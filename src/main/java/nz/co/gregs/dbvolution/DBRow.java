@@ -1695,7 +1695,7 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 						listRequired = true;
 						final AutoFillDuringQueryIfPossible autoFillAnnotation = field.getAnnotation(AutoFillDuringQueryIfPossible.class);
 						requiredClass = autoFillAnnotation.requiredClass();
-						if (requiredClass.isAssignableFrom(DBRow.class)){
+						if (requiredClass.isAssignableFrom(DBRow.class)) {
 							throw new nz.co.gregs.dbvolution.exceptions.UnacceptableClassForAutoFillAnnotation(field, requiredClass);
 						}
 					}

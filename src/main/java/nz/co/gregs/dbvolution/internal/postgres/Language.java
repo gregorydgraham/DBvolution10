@@ -20,8 +20,9 @@ package nz.co.gregs.dbvolution.internal.postgres;
  * @author gregorygraham
  */
 public enum Language {
+
 	sql,
 	plpgsql,
 	c;
-	
+
 }

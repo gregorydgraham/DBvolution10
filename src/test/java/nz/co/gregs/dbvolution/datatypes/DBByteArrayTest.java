@@ -139,7 +139,7 @@ public class DBByteArrayTest extends AbstractTest {
 		Assert.assertThat(stringValue, is(sourceDataAsString));
 
 		database.preventDroppingOfTables(false);
-	    database.dropTableNoExceptions(clobTable);
+		database.dropTableNoExceptions(clobTable);
 
 	}
 

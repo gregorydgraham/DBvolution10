@@ -22,7 +22,7 @@ import java.beans.PropertyEditorSupport;
  * @author Gregory Graham
  */
 public class QueryableDatatypeEditor extends PropertyEditorSupport {
-	
+
 	private String format;
 
 	/**
@@ -33,7 +33,7 @@ public class QueryableDatatypeEditor extends PropertyEditorSupport {
 	public void setFormat(String format) {
 		this.format = format;
 	}
-	
+
 	@Override
 	public void setAsText(String text) {
 		String inputText = text;

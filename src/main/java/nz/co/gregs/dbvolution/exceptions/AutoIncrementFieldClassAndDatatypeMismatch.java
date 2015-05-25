@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package nz.co.gregs.dbvolution.exceptions;
 
 import nz.co.gregs.dbvolution.internal.properties.PropertyWrapper;
@@ -23,18 +22,20 @@ import nz.co.gregs.dbvolution.internal.properties.PropertyWrapper;
  * @author Gregory Graham
  */
 public class AutoIncrementFieldClassAndDatatypeMismatch extends DBRuntimeException {
+
 	private static final long serialVersionUID = 1L;
 
 	/**
-	 * Thrown if the database's idea of an acceptable datatype to auto-increment and the programmer's are incompatible.
-	 * 
+	 * Thrown if the database's idea of an acceptable datatype to auto-increment
+	 * and the programmer's are incompatible.
+	 *
 	 * <p>
 	 * Generally DBinteger is the class you want.
 	 *
 	 * @param field field
 	 */
 	public AutoIncrementFieldClassAndDatatypeMismatch(PropertyWrapper field) {
-		super("Attempt To Create Column Failed Because The QDT Was Inappropriate For The Auto-Increment Datatype: field"+field.javaName()+" was "+field.getRawJavaType());
+		super("Attempt To Create Column Failed Because The QDT Was Inappropriate For The Auto-Increment Datatype: field" + field.javaName() + " was " + field.getRawJavaType());
 	}
-	
+
 }

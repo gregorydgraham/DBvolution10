@@ -31,76 +31,76 @@ import org.junit.Test;
  */
 public class DBTableDeleteTest extends AbstractTest {
 
-    public DBTableDeleteTest(Object testIterationName, Object db) {
-        super(testIterationName, db);
-    }
+	public DBTableDeleteTest(Object testIterationName, Object db) {
+		super(testIterationName, db);
+	}
 
-    @Test
-    public void testDeleteListOfRows() throws SQLException {
-        List<Marque> rowList = marquesTable.setBlankQueryAllowed(true).getAllRows();
-        int originalSize = rowList.size();
-        System.out.println("rowList.size()==" + rowList.size());
-        ArrayList<Marque> deleteList = new ArrayList<Marque>();
-        for (Marque row : rowList) {
-            if (row.getIsUsedForTAFROs().toString().equals("False")) {
-                deleteList.add(row);
-            }
-        }
-        marquesTable.delete(deleteList);
-        marquesTable.getAllRows();
-        System.out.println("rowList.size()==" + marquesTable.getAllRows().size());
-        //assertThat("All 'False' rows have not been deleted", originalSize - deleteList.size() == marquesTable.toList().size());
-        Assert.assertThat(originalSize - deleteList.size(), is(marquesTable.getAllRows().size()));
+	@Test
+	public void testDeleteListOfRows() throws SQLException {
+		List<Marque> rowList = marquesTable.setBlankQueryAllowed(true).getAllRows();
+		int originalSize = rowList.size();
+		System.out.println("rowList.size()==" + rowList.size());
+		ArrayList<Marque> deleteList = new ArrayList<Marque>();
+		for (Marque row : rowList) {
+			if (row.getIsUsedForTAFROs().toString().equals("False")) {
+				deleteList.add(row);
+			}
+		}
+		marquesTable.delete(deleteList);
+		marquesTable.getAllRows();
+		System.out.println("rowList.size()==" + marquesTable.getAllRows().size());
+		//assertThat("All 'False' rows have not been deleted", originalSize - deleteList.size() == marquesTable.toList().size());
+		Assert.assertThat(originalSize - deleteList.size(), is(marquesTable.getAllRows().size()));
 
-    }
+	}
 
-    @Test
-    public void testDeleteByExample() throws SQLException {
-        List<Marque> beforeList = marquesTable.setBlankQueryAllowed(true).getAllRows();
-        System.out.println("rowList.size()==" + beforeList.size());
-        Marque marq = new Marque();
-        marq.name.permittedValues("PEUGEOT", "HUMMER");
-        marquesTable.delete(marq);
-        List<Marque> afterList = marquesTable.getAllRows();
-        System.out.println("rowList.size()==" + afterList.size());
-        //assertThat("All 'False' rows have not been deleted", originalSize - deleteList.size() == marquesTable.toList().size());
-        Assert.assertThat(beforeList.size(), is(afterList.size() + 2));
+	@Test
+	public void testDeleteByExample() throws SQLException {
+		List<Marque> beforeList = marquesTable.setBlankQueryAllowed(true).getAllRows();
+		System.out.println("rowList.size()==" + beforeList.size());
+		Marque marq = new Marque();
+		marq.name.permittedValues("PEUGEOT", "HUMMER");
+		marquesTable.delete(marq);
+		List<Marque> afterList = marquesTable.getAllRows();
+		System.out.println("rowList.size()==" + afterList.size());
+		//assertThat("All 'False' rows have not been deleted", originalSize - deleteList.size() == marquesTable.toList().size());
+		Assert.assertThat(beforeList.size(), is(afterList.size() + 2));
 
-    }
+	}
 
-    @Test
-    @SuppressWarnings("unchecked")
-    public void testDeleteByExampleUsingList() throws SQLException {
-        List<Marque> beforeList = marquesTable.setBlankQueryAllowed(true).getAllRows();
-        System.out.println("rowList.size()==" + beforeList.size());
-        Marque marq = new Marque();
-        ArrayList<String> arrayList = new ArrayList<String>();
-        arrayList.add("PEUGEOT");
-        arrayList.add("HUMMER");
-        marq.name.permittedValues(arrayList);
-        marquesTable.delete(marq);
-        List<Marque> afterList = marquesTable.getAllRows();
-        System.out.println("rowList.size()==" + afterList.size());
-        //assertThat("All 'False' rows have not been deleted", originalSize - deleteList.size() == marquesTable.toList().size());
-        Assert.assertThat(beforeList.size(), is(afterList.size() + 2));
+	@Test
+	@SuppressWarnings("unchecked")
+	public void testDeleteByExampleUsingList() throws SQLException {
+		List<Marque> beforeList = marquesTable.setBlankQueryAllowed(true).getAllRows();
+		System.out.println("rowList.size()==" + beforeList.size());
+		Marque marq = new Marque();
+		ArrayList<String> arrayList = new ArrayList<String>();
+		arrayList.add("PEUGEOT");
+		arrayList.add("HUMMER");
+		marq.name.permittedValues(arrayList);
+		marquesTable.delete(marq);
+		List<Marque> afterList = marquesTable.getAllRows();
+		System.out.println("rowList.size()==" + afterList.size());
+		//assertThat("All 'False' rows have not been deleted", originalSize - deleteList.size() == marquesTable.toList().size());
+		Assert.assertThat(beforeList.size(), is(afterList.size() + 2));
 
-    }
+	}
 
-    @Test
-    @SuppressWarnings("unchecked")
-    public void testDeleteByExampleUsingSet() throws SQLException {
-        List<Marque> beforeList = marquesTable.setBlankQueryAllowed(true).getAllRows();
-        System.out.println("rowList.size()==" + beforeList.size());
-        Marque marq = new Marque();
-        HashSet<String> hashSet = new HashSet<String>();
-        hashSet.add("PEUGEOT");
-        hashSet.add("HUMMER");
-        marq.name.permittedValues(hashSet);
-        marquesTable.delete(marq);
-        List<Marque> afterList = marquesTable.getAllRows();
-        System.out.println("rowList.size()==" + afterList.size());
-        //assertThat("All 'False' rows have not been deleted", originalSize - deleteList.size() == marquesTable.toList().size());
-        Assert.assertThat(beforeList.size(), is(afterList.size() + 2));
+	@Test
+	@SuppressWarnings("unchecked")
+	public void testDeleteByExampleUsingSet() throws SQLException {
+		List<Marque> beforeList = marquesTable.setBlankQueryAllowed(true).getAllRows();
+		System.out.println("rowList.size()==" + beforeList.size());
+		Marque marq = new Marque();
+		HashSet<String> hashSet = new HashSet<String>();
+		hashSet.add("PEUGEOT");
+		hashSet.add("HUMMER");
+		marq.name.permittedValues(hashSet);
+		marquesTable.delete(marq);
+		List<Marque> afterList = marquesTable.getAllRows();
+		System.out.println("rowList.size()==" + afterList.size());
+		//assertThat("All 'False' rows have not been deleted", originalSize - deleteList.size() == marquesTable.toList().size());
+		Assert.assertThat(beforeList.size(), is(afterList.size() + 2));
 
-    }
+	}
 }

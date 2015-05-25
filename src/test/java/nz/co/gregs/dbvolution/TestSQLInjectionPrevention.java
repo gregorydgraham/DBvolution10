@@ -24,24 +24,23 @@ import static org.hamcrest.Matchers.is;
 import org.junit.Assert;
 import org.junit.Test;
 
-
 public class TestSQLInjectionPrevention extends AbstractTest {
 
 	public TestSQLInjectionPrevention(Object testIterationName, Object db) {
 		super(testIterationName, db);
 	}
-    
-    @Test
-    public void testSQLInjectionPrevention() throws SQLException{
-        Marque newMarque1 = new Marque();
-        newMarque1.getUidMarque().setValue(998);
-        newMarque1.getName().setValue("TOYOTA'; drop table marques;");
-        newMarque1.getNumericCode().setValue(10);
-        
-        DBActionList changes = database.insert(newMarque1);
+
+	@Test
+	public void testSQLInjectionPrevention() throws SQLException {
+		Marque newMarque1 = new Marque();
+		newMarque1.getUidMarque().setValue(998);
+		newMarque1.getName().setValue("TOYOTA'; drop table marques;");
+		newMarque1.getNumericCode().setValue(10);
+
+		DBActionList changes = database.insert(newMarque1);
 		List<Marque> allRows = marquesTable.setBlankQueryAllowed(true).getAllRows();
 		Assert.assertThat(allRows.size(), is(23));
-        marquesTable.print();
-    }
-	
+		marquesTable.print();
+	}
+
 }

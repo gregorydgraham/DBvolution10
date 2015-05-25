@@ -32,34 +32,34 @@ import nz.co.gregs.dbvolution.expressions.StringResult;
  */
 public class DBLessThanOperator extends DBOperator {
 
-    private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 1L;
 //    protected final QueryableDatatype firstValue;
 
-    /**
-     *
+	/**
+	 *
 	 * @param lessThanThis the expression to compare to.
-     */
-    public DBLessThanOperator(DBExpression lessThanThis) {
-        super();
-        if (lessThanThis != null) {
-            this.firstValue = lessThanThis.copy();
-        } else {
-            this.firstValue = null;
-        }
-    }
+	 */
+	public DBLessThanOperator(DBExpression lessThanThis) {
+		super();
+		if (lessThanThis != null) {
+			this.firstValue = lessThanThis.copy();
+		} else {
+			this.firstValue = null;
+		}
+	}
 
-    public DBLessThanOperator() {
-        super();
-        this.firstValue = null;
-    }
-    
-    @Override
-    public DBLessThanOperator copyAndAdapt(DBSafeInternalQDTAdaptor typeAdaptor) {
-    	DBLessThanOperator op = new DBLessThanOperator(typeAdaptor.convert(firstValue));
-    	op.invertOperator = this.invertOperator;
-    	op.includeNulls = this.includeNulls;
-    	return op;
-    }
+	public DBLessThanOperator() {
+		super();
+		this.firstValue = null;
+	}
+
+	@Override
+	public DBLessThanOperator copyAndAdapt(DBSafeInternalQDTAdaptor typeAdaptor) {
+		DBLessThanOperator op = new DBLessThanOperator(typeAdaptor.convert(firstValue));
+		op.invertOperator = this.invertOperator;
+		op.includeNulls = this.includeNulls;
+		return op;
+	}
 
 	@Override
 	public BooleanExpression generateWhereExpression(DBDatabase db, DBExpression column) {

@@ -30,12 +30,12 @@ public class DBBooleanPermittedValuesOperator extends DBPermittedValuesOperator 
 //			if (permitted == null) {
 //				this.includeNulls = true;
 //			} else {
-				expr = BooleanExpression.value(permitted);
+			expr = BooleanExpression.value(permitted);
 //			}
 //			if (expr==null) {
 //				operator = new DBIsNullOperator();
 //			} else{
-				operator = new DBBitwiseEqualsOperator(expr);
+			operator = new DBBitwiseEqualsOperator(expr);
 //			}
 		}
 		operator.includeNulls = this.includeNulls;

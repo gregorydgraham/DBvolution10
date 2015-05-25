@@ -2,25 +2,25 @@
 <!DOCTYPE log4j:configuration SYSTEM "log4j.dtd">
 <log4j:configuration debug="false" xmlns:log4j='http://jakarta.apache.org/log4j/'>
 
-   <appender name="consoleAppender" class="org.apache.log4j.ConsoleAppender">
-      <param name="target" value="System.err"/>
-      <layout class="org.apache.log4j.PatternLayout">
-         <param name="ConversionPattern" value="%-5p %c{1} - %m%n"/>
-      </layout>
-   </appender>
+	<appender name="consoleAppender" class="org.apache.log4j.ConsoleAppender">
+		<param name="target" value="System.err"/>
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="ConversionPattern" value="%-5p %c{1} - %m%n"/>
+		</layout>
+	</appender>
 
-   <appender name="fileAppender" class="org.apache.log4j.RollingFileAppender">
-      <param name="append" value="false"/>
-      <param name="file" value="dbvolution.log"/>
-      <layout class="org.apache.log4j.PatternLayout">
-         <param name="ConversionPattern" value="%d{ABSOLUTE} %-5p [%c{1}] %m%n"/>
-      </layout>
-   </appender>
+	<appender name="fileAppender" class="org.apache.log4j.RollingFileAppender">
+		<param name="append" value="false"/>
+		<param name="file" value="dbvolution.log"/>
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="ConversionPattern" value="%d{ABSOLUTE} %-5p [%c{1}] %m%n"/>
+		</layout>
+	</appender>
 
-   <root>
-      <level value="INFO"/>
-      <appender-ref ref="consoleAppender"/>
-      <appender-ref ref="fileAppender"/>
-   </root>
+	<root>
+		<level value="INFO"/>
+		<appender-ref ref="consoleAppender"/>
+		<appender-ref ref="fileAppender"/>
+	</root>
 
 </log4j:configuration>

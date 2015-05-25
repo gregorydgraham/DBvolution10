@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package nz.co.gregs.dbvolution.operators;
 
 import nz.co.gregs.dbvolution.DBDatabase;
@@ -31,25 +30,25 @@ import nz.co.gregs.dbvolution.expressions.StringResult;
  *
  * @author Gregory Graham
  */
-public class DBBetweenInclusiveOperator  extends DBOperator{
-    private static final long serialVersionUID = 1L;
+public class DBBetweenInclusiveOperator extends DBOperator {
+
+	private static final long serialVersionUID = 1L;
 
 //    private final QueryableDatatype firstValue;
 //    private final QueryableDatatype secondValue;
-    
-    public DBBetweenInclusiveOperator(DBExpression lowValue, DBExpression highValue){
-        super();
-        this.firstValue = lowValue==null?lowValue:lowValue.copy();
-        this.secondValue = highValue==null?highValue:highValue.copy();
-    }
-    
-    @Override
-    public DBBetweenInclusiveOperator copyAndAdapt(QueryableDatatypeSyncer.DBSafeInternalQDTAdaptor typeAdaptor) {
-    	DBBetweenInclusiveOperator op = new DBBetweenInclusiveOperator(typeAdaptor.convert(firstValue), typeAdaptor.convert(secondValue));
-    	op.invertOperator = this.invertOperator;
-    	op.includeNulls = this.includeNulls;
-    	return op;
-    }
+	public DBBetweenInclusiveOperator(DBExpression lowValue, DBExpression highValue) {
+		super();
+		this.firstValue = lowValue == null ? lowValue : lowValue.copy();
+		this.secondValue = highValue == null ? highValue : highValue.copy();
+	}
+
+	@Override
+	public DBBetweenInclusiveOperator copyAndAdapt(QueryableDatatypeSyncer.DBSafeInternalQDTAdaptor typeAdaptor) {
+		DBBetweenInclusiveOperator op = new DBBetweenInclusiveOperator(typeAdaptor.convert(firstValue), typeAdaptor.convert(secondValue));
+		op.invertOperator = this.invertOperator;
+		op.includeNulls = this.includeNulls;
+		return op;
+	}
 
 	@Override
 	public BooleanExpression generateWhereExpression(DBDatabase db, DBExpression column) {
@@ -75,13 +74,13 @@ public class DBBetweenInclusiveOperator  extends DBOperator{
 				betweenOp = stringExpression.bracket().isBetweenInclusive(firstStringExpr, secondStringExpr);
 			}
 		} else if ((genericExpression instanceof NumberExpression)
-				&&(firstValue instanceof NumberResult)
-				&&(secondValue instanceof NumberResult)) {
+				&& (firstValue instanceof NumberResult)
+				&& (secondValue instanceof NumberResult)) {
 			NumberExpression numberExpression = (NumberExpression) genericExpression;
 			betweenOp = numberExpression.isBetweenInclusive((NumberResult) firstValue, (NumberResult) secondValue);
 		} else if ((genericExpression instanceof DateExpression)
-				&&(firstValue instanceof DateResult)
-				&&(secondValue instanceof DateResult)) {
+				&& (firstValue instanceof DateResult)
+				&& (secondValue instanceof DateResult)) {
 			DateExpression dateExpression = (DateExpression) genericExpression;
 			betweenOp = dateExpression.isBetweenInclusive((DateResult) firstValue, (DateResult) secondValue);
 		}

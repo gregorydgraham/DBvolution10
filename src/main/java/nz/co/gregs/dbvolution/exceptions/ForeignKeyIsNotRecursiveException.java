@@ -26,12 +26,13 @@ public class ForeignKeyIsNotRecursiveException extends DBRuntimeException {
 	private static final long serialVersionUID = 1L;
 
 	/**
-	 * The column needs to both be a foreign key and a foreign key to the table/DBRow that this column belongs to.
+	 * The column needs to both be a foreign key and a foreign key to the
+	 * table/DBRow that this column belongs to.
 	 *
 	 * @param keyToFollow
 	 */
 	public ForeignKeyIsNotRecursiveException(ColumnProvider keyToFollow) {
-		super("The Foreign Key Provided Should be Recursive: the field \""+keyToFollow.getColumn().getPropertyWrapper().javaName()+"\" should be a foreign key to this DBRow class or a subclass of it.  Please provide a different Foreign Key or correct the @DBForeignKey annotation.");
+		super("The Foreign Key Provided Should be Recursive: the field \"" + keyToFollow.getColumn().getPropertyWrapper().javaName() + "\" should be a foreign key to this DBRow class or a subclass of it.  Please provide a different Foreign Key or correct the @DBForeignKey annotation.");
 	}
-	
+
 }

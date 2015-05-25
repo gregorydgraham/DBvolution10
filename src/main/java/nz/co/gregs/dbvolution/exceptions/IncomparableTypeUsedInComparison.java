@@ -19,14 +19,16 @@ import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.expressions.DBExpression;
 
 /**
- * Thrown when the datatype used in a comparison does not support that comparison.
- * 
+ * Thrown when the datatype used in a comparison does not support that
+ * comparison.
+ *
  * <p>
  * Theoretically no-one should ever see this exception but mistakes do happen.
- * 
+ *
  * <p>
- * If it occurs check that you're not accidentally comparing LargeObject columns (JavaObject, CLOB, BLOB, etc) as they support very few comparisons.
- * 
+ * If it occurs check that you're not accidentally comparing LargeObject columns
+ * (JavaObject, CLOB, BLOB, etc) as they support very few comparisons.
+ *
  * <p>
  * Alternatively inform the developers and they will fix it.
  *
@@ -35,9 +37,27 @@ import nz.co.gregs.dbvolution.expressions.DBExpression;
 public class IncomparableTypeUsedInComparison extends DBRuntimeException {
 
 	private static final long serialVersionUID = 1L;
-	
+
+	/**
+	 * Thrown when the datatype used in a comparison does not support that
+	 * comparison.
+	 *
+	 * <p>
+	 * Theoretically no-one should ever see this exception but mistakes do happen.
+	 *
+	 * <p>
+	 * If it occurs check that you're not accidentally comparing LargeObject
+	 * columns (JavaObject, CLOB, BLOB, etc) as they support very few comparisons.
+	 *
+	 * <p>
+	 * Alternatively inform the developers and they will fix it.
+	 *
+	 * @author Gregory Graham
+	 * @param db
+	 * @param genericExpression
+	 */
 	public IncomparableTypeUsedInComparison(DBDatabase db, DBExpression genericExpression) {
 		super("Incomparable Type: " + genericExpression.toSQLString(db) + " is a " + genericExpression.getClass().getSimpleName() + " and is not an equals comparable expression");
 	}
-	
+
 }

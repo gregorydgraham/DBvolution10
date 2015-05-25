@@ -73,7 +73,7 @@ public class TypeAdaptorTest {
 			;
 		}
 	}
-	
+
 	@Test
 	public void queriesOnDBIntegerGivenDBInteger() throws SQLException {
 		CustomerWithDBInteger query = new CustomerWithDBInteger();

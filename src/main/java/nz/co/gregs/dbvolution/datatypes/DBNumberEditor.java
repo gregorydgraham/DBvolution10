@@ -23,29 +23,29 @@ import java.beans.PropertyEditorSupport;
  */
 public class DBNumberEditor extends PropertyEditorSupport {
 
-    private String format;
+	private String format;
 
-    /**
-     *
+	/**
+	 *
 	 * @param format format
-     */
-    public void setFormat(String format) {
-        this.format = format;
-    }
+	 */
+	public void setFormat(String format) {
+		this.format = format;
+	}
 
-    /**
-     *
+	/**
+	 *
 	 * @param text text
-     */
-    @Override
-    public void setAsText(String text) {
-        DBNumber type;
-        if (text == null || text.isEmpty()) {
-            type = new DBNumber();
-        } else {
-            type = new DBNumber();
-            type.setValue(Double.parseDouble(text));
-        }
-        setValue(type);
-    }
+	 */
+	@Override
+	public void setAsText(String text) {
+		DBNumber type;
+		if (text == null || text.isEmpty()) {
+			type = new DBNumber();
+		} else {
+			type = new DBNumber();
+			type.setValue(Double.parseDouble(text));
+		}
+		setValue(type);
+	}
 }

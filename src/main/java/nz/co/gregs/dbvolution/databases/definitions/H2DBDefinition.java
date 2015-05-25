@@ -64,11 +64,13 @@ public class H2DBDefinition extends DBDefinition {
 		if (qdt instanceof DBDateRepeat) {
 			return DateRepeatFunctions.DATATYPE;
 		} else if (qdt instanceof DBPoint2D) {
-			return Point2D.POINT2D.datatype();
+			return DataTypes.POINT2D.datatype();
+		} else if (qdt instanceof DBLineSegment2D) {
+			return DataTypes.LINESEGMENT2D.datatype();
 		} else if (qdt instanceof DBLine2D) {
-			return Line2D.LINE2D.datatype();
+			return DataTypes.LINE2D.datatype();
 		} else if (qdt instanceof DBPolygon2D) {
-			return Polygon2D.POLYGON2D.datatype();
+			return DataTypes.POLYGON2D.datatype();
 		} else {
 			return super.getSQLTypeOfDBDatatype(qdt);
 		}
@@ -276,6 +278,11 @@ public class H2DBDefinition extends DBDefinition {
 	}
 
 	@Override
+	public String doLine2DIntersectsLine2DTransform(String toSQLString, String toSQLString0) {
+		return Line2DFunctions.INTERSECTS_LINE2D + "((" + toSQLString +"), ("+toSQLString0+ "))";
+	}
+
+	@Override
 	public String doPoint2DEqualsTransform(String firstPoint, String secondPoint) {
 		return Point2DFunctions.EQUALS + "(" + firstPoint + ", " + secondPoint + ")";
 	}
@@ -327,8 +334,13 @@ public class H2DBDefinition extends DBDefinition {
 	}
 
 	@Override
-	public String doPolygon2DContainsTransform(String firstGeometry, String secondGeometry) {
-		return Polygon2DFunctions.CONTAINS.alias() + "(" + firstGeometry + ", " + secondGeometry + ")";
+	public String doPolygon2DContainsPolygon2DTransform(String firstGeometry, String secondGeometry) {
+		return Polygon2DFunctions.CONTAINS_POLYGON2D.alias() + "(" + firstGeometry + ", " + secondGeometry + ")";
+	}
+
+	@Override
+	public String doPolygon2DContainsPoint2DTransform(String polygon2DSQL, String point2DSQL) {
+		return Polygon2DFunctions.CONTAINS_POINT2D.alias() + "(" + polygon2DSQL + ", " + point2DSQL + ")";
 	}
 
 	@Override
@@ -391,5 +403,60 @@ public class H2DBDefinition extends DBDefinition {
 	@Override
 	public String doPolygon2DGetMinYTransform(String toSQLString) {
 		return Polygon2DFunctions.MIN_Y.alias() + "(" + toSQLString + ")";
+	}
+
+	@Override
+	public String doLineSegment2DIntersectsLineSegment2DTransform(String toSQLString, String toSQLString0) {
+		return LineSegment2DFunctions.INTERSECTS_LINESEGMENT2D+"(("+toSQLString+"), ("+toSQLString0+"))";
+	}
+
+	@Override
+	public String doLineSegment2DGetMaxXTransform(String toSQLString) {
+		return LineSegment2DFunctions.MAXX+"("+toSQLString+")";
+	}
+
+	@Override
+	public String doLineSegment2DGetMinXTransform(String toSQLString) {
+		return LineSegment2DFunctions.MINX+"("+toSQLString+")";
+	}
+
+	@Override
+	public String doLineSegment2DGetMaxYTransform(String toSQLString) {
+		return LineSegment2DFunctions.MAXY+"("+toSQLString+")";
+	}
+
+	@Override
+	public String doLineSegment2DGetMinYTransform(String toSQLString) {
+		return LineSegment2DFunctions.MINY+"("+toSQLString+")";
+	}
+
+	@Override
+	public String doLineSegment2DGetBoundingBoxTransform(String toSQLString) {
+		return LineSegment2DFunctions.BOUNDINGBOX+"("+toSQLString+")";
+	}
+
+	@Override
+	public String doLineSegment2DDimensionTransform(String toSQLString) {
+		return LineSegment2DFunctions.DIMENSION+"("+toSQLString+")";
+	}
+
+	@Override
+	public String doLineSegment2DNotEqualsTransform(String toSQLString, String toSQLString0) {
+		return "!"+LineSegment2DFunctions.EQUALS+"(("+toSQLString+"), ("+toSQLString0+"))";
+	}
+
+	@Override
+	public String doLineSegment2DEqualsTransform(String toSQLString, String toSQLString0) {
+		return LineSegment2DFunctions.EQUALS+"(("+toSQLString+"), ("+toSQLString0+"))";
+	}
+
+	@Override
+	public String doLineSegment2DAsTextTransform(String toSQLString) {
+		return LineSegment2DFunctions.ASTEXT+"("+toSQLString+")";
+	}
+	
+	@Override
+	public String doLineSegment2DIntersectionPointWithLineSegment2DTransform(String toSQLString, String toSQLString0) {
+		return LineSegment2DFunctions.INTERSECTIONPOINT_LINESEGMENT2D+"(("+toSQLString+"), ("+toSQLString0+"))";
 	}
 }

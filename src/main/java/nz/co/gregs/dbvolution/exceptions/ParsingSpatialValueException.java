@@ -22,9 +22,15 @@ package nz.co.gregs.dbvolution.exceptions;
 public class ParsingSpatialValueException extends DBRuntimeException {
 
 	private static final long serialVersionUID = 1L;
-	
+
+	/**
+	 * Thrown when the geometry returned cannot be parsed.
+	 *
+	 * @param fullColumnName
+	 * @param string
+	 */
 	public ParsingSpatialValueException(String fullColumnName, String string) {
-		super("Failed To Parse Spatial Data: unable to create a correct value for column <"+fullColumnName+"> from '"+string+"'");
+		super("Failed To Parse Spatial Data: unable to create a correct value for column <" + fullColumnName + "> from '" + string + "'");
 	}
-	
+
 }

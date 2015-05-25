@@ -33,7 +33,7 @@ package nz.co.gregs.dbvolution.expressions;
  */
 public interface BooleanResult extends DBExpression, ExpressionCanHaveNullValues {
 
-    @Override
-    public BooleanResult copy();
+	@Override
+	public BooleanResult copy();
 
 }

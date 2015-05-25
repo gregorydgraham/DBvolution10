@@ -24,14 +24,15 @@ import org.junit.Test;
  *
  * @author Gregory Graham
  */
-public class DBUpdateTest extends AbstractTest{
+public class DBUpdateTest extends AbstractTest {
 
 	public DBUpdateTest(Object testIterationName, Object db) {
 		super(testIterationName, db);
 	}
-	
+
 	/**
 	 * Test of getUpdates method, of class DBUpdate.
+	 *
 	 * @throws java.lang.Exception
 	 */
 	@Test(expected = AccidentalUpdateOfUndefinedRowException.class)
@@ -41,5 +42,5 @@ public class DBUpdateTest extends AbstractTest{
 		marque.name.setValue("Not a Marque");
 		DBUpdate.getUpdates(marque);
 	}
-	
+
 }

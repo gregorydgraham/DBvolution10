@@ -50,33 +50,40 @@ public class Polygon2DFunctions {
 	public static String BOUNDINGBOX = "DBV_POLYGON2D_BOUNDINGBOX2D";
 	public static String TOUCHES = "DBV_POLYGON2D_TOUCHES";
 	public static String EXTERIORRING = "DBV_POLYGON2D_EXTERIORRING";
-	public static String CONTAINS = "DBV_POLYGON2D_CONTAINS";
+	public static String CONTAINS_POLYGON2D = "DBV_POLYGON2D_CONTAINS";
 	public static String WITHIN = "DBV_POLYGON2D_WITHIN";
 	public static String OVERLAPS = "DBV_POLYGON2D_OVERLAPS";
 	public static String INTERSECTS = "DBV_POLYGON2D_INTERSECTS";
 	public static String DISJOINT = "DBV_POLYGON2D_DISJOINT";
+	public static String CONTAINS_POINT2D = "DBV_POLYGON2D_CONTAINS_POINT2D";
 
 	private Polygon2DFunctions() {
 	}
 
 	public static void addFunctions(java.sql.Connection connection) throws SQLException {
-		Function.create(connection, DIMENSION, new Dimension());
-		Function.create(connection, EQUALS, new Equals());
-		Function.create(connection, AREA, new Area());
-		Function.create(connection, TOUCHES, new Touches());
-		Function.create(connection, EXTERIORRING, new ExteriorRing());
-		Function.create(connection, CONTAINS, new Contains());
-		Function.create(connection, WITHIN, new Within());
-		Function.create(connection, OVERLAPS, new Overlaps());
-		Function.create(connection, INTERSECTS, new Intersects());
-		Function.create(connection, DISJOINT, new Disjoint());
-		Function.create(connection, CREATE_FROM_WKTPOLYGON2D, new CreatePolygonFromWKTPolygon2D());
-		Function.create(connection, CREATE_FROM_POINT2DS, new CreatePolygonFromPoint2Ds());
-		Function.create(connection, MAX_X, new MaxX());
-		Function.create(connection, MIN_X, new MinX());
-		Function.create(connection, MAX_Y, new MaxY());
-		Function.create(connection, MIN_Y, new MinY());
-		Function.create(connection, BOUNDINGBOX, new BoundingBox());
+		add(connection, DIMENSION, new Dimension());
+		add(connection, EQUALS, new Equals());
+		add(connection, AREA, new Area());
+		add(connection, TOUCHES, new Touches());
+		add(connection, EXTERIORRING, new ExteriorRing());
+		add(connection, CONTAINS_POLYGON2D, new Contains());
+		add(connection, WITHIN, new Within());
+		add(connection, OVERLAPS, new Overlaps());
+		add(connection, INTERSECTS, new Intersects());
+		add(connection, DISJOINT, new Disjoint());
+		add(connection, CREATE_FROM_WKTPOLYGON2D, new CreatePolygonFromWKTPolygon2D());
+		add(connection, CREATE_FROM_POINT2DS, new CreatePolygonFromPoint2Ds());
+		add(connection, MAX_X, new MaxX());
+		add(connection, MIN_X, new MinX());
+		add(connection, MAX_Y, new MaxY());
+		add(connection, MIN_Y, new MinY());
+		add(connection, BOUNDINGBOX, new BoundingBox());
+		add(connection, CONTAINS_POINT2D, new ContainsPoint2D());
+	}
+
+	private static void add(java.sql.Connection connection, String functionName, Function function) throws SQLException {
+		Function.destroy(connection, functionName);
+		Function.create(connection, functionName, function);
 	}
 
 	public static class Dimension extends Function {
@@ -417,8 +424,11 @@ public class Polygon2DFunctions {
 				} else {
 					final LineString exteriorRing = poly1.getExteriorRing();
 					exteriorRing.normalize();
-					Polygon exteriorPolygon = (new GeometryFactory()).createPolygon(exteriorRing.getCoordinateSequence());
-					result(exteriorPolygon.toText());
+//					Polygon exteriorPolygon = (new GeometryFactory()).createPolygon(exteriorRing.getCoordinateSequence());
+//					result(exteriorPolygon.toText());
+					LineString createLineString = (new GeometryFactory()).createLineString(exteriorRing.getCoordinates());
+					Geometry reverse = createLineString.reverse();
+					result(reverse.toText());
 				}
 			} catch (com.vividsolutions.jts.io.ParseException ex) {
 				Logger.getLogger(SQLiteDB.class.getName()).log(Level.SEVERE, null, ex);
@@ -441,6 +451,24 @@ public class Polygon2DFunctions {
 				}
 			} catch (Exception ex) {
 				throw new RuntimeException("Failed To Parse Polygon", ex);
+			}
+		}
+	}
+
+	private static class ContainsPoint2D extends PolygonFunction {
+
+		@Override
+		protected void xFunc() throws SQLException {
+			try {
+				Polygon poly1 = getPolygon(value_text(0));
+				Point point = getPoint(value_text(1));
+				if (poly1 == null || point == null) {
+					result();
+				} else {
+					result(poly1.contains(point) ? 1 : 0);
+				}
+			} catch (Exception ex) {
+				throw new RuntimeException("Failed To Parse Polygon or Point", ex);
 			}
 		}
 	}
@@ -515,7 +543,7 @@ public class Polygon2DFunctions {
 					result(poly1.disjoint(poly2) ? 1 : 0);
 				}
 			} catch (com.vividsolutions.jts.io.ParseException ex) {
-				Logger.getLogger(SQLiteDB.class.getName()).log(Level.SEVERE, null, ex);
+				Logger.getLogger(Polygon2DFunctions.class.getName()).log(Level.SEVERE, null, ex);
 				throw new RuntimeException("Failed To Parse SQLite Polygon", ex);
 			}
 		}
@@ -528,6 +556,15 @@ public class Polygon2DFunctions {
 			Geometry firstGeom = wktReader.read(possiblePoly);
 			if (firstGeom instanceof Polygon) {
 				return (Polygon) firstGeom;
+			}
+			return null;
+		}
+		
+		Point getPoint(String possiblePoly) throws com.vividsolutions.jts.io.ParseException {
+			WKTReader wktReader = new WKTReader();
+			Geometry firstGeom = wktReader.read(possiblePoly);
+			if (firstGeom instanceof Point) {
+				return (Point) firstGeom;
 			}
 			return null;
 		}

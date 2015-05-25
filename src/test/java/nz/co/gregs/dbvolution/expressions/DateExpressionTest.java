@@ -780,6 +780,8 @@ public class DateExpressionTest extends AbstractTest {
 
 	public static class MarqueWithSecondsFromDate extends Marque {
 
+		private static final long serialVersionUID = 1L;
+
 		Date date = new Date(10l);
 		@DBColumn
 		DBNumber subseconds = new DBNumber(DateExpression.value(date).subsecond());
@@ -790,7 +792,7 @@ public class DateExpressionTest extends AbstractTest {
 		final List<MarqueWithSecondsFromDate> allRows = database.getDBTable(new MarqueWithSecondsFromDate()).setBlankQueryAllowed(true).getAllRows();
 		database.print(allRows);
 		for (MarqueWithSecondsFromDate row : allRows) {
-				Assert.assertThat(row.subseconds.doubleValue(), is(0.01));
+			Assert.assertThat(row.subseconds.doubleValue(), is(0.01));
 		}
 	}
 

@@ -155,15 +155,16 @@ public class DBScriptTest extends AbstractTest {
 	}
 
 	public class ScriptThatThrowsAnException extends DBScript {
+
 		private Exception exc;
-		
-		public ScriptThatThrowsAnException(Exception exception){
+
+		public ScriptThatThrowsAnException(Exception exception) {
 			this.exc = exception;
 		}
 
 		@Override
 		public DBActionList script(DBDatabase db) throws Exception {
-			if (exc!=null){
+			if (exc != null) {
 				throw exc;
 			}
 			return new DBActionList();

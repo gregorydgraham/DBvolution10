@@ -21,17 +21,20 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * 
- * Used to indicate the class references a SQL query rather than a table or view and the query itself.
+ *
+ * Used to indicate the class references a SQL query rather than a table or view
+ * and the query itself.
  * <code>
  * <br>
- * <span style="font-weight:bold"> &#64;DBSelectQuery("select my_table_id, other_table_fk from my_table") </span><br>
+ * <span style="font-weight:bold"> &#64;DBSelectQuery("select my_table_id,
+ * other_table_fk from my_table") </span><br>
  * &#64;DBTableName("my_table")<br>
  * public class MyTableQuery extends DBRow {<br>
  * <br>
  * </code>
  * <p>
- * This class is provided to help with the 1% of queries that DBvolution is not designed for, use it rarely and carefully.
+ * This class is provided to help with the 1% of queries that DBvolution is not
+ * designed for, use it rarely and carefully.
  *
  * @author Gregory Graham
  */
@@ -42,8 +45,8 @@ public @interface DBSelectQuery {
 	/**
 	 * The raw SELECT clause.
 	 *
-	 * @return  the Select SQL.
+	 * @return the Select SQL.
 	 */
 	String value() default "";
-    
+
 }

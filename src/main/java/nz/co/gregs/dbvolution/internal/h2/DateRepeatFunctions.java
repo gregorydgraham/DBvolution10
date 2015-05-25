@@ -28,7 +28,7 @@ public class DateRepeatFunctions {
 
 	static String ACTUAL_DATATYPE = " VARCHAR(100) ";
 	public static String DATATYPE = " DBV_DATEREPEAT ";
-	
+
 	public static String DATEREPEAT_CREATION_FUNCTION = "DBV_DATEREPEAT_CREATE";
 	public static String DATEREPEAT_EQUALS_FUNCTION = "DBV_DATEREPEAT_EQUALS";
 	public static String DATEREPEAT_LESSTHAN_FUNCTION = "DBV_DATEREPEAT_LESSTHAN";
@@ -37,7 +37,7 @@ public class DateRepeatFunctions {
 	public static String DATEREPEAT_GREATERTHANEQUALS_FUNCTION = "DBV_DATEREPEAT_GREATERTHANEQUALS";
 	public static String DATEREPEAT_DATEADDITION_FUNCTION = "DBV_DATEREPEAT_DATEPLUSDATEREPEAT";
 	public static String DATEREPEAT_DATESUBTRACTION_FUNCTION = "DBV_DATEREPEAT_DATEMINUSDATEREPEAT";
-	
+
 	public static String DATEREPEAT_YEAR_PART_FUNCTION = "DBV_DATEREPEAT_YEAR_PART";
 	public static String DATEREPEAT_MONTH_PART_FUNCTION = "DBV_DATEREPEAT_MONTH_PART";
 	public static String DATEREPEAT_DAY_PART_FUNCTION = "DBV_DATEREPEAT_DAY_PART";
@@ -45,7 +45,6 @@ public class DateRepeatFunctions {
 	public static String DATEREPEAT_MINUTE_PART_FUNCTION = "DBV_DATEREPEAT_MINUTE_PART";
 	public static String DATEREPEAT_SECOND_PART_FUNCTION = "DBV_DATEREPEAT_SECOND_PART";
 //	public static String DATEREPEAT_MILLISECOND_PART_FUNCTION = "DBV_DATEREPEAT_MILLI_PART";
-
 
 	private DateRepeatFunctions() {
 	}
@@ -72,7 +71,7 @@ public class DateRepeatFunctions {
 	}
 
 	protected static void addDateRepeatDatatype(Statement stmt) throws SQLException {
-		stmt.execute("CREATE DOMAIN IF NOT EXISTS "+DATATYPE+" AS "+ACTUAL_DATATYPE+"; ");
+		stmt.execute("CREATE DOMAIN IF NOT EXISTS " + DATATYPE + " AS " + ACTUAL_DATATYPE + "; ");
 	}
 
 	protected static void addCreation(Statement stmt) throws SQLException {

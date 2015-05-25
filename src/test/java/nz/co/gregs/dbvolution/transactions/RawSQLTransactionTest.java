@@ -27,48 +27,48 @@ import org.junit.Test;
 
 public class RawSQLTransactionTest extends AbstractTest {
 
-    public RawSQLTransactionTest(Object testIterationName, Object db) {
-        super(testIterationName, db);
-    }
+	public RawSQLTransactionTest(Object testIterationName, Object db) {
+		super(testIterationName, db);
+	}
 
-    @Test
-    public void testRawSQLTransactionRollback() throws Exception {
-        DBRawSQLTransaction sqlTrans = new DBRawSQLTransaction("update marque set name = 'Peugeot' where name = 'PEUGEOT'");
-        Boolean doneTrans = database.doTransaction(sqlTrans, Boolean.FALSE);
-        Assert.assertThat(doneTrans, is(true));
-        Marque mrq = new Marque();
-        mrq.name.permittedValues("PEUGEOT");
-        Marque peugeot = database.getDBTable(mrq).getOnlyRowByExample(mrq);
-        System.out.println("" + peugeot);
-        Assert.assertThat(peugeot, is(not(nullValue())));
-    }
+	@Test
+	public void testRawSQLTransactionRollback() throws Exception {
+		DBRawSQLTransaction sqlTrans = new DBRawSQLTransaction("update marque set name = 'Peugeot' where name = 'PEUGEOT'");
+		Boolean doneTrans = database.doTransaction(sqlTrans, Boolean.FALSE);
+		Assert.assertThat(doneTrans, is(true));
+		Marque mrq = new Marque();
+		mrq.name.permittedValues("PEUGEOT");
+		Marque peugeot = database.getDBTable(mrq).getOnlyRowByExample(mrq);
+		System.out.println("" + peugeot);
+		Assert.assertThat(peugeot, is(not(nullValue())));
+	}
 
-    @Test
-    public void testRawSQLTransactionCommit() throws Exception {
-        DBRawSQLTransaction sqlTrans = new DBRawSQLTransaction("update marque set name = 'Peugeot' where name = 'PEUGEOT'");
-        Boolean doneTrans = database.doTransaction(sqlTrans, Boolean.TRUE);
-        Assert.assertThat(doneTrans, is(true));
-        Marque mrq = new Marque();
-        mrq.name.permittedValues("Peugeot");
-        Marque peugeot = database.getDBTable(mrq).getOnlyRowByExample(mrq);
-        System.out.println("" + peugeot);
-        Assert.assertThat(peugeot, is(not(nullValue())));
-    }
+	@Test
+	public void testRawSQLTransactionCommit() throws Exception {
+		DBRawSQLTransaction sqlTrans = new DBRawSQLTransaction("update marque set name = 'Peugeot' where name = 'PEUGEOT'");
+		Boolean doneTrans = database.doTransaction(sqlTrans, Boolean.TRUE);
+		Assert.assertThat(doneTrans, is(true));
+		Marque mrq = new Marque();
+		mrq.name.permittedValues("Peugeot");
+		Marque peugeot = database.getDBTable(mrq).getOnlyRowByExample(mrq);
+		System.out.println("" + peugeot);
+		Assert.assertThat(peugeot, is(not(nullValue())));
+	}
 
-    @Test
-    public void testRawSQLTransactionWithManyStatements() throws Exception {
-        DBRawSQLTransaction sqlTrans = new DBRawSQLTransaction(
-                "update marque set name = 'Peugeot' where name = 'PEUGEOT'");
-        Boolean doneTrans = database.doTransaction(sqlTrans, Boolean.TRUE);
-        sqlTrans = new DBRawSQLTransaction(
-                "update marque set name = 'Toyota' where name = 'TOYOTA'");
-         doneTrans = database.doTransaction(sqlTrans, Boolean.TRUE);
-        Assert.assertThat(doneTrans, is(true));
-        Marque mrq = new Marque();
-        mrq.name.permittedValues("Peugeot", "Toyota");
-        DBTable<Marque> rows = database.getDBTable(mrq);
-        rows.print();
-        Assert.assertThat(rows.toList(), is(not(Matchers.empty())));
-        Assert.assertThat(rows.toList().size(), is(2));
-    }
+	@Test
+	public void testRawSQLTransactionWithManyStatements() throws Exception {
+		DBRawSQLTransaction sqlTrans = new DBRawSQLTransaction(
+				"update marque set name = 'Peugeot' where name = 'PEUGEOT'");
+		Boolean doneTrans = database.doTransaction(sqlTrans, Boolean.TRUE);
+		sqlTrans = new DBRawSQLTransaction(
+				"update marque set name = 'Toyota' where name = 'TOYOTA'");
+		doneTrans = database.doTransaction(sqlTrans, Boolean.TRUE);
+		Assert.assertThat(doneTrans, is(true));
+		Marque mrq = new Marque();
+		mrq.name.permittedValues("Peugeot", "Toyota");
+		DBTable<Marque> rows = database.getDBTable(mrq);
+		rows.print();
+		Assert.assertThat(rows.toList(), is(not(Matchers.empty())));
+		Assert.assertThat(rows.toList().size(), is(2));
+	}
 }

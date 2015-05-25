@@ -22,12 +22,12 @@ import nz.co.gregs.dbvolution.expressions.DBExpression;
 
 public class DBNonOperator extends DBOperator {
 
-    private static final long serialVersionUID = 1L;
-    
-    @Override
-    public DBNonOperator copyAndAdapt(DBSafeInternalQDTAdaptor typeAdaptor) {
-    	return this;
-    }
+	private static final long serialVersionUID = 1L;
+
+	@Override
+	public DBNonOperator copyAndAdapt(DBSafeInternalQDTAdaptor typeAdaptor) {
+		return this;
+	}
 
 	@Override
 	public BooleanExpression generateWhereExpression(DBDatabase db, DBExpression column) {

@@ -27,16 +27,18 @@ import nz.co.gregs.dbvolution.query.RowDefinition;
  *
  * @author Gregory Graham
  */
-public class Point2DColumn  extends Point2DExpression implements ColumnProvider{
+public class Point2DColumn extends Point2DExpression implements ColumnProvider {
+
 	private final AbstractColumn column;
 
 	/**
-	 * Creates a portable reference to the column represented by the field of the row.
+	 * Creates a portable reference to the column represented by the field of the
+	 * row.
 	 *
 	 * @param row
 	 * @param field
 	 */
-	public Point2DColumn(RowDefinition row, DBPoint2D field) {	
+	public Point2DColumn(RowDefinition row, DBPoint2D field) {
 		this.column = new AbstractColumn(row, field);
 	}
 
@@ -48,12 +50,12 @@ public class Point2DColumn  extends Point2DExpression implements ColumnProvider{
 	@Override
 	public void setUseTableAlias(boolean useTableAlias) {
 		this.column.setUseTableAlias(useTableAlias);
-	}	
+	}
 
-    @Override
-    public String toSQLString(DBDatabase db) {
-        return column.toSQLString(db);
-    }
+	@Override
+	public String toSQLString(DBDatabase db) {
+		return column.toSQLString(db);
+	}
 
 	@Override
 	public Set<DBRow> getTablesInvolved() {

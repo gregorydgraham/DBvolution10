@@ -82,6 +82,9 @@ import nz.co.gregs.dbvolution.internal.query.*;
  */
 public class DBQuery {
 
+	/**
+	 * The default timeout value used to prevent accidental long running queries
+	 */
 	public final int DEFAULT_TIMEOUT_MILLISECONDS = 10000;
 	private final DBDatabase database;
 	private final QueryDetails details = new QueryDetails();
@@ -416,7 +419,7 @@ public class DBQuery {
 					if (expression == null
 							|| (!expression.isAggregator()
 							&& (!expression.isPurelyFunctional() || defn.supportsPurelyFunctionalGroupByColumns()))) {
-						groupByIsRequired=true;
+						groupByIsRequired = true;
 						groupByColumnIndex += groupByColumnIndexSeparator + columnIndex;
 						groupByColumnIndexSeparator = defn.getSubsequentGroupBySubClauseSeparator();
 						if (expression != null) {
@@ -510,7 +513,7 @@ public class DBQuery {
 
 			if (queryType == QueryType.SELECT) {
 				String groupByClauseFinal = "";
-				if (details.isGroupedQuery()&&groupByIsRequired) {
+				if (details.isGroupedQuery() && groupByIsRequired) {
 					if (useColumnIndexGroupBy) {
 						groupByClauseFinal = groupByColumnIndex;
 					} else {
@@ -2422,10 +2425,11 @@ public class DBQuery {
 
 	/**
 	 * Changes the default timeout for this query.
-	 * 
+	 *
 	 * <p>
-	 * DBvolution defaults to a timeout of 10000milliseconds (10 seconds) to avoid eternal queries.
-	 * 
+	 * DBvolution defaults to a timeout of 10000milliseconds (10 seconds) to avoid
+	 * eternal queries.
+	 *
 	 * <p>
 	 * Use this method If you require a longer running query.
 	 *
@@ -2439,14 +2443,15 @@ public class DBQuery {
 
 	/**
 	 * Completely removes the timeout from this query.
-	 * 
+	 *
 	 * <p>
-	 * DBvolution defaults to a timeout of 10000milliseconds (10 seconds) to avoid eternal queries.
-	 * 
+	 * DBvolution defaults to a timeout of 10000milliseconds (10 seconds) to avoid
+	 * eternal queries.
+	 *
 	 * <p>
 	 * Use this method if you expect an extremely long query.
 	 *
-	 * @return 
+	 * @return
 	 */
 	public DBQuery clearTimeout() {
 		this.timeoutInMilliseconds = null;

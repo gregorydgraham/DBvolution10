@@ -102,17 +102,23 @@ public class AutoFillDuringQueryIfPossibleTest extends AbstractTest {
 
 	public static class FilledMarque extends Marque {
 
+		private static final long serialVersionUID = 1L;
+
 		@AutoFillDuringQueryIfPossible
 		public CarCompany actualCarCo;
 	}
 
 	public static class FilledCarCoWithArray extends CarCompany {
 
+		private static final long serialVersionUID = 1L;
+
 		@AutoFillDuringQueryIfPossible
 		public Marque[] marques;
 	}
 
 	public static class FilledCarCoWithList extends CarCompany {
+
+		private static final long serialVersionUID = 1L;
 
 		@AutoFillDuringQueryIfPossible(requiredClass = Marque.class)
 		public List<Marque> marques;

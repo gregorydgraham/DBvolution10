@@ -71,10 +71,12 @@ public class ExistsExpression extends BooleanExpression {
 
 	/**
 	 * Creates an ExistsExpression that connects to the original query via the
-	 * examples in the first list supplied, and also uses the examples in the second list.
+	 * examples in the first list supplied, and also uses the examples in the
+	 * second list.
 	 *
-	 * @param outerTables  examples  that will also be linked to the exterior query.
-	 * @param innerTables all other examples, which will not be linked to the exterior query.
+	 * @param outerTables examples that will also be linked to the exterior query.
+	 * @param innerTables all other examples, which will not be linked to the
+	 * exterior query.
 	 */
 	public ExistsExpression(List<DBRow> outerTables, List<DBRow> innerTables) {
 		for (DBRow outerTable : outerTables) {
@@ -94,8 +96,10 @@ public class ExistsExpression extends BooleanExpression {
 	 * Create an ExistsExpression that connects to the original query via the
 	 * first DBRow example supplied, and uses the examples in the list.
 	 *
-	 * @param outerTable an example that will also be linked to the exterior query.
-	 * @param innerTables all other examples, which will not be linked to the exterior query.
+	 * @param outerTable an example that will also be linked to the exterior
+	 * query.
+	 * @param innerTables all other examples, which will not be linked to the
+	 * exterior query.
 	 */
 	public ExistsExpression(DBRow outerTable, List<DBRow> innerTables) {
 		final DBRow newOuter = DBRow.copyDBRow(outerTable);
@@ -114,8 +118,8 @@ public class ExistsExpression extends BooleanExpression {
 	 * Create an ExistsExpression that connects to the original query via the
 	 * tables of the first query supplied, and uses the examples in the second.
 	 *
-	 * @param outerQuery  a query that will also be linked to the exterior query.
-	 * @param innerQuery  a query which will not be linked to the exterior query.
+	 * @param outerQuery a query that will also be linked to the exterior query.
+	 * @param innerQuery a query which will not be linked to the exterior query.
 	 */
 	public ExistsExpression(DBQuery outerQuery, DBQuery innerQuery) {
 		for (DBRow outerTable : outerQuery.getAllTables()) {
@@ -139,7 +143,8 @@ public class ExistsExpression extends BooleanExpression {
 	}
 
 	/**
-	 * Create a ExistsExpression that connects to the exterior query using the first DBRow but also queries with the second.
+	 * Create a ExistsExpression that connects to the exterior query using the
+	 * first DBRow but also queries with the second.
 	 *
 	 * @param outerTable connects to the outer query.
 	 * @param innerTable also in the query but used only internally.

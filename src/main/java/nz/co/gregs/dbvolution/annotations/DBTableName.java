@@ -11,8 +11,7 @@ import java.lang.annotation.Target;
  * {@code DBRow} implementation refers to.  
  * <code>
  * <br>
- * &#64;DBTableName("my_table")
- * public class MyTable extends DBRow {
+ * &#64;DBTableName("my_table") public class MyTable extends DBRow {
  * </code>
  *
  * <p>

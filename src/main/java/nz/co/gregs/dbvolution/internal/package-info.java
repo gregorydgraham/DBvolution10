@@ -1,7 +1,8 @@
 /**
  * Internal API.
  * <p>
- * Internal API. Please don't use the internal as it is subject to arbitrary change.
+ * Internal API. Please don't use the internal as it is subject to arbitrary
+ * change.
  * <p>
  * Thanks<br>
  * <b>Gregory Graham</b>

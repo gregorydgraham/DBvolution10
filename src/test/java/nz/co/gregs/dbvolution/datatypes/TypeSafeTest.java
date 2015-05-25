@@ -13,37 +13,35 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package nz.co.gregs.dbvolution.datatypes;
 
 import nz.co.gregs.dbvolution.generic.AbstractTest;
 import org.junit.Test;
 
-
 public class TypeSafeTest extends AbstractTest {
 
-    public TypeSafeTest(Object testIterationName, Object db) {
-        super(testIterationName, db);
-    }
-    
-    @Test
-    public void typeSafeTest(){
-        DBInteger myInt = new DBInteger(23);
-        if (!myInt.getValue().equals(23L)){
-            throw new RuntimeException("DBInteger(int) should return a Long");
-        }
-        myInt.setValue(23);
-        if (!myInt.getValue().equals(23L)){
-            throw new RuntimeException("DBInteger.setValue(int) should return a Long");
-        }
-        myInt = new DBInteger(23L);
-        if (!myInt.getValue().equals(23L)){
-            throw new RuntimeException("DBInteger.setValue(long) should return a Long");
-        }
-        myInt.setValue(23L);
-        if (!myInt.getValue().equals(23L)){
-            throw new RuntimeException("DBInteger.setValue(long) should return a Long");
-        }
-    }
-    
+	public TypeSafeTest(Object testIterationName, Object db) {
+		super(testIterationName, db);
+	}
+
+	@Test
+	public void typeSafeTest() {
+		DBInteger myInt = new DBInteger(23);
+		if (!myInt.getValue().equals(23L)) {
+			throw new RuntimeException("DBInteger(int) should return a Long");
+		}
+		myInt.setValue(23);
+		if (!myInt.getValue().equals(23L)) {
+			throw new RuntimeException("DBInteger.setValue(int) should return a Long");
+		}
+		myInt = new DBInteger(23L);
+		if (!myInt.getValue().equals(23L)) {
+			throw new RuntimeException("DBInteger.setValue(long) should return a Long");
+		}
+		myInt.setValue(23L);
+		if (!myInt.getValue().equals(23L)) {
+			throw new RuntimeException("DBInteger.setValue(long) should return a Long");
+		}
+	}
+
 }

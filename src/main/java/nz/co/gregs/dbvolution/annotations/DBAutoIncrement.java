@@ -12,21 +12,29 @@ import nz.co.gregs.dbvolution.datatypes.DBInteger;
 import nz.co.gregs.dbvolution.datatypes.DBNumber;
 
 /**
- * 
- * Used to indicate that this field is an auto-incrementing column in the database.
- * 
- * <p>DBAutoIncrement allows you to insert rows without specifying the primary key, have the PK generated automatically, and have the row inserted updated with the new PK value:</p>
+ *
+ * Used to indicate that this field is an auto-incrementing column in the
+ * database.
+ *
+ * <p>
+ * DBAutoIncrement allows you to insert rows without specifying the primary key,
+ * have the PK generated automatically, and have the row inserted updated with
+ * the new PK value:</p>
  * <code>
  * <br>
  * MyRow row = new MyRow();<br>
  * row.name.setValue("example");<br>
  * database.insert(row);<br>
- * row.pkColumn.getValue(); // now contains the primary key created by the database.<br>
+ * row.pkColumn.getValue(); // now contains the primary key created by the
+ * database.<br>
  * <br>
  * </code>
- * <p>It also allows DBvolution to create the correct data types to automatically populate primary keys.</p>
- * 
- * <p>Example of use:</p>
+ * <p>
+ * It also allows DBvolution to create the correct data types to automatically
+ * populate primary keys.</p>
+ *
+ * <p>
+ * Example of use:</p>
  * <code>
  * <br>
  * public class MyRow extends DBRow{<br>
@@ -41,9 +49,12 @@ import nz.co.gregs.dbvolution.datatypes.DBNumber;
  * }<br>
  * <br>
  * </code>
- * <p>DBAutoIncrement has no effect unless the field is also a DBColumn and a DBPrimaryKey.  It should also be a DBNumber or DBinteger as shown above.</p>
- * 
- * <p>DBAutoIncrement is generated automatically by DBTableClassGenerator.</p>
+ * <p>
+ * DBAutoIncrement has no effect unless the field is also a DBColumn and a
+ * DBPrimaryKey. It should also be a DBNumber or DBinteger as shown above.</p>
+ *
+ * <p>
+ * DBAutoIncrement is generated automatically by DBTableClassGenerator.</p>
  *
  * @author Gregory Graham
  * @see DBColumn

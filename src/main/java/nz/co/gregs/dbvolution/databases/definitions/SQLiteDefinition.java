@@ -15,7 +15,13 @@
  */
 package nz.co.gregs.dbvolution.databases.definitions;
 
+import com.vividsolutions.jts.geom.Coordinate;
+import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.GeometryFactory;
+import com.vividsolutions.jts.geom.LineSegment;
+import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.Polygon;
+import com.vividsolutions.jts.io.WKTReader;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -29,11 +35,13 @@ import nz.co.gregs.dbvolution.datatypes.DBLargeObject;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 import nz.co.gregs.dbvolution.datatypes.spatial2D.DBLine2D;
 import nz.co.gregs.dbvolution.datatypes.spatial2D.DBPoint2D;
+import nz.co.gregs.dbvolution.exceptions.IncorrectGeometryReturnedForDatatype;
 import nz.co.gregs.dbvolution.generation.DBTableField;
 import nz.co.gregs.dbvolution.internal.datatypes.DateRepeatImpl;
 import nz.co.gregs.dbvolution.internal.properties.PropertyWrapper;
 import nz.co.gregs.dbvolution.internal.sqlite.DateRepeatFunctions;
 import nz.co.gregs.dbvolution.internal.sqlite.Line2DFunctions;
+import nz.co.gregs.dbvolution.internal.sqlite.LineSegment2DFunctions;
 import nz.co.gregs.dbvolution.internal.sqlite.Point2DFunctions;
 import nz.co.gregs.dbvolution.internal.sqlite.Polygon2DFunctions;
 import org.joda.time.Period;
@@ -206,7 +214,7 @@ public class SQLiteDefinition extends DBDefinition {
 	public String doSubsecondTransform(String dateExpression) {
 		return " ((CAST(strftime('%f', " + dateExpression + ") as REAL))-(CAST(strftime('%S', " + dateExpression + ") as INTEGER)))";
 	}
-	
+
 	@Override
 	public String getGreatestOfFunctionName() {
 		return " MAX "; //To change body of generated methods, choose Tools | Templates.
@@ -462,7 +470,7 @@ public class SQLiteDefinition extends DBDefinition {
 	@Override
 	public String doDBPolygon2DFormatTransform(Polygon geom) {
 		String wktValue = geom.toText();
-		return Polygon2DFunctions.CREATE_FROM_WKTPOLYGON2D+"('" + wktValue + "')";
+		return Polygon2DFunctions.CREATE_FROM_WKTPOLYGON2D + "('" + wktValue + "')";
 	}
 
 	@Override
@@ -497,49 +505,56 @@ public class SQLiteDefinition extends DBDefinition {
 
 	@Override
 	public String doPolygon2DGetAreaTransform(String polygonSQL) {
-		return Polygon2DFunctions.AREA + "(" + polygonSQL+")";
+		return Polygon2DFunctions.AREA + "(" + polygonSQL + ")";
 	}
 
 	@Override
 	public String doPolygon2DGetExteriorRingTransform(String firstGeometry) {
-		return Polygon2DFunctions.EXTERIORRING + "(" + firstGeometry+ ")";
+		return Polygon2DFunctions.EXTERIORRING + "(" + firstGeometry + ")";
 	}
 
 	@Override
 	public String doPolygon2DEqualsTransform(String firstGeometry, String secondGeometry) {
-		return Polygon2DFunctions.EQUALS + "(" + firstGeometry+", "+secondGeometry + ")";
+		return Polygon2DFunctions.EQUALS + "(" + firstGeometry + ", " + secondGeometry + ")";
 	}
 
 	@Override
 	public String doPolygon2DIntersectsTransform(String firstGeometry, String secondGeometry) {
-		return Polygon2DFunctions.INTERSECTS + "(" + firstGeometry+", "+secondGeometry + ")";
+		return Polygon2DFunctions.INTERSECTS + "(" + firstGeometry + ", " + secondGeometry + ")";
 	}
 
 	@Override
-	public String doPolygon2DContainsTransform(String firstGeometry, String secondGeometry) {
-		return Polygon2DFunctions.CONTAINS + "(" + firstGeometry+", "+secondGeometry + ")";
+	public String doPolygon2DContainsPolygon2DTransform(String firstGeometry, String secondGeometry) {
+		return Polygon2DFunctions.CONTAINS_POLYGON2D + "(" + firstGeometry + ", " + secondGeometry + ")";
 	}
 
 	@Override
 	public String doPolygon2DDoesNotIntersectTransform(String firstGeometry, String secondGeometry) {
-		return Polygon2DFunctions.DISJOINT + "(" + firstGeometry+", "+secondGeometry + ")";
+		return Polygon2DFunctions.DISJOINT + "(" + firstGeometry + ", " + secondGeometry + ")";
 	}
 
 	@Override
 	public String doPolygon2DOverlapsTransform(String firstGeometry, String secondGeometry) {
-		return Polygon2DFunctions.OVERLAPS + "(" + firstGeometry+", "+secondGeometry + ")";
+		return Polygon2DFunctions.OVERLAPS + "(" + firstGeometry + ", " + secondGeometry + ")";
 	}
 
 	@Override
 	public String doPolygon2DTouchesTransform(String firstGeometry, String secondGeometry) {
-		return Polygon2DFunctions.TOUCHES + "(" + firstGeometry+", "+secondGeometry + ")";
+		return Polygon2DFunctions.TOUCHES + "(" + firstGeometry + ", " + secondGeometry + ")";
 	}
 
 	@Override
 	public String doPolygon2DWithinTransform(String firstGeometry, String secondGeometry) {
 		//indicate whether g1 is spatially within g2. This is the inverse of Contains(). 
 		// i.e. G1.within(G2) === G2.contains(G1)
-		return Polygon2DFunctions.WITHIN + "(" + firstGeometry+", "+secondGeometry + ")";
+		return Polygon2DFunctions.WITHIN + "(" + firstGeometry + ", " + secondGeometry + ")";
+	}
+
+	@Override
+	public String doPolygon2DContainsPoint2DTransform(String firstGeometry, String secondGeometry) {
+		//indicate whether g1 is spatially within g2. This is the inverse of Contains(). 
+		// i.e. G1.within(G2) === G2.contains(G1)
+		return Polygon2DFunctions.CONTAINS_POINT2D + "(" + firstGeometry + ", " + secondGeometry + ")";
 	}
 
 	@Override
@@ -580,5 +595,89 @@ public class SQLiteDefinition extends DBDefinition {
 	@Override
 	public String doLine2DGetMinYTransform(String lineSQL) {
 		return Line2DFunctions.GETMINY_FUNCTION + "(" + lineSQL + ")";
+	}
+
+	@Override
+	public String doLine2DIntersectsLine2DTransform(String toSQLString, String toSQLString0) {
+		return Line2DFunctions.INTERSECTS + "(" + toSQLString + ", "+toSQLString0+")";
+	}
+
+	@Override
+	public LineSegment transformDatabaseLineSegment2DValueToJTSLineSegment(String lineSegmentAsSQL) throws com.vividsolutions.jts.io.ParseException {
+		LineString lineString = null;
+		WKTReader wktReader = new WKTReader();
+		Geometry geometry = wktReader.read(lineSegmentAsSQL);
+		if (geometry instanceof LineString) {
+			lineString = (LineString) geometry;
+			if (lineSegmentAsSQL == null) {
+				return null;
+			} else {
+				return new LineSegment(lineString.getCoordinateN(0), lineString.getCoordinateN(1));
+			}
+		} else {
+			throw new IncorrectGeometryReturnedForDatatype(geometry, lineString);
+		}
+	}
+
+	@Override
+	public String transformLineSegmentIntoDatabaseLineSegment2DFormat(LineSegment lineSegment) {
+		LineString line = (new GeometryFactory()).createLineString(new Coordinate[]{lineSegment.getCoordinate(0),lineSegment.getCoordinate(1)});
+		String wktValue = line.toText();
+		return "'" + wktValue + "'";
+	}
+
+	@Override
+	public String doLineSegment2DIntersectsLineSegment2DTransform(String toSQLString, String toSQLString0) {
+		return doLine2DIntersectsLine2DTransform(toSQLString, toSQLString0);
+	}
+
+	@Override
+	public String doLineSegment2DGetMaxXTransform(String toSQLString) {
+		return LineSegment2DFunctions.GETMAXX_FUNCTION+"("+toSQLString+")";
+	}
+
+	@Override
+	public String doLineSegment2DGetMinXTransform(String toSQLString) {
+		return LineSegment2DFunctions.GETMINX_FUNCTION+"("+toSQLString+")";
+	}
+
+	@Override
+	public String doLineSegment2DGetMaxYTransform(String toSQLString) {
+		return LineSegment2DFunctions.GETMAXY_FUNCTION+"("+toSQLString+")";
+	}
+
+	@Override
+	public String doLineSegment2DGetMinYTransform(String toSQLString) {
+		return LineSegment2DFunctions.GETMINY_FUNCTION+"("+toSQLString+")";
+	}
+
+	@Override
+	public String doLineSegment2DGetBoundingBoxTransform(String toSQLString) {
+		return LineSegment2DFunctions.GETBOUNDINGBOX_FUNCTION+"("+toSQLString+")";
+	}
+
+	@Override
+	public String doLineSegment2DDimensionTransform(String toSQLString) {
+		return LineSegment2DFunctions.GETDIMENSION_FUNCTION+"("+toSQLString+")";
+	}
+
+	@Override
+	public String doLineSegment2DNotEqualsTransform(String toSQLString, String toSQLString0) {
+		return "!("+LineSegment2DFunctions.EQUALS_FUNCTION+"(("+toSQLString+"),("+toSQLString0+")))";
+	}
+
+	@Override
+	public String doLineSegment2DEqualsTransform(String toSQLString, String toSQLString0) {
+		return LineSegment2DFunctions.EQUALS_FUNCTION+"(("+toSQLString+"),("+toSQLString0+"))";
+	}
+
+	@Override
+	public String doLineSegment2DAsTextTransform(String toSQLString) {
+		return LineSegment2DFunctions.ASTEXT_FUNCTION+"("+toSQLString+")";
+	}
+	
+	@Override
+	public String doLineSegment2DIntersectionPointWithLineSegment2DTransform(String toSQLString, String toSQLString0) {
+		return LineSegment2DFunctions.INTERSECTIONWITH_LINESEGMENT2D+"(("+toSQLString+"), ("+toSQLString0+"))";
 	}
 }

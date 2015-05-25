@@ -257,7 +257,7 @@ public class DBTableGetTest extends AbstractTest {
 		} else {
 			Assert.assertThat(rowsByExample.size(), is(22));
 		}
-		
+
 		hummerQuery.individualAllocationsAllowed.permittedValues(null, "YES");
 		rowsByExample = marquesTable.getRowsByExample(hummerQuery);
 		marquesTable.print();

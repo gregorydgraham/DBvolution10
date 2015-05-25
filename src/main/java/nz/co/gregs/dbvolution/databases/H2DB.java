@@ -26,8 +26,6 @@ import nz.co.gregs.dbvolution.databases.definitions.H2DBDefinition;
 import nz.co.gregs.dbvolution.databases.supports.SupportsDateRepeatDatatypeFunctions;
 import nz.co.gregs.dbvolution.databases.supports.SupportsPolygonDatatype;
 import nz.co.gregs.dbvolution.exceptions.DBRuntimeException;
-import nz.co.gregs.dbvolution.exceptions.UnableToCreateDatabaseConnectionException;
-import nz.co.gregs.dbvolution.exceptions.UnableToFindJDBCDriver;
 import nz.co.gregs.dbvolution.internal.h2.*;
 
 /**
@@ -37,13 +35,11 @@ import nz.co.gregs.dbvolution.internal.h2.*;
  */
 public class H2DB extends DBDatabase implements SupportsDateRepeatDatatypeFunctions, SupportsPolygonDatatype {
 
-
 	/**
 	 * Used to hold the database open
 	 *
 	 */
 	protected Connection storedConnection;
-
 
 	/**
 	 * Creates a DBDatabase for a H2 database in the file supplied.
@@ -79,6 +75,7 @@ public class H2DB extends DBDatabase implements SupportsDateRepeatDatatypeFuncti
 		final Statement stmt = getConnection().createStatement();
 		addDatabaseSpecificFeatures(stmt);
 	}
+
 	/**
 	 * Creates a DBDatabase for a H2 database.
 	 *
@@ -102,9 +99,9 @@ public class H2DB extends DBDatabase implements SupportsDateRepeatDatatypeFuncti
 	@Override
 	protected void addDatabaseSpecificFeatures(final Statement stmt) throws SQLException {
 		DateRepeatFunctions.addFunctions(stmt);
-		Point2D.POINT2D.add(stmt);
-		Line2D.LINE2D.add(stmt);
-		Polygon2D.POLYGON2D.add(stmt);
+//		Point2D.POINT2D.add(stmt);
+		DataTypes.addAll(stmt);
+//		Polygon2D.POLYGON2D.add(stmt);
 	}
 
 	private void jamDatabaseConnectionOpen() throws DBRuntimeException, SQLException {
@@ -127,7 +124,7 @@ public class H2DB extends DBDatabase implements SupportsDateRepeatDatatypeFuncti
 	 */
 	@Override
 	public H2DB clone() throws CloneNotSupportedException {
-		return (H2DB) super.clone(); 
+		return (H2DB) super.clone();
 	}
 
 }

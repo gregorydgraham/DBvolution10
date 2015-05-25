@@ -23,10 +23,10 @@ import java.sql.Statement;
  * @author gregorygraham
  */
 public enum StringFunctions {
-	
-	SUBSTRINGBEFORE(Language.sql,"text", "sourceText text, rightHandSide text", "select (CASE WHEN POSITION(rightHandSide IN (sourceText)::VARCHAR) > 0 THEN  SUBSTRING((sourceText)::VARCHAR FROM 0 + 1 FOR POSITION(rightHandSide IN (sourceText)::VARCHAR) - 1 - 0)  ELSE $$$$ END);"),
-	SUBSTRINGAFTER(Language.sql,"text", "sourceText text, leftHandSide text", " select (CASE WHEN POSITION(leftHandSide IN (sourceText)::VARCHAR) > 0 THEN  SUBSTRING((sourceText)::VARCHAR FROM POSITION(leftHandSide IN (sourceText)::VARCHAR) + 1 FOR  CHAR_LENGTH( (sourceText)::VARCHAR )  - POSITION(leftHandSide IN (sourceText)::VARCHAR))  ELSE $$$$ END);");
-	
+
+	SUBSTRINGBEFORE(Language.sql, "text", "sourceText text, rightHandSide text", "select (CASE WHEN POSITION(rightHandSide IN (sourceText)::VARCHAR) > 0 THEN  SUBSTRING((sourceText)::VARCHAR FROM 0 + 1 FOR POSITION(rightHandSide IN (sourceText)::VARCHAR) - 1 - 0)  ELSE $$$$ END);"),
+	SUBSTRINGAFTER(Language.sql, "text", "sourceText text, leftHandSide text", " select (CASE WHEN POSITION(leftHandSide IN (sourceText)::VARCHAR) > 0 THEN  SUBSTRING((sourceText)::VARCHAR FROM POSITION(leftHandSide IN (sourceText)::VARCHAR) + 1 FOR  CHAR_LENGTH( (sourceText)::VARCHAR )  - POSITION(leftHandSide IN (sourceText)::VARCHAR))  ELSE $$$$ END);");
+
 //	private final String functionName;
 	private final Language language;
 	private final String returnType;
@@ -43,18 +43,17 @@ public enum StringFunctions {
 
 	@Override
 	public String toString() {
-		return "DBV_STRINGFN_"+name();
+		return "DBV_STRINGFN_" + name();
 	}
 
 	public void add(Statement stmt) throws SQLException {
 		try {
-			stmt.execute("DROP FUNCTION " + this + "("+parameters+");");
+			stmt.execute("DROP FUNCTION " + this + "(" + parameters + ");");
 		} catch (SQLException sqlex) {
 			;
 		}
-		stmt.execute("CREATE OR REPLACE FUNCTION "+this+"("+this.parameters+")\n" +"    RETURNS "+this.returnType+" AS\n" +"'\n" + this.code+"'\n" +"LANGUAGE '"+this.language.name()+"';");
-		
+		stmt.execute("CREATE OR REPLACE FUNCTION " + this + "(" + this.parameters + ")\n" + "    RETURNS " + this.returnType + " AS\n" + "'\n" + this.code + "'\n" + "LANGUAGE '" + this.language.name() + "';");
+
 	}
 
-	
 }

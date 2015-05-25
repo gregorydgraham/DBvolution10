@@ -28,8 +28,8 @@ package nz.co.gregs.dbvolution.expressions;
 public interface RangeComparable<A> extends EqualComparable<A> {
 
 	/**
-	 * Creates a {@link BooleanExpression} that compares the 2 instances using
-	 * the LESSTHAN operation.
+	 * Creates a {@link BooleanExpression} that compares the 2 instances using the
+	 * LESSTHAN operation.
 	 *
 	 * @param anotherInstance
 	 * @return a BooleanExpression
@@ -37,8 +37,8 @@ public interface RangeComparable<A> extends EqualComparable<A> {
 	public BooleanExpression isLessThan(A anotherInstance);
 
 	/**
-	 * Creates a {@link BooleanExpression} that compares the 2 instances using
-	 * the GREATERTHAN operation.
+	 * Creates a {@link BooleanExpression} that compares the 2 instances using the
+	 * GREATERTHAN operation.
 	 *
 	 * @param anotherInstance
 	 * @return a BooleanExpression
@@ -46,8 +46,8 @@ public interface RangeComparable<A> extends EqualComparable<A> {
 	public BooleanExpression isGreaterThan(A anotherInstance);
 
 	/**
-	 * Creates a {@link BooleanExpression} that compares the 2 instances using
-	 * the LESSTHAN operation.
+	 * Creates a {@link BooleanExpression} that compares the 2 instances using the
+	 * LESSTHAN operation.
 	 *
 	 * @param anotherInstance
 	 * @return a BooleanExpression
@@ -55,8 +55,8 @@ public interface RangeComparable<A> extends EqualComparable<A> {
 	public BooleanExpression isLessThanOrEqual(A anotherInstance);
 
 	/**
-	 * Creates a {@link BooleanExpression} that compares the 2 instances using
-	 * the GREATERTHAN operation.
+	 * Creates a {@link BooleanExpression} that compares the 2 instances using the
+	 * GREATERTHAN operation.
 	 *
 	 * @param anotherInstance
 	 * @return a BooleanExpression
@@ -64,13 +64,13 @@ public interface RangeComparable<A> extends EqualComparable<A> {
 	public BooleanExpression isGreaterThanOrEqual(A anotherInstance);
 
 	/**
-	 * Creates a {@link BooleanExpression} that compares the 2 instances using
-	 * the LESSTHAN operation.
+	 * Creates a {@link BooleanExpression} that compares the 2 instances using the
+	 * LESSTHAN operation.
 	 *
 	 * <p>
-	 * However when the 2 values are equal the results of the fallback
-	 * expression is returned instead. This helps apply the LESSTHAN operator
-	 * across multiple columns.
+	 * However when the 2 values are equal the results of the fallback expression
+	 * is returned instead. This helps apply the LESSTHAN operator across multiple
+	 * columns.
 	 *
 	 * @param anotherInstance
 	 * @param fallBackWhenEqual
@@ -79,8 +79,8 @@ public interface RangeComparable<A> extends EqualComparable<A> {
 	public BooleanExpression isLessThan(A anotherInstance, BooleanExpression fallBackWhenEqual);
 
 	/**
-	 * Creates a {@link BooleanExpression} that compares the 2 instances using
-	 * the GREATERTHAN operation.
+	 * Creates a {@link BooleanExpression} that compares the 2 instances using the
+	 * GREATERTHAN operation.
 	 *
 	 * @param anotherInstance
 	 * @param fallBackWhenEqual

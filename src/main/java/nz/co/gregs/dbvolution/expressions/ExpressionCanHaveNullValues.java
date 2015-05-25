@@ -20,12 +20,13 @@ package nz.co.gregs.dbvolution.expressions;
  * @author Gregory Graham
  */
 public interface ExpressionCanHaveNullValues {
-	
+
 	/**
-	 * Returns TRUE if this expression requires support for possible NULL database values.
+	 * Returns TRUE if this expression requires support for possible NULL database
+	 * values.
 	 *
-	 * @return TRUE if the expression should check for NULLs, FALSE otherwise. 
+	 * @return TRUE if the expression should check for NULLs, FALSE otherwise.
 	 */
 	public boolean getIncludesNull();
-	
+
 }

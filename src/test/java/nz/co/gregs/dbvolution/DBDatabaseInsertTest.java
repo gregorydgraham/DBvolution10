@@ -31,43 +31,40 @@ import static org.hamcrest.Matchers.*;
  *
  * @author Gregory Graham
  */
-public class DBDatabaseInsertTest extends AbstractTest{
+public class DBDatabaseInsertTest extends AbstractTest {
 
-    public DBDatabaseInsertTest(Object testIterationName, Object db) {
-        super(testIterationName, db);
-    }
-    
-    
-    
-    
-    @Test
-    public void testInsertRows() throws SQLException{
-        int originalNumberOfMarques = marquesTable.setBlankQueryAllowed(true).getAllRows().size();
-        final DBTable<CarCompany> allCarCompanies = database.getDBTable(new CarCompany()).setBlankQueryAllowed(true);
-        int originalNumberOfCarCos = allCarCompanies.getAllRows().size();
+	public DBDatabaseInsertTest(Object testIterationName, Object db) {
+		super(testIterationName, db);
+	}
 
-        Marque newMarque1 = new Marque();
-        newMarque1.getUidMarque().setValue(999);
-        newMarque1.getName().permittedValues("TOYOTA");
-        newMarque1.getNumericCode().permittedValues(10);
-        
-        Date creationDate = new Date();
-        List<Marque> myTableRows = new ArrayList<Marque>();
-        Marque newMarque2 = new Marque(3, "False", 1246974, "", 3, "UV", "TVR", "", "Y",creationDate, 4,null);
-        myTableRows.add(newMarque1);
-        myTableRows.add(newMarque2);
-        CarCompany carCompany = new CarCompany("TATA", 569);
-        DBActionList changes = database.insert(myTableRows);
+	@Test
+	public void testInsertRows() throws SQLException {
+		int originalNumberOfMarques = marquesTable.setBlankQueryAllowed(true).getAllRows().size();
+		final DBTable<CarCompany> allCarCompanies = database.getDBTable(new CarCompany()).setBlankQueryAllowed(true);
+		int originalNumberOfCarCos = allCarCompanies.getAllRows().size();
+
+		Marque newMarque1 = new Marque();
+		newMarque1.getUidMarque().setValue(999);
+		newMarque1.getName().permittedValues("TOYOTA");
+		newMarque1.getNumericCode().permittedValues(10);
+
+		Date creationDate = new Date();
+		List<Marque> myTableRows = new ArrayList<Marque>();
+		Marque newMarque2 = new Marque(3, "False", 1246974, "", 3, "UV", "TVR", "", "Y", creationDate, 4, null);
+		myTableRows.add(newMarque1);
+		myTableRows.add(newMarque2);
+		CarCompany carCompany = new CarCompany("TATA", 569);
+		DBActionList changes = database.insert(myTableRows);
 		changes.addAll(database.insert(carCompany));
-        marquesTable.getAllRows();
-        marquesTable.print();
-        database.print(allCarCompanies.getAllRows());
-        final int updatedNumberOfCarCompanies = allCarCompanies.getAllRows().size();
-        Assert.assertThat(changes.size(), is(3));
-        Assert.assertThat(marquesTable.getAllRows().size(), is(originalNumberOfMarques+2));
-        Assert.assertThat(
-                updatedNumberOfCarCompanies, 
-                is(originalNumberOfCarCos+1));
-    }
-    
+		marquesTable.getAllRows();
+		marquesTable.print();
+		database.print(allCarCompanies.getAllRows());
+		final int updatedNumberOfCarCompanies = allCarCompanies.getAllRows().size();
+		Assert.assertThat(changes.size(), is(3));
+		Assert.assertThat(marquesTable.getAllRows().size(), is(originalNumberOfMarques + 2));
+		Assert.assertThat(
+				updatedNumberOfCarCompanies,
+				is(originalNumberOfCarCos + 1));
+	}
+
 }

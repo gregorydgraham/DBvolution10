@@ -16,8 +16,8 @@
 package nz.co.gregs.dbvolution.expressions;
 
 /**
- * Interface required to be implemented by all DBExpressions that produce
- * Number results
+ * Interface required to be implemented by all DBExpressions that produce Number
+ * results
  *
  * <p>
  * DBvolution attempts to maintain type safety using the *Result interfaces.
@@ -31,8 +31,8 @@ package nz.co.gregs.dbvolution.expressions;
  * @author greg
  * @see DBExpression
  */
-public interface NumberResult extends DBExpression, ExpressionCanHaveNullValues{
-    
-    @Override
-    public NumberResult copy();
+public interface NumberResult extends DBExpression, ExpressionCanHaveNullValues {
+
+	@Override
+	public NumberResult copy();
 }

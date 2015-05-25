@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package nz.co.gregs.dbvolution.operators;
 
 import nz.co.gregs.dbvolution.DBDatabase;
@@ -25,28 +24,29 @@ import nz.co.gregs.dbvolution.expressions.DBExpression;
  *
  * @author Gregory Graham
  */
-abstract class DBMetaOperator extends DBOperator{
-    private static final long serialVersionUID = 1L;
-    
-    protected DBOperator operator;
+abstract class DBMetaOperator extends DBOperator {
 
-    @Override
-    public DBOperator copyAndAdapt(QueryableDatatypeSyncer.DBSafeInternalQDTAdaptor typeAdaptor) {
-        return operator.copyAndAdapt(typeAdaptor);
-    }
+	private static final long serialVersionUID = 1L;
 
-    @Override
-    public BooleanExpression generateWhereExpression(DBDatabase db, DBExpression column){
-        return operator.generateWhereExpression(db, column);
-    }
+	protected DBOperator operator;
 
-    @Override
-    public void invertOperator(Boolean invertOperator) {
-        operator.invertOperator(invertOperator);
-    }
+	@Override
+	public DBOperator copyAndAdapt(QueryableDatatypeSyncer.DBSafeInternalQDTAdaptor typeAdaptor) {
+		return operator.copyAndAdapt(typeAdaptor);
+	}
 
-    @Override
-    public void not() {
-        operator.not();
-    }
+	@Override
+	public BooleanExpression generateWhereExpression(DBDatabase db, DBExpression column) {
+		return operator.generateWhereExpression(db, column);
+	}
+
+	@Override
+	public void invertOperator(Boolean invertOperator) {
+		operator.invertOperator(invertOperator);
+	}
+
+	@Override
+	public void not() {
+		operator.not();
+	}
 }

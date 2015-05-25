@@ -16,8 +16,8 @@
 package nz.co.gregs.dbvolution.expressions;
 
 /**
- * Interface required to be implemented by all DBExpressions that produce
- * BIT results
+ * Interface required to be implemented by all DBExpressions that produce BIT
+ * results
  *
  * <p>
  * DBvolution attempts to maintain type safety using the *Result interfaces.
@@ -31,8 +31,8 @@ package nz.co.gregs.dbvolution.expressions;
  * @author Gregory Graham
  * @see DBExpression
  */
-public interface BooleanArrayResult extends DBExpression, ExpressionCanHaveNullValues{
-    
-    @Override
-    public BooleanArrayResult copy();
+public interface BooleanArrayResult extends DBExpression, ExpressionCanHaveNullValues {
+
+	@Override
+	public BooleanArrayResult copy();
 }

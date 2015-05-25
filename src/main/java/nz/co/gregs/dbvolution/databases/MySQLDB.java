@@ -16,10 +16,10 @@
 package nz.co.gregs.dbvolution.databases;
 
 import java.sql.SQLException;
-import nz.co.gregs.dbvolution.databases.supports.SupportsPolygonDatatype;
 import javax.sql.DataSource;
 import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.databases.definitions.MySQLDBDefinition;
+import nz.co.gregs.dbvolution.databases.supports.SupportsPolygonDatatype;
 
 /**
  * A DBDatabase tweaked for MySQL databases
@@ -33,8 +33,8 @@ public class MySQLDB extends DBDatabase implements SupportsPolygonDatatype{
 	/**
 	 * Creates a {@link DBDatabase } instance for the data source.
 	 *
-	 * @param ds	 ds	
-	 * @throws java.sql.SQLException	
+	 * @param ds	ds
+	 * @throws java.sql.SQLException
 	 */
 	public MySQLDB(DataSource ds) throws SQLException {
 		super(new MySQLDBDefinition(), ds);

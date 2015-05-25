@@ -36,8 +36,8 @@ public interface ColumnProvider {
 	 *
 	 * <p>
 	 * the standard implementation is
-	 * {@code this.column.setUseTableAlias(useTableAlias);} and passes the
-	 * boolean along to the underlying AbstractColumn
+	 * {@code this.column.setUseTableAlias(useTableAlias);} and passes the boolean
+	 * along to the underlying AbstractColumn
 	 *
 	 * @param useTableAlias true or false
 	 */

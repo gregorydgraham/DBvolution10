@@ -21,12 +21,12 @@ import nz.co.gregs.dbvolution.databases.DBStatement;
 
 /**
  * Performs transactions for arbitrary SQL strings.
- * 
+ *
  * @author Gregory Graham
  */
 public class DBRawSQLTransaction implements DBTransaction<Boolean> {
 
-    private final String sql;
+	private final String sql;
 
 	/**
 	 * Create a DBRawSQLTransaction object for the SQL provided.
@@ -34,8 +34,8 @@ public class DBRawSQLTransaction implements DBTransaction<Boolean> {
 	 * @param rawSQL rawSQL
 	 */
 	public DBRawSQLTransaction(String rawSQL) {
-        this.sql = rawSQL;
-    }
+		this.sql = rawSQL;
+	}
 
 	/**
 	 * Perform the SQL on the database within a transaction.
@@ -43,23 +43,23 @@ public class DBRawSQLTransaction implements DBTransaction<Boolean> {
 	 * @param dbDatabase dbDatabase
 	 * @return TRUE if the transaction succeeded, FALSE otherwise.
 	 * @throws java.lang.Exception java.lang.Exception
-	 
+	 *
 	 */
-    @Override
-    public Boolean doTransaction(DBDatabase dbDatabase) throws Exception {
-        DBStatement dbStatement = dbDatabase.getDBStatement();
-        try {
-            dbStatement.addBatch(sql);
-            int[] executeBatchResults = dbStatement.executeBatch();
-            for (int result : executeBatchResults) {
-                if (result == Statement.EXECUTE_FAILED) {
-                    return Boolean.FALSE;
-                }
-            }
-        } finally {
-            dbStatement.close();
-        }
-        return Boolean.TRUE;
-    }
+	@Override
+	public Boolean doTransaction(DBDatabase dbDatabase) throws Exception {
+		DBStatement dbStatement = dbDatabase.getDBStatement();
+		try {
+			dbStatement.addBatch(sql);
+			int[] executeBatchResults = dbStatement.executeBatch();
+			for (int result : executeBatchResults) {
+				if (result == Statement.EXECUTE_FAILED) {
+					return Boolean.FALSE;
+				}
+			}
+		} finally {
+			dbStatement.close();
+		}
+		return Boolean.TRUE;
+	}
 
 }

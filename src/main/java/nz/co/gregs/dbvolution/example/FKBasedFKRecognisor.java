@@ -29,7 +29,8 @@ public class FKBasedFKRecognisor extends ForeignKeyRecognisor {
 	Pattern fkStartPattern = Pattern.compile("^[fF][kK]_");
 
 	/**
-	 * Indicates that the column is a foreign key if the column name starts with "fk_".
+	 * Indicates that the column is a foreign key if the column name starts with
+	 * "fk_".
 	 *
 	 * @param tableName tableName
 	 * @param columnName columnName

@@ -26,8 +26,6 @@ import org.junit.Test;
  * @author gregorygraham
  */
 public class DBStringEditorTest {
-	
-
 
 	@Before
 	public void setUp() {

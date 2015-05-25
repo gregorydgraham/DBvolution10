@@ -20,19 +20,21 @@ import org.junit.Test;
 
 @SuppressWarnings({"serial", "unused"})
 public class EnumTypeHandlerTest {
+
 	private JavaPropertyFinder privateFieldPublicBeanFinder = new JavaPropertyFinder(
-			Visibility.PRIVATE, Visibility.PUBLIC, null, (PropertyType[])null);
+			Visibility.PRIVATE, Visibility.PUBLIC, null, (PropertyType[]) null);
 
 	@Test
 	public void acceptsInvalidDeclarationGivenNonColumn() {
 		class TestClass extends DBRow {
+
 			public DBEnum<?> field;
 		}
 
 		try {
 			typeHandlerOf(TestClass.class, "field");
 		} catch (InvalidDeclaredTypeException e) {
-			Error error = new AssertionFailedError("Encountered "+e.getClass().getSimpleName()+", expected no exception");
+			Error error = new AssertionFailedError("Encountered " + e.getClass().getSimpleName() + ", expected no exception");
 			error.initCause(e);
 			throw error;
 		}
@@ -41,6 +43,7 @@ public class EnumTypeHandlerTest {
 	@Test
 	public void acceptsValidDeclarationGivenColumn() {
 		class TestClass extends DBRow {
+
 			@DBColumn
 			public DBEnum<MyIntegerEnum> field;
 		}
@@ -48,16 +51,17 @@ public class EnumTypeHandlerTest {
 		try {
 			typeHandlerOf(TestClass.class, "field");
 		} catch (InvalidDeclaredTypeException e) {
-			Error error = new AssertionFailedError("Encountered "+e.getClass().getSimpleName()+", expected no exception");
+			Error error = new AssertionFailedError("Encountered " + e.getClass().getSimpleName() + ", expected no exception");
 			error.initCause(e);
 			throw error;
 		}
 	}
-	
-	@Test(expected=InvalidDeclaredTypeException.class)
+
+	@Test(expected = InvalidDeclaredTypeException.class)
 	public void rejectsInvalidDeclarationGivenColumnAndNoGenerics() {
 		@SuppressWarnings("rawtypes")
 		class TestClass extends DBRow {
+
 			@DBColumn
 			public DBEnum field;
 		}
@@ -65,9 +69,10 @@ public class EnumTypeHandlerTest {
 		typeHandlerOf(TestClass.class, "field");
 	}
 
-	@Test(expected=InvalidDeclaredTypeException.class)
+	@Test(expected = InvalidDeclaredTypeException.class)
 	public void rejectsInvalidDeclarationGivenColumnAndWildcardGenerics() {
 		class TestClass extends DBRow {
+
 			@DBColumn
 			public DBEnum<?> field;
 		}
@@ -75,19 +80,21 @@ public class EnumTypeHandlerTest {
 		typeHandlerOf(TestClass.class, "field");
 	}
 
-	@Test(expected=InvalidDeclaredTypeException.class)
+	@Test(expected = InvalidDeclaredTypeException.class)
 	public void rejectsInvalidDeclarationGivenColumnAndWildcardGenerics2() {
 		class TestClass extends DBRow {
+
 			@DBColumn
 			public DBEnum<? extends MyIntegerEnum> field;
 		}
 
 		typeHandlerOf(TestClass.class, "field");
 	}
-	
+
 	@Test
 	public void infersEnumTypeGivenIntegerEnum() {
 		class TestClass extends DBRow {
+
 			@DBColumn
 			public DBEnum<MyIntegerEnum> field;
 		}
@@ -99,6 +106,7 @@ public class EnumTypeHandlerTest {
 	@Test
 	public void infersEnumLiteralValueTypeGivenIntegerEnum() {
 		class TestClass extends DBRow {
+
 			@DBColumn
 			public DBEnum<MyIntegerEnum> field;
 		}
@@ -110,6 +118,7 @@ public class EnumTypeHandlerTest {
 	@Test
 	public void infersEnumLiteralValueTypeGivenStringEnum() {
 		class TestClass extends DBRow {
+
 			@DBColumn
 			public DBEnum<MyStringEnum> field;
 		}
@@ -117,8 +126,9 @@ public class EnumTypeHandlerTest {
 		EnumTypeHandler enumTypeHandler = typeHandlerOf(TestClass.class, "field");
 		assertThat(enumTypeHandler.getEnumLiteralValueType(), is((Object) String.class));
 	}
-	
+
 	private enum MyIntegerEnum implements DBEnumValue<Integer> {
+
 		ZERO, ONE, TWO;
 
 		@Override
@@ -128,6 +138,7 @@ public class EnumTypeHandlerTest {
 	}
 
 	private enum MyStringEnum implements DBEnumValue<String> {
+
 		ZERO, ONE, TWO;
 
 		@Override
@@ -135,17 +146,17 @@ public class EnumTypeHandlerTest {
 			return name().toLowerCase();
 		}
 	}
-	
+
 	private EnumTypeHandler typeHandlerOf(Class<?> clazz, String javaPropertyName) {
 		ColumnHandler columnHandler = new ColumnHandler(propertyOf(clazz, javaPropertyName));
 		return new EnumTypeHandler(propertyOf(clazz, javaPropertyName), columnHandler);
 	}
-	
+
 	private JavaProperty propertyOf(Class<?> clazz, String javaPropertyName) {
 		List<JavaProperty> properties = privateFieldPublicBeanFinder.getPropertiesOf(clazz);
 		JavaProperty property = itemOf(properties, that(hasJavaPropertyName(javaPropertyName)));
 		if (property == null) {
-			throw new IllegalArgumentException("No property found with java name '"+javaPropertyName+"'");
+			throw new IllegalArgumentException("No property found with java name '" + javaPropertyName + "'");
 		}
 		return property;
 	}

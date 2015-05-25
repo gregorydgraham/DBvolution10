@@ -40,6 +40,11 @@ import nz.co.gregs.dbvolution.expressions.Line2DResult;
  * is X and Y points) that are contiguous and open.
  *
  * <p>
+ * Alternatives to a DBLine2D are single line segments {@link DBLineSegment2D},
+ * infinite lines {@link @DBRay2D}, closed paths {@link DBRing2D}, and closed
+ * paths defining a solid {@link DBPolygon2D}.
+ *
+ * <p>
  * Common datatypes covered by this type include LINESTRING.
  *
  * <p>
@@ -102,14 +107,14 @@ public class DBLine2D extends QueryableDatatype implements Line2DResult {
 
 	/**
 	 * Set the value of this DBLine2D to the value provided.
-	 * 
+	 *
 	 * <p>
 	 * The series of points will combined into a line for you.
 	 *
 	 * <p>
 	 * Use this method to define the value of a field/column before inserting the
 	 * DBRow subclass into the database.
-	 * 
+	 *
 	 * @param points
 	 */
 	public void setValue(Point... points) {
@@ -124,7 +129,7 @@ public class DBLine2D extends QueryableDatatype implements Line2DResult {
 
 	/**
 	 * Set the value of this DBLine2D to the value provided.
-	 * 
+	 *
 	 * <p>
 	 * The series of coordinates will combined into a line for you.
 	 *
@@ -150,7 +155,8 @@ public class DBLine2D extends QueryableDatatype implements Line2DResult {
 	}
 
 	/**
-	 * Transform the value of the DBLine2D into a {@link LineString JTS LineString}
+	 * Transform the value of the DBLine2D into a
+	 * {@link LineString JTS LineString}
 	 *
 	 * @return the value of this object if defined and not NULL, NULL otherwise.
 	 */

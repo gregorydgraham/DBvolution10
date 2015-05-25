@@ -26,8 +26,8 @@ import nz.co.gregs.dbvolution.query.QueryOptions;
  * database.
  *
  * <p>
- * This DBDefinition is automatically included in {@link Oracle11DB} instances, and
- * you should not need to use it directly.
+ * This DBDefinition is automatically included in {@link Oracle11DB} instances,
+ * and you should not need to use it directly.
  *
  * @author Gregory Graham
  */
@@ -79,15 +79,15 @@ public class Oracle11DBDefinition extends OracleDBDefinition {
 		result.add("CREATE SEQUENCE " + sequenceName);
 
 		String triggerName = getPrimaryKeyTriggerName(table, column);
-		result.add("CREATE OR REPLACE TRIGGER "+DB.getUsername()+"." + triggerName + " \n"
-				+ "    BEFORE INSERT ON "+DB.getUsername()+"." + table + " \n"
+		result.add("CREATE OR REPLACE TRIGGER " + DB.getUsername() + "." + triggerName + " \n"
+				+ "    BEFORE INSERT ON " + DB.getUsername() + "." + table + " \n"
 				+ "    FOR EACH ROW\n"
 				+ "    WHEN (new." + column + " IS NULL)\n"
 				+ "    BEGIN\n"
 				+ "      SELECT " + sequenceName + ".NEXTVAL\n"
 				+ "      INTO   :new." + column + "\n"
 				+ "      FROM   dual;\n"
-//				+ ":new."+column+" := "+sequenceName+".nextval; \n"
+				//				+ ":new."+column+" := "+sequenceName+".nextval; \n"
 				+ "    END;\n");
 
 		return result;

@@ -25,23 +25,24 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
 /**
- * Focuses on low-level functionality of type adaptors.
- * End-to-end confirmation that it works when querying an actual
- * database is in {@link TypeAdaptorTest}.
+ * Focuses on low-level functionality of type adaptors. End-to-end confirmation
+ * that it works when querying an actual database is in {@link TypeAdaptorTest}.
  */
-@SuppressWarnings({"serial","unused"})
+@SuppressWarnings({"serial", "unused"})
 public class PropertyTypeHandlerTest {
+
 	@Rule
 	public ExpectedException thrown = ExpectedException.none();
-	
+
 	@Test
 	public void errorsOnConstructionGivenValidTypeAdaptorWithWrongExplicitDBvType() {
 		class MyClass extends DBRow {
+
 			@DBColumn
-			@DBAdaptType(value=StringLongAdaptor.class, type=DBString.class)
+			@DBAdaptType(value = StringLongAdaptor.class, type = DBString.class)
 			public DBString field = new DBString();
 		}
-		
+
 		thrown.expect(InvalidDeclaredTypeException.class);
 		thrown.expectMessage("internal Long type is not compatible");
 		new PropertyTypeHandler(propertyOf(MyClass.class, "field"), false);
@@ -50,61 +51,66 @@ public class PropertyTypeHandlerTest {
 	@Test
 	public void errorsOnConstructionGivenTypeAdaptorWithWrongExternalType() {
 		class MyClass extends DBRow {
+
 			@DBColumn
-			@DBAdaptType(value=LongStringAdaptor.class)
+			@DBAdaptType(value = LongStringAdaptor.class)
 			public DBString field = new DBString();
 		}
-		
+
 		thrown.expect(InvalidDeclaredTypeException.class);
 		thrown.expectMessage("external Long type is not compatible");
 		new PropertyTypeHandler(propertyOf(MyClass.class, "field"), false);
 	}
-	
+
 	@Test
 	public void errorsOnConstructionGivenInvalidAdaptorWithNonSimpleFirstType() {
 		class MyClass extends DBRow {
+
 			@DBColumn
-			@DBAdaptType(value=DBStringIntegerAdaptor.class, type=DBInteger.class)
+			@DBAdaptType(value = DBStringIntegerAdaptor.class, type = DBInteger.class)
 			public DBString field = new DBString();
 		}
-		
+
 		thrown.expect(InvalidDeclaredTypeException.class);
 		thrown.expectMessage("external type must not");
 		new PropertyTypeHandler(propertyOf(MyClass.class, "field"), false);
 	}
-	
+
 	@Test
 	public void errorsOnConstructionGivenInvalidAdaptorWithNonSimpleSecondType() {
 		class MyClass extends DBRow {
+
 			@DBColumn
-			@DBAdaptType(value=IntegerDBIntegerAdaptor.class, type=DBInteger.class)
+			@DBAdaptType(value = IntegerDBIntegerAdaptor.class, type = DBInteger.class)
 			public DBString field = new DBString();
 		}
-		
+
 		thrown.expect(InvalidDeclaredTypeException.class);
 		thrown.expectMessage("internal type must not");
 		new PropertyTypeHandler(propertyOf(MyClass.class, "field"), false);
 	}
-	
-	@Test(expected=InvalidDeclaredTypeException.class)
+
+	@Test(expected = InvalidDeclaredTypeException.class)
 	public void errorsOnConstructionGivenInterfaceTypeAdaptor() {
 		class MyClass extends DBRow {
+
 			@DBColumn
-			@DBAdaptType(value=AdaptorInterface.class, type=DBInteger.class)
+			@DBAdaptType(value = AdaptorInterface.class, type = DBInteger.class)
 			public DBInteger field;
 		}
-		
+
 		new PropertyTypeHandler(propertyOf(MyClass.class, "field"), false);
 	}
-	
+
 	@Test
 	public void errorsOnConstructionGivenTypeAdaptorWithAbstractExplicitType() {
 		class MyClass extends DBRow {
+
 			@DBColumn
-			@DBAdaptType(value=IntegerLongAdaptor.class, type=QueryableDatatype.class)
+			@DBAdaptType(value = IntegerLongAdaptor.class, type = QueryableDatatype.class)
 			public Integer field;
 		}
-		
+
 		thrown.expect(InvalidDeclaredTypeException.class);
 		thrown.expectMessage("must be");
 		thrown.expectMessage("concrete");
@@ -114,23 +120,25 @@ public class PropertyTypeHandlerTest {
 	@Test
 	public void acceptsOnConstructionGivenValidTypeAdaptorWithImplicitDBvType() {
 		class MyClass extends DBRow {
+
 			@DBColumn
-			@DBAdaptType(value=IntegerLongAdaptor.class)
+			@DBAdaptType(value = IntegerLongAdaptor.class)
 			public Integer field;
 		}
-		
+
 		PropertyTypeHandler propertyHandler = new PropertyTypeHandler(propertyOf(MyClass.class, "field"), false);
 		assertThat(propertyHandler, is(not(nullValue())));
 	}
-	
+
 	@Test
 	public void acceptsOnConstructionGivenValidTypeAdaptorWithCorrectExplicitDBvType() {
 		class MyClass extends DBRow {
+
 			@DBColumn
-			@DBAdaptType(value=IntegerLongAdaptor.class, type=DBInteger.class)
+			@DBAdaptType(value = IntegerLongAdaptor.class, type = DBInteger.class)
 			public Integer field;
 		}
-		
+
 		PropertyTypeHandler propertyHandler = new PropertyTypeHandler(propertyOf(MyClass.class, "field"), false);
 		assertThat(propertyHandler, is(not(nullValue())));
 	}
@@ -138,11 +146,12 @@ public class PropertyTypeHandlerTest {
 	@Test
 	public void acceptsOnConstructionGivenValidTypeAdaptorWithExternalSimpleTypeUpcast() {
 		class MyClass extends DBRow {
+
 			@DBColumn
-			@DBAdaptType(value=IntegerStringAdaptor.class)
+			@DBAdaptType(value = IntegerStringAdaptor.class)
 			public Long field;
 		}
-		
+
 		PropertyTypeHandler propertyHandler = new PropertyTypeHandler(propertyOf(MyClass.class, "field"), false);
 		assertThat(propertyHandler, is(not(nullValue())));
 	}
@@ -150,35 +159,38 @@ public class PropertyTypeHandlerTest {
 	@Test
 	public void acceptsOnConstructionGivenValidTypeAdaptorWithExternalSimpleTypeDowncast() {
 		class MyClass extends DBRow {
+
 			@DBColumn
-			@DBAdaptType(value=LongStringAdaptor.class)
+			@DBAdaptType(value = LongStringAdaptor.class)
 			public Integer field;
 		}
-		
+
 		PropertyTypeHandler propertyHandler = new PropertyTypeHandler(propertyOf(MyClass.class, "field"), false);
 		assertThat(propertyHandler, is(not(nullValue())));
 	}
-	
+
 	@Test
 	public void acceptsOnConstructionGivenValidTypeAdaptorWithInternalSimpleTypeUpcast() {
 		class MyClass extends DBRow {
+
 			@DBColumn
-			@DBAdaptType(value=StringIntegerAdaptor.class)
+			@DBAdaptType(value = StringIntegerAdaptor.class)
 			public String field;
 		}
-		
+
 		PropertyTypeHandler propertyHandler = new PropertyTypeHandler(propertyOf(MyClass.class, "field"), false);
 		assertThat(propertyHandler, is(not(nullValue())));
 	}
-	
+
 	@Test
 	public void infersDBIntegerGivenStringLongAdaptorOnDBStringField() {
 		class MyClass extends DBRow {
-			@DBAdaptType(value=StringLongAdaptor.class)
+
+			@DBAdaptType(value = StringLongAdaptor.class)
 			@DBColumn
 			public DBString field = new DBString("23");
 		}
-		
+
 		PropertyTypeHandler propertyHandler = propertyHandlerOf(MyClass.class, "field");
 		QueryableDatatype qdt = propertyHandler.getJavaPropertyAsQueryableDatatype(new MyClass());
 		assertThat(propertyHandler.getType(), is((Object) DBInteger.class));
@@ -186,15 +198,16 @@ public class PropertyTypeHandlerTest {
 		assertThat(qdt.getValue(), is(instanceOf(Long.class)));
 		propertyHandler.setJavaPropertyAsQueryableDatatype(new MyClass(), new DBInteger(42));
 	}
-	
+
 	@Test
 	public void infersDBIntegerGivenStringLongAdaptorOnStringField() {
 		class MyClass extends DBRow {
-			@DBAdaptType(value=StringLongAdaptor.class)
+
+			@DBAdaptType(value = StringLongAdaptor.class)
 			@DBColumn
 			public String field = "23";
 		}
-		
+
 		PropertyTypeHandler propertyHandler = propertyHandlerOf(MyClass.class, "field");
 		QueryableDatatype qdt = propertyHandler.getJavaPropertyAsQueryableDatatype(new MyClass());
 		assertThat(propertyHandler.getType(), is((Object) DBInteger.class));
@@ -206,11 +219,12 @@ public class PropertyTypeHandlerTest {
 	@Test
 	public void infersDBIntegerGivenStringIntegerAdaptorOnDBStringField() {
 		class MyClass extends DBRow {
-			@DBAdaptType(value=StringIntegerAdaptor.class)
+
+			@DBAdaptType(value = StringIntegerAdaptor.class)
 			@DBColumn
 			public DBString field = new DBString("23");
 		}
-		
+
 		PropertyTypeHandler propertyHandler = propertyHandlerOf(MyClass.class, "field");
 		QueryableDatatype qdt = propertyHandler.getJavaPropertyAsQueryableDatatype(new MyClass());
 		assertThat(propertyHandler.getType(), is((Object) DBInteger.class));
@@ -218,15 +232,16 @@ public class PropertyTypeHandlerTest {
 		assertThat(qdt.getValue(), is(instanceOf(Long.class)));
 		propertyHandler.setJavaPropertyAsQueryableDatatype(new MyClass(), new DBInteger(42));
 	}
-	
+
 	@Test
 	public void infersDBIntegerGivenStringIntegerAdaptorOnStringField() {
 		class MyClass extends DBRow {
-			@DBAdaptType(value=StringIntegerAdaptor.class)
+
+			@DBAdaptType(value = StringIntegerAdaptor.class)
 			@DBColumn
 			public String field = "23";
 		}
-		
+
 		PropertyTypeHandler propertyHandler = propertyHandlerOf(MyClass.class, "field");
 		QueryableDatatype qdt = propertyHandler.getJavaPropertyAsQueryableDatatype(new MyClass());
 		assertThat(propertyHandler.getType(), is((Object) DBInteger.class));
@@ -234,15 +249,16 @@ public class PropertyTypeHandlerTest {
 		assertThat(qdt.getValue(), is(instanceOf(Long.class)));
 		propertyHandler.setJavaPropertyAsQueryableDatatype(new MyClass(), new DBInteger(42));
 	}
-	
+
 	@Test
 	public void infersDBStringGivenLongStringAdaptorOnDBIntegerField() {
 		class MyClass extends DBRow {
-			@DBAdaptType(value=LongStringAdaptor.class)
+
+			@DBAdaptType(value = LongStringAdaptor.class)
 			@DBColumn
 			public DBInteger field = new DBInteger(23);
 		}
-		
+
 		PropertyTypeHandler propertyHandler = propertyHandlerOf(MyClass.class, "field");
 		QueryableDatatype qdt = propertyHandler.getJavaPropertyAsQueryableDatatype(new MyClass());
 		assertThat(propertyHandler.getType(), is((Object) DBString.class));
@@ -254,11 +270,12 @@ public class PropertyTypeHandlerTest {
 	@Test
 	public void infersDBStringGivenLongStringAdaptorOnLongField() {
 		class MyClass extends DBRow {
-			@DBAdaptType(value=LongStringAdaptor.class)
+
+			@DBAdaptType(value = LongStringAdaptor.class)
 			@DBColumn
 			public Long field = 23L;
 		}
-		
+
 		PropertyTypeHandler propertyHandler = propertyHandlerOf(MyClass.class, "field");
 		QueryableDatatype qdt = propertyHandler.getJavaPropertyAsQueryableDatatype(new MyClass());
 		assertThat(propertyHandler.getType(), is((Object) DBString.class));
@@ -266,15 +283,16 @@ public class PropertyTypeHandlerTest {
 		assertThat(qdt.getValue(), is(instanceOf(String.class)));
 		propertyHandler.setJavaPropertyAsQueryableDatatype(new MyClass(), new DBString("42"));
 	}
-	
+
 	@Test
 	public void infersDBStringGivenLongStringAdaptorOnIntegerField() {
 		class MyClass extends DBRow {
-			@DBAdaptType(value=LongStringAdaptor.class)
+
+			@DBAdaptType(value = LongStringAdaptor.class)
 			@DBColumn
 			public Integer field = 23;
 		}
-		
+
 		PropertyTypeHandler propertyHandler = propertyHandlerOf(MyClass.class, "field");
 		QueryableDatatype qdt = propertyHandler.getJavaPropertyAsQueryableDatatype(new MyClass());
 		assertThat(propertyHandler.getType(), is((Object) DBString.class));
@@ -286,11 +304,12 @@ public class PropertyTypeHandlerTest {
 	@Test
 	public void infersDBStringGivenIntegerStringAdaptorOnLongField() {
 		class MyClass extends DBRow {
-			@DBAdaptType(value=IntegerStringAdaptor.class)
+
+			@DBAdaptType(value = IntegerStringAdaptor.class)
 			@DBColumn
 			public Long field = 23L;
 		}
-		
+
 		PropertyTypeHandler propertyHandler = propertyHandlerOf(MyClass.class, "field");
 		QueryableDatatype qdt = propertyHandler.getJavaPropertyAsQueryableDatatype(new MyClass());
 		assertThat(propertyHandler.getType(), is((Object) DBString.class));
@@ -298,15 +317,16 @@ public class PropertyTypeHandlerTest {
 		assertThat(qdt.getValue(), is(instanceOf(String.class)));
 		propertyHandler.setJavaPropertyAsQueryableDatatype(new MyClass(), new DBString("42"));
 	}
-	
+
 	@Test
 	public void infersLongGivenDateLongAdaptor() {
 		class MyClass extends DBRow {
-			@DBAdaptType(value=DateLongAdaptor.class)
+
+			@DBAdaptType(value = DateLongAdaptor.class)
 			@DBColumn
 			public DBDate field = new DBDate(new Date());
 		}
-		
+
 		PropertyTypeHandler propertyHandler = propertyHandlerOf(MyClass.class, "field");
 		QueryableDatatype qdt = propertyHandler.getJavaPropertyAsQueryableDatatype(new MyClass());
 		assertThat(propertyHandler.getType(), is((Object) DBInteger.class));
@@ -318,11 +338,12 @@ public class PropertyTypeHandlerTest {
 	@Test
 	public void infersDBDateGivenIntegerStringAdaptor() {
 		class MyClass extends DBRow {
-			@DBAdaptType(value=LongDateAdaptor.class)
+
+			@DBAdaptType(value = LongDateAdaptor.class)
 			@DBColumn
 			public Long field = 2013L;
 		}
-		
+
 		PropertyTypeHandler propertyHandler = propertyHandlerOf(MyClass.class, "field");
 		QueryableDatatype qdt = propertyHandler.getJavaPropertyAsQueryableDatatype(new MyClass());
 		assertThat(propertyHandler.getType(), is((Object) DBDate.class));
@@ -330,23 +351,23 @@ public class PropertyTypeHandlerTest {
 		assertThat(qdt.getValue(), is(instanceOf(Date.class)));
 		propertyHandler.setJavaPropertyAsQueryableDatatype(new MyClass(), new DBDate(new Date()));
 	}
-	
+
 	@Test
 	public void acceptsDBIntegerGivenIntegerAdaptorAndExplicitType() {
 		class MyClass extends DBRow {
-			@DBAdaptType(value=StringIntegerAdaptor.class, type=DBInteger.class)
+
+			@DBAdaptType(value = StringIntegerAdaptor.class, type = DBInteger.class)
 			@DBColumn
 			public String field = "23";
 		}
-		
+
 		PropertyTypeHandler propertyHandler = propertyHandlerOf(MyClass.class, "field");
 		QueryableDatatype qdt = propertyHandler.getJavaPropertyAsQueryableDatatype(new MyClass());
 		assertThat(propertyHandler.getType(), is((Object) DBInteger.class));
 		assertThat(qdt, is(instanceOf(DBInteger.class)));
 		assertThat(qdt.getValue(), is(instanceOf(Long.class)));
 	}
-        
-        
+
 	// Obsolete since DBInteger is now a separate type
 //	@Test
 //	public void acceptsDBNumberGivenIntegerAdaptorAndExplicitType() {
@@ -362,60 +383,63 @@ public class PropertyTypeHandlerTest {
 //		assertThat(qdt, is(instanceOf(DBNumber.class)));
 //		assertThat(qdt.getValue(), is(instanceOf(Double.class)));
 //	}
-	
 	@Test
 	public void getsQDTValueGivenValidFieldAndNoTypeAdaptor() {
 		class MyClass extends DBRow {
+
 			@DBColumn
 			public DBInteger field = new DBInteger();
 		}
-		
+
 		MyClass myObj = new MyClass();
 		myObj.field.setValue(23);
-		
+
 		PropertyTypeHandler propertyHandler = propertyHandlerOf(MyClass.class, "field");
-		DBInteger qdt = (DBInteger)propertyHandler.getJavaPropertyAsQueryableDatatype(myObj);
+		DBInteger qdt = (DBInteger) propertyHandler.getJavaPropertyAsQueryableDatatype(myObj);
 		assertThat(qdt.getValue().intValue(), is(23));
 	}
 
 	@Test
 	public void getsUnchangedQDTInstanceGivenValidFieldAndNoTypeAdaptor() {
 		class MyClass extends DBRow {
+
 			@DBColumn
 			public DBInteger field = new DBInteger();
 		}
-		
+
 		MyClass myObj = new MyClass();
-		
+
 		PropertyTypeHandler propertyHandler = propertyHandlerOf(MyClass.class, "field");
-		DBInteger qdt = (DBInteger)propertyHandler.getJavaPropertyAsQueryableDatatype(myObj);
+		DBInteger qdt = (DBInteger) propertyHandler.getJavaPropertyAsQueryableDatatype(myObj);
 		assertThat(qdt == myObj.field, is(true));
 	}
-	
+
 	@Test
 	public void getsNullQDTValueGivenValidNullQDTFieldAndNoTypeAdaptor() {
 		class MyClass extends DBRow {
+
 			@DBColumn
 			public DBInteger field = null;
 		}
-		
+
 		MyClass myObj = new MyClass();
-		
+
 		PropertyTypeHandler propertyHandler = propertyHandlerOf(MyClass.class, "field");
-		DBInteger qdt = (DBInteger)propertyHandler.getJavaPropertyAsQueryableDatatype(myObj);
+		DBInteger qdt = (DBInteger) propertyHandler.getJavaPropertyAsQueryableDatatype(myObj);
 		assertThat(qdt, is(nullValue()));
 	}
 
 	@Test
 	public void getsNullAdaptedQDTValueGivenNullQDTFieldAndTypeAdaptor() {
 		class MyClass extends DBRow {
+
 			@DBColumn
-			@DBAdaptType(value=LongStringAdaptor.class)
+			@DBAdaptType(value = LongStringAdaptor.class)
 			public DBInteger field = null;
 		}
-		
+
 		MyClass myObj = new MyClass();
-		
+
 		PropertyTypeHandler propertyHandler = propertyHandlerOf(MyClass.class, "field");
 		QueryableDatatype qdt = propertyHandler.getJavaPropertyAsQueryableDatatype(myObj);
 		assertThat(qdt, is(nullValue()));
@@ -424,27 +448,29 @@ public class PropertyTypeHandlerTest {
 	@Test
 	public void getsIsNullAdaptedQDTValueGivenNullSimpleFieldAndTypeAdaptor() {
 		class MyClass extends DBRow {
+
 			@DBColumn
-			@DBAdaptType(value=LongStringAdaptor.class)
+			@DBAdaptType(value = LongStringAdaptor.class)
 			public Long field = null;
 		}
-		
+
 		MyClass myObj = new MyClass();
-		
+
 		PropertyTypeHandler propertyHandler = propertyHandlerOf(MyClass.class, "field");
 		QueryableDatatype qdt = propertyHandler.getJavaPropertyAsQueryableDatatype(myObj);
 		assertThat(qdt, is(not(nullValue())));
 		assertThat(qdt.isNull(), is(true));
 	}
-	
+
 	@Test
 	public void getsCorrectInternalValueTypeGivenIntegerStringAdaptorOnDBIntegerField() {
 		class MyClass extends DBRow {
-			@DBAdaptType(value=LongStringAdaptor.class)
+
+			@DBAdaptType(value = LongStringAdaptor.class)
 			@DBColumn
 			public DBInteger field = new DBInteger();
 		}
-		
+
 		PropertyTypeHandler propertyHandler = propertyHandlerOf(MyClass.class, "field");
 		QueryableDatatype qdt = propertyHandler.getJavaPropertyAsQueryableDatatype(new MyClass());
 		assertThat(qdt, is(instanceOf(DBString.class)));
@@ -453,34 +479,36 @@ public class PropertyTypeHandlerTest {
 	@Test
 	public void getsCorrectInternalValueGivenLongStringAdaptorOnDBIntegerField() {
 		class MyClass extends DBRow {
-			@DBAdaptType(value=LongStringAdaptor.class)
+
+			@DBAdaptType(value = LongStringAdaptor.class)
 			@DBColumn
 			public DBInteger field = new DBInteger();
 		}
-		
+
 		MyClass myObj = new MyClass();
 		myObj.field.setValue(23);
-		
+
 		PropertyTypeHandler propertyHandler = propertyHandlerOf(MyClass.class, "field");
-		DBString qdt = (DBString)propertyHandler.getJavaPropertyAsQueryableDatatype(myObj);
-		
+		DBString qdt = (DBString) propertyHandler.getJavaPropertyAsQueryableDatatype(myObj);
+
 		assertThat(qdt.stringValue(), is("23"));
 	}
-	
+
 	@Test
 	public void getsSameInstanceOnConsecutiveReadsGivenAdaptorWhenUsingSameHandler() {
 		class MyClass extends DBRow {
-			@DBAdaptType(value=LongStringAdaptor.class)
+
+			@DBAdaptType(value = LongStringAdaptor.class)
 			@DBColumn
 			public DBInteger field = new DBInteger();
 		}
-		
+
 		MyClass myObj = new MyClass();
 		PropertyTypeHandler propertyHandler = propertyHandlerOf(MyClass.class, "field");
-		DBString qdt1 = (DBString)propertyHandler.getJavaPropertyAsQueryableDatatype(myObj);
-		DBString qdt2 = (DBString)propertyHandler.getJavaPropertyAsQueryableDatatype(myObj);
-		DBString qdt3 = (DBString)propertyHandler.getJavaPropertyAsQueryableDatatype(myObj);
-		
+		DBString qdt1 = (DBString) propertyHandler.getJavaPropertyAsQueryableDatatype(myObj);
+		DBString qdt2 = (DBString) propertyHandler.getJavaPropertyAsQueryableDatatype(myObj);
+		DBString qdt3 = (DBString) propertyHandler.getJavaPropertyAsQueryableDatatype(myObj);
+
 		assertThat(qdt2 == qdt1, is(true));
 		assertThat(qdt3 == qdt1, is(true));
 	}
@@ -488,84 +516,89 @@ public class PropertyTypeHandlerTest {
 	@Test
 	public void getsDifferentInstanceOnConsecutiveReadsAndWritesGivenAdaptorWhenUsingSameHandler() {
 		class MyClass extends DBRow {
-			@DBAdaptType(value=LongStringAdaptor.class)
+
+			@DBAdaptType(value = LongStringAdaptor.class)
 			@DBColumn
 			public DBInteger field = new DBInteger();
 		}
-		
+
 		MyClass myObj = new MyClass();
 		PropertyTypeHandler propertyHandler = propertyHandlerOf(MyClass.class, "field");
-		DBString qdt1 = (DBString)propertyHandler.getJavaPropertyAsQueryableDatatype(myObj);
-		
+		DBString qdt1 = (DBString) propertyHandler.getJavaPropertyAsQueryableDatatype(myObj);
+
 		propertyHandler.setJavaPropertyAsQueryableDatatype(myObj, new DBString());
-		DBString qdt2 = (DBString)propertyHandler.getJavaPropertyAsQueryableDatatype(myObj);
-		
+		DBString qdt2 = (DBString) propertyHandler.getJavaPropertyAsQueryableDatatype(myObj);
+
 		propertyHandler.setJavaPropertyAsQueryableDatatype(myObj, new DBString());
-		DBString qdt3 = (DBString)propertyHandler.getJavaPropertyAsQueryableDatatype(myObj);
-		
+		DBString qdt3 = (DBString) propertyHandler.getJavaPropertyAsQueryableDatatype(myObj);
+
 		assertThat(qdt2 == qdt1, is(false));
 		assertThat(qdt3 == qdt1, is(false));
 		assertThat(qdt3 == qdt2, is(false));
 	}
-	
+
 	@Test
 	public void setsFieldValueGivenValidFieldAndNoTypeAdaptor() {
 		class MyClass extends DBRow {
+
 			@DBColumn
 			public DBInteger field = new DBInteger();
 		}
-		
+
 		MyClass myObj = new MyClass();
 		PropertyTypeHandler propertyHandler = propertyHandlerOf(MyClass.class, "field");
-		
+
 		DBInteger qdt = new DBInteger();
 		qdt.setValue(23);
 		propertyHandler.setJavaPropertyAsQueryableDatatype(myObj, qdt);
-		
+
 		assertThat(myObj.field.getValue().intValue(), is(23));
 	}
 
 	@Test
 	public void setsFieldValueGivenValidFieldAndTypeAdaptor() {
 		class MyClass extends DBRow {
+
 			@DBColumn
 			@DBAdaptType(StringLongAdaptor.class)
 			public DBString field = new DBString();
 		}
-		
+
 		MyClass myObj = new MyClass();
 		PropertyTypeHandler propertyHandler = propertyHandlerOf(MyClass.class, "field");
-		
+
 		DBInteger qdt = new DBInteger();
 		qdt.setValue(23);
 		propertyHandler.setJavaPropertyAsQueryableDatatype(myObj, qdt);
-		
+
 		assertThat(myObj.field.stringValue(), is("23"));
 	}
-	
+
 	@Test
 	public void setsUnchangedFieldReferenceGivenValidObjectAndNoTypeAdaptor() {
 		class MyClass extends DBRow {
+
 			@DBColumn
 			public DBInteger field = new DBInteger();
 		}
-		
+
 		MyClass myObj = new MyClass();
 		PropertyTypeHandler propertyHandler = propertyHandlerOf(MyClass.class, "field");
 
 		DBInteger qdt = new DBInteger();
 		propertyHandler.setJavaPropertyAsQueryableDatatype(myObj, qdt);
-		
+
 		assertThat(myObj.field == qdt, is(true));
 	}
-	
+
 	@Test
 	public void setsQDTFieldNullGivenNullQDTAndNoTypeAdaptor() {
 		class MyClass extends DBRow {
+
 			@DBColumn
 			public DBInteger field = new DBInteger();
 		}
-		
+
 		MyClass myObj = new MyClass();
 		PropertyTypeHandler propertyHandler = propertyHandlerOf(MyClass.class, "field");
 
@@ -576,22 +609,24 @@ public class PropertyTypeHandlerTest {
 	@Test
 	public void setsQDTFieldNullGivenNullQDTAndTypeAdaptor() {
 		class MyClass extends DBRow {
+
 			@DBColumn
-			@DBAdaptType(value=IntegerStringAdaptor.class)
+			@DBAdaptType(value = IntegerStringAdaptor.class)
 			public DBInteger field = new DBInteger();
 		}
-		
+
 		MyClass myObj = new MyClass();
 		PropertyTypeHandler propertyHandler = propertyHandlerOf(MyClass.class, "field");
 
 		propertyHandler.setJavaPropertyAsQueryableDatatype(myObj, null);
 		assertThat(myObj.field, is(nullValue()));
 	}
-	
+
 	@Test
 	public void setsAsDBIntegerWithLongGivenLongAdaptor() {
 		class MyClass extends DBRow {
-			@DBAdaptType(value=StringLongAdaptor.class)
+
+			@DBAdaptType(value = StringLongAdaptor.class)
 			@DBColumn
 			public DBString field = new DBString();
 		}
@@ -599,13 +634,14 @@ public class PropertyTypeHandlerTest {
 		MyClass obj = new MyClass();
 		PropertyTypeHandler propertyHandler = propertyHandlerOf(MyClass.class, "field");
 		propertyHandler.setJavaPropertyAsQueryableDatatype(obj, new DBInteger(42L));
-		assertThat(obj.field.getValue(), is((Object)"42"));
+		assertThat(obj.field.getValue(), is((Object) "42"));
 	}
 
 	@Test
 	public void setsAsDBIntegerWithIntegerGivenLongAdaptor() {
 		class MyClass extends DBRow {
-			@DBAdaptType(value=StringLongAdaptor.class)
+
+			@DBAdaptType(value = StringLongAdaptor.class)
 			@DBColumn
 			public DBString field = new DBString();
 		}
@@ -613,7 +649,7 @@ public class PropertyTypeHandlerTest {
 		MyClass obj = new MyClass();
 		PropertyTypeHandler propertyHandler = propertyHandlerOf(MyClass.class, "field");
 		propertyHandler.setJavaPropertyAsQueryableDatatype(obj, new DBInteger(42));
-		assertThat(obj.field.getValue(), is((Object)"42"));
+		assertThat(obj.field.getValue(), is((Object) "42"));
 	}
 
 //	@Test
@@ -629,7 +665,6 @@ public class PropertyTypeHandlerTest {
 //		propertyHandler.setJavaPropertyAsQueryableDatatype(obj, new DBNumber(42));
 //		assertThat(obj.field.getValue(), is((Object)"42"));
 //	}
-
 //	@Test
 //	public void doesSomethingSensibleWhenSettingDBNumberAsDBIntegerWithLongGivenLongAdaptor() {
 //		class MyClass extends DBRow {
@@ -645,7 +680,6 @@ public class PropertyTypeHandlerTest {
 //		propertyHandler.setJavaPropertyAsQueryableDatatype(obj, new DBInteger(42L));
 //		//assertThat(obj.field.getValue(), is((Object)"42"));
 //	}
-	
 //	@Test
 //	public void doesSomethingSensibleWhenSettingDBNumberAsDBIntegerWithIntegerGivenLongAdaptor() {
 //		class MyClass extends DBRow {
@@ -661,12 +695,12 @@ public class PropertyTypeHandlerTest {
 //		propertyHandler.setJavaPropertyAsQueryableDatatype(obj, new DBInteger(42));
 //		//assertThat(obj.field.getValue(), is((Object)"42"));
 //	}
-	
 	@Test
-        @SuppressWarnings("deprecation")
+	@SuppressWarnings("deprecation")
 	public void nullifiesSimpleFieldsWhenClearingGivenTypeAdaptor() throws SQLException {
 		class MyClass extends DBRow {
-			@DBAdaptType(value=StringLongAdaptor.class)
+
+			@DBAdaptType(value = StringLongAdaptor.class)
 			@DBColumn
 			public DBString field = new DBString();
 		}
@@ -674,24 +708,25 @@ public class PropertyTypeHandlerTest {
 		MyClass obj = new MyClass();
 		obj.field.permittedRange("10", "50");
 		obj.clear();
-		
+
 		assertThat(obj.field.getOperator(), is(nullValue()));
 	}
-	
+
 	private PropertyTypeHandler propertyHandlerOf(Class<?> clazz, String javaPropertyName) {
 		return new PropertyTypeHandler(propertyOf(clazz, javaPropertyName), false);
 	}
-	
+
 	private JavaProperty propertyOf(Class<?> clazz, String javaPropertyName) {
 		List<JavaProperty> properties = new JavaPropertyFinder().getPropertiesOf(clazz);
 		JavaProperty property = itemOf(properties, that(hasJavaPropertyName(javaPropertyName)));
 		if (property == null) {
-			throw new IllegalArgumentException("No public property found with java name '"+javaPropertyName+"'");
+			throw new IllegalArgumentException("No public property found with java name '" + javaPropertyName + "'");
 		}
 		return property;
 	}
 
-	public static class IntegerStringAdaptor implements DBTypeAdaptor<Integer,String> {
+	public static class IntegerStringAdaptor implements DBTypeAdaptor<Integer, String> {
+
 		@Override
 		public Integer fromDatabaseValue(String dbvValue) {
 			if (dbvValue != null) {
@@ -709,7 +744,8 @@ public class PropertyTypeHandlerTest {
 		}
 	}
 
-	public static class StringIntegerAdaptor implements DBTypeAdaptor<String,Integer> {
+	public static class StringIntegerAdaptor implements DBTypeAdaptor<String, Integer> {
+
 		@Override
 		public String fromDatabaseValue(Integer dbvValue) {
 			if (dbvValue != null) {
@@ -726,8 +762,9 @@ public class PropertyTypeHandlerTest {
 			return null;
 		}
 	}
-	
-	public static class LongStringAdaptor implements DBTypeAdaptor<Long,String> {
+
+	public static class LongStringAdaptor implements DBTypeAdaptor<Long, String> {
+
 		@Override
 		public Long fromDatabaseValue(String dbvValue) {
 			if (dbvValue != null) {
@@ -745,7 +782,8 @@ public class PropertyTypeHandlerTest {
 		}
 	}
 
-	public static class StringLongAdaptor implements DBTypeAdaptor<String,Long> {
+	public static class StringLongAdaptor implements DBTypeAdaptor<String, Long> {
+
 		@Override
 		public String fromDatabaseValue(Long dbvValue) {
 			if (dbvValue != null) {
@@ -764,7 +802,8 @@ public class PropertyTypeHandlerTest {
 	}
 
 	public static class DateLongAdaptor implements DBTypeAdaptor<Date, Long> {
-                @Override
+
+		@Override
 		public Date fromDatabaseValue(Long dbvValue) {
 			if (dbvValue != null) {
 				Calendar c = Calendar.getInstance();
@@ -775,23 +814,24 @@ public class PropertyTypeHandlerTest {
 			return null;
 		}
 
-                @Override
+		@Override
 		public Long toDatabaseValue(Date objectValue) {
 			Calendar c = Calendar.getInstance();
 			c.setTime(objectValue);
-			return (long)c.get(Calendar.YEAR);
+			return (long) c.get(Calendar.YEAR);
 		}
 	}
 
 	public static class LongDateAdaptor implements DBTypeAdaptor<Long, Date> {
-                @Override
+
+		@Override
 		public Long fromDatabaseValue(Date dbvValue) {
 			Calendar c = Calendar.getInstance();
 			c.setTime(dbvValue);
-			return (long)c.get(Calendar.YEAR);
+			return (long) c.get(Calendar.YEAR);
 		}
 
-                @Override
+		@Override
 		public Date toDatabaseValue(Long objectValue) {
 			if (objectValue != null) {
 				Calendar c = Calendar.getInstance();
@@ -802,43 +842,46 @@ public class PropertyTypeHandlerTest {
 			return null;
 		}
 	}
-	
+
 	public static class IntegerLongAdaptor implements DBTypeAdaptor<Integer, Long> {
-                @Override
+
+		@Override
 		public Integer fromDatabaseValue(Long dbvValue) {
 			return null;
 		}
 
-                @Override
+		@Override
 		public Long toDatabaseValue(Integer objectValue) {
 			return null;
 		}
 	}
-	
+
 	public static class IntegerDBIntegerAdaptor implements DBTypeAdaptor<Integer, DBInteger> {
-                @Override
+
+		@Override
 		public Integer fromDatabaseValue(DBInteger dbvValue) {
 			return null;
 		}
 
-                @Override
+		@Override
 		public DBInteger toDatabaseValue(Integer objectValue) {
 			return null;
 		}
 	}
 
 	public static class DBStringIntegerAdaptor implements DBTypeAdaptor<DBString, Integer> {
-                @Override
+
+		@Override
 		public DBString fromDatabaseValue(Integer dbvValue) {
 			return null;
 		}
 
-                @Override
+		@Override
 		public Integer toDatabaseValue(DBString objectValue) {
 			return null;
 		}
 	}
-	
+
 	public static interface AdaptorInterface extends DBTypeAdaptor<Object, QueryableDatatype> {
 		// empty
 	}

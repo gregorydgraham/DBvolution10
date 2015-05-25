@@ -24,6 +24,7 @@ import nz.co.gregs.dbvolution.expressions.DBExpression;
  * @author gregory.graham
  */
 public class QueryGraphEdgeLabelTransformer extends ToStringLabeller<DBExpression> {
+
 	private final DBQuery query;
 
 	public QueryGraphEdgeLabelTransformer(final DBQuery originalQuery) {
@@ -34,5 +35,5 @@ public class QueryGraphEdgeLabelTransformer extends ToStringLabeller<DBExpressio
 	public String transform(DBExpression v) {
 		return v.toSQLString(query.getDatabase()).replaceAll("[^ ]*\\.", "");
 	}
-	
+
 }

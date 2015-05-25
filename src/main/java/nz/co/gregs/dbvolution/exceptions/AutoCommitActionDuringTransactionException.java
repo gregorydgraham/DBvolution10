@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package nz.co.gregs.dbvolution.exceptions;
 
 /**
@@ -21,19 +20,21 @@ package nz.co.gregs.dbvolution.exceptions;
  * @author Gregory Graham
  */
 public class AutoCommitActionDuringTransactionException extends RuntimeException {
-    
-    private static final long serialVersionUID = 1L;
+
+	private static final long serialVersionUID = 1L;
 
 	/**
-	 * Thrown when a Data Definition Language (DDL) operation is used in a transaction.
-	 * 
-	 * <p>
-	 * DDL operations force a commit and are virtually always a mistake inside a transaction.
+	 * Thrown when a Data Definition Language (DDL) operation is used in a
+	 * transaction.
 	 *
-	 * @param ddlMethod	 ddlMethod	
+	 * <p>
+	 * DDL operations force a commit and are virtually always a mistake inside a
+	 * transaction.
+	 *
+	 * @param ddlMethod	ddlMethod
 	 */
 	public AutoCommitActionDuringTransactionException(String ddlMethod) {
-        super("Autocommit Action Attempted During Transaction: the method "+ddlMethod+" will cause a commit during your read-only transaction, this is probably not what you want. Remove the call from the transaction.");
-    }
-    
+		super("Autocommit Action Attempted During Transaction: the method " + ddlMethod + " will cause a commit during your read-only transaction, this is probably not what you want. Remove the call from the transaction.");
+	}
+
 }

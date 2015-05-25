@@ -46,20 +46,10 @@ import nz.co.gregs.dbvolution.query.RowDefinition;
  */
 public class NumberColumn extends NumberExpression implements ColumnProvider {
 
-    private AbstractColumn column;
+	private AbstractColumn column;
 
-    private NumberColumn() {
-    }
-
-	/**
-	 * Create a NumberColumn for the supplied field of the supplied row
-	 *
-	 * @param row the row containing the field
-	 * @param field the field defining the column
-	 */
-    public NumberColumn(RowDefinition row, Number field) {
-        this.column = new AbstractColumn(row, field);
-    }
+	private NumberColumn() {
+	}
 
 	/**
 	 * Create a NumberColumn for the supplied field of the supplied row
@@ -67,38 +57,48 @@ public class NumberColumn extends NumberExpression implements ColumnProvider {
 	 * @param row the row containing the field
 	 * @param field the field defining the column
 	 */
-    public NumberColumn(RowDefinition row, DBNumber field) {
-        this.column = new AbstractColumn(row, field);
-    }
+	public NumberColumn(RowDefinition row, Number field) {
+		this.column = new AbstractColumn(row, field);
+	}
 
-    @Override
-    public String toSQLString(DBDatabase db) {
-        return column.toSQLString(db);
-    }
+	/**
+	 * Create a NumberColumn for the supplied field of the supplied row
+	 *
+	 * @param row the row containing the field
+	 * @param field the field defining the column
+	 */
+	public NumberColumn(RowDefinition row, DBNumber field) {
+		this.column = new AbstractColumn(row, field);
+	}
 
-    @Override
-    public synchronized NumberColumn copy() {
-        try {
-            NumberColumn newInstance = this.getClass().newInstance();
-            newInstance.column = this.column;
-            return newInstance;
-        } catch (InstantiationException ex) {
-            throw new RuntimeException(ex);
-        } catch (IllegalAccessException ex) {
-            throw new RuntimeException(ex);
-        }
+	@Override
+	public String toSQLString(DBDatabase db) {
+		return column.toSQLString(db);
+	}
 
-    }
+	@Override
+	public synchronized NumberColumn copy() {
+		try {
+			NumberColumn newInstance = this.getClass().newInstance();
+			newInstance.column = this.column;
+			return newInstance;
+		} catch (InstantiationException ex) {
+			throw new RuntimeException(ex);
+		} catch (IllegalAccessException ex) {
+			throw new RuntimeException(ex);
+		}
 
-    @Override
-    public AbstractColumn getColumn() {
-        return column;
-    }
+	}
 
-    @Override
-    public Set<DBRow> getTablesInvolved() {
-        return column.getTablesInvolved();
-    }
+	@Override
+	public AbstractColumn getColumn() {
+		return column;
+	}
+
+	@Override
+	public Set<DBRow> getTablesInvolved() {
+		return column.getTablesInvolved();
+	}
 
 	@Override
 	public void setUseTableAlias(boolean useTableAlias) {
@@ -109,24 +109,26 @@ public class NumberColumn extends NumberExpression implements ColumnProvider {
 	public boolean isPurelyFunctional() {
 		return getTablesInvolved().isEmpty();
 	}
-	
+
 	/**
-	 * Create an expression to compare this column to the other column using EQUALS.
+	 * Create an expression to compare this column to the other column using
+	 * EQUALS.
 	 *
-	 * @param column 
+	 * @param column
 	 * @return a BooleanExpression
 	 */
-	public BooleanExpression is(DBInteger column){
+	public BooleanExpression is(DBInteger column) {
 		return super.is(column);
 	}
-	
+
 	/**
-	 * Create an expression to compare this column to the other column using EQUALS.
+	 * Create an expression to compare this column to the other column using
+	 * EQUALS.
 	 *
-	 * @param column 
+	 * @param column
 	 * @return a BooleanExpression
 	 */
-	public BooleanExpression is(DBNumber column){
+	public BooleanExpression is(DBNumber column) {
 		return super.is(column);
 	}
 }

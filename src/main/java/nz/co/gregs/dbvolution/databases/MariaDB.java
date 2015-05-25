@@ -29,17 +29,16 @@ public class MariaDB extends DBDatabase {
 
 	private final static String MARIADBDRIVERNAME = "com.mariadb.jdbc.Driver";
 
-
 	/**
 	 * Creates a {@link DBDatabase } instance for the data source.
 	 *
-	 * @param ds	 ds	
-	 * @throws java.sql.SQLException	
+	 * @param ds	ds
+	 * @throws java.sql.SQLException
 	 */
 	public MariaDB(DataSource ds) throws SQLException {
-        super(new MariaDBDefinition(), ds);
-    }
-	
+		super(new MariaDBDefinition(), ds);
+	}
+
 	/**
 	 * Create a MariaDB instance of DBDatabase for the database with the supplied
 	 * JDBC URL, using the username and password to login.
@@ -85,9 +84,7 @@ public class MariaDB extends DBDatabase {
 
 	@Override
 	public boolean supportsRecursiveQueriesNatively() {
-		return false; 
+		return false;
 	}
-	
-	
 
 }

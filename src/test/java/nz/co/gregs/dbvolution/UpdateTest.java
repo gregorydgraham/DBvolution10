@@ -25,41 +25,41 @@ import static org.hamcrest.Matchers.*;
 
 public class UpdateTest extends AbstractTest {
 
-    public UpdateTest(Object testIterationName, Object db) {
-        super(testIterationName, db);
-    }
+	public UpdateTest(Object testIterationName, Object db) {
+		super(testIterationName, db);
+	}
 
-    @Test
-    public void updateNewRow() throws SQLException, ClassNotFoundException {
-        Marque myMarqueRow = new Marque();
-        myMarqueRow.uidMarque.setValue(4);
-        marquesTable.insert(myMarqueRow);
-        Marque insertedRow = marquesTable.getRowsByPrimaryKey(4).get(0);
-        insertedRow.individualAllocationsAllowed.setValue("Y");
-        String sqlForUpdate = marquesTable.update(insertedRow).get(0).getSQLStatements(database).get(0);
+	@Test
+	public void updateNewRow() throws SQLException, ClassNotFoundException {
+		Marque myMarqueRow = new Marque();
+		myMarqueRow.uidMarque.setValue(4);
+		marquesTable.insert(myMarqueRow);
+		Marque insertedRow = marquesTable.getRowsByPrimaryKey(4).get(0);
+		insertedRow.individualAllocationsAllowed.setValue("Y");
+		String sqlForUpdate = marquesTable.update(insertedRow).get(0).getSQLStatements(database).get(0);
 		final String testableQueryString = testableSQL("UPDATE MARQUE SET INTINDALLOCALLOWED = 'Y' WHERE UID_MARQUE = 4;");
-        Assert.assertThat(testableSQL(sqlForUpdate),
-                is(testableQueryString));
+		Assert.assertThat(testableSQL(sqlForUpdate),
+				is(testableQueryString));
 //        marquesTable.update(insertedRow);
-        insertedRow = marquesTable.getRowsByPrimaryKey(4).get(0);
-        Assert.assertThat(insertedRow.individualAllocationsAllowed.toString(), is("Y"));
-    }
+		insertedRow = marquesTable.getRowsByPrimaryKey(4).get(0);
+		Assert.assertThat(insertedRow.individualAllocationsAllowed.toString(), is("Y"));
+	}
 
-    @Test
-    public void updateExistingRow() throws SQLException {
-        Marque marque = new Marque();
-        marque.name.permittedValues("PEUGEOT");
-        List<Marque> rowsByExample = marquesTable.getRowsByExample(marque);
-        Assert.assertThat(rowsByExample.size(), is(1));
-        Marque peugeot = rowsByExample.get(0);
-        System.out.println(peugeot);
-        peugeot.individualAllocationsAllowed.setValue("Y");
-        String sqlForUpdate = marquesTable.update(peugeot).get(0).getSQLStatements(database).get(0);
+	@Test
+	public void updateExistingRow() throws SQLException {
+		Marque marque = new Marque();
+		marque.name.permittedValues("PEUGEOT");
+		List<Marque> rowsByExample = marquesTable.getRowsByExample(marque);
+		Assert.assertThat(rowsByExample.size(), is(1));
+		Marque peugeot = rowsByExample.get(0);
+		System.out.println(peugeot);
+		peugeot.individualAllocationsAllowed.setValue("Y");
+		String sqlForUpdate = marquesTable.update(peugeot).get(0).getSQLStatements(database).get(0);
 		final String updateQueryStr = testableSQL("UPDATE MARQUE SET INTINDALLOCALLOWED = 'Y' WHERE UID_MARQUE = 4893059;");
-        Assert.assertThat(testableSQL(sqlForUpdate),
-                is(updateQueryStr));
-        marquesTable.update(peugeot);
-        Marque updatePeugeot = marquesTable.getRowsByExample(marque).get(0);
-        Assert.assertThat(updatePeugeot.individualAllocationsAllowed.toString(), is("Y"));
-    }
+		Assert.assertThat(testableSQL(sqlForUpdate),
+				is(updateQueryStr));
+		marquesTable.update(peugeot);
+		Marque updatePeugeot = marquesTable.getRowsByExample(marque).get(0);
+		Assert.assertThat(updatePeugeot.individualAllocationsAllowed.toString(), is("Y"));
+	}
 }

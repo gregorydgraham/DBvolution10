@@ -29,8 +29,8 @@ import nz.co.gregs.dbvolution.query.RowDefinition;
  * Represents a database column storing an integer value.
  *
  * <p>
- * This class adds the necessary methods to use an integer column like an integer
- * expression.
+ * This class adds the necessary methods to use an integer column like an
+ * integer expression.
  *
  * <p>
  * Internally the class uses an AbsractColumn to store the column and overrides
@@ -47,21 +47,10 @@ import nz.co.gregs.dbvolution.query.RowDefinition;
  */
 public class IntegerColumn extends NumberExpression implements ColumnProvider {
 
-    private AbstractColumn column;
+	private AbstractColumn column;
 
-    private IntegerColumn() {
-    }
-
-
-	/**
-	 * Create a IntegerColumn for the supplied field of the supplied row
-	 *
-	 * @param row the row containing the field
-	 * @param field the field defining the column
-	 */
-    public IntegerColumn(RowDefinition row, Long field) {
-        this.column = new AbstractColumn(row, field);
-    }
+	private IntegerColumn() {
+	}
 
 	/**
 	 * Create a IntegerColumn for the supplied field of the supplied row
@@ -69,9 +58,9 @@ public class IntegerColumn extends NumberExpression implements ColumnProvider {
 	 * @param row the row containing the field
 	 * @param field the field defining the column
 	 */
-    public IntegerColumn(RowDefinition row, Integer field) {
-        this.column = new AbstractColumn(row, field);
-    }
+	public IntegerColumn(RowDefinition row, Long field) {
+		this.column = new AbstractColumn(row, field);
+	}
 
 	/**
 	 * Create a IntegerColumn for the supplied field of the supplied row
@@ -79,9 +68,9 @@ public class IntegerColumn extends NumberExpression implements ColumnProvider {
 	 * @param row the row containing the field
 	 * @param field the field defining the column
 	 */
-    public IntegerColumn(RowDefinition row, DBInteger field) {
-        this.column = new AbstractColumn(row, field);
-    }
+	public IntegerColumn(RowDefinition row, Integer field) {
+		this.column = new AbstractColumn(row, field);
+	}
 
 	/**
 	 * Create a IntegerColumn for the supplied field of the supplied row
@@ -89,38 +78,48 @@ public class IntegerColumn extends NumberExpression implements ColumnProvider {
 	 * @param row the row containing the field
 	 * @param field the field defining the column
 	 */
-    public IntegerColumn(RowDefinition row, DBIntegerEnum<?> field) {
-        this.column = new AbstractColumn(row, field);
-    }
+	public IntegerColumn(RowDefinition row, DBInteger field) {
+		this.column = new AbstractColumn(row, field);
+	}
 
-    @Override
-    public String toSQLString(DBDatabase db) {
-        return column.toSQLString(db);
-    }
+	/**
+	 * Create a IntegerColumn for the supplied field of the supplied row
+	 *
+	 * @param row the row containing the field
+	 * @param field the field defining the column
+	 */
+	public IntegerColumn(RowDefinition row, DBIntegerEnum<?> field) {
+		this.column = new AbstractColumn(row, field);
+	}
 
-    @Override
-    public synchronized IntegerColumn copy() {
-        try {
-            IntegerColumn newInstance = this.getClass().newInstance();
-            newInstance.column = this.column;
-            return newInstance;
-        } catch (InstantiationException ex) {
-            throw new RuntimeException(ex);
-        } catch (IllegalAccessException ex) {
-            throw new RuntimeException(ex);
-        }
+	@Override
+	public String toSQLString(DBDatabase db) {
+		return column.toSQLString(db);
+	}
 
-    }
+	@Override
+	public synchronized IntegerColumn copy() {
+		try {
+			IntegerColumn newInstance = this.getClass().newInstance();
+			newInstance.column = this.column;
+			return newInstance;
+		} catch (InstantiationException ex) {
+			throw new RuntimeException(ex);
+		} catch (IllegalAccessException ex) {
+			throw new RuntimeException(ex);
+		}
 
-    @Override
-    public AbstractColumn getColumn() {
-        return column;
-    }
+	}
 
-    @Override
-    public Set<DBRow> getTablesInvolved() {
-        return column.getTablesInvolved();
-    }
+	@Override
+	public AbstractColumn getColumn() {
+		return column;
+	}
+
+	@Override
+	public Set<DBRow> getTablesInvolved() {
+		return column.getTablesInvolved();
+	}
 
 	@Override
 	public void setUseTableAlias(boolean useTableAlias) {
@@ -131,24 +130,26 @@ public class IntegerColumn extends NumberExpression implements ColumnProvider {
 	public boolean isPurelyFunctional() {
 		return getTablesInvolved().isEmpty();
 	}
-	
+
 	/**
-	 * Create an expression to compare this column to the other column using EQUALS.
+	 * Create an expression to compare this column to the other column using
+	 * EQUALS.
 	 *
-	 * @param integerColumn 
+	 * @param integerColumn
 	 * @return a BooleanExpression
 	 */
-	public BooleanExpression is(DBInteger integerColumn){
+	public BooleanExpression is(DBInteger integerColumn) {
 		return super.is(integerColumn);
 	}
-	
+
 	/**
-	 * Create an expression to compare this column to the other column using EQUALS.
+	 * Create an expression to compare this column to the other column using
+	 * EQUALS.
 	 *
-	 * @param numberColumn 
+	 * @param numberColumn
 	 * @return a BooleanExpression
 	 */
-	public BooleanExpression is(DBNumber numberColumn){
+	public BooleanExpression is(DBNumber numberColumn) {
 		return super.is(numberColumn);
 	}
 }

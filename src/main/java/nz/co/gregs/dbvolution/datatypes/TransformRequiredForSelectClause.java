@@ -20,5 +20,5 @@ package nz.co.gregs.dbvolution.datatypes;
  * @author gregorygraham
  */
 public interface TransformRequiredForSelectClause {
-	
+
 }

@@ -72,13 +72,13 @@ public class DBBetweenInclusiveExclusiveOperator extends DBOperator {
 				betweenOp = stringExpression.bracket().isBetween(firstStringExpr, secondStringExpr);
 			}
 		} else if ((genericExpression instanceof NumberExpression)
-				&&(firstValue instanceof NumberResult)
-				&&(secondValue instanceof NumberResult)) {
+				&& (firstValue instanceof NumberResult)
+				&& (secondValue instanceof NumberResult)) {
 			NumberExpression numberExpression = (NumberExpression) genericExpression;
 			betweenOp = numberExpression.isBetween((NumberResult) firstValue, (NumberResult) secondValue);
 		} else if ((genericExpression instanceof DateExpression)
-				&&(firstValue instanceof DateResult)
-				&&(secondValue instanceof DateResult)) {
+				&& (firstValue instanceof DateResult)
+				&& (secondValue instanceof DateResult)) {
 			DateExpression dateExpression = (DateExpression) genericExpression;
 			betweenOp = dateExpression.isBetween((DateResult) firstValue, (DateResult) secondValue);
 		}

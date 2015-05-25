@@ -13,7 +13,7 @@ import nz.co.gregs.dbvolution.generic.AbstractTest;
 import org.junit.Test;
 
 public class DBIntegerTest extends AbstractTest {
-	
+
 	public DBIntegerTest(Object testIterationName, Object db) {
 		super(testIterationName, db);
 	}
@@ -42,12 +42,12 @@ public class DBIntegerTest extends AbstractTest {
 	public void equalGivenSameValuesFromDifferentSources() throws SQLException, UnexpectedNumberOfRowsException {
 		DBInteger int1 = new DBInteger();
 		int1.setValue(1);
-		
+
 		Marque marqueEx = new Marque();
 		marqueEx.uidMarque.permittedValues(1);
 		Marque result = database.getDBTable(marqueEx).getOnlyRow();
 		DBInteger int2 = result.uidMarque;
-		
+
 		assertThat(int1.equals(int2), is(true));
 	}
 
@@ -55,12 +55,12 @@ public class DBIntegerTest extends AbstractTest {
 	public void notEqualGivenDifferentValuesFromDifferentSources() throws SQLException {
 		DBInteger int1 = new DBInteger();
 		int1.setValue(2);
-		
+
 		Marque marqueEx = new Marque();
 		marqueEx.uidMarque.permittedValues(1);
 		List<Marque> results = database.get(marqueEx);
 		DBInteger int2 = results.get(0).uidMarque;
-		
+
 		assertThat(int1.equals(int2), is(false));
 	}
 }

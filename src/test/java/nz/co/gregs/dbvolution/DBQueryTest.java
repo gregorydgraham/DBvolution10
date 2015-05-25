@@ -115,7 +115,7 @@ public class DBQueryTest extends AbstractTest {
 				foundHyundai = true;
 			}
 		}
-		assertTrue("Did not find both marques expected.", foundToyota&&foundHyundai);
+		assertTrue("Did not find both marques expected.", foundToyota && foundHyundai);
 	}
 
 	@Test

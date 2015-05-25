@@ -125,8 +125,9 @@ public interface DBExpression {
 	 * to produce results and do not require data from tables.
 	 *
 	 * <p>
-	 * Some databases, notably MS SQLServer, can not group purely functional expressions.
-	 * 
+	 * Some databases, notably MS SQLServer, can not group purely functional
+	 * expressions.
+	 *
 	 * @return TRUE if the expression does not access table data, otherwise FALSE.
 	 */
 	public boolean isPurelyFunctional();

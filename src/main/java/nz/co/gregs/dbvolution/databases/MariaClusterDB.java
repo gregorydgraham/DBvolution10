@@ -37,16 +37,16 @@ public class MariaClusterDB extends DBDatabase {
 	/**
 	 * Creates a {@link DBDatabase } instance for the data source.
 	 *
-	 * @param ds	 ds	
-	 * @throws java.sql.SQLException	
+	 * @param ds	ds
+	 * @throws java.sql.SQLException
 	 */
 	public MariaClusterDB(DataSource ds) throws SQLException {
 		super(new MariaDBDefinition(), ds);
 	}
 
 	/**
-	 * Creates a DBDatabase instance for a MariaDB cluster hosted at the JDBC
-	 * URL supplied, logging in with the username and password supplied.
+	 * Creates a DBDatabase instance for a MariaDB cluster hosted at the JDBC URL
+	 * supplied, logging in with the username and password supplied.
 	 *
 	 *
 	 * @param jdbcURL jdbcURL

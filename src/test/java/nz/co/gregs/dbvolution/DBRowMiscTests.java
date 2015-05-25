@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package nz.co.gregs.dbvolution;
 
 import nz.co.gregs.dbvolution.annotations.DBColumn;
@@ -29,68 +28,71 @@ import org.junit.Test;
  *
  * @author Gregory Graham
  */
-public class DBRowMiscTests extends AbstractTest{
+public class DBRowMiscTests extends AbstractTest {
 
 	public DBRowMiscTests(Object testIterationName, Object db) {
 		super(testIterationName, db);
 	}
-	
+
 	@Test
-	public void testPrimaryKeyColumnNameForUnspecifiedColumnName(){
+	public void testPrimaryKeyColumnNameForUnspecifiedColumnName() {
 		UnspecifiedColumnName unchangedPK = new UnspecifiedColumnName();
 		String primaryKeyColumnName = unchangedPK.getPrimaryKeyColumnName();
 		Assert.assertThat(primaryKeyColumnName, is("pkuid"));
 	}
-	
+
 	@Test
-	public void testPrimaryKeyColumnNameForSpecifiedColumnName(){
+	public void testPrimaryKeyColumnNameForSpecifiedColumnName() {
 		SpecifiedColumnName changedPK = new SpecifiedColumnName();
 		String primaryKeyColumnName = changedPK.getPrimaryKeyColumnName();
 		Assert.assertThat(primaryKeyColumnName, is("pk_unique_id"));
 	}
-	
+
 	@Test
-	public void testPrimaryKeyFieldNameForUnspecifiedColumnName(){
+	public void testPrimaryKeyFieldNameForUnspecifiedColumnName() {
 		UnspecifiedColumnName unchangedPK = new UnspecifiedColumnName();
 		String primaryKeyColumnName = unchangedPK.getPrimaryKeyFieldName();
 		Assert.assertThat(primaryKeyColumnName, is("pkuid"));
 	}
-	
+
 	@Test
-	public void testPrimaryKeyFieldNameForSpecifiedColumnName(){
+	public void testPrimaryKeyFieldNameForSpecifiedColumnName() {
 		SpecifiedColumnName changedPK = new SpecifiedColumnName();
 		String primaryKeyColumnName = changedPK.getPrimaryKeyFieldName();
 		Assert.assertThat(primaryKeyColumnName, is("pkuid"));
 	}
-	
+
 	@Test
-	public void testSetPrimaryKey(){
+	public void testSetPrimaryKey() {
 		SpecifiedColumnName changedPK = new SpecifiedColumnName();
 		changedPK.setPrimaryKey(2);
 		Assert.assertThat(changedPK.pkuid.intValue(), is(2));
 	}
-	
+
 	@Test(expected = UndefinedPrimaryKeyException.class)
-	public void testSetPrimaryKeyWithoutPrimaryKeyThrowsUndefinedPrimaryKeyException(){
+	public void testSetPrimaryKeyWithoutPrimaryKeyThrowsUndefinedPrimaryKeyException() {
 		WithoutPrimaryKey changedPK = new WithoutPrimaryKey();
 		changedPK.setPrimaryKey("2");
 	}
-	
-	public static class UnspecifiedColumnName extends DBRow{
+
+	public static class UnspecifiedColumnName extends DBRow {
+
 		private static final long serialVersionUID = 1L;
 		@DBColumn
 		@DBPrimaryKey
 		DBInteger pkuid = new DBInteger();
 	}
-	
-	public static class SpecifiedColumnName extends DBRow{
+
+	public static class SpecifiedColumnName extends DBRow {
+
 		private static final long serialVersionUID = 1L;
 		@DBColumn("pk_unique_id")
 		@DBPrimaryKey
 		DBInteger pkuid = new DBInteger();
 	}
-	
-	public static class WithoutPrimaryKey extends DBRow{
+
+	public static class WithoutPrimaryKey extends DBRow {
+
 		private static final long serialVersionUID = 1L;
 		@DBColumn("pk_unique_id")
 		DBInteger pkuid = new DBInteger();

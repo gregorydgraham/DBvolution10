@@ -494,10 +494,36 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 		});
 	}
 
+	/**
+	 * Allows you to specify different return values based on the value of this
+	 * boolean expression.
+	 *
+	 * <p>
+	 * The first expression is returned if this expression is TRUE, otherwise the
+	 * second is returned.
+	 *
+	 * @param thenExpr
+	 * @param elseExpr
+	 * @return an expression that will generate a SQL clause conceptually similar
+	 * to "if (this) then thenExpr else elseExpr".
+	 */
 	public StringExpression ifThenElse(String thenExpr, String elseExpr) {
 		return this.ifThenElse(new StringExpression(thenExpr), new StringExpression(elseExpr));
 	}
 
+	/**
+	 * Allows you to specify different return values based on the value of this
+	 * boolean expression.
+	 *
+	 * <p>
+	 * The first expression is returned if this expression is TRUE, otherwise the
+	 * second is returned.
+	 *
+	 * @param thenExpr
+	 * @param elseExpr
+	 * @return an expression that will generate a SQL clause conceptually similar
+	 * to "if (this) then thenExpr else elseExpr".
+	 */
 	public StringExpression ifThenElse(StringExpression thenExpr, StringExpression elseExpr) {
 		return new StringExpression(new DBBooleanStringStringFunction(this, thenExpr, elseExpr) {
 
@@ -519,10 +545,36 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 		});
 	}
 
+	/**
+	 * Allows you to specify different return values based on the value of this
+	 * boolean expression.
+	 *
+	 * <p>
+	 * The first expression is returned if this expression is TRUE, otherwise the
+	 * second is returned.
+	 *
+	 * @param thenExpr
+	 * @param elseExpr
+	 * @return an expression that will generate a SQL clause conceptually similar
+	 * to "if (this) then thenExpr else elseExpr".
+	 */
 	public NumberExpression ifThenElse(Number thenExpr, Number elseExpr) {
 		return this.ifThenElse(new NumberExpression(thenExpr), new NumberExpression(elseExpr));
 	}
 
+	/**
+	 * Allows you to specify different return values based on the value of this
+	 * boolean expression.
+	 *
+	 * <p>
+	 * The first expression is returned if this expression is TRUE, otherwise the
+	 * second is returned.
+	 *
+	 * @param thenExpr
+	 * @param elseExpr
+	 * @return an expression that will generate a SQL clause conceptually similar
+	 * to "if (this) then thenExpr else elseExpr".
+	 */
 	public NumberExpression ifThenElse(NumberResult thenExpr, NumberResult elseExpr) {
 		return new NumberExpression(new DBBooleanNumberNumberFunction(this, thenExpr, elseExpr) {
 
@@ -543,6 +595,19 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 		});
 	}
 
+	/**
+	 * Allows you to specify different return values based on the value of this
+	 * boolean expression.
+	 *
+	 * <p>
+	 * The first expression is returned if this expression is TRUE, otherwise the
+	 * second is returned.
+	 *
+	 * @param thenExpr
+	 * @param elseExpr
+	 * @return an expression that will generate a SQL clause conceptually similar
+	 * to "if (this) then thenExpr else elseExpr".
+	 */
 	public DateExpression ifThenElse(Date thenExpr, Date elseExpr) {
 		return this.ifThenElse(new DateExpression(thenExpr), new DateExpression(elseExpr));
 	}
@@ -568,10 +633,36 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 		});
 	}
 
+	/**
+	 * Allows you to specify different return values based on the value of this
+	 * boolean expression.
+	 *
+	 * <p>
+	 * The first expression is returned if this expression is TRUE, otherwise the
+	 * second is returned.
+	 *
+	 * @param thenExpr
+	 * @param elseExpr
+	 * @return an expression that will generate a SQL clause conceptually similar
+	 * to "if (this) then thenExpr else elseExpr".
+	 */
 	public Polygon2DExpression ifThenElse(Polygon thenExpr, Polygon elseExpr) {
 		return this.ifThenElse(new Polygon2DExpression(thenExpr), new Polygon2DExpression(elseExpr));
 	}
 
+	/**
+	 * Allows you to specify different return values based on the value of this
+	 * boolean expression.
+	 *
+	 * <p>
+	 * The first expression is returned if this expression is TRUE, otherwise the
+	 * second is returned.
+	 *
+	 * @param thenExpr
+	 * @param elseExpr
+	 * @return an expression that will generate a SQL clause conceptually similar
+	 * to "if (this) then thenExpr else elseExpr".
+	 */
 	public Polygon2DExpression ifThenElse(Polygon2DExpression thenExpr, Polygon2DExpression elseExpr) {
 		return new Polygon2DExpression(new DBBinaryGeometryGeometryFunction(this, thenExpr, elseExpr) {
 
@@ -644,12 +735,36 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 		};
 	}
 
+	/**
+	 * Specifies that the expression will return TRUE if this OR the specified
+	 * expression are TRUE.
+	 *
+	 * <p>
+	 * This is a convenience method that wraps this and anotherBooleanExpr in {@link BooleanExpression#anyOf(nz.co.gregs.dbvolution.expressions.BooleanExpression...)
+	 * }.
+	 *
+	 * @param anotherBooleanExpr
+	 * @return a expression that will evaluate to TRUE if either of the
+	 * expressions are TRUE.
+	 */
 	public BooleanExpression or(BooleanExpression anotherBooleanExpr) {
 		return BooleanExpression.anyOf(
 				this,
 				anotherBooleanExpr);
 	}
 
+	/**
+	 * Specifies that the expression will return TRUE only if this AND the
+	 * specified expression are TRUE.
+	 *
+	 * <p>
+	 * This is a convenience method that wraps this and anotherBooleanExpr in {@link BooleanExpression#allOf(nz.co.gregs.dbvolution.expressions.BooleanExpression...)
+	 * }.
+	 *
+	 * @param anotherBooleanExpr
+	 * @return a expression that will evaluate to TRUE only if both of the
+	 * expressions are TRUE.
+	 */
 	public BooleanExpression and(BooleanExpression anotherBooleanExpr) {
 		return BooleanExpression.allOf(
 				this,
@@ -1099,7 +1214,6 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 ////			this.first = new BooleanExpression(first);
 ////			this.second = second;
 //		}
-
 		DBBinaryBooleanArithmetic(BooleanExpression first, BooleanResult second) {
 			this(first, new BooleanExpression(second));
 //			this.first = first;
@@ -1111,7 +1225,6 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 ////			this.first = new BooleanExpression(first);
 ////			this.second = new BooleanExpression(second);
 //		}
-
 		@Override
 		public DBBoolean getQueryableDatatypeForExpressionValue() {
 			return new DBBoolean();

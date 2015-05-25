@@ -19,6 +19,6 @@ package nz.co.gregs.dbvolution.datatypes;
  *
  * @author Gregory Graham
  */
-public class DBDateOnlyEditor  extends DBDateEditor {
+public class DBDateOnlyEditor extends DBDateEditor {
 
 }

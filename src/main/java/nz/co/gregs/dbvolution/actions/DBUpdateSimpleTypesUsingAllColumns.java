@@ -25,7 +25,8 @@ import nz.co.gregs.dbvolution.expressions.BooleanExpression;
 import nz.co.gregs.dbvolution.internal.properties.PropertyWrapper;
 
 /**
- * Provides support for the abstract concept of updating rows without primary keys.
+ * Provides support for the abstract concept of updating rows without primary
+ * keys.
  *
  * <p>
  * The best way to use this is by using {@link DBUpdate#getUpdates(nz.co.gregs.dbvolution.DBRow...)
@@ -53,7 +54,7 @@ public class DBUpdateSimpleTypesUsingAllColumns extends DBUpdateSimpleTypes {
 		for (PropertyWrapper prop : row.getPropertyWrappers()) {
 			QueryableDatatype qdt = prop.getQueryableDatatype();
 			if (qdt.isNull()) {
-				sql+=defn.beginAndLine()+BooleanExpression.isNull(row.column(qdt)).toSQLString(db);
+				sql += defn.beginAndLine() + BooleanExpression.isNull(row.column(qdt)).toSQLString(db);
 //				DBIsNullOperator isNullOp = new DBIsNullOperator();
 //				sql += isNullOp.generateWhereLine(db, prop.columnName());
 			} else {

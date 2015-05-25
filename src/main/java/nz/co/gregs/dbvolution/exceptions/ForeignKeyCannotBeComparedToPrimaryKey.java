@@ -40,6 +40,7 @@ public class ForeignKeyCannotBeComparedToPrimaryKey extends DBRuntimeException {
 	/**
 	 * Thrown when there is a mismatch between the datatype of a DBRow's primary
 	 * key and another's foreign key reference to it.
+	 *
 	 * @param ex ex
 	 * @param targetPK targetPK
 	 * @param source source

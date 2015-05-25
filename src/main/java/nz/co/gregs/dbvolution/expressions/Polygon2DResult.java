@@ -20,5 +20,5 @@ package nz.co.gregs.dbvolution.expressions;
  * @author gregorygraham
  */
 public interface Polygon2DResult extends DBExpression, ExpressionCanHaveNullValues {
-	
+
 }

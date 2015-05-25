@@ -67,7 +67,7 @@ public class DBBoolean extends QueryableDatatype implements BooleanResult {
 	 * The resulting DBBoolean will be set as having the value provided but will
 	 * not be defined in the database.
 	 *
-	 * @param bool	 bool	
+	 * @param bool	bool
 	 */
 	public DBBoolean(Boolean bool) {
 		super(bool);
@@ -81,7 +81,7 @@ public class DBBoolean extends QueryableDatatype implements BooleanResult {
 	 * Used in {@link DBReport}, and some {@link DBRow}, sub-classes to derive
 	 * data from the database prior to retrieval.
 	 *
-	 * @param bool	 bool	
+	 * @param bool	bool
 	 */
 	public DBBoolean(BooleanResult bool) {
 		super(bool);
@@ -95,13 +95,13 @@ public class DBBoolean extends QueryableDatatype implements BooleanResult {
 	/**
 	 * Implements the standard Java equals method.
 	 *
-	 * @param other	 other	
+	 * @param other	other
 	 * @return TRUE if this object is the same as the other, otherwise FALSE.
 	 */
 	@Override
 	public boolean equals(Object other) {
 		if (other instanceof DBBoolean) {
-			DBBoolean otherDBBoolean=  (DBBoolean) other;
+			DBBoolean otherDBBoolean = (DBBoolean) other;
 			return getValue().equals(otherDBBoolean.getValue());
 		}
 		return false;
@@ -126,7 +126,7 @@ public class DBBoolean extends QueryableDatatype implements BooleanResult {
 	/**
 	 * Sets the value of this DBBoolean to the value provided.
 	 *
-	 * @param newLiteralValue	 newLiteralValue	
+	 * @param newLiteralValue	newLiteralValue
 	 */
 	public void setValue(Boolean newLiteralValue) {
 		super.setLiteralValue(newLiteralValue);
@@ -145,7 +145,7 @@ public class DBBoolean extends QueryableDatatype implements BooleanResult {
 
 	/**
 	 * Returns the defined or set value of this DBBoolean as an actual Boolean.
-	 * 
+	 *
 	 * <p>
 	 * May return a null.
 	 *
@@ -181,10 +181,9 @@ public class DBBoolean extends QueryableDatatype implements BooleanResult {
 
 	/**
 	 *
-	 * reduces the rows to only the object, Set, List, Array, or vararg of
-	 * objects
+	 * reduces the rows to only the object, Set, List, Array, or vararg of objects
 	 *
-	 * @param permitted	 permitted	
+	 * @param permitted	permitted
 	 */
 	public void permittedValues(Boolean permitted) {
 		this.setOperator(new DBBooleanPermittedValuesOperator(permitted));
@@ -195,7 +194,7 @@ public class DBBoolean extends QueryableDatatype implements BooleanResult {
 	 * excludes the object, Set, List, Array, or vararg of objects
 	 *
 	 *
-	 * @param excluded	 excluded	
+	 * @param excluded	excluded
 	 */
 	public void excludedValues(Boolean excluded) {
 		this.setOperator(new DBPermittedValuesOperator(excluded));
@@ -204,10 +203,9 @@ public class DBBoolean extends QueryableDatatype implements BooleanResult {
 
 	/**
 	 *
-	 * reduces the rows to only the object, Set, List, Array, or vararg of
-	 * objects
+	 * reduces the rows to only the object, Set, List, Array, or vararg of objects
 	 *
-	 * @param permitted	 permitted	
+	 * @param permitted	permitted
 	 */
 	public void permittedValues(BooleanExpression permitted) {
 		this.setOperator(new DBPermittedValuesOperator(permitted));
@@ -218,7 +216,7 @@ public class DBBoolean extends QueryableDatatype implements BooleanResult {
 	 * excludes the object, Set, List, Array, or vararg of objects
 	 *
 	 *
-	 * @param excluded	 excluded	
+	 * @param excluded	excluded
 	 */
 	public void excludedValues(BooleanExpression excluded) {
 		this.setOperator(new DBPermittedValuesOperator(excluded));

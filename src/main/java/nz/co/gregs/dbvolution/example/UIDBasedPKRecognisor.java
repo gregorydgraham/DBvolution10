@@ -23,13 +23,14 @@ import nz.co.gregs.dbvolution.generation.PrimaryKeyRecognisor;
  * @author gregorygraham
  */
 public class UIDBasedPKRecognisor extends PrimaryKeyRecognisor {
-/**
- * Returns TRUE if the column starts with "uid_".
- *
+
+	/**
+	 * Returns TRUE if the column starts with "uid_".
+	 *
 	 * @param tableName tableName
 	 * @param columnName columnName
- * @return TRUE if the column looks like a primary key.
- */
+	 * @return TRUE if the column looks like a primary key.
+	 */
 	@Override
 	public boolean isPrimaryKeyColumn(String tableName, String columnName) {
 		return columnName.toLowerCase().equals("uid_" + tableName.toLowerCase());

@@ -75,12 +75,17 @@ public class SQLiteDB extends DBDatabase implements SupportsDateRepeatDatatypeFu
 		config.enableCaseSensitiveLike(true);
 		Connection connection = DriverManager.getConnection(getJdbcURL(), getUsername(), getPassword());
 		config.apply(connection);
+		addMissingFunctions(connection);
+		return connection;
+	}
+
+	private void addMissingFunctions(Connection connection) throws SQLException {
 		MissingStandardFunctions.addFunctions(this, connection);
 		DateRepeatFunctions.addFunctions(connection);
 		Point2DFunctions.addFunctions(connection);
+		LineSegment2DFunctions.addFunctions(connection);
 		Line2DFunctions.addFunctions(connection);
 		Polygon2DFunctions.addFunctions(connection);
-		return connection;
 	}
 
 	@Override

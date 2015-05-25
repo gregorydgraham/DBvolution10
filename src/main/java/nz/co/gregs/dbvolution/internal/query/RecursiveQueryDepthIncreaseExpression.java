@@ -59,8 +59,8 @@ public class RecursiveQueryDepthIncreaseExpression implements DBExpression {
 	}
 
 	@Override
-	public boolean isPurelyFunctional(){
+	public boolean isPurelyFunctional() {
 		return false;
 	}
-	
+
 }

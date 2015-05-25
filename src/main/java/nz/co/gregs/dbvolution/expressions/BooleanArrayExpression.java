@@ -118,8 +118,8 @@ public class BooleanArrayExpression implements BooleanArrayResult, EqualComparab
 
 	/**
 	 * Create a BooleanExpression that will compare the BooleanArrayResult
-	 * provided to this BooleanArrayExpression using the equivalent of the
-	 * EQUALS operator.
+	 * provided to this BooleanArrayExpression using the equivalent of the EQUALS
+	 * operator.
 	 *
 	 * @param bools the value to compare this expression to
 	 * @return a BooleanExpresson of the Bit comparison of the number and this
@@ -136,8 +136,8 @@ public class BooleanArrayExpression implements BooleanArrayResult, EqualComparab
 
 	/**
 	 * Create a BooleanExpression that will compare the BooleanArrayResult
-	 * provided to this BooleanArrayExpression using the equivalent of the
-	 * EQUALS operator.
+	 * provided to this BooleanArrayExpression using the equivalent of the EQUALS
+	 * operator.
 	 *
 	 * @param i the value to compare this expression to
 	 * @return a BooleanExpresson of the Bit comparison of the number and this
@@ -174,9 +174,9 @@ public class BooleanArrayExpression implements BooleanArrayResult, EqualComparab
 		@Override
 		public String toSQLString(DBDatabase db) {
 			if (this.getIncludesNull()) {
-				return "("+BooleanExpression.isNull(first).toSQLString(db)+")";
+				return "(" + BooleanExpression.isNull(first).toSQLString(db) + ")";
 			} else {
-				return "("+first.toSQLString(db) + this.getEquationOperator(db) + second.toSQLString(db)+")";
+				return "(" + first.toSQLString(db) + this.getEquationOperator(db) + second.toSQLString(db) + ")";
 			}
 		}
 

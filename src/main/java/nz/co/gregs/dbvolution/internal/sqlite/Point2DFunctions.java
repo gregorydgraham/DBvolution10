@@ -80,7 +80,7 @@ public class Point2DFunctions {
 		protected void xFunc() throws SQLException {
 			String firstPoint = value_text(0);
 			if (firstPoint == null) {
-				result((String)null);
+				result((String) null);
 			} else {
 				String[] split = firstPoint.split("[ ()]+");
 				double x = Double.parseDouble(split[1]);
@@ -95,7 +95,7 @@ public class Point2DFunctions {
 		protected void xFunc() throws SQLException {
 			String firstPoint = value_text(0);
 			if (firstPoint == null) {
-				result((String)null);
+				result((String) null);
 			} else {
 				String[] split = firstPoint.split("[ ()]+");
 				double y = Double.parseDouble(split[2]);
@@ -118,13 +118,13 @@ public class Point2DFunctions {
 		protected void xFunc() throws SQLException {
 			String firstPoint = value_text(0);
 			if (firstPoint == null) {
-				result((String)null);
+				result((String) null);
 			} else {
 				String[] split = firstPoint.split("[ ()]+");
 				double x = Double.parseDouble(split[1]);
 				double y = Double.parseDouble(split[2]);
-				String point = x+" "+y;
-				String resultString = "POLYGON (("+point+", "+point+", "+point+", "+point+", "+point+"))";
+				String point = x + " " + y;
+				String resultString = "POLYGON ((" + point + ", " + point + ", " + point + ", " + point + ", " + point + "))";
 				result(resultString);
 			}
 		}

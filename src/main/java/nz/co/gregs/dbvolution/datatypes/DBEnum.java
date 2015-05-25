@@ -43,7 +43,7 @@ public abstract class DBEnum<E extends Enum<E> & DBEnumValue<?>> extends Queryab
 	 * The resulting DBEnum will be set as having the value provided but will not
 	 * be defined in the database.
 	 *
-	 * @param literalValue	 literalValue	
+	 * @param literalValue	literalValue
 	 */
 	protected DBEnum(Object literalValue) {
 		super(literalValue);
@@ -60,6 +60,7 @@ public abstract class DBEnum<E extends Enum<E> & DBEnumValue<?>> extends Queryab
 	 * {@code			public DBEnum<MyDBEnumValue> field = new DBEnum<MyDBEnumValue>();}
 	 * Where MyDBEnumValue is a sub-class of {@link DBEnumValue} and probably a
 	 * {@link DBIntegerEnum} or {@link DBStringEnum}.
+	 *
 	 * @param value an enumeration value.
 	 */
 	@SuppressWarnings("unchecked")
@@ -71,7 +72,7 @@ public abstract class DBEnum<E extends Enum<E> & DBEnumValue<?>> extends Queryab
 	/**
 	 * Sets the value based on the given enumeration.
 	 *
-	 * @param enumValue	 enumValue	
+	 * @param enumValue	enumValue
 	 */
 	@SuppressWarnings("unchecked")
 	public void setValue(E enumValue) {
@@ -122,8 +123,8 @@ public abstract class DBEnum<E extends Enum<E> & DBEnumValue<?>> extends Queryab
 	 * Tests whether two objects represent the same value. Handles subtle
 	 * differences in type.
 	 *
-	 
-	 
+	 *
+	 *
 	 * @return {@code true} if both null or equivalent on value, {@code false} if
 	 * not equal
 	 * @throws IncompatibleClassChangeError if can't recognise the type
@@ -135,7 +136,7 @@ public abstract class DBEnum<E extends Enum<E> & DBEnumValue<?>> extends Queryab
 			return false;
 		}
 
-        // handle same types and related types
+		// handle same types and related types
 		// (includes support for: String, BicDecimal, BigInteger, custom types)
 		if (o1.getClass().isAssignableFrom(o2.getClass())) {
 			// t2 extends t1: assume t2 knows how to compare them
@@ -145,7 +146,7 @@ public abstract class DBEnum<E extends Enum<E> & DBEnumValue<?>> extends Queryab
 			return o1.equals(o2);
 		}
 
-        // handle java.lang.Number variations
+		// handle java.lang.Number variations
 		// (Get the values at the greatest common precision,
 		//  then compare them)
 		if (o1 instanceof Number && o2 instanceof Number
@@ -240,7 +241,7 @@ public abstract class DBEnum<E extends Enum<E> & DBEnumValue<?>> extends Queryab
 	/**
 	 * Provides the literal values for all the enumeration values provided.
 	 *
-	 * @param enumValues	 enumValues	
+	 * @param enumValues	enumValues
 	 * @return a list of the literal database values for the enumeration values.
 	 */
 	protected Object[] convertToLiteral(E... enumValues) {
@@ -255,7 +256,7 @@ public abstract class DBEnum<E extends Enum<E> & DBEnumValue<?>> extends Queryab
 	/**
 	 * Provides the value for the enumeration value provided.
 	 *
-	 * @param enumValue	 enumValue	
+	 * @param enumValue	enumValue
 	 * @return the literal database value for the enumeration value.
 	 */
 	protected final Object convertToLiteral(E enumValue) {

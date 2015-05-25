@@ -12,7 +12,7 @@ import org.hamcrest.TypeSafeDiagnosingMatcher;
 import org.hamcrest.TypeSafeMatcher;
 
 class PropertyMatchers {
-	
+
 	public static Matcher<String> matchesRegex(final String regex) {
 		return new TypeSafeMatcher<String>() {
 			public void describeTo(Description description) {
@@ -25,24 +25,26 @@ class PropertyMatchers {
 			}
 		};
 	}
-	
+
 	/**
 	 * Gets the first found item where there are many.
+	 *
 	 * @param c
 	 * @param matcher
 	 * @return
 	 */
 	public static <E> E firstItemOf(Collection<E> c, Matcher<? super E> matcher) {
-		for (E item: c) {
+		for (E item : c) {
 			if (matcher.matches(item)) {
 				return item;
 			}
 		}
 		return null; // not found
 	}
-	
+
 	/**
 	 * Gets the zero or one item accepted by the matcher.
+	 *
 	 * @param c
 	 * @param matcher
 	 * @return the item or null if not found
@@ -50,7 +52,7 @@ class PropertyMatchers {
 	 */
 	public static <E> E itemOf(Collection<E> c, Matcher<? super E> matcher) {
 		List<E> found = new ArrayList<E>();
-		for (E item: c) {
+		for (E item : c) {
 			if (matcher.matches(item)) {
 				found.add(item);
 			}
@@ -58,20 +60,20 @@ class PropertyMatchers {
 		if (found.size() > 1) {
 			Description desc = new StringDescription();
 			matcher.describeTo(desc);
-			throw new AssertionError("Expected at most one item "+desc.toString()+", got "+found.size()+" items");
+			throw new AssertionError("Expected at most one item " + desc.toString() + ", got " + found.size() + " items");
 		}
 		if (found.size() == 1) {
 			return found.get(0);
 		}
 		return null; // not found
 	}
-	
+
 	/**
-	 * Decorates another Matcher, retaining the behaviour but allowing tests
-	 * to be slightly more expressive.
+	 * Decorates another Matcher, retaining the behaviour but allowing tests to be
+	 * slightly more expressive.
 	 * <p>
-	 * For example:  itemOf(collection, hasName(smelly))
-	 *          vs.  itemOf(collection, that(hasName(smelly)))
+	 * For example: itemOf(collection, hasName(smelly)) vs. itemOf(collection,
+	 * that(hasName(smelly)))
 	 */
 	public static <T> Matcher<T> that(final Matcher<T> matcher) {
 		return new BaseMatcher<T>() {
@@ -85,14 +87,14 @@ class PropertyMatchers {
 			public void describeTo(Description description) {
 				description.appendText("that ").appendDescriptionOf(matcher);
 			}
-			
-		    @Override
-		    public void describeMismatch(Object item, Description mismatchDescription) {
-		        matcher.describeMismatch(item, mismatchDescription);
-		    }
+
+			@Override
+			public void describeMismatch(Object item, Description mismatchDescription) {
+				matcher.describeMismatch(item, mismatchDescription);
+			}
 		};
 	}
-	
+
 	public static Matcher<JavaProperty> hasJavaPropertyName(final String name) {
 		return new TypeSafeDiagnosingMatcher<JavaProperty>() {
 			@Override

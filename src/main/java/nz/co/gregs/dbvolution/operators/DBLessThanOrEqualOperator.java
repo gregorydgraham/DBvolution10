@@ -29,23 +29,23 @@ import nz.co.gregs.dbvolution.expressions.StringResult;
 
 public class DBLessThanOrEqualOperator extends DBLessThanOperator {
 
-    private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 1L;
 
-    public DBLessThanOrEqualOperator(DBExpression lessThanThis) {
-        super(lessThanThis);
-    }
+	public DBLessThanOrEqualOperator(DBExpression lessThanThis) {
+		super(lessThanThis);
+	}
 
-    public DBLessThanOrEqualOperator() {
-        super();
-    }
-    
-    @Override
-    public DBLessThanOrEqualOperator copyAndAdapt(DBSafeInternalQDTAdaptor typeAdaptor) {
-    	DBLessThanOrEqualOperator op = new DBLessThanOrEqualOperator(typeAdaptor.convert(firstValue));
-    	op.invertOperator = this.invertOperator;
-    	op.includeNulls = this.includeNulls;
-    	return op;
-    }
+	public DBLessThanOrEqualOperator() {
+		super();
+	}
+
+	@Override
+	public DBLessThanOrEqualOperator copyAndAdapt(DBSafeInternalQDTAdaptor typeAdaptor) {
+		DBLessThanOrEqualOperator op = new DBLessThanOrEqualOperator(typeAdaptor.convert(firstValue));
+		op.invertOperator = this.invertOperator;
+		op.includeNulls = this.includeNulls;
+		return op;
+	}
 
 	@Override
 	public BooleanExpression generateWhereExpression(DBDatabase db, DBExpression column) {
