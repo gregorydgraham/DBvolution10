@@ -31,7 +31,6 @@ import nz.co.gregs.dbvolution.annotations.DBPrimaryKey;
 import nz.co.gregs.dbvolution.datatypes.DBInteger;
 import nz.co.gregs.dbvolution.datatypes.DBString;
 import nz.co.gregs.dbvolution.datatypes.spatial2D.DBLineSegment2D;
-import nz.co.gregs.dbvolution.datatypes.spatial2D.DBPoint2D;
 import nz.co.gregs.dbvolution.datatypes.spatial2D.DBPolygon2D;
 import nz.co.gregs.dbvolution.generic.AbstractTest;
 import org.junit.Assert;
@@ -90,10 +89,10 @@ public class LineSegment2DExpressionTest  extends AbstractTest {
 	@Test
 	public void testValue() throws SQLException {
 		System.out.println("value");
-		LineSegment point = new LineSegment(new Coordinate(2.0, 3.0), new Coordinate(3.0, 4.0));
+		LineSegment lineSegment = new LineSegment(new Coordinate(2.0, 3.0), new Coordinate(3.0, 4.0));
 		final LineSegmentTestTable pointTestTable = new LineSegmentTestTable();
 		DBQuery dbQuery = database.getDBQuery(pointTestTable);
-		dbQuery.addCondition(LineSegment2DExpression.value(point).is(pointTestTable.column(pointTestTable.line)));
+		dbQuery.addCondition(LineSegment2DExpression.value(lineSegment).is(pointTestTable.column(pointTestTable.line)));
 		List<LineSegmentTestTable> allRows = dbQuery.getAllInstancesOf(pointTestTable);
 		Assert.assertThat(allRows.size(), is(1));
 		Assert.assertThat(allRows.get(0).line_id.intValue(), is(1));

@@ -27,12 +27,14 @@ import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.databases.MSSQLServerDB;
 import nz.co.gregs.dbvolution.datatypes.*;
 import nz.co.gregs.dbvolution.datatypes.spatial2D.DBLine2D;
+import nz.co.gregs.dbvolution.datatypes.spatial2D.DBLineSegment2D;
 import nz.co.gregs.dbvolution.datatypes.spatial2D.DBPolygon2D;
 import nz.co.gregs.dbvolution.datatypes.spatial2D.DBPoint2D;
 import nz.co.gregs.dbvolution.exceptions.DBRuntimeException;
 import nz.co.gregs.dbvolution.expressions.BooleanExpression;
 import nz.co.gregs.dbvolution.expressions.DBExpression;
 import nz.co.gregs.dbvolution.internal.sqlserver.Line2DFunctions;
+import nz.co.gregs.dbvolution.internal.sqlserver.Point2DFunctions;
 import nz.co.gregs.dbvolution.query.QueryOptions;
 
 /**
@@ -81,12 +83,29 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 			return " NVARCHAR(1000) COLLATE Latin1_General_CS_AS_KS_WS ";
 		} else if (qdt instanceof DBPoint2D) {
 			return " GEOMETRY ";
+		} else if (qdt instanceof DBLineSegment2D) {
+			return " GEOMETRY ";
 		} else if (qdt instanceof DBLine2D) {
 			return " GEOMETRY ";
 		} else if (qdt instanceof DBPolygon2D) {
 			return " GEOMETRY ";
 		} else {
 			return super.getSQLTypeOfDBDatatype(qdt);
+		}
+	}
+
+	@Override
+	public Object doColumnTransformForSelect(QueryableDatatype qdt, String selectableName) {
+		if (qdt instanceof DBPolygon2D) {
+			return "(" + selectableName + ").STAsText()";
+		} else if (qdt instanceof DBPoint2D) {
+			return "CAST((" + selectableName + ").STAsText() AS VARCHAR(2000))";
+		} else if (qdt instanceof DBLine2D) {
+			return "CAST((" + selectableName + ").STAsText() AS VARCHAR(2000))";
+		} else if (qdt instanceof DBLineSegment2D) {
+			return "CAST((" + selectableName + ").STAsText() AS VARCHAR(2000))";
+		} else {
+			return selectableName;
 		}
 	}
 
@@ -458,7 +477,7 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 
 	@Override
 	public String doPoint2DEqualsTransform(String firstPoint, String secondPoint) {
-		return "((" + firstPoint + ").STEquals( " + secondPoint + ")=1)";
+		return "("+Point2DFunctions.EQUALS+"((" + firstPoint + "), (" + secondPoint + "))=1)";
 	}
 
 	@Override
@@ -527,6 +546,12 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 	}
 
 	@Override
+	public String doLine2DIntersectsLine2DTransform(String firstLine, String secondLine) {		
+		return "((" + firstLine + ").STIntersects("+secondLine+")=1)";
+
+	}
+	
+	@Override
 	public String doLine2DIntersectionPointWithLine2DTransform(String firstLine, String secondLine) {
 		return "(" + firstLine + ").STIntersection("+secondLine+")";
 	}
@@ -549,19 +574,6 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 	@Override
 	public String transformPoint2DIntoDatabaseFormat(Point point) {
 		return "geometry::STGeomFromText ('" + point.toText() + "',0)";
-	}
-
-	@Override
-	public Object doColumnTransformForSelect(QueryableDatatype qdt, String selectableName) {
-		if (qdt instanceof DBPolygon2D) {
-			return "(" + selectableName + ").STAsText()";
-		} else if (qdt instanceof DBPoint2D) {
-			return "CAST((" + selectableName + ").STAsText() AS VARCHAR(2000))";
-		} else if (qdt instanceof DBLine2D) {
-			return "CAST((" + selectableName + ").STAsText() AS VARCHAR(2000))";
-		} else {
-			return selectableName;
-		}
 	}
 
 	@Override
@@ -785,7 +797,8 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 
 	@Override
 	public String transformLineSegmentIntoDatabaseLineSegment2DFormat(LineSegment lineSegment) {
-		return super.transformLineSegmentIntoDatabaseLineSegment2DFormat(lineSegment);
+		LineString line = (new GeometryFactory()).createLineString(new Coordinate[]{lineSegment.getCoordinate(0),lineSegment.getCoordinate(1)});
+		return transformLineStringIntoDatabaseLine2DFormat(line);
 	}
 
 	@Override

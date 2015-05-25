@@ -21,7 +21,7 @@ import nz.co.gregs.dbvolution.DBDatabase;
 import javax.sql.DataSource;
 import nz.co.gregs.dbvolution.databases.definitions.MSSQLServerDBDefinition;
 import nz.co.gregs.dbvolution.databases.supports.SupportsPolygonDatatype;
-import nz.co.gregs.dbvolution.internal.sqlserver.Line2DFunctions;
+import nz.co.gregs.dbvolution.internal.sqlserver.*;
 
 /**
  * A DBDatabase object tweaked to work with Microsoft SQL Server.
@@ -141,6 +141,9 @@ public class MSSQLServerDB extends DBDatabase implements SupportsPolygonDatatype
 
 	@Override
 	protected void addDatabaseSpecificFeatures(Statement statement) throws SQLException {
+		for (Point2DFunctions fn : Point2DFunctions.values()) {
+			fn.add(statement);
+		}
 		for (Line2DFunctions fn : Line2DFunctions.values()) {
 			fn.add(statement);
 		}
