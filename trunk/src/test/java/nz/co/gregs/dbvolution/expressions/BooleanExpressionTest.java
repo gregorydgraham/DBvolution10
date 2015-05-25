@@ -349,7 +349,7 @@ public class BooleanExpressionTest extends AbstractTest {
 		DBQuery dbQuery = database.getDBQuery(marque);
 
 		dbQuery.addCondition(marque.column(marque.uidMarque).is(1));
-		dbQuery.addCondition(BooleanExpression.value((Boolean)null).is((Boolean)null));
+		dbQuery.addCondition(BooleanExpression.value((Boolean) null).is((Boolean) null));
 
 		List<DBQueryRow> allRows = dbQuery.getAllRows();
 		database.print(allRows);
@@ -679,11 +679,11 @@ public class BooleanExpressionTest extends AbstractTest {
 		List<DBQueryRow> allRows = dbQuery.getAllRows();
 		database.print(allRows);
 		Assert.assertThat(allRows.size(), is(2));
-		
+
 		dbQuery = database.getDBQuery(marque);
 
 		dbQuery.addCondition(
-				BooleanExpression.isNull((ColumnProvider)marque.column(marque.updateCount))
+				BooleanExpression.isNull((ColumnProvider) marque.column(marque.updateCount))
 		);
 
 		allRows = dbQuery.getAllRows();
@@ -736,20 +736,21 @@ public class BooleanExpressionTest extends AbstractTest {
 		database.print(allRows);
 		Assert.assertThat(allRows.size(), is(1));
 	}
-	
+
 	public static class MarqueReportWithBooleanExpressionCount extends DBReport {
 
 		private static final long serialVersionUID = 1L;
-		
+
 		public Marque marque = new Marque();
 		@DBColumn
 		public DBBoolean greaterThan3 = new DBBoolean(marque.column(marque.carCompany).isGreaterThan(3));
 		@DBColumn
 		public DBNumber counted = new DBNumber(marque.column(marque.carCompany).isGreaterThan(3).count());
+
 		{
 			this.setSortOrder(greaterThan3, counted);
 		}
-		
+
 	}
 
 	@Test
@@ -764,15 +765,16 @@ public class BooleanExpressionTest extends AbstractTest {
 		Assert.assertThat(allRows.get(0).counted.intValue(), is(6));
 		Assert.assertThat(allRows.get(1).counted.intValue(), is(16));
 	}
-	
+
 	public static class MarqueWithBooleanExpressionCount extends Marque {
 
 		private static final long serialVersionUID = 1L;
-		
+
 		@DBColumn
 		public DBBoolean greaterThan3 = new DBBoolean(this.column(this.carCompany).isGreaterThan(3));
 		@DBColumn
 		public DBNumber counted = new DBNumber(this.column(this.carCompany).isGreaterThan(3).count());
+
 		{
 			this.setReturnFields(greaterThan3, counted);
 		}
@@ -810,7 +812,7 @@ public class BooleanExpressionTest extends AbstractTest {
 		dbQuery = database.getDBQuery(carCo);
 
 		dbQuery.addCondition(
-				BooleanExpression.isNotNull((ColumnProvider)carCo.column(carCo.name))
+				BooleanExpression.isNotNull((ColumnProvider) carCo.column(carCo.name))
 		);
 
 		allRows = dbQuery.getAllRows();

@@ -43,8 +43,8 @@ public class JavaDB extends DBDatabase {
 	/**
 	 * Creates a new JavaDB instance that will connect to the DataSource.
 	 *
-	 * @param dataSource	 dataSource	
-	 * @throws java.sql.SQLException	
+	 * @param dataSource	dataSource
+	 * @throws java.sql.SQLException
 	 */
 	public JavaDB(DataSource dataSource) throws SQLException {
 		super(new JavaDBDefinition(), dataSource);

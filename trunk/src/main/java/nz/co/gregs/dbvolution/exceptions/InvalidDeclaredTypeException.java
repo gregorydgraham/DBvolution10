@@ -24,36 +24,36 @@ public class InvalidDeclaredTypeException extends RuntimeException {
 	private static final long serialVersionUID = 1L;
 
 	/**
-	 * Thrown when a type is encountered that is not valid in the context in
-	 * which it is found.
+	 * Thrown when a type is encountered that is not valid in the context in which
+	 * it is found.
 	 */
 	public InvalidDeclaredTypeException() {
 		super();
 	}
 
 	/**
-	 * Thrown when a type is encountered that is not valid in the context in
-	 * which it is found.
+	 * Thrown when a type is encountered that is not valid in the context in which
+	 * it is found.
 	 *
-	 * @param string	 string	
+	 * @param string	string
 	 */
 	public InvalidDeclaredTypeException(String string) {
 		super(string);
 	}
 
 	/**
-	 * Thrown when a type is encountered that is not valid in the context in
-	 * which it is found.
+	 * Thrown when a type is encountered that is not valid in the context in which
+	 * it is found.
 	 *
-	 * @param cause	 cause	
+	 * @param cause	cause
 	 */
 	public InvalidDeclaredTypeException(Throwable cause) {
 		super(cause);
 	}
 
 	/**
-	 * Thrown when a type is encountered that is not valid in the context in
-	 * which it is found.
+	 * Thrown when a type is encountered that is not valid in the context in which
+	 * it is found.
 	 *
 	 * @param message message
 	 * @param cause cause

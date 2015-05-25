@@ -51,14 +51,15 @@ public class LinkCarCompanyAndLogo extends DBRow {
 	 * DBInteger indicates that the field is INTEGER or NUMBER field that
 	 * naturally provides Integer values in Java. It has an instance as that just
 	 * makes everyone's life easier.
-	 * 
+	 *
 	 */
 	@DBForeignKey(CarCompany.class)
-    @DBColumn("fk_car_company")
-    public DBInteger fkCarCompany  = new DBInteger();
-    
+	@DBColumn("fk_car_company")
+	public DBInteger fkCarCompany = new DBInteger();
+
 	/**
-	 * A DBInteger field representing the "fk_company_logo" column in the database.
+	 * A DBInteger field representing the "fk_company_logo" column in the
+	 * database.
 	 *
 	 * <p>
 	 * &#64;DBColumn both indicates that the field is part of the database table
@@ -72,12 +73,10 @@ public class LinkCarCompanyAndLogo extends DBRow {
 	 * DBInteger indicates that the field is INTEGER or NUMBER field that
 	 * naturally provides Integer values in Java. It has an instance as that just
 	 * makes everyone's life easier.
-	 * 
+	 *
 	 */
 	@DBForeignKey(CompanyLogo.class)
-    @DBColumn("fk_company_logo")
-    public DBInteger fkCompanyLogo  = new DBInteger();
-    
-    
-    
+	@DBColumn("fk_company_logo")
+	public DBInteger fkCompanyLogo = new DBInteger();
+
 }

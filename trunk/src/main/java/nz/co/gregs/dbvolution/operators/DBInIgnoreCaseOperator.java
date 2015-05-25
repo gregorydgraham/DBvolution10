@@ -27,27 +27,27 @@ import nz.co.gregs.dbvolution.expressions.StringResult;
 
 public class DBInIgnoreCaseOperator extends DBInOperator {
 
-    private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 1L;
 
-    public DBInIgnoreCaseOperator(List<DBExpression> listOfPossibleValues) {
-        super(listOfPossibleValues);
-    }
+	public DBInIgnoreCaseOperator(List<DBExpression> listOfPossibleValues) {
+		super(listOfPossibleValues);
+	}
 
-    public DBInIgnoreCaseOperator() {
-        super();
-    }
-    
-    @Override
-    public DBInIgnoreCaseOperator copyAndAdapt(DBSafeInternalQDTAdaptor typeAdaptor) {
-    	ArrayList<DBExpression> list = new ArrayList<DBExpression>();
-    	for (DBExpression item: listOfPossibleValues) {
-    		list.add(typeAdaptor.convert(item));
-    	}
-    	DBInIgnoreCaseOperator op = new DBInIgnoreCaseOperator(list);
-    	op.invertOperator = this.invertOperator;
-    	op.includeNulls = this.includeNulls;
-    	return op;
-    }
+	public DBInIgnoreCaseOperator() {
+		super();
+	}
+
+	@Override
+	public DBInIgnoreCaseOperator copyAndAdapt(DBSafeInternalQDTAdaptor typeAdaptor) {
+		ArrayList<DBExpression> list = new ArrayList<DBExpression>();
+		for (DBExpression item : listOfPossibleValues) {
+			list.add(typeAdaptor.convert(item));
+		}
+		DBInIgnoreCaseOperator op = new DBInIgnoreCaseOperator(list);
+		op.invertOperator = this.invertOperator;
+		op.includeNulls = this.includeNulls;
+		return op;
+	}
 
 	@Override
 	public BooleanExpression generateWhereExpression(DBDatabase db, DBExpression column) {

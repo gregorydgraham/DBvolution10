@@ -28,11 +28,11 @@ import org.junit.Assert;
 import org.junit.Test;
 
 public class DBReportTest extends AbstractTest {
-	
+
 	public DBReportTest(Object testIterationName, Object db) {
 		super(testIterationName, db);
 	}
-	
+
 	@Test
 	public void createReportTest() throws SQLException {
 		SimpleReport reportExample = new SimpleReport();
@@ -49,7 +49,7 @@ public class DBReportTest extends AbstractTest {
 			System.out.println("" + simp.carCompanyAndMarque.stringValue());
 		}
 	}
-	
+
 	@Test
 	public void withExampleTest() throws SQLException {
 		SimpleReport reportExample = new SimpleReport();
@@ -68,7 +68,7 @@ public class DBReportTest extends AbstractTest {
 			Assert.assertThat(simp.carCompanyAndMarque.stringValue(), is("TOYOTA: TOYOTA"));
 		}
 	}
-	
+
 	@Test
 	public void GroupTest() throws SQLException {
 		System.out.println("GroupTest");
@@ -83,10 +83,10 @@ public class DBReportTest extends AbstractTest {
 		// TOYOTA: 6: 0.7071067811865476
 		//OTHER: 5.8667: 1.9955506062794353
 		Assert.assertThat(otherRow.carCompanyName.stringValue(), is("OTHER"));
-		Assert.assertThat(Math.round(otherRow.average.doubleValue()*100), is(587L));
-		Assert.assertThat(Math.round(otherRow.stddev.doubleValue()*100), is(207L));
+		Assert.assertThat(Math.round(otherRow.average.doubleValue() * 100), is(587L));
+		Assert.assertThat(Math.round(otherRow.stddev.doubleValue() * 100), is(207L));
 	}
-	
+
 	@Test
 	public void CountAllTest() throws SQLException {
 		CountAllReport reportExample = new CountAllReport();
@@ -112,7 +112,7 @@ public class DBReportTest extends AbstractTest {
 			}
 		}
 	}
-	
+
 	@Test
 	public void MinMaxSumTest() throws SQLException {
 		MinMaxSumReport reportExample = new MinMaxSumReport();
@@ -128,7 +128,7 @@ public class DBReportTest extends AbstractTest {
 			}
 		}
 	}
-	
+
 	@Test
 	public void MinMaxSumOrderedTest() throws SQLException {
 		MinMaxSumReport reportExample = new MinMaxSumReport();
@@ -157,7 +157,7 @@ public class DBReportTest extends AbstractTest {
 		Assert.assertThat(foundGroupReports.get(1).carCompanyName.stringValue(), is("OTHER"));
 		Assert.assertThat(foundGroupReports.get(0).carCompanyName.stringValue(), is("TOYOTA"));
 	}
-	
+
 	@Test
 	public void MinMaxSumOrderedWithExampleTest() throws SQLException {
 		MinMaxSumReport reportExample = new MinMaxSumReport();
@@ -194,11 +194,11 @@ public class DBReportTest extends AbstractTest {
 		Assert.assertThat(foundGroupReports.get(1).carCompanyName.stringValue(), is("GENERAL MOTORS"));
 		Assert.assertThat(foundGroupReports.get(2).carCompanyName.stringValue(), is("OTHER"));
 	}
-	
+
 	public static class SimpleReport extends DBReport {
 
 		private static final long serialVersionUID = 1L;
-		
+
 		public Marque marque = new Marque();
 		public CarCompany carCompany = new CarCompany();
 		@DBColumn
@@ -211,18 +211,17 @@ public class DBReportTest extends AbstractTest {
 		public DBNumber marqueUID = new DBNumber(marque.column(marque.uidMarque));
 		@DBColumn
 		public DBDate marqueCreated = new DBDate(marque.column(marque.creationDate));
-		
+
 		{
 			marque.statusClassID.permittedValues(1246974);
 			carCompany.uidCarCompany.excludedValues((Long) null);
 		}
 	}
-	
-	
+
 	public static class GroupReport extends DBReport {
 
 		private static final long serialVersionUID = 1L;
-		
+
 		public Marque marque = new Marque();
 		public CarCompany carCompany = new CarCompany();
 		@DBColumn
@@ -235,33 +234,33 @@ public class DBReportTest extends AbstractTest {
 		public DBNumber average = new DBNumber(marque.column(marque.name).length().average());
 		@DBColumn
 		public DBNumber stddev = new DBNumber(marque.column(marque.name).length().standardDeviation());
-		
+
 		{
 			marque.statusClassID.permittedValues(1246974);
 			carCompany.uidCarCompany.excludedValues((Integer) null);
 			this.setSortOrder(this.column(this.carCompanyName));
 		}
 	}
-	
+
 	public static class CountAllReport extends DBReport {
 
 		private static final long serialVersionUID = 1L;
-		
+
 		public Marque marque = new Marque();
 		public CarCompany carCompany = new CarCompany();
 		public DBString carCompanyName = new DBString(carCompany.column(carCompany.name).uppercase());
 		public DBNumber countAll = new DBNumber(NumberExpression.countAll());
-		
+
 		{
 			marque.statusClassID.permittedValues(1246974);
 			carCompany.uidCarCompany.excludedValues((Integer) null);
 		}
 	}
-	
+
 	public static class MinMaxSumReport extends DBReport {
 
 		private static final long serialVersionUID = 1L;
-		
+
 		public Marque marque = new Marque();
 		public CarCompany carCompany = new CarCompany();
 		@DBColumn
@@ -272,7 +271,7 @@ public class DBReportTest extends AbstractTest {
 		public DBNumber max = new DBNumber(marque.column(marque.uidMarque).max());
 		@DBColumn
 		public DBNumber sum = new DBNumber(marque.column(marque.uidMarque).sum());
-		
+
 		{
 			marque.statusClassID.permittedValues(1246974);
 			carCompany.uidCarCompany.excludedValues((Integer) null);

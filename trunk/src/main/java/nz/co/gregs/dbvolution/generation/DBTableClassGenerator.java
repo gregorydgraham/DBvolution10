@@ -262,8 +262,8 @@ public class DBTableClassGenerator {
 	 * the version number supplied and the supplied {@link PrimaryKeyRecognisor}
 	 * and {@link ForeignKeyRecognisor} will be used.
 	 *
-	 * @return a List of DBTableClass instances representing the tables and
-	 * views found on the database 1 Database exceptions may be thrown
+	 * @return a List of DBTableClass instances representing the tables and views
+	 * found on the database 1 Database exceptions may be thrown
 	 */
 	private static List<DBTableClass> generateClassesOfObjectTypes(DBDatabase database, String packageName, PrimaryKeyRecognisor pkRecognisor, ForeignKeyRecognisor fkRecogisor, String... dbObjectTypes) throws SQLException {
 		List<DBTableClass> dbTableClasses = new ArrayList<DBTableClass>();

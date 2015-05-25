@@ -26,12 +26,12 @@ import org.junit.Test;
  *
  * @author Gregory Graham
  */
-public class AutoCommitActionDuringTransactionExceptionTest extends AbstractTest{
+public class AutoCommitActionDuringTransactionExceptionTest extends AbstractTest {
 
 	public AutoCommitActionDuringTransactionExceptionTest(Object testIterationName, Object db) {
 		super(testIterationName, db);
 	}
-	
+
 	@Test(expected = AutoCommitActionDuringTransactionException.class)
 	public void testDropTableThrowsAutoCommitException() throws Exception {
 		DBScript badScript = new DBScript() {
@@ -44,7 +44,7 @@ public class AutoCommitActionDuringTransactionExceptionTest extends AbstractTest
 		};
 		database.test(badScript);
 	}
-	
+
 	@Test(expected = AutoCommitActionDuringTransactionException.class)
 	public void testCreateTableThrowsAutoCommitException() throws Exception {
 		DBScript badScript = new DBScript() {
@@ -57,7 +57,7 @@ public class AutoCommitActionDuringTransactionExceptionTest extends AbstractTest
 		};
 		database.test(badScript);
 	}
-	
+
 	@Test(expected = AutoCommitActionDuringTransactionException.class)
 	public void testDropDatabaseThrowsAutoCommitException() throws Exception {
 		DBScript badScript = new DBScript() {
@@ -70,5 +70,5 @@ public class AutoCommitActionDuringTransactionExceptionTest extends AbstractTest
 		};
 		database.test(badScript);
 	}
-	
+
 }

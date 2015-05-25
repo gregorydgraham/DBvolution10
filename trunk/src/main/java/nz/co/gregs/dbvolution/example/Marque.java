@@ -81,7 +81,8 @@ public class Marque extends DBRow {
 	public DBString isUsedForTAFROs = new DBString();
 
 	/**
-	 * A DBNumber field representing the "fk_toystatusclass" column in the database.
+	 * A DBNumber field representing the "fk_toystatusclass" column in the
+	 * database.
 	 *
 	 * <p>
 	 * &#64;DBColumn both indicates that the field is part of the database table
@@ -97,7 +98,8 @@ public class Marque extends DBRow {
 	public DBNumber statusClassID = new DBNumber();
 
 	/**
-	 * A DBString field representing the "intindallocallowed" column in the database.
+	 * A DBString field representing the "intindallocallowed" column in the
+	 * database.
 	 *
 	 * <p>
 	 * &#64;DBColumn both indicates that the field is part of the database table
@@ -162,7 +164,8 @@ public class Marque extends DBRow {
 	public DBString name = new DBString();
 
 	/**
-	 * A DBString field representing the "pricingcodeprefix" column in the database.
+	 * A DBString field representing the "pricingcodeprefix" column in the
+	 * database.
 	 *
 	 * <p>
 	 * &#64;DBColumn both indicates that the field is part of the database table
@@ -178,7 +181,8 @@ public class Marque extends DBRow {
 	public DBString pricingCodePrefix = new DBString();
 
 	/**
-	 * A DBString field representing the "reservationsalwd" column in the database.
+	 * A DBString field representing the "reservationsalwd" column in the
+	 * database.
 	 *
 	 * <p>
 	 * &#64;DBColumn both indicates that the field is part of the database table
@@ -237,9 +241,9 @@ public class Marque extends DBRow {
 	 * and protects the actual database column name from any refactoring.
 	 *
 	 * <p>
-	 * DBInteger indicates that the field is INTEGER or NUMBER field that naturally
-	 * provides Integer values in Java. It has an instance as that just makes
-	 * everyone's life easier.
+	 * DBInteger indicates that the field is INTEGER or NUMBER field that
+	 * naturally provides Integer values in Java. It has an instance as that just
+	 * makes everyone's life easier.
 	 *
 	 */
 	@DBForeignKey(CarCompany.class)

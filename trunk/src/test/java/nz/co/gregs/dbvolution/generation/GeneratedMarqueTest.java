@@ -233,7 +233,7 @@ public class GeneratedMarqueTest extends AbstractTest {
 
 		}
 	}
-	
+
 	/**
 	 * A file object used to represent source coming from a string.
 	 */

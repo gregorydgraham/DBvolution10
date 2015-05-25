@@ -26,14 +26,18 @@ import org.joda.time.format.PeriodFormat;
  * Encapsulates database values that are differences between dates.
  *
  * <p>
- * Use {@link DBDateRepeat} when the column is used to represent an specific period of time between events expressed in days, weeks, months or years.
- * 
- * <p>Please note that exact differences between dates should probably be derived using {@link DateExpression#secondsFrom(java.util.Date)} and stored with a DBNumber.
+ * Use {@link DBDateRepeat} when the column is used to represent an specific
+ * period of time between events expressed in days, weeks, months or years.
+ *
+ * <p>
+ * Please note that exact differences between dates should probably be derived
+ * using {@link DateExpression#secondsFrom(java.util.Date)} and stored with a
+ * DBNumber.
  *
  * <p>
  * Generally DBDateRepeat is declared inside your DBRow sub-class as:
  * {@code @DBColumn public DBDateRepeat myColumn = new DBDateRepeat();}
- * 
+ *
  * @author Gregory Graham
  */
 public class DBDateRepeat extends QueryableDatatype implements DateRepeatResult {
@@ -59,7 +63,7 @@ public class DBDateRepeat extends QueryableDatatype implements DateRepeatResult 
 
 	/**
 	 * Creates a DBDateRepeat with the DateRepeatExpression specified.
-	 * 
+	 *
 	 * <p>
 	 * Very useful for adding column expressions to a DBRow subclass.
 	 *
@@ -71,7 +75,7 @@ public class DBDateRepeat extends QueryableDatatype implements DateRepeatResult 
 
 	/**
 	 * Set the value of this DBDateRepeat to the period specified.
-	 * 
+	 *
 	 * <p>
 	 * Use this method before inserting the value into the database.
 	 *
@@ -82,8 +86,9 @@ public class DBDateRepeat extends QueryableDatatype implements DateRepeatResult 
 	}
 
 	/**
-	 * Returns the value of this DBDateRepeat as a Period, if the value is defined and is not null.
-	 * 
+	 * Returns the value of this DBDateRepeat as a Period, if the value is defined
+	 * and is not null.
+	 *
 	 * <p>
 	 * Returns NULL otherwise.
 	 *

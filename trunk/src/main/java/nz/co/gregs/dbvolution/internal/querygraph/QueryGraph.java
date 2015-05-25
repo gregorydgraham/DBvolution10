@@ -98,7 +98,7 @@ public class QueryGraph {
 				addNodeToDisplayGraph(node1);
 				for (DBRow table2 : tablesToConnectTo) {
 					final Class<? extends DBRow> table2Class = table2.getClass();
-					final QueryGraphNode node2 = getOrCreateNode(table2, table2Class,requiredTables);
+					final QueryGraphNode node2 = getOrCreateNode(table2, table2Class, requiredTables);
 					node1.connectTable(table2Class);
 					node2.connectTable(table1Class);
 					addNodeToDisplayGraph(node2);
@@ -154,34 +154,34 @@ public class QueryGraph {
 		}
 		return false;
 	}
-	
-	private Class<? extends DBRow> getStartTable(){
+
+	private Class<? extends DBRow> getStartTable() {
 		List<QueryGraphNode> innerNodes = new ArrayList<QueryGraphNode>();
 		List<QueryGraphNode> outerNodes = new ArrayList<QueryGraphNode>();
-		
+
 		for (QueryGraphNode node : nodes.values()) {
-			if (node.isRequiredNode()){
+			if (node.isRequiredNode()) {
 				innerNodes.add(node);
-			}else{
+			} else {
 				outerNodes.add(node);
 			}
 		}
-		
+
 		List<QueryGraphNode> nodesToCheck = innerNodes;
-		if (innerNodes.isEmpty()){
+		if (innerNodes.isEmpty()) {
 			nodesToCheck = outerNodes;
 		}
-		
+
 		for (QueryGraphNode queryGraphNode : nodesToCheck) {
 			final Class<? extends DBRow> tableClass = queryGraphNode.getTable();
 			final DBRow table = rows.get(tableClass);
-			if(table.hasConditionsSet()){
+			if (table.hasConditionsSet()) {
 				return tableClass;
 			}
 		}
 		return nodesToCheck.get(0).getTable();
 	}
-	
+
 	public List<DBRow> toList() {
 		return toList(getStartTable());
 	}

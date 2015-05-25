@@ -36,5 +36,5 @@ public class QueryGraphVertexFillPaintTransformer implements Transformer<QueryGr
 			return Color.ORANGE;
 		}
 	}
-	
+
 }

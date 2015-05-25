@@ -33,46 +33,46 @@ import org.junit.Test;
  */
 public class SerializableTest extends AbstractTest {
 
-    String filename = "SerializableTest.obj";
+	String filename = "SerializableTest.obj";
 
-    public SerializableTest(Object testIterationName, Object db) {
-        super(testIterationName, db);
-    }
+	public SerializableTest(Object testIterationName, Object db) {
+		super(testIterationName, db);
+	}
 
-    @Test
-    @SuppressWarnings("unchecked")
-    public void saveToFile() throws SQLException {
-        try {
+	@Test
+	@SuppressWarnings("unchecked")
+	public void saveToFile() throws SQLException {
+		try {
 
-            Marque hummerExample = new Marque();
-            hummerExample.getName().permittedValues("PEUGEOT", "HUMMER");
-            List<Marque> marqueList = database.getDBTable(hummerExample).getRowsByExample(hummerExample);
+			Marque hummerExample = new Marque();
+			hummerExample.getName().permittedValues("PEUGEOT", "HUMMER");
+			List<Marque> marqueList = database.getDBTable(hummerExample).getRowsByExample(hummerExample);
 
-            ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(filename));
+			ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(filename));
 
-            oos.writeObject(marqueList);
-            oos.close();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-        try {
-            ObjectInputStream ois = new ObjectInputStream(new BufferedInputStream(new FileInputStream(filename)));
-            Object object = ois.readObject();
-            if (object instanceof List) {
-                List<Object> list = (List<Object>) object;
-                for (Object obj : list) {
-                    if (obj instanceof Marque) {
-                        System.out.println("" + obj);
-                    } else {
-                        throw new RuntimeException("Unable to reload the object correctly");
-                    }
-                }
-            }
-            ois.close();
-        } catch (ClassNotFoundException e) {
-            throw new RuntimeException(e);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
+			oos.writeObject(marqueList);
+			oos.close();
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+		try {
+			ObjectInputStream ois = new ObjectInputStream(new BufferedInputStream(new FileInputStream(filename)));
+			Object object = ois.readObject();
+			if (object instanceof List) {
+				List<Object> list = (List<Object>) object;
+				for (Object obj : list) {
+					if (obj instanceof Marque) {
+						System.out.println("" + obj);
+					} else {
+						throw new RuntimeException("Unable to reload the object correctly");
+					}
+				}
+			}
+			ois.close();
+		} catch (ClassNotFoundException e) {
+			throw new RuntimeException(e);
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+	}
 }

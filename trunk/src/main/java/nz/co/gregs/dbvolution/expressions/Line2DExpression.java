@@ -19,17 +19,23 @@ import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.Point;
+import com.vividsolutions.jts.geom.Polygon;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.DBRow;
+import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.datatypes.spatial2D.DBLine2D;
 
 /**
+ * Represents SQL expressions that are a 2 dimensional path, a series of
+ * connected line segments with X and Y coordinates.
  *
- * @author greg
+ *
+ *
+ * @author Gregory Graham
  */
 public class Line2DExpression implements Line2DResult, EqualComparable<Line2DResult>, SpatialExpression {
 
@@ -163,6 +169,10 @@ public class Line2DExpression implements Line2DResult, EqualComparable<Line2DRes
 		return is(new DBLine2D(rightHandSide));
 	}
 
+	public BooleanExpression is(Polygon rightHandSide) {
+		return is(rightHandSide.getExteriorRing());
+	}
+
 	@Override
 	public BooleanExpression is(Line2DResult rightHandSide) {
 		return new BooleanExpression(new Line2DExpression.LineLineWithBooleanResult(this, new Line2DExpression(rightHandSide)) {
@@ -173,6 +183,29 @@ public class Line2DExpression implements Line2DResult, EqualComparable<Line2DRes
 					return db.getDefinition().doLine2DEqualsTransform(getFirst().toSQLString(db), getSecond().toSQLString(db));
 				} catch (UnsupportedOperationException unsupported) {
 					return getFirst().stringResult().is(getSecond().stringResult()).toSQLString(db);
+				}
+			}
+		});
+	}
+
+	public BooleanExpression isNot(LineString rightHandSide) {
+		return isNot(new DBLine2D(rightHandSide));
+	}
+
+	public BooleanExpression isNot(Polygon rightHandSide) {
+		return isNot(rightHandSide.getExteriorRing());
+	}
+
+	public BooleanExpression isNot(Line2DResult rightHandSide) {
+		return new BooleanExpression(new Line2DExpression.LineLineWithBooleanResult(this, new Line2DExpression(rightHandSide)) {
+
+			@Override
+			public String doExpressionTransform(DBDatabase db) {
+				try {
+					final DBDefinition defn = db.getDefinition();
+					return defn.doLine2DNotEqualsTransform(getFirst().toSQLString(db), getSecond().toSQLString(db));
+				} catch (UnsupportedOperationException unsupported) {
+					return getFirst().stringResult().is(getSecond().stringResult()).not().toSQLString(db);
 				}
 			}
 		});
@@ -208,10 +241,10 @@ public class Line2DExpression implements Line2DResult, EqualComparable<Line2DRes
 					final NumberExpression minX = first.getMinX();
 					final NumberExpression minY = first.getMinY();
 					return Polygon2DExpression.value(
-							Point2DExpression.value(minX, minY), 
-							Point2DExpression.value(maxX, minY), 
-							Point2DExpression.value(maxX, maxY), 
-							Point2DExpression.value(minX, maxY), 
+							Point2DExpression.value(minX, minY),
+							Point2DExpression.value(maxX, minY),
+							Point2DExpression.value(maxX, maxY),
+							Point2DExpression.value(minX, maxY),
 							Point2DExpression.value(minX, minY)).toSQLString(db);
 				}
 			}
@@ -262,6 +295,76 @@ public class Line2DExpression implements Line2DResult, EqualComparable<Line2DRes
 		});
 	}
 
+	/**
+	 * Tests whether this line and the line represented by the points ever cross.
+	 * 
+	 * <p>
+	 * Multiple line segments means it may cross at several points, however this method only reports TRUE or FALSE.
+	 * 
+	 * <p>
+	 * Use {@link #intersectionPoints(Line2DResult)} to find the intersection points of these lines
+	 *
+	 * @param points 
+	 * @return a BooleanExpression that will be TRUE if the lines ever cross, otherwise FALSE.
+	 */
+	public BooleanExpression intersects(Point... points) {
+		return this.intersects(new Line2DExpression(points));
+	}
+	
+	/**
+	 * Tests whether this line and the line represented by the coordinates ever cross.
+	 * 
+	 * <p>
+	 * Multiple line segments means it may cross at several points, however this method only reports TRUE or FALSE.
+	 * 
+	 * <p>
+	 * Use {@link #intersectionPoints(Line2DResult)} to find the intersection points of these lines
+	 *
+	 * @param coords 
+	 * @return a BooleanExpression that will be TRUE if the lines ever cross, otherwise FALSE.
+	 */
+	public BooleanExpression intersects(Coordinate... coords) {
+		return this.intersects(new Line2DExpression(coords));
+	}
+	
+	/**
+	 * Tests whether this line and the other line ever cross.
+	 * 
+	 * <p>
+	 * Multiple line segments means it may cross at several points, however this method only reports TRUE or FALSE.
+	 * 
+	 * <p>
+	 * Use {@link #intersectionPoints(Line2DResult)} to find the intersection points of these lines
+	 *
+	 * @param lineString 
+	 * @return a BooleanExpression that will be TRUE if the lines ever cross, otherwise FALSE.
+	 */
+	public BooleanExpression intersects(LineString lineString) {
+		return this.intersects(new Line2DExpression(lineString));
+	}
+	
+	/**
+	 * Tests whether this line and the other line ever cross.
+	 * 
+	 * <p>
+	 * Multiple line segments means it may cross at several points, however this method only reports TRUE or FALSE.
+	 * 
+	 * <p>
+	 * Use {@link #intersectionPoints(Line2DResult)} to find the intersection points of these lines
+	 *
+	 * @param crossingLine
+	 * @return a BooleanExpression that will be TRUE if the lines ever cross, otherwise FALSE.
+	 */
+	public BooleanExpression intersects(Line2DResult crossingLine) {
+		return new BooleanExpression(new LineLineWithBooleanResult(this, new Line2DExpression(crossingLine)) {
+			
+			@Override
+			protected String doExpressionTransform(DBDatabase db) {
+				return db.getDefinition().doLine2DIntersectsLine2DTransform(getFirst().toSQLString(db), getSecond().toSQLString(db));
+			}
+		});
+	}
+	
 	private static abstract class LineLineWithBooleanResult extends BooleanExpression {
 
 		private Line2DExpression first;

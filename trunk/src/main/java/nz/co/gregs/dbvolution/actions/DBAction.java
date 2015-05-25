@@ -68,8 +68,8 @@ public abstract class DBAction {
 	 * require to revert the change enacted by the action.
 	 *
 	 * <p>
-	 * Revert actions are tricky to implement correctly, so be sure to check
-	 * that the revert will produce the desired result.
+	 * Revert actions are tricky to implement correctly, so be sure to check that
+	 * the revert will produce the desired result.
 	 *
 	 * @return a list of all the actions required to revert this action in the
 	 * order they need to enacted.
@@ -80,8 +80,8 @@ public abstract class DBAction {
 	 * Returns a DBActionList of the actions required to perform this DBAction.
 	 *
 	 * <p>
-	 * Actions are allowed to create sub-actions so all actions are returned as
-	 * a DBActionList.
+	 * Actions are allowed to create sub-actions so all actions are returned as a
+	 * DBActionList.
 	 *
 	 * @return a DBActionList of this DBAction.
 	 */
@@ -111,8 +111,8 @@ public abstract class DBAction {
 	 * row for internal use.
 	 *
 	 * @param db the target database.
-	 * @return The complete list of all actions performed to complete this
-	 * action on the database
+	 * @return The complete list of all actions performed to complete this action
+	 * on the database
 	 * @throws SQLException Database operations may throw SQLExceptions
 	 */
 	protected abstract DBActionList execute(DBDatabase db) throws SQLException;

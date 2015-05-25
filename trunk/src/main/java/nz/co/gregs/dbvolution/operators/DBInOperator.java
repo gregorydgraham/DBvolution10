@@ -122,7 +122,7 @@ public class DBInOperator extends DBOperator {
 			NumberExpression numberExpression = (NumberExpression) genericExpression;
 			op = numberExpression.isIn(listNumbers.toArray(new NumberResult[]{}));
 		} else if (genericExpression instanceof DateExpression) {
-				ArrayList<DateResult> listDate = new ArrayList<DateResult>(listOfPossibleDates);
+			ArrayList<DateResult> listDate = new ArrayList<DateResult>(listOfPossibleDates);
 			if (this.includeNulls) {
 				listDate.add(null);
 			}

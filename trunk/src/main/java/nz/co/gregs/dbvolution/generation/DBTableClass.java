@@ -39,7 +39,8 @@ public class DBTableClass {
 	private final String conceptBreak = lineSeparator + lineSeparator;
 
 	/**
-	 * Constructor with required information for automatically creating a DBRow class.
+	 * Constructor with required information for automatically creating a DBRow
+	 * class.
 	 *
 	 * @param tableName tableName
 	 * @param packageName packageName
@@ -65,11 +66,12 @@ public class DBTableClass {
 	}
 
 	/**
-	 * Transforms the information encapsulated within the DBTableClass into valid Java source code.
+	 * Transforms the information encapsulated within the DBTableClass into valid
+	 * Java source code.
 	 *
 	 * <p>
-	 * After all available information has been set for this DBTableClass, this method is called to generate the
-	 * required Java source.
+	 * After all available information has been set for this DBTableClass, this
+	 * method is called to generate the required Java source.
 	 *
 	 * @return a String of the source code of the new DBRow class.
 	 */

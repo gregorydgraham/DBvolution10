@@ -112,7 +112,7 @@ public class DBStatement implements Statement {
 	 */
 	@Override
 	public void close() throws SQLException {
-		isClosed=true;
+		isClosed = true;
 		try {
 			database.unusedConnection(getConnection());
 			getInternalStatement().close();
@@ -830,9 +830,9 @@ public class DBStatement implements Statement {
 	 */
 	@Override
 	public boolean isClosed() throws SQLException {
-		if (database.getDefinition().supportsStatementIsClosed()){
+		if (database.getDefinition().supportsStatementIsClosed()) {
 			return getInternalStatement().isClosed();
-		} else{
+		} else {
 			return isClosed;
 		}
 	}

@@ -28,18 +28,18 @@ public class UnknownJavaSQLTypeException extends RuntimeException {
 	private int unknownJavaSQLType;
 
 	/**
-	 * Sometimes a database has a datatype that DBvolution has not yet
-	 * supported, this is one of those times.
+	 * Sometimes a database has a datatype that DBvolution has not yet supported,
+	 * this is one of those times.
 	 *
-	 * @param string	 string	
+	 * @param string	string
 	 */
 	public UnknownJavaSQLTypeException(String string) {
 		super(string);
 	}
 
 	/**
-	 * Sometimes a database has a datatype that DBvolution has not yet
-	 * supported, this is one of those times.
+	 * Sometimes a database has a datatype that DBvolution has not yet supported,
+	 * this is one of those times.
 	 *
 	 * @param string string
 	 * @param columnType columnType

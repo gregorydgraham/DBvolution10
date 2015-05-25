@@ -28,12 +28,12 @@ import static org.junit.Assert.*;
  *
  * @author gregorygraham
  */
-public class DBPoint2DTest extends AbstractTest{
+public class DBPoint2DTest extends AbstractTest {
 
 	public DBPoint2DTest(Object testIterationName, Object db) {
 		super(testIterationName, db);
 	}
-	
+
 	@Test
 	public void testSetValue() {
 		System.out.println("setValue");
@@ -73,5 +73,5 @@ public class DBPoint2DTest extends AbstractTest{
 		boolean result = instance.getIncludesNull();
 		assertEquals(expResult, result);
 	}
-	
+
 }

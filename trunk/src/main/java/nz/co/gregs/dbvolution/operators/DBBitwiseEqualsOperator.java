@@ -41,7 +41,7 @@ public class DBBitwiseEqualsOperator extends DBEqualsOperator {
 			BooleanExpression expr = (BooleanExpression) genericExpression;
 			if (firstValue instanceof BooleanResult) {
 				op = expr.is((BooleanResult) firstValue);
-			}else if (firstValue instanceof NumberResult) {
+			} else if (firstValue instanceof NumberResult) {
 				op = expr.is(new NumberExpression((NumberResult) firstValue).is(1));
 			}
 		}

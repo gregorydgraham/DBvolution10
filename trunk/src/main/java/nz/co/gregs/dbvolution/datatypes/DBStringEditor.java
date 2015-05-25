@@ -23,32 +23,32 @@ import java.beans.PropertyEditorSupport;
  */
 public class DBStringEditor extends PropertyEditorSupport {
 
-    private String format;
+	private String format;
 
-    /**
-     *
+	/**
+	 *
 	 * @param format format
-     */
-    public void setFormat(String format) {
-        this.format = format;
-    }
+	 */
+	public void setFormat(String format) {
+		this.format = format;
+	}
 
-    /**
-     *
+	/**
+	 *
 	 * @param text text
-     */
-    @Override
-    public void setAsText(String text) {
-        DBString type;
-        Object value = getValue();
-        if (value instanceof DBString) {
-            type = (DBString) value;
-        } else {
-            type = new DBString();
-        }
-        if (text != null && !text.isEmpty()) {
-            type.setValue(text);
-        }
-        setValue(type);
-    }
+	 */
+	@Override
+	public void setAsText(String text) {
+		DBString type;
+		Object value = getValue();
+		if (value instanceof DBString) {
+			type = (DBString) value;
+		} else {
+			type = new DBString();
+		}
+		if (text != null && !text.isEmpty()) {
+			type.setValue(text);
+		}
+		setValue(type);
+	}
 }

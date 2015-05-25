@@ -109,7 +109,8 @@ public class DBReport extends RowDefinition {
 	}
 
 	/**
-	 * Gets all the report rows of the supplied DBReport using conditions in the DBreport and the supplied examples.
+	 * Gets all the report rows of the supplied DBReport using conditions in the
+	 * DBreport and the supplied examples.
 	 *
 	 * <p>
 	 * Use this method to retrieve all rows when the criteria have been supplied

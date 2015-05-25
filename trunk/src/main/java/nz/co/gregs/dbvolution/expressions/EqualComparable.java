@@ -25,12 +25,13 @@ package nz.co.gregs.dbvolution.expressions;
  *
  * @author Gregory Graham
  * @param <A> the class that can be compared using the "=" operator
-
+ *
  */
 public interface EqualComparable<A> {
 
 	/**
-	 * Creates a {@link BooleanExpression} that compares the 2 instances using the EQUALS operation.
+	 * Creates a {@link BooleanExpression} that compares the 2 instances using the
+	 * EQUALS operation.
 	 *
 	 * @param anotherInstance
 	 * @return a BooleanExpression

@@ -67,10 +67,10 @@ public class DBTableInsertTest extends AbstractTest {
 		DBActionList insertActions = DBInsert.getInserts(marque);
 		DBAction possibleInsert = insertActions.get(0);
 		Assert.assertThat(possibleInsert.getClass().getSimpleName(), Matchers.is(DBInsert.class.getSimpleName()));
-		if (possibleInsert instanceof DBInsert){
-			DBInsert insert = (DBInsert)possibleInsert;
+		if (possibleInsert instanceof DBInsert) {
+			DBInsert insert = (DBInsert) possibleInsert;
 			String sql = insert.getSQLStatements(database).get(0);
-			System.out.println(""+sql);
+			System.out.println("" + sql);
 			Assert.assertThat(sql.toUpperCase(), Matchers.containsString("NAME"));
 			Assert.assertThat(sql.toUpperCase(), Matchers.not(Matchers.containsString("CREATION_DATE")));
 			Assert.assertThat(sql.toUpperCase(), Matchers.not(Matchers.containsString("FK_CARCOMPANY")));

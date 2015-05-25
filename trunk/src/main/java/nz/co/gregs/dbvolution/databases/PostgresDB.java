@@ -16,12 +16,14 @@
 package nz.co.gregs.dbvolution.databases;
 
 import java.io.File;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import nz.co.gregs.dbvolution.DBDatabase;
 import javax.sql.DataSource;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.databases.definitions.PostgresDBDefinition;
+import nz.co.gregs.dbvolution.databases.supports.SupportsPolygonDatatype;
 import nz.co.gregs.dbvolution.exceptions.AccidentalDroppingOfTableException;
 import nz.co.gregs.dbvolution.exceptions.AutoCommitActionDuringTransactionException;
 import nz.co.gregs.dbvolution.internal.postgres.Line2DFunctions;
@@ -32,7 +34,7 @@ import nz.co.gregs.dbvolution.internal.postgres.StringFunctions;
  *
  * @author Gregory Graham
  */
-public class PostgresDB extends DBDatabase {
+public class PostgresDB extends DBDatabase implements SupportsPolygonDatatype{
 
 	private static final String POSTGRES_DRIVER_NAME = "org.postgresql.Driver";
 
@@ -209,11 +211,39 @@ public class PostgresDB extends DBDatabase {
 
 	@Override
 	protected void addDatabaseSpecificFeatures(Statement stmnt) throws SQLException {
+		createPostGISExtension(stmnt);
+		createPostGISTopologyExtension(stmnt);
 		for (StringFunctions fn : StringFunctions.values()) {
 			fn.add(stmnt);
 		}
 		for (Line2DFunctions fn : Line2DFunctions.values()) {
 			fn.add(stmnt);
+		}
+	}
+
+	private void createPostGISTopologyExtension(Statement stmnt) {
+		try {
+			boolean execute = stmnt.execute("select * from pg_extension where extname = 'postgis_topology';");
+			final ResultSet resultSet = stmnt.getResultSet();
+			boolean postGISAlreadyCreated = resultSet.next();
+			if (!postGISAlreadyCreated) {
+				stmnt.execute("CREATE EXTENSION IF NOT EXISTS postgis_topology;");
+			}
+		} catch (SQLException sqlex) {
+			System.out.println("" + sqlex.getMessage());;
+		}
+	}
+
+	private void createPostGISExtension(Statement stmnt) {
+		try {
+			boolean execute = stmnt.execute("select * from pg_extension where extname = 'postgis';");
+			final ResultSet resultSet = stmnt.getResultSet();
+			boolean postGISAlreadyCreated = resultSet.next();
+			if (!postGISAlreadyCreated) {
+				stmnt.execute("CREATE EXTENSION IF NOT EXISTS postgis;");
+			}
+		} catch (SQLException sqlex) {
+			System.out.println("" + sqlex.getMessage());;
 		}
 	}
 }

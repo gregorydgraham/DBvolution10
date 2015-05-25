@@ -15,6 +15,9 @@
  */
 package nz.co.gregs.dbvolution.databases.definitions;
 
+import com.vividsolutions.jts.geom.Coordinate;
+import com.vividsolutions.jts.geom.GeometryFactory;
+import com.vividsolutions.jts.geom.LineSegment;
 import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.geom.Polygon;
@@ -25,6 +28,7 @@ import java.util.Date;
 import nz.co.gregs.dbvolution.databases.MySQLDB;
 import nz.co.gregs.dbvolution.datatypes.*;
 import nz.co.gregs.dbvolution.datatypes.spatial2D.DBLine2D;
+import nz.co.gregs.dbvolution.datatypes.spatial2D.DBLineSegment2D;
 import nz.co.gregs.dbvolution.datatypes.spatial2D.DBPoint2D;
 import nz.co.gregs.dbvolution.internal.properties.PropertyWrapper;
 
@@ -86,6 +90,8 @@ public class MySQLDBDefinition extends DBDefinition {
 			return "AsText(" + selectableName + ")";
 		} else if (qdt instanceof DBLine2D) {
 			return "AsText(" + selectableName + ")";
+		} else if (qdt instanceof DBLineSegment2D) {
+			return "AsText(" + selectableName + ")";
 		} else {
 			return selectableName;
 		}
@@ -126,6 +132,7 @@ public class MySQLDBDefinition extends DBDefinition {
 	public String getStandardDeviationFunctionName() {
 		return "STDDEV_SAMP";
 	}
+
 	@Override
 	public String doSubsecondTransform(String dateExpression) {
 		return "(EXTRACT(MICROSECOND FROM " + dateExpression + ")/1000000.0000000)";
@@ -206,7 +213,7 @@ public class MySQLDBDefinition extends DBDefinition {
 	public boolean supportsArraysNatively() {
 		return false;
 	}
-	
+
 	@Override
 	public String doDBPolygon2DFormatTransform(Polygon geom) {
 		String wktValue = geom.toText();
@@ -224,8 +231,13 @@ public class MySQLDBDefinition extends DBDefinition {
 	}
 
 	@Override
-	public String doPolygon2DContainsTransform(String firstGeometry, String secondGeometry) {
+	public String doPolygon2DContainsPolygon2DTransform(String firstGeometry, String secondGeometry) {
 		return "Contains(" + firstGeometry + ", " + secondGeometry + ")";
+	}
+
+	@Override
+	public String doPolygon2DContainsPoint2DTransform(String polygon2DSQL, String point2DSQL) {
+		return "Contains(" + polygon2DSQL+ ", " + point2DSQL + ")";
 	}
 
 	@Override
@@ -296,9 +308,9 @@ public class MySQLDBDefinition extends DBDefinition {
 
 	@Override
 	public String transformCoordinatesIntoDatabasePoint2DFormat(String xValue, String yValue) {
-		return "PointFromText('POINT (" + xValue+" "+yValue + ")')";
+		return "PointFromText('POINT (" + xValue + " " + yValue + ")')";
 	}
-	
+
 	@Override
 	public String doPoint2DEqualsTransform(String firstPoint, String secondPoint) {
 		return "Equals(" + firstPoint + ", " + secondPoint + ")";
@@ -365,4 +377,84 @@ public class MySQLDBDefinition extends DBDefinition {
 	public String doLine2DGetMinYTransform(String toSQLString) {
 		return "Y(PointN(ExteriorRing(Envelope(" + toSQLString + ")),1))";
 	}
+
+	@Override
+	public String doLine2DIntersectsLine2DTransform(String firstLine, String secondLine) {
+		return "Touches((" + firstLine + "), ("+secondLine+"))";
+	}	
+	
+	@Override
+	public String doLine2DIntersectionPointWithLine2DTransform(String firstLine, String secondLine) {
+		return "ST_Intersection((" + firstLine + "), ("+secondLine+"))";
+	}
+	
+	@Override
+	public LineSegment transformDatabaseLineSegment2DValueToJTSLineSegment(String lineSegmentAsSQL) throws com.vividsolutions.jts.io.ParseException {
+		LineString line = transformDatabaseLine2DValueToJTSLineString(lineSegmentAsSQL);
+		LineSegment lineSegment = new LineSegment(line.getCoordinateN(0), line.getCoordinateN(1));
+		return lineSegment;
+	}
+
+	@Override
+	public String transformLineSegmentIntoDatabaseLineSegment2DFormat(LineSegment lineSegment) {
+		LineString line = (new GeometryFactory()).createLineString(new Coordinate[]{lineSegment.getCoordinate(0),lineSegment.getCoordinate(1)});
+		return transformLineStringIntoDatabaseLine2DFormat(line);
+//		String wktValue = line.toText();
+//		return "'" + wktValue + "'";
+	}
+
+	@Override
+	public String doLineSegment2DIntersectsLineSegment2DTransform(String toSQLString, String toSQLString0) {
+		return doLine2DIntersectsLine2DTransform(toSQLString, toSQLString0);
+	}
+
+	@Override
+	public String doLineSegment2DGetMaxXTransform(String toSQLString) {
+		return doLine2DGetMaxXTransform(toSQLString);
+	}
+
+	@Override
+	public String doLineSegment2DGetMinXTransform(String toSQLString) {
+		return doLine2DGetMinXTransform(toSQLString);
+	}
+
+	@Override
+	public String doLineSegment2DGetMaxYTransform(String toSQLString) {
+		return doLine2DGetMaxYTransform(toSQLString);
+	}
+
+	@Override
+	public String doLineSegment2DGetMinYTransform(String toSQLString) {
+		return doLine2DGetMinYTransform(toSQLString);
+	}
+
+	@Override
+	public String doLineSegment2DGetBoundingBoxTransform(String toSQLString) {
+		return doLine2DGetBoundingBoxTransform(toSQLString);
+	}
+
+	@Override
+	public String doLineSegment2DDimensionTransform(String toSQLString) {
+		return doLine2DDimensionTransform(toSQLString);
+	}
+
+	@Override
+	public String doLineSegment2DNotEqualsTransform(String toSQLString, String toSQLString0) {
+		return doLine2DNotEqualsTransform(toSQLString, toSQLString0);
+	}
+
+	@Override
+	public String doLineSegment2DEqualsTransform(String toSQLString, String toSQLString0) {
+		return doLine2DEqualsTransform(toSQLString, toSQLString0);
+	}
+
+	@Override
+	public String doLineSegment2DAsTextTransform(String toSQLString) {
+		return doLine2DAsTextTransform(toSQLString);
+	}
+	@Override
+	public String doLineSegment2DIntersectionPointWithLineSegment2DTransform(String firstLineSegment, String secondLineSegment) {
+		return doLine2DIntersectionPointWithLine2DTransform(firstLineSegment,secondLineSegment);
+	}
+
 }

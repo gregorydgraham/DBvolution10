@@ -35,9 +35,28 @@ import nz.co.gregs.dbvolution.expressions.DBExpression;
  * @author Gregory Graham
  */
 public class ComparisonBetweenTwoDissimilarTypes extends DBRuntimeException {
-	
+
 	private static final long serialVersionUID = 1L;
 
+	/**
+	 * Thrown when the two data types used in a comparison does not support that
+	 * comparison.
+	 *
+	 * <p>
+	 * Theoretically no-one should ever see this exception but mistakes do happen.
+	 *
+	 * <p>
+	 * If it occurs check that you're not accidentally comparing LargeObject
+	 * columns (JavaObject, CLOB, BLOB, etc) as they support very few comparisons.
+	 *
+	 * <p>
+	 * Alternatively inform the developers and they will fix it.
+	 *
+	 * @author Gregory Graham
+	 * @param db
+	 * @param genericExpression
+	 * @param firstValue
+	 */
 	public ComparisonBetweenTwoDissimilarTypes(DBDatabase db, DBExpression genericExpression, DBExpression firstValue) {
 		super("Attempt To Compared Two Dissimilar Types: "
 				+ genericExpression.toSQLString(db)

@@ -92,7 +92,7 @@ public class JavaDBDefinition extends DBDefinition {
 
 	@Override
 	public String formatTableAlias(String tabRow) {
-		return "\"" + tabRow.replaceAll("-","_") + "\"";
+		return "\"" + tabRow.replaceAll("-", "_") + "\"";
 	}
 
 	@Override
@@ -158,7 +158,7 @@ public class JavaDBDefinition extends DBDefinition {
 
 	/**
 	 * JavaDB does not support the GREATESTOF operation natively.
-	 * 
+	 *
 	 * @return FALSE
 	 */
 	@Override
@@ -168,7 +168,7 @@ public class JavaDBDefinition extends DBDefinition {
 
 	/**
 	 * JavaDB does not support the LEASTOF operation natively.
-	 * 
+	 *
 	 * @return FALSE
 	 */
 	@Override

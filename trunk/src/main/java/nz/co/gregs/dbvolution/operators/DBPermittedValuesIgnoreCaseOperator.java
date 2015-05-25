@@ -23,54 +23,54 @@ import nz.co.gregs.dbvolution.expressions.StringExpression;
 
 public class DBPermittedValuesIgnoreCaseOperator extends DBMetaOperator {
 
-    private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 1L;
 
-    public DBPermittedValuesIgnoreCaseOperator(String... permitted) {
-        ArrayList<DBExpression> qdts = new ArrayList<DBExpression>();
-        for (String obj : permitted) {
-                qdts.add(getQueryableDatatypeForObject(obj));
-        }
-        if (permitted == null) {
-            operator = new DBIsNullOperator();
-        } else if (qdts.isEmpty()) {
-            operator = new DBIsNullOperator();
-        } else if (qdts.size() == 1) {
-            operator = new DBEqualsIgnoreCaseOperator(qdts.get(0));
-        } else {
-            operator = new DBInIgnoreCaseOperator(qdts);
-        }
-    }
+	public DBPermittedValuesIgnoreCaseOperator(String... permitted) {
+		ArrayList<DBExpression> qdts = new ArrayList<DBExpression>();
+		for (String obj : permitted) {
+			qdts.add(getQueryableDatatypeForObject(obj));
+		}
+		if (permitted == null) {
+			operator = new DBIsNullOperator();
+		} else if (qdts.isEmpty()) {
+			operator = new DBIsNullOperator();
+		} else if (qdts.size() == 1) {
+			operator = new DBEqualsIgnoreCaseOperator(qdts.get(0));
+		} else {
+			operator = new DBInIgnoreCaseOperator(qdts);
+		}
+	}
 
-    public DBPermittedValuesIgnoreCaseOperator(StringExpression[] permitted) {
-        ArrayList<DBExpression> qdts = new ArrayList<DBExpression>();
-        for (StringExpression obj : permitted) {
-                qdts.add(getQueryableDatatypeForObject(obj));
-        }
-        if (permitted == null) {
-            operator = new DBIsNullOperator();
-        } else if (qdts.isEmpty()) {
-            operator = new DBIsNullOperator();
-        } else if (qdts.size() == 1) {
-            operator = new DBEqualsIgnoreCaseOperator(qdts.get(0));
-        } else {
-            operator = new DBInIgnoreCaseOperator(qdts);
-        }
-    }
+	public DBPermittedValuesIgnoreCaseOperator(StringExpression[] permitted) {
+		ArrayList<DBExpression> qdts = new ArrayList<DBExpression>();
+		for (StringExpression obj : permitted) {
+			qdts.add(getQueryableDatatypeForObject(obj));
+		}
+		if (permitted == null) {
+			operator = new DBIsNullOperator();
+		} else if (qdts.isEmpty()) {
+			operator = new DBIsNullOperator();
+		} else if (qdts.size() == 1) {
+			operator = new DBEqualsIgnoreCaseOperator(qdts.get(0));
+		} else {
+			operator = new DBInIgnoreCaseOperator(qdts);
+		}
+	}
 
-    public DBPermittedValuesIgnoreCaseOperator(Collection<String> permitted) {
-        ArrayList<DBExpression> qdts = new ArrayList<DBExpression>();
-        for (String obj : permitted) {
-            qdts.add(getQueryableDatatypeForObject(obj));
-        }
-        if (permitted == null) {
-            operator = new DBIsNullOperator();
-        } else if (qdts.isEmpty()) {
-            operator = new DBIsNullOperator();
-        } else if (qdts.size() == 1) {
-            operator = new DBEqualsIgnoreCaseOperator(qdts.get(0));
-        } else {
-            operator = new DBInIgnoreCaseOperator(qdts);
-        }
-    }
+	public DBPermittedValuesIgnoreCaseOperator(Collection<String> permitted) {
+		ArrayList<DBExpression> qdts = new ArrayList<DBExpression>();
+		for (String obj : permitted) {
+			qdts.add(getQueryableDatatypeForObject(obj));
+		}
+		if (permitted == null) {
+			operator = new DBIsNullOperator();
+		} else if (qdts.isEmpty()) {
+			operator = new DBIsNullOperator();
+		} else if (qdts.size() == 1) {
+			operator = new DBEqualsIgnoreCaseOperator(qdts.get(0));
+		} else {
+			operator = new DBInIgnoreCaseOperator(qdts);
+		}
+	}
 
 }

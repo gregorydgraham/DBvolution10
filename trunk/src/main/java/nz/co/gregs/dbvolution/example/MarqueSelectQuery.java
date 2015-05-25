@@ -63,7 +63,6 @@ public class MarqueSelectQuery extends DBRow {
 	@DBPrimaryKey
 	public DBInteger uidMarque = new DBInteger();
 
-
 	/**
 	 * A DBString field representing the "isusedfortafros" column in the database.
 	 *
@@ -92,9 +91,9 @@ public class MarqueSelectQuery extends DBRow {
 	 * and protects the actual database column name from any refactoring.
 	 *
 	 * <p>
-	 * DBInteger indicates that the field is INTEGER or NUMBER field that naturally
-	 * provides Integer values in Java. It has an instance as that just makes
-	 * everyone's life easier.
+	 * DBInteger indicates that the field is INTEGER or NUMBER field that
+	 * naturally provides Integer values in Java. It has an instance as that just
+	 * makes everyone's life easier.
 	 *
 	 */
 	@DBForeignKey(CarCompany.class)

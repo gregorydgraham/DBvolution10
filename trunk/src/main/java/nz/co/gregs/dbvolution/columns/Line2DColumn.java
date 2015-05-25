@@ -27,16 +27,18 @@ import nz.co.gregs.dbvolution.query.RowDefinition;
  *
  * @author Gregory Graham
  */
-public class Line2DColumn  extends Line2DExpression implements ColumnProvider{
+public class Line2DColumn extends Line2DExpression implements ColumnProvider {
+
 	private final AbstractColumn column;
 
 	/**
-	 * Creates a portable reference to the column represented by the field of the row.
+	 * Creates a portable reference to the column represented by the field of the
+	 * row.
 	 *
 	 * @param row
 	 * @param field
 	 */
-	public Line2DColumn(RowDefinition row, DBLine2D field) {	
+	public Line2DColumn(RowDefinition row, DBLine2D field) {
 		this.column = new AbstractColumn(row, field);
 	}
 
@@ -48,12 +50,12 @@ public class Line2DColumn  extends Line2DExpression implements ColumnProvider{
 	@Override
 	public void setUseTableAlias(boolean useTableAlias) {
 		this.column.setUseTableAlias(useTableAlias);
-	}	
+	}
 
-    @Override
-    public String toSQLString(DBDatabase db) {
-        return column.toSQLString(db);
-    }
+	@Override
+	public String toSQLString(DBDatabase db) {
+		return column.toSQLString(db);
+	}
 
 	@Override
 	public Set<DBRow> getTablesInvolved() {

@@ -31,15 +31,15 @@ import org.junit.Test;
  *
  * @author gregory.graham
  */
-public class DBDateOnlyTest extends AbstractTest{
+public class DBDateOnlyTest extends AbstractTest {
 
 	public DBDateOnlyTest(Object testIterationName, Object db) {
 		super(testIterationName, db);
 	}
-	
 
 	/**
 	 * Test of getSQLDatatype method, of class DBDateOnly.
+	 *
 	 * @throws java.sql.SQLException
 	 */
 	@Test
@@ -56,16 +56,17 @@ public class DBDateOnlyTest extends AbstractTest{
 		database.preventDroppingOfTables(false);
 		database.dropTableNoExceptions(dateOnlyTest);
 	}
-	
-	public static class DateOnlyTest extends DBRow{
+
+	public static class DateOnlyTest extends DBRow {
+
 		private static final long serialVersionUID = 1L;
 		@DBColumn
 		@DBPrimaryKey
 		@DBAutoIncrement
 		DBInteger ddateonlypk = new DBInteger();
-		
+
 		@DBColumn
 		DBDateOnly dateOnly = new DBDateOnly();
 	}
-	
+
 }

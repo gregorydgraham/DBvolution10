@@ -33,7 +33,7 @@ package nz.co.gregs.dbvolution.expressions;
  */
 public interface DateResult extends DBExpression, ExpressionCanHaveNullValues {
 
-    @Override
-    public DateResult copy();
+	@Override
+	public DateResult copy();
 
 }

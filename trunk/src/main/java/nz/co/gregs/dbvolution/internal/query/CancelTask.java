@@ -35,7 +35,7 @@ public class CancelTask extends TimerTask {
 	public void run() {
 		try {
 //			if (!query.isClosed()) {
-				query.cancel();
+			query.cancel();
 //			}
 			System.err.println("CANCELLING TASK");
 		} catch (SQLException ex) {

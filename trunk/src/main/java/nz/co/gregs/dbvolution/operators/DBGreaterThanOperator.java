@@ -32,36 +32,36 @@ import nz.co.gregs.dbvolution.expressions.StringResult;
  */
 public class DBGreaterThanOperator extends DBOperator {
 
-    private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 1L;
 
-    /**
-     *
-     */
-    public DBGreaterThanOperator() {
-        super();
-        this.firstValue = null;
-    }
+	/**
+	 *
+	 */
+	public DBGreaterThanOperator() {
+		super();
+		this.firstValue = null;
+	}
 
-    public DBGreaterThanOperator(DBExpression greaterThanThis) {
-        super();
-        this.firstValue = greaterThanThis == null ? greaterThanThis : greaterThanThis.copy();
-    }
+	public DBGreaterThanOperator(DBExpression greaterThanThis) {
+		super();
+		this.firstValue = greaterThanThis == null ? greaterThanThis : greaterThanThis.copy();
+	}
 
-    public String getInverse() {
-        return " <= ";
-    }
+	public String getInverse() {
+		return " <= ";
+	}
 
-    public String getOperator() {
-        return " > ";
-    }
+	public String getOperator() {
+		return " > ";
+	}
 
-    @Override
-    public DBGreaterThanOperator copyAndAdapt(DBSafeInternalQDTAdaptor typeAdaptor) {
-    	DBGreaterThanOperator op = new DBGreaterThanOperator(typeAdaptor.convert(firstValue));
-    	op.invertOperator = this.invertOperator;
-    	op.includeNulls = this.includeNulls;
-    	return op;
-    }
+	@Override
+	public DBGreaterThanOperator copyAndAdapt(DBSafeInternalQDTAdaptor typeAdaptor) {
+		DBGreaterThanOperator op = new DBGreaterThanOperator(typeAdaptor.convert(firstValue));
+		op.invertOperator = this.invertOperator;
+		op.includeNulls = this.includeNulls;
+		return op;
+	}
 
 	@Override
 	public BooleanExpression generateWhereExpression(DBDatabase db, DBExpression column) {

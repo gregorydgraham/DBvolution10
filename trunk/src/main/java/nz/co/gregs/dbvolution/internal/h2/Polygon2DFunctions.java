@@ -22,7 +22,7 @@ import java.sql.Statement;
  *
  * @author gregorygraham
  */
-public enum Polygon2DFunctions {
+public enum Polygon2DFunctions implements Functions {
 
 	CREATE_FROM_WKTPOLYGON2D("String", "String wkt", "return wkt;"),
 	//	GETPOLYGON_FROM_WKTPOLYGON2D("Polygon", "String wkt",
@@ -284,8 +284,11 @@ public enum Polygon2DFunctions {
 			+ "						Polygon firstPoly = (Polygon) firstGeometry;\n"
 			+ "						final LineString exteriorRing = firstPoly.getExteriorRing();\n"
 			+ "						exteriorRing.normalize();\n"
-			+ "						Polygon exteriorPolygon = (new GeometryFactory()).createPolygon(exteriorRing.getCoordinateSequence());\n"
-			+ "						return exteriorPolygon.toText();\n"
+			//+ "						Polygon exteriorPolygon = (new GeometryFactory()).createPolygon(exteriorRing.getCoordinateSequence());\n"
+			//+ "						return exteriorPolygon.toText();\n"
+			+ "						LineString createLineString = (new GeometryFactory()).createLineString(exteriorRing.getCoordinateSequence());\n"
+			+ "						Geometry reverse = createLineString.reverse();\n"
+			+ "						return reverse.toText();\n"
 			+ "					} else {\n"
 			+ "						return null;"
 			+ "					}\n"
@@ -293,7 +296,7 @@ public enum Polygon2DFunctions {
 			+ "			} catch (Exception ex) {\n"
 			+ "				throw new RuntimeException(\"Failed To Parse SQLite Polygon\", ex);\n"
 			+ "			}"),
-	CONTAINS("Boolean", "String firstPolyStr, String secondPolyStr", ""
+	CONTAINS_POLYGON2D("Boolean", "String firstPolyStr, String secondPolyStr", ""
 			+ "			try {\n"
 			+ "				if (firstPolyStr == null || secondPolyStr == null) {\n"
 			+ "					return null;\n"
@@ -305,6 +308,26 @@ public enum Polygon2DFunctions {
 			+ "					if ((firstGeometry instanceof Polygon)&&(secondGeometry instanceof Polygon)) {\n"
 			+ "						Polygon firstPoly = (Polygon) firstGeometry;\n"
 			+ "						Polygon secondPoly = (Polygon) secondGeometry;\n"
+			+ "						return firstPoly.contains(secondPoly);\n"
+			+ "					}else{"
+			+ "						return false;"
+			+ "					}"
+			+ "				}\n"
+			+ "			} catch (Exception ex) {\n"
+			+ "				throw new RuntimeException(\"Failed To Parse Polygon\", ex);\n"
+			+ "			}"),
+	CONTAINS_POINT2D("Boolean", "String firstPolyStr, String secondPolyStr", ""
+			+ "			try {\n"
+			+ "				if (firstPolyStr == null || secondPolyStr == null) {\n"
+			+ "					return null;\n"
+			+ "				} else {\n"
+			+ "					WKTReader wktReader = new WKTReader();\n"
+			+ "					GeometryFactory factory = new GeometryFactory();\n"
+			+ "					Geometry firstGeometry = wktReader.read(firstPolyStr);\n"
+			+ "					Geometry secondGeometry = wktReader.read(secondPolyStr);\n"
+			+ "					if ((firstGeometry instanceof Polygon)&&(secondGeometry instanceof Point)) {\n"
+			+ "						Polygon firstPoly = (Polygon) firstGeometry;\n"
+			+ "						Point secondPoly = (Point) secondGeometry;\n"
 			+ "						return firstPoly.contains(secondPoly);\n"
 			+ "					}else{"
 			+ "						return false;"
@@ -408,12 +431,13 @@ public enum Polygon2DFunctions {
 		return "DBV_POLYGON2D_" + name();
 	}
 
+	@Override
 	public void add(Statement stmt) throws SQLException {
-//		try {
-//			stmt.execute("DROP ALIAS " + alias() + ";");
-//		} catch (SQLException sqlex) {
-//			;
-//		}
+		try {
+			stmt.execute("DROP ALIAS " + alias() + ";");
+		} catch (SQLException sqlex) {
+			;
+		}
 		if (code.isEmpty()) {
 			stmt.execute("CREATE ALIAS IF NOT EXISTS " + alias() + " DETERMINISTIC AS $$ \n"
 					+ "import com.vividsolutions.jts.geom.*; import com.vividsolutions.jts.io.*;\n import java.util.*;\n" + "@CODE " + returnType + " " + alias() + "(" + parameters + ") {\n throw new UnsupportedOperationException(\"Not supported yet.\");} $$;");

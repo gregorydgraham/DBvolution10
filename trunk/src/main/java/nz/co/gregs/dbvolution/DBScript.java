@@ -32,7 +32,8 @@ import nz.co.gregs.dbvolution.actions.DBActionList;
  *
  * <p>
  * Use {@link DBDatabase#implement(nz.co.gregs.dbvolution.DBScript)} or 
- * {@link DBScript#implement(nz.co.gregs.dbvolution.DBDatabase) } to run the script within a Committed Transaction.
+ * {@link DBScript#implement(nz.co.gregs.dbvolution.DBDatabase) } to run the
+ * script within a Committed Transaction.
  *
  * <p>
  * DBvolution is available on <a
@@ -49,13 +50,13 @@ public abstract class DBScript {
 	 *
 	 * Call test() or implement() to safely run the script within a transaction.
 	 *
-	 * Use the {@link DBActionList} to collect the script's actions for saving
-	 * or later use.
+	 * Use the {@link DBActionList} to collect the script's actions for saving or
+	 * later use.
 	 *
-	 * @param db	 db	
+	 * @param db	db
 	 * @return DBActionList
 	 * @throws java.lang.Exception java.lang.Exception
-	 
+	 *
 	 */
 	public abstract DBActionList script(DBDatabase db) throws Exception;
 
@@ -73,10 +74,10 @@ public abstract class DBScript {
 	 * When the script executes without exceptions the changes will be committed
 	 * and made permanent.
 	 *
-	 * @param db	 db	
+	 * @param db	db
 	 * @return a DBActionList of all the actions performed on the database
 	 * @throws java.lang.Exception java.lang.Exception
-	 
+	 *
 	 */
 	public final DBActionList implement(DBDatabase db) throws Exception {
 		DBTransaction<DBActionList> trans = getDBTransaction();
@@ -96,10 +97,10 @@ public abstract class DBScript {
 	 * <P>
 	 * Any exceptions will cause the script to abort and rollback safely.
 	 *
-	 * @param db	 db	
+	 * @param db	db
 	 * @return a DBActionList of all the actions performed on the database
 	 * @throws java.lang.Exception java.lang.Exception
-	 
+	 *
 	 */
 	public final DBActionList test(DBDatabase db) throws Exception {
 		DBTransaction<DBActionList> trans = getDBTransaction();

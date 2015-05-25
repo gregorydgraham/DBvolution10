@@ -38,8 +38,8 @@ public class DBDeleteByExample extends DBDelete {
 	private List<DBRow> savedRows = new ArrayList<DBRow>();
 
 	/**
-	 * Creates a DBDeleteByExample action for the supplied example DBRow on the supplied
-	 * database.
+	 * Creates a DBDeleteByExample action for the supplied example DBRow on the
+	 * supplied database.
 	 *
 	 * @param <R> the table affected
 	 * @param row the example to be deleted
@@ -110,8 +110,8 @@ public class DBDeleteByExample extends DBDelete {
 	}
 
 	/**
-	 * Returns the list of actions required to delete rows matching the example supplied on the
-	 * database supplied.
+	 * Returns the list of actions required to delete rows matching the example
+	 * supplied on the database supplied.
 	 *
 	 * <p>
 	 * While it is unlikely that more than one action is required to delete, all

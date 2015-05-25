@@ -21,7 +21,7 @@ package nz.co.gregs.dbvolution.expressions;
  */
 public interface DateRepeatResult extends DBExpression, ExpressionCanHaveNullValues {
 
-    @Override
-    public DateRepeatResult copy();
-	
+	@Override
+	public DateRepeatResult copy();
+
 }

@@ -60,7 +60,6 @@ public class DateColumn extends DateExpression implements ColumnProvider {
 		this.column = new AbstractColumn(row, field);
 	}
 
-
 	/**
 	 * Create a DateColumn for the supplied field of the supplied row
 	 *
@@ -109,14 +108,15 @@ public class DateColumn extends DateExpression implements ColumnProvider {
 	public boolean isPurelyFunctional() {
 		return getTablesInvolved().isEmpty();
 	}
-	
+
 	/**
-	 * Create an expression to compare this column to the other column using EQUALS.
+	 * Create an expression to compare this column to the other column using
+	 * EQUALS.
 	 *
-	 * @param dateColumn 
+	 * @param dateColumn
 	 * @return a BooleanExpression
 	 */
-	public BooleanExpression is(DBDate dateColumn){
+	public BooleanExpression is(DBDate dateColumn) {
 		return super.is(dateColumn);
 	}
 }

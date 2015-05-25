@@ -16,10 +16,11 @@
 package nz.co.gregs.dbvolution.datatypes;
 
 /**
- * Translates between a target object's property type
- * and the type used by DBvolution.
- * 
- * <p> On the DBvolution side, the following types are supported:
+ * Translates between a target object's property type and the type used by
+ * DBvolution.
+ *
+ * <p>
+ * On the DBvolution side, the following types are supported:
  * <ul>
  * <li> String
  * <li> Integer, Long
@@ -27,26 +28,30 @@ package nz.co.gregs.dbvolution.datatypes;
  * <li> Boolean
  * <li> arbitrary object type (requires the use of DBJavaObject)
  * </ul>
- * 
- * <p> If the target object's property is a DBvolution type, then
- * the supported types are the same as above. Otherwise
- * any object type can be used that is assignable with the type of the
- * property this adaptor is used on. 
- * 
+ *
+ * <p>
+ * If the target object's property is a DBvolution type, then the supported
+ * types are the same as above. Otherwise any object type can be used that is
+ * assignable with the type of the property this adaptor is used on.
+ *
  * @param <J> the Java side type of the property on the target Java object
- * @param <D> the database side type: the type of the property once translated for DBvolution use
+ * @param <D> the database side type: the type of the property once translated
+ * for DBvolution use
  */
 public interface DBTypeAdaptor<J, D> {
+
 	/**
 	 * Null values must be handled correctly.
-	 * @param dbValue	 dbValue	
+	 *
+	 * @param dbValue	dbValue
 	 * @return The database value transformed into the Java value
 	 */
 	public J fromDatabaseValue(D dbValue);
 
 	/**
 	 * Null values must be handled correctly.
-	 * @param javaValue	 javaValue	
+	 *
+	 * @param javaValue	javaValue
 	 * @return The Java value transformed into the database value
 	 */
 	public D toDatabaseValue(J javaValue);

@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package nz.co.gregs.dbvolution.databases;
 
 import java.sql.SQLException;
@@ -27,17 +26,16 @@ import nz.co.gregs.dbvolution.DBDatabase;
  */
 public class PostgresDBOverSSL extends PostgresDB {
 
-
 	/**
 	 * Creates a {@link DBDatabase } instance for the data source.
 	 *
-	 * @param ds	 ds	
-	 * @throws java.sql.SQLException	
+	 * @param ds	ds
+	 * @throws java.sql.SQLException
 	 */
 	public PostgresDBOverSSL(DataSource ds) throws SQLException {
-        super(ds);
-    }
-	
+		super(ds);
+	}
+
 	/**
 	 * Creates a DBDatabase for a PostgreSQL database over SSL.
 	 *
@@ -50,8 +48,8 @@ public class PostgresDBOverSSL extends PostgresDB {
 	 * @throws java.sql.SQLException
 	 */
 	public PostgresDBOverSSL(String hostname, int port, String databaseName, String username, String password, String urlExtras) throws SQLException {
-        super(hostname, port, databaseName, username, password, "ssl=true&sslfactory=org.postgresql.ssl.NonValidatingFactory"+(urlExtras==null||urlExtras.isEmpty()?"":"&"+urlExtras));
-    }
+		super(hostname, port, databaseName, username, password, "ssl=true&sslfactory=org.postgresql.ssl.NonValidatingFactory" + (urlExtras == null || urlExtras.isEmpty() ? "" : "&" + urlExtras));
+	}
 
 	/**
 	 * Creates a DBDatabase for a PostgreSQL database over SSL.
@@ -64,12 +62,12 @@ public class PostgresDBOverSSL extends PostgresDB {
 	 * @throws java.sql.SQLException
 	 */
 	public PostgresDBOverSSL(String hostname, int port, String databaseName, String username, String password) throws SQLException {
-        this(hostname, port, databaseName, username, password, "");
-    }
+		this(hostname, port, databaseName, username, password, "");
+	}
 
 	@Override
 	public DBDatabase clone() throws CloneNotSupportedException {
 		return super.clone(); //To change body of generated methods, choose Tools | Templates.
 	}
-    
+
 }

@@ -53,7 +53,7 @@ public class DBInsertLargeObjects extends DBUpdateLargeObjects {
 	}
 
 	@Override
-	protected DBActionList getActions(){
+	protected DBActionList getActions() {
 		return new DBActionList(new DBInsertLargeObjects(getRow()));
 	}
 

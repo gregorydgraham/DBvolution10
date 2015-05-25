@@ -54,26 +54,26 @@ import nz.co.gregs.dbvolution.DBRow;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface DBForeignKey {
 
-    /**
-     * Identifies the foreign table by its {@code DBRow} implementation class.
-     *
-     * @return the DBRow subclass that this foreign key references.
-     */
-    Class<? extends DBRow> value();
+	/**
+	 * Identifies the foreign table by its {@code DBRow} implementation class.
+	 *
+	 * @return the DBRow subclass that this foreign key references.
+	 */
+	Class<? extends DBRow> value();
 
-    /**
-     * Identifies the foreign column by column name. This must be a column in
-     * the foreign class.
-     *
-     * <p>
-     * If not specified, and the foreign class as exactly one primary key
-     * column, the primary key of the foreign class is used.
-     * <p>
-     * Must be specified if the foreign class has no primary key, or if it has
-     * multiple primary key columns (not supported yet).
-     *
-     * @return the name of the column this foreign key references.
-     */
-    String column() default "";
-		
+	/**
+	 * Identifies the foreign column by column name. This must be a column in the
+	 * foreign class.
+	 *
+	 * <p>
+	 * If not specified, and the foreign class as exactly one primary key column,
+	 * the primary key of the foreign class is used.
+	 * <p>
+	 * Must be specified if the foreign class has no primary key, or if it has
+	 * multiple primary key columns (not supported yet).
+	 *
+	 * @return the name of the column this foreign key references.
+	 */
+	String column() default "";
+
 }

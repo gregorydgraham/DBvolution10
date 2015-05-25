@@ -21,39 +21,39 @@ import nz.co.gregs.dbvolution.query.RowDefinition;
  */
 public class RowDefinitionWrapperFactory {
 
-    /**
-     * Thread-safety: access to this object must be synchronized on it
-     */
-    private final Map<Class<?>, RowDefinitionClassWrapper> classWrappersByClass = new HashMap<Class<?>, RowDefinitionClassWrapper>();
+	/**
+	 * Thread-safety: access to this object must be synchronized on it
+	 */
+	private final Map<Class<?>, RowDefinitionClassWrapper> classWrappersByClass = new HashMap<Class<?>, RowDefinitionClassWrapper>();
 
-    /**
-     * Gets the class adaptor for the given class. If an adaptor for the given
-     * class has not yet been created, one will be created and added to the
-     * internal cache.
-     *
+	/**
+	 * Gets the class adaptor for the given class. If an adaptor for the given
+	 * class has not yet been created, one will be created and added to the
+	 * internal cache.
+	 *
 	 * @param clazz clazz
-     * @return the class adaptor
-     */
-    public RowDefinitionClassWrapper classWrapperFor(Class<? extends RowDefinition> clazz) {
-        synchronized (classWrappersByClass) {
-            RowDefinitionClassWrapper wrapper = classWrappersByClass.get(clazz);
-            if (wrapper == null) {
-                wrapper = new RowDefinitionClassWrapper(clazz);
-                classWrappersByClass.put(clazz, wrapper);
-            }
-            return wrapper;
-        }
-    }
+	 * @return the class adaptor
+	 */
+	public RowDefinitionClassWrapper classWrapperFor(Class<? extends RowDefinition> clazz) {
+		synchronized (classWrappersByClass) {
+			RowDefinitionClassWrapper wrapper = classWrappersByClass.get(clazz);
+			if (wrapper == null) {
+				wrapper = new RowDefinitionClassWrapper(clazz);
+				classWrappersByClass.put(clazz, wrapper);
+			}
+			return wrapper;
+		}
+	}
 
-    /**
-     * Gets the object adaptor for the given object. If an adaptor for the
-     * object's class has not yet been created, one will be created and added to
-     * the internal cache.
-     *
-     * @param object the DBRow instance to wrap
-     * @return the object adaptor for the given object
-     */
-    public RowDefinitionInstanceWrapper instanceWrapperFor(RowDefinition object) {
-        return classWrapperFor(object.getClass()).instanceWrapperFor(object);
-    }
+	/**
+	 * Gets the object adaptor for the given object. If an adaptor for the
+	 * object's class has not yet been created, one will be created and added to
+	 * the internal cache.
+	 *
+	 * @param object the DBRow instance to wrap
+	 * @return the object adaptor for the given object
+	 */
+	public RowDefinitionInstanceWrapper instanceWrapperFor(RowDefinition object) {
+		return classWrapperFor(object.getClass()).instanceWrapperFor(object);
+	}
 }

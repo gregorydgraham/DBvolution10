@@ -50,7 +50,6 @@ public class OuterJoinTest extends AbstractTest {
 //		Assert.assertThat(testableSQL(carCo.getRelationshipsAsSQL(database, mrq, opts)), is(testableSQL(expectedString)));
 //
 //	}
-
 	@Test
 	public void testANSIInnerJoinQueryCreation() throws Exception {
 		Marque mrq = new Marque();

@@ -11,8 +11,8 @@
  * DBDatabase sub-classes that include all the tweaks required to make
  * DBvolution work perfectly on the supported databases.
  * <p>
- * Most databases will work for most of DBvolution without any
- * changes but I don't ship them until they pass 100% of the tests.
+ * Most databases will work for most of DBvolution without any changes but I
+ * don't ship them until they pass 100% of the tests.
  * <p>
  * I've been writing SQL for 20 years and DBV is easier, I hope you like it.
  * <p>

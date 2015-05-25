@@ -20,29 +20,29 @@ import java.util.List;
 import nz.co.gregs.dbvolution.DBRow;
 
 public class TreeNode<T extends DBRow> {
-	
+
 	private final List<TreeNode<T>> children = new ArrayList<TreeNode<T>>();
 	private final List<String> childrenData = new ArrayList<String>();
 	private TreeNode<T> parent = null;
 	private T data = null;
-	
+
 	public TreeNode(T data) {
 		this.data = data;
 	}
-	
+
 	public TreeNode(T data, TreeNode<T> parent) {
 		this.data = data;
 		this.parent = parent;
 	}
-	
+
 	public List<TreeNode<T>> getChildren() {
 		return children;
 	}
-	
+
 	private void setParent(TreeNode<T> parent) {
 		this.parent = parent;
 	}
-	
+
 	public void addChild(T data) {
 		TreeNode<T> child = new TreeNode<T>(data);
 		child.setParent(this);
@@ -51,7 +51,7 @@ public class TreeNode<T extends DBRow> {
 			this.childrenData.add(data.getPrimaryKey().stringValue());
 		}
 	}
-	
+
 	public void addChild(TreeNode<T> child) {
 		child.setParent(this);
 		if (notAlreadyIncluded(child)) {
@@ -59,31 +59,31 @@ public class TreeNode<T extends DBRow> {
 			this.childrenData.add(child.getData().getPrimaryKey().stringValue());
 		}
 	}
-	
+
 	private boolean notAlreadyIncluded(TreeNode<T> child) {
 		return !this.children.contains(child) && !childrenData.contains(child.getData().getPrimaryKey().stringValue());
 	}
-	
+
 	public T getData() {
 		return this.data;
 	}
-	
+
 	public void setData(T data) {
 		this.data = data;
 	}
-	
+
 	public boolean isRoot() {
 		return (this.parent == null);
 	}
-	
+
 	public boolean isLeaf() {
 		return this.children.isEmpty();
 	}
-	
+
 	public void removeParent() {
 		this.parent = null;
 	}
-	
+
 	public TreeNode<T> getParent() {
 		return this.parent;
 	}

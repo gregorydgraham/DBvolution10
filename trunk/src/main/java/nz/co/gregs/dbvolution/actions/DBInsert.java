@@ -72,8 +72,8 @@ public class DBInsert extends DBAction {
 	/**
 	 * Saves the row to the database.
 	 *
-	 * Creates the appropriate actions to save the row permanently in the
-	 * database and executes them.
+	 * Creates the appropriate actions to save the row permanently in the database
+	 * and executes them.
 	 * <p>
 	 * Supports automatic retrieval of the new primary key in limited cases:
 	 * <ul>

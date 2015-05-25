@@ -15,6 +15,7 @@
  */
 package nz.co.gregs.dbvolution.databases.definitions;
 
+import com.vividsolutions.jts.geom.Polygon;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
@@ -31,6 +32,7 @@ import nz.co.gregs.dbvolution.datatypes.spatial2D.DBPolygon2D;
 import nz.co.gregs.dbvolution.expressions.BooleanExpression;
 import nz.co.gregs.dbvolution.expressions.DBExpression;
 import nz.co.gregs.dbvolution.internal.oracle.Line2DFunctions;
+import nz.co.gregs.dbvolution.internal.oracle.Polygon2DFunctions;
 import nz.co.gregs.dbvolution.internal.oracle.StringFunctions;
 import nz.co.gregs.dbvolution.query.QueryOptions;
 
@@ -282,10 +284,10 @@ public class OracleDBDefinition extends DBDefinition {
 		return "(EXTRACT(SECOND FROM (CAST(" + otherDateValue + " AS TIMESTAMP) - CAST(" + dateValue + " AS TIMESTAMP)))"
 				+ "+(" + doMinuteDifferenceTransform(dateValue, otherDateValue) + "*60))";
 	}
-	
+
 	@Override
 	public String doSubsecondTransform(String dateExpression) {
-		return doSecondTransform(dateExpression)+"-"+doRoundTransform(doSecondTransform(dateExpression));
+		return doSecondTransform(dateExpression) + "-" + doRoundTransform(doSecondTransform(dateExpression));
 	}
 
 	@Override
@@ -304,7 +306,7 @@ public class OracleDBDefinition extends DBDefinition {
 		builder.append("))");
 		return builder.toString();
 	}
-	
+
 	@Override
 	public Object getOrderByDirectionClause(Boolean sortOrder) {
 		if (sortOrder == null) {
@@ -323,7 +325,7 @@ public class OracleDBDefinition extends DBDefinition {
 
 	@Override
 	public String doSelectFromRecursiveTable(String recursiveTableAlias, String recursiveAliases) {
-		return " SELECT " + recursiveAliases +", "+getRecursiveQueryDepthColumnName()+ " FROM " + recursiveTableAlias + " ORDER BY "+getRecursiveQueryDepthColumnName()+" ASC ";
+		return " SELECT " + recursiveAliases + ", " + getRecursiveQueryDepthColumnName() + " FROM " + recursiveTableAlias + " ORDER BY " + getRecursiveQueryDepthColumnName() + " ASC ";
 	}
 
 	/**
@@ -331,8 +333,8 @@ public class OracleDBDefinition extends DBDefinition {
 	 * generation i.e. {@link DBTableClassGenerator}.
 	 *
 	 * <p>
-	 * By default this method returns null as system tables are not a problem
-	 * for most databases.
+	 * By default this method returns null as system tables are not a problem for
+	 * most databases.
 	 *
 	 * @return
 	 */
@@ -344,7 +346,7 @@ public class OracleDBDefinition extends DBDefinition {
 	@Override
 	public String doDayOfWeekTransform(String dateSQL) {
 //		return " (TO_CHAR("+dateSQL+",'D')+1)";
-		return "DECODE(trim(to_char(("+dateSQL+"), 'Day', 'NLS_DATE_LANGUAGE=ENGLISH')), 'Sunday', 1, 'Monday', 2, 'Tuesday', 3, 'Wednesday', 4, 'Thursday', 5, 'Friday', 6, 'Saturday', 7)";
+		return "DECODE(trim(to_char((" + dateSQL + "), 'Day', 'NLS_DATE_LANGUAGE=ENGLISH')), 'Sunday', 1, 'Monday', 2, 'Tuesday', 3, 'Wednesday', 4, 'Thursday', 5, 'Friday', 6, 'Saturday', 7)";
 	}
 
 	@Override
@@ -373,41 +375,127 @@ public class OracleDBDefinition extends DBDefinition {
 
 	@Override
 	public String doLine2DAsTextTransform(String line2DSQL) {
-		return "("+line2DSQL+")";
+		return "(" + line2DSQL + ")";
 	}
 
 	@Override
 	public String doLine2DGetMinYTransform(String toSQLString) {
-		return Line2DFunctions.MINY+"("+toSQLString+")";
+		return Line2DFunctions.MINY + "(" + toSQLString + ")";
 	}
 
 	@Override
 	public String doLine2DGetMaxYTransform(String toSQLString) {
-		return Line2DFunctions.MAXY+"("+toSQLString+")";
+		return Line2DFunctions.MAXY + "(" + toSQLString + ")";
 	}
 
 	@Override
 	public String doLine2DGetMinXTransform(String toSQLString) {
-		return Line2DFunctions.MINX+"("+toSQLString+")";
+		return Line2DFunctions.MINX + "(" + toSQLString + ")";
 	}
 
 	@Override
 	public String doLine2DGetMaxXTransform(String toSQLString) {
-		return Line2DFunctions.MAXX+"("+toSQLString+")";
+		return Line2DFunctions.MAXX + "(" + toSQLString + ")";
 	}
 
 	@Override
 	public String doLine2DGetBoundingBoxTransform(String toSQLString) {
-		return Line2DFunctions.BOUNDINGBOX+"("+toSQLString+")";
+		return Line2DFunctions.BOUNDINGBOX + "(" + toSQLString + ")";
 	}
-	
+
 	@Override
 	public String doSubstringBeforeTransform(String afterThis, String butBeforeThis) {
-		return StringFunctions.SUBSTRINGBEFORE+"("+afterThis+", "+butBeforeThis+")";
+		return StringFunctions.SUBSTRINGBEFORE + "(" + afterThis + ", " + butBeforeThis + ")";
 	}
 
 	@Override
 	public String doSubstringAfterTransform(String fromThis, String afterThis) {
-		return StringFunctions.SUBSTRINGAFTER+"("+fromThis+", "+afterThis+")";
+		return StringFunctions.SUBSTRINGAFTER + "(" + fromThis + ", " + afterThis + ")";
+	}
+
+	@Override
+	public String doDBPolygon2DFormatTransform(Polygon geom) {
+		String wktValue = geom.toText();
+		return Polygon2DFunctions.CREATE_WKTPOLY2D + "('" + wktValue + "')";
+	}
+
+	@Override
+	public String doPolygon2DGetMinYTransform(String polygon2DSQL) {
+		return Polygon2DFunctions.MINY + "(" + polygon2DSQL + ")";
+	}
+
+	@Override
+	public String doPolygon2DGetMaxYTransform(String polygon2DSQL) {
+		return Polygon2DFunctions.MAXY + "(" + polygon2DSQL + ")";
+	}
+
+	@Override
+	public String doPolygon2DGetMinXTransform(String polygon2DSQL) {
+		return Polygon2DFunctions.MINX + "(" + polygon2DSQL + ")";
+	}
+
+	@Override
+	public String doPolygon2DGetMaxXTransform(String polygon2DSQL) {
+		return Polygon2DFunctions.MAXX + "(" + polygon2DSQL + ")";
+	}
+
+	@Override
+	public String doPolygon2DGetExteriorRingTransform(String polygon2DSQL) {
+		return Polygon2DFunctions.EXTERIORRING + "(" + polygon2DSQL + ")";
+	}
+
+	@Override
+	public String doPolygon2DGetAreaTransform(String polygon2DSQL) {
+		return Polygon2DFunctions.AREA + "(" + polygon2DSQL + ")";
+	}
+
+	@Override
+	public String doPolygon2DGetBoundingBoxTransform(String polygon2DSQL) {
+		return Polygon2DFunctions.BOUNDINGBOX + "(" + polygon2DSQL + ")";
+	}
+
+	@Override
+	public String doPolygon2DGetDimensionTransform(String toSQLString) {
+		return Polygon2DFunctions.DIMENSION + "(" + toSQLString + ")";
+	}
+
+	@Override
+	public String doPolygon2DWithinTransform(String firstGeometry, String secondGeometry) {
+		return Polygon2DFunctions.WITHIN + "(" + firstGeometry + ", " + secondGeometry + ")";	
+	}
+
+	@Override
+	public String doPolygon2DTouchesTransform(String firstGeometry, String secondGeometry) {
+		return Polygon2DFunctions.TOUCHES + "(" + firstGeometry + ", " + secondGeometry + ")";	
+	}
+
+	@Override
+	public String doPolygon2DOverlapsTransform(String firstGeometry, String secondGeometry) {
+		return Polygon2DFunctions.OVERLAPS + "(" + firstGeometry + ", " + secondGeometry + ")";	
+	}
+
+	@Override
+	public String doPolygon2DDoesNotIntersectTransform(String firstGeometry, String secondGeometry) {
+		return Polygon2DFunctions.DISJOINT + "(" + firstGeometry + ", " + secondGeometry + ")";	
+	}
+
+	@Override
+	public String doPolygon2DContainsPolygon2DTransform(String firstGeometry, String secondGeometry) {
+		return Polygon2DFunctions.CONTAINS + "(" + firstGeometry + ", " + secondGeometry + ")";	
+	}
+
+	@Override
+	public String doPolygon2DIntersectsTransform(String firstGeometry, String secondGeometry) {
+		return Polygon2DFunctions.INTERSECTS + "(" + firstGeometry + ", " + secondGeometry + ")";	
+	}
+
+	@Override
+	public String doPolygon2DIntersectionTransform(String firstGeometry, String secondGeometry) {
+		return Polygon2DFunctions.INTERSECTION + "(" + firstGeometry + ", " + secondGeometry + ")";	
+	}
+
+	@Override
+	public String doPolygon2DEqualsTransform(String firstGeometry, String secondGeometry) {
+		return "("+Polygon2DFunctions.EQUALS + "(" + firstGeometry + ", " + secondGeometry + ")=1)";
 	}
 }

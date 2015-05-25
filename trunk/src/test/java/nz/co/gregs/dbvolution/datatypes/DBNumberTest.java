@@ -31,15 +31,15 @@ import org.junit.Test;
  *
  * @author gregorygraham
  */
-public class DBNumberTest extends AbstractTest{
+public class DBNumberTest extends AbstractTest {
 
 	public DBNumberTest(Object testIterationName, Object db) {
 		super(testIterationName, db);
 	}
-	
 
 	/**
 	 * Test of getSQLDatatype method, of class DBDateOnly.
+	 *
 	 * @throws java.sql.SQLException
 	 */
 	@Test
@@ -48,13 +48,13 @@ public class DBNumberTest extends AbstractTest{
 		database.preventDroppingOfTables(false);
 		database.dropTableNoExceptions(numberTest);
 		database.createTable(numberTest);
-		
+
 		numberTest.numberColumn.setValue(2.2);
 		database.insert(numberTest);
 		List<NumberTest> allRows = database.getDBTable(new NumberTest()).setBlankQueryAllowed(true).getAllRows();
 		Assert.assertThat(allRows.size(), is(1));
 		Assert.assertThat(allRows.get(0).numberColumn.doubleValue(), is(2.2));
-		
+
 		numberTest = new NumberTest();
 		numberTest.numberColumn.setValue(new DBNumber(2L));
 		database.insert(numberTest);
@@ -62,68 +62,69 @@ public class DBNumberTest extends AbstractTest{
 		Assert.assertThat(allRows.size(), is(2));
 		Assert.assertThat(allRows.get(0).numberColumn.longValue(), is(2L));
 		Assert.assertThat(allRows.get(1).numberColumn.longValue(), is(2L));
-		
+
 		numberTest = new NumberTest();
-		numberTest.numberColumn.permittedRange(0.1,2.1);
+		numberTest.numberColumn.permittedRange(0.1, 2.1);
 		allRows = database.getDBTable(numberTest).getAllRows();
 		Assert.assertThat(allRows.size(), is(1));
 		Assert.assertThat(allRows.get(0).numberColumn.doubleValue(), is(2.0));
-		
+
 		numberTest = new NumberTest();
-		numberTest.numberColumn.excludedRange(0.1,2.1);
+		numberTest.numberColumn.excludedRange(0.1, 2.1);
 		allRows = database.getDBTable(numberTest).getAllRows();
 		Assert.assertThat(allRows.size(), is(1));
 		Assert.assertThat(allRows.get(0).numberColumn.doubleValue(), is(2.2));
-		
+
 		numberTest = new NumberTest();
-		numberTest.numberColumn.excludedRangeExclusive(0.1,2.1);
+		numberTest.numberColumn.excludedRangeExclusive(0.1, 2.1);
 		allRows = database.getDBTable(numberTest).getAllRows();
 		Assert.assertThat(allRows.size(), is(1));
 		Assert.assertThat(allRows.get(0).numberColumn.doubleValue(), is(2.2));
-		
+
 		numberTest = new NumberTest();
-		numberTest.numberColumn.permittedRangeExclusive(0.1,2.1);
+		numberTest.numberColumn.permittedRangeExclusive(0.1, 2.1);
 		allRows = database.getDBTable(numberTest).getAllRows();
 		Assert.assertThat(allRows.size(), is(1));
 		Assert.assertThat(allRows.get(0).numberColumn.doubleValue(), is(2.0));
-		
+
 		numberTest = new NumberTest();
-		numberTest.numberColumn.excludedRangeInclusive(0.1,2.1);
+		numberTest.numberColumn.excludedRangeInclusive(0.1, 2.1);
 		allRows = database.getDBTable(numberTest).getAllRows();
 		Assert.assertThat(allRows.size(), is(1));
 		Assert.assertThat(allRows.get(0).numberColumn.doubleValue(), is(2.2));
-		
+
 		numberTest = new NumberTest();
-		numberTest.numberColumn.permittedRangeInclusive(0.1,2.1);
+		numberTest.numberColumn.permittedRangeInclusive(0.1, 2.1);
 		allRows = database.getDBTable(numberTest).getAllRows();
 		Assert.assertThat(allRows.size(), is(1));
 		Assert.assertThat(allRows.get(0).numberColumn.doubleValue(), is(2.0));
-		
+
 		numberTest = new NumberTest();
-		numberTest.numberColumn.excludedValues(0.1,2.0);
+		numberTest.numberColumn.excludedValues(0.1, 2.0);
 		allRows = database.getDBTable(numberTest).getAllRows();
 		Assert.assertThat(allRows.size(), is(1));
 		Assert.assertThat(allRows.get(0).numberColumn.doubleValue(), is(2.2));
-		
+
 		numberTest = new NumberTest();
-		numberTest.numberColumn.permittedValues(0.1,2.0);
+		numberTest.numberColumn.permittedValues(0.1, 2.0);
 		allRows = database.getDBTable(numberTest).getAllRows();
 		Assert.assertThat(allRows.size(), is(1));
 		Assert.assertThat(allRows.get(0).numberColumn.doubleValue(), is(2.0));
-		
+
 		database.preventDroppingOfTables(false);
 		database.dropTableNoExceptions(numberTest);
 	}
-	
-	public static class NumberTest extends DBRow{
+
+	public static class NumberTest extends DBRow {
+
 		private static final long serialVersionUID = 1L;
 		@DBColumn
 		@DBPrimaryKey
 		@DBAutoIncrement
 		DBInteger ddateonlypk = new DBInteger();
-		
+
 		@DBColumn
 		DBNumber numberColumn = new DBNumber();
 	}
-	
+
 }

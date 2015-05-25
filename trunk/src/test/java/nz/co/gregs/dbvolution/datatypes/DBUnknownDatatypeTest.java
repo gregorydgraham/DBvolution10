@@ -26,7 +26,7 @@ import static org.junit.Assert.*;
  * @author gregorygraham
  */
 public class DBUnknownDatatypeTest {
-	
+
 	public DBUnknownDatatypeTest() {
 	}
 
@@ -73,5 +73,5 @@ public class DBUnknownDatatypeTest {
 		Set<DBRow> result = instance.getTablesInvolved();
 		assertEquals(0, result.size());
 	}
-	
+
 }

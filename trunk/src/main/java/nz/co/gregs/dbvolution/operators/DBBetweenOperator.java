@@ -31,34 +31,35 @@ import nz.co.gregs.dbvolution.expressions.StringResult;
  *
  * @author Gregory Graham
  */
-public class DBBetweenOperator extends DBOperator{
-    private static final long serialVersionUID = 1L;
-    
-    public DBBetweenOperator(int lowValue, int highValue){
-        this(NumberExpression.value(lowValue), NumberExpression.value(highValue));
-    }
-    
-    public DBBetweenOperator(String lowValue, String highValue){
-        this(StringExpression.value(lowValue), StringExpression.value(highValue));
-    }
-    
-    public DBBetweenOperator(Date lowValue, Date highValue){
-        this(DateExpression.value(lowValue), DateExpression.value(highValue));
-    }
-    
-    public DBBetweenOperator(DBExpression lowValue, DBExpression highValue){
-        super();
-        this.firstValue = lowValue==null?lowValue:lowValue.copy();
-        this.secondValue = highValue==null?highValue:highValue.copy();
-    }
-    
-    @Override
-    public DBBetweenOperator copyAndAdapt(DBSafeInternalQDTAdaptor typeAdaptor) {
-    	DBBetweenOperator op = new DBBetweenOperator(typeAdaptor.convert(firstValue), typeAdaptor.convert(secondValue));
-    	op.invertOperator = this.invertOperator;
-    	op.includeNulls = this.includeNulls;
-    	return op;
-    }
+public class DBBetweenOperator extends DBOperator {
+
+	private static final long serialVersionUID = 1L;
+
+	public DBBetweenOperator(int lowValue, int highValue) {
+		this(NumberExpression.value(lowValue), NumberExpression.value(highValue));
+	}
+
+	public DBBetweenOperator(String lowValue, String highValue) {
+		this(StringExpression.value(lowValue), StringExpression.value(highValue));
+	}
+
+	public DBBetweenOperator(Date lowValue, Date highValue) {
+		this(DateExpression.value(lowValue), DateExpression.value(highValue));
+	}
+
+	public DBBetweenOperator(DBExpression lowValue, DBExpression highValue) {
+		super();
+		this.firstValue = lowValue == null ? lowValue : lowValue.copy();
+		this.secondValue = highValue == null ? highValue : highValue.copy();
+	}
+
+	@Override
+	public DBBetweenOperator copyAndAdapt(DBSafeInternalQDTAdaptor typeAdaptor) {
+		DBBetweenOperator op = new DBBetweenOperator(typeAdaptor.convert(firstValue), typeAdaptor.convert(secondValue));
+		op.invertOperator = this.invertOperator;
+		op.includeNulls = this.includeNulls;
+		return op;
+	}
 
 	@Override
 	public BooleanExpression generateWhereExpression(DBDatabase db, DBExpression column) {
@@ -84,13 +85,13 @@ public class DBBetweenOperator extends DBOperator{
 				betweenOp = stringExpression.bracket().isBetween(firstStringExpr, secondStringExpr);
 			}
 		} else if ((genericExpression instanceof NumberExpression)
-				&&(firstValue instanceof NumberResult)
-				&&(secondValue instanceof NumberResult)) {
+				&& (firstValue instanceof NumberResult)
+				&& (secondValue instanceof NumberResult)) {
 			NumberExpression numberExpression = (NumberExpression) genericExpression;
 			betweenOp = numberExpression.isBetween((NumberResult) firstValue, (NumberResult) secondValue);
 		} else if ((genericExpression instanceof DateExpression)
-				&&(firstValue instanceof DateResult)
-				&&(secondValue instanceof DateResult)) {
+				&& (firstValue instanceof DateResult)
+				&& (secondValue instanceof DateResult)) {
 			DateExpression dateExpression = (DateExpression) genericExpression;
 			betweenOp = dateExpression.isBetween((DateResult) firstValue, (DateResult) secondValue);
 		}

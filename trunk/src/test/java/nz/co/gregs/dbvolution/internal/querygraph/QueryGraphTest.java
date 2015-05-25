@@ -36,11 +36,11 @@ import org.junit.Test;
  * @author gregorygraham
  */
 public class QueryGraphTest extends AbstractTest {
-	
+
 	@BeforeClass
 	public static void setUpClass() {
 	}
-	
+
 	@AfterClass
 	public static void tearDownClass() {
 	}
@@ -48,15 +48,14 @@ public class QueryGraphTest extends AbstractTest {
 	public QueryGraphTest(Object testIterationName, Object db) {
 		super(testIterationName, db);
 	}
-	
+
 	@Before
 	public void setUp() {
 	}
-	
+
 	@After
 	public void tearDown() {
 	}
-
 
 	/**
 	 * Test of getJungGraph method, of class QueryGraph.
@@ -70,5 +69,5 @@ public class QueryGraphTest extends AbstractTest {
 		Assert.assertNotNull(result);
 		Assert.assertThat(result.getClass().getSimpleName(), is(expResult.getClass().getSimpleName()));
 	}
-	
+
 }

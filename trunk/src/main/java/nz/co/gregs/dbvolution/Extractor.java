@@ -84,8 +84,8 @@ public abstract class Extractor extends DBScript {
 	}
 
 	/**
-	 * When Extractor has successfully extract some rows, they are handed to
-	 * this method for processing.
+	 * When Extractor has successfully extract some rows, they are handed to this
+	 * method for processing.
 	 *
 	 * @param rows
 	 * @throws Exception
@@ -96,8 +96,8 @@ public abstract class Extractor extends DBScript {
 	 * Using the database and bounds provided, construct the required query.
 	 *
 	 * <p>
-	 * Extractor does not know the query you want executed so this is the place
-	 * to add it.
+	 * Extractor does not know the query you want executed so this is the place to
+	 * add it.
 	 *
 	 * <p>
 	 * Choose one important table in your query and add the lower- and
@@ -133,9 +133,9 @@ public abstract class Extractor extends DBScript {
 	 * <p>
 	 * Works in conjuction with the
 	 * {@link #getQuery(nz.co.gregs.dbvolution.DBDatabase, int, int)} and
-	 * {@link #processRows(java.util.List)} method to provide a dynamic
-	 * extraction process that achieves fast results on unreliable or
-	 * under-resourced databases.
+	 * {@link #processRows(java.util.List)} method to provide a dynamic extraction
+	 * process that achieves fast results on unreliable or under-resourced
+	 * databases.
 	 *
 	 * @return @throws Exception
 	 */
@@ -362,15 +362,17 @@ public abstract class Extractor extends DBScript {
 	}
 
 	/**
-	 * Changes the default timeout for the underlying query during this extraction.
-	 * 
+	 * Changes the default timeout for the underlying query during this
+	 * extraction.
+	 *
 	 * <p>
-	 * DBvolution default timeout is 10000 milliseconds to avoid excessive queries.
-	 * 
+	 * DBvolution default timeout is 10000 milliseconds to avoid excessive
+	 * queries.
+	 *
 	 * <p>
 	 * Use this method to extend or reduce the timeout period as required.
-	 * 
-	 * @param milliseconds 
+	 *
+	 * @param milliseconds
 	 */
 	protected void setTimeoutInMilliseconds(Integer milliseconds) {
 		this.timeoutInMilliseconds = milliseconds;

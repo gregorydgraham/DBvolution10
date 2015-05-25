@@ -146,7 +146,7 @@ public class DBDatabaseGetTest extends AbstractTest {
 			Assert.assertEquals(gotMarques.size(), 2);
 		} else {
 			database.print(gotMarques);
-			Assert.assertEquals(gotMarques.size(), database.getDBTable(new Marque()).count()-1);
+			Assert.assertEquals(gotMarques.size(), database.getDBTable(new Marque()).count() - 1);
 		}
 		Assert.assertEquals(true, gotMarques.get(0).individualAllocationsAllowed.isNull());
 	}

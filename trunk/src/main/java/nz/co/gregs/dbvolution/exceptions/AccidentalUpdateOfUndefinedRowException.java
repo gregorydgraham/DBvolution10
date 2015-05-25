@@ -23,7 +23,7 @@ import nz.co.gregs.dbvolution.DBRow;
  */
 public class AccidentalUpdateOfUndefinedRowException extends RuntimeException {
 
-    private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 1L;
 
 	/**
 	 * Thrown when attempting to update an undefined DBRow.
@@ -31,7 +31,7 @@ public class AccidentalUpdateOfUndefinedRowException extends RuntimeException {
 	 * @param row row
 	 */
 	public AccidentalUpdateOfUndefinedRowException(DBRow row) {
-        super("Accidental Update Of Undefined Row: Only rows that exist on the database already can be updated. Please use only rows from the database or insert the row and retreive it before updating.");
-    }
+		super("Accidental Update Of Undefined Row: Only rows that exist on the database already can be updated. Please use only rows from the database or insert the row and retreive it before updating.");
+	}
 
 }

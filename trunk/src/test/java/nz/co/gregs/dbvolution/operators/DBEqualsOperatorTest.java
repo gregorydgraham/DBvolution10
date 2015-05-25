@@ -63,5 +63,5 @@ public class DBEqualsOperatorTest extends AbstractTest {
 		DBEqualsOperator instance = new DBEqualsOperator(new StringExpression("a string"));
 		BooleanExpression result = instance.generateWhereExpression(database, column);
 	}
-	
+
 }

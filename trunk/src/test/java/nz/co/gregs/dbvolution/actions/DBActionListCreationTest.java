@@ -133,22 +133,22 @@ public class DBActionListCreationTest extends AbstractTest {
 
 	@Test
 	public void insertAndRevertWithAutoIncrementTest() throws SQLException {
-		
+
 		CarCompanyWithAutoIncrement tvr = new CarCompanyWithAutoIncrement();
 		tvr.name.setValue("TVR");
-		
+
 		database.preventDroppingOfTables(false);
 		database.dropTableNoExceptions(tvr);
 		database.createTable(tvr);
-		
+
 		DBActionList insertTVRActions = database.insert(tvr);
 		Assert.assertThat(tvr.carcoId.intValue(), is(1));
-		
+
 		CarCompanyWithAutoIncrement hulme = new CarCompanyWithAutoIncrement();
 		hulme.name.setValue("HULME");
 		database.insert(hulme);
 		Assert.assertThat(hulme.carcoId.intValue(), is(2));
-		
+
 		CarCompanyWithAutoIncrement tvrExample = new CarCompanyWithAutoIncrement();
 		tvrExample.name.permittedValuesIgnoreCase("TVR");
 		CarCompanyWithAutoIncrement hulmeExample = new CarCompanyWithAutoIncrement();
@@ -157,7 +157,7 @@ public class DBActionListCreationTest extends AbstractTest {
 		Assert.assertThat(foundTVR.size(), is(1));
 		List<CarCompanyWithAutoIncrement> foundHulme = database.get(hulmeExample);
 		Assert.assertThat(foundHulme.size(), is(1));
-		
+
 		DBActionList revertTVRInsertActionList = insertTVRActions.getRevertActionList();
 		revertTVRInsertActionList.execute(database);
 		foundTVR = database.get(tvrExample);
@@ -165,17 +165,17 @@ public class DBActionListCreationTest extends AbstractTest {
 		foundHulme = database.get(hulmeExample);
 		Assert.assertThat(foundHulme.size(), is(1));
 	}
-	
-	@DBTableName("carcompany_auto")
-	public static class CarCompanyWithAutoIncrement extends DBRow{
 
-	private static final long serialVersionUID = 1L;
-	
+	@DBTableName("carcompany_auto")
+	public static class CarCompanyWithAutoIncrement extends DBRow {
+
+		private static final long serialVersionUID = 1L;
+
 		@DBColumn
 		@DBPrimaryKey
 		@DBAutoIncrement
 		public DBInteger carcoId = new DBInteger();
-		
+
 		@DBColumn
 		DBString name = new DBString();
 	}
@@ -308,7 +308,7 @@ public class DBActionListCreationTest extends AbstractTest {
 				anyOf(
 						is(this.testableSQLWithoutColumnAliases(standardSQL)),
 						is(this.testableSQLWithoutColumnAliases(microsoftSQL)),
-						is(this.testableSQLWithoutColumnAliases(oracleSQL))  
+						is(this.testableSQLWithoutColumnAliases(oracleSQL))
 				)
 		);
 

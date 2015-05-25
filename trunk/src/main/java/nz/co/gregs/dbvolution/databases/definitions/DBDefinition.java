@@ -15,8 +15,10 @@
  */
 package nz.co.gregs.dbvolution.databases.definitions;
 
+import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
+import com.vividsolutions.jts.geom.LineSegment;
 import com.vividsolutions.jts.geom.Polygon;
 import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.Point;
@@ -2403,7 +2405,6 @@ public abstract class DBDefinition {
 //	public String doMillisecondDifferenceTransform(String dateValue, String otherDateValue) {
 //		return "(DATEDIFF('MILLISECOND', " + dateValue + "," + otherDateValue + "))";
 //	}
-	
 	/**
 	 * Create a foreign key clause for use in a CREATE TABLE statement from the
 	 * {@link PropertyWrapper} provided.
@@ -3046,6 +3047,18 @@ public abstract class DBDefinition {
 	}
 
 	/**
+	 * Creates a Polygon2D representing the intersection of the Polygon2Ds.
+	 *
+	 * @param firstGeometry
+	 * @param secondGeometry
+	 * @return SQL that represents a polygon of the intersection, null if there is
+	 * no intersection.
+	 */
+	public String doPolygon2DIntersectionTransform(String firstGeometry, String secondGeometry) {
+		throw new UnsupportedOperationException("Spatial Operations Haven't Been Defined Yet");
+	}
+
+	/**
 	 * Test whether the 2 polygons intersect.
 	 *
 	 * @param firstGeometry
@@ -3063,7 +3076,7 @@ public abstract class DBDefinition {
 	 * @param secondGeometry
 	 * @return SQL that is TRUE if the first polygon contains the second.
 	 */
-	public String doPolygon2DContainsTransform(String firstGeometry, String secondGeometry) {
+	public String doPolygon2DContainsPolygon2DTransform(String firstGeometry, String secondGeometry) {
 		throw new UnsupportedOperationException("Geometry Operations Have Not Been Defined For This Database Yet.");
 	}
 
@@ -3094,9 +3107,13 @@ public abstract class DBDefinition {
 	/**
 	 * Tests whether the polygons touch.
 	 *
+	 * <p>
+	 * Checks that a) the polygons have at least on point in common and b) that
+	 * their interiors do not overlap.
+	 *
 	 * @param firstGeometry
 	 * @param secondGeometry
-	 * @return
+	 * @return SQL snippet
 	 */
 	public String doPolygon2DTouchesTransform(String firstGeometry, String secondGeometry) {
 		throw new UnsupportedOperationException("Geometry Operations Have Not Been Defined For This Database Yet.");
@@ -3106,7 +3123,7 @@ public abstract class DBDefinition {
 	 * Test whether the first polygon is completely within the second polygon.
 	 *
 	 * <p>
-	 * Compare this to {@link #doPolygon2DContainsTransform(java.lang.String, java.lang.String)
+	 * Compare this to {@link #doPolygon2DContainsPolygon2DTransform(java.lang.String, java.lang.String)
 	 * }
 	 *
 	 * @param firstGeometry
@@ -3154,7 +3171,7 @@ public abstract class DBDefinition {
 
 	/**
 	 * Defines the transformation require to transform an SQL Polygon2D into a
-	 * polygon representing the exterior ring of the polygon.
+	 * linestring representing the exterior ring of the polygon.
 	 *
 	 * @param polygon2DSQL
 	 * @return SQL
@@ -3500,6 +3517,17 @@ public abstract class DBDefinition {
 	}
 
 	/**
+	 * Transform the 2 Line2D SQL snippets into an NOT_EQUALS comparison of the 2
+	 *
+	 * @param line2DSQL
+	 * @param otherLine2DSQL
+	 * @return SQL
+	 */
+	public String doLine2DNotEqualsTransform(String line2DSQL, String otherLine2DSQL) {
+		return "NOT (" + doLine2DEqualsTransform(line2DSQL, otherLine2DSQL) + ")";
+	}
+
+	/**
 	 * Create the SQL required to get the dimension of this Line2D SQL.
 	 *
 	 * @param line2DSQL
@@ -3710,4 +3738,186 @@ public abstract class DBDefinition {
 		return true;
 	}
 
+	/**
+	 * Generates the SQL to determine whether the first (polygon) argument contains the second point argument.
+	 *
+	 * @param polygon2DSQL
+	 * @param point2DSQL
+	 * @return
+	 */
+	public String doPolygon2DContainsPoint2DTransform(String polygon2DSQL, String point2DSQL) {
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	}
+
+	/**
+	 * Generates the SQL required to find whether the 2 lines cross at any point.
+	 *
+	 * @param firstLine
+	 * @param secondLine
+	 * @return an SQL expression that will evaluate to TRUE FALSE or NULL, depending on whether the lines cross at any point.
+	 */
+	public String doLine2DIntersectsLine2DTransform(String firstLine, String secondLine) {
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	}
+
+	/**
+	 * Generate the SQL required to find the intersection point of the 2 line segment SQL expressions.
+	 *
+	 * @param firstLine
+	 * @param secondLine
+	 * @return an SQL expression that will evaluate to the intersection point of the 2 line segments or NULL.
+	 */
+	public String doLine2DIntersectionPointWithLine2DTransform(String firstLine, String secondLine) {
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	}
+
+	/**
+	 * Convert the String object returned by the database into a JTS LineSegment object.
+	 *
+	 * @param lineSegmentAsSQL
+	 * @return a JTS LineSegment derived from the database's response, may be null.
+	 * @throws com.vividsolutions.jts.io.ParseException
+	 */
+	public LineSegment transformDatabaseLineSegment2DValueToJTSLineSegment(String lineSegmentAsSQL) throws com.vividsolutions.jts.io.ParseException {
+		LineString lineString = null;
+		WKTReader wktReader = new WKTReader();
+		Geometry geometry = wktReader.read(lineSegmentAsSQL);
+		if (geometry instanceof LineString) {
+			lineString = (LineString) geometry;
+			if (lineSegmentAsSQL == null) {
+				return null;
+			} else {
+				return new LineSegment(lineString.getCoordinateN(0), lineString.getCoordinateN(1));
+			}
+		} else {
+			throw new IncorrectGeometryReturnedForDatatype(geometry, lineString);
+		}
+	}
+
+	/**
+	 * Convert the JTS LineSegment object into a SQL expression that the database will accept as a line segment.
+	 *
+	 * @param lineSegment
+	 * @return an SQL expression that can be interpreted by the database as a line segment.
+	 */
+	public String transformLineSegmentIntoDatabaseLineSegment2DFormat(LineSegment lineSegment) {
+		LineString line = (new GeometryFactory()).createLineString(new Coordinate[]{lineSegment.getCoordinate(0),lineSegment.getCoordinate(1)});
+		String wktValue = line.toText();
+		return "'" + wktValue + "'";
+	}
+
+	/**
+	 * Generates the database specific SQL for testing whether the 2 line segment expressions ever cross.
+	 *
+	 * @param firstSQL
+	 * @param secondSQL
+	 * @return an SQL expression that will report whether the 2 line segments intersect.
+	 * @see #doLineSegment2DIntersectionPointWithLineSegment2DTransform(java.lang.String, java.lang.String) 
+	 */
+	public String doLineSegment2DIntersectsLineSegment2DTransform(String firstSQL, String secondSQL) {
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	}
+
+	/**
+	 * Generate the SQL required to find the largest X value in the line segment SQL expression.
+	 *
+	 * @param lineSegment
+	 * @return SQL
+	 */
+	public String doLineSegment2DGetMaxXTransform(String lineSegment) {
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	}
+
+	/**
+	 * Generate the SQL required to find the smallest X value in the line segment SQL expression.
+	 * 
+	 * @param lineSegment
+	 * @return SQL
+	 */
+	public String doLineSegment2DGetMinXTransform(String lineSegment) {
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	}
+
+	/**
+	 * Generate the SQL required to find the largest Y value in the line segment SQL expression.
+	 *
+	 * @param lineSegment
+	 * @return SQL
+	 */
+	public String doLineSegment2DGetMaxYTransform(String lineSegment) {
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	}
+
+	/**
+	 * Generate the SQL required to find the smallest Y value in the line segment SQL expression.
+	 *
+	 * @param lineSegment
+	 * @return SQL
+	 */
+	public String doLineSegment2DGetMinYTransform(String lineSegment) {
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	}
+
+	/**
+	 * Generate the SQL required to the rectangular boundary that fully encloses the line segment SQL expression.
+	 *
+	 * @param lineSegment
+	 * @return SQL
+	 */
+	public String doLineSegment2DGetBoundingBoxTransform(String lineSegment) {
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	}
+
+	/**
+	 * Generate the SQL required to find the dimension of the line segment SQL expression.
+	 *
+	 * @param lineSegment
+	 * @return SQL
+	 */
+	public String doLineSegment2DDimensionTransform(String lineSegment) {
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	}
+
+	/**
+	 * Generate the SQL required to find whether the 2 line segment SQL expressions are NOT equal.
+	 *
+	 * @param firstLineSegment
+	 * @param secondLineSegment
+	 * @return SQL
+	 */
+	public String doLineSegment2DNotEqualsTransform(String firstLineSegment, String secondLineSegment) {
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	}
+
+	/**
+	 * Generate the SQL required to find whether the 2 line segment SQL expressions are equal.
+	 *
+	 * @param firstLineSegment
+	 * @param secondLineSegment
+	 * @return
+	 */
+	public String doLineSegment2DEqualsTransform(String firstLineSegment, String secondLineSegment) {
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	}
+
+	/**
+	 * Generate the SQL required to convert the line segment SQL expression into the WKT string format.
+	 *
+	 * @param lineSegment
+	 * @return
+	 */
+	public String doLineSegment2DAsTextTransform(String lineSegment) {
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	}
+
+	/**
+	 * Generate the SQL required to find the intersection point of the 2 line segment SQL expressions.
+	 *
+	 * @param firstLineSegment
+	 * @param secondLineSegment
+	 * @return an SQL expression that will evaluate to the intersection point of the 2 line segments or NULL.
+	 */
+	public String doLineSegment2DIntersectionPointWithLineSegment2DTransform(String firstLineSegment, String secondLineSegment) {
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	}
 }

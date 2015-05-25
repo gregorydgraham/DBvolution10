@@ -15,8 +15,15 @@
  */
 package nz.co.gregs.dbvolution.internal.sqlite;
 
+import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.LineString;
+import com.vividsolutions.jts.geom.Point;
+import com.vividsolutions.jts.geom.Polygon;
+import com.vividsolutions.jts.io.WKTReader;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.sqlite.Function;
 
 /**
@@ -38,6 +45,7 @@ public class Line2DFunctions {
 	public static String SPATIAL_LINE_MAX_Y_COORD_FUNCTION = "DBV_LINE_MAX_Y2D_COORD";
 	public static String SPATIAL_LINE_MIN_Y_COORD_FUNCTION = "DBV_LINE_MIN_Y2D_COORD";
 	public static String SPATIAL_LINE_MAX_X_COORD_FUNCTION = "DBV_LINE_MAX_X2D_COORD";
+	public static String INTERSECTS = "DBV_LINE2D_INTERSECTS_LINE2D";
 
 	private Line2DFunctions() {
 	}
@@ -52,9 +60,10 @@ public class Line2DFunctions {
 		Function.create(connection, GETDIMENSION_FUNCTION, new GetDimension());
 		Function.create(connection, GETBOUNDINGBOX_FUNCTION, new GetBoundingBox());
 		Function.create(connection, ASTEXT_FUNCTION, new AsText());
+		Function.create(connection, INTERSECTS, new Intersects());
 	}
 
-	private static class CreateFromCoords extends Function {
+	private static class CreateFromCoords extends PolygonFunction {
 //LINESTRING (2 3, 3 4)
 
 		@Override
@@ -82,7 +91,7 @@ public class Line2DFunctions {
 		}
 	}
 
-	private static class Equals extends Function {
+	private static class Equals extends PolygonFunction {
 
 		@Override
 		protected void xFunc() throws SQLException {
@@ -96,7 +105,7 @@ public class Line2DFunctions {
 		}
 	}
 
-	private static class GetMaxX extends Function {
+	private static class GetMaxX extends PolygonFunction {
 
 		@Override
 		protected void xFunc() throws SQLException {
@@ -109,7 +118,7 @@ public class Line2DFunctions {
 				for (int i = 1; i < split.length; i += 2) {
 					double x = Double.parseDouble(split[i]);
 //					double y = Double.parseDouble(split[i + 1]);
-					if (maxX==null || maxX<x){
+					if (maxX == null || maxX < x) {
 						maxX = x;
 					}
 				}
@@ -119,7 +128,7 @@ public class Line2DFunctions {
 
 	}
 
-	private static class GetMaxY extends Function {
+	private static class GetMaxY extends PolygonFunction {
 
 		@Override
 		protected void xFunc() throws SQLException {
@@ -132,7 +141,7 @@ public class Line2DFunctions {
 				for (int i = 1; i < split.length; i += 2) {
 //					double x = Double.parseDouble(split[i]);
 					double y = Double.parseDouble(split[i + 1]);
-					if (maxY==null || maxY<y){
+					if (maxY == null || maxY < y) {
 						maxY = y;
 					}
 				}
@@ -141,7 +150,7 @@ public class Line2DFunctions {
 		}
 	}
 
-	private static class GetMinX extends Function {
+	private static class GetMinX extends PolygonFunction {
 
 		@Override
 		protected void xFunc() throws SQLException {
@@ -154,7 +163,7 @@ public class Line2DFunctions {
 				for (int i = 1; i < split.length; i += 2) {
 					double x = Double.parseDouble(split[i]);
 //					double y = Double.parseDouble(split[i + 1]);
-					if (minX==null || minX>x){
+					if (minX == null || minX > x) {
 						minX = x;
 					}
 				}
@@ -164,7 +173,7 @@ public class Line2DFunctions {
 
 	}
 
-	private static class GetMinY extends Function {
+	private static class GetMinY extends PolygonFunction {
 
 		@Override
 		protected void xFunc() throws SQLException {
@@ -177,7 +186,7 @@ public class Line2DFunctions {
 				for (int i = 1; i < split.length; i += 2) {
 //					double x = Double.parseDouble(split[i]);
 					double y = Double.parseDouble(split[i + 1]);
-					if (minY==null || minY>y){
+					if (minY == null || minY > y) {
 						minY = y;
 					}
 				}
@@ -186,7 +195,34 @@ public class Line2DFunctions {
 		}
 	}
 
-	private static class GetDimension extends Function {
+	private static class Intersects extends PolygonFunction {
+
+		@Override
+		protected void xFunc() throws SQLException {
+			try {
+				String firstLineStr = value_text(0);
+				String secondLineStr = value_text(1);
+				if (firstLineStr == null) {
+					result();
+				} else if (secondLineStr == null) {
+					result();
+				} else {
+					LineString firstLine = getLineString(firstLineStr);
+					LineString secondLine = getLineString(secondLineStr);
+					if (firstLine == null || secondLine == null) {
+						result();
+					} else {
+						result(firstLine.intersects(secondLine)?1:0);
+					}
+				}
+			} catch (com.vividsolutions.jts.io.ParseException ex) {
+				Logger.getLogger(Line2DFunctions.class.getName()).log(Level.SEVERE, null, ex);
+				throw new RuntimeException("Failed To Parse SQLite Polygon", ex);
+			}
+		}
+	}
+
+	private static class GetDimension extends PolygonFunction {
 
 		@Override
 		protected void xFunc() throws SQLException {
@@ -194,7 +230,7 @@ public class Line2DFunctions {
 		}
 	}
 
-	private static class GetBoundingBox extends Function {
+	private static class GetBoundingBox extends PolygonFunction {
 
 		@Override
 		protected void xFunc() throws SQLException {
@@ -210,20 +246,20 @@ public class Line2DFunctions {
 				for (int i = 1; i < split.length; i += 2) {
 					double x = Double.parseDouble(split[i]);
 					double y = Double.parseDouble(split[i + 1]);
-					if (maxX==null || maxX<x){
+					if (maxX == null || maxX < x) {
 						maxX = x;
 					}
-					if (maxY==null || maxY<y){
+					if (maxY == null || maxY < y) {
 						maxY = y;
 					}
-					if (minX==null || minX>x){
+					if (minX == null || minX > x) {
 						minX = x;
 					}
-					if (minY==null || minY>y){
+					if (minY == null || minY > y) {
 						minY = y;
 					}
 				}
-				String resultString = "POLYGON ((" + minX+" "+minY + ", " + maxX+" "+minY + ", " + maxX+" "+maxY + ", " + minX+" "+maxY + ", " + minX+" "+minY + "))";
+				String resultString = "POLYGON ((" + minX + " " + minY + ", " + maxX + " " + minY + ", " + maxX + " " + maxY + ", " + minX + " " + maxY + ", " + minX + " " + minY + "))";
 				result(resultString);
 			}
 		}
@@ -237,4 +273,35 @@ public class Line2DFunctions {
 			result(point);
 		}
 	}
+
+	private static abstract class PolygonFunction extends Function {
+
+		Polygon getPolygon(String possiblePoly) throws com.vividsolutions.jts.io.ParseException {
+			WKTReader wktReader = new WKTReader();
+			Geometry firstGeom = wktReader.read(possiblePoly);
+			if (firstGeom instanceof Polygon) {
+				return (Polygon) firstGeom;
+			}
+			return null;
+		}
+
+		LineString getLineString(String possiblePoly) throws com.vividsolutions.jts.io.ParseException {
+			WKTReader wktReader = new WKTReader();
+			Geometry firstGeom = wktReader.read(possiblePoly);
+			if (firstGeom instanceof LineString) {
+				return (LineString) firstGeom;
+			}
+			return null;
+		}
+
+		Point getPoint(String possiblePoly) throws com.vividsolutions.jts.io.ParseException {
+			WKTReader wktReader = new WKTReader();
+			Geometry firstGeom = wktReader.read(possiblePoly);
+			if (firstGeom instanceof Point) {
+				return (Point) firstGeom;
+			}
+			return null;
+		}
+	}
+
 }

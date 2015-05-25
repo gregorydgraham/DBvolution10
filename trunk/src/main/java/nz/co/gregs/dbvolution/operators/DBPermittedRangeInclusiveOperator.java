@@ -13,29 +13,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package nz.co.gregs.dbvolution.operators;
 
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 
-
 public class DBPermittedRangeInclusiveOperator extends DBMetaOperator {
 
-    private static final long serialVersionUID = 1L;
-    
-       public DBPermittedRangeInclusiveOperator(Object lowerBound, Object upperBound) {
-        if (lowerBound != null && upperBound != null) {
-            operator = new DBBetweenInclusiveOperator(
-                    QueryableDatatype.getQueryableDatatypeForObject(lowerBound), 
-                    QueryableDatatype.getQueryableDatatypeForObject(upperBound));
-        } else if (lowerBound == null && upperBound != null) {
-            QueryableDatatype qdt = QueryableDatatype.getQueryableDatatypeForObject(upperBound);
+	private static final long serialVersionUID = 1L;
+
+	public DBPermittedRangeInclusiveOperator(Object lowerBound, Object upperBound) {
+		if (lowerBound != null && upperBound != null) {
+			operator = new DBBetweenInclusiveOperator(
+					QueryableDatatype.getQueryableDatatypeForObject(lowerBound),
+					QueryableDatatype.getQueryableDatatypeForObject(upperBound));
+		} else if (lowerBound == null && upperBound != null) {
+			QueryableDatatype qdt = QueryableDatatype.getQueryableDatatypeForObject(upperBound);
 //            qdt.setLiteralValue(upperBound);
-            operator = new DBLessThanOrEqualOperator(qdt);
-        } else if (lowerBound != null && upperBound == null) {
-            final QueryableDatatype qdt = QueryableDatatype.getQueryableDatatypeForObject(lowerBound);
+			operator = new DBLessThanOrEqualOperator(qdt);
+		} else if (lowerBound != null && upperBound == null) {
+			final QueryableDatatype qdt = QueryableDatatype.getQueryableDatatypeForObject(lowerBound);
 //            qdt.setLiteralValue(lowerBound);
-            operator = new DBGreaterThanOrEqualsOperator(qdt);
-        }
-    }
+			operator = new DBGreaterThanOrEqualsOperator(qdt);
+		}
+	}
 }

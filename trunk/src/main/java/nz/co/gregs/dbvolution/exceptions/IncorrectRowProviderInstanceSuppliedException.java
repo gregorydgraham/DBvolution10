@@ -39,16 +39,16 @@ public class IncorrectRowProviderInstanceSuppliedException extends RuntimeExcept
 	private static final long serialVersionUID = 1L;
 
 	/**
-	 * Thrown when the current object needs the supplied variable to be a field
-	 * of the object, but it isn't.
+	 * Thrown when the current object needs the supplied variable to be a field of
+	 * the object, but it isn't.
 	 */
 	public IncorrectRowProviderInstanceSuppliedException() {
 		super("The Field Supplied Is Not A Field Of This Instance: use only fields from this instance.");
 	}
 
 	/**
-	 * Thrown when the current object needs the supplied variable to be a field
-	 * of the object, but it isn't.
+	 * Thrown when the current object needs the supplied variable to be a field of
+	 * the object, but it isn't.
 	 *
 	 * @param row row
 	 * @param qdt qdt
@@ -58,10 +58,10 @@ public class IncorrectRowProviderInstanceSuppliedException extends RuntimeExcept
 	}
 
 	/**
-	 * Thrown when the current object needs the supplied variable to be a field
-	 * of the object, but it isn't.
+	 * Thrown when the current object needs the supplied variable to be a field of
+	 * the object, but it isn't.
 	 *
-	 * @param qdt	 qdt	
+	 * @param qdt	qdt
 	 * @return an IncorrectRowProviderInstanceSuppliedException
 	 */
 	public static IncorrectRowProviderInstanceSuppliedException newMultiRowInstance(Object qdt) {
@@ -78,10 +78,10 @@ public class IncorrectRowProviderInstanceSuppliedException extends RuntimeExcept
 	}
 
 	/**
-	 * Thrown when the current object needs the supplied variable to be a field
-	 * of the object, but it isn't.
+	 * Thrown when the current object needs the supplied variable to be a field of
+	 * the object, but it isn't.
 	 *
-	 * @param message	 message	
+	 * @param message	message
 	 */
 	public IncorrectRowProviderInstanceSuppliedException(String message) {
 		super(message);

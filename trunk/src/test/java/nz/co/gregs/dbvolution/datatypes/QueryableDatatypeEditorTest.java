@@ -26,8 +26,6 @@ import org.junit.Test;
  * @author gregorygraham
  */
 public class QueryableDatatypeEditorTest {
-		
-
 
 	@Before
 	public void setUp() {
@@ -44,7 +42,7 @@ public class QueryableDatatypeEditorTest {
 	public void testSetFormat() {
 		System.out.println("setFormat");
 		String format = "";
-		QueryableDatatypeEditor instance = new  QueryableDatatypeEditor();
+		QueryableDatatypeEditor instance = new QueryableDatatypeEditor();
 		instance.setFormat(format);
 	}
 
@@ -56,11 +54,11 @@ public class QueryableDatatypeEditorTest {
 	public void testSetAsText() {
 		System.out.println("setAsText");
 		String fivePointOne = "5.1";
-		QueryableDatatypeEditor instance = new  QueryableDatatypeEditor();
+		QueryableDatatypeEditor instance = new QueryableDatatypeEditor();
 		instance.setAsText(fivePointOne);
 		Assert.assertThat(((QueryableDatatype) instance.getValue()).stringValue(), is("5.1"));
-		
-		instance = new  QueryableDatatypeEditor();
+
+		instance = new QueryableDatatypeEditor();
 		instance.setValue(new DBInteger());
 		instance.setAsText(fivePointOne);
 		Assert.assertThat(((QueryableDatatype) instance.getValue()).stringValue(), is("5"));

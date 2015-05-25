@@ -265,7 +265,6 @@ public class DBDateRepeatTest extends AbstractTest {
 //		@DBColumn
 //		DBNumber addedMillis = new DBNumber(this.column(this.creationDate).addMilliseconds(5).getDateRepeatFrom(march23rd2013).getMilliseconds());
 //	}
-
 //	@Test
 //	public void testGetMilliseconds() throws SQLException {
 //		DateRepeatMilliseconds marq = new DateRepeatMilliseconds();
@@ -279,7 +278,6 @@ public class DBDateRepeatTest extends AbstractTest {
 //		database.print(allRows);
 //		Assert.assertThat(allRows.size(), is(18));
 //	}
-
 	@Test
 	public void testParsing() {
 		String twoYearPlusDateRepeat = "P2Y-1M0D11h32n53s";
@@ -316,7 +314,6 @@ public class DBDateRepeatTest extends AbstractTest {
 //		String resultDate = DateRepeatImpl.repeatFromTwoDates(march23rd2013, march23rd2013Plus5Millis);
 //		Assert.assertThat(resultDate,anyOf(is("P0Y0M0D0h0n0.0050s"),is("P0Y0M0D0h0n0.005s")));
 //	}
-
 	public static class DateRepeatTable extends DBRow {
 
 		private static final long serialVersionUID = 1L;

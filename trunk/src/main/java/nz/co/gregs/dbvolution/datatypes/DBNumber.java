@@ -70,7 +70,7 @@ public class DBNumber extends QueryableDatatype implements NumberResult {
 	 * Used in {@link DBReport}, and some {@link DBRow}, sub-classes to derive
 	 * data from the database prior to retrieval.
 	 *
-	 * @param numberExpression	 numberExpression	
+	 * @param numberExpression	numberExpression
 	 */
 	public DBNumber(NumberResult numberExpression) {
 		super(numberExpression);
@@ -79,7 +79,7 @@ public class DBNumber extends QueryableDatatype implements NumberResult {
 	/**
 	 * Creates a new DBNumber with the value set to the number provided.
 	 *
-	 * @param aNumber	 aNumber	
+	 * @param aNumber	aNumber
 	 */
 	public DBNumber(Number aNumber) {
 		super(aNumber);
@@ -87,7 +87,7 @@ public class DBNumber extends QueryableDatatype implements NumberResult {
 
 	/**
 	 *
-	 * @param aNumber	 aNumber	
+	 * @param aNumber	aNumber
 	 */
 	public DBNumber(Long aNumber) {
 		super(aNumber);
@@ -105,7 +105,7 @@ public class DBNumber extends QueryableDatatype implements NumberResult {
 	 * You probably want {@link #setValue(java.lang.Number)} or {@link #setValue(nz.co.gregs.dbvolution.datatypes.DBNumber)
 	 * }
 	 *
-	 
+	 *
 	 */
 	@Override
 	void setValue(Object newLiteralValue) {
@@ -125,7 +125,7 @@ public class DBNumber extends QueryableDatatype implements NumberResult {
 	 * This allows DBNumbers to be treated somewhat like normal numbers. However {@link #setValue(java.lang.Number)
 	 * } may be more useful in normal usage.
 	 *
-	 * @param newLiteralValue	 newLiteralValue	
+	 * @param newLiteralValue	newLiteralValue
 	 */
 	public void setValue(DBNumber newLiteralValue) {
 		setValue((newLiteralValue).getValue());
@@ -137,10 +137,9 @@ public class DBNumber extends QueryableDatatype implements NumberResult {
 	 *
 	 * <p>
 	 * This is probably the method you want to use to set or change the value of
-	 * this DBNumber. When creating a new row or updating an existing row use
-	 * this method or
-	 * {@link #setValue(nz.co.gregs.dbvolution.datatypes.DBNumber)} to correctly
-	 * set the value.
+	 * this DBNumber. When creating a new row or updating an existing row use this
+	 * method or {@link #setValue(nz.co.gregs.dbvolution.datatypes.DBNumber)} to
+	 * correctly set the value.
 	 *
 	 * <p>
 	 * Remember:</p>
@@ -151,7 +150,7 @@ public class DBNumber extends QueryableDatatype implements NumberResult {
 	 * } to make the changes permanent.</li>
 	 * </ul>
 	 *
-	 * @param newLiteralValue	 newLiteralValue	
+	 * @param newLiteralValue	newLiteralValue
 	 */
 	public void setValue(Number newLiteralValue) {
 		if (newLiteralValue == null) {
@@ -173,7 +172,7 @@ public class DBNumber extends QueryableDatatype implements NumberResult {
 
 	/**
 	 *
-	 * @param db	 db	
+	 * @param db	db
 	 * @return the underlying number formatted for a SQL statement
 	 */
 	@Override
@@ -200,8 +199,7 @@ public class DBNumber extends QueryableDatatype implements NumberResult {
 	}
 
 	/**
-	 * The current {@link #getValue()  literal value} of this DBNumber as a
-	 * Number
+	 * The current {@link #getValue()  literal value} of this DBNumber as a Number
 	 *
 	 * @return the number as the original number class
 	 */
@@ -216,8 +214,7 @@ public class DBNumber extends QueryableDatatype implements NumberResult {
 	}
 
 	/**
-	 * The current {@link #getValue()  literal value} of this DBNumber as a
-	 * Double
+	 * The current {@link #getValue()  literal value} of this DBNumber as a Double
 	 *
 	 * @return the number as a Double
 	 */
@@ -266,7 +263,7 @@ public class DBNumber extends QueryableDatatype implements NumberResult {
 			return Integer.parseInt(getLiteralValue().toString());
 		}
 	}
-	
+
 	@Override
 	public DBNumber getQueryableDatatypeForExpressionValue() {
 		return new DBNumber();
@@ -284,10 +281,9 @@ public class DBNumber extends QueryableDatatype implements NumberResult {
 
 	/**
 	 *
-	 * reduces the rows to only the object, Set, List, Array, or vararg of
-	 * objects
+	 * reduces the rows to only the object, Set, List, Array, or vararg of objects
 	 *
-	 * @param permitted	 permitted	
+	 * @param permitted	permitted
 	 */
 	public void permittedValues(Number... permitted) {
 		this.setOperator(new DBPermittedValuesOperator((Object[]) permitted));
@@ -295,10 +291,9 @@ public class DBNumber extends QueryableDatatype implements NumberResult {
 
 	/**
 	 *
-	 * reduces the rows to only the object, Set, List, Array, or vararg of
-	 * objects
+	 * reduces the rows to only the object, Set, List, Array, or vararg of objects
 	 *
-	 * @param permitted	 permitted	
+	 * @param permitted	permitted
 	 */
 	public void permittedValues(Collection<Number> permitted) {
 		this.setOperator(new DBPermittedValuesOperator(permitted));
@@ -306,10 +301,9 @@ public class DBNumber extends QueryableDatatype implements NumberResult {
 
 	/**
 	 *
-	 * reduces the rows to only the object, Set, List, Array, or vararg of
-	 * objects
+	 * reduces the rows to only the object, Set, List, Array, or vararg of objects
 	 *
-	 * @param permitted	 permitted	
+	 * @param permitted	permitted
 	 */
 	public void permittedValues(NumberResult... permitted) {
 		this.setOperator(new DBPermittedValuesOperator((Object[]) permitted));
@@ -320,7 +314,7 @@ public class DBNumber extends QueryableDatatype implements NumberResult {
 	 * excludes the object, Set, List, Array, or vararg of objects
 	 *
 	 *
-	 * @param excluded	 excluded	
+	 * @param excluded	excluded
 	 */
 	public void excludedValues(Number... excluded) {
 		this.setOperator(new DBPermittedValuesOperator((Object[]) excluded));
@@ -332,7 +326,7 @@ public class DBNumber extends QueryableDatatype implements NumberResult {
 	 * excludes the object, Set, List, Array, or vararg of objects
 	 *
 	 *
-	 * @param excluded	 excluded	
+	 * @param excluded	excluded
 	 */
 	public void excludedValues(Collection<Number> excluded) {
 		this.setOperator(new DBPermittedValuesOperator(excluded));
@@ -344,7 +338,7 @@ public class DBNumber extends QueryableDatatype implements NumberResult {
 	 * excludes the object, Set, List, Array, or vararg of objects
 	 *
 	 *
-	 * @param excluded	 excluded	
+	 * @param excluded	excluded
 	 */
 	public void excludedValues(NumberResult... excluded) {
 		this.setOperator(new DBPermittedValuesOperator((Object[]) excluded));
@@ -354,8 +348,8 @@ public class DBNumber extends QueryableDatatype implements NumberResult {
 	/**
 	 * Performs searches based on a range.
 	 *
-	 * if both ends of the range are specified the lower-bound will be included
-	 * in the search and the upper-bound excluded. I.e permittedRange(1,3) will
+	 * if both ends of the range are specified the lower-bound will be included in
+	 * the search and the upper-bound excluded. I.e permittedRange(1,3) will
 	 * return 1 and 2.
 	 *
 	 * <p>
@@ -378,8 +372,8 @@ public class DBNumber extends QueryableDatatype implements NumberResult {
 	/**
 	 * Performs searches based on a range.
 	 *
-	 * if both ends of the range are specified the lower-bound will be included
-	 * in the search and the upper-bound excluded. I.e permittedRange(1,3) will
+	 * if both ends of the range are specified the lower-bound will be included in
+	 * the search and the upper-bound excluded. I.e permittedRange(1,3) will
 	 * return 1 and 2.
 	 *
 	 * <p>
@@ -498,9 +492,9 @@ public class DBNumber extends QueryableDatatype implements NumberResult {
 	/**
 	 * Performs searches based on a range.
 	 *
-	 * if both ends of the range are specified the lower-bound will be within
-	 * the range and the upper-bound outside. I.e excludedRange(1,3) will
-	 * exclude 1 and 2.
+	 * if both ends of the range are specified the lower-bound will be within the
+	 * range and the upper-bound outside. I.e excludedRange(1,3) will exclude 1
+	 * and 2.
 	 *
 	 * <p>
 	 * if the upper-bound is null the range will be open ended and inclusive.
@@ -524,8 +518,8 @@ public class DBNumber extends QueryableDatatype implements NumberResult {
 	 * Performs searches based on a range.
 	 *
 	 * if both ends of the range are specified the lower-bound will be within in
-	 * the range and the upper-bound outside. I.e excludedRange(1,3) will
-	 * exclude 1 and 2.
+	 * the range and the upper-bound outside. I.e excludedRange(1,3) will exclude
+	 * 1 and 2.
 	 *
 	 * <p>
 	 * if the upper-bound is null the range will be open ended and inclusive.
@@ -549,8 +543,8 @@ public class DBNumber extends QueryableDatatype implements NumberResult {
 	 * Performs searches based on a range.
 	 *
 	 * if both ends of the range are specified both the lower- and upper-bound
-	 * will be included in the range. I.e excludedRangeInclusive(1,3) will
-	 * exclude 1, 2, and 3.
+	 * will be included in the range. I.e excludedRangeInclusive(1,3) will exclude
+	 * 1, 2, and 3.
 	 *
 	 * <p>
 	 * if the upper-bound is null the range will be open ended and inclusive.
@@ -574,8 +568,8 @@ public class DBNumber extends QueryableDatatype implements NumberResult {
 	 * Performs searches based on a range.
 	 *
 	 * if both ends of the range are specified both the lower- and upper-bound
-	 * will be included in the range. I.e excludedRangeInclusive(1,3) will
-	 * exclude 1, 2, and 3.
+	 * will be included in the range. I.e excludedRangeInclusive(1,3) will exclude
+	 * 1, 2, and 3.
 	 *
 	 * <p>
 	 * if the upper-bound is null the range will be open ended and inclusive.
@@ -599,8 +593,8 @@ public class DBNumber extends QueryableDatatype implements NumberResult {
 	 * Performs searches based on a range.
 	 *
 	 * if both ends of the range are specified both the lower- and upper-bound
-	 * will be excluded in the range. I.e excludedRangeExclusive(1,3) will
-	 * exclude 2.
+	 * will be excluded in the range. I.e excludedRangeExclusive(1,3) will exclude
+	 * 2.
 	 *
 	 * <p>
 	 * if the upper-bound is null the range will be open ended and exclusive.
@@ -624,8 +618,8 @@ public class DBNumber extends QueryableDatatype implements NumberResult {
 	 * Performs searches based on a range.
 	 *
 	 * if both ends of the range are specified both the lower- and upper-bound
-	 * will be excluded in the range. I.e excludedRangeExclusive(1,3) will
-	 * exclude 2.
+	 * will be excluded in the range. I.e excludedRangeExclusive(1,3) will exclude
+	 * 2.
 	 *
 	 * <p>
 	 * if the upper-bound is null the range will be open ended and exclusive.

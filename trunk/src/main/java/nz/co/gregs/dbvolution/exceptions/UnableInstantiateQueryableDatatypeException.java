@@ -22,7 +22,8 @@ import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
  * {@link QueryableDatatype} cannot be created as required.
  *
  * <p>
- * Generally this means your QDT does not have a publicly accessible default constructor.
+ * Generally this means your QDT does not have a publicly accessible default
+ * constructor.
  *
  * @author Gregory Graham
  */
@@ -31,7 +32,8 @@ public class UnableInstantiateQueryableDatatypeException extends DBRuntimeExcept
 	private static final long serialVersionUID = 1L;
 
 	/**
-	 * Thrown when a QueryableDatatype cannot be created using the {@link Class#newInstance() } method.
+	 * Thrown when a QueryableDatatype cannot be created using the {@link Class#newInstance()
+	 * } method.
 	 *
 	 * @param qdt qdt
 	 * @param exception exception

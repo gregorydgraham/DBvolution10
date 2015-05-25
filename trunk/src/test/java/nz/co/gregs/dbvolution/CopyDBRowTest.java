@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package nz.co.gregs.dbvolution;
 
 import java.sql.SQLException;
@@ -23,27 +22,26 @@ import static org.hamcrest.Matchers.*;
 import org.junit.Assert;
 import org.junit.Test;
 
-
 public class CopyDBRowTest extends AbstractTest {
 
-    public CopyDBRowTest(Object testIterationName, Object db) {
-        super(testIterationName, db);
-    }
-    
-    @Test
-    public void copyDBRowTest() throws SQLException{
-        DBTable<Marque> marqs = database.getDBTable(new Marque());
-        marqs.setBlankQueryAllowed(true);
-        Marque first = marqs.getAllRows().get(0);
-        Marque firstCopy = DBRow.copyDBRow(first);
-        System.out.println(first);
-        System.out.println(firstCopy);
-        Assert.assertThat(firstCopy,is(not(first)));
-        Assert.assertThat(firstCopy.name,not(sameInstance(first.name)));
-        Assert.assertThat(firstCopy.name,is(first.name));
-        Assert.assertThat(firstCopy.carCompany.getValue(),is(equalTo(first.carCompany.getValue())));
-        Assert.assertThat(firstCopy.name.getValue(),is(equalTo(first.name.getValue())));
-        Assert.assertThat(firstCopy.creationDate.getValue(),is(equalTo(first.creationDate.getValue())));
-    }
-    
+	public CopyDBRowTest(Object testIterationName, Object db) {
+		super(testIterationName, db);
+	}
+
+	@Test
+	public void copyDBRowTest() throws SQLException {
+		DBTable<Marque> marqs = database.getDBTable(new Marque());
+		marqs.setBlankQueryAllowed(true);
+		Marque first = marqs.getAllRows().get(0);
+		Marque firstCopy = DBRow.copyDBRow(first);
+		System.out.println(first);
+		System.out.println(firstCopy);
+		Assert.assertThat(firstCopy, is(not(first)));
+		Assert.assertThat(firstCopy.name, not(sameInstance(first.name)));
+		Assert.assertThat(firstCopy.name, is(first.name));
+		Assert.assertThat(firstCopy.carCompany.getValue(), is(equalTo(first.carCompany.getValue())));
+		Assert.assertThat(firstCopy.name.getValue(), is(equalTo(first.name.getValue())));
+		Assert.assertThat(firstCopy.creationDate.getValue(), is(equalTo(first.creationDate.getValue())));
+	}
+
 }

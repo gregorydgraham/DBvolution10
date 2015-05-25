@@ -23,8 +23,8 @@ import nz.co.gregs.dbvolution.query.QueryOptions;
  * database.
  *
  * <p>
- * This DBDefinition is automatically included in {@link Oracle12DB} instances, and
- * you should not need to use it directly.
+ * This DBDefinition is automatically included in {@link Oracle12DB} instances,
+ * and you should not need to use it directly.
  *
  * @author Gregory Graham
  */
@@ -39,7 +39,7 @@ public class Oracle12DBDefinition extends OracleDBDefinition {
 		} else {
 			long offset = pageNumber * rowLimit;
 
-			return " OFFSET " + offset + " ROWS FETCH NEXT " + rowLimit+" ROWS ONLY ";
+			return " OFFSET " + offset + " ROWS FETCH NEXT " + rowLimit + " ROWS ONLY ";
 		}
 	}
 }

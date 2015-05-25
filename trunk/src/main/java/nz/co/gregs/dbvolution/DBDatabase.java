@@ -1611,9 +1611,11 @@ public abstract class DBDatabase implements Cloneable {
 
 	/**
 	 * Removes a connection from the available pool.
-	 * 
-	 * You'll not need to use this unless you're replacing DBvolution's database connection handling.
-	 * @param connection 
+	 *
+	 * You'll not need to use this unless you're replacing DBvolution's database
+	 * connection handling.
+	 *
+	 * @param connection
 	 */
 	public synchronized void discardConnection(Connection connection) {
 		getConnectionList(busyConnections).remove(connection);

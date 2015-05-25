@@ -32,23 +32,22 @@ public class NuoDB extends DBDatabase {
 	private static final int NUODB_DEFAULT_PORT = 48004;
 	private static final String NUODB_DRIVER = "com.nuodb.jdbc.Driver";
 	private static final String NUODB_URL_PREFIX = "jdbc:com.nuodb://";
-	
+
 	@Override
 	public DBDatabase clone() throws CloneNotSupportedException {
 		return super.clone(); //To change body of generated methods, choose Tools | Templates.
 	}
 
-
 	/**
 	 * Creates a {@link DBDatabase } instance for the data source.
 	 *
-	 * @param ds	 ds	
-	 * @throws java.sql.SQLException	
+	 * @param ds	ds
+	 * @throws java.sql.SQLException
 	 */
 	public NuoDB(DataSource ds) throws SQLException {
-        super(new NuoDBDefinition(), ds);
-    }
-	
+		super(new NuoDBDefinition(), ds);
+	}
+
 	/**
 	 * Creates a DBDatabase instance tweaked for NuoDB using the broker supplied
 	 * on the default port for NuoDB.
@@ -81,7 +80,7 @@ public class NuoDB extends DBDatabase {
 	 * Creates a DBDatabase instance tweaked for NuoDB using the broker supplied
 	 * using the ports supplied for each broker.
 	 *
-	 * @param broker  a single NuoDB broker to use.
+	 * @param broker a single NuoDB broker to use.
 	 * @param port the port for the broker provided.
 	 * @param databaseName the database required from the brokers.
 	 * @param schema the schema on the database to be used.
@@ -95,7 +94,7 @@ public class NuoDB extends DBDatabase {
 		ports.add(port);
 		initNuoDB(brokers, ports, databaseName, schema, username, password);
 	}
-	
+
 	/**
 	 * Creates a DBDatabase instance tweaked for NuoDB using the broker supplied
 	 * using the ports supplied for each broker.

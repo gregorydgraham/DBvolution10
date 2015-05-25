@@ -43,8 +43,7 @@ public class DBTransactionStatement extends DBStatement {
 	private static final Log log = LogFactory.getLog(DBTransactionStatement.class);
 
 	/**
-	 * Creates a DBTransactionStatement for the given DBDatabase and
-	 * DBStatement.
+	 * Creates a DBTransactionStatement for the given DBDatabase and DBStatement.
 	 *
 	 * <p>
 	 * Used within {@link DBDatabase#doTransaction(nz.co.gregs.dbvolution.transactions.DBTransaction)

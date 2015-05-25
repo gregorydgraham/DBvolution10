@@ -73,12 +73,11 @@ abstract public class DBOperator implements Serializable {
 //		hash = 41 * hash + (this.expression != null ? this.expression.hashCode() : 0);
 //		return hash;
 //	}
-
 	@Override
 	public int hashCode() {
 		return super.hashCode();
 	}
-	
+
 	@Override
 	public boolean equals(Object otherObject) {
 		if (otherObject instanceof DBOperator) {

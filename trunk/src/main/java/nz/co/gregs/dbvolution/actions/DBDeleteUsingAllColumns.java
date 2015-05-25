@@ -40,8 +40,8 @@ public class DBDeleteUsingAllColumns extends DBDelete {
 	private List<DBRow> savedRows = new ArrayList<DBRow>();
 
 	/**
-	 * Creates a DBDeleteUsingAllColumns action for the supplied example DBRow on the supplied
-	 * database.
+	 * Creates a DBDeleteUsingAllColumns action for the supplied example DBRow on
+	 * the supplied database.
 	 *
 	 * @param <R> the table affected
 	 * @param row the row to be deleted

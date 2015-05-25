@@ -23,29 +23,29 @@ import java.beans.PropertyEditorSupport;
  */
 public class DBBooleanEditor extends PropertyEditorSupport {
 
-    private String format;
+	private String format;
 
-    /**
-     *
+	/**
+	 *
 	 * @param format format
-     */
-    public void setFormat(String format) {
-        this.format = format;
-    }
+	 */
+	public void setFormat(String format) {
+		this.format = format;
+	}
 
-    /**
-     *
+	/**
+	 *
 	 * @param text text
-     */
-    @Override
-    public void setAsText(String text) {
-        DBBoolean type;
-        if (text == null || text.isEmpty()) {
-            type = new DBBoolean();
-        } else {
-            type = new DBBoolean();
-            type.setValue(text.equalsIgnoreCase("true"));
-        }
-        setValue(type);
-    }
+	 */
+	@Override
+	public void setAsText(String text) {
+		DBBoolean type;
+		if (text == null || text.isEmpty()) {
+			type = new DBBoolean();
+		} else {
+			type = new DBBoolean();
+			type.setValue(text.equalsIgnoreCase("true"));
+		}
+		setValue(type);
+	}
 }
