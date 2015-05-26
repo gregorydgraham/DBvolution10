@@ -20,9 +20,7 @@ import java.sql.Statement;
 import javax.sql.DataSource;
 import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
-import nz.co.gregs.dbvolution.internal.oracle.Line2DFunctions;
-import nz.co.gregs.dbvolution.internal.oracle.Polygon2DFunctions;
-import nz.co.gregs.dbvolution.internal.oracle.StringFunctions;
+import nz.co.gregs.dbvolution.internal.oracle.*;
 
 /**
  * Super class for connecting the different versions of the Oracle DB.
@@ -87,6 +85,9 @@ public abstract class OracleDB extends DBDatabase {
 			fn.add(statement);
 		}
 		for (Line2DFunctions fn : Line2DFunctions.values()) {
+			fn.add(statement);
+		}
+		for (LineSegment2DFunctions fn : LineSegment2DFunctions.values()) {
 			fn.add(statement);
 		}
 		for (Polygon2DFunctions fn : Polygon2DFunctions.values()) {
