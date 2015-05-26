@@ -15,7 +15,13 @@
  */
 package nz.co.gregs.dbvolution.databases.definitions;
 
+import com.vividsolutions.jts.geom.Coordinate;
+import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.GeometryFactory;
+import com.vividsolutions.jts.geom.LineSegment;
+import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.Polygon;
+import com.vividsolutions.jts.io.WKTReader;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
@@ -27,11 +33,14 @@ import nz.co.gregs.dbvolution.datatypes.DBJavaObject;
 import nz.co.gregs.dbvolution.datatypes.DBString;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 import nz.co.gregs.dbvolution.datatypes.spatial2D.DBLine2D;
+import nz.co.gregs.dbvolution.datatypes.spatial2D.DBLineSegment2D;
 import nz.co.gregs.dbvolution.datatypes.spatial2D.DBPoint2D;
 import nz.co.gregs.dbvolution.datatypes.spatial2D.DBPolygon2D;
+import nz.co.gregs.dbvolution.exceptions.IncorrectGeometryReturnedForDatatype;
 import nz.co.gregs.dbvolution.expressions.BooleanExpression;
 import nz.co.gregs.dbvolution.expressions.DBExpression;
 import nz.co.gregs.dbvolution.internal.oracle.Line2DFunctions;
+import nz.co.gregs.dbvolution.internal.oracle.LineSegment2DFunctions;
 import nz.co.gregs.dbvolution.internal.oracle.Polygon2DFunctions;
 import nz.co.gregs.dbvolution.internal.oracle.StringFunctions;
 import nz.co.gregs.dbvolution.query.QueryOptions;
@@ -108,6 +117,8 @@ public class OracleDBDefinition extends DBDefinition {
 			return " VARCHAR(2002) ";
 		} else if (qdt instanceof DBPolygon2D) {
 			return " VARCHAR(2003) ";
+		} else if (qdt instanceof DBLineSegment2D) {
+			return " VARCHAR(2004) ";
 		} else {
 			return qdt.getSQLDatatype();
 		}
@@ -498,4 +509,123 @@ public class OracleDBDefinition extends DBDefinition {
 	public String doPolygon2DEqualsTransform(String firstGeometry, String secondGeometry) {
 		return "("+Polygon2DFunctions.EQUALS + "(" + firstGeometry + ", " + secondGeometry + ")=1)";
 	}
+	
+	@Override
+	public String doLineSegment2DIntersectsLineSegment2DTransform(String firstSQL, String secondSQL) {
+		return LineSegment2DFunctions.INTERSECTS_LSEG2D+"(("+firstSQL+"), ("+secondSQL+"))";
+	}
+
+	/**
+	 * Generate the SQL required to find the largest X value in the line segment SQL expression.
+	 *
+	 * @param lineSegment
+	 * @return SQL
+	 */
+	@Override
+	public String doLineSegment2DGetMaxXTransform(String lineSegment) {
+		return LineSegment2DFunctions.MAXX+"("+lineSegment+")";
+	}
+
+	/**
+	 * Generate the SQL required to find the smallest X value in the line segment SQL expression.
+	 * 
+	 * @param lineSegment
+	 * @return SQL
+	 */
+	@Override
+	public String doLineSegment2DGetMinXTransform(String lineSegment) {
+		return LineSegment2DFunctions.MINX+"("+lineSegment+")";
+	}
+
+	/**
+	 * Generate the SQL required to find the largest Y value in the line segment SQL expression.
+	 *
+	 * @param lineSegment
+	 * @return SQL
+	 */
+	@Override
+	public String doLineSegment2DGetMaxYTransform(String lineSegment) {
+		return LineSegment2DFunctions.MAXY+"("+lineSegment+")";
+	}
+
+	/**
+	 * Generate the SQL required to find the smallest Y value in the line segment SQL expression.
+	 *
+	 * @param lineSegment
+	 * @return SQL
+	 */
+	@Override
+	public String doLineSegment2DGetMinYTransform(String lineSegment) {
+		return LineSegment2DFunctions.MINY+"("+lineSegment+")";
+	}
+
+	/**
+	 * Generate the SQL required to the rectangular boundary that fully encloses the line segment SQL expression.
+	 *
+	 * @param lineSegment
+	 * @return SQL
+	 */
+	@Override
+	public String doLineSegment2DGetBoundingBoxTransform(String lineSegment) {
+		return LineSegment2DFunctions.BOUNDINGBOX+"("+lineSegment+")";
+	}
+
+	/**
+	 * Generate the SQL required to find the dimension of the line segment SQL expression.
+	 *
+	 * @param lineSegment
+	 * @return SQL
+	 */
+	@Override
+	public String doLineSegment2DDimensionTransform(String lineSegment) {
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	}
+
+	/**
+	 * Generate the SQL required to find whether the 2 line segment SQL expressions are NOT equal.
+	 *
+	 * @param firstLineSegment
+	 * @param secondLineSegment
+	 * @return SQL
+	 */
+	@Override
+	public String doLineSegment2DNotEqualsTransform(String firstLineSegment, String secondLineSegment) {
+		return " NOT "+LineSegment2DFunctions.EQUALS+"(("+firstLineSegment+"), ("+secondLineSegment+"))";
+	}
+
+	/**
+	 * Generate the SQL required to find whether the 2 line segment SQL expressions are equal.
+	 *
+	 * @param firstLineSegment
+	 * @param secondLineSegment
+	 * @return
+	 */
+	@Override
+	public String doLineSegment2DEqualsTransform(String firstLineSegment, String secondLineSegment) {
+		return "("+LineSegment2DFunctions.EQUALS+"(("+firstLineSegment+"), ("+secondLineSegment+"))=1)";
+	}
+
+	/**
+	 * Generate the SQL required to convert the line segment SQL expression into the WKT string format.
+	 *
+	 * @param lineSegment
+	 * @return
+	 */
+	@Override
+	public String doLineSegment2DAsTextTransform(String lineSegment) {
+		return lineSegment;
+	}
+
+	/**
+	 * Generate the SQL required to find the intersection point of the 2 line segment SQL expressions.
+	 *
+	 * @param firstLineSegment
+	 * @param secondLineSegment
+	 * @return an SQL expression that will evaluate to the intersection point of the 2 line segments or NULL.
+	 */
+	@Override
+	public String doLineSegment2DIntersectionPointWithLineSegment2DTransform(String firstLineSegment, String secondLineSegment) {
+		return LineSegment2DFunctions.INTERSECTPT_LSEG2D+"(("+firstLineSegment+"), ("+secondLineSegment+"))";
+	}
+
 }
