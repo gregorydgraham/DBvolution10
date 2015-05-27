@@ -15,6 +15,8 @@
  */
 package nz.co.gregs.dbvolution.query;
 
+import nz.co.gregs.dbvolution.results.StringResult;
+import nz.co.gregs.dbvolution.results.NumberResult;
 import nz.co.gregs.dbvolution.datatypes.spatial2D.DBPolygon2D;
 import java.io.Serializable;
 import java.text.SimpleDateFormat;

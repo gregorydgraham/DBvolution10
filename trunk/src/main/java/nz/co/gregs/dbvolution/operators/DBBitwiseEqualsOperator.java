@@ -17,10 +17,10 @@ package nz.co.gregs.dbvolution.operators;
 
 import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.expressions.BooleanExpression;
-import nz.co.gregs.dbvolution.expressions.BooleanResult;
+import nz.co.gregs.dbvolution.results.BooleanResult;
 import nz.co.gregs.dbvolution.expressions.DBExpression;
 import nz.co.gregs.dbvolution.expressions.NumberExpression;
-import nz.co.gregs.dbvolution.expressions.NumberResult;
+import nz.co.gregs.dbvolution.results.NumberResult;
 
 public class DBBitwiseEqualsOperator extends DBEqualsOperator {
 

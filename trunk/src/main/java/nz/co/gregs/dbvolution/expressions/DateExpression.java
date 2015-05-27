@@ -15,6 +15,10 @@
  */
 package nz.co.gregs.dbvolution.expressions;
 
+import nz.co.gregs.dbvolution.results.RangeComparable;
+import nz.co.gregs.dbvolution.results.DateRepeatResult;
+import nz.co.gregs.dbvolution.results.DateResult;
+import nz.co.gregs.dbvolution.results.NumberResult;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;

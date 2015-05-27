@@ -13,7 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package nz.co.gregs.dbvolution.expressions;
+package nz.co.gregs.dbvolution.results;
+
+import nz.co.gregs.dbvolution.expressions.DBExpression;
 
 /**
  *

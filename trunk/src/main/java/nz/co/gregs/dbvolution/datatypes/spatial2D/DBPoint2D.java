@@ -25,7 +25,7 @@ import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 import nz.co.gregs.dbvolution.exceptions.IncorrectGeometryReturnedForDatatype;
 import nz.co.gregs.dbvolution.exceptions.ParsingSpatialValueException;
-import nz.co.gregs.dbvolution.expressions.Point2DResult;
+import nz.co.gregs.dbvolution.results.Point2DResult;
 
 /**
  * Represents database columns and values that are a 2 dimensional point: an

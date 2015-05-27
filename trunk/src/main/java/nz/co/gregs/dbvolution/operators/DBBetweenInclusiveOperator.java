@@ -20,11 +20,11 @@ import nz.co.gregs.dbvolution.datatypes.QueryableDatatypeSyncer;
 import nz.co.gregs.dbvolution.expressions.BooleanExpression;
 import nz.co.gregs.dbvolution.expressions.DBExpression;
 import nz.co.gregs.dbvolution.expressions.DateExpression;
-import nz.co.gregs.dbvolution.expressions.DateResult;
+import nz.co.gregs.dbvolution.results.DateResult;
 import nz.co.gregs.dbvolution.expressions.NumberExpression;
-import nz.co.gregs.dbvolution.expressions.NumberResult;
+import nz.co.gregs.dbvolution.results.NumberResult;
 import nz.co.gregs.dbvolution.expressions.StringExpression;
-import nz.co.gregs.dbvolution.expressions.StringResult;
+import nz.co.gregs.dbvolution.results.StringResult;
 
 /**
  *

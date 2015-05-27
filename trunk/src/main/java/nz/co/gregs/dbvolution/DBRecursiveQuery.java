@@ -15,6 +15,10 @@
  */
 package nz.co.gregs.dbvolution;
 
+import nz.co.gregs.dbvolution.results.StringResult;
+import nz.co.gregs.dbvolution.results.EqualComparable;
+import nz.co.gregs.dbvolution.results.DateResult;
+import nz.co.gregs.dbvolution.results.NumberResult;
 import nz.co.gregs.dbvolution.exceptions.*;
 import java.sql.*;
 import java.util.*;

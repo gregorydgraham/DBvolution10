@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 gregory.graham.
+ * Copyright 2014 Gregory Graham.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,28 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package nz.co.gregs.dbvolution.expressions;
+package nz.co.gregs.dbvolution.results;
 
 /**
- * Indicates that the class can be compared to other instances of this class as
- * if the instances were equivalent.
- *
- * <p>
- * EqualsComparable expressions must have an equivalent to the EQUALS (=)
- * operation.
  *
  * @author Gregory Graham
- * @param <A> the class that can be compared using the "=" operator
- *
  */
-public interface EqualComparable<A> {
+public interface ExpressionCanHaveNullValues {
 
 	/**
-	 * Creates a {@link BooleanExpression} that compares the 2 instances using the
-	 * EQUALS operation.
+	 * Returns TRUE if this expression requires support for possible NULL database
+	 * values.
 	 *
-	 * @param anotherInstance
-	 * @return a BooleanExpression
+	 * @return TRUE if the expression should check for NULLs, FALSE otherwise.
 	 */
-	public BooleanExpression is(A anotherInstance);
+	public boolean getIncludesNull();
+
 }

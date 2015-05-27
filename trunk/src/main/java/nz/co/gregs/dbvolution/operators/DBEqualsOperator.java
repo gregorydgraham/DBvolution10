@@ -19,21 +19,21 @@ import nz.co.gregs.dbvolution.datatypes.QueryableDatatypeSyncer.DBSafeInternalQD
 import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 import nz.co.gregs.dbvolution.expressions.BooleanArrayExpression;
-import nz.co.gregs.dbvolution.expressions.BooleanArrayResult;
+import nz.co.gregs.dbvolution.results.BooleanArrayResult;
 import nz.co.gregs.dbvolution.expressions.BooleanExpression;
-import nz.co.gregs.dbvolution.expressions.BooleanResult;
+import nz.co.gregs.dbvolution.results.BooleanResult;
 import nz.co.gregs.dbvolution.expressions.DBExpression;
 import nz.co.gregs.dbvolution.expressions.DateExpression;
-import nz.co.gregs.dbvolution.expressions.DateResult;
-import nz.co.gregs.dbvolution.expressions.EqualComparable;
+import nz.co.gregs.dbvolution.results.DateResult;
+import nz.co.gregs.dbvolution.results.EqualComparable;
 import nz.co.gregs.dbvolution.expressions.Polygon2DExpression;
-import nz.co.gregs.dbvolution.expressions.Polygon2DResult;
+import nz.co.gregs.dbvolution.results.Polygon2DResult;
 import nz.co.gregs.dbvolution.expressions.DateRepeatExpression;
-import nz.co.gregs.dbvolution.expressions.DateRepeatResult;
+import nz.co.gregs.dbvolution.results.DateRepeatResult;
 import nz.co.gregs.dbvolution.expressions.NumberExpression;
-import nz.co.gregs.dbvolution.expressions.NumberResult;
+import nz.co.gregs.dbvolution.results.NumberResult;
 import nz.co.gregs.dbvolution.expressions.StringExpression;
-import nz.co.gregs.dbvolution.expressions.StringResult;
+import nz.co.gregs.dbvolution.results.StringResult;
 
 /**
  *

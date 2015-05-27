@@ -15,6 +15,8 @@
  */
 package nz.co.gregs.dbvolution.expressions;
 
+import nz.co.gregs.dbvolution.results.EqualComparable;
+import nz.co.gregs.dbvolution.results.Line2DResult;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.LineString;

@@ -25,7 +25,7 @@ import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.DBReport;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
-import nz.co.gregs.dbvolution.expressions.BooleanArrayResult;
+import nz.co.gregs.dbvolution.results.BooleanArrayResult;
 
 /**
  * Encapsulates database values that are BIT arrays of up to 64 bits.

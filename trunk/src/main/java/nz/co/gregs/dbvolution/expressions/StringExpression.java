@@ -15,6 +15,9 @@
  */
 package nz.co.gregs.dbvolution.expressions;
 
+import nz.co.gregs.dbvolution.results.StringResult;
+import nz.co.gregs.dbvolution.results.RangeComparable;
+import nz.co.gregs.dbvolution.results.NumberResult;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;

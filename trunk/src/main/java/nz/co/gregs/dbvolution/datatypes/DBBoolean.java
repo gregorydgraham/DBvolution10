@@ -24,7 +24,7 @@ import nz.co.gregs.dbvolution.DBReport;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.expressions.BooleanExpression;
-import nz.co.gregs.dbvolution.expressions.BooleanResult;
+import nz.co.gregs.dbvolution.results.BooleanResult;
 import nz.co.gregs.dbvolution.operators.DBBooleanPermittedValuesOperator;
 import nz.co.gregs.dbvolution.operators.DBPermittedValuesOperator;
 

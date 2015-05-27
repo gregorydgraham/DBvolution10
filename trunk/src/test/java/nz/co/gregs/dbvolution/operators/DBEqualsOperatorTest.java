@@ -24,7 +24,7 @@ import nz.co.gregs.dbvolution.expressions.BooleanExpression;
 import nz.co.gregs.dbvolution.expressions.DBExpression;
 import nz.co.gregs.dbvolution.expressions.DateExpression;
 import nz.co.gregs.dbvolution.expressions.LargeObjectExpression;
-import nz.co.gregs.dbvolution.expressions.LargeObjectResult;
+import nz.co.gregs.dbvolution.results.LargeObjectResult;
 import nz.co.gregs.dbvolution.expressions.StringExpression;
 import nz.co.gregs.dbvolution.generic.AbstractTest;
 import org.junit.Test;
