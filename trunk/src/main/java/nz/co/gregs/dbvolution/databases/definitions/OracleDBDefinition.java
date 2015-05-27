@@ -505,7 +505,7 @@ public class OracleDBDefinition extends DBDefinition {
 	
 	@Override
 	public String doLineSegment2DIntersectsLineSegment2DTransform(String firstSQL, String secondSQL) {
-		return LineSegment2DFunctions.INTERSECTS_LSEG2D+"(("+firstSQL+"), ("+secondSQL+"))";
+		return "("+LineSegment2DFunctions.INTERSECTS_LSEG2D+"(("+firstSQL+"), ("+secondSQL+"))=1)";
 	}
 
 	/**
