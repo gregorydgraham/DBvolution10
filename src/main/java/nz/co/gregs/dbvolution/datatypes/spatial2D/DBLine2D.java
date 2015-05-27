@@ -29,7 +29,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import nz.co.gregs.dbvolution.exceptions.IncorrectGeometryReturnedForDatatype;
 import nz.co.gregs.dbvolution.exceptions.ParsingSpatialValueException;
-import nz.co.gregs.dbvolution.expressions.Line2DResult;
+import nz.co.gregs.dbvolution.results.Line2DResult;
 
 /**
  * Represents datatypes and columns that are composed of a series of points

@@ -25,7 +25,7 @@ import java.util.Set;
 import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.expressions.StringExpression;
-import nz.co.gregs.dbvolution.expressions.StringResult;
+import nz.co.gregs.dbvolution.results.StringResult;
 import nz.co.gregs.dbvolution.operators.*;
 
 /**

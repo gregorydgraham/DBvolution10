@@ -15,6 +15,12 @@
  */
 package nz.co.gregs.dbvolution.expressions;
 
+import nz.co.gregs.dbvolution.results.RangeComparable;
+import nz.co.gregs.dbvolution.results.StringResult;
+import nz.co.gregs.dbvolution.results.EqualComparable;
+import nz.co.gregs.dbvolution.results.DateResult;
+import nz.co.gregs.dbvolution.results.NumberResult;
+import nz.co.gregs.dbvolution.results.BooleanResult;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.Polygon;
 import java.util.Date;

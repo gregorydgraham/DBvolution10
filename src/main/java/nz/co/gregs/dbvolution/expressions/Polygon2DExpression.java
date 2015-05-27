@@ -16,6 +16,9 @@
 package nz.co.gregs.dbvolution.expressions;
 
 //import com.vividsolutions.jts.geom.Geometry;
+import nz.co.gregs.dbvolution.results.EqualComparable;
+import nz.co.gregs.dbvolution.results.Point2DResult;
+import nz.co.gregs.dbvolution.results.Polygon2DResult;
 import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.geom.Polygon;
 import java.util.ArrayList;

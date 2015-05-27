@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 Gregory Graham.
+ * Copyright 2015 gregory.graham.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,20 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package nz.co.gregs.dbvolution.expressions;
+package nz.co.gregs.dbvolution.results;
+
+import nz.co.gregs.dbvolution.expressions.DBExpression;
 
 /**
  *
- * @author Gregory Graham
+ * @author gregory.graham
  */
-public interface ExpressionCanHaveNullValues {
+public interface DateRepeatResult extends DBExpression, ExpressionCanHaveNullValues {
 
-	/**
-	 * Returns TRUE if this expression requires support for possible NULL database
-	 * values.
-	 *
-	 * @return TRUE if the expression should check for NULLs, FALSE otherwise.
-	 */
-	public boolean getIncludesNull();
+	@Override
+	public DateRepeatResult copy();
 
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 greg.
+ * Copyright 2013 Gregory Graham.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,27 +13,28 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package nz.co.gregs.dbvolution.expressions;
+package nz.co.gregs.dbvolution.results;
+
+import nz.co.gregs.dbvolution.expressions.DBExpression;
 
 /**
- * Interface required to be implemented by all DBExpressions that produce
- * Boolean results
+ * Interface required to be implemented by all DBExpressions that produce BIT
+ * results
  *
  * <p>
  * DBvolution attempts to maintain type safety using the *Result interfaces.
- * Most operations requiring a boolean will not accept anything other than an
- * actual Boolean or a BooleanResult.
+ * Most operations requiring a bit type will not accept anything other than an
+ * actual bit type.
  *
  * <p>
- * Add {@code implements BooleanResult} to your class and override the copy
+ * Add {@code implements BooleanArrayResult} to your class and override the copy
  * method so that it returns your class type.
  *
  * @author Gregory Graham
  * @see DBExpression
  */
-public interface BooleanResult extends DBExpression, ExpressionCanHaveNullValues {
+public interface BooleanArrayResult extends DBExpression, ExpressionCanHaveNullValues {
 
 	@Override
-	public BooleanResult copy();
-
+	public BooleanArrayResult copy();
 }

@@ -16,7 +16,7 @@
 package nz.co.gregs.dbvolution.datatypes;
 
 import java.io.InputStream;
-import nz.co.gregs.dbvolution.expressions.LargeObjectResult;
+import nz.co.gregs.dbvolution.results.LargeObjectResult;
 
 /**
  * Encapsulates database values that are large, vague objects.

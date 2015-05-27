@@ -15,6 +15,7 @@
  */
 package nz.co.gregs.dbvolution.datatypes;
 
+import nz.co.gregs.dbvolution.results.DateRepeatResult;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import nz.co.gregs.dbvolution.DBDatabase;

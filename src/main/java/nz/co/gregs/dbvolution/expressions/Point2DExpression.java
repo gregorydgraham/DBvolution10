@@ -15,6 +15,8 @@
  */
 package nz.co.gregs.dbvolution.expressions;
 
+import nz.co.gregs.dbvolution.results.EqualComparable;
+import nz.co.gregs.dbvolution.results.Point2DResult;
 import com.vividsolutions.jts.geom.Point;
 import java.util.HashSet;
 import java.util.Set;

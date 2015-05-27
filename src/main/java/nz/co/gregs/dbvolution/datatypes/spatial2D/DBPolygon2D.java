@@ -24,7 +24,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
-import nz.co.gregs.dbvolution.expressions.Polygon2DResult;
+import nz.co.gregs.dbvolution.results.Polygon2DResult;
 
 /**
  * Represents database columns and values that are a 2 dimensional polygon: an
