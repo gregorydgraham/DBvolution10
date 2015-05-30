@@ -406,6 +406,11 @@ public class OracleDBDefinition extends DBDefinition {
 	public String doLine2DGetBoundingBoxTransform(String toSQLString) {
 		return Line2DFunctions.BOUNDINGBOX + "(" + toSQLString + ")";
 	}
+	
+	public String doLine2DIntersectsLine2DTransform(String firstLine, String secondLine) {
+		return "("+Line2DFunctions.INTERSECTSLINE2D + "((" + firstLine+"), ("+secondLine + "))=1)";
+	}
+
 
 	@Override
 	public String doSubstringBeforeTransform(String afterThis, String butBeforeThis) {
