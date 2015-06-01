@@ -407,8 +407,14 @@ public class OracleDBDefinition extends DBDefinition {
 		return Line2DFunctions.BOUNDINGBOX + "(" + toSQLString + ")";
 	}
 	
+	@Override
 	public String doLine2DIntersectsLine2DTransform(String firstLine, String secondLine) {
 		return "("+Line2DFunctions.INTERSECTSLINE2D + "((" + firstLine+"), ("+secondLine + "))=1)";
+	}
+	
+	@Override
+	public String doLine2DIntersectionPointWithLine2DTransform(String firstLine, String secondLine) {
+		return Line2DFunctions.INTERSECTNWLINE2D + "((" + firstLine+"), ("+secondLine + "))";
 	}
 
 
