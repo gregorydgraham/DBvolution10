@@ -22,7 +22,7 @@ import java.sql.Statement;
  *
  * @author gregorygraham
  */
-interface Functions {
+public interface Functions {
 		public void add(Statement stmt) throws SQLException;
 
 }

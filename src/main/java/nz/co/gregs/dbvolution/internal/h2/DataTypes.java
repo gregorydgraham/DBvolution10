@@ -44,22 +44,22 @@ public enum DataTypes {
 	}
 
 	public void add(Statement stmt) throws SQLException {
-		try {
-			stmt.execute("DROP DOMAIN " + datatype + "; ");
-		} catch (SQLException sqlex) {
-			; // I don't care.
-		}
+//		try {
+//			stmt.execute("DROP DOMAIN " + datatype + "; ");
+//		} catch (SQLException sqlex) {
+//			; // I don't care.
+//		}
 		stmt.execute("CREATE DOMAIN IF NOT EXISTS " + datatype + " AS " + actualType + "; ");
 
-		for (Functions function : functions) {
-			function.add(stmt);
-		}
+//		for (Functions function : functions) {
+//			function.add(stmt);
+//		}
 	}
 	
 	public static void addAll(Statement stmt) throws SQLException{
-		for (DataTypes datatype : values()) {
-			datatype.add(stmt);
-		}
+//		for (DataTypes datatype : values()) {
+//			datatype.add(stmt);
+//		}
 	}
 
 	public String datatype() {

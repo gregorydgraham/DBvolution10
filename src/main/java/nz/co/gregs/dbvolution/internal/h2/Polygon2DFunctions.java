@@ -25,18 +25,6 @@ import java.sql.Statement;
 public enum Polygon2DFunctions implements Functions {
 
 	CREATE_FROM_WKTPOLYGON2D("String", "String wkt", "return wkt;"),
-	//	GETPOLYGON_FROM_WKTPOLYGON2D("Polygon", "String wkt",
-	//			"			try{"
-	//			+ "			WKTReader wktReader = new WKTReader();\n"
-	//			+ "			Geometry firstGeom = wktReader.read(wkt);\n"
-	//			+ "			if (firstGeom instanceof Polygon) {\n"
-	//			+ "				return (Polygon) firstGeom;\n"
-	//			+ "			}\n"
-	//			+ "			return null;\n"
-	//			+ "			} catch (Exception ex) {\n"
-	//			+ "				throw new RuntimeException(\"Failed To Parse SQLite Polygon\", ex);\n"
-	//			+ "			}"
-	//			+ ""),
 	CREATE_FROM_POINT2DS("String", "String... pointsArray", ""
 			+ "try {\n"
 			+ "				WKTReader wktReader = new WKTReader();\n"
@@ -284,8 +272,6 @@ public enum Polygon2DFunctions implements Functions {
 			+ "						Polygon firstPoly = (Polygon) firstGeometry;\n"
 			+ "						final LineString exteriorRing = firstPoly.getExteriorRing();\n"
 			+ "						exteriorRing.normalize();\n"
-			//+ "						Polygon exteriorPolygon = (new GeometryFactory()).createPolygon(exteriorRing.getCoordinateSequence());\n"
-			//+ "						return exteriorPolygon.toText();\n"
 			+ "						LineString createLineString = (new GeometryFactory()).createLineString(exteriorRing.getCoordinateSequence());\n"
 			+ "						Geometry reverse = createLineString.reverse();\n"
 			+ "						return reverse.toText();\n"
@@ -427,6 +413,10 @@ public enum Polygon2DFunctions implements Functions {
 		this.code = code;
 	}
 
+	@Override
+	public String toString(){
+		return alias();
+	}
 	public String alias() {
 		return "DBV_POLYGON2D_" + name();
 	}

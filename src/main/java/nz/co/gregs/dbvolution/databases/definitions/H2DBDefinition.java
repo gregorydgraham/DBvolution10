@@ -283,6 +283,11 @@ public class H2DBDefinition extends DBDefinition {
 	}
 
 	@Override
+	public String doLine2DIntersectionPointWithLine2DTransform(String toSQLString, String toSQLString0) {
+		return Line2DFunctions.INTERSECTIONWITH_LINE2D + "((" + toSQLString +"), ("+toSQLString0+ "))";
+	}
+
+	@Override
 	public String doPoint2DEqualsTransform(String firstPoint, String secondPoint) {
 		return Point2DFunctions.EQUALS + "(" + firstPoint + ", " + secondPoint + ")";
 	}

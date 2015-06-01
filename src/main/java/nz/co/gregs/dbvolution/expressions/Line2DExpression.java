@@ -230,7 +230,7 @@ public class Line2DExpression implements Line2DResult, EqualComparable<Line2DRes
 
 	@Override
 	public Polygon2DExpression boundingBox() {
-		return new Polygon2DExpression(new LineFunctionWithGeometry2DResult(this) {
+		return new Polygon2DExpression(new LineFunctionWithPolygon2DResult(this) {
 
 			@Override
 			public String doExpressionTransform(DBDatabase db) {
@@ -310,7 +310,7 @@ public class Line2DExpression implements Line2DResult, EqualComparable<Line2DRes
 	 * @return a BooleanExpression that will be TRUE if the lines ever cross, otherwise FALSE.
 	 */
 	public BooleanExpression intersects(Point... points) {
-		return this.intersects(new Line2DExpression(points));
+		return this.intersects(value(points));
 	}
 	
 	/**
@@ -326,7 +326,7 @@ public class Line2DExpression implements Line2DResult, EqualComparable<Line2DRes
 	 * @return a BooleanExpression that will be TRUE if the lines ever cross, otherwise FALSE.
 	 */
 	public BooleanExpression intersects(Coordinate... coords) {
-		return this.intersects(new Line2DExpression(coords));
+		return this.intersects(value(coords));
 	}
 	
 	/**
@@ -342,7 +342,7 @@ public class Line2DExpression implements Line2DResult, EqualComparable<Line2DRes
 	 * @return a BooleanExpression that will be TRUE if the lines ever cross, otherwise FALSE.
 	 */
 	public BooleanExpression intersects(LineString lineString) {
-		return this.intersects(new Line2DExpression(lineString));
+		return this.intersects(value(lineString));
 	}
 	
 	/**
@@ -363,6 +363,37 @@ public class Line2DExpression implements Line2DResult, EqualComparable<Line2DRes
 			@Override
 			protected String doExpressionTransform(DBDatabase db) {
 				return db.getDefinition().doLine2DIntersectsLine2DTransform(getFirst().toSQLString(db), getSecond().toSQLString(db));
+			}
+		});
+	}
+	
+	public Point2DExpression intersectionWith(Point... crossingLine) {
+		return intersectionWith(value(crossingLine));
+	}
+	public Point2DExpression intersectionWith(Coordinate... crossingLine) {
+		return intersectionWith(value(crossingLine));
+	}
+	public Point2DExpression intersectionWith(LineString crossingLine) {
+		return intersectionWith(value(crossingLine));
+	}
+	/**
+	 * Find a point where this line and the other line cross.
+	 * 
+	 * <p>
+	 * Multiple line segments means it may cross at several points, however this method only reports the first point found.
+	 * 
+	 * <p>
+	 * Use {@link #intersectionPoints(Line2DResult)} to find the intersection points of these lines
+	 *
+	 * @param crossingLine
+	 * @return a BooleanExpression that will be TRUE if the lines ever cross, otherwise FALSE.
+	 */
+	public Point2DExpression intersectionWith(Line2DResult crossingLine) {
+		return new Point2DExpression(new LineLineWithPoint2DResult(this, new Line2DExpression(crossingLine)) {
+			
+			@Override
+			protected String doExpressionTransform(DBDatabase db) {
+				return db.getDefinition().doLine2DIntersectionPointWithLine2DTransform(getFirst().toSQLString(db), getSecond().toSQLString(db));
 			}
 		});
 	}
@@ -401,6 +432,77 @@ public class Line2DExpression implements Line2DResult, EqualComparable<Line2DRes
 		@Override
 		public LineLineWithBooleanResult copy() {
 			LineLineWithBooleanResult newInstance;
+			try {
+				newInstance = getClass().newInstance();
+			} catch (InstantiationException ex) {
+				throw new RuntimeException(ex);
+			} catch (IllegalAccessException ex) {
+				throw new RuntimeException(ex);
+			}
+			newInstance.first = first.copy();
+			newInstance.second = second.copy();
+			return newInstance;
+		}
+
+		protected abstract String doExpressionTransform(DBDatabase db);
+
+		@Override
+		public Set<DBRow> getTablesInvolved() {
+			HashSet<DBRow> hashSet = new HashSet<DBRow>();
+			if (first != null) {
+				hashSet.addAll(first.getTablesInvolved());
+			}
+			if (second != null) {
+				hashSet.addAll(second.getTablesInvolved());
+			}
+			return hashSet;
+		}
+
+		@Override
+		public boolean isAggregator() {
+			return first.isAggregator() || second.isAggregator();
+		}
+
+		@Override
+		public boolean getIncludesNull() {
+			return requiresNullProtection;
+		}
+	}
+
+	private static abstract class LineLineWithPoint2DResult extends Point2DExpression {
+
+		private Line2DExpression first;
+		private Line2DExpression second;
+		private boolean requiresNullProtection;
+
+		LineLineWithPoint2DResult(Line2DExpression first, Line2DExpression second) {
+			this.first = first;
+			this.second = second;
+			if (this.second == null || this.second.getIncludesNull()) {
+				this.requiresNullProtection = true;
+			}
+		}
+
+		Line2DExpression getFirst() {
+			return first;
+		}
+
+		Line2DExpression getSecond() {
+			return second;
+		}
+
+		@Override
+		public final String toSQLString(DBDatabase db) {
+			if (this.getIncludesNull()) {
+				return BooleanExpression.isNull(first).toSQLString(db);
+			} else {
+				return doExpressionTransform(db);
+			}
+		}
+
+		@Override
+		public LineLineWithPoint2DResult copy() {
+			LineLineWithPoint2DResult newInstance;
 			try {
 				newInstance = getClass().newInstance();
 			} catch (InstantiationException ex) {
@@ -569,13 +671,13 @@ public class Line2DExpression implements Line2DResult, EqualComparable<Line2DRes
 		}
 	}
 
-	private static abstract class LineFunctionWithGeometry2DResult extends Polygon2DExpression {
+	private static abstract class LineFunctionWithPolygon2DResult extends Polygon2DExpression {
 
 		private Line2DExpression first;
 //		private Point2DExpression second;
 		private boolean requiresNullProtection;
 
-		LineFunctionWithGeometry2DResult(Line2DExpression first) {
+		LineFunctionWithPolygon2DResult(Line2DExpression first) {
 			this.first = first;
 //			this.second = second;
 			if (this.first == null) {// || this.second.getIncludesNull()) {
@@ -600,8 +702,8 @@ public class Line2DExpression implements Line2DResult, EqualComparable<Line2DRes
 		}
 
 		@Override
-		public LineFunctionWithGeometry2DResult copy() {
-			LineFunctionWithGeometry2DResult newInstance;
+		public LineFunctionWithPolygon2DResult copy() {
+			LineFunctionWithPolygon2DResult newInstance;
 			try {
 				newInstance = getClass().newInstance();
 			} catch (InstantiationException ex) {

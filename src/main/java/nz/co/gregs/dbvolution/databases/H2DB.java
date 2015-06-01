@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.*;
 import javax.sql.DataSource;
 import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.databases.definitions.H2DBDefinition;
@@ -35,6 +36,8 @@ import nz.co.gregs.dbvolution.internal.h2.*;
  */
 public class H2DB extends DBDatabase implements SupportsDateRepeatDatatypeFunctions, SupportsPolygonDatatype {
 
+	private static Map<String, Functions> functionMap = null;
+	private static Map<String, DataTypes> dataTypeMap = null;
 	/**
 	 * Used to hold the database open
 	 *
@@ -99,9 +102,28 @@ public class H2DB extends DBDatabase implements SupportsDateRepeatDatatypeFuncti
 	@Override
 	protected void addDatabaseSpecificFeatures(final Statement stmt) throws SQLException {
 		DateRepeatFunctions.addFunctions(stmt);
-//		Point2D.POINT2D.add(stmt);
 		DataTypes.addAll(stmt);
-//		Polygon2D.POLYGON2D.add(stmt);
+		if (functionMap == null) {
+			functionMap = new HashMap<String, Functions>();
+			for (Functions function : Point2DFunctions.values()) {
+				functionMap.put("" + function, function);
+			}
+			for (Functions function : LineSegment2DFunctions.values()) {
+				functionMap.put("" + function, function);
+			}
+			for (Functions function : Line2DFunctions.values()) {
+				functionMap.put("" + function, function);
+			}
+			for (Functions function : Polygon2DFunctions.values()) {
+				functionMap.put("" + function, function);
+			}
+		}
+		if (dataTypeMap == null) {
+			dataTypeMap = new HashMap<String, DataTypes>();
+			for (DataTypes datatype : DataTypes.values()) {
+				dataTypeMap.put("" + datatype, datatype);
+			}
+		}
 	}
 
 	private void jamDatabaseConnectionOpen() throws DBRuntimeException, SQLException {
@@ -125,6 +147,38 @@ public class H2DB extends DBDatabase implements SupportsDateRepeatDatatypeFuncti
 	@Override
 	public H2DB clone() throws CloneNotSupportedException {
 		return (H2DB) super.clone();
+	}
+
+	@Override
+	public void addFeatureToFixException(Exception exp) throws SQLException {
+//		org.h2.jdbc.JdbcSQLException: Function "DBV_LINE2D_EQUALS" not found
+//      org.h2.jdbc.JdbcSQLException: Unknown data type: "DBV_LINE2D"; SQL statement:
+		if (exp instanceof org.h2.jdbc.JdbcSQLException) {
+			String message = exp.getMessage();
+			if (message.startsWith("Function \"DBV_") && message.contains("\" not found")) {
+				String[] split = message.split("\"");
+				String functionName = split[1];
+				Functions functions = functionMap.get(functionName);
+				if (functions != null) {
+					functions.add(getConnection().createStatement());
+				}
+			} else if (message.startsWith("Unknown data type: \"DBV_")) {
+				String[] split = message.split("\"");
+				String functionName = split[1];
+				DataTypes datatype = dataTypeMap.get(functionName);
+				if (datatype != null) {
+					datatype.add(getConnection().createStatement());
+				}
+			} else {
+				for (Map.Entry<String, Functions> entrySet : functionMap.entrySet()) {
+					String key = entrySet.getKey();
+					Functions value = entrySet.getValue();
+					if (message.contains(key)) {
+						value.add(getConnection().createStatement());
+					}
+				}
+			}
+		}
 	}
 
 }

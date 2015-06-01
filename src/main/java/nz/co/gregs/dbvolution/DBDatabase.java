@@ -1683,4 +1683,22 @@ public abstract class DBDatabase implements Cloneable {
 		// by default there are no extras to be added to the database
 		;
 	}
+
+	/**
+	 * Used to add features in a just in time manner.
+	 *
+	 * <p>
+	 * During a statement the database may throw an exception because a feature
+	 * has not yet been added. Use this method to parse the exception and install
+	 * the required feature.
+	 * 
+	 * <p>
+	 * The statement will be automatically run after this method exits.
+	 *
+	 * @param exp
+	 * @throws SQLException
+	 */
+	public void addFeatureToFixException(Exception exp) throws SQLException {
+		;
+	}
 }

@@ -3920,4 +3920,8 @@ public abstract class DBDefinition {
 	public String doLineSegment2DIntersectionPointWithLineSegment2DTransform(String firstLineSegment, String secondLineSegment) {
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
+
+//	public String doLine2DIntersectionWithLine2DTransform(String toSQLString, String toSQLString0) {
+//		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+//	}
 }

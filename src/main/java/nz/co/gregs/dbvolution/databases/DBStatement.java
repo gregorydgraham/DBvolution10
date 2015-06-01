@@ -80,7 +80,30 @@ public class DBStatement implements Statement {
 		final String logSQL = "EXECUTING QUERY: " + string;
 		database.printSQLIfRequested(logSQL);
 		log.debug(logSQL);
-		return getInternalStatement().executeQuery(string);
+		ResultSet executeQuery = null;
+		try {
+			executeQuery = getInternalStatement().executeQuery(string);
+		} catch (SQLException exp) {
+			executeQuery = addFeatureAndAttemptQueryAgain(exp, string);
+		}
+		return executeQuery;
+	}
+
+	private ResultSet addFeatureAndAttemptQueryAgain(SQLException exp, String string) throws SQLException {
+		ResultSet executeQuery;
+		System.out.println("Adding Feature for: " + exp.getMessage());
+		database.addFeatureToFixException(exp);
+		try {
+			executeQuery = getInternalStatement().executeQuery(string);
+			return executeQuery;
+		} catch (SQLException exp2) {
+			if (!exp.getMessage().equals(exp2.getMessage())) {
+				executeQuery = addFeatureAndAttemptQueryAgain(exp2, string);
+				return executeQuery;
+			} else {
+				throw exp;
+			}
+		}
 	}
 
 	/**
@@ -358,7 +381,30 @@ public class DBStatement implements Statement {
 		final String logSQL = "EXECUTING: " + string;
 		database.printSQLIfRequested(logSQL);
 		log.debug(logSQL);
-		return getInternalStatement().execute(string);
+		final boolean execute;
+		try {
+			execute = getInternalStatement().execute(string);
+		} catch (Exception exp) {
+			return addFeatureAndAttemptExecuteAgain(exp, string);
+		}
+		return execute;
+	}
+
+	private boolean addFeatureAndAttemptExecuteAgain(Exception exp, String string) throws SQLException {
+		boolean executeQuery;
+		System.out.println("Adding Feature for: " + exp.getMessage());
+		database.addFeatureToFixException(exp);
+		try {
+			executeQuery = getInternalStatement().execute(string);
+			return executeQuery;
+		} catch (Exception exp2) {
+			if (!exp.getMessage().equals(exp2.getMessage())) {
+				executeQuery = addFeatureAndAttemptExecuteAgain(exp2, string);
+				return executeQuery;
+			} else {
+				throw new SQLException(exp);
+			}
+		}
 	}
 
 	/**
