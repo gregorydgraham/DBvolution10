@@ -22,7 +22,7 @@ import java.sql.Statement;
  *
  * @author gregorygraham
  */
-public enum LineSegment2DFunctions implements Functions {
+public enum LineSegment2DFunctions implements DBVFeature {
 
 	CREATE("String", "Double... coords", "\n"
 			+ "			Integer numberOfArguments = coords.length;\n"
@@ -277,5 +277,9 @@ public enum LineSegment2DFunctions implements Functions {
 			// No collision
 			return null;
 		}
+	}
+	@Override
+	public String alias() {
+		return toString();
 	}
 }

@@ -22,7 +22,7 @@ import java.sql.Statement;
  *
  * @author gregorygraham
  */
-public enum DataTypes {
+public enum DataTypes implements DBVFeature{
 
 	POINT2D("DBV_POINT2D", "VARCHAR(2000)", Point2DFunctions.values()),
 	LINE2D("DBV_LINE2D", "VARCHAR(2001)", Line2DFunctions.values()),
@@ -30,9 +30,9 @@ public enum DataTypes {
 	POLYGON2D("DBV_POLYGON2D", "VARCHAR(2002)", Polygon2DFunctions.values());;
 	private final String datatype;
 	private final String actualType;
-	private final Functions[] functions;
+	private final DBVFeature[] functions;
 
-	DataTypes(String datatype, String actualType, Functions[] functions) {
+	DataTypes(String datatype, String actualType, DBVFeature[] functions) {
 		this.datatype = datatype;
 		this.actualType = actualType;
 		this.functions = functions;
@@ -51,7 +51,7 @@ public enum DataTypes {
 //		}
 		stmt.execute("CREATE DOMAIN IF NOT EXISTS " + datatype + " AS " + actualType + "; ");
 
-//		for (Functions function : functions) {
+//		for (DBVFeature function : functions) {
 //			function.add(stmt);
 //		}
 	}
@@ -64,6 +64,11 @@ public enum DataTypes {
 
 	public String datatype() {
 		return datatype;
+	}
+
+	@Override
+	public String alias() {
+		return toString();
 	}
 
 }

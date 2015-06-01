@@ -22,7 +22,7 @@ import java.sql.Statement;
  *
  * @author gregorygraham
  */
-public enum Polygon2DFunctions implements Functions {
+public enum Polygon2DFunctions implements DBVFeature {
 
 	CREATE_FROM_WKTPOLYGON2D("String", "String wkt", "return wkt;"),
 	CREATE_FROM_POINT2DS("String", "String... pointsArray", ""

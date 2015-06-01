@@ -36,8 +36,8 @@ import nz.co.gregs.dbvolution.internal.h2.*;
  */
 public class H2DB extends DBDatabase implements SupportsDateRepeatDatatypeFunctions, SupportsPolygonDatatype {
 
-	private static Map<String, Functions> functionMap = null;
-	private static Map<String, DataTypes> dataTypeMap = null;
+	private static Map<String, DBVFeature> featureMap = null;
+//	private static Map<String, DataTypes> dataTypeMap = null;
 	/**
 	 * Used to hold the database open
 	 *
@@ -103,27 +103,27 @@ public class H2DB extends DBDatabase implements SupportsDateRepeatDatatypeFuncti
 	protected void addDatabaseSpecificFeatures(final Statement stmt) throws SQLException {
 		DateRepeatFunctions.addFunctions(stmt);
 		DataTypes.addAll(stmt);
-		if (functionMap == null) {
-			functionMap = new HashMap<String, Functions>();
-			for (Functions function : Point2DFunctions.values()) {
-				functionMap.put("" + function, function);
+		if (featureMap == null) {
+			featureMap = new HashMap<String, DBVFeature>();
+			for (DBVFeature function : Point2DFunctions.values()) {
+				featureMap.put(function.alias(), function);
 			}
-			for (Functions function : LineSegment2DFunctions.values()) {
-				functionMap.put("" + function, function);
+			for (DBVFeature function : LineSegment2DFunctions.values()) {
+				featureMap.put(function.alias(), function);
 			}
-			for (Functions function : Line2DFunctions.values()) {
-				functionMap.put("" + function, function);
+			for (DBVFeature function : Line2DFunctions.values()) {
+				featureMap.put(function.alias(), function);
 			}
-			for (Functions function : Polygon2DFunctions.values()) {
-				functionMap.put("" + function, function);
+			for (DBVFeature function : Polygon2DFunctions.values()) {
+				featureMap.put(function.alias(), function);
 			}
 		}
-		if (dataTypeMap == null) {
-			dataTypeMap = new HashMap<String, DataTypes>();
+//		if (dataTypeMap == null) {
+//			dataTypeMap = new HashMap<String, DataTypes>();
 			for (DataTypes datatype : DataTypes.values()) {
-				dataTypeMap.put("" + datatype, datatype);
+				featureMap.put(datatype.alias(), datatype);
 			}
-		}
+//		}
 	}
 
 	private void jamDatabaseConnectionOpen() throws DBRuntimeException, SQLException {
@@ -158,21 +158,21 @@ public class H2DB extends DBDatabase implements SupportsDateRepeatDatatypeFuncti
 			if (message.startsWith("Function \"DBV_") && message.contains("\" not found")) {
 				String[] split = message.split("\"");
 				String functionName = split[1];
-				Functions functions = functionMap.get(functionName);
+				DBVFeature functions = featureMap.get(functionName);
 				if (functions != null) {
 					functions.add(getConnection().createStatement());
 				}
 			} else if (message.startsWith("Unknown data type: \"DBV_")) {
 				String[] split = message.split("\"");
 				String functionName = split[1];
-				DataTypes datatype = dataTypeMap.get(functionName);
+				DBVFeature datatype = featureMap.get(functionName);
 				if (datatype != null) {
 					datatype.add(getConnection().createStatement());
 				}
 			} else {
-				for (Map.Entry<String, Functions> entrySet : functionMap.entrySet()) {
+				for (Map.Entry<String, DBVFeature> entrySet : featureMap.entrySet()) {
 					String key = entrySet.getKey();
-					Functions value = entrySet.getValue();
+					DBVFeature value = entrySet.getValue();
 					if (message.contains(key)) {
 						value.add(getConnection().createStatement());
 					}
