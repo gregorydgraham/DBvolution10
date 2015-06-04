@@ -1660,15 +1660,22 @@ public class DBQuery {
 	 * quickly make the query impossibly large.
 	 *
 	 * @return this DBQuery instance
-	 * @throws java.lang.InstantiationException java.lang.InstantiationException
-	 * @throws java.lang.IllegalAccessException java.lang.IllegalAccessException
+	 * @throws UnableToInstantiateDBRowSubclassException
 	 */
-	public DBQuery addAllConnectedTables() throws InstantiationException, IllegalAccessException {
+	public DBQuery addAllConnectedTables() throws UnableToInstantiateDBRowSubclassException {
 		List<DBRow> tablesToAdd = new ArrayList<DBRow>();
 		for (DBRow table : details.getAllQueryTables()) {
 			Set<Class<? extends DBRow>> allConnectedTables = table.getAllConnectedTables();
-			for (Class<? extends DBRow> ConnectedTable : allConnectedTables) {
-				tablesToAdd.add(ConnectedTable.newInstance());
+//			for (Class<? extends DBRow> ConnectedTable : allConnectedTables) {
+//				tablesToAdd.add(ConnectedTable.newInstance());
+			for (Class<? extends DBRow> connectedTable : allConnectedTables) {
+				try {
+					tablesToAdd.add(connectedTable.newInstance());
+				} catch (InstantiationException ex) {
+					throw new UnableToInstantiateDBRowSubclassException(connectedTable, ex);
+				} catch (IllegalAccessException ex) {
+					throw new UnableToInstantiateDBRowSubclassException(connectedTable, ex);
+				}
 			}
 		}
 		add(tablesToAdd.toArray(new DBRow[]{}));
@@ -1692,10 +1699,9 @@ public class DBQuery {
 	 * quickly make the query impossibly large.
 	 *
 	 * @return this DBQuery instance
-	 * @throws java.lang.InstantiationException java.lang.InstantiationException
-	 * @throws java.lang.IllegalAccessException java.lang.IllegalAccessException
+	 * @throws UnableToInstantiateDBRowSubclassException
 	 */
-	public DBQuery addAllConnectedTablesAsOptional() throws InstantiationException, IllegalAccessException {
+	public DBQuery addAllConnectedTablesAsOptional() throws UnableToInstantiateDBRowSubclassException {
 		Set<DBRow> tablesToAdd = new HashSet<DBRow>();
 		List<Class<DBRow>> alreadyAddedClasses = new ArrayList<Class<DBRow>>();
 		for (DBRow table : details.getAllQueryTables()) {
@@ -1706,7 +1712,15 @@ public class DBQuery {
 		for (DBRow table : details.getAllQueryTables()) {
 			Set<Class<? extends DBRow>> allRelatedTables = table.getAllConnectedTables();
 			for (Class<? extends DBRow> relatedTable : allRelatedTables) {
-				DBRow newInstance = relatedTable.newInstance();
+//				DBRow newInstance = relatedTable.newInstance();
+				DBRow newInstance;
+				try {
+					newInstance = relatedTable.newInstance();
+				} catch (InstantiationException ex) {
+					throw new UnableToInstantiateDBRowSubclassException(relatedTable, ex);
+				} catch (IllegalAccessException ex) {
+					throw new UnableToInstantiateDBRowSubclassException(relatedTable, ex);
+				}
 				@SuppressWarnings("unchecked")
 				final Class<DBRow> newInstanceClass = (Class<DBRow>) newInstance.getClass();
 				if (!alreadyAddedClasses.contains(newInstanceClass)) {
@@ -1733,10 +1747,9 @@ public class DBQuery {
 	 * the core tables and had no other relationships.
 	 *
 	 * @return this DBQuery instance
-	 * @throws java.lang.InstantiationException java.lang.InstantiationException
-	 * @throws java.lang.IllegalAccessException java.lang.IllegalAccessException
+	 * @throws UnableToInstantiateDBRowSubclassException
 	 */
-	public DBQuery addAllConnectedTablesAsOptionalWithoutInternalRelations() throws InstantiationException, IllegalAccessException {
+	public DBQuery addAllConnectedTablesAsOptionalWithoutInternalRelations() throws UnableToInstantiateDBRowSubclassException {
 		Set<DBRow> tablesToAdd = new HashSet<DBRow>();
 		List<Class<DBRow>> alreadyAddedClasses = new ArrayList<Class<DBRow>>();
 		final List<DBRow> allQueryTables = details.getAllQueryTables();
@@ -1750,7 +1763,15 @@ public class DBQuery {
 		for (DBRow table : allQueryTables) {
 			Set<Class<? extends DBRow>> allRelatedTables = table.getAllConnectedTables();
 			for (Class<? extends DBRow> relatedTable : allRelatedTables) {
-				DBRow newInstance = relatedTable.newInstance();
+//				DBRow newInstance = relatedTable.newInstance();
+				DBRow newInstance;
+				try {
+					newInstance = relatedTable.newInstance();
+				} catch (InstantiationException ex) {
+					throw new UnableToInstantiateDBRowSubclassException(relatedTable, ex);
+				} catch (IllegalAccessException ex) {
+					throw new UnableToInstantiateDBRowSubclassException(relatedTable, ex);
+				}
 				@SuppressWarnings("unchecked")
 				final Class<DBRow> newInstanceClass = (Class<DBRow>) newInstance.getClass();
 				if (!alreadyAddedClasses.contains(newInstanceClass)) {

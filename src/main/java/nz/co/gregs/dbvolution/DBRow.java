@@ -5,9 +5,9 @@ import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
@@ -436,13 +436,14 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 	 *
 	 */
 	public List<String> getWhereClausesWithoutAliases(DBDatabase db) {
-		try {
-			return getWhereClauses(db, false);
-		} catch (InstantiationException ex) {
-			throw new RuntimeException(ex);
-		} catch (IllegalAccessException ex) {
-			throw new RuntimeException(ex);
-		}
+//		try {
+//			return getWhereClauses(db, false);
+//		} catch (InstantiationException ex) {
+//			throw new RuntimeException(ex);
+//		} catch (IllegalAccessException ex) {
+//			throw new RuntimeException(ex);
+//		}
+		return getWhereClauses(db, false);
 	}
 
 	/**
@@ -457,16 +458,18 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 	 *
 	 */
 	public List<String> getWhereClausesWithAliases(DBDatabase db) {
-		try {
-			return getWhereClauses(db, true);
-		} catch (InstantiationException ex) {
-			throw new RuntimeException(ex);
-		} catch (IllegalAccessException ex) {
-			throw new RuntimeException(ex);
-		}
+//		try {
+//			return getWhereClauses(db, true);
+//		} catch (InstantiationException ex) {
+//			throw new RuntimeException(ex);
+//		} catch (IllegalAccessException ex) {
+//			throw new RuntimeException(ex);
+//		}
+		return getWhereClauses(db, true);
 	}
 
-	private List<String> getWhereClauses(DBDatabase db, boolean useTableAlias) throws InstantiationException, IllegalAccessException {
+	private List<String> getWhereClauses(DBDatabase db, boolean useTableAlias) //throws InstantiationException, IllegalAccessException 
+	{
 		DBDefinition defn = db.getDefinition();
 		List<String> whereClause = new ArrayList<String>();
 		List<PropertyWrapper> props = getWrapper().getPropertyWrappers();
@@ -478,7 +481,15 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 				if (prop.isTypeAdapted()) {
 					Object rawJavaValue = prop.rawJavaValue();
 					if (rawJavaValue == null) {
-						rawJavaValue = prop.getRawJavaType().newInstance();
+//						rawJavaValue = prop.getRawJavaType().newInstance();
+						try {
+							rawJavaValue = prop.getRawJavaType().newInstance();
+						} catch (InstantiationException ex) {
+							// note: InstantiationException tends to be thrown without a message
+							throw new RuntimeException("Unable to instantiate instance of " + prop.toString(), ex);
+						} catch (IllegalAccessException ex) {
+							throw new RuntimeException("Unable to instantiate instance of " + prop.toString(), ex);
+						}
 						prop.setRawJavaValue(rawJavaValue);
 					}
 					column = this.column(rawJavaValue);
@@ -1272,22 +1283,27 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 	 * @return a set of classes that have a {@code @DBForeignKey} reference to
 	 * this class
 	 */
-	public SortedSet<Class<? extends DBRow>> getRelatedTables() {
+	public SortedSet<Class<? extends DBRow>> getRelatedTables() throws UnableToInstantiateDBRowSubclassException {
 		SortedSet<Class<? extends DBRow>> relatedTables = new TreeSet<Class<? extends DBRow>>(new DBRow.ClassNameComparator());
 		Reflections reflections = new Reflections(this.getClass().getPackage().getName());
 
 		Set<Class<? extends DBRow>> subTypes = reflections.getSubTypesOf(DBRow.class);
 		for (Class<? extends DBRow> tableClass : subTypes) {
-			DBRow newInstance;
+			//DBRow newInstance;
 			try {
-				newInstance = tableClass.newInstance();
-				if (newInstance.getReferencedTables().contains(this.getClass())) {
-					relatedTables.add(tableClass);
+				//newInstance = tableClass.newInstance();
+				//if (newInstance.getReferencedTables().contains(this.getClass())) {
+				//	relatedTables.add(tableClass);
+				if (!Modifier.isAbstract(tableClass.getModifiers())) {
+					DBRow newInstance = tableClass.newInstance();
+					if (newInstance.getReferencedTables().contains(this.getClass())) {
+						relatedTables.add(tableClass);
+					}
 				}
 			} catch (InstantiationException ex) {
-				throw new RuntimeException(ex);
+				throw new UnableToInstantiateDBRowSubclassException(tableClass, ex);
 			} catch (IllegalAccessException ex) {
-				throw new RuntimeException(ex);
+				throw new UnableToInstantiateDBRowSubclassException(tableClass, ex);
 			}
 		}
 		return relatedTables;
@@ -1651,19 +1667,22 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 	 * @return a list of all the direct subclasses of DBRow from the specified
 	 * package.
 	 */
-	public static List<DBRow> getDBRowSubclassesFromPackage(Package referencePackage) {
+	public static List<DBRow> getDBRowSubclassesFromPackage(Package referencePackage) throws UnableToInstantiateDBRowSubclassException {
 		List<DBRow> resultList = new ArrayList<DBRow>();
 		Reflections reflections = new Reflections(referencePackage);
 		Set<Class<? extends DBRow>> tables = reflections.getSubTypesOf(DBRow.class);
 		for (Class<? extends DBRow> tab : tables) {
-			if (tab.getSuperclass().equals(DBRow.class) && tab.getPackage().equals(referencePackage)) {
+			//if (tab.getSuperclass().equals(DBRow.class) && tab.getPackage().equals(referencePackage)) {
+			if (!Modifier.isAbstract(tab.getModifiers())
+					&& tab.getSuperclass().equals(DBRow.class)
+					&& tab.getPackage().equals(referencePackage)) {
 				DBRow tabInstance;
 				try {
 					tabInstance = tab.newInstance();
 				} catch (InstantiationException ex) {
-					throw new RuntimeException(ex);
+					throw new UnableToInstantiateDBRowSubclassException(tab, ex);
 				} catch (IllegalAccessException ex) {
-					throw new RuntimeException(ex);
+					throw new UnableToInstantiateDBRowSubclassException(tab, ex);
 				}
 				resultList.add(tabInstance);
 			}
@@ -1679,6 +1698,7 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	void setAutoFilledFields(DBQuery query) throws SQLException {
 		boolean arrayRequired = false;
 		boolean listRequired = false;
@@ -1700,7 +1720,15 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 						}
 					}
 					if (DBRow.class.isAssignableFrom(requiredClass)) {
-						DBRow fieldInstance = (DBRow) requiredClass.newInstance();
+//						DBRow fieldInstance = (DBRow) requiredClass.newInstance();
+						DBRow fieldInstance;
+						try {
+							fieldInstance = (DBRow) requiredClass.newInstance();
+						} catch (InstantiationException ex) {
+							throw new UnableToInstantiateDBRowSubclassException((Class<? extends DBRow>) requiredClass, ex);
+						} catch (IllegalAccessException ex) {
+							throw new UnableToInstantiateDBRowSubclassException((Class<? extends DBRow>) requiredClass, ex);
+						}
 						List<DBRow> relatedInstancesFromQuery = this.getRelatedInstancesFromQuery(query, fieldInstance);
 						if (arrayRequired) {
 							Object newInstance = Array.newInstance(requiredClass, relatedInstancesFromQuery.size());
