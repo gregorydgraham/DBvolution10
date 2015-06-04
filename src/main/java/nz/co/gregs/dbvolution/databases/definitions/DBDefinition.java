@@ -21,6 +21,7 @@ import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.LineSegment;
 import com.vividsolutions.jts.geom.Polygon;
 import com.vividsolutions.jts.geom.LineString;
+import com.vividsolutions.jts.geom.MultiPoint;
 import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.io.WKTReader;
 import java.sql.ResultSet;
@@ -39,6 +40,7 @@ import nz.co.gregs.dbvolution.exceptions.AutoIncrementFieldClassAndDatatypeMisma
 import nz.co.gregs.dbvolution.exceptions.IncorrectGeometryReturnedForDatatype;
 import nz.co.gregs.dbvolution.expressions.DBExpression;
 import nz.co.gregs.dbvolution.expressions.DateRepeatExpression;
+import nz.co.gregs.dbvolution.expressions.MultiPoint2DExpression;
 import nz.co.gregs.dbvolution.expressions.NumberExpression;
 import nz.co.gregs.dbvolution.expressions.Point2DExpression;
 import nz.co.gregs.dbvolution.expressions.StringExpression;
@@ -3924,4 +3926,49 @@ public abstract class DBDefinition {
 //	public String doLine2DIntersectionWithLine2DTransform(String toSQLString, String toSQLString0) {
 //		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 //	}
+
+	public String transformPoint2DListIntoDatabaseFormat(MultiPoint points) {
+		String wktValue = points.toText();
+		return "'" + wktValue + "'";
+	}
+
+	public MultiPoint transformDatabasePoint2DListValueToJTSPointList(String pointsAsString) throws com.vividsolutions.jts.io.ParseException {
+		MultiPoint point = null;
+		WKTReader wktReader = new WKTReader();
+		Geometry geometry = wktReader.read(pointsAsString);
+		if (geometry instanceof MultiPoint) {
+			point = (MultiPoint) geometry;
+		} else {
+			throw new IncorrectGeometryReturnedForDatatype(geometry, point);
+		}
+		return point;
+	}
+
+	public String doMultiPoint2DDistanceBetweenTransform(String toSQLString, MultiPoint2DExpression second) {
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	}
+
+	public String doMultiPoint2DEqualsTransform(String toSQLString, String toSQLString0) {
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	}
+
+	public String doMultiPoint2DGetPointAtIndexTransform(String toSQLString) {
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	}
+
+	public String doMultiPoint2DGetNumberOfPointsTransform(String toSQLString) {
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	}
+
+	public String doMultiPoint2DDimensionTransform(String toSQLString) {
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	}
+
+	public String doMultiPoint2DGetBoundingBoxTransform(String toSQLString) {
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	}
+
+	public String doMultiPoint2DAsTextTransform(String toSQLString) {
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	}
 }

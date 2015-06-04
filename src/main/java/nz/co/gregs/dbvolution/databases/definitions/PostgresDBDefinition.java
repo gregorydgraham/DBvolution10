@@ -623,7 +623,7 @@ public class PostgresDBDefinition extends DBDefinition {
 
 	@Override
 	public String doLine2DIntersectionPointWithLine2DTransform(String firstGeometry, String secondGeometry) {
-		return "ST_POINTN(ST_INTERSECTION((" + firstGeometry + ")::GEOMETRY , (" + secondGeometry + ")::GEOMETRY), 1)::POINT";
+		return Line2DFunctions.INTERSECTIONWITHLINE2D+"((" + firstGeometry + ") , (" + secondGeometry + "))";
 	}
 	
 	@Override

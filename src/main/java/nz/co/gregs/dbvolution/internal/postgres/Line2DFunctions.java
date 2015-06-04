@@ -161,6 +161,20 @@ public enum Line2DFunctions {
 			+ "  result:= polygon ($$($$||minx||$$,$$||miny||$$),($$||maxx||$$, $$||miny||$$),($$||maxx||$$,$$||maxy||$$),($$||minx||$$,$$||maxy||$$)$$);\n"
 			+ "  return result;\n"
 			+ " END IF;\n"
+			+ "END;"),
+	INTERSECTIONWITHLINE2D(Language.plpgsql, "point", "path1 path, path2 path", "DECLARE \n"
+			+ " intersectionPoly GEOMETRY;\n"
+			+ "BEGIN\n"
+			+ " intersectionPoly = ST_INTERSECTION(path1::GEOMETRY, path2::GEOMETRY)::GEOMETRY; \n"
+			+ " if ST_ISEMPTY(intersectionPoly) then\n"
+			+ "  RETURN NULL;\n"
+			+ " else\n"
+			+ "  if ST_ASTEXT(intersectionPoly) like $$POINT%$$ then \n"
+			+ "   RETURN intersectionPoly::POINT;\n"
+			+ "  else\n"
+			+ "   RETURN ST_POINTN(intersectionPoly,1)::POINT; \n"
+			+ "  END IF;\n"
+			+ " END IF;\n"
 			+ "END;");
 
 //	private final String functionName;
@@ -187,7 +201,9 @@ public enum Line2DFunctions {
 		} catch (SQLException sqlex) {
 			;
 		}
-		stmt.execute("CREATE OR REPLACE FUNCTION " + this + "(" + this.parameters + ")\n" + "    RETURNS " + this.returnType + " AS\n" + "'\n" + this.code + "'\n" + "LANGUAGE '" + language + "' IMMUTABLE;");
+		final String createFunctionStatement = "CREATE OR REPLACE FUNCTION " + this + "(" + this.parameters + ")\n" + "    RETURNS " + this.returnType + " AS\n" + "'\n" + this.code + "'\n" + "LANGUAGE '" + language + "' IMMUTABLE;";
+		System.out.println("" + createFunctionStatement);
+		stmt.execute(createFunctionStatement);
 
 	}
 
