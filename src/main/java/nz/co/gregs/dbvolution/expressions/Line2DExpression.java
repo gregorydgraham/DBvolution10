@@ -30,6 +30,7 @@ import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.datatypes.spatial2D.DBLine2D;
+import nz.co.gregs.dbvolution.results.MultiPoint2DResult;
 
 /**
  * Represents SQL expressions that are a 2 dimensional path, a series of
@@ -81,6 +82,10 @@ public class Line2DExpression implements Line2DResult, EqualComparable<Line2DRes
 		initInnerLine(coords, innerLineString);
 	}
 
+	public Line2DExpression(MultiPoint2DResult multipoint2DExpression) {
+		initInnerLine(multipoint2DExpression, new MultiPoint2DExpression(multipoint2DExpression).line2DResult());
+	}
+
 	public static Line2DExpression value(Point... points) {
 		return new Line2DExpression(points);
 	}
@@ -90,6 +95,10 @@ public class Line2DExpression implements Line2DResult, EqualComparable<Line2DRes
 	}
 
 	public static Line2DExpression value(LineString line) {
+		return new Line2DExpression(line);
+	}
+
+	public static Line2DExpression value(MultiPoint2DResult line) {
 		return new Line2DExpression(line);
 	}
 
@@ -367,15 +376,70 @@ public class Line2DExpression implements Line2DResult, EqualComparable<Line2DRes
 		});
 	}
 	
+	/**
+	 * Find a point where this line and the other line (represented as a series of points) cross.
+	 * 
+	 * <p>
+	 * Multiple line segments means it may cross at several points, however this method only reports the first point found.
+	 * 
+	 * <p>
+	 * Use {@link #intersectionPoints(Line2DResult)} to find the intersection points of these lines
+	 *
+	 * @param crossingLine
+	 * @return a BooleanExpression that will be TRUE if the lines ever cross, otherwise FALSE.
+	 */
 	public Point2DExpression intersectionWith(Point... crossingLine) {
 		return intersectionWith(value(crossingLine));
 	}
+	
+	/**
+	 * Find a point where this line and the other line (represented as a series of coordinates) cross.
+	 * 
+	 * <p>
+	 * Multiple line segments means it may cross at several points, however this method only reports the first point found.
+	 * 
+	 * <p>
+	 * Use {@link #intersectionPoints(Line2DResult)} to find the intersection points of these lines
+	 *
+	 * @param crossingLine
+	 * @return a BooleanExpression that will be TRUE if the lines ever cross, otherwise FALSE.
+	 */
 	public Point2DExpression intersectionWith(Coordinate... crossingLine) {
 		return intersectionWith(value(crossingLine));
 	}
+	
+	/**
+	 * Find a point where this line and the other line cross.
+	 * 
+	 * <p>
+	 * Multiple line segments means it may cross at several points, however this method only reports the first point found.
+	 * 
+	 * <p>
+	 * Use {@link #intersectionPoints(Line2DResult)} to find the intersection points of these lines
+	 *
+	 * @param crossingLine
+	 * @return a BooleanExpression that will be TRUE if the lines ever cross, otherwise FALSE.
+	 */
 	public Point2DExpression intersectionWith(LineString crossingLine) {
 		return intersectionWith(value(crossingLine));
 	}
+	
+	/**
+	 * Find a point where this line and the line derived from the MultiPoint cross.
+	 * 
+	 * <p>
+	 * Multiple line segments means it may cross at several points, however this method only reports the first point found.
+	 * 
+	 * <p>
+	 * Use {@link #intersectionPoints(Line2DResult)} to find the intersection points of these lines
+	 *
+	 * @param crossingLine
+	 * @return a BooleanExpression that will be TRUE if the lines ever cross, otherwise FALSE.
+	 */
+	public Point2DExpression intersectionWith(MultiPoint2DExpression crossingLine) {
+		return intersectionWith(value(crossingLine));
+	}
+	
 	/**
 	 * Find a point where this line and the other line cross.
 	 * 

@@ -24,7 +24,10 @@ import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.datatypes.spatial2D.DBMultiPoint2D;
 import nz.co.gregs.dbvolution.datatypes.spatial2D.DBPoint2D;
+import nz.co.gregs.dbvolution.results.Line2DResult;
 import nz.co.gregs.dbvolution.results.MultiPoint2DResult;
+import nz.co.gregs.dbvolution.results.NumberResult;
+import nz.co.gregs.dbvolution.results.Polygon2DResult;
 
 /**
  *
@@ -160,10 +163,14 @@ public class MultiPoint2DExpression implements MultiPoint2DResult, EqualComparab
 	}
 
 	public Point2DExpression getPointAtIndex(int index) {
-		return getPointAtIndex(Long.valueOf(index));
+		return getPointAtIndex(NumberExpression.value(index));
 	}
 
 	public Point2DExpression getPointAtIndex(long index) {
+		return getPointAtIndex(NumberExpression.value(index));
+	}
+
+	public Point2DExpression getPointAtIndex(NumberResult index) {
 		return new Point2DExpression(new MultiPointNumberFunctionWithPoint2DResult(this, new NumberExpression(index)) {
 
 			@Override
@@ -207,6 +214,168 @@ public class MultiPoint2DExpression implements MultiPoint2DResult, EqualComparab
 				return db.getDefinition().doMultiPoint2DGetBoundingBoxTransform(getFirst().toSQLString(db));
 			}
 		});
+	}
+
+	Line2DExpression line2DResult() {
+		return new Line2DExpression(new SingleArgumentLine2DFunction<MultiPoint2DExpression>(this) {
+
+			@Override
+			protected String doExpressionTransform(DBDatabase db) {
+				return db.getDefinition().doMultiPoint2DToLine2DTransform(getFirst().toSQLString(db));
+			}
+		});
+	}
+
+	Polygon2DExpression polygon2DResult() {
+		return new Polygon2DExpression(new SingleArgumentPolygon2DFunction<MultiPoint2DExpression>(this) {
+
+			@Override
+			protected String doExpressionTransform(DBDatabase db) {
+				return db.getDefinition().doMultiPoint2DToPolygon2DTransform(getFirst().toSQLString(db));
+			}
+		});
+	}
+
+	private static abstract class SingleArgumentLine2DFunction<A extends DBExpression> extends Line2DExpression {
+
+		private A first;
+//		private B second;
+		private boolean requiresNullProtection;
+
+		SingleArgumentLine2DFunction(A first) {
+			this.first = first;
+//			this.second = second;
+//			if (this.second == null || this.second.getIncludesNull()) {
+//				this.requiresNullProtection = true;
+//			}
+		}
+
+		A getFirst() {
+			return first;
+		}
+
+//		MultiPoint2DExpression getSecond() {
+//			return second;
+//		}
+		@Override
+		public final String toSQLString(DBDatabase db) {
+			if (this.getIncludesNull()) {
+				return BooleanExpression.isNull(first).toSQLString(db);
+			} else {
+			return doExpressionTransform(db);
+			}
+		}
+
+		@Override
+		@SuppressWarnings("unchecked")
+		public SingleArgumentLine2DFunction<A> copy() {
+			SingleArgumentLine2DFunction<A> newInstance;
+			try {
+				newInstance = getClass().newInstance();
+			} catch (InstantiationException ex) {
+				throw new RuntimeException(ex);
+			} catch (IllegalAccessException ex) {
+				throw new RuntimeException(ex);
+			}
+			newInstance.first = (A) first.copy();
+//			newInstance.second = second.copy();
+			return newInstance;
+		}
+
+		protected abstract String doExpressionTransform(DBDatabase db);
+
+		@Override
+		public Set<DBRow> getTablesInvolved() {
+			HashSet<DBRow> hashSet = new HashSet<DBRow>();
+			if (first != null) {
+				hashSet.addAll(first.getTablesInvolved());
+			}
+//			if (second != null) {
+//				hashSet.addAll(second.getTablesInvolved());
+//			}
+			return hashSet;
+		}
+
+		@Override
+		public boolean isAggregator() {
+			return first.isAggregator();// || second.isAggregator();
+		}
+
+		@Override
+		public boolean getIncludesNull() {
+			return requiresNullProtection;
+		}
+	}
+
+	private static abstract class SingleArgumentPolygon2DFunction<A extends DBExpression> extends Polygon2DExpression {
+
+		private A first;
+//		private B second;
+		private boolean requiresNullProtection;
+
+		SingleArgumentPolygon2DFunction(A first) {
+			this.first = first;
+//			this.second = second;
+//			if (this.second == null || this.second.getIncludesNull()) {
+//				this.requiresNullProtection = true;
+//			}
+		}
+
+		A getFirst() {
+			return first;
+		}
+
+//		MultiPoint2DExpression getSecond() {
+//			return second;
+//		}
+		@Override
+		public final String toSQLString(DBDatabase db) {
+			if (this.getIncludesNull()) {
+				return BooleanExpression.isNull(first).toSQLString(db);
+			} else {
+			return doExpressionTransform(db);
+			}
+		}
+
+		@Override
+		@SuppressWarnings("unchecked")
+		public SingleArgumentPolygon2DFunction<A> copy() {
+			SingleArgumentPolygon2DFunction<A> newInstance;
+			try {
+				newInstance = getClass().newInstance();
+			} catch (InstantiationException ex) {
+				throw new RuntimeException(ex);
+			} catch (IllegalAccessException ex) {
+				throw new RuntimeException(ex);
+			}
+			newInstance.first = (A) first.copy();
+//			newInstance.second = second.copy();
+			return newInstance;
+		}
+
+		protected abstract String doExpressionTransform(DBDatabase db);
+
+		@Override
+		public Set<DBRow> getTablesInvolved() {
+			HashSet<DBRow> hashSet = new HashSet<DBRow>();
+			if (first != null) {
+				hashSet.addAll(first.getTablesInvolved());
+			}
+//			if (second != null) {
+//				hashSet.addAll(second.getTablesInvolved());
+//			}
+			return hashSet;
+		}
+
+		@Override
+		public boolean isAggregator() {
+			return first.isAggregator();// || second.isAggregator();
+		}
+
+		@Override
+		public boolean getIncludesNull() {
+			return requiresNullProtection;
+		}
 	}
 
 	private static abstract class MultiPoint2DMultiPoint2DFunctionWithBooleanResult extends BooleanExpression {

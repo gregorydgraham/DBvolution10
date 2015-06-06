@@ -3927,12 +3927,12 @@ public abstract class DBDefinition {
 //		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 //	}
 
-	public String transformPoint2DListIntoDatabaseFormat(MultiPoint points) {
+	public String transformJTSMultiPointToDatabaseMultiPoint2DValue(MultiPoint points) {
 		String wktValue = points.toText();
 		return "'" + wktValue + "'";
 	}
 
-	public MultiPoint transformDatabasePoint2DListValueToJTSPointList(String pointsAsString) throws com.vividsolutions.jts.io.ParseException {
+	public MultiPoint transformDatabaseMultiPoint2DValueToJTSMultiPoint(String pointsAsString) throws com.vividsolutions.jts.io.ParseException {
 		MultiPoint point = null;
 		WKTReader wktReader = new WKTReader();
 		Geometry geometry = wktReader.read(pointsAsString);
@@ -3969,6 +3969,14 @@ public abstract class DBDefinition {
 	}
 
 	public String doMultiPoint2DAsTextTransform(String toSQLString) {
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	}
+
+	public String doMultiPoint2DToLine2DTransform(String toSQLString) {
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	}
+
+	public String doMultiPoint2DToPolygon2DTransform(String toSQLString) {
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 }

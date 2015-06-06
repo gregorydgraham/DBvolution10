@@ -138,7 +138,7 @@ public class DBMultiPoint2D extends QueryableDatatype implements MultiPoint2DRes
 		if (points == null) {
 			return db.getDefinition().getNull();
 		} else {
-			String str = db.getDefinition().transformPoint2DListIntoDatabaseFormat(points);
+			String str = db.getDefinition().transformJTSMultiPointToDatabaseMultiPoint2DValue(points);
 			return str;
 		}
 	}
@@ -152,7 +152,7 @@ public class DBMultiPoint2D extends QueryableDatatype implements MultiPoint2DRes
 			return null;
 		} else {
 			try {
-				point = database.getDefinition().transformDatabasePoint2DListValueToJTSPointList(string);
+				point = database.getDefinition().transformDatabaseMultiPoint2DValueToJTSMultiPoint(string);
 			} catch (ParseException ex) {
 				Logger.getLogger(DBPoint2D.class.getName()).log(Level.SEVERE, null, ex);
 				throw new ParsingSpatialValueException(fullColumnName, string);

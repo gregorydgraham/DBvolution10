@@ -36,6 +36,7 @@ import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 import nz.co.gregs.dbvolution.datatypes.spatial2D.DBLine2D;
 import nz.co.gregs.dbvolution.datatypes.spatial2D.DBPoint2D;
 import nz.co.gregs.dbvolution.exceptions.IncorrectGeometryReturnedForDatatype;
+import nz.co.gregs.dbvolution.expressions.MultiPoint2DExpression;
 import nz.co.gregs.dbvolution.generation.DBTableField;
 import nz.co.gregs.dbvolution.internal.datatypes.DateRepeatImpl;
 import nz.co.gregs.dbvolution.internal.properties.PropertyWrapper;
@@ -684,5 +685,50 @@ public class SQLiteDefinition extends DBDefinition {
 	@Override
 	public String doLineSegment2DIntersectionPointWithLineSegment2DTransform(String toSQLString, String toSQLString0) {
 		return LineSegment2DFunctions.INTERSECTIONWITH_LINESEGMENT2D+"(("+toSQLString+"), ("+toSQLString0+"))";
+	}
+
+	@Override
+	public String doMultiPoint2DDistanceBetweenTransform(String toSQLString, MultiPoint2DExpression second) {
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	}
+
+	@Override
+	public String doMultiPoint2DEqualsTransform(String toSQLString, String toSQLString0) {
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	}
+
+	@Override
+	public String doMultiPoint2DGetPointAtIndexTransform(String toSQLString) {
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	}
+
+	@Override
+	public String doMultiPoint2DGetNumberOfPointsTransform(String toSQLString) {
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	}
+
+	@Override
+	public String doMultiPoint2DDimensionTransform(String toSQLString) {
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	}
+
+	@Override
+	public String doMultiPoint2DGetBoundingBoxTransform(String toSQLString) {
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	}
+
+	@Override
+	public String doMultiPoint2DAsTextTransform(String toSQLString) {
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	}
+
+	@Override
+	public String doMultiPoint2DToLine2DTransform(String toSQLString) {
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	}
+
+	@Override
+	public String doMultiPoint2DToPolygon2DTransform(String toSQLString) {
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 }
