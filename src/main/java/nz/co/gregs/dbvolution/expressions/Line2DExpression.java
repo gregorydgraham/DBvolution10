@@ -376,6 +376,16 @@ public class Line2DExpression implements Line2DResult, EqualComparable<Line2DRes
 		});
 	}
 	
+	public MultiPoint2DExpression intersectionPoints(Line2DResult crossingLine) {
+		return new MultiPoint2DExpression(new LineLineWithMultiPoint2DResult(this, new Line2DExpression(crossingLine)) {
+			
+			@Override
+			protected String doExpressionTransform(DBDatabase db) {
+				return db.getDefinition().doLine2DAllIntersectionPointsWithLine2DTransform(getFirst().toSQLString(db), getSecond().toSQLString(db));
+			}
+		});
+	}
+	
 	/**
 	 * Find a point where this line and the other line (represented as a series of points) cross.
 	 * 
@@ -567,6 +577,77 @@ public class Line2DExpression implements Line2DResult, EqualComparable<Line2DRes
 		@Override
 		public LineLineWithPoint2DResult copy() {
 			LineLineWithPoint2DResult newInstance;
+			try {
+				newInstance = getClass().newInstance();
+			} catch (InstantiationException ex) {
+				throw new RuntimeException(ex);
+			} catch (IllegalAccessException ex) {
+				throw new RuntimeException(ex);
+			}
+			newInstance.first = first.copy();
+			newInstance.second = second.copy();
+			return newInstance;
+		}
+
+		protected abstract String doExpressionTransform(DBDatabase db);
+
+		@Override
+		public Set<DBRow> getTablesInvolved() {
+			HashSet<DBRow> hashSet = new HashSet<DBRow>();
+			if (first != null) {
+				hashSet.addAll(first.getTablesInvolved());
+			}
+			if (second != null) {
+				hashSet.addAll(second.getTablesInvolved());
+			}
+			return hashSet;
+		}
+
+		@Override
+		public boolean isAggregator() {
+			return first.isAggregator() || second.isAggregator();
+		}
+
+		@Override
+		public boolean getIncludesNull() {
+			return requiresNullProtection;
+		}
+	}
+
+	private static abstract class LineLineWithMultiPoint2DResult extends MultiPoint2DExpression {
+
+		private Line2DExpression first;
+		private Line2DExpression second;
+		private boolean requiresNullProtection;
+
+		LineLineWithMultiPoint2DResult(Line2DExpression first, Line2DExpression second) {
+			this.first = first;
+			this.second = second;
+			if (this.second == null || this.second.getIncludesNull()) {
+				this.requiresNullProtection = true;
+			}
+		}
+
+		Line2DExpression getFirst() {
+			return first;
+		}
+
+		Line2DExpression getSecond() {
+			return second;
+		}
+
+		@Override
+		public final String toSQLString(DBDatabase db) {
+			if (this.getIncludesNull()) {
+				return BooleanExpression.isNull(first).toSQLString(db);
+			} else {
+				return doExpressionTransform(db);
+			}
+		}
+
+		@Override
+		public LineLineWithMultiPoint2DResult copy() {
+			LineLineWithMultiPoint2DResult newInstance;
 			try {
 				newInstance = getClass().newInstance();
 			} catch (InstantiationException ex) {

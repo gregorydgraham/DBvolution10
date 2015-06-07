@@ -18,6 +18,7 @@ package nz.co.gregs.dbvolution.expressions;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.LineString;
+import com.vividsolutions.jts.geom.MultiPoint;
 import com.vividsolutions.jts.geom.Point;
 import java.sql.SQLException;
 import java.util.List;
@@ -305,6 +306,33 @@ public class Line2DExpressionTest extends AbstractTest {
 		Assert.assertThat(allRows.size(), is(2));
 		dbQuery = database.getDBQuery(lineTestTable);
 		dbQuery.addCondition(lineTestTable.column(lineTestTable.line).intersectionWith(nonCrossingLine).is((Point)null));
+		allRows = dbQuery.getAllInstancesOf(lineTestTable);
+		Assert.assertThat(allRows.size(), is(0));
+	}
+
+	@Test
+	public void testIntersectionPoints() throws SQLException {
+		System.out.println("intersects");
+		final LineTestTable lineTestTable = new LineTestTable();
+		DBQuery dbQuery = database.getDBQuery(lineTestTable);
+		Coordinate coordinate1 = new Coordinate(1, 2);
+		Coordinate coordinate2 = new Coordinate(1, 3);
+		Coordinate coordinate3 = new Coordinate(5, 3);
+		final Line2DExpression nonCrossingLine = Line2DExpression.value(coordinate1, coordinate2, coordinate3);
+		
+		Coordinate coordinateA = new Coordinate(3, 3);
+		Coordinate coordinateB = new Coordinate(2, 4);
+		Coordinate coordinateC = new Coordinate(1, 4);
+		final Line2DExpression crossingLine = Line2DExpression.value(coordinateA, coordinateB, coordinateC);
+		dbQuery.setBlankQueryAllowed(true);
+		database.print(dbQuery.getAllRows());
+
+		dbQuery.addCondition(lineTestTable.column(lineTestTable.line).intersectionPoints(crossingLine).is(MultiPoint2DExpression.value(new Coordinate(2.5D, 3.5D))));
+		List<LineTestTable> allRows = dbQuery.getAllInstancesOf(lineTestTable);
+		database.print(allRows);
+		Assert.assertThat(allRows.size(), is(2));
+		dbQuery = database.getDBQuery(lineTestTable);
+		dbQuery.addCondition(lineTestTable.column(lineTestTable.line).intersectionPoints(nonCrossingLine).is((MultiPoint)null));
 		allRows = dbQuery.getAllInstancesOf(lineTestTable);
 		Assert.assertThat(allRows.size(), is(0));
 	}

@@ -26,6 +26,7 @@ import nz.co.gregs.dbvolution.columns.*;
 import nz.co.gregs.dbvolution.datatypes.*;
 import nz.co.gregs.dbvolution.datatypes.spatial2D.DBLine2D;
 import nz.co.gregs.dbvolution.datatypes.spatial2D.DBLineSegment2D;
+import nz.co.gregs.dbvolution.datatypes.spatial2D.DBMultiPoint2D;
 import nz.co.gregs.dbvolution.datatypes.spatial2D.DBPoint2D;
 import nz.co.gregs.dbvolution.exceptions.IncorrectRowProviderInstanceSuppliedException;
 import nz.co.gregs.dbvolution.expressions.*;
@@ -134,6 +135,10 @@ public class RowDefinition implements Serializable {
 	public LineSegment2DColumn column(DBLineSegment2D fieldOfThisInstance) {
 		return new LineSegment2DColumn(this, fieldOfThisInstance);
 	}
+	
+	public MultiPoint2DColumn column(DBMultiPoint2D fieldOfThisInstance) {
+		return new MultiPoint2DColumn(this, fieldOfThisInstance);
+	}
 
 	/**
 	 * Creates a new ColumnProvider instance to help create
@@ -181,6 +186,8 @@ public class RowDefinition implements Serializable {
 			col = this.column((DBLine2D) fieldOfThisInstance);
 		} else if (DBLineSegment2D.class.isAssignableFrom(fieldOfThisInstance.getClass())) {
 			col = this.column((DBLineSegment2D) fieldOfThisInstance);
+		} else if (DBMultiPoint2D.class.isAssignableFrom(fieldOfThisInstance.getClass())) {
+			col = this.column((DBMultiPoint2D) fieldOfThisInstance);
 		}
 		if (col == null) {
 			throw new IncorrectRowProviderInstanceSuppliedException(this, fieldOfThisInstance);

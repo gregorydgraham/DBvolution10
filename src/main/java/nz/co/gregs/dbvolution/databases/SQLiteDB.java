@@ -83,6 +83,7 @@ public class SQLiteDB extends DBDatabase implements SupportsDateRepeatDatatypeFu
 		MissingStandardFunctions.addFunctions(this, connection);
 		DateRepeatFunctions.addFunctions(connection);
 		Point2DFunctions.addFunctions(connection);
+		MultiPoint2DFunctions.addFunctions(connection);
 		LineSegment2DFunctions.addFunctions(connection);
 		Line2DFunctions.addFunctions(connection);
 		Polygon2DFunctions.addFunctions(connection);

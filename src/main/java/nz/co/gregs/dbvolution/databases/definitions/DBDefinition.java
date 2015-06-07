@@ -3944,39 +3944,55 @@ public abstract class DBDefinition {
 		return point;
 	}
 
-	public String doMultiPoint2DDistanceBetweenTransform(String toSQLString, MultiPoint2DExpression second) {
+	public String doMultiPoint2DEqualsTransform(String first, String second) {
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
-	public String doMultiPoint2DEqualsTransform(String toSQLString, String toSQLString0) {
+	public String doMultiPoint2DGetPointAtIndexTransform(String first, String index) {
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
-	public String doMultiPoint2DGetPointAtIndexTransform(String toSQLString) {
+	public String doMultiPoint2DGetNumberOfPointsTransform(String first) {
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
-	public String doMultiPoint2DGetNumberOfPointsTransform(String toSQLString) {
+	public String doMultiPoint2DDimensionTransform(String first) {
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
-	public String doMultiPoint2DDimensionTransform(String toSQLString) {
+	public String doMultiPoint2DGetBoundingBoxTransform(String first) {
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
-	public String doMultiPoint2DGetBoundingBoxTransform(String toSQLString) {
+	public String doMultiPoint2DAsTextTransform(String first) {
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
-	public String doMultiPoint2DAsTextTransform(String toSQLString) {
+	public String doMultiPoint2DToLine2DTransform(String first) {
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
-	public String doMultiPoint2DToLine2DTransform(String toSQLString) {
+	public String doMultiPoint2DToPolygon2DTransform(String first) {
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
-	public String doMultiPoint2DToPolygon2DTransform(String toSQLString) {
+	public String doMultiPoint2DGetMinYTransform(String toSQLString) {
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	}
+
+	public String doMultiPoint2DGetMinXTransform(String toSQLString) {
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	}
+
+	public String doMultiPoint2DGetMaxYTransform(String toSQLString) {
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	}
+
+	public String doMultiPoint2DGetMaxXTransform(String toSQLString) {
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	}
+
+	public String doLine2DAllIntersectionPointsWithLine2DTransform(String toSQLString, String toSQLString0) {
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 }

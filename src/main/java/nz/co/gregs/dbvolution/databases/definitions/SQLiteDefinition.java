@@ -15,12 +15,7 @@
  */
 package nz.co.gregs.dbvolution.databases.definitions;
 
-import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.GeometryFactory;
-import com.vividsolutions.jts.geom.LineSegment;
-import com.vividsolutions.jts.geom.LineString;
-import com.vividsolutions.jts.geom.Polygon;
+import com.vividsolutions.jts.geom.*;
 import com.vividsolutions.jts.io.WKTReader;
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -28,23 +23,13 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.databases.SQLiteDB;
-import nz.co.gregs.dbvolution.datatypes.DBBooleanArray;
-import nz.co.gregs.dbvolution.datatypes.DBDate;
-import nz.co.gregs.dbvolution.datatypes.DBInteger;
-import nz.co.gregs.dbvolution.datatypes.DBLargeObject;
-import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
-import nz.co.gregs.dbvolution.datatypes.spatial2D.DBLine2D;
-import nz.co.gregs.dbvolution.datatypes.spatial2D.DBPoint2D;
+import nz.co.gregs.dbvolution.datatypes.*;
+import nz.co.gregs.dbvolution.datatypes.spatial2D.*;
 import nz.co.gregs.dbvolution.exceptions.IncorrectGeometryReturnedForDatatype;
-import nz.co.gregs.dbvolution.expressions.MultiPoint2DExpression;
 import nz.co.gregs.dbvolution.generation.DBTableField;
 import nz.co.gregs.dbvolution.internal.datatypes.DateRepeatImpl;
 import nz.co.gregs.dbvolution.internal.properties.PropertyWrapper;
-import nz.co.gregs.dbvolution.internal.sqlite.DateRepeatFunctions;
-import nz.co.gregs.dbvolution.internal.sqlite.Line2DFunctions;
-import nz.co.gregs.dbvolution.internal.sqlite.LineSegment2DFunctions;
-import nz.co.gregs.dbvolution.internal.sqlite.Point2DFunctions;
-import nz.co.gregs.dbvolution.internal.sqlite.Polygon2DFunctions;
+import nz.co.gregs.dbvolution.internal.sqlite.*;
 import org.joda.time.Period;
 
 /**
@@ -107,6 +92,8 @@ public class SQLiteDefinition extends DBDefinition {
 			return " VARCHAR(2000) ";
 		} else if (qdt instanceof DBLine2D) {
 			return " VARCHAR(2001) ";
+		} else if (qdt instanceof DBMultiPoint2D) {
+			return " VARCHAR(2002) ";
 		} else {
 			return super.getSQLTypeOfDBDatatype(qdt);
 		}
@@ -688,47 +675,62 @@ public class SQLiteDefinition extends DBDefinition {
 	}
 
 	@Override
-	public String doMultiPoint2DDistanceBetweenTransform(String toSQLString, MultiPoint2DExpression second) {
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	public String doMultiPoint2DEqualsTransform(String first, String second) {
+		return MultiPoint2DFunctions.EQUALS_FUNCTION+"(("+first+"), ("+second+"))";
 	}
 
 	@Override
-	public String doMultiPoint2DEqualsTransform(String toSQLString, String toSQLString0) {
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	public String doMultiPoint2DGetPointAtIndexTransform(String first, String index) {
+		return MultiPoint2DFunctions.GETPOINTSATINDEX_FUNCTION+"(("+first+"), ("+index+"))";
 	}
 
 	@Override
-	public String doMultiPoint2DGetPointAtIndexTransform(String toSQLString) {
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	public String doMultiPoint2DGetNumberOfPointsTransform(String first) {
+		return MultiPoint2DFunctions.GETNUMBEROFPOINTS_FUNCTION+"("+first+")";
 	}
 
 	@Override
-	public String doMultiPoint2DGetNumberOfPointsTransform(String toSQLString) {
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	public String doMultiPoint2DDimensionTransform(String first) {
+		return MultiPoint2DFunctions.GETDIMENSION_FUNCTION+"("+first+")";
 	}
 
 	@Override
-	public String doMultiPoint2DDimensionTransform(String toSQLString) {
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	public String doMultiPoint2DGetBoundingBoxTransform(String first) {
+		return MultiPoint2DFunctions.GETBOUNDINGBOX_FUNCTION+"("+first+")";
 	}
 
 	@Override
-	public String doMultiPoint2DGetBoundingBoxTransform(String toSQLString) {
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	public String doMultiPoint2DAsTextTransform(String first) {
+		return MultiPoint2DFunctions.ASTEXT_FUNCTION+"("+first+")";
 	}
 
 	@Override
-	public String doMultiPoint2DAsTextTransform(String toSQLString) {
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	public String doMultiPoint2DToLine2DTransform(String first) {
+		return MultiPoint2DFunctions.ASLINE2D+"("+first+")";
 	}
 
 	@Override
-	public String doMultiPoint2DToLine2DTransform(String toSQLString) {
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	public String doMultiPoint2DToPolygon2DTransform(String first) {
+		return MultiPoint2DFunctions.ASPOLYGON2D+"("+first+")";
 	}
 
 	@Override
-	public String doMultiPoint2DToPolygon2DTransform(String toSQLString) {
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	public String doMultiPoint2DGetMinYTransform(String first) {
+		return MultiPoint2DFunctions.GETMINY_FUNCTION+"("+first+")";
+	}
+
+	@Override
+	public String doMultiPoint2DGetMinXTransform(String first) {
+		return MultiPoint2DFunctions.GETMINX_FUNCTION+"("+first+")";
+	}
+
+	@Override
+	public String doMultiPoint2DGetMaxYTransform(String first) {
+		return MultiPoint2DFunctions.GETMAXY_FUNCTION+"("+first+")";
+	}
+
+	@Override
+	public String doMultiPoint2DGetMaxXTransform(String first) {
+		return MultiPoint2DFunctions.GETMAXX_FUNCTION+"("+first+")";
 	}
 }

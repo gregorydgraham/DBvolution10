@@ -15,6 +15,7 @@
  */
 package nz.co.gregs.dbvolution.datatypes.spatial2D;
 
+import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.MultiPoint;
 import com.vividsolutions.jts.geom.Point;
@@ -71,6 +72,17 @@ public class DBMultiPoint2D extends QueryableDatatype implements MultiPoint2DRes
 	 */
 	public void setValue(MultiPoint point) {
 		setLiteralValue(point);
+	}
+
+	public void setValue(Coordinate... coordinates) {
+		GeometryFactory geometryFactory = new GeometryFactory();
+		MultiPoint mpoint = geometryFactory.createMultiPoint(coordinates);
+		this.setValue(mpoint);
+	}
+	public void setValue(Point... points) {
+		GeometryFactory geometryFactory = new GeometryFactory();
+		MultiPoint mpoint = geometryFactory.createMultiPoint(points);
+		this.setValue(mpoint);
 	}
 
 	@Override

@@ -30,19 +30,19 @@ import org.sqlite.Function;
  */
 public class MultiPoint2DFunctions {
 
-	public static String CREATE_FROM_COORDS_FUNCTION = "DBV_CREATE_MULTIPOINT2D_FROM_COORDS";
-	public static String EQUALS_FUNCTION = "DBV_MULTIPOINT2D_EQUALS";
-	public static String GETMAXX_FUNCTION = "DBV_MULTIPOINT2D_GETMAXX";
-	public static String GETMAXY_FUNCTION = "DBV_MULTIPOINT2D_GETMAXY";
-	public static String GETMINX_FUNCTION = "DBV_MULTIPOINT2D_GETMINX";
-	public static String GETMINY_FUNCTION = "DBV_MULTIPOINT2D_GETMINY";
-	public static String GETDIMENSION_FUNCTION = "DBV_MULTIPOINT2D_GETDIMENSION";
-	public static String GETBOUNDINGBOX_FUNCTION = "DBV_MULTIPOINT2D_GETBOUNDINGBOX";
-	public static String ASTEXT_FUNCTION = "DBV_MULTIPOINT2D_ASTEXT";
-	public static String SPATIAL_LINE_MIN_X_COORD_FUNCTION = "DBV_MULTIPOINT2D_MIN_X2D_COORD";
-	public static String SPATIAL_LINE_MAX_Y_COORD_FUNCTION = "DBV_MULTIPOINT2D_MAX_Y2D_COORD";
-	public static String SPATIAL_LINE_MIN_Y_COORD_FUNCTION = "DBV_MULTIPOINT2D_MIN_Y2D_COORD";
-	public static String SPATIAL_LINE_MAX_X_COORD_FUNCTION = "DBV_MULTIPOINT2D_MAX_X2D_COORD";
+	public static String CREATE_FROM_COORDS_FUNCTION = "DBV_CREATE_MPOINT2D_FROM_COORDS";
+	public static String EQUALS_FUNCTION = "DBV_MPOINT2D_EQUALS";
+	public static String GETMAXX_FUNCTION = "DBV_MPOINT2D_GETMAXX";
+	public static String GETMAXY_FUNCTION = "DBV_MPOINT2D_GETMAXY";
+	public static String GETMINX_FUNCTION = "DBV_MPOINT2D_GETMINX";
+	public static String GETMINY_FUNCTION = "DBV_MPOINT2D_GETMINY";
+	public static String GETDIMENSION_FUNCTION = "DBV_MPOINT2D_GETDIMENSION";
+	public static String GETBOUNDINGBOX_FUNCTION = "DBV_MPOINT2D_GETBOUNDINGBOX";
+	public static String GETNUMBEROFPOINTS_FUNCTION = "DBV_MPOINT2D_GETNUMBEROFPOINTS";
+	public static String GETPOINTSATINDEX_FUNCTION = "DBV_MPOINT2D_GETPOINTATINDEX";
+	public static String ASTEXT_FUNCTION = "DBV_MPOINT2D_ASTEXT";
+	public static String ASLINE2D = "DBV_MPOINT2D_ASLINE2D";
+	public static String ASPOLYGON2D = "DBV_MPOINT2D_ASPOLYGON2D";
 
 	private MultiPoint2DFunctions() {
 	}
@@ -56,11 +56,15 @@ public class MultiPoint2DFunctions {
 		Function.create(connection, GETMINY_FUNCTION, new GetMinY());
 		Function.create(connection, GETDIMENSION_FUNCTION, new GetDimension());
 		Function.create(connection, GETBOUNDINGBOX_FUNCTION, new GetBoundingBox());
+		Function.create(connection, GETNUMBEROFPOINTS_FUNCTION, new GetNumberOfPoints());
+		Function.create(connection, GETPOINTSATINDEX_FUNCTION, new GetPointAtIndex());
 		Function.create(connection, ASTEXT_FUNCTION, new AsText());
+		Function.create(connection, ASLINE2D, new AsLine2D());
+		Function.create(connection, ASPOLYGON2D, new AsPolygon2D());
 	}
 
 	private static class CreateFromCoords extends PolygonFunction {
-//LINESTRING (2 3, 3 4)
+//MULTIPOINT (2 3, 3 4)
 
 		@Override
 		protected void xFunc() throws SQLException {
@@ -82,16 +86,55 @@ public class MultiPoint2DFunctions {
 		}
 	}
 
+	private static class GetNumberOfPoints extends PolygonFunction {
+//MULTIPOINT (2 3, 3 4)
+
+		@Override
+		protected void xFunc() throws SQLException {
+			String multipoint = value_text(0);
+			if (multipoint == null) {
+				result();
+			} else {
+				Double maxX = null;
+				String[] split = multipoint.trim().split("[ (),]+");
+				result(split.length - 1);
+			}
+		}
+	}
+
+	private static class GetPointAtIndex extends PolygonFunction {
+//MULTIPOINT (2 3, 3 4)
+
+		@Override
+		protected void xFunc() throws SQLException {
+			String multipoint = value_text(0);
+			int index = value_int(1);
+			final int indexInMPoint = index * 2;
+			if (multipoint == null||indexInMPoint<=0) {
+				result();
+			} else {
+				String[] split = multipoint.split("[ (),]+");
+				if (indexInMPoint > split.length) {
+					result();
+				} else {
+					String x = split[indexInMPoint - 1];
+					String y = split[indexInMPoint];
+					result("POINT (" + x + " " + y + ")");
+				}
+			}
+		}
+	}
+
 	private static class Equals extends PolygonFunction {
 
 		@Override
 		protected void xFunc() throws SQLException {
-			String firstPoint = value_text(0);
-			String secondPoint = value_text(1);
-			if (firstPoint == null || secondPoint == null) {
+			String firstMPoint = value_text(0);
+			String secondMPoint = value_text(1);
+			if (firstMPoint == null || secondMPoint == null) {
 				result();
 			} else {
-				result(firstPoint.equals(secondPoint) ? 1 : 0);
+				result(firstMPoint.equals(secondMPoint) ? 1 : 0);
 			}
 		}
 	}
@@ -100,12 +143,12 @@ public class MultiPoint2DFunctions {
 
 		@Override
 		protected void xFunc() throws SQLException {
-			String firstLine = value_text(0);
-			if (firstLine == null) {
+			String multipoint = value_text(0);
+			if (multipoint == null) {
 				result();
 			} else {
 				Double maxX = null;
-				String[] split = firstLine.split("[ (),]+");
+				String[] split = multipoint.split("[ (),]+");
 				for (int i = 1; i < split.length; i += 2) {
 					double x = Double.parseDouble(split[i]);
 //					double y = Double.parseDouble(split[i + 1]);
@@ -123,12 +166,12 @@ public class MultiPoint2DFunctions {
 
 		@Override
 		protected void xFunc() throws SQLException {
-			String firstPoint = value_text(0);
-			if (firstPoint == null) {
+			String multipoint = value_text(0);
+			if (multipoint == null) {
 				result();
 			} else {
 				Double maxY = null;
-				String[] split = firstPoint.split("[ (),]+");
+				String[] split = multipoint.split("[ (),]+");
 				for (int i = 1; i < split.length; i += 2) {
 //					double x = Double.parseDouble(split[i]);
 					double y = Double.parseDouble(split[i + 1]);
@@ -145,12 +188,12 @@ public class MultiPoint2DFunctions {
 
 		@Override
 		protected void xFunc() throws SQLException {
-			String firstPoint = value_text(0);
-			if (firstPoint == null) {
+			String multipoint = value_text(0);
+			if (multipoint == null) {
 				result();
 			} else {
 				Double minX = null;
-				String[] split = firstPoint.split("[ (),]+");
+				String[] split = multipoint.split("[ (),]+");
 				for (int i = 1; i < split.length; i += 2) {
 					double x = Double.parseDouble(split[i]);
 //					double y = Double.parseDouble(split[i + 1]);
@@ -168,12 +211,12 @@ public class MultiPoint2DFunctions {
 
 		@Override
 		protected void xFunc() throws SQLException {
-			String firstPoint = value_text(0);
-			if (firstPoint == null) {
+			String multipoint = value_text(0);
+			if (multipoint == null) {
 				result();
 			} else {
 				Double minY = null;
-				String[] split = firstPoint.split("[ (),]+");
+				String[] split = multipoint.split("[ (),]+");
 				for (int i = 1; i < split.length; i += 2) {
 //					double x = Double.parseDouble(split[i]);
 					double y = Double.parseDouble(split[i + 1]);
@@ -198,15 +241,15 @@ public class MultiPoint2DFunctions {
 
 		@Override
 		protected void xFunc() throws SQLException {
-			String firstLine = value_text(0);
-			if (firstLine == null) {
+			String multipoint = value_text(0);
+			if (multipoint == null) {
 				result();
 			} else {
 				Double maxX = null;
 				Double maxY = null;
 				Double minX = null;
 				Double minY = null;
-				String[] split = firstLine.split("[ (),]+");
+				String[] split = multipoint.split("[ (),]+");
 				for (int i = 1; i < split.length; i += 2) {
 					double x = Double.parseDouble(split[i]);
 					double y = Double.parseDouble(split[i + 1]);
@@ -233,8 +276,28 @@ public class MultiPoint2DFunctions {
 
 		@Override
 		protected void xFunc() throws SQLException {
-			String point = value_text(0);
-			result(point);
+			String multipoint = value_text(0);
+			result(multipoint);
+		}
+	}
+
+	private static class AsLine2D extends Function {
+
+		@Override
+		protected void xFunc() throws SQLException {
+			String multipoint = value_text(0);
+			String[] split = multipoint.split("(");
+			result("LINESTRING ("+split[1]);
+		}
+	}
+
+	private static class AsPolygon2D extends Function {
+
+		@Override
+		protected void xFunc() throws SQLException {
+			String multipoint = value_text(0);
+			String[] split = multipoint.split("(");
+			result("POLYGON (("+split[1]+")");
 		}
 	}
 

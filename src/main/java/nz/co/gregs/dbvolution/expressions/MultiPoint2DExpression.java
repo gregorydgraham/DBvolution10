@@ -15,6 +15,8 @@
  */
 package nz.co.gregs.dbvolution.expressions;
 
+import com.vividsolutions.jts.geom.Coordinate;
+import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.MultiPoint;
 import nz.co.gregs.dbvolution.results.EqualComparable;
 import com.vividsolutions.jts.geom.Point;
@@ -24,10 +26,8 @@ import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.datatypes.spatial2D.DBMultiPoint2D;
 import nz.co.gregs.dbvolution.datatypes.spatial2D.DBPoint2D;
-import nz.co.gregs.dbvolution.results.Line2DResult;
 import nz.co.gregs.dbvolution.results.MultiPoint2DResult;
 import nz.co.gregs.dbvolution.results.NumberResult;
-import nz.co.gregs.dbvolution.results.Polygon2DResult;
 
 /**
  *
@@ -55,7 +55,24 @@ public class MultiPoint2DExpression implements MultiPoint2DResult, EqualComparab
 		}
 	}
 
+	public MultiPoint2DExpression(MultiPoint points) {
+		innerPoint = new DBMultiPoint2D(points);
+		if (points == null || innerPoint.getIncludesNull()) {
+			nullProtectionRequired = true;
+		}
+	}
+
 	public static MultiPoint2DExpression value(Point... points) {
+		return new MultiPoint2DExpression(points);
+	}
+
+	public static MultiPoint2DExpression value(Coordinate... coords) {
+		GeometryFactory geometryFactory = new GeometryFactory();
+		MultiPoint multiPoint = geometryFactory.createMultiPoint(coords);
+		return new MultiPoint2DExpression(multiPoint);
+	}
+
+	public static MultiPoint2DExpression value(MultiPoint points) {
 		return new MultiPoint2DExpression(points);
 	}
 
@@ -152,6 +169,46 @@ public class MultiPoint2DExpression implements MultiPoint2DResult, EqualComparab
 		});
 	}
 
+	public NumberExpression getMaxX() {
+		return new NumberExpression(new MultiPointFunctionWithNumberResult(this) {
+
+			@Override
+			public String doExpressionTransform(DBDatabase db) {
+				return db.getDefinition().doMultiPoint2DGetMaxXTransform(getFirst().toSQLString(db));
+			}
+		});
+	}
+
+	public NumberExpression getMaxY() {
+		return new NumberExpression(new MultiPointFunctionWithNumberResult(this) {
+
+			@Override
+			public String doExpressionTransform(DBDatabase db) {
+				return db.getDefinition().doMultiPoint2DGetMaxYTransform(getFirst().toSQLString(db));
+			}
+		});
+	}
+
+	public NumberExpression getMinX() {
+		return new NumberExpression(new MultiPointFunctionWithNumberResult(this) {
+
+			@Override
+			public String doExpressionTransform(DBDatabase db) {
+				return db.getDefinition().doMultiPoint2DGetMinXTransform(getFirst().toSQLString(db));
+			}
+		});
+	}
+
+	public NumberExpression getMinY() {
+		return new NumberExpression(new MultiPointFunctionWithNumberResult(this) {
+
+			@Override
+			public String doExpressionTransform(DBDatabase db) {
+				return db.getDefinition().doMultiPoint2DGetMinYTransform(getFirst().toSQLString(db));
+			}
+		});
+	}
+
 	public NumberExpression numberOfPoints() {
 		return new NumberExpression(new MultiPointFunctionWithNumberResult(this) {
 
@@ -175,7 +232,7 @@ public class MultiPoint2DExpression implements MultiPoint2DResult, EqualComparab
 
 			@Override
 			public String doExpressionTransform(DBDatabase db) {
-				return db.getDefinition().doMultiPoint2DGetPointAtIndexTransform(getFirst().toSQLString(db));
+				return db.getDefinition().doMultiPoint2DGetPointAtIndexTransform(getFirst().toSQLString(db), getSecond().toSQLString(db));
 			}
 		});
 	}
@@ -191,16 +248,6 @@ public class MultiPoint2DExpression implements MultiPoint2DResult, EqualComparab
 				} catch (UnsupportedOperationException unsupported) {
 					return NumberExpression.value(2).toSQLString(db);
 				}
-			}
-		});
-	}
-
-	public NumberExpression distanceBetween(MultiPoint2DExpression otherPoint) {
-		return new NumberExpression(new MultiPointMultiPointFunctionWithNumberResult(this, otherPoint) {
-
-			@Override
-			public String doExpressionTransform(DBDatabase db) {
-				return db.getDefinition().doMultiPoint2DDistanceBetweenTransform(getFirst().toSQLString(db), getSecond());
 			}
 		});
 	}
@@ -262,7 +309,7 @@ public class MultiPoint2DExpression implements MultiPoint2DResult, EqualComparab
 			if (this.getIncludesNull()) {
 				return BooleanExpression.isNull(first).toSQLString(db);
 			} else {
-			return doExpressionTransform(db);
+				return doExpressionTransform(db);
 			}
 		}
 
