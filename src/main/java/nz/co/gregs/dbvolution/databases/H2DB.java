@@ -117,13 +117,13 @@ public class H2DB extends DBDatabase implements SupportsDateRepeatDatatypeFuncti
 			for (DBVFeature function : Polygon2DFunctions.values()) {
 				featureMap.put(function.alias(), function);
 			}
-		}
-//		if (dataTypeMap == null) {
-//			dataTypeMap = new HashMap<String, DataTypes>();
-			for (DataTypes datatype : DataTypes.values()) {
-				featureMap.put(datatype.alias(), datatype);
+			for (DBVFeature function : MultiPoint2DFunctions.values()) {
+				featureMap.put(function.alias(), function);
 			}
-//		}
+		}
+		for (DataTypes datatype : DataTypes.values()) {
+			featureMap.put(datatype.alias(), datatype);
+		}
 	}
 
 	private void jamDatabaseConnectionOpen() throws DBRuntimeException, SQLException {

@@ -681,7 +681,7 @@ public class SQLiteDefinition extends DBDefinition {
 
 	@Override
 	public String doMultiPoint2DGetPointAtIndexTransform(String first, String index) {
-		return MultiPoint2DFunctions.GETPOINTSATINDEX_FUNCTION+"(("+first+"), ("+index+"))";
+		return MultiPoint2DFunctions.GETPOINTATINDEX_FUNCTION+"(("+first+"), ("+index+"))";
 	}
 
 	@Override

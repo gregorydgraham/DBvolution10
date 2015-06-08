@@ -27,15 +27,16 @@ public enum DataTypes implements DBVFeature{
 	POINT2D("DBV_POINT2D", "VARCHAR(2000)", Point2DFunctions.values()),
 	LINE2D("DBV_LINE2D", "VARCHAR(2001)", Line2DFunctions.values()),
 	LINESEGMENT2D("DBV_LINESEGMENT2D", "VARCHAR(2001)", LineSegment2DFunctions.values()),
-	POLYGON2D("DBV_POLYGON2D", "VARCHAR(2002)", Polygon2DFunctions.values());;
+	POLYGON2D("DBV_POLYGON2D", "VARCHAR(2002)", Polygon2DFunctions.values()), 
+	MULTIPOINT2D("DBV_MULTIPOINT2D", "VARCHAR(2003)", MultiPoint2DFunctions.values());
 	private final String datatype;
 	private final String actualType;
-	private final DBVFeature[] functions;
+//	private final DBVFeature[] functions;
 
 	DataTypes(String datatype, String actualType, DBVFeature[] functions) {
 		this.datatype = datatype;
 		this.actualType = actualType;
-		this.functions = functions;
+//		this.functions = functions;
 	}
 
 	@Override

@@ -39,7 +39,7 @@ public class MultiPoint2DFunctions {
 	public static String GETDIMENSION_FUNCTION = "DBV_MPOINT2D_GETDIMENSION";
 	public static String GETBOUNDINGBOX_FUNCTION = "DBV_MPOINT2D_GETBOUNDINGBOX";
 	public static String GETNUMBEROFPOINTS_FUNCTION = "DBV_MPOINT2D_GETNUMBEROFPOINTS";
-	public static String GETPOINTSATINDEX_FUNCTION = "DBV_MPOINT2D_GETPOINTATINDEX";
+	public static String GETPOINTATINDEX_FUNCTION = "DBV_MPOINT2D_GETPOINTATINDEX";
 	public static String ASTEXT_FUNCTION = "DBV_MPOINT2D_ASTEXT";
 	public static String ASLINE2D = "DBV_MPOINT2D_ASLINE2D";
 	public static String ASPOLYGON2D = "DBV_MPOINT2D_ASPOLYGON2D";
@@ -57,7 +57,7 @@ public class MultiPoint2DFunctions {
 		Function.create(connection, GETDIMENSION_FUNCTION, new GetDimension());
 		Function.create(connection, GETBOUNDINGBOX_FUNCTION, new GetBoundingBox());
 		Function.create(connection, GETNUMBEROFPOINTS_FUNCTION, new GetNumberOfPoints());
-		Function.create(connection, GETPOINTSATINDEX_FUNCTION, new GetPointAtIndex());
+		Function.create(connection, GETPOINTATINDEX_FUNCTION, new GetPointAtIndex());
 		Function.create(connection, ASTEXT_FUNCTION, new AsText());
 		Function.create(connection, ASLINE2D, new AsLine2D());
 		Function.create(connection, ASPOLYGON2D, new AsPolygon2D());
@@ -87,17 +87,17 @@ public class MultiPoint2DFunctions {
 	}
 
 	private static class GetNumberOfPoints extends PolygonFunction {
-//MULTIPOINT (2 3, 3 4)
+//'MULTIPOINT ((2 3), (3 4), (4 5))'
 
 		@Override
 		protected void xFunc() throws SQLException {
 			String multipoint = value_text(0);
-			if (multipoint == null) {
+			if (multipoint == null||multipoint.equals("")) {
 				result();
 			} else {
 				Double maxX = null;
 				String[] split = multipoint.trim().split("[ (),]+");
-				result(split.length - 1);
+				result((split.length - 1)/2);
 			}
 		}
 	}

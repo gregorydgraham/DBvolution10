@@ -71,6 +71,8 @@ public class H2DBDefinition extends DBDefinition {
 			return DataTypes.LINE2D.datatype();
 		} else if (qdt instanceof DBPolygon2D) {
 			return DataTypes.POLYGON2D.datatype();
+		} else if (qdt instanceof DBMultiPoint2D) {
+			return DataTypes.MULTIPOINT2D.datatype();
 		} else {
 			return super.getSQLTypeOfDBDatatype(qdt);
 		}
@@ -463,5 +465,65 @@ public class H2DBDefinition extends DBDefinition {
 	@Override
 	public String doLineSegment2DIntersectionPointWithLineSegment2DTransform(String toSQLString, String toSQLString0) {
 		return LineSegment2DFunctions.INTERSECTIONPOINT_LINESEGMENT2D+"(("+toSQLString+"), ("+toSQLString0+"))";
+	}
+
+	@Override
+	public String doMultiPoint2DEqualsTransform(String first, String second) {
+		return MultiPoint2DFunctions.EQUALS+"(("+first+"), ("+second+"))";
+	}
+
+	@Override
+	public String doMultiPoint2DGetPointAtIndexTransform(String first, String index) {
+		return MultiPoint2DFunctions.GETPOINTATINDEX_FUNCTION+"(("+first+"), ("+index+"))";
+	}
+
+	@Override
+	public String doMultiPoint2DGetNumberOfPointsTransform(String first) {
+		return MultiPoint2DFunctions.GETNUMBEROFPOINTS_FUNCTION+"("+first+")";
+	}
+
+	@Override
+	public String doMultiPoint2DDimensionTransform(String first) {
+		return MultiPoint2DFunctions.DIMENSION+"("+first+")";
+	}
+
+	@Override
+	public String doMultiPoint2DGetBoundingBoxTransform(String first) {
+		return MultiPoint2DFunctions.BOUNDINGBOX+"("+first+")";
+	}
+
+	@Override
+	public String doMultiPoint2DAsTextTransform(String first) {
+		return MultiPoint2DFunctions.ASTEXT+"("+first+")";
+	}
+
+	@Override
+	public String doMultiPoint2DToLine2DTransform(String first) {
+		return MultiPoint2DFunctions.ASLINE2D+"("+first+")";
+	}
+
+	@Override
+	public String doMultiPoint2DToPolygon2DTransform(String first) {
+		return MultiPoint2DFunctions.ASPOLYGON2D+"("+first+")";
+	}
+
+	@Override
+	public String doMultiPoint2DGetMinYTransform(String first) {
+		return MultiPoint2DFunctions.MINY+"("+first+")";
+	}
+
+	@Override
+	public String doMultiPoint2DGetMinXTransform(String first) {
+		return MultiPoint2DFunctions.MINX+"("+first+")";
+	}
+
+	@Override
+	public String doMultiPoint2DGetMaxYTransform(String first) {
+		return MultiPoint2DFunctions.MAXY+"("+first+")";
+	}
+
+	@Override
+	public String doMultiPoint2DGetMaxXTransform(String first) {
+		return MultiPoint2DFunctions.MAXX+"("+first+")";
 	}
 }
