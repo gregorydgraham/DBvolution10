@@ -3995,4 +3995,8 @@ public abstract class DBDefinition {
 	public String doLine2DAllIntersectionPointsWithLine2DTransform(String toSQLString, String toSQLString0) {
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
+
+	public boolean supportsRowLimitsNatively(QueryOptions options) {
+		return true;
+	}
 }

@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 import nz.co.gregs.dbvolution.example.*;
 import nz.co.gregs.dbvolution.generic.AbstractTest;
+import nz.co.gregs.dbvolution.query.QueryOptions;
 import org.junit.Assert;
 import org.junit.Test;
 import static org.hamcrest.Matchers.*;
@@ -60,7 +61,7 @@ public class OuterJoinTest extends AbstractTest {
 		DBQuery dbQuery = database.getDBQuery(mrq);
 		List<DBRow> tables = new ArrayList<DBRow>();
 		StringBuilder ansiJoinClause = new StringBuilder();
-		ansiJoinClause.append(dbQuery.getANSIJoinClause(database, new DBQuery.QueryState(dbQuery, database), carCo, tables));
+		ansiJoinClause.append(dbQuery.getANSIJoinClause(database, new DBQuery.QueryState(dbQuery, database), carCo, tables, new QueryOptions()));
 		System.out.println("=============");
 		System.out.println(ansiJoinClause);
 		System.out.println("=============");
@@ -73,7 +74,7 @@ public class OuterJoinTest extends AbstractTest {
 				));
 
 		tables.add(carCo);
-		ansiJoinClause.append(dbQuery.getANSIJoinClause(database, new DBQuery.QueryState(dbQuery, database), mrq, tables));
+		ansiJoinClause.append(dbQuery.getANSIJoinClause(database, new DBQuery.QueryState(dbQuery, database), mrq, tables, new QueryOptions()));
 		System.out.println("=============");
 		System.out.println(ansiJoinClause);
 		System.out.println("=============");
@@ -87,7 +88,7 @@ public class OuterJoinTest extends AbstractTest {
 				));
 
 		tables.add(mrq);
-		ansiJoinClause.append(dbQuery.getANSIJoinClause(database, new DBQuery.QueryState(dbQuery, database), link, tables));
+		ansiJoinClause.append(dbQuery.getANSIJoinClause(database, new DBQuery.QueryState(dbQuery, database), link, tables, new QueryOptions()));
 		System.out.println("=============");
 		System.out.println(ansiJoinClause);
 		System.out.println("=============");
@@ -100,7 +101,7 @@ public class OuterJoinTest extends AbstractTest {
 				));
 
 		tables.add(link);
-		ansiJoinClause.append(dbQuery.getANSIJoinClause(database, new DBQuery.QueryState(dbQuery, database), logo, tables));
+		ansiJoinClause.append(dbQuery.getANSIJoinClause(database, new DBQuery.QueryState(dbQuery, database), logo, tables, new QueryOptions()));
 		System.out.println("=============");
 		System.out.println(ansiJoinClause);
 		System.out.println("=============");

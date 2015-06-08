@@ -18,29 +18,16 @@ package nz.co.gregs.dbvolution.databases;
 import nz.co.gregs.dbvolution.DBDatabase;
 import java.sql.SQLException;
 import javax.sql.DataSource;
-import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
-import nz.co.gregs.dbvolution.databases.definitions.InformixDBDefinition;
+import nz.co.gregs.dbvolution.databases.definitions.Informix11DBDefinition;
 
 /**
- * A version of DBDatabase tweaked for Informix 7 and higher.
+ * A version of DBDatabase tweaked for Informix 11 and higher.
  *
  * @author Gregory Graham
  */
-public class InformixDB extends DBDatabase {
+public class Informix11DB extends InformixDB {
 
 	private final static String INFORMIXDRIVERNAME = "com.informix.jdbc.IfxDriver";
-
-	protected InformixDB(DBDefinition definition, DataSource ds) throws SQLException {
-		super(definition, ds);
-		// Informix causes problems when using batched statements :(
-		setBatchSQLStatementsWhenPossible(false);
-	}
-
-	protected InformixDB(DBDefinition definition, String driverName, String jdbcURL, String username, String password) throws SQLException {
-		super(definition, driverName, jdbcURL, username, password);
-		// Informix causes problems when using batched statements :(
-		setBatchSQLStatementsWhenPossible(false);
-	}
 
 	/**
 	 * Creates a DBDatabase configured for Informix with the given JDBC URL,
@@ -61,9 +48,10 @@ public class InformixDB extends DBDatabase {
 	 * @throws java.lang.ClassNotFoundException java.lang.ClassNotFoundException
 	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
-	public InformixDB(String jdbcURL, String username, String password) throws ClassNotFoundException, SQLException {
-		this(new InformixDBDefinition(), INFORMIXDRIVERNAME, jdbcURL, username, password);
+	public Informix11DB(String jdbcURL, String username, String password) throws ClassNotFoundException, SQLException {
+		super(new Informix11DBDefinition(), INFORMIXDRIVERNAME, jdbcURL, username, password);
 	}
+
 	/**
 	 * Creates a DBDatabase configured for Informix for the given data source.
 	 *
@@ -78,12 +66,12 @@ public class InformixDB extends DBDatabase {
 	 * @throws java.lang.ClassNotFoundException java.lang.ClassNotFoundException
 	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
-	public InformixDB(DataSource dataSource) throws ClassNotFoundException, SQLException {
-		this(new InformixDBDefinition(), dataSource);
+	public Informix11DB(DataSource dataSource) throws ClassNotFoundException, SQLException {
+		super(new Informix11DBDefinition(), dataSource);
 	}
 
 	@Override
 	public DBDatabase clone() throws CloneNotSupportedException {
-		return super.clone(); //To change body of generated methods, choose Tools | Templates.
+		return super.clone(); 
 	}
 }

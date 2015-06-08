@@ -15,6 +15,8 @@
  */
 package nz.co.gregs.dbvolution.query;
 
+import java.util.Arrays;
+import java.util.Collections;
 import nz.co.gregs.dbvolution.columns.ColumnProvider;
 
 /**
@@ -163,6 +165,24 @@ public class QueryOptions {
 	 */
 	public boolean isMatchAllRelationships() {
 		return !matchAnyRelationship;
+	}
+
+	public QueryOptions copy() {
+		return this.clone();
+	}
+
+	@Override
+	protected QueryOptions clone() {
+		QueryOptions opts = new QueryOptions();
+		opts.matchAll = this.matchAll;
+		opts.rowLimit = this.rowLimit;
+		opts.sortColumns = Arrays.asList(this.sortColumns).toArray(sortColumns);
+		opts.pageIndex = this.pageIndex;
+		opts.blankQueryAllowed = this.blankQueryAllowed;
+		opts.cartesianJoinAllowed = this.cartesianJoinAllowed;
+		opts.useANSISyntax = this.useANSISyntax;
+		opts.matchAnyRelationship = this.matchAnyRelationship;
+		return opts;
 	}
 
 }

@@ -248,10 +248,10 @@ public class DBQuery {
 	 * @return a String of the SQL that will be used by this DBQuery.
 	 */
 	public String getSQLForQuery() {
-		return getSQLForQuery(QueryType.SELECT);
+		return getSQLForQuery(QueryType.SELECT, this.details.getOptions());
 	}
 
-	String getANSIJoinClause(DBDatabase database, QueryState queryState, DBRow newTable, List<DBRow> previousTables) {
+	String getANSIJoinClause(DBDatabase database, QueryState queryState, DBRow newTable, List<DBRow> previousTables, QueryOptions options) {
 		List<String> joinClauses = new ArrayList<String>();
 		List<String> conditionClauses = new ArrayList<String>();
 		String lineSep = System.getProperty("line.separator");
@@ -271,7 +271,7 @@ public class DBQuery {
 
 		//Store the expressions from the new table in the QueryState
 		for (DBRow otherTable : preExistingTables) {
-			queryState.remainingExpressions.addAll(newTable.getRelationshipsAsBooleanExpressions(database, otherTable, details.getOptions()));
+			queryState.remainingExpressions.addAll(newTable.getRelationshipsAsBooleanExpressions(database, otherTable, options));
 		}
 
 		// Add new table's conditions
@@ -332,7 +332,7 @@ public class DBQuery {
 				if (!joinClauses.isEmpty()) {
 					sqlToReturn += "(";
 				}
-				sqlToReturn += mergeConditionsIntoSQLClause(conditionClauses, defn);
+				sqlToReturn += mergeConditionsIntoSQLClause(conditionClauses, defn, options);
 			}
 			if (!joinClauses.isEmpty()) {
 				if (!conditionClauses.isEmpty()) {
@@ -341,33 +341,33 @@ public class DBQuery {
 				String separator = "";
 				for (String join : joinClauses) {
 					sqlToReturn += separator + join;
-					separator = defn.beginJoinClauseLine(details.getOptions());
+					separator = defn.beginJoinClauseLine(options);
 				}
 				if (!conditionClauses.isEmpty()) {
 					sqlToReturn += ")";
 				}
 			}
 			if (conditionClauses.isEmpty() && joinClauses.isEmpty()) {
-				sqlToReturn += defn.getWhereClauseBeginningCondition(details.getOptions());
+				sqlToReturn += defn.getWhereClauseBeginningCondition(options);
 			}
 			sqlToReturn += defn.endOnClause();
 		}
 		return sqlToReturn;
 	}
 
-	private String mergeConditionsIntoSQLClause(List<String> conditionClauses, DBDefinition defn) {
+	private String mergeConditionsIntoSQLClause(List<String> conditionClauses, DBDefinition defn, QueryOptions options) {
 		String separator = "";
 		String sqlToReturn = "";
 		for (String cond : conditionClauses) {
 			sqlToReturn += separator + cond;
-			separator = defn.beginConditionClauseLine(details.getOptions());
+			separator = defn.beginConditionClauseLine(options);
 		}
 		return sqlToReturn;
 	}
 
-	private String getSQLForQuery(QueryType queryType) {
+	private String getSQLForQuery(QueryType queryType, QueryOptions options) {
 		String sqlString = "";
-		final QueryOptions options = details.getOptions();
+//		final QueryOptions options = details.getOptions();
 
 		if (details.getAllQueryTables().size() > 0) {
 			QueryState queryState = new QueryState(this, getDatabase());
@@ -435,7 +435,7 @@ public class DBQuery {
 				if (!options.isUseANSISyntax()) {
 					fromClause.append(separator).append(tableName);
 				} else {
-					fromClause.append(getANSIJoinClause(getDatabase(), queryState, tabRow, joinedTables));
+					fromClause.append(getANSIJoinClause(getDatabase(), queryState, tabRow, joinedTables, options));
 				}
 				joinedTables.add(tabRow);
 
@@ -446,14 +446,14 @@ public class DBQuery {
 							whereClause.append(lineSep).append(defn.beginConditionClauseLine(options)).append(clause);
 						}
 					}
-					getNonANSIJoin(tabRow, whereClause, defn, joinedTables, lineSep);
+					getNonANSIJoin(tabRow, whereClause, defn, joinedTables, lineSep, options);
 				}
 
 				separator = ", " + lineSep;
 			}
 
 			//add conditions found during the ANSI Join creation
-			final String conditionsAsSQLClause = mergeConditionsIntoSQLClause(queryState.getRequiredConditions(), defn);
+			final String conditionsAsSQLClause = mergeConditionsIntoSQLClause(queryState.getRequiredConditions(), defn, options);
 			if (!conditionsAsSQLClause.isEmpty()) {
 				whereClause.append(defn.beginConditionClauseLine(options)).append(conditionsAsSQLClause);
 			}
@@ -541,8 +541,8 @@ public class DBQuery {
 	}
 
 	@SuppressWarnings("deprecation")
-	private void getNonANSIJoin(DBRow tabRow, StringBuilder whereClause, DBDefinition defn, List<DBRow> otherTables, String lineSep) {
-		final QueryOptions options = details.getOptions();
+	private void getNonANSIJoin(DBRow tabRow, StringBuilder whereClause, DBDefinition defn, List<DBRow> otherTables, String lineSep, QueryOptions options) {
+//		final QueryOptions options = details.getOptions();
 		for (DBExpression rel : tabRow.getAdHocRelationships()) {
 			whereClause.append(defn.beginConditionClauseLine(options)).append("(").append(rel.toSQLString(getDatabase())).append(")");
 		}
@@ -583,7 +583,7 @@ public class DBQuery {
 	 * returned by this query
 	 */
 	public String getSQLForCount() {
-		return getSQLForQuery(QueryType.COUNT);
+		return getSQLForQuery(QueryType.COUNT, details.getOptions());
 	}
 
 	/**
@@ -623,10 +623,10 @@ public class DBQuery {
 	 * @see DBDatabase
 	 */
 	public List<DBQueryRow> getAllRows() throws SQLException, SQLTimeoutException, AccidentalBlankQueryException, AccidentalCartesianJoinException {
-		if (this.needsResults()) {
-			getAllRowsInternal();
-		}
 		final QueryOptions options = details.getOptions();
+		if (this.needsResults(options)) {
+			getAllRowsInternal(options);
+		}
 		if (options.getRowLimit() > 0 && results.size() > options.getRowLimit()) {
 			final int firstItemOfPage = options.getPageIndex() * options.getRowLimit();
 			final int firstItemOfNextPage = (options.getPageIndex() + 1) * options.getRowLimit();
@@ -636,10 +636,10 @@ public class DBQuery {
 		}
 	}
 
-	private void getAllRowsInternal() throws SQLException, SQLTimeoutException, AccidentalBlankQueryException, AccidentalCartesianJoinException {
-		prepareForQuery();
+	private void getAllRowsInternal(QueryOptions options) throws SQLException, SQLTimeoutException, AccidentalBlankQueryException, AccidentalCartesianJoinException {
+		prepareForQuery(options);
 
-		final QueryOptions options = details.getOptions();
+//		final QueryOptions options = details.getOptions();
 
 		if (!options.isBlankQueryAllowed() && willCreateBlankQuery() && rawSQLClause.isEmpty()) {
 			throw new AccidentalBlankQueryException();
@@ -844,12 +844,12 @@ public class DBQuery {
 		}
 	}
 
-	private void prepareForQuery() throws SQLException {
+	private void prepareForQuery(QueryOptions options) throws SQLException {
 		results = new ArrayList<DBQueryRow>();
-		final QueryOptions options = details.getOptions();
+//		final QueryOptions options = details.getOptions();
 		resultsRowLimit = options.getRowLimit();
 		resultsPageIndex = options.getPageIndex();
-		resultSQL = this.getSQLForQuery();
+		resultSQL = this.getSQLForQuery(QueryType.SELECT, options);
 	}
 
 	/**
@@ -926,14 +926,14 @@ public class DBQuery {
 		}
 	}
 
-	private boolean needsResults() {
-		final QueryOptions options = details.getOptions();
+	private boolean needsResults(QueryOptions options) {
+//		final QueryOptions options = details.getOptions();
 		return results == null
 				|| results.isEmpty()
 				|| resultSQL == null
 				|| !resultsPageIndex.equals(options.getPageIndex())
 				|| !resultsRowLimit.equals(options.getRowLimit())
-				|| !resultSQL.equals(getSQLForQuery());
+				|| !resultSQL.equals(getSQLForQuery(QueryType.SELECT, options));
 	}
 
 	/**
@@ -956,8 +956,9 @@ public class DBQuery {
 	 */
 	public <R extends DBRow> List<R> getAllInstancesOf(R exemplar) throws SQLException {
 		List<R> arrayList = new ArrayList<R>();
-		if (this.needsResults()) {
-			getAllRowsInternal();
+		final QueryOptions options = details.getOptions();
+		if (this.needsResults(options)) {
+			getAllRowsInternal(options);
 		}
 		if (!results.isEmpty()) {
 			for (DBQueryRow row : results) {
@@ -992,8 +993,9 @@ public class DBQuery {
 	 *
 	 */
 	public void print(PrintStream ps) throws SQLException {
-		if (needsResults()) {
-			this.getAllRowsInternal();
+		final QueryOptions options = details.getOptions();
+		if (needsResults(options)) {
+			this.getAllRowsInternal(options);
 		}
 
 		for (DBQueryRow row : this.results) {
@@ -1030,8 +1032,9 @@ public class DBQuery {
 	 *
 	 */
 	public void printAllDataColumns(PrintStream printStream) throws SQLException {
-		if (needsResults()) {
-			this.getAllRowsInternal();
+		final QueryOptions options = details.getOptions();
+		if (needsResults(options)) {
+			this.getAllRowsInternal(options);
 		}
 
 		for (DBQueryRow row : this.results) {
@@ -1061,8 +1064,9 @@ public class DBQuery {
 	 *
 	 */
 	public void printAllPrimaryKeys(PrintStream ps) throws SQLException {
-		if (needsResults()) {
-			this.getAllRowsInternal();
+		final QueryOptions options = details.getOptions();
+		if (needsResults(options)) {
+			this.getAllRowsInternal(options);
 		}
 
 		for (DBQueryRow row : this.results) {
@@ -1804,8 +1808,9 @@ public class DBQuery {
 	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
 	public List<DBQueryRow> getAllRowsContaining(DBRow instance) throws SQLException {
-		if (this.needsResults()) {
-			getAllRowsInternal();
+		final QueryOptions options = details.getOptions();
+		if (this.needsResults(options)) {
+			getAllRowsInternal(options);
 		}
 		List<DBQueryRow> returnList = new ArrayList<DBQueryRow>();
 		for (DBQueryRow row : results) {
@@ -1860,16 +1865,24 @@ public class DBQuery {
 
 		if (database.getDefinition().supportsPagingNatively(options)) {
 			options.setPageIndex(pageNumber);
-			if (this.needsResults()) {
-				getAllRowsInternal();
+			if (this.needsResults(options)) {
+				getAllRowsInternal(options);
 			}
 			return results;
 		} else {
-			if (this.needsResults()) {
-				int rowLimit = options.getRowLimit();
-				options.setRowLimit(-1);
-				getAllRowsInternal();
-				options.setRowLimit(rowLimit);
+			if (database.getDefinition().supportsRowLimitsNatively(options)) {
+				QueryOptions tempOptions = options.copy();
+				tempOptions.setRowLimit((pageNumber+1)*options.getRowLimit());
+					if (this.needsResults(tempOptions)||tempOptions.getRowLimit()>results.size()) {
+						getAllRowsInternal(tempOptions);
+					}
+			} else {
+				if (this.needsResults(options)) {
+					int rowLimit = options.getRowLimit();
+					options.setRowLimit(-1);
+					getAllRowsInternal(options);
+					options.setRowLimit(rowLimit);
+				}
 			}
 			int rowLimit = options.getRowLimit();
 			int startIndex = rowLimit * pageNumber;

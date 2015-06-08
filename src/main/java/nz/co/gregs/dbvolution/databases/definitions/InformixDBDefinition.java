@@ -80,6 +80,8 @@ public class InformixDBDefinition extends DBDefinition {
 
 				}
 				return offsetStr + rowLimitStr;
+			} else if (supportsRowLimitsNatively(options)) {
+				return " FIRST " + rowLimit + " ";
 			} else {
 				return "";
 			}

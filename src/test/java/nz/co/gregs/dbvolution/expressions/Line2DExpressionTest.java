@@ -310,7 +310,7 @@ public class Line2DExpressionTest extends AbstractTest {
 		Assert.assertThat(allRows.size(), is(0));
 	}
 
-	@Test
+//	@Test
 	public void testIntersectionPoints() throws SQLException {
 		System.out.println("intersects");
 		final LineTestTable lineTestTable = new LineTestTable();
