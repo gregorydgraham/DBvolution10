@@ -158,7 +158,8 @@ public class H2DB extends DBDatabase implements SupportsDateRepeatDatatypeFuncti
 //      org.h2.jdbc.JdbcSQLException: Unknown data type: "DBV_LINE2D"; SQL statement:
 		if (exp instanceof org.h2.jdbc.JdbcSQLException) {
 			String message = exp.getMessage();
-			if (message.startsWith("Function \"DBV_") && message.contains("\" not found")) {
+			if ((message.startsWith("Function \"DBV_") && message.contains("\" not found"))
+					||(message.startsWith("Method \"DBV_") && message.contains("\" not found"))) {
 				String[] split = message.split("\"");
 				String functionName = split[1];
 				DBVFeature functions = featureMap.get(functionName);
