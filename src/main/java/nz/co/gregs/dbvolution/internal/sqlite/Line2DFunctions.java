@@ -16,12 +16,15 @@
 package nz.co.gregs.dbvolution.internal.sqlite;
 
 import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.geom.Polygon;
 import com.vividsolutions.jts.io.WKTReader;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.sqlite.Function;
@@ -47,6 +50,7 @@ public class Line2DFunctions {
 	public static String SPATIAL_LINE_MAX_X_COORD_FUNCTION = "DBV_LINE_MAX_X2D_COORD";
 	public static String INTERSECTS = "DBV_LINE2D_INTERSECTS_LINE2D";
 	public static String INTERSECTIONWITH_LINE2D = "DBV_LINE2D_INTERSECTIONWITH_LINE2D";
+	public static String ALLINTERSECTIONSWITH_LINE2D = "DBV_LINE2D_ALLINTERSECTIONSWITH_LINE2D";
 
 	private Line2DFunctions() {
 	}
@@ -63,6 +67,7 @@ public class Line2DFunctions {
 		Function.create(connection, ASTEXT_FUNCTION, new AsText());
 		Function.create(connection, INTERSECTS, new Intersects());
 		Function.create(connection, INTERSECTIONWITH_LINE2D, new IntersectionWith());
+		Function.create(connection, ALLINTERSECTIONSWITH_LINE2D, new AllIntersectionsWith());
 	}
 
 	private static class CreateFromCoords extends PolygonFunction {
@@ -214,7 +219,7 @@ public class Line2DFunctions {
 					if (firstLine == null || secondLine == null) {
 						result();
 					} else {
-						result(firstLine.intersects(secondLine)?1:0);
+						result(firstLine.intersects(secondLine) ? 1 : 0);
 					}
 				}
 			} catch (com.vividsolutions.jts.io.ParseException ex) {
@@ -242,7 +247,57 @@ public class Line2DFunctions {
 						result();
 					} else {
 						final Geometry intersection = firstLine.intersection(secondLine);
-						result(intersection.getGeometryN(0).toText());
+						if (intersection == null || intersection.isEmpty()) {
+							result();
+						} else {
+							result(intersection.getGeometryN(0).toText());
+						}
+					}
+				}
+			} catch (com.vividsolutions.jts.io.ParseException ex) {
+				Logger.getLogger(Line2DFunctions.class.getName()).log(Level.SEVERE, null, ex);
+				throw new RuntimeException("Failed To Parse SQLite Polygon", ex);
+			}
+		}
+	}
+
+	private static class AllIntersectionsWith extends PolygonFunction {
+
+		@Override
+		protected void xFunc() throws SQLException {
+			try {
+				String firstLineStr = value_text(0);
+				String secondLineStr = value_text(1);
+				if (firstLineStr == null) {
+					result();
+				} else if (secondLineStr == null) {
+					result();
+				} else {
+					LineString firstLine = getLineString(firstLineStr);
+					LineString secondLine = getLineString(secondLineStr);
+					if (firstLine == null || secondLine == null) {
+						result();
+					} else {
+						List<Point> pointList = new ArrayList<Point>();
+						final Geometry intersection = firstLine.intersection(secondLine);
+						if (intersection == null || intersection.isEmpty()) {
+							result();
+						} else {
+							int numPoints = intersection.getNumPoints();
+							for (int i = 0; i < numPoints; i++) {
+								Geometry geometryN = intersection.getGeometryN(i);
+								if ((geometryN!=null)&&(geometryN instanceof Point)) {
+									pointList.add((Point) geometryN);
+								}
+							}
+							if (pointList.isEmpty()) {
+								result();
+							} else {
+								Point[] pointArray = new Point[numPoints];
+								pointArray = pointList.toArray(pointArray);
+								result((new GeometryFactory()).createMultiPoint(pointArray).toText());
+							}
+						}
 					}
 				}
 			} catch (com.vividsolutions.jts.io.ParseException ex) {

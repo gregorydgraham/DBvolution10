@@ -594,6 +594,11 @@ public class SQLiteDefinition extends DBDefinition {
 	public String doLine2DIntersectionPointWithLine2DTransform(String toSQLString, String toSQLString0) {
 		return Line2DFunctions.INTERSECTIONWITH_LINE2D + "((" + toSQLString +"), ("+toSQLString0+ "))";
 	}
+
+	@Override
+	public String doLine2DAllIntersectionPointsWithLine2DTransform(String toSQLString, String toSQLString0) {
+		return Line2DFunctions.ALLINTERSECTIONSWITH_LINE2D + "((" + toSQLString +"), ("+toSQLString0+ "))";
+	}
 	
 	@Override
 	public LineSegment transformDatabaseLineSegment2DValueToJTSLineSegment(String lineSegmentAsSQL) throws com.vividsolutions.jts.io.ParseException {
