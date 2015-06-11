@@ -62,7 +62,7 @@ public class H2DBDefinition extends DBDefinition {
 	@Override
 	protected String getSQLTypeOfDBDatatype(QueryableDatatype qdt) {
 		if (qdt instanceof DBDateRepeat) {
-			return DateRepeatFunctions.DATATYPE;
+			return DataTypes.DATEREPEAT.datatype();
 		} else if (qdt instanceof DBPoint2D) {
 			return DataTypes.POINT2D.datatype();
 		} else if (qdt instanceof DBLineSegment2D) {
@@ -171,72 +171,72 @@ public class H2DBDefinition extends DBDefinition {
 //	}
 	@Override
 	public String doDateMinusToDateRepeatTransformation(String leftHandSide, String rightHandSide) {
-		return " " + DateRepeatFunctions.DATEREPEAT_CREATION_FUNCTION + "(" + leftHandSide + ", " + rightHandSide + ")";
+		return " " + DateRepeatFunctions.CREATE + "(" + leftHandSide + ", " + rightHandSide + ")";
 	}
 
 	@Override
 	public String doDatePlusDateRepeatTransform(String leftHandSide, String rightHandSide) {
-		return " " + DateRepeatFunctions.DATEREPEAT_DATEADDITION_FUNCTION + "(" + leftHandSide + ", " + rightHandSide + ")";
+		return " " + DateRepeatFunctions.DATEADDITION + "(" + leftHandSide + ", " + rightHandSide + ")";
 	}
 
 	@Override
 	public String doDateMinusDateRepeatTransform(String leftHandSide, String rightHandSide) {
-		return " " + DateRepeatFunctions.DATEREPEAT_DATESUBTRACTION_FUNCTION + "(" + leftHandSide + ", " + rightHandSide + ")";
+		return " " + DateRepeatFunctions.DATESUBTRACTION + "(" + leftHandSide + ", " + rightHandSide + ")";
 	}
 
 	@Override
 	public String doDateRepeatEqualsTransform(String leftHandSide, String rightHandSide) {
-		return " " + DateRepeatFunctions.DATEREPEAT_EQUALS_FUNCTION + "(" + leftHandSide + ", " + rightHandSide + ")";
+		return " " + DateRepeatFunctions.EQUALS + "(" + leftHandSide + ", " + rightHandSide + ")";
 	}
 
 	@Override
 	public String doDateRepeatLessThanTransform(String leftHandSide, String rightHandSide) {
-		return DateRepeatFunctions.DATEREPEAT_LESSTHAN_FUNCTION + "(" + leftHandSide + ", " + rightHandSide + ")";
+		return DateRepeatFunctions.LESSTHAN + "(" + leftHandSide + ", " + rightHandSide + ")";
 	}
 
 	@Override
 	public String doDateRepeatLessThanEqualsTransform(String leftHandSide, String rightHandSide) {
-		return DateRepeatFunctions.DATEREPEAT_LESSTHANEQUALS_FUNCTION + "(" + leftHandSide + ", " + rightHandSide + ")";
+		return DateRepeatFunctions.LESSTHANEQUALS + "(" + leftHandSide + ", " + rightHandSide + ")";
 	}
 
 	@Override
 	public String doDateRepeatGreaterThanTransform(String leftHandSide, String rightHandSide) {
-		return DateRepeatFunctions.DATEREPEAT_GREATERTHAN_FUNCTION + "(" + leftHandSide + ", " + rightHandSide + ")";
+		return DateRepeatFunctions.GREATERTHAN + "(" + leftHandSide + ", " + rightHandSide + ")";
 	}
 
 	@Override
 	public String doDateRepeatGreaterThanEqualsTransform(String leftHandSide, String rightHandSide) {
-		return DateRepeatFunctions.DATEREPEAT_GREATERTHANEQUALS_FUNCTION + "(" + leftHandSide + ", " + rightHandSide + ")";
+		return DateRepeatFunctions.GREATERTHANEQUALS + "(" + leftHandSide + ", " + rightHandSide + ")";
 	}
 
 	@Override
 	public String doDateRepeatGetYearsTransform(String intervalStr) {
-		return DateRepeatFunctions.DATEREPEAT_YEAR_PART_FUNCTION + "(" + intervalStr + ")";
+		return DateRepeatFunctions.YEAR_PART + "(" + intervalStr + ")";
 	}
 
 	@Override
 	public String doDateRepeatGetMonthsTransform(String intervalStr) {
-		return DateRepeatFunctions.DATEREPEAT_MONTH_PART_FUNCTION + "(" + intervalStr + ")";
+		return DateRepeatFunctions.MONTH_PART + "(" + intervalStr + ")";
 	}
 
 	@Override
 	public String doDateRepeatGetDaysTransform(String intervalStr) {
-		return DateRepeatFunctions.DATEREPEAT_DAY_PART_FUNCTION + "(" + intervalStr + ")";
+		return DateRepeatFunctions.DAY_PART + "(" + intervalStr + ")";
 	}
 
 	@Override
 	public String doDateRepeatGetHoursTransform(String intervalStr) {
-		return DateRepeatFunctions.DATEREPEAT_HOUR_PART_FUNCTION + "(" + intervalStr + ")";
+		return DateRepeatFunctions.HOUR_PART + "(" + intervalStr + ")";
 	}
 
 	@Override
 	public String doDateRepeatGetMinutesTransform(String intervalStr) {
-		return DateRepeatFunctions.DATEREPEAT_MINUTE_PART_FUNCTION + "(" + intervalStr + ")";
+		return DateRepeatFunctions.MINUTE_PART + "(" + intervalStr + ")";
 	}
 
 	@Override
 	public String doDateRepeatGetSecondsTransform(String intervalStr) {
-		return DateRepeatFunctions.DATEREPEAT_SECOND_PART_FUNCTION + "(" + intervalStr + ")";
+		return DateRepeatFunctions.SECOND_PART + "(" + intervalStr + ")";
 	}
 
 	@Override

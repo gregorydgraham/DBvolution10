@@ -24,6 +24,7 @@ import java.sql.Statement;
  */
 public enum DataTypes implements DBVFeature{
 
+	DATEREPEAT("DBV_DATEREPEAT", "VARCHAR(100)", DateRepeatFunctions.values()),	
 	POINT2D("DBV_POINT2D", "VARCHAR(2000)", Point2DFunctions.values()),
 	LINE2D("DBV_LINE2D", "VARCHAR(2001)", Line2DFunctions.values()),
 	LINESEGMENT2D("DBV_LINESEGMENT2D", "VARCHAR(2001)", LineSegment2DFunctions.values()),

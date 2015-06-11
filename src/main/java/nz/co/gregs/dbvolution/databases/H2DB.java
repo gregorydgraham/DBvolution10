@@ -95,16 +95,19 @@ public class H2DB extends DBDatabase implements SupportsDateRepeatDatatypeFuncti
 	public H2DB(String jdbcURL, String username, String password) throws SQLException {
 		super(new H2DBDefinition(), "org.h2.Driver", jdbcURL, username, password);
 		jamDatabaseConnectionOpen();
-//		final Statement stmt = getConnection().createStatement();
-//		addDatabaseSpecificFeatures(stmt);
+		final Statement stmt = getConnection().createStatement();
+		addDatabaseSpecificFeatures(stmt);
 	}
 
 	@Override
 	protected void addDatabaseSpecificFeatures(final Statement stmt) throws SQLException {
-		DateRepeatFunctions.addFunctions(stmt);
+//		DateRepeatFunctions.addFunctions(stmt);
 		DataTypes.addAll(stmt);
 		if (featureMap == null) {
 			featureMap = new HashMap<String, DBVFeature>();
+			for (DBVFeature function : DateRepeatFunctions.values()) {
+				featureMap.put(function.alias(), function);
+			}
 			for (DBVFeature function : Point2DFunctions.values()) {
 				featureMap.put(function.alias(), function);
 			}
