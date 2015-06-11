@@ -19,11 +19,15 @@ import java.sql.SQLException;
 import java.sql.Statement;
 
 /**
+ * a MultiPoint in H2 is a String formatted as MULTIPOINT ((1 2, 3 4, 5 6))
+ * where each pair of numbers is a point and the entire string is less than 2000
+ * characters
  *
  * @author gregorygraham
  */
 public enum MultiPoint2DFunctions implements DBVFeature {
 
+// MULTIPOINT ((1 2, 3 4, 5 6))
 	CREATE("String", "Double... coords", "\n"
 			+ "			Integer numberOfArguments = coords.length;\n"
 			+ "			if (numberOfArguments % 2 != 0) {\n"
@@ -135,31 +139,31 @@ public enum MultiPoint2DFunctions implements DBVFeature {
 			+ "				return resultString;\n"
 			+ "			}"),
 	DIMENSION("Integer", "String firstLine", "return 1;"),
-	ASTEXT("String", "String firstLine", "return firstLine;"), 
-	ASLINE2D("String", "String multipoint", "return multipoint.replace(\"MULTIPOINT\", \"LINESTRING\");"), 
-	ASPOLYGON2D("String", "String multipoint", "return multipoint.replace(\"MULTIPOINT\", \"POLYGON\");"), 
-	GETNUMBEROFPOINTS_FUNCTION("Integer", "String multipoint", "\n" +
-"			if (multipoint == null||multipoint.equals(\"\")) {\n" +
-"				return null;\n" +
-"			} else {\n" +
-"				Double maxX = null;\n" +
-"				String[] split = multipoint.trim().split(\"[ (),]+\");\n" +
-"				return (split.length - 1)/2;\n" +
-"			}"),
-	GETPOINTATINDEX_FUNCTION("String", "String multipoint, Integer index", "\n" +
-"			final int indexInMPoint = index * 2;\n" +
-"			if (multipoint == null||indexInMPoint<=0) {\n" +
-"				return null;\n" +
-"			} else {\n" +
-"				String[] split = multipoint.split(\"[ (),]+\");\n" +
-"				if (indexInMPoint > split.length) {\n" +
-"					return null;\n" +
-"				} else {\n" +
-"					String x = split[indexInMPoint - 1];\n" +
-"					String y = split[indexInMPoint];\n" +
-"					return \"POINT (\" + x + \" \" + y + \")\";\n" +
-"				}\n" +
-"			}");
+	ASTEXT("String", "String firstLine", "return firstLine;"),
+	ASLINE2D("String", "String multipoint", "return multipoint.replace(\"MULTIPOINT\", \"LINESTRING\");"),
+	ASPOLYGON2D("String", "String multipoint", "return multipoint.replace(\"MULTIPOINT\", \"POLYGON\");"),
+	GETNUMBEROFPOINTS_FUNCTION("Integer", "String multipoint", "\n"
+			+ "			if (multipoint == null||multipoint.equals(\"\")) {\n"
+			+ "				return null;\n"
+			+ "			} else {\n"
+			+ "				Double maxX = null;\n"
+			+ "				String[] split = multipoint.trim().split(\"[ (),]+\");\n"
+			+ "				return (split.length - 1)/2;\n"
+			+ "			}"),
+	GETPOINTATINDEX_FUNCTION("String", "String multipoint, Integer index", "\n"
+			+ "			final int indexInMPoint = index * 2;\n"
+			+ "			if (multipoint == null||indexInMPoint<=0) {\n"
+			+ "				return null;\n"
+			+ "			} else {\n"
+			+ "				String[] split = multipoint.split(\"[ (),]+\");\n"
+			+ "				if (indexInMPoint > split.length) {\n"
+			+ "					return null;\n"
+			+ "				} else {\n"
+			+ "					String x = split[indexInMPoint - 1];\n"
+			+ "					String y = split[indexInMPoint];\n"
+			+ "					return \"POINT (\" + x + \" \" + y + \")\";\n"
+			+ "				}\n"
+			+ "			}");
 
 //	private final String functionName;
 	private final String returnType;
@@ -177,7 +181,7 @@ public enum MultiPoint2DFunctions implements DBVFeature {
 	public String toString() {
 		return "DBV_MULTIPOINT2D_" + name();
 	}
-	
+
 	@Override
 	public String alias() {
 		return toString();

@@ -79,6 +79,8 @@ public class Line2DExpressionTest extends AbstractTest {
 
 		@DBColumn("line_col")
 		public DBLine2D line = new DBLine2D();
+//		@DBColumn()
+//		public DBMultiPoint2D lineIntersections = new DBMultiPoint2D(this.column(this.line).intersectionPoints(Line2DExpression.value(new Coordinate(3, 3),new Coordinate(2, 4),new Coordinate(1, 4))));
 	}
 
 	@Test
