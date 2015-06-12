@@ -175,6 +175,22 @@ public enum Line2DFunctions {
 			+ "   RETURN ST_POINTN(intersectionPoly,1)::POINT; \n"
 			+ "  END IF;\n"
 			+ " END IF;\n"
+			+ "END;"),
+	INTERSECTIONPOINTSWITHLINE2D(Language.plpgsql, "geometry", "path1 path, path2 path", "DECLARE \n"
+			+ " intersectionPoly GEOMETRY;\n"
+			+ "BEGIN\n"
+			+ " intersectionPoly = ST_INTERSECTION(path1::GEOMETRY, path2::GEOMETRY)::GEOMETRY; \n"
+			+ " if ST_ISEMPTY(intersectionPoly) then\n"
+			+ "  RETURN NULL;\n"
+			+ " else\n"
+			+ "  if ST_ASTEXT(intersectionPoly) like $$POINT%$$ then \n"
+			+ "   RETURN intersectionPoly;\n"
+			+ "  else\n"
+			+ "   if ST_ASTEXT(intersectionPoly) like $$MULTIPOINT%$$ then \n"
+			+ "    RETURN intersectionPoly; \n"
+			+ "   END IF;\n"
+			+ "  END IF;\n"
+			+ " END IF;\n"
 			+ "END;");
 
 //	private final String functionName;
@@ -202,7 +218,7 @@ public enum Line2DFunctions {
 			;
 		}
 		final String createFunctionStatement = "CREATE OR REPLACE FUNCTION " + this + "(" + this.parameters + ")\n" + "    RETURNS " + this.returnType + " AS\n" + "'\n" + this.code + "'\n" + "LANGUAGE '" + language + "' IMMUTABLE;";
-		System.out.println("" + createFunctionStatement);
+//		System.out.println("" + createFunctionStatement);
 		stmt.execute(createFunctionStatement);
 
 	}

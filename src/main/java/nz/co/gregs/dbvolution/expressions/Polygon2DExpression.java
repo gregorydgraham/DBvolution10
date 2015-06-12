@@ -382,6 +382,18 @@ public class Polygon2DExpression implements Polygon2DResult, EqualComparable<Pol
 		return this.is(geometry).not();
 	}
 
+	public StringExpression stringResult() {
+		StringExpression stringResultExpr = new StringExpression(new Polygon2DFunctionWithStringResult(this) {
+
+			@Override
+			public String doExpressionTransform(DBDatabase db) {
+				return db.getDefinition().doPolygon2DAsTextTransform(getFirst().toSQLString(db));
+			}
+		});
+//		return this.dimension().is(2).ifThenElse(exteriorRingExpr, this);
+		return stringResultExpr;
+	}
+
 	private static abstract class PolygonPolygonWithBooleanResult extends BooleanExpression {
 
 		private Polygon2DExpression first;
@@ -696,6 +708,76 @@ public class Polygon2DExpression implements Polygon2DResult, EqualComparable<Pol
 		@Override
 		public Polygon2DFunctionWithLine2DResult copy() {
 			Polygon2DFunctionWithLine2DResult newInstance;
+			try {
+				newInstance = getClass().newInstance();
+			} catch (InstantiationException ex) {
+				throw new RuntimeException(ex);
+			} catch (IllegalAccessException ex) {
+				throw new RuntimeException(ex);
+			}
+			newInstance.first = first.copy();
+//			newInstance.second = second.copy();
+			return newInstance;
+		}
+
+		protected abstract String doExpressionTransform(DBDatabase db);
+
+		@Override
+		public Set<DBRow> getTablesInvolved() {
+			HashSet<DBRow> hashSet = new HashSet<DBRow>();
+			if (first != null) {
+				hashSet.addAll(first.getTablesInvolved());
+			}
+//			if (second != null) {
+//				hashSet.addAll(second.getTablesInvolved());
+//			}
+			return hashSet;
+		}
+
+		@Override
+		public boolean isAggregator() {
+			return first.isAggregator();//|| second.isAggregator();
+		}
+
+		@Override
+		public boolean getIncludesNull() {
+			return requiresNullProtection;
+		}
+	}
+
+	private static abstract class Polygon2DFunctionWithStringResult extends StringExpression {
+
+		private Polygon2DExpression first;
+//		private Polygon2DExpression second;
+		private boolean requiresNullProtection;
+
+		Polygon2DFunctionWithStringResult(Polygon2DExpression first) {
+			this.first = first;
+//			this.second = second;
+//			if (this.second == null || this.second.getIncludesNull()) {
+//				this.requiresNullProtection = true;
+//			}
+		}
+
+		Polygon2DExpression getFirst() {
+			return first;
+		}
+
+//		Polygon2DResult getSecond() {
+//			return second;
+//		}
+		@Override
+		public final String toSQLString(DBDatabase db) {
+			if (this.getIncludesNull()) {
+				return BooleanExpression.isNull(first).toSQLString(db);
+			} else {
+				return doExpressionTransform(db);
+			}
+		}
+
+		@Override
+		public Polygon2DFunctionWithStringResult copy() {
+			Polygon2DFunctionWithStringResult newInstance;
 			try {
 				newInstance = getClass().newInstance();
 			} catch (InstantiationException ex) {

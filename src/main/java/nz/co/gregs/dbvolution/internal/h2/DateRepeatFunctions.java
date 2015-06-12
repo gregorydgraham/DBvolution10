@@ -17,9 +17,6 @@ package nz.co.gregs.dbvolution.internal.h2;
 
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.GregorianCalendar;
 
 /**
  *

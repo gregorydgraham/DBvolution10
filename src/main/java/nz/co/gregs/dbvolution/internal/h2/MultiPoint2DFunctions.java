@@ -138,7 +138,7 @@ public enum MultiPoint2DFunctions implements DBVFeature {
 			+ "				String resultString = \"POLYGON ((\" + minX+\" \"+minY + \", \" + maxX+\" \"+minY + \", \" + maxX+\" \"+maxY + \", \" + minX+\" \"+maxY + \", \" + minX+\" \"+minY + \"))\";\n"
 			+ "				return resultString;\n"
 			+ "			}"),
-	DIMENSION("Integer", "String firstLine", "return 1;"),
+	DIMENSION("Integer", "String firstLine", "return 0;"),
 	ASTEXT("String", "String firstLine", "return firstLine;"),
 	ASLINE2D("String", "String multipoint", "return multipoint.replace(\"MULTIPOINT\", \"LINESTRING\");"),
 	ASPOLYGON2D("String", "String multipoint", "return multipoint.replace(\"MULTIPOINT\", \"POLYGON\");"),

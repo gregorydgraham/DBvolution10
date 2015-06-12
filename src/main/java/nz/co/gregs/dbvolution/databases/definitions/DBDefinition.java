@@ -3751,6 +3751,10 @@ public abstract class DBDefinition {
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
+	public String doPolygon2DAsTextTransform(String toSQLString) {
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	}
+
 	/**
 	 * Generates the SQL required to find whether the 2 lines cross at any point.
 	 *
@@ -3773,7 +3777,7 @@ public abstract class DBDefinition {
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
-	public String doLine2DAllIntersectionPointsWithLine2DTransform(String toSQLString, String toSQLString0) {
+	public String doLine2DAllIntersectionPointsWithLine2DTransform(String firstGeometry, String secondGeometry) {
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
@@ -3937,15 +3941,19 @@ public abstract class DBDefinition {
 	}
 
 	public MultiPoint transformDatabaseMultiPoint2DValueToJTSMultiPoint(String pointsAsString) throws com.vividsolutions.jts.io.ParseException {
-		MultiPoint point = null;
+		System.out.println(""+pointsAsString);
+		MultiPoint mpoint = null;
 		WKTReader wktReader = new WKTReader();
 		Geometry geometry = wktReader.read(pointsAsString);
 		if (geometry instanceof MultiPoint) {
-			point = (MultiPoint) geometry;
+			mpoint = (MultiPoint) geometry;
+		} else if (geometry instanceof Point) {
+			Point point = (Point) geometry;
+			mpoint = (new GeometryFactory()).createMultiPoint(new Point[]{point});
 		} else {
-			throw new IncorrectGeometryReturnedForDatatype(geometry, point);
+			throw new IncorrectGeometryReturnedForDatatype(geometry, mpoint);
 		}
-		return point;
+		return mpoint;
 	}
 
 	public String doMultiPoint2DEqualsTransform(String first, String second) {

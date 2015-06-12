@@ -233,7 +233,7 @@ public class MultiPoint2DFunctions {
 
 		@Override
 		protected void xFunc() throws SQLException {
-			result(1);
+			result(0);
 		}
 	}
 

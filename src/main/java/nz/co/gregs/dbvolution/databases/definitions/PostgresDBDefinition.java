@@ -24,9 +24,9 @@ import nz.co.gregs.dbvolution.datatypes.*;
 import nz.co.gregs.dbvolution.datatypes.spatial2D.*;
 import nz.co.gregs.dbvolution.expressions.DBExpression;
 import nz.co.gregs.dbvolution.expressions.Line2DExpression;
-import nz.co.gregs.dbvolution.internal.postgres.Line2DFunctions;
-import nz.co.gregs.dbvolution.internal.postgres.StringFunctions;
-import nz.co.gregs.dbvolution.internal.sqlite.LineSegment2DFunctions;
+import nz.co.gregs.dbvolution.expressions.MultiPoint2DExpression;
+import nz.co.gregs.dbvolution.expressions.Polygon2DExpression;
+import nz.co.gregs.dbvolution.internal.postgres.*;
 
 /**
  * Defines the features of the PostgreSQL database that differ from the standard
@@ -89,6 +89,8 @@ public class PostgresDBDefinition extends DBDefinition {
 			return " PATH ";
 		} else if (qdt instanceof DBLineSegment2D) {
 			return " PATH ";
+		} else if (qdt instanceof DBMultiPoint2D) {
+			return " GEOMETRY ";
 		} else {
 			return super.getSQLTypeOfDBDatatype(qdt);
 		}
@@ -429,6 +431,11 @@ public class PostgresDBDefinition extends DBDefinition {
 	}
 
 	@Override
+	public String doPolygon2DAsTextTransform(String toSQLString) {
+		return "ST_ASTEXT(("+toSQLString+")::GEOMETRY)";
+	}
+
+	@Override
 	public boolean supportsHyperbolicFunctionsNatively() {
 		return false;//To change body of generated methods, choose Tools | Templates.
 	}
@@ -504,6 +511,8 @@ public class PostgresDBDefinition extends DBDefinition {
 			return "(" + selectableName + ")::VARCHAR";
 		} else if (qdt instanceof DBLine2D) {
 			return "(" + selectableName + ")::VARCHAR";
+		} else if (qdt instanceof DBMultiPoint2D) {
+			return "ST_ASTEXT(" + selectableName + ")::VARCHAR";
 		} else {
 			return selectableName;
 		}
@@ -527,12 +536,13 @@ public class PostgresDBDefinition extends DBDefinition {
 		return point;
 	}
 
-	// ((2,3),(2,3),(2,3),(2,3)) => POLYGON ((2 3, 2 3, 2 3, 2 3, 2 3))
+	// ((2,3),(2,3),(2,3),(2,3))
+	// POLYGON((2 3,2 4,3 4,3 3,2 3))
 	@Override
 	public Polygon transformDatabasePolygon2DToJTSPolygon(String geometryAsString) throws com.vividsolutions.jts.io.ParseException {
 		String string = "POLYGON " + geometryAsString.replaceAll("\\),\\(", ", ").replaceAll("([-0-9.]+),([-0-9.]+)", "$1 $2");
-		String[] splits = geometryAsString.split("[(),]+");
 		System.out.println(geometryAsString + " => " + string);
+		String[] splits = geometryAsString.split("[^0-9.]+");
 		List<Coordinate> coords = new ArrayList<Coordinate>();
 		Coordinate firstCoord = null;
 		for (int i = 1; i < splits.length; i++) {
@@ -546,7 +556,13 @@ public class PostgresDBDefinition extends DBDefinition {
 			}
 			i++;
 		}
-		coords.add(firstCoord);
+//		coords.add(firstCoord);
+		if (coords.size()==1){
+			coords.add(firstCoord);
+			coords.add(firstCoord);
+			coords.add(firstCoord);
+			coords.add(firstCoord);
+		}
 		final GeometryFactory geometryFactory = new GeometryFactory();
 		Polygon polygon = geometryFactory.createPolygon(coords.toArray(new Coordinate[]{}));
 		return polygon;
@@ -625,6 +641,11 @@ public class PostgresDBDefinition extends DBDefinition {
 	public String doLine2DIntersectionPointWithLine2DTransform(String firstGeometry, String secondGeometry) {
 		return Line2DFunctions.INTERSECTIONWITHLINE2D+"((" + firstGeometry + ") , (" + secondGeometry + "))";
 	}
+
+	@Override
+	public String doLine2DAllIntersectionPointsWithLine2DTransform(String firstGeometry, String secondGeometry) {
+		return Line2DFunctions.INTERSECTIONPOINTSWITHLINE2D+"((" + firstGeometry + ") , (" + secondGeometry + "))";
+	}
 	
 	@Override
 	public String doSubstringBeforeTransform(String fromThis, String beforeThis) {
@@ -656,6 +677,10 @@ public class PostgresDBDefinition extends DBDefinition {
 	public DBExpression transformToStorableType(DBExpression columnExpression) {
 		if (columnExpression instanceof Line2DExpression) {
 			return ((Line2DExpression) columnExpression).stringResult();
+		} else if (columnExpression instanceof MultiPoint2DExpression) {
+			return ((MultiPoint2DExpression) columnExpression).stringResult();
+		} else if (columnExpression instanceof Polygon2DExpression) {
+			return ((Polygon2DExpression) columnExpression).stringResult();
 		} else {
 			return super.transformToStorableType(columnExpression);
 		}
@@ -746,8 +771,78 @@ public class PostgresDBDefinition extends DBDefinition {
 	}
 	
 	@Override
-	public String doLineSegment2DIntersectionPointWithLineSegment2DTransform(String fisrstLineSegment, String secondLineSegment) {
-		return "ST_PointFROMTEXT(ST_ASTEXT(ST_INTERSECTION((" + fisrstLineSegment + ")::GEOMETRY , (" + secondLineSegment + ")::GEOMETRY)))::POINT";
+	public String doLineSegment2DIntersectionPointWithLineSegment2DTransform(String firstLineSegment, String secondLineSegment) {
+		return "ST_PointFROMTEXT(ST_ASTEXT(ST_INTERSECTION((" + firstLineSegment + ")::GEOMETRY , (" + secondLineSegment + ")::GEOMETRY)))::POINT";
+	}
+
+	@Override
+	public String transformJTSMultiPointToDatabaseMultiPoint2DValue(MultiPoint points) {
+		return super.transformJTSMultiPointToDatabaseMultiPoint2DValue(points);
+	}
+
+	@Override
+	public MultiPoint transformDatabaseMultiPoint2DValueToJTSMultiPoint(String pointsAsString) throws com.vividsolutions.jts.io.ParseException {
+		return super.transformDatabaseMultiPoint2DValueToJTSMultiPoint(pointsAsString);
+	}
+
+	@Override
+	public String doMultiPoint2DEqualsTransform(String first, String second) {
+		return "ST_EQUALS(" + first + ", " + second + ")";
+	}
+
+	@Override
+	public String doMultiPoint2DGetPointAtIndexTransform(String first, String index) {
+		return "ST_GEOMETRYN(" + first + ", " + index + ")::POINT";
+	}
+
+	@Override
+	public String doMultiPoint2DGetNumberOfPointsTransform(String first) {
+		return "ST_NPOINTS(" + first + ")";
+	}
+
+	@Override
+	public String doMultiPoint2DDimensionTransform(String first) {
+		return "ST_DIMENSION(" + first + ")";
+	}
+
+	@Override
+	public String doMultiPoint2DGetBoundingBoxTransform(String first) {
+		return "ST_REVERSE(ST_ENVELOPE(" + first + "))";
+	}
+
+	@Override
+	public String doMultiPoint2DAsTextTransform(String first) {
+		return "ST_ASTEXT((" + first + ")::GEOMETRY)::TEXT";
+	}
+
+	@Override
+	public String doMultiPoint2DToLine2DTransform(String first) {
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	}
+
+	@Override
+	public String doMultiPoint2DToPolygon2DTransform(String first) {
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	}
+
+	@Override
+	public String doMultiPoint2DGetMinYTransform(String toSQLString) {
+		return "ST_YMIN(" + toSQLString + ")";
+	}
+
+	@Override
+	public String doMultiPoint2DGetMinXTransform(String toSQLString) {
+		return "ST_XMIN(" + toSQLString + ")";
+	}
+
+	@Override
+	public String doMultiPoint2DGetMaxYTransform(String toSQLString) {
+		return "ST_YMAX(" + toSQLString + ")";
+	}
+
+	@Override
+	public String doMultiPoint2DGetMaxXTransform(String toSQLString) {
+		return "ST_XMAX(" + toSQLString + ")";
 	}
 
 }

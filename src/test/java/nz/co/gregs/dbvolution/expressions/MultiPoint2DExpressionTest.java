@@ -279,11 +279,11 @@ public class MultiPoint2DExpressionTest extends AbstractTest {
 		System.out.println("dimension");
 		final MultiPoint2DTestTable lineTestTable = new MultiPoint2DTestTable();
 		DBQuery dbQuery = database.getDBQuery(lineTestTable);
-		dbQuery.addCondition(lineTestTable.column(lineTestTable.multipoint).dimension().is(0));
+		dbQuery.addCondition(lineTestTable.column(lineTestTable.multipoint).dimension().is(1));
 		List<MultiPoint2DTestTable> allRows = dbQuery.getAllInstancesOf(lineTestTable);
 		Assert.assertThat(allRows.size(), is(0));
 		dbQuery = database.getDBQuery(lineTestTable);
-		dbQuery.addCondition(lineTestTable.column(lineTestTable.multipoint).dimension().is(1));
+		dbQuery.addCondition(lineTestTable.column(lineTestTable.multipoint).dimension().is(0));
 		allRows = dbQuery.getAllInstancesOf(lineTestTable);
 		Assert.assertThat(allRows.size(), is(3));
 	}
