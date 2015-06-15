@@ -3,3 +3,5 @@
 /SerializableTest.obj
 /retrieveRowWithByteArray.jpg
 /dbvolutionTest.sqlite
+/directTest.h2db.mv.db
+/directTest.h2db.trace.db
