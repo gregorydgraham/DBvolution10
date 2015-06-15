@@ -156,15 +156,17 @@ public class H2DB extends DBDatabase implements SupportsDateRepeatDatatypeFuncti
 	public void addFeatureToFixException(Exception exp) throws SQLException {
 //		org.h2.jdbc.JdbcSQLException: Function "DBV_LINE2D_EQUALS" not found
 //      org.h2.jdbc.JdbcSQLException: Unknown data type: "DBV_LINE2D"; SQL statement:
+//		boolean handledException = false;
 		if (exp instanceof org.h2.jdbc.JdbcSQLException) {
 			String message = exp.getMessage();
 			if ((message.startsWith("Function \"DBV_") && message.contains("\" not found"))
-					||(message.startsWith("Method \"DBV_") && message.contains("\" not found"))) {
-				String[] split = message.split("\"");
+					|| (message.startsWith("Method \"DBV_") && message.contains("\" not found"))) {
+				String[] split = message.split("[\" ]+");
 				String functionName = split[1];
 				DBVFeature functions = featureMap.get(functionName);
 				if (functions != null) {
 					functions.add(getConnection().createStatement());
+//					handledException = true;
 				}
 			} else if (message.startsWith("Unknown data type: \"DBV_")) {
 				String[] split = message.split("\"");
@@ -172,6 +174,7 @@ public class H2DB extends DBDatabase implements SupportsDateRepeatDatatypeFuncti
 				DBVFeature datatype = featureMap.get(functionName);
 				if (datatype != null) {
 					datatype.add(getConnection().createStatement());
+//					handledException = true;
 				}
 			} else {
 				for (Map.Entry<String, DBVFeature> entrySet : featureMap.entrySet()) {
@@ -179,10 +182,14 @@ public class H2DB extends DBDatabase implements SupportsDateRepeatDatatypeFuncti
 					DBVFeature value = entrySet.getValue();
 					if (message.contains(key)) {
 						value.add(getConnection().createStatement());
+//						handledException = true;
 					}
 				}
 			}
 		}
+//		if (!handledException) {
+//			throw exp;
+//		}
 	}
 
 }

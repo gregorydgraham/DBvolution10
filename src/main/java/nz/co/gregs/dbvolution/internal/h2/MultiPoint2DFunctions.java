@@ -138,7 +138,7 @@ public enum MultiPoint2DFunctions implements DBVFeature {
 			+ "				String resultString = \"POLYGON ((\" + minX+\" \"+minY + \", \" + maxX+\" \"+minY + \", \" + maxX+\" \"+maxY + \", \" + minX+\" \"+maxY + \", \" + minX+\" \"+minY + \"))\";\n"
 			+ "				return resultString;\n"
 			+ "			}"),
-	DIMENSION("Integer", "String firstLine", "return 0;"),
+	DIMENSION("Integer", "String firstLine", "return 0;"	),
 	ASTEXT("String", "String firstLine", "return firstLine;"),
 	ASLINE2D("String", "String multipoint", "return multipoint.replace(\"MULTIPOINT\", \"LINESTRING\");"),
 	ASPOLYGON2D("String", "String multipoint", "return multipoint.replace(\"MULTIPOINT\", \"POLYGON\");"),
@@ -165,10 +165,12 @@ public enum MultiPoint2DFunctions implements DBVFeature {
 			+ "				}\n"
 			+ "			}");
 
+
 //	private final String functionName;
 	private final String returnType;
 	private final String parameters;
 	private final String code;
+	public static int CURRENTVERSION=1;
 
 	MultiPoint2DFunctions(String returnType, String parameters, String code) {
 //		this.functionName = functionName;
@@ -194,8 +196,14 @@ public enum MultiPoint2DFunctions implements DBVFeature {
 		} catch (SQLException sqlex) {
 			;// Not an issue.
 		}
-		final String createFunctionStatement = "CREATE ALIAS IF NOT EXISTS " + this + " DETERMINISTIC AS $$ \n" + "@CODE " + returnType + " " + this + "(" + parameters + ") {\n" + code + "} $$;";
-//		System.out.println(createFunctionStatement);
+		final String createFunctionStatement = "CREATE ALIAS IF NOT EXISTS " + this + " DETERMINISTIC AS $$ \n" + "@CODE " + returnType + " " + this + "(" + parameters + ", Integer version) throws org.h2.jdbc.JdbcSQLException {\n"
+				+ "if (version!="+CURRENTVERSION+"){\n"
+				+ "	throw new org.h2.jdbc.JdbcSQLException(\"Function " + this + " not found\", \"Function " + this + " not found\", \"Function " + this + " not found\", version, null, \"Function " + this + " not found\"); \n"
+				+ "}else{\n"
+				+ code
+				+ "}\n"
+				+ "} $$;";
+		System.out.println(createFunctionStatement);
 		stmt.execute(createFunctionStatement);
 	}
 
