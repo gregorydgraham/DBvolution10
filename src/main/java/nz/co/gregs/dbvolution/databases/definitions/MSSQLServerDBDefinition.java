@@ -554,6 +554,11 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 	}
 
 	@Override
+	public String doLine2DAllIntersectionPointsWithLine2DTransform(String firstGeometry, String secondGeometry) {
+		return "(" + firstGeometry + ").STIntersection("+secondGeometry+")";
+	}
+
+	@Override
 	public String transformPolygonIntoDatabasePolygon2DFormat(Polygon polygon) {
 		return "geometry::STGeomFromText ('" + polygon.toText() + "',0)";
 	}
@@ -860,20 +865,23 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 
 	@Override
 	public MultiPoint transformDatabaseMultiPoint2DValueToJTSMultiPoint(String pointsAsString) throws com.vividsolutions.jts.io.ParseException {
-		MultiPoint point = null;
+		MultiPoint mpoint = null;
 		WKTReader wktReader = new WKTReader();
 		Geometry geometry = wktReader.read(pointsAsString);
 		if (geometry instanceof MultiPoint) {
-			point = (MultiPoint) geometry;
+			mpoint = (MultiPoint) geometry;
+		} else if (geometry instanceof Point) {
+			Point point = (Point) geometry;
+			mpoint = (new GeometryFactory()).createMultiPoint(new Point[]{point});
 		} else {
-			throw new IncorrectGeometryReturnedForDatatype(geometry, point);
+			throw new IncorrectGeometryReturnedForDatatype(geometry, mpoint);
 		}
-		return point;
+		return mpoint;
 	}
 
 	@Override
 	public String doMultiPoint2DEqualsTransform(String first, String second) {
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+		return "((" + first + ").STEquals("+second+")=1)";
 	}
 
 	@Override
