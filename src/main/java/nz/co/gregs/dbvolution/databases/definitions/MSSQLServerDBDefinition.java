@@ -15,26 +15,19 @@
  */
 package nz.co.gregs.dbvolution.databases.definitions;
 
-import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.GeometryFactory;
-import com.vividsolutions.jts.geom.LineSegment;
-import com.vividsolutions.jts.geom.LineString;
-import com.vividsolutions.jts.geom.Point;
-import com.vividsolutions.jts.geom.Polygon;
+import com.vividsolutions.jts.geom.*;
+import com.vividsolutions.jts.io.WKTReader;
 import java.text.*;
 import java.util.*;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.databases.MSSQLServerDB;
 import nz.co.gregs.dbvolution.datatypes.*;
-import nz.co.gregs.dbvolution.datatypes.spatial2D.DBLine2D;
-import nz.co.gregs.dbvolution.datatypes.spatial2D.DBLineSegment2D;
-import nz.co.gregs.dbvolution.datatypes.spatial2D.DBPolygon2D;
-import nz.co.gregs.dbvolution.datatypes.spatial2D.DBPoint2D;
+import nz.co.gregs.dbvolution.datatypes.spatial2D.*;
 import nz.co.gregs.dbvolution.exceptions.DBRuntimeException;
+import nz.co.gregs.dbvolution.exceptions.IncorrectGeometryReturnedForDatatype;
 import nz.co.gregs.dbvolution.expressions.BooleanExpression;
 import nz.co.gregs.dbvolution.expressions.DBExpression;
-import nz.co.gregs.dbvolution.internal.sqlserver.Line2DFunctions;
-import nz.co.gregs.dbvolution.internal.sqlserver.Point2DFunctions;
+import nz.co.gregs.dbvolution.internal.sqlserver.*;
 import nz.co.gregs.dbvolution.query.QueryOptions;
 
 /**
@@ -89,6 +82,8 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 			return " GEOMETRY ";
 		} else if (qdt instanceof DBPolygon2D) {
 			return " GEOMETRY ";
+		} else if (qdt instanceof DBMultiPoint2D) {
+			return " GEOMETRY ";
 		} else {
 			return super.getSQLTypeOfDBDatatype(qdt);
 		}
@@ -103,6 +98,8 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 		} else if (qdt instanceof DBLine2D) {
 			return "CAST((" + selectableName + ").STAsText() AS VARCHAR(2000))";
 		} else if (qdt instanceof DBLineSegment2D) {
+			return "CAST((" + selectableName + ").STAsText() AS VARCHAR(2000))";
+		} else if (qdt instanceof DBMultiPoint2D) {
 			return "CAST((" + selectableName + ").STAsText() AS VARCHAR(2000))";
 		} else {
 			return selectableName;
@@ -855,4 +852,82 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 		return doLine2DIntersectionPointWithLine2DTransform(firstLineSegment,secondLineSegment);
 	}
 
+	@Override
+	public String transformJTSMultiPointToDatabaseMultiPoint2DValue(MultiPoint points) {
+		return "geometry::STGeomFromText ('" + points.toText() + "',0)";
+	}
+
+
+	@Override
+	public MultiPoint transformDatabaseMultiPoint2DValueToJTSMultiPoint(String pointsAsString) throws com.vividsolutions.jts.io.ParseException {
+		MultiPoint point = null;
+		WKTReader wktReader = new WKTReader();
+		Geometry geometry = wktReader.read(pointsAsString);
+		if (geometry instanceof MultiPoint) {
+			point = (MultiPoint) geometry;
+		} else {
+			throw new IncorrectGeometryReturnedForDatatype(geometry, point);
+		}
+		return point;
+	}
+
+	@Override
+	public String doMultiPoint2DEqualsTransform(String first, String second) {
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	}
+
+	@Override
+	public String doMultiPoint2DGetPointAtIndexTransform(String first, String index) {
+		return "(" + first + ").STPointN("+index+")";
+	}
+
+	@Override
+	public String doMultiPoint2DGetNumberOfPointsTransform(String first) {
+		return "(" + first + ").STNumPoints()";
+	}
+
+	@Override
+	public String doMultiPoint2DDimensionTransform(String first) {
+		return "(" + first + ").STDimension()";
+	}
+
+	@Override
+	public String doMultiPoint2DGetBoundingBoxTransform(String first) {
+		return "(" + first + ").STEnvelope()";
+	}
+
+	@Override
+	public String doMultiPoint2DAsTextTransform(String first) {
+		return "(" + first + ").STAsText()";
+	}
+
+	@Override
+	public String doMultiPoint2DToLine2DTransform(String first) {
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	}
+
+	@Override
+	public String doMultiPoint2DToPolygon2DTransform(String first) {
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	}
+
+	@Override
+	public String doMultiPoint2DGetMinYTransform(String first) {
+		return MultiPoint2DFunctions.MINY + "(" + first + ")";
+	}
+
+	@Override
+	public String doMultiPoint2DGetMinXTransform(String first) {
+		return MultiPoint2DFunctions.MINX + "(" + first + ")";
+	}
+
+	@Override
+	public String doMultiPoint2DGetMaxYTransform(String first) {
+		return MultiPoint2DFunctions.MAXY + "(" + first + ")";
+	}
+
+	@Override
+	public String doMultiPoint2DGetMaxXTransform(String first) {
+		return MultiPoint2DFunctions.MAXX + "(" + first + ")";
+	}
 }

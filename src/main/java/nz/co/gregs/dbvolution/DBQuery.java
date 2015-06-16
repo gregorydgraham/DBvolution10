@@ -1888,7 +1888,7 @@ public class DBQuery {
 			int startIndex = rowLimit * pageNumber;
 			startIndex = (startIndex < 0 ? 0 : startIndex);
 			int stopIndex = rowLimit * (pageNumber + 1);
-			stopIndex = (stopIndex >= results.size() ? results.size() - 1 : stopIndex);
+			stopIndex = (stopIndex >= results.size() ? results.size() : stopIndex);
 			if (stopIndex - startIndex < 1) {
 				return new ArrayList<DBQueryRow>();
 			} else {

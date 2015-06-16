@@ -114,6 +114,8 @@ public class SelectTopTest extends AbstractTest {
 		Assert.assertThat(secondPage.get(1).get(carCompany).name.stringValue(), is("OTHER"));
 		Assert.assertThat(secondPage.get(0).get(marque).name.stringValue(), is("CHRYSLER"));
 		Assert.assertThat(secondPage.get(1).get(marque).name.stringValue(), is("DAEWOO"));
+		Assert.assertThat(secondPage.get(0).get(marque).uidMarque.intValue(), is(9971178));
+		Assert.assertThat(secondPage.get(4).get(marque).uidMarque.intValue(), is(8376505));
 		query.print();
 		database.print(secondPage);
 		Assert.assertThat(thirdPage.get(0).get(carCompany).name.stringValue(), is("OTHER"));

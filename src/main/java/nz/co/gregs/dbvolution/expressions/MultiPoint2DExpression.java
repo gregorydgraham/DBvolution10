@@ -246,7 +246,7 @@ public class MultiPoint2DExpression implements MultiPoint2DResult, EqualComparab
 				try {
 					return db.getDefinition().doMultiPoint2DDimensionTransform(getFirst().toSQLString(db));
 				} catch (UnsupportedOperationException unsupported) {
-					return NumberExpression.value(2).toSQLString(db);
+					return NumberExpression.value(0).toSQLString(db);
 				}
 			}
 		});

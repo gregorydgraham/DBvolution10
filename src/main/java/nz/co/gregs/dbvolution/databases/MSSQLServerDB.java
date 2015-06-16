@@ -147,6 +147,9 @@ public class MSSQLServerDB extends DBDatabase implements SupportsPolygonDatatype
 		for (Line2DFunctions fn : Line2DFunctions.values()) {
 			fn.add(statement);
 		}
+		for (MultiPoint2DFunctions fn : MultiPoint2DFunctions.values()) {
+			fn.add(statement);
+		}
 	}
 
 }
