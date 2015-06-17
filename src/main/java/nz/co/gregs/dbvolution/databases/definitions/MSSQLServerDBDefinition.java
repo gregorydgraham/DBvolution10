@@ -881,7 +881,7 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 
 	@Override
 	public String doMultiPoint2DEqualsTransform(String first, String second) {
-		return "((" + first + ").STEquals("+second+")=1)";
+		return "("+MultiPoint2DFunctions.EQUALS+"((" + first + "), ("+second+"))=1)";
 	}
 
 	@Override
