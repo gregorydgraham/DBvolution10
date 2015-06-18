@@ -858,7 +858,7 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 	}
 
 	@Override
-	public String transformJTSMultiPointToDatabaseMultiPoint2DValue(MultiPoint points) {
+	public String transformMultiPoint2DToDatabaseMultiPoint2DValue(MultiPoint points) {
 		return "geometry::STGeomFromText ('" + points.toText() + "',0)";
 	}
 

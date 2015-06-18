@@ -1698,7 +1698,7 @@ public abstract class DBDatabase implements Cloneable {
 	 * @param exp
 	 * @throws SQLException
 	 */
-	public void addFeatureToFixException(Exception exp) throws SQLException {
-		;
+	public void addFeatureToFixException(Exception exp) throws Exception {
+		throw exp;
 	}
 }

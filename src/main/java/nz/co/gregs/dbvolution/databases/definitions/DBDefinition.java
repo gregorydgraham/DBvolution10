@@ -3935,23 +3935,21 @@ public abstract class DBDefinition {
 //		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 //	}
 
-	public String transformJTSMultiPointToDatabaseMultiPoint2DValue(MultiPoint points) {
+	public String transformMultiPoint2DToDatabaseMultiPoint2DValue(MultiPoint points) {
 		String wktValue = points.toText();
 		return "'" + wktValue + "'";
 	}
 
 	public MultiPoint transformDatabaseMultiPoint2DValueToJTSMultiPoint(String pointsAsString) throws com.vividsolutions.jts.io.ParseException {
-		System.out.println(""+pointsAsString);
 		MultiPoint mpoint = null;
 		WKTReader wktReader = new WKTReader();
 		Geometry geometry = wktReader.read(pointsAsString);
 		if (geometry instanceof MultiPoint) {
 			mpoint = (MultiPoint) geometry;
 		} else if (geometry instanceof Point) {
-			Point point = (Point) geometry;
-			mpoint = (new GeometryFactory()).createMultiPoint(new Point[]{point});
+			mpoint = (new GeometryFactory().createMultiPoint(new Point[]{((Point)geometry)}));
 		} else {
-			throw new IncorrectGeometryReturnedForDatatype(geometry, mpoint);
+			throw new IncorrectGeometryReturnedForDatatype(geometry, geometry);
 		}
 		return mpoint;
 	}
@@ -3988,19 +3986,19 @@ public abstract class DBDefinition {
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
-	public String doMultiPoint2DGetMinYTransform(String toSQLString) {
+	public String doMultiPoint2DGetMinYTransform(String first) {
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
-	public String doMultiPoint2DGetMinXTransform(String toSQLString) {
+	public String doMultiPoint2DGetMinXTransform(String first) {
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
-	public String doMultiPoint2DGetMaxYTransform(String toSQLString) {
+	public String doMultiPoint2DGetMaxYTransform(String first) {
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
-	public String doMultiPoint2DGetMaxXTransform(String toSQLString) {
+	public String doMultiPoint2DGetMaxXTransform(String first) {
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 

@@ -15,12 +15,8 @@
  */
 package nz.co.gregs.dbvolution.databases.definitions;
 
-import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.GeometryFactory;
-import com.vividsolutions.jts.geom.LineSegment;
-import com.vividsolutions.jts.geom.LineString;
-import com.vividsolutions.jts.geom.Point;
-import com.vividsolutions.jts.geom.Polygon;
+import com.vividsolutions.jts.geom.*;
+import com.vividsolutions.jts.io.WKTReader;
 import nz.co.gregs.dbvolution.datatypes.spatial2D.DBPolygon2D;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -29,7 +25,11 @@ import nz.co.gregs.dbvolution.databases.MySQLDB;
 import nz.co.gregs.dbvolution.datatypes.*;
 import nz.co.gregs.dbvolution.datatypes.spatial2D.DBLine2D;
 import nz.co.gregs.dbvolution.datatypes.spatial2D.DBLineSegment2D;
+import nz.co.gregs.dbvolution.datatypes.spatial2D.DBMultiPoint2D;
 import nz.co.gregs.dbvolution.datatypes.spatial2D.DBPoint2D;
+import nz.co.gregs.dbvolution.exceptions.IncorrectGeometryReturnedForDatatype;
+import nz.co.gregs.dbvolution.expressions.DBExpression;
+import nz.co.gregs.dbvolution.expressions.MultiPoint2DExpression;
 import nz.co.gregs.dbvolution.internal.properties.PropertyWrapper;
 
 /**
@@ -91,6 +91,8 @@ public class MySQLDBDefinition extends DBDefinition {
 		} else if (qdt instanceof DBLine2D) {
 			return "AsText(" + selectableName + ")";
 		} else if (qdt instanceof DBLineSegment2D) {
+			return "AsText(" + selectableName + ")";
+		} else if (qdt instanceof DBMultiPoint2D) {
 			return "AsText(" + selectableName + ")";
 		} else {
 			return selectableName;
@@ -387,6 +389,11 @@ public class MySQLDBDefinition extends DBDefinition {
 	public String doLine2DIntersectionPointWithLine2DTransform(String firstLine, String secondLine) {
 		return "ST_Intersection((" + firstLine + "), ("+secondLine+"))";
 	}
+
+	@Override
+	public String doLine2DAllIntersectionPointsWithLine2DTransform(String firstGeometry, String secondGeometry) {
+		return "ST_Intersection((" + firstGeometry + "), ("+secondGeometry+"))";
+	}
 	
 	@Override
 	public LineSegment transformDatabaseLineSegment2DValueToJTSLineSegment(String lineSegmentAsSQL) throws com.vividsolutions.jts.io.ParseException {
@@ -457,4 +464,86 @@ public class MySQLDBDefinition extends DBDefinition {
 		return doLine2DIntersectionPointWithLine2DTransform(firstLineSegment,secondLineSegment);
 	}
 
+	@Override
+	public String transformMultiPoint2DToDatabaseMultiPoint2DValue(MultiPoint points) {
+		String wktValue = points.toText().replace("((", "(").replace("))", ")").replaceAll("\\), \\(", ", ");
+		return "MPointFromText('" + wktValue + "')";
+	}
+
+	@Override
+	public MultiPoint transformDatabaseMultiPoint2DValueToJTSMultiPoint(String pointsAsString) throws com.vividsolutions.jts.io.ParseException {
+		System.out.println(""+pointsAsString);
+		MultiPoint mpoint = null;
+		WKTReader wktReader = new WKTReader();
+		Geometry geometry = wktReader.read(pointsAsString);
+		if (geometry instanceof MultiPoint) {
+			mpoint = (MultiPoint) geometry;
+		} else if (geometry instanceof Point) {
+			Point point = (Point) geometry;
+			mpoint = (new GeometryFactory()).createMultiPoint(new Point[]{point});
+		} else {
+			throw new IncorrectGeometryReturnedForDatatype(geometry,  (new GeometryFactory()).createMultiPoint(new Point[]{}));
+		}
+		return mpoint;
+	}
+
+	@Override
+	public String doMultiPoint2DEqualsTransform(String first, String second) {
+		return "Equals(" + first + ", "+second+")";
+	}
+
+	@Override
+	public String doMultiPoint2DGetPointAtIndexTransform(String first, String index) {
+		return "PointN(" + doMultiPoint2DToLine2DTransform(first) + ", "+index+")";
+	}
+
+	@Override
+	public String doMultiPoint2DGetNumberOfPointsTransform(String first) {
+		return "NumPoints(" + doMultiPoint2DToLine2DTransform(first) + ")";
+	}
+
+	@Override
+	public String doMultiPoint2DDimensionTransform(String first) {
+		return "Dimension(" + first + ")";
+	}
+
+	@Override
+	public String doMultiPoint2DGetBoundingBoxTransform(String first) {
+		return "Envelope(" + first + ")";
+	}
+
+	@Override
+	public String doMultiPoint2DAsTextTransform(String first) {
+		return "AsText("+first+")";
+	}
+
+	@Override
+	public String doMultiPoint2DToLine2DTransform(String first) {
+		return "LineFromText(REPLACE(ASTEXT(" + first + "),'MULTIPOINT', 'LINESTRING'))";	
+	}
+
+	@Override
+	public String doMultiPoint2DToPolygon2DTransform(String first) {
+		return "LineFromText(REPLACE(ASTEXT(" + first + "),'MULTIPOINT', 'POLYGON'))";	
+	}
+
+	@Override
+	public String doMultiPoint2DGetMinYTransform(String first) {
+		return "Y(PointN(ExteriorRing(Envelope(" + first + ")),1))";
+	}
+
+	@Override
+	public String doMultiPoint2DGetMinXTransform(String first) {
+		return "X(PointN(ExteriorRing(Envelope(" + first + ")),1))";
+	}
+
+	@Override
+	public String doMultiPoint2DGetMaxYTransform(String first) {
+		return "Y(PointN(ExteriorRing(Envelope(" + first + ")),3))";
+	}
+
+	@Override
+	public String doMultiPoint2DGetMaxXTransform(String first) {
+		return "X(PointN(ExteriorRing(Envelope(" + first + ")),3))";
+	}
 }

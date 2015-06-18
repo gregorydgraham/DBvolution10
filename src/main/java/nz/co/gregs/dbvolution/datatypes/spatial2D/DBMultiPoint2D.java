@@ -150,7 +150,7 @@ public class DBMultiPoint2D extends QueryableDatatype implements MultiPoint2DRes
 		if (points == null) {
 			return db.getDefinition().getNull();
 		} else {
-			String str = db.getDefinition().transformJTSMultiPointToDatabaseMultiPoint2DValue(points);
+			String str = db.getDefinition().transformMultiPoint2DToDatabaseMultiPoint2DValue(points);
 			return str;
 		}
 	}

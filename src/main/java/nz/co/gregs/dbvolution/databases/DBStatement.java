@@ -20,6 +20,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.SQLWarning;
 import java.sql.Statement;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.exceptions.UnableToCreateDatabaseConnectionException;
@@ -92,7 +94,11 @@ public class DBStatement implements Statement {
 	private ResultSet addFeatureAndAttemptQueryAgain(SQLException exp, String string) throws SQLException {
 		ResultSet executeQuery;
 		System.out.println("Adding Feature for: " + exp.getMessage());
-		database.addFeatureToFixException(exp);
+		try {
+			database.addFeatureToFixException(exp);
+		} catch (Exception ex) {
+			throw new SQLException(exp);
+		}
 		try {
 			executeQuery = getInternalStatement().executeQuery(string);
 			return executeQuery;
@@ -393,7 +399,11 @@ public class DBStatement implements Statement {
 	private boolean addFeatureAndAttemptExecuteAgain(Exception exp, String string) throws SQLException {
 		boolean executeQuery;
 		System.out.println("Adding Feature for: " + exp.getMessage());
-		database.addFeatureToFixException(exp);
+		try {
+			database.addFeatureToFixException(exp);
+		} catch (Exception ex) {
+			throw new SQLException(ex);
+		}
 		try {
 			executeQuery = getInternalStatement().execute(string);
 			return executeQuery;

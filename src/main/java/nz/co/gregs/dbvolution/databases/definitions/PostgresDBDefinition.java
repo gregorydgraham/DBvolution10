@@ -776,8 +776,8 @@ public class PostgresDBDefinition extends DBDefinition {
 	}
 
 	@Override
-	public String transformJTSMultiPointToDatabaseMultiPoint2DValue(MultiPoint points) {
-		return super.transformJTSMultiPointToDatabaseMultiPoint2DValue(points);
+	public String transformMultiPoint2DToDatabaseMultiPoint2DValue(MultiPoint points) {
+		return super.transformMultiPoint2DToDatabaseMultiPoint2DValue(points);
 	}
 
 	@Override
