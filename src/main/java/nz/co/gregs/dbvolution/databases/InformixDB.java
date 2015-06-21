@@ -30,12 +30,29 @@ public class InformixDB extends DBDatabase {
 
 	private final static String INFORMIXDRIVERNAME = "com.informix.jdbc.IfxDriver";
 
+	/**
+	 * Create a database object for a Informix 7+ database using the supplied definition and datasource.
+	 *
+	 * @param definition
+	 * @param ds
+	 * @throws SQLException
+	 */
 	protected InformixDB(DBDefinition definition, DataSource ds) throws SQLException {
 		super(definition, ds);
 		// Informix causes problems when using batched statements :(
 		setBatchSQLStatementsWhenPossible(false);
 	}
 
+	/**
+	 * Create a database object for a Informix 7+ database using the supplied definition and connection details.
+	 *
+	 * @param definition
+	 * @param driverName 
+	 * @param jdbcURL 
+	 * @param username 
+	 * @param password 
+	 * @throws SQLException
+	 */
 	protected InformixDB(DBDefinition definition, String driverName, String jdbcURL, String username, String password) throws SQLException {
 		super(definition, driverName, jdbcURL, username, password);
 		// Informix causes problems when using batched statements :(

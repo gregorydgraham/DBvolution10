@@ -3751,7 +3751,13 @@ public abstract class DBDefinition {
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
-	public String doPolygon2DAsTextTransform(String toSQLString) {
+	/**
+	 * Generates the SQL to convert the polygon to the standard text version of a polygon.
+	 *
+	 * @param polygonSQL 
+	 * @return SQL
+	 */
+	public String doPolygon2DAsTextTransform(String polygonSQL) {
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
@@ -3777,6 +3783,13 @@ public abstract class DBDefinition {
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
+	/**
+	 * Generate the SQL required to find the complete set of all points of intersection between the tow 2 lines.
+	 *
+	 * @param firstGeometry 
+	 * @param secondGeometry 
+	 * @return an SQL expression that will evaluate to the intersection point of the 2 line segments or NULL.
+	 */
 	public String doLine2DAllIntersectionPointsWithLine2DTransform(String firstGeometry, String secondGeometry) {
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
@@ -3935,11 +3948,23 @@ public abstract class DBDefinition {
 //		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 //	}
 
+	/**
+	 * Provide the SQL that correctly represents this MultiPoint2D value in this database.
+	 *
+	 * @param points
+	 * @return SQL
+	 */
 	public String transformMultiPoint2DToDatabaseMultiPoint2DValue(MultiPoint points) {
 		String wktValue = points.toText();
 		return "'" + wktValue + "'";
 	}
 
+	/**
+	 * Convert the database's string representation of a MultiPoint2D value into a MultiPoint..
+	 *
+	 * @param pointsAsString 
+	 * @return MultiPoint
+	 */
 	public MultiPoint transformDatabaseMultiPoint2DValueToJTSMultiPoint(String pointsAsString) throws com.vividsolutions.jts.io.ParseException {
 		MultiPoint mpoint = null;
 		WKTReader wktReader = new WKTReader();
