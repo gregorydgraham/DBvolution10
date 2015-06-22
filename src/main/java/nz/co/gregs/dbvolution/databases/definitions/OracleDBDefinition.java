@@ -15,27 +15,15 @@
  */
 package nz.co.gregs.dbvolution.databases.definitions;
 
-import com.vividsolutions.jts.geom.Polygon;
+import com.vividsolutions.jts.geom.*;
+import com.vividsolutions.jts.io.WKTReader;
 import java.text.SimpleDateFormat;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
-import nz.co.gregs.dbvolution.datatypes.DBBoolean;
-import nz.co.gregs.dbvolution.datatypes.DBBooleanArray;
-import nz.co.gregs.dbvolution.datatypes.DBDate;
-import nz.co.gregs.dbvolution.datatypes.DBJavaObject;
-import nz.co.gregs.dbvolution.datatypes.DBString;
-import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
-import nz.co.gregs.dbvolution.datatypes.spatial2D.DBLine2D;
-import nz.co.gregs.dbvolution.datatypes.spatial2D.DBLineSegment2D;
-import nz.co.gregs.dbvolution.datatypes.spatial2D.DBPoint2D;
-import nz.co.gregs.dbvolution.datatypes.spatial2D.DBPolygon2D;
-import nz.co.gregs.dbvolution.expressions.BooleanExpression;
-import nz.co.gregs.dbvolution.expressions.DBExpression;
-import nz.co.gregs.dbvolution.internal.oracle.Line2DFunctions;
-import nz.co.gregs.dbvolution.internal.oracle.LineSegment2DFunctions;
-import nz.co.gregs.dbvolution.internal.oracle.Polygon2DFunctions;
-import nz.co.gregs.dbvolution.internal.oracle.StringFunctions;
+import java.util.*;
+import nz.co.gregs.dbvolution.datatypes.*;
+import nz.co.gregs.dbvolution.datatypes.spatial2D.*;
+import nz.co.gregs.dbvolution.exceptions.IncorrectGeometryReturnedForDatatype;
+import nz.co.gregs.dbvolution.expressions.*;
+import nz.co.gregs.dbvolution.internal.oracle.*;
 import nz.co.gregs.dbvolution.query.QueryOptions;
 
 /**
@@ -112,6 +100,8 @@ public class OracleDBDefinition extends DBDefinition {
 			return " VARCHAR(2003) ";
 		} else if (qdt instanceof DBLineSegment2D) {
 			return " VARCHAR(2004) ";
+		} else if (qdt instanceof DBMultiPoint2D) {
+			return " VARCHAR(2005) ";
 		} else {
 			return qdt.getSQLDatatype();
 		}
@@ -632,4 +622,112 @@ public class OracleDBDefinition extends DBDefinition {
 		return LineSegment2DFunctions.INTERSECTPT_LSEG2D+"(("+firstLineSegment+"), ("+secondLineSegment+"))";
 	}
 
+	/**
+	 * Provide the SQL that correctly represents this MultiPoint2D value in this database.
+	 *
+	 * @param points
+	 * @return SQL
+	 */
+	@Override
+	public String transformMultiPoint2DToDatabaseMultiPoint2DValue(MultiPoint points) {
+		String wktValue = points.toText();
+		return "'" + wktValue + "'";
+	}
+
+	/**
+	 * Convert the database's string representation of a MultiPoint2D value into a MultiPoint..
+	 *
+	 * @param pointsAsString 
+	 * @return MultiPoint
+	 * @throws com.vividsolutions.jts.io.ParseException
+	 */
+	@Override
+	public MultiPoint transformDatabaseMultiPoint2DValueToJTSMultiPoint(String pointsAsString) throws com.vividsolutions.jts.io.ParseException {
+		MultiPoint mpoint = null;
+		WKTReader wktReader = new WKTReader();
+		Geometry geometry = wktReader.read(pointsAsString);
+		if (geometry instanceof MultiPoint) {
+			mpoint = (MultiPoint) geometry;
+		} else if (geometry instanceof Point) {
+			mpoint = (new GeometryFactory().createMultiPoint(new Point[]{((Point)geometry)}));
+		} else {
+			throw new IncorrectGeometryReturnedForDatatype(geometry, geometry);
+		}
+		return mpoint;
+	}
+
+	/**
+	 * Provide the SQL to compare 2 MultiPoint2Ds
+	 *
+	 * @param first
+	 * @param second
+	 * @return SQL
+	 */
+	@Override
+	public String doMultiPoint2DEqualsTransform(String first, String second) {
+		return "("+MultiPoint2DFunctions.EQUALS+"("+first+", "+second+")=1)";
+	}
+
+	/**
+	 * Provide the SQL to get point at the supplied index within the MultiPoint2D
+	 *
+	 * @param first
+	 * @param index 
+	 * @return SQL
+	 */
+	@Override
+	public String doMultiPoint2DGetPointAtIndexTransform(String first, String index) {
+		return ""+MultiPoint2DFunctions.GETFROMINDEX+"("+first+", "+index+")";
+	}
+
+	@Override
+	public String doMultiPoint2DGetNumberOfPointsTransform(String first) {
+		return ""+MultiPoint2DFunctions.POINTCOUNT+"("+first+")";
+	}
+
+	@Override
+	public String doMultiPoint2DDimensionTransform(String first) {
+		return ""+MultiPoint2DFunctions.DIMENSION+"("+first+")";
+	}
+
+	@Override
+	public String doMultiPoint2DGetBoundingBoxTransform(String first) {
+		return ""+MultiPoint2DFunctions.BOUNDINGBOX+"("+first+")";
+	}
+
+	@Override
+	public String doMultiPoint2DAsTextTransform(String first) {
+		return ""+MultiPoint2DFunctions.ASTEXT+"("+first+")";
+	}
+
+	@Override
+	public String doMultiPoint2DToLine2DTransform(String first) {
+		return ""+MultiPoint2DFunctions.ASLINE2D+"("+first+")";
+	}
+
+	@Override
+	public String doMultiPoint2DToPolygon2DTransform(String first) {
+		return ""+MultiPoint2DFunctions.ASPOLY2D+"("+first+")";
+	}
+
+	@Override
+	public String doMultiPoint2DGetMinYTransform(String first) {
+		return ""+MultiPoint2DFunctions.MINY+"("+first+")";
+	}
+
+	@Override
+	public String doMultiPoint2DGetMinXTransform(String first) {
+		return ""+MultiPoint2DFunctions.MINX+"("+first+")";
+	}
+
+	@Override
+	public String doMultiPoint2DGetMaxYTransform(String first) {
+		return ""+MultiPoint2DFunctions.MAXY+"("+first+")";
+	}
+
+	@Override
+	public String doMultiPoint2DGetMaxXTransform(String first) {
+		return ""+MultiPoint2DFunctions.MAXX+"("+first+")";
+	}
+	
 }

@@ -3979,10 +3979,24 @@ public abstract class DBDefinition {
 		return mpoint;
 	}
 
+	/**
+	 * Provide the SQL to compare 2 MultiPoint2Ds
+	 *
+	 * @param first
+	 * @param second
+	 * @return SQL
+	 */
 	public String doMultiPoint2DEqualsTransform(String first, String second) {
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
+	/**
+	 * Provide the SQL to get point at the supplied index within the MultiPoint2D
+	 *
+	 * @param first
+	 * @param index 
+	 * @return SQL
+	 */
 	public String doMultiPoint2DGetPointAtIndexTransform(String first, String index) {
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}

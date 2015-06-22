@@ -93,6 +93,9 @@ public abstract class OracleDB extends DBDatabase {
 		for (Polygon2DFunctions fn : Polygon2DFunctions.values()) {
 			fn.add(statement);
 		}
+		for (MultiPoint2DFunctions fn : MultiPoint2DFunctions.values()) {
+			fn.add(statement);
+		}
 	}
 
 }
