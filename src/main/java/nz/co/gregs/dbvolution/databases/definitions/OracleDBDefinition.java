@@ -407,6 +407,10 @@ public class OracleDBDefinition extends DBDefinition {
 		return Line2DFunctions.INTERSECTNWLINE2D + "((" + firstLine+"), ("+secondLine + "))";
 	}
 
+	@Override
+	public String doLine2DAllIntersectionPointsWithLine2DTransform(String firstGeometry, String secondGeometry) {
+		return Line2DFunctions.ALLINTERSECTSL2D + "((" + firstGeometry+"), ("+secondGeometry + "))";
+	}
 
 	@Override
 	public String doSubstringBeforeTransform(String afterThis, String butBeforeThis) {
