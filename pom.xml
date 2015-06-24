@@ -29,7 +29,6 @@
 		<connection>scm:git:https://github.com/gregorydgraham/DBvolution.git</connection>
 		<developerConnection>scm:git:https://github.com/gregorydgraham/DBvolution.git</developerConnection>
 		<url>https://github.com/gregorydgraham/DBvolution.git</url>
-	  <tag>HEAD</tag>
   </scm>
 	<developers>
 		<developer>
