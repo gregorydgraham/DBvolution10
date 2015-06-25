@@ -86,28 +86,36 @@ public class DBStatement implements Statement {
 		try {
 			executeQuery = getInternalStatement().executeQuery(string);
 		} catch (SQLException exp) {
-			executeQuery = addFeatureAndAttemptQueryAgain(exp, string);
+			try {
+				executeQuery = addFeatureAndAttemptQueryAgain(exp, string);
+			} catch (Exception ex) {
+				throw new RuntimeException(ex);
+			}
 		}
 		return executeQuery;
 	}
 
-	private ResultSet addFeatureAndAttemptQueryAgain(SQLException exp, String string) throws SQLException {
+	private ResultSet addFeatureAndAttemptQueryAgain(Exception exp, String string) throws Exception {
 		ResultSet executeQuery;
 		System.out.println("Adding Feature for: " + exp.getMessage());
 		try {
 			database.addFeatureToFixException(exp);
 		} catch (Exception ex) {
-			throw new SQLException(exp);
+			Exception ex1 = exp;
+			while (!ex1.getMessage().equals(ex)){
+				database.addFeatureToFixException(ex);
+			}
+			throw new SQLException(ex);
 		}
 		try {
 			executeQuery = getInternalStatement().executeQuery(string);
 			return executeQuery;
 		} catch (SQLException exp2) {
-			if (!exp.getMessage().equals(exp2.getMessage())) {
+			if (exp.getMessage().equals(exp2.getMessage())) {
+				throw exp;
+			} else {
 				executeQuery = addFeatureAndAttemptQueryAgain(exp2, string);
 				return executeQuery;
-			} else {
-				throw exp;
 			}
 		}
 	}

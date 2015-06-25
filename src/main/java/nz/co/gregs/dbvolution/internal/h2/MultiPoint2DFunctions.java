@@ -140,8 +140,7 @@ public enum MultiPoint2DFunctions implements DBVFeature {
 			+ "			}"),
 	DIMENSION("Integer", "String firstLine", "return 0;"	),
 	ASTEXT("String", "String firstLine", "return firstLine;"),
-	ASLINE2D("String", "String multipoint", "return multipoint.replace(\"MULTIPOINT\", \"LINESTRING\");"),
-	ASPOLYGON2D("String", "String multipoint", "return multipoint.replace(\"MULTIPOINT\", \"POLYGON\");"),
+	ASLINE2D("String", "String multipoint", "return multipoint.replace(\"(\",\"\").replace(\")\",\"\").replace(\"MULTIPOINT \", \"LINESTRING (\")+\")\";"),
 	GETNUMBEROFPOINTS_FUNCTION("Integer", "String multipoint", "\n"
 			+ "			if (multipoint == null||multipoint.equals(\"\")) {\n"
 			+ "				return null;\n"
@@ -150,6 +149,13 @@ public enum MultiPoint2DFunctions implements DBVFeature {
 			+ "				String[] split = multipoint.trim().split(\"[ (),]+\");\n"
 			+ "				return (split.length - 1)/2;\n"
 			+ "			}"),
+	//'MULTIPOINT ((2 3), (3 4))' => 'POLYGON ((2 3, 3 4, 2 3))' 
+	ASPOLYGON2D("String", "String multipoint", ""
+			+ "if ("+GETNUMBEROFPOINTS_FUNCTION+"(multipoint, "+MultiPoint2DFunctions.getCurrentVersion()+")<3){"
+			+ "	return "+BOUNDINGBOX+"(multipoint, "+MultiPoint2DFunctions.getCurrentVersion()+");"
+			+ "} else{"
+			+ "	return multipoint.replace(\"), (\", \", \").replaceAll(\"\\\\(([-0-9.]+ [-0-9.]+)(.*)\\\\)\\\\)\", \"($1$2, $1))\").replace(\"MULTIPOINT\", \"POLYGON\");"
+			+ "}"),
 	GETPOINTATINDEX_FUNCTION("String", "String multipoint, Integer index", "\n"
 			+ "			final int indexInMPoint = index * 2;\n"
 			+ "			if (multipoint == null||indexInMPoint<=0) {\n"
@@ -170,13 +176,17 @@ public enum MultiPoint2DFunctions implements DBVFeature {
 	private final String returnType;
 	private final String parameters;
 	private final String code;
-	public static int CURRENTVERSION=1;
+//	public static int CURRENTVERSION=2;
 
 	MultiPoint2DFunctions(String returnType, String parameters, String code) {
 //		this.functionName = functionName;
 		this.returnType = returnType;
 		this.parameters = parameters;
 		this.code = code;
+	}
+	
+	static public int getCurrentVersion(){
+		return 2;
 	}
 
 	@Override
@@ -197,7 +207,7 @@ public enum MultiPoint2DFunctions implements DBVFeature {
 			;// Not an issue.
 		}
 		final String createFunctionStatement = "CREATE ALIAS IF NOT EXISTS " + this + " DETERMINISTIC AS $$ \n" + "@CODE " + returnType + " " + this + "(" + parameters + ", Integer version) throws org.h2.jdbc.JdbcSQLException {\n"
-				+ "if (version!="+CURRENTVERSION+"){\n"
+				+ "if (version!="+getCurrentVersion()+"){\n"
 				+ "	throw new org.h2.jdbc.JdbcSQLException(\"Function " + this + " not found\", \"Function " + this + " not found\", \"Function " + this + " not found\", version, null, \"Function " + this + " not found\"); \n"
 				+ "}else{\n"
 				+ code

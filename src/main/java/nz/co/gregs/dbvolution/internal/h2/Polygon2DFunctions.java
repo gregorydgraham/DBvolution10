@@ -76,7 +76,7 @@ public enum Polygon2DFunctions implements DBVFeature {
 			+ "					}\n"
 			+ "				}\n"
 			+ "			} catch (Exception ex) {\n"
-			+ "				throw new RuntimeException(\"Failed To Parse SQLite Polygon\", ex);\n"
+			+ "				throw new RuntimeException(\"Failed To Parse Polygon: either '\"+firstPolyStr+\"' or '\"+secondPolyStr+\"' is wrong somehow\", ex);\n"
 			+ "			}"),
 	AREA("Double", "String firstPolyStr", "\n"
 			+ "			try {\n"
@@ -95,7 +95,7 @@ public enum Polygon2DFunctions implements DBVFeature {
 			+ "					}\n"
 			+ "				}\n"
 			+ "			} catch (Exception ex) {\n"
-			+ "				throw new RuntimeException(\"Failed To Parse SQLite Polygon\", ex);\n"
+			+ "				throw new RuntimeException(\"Failed To Parse Polygon: '\"+firstPolyStr+\"'\", ex);\n"
 			+ "			}"),
 	DIMENSION("Integer", "String firstPoly", "return 2;"),
 	MIN_Y("Double", "String firstPoly", ""

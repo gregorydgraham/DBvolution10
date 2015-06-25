@@ -176,6 +176,17 @@ public class H2DB extends DBDatabase implements SupportsDateRepeatDatatypeFuncti
 					datatype.add(getConnection().createStatement());
 					handledException = true;
 				}
+				//symbol:   method DBV_MULTIPOINT2D_BOUNDINGBOX(
+			} else if (message.matches(": +method \"DBV_[A-Z_0-9]+")) {
+				String[] split = message.split("method \"");
+				split = split[1].split("(");
+				String functionName = split[0];
+				System.out.println("ADDING FUNCTION: "+functionName);
+				DBVFeature functions = featureMap.get(functionName);
+				if (functions != null) {
+					functions.add(getConnection().createStatement());
+					handledException = true;
+				}
 			} else {
 				for (Map.Entry<String, DBVFeature> entrySet : featureMap.entrySet()) {
 					String key = entrySet.getKey();
