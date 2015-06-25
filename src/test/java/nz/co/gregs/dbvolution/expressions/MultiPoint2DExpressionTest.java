@@ -160,6 +160,30 @@ public class MultiPoint2DExpressionTest extends AbstractTest {
 	}
 
 	@Test
+	public void testLine2DResult() throws SQLException {
+		System.out.println("stringResult");
+		LineString line = geometryFactory.createLineString(new Coordinate[]{new Coordinate(2.0, 3.0), new Coordinate(3.0, 4.0)});
+		final MultiPoint2DTestTable pointTestTable = new MultiPoint2DTestTable();
+		DBQuery dbQuery = database.getDBQuery(pointTestTable);
+		dbQuery.addCondition(Line2DExpression.value(line).stringResult().is(pointTestTable.column(pointTestTable.multipoint).line2DResult().stringResult()));
+		List<MultiPoint2DTestTable> allRows = dbQuery.getAllInstancesOf(pointTestTable);
+		Assert.assertThat(allRows.size(), is(1));
+		Assert.assertThat(allRows.get(0).line_id.intValue(), is(1));
+	}
+
+	@Test
+	public void testPolygon2DResult() throws SQLException {
+		System.out.println("stringResult");
+		Polygon line = geometryFactory.createPolygon(new Coordinate[]{new Coordinate(2.0, 3.0), new Coordinate(3.0, 4.0), new Coordinate(4.0, 5.0), new Coordinate(2.0, 3.0)});
+		final MultiPoint2DTestTable pointTestTable = new MultiPoint2DTestTable();
+		DBQuery dbQuery = database.getDBQuery(pointTestTable);
+		dbQuery.addCondition(Polygon2DExpression.value(line).is(pointTestTable.column(pointTestTable.multipoint).polygon2DResult()));
+		List<MultiPoint2DTestTable> allRows = dbQuery.getAllInstancesOf(pointTestTable);
+		Assert.assertThat(allRows.size(), is(1));
+		Assert.assertThat(allRows.get(0).line_id.intValue(), is(1));
+	}
+
+	@Test
 	public void testIs_MultiPoint() throws SQLException {
 		System.out.println("is");
 		MultiPoint mpoint = geometryFactory.createMultiPoint(new Coordinate[]{new Coordinate(2.0, 3.0), new Coordinate(3.0, 4.0)});

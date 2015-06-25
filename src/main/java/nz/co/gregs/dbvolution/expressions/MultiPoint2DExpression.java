@@ -263,7 +263,7 @@ public class MultiPoint2DExpression implements MultiPoint2DResult, EqualComparab
 		});
 	}
 
-	Line2DExpression line2DResult() {
+	public Line2DExpression line2DResult() {
 		return new Line2DExpression(new SingleArgumentLine2DFunction<MultiPoint2DExpression>(this) {
 
 			@Override
@@ -273,7 +273,7 @@ public class MultiPoint2DExpression implements MultiPoint2DResult, EqualComparab
 		});
 	}
 
-	Polygon2DExpression polygon2DResult() {
+	public Polygon2DExpression polygon2DResult() {
 		return new Polygon2DExpression(new SingleArgumentPolygon2DFunction<MultiPoint2DExpression>(this) {
 
 			@Override

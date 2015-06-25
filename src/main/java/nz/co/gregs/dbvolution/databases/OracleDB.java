@@ -20,6 +20,7 @@ import java.sql.Statement;
 import javax.sql.DataSource;
 import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
+import nz.co.gregs.dbvolution.databases.supports.SupportsPolygonDatatype;
 import nz.co.gregs.dbvolution.internal.oracle.*;
 
 /**
@@ -32,7 +33,7 @@ import nz.co.gregs.dbvolution.internal.oracle.*;
  * @see Oracle11DB
  * @see Oracle12DB
  */
-public abstract class OracleDB extends DBDatabase {
+public abstract class OracleDB extends DBDatabase implements SupportsPolygonDatatype{
 
 	/**
 	 * Creates a DBDatabase instance for the definition and data source.
