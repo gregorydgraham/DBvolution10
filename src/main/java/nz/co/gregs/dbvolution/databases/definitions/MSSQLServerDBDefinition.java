@@ -911,7 +911,7 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 
 	@Override
 	public String doMultiPoint2DToLine2DTransform(String first) {
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+		return "geometry::STLineFromText('LINESTRING (' + replace(replace((SUBSTRING(("+first+").ToString(),11,9999999)),'(','' ),')', '')+')',0)"; 
 	}
 
 //	@Override
