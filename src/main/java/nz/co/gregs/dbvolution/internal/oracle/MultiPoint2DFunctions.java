@@ -437,8 +437,7 @@ public enum MultiPoint2DFunctions {
 			+ "RETURN 0;\n"
 			+ "END;"),
 	ASTEXT("VARCHAR", "mpoint IN VARCHAR", "BEGIN RETURN mpoint; END;"),
-	ASLINE2D("VARCHAR", "mpoint IN VARCHAR", "BEGIN RETURN replace(mpoint, 'MULTIPOINT', 'LINESTRING'); END;"),
-	ASPOLY2D("VARCHAR", "mpoint IN VARCHAR", "BEGIN RETURN replace(mpoint, 'MULTIPOINT', 'POLYGON');; END;");
+	ASLINE2D("VARCHAR", "mpoint IN VARCHAR", "BEGIN RETURN replace(mpoint, 'MULTIPOINT', 'LINESTRING'); END;");
 
 	private final String returnType;
 	private final String parameters;

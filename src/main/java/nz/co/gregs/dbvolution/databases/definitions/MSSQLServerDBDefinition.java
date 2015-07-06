@@ -914,10 +914,10 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
-	@Override
-	public String doMultiPoint2DToPolygon2DTransform(String first) {
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-	}
+//	@Override
+//	public String doMultiPoint2DToPolygon2DTransform(String first) {
+//		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+//	}
 
 	@Override
 	public String doMultiPoint2DGetMinYTransform(String first) {

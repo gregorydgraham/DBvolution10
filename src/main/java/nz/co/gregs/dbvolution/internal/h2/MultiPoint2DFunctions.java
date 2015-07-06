@@ -150,12 +150,12 @@ public enum MultiPoint2DFunctions implements DBVFeature {
 			+ "				return (split.length - 1)/2;\n"
 			+ "			}"),
 	//'MULTIPOINT ((2 3), (3 4))' => 'POLYGON ((2 3, 3 4, 2 3))' 
-	ASPOLYGON2D("String", "String multipoint", ""
-			+ "if ("+GETNUMBEROFPOINTS_FUNCTION+"(multipoint, "+MultiPoint2DFunctions.getCurrentVersion()+")<3){"
-			+ "	return "+BOUNDINGBOX+"(multipoint, "+MultiPoint2DFunctions.getCurrentVersion()+");"
-			+ "} else{"
-			+ "	return multipoint.replace(\"), (\", \", \").replaceAll(\"\\\\(([-0-9.]+ [-0-9.]+)(.*)\\\\)\\\\)\", \"($1$2, $1))\").replace(\"MULTIPOINT\", \"POLYGON\");"
-			+ "}"),
+//	ASPOLYGON2D("String", "String multipoint", ""
+//			+ "if (multipoint.split(\",\").length<3){"
+//			+ "	return null;"
+//			+ "} else{"
+//			+ "	return multipoint.replace(\"), (\", \", \").replaceAll(\"\\\\(([-0-9.]+ [-0-9.]+)(.*)\\\\)\\\\)\", \"($1$2, $1))\").replace(\"MULTIPOINT\", \"POLYGON\");"
+//			+ "}"),
 	GETPOINTATINDEX_FUNCTION("String", "String multipoint, Integer index", "\n"
 			+ "			final int indexInMPoint = index * 2;\n"
 			+ "			if (multipoint == null||indexInMPoint<=0) {\n"

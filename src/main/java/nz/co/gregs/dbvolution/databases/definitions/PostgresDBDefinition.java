@@ -817,13 +817,13 @@ public class PostgresDBDefinition extends DBDefinition {
 
 	@Override
 	public String doMultiPoint2DToLine2DTransform(String first) {
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+		return MultiPoint2DFunctions.ASLINE2D+"(("+first+"))::PATH";
 	}
 
-	@Override
-	public String doMultiPoint2DToPolygon2DTransform(String first) {
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-	}
+//	@Override
+//	public String doMultiPoint2DToPolygon2DTransform(String first) {
+//		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+//	}
 
 	@Override
 	public String doMultiPoint2DGetMinYTransform(String toSQLString) {

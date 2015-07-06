@@ -27,6 +27,7 @@ import nz.co.gregs.dbvolution.databases.supports.SupportsPolygonDatatype;
 import nz.co.gregs.dbvolution.exceptions.AccidentalDroppingOfTableException;
 import nz.co.gregs.dbvolution.exceptions.AutoCommitActionDuringTransactionException;
 import nz.co.gregs.dbvolution.internal.postgres.Line2DFunctions;
+import nz.co.gregs.dbvolution.internal.postgres.MultiPoint2DFunctions;
 import nz.co.gregs.dbvolution.internal.postgres.StringFunctions;
 
 /**
@@ -217,6 +218,9 @@ public class PostgresDB extends DBDatabase implements SupportsPolygonDatatype{
 			fn.add(stmnt);
 		}
 		for (Line2DFunctions fn : Line2DFunctions.values()) {
+			fn.add(stmnt);
+		}
+		for (MultiPoint2DFunctions fn : MultiPoint2DFunctions.values()) {
 			fn.add(stmnt);
 		}
 	}

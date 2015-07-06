@@ -273,15 +273,15 @@ public class MultiPoint2DExpression implements MultiPoint2DResult, EqualComparab
 		});
 	}
 
-	public Polygon2DExpression polygon2DResult() {
-		return new Polygon2DExpression(new SingleArgumentPolygon2DFunction<MultiPoint2DExpression>(this) {
-
-			@Override
-			protected String doExpressionTransform(DBDatabase db) {
-				return db.getDefinition().doMultiPoint2DToPolygon2DTransform(getFirst().toSQLString(db));
-			}
-		});
-	}
+//	public Polygon2DExpression polygon2DResult() {
+//		return this.line2DResult().polygon2DResult();
+//		return new Polygon2DExpression(new SingleArgumentPolygon2DFunction<MultiPoint2DExpression>(this) {
+//			@Override
+//			protected String doExpressionTransform(DBDatabase db) {
+//				return db.getDefinition().doMultiPoint2DToPolygon2DTransform(getFirst().toSQLString(db));
+//			}
+//		});
+//	}
 
 	private static abstract class SingleArgumentLine2DFunction<A extends DBExpression> extends Line2DExpression {
 

@@ -72,8 +72,8 @@ public class MultiPoint2DExpressionTest extends AbstractTest {
 		@DBColumn("multipoint_col")
 		public DBMultiPoint2D multipoint = new DBMultiPoint2D();
 		
-//		@DBColumn
-//		public DBString asLine = new DBString(this.column(this.multipoint).line2DResult().stringResult());
+		@DBColumn
+		public DBString asText = new DBString(this.column(this.multipoint).stringResult());
 //		
 //		@DBColumn
 //		public DBString asPolygon = new DBString(this.column(this.multipoint).polygon2DResult().stringResult());
@@ -180,23 +180,20 @@ public class MultiPoint2DExpressionTest extends AbstractTest {
 		Assert.assertThat(allRows.get(0).line_id.intValue(), is(1));
 	}
 
-	@Test
-	public void testPolygon2DResult() throws SQLException {
-		System.out.println("stringResult");
-		Polygon line = geometryFactory.createPolygon(new Coordinate[]{new Coordinate(2.0, 3.0), new Coordinate(3.0, 4.0), new Coordinate(4.0, 5.0), new Coordinate(2.0, 3.0)});
-		final MultiPoint2DTestTable pointTestTable = new MultiPoint2DTestTable();
-		MultiPoint mpoint = geometryFactory.createMultiPoint(new Coordinate[]{new Coordinate(2.0, 3.0), new Coordinate(3.0, 4.0)});
-		final String toText = mpoint.toText();
-		System.out.println("TESTING REGEXP: "+toText.replace("), (", ", ").replaceAll("\\(([-0-9.]+ [-0-9.]+)(.*)\\)\\)", "($1$2, $1))").replace("MULTIPOINT", "POLYGON"));
-		DBQuery dbQuery = database.getDBQuery(pointTestTable);
-		dbQuery.setBlankQueryAllowed(true);
-		List<MultiPoint2DTestTable> allRows = dbQuery.getAllInstancesOf(pointTestTable);
-		database.print(allRows);
-		dbQuery.addCondition(Polygon2DExpression.value(line).is(pointTestTable.column(pointTestTable.multipoint).polygon2DResult()));
-		allRows = dbQuery.getAllInstancesOf(pointTestTable);
-		Assert.assertThat(allRows.size(), is(1));
-		Assert.assertThat(allRows.get(0).line_id.intValue(), is(1));
-	}
+//	@Test
+//	public void testPolygon2DResult() throws SQLException {
+//		System.out.println("stringResult");
+//		Polygon line = geometryFactory.createPolygon(new Coordinate[]{new Coordinate(2.0, 3.0), new Coordinate(3.0, 4.0), new Coordinate(4.0, 5.0), new Coordinate(2.0, 3.0)});
+//		final MultiPoint2DTestTable pointTestTable = new MultiPoint2DTestTable();
+//		DBQuery dbQuery = database.getDBQuery(pointTestTable);
+//		dbQuery.setBlankQueryAllowed(true);
+//		List<MultiPoint2DTestTable> allRows = dbQuery.getAllInstancesOf(pointTestTable);
+//		database.print(allRows);
+//		dbQuery.addCondition(Polygon2DExpression.value(line).is(pointTestTable.column(pointTestTable.multipoint).polygon2DResult()));
+//		allRows = dbQuery.getAllInstancesOf(pointTestTable);
+//		Assert.assertThat(allRows.size(), is(1));
+//		Assert.assertThat(allRows.get(0).line_id.intValue(), is(1));
+//	}
 
 	@Test
 	public void testIs_MultiPoint() throws SQLException {

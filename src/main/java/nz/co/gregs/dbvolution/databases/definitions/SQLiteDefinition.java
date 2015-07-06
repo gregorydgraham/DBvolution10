@@ -714,10 +714,10 @@ public class SQLiteDefinition extends DBDefinition {
 		return MultiPoint2DFunctions.ASLINE2D+"("+first+")";
 	}
 
-	@Override
-	public String doMultiPoint2DToPolygon2DTransform(String first) {
-		return MultiPoint2DFunctions.ASPOLYGON2D+"("+first+")";
-	}
+//	@Override
+//	public String doMultiPoint2DToPolygon2DTransform(String first) {
+//		return MultiPoint2DFunctions.ASPOLYGON2D+"("+first+")";
+//	}
 
 	@Override
 	public String doMultiPoint2DGetMinYTransform(String first) {

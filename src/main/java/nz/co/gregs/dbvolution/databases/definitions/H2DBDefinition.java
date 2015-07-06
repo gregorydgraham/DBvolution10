@@ -512,10 +512,10 @@ public class H2DBDefinition extends DBDefinition {
 		return MultiPoint2DFunctions.ASLINE2D+"("+first+", "+MultiPoint2DFunctions.getCurrentVersion()+")";
 	}
 
-	@Override
-	public String doMultiPoint2DToPolygon2DTransform(String first) {
-		return MultiPoint2DFunctions.ASPOLYGON2D+"("+first+", "+MultiPoint2DFunctions.getCurrentVersion()+")";
-	}
+//	@Override
+//	public String doMultiPoint2DToPolygon2DTransform(String first) {
+//		return MultiPoint2DFunctions.ASPOLYGON2D+"("+first+", "+MultiPoint2DFunctions.getCurrentVersion()+")";
+//	}
 
 	@Override
 	public String doMultiPoint2DGetMinYTransform(String first) {

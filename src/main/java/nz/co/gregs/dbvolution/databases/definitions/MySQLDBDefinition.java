@@ -522,10 +522,10 @@ public class MySQLDBDefinition extends DBDefinition {
 		return "LineFromText(REPLACE(ASTEXT(" + first + "),'MULTIPOINT', 'LINESTRING'))";	
 	}
 
-	@Override
-	public String doMultiPoint2DToPolygon2DTransform(String first) {
-		return "LineFromText(REPLACE(ASTEXT(" + first + "),'MULTIPOINT', 'POLYGON'))";	
-	}
+//	@Override
+//	public String doMultiPoint2DToPolygon2DTransform(String first) {
+//		return "LineFromText(REPLACE(ASTEXT(" + first + "),'MULTIPOINT', 'POLYGON'))";	
+//	}
 
 	@Override
 	public String doMultiPoint2DGetMinYTransform(String first) {
