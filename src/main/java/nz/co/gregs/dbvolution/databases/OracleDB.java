@@ -85,18 +85,6 @@ public abstract class OracleDB extends DBDatabase implements SupportsPolygonData
 		for (StringFunctions fn : StringFunctions.values()) {
 			fn.add(statement);
 		}
-		for (Line2DFunctions fn : Line2DFunctions.values()) {
-			fn.add(statement);
-		}
-		for (LineSegment2DFunctions fn : LineSegment2DFunctions.values()) {
-			fn.add(statement);
-		}
-		for (Polygon2DFunctions fn : Polygon2DFunctions.values()) {
-			fn.add(statement);
-		}
-		for (MultiPoint2DFunctions fn : MultiPoint2DFunctions.values()) {
-			fn.add(statement);
-		}
 	}
 
 }

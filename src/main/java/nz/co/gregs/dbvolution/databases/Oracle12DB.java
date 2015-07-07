@@ -24,11 +24,11 @@ import nz.co.gregs.dbvolution.databases.definitions.Oracle12DBDefinition;
  * Implements support for version 12 of the Oracle database.
  *
  * @author Gregory Graham
- * @see OracleDB
+ * @see OracleAWSDB
  * @see Oracle11DB
  * @see Oracle12DBDefinition
  */
-public class Oracle12DB extends OracleDB {
+public class Oracle12DB extends OracleAWSDB {
 
 	private static final String ORACLE_JDBC_DRIVER = "oracle.jdbc.driver.OracleDriver";
 

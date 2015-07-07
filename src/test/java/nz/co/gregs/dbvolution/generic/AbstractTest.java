@@ -97,11 +97,11 @@ public abstract class AbstractTest {
 			databases.add(new Object[]{"NuoDB", new NuoDB("localhost", 48004L, "dbv", "dbv", "dbv", "dbv")});
 		}
 		if (System.getProperty("testOracleAWS") != null) {
-//			databases.addPoint2D(new Object[]{"Oracle11DB", new Oracle11DB("dbvtest.c0wzty6pgnq4.us-west-2.rds.amazonaws.com", 1521, "ORCL", "dbv", "Testingdbv")});
-			databases.add(new Object[]{"Oracle11DB", new Oracle11DB("dbvtest-oracle-se1.cygjg2wvuyam.ap-southeast-2.rds.amazonaws.com", 1521, "ORCL", "dbv", "Testingdbv")});
+//			databases.addPoint2D(new Object[]{"OracleAWS11DB", new OracleAWS11DB("dbvtest.c0wzty6pgnq4.us-west-2.rds.amazonaws.com", 1521, "ORCL", "dbv", "Testingdbv")});
+			databases.add(new Object[]{"Oracle11DB", new OracleAWS11DB("dbvtest-oracle-se1.cygjg2wvuyam.ap-southeast-2.rds.amazonaws.com", 1521, "ORCL", "dbv", "Testingdbv")});
 		}
 		if (System.getProperty("testOracleXE") != null) {
-//			databases.addPoint2D(new Object[]{"Oracle11DB", new Oracle11DB("dbvtest.c0wzty6pgnq4.us-west-2.rds.amazonaws.com", 1521, "ORCL", "dbv", "Testingdbv")});
+//			databases.addPoint2D(new Object[]{"OracleAWS11DB", new OracleAWS11DB("dbvtest.c0wzty6pgnq4.us-west-2.rds.amazonaws.com", 1521, "ORCL", "dbv", "Testingdbv")});
 			databases.add(new Object[]{"Oracle11DB", new Oracle11DB("ec2-52-64-98-125.ap-southeast-2.compute.amazonaws.com", 1521, "XE", "DBV", "Testingdbv")});
 		}
 		if (System.getProperty("testOracle12") != null) {
@@ -136,7 +136,7 @@ public abstract class AbstractTest {
 	public String testableSQL(String str) {
 		if (str != null) {
 			String trimStr = str.trim().replaceAll("[ \\r\\n]+", " ").toLowerCase();
-			if ((database instanceof OracleDB) || (database instanceof JavaDB)) {
+			if ((database instanceof OracleAWSDB) || (database instanceof JavaDB)) {
 				return trimStr
 						.replaceAll("\"", "")
 						.replaceAll(" oo", " ")
@@ -164,7 +164,7 @@ public abstract class AbstractTest {
 					.replaceAll(" DB[_0-9]+", "")
 					.replaceAll("[ \\r\\n]+", " ")
 					.toLowerCase();
-			if ((database instanceof OracleDB)
+			if ((database instanceof OracleAWSDB)
 					|| (database instanceof JavaDB)) {
 				return trimStr
 						.replaceAll("\"", "")
