@@ -96,9 +96,13 @@ public abstract class AbstractTest {
 		if (System.getProperty("testNuo") != null) {
 			databases.add(new Object[]{"NuoDB", new NuoDB("localhost", 48004L, "dbv", "dbv", "dbv", "dbv")});
 		}
-		if (System.getProperty("testOracle") != null) {
+		if (System.getProperty("testOracleAWS") != null) {
 //			databases.addPoint2D(new Object[]{"Oracle11DB", new Oracle11DB("dbvtest.c0wzty6pgnq4.us-west-2.rds.amazonaws.com", 1521, "ORCL", "dbv", "Testingdbv")});
 			databases.add(new Object[]{"Oracle11DB", new Oracle11DB("dbvtest-oracle-se1.cygjg2wvuyam.ap-southeast-2.rds.amazonaws.com", 1521, "ORCL", "dbv", "Testingdbv")});
+		}
+		if (System.getProperty("testOracleXE") != null) {
+//			databases.addPoint2D(new Object[]{"Oracle11DB", new Oracle11DB("dbvtest.c0wzty6pgnq4.us-west-2.rds.amazonaws.com", 1521, "ORCL", "dbv", "Testingdbv")});
+			databases.add(new Object[]{"Oracle11DB", new Oracle11DB("ec2-52-64-98-125.ap-southeast-2.compute.amazonaws.com", 1521, "XE", "DBV", "Testingdbv")});
 		}
 		if (System.getProperty("testOracle12") != null) {
 			databases.add(new Object[]{"Oracle12DB", new Oracle12DB("dbvtest-oracle12.cygjg2wvuyam.ap-southeast-2.rds.amazonaws.com", 1521, "ORCL", "dbv", "Testingdbv")});
