@@ -352,7 +352,7 @@
 						<version>2.18.1</version>
 						<configuration>
 							<systemPropertyVariables>
-								<testOracle>true</testOracle>
+								<testOracleAWS>true</testOracleAWS>
 							</systemPropertyVariables>
 							<includes>
 								<include>**/*.java</include>
@@ -759,7 +759,7 @@
 		<dependency>
 			<groupId>org.xerial</groupId>
 			<artifactId>sqlite-jdbc</artifactId>
-			<version>3.8.7</version>
+			<version>3.8.10.1</version>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
