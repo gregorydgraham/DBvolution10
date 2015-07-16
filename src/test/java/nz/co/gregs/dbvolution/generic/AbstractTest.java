@@ -136,7 +136,7 @@ public abstract class AbstractTest {
 	public String testableSQL(String str) {
 		if (str != null) {
 			String trimStr = str.trim().replaceAll("[ \\r\\n]+", " ").toLowerCase();
-			if ((database instanceof OracleAWSDB) || (database instanceof JavaDB)) {
+			if ((database instanceof OracleDB) || (database instanceof JavaDB)) {
 				return trimStr
 						.replaceAll("\"", "")
 						.replaceAll(" oo", " ")
@@ -164,7 +164,7 @@ public abstract class AbstractTest {
 					.replaceAll(" DB[_0-9]+", "")
 					.replaceAll("[ \\r\\n]+", " ")
 					.toLowerCase();
-			if ((database instanceof OracleAWSDB)
+			if ((database instanceof OracleDB)
 					|| (database instanceof JavaDB)) {
 				return trimStr
 						.replaceAll("\"", "")

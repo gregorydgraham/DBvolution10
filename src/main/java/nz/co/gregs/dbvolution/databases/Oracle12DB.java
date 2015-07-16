@@ -28,7 +28,7 @@ import nz.co.gregs.dbvolution.databases.definitions.Oracle12DBDefinition;
  * @see Oracle11DB
  * @see Oracle12DBDefinition
  */
-public class Oracle12DB extends OracleAWSDB {
+public class Oracle12DB extends OracleDB {
 
 	private static final String ORACLE_JDBC_DRIVER = "oracle.jdbc.driver.OracleDriver";
 

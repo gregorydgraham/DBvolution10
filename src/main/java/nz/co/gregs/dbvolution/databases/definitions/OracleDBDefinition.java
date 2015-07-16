@@ -15,6 +15,14 @@
  */
 package nz.co.gregs.dbvolution.databases.definitions;
 
+import com.vividsolutions.jts.geom.Coordinate;
+import com.vividsolutions.jts.geom.GeometryFactory;
+import com.vividsolutions.jts.geom.LineSegment;
+import com.vividsolutions.jts.geom.LineString;
+import com.vividsolutions.jts.geom.MultiPoint;
+import com.vividsolutions.jts.geom.Point;
+import com.vividsolutions.jts.geom.Polygon;
+import com.vividsolutions.jts.io.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
@@ -32,6 +40,7 @@ import nz.co.gregs.dbvolution.datatypes.spatial2D.DBPoint2D;
 import nz.co.gregs.dbvolution.datatypes.spatial2D.DBPolygon2D;
 import nz.co.gregs.dbvolution.expressions.BooleanExpression;
 import nz.co.gregs.dbvolution.expressions.DBExpression;
+import nz.co.gregs.dbvolution.expressions.Point2DExpression;
 import nz.co.gregs.dbvolution.internal.oracle.StringFunctions;
 import nz.co.gregs.dbvolution.query.QueryOptions;
 
@@ -90,6 +99,12 @@ public class OracleDBDefinition extends DBDefinition {
 			return " BLOB ";
 		} else if (qdt instanceof DBBooleanArray) {
 			return " VARCHAR(64) ";
+		} else if (qdt instanceof DBPoint2D) {
+			return " SDO_GEOMETRY ";
+		} else if (qdt instanceof DBLine2D) {
+			return " SDO_GEOMETRY ";
+		} else if (qdt instanceof DBPolygon2D) {
+			return " SDO_GEOMETRY ";
 		} else {
 			return qdt.getSQLDatatype();
 		}
@@ -357,6 +372,82 @@ public class OracleDBDefinition extends DBDefinition {
 	@Override
 	public String doSubstringAfterTransform(String fromThis, String afterThis) {
 		return StringFunctions.SUBSTRINGAFTER + "(" + fromThis + ", " + afterThis + ")";
+	}
+
+	@Override
+	public String transformPoint2DIntoDatabaseFormat(Point point) {
+//		final Coordinate coordinate = point.getCoordinate();
+//		return "SDO_GEOMETRY(2001, NULL, SDO_POINT_TYPE(" + coordinate.x + ", " + coordinate.y + ",NULL), NULL, NULL)";
+		return "SDO_UTIL.FROM_WKTGEOMETRY('"+point.toText()+"')";
+	}
+
+	@Override
+	public String transformLineStringIntoDatabaseLine2DFormat(LineString point) {
+//		final Coordinate coordinate = point.getCoordinate();
+//		return "SDO_GEOMETRY(2002, NULL, SDO_POINT_TYPE(" + coordinate.x + ", " + coordinate.y + ",NULL), NULL, NULL)";
+		return "SDO_UTIL.FROM_WKTGEOMETRY('"+point.toText()+"')";
+	}
+
+	@Override
+	public String transformPolygonIntoDatabasePolygon2DFormat(Polygon point) {
+//		final Coordinate coordinate = point.getCoordinate();
+//		return "SDO_GEOMETRY(2003, NULL, SDO_POINT_TYPE(" + coordinate.x + ", " + coordinate.y + ",NULL), NULL, NULL)";
+		return "SDO_UTIL.FROM_WKTGEOMETRY('"+point.toText()+"')";
+	}
+
+	@Override
+	public String transformMultiPoint2DToDatabaseMultiPoint2DValue(MultiPoint point) {
+//		final Coordinate coordinate = point.getCoordinate();
+//		return "SDO_GEOMETRY(2005, NULL, SDO_POINT_TYPE(" + coordinate.x + ", " + coordinate.y + ",NULL), NULL, NULL)";
+		return "SDO_UTIL.FROM_WKTGEOMETRY('"+point.toText()+"')";
+	}
+	
+	@Override
+	public String transformLineSegmentIntoDatabaseLineSegment2DFormat(LineSegment point) {
+//		final Coordinate coordinate = point.p0;
+//		final Coordinate otherCoord = point.p1;
+//		return "SDO_GEOMETRY(2002, NULL, SDO_POINT_TYPE(" + coordinate.x + ", " + coordinate.y + ",NULL), NULL, NULL)";
+		return "SDO_UTIL.FROM_WKTGEOMETRY('"+point.toGeometry(new GeometryFactory()).toText()+"')";
+	}
+
+	@Override
+	public String doPoint2DDistanceBetweenTransform(String polygon2DSQL, Point2DExpression otherPolygon2DSQL) {
+		return "SDO_GEOM.SDO_DISTANCE("+polygon2DSQL+", "+otherPolygon2DSQL+", 0.000001)"; //To change body of generated methods, choose Tools | Templates.
+	}
+
+	@Override
+	public String doPoint2DArrayToPolygon2DTransform(List<String> pointSQL) {
+		return super.doPoint2DArrayToPolygon2DTransform(pointSQL); //To change body of generated methods, choose Tools | Templates.
+	}
+
+	@Override
+	public String doPoint2DAsTextTransform(String point2DSQL) {
+		return "SDO_UTIL.TO_WKTGEOMETRY("+point2DSQL+")";
+	}
+
+	@Override
+	public String doPoint2DGetBoundingBoxTransform(String point2DSQL) {
+		return "SDO_UTIL.SDO_MBR("+point2DSQL+")";
+	}
+
+	@Override
+	public String doPoint2DDimensionTransform(String point2DSQL) {
+		return "("+point2DSQL+").GET_DIMS()";
+	}
+
+	@Override
+	public String doPoint2DGetYTransform(String point2DSQL) {
+		return "("+point2DSQL+").SDO_POINT.Y";
+	}
+
+	@Override
+	public String doPoint2DGetXTransform(String point2DSQL) {
+		return "("+point2DSQL+").SDO_POINT.X";
+	}
+
+	@Override
+	public String doPoint2DEqualsTransform(String firstPoint, String secondPoint) {
+		return "SDO_GEOM.RELATE("+firstPoint+", 'equal', "+secondPoint+", '')='EQUAL'";
 	}
 
 }

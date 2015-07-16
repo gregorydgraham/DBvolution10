@@ -82,11 +82,11 @@ public class Oracle12SpatialDB extends Oracle12DBDefinition {
 	 NULL,
 	 NULL)
 	 */
-	@Override
-	public String transformPoint2DIntoDatabaseFormat(Point point) {
-		final Coordinate coordinate = point.getCoordinate();
-		return "SDO_GEOMETRY(2001, NULL, SDO_POINT_TYPE(" + coordinate.x + ", " + coordinate.y + ",NULL), NULL, NULL)";
-	}
+//	@Override
+//	public String transformPoint2DIntoDatabaseFormat(Point point) {
+//		final Coordinate coordinate = point.getCoordinate();
+//		return "SDO_GEOMETRY(2001, NULL, SDO_POINT_TYPE(" + coordinate.x + ", " + coordinate.y + ",NULL), NULL, NULL)";
+//	}
 
 	@Override
 	public LineString transformDatabaseLine2DValueToJTSLineString(String lineStringAsString) throws ParseException {
