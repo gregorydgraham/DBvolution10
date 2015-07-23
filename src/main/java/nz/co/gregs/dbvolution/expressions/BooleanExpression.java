@@ -21,7 +21,6 @@ import nz.co.gregs.dbvolution.results.EqualComparable;
 import nz.co.gregs.dbvolution.results.DateResult;
 import nz.co.gregs.dbvolution.results.NumberResult;
 import nz.co.gregs.dbvolution.results.BooleanResult;
-import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.Polygon;
 import java.util.Date;
 import java.util.HashSet;
@@ -618,6 +617,19 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 		return this.ifThenElse(new DateExpression(thenExpr), new DateExpression(elseExpr));
 	}
 
+	/**
+	 * Allows you to specify different return values based on the value of this
+	 * boolean expression.
+	 *
+	 * <p>
+	 * The first expression is returned if this expression is TRUE, otherwise the
+	 * second is returned.
+	 *
+	 * @param thenExpr
+	 * @param elseExpr
+	 * @return an expression that will generate a SQL clause conceptually similar
+	 * to "if (this) then thenExpr else elseExpr".
+	 */
 	public DateExpression ifThenElse(DateExpression thenExpr, DateExpression elseExpr) {
 		return new DateExpression(new DBBinaryDateDateFunction(this, thenExpr, elseExpr) {
 
@@ -843,6 +855,35 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 		return columnA.isGreaterThan(valueA).or(columnA.is(valueA).and(whenEqualsFallbackComparison));
 	}
 
+	/**
+	 * Implements the little-known (and implemented) SQL Row Value syntax.
+	 *
+	 * <p>
+	 * in PostgreSQL you can do (colA, colB) &lt; (valA, valB). In other databases
+	 * you need to write: ((colA &lt; valA) OR (colA = valA AND colB &lt; valB)).
+	 * Similarly for &gt;.
+	 *
+	 * <p>
+	 * Essentially seek looks at both parameters and returns the rows that sort
+	 * below both.
+	 *
+	 * <p>
+	 * If you are using this for pagination, remember to sort by the columns as
+	 * well
+	 *
+	 * @author Gregory Graham
+	 * @param <RangeComparableY> a value that can be compared to Z, probably StringResult,
+	 * NumberResult, or DateResult
+	 * @param <RangeComparableZ> an expression or column that implements RangeComparable,
+	 * probably StringExpression, NumberExpression, DateExpression or a column
+	 * type of the same.
+	 * @param columnA the left side of the internal comparison
+	 * @param valueA the right side of the internal comparison
+	 * @param columnB the left side of the internal comparison
+	 * @param valueB the right side of the internal comparison
+	 * and ValueA are equal.
+	 * @return a BooleanExpression
+	 */
 	public static
 			<RangeComparableZ extends RangeComparable<? super RangeComparableZ>, RangeComparableY extends RangeComparable<? super RangeComparableY>>
 			BooleanExpression

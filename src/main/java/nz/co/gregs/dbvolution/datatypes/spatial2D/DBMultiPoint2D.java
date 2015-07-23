@@ -22,7 +22,6 @@ import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.io.ParseException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Arrays;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import nz.co.gregs.dbvolution.DBDatabase;
@@ -57,6 +56,13 @@ public class DBMultiPoint2D extends QueryableDatatype implements MultiPoint2DRes
 	 */
 	public DBMultiPoint2D() {
 	}
+
+	/**
+	 * Create a DBPoint2D object to represent a Point column or
+	 * value using the value supplied.
+	 *
+	 * @param points the collection of points that are the value of this DBMultiPoint2D
+	 */
 	public DBMultiPoint2D(MultiPoint points) {
 		super(points);
 	}
@@ -74,11 +80,30 @@ public class DBMultiPoint2D extends QueryableDatatype implements MultiPoint2DRes
 		setLiteralValue(point);
 	}
 
+	/**
+	 * Set the value of this DBPoint2D to the {@link Coordinate coordinates} specified.
+	 *
+	 * <p>
+	 * Set values are used to add the value to the database. Without a set value
+	 * the database entry will be NULL.
+	 *
+	 * @param coordinates the value to be set in the database.
+	 */
 	public void setValue(Coordinate... coordinates) {
 		GeometryFactory geometryFactory = new GeometryFactory();
 		MultiPoint mpoint = geometryFactory.createMultiPoint(coordinates);
 		this.setValue(mpoint);
 	}
+
+	/**
+	 * Set the value of this DBPoint2D to the {@link Point points} specified.
+	 *
+	 * <p>
+	 * Set values are used to add the value to the database. Without a set value
+	 * the database entry will be NULL.
+	 *
+	 * @param points the value to be set in the database.
+	 */
 	public void setValue(Point... points) {
 		GeometryFactory geometryFactory = new GeometryFactory();
 		MultiPoint mpoint = geometryFactory.createMultiPoint(points);
