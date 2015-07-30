@@ -63,7 +63,7 @@ public class RowDefinition implements Serializable {
 	 * @return the PropertyWrapper associated with the Object suppled or NULL.
 	 */
 	public PropertyWrapper getPropertyWrapperOf(Object qdt) {
-		List<PropertyWrapper> props = getWrapper().getPropertyWrappers();
+		List<PropertyWrapper> props = getWrapper().getColumnPropertyWrappers();
 
 		Object qdtOfProp;
 		for (PropertyWrapper prop : props) {
@@ -88,8 +88,17 @@ public class RowDefinition implements Serializable {
 	 *
 	 * @return non-null list of property wrappers, empty if none
 	 */
-	public List<PropertyWrapper> getPropertyWrappers() {
-		return getWrapper().getPropertyWrappers();
+	public List<PropertyWrapper> getColumnPropertyWrappers() {
+		return getWrapper().getColumnPropertyWrappers();
+	}
+
+	/**
+	 * Returns the PropertyWrappers of normal non-column properties.
+	 *
+	 * @return non-null list of property wrappers, empty if none
+	 */
+	public List<PropertyWrapper> getAutoFillingPropertyWrappers() {
+		return getWrapper().getAutoFillingPropertyWrappers();
 	}
 
 	/**
@@ -888,7 +897,7 @@ public class RowDefinition implements Serializable {
 	@Override
 	public String toString() {
 		StringBuilder string = new StringBuilder();
-		List<PropertyWrapper> fields = getWrapper().getPropertyWrappers();
+		List<PropertyWrapper> fields = getWrapper().getColumnPropertyWrappers();
 
 		String separator = "" + this.getClass().getSimpleName();
 
@@ -907,7 +916,7 @@ public class RowDefinition implements Serializable {
 
 	public String toSeparatedLine(String separatorToUse) {
 		StringBuilder string = new StringBuilder();
-		List<PropertyWrapper> fields = getWrapper().getPropertyWrappers();
+		List<PropertyWrapper> fields = getWrapper().getColumnPropertyWrappers();
 
 		String separator = "" + this.getClass().getSimpleName();
 
@@ -922,7 +931,7 @@ public class RowDefinition implements Serializable {
 
 	public String toSeparatedHeader(String separatorToUse) {
 		StringBuilder string = new StringBuilder();
-		List<PropertyWrapper> fields = getWrapper().getPropertyWrappers();
+		List<PropertyWrapper> fields = getWrapper().getColumnPropertyWrappers();
 
 		String separator = "" + this.getClass().getSimpleName();
 
@@ -953,7 +962,7 @@ public class RowDefinition implements Serializable {
 
 	public String getHTMLTableRow(String tableRowCSSClass) {
 		StringBuilder string = new StringBuilder();
-		List<PropertyWrapper> fields = getWrapper().getPropertyWrappers();
+		List<PropertyWrapper> fields = getWrapper().getColumnPropertyWrappers();
 
 		string.append("<tr class=\"").append(tableRowCSSClass).append("\">");
 		for (PropertyWrapper field : fields) {
@@ -969,7 +978,7 @@ public class RowDefinition implements Serializable {
 
 	public String getHTMLTableHeader(String tableRowCSSClass, String tableHeaderCellCSSClass) {
 		StringBuilder string = new StringBuilder();
-		List<PropertyWrapper> fields = getWrapper().getPropertyWrappers();
+		List<PropertyWrapper> fields = getWrapper().getColumnPropertyWrappers();
 
 		string.append("<tr class=\"").append(tableRowCSSClass).append("\">");
 		for (PropertyWrapper field : fields) {
@@ -1047,7 +1056,7 @@ public class RowDefinition implements Serializable {
 
 	protected List<PropertyWrapperDefinition> getReturnColumns() {
 		if (returnColumns == null) {
-			returnColumns = this.getAllPropertyWrapperDefinitions();
+			returnColumns = this.getColumnPropertyWrapperDefinitions();
 		}
 		return returnColumns;
 	}
@@ -1056,9 +1065,9 @@ public class RowDefinition implements Serializable {
 		this.returnColumns = returnColumns;
 	}
 
-	protected List<PropertyWrapperDefinition> getAllPropertyWrapperDefinitions() {
+	protected List<PropertyWrapperDefinition> getColumnPropertyWrapperDefinitions() {
 		List<PropertyWrapperDefinition> columns = new ArrayList<PropertyWrapperDefinition>();
-		List<PropertyWrapper> propertyWrappers = this.getPropertyWrappers();
+		List<PropertyWrapper> propertyWrappers = this.getColumnPropertyWrappers();
 		for (PropertyWrapper propertyWrapper : propertyWrappers) {
 			columns.add(propertyWrapper.getDefinition());
 		}

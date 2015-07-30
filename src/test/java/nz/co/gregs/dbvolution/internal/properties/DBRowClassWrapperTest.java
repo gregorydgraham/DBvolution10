@@ -76,7 +76,7 @@ public class DBRowClassWrapperTest {
 	@Test
 	public void getsProperties() {
 		RowDefinitionClassWrapper classAdaptor = new RowDefinitionClassWrapper(MyTable1.class);
-		assertThat(classAdaptor.getPropertyDefinitions().size(), is(3));
+		assertThat(classAdaptor.getColumnPropertyDefinitions().size(), is(3));
 	}
 
 	@Test

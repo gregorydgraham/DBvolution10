@@ -47,7 +47,9 @@ public class RowDefinitionClassWrapper {
 	 * All properties of which DBvolution is aware, ordered as first encountered.
 	 * Properties are only included if they are columns.
 	 */
-	private final List<PropertyWrapperDefinition> properties;
+	private final List<PropertyWrapperDefinition> columnProperties;
+	private final List<PropertyWrapperDefinition> autoFillingProperties;
+	private final List<PropertyWrapperDefinition> allProperties;
 	/**
 	 * Column names with original case for doing lookups on case-sensitive
 	 * databases. If column names duplicated, stores only the first encountered of
@@ -114,34 +116,41 @@ public class RowDefinitionClassWrapper {
 		// pre-calculate properties list
 		// (note: skip if processing identity only, in order to avoid
 		//  all the per-property validation)
-		properties = new ArrayList<PropertyWrapperDefinition>();
+		columnProperties = new ArrayList<PropertyWrapperDefinition>();
+		autoFillingProperties = new ArrayList<PropertyWrapperDefinition>();
+		allProperties = new ArrayList<PropertyWrapperDefinition>();
 		if (processIdentityOnly) {
 			// identity-only: extract only primary key properties
-			JavaPropertyFinder propertyFinder = getJavaPropertyFinder();
+			JavaPropertyFinder propertyFinder = getColumnPropertyFinder();
 			for (JavaProperty javaProperty : propertyFinder.getPropertiesOf(clazz)) {
 				ColumnHandler column = new ColumnHandler(javaProperty);
 				if (column.isColumn() && column.isPrimaryKey()) {
 					PropertyWrapperDefinition property = new PropertyWrapperDefinition(this, javaProperty, processIdentityOnly);
-					properties.add(property);
+					columnProperties.add(property);
+					allProperties.add(property);
 				}
 			}
 		} else {
 			// extract all column properties
 			int columnIndex = 0;
-			JavaPropertyFinder propertyFinder = getJavaPropertyFinder();
+			JavaPropertyFinder propertyFinder = getColumnOrAutoFillablePropertyFinder();
 			for (JavaProperty javaProperty : propertyFinder.getPropertiesOf(clazz)) {
 				PropertyWrapperDefinition property = new PropertyWrapperDefinition(this, javaProperty, processIdentityOnly);
 				if (property.isColumn()) {
 					columnIndex++;
 					property.setColumnIndex(columnIndex);
-					properties.add(property);
+					columnProperties.add(property);
+					allProperties.add(property);
+				}else{
+					autoFillingProperties.add(property);
+					allProperties.add(property);
 				}
 			}
 		}
 
 		// pre-calculate primary key
 		List<PropertyWrapperDefinition> primaryKeyProperties = new ArrayList<PropertyWrapperDefinition>();
-		for (PropertyWrapperDefinition property : properties) {
+		for (PropertyWrapperDefinition property : columnProperties) {
 			if (property.isPrimaryKey()) {
 				primaryKeyProperties.add(property);
 			}
@@ -157,7 +166,7 @@ public class RowDefinitionClassWrapper {
 		propertiesByUpperCaseColumnName = new HashMap<String, PropertyWrapperDefinition>();
 		propertiesByPropertyName = new HashMap<String, PropertyWrapperDefinition>();
 		duplicatedPropertiesByUpperCaseColumnName = new HashMap<String, List<PropertyWrapperDefinition>>();
-		for (PropertyWrapperDefinition property : properties) {
+		for (PropertyWrapperDefinition property : allProperties) {
 			propertiesByPropertyName.put(property.javaName(), property);
 
 			// add unique values for case-sensitive lookups
@@ -172,18 +181,20 @@ public class RowDefinitionClassWrapper {
 
 			// add unique values for case-insensitive lookups
 			// (defer erroring until actually know database is case insensitive)
-			if (propertiesByUpperCaseColumnName.containsKey(property.getColumnName().toUpperCase())) {
-				if (!processIdentityOnly) {
-					List<PropertyWrapperDefinition> list = duplicatedPropertiesByUpperCaseColumnName.get(property.getColumnName().toUpperCase());
-					if (list == null) {
-						list = new ArrayList<PropertyWrapperDefinition>();
-						list.add(propertiesByUpperCaseColumnName.get(property.getColumnName().toUpperCase()));
+			if (property.isColumn()) {
+				if (propertiesByUpperCaseColumnName.containsKey(property.getColumnName().toUpperCase())) {
+					if (!processIdentityOnly) {
+						List<PropertyWrapperDefinition> list = duplicatedPropertiesByUpperCaseColumnName.get(property.getColumnName().toUpperCase());
+						if (list == null) {
+							list = new ArrayList<PropertyWrapperDefinition>();
+							list.add(propertiesByUpperCaseColumnName.get(property.getColumnName().toUpperCase()));
+						}
+						list.add(property);
+						duplicatedPropertiesByUpperCaseColumnName.put(property.getColumnName().toUpperCase(), list);
 					}
-					list.add(property);
-					duplicatedPropertiesByUpperCaseColumnName.put(property.getColumnName().toUpperCase(), list);
+				} else {
+					propertiesByUpperCaseColumnName.put(property.getColumnName().toUpperCase(), property);
 				}
-			} else {
-				propertiesByUpperCaseColumnName.put(property.getColumnName().toUpperCase(), property);
 			}
 		}
 	}
@@ -191,12 +202,18 @@ public class RowDefinitionClassWrapper {
 	/**
 	 * Gets a new instance of the java property finder, configured as required
 	 *
-	 * @return A new JavePropertyFinder with the required settings
+	 * @return A new JavePropertyFinder for all fields, public methods, that have DBColumn annotation, and are fields or beans.
 	 */
-	private static JavaPropertyFinder getJavaPropertyFinder() {
+	private static JavaPropertyFinder getColumnPropertyFinder() {
 		return new JavaPropertyFinder(
 				Visibility.PRIVATE, Visibility.PUBLIC,
 				JavaPropertyFilter.COLUMN_PROPERTY_FILTER,
+				PropertyType.FIELD, PropertyType.BEAN_PROPERTY);
+	}
+	private static JavaPropertyFinder getColumnOrAutoFillablePropertyFinder() {
+		return new JavaPropertyFinder(
+				Visibility.PRIVATE, Visibility.PUBLIC,
+				JavaPropertyFilter.COLUMN_OR_AUTOFILLABLE_PROPERTY_FILTER,
 				PropertyType.FIELD, PropertyType.BEAN_PROPERTY);
 	}
 
@@ -412,7 +429,7 @@ public class RowDefinitionClassWrapper {
 	 */
 	List<PropertyWrapperDefinition> getPropertyDefinitionIdentitiesByColumnNameCaseInsensitive(String columnName) {
 		List<PropertyWrapperDefinition> list = new ArrayList<PropertyWrapperDefinition>();
-		JavaPropertyFinder propertyFinder = getJavaPropertyFinder();
+		JavaPropertyFinder propertyFinder = getColumnPropertyFinder();
 		for (JavaProperty javaProperty : propertyFinder.getPropertiesOf(adapteeClass)) {
 			ColumnHandler column = new ColumnHandler(javaProperty);
 			if (column.isColumn() && column.getColumnName().equalsIgnoreCase(columnName)) {
@@ -450,11 +467,23 @@ public class RowDefinitionClassWrapper {
 	 *
 	 * @return a List of all PropertyWrapperDefinitions for the wrapped class.
 	 */
-	public List<PropertyWrapperDefinition> getPropertyDefinitions() {
+	public List<PropertyWrapperDefinition> getColumnPropertyDefinitions() {
 		if (identityOnly) {
 			throw new AssertionError("Attempt to access non-identity information of identity-only DBRow class wrapper");
 		}
-		return properties;
+		return columnProperties;
+	}
+
+	/**
+	 * Gets all properties NOT annotated with {@code DBColumn}.
+	 *
+	 * @return a List of all PropertyWrapperDefinitions for the wrapped class.
+	 */
+	public List<PropertyWrapperDefinition> getAutoFillingPropertyDefinitions() {
+		if (identityOnly) {
+			throw new AssertionError("Attempt to access non-identity information of identity-only DBRow class wrapper");
+		}
+		return autoFillingProperties;
 	}
 
 	/**
@@ -469,7 +498,7 @@ public class RowDefinitionClassWrapper {
 		}
 
 		List<PropertyWrapperDefinition> list = new ArrayList<PropertyWrapperDefinition>();
-		for (PropertyWrapperDefinition property : properties) {
+		for (PropertyWrapperDefinition property : columnProperties) {
 			if (property.isColumn() && property.isForeignKey()) {
 				list.add(property);
 			}

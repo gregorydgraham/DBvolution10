@@ -56,7 +56,7 @@ public class DBRowClassWrapperUsabilityTest {
 	@Test
 	public void easyToIterateOverPropertiesUsingFactory() {
 		RowDefinitionInstanceWrapper objectWrapper = factory.instanceWrapperFor(obj);
-		for (PropertyWrapper property : objectWrapper.getPropertyWrappers()) {
+		for (PropertyWrapper property : objectWrapper.getColumnPropertyWrappers()) {
 			QueryableDatatype qdt = property.getQueryableDatatype();
 			property.columnName();
 			property.isForeignKey();

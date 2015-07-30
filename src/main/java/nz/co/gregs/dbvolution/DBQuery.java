@@ -805,7 +805,7 @@ public class DBQuery {
 	 */
 	protected void setFieldsFromColumns(DBRow oldInstance, DBRow newInstance, ResultSet resultSet) throws SQLException {
 		List<PropertyWrapper> selectedProperties = oldInstance.getSelectedProperties();
-		List<PropertyWrapper> newProperties = newInstance.getPropertyWrappers();
+		List<PropertyWrapper> newProperties = newInstance.getColumnPropertyWrappers();
 		for (PropertyWrapper newProp : newProperties) {
 			QueryableDatatype qdt = newProp.getQueryableDatatype();
 			for (PropertyWrapper propertyWrapper : selectedProperties) {

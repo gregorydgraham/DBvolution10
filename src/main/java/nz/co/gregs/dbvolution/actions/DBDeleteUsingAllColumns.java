@@ -86,7 +86,7 @@ public class DBDeleteUsingAllColumns extends DBDelete {
 				+ defn.formatTableName(row)
 				+ defn.beginWhereClause()
 				+ defn.getWhereClauseBeginningCondition();
-		for (PropertyWrapper prop : row.getPropertyWrappers()) {
+		for (PropertyWrapper prop : row.getColumnPropertyWrappers()) {
 			QueryableDatatype qdt = prop.getQueryableDatatype();
 			sql = sql
 					+ defn.beginWhereClauseLine()

@@ -17,6 +17,7 @@ package nz.co.gregs.dbvolution.exceptions;
 
 import java.lang.reflect.Field;
 import nz.co.gregs.dbvolution.annotations.AutoFillDuringQueryIfPossible;
+import nz.co.gregs.dbvolution.internal.properties.PropertyWrapper;
 
 /**
  * Thrown when the developer has attempted to use a POJO rather than a DBRow in
@@ -36,8 +37,8 @@ public class UnacceptableClassForAutoFillAnnotation extends DBRuntimeException {
 	 * @param field
 	 * @param requiredClass
 	 */
-	public UnacceptableClassForAutoFillAnnotation(Field field, Class<?> requiredClass) {
-		super("Unable To AutoFill Given Type: field " + field.getDeclaringClass().getCanonicalName() + "." + field.getName() + " is a " + requiredClass.getCanonicalName() + " but needs to be a DBRow sub-class.");
+	public UnacceptableClassForAutoFillAnnotation(PropertyWrapper field, Class<?> requiredClass) {
+		super("Unable To AutoFill Given Type: field " + field.qualifiedJavaName() + " is a " + requiredClass.getCanonicalName() + " but needs to be a DBRow sub-class.");
 	}
 
 }

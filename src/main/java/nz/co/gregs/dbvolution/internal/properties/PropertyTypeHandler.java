@@ -6,6 +6,7 @@ import java.lang.reflect.Modifier;
 import java.util.Date;
 
 import nz.co.gregs.dbvolution.annotations.DBAdaptType;
+import nz.co.gregs.dbvolution.annotations.DBColumn;
 import nz.co.gregs.dbvolution.datatypes.DBBoolean;
 import nz.co.gregs.dbvolution.datatypes.DBDate;
 import nz.co.gregs.dbvolution.datatypes.DBInteger;
@@ -43,11 +44,13 @@ class PropertyTypeHandler {
 
 //    private static Log logger = LogFactory.getLog(PropertyTypeHandler.class);
 	private final JavaProperty javaProperty;
+	private final Class<?> genericPropertyType;
 	private final Class<? extends QueryableDatatype> dbvPropertyType;
 	private final DBTypeAdaptor<Object, Object> typeAdaptor;
 	private final QueryableDatatypeSyncer internalQdtSyncer;
 	private final boolean identityOnly;
-	private final DBAdaptType annotation;
+	private final DBAdaptType dbAdaptTypeAnnotation;
+	private final DBColumn dbColumnAnnotation;
 //    private static Class<?>[] SUPPORTED_SIMPLE_TYPES = {
 //        String.class,
 //        boolean.class, int.class, long.class, float.class, double.class,
@@ -68,18 +71,20 @@ class PropertyTypeHandler {
 	PropertyTypeHandler(JavaProperty javaProperty, boolean processIdentityOnly) {
 		this.javaProperty = javaProperty;
 		this.identityOnly = processIdentityOnly;
-		this.annotation = javaProperty.getAnnotation(DBAdaptType.class);
+		this.dbAdaptTypeAnnotation = javaProperty.getAnnotation(DBAdaptType.class);
+		this.dbColumnAnnotation = javaProperty.getAnnotation(DBColumn.class);
+		boolean isColumn = (dbColumnAnnotation!=null);
 
 		Class<?> typeAdaptorClass = null;
-		if (annotation != null) {
-			typeAdaptorClass = annotation.value();
+		if (dbAdaptTypeAnnotation != null) {
+			typeAdaptorClass = dbAdaptTypeAnnotation.value();
 		}
 		Class<?> typeAdaptorInternalType = null; // DBv-internal
 		Class<?> typeAdaptorExternalType = null;
 
 		// validation: must use type adaptor if java property not a QueryableDataType
-		if (!QueryableDatatype.class.isAssignableFrom(javaProperty.type())) {
-			if (annotation == null) {
+		if (isColumn && !QueryableDatatype.class.isAssignableFrom(javaProperty.type())) {
+			if (dbAdaptTypeAnnotation == null) {
 				throw new InvalidDeclaredTypeException(javaProperty.type().getName() + " is not a supported type on " + javaProperty + ". "
 						+ "Use one of the standard DB types, or use the @" + DBAdaptType.class.getSimpleName() + " annotation "
 						+ "to adapt from a non-standard type.");
@@ -167,8 +172,8 @@ class PropertyTypeHandler {
 		}
 
 		// validation: explicit external type must be a QDT and must not be abstract or an interface
-		if (annotation != null && explicitTypeOrNullOf(annotation) != null) {
-			Class<?> explicitQDTType = explicitTypeOrNullOf(annotation);
+		if (dbAdaptTypeAnnotation != null && explicitTypeOrNullOf(dbAdaptTypeAnnotation) != null) {
+			Class<?> explicitQDTType = explicitTypeOrNullOf(dbAdaptTypeAnnotation);
 			if (!QueryableDatatype.class.isAssignableFrom(explicitQDTType)) {
 				throw new InvalidDeclaredTypeException("@DB" + DBAdaptType.class.getSimpleName() + "(type) on "
 						+ javaProperty + " is not a supported type. "
@@ -212,15 +217,15 @@ class PropertyTypeHandler {
 		//   b) a simple type that is supported by the explicit internal QDT type,
 		//      and the explicit internal QDT type is specified
 		// (note: in either case can't be a QDT itself due to rule above)
-		if (typeAdaptorInternalType != null && explicitTypeOrNullOf(annotation) == null) {
+		if (typeAdaptorInternalType != null && explicitTypeOrNullOf(dbAdaptTypeAnnotation) == null) {
 			Class<?> inferredQDTType = inferredQDTTypeForSimpleType(typeAdaptorInternalType);
 			if (inferredQDTType == null) {
 				throw new InvalidDeclaredTypeException("Type adaptor's internal " + typeAdaptorInternalType.getSimpleName()
 						+ " type is not a supported simple type, on " + javaProperty);
 			}
 		}
-		if (typeAdaptorInternalType != null && explicitTypeOrNullOf(annotation) != null) {
-			Class<? extends QueryableDatatype> explicitQDTType = explicitTypeOrNullOf(annotation);
+		if (typeAdaptorInternalType != null && explicitTypeOrNullOf(dbAdaptTypeAnnotation) != null) {
+			Class<? extends QueryableDatatype> explicitQDTType = explicitTypeOrNullOf(dbAdaptTypeAnnotation);
 			Class<?> inferredQDTType = inferredQDTTypeForSimpleType(typeAdaptorInternalType);
 			if (inferredQDTType == null) {
 				throw new InvalidDeclaredTypeException("Type adaptor's internal " + typeAdaptorInternalType.getSimpleName()
@@ -288,14 +293,15 @@ class PropertyTypeHandler {
 //        	}
 //        }
 		// populate everything
-		if (annotation == null) {
+		this.genericPropertyType = javaProperty.type();
+		if (dbAdaptTypeAnnotation == null) {
 			// populate when no annotation
 			this.typeAdaptor = null;
 			this.dbvPropertyType = (Class<? extends QueryableDatatype>) javaProperty.type();
 			this.internalQdtSyncer = null;
 		} else if (identityOnly) {
 			// populate identity-only information when type adaptor declared
-			Class<? extends QueryableDatatype> type = explicitTypeOrNullOf(annotation);
+			Class<? extends QueryableDatatype> type = explicitTypeOrNullOf(dbAdaptTypeAnnotation);
 			if (type == null && typeAdaptorInternalType != null) {
 				type = inferredQDTTypeForSimpleType(typeAdaptorInternalType);
 			}
@@ -308,9 +314,9 @@ class PropertyTypeHandler {
 			this.internalQdtSyncer = null;
 		} else {
 			// initialise type adapting
-			this.typeAdaptor = newTypeAdaptorInstanceGiven(javaProperty, annotation);
+			this.typeAdaptor = newTypeAdaptorInstanceGiven(javaProperty, dbAdaptTypeAnnotation);
 
-			Class<? extends QueryableDatatype> type = explicitTypeOrNullOf(annotation);
+			Class<? extends QueryableDatatype> type = explicitTypeOrNullOf(dbAdaptTypeAnnotation);
 			if (type == null && typeAdaptorInternalType != null) {
 				type = inferredQDTTypeForSimpleType(typeAdaptorInternalType);
 			}
@@ -445,8 +451,15 @@ class PropertyTypeHandler {
 	/**
 	 * Gets the DBv-centric type of the property, possibly after type adaption.
 	 */
-	public Class<? extends QueryableDatatype> getType() {
+	public Class<? extends QueryableDatatype> getQueryableDatatypeClass() {
 		return dbvPropertyType;
+	}
+
+	/**
+	 * Gets the type of the property, possibly after type adaption.
+	 */
+	public Class<?> getGenericClass() {
+		return genericPropertyType;
 	}
 
 	/**
@@ -457,7 +470,7 @@ class PropertyTypeHandler {
 	 * @return
 	 */
 	public boolean isTypeAdapted() {
-		return (annotation != null);
+		return (dbAdaptTypeAnnotation != null);
 	}
 
 //    /**

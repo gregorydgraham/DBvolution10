@@ -62,12 +62,33 @@ import org.joda.time.Period;
  */
 public class DateExpression implements DateResult, RangeComparable<DateResult> {
 
+	/**
+	 * The integer used to represent the index for Sunday
+	 */
 	static final public Number SUNDAY = 1;
+	/**
+	 * The integer used to represent the index for Monday
+	 */
 	static final public Number MONDAY = 2;
+	/**
+	 * The integer used to represent the index for Tuesday
+	 */
 	static final public Number TUESDAY = 3;
+	/**
+	 * The integer used to represent the index for Wednesday
+	 */
 	static final public Number WEDNESDAY = 4;
+	/**
+	 * The integer used to represent the index for Thursday
+	 */
 	static final public Number THURSDAY = 5;
+	/**
+	 * The integer used to represent the index for Friday
+	 */
 	static final public Number FRIDAY = 6;
+	/**
+	 * The integer used to represent the index for Saturday
+	 */
 	static final public Number SATURDAY = 7;
 
 	private DateResult date1;
@@ -464,7 +485,16 @@ public class DateExpression implements DateResult, RangeComparable<DateResult> {
 					}
 				});
 	}
-
+	/**
+	 * Creates an SQL expression that returns the fractions of a second part of this date
+	 * expression.
+	 *
+	 * <p>
+	 * Contains only the fractional part of the seconds, that is always between 0 and 1, use {@link #second()} to retrieve the
+	 * integer part.
+	 *
+	 * @return the second of this date expression as a number.
+	 */
 	public NumberExpression subsecond() {
 		return new NumberExpression(
 				new UnaryComplicatedNumberFunction(this) {
@@ -932,10 +962,22 @@ public class DateExpression implements DateResult, RangeComparable<DateResult> {
 		});
 	}
 
+	/**
+	 * Create a DateRepeat value representing the difference between this date expression and the one provided
+	 *
+	 * @param date
+	 * @return a DateRepeat expression
+	 */
 	public DateRepeatExpression getDateRepeatFrom(Date date) {
 		return getDateRepeatFrom(value(date));
 	}
 
+	/**
+	 * Create a DateRepeat value representing the difference between this date expression and the one provided
+	 *
+	 * @param dateExpression 
+	 * @return DateRepeat expression
+	 */
 	public DateRepeatExpression getDateRepeatFrom(DateResult dateExpression) {
 		return new DateRepeatExpression(new DateDateWithDateRepeatResult(this, dateExpression) {
 
@@ -967,10 +1009,22 @@ public class DateExpression implements DateResult, RangeComparable<DateResult> {
 		});
 	}
 
+	/**
+	 * Subtract the period/duration provided from this date expression to get an offset date.
+	 *
+	 * @param interval
+	 * @return a Date expression
+	 */
 	public DateExpression minus(Period interval) {
 		return minus(DateRepeatExpression.value(interval));
 	}
 
+	/**
+	 * Subtract the period/duration provided from this date expression to get an offset date.
+	 *
+	 * @param intervalExpression 
+	 * @return a Date expression
+	 */
 	public DateExpression minus(DateRepeatResult intervalExpression) {
 		return new DateExpression(new DateDateRepeatArithmeticDateResult(this, intervalExpression) {
 			@Override
@@ -1001,10 +1055,22 @@ public class DateExpression implements DateResult, RangeComparable<DateResult> {
 		});
 	}
 
+	/**
+	 * Add the period/duration provided from this date expression to get an offset date.
+	 *
+	 * @param interval
+	 * @return a Date expression
+	 */
 	public DateExpression plus(Period interval) {
 		return plus(DateRepeatExpression.value(interval));
 	}
 
+	/**
+	 * Add the period/duration provided from this date expression to get an offset date.
+	 *
+	 * @param intervalExpression 
+	 * @return a Date expression
+	 */
 	public DateExpression plus(DateRepeatResult intervalExpression) {
 		return new DateExpression(new DateDateRepeatArithmeticDateResult(this, intervalExpression) {
 			@Override
@@ -2018,14 +2084,32 @@ public class DateExpression implements DateResult, RangeComparable<DateResult> {
 //					}
 //				});
 //	}
+
+	/**
+	 * Derive the first day of the month for this date expression
+	 *
+	 * @return a Date expression
+	 */
 	public DateExpression firstOfMonth() {
 		return this.addDays(this.day().minus(1).bracket().times(-1));
 	}
 
+	/**
+	 * Derive the last day of the month for this date expression
+	 *
+	 * @return a Date expression
+	 */
 	public DateExpression endOfMonth() {
 		return this.addDays(this.day().minus(1).bracket().times(-1)).addMonths(1).addDays(-1);
 	}
 
+	/**
+	 * Return the index of the day of the week that this date expression refers to.
+	 * 
+	 * Refer to {@link #SUNDAY},  {@link #MONDAY}, etc
+	 *
+	 * @return an index of the day of the week.
+	 */
 	public NumberExpression dayOfWeek() {
 		return new NumberExpression(
 				new UnaryComplicatedNumberFunction(this) {
@@ -2036,6 +2120,15 @@ public class DateExpression implements DateResult, RangeComparable<DateResult> {
 				});
 	}
 
+	/**
+	 * Considering the first and second dates as end point for a time period and similarly for the third and fourth, tests whether the 2 time periods overlap.
+	 *
+	 * @param firstStartTime
+	 * @param firstEndTime
+	 * @param secondStartTime
+	 * @param secondEndtime
+	 * @return a boolean expression
+	 */
 	public static BooleanExpression overlaps(Date firstStartTime, Date firstEndTime, Date secondStartTime, Date secondEndtime) {
 		return DateExpression.overlaps(
 				DateExpression.value(firstStartTime), DateExpression.value(firstEndTime),
@@ -2043,6 +2136,15 @@ public class DateExpression implements DateResult, RangeComparable<DateResult> {
 		);
 	}
 
+	/**
+	 * Considering the first and second dates as end point for a time period and similarly for the third and fourth, tests whether the 2 time periods overlap.
+	 *
+	 * @param firstStartTime
+	 * @param firstEndTime
+	 * @param secondStartTime
+	 * @param secondEndtime
+	 * @return a boolean expression
+	 */
 	public BooleanExpression overlaps(DateResult firstStartTime, DateResult firstEndTime, DateResult secondStartTime, DateResult secondEndtime) {
 		return DateExpression.overlaps(
 				new DateExpression(firstStartTime), new DateExpression(firstEndTime),
@@ -2050,6 +2152,15 @@ public class DateExpression implements DateResult, RangeComparable<DateResult> {
 		);
 	}
 
+	/**
+	 * Considering the first and second dates as end point for a time period and similarly for the third and fourth, tests whether the 2 time periods overlap.
+	 *
+	 * @param firstStartTime
+	 * @param firstEndTime
+	 * @param secondStartTime
+	 * @param secondEndtime
+	 * @return a Boolean expression
+	 */
 	public static BooleanExpression overlaps(DateExpression firstStartTime, DateExpression firstEndTime, DateResult secondStartTime, DateResult secondEndtime) {
 		return BooleanExpression.anyOf(
 				firstStartTime.isBetween(

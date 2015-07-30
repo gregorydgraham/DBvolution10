@@ -246,7 +246,7 @@ public class DBTableOLD<E extends DBRow> {
 			@SuppressWarnings("unchecked")
 			E tableRow = (E) DBRow.getDBRow(template.getClass());
 
-			List<PropertyWrapper> fields = tableRow.getPropertyWrappers();
+			List<PropertyWrapper> fields = tableRow.getColumnPropertyWrappers();
 
 			for (PropertyWrapper field : fields) {
 				if (field.isColumn()) {

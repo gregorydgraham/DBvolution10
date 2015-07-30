@@ -27,6 +27,11 @@ interface JavaPropertyFilter {
 	public static final JavaPropertyFilter COLUMN_PROPERTY_FILTER = new ColumnPropertyFilter();
 
 	/**
+	 * Accepts only properties that are a field or have both getter and setter
+	 */
+	public static final JavaPropertyFilter COLUMN_OR_AUTOFILLABLE_PROPERTY_FILTER = new ColumnOrAutoFillPropertyFilter();
+
+	/**
 	 * Indicates whether the specified field is accepted by the filter.
 	 *
 	 * @return

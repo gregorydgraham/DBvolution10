@@ -228,7 +228,7 @@ public class DBRecursiveQuery<T extends DBRow> {
 			String recursiveAliases = "";
 			final RowDefinitionInstanceWrapper rowDefinitionInstanceWrapper = foreignKeyToFollow.getColumn().getPropertyWrapper().getRowDefinitionInstanceWrapper();
 			RowDefinition adapteeRowDefinition = rowDefinitionInstanceWrapper.adapteeRowDefinition();
-			List<PropertyWrapper> propertyWrappers = adapteeRowDefinition.getPropertyWrappers();
+			List<PropertyWrapper> propertyWrappers = adapteeRowDefinition.getColumnPropertyWrappers();
 			String separator = "";
 			for (PropertyWrapper propertyWrapper : propertyWrappers) {
 				final String columnName = defn.formatColumnName(propertyWrapper.getDefinition().getColumnName());

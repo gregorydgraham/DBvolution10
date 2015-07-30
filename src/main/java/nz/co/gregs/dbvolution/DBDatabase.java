@@ -929,7 +929,7 @@ public abstract class DBDatabase implements Cloneable {
 		// columns
 		String sep = "";
 		String nextSep = definition.getCreateTableColumnsSeparator();
-		List<PropertyWrapper> fields = newTableRow.getPropertyWrappers();
+		List<PropertyWrapper> fields = newTableRow.getColumnPropertyWrappers();
 		List<String> fkClauses = new ArrayList<String>();
 		for (PropertyWrapper field : fields) {
 			if (field.isColumn() && !field.getQueryableDatatype().hasColumnExpression()) {
@@ -1011,7 +1011,7 @@ public abstract class DBDatabase implements Cloneable {
 	 */
 	public void createForeignKeyConstraints(DBRow newTableRow) throws SQLException {
 
-		List<PropertyWrapper> fields = newTableRow.getPropertyWrappers();
+		List<PropertyWrapper> fields = newTableRow.getColumnPropertyWrappers();
 		List<String> fkClauses = new ArrayList<String>();
 		for (PropertyWrapper field : fields) {
 			if (field.isColumn() && !field.getQueryableDatatype().hasColumnExpression()) {
@@ -1056,7 +1056,7 @@ public abstract class DBDatabase implements Cloneable {
 	 */
 	public void removeForeignKeyConstraints(DBRow newTableRow) throws SQLException {
 
-		List<PropertyWrapper> fields = newTableRow.getPropertyWrappers();
+		List<PropertyWrapper> fields = newTableRow.getColumnPropertyWrappers();
 		List<String> fkClauses = new ArrayList<String>();
 		for (PropertyWrapper field : fields) {
 			if (field.isColumn() && !field.getQueryableDatatype().hasColumnExpression()) {
@@ -1099,7 +1099,7 @@ public abstract class DBDatabase implements Cloneable {
 	 */
 	public void createIndexesOnAllFields(DBRow newTableRow) throws SQLException {
 
-		List<PropertyWrapper> fields = newTableRow.getPropertyWrappers();
+		List<PropertyWrapper> fields = newTableRow.getColumnPropertyWrappers();
 		List<String> indexClauses = new ArrayList<String>();
 		for (PropertyWrapper field : fields) {
 			final QueryableDatatype qdt = field.getQueryableDatatype();

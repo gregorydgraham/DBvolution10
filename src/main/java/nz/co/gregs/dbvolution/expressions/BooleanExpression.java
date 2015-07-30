@@ -110,8 +110,8 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 	 *
 	 * <p>
 	 * BooleanExpressions generally wrap other BooleanExpressions or similar
-	 * objects and add functionality to them. Use this constructor to wrap a known
-	 * value for use in a BooleanExpression.
+	 * objects and add functionality to them. Use this constructor to wrap a
+	 * known value for use in a BooleanExpression.
 	 *
 	 *
 	 */
@@ -144,9 +144,10 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 	 * little trickier.
 	 *
 	 * <p>
-	 * This method provides the easy route to a *Expression from a literal value.
-	 * Just call, for instance, {@code StringExpression.value("STARTING STRING")}
-	 * to get a StringExpression and start the expression chain.
+	 * This method provides the easy route to a *Expression from a literal
+	 * value. Just call, for instance,
+	 * {@code StringExpression.value("STARTING STRING")} to get a
+	 * StringExpression and start the expression chain.
 	 *
 	 * <ul>
 	 * <li>Only object classes that are appropriate need to be handle by the
@@ -155,8 +156,8 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 	 * </ul>
 	 *
 	 * @param bool the boolean value to be tested
-	 * @return a DBExpression instance that is appropriate to the subclass and the
-	 * value supplied.
+	 * @return a DBExpression instance that is appropriate to the subclass and
+	 * the value supplied.
 	 */
 	public static BooleanExpression value(Boolean bool) {
 		return new BooleanExpression(bool);
@@ -167,8 +168,8 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 	 * operator, that is "=" or similar.
 	 *
 	 * @param bool the boolean value to be tested
-	 * @return a BooleanExpression that compares the previous BooleanExpression to
-	 * the Boolean supplied.
+	 * @return a BooleanExpression that compares the previous BooleanExpression
+	 * to the Boolean supplied.
 	 */
 	public BooleanExpression is(Boolean bool) {
 		return is(new BooleanExpression(bool));
@@ -182,8 +183,8 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 	 * BooleanResult includes {@link BooleanExpression} and {@link DBBoolean}.
 	 *
 	 * @param bool the boolean value to be tested
-	 * @return a BooleanExpression that compares the previous BooleanExpression to
-	 * the Boolean supplied.
+	 * @return a BooleanExpression that compares the previous BooleanExpression
+	 * to the Boolean supplied.
 	 */
 	public BooleanExpression is(BooleanExpression bool) {
 		return is((BooleanResult) bool);
@@ -197,8 +198,8 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 	 * BooleanResult includes {@link BooleanExpression} and {@link DBBoolean}.
 	 *
 	 * @param bool the boolean value to be tested
-	 * @return a BooleanExpression that compares the previous BooleanExpression to
-	 * the Boolean supplied.
+	 * @return a BooleanExpression that compares the previous BooleanExpression
+	 * to the Boolean supplied.
 	 */
 	@Override
 	public BooleanExpression is(BooleanResult bool) {
@@ -470,8 +471,8 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 	}
 
 	/**
-	 * Returns TRUE if the given {@link DBExpression} evaluates to NULL, otherwise
-	 * FALSE.
+	 * Returns TRUE if the given {@link DBExpression} evaluates to NULL,
+	 * otherwise FALSE.
 	 *
 	 * <p>
 	 * DBExpression subclasses include
@@ -504,13 +505,13 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 	 * boolean expression.
 	 *
 	 * <p>
-	 * The first expression is returned if this expression is TRUE, otherwise the
-	 * second is returned.
+	 * The first expression is returned if this expression is TRUE, otherwise
+	 * the second is returned.
 	 *
 	 * @param thenExpr
 	 * @param elseExpr
-	 * @return an expression that will generate a SQL clause conceptually similar
-	 * to "if (this) then thenExpr else elseExpr".
+	 * @return an expression that will generate a SQL clause conceptually
+	 * similar to "if (this) then thenExpr else elseExpr".
 	 */
 	public StringExpression ifThenElse(String thenExpr, String elseExpr) {
 		return this.ifThenElse(new StringExpression(thenExpr), new StringExpression(elseExpr));
@@ -521,13 +522,13 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 	 * boolean expression.
 	 *
 	 * <p>
-	 * The first expression is returned if this expression is TRUE, otherwise the
-	 * second is returned.
+	 * The first expression is returned if this expression is TRUE, otherwise
+	 * the second is returned.
 	 *
 	 * @param thenExpr
 	 * @param elseExpr
-	 * @return an expression that will generate a SQL clause conceptually similar
-	 * to "if (this) then thenExpr else elseExpr".
+	 * @return an expression that will generate a SQL clause conceptually
+	 * similar to "if (this) then thenExpr else elseExpr".
 	 */
 	public StringExpression ifThenElse(StringExpression thenExpr, StringExpression elseExpr) {
 		return new StringExpression(new DBBooleanStringStringFunction(this, thenExpr, elseExpr) {
@@ -555,13 +556,13 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 	 * boolean expression.
 	 *
 	 * <p>
-	 * The first expression is returned if this expression is TRUE, otherwise the
-	 * second is returned.
+	 * The first expression is returned if this expression is TRUE, otherwise
+	 * the second is returned.
 	 *
 	 * @param thenExpr
 	 * @param elseExpr
-	 * @return an expression that will generate a SQL clause conceptually similar
-	 * to "if (this) then thenExpr else elseExpr".
+	 * @return an expression that will generate a SQL clause conceptually
+	 * similar to "if (this) then thenExpr else elseExpr".
 	 */
 	public NumberExpression ifThenElse(Number thenExpr, Number elseExpr) {
 		return this.ifThenElse(new NumberExpression(thenExpr), new NumberExpression(elseExpr));
@@ -572,13 +573,13 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 	 * boolean expression.
 	 *
 	 * <p>
-	 * The first expression is returned if this expression is TRUE, otherwise the
-	 * second is returned.
+	 * The first expression is returned if this expression is TRUE, otherwise
+	 * the second is returned.
 	 *
 	 * @param thenExpr
 	 * @param elseExpr
-	 * @return an expression that will generate a SQL clause conceptually similar
-	 * to "if (this) then thenExpr else elseExpr".
+	 * @return an expression that will generate a SQL clause conceptually
+	 * similar to "if (this) then thenExpr else elseExpr".
 	 */
 	public NumberExpression ifThenElse(NumberResult thenExpr, NumberResult elseExpr) {
 		return new NumberExpression(new DBBooleanNumberNumberFunction(this, thenExpr, elseExpr) {
@@ -605,13 +606,13 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 	 * boolean expression.
 	 *
 	 * <p>
-	 * The first expression is returned if this expression is TRUE, otherwise the
-	 * second is returned.
+	 * The first expression is returned if this expression is TRUE, otherwise
+	 * the second is returned.
 	 *
 	 * @param thenExpr
 	 * @param elseExpr
-	 * @return an expression that will generate a SQL clause conceptually similar
-	 * to "if (this) then thenExpr else elseExpr".
+	 * @return an expression that will generate a SQL clause conceptually
+	 * similar to "if (this) then thenExpr else elseExpr".
 	 */
 	public DateExpression ifThenElse(Date thenExpr, Date elseExpr) {
 		return this.ifThenElse(new DateExpression(thenExpr), new DateExpression(elseExpr));
@@ -622,13 +623,13 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 	 * boolean expression.
 	 *
 	 * <p>
-	 * The first expression is returned if this expression is TRUE, otherwise the
-	 * second is returned.
+	 * The first expression is returned if this expression is TRUE, otherwise
+	 * the second is returned.
 	 *
 	 * @param thenExpr
 	 * @param elseExpr
-	 * @return an expression that will generate a SQL clause conceptually similar
-	 * to "if (this) then thenExpr else elseExpr".
+	 * @return an expression that will generate a SQL clause conceptually
+	 * similar to "if (this) then thenExpr else elseExpr".
 	 */
 	public DateExpression ifThenElse(DateExpression thenExpr, DateExpression elseExpr) {
 		return new DateExpression(new DBBinaryDateDateFunction(this, thenExpr, elseExpr) {
@@ -656,13 +657,13 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 	 * boolean expression.
 	 *
 	 * <p>
-	 * The first expression is returned if this expression is TRUE, otherwise the
-	 * second is returned.
+	 * The first expression is returned if this expression is TRUE, otherwise
+	 * the second is returned.
 	 *
 	 * @param thenExpr
 	 * @param elseExpr
-	 * @return an expression that will generate a SQL clause conceptually similar
-	 * to "if (this) then thenExpr else elseExpr".
+	 * @return an expression that will generate a SQL clause conceptually
+	 * similar to "if (this) then thenExpr else elseExpr".
 	 */
 	public Polygon2DExpression ifThenElse(Polygon thenExpr, Polygon elseExpr) {
 		return this.ifThenElse(new Polygon2DExpression(thenExpr), new Polygon2DExpression(elseExpr));
@@ -673,13 +674,13 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 	 * boolean expression.
 	 *
 	 * <p>
-	 * The first expression is returned if this expression is TRUE, otherwise the
-	 * second is returned.
+	 * The first expression is returned if this expression is TRUE, otherwise
+	 * the second is returned.
 	 *
 	 * @param thenExpr
 	 * @param elseExpr
-	 * @return an expression that will generate a SQL clause conceptually similar
-	 * to "if (this) then thenExpr else elseExpr".
+	 * @return an expression that will generate a SQL clause conceptually
+	 * similar to "if (this) then thenExpr else elseExpr".
 	 */
 	public Polygon2DExpression ifThenElse(Polygon2DExpression thenExpr, Polygon2DExpression elseExpr) {
 		return new Polygon2DExpression(new DBBinaryGeometryGeometryFunction(this, thenExpr, elseExpr) {
@@ -793,9 +794,9 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 	 * Implements the little-known (and implemented) SQL Row Value syntax.
 	 *
 	 * <p>
-	 * in PostgreSQL you can do (colA, colB) &lt; (valA, valB). In other databases
-	 * you need to write: ((colA &lt; valA) OR (colA = valA AND colB &lt; valB)).
-	 * Similarly for &gt;.
+	 * in PostgreSQL you can do (colA, colB) &lt; (valA, valB). In other
+	 * databases you need to write: ((colA &lt; valA) OR (colA = valA AND colB
+	 * &lt; valB)). Similarly for &gt;.
 	 *
 	 * <p>
 	 * Essentially seek looks at both parameters and returns the rows that sort
@@ -826,9 +827,9 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 	 * Implements the little-known (and implemented) SQL Row Value syntax.
 	 *
 	 * <p>
-	 * in PostgreSQL you can do (colA, colB) &lt; (valA, valB). In other databases
-	 * you need to write: ((colA &lt; valA) OR (colA = valA AND colB &lt; valB)).
-	 * Similarly for &gt;.
+	 * in PostgreSQL you can do (colA, colB) &lt; (valA, valB). In other
+	 * databases you need to write: ((colA &lt; valA) OR (colA = valA AND colB
+	 * &lt; valB)). Similarly for &gt;.
 	 *
 	 * <p>
 	 * Essentially seek looks at both parameters and returns the rows that sort
@@ -859,9 +860,9 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 	 * Implements the little-known (and implemented) SQL Row Value syntax.
 	 *
 	 * <p>
-	 * in PostgreSQL you can do (colA, colB) &lt; (valA, valB). In other databases
-	 * you need to write: ((colA &lt; valA) OR (colA = valA AND colB &lt; valB)).
-	 * Similarly for &gt;.
+	 * in PostgreSQL you can do (colA, colB) &lt; (valA, valB). In other
+	 * databases you need to write: ((colA &lt; valA) OR (colA = valA AND colB
+	 * &lt; valB)). Similarly for &gt;.
 	 *
 	 * <p>
 	 * Essentially seek looks at both parameters and returns the rows that sort
@@ -872,16 +873,16 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 	 * well
 	 *
 	 * @author Gregory Graham
-	 * @param <RangeComparableY> a value that can be compared to Z, probably StringResult,
-	 * NumberResult, or DateResult
-	 * @param <RangeComparableZ> an expression or column that implements RangeComparable,
-	 * probably StringExpression, NumberExpression, DateExpression or a column
-	 * type of the same.
+	 * @param <RangeComparableY> a value that can be compared to Z, probably
+	 * StringResult, NumberResult, or DateResult
+	 * @param <RangeComparableZ> an expression or column that implements
+	 * RangeComparable, probably StringExpression, NumberExpression,
+	 * DateExpression or a column type of the same.
 	 * @param columnA the left side of the internal comparison
 	 * @param valueA the right side of the internal comparison
 	 * @param columnB the left side of the internal comparison
-	 * @param valueB the right side of the internal comparison
-	 * and ValueA are equal.
+	 * @param valueB the right side of the internal comparison and ValueA are
+	 * equal.
 	 * @return a BooleanExpression
 	 */
 	public static
@@ -893,6 +894,40 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 				BooleanExpression.allOf(columnA.is(valueA), columnB.isLessThanOrEqual(valueB)));
 	}
 
+	/**
+	 * Implements the little-known (and implemented) SQL Row Value syntax.
+	 *
+	 * <p>
+	 * in PostgreSQL you can do (colA, colB) &lt; (valA, valB). In other
+	 * databases you need to write: ((colA &lt; valA) OR (colA = valA AND colB
+	 * &lt; valB)). Similarly for &gt;.
+	 *
+	 * <p>
+	 * Essentially seek looks at both parameters and returns the rows that sort
+	 * above both.
+	 *
+	 * <p>
+	 * This version provides a second level of sorting. If you only need to seek
+	 * on one column/value use {@link #seekGreaterThan(nz.co.gregs.dbvolution.results.RangeComparable, nz.co.gregs.dbvolution.expressions.DBExpression, nz.co.gregs.dbvolution.expressions.BooleanExpression)
+	 * }
+	 *
+	 * <p>
+	 * If you are using this for pagination, remember to sort by the columns as
+	 * well
+	 *
+	 * @author Gregory Graham
+	 * @param <RangeComparableZ> an expression or column that implements
+	 * RangeComparable, probably StringExpression, NumberExpression,
+	 * DateExpression or a column type of the same.
+	 * @param columnA the left side of the internal comparison
+	 * @param valueA the right side of the internal comparison
+	 * @param <RangeComparableY> an expression or column that implements
+	 * RangeComparable, probably StringExpression, NumberExpression,
+	 * DateExpression or a column type of the same.
+	 * @param columnB the left side of the internal comparison
+	 * @param valueB the right side of the internal comparison
+	 * @return a BooleanExpression
+	 */
 	public static
 			<RangeComparableZ extends RangeComparable<? super RangeComparableZ>, RangeComparableY extends RangeComparable<? super RangeComparableY>>
 			BooleanExpression
@@ -902,6 +937,45 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 				BooleanExpression.allOf(columnA.is(valueA), columnB.isGreaterThanOrEqual(valueB)));
 	}
 
+	/**
+	 * Implements the little-known (and implemented) SQL Row Value syntax.
+	 *
+	 * <p>
+	 * in PostgreSQL you can do (colA, colB) &lt; (valA, valB). In other
+	 * databases you need to write: ((colA &lt; valA) OR (colA = valA AND colB
+	 * &lt; valB)). Similarly for &gt;.
+	 *
+	 * <p>
+	 * Essentially seek looks at both parameters and returns the rows that sort
+	 * below both.
+	 *
+	 * <p>
+	 * This version provides three levels of sorting. If you only need to seek
+	 * on one column/value use {@link #seekGreaterThan(nz.co.gregs.dbvolution.results.RangeComparable, nz.co.gregs.dbvolution.expressions.DBExpression, nz.co.gregs.dbvolution.expressions.BooleanExpression)
+	 * }
+	 *
+	 * <p>
+	 * If you are using this for pagination, remember to sort by the columns as
+	 * well
+	 *
+	 * @author Gregory Graham
+	 * @param <RangeComparableZ> an expression or column that implements
+	 * RangeComparable, probably StringExpression, NumberExpression,
+	 * DateExpression or a column type of the same.
+	 * @param columnA the left side of the internal comparison
+	 * @param valueA the right side of the internal comparison
+	 * @param <RangeComparableY> an expression or column that implements
+	 * RangeComparable, probably StringExpression, NumberExpression,
+	 * DateExpression or a column type of the same.
+	 * @param columnB the left side of the internal comparison
+	 * @param valueB the right side of the internal comparison
+	 * @param <RangeComparableX> an expression or column that implements
+	 * RangeComparable, probably StringExpression, NumberExpression,
+	 * DateExpression or a column type of the same.
+	 * @param columnC the left side of the internal comparison
+	 * @param valueC the right side of the internal comparison
+	 * @return a BooleanExpression
+	 */
 	public static
 			<RangeComparableZ extends RangeComparable<? super RangeComparableZ>, RangeComparableY extends RangeComparable<? super RangeComparableY>, RangeComparableX extends RangeComparable<? super RangeComparableX>>
 			BooleanExpression
@@ -911,6 +985,50 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 				BooleanExpression.allOf(columnA.is(valueA), BooleanExpression.seekLessThan(columnB, valueB, columnC, valueC)));
 	}
 
+	/**
+	 * Implements the little-known (and implemented) SQL Row Value syntax.
+	 *
+	 * <p>
+	 * in PostgreSQL you can do (colA, colB) &lt; (valA, valB). In other
+	 * databases you need to write: ((colA &lt; valA) OR (colA = valA AND colB
+	 * &lt; valB)). Similarly for &gt;.
+	 *
+	 * <p>
+	 * Essentially seek looks at both parameters and returns the rows that sort
+	 * below both.
+	 *
+	 * <p>
+	 * This version provides four levels of sorting. If you only need to seek
+	 * on one column/value use {@link #seekLessThan(nz.co.gregs.dbvolution.results.RangeComparable, nz.co.gregs.dbvolution.expressions.DBExpression, nz.co.gregs.dbvolution.expressions.BooleanExpression)
+	 * }
+	 *
+	 * <p>
+	 * If you are using this for pagination, remember to sort by the columns as
+	 * well
+	 *
+	 * @author Gregory Graham
+	 * @param <RangeComparableZ> an expression or column that implements
+	 * RangeComparable, probably StringExpression, NumberExpression,
+	 * DateExpression or a column type of the same.
+	 * @param columnA the left side of the internal comparison
+	 * @param valueA the right side of the internal comparison
+	 * @param <RangeComparableY> an expression or column that implements
+	 * RangeComparable, probably StringExpression, NumberExpression,
+	 * DateExpression or a column type of the same.
+	 * @param columnB the left side of the internal comparison
+	 * @param valueB the right side of the internal comparison
+	 * @param <RangeComparableX> an expression or column that implements
+	 * RangeComparable, probably StringExpression, NumberExpression,
+	 * DateExpression or a column type of the same.
+	 * @param columnC the left side of the internal comparison
+	 * @param valueC the right side of the internal comparison
+	 * @param <RangeComparableW> an expression or column that implements
+	 * RangeComparable, probably StringExpression, NumberExpression,
+	 * DateExpression or a column type of the same.
+	 * @param columnD the left side of the internal comparison
+	 * @param valueD the right side of the internal comparison
+	 * @return a BooleanExpression
+	 */
 	public static
 			<RangeComparableZ extends RangeComparable<? super RangeComparableZ>, RangeComparableY extends RangeComparable<? super RangeComparableY>, RangeComparableX extends RangeComparable<? super RangeComparableX>, RangeComparableW extends RangeComparable<? super RangeComparableW>>
 			BooleanExpression
@@ -920,6 +1038,45 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 				BooleanExpression.allOf(columnA.is(valueA), BooleanExpression.seekLessThan(columnB, valueB, columnC, valueC, columnD, valueD)));
 	}
 
+	/**
+	 * Implements the little-known (and implemented) SQL Row Value syntax.
+	 *
+	 * <p>
+	 * in PostgreSQL you can do (colA, colB) &lt; (valA, valB). In other
+	 * databases you need to write: ((colA &lt; valA) OR (colA = valA AND colB
+	 * &lt; valB)). Similarly for &gt;.
+	 *
+	 * <p>
+	 * Essentially seek looks at both parameters and returns the rows that sort
+	 * below both.
+	 *
+	 * <p>
+	 * This version provides 3 levels of sorting. If you only need to seek
+	 * on one column/value use {@link #seekLessThan(nz.co.gregs.dbvolution.results.RangeComparable, nz.co.gregs.dbvolution.expressions.DBExpression, nz.co.gregs.dbvolution.expressions.BooleanExpression)
+	 * }
+	 *
+	 * <p>
+	 * If you are using this for pagination, remember to sort by the columns as
+	 * well
+	 *
+	 * @author Gregory Graham
+	 * @param <RangeComparableZ> an expression or column that implements
+	 * RangeComparable, probably StringExpression, NumberExpression,
+	 * DateExpression or a column type of the same.
+	 * @param columnA the left side of the internal comparison
+	 * @param valueA the right side of the internal comparison
+	 * @param <RangeComparableY> an expression or column that implements
+	 * RangeComparable, probably StringExpression, NumberExpression,
+	 * DateExpression or a column type of the same.
+	 * @param columnB the left side of the internal comparison
+	 * @param valueB the right side of the internal comparison
+	 * @param <RangeComparableX> an expression or column that implements
+	 * RangeComparable, probably StringExpression, NumberExpression,
+	 * DateExpression or a column type of the same.
+	 * @param columnC the left side of the internal comparison
+	 * @param valueC the right side of the internal comparison
+	 * @return a BooleanExpression
+	 */
 	public static
 			<RangeComparableZ extends RangeComparable<? super RangeComparableZ>, RangeComparableY extends RangeComparable<? super RangeComparableY>, RangeComparableX extends RangeComparable<? super RangeComparableX>>
 			BooleanExpression
@@ -929,6 +1086,50 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 				BooleanExpression.allOf(columnA.is(valueA), BooleanExpression.seekGreaterThan(columnB, valueB, columnC, valueC)));
 	}
 
+	/**
+	 * Implements the little-known (and implemented) SQL Row Value syntax.
+	 *
+	 * <p>
+	 * in PostgreSQL you can do (colA, colB) &lt; (valA, valB). In other
+	 * databases you need to write: ((colA &lt; valA) OR (colA = valA AND colB
+	 * &lt; valB)). Similarly for &gt;.
+	 *
+	 * <p>
+	 * Essentially seek looks at both parameters and returns the rows that sort
+	 * above both.
+	 *
+	 * <p>
+	 * This version provides four levels of sorting. If you only need to seek
+	 * on one column/value use {@link #seekLessThan(nz.co.gregs.dbvolution.results.RangeComparable, nz.co.gregs.dbvolution.expressions.DBExpression, nz.co.gregs.dbvolution.expressions.BooleanExpression)
+	 * }
+	 *
+	 * <p>
+	 * If you are using this for pagination, remember to sort by the columns as
+	 * well
+	 *
+	 * @author Gregory Graham
+	 * @param <RangeComparableZ> an expression or column that implements
+	 * RangeComparable, probably StringExpression, NumberExpression,
+	 * DateExpression or a column type of the same.
+	 * @param columnA the left side of the internal comparison
+	 * @param valueA the right side of the internal comparison
+	 * @param <RangeComparableY> an expression or column that implements
+	 * RangeComparable, probably StringExpression, NumberExpression,
+	 * DateExpression or a column type of the same.
+	 * @param columnB the left side of the internal comparison
+	 * @param valueB the right side of the internal comparison
+	 * @param <RangeComparableX> an expression or column that implements
+	 * RangeComparable, probably StringExpression, NumberExpression,
+	 * DateExpression or a column type of the same.
+	 * @param columnC the left side of the internal comparison
+	 * @param valueC the right side of the internal comparison
+	 * @param <RangeComparableW> an expression or column that implements
+	 * RangeComparable, probably StringExpression, NumberExpression,
+	 * DateExpression or a column type of the same.
+	 * @param columnD the left side of the internal comparison
+	 * @param valueD the right side of the internal comparison
+	 * @return a BooleanExpression
+	 */
 	public static
 			<RangeComparableZ extends RangeComparable<? super RangeComparableZ>, RangeComparableY extends RangeComparable<? super RangeComparableY>, RangeComparableX extends RangeComparable<? super RangeComparableX>, RangeComparableW extends RangeComparable<? super RangeComparableW>>
 			BooleanExpression
@@ -967,7 +1168,8 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 	}
 
 	/**
-	 * Indicates if this expression is a relationship between 2, or more, tables.
+	 * Indicates if this expression is a relationship between 2, or more,
+	 * tables.
 	 *
 	 * @return the relationship
 	 */

@@ -19,7 +19,6 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import nz.co.gregs.dbvolution.DBQuery;
-import nz.co.gregs.dbvolution.annotations.AutoFillDuringQueryIfPossible;
 import nz.co.gregs.dbvolution.example.CarCompany;
 import nz.co.gregs.dbvolution.example.Marque;
 import nz.co.gregs.dbvolution.generic.AbstractTest;
@@ -47,7 +46,11 @@ public class AutoFillDuringQueryIfPossibleTest extends AbstractTest {
 			System.out.println("" + instance.actualCarCo);
 			final CarCompany relatedCarCo = instance.getRelatedInstancesFromQuery(query, new CarCompany()).get(0);
 			final CarCompany actualCarCo = instance.actualCarCo;
-			Assert.assertThat(relatedCarCo.name.stringValue(), is(actualCarCo.name.stringValue()));
+			if (actualCarCo == null) {
+				Assert.assertThat(relatedCarCo, nullValue());
+			} else {
+				Assert.assertThat(relatedCarCo.name.stringValue(), is(actualCarCo.name.stringValue()));
+			}
 		}
 	}
 
