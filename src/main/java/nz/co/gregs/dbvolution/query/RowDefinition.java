@@ -1120,6 +1120,7 @@ public class RowDefinition implements Serializable {
 	 * by the a tab "\t".
 	 *
 	 * @return a string of all the values in this RowDefinition
+	 * @throws java.lang.IllegalAccessException
 	 */
 	public String toTabbedLine() throws IllegalArgumentException, IllegalAccessException {
 		return toSeparatedLine("\t");

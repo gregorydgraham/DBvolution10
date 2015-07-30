@@ -120,6 +120,7 @@ public class TreeNode<T extends DBRow> {
 	/**
 	 * Set the DBRow within this node.
 	 *
+	 * @param data
 	 */
 	public void setData(T data) {
 		this.data = data;
