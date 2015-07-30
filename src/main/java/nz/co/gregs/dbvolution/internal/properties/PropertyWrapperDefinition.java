@@ -570,6 +570,8 @@ public class PropertyWrapperDefinition {
 	boolean isSpatial2DType() {
 		Class<? extends QueryableDatatype> qdt = type();
 		return (Spatial2DResult.class.isAssignableFrom(qdt));
+	}
+	
 	boolean isAutoFilling() {
 		return this.javaProperty.isAnnotationPresent(AutoFillDuringQueryIfPossible.class);
 	}
