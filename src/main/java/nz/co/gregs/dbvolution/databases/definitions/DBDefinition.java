@@ -4043,4 +4043,12 @@ public abstract class DBDefinition {
 	public boolean supportsRowLimitsNatively(QueryOptions options) {
 		return true;
 	}
+
+	public boolean requiresSpatial2DIndexes() {
+		return false;
+	}
+
+	public List<String> getSpatial2DIndexSQL(DBDatabase aThis, String formatTableName, String formatColumnName) {
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	}
 }

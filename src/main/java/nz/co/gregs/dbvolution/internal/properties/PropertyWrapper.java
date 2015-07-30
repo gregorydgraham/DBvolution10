@@ -593,4 +593,8 @@ public class PropertyWrapper {
 	public boolean isAutoIncrement() {
 		return propertyDefinition.isAutoIncrementColumn();
 	}
+
+	public boolean isSpatial2DType() {
+		return propertyDefinition.isSpatial2DType();
+	}
 }

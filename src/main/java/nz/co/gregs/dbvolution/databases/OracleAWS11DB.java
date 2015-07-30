@@ -112,13 +112,14 @@ public class OracleAWS11DB extends OracleAWSDB {
 			} finally {
 				dbStatement.close();
 			}
-			final DBStatement dbStatement2 = getDBStatement();
-			try {
-				dbStatement2.execute("DROP TRIGGER " + definition.getPrimaryKeyTriggerName(formattedTableName, formattedColumnName));
-			} finally {
-				dbStatement2.close();
-			}
+//			final DBStatement dbStatement2 = getDBStatement();
+//			try {
+//				dbStatement2.execute("DROP TRIGGER " + definition.getPrimaryKeyTriggerName(formattedTableName, formattedColumnName));
+//			} finally {
+//				dbStatement2.close();
+//			}
 		}
+		super.dropAnyAssociatedDatabaseObjects(tableRow);
 	}
 
 	@Override

@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 greg.
+ * Copyright 2015 gregorygraham.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,14 +15,10 @@
  */
 package nz.co.gregs.dbvolution.results;
 
-import nz.co.gregs.dbvolution.expressions.DBExpression;
-
 /**
- * Represents SQL results that are 2 dimensional paths: a series of connected
- * line segments with X and Y coordinates.
  *
- * @author Gregory Graham
+ * @author gregorygraham
  */
-public interface Line2DResult extends DBExpression, ExpressionCanHaveNullValues, Spatial2DResult {
-
+public interface Spatial2DResult {
+	
 }

@@ -21,6 +21,6 @@ import nz.co.gregs.dbvolution.expressions.DBExpression;
  *
  * @author gregory.graham
  */
-public interface LineSegment2DResult extends DBExpression, ExpressionCanHaveNullValues {
+public interface LineSegment2DResult extends DBExpression, ExpressionCanHaveNullValues, Spatial2DResult {
 	
 }

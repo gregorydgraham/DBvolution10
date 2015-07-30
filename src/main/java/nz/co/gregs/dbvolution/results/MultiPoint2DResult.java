@@ -21,6 +21,6 @@ import nz.co.gregs.dbvolution.expressions.DBExpression;
  *
  * @author gregorygraham
  */
-public interface MultiPoint2DResult extends DBExpression, ExpressionCanHaveNullValues {
+public interface MultiPoint2DResult extends DBExpression, ExpressionCanHaveNullValues, Spatial2DResult {
 
 }

@@ -17,6 +17,9 @@ package nz.co.gregs.dbvolution.databases.definitions;
 
 import com.vividsolutions.jts.geom.*;
 import com.vividsolutions.jts.io.WKTReader;
+import java.util.ArrayList;
+import java.util.List;
+import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.datatypes.*;
 import nz.co.gregs.dbvolution.datatypes.spatial2D.*;
 import nz.co.gregs.dbvolution.exceptions.IncorrectGeometryReturnedForDatatype;
@@ -51,6 +54,17 @@ public class OracleAWSDBDefinition extends OracleDBDefinition {
 			return super.getSQLTypeOfDBDatatype(qdt);
 		}
 	}
+
+	@Override
+	public boolean requiresSpatial2DIndexes() {
+		return false;
+	}
+
+	@Override
+	public List<String> getSpatial2DIndexSQL(DBDatabase aThis, final String formatTableName, final String formatColumnName) {
+		throw new UnsupportedOperationException("Not supported yet."); 
+	}
+
 
 	@Override
 	public String transformCoordinatesIntoDatabasePoint2DFormat(String xValue, String yValue) {
