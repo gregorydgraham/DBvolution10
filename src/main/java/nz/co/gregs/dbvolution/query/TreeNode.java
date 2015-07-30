@@ -17,8 +17,19 @@ package nz.co.gregs.dbvolution.query;
 
 import java.util.ArrayList;
 import java.util.List;
+import nz.co.gregs.dbvolution.DBRecursiveQuery;
 import nz.co.gregs.dbvolution.DBRow;
 
+/**
+ * Encapsulates a DBRow class for use in {@link DBRecursiveQuery} tree or path.
+ *
+ * <p>
+ * Use {@link #getData() } to retrieve the DBRow contain in the node, {@link #getParent()
+ * } to move up the hierarchy, and {@link #getChildren() } to move down it.
+ *
+ * @author Gregory Graham
+ * @param <T> The DBRow class
+ */
 public class TreeNode<T extends DBRow> {
 
 	private final List<TreeNode<T>> children = new ArrayList<TreeNode<T>>();
@@ -26,15 +37,31 @@ public class TreeNode<T extends DBRow> {
 	private TreeNode<T> parent = null;
 	private T data = null;
 
+	/**
+	 * Create a new node for the DBRow
+	 *
+	 * @param data
+	 */
 	public TreeNode(T data) {
 		this.data = data;
 	}
 
+	/**
+	 * Create a new node the contains the specified DBRow as the data, and the specified TreeNode as the parent of the node.
+	 *
+	 * @param data
+	 * @param parent
+	 */
 	public TreeNode(T data, TreeNode<T> parent) {
 		this.data = data;
 		this.parent = parent;
 	}
 
+	/**
+	 * Returns a list of all known children of this node, that is all database rows returned by the recursive query that referenced this row.
+	 *
+	 * @return
+	 */
 	public List<TreeNode<T>> getChildren() {
 		return children;
 	}
@@ -43,15 +70,32 @@ public class TreeNode<T extends DBRow> {
 		this.parent = parent;
 	}
 
-	public void addChild(T data) {
-		TreeNode<T> child = new TreeNode<T>(data);
-		child.setParent(this);
-		if (notAlreadyIncluded(child)) {
-			this.children.add(child);
-			this.childrenData.add(data.getPrimaryKey().stringValue());
-		}
+	/**
+	 * Append the supplied DBRow to the list of children for this node.
+	 * 
+	 * <p>
+	 * Also adds this node as the parent of the supplied node.
+	 *
+	 * @param childData
+	 */
+	public void addChild(T childData) {
+		TreeNode<T> child = new TreeNode<T>(childData);
+		this.addChild(child);
+//		child.setParent(this);
+//		if (notAlreadyIncluded(child)) {
+//			this.children.add(child);
+//			this.childrenData.add(data.getPrimaryKey().stringValue());
+//		}
 	}
 
+	/**
+	 * Append the supplied DBRow to the list of children for this node.
+	 * 
+	 * <p>
+	 * Also adds this node as the parent of the supplied node.
+	 *
+	 * @param child 
+	 */
 	public void addChild(TreeNode<T> child) {
 		child.setParent(this);
 		if (notAlreadyIncluded(child)) {
@@ -64,26 +108,54 @@ public class TreeNode<T extends DBRow> {
 		return !this.children.contains(child) && !childrenData.contains(child.getData().getPrimaryKey().stringValue());
 	}
 
+	/**
+	 * Retrieves the DBRow within this node.
+	 *
+	 * @return a DBRow
+	 */
 	public T getData() {
 		return this.data;
 	}
 
+	/**
+	 * Set the DBRow within this node.
+	 *
+	 */
 	public void setData(T data) {
 		this.data = data;
 	}
 
+	/**
+	 * Indicates whether or not this node is a root node, that is it has no known parent.
+	 *
+	 * @return TRUE if this node is the top of a hierarchy.
+	 */
 	public boolean isRoot() {
 		return (this.parent == null);
 	}
 
+	/**
+	 * Indicates whether or not this node is a leaf node, that is it has no known children.
+	 *
+	 * @return TRUE if this node is the bottom of a hierarchy.
+	 */
 	public boolean isLeaf() {
 		return this.children.isEmpty();
 	}
 
+	/**
+	 * Remove the link to this node's parent, if any.
+	 * 
+	 */
 	public void removeParent() {
 		this.parent = null;
 	}
 
+	/**
+	 * Retrieves the node that is the parent of this node.
+	 *
+	 * @return the TreeNode immediately above this node in the hierarchy
+	 */
 	public TreeNode<T> getParent() {
 		return this.parent;
 	}

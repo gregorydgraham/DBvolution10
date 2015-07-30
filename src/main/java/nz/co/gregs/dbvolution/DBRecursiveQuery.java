@@ -205,7 +205,7 @@ public class DBRecursiveQuery<T extends DBRow> {
 
 					originalQuery.setExpressionColumns(resultSet, queryRow);
 
-					originalQuery.setQueryRowFromResultSet(resultSet, queryRow, originalQuery.getQueryDetails().getDbReportGroupByColumns().size() > 0);
+					originalQuery.setQueryRowFromResultSet(resultSet, queryRow, originalQuery.getQueryDetails().getDBReportGroupByColumns().size() > 0);
 					returnList.add(queryRow);
 				}
 			} finally {

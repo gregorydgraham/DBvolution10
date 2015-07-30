@@ -52,8 +52,8 @@ public class RowDefinition implements Serializable {
 	 * property's object reference.
 	 *
 	 * <p>
-	 * For example the following code snippet will get a property wrapper for the
-	 * {@literal name} field:
+	 * For example the following code snippet will get a property wrapper for
+	 * the {@literal name} field:
 	 * <pre>
 	 * Customer customer = ...;
 	 * getPropertyWrapperOf(customer.name);
@@ -75,6 +75,15 @@ public class RowDefinition implements Serializable {
 		return null;
 	}
 
+	/**
+	 * Return the {@link RowDefinitionInstanceWrapper } for this RowDefinition.
+	 *
+	 * <p>
+	 * The {@link RowDefinitionInstanceWrapper } contains meta-data about this
+	 * instance of the RowDefinition class.
+	 *
+	 * @return a {@link RowDefinitionInstanceWrapper}
+	 */
 	protected RowDefinitionInstanceWrapper getWrapper() {
 		if (wrapper == null) {
 			wrapper = wrapperFactory.instanceWrapperFor(this);
@@ -121,30 +130,142 @@ public class RowDefinition implements Serializable {
 		return new LargeObjectColumn(this, fieldOfThisInstance);
 	}
 
+	/**
+	 * Creates a new {@link DateRepeatColumn} instance to help create
+	 * {@link DBExpression expressions}
+	 *
+	 * <p>
+	 * This method is the easy way to create a reference to the database column
+	 * represented by the field for use in creating complex expressions within
+	 * your query.
+	 *
+	 * <p>
+	 * For use with the
+	 * {@link DBQuery#addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression) DBQuery addCondition method}
+	 *
+	 * @param fieldOfThisInstance	fieldOfThisInstance
+	 * @return A DateRepeatColumn representing the supplied field
+	 */
 	public DateRepeatColumn column(DBDateRepeat fieldOfThisInstance) {
 		return new DateRepeatColumn(this, fieldOfThisInstance);
 	}
 
+	/**
+	 * Creates a new {@link BooleanArrayColumn} instance to help create
+	 * {@link DBExpression expressions}
+	 *
+	 * <p>
+	 * This method is the easy way to create a reference to the database column
+	 * represented by the field for use in creating complex expressions within
+	 * your query.
+	 *
+	 * <p>
+	 * For use with the
+	 * {@link DBQuery#addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression) DBQuery addCondition method}
+	 *
+	 * @param fieldOfThisInstance	fieldOfThisInstance
+	 * @return A {@link BooleanArrayColumn} representing the supplied field
+	 */
 	public BooleanArrayColumn column(DBBooleanArray fieldOfThisInstance) {
 		return new BooleanArrayColumn(this, fieldOfThisInstance);
 	}
 
+	/**
+	 * Creates a new {@link Polygon2DColumn} instance to help create
+	 * {@link DBExpression expressions}
+	 *
+	 * <p>
+	 * This method is the easy way to create a reference to the database column
+	 * represented by the field for use in creating complex expressions within
+	 * your query.
+	 *
+	 * <p>
+	 * For use with the
+	 * {@link DBQuery#addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression) DBQuery addCondition method}
+	 *
+	 * @param fieldOfThisInstance	fieldOfThisInstance
+	 * @return A {@link Polygon2DColumn} representing the supplied field
+	 */
 	public Polygon2DColumn column(DBPolygon2D fieldOfThisInstance) {
 		return new Polygon2DColumn(this, fieldOfThisInstance);
 	}
 
+	/**
+	 * Creates a new {@link Point2DColumn} instance to help create
+	 * {@link DBExpression expressions}
+	 *
+	 * <p>
+	 * This method is the easy way to create a reference to the database column
+	 * represented by the field for use in creating complex expressions within
+	 * your query.
+	 *
+	 * <p>
+	 * For use with the
+	 * {@link DBQuery#addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression) DBQuery addCondition method}
+	 *
+	 * @param fieldOfThisInstance	fieldOfThisInstance
+	 * @return A {@link Point2DColumn} representing the supplied field
+	 */
 	public Point2DColumn column(DBPoint2D fieldOfThisInstance) {
 		return new Point2DColumn(this, fieldOfThisInstance);
 	}
 
+	/**
+	 * Creates a new {@link Line2DColumn} instance to help create
+	 * {@link DBExpression expressions}
+	 *
+	 * <p>
+	 * This method is the easy way to create a reference to the database column
+	 * represented by the field for use in creating complex expressions within
+	 * your query.
+	 *
+	 * <p>
+	 * For use with the
+	 * {@link DBQuery#addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression) DBQuery addCondition method}
+	 *
+	 * @param fieldOfThisInstance	fieldOfThisInstance
+	 * @return A {@link Line2DColumn} representing the supplied field
+	 */
 	public Line2DColumn column(DBLine2D fieldOfThisInstance) {
 		return new Line2DColumn(this, fieldOfThisInstance);
 	}
-	
+
+	/**
+	 * Creates a new {@link LineSegment2DColumn} instance to help create
+	 * {@link DBExpression expressions}
+	 *
+	 * <p>
+	 * This method is the easy way to create a reference to the database column
+	 * represented by the field for use in creating complex expressions within
+	 * your query.
+	 *
+	 * <p>
+	 * For use with the
+	 * {@link DBQuery#addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression) DBQuery addCondition method}
+	 *
+	 * @param fieldOfThisInstance	fieldOfThisInstance
+	 * @return A {@link LineSegment2DColumn} representing the supplied field
+	 */
 	public LineSegment2DColumn column(DBLineSegment2D fieldOfThisInstance) {
 		return new LineSegment2DColumn(this, fieldOfThisInstance);
 	}
-	
+
+	/**
+	 * Creates a new {@link MultiPoint2DColumn} instance to help create
+	 * {@link DBExpression expressions}
+	 *
+	 * <p>
+	 * This method is the easy way to create a reference to the database column
+	 * represented by the field for use in creating complex expressions within
+	 * your query.
+	 *
+	 * <p>
+	 * For use with the
+	 * {@link DBQuery#addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression) DBQuery addCondition method}
+	 *
+	 * @param fieldOfThisInstance	fieldOfThisInstance
+	 * @return A {@link MultiPoint2DColumn} representing the supplied field
+	 */
 	public MultiPoint2DColumn column(DBMultiPoint2D fieldOfThisInstance) {
 		return new MultiPoint2DColumn(this, fieldOfThisInstance);
 	}
@@ -383,8 +504,8 @@ public class RowDefinition implements Serializable {
 	}
 
 	/**
-	 * Creates a new StringExpression for the field with a default value for NULL
-	 * entries.
+	 * Creates a new StringExpression for the field with a default value for
+	 * NULL entries.
 	 *
 	 * <p>
 	 * This method is the easy way to create a reference to the database column
@@ -405,8 +526,8 @@ public class RowDefinition implements Serializable {
 	}
 
 	/**
-	 * Creates a new StringExpression for the field with a default value for NULL
-	 * entries.
+	 * Creates a new StringExpression for the field with a default value for
+	 * NULL entries.
 	 *
 	 * <p>
 	 * This method is the easy way to create a reference to the database column
@@ -427,8 +548,8 @@ public class RowDefinition implements Serializable {
 	}
 
 	/**
-	 * Creates a new StringExpression for the field with a default value for NULL
-	 * entries.
+	 * Creates a new StringExpression for the field with a default value for
+	 * NULL entries.
 	 *
 	 * <p>
 	 * This method is the easy way to create a reference to the database column
@@ -449,8 +570,8 @@ public class RowDefinition implements Serializable {
 	}
 
 	/**
-	 * Creates a new StringExpression for the field with a default value for NULL
-	 * entries.
+	 * Creates a new StringExpression for the field with a default value for
+	 * NULL entries.
 	 *
 	 * <p>
 	 * This method is the easy way to create a reference to the database column
@@ -914,6 +1035,16 @@ public class RowDefinition implements Serializable {
 		return string.toString();
 	}
 
+	/**
+	 * Convenience method to change this RowDefinition into a series of values
+	 * separated by the supplied separator.
+	 *
+	 * <p>
+	 * Useful for creating TSV and CSV lines.
+	 *
+	 * @param separatorToUse
+	 * @return a string of all the values in this RowDefinition
+	 */
 	public String toSeparatedLine(String separatorToUse) {
 		StringBuilder string = new StringBuilder();
 		List<PropertyWrapper> fields = getWrapper().getColumnPropertyWrappers();
@@ -929,6 +1060,16 @@ public class RowDefinition implements Serializable {
 		return string.toString();
 	}
 
+	/**
+	 * Convenience method to change the field names into a series of values
+	 * separated by the supplied separator.
+	 *
+	 * <p>
+	 * Useful for creating TSV and CSV headers.
+	 *
+	 * @param separatorToUse
+	 * @return a string of all the fields in this RowDefinition
+	 */
 	public String toSeparatedHeader(String separatorToUse) {
 		StringBuilder string = new StringBuilder();
 		List<PropertyWrapper> fields = getWrapper().getColumnPropertyWrappers();
@@ -944,22 +1085,53 @@ public class RowDefinition implements Serializable {
 		return string.toString();
 	}
 
+	/**
+	 * Convenience method to change the field names into a series of values
+	 * separated by the a comma ",".
+	 *
+	 * @return a string of all the fields in this RowDefinition
+	 */
 	public String toCSVHeader() {
 		return toSeparatedHeader(",");
 	}
 
+	/**
+	 * Convenience method to change the values into a series of values separated
+	 * by the a comma ",".
+	 *
+	 * @return a string of all the values in this RowDefinition
+	 */
 	public String toCSVLine() {
 		return toSeparatedLine(",");
 	}
 
+	/**
+	 * Convenience method to change the field names into a series of values
+	 * separated by the a tab "\t".
+	 *
+	 * @return a string of all the fields in this RowDefinition
+	 */
 	public String toTabbedHeader() {
 		return toSeparatedHeader("\t");
 	}
 
+	/**
+	 * Convenience method to change the values into a series of values separated
+	 * by the a tab "\t".
+	 *
+	 * @return a string of all the values in this RowDefinition
+	 */
 	public String toTabbedLine() throws IllegalArgumentException, IllegalAccessException {
 		return toSeparatedLine("\t");
 	}
 
+	/**
+	 * Convenience method to change the values into a series of HTML table
+	 * cells.
+	 *
+	 * @param tableRowCSSClass
+	 * @return a string of all the values in this RowDefinition
+	 */
 	public String getHTMLTableRow(String tableRowCSSClass) {
 		StringBuilder string = new StringBuilder();
 		List<PropertyWrapper> fields = getWrapper().getColumnPropertyWrappers();
@@ -976,6 +1148,14 @@ public class RowDefinition implements Serializable {
 		return string.toString();
 	}
 
+	/**
+	 * Convenience method to change the field names into a series of HTML table
+	 * cells.
+	 *
+	 * @param tableRowCSSClass
+	 * @param tableHeaderCellCSSClass
+	 * @return a string of all the fields in this RowDefinition
+	 */
 	public String getHTMLTableHeader(String tableRowCSSClass, String tableHeaderCellCSSClass) {
 		StringBuilder string = new StringBuilder();
 		List<PropertyWrapper> fields = getWrapper().getColumnPropertyWrappers();
@@ -1054,6 +1234,17 @@ public class RowDefinition implements Serializable {
 		return returnList;
 	}
 
+	/**
+	 * Returns a list of the columns that are set to be return during a query.
+	 *
+	 * <p>
+	 * By default this list is all the columns in the RowDefinition.
+	 * <p>
+	 * However it can be changed using {@link #setReturnColumns(java.util.List)
+	 * }.
+	 *
+	 * @return a list of the columns to be selected and returned in the query.
+	 */
 	protected List<PropertyWrapperDefinition> getReturnColumns() {
 		if (returnColumns == null) {
 			returnColumns = this.getColumnPropertyWrapperDefinitions();
@@ -1061,10 +1252,22 @@ public class RowDefinition implements Serializable {
 		return returnColumns;
 	}
 
+	/**
+	 * Changed the list of columns that are to be return during a query.
+	 *
+	 * @param returnColumns
+	 */
 	protected void setReturnColumns(List<PropertyWrapperDefinition> returnColumns) {
 		this.returnColumns = returnColumns;
 	}
 
+	/**
+	 * Return the list of
+	 * {@link PropertyWrapperDefinition PropertyWrapperDefinitions} for all the
+	 * columns within this RowDefinition.
+	 *
+	 * @return
+	 */
 	protected List<PropertyWrapperDefinition> getColumnPropertyWrapperDefinitions() {
 		List<PropertyWrapperDefinition> columns = new ArrayList<PropertyWrapperDefinition>();
 		List<PropertyWrapper> propertyWrappers = this.getColumnPropertyWrappers();

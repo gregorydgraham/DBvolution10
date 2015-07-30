@@ -493,7 +493,7 @@ public class DBQuery {
 				columnIndex++;
 			}
 
-			for (Map.Entry<Object, DBExpression> entry : details.getDbReportGroupByColumns().entrySet()) {
+			for (Map.Entry<Object, DBExpression> entry : details.getDBReportGroupByColumns().entrySet()) {
 				final DBExpression expression = entry.getValue();
 				if ((!expression.isPurelyFunctional() || defn.supportsPurelyFunctionalGroupByColumns())) {
 					groupByClause.append(groupByColSep).append(defn.transformToStorableType(expression).toSQLString(getDatabase()));
@@ -2101,7 +2101,7 @@ public class DBQuery {
 	 * @return this DBQuery instance
 	 */
 	protected DBQuery addGroupByColumn(Object identifyingObject, DBExpression expressionToAdd) {
-		details.getDbReportGroupByColumns().put(identifyingObject, expressionToAdd);
+		details.getDBReportGroupByColumns().put(identifyingObject, expressionToAdd);
 		return this;
 	}
 

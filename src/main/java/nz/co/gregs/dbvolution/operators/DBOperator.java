@@ -36,61 +36,99 @@ abstract public class DBOperator implements Serializable {
 	private DBExpression thirdValue;
 	private BooleanExpression expression;
 
+	/**
+	 * Create a DBOperator with all NULL values.
+	 *
+	 */
 	public DBOperator() {
 		firstValue = null;
 		secondValue = null;
 		thirdValue = null;
 	}
 
+	/**
+	 * Create a DBOperator with the first parameter specified.
+	 *
+	 * @param first the first parameter of the operator.
+	 */
 	public DBOperator(DBExpression first) {
 		firstValue = first;
 		secondValue = null;
 		thirdValue = null;
 	}
 
+	/**
+	 * Create a DBOperator with first and second parameters specified.
+	 *
+	 * @param first the first parameter of the operator.
+	 * @param second the second parameter of the operator.
+	 */
 	public DBOperator(DBExpression first, DBExpression second) {
 		firstValue = first;
 		secondValue = second;
 		thirdValue = null;
 	}
 
+	/**
+	 * Create a DBOperator with first, second, and third parameters specified.
+	 *
+	 * @param first the first parameter of the operator.
+	 * @param second the second parameter of the operator.
+	 * @param third the third expression of the operator.
+	 */
 	public DBOperator(DBExpression first, DBExpression second, DBExpression third) {
 		firstValue = first;
 		secondValue = second;
 		thirdValue = third;
 	}
+//
+//	/**
+//	 * 
+//	 *
+//	 * @return
+//	 */
+//	protected DBExpression getExpression() {
+//		return this.expression;
+//	}
+//
+//	protected void setExpression(BooleanExpression operatorExpression) {
+//		this.expression = operatorExpression;
+//	}
 
-	protected DBExpression getExpression() {
-		return this.expression;
-	}
-
-	protected void setExpression(BooleanExpression operatorExpression) {
-		this.expression = operatorExpression;
-	}
-
+	/**
+	 * Make this operator an exclusive rather than inclusive comparison.
+	 *
+	 * <p>
+	 * Basically switches the operator from, for instance, "==" to "!=".
+	 *
+	 * @param invertOperator
+	 */
 	public void invertOperator(Boolean invertOperator) {
 		this.invertOperator = invertOperator;
 	}
 
+	/**
+	 * Make this operator an exclusive rather than inclusive comparison.
+	 *
+	 * <p>
+	 * Basically switches the operator from, for instance, "==" to "!=".
+	 *
+	 */
 	public void not() {
 		invertOperator = true;
 	}
 
+	/**
+	 * Makes this operator treat NULL values as if they match the operator.
+	 * 
+	 * <p>
+	 * Basically this means an equals operation becomes an (equals or null) operation.
+	 *
+	 */
 	public void includeNulls() {
 		includeNulls = true;
 	}
-
-//	@Override
-//	public int hashCode() {
-//		int hash = 7;
-//		hash = 41 * hash + (this.invertOperator != null ? this.invertOperator.hashCode() : 0);
-//		hash = 41 * hash + (this.includeNulls != null ? this.includeNulls.hashCode() : 0);
-//		hash = 41 * hash + (this.firstValue != null ? this.firstValue.hashCode() : 0);
-//		hash = 41 * hash + (this.secondValue != null ? this.secondValue.hashCode() : 0);
-//		hash = 41 * hash + (this.thirdValue != null ? this.thirdValue.hashCode() : 0);
-//		hash = 41 * hash + (this.expression != null ? this.expression.hashCode() : 0);
-//		return hash;
-//	}
+	
 	@Override
 	public int hashCode() {
 		return super.hashCode();
@@ -111,8 +149,21 @@ abstract public class DBOperator implements Serializable {
 		}
 	}
 
+	/**
+	 * Adds TypeAdaptor support to DBOperator.
+	 *
+	 * @param typeAdaptor
+	 * @return the type adapted operator
+	 */
 	abstract public DBOperator copyAndAdapt(DBSafeInternalQDTAdaptor typeAdaptor);
 
+	/**
+	 * Create the expression to be used in the query generation.
+	 *
+	 * @param db
+	 * @param column
+	 * @return a boolean expression
+	 */
 	abstract public BooleanExpression generateWhereExpression(DBDatabase db, DBExpression column);
 
 	/**
