@@ -51,17 +51,16 @@ public class DBEqualsOperator extends DBOperator {
 	}
 
 	public DBEqualsOperator(DBExpression equalTo) {
-		this.firstValue = (equalTo == null ? equalTo : equalTo.copy());
+		super(equalTo == null ? equalTo : equalTo.copy());
 	}
 
 	public DBEqualsOperator(Object equalTo) {
-		QueryableDatatype first = QueryableDatatype.getQueryableDatatypeForObject(equalTo);
-		this.firstValue = (first == null ? first : first.copy());
+		super(QueryableDatatype.getQueryableDatatypeForObject(equalTo));
 	}
 
 	@Override
 	public DBEqualsOperator copyAndAdapt(DBSafeInternalQDTAdaptor typeAdaptor) {
-		DBEqualsOperator op = new DBEqualsOperator(typeAdaptor.convert(firstValue));
+		DBEqualsOperator op = new DBEqualsOperator(typeAdaptor.convert(getFirstValue()));
 		op.invertOperator = this.invertOperator;
 		op.includeNulls = this.includeNulls;
 		return op;
@@ -74,33 +73,33 @@ public class DBEqualsOperator extends DBOperator {
 		if (genericExpression instanceof EqualComparable) {
 			if (genericExpression instanceof StringExpression) {
 				StringExpression stringExpression = (StringExpression) genericExpression;
-				if ((firstValue instanceof StringResult) || firstValue == null) {
-					op = stringExpression.bracket().is((StringResult) firstValue);
-				} else if (firstValue instanceof NumberResult) {
-					op = stringExpression.bracket().is(new NumberExpression((NumberResult) firstValue).stringResult());
+				if ((getFirstValue() instanceof StringResult) || getFirstValue() == null) {
+					op = stringExpression.bracket().is((StringResult) getFirstValue());
+				} else if (getFirstValue() instanceof NumberResult) {
+					op = stringExpression.bracket().is(new NumberExpression((NumberResult) getFirstValue()).stringResult());
 				} else {
-					throw new nz.co.gregs.dbvolution.exceptions.ComparisonBetweenTwoDissimilarTypes(db, genericExpression, firstValue);
+					throw new nz.co.gregs.dbvolution.exceptions.ComparisonBetweenTwoDissimilarTypes(db, genericExpression, getFirstValue());
 				}
-			} else if ((genericExpression instanceof NumberExpression) && ((firstValue instanceof NumberResult) || firstValue == null)) {
+			} else if ((genericExpression instanceof NumberExpression) && ((getFirstValue() instanceof NumberResult) || getFirstValue() == null)) {
 				NumberExpression numberExpression = (NumberExpression) genericExpression;
-				op = numberExpression.is((NumberResult) firstValue);
-			} else if ((genericExpression instanceof DateExpression) && ((firstValue instanceof DateResult) || firstValue == null)) {
+				op = numberExpression.is((NumberResult) getFirstValue());
+			} else if ((genericExpression instanceof DateExpression) && ((getFirstValue() instanceof DateResult) || getFirstValue() == null)) {
 				DateExpression dateExpression = (DateExpression) genericExpression;
-				op = dateExpression.is((DateResult) firstValue);
-			} else if ((genericExpression instanceof BooleanExpression) && ((firstValue instanceof BooleanResult) || firstValue == null)) {
+				op = dateExpression.is((DateResult) getFirstValue());
+			} else if ((genericExpression instanceof BooleanExpression) && ((getFirstValue() instanceof BooleanResult) || getFirstValue() == null)) {
 				BooleanExpression boolExpr = (BooleanExpression) genericExpression;
-				op = boolExpr.is((BooleanResult) firstValue);
-			} else if ((genericExpression instanceof BooleanArrayExpression) && ((firstValue instanceof BooleanArrayResult) || firstValue == null)) {
+				op = boolExpr.is((BooleanResult) getFirstValue());
+			} else if ((genericExpression instanceof BooleanArrayExpression) && ((getFirstValue() instanceof BooleanArrayResult) || getFirstValue() == null)) {
 				BooleanArrayExpression boolExpr = (BooleanArrayExpression) genericExpression;
-				op = boolExpr.is((BooleanArrayResult) firstValue);
-			} else if ((genericExpression instanceof DateRepeatExpression) && ((firstValue instanceof DateRepeatResult) || firstValue == null)) {
+				op = boolExpr.is((BooleanArrayResult) getFirstValue());
+			} else if ((genericExpression instanceof DateRepeatExpression) && ((getFirstValue() instanceof DateRepeatResult) || getFirstValue() == null)) {
 				DateRepeatExpression intervalExpr = (DateRepeatExpression) genericExpression;
-				op = intervalExpr.is((DateRepeatResult) firstValue);
-			} else if ((genericExpression instanceof Polygon2DExpression) && ((firstValue instanceof Polygon2DResult) || firstValue == null)) {
+				op = intervalExpr.is((DateRepeatResult) getFirstValue());
+			} else if ((genericExpression instanceof Polygon2DExpression) && ((getFirstValue() instanceof Polygon2DResult) || getFirstValue() == null)) {
 				Polygon2DExpression intervalExpr = (Polygon2DExpression) genericExpression;
-				op = intervalExpr.is((Polygon2DResult) firstValue);
+				op = intervalExpr.is((Polygon2DResult) getFirstValue());
 			} else {
-				throw new nz.co.gregs.dbvolution.exceptions.ComparisonBetweenTwoDissimilarTypes(db, genericExpression, firstValue);
+				throw new nz.co.gregs.dbvolution.exceptions.ComparisonBetweenTwoDissimilarTypes(db, genericExpression, getFirstValue());
 			}
 		} else {
 			throw new nz.co.gregs.dbvolution.exceptions.IncomparableTypeUsedInComparison(db, genericExpression);

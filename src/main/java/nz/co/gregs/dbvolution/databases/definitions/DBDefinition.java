@@ -3966,6 +3966,7 @@ public abstract class DBDefinition {
 	 *
 	 * @param pointsAsString 
 	 * @return MultiPoint
+	 * @throws com.vividsolutions.jts.io.ParseException
 	 */
 	public MultiPoint transformDatabaseMultiPoint2DValueToJTSMultiPoint(String pointsAsString) throws com.vividsolutions.jts.io.ParseException {
 		MultiPoint mpoint = null;
@@ -4107,10 +4108,23 @@ public abstract class DBDefinition {
 		return true;
 	}
 
+	/**
+	 * Return if, like Oracle, the database requires Spatial indexes to perform standard spatial operations.
+	 *
+	 * @return FALSE by default
+	 */
 	public boolean requiresSpatial2DIndexes() {
 		return false;
 	}
 
+	/**
+	 * Return the sequence of SQL operations required to create the necessary Spatial2D indexes
+	 *
+	 * @param aThis
+	 * @param formatTableName
+	 * @param formatColumnName
+	 * @return an ordered list of SQL
+	 */
 	public List<String> getSpatial2DIndexSQL(DBDatabase aThis, String formatTableName, String formatColumnName) {
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}

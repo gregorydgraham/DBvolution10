@@ -55,7 +55,7 @@ public class DBEqualsIgnoreCaseOperator extends DBEqualsOperator {
 //    }
 	@Override
 	public DBEqualsIgnoreCaseOperator copyAndAdapt(DBSafeInternalQDTAdaptor typeAdaptor) {
-		DBEqualsIgnoreCaseOperator op = new DBEqualsIgnoreCaseOperator(typeAdaptor.convert(firstValue));
+		DBEqualsIgnoreCaseOperator op = new DBEqualsIgnoreCaseOperator(typeAdaptor.convert(getFirstValue()));
 		op.invertOperator = this.invertOperator;
 		op.includeNulls = this.includeNulls;
 		return op;
@@ -67,13 +67,13 @@ public class DBEqualsIgnoreCaseOperator extends DBEqualsOperator {
 		BooleanExpression op = BooleanExpression.trueExpression();
 		if (genericExpression instanceof StringExpression) {
 			StringExpression stringExpression = (StringExpression) genericExpression;
-			op = stringExpression.bracket().isIgnoreCase((StringResult) firstValue);
+			op = stringExpression.bracket().isIgnoreCase((StringResult) getFirstValue());
 		} else if (genericExpression instanceof NumberExpression) {
 			NumberExpression numberExpression = (NumberExpression) genericExpression;
-			op = numberExpression.is((NumberResult) firstValue);
+			op = numberExpression.is((NumberResult) getFirstValue());
 		} else if (genericExpression instanceof DateExpression) {
 			DateExpression dateExpression = (DateExpression) genericExpression;
-			op = dateExpression.is((DateResult) firstValue);
+			op = dateExpression.is((DateResult) getFirstValue());
 		}
 		return this.invertOperator ? op.not() : op;
 	}

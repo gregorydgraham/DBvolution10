@@ -110,6 +110,7 @@ public class DateRepeatExpression implements DateRepeatResult, RangeComparable<D
 	 * Equivalent to {@code new DateRepeatExpression(period)}
 	 *
 	 * @param period
+	 * @return a DateRepeat expression representing the value supplied.
 	 */
 	public static DateRepeatExpression value(Period period) {
 		return new DateRepeatExpression(period);

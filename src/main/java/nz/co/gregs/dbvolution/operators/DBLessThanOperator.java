@@ -40,22 +40,16 @@ public class DBLessThanOperator extends DBOperator {
 	 * @param lessThanThis the expression to compare to.
 	 */
 	public DBLessThanOperator(DBExpression lessThanThis) {
-		super();
-		if (lessThanThis != null) {
-			this.firstValue = lessThanThis.copy();
-		} else {
-			this.firstValue = null;
-		}
+		super((lessThanThis != null?lessThanThis.copy(): null));
 	}
 
 	public DBLessThanOperator() {
 		super();
-		this.firstValue = null;
 	}
 
 	@Override
 	public DBLessThanOperator copyAndAdapt(DBSafeInternalQDTAdaptor typeAdaptor) {
-		DBLessThanOperator op = new DBLessThanOperator(typeAdaptor.convert(firstValue));
+		DBLessThanOperator op = new DBLessThanOperator(typeAdaptor.convert(getFirstValue()));
 		op.invertOperator = this.invertOperator;
 		op.includeNulls = this.includeNulls;
 		return op;
@@ -67,13 +61,13 @@ public class DBLessThanOperator extends DBOperator {
 		BooleanExpression op = BooleanExpression.trueExpression();
 		if (genericExpression instanceof StringExpression) {
 			StringExpression stringExpression = (StringExpression) genericExpression;
-			op = stringExpression.bracket().isLessThan((StringResult) firstValue);
+			op = stringExpression.bracket().isLessThan((StringResult) getFirstValue());
 		} else if (genericExpression instanceof NumberExpression) {
 			NumberExpression numberExpression = (NumberExpression) genericExpression;
-			op = numberExpression.isLessThan((NumberResult) firstValue);
+			op = numberExpression.isLessThan((NumberResult) getFirstValue());
 		} else if (genericExpression instanceof DateExpression) {
 			DateExpression dateExpression = (DateExpression) genericExpression;
-			op = dateExpression.isLessThan((DateResult) firstValue);
+			op = dateExpression.isLessThan((DateResult) getFirstValue());
 		}
 		return this.invertOperator ? op.not() : op;
 	}

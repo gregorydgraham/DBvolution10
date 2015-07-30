@@ -31,15 +31,33 @@ abstract public class DBOperator implements Serializable {
 
 	Boolean invertOperator = false;
 	Boolean includeNulls = false;
-	protected DBExpression firstValue;
-	protected DBExpression secondValue;
-	protected DBExpression thirdValue;
+	private DBExpression firstValue;
+	private DBExpression secondValue;
+	private DBExpression thirdValue;
 	private BooleanExpression expression;
 
 	public DBOperator() {
 		firstValue = null;
 		secondValue = null;
 		thirdValue = null;
+	}
+
+	public DBOperator(DBExpression first) {
+		firstValue = first;
+		secondValue = null;
+		thirdValue = null;
+	}
+
+	public DBOperator(DBExpression first, DBExpression second) {
+		firstValue = first;
+		secondValue = second;
+		thirdValue = null;
+	}
+
+	public DBOperator(DBExpression first, DBExpression second, DBExpression third) {
+		firstValue = first;
+		secondValue = second;
+		thirdValue = third;
 	}
 
 	protected DBExpression getExpression() {
@@ -85,9 +103,9 @@ abstract public class DBOperator implements Serializable {
 			return this.getClass() == other.getClass()
 					&& this.invertOperator.equals(other.invertOperator)
 					&& this.includeNulls.equals(other.includeNulls)
-					&& (firstValue == null ? other.firstValue == null : firstValue.equals(other.firstValue))
-					&& (secondValue == null ? other.secondValue == null : secondValue.equals(other.secondValue))
-					&& (thirdValue == null ? other.thirdValue == null : thirdValue.equals(other.thirdValue));
+					&& (getFirstValue() == null ? other.getFirstValue() == null : getFirstValue().equals(other.getFirstValue()))
+					&& (getSecondValue() == null ? other.getSecondValue() == null : getSecondValue().equals(other.getSecondValue()))
+					&& (getThirdValue() == null ? other.getThirdValue() == null : getThirdValue().equals(other.getThirdValue()));
 		} else {
 			return false;
 		}
@@ -96,4 +114,46 @@ abstract public class DBOperator implements Serializable {
 	abstract public DBOperator copyAndAdapt(DBSafeInternalQDTAdaptor typeAdaptor);
 
 	abstract public BooleanExpression generateWhereExpression(DBDatabase db, DBExpression column);
+
+	/**
+	 * @return the firstValue
+	 */
+	public DBExpression getFirstValue() {
+		return firstValue;
+	}
+
+	/**
+	 * @param firstValue the firstValue to set
+	 */
+	public void setFirstValue(DBExpression firstValue) {
+		this.firstValue = firstValue;
+	}
+
+	/**
+	 * @return the secondValue
+	 */
+	public DBExpression getSecondValue() {
+		return secondValue;
+	}
+
+	/**
+	 * @param secondValue the secondValue to set
+	 */
+	public void setSecondValue(DBExpression secondValue) {
+		this.secondValue = secondValue;
+	}
+
+	/**
+	 * @return the thirdValue
+	 */
+	public DBExpression getThirdValue() {
+		return thirdValue;
+	}
+
+	/**
+	 * @param thirdValue the thirdValue to set
+	 */
+	public void setThirdValue(DBExpression thirdValue) {
+		this.thirdValue = thirdValue;
+	}
 }

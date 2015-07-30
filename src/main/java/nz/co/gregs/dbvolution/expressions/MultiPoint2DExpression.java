@@ -33,7 +33,7 @@ import nz.co.gregs.dbvolution.results.NumberResult;
  *
  * @author gregorygraham
  */
-public class MultiPoint2DExpression implements MultiPoint2DResult, EqualComparable<MultiPoint2DResult>, SpatialExpression {
+public class MultiPoint2DExpression implements MultiPoint2DResult, EqualComparable<MultiPoint2DResult>, Spatial2DExpression {
 
 	private MultiPoint2DResult innerPoint;
 	private boolean nullProtectionRequired;
