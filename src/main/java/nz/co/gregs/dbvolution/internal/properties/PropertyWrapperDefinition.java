@@ -8,9 +8,15 @@ import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.datatypes.DBEnumValue;
 import nz.co.gregs.dbvolution.datatypes.InternalQueryableDatatypeProxy;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
+import nz.co.gregs.dbvolution.datatypes.spatial2D.DBLine2D;
+import nz.co.gregs.dbvolution.datatypes.spatial2D.DBLineSegment2D;
+import nz.co.gregs.dbvolution.datatypes.spatial2D.DBMultiPoint2D;
+import nz.co.gregs.dbvolution.datatypes.spatial2D.DBPoint2D;
+import nz.co.gregs.dbvolution.datatypes.spatial2D.DBPolygon2D;
 import nz.co.gregs.dbvolution.exceptions.DBThrownByEndUserCodeException;
 import nz.co.gregs.dbvolution.expressions.DBExpression;
 import nz.co.gregs.dbvolution.query.RowDefinition;
+import nz.co.gregs.dbvolution.results.Spatial2DResult;
 
 /**
  * Abstracts a java field or bean-property as a DBvolution-centric property,
@@ -561,6 +567,9 @@ public class PropertyWrapperDefinition {
 		return columnHandler.isAutoIncrement();
 	}
 
+	boolean isSpatial2DType() {
+		Class<? extends QueryableDatatype> qdt = type();
+		return (Spatial2DResult.class.isAssignableFrom(qdt));
 	boolean isAutoFilling() {
 		return this.javaProperty.isAnnotationPresent(AutoFillDuringQueryIfPossible.class);
 	}

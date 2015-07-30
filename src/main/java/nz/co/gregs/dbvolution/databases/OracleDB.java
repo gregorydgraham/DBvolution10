@@ -19,6 +19,8 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import javax.sql.DataSource;
 import nz.co.gregs.dbvolution.DBDatabase;
+import nz.co.gregs.dbvolution.DBRow;
+import nz.co.gregs.dbvolution.annotations.DBTableName;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.databases.supports.SupportsPolygonDatatype;
 import nz.co.gregs.dbvolution.internal.oracle.*;
@@ -33,7 +35,7 @@ import nz.co.gregs.dbvolution.internal.oracle.*;
  * @see Oracle11DB
  * @see Oracle12DB
  */
-public abstract class OracleDB extends DBDatabase implements SupportsPolygonDatatype{
+public abstract class OracleDB extends DBDatabase implements SupportsPolygonDatatype {
 
 	/**
 	 * Creates a DBDatabase instance for the definition and data source.
@@ -84,6 +86,19 @@ public abstract class OracleDB extends DBDatabase implements SupportsPolygonData
 	protected void addDatabaseSpecificFeatures(Statement statement) throws SQLException {
 		for (StringFunctions fn : StringFunctions.values()) {
 			fn.add(statement);
+		}
+	}
+
+	@Override
+	protected <TR extends DBRow> void dropAnyAssociatedDatabaseObjects(TR tableRow) throws SQLException {
+
+		DBDefinition definition = getDefinition();
+		final String formattedTableName = definition.formatTableName(tableRow);
+		final DBStatement dbStatement3 = getDBStatement();
+		try {
+			dbStatement3.execute("DELETE FROM USER_SDO_GEOM_METADATA WHERE TABLE_NAME = '" + formattedTableName.toUpperCase() + "'");
+		} finally {
+			dbStatement3.close();
 		}
 	}
 

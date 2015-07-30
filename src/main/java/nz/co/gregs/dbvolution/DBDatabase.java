@@ -921,6 +921,7 @@ public abstract class DBDatabase implements Cloneable {
 		preventDDLDuringTransaction("DBDatabase.createTable()");
 		StringBuilder sqlScript = new StringBuilder();
 		List<PropertyWrapper> pkFields = new ArrayList<PropertyWrapper>();
+		List<PropertyWrapper> spatial2DFields = new ArrayList<PropertyWrapper>();
 		String lineSeparator = System.getProperty("line.separator");
 		// table name
 
@@ -943,6 +944,9 @@ public abstract class DBDatabase implements Cloneable {
 
 				if (field.isPrimaryKey()) {
 					pkFields.add(field);
+				}
+				if (field.isSpatial2DType()) {
+					spatial2DFields.add(field);
 				}
 				String fkClause = definition.getForeignKeyClauseForCreateTable(field);
 				if (!fkClause.isEmpty()) {
@@ -979,12 +983,22 @@ public abstract class DBDatabase implements Cloneable {
 		final DBStatement dbStatement = getDBStatement();
 		try {
 			dbStatement.execute(sqlString);
+			
+			//Oracle style trigger based auto-increment keys
 			if (definition.prefersTriggerBasedIdentities() && pkFields.size() == 1) {
 				List<String> triggerBasedIdentitySQL = definition.getTriggerBasedIdentitySQL(this, definition.formatTableName(newTableRow), definition.formatColumnName(pkFields.get(0).columnName()));
 				for (String sql : triggerBasedIdentitySQL) {
 					dbStatement.execute(sql);
 				}
 			}
+			
+			if (definition.requiresSpatial2DIndexes() && spatial2DFields.size() >0) {
+				List<String> triggerBasedIdentitySQL = definition.getSpatial2DIndexSQL(this, definition.formatTableName(newTableRow), definition.formatColumnName(spatial2DFields.get(0).columnName()));
+				for (String sql : triggerBasedIdentitySQL) {
+					dbStatement.execute(sql);
+				}
+			}
+			
 		} finally {
 			dbStatement.close();
 		}

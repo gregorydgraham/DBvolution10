@@ -24,9 +24,11 @@ import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.geom.Polygon;
 import com.vividsolutions.jts.io.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.datatypes.DBBoolean;
 import nz.co.gregs.dbvolution.datatypes.DBBooleanArray;
 import nz.co.gregs.dbvolution.datatypes.DBDate;
@@ -45,7 +47,7 @@ import nz.co.gregs.dbvolution.internal.oracle.StringFunctions;
 import nz.co.gregs.dbvolution.query.QueryOptions;
 
 public class OracleDBDefinition extends DBDefinition {
-	
+
 	String dateFormatStr = "yyyy-M-d HH:mm:ss.SSS Z";
 	String oracleDateFormatStr = "YYYY-MM-DD HH24:MI:SS.FF3 TZHTZM";
 	SimpleDateFormat javaToStringFormatter = new SimpleDateFormat(dateFormatStr);
@@ -109,6 +111,7 @@ public class OracleDBDefinition extends DBDefinition {
 			return qdt.getSQLDatatype();
 		}
 	}
+
 	@Override
 	public boolean supportsArraysNatively() {
 		return false;
@@ -375,44 +378,69 @@ public class OracleDBDefinition extends DBDefinition {
 	}
 
 	@Override
+	public boolean requiresSpatial2DIndexes() {
+		return true;
+	}
+
+	@Override
+	public List<String> getSpatial2DIndexSQL(DBDatabase aThis, final String formatTableName, final String formatColumnName) {
+		return new ArrayList<String>() {
+			{
+				add(
+						"INSERT INTO USER_SDO_GEOM_METADATA \n"
+						+ "  VALUES (\n"
+						+ "  '" + formatTableName + "',\n"
+						+ "  '" + formatColumnName + "',\n"
+						+ "  MDSYS.SDO_DIM_ARRAY(\n"
+						+ "    MDSYS.SDO_DIM_ELEMENT('X', -9999999999, 9999999999, 0.0000000001),\n"
+						+ "    MDSYS.SDO_DIM_ELEMENT('Y', -9999999999, 9999999999, 0.0000000001)\n"
+						+ "     ),\n"
+						+ "  NULL   -- SRID\n"
+						+ ")");
+				add("CREATE INDEX "+formatNameForDatabase("DBV_"+formatTableName+"_"+formatColumnName+"_sp2didx")+" ON " + formatTableName + " (" + formatColumnName + ") INDEXTYPE IS MDSYS.SPATIAL_INDEX");
+			}
+		};
+	}
+
+	@Override
 	public String transformPoint2DIntoDatabaseFormat(Point point) {
-//		final Coordinate coordinate = point.getCoordinate();
-//		return "SDO_GEOMETRY(2001, NULL, SDO_POINT_TYPE(" + coordinate.x + ", " + coordinate.y + ",NULL), NULL, NULL)";
-		return "SDO_UTIL.FROM_WKTGEOMETRY('"+point.toText()+"')";
+		final Coordinate coordinate = point.getCoordinate();
+		return "SDO_GEOMETRY(2001, NULL, SDO_POINT_TYPE(" + coordinate.x + ", " + coordinate.y + ",NULL), NULL, NULL)";
+//		return "SDO_UTIL.FROM_WKTGEOMETRY('"+point.toText()+"')";
 	}
 
 	@Override
 	public String transformLineStringIntoDatabaseLine2DFormat(LineString point) {
 //		final Coordinate coordinate = point.getCoordinate();
 //		return "SDO_GEOMETRY(2002, NULL, SDO_POINT_TYPE(" + coordinate.x + ", " + coordinate.y + ",NULL), NULL, NULL)";
-		return "SDO_UTIL.FROM_WKTGEOMETRY('"+point.toText()+"')";
+		return "SDO_UTIL.FROM_WKTGEOMETRY('" + point.toText() + "')";
 	}
 
 	@Override
 	public String transformPolygonIntoDatabasePolygon2DFormat(Polygon point) {
 //		final Coordinate coordinate = point.getCoordinate();
 //		return "SDO_GEOMETRY(2003, NULL, SDO_POINT_TYPE(" + coordinate.x + ", " + coordinate.y + ",NULL), NULL, NULL)";
-		return "SDO_UTIL.FROM_WKTGEOMETRY('"+point.toText()+"')";
+		return "SDO_UTIL.FROM_WKTGEOMETRY('" + point.toText() + "')";
 	}
 
 	@Override
 	public String transformMultiPoint2DToDatabaseMultiPoint2DValue(MultiPoint point) {
 //		final Coordinate coordinate = point.getCoordinate();
 //		return "SDO_GEOMETRY(2005, NULL, SDO_POINT_TYPE(" + coordinate.x + ", " + coordinate.y + ",NULL), NULL, NULL)";
-		return "SDO_UTIL.FROM_WKTGEOMETRY('"+point.toText()+"')";
+		return "SDO_UTIL.FROM_WKTGEOMETRY('" + point.toText() + "')";
 	}
-	
+
 	@Override
 	public String transformLineSegmentIntoDatabaseLineSegment2DFormat(LineSegment point) {
 //		final Coordinate coordinate = point.p0;
 //		final Coordinate otherCoord = point.p1;
 //		return "SDO_GEOMETRY(2002, NULL, SDO_POINT_TYPE(" + coordinate.x + ", " + coordinate.y + ",NULL), NULL, NULL)";
-		return "SDO_UTIL.FROM_WKTGEOMETRY('"+point.toGeometry(new GeometryFactory()).toText()+"')";
+		return "SDO_UTIL.FROM_WKTGEOMETRY('" + point.toGeometry(new GeometryFactory()).toText() + "')";
 	}
 
 	@Override
 	public String doPoint2DDistanceBetweenTransform(String polygon2DSQL, Point2DExpression otherPolygon2DSQL) {
-		return "SDO_GEOM.SDO_DISTANCE("+polygon2DSQL+", "+otherPolygon2DSQL+", 0.000001)"; //To change body of generated methods, choose Tools | Templates.
+		return "SDO_GEOM.SDO_DISTANCE(" + polygon2DSQL + ", " + otherPolygon2DSQL + ", 0.000001)"; //To change body of generated methods, choose Tools | Templates.
 	}
 
 	@Override
@@ -422,32 +450,32 @@ public class OracleDBDefinition extends DBDefinition {
 
 	@Override
 	public String doPoint2DAsTextTransform(String point2DSQL) {
-		return "SDO_UTIL.TO_WKTGEOMETRY("+point2DSQL+")";
+		return "SDO_UTIL.TO_WKTGEOMETRY(" + point2DSQL + ")";
 	}
 
 	@Override
 	public String doPoint2DGetBoundingBoxTransform(String point2DSQL) {
-		return "SDO_UTIL.SDO_MBR("+point2DSQL+")";
+		return "SDO_UTIL.SDO_MBR(" + point2DSQL + ")";
 	}
 
 	@Override
 	public String doPoint2DDimensionTransform(String point2DSQL) {
-		return "("+point2DSQL+").GET_DIMS()";
+		return "(" + point2DSQL + ").GET_DIMS()";
 	}
 
 	@Override
 	public String doPoint2DGetYTransform(String point2DSQL) {
-		return "("+point2DSQL+").SDO_POINT.Y";
+		return "(" + point2DSQL + ").SDO_POINT.Y";
 	}
 
 	@Override
 	public String doPoint2DGetXTransform(String point2DSQL) {
-		return "("+point2DSQL+").SDO_POINT.X";
+		return "(" + point2DSQL + ").SDO_POINT.X";
 	}
 
 	@Override
 	public String doPoint2DEqualsTransform(String firstPoint, String secondPoint) {
-		return "SDO_GEOM.RELATE("+firstPoint+", 'equal', "+secondPoint+", '')='EQUAL'";
+		return "SDO_GEOM.RELATE(" + firstPoint + ", 'equal', " + secondPoint + ", '')='EQUAL'";
 	}
 
 }

@@ -598,6 +598,8 @@ public class PropertyWrapper {
 		return propertyDefinition.isAutoIncrementColumn();
 	}
 
+	public boolean isSpatial2DType() {
+		return propertyDefinition.isSpatial2DType();
 	/**
 	 * Returns true if the property wrapped is an auto-filling field.
 	 *
