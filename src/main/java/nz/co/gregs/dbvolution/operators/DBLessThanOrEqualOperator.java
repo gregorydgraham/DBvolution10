@@ -41,7 +41,7 @@ public class DBLessThanOrEqualOperator extends DBLessThanOperator {
 
 	@Override
 	public DBLessThanOrEqualOperator copyAndAdapt(DBSafeInternalQDTAdaptor typeAdaptor) {
-		DBLessThanOrEqualOperator op = new DBLessThanOrEqualOperator(typeAdaptor.convert(firstValue));
+		DBLessThanOrEqualOperator op = new DBLessThanOrEqualOperator(typeAdaptor.convert(getFirstValue()));
 		op.invertOperator = this.invertOperator;
 		op.includeNulls = this.includeNulls;
 		return op;
@@ -53,13 +53,13 @@ public class DBLessThanOrEqualOperator extends DBLessThanOperator {
 		BooleanExpression op = BooleanExpression.trueExpression();
 		if (genericExpression instanceof StringExpression) {
 			StringExpression stringExpression = (StringExpression) genericExpression;
-			op = stringExpression.bracket().isLessThanOrEqual((StringResult) firstValue);
+			op = stringExpression.bracket().isLessThanOrEqual((StringResult) getFirstValue());
 		} else if (genericExpression instanceof NumberExpression) {
 			NumberExpression numberExpression = (NumberExpression) genericExpression;
-			op = numberExpression.isLessThanOrEqual((NumberResult) firstValue);
+			op = numberExpression.isLessThanOrEqual((NumberResult) getFirstValue());
 		} else if (genericExpression instanceof DateExpression) {
 			DateExpression dateExpression = (DateExpression) genericExpression;
-			op = dateExpression.isLessThanOrEqual((DateResult) firstValue);
+			op = dateExpression.isLessThanOrEqual((DateResult) getFirstValue());
 		}
 		return this.invertOperator ? op.not() : op;
 	}

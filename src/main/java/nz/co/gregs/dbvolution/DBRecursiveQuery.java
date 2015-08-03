@@ -205,7 +205,7 @@ public class DBRecursiveQuery<T extends DBRow> {
 
 					originalQuery.setExpressionColumns(resultSet, queryRow);
 
-					originalQuery.setQueryRowFromResultSet(resultSet, queryRow, originalQuery.getQueryDetails().getDbReportGroupByColumns().size() > 0);
+					originalQuery.setQueryRowFromResultSet(resultSet, queryRow, originalQuery.getQueryDetails().getDBReportGroupByColumns().size() > 0);
 					returnList.add(queryRow);
 				}
 			} finally {
@@ -228,7 +228,7 @@ public class DBRecursiveQuery<T extends DBRow> {
 			String recursiveAliases = "";
 			final RowDefinitionInstanceWrapper rowDefinitionInstanceWrapper = foreignKeyToFollow.getColumn().getPropertyWrapper().getRowDefinitionInstanceWrapper();
 			RowDefinition adapteeRowDefinition = rowDefinitionInstanceWrapper.adapteeRowDefinition();
-			List<PropertyWrapper> propertyWrappers = adapteeRowDefinition.getPropertyWrappers();
+			List<PropertyWrapper> propertyWrappers = adapteeRowDefinition.getColumnPropertyWrappers();
 			String separator = "";
 			for (PropertyWrapper propertyWrapper : propertyWrappers) {
 				final String columnName = defn.formatColumnName(propertyWrapper.getDefinition().getColumnName());

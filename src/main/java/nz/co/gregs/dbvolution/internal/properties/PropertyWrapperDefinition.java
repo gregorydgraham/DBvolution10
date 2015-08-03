@@ -2,6 +2,7 @@ package nz.co.gregs.dbvolution.internal.properties;
 
 import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.DBRow;
+import nz.co.gregs.dbvolution.annotations.AutoFillDuringQueryIfPossible;
 import nz.co.gregs.dbvolution.annotations.DBForeignKey;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.datatypes.DBEnumValue;
@@ -209,7 +210,7 @@ public class PropertyWrapperDefinition {
 	 * @return the Class of the internal QueryableDatatype used by this property
 	 */
 	public Class<? extends QueryableDatatype> type() {
-		return typeHandler.getType();
+		return typeHandler.getQueryableDatatypeClass();
 	}
 
 	/**
@@ -569,6 +570,14 @@ public class PropertyWrapperDefinition {
 	boolean isSpatial2DType() {
 		Class<? extends QueryableDatatype> qdt = type();
 		return (Spatial2DResult.class.isAssignableFrom(qdt));
+	}
+	
+	boolean isAutoFilling() {
+		return this.javaProperty.isAnnotationPresent(AutoFillDuringQueryIfPossible.class);
+	}
+
+	Class<?> getAutoFillingClass() {
+		return this.javaProperty.getAnnotation(AutoFillDuringQueryIfPossible.class).requiredClass();
 	}
 
 }

@@ -35,17 +35,54 @@ public class DateRepeatExpression implements DateRepeatResult, RangeComparable<D
 	DateRepeatResult innerDateRepeatResult = null;
 	private boolean nullProtectionRequired = false;
 
+	/**
+	 * DateRepeat values are often stored as Strings of the format
+	 * P2015Y12M30D23h59n59.0s
+	 */
 	public static final String INTERVAL_PREFIX = "P";
+	/**
+	 * DateRepeat values are often stored as Strings of the format
+	 * P2015Y12M30D23h59n59.0s
+	 */
 	public static final String YEAR_SUFFIX = "Y";
+	/**
+	 * DateRepeat values are often stored as Strings of the format
+	 * P2015Y12M30D23h59n59.0s
+	 */
 	public static final String MONTH_SUFFIX = "M";
+	/**
+	 * DateRepeat values are often stored as Strings of the format
+	 * P2015Y12M30D23h59n59.0s
+	 */
 	public static final String DAY_SUFFIX = "D";
+	/**
+	 * DateRepeat values are often stored as Strings of the format
+	 * P2015Y12M30D23h59n59.0s
+	 */
 	public static final String HOUR_SUFFIX = "h";
+	/**
+	 * DateRepeat values are often stored as Strings of the format
+	 * P2015Y12M30D23h59n59.0s
+	 */
 	public static final String MINUTE_SUFFIX = "n";
+	/**
+	 * DateRepeat values are often stored as Strings of the format
+	 * P2015Y12M30D23h59n59.0s
+	 */
 	public static final String SECOND_SUFFIX = "s";
 
-	public DateRepeatExpression() {
+	/**
+	 * Default constructor
+	 *
+	 */
+	protected DateRepeatExpression() {
 	}
 
+	/**
+	 * Creates a new DateRepeatExression that represents the value supplied.
+	 *
+	 * @param interval
+	 */
 	public DateRepeatExpression(Period interval) {
 		innerDateRepeatResult = new DBDateRepeat(interval);
 		if (interval == null || innerDateRepeatResult.getIncludesNull()) {
@@ -53,6 +90,12 @@ public class DateRepeatExpression implements DateRepeatResult, RangeComparable<D
 		}
 	}
 
+	/**
+	 * Creates a new DateRepeatExression that represents the DateRepeat value
+	 * supplied.
+	 *
+	 * @param interval
+	 */
 	public DateRepeatExpression(DateRepeatResult interval) {
 		innerDateRepeatResult = interval;
 		if (interval == null || innerDateRepeatResult.getIncludesNull()) {
@@ -60,6 +103,15 @@ public class DateRepeatExpression implements DateRepeatResult, RangeComparable<D
 		}
 	}
 
+	/**
+	 * Creates a new DateRepeatExression that represents the value supplied.
+	 *
+	 * <p>
+	 * Equivalent to {@code new DateRepeatExpression(period)}
+	 *
+	 * @param period
+	 * @return a DateRepeat expression representing the value supplied.
+	 */
 	public static DateRepeatExpression value(Period period) {
 		return new DateRepeatExpression(period);
 	}
@@ -108,10 +160,23 @@ public class DateRepeatExpression implements DateRepeatResult, RangeComparable<D
 		return BooleanExpression.isNull(this);
 	}
 
+	/**
+	 * Returns TRUE if this expression evaluates to a smaller or more negative
+	 * offset than the provided value, otherwise FALSE.
+	 *
+	 * @param period
+	 * @return a BooleanExpression
+	 */
 	public BooleanExpression isLessThan(Period period) {
 		return this.isLessThan(value(period));
 	}
 
+	/**
+	 * Returns TRUE if this expression evaluates to a smaller or more negative
+	 * offset than the provided value, otherwise FALSE.
+	 *
+	 * @return a BooleanExpression
+	 */
 	@Override
 	public BooleanExpression isLessThan(DateRepeatResult anotherInstance) {
 		return new BooleanExpression(new DateRepeatDateRepeatWithBooleanResult(this, anotherInstance) {
@@ -123,10 +188,23 @@ public class DateRepeatExpression implements DateRepeatResult, RangeComparable<D
 		});
 	}
 
+	/**
+	 * Returns TRUE if this expression evaluates to a greater or less negative
+	 * offset than the provided value, otherwise FALSE.
+	 *
+	 * @param period
+	 * @return a BooleanExpression
+	 */
 	public BooleanExpression isGreaterThan(Period period) {
 		return this.isGreaterThan(value(period));
 	}
 
+	/**
+	 * Returns TRUE if this expression evaluates to a smaller or more negative
+	 * offset than the provided value, otherwise FALSE.
+	 *
+	 * @return a BooleanExpression
+	 */
 	@Override
 	public BooleanExpression isGreaterThan(DateRepeatResult anotherInstance) {
 		return new BooleanExpression(new DateRepeatDateRepeatWithBooleanResult(this, anotherInstance) {
@@ -138,10 +216,24 @@ public class DateRepeatExpression implements DateRepeatResult, RangeComparable<D
 		});
 	}
 
+	/**
+	 * Returns TRUE if this expression evaluates to an equal or smaller offset
+	 * than the provided value, otherwise FALSE.
+	 *
+	 * @param period
+	 * @return a BooleanExpression
+	 */
 	public BooleanExpression isLessThanOrEqual(Period period) {
 		return this.isLessThanOrEqual(value(period));
 	}
 
+	/**
+	 * Returns TRUE if this expression evaluates to an equal or smaller offset
+	 * than the provided value, otherwise FALSE.
+	 *
+	 * @param anotherInstance
+	 * @return a BooleanExpression
+	 */
 	@Override
 	public BooleanExpression isLessThanOrEqual(DateRepeatResult anotherInstance) {
 		return new BooleanExpression(new DateRepeatDateRepeatWithBooleanResult(this, anotherInstance) {
@@ -153,10 +245,24 @@ public class DateRepeatExpression implements DateRepeatResult, RangeComparable<D
 		});
 	}
 
+	/**
+	 * Returns TRUE if this expression evaluates to an equal or greater offset
+	 * than the provided value, otherwise FALSE.
+	 *
+	 * @param period
+	 * @return a BooleanExpression
+	 */
 	public BooleanExpression isGreaterThanOrEqual(Period period) {
 		return this.isGreaterThanOrEqual(value(period));
 	}
 
+	/**
+	 * Returns TRUE if this expression evaluates to an equal or greater offset
+	 * than the provided value, otherwise FALSE.
+	 *
+	 * @param anotherInstance
+	 * @return a BooleanExpression
+	 */
 	@Override
 	public BooleanExpression isGreaterThanOrEqual(DateRepeatResult anotherInstance) {
 		return new BooleanExpression(new DateRepeatDateRepeatWithBooleanResult(this, anotherInstance) {
@@ -169,28 +275,80 @@ public class DateRepeatExpression implements DateRepeatResult, RangeComparable<D
 		});
 	}
 
+	/**
+	 * Returns TRUE if this expression evaluates to an smaller offset than the
+	 * provided value, FALSE when the it is greater than the provided value, and
+	 * the value of the fallBackWhenEqual parameter when the 2 values are the
+	 * same.
+	 *
+	 * @param period
+	 * @param fallBackWhenEqual
+	 * @return a BooleanExpression
+	 */
 	public BooleanExpression isLessThan(Period period, BooleanExpression fallBackWhenEqual) {
 		return this.isLessThan(value(period), fallBackWhenEqual);
 	}
 
+	/**
+	 * Returns TRUE if this expression evaluates to an smaller offset than the
+	 * provided value, FALSE when the it is greater than the provided value, and
+	 * the value of the fallBackWhenEqual parameter when the 2 values are the
+	 * same.
+	 *
+	 * @param anotherInstance
+	 * @param fallBackWhenEqual
+	 * @return a BooleanExpression
+	 */
 	@Override
 	public BooleanExpression isLessThan(DateRepeatResult anotherInstance, BooleanExpression fallBackWhenEqual) {
 		return this.isLessThan(anotherInstance).or(this.is(anotherInstance).and(fallBackWhenEqual));
 	}
 
+	/**
+	 * Returns TRUE if this expression evaluates to an greater offset than the
+	 * provided value, FALSE when the it is smaller than the provided value, and
+	 * the value of the fallBackWhenEqual parameter when the 2 values are the
+	 * same.
+	 *
+	 * @param period
+	 * @param fallBackWhenEqual
+	 * @return a BooleanExpression
+	 */
 	public BooleanExpression isGreaterThan(Period period, BooleanExpression fallBackWhenEqual) {
 		return this.isGreaterThan(value(period), fallBackWhenEqual);
 	}
 
+	/**
+	 * Returns TRUE if this expression evaluates to an greater offset than the
+	 * provided value, FALSE when the it is smaller than the provided value, and
+	 * the value of the fallBackWhenEqual parameter when the 2 values are the
+	 * same.
+	 *
+	 * @param anotherInstance
+	 * @param fallBackWhenEqual
+	 * @return a BooleanExpression
+	 */
 	@Override
 	public BooleanExpression isGreaterThan(DateRepeatResult anotherInstance, BooleanExpression fallBackWhenEqual) {
 		return this.isGreaterThan(anotherInstance).or(this.is(anotherInstance).and(fallBackWhenEqual));
 	}
 
+	/**
+	 * Returns TRUE if this expression and the provided value are the same.
+	 *
+	 * @param period
+	 * @return a BooleanExpression
+	 */
 	public BooleanExpression is(Period period) {
 		return this.is(value(period));
 	}
 
+	/**
+	 * Returns TRUE if this expression and the provided value are the same.
+	 *
+	 * @param anotherInstance 
+	 * @return a BooleanExpression
+	 */
 	@Override
 	public BooleanExpression is(DateRepeatResult anotherInstance) {
 		return new BooleanExpression(new DateRepeatDateRepeatWithBooleanResult(this, anotherInstance) {
@@ -202,6 +360,11 @@ public class DateRepeatExpression implements DateRepeatResult, RangeComparable<D
 		});
 	}
 
+	/**
+	 * Returns the YEARS part of this DateRepeat value.
+	 *
+	 * @return a number expression
+	 */
 	public NumberExpression getYears() {
 		return new NumberExpression(new DateRepeatWithNumberResult(this) {
 
@@ -220,6 +383,11 @@ public class DateRepeatExpression implements DateRepeatResult, RangeComparable<D
 		);
 	}
 
+	/**
+	 * Returns the MONTHS part of this DateRepeat value.
+	 *
+	 * @return a number expression
+	 */
 	public NumberExpression getMonths() {
 		return new NumberExpression(new DateRepeatWithNumberResult(this) {
 
@@ -238,6 +406,11 @@ public class DateRepeatExpression implements DateRepeatResult, RangeComparable<D
 		);
 	}
 
+	/**
+	 * Returns the DAYS part of this DateRepeat value.
+	 *
+	 * @return a number expression
+	 */
 	public NumberExpression getDays() {
 		return new NumberExpression(new DateRepeatWithNumberResult(this) {
 
@@ -256,6 +429,11 @@ public class DateRepeatExpression implements DateRepeatResult, RangeComparable<D
 		);
 	}
 
+	/**
+	 * Returns the HOURS part of this DateRepeat value.
+	 *
+	 * @return a number expression
+	 */
 	public NumberExpression getHours() {
 		return new NumberExpression(new DateRepeatWithNumberResult(this) {
 
@@ -274,6 +452,11 @@ public class DateRepeatExpression implements DateRepeatResult, RangeComparable<D
 		);
 	}
 
+	/**
+	 * Returns the MINUTES part of this DateRepeat value.
+	 *
+	 * @return a number expression
+	 */
 	public NumberExpression getMinutes() {
 		return new NumberExpression(new DateRepeatWithNumberResult(this) {
 
@@ -292,6 +475,11 @@ public class DateRepeatExpression implements DateRepeatResult, RangeComparable<D
 		);
 	}
 
+	/**
+	 * Returns the SECONDS part of this DateRepeat value.
+	 *
+	 * @return a number expression
+	 */
 	public NumberExpression getSeconds() {
 		return new NumberExpression(new DateRepeatWithNumberResult(this) {
 
@@ -310,23 +498,6 @@ public class DateRepeatExpression implements DateRepeatResult, RangeComparable<D
 		);
 	}
 
-//	public NumberExpression getMilliseconds() {
-//		return new NumberExpression(new DateRepeatWithNumberResult(this) {
-//
-//			@Override
-//			protected String doExpressionTransform(DBDatabase db) {
-//				if (db instanceof SupportsDateRepeatDatatypeFunctions) {
-//					return db.getDefinition().doDateRepeatGetMillisecondsTransform(getFirst().toSQLString(db));
-//				} else {
-//					return BooleanExpression.isNull(getFirst()).ifThenElse(
-//							NumberExpression.nullExpression(),
-//							getFirst().stringResult().substringBefore(SECOND_SUFFIX).substringAfter(MINUTE_SUFFIX).numberResult().bracket().decimalPart().bracket().times(1000).bracket())
-//							.toSQLString(db);
-//				}
-//			}
-//		}
-//		);
-//	}
 	/**
 	 * Converts the interval expression into a string/character expression.
 	 *

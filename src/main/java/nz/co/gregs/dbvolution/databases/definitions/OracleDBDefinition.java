@@ -22,7 +22,6 @@ import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.MultiPoint;
 import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.geom.Polygon;
-import com.vividsolutions.jts.io.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -36,8 +35,6 @@ import nz.co.gregs.dbvolution.datatypes.DBJavaObject;
 import nz.co.gregs.dbvolution.datatypes.DBString;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 import nz.co.gregs.dbvolution.datatypes.spatial2D.DBLine2D;
-import nz.co.gregs.dbvolution.datatypes.spatial2D.DBLineSegment2D;
-import nz.co.gregs.dbvolution.datatypes.spatial2D.DBMultiPoint2D;
 import nz.co.gregs.dbvolution.datatypes.spatial2D.DBPoint2D;
 import nz.co.gregs.dbvolution.datatypes.spatial2D.DBPolygon2D;
 import nz.co.gregs.dbvolution.expressions.BooleanExpression;
@@ -46,6 +43,16 @@ import nz.co.gregs.dbvolution.expressions.Point2DExpression;
 import nz.co.gregs.dbvolution.internal.oracle.StringFunctions;
 import nz.co.gregs.dbvolution.query.QueryOptions;
 
+/**
+ * Defines the features of the Oracle database that differ from the standard
+ * database.
+ *
+ * <p>
+ * Provides the base definitions used by all variants of the Oracle database
+ * DBDefinition.
+ *
+ * @author Gregory Graham
+ */
 public class OracleDBDefinition extends DBDefinition {
 
 	String dateFormatStr = "yyyy-M-d HH:mm:ss.SSS Z";
@@ -332,8 +339,8 @@ public class OracleDBDefinition extends DBDefinition {
 	 * generation i.e. {@link DBTableClassGenerator}.
 	 *
 	 * <p>
-	 * By default this method returns null as system tables are not a problem for
-	 * most databases.
+	 * By default this method returns null as system tables are not a problem
+	 * for most databases.
 	 *
 	 * @return
 	 */
@@ -385,6 +392,8 @@ public class OracleDBDefinition extends DBDefinition {
 	@Override
 	public List<String> getSpatial2DIndexSQL(DBDatabase aThis, final String formatTableName, final String formatColumnName) {
 		return new ArrayList<String>() {
+			public static final long serialVersionUID = 1;
+
 			{
 				add(
 						"INSERT INTO USER_SDO_GEOM_METADATA \n"
@@ -397,7 +406,7 @@ public class OracleDBDefinition extends DBDefinition {
 						+ "     ),\n"
 						+ "  NULL   -- SRID\n"
 						+ ")");
-				add("CREATE INDEX "+formatNameForDatabase("DBV_"+formatTableName+"_"+formatColumnName+"_sp2didx")+" ON " + formatTableName + " (" + formatColumnName + ") INDEXTYPE IS MDSYS.SPATIAL_INDEX");
+				add("CREATE INDEX " + formatNameForDatabase("DBV_" + formatTableName + "_" + formatColumnName + "_sp2didx") + " ON " + formatTableName + " (" + formatColumnName + ") INDEXTYPE IS MDSYS.SPATIAL_INDEX");
 			}
 		};
 	}

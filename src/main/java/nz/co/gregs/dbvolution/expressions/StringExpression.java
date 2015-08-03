@@ -1410,10 +1410,34 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 				});
 	}
 
+	/**
+	 * Retrieve the substring that precedes the supplied value.
+	 * 
+	 * <p>
+	 * Complements {@link #substringAfter(java.lang.String) }.
+	 * 
+	 * <p>
+	 * Within this expression, find the supplied value and return all characters before the value, not including the value itself.
+	 * 
+	 * @param splitBeforeThis
+	 * @return a string expression
+	 */
 	public StringExpression substringBefore(String splitBeforeThis) {
 		return substringBefore(value(splitBeforeThis));
 	}
 
+	/**
+	 * Retrieve the substring that precedes the supplied value.
+	 * 
+	 * <p>
+	 * Complements {@link #substringAfter(java.lang.String) }.
+	 * 
+	 * <p>
+	 * Within this expression, find the supplied value and return all characters before the value, not including the value itself.
+	 * 
+	 * @param splitBeforeThis
+	 * @return a string expression
+	 */
 	public StringExpression substringBefore(StringResult splitBeforeThis) {
 		return new StringExpression(new DBBinaryStringFunction(this, new StringExpression(splitBeforeThis)) {
 
@@ -1433,10 +1457,34 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 		});
 	}
 
+	/**
+	 * Retrieve the substring that follows the supplied value.
+	 * 
+	 * <p>
+	 * Complements {@link #substringBefore(java.lang.String) }.
+	 * 
+	 * <p>
+	 * Within this expression, find the supplied value and return all characters after the value, not including the value itself.
+	 * 
+	 * @param splitAfterThis 
+	 * @return a string expression
+	 */
 	public StringExpression substringAfter(String splitAfterThis) {
 		return substringAfter(value(splitAfterThis));
 	}
 
+	/**
+	 * Retrieve the substring that follows the supplied value.
+	 * 
+	 * <p>
+	 * Complements {@link #substringBefore(java.lang.String) }.
+	 * 
+	 * <p>
+	 * Within this expression, find the supplied value and return all characters after the value, not including the value itself.
+	 * 
+	 * @param splitAfterThis 
+	 * @return a string expression
+	 */
 	public StringExpression substringAfter(StringResult splitAfterThis) {
 		return new StringExpression(new DBBinaryStringFunction(this, new StringExpression(splitAfterThis)) {
 
@@ -1456,10 +1504,42 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 		});
 	}
 
+	/**
+	 * Retrieve the substring that follows the first supplied value but precedes the second value.
+	 * 
+	 * <p>
+	 * Complements {@link #substringBefore(java.lang.String) } and {@link #substringAfter(java.lang.String) }.
+	 * 
+	 * <p>
+	 * Within this expression, find the first supplied value and return all characters after the value, not including the value itself, but prior to the second value.
+	 * 
+	 * <p>
+	 * for an expression like "(1234)", substringBetween("(", ")") will return "1234".
+	 * 
+	 * @param splitAfterThis 
+	 * @param butBeforeThis 
+	 * @return a string expression
+	 */
 	public StringExpression substringBetween(String splitAfterThis, String butBeforeThis) {
 		return substringBetween(value(splitAfterThis), value(butBeforeThis));
 	}
 
+	/**
+	 * Retrieve the substring that follows the first supplied value but precedes the second value.
+	 * 
+	 * <p>
+	 * Complements {@link #substringBefore(java.lang.String) } and {@link #substringAfter(java.lang.String) }.
+	 * 
+	 * <p>
+	 * Within this expression, find the first supplied value and return all characters after the value, not including the value itself, but prior to the second value.
+	 * 
+	 * <p>
+	 * for an expression like "(1234)", substringBetween("(", ")") will return "1234".
+	 * 
+	 * @param splitAfterThis 
+	 * @param butBeforeThis 
+	 * @return a string expression
+	 */
 	public StringExpression substringBetween(StringResult splitAfterThis, StringResult butBeforeThis) {
 		return substringAfter(splitAfterThis).substringBefore(butBeforeThis);
 	}
@@ -1935,6 +2015,17 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 		}
 	}
 
+	/**
+	 * In so far as it is possible, transform the value of this expression into a number.
+	 * 
+	 * <p>
+	 * Uses the database's own facilities to parse the value of this expression into a number.
+	 * 
+	 * <p>
+	 * May return NULL and all sorts of crazy things.
+	 *
+	 * @return a number expression
+	 */
 	public NumberExpression numberResult() {
 		return new NumberExpression(
 				new DBUnaryNumberFunction(this) {

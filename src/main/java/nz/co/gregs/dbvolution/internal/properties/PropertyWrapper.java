@@ -1,11 +1,8 @@
 package nz.co.gregs.dbvolution.internal.properties;
 
 import nz.co.gregs.dbvolution.DBDatabase;
-import nz.co.gregs.dbvolution.DBReport;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.annotations.DBForeignKey;
-import nz.co.gregs.dbvolution.columns.ColumnProvider;
-import nz.co.gregs.dbvolution.columns.NumberColumn;
 import nz.co.gregs.dbvolution.datatypes.DBEnumValue;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 import nz.co.gregs.dbvolution.exceptions.DBThrownByEndUserCodeException;
@@ -134,9 +131,9 @@ public class PropertyWrapper {
 	}
 
 	/**
-	 * Equality of this property wrapper definition, based on the java property it
-	 * wraps in a specific class, plus the underlying object reference containing
-	 * the wrapped property.
+	 * Equality of this property wrapper definition, based on the java property
+	 * it wraps in a specific class, plus the underlying object reference
+	 * containing the wrapped property.
 	 *
 	 * <p>
 	 * Two instances are identical if they wrap the same java property (field or
@@ -206,7 +203,8 @@ public class PropertyWrapper {
 	 * <p>
 	 * Use {@link #columnName()} to determine column name.
 	 *
-	 * @return the String of the full class name of the containing RowDefinition.
+	 * @return the String of the full class name of the containing
+	 * RowDefinition.
 	 */
 	public String qualifiedJavaName() {
 		return propertyDefinition.qualifiedJavaName();
@@ -251,8 +249,9 @@ public class PropertyWrapper {
 	}
 
 	/**
-	 * Gets the annotated column name. Applies defaulting if the {@code DBColumn}
-	 * annotation is present but does not explicitly specify the column name.
+	 * Gets the annotated column name. Applies defaulting if the
+	 * {@code DBColumn} annotation is present but does not explicitly specify
+	 * the column name.
 	 *
 	 * <p>
 	 * If the {@code DBColumn} annotation is missing, this method returns
@@ -295,8 +294,8 @@ public class PropertyWrapper {
 	 * Gets the class referenced by this property, if this property is a foreign
 	 * key.
 	 *
-	 * @return the referenced class if this property is a foreign key; null if not
-	 * a foreign key
+	 * @return the referenced class if this property is a foreign key; null if
+	 * not a foreign key
 	 */
 	public Class<? extends DBRow> referencedClass() {
 		return propertyDefinition.referencedClass();
@@ -314,8 +313,8 @@ public class PropertyWrapper {
 	}
 
 	/**
-	 * Gets the column name in the foreign table referenced by this property. The
-	 * referenced column is either explicitly indicated by use of the
+	 * Gets the column name in the foreign table referenced by this property.
+	 * The referenced column is either explicitly indicated by use of the
 	 * {@link DBForeignKey#column()} attribute, or it is implicitly the single
 	 * primary key of the referenced table if the {@link DBForeignKey#column()}
 	 * attribute is unset.
@@ -340,8 +339,8 @@ public class PropertyWrapper {
 	 * table name). Attempts to get or set its value or get the type adaptor
 	 * instance will result in an internal exception.
 	 *
-	 * @return the referenced property if this property is a foreign key; null if
-	 * not a foreign key
+	 * @return the referenced property if this property is a foreign key; null
+	 * if not a foreign key
 	 */
 	public PropertyWrapperDefinition referencedPropertyDefinitionIdentity() {
 		return propertyDefinition.referencedPropertyDefinitionIdentity();
@@ -357,8 +356,8 @@ public class PropertyWrapper {
 	}
 
 	/**
-	 * Gets the type of the code supplied by enum values. This is derived from the
-	 * {@link DBEnumValue} implementation in the enum.
+	 * Gets the type of the code supplied by enum values. This is derived from
+	 * the {@link DBEnumValue} implementation in the enum.
 	 *
 	 * @return null if not known or not appropriate
 	 */
@@ -368,8 +367,8 @@ public class PropertyWrapper {
 
 	/**
 	 * Indicates whether the value of the property can be retrieved. Bean
-	 * properties which are missing a 'getter' can not be read, but may be able to
-	 * be set.
+	 * properties which are missing a 'getter' can not be read, but may be able
+	 * to be set.
 	 *
 	 * @return TRUE if this property is readable, FALSE otherwise.
 	 */
@@ -389,9 +388,9 @@ public class PropertyWrapper {
 	}
 
 	/**
-	 * Indicates whether the property's type is adapted by an explicit or implicit
-	 * type adaptor. (Note: at present there is no support for implicit type
-	 * adaptors)
+	 * Indicates whether the property's type is adapted by an explicit or
+	 * implicit type adaptor. (Note: at present there is no support for implicit
+	 * type adaptors)
 	 *
 	 * @return {@code true} if a type adaptor is being used
 	 */
@@ -412,7 +411,8 @@ public class PropertyWrapper {
 	 * @return The queryableDatatype instance representing this property
 	 * @throws IllegalStateException if not readable (you should have called
 	 * isReadable() first)
-	 * @throws DBThrownByEndUserCodeException if any user code throws an exception
+	 * @throws DBThrownByEndUserCodeException if any user code throws an
+	 * exception
 	 */
 	@SuppressWarnings("unchecked")
 	public <A extends QueryableDatatype> A getQueryableDatatype() {
@@ -421,8 +421,8 @@ public class PropertyWrapper {
 
 	/**
 	 * Sets the DBvolution-centric value of the property. The value set may have
-	 * undergone type conversion to the target object's actual property type, if a
-	 * type adaptor is present.
+	 * undergone type conversion to the target object's actual property type, if
+	 * a type adaptor is present.
 	 *
 	 * <p>
 	 * Use {@link #isWritable()} beforehand to check whether the property can be
@@ -431,7 +431,8 @@ public class PropertyWrapper {
 	 * @param value value
 	 * @throws IllegalStateException if not writable (you should have called
 	 * isWritable() first)
-	 * @throws DBThrownByEndUserCodeException if any user code throws an exception
+	 * @throws DBThrownByEndUserCodeException if any user code throws an
+	 * exception
 	 */
 	public void setQueryableDatatype(QueryableDatatype value) {
 		propertyDefinition.setQueryableDatatype(target, value);
@@ -442,8 +443,8 @@ public class PropertyWrapper {
 	 * prior to type conversion to the DBvolution-centric type.
 	 *
 	 * <p>
-	 * In most cases you will not need to call this method, as type conversion is
-	 * done transparently via the {@link #getQueryableDatatype()} and
+	 * In most cases you will not need to call this method, as type conversion
+	 * is done transparently via the {@link #getQueryableDatatype()} and
 	 * {@link #setQueryableDatatype(QueryableDatatype)} methods.
 	 *
 	 * <p>
@@ -453,7 +454,8 @@ public class PropertyWrapper {
 	 * @return value
 	 * @throws IllegalStateException if not readable (you should have called
 	 * isReadable() first)
-	 * @throws DBThrownByEndUserCodeException if any user code throws an exception
+	 * @throws DBThrownByEndUserCodeException if any user code throws an
+	 * exception
 	 */
 	public Object rawJavaValue() {
 		return propertyDefinition.rawJavaValue(target);
@@ -464,8 +466,8 @@ public class PropertyWrapper {
 	 * without type conversion to/from the DBvolution-centric type.
 	 *
 	 * <p>
-	 * In most cases you will not need to call this method, as type conversion is
-	 * done transparently via the {@link #getQueryableDatatype()} and
+	 * In most cases you will not need to call this method, as type conversion
+	 * is done transparently via the {@link #getQueryableDatatype()} and
 	 * {@link #setQueryableDatatype(QueryableDatatype)} methods.
 	 *
 	 * <p>
@@ -475,7 +477,8 @@ public class PropertyWrapper {
 	 * @param value new value
 	 * @throws IllegalStateException if not writable (you should have called
 	 * isWritable() first)
-	 * @throws DBThrownByEndUserCodeException if any user code throws an exception
+	 * @throws DBThrownByEndUserCodeException if any user code throws an
+	 * exception
 	 */
 	public void setRawJavaValue(Object value) {
 		propertyDefinition.setRawJavaValue(target, value);
@@ -486,8 +489,8 @@ public class PropertyWrapper {
 	 * prior to type conversion to the DBvolution-centric type.
 	 *
 	 * <p>
-	 * In most cases you will not need to call this method, as type conversion is
-	 * done transparently via the {@link #getQueryableDatatype()} and
+	 * In most cases you will not need to call this method, as type conversion
+	 * is done transparently via the {@link #getQueryableDatatype()} and
 	 * {@link #setQueryableDatatype(QueryableDatatype)} methods. Use the
 	 * {@link #type()} method to get the DBv-centric property type, after type
 	 * conversion.
@@ -524,8 +527,8 @@ public class PropertyWrapper {
 	 * {@link DBExpression DBexpressions} like
 	 * {@link StringExpression}, {@link NumberExpression}, and
 	 * {@link BooleanExpression}. The often involve database columns using
-	 * {@link DBRow#column(java.lang.Boolean) the DBRow column methods} or literal
-	 * values using the, for instance, the StringExpression
+	 * {@link DBRow#column(java.lang.Boolean) the DBRow column methods} or
+	 * literal values using the, for instance, the StringExpression
 	 * {@link StringExpression#value(java.lang.String) value method}.
 	 *
 	 * @return TRUE if this property uses an expression to generate a value,
@@ -546,7 +549,8 @@ public class PropertyWrapper {
 	}
 
 	/**
-	 * The name of this property as it will appear in a SELECT and WHERE clauses.
+	 * The name of this property as it will appear in a SELECT and WHERE
+	 * clauses.
 	 *
 	 * @param db db
 	 * @return A String of the property for use in SELECT and WHERE clauses.
@@ -584,8 +588,8 @@ public class PropertyWrapper {
 	 * Returns true if the property wrapped is an auto-incrementing column.
 	 *
 	 * <p>
-	 * This generally means that the column is a primary key. and definitely means
-	 * you do not need to set the value of the column.
+	 * This generally means that the column is a primary key. and definitely
+	 * means you do not need to set the value of the column.
 	 *
 	 * @return TRUE if the value of this column is provided by the database's
 	 * auto-increment functionality, otherwise FALSE.
@@ -596,5 +600,18 @@ public class PropertyWrapper {
 
 	public boolean isSpatial2DType() {
 		return propertyDefinition.isSpatial2DType();
+	}
+	/**
+	 * Returns true if the property wrapped is an auto-filling field.
+	 *
+	 * @return TRUE if the value of this column is to be automatically filled
+	 * during queries if possible, otherwise FALSE.
+	 */
+	public boolean isAutoFilling() {
+		return propertyDefinition.isAutoFilling();
+	}
+
+	public Class<?> getAutoFillingClass() {
+		return propertyDefinition.getAutoFillingClass();
 	}
 }

@@ -35,6 +35,8 @@ public class RowDefinitionInstanceWrapper {
 	private final RowDefinitionClassWrapper classWrapper;
 	private final RowDefinition rowDefinition;
 	private final List<PropertyWrapper> allProperties;
+	private final List<PropertyWrapper> columnProperties;
+	private final List<PropertyWrapper> autoFillingProperties;
 	private final List<PropertyWrapper> foreignKeyProperties;
 
 	/**
@@ -62,14 +64,31 @@ public class RowDefinitionInstanceWrapper {
 		// (note: if you change this to use lazy-initialisation, you'll have to
 		// add explicit synchronisation, or it won't be thread-safe anymore)
 		this.allProperties = new ArrayList<PropertyWrapper>();
-		for (PropertyWrapperDefinition propertyDefinition : classWrapper.getPropertyDefinitions()) {
-			this.allProperties.add(new PropertyWrapper(this, propertyDefinition, rowDefinition));
+		this.columnProperties = new ArrayList<PropertyWrapper>();
+		for (PropertyWrapperDefinition propertyDefinition : classWrapper.getColumnPropertyDefinitions()) {
+			final PropertyWrapper propertyWrapper = new PropertyWrapper(this, propertyDefinition, rowDefinition);
+			addPropertyWrapperToCollection(columnProperties, propertyWrapper);
+//			this.columnProperties.add(propertyWrapper);
+//			this.allProperties.add(propertyWrapper);
+//			if (propertyWrapper.isAutoFilling()){
+//				autoFillingProperties.add(propertyWrapper);
+//			}
+		}
+		this.autoFillingProperties = new ArrayList<PropertyWrapper>();
+		for (PropertyWrapperDefinition propertyDefinition : classWrapper.getAutoFillingPropertyDefinitions()) {
+			final PropertyWrapper propertyWrapper = new PropertyWrapper(this, propertyDefinition, rowDefinition);
+			addPropertyWrapperToCollection(autoFillingProperties, propertyWrapper);
 		}
 
 		this.foreignKeyProperties = new ArrayList<PropertyWrapper>();
 		for (PropertyWrapperDefinition propertyDefinition : classWrapper.getForeignKeyPropertyDefinitions()) {
 			this.foreignKeyProperties.add(new PropertyWrapper(this, propertyDefinition, rowDefinition));
 		}
+	}
+	
+	private void addPropertyWrapperToCollection(List<PropertyWrapper> collection, PropertyWrapper propertyWrapper){
+			collection.add(propertyWrapper);
+			this.allProperties.add(propertyWrapper);
 	}
 
 	/**
@@ -280,12 +299,28 @@ public class RowDefinitionInstanceWrapper {
 	 * <p>
 	 * Note: if you wish to iterate over the properties and only use their
 	 * definitions (ie: meta-information), this method is not efficient. Use
-	 * {@link #getPropertyDefinitions()} instead in that case.
+	 * {@link #getColumnPropertyDefinitions()} instead in that case.
 	 *
 	 * @return the non-null list of properties, empty if none
 	 */
-	public List<PropertyWrapper> getPropertyWrappers() {
-		return allProperties;
+	public List<PropertyWrapper> getColumnPropertyWrappers() {
+		return columnProperties;
+	}
+
+	/**
+	 * Gets all properties that are NOT annotated with {@code DBColumn}. This method
+	 * is intended for where you need to get/set property values on all properties
+	 * in the class.
+	 *
+	 * <p>
+	 * Note: if you wish to iterate over the properties and only use their
+	 * definitions (ie: meta-information), this method is not efficient. Use
+	 * {@link #getColumnPropertyDefinitions()} instead in that case.
+	 *
+	 * @return the non-null list of properties, empty if none
+	 */
+	public List<PropertyWrapper> getAutoFillingPropertyWrappers() {
+		return autoFillingProperties;
 	}
 
 	/**
@@ -316,7 +351,7 @@ public class RowDefinitionInstanceWrapper {
 	 * @return a list of PropertyWrapperDefinitions for the PropertyWrappers of
 	 * this RowDefinition
 	 */
-	public List<PropertyWrapperDefinition> getPropertyDefinitions() {
-		return classWrapper.getPropertyDefinitions();
+	public List<PropertyWrapperDefinition> getColumnPropertyDefinitions() {
+		return classWrapper.getColumnPropertyDefinitions();
 	}
 }

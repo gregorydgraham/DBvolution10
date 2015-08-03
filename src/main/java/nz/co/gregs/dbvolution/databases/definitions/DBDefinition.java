@@ -33,9 +33,11 @@ import java.util.List;
 import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.DBRecursiveQuery;
 import nz.co.gregs.dbvolution.DBRow;
+import nz.co.gregs.dbvolution.datatypes.DBDateRepeat;
 import nz.co.gregs.dbvolution.datatypes.DBInteger;
 import nz.co.gregs.dbvolution.datatypes.DBNumber;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
+import nz.co.gregs.dbvolution.datatypes.spatial2D.DBLine2D;
 import nz.co.gregs.dbvolution.exceptions.AutoIncrementFieldClassAndDatatypeMismatch;
 import nz.co.gregs.dbvolution.exceptions.IncorrectGeometryReturnedForDatatype;
 import nz.co.gregs.dbvolution.expressions.DBExpression;
@@ -48,6 +50,7 @@ import nz.co.gregs.dbvolution.internal.datatypes.DateRepeatImpl;
 import nz.co.gregs.dbvolution.internal.properties.PropertyWrapper;
 import nz.co.gregs.dbvolution.query.QueryOptions;
 import nz.co.gregs.dbvolution.query.RowDefinition;
+import nz.co.gregs.dbvolution.results.Line2DResult;
 import org.joda.time.Period;
 
 /**
@@ -3963,6 +3966,7 @@ public abstract class DBDefinition {
 	 *
 	 * @param pointsAsString 
 	 * @return MultiPoint
+	 * @throws com.vividsolutions.jts.io.ParseException
 	 */
 	public MultiPoint transformDatabaseMultiPoint2DValueToJTSMultiPoint(String pointsAsString) throws com.vividsolutions.jts.io.ParseException {
 		MultiPoint mpoint = null;
@@ -4000,23 +4004,53 @@ public abstract class DBDefinition {
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
-	public String doMultiPoint2DGetNumberOfPointsTransform(String first) {
+	/**
+	 * Provides the SQL the derive the number of points in the multipoint2d value.
+	 *
+	 * @param multiPoint2D
+	 * @return SQL
+	 */
+	public String doMultiPoint2DGetNumberOfPointsTransform(String multiPoint2D) {
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
-	public String doMultiPoint2DDimensionTransform(String first) {
+	/**
+	 * Provides the SQL the derive the dimension (2 basically) of the MultiPoint2D value.
+	 *
+	 * @param multipoint2D
+	 * @return SQL
+	 */
+	public String doMultiPoint2DDimensionTransform(String multipoint2D) {
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
-	public String doMultiPoint2DGetBoundingBoxTransform(String first) {
+	/**
+	 * Provides the SQL the derive the bounding box containing all the points in the MultiPoint2D value.
+	 *
+	 * @param multiPoint2D
+	 * @return SQL
+	 */
+	public String doMultiPoint2DGetBoundingBoxTransform(String multiPoint2D) {
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
-	public String doMultiPoint2DAsTextTransform(String first) {
+	/**
+	 * Provides the SQL the transform the MultiPoint2D value into a WKT value.
+	 *
+	 * @param multiPoint2D
+	 * @return SQL
+	 */
+	public String doMultiPoint2DAsTextTransform(String multiPoint2D) {
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
-	public String doMultiPoint2DToLine2DTransform(String first) {
+	/**
+	 * Provides the SQL the transform the MultiPoint2D value into a {@link Line2DResult} value.
+	 *
+	 * @param multiPoint2D
+	 * @return SQL
+	 */
+	public String doMultiPoint2DToLine2DTransform(String multiPoint2D) {
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
@@ -4024,30 +4058,73 @@ public abstract class DBDefinition {
 //		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 //	}
 
-	public String doMultiPoint2DGetMinYTransform(String first) {
+	/**
+	 * Provides the SQL that will derive the smallest Y value of all the points in the MultiPoint2D value
+	 * 
+	 * @param multiPoint2D
+	 * @return
+	 */
+	public String doMultiPoint2DGetMinYTransform(String multiPoint2D) {
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
-	public String doMultiPoint2DGetMinXTransform(String first) {
+	/**
+	 * Provides the SQL that will derive the smallest X value of all the points in the MultiPoint2D value
+	 * 
+	 * @param multiPoint2D
+	 * @return
+	 */
+	public String doMultiPoint2DGetMinXTransform(String multiPoint2D) {
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
-	public String doMultiPoint2DGetMaxYTransform(String first) {
+	/**
+	 * Provides the SQL that will derive the largest Y value of all the points in the MultiPoint2D value
+	 * 
+	 * @param multiPoint2D
+	 * @return
+	 */
+	public String doMultiPoint2DGetMaxYTransform(String multiPoint2D) {
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
-	public String doMultiPoint2DGetMaxXTransform(String first) {
+	/**
+	 * Provides the SQL that will derive the largest X value of all the points in the MultiPoint2D value
+	 * 
+	 * @param multiPoint2D
+	 * @return
+	 */
+	public String doMultiPoint2DGetMaxXTransform(String multiPoint2D) {
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
+	/**
+	 * Returns true if the database supports has built-in support for limiting number of rows returned by a query.
+	 * 
+	 * @param options 
+	 * @return TRUE if there is an SQL way of limiting rows numbers, otherwise FALSE
+	 */
 	public boolean supportsRowLimitsNatively(QueryOptions options) {
 		return true;
 	}
 
+	/**
+	 * Return if, like Oracle, the database requires Spatial indexes to perform standard spatial operations.
+	 *
+	 * @return FALSE by default
+	 */
 	public boolean requiresSpatial2DIndexes() {
 		return false;
 	}
 
+	/**
+	 * Return the sequence of SQL operations required to create the necessary Spatial2D indexes
+	 *
+	 * @param aThis
+	 * @param formatTableName
+	 * @param formatColumnName
+	 * @return an ordered list of SQL
+	 */
 	public List<String> getSpatial2DIndexSQL(DBDatabase aThis, String formatTableName, String formatColumnName) {
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}

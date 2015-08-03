@@ -31,48 +31,104 @@ abstract public class DBOperator implements Serializable {
 
 	Boolean invertOperator = false;
 	Boolean includeNulls = false;
-	protected DBExpression firstValue;
-	protected DBExpression secondValue;
-	protected DBExpression thirdValue;
+	private DBExpression firstValue;
+	private DBExpression secondValue;
+	private DBExpression thirdValue;
 	private BooleanExpression expression;
 
+	/**
+	 * Create a DBOperator with all NULL values.
+	 *
+	 */
 	public DBOperator() {
 		firstValue = null;
 		secondValue = null;
 		thirdValue = null;
 	}
 
-	protected DBExpression getExpression() {
-		return this.expression;
+	/**
+	 * Create a DBOperator with the first parameter specified.
+	 *
+	 * @param first the first parameter of the operator.
+	 */
+	public DBOperator(DBExpression first) {
+		firstValue = first;
+		secondValue = null;
+		thirdValue = null;
 	}
 
-	protected void setExpression(BooleanExpression operatorExpression) {
-		this.expression = operatorExpression;
+	/**
+	 * Create a DBOperator with first and second parameters specified.
+	 *
+	 * @param first the first parameter of the operator.
+	 * @param second the second parameter of the operator.
+	 */
+	public DBOperator(DBExpression first, DBExpression second) {
+		firstValue = first;
+		secondValue = second;
+		thirdValue = null;
 	}
 
+	/**
+	 * Create a DBOperator with first, second, and third parameters specified.
+	 *
+	 * @param first the first parameter of the operator.
+	 * @param second the second parameter of the operator.
+	 * @param third the third expression of the operator.
+	 */
+	public DBOperator(DBExpression first, DBExpression second, DBExpression third) {
+		firstValue = first;
+		secondValue = second;
+		thirdValue = third;
+	}
+//
+//	/**
+//	 * 
+//	 *
+//	 * @return
+//	 */
+//	protected DBExpression getExpression() {
+//		return this.expression;
+//	}
+//
+//	protected void setExpression(BooleanExpression operatorExpression) {
+//		this.expression = operatorExpression;
+//	}
+
+	/**
+	 * Make this operator an exclusive rather than inclusive comparison.
+	 *
+	 * <p>
+	 * Basically switches the operator from, for instance, "==" to "!=".
+	 *
+	 * @param invertOperator
+	 */
 	public void invertOperator(Boolean invertOperator) {
 		this.invertOperator = invertOperator;
 	}
 
+	/**
+	 * Make this operator an exclusive rather than inclusive comparison.
+	 *
+	 * <p>
+	 * Basically switches the operator from, for instance, "==" to "!=".
+	 *
+	 */
 	public void not() {
 		invertOperator = true;
 	}
 
+	/**
+	 * Makes this operator treat NULL values as if they match the operator.
+	 * 
+	 * <p>
+	 * Basically this means an equals operation becomes an (equals or null) operation.
+	 *
+	 */
 	public void includeNulls() {
 		includeNulls = true;
 	}
-
-//	@Override
-//	public int hashCode() {
-//		int hash = 7;
-//		hash = 41 * hash + (this.invertOperator != null ? this.invertOperator.hashCode() : 0);
-//		hash = 41 * hash + (this.includeNulls != null ? this.includeNulls.hashCode() : 0);
-//		hash = 41 * hash + (this.firstValue != null ? this.firstValue.hashCode() : 0);
-//		hash = 41 * hash + (this.secondValue != null ? this.secondValue.hashCode() : 0);
-//		hash = 41 * hash + (this.thirdValue != null ? this.thirdValue.hashCode() : 0);
-//		hash = 41 * hash + (this.expression != null ? this.expression.hashCode() : 0);
-//		return hash;
-//	}
+	
 	@Override
 	public int hashCode() {
 		return super.hashCode();
@@ -85,15 +141,70 @@ abstract public class DBOperator implements Serializable {
 			return this.getClass() == other.getClass()
 					&& this.invertOperator.equals(other.invertOperator)
 					&& this.includeNulls.equals(other.includeNulls)
-					&& (firstValue == null ? other.firstValue == null : firstValue.equals(other.firstValue))
-					&& (secondValue == null ? other.secondValue == null : secondValue.equals(other.secondValue))
-					&& (thirdValue == null ? other.thirdValue == null : thirdValue.equals(other.thirdValue));
+					&& (getFirstValue() == null ? other.getFirstValue() == null : getFirstValue().equals(other.getFirstValue()))
+					&& (getSecondValue() == null ? other.getSecondValue() == null : getSecondValue().equals(other.getSecondValue()))
+					&& (getThirdValue() == null ? other.getThirdValue() == null : getThirdValue().equals(other.getThirdValue()));
 		} else {
 			return false;
 		}
 	}
 
+	/**
+	 * Adds TypeAdaptor support to DBOperator.
+	 *
+	 * @param typeAdaptor
+	 * @return the type adapted operator
+	 */
 	abstract public DBOperator copyAndAdapt(DBSafeInternalQDTAdaptor typeAdaptor);
 
+	/**
+	 * Create the expression to be used in the query generation.
+	 *
+	 * @param db
+	 * @param column
+	 * @return a boolean expression
+	 */
 	abstract public BooleanExpression generateWhereExpression(DBDatabase db, DBExpression column);
+
+	/**
+	 * @return the firstValue
+	 */
+	public DBExpression getFirstValue() {
+		return firstValue;
+	}
+
+	/**
+	 * @param firstValue the firstValue to set
+	 */
+	public void setFirstValue(DBExpression firstValue) {
+		this.firstValue = firstValue;
+	}
+
+	/**
+	 * @return the secondValue
+	 */
+	public DBExpression getSecondValue() {
+		return secondValue;
+	}
+
+	/**
+	 * @param secondValue the secondValue to set
+	 */
+	public void setSecondValue(DBExpression secondValue) {
+		this.secondValue = secondValue;
+	}
+
+	/**
+	 * @return the thirdValue
+	 */
+	public DBExpression getThirdValue() {
+		return thirdValue;
+	}
+
+	/**
+	 * @param thirdValue the thirdValue to set
+	 */
+	public void setThirdValue(DBExpression thirdValue) {
+		this.thirdValue = thirdValue;
+	}
 }

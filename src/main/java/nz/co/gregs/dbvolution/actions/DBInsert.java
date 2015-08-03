@@ -224,7 +224,7 @@ public class DBInsert extends DBAction {
 		allChangedColumns = new StringBuilder();
 		allSetValues = new StringBuilder();
 		DBDefinition defn = database.getDefinition();
-		List<PropertyWrapper> props = row.getPropertyWrappers();
+		List<PropertyWrapper> props = row.getColumnPropertyWrappers();
 		String allColumnSeparator = "";
 		String columnSeparator = "";
 		String valuesSeparator = defn.beginValueClause();

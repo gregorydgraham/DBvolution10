@@ -16,7 +16,6 @@
 package nz.co.gregs.dbvolution.query;
 
 import java.util.Arrays;
-import java.util.Collections;
 import nz.co.gregs.dbvolution.columns.ColumnProvider;
 
 /**
@@ -32,17 +31,24 @@ public class QueryOptions {
 	private boolean blankQueryAllowed = false;
 	private boolean cartesianJoinAllowed = false;
 	private boolean useANSISyntax = true;
-	private boolean matchAnyRelationship;
+	private boolean matchAnyRelationship = false;
 
 	/**
+	 * Indicates whether this query will use AND rather than OR to add the
+	 * conditions.
 	 *
-	 *
-	 * @return the matchAll
+	 * @return TRUE if criteria should be collected using AND
 	 */
 	public boolean isMatchAllConditions() {
 		return matchAll;
 	}
 
+	/**
+	 * Indicates whether this query will use OR rather than AND to add the
+	 * conditions.
+	 *
+	 * @return TRUE if criteria should be collected using OR
+	 */
 	public boolean isMatchAny() {
 		return !matchAll;
 	}
@@ -152,21 +158,46 @@ public class QueryOptions {
 		this.pageIndex = pageIndex;
 	}
 
+	/**
+	 * Controls how relationships, that is Foreign Keys, are compared.
+	 *
+	 * <p>
+	 * If there are multiple FKs between 2 DBRows setMatchAnyRelationship() will
+	 * switch the query to connecting the 2 rows if ANY of the FKs match, rather
+	 * the normal case of ALL.
+	 *
+	 */
 	public void setMatchAnyRelationship() {
 		matchAnyRelationship = true;
 	}
 
+	/**
+	 * Controls how relationships, that is Foreign Keys, are compared.
+	 *
+	 * <p>
+	 * If there are multiple FKs between 2 DBRows setMatchAllRelationship() will
+	 * switch the query to connecting the 2 rows if ALL of the FKs match.
+	 * 
+	 * <p>
+	 * This is the default option.
+	 *
+	 */
 	public void setMatchAllRelationships() {
 		matchAnyRelationship = false;
 	}
 
 	/**
-	 * @return the matchAnyRelationship
+	 * @return the matchAllRelationship
 	 */
 	public boolean isMatchAllRelationships() {
 		return !matchAnyRelationship;
 	}
 
+	/**
+	 * Clones this QueryOptions
+	 *
+	 * @return very similar QueryOptions
+	 */
 	public QueryOptions copy() {
 		return this.clone();
 	}

@@ -103,7 +103,7 @@ public class QueryDetails {
 	/**
 	 * @return the dbReportGroupByColumns
 	 */
-	public Map<Object, DBExpression> getDbReportGroupByColumns() {
+	public Map<Object, DBExpression> getDBReportGroupByColumns() {
 		return dbReportGroupByColumns;
 	}
 
@@ -114,16 +114,26 @@ public class QueryDetails {
 		return existingInstances;
 	}
 
+	/**
+	 * Set the requirement for a GROUP BY clause.
+	 *
+	 * @param b
+	 */
 	public void setGroupByRequiredByAggregator(boolean b) {
 		this.groupByRequiredByAggregator = true;
 	}
-
-	public boolean getGroupByRequiredByAggregator() {
+	
+	private boolean getGroupByRequiredByAggregator() {
 		return this.groupByRequiredByAggregator;
 	}
 
+	/**
+	 * Return the requirement for a GROUP BY clause.
+	 *
+	 * @return TRUE if the GROUP BY clause is required, otherwise FALSE.
+	 */
 	public boolean isGroupedQuery() {
-		return getDbReportGroupByColumns().size() > 0 || getGroupByRequiredByAggregator();
+		return getDBReportGroupByColumns().size() > 0 || getGroupByRequiredByAggregator();
 	}
 
 }

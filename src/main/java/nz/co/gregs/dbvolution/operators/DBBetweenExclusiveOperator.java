@@ -38,14 +38,13 @@ public class DBBetweenExclusiveOperator extends DBOperator {
 //	DBExpression highest;
 
 	public DBBetweenExclusiveOperator(DBExpression lowValue, DBExpression highValue) {
-		super();
-		firstValue = lowValue == null ? lowValue : lowValue.copy();
-		secondValue = highValue == null ? highValue : highValue.copy();
+		super(lowValue == null ? lowValue : lowValue.copy(),
+				highValue == null ? highValue : highValue.copy());
 	}
 
 	@Override
 	public DBBetweenExclusiveOperator copyAndAdapt(QueryableDatatypeSyncer.DBSafeInternalQDTAdaptor typeAdaptor) {
-		DBBetweenExclusiveOperator op = new DBBetweenExclusiveOperator(typeAdaptor.convert(firstValue), typeAdaptor.convert(secondValue));
+		DBBetweenExclusiveOperator op = new DBBetweenExclusiveOperator(typeAdaptor.convert(getFirstValue()), typeAdaptor.convert(getSecondValue()));
 		op.invertOperator = this.invertOperator;
 		op.includeNulls = this.includeNulls;
 		return op;
@@ -59,31 +58,31 @@ public class DBBetweenExclusiveOperator extends DBOperator {
 			StringExpression stringExpression = (StringExpression) genericExpression;
 			StringResult firstStringExpr = null;
 			StringResult secondStringExpr = null;
-			if (firstValue instanceof NumberResult) {
-				NumberResult numberResult = (NumberResult) firstValue;
+			if (getFirstValue() instanceof NumberResult) {
+				NumberResult numberResult = (NumberResult) getFirstValue();
 				firstStringExpr = new NumberExpression(numberResult).stringResult();
-			} else if (firstValue instanceof StringResult) {
-				firstStringExpr = (StringResult) firstValue;
+			} else if (getFirstValue() instanceof StringResult) {
+				firstStringExpr = (StringResult) getFirstValue();
 			}
-			if (secondValue instanceof NumberResult) {
-				NumberResult numberResult = (NumberResult) secondValue;
+			if (getSecondValue() instanceof NumberResult) {
+				NumberResult numberResult = (NumberResult) getSecondValue();
 				secondStringExpr = new NumberExpression(numberResult).stringResult();
-			} else if (secondValue instanceof StringResult) {
-				secondStringExpr = (StringResult) secondValue;
+			} else if (getSecondValue() instanceof StringResult) {
+				secondStringExpr = (StringResult) getSecondValue();
 			}
 			if (firstStringExpr != null && secondStringExpr != null) {
 				betweenOp = stringExpression.bracket().isBetweenExclusive(firstStringExpr, secondStringExpr);
 			}
 		} else if ((genericExpression instanceof NumberExpression)
-				&& (firstValue instanceof NumberResult)
-				&& (secondValue instanceof NumberResult)) {
+				&& (getFirstValue() instanceof NumberResult)
+				&& (getSecondValue() instanceof NumberResult)) {
 			NumberExpression numberExpression = (NumberExpression) genericExpression;
-			betweenOp = numberExpression.isBetweenExclusive((NumberResult) firstValue, (NumberResult) secondValue);
+			betweenOp = numberExpression.isBetweenExclusive((NumberResult) getFirstValue(), (NumberResult) getSecondValue());
 		} else if ((genericExpression instanceof DateExpression)
-				&& (firstValue instanceof DateResult)
-				&& (secondValue instanceof DateResult)) {
+				&& (getFirstValue() instanceof DateResult)
+				&& (getSecondValue() instanceof DateResult)) {
 			DateExpression dateExpression = (DateExpression) genericExpression;
-			betweenOp = dateExpression.isBetweenExclusive((DateResult) firstValue, (DateResult) secondValue);
+			betweenOp = dateExpression.isBetweenExclusive((DateResult) getFirstValue(), (DateResult) getSecondValue());
 		} else {
 			throw new DBRuntimeException("whoops");
 		}

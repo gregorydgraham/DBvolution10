@@ -46,7 +46,7 @@ public class DBGreaterThanOrEqualsOperator extends DBGreaterThanOperator {
 
 	@Override
 	public DBGreaterThanOrEqualsOperator copyAndAdapt(DBSafeInternalQDTAdaptor typeAdaptor) {
-		DBGreaterThanOrEqualsOperator op = new DBGreaterThanOrEqualsOperator(typeAdaptor.convert(firstValue));
+		DBGreaterThanOrEqualsOperator op = new DBGreaterThanOrEqualsOperator(typeAdaptor.convert(getFirstValue()));
 		op.invertOperator = this.invertOperator;
 		op.includeNulls = this.includeNulls;
 		return op;
@@ -58,13 +58,13 @@ public class DBGreaterThanOrEqualsOperator extends DBGreaterThanOperator {
 		BooleanExpression op = BooleanExpression.trueExpression();
 		if (genericExpression instanceof StringExpression) {
 			StringExpression stringExpression = (StringExpression) genericExpression;
-			op = stringExpression.bracket().isGreaterThanOrEqual((StringResult) firstValue);
+			op = stringExpression.bracket().isGreaterThanOrEqual((StringResult) getFirstValue());
 		} else if (genericExpression instanceof NumberExpression) {
 			NumberExpression numberExpression = (NumberExpression) genericExpression;
-			op = numberExpression.isGreaterThanOrEqual((NumberResult) firstValue);
+			op = numberExpression.isGreaterThanOrEqual((NumberResult) getFirstValue());
 		} else if (genericExpression instanceof DateExpression) {
 			DateExpression dateExpression = (DateExpression) genericExpression;
-			op = dateExpression.isGreaterThanOrEqual((DateResult) firstValue);
+			op = dateExpression.isGreaterThanOrEqual((DateResult) getFirstValue());
 		}
 		return this.invertOperator ? op.not() : op;
 	}

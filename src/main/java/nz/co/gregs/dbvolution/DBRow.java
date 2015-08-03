@@ -195,7 +195,7 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 			newRow.getAdHocRelationships().add(adhoc);
 		}
 
-		List<PropertyWrapper> subclassFields = originalRow.getPropertyWrappers();
+		List<PropertyWrapper> subclassFields = originalRow.getColumnPropertyWrappers();
 		for (PropertyWrapper field : subclassFields) {
 			try {
 				Object originalValue = field.rawJavaValue();
@@ -222,7 +222,7 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 	 */
 	@Deprecated
 	public void clear() {
-		for (PropertyWrapper prop : getPropertyWrappers()) {
+		for (PropertyWrapper prop : getColumnPropertyWrappers()) {
 			QueryableDatatype qdt = prop.getQueryableDatatype();
 			if (qdt != null) {
 				qdt.clear();
@@ -349,7 +349,7 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 	 * @return TRUE if the simple types have changed, otherwise FALSE
 	 */
 	public boolean hasChangedSimpleTypes() {
-		List<PropertyWrapper> propertyWrappers = getWrapper().getPropertyWrappers();
+		List<PropertyWrapper> propertyWrappers = getWrapper().getColumnPropertyWrappers();
 		for (PropertyWrapper prop : propertyWrappers) {
 			if (!(prop.getQueryableDatatype() instanceof DBLargeObject)) {
 				if (prop.getQueryableDatatype().hasChanged()) {
@@ -373,7 +373,7 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 	 *
 	 */
 	public void setSimpleTypesToUnchanged() {
-		List<PropertyWrapper> propertyWrappers = getWrapper().getPropertyWrappers();
+		List<PropertyWrapper> propertyWrappers = getWrapper().getColumnPropertyWrappers();
 		for (PropertyWrapper prop : propertyWrappers) {
 			final QueryableDatatype qdt = prop.getQueryableDatatype();
 			if (!(qdt instanceof DBLargeObject)) {
@@ -472,7 +472,7 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 	{
 		DBDefinition defn = db.getDefinition();
 		List<String> whereClause = new ArrayList<String>();
-		List<PropertyWrapper> props = getWrapper().getPropertyWrappers();
+		List<PropertyWrapper> props = getWrapper().getColumnPropertyWrappers();
 		for (PropertyWrapper prop : props) {
 			if (prop.isColumn()) {
 				QueryableDatatype qdt = prop.getQueryableDatatype();
@@ -560,7 +560,7 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 	 */
 	public String toStringMinusFKs() {
 		StringBuilder string = new StringBuilder();
-		List<PropertyWrapper> fields = getWrapper().getPropertyWrappers();
+		List<PropertyWrapper> fields = getWrapper().getColumnPropertyWrappers();
 
 		String separator = "";
 
@@ -589,7 +589,7 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 	protected List<String> getColumnNames(DBDatabase db) {
 		final DBDefinition defn = db.getDefinition();
 		ArrayList<String> columnNames = new ArrayList<String>();
-		List<PropertyWrapper> props = getWrapper().getPropertyWrappers();
+		List<PropertyWrapper> props = getWrapper().getColumnPropertyWrappers();
 
 		for (PropertyWrapper prop : props) {
 			if (prop.isColumn()) {
@@ -956,7 +956,7 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 		synchronized (blobColumns) {
 			if (hasBlobs == null) {
 				hasBlobs = Boolean.FALSE;
-				for (PropertyWrapper prop : getPropertyWrappers()) {
+				for (PropertyWrapper prop : getColumnPropertyWrappers()) {
 					if (prop.isInstanceOf(DBLargeObject.class)) {
 						blobColumns.add(prop);
 						hasBlobs = Boolean.TRUE;
@@ -1414,11 +1414,11 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 
 	List<PropertyWrapper> getSelectedProperties() {
 		if (getReturnColumns() == null) {
-			return getPropertyWrappers();
+			return getColumnPropertyWrappers();
 		} else {
 			ArrayList<PropertyWrapper> selected = new ArrayList<PropertyWrapper>();
 			for (PropertyWrapperDefinition proDef : getReturnColumns()) {
-				for (PropertyWrapper pro : getPropertyWrappers()) {
+				for (PropertyWrapper pro : getColumnPropertyWrappers()) {
 					if (pro.getDefinition().equals(proDef)) {
 						selected.add(pro);
 					}
@@ -1637,7 +1637,7 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 	 * @return true if the row has a condition set.
 	 */
 	public boolean hasConditionsSet() {
-		List<PropertyWrapper> props = getWrapper().getPropertyWrappers();
+		List<PropertyWrapper> props = getWrapper().getColumnPropertyWrappers();
 		for (PropertyWrapper prop : props) {
 			if (prop.isColumn()) {
 				QueryableDatatype qdt = prop.getQueryableDatatype();
@@ -1692,7 +1692,7 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 
 	void removeConstraints() {
 		RowDefinitionInstanceWrapper wrapper = getWrapper();
-		List<PropertyWrapper> propertyWrappers = wrapper.getPropertyWrappers();
+		List<PropertyWrapper> propertyWrappers = wrapper.getColumnPropertyWrappers();
 		for (PropertyWrapper propertyWrapper : propertyWrappers) {
 			propertyWrapper.getQueryableDatatype().removeConstraints();
 		}
@@ -1703,18 +1703,19 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 		boolean arrayRequired = false;
 		boolean listRequired = false;
 		try {
-			Field[] fields = this.getClass().getFields();
-			for (Field field : fields) {
-				field.setAccessible(true);
-				if (field.isAnnotationPresent(AutoFillDuringQueryIfPossible.class)) {
-					Class<?> requiredClass = field.getType();
+			List<PropertyWrapper> fields = this.getAutoFillingPropertyWrappers();
+			for (PropertyWrapper field : fields) {
+//				field.setAccessible(true);
+				if (field.isAutoFilling()) {
+					Class<?> requiredClass = field.getRawJavaType();
 					if (requiredClass.isArray()) {
 						requiredClass = requiredClass.getComponentType();
 						arrayRequired = true;
 					} else if (Collection.class.isAssignableFrom(requiredClass)) {
 						listRequired = true;
-						final AutoFillDuringQueryIfPossible autoFillAnnotation = field.getAnnotation(AutoFillDuringQueryIfPossible.class);
-						requiredClass = autoFillAnnotation.requiredClass();
+//						final AutoFillDuringQueryIfPossible autoFillAnnotation = field.getAnnotation(AutoFillDuringQueryIfPossible.class);
+//						requiredClass = autoFillAnnotation.requiredClass();
+						requiredClass = field.getAutoFillingClass();
 						if (requiredClass.isAssignableFrom(DBRow.class)) {
 							throw new nz.co.gregs.dbvolution.exceptions.UnacceptableClassForAutoFillAnnotation(field, requiredClass);
 						}
@@ -1735,14 +1736,14 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 							for (int index = 0; index < relatedInstancesFromQuery.size(); index++) {
 								Array.set(newInstance, index, relatedInstancesFromQuery.get(index));
 							}
-							field.set(this, newInstance);
+							field.setRawJavaValue(newInstance);
 						} else if (listRequired) {
-							field.set(this, relatedInstancesFromQuery);
+							field.setRawJavaValue(relatedInstancesFromQuery);
 						} else {
 							if (relatedInstancesFromQuery.isEmpty()) {
-								field.set(this, null);
+								field.setRawJavaValue(null);
 							} else {
-								field.set(this, relatedInstancesFromQuery.get(0));
+								field.setRawJavaValue(relatedInstancesFromQuery.get(0));
 							}
 						}
 					}
@@ -1752,7 +1753,7 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 			throw new RuntimeException("Unable To AutoFill Field", ex);
 		}
 	}
-
+	
 	/**
 	 * Default sorting for DBRow in the various collections in DBRow and DBQuery.
 	 *

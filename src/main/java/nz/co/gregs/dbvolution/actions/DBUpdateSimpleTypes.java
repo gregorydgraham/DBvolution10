@@ -83,7 +83,7 @@ public class DBUpdateSimpleTypes extends DBUpdate {
 	protected String getSetClause(DBDatabase db, DBRow row) {
 		DBDefinition defn = db.getDefinition();
 		StringBuilder sql = new StringBuilder();
-		List<PropertyWrapper> fields = row.getPropertyWrappers();
+		List<PropertyWrapper> fields = row.getColumnPropertyWrappers();
 
 		String separator = defn.getStartingSetSubClauseSeparator();
 		for (PropertyWrapper field : fields) {
