@@ -524,7 +524,8 @@ public class DBQuery {
 				if (!orderByClauseFinal.trim().isEmpty()) {
 					orderByClauseFinal += lineSep;
 				}
-				sqlString = selectClause.append(lineSep)
+				sqlString = defn.doWrapQueryForPaging(
+						selectClause.append(lineSep)
 						.append(fromClause).append(lineSep)
 						.append(whereClause).append(lineSep)
 						.append(rawSQLClauseFinal)
@@ -532,7 +533,8 @@ public class DBQuery {
 						.append(orderByClauseFinal)
 						.append(options.getRowLimit() > 0 ? defn.getLimitRowsSubClauseAfterWhereClause(options) : "")
 						.append(defn.endSQLStatement())
-						.toString();
+						.toString(),
+						options);
 			} else if (queryType == QueryType.COUNT) {
 				sqlString = defn.beginSelectStatement() + defn.countStarClause() + lineSep + fromClause + lineSep + whereClause + lineSep + rawSQLClauseFinal + lineSep + defn.endSQLStatement();
 			}

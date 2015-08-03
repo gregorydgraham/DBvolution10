@@ -147,6 +147,24 @@ public class OracleDBDefinition extends DBDefinition {
 	public Object getLimitRowsSubClauseAfterWhereClause(QueryOptions options) {
 		return "";
 	}
+	
+	@Override
+	public String doWrapQueryForPaging(String sqlQuery, QueryOptions options) {
+		if (options.getRowLimit() > -1) {
+			final int firstRowOfNextPage = (options.getPageIndex() + 1) * options.getRowLimit()+1;
+			final int firstRowOfPage = options.getPageIndex() * options.getRowLimit()+1;
+			return "select *\n"
+					+ "  from ( select /*+ FIRST_ROWS(n) */\n"
+					+ "  a.*, ROWNUM rnum\n"
+					+ "      from ( " + sqlQuery + " ) a\n"
+					+ "      where ROWNUM <" + firstRowOfNextPage + "\n"
+					+ "      )\n"
+					+ "where rnum  >= " + firstRowOfPage +"";
+		} else {
+			return super.doWrapQueryForPaging(sqlQuery, options);
+		}
+	}
+
 
 	@Override
 	public String getCurrentUserFunctionName() {

@@ -43,10 +43,10 @@ public class Oracle11DBDefinition extends OracleDBDefinition {
 		return "";
 	}
 
-	@Override
-	public boolean supportsPagingNatively(QueryOptions options) {
-		return false;
-	}
+//	@Override
+//	public boolean supportsPagingNatively(QueryOptions options) {
+//		return true;
+//	}
 
 	@Override
 	public String getColumnAutoIncrementSuffix() {

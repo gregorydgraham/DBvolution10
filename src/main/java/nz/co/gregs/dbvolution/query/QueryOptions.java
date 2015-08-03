@@ -145,6 +145,18 @@ public class QueryOptions {
 	}
 
 	/**
+	 * Defines which page of results the query is to retrieve.
+	 * 
+	 * <p>
+	 * {@link #getRowLimit() } defines the size of a page, and this method return which page is to be retrieved.
+	 * 
+	 * <p>
+	 * Be default the page index is zero.
+	 * 
+	 * <p>
+	 * The first item on the page will be (pageindex*rowlimit) , and the first item on the next page will be ((pageindex+1)*rowlimit). 
+	 * 
+	 * 
 	 * @return the pageIndex
 	 */
 	public int getPageIndex() {

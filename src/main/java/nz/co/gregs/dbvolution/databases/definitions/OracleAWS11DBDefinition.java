@@ -43,10 +43,10 @@ public class OracleAWS11DBDefinition extends OracleAWSDBDefinition {
 		return "";
 	}
 
-	@Override
-	public boolean supportsPagingNatively(QueryOptions options) {
-		return false;
-	}
+//	@Override
+//	public boolean supportsPagingNatively(QueryOptions options) {
+//		return true;
+//	}
 
 	@Override
 	public String getColumnAutoIncrementSuffix() {

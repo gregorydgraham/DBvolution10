@@ -4128,4 +4128,18 @@ public abstract class DBDefinition {
 	public List<String> getSpatial2DIndexSQL(DBDatabase aThis, String formatTableName, String formatColumnName) {
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
+
+	/**
+	 * Wrap query with any required syntax to provide paging functionality.
+	 * 
+	 * <p>
+	 * Required to support Oracle's ROWNUM-based paging "system".
+	 *
+	 * @param sqlQuery
+	 * @param options
+	 * @return
+	 */
+	public String doWrapQueryForPaging(String sqlQuery, QueryOptions options) {
+		return sqlQuery;
+	}
 }
