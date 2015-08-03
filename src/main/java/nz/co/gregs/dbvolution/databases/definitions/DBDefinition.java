@@ -3349,7 +3349,7 @@ public abstract class DBDefinition {
 	 * Provide the SQL to return the dimension of the Point2D
 	 *
 	 * <p>
-	 * Points a 0-dimensional objects for this purpose.
+	 * Point is a 0-dimensional objects for this purpose.
 	 *
 	 * @param point2DSQL
 	 * @return SQL
@@ -3391,14 +3391,14 @@ public abstract class DBDefinition {
 	}
 
 	/**
-	 * The same as {@link #transformPoint2DIntoDatabaseFormat(com.vividsolutions.jts.geom.Point) but for to coordinates as SQL.
+	 * The same as {@link #transformPoint2DIntoDatabaseFormat(com.vividsolutions.jts.geom.Point) but for two coordinates as SQL.
 	 *
 	 * @param xValue
 	 * @param yValue
 	 * @return SQL
 	 */
 	public String transformCoordinatesIntoDatabasePoint2DFormat(String xValue, String yValue) {
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+		return "'POINT(" + xValue+" " +yValue+ ")'";
 	}
 
 	/**
@@ -3664,7 +3664,7 @@ public abstract class DBDefinition {
 	 * @param otherPolygon2DSQL
 	 * @return SQL:
 	 */
-	public String doPoint2DDistanceBetweenTransform(String polygon2DSQL, Point2DExpression otherPolygon2DSQL) {
+	public String doPoint2DDistanceBetweenTransform(String polygon2DSQL, String otherPolygon2DSQL) {
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 

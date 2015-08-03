@@ -219,7 +219,7 @@ public class Point2DExpression implements Point2DResult, EqualComparable<Point2D
 			@Override
 			public String doExpressionTransform(DBDatabase db) {
 				try {
-					return db.getDefinition().doPoint2DDistanceBetweenTransform(getFirst().toSQLString(db), getSecond());
+					return db.getDefinition().doPoint2DDistanceBetweenTransform(getFirst().toSQLString(db), getSecond().toSQLString(db));
 				} catch (UnsupportedOperationException unsupported) {
 					return getSecond().getX().minus(getFirst().getX()).bracket().squared().plus(getSecond().getY().minus(getFirst().getY()).bracket().squared()).squareRoot().toSQLString(db);
 				}

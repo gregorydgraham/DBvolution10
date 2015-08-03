@@ -405,7 +405,12 @@ public class OracleDBDefinition extends DBDefinition {
 	@Override
 	public String transformPoint2DIntoDatabaseFormat(Point point) {
 		final Coordinate coordinate = point.getCoordinate();
-		return "SDO_GEOMETRY(2001, NULL, SDO_POINT_TYPE(" + coordinate.x + ", " + coordinate.y + ",NULL), NULL, NULL)";
+		return transformCoordinatesIntoDatabasePoint2DFormat(""+coordinate.x, ""+coordinate.y);
+	}
+	
+	@Override
+	public String transformCoordinatesIntoDatabasePoint2DFormat(String xValue, String yValue) {
+		return "SDO_GEOMETRY(2001, NULL, SDO_POINT_TYPE(" + xValue + ", " + yValue + ",NULL), NULL, NULL)";
 //		return "SDO_UTIL.FROM_WKTGEOMETRY('"+point.toText()+"')";
 	}
 
@@ -439,7 +444,7 @@ public class OracleDBDefinition extends DBDefinition {
 	}
 
 	@Override
-	public String doPoint2DDistanceBetweenTransform(String polygon2DSQL, Point2DExpression otherPolygon2DSQL) {
+	public String doPoint2DDistanceBetweenTransform(String polygon2DSQL, String otherPolygon2DSQL) {
 		return "SDO_GEOM.SDO_DISTANCE(" + polygon2DSQL + ", " + otherPolygon2DSQL + ", 0.000001)"; //To change body of generated methods, choose Tools | Templates.
 	}
 
@@ -450,17 +455,18 @@ public class OracleDBDefinition extends DBDefinition {
 
 	@Override
 	public String doPoint2DAsTextTransform(String point2DSQL) {
-		return "SDO_UTIL.TO_WKTGEOMETRY(" + point2DSQL + ")";
+		return "TO_CHAR(SDO_UTIL.TO_WKTGEOMETRY(" + point2DSQL + "))";
 	}
 
 	@Override
 	public String doPoint2DGetBoundingBoxTransform(String point2DSQL) {
-		return "SDO_UTIL.SDO_MBR(" + point2DSQL + ")";
+		return "SDO_GEOM.SDO_MBR(" + point2DSQL + ")";
 	}
 
 	@Override
 	public String doPoint2DDimensionTransform(String point2DSQL) {
-		return "(" + point2DSQL + ").GET_DIMS()";
+		return "0";
+		//return "(" + point2DSQL + ").GET_DIMS()"; get_dims() will return 2 as in 2D, whereas we require 0
 	}
 
 	@Override
@@ -475,7 +481,7 @@ public class OracleDBDefinition extends DBDefinition {
 
 	@Override
 	public String doPoint2DEqualsTransform(String firstPoint, String secondPoint) {
-		return "SDO_GEOM.RELATE(" + firstPoint + ", 'equal', " + secondPoint + ", '')='EQUAL'";
+		return "SDO_GEOM.RELATE(" + firstPoint + ", 'equal', " + secondPoint + ", 0.0000005)='EQUAL'";
 	}
 
 }
