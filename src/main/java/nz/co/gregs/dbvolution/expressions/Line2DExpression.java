@@ -30,6 +30,7 @@ import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.datatypes.spatial2D.DBLine2D;
+import nz.co.gregs.dbvolution.datatypes.spatial2D.DBMultiPoint2D;
 import nz.co.gregs.dbvolution.results.MultiPoint2DResult;
 
 /**
@@ -45,13 +46,31 @@ public class Line2DExpression implements Line2DResult, EqualComparable<Line2DRes
 	private Line2DResult innerLineString;
 	private boolean nullProtectionRequired;
 
+	/**
+	 * Default constructor, probably shouldn't be used.
+	 *
+	 */
 	protected Line2DExpression() {
 	}
 
+	/**
+	 * Create a new Line2DExpression containing the specified value or expression.
+	 * 
+	 * <p>
+	 * {@link Line2DResult} classes include {@link DBLine2D} and {@link Line2DExpression}.
+	 *
+	 * @param value
+	 */
 	public Line2DExpression(Line2DResult value) {
 		initInnerLine(value, value);
 	}
 
+	/**
+	 * Perform standard set up and checks when creating the expression.
+	 *
+	 * @param original
+	 * @param value
+	 */
 	protected final void initInnerLine(Object original, Line2DResult value) {
 		innerLineString = value;
 		if (original == null || innerLineString.getIncludesNull()) {
@@ -59,11 +78,21 @@ public class Line2DExpression implements Line2DResult, EqualComparable<Line2DRes
 		}
 	}
 
+	/**
+	 * Create a Line2DExpression representing the line supplied.
+	 *
+	 * @param line
+	 */
 	public Line2DExpression(LineString line) {
-		innerLineString = new DBLine2D(line);
-		initInnerLine(line, innerLineString);
+//		innerLineString = new DBLine2D(line);
+		initInnerLine(line, new DBLine2D(line));
 	}
 
+	/**
+	 * Create a Line2DExpression representing the set of points as a line.
+	 *
+	 * @param points 
+	 */
 	public Line2DExpression(Point... points) {
 		GeometryFactory geometryFactory = new GeometryFactory();
 		List<Coordinate> coords = new ArrayList<Coordinate>();
@@ -71,35 +100,69 @@ public class Line2DExpression implements Line2DResult, EqualComparable<Line2DRes
 			coords.add(point.getCoordinate());
 		}
 		LineString line = geometryFactory.createLineString(coords.toArray(new Coordinate[]{}));
-		innerLineString = new DBLine2D(line);
-		initInnerLine(points, innerLineString);
+//		innerLineString = new DBLine2D(line);
+		initInnerLine(points, new DBLine2D(line));
 	}
 
+	/**
+	 * Create a Line2DExpression representing the set of coordinates as a line.
+	 *
+	 * @param coords 
+	 */
 	public Line2DExpression(Coordinate... coords) {
 		GeometryFactory geometryFactory = new GeometryFactory();
 		LineString line = geometryFactory.createLineString(coords);
-		innerLineString = new DBLine2D(line);
-		initInnerLine(coords, innerLineString);
+//		innerLineString = new DBLine2D(line);
+		initInnerLine(coords, new DBLine2D(line));
 	}
 
+	/**
+	 * Create a Line2DExpression representing the {@link MultiPoint2DExpression} or {@link DBMultiPoint2D} as a line.
+	 *
+	 * @param multipoint2DExpression 
+	 */
 	public Line2DExpression(MultiPoint2DResult multipoint2DExpression) {
-		initInnerLine(multipoint2DExpression, new MultiPoint2DExpression(multipoint2DExpression).line2DResult());
+		initInnerLine(multipoint2DExpression, new DBLine2D(multipoint2DExpression));
 	}
 
+	/**
+	 * Create a Line2DExpression representing the set of points as a line.
+	 *
+	 * @param points 
+	 * @return  a Line2DExpression
+	 */
 	public static Line2DExpression value(Point... points) {
 		return new Line2DExpression(points);
 	}
 
+	/**
+	 * Create a Line2DExpression representing the set of coordinates as a line.
+	 *
+	 * @param coords 
+	 * @return  a Line2DExpression
+	 */
 	public static Line2DExpression value(Coordinate... coords) {
 		return new Line2DExpression(coords);
 	}
 
+	/**
+	 * Create a Line2DExpression representing the line.
+	 *
+	 * @param line 
+	 * @return  a Line2DExpression
+	 */
 	public static Line2DExpression value(LineString line) {
 		return new Line2DExpression(line);
 	}
 
-	public static Line2DExpression value(MultiPoint2DResult line) {
-		return new Line2DExpression(line);
+	/**
+	 * Create a Line2DExpression representing the {@link MultiPoint2DExpression} or {@link DBMultiPoint2D} as a line.
+	 *
+	 * @param multipoint2DExpression 
+	 * @return a Line2DExpression
+	 */
+	public static Line2DExpression value(MultiPoint2DResult multipoint2DExpression) {
+		return new Line2DExpression(multipoint2DExpression);
 	}
 
 	@Override

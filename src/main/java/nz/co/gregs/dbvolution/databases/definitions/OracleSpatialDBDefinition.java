@@ -28,9 +28,13 @@ import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 import nz.co.gregs.dbvolution.datatypes.spatial2D.*;
 
-
+/**
+ * A subclass of OracleDB that contains definitions of standard Spatial
+ * functions shared by Oracle databases with Spatial functions.
+ *
+ * @author gregorygraham
+ */
 public class OracleSpatialDBDefinition extends OracleDBDefinition {
-	
 
 	@Override
 	public String getSQLTypeOfDBDatatype(QueryableDatatype qdt) {
@@ -44,12 +48,12 @@ public class OracleSpatialDBDefinition extends OracleDBDefinition {
 			return super.getSQLTypeOfDBDatatype(qdt);
 		}
 	}
-	
+
 	@Override
 	public boolean requiresSpatial2DIndexes() {
 		return true;
 	}
-	
+
 	@Override
 	public List<String> getSpatial2DIndexSQL(DBDatabase aThis, final String formatTableName, final String formatColumnName) {
 		return new ArrayList<String>() {
@@ -75,9 +79,9 @@ public class OracleSpatialDBDefinition extends OracleDBDefinition {
 	@Override
 	public String transformPoint2DIntoDatabaseFormat(Point point) {
 		final Coordinate coordinate = point.getCoordinate();
-		return transformCoordinatesIntoDatabasePoint2DFormat(""+coordinate.x, ""+coordinate.y);
+		return transformCoordinatesIntoDatabasePoint2DFormat("" + coordinate.x, "" + coordinate.y);
 	}
-	
+
 	@Override
 	public String transformCoordinatesIntoDatabasePoint2DFormat(String xValue, String yValue) {
 		return "SDO_GEOMETRY(2001, NULL, SDO_POINT_TYPE(" + xValue + ", " + yValue + ",NULL), NULL, NULL)";
@@ -153,6 +157,5 @@ public class OracleSpatialDBDefinition extends OracleDBDefinition {
 	public String doPoint2DEqualsTransform(String firstPoint, String secondPoint) {
 		return "SDO_GEOM.RELATE(" + firstPoint + ", 'equal', " + secondPoint + ", 0.0000005)='EQUAL'";
 	}
-
 
 }

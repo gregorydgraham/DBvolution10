@@ -29,7 +29,9 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import nz.co.gregs.dbvolution.exceptions.IncorrectGeometryReturnedForDatatype;
 import nz.co.gregs.dbvolution.exceptions.ParsingSpatialValueException;
+import nz.co.gregs.dbvolution.expressions.MultiPoint2DExpression;
 import nz.co.gregs.dbvolution.results.Line2DResult;
+import nz.co.gregs.dbvolution.results.MultiPoint2DResult;
 
 /**
  * Represents datatypes and columns that are composed of a series of points
@@ -77,6 +79,19 @@ public class DBLine2D extends QueryableDatatype implements Line2DResult {
 	 */
 	public DBLine2D(LineString lineString) {
 		super(lineString);
+	}
+
+	/**
+	 * Create a DBLine2D with the value set to the {@link MultiPoint2DResult multipoint value or expression} provided.
+	 *
+	 * <p>
+	 * This is a convenient way to assign a constant value in an expression or
+	 * DBRow subclass.
+	 *
+	 * @param multipoint either a {@link MultiPoint2DExpression} or a {@link DBMultiPoint2D}
+	 */
+	public DBLine2D(MultiPoint2DResult multipoint) {
+		super(new MultiPoint2DExpression(multipoint).line2DResult());
 	}
 
 	/**
