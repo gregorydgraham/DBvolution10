@@ -39,8 +39,7 @@ import nz.co.gregs.dbvolution.datatypes.spatial2D.DBPoint2D;
 import nz.co.gregs.dbvolution.datatypes.spatial2D.DBPolygon2D;
 import nz.co.gregs.dbvolution.expressions.BooleanExpression;
 import nz.co.gregs.dbvolution.expressions.DBExpression;
-import nz.co.gregs.dbvolution.expressions.Point2DExpression;
-import nz.co.gregs.dbvolution.internal.oracle.StringFunctions;
+import nz.co.gregs.dbvolution.internal.oracle.aws.StringFunctions;
 import nz.co.gregs.dbvolution.query.QueryOptions;
 
 /**

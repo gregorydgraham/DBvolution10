@@ -15,15 +15,14 @@
  */
 package nz.co.gregs.dbvolution.databases;
 
+import nz.co.gregs.dbvolution.internal.oracle.aws.StringFunctions;
 import java.sql.SQLException;
 import java.sql.Statement;
 import javax.sql.DataSource;
 import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.DBRow;
-import nz.co.gregs.dbvolution.annotations.DBTableName;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.databases.supports.SupportsPolygonDatatype;
-import nz.co.gregs.dbvolution.internal.oracle.*;
 
 /**
  * Super class for connecting the different versions of the Oracle DB.
@@ -92,6 +91,10 @@ public abstract class OracleDB extends DBDatabase implements SupportsPolygonData
 	@Override
 	protected <TR extends DBRow> void dropAnyAssociatedDatabaseObjects(TR tableRow) throws SQLException {
 
+		removeSpatialMetadata(tableRow);
+	}
+
+	protected <TR extends DBRow> void removeSpatialMetadata(TR tableRow) throws SQLException {
 		DBDefinition definition = getDefinition();
 		final String formattedTableName = definition.formatTableName(tableRow);
 		final DBStatement dbStatement3 = getDBStatement();

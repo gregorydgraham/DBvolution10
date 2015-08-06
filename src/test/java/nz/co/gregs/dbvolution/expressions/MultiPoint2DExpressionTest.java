@@ -167,7 +167,7 @@ public class MultiPoint2DExpressionTest extends AbstractTest {
 
 	@Test
 	public void testLine2DResult() throws SQLException {
-		System.out.println("stringResult");
+		System.out.println("testLine2DResult");
 		LineString line = geometryFactory.createLineString(new Coordinate[]{new Coordinate(2.0, 3.0), new Coordinate(3.0, 4.0)});
 		final MultiPoint2DTestTable pointTestTable = new MultiPoint2DTestTable();
 		DBQuery dbQuery = database.getDBQuery(pointTestTable);
@@ -197,7 +197,7 @@ public class MultiPoint2DExpressionTest extends AbstractTest {
 
 	@Test
 	public void testIs_MultiPoint() throws SQLException {
-		System.out.println("is");
+		System.out.println("testIs_MultiPoint");
 		MultiPoint mpoint = geometryFactory.createMultiPoint(new Coordinate[]{new Coordinate(2.0, 3.0), new Coordinate(3.0, 4.0)});
 		final MultiPoint2DTestTable pointTestTable = new MultiPoint2DTestTable();
 		DBQuery dbQuery = database.getDBQuery(pointTestTable);
@@ -209,7 +209,7 @@ public class MultiPoint2DExpressionTest extends AbstractTest {
 
 	@Test
 	public void testIs_MultiPoint2DResult() throws SQLException {
-		System.out.println("is");
+		System.out.println("testIs_MultiPoint2DResult");
 		MultiPoint mpoint = geometryFactory.createMultiPoint(new Coordinate[]{new Coordinate(2.0, 3.0), new Coordinate(3.0, 4.0)});
 		final MultiPoint2DTestTable multiPointRow = new MultiPoint2DTestTable();
 		DBQuery dbQuery = database.getDBQuery(multiPointRow);
@@ -222,7 +222,7 @@ public class MultiPoint2DExpressionTest extends AbstractTest {
 
 	@Test
 	public void testNumberOfPoints() throws SQLException {
-		System.out.println("is");
+		System.out.println("testNumberOfPoints");
 		final MultiPoint2DTestTable multiPointRow = new MultiPoint2DTestTable();
 		DBQuery dbQuery = database.getDBQuery(multiPointRow);
 		dbQuery.addCondition(multiPointRow.column(multiPointRow.multipoint).numberOfPoints().is(3));
@@ -234,7 +234,7 @@ public class MultiPoint2DExpressionTest extends AbstractTest {
 
 	@Test
 	public void testPointAtIndex() throws SQLException {
-		System.out.println("is");
+		System.out.println("testPointAtIndex");
 		Point point = geometryFactory.createPoint(new Coordinate(3, 4));
 		final MultiPoint2DTestTable multiPointRow = new MultiPoint2DTestTable();
 		DBQuery dbQuery = database.getDBQuery(multiPointRow);

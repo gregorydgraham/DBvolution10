@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package nz.co.gregs.dbvolution.internal.oracle;
+package nz.co.gregs.dbvolution.internal.oracle.aws;
 
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -437,7 +437,16 @@ public enum MultiPoint2DFunctions {
 			+ "RETURN 0;\n"
 			+ "END;"),
 	ASTEXT("VARCHAR", "mpoint IN VARCHAR", "BEGIN RETURN mpoint; END;"),
-	ASLINE2D("VARCHAR", "mpoint IN VARCHAR", "BEGIN RETURN replace(mpoint, 'MULTIPOINT', 'LINESTRING'); END;");
+	ASLINE2D("VARCHAR", "mpoint IN VARCHAR", "BEGIN\n"
+			+ "   --'MULTIPOINT ((2 3), (3 4), (4 5))'\n"
+			+ "   --'LINESTRING (2 3, 3 4, 4 5)'\n"
+			+ "   RETURN REPLACE (\n"
+			+ "             REPLACE (REPLACE (mpoint, 'MULTIPOINT ((', 'LINESTRING ('),\n"
+			+ "                      '), (',\n"
+			+ "                      ', '),\n"
+			+ "             '))',\n"
+			+ "             ')');\n"
+			+ "END;");
 
 	private final String returnType;
 	private final String parameters;

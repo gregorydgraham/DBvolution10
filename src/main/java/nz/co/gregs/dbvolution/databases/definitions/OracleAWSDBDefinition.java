@@ -15,15 +15,17 @@
  */
 package nz.co.gregs.dbvolution.databases.definitions;
 
+import nz.co.gregs.dbvolution.internal.oracle.aws.MultiPoint2DFunctions;
+import nz.co.gregs.dbvolution.internal.oracle.aws.Polygon2DFunctions;
+import nz.co.gregs.dbvolution.internal.oracle.aws.LineSegment2DFunctions;
+import nz.co.gregs.dbvolution.internal.oracle.aws.Line2DFunctions;
 import com.vividsolutions.jts.geom.*;
 import com.vividsolutions.jts.io.WKTReader;
-import java.util.ArrayList;
 import java.util.List;
 import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.datatypes.*;
 import nz.co.gregs.dbvolution.datatypes.spatial2D.*;
 import nz.co.gregs.dbvolution.exceptions.IncorrectGeometryReturnedForDatatype;
-import nz.co.gregs.dbvolution.internal.oracle.*;
 
 /**
  * Defines the features of Amazon's Oracle RDS databases that differ from the standard
@@ -71,6 +73,66 @@ public class OracleAWSDBDefinition extends OracleDBDefinition {
 		return "'POINT (" + xValue + " " + yValue + ")'";
 	}
 
+	@Override
+	public String doPoint2DDistanceBetweenTransform(String polygon2DSQL, String otherPolygon2DSQL) {
+		throw new UnsupportedOperationException("Spatial functions have been removed from AWS Oracle");
+	}
+
+	@Override
+	public String doPoint2DArrayToPolygon2DTransform(List<String> pointSQL) {
+		throw new UnsupportedOperationException("Spatial functions have been removed from AWS Oracle");
+	}
+
+	@Override
+	public String doPoint2DAsTextTransform(String point2DSQL) {
+		throw new UnsupportedOperationException("Spatial functions have been removed from AWS Oracle");
+	}
+
+	@Override
+	public String doPoint2DGetBoundingBoxTransform(String point2DSQL) {
+		throw new UnsupportedOperationException("Spatial functions have been removed from AWS Oracle");
+	}
+
+	@Override
+	public String doPoint2DDimensionTransform(String point2DSQL) {
+		throw new UnsupportedOperationException("Spatial functions have been removed from AWS Oracle");
+	}
+
+	@Override
+	public String doPoint2DGetYTransform(String point2DSQL) {
+		throw new UnsupportedOperationException("Spatial functions have been removed from AWS Oracle");
+	}
+
+	@Override
+	public String doPoint2DGetXTransform(String point2DSQL) {
+		throw new UnsupportedOperationException("Spatial functions have been removed from AWS Oracle");
+	}
+
+	@Override
+	public String doPoint2DEqualsTransform(String firstPoint, String secondPoint) {
+		throw new UnsupportedOperationException("Spatial functions have been removed from AWS Oracle");
+	}
+
+	@Override
+	public String transformLineStringIntoDatabaseLine2DFormat(LineString lineString) {
+		String wktValue = lineString.toText();
+		return "'" + wktValue + "'";
+	}
+
+	@Override
+	public String transformLineSegmentIntoDatabaseLineSegment2DFormat(LineSegment lineSegment) {
+		LineString line = (new GeometryFactory()).createLineString(new Coordinate[]{lineSegment.getCoordinate(0),lineSegment.getCoordinate(1)});
+		String wktValue = line.toText();
+		return "'" + wktValue + "'";
+	}	
+	
+	@Override
+	public String transformPolygonIntoDatabasePolygon2DFormat(Polygon polygon) {
+		String wktValue = polygon.toText();
+		return "'" + wktValue + "'";
+	}
+
+	
 	@Override
 	public String doLine2DAsTextTransform(String line2DSQL) {
 		return "(" + line2DSQL + ")";

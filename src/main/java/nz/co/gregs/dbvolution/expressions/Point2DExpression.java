@@ -164,7 +164,13 @@ public class Point2DExpression implements Point2DResult, EqualComparable<Point2D
 				try {
 					return db.getDefinition().doPoint2DEqualsTransform(getFirst().toSQLString(db), getSecond().toSQLString(db));
 				} catch (UnsupportedOperationException unsupported) {
-					return getFirst().stringResult().is(getSecond().stringResult()).toSQLString(db);
+					return 
+							BooleanExpression.allOf(
+							getFirst().stringResult().substringBetween("(", " ").numberResult()
+							.is(getSecond().stringResult().substringBetween("(", " ").numberResult()),
+							getFirst().stringResult().substringAfter("(").substringBetween(" ", ")").numberResult()
+							.is(getSecond().stringResult().substringAfter("(").substringBetween(" ", ")").numberResult())
+							).toSQLString(db);
 				}
 			}
 		});

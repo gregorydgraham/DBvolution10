@@ -15,13 +15,17 @@
  */
 package nz.co.gregs.dbvolution.databases;
 
+import nz.co.gregs.dbvolution.internal.oracle.aws.MultiPoint2DFunctions;
+import nz.co.gregs.dbvolution.internal.oracle.aws.LineSegment2DFunctions;
+import nz.co.gregs.dbvolution.internal.oracle.aws.Polygon2DFunctions;
+import nz.co.gregs.dbvolution.internal.oracle.aws.Line2DFunctions;
 import java.sql.SQLException;
 import java.sql.Statement;
 import javax.sql.DataSource;
 import nz.co.gregs.dbvolution.DBDatabase;
+import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.databases.supports.SupportsPolygonDatatype;
-import nz.co.gregs.dbvolution.internal.oracle.*;
 
 /**
  * Super class for connecting the different versions of the AWS Oracle DB.
@@ -96,6 +100,10 @@ public abstract class OracleAWSDB extends OracleDB implements SupportsPolygonDat
 		for (MultiPoint2DFunctions fn : MultiPoint2DFunctions.values()) {
 			fn.add(statement);
 		}
+	}
+
+	@Override
+	protected <TR extends DBRow> void removeSpatialMetadata(TR tableRow) throws SQLException {
 	}
 
 }
