@@ -18,7 +18,7 @@ package nz.co.gregs.dbvolution.databases.definitions;
 import java.util.ArrayList;
 import java.util.List;
 import nz.co.gregs.dbvolution.DBDatabase;
-import nz.co.gregs.dbvolution.databases.Oracle11DB;
+import nz.co.gregs.dbvolution.databases.Oracle11XEDB;
 import nz.co.gregs.dbvolution.query.QueryOptions;
 
 /**
@@ -26,12 +26,12 @@ import nz.co.gregs.dbvolution.query.QueryOptions;
  * database.
  *
  * <p>
- * This DBDefinition is automatically included in {@link Oracle11DB} instances,
+ * This DBDefinition is automatically included in {@link Oracle11XEDB} instances,
  * and you should not need to use it directly.
  *
  * @author Gregory Graham
  */
-public class Oracle11DBDefinition extends OracleSpatialDBDefinition {
+public class Oracle11XEDBDefinition extends OracleSpatialDBDefinition {
 
 	@Override
 	public Object getLimitRowsSubClauseDuringSelectClause(QueryOptions options) {
@@ -93,18 +93,30 @@ public class Oracle11DBDefinition extends OracleSpatialDBDefinition {
 		return result;
 	}
 
+//	@Override
+//	public String getStringLengthFunctionName() {
+//		return "LENGTH";
+//	}
+//
+//	@Override
+//	public String doSubstringTransform(String originalString, String start, String length) {
+//		return " SUBSTR("
+//				+ originalString
+//				+ ", "
+//				+ start
+//				+ (length.trim().isEmpty() ? "" : ", " + length)
+//				+ ") ";
+//	}
+	
 	@Override
-	public String getStringLengthFunctionName() {
-		return "LENGTH";
+	public String doPoint2DGetBoundingBoxTransform(String point2DSQL) {
+		throw new UnsupportedOperationException("Bounding Box is an unsupported operation in Oracle11 XE.");
+	}
+	
+	@Override
+	public String doPoint2DAsTextTransform(String point2DSQL) {
+		return "'POINT ('||"+doPoint2DGetXTransform(point2DSQL)+"||' '||"+doPoint2DGetYTransform(point2DSQL)+"||')'";
 	}
 
-	@Override
-	public String doSubstringTransform(String originalString, String start, String length) {
-		return " SUBSTR("
-				+ originalString
-				+ ", "
-				+ start
-				+ (length.trim().isEmpty() ? "" : ", " + length)
-				+ ") ";
-	}
+
 }

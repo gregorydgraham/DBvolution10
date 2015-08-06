@@ -93,18 +93,18 @@ public class OracleAWS11DBDefinition extends OracleAWSDBDefinition {
 		return result;
 	}
 
-	@Override
-	public String getStringLengthFunctionName() {
-		return "LENGTH";
-	}
-
-	@Override
-	public String doSubstringTransform(String originalString, String start, String length) {
-		return " SUBSTR("
-				+ originalString
-				+ ", "
-				+ start
-				+ (length.trim().isEmpty() ? "" : ", " + length)
-				+ ") ";
-	}
+//	@Override
+//	public String getStringLengthFunctionName() {
+//		return "LENGTH";
+//	}
+//
+//	@Override
+//	public String doSubstringTransform(String originalString, String start, String length) {
+//		return " SUBSTR("
+//				+ originalString
+//				+ ", "
+//				+ start
+//				+ (length.trim().isEmpty() ? "" : ", " + length)
+//				+ ") ";
+//	}
 }

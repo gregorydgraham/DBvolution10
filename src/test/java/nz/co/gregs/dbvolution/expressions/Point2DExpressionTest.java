@@ -290,7 +290,7 @@ public class Point2DExpressionTest extends AbstractTest {
 
 	@Test
 	public void testDistance() throws SQLException {
-		System.out.println("boundingBox");
+		System.out.println("distance");
 		final DistanceTest pointTestTable = new DistanceTest();
 		DBQuery dbQuery = database.getDBQuery(pointTestTable).setBlankQueryAllowed(true);
 		database.print(dbQuery.getAllInstancesOf(pointTestTable));

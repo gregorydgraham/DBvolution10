@@ -90,10 +90,17 @@ public abstract class OracleDB extends DBDatabase implements SupportsPolygonData
 
 	@Override
 	protected <TR extends DBRow> void dropAnyAssociatedDatabaseObjects(TR tableRow) throws SQLException {
-
+		
 		removeSpatialMetadata(tableRow);
 	}
 
+	/**
+	 * Allows the database to remove any spatial metadata that might exist for a table during DROP TABLE.
+	 *
+	 * @param <TR>
+	 * @param tableRow
+	 * @throws SQLException
+	 */
 	protected <TR extends DBRow> void removeSpatialMetadata(TR tableRow) throws SQLException {
 		DBDefinition definition = getDefinition();
 		final String formattedTableName = definition.formatTableName(tableRow);
