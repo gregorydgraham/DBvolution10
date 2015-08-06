@@ -28,7 +28,7 @@ import nz.co.gregs.dbvolution.query.QueryOptions;
  *
  * @author Gregory Graham
  */
-public class Oracle12DBDefinition extends OracleDBDefinition {
+public class Oracle12DBDefinition extends OracleSpatialDBDefinition {
 
 	@Override
 	public Object getLimitRowsSubClauseAfterWhereClause(QueryOptions options) {
