@@ -26,7 +26,7 @@ import java.util.ArrayList;
 import java.util.List;
 import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
-import nz.co.gregs.dbvolution.datatypes.spatial2D.*;
+import nz.co.gregs.dbvolution.results.Spatial2DResult;
 
 /**
  * A subclass of OracleDB that contains definitions of standard Spatial
@@ -38,12 +38,14 @@ public class OracleSpatialDBDefinition extends OracleDBDefinition {
 
 	@Override
 	public String getSQLTypeOfDBDatatype(QueryableDatatype qdt) {
-		if (qdt instanceof DBPoint2D) {
+		if (qdt instanceof Spatial2DResult) {
 			return " SDO_GEOMETRY ";
-		} else if (qdt instanceof DBLine2D) {
-			return " SDO_GEOMETRY ";
-		} else if (qdt instanceof DBPolygon2D) {
-			return " SDO_GEOMETRY ";
+//		} else if (qdt instanceof DBLine2D) {
+//			return " SDO_GEOMETRY ";
+//		} else if (qdt instanceof DBLineSegment2D) {
+//			return " SDO_GEOMETRY ";
+//		} else if (qdt instanceof DBPolygon2D) {
+//			return " SDO_GEOMETRY ";
 		} else {
 			return super.getSQLTypeOfDBDatatype(qdt);
 		}
@@ -110,11 +112,18 @@ public class OracleSpatialDBDefinition extends OracleDBDefinition {
 	}
 
 	@Override
-	public String transformLineSegmentIntoDatabaseLineSegment2DFormat(LineSegment point) {
+	public String transformLineSegmentIntoDatabaseLineSegment2DFormat(LineSegment lineSegment) {
 //		final Coordinate coordinate = point.p0;
 //		final Coordinate otherCoord = point.p1;
-//		return "SDO_GEOMETRY(2002, NULL, SDO_POINT_TYPE(" + coordinate.x + ", " + coordinate.y + ",NULL), NULL, NULL)";
-		return "SDO_UTIL.FROM_WKTGEOMETRY('" + point.toGeometry(new GeometryFactory()).toText() + "')";
+		
+		//MDSYS.SDO_GEOMETRY(2002, NULL, NULL,
+		//MDSYS.SDO_ELEM_INFO_ARRAY(1,4,2, 1,2,1, 9,2,2),
+		//MDSYS.SDO_ORDINATE_ARRAY(15,10, 25,10, 30,5, 38,5, 38,10, 35,15, 25,20))
+		
+		return "MDSYS.SDO_GEOMETRY(2002, NULL, NULL,"
+				+ "MDSYS.SDO_ELEM_INFO_ARRAY(1,2,1),"
+				+ "MDSYS.SDO_ORDINATE_ARRAY("+lineSegment.p0.x+", "+lineSegment.p0.y+", "+lineSegment.p1.x+", "+lineSegment.p1.y+")"
+				+ ")";
 	}
 
 	@Override
@@ -158,4 +167,152 @@ public class OracleSpatialDBDefinition extends OracleDBDefinition {
 		return "SDO_GEOM.RELATE(" + firstPoint + ", 'equal', " + secondPoint + ", 0.0000005)='EQUAL'";
 	}
 
+	/**
+	 * Convert the String object returned by the database into a JTS LineSegment object.
+	 *
+	 * @param lineSegmentAsSQL
+	 * @return a JTS LineSegment derived from the database's response, may be null.
+	 * @throws com.vividsolutions.jts.io.ParseException
+	 */
+//	public LineSegment transformDatabaseLineSegment2DValueToJTSLineSegment(String lineSegmentAsSQL) throws com.vividsolutions.jts.io.ParseException {
+//		LineString lineString = null;
+//		WKTReader wktReader = new WKTReader();
+//		Geometry geometry = wktReader.read(lineSegmentAsSQL);
+//		if (geometry instanceof LineString) {
+//			lineString = (LineString) geometry;
+//			if (lineSegmentAsSQL == null) {
+//				return null;
+//			} else {
+//				return new LineSegment(lineString.getCoordinateN(0), lineString.getCoordinateN(1));
+//			}
+//		} else {
+//			throw new IncorrectGeometryReturnedForDatatype(geometry, lineString);
+//		}
+//	}
+
+	/**
+	 * Generates the database specific SQL for testing whether the 2 line segment expressions ever cross.
+	 *
+	 * @param firstSQL
+	 * @param secondSQL
+	 * @return an SQL expression that will report whether the 2 line segments intersect.
+	 * @see #doLineSegment2DIntersectionPointWithLineSegment2DTransform(java.lang.String, java.lang.String) 
+	 */
+	@Override
+	public String doLineSegment2DIntersectsLineSegment2DTransform(String firstSQL, String secondSQL) {
+		return "SDO_GEOM.RELATE(" + firstSQL + ", 'ANYINTERACT', " + secondSQL + ", 0.0000005)='EQUAL'";
+	}
+
+	/**
+	 * Generate the SQL required to find the largest X value in the line segment SQL expression.
+	 *
+	 * @param lineSegment
+	 * @return SQL
+	 */
+	@Override
+	public String doLineSegment2DGetMaxXTransform(String lineSegment) {
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	}
+
+	/**
+	 * Generate the SQL required to find the smallest X value in the line segment SQL expression.
+	 * 
+	 * @param lineSegment
+	 * @return SQL
+	 */
+	@Override
+	public String doLineSegment2DGetMinXTransform(String lineSegment) {
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	}
+
+	/**
+	 * Generate the SQL required to find the largest Y value in the line segment SQL expression.
+	 *
+	 * @param lineSegment
+	 * @return SQL
+	 */
+	@Override
+	public String doLineSegment2DGetMaxYTransform(String lineSegment) {
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	}
+
+	/**
+	 * Generate the SQL required to find the smallest Y value in the line segment SQL expression.
+	 *
+	 * @param lineSegment
+	 * @return SQL
+	 */
+	@Override
+	public String doLineSegment2DGetMinYTransform(String lineSegment) {
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	}
+
+	/**
+	 * Generate the SQL required to the rectangular boundary that fully encloses the line segment SQL expression.
+	 *
+	 * @param lineSegment
+	 * @return SQL
+	 */
+	@Override
+	public String doLineSegment2DGetBoundingBoxTransform(String lineSegment) {
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	}
+
+	/**
+	 * Generate the SQL required to find the dimension of the line segment SQL expression.
+	 *
+	 * @param lineSegment
+	 * @return SQL
+	 */
+	@Override
+	public String doLineSegment2DDimensionTransform(String lineSegment) {
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	}
+
+	/**
+	 * Generate the SQL required to find whether the 2 line segment SQL expressions are NOT equal.
+	 *
+	 * @param firstLineSegment
+	 * @param secondLineSegment
+	 * @return SQL
+	 */
+	@Override
+	public String doLineSegment2DNotEqualsTransform(String firstLineSegment, String secondLineSegment) {
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	}
+
+	/**
+	 * Generate the SQL required to find whether the 2 line segment SQL expressions are equal.
+	 *
+	 * @param firstLineSegment
+	 * @param secondLineSegment
+	 * @return
+	 */
+	@Override
+	public String doLineSegment2DEqualsTransform(String firstLineSegment, String secondLineSegment) {
+				return "SDO_GEOM.RELATE(" + firstLineSegment + ", 'equal', " + secondLineSegment + ", 0.0000005)='EQUAL'";
+	}
+
+	/**
+	 * Generate the SQL required to convert the line segment SQL expression into the WKT string format.
+	 *
+	 * @param lineSegment
+	 * @return
+	 */
+	@Override
+	public String doLineSegment2DAsTextTransform(String lineSegment) {
+				return "TO_CHAR(SDO_UTIL.TO_WKTGEOMETRY(" + lineSegment + "))";
+	}
+
+	/**
+	 * Generate the SQL required to find the intersection point of the 2 line segment SQL expressions.
+	 *
+	 * @param firstLineSegment
+	 * @param secondLineSegment
+	 * @return an SQL expression that will evaluate to the intersection point of the 2 line segments or NULL.
+	 */
+	@Override
+	public String doLineSegment2DIntersectionPointWithLineSegment2DTransform(String firstLineSegment, String secondLineSegment) {
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	}
 }

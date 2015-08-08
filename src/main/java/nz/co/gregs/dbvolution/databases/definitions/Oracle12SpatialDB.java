@@ -15,15 +15,12 @@
  */
 package nz.co.gregs.dbvolution.databases.definitions;
 
-import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.geom.Polygon;
 import com.vividsolutions.jts.io.ParseException;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
-import nz.co.gregs.dbvolution.datatypes.spatial2D.DBLine2D;
-import nz.co.gregs.dbvolution.datatypes.spatial2D.DBPoint2D;
-import nz.co.gregs.dbvolution.datatypes.spatial2D.DBPolygon2D;
+import nz.co.gregs.dbvolution.results.Spatial2DResult;
 
 /**
  * Defines the features of the Oracle 12 database when spatial options are
@@ -40,12 +37,12 @@ public class Oracle12SpatialDB extends Oracle12DBDefinition {
 
 	@Override
 	public String getSQLTypeOfDBDatatype(QueryableDatatype qdt) {
-		if (qdt instanceof DBPoint2D) {
+		if (qdt instanceof Spatial2DResult) {
 			return " SDO_GEOMETRY ";
-		} else if (qdt instanceof DBLine2D) {
-			return " SDO_GEOMETRY ";
-		} else if (qdt instanceof DBPolygon2D) {
-			return " SDO_GEOMETRY ";
+//		} else if (qdt instanceof DBLine2D) {
+//			return " SDO_GEOMETRY ";
+//		} else if (qdt instanceof DBPolygon2D) {
+//			return " SDO_GEOMETRY ";
 		} else {
 			return super.getSQLTypeOfDBDatatype(qdt);
 		}

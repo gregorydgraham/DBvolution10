@@ -58,7 +58,7 @@ public class NuoDBDefinition extends DBDefinition {
 		} else if (qdt instanceof DBJavaObject) {
 			return " BLOB ";
 		} else {
-			return qdt.getSQLDatatype();
+			return super.getSQLTypeOfDBDatatype(qdt);
 		}
 	}
 

@@ -78,7 +78,7 @@ public class MySQLDBDefinition extends DBDefinition {
 //		} else if (qdt instanceof DBLine2D) {
 //			return " VARCHAR(2001) ";
 		} else {
-			return qdt.getSQLDatatype();
+			return super.getSQLTypeOfDBDatatype(qdt);
 		}
 	}
 

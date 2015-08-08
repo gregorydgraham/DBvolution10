@@ -69,7 +69,7 @@ public class MariaDBDefinition extends DBDefinition {
 		} else if (qdt instanceof DBLargeObject) {
 			return " LONGBLOB ";
 		} else {
-			return qdt.getSQLDatatype();
+			return super.getSQLTypeOfDBDatatype(qdt);
 		}
 	}
 

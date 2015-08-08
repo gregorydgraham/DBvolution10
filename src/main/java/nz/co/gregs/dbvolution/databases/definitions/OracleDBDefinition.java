@@ -114,7 +114,7 @@ public class OracleDBDefinition extends DBDefinition {
 //		} else if (qdt instanceof DBPolygon2D) {
 //			return " SDO_GEOMETRY ";
 		} else {
-			return qdt.getSQLDatatype();
+			return super.getSQLTypeOfDBDatatype(qdt);
 		}
 	}
 
