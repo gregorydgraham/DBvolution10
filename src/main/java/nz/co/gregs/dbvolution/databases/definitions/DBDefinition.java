@@ -3149,7 +3149,7 @@ public abstract class DBDefinition {
 	 * @param toSQLString
 	 * @return "2" unless something has gone horribly wrong.
 	 */
-	public String doPolygon2DGetDimensionTransform(String toSQLString) {
+	public String doPolygon2DMeasurableDimensionsTransform(String toSQLString) {
 		throw new UnsupportedOperationException("Geometry Operations Have Not Been Defined For This Database Yet.");
 	}
 
@@ -3357,7 +3357,7 @@ public abstract class DBDefinition {
 	 * @param point2DSQL
 	 * @return SQL
 	 */
-	public String doPoint2DDimensionTransform(String point2DSQL) {
+	public String doPoint2DMeasurableDimensionsTransform(String point2DSQL) {
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
@@ -3537,7 +3537,7 @@ public abstract class DBDefinition {
 	 * @param line2DSQL
 	 * @return the dimension (probably 1)
 	 */
-	public String doLine2DDimensionTransform(String line2DSQL) {
+	public String doLine2DMeasurableDimensionsTransform(String line2DSQL) {
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
@@ -3944,11 +3944,26 @@ public abstract class DBDefinition {
 	 */
 	public String doLineSegment2DIntersectionPointWithLineSegment2DTransform(String firstLineSegment, String secondLineSegment) {
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	}	
+	
+	/**
+	 * Generate the SQK required to return the starting point of the provided LineSegment2D expression.
+	 *
+	 * @param lineSegmentSQL
+	 * @return SQL
+	 */
+	public String doLineSegment2DStartPointTransform(String lineSegmentSQL) {
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
-//	public String doLine2DIntersectionWithLine2DTransform(String toSQLString, String toSQLString0) {
-//		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-//	}
+	/**
+	 * Generate the SQK required to return the starting point of the provided LineSegment2D expression.
+	 * @param lineSegmentSQL
+	 * @return SQL
+	 */
+	public String doLineSegment2DEndPointTransform(String lineSegmentSQL) {
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	}
 
 	/**
 	 * Provide the SQL that correctly represents this MultiPoint2D value in this database.
@@ -4020,7 +4035,7 @@ public abstract class DBDefinition {
 	 * @param multipoint2D
 	 * @return SQL
 	 */
-	public String doMultiPoint2DDimensionTransform(String multipoint2D) {
+	public String doMultiPoint2DMeasurableDimensionsTransform(String multipoint2D) {
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
@@ -4141,5 +4156,65 @@ public abstract class DBDefinition {
 	 */
 	public String doWrapQueryForPaging(String sqlQuery, QueryOptions options) {
 		return sqlQuery;
+	}
+
+	public String doLine2DSpatialDimensionsTransform(String toSQLString) {
+		return "2";
+	}
+
+	public String doLine2DHasMagnitudeTransform(String toSQLString) {
+		return this.getFalseOperation();
+	}
+
+	public String doLine2DGetMagnitudeTransform(String toSQLString) {
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	}
+
+	public String doPoint2DSpatialDimensionsTransform(String toSQLString) {
+		return "2";
+	}
+
+	public String doPoint2DHasMagnitudeTransform(String toSQLString) {
+		return this.getFalseOperation();
+	}
+
+	public String doPoint2DGetMagnitudeTransform(String toSQLString) {
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	}
+
+	public String doMultiPoint2DSpatialDimensionsTransform(String toSQLString) {
+		return "2";
+	}
+
+	public String doMultiPoint2DHasMagnitudeTransform(String toSQLString) {
+		return this.getFalseOperation();
+	}
+
+	public String doMultiPoint2DGetMagnitudeTransform(String toSQLString) {
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	}
+
+	public String doPolygon2DSpatialDimensionsTransform(String toSQLString) {
+		return "2";
+	}
+
+	public String doPolygon2DHasMagnitudeTransform(String toSQLString) {
+		return this.getFalseOperation();
+	}
+
+	public String doPolygon2DGetMagnitudeTransform(String toSQLString) {
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	}
+	
+	public String doLineSegment2DSpatialDimensionsTransform(String toSQLString) {
+		return "2";
+	}
+
+	public String doLineSegment2DHasMagnitudeTransform(String toSQLString) {
+		return this.getFalseOperation();
+	}
+
+	public String doLineSegment2DGetMagnitudeTransform(String toSQLString) {
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 }

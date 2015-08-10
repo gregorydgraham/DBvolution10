@@ -250,7 +250,7 @@ public class H2DBDefinition extends DBDefinition {
 	}
 
 	@Override
-	public String doLine2DDimensionTransform(String toSQLString) {
+	public String doLine2DMeasurableDimensionsTransform(String toSQLString) {
 		return Line2DFunctions.DIMENSION + "(" + toSQLString + ")";
 	}
 
@@ -310,7 +310,7 @@ public class H2DBDefinition extends DBDefinition {
 	}
 
 	@Override
-	public String doPoint2DDimensionTransform(String toSQLString) {
+	public String doPoint2DMeasurableDimensionsTransform(String toSQLString) {
 		return Point2DFunctions.DIMENSION + "(" + toSQLString + ")";
 	}
 
@@ -383,7 +383,7 @@ public class H2DBDefinition extends DBDefinition {
 	}
 
 	@Override
-	public String doPolygon2DGetDimensionTransform(String toSQLString) {
+	public String doPolygon2DMeasurableDimensionsTransform(String toSQLString) {
 		return Polygon2DFunctions.DIMENSION.alias() + "(" + toSQLString + ")";
 	}
 
@@ -493,7 +493,7 @@ public class H2DBDefinition extends DBDefinition {
 	}
 
 	@Override
-	public String doMultiPoint2DDimensionTransform(String first) {
+	public String doMultiPoint2DMeasurableDimensionsTransform(String first) {
 		return MultiPoint2DFunctions.DIMENSION+"("+first+", "+MultiPoint2DFunctions.getCurrentVersion()+")";
 	}
 

@@ -412,21 +412,21 @@ public class DBPolygonTest extends AbstractTest {
 
 			database.print(database.getDBTable(new BasicSpatialTable()).setBlankQueryAllowed(true).getAllRows());
 
-			DBQuery query = database.getDBQuery(new BasicSpatialTable()).addCondition(spatial.column(spatial.myfirstgeom).dimension().is(2));
+			DBQuery query = database.getDBQuery(new BasicSpatialTable()).addCondition(spatial.column(spatial.myfirstgeom).measurableDimensions().is(2));
 			List<BasicSpatialTable> allRows = query.getAllInstancesOf(spatial);
 			database.print(allRows);
 			Assert.assertThat(allRows.size(), is(3));
 			Assert.assertThat(allRows.get(0).pkid.intValue(), anyOf(is(1), is(2)));
 			Assert.assertThat(allRows.get(1).pkid.intValue(), anyOf(is(1), is(2)));
 
-			query = database.getDBQuery(new BasicSpatialTable()).addCondition(NumberExpression.value(2).is(spatial.column(spatial.myfirstgeom).dimension()));
+			query = database.getDBQuery(new BasicSpatialTable()).addCondition(NumberExpression.value(2).is(spatial.column(spatial.myfirstgeom).measurableDimensions()));
 			allRows = query.getAllInstancesOf(spatial);
 			database.print(allRows);
 			Assert.assertThat(allRows.size(), is(3));
 			Assert.assertThat(allRows.get(0).pkid.intValue(), anyOf(is(1), is(2)));
 			Assert.assertThat(allRows.get(1).pkid.intValue(), anyOf(is(1), is(2)));
 
-			query = database.getDBQuery(new BasicSpatialTable()).addCondition(spatial.column(spatial.myfirstgeom).dimension().is(2));
+			query = database.getDBQuery(new BasicSpatialTable()).addCondition(spatial.column(spatial.myfirstgeom).measurableDimensions().is(2));
 			allRows = query.getAllInstancesOf(spatial);
 			database.print(allRows);
 			Assert.assertThat(allRows.size(), is(3));

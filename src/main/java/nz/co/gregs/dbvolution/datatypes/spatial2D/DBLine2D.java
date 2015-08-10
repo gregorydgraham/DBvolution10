@@ -29,7 +29,9 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import nz.co.gregs.dbvolution.exceptions.IncorrectGeometryReturnedForDatatype;
 import nz.co.gregs.dbvolution.exceptions.ParsingSpatialValueException;
+import nz.co.gregs.dbvolution.expressions.BooleanExpression;
 import nz.co.gregs.dbvolution.expressions.MultiPoint2DExpression;
+import nz.co.gregs.dbvolution.expressions.NumberExpression;
 import nz.co.gregs.dbvolution.results.Line2DResult;
 import nz.co.gregs.dbvolution.results.MultiPoint2DResult;
 
@@ -221,6 +223,26 @@ public class DBLine2D extends QueryableDatatype implements Line2DResult {
 	@Override
 	public boolean getIncludesNull() {
 		return false;
+	}
+
+	@Override
+	public NumberExpression measurableDimensions() {
+		return NumberExpression.value(1);
+	}
+
+	@Override
+	public NumberExpression spatialDimensions() {
+		return NumberExpression.value(2);
+	}
+
+	@Override
+	public BooleanExpression hasMagnitude() {
+		return BooleanExpression.falseExpression();
+	}
+
+	@Override
+	public NumberExpression magnitude() {
+		return NumberExpression.value((Number)null);
 	}
 
 }

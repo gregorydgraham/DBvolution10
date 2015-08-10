@@ -257,11 +257,11 @@ public class LineSegment2DExpressionTest  extends AbstractTest {
 		System.out.println("dimension");
 		final LineSegmentTestTable lineTestTable = new LineSegmentTestTable();
 		DBQuery dbQuery = database.getDBQuery(lineTestTable);
-		dbQuery.addCondition(lineTestTable.column(lineTestTable.line).dimension().is(0));
+		dbQuery.addCondition(lineTestTable.column(lineTestTable.line).measurableDimensions().is(0));
 		List<LineSegmentTestTable> allRows = dbQuery.getAllInstancesOf(lineTestTable);
 		Assert.assertThat(allRows.size(), is(0));
 		dbQuery = database.getDBQuery(lineTestTable);
-		dbQuery.addCondition(lineTestTable.column(lineTestTable.line).dimension().is(1));
+		dbQuery.addCondition(lineTestTable.column(lineTestTable.line).measurableDimensions().is(1));
 		allRows = dbQuery.getAllInstancesOf(lineTestTable);
 		Assert.assertThat(allRows.size(), is(3));
 	}

@@ -118,5 +118,29 @@ public class Oracle11XEDBDefinition extends OracleSpatialDBDefinition {
 		return "'POINT ('||"+doPoint2DGetXTransform(point2DSQL)+"||' '||"+doPoint2DGetYTransform(point2DSQL)+"||')'";
 	}
 
+	@Override
+	public String doLineSegment2DGetBoundingBoxTransform(String lineSegmentSQL) {
+		throw new UnsupportedOperationException("Bounding Box is an unsupported operation in Oracle11 XE.");
+	}
+	
+	@Override
+	public String doLineSegment2DAsTextTransform(String lineSegmentSQL) {
+		return "'LINESTRING ('||"+doPoint2DGetXTransform(doLineSegment2DStartPointTransform(lineSegmentSQL))
+				+"||' '||"+doPoint2DGetYTransform(doLineSegment2DStartPointTransform(lineSegmentSQL))
+				+"||', '||"+doPoint2DGetXTransform(doLineSegment2DEndPointTransform(lineSegmentSQL))
+				+"||' '||"+doPoint2DGetYTransform(doLineSegment2DEndPointTransform(lineSegmentSQL))
+				+"||')'";
+	}
+
+	@Override
+	public String doLineSegment2DStartPointTransform(String lineSegmentSQL) {
+		return "SDO_LRS.GEOM_SEGMENT_START_PT("+lineSegmentSQL+")";
+	}
+
+	@Override
+	public String doLineSegment2DEndPointTransform(String lineSegmentSQL) {
+		return "SDO_LRS.GEOM_SEGMENT_END_PT("+lineSegmentSQL+")";
+	}
+
 
 }

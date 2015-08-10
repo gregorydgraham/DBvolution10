@@ -16,7 +16,6 @@
 package nz.co.gregs.dbvolution.databases.definitions;
 
 import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.LineSegment;
 import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.MultiPoint;
@@ -147,7 +146,7 @@ public class OracleSpatialDBDefinition extends OracleDBDefinition {
 	}
 
 	@Override
-	public String doPoint2DDimensionTransform(String point2DSQL) {
+	public String doPoint2DMeasurableDimensionsTransform(String point2DSQL) {
 		return "0";
 		//return "(" + point2DSQL + ").GET_DIMS()"; get_dims() will return 2 as in 2D, whereas we require 0
 	}
@@ -200,7 +199,7 @@ public class OracleSpatialDBDefinition extends OracleDBDefinition {
 	 */
 	@Override
 	public String doLineSegment2DIntersectsLineSegment2DTransform(String firstSQL, String secondSQL) {
-		return "SDO_GEOM.RELATE(" + firstSQL + ", 'ANYINTERACT', " + secondSQL + ", 0.0000005)='EQUAL'";
+		return "SDO_GEOM.RELATE(" + firstSQL + ", 'ANYINTERACT', " + secondSQL + ", 0.0000005)='TRUE'";
 	}
 
 	/**
@@ -211,7 +210,10 @@ public class OracleSpatialDBDefinition extends OracleDBDefinition {
 	 */
 	@Override
 	public String doLineSegment2DGetMaxXTransform(String lineSegment) {
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+		return "SDO_GEOM.SDO_MAX_MBR_ORDINATE("+lineSegment+", MDSYS.SDO_DIM_ARRAY(\n" +
+"						MDSYS.SDO_DIM_ELEMENT('X', -9999999999, 9999999999, 0.0000000001),\n" +
+"					           MDSYS.SDO_DIM_ELEMENT('Y', -9999999999, 9999999999, 0.0000000001)\n" +
+"						), 1)";
 	}
 
 	/**
@@ -222,7 +224,10 @@ public class OracleSpatialDBDefinition extends OracleDBDefinition {
 	 */
 	@Override
 	public String doLineSegment2DGetMinXTransform(String lineSegment) {
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+		return "SDO_GEOM.SDO_MIN_MBR_ORDINATE("+lineSegment+", MDSYS.SDO_DIM_ARRAY(\n" +
+"						MDSYS.SDO_DIM_ELEMENT('X', -9999999999, 9999999999, 0.0000000001),\n" +
+"					           MDSYS.SDO_DIM_ELEMENT('Y', -9999999999, 9999999999, 0.0000000001)\n" +
+"						), 1)";
 	}
 
 	/**
@@ -233,7 +238,10 @@ public class OracleSpatialDBDefinition extends OracleDBDefinition {
 	 */
 	@Override
 	public String doLineSegment2DGetMaxYTransform(String lineSegment) {
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+		return "SDO_GEOM.SDO_MAX_MBR_ORDINATE("+lineSegment+", MDSYS.SDO_DIM_ARRAY(\n" +
+"						MDSYS.SDO_DIM_ELEMENT('X', -9999999999, 9999999999, 0.0000000001),\n" +
+"					           MDSYS.SDO_DIM_ELEMENT('Y', -9999999999, 9999999999, 0.0000000001)\n" +
+"						), 2)";
 	}
 
 	/**
@@ -244,7 +252,10 @@ public class OracleSpatialDBDefinition extends OracleDBDefinition {
 	 */
 	@Override
 	public String doLineSegment2DGetMinYTransform(String lineSegment) {
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+		return "SDO_GEOM.SDO_MIN_MBR_ORDINATE("+lineSegment+", MDSYS.SDO_DIM_ARRAY(\n" +
+"						MDSYS.SDO_DIM_ELEMENT('X', -9999999999, 9999999999, 0.0000000001),\n" +
+"					           MDSYS.SDO_DIM_ELEMENT('Y', -9999999999, 9999999999, 0.0000000001)\n" +
+"						), 2)";
 	}
 
 	/**
@@ -255,7 +266,8 @@ public class OracleSpatialDBDefinition extends OracleDBDefinition {
 	 */
 	@Override
 	public String doLineSegment2DGetBoundingBoxTransform(String lineSegment) {
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+//		return "SDO_GEOM.SDO_MBR("+lineSegment+")";
+		throw new UnsupportedOperationException("Not supported yet."); 
 	}
 
 	/**
@@ -278,7 +290,7 @@ public class OracleSpatialDBDefinition extends OracleDBDefinition {
 	 */
 	@Override
 	public String doLineSegment2DNotEqualsTransform(String firstLineSegment, String secondLineSegment) {
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+				return "SDO_GEOM.RELATE(" + firstLineSegment + ", 'equal', " + secondLineSegment + ", 0.0000005)='FALSE'";
 	}
 
 	/**
@@ -313,6 +325,6 @@ public class OracleSpatialDBDefinition extends OracleDBDefinition {
 	 */
 	@Override
 	public String doLineSegment2DIntersectionPointWithLineSegment2DTransform(String firstLineSegment, String secondLineSegment) {
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+		return "SDO_GEOM.SDO_INTERSECTION("+firstLineSegment+", "+secondLineSegment+", 0.0000005)";
 	}
 }

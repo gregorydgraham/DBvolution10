@@ -25,6 +25,8 @@ import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 import nz.co.gregs.dbvolution.exceptions.IncorrectGeometryReturnedForDatatype;
 import nz.co.gregs.dbvolution.exceptions.ParsingSpatialValueException;
+import nz.co.gregs.dbvolution.expressions.BooleanExpression;
+import nz.co.gregs.dbvolution.expressions.NumberExpression;
 import nz.co.gregs.dbvolution.results.Point2DResult;
 
 /**
@@ -155,6 +157,26 @@ public class DBPoint2D extends QueryableDatatype implements Point2DResult {
 	@Override
 	public boolean getIncludesNull() {
 		return false;
+	}
+
+	@Override
+	public NumberExpression measurableDimensions() {
+		return NumberExpression.value(0);
+	}
+
+	@Override
+	public NumberExpression spatialDimensions() {
+		return NumberExpression.value(2);
+	}
+
+	@Override
+	public BooleanExpression hasMagnitude() {
+		return BooleanExpression.falseExpression();
+	}
+
+	@Override
+	public NumberExpression magnitude() {
+		return NumberExpression.value((Number)null);
 	}
 
 }

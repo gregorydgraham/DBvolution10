@@ -15,10 +15,12 @@
  */
 package nz.co.gregs.dbvolution.results;
 
+import nz.co.gregs.dbvolution.expressions.SpatialResult;
+
 /**
  *
  * @author gregorygraham
  */
-public interface Spatial2DResult {
+public interface Spatial2DResult extends SpatialResult {
 	
 }

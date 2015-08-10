@@ -165,7 +165,7 @@ public class LineSegment2DExpression implements LineSegment2DResult, EqualCompar
 	}
 
 	public StringExpression stringResult() {
-		return new StringExpression(new LineFunctionWithStringResult(this) {
+		return new StringExpression(new LineSegmentWithStringResult(this) {
 
 			@Override
 			protected String doExpressionTransform(DBDatabase db) {
@@ -184,7 +184,7 @@ public class LineSegment2DExpression implements LineSegment2DResult, EqualCompar
 
 	@Override
 	public BooleanExpression is(LineSegment2DResult rightHandSide) {
-		return new BooleanExpression(new LineLineWithBooleanResult(this, new LineSegment2DExpression(rightHandSide)) {
+		return new BooleanExpression(new LineSegmentLineSegmentWithBooleanResult(this, new LineSegment2DExpression(rightHandSide)) {
 
 			@Override
 			public String doExpressionTransform(DBDatabase db) {
@@ -202,7 +202,7 @@ public class LineSegment2DExpression implements LineSegment2DResult, EqualCompar
 	}
 
 	public BooleanExpression isNot(LineSegment2DResult rightHandSide) {
-		return new BooleanExpression(new LineLineWithBooleanResult(this, new LineSegment2DExpression(rightHandSide)) {
+		return new BooleanExpression(new LineSegmentLineSegmentWithBooleanResult(this, new LineSegment2DExpression(rightHandSide)) {
 
 			@Override
 			public String doExpressionTransform(DBDatabase db) {
@@ -217,8 +217,8 @@ public class LineSegment2DExpression implements LineSegment2DResult, EqualCompar
 	}
 
 	@Override
-	public NumberExpression dimension() {
-		return new NumberExpression(new LineFunctionWithNumberResult(this) {
+	public NumberExpression measurableDimensions() {
+		return new NumberExpression(new LineSegmentWithNumberResult(this) {
 
 			@Override
 			public String doExpressionTransform(DBDatabase db) {
@@ -232,8 +232,53 @@ public class LineSegment2DExpression implements LineSegment2DResult, EqualCompar
 	}
 
 	@Override
+	public NumberExpression spatialDimensions() {
+		return new NumberExpression(new LineSegmentWithNumberResult(this) {
+
+			@Override
+			public String doExpressionTransform(DBDatabase db) {
+				try {
+					return db.getDefinition().doLineSegment2DSpatialDimensionsTransform(getFirst().toSQLString(db));
+				} catch (UnsupportedOperationException unsupported) {
+					return NumberExpression.value(2).toSQLString(db);
+				}
+			}
+		});
+	}
+
+	@Override
+	public BooleanExpression hasMagnitude() {
+		return new BooleanExpression(new LineSegmentWithBooleanResult(this) {
+
+			@Override
+			public String doExpressionTransform(DBDatabase db) {
+				try {
+					return db.getDefinition().doLineSegment2DHasMagnitudeTransform(getFirst().toSQLString(db));
+				} catch (UnsupportedOperationException unsupported) {
+					return BooleanExpression.falseExpression().toSQLString(db);
+				}
+			}
+		});
+	}
+
+	@Override
+	public NumberExpression magnitude() {
+		return new NumberExpression(new LineSegmentWithNumberResult(this) {
+
+			@Override
+			public String doExpressionTransform(DBDatabase db) {
+				try {
+					return db.getDefinition().doLineSegment2DGetMagnitudeTransform(getFirst().toSQLString(db));
+				} catch (UnsupportedOperationException unsupported) {
+					return nullExpression().toSQLString(db);
+				}
+			}
+		});
+	}
+
+	@Override
 	public Polygon2DExpression boundingBox() {
-		return new Polygon2DExpression(new LineFunctionWithGeometry2DResult(this) {
+		return new Polygon2DExpression(new LineSegmentWithGeometry2DResult(this) {
 
 			@Override
 			public String doExpressionTransform(DBDatabase db) {
@@ -258,7 +303,7 @@ public class LineSegment2DExpression implements LineSegment2DResult, EqualCompar
 
 	public NumberExpression getMaxX() {
 
-		return new NumberExpression(new LineFunctionWithNumberResult(this) {
+		return new NumberExpression(new LineSegmentWithNumberResult(this) {
 
 			@Override
 			public String doExpressionTransform(DBDatabase db) {
@@ -269,7 +314,7 @@ public class LineSegment2DExpression implements LineSegment2DResult, EqualCompar
 
 	public NumberExpression getMinX() {
 
-		return new NumberExpression(new LineFunctionWithNumberResult(this) {
+		return new NumberExpression(new LineSegmentWithNumberResult(this) {
 
 			@Override
 			public String doExpressionTransform(DBDatabase db) {
@@ -280,7 +325,7 @@ public class LineSegment2DExpression implements LineSegment2DResult, EqualCompar
 
 	public NumberExpression getMaxY() {
 
-		return new NumberExpression(new LineFunctionWithNumberResult(this) {
+		return new NumberExpression(new LineSegmentWithNumberResult(this) {
 
 			@Override
 			public String doExpressionTransform(DBDatabase db) {
@@ -291,7 +336,7 @@ public class LineSegment2DExpression implements LineSegment2DResult, EqualCompar
 
 	public NumberExpression getMinY() {
 
-		return new NumberExpression(new LineFunctionWithNumberResult(this) {
+		return new NumberExpression(new LineSegmentWithNumberResult(this) {
 
 			@Override
 			public String doExpressionTransform(DBDatabase db) {
@@ -376,7 +421,7 @@ public class LineSegment2DExpression implements LineSegment2DResult, EqualCompar
 	 * otherwise FALSE.
 	 */
 	public BooleanExpression intersects(LineSegment2DResult crossingLine) {
-		return new BooleanExpression(new LineLineWithBooleanResult(this, new LineSegment2DExpression(crossingLine)) {
+		return new BooleanExpression(new LineSegmentLineSegmentWithBooleanResult(this, new LineSegment2DExpression(crossingLine)) {
 
 			@Override
 			protected String doExpressionTransform(DBDatabase db) {
@@ -402,7 +447,7 @@ public class LineSegment2DExpression implements LineSegment2DResult, EqualCompar
 	}
 
 	public Point2DExpression intersectionWith(LineSegment2DResult crossingLine) {
-		return new Point2DExpression(new LineLineWithPointResult(this, new LineSegment2DExpression(crossingLine)) {
+		return new Point2DExpression(new LineSegmentLineSegmentWithPointResult(this, new LineSegment2DExpression(crossingLine)) {
 
 			@Override
 			protected String doExpressionTransform(DBDatabase db) {
@@ -411,13 +456,13 @@ public class LineSegment2DExpression implements LineSegment2DResult, EqualCompar
 		});
 	}
 
-	private static abstract class LineLineWithBooleanResult extends BooleanExpression {
+	private static abstract class LineSegmentLineSegmentWithBooleanResult extends BooleanExpression {
 
 		private LineSegment2DExpression first;
 		private LineSegment2DExpression second;
 		private boolean requiresNullProtection;
 
-		LineLineWithBooleanResult(LineSegment2DExpression first, LineSegment2DExpression second) {
+		LineSegmentLineSegmentWithBooleanResult(LineSegment2DExpression first, LineSegment2DExpression second) {
 			this.first = first;
 			this.second = second;
 			if (this.second == null || this.second.getIncludesNull()) {
@@ -443,8 +488,8 @@ public class LineSegment2DExpression implements LineSegment2DResult, EqualCompar
 		}
 
 		@Override
-		public LineLineWithBooleanResult copy() {
-			LineLineWithBooleanResult newInstance;
+		public LineSegmentLineSegmentWithBooleanResult copy() {
+			LineSegmentLineSegmentWithBooleanResult newInstance;
 			try {
 				newInstance = getClass().newInstance();
 			} catch (InstantiationException ex) {
@@ -482,13 +527,13 @@ public class LineSegment2DExpression implements LineSegment2DResult, EqualCompar
 		}
 	}
 
-	private static abstract class LineLineWithPointResult extends Point2DExpression {
+	private static abstract class LineSegmentLineSegmentWithPointResult extends Point2DExpression {
 
 		private LineSegment2DExpression first;
 		private LineSegment2DExpression second;
 		private boolean requiresNullProtection;
 
-		LineLineWithPointResult(LineSegment2DExpression first, LineSegment2DExpression second) {
+		LineSegmentLineSegmentWithPointResult(LineSegment2DExpression first, LineSegment2DExpression second) {
 			this.first = first;
 			this.second = second;
 			if (this.second == null || this.second.getIncludesNull()) {
@@ -514,8 +559,8 @@ public class LineSegment2DExpression implements LineSegment2DResult, EqualCompar
 		}
 
 		@Override
-		public LineLineWithPointResult copy() {
-			LineLineWithPointResult newInstance;
+		public LineSegmentLineSegmentWithPointResult copy() {
+			LineSegmentLineSegmentWithPointResult newInstance;
 			try {
 				newInstance = getClass().newInstance();
 			} catch (InstantiationException ex) {
@@ -553,13 +598,13 @@ public class LineSegment2DExpression implements LineSegment2DResult, EqualCompar
 		}
 	}
 
-	private static abstract class LineFunctionWithNumberResult extends NumberExpression {
+	private static abstract class LineSegmentWithNumberResult extends NumberExpression {
 
 		private LineSegment2DExpression first;
 //		private Point2DExpression second;
 		private boolean requiresNullProtection;
 
-		LineFunctionWithNumberResult(LineSegment2DExpression first) {
+		LineSegmentWithNumberResult(LineSegment2DExpression first) {
 			this.first = first;
 //			this.second = second;
 			if (this.first == null) {// || this.second.getIncludesNull()) {
@@ -584,8 +629,8 @@ public class LineSegment2DExpression implements LineSegment2DResult, EqualCompar
 		}
 
 		@Override
-		public LineFunctionWithNumberResult copy() {
-			LineFunctionWithNumberResult newInstance;
+		public LineSegmentWithNumberResult copy() {
+			LineSegmentWithNumberResult newInstance;
 			try {
 				newInstance = getClass().newInstance();
 			} catch (InstantiationException ex) {
@@ -623,12 +668,82 @@ public class LineSegment2DExpression implements LineSegment2DResult, EqualCompar
 		}
 	}
 
-	private static abstract class LineFunctionWithStringResult extends StringExpression {
+	private static abstract class LineSegmentWithBooleanResult extends BooleanExpression {
+
+		private LineSegment2DExpression first;
+//		private Point2DExpression second;
+		private boolean requiresNullProtection;
+
+		LineSegmentWithBooleanResult(LineSegment2DExpression first) {
+			this.first = first;
+//			this.second = second;
+			if (this.first == null) {// || this.second.getIncludesNull()) {
+				this.requiresNullProtection = true;
+			}
+		}
+
+		LineSegment2DExpression getFirst() {
+			return first;
+		}
+
+//		Point2DExpression getSecond() {
+//			return second;
+//		}
+		@Override
+		public final String toSQLString(DBDatabase db) {
+			if (this.getIncludesNull()) {
+				return BooleanExpression.isNull(first).toSQLString(db);
+			} else {
+				return doExpressionTransform(db);
+			}
+		}
+
+		@Override
+		public LineSegmentWithBooleanResult copy() {
+			LineSegmentWithBooleanResult newInstance;
+			try {
+				newInstance = getClass().newInstance();
+			} catch (InstantiationException ex) {
+				throw new RuntimeException(ex);
+			} catch (IllegalAccessException ex) {
+				throw new RuntimeException(ex);
+			}
+			newInstance.first = first.copy();
+//			newInstance.second = second.copy();
+			return newInstance;
+		}
+
+		protected abstract String doExpressionTransform(DBDatabase db);
+
+		@Override
+		public Set<DBRow> getTablesInvolved() {
+			HashSet<DBRow> hashSet = new HashSet<DBRow>();
+			if (first != null) {
+				hashSet.addAll(first.getTablesInvolved());
+			}
+//			if (second != null) {
+//				hashSet.addAll(second.getTablesInvolved());
+//			}
+			return hashSet;
+		}
+
+		@Override
+		public boolean isAggregator() {
+			return first.isAggregator();//|| second.isAggregator();
+		}
+
+		@Override
+		public boolean getIncludesNull() {
+			return requiresNullProtection;
+		}
+	}
+
+	private static abstract class LineSegmentWithStringResult extends StringExpression {
 
 		private LineSegment2DExpression first;
 		private boolean requiresNullProtection;
 
-		LineFunctionWithStringResult(LineSegment2DExpression first) {
+		LineSegmentWithStringResult(LineSegment2DExpression first) {
 			this.first = first;
 			if (this.first == null) {// || this.second.getIncludesNull()) {
 				this.requiresNullProtection = true;
@@ -649,8 +764,8 @@ public class LineSegment2DExpression implements LineSegment2DResult, EqualCompar
 		}
 
 		@Override
-		public LineFunctionWithStringResult copy() {
-			LineFunctionWithStringResult newInstance;
+		public LineSegmentWithStringResult copy() {
+			LineSegmentWithStringResult newInstance;
 			try {
 				newInstance = getClass().newInstance();
 			} catch (InstantiationException ex) {
@@ -684,13 +799,13 @@ public class LineSegment2DExpression implements LineSegment2DResult, EqualCompar
 		}
 	}
 
-	private static abstract class LineFunctionWithGeometry2DResult extends Polygon2DExpression {
+	private static abstract class LineSegmentWithGeometry2DResult extends Polygon2DExpression {
 
 		private LineSegment2DExpression first;
 //		private Point2DExpression second;
 		private boolean requiresNullProtection;
 
-		LineFunctionWithGeometry2DResult(LineSegment2DExpression first) {
+		LineSegmentWithGeometry2DResult(LineSegment2DExpression first) {
 			this.first = first;
 //			this.second = second;
 			if (this.first == null) {// || this.second.getIncludesNull()) {
@@ -715,8 +830,8 @@ public class LineSegment2DExpression implements LineSegment2DResult, EqualCompar
 		}
 
 		@Override
-		public LineFunctionWithGeometry2DResult copy() {
-			LineFunctionWithGeometry2DResult newInstance;
+		public LineSegmentWithGeometry2DResult copy() {
+			LineSegmentWithGeometry2DResult newInstance;
 			try {
 				newInstance = getClass().newInstance();
 			} catch (InstantiationException ex) {

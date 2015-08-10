@@ -28,7 +28,6 @@ import java.util.List;
 import java.util.Set;
 import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.DBRow;
-import nz.co.gregs.dbvolution.datatypes.spatial2D.DBPoint2D;
 import nz.co.gregs.dbvolution.datatypes.spatial2D.DBPolygon2D;
 
 /**
@@ -282,12 +281,58 @@ public class Polygon2DExpression implements Polygon2DResult, EqualComparable<Pol
 		});
 	}
 
-	public NumberExpression dimension() {
+	@Override
+	public NumberExpression measurableDimensions() {
 		return new NumberExpression(new PolygonFunctionWithNumberResult(this) {
 
 			@Override
 			public String doExpressionTransform(DBDatabase db) {
-				return db.getDefinition().doPolygon2DGetDimensionTransform(getFirst().toSQLString(db));
+				return db.getDefinition().doPolygon2DMeasurableDimensionsTransform(getFirst().toSQLString(db));
+			}
+		});
+	}
+
+	@Override
+	public NumberExpression spatialDimensions() {
+		return new NumberExpression(new PolygonFunctionWithNumberResult(this) {
+
+			@Override
+			public String doExpressionTransform(DBDatabase db) {
+				try {
+					return db.getDefinition().doPolygon2DSpatialDimensionsTransform(getFirst().toSQLString(db));
+				} catch (UnsupportedOperationException unsupported) {
+					return NumberExpression.value(2).toSQLString(db);
+				}
+			}
+		});
+	}
+
+	@Override
+	public BooleanExpression hasMagnitude() {
+		return new BooleanExpression(new PolygonWithBooleanResult(this) {
+
+			@Override
+			public String doExpressionTransform(DBDatabase db) {
+				try {
+					return db.getDefinition().doPolygon2DHasMagnitudeTransform(getFirst().toSQLString(db));
+				} catch (UnsupportedOperationException unsupported) {
+					return BooleanExpression.falseExpression().toSQLString(db);
+				}
+			}
+		});
+	}
+
+	@Override
+	public NumberExpression magnitude() {
+		return new NumberExpression(new PolygonFunctionWithNumberResult(this) {
+
+			@Override
+			public String doExpressionTransform(DBDatabase db) {
+				try {
+					return db.getDefinition().doPolygon2DGetMagnitudeTransform(getFirst().toSQLString(db));
+				} catch (UnsupportedOperationException unsupported) {
+					return nullExpression().toSQLString(db);
+				}
 			}
 		});
 	}
@@ -370,7 +415,7 @@ public class Polygon2DExpression implements Polygon2DResult, EqualComparable<Pol
 				return db.getDefinition().doPolygon2DGetExteriorRingTransform(getFirst().toSQLString(db));
 			}
 		});
-//		return this.dimension().is(2).ifThenElse(exteriorRingExpr, this);
+//		return this.measurableDimensions().is(2).ifThenElse(exteriorRingExpr, this);
 		return exteriorRingExpr;
 	}
 
@@ -390,7 +435,7 @@ public class Polygon2DExpression implements Polygon2DResult, EqualComparable<Pol
 				return db.getDefinition().doPolygon2DAsTextTransform(getFirst().toSQLString(db));
 			}
 		});
-//		return this.dimension().is(2).ifThenElse(exteriorRingExpr, this);
+//		return this.measurableDimensions().is(2).ifThenElse(exteriorRingExpr, this);
 		return stringResultExpr;
 	}
 
@@ -464,6 +509,78 @@ public class Polygon2DExpression implements Polygon2DResult, EqualComparable<Pol
 			return requiresNullProtection;
 		}
 	}
+
+	private static abstract class PolygonWithBooleanResult extends BooleanExpression {
+
+		private Polygon2DExpression first;
+//		private Polygon2DExpression second;
+		private boolean requiresNullProtection;
+
+		PolygonWithBooleanResult(Polygon2DExpression first) {
+			this.first = first;
+//			this.second = second;
+//			if (this.second == null || this.second.getIncludesNull()) {
+//				this.requiresNullProtection = true;
+//			}
+		}
+
+		Polygon2DExpression getFirst() {
+			return first;
+		}
+
+//		Polygon2DResult getSecond() {
+//			return second;
+//		}
+
+		@Override
+		public final String toSQLString(DBDatabase db) {
+			if (this.getIncludesNull()) {
+				return BooleanExpression.isNull(first).toSQLString(db);
+			} else {
+				return doExpressionTransform(db);
+			}
+		}
+
+		@Override
+		public PolygonWithBooleanResult copy() {
+			PolygonWithBooleanResult newInstance;
+			try {
+				newInstance = getClass().newInstance();
+			} catch (InstantiationException ex) {
+				throw new RuntimeException(ex);
+			} catch (IllegalAccessException ex) {
+				throw new RuntimeException(ex);
+			}
+			newInstance.first = first.copy();
+//			newInstance.second = second.copy();
+			return newInstance;
+		}
+
+		protected abstract String doExpressionTransform(DBDatabase db);
+
+		@Override
+		public Set<DBRow> getTablesInvolved() {
+			HashSet<DBRow> hashSet = new HashSet<DBRow>();
+			if (first != null) {
+				hashSet.addAll(first.getTablesInvolved());
+			}
+//			if (second != null) {
+//				hashSet.addAll(second.getTablesInvolved());
+//			}
+			return hashSet;
+		}
+
+		@Override
+		public boolean isAggregator() {
+			return first.isAggregator() ;//|| second.isAggregator();
+		}
+
+		@Override
+		public boolean getIncludesNull() {
+			return requiresNullProtection;
+		}
+	}
+	
 	private static abstract class PolygonPointWithBooleanResult extends BooleanExpression {
 
 		private Polygon2DExpression first;

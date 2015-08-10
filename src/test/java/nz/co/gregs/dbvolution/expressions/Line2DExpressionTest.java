@@ -254,11 +254,11 @@ public class Line2DExpressionTest extends AbstractTest {
 		System.out.println("dimension");
 		final LineTestTable lineTestTable = new LineTestTable();
 		DBQuery dbQuery = database.getDBQuery(lineTestTable);
-		dbQuery.addCondition(lineTestTable.column(lineTestTable.line).dimension().is(0));
+		dbQuery.addCondition(lineTestTable.column(lineTestTable.line).measurableDimensions().is(0));
 		List<LineTestTable> allRows = dbQuery.getAllInstancesOf(lineTestTable);
 		Assert.assertThat(allRows.size(), is(0));
 		dbQuery = database.getDBQuery(lineTestTable);
-		dbQuery.addCondition(lineTestTable.column(lineTestTable.line).dimension().is(1));
+		dbQuery.addCondition(lineTestTable.column(lineTestTable.line).measurableDimensions().is(1));
 		allRows = dbQuery.getAllInstancesOf(lineTestTable);
 		Assert.assertThat(allRows.size(), is(3));
 	}

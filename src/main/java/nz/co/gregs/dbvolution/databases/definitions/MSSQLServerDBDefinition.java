@@ -488,7 +488,7 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 	}
 
 	@Override
-	public String doPoint2DDimensionTransform(String point2D) {
+	public String doPoint2DMeasurableDimensionsTransform(String point2D) {
 		return "(" + point2D + ").STDimension()";
 	}
 
@@ -533,8 +533,8 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 	}
 
 	@Override
-	public String doLine2DDimensionTransform(String toSQLString) {
-		return super.doLine2DDimensionTransform(toSQLString); //To change body of generated methods, choose Tools | Templates.
+	public String doLine2DMeasurableDimensionsTransform(String toSQLString) {
+		return super.doLine2DMeasurableDimensionsTransform(toSQLString); //To change body of generated methods, choose Tools | Templates.
 	}
 
 	@Override
@@ -728,7 +728,7 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 	 * @return "2" unless something has gone horribly wrong.
 	 */
 	@Override
-	public String doPolygon2DGetDimensionTransform(String toSQLString) {
+	public String doPolygon2DMeasurableDimensionsTransform(String toSQLString) {
 		return "((" + toSQLString + ").STDimension())";
 	}
 
@@ -835,7 +835,7 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 
 	@Override
 	public String doLineSegment2DDimensionTransform(String toSQLString) {
-		return doLine2DDimensionTransform(toSQLString);
+		return doLine2DMeasurableDimensionsTransform(toSQLString);
 	}
 
 	@Override
@@ -895,7 +895,7 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 	}
 
 	@Override
-	public String doMultiPoint2DDimensionTransform(String first) {
+	public String doMultiPoint2DMeasurableDimensionsTransform(String first) {
 		return "(" + first + ").STDimension()";
 	}
 

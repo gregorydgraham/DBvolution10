@@ -264,7 +264,7 @@ public class MySQLDBDefinition extends DBDefinition {
 	}
 
 	@Override
-	public String doPolygon2DGetDimensionTransform(String thisGeometry) {
+	public String doPolygon2DMeasurableDimensionsTransform(String thisGeometry) {
 		return "Dimension(" + thisGeometry + ")";
 	}
 
@@ -329,8 +329,8 @@ public class MySQLDBDefinition extends DBDefinition {
 	}
 
 	@Override
-	public String doPoint2DDimensionTransform(String point2D) {
-		return doPolygon2DGetDimensionTransform(point2D);
+	public String doPoint2DMeasurableDimensionsTransform(String point2D) {
+		return doPolygon2DMeasurableDimensionsTransform(point2D);
 	}
 
 	@Override
@@ -442,7 +442,7 @@ public class MySQLDBDefinition extends DBDefinition {
 
 	@Override
 	public String doLineSegment2DDimensionTransform(String toSQLString) {
-		return doLine2DDimensionTransform(toSQLString);
+		return doLine2DMeasurableDimensionsTransform(toSQLString);
 	}
 
 	@Override
@@ -503,7 +503,7 @@ public class MySQLDBDefinition extends DBDefinition {
 	}
 
 	@Override
-	public String doMultiPoint2DDimensionTransform(String first) {
+	public String doMultiPoint2DMeasurableDimensionsTransform(String first) {
 		return "Dimension(" + first + ")";
 	}
 

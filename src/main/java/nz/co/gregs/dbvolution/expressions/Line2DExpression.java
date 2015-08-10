@@ -55,9 +55,10 @@ public class Line2DExpression implements Line2DResult, EqualComparable<Line2DRes
 
 	/**
 	 * Create a new Line2DExpression containing the specified value or expression.
-	 * 
+	 *
 	 * <p>
-	 * {@link Line2DResult} classes include {@link DBLine2D} and {@link Line2DExpression}.
+	 * {@link Line2DResult} classes include {@link DBLine2D} and
+	 * {@link Line2DExpression}.
 	 *
 	 * @param value
 	 */
@@ -91,7 +92,7 @@ public class Line2DExpression implements Line2DResult, EqualComparable<Line2DRes
 	/**
 	 * Create a Line2DExpression representing the set of points as a line.
 	 *
-	 * @param points 
+	 * @param points
 	 */
 	public Line2DExpression(Point... points) {
 		GeometryFactory geometryFactory = new GeometryFactory();
@@ -107,7 +108,7 @@ public class Line2DExpression implements Line2DResult, EqualComparable<Line2DRes
 	/**
 	 * Create a Line2DExpression representing the set of coordinates as a line.
 	 *
-	 * @param coords 
+	 * @param coords
 	 */
 	public Line2DExpression(Coordinate... coords) {
 		GeometryFactory geometryFactory = new GeometryFactory();
@@ -117,9 +118,10 @@ public class Line2DExpression implements Line2DResult, EqualComparable<Line2DRes
 	}
 
 	/**
-	 * Create a Line2DExpression representing the {@link MultiPoint2DExpression} or {@link DBMultiPoint2D} as a line.
+	 * Create a Line2DExpression representing the {@link MultiPoint2DExpression}
+	 * or {@link DBMultiPoint2D} as a line.
 	 *
-	 * @param multipoint2DExpression 
+	 * @param multipoint2DExpression
 	 */
 	public Line2DExpression(MultiPoint2DResult multipoint2DExpression) {
 		initInnerLine(multipoint2DExpression, new DBLine2D(multipoint2DExpression));
@@ -128,8 +130,8 @@ public class Line2DExpression implements Line2DResult, EqualComparable<Line2DRes
 	/**
 	 * Create a Line2DExpression representing the set of points as a line.
 	 *
-	 * @param points 
-	 * @return  a Line2DExpression
+	 * @param points
+	 * @return a Line2DExpression
 	 */
 	public static Line2DExpression value(Point... points) {
 		return new Line2DExpression(points);
@@ -138,8 +140,8 @@ public class Line2DExpression implements Line2DResult, EqualComparable<Line2DRes
 	/**
 	 * Create a Line2DExpression representing the set of coordinates as a line.
 	 *
-	 * @param coords 
-	 * @return  a Line2DExpression
+	 * @param coords
+	 * @return a Line2DExpression
 	 */
 	public static Line2DExpression value(Coordinate... coords) {
 		return new Line2DExpression(coords);
@@ -148,17 +150,18 @@ public class Line2DExpression implements Line2DResult, EqualComparable<Line2DRes
 	/**
 	 * Create a Line2DExpression representing the line.
 	 *
-	 * @param line 
-	 * @return  a Line2DExpression
+	 * @param line
+	 * @return a Line2DExpression
 	 */
 	public static Line2DExpression value(LineString line) {
 		return new Line2DExpression(line);
 	}
 
 	/**
-	 * Create a Line2DExpression representing the {@link MultiPoint2DExpression} or {@link DBMultiPoint2D} as a line.
+	 * Create a Line2DExpression representing the {@link MultiPoint2DExpression}
+	 * or {@link DBMultiPoint2D} as a line.
 	 *
-	 * @param multipoint2DExpression 
+	 * @param multipoint2DExpression
 	 * @return a Line2DExpression
 	 */
 	public static Line2DExpression value(MultiPoint2DResult multipoint2DExpression) {
@@ -225,6 +228,14 @@ public class Line2DExpression implements Line2DResult, EqualComparable<Line2DRes
 		return nullProtectionRequired;
 	}
 
+	/**
+	 * Convert the Line2D value into a String expression.
+	 *
+	 * <p>
+	 * This should be the WKT (Well Known Text) version of the line.
+	 *
+	 * @return a StringExpression of the Line2D in WKT format.
+	 */
 	public StringExpression stringResult() {
 		return new StringExpression(new Line2DExpression.LineFunctionWithStringResult(this) {
 
@@ -239,14 +250,62 @@ public class Line2DExpression implements Line2DResult, EqualComparable<Line2DRes
 		});
 	}
 
+	/**
+	 * Compare the value of the given LineString to this expression using the
+	 * equivalent of EQUALS.
+	 *
+	 * <p>
+	 * The boolean expression will be TRUE if the two expressions are functionally
+	 * equivalent.
+	 *
+	 * <p>
+	 * Due to to the imperfect interpretation of floating point numbers there may
+	 * some discrepancies between databases but DBV tries to be as accurate as the
+	 * database allows.
+	 *
+	 * @param rightHandSide
+	 * @return a BooleanExpression that will be TRUE when the two expressions are functionally equivalent, otherwise FALSE.
+	 */
 	public BooleanExpression is(LineString rightHandSide) {
 		return is(new DBLine2D(rightHandSide));
 	}
 
+	/**
+	 * Compare this expression to the exterior ring of the given Polygon2D using the
+	 * equivalent of EQUALS.
+	 *
+	 * <p>
+	 * The boolean expression will be TRUE if the exterior ring and the line  are functionally
+	 * equivalent.
+	 *
+	 * <p>
+	 * Due to to the imperfect interpretation of floating point numbers there may
+	 * some discrepancies between databases but DBV tries to be as accurate as the
+	 * database allows.
+	 *
+	 * @param rightHandSide
+	 * @return a BooleanExpression that will be TRUE when the two expressions are functionally equivalent, otherwise FALSE.
+	 */
 	public BooleanExpression is(Polygon rightHandSide) {
 		return is(rightHandSide.getExteriorRing());
 	}
 
+	/**
+	 * Compare the value of the given Line2D to this expression using the
+	 * equivalent of EQUALS.
+	 *
+	 * <p>
+	 * The boolean expression will be TRUE if the two expressions are functionally
+	 * equivalent.
+	 *
+	 * <p>
+	 * Due to to the imperfect interpretation of floating point numbers there may
+	 * some discrepancies between databases but DBV tries to be as accurate as the
+	 * database allows.
+	 *
+	 * @param rightHandSide
+	 * @return a BooleanExpression that will be TRUE when the two expressions are functionally equivalent, otherwise FALSE.
+	 */
 	@Override
 	public BooleanExpression is(Line2DResult rightHandSide) {
 		return new BooleanExpression(new Line2DExpression.LineLineWithBooleanResult(this, new Line2DExpression(rightHandSide)) {
@@ -262,14 +321,62 @@ public class Line2DExpression implements Line2DResult, EqualComparable<Line2DRes
 		});
 	}
 
+	/**
+	 * Compare the value of the given LineString to this expression using the
+	 * equivalent of NOT EQUALS.
+	 *
+	 * <p>
+	 * The boolean expression will be FALSE if the two expressions are functionally
+	 * equivalent.
+	 *
+	 * <p>
+	 * Due to to the imperfect interpretation of floating point numbers there may
+	 * some discrepancies between databases but DBV tries to be as accurate as the
+	 * database allows.
+	 *
+	 * @param rightHandSide
+	 * @return a BooleanExpression that will be FALSE when the two expressions are functionally equivalent, otherwise TRUE.
+	 */
 	public BooleanExpression isNot(LineString rightHandSide) {
 		return isNot(new DBLine2D(rightHandSide));
 	}
 
+	/**
+	 * Compare this expression to the exterior ring of the given Polygon2D using the
+	 * equivalent of NOT EQUALS.
+	 *
+	 * <p>
+	 * The boolean expression will be FALSE if the exterior ring and the line  are functionally
+	 * equivalent.
+	 *
+	 * <p>
+	 * Due to to the imperfect interpretation of floating point numbers there may
+	 * some discrepancies between databases but DBV tries to be as accurate as the
+	 * database allows.
+	 *
+	 * @param rightHandSide
+	 * @return a BooleanExpression that will be FALSE when the two expressions are functionally equivalent, otherwise TRUE.
+	 */
 	public BooleanExpression isNot(Polygon rightHandSide) {
 		return isNot(rightHandSide.getExteriorRing());
 	}
 
+	/**
+	 * Compare the value of the given Line2D to this expression using the
+	 * equivalent of NOT EQUALS.
+	 *
+	 * <p>
+	 * The boolean expression will be FALSE if the two expressions are functionally
+	 * equivalent.
+	 *
+	 * <p>
+	 * Due to to the imperfect interpretation of floating point numbers there may
+	 * some discrepancies between databases but DBV tries to be as accurate as the
+	 * database allows.
+	 *
+	 * @param rightHandSide
+	 * @return a BooleanExpression that will be FALSE when the two expressions are functionally equivalent, otherwise TRUE.
+	 */
 	public BooleanExpression isNot(Line2DResult rightHandSide) {
 		return new BooleanExpression(new Line2DExpression.LineLineWithBooleanResult(this, new Line2DExpression(rightHandSide)) {
 
@@ -286,15 +393,60 @@ public class Line2DExpression implements Line2DResult, EqualComparable<Line2DRes
 	}
 
 	@Override
-	public NumberExpression dimension() {
+	public NumberExpression measurableDimensions() {
 		return new NumberExpression(new LineFunctionWithNumberResult(this) {
 
 			@Override
 			public String doExpressionTransform(DBDatabase db) {
 				try {
-					return db.getDefinition().doLine2DDimensionTransform(getFirst().toSQLString(db));
+					return db.getDefinition().doLine2DMeasurableDimensionsTransform(getFirst().toSQLString(db));
 				} catch (UnsupportedOperationException unsupported) {
 					return NumberExpression.value(1).toSQLString(db);
+				}
+			}
+		});
+	}
+
+	@Override
+	public NumberExpression spatialDimensions() {
+		return new NumberExpression(new LineFunctionWithNumberResult(this) {
+
+			@Override
+			public String doExpressionTransform(DBDatabase db) {
+				try {
+					return db.getDefinition().doLine2DSpatialDimensionsTransform(getFirst().toSQLString(db));
+				} catch (UnsupportedOperationException unsupported) {
+					return NumberExpression.value(2).toSQLString(db);
+				}
+			}
+		});
+	}
+
+	@Override
+	public BooleanExpression hasMagnitude() {
+		return new BooleanExpression(new LineWithBooleanResult(this) {
+
+			@Override
+			public String doExpressionTransform(DBDatabase db) {
+				try {
+					return db.getDefinition().doLine2DHasMagnitudeTransform(getFirst().toSQLString(db));
+				} catch (UnsupportedOperationException unsupported) {
+					return BooleanExpression.falseExpression().toSQLString(db);
+				}
+			}
+		});
+	}
+
+	@Override
+	public NumberExpression magnitude() {
+		return new NumberExpression(new LineFunctionWithNumberResult(this) {
+
+			@Override
+			public String doExpressionTransform(DBDatabase db) {
+				try {
+					return db.getDefinition().doLine2DGetMagnitudeTransform(getFirst().toSQLString(db));
+				} catch (UnsupportedOperationException unsupported) {
+					return nullExpression().toSQLString(db);
 				}
 			}
 		});
@@ -371,170 +523,201 @@ public class Line2DExpression implements Line2DResult, EqualComparable<Line2DRes
 
 	/**
 	 * Tests whether this line and the line represented by the points ever cross.
-	 * 
-	 * <p>
-	 * Multiple line segments means it may cross at several points, however this method only reports TRUE or FALSE.
-	 * 
-	 * <p>
-	 * Use {@link #intersectionPoints(Line2DResult)} to find the intersection points of these lines
 	 *
-	 * @param points 
-	 * @return a BooleanExpression that will be TRUE if the lines ever cross, otherwise FALSE.
+	 * <p>
+	 * Multiple line segments means it may cross at several points, however this
+	 * method only reports TRUE or FALSE.
+	 *
+	 * <p>
+	 * Use {@link #intersectionPoints(Line2DResult)} to find the intersection
+	 * points of these lines
+	 *
+	 * @param points
+	 * @return a BooleanExpression that will be TRUE if the lines ever cross,
+	 * otherwise FALSE.
 	 */
 	public BooleanExpression intersects(Point... points) {
 		return this.intersects(value(points));
 	}
-	
+
 	/**
-	 * Tests whether this line and the line represented by the coordinates ever cross.
-	 * 
-	 * <p>
-	 * Multiple line segments means it may cross at several points, however this method only reports TRUE or FALSE.
-	 * 
-	 * <p>
-	 * Use {@link #intersectionPoints(Line2DResult)} to find the intersection points of these lines
+	 * Tests whether this line and the line represented by the coordinates ever
+	 * cross.
 	 *
-	 * @param coords 
-	 * @return a BooleanExpression that will be TRUE if the lines ever cross, otherwise FALSE.
+	 * <p>
+	 * Multiple line segments means it may cross at several points, however this
+	 * method only reports TRUE or FALSE.
+	 *
+	 * <p>
+	 * Use {@link #intersectionPoints(Line2DResult)} to find the intersection
+	 * points of these lines
+	 *
+	 * @param coords
+	 * @return a BooleanExpression that will be TRUE if the lines ever cross,
+	 * otherwise FALSE.
 	 */
 	public BooleanExpression intersects(Coordinate... coords) {
 		return this.intersects(value(coords));
 	}
-	
+
 	/**
 	 * Tests whether this line and the other line ever cross.
-	 * 
-	 * <p>
-	 * Multiple line segments means it may cross at several points, however this method only reports TRUE or FALSE.
-	 * 
-	 * <p>
-	 * Use {@link #intersectionPoints(Line2DResult)} to find the intersection points of these lines
 	 *
-	 * @param lineString 
-	 * @return a BooleanExpression that will be TRUE if the lines ever cross, otherwise FALSE.
+	 * <p>
+	 * Multiple line segments means it may cross at several points, however this
+	 * method only reports TRUE or FALSE.
+	 *
+	 * <p>
+	 * Use {@link #intersectionPoints(Line2DResult)} to find the intersection
+	 * points of these lines
+	 *
+	 * @param lineString
+	 * @return a BooleanExpression that will be TRUE if the lines ever cross,
+	 * otherwise FALSE.
 	 */
 	public BooleanExpression intersects(LineString lineString) {
 		return this.intersects(value(lineString));
 	}
-	
+
 	/**
 	 * Tests whether this line and the other line ever cross.
-	 * 
+	 *
 	 * <p>
-	 * Multiple line segments means it may cross at several points, however this method only reports TRUE or FALSE.
-	 * 
+	 * Multiple line segments means it may cross at several points, however this
+	 * method only reports TRUE or FALSE.
+	 *
 	 * <p>
-	 * Use {@link #intersectionPoints(Line2DResult)} to find the intersection points of these lines
+	 * Use {@link #intersectionPoints(Line2DResult)} to find the intersection
+	 * points of these lines
 	 *
 	 * @param crossingLine
-	 * @return a BooleanExpression that will be TRUE if the lines ever cross, otherwise FALSE.
+	 * @return a BooleanExpression that will be TRUE if the lines ever cross,
+	 * otherwise FALSE.
 	 */
 	public BooleanExpression intersects(Line2DResult crossingLine) {
 		return new BooleanExpression(new LineLineWithBooleanResult(this, new Line2DExpression(crossingLine)) {
-			
+
 			@Override
 			protected String doExpressionTransform(DBDatabase db) {
 				return db.getDefinition().doLine2DIntersectsLine2DTransform(getFirst().toSQLString(db), getSecond().toSQLString(db));
 			}
 		});
 	}
-	
+
 	public MultiPoint2DExpression intersectionPoints(Line2DResult crossingLine) {
 		return new MultiPoint2DExpression(new LineLineWithMultiPoint2DResult(this, new Line2DExpression(crossingLine)) {
-			
+
 			@Override
 			protected String doExpressionTransform(DBDatabase db) {
 				return db.getDefinition().doLine2DAllIntersectionPointsWithLine2DTransform(getFirst().toSQLString(db), getSecond().toSQLString(db));
 			}
 		});
 	}
-	
+
 	/**
-	 * Find a point where this line and the other line (represented as a series of points) cross.
-	 * 
+	 * Find a point where this line and the other line (represented as a series of
+	 * points) cross.
+	 *
 	 * <p>
-	 * Multiple line segments means it may cross at several points, however this method only reports the first point found.
-	 * 
+	 * Multiple line segments means it may cross at several points, however this
+	 * method only reports the first point found.
+	 *
 	 * <p>
-	 * Use {@link #intersectionPoints(Line2DResult)} to find the intersection points of these lines
+	 * Use {@link #intersectionPoints(Line2DResult)} to find the intersection
+	 * points of these lines
 	 *
 	 * @param crossingLine
-	 * @return a BooleanExpression that will be TRUE if the lines ever cross, otherwise FALSE.
+	 * @return a BooleanExpression that will be TRUE if the lines ever cross,
+	 * otherwise FALSE.
 	 */
 	public Point2DExpression intersectionWith(Point... crossingLine) {
 		return intersectionWith(value(crossingLine));
 	}
-	
+
 	/**
-	 * Find a point where this line and the other line (represented as a series of coordinates) cross.
-	 * 
+	 * Find a point where this line and the other line (represented as a series of
+	 * coordinates) cross.
+	 *
 	 * <p>
-	 * Multiple line segments means it may cross at several points, however this method only reports the first point found.
-	 * 
+	 * Multiple line segments means it may cross at several points, however this
+	 * method only reports the first point found.
+	 *
 	 * <p>
-	 * Use {@link #intersectionPoints(Line2DResult)} to find the intersection points of these lines
+	 * Use {@link #intersectionPoints(Line2DResult)} to find the intersection
+	 * points of these lines
 	 *
 	 * @param crossingLine
-	 * @return a BooleanExpression that will be TRUE if the lines ever cross, otherwise FALSE.
+	 * @return a BooleanExpression that will be TRUE if the lines ever cross,
+	 * otherwise FALSE.
 	 */
 	public Point2DExpression intersectionWith(Coordinate... crossingLine) {
 		return intersectionWith(value(crossingLine));
 	}
-	
+
 	/**
 	 * Find a point where this line and the other line cross.
-	 * 
+	 *
 	 * <p>
-	 * Multiple line segments means it may cross at several points, however this method only reports the first point found.
-	 * 
+	 * Multiple line segments means it may cross at several points, however this
+	 * method only reports the first point found.
+	 *
 	 * <p>
-	 * Use {@link #intersectionPoints(Line2DResult)} to find the intersection points of these lines
+	 * Use {@link #intersectionPoints(Line2DResult)} to find the intersection
+	 * points of these lines
 	 *
 	 * @param crossingLine
-	 * @return a BooleanExpression that will be TRUE if the lines ever cross, otherwise FALSE.
+	 * @return a BooleanExpression that will be TRUE if the lines ever cross,
+	 * otherwise FALSE.
 	 */
 	public Point2DExpression intersectionWith(LineString crossingLine) {
 		return intersectionWith(value(crossingLine));
 	}
-	
+
 	/**
-	 * Find a point where this line and the line derived from the MultiPoint cross.
-	 * 
+	 * Find a point where this line and the line derived from the MultiPoint
+	 * cross.
+	 *
 	 * <p>
-	 * Multiple line segments means it may cross at several points, however this method only reports the first point found.
-	 * 
+	 * Multiple line segments means it may cross at several points, however this
+	 * method only reports the first point found.
+	 *
 	 * <p>
-	 * Use {@link #intersectionPoints(Line2DResult)} to find the intersection points of these lines
+	 * Use {@link #intersectionPoints(Line2DResult)} to find the intersection
+	 * points of these lines
 	 *
 	 * @param crossingLine
-	 * @return a BooleanExpression that will be TRUE if the lines ever cross, otherwise FALSE.
+	 * @return a BooleanExpression that will be TRUE if the lines ever cross,
+	 * otherwise FALSE.
 	 */
 	public Point2DExpression intersectionWith(MultiPoint2DExpression crossingLine) {
 		return intersectionWith(value(crossingLine));
 	}
-	
+
 	/**
 	 * Find a point where this line and the other line cross.
-	 * 
+	 *
 	 * <p>
-	 * Multiple line segments means it may cross at several points, however this method only reports the first point found.
-	 * 
+	 * Multiple line segments means it may cross at several points, however this
+	 * method only reports the first point found.
+	 *
 	 * <p>
-	 * Use {@link #intersectionPoints(Line2DResult)} to find the intersection points of these lines
+	 * Use {@link #intersectionPoints(Line2DResult)} to find the intersection
+	 * points of these lines
 	 *
 	 * @param crossingLine
-	 * @return a BooleanExpression that will be TRUE if the lines ever cross, otherwise FALSE.
+	 * @return a BooleanExpression that will be TRUE if the lines ever cross,
+	 * otherwise FALSE.
 	 */
 	public Point2DExpression intersectionWith(Line2DResult crossingLine) {
 		return new Point2DExpression(new LineLineWithPoint2DResult(this, new Line2DExpression(crossingLine)) {
-			
+
 			@Override
 			protected String doExpressionTransform(DBDatabase db) {
 				return db.getDefinition().doLine2DIntersectionPointWithLine2DTransform(getFirst().toSQLString(db), getSecond().toSQLString(db));
 			}
 		});
 	}
-	
+
 	private static abstract class LineLineWithBooleanResult extends BooleanExpression {
 
 		private Line2DExpression first;
@@ -598,6 +781,64 @@ public class Line2DExpression implements Line2DResult, EqualComparable<Line2DRes
 		@Override
 		public boolean isAggregator() {
 			return first.isAggregator() || second.isAggregator();
+		}
+
+		@Override
+		public boolean getIncludesNull() {
+			return requiresNullProtection;
+		}
+	}
+
+	private static abstract class LineWithBooleanResult extends BooleanExpression {
+
+		private Line2DExpression first;
+		private boolean requiresNullProtection;
+
+		LineWithBooleanResult(Line2DExpression first) {
+			this.first = first;
+		}
+
+		Line2DExpression getFirst() {
+			return first;
+		}
+
+		@Override
+		public final String toSQLString(DBDatabase db) {
+			if (this.getIncludesNull()) {
+				return BooleanExpression.isNull(first).toSQLString(db);
+			} else {
+				return doExpressionTransform(db);
+			}
+		}
+
+		@Override
+		public LineWithBooleanResult copy() {
+			LineWithBooleanResult newInstance;
+			try {
+				newInstance = getClass().newInstance();
+			} catch (InstantiationException ex) {
+				throw new RuntimeException(ex);
+			} catch (IllegalAccessException ex) {
+				throw new RuntimeException(ex);
+			}
+			newInstance.first = first.copy();
+			return newInstance;
+		}
+
+		protected abstract String doExpressionTransform(DBDatabase db);
+
+		@Override
+		public Set<DBRow> getTablesInvolved() {
+			HashSet<DBRow> hashSet = new HashSet<DBRow>();
+			if (first != null) {
+				hashSet.addAll(first.getTablesInvolved());
+			}
+			return hashSet;
+		}
+
+		@Override
+		public boolean isAggregator() {
+			return first.isAggregator();
 		}
 
 		@Override

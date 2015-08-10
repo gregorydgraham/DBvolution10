@@ -357,7 +357,7 @@ public class PostgresDBDefinition extends DBDefinition {
 	}
 
 	/**
-	 * Returns the dimension of the polygon.
+	 * Returns the measurable dimensions of the polygon.
 	 *
 	 * <p>
 	 * This will be "2"
@@ -366,7 +366,7 @@ public class PostgresDBDefinition extends DBDefinition {
 	 * @return "2" unless something has gone horribly wrong.
 	 */
 	@Override
-	public String doPolygon2DGetDimensionTransform(String toSQLString) {
+	public String doPolygon2DMeasurableDimensionsTransform(String toSQLString) {
 		return "ST_DIMENSION((" + toSQLString + ")::GEOMETRY)";
 	}
 
@@ -471,7 +471,7 @@ public class PostgresDBDefinition extends DBDefinition {
 	}
 
 	@Override
-	public String doPoint2DDimensionTransform(String point2D) {
+	public String doPoint2DMeasurableDimensionsTransform(String point2D) {
 		return " 0 ";
 	}
 
@@ -801,7 +801,7 @@ public class PostgresDBDefinition extends DBDefinition {
 	}
 
 	@Override
-	public String doMultiPoint2DDimensionTransform(String first) {
+	public String doMultiPoint2DMeasurableDimensionsTransform(String first) {
 		return "ST_DIMENSION(" + first + ")";
 	}
 

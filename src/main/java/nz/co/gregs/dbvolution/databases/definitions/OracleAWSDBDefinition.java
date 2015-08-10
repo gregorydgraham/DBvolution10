@@ -94,7 +94,7 @@ public class OracleAWSDBDefinition extends OracleDBDefinition {
 	}
 
 	@Override
-	public String doPoint2DDimensionTransform(String point2DSQL) {
+	public String doPoint2DMeasurableDimensionsTransform(String point2DSQL) {
 		throw new UnsupportedOperationException("Spatial functions have been removed from AWS Oracle");
 	}
 
@@ -220,7 +220,7 @@ public class OracleAWSDBDefinition extends OracleDBDefinition {
 	}
 
 	@Override
-	public String doPolygon2DGetDimensionTransform(String toSQLString) {
+	public String doPolygon2DMeasurableDimensionsTransform(String toSQLString) {
 		return Polygon2DFunctions.DIMENSION + "(" + toSQLString + ")";
 	}
 
@@ -446,7 +446,7 @@ public class OracleAWSDBDefinition extends OracleDBDefinition {
 	}
 
 	@Override
-	public String doMultiPoint2DDimensionTransform(String first) {
+	public String doMultiPoint2DMeasurableDimensionsTransform(String first) {
 		return ""+MultiPoint2DFunctions.DIMENSION+"("+first+")";
 	}
 

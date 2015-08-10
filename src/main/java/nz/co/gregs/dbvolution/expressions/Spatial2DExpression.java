@@ -25,26 +25,28 @@ import nz.co.gregs.dbvolution.results.Spatial2DResult;
 public interface Spatial2DExpression extends Spatial2DResult {
 
 	/**
-	 * Return the dimension of this expression.
+	 * Return the measurableDimensions of this expression.
 	 *
 	 * <p>
-	 * This represents dimension in the sense of how many dimensions they can be
-	 * measured in.
+	 * This represents measurableDimensions in the sense of how many dimensions
+	 * they can be measured in.
 	 *
 	 * <p>
-	 * For instance points are zero dimensional in this sense, while lines have
-	 * a single dimension, and polygons have 2.
+	 * For instance points are zero dimensional in this sense, while lines have a
+	 * single measurableDimensions, and polygons have 2.
 	 *
 	 * <p>
-	 * Since this is a 2D expression, the maximum value of dimension() is 2.
+	 * Since this is a 2D expression, the maximum value of measurableDimensions()
+	 * is 2.
 	 *
 	 * <p>
-	 * All Spatial2D values are still defined in 2D space and require an X and a
-	 * Y value.
+	 * All Spatial2D values are still defined in 2D space and require an X and a Y
+	 * value.
 	 *
 	 * @return
 	 */
-	public NumberExpression dimension();
+	@Override
+	NumberExpression measurableDimensions();
 
 	/**
 	 * Return a rectangular Polygon2D that fully encompasses all point(s) within

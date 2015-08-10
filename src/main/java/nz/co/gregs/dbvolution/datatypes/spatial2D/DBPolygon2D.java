@@ -24,6 +24,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
+import nz.co.gregs.dbvolution.expressions.BooleanExpression;
+import nz.co.gregs.dbvolution.expressions.NumberExpression;
 import nz.co.gregs.dbvolution.results.Polygon2DResult;
 
 /**
@@ -146,5 +148,25 @@ public class DBPolygon2D extends QueryableDatatype implements TransformRequiredF
 	@Override
 	public boolean getIncludesNull() {
 		return false;
+	}
+
+	@Override
+	public NumberExpression measurableDimensions() {
+		return NumberExpression.value(2);
+	}
+
+	@Override
+	public NumberExpression spatialDimensions() {
+		return NumberExpression.value(2);
+	}
+
+	@Override
+	public BooleanExpression hasMagnitude() {
+		return BooleanExpression.falseExpression();
+	}
+
+	@Override
+	public NumberExpression magnitude() {
+		return NumberExpression.value((Number)null);
 	}
 }

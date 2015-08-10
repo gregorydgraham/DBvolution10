@@ -205,15 +205,60 @@ public class Point2DExpression implements Point2DResult, EqualComparable<Point2D
 	}
 
 	@Override
-	public NumberExpression dimension() {
+	public NumberExpression measurableDimensions() {
 		return new NumberExpression(new PointFunctionWithNumberResult(this) {
 
 			@Override
 			public String doExpressionTransform(DBDatabase db) {
 				try {
-					return db.getDefinition().doPoint2DDimensionTransform(getFirst().toSQLString(db));
+					return db.getDefinition().doPoint2DMeasurableDimensionsTransform(getFirst().toSQLString(db));
 				} catch (UnsupportedOperationException unsupported) {
 					return NumberExpression.value(0).toSQLString(db);
+				}
+			}
+		});
+	}
+
+	@Override
+	public NumberExpression spatialDimensions() {
+		return new NumberExpression(new PointFunctionWithNumberResult(this) {
+
+			@Override
+			public String doExpressionTransform(DBDatabase db) {
+				try {
+					return db.getDefinition().doPoint2DSpatialDimensionsTransform(getFirst().toSQLString(db));
+				} catch (UnsupportedOperationException unsupported) {
+					return NumberExpression.value(2).toSQLString(db);
+				}
+			}
+		});
+	}
+
+	@Override
+	public BooleanExpression hasMagnitude() {
+		return new BooleanExpression(new PointWithBooleanResult(this) {
+
+			@Override
+			public String doExpressionTransform(DBDatabase db) {
+				try {
+					return db.getDefinition().doPoint2DHasMagnitudeTransform(getFirst().toSQLString(db));
+				} catch (UnsupportedOperationException unsupported) {
+					return BooleanExpression.falseExpression().toSQLString(db);
+				}
+			}
+		});
+	}
+
+	@Override
+	public NumberExpression magnitude() {
+		return new NumberExpression(new PointFunctionWithNumberResult(this) {
+
+			@Override
+			public String doExpressionTransform(DBDatabase db) {
+				try {
+					return db.getDefinition().doPoint2DGetMagnitudeTransform(getFirst().toSQLString(db));
+				} catch (UnsupportedOperationException unsupported) {
+					return nullExpression().toSQLString(db);
 				}
 			}
 		});
@@ -319,6 +364,64 @@ public class Point2DExpression implements Point2DResult, EqualComparable<Point2D
 		@Override
 		public boolean isAggregator() {
 			return first.isAggregator() || second.isAggregator();
+		}
+
+		@Override
+		public boolean getIncludesNull() {
+			return requiresNullProtection;
+		}
+	}
+
+	private static abstract class PointWithBooleanResult extends BooleanExpression {
+
+		private Point2DExpression first;
+		private boolean requiresNullProtection;
+
+		PointWithBooleanResult(Point2DExpression first) {
+			this.first = first;
+		}
+
+		Point2DExpression getFirst() {
+			return first;
+		}
+
+		@Override
+		public final String toSQLString(DBDatabase db) {
+			if (this.getIncludesNull()) {
+				return BooleanExpression.isNull(first).toSQLString(db);
+			} else {
+				return doExpressionTransform(db);
+			}
+		}
+
+		@Override
+		public PointWithBooleanResult copy() {
+			PointWithBooleanResult newInstance;
+			try {
+				newInstance = getClass().newInstance();
+			} catch (InstantiationException ex) {
+				throw new RuntimeException(ex);
+			} catch (IllegalAccessException ex) {
+				throw new RuntimeException(ex);
+			}
+			newInstance.first = first.copy();
+			return newInstance;
+		}
+
+		protected abstract String doExpressionTransform(DBDatabase db);
+
+		@Override
+		public Set<DBRow> getTablesInvolved() {
+			HashSet<DBRow> hashSet = new HashSet<DBRow>();
+			if (first != null) {
+				hashSet.addAll(first.getTablesInvolved());
+			}
+			return hashSet;
+		}
+
+		@Override
+		public boolean isAggregator() {
+			return first.isAggregator();
 		}
 
 		@Override

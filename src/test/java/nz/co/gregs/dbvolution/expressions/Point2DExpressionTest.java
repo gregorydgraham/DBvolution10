@@ -221,7 +221,7 @@ public class Point2DExpressionTest extends AbstractTest {
 		System.out.println("dimension");
 		final PointTestTable pointTestTable = new PointTestTable();
 		DBQuery dbQuery = database.getDBQuery(pointTestTable);
-		dbQuery.addCondition(pointTestTable.column(pointTestTable.point).dimension().is(0));
+		dbQuery.addCondition(pointTestTable.column(pointTestTable.point).measurableDimensions().is(0));
 		List<PointTestTable> allRows = dbQuery.getAllInstancesOf(pointTestTable);
 		Assert.assertThat(allRows.size(), is(3));
 	}

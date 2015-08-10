@@ -238,15 +238,60 @@ public class MultiPoint2DExpression implements MultiPoint2DResult, EqualComparab
 	}
 
 	@Override
-	public NumberExpression dimension() {
+	public NumberExpression measurableDimensions() {
 		return new NumberExpression(new MultiPointFunctionWithNumberResult(this) {
 
 			@Override
 			public String doExpressionTransform(DBDatabase db) {
 				try {
-					return db.getDefinition().doMultiPoint2DDimensionTransform(getFirst().toSQLString(db));
+					return db.getDefinition().doMultiPoint2DMeasurableDimensionsTransform(getFirst().toSQLString(db));
 				} catch (UnsupportedOperationException unsupported) {
 					return NumberExpression.value(0).toSQLString(db);
+				}
+			}
+		});
+	}
+
+	@Override
+	public NumberExpression spatialDimensions() {
+		return new NumberExpression(new MultiPointFunctionWithNumberResult(this) {
+
+			@Override
+			public String doExpressionTransform(DBDatabase db) {
+				try {
+					return db.getDefinition().doMultiPoint2DSpatialDimensionsTransform(getFirst().toSQLString(db));
+				} catch (UnsupportedOperationException unsupported) {
+					return NumberExpression.value(2).toSQLString(db);
+				}
+			}
+		});
+	}
+
+	@Override
+	public BooleanExpression hasMagnitude() {
+		return new BooleanExpression(new SingleArgumentBooleanFunction<DBExpression>(this) {
+
+			@Override
+			public String doExpressionTransform(DBDatabase db) {
+				try {
+					return db.getDefinition().doMultiPoint2DHasMagnitudeTransform(getFirst().toSQLString(db));
+				} catch (UnsupportedOperationException unsupported) {
+					return BooleanExpression.falseExpression().toSQLString(db);
+				}
+			}
+		});
+	}
+
+	@Override
+	public NumberExpression magnitude() {
+		return new NumberExpression(new MultiPointFunctionWithNumberResult(this) {
+
+			@Override
+			public String doExpressionTransform(DBDatabase db) {
+				try {
+					return db.getDefinition().doMultiPoint2DGetMagnitudeTransform(getFirst().toSQLString(db));
+				} catch (UnsupportedOperationException unsupported) {
+					return nullExpression().toSQLString(db);
 				}
 			}
 		});
@@ -354,13 +399,13 @@ public class MultiPoint2DExpression implements MultiPoint2DResult, EqualComparab
 		}
 	}
 
-	private static abstract class SingleArgumentPolygon2DFunction<A extends DBExpression> extends Polygon2DExpression {
+	private static abstract class SingleArgumentBooleanFunction<A extends DBExpression> extends BooleanExpression {
 
 		private A first;
 //		private B second;
 		private boolean requiresNullProtection;
 
-		SingleArgumentPolygon2DFunction(A first) {
+		SingleArgumentBooleanFunction(A first) {
 			this.first = first;
 //			this.second = second;
 //			if (this.second == null || this.second.getIncludesNull()) {
@@ -380,14 +425,14 @@ public class MultiPoint2DExpression implements MultiPoint2DResult, EqualComparab
 			if (this.getIncludesNull()) {
 				return BooleanExpression.isNull(first).toSQLString(db);
 			} else {
-			return doExpressionTransform(db);
+				return doExpressionTransform(db);
 			}
 		}
 
 		@Override
 		@SuppressWarnings("unchecked")
-		public SingleArgumentPolygon2DFunction<A> copy() {
-			SingleArgumentPolygon2DFunction<A> newInstance;
+		public SingleArgumentBooleanFunction<A> copy() {
+			SingleArgumentBooleanFunction<A> newInstance;
 			try {
 				newInstance = getClass().newInstance();
 			} catch (InstantiationException ex) {
@@ -424,6 +469,77 @@ public class MultiPoint2DExpression implements MultiPoint2DResult, EqualComparab
 			return requiresNullProtection;
 		}
 	}
+
+//	private static abstract class SingleArgumentPolygon2DFunction<A extends DBExpression> extends Polygon2DExpression {
+//
+//		private A first;
+////		private B second;
+//		private boolean requiresNullProtection;
+//
+//		SingleArgumentPolygon2DFunction(A first) {
+//			this.first = first;
+////			this.second = second;
+////			if (this.second == null || this.second.getIncludesNull()) {
+////				this.requiresNullProtection = true;
+////			}
+//		}
+//
+//		A getFirst() {
+//			return first;
+//		}
+//
+////		MultiPoint2DExpression getSecond() {
+////			return second;
+////		}
+//		@Override
+//		public final String toSQLString(DBDatabase db) {
+//			if (this.getIncludesNull()) {
+//				return BooleanExpression.isNull(first).toSQLString(db);
+//			} else {
+//			return doExpressionTransform(db);
+//			}
+//		}
+//
+//		@Override
+//		@SuppressWarnings("unchecked")
+//		public SingleArgumentPolygon2DFunction<A> copy() {
+//			SingleArgumentPolygon2DFunction<A> newInstance;
+//			try {
+//				newInstance = getClass().newInstance();
+//			} catch (InstantiationException ex) {
+//				throw new RuntimeException(ex);
+//			} catch (IllegalAccessException ex) {
+//				throw new RuntimeException(ex);
+//			}
+//			newInstance.first = (A) first.copy();
+////			newInstance.second = second.copy();
+//			return newInstance;
+//		}
+//
+//		protected abstract String doExpressionTransform(DBDatabase db);
+//
+//		@Override
+//		public Set<DBRow> getTablesInvolved() {
+//			HashSet<DBRow> hashSet = new HashSet<DBRow>();
+//			if (first != null) {
+//				hashSet.addAll(first.getTablesInvolved());
+//			}
+////			if (second != null) {
+////				hashSet.addAll(second.getTablesInvolved());
+////			}
+//			return hashSet;
+//		}
+//
+//		@Override
+//		public boolean isAggregator() {
+//			return first.isAggregator();// || second.isAggregator();
+//		}
+//
+//		@Override
+//		public boolean getIncludesNull() {
+//			return requiresNullProtection;
+//		}
+//	}
 
 	private static abstract class MultiPoint2DMultiPoint2DFunctionWithBooleanResult extends BooleanExpression {
 

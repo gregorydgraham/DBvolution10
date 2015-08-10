@@ -26,6 +26,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import nz.co.gregs.dbvolution.exceptions.IncorrectGeometryReturnedForDatatype;
 import nz.co.gregs.dbvolution.exceptions.ParsingSpatialValueException;
+import nz.co.gregs.dbvolution.expressions.BooleanExpression;
+import nz.co.gregs.dbvolution.expressions.NumberExpression;
 import nz.co.gregs.dbvolution.results.LineSegment2DResult;
 
 /**
@@ -199,6 +201,26 @@ public class DBLineSegment2D extends QueryableDatatype implements LineSegment2DR
 	@Override
 	public boolean getIncludesNull() {
 		return false;
+	}
+
+	@Override
+	public NumberExpression measurableDimensions() {
+		return NumberExpression.value(1);
+	}
+
+	@Override
+	public NumberExpression spatialDimensions() {
+		return NumberExpression.value(2);
+	}
+
+	@Override
+	public BooleanExpression hasMagnitude() {
+		return BooleanExpression.falseExpression();
+	}
+
+	@Override
+	public NumberExpression magnitude() {
+		return NumberExpression.value((Number)null);
 	}
 
 }
