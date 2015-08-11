@@ -145,11 +145,32 @@ public class BooleanArrayExpression implements BooleanArrayResult, EqualComparab
 	 * @return a BooleanExpresson of the Bit comparison of the number and this
 	 * expression.
 	 */
+	@Override
 	public BooleanExpression is(BooleanArrayResult i) {
 		return new BooleanExpression(new DBBinaryBooleanArithmetic(this, i) {
 			@Override
 			protected String getEquationOperator(DBDatabase db) {
 				return " = ";
+			}
+		});
+	}
+
+
+	/**
+	 * Create a BooleanExpression that will compare the BooleanArrayResult
+	 * provided to this BooleanArrayExpression using the equivalent of the NOT EQUALS
+	 * operator.
+	 *
+	 * @param i the value to compare this expression to
+	 * @return a BooleanExpresson of the Bit comparison of the number and this
+	 * expression.
+	 */
+	@Override
+	public BooleanExpression isNot(BooleanArrayResult i) {
+		return new BooleanExpression(new DBBinaryBooleanArithmetic(this, i) {
+			@Override
+			protected String getEquationOperator(DBDatabase db) {
+				return " <> ";
 			}
 		});
 	}

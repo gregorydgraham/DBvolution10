@@ -176,6 +176,27 @@ public class Point2DExpression implements Point2DResult, EqualComparable<Point2D
 		});
 	}
 
+	@Override
+	public BooleanExpression isNot(Point2DResult rightHandSide) {
+		return new BooleanExpression(new PointPointFunctionWithBooleanResult(this, new Point2DExpression(rightHandSide)) {
+
+			@Override
+			public String doExpressionTransform(DBDatabase db) {
+				try {
+					return db.getDefinition().doPoint2DEqualsTransform(getFirst().toSQLString(db), getSecond().toSQLString(db));
+				} catch (UnsupportedOperationException unsupported) {
+					return 
+							BooleanExpression.notAllOf(
+							getFirst().stringResult().substringBetween("(", " ").numberResult()
+							.is(getSecond().stringResult().substringBetween("(", " ").numberResult()),
+							getFirst().stringResult().substringAfter("(").substringBetween(" ", ")").numberResult()
+							.is(getSecond().stringResult().substringAfter("(").substringBetween(" ", ")").numberResult())
+							).toSQLString(db);
+				}
+			}
+		});
+	}
+
 	public NumberExpression getX() {
 		return new NumberExpression(new PointFunctionWithNumberResult(this) {
 

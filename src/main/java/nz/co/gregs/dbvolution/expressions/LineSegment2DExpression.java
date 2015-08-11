@@ -28,6 +28,8 @@ import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.datatypes.spatial2D.DBLineSegment2D;
 
 /**
+ * Represents expressions that produce a geometry consisting of 2 points and
+ * representing a line from the first point to the second.
  *
  * @author gregory.graham
  */
@@ -36,25 +38,47 @@ public class LineSegment2DExpression implements LineSegment2DResult, EqualCompar
 	private LineSegment2DResult innerLineString;
 	private boolean nullProtectionRequired;
 
+	/**
+	 * Default constructor.
+	 *
+	 */
 	protected LineSegment2DExpression() {
 	}
 
+	/**
+	 * Create a LineSegment2D expression encapsulating the value supplied.
+	 *
+	 * @param value
+	 */
 	public LineSegment2DExpression(LineSegment2DResult value) {
 		initInnerLine(value, value, value);
 	}
 
-	protected final void initInnerLine(Object original1, Object original2, LineSegment2DResult value) {
+	private void initInnerLine(Object original1, Object original2, LineSegment2DResult value) {
 		innerLineString = value;
 		if (original1 == null || original2 == null || innerLineString.getIncludesNull()) {
 			nullProtectionRequired = true;
 		}
 	}
 
+	/**
+	 * Create a LineSegment2D expression encapsulating the value supplied.
+	 *
+	 * @param line 
+	 */
 	public LineSegment2DExpression(LineSegment line) {
 		innerLineString = new DBLineSegment2D(line);
 		initInnerLine(line, line, innerLineString);
 	}
 
+	/**
+	 * Create a LineSegment2D expression encapsulating the values supplied.
+	 *
+	 * @param point1x
+	 * @param point1y
+	 * @param point2x
+	 * @param point2y
+	 */
 	public LineSegment2DExpression(Double point1x, Double point1y, Double point2x, Double point2y) {
 		LineSegment line = null;
 		if (point1x != null && point1y != null && point2x != null && point2y != null) {
@@ -62,10 +86,17 @@ public class LineSegment2DExpression implements LineSegment2DResult, EqualCompar
 			innerLineString = new DBLineSegment2D(line);
 		} else {
 			innerLineString = new DBLineSegment2D(line);
-			nullProtectionRequired= true;
+			nullProtectionRequired = true;
 		}
 	}
 
+	/**
+	 * Create a LineSegment2D expression encapsulating the value supplied.
+	 *
+	 * @param point1 
+	 * @param point2 
+	 * 
+	 */
 	public LineSegment2DExpression(Point point1, Point point2) {
 		LineSegment line = null;
 		if (point1 != null && point2 != null) {
@@ -77,6 +108,12 @@ public class LineSegment2DExpression implements LineSegment2DResult, EqualCompar
 		initInnerLine(point1, point2, innerLineString);
 	}
 
+	/**
+	 * Create a LineSegment2D expression encapsulating the value supplied.
+	 *
+	 * @param coord1
+	 * @param coord2
+	 */
 	public LineSegment2DExpression(Coordinate coord1, Coordinate coord2) {
 		LineSegment line = null;
 		if (coord1 != null && coord2 != null) {
@@ -88,18 +125,47 @@ public class LineSegment2DExpression implements LineSegment2DResult, EqualCompar
 		initInnerLine(coord1, coord2, innerLineString);
 	}
 
+	/**
+	 * Create an expression for the line segment created from the 2 points.
+	 *
+	 * @param point1
+	 * @param point2
+	 * @return a LineSegment2D expression
+	 */
 	public static LineSegment2DExpression value(Point point1, Point point2) {
 		return new LineSegment2DExpression(point1, point2);
 	}
 
+	/**
+	 * Create an expression for the line segment created from the 2 coordinates.
+	 *
+	 * @param coord1 
+	 * @param coord2 
+	 * @return a LineSegment2D expression
+	 */
 	public static LineSegment2DExpression value(Coordinate coord1, Coordinate coord2) {
 		return new LineSegment2DExpression(coord1, coord2);
 	}
 
+	/**
+	 * Create an expression for the line segment created by combining the 4 numbers into 2 points.
+	 *
+	 * @param x1 
+	 * @param y1 
+	 * @param x2
+	 * @param y2
+	 * @return a LineSegment2D expression
+	 */
 	public static LineSegment2DExpression value(Double x1, Double y1, Double x2, Double y2) {
 		return new LineSegment2DExpression(new Coordinate(x1, y1), new Coordinate(x2, y2));
 	}
 
+	/**
+	 * Create an expression for the line segment created from the 2 points.
+	 *
+	 * @param line 
+	 * @return a LineSegment2D expression
+	 */
 	public static LineSegment2DExpression value(LineSegment line) {
 		return new LineSegment2DExpression(line);
 	}
@@ -178,6 +244,13 @@ public class LineSegment2DExpression implements LineSegment2DResult, EqualCompar
 		});
 	}
 
+	/**
+	 * Creates a {@link BooleanExpression} that compares the 2 instances using the
+	 * EQUALS operation.
+	 *
+	 * @param rightHandSide 
+	 * @return a BooleanExpression
+	 */
 	public BooleanExpression is(LineSegment rightHandSide) {
 		return is(new DBLineSegment2D(rightHandSide));
 	}
@@ -201,19 +274,9 @@ public class LineSegment2DExpression implements LineSegment2DResult, EqualCompar
 		return isNot(new DBLineSegment2D(rightHandSide));
 	}
 
+	@Override
 	public BooleanExpression isNot(LineSegment2DResult rightHandSide) {
-		return new BooleanExpression(new LineSegmentLineSegmentWithBooleanResult(this, new LineSegment2DExpression(rightHandSide)) {
-
-			@Override
-			public String doExpressionTransform(DBDatabase db) {
-				try {
-					final DBDefinition defn = db.getDefinition();
-					return defn.doLineSegment2DNotEqualsTransform(getFirst().toSQLString(db), getSecond().toSQLString(db));
-				} catch (UnsupportedOperationException unsupported) {
-					return getFirst().stringResult().is(getSecond().stringResult()).not().toSQLString(db);
-				}
-			}
-		});
+		return is(rightHandSide).not();
 	}
 
 	@Override

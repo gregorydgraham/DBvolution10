@@ -2964,6 +2964,17 @@ public abstract class DBDefinition {
 	}
 
 	/**
+	 * Compare 2 DateRepeats using NOT EQUALS.
+	 *
+	 * @param leftHandSide
+	 * @param rightHandSide
+	 * @return the SQL required to create to compare DateRepeats
+	 */
+	public String doDateRepeatNotEqualsTransform(String leftHandSide, String rightHandSide) {
+		return "(" + leftHandSide + " <> " + rightHandSide + ")";
+	}
+
+	/**
 	 * Compare 2 DateRepeats using LESSTHAN.
 	 *
 	 * @param leftHandSide
@@ -3947,7 +3958,7 @@ public abstract class DBDefinition {
 	}	
 	
 	/**
-	 * Generate the SQK required to return the starting point of the provided LineSegment2D expression.
+	 * Generate the SQL required to return the starting point of the provided LineSegment2D expression.
 	 *
 	 * @param lineSegmentSQL
 	 * @return SQL
@@ -3957,7 +3968,8 @@ public abstract class DBDefinition {
 	}
 
 	/**
-	 * Generate the SQK required to return the starting point of the provided LineSegment2D expression.
+	 * Generate the SQL required to return the starting point of the provided LineSegment2D expression.
+	 * 
 	 * @param lineSegmentSQL
 	 * @return SQL
 	 */
@@ -3998,13 +4010,24 @@ public abstract class DBDefinition {
 	}
 
 	/**
-	 * Provide the SQL to compare 2 MultiPoint2Ds
+	 * Provide the SQL to compare 2 MultiPoint2Ds using the equivalent of EQUALS.
 	 *
 	 * @param first
 	 * @param second
 	 * @return SQL
 	 */
 	public String doMultiPoint2DEqualsTransform(String first, String second) {
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	}
+
+	/**
+	 * Provide the SQL to compare 2 MultiPoint2Ds using the equivalent of NOT EQUALS.
+	 *
+	 * @param first
+	 * @param second
+	 * @return SQL
+	 */
+	public String doMultiPoint2DNotEqualsTransform(String first, String second) {
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
@@ -4158,63 +4181,183 @@ public abstract class DBDefinition {
 		return sqlQuery;
 	}
 
-	public String doLine2DSpatialDimensionsTransform(String toSQLString) {
+	/**
+	 * Return the number of spatial dimensions that this geometry is defined in.
+	 * 
+	 * <p>
+	 * Effectively indicates whether the geometry is 2D, 3D, etc.
+	 *
+	 * @param line2DSQL 
+	 * @return the number of spatial dimensions that this geometry is defined in.
+	 */
+	public String doLine2DSpatialDimensionsTransform(String line2DSQL) {
 		return "2";
 	}
 
-	public String doLine2DHasMagnitudeTransform(String toSQLString) {
+	/**
+	 * Return whether this geometry includes a magnitude (M) value along with X, Y, etc.
+	 * 
+	 * @param line2DSQL 
+	 * @return TRUE or FALSE
+	 */
+	public String doLine2DHasMagnitudeTransform(String line2DSQL) {
 		return this.getFalseOperation();
 	}
 
-	public String doLine2DGetMagnitudeTransform(String toSQLString) {
+	/**
+	 * Return the magnitude (M) value of this line.
+	 * 
+	 * <p>
+	 * Effectively indicates whether the geometry is 2D or 3D.
+	 *
+	 * @param line2DSQL 
+	 * @return the value for the magnitude, or NULL if there is no magnitude.
+	 */
+	public String doLine2DGetMagnitudeTransform(String line2DSQL) {
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
-	public String doPoint2DSpatialDimensionsTransform(String toSQLString) {
+	/**
+	 * Return the number of spatial dimensions that this geometry is defined in.
+	 * 
+	 * <p>
+	 * Effectively indicates whether the geometry is 2D, 3D, etc.
+	 *
+	 * @param point2DSQL  
+	 * @return the number of spatial dimensions that this geometry is defined in.
+	 */
+	public String doPoint2DSpatialDimensionsTransform(String point2DSQL) {
 		return "2";
 	}
 
-	public String doPoint2DHasMagnitudeTransform(String toSQLString) {
+	/**
+	 * Return whether this geometry includes a magnitude (M) value along with X, Y, etc.
+	 * 
+	 * @param point2DSQL  
+	 * @return TRUE or FALSE
+	 */
+	public String doPoint2DHasMagnitudeTransform(String point2DSQL) {
 		return this.getFalseOperation();
 	}
 
-	public String doPoint2DGetMagnitudeTransform(String toSQLString) {
+	/**
+	 * Return the magnitude (M) value of this line.
+	 * 
+	 * <p>
+	 * Effectively indicates whether the geometry is 2D or 3D.
+	 *
+	 * @param point2DSQL  
+	 * @return the value for the magnitude, or NULL if there is no magnitude.
+	 */
+	public String doPoint2DGetMagnitudeTransform(String point2DSQL) {
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
-	public String doMultiPoint2DSpatialDimensionsTransform(String toSQLString) {
+	/**
+	 * Return the number of spatial dimensions that this geometry is defined in.
+	 * 
+	 * <p>
+	 * Effectively indicates whether the geometry is 2D, 3D, etc.
+	 *
+	 * @param multipoint2DSQL  
+	 * @return the number of spatial dimensions that this geometry is defined in.
+	 */
+	public String doMultiPoint2DSpatialDimensionsTransform(String multipoint2DSQL) {
 		return "2";
 	}
 
-	public String doMultiPoint2DHasMagnitudeTransform(String toSQLString) {
+	/**
+	 * Return whether this geometry includes a magnitude (M) value along with X, Y, etc.
+	 * 
+	 * @param multipoint2DSQL  
+	 * @return TRUE or FALSE
+	 */
+	public String doMultiPoint2DHasMagnitudeTransform(String multipoint2DSQL) {
 		return this.getFalseOperation();
 	}
 
-	public String doMultiPoint2DGetMagnitudeTransform(String toSQLString) {
+	/**
+	 * Return the magnitude (M) value of this line.
+	 * 
+	 * <p>
+	 * Effectively indicates whether the geometry is 2D or 3D.
+	 *
+	 * @param multipoint2DSQL  
+	 * @return the value for the magnitude, or NULL if there is no magnitude.
+	 */
+	public String doMultiPoint2DGetMagnitudeTransform(String multipoint2DSQL) {
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
-	public String doPolygon2DSpatialDimensionsTransform(String toSQLString) {
+	/**
+	 * Return the number of spatial dimensions that this geometry is defined in.
+	 * 
+	 * <p>
+	 * Effectively indicates whether the geometry is 2D, 3D, etc.
+	 *
+	 * @param polygon2DSQL  
+	 * @return the number of spatial dimensions that this geometry is defined in.
+	 */
+	public String doPolygon2DSpatialDimensionsTransform(String polygon2DSQL) {
 		return "2";
 	}
 
-	public String doPolygon2DHasMagnitudeTransform(String toSQLString) {
+	/**
+	 * Return whether this geometry includes a magnitude (M) value along with X, Y, etc.
+	 * 
+	 * @param polygon2DSQL  
+	 * @return TRUE or FALSE
+	 */
+	public String doPolygon2DHasMagnitudeTransform(String polygon2DSQL) {
 		return this.getFalseOperation();
 	}
 
-	public String doPolygon2DGetMagnitudeTransform(String toSQLString) {
+	/**
+	 * Return the magnitude (M) value of this line.
+	 * 
+	 * <p>
+	 * Effectively indicates whether the geometry is 2D or 3D.
+	 *
+	 * @param polygon2DSQL  
+	 * @return the value for the magnitude, or NULL if there is no magnitude.
+	 */
+	public String doPolygon2DGetMagnitudeTransform(String polygon2DSQL) {
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 	
-	public String doLineSegment2DSpatialDimensionsTransform(String toSQLString) {
+	/**
+	 * Return the number of spatial dimensions that this geometry is defined in.
+	 * 
+	 * <p>
+	 * Effectively indicates whether the geometry is 2D, 3D, etc.
+	 *
+	 * @param lineSegment2DSQL 
+	 * @return the number of spatial dimensions that this geometry is defined in.
+	 */
+	public String doLineSegment2DSpatialDimensionsTransform(String lineSegment2DSQL) {
 		return "2";
 	}
 
-	public String doLineSegment2DHasMagnitudeTransform(String toSQLString) {
+	/**
+	 * Return whether this geometry includes a magnitude (M) value along with X, Y, etc.
+	 * 
+	 * @param lineSegment2DSQL  
+	 * @return TRUE or FALSE
+	 */
+	public String doLineSegment2DHasMagnitudeTransform(String lineSegment2DSQL) {
 		return this.getFalseOperation();
 	}
 
-	public String doLineSegment2DGetMagnitudeTransform(String toSQLString) {
+	/**
+	 * Return the magnitude (M) value of this line.
+	 * 
+	 * <p>
+	 * Effectively indicates whether the geometry is 2D or 3D.
+	 *
+	 * @param lineSegment2DSQL  
+	 * @return the value for the magnitude, or NULL if there is no magnitude.
+	 */
+	public String doLineSegment2DGetMagnitudeTransform(String lineSegment2DSQL) {
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 }

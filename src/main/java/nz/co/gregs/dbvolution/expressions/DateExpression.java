@@ -568,6 +568,29 @@ public class DateExpression implements DateResult, RangeComparable<DateResult> {
 	}
 
 	/**
+	 * Creates an SQL expression that test whether this date expression is NOT equal
+	 * to the supplied date.
+	 *
+	 * @param dateExpression the date the expression must not match
+	 * @return a BooleanExpression comparing the DateResult and this
+	 * DateExpression.
+	 */
+	@Override
+	public BooleanExpression isNot(DateResult dateExpression) {
+		BooleanExpression isExpr = new BooleanExpression(new DBBinaryBooleanArithmetic(this, dateExpression) {
+			@Override
+			protected String getEquationOperator(DBDatabase db) {
+				return " <> ";
+			}
+		});
+		if (isExpr.getIncludesNull()) {
+			return BooleanExpression.isNull(this);
+		} else {
+			return isExpr;
+		}
+	}
+
+	/**
 	 * Returns FALSE if this expression evaluates to NULL, otherwise TRUE.
 	 *
 	 * @return a BooleanExpression

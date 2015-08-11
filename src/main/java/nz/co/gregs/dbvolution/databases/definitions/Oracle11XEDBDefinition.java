@@ -27,8 +27,8 @@ import nz.co.gregs.dbvolution.query.QueryOptions;
  * database.
  *
  * <p>
- * This DBDefinition is automatically included in {@link Oracle11XEDB} instances,
- * and you should not need to use it directly.
+ * This DBDefinition is automatically included in {@link Oracle11XEDB}
+ * instances, and you should not need to use it directly.
  *
  * @author Gregory Graham
  */
@@ -48,7 +48,6 @@ public class Oracle11XEDBDefinition extends OracleSpatialDBDefinition {
 //	public boolean supportsPagingNatively(QueryOptions options) {
 //		return true;
 //	}
-
 	@Override
 	public String getColumnAutoIncrementSuffix() {
 		return "";
@@ -108,40 +107,84 @@ public class Oracle11XEDBDefinition extends OracleSpatialDBDefinition {
 //				+ (length.trim().isEmpty() ? "" : ", " + length)
 //				+ ") ";
 //	}
-	
 	@Override
 	public String doPoint2DGetBoundingBoxTransform(String point2DSQL) {
 		throw new UnsupportedOperationException("Bounding Box is an unsupported operation in Oracle11 XE.");
 	}
-	
+
 	@Override
 	public String doPoint2DAsTextTransform(String point2DSQL) {
-		return "'POINT ('||"+doPoint2DGetXTransform(point2DSQL)+"||' '||"+doPoint2DGetYTransform(point2DSQL)+"||')'";
+		return "'POINT ('||" + doPoint2DGetXTransform(point2DSQL) + "||' '||" + doPoint2DGetYTransform(point2DSQL) + "||')'";
 	}
 
 	@Override
 	public String doLineSegment2DGetBoundingBoxTransform(String lineSegmentSQL) {
 		throw new UnsupportedOperationException("Bounding Box is an unsupported operation in Oracle11 XE.");
 	}
-	
+
 	@Override
 	public String doLineSegment2DAsTextTransform(String lineSegmentSQL) {
-		return "'LINESTRING ('||"+doPoint2DGetXTransform(doLineSegment2DStartPointTransform(lineSegmentSQL))
-				+"||' '||"+doPoint2DGetYTransform(doLineSegment2DStartPointTransform(lineSegmentSQL))
-				+"||', '||"+doPoint2DGetXTransform(doLineSegment2DEndPointTransform(lineSegmentSQL))
-				+"||' '||"+doPoint2DGetYTransform(doLineSegment2DEndPointTransform(lineSegmentSQL))
-				+"||')'";
+		return "'LINESTRING ('||" + doPoint2DGetXTransform(doLineSegment2DStartPointTransform(lineSegmentSQL))
+				+ "||' '||" + doPoint2DGetYTransform(doLineSegment2DStartPointTransform(lineSegmentSQL))
+				+ "||', '||" + doPoint2DGetXTransform(doLineSegment2DEndPointTransform(lineSegmentSQL))
+				+ "||' '||" + doPoint2DGetYTransform(doLineSegment2DEndPointTransform(lineSegmentSQL))
+				+ "||')'";
 	}
 
 	@Override
 	public String doLineSegment2DStartPointTransform(String lineSegmentSQL) {
-		return ""+GeometryFunctions.GETPOINTATINDEX+"("+lineSegmentSQL+", 1)";
+		return "" + GeometryFunctions.GETPOINTATINDEX + "(" + lineSegmentSQL + ", 1)";
 	}
 
 	@Override
 	public String doLineSegment2DEndPointTransform(String lineSegmentSQL) {
-		return ""+GeometryFunctions.GETPOINTATINDEX+"("+lineSegmentSQL+", -1)";
+		return "" + GeometryFunctions.GETPOINTATINDEX + "(" + lineSegmentSQL + ", -1)";
 	}
 
+	@Override
+	public String doLineSegment2DGetMaxXTransform(final String lineSegment) {
+		return doGreatestOfTransformation(
+				new ArrayList<String>() {
+					{
+						add(doPoint2DGetXTransform(doLineSegment2DStartPointTransform(lineSegment)));
+						add(doPoint2DGetXTransform(doLineSegment2DEndPointTransform(lineSegment)));
+					}
+				}
+		);
+	}
+
+	@Override
+	public String doLineSegment2DGetMinXTransform(final String lineSegment) {
+		return doLeastOfTransformation(
+				new ArrayList<String>() {
+					{
+						add(doPoint2DGetXTransform(doLineSegment2DStartPointTransform(lineSegment)));
+						add(doPoint2DGetXTransform(doLineSegment2DEndPointTransform(lineSegment)));
+					}
+				}
+		);
+	}
+	@Override
+	public String doLineSegment2DGetMaxYTransform(final String lineSegment) {
+		return doGreatestOfTransformation(
+				new ArrayList<String>() {
+					{
+						add(doPoint2DGetYTransform(doLineSegment2DStartPointTransform(lineSegment)));
+						add(doPoint2DGetYTransform(doLineSegment2DEndPointTransform(lineSegment)));
+					}
+				}
+		);
+	}
+	@Override
+	public String doLineSegment2DGetMinYTransform(final String lineSegment) {
+		return doLeastOfTransformation(
+				new ArrayList<String>() {
+					{
+						add(doPoint2DGetYTransform(doLineSegment2DStartPointTransform(lineSegment)));
+						add(doPoint2DGetYTransform(doLineSegment2DEndPointTransform(lineSegment)));
+					}
+				}
+		);
+	}
 
 }

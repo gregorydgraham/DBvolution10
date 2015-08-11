@@ -22,8 +22,10 @@ import nz.co.gregs.dbvolution.results.DateResult;
 import nz.co.gregs.dbvolution.results.NumberResult;
 import nz.co.gregs.dbvolution.results.BooleanResult;
 import com.vividsolutions.jts.geom.Polygon;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.DBQuery;
@@ -213,6 +215,27 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 
 	/**
 	 * Compare this BooleanExpression and the given {@link BooleanResult} using
+	 * the inequality operator, that is "<>" or similar.
+	 *
+	 * <p>
+	 * BooleanResult includes {@link BooleanExpression} and {@link DBBoolean}.
+	 *
+	 * @param bool the boolean value to be tested
+	 * @return a BooleanExpression that compares the previous BooleanExpression
+	 * to the Boolean supplied.
+	 */
+	@Override
+	public BooleanExpression isNot(BooleanResult bool) {
+		return new BooleanExpression(new DBBinaryBooleanArithmetic(this, bool) {
+			@Override
+			protected String getEquationOperator(DBDatabase db) {
+				return " <> ";
+			}
+		});
+	}
+
+	/**
+	 * Compare this BooleanExpression and the given {@link BooleanResult} using
 	 * the Exclusive OR operator, that is "=" or similar.
 	 *
 	 * <p>
@@ -270,6 +293,15 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 			}
 		});
 	}
+	
+	public static BooleanExpression notAllOf(final BooleanExpression... booleanExpressions) {
+		List<BooleanExpression> notBools = new ArrayList<BooleanExpression>();
+		for (BooleanExpression booleanExpression : booleanExpressions) {
+			notBools.add(booleanExpression.not());
+		}
+		return anyOf(notBools.toArray(booleanExpressions));
+	}
+
 
 	/**
 	 * Collects the expressions together and only requires one to be true.

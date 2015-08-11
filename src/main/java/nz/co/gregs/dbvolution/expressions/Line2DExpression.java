@@ -377,6 +377,7 @@ public class Line2DExpression implements Line2DResult, EqualComparable<Line2DRes
 	 * @param rightHandSide
 	 * @return a BooleanExpression that will be FALSE when the two expressions are functionally equivalent, otherwise TRUE.
 	 */
+	@Override
 	public BooleanExpression isNot(Line2DResult rightHandSide) {
 		return new BooleanExpression(new Line2DExpression.LineLineWithBooleanResult(this, new Line2DExpression(rightHandSide)) {
 
@@ -477,6 +478,11 @@ public class Line2DExpression implements Line2DResult, EqualComparable<Line2DRes
 		});
 	}
 
+	/**
+	 * Return the maximum X value in the Line2D.
+	 *
+	 * @return the numeric value of the largest X coordinate for the Line2D.
+	 */
 	public NumberExpression getMaxX() {
 
 		return new NumberExpression(new LineFunctionWithNumberResult(this) {
@@ -488,6 +494,11 @@ public class Line2DExpression implements Line2DResult, EqualComparable<Line2DRes
 		});
 	}
 
+	/**
+	 * Return the minimum X value in the Line2D.
+	 *
+	 * @return the numeric value of the smallest X coordinate for the Line2D.
+	 */
 	public NumberExpression getMinX() {
 
 		return new NumberExpression(new LineFunctionWithNumberResult(this) {
@@ -499,6 +510,11 @@ public class Line2DExpression implements Line2DResult, EqualComparable<Line2DRes
 		});
 	}
 
+	/**
+	 * Return the maximum Y value in the Line2D.
+	 *
+	 * @return the numeric value of the largest Y coordinate for the Line2D.
+	 */
 	public NumberExpression getMaxY() {
 
 		return new NumberExpression(new LineFunctionWithNumberResult(this) {
@@ -510,6 +526,11 @@ public class Line2DExpression implements Line2DResult, EqualComparable<Line2DRes
 		});
 	}
 
+	/**
+	 * Return the minimum Y value in the Line2D.
+	 *
+	 * @return the numeric value of the smallest Y coordinate for the Line2D.
+	 */
 	public NumberExpression getMinY() {
 
 		return new NumberExpression(new LineFunctionWithNumberResult(this) {
@@ -604,6 +625,12 @@ public class Line2DExpression implements Line2DResult, EqualComparable<Line2DRes
 		});
 	}
 
+	/**
+	 * Find all the points of intersection between this expression and the specified Line2D expression.
+	 *
+	 * @param crossingLine
+	 * @return a MultiPoint2D expression containing all the intersection points of the 2 lines.
+	 */
 	public MultiPoint2DExpression intersectionPoints(Line2DResult crossingLine) {
 		return new MultiPoint2DExpression(new LineLineWithMultiPoint2DResult(this, new Line2DExpression(crossingLine)) {
 

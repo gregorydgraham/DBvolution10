@@ -266,8 +266,8 @@ public class OracleSpatialDBDefinition extends OracleDBDefinition {
 	 */
 	@Override
 	public String doLineSegment2DGetBoundingBoxTransform(String lineSegment) {
-//		return "SDO_GEOM.SDO_MBR("+lineSegment+")";
-		throw new UnsupportedOperationException("Not supported yet."); 
+		return "SDO_GEOM.SDO_MBR("+lineSegment+")";
+//		throw new UnsupportedOperationException("Not supported yet."); 
 	}
 
 	/**

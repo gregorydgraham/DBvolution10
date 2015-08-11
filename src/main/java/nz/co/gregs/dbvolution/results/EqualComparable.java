@@ -39,4 +39,12 @@ public interface EqualComparable<A> {
 	 * @return a BooleanExpression
 	 */
 	public BooleanExpression is(A anotherInstance);
+	/**
+	 * Creates a {@link BooleanExpression} that compares the 2 instances using the
+	 * NOT EQUALS operation.
+	 *
+	 * @param anotherInstance
+	 * @return a BooleanExpression
+	 */
+	public BooleanExpression isNot(A anotherInstance);
 }

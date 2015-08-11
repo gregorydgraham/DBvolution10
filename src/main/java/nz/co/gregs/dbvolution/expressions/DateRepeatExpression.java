@@ -21,6 +21,7 @@ import java.util.HashSet;
 import java.util.Set;
 import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.DBRow;
+import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.databases.supports.SupportsDateRepeatDatatypeFunctions;
 import nz.co.gregs.dbvolution.datatypes.DBBoolean;
 import nz.co.gregs.dbvolution.datatypes.DBDateRepeat;
@@ -358,6 +359,17 @@ public class DateRepeatExpression implements DateRepeatResult, RangeComparable<D
 				return db.getDefinition().doDateRepeatEqualsTransform(getFirst().toSQLString(db), getSecond().toSQLString(db));
 			}
 		});
+	}
+
+	/**
+	 * Returns FALSE if this expression and the provided value are the same.
+	 *
+	 * @param anotherInstance 
+	 * @return a BooleanExpression
+	 */
+	@Override
+	public BooleanExpression isNot(DateRepeatResult anotherInstance) {
+		return is(anotherInstance).not();
 	}
 
 	/**

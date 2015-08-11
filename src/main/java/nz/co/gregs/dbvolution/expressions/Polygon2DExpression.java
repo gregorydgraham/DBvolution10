@@ -146,10 +146,10 @@ public class Polygon2DExpression implements Polygon2DResult, EqualComparable<Pol
 					String separator = "";
 
 					for (Point2DExpression point : allPoints) {
-						newPolygon.append(separator).append(point.stringResult());
+						newPolygon=newPolygon.append(separator).append(point.stringResult());
 						separator = ",";
 					}
-					newPolygon.append(separator).append(allPoints[0].stringResult());
+					newPolygon=newPolygon.append(separator).append(allPoints[0].stringResult()).append("))");
 					return newPolygon.toSQLString(db);
 				}
 			}

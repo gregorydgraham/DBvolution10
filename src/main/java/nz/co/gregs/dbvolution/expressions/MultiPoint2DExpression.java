@@ -169,6 +169,11 @@ public class MultiPoint2DExpression implements MultiPoint2DResult, EqualComparab
 		});
 	}
 
+	@Override
+	public BooleanExpression isNot(MultiPoint2DResult rightHandSide) {
+		return is(rightHandSide).not();
+	}
+
 	public NumberExpression getMaxX() {
 		return new NumberExpression(new MultiPointFunctionWithNumberResult(this) {
 
