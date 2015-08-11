@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.databases.Oracle11XEDB;
+import nz.co.gregs.dbvolution.internal.oracle.xe.GeometryFunctions;
 import nz.co.gregs.dbvolution.query.QueryOptions;
 
 /**
@@ -134,12 +135,12 @@ public class Oracle11XEDBDefinition extends OracleSpatialDBDefinition {
 
 	@Override
 	public String doLineSegment2DStartPointTransform(String lineSegmentSQL) {
-		return "SDO_LRS.GEOM_SEGMENT_START_PT("+lineSegmentSQL+")";
+		return ""+GeometryFunctions.GETPOINTATINDEX+"("+lineSegmentSQL+", 1)";
 	}
 
 	@Override
 	public String doLineSegment2DEndPointTransform(String lineSegmentSQL) {
-		return "SDO_LRS.GEOM_SEGMENT_END_PT("+lineSegmentSQL+")";
+		return ""+GeometryFunctions.GETPOINTATINDEX+"("+lineSegmentSQL+", -1)";
 	}
 
 

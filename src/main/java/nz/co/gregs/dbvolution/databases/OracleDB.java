@@ -15,7 +15,7 @@
  */
 package nz.co.gregs.dbvolution.databases;
 
-import nz.co.gregs.dbvolution.internal.oracle.aws.StringFunctions;
+import nz.co.gregs.dbvolution.internal.oracle.StringFunctions;
 import java.sql.SQLException;
 import java.sql.Statement;
 import javax.sql.DataSource;

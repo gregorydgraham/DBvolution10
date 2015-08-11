@@ -17,12 +17,14 @@ package nz.co.gregs.dbvolution.databases;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.sql.Statement;
 import javax.sql.DataSource;
 import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.databases.definitions.Oracle11XEDBDefinition;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.databases.definitions.OracleDBDefinition;
+import nz.co.gregs.dbvolution.internal.oracle.xe.GeometryFunctions;
 
 /**
  * Implements support for version 11 and prior of the Oracle database.
@@ -112,12 +114,6 @@ public class Oracle11XEDB extends OracleDB {
 			} finally {
 				dbStatement.close();
 			}
-//			final DBStatement dbStatement2 = getDBStatement();
-//			try {
-//				dbStatement2.execute("DROP TRIGGER " + definition.getPrimaryKeyTriggerName(formattedTableName, formattedColumnName));
-//			} finally {
-//				dbStatement2.close();
-//			}
 		}
 		super.dropAnyAssociatedDatabaseObjects(tableRow);
 	}
@@ -130,6 +126,17 @@ public class Oracle11XEDB extends OracleDB {
 	@Override
 	protected Connection getConnectionFromDriverManager() throws SQLException {
 		return super.getConnectionFromDriverManager(); //To change body of generated methods, choose Tools | Templates.
+	}	
+	
+	@Override
+	protected void addDatabaseSpecificFeatures(Statement statement) throws SQLException {
+		super.addDatabaseSpecificFeatures(statement);
+		
+		for (GeometryFunctions fn : GeometryFunctions.values()) {
+			fn.add(statement);
+		}
 	}
+
+
 
 }

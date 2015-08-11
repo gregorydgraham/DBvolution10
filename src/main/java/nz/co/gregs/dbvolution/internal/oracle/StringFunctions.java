@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package nz.co.gregs.dbvolution.internal.oracle.aws;
+package nz.co.gregs.dbvolution.internal.oracle;
 
 import java.sql.SQLException;
 import java.sql.Statement;
