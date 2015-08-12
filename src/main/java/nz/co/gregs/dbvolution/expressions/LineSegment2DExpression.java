@@ -357,8 +357,8 @@ public class LineSegment2DExpression implements LineSegment2DResult, EqualCompar
 							Point2DExpression.value(minX, minY),
 							Point2DExpression.value(maxX, minY),
 							Point2DExpression.value(maxX, maxY),
-							Point2DExpression.value(minX, maxY),
-							Point2DExpression.value(minX, minY)).toSQLString(db);
+							Point2DExpression.value(minX, maxY))
+							.toSQLString(db);
 				}
 			}
 		});

@@ -143,7 +143,7 @@ public class DBPoint2D extends QueryableDatatype implements Point2DResult {
 				point = database.getDefinition().transformDatabasePoint2DValueToJTSPoint(string);
 			} catch (ParseException ex) {
 				Logger.getLogger(DBPoint2D.class.getName()).log(Level.SEVERE, null, ex);
-				throw new ParsingSpatialValueException(fullColumnName, string);
+				throw new ParsingSpatialValueException(fullColumnName, string,ex);
 			}
 			return point;
 		}

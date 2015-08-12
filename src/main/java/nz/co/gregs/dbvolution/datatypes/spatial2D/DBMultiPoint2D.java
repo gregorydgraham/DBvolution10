@@ -194,7 +194,7 @@ public class DBMultiPoint2D extends QueryableDatatype implements MultiPoint2DRes
 				point = database.getDefinition().transformDatabaseMultiPoint2DValueToJTSMultiPoint(string);
 			} catch (ParseException ex) {
 				Logger.getLogger(DBPoint2D.class.getName()).log(Level.SEVERE, null, ex);
-				throw new ParsingSpatialValueException(fullColumnName, string);
+				throw new ParsingSpatialValueException(fullColumnName, string,ex);
 			}
 			return point;
 		}

@@ -28,9 +28,10 @@ public class ParsingSpatialValueException extends DBRuntimeException {
 	 *
 	 * @param fullColumnName
 	 * @param string
+	 * @param exp
 	 */
-	public ParsingSpatialValueException(String fullColumnName, String string) {
-		super("Failed To Parse Spatial Data: unable to create a correct value for column <" + fullColumnName + "> from '" + string + "'");
+	public ParsingSpatialValueException(String fullColumnName, String string, Exception exp) {
+		super("Failed To Parse Spatial Data: unable to create a correct value for column <" + fullColumnName + "> from '" + string + "'", exp);
 	}
 
 }

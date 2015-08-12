@@ -142,14 +142,15 @@ public class Polygon2DExpression implements Polygon2DResult, EqualComparable<Pol
 				try {
 					return db.getDefinition().doPoint2DArrayToPolygon2DTransform(pointSQL);
 				} catch (UnsupportedOperationException ex) {
-					StringExpression newPolygon = StringExpression.value("POLYGON((");
+					StringExpression newPolygon = StringExpression.value("POLYGON ((");
 					String separator = "";
 
 					for (Point2DExpression point : allPoints) {
-						newPolygon=newPolygon.append(separator).append(point.stringResult());
-						separator = ",";
+						newPolygon=newPolygon.append(separator).append(point.getX()).append(" ").append(point.getY());
+						separator = " , ";
 					}
-					newPolygon=newPolygon.append(separator).append(allPoints[0].stringResult()).append("))");
+					final Point2DExpression firstPoint = allPoints[0];
+					newPolygon=newPolygon.append(separator).append(firstPoint.getX()).append(" ").append(firstPoint.getY()).append("))");
 					return newPolygon.toSQLString(db);
 				}
 			}

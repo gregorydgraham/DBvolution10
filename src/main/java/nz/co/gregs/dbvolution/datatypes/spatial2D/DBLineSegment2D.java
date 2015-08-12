@@ -187,7 +187,7 @@ public class DBLineSegment2D extends QueryableDatatype implements LineSegment2DR
 				lineSegment = database.getDefinition().transformDatabaseLineSegment2DValueToJTSLineSegment(string);
 			} catch (com.vividsolutions.jts.io.ParseException ex) {
 				Logger.getLogger(DBLineSegment2D.class.getName()).log(Level.SEVERE, null, ex);
-				throw new ParsingSpatialValueException(fullColumnName, string);
+				throw new ParsingSpatialValueException(fullColumnName, string,ex);
 			}
 			return lineSegment;
 		}

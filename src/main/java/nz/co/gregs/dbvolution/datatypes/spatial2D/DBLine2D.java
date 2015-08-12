@@ -209,7 +209,7 @@ public class DBLine2D extends QueryableDatatype implements Line2DResult {
 				lineString = database.getDefinition().transformDatabaseLine2DValueToJTSLineString(string);
 			} catch (com.vividsolutions.jts.io.ParseException ex) {
 				Logger.getLogger(DBPoint2D.class.getName()).log(Level.SEVERE, null, ex);
-				throw new ParsingSpatialValueException(fullColumnName, string);
+				throw new ParsingSpatialValueException(fullColumnName, string,ex);
 			}
 			return lineString;
 		}
