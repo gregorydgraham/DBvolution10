@@ -15,6 +15,8 @@
  */
 package nz.co.gregs.dbvolution.databases.definitions;
 
+import com.vividsolutions.jts.geom.MultiPoint;
+import com.vividsolutions.jts.io.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 import nz.co.gregs.dbvolution.DBDatabase;
@@ -185,6 +187,76 @@ public class Oracle11XEDBDefinition extends OracleSpatialDBDefinition {
 					}
 				}
 		);
+	}
+
+	@Override
+	public String doMultiPoint2DGetMaxXTransform(String multiPoint2D) {
+		return super.doMultiPoint2DGetMaxXTransform(multiPoint2D); //To change body of generated methods, choose Tools | Templates.
+	}
+
+	@Override
+	public String doMultiPoint2DGetMaxYTransform(String multiPoint2D) {
+		return super.doMultiPoint2DGetMaxYTransform(multiPoint2D); //To change body of generated methods, choose Tools | Templates.
+	}
+
+	@Override
+	public String doMultiPoint2DGetMinXTransform(String multiPoint2D) {
+		return super.doMultiPoint2DGetMinXTransform(multiPoint2D); //To change body of generated methods, choose Tools | Templates.
+	}
+
+	@Override
+	public String doMultiPoint2DGetMinYTransform(String multiPoint2D) {
+		return super.doMultiPoint2DGetMinYTransform(multiPoint2D); //To change body of generated methods, choose Tools | Templates.
+	}
+
+	@Override
+	public String doMultiPoint2DToLine2DTransform(String multiPoint2D) {
+		return super.doMultiPoint2DToLine2DTransform(multiPoint2D); //To change body of generated methods, choose Tools | Templates.
+	}
+
+	@Override
+	public String doMultiPoint2DAsTextTransform(String multiPoint2D) {
+		return super.doMultiPoint2DAsTextTransform(multiPoint2D); //To change body of generated methods, choose Tools | Templates.
+	}
+
+	@Override
+	public String doMultiPoint2DGetBoundingBoxTransform(String multiPoint2D) {
+		return super.doMultiPoint2DGetBoundingBoxTransform(multiPoint2D); //To change body of generated methods, choose Tools | Templates.
+	}
+
+	@Override
+	public String doMultiPoint2DMeasurableDimensionsTransform(String multipoint2D) {
+		return super.doMultiPoint2DMeasurableDimensionsTransform(multipoint2D); //To change body of generated methods, choose Tools | Templates.
+	}
+
+	@Override
+	public String doMultiPoint2DGetNumberOfPointsTransform(String multiPoint2D) {
+		return super.doMultiPoint2DGetNumberOfPointsTransform(multiPoint2D); //To change body of generated methods, choose Tools | Templates.
+	}
+
+	@Override
+	public String doMultiPoint2DGetPointAtIndexTransform(String first, String index) {
+		return super.doMultiPoint2DGetPointAtIndexTransform(first, index); //To change body of generated methods, choose Tools | Templates.
+	}
+
+	@Override
+	public String doMultiPoint2DNotEqualsTransform(String first, String second) {
+		return super.doMultiPoint2DNotEqualsTransform(first, second); //To change body of generated methods, choose Tools | Templates.
+	}
+
+	@Override
+	public String doMultiPoint2DEqualsTransform(String first, String second) {
+		return super.doMultiPoint2DEqualsTransform(first, second); //To change body of generated methods, choose Tools | Templates.
+	}
+
+	@Override
+	public String transformMultiPoint2DToDatabaseMultiPoint2DValue(MultiPoint point) {
+		return super.transformMultiPoint2DToDatabaseMultiPoint2DValue(point); //To change body of generated methods, choose Tools | Templates.
+	}
+
+	@Override
+	public MultiPoint transformDatabaseMultiPoint2DValueToJTSMultiPoint(String pointsAsString) throws ParseException {
+		return super.transformDatabaseMultiPoint2DValueToJTSMultiPoint(pointsAsString); //To change body of generated methods, choose Tools | Templates.
 	}
 
 }
