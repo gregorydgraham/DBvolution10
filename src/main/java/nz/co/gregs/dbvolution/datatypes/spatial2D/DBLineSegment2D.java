@@ -204,29 +204,29 @@ public class DBLineSegment2D extends QueryableDatatype implements LineSegment2DR
 		return false;
 	}
 
-	@Override
-	public NumberExpression measurableDimensions() {
-		return NumberExpression.value(1);
-	}
-
-	@Override
-	public NumberExpression spatialDimensions() {
-		return NumberExpression.value(2);
-	}
-
-	@Override
-	public BooleanExpression hasMagnitude() {
-		return BooleanExpression.falseExpression();
-	}
-
-	@Override
-	public NumberExpression magnitude() {
-		return NumberExpression.value((Number)null);
-	}
-
-	@Override
-	public StringExpression toWKTFormat(){
-		return StringExpression.value(jtsLineSegmentValue().toString());
-	}
+//	@Override
+//	public NumberExpression measurableDimensions() {
+//		return NumberExpression.value(1);
+//	}
+//
+//	@Override
+//	public NumberExpression spatialDimensions() {
+//		return NumberExpression.value(2);
+//	}
+//
+//	@Override
+//	public BooleanExpression hasMagnitude() {
+//		return BooleanExpression.falseExpression();
+//	}
+//
+//	@Override
+//	public NumberExpression magnitude() {
+//		return NumberExpression.value((Number)null);
+//	}
+//
+//	@Override
+//	public StringExpression toWKTFormat(){
+//		return StringExpression.value(jtsLineSegmentValue().toString());
+//	}
 
 }

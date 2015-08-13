@@ -34,7 +34,7 @@ import nz.co.gregs.dbvolution.datatypes.spatial2D.DBPolygon2D;
  *
  * @author gregorygraham
  */
-public class Polygon2DExpression implements Polygon2DResult, EqualComparable<Polygon2DResult> {
+public class Polygon2DExpression implements Spatial2DExpression, Polygon2DResult, EqualComparable<Polygon2DResult> {
 
 	private Polygon2DResult innerGeometry;
 	private boolean nullProtectionRequired;
@@ -429,6 +429,7 @@ public class Polygon2DExpression implements Polygon2DResult, EqualComparable<Pol
 		return this.is(geometry).not();
 	}
 
+	@Override
 	public BooleanExpression isNot(Polygon2DResult geometry) {
 		return this.is(geometry).not();
 	}
@@ -443,6 +444,26 @@ public class Polygon2DExpression implements Polygon2DResult, EqualComparable<Pol
 		});
 //		return this.measurableDimensions().is(2).ifThenElse(exteriorRingExpr, this);
 		return stringResultExpr;
+	}
+
+	@Override
+	public NumberExpression getMaxX() {
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	}
+
+	@Override
+	public NumberExpression getMaxY() {
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	}
+
+	@Override
+	public NumberExpression getMinX() {
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	}
+
+	@Override
+	public NumberExpression getMinY() {
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
 	private static abstract class PolygonPolygonWithBooleanResult extends BooleanExpression {

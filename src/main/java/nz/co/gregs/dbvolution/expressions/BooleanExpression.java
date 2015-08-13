@@ -278,7 +278,7 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 	 *
 	 * <p>
 	 * This expression returns true if and only if all the component expressions
-	 * are true
+	 * are true.
 	 *
 	 * @param booleanExpressions the boolean expressions to be tested
 	 * @return a boolean expression that returns true IFF all the
@@ -294,6 +294,23 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 		});
 	}
 	
+	/**
+	 * Collects the expressions together and requires that at least one of them to be false.
+	 *
+	 * <p>
+	 * Creates a BooleanExpression of several Boolean Expressions by connecting
+	 * them using NOT and OR repeatedly.
+	 *
+	 * <p>
+	 * This expression returns true if and only if some the component expressions
+	 * are false.
+	 *
+	 * @param booleanExpressions the boolean expressions to be tested
+	 * @return a boolean expression that returns true IFF some of the
+	 * booleanExpressions are false.
+	 * @see #anyOf(BooleanExpression...)
+	 * @see #allOf(BooleanExpression...)
+	 */
 	public static BooleanExpression notAllOf(final BooleanExpression... booleanExpressions) {
 		List<BooleanExpression> notBools = new ArrayList<BooleanExpression>();
 		for (BooleanExpression booleanExpression : booleanExpressions) {

@@ -327,6 +327,26 @@ public class Point2DExpression implements Point2DResult, EqualComparable<Point2D
 		});
 	}
 
+	@Override
+	public NumberExpression getMaxX() {
+		return this.getX();
+	}
+
+	@Override
+	public NumberExpression getMaxY() {
+		return this.getY();
+	}
+
+	@Override
+	public NumberExpression getMinX() {
+		return this.getX();
+	}
+
+	@Override
+	public NumberExpression getMinY() {
+		return this.getY();
+	}
+
 	private static abstract class PointPointFunctionWithBooleanResult extends BooleanExpression {
 
 		private Point2DExpression first;

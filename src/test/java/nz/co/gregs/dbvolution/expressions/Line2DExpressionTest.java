@@ -93,6 +93,7 @@ public class Line2DExpressionTest extends AbstractTest {
 		List<LineTestTable> allRows = dbQuery.getAllInstancesOf(pointTestTable);
 		Assert.assertThat(allRows.size(), is(1));
 		Assert.assertThat(allRows.get(0).line_id.intValue(), is(1));
+		Assert.assertThat(allRows.get(0).line.jtsLineStringValue(), is(point));
 	}
 
 	@Test

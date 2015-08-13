@@ -82,14 +82,14 @@ public class MultiPoint2DExpressionTest extends AbstractTest {
 	@Test
 	public void testValue() throws SQLException {
 		System.out.println("value");
-		MultiPoint point = geometryFactory.createMultiPoint(new Coordinate[]{new Coordinate(2.0, 3.0), new Coordinate(3.0, 4.0)});
+		MultiPoint mpoint = geometryFactory.createMultiPoint(new Coordinate[]{new Coordinate(2.0, 3.0), new Coordinate(3.0, 4.0)});
 		final MultiPoint2DTestTable pointTestTable = new MultiPoint2DTestTable();
 		DBQuery dbQuery = database.getDBQuery(pointTestTable);
-		dbQuery.addCondition(MultiPoint2DExpression.value(point).is(pointTestTable.column(pointTestTable.multipoint)));
+		dbQuery.addCondition(MultiPoint2DExpression.value(mpoint).is(pointTestTable.column(pointTestTable.multipoint)));
 		List<MultiPoint2DTestTable> allRows = dbQuery.getAllInstancesOf(pointTestTable);
 		Assert.assertThat(allRows.size(), is(1));
 		Assert.assertThat(allRows.get(0).line_id.intValue(), is(1));
-		Assert.assertThat(allRows.get(0).multipoint.jtsMultiPointValue(), is(point));
+		Assert.assertThat(allRows.get(0).multipoint.jtsMultiPointValue(), is(mpoint));
 	}
 
 	@Test

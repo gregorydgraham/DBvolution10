@@ -24,7 +24,6 @@ import java.util.HashSet;
 import java.util.Set;
 import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.DBRow;
-import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.datatypes.spatial2D.DBLineSegment2D;
 
 /**
@@ -235,6 +234,11 @@ public class LineSegment2DExpression implements LineSegment2DResult, EqualCompar
 		return stringResult();
 	}
 
+	/**
+	 * Convert this LineSegment2D to a String representation based on the Well Known Text (WKT) format.
+	 * 
+	 * @return a StringExpression representing this spatial value.
+	 */
 	public StringExpression stringResult() {
 		return new StringExpression(new LineSegmentWithStringResult(this) {
 
@@ -275,6 +279,13 @@ public class LineSegment2DExpression implements LineSegment2DResult, EqualCompar
 		});
 	}
 
+	/**
+	 * Creates a {@link BooleanExpression} that compares the 2 values using the
+	 * NOT EQUALS operation.
+	 *
+	 * @param rightHandSide
+	 * @return a BooleanExpression returning TRUE if the two line segments are different, otherwise FALSE.
+	 */
 	public BooleanExpression isNot(LineSegment rightHandSide) {
 		return isNot(new DBLineSegment2D(rightHandSide));
 	}

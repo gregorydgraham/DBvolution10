@@ -211,28 +211,28 @@ public class DBMultiPoint2D extends QueryableDatatype implements MultiPoint2DRes
 		return false;
 	}
 
-	@Override
-	public NumberExpression measurableDimensions() {
-		return NumberExpression.value(0);
-	}
-
-	@Override
-	public NumberExpression spatialDimensions() {
-		return NumberExpression.value(2);
-	}
-
-	@Override
-	public BooleanExpression hasMagnitude() {
-		return BooleanExpression.falseExpression();
-	}
-
-	@Override
-	public NumberExpression magnitude() {
-		return NumberExpression.value((Number)null);
-	}
-
-	@Override
-	public StringExpression toWKTFormat(){
-		return StringExpression.value(jtsMultiPointValue().toText());
-	}
+//	@Override
+//	public NumberExpression measurableDimensions() {
+//		return NumberExpression.value(0);
+//	}
+//
+//	@Override
+//	public NumberExpression spatialDimensions() {
+//		return NumberExpression.value(2);
+//	}
+//
+//	@Override
+//	public BooleanExpression hasMagnitude() {
+//		return BooleanExpression.falseExpression();
+//	}
+//
+//	@Override
+//	public NumberExpression magnitude() {
+//		return NumberExpression.value((Number)null);
+//	}
+//
+//	@Override
+//	public StringExpression toWKTFormat(){
+//		return StringExpression.value(jtsMultiPointValue().toText());
+//	}
 }

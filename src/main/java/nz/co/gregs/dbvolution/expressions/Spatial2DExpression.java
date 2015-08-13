@@ -45,7 +45,6 @@ public interface Spatial2DExpression extends Spatial2DResult {
 	 *
 	 * @return
 	 */
-	@Override
 	NumberExpression measurableDimensions();
 
 	/**
@@ -55,5 +54,97 @@ public interface Spatial2DExpression extends Spatial2DResult {
 	 * @return a Polygon2D expression
 	 */
 	public Polygon2DExpression boundingBox();
+
+	/**
+	 * Return a expression that provides the largest X value within the spatial
+	 * value.
+	 *
+	 * @return a NumberExpression
+	 */
+	public NumberExpression getMaxX();
+
+	/**
+	 * Return a expression that provides the largest Y value within the spatial
+	 * value.
+	 *
+	 * @return a NumberExpression
+	 */
+	public NumberExpression getMaxY();
+
+	/**
+	 * Return a expression that provides the smallest X value within the spatial
+	 * value.
+	 *
+	 * @return a NumberExpression
+	 */
+	public NumberExpression getMinX();
+
+	/**
+	 * Return a expression that provides the smallest Y value within the spatial
+	 * value.
+	 *
+	 * @return a NumberExpression
+	 */
+	public NumberExpression getMinY();
+
+	/**
+	 * Return the spatial dimensions of this expression.
+	 *
+	 * <p>
+	 * This represents spatial dimensions in the sense of how many dimensions the
+	 * locations of the geometry in defined in. That is to say how many of X, Y,
+	 * Z, and W the geometry must be defined in.
+	 *
+	 * <p>
+	 * For instance 2D geometries have 2 spatial dimensions: X and Y. 3D
+	 * geometries use X, Y, and Z. Presumably hyper-geometries have X, Y, Z, W,
+	 * etc dimensions.
+	 *
+	 * @return a number expression representing the number of spatial dimensions
+	 */
+	NumberExpression spatialDimensions();
+
+	/**
+	 * Indicates whether this geometry has a magnitude value.
+	 *
+	 * <p>
+	 * Magnitude is a single value that has been measured at this point. For
+	 * instance density, depth, color, or temperature. The particular meaning of
+	 * magnitude is not defined and it can be anything with a numerical value.
+	 *
+	 * <p>
+	 * Magnitude isn't actually a very good way to store this information but it
+	 * is used sometimes.
+	 *
+	 * @return TRUE if this spatial type supports magnitude values.
+	 */
+	BooleanExpression hasMagnitude();
+
+	/**
+	 * Returns the numerical magnitude value, if any, for this expression.
+	 *
+	 * <p>
+	 * Magnitude is a single value that has been measured at this point. For
+	 * instance density, depth, color, or temperature. The particular meaning of
+	 * magnitude is not defined and it can be anything with a numerical value.
+	 *
+	 * <p>
+	 * Magnitude isn't actually a very good way to store this information but it
+	 * is used sometimes.
+	 *
+	 * <p>
+	 * This value will be null if the actual value is null OR if the spatial type
+	 * does not support magnitudes.
+	 *
+	 * @return a NumberExpression for the magnitude value of this spatial value.
+	 */
+	NumberExpression magnitude();
+
+	/**
+	 * Transform the value into the Well Known Text (WKT) format.
+	 *
+	 * @return an expression that converts the geometry into the WKT format.
+	 */
+	StringExpression toWKTFormat();
 
 }
