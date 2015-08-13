@@ -137,6 +137,11 @@ public class Point2DExpression implements Point2DResult, EqualComparable<Point2D
 		return nullProtectionRequired;
 	}
 
+	@Override
+	public StringExpression toWKTFormat(){
+		return stringResult();
+	}
+
 	public StringExpression stringResult() {
 		return new StringExpression(new PointFunctionWithStringResult(this) {
 

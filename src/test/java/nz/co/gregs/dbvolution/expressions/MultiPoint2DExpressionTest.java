@@ -89,6 +89,7 @@ public class MultiPoint2DExpressionTest extends AbstractTest {
 		List<MultiPoint2DTestTable> allRows = dbQuery.getAllInstancesOf(pointTestTable);
 		Assert.assertThat(allRows.size(), is(1));
 		Assert.assertThat(allRows.get(0).line_id.intValue(), is(1));
+		Assert.assertThat(allRows.get(0).multipoint.jtsMultiPointValue(), is(point));
 	}
 
 	@Test

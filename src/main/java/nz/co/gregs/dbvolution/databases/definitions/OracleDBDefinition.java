@@ -15,19 +15,10 @@
  */
 package nz.co.gregs.dbvolution.databases.definitions;
 
-import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.GeometryFactory;
-import com.vividsolutions.jts.geom.LineSegment;
-import com.vividsolutions.jts.geom.LineString;
-import com.vividsolutions.jts.geom.MultiPoint;
-import com.vividsolutions.jts.geom.Point;
-import com.vividsolutions.jts.geom.Polygon;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
-import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.datatypes.DBBoolean;
 import nz.co.gregs.dbvolution.datatypes.DBBooleanArray;
 import nz.co.gregs.dbvolution.datatypes.DBDate;
@@ -35,6 +26,8 @@ import nz.co.gregs.dbvolution.datatypes.DBJavaObject;
 import nz.co.gregs.dbvolution.datatypes.DBString;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 import nz.co.gregs.dbvolution.datatypes.spatial2D.DBLine2D;
+import nz.co.gregs.dbvolution.datatypes.spatial2D.DBLineSegment2D;
+import nz.co.gregs.dbvolution.datatypes.spatial2D.DBMultiPoint2D;
 import nz.co.gregs.dbvolution.datatypes.spatial2D.DBPoint2D;
 import nz.co.gregs.dbvolution.datatypes.spatial2D.DBPolygon2D;
 import nz.co.gregs.dbvolution.expressions.BooleanExpression;
@@ -107,17 +100,11 @@ public class OracleDBDefinition extends DBDefinition {
 			return " BLOB ";
 		} else if (qdt instanceof DBBooleanArray) {
 			return " VARCHAR(64) ";
-//		} else if (qdt instanceof DBPoint2D) {
-//			return " SDO_GEOMETRY ";
-//		} else if (qdt instanceof DBLine2D) {
-//			return " SDO_GEOMETRY ";
-//		} else if (qdt instanceof DBPolygon2D) {
-//			return " SDO_GEOMETRY ";
 		} else {
 			return super.getSQLTypeOfDBDatatype(qdt);
 		}
-	}
-
+	}	
+	
 	@Override
 	public boolean supportsArraysNatively() {
 		return false;

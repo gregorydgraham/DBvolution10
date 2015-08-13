@@ -70,6 +70,11 @@ public class Polygon2DExpression implements Polygon2DResult, EqualComparable<Pol
 	}
 
 	@Override
+	public StringExpression toWKTFormat(){
+		return stringResult();
+	}
+
+	@Override
 	public String toSQLString(DBDatabase db) {
 		if (innerGeometry == null) {
 			return db.getDefinition().getNull();

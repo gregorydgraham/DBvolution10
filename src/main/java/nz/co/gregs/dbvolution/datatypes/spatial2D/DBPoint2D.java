@@ -27,6 +27,7 @@ import nz.co.gregs.dbvolution.exceptions.IncorrectGeometryReturnedForDatatype;
 import nz.co.gregs.dbvolution.exceptions.ParsingSpatialValueException;
 import nz.co.gregs.dbvolution.expressions.BooleanExpression;
 import nz.co.gregs.dbvolution.expressions.NumberExpression;
+import nz.co.gregs.dbvolution.expressions.StringExpression;
 import nz.co.gregs.dbvolution.results.Point2DResult;
 
 /**
@@ -177,6 +178,11 @@ public class DBPoint2D extends QueryableDatatype implements Point2DResult {
 	@Override
 	public NumberExpression magnitude() {
 		return NumberExpression.value((Number)null);
+	}
+
+	@Override
+	public StringExpression toWKTFormat(){
+		return StringExpression.value(jtsPointValue().toText());
 	}
 
 }

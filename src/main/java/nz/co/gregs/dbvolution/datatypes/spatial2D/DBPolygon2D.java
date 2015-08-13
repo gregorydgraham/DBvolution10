@@ -26,6 +26,7 @@ import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 import nz.co.gregs.dbvolution.expressions.BooleanExpression;
 import nz.co.gregs.dbvolution.expressions.NumberExpression;
+import nz.co.gregs.dbvolution.expressions.StringExpression;
 import nz.co.gregs.dbvolution.results.Polygon2DResult;
 
 /**
@@ -168,5 +169,10 @@ public class DBPolygon2D extends QueryableDatatype implements TransformRequiredF
 	@Override
 	public NumberExpression magnitude() {
 		return NumberExpression.value((Number)null);
+	}
+	
+	@Override
+	public StringExpression toWKTFormat(){
+		return StringExpression.value(jtsPolygonValue().toText());
 	}
 }

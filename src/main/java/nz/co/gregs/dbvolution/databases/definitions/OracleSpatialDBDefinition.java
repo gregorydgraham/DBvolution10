@@ -25,6 +25,12 @@ import java.util.ArrayList;
 import java.util.List;
 import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
+import nz.co.gregs.dbvolution.datatypes.spatial2D.DBLineSegment2D;
+import nz.co.gregs.dbvolution.datatypes.spatial2D.DBMultiPoint2D;
+import nz.co.gregs.dbvolution.datatypes.spatial2D.DBPoint2D;
+import nz.co.gregs.dbvolution.datatypes.spatial2D.DBPolygon2D;
+import nz.co.gregs.dbvolution.expressions.DBExpression;
+import nz.co.gregs.dbvolution.expressions.SpatialResult;
 import nz.co.gregs.dbvolution.results.Spatial2DResult;
 
 /**
@@ -47,6 +53,21 @@ public class OracleSpatialDBDefinition extends OracleDBDefinition {
 //			return " SDO_GEOMETRY ";
 		} else {
 			return super.getSQLTypeOfDBDatatype(qdt);
+		}
+	}	
+	
+	@Override
+	public Object doColumnTransformForSelect(QueryableDatatype qdt, String selectableName) {
+		if (qdt instanceof DBPolygon2D) {
+			return doPolygon2DAsTextTransform(selectableName);
+		} else if (qdt instanceof DBPoint2D) {
+			return doPoint2DAsTextTransform(selectableName);
+		} else if (qdt instanceof DBLineSegment2D) {
+			return doLineSegment2DAsTextTransform(selectableName);
+		} else if (qdt instanceof DBMultiPoint2D) {
+			return doMultiPoint2DAsTextTransform(selectableName);
+		} else {
+			return selectableName;
 		}
 	}
 
@@ -345,7 +366,8 @@ public class OracleSpatialDBDefinition extends OracleDBDefinition {
 	}
 
 	/**
-	 * Provide the SQL to get the point at the supplied index within the MultiPoint2D
+	 * Provide the SQL to get the point at the supplied index within the
+	 * MultiPoint2D
 	 *
 	 * @param first
 	 * @param index
@@ -353,11 +375,11 @@ public class OracleSpatialDBDefinition extends OracleDBDefinition {
 	 */
 	@Override
 	public String doMultiPoint2DGetPointAtIndexTransform(String first, String index) {
-		return "(" + first + ").SDO_ORDINATES("+index+")";
+		return "(" + first + ").SDO_ORDINATES(" + index + ")";
 	}
 
 	/**
-	 * Provides the SQL to  derive the number of points in the MultiPoint2D value.
+	 * Provides the SQL to derive the number of points in the MultiPoint2D value.
 	 *
 	 * @param multiPoint2D
 	 * @return SQL

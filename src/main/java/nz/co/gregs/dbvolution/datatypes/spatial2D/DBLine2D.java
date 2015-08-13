@@ -32,6 +32,7 @@ import nz.co.gregs.dbvolution.exceptions.ParsingSpatialValueException;
 import nz.co.gregs.dbvolution.expressions.BooleanExpression;
 import nz.co.gregs.dbvolution.expressions.MultiPoint2DExpression;
 import nz.co.gregs.dbvolution.expressions.NumberExpression;
+import nz.co.gregs.dbvolution.expressions.StringExpression;
 import nz.co.gregs.dbvolution.results.Line2DResult;
 import nz.co.gregs.dbvolution.results.MultiPoint2DResult;
 
@@ -243,6 +244,11 @@ public class DBLine2D extends QueryableDatatype implements Line2DResult {
 	@Override
 	public NumberExpression magnitude() {
 		return NumberExpression.value((Number)null);
+	}
+
+	@Override
+	public StringExpression toWKTFormat(){
+		return StringExpression.value(jtsLineStringValue().toText());
 	}
 
 }

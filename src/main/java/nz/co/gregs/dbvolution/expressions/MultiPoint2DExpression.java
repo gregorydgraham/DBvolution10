@@ -135,6 +135,11 @@ public class MultiPoint2DExpression implements MultiPoint2DResult, EqualComparab
 	public boolean getIncludesNull() {
 		return nullProtectionRequired;
 	}
+	
+	@Override
+	public StringExpression toWKTFormat(){
+		return stringResult();
+	}
 
 	public StringExpression stringResult() {
 		return new StringExpression(new MultiPointFunctionWithStringResult(this) {

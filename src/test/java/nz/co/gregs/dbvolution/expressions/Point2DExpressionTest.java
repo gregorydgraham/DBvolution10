@@ -82,6 +82,7 @@ public class Point2DExpressionTest extends AbstractTest {
 		List<PointTestTable> allRows = dbQuery.getAllInstancesOf(pointTestTable);
 		Assert.assertThat(allRows.size(), is(1));
 		Assert.assertThat(allRows.get(0).point_id.intValue(), is(1));
+		Assert.assertThat(allRows.get(0).point.jtsPointValue(), is(point));
 	}
 
 	@Test

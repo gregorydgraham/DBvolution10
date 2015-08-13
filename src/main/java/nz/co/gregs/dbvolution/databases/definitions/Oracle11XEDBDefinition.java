@@ -15,12 +15,14 @@
  */
 package nz.co.gregs.dbvolution.databases.definitions;
 
+import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.MultiPoint;
 import com.vividsolutions.jts.io.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.databases.Oracle11XEDB;
+import nz.co.gregs.dbvolution.expressions.DBExpression;
 import nz.co.gregs.dbvolution.internal.oracle.xe.GeometryFunctions;
 import nz.co.gregs.dbvolution.query.QueryOptions;
 
@@ -46,10 +48,6 @@ public class Oracle11XEDBDefinition extends OracleSpatialDBDefinition {
 		return "";
 	}
 
-//	@Override
-//	public boolean supportsPagingNatively(QueryOptions options) {
-//		return true;
-//	}
 	@Override
 	public String getColumnAutoIncrementSuffix() {
 		return "";
@@ -62,19 +60,6 @@ public class Oracle11XEDBDefinition extends OracleSpatialDBDefinition {
 
 	@Override
 	public List<String> getTriggerBasedIdentitySQL(DBDatabase DB, String table, String column) {
-//		    CREATE SEQUENCE dept_seq;
-//
-//Create a trigger to populate the ID column if it's not specified in the insert.
-//
-//    CREATE OR REPLACE TRIGGER dept_bir 
-//    BEFORE INSERT ON departments 
-//    FOR EACH ROW
-//    WHEN (new.id IS NULL)
-//    BEGIN
-//      SELECT dept_seq.NEXTVAL
-//      INTO   :new.id
-//      FROM   dual;
-//    END;
 
 		List<String> result = new ArrayList<String>();
 		String sequenceName = getPrimaryKeySequenceName(table, column);
@@ -94,21 +79,7 @@ public class Oracle11XEDBDefinition extends OracleSpatialDBDefinition {
 
 		return result;
 	}
-
-//	@Override
-//	public String getStringLengthFunctionName() {
-//		return "LENGTH";
-//	}
-//
-//	@Override
-//	public String doSubstringTransform(String originalString, String start, String length) {
-//		return " SUBSTR("
-//				+ originalString
-//				+ ", "
-//				+ start
-//				+ (length.trim().isEmpty() ? "" : ", " + length)
-//				+ ") ";
-//	}
+	
 	@Override
 	public String doPoint2DGetBoundingBoxTransform(String point2DSQL) {
 		throw new UnsupportedOperationException("Bounding Box is an unsupported operation in Oracle11 XE.");
@@ -166,6 +137,7 @@ public class Oracle11XEDBDefinition extends OracleSpatialDBDefinition {
 				}
 		);
 	}
+
 	@Override
 	public String doLineSegment2DGetMaxYTransform(final String lineSegment) {
 		return doGreatestOfTransformation(
@@ -177,6 +149,7 @@ public class Oracle11XEDBDefinition extends OracleSpatialDBDefinition {
 				}
 		);
 	}
+
 	@Override
 	public String doLineSegment2DGetMinYTransform(final String lineSegment) {
 		return doLeastOfTransformation(
@@ -250,8 +223,22 @@ public class Oracle11XEDBDefinition extends OracleSpatialDBDefinition {
 	}
 
 	@Override
-	public String transformMultiPoint2DToDatabaseMultiPoint2DValue(MultiPoint point) {
-		return super.transformMultiPoint2DToDatabaseMultiPoint2DValue(point); //To change body of generated methods, choose Tools | Templates.
+	public String transformMultiPoint2DToDatabaseMultiPoint2DValue(MultiPoint mpoint) {
+		StringBuilder ordinateArray = new StringBuilder("MDSYS.SDO_ORDINATE_ARRAY(");
+		final String ordinateSep = ", ";
+		String pairSep = "";
+		for (Coordinate coordinate : mpoint.getCoordinates()) {
+			ordinateArray.append(pairSep).append(coordinate.x).append(ordinateSep).append(coordinate.y);
+			pairSep = ", ";
+		}
+		//+ lineSegment.p0.x + ", " + lineSegment.p0.y + ", " + lineSegment.p1.x + ", " + lineSegment.p1.y 
+		ordinateArray.append(")");
+		return "MDSYS.SDO_GEOMETRY(2005, NULL, NULL,"
+				+ "MDSYS.SDO_ELEM_INFO_ARRAY(1,1," + mpoint.getNumPoints() + "),"
+				+ ordinateArray
+				+ ")";
+
+//		return super.transformMultiPoint2DToDatabaseMultiPoint2DValue(point); //To change body of generated methods, choose Tools | Templates.
 	}
 
 	@Override

@@ -28,6 +28,7 @@ import nz.co.gregs.dbvolution.exceptions.IncorrectGeometryReturnedForDatatype;
 import nz.co.gregs.dbvolution.exceptions.ParsingSpatialValueException;
 import nz.co.gregs.dbvolution.expressions.BooleanExpression;
 import nz.co.gregs.dbvolution.expressions.NumberExpression;
+import nz.co.gregs.dbvolution.expressions.StringExpression;
 import nz.co.gregs.dbvolution.results.LineSegment2DResult;
 
 /**
@@ -221,6 +222,11 @@ public class DBLineSegment2D extends QueryableDatatype implements LineSegment2DR
 	@Override
 	public NumberExpression magnitude() {
 		return NumberExpression.value((Number)null);
+	}
+
+	@Override
+	public StringExpression toWKTFormat(){
+		return StringExpression.value(jtsLineSegmentValue().toString());
 	}
 
 }

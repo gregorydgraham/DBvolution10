@@ -90,5 +90,12 @@ public interface SpatialResult {
 	 * @return a NumberExpression for the magnitude value of this spatial value.
 	 */
 	NumberExpression magnitude();
+	
+	/**
+	 * Transform the value into the Well Known Text (WKT) format.
+	 *
+	 * @return an expression that converts the geometry into the WKT format.
+	 */
+	StringExpression toWKTFormat();
 
 }

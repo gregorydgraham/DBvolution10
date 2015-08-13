@@ -229,6 +229,11 @@ public class LineSegment2DExpression implements LineSegment2DResult, EqualCompar
 	public boolean getIncludesNull() {
 		return nullProtectionRequired;
 	}
+	
+	@Override
+	public StringExpression toWKTFormat(){
+		return stringResult();
+	}
 
 	public StringExpression stringResult() {
 		return new StringExpression(new LineSegmentWithStringResult(this) {

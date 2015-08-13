@@ -96,6 +96,7 @@ public class LineSegment2DExpressionTest  extends AbstractTest {
 		List<LineSegmentTestTable> allRows = dbQuery.getAllInstancesOf(pointTestTable);
 		Assert.assertThat(allRows.size(), is(1));
 		Assert.assertThat(allRows.get(0).line_id.intValue(), is(1));
+		Assert.assertThat(allRows.get(0).line.jtsLineSegmentValue(), is(lineSegment));
 	}
 
 	@Test

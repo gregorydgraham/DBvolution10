@@ -167,6 +167,11 @@ public class Line2DExpression implements Line2DResult, EqualComparable<Line2DRes
 	public static Line2DExpression value(MultiPoint2DResult multipoint2DExpression) {
 		return new Line2DExpression(multipoint2DExpression);
 	}
+	
+	@Override
+	public StringExpression toWKTFormat(){
+		return stringResult();
+	}
 
 	@Override
 	public DBLine2D getQueryableDatatypeForExpressionValue() {
