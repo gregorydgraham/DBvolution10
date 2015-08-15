@@ -87,9 +87,9 @@ public enum GeometryFunctions {
 "             END;\n" +
 "END;\n");
 
-	private final String returnType;
-	private final String parameters;
-	private final String code;
+	final String returnType;
+	final String parameters;
+	final String code;
 
 	GeometryFunctions(String returnType, String parameters, String code) {
 		this.returnType = returnType;

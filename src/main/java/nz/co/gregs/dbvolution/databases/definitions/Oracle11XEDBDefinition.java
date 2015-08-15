@@ -22,8 +22,8 @@ import java.util.ArrayList;
 import java.util.List;
 import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.databases.Oracle11XEDB;
-import nz.co.gregs.dbvolution.expressions.DBExpression;
 import nz.co.gregs.dbvolution.internal.oracle.xe.GeometryFunctions;
+import nz.co.gregs.dbvolution.internal.oracle.xe.MultiPoint2DFunctions;
 import nz.co.gregs.dbvolution.query.QueryOptions;
 
 /**
@@ -189,7 +189,7 @@ public class Oracle11XEDBDefinition extends OracleSpatialDBDefinition {
 
 	@Override
 	public String doMultiPoint2DAsTextTransform(String multiPoint2D) {
-		return super.doMultiPoint2DAsTextTransform(multiPoint2D); //To change body of generated methods, choose Tools | Templates.
+		return nz.co.gregs.dbvolution.internal.oracle.xe.MultiPoint2DFunctions.ASTEXT+"("+multiPoint2D+")";
 	}
 
 	@Override
@@ -204,12 +204,12 @@ public class Oracle11XEDBDefinition extends OracleSpatialDBDefinition {
 
 	@Override
 	public String doMultiPoint2DGetNumberOfPointsTransform(String multiPoint2D) {
-		return super.doMultiPoint2DGetNumberOfPointsTransform(multiPoint2D); //To change body of generated methods, choose Tools | Templates.
+		return MultiPoint2DFunctions.NUMPOINTS+"("+multiPoint2D+")";
 	}
 
 	@Override
 	public String doMultiPoint2DGetPointAtIndexTransform(String first, String index) {
-		return super.doMultiPoint2DGetPointAtIndexTransform(first, index); //To change body of generated methods, choose Tools | Templates.
+		return MultiPoint2DFunctions.GETPOINTATINDEX+"("+first+", "+index+")";
 	}
 
 	@Override

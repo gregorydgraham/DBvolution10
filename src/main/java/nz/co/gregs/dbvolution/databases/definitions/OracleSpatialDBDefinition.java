@@ -29,8 +29,6 @@ import nz.co.gregs.dbvolution.datatypes.spatial2D.DBLineSegment2D;
 import nz.co.gregs.dbvolution.datatypes.spatial2D.DBMultiPoint2D;
 import nz.co.gregs.dbvolution.datatypes.spatial2D.DBPoint2D;
 import nz.co.gregs.dbvolution.datatypes.spatial2D.DBPolygon2D;
-import nz.co.gregs.dbvolution.expressions.DBExpression;
-import nz.co.gregs.dbvolution.expressions.SpatialResult;
 import nz.co.gregs.dbvolution.results.Spatial2DResult;
 
 /**
@@ -386,7 +384,7 @@ public class OracleSpatialDBDefinition extends OracleDBDefinition {
 	 */
 	@Override
 	public String doMultiPoint2DGetNumberOfPointsTransform(String multiPoint2D) {
-		return "(" + multiPoint2D + ".SDO_ORDINATES.count";
+		return "(" + multiPoint2D + ").SDO_ORDINATES.count";
 	}
 
 	/**
