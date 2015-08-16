@@ -198,7 +198,7 @@ public class Oracle11XEDBDefinition extends OracleSpatialDBDefinition {
 
 	@Override
 	public String doMultiPoint2DGetBoundingBoxTransform(String multiPoint2D) {
-		return super.doMultiPoint2DGetBoundingBoxTransform(multiPoint2D); //To change body of generated methods, choose Tools | Templates.
+		throw new UnsupportedOperationException("Not supported yet.");
 	}
 
 	@Override
@@ -262,27 +262,75 @@ public class Oracle11XEDBDefinition extends OracleSpatialDBDefinition {
 
 	@Override
 	public String transformLineSegmentIntoDatabaseLineSegment2DFormat(LineSegment lineSegment) {
-		return super.transformLineSegmentIntoDatabaseLineSegment2DFormat(lineSegment); //To change body of generated methods, choose Tools | Templates.
+		return super.transformLineSegmentIntoDatabaseLineSegment2DFormat(lineSegment);
 	}
 
 	@Override
-	public String transformPolygonIntoDatabasePolygon2DFormat(Polygon point) {
-		return super.transformPolygonIntoDatabasePolygon2DFormat(point); //To change body of generated methods, choose Tools | Templates.
+	public String transformPolygonIntoDatabasePolygon2DFormat(Polygon polygon) {
+		StringBuilder ordinateArray = new StringBuilder("MDSYS.SDO_ORDINATE_ARRAY(");
+		final String ordinateSep = ", ";
+		String pairSep = "";
+		for (Coordinate coordinate : polygon.getCoordinates()) {
+			ordinateArray.append(pairSep).append(coordinate.x).append(ordinateSep).append(coordinate.y);
+			pairSep = ", ";
+		}
+		//+ lineSegment.p0.x + ", " + lineSegment.p0.y + ", " + lineSegment.p1.x + ", " + lineSegment.p1.y 
+		ordinateArray.append(")");
+		return "MDSYS.SDO_GEOMETRY(2003, NULL, NULL,"
+				+ "MDSYS.SDO_ELEM_INFO_ARRAY(1,1," + polygon.getNumPoints() + "),"
+				+ ordinateArray
+				+ ")";
+//		return super.transformPolygonIntoDatabasePolygon2DFormat(point);
 	}
 
 	@Override
-	public String transformLineStringIntoDatabaseLine2DFormat(LineString point) {
-		return super.transformLineStringIntoDatabaseLine2DFormat(point); //To change body of generated methods, choose Tools | Templates.
+	public String transformLineStringIntoDatabaseLine2DFormat(LineString lineString) {
+		StringBuilder ordinateArray = new StringBuilder("MDSYS.SDO_ORDINATE_ARRAY(");
+		final String ordinateSep = ", ";
+		String pairSep = "";
+		for (Coordinate coordinate : lineString.getCoordinates()) {
+			ordinateArray.append(pairSep).append(coordinate.x).append(ordinateSep).append(coordinate.y);
+			pairSep = ", ";
+		}
+		//+ lineSegment.p0.x + ", " + lineSegment.p0.y + ", " + lineSegment.p1.x + ", " + lineSegment.p1.y 
+		ordinateArray.append(")");
+		return "MDSYS.SDO_GEOMETRY(2002, NULL, NULL,"
+				+ "MDSYS.SDO_ELEM_INFO_ARRAY(1,1," + lineString.getNumPoints() + "),"
+				+ ordinateArray
+				+ ")";
+		//return super.transformLineStringIntoDatabaseLine2DFormat(point);
 	}
 
 	@Override
 	public String transformCoordinatesIntoDatabasePoint2DFormat(String xValue, String yValue) {
-		return super.transformCoordinatesIntoDatabasePoint2DFormat(xValue, yValue); //To change body of generated methods, choose Tools | Templates.
+		return super.transformCoordinatesIntoDatabasePoint2DFormat(xValue, yValue);
 	}
 
 	@Override
 	public String transformPoint2DIntoDatabaseFormat(Point point) {
-		return super.transformPoint2DIntoDatabaseFormat(point); //To change body of generated methods, choose Tools | Templates.
+		return super.transformPoint2DIntoDatabaseFormat(point);
 	}
+
+	@Override
+	public String doPoint2DArrayToPolygon2DTransform(List<String> pointSQL) {
+		StringBuilder ordinateArray = new StringBuilder("MDSYS.SDO_ORDINATE_ARRAY(");
+		final String ordinateSep = ", ";
+		String pairSep = "";
+		for (String pointish : pointSQL) {
+			ordinateArray
+					.append(pairSep)
+					.append(doPoint2DGetXTransform(pointish))
+					.append(ordinateSep)
+					.append(doPoint2DGetYTransform(pointish));
+			pairSep = ", ";
+		}
+		//+ lineSegment.p0.x + ", " + lineSegment.p0.y + ", " + lineSegment.p1.x + ", " + lineSegment.p1.y 
+		ordinateArray.append(")");
+		return "MDSYS.SDO_GEOMETRY(2003, NULL, NULL,"
+				+ "MDSYS.SDO_ELEM_INFO_ARRAY(1,1," + pointSQL.size()+ "),"
+				+ ordinateArray
+				+ ")";
+	}
+
 
 }

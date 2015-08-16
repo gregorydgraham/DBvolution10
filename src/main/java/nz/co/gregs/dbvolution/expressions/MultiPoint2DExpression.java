@@ -313,7 +313,22 @@ public class MultiPoint2DExpression implements MultiPoint2DResult, EqualComparab
 
 			@Override
 			public String doExpressionTransform(DBDatabase db) {
-				return db.getDefinition().doMultiPoint2DGetBoundingBoxTransform(getFirst().toSQLString(db));
+				try{
+					return db.getDefinition().doMultiPoint2DGetBoundingBoxTransform(getFirst().toSQLString(db));
+				}catch(UnsupportedOperationException exp){
+					final MultiPoint2DExpression first = getFirst();
+					final NumberExpression maxX = first.getMaxX();
+					final NumberExpression maxY = first.getMaxY();
+					final NumberExpression minX = first.getMinX();
+					final NumberExpression minY = first.getMinY();
+					return Polygon2DExpression.value(
+							Point2DExpression.value(minX, minY),
+							Point2DExpression.value(maxX, minY),
+							Point2DExpression.value(maxX, maxY),
+							Point2DExpression.value(minX, maxY),
+							Point2DExpression.value(minX, minY))
+							.toSQLString(db);
+				}
 			}
 		});
 	}
