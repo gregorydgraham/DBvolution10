@@ -16,7 +16,11 @@
 package nz.co.gregs.dbvolution.databases.definitions;
 
 import com.vividsolutions.jts.geom.Coordinate;
+import com.vividsolutions.jts.geom.LineSegment;
+import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.MultiPoint;
+import com.vividsolutions.jts.geom.Point;
+import com.vividsolutions.jts.geom.Polygon;
 import com.vividsolutions.jts.io.ParseException;
 import java.util.ArrayList;
 import java.util.List;
@@ -184,12 +188,12 @@ public class Oracle11XEDBDefinition extends OracleSpatialDBDefinition {
 
 	@Override
 	public String doMultiPoint2DToLine2DTransform(String multiPoint2D) {
-		return super.doMultiPoint2DToLine2DTransform(multiPoint2D); //To change body of generated methods, choose Tools | Templates.
+		return MultiPoint2DFunctions.ASLINE2D+"("+multiPoint2D+")";
 	}
 
 	@Override
 	public String doMultiPoint2DAsTextTransform(String multiPoint2D) {
-		return nz.co.gregs.dbvolution.internal.oracle.xe.MultiPoint2DFunctions.ASTEXT+"("+multiPoint2D+")";
+		return nz.co.gregs.dbvolution.internal.oracle.xe.GeometryFunctions.ASTEXT+"("+multiPoint2D+")";
 	}
 
 	@Override
@@ -244,6 +248,41 @@ public class Oracle11XEDBDefinition extends OracleSpatialDBDefinition {
 	@Override
 	public MultiPoint transformDatabaseMultiPoint2DValueToJTSMultiPoint(String pointsAsString) throws ParseException {
 		return super.transformDatabaseMultiPoint2DValueToJTSMultiPoint(pointsAsString); //To change body of generated methods, choose Tools | Templates.
+	}
+
+	@Override
+	public String doPolygon2DAsTextTransform(String polygonSQL) {
+		return nz.co.gregs.dbvolution.internal.oracle.xe.GeometryFunctions.ASTEXT+"("+polygonSQL+")";
+	}
+
+	@Override
+	public String doLine2DAsTextTransform(String line2DSQL) {
+		return nz.co.gregs.dbvolution.internal.oracle.xe.GeometryFunctions.ASTEXT+"("+line2DSQL+")";
+	}
+
+	@Override
+	public String transformLineSegmentIntoDatabaseLineSegment2DFormat(LineSegment lineSegment) {
+		return super.transformLineSegmentIntoDatabaseLineSegment2DFormat(lineSegment); //To change body of generated methods, choose Tools | Templates.
+	}
+
+	@Override
+	public String transformPolygonIntoDatabasePolygon2DFormat(Polygon point) {
+		return super.transformPolygonIntoDatabasePolygon2DFormat(point); //To change body of generated methods, choose Tools | Templates.
+	}
+
+	@Override
+	public String transformLineStringIntoDatabaseLine2DFormat(LineString point) {
+		return super.transformLineStringIntoDatabaseLine2DFormat(point); //To change body of generated methods, choose Tools | Templates.
+	}
+
+	@Override
+	public String transformCoordinatesIntoDatabasePoint2DFormat(String xValue, String yValue) {
+		return super.transformCoordinatesIntoDatabasePoint2DFormat(xValue, yValue); //To change body of generated methods, choose Tools | Templates.
+	}
+
+	@Override
+	public String transformPoint2DIntoDatabaseFormat(Point point) {
+		return super.transformPoint2DIntoDatabaseFormat(point); //To change body of generated methods, choose Tools | Templates.
 	}
 
 }
