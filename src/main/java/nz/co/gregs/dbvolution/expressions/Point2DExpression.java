@@ -313,15 +313,27 @@ public class Point2DExpression implements Point2DResult, EqualComparable<Point2D
 				try {
 					return db.getDefinition().doPoint2DGetBoundingBoxTransform(getFirst().toSQLString(db));
 				} catch (UnsupportedOperationException unsupported) {
-					final StringExpression coordinates = getFirst().stringResult().substringBetween("(", ")");
-					return StringExpression.value("POLYGON((")
-							.append(coordinates)
-							.append(",").append(coordinates)
-							.append(",").append(coordinates)
-							.append(",").append(coordinates)
-							.append(",").append(coordinates)
-							.append("))")
+					final Point2DExpression first = getFirst();
+					final NumberExpression maxX = first.getMaxX();
+					final NumberExpression maxY = first.getMaxY();
+					final NumberExpression minX = first.getMinX();
+					final NumberExpression minY = first.getMinY();
+					return Polygon2DExpression.value(
+							Point2DExpression.value(minX, minY),
+							Point2DExpression.value(maxX, minY),
+							Point2DExpression.value(maxX, maxY),
+							Point2DExpression.value(minX, maxY),
+							Point2DExpression.value(minX, minY))
 							.toSQLString(db);
+//					final StringExpression coordinates = getFirst().stringResult().substringBetween("(", ")");
+//					return StringExpression.value("POLYGON((")
+//							.append(coordinates)
+//							.append(",").append(coordinates)
+//							.append(",").append(coordinates)
+//							.append(",").append(coordinates)
+//							.append(",").append(coordinates)
+//							.append("))")
+//							.toSQLString(db);
 				}
 			}
 		});
