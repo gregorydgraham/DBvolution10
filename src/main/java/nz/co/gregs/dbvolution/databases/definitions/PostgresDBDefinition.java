@@ -556,7 +556,6 @@ public class PostgresDBDefinition extends DBDefinition {
 			}
 			i++;
 		}
-//		coords.add(firstCoord);
 		if (coords.size()==1){
 			coords.add(firstCoord);
 			coords.add(firstCoord);
@@ -588,7 +587,6 @@ public class PostgresDBDefinition extends DBDefinition {
 				}
 				i++;
 			}
-			coords.add(firstCoord);
 			final GeometryFactory geometryFactory = new GeometryFactory();
 			lineString = geometryFactory.createLineString(coords.toArray(new Coordinate[]{}));
 		} else {
