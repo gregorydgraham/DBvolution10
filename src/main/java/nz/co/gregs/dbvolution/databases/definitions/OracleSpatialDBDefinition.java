@@ -25,6 +25,7 @@ import java.util.ArrayList;
 import java.util.List;
 import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
+import nz.co.gregs.dbvolution.datatypes.spatial2D.DBLine2D;
 import nz.co.gregs.dbvolution.datatypes.spatial2D.DBLineSegment2D;
 import nz.co.gregs.dbvolution.datatypes.spatial2D.DBMultiPoint2D;
 import nz.co.gregs.dbvolution.datatypes.spatial2D.DBPoint2D;
@@ -58,6 +59,8 @@ public class OracleSpatialDBDefinition extends OracleDBDefinition {
 	public Object doColumnTransformForSelect(QueryableDatatype qdt, String selectableName) {
 		if (qdt instanceof DBPolygon2D) {
 			return doPolygon2DAsTextTransform(selectableName);
+		} else if (qdt instanceof DBLine2D) {
+			return doLine2DAsTextTransform(selectableName);
 		} else if (qdt instanceof DBPoint2D) {
 			return doPoint2DAsTextTransform(selectableName);
 		} else if (qdt instanceof DBLineSegment2D) {
@@ -150,9 +153,24 @@ public class OracleSpatialDBDefinition extends OracleDBDefinition {
 
 	@Override
 	public String doPoint2DArrayToPolygon2DTransform(List<String> pointSQL) {
-		return super.doPoint2DArrayToPolygon2DTransform(pointSQL); //To change body of generated methods, choose Tools | Templates.
+		StringBuilder ordinateArray = new StringBuilder("MDSYS.SDO_ORDINATE_ARRAY(");
+		final String ordinateSep = ", ";
+		String pairSep = "";
+		for (String pointish : pointSQL) {
+			ordinateArray
+					.append(pairSep)
+					.append(doPoint2DGetXTransform(pointish))
+					.append(ordinateSep)
+					.append(doPoint2DGetYTransform(pointish));
+			pairSep = ", ";
+		}
+		//+ lineSegment.p0.x + ", " + lineSegment.p0.y + ", " + lineSegment.p1.x + ", " + lineSegment.p1.y 
+		ordinateArray.append(")");
+		return "MDSYS.SDO_GEOMETRY(2003, NULL, NULL,"
+				+ "MDSYS.SDO_ELEM_INFO_ARRAY(1,1," + pointSQL.size()+ "),"
+				+ ordinateArray
+				+ ")";
 	}
-
 	@Override
 	public String doPoint2DAsTextTransform(String point2DSQL) {
 		return "TO_CHAR(SDO_UTIL.TO_WKTGEOMETRY(" + point2DSQL + "))";
@@ -495,6 +513,93 @@ public class OracleSpatialDBDefinition extends OracleDBDefinition {
 				+ "						MDSYS.SDO_DIM_ELEMENT('X', -9999999999, 9999999999, 0.0000000001),\n"
 				+ "					           MDSYS.SDO_DIM_ELEMENT('Y', -9999999999, 9999999999, 0.0000000001)\n"
 				+ "						), 1)";
+	}
+
+	@Override
+	public String doLine2DGetMagnitudeTransform(String line2DSQL) {
+		return super.doLine2DGetMagnitudeTransform(line2DSQL); //To change body of generated methods, choose Tools | Templates.
+	}
+
+	@Override
+	public String doLine2DHasMagnitudeTransform(String line2DSQL) {
+		return super.doLine2DHasMagnitudeTransform(line2DSQL); //To change body of generated methods, choose Tools | Templates.
+	}
+
+	@Override
+	public String doLine2DSpatialDimensionsTransform(String line2DSQL) {
+		return "(" + line2DSQL + ").GET_DIMS()";
+	}
+
+	@Override
+	public String doLine2DAllIntersectionPointsWithLine2DTransform(String firstGeometry, String secondGeometry) {
+		return super.doLine2DAllIntersectionPointsWithLine2DTransform(firstGeometry, secondGeometry); //To change body of generated methods, choose Tools | Templates.
+	}
+
+	@Override
+	public String doLine2DIntersectionPointWithLine2DTransform(String firstLine, String secondLine) {
+		return "SDO_GEOM.SDO_INTERSECTION(" + firstLine + ", " + firstLine + ", 0.0000005)";
+	}
+
+	@Override
+	public String doLine2DIntersectsLine2DTransform(String firstLine, String secondLine) {
+		return "SDO_GEOM.RELATE(" + firstLine + ", 'ANYINTERACT', " + secondLine + ", 0.0000005)='TRUE'";
+	}
+
+	@Override
+	public String doLine2DGetMinYTransform(String line2DSQL) {
+		return "SDO_GEOM.SDO_MIN_MBR_ORDINATE(" + line2DSQL + ", MDSYS.SDO_DIM_ARRAY(\n"
+				+ "						MDSYS.SDO_DIM_ELEMENT('X', -9999999999, 9999999999, 0.0000000001),\n"
+				+ "					           MDSYS.SDO_DIM_ELEMENT('Y', -9999999999, 9999999999, 0.0000000001)\n"
+				+ "						), 2)";
+	}
+
+	@Override
+	public String doLine2DGetMaxYTransform(String line2DSQL) {
+		return "SDO_GEOM.SDO_MAX_MBR_ORDINATE(" + line2DSQL + ", MDSYS.SDO_DIM_ARRAY(\n"
+				+ "						MDSYS.SDO_DIM_ELEMENT('X', -9999999999, 9999999999, 0.0000000001),\n"
+				+ "					           MDSYS.SDO_DIM_ELEMENT('Y', -9999999999, 9999999999, 0.0000000001)\n"
+				+ "						), 2)";
+	}
+
+	@Override
+	public String doLine2DGetMinXTransform(String line2DSQL) {
+		return "SDO_GEOM.SDO_MIN_MBR_ORDINATE(" + line2DSQL + ", MDSYS.SDO_DIM_ARRAY(\n"
+				+ "						MDSYS.SDO_DIM_ELEMENT('X', -9999999999, 9999999999, 0.0000000001),\n"
+				+ "					           MDSYS.SDO_DIM_ELEMENT('Y', -9999999999, 9999999999, 0.0000000001)\n"
+				+ "						), 1)";
+	}
+
+	@Override
+	public String doLine2DGetMaxXTransform(String line2DSQL) {
+		return "SDO_GEOM.SDO_MAX_MBR_ORDINATE(" + line2DSQL + ", MDSYS.SDO_DIM_ARRAY(\n"
+				+ "						MDSYS.SDO_DIM_ELEMENT('X', -9999999999, 9999999999, 0.0000000001),\n"
+				+ "					           MDSYS.SDO_DIM_ELEMENT('Y', -9999999999, 9999999999, 0.0000000001)\n"
+				+ "						), 1)";
+	}
+
+	@Override
+	public String doLine2DGetBoundingBoxTransform(String line2DSQL) {
+		return "SDO_GEOM.SDO_MBR(" + line2DSQL + ")";	
+	}
+
+	@Override
+	public String doLine2DMeasurableDimensionsTransform(String line2DSQL) {
+		return super.doLine2DMeasurableDimensionsTransform(line2DSQL); //To change body of generated methods, choose Tools | Templates.
+	}
+
+	@Override
+	public String doLine2DNotEqualsTransform(String line2DSQL, String otherLine2DSQL) {
+		return "SDO_GEOM.RELATE(" + line2DSQL + ", 'equal', " + otherLine2DSQL + ", 0.0000005)='FALSE'";
+	}
+
+	@Override
+	public String doLine2DEqualsTransform(String line2DSQL, String otherLine2DSQL) {
+		return "SDO_GEOM.RELATE(" + line2DSQL + ", 'equal', " + otherLine2DSQL + ", 0.0000005)='EQUAL'";
+	}
+
+	@Override
+	public String doLine2DAsTextTransform(String line2DSQL) {
+		return "TO_CHAR(SDO_UTIL.TO_WKTGEOMETRY(" + line2DSQL + "))";
 	}
 
 }

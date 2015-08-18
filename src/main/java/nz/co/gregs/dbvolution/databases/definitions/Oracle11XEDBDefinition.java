@@ -27,6 +27,7 @@ import java.util.List;
 import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.databases.Oracle11XEDB;
 import nz.co.gregs.dbvolution.internal.oracle.xe.GeometryFunctions;
+import nz.co.gregs.dbvolution.internal.oracle.xe.Line2DFunctions;
 import nz.co.gregs.dbvolution.internal.oracle.xe.MultiPoint2DFunctions;
 import nz.co.gregs.dbvolution.query.QueryOptions;
 
@@ -311,25 +312,95 @@ public class Oracle11XEDBDefinition extends OracleSpatialDBDefinition {
 		return super.transformPoint2DIntoDatabaseFormat(point);
 	}
 
+//	@Override
+//	public String doPoint2DArrayToPolygon2DTransform(List<String> pointSQL) {
+//		StringBuilder ordinateArray = new StringBuilder("MDSYS.SDO_ORDINATE_ARRAY(");
+//		final String ordinateSep = ", ";
+//		String pairSep = "";
+//		for (String pointish : pointSQL) {
+//			ordinateArray
+//					.append(pairSep)
+//					.append(doPoint2DGetXTransform(pointish))
+//					.append(ordinateSep)
+//					.append(doPoint2DGetYTransform(pointish));
+//			pairSep = ", ";
+//		}
+//		//+ lineSegment.p0.x + ", " + lineSegment.p0.y + ", " + lineSegment.p1.x + ", " + lineSegment.p1.y 
+//		ordinateArray.append(")");
+//		return "MDSYS.SDO_GEOMETRY(2003, NULL, NULL,"
+//				+ "MDSYS.SDO_ELEM_INFO_ARRAY(1,1," + pointSQL.size()+ "),"
+//				+ ordinateArray
+//				+ ")";
+//	}
+
 	@Override
-	public String doPoint2DArrayToPolygon2DTransform(List<String> pointSQL) {
-		StringBuilder ordinateArray = new StringBuilder("MDSYS.SDO_ORDINATE_ARRAY(");
-		final String ordinateSep = ", ";
-		String pairSep = "";
-		for (String pointish : pointSQL) {
-			ordinateArray
-					.append(pairSep)
-					.append(doPoint2DGetXTransform(pointish))
-					.append(ordinateSep)
-					.append(doPoint2DGetYTransform(pointish));
-			pairSep = ", ";
-		}
-		//+ lineSegment.p0.x + ", " + lineSegment.p0.y + ", " + lineSegment.p1.x + ", " + lineSegment.p1.y 
-		ordinateArray.append(")");
-		return "MDSYS.SDO_GEOMETRY(2003, NULL, NULL,"
-				+ "MDSYS.SDO_ELEM_INFO_ARRAY(1,1," + pointSQL.size()+ "),"
-				+ ordinateArray
-				+ ")";
+	public String doLine2DGetMagnitudeTransform(String line2DSQL) {
+		return super.doLine2DGetMagnitudeTransform(line2DSQL); //To change body of generated methods, choose Tools | Templates.
+	}
+
+	@Override
+	public String doLine2DHasMagnitudeTransform(String line2DSQL) {
+		return super.doLine2DHasMagnitudeTransform(line2DSQL); //To change body of generated methods, choose Tools | Templates.
+	}
+
+	@Override
+	public String doLine2DSpatialDimensionsTransform(String line2DSQL) {
+		return super.doLine2DSpatialDimensionsTransform(line2DSQL); //To change body of generated methods, choose Tools | Templates.
+	}
+
+	@Override
+	public String doLine2DAllIntersectionPointsWithLine2DTransform(String firstGeometry, String secondGeometry) {
+		return super.doLine2DAllIntersectionPointsWithLine2DTransform(firstGeometry, secondGeometry); //To change body of generated methods, choose Tools | Templates.
+	}
+
+	@Override
+	public String doLine2DIntersectionPointWithLine2DTransform(String firstLine, String secondLine) {
+		return super.doLine2DIntersectionPointWithLine2DTransform(firstLine, secondLine); //To change body of generated methods, choose Tools | Templates.
+	}
+
+	@Override
+	public String doLine2DIntersectsLine2DTransform(String firstLine, String secondLine) {
+		return Line2DFunctions.INTERSECTSLINE2D+"("+firstLine+", "+secondLine+")";
+	}
+
+	@Override
+	public String doLine2DGetMinYTransform(String line2DSQL) {
+		return super.doLine2DGetMinYTransform(line2DSQL); //To change body of generated methods, choose Tools | Templates.
+	}
+
+	@Override
+	public String doLine2DGetMaxYTransform(String line2DSQL) {
+		return super.doLine2DGetMaxYTransform(line2DSQL); //To change body of generated methods, choose Tools | Templates.
+	}
+
+	@Override
+	public String doLine2DGetMinXTransform(String line2DSQL) {
+		return super.doLine2DGetMinXTransform(line2DSQL); //To change body of generated methods, choose Tools | Templates.
+	}
+
+	@Override
+	public String doLine2DGetMaxXTransform(String line2DSQL) {
+		return super.doLine2DGetMaxXTransform(line2DSQL); //To change body of generated methods, choose Tools | Templates.
+	}
+
+	@Override
+	public String doLine2DGetBoundingBoxTransform(String line2DSQL) {
+		throw new UnsupportedOperationException("Oracle SDO_MBR returns strange results for points and straight lines.");
+	}
+
+	@Override
+	public String doLine2DMeasurableDimensionsTransform(String line2DSQL) {
+		return super.doLine2DMeasurableDimensionsTransform(line2DSQL); //To change body of generated methods, choose Tools | Templates.
+	}
+
+	@Override
+	public String doLine2DNotEqualsTransform(String line2DSQL, String otherLine2DSQL) {
+		return super.doLine2DNotEqualsTransform(line2DSQL, otherLine2DSQL); //To change body of generated methods, choose Tools | Templates.
+	}
+
+	@Override
+	public String doLine2DEqualsTransform(String line2DSQL, String otherLine2DSQL) {
+		return super.doLine2DEqualsTransform(line2DSQL, otherLine2DSQL); //To change body of generated methods, choose Tools | Templates.
 	}
 
 

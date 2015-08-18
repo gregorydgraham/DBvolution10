@@ -1,0 +1,190 @@
+/*
+ * Copyright 2015 gregorygraham.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package nz.co.gregs.dbvolution.internal.oracle.xe;
+
+import java.sql.SQLException;
+import java.sql.Statement;
+
+/**
+ *
+ * @author gregorygraham
+ */
+public enum Line2DFunctions {
+	
+	GETPOINTATINDEX(GeometryFunctions.GETPOINTATINDEX),
+	NUMPOINTS("NUMBER", "p_geometry     IN MDSYS.SDO_GEOMETRY", " begin return p_geometry.sdo_ordinates.count/2; end;"),
+	ASPOLY2D("MDSYS.SDO_GEOMETRY", "p_geometry     IN MDSYS.SDO_GEOMETRY", ""
+			+ "   BEGIN\n"
+			+ "    return MDSYS.SDO_GEOMETRY(\n"
+			+ "      2003,\n"
+			+ "      p_geometry.SDO_SRID,\n"
+			+ "      p_geometry.SDO_POINT,\n"
+			+ "      p_geometry.SDO_ELEM_INFO,\n"
+			+ "      p_geometry.SDO_ORDINATES\n"
+			+ "    );\n"
+			+ "END;"),
+	INTERSECTSLINE2D("NUMBER", "firstLine IN VARCHAR, secondLine IN VARCHAR", "   p0x           NUMBER;\n"
+			+ "   p0y           NUMBER;\n"
+			+ "   p1x           NUMBER;\n"
+			+ "   p1y           NUMBER;\n"
+			+ "   p2x           NUMBER;\n"
+			+ "   p2y           NUMBER;\n"
+			+ "   p3x           NUMBER;\n"
+			+ "   p3y           NUMBER;\n"
+			+ "   s1_x          NUMBER;\n"
+			+ "   s1_y          NUMBER;\n"
+			+ "   s2_x          NUMBER;\n"
+			+ "   s2_y          NUMBER;\n"
+			+ "   s             NUMBER;\n"
+			+ "   t             NUMBER;\n"
+			+ "   polyAsText    VARCHAR (4000);\n"
+			+ "   poly2AsText   VARCHAR (4000);\n"
+			+ "   pointAsText   VARCHAR (4000);\n"
+			+ "BEGIN\n"
+			+ "   --   DBMS_OUTPUT.PUT_LINE ('STARTING INTERSECTS... ');\n"
+			+ "\n"
+			+ "   IF (firstLine IS NULL OR secondLine IS NULL)\n"
+			+ "   THEN\n"
+			+ "      RETURN NULL;\n"
+			+ "   END IF;\n"
+			+ "\n"
+			+ "   --'LINESTRING (2 3, 3 4)'\n"
+			+ "   polyAsText := firstLine;\n"
+			+ "   --   DBMS_OUTPUT.PUT_LINE ('CURRENT POLY: ' || polyAsText);\n"
+			+ "   polyAsText := DBV_STRINGFN_SUBSTRINGAFTER (polyAsText, '(');\n"
+			+ "   polyAsText := DBV_STRINGFN_SUBSTRINGBEFORE (polyAsText, ')');\n"
+			+ "\n"
+			+ "   --   DBMS_OUTPUT.PUT_LINE ('SHORT POLY: ' || polyAsText);\n"
+			+ "\n"
+			+ "   --'2 3, 3 4'\n"
+			+ "   WHILE INSTR (polyAsText, ',') > 0\n"
+			+ "   LOOP\n"
+			+ "      --   DBMS_OUTPUT.PUT_LINE ('FIRST WHILE LOOP... ');\n"
+			+ "      pointAsText := DBV_STRINGFN_SUBSTRINGBEFORE (polyAsText, ',');\n"
+			+ "      --   DBMS_OUTPUT.PUT_LINE ('FIRST POINT: ' || pointAsText);\n"
+			+ "      --'2 3'\n"
+			+ "      p0x := DBV_STRINGFN_SUBSTRINGBEFORE (pointAsText, ' ');\n"
+			+ "      p0y := DBV_STRINGFN_SUBSTRINGAFTER (pointAsText, ' ');\n"
+			+ "      pointAsText := DBV_STRINGFN_SUBSTRINGAFTER (polyAsText, ', ');\n"
+			+ "\n"
+			+ "      --   DBMS_OUTPUT.PUT_LINE ('SECOND POINT: ' || pointAsText);\n"
+			+ "\n"
+			+ "      IF (INSTR (pointAsText, ',') > 0)\n"
+			+ "      THEN\n"
+			+ "         pointAsText := DBV_STRINGFN_SUBSTRINGBEFORE (pointAsText, ',');\n"
+			+ "      END IF;\n"
+			+ "\n"
+			+ "      --   DBMS_OUTPUT.PUT_LINE ('SECOND POINT FINAL: ' || pointAsText);\n"
+			+ "      --'3 4'\n"
+			+ "      p1x := DBV_STRINGFN_SUBSTRINGBEFORE (pointAsText, ' ');\n"
+			+ "      p1y := DBV_STRINGFN_SUBSTRINGAFTER (pointAsText, ' ');\n"
+			+ "\n"
+			+ "      --'LINESTRING (2 3, 3 4)'\n"
+			+ "      poly2AsText := secondLine;\n"
+			+ "      --   DBMS_OUTPUT.PUT_LINE ('SECOND POLY: ' || poly2AsText);\n"
+			+ "      poly2AsText := DBV_STRINGFN_SUBSTRINGAFTER (poly2AsText, '(');\n"
+			+ "      poly2AsText := DBV_STRINGFN_SUBSTRINGBEFORE (poly2AsText, ')');\n"
+			+ "\n"
+			+ "      --   DBMS_OUTPUT.PUT_LINE ('SHORT SECOND POLY: ' || poly2AsText);\n"
+			+ "\n"
+			+ "      --'2 3, 3 4'\n"
+			+ "      WHILE INSTR (poly2AsText, ',') > 0\n"
+			+ "      LOOP\n"
+			+ "         --   DBMS_OUTPUT.PUT_LINE ('CURRENT SECOND POLY: ' || poly2AsText);\n"
+			+ "         pointAsText := DBV_STRINGFN_SUBSTRINGBEFORE (poly2AsText, ',');\n"
+			+ "         --   DBMS_OUTPUT.PUT_LINE ('THIRD POINT: ' || pointAsText);\n"
+			+ "         --'2 3'\n"
+			+ "         p2x := DBV_STRINGFN_SUBSTRINGBEFORE (pointAsText, ' ');\n"
+			+ "         p2y := DBV_STRINGFN_SUBSTRINGAFTER (pointAsText, ' ');\n"
+			+ "         pointAsText := DBV_STRINGFN_SUBSTRINGAFTER (poly2AsText, ', ');\n"
+			+ "\n"
+			+ "         IF (INSTR (pointAsText, ',') > 0)\n"
+			+ "         THEN\n"
+			+ "            pointAsText := DBV_STRINGFN_SUBSTRINGBEFORE (pointAsText, ',');\n"
+			+ "         END IF;\n"
+			+ "\n"
+			+ "         --   DBMS_OUTPUT.PUT_LINE ('FOURTH POINT: ' || pointAsText);\n"
+			+ "\n"
+			+ "         --'3 4'\n"
+			+ "         p3x := DBV_STRINGFN_SUBSTRINGBEFORE (pointAsText, ' ');\n"
+			+ "         p3y := DBV_STRINGFN_SUBSTRINGAFTER (pointAsText, ' ');\n"
+			+ "         --double s1_x, s1_y, s2_x, s2_y;\n"
+			+ "         --double i_x, i_y;\n"
+			+ "         s1_x := p1x - p0x;\n"
+			+ "         s1_y := p1y - p0y;\n"
+			+ "         s2_x := p3x - p2x;\n"
+			+ "         s2_y := p3y - p2y;\n"
+			+ "         --double s, t;\n"
+			+ "         s :=\n"
+			+ "              (-s1_y * (p0x - p2x) + s1_x * (p0y - p2y))\n"
+			+ "            / (-s2_x * s1_y + s1_x * s2_y);\n"
+			+ "         t :=\n"
+			+ "              (s2_x * (p0y - p2y) - s2_y * (p0x - p2x))\n"
+			+ "            / (-s2_x * s1_y + s1_x * s2_y);\n"
+			+ "\n"
+			+ "         IF (s >= 0 AND s <= 1 AND t >= 0 AND t <= 1)\n"
+			+ "         THEN\n"
+			+ "            -- Collision detected\n"
+			+ "            --i_x = p0x + (t * s1_x);\n"
+			+ "            --i_y = p0y + (t * s1_y);\n"
+			+ "            RETURN 1;\n"
+			+ "         END IF;\n"
+			+ "\n"
+			+ "         poly2AsText := DBV_STRINGFN_SUBSTRINGAFTER (poly2AsText, ', ');\n"
+			+ "      END LOOP;\n"
+			+ "\n"
+			+ "      polyAsText := DBV_STRINGFN_SUBSTRINGAFTER (polyAsText, ', ');\n"
+			+ "   END LOOP;\n"
+			+ "\n"
+			+ "   -- No Collision\n"
+			+ "   RETURN 0;\n"
+			+ "END;");
+
+	private final String returnType;
+	private final String parameters;
+	private final String code;
+
+	Line2DFunctions(String returnType, String parameters, String code) {
+		this.returnType = returnType;
+		this.parameters = parameters;
+		this.code = code;
+	}
+
+	Line2DFunctions(GeometryFunctions function) {
+		this.returnType = function.returnType;
+		this.parameters = function.parameters;
+		this.code = function.code;
+	}
+
+	@Override
+	public String toString() {
+		return "DBV_LN2D_" + name();
+	}
+
+	public void add(Statement stmt) throws SQLException {
+		try {
+			if (!this.code.isEmpty()) {
+				final String createFn = "CREATE OR REPLACE FUNCTION " + this + "(" + this.parameters + ")\n"
+						+ "    RETURN " + this.returnType
+						+ " AS \n" + "\n" + this.code;
+				System.out.println(createFn);
+				stmt.execute(createFn);
+			}
+		} catch (SQLException ex) {
+			;
+		}
+	}
+}

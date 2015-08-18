@@ -352,8 +352,8 @@ public class Line2DExpressionTest extends AbstractTest {
 //		public DBNumber getY = new DBNumber(this.column(this.line).getMaxY());
 		@DBColumn
 		public DBPolygon2D boundingBox = new DBPolygon2D(this.column(this.line).boundingBox());
-		@DBColumn
-		public DBMultiPoint2D getXis2 = new DBMultiPoint2D(this.column(this.line).intersectionPoints(Line2DExpression.value(new Coordinate(3,3), new Coordinate(2,4),new Coordinate(1,4))));
+//		@DBColumn
+//		public DBMultiPoint2D getXis2 = new DBMultiPoint2D(this.column(this.line).intersectionPoints(Line2DExpression.value(new Coordinate(3,3), new Coordinate(2,4),new Coordinate(1,4))));
 
 	}
 

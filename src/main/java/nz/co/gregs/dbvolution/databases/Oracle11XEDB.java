@@ -24,8 +24,7 @@ import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.databases.definitions.Oracle11XEDBDefinition;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.databases.definitions.OracleDBDefinition;
-import nz.co.gregs.dbvolution.internal.oracle.xe.GeometryFunctions;
-import nz.co.gregs.dbvolution.internal.oracle.xe.MultiPoint2DFunctions;
+import nz.co.gregs.dbvolution.internal.oracle.xe.*;
 
 /**
  * Implements support for version 11 and prior of the Oracle database.
@@ -137,6 +136,9 @@ public class Oracle11XEDB extends OracleDB {
 			fn.add(statement);
 		}
 		for (MultiPoint2DFunctions fn : MultiPoint2DFunctions.values()) {
+			fn.add(statement);
+		}
+		for (Line2DFunctions fn : Line2DFunctions.values()) {
 			fn.add(statement);
 		}
 	}
