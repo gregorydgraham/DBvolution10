@@ -20,6 +20,7 @@ import java.util.List;
 import nz.co.gregs.dbvolution.annotations.DBColumn;
 import nz.co.gregs.dbvolution.datatypes.*;
 import nz.co.gregs.dbvolution.example.CarCompany;
+import nz.co.gregs.dbvolution.example.CompanyLogo;
 import nz.co.gregs.dbvolution.example.Marque;
 import nz.co.gregs.dbvolution.expressions.NumberExpression;
 import nz.co.gregs.dbvolution.generic.AbstractTest;
@@ -275,6 +276,126 @@ public class DBReportTest extends AbstractTest {
 		{
 			marque.statusClassID.permittedValues(1246974);
 			carCompany.uidCarCompany.excludedValues((Integer) null);
+		}
+	}
+
+	public static class ProtectedDBRowsReport extends DBReport {
+
+		private static final long serialVersionUID = 1L;
+
+		Marque marque = new Marque();
+		protected CarCompany carCompany = new CarCompany();
+		public DBString carCompanyName = new DBString(carCompany.column(carCompany.name).uppercase());
+		public DBNumber countAll = new DBNumber(NumberExpression.countAll());
+
+		{
+			carCompany.uidCarCompany.excludedValues((Integer) null);
+		}
+	}
+
+	@Test
+	public void nonPublicDBRowsReportTest() throws SQLException {
+		ProtectedDBRowsReport reportExample = new ProtectedDBRowsReport();
+		List<ProtectedDBRowsReport> foundGroupReports = database.getRows(reportExample);
+		Assert.assertThat(foundGroupReports.size(), is(4));
+		for (ProtectedDBRowsReport rep : foundGroupReports) {
+			System.out.println("" + rep.carCompanyName.stringValue() + ": " + rep.countAll.stringValue());
+			switch (rep.countAll.intValue()) {
+				case 1:
+					Assert.assertThat(rep.carCompanyName.stringValue(), is("FORD"));
+					break;
+				case 3:
+					Assert.assertThat(rep.carCompanyName.stringValue(), is("GENERAL MOTORS"));
+					break;
+				case 2:
+					Assert.assertThat(rep.carCompanyName.stringValue(), is("TOYOTA"));
+					break;
+				case 15:
+					Assert.assertThat(rep.carCompanyName.stringValue(), is("OTHER"));
+					break;
+				default:
+                    ;
+			}
+		}
+	}
+
+	public static class PrivateDBRowsReport extends DBReport {
+
+		private static final long serialVersionUID = 1L;
+
+		private Marque marque = new Marque();
+		private CarCompany carCompany = new CarCompany();
+		public DBString carCompanyName = new DBString(carCompany.column(carCompany.name).uppercase());
+		public DBNumber countAll = new DBNumber(NumberExpression.countAll());
+
+		{
+			carCompany.uidCarCompany.excludedValues((Integer) null);
+		}
+	}
+
+	@Test
+	public void privateDBRowsReportTest() throws SQLException {
+		PrivateDBRowsReport reportExample = new PrivateDBRowsReport();
+		List<PrivateDBRowsReport> foundGroupReports = database.getRows(reportExample);
+		Assert.assertThat(foundGroupReports.size(), is(4));
+		for (PrivateDBRowsReport rep : foundGroupReports) {
+			System.out.println("" + rep.carCompanyName.stringValue() + ": " + rep.countAll.stringValue());
+			switch (rep.countAll.intValue()) {
+				case 1:
+					Assert.assertThat(rep.carCompanyName.stringValue(), is("FORD"));
+					break;
+				case 3:
+					Assert.assertThat(rep.carCompanyName.stringValue(), is("GENERAL MOTORS"));
+					break;
+				case 2:
+					Assert.assertThat(rep.carCompanyName.stringValue(), is("TOYOTA"));
+					break;
+				case 15:
+					Assert.assertThat(rep.carCompanyName.stringValue(), is("OTHER"));
+					break;
+				default:
+                    ;
+			}
+		}
+	}
+	
+	public static class PrivateFieldsReport extends DBReport {
+
+		private static final long serialVersionUID = 1L;
+
+		private final Marque marque = new Marque();
+		private final CarCompany carCompany = new CarCompany();
+		private final DBString carCompanyName = new DBString(carCompany.column(carCompany.name).uppercase());
+		private final DBNumber countAll = new DBNumber(NumberExpression.countAll());
+
+		{
+			carCompany.uidCarCompany.excludedValues((Integer) null);
+		}
+	}
+
+	@Test
+	public void privateFieldsReportTest() throws SQLException {
+		PrivateFieldsReport reportExample = new PrivateFieldsReport();
+		List<PrivateFieldsReport> foundGroupReports = database.getRows(reportExample);
+		Assert.assertThat(foundGroupReports.size(), is(4));
+		for (PrivateFieldsReport rep : foundGroupReports) {
+			System.out.println("" + rep.carCompanyName.stringValue() + ": " + rep.countAll.stringValue());
+			switch (rep.countAll.intValue()) {
+				case 1:
+					Assert.assertThat(rep.carCompanyName.stringValue(), is("FORD"));
+					break;
+				case 3:
+					Assert.assertThat(rep.carCompanyName.stringValue(), is("GENERAL MOTORS"));
+					break;
+				case 2:
+					Assert.assertThat(rep.carCompanyName.stringValue(), is("TOYOTA"));
+					break;
+				case 15:
+					Assert.assertThat(rep.carCompanyName.stringValue(), is("OTHER"));
+					break;
+				default:
+                    ;
+			}
 		}
 	}
 }

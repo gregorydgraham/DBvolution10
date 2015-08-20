@@ -63,7 +63,7 @@ public class LineSegment2DExpression implements LineSegment2DResult, EqualCompar
 	/**
 	 * Create a LineSegment2D expression encapsulating the value supplied.
 	 *
-	 * @param line 
+	 * @param line
 	 */
 	public LineSegment2DExpression(LineSegment line) {
 		innerLineString = new DBLineSegment2D(line);
@@ -92,9 +92,9 @@ public class LineSegment2DExpression implements LineSegment2DResult, EqualCompar
 	/**
 	 * Create a LineSegment2D expression encapsulating the value supplied.
 	 *
-	 * @param point1 
-	 * @param point2 
-	 * 
+	 * @param point1
+	 * @param point2
+	 *
 	 */
 	public LineSegment2DExpression(Point point1, Point point2) {
 		LineSegment line = null;
@@ -138,8 +138,8 @@ public class LineSegment2DExpression implements LineSegment2DResult, EqualCompar
 	/**
 	 * Create an expression for the line segment created from the 2 coordinates.
 	 *
-	 * @param coord1 
-	 * @param coord2 
+	 * @param coord1
+	 * @param coord2
 	 * @return a LineSegment2D expression
 	 */
 	public static LineSegment2DExpression value(Coordinate coord1, Coordinate coord2) {
@@ -147,10 +147,11 @@ public class LineSegment2DExpression implements LineSegment2DResult, EqualCompar
 	}
 
 	/**
-	 * Create an expression for the line segment created by combining the 4 numbers into 2 points.
+	 * Create an expression for the line segment created by combining the 4
+	 * numbers into 2 points.
 	 *
-	 * @param x1 
-	 * @param y1 
+	 * @param x1
+	 * @param y1
 	 * @param x2
 	 * @param y2
 	 * @return a LineSegment2D expression
@@ -162,7 +163,7 @@ public class LineSegment2DExpression implements LineSegment2DResult, EqualCompar
 	/**
 	 * Create an expression for the line segment created from the 2 points.
 	 *
-	 * @param line 
+	 * @param line
 	 * @return a LineSegment2D expression
 	 */
 	public static LineSegment2DExpression value(LineSegment line) {
@@ -228,15 +229,16 @@ public class LineSegment2DExpression implements LineSegment2DResult, EqualCompar
 	public boolean getIncludesNull() {
 		return nullProtectionRequired;
 	}
-	
+
 	@Override
-	public StringExpression toWKTFormat(){
+	public StringExpression toWKTFormat() {
 		return stringResult();
 	}
 
 	/**
-	 * Convert this LineSegment2D to a String representation based on the Well Known Text (WKT) format.
-	 * 
+	 * Convert this LineSegment2D to a String representation based on the Well
+	 * Known Text (WKT) format.
+	 *
 	 * @return a StringExpression representing this spatial value.
 	 */
 	public StringExpression stringResult() {
@@ -257,7 +259,7 @@ public class LineSegment2DExpression implements LineSegment2DResult, EqualCompar
 	 * Creates a {@link BooleanExpression} that compares the 2 instances using the
 	 * EQUALS operation.
 	 *
-	 * @param rightHandSide 
+	 * @param rightHandSide
 	 * @return a BooleanExpression
 	 */
 	public BooleanExpression is(LineSegment rightHandSide) {
@@ -284,7 +286,8 @@ public class LineSegment2DExpression implements LineSegment2DResult, EqualCompar
 	 * NOT EQUALS operation.
 	 *
 	 * @param rightHandSide
-	 * @return a BooleanExpression returning TRUE if the two line segments are different, otherwise FALSE.
+	 * @return a BooleanExpression returning TRUE if the two line segments are
+	 * different, otherwise FALSE.
 	 */
 	public BooleanExpression isNot(LineSegment rightHandSide) {
 		return isNot(new DBLineSegment2D(rightHandSide));
@@ -510,22 +513,62 @@ public class LineSegment2DExpression implements LineSegment2DResult, EqualCompar
 		});
 	}
 
+	/**
+	 * Returns an expression providing the "first" point of intersection between
+	 * this line segment and the line segment formed from the two points provided.
+	 *
+	 * @param point1
+	 * @param point2
+	 * @return a Point2DExpression
+	 */
 	public Point2DExpression intersectionWith(Point point1, Point point2) {
 		return this.intersectionWith(new LineSegment2DExpression(point1, point2));
 	}
 
+	/**
+	 * Returns an expression providing the "first" point of intersection between
+	 * this line segment and the line segment formed from the four ordinates provided.
+	 *
+	 * @param point1x 
+	 * @param point1y 
+	 * @param point2x  
+	 * @param point2y  
+	 * @return a Point2DExpression
+	 */
 	public Point2DExpression intersectionWith(Double point1x, Double point1y, Double point2x, Double point2y) {
 		return this.intersectionWith(new LineSegment2DExpression(point1x, point1y, point2x, point2y));
 	}
 
+	/**
+	 * Returns an expression providing the "first" point of intersection between
+	 * this line segment and the line segment formed from the two coordinates provided.
+	 *
+	 * @param coord1 
+	 * @param coord2 
+	 * @return a Point2DExpression
+	 */
 	public Point2DExpression intersectionWith(Coordinate coord1, Coordinate coord2) {
 		return this.intersectionWith(new LineSegment2DExpression(coord1, coord2));
 	}
 
+	/**
+	 * Returns an expression providing the "first" point of intersection between
+	 * this line segment and the line segment provided.
+	 *
+	 * @param lineString 
+	 * @return a Point2DExpression
+	 */
 	public Point2DExpression intersectionWith(LineSegment lineString) {
 		return this.intersectionWith(new LineSegment2DExpression(lineString));
 	}
 
+	/**
+	 * Returns an expression providing the "first" point of intersection between
+	 * this line segment and the {@link LineSegment2DResult}/{@link LineSegment2DExpression} provided.
+	 *
+	 * @param crossingLine 
+	 * @return a Point2DExpression
+	 */
 	public Point2DExpression intersectionWith(LineSegment2DResult crossingLine) {
 		return new Point2DExpression(new LineSegmentLineSegmentWithPointResult(this, new LineSegment2DExpression(crossingLine)) {
 

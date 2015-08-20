@@ -38,9 +38,18 @@ public class MultiPoint2DExpression implements MultiPoint2DResult, EqualComparab
 	private MultiPoint2DResult innerPoint;
 	private boolean nullProtectionRequired;
 
+	/**
+	 * Default constructor
+	 *
+	 */
 	protected MultiPoint2DExpression() {
 	}
 
+	/**
+	 * Create a {@link MultiPoint2DExpression} representing from provided {@link MultiPoint2DResult}/{@link MultiPoint2DExpression}
+	 *
+	 * @param value
+	 */
 	public MultiPoint2DExpression(MultiPoint2DResult value) {
 		innerPoint = value;
 		if (value == null || innerPoint.getIncludesNull()) {
@@ -48,6 +57,11 @@ public class MultiPoint2DExpression implements MultiPoint2DResult, EqualComparab
 		}
 	}
 
+	/**
+	 * Create a {@link MultiPoint2DExpression} representing from provided {@link Point JTS points}.
+	 *
+	 * @param points 
+	 */
 	public MultiPoint2DExpression(Point... points) {
 		innerPoint = new DBMultiPoint2D(points);
 		if (points == null || points.length == 0 || innerPoint.getIncludesNull()) {
@@ -55,6 +69,11 @@ public class MultiPoint2DExpression implements MultiPoint2DResult, EqualComparab
 		}
 	}
 
+	/**
+	 * Create a {@link MultiPoint2DExpression} representing from provided {@link MultiPoint JTS multipoint}.
+	 *
+	 * @param points 
+	 */
 	public MultiPoint2DExpression(MultiPoint points) {
 		innerPoint = new DBMultiPoint2D(points);
 		if (points == null || innerPoint.getIncludesNull()) {
@@ -62,10 +81,22 @@ public class MultiPoint2DExpression implements MultiPoint2DResult, EqualComparab
 		}
 	}
 
+	/**
+	 * Create a {@link MultiPoint2DExpression} representing from provided {@link Point JTS points}.
+	 *
+	 * @param points 
+	 * @return  a MultiPoint2DExpression.
+	 */
 	public static MultiPoint2DExpression value(Point... points) {
 		return new MultiPoint2DExpression(points);
 	}
 
+	/**
+	 * Create a {@link MultiPoint2DExpression} representing from provided {@link Coordinate JTS coordinates}.
+	 *
+	 * @param coords  
+	 * @return  a MultiPoint2DExpression.
+	 */
 	public static MultiPoint2DExpression value(Coordinate... coords) {
 		GeometryFactory geometryFactory = new GeometryFactory();
 		MultiPoint multiPoint = geometryFactory.createMultiPoint(coords);
