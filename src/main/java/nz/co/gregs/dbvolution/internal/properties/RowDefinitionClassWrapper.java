@@ -56,14 +56,14 @@ public class RowDefinitionClassWrapper {
 	 * each column name. Assumes validation is done elsewhere in this class. Note:
 	 * doesn't need to be synchronized because it's never modified once created.
 	 */
-	private final Map<String, PropertyWrapperDefinition> propertiesByCaseSensitiveColumnName;
+	private final Map<String, PropertyWrapperDefinition> columnPropertiesByCaseSensitiveColumnName;
 	/**
 	 * Column names normalized to upper case for doing lookups on case-insensitive
 	 * databases. If column names duplicated, stores only the first encountered of
 	 * each column name. Assumes validation is done elsewhere in this class. Note:
 	 * doesn't need to be synchronized because it's never modified once created.
 	 */
-	private final Map<String, PropertyWrapperDefinition> propertiesByUpperCaseColumnName;
+	private final Map<String, PropertyWrapperDefinition> columnPropertiesByUpperCaseColumnName;
 	/**
 	 * Lists of properties that would have duplicated columns if-and-only-if using
 	 * a case-insensitive database. For each duplicate upper case column name,
@@ -75,11 +75,11 @@ public class RowDefinitionClassWrapper {
 	 * record until later. If this class is accessed for use on a case-insensitive
 	 * database the exception will be thrown then, on first access to this class.
 	 */
-	private final Map<String, List<PropertyWrapperDefinition>> duplicatedPropertiesByUpperCaseColumnName;
+	private final Map<String, List<PropertyWrapperDefinition>> duplicatedColumnPropertiesByUpperCaseColumnName;
 	/**
 	 * Indexed by java property name.
 	 */
-	private final Map<String, PropertyWrapperDefinition> propertiesByPropertyName;
+	private final Map<String, PropertyWrapperDefinition> columnPropertiesByPropertyName;
 
 	/**
 	 * Fully constructs a wrapper for the given class, including performing all
@@ -162,38 +162,38 @@ public class RowDefinitionClassWrapper {
 		}
 
 		// pre-calculate properties index
-		propertiesByCaseSensitiveColumnName = new HashMap<String, PropertyWrapperDefinition>();
-		propertiesByUpperCaseColumnName = new HashMap<String, PropertyWrapperDefinition>();
-		propertiesByPropertyName = new HashMap<String, PropertyWrapperDefinition>();
-		duplicatedPropertiesByUpperCaseColumnName = new HashMap<String, List<PropertyWrapperDefinition>>();
+		columnPropertiesByCaseSensitiveColumnName = new HashMap<String, PropertyWrapperDefinition>();
+		columnPropertiesByUpperCaseColumnName = new HashMap<String, PropertyWrapperDefinition>();
+		columnPropertiesByPropertyName = new HashMap<String, PropertyWrapperDefinition>();
+		duplicatedColumnPropertiesByUpperCaseColumnName = new HashMap<String, List<PropertyWrapperDefinition>>();
 		for (PropertyWrapperDefinition property : allProperties) {
-			propertiesByPropertyName.put(property.javaName(), property);
-
-			// add unique values for case-sensitive lookups
-			// (error immediately on collisions)
-			if (propertiesByCaseSensitiveColumnName.containsKey(property.getColumnName())) {
-				if (!processIdentityOnly) {
-					throw new DBPebkacException("Class " + clazz.getName() + " has multiple properties for column " + property.getColumnName());
-				}
-			} else {
-				propertiesByCaseSensitiveColumnName.put(property.getColumnName(), property);
-			}
-
 			// add unique values for case-insensitive lookups
 			// (defer erroring until actually know database is case insensitive)
 			if (property.isColumn()) {
-				if (propertiesByUpperCaseColumnName.containsKey(property.getColumnName().toUpperCase())) {
+				columnPropertiesByPropertyName.put(property.javaName(), property);
+
+				// add unique values for case-sensitive lookups
+				// (error immediately on collisions)
+				if (columnPropertiesByCaseSensitiveColumnName.containsKey(property.getColumnName())) {
 					if (!processIdentityOnly) {
-						List<PropertyWrapperDefinition> list = duplicatedPropertiesByUpperCaseColumnName.get(property.getColumnName().toUpperCase());
-						if (list == null) {
-							list = new ArrayList<PropertyWrapperDefinition>();
-							list.add(propertiesByUpperCaseColumnName.get(property.getColumnName().toUpperCase()));
-						}
-						list.add(property);
-						duplicatedPropertiesByUpperCaseColumnName.put(property.getColumnName().toUpperCase(), list);
+						throw new DBPebkacException("Class " + clazz.getName() + " has multiple properties for column " + property.getColumnName());
 					}
 				} else {
-					propertiesByUpperCaseColumnName.put(property.getColumnName().toUpperCase(), property);
+					columnPropertiesByCaseSensitiveColumnName.put(property.getColumnName(), property);
+				}
+
+				if (columnPropertiesByUpperCaseColumnName.containsKey(property.getColumnName().toUpperCase())) {
+					if (!processIdentityOnly) {
+						List<PropertyWrapperDefinition> list = duplicatedColumnPropertiesByUpperCaseColumnName.get(property.getColumnName().toUpperCase());
+						if (list == null) {
+							list = new ArrayList<PropertyWrapperDefinition>();
+							list.add(columnPropertiesByUpperCaseColumnName.get(property.getColumnName().toUpperCase()));
+						}
+						list.add(property);
+						duplicatedColumnPropertiesByUpperCaseColumnName.put(property.getColumnName().toUpperCase(), list);
+					}
+				} else {
+					columnPropertiesByUpperCaseColumnName.put(property.getColumnName().toUpperCase(), property);
 				}
 			}
 		}
@@ -226,9 +226,9 @@ public class RowDefinitionClassWrapper {
 	private void checkForRemainingErrorsOnAcccess(DBDatabase database) {
 		// check for case-differing duplicate columns
 		if (database.getDefinition().isColumnNamesCaseSensitive()) {
-			if (!duplicatedPropertiesByUpperCaseColumnName.isEmpty()) {
+			if (!duplicatedColumnPropertiesByUpperCaseColumnName.isEmpty()) {
 				StringBuilder buf = new StringBuilder();
-				for (List<PropertyWrapperDefinition> props : duplicatedPropertiesByUpperCaseColumnName.values()) {
+				for (List<PropertyWrapperDefinition> props : duplicatedColumnPropertiesByUpperCaseColumnName.values()) {
 					for (PropertyWrapperDefinition property : props) {
 						if (buf.length() > 0) {
 							buf.append(", ");
@@ -409,9 +409,9 @@ public class RowDefinitionClassWrapper {
 
 		checkForRemainingErrorsOnAcccess(database);
 		if (database.getDefinition().isColumnNamesCaseSensitive()) {
-			return propertiesByUpperCaseColumnName.get(columnName.toUpperCase());
+			return columnPropertiesByUpperCaseColumnName.get(columnName.toUpperCase());
 		} else {
-			return propertiesByCaseSensitiveColumnName.get(columnName);
+			return columnPropertiesByCaseSensitiveColumnName.get(columnName);
 		}
 	}
 
@@ -459,7 +459,7 @@ public class RowDefinitionClassWrapper {
 		if (identityOnly) {
 			throw new AssertionError("Attempt to access non-identity information of identity-only DBRow class wrapper");
 		}
-		return propertiesByPropertyName.get(propertyName);
+		return columnPropertiesByPropertyName.get(propertyName);
 	}
 
 	/**

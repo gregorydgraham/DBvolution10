@@ -344,7 +344,7 @@ public class DBReport extends RowDefinition {
 	}
 
 	<A extends DBReport> void addTablesAndExpressions(DBQuery query, A exampleReport) {
-		Field[] fields = exampleReport.getClass().getFields();
+		Field[] fields = exampleReport.getClass().getDeclaredFields();
 		if (fields.length == 0) {
 			throw new UnableToAccessDBReportFieldException(exampleReport, null);
 		}
@@ -384,7 +384,7 @@ public class DBReport extends RowDefinition {
 	private static <A extends DBReport> A getReportInstance(A exampleReport, DBQueryRow row) {
 		try {
 			A newReport = (A) exampleReport.getClass().newInstance();
-			Field[] fields = exampleReport.getClass().getFields();
+			Field[] fields = exampleReport.getClass().getDeclaredFields();
 			for (Field field : fields) {
 				field.setAccessible(true);
 				final Object value;
