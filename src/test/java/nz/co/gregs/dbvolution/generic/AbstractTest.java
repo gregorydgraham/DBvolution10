@@ -102,7 +102,7 @@ public abstract class AbstractTest {
 		}
 		if (System.getProperty("testOracleXE") != null) {
 //			databases.addPoint2D(new Object[]{"OracleAWS11DB", new OracleAWS11DB("dbvtest.c0wzty6pgnq4.us-west-2.rds.amazonaws.com", 1521, "ORCL", "dbv", "Testingdbv")});
-			databases.add(new Object[]{"Oracle11DB", new Oracle11XEDB("ec2-52-64-98-125.ap-southeast-2.compute.amazonaws.com", 1521, "XE", "DBV", "Testingdbv")});
+			databases.add(new Object[]{"Oracle11DB", new Oracle11XEDB("ec2-54-206-23-5.ap-southeast-2.compute.amazonaws.com", 1521, "XE", "DBV", "Testingdbv")});
 		}
 		if (System.getProperty("testOracle12") != null) {
 			databases.add(new Object[]{"Oracle12DB", new Oracle12DB("dbvtest-oracle12.cygjg2wvuyam.ap-southeast-2.rds.amazonaws.com", 1521, "ORCL", "dbv", "Testingdbv")});

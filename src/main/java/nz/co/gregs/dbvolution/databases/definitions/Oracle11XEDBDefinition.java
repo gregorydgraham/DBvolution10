@@ -360,7 +360,7 @@ public class Oracle11XEDBDefinition extends OracleSpatialDBDefinition {
 
 	@Override
 	public String doLine2DIntersectsLine2DTransform(String firstLine, String secondLine) {
-		return Line2DFunctions.INTERSECTSLINE2D+"("+firstLine+", "+secondLine+")";
+		return Line2DFunctions.INTERSECTSLINE2D+"("+firstLine+", "+secondLine+")=1";
 	}
 
 	@Override
