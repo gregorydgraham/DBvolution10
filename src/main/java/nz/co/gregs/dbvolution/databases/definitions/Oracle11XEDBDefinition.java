@@ -296,7 +296,8 @@ public class Oracle11XEDBDefinition extends OracleSpatialDBDefinition {
 		//+ lineSegment.p0.x + ", " + lineSegment.p0.y + ", " + lineSegment.p1.x + ", " + lineSegment.p1.y 
 		ordinateArray.append(")");
 		return "MDSYS.SDO_GEOMETRY(2002, NULL, NULL,"
-				+ "MDSYS.SDO_ELEM_INFO_ARRAY(1,1," + lineString.getNumPoints() + "),"
+				+ "MDSYS.SDO_ELEM_INFO_ARRAY(1,2,1),"
+//				+ "MDSYS.SDO_ELEM_INFO_ARRAY(1,2," + lineString.getNumPoints() + "),"
 				+ ordinateArray
 				+ ")";
 		//return super.transformLineStringIntoDatabaseLine2DFormat(point);
@@ -358,10 +359,10 @@ public class Oracle11XEDBDefinition extends OracleSpatialDBDefinition {
 		return super.doLine2DIntersectionPointWithLine2DTransform(firstLine, secondLine); //To change body of generated methods, choose Tools | Templates.
 	}
 
-	@Override
-	public String doLine2DIntersectsLine2DTransform(String firstLine, String secondLine) {
-		return Line2DFunctions.INTERSECTSLINE2D+"("+firstLine+", "+secondLine+")=1";
-	}
+//	@Override
+//	public String doLine2DIntersectsLine2DTransform(String firstLine, String secondLine) {
+//		return Line2DFunctions.INTERSECTSLINE2D+"("+firstLine+", "+secondLine+")=1";
+//	}
 
 	@Override
 	public String doLine2DGetMinYTransform(String line2DSQL) {

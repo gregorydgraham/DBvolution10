@@ -532,12 +532,12 @@ public class OracleSpatialDBDefinition extends OracleDBDefinition {
 
 	@Override
 	public String doLine2DAllIntersectionPointsWithLine2DTransform(String firstGeometry, String secondGeometry) {
-		return super.doLine2DAllIntersectionPointsWithLine2DTransform(firstGeometry, secondGeometry); //To change body of generated methods, choose Tools | Templates.
+		return "SDO_GEOM.SDO_INTERSECTION("+firstGeometry+", "+secondGeometry+", 0.0000005)";
 	}
 
 	@Override
 	public String doLine2DIntersectionPointWithLine2DTransform(String firstLine, String secondLine) {
-		return "SDO_GEOM.SDO_INTERSECTION(" + firstLine + ", " + firstLine + ", 0.0000005)";
+		return "SDO_GEOM.SDO_INTERSECTION(" + firstLine + ", " + secondLine + ", 0.0000005)";
 	}
 
 	@Override
