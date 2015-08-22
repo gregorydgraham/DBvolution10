@@ -687,27 +687,27 @@ public class OracleSpatialDBDefinition extends OracleDBDefinition {
 
 	@Override
 	public String doPolygon2DWithinTransform(String firstGeometry, String secondGeometry) {
-		return "SDO_GEOM.RELATE(" + firstGeometry + ", 'INSIDE', " + secondGeometry + ", 0.0000005)='TRUE'";
+		return "SDO_GEOM.RELATE(" + firstGeometry + ", 'INSIDE', " + secondGeometry + ", 0.0000005)='INSIDE'";
 	}
 
 	@Override
 	public String doPolygon2DTouchesTransform(String firstGeometry, String secondGeometry) {
-		return "SDO_GEOM.RELATE(" + firstGeometry + ", 'TOUCH', " + secondGeometry + ", 0.0000005)='TRUE'";
+		return "SDO_GEOM.RELATE(" + firstGeometry + ", 'TOUCH', " + secondGeometry + ", 0.0000005)='TOUCH'";
 	}
 
 	@Override
 	public String doPolygon2DOverlapsTransform(String firstGeometry, String secondGeometry) {
-		return "SDO_GEOM.RELATE(" + firstGeometry + ", 'OVERLAPBDYINTERSECT', " + secondGeometry + ", 0.0000005)='TRUE'";
+		return "SDO_GEOM.RELATE(" + firstGeometry + ", 'OVERLAPBDYINTERSECT', " + secondGeometry + ", 0.0000005)='OVERLAPBDYINTERSECT'";
 	}
 
 	@Override
 	public String doPolygon2DDoesNotIntersectTransform(String firstGeometry, String secondGeometry) {
-		return "SDO_GEOM.RELATE(" + firstGeometry + ", 'DISJOINT', " + secondGeometry + ", 0.0000005)='TRUE'";
+		return "SDO_GEOM.RELATE(" + firstGeometry + ", 'DISJOINT', " + secondGeometry + ", 0.0000005)='DISJOINT'";
 	}
 
 	@Override
 	public String doPolygon2DContainsPolygon2DTransform(String firstGeometry, String secondGeometry) {
-		return "SDO_GEOM.RELATE(" + firstGeometry + ", 'CONTAINS', " + secondGeometry + ", 0.0000005)='TRUE'";
+		return "SDO_GEOM.RELATE(" + firstGeometry + ", 'COVERS', " + secondGeometry + ", 0.0000005)='COVERS'";
 	}
 
 	@Override
@@ -722,7 +722,7 @@ public class OracleSpatialDBDefinition extends OracleDBDefinition {
 
 	@Override
 	public String doPolygon2DEqualsTransform(String firstGeometry, String secondGeometry) {
-		return "SDO_GEOM.RELATE(" + firstGeometry + ", 'EQUAL', " + secondGeometry + ", 0.0000005)='TRUE'";
+		return "SDO_GEOM.RELATE(" + firstGeometry + ", 'EQUAL', " + secondGeometry + ", 0.0000005)='EQUAL'";
 	}
 
 }

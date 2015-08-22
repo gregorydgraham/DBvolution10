@@ -442,7 +442,7 @@ public class Oracle11XEDBDefinition extends OracleSpatialDBDefinition {
 
 	@Override
 	public String doPolygon2DGetBoundingBoxTransform(String toSQLString) {
-		return super.doPolygon2DGetBoundingBoxTransform(toSQLString); //To change body of generated methods, choose Tools | Templates.
+		throw new UnsupportedOperationException("Oracle SDO_MBR returns a diagonal line as the bounding box.");
 	}
 
 	@Override
@@ -455,25 +455,25 @@ public class Oracle11XEDBDefinition extends OracleSpatialDBDefinition {
 		return super.doPolygon2DGetExteriorRingTransform(polygon2DSQL); //To change body of generated methods, choose Tools | Templates.
 	}
 
-	@Override
-	public String doPolygon2DGetMaxXTransform(String polygon2DSQL) {
-		return super.doPolygon2DGetMaxXTransform(polygon2DSQL); //To change body of generated methods, choose Tools | Templates.
-	}
-
-	@Override
-	public String doPolygon2DGetMinXTransform(String polygon2DSQL) {
-		return super.doPolygon2DGetMinXTransform(polygon2DSQL); //To change body of generated methods, choose Tools | Templates.
-	}
-
-	@Override
-	public String doPolygon2DGetMaxYTransform(String polygon2DSQL) {
-		return super.doPolygon2DGetMaxYTransform(polygon2DSQL); //To change body of generated methods, choose Tools | Templates.
-	}
-
-	@Override
-	public String doPolygon2DGetMinYTransform(String polygon2DSQL) {
-		return super.doPolygon2DGetMinYTransform(polygon2DSQL); //To change body of generated methods, choose Tools | Templates.
-	}
+//	@Override
+//	public String doPolygon2DGetMaxXTransform(String polygon2DSQL) {
+//		return super.doPolygon2DGetMaxXTransform(polygon2DSQL); //To change body of generated methods, choose Tools | Templates.
+//	}
+//
+//	@Override
+//	public String doPolygon2DGetMinXTransform(String polygon2DSQL) {
+//		return super.doPolygon2DGetMinXTransform(polygon2DSQL); //To change body of generated methods, choose Tools | Templates.
+//	}
+//
+//	@Override
+//	public String doPolygon2DGetMaxYTransform(String polygon2DSQL) {
+//		return super.doPolygon2DGetMaxYTransform(polygon2DSQL); //To change body of generated methods, choose Tools | Templates.
+//	}
+//
+//	@Override
+//	public String doPolygon2DGetMinYTransform(String polygon2DSQL) {
+//		return super.doPolygon2DGetMinYTransform(polygon2DSQL); //To change body of generated methods, choose Tools | Templates.
+//	}
 
 	@Override
 	public String transformPolygonIntoDatabasePolygon2DFormat(Polygon polygon2D) {
@@ -486,7 +486,7 @@ public class Oracle11XEDBDefinition extends OracleSpatialDBDefinition {
 		}
 		ordinateArray.append(")");
 		return "MDSYS.SDO_GEOMETRY(2003, NULL, NULL,"
-				+ "MDSYS.SDO_ELEM_INFO_ARRAY(1,2,1),"
+				+ "MDSYS.SDO_ELEM_INFO_ARRAY(1,2003,1),"
 				+ ordinateArray
 				+ ")";
 	}

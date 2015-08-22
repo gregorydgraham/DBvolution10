@@ -69,7 +69,8 @@ public class DBPolygonTest extends AbstractTest {
 
 			GeometryFactory geoFactory = new GeometryFactory();
 			Point createPoint = geoFactory.createPoint(new Coordinate(5, 10));
-			spatial.myfirstgeom.setValue(createPolygonFromPoint(createPoint));
+			final Polygon createPolygonFromPoint = createPolygonFromPoint(createPoint);
+			spatial.myfirstgeom.setValue(createPolygonFromPoint);
 			database.insert(spatial);
 
 			List<BasicSpatialTable> allRows = database.getDBTable(new BasicSpatialTable()).setBlankQueryAllowed(true).getAllRows();
@@ -77,7 +78,7 @@ public class DBPolygonTest extends AbstractTest {
 			
 			final Polygon gotPolygon = allRows.get(0).myfirstgeom.getValue();
 			Assert.assertThat(gotPolygon.getGeometryType(), is("Polygon"));
-			Assert.assertThat(gotPolygon, is(createPolygonFromPoint(createPoint)));
+			Assert.assertThat(gotPolygon, is(createPolygonFromPoint));
 
 			createPoint = geoFactory.createPoint(new Coordinate(12, 12));
 			spatial = new BasicSpatialTable();
