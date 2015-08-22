@@ -53,8 +53,8 @@ public class OracleSpatialDBDefinition extends OracleDBDefinition {
 		} else {
 			return super.getSQLTypeOfDBDatatype(qdt);
 		}
-	}	
-	
+	}
+
 	@Override
 	public Object doColumnTransformForSelect(QueryableDatatype qdt, String selectableName) {
 		if (qdt instanceof DBPolygon2D) {
@@ -119,7 +119,7 @@ public class OracleSpatialDBDefinition extends OracleDBDefinition {
 	}
 
 	@Override
-	public String transformPolygonIntoDatabasePolygon2DFormat(Polygon point) {
+	public String OldtransformPolygonIntoDatabasePolygon2DFormat(Polygon point) {
 //		final Coordinate coordinate = point.getCoordinate();
 //		return "SDO_GEOMETRY(2003, NULL, SDO_POINT_TYPE(" + coordinate.x + ", " + coordinate.y + ",NULL), NULL, NULL)";
 		return "SDO_UTIL.FROM_WKTGEOMETRY('" + point.toText() + "')";
@@ -167,10 +167,11 @@ public class OracleSpatialDBDefinition extends OracleDBDefinition {
 		//+ lineSegment.p0.x + ", " + lineSegment.p0.y + ", " + lineSegment.p1.x + ", " + lineSegment.p1.y 
 		ordinateArray.append(")");
 		return "MDSYS.SDO_GEOMETRY(2003, NULL, NULL,"
-				+ "MDSYS.SDO_ELEM_INFO_ARRAY(1,1," + pointSQL.size()+ "),"
+				+ "MDSYS.SDO_ELEM_INFO_ARRAY(1,1," + pointSQL.size() + "),"
 				+ ordinateArray
 				+ ")";
 	}
+
 	@Override
 	public String doPoint2DAsTextTransform(String point2DSQL) {
 		return "TO_CHAR(SDO_UTIL.TO_WKTGEOMETRY(" + point2DSQL + "))";
@@ -532,7 +533,7 @@ public class OracleSpatialDBDefinition extends OracleDBDefinition {
 
 	@Override
 	public String doLine2DAllIntersectionPointsWithLine2DTransform(String firstGeometry, String secondGeometry) {
-		return "SDO_GEOM.SDO_INTERSECTION("+firstGeometry+", "+secondGeometry+", 0.0000005)";
+		return "SDO_GEOM.SDO_INTERSECTION(" + firstGeometry + ", " + secondGeometry + ", 0.0000005)";
 	}
 
 	@Override
@@ -579,7 +580,7 @@ public class OracleSpatialDBDefinition extends OracleDBDefinition {
 
 	@Override
 	public String doLine2DGetBoundingBoxTransform(String line2DSQL) {
-		return "SDO_GEOM.SDO_MBR(" + line2DSQL + ")";	
+		return "SDO_GEOM.SDO_MBR(" + line2DSQL + ")";
 	}
 
 	@Override
@@ -600,6 +601,128 @@ public class OracleSpatialDBDefinition extends OracleDBDefinition {
 	@Override
 	public String doLine2DAsTextTransform(String line2DSQL) {
 		return "TO_CHAR(SDO_UTIL.TO_WKTGEOMETRY(" + line2DSQL + "))";
+	}
+
+	@Override
+	public String doPolygon2DGetMagnitudeTransform(String polygon2DSQL) {
+		return super.doPolygon2DGetMagnitudeTransform(polygon2DSQL); //To change body of generated methods, choose Tools | Templates.
+	}
+
+	@Override
+	public String doPolygon2DHasMagnitudeTransform(String polygon2DSQL) {
+		return super.doPolygon2DHasMagnitudeTransform(polygon2DSQL); //To change body of generated methods, choose Tools | Templates.
+	}
+
+	@Override
+	public String doPolygon2DSpatialDimensionsTransform(String polygon2DSQL) {
+		return "(" + polygon2DSQL + ").GET_DIMS()";
+	}
+
+	@Override
+	public String doPolygon2DAsTextTransform(String polygonSQL) {
+		return "TO_CHAR(SDO_UTIL.TO_WKTGEOMETRY(" + polygonSQL + "))";
+	}
+
+	@Override
+	public String doPolygon2DContainsPoint2DTransform(String polygon2DSQL, String point2DSQL) {
+		return "SDO_GEOM.RELATE(" + polygon2DSQL + ", 'CONTAINS', " + point2DSQL + ", 0.0000005)='TRUE'";
+	}
+
+	@Override
+	public String transformPolygonIntoDatabasePolygon2DFormat(Polygon polygon2D) {
+		return "SDO_UTIL.FROM_WKTGEOMETRY(" + polygon2D.toText() + ")";
+	}
+
+	@Override
+	public String doPolygon2DGetMinYTransform(String polygon2DSQL) {
+		return "SDO_GEOM.SDO_MIN_MBR_ORDINATE(" + polygon2DSQL + ", MDSYS.SDO_DIM_ARRAY(\n"
+				+ "						MDSYS.SDO_DIM_ELEMENT('X', -9999999999, 9999999999, 0.0000000001),\n"
+				+ "					           MDSYS.SDO_DIM_ELEMENT('Y', -9999999999, 9999999999, 0.0000000001)\n"
+				+ "						), 2)";
+	}
+
+	@Override
+	public String doPolygon2DGetMaxYTransform(String polygon2DSQL) {
+		return "SDO_GEOM.SDO_MAX_MBR_ORDINATE(" + polygon2DSQL + ", MDSYS.SDO_DIM_ARRAY(\n"
+				+ "						MDSYS.SDO_DIM_ELEMENT('X', -9999999999, 9999999999, 0.0000000001),\n"
+				+ "					           MDSYS.SDO_DIM_ELEMENT('Y', -9999999999, 9999999999, 0.0000000001)\n"
+				+ "						), 2)";
+	}
+
+	@Override
+	public String doPolygon2DGetMinXTransform(String polygon2DSQL) {
+		return "SDO_GEOM.SDO_MIN_MBR_ORDINATE(" + polygon2DSQL + ", MDSYS.SDO_DIM_ARRAY(\n"
+				+ "						MDSYS.SDO_DIM_ELEMENT('X', -9999999999, 9999999999, 0.0000000001),\n"
+				+ "					           MDSYS.SDO_DIM_ELEMENT('Y', -9999999999, 9999999999, 0.0000000001)\n"
+				+ "						), 1)";
+	}
+
+	@Override
+	public String doPolygon2DGetMaxXTransform(String polygon2DSQL) {
+		return "SDO_GEOM.SDO_MAX_MBR_ORDINATE(" + polygon2DSQL + ", MDSYS.SDO_DIM_ARRAY(\n"
+				+ "						MDSYS.SDO_DIM_ELEMENT('X', -9999999999, 9999999999, 0.0000000001),\n"
+				+ "					           MDSYS.SDO_DIM_ELEMENT('Y', -9999999999, 9999999999, 0.0000000001)\n"
+				+ "						), 1)";
+	}
+
+	@Override
+	public String doPolygon2DGetExteriorRingTransform(String polygon2DSQL) {
+		return super.doPolygon2DGetExteriorRingTransform(polygon2DSQL); //To change body of generated methods, choose Tools | Templates.
+	}
+
+	@Override
+	public String doPolygon2DGetAreaTransform(String toSQLString) {
+		return super.doPolygon2DGetAreaTransform(toSQLString); //To change body of generated methods, choose Tools | Templates.
+	}
+
+	@Override
+	public String doPolygon2DGetBoundingBoxTransform(String polygon2DSQL) {
+		return "SDO_GEOM.SDO_MBR(" + polygon2DSQL + ")";
+	}
+
+	@Override
+	public String doPolygon2DMeasurableDimensionsTransform(String toSQLString) {
+		return "2";
+	}
+
+	@Override
+	public String doPolygon2DWithinTransform(String firstGeometry, String secondGeometry) {
+		return "SDO_GEOM.RELATE(" + firstGeometry + ", 'INSIDE', " + secondGeometry + ", 0.0000005)='TRUE'";
+	}
+
+	@Override
+	public String doPolygon2DTouchesTransform(String firstGeometry, String secondGeometry) {
+		return "SDO_GEOM.RELATE(" + firstGeometry + ", 'TOUCH', " + secondGeometry + ", 0.0000005)='TRUE'";
+	}
+
+	@Override
+	public String doPolygon2DOverlapsTransform(String firstGeometry, String secondGeometry) {
+		return "SDO_GEOM.RELATE(" + firstGeometry + ", 'OVERLAPBDYINTERSECT', " + secondGeometry + ", 0.0000005)='TRUE'";
+	}
+
+	@Override
+	public String doPolygon2DDoesNotIntersectTransform(String firstGeometry, String secondGeometry) {
+		return "SDO_GEOM.RELATE(" + firstGeometry + ", 'DISJOINT', " + secondGeometry + ", 0.0000005)='TRUE'";
+	}
+
+	@Override
+	public String doPolygon2DContainsPolygon2DTransform(String firstGeometry, String secondGeometry) {
+		return "SDO_GEOM.RELATE(" + firstGeometry + ", 'CONTAINS', " + secondGeometry + ", 0.0000005)='TRUE'";
+	}
+
+	@Override
+	public String doPolygon2DIntersectsTransform(String firstGeometry, String secondGeometry) {
+		return "SDO_GEOM.RELATE(" + firstGeometry + ", 'ANYINTERACT', " + secondGeometry + ", 0.0000005)='TRUE'";
+	}
+
+	@Override
+	public String doPolygon2DIntersectionTransform(String firstGeometry, String secondGeometry) {
+		return "SDO_GEOM.SDO_INTERSECTION(" + firstGeometry + ", " + secondGeometry + ", 0.0000005)";
+	}
+
+	@Override
+	public String doPolygon2DEqualsTransform(String firstGeometry, String secondGeometry) {
+		return "SDO_GEOM.RELATE(" + firstGeometry + ", 'EQUAL', " + secondGeometry + ", 0.0000005)='TRUE'";
 	}
 
 }

@@ -16,18 +16,14 @@
 package nz.co.gregs.dbvolution.databases.definitions;
 
 import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.LineSegment;
 import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.MultiPoint;
-import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.geom.Polygon;
-import com.vividsolutions.jts.io.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.databases.Oracle11XEDB;
 import nz.co.gregs.dbvolution.internal.oracle.xe.GeometryFunctions;
-import nz.co.gregs.dbvolution.internal.oracle.xe.Line2DFunctions;
 import nz.co.gregs.dbvolution.internal.oracle.xe.MultiPoint2DFunctions;
 import nz.co.gregs.dbvolution.query.QueryOptions;
 
@@ -167,25 +163,25 @@ public class Oracle11XEDBDefinition extends OracleSpatialDBDefinition {
 		);
 	}
 
-	@Override
-	public String doMultiPoint2DGetMaxXTransform(String multiPoint2D) {
-		return super.doMultiPoint2DGetMaxXTransform(multiPoint2D); //To change body of generated methods, choose Tools | Templates.
-	}
-
-	@Override
-	public String doMultiPoint2DGetMaxYTransform(String multiPoint2D) {
-		return super.doMultiPoint2DGetMaxYTransform(multiPoint2D); //To change body of generated methods, choose Tools | Templates.
-	}
-
-	@Override
-	public String doMultiPoint2DGetMinXTransform(String multiPoint2D) {
-		return super.doMultiPoint2DGetMinXTransform(multiPoint2D); //To change body of generated methods, choose Tools | Templates.
-	}
-
-	@Override
-	public String doMultiPoint2DGetMinYTransform(String multiPoint2D) {
-		return super.doMultiPoint2DGetMinYTransform(multiPoint2D); //To change body of generated methods, choose Tools | Templates.
-	}
+//	@Override
+//	public String doMultiPoint2DGetMaxXTransform(String multiPoint2D) {
+//		return super.doMultiPoint2DGetMaxXTransform(multiPoint2D); //To change body of generated methods, choose Tools | Templates.
+//	}
+//
+//	@Override
+//	public String doMultiPoint2DGetMaxYTransform(String multiPoint2D) {
+//		return super.doMultiPoint2DGetMaxYTransform(multiPoint2D); //To change body of generated methods, choose Tools | Templates.
+//	}
+//
+//	@Override
+//	public String doMultiPoint2DGetMinXTransform(String multiPoint2D) {
+//		return super.doMultiPoint2DGetMinXTransform(multiPoint2D); //To change body of generated methods, choose Tools | Templates.
+//	}
+//
+//	@Override
+//	public String doMultiPoint2DGetMinYTransform(String multiPoint2D) {
+//		return super.doMultiPoint2DGetMinYTransform(multiPoint2D); //To change body of generated methods, choose Tools | Templates.
+//	}
 
 	@Override
 	public String doMultiPoint2DToLine2DTransform(String multiPoint2D) {
@@ -202,10 +198,10 @@ public class Oracle11XEDBDefinition extends OracleSpatialDBDefinition {
 		throw new UnsupportedOperationException("Not supported yet.");
 	}
 
-	@Override
-	public String doMultiPoint2DMeasurableDimensionsTransform(String multipoint2D) {
-		return super.doMultiPoint2DMeasurableDimensionsTransform(multipoint2D); //To change body of generated methods, choose Tools | Templates.
-	}
+//	@Override
+//	public String doMultiPoint2DMeasurableDimensionsTransform(String multipoint2D) {
+//		return super.doMultiPoint2DMeasurableDimensionsTransform(multipoint2D); //To change body of generated methods, choose Tools | Templates.
+//	}
 
 	@Override
 	public String doMultiPoint2DGetNumberOfPointsTransform(String multiPoint2D) {
@@ -217,15 +213,15 @@ public class Oracle11XEDBDefinition extends OracleSpatialDBDefinition {
 		return MultiPoint2DFunctions.GETPOINTATINDEX+"("+first+", "+index+")";
 	}
 
-	@Override
-	public String doMultiPoint2DNotEqualsTransform(String first, String second) {
-		return super.doMultiPoint2DNotEqualsTransform(first, second); //To change body of generated methods, choose Tools | Templates.
-	}
-
-	@Override
-	public String doMultiPoint2DEqualsTransform(String first, String second) {
-		return super.doMultiPoint2DEqualsTransform(first, second); //To change body of generated methods, choose Tools | Templates.
-	}
+//	@Override
+//	public String doMultiPoint2DNotEqualsTransform(String first, String second) {
+//		return super.doMultiPoint2DNotEqualsTransform(first, second); //To change body of generated methods, choose Tools | Templates.
+//	}
+//
+//	@Override
+//	public String doMultiPoint2DEqualsTransform(String first, String second) {
+//		return super.doMultiPoint2DEqualsTransform(first, second); //To change body of generated methods, choose Tools | Templates.
+//	}
 
 	@Override
 	public String transformMultiPoint2DToDatabaseMultiPoint2DValue(MultiPoint mpoint) {
@@ -246,10 +242,10 @@ public class Oracle11XEDBDefinition extends OracleSpatialDBDefinition {
 //		return super.transformMultiPoint2DToDatabaseMultiPoint2DValue(point); //To change body of generated methods, choose Tools | Templates.
 	}
 
-	@Override
-	public MultiPoint transformDatabaseMultiPoint2DValueToJTSMultiPoint(String pointsAsString) throws ParseException {
-		return super.transformDatabaseMultiPoint2DValueToJTSMultiPoint(pointsAsString); //To change body of generated methods, choose Tools | Templates.
-	}
+//	@Override
+//	public MultiPoint transformDatabaseMultiPoint2DValueToJTSMultiPoint(String pointsAsString) throws ParseException {
+//		return super.transformDatabaseMultiPoint2DValueToJTSMultiPoint(pointsAsString); //To change body of generated methods, choose Tools | Templates.
+//	}
 
 	@Override
 	public String doPolygon2DAsTextTransform(String polygonSQL) {
@@ -261,13 +257,13 @@ public class Oracle11XEDBDefinition extends OracleSpatialDBDefinition {
 		return nz.co.gregs.dbvolution.internal.oracle.xe.GeometryFunctions.ASTEXT+"("+line2DSQL+")";
 	}
 
-	@Override
-	public String transformLineSegmentIntoDatabaseLineSegment2DFormat(LineSegment lineSegment) {
-		return super.transformLineSegmentIntoDatabaseLineSegment2DFormat(lineSegment);
-	}
+//	@Override
+//	public String transformLineSegmentIntoDatabaseLineSegment2DFormat(LineSegment lineSegment) {
+//		return super.transformLineSegmentIntoDatabaseLineSegment2DFormat(lineSegment);
+//	}
 
 	@Override
-	public String transformPolygonIntoDatabasePolygon2DFormat(Polygon polygon) {
+	public String OldtransformPolygonIntoDatabasePolygon2DFormat(Polygon polygon) {
 		StringBuilder ordinateArray = new StringBuilder("MDSYS.SDO_ORDINATE_ARRAY(");
 		final String ordinateSep = ", ";
 		String pairSep = "";
@@ -278,10 +274,10 @@ public class Oracle11XEDBDefinition extends OracleSpatialDBDefinition {
 		//+ lineSegment.p0.x + ", " + lineSegment.p0.y + ", " + lineSegment.p1.x + ", " + lineSegment.p1.y 
 		ordinateArray.append(")");
 		return "MDSYS.SDO_GEOMETRY(2003, NULL, NULL,"
-				+ "MDSYS.SDO_ELEM_INFO_ARRAY(1,1," + polygon.getNumPoints() + "),"
+				+ "MDSYS.SDO_ELEM_INFO_ARRAY(1,2,1),"
 				+ ordinateArray
 				+ ")";
-//		return super.transformPolygonIntoDatabasePolygon2DFormat(point);
+//		return super.OldtransformPolygonIntoDatabasePolygon2DFormat(point);
 	}
 
 	@Override
@@ -303,15 +299,15 @@ public class Oracle11XEDBDefinition extends OracleSpatialDBDefinition {
 		//return super.transformLineStringIntoDatabaseLine2DFormat(point);
 	}
 
-	@Override
-	public String transformCoordinatesIntoDatabasePoint2DFormat(String xValue, String yValue) {
-		return super.transformCoordinatesIntoDatabasePoint2DFormat(xValue, yValue);
-	}
-
-	@Override
-	public String transformPoint2DIntoDatabaseFormat(Point point) {
-		return super.transformPoint2DIntoDatabaseFormat(point);
-	}
+//	@Override
+//	public String transformCoordinatesIntoDatabasePoint2DFormat(String xValue, String yValue) {
+//		return super.transformCoordinatesIntoDatabasePoint2DFormat(xValue, yValue);
+//	}
+//
+//	@Override
+//	public String transformPoint2DIntoDatabaseFormat(Point point) {
+//		return super.transformPoint2DIntoDatabaseFormat(point);
+//	}
 
 //	@Override
 //	public String doPoint2DArrayToPolygon2DTransform(List<String> pointSQL) {
@@ -334,75 +330,187 @@ public class Oracle11XEDBDefinition extends OracleSpatialDBDefinition {
 //				+ ")";
 //	}
 
-	@Override
-	public String doLine2DGetMagnitudeTransform(String line2DSQL) {
-		return super.doLine2DGetMagnitudeTransform(line2DSQL); //To change body of generated methods, choose Tools | Templates.
-	}
-
-	@Override
-	public String doLine2DHasMagnitudeTransform(String line2DSQL) {
-		return super.doLine2DHasMagnitudeTransform(line2DSQL); //To change body of generated methods, choose Tools | Templates.
-	}
-
-	@Override
-	public String doLine2DSpatialDimensionsTransform(String line2DSQL) {
-		return super.doLine2DSpatialDimensionsTransform(line2DSQL); //To change body of generated methods, choose Tools | Templates.
-	}
-
-	@Override
-	public String doLine2DAllIntersectionPointsWithLine2DTransform(String firstGeometry, String secondGeometry) {
-		return super.doLine2DAllIntersectionPointsWithLine2DTransform(firstGeometry, secondGeometry); //To change body of generated methods, choose Tools | Templates.
-	}
-
-	@Override
-	public String doLine2DIntersectionPointWithLine2DTransform(String firstLine, String secondLine) {
-		return super.doLine2DIntersectionPointWithLine2DTransform(firstLine, secondLine); //To change body of generated methods, choose Tools | Templates.
-	}
-
 //	@Override
-//	public String doLine2DIntersectsLine2DTransform(String firstLine, String secondLine) {
-//		return Line2DFunctions.INTERSECTSLINE2D+"("+firstLine+", "+secondLine+")=1";
+//	public String doLine2DGetMagnitudeTransform(String line2DSQL) {
+//		return super.doLine2DGetMagnitudeTransform(line2DSQL); //To change body of generated methods, choose Tools | Templates.
+//	}
+//
+//	@Override
+//	public String doLine2DHasMagnitudeTransform(String line2DSQL) {
+//		return super.doLine2DHasMagnitudeTransform(line2DSQL); //To change body of generated methods, choose Tools | Templates.
+//	}
+//
+//	@Override
+//	public String doLine2DSpatialDimensionsTransform(String line2DSQL) {
+//		return super.doLine2DSpatialDimensionsTransform(line2DSQL); //To change body of generated methods, choose Tools | Templates.
+//	}
+//
+//	@Override
+//	public String doLine2DAllIntersectionPointsWithLine2DTransform(String firstGeometry, String secondGeometry) {
+//		return super.doLine2DAllIntersectionPointsWithLine2DTransform(firstGeometry, secondGeometry); //To change body of generated methods, choose Tools | Templates.
+//	}
+//
+//	@Override
+//	public String doLine2DIntersectionPointWithLine2DTransform(String firstLine, String secondLine) {
+//		return super.doLine2DIntersectionPointWithLine2DTransform(firstLine, secondLine); //To change body of generated methods, choose Tools | Templates.
 //	}
 
-	@Override
-	public String doLine2DGetMinYTransform(String line2DSQL) {
-		return super.doLine2DGetMinYTransform(line2DSQL); //To change body of generated methods, choose Tools | Templates.
-	}
-
-	@Override
-	public String doLine2DGetMaxYTransform(String line2DSQL) {
-		return super.doLine2DGetMaxYTransform(line2DSQL); //To change body of generated methods, choose Tools | Templates.
-	}
-
-	@Override
-	public String doLine2DGetMinXTransform(String line2DSQL) {
-		return super.doLine2DGetMinXTransform(line2DSQL); //To change body of generated methods, choose Tools | Templates.
-	}
-
-	@Override
-	public String doLine2DGetMaxXTransform(String line2DSQL) {
-		return super.doLine2DGetMaxXTransform(line2DSQL); //To change body of generated methods, choose Tools | Templates.
-	}
+//	@Override
+//	public String doLine2DGetMinYTransform(String line2DSQL) {
+//		return super.doLine2DGetMinYTransform(line2DSQL); //To change body of generated methods, choose Tools | Templates.
+//	}
+//
+//	@Override
+//	public String doLine2DGetMaxYTransform(String line2DSQL) {
+//		return super.doLine2DGetMaxYTransform(line2DSQL); //To change body of generated methods, choose Tools | Templates.
+//	}
+//
+//	@Override
+//	public String doLine2DGetMinXTransform(String line2DSQL) {
+//		return super.doLine2DGetMinXTransform(line2DSQL); //To change body of generated methods, choose Tools | Templates.
+//	}
+//
+//	@Override
+//	public String doLine2DGetMaxXTransform(String line2DSQL) {
+//		return super.doLine2DGetMaxXTransform(line2DSQL); //To change body of generated methods, choose Tools | Templates.
+//	}
 
 	@Override
 	public String doLine2DGetBoundingBoxTransform(String line2DSQL) {
 		throw new UnsupportedOperationException("Oracle SDO_MBR returns strange results for points and straight lines.");
 	}
 
+//	@Override
+//	public String doLine2DMeasurableDimensionsTransform(String line2DSQL) {
+//		return super.doLine2DMeasurableDimensionsTransform(line2DSQL); //To change body of generated methods, choose Tools | Templates.
+//	}
+
+//	@Override
+//	public String doLine2DNotEqualsTransform(String line2DSQL, String otherLine2DSQL) {
+//		return super.doLine2DNotEqualsTransform(line2DSQL, otherLine2DSQL); //To change body of generated methods, choose Tools | Templates.
+//	}
+
+//	@Override
+//	public String doLine2DEqualsTransform(String line2DSQL, String otherLine2DSQL) {
+//		return super.doLine2DEqualsTransform(line2DSQL, otherLine2DSQL); //To change body of generated methods, choose Tools | Templates.
+//	}
+
 	@Override
-	public String doLine2DMeasurableDimensionsTransform(String line2DSQL) {
-		return super.doLine2DMeasurableDimensionsTransform(line2DSQL); //To change body of generated methods, choose Tools | Templates.
+	public String doPolygon2DEqualsTransform(String firstGeometry, String secondGeometry) {
+		return super.doPolygon2DEqualsTransform(firstGeometry, secondGeometry); //To change body of generated methods, choose Tools | Templates.
 	}
 
 	@Override
-	public String doLine2DNotEqualsTransform(String line2DSQL, String otherLine2DSQL) {
-		return super.doLine2DNotEqualsTransform(line2DSQL, otherLine2DSQL); //To change body of generated methods, choose Tools | Templates.
+	public String doPolygon2DIntersectionTransform(String firstGeometry, String secondGeometry) {
+		return super.doPolygon2DIntersectionTransform(firstGeometry, secondGeometry); //To change body of generated methods, choose Tools | Templates.
 	}
 
 	@Override
-	public String doLine2DEqualsTransform(String line2DSQL, String otherLine2DSQL) {
-		return super.doLine2DEqualsTransform(line2DSQL, otherLine2DSQL); //To change body of generated methods, choose Tools | Templates.
+	public String doPolygon2DIntersectsTransform(String firstGeometry, String secondGeometry) {
+		return super.doPolygon2DIntersectsTransform(firstGeometry, secondGeometry); //To change body of generated methods, choose Tools | Templates.
 	}
 
+	@Override
+	public String doPolygon2DContainsPolygon2DTransform(String firstGeometry, String secondGeometry) {
+		return super.doPolygon2DContainsPolygon2DTransform(firstGeometry, secondGeometry); //To change body of generated methods, choose Tools | Templates.
+	}
+
+	@Override
+	public String doPolygon2DDoesNotIntersectTransform(String firstGeometry, String secondGeometry) {
+		return super.doPolygon2DDoesNotIntersectTransform(firstGeometry, secondGeometry); //To change body of generated methods, choose Tools | Templates.
+	}
+
+	@Override
+	public String doPolygon2DOverlapsTransform(String firstGeometry, String secondGeometry) {
+		return super.doPolygon2DOverlapsTransform(firstGeometry, secondGeometry); //To change body of generated methods, choose Tools | Templates.
+	}
+
+	@Override
+	public String doPolygon2DTouchesTransform(String firstGeometry, String secondGeometry) {
+		return super.doPolygon2DTouchesTransform(firstGeometry, secondGeometry); //To change body of generated methods, choose Tools | Templates.
+	}
+
+	@Override
+	public String doPolygon2DWithinTransform(String firstGeometry, String secondGeometry) {
+		return super.doPolygon2DWithinTransform(firstGeometry, secondGeometry); //To change body of generated methods, choose Tools | Templates.
+	}
+
+	@Override
+	public String doPolygon2DMeasurableDimensionsTransform(String toSQLString) {
+		return super.doPolygon2DMeasurableDimensionsTransform(toSQLString); //To change body of generated methods, choose Tools | Templates.
+	}
+
+	@Override
+	public String doPolygon2DGetBoundingBoxTransform(String toSQLString) {
+		return super.doPolygon2DGetBoundingBoxTransform(toSQLString); //To change body of generated methods, choose Tools | Templates.
+	}
+
+	@Override
+	public String doPolygon2DGetAreaTransform(String toSQLString) {
+		return super.doPolygon2DGetAreaTransform(toSQLString); //To change body of generated methods, choose Tools | Templates.
+	}
+
+	@Override
+	public String doPolygon2DGetExteriorRingTransform(String polygon2DSQL) {
+		return super.doPolygon2DGetExteriorRingTransform(polygon2DSQL); //To change body of generated methods, choose Tools | Templates.
+	}
+
+	@Override
+	public String doPolygon2DGetMaxXTransform(String polygon2DSQL) {
+		return super.doPolygon2DGetMaxXTransform(polygon2DSQL); //To change body of generated methods, choose Tools | Templates.
+	}
+
+	@Override
+	public String doPolygon2DGetMinXTransform(String polygon2DSQL) {
+		return super.doPolygon2DGetMinXTransform(polygon2DSQL); //To change body of generated methods, choose Tools | Templates.
+	}
+
+	@Override
+	public String doPolygon2DGetMaxYTransform(String polygon2DSQL) {
+		return super.doPolygon2DGetMaxYTransform(polygon2DSQL); //To change body of generated methods, choose Tools | Templates.
+	}
+
+	@Override
+	public String doPolygon2DGetMinYTransform(String polygon2DSQL) {
+		return super.doPolygon2DGetMinYTransform(polygon2DSQL); //To change body of generated methods, choose Tools | Templates.
+	}
+
+	@Override
+	public String transformPolygonIntoDatabasePolygon2DFormat(Polygon polygon2D) {
+		StringBuilder ordinateArray = new StringBuilder("MDSYS.SDO_ORDINATE_ARRAY(");
+		final String ordinateSep = ", ";
+		String pairSep = "";
+		for (Coordinate coordinate : polygon2D.getCoordinates()) {
+			ordinateArray.append(pairSep).append(coordinate.x).append(ordinateSep).append(coordinate.y);
+			pairSep = ", ";
+		}
+		ordinateArray.append(")");
+		return "MDSYS.SDO_GEOMETRY(2003, NULL, NULL,"
+				+ "MDSYS.SDO_ELEM_INFO_ARRAY(1,2,1),"
+				+ ordinateArray
+				+ ")";
+	}
+
+	@Override
+	public String doPolygon2DContainsPoint2DTransform(String polygon2DSQL, String point2DSQL) {
+		return super.doPolygon2DContainsPoint2DTransform(polygon2DSQL, point2DSQL); //To change body of generated methods, choose Tools | Templates.
+	}
+
+	@Override
+	public String doPolygon2DSpatialDimensionsTransform(String polygon2DSQL) {
+		return super.doPolygon2DSpatialDimensionsTransform(polygon2DSQL); //To change body of generated methods, choose Tools | Templates.
+	}
+
+	@Override
+	public String doPolygon2DHasMagnitudeTransform(String polygon2DSQL) {
+		return super.doPolygon2DHasMagnitudeTransform(polygon2DSQL); //To change body of generated methods, choose Tools | Templates.
+	}
+
+	@Override
+	public String doPolygon2DGetMagnitudeTransform(String polygon2DSQL) {
+		return super.doPolygon2DGetMagnitudeTransform(polygon2DSQL); //To change body of generated methods, choose Tools | Templates.
+	}
+
+	
 
 }

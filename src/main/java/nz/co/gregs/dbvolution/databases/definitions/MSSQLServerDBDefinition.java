@@ -559,7 +559,7 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 	}
 
 	@Override
-	public String transformPolygonIntoDatabasePolygon2DFormat(Polygon polygon) {
+	public String OldtransformPolygonIntoDatabasePolygon2DFormat(Polygon polygon) {
 		return "geometry::STGeomFromText ('" + polygon.toText() + "',0)";
 	}
 
@@ -578,51 +578,8 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 		return "geometry::STGeomFromText ('" + point.toText() + "',0)";
 	}
 
-//	@Override
-//	public Point transformDatabasePoint2DValueToJTSPoint(String pointAsString) throws com.vividsolutions.jts.io.ParseException {
-//		Point point = null;
-//		if (pointAsString.matches(" *\\( *[-0-9.]+, *[-0-9.]+ *\\) *")) {
-//			String[] split = pointAsString.split("[^-0-9.]+");
-//			for (String split1 : split) {
-//				System.out.println("DATABASE VALUE: " + split1);
-//			}
-//			GeometryFactory geometryFactory = new GeometryFactory();
-//			final double x = Double.parseDouble(split[1]);
-//			final double y = Double.parseDouble(split[2]);
-//			point = geometryFactory.createPoint(new Coordinate(x, y));
-//		} else {
-////			throw new IncorrectGeometryReturnedForDatatype(geometry, point);
-//		}
-//		return point;
-//	}
-
-	// ((2,3),(2,3),(2,3),(2,3)) => POLYGON ((2 3, 2 3, 2 3, 2 3, 2 3))
-//	@Override
-//	public Geometry transformDatabasePolygon2DToJTSPolygon(String geometryAsString) throws com.vividsolutions.jts.io.ParseException {
-//		String string = "POLYGON "+geometryAsString.replaceAll("\\),\\(", ", ").replaceAll("([-0-9.]+),([-0-9.]+)", "$1 $2");
-//		String[] splits = geometryAsString.split("[(),]+");
-//		System.out.println(geometryAsString+" => "+string);
-//		List<Coordinate> coords = new ArrayList<Coordinate>();
-//		Coordinate firstCoord = null;
-//		for (int i = 1; i < splits.length; i++) {
-//			String splitX = splits[i];
-//			String splitY = splits[i+1];
-//			System.out.println("COORD: "+splitX+", "+splitY);
-//			final Coordinate coordinate = new Coordinate(Double.parseDouble(splitX), Double.parseDouble(splitY));
-//			coords.add(coordinate);
-//			if (firstCoord==null){
-//				firstCoord=coordinate;
-//			}
-//			i++;
-//		}
-//		coords.add(firstCoord);
-//		final GeometryFactory geometryFactory = new GeometryFactory();
-//		Polygon polygon = geometryFactory.createPolygon(coords.toArray(new Coordinate[]{}));
-//		return polygon;
-//	}
-	//geometry::STGeomFromText('POLYGON ((0 0, 150 0, 150 150, 0 150, 0 0))', 0)
 	@Override
-	public String doDBPolygon2DFormatTransform(Polygon polygon2DInWKTFormat) {
+	public String transformPolygonIntoDatabasePolygon2DFormat(Polygon polygon2DInWKTFormat) {
 		StringBuilder str = new StringBuilder();
 		String separator = "";
 		Coordinate[] coordinates = polygon2DInWKTFormat.getCoordinates();

@@ -127,7 +127,7 @@ public class OracleAWSDBDefinition extends OracleDBDefinition {
 	}	
 	
 	@Override
-	public String transformPolygonIntoDatabasePolygon2DFormat(Polygon polygon) {
+	public String OldtransformPolygonIntoDatabasePolygon2DFormat(Polygon polygon) {
 		String wktValue = polygon.toText();
 		return "'" + wktValue + "'";
 	}
@@ -179,7 +179,7 @@ public class OracleAWSDBDefinition extends OracleDBDefinition {
 	}
 
 	@Override
-	public String doDBPolygon2DFormatTransform(Polygon geom) {
+	public String transformPolygonIntoDatabasePolygon2DFormat(Polygon geom) {
 		String wktValue = geom.toText();
 		return Polygon2DFunctions.CREATE_WKTPOLY2D + "('" + wktValue + "')";
 	}

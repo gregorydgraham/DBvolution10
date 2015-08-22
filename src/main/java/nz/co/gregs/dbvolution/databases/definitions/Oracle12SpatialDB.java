@@ -56,8 +56,8 @@ public class Oracle12SpatialDB extends Oracle12DBDefinition {
 	 )*/
 
 	@Override
-	public String transformPolygonIntoDatabasePolygon2DFormat(Polygon polygon) {
-		return super.transformPolygonIntoDatabasePolygon2DFormat(polygon); //To change body of generated methods, choose Tools | Templates.
+	public String OldtransformPolygonIntoDatabasePolygon2DFormat(Polygon polygon) {
+		return super.OldtransformPolygonIntoDatabasePolygon2DFormat(polygon); //To change body of generated methods, choose Tools | Templates.
 	}
 
 	/*SDO_GEOMETRY(

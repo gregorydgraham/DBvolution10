@@ -103,7 +103,7 @@ public class DBPolygon2D extends QueryableDatatype implements TransformRequiredF
 	@Override
 	protected String formatValueForSQLStatement(DBDatabase db) {
 		Polygon geom = (Polygon) getLiteralValue();
-		return db.getDefinition().doDBPolygon2DFormatTransform(geom);
+		return db.getDefinition().transformPolygonIntoDatabasePolygon2DFormat(geom);
 	}
 
 	@Override

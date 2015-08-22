@@ -3502,7 +3502,8 @@ public abstract class DBDefinition {
 	 * @param polygon
 	 * @return SQL
 	 */
-	public String transformPolygonIntoDatabasePolygon2DFormat(Polygon polygon) {
+	@Deprecated
+	public String OldtransformPolygonIntoDatabasePolygon2DFormat(Polygon polygon) {
 		String wktValue = polygon.toText();
 		return "'" + wktValue + "'";
 	}
@@ -3661,10 +3662,10 @@ public abstract class DBDefinition {
 	 * Generate the SQL that will transform a WKT version of a Polygon2D into the
 	 * database's version of a Polygon2D.
 	 *
-	 * @param polygon2DInWKTFormat
+	 * @param polygon2D
 	 * @return SQL
 	 */
-	public String doDBPolygon2DFormatTransform(Polygon polygon2DInWKTFormat) {
+	public String transformPolygonIntoDatabasePolygon2DFormat(Polygon polygon2D) {
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 

@@ -217,7 +217,7 @@ public class MySQLDBDefinition extends DBDefinition {
 	}
 
 	@Override
-	public String doDBPolygon2DFormatTransform(Polygon geom) {
+	public String transformPolygonIntoDatabasePolygon2DFormat(Polygon geom) {
 		String wktValue = geom.toText();
 		return "PolyFromText('" + wktValue + "')";
 	}

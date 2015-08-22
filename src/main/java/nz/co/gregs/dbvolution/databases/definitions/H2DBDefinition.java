@@ -330,7 +330,7 @@ public class H2DBDefinition extends DBDefinition {
 	}
 
 	@Override
-	public String doDBPolygon2DFormatTransform(Polygon geom) {
+	public String transformPolygonIntoDatabasePolygon2DFormat(Polygon geom) {
 		String wktValue = geom.toText();
 		return Polygon2DFunctions.CREATE_FROM_WKTPOLYGON2D.alias() + "('" + wktValue + "')";
 	}

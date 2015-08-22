@@ -658,7 +658,7 @@ public class PostgresDBDefinition extends DBDefinition {
 	//INSERT INTO BasicSpatialTable( myfirstgeom)  VALUES ( polygon 'POLYGON ((5 10, 6 10, 6 11, 5 11, 5 10))')
 	//INSERT INTO BasicSpatialTable( myfirstgeom)  VALUES ( polygon '((5,10), (6,10), (6,11), (5,11), (5,10))');
 	@Override
-	public String doDBPolygon2DFormatTransform(Polygon polygon) {
+	public String transformPolygonIntoDatabasePolygon2DFormat(Polygon polygon) {
 
 		StringBuilder str = new StringBuilder();
 		String separator = "";
