@@ -100,7 +100,7 @@ public class Polygon2DFunctions {
 		protected void xFunc() throws SQLException {
 			try {
 				Polygon polygon = getPolygon(value_text(0));
-				polygon.normalize();
+	//			polygon.normalize();
 				result(polygon.toText());
 			} catch (com.vividsolutions.jts.io.ParseException ex) {
 				Logger.getLogger(Polygon2DFunctions.class.getName()).log(Level.SEVERE, null, ex);
