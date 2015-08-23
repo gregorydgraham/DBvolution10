@@ -34,7 +34,7 @@ interface JavaPropertyFilter {
 	/**
 	 * Indicates whether the specified field is accepted by the filter.
 	 *
-	 * @return
+	 * @return TRUE if the field is acceptable, otherwise FALSE.
 	 */
 	public boolean acceptField(Field field);
 
@@ -43,7 +43,7 @@ interface JavaPropertyFilter {
 	 * filter.
 	 *
 	 *
-	 * @return
+	 * @return TRUE if the field is acceptable, otherwise FALSE.
 	 */
 	public boolean acceptBeanProperty(Method getter, Method setter);
 

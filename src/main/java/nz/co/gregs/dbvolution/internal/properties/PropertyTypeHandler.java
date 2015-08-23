@@ -352,7 +352,7 @@ class PropertyTypeHandler {
 	 * Make sure to keep this in sync with {@link #literalTypeOf}.
 	 *
 	 *
-	 * @return
+	 * @return a QDT the should work
 	 */
 	// FIXME: change to require exact matches, rather than 'instance of'
 	private static Class<? extends QueryableDatatype> inferredQDTTypeForSimpleType(Class<?> simpleType) {
@@ -383,7 +383,7 @@ class PropertyTypeHandler {
 	 * Make sure to keep this in sync with {@link #inferredQDTTypeForSimpleType}.
 	 *
 	 *
-	 * @return
+	 * @return a standard Java class equivalent to the QDT
 	 */
 	private static Class<?> literalTypeOf(Class<? extends QueryableDatatype> qdtType) {
 		if (qdtType.equals(DBString.class)) {
@@ -415,7 +415,7 @@ class PropertyTypeHandler {
 	 *
 	 *
 	 *
-	 * @return
+	 * @return TRUE if the simple type can be replaced by a QDT
 	 */
 	private static boolean isSimpleTypeSupportedByQDT(Class<?> simpleType,
 			Class<? extends QueryableDatatype> qdtType) {
@@ -432,7 +432,7 @@ class PropertyTypeHandler {
 	 * Internal helper to support the way annotation attribute defaulting works.
 	 *
 	 *
-	 * @return
+	 * @return A QDT Class
 	 */
 	private static Class<? extends QueryableDatatype> explicitTypeOrNullOf(DBAdaptType annotation) {
 		if (annotation == null) {
@@ -467,23 +467,12 @@ class PropertyTypeHandler {
 	 * type adaptor. (Note: at present there is no support for implicit type
 	 * adaptors)
 	 *
-	 * @return
+	 * @return TRUE if the property is type adapted
 	 */
 	public boolean isTypeAdapted() {
 		return (dbAdaptTypeAnnotation != null);
 	}
 
-//    /**
-//     * Gets the annotation, if present.
-//     *
-//     * @return
-//     */
-//    public DBAdaptType getDBTypeAdaptorAnnotation() {
-//    	if (identityOnly) {
-//    		throw new AssertionError("Attempt to access non-identity information of identity-only property type handler");
-//    	}
-//        return annotation;
-//    }
 	/**
 	 * Gets the DBv-centric value from the underlying java property, converting if
 	 * needed. This method behaves correctly regardless of whether an
@@ -569,13 +558,13 @@ class PropertyTypeHandler {
 	}
 
 	/**
-	 * Constructs a new instanceof the type adaptor referenced by the given
+	 * Constructs a new instance of the type adaptor referenced by the given
 	 * annotation instance. Handles all exceptions and throws them as the
 	 * appropriate runtime exceptions
 	 *
 	 *
 	 *
-	 * @return
+	 * @return a DBTypeAdaptor
 	 * @throws DBRuntimeException on unexpected internal errors, and
 	 * @throws InvalidDeclaredTypeException on errors with the end-user supplied
 	 * code

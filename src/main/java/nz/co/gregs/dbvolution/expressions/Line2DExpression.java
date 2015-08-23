@@ -555,7 +555,7 @@ public class Line2DExpression implements Line2DResult, EqualComparable<Line2DRes
 	 * method only reports TRUE or FALSE.
 	 *
 	 * <p>
-	 * Use {@link #intersectionPoints(Line2DResult)} to find the intersection
+	 * Use {@link #intersectionPoints(nz.co.gregs.dbvolution.results.Line2DResult) } to find the intersection
 	 * points of these lines
 	 *
 	 * @param points
@@ -575,7 +575,7 @@ public class Line2DExpression implements Line2DResult, EqualComparable<Line2DRes
 	 * method only reports TRUE or FALSE.
 	 *
 	 * <p>
-	 * Use {@link #intersectionPoints(Line2DResult)} to find the intersection
+	 * Use {@link #intersectionPoints(nz.co.gregs.dbvolution.results.Line2DResult) } to find the intersection
 	 * points of these lines
 	 *
 	 * @param coords
@@ -594,7 +594,7 @@ public class Line2DExpression implements Line2DResult, EqualComparable<Line2DRes
 	 * method only reports TRUE or FALSE.
 	 *
 	 * <p>
-	 * Use {@link #intersectionPoints(Line2DResult)} to find the intersection
+	 * Use {@link #intersectionPoints(nz.co.gregs.dbvolution.results.Line2DResult) } to find the intersection
 	 * points of these lines
 	 *
 	 * @param lineString
@@ -613,7 +613,7 @@ public class Line2DExpression implements Line2DResult, EqualComparable<Line2DRes
 	 * method only reports TRUE or FALSE.
 	 *
 	 * <p>
-	 * Use {@link #intersectionPoints(Line2DResult)} to find the intersection
+	 * Use {@link #intersectionPoints(nz.co.gregs.dbvolution.results.Line2DResult) } to find the intersection
 	 * points of these lines
 	 *
 	 * @param crossingLine
@@ -655,7 +655,7 @@ public class Line2DExpression implements Line2DResult, EqualComparable<Line2DRes
 	 * method only reports the first point found.
 	 *
 	 * <p>
-	 * Use {@link #intersectionPoints(Line2DResult)} to find the intersection
+	 * Use {@link #intersectionPoints(nz.co.gregs.dbvolution.results.Line2DResult) } to find the intersection
 	 * points of these lines
 	 *
 	 * @param crossingLine
@@ -675,7 +675,7 @@ public class Line2DExpression implements Line2DResult, EqualComparable<Line2DRes
 	 * method only reports the first point found.
 	 *
 	 * <p>
-	 * Use {@link #intersectionPoints(Line2DResult)} to find the intersection
+	 * Use {@link #intersectionPoints(nz.co.gregs.dbvolution.results.Line2DResult) } to find the intersection
 	 * points of these lines
 	 *
 	 * @param crossingLine
@@ -694,7 +694,7 @@ public class Line2DExpression implements Line2DResult, EqualComparable<Line2DRes
 	 * method only reports the first point found.
 	 *
 	 * <p>
-	 * Use {@link #intersectionPoints(Line2DResult)} to find the intersection
+	 * Use {@link #intersectionPoints(nz.co.gregs.dbvolution.results.Line2DResult) } to find the intersection
 	 * points of these lines
 	 *
 	 * @param crossingLine
@@ -714,7 +714,7 @@ public class Line2DExpression implements Line2DResult, EqualComparable<Line2DRes
 	 * method only reports the first point found.
 	 *
 	 * <p>
-	 * Use {@link #intersectionPoints(Line2DResult)} to find the intersection
+	 * Use {@link #intersectionPoints(nz.co.gregs.dbvolution.results.Line2DResult) } to find the intersection
 	 * points of these lines
 	 *
 	 * @param crossingLine
@@ -733,7 +733,7 @@ public class Line2DExpression implements Line2DResult, EqualComparable<Line2DRes
 	 * method only reports the first point found.
 	 *
 	 * <p>
-	 * Use {@link #intersectionPoints(Line2DResult)} to find the intersection
+	 * Use {@link #intersectionPoints(nz.co.gregs.dbvolution.results.Line2DResult) } to find the intersection
 	 * points of these lines
 	 *
 	 * @param crossingLine

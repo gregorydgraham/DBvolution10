@@ -90,7 +90,7 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 	}
 
 	@Override
-	public Object doColumnTransformForSelect(QueryableDatatype qdt, String selectableName) {
+	public String doColumnTransformForSelect(QueryableDatatype qdt, String selectableName) {
 		if (qdt instanceof DBPolygon2D) {
 			return "(" + selectableName + ").STAsText()";
 		} else if (qdt instanceof DBPoint2D) {
@@ -180,7 +180,7 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 	 *
 	 * @param firstSQLExpression
 	 * @param secondSQLExpression
-	 * @return
+	 * @return SQL
 	 */
 	@Override
 	public String doStringEqualsTransform(String firstSQLExpression, String secondSQLExpression) {

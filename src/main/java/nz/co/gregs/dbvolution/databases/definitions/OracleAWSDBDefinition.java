@@ -352,7 +352,7 @@ public class OracleAWSDBDefinition extends OracleDBDefinition {
 	 *
 	 * @param firstLineSegment
 	 * @param secondLineSegment
-	 * @return
+	 * @return SQL
 	 */
 	@Override
 	public String doLineSegment2DEqualsTransform(String firstLineSegment, String secondLineSegment) {
@@ -363,7 +363,7 @@ public class OracleAWSDBDefinition extends OracleDBDefinition {
 	 * Generate the SQL required to convert the line segment SQL expression into the WKT string format.
 	 *
 	 * @param lineSegment
-	 * @return
+	 * @return SQL
 	 */
 	@Override
 	public String doLineSegment2DAsTextTransform(String lineSegment) {

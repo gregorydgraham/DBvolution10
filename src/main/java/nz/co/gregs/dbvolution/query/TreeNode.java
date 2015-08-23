@@ -60,7 +60,7 @@ public class TreeNode<T extends DBRow> {
 	/**
 	 * Returns a list of all known children of this node, that is all database rows returned by the recursive query that referenced this row.
 	 *
-	 * @return
+	 * @return a list of TreeNodes
 	 */
 	public List<TreeNode<T>> getChildren() {
 		return children;

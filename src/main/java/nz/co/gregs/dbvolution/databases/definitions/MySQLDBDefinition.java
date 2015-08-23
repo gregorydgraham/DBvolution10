@@ -83,7 +83,7 @@ public class MySQLDBDefinition extends DBDefinition {
 	}
 
 	@Override
-	public Object doColumnTransformForSelect(QueryableDatatype qdt, String selectableName) {
+	public String doColumnTransformForSelect(QueryableDatatype qdt, String selectableName) {
 		if (qdt instanceof DBPolygon2D) {
 			return "AsText(" + selectableName + ")";
 		} else if (qdt instanceof DBPoint2D) {

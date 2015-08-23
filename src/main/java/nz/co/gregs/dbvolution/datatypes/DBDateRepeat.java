@@ -93,7 +93,7 @@ public class DBDateRepeat extends QueryableDatatype implements DateRepeatResult 
 	 * <p>
 	 * Returns NULL otherwise.
 	 *
-	 * @return
+	 * @return a Period
 	 */
 	public Period periodValue() {
 		if (!isDefined() || isNull()) {

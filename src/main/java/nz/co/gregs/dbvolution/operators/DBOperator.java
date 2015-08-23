@@ -81,19 +81,6 @@ abstract public class DBOperator implements Serializable {
 		secondValue = second;
 		thirdValue = third;
 	}
-//
-//	/**
-//	 * 
-//	 *
-//	 * @return
-//	 */
-//	protected DBExpression getExpression() {
-//		return this.expression;
-//	}
-//
-//	protected void setExpression(BooleanExpression operatorExpression) {
-//		this.expression = operatorExpression;
-//	}
 
 	/**
 	 * Make this operator an exclusive rather than inclusive comparison.

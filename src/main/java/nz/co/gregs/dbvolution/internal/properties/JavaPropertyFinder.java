@@ -105,7 +105,7 @@ class JavaPropertyFinder {
 	/**
 	 * Gets the field-based properties.
 	 *
-	 * @return
+	 * @return a list of JavaProperty
 	 */
 	// TODO: this may not be able to handle inheritance of protected/default fields
 	private List<JavaProperty> getFields(Class<?> clazz) {
@@ -156,7 +156,7 @@ class JavaPropertyFinder {
 	/**
 	 * Gets the bean-property-based properties.
 	 *
-	 * @return
+	 * @return a list of JavaProperty
 	 */
 	private List<JavaProperty> getBeanProperties(Class<?> clazz) {
 		List<JavaProperty> properties = new ArrayList<JavaProperty>();

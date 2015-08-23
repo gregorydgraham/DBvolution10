@@ -234,7 +234,7 @@ public abstract class DBDefinition {
 	 * post-processing of the object names to conform to the rules.
 	 *
 	 * @param sqlObjectName
-	 * @return
+	 * @return the object name formatted for use with this database
 	 */
 	protected String formatNameForDatabase(final String sqlObjectName) {
 		return sqlObjectName;
@@ -1308,7 +1308,7 @@ public abstract class DBDefinition {
 	 * the date expression provided. It should always return a value less than 1s.
 	 *
 	 * @param dateExpression
-	 * @return
+	 * @return SQL
 	 */
 	public String doSubsecondTransform(String dateExpression) {
 		return "(EXTRACT(MILLISECOND FROM " + dateExpression + ")/1000.0000)";
@@ -2663,7 +2663,7 @@ public abstract class DBDefinition {
 	 * the column name to be lowercase in this particular instance.
 	 *
 	 * @param primaryKeyColumnName
-	 * @return
+	 * @return the Primary Key formatted for this database.
 	 */
 	public String formatPrimaryKeyForRetrievingGeneratedKeys(String primaryKeyColumnName) {
 		return primaryKeyColumnName;
@@ -2680,7 +2680,7 @@ public abstract class DBDefinition {
 	 *
 	 * @param numberToChooseWith
 	 * @param strs
-	 * @return
+	 * @return SQL
 	 */
 	public String doChooseTransformation(String numberToChooseWith, List<String> strs) {
 		if (supportsChooseNatively()) {
@@ -2722,7 +2722,7 @@ public abstract class DBDefinition {
 	 * Used by {@link #doChooseTransformation(java.lang.String, java.util.List)
 	 * } to connect to the correct database function.
 	 *
-	 * @return
+	 * @return SQL
 	 */
 	public String getChooseFunctionName() {
 		return "";
@@ -2783,7 +2783,7 @@ public abstract class DBDefinition {
 	 * } to create indexes for the fields of the table.
 	 *
 	 * @param field
-	 * @return
+	 * @return SQL
 	 */
 	public String getIndexClauseForCreateTable(PropertyWrapper field) {
 		return "CREATE INDEX " + formatNameForDatabase("DBI_" + field.tableName() + "_" + field.columnName()) + " ON " + formatNameForDatabase(field.tableName()) + "(" + formatNameForDatabase(field.columnName()) + ")";
@@ -2913,9 +2913,9 @@ public abstract class DBDefinition {
 	 *
 	 * @param qdt
 	 * @param selectableName
-	 * @return
+	 * @return SQL
 	 */
-	public Object doColumnTransformForSelect(QueryableDatatype qdt, String selectableName) {
+	public String doColumnTransformForSelect(QueryableDatatype qdt, String selectableName) {
 		return selectableName;
 	}
 
@@ -3756,7 +3756,7 @@ public abstract class DBDefinition {
 	 *
 	 * @param polygon2DSQL
 	 * @param point2DSQL
-	 * @return
+	 * @return SQL
 	 */
 	public String doPolygon2DContainsPoint2DTransform(String polygon2DSQL, String point2DSQL) {
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
@@ -3928,7 +3928,7 @@ public abstract class DBDefinition {
 	 *
 	 * @param firstLineSegment
 	 * @param secondLineSegment
-	 * @return
+	 * @return SQL
 	 */
 	public String doLineSegment2DEqualsTransform(String firstLineSegment, String secondLineSegment) {
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
@@ -3938,7 +3938,7 @@ public abstract class DBDefinition {
 	 * Generate the SQL required to convert the line segment SQL expression into the WKT string format.
 	 *
 	 * @param lineSegment
-	 * @return
+	 * @return SQL
 	 */
 	public String doLineSegment2DAsTextTransform(String lineSegment) {
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
@@ -4098,7 +4098,7 @@ public abstract class DBDefinition {
 	 * Provides the SQL that will derive the smallest Y value of all the points in the MultiPoint2D value
 	 * 
 	 * @param multiPoint2D
-	 * @return
+	 * @return SQL
 	 */
 	public String doMultiPoint2DGetMinYTransform(String multiPoint2D) {
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
@@ -4108,7 +4108,7 @@ public abstract class DBDefinition {
 	 * Provides the SQL that will derive the smallest X value of all the points in the MultiPoint2D value
 	 * 
 	 * @param multiPoint2D
-	 * @return
+	 * @return SQL
 	 */
 	public String doMultiPoint2DGetMinXTransform(String multiPoint2D) {
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
@@ -4118,7 +4118,7 @@ public abstract class DBDefinition {
 	 * Provides the SQL that will derive the largest Y value of all the points in the MultiPoint2D value
 	 * 
 	 * @param multiPoint2D
-	 * @return
+	 * @return SQL
 	 */
 	public String doMultiPoint2DGetMaxYTransform(String multiPoint2D) {
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
@@ -4128,7 +4128,7 @@ public abstract class DBDefinition {
 	 * Provides the SQL that will derive the largest X value of all the points in the MultiPoint2D value
 	 * 
 	 * @param multiPoint2D
-	 * @return
+	 * @return SQL
 	 */
 	public String doMultiPoint2DGetMaxXTransform(String multiPoint2D) {
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
@@ -4173,7 +4173,7 @@ public abstract class DBDefinition {
 	 *
 	 * @param sqlQuery
 	 * @param options
-	 * @return
+	 * @return SQL
 	 */
 	public String doWrapQueryForPaging(String sqlQuery, QueryOptions options) {
 		return sqlQuery;

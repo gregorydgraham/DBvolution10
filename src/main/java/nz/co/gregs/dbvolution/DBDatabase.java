@@ -1050,7 +1050,7 @@ public abstract class DBDatabase implements Cloneable {
 	/**
 	 * Drops All Foreign Key Constraints From The Supplied Table, does not affect
 	 *
-	 * @DBForeignKey.
+	 * &commat;DBForeignKey.
 	 *
 	 * <p>
 	 * Generates and executes the required SQL to remove all foreign key
@@ -1476,7 +1476,7 @@ public abstract class DBDatabase implements Cloneable {
 	 * @param <A>
 	 * @param report
 	 * @param examples
-	 * @return
+	 * @return A list of the DBreports generated
 	 * @throws SQLException
 	 */
 	public <A extends DBReport> List<A> getAllRows(A report, DBRow... examples) throws SQLException {

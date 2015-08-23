@@ -56,7 +56,7 @@ class TableHandler {
 	 * Indicates whether this class maps to a database table. {@code true} always
 	 * with the present implementation.
 	 *
-	 * @return
+	 * @return TRUE if the class represents a DB table, otherwise FALSE.
 	 */
 	public boolean isTable() {
 		return isTable;

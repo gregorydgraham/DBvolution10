@@ -71,7 +71,7 @@ public @interface AutoFillDuringQueryIfPossible {
 	 * <p>
 	 * Must be a DBRow subclass.
 	 *
-	 * @return
+	 * @return the Class of DBRow to be filled.
 	 */
 	Class<? extends DBRow> requiredClass() default DBRow.class;
 

@@ -215,7 +215,7 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 
 	/**
 	 * Compare this BooleanExpression and the given {@link BooleanResult} using
-	 * the inequality operator, that is "<>" or similar.
+	 * the inequality operator, that is "&lt;&gt;" or similar.
 	 *
 	 * <p>
 	 * BooleanResult includes {@link BooleanExpression} and {@link DBBoolean}.

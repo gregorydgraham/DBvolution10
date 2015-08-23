@@ -88,7 +88,7 @@ class EnumTypeHandler {
 	/**
 	 * Determines the type of literal code values for the given enum type.
 	 *
-	 * @return
+	 * @return Ummm...
 	 */
 	private static Class<?> enumLiteralValueTypeOf(Class<? extends Enum<?>> enumType) {
 		Enum<?>[] enumValues = enumType.getEnumConstants();

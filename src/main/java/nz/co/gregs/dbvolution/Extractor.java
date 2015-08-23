@@ -115,7 +115,7 @@ public abstract class Extractor extends DBScript {
 	 * @param db
 	 * @param lowerbound
 	 * @param upperbound
-	 * @return
+	 * @return a DBQuery for the database and range
 	 */
 	abstract public DBQuery getQuery(DBDatabase db, int lowerbound, int upperbound);
 

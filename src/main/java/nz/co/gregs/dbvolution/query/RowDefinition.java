@@ -1267,7 +1267,7 @@ public class RowDefinition implements Serializable {
 	 * {@link PropertyWrapperDefinition PropertyWrapperDefinitions} for all the
 	 * columns within this RowDefinition.
 	 *
-	 * @return
+	 * @return a list of the PropertyWrapperDefinition for columns.
 	 */
 	protected List<PropertyWrapperDefinition> getColumnPropertyWrapperDefinitions() {
 		List<PropertyWrapperDefinition> columns = new ArrayList<PropertyWrapperDefinition>();

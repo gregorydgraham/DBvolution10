@@ -43,7 +43,7 @@ public interface Spatial2DExpression extends Spatial2DResult {
 	 * All Spatial2D values are still defined in 2D space and require an X and a Y
 	 * value.
 	 *
-	 * @return
+	 * @return a NumberExpression
 	 */
 	NumberExpression measurableDimensions();
 

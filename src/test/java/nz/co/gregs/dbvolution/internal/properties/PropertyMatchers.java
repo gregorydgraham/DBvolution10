@@ -31,7 +31,7 @@ class PropertyMatchers {
 	 *
 	 * @param c
 	 * @param matcher
-	 * @return
+	 * @return an item
 	 */
 	public static <E> E firstItemOf(Collection<E> c, Matcher<? super E> matcher) {
 		for (E item : c) {

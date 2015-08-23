@@ -2487,7 +2487,7 @@ public class DBQuery {
 	 * <p>
 	 * Use this method if you expect an extremely long query.
 	 *
-	 * @return
+	 * @return this DBQuery object
 	 */
 	public DBQuery clearTimeout() {
 		this.timeoutInMilliseconds = null;

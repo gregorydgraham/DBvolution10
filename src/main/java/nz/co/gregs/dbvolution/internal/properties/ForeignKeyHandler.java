@@ -112,7 +112,7 @@ class ForeignKeyHandler {
 	/**
 	 * Indicates whether this property references another class/table.
 	 *
-	 * @return
+	 * @return TRUE/FALSE
 	 */
 	public boolean isForeignKey() {
 		if (identityOnly) {

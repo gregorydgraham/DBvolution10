@@ -54,7 +54,6 @@
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<libDirectory>${basedir}/lib</libDirectory>
-		<maven.javadoc.failOnError>false</maven.javadoc.failOnError>
 	</properties>
     
 	<reporting>

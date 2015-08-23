@@ -341,7 +341,7 @@ public class OracleDBDefinition extends DBDefinition {
 	 * By default this method returns null as system tables are not a problem
 	 * for most databases.
 	 *
-	 * @return
+	 * @return a regexp pattern
 	 */
 	@Override
 	public String getSystemTableExclusionPattern() {

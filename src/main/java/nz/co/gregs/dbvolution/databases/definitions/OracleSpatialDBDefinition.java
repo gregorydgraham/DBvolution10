@@ -56,7 +56,7 @@ public class OracleSpatialDBDefinition extends OracleDBDefinition {
 	}
 
 	@Override
-	public Object doColumnTransformForSelect(QueryableDatatype qdt, String selectableName) {
+	public String doColumnTransformForSelect(QueryableDatatype qdt, String selectableName) {
 		if (qdt instanceof DBPolygon2D) {
 			return doPolygon2DAsTextTransform(selectableName);
 		} else if (qdt instanceof DBLine2D) {
@@ -349,7 +349,7 @@ public class OracleSpatialDBDefinition extends OracleDBDefinition {
 	 *
 	 * @param firstLineSegment
 	 * @param secondLineSegment
-	 * @return
+	 * @return SQL
 	 */
 	@Override
 	public String doLineSegment2DEqualsTransform(String firstLineSegment, String secondLineSegment) {
@@ -361,7 +361,7 @@ public class OracleSpatialDBDefinition extends OracleDBDefinition {
 	 * the WKT string format.
 	 *
 	 * @param lineSegment
-	 * @return
+	 * @return SQL
 	 */
 	@Override
 	public String doLineSegment2DAsTextTransform(String lineSegment) {
@@ -486,7 +486,7 @@ public class OracleSpatialDBDefinition extends OracleDBDefinition {
 	 * the MultiPoint2D value
 	 *
 	 * @param multiPoint2D
-	 * @return
+	 * @return SQL
 	 */
 	@Override
 	public String doMultiPoint2DGetMinYTransform(String multiPoint2D) {
@@ -501,7 +501,7 @@ public class OracleSpatialDBDefinition extends OracleDBDefinition {
 	 * the MultiPoint2D value
 	 *
 	 * @param multiPoint2D
-	 * @return
+	 * @return SQL
 	 */
 	@Override
 	public String doMultiPoint2DGetMinXTransform(String multiPoint2D) {
@@ -516,7 +516,7 @@ public class OracleSpatialDBDefinition extends OracleDBDefinition {
 	 * the MultiPoint2D value
 	 *
 	 * @param multiPoint2D
-	 * @return
+	 * @return SQL
 	 */
 	@Override
 	public String doMultiPoint2DGetMaxYTransform(String multiPoint2D) {
@@ -531,7 +531,7 @@ public class OracleSpatialDBDefinition extends OracleDBDefinition {
 	 * the MultiPoint2D value
 	 *
 	 * @param multiPoint2D
-	 * @return
+	 * @return SQL
 	 */
 	@Override
 	public String doMultiPoint2DGetMaxXTransform(String multiPoint2D) {

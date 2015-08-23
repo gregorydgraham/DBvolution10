@@ -461,7 +461,7 @@ public class Polygon2DExpression implements Spatial2DExpression, Polygon2DResult
 	 * The line is coincident with the edge of the polygon but it does not contain
 	 * any points within the polygon as it is only a line.
 	 *
-	 * @return
+	 * @return a Line2DExpression
 	 */
 	public Line2DExpression exteriorRing() {
 		Line2DExpression exteriorRingExpr = new Line2DExpression(new Polygon2DFunctionWithLine2DResult(this) {

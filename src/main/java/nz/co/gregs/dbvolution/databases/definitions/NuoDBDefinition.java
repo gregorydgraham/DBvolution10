@@ -115,7 +115,7 @@ public class NuoDBDefinition extends DBDefinition {
 	 *
 	 * @param firstSQLExpression
 	 * @param secondSQLExpression
-	 * @return
+	 * @return SQL
 	 */
 	@Override
 	public String doStringEqualsTransform(String firstSQLExpression, String secondSQLExpression) {
