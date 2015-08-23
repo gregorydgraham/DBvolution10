@@ -25,11 +25,6 @@ import nz.co.gregs.dbvolution.datatypes.DBDate;
 import nz.co.gregs.dbvolution.datatypes.DBJavaObject;
 import nz.co.gregs.dbvolution.datatypes.DBString;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
-import nz.co.gregs.dbvolution.datatypes.spatial2D.DBLine2D;
-import nz.co.gregs.dbvolution.datatypes.spatial2D.DBLineSegment2D;
-import nz.co.gregs.dbvolution.datatypes.spatial2D.DBMultiPoint2D;
-import nz.co.gregs.dbvolution.datatypes.spatial2D.DBPoint2D;
-import nz.co.gregs.dbvolution.datatypes.spatial2D.DBPolygon2D;
 import nz.co.gregs.dbvolution.expressions.BooleanExpression;
 import nz.co.gregs.dbvolution.expressions.DBExpression;
 import nz.co.gregs.dbvolution.internal.oracle.StringFunctions;
@@ -234,7 +229,7 @@ public class OracleDBDefinition extends DBDefinition {
 
 	@Override
 	public String doAddDaysTransform(String dateValue, String numberOfDays) {
-		return "((" + dateValue + ")+(" + numberOfDays + "))";
+		return "((" + dateValue + ")+(INTERVAL '1' DAY*(" + numberOfDays +")))";
 	}
 
 	@Override
