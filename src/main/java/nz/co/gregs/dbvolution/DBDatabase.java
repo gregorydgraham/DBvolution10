@@ -1050,14 +1050,14 @@ public abstract class DBDatabase implements Cloneable {
 	/**
 	 * Drops All Foreign Key Constraints From The Supplied Table, does not affect
 	 *
-	 * &commat;DBForeignKey.
+	 * &#64;DBForeignKey.
 	 *
 	 * <p>
 	 * Generates and executes the required SQL to remove all foreign key
 	 * constraints on this table defined within the database.
 	 *
 	 * <p>
-	 * This methods is supplied as an inverse to {@link #createForeignKeyConstraints(nz.co.gregs.dbvolution.DBRow).
+	 * This methods is supplied as an inverse to {@link #createForeignKeyConstraints(nz.co.gregs.dbvolution.DBRow)}.
 	 *
 	 * <p>
 	 * If a pair of tables have foreign keys constraints to each other it may be
