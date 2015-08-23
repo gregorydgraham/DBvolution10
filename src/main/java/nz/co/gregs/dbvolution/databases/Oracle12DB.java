@@ -25,7 +25,7 @@ import nz.co.gregs.dbvolution.databases.definitions.Oracle12DBDefinition;
  *
  * @author Gregory Graham
  * @see OracleAWSDB
- * @see Oracle11DB
+ * @see Oracle11XEDB
  * @see Oracle12DBDefinition
  */
 public class Oracle12DB extends OracleDB {

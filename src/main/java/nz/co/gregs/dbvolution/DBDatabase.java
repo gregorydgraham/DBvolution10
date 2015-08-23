@@ -1186,12 +1186,9 @@ public abstract class DBDatabase implements Cloneable {
 	 * transaction or AccidentalDroppingOfTableException if dropping tables is
 	 * being prevented by DBvolution.
 	 * <p>
-	 * An even worse idea than {@link #dropTable(nz.co.gregs.dbvolution.DBRow)
-	 * }
-	 * <
-	 * p>
-	 * I
-	 * n General NEVER USE THIS METHOD.
+	 * An even worse idea than {@link #dropTable(nz.co.gregs.dbvolution.DBRow)}
+	 * <p>
+	 * In General NEVER USE THIS METHOD.
 	 *
 	 * <p>
 	 * Seriously NEVER USE THIS METHOD.

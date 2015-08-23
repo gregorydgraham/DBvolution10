@@ -28,10 +28,10 @@ import nz.co.gregs.dbvolution.databases.supports.SupportsPolygonDatatype;
  * Super class for connecting the different versions of the Oracle DB.
  *
  * <p>
- * You should probably use {@link Oracle11DB} or {@link Oracle12DB} instead.
+ * You should probably use {@link Oracle11XEDB} or {@link Oracle12DB} instead.
  *
  * @author Gregory Graham
- * @see Oracle11DB
+ * @see Oracle11XEDB
  * @see Oracle12DB
  */
 public abstract class OracleDB extends DBDatabase implements SupportsPolygonDatatype {
@@ -40,7 +40,7 @@ public abstract class OracleDB extends DBDatabase implements SupportsPolygonData
 	 * Creates a DBDatabase instance for the definition and data source.
 	 *
 	 * <p>
-	 * You should probably be using {@link Oracle11DB#Oracle11DB(java.lang.String, int, java.lang.String, java.lang.String, java.lang.String)
+	 * You should probably be using {@link Oracle11XEDB#Oracle11XEDB(java.lang.String, int, java.lang.String, java.lang.String, java.lang.String)
 	 * } or
 	 * {@link Oracle12DB#Oracle12DB(java.lang.String, int, java.lang.String, java.lang.String, java.lang.String)}
 	 *

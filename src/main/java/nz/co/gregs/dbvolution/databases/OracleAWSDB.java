@@ -43,7 +43,7 @@ public abstract class OracleAWSDB extends OracleDB implements SupportsPolygonDat
 	 * Creates a DBDatabase instance for the definition and data source.
 	 *
 	 * <p>
-	 * You should probably be using {@link Oracle11DB#Oracle11DB(java.lang.String, int, java.lang.String, java.lang.String, java.lang.String)
+	 * You should probably be using {@link Oracle11XEDB#Oracle11XEDB(java.lang.String, int, java.lang.String, java.lang.String, java.lang.String)
 	 * } or
 	 * {@link Oracle12DB#Oracle12DB(java.lang.String, int, java.lang.String, java.lang.String, java.lang.String)}
 	 *
