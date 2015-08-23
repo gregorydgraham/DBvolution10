@@ -382,4 +382,9 @@ public class OracleDBDefinition extends DBDefinition {
 	public String doSubstringAfterTransform(String fromThis, String afterThis) {
 		return StringFunctions.SUBSTRINGAFTER + "(" + fromThis + ", " + afterThis + ")";
 	}
+
+	@Override
+	public String doEndOfMonthTransform(String dateSQL) {
+		return "LAST_DAY("+dateSQL+")";
+	}
 }

@@ -204,7 +204,7 @@ public class DateExpression implements DateResult, RangeComparable<DateResult> {
 	 */
 	public static DateExpression currentDateOnly() {
 		return new DateExpression(
-				new DBNonaryFunction() {
+				new FunctionWithDateResult() {
 
 					@Override
 					public String toSQLString(DBDatabase db) {
@@ -229,7 +229,7 @@ public class DateExpression implements DateResult, RangeComparable<DateResult> {
 	 */
 	public static DateExpression currentDate() {
 		return new DateExpression(
-				new DBNonaryFunction() {
+				new FunctionWithDateResult() {
 
 					@Override
 					public String toSQLString(DBDatabase db) {
@@ -255,7 +255,7 @@ public class DateExpression implements DateResult, RangeComparable<DateResult> {
 	 */
 	public static DateExpression currentTime() {
 		return new DateExpression(
-				new DBNonaryFunction() {
+				new FunctionWithDateResult() {
 
 					@Override
 					public String toSQLString(DBDatabase db) {
@@ -277,7 +277,7 @@ public class DateExpression implements DateResult, RangeComparable<DateResult> {
 	 */
 	public NumberExpression year() {
 		return new NumberExpression(
-				new UnaryComplicatedNumberFunction(this) {
+				new DateExpressionWithNumberResult(this) {
 					@Override
 					public String toSQLString(DBDatabase db) {
 						return db.getDefinition().doYearTransform(this.only.toSQLString(db));
@@ -315,7 +315,7 @@ public class DateExpression implements DateResult, RangeComparable<DateResult> {
 	 */
 	public NumberExpression month() {
 		return new NumberExpression(
-				new UnaryComplicatedNumberFunction(this) {
+				new DateExpressionWithNumberResult(this) {
 					@Override
 					public String toSQLString(DBDatabase db) {
 						return db.getDefinition().doMonthTransform(this.only.toSQLString(db));
@@ -358,7 +358,7 @@ public class DateExpression implements DateResult, RangeComparable<DateResult> {
 	 */
 	public NumberExpression day() {
 		return new NumberExpression(
-				new UnaryComplicatedNumberFunction(this) {
+				new DateExpressionWithNumberResult(this) {
 					@Override
 					public String toSQLString(DBDatabase db) {
 						return db.getDefinition().doDayTransform(this.only.toSQLString(db));
@@ -396,7 +396,7 @@ public class DateExpression implements DateResult, RangeComparable<DateResult> {
 	 */
 	public NumberExpression hour() {
 		return new NumberExpression(
-				new UnaryComplicatedNumberFunction(this) {
+				new DateExpressionWithNumberResult(this) {
 					@Override
 					public String toSQLString(DBDatabase db) {
 						return db.getDefinition().doHourTransform(this.only.toSQLString(db));
@@ -434,7 +434,7 @@ public class DateExpression implements DateResult, RangeComparable<DateResult> {
 	 */
 	public NumberExpression minute() {
 		return new NumberExpression(
-				new UnaryComplicatedNumberFunction(this) {
+				new DateExpressionWithNumberResult(this) {
 					@Override
 					public String toSQLString(DBDatabase db) {
 						return db.getDefinition().doMinuteTransform(this.only.toSQLString(db));
@@ -478,7 +478,7 @@ public class DateExpression implements DateResult, RangeComparable<DateResult> {
 	 */
 	public NumberExpression second() {
 		return new NumberExpression(
-				new UnaryComplicatedNumberFunction(this) {
+				new DateExpressionWithNumberResult(this) {
 					@Override
 					public String toSQLString(DBDatabase db) {
 						return db.getDefinition().doSecondTransform(this.only.toSQLString(db));
@@ -497,7 +497,7 @@ public class DateExpression implements DateResult, RangeComparable<DateResult> {
 	 */
 	public NumberExpression subsecond() {
 		return new NumberExpression(
-				new UnaryComplicatedNumberFunction(this) {
+				new DateExpressionWithNumberResult(this) {
 					@Override
 					public String toSQLString(DBDatabase db) {
 						return db.getDefinition().doSubsecondTransform(this.only.toSQLString(db));
@@ -554,7 +554,7 @@ public class DateExpression implements DateResult, RangeComparable<DateResult> {
 	 */
 	@Override
 	public BooleanExpression is(DateResult dateExpression) {
-		BooleanExpression isExpr = new BooleanExpression(new DBBinaryBooleanArithmetic(this, dateExpression) {
+		BooleanExpression isExpr = new BooleanExpression(new DateDateExressionWithBooleanResult(this, dateExpression) {
 			@Override
 			protected String getEquationOperator(DBDatabase db) {
 				return " = ";
@@ -577,7 +577,7 @@ public class DateExpression implements DateResult, RangeComparable<DateResult> {
 	 */
 	@Override
 	public BooleanExpression isNot(DateResult dateExpression) {
-		BooleanExpression isExpr = new BooleanExpression(new DBBinaryBooleanArithmetic(this, dateExpression) {
+		BooleanExpression isExpr = new BooleanExpression(new DateDateExressionWithBooleanResult(this, dateExpression) {
 			@Override
 			protected String getEquationOperator(DBDatabase db) {
 				return " <> ";
@@ -972,7 +972,7 @@ public class DateExpression implements DateResult, RangeComparable<DateResult> {
 	 */
 	@Override
 	public BooleanExpression isLessThan(DateResult dateExpression) {
-		return new BooleanExpression(new DateExpression.DBBinaryBooleanArithmetic(this, dateExpression) {
+		return new BooleanExpression(new DateExpression.DateDateExressionWithBooleanResult(this, dateExpression) {
 			@Override
 			protected String getEquationOperator(DBDatabase db) {
 				return " < ";
@@ -1002,7 +1002,7 @@ public class DateExpression implements DateResult, RangeComparable<DateResult> {
 	 * @return DateRepeat expression
 	 */
 	public DateRepeatExpression getDateRepeatFrom(DateResult dateExpression) {
-		return new DateRepeatExpression(new DateDateWithDateRepeatResult(this, dateExpression) {
+		return new DateRepeatExpression(new DateDateExpressionWithDateRepeatResult(this, dateExpression) {
 
 			@Override
 			public String toSQLString(DBDatabase db) {
@@ -1128,7 +1128,7 @@ public class DateExpression implements DateResult, RangeComparable<DateResult> {
 	 */
 	@Override
 	public BooleanExpression isLessThanOrEqual(DateResult dateExpression) {
-		return new BooleanExpression(new DBBinaryBooleanArithmetic(this, dateExpression) {
+		return new BooleanExpression(new DateDateExressionWithBooleanResult(this, dateExpression) {
 			@Override
 			protected String getEquationOperator(DBDatabase db) {
 				return " <= ";
@@ -1161,7 +1161,7 @@ public class DateExpression implements DateResult, RangeComparable<DateResult> {
 	 */
 	@Override
 	public BooleanExpression isGreaterThan(DateResult dateExpression) {
-		return new BooleanExpression(new DBBinaryBooleanArithmetic(this, dateExpression) {
+		return new BooleanExpression(new DateDateExressionWithBooleanResult(this, dateExpression) {
 			@Override
 			protected String getEquationOperator(DBDatabase db) {
 				return " > ";
@@ -1194,7 +1194,7 @@ public class DateExpression implements DateResult, RangeComparable<DateResult> {
 	 */
 	@Override
 	public BooleanExpression isGreaterThanOrEqual(DateResult dateExpression) {
-		return new BooleanExpression(new DBBinaryBooleanArithmetic(this, dateExpression) {
+		return new BooleanExpression(new DateDateExressionWithBooleanResult(this, dateExpression) {
 			@Override
 			protected String getEquationOperator(DBDatabase db) {
 				return " >= ";
@@ -1351,7 +1351,7 @@ public class DateExpression implements DateResult, RangeComparable<DateResult> {
 	 * @return a boolean expression representing the required comparison
 	 */
 	public BooleanExpression isIn(DateResult... possibleValues) {
-		BooleanExpression isInExpr = new BooleanExpression(new DBNnaryBooleanFunction(this, possibleValues) {
+		BooleanExpression isInExpr = new BooleanExpression(new DateDateResultFunctionWithBooleanResult(this, possibleValues) {
 
 			@Override
 			public String toSQLString(DBDatabase db) {
@@ -1385,7 +1385,7 @@ public class DateExpression implements DateResult, RangeComparable<DateResult> {
 	 */
 	public DateExpression ifDBNull(Date alternative) {
 		return new DateExpression(
-				new DateExpression.DBBinaryFunction(this, new DateExpression(alternative)) {
+				new DateExpression.DateDateFunctionWithDateResult(this, new DateExpression(alternative)) {
 					@Override
 					String getFunctionName(DBDatabase db) {
 						return db.getDefinition().getIfNullFunctionName();
@@ -1410,7 +1410,7 @@ public class DateExpression implements DateResult, RangeComparable<DateResult> {
 	 */
 	public DateExpression ifDBNull(DateResult alternative) {
 		return new DateExpression(
-				new DateExpression.DBBinaryFunction(this, alternative) {
+				new DateExpression.DateDateFunctionWithDateResult(this, alternative) {
 
 					@Override
 					public String toSQLString(DBDatabase db) {
@@ -1435,7 +1435,7 @@ public class DateExpression implements DateResult, RangeComparable<DateResult> {
 	 * @return a number expression.
 	 */
 	public NumberExpression count() {
-		return new NumberExpression(new DBUnaryNumberFunction(this) {
+		return new NumberExpression(new DateFunctionWithNumberResult(this) {
 			@Override
 			String getFunctionName(DBDatabase db) {
 				return db.getDefinition().getCountFunctionName();
@@ -1458,7 +1458,7 @@ public class DateExpression implements DateResult, RangeComparable<DateResult> {
 	 * @return a number expression.
 	 */
 	public DateExpression max() {
-		return new DateExpression(new DBUnaryDateFunction(this) {
+		return new DateExpression(new DateFunctionWithDateResult(this) {
 			@Override
 			String getFunctionName(DBDatabase db) {
 				return db.getDefinition().getMaxFunctionName();
@@ -1486,7 +1486,7 @@ public class DateExpression implements DateResult, RangeComparable<DateResult> {
 	 * @return a number expression.
 	 */
 	public DateExpression min() {
-		return new DateExpression(new DBUnaryDateFunction(this) {
+		return new DateExpression(new DateFunctionWithDateResult(this) {
 			@Override
 			String getFunctionName(DBDatabase db) {
 				return db.getDefinition().getMinFunctionName();
@@ -1548,7 +1548,7 @@ public class DateExpression implements DateResult, RangeComparable<DateResult> {
 	 */
 	public DateExpression addSeconds(NumberExpression secondsToAdd) {
 		return new DateExpression(
-				new DBBinaryDateNumberFunctionWithDateResult(this, secondsToAdd) {
+				new DateNumberExpressionWithDateResult(this, secondsToAdd) {
 
 					@Override
 					public boolean getIncludesNull() {
@@ -1609,7 +1609,7 @@ public class DateExpression implements DateResult, RangeComparable<DateResult> {
 	 */
 	public DateExpression addMinutes(NumberExpression minutesToAdd) {
 		return new DateExpression(
-				new DBBinaryDateNumberFunctionWithDateResult(this, minutesToAdd) {
+				new DateNumberExpressionWithDateResult(this, minutesToAdd) {
 
 					@Override
 					public boolean getIncludesNull() {
@@ -1647,7 +1647,7 @@ public class DateExpression implements DateResult, RangeComparable<DateResult> {
 	 */
 	public DateExpression addDays(NumberExpression daysToAdd) {
 		return new DateExpression(
-				new DBBinaryDateNumberFunctionWithDateResult(this, daysToAdd) {
+				new DateNumberExpressionWithDateResult(this, daysToAdd) {
 
 					@Override
 					public boolean getIncludesNull() {
@@ -1685,7 +1685,7 @@ public class DateExpression implements DateResult, RangeComparable<DateResult> {
 	 */
 	public DateExpression addHours(NumberExpression hoursToAdd) {
 		return new DateExpression(
-				new DBBinaryDateNumberFunctionWithDateResult(this, hoursToAdd) {
+				new DateNumberExpressionWithDateResult(this, hoursToAdd) {
 
 					@Override
 					public boolean getIncludesNull() {
@@ -1723,7 +1723,7 @@ public class DateExpression implements DateResult, RangeComparable<DateResult> {
 	 */
 	public DateExpression addWeeks(NumberExpression weeksToAdd) {
 		return new DateExpression(
-				new DBBinaryDateNumberFunctionWithDateResult(this, weeksToAdd) {
+				new DateNumberExpressionWithDateResult(this, weeksToAdd) {
 
 					@Override
 					public boolean getIncludesNull() {
@@ -1761,7 +1761,7 @@ public class DateExpression implements DateResult, RangeComparable<DateResult> {
 	 */
 	public DateExpression addMonths(NumberExpression monthsToAdd) {
 		return new DateExpression(
-				new DBBinaryDateNumberFunctionWithDateResult(this, monthsToAdd) {
+				new DateNumberExpressionWithDateResult(this, monthsToAdd) {
 
 					@Override
 					public boolean getIncludesNull() {
@@ -1799,7 +1799,7 @@ public class DateExpression implements DateResult, RangeComparable<DateResult> {
 	 */
 	public DateExpression addYears(NumberExpression yearsToAdd) {
 		return new DateExpression(
-				new DBBinaryDateNumberFunctionWithDateResult(this, yearsToAdd) {
+				new DateNumberExpressionWithDateResult(this, yearsToAdd) {
 
 					@Override
 					public boolean getIncludesNull() {
@@ -1839,7 +1839,7 @@ public class DateExpression implements DateResult, RangeComparable<DateResult> {
 	 */
 	public NumberExpression daysFrom(DateResult dateToCompareTo) {
 		return new NumberExpression(
-				new DBBinaryDateFunctionWithNumberResult(this, dateToCompareTo) {
+				new DateDateFunctionWithNumberResult(this, dateToCompareTo) {
 
 					@Override
 					public boolean getIncludesNull() {
@@ -1879,7 +1879,7 @@ public class DateExpression implements DateResult, RangeComparable<DateResult> {
 	 */
 	public NumberExpression weeksFrom(DateExpression dateToCompareTo) {
 		return new NumberExpression(
-				new DBBinaryDateFunctionWithNumberResult(this, dateToCompareTo) {
+				new DateDateFunctionWithNumberResult(this, dateToCompareTo) {
 
 					@Override
 					public boolean getIncludesNull() {
@@ -1919,7 +1919,7 @@ public class DateExpression implements DateResult, RangeComparable<DateResult> {
 	 */
 	public NumberExpression monthsFrom(DateResult dateToCompareTo) {
 		return new NumberExpression(
-				new DBBinaryDateFunctionWithNumberResult(this, dateToCompareTo) {
+				new DateDateFunctionWithNumberResult(this, dateToCompareTo) {
 
 					@Override
 					public boolean getIncludesNull() {
@@ -1959,7 +1959,7 @@ public class DateExpression implements DateResult, RangeComparable<DateResult> {
 	 */
 	public NumberExpression yearsFrom(DateResult dateToCompareTo) {
 		return new NumberExpression(
-				new DBBinaryDateFunctionWithNumberResult(this, dateToCompareTo) {
+				new DateDateFunctionWithNumberResult(this, dateToCompareTo) {
 
 					@Override
 					public boolean getIncludesNull() {
@@ -1999,7 +1999,7 @@ public class DateExpression implements DateResult, RangeComparable<DateResult> {
 	 */
 	public NumberExpression hoursFrom(DateResult dateToCompareTo) {
 		return new NumberExpression(
-				new DBBinaryDateFunctionWithNumberResult(this, dateToCompareTo) {
+				new DateDateFunctionWithNumberResult(this, dateToCompareTo) {
 
 					@Override
 					public boolean getIncludesNull() {
@@ -2039,7 +2039,7 @@ public class DateExpression implements DateResult, RangeComparable<DateResult> {
 	 */
 	public NumberExpression minutesFrom(DateResult dateToCompareTo) {
 		return new NumberExpression(
-				new DBBinaryDateFunctionWithNumberResult(this, dateToCompareTo) {
+				new DateDateFunctionWithNumberResult(this, dateToCompareTo) {
 
 					@Override
 					public boolean getIncludesNull() {
@@ -2079,7 +2079,7 @@ public class DateExpression implements DateResult, RangeComparable<DateResult> {
 	 */
 	public NumberExpression secondsFrom(DateResult dateToCompareTo) {
 		return new NumberExpression(
-				new DBBinaryDateFunctionWithNumberResult(this, dateToCompareTo) {
+				new DateDateFunctionWithNumberResult(this, dateToCompareTo) {
 
 					@Override
 					public boolean getIncludesNull() {
@@ -2123,7 +2123,19 @@ public class DateExpression implements DateResult, RangeComparable<DateResult> {
 	 * @return a Date expression
 	 */
 	public DateExpression endOfMonth() {
-		return this.addDays(this.day().minus(1).bracket().times(-1)).addMonths(1).addDays(-1);
+		return new DateExpression(
+				new DateExpressionWithDateResult(this) {
+					@Override
+					public String toSQLString(DBDatabase db) {
+						try {
+							return db.getDefinition().doEndOfMonthTransform(this.getFirst().toSQLString(db));
+						} catch (UnsupportedOperationException exp) {
+							return getFirst().addDays(getFirst().day().minus(1).bracket().times(-1)).addMonths(1).addDays(-1).toSQLString(db);
+						}
+					}
+				}
+		);
+//		return this.addDays(this.day().minus(1).bracket().times(-1)).addMonths(1).addDays(-1);
 	}
 
 	/**
@@ -2135,7 +2147,7 @@ public class DateExpression implements DateResult, RangeComparable<DateResult> {
 	 */
 	public NumberExpression dayOfWeek() {
 		return new NumberExpression(
-				new UnaryComplicatedNumberFunction(this) {
+				new DateExpressionWithNumberResult(this) {
 					@Override
 					public String toSQLString(DBDatabase db) {
 						return db.getDefinition().doDayOfWeekTransform(this.only.toSQLString(db));
@@ -2244,7 +2256,7 @@ public class DateExpression implements DateResult, RangeComparable<DateResult> {
 	 */
 	public static DateExpression leastOf(DateResult... possibleValues) {
 		DateExpression leastExpr
-				= new DateExpression(new NnaryDateFunctionDateResult(possibleValues) {
+				= new DateExpression(new DateArrayFunctionWithDateResult(possibleValues) {
 
 					@Override
 					public String toSQLString(DBDatabase db) {
@@ -2311,7 +2323,7 @@ public class DateExpression implements DateResult, RangeComparable<DateResult> {
 	 */
 	public static DateExpression greatestOf(DateResult... possibleValues) {
 		DateExpression leastExpr
-				= new DateExpression(new NnaryDateFunctionDateResult(possibleValues) {
+				= new DateExpression(new DateArrayFunctionWithDateResult(possibleValues) {
 
 					@Override
 					public String toSQLString(DBDatabase db) {
@@ -2330,9 +2342,9 @@ public class DateExpression implements DateResult, RangeComparable<DateResult> {
 		return leastExpr;
 	}
 
-	private static abstract class DBNonaryFunction extends DateExpression {
+	private static abstract class FunctionWithDateResult extends DateExpression {
 
-		DBNonaryFunction() {
+		FunctionWithDateResult() {
 		}
 
 		abstract String getFunctionName(DBDatabase db);
@@ -2356,8 +2368,8 @@ public class DateExpression implements DateResult, RangeComparable<DateResult> {
 		}
 
 		@Override
-		public DateExpression.DBNonaryFunction copy() {
-			DateExpression.DBNonaryFunction newInstance;
+		public DateExpression.FunctionWithDateResult copy() {
+			DateExpression.FunctionWithDateResult newInstance;
 			try {
 				newInstance = getClass().newInstance();
 			} catch (InstantiationException ex) {
@@ -2389,15 +2401,15 @@ public class DateExpression implements DateResult, RangeComparable<DateResult> {
 		}
 	}
 
-	private static abstract class UnaryComplicatedNumberFunction extends NumberExpression {
+	private static abstract class DateExpressionWithNumberResult extends NumberExpression {
 
 		protected DateExpression only;
 
-		UnaryComplicatedNumberFunction() {
+		DateExpressionWithNumberResult() {
 			this.only = null;
 		}
 
-		UnaryComplicatedNumberFunction(DateExpression only) {
+		DateExpressionWithNumberResult(DateExpression only) {
 			this.only = only;
 		}
 
@@ -2410,8 +2422,8 @@ public class DateExpression implements DateResult, RangeComparable<DateResult> {
 		public abstract String toSQLString(DBDatabase db);
 
 		@Override
-		public DateExpression.UnaryComplicatedNumberFunction copy() {
-			DateExpression.UnaryComplicatedNumberFunction newInstance;
+		public DateExpression.DateExpressionWithNumberResult copy() {
+			DateExpression.DateExpressionWithNumberResult newInstance;
 			try {
 				newInstance = getClass().newInstance();
 			} catch (InstantiationException ex) {
@@ -2452,13 +2464,83 @@ public class DateExpression implements DateResult, RangeComparable<DateResult> {
 		}
 	}
 
-	private static abstract class DBBinaryBooleanArithmetic extends BooleanExpression {
+	private static abstract class DateExpressionWithDateResult extends DateExpression {
+
+		private DateExpression only;
+
+		DateExpressionWithDateResult() {
+			this.only = null;
+		}
+
+		DateExpressionWithDateResult(DateExpression only) {
+			this.only = only;
+		}
+
+		@Override
+		public DBDate getQueryableDatatypeForExpressionValue() {
+			return new DBDate();
+		}
+
+		@Override
+		public abstract String toSQLString(DBDatabase db);
+
+		@Override
+		public DateExpressionWithDateResult copy() {
+			DateExpressionWithDateResult newInstance;
+			try {
+				newInstance = getClass().newInstance();
+			} catch (InstantiationException ex) {
+				throw new RuntimeException(ex);
+			} catch (IllegalAccessException ex) {
+				throw new RuntimeException(ex);
+			}
+			newInstance.only = getFirst().copy();
+			return newInstance;
+		}
+
+		@Override
+		public Set<DBRow> getTablesInvolved() {
+			HashSet<DBRow> hashSet = new HashSet<DBRow>();
+			if (getFirst() != null) {
+				hashSet.addAll(getFirst().getTablesInvolved());
+			}
+			return hashSet;
+		}
+
+		@Override
+		public boolean isAggregator() {
+			return getFirst().isAggregator();
+		}
+
+		@Override
+		public boolean getIncludesNull() {
+			return false;
+		}
+
+		@Override
+		public boolean isPurelyFunctional() {
+			if (getFirst() == null) {
+				return true;
+			} else {
+				return getFirst().isPurelyFunctional();
+			}
+		}
+
+		/**
+		 * @return the only
+		 */
+		public DateExpression getFirst() {
+			return only;
+		}
+	}
+
+	private static abstract class DateDateExressionWithBooleanResult extends BooleanExpression {
 
 		private DateExpression first;
 		private DateResult second;
 		private boolean requiresNullProtection = false;
 
-		DBBinaryBooleanArithmetic(DateExpression first, DateResult second) {
+		DateDateExressionWithBooleanResult(DateExpression first, DateResult second) {
 			this.first = first;
 			this.second = second;
 			if (second == null || second.getIncludesNull()) {
@@ -2477,8 +2559,8 @@ public class DateExpression implements DateResult, RangeComparable<DateResult> {
 		}
 
 		@Override
-		public DBBinaryBooleanArithmetic copy() {
-			DBBinaryBooleanArithmetic newInstance;
+		public DateDateExressionWithBooleanResult copy() {
+			DateDateExressionWithBooleanResult newInstance;
 			try {
 				newInstance = getClass().newInstance();
 			} catch (InstantiationException ex) {
@@ -2516,13 +2598,13 @@ public class DateExpression implements DateResult, RangeComparable<DateResult> {
 		}
 	}
 
-	private static abstract class DateDateWithDateRepeatResult extends DateRepeatExpression {
+	private static abstract class DateDateExpressionWithDateRepeatResult extends DateRepeatExpression {
 
 		private DateExpression first;
 		private DateResult second;
 		private boolean requiresNullProtection = false;
 
-		DateDateWithDateRepeatResult(DateExpression first, DateResult second) {
+		DateDateExpressionWithDateRepeatResult(DateExpression first, DateResult second) {
 			this.first = first;
 			this.second = second;
 			if (second == null || second.getIncludesNull()) {
@@ -2531,8 +2613,8 @@ public class DateExpression implements DateResult, RangeComparable<DateResult> {
 		}
 
 		@Override
-		public DateDateWithDateRepeatResult copy() {
-			DateDateWithDateRepeatResult newInstance;
+		public DateDateExpressionWithDateRepeatResult copy() {
+			DateDateExpressionWithDateRepeatResult newInstance;
 			try {
 				newInstance = getClass().newInstance();
 			} catch (InstantiationException ex) {
@@ -2655,16 +2737,16 @@ public class DateExpression implements DateResult, RangeComparable<DateResult> {
 		}
 	}
 
-	private static abstract class NnaryDateFunctionDateResult extends DateExpression {
+	private static abstract class DateArrayFunctionWithDateResult extends DateExpression {
 
 		protected DateExpression column;
 		protected final List<DateResult> values = new ArrayList<DateResult>();
 		boolean nullProtectionRequired = false;
 
-		NnaryDateFunctionDateResult() {
+		DateArrayFunctionWithDateResult() {
 		}
 
-		NnaryDateFunctionDateResult(DateResult[] rightHandSide) {
+		DateArrayFunctionWithDateResult(DateResult[] rightHandSide) {
 			for (DateResult dateResult : rightHandSide) {
 				if (dateResult == null) {
 					this.nullProtectionRequired = true;
@@ -2705,8 +2787,8 @@ public class DateExpression implements DateResult, RangeComparable<DateResult> {
 		}
 
 		@Override
-		public NnaryDateFunctionDateResult copy() {
-			NnaryDateFunctionDateResult newInstance;
+		public DateArrayFunctionWithDateResult copy() {
+			DateArrayFunctionWithDateResult newInstance;
 			try {
 				newInstance = getClass().newInstance();
 			} catch (InstantiationException ex) {
@@ -2761,16 +2843,16 @@ public class DateExpression implements DateResult, RangeComparable<DateResult> {
 		}
 	}
 
-	private static abstract class DBNnaryBooleanFunction extends BooleanExpression {
+	private static abstract class DateDateResultFunctionWithBooleanResult extends BooleanExpression {
 
 		private DateExpression column;
 		private List<DateResult> values = new ArrayList<DateResult>();
 		boolean nullProtectionRequired = false;
 
-		DBNnaryBooleanFunction() {
+		DateDateResultFunctionWithBooleanResult() {
 		}
 
-		DBNnaryBooleanFunction(DateExpression leftHandSide, DateResult[] rightHandSide) {
+		DateDateResultFunctionWithBooleanResult(DateExpression leftHandSide, DateResult[] rightHandSide) {
 			this.column = leftHandSide;
 			for (DateResult dateResult : rightHandSide) {
 				if (dateResult == null) {
@@ -2819,8 +2901,8 @@ public class DateExpression implements DateResult, RangeComparable<DateResult> {
 		}
 
 		@Override
-		public DBNnaryBooleanFunction copy() {
-			DBNnaryBooleanFunction newInstance;
+		public DateDateResultFunctionWithBooleanResult copy() {
+			DateDateResultFunctionWithBooleanResult newInstance;
 			try {
 				newInstance = getClass().newInstance();
 			} catch (InstantiationException ex) {
@@ -2876,17 +2958,17 @@ public class DateExpression implements DateResult, RangeComparable<DateResult> {
 		}
 	}
 
-	private static abstract class DBBinaryFunction extends DateExpression {
+	private static abstract class DateDateFunctionWithDateResult extends DateExpression {
 
 		private DateExpression first;
 		private DateResult second;
 
-		DBBinaryFunction(DateExpression first) {
+		DateDateFunctionWithDateResult(DateExpression first) {
 			this.first = first;
 			this.second = null;
 		}
 
-		DBBinaryFunction(DateExpression first, DateResult second) {
+		DateDateFunctionWithDateResult(DateExpression first, DateResult second) {
 			this.first = first;
 			this.second = second;
 		}
@@ -2901,8 +2983,8 @@ public class DateExpression implements DateResult, RangeComparable<DateResult> {
 		}
 
 		@Override
-		public DBBinaryFunction copy() {
-			DBBinaryFunction newInstance;
+		public DateDateFunctionWithDateResult copy() {
+			DateDateFunctionWithDateResult newInstance;
 			try {
 				newInstance = getClass().newInstance();
 			} catch (InstantiationException ex) {
@@ -2970,15 +3052,15 @@ public class DateExpression implements DateResult, RangeComparable<DateResult> {
 		}
 	}
 
-	private static abstract class DBUnaryNumberFunction extends NumberExpression {
+	private static abstract class DateFunctionWithNumberResult extends NumberExpression {
 
 		protected DateExpression only;
 
-		DBUnaryNumberFunction() {
+		DateFunctionWithNumberResult() {
 			this.only = null;
 		}
 
-		DBUnaryNumberFunction(DateExpression only) {
+		DateFunctionWithNumberResult(DateExpression only) {
 			this.only = only;
 		}
 
@@ -3003,8 +3085,8 @@ public class DateExpression implements DateResult, RangeComparable<DateResult> {
 		}
 
 		@Override
-		public DBUnaryNumberFunction copy() {
-			DBUnaryNumberFunction newInstance;
+		public DateFunctionWithNumberResult copy() {
+			DateFunctionWithNumberResult newInstance;
 			try {
 				newInstance = getClass().newInstance();
 			} catch (InstantiationException ex) {
@@ -3041,15 +3123,15 @@ public class DateExpression implements DateResult, RangeComparable<DateResult> {
 		}
 	}
 
-	private static abstract class DBUnaryDateFunction extends DateExpression {
+	private static abstract class DateFunctionWithDateResult extends DateExpression {
 
 		protected DateExpression only;
 
-		DBUnaryDateFunction() {
+		DateFunctionWithDateResult() {
 			this.only = null;
 		}
 
-		DBUnaryDateFunction(DateExpression only) {
+		DateFunctionWithDateResult(DateExpression only) {
 			this.only = only;
 		}
 
@@ -3073,8 +3155,8 @@ public class DateExpression implements DateResult, RangeComparable<DateResult> {
 		}
 
 		@Override
-		public DBUnaryDateFunction copy() {
-			DBUnaryDateFunction newInstance;
+		public DateFunctionWithDateResult copy() {
+			DateFunctionWithDateResult newInstance;
 			try {
 				newInstance = getClass().newInstance();
 			} catch (InstantiationException ex) {
@@ -3106,17 +3188,17 @@ public class DateExpression implements DateResult, RangeComparable<DateResult> {
 		}
 	}
 
-	private static abstract class DBBinaryDateNumberFunctionWithDateResult extends DateExpression {
+	private static abstract class DateNumberExpressionWithDateResult extends DateExpression {
 
 		protected DateExpression first;
 		protected NumberExpression second;
 
-		DBBinaryDateNumberFunctionWithDateResult() {
+		DateNumberExpressionWithDateResult() {
 			this.first = null;
 			this.second = null;
 		}
 
-		DBBinaryDateNumberFunctionWithDateResult(DateExpression dateExp, NumberExpression numbExp) {
+		DateNumberExpressionWithDateResult(DateExpression dateExp, NumberExpression numbExp) {
 			this.first = dateExp;
 			this.second = numbExp;
 		}
@@ -3127,8 +3209,8 @@ public class DateExpression implements DateResult, RangeComparable<DateResult> {
 //		}
 
 		@Override
-		public DBBinaryDateNumberFunctionWithDateResult copy() {
-			DBBinaryDateNumberFunctionWithDateResult newInstance;
+		public DateNumberExpressionWithDateResult copy() {
+			DateNumberExpressionWithDateResult newInstance;
 			try {
 				newInstance = getClass().newInstance();
 			} catch (InstantiationException ex) {
@@ -3163,17 +3245,17 @@ public class DateExpression implements DateResult, RangeComparable<DateResult> {
 		}
 	}
 
-	private static abstract class DBBinaryDateFunctionWithNumberResult extends NumberExpression {
+	private static abstract class DateDateFunctionWithNumberResult extends NumberExpression {
 
 		protected DateExpression first;
 		protected DateResult second;
 
-		DBBinaryDateFunctionWithNumberResult() {
+		DateDateFunctionWithNumberResult() {
 			this.first = null;
 			this.second = null;
 		}
 
-		DBBinaryDateFunctionWithNumberResult(DateExpression dateExp, DateResult otherDateExp) {
+		DateDateFunctionWithNumberResult(DateExpression dateExp, DateResult otherDateExp) {
 			this.first = dateExp;
 			this.second = otherDateExp;
 		}
@@ -3182,8 +3264,8 @@ public class DateExpression implements DateResult, RangeComparable<DateResult> {
 		abstract public String toSQLString(DBDatabase db);
 
 		@Override
-		public DBBinaryDateFunctionWithNumberResult copy() {
-			DBBinaryDateFunctionWithNumberResult newInstance;
+		public DateDateFunctionWithNumberResult copy() {
+			DateDateFunctionWithNumberResult newInstance;
 			try {
 				newInstance = getClass().newInstance();
 			} catch (InstantiationException ex) {

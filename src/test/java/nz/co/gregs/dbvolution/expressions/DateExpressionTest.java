@@ -874,7 +874,7 @@ public class DateExpressionTest extends AbstractTest {
 		@DBColumn
 		DBDateOnly firstOfMonth = new DBDateOnly(this.column(this.creationDate).addDays(this.column(this.creationDate).day().minus(1).bracket().times(-1)));
 		@DBColumn
-		DBDateOnly endOfMonth = new DBDateOnly(this.column(this.creationDate).addDays(this.column(this.creationDate).day().minus(1).bracket().times(-1)).addMonths(1).addDays(-1));
+		DBDateOnly endOfMonth = new DBDateOnly(this.column(this.creationDate).endOfMonth());
 		@DBColumn
 		DBDateOnly shouldBreakPostgreSQL = new DBDateOnly(this.column(this.creationDate).addDays(this.column(this.creationDate).day().minus(1).times(-1)).addMonths(1).addDays(-1));
 	}
