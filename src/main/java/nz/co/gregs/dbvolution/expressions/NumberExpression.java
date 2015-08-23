@@ -1364,6 +1364,19 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 	}
 
 	/**
+	 * Provides access to the database's absolute value function.
+	 * 
+	 * <p>
+	 * Synonym for {@link #abs() }.
+	 *
+	 * @return a NumberExpression representing the absolute value of the current
+	 * number expression.
+	 */
+	public NumberExpression absoluteValue() {
+		return abs();
+	}
+
+	/**
 	 * Provides access to the database's inverse cosine function.
 	 *
 	 * @return a NumberExpression representing the inverse cosine of the current

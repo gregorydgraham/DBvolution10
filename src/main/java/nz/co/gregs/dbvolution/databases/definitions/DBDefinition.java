@@ -4358,4 +4358,8 @@ public abstract class DBDefinition {
 	public String doLineSegment2DGetMagnitudeTransform(String lineSegment2DSQL) {
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
+
+	public String doCoordinateArrayToPolygon2DTransform(List<String> coordinateSQL) {
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	}
 }

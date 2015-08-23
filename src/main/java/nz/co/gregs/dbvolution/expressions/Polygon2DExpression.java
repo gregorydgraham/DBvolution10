@@ -64,13 +64,17 @@ public class Polygon2DExpression implements Spatial2DExpression, Polygon2DResult
 		return Polygon2DExpression.polygon2DFromPoint2DArray(pointExpressions);
 	}
 
+	public static Polygon2DExpression value(NumberExpression... coordinateExpressions) {
+		return Polygon2DExpression.polygon2DFromCoordinateArray(coordinateExpressions);
+	}
+
 	@Override
 	public DBPolygon2D getQueryableDatatypeForExpressionValue() {
 		return new DBPolygon2D();
 	}
 
 	@Override
-	public StringExpression toWKTFormat(){
+	public StringExpression toWKTFormat() {
 		return stringResult();
 	}
 
@@ -151,11 +155,45 @@ public class Polygon2DExpression implements Spatial2DExpression, Polygon2DResult
 					String separator = "";
 
 					for (Point2DExpression point : allPoints) {
-						newPolygon=newPolygon.append(separator).append(point.getX()).append(" ").append(point.getY());
+						newPolygon = newPolygon.append(separator).append(point.getX()).append(" ").append(point.getY());
 						separator = " , ";
 					}
 					final Point2DExpression firstPoint = allPoints[0];
-					newPolygon=newPolygon.append(separator).append(firstPoint.getX()).append(" ").append(firstPoint.getY()).append("))");
+					newPolygon = newPolygon.append(separator).append(firstPoint.getX()).append(" ").append(firstPoint.getY()).append("))");
+					return newPolygon.toSQLString(db);
+				}
+			}
+		});
+	}
+
+	public static Polygon2DExpression polygon2DFromCoordinateArray(NumberExpression... coordExpressions) {
+		return new Polygon2DExpression(new CoordinateArrayFunctionWithPolygon2DResult(coordExpressions) {
+
+			@Override
+			protected String doExpressionTransform(DBDatabase db) {
+				NumberExpression[] allCoords = getAllCoordinates();
+				List<String> pointSQL = new ArrayList<String>();
+				for (NumberExpression pointExpr : allCoords) {
+					pointSQL.add(pointExpr.toSQLString(db));
+				}
+				try {
+					return db.getDefinition().doCoordinateArrayToPolygon2DTransform(pointSQL);
+				} catch (UnsupportedOperationException ex) {
+					StringExpression newPolygon = StringExpression.value("POLYGON ((");
+					String separator = "";
+
+					for (NumberExpression coord : allCoords) {
+						newPolygon = newPolygon.append(separator).append(coord);
+						if (separator.equals("")) {
+							separator = " ";
+						} else if (separator.equals(" ")) {
+							separator = ", ";
+						} else if (separator.equals(", ")) {
+							separator = " ";
+						}
+					}
+					final StringExpression firstPoint = allCoords[0].append(" ").append(allCoords[1]);
+					newPolygon = newPolygon.append(separator).append(firstPoint).append("))");
 					return newPolygon.toSQLString(db);
 				}
 			}
@@ -289,7 +327,7 @@ public class Polygon2DExpression implements Spatial2DExpression, Polygon2DResult
 
 	@Override
 	public NumberExpression measurableDimensions() {
-		return new NumberExpression(new PolygonFunctionWithNumberResult(this) {
+		return new NumberExpression(new Polygon2DFunctionWithNumberResult(this) {
 
 			@Override
 			public String doExpressionTransform(DBDatabase db) {
@@ -300,7 +338,7 @@ public class Polygon2DExpression implements Spatial2DExpression, Polygon2DResult
 
 	@Override
 	public NumberExpression spatialDimensions() {
-		return new NumberExpression(new PolygonFunctionWithNumberResult(this) {
+		return new NumberExpression(new Polygon2DFunctionWithNumberResult(this) {
 
 			@Override
 			public String doExpressionTransform(DBDatabase db) {
@@ -330,7 +368,7 @@ public class Polygon2DExpression implements Spatial2DExpression, Polygon2DResult
 
 	@Override
 	public NumberExpression magnitude() {
-		return new NumberExpression(new PolygonFunctionWithNumberResult(this) {
+		return new NumberExpression(new Polygon2DFunctionWithNumberResult(this) {
 
 			@Override
 			public String doExpressionTransform(DBDatabase db) {
@@ -344,7 +382,7 @@ public class Polygon2DExpression implements Spatial2DExpression, Polygon2DResult
 	}
 
 	public NumberExpression area() {
-		return new NumberExpression(new PolygonFunctionWithNumberResult(this) {
+		return new NumberExpression(new Polygon2DFunctionWithNumberResult(this) {
 
 			@Override
 			public String doExpressionTransform(DBDatabase db) {
@@ -354,7 +392,7 @@ public class Polygon2DExpression implements Spatial2DExpression, Polygon2DResult
 	}
 
 	public NumberExpression maxX() {
-		return new NumberExpression(new PolygonFunctionWithNumberResult(this) {
+		return new NumberExpression(new Polygon2DFunctionWithNumberResult(this) {
 
 			@Override
 			public String doExpressionTransform(DBDatabase db) {
@@ -364,7 +402,7 @@ public class Polygon2DExpression implements Spatial2DExpression, Polygon2DResult
 	}
 
 	public NumberExpression minX() {
-		return new NumberExpression(new PolygonFunctionWithNumberResult(this) {
+		return new NumberExpression(new Polygon2DFunctionWithNumberResult(this) {
 
 			@Override
 			public String doExpressionTransform(DBDatabase db) {
@@ -374,7 +412,7 @@ public class Polygon2DExpression implements Spatial2DExpression, Polygon2DResult
 	}
 
 	public NumberExpression maxY() {
-		return new NumberExpression(new PolygonFunctionWithNumberResult(this) {
+		return new NumberExpression(new Polygon2DFunctionWithNumberResult(this) {
 
 			@Override
 			public String doExpressionTransform(DBDatabase db) {
@@ -384,7 +422,7 @@ public class Polygon2DExpression implements Spatial2DExpression, Polygon2DResult
 	}
 
 	public NumberExpression minY() {
-		return new NumberExpression(new PolygonFunctionWithNumberResult(this) {
+		return new NumberExpression(new Polygon2DFunctionWithNumberResult(this) {
 
 			@Override
 			public String doExpressionTransform(DBDatabase db) {
@@ -393,12 +431,24 @@ public class Polygon2DExpression implements Spatial2DExpression, Polygon2DResult
 		});
 	}
 
+	@Override
 	public Polygon2DExpression boundingBox() {
 		return new Polygon2DExpression(new Polygon2DFunctionWithPolygon2DResult(this) {
 
 			@Override
 			public String doExpressionTransform(DBDatabase db) {
-				return db.getDefinition().doPolygon2DGetBoundingBoxTransform(getFirst().toSQLString(db));
+				try {
+					return db.getDefinition().doPolygon2DGetBoundingBoxTransform(getFirst().toSQLString(db));
+				} catch (UnsupportedOperationException unsupported) {
+					final Polygon2DExpression first = getFirst();
+					final NumberExpression maxX = first.getMaxX();
+					final NumberExpression maxY = first.getMaxY();
+					final NumberExpression minX = first.getMinX();
+					final NumberExpression minY = first.getMinY();
+					return Polygon2DExpression
+							.value(minX, minY, maxX, minY, maxX, maxY, minX, maxY, minX, minY)
+							.toSQLString(db);
+				}
 			}
 		});
 	}
@@ -448,22 +498,50 @@ public class Polygon2DExpression implements Spatial2DExpression, Polygon2DResult
 
 	@Override
 	public NumberExpression getMaxX() {
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+		NumberExpression expr = new NumberExpression(new Polygon2DFunctionWithNumberResult(this) {
+
+			@Override
+			public String doExpressionTransform(DBDatabase db) {
+				return db.getDefinition().doPolygon2DGetMaxXTransform(getFirst().toSQLString(db));
+			}
+		});
+		return expr;
 	}
 
 	@Override
 	public NumberExpression getMaxY() {
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+		NumberExpression expr = new NumberExpression(new Polygon2DFunctionWithNumberResult(this) {
+
+			@Override
+			public String doExpressionTransform(DBDatabase db) {
+				return db.getDefinition().doPolygon2DGetMaxYTransform(getFirst().toSQLString(db));
+			}
+		});
+		return expr;
 	}
 
 	@Override
 	public NumberExpression getMinX() {
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+		NumberExpression expr = new NumberExpression(new Polygon2DFunctionWithNumberResult(this) {
+
+			@Override
+			public String doExpressionTransform(DBDatabase db) {
+				return db.getDefinition().doPolygon2DGetMinXTransform(getFirst().toSQLString(db));
+			}
+		});
+		return expr;
 	}
 
 	@Override
 	public NumberExpression getMinY() {
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+		NumberExpression expr = new NumberExpression(new Polygon2DFunctionWithNumberResult(this) {
+
+			@Override
+			public String doExpressionTransform(DBDatabase db) {
+				return db.getDefinition().doPolygon2DGetMinYTransform(getFirst().toSQLString(db));
+			}
+		});
+		return expr;
 	}
 
 	private static abstract class PolygonPolygonWithBooleanResult extends BooleanExpression {
@@ -558,7 +636,6 @@ public class Polygon2DExpression implements Spatial2DExpression, Polygon2DResult
 //		Polygon2DResult getSecond() {
 //			return second;
 //		}
-
 		@Override
 		public final String toSQLString(DBDatabase db) {
 			if (this.getIncludesNull()) {
@@ -599,7 +676,7 @@ public class Polygon2DExpression implements Spatial2DExpression, Polygon2DResult
 
 		@Override
 		public boolean isAggregator() {
-			return first.isAggregator() ;//|| second.isAggregator();
+			return first.isAggregator();//|| second.isAggregator();
 		}
 
 		@Override
@@ -607,7 +684,7 @@ public class Polygon2DExpression implements Spatial2DExpression, Polygon2DResult
 			return requiresNullProtection;
 		}
 	}
-	
+
 	private static abstract class PolygonPointWithBooleanResult extends BooleanExpression {
 
 		private Polygon2DExpression first;
@@ -679,13 +756,13 @@ public class Polygon2DExpression implements Spatial2DExpression, Polygon2DResult
 		}
 	}
 
-	private static abstract class PolygonFunctionWithNumberResult extends NumberExpression {
+	private static abstract class Polygon2DFunctionWithNumberResult extends NumberExpression {
 
 		private Polygon2DExpression first;
 //		private Polygon2DExpression second;
 		private boolean requiresNullProtection;
 
-		PolygonFunctionWithNumberResult(Polygon2DExpression first) {
+		Polygon2DFunctionWithNumberResult(Polygon2DExpression first) {
 			this.first = first;
 //			this.second = second;
 //			if (this.second == null || this.second.getIncludesNull()) {
@@ -710,8 +787,8 @@ public class Polygon2DExpression implements Spatial2DExpression, Polygon2DResult
 		}
 
 		@Override
-		public PolygonFunctionWithNumberResult copy() {
-			PolygonFunctionWithNumberResult newInstance;
+		public Polygon2DFunctionWithNumberResult copy() {
+			Polygon2DFunctionWithNumberResult newInstance;
 			try {
 				newInstance = getClass().newInstance();
 			} catch (InstantiationException ex) {
@@ -1022,6 +1099,79 @@ public class Polygon2DExpression implements Spatial2DExpression, Polygon2DResult
 		public boolean isAggregator() {
 			boolean aggregator = false;
 			for (Point2DExpression allPoint : allPoints) {
+				aggregator |= allPoint.isAggregator();
+			}
+			return aggregator;//|| second.isAggregator();
+		}
+
+		@Override
+		public boolean getIncludesNull() {
+			return requiresNullProtection;
+		}
+	}
+	private static abstract class CoordinateArrayFunctionWithPolygon2DResult extends Polygon2DExpression {
+
+		private NumberExpression[] allCoords;
+		private boolean requiresNullProtection;
+
+		CoordinateArrayFunctionWithPolygon2DResult(NumberExpression... all) {
+			this.allCoords = all;
+			for (NumberExpression all1 : all) {
+				if (all1.getIncludesNull()) {
+					this.requiresNullProtection = true;
+				}
+			}
+		}
+
+		NumberExpression[] getAllCoordinates() {
+			return allCoords;
+		}
+
+		@Override
+		public final String toSQLString(DBDatabase db) {
+			BooleanExpression isNull = BooleanExpression.trueExpression();
+			if (this.getIncludesNull()) {
+				for (NumberExpression allPoint : allCoords) {
+					isNull = isNull.or(BooleanExpression.isNull(allPoint));
+				}
+				return isNull.toSQLString(db);
+			} else {
+				return doExpressionTransform(db);
+			}
+		}
+
+		@Override
+		public CoordinateArrayFunctionWithPolygon2DResult copy() {
+			CoordinateArrayFunctionWithPolygon2DResult newInstance;
+			try {
+				newInstance = getClass().newInstance();
+			} catch (InstantiationException ex) {
+				throw new RuntimeException(ex);
+			} catch (IllegalAccessException ex) {
+				throw new RuntimeException(ex);
+			}
+			newInstance.allCoords = Arrays.copyOf(allCoords, allCoords.length);
+//			newInstance.second = second.copy();
+			return newInstance;
+		}
+
+		protected abstract String doExpressionTransform(DBDatabase db);
+
+		@Override
+		public Set<DBRow> getTablesInvolved() {
+			HashSet<DBRow> hashSet = new HashSet<DBRow>();
+			if (allCoords != null) {
+				for (NumberExpression point : allCoords) {
+					hashSet.addAll(point.getTablesInvolved());
+				}
+			}
+			return hashSet;
+		}
+
+		@Override
+		public boolean isAggregator() {
+			boolean aggregator = false;
+			for (NumberExpression allPoint : allCoords) {
 				aggregator |= allPoint.isAggregator();
 			}
 			return aggregator;//|| second.isAggregator();

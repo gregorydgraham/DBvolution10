@@ -167,7 +167,32 @@ public class OracleSpatialDBDefinition extends OracleDBDefinition {
 		//+ lineSegment.p0.x + ", " + lineSegment.p0.y + ", " + lineSegment.p1.x + ", " + lineSegment.p1.y 
 		ordinateArray.append(")");
 		return "MDSYS.SDO_GEOMETRY(2003, NULL, NULL,"
-				+ "MDSYS.SDO_ELEM_INFO_ARRAY(1,1," + pointSQL.size() + "),"
+				+ "MDSYS.SDO_ELEM_INFO_ARRAY(1,2003,1),"
+				+ ordinateArray
+				+ ")";
+	}
+
+	@Override
+	public String doCoordinateArrayToPolygon2DTransform(List<String> pointSQL) {
+		StringBuilder ordinateArray = new StringBuilder("MDSYS.SDO_ORDINATE_ARRAY(");
+		final String ordinateSep = ", ";
+		String pairSep = "";
+		String sep = pairSep;
+		for (String pointish : pointSQL) {
+			ordinateArray
+					.append(sep)
+					.append(pointish);
+			pairSep = ", ";
+			if (sep.equals(ordinateSep)){
+				sep=pairSep;
+			}else{
+				sep = ordinateSep;
+			}
+		}
+		//+ lineSegment.p0.x + ", " + lineSegment.p0.y + ", " + lineSegment.p1.x + ", " + lineSegment.p1.y 
+		ordinateArray.append(")");
+		return "MDSYS.SDO_GEOMETRY(2003, NULL, NULL,"
+				+ "MDSYS.SDO_ELEM_INFO_ARRAY(1,2003,1),"
 				+ ordinateArray
 				+ ")";
 	}
@@ -625,7 +650,7 @@ public class OracleSpatialDBDefinition extends OracleDBDefinition {
 
 	@Override
 	public String doPolygon2DContainsPoint2DTransform(String polygon2DSQL, String point2DSQL) {
-		return "SDO_GEOM.RELATE(" + polygon2DSQL + ", 'CONTAINS', " + point2DSQL + ", 0.0000005)='TRUE'";
+		return "SDO_GEOM.RELATE(" + polygon2DSQL + ", 'CONTAINS', " + point2DSQL + ", 0.0000005)='CONTAINS'";
 	}
 
 	@Override
@@ -667,12 +692,16 @@ public class OracleSpatialDBDefinition extends OracleDBDefinition {
 
 	@Override
 	public String doPolygon2DGetExteriorRingTransform(String polygon2DSQL) {
-		return super.doPolygon2DGetExteriorRingTransform(polygon2DSQL); //To change body of generated methods, choose Tools | Templates.
+		return "SDO_UTIL.POLYGONTOLINE(" + polygon2DSQL + ")";
+//		return "MDSYS.SDO_GEOMETRY(2002, NULL, NULL,"
+//				+ "MDSYS.SDO_ELEM_INFO_ARRAY(1,2,1),"
+//				+ "SDO_UTIL.EXTRACT("+polygon2DSQL+",1).SDO_ORDINATES"
+//				+ ")";
 	}
 
 	@Override
-	public String doPolygon2DGetAreaTransform(String toSQLString) {
-		return super.doPolygon2DGetAreaTransform(toSQLString); //To change body of generated methods, choose Tools | Templates.
+	public String doPolygon2DGetAreaTransform(String polygon2DSQL) {
+		return "ABS(SDO_GEOM.SDO_AREA(" + polygon2DSQL + ", 0.0000005))";
 	}
 
 	@Override
@@ -687,7 +716,7 @@ public class OracleSpatialDBDefinition extends OracleDBDefinition {
 
 	@Override
 	public String doPolygon2DWithinTransform(String firstGeometry, String secondGeometry) {
-		return "SDO_GEOM.RELATE(" + firstGeometry + ", 'INSIDE', " + secondGeometry + ", 0.0000005)='INSIDE'";
+		return "SDO_GEOM.RELATE(" + firstGeometry + ", 'COVEREDBY+INSIDE', " + secondGeometry + ", 0.0000005)<>'FALSE'";
 	}
 
 	@Override
@@ -707,7 +736,7 @@ public class OracleSpatialDBDefinition extends OracleDBDefinition {
 
 	@Override
 	public String doPolygon2DContainsPolygon2DTransform(String firstGeometry, String secondGeometry) {
-		return "SDO_GEOM.RELATE(" + firstGeometry + ", 'COVERS', " + secondGeometry + ", 0.0000005)='COVERS'";
+		return "SDO_GEOM.RELATE(" + firstGeometry + ", 'COVERS+CONTAINS', " + secondGeometry + ", 0.0000005)<>'FALSE'";
 	}
 
 	@Override
