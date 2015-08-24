@@ -558,10 +558,10 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 		return "(" + firstGeometry + ").STIntersection("+secondGeometry+")";
 	}
 
-	@Override
-	public String OldtransformPolygonIntoDatabasePolygon2DFormat(Polygon polygon) {
-		return "geometry::STGeomFromText ('" + polygon.toText() + "',0)";
-	}
+//	@Override
+//	public String OldtransformPolygonIntoDatabasePolygon2DFormat(Polygon polygon) {
+//		return "geometry::STGeomFromText ('" + polygon.toText() + "',0)";
+//	}
 
 	@Override
 	public String transformLineStringIntoDatabaseLine2DFormat(LineString line) {

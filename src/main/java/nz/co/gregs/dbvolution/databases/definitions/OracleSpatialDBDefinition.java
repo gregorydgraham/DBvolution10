@@ -119,12 +119,12 @@ public class OracleSpatialDBDefinition extends OracleDBDefinition {
 		return "SDO_UTIL.FROM_WKTGEOMETRY('" + point.toText() + "')";
 	}
 
-	@Override
-	public String OldtransformPolygonIntoDatabasePolygon2DFormat(Polygon point) {
-//		final Coordinate coordinate = point.getCoordinate();
-//		return "SDO_GEOMETRY(2003, NULL, SDO_POINT_TYPE(" + coordinate.x + ", " + coordinate.y + ",NULL), NULL, NULL)";
-		return "SDO_UTIL.FROM_WKTGEOMETRY('" + point.toText() + "')";
-	}
+//	@Override
+//	public String OldtransformPolygonIntoDatabasePolygon2DFormat(Polygon point) {
+////		final Coordinate coordinate = point.getCoordinate();
+////		return "SDO_GEOMETRY(2003, NULL, SDO_POINT_TYPE(" + coordinate.x + ", " + coordinate.y + ",NULL), NULL, NULL)";
+//		return "SDO_UTIL.FROM_WKTGEOMETRY('" + point.toText() + "')";
+//	}
 
 	@Override
 	public String transformMultiPoint2DToDatabaseMultiPoint2DValue(MultiPoint point) {

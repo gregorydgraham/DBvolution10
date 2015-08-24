@@ -126,11 +126,11 @@ public class OracleAWSDBDefinition extends OracleDBDefinition {
 		return "'" + wktValue + "'";
 	}	
 	
-	@Override
-	public String OldtransformPolygonIntoDatabasePolygon2DFormat(Polygon polygon) {
-		String wktValue = polygon.toText();
-		return "'" + wktValue + "'";
-	}
+//	@Override
+//	public String OldtransformPolygonIntoDatabasePolygon2DFormat(Polygon polygon) {
+//		String wktValue = polygon.toText();
+//		return "'" + wktValue + "'";
+//	}
 
 	
 	@Override
