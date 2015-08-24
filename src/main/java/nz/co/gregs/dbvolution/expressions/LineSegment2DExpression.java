@@ -429,15 +429,11 @@ public class LineSegment2DExpression implements LineSegment2DResult, EqualCompar
 	}
 
 	/**
-	 * Tests whether this line and the line represented by the points ever cross.
+	 * Tests whether this line segment and the line segment represented by the points ever cross.
 	 *
 	 * <p>
-	 * Multiple line segments means it may cross at several points, however this
-	 * method only reports TRUE or FALSE.
-	 *
-	 * <p>
-	 * Use {@link #intersectionPoints(Line2DResult)} to find the intersection
-	 * points of these lines
+	 * Use {@link #intersectionWith(com.vividsolutions.jts.geom.Point, com.vividsolutions.jts.geom.Point) } to find the intersection
+	 * point.
 	 *
 	 * @param point1
 	 * @param point2
@@ -449,16 +445,12 @@ public class LineSegment2DExpression implements LineSegment2DResult, EqualCompar
 	}
 
 	/**
-	 * Tests whether this line and the line represented by the coordinates ever
+	 * Tests whether this line segment and the line segment represented by the coordinates ever
 	 * cross.
 	 *
 	 * <p>
-	 * Multiple line segments means it may cross at several points, however this
-	 * method only reports TRUE or FALSE.
-	 *
-	 * <p>
-	 * Use {@link #intersectionPoints(Line2DResult)} to find the intersection
-	 * points of these lines
+	 * Use {@link #intersectionWith(com.vividsolutions.jts.geom.Coordinate, com.vividsolutions.jts.geom.Coordinate) } to find the intersection
+	 * point.
 	 *
 	 * @param coord1
 	 * @param coord2
@@ -470,34 +462,26 @@ public class LineSegment2DExpression implements LineSegment2DResult, EqualCompar
 	}
 
 	/**
-	 * Tests whether this line and the other line ever cross.
+	 * Tests whether this line segment and the other line segment ever cross.
 	 *
 	 * <p>
-	 * Multiple line segments means it may cross at several points, however this
-	 * method only reports TRUE or FALSE.
+	 * Use {@link #intersectionWith(com.vividsolutions.jts.geom.LineSegment) } to find the intersection
+	 * point.
 	 *
-	 * <p>
-	 * Use {@link #intersectionPoints(Line2DResult)} to find the intersection
-	 * points of these lines
-	 *
-	 * @param lineString
+	 * @param linesegment
 	 * @return a BooleanExpression that will be TRUE if the lines ever cross,
 	 * otherwise FALSE.
 	 */
-	public BooleanExpression intersects(LineSegment lineString) {
-		return this.intersects(new LineSegment2DExpression(lineString));
+	public BooleanExpression intersects(LineSegment linesegment) {
+		return this.intersects(new LineSegment2DExpression(linesegment));
 	}
 
 	/**
-	 * Tests whether this line and the other line ever cross.
+	 * Tests whether this line segment and the other line segment ever cross.
 	 *
 	 * <p>
-	 * Multiple line segments means it may cross at several points, however this
-	 * method only reports TRUE or FALSE.
-	 *
-	 * <p>
-	 * Use {@link #intersectionPoints(Line2DResult)} to find the intersection
-	 * points of these lines
+	 * Use {@link #intersectionWith(nz.co.gregs.dbvolution.results.LineSegment2DResult) } to find the intersection
+	 * point.
 	 *
 	 * @param crossingLine
 	 * @return a BooleanExpression that will be TRUE if the lines ever cross,
@@ -514,7 +498,7 @@ public class LineSegment2DExpression implements LineSegment2DResult, EqualCompar
 	}
 
 	/**
-	 * Returns an expression providing the "first" point of intersection between
+	 * Returns an expression providing the point of intersection between
 	 * this line segment and the line segment formed from the two points provided.
 	 *
 	 * @param point1
@@ -526,7 +510,7 @@ public class LineSegment2DExpression implements LineSegment2DResult, EqualCompar
 	}
 
 	/**
-	 * Returns an expression providing the "first" point of intersection between
+	 * Returns an expression providing the point of intersection between
 	 * this line segment and the line segment formed from the four ordinates provided.
 	 *
 	 * @param point1x 
@@ -540,7 +524,7 @@ public class LineSegment2DExpression implements LineSegment2DResult, EqualCompar
 	}
 
 	/**
-	 * Returns an expression providing the "first" point of intersection between
+	 * Returns an expression providing the point of intersection between
 	 * this line segment and the line segment formed from the two coordinates provided.
 	 *
 	 * @param coord1 
@@ -552,7 +536,7 @@ public class LineSegment2DExpression implements LineSegment2DResult, EqualCompar
 	}
 
 	/**
-	 * Returns an expression providing the "first" point of intersection between
+	 * Returns an expression providing the point of intersection between
 	 * this line segment and the line segment provided.
 	 *
 	 * @param lineString 
@@ -563,7 +547,7 @@ public class LineSegment2DExpression implements LineSegment2DResult, EqualCompar
 	}
 
 	/**
-	 * Returns an expression providing the "first" point of intersection between
+	 * Returns an expression providing the point of intersection between
 	 * this line segment and the {@link LineSegment2DResult}/{@link LineSegment2DExpression} provided.
 	 *
 	 * @param crossingLine 

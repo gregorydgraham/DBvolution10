@@ -187,7 +187,7 @@ interface JavaProperty {
 	 * that the declared annotations must be identical. If not, an exception is
 	 * thrown.
 	 *
-	 * @param A the annotation type
+	 * A is the annotation type
 	 * @param annotationClass the annotation to check for
 	 * @return the annotation, or null if not found
 	 * @throws DBPebkacException if the annotation is duplicated and different

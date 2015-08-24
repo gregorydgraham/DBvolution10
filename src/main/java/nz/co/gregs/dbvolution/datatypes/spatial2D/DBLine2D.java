@@ -43,7 +43,7 @@ import nz.co.gregs.dbvolution.results.MultiPoint2DResult;
  *
  * <p>
  * Alternatives to a DBLine2D are single line segments {@link DBLineSegment2D},
- * infinite lines {@link @DBRay2D}, closed paths {@link DBRing2D}, and closed
+ * infinite lines (#TODO), closed paths (#TODO), and closed
  * paths defining a solid {@link DBPolygon2D}.
  *
  * <p>

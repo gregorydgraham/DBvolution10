@@ -32,7 +32,7 @@ import nz.co.gregs.dbvolution.exceptions.IncorrectGeometryReturnedForDatatype;
  * database.
  *
  * <p>
- * This DBDefinition is sub-classed by {@link Oracle11DBDefinition} and
+ * This DBDefinition is sub-classed by {@link Oracle11XEDBDefinition} and
  * {@link  Oracle12DBDefinition} to provide the full set of features required to
  * use an Oracle database.
  *

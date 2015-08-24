@@ -17,6 +17,7 @@ package nz.co.gregs.dbvolution.datatypes.spatial2D;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.LineSegment;
+import com.vividsolutions.jts.geom.LineString;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import nz.co.gregs.dbvolution.DBDatabase;
@@ -41,7 +42,7 @@ import nz.co.gregs.dbvolution.results.LineSegment2DResult;
  *
  * <p>
  * Alternatives to a DBLineSegment2D are a series of points constituting a line {@link DBLine2D},
- * infinite lines {@link @DBRay2D}, closed paths {@link DBRing2D}, and closed
+ * infinite lines (TODO), closed paths (TODO), and closed
  * paths defining a solid {@link DBPolygon2D}.
  *
  * <p>

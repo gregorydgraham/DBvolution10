@@ -92,57 +92,6 @@ public class DBIntegerEnum<E extends Enum<E> & DBEnumValue<? extends Number>> ex
 		super(value);
 	}
 
-	/**
-	 * Used to set the value of the instance.
-	 *
-	 * <p>
-	 * However only some types of objects can set the value of a DBIntegerEnum and
-	 * you should probably use the more particular versions of setValue.
-	 *
-	 *
-	 */
-//	@Override
-//	void setValue(Object newLiteralValue) {
-//		if (newLiteralValue instanceof Long) {
-//			setValue((Long) newLiteralValue);
-//		} else if (newLiteralValue instanceof Integer) {
-//			setValue((Integer) newLiteralValue);
-//		} else if (newLiteralValue instanceof DBIntegerEnum) {
-//			setValue(((QueryableDatatype) newLiteralValue).getLiteralValue());
-//		} else {
-//			throw new ClassCastException(this.getClass().getSimpleName() + ".setValue() Called With A Non-Long: Use only Long with this class");
-//		}
-//	}
-	/**
-	 * Used to set the value of the instance to the Long provided.
-	 *
-	 * <p>
-	 * DBIntegerEnums retrieved from the database will be automatically set.
-	 * However if you are creating a new entry to save in the database you should
-	 * probably use the
-	 * {@link DBEnum#setValue(java.lang.Enum<E>&nz.co.gregs.dbvolution.datatypes.DBEnumValue<?>)
-	 * } method.
-	 *
-	 *
-	 */
-//	private void setValue(Long newLiteralValue) {
-//		super.setLiteralValue(newLiteralValue);
-//	}
-	/**
-	 * Used to set the value of the instance to the Integer provided.
-	 *
-	 * <p>
-	 * DBIntegerEnums retrieved from the database will be automatically set.
-	 * However if you are creating a new entry to save in the database you should
-	 * probably use the
-	 * {@link DBEnum#setValue(java.lang.Enum<E>&nz.co.gregs.dbvolution.datatypes.DBEnumValue<?>)
-	 * } method.
-	 *
-	 *
-	 */
-//	private void setValue(Integer newLiteralValue) {
-//		super.setLiteralValue(newLiteralValue);
-//	}
 	@Override
 	protected void validateLiteralValue(E enumValue) {
 		Object code = enumValue.getCode();

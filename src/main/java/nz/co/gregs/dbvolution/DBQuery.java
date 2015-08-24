@@ -239,7 +239,7 @@ public class DBQuery {
 	 *
 	 * <p>
 	 * Generates the SQL query for retrieving the objects but does not execute the
-	 * SQL. Use {@link #getAllRowsInternal() the get*Rows methods} to retrieve the
+	 * SQL. Use {@link #getAllRowsInternal(nz.co.gregs.dbvolution.query.QueryOptions) the get*Rows methods} to retrieve the
 	 * rows.
 	 *
 	 * <p>
@@ -1112,7 +1112,7 @@ public class DBQuery {
 	 * Either: counts the results already retrieved, or creates a
 	 * {@link #getSQLForCount() count query} for this instance and retrieves the
 	 * number of rows that would have been returned had
-	 * {@link #getAllRowsInternal() getAllRows()} been called.
+	 * {@link #getAllRowsInternal(nz.co.gregs.dbvolution.query.QueryOptions)  getAllRows()} been called.
 	 *
 	 * @return the number of rows that have or will be retrieved. Database
 	 * exceptions may be thrown
@@ -1439,7 +1439,7 @@ public class DBQuery {
 	 * returning the rows found.
 	 *
 	 * <p>
-	 * Like {@link #getAllRowsInternal() getAllRows()} this method retrieves all
+	 * Like {@link #getAllRowsInternal(nz.co.gregs.dbvolution.query.QueryOptions)  getAllRows()} this method retrieves all
 	 * the rows for this DBQuery. However it checks the number of rows retrieved
 	 * and throws a {@link UnexpectedNumberOfRowsException} if the number of rows
 	 * retrieved differs from the expected number.
@@ -1476,7 +1476,7 @@ public class DBQuery {
 	 * @throws nz.co.gregs.dbvolution.exceptions.UnexpectedNumberOfRowsException
 	 * nz.co.gregs.dbvolution.exceptions.UnexpectedNumberOfRowsException
 	 * @throws java.sql.SQLException java.sql.SQLException
-	 * @see #getAllRowsInternal()
+	 * @see #getAllRowsInternal(nz.co.gregs.dbvolution.query.QueryOptions) 
 	 */
 	public List<DBQueryRow> getAllRows(long expectedRows) throws UnexpectedNumberOfRowsException, SQLException {
 		List<DBQueryRow> allRows = getAllRows();

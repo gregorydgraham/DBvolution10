@@ -42,6 +42,7 @@ import nz.co.gregs.dbvolution.expressions.DBExpression;
 import nz.co.gregs.dbvolution.expressions.DateRepeatExpression;
 import nz.co.gregs.dbvolution.expressions.NumberExpression;
 import nz.co.gregs.dbvolution.expressions.StringExpression;
+import nz.co.gregs.dbvolution.generation.DBTableClassGenerator;
 import nz.co.gregs.dbvolution.generation.DBTableField;
 import nz.co.gregs.dbvolution.internal.datatypes.DateRepeatImpl;
 import nz.co.gregs.dbvolution.internal.properties.PropertyWrapper;
@@ -1555,7 +1556,7 @@ public abstract class DBDefinition {
 	 * maintain auto-incrementing identities.
 	 *
 	 * @return the default implementation returns FALSE.
-	 * @see Oracle11DBDefinition#prefersTriggerBasedIdentities()
+	 * @see Oracle11XEDBDefinition#prefersTriggerBasedIdentities()
 	 */
 	public boolean prefersTriggerBasedIdentities() {
 		return false;
@@ -1570,7 +1571,7 @@ public abstract class DBDefinition {
 	 * @param column column
 	 * @return the default implementation returns an empty list.
 	 * @see
-	 * Oracle11DBDefinition#getTriggerBasedIdentitySQL(nz.co.gregs.dbvolution.DBDatabase,
+	 * Oracle11XEDBDefinition#getTriggerBasedIdentitySQL(nz.co.gregs.dbvolution.DBDatabase,
 	 * java.lang.String, java.lang.String)
 	 */
 	public List<String> getTriggerBasedIdentitySQL(DBDatabase db, String table, String column) {
@@ -1838,7 +1839,7 @@ public abstract class DBDefinition {
 	 * using a text mode.
 	 *
 	 * @return the default implementation returns false.
-	 * @see #parseDateFromGetString()
+	 * @see #parseDateFromGetString(java.lang.String)
 	 */
 	public boolean prefersDatesReadAsStrings() {
 		return false;
@@ -3402,7 +3403,10 @@ public abstract class DBDefinition {
 	}
 
 	/**
-	 * The same as {@link #transformPoint2DIntoDatabaseFormat(com.vividsolutions.jts.geom.Point) but for two coordinates as SQL.
+	 * Provide the SQL that correctly represents these coordinates in this database.
+	 * 
+	 * <p>
+	 * The same as {@link #transformPoint2DIntoDatabaseFormat(com.vividsolutions.jts.geom.Point)} but for two coordinates as SQL.
 	 *
 	 * @param xValue
 	 * @param yValue

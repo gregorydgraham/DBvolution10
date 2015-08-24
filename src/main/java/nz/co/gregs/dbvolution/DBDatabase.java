@@ -1048,9 +1048,7 @@ public abstract class DBDatabase implements Cloneable {
 	}
 
 	/**
-	 * Drops All Foreign Key Constraints From The Supplied Table, does not affect
-	 *
-	 * &#64;DBForeignKey.
+	 * Drops All Foreign Key Constraints From The Supplied Table, does not affect &#64;DBForeignKey.
 	 *
 	 * <p>
 	 * Generates and executes the required SQL to remove all foreign key
@@ -1065,7 +1063,7 @@ public abstract class DBDatabase implements Cloneable {
 	 * DBvolution cannot to protect you from this situation, however this method
 	 * will remove some of the problem.
 	 *
-	 * @param newTableRow
+	 * @param newTableRow the data models version of the table that needs FKs removed
 	 * @throws SQLException
 	 */
 	public void removeForeignKeyConstraints(DBRow newTableRow) throws SQLException {
@@ -1108,7 +1106,7 @@ public abstract class DBDatabase implements Cloneable {
 	 * <p>
 	 * As usual, your mileage may vary and consult a DBA if trouble persists.
 	 *
-	 * @param newTableRow
+	 * @param newTableRow the data model's version of the table that needs indexes
 	 * @throws SQLException
 	 */
 	public void createIndexesOnAllFields(DBRow newTableRow) throws SQLException {
@@ -1250,7 +1248,7 @@ public abstract class DBDatabase implements Cloneable {
 	 * {@link DBRow#willCreateBlankQuery(nz.co.gregs.dbvolution.DBDatabase) willCreateBlankQuery}
 	 * on DBRow.
 	 *
-	 * @param row	row
+	 * @param row row
 	 * @return TRUE if the specified row has no specified criteria, FALSE
 	 * otherwise
 	 */
@@ -1293,7 +1291,7 @@ public abstract class DBDatabase implements Cloneable {
 	 * <p>
 	 * Do NOT Use This.
 	 *
-	 * @param databaseName
+	 * @param databaseName the database to be permanently and completely destroyed.
 	 * @param doIt don't do it.
 	 * @throws java.lang.Exception java.lang.Exception
 	 */
@@ -1471,8 +1469,8 @@ public abstract class DBDatabase implements Cloneable {
 	 * supplied by the report and the examples supplied.
 	 *
 	 * @param <A>
-	 * @param report
-	 * @param examples
+	 * @param report the report to be produced
+	 * @param examples DBRow subclasses that provide extra criteria
 	 * @return A list of the DBreports generated
 	 * @throws SQLException
 	 */
@@ -1626,7 +1624,7 @@ public abstract class DBDatabase implements Cloneable {
 	 * You'll not need to use this unless you're replacing DBvolution's database
 	 * connection handling.
 	 *
-	 * @param connection
+	 * @param connection the JDBC connection to be removed
 	 */
 	public synchronized void discardConnection(Connection connection) {
 		getConnectionList(busyConnections).remove(connection);
