@@ -32,7 +32,7 @@ import nz.co.gregs.dbvolution.expressions.BooleanExpression;
 public interface EqualComparable<A> {
 
 	/**
-	 * Creates a {@link BooleanExpression} that compares the 2 instances using the
+	 * Creates a {@link BooleanExpression} that compares the 2 values using the
 	 * EQUALS operation.
 	 *
 	 * @param anotherInstance
@@ -40,7 +40,7 @@ public interface EqualComparable<A> {
 	 */
 	public BooleanExpression is(A anotherInstance);
 	/**
-	 * Creates a {@link BooleanExpression} that compares the 2 instances using the
+	 * Creates a {@link BooleanExpression} that compares the 2 values using the
 	 * NOT EQUALS operation.
 	 *
 	 * @param anotherInstance

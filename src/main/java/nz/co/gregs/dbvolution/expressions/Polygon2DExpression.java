@@ -128,6 +128,23 @@ public class Polygon2DExpression implements Spatial2DExpression, Polygon2DResult
 		return Polygon2DExpression.polygon2DFromCoordinateArray(coordinateExpressions);
 	}
 
+
+	/**
+	 * Create a Polygon2DExpression that represents the value for use in {@link DBQuery#addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression)
+	 * }, and when creating column expressions using {@link DBPolygon2D#DBPolygon2D(nz.co.gregs.dbvolution.expressions.Polygon2DExpression)
+	 * } and similar methods.
+	 *
+	 * @param points  
+	 * @return  a polygon2d expression
+	 */
+	public static Polygon2DExpression value(Point... points) {
+		List<Point2DExpression> exprs = new ArrayList<Point2DExpression>();
+		for (Point point : points) {
+			exprs.add(Point2DExpression.value(point));
+		}
+		return polygon2DFromPoint2DExpressionArray(exprs.toArray(new Point2DExpression[]{}));
+	}
+
 	@Override
 	public DBPolygon2D getQueryableDatatypeForExpressionValue() {
 		return new DBPolygon2D();
@@ -221,14 +238,6 @@ public class Polygon2DExpression implements Spatial2DExpression, Polygon2DResult
 		throw new UnsupportedOperationException("NOT DONE YET, SORRY.");
 	}
 
-	public static Polygon2DExpression value(Point... points) {
-		List<Point2DExpression> exprs = new ArrayList<Point2DExpression>();
-		for (Point point : points) {
-			exprs.add(Point2DExpression.value(point));
-		}
-		return polygon2DFromPoint2DExpressionArray(exprs.toArray(new Point2DExpression[]{}));
-	}
-
 	private static Polygon2DExpression polygon2DFromPoint2DExpressionArray(Point2DExpression... pointExpressions) {
 		return new Polygon2DExpression(new Point2dArrayFunctionWithPolygon2DResult(pointExpressions) {
 
@@ -257,7 +266,7 @@ public class Polygon2DExpression implements Spatial2DExpression, Polygon2DResult
 		});
 	}
 
-	public static Polygon2DExpression polygon2DFromCoordinateArray(NumberExpression... coordExpressions) {
+	private static Polygon2DExpression polygon2DFromCoordinateArray(NumberExpression... coordExpressions) {
 		return new Polygon2DExpression(new CoordinateArrayFunctionWithPolygon2DResult(coordExpressions) {
 
 			@Override
@@ -291,10 +300,17 @@ public class Polygon2DExpression implements Spatial2DExpression, Polygon2DResult
 		});
 	}
 
+	/**
+	 * Creates a {@link BooleanExpression} that compares the 2 values using the
+	 * EQUALS operation.
+	 *
+	 * @param rightHandSide
+	 * @return a BooleanExpression
+	 */
 	public BooleanExpression is(Polygon rightHandSide) {
 		return is(new DBPolygon2D(rightHandSide));
 	}
-
+	
 	@Override
 	public BooleanExpression is(Polygon2DResult rightHandSide) {
 		return new BooleanExpression(new PolygonPolygonWithBooleanResult(this, new Polygon2DExpression(rightHandSide)) {
@@ -306,14 +322,32 @@ public class Polygon2DExpression implements Spatial2DExpression, Polygon2DResult
 		});
 	}
 
+	/**
+	 * Returns an expression that will evaluate to true if the point is inside this polygon value.
+	 *
+	 * @param rightHandSide
+	 * @return a boolean expression
+	 */
 	public BooleanExpression contains(Point rightHandSide) {
 		return contains(new Point2DExpression(rightHandSide));
 	}
 
+	/**
+	 * Returns an expression that will evaluate to true if the point is inside this polygon value.
+	 *
+	 * @param rightHandSide
+	 * @return a boolean expression
+	 */
 	public BooleanExpression contains(Point2DResult rightHandSide) {
 		return contains(new Point2DExpression(rightHandSide));
 	}
 
+	/**
+	 * Returns an expression that will evaluate to true if the point is inside this polygon value.
+	 *
+	 * @param rightHandSide
+	 * @return a boolean expression
+	 */
 	public BooleanExpression contains(Point2DExpression rightHandSide) {
 		return new BooleanExpression(new PolygonPointWithBooleanResult(this, rightHandSide) {
 
@@ -324,10 +358,28 @@ public class Polygon2DExpression implements Spatial2DExpression, Polygon2DResult
 		});
 	}
 
+	/**
+	 * Returns an expression that will evaluate to true if the polygon is completely inside this polygon value.
+	 *
+	 * <p>
+	 * A CONTAINS B implies B WITHIN A.
+	 * 
+	 * @param rightHandSide
+	 * @return a boolean expression
+	 */
 	public BooleanExpression contains(Polygon rightHandSide) {
 		return contains(new DBPolygon2D(rightHandSide));
 	}
 
+	/**
+	 * Returns an expression that will evaluate to true if the polygon is completely inside this polygon value.
+	 *
+	 * <p>
+	 * A CONTAINS B implies B WITHIN A.
+	 * 
+	 * @param rightHandSide
+	 * @return a boolean expression
+	 */
 	public BooleanExpression contains(Polygon2DResult rightHandSide) {
 		return new BooleanExpression(new PolygonPolygonWithBooleanResult(this, new Polygon2DExpression(rightHandSide)) {
 
