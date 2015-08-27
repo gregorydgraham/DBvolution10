@@ -35,6 +35,28 @@ public class SQLiteDB extends DBDatabase implements SupportsDateRepeatDatatypeFu
 
 	private static final String SQLITE_DRIVER_NAME = "org.sqlite.JDBC";
 
+	/**
+	 *
+	 * Provides a convenient constructor for DBDatabases that have configuration
+	 * details hardwired or are able to automatically retrieve the details.
+	 *
+	 * <p>
+	 * This constructor creates an empty DBDatabase with only the default
+	 * settings, in particular with no driver, URL, username, password, or
+	 * {@link DBDefinition}
+	 *
+	 * <p>
+	 * Most programmers should not call this constructor directly. Instead you
+	 * should define a no-parameter constructor that supplies the details for
+	 * creating an instance using a more complete constructor.
+	 *
+	 * <p>
+	 * DBDatabase encapsulates the knowledge of the database, in particular the
+	 * syntax of the database in the DBDefinition and the connection details from
+	 * a DataSource.
+	 *
+	 * @see DBDefinition
+	 */
 	protected SQLiteDB() {
 	}
 

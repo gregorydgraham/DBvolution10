@@ -117,6 +117,19 @@ public class DateRepeatExpression implements DateRepeatResult, RangeComparable<D
 		return new DateRepeatExpression(period);
 	}
 
+	/**
+	 * Creates a new DateRepeatExression that represents the value supplied.
+	 *
+	 * <p>
+	 * Equivalent to {@code new DateRepeatExpression(period)}
+	 *
+	 * @param period
+	 * @return a DateRepeat expression representing the value supplied.
+	 */
+	public static DateRepeatExpression value(DateRepeatResult period) {
+		return new DateRepeatExpression(period);
+	}
+
 	@Override
 	public DateRepeatExpression copy() {
 		return new DateRepeatExpression(innerDateRepeatResult);

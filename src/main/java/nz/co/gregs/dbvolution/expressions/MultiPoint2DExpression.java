@@ -25,11 +25,15 @@ import java.util.Set;
 import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.datatypes.spatial2D.DBMultiPoint2D;
-import nz.co.gregs.dbvolution.datatypes.spatial2D.DBPoint2D;
 import nz.co.gregs.dbvolution.results.MultiPoint2DResult;
 import nz.co.gregs.dbvolution.results.NumberResult;
 
 /**
+ * Creates and transforms MultiPoint2D values within your database queries.
+ *
+ * <p>
+ * Use these methods to manipulate your MultiPoint2D columns and results for
+ * finer control of the query results.
  *
  * @author gregorygraham
  */
@@ -46,7 +50,8 @@ public class MultiPoint2DExpression implements MultiPoint2DResult, EqualComparab
 	}
 
 	/**
-	 * Create a {@link MultiPoint2DExpression} representing from provided {@link MultiPoint2DResult}/{@link MultiPoint2DExpression}
+	 * Create a {@link MultiPoint2DExpression} representing from provided
+	 * {@link MultiPoint2DResult}/{@link MultiPoint2DExpression}
 	 *
 	 * @param value
 	 */
@@ -58,9 +63,10 @@ public class MultiPoint2DExpression implements MultiPoint2DResult, EqualComparab
 	}
 
 	/**
-	 * Create a {@link MultiPoint2DExpression} representing from provided {@link Point JTS points}.
+	 * Create a {@link MultiPoint2DExpression} representing from provided
+	 * {@link Point JTS points}.
 	 *
-	 * @param points 
+	 * @param points
 	 */
 	public MultiPoint2DExpression(Point... points) {
 		innerPoint = new DBMultiPoint2D(points);
@@ -70,9 +76,10 @@ public class MultiPoint2DExpression implements MultiPoint2DResult, EqualComparab
 	}
 
 	/**
-	 * Create a {@link MultiPoint2DExpression} representing from provided {@link MultiPoint JTS multipoint}.
+	 * Create a {@link MultiPoint2DExpression} representing from provided
+	 * {@link MultiPoint JTS multipoint}.
 	 *
-	 * @param points 
+	 * @param points
 	 */
 	public MultiPoint2DExpression(MultiPoint points) {
 		innerPoint = new DBMultiPoint2D(points);
@@ -82,20 +89,22 @@ public class MultiPoint2DExpression implements MultiPoint2DResult, EqualComparab
 	}
 
 	/**
-	 * Create a {@link MultiPoint2DExpression} representing from provided {@link Point JTS points}.
+	 * Create a {@link MultiPoint2DExpression} representing from provided
+	 * {@link Point JTS points}.
 	 *
-	 * @param points 
-	 * @return  a MultiPoint2DExpression.
+	 * @param points
+	 * @return a MultiPoint2DExpression.
 	 */
 	public static MultiPoint2DExpression value(Point... points) {
 		return new MultiPoint2DExpression(points);
 	}
 
 	/**
-	 * Create a {@link MultiPoint2DExpression} representing from provided {@link Coordinate JTS coordinates}.
+	 * Create a {@link MultiPoint2DExpression} representing from provided
+	 * {@link Coordinate JTS coordinates}.
 	 *
-	 * @param coords  
-	 * @return  a MultiPoint2DExpression.
+	 * @param coords
+	 * @return a MultiPoint2DExpression.
 	 */
 	public static MultiPoint2DExpression value(Coordinate... coords) {
 		GeometryFactory geometryFactory = new GeometryFactory();
@@ -103,13 +112,31 @@ public class MultiPoint2DExpression implements MultiPoint2DResult, EqualComparab
 		return new MultiPoint2DExpression(multiPoint);
 	}
 
+	/**
+	 * Create a {@link MultiPoint2DExpression} representing from the provided
+	 * {@link MultiPoint JTS multipoint}.
+	 *
+	 * @param points
+	 * @return a MultiPoint2DExpression representing the points
+	 */
 	public static MultiPoint2DExpression value(MultiPoint points) {
 		return new MultiPoint2DExpression(points);
 	}
 
+	/**
+	 * Create a {@link MultiPoint2DExpression} representing from the
+	 * {@link MultiPoint2DResult}.
+	 *
+	 * @param points
+	 * @return a MultiPoint2DExpression representing the points
+	 */
+	public static MultiPoint2DExpression value(MultiPoint2DResult points) {
+		return new MultiPoint2DExpression(points);
+	}
+
 	@Override
-	public DBPoint2D getQueryableDatatypeForExpressionValue() {
-		return new DBPoint2D();
+	public DBMultiPoint2D getQueryableDatatypeForExpressionValue() {
+		return new DBMultiPoint2D();
 	}
 
 	@Override
@@ -166,12 +193,19 @@ public class MultiPoint2DExpression implements MultiPoint2DResult, EqualComparab
 	public boolean getIncludesNull() {
 		return nullProtectionRequired;
 	}
-	
+
 	@Override
-	public StringExpression toWKTFormat(){
+	public StringExpression toWKTFormat() {
 		return stringResult();
 	}
 
+	/**
+	 * Transform the MultiPoint2D value into the Well Known Text (WKT) version of
+	 * the value.
+	 *
+	 * @return a StringExpression representing the value transformed into a WKT
+	 * string.
+	 */
 	public StringExpression stringResult() {
 		return new StringExpression(new MultiPointFunctionWithStringResult(this) {
 
@@ -186,6 +220,13 @@ public class MultiPoint2DExpression implements MultiPoint2DResult, EqualComparab
 		});
 	}
 
+	/**
+	 * Creates a {@link BooleanExpression} that compares the 2 instances using the
+	 * EQUALS operation.
+	 *
+	 * @param rightHandSide
+	 * @return a BooleanExpression
+	 */
 	public BooleanExpression is(MultiPoint rightHandSide) {
 		return is(new DBMultiPoint2D(rightHandSide));
 	}
@@ -210,6 +251,7 @@ public class MultiPoint2DExpression implements MultiPoint2DResult, EqualComparab
 		return is(rightHandSide).not();
 	}
 
+	@Override
 	public NumberExpression getMaxX() {
 		return new NumberExpression(new MultiPointFunctionWithNumberResult(this) {
 
@@ -220,6 +262,7 @@ public class MultiPoint2DExpression implements MultiPoint2DResult, EqualComparab
 		});
 	}
 
+	@Override
 	public NumberExpression getMaxY() {
 		return new NumberExpression(new MultiPointFunctionWithNumberResult(this) {
 
@@ -230,6 +273,7 @@ public class MultiPoint2DExpression implements MultiPoint2DResult, EqualComparab
 		});
 	}
 
+	@Override
 	public NumberExpression getMinX() {
 		return new NumberExpression(new MultiPointFunctionWithNumberResult(this) {
 
@@ -240,6 +284,7 @@ public class MultiPoint2DExpression implements MultiPoint2DResult, EqualComparab
 		});
 	}
 
+	@Override
 	public NumberExpression getMinY() {
 		return new NumberExpression(new MultiPointFunctionWithNumberResult(this) {
 
@@ -250,6 +295,12 @@ public class MultiPoint2DExpression implements MultiPoint2DResult, EqualComparab
 		});
 	}
 
+	/**
+	 * Create a NumberExpression that represents the number of points stored in
+	 * the MultiPoint value.
+	 *
+	 * @return a number expression
+	 */
 	public NumberExpression numberOfPoints() {
 		return new NumberExpression(new MultiPointFunctionWithNumberResult(this) {
 
@@ -260,20 +311,74 @@ public class MultiPoint2DExpression implements MultiPoint2DResult, EqualComparab
 		});
 	}
 
-	public Point2DExpression getPointAtIndex(int index) {
-		return getPointAtIndex(NumberExpression.value(index));
+	/**
+	 * Create a point2d expression that represents the point at the given index.
+	 *
+	 * <p>
+	 * This method provides array-like access to the points in the multipoint2d
+	 * value and uses a Java standard zero-based index.
+	 *
+	 * <p>
+	 * Databases may use a one-based index but DBvolution compensates for that
+	 * automatically.
+	 *
+	 * <p>
+	 * Indexes beyond the end of the multipoint2d will return NULL values.
+	 *
+	 * @param index a zero-based index within the multipoint2d
+	 * @return a point2d expression
+	 */
+	public Point2DExpression getPointAtIndexZeroBased(int index) {
+		return getPointAtIndexZeroBased(NumberExpression.value(index));
 	}
 
-	public Point2DExpression getPointAtIndex(long index) {
-		return getPointAtIndex(NumberExpression.value(index));
+	/**
+	 * Create a point2d expression that represents the point at the given index.
+	 *
+	 * <p>
+	 * This method provides array-like access to the points in the multipoint2d
+	 * value and uses a Java standard zero-based index.
+	 *
+	 * <p>
+	 * Databases may use a one-based index but DBvolution compensates for that
+	 * automatically.
+	 *
+	 * <p>
+	 * Indexes beyond the end of the multipoint2d will return NULL values.
+	 *
+	 * @param index a zero-based index within the multipoint2d
+	 * @return a point2d expression
+	 */
+	public Point2DExpression getPointAtIndexZeroBased(long index) {
+		return getPointAtIndexZeroBased(NumberExpression.value(index));
 	}
 
-	public Point2DExpression getPointAtIndex(NumberResult index) {
+	/**
+	 * Create a point2d expression that represents the point at the given index.
+	 *
+	 * <p>
+	 * This method provides array-like access to the points in the multipoint2d
+	 * value and uses a Java standard zero-based index.
+	 *
+	 * <p>
+	 * Databases may use a one-based index but DBvolution compensates for that
+	 * automatically.
+	 *
+	 * <p>
+	 * Indexes beyond the end of the multipoint2d will return NULL values.
+	 *
+	 * @param index a zero-based index within the multipoint2d
+	 * @return a point2d expression
+	 */
+	public Point2DExpression getPointAtIndexZeroBased(NumberResult index) {
 		return new Point2DExpression(new MultiPointNumberFunctionWithPoint2DResult(this, new NumberExpression(index)) {
 
 			@Override
 			public String doExpressionTransform(DBDatabase db) {
-				return db.getDefinition().doMultiPoint2DGetPointAtIndexTransform(getFirst().toSQLString(db), getSecond().toSQLString(db));
+				return db.getDefinition().doMultiPoint2DGetPointAtIndexTransform(
+						getFirst().toSQLString(db),
+						getSecond().plus(1).toSQLString(db)
+				);
 			}
 		});
 	}
@@ -344,9 +449,9 @@ public class MultiPoint2DExpression implements MultiPoint2DResult, EqualComparab
 
 			@Override
 			public String doExpressionTransform(DBDatabase db) {
-				try{
+				try {
 					return db.getDefinition().doMultiPoint2DGetBoundingBoxTransform(getFirst().toSQLString(db));
-				}catch(UnsupportedOperationException exp){
+				} catch (UnsupportedOperationException exp) {
 					final MultiPoint2DExpression first = getFirst();
 					final NumberExpression maxX = first.getMaxX();
 					final NumberExpression maxY = first.getMaxY();
@@ -364,6 +469,18 @@ public class MultiPoint2DExpression implements MultiPoint2DResult, EqualComparab
 		});
 	}
 
+	/**
+	 * Provides a expression that represents the multipoint2d value as a line2d
+	 * value.
+	 *
+	 * <P>
+	 * Points are added to the line in index order.
+	 *
+	 * <p>
+	 * MultiPoint2d values with less than 2 points will return NULL values.
+	 *
+	 * @return a line2d expression
+	 */
 	public Line2DExpression line2DResult() {
 		return new Line2DExpression(new SingleArgumentLine2DFunction<MultiPoint2DExpression>(this) {
 
@@ -374,15 +491,23 @@ public class MultiPoint2DExpression implements MultiPoint2DResult, EqualComparab
 		});
 	}
 
-//	public Polygon2DExpression polygon2DResult() {
-//		return this.line2DResult().polygon2DResult();
-//		return new Polygon2DExpression(new SingleArgumentPolygon2DFunction<MultiPoint2DExpression>(this) {
-//			@Override
-//			protected String doExpressionTransform(DBDatabase db) {
-//				return db.getDefinition().doMultiPoint2DToPolygon2DTransform(getFirst().toSQLString(db));
-//			}
-//		});
-//	}
+	/**
+	 * Provides a expression that represents the multipoint2d value as a polygon2d
+	 * value.
+	 *
+	 * <P>
+	 * Points are added to the polygon in index order. If necessary the polygon is
+	 * closed by adding the first point to the end.
+	 *
+	 * <p>
+	 * MultiPoint2d values with less than 3 points will return NULL values.
+	 *
+	 * @return a polygon2d expression
+	 */
+	/* TODO implement public Polygon2DExpression polygon2DResult() {*/
+	public Polygon2DExpression polygon2DResult() {
+		throw new UnsupportedOperationException("NOT DONE YET, SORRY.");
+	}
 
 	private static abstract class SingleArgumentLine2DFunction<A extends DBExpression> extends Line2DExpression {
 
@@ -596,7 +721,6 @@ public class MultiPoint2DExpression implements MultiPoint2DResult, EqualComparab
 //			return requiresNullProtection;
 //		}
 //	}
-
 	private static abstract class MultiPoint2DMultiPoint2DFunctionWithBooleanResult extends BooleanExpression {
 
 		private MultiPoint2DExpression first;

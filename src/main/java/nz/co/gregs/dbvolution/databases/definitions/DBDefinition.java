@@ -3403,17 +3403,20 @@ public abstract class DBDefinition {
 	}
 
 	/**
-	 * Provide the SQL that correctly represents these coordinates in this database.
-	 * 
+	 * Provide the SQL that correctly represents these coordinates in this
+	 * database.
+	 *
 	 * <p>
-	 * The same as {@link #transformPoint2DIntoDatabaseFormat(com.vividsolutions.jts.geom.Point)} but for two coordinates as SQL.
+	 * The same as
+	 * {@link #transformPoint2DIntoDatabaseFormat(com.vividsolutions.jts.geom.Point)}
+	 * but for two coordinates as SQL.
 	 *
 	 * @param xValue
 	 * @param yValue
 	 * @return SQL
 	 */
 	public String transformCoordinatesIntoDatabasePoint2DFormat(String xValue, String yValue) {
-		return "'POINT(" + xValue+" " +yValue+ ")'";
+		return "'POINT(" + xValue + " " + yValue + ")'";
 	}
 
 	/**
@@ -3756,7 +3759,8 @@ public abstract class DBDefinition {
 	}
 
 	/**
-	 * Generates the SQL to determine whether the first (polygon) argument contains the second point argument.
+	 * Generates the SQL to determine whether the first (polygon) argument
+	 * contains the second point argument.
 	 *
 	 * @param polygon2DSQL
 	 * @param point2DSQL
@@ -3767,9 +3771,10 @@ public abstract class DBDefinition {
 	}
 
 	/**
-	 * Generates the SQL to convert the polygon to the standard text version of a polygon.
+	 * Generates the SQL to convert the polygon to the standard text version of a
+	 * polygon.
 	 *
-	 * @param polygonSQL 
+	 * @param polygonSQL
 	 * @return SQL
 	 */
 	public String doPolygon2DAsTextTransform(String polygonSQL) {
@@ -3781,39 +3786,46 @@ public abstract class DBDefinition {
 	 *
 	 * @param firstLine
 	 * @param secondLine
-	 * @return an SQL expression that will evaluate to TRUE FALSE or NULL, depending on whether the lines cross at any point.
+	 * @return an SQL expression that will evaluate to TRUE FALSE or NULL,
+	 * depending on whether the lines cross at any point.
 	 */
 	public String doLine2DIntersectsLine2DTransform(String firstLine, String secondLine) {
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
 	/**
-	 * Generate the SQL required to find the intersection point of the 2 line segment SQL expressions.
+	 * Generate the SQL required to find the intersection point of the 2 line
+	 * segment SQL expressions.
 	 *
 	 * @param firstLine
 	 * @param secondLine
-	 * @return an SQL expression that will evaluate to the intersection point of the 2 line segments or NULL.
+	 * @return an SQL expression that will evaluate to the intersection point of
+	 * the 2 line segments or NULL.
 	 */
 	public String doLine2DIntersectionPointWithLine2DTransform(String firstLine, String secondLine) {
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
 	/**
-	 * Generate the SQL required to find the complete set of all points of intersection between the tow 2 lines.
+	 * Generate the SQL required to find the complete set of all points of
+	 * intersection between the tow 2 lines.
 	 *
-	 * @param firstGeometry 
-	 * @param secondGeometry 
-	 * @return an SQL expression that will evaluate to the intersection point of the 2 line segments or NULL.
+	 * @param firstGeometry
+	 * @param secondGeometry
+	 * @return an SQL expression that will evaluate to the intersection point of
+	 * the 2 line segments or NULL.
 	 */
 	public String doLine2DAllIntersectionPointsWithLine2DTransform(String firstGeometry, String secondGeometry) {
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
 	/**
-	 * Convert the String object returned by the database into a JTS LineSegment object.
+	 * Convert the String object returned by the database into a JTS LineSegment
+	 * object.
 	 *
 	 * @param lineSegmentAsSQL
-	 * @return a JTS LineSegment derived from the database's response, may be null.
+	 * @return a JTS LineSegment derived from the database's response, may be
+	 * null.
 	 * @throws com.vividsolutions.jts.io.ParseException
 	 */
 	public LineSegment transformDatabaseLineSegment2DValueToJTSLineSegment(String lineSegmentAsSQL) throws com.vividsolutions.jts.io.ParseException {
@@ -3833,31 +3845,38 @@ public abstract class DBDefinition {
 	}
 
 	/**
-	 * Convert the JTS LineSegment object into a SQL expression that the database will accept as a line segment.
+	 * Convert the JTS LineSegment object into a SQL expression that the database
+	 * will accept as a line segment.
 	 *
 	 * @param lineSegment
-	 * @return an SQL expression that can be interpreted by the database as a line segment.
+	 * @return an SQL expression that can be interpreted by the database as a line
+	 * segment.
 	 */
 	public String transformLineSegmentIntoDatabaseLineSegment2DFormat(LineSegment lineSegment) {
-		LineString line = (new GeometryFactory()).createLineString(new Coordinate[]{lineSegment.getCoordinate(0),lineSegment.getCoordinate(1)});
+		LineString line = (new GeometryFactory()).createLineString(new Coordinate[]{lineSegment.getCoordinate(0), lineSegment.getCoordinate(1)});
 		String wktValue = line.toText();
 		return "'" + wktValue + "'";
 	}
 
 	/**
-	 * Generates the database specific SQL for testing whether the 2 line segment expressions ever cross.
+	 * Generates the database specific SQL for testing whether the 2 line segment
+	 * expressions ever cross.
 	 *
 	 * @param firstSQL
 	 * @param secondSQL
-	 * @return an SQL expression that will report whether the 2 line segments intersect.
-	 * @see #doLineSegment2DIntersectionPointWithLineSegment2DTransform(java.lang.String, java.lang.String) 
+	 * @return an SQL expression that will report whether the 2 line segments
+	 * intersect.
+	 * @see
+	 * #doLineSegment2DIntersectionPointWithLineSegment2DTransform(java.lang.String,
+	 * java.lang.String)
 	 */
 	public String doLineSegment2DIntersectsLineSegment2DTransform(String firstSQL, String secondSQL) {
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
 	/**
-	 * Generate the SQL required to find the largest X value in the line segment SQL expression.
+	 * Generate the SQL required to find the largest X value in the line segment
+	 * SQL expression.
 	 *
 	 * @param lineSegment
 	 * @return SQL
@@ -3867,8 +3886,9 @@ public abstract class DBDefinition {
 	}
 
 	/**
-	 * Generate the SQL required to find the smallest X value in the line segment SQL expression.
-	 * 
+	 * Generate the SQL required to find the smallest X value in the line segment
+	 * SQL expression.
+	 *
 	 * @param lineSegment
 	 * @return SQL
 	 */
@@ -3877,7 +3897,8 @@ public abstract class DBDefinition {
 	}
 
 	/**
-	 * Generate the SQL required to find the largest Y value in the line segment SQL expression.
+	 * Generate the SQL required to find the largest Y value in the line segment
+	 * SQL expression.
 	 *
 	 * @param lineSegment
 	 * @return SQL
@@ -3887,7 +3908,8 @@ public abstract class DBDefinition {
 	}
 
 	/**
-	 * Generate the SQL required to find the smallest Y value in the line segment SQL expression.
+	 * Generate the SQL required to find the smallest Y value in the line segment
+	 * SQL expression.
 	 *
 	 * @param lineSegment
 	 * @return SQL
@@ -3897,7 +3919,8 @@ public abstract class DBDefinition {
 	}
 
 	/**
-	 * Generate the SQL required to the rectangular boundary that fully encloses the line segment SQL expression.
+	 * Generate the SQL required to the rectangular boundary that fully encloses
+	 * the line segment SQL expression.
 	 *
 	 * @param lineSegment
 	 * @return SQL
@@ -3907,7 +3930,8 @@ public abstract class DBDefinition {
 	}
 
 	/**
-	 * Generate the SQL required to find the dimension of the line segment SQL expression.
+	 * Generate the SQL required to find the dimension of the line segment SQL
+	 * expression.
 	 *
 	 * @param lineSegment
 	 * @return SQL
@@ -3917,7 +3941,8 @@ public abstract class DBDefinition {
 	}
 
 	/**
-	 * Generate the SQL required to find whether the 2 line segment SQL expressions are NOT equal.
+	 * Generate the SQL required to find whether the 2 line segment SQL
+	 * expressions are NOT equal.
 	 *
 	 * @param firstLineSegment
 	 * @param secondLineSegment
@@ -3928,7 +3953,8 @@ public abstract class DBDefinition {
 	}
 
 	/**
-	 * Generate the SQL required to find whether the 2 line segment SQL expressions are equal.
+	 * Generate the SQL required to find whether the 2 line segment SQL
+	 * expressions are equal.
 	 *
 	 * @param firstLineSegment
 	 * @param secondLineSegment
@@ -3939,7 +3965,8 @@ public abstract class DBDefinition {
 	}
 
 	/**
-	 * Generate the SQL required to convert the line segment SQL expression into the WKT string format.
+	 * Generate the SQL required to convert the line segment SQL expression into
+	 * the WKT string format.
 	 *
 	 * @param lineSegment
 	 * @return SQL
@@ -3949,18 +3976,21 @@ public abstract class DBDefinition {
 	}
 
 	/**
-	 * Generate the SQL required to find the intersection point of the 2 line segment SQL expressions.
+	 * Generate the SQL required to find the intersection point of the 2 line
+	 * segment SQL expressions.
 	 *
 	 * @param firstLineSegment
 	 * @param secondLineSegment
-	 * @return an SQL expression that will evaluate to the intersection point of the 2 line segments or NULL.
+	 * @return an SQL expression that will evaluate to the intersection point of
+	 * the 2 line segments or NULL.
 	 */
 	public String doLineSegment2DIntersectionPointWithLineSegment2DTransform(String firstLineSegment, String secondLineSegment) {
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-	}	
-	
+	}
+
 	/**
-	 * Generate the SQL required to return the starting point of the provided LineSegment2D expression.
+	 * Generate the SQL required to return the starting point of the provided
+	 * LineSegment2D expression.
 	 *
 	 * @param lineSegmentSQL
 	 * @return SQL
@@ -3970,8 +4000,9 @@ public abstract class DBDefinition {
 	}
 
 	/**
-	 * Generate the SQL required to return the starting point of the provided LineSegment2D expression.
-	 * 
+	 * Generate the SQL required to return the starting point of the provided
+	 * LineSegment2D expression.
+	 *
 	 * @param lineSegmentSQL
 	 * @return SQL
 	 */
@@ -3980,7 +4011,8 @@ public abstract class DBDefinition {
 	}
 
 	/**
-	 * Provide the SQL that correctly represents this MultiPoint2D value in this database.
+	 * Provide the SQL that correctly represents this MultiPoint2D value in this
+	 * database.
 	 *
 	 * @param points
 	 * @return SQL
@@ -3991,9 +4023,10 @@ public abstract class DBDefinition {
 	}
 
 	/**
-	 * Convert the database's string representation of a MultiPoint2D value into a MultiPoint..
+	 * Convert the database's string representation of a MultiPoint2D value into a
+	 * MultiPoint..
 	 *
-	 * @param pointsAsString 
+	 * @param pointsAsString
 	 * @return MultiPoint
 	 * @throws com.vividsolutions.jts.io.ParseException
 	 */
@@ -4004,7 +4037,7 @@ public abstract class DBDefinition {
 		if (geometry instanceof MultiPoint) {
 			mpoint = (MultiPoint) geometry;
 		} else if (geometry instanceof Point) {
-			mpoint = (new GeometryFactory().createMultiPoint(new Point[]{((Point)geometry)}));
+			mpoint = (new GeometryFactory().createMultiPoint(new Point[]{((Point) geometry)}));
 		} else {
 			throw new IncorrectGeometryReturnedForDatatype(geometry, geometry);
 		}
@@ -4023,7 +4056,8 @@ public abstract class DBDefinition {
 	}
 
 	/**
-	 * Provide the SQL to compare 2 MultiPoint2Ds using the equivalent of NOT EQUALS.
+	 * Provide the SQL to compare 2 MultiPoint2Ds using the equivalent of NOT
+	 * EQUALS.
 	 *
 	 * @param first
 	 * @param second
@@ -4037,7 +4071,7 @@ public abstract class DBDefinition {
 	 * Provide the SQL to get point at the supplied index within the MultiPoint2D
 	 *
 	 * @param first
-	 * @param index 
+	 * @param index
 	 * @return SQL
 	 */
 	public String doMultiPoint2DGetPointAtIndexTransform(String first, String index) {
@@ -4055,7 +4089,8 @@ public abstract class DBDefinition {
 	}
 
 	/**
-	 * Provides the SQL the derive the dimension (2 basically) of the MultiPoint2D value.
+	 * Provides the SQL the derive the dimension (2 basically) of the MultiPoint2D
+	 * value.
 	 *
 	 * @param multipoint2D
 	 * @return SQL
@@ -4065,7 +4100,8 @@ public abstract class DBDefinition {
 	}
 
 	/**
-	 * Provides the SQL the derive the bounding box containing all the points in the MultiPoint2D value.
+	 * Provides the SQL the derive the bounding box containing all the points in
+	 * the MultiPoint2D value.
 	 *
 	 * @param multiPoint2D
 	 * @return SQL
@@ -4085,7 +4121,8 @@ public abstract class DBDefinition {
 	}
 
 	/**
-	 * Provides the SQL the transform the MultiPoint2D value into a {@link Line2DResult} value.
+	 * Provides the SQL the transform the MultiPoint2D value into a
+	 * {@link Line2DResult} value.
 	 *
 	 * @param multiPoint2D
 	 * @return SQL
@@ -4097,10 +4134,10 @@ public abstract class DBDefinition {
 //	public String doMultiPoint2DToPolygon2DTransform(String first) {
 //		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 //	}
-
 	/**
-	 * Provides the SQL that will derive the smallest Y value of all the points in the MultiPoint2D value
-	 * 
+	 * Provides the SQL that will derive the smallest Y value of all the points in
+	 * the MultiPoint2D value
+	 *
 	 * @param multiPoint2D
 	 * @return SQL
 	 */
@@ -4109,8 +4146,9 @@ public abstract class DBDefinition {
 	}
 
 	/**
-	 * Provides the SQL that will derive the smallest X value of all the points in the MultiPoint2D value
-	 * 
+	 * Provides the SQL that will derive the smallest X value of all the points in
+	 * the MultiPoint2D value
+	 *
 	 * @param multiPoint2D
 	 * @return SQL
 	 */
@@ -4119,8 +4157,9 @@ public abstract class DBDefinition {
 	}
 
 	/**
-	 * Provides the SQL that will derive the largest Y value of all the points in the MultiPoint2D value
-	 * 
+	 * Provides the SQL that will derive the largest Y value of all the points in
+	 * the MultiPoint2D value
+	 *
 	 * @param multiPoint2D
 	 * @return SQL
 	 */
@@ -4129,8 +4168,9 @@ public abstract class DBDefinition {
 	}
 
 	/**
-	 * Provides the SQL that will derive the largest X value of all the points in the MultiPoint2D value
-	 * 
+	 * Provides the SQL that will derive the largest X value of all the points in
+	 * the MultiPoint2D value
+	 *
 	 * @param multiPoint2D
 	 * @return SQL
 	 */
@@ -4139,17 +4179,20 @@ public abstract class DBDefinition {
 	}
 
 	/**
-	 * Returns true if the database supports has built-in support for limiting number of rows returned by a query.
-	 * 
-	 * @param options 
-	 * @return TRUE if there is an SQL way of limiting rows numbers, otherwise FALSE
+	 * Returns true if the database supports has built-in support for limiting
+	 * number of rows returned by a query.
+	 *
+	 * @param options
+	 * @return TRUE if there is an SQL way of limiting rows numbers, otherwise
+	 * FALSE
 	 */
 	public boolean supportsRowLimitsNatively(QueryOptions options) {
 		return true;
 	}
 
 	/**
-	 * Return if, like Oracle, the database requires Spatial indexes to perform standard spatial operations.
+	 * Return if, like Oracle, the database requires Spatial indexes to perform
+	 * standard spatial operations.
 	 *
 	 * @return FALSE by default
 	 */
@@ -4158,7 +4201,8 @@ public abstract class DBDefinition {
 	}
 
 	/**
-	 * Return the sequence of SQL operations required to create the necessary Spatial2D indexes
+	 * Return the sequence of SQL operations required to create the necessary
+	 * Spatial2D indexes
 	 *
 	 * @param aThis
 	 * @param formatTableName
@@ -4171,7 +4215,7 @@ public abstract class DBDefinition {
 
 	/**
 	 * Wrap query with any required syntax to provide paging functionality.
-	 * 
+	 *
 	 * <p>
 	 * Required to support Oracle's ROWNUM-based paging "system".
 	 *
@@ -4185,11 +4229,11 @@ public abstract class DBDefinition {
 
 	/**
 	 * Return the number of spatial dimensions that this geometry is defined in.
-	 * 
+	 *
 	 * <p>
 	 * Effectively indicates whether the geometry is 2D, 3D, etc.
 	 *
-	 * @param line2DSQL 
+	 * @param line2DSQL
 	 * @return the number of spatial dimensions that this geometry is defined in.
 	 */
 	public String doLine2DSpatialDimensionsTransform(String line2DSQL) {
@@ -4197,9 +4241,10 @@ public abstract class DBDefinition {
 	}
 
 	/**
-	 * Return whether this geometry includes a magnitude (M) value along with X, Y, etc.
-	 * 
-	 * @param line2DSQL 
+	 * Return whether this geometry includes a magnitude (M) value along with X,
+	 * Y, etc.
+	 *
+	 * @param line2DSQL
 	 * @return TRUE or FALSE
 	 */
 	public String doLine2DHasMagnitudeTransform(String line2DSQL) {
@@ -4208,11 +4253,11 @@ public abstract class DBDefinition {
 
 	/**
 	 * Return the magnitude (M) value of this line.
-	 * 
+	 *
 	 * <p>
 	 * Effectively indicates whether the geometry is 2D or 3D.
 	 *
-	 * @param line2DSQL 
+	 * @param line2DSQL
 	 * @return the value for the magnitude, or NULL if there is no magnitude.
 	 */
 	public String doLine2DGetMagnitudeTransform(String line2DSQL) {
@@ -4221,11 +4266,11 @@ public abstract class DBDefinition {
 
 	/**
 	 * Return the number of spatial dimensions that this geometry is defined in.
-	 * 
+	 *
 	 * <p>
 	 * Effectively indicates whether the geometry is 2D, 3D, etc.
 	 *
-	 * @param point2DSQL  
+	 * @param point2DSQL
 	 * @return the number of spatial dimensions that this geometry is defined in.
 	 */
 	public String doPoint2DSpatialDimensionsTransform(String point2DSQL) {
@@ -4233,9 +4278,10 @@ public abstract class DBDefinition {
 	}
 
 	/**
-	 * Return whether this geometry includes a magnitude (M) value along with X, Y, etc.
-	 * 
-	 * @param point2DSQL  
+	 * Return whether this geometry includes a magnitude (M) value along with X,
+	 * Y, etc.
+	 *
+	 * @param point2DSQL
 	 * @return TRUE or FALSE
 	 */
 	public String doPoint2DHasMagnitudeTransform(String point2DSQL) {
@@ -4244,11 +4290,11 @@ public abstract class DBDefinition {
 
 	/**
 	 * Return the magnitude (M) value of this line.
-	 * 
+	 *
 	 * <p>
 	 * Effectively indicates whether the geometry is 2D or 3D.
 	 *
-	 * @param point2DSQL  
+	 * @param point2DSQL
 	 * @return the value for the magnitude, or NULL if there is no magnitude.
 	 */
 	public String doPoint2DGetMagnitudeTransform(String point2DSQL) {
@@ -4257,11 +4303,11 @@ public abstract class DBDefinition {
 
 	/**
 	 * Return the number of spatial dimensions that this geometry is defined in.
-	 * 
+	 *
 	 * <p>
 	 * Effectively indicates whether the geometry is 2D, 3D, etc.
 	 *
-	 * @param multipoint2DSQL  
+	 * @param multipoint2DSQL
 	 * @return the number of spatial dimensions that this geometry is defined in.
 	 */
 	public String doMultiPoint2DSpatialDimensionsTransform(String multipoint2DSQL) {
@@ -4269,9 +4315,10 @@ public abstract class DBDefinition {
 	}
 
 	/**
-	 * Return whether this geometry includes a magnitude (M) value along with X, Y, etc.
-	 * 
-	 * @param multipoint2DSQL  
+	 * Return whether this geometry includes a magnitude (M) value along with X,
+	 * Y, etc.
+	 *
+	 * @param multipoint2DSQL
 	 * @return TRUE or FALSE
 	 */
 	public String doMultiPoint2DHasMagnitudeTransform(String multipoint2DSQL) {
@@ -4280,11 +4327,11 @@ public abstract class DBDefinition {
 
 	/**
 	 * Return the magnitude (M) value of this line.
-	 * 
+	 *
 	 * <p>
 	 * Effectively indicates whether the geometry is 2D or 3D.
 	 *
-	 * @param multipoint2DSQL  
+	 * @param multipoint2DSQL
 	 * @return the value for the magnitude, or NULL if there is no magnitude.
 	 */
 	public String doMultiPoint2DGetMagnitudeTransform(String multipoint2DSQL) {
@@ -4293,11 +4340,11 @@ public abstract class DBDefinition {
 
 	/**
 	 * Return the number of spatial dimensions that this geometry is defined in.
-	 * 
+	 *
 	 * <p>
 	 * Effectively indicates whether the geometry is 2D, 3D, etc.
 	 *
-	 * @param polygon2DSQL  
+	 * @param polygon2DSQL
 	 * @return the number of spatial dimensions that this geometry is defined in.
 	 */
 	public String doPolygon2DSpatialDimensionsTransform(String polygon2DSQL) {
@@ -4305,9 +4352,10 @@ public abstract class DBDefinition {
 	}
 
 	/**
-	 * Return whether this geometry includes a magnitude (M) value along with X, Y, etc.
-	 * 
-	 * @param polygon2DSQL  
+	 * Return whether this geometry includes a magnitude (M) value along with X,
+	 * Y, etc.
+	 *
+	 * @param polygon2DSQL
 	 * @return TRUE or FALSE
 	 */
 	public String doPolygon2DHasMagnitudeTransform(String polygon2DSQL) {
@@ -4316,24 +4364,24 @@ public abstract class DBDefinition {
 
 	/**
 	 * Return the magnitude (M) value of this line.
-	 * 
+	 *
 	 * <p>
 	 * Effectively indicates whether the geometry is 2D or 3D.
 	 *
-	 * @param polygon2DSQL  
+	 * @param polygon2DSQL
 	 * @return the value for the magnitude, or NULL if there is no magnitude.
 	 */
 	public String doPolygon2DGetMagnitudeTransform(String polygon2DSQL) {
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
-	
+
 	/**
 	 * Return the number of spatial dimensions that this geometry is defined in.
-	 * 
+	 *
 	 * <p>
 	 * Effectively indicates whether the geometry is 2D, 3D, etc.
 	 *
-	 * @param lineSegment2DSQL 
+	 * @param lineSegment2DSQL
 	 * @return the number of spatial dimensions that this geometry is defined in.
 	 */
 	public String doLineSegment2DSpatialDimensionsTransform(String lineSegment2DSQL) {
@@ -4341,9 +4389,10 @@ public abstract class DBDefinition {
 	}
 
 	/**
-	 * Return whether this geometry includes a magnitude (M) value along with X, Y, etc.
-	 * 
-	 * @param lineSegment2DSQL  
+	 * Return whether this geometry includes a magnitude (M) value along with X,
+	 * Y, etc.
+	 *
+	 * @param lineSegment2DSQL
 	 * @return TRUE or FALSE
 	 */
 	public String doLineSegment2DHasMagnitudeTransform(String lineSegment2DSQL) {
@@ -4352,21 +4401,43 @@ public abstract class DBDefinition {
 
 	/**
 	 * Return the magnitude (M) value of this line.
-	 * 
+	 *
 	 * <p>
 	 * Effectively indicates whether the geometry is 2D or 3D.
 	 *
-	 * @param lineSegment2DSQL  
+	 * @param lineSegment2DSQL
 	 * @return the value for the magnitude, or NULL if there is no magnitude.
 	 */
 	public String doLineSegment2DGetMagnitudeTransform(String lineSegment2DSQL) {
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
+	/**
+	 * Override this method to provide the SQL that will create a database
+	 * Polygon2D value from the list of presumed coordinates.
+	 *
+	 * <p>
+	 * Coordinates are a series of number values that are presumed to be pairs of
+	 * X and Y values. That is to say the list is a list number values with no
+	 * formatting other than that required to express the values as numbers.
+	 *
+	 * @param coordinateSQL
+	 * @return
+	 */
 	public String doCoordinateArrayToPolygon2DTransform(List<String> coordinateSQL) {
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
+	/**
+	 * Override this method to provide a specific transform that will derive the
+	 * last day of the month from the date value provided.
+	 * 
+	 * <p>
+	 * If no override is provided for this method a default implementation will be used instead.
+	 *
+	 * @param dateSQL
+	 * @return
+	 */
 	public String doEndOfMonthTransform(String dateSQL) {
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}

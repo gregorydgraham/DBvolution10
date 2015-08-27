@@ -39,7 +39,30 @@ import nz.co.gregs.dbvolution.databases.supports.SupportsPolygonDatatype;
  */
 public abstract class OracleAWSDB extends OracleDB implements SupportsPolygonDatatype {
 
-	protected OracleAWSDB() {
+	/**
+
+	 * Provides a convenient constructor for DBDatabases that have configuration
+	 * details hardwired or are able to automatically retrieve the details.
+	 *
+	 * <p>
+	 * This constructor creates an empty DBDatabase with only the default
+	 * settings, in particular with no driver, URL, username, password, or
+	 * {@link DBDefinition}
+	 * 
+	 * <p>
+	 * Most programmers should not call this constructor directly. Check the
+	 * subclasses in {@code nz.co.gregs.dbvolution.databases} for your particular
+	 * database.
+	 *
+	 * <p>
+	 * DBDatabase encapsulates the knowledge of the database, in particular the
+	 * syntax of the database in the DBDefinition and the connection details from
+	 * a DataSource.
+	 *
+	 * @see DBDefinition
+	 * @see OracleAWS11DB
+	 * @see OracleAWSDB
+	 */	protected OracleAWSDB() {
 	}
 
 	/**

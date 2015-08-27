@@ -33,7 +33,7 @@ import nz.co.gregs.dbvolution.expressions.DBExpression;
  * @author greg
  * @see DBExpression
  */
-public interface NumberResult extends DBExpression, ExpressionCanHaveNullValues {
+public interface NumberResult extends DBExpression, ExpressionCanHaveNullValues, ExpressionHasStandardStringResult {
 
 	@Override
 	public NumberResult copy();

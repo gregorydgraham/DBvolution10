@@ -27,10 +27,16 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import nz.co.gregs.dbvolution.DBDatabase;
+import nz.co.gregs.dbvolution.DBQuery;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.datatypes.spatial2D.DBPolygon2D;
 
 /**
+ * Creates and transforms Polygon2D values within your database queries.
+ *
+ * <p>
+ * Use these methods to manipulate your Polygon2D columns and results for finer
+ * control of the query results.
  *
  * @author gregorygraham
  */
@@ -39,9 +45,20 @@ public class Polygon2DExpression implements Spatial2DExpression, Polygon2DResult
 	private Polygon2DResult innerGeometry;
 	private boolean nullProtectionRequired;
 
+	/**
+	 * Default constructor
+	 *
+	 */
 	protected Polygon2DExpression() {
 	}
 
+	/**
+	 * Create a Polygon2DExpression that represents the value for use in {@link DBQuery#addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression)
+	 * }, and when creating column expressions using {@link DBPolygon2D#DBPolygon2D(nz.co.gregs.dbvolution.expressions.Polygon2DExpression)
+	 * } and similar methods.
+	 *
+	 * @param value
+	 */
 	public Polygon2DExpression(Polygon2DResult value) {
 		innerGeometry = value;
 		if (value == null || innerGeometry.getIncludesNull()) {
@@ -49,6 +66,13 @@ public class Polygon2DExpression implements Spatial2DExpression, Polygon2DResult
 		}
 	}
 
+	/**
+	 * Create a Polygon2DExpression that represents the value for use in {@link DBQuery#addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression)
+	 * }, and when creating column expressions using {@link DBPolygon2D#DBPolygon2D(nz.co.gregs.dbvolution.expressions.Polygon2DExpression)
+	 * } and similar methods.
+	 *
+	 * @param geometry 
+	 */
 	public Polygon2DExpression(Polygon geometry) {
 		innerGeometry = new DBPolygon2D(geometry);
 		if (geometry == null || innerGeometry.getIncludesNull()) {
@@ -56,14 +80,50 @@ public class Polygon2DExpression implements Spatial2DExpression, Polygon2DResult
 		}
 	}
 
+	/**
+	 * Create a Polygon2DExpression that represents the value for use in {@link DBQuery#addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression)
+	 * }, and when creating column expressions using {@link DBPolygon2D#DBPolygon2D(nz.co.gregs.dbvolution.expressions.Polygon2DExpression)
+	 * } and similar methods.
+	 *
+	 * @param geometry
+	 * @return  a polygon2d expression
+	 */
 	public static Polygon2DExpression value(Polygon geometry) {
 		return new Polygon2DExpression(geometry);
 	}
 
-	public static Polygon2DExpression value(Point2DExpression... pointExpressions) {
-		return Polygon2DExpression.polygon2DFromPoint2DArray(pointExpressions);
+	/**
+	 * Create a Polygon2DExpression that represents the value for use in {@link DBQuery#addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression)
+	 * }, and when creating column expressions using {@link DBPolygon2D#DBPolygon2D(nz.co.gregs.dbvolution.expressions.Polygon2DExpression)
+	 * } and similar methods.
+	 *
+	 * @param geometry
+	 * @return  a polygon2d expression
+	 */
+	public static Polygon2DExpression value(Polygon2DResult geometry) {
+		return new Polygon2DExpression(geometry);
 	}
 
+	/**
+	 * Create a Polygon2DExpression that represents the value for use in {@link DBQuery#addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression)
+	 * }, and when creating column expressions using {@link DBPolygon2D#DBPolygon2D(nz.co.gregs.dbvolution.expressions.Polygon2DExpression)
+	 * } and similar methods.
+	 *
+	 * @param pointExpressions 
+	 * @return  a polygon2d expression
+	 */
+	public static Polygon2DExpression value(Point2DExpression... pointExpressions) {
+		return Polygon2DExpression.polygon2DFromPoint2DExpressionArray(pointExpressions);
+	}
+
+	/**
+	 * Create a Polygon2DExpression that represents the value for use in {@link DBQuery#addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression)
+	 * }, and when creating column expressions using {@link DBPolygon2D#DBPolygon2D(nz.co.gregs.dbvolution.expressions.Polygon2DExpression)
+	 * } and similar methods.
+	 *
+	 * @param coordinateExpressions 
+	 * @return  a polygon2d expression
+	 */
 	public static Polygon2DExpression value(NumberExpression... coordinateExpressions) {
 		return Polygon2DExpression.polygon2DFromCoordinateArray(coordinateExpressions);
 	}
@@ -116,10 +176,22 @@ public class Polygon2DExpression implements Spatial2DExpression, Polygon2DResult
 		return nullProtectionRequired;
 	}
 
+	/**
+	 * Create a boolean expression that returns TRUE if the two polygons share any spatial coordinates.
+	 *
+	 * @param rightHandSide
+	 * @return a boolean expression that is true if the polygons interact in any way.
+	 */
 	public BooleanExpression intersects(Polygon rightHandSide) {
 		return intersects(new DBPolygon2D(rightHandSide));
 	}
 
+	/**
+	 * Create a boolean expression that returns TRUE if the two polygons share any spatial coordinates.
+	 *
+	 * @param rightHandSide
+	 * @return a boolean expression that is true if the polygons interact in any way.
+	 */
 	public BooleanExpression intersects(Polygon2DResult rightHandSide) {
 		return new BooleanExpression(new PolygonPolygonWithBooleanResult(this, new Polygon2DExpression(rightHandSide)) {
 
@@ -130,15 +202,34 @@ public class Polygon2DExpression implements Spatial2DExpression, Polygon2DResult
 		});
 	}
 
-	public static Polygon2DExpression polygon2DFromPoint2DArray(Point... points) {
+
+	/**
+	 * Provides a expression that represents the multipoint2d value as a polygon2d
+	 * value.
+	 *
+	 * <P>
+	 * Points are added to the polygon in index order. If necessary the polygon is
+	 * closed by adding the first point to the end.
+	 *
+	 * <p>
+	 * MultiPoint2d values with less than 3 points will return NULL values.
+	 *
+	 * @return a polygon2d expression
+	 */
+	/* TODO implement public Polygon2DExpression polygon2DResult() {*/
+	public Polygon2DExpression polygon2DResult() {
+		throw new UnsupportedOperationException("NOT DONE YET, SORRY.");
+	}
+
+	public static Polygon2DExpression value(Point... points) {
 		List<Point2DExpression> exprs = new ArrayList<Point2DExpression>();
 		for (Point point : points) {
 			exprs.add(Point2DExpression.value(point));
 		}
-		return polygon2DFromPoint2DArray(exprs.toArray(new Point2DExpression[]{}));
+		return polygon2DFromPoint2DExpressionArray(exprs.toArray(new Point2DExpression[]{}));
 	}
 
-	public static Polygon2DExpression polygon2DFromPoint2DArray(Point2DExpression... pointExpressions) {
+	private static Polygon2DExpression polygon2DFromPoint2DExpressionArray(Point2DExpression... pointExpressions) {
 		return new Polygon2DExpression(new Point2dArrayFunctionWithPolygon2DResult(pointExpressions) {
 
 			@Override
@@ -484,6 +575,7 @@ public class Polygon2DExpression implements Spatial2DExpression, Polygon2DResult
 		return this.is(geometry).not();
 	}
 
+	@Override
 	public StringExpression stringResult() {
 		StringExpression stringResultExpr = new StringExpression(new Polygon2DFunctionWithStringResult(this) {
 
@@ -1109,6 +1201,7 @@ public class Polygon2DExpression implements Spatial2DExpression, Polygon2DResult
 			return requiresNullProtection;
 		}
 	}
+
 	private static abstract class CoordinateArrayFunctionWithPolygon2DResult extends Polygon2DExpression {
 
 		private NumberExpression[] allCoords;

@@ -170,6 +170,16 @@ public class LineSegment2DExpression implements LineSegment2DResult, EqualCompar
 		return new LineSegment2DExpression(line);
 	}
 
+	/**
+	 * Create an expression for the line segment created from the 2 points.
+	 *
+	 * @param line
+	 * @return a LineSegment2D expression
+	 */
+	public static LineSegment2DExpression value(LineSegment2DResult line) {
+		return new LineSegment2DExpression(line);
+	}
+
 	@Override
 	public DBLineSegment2D getQueryableDatatypeForExpressionValue() {
 		return new DBLineSegment2D();

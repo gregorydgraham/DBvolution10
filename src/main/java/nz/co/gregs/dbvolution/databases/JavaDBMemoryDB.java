@@ -40,13 +40,8 @@ public class JavaDBMemoryDB extends JavaDB {
 	 */
 	public JavaDBMemoryDB(String host, int port, String database, String username, String password) throws SQLException, UnableToCreateDatabaseConnectionException, UnableToFindJDBCDriver {
 		super("jdbc:derby://" + host + ":" + port + "/memory:" + database + ";create=true", username, password);
-//		jamDatabaseConnectionOpen();
 	}
 
-//	private void jamDatabaseConnectionOpen() throws SQLException, UnableToCreateDatabaseConnectionException, UnableToFindJDBCDriver {
-//		this.storedConnection = getConnection();
-//		this.storedConnection.createStatement();
-//	}
 	@Override
 	public JavaDBMemoryDB clone() throws CloneNotSupportedException {
 		return (JavaDBMemoryDB) super.clone(); //To change body of generated methods, choose Tools | Templates.

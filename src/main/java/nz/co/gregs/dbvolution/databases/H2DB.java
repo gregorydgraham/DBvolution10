@@ -92,7 +92,6 @@ public class H2DB extends DBDatabase implements SupportsDateRepeatDatatypeFuncti
 	 * @param jdbcURL jdbcURL
 	 * @param username username
 	 * @param password password
-	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
 	public H2DB(String jdbcURL, String username, String password) {
 		super(new H2DBDefinition(), "org.h2.Driver", jdbcURL, username, password);
@@ -201,11 +200,6 @@ public class H2DB extends DBDatabase implements SupportsDateRepeatDatatypeFuncti
 		if (!handledException) {
 			throw exp;
 		}
-	}
-
-	@Override
-	protected boolean persistentConnectionRequired() {
-		return true;
 	}
 
 }

@@ -27,9 +27,7 @@ import java.util.logging.Logger;
 import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 import nz.co.gregs.dbvolution.exceptions.*;
-import nz.co.gregs.dbvolution.expressions.BooleanExpression;
 import nz.co.gregs.dbvolution.expressions.MultiPoint2DExpression;
-import nz.co.gregs.dbvolution.expressions.NumberExpression;
 import nz.co.gregs.dbvolution.expressions.StringExpression;
 import nz.co.gregs.dbvolution.results.MultiPoint2DResult;
 
@@ -235,4 +233,10 @@ public class DBMultiPoint2D extends QueryableDatatype implements MultiPoint2DRes
 //	public StringExpression toWKTFormat(){
 //		return StringExpression.value(jtsMultiPointValue().toText());
 //	}
+
+	@Override
+	public StringExpression stringResult() {
+		return MultiPoint2DExpression.value(this).stringResult();
+	}
+	
 }

@@ -46,7 +46,6 @@ public class Informix11DB extends InformixDB {
 	 * @param username username
 	 * @param password password
 	 * @throws java.lang.ClassNotFoundException java.lang.ClassNotFoundException
-	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
 	public Informix11DB(String jdbcURL, String username, String password) throws ClassNotFoundException {
 		super(new Informix11DBDefinition(), INFORMIXDRIVERNAME, jdbcURL, username, password);

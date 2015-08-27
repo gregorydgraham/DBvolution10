@@ -49,6 +49,28 @@ public class PostgresDB extends DBDatabase implements SupportsPolygonDatatype{
 	 */
 	public static final String POSTGRES_DEFAULT_USERNAME = "postgres";
 
+/**
+	 *
+	 * Provides a convenient constructor for DBDatabases that have configuration
+	 * details hardwired or are able to automatically retrieve the details.
+	 *
+	 * <p>
+	 * This constructor creates an empty DBDatabase with only the default
+	 * settings, in particular with no driver, URL, username, password, or
+	 * {@link DBDefinition}
+	 *
+	 * <p>
+	 * Most programmers should not call this constructor directly. Instead you
+	 * should define a no-parameter constructor that supplies the details for
+	 * creating an instance using a more complete constructor.
+	 *
+	 * <p>
+	 * DBDatabase encapsulates the knowledge of the database, in particular the
+	 * syntax of the database in the DBDefinition and the connection details from
+	 * a DataSource.
+	 *
+	 * @see DBDefinition
+	 */
 	protected PostgresDB() {
 		super();
 	}
@@ -56,7 +78,6 @@ public class PostgresDB extends DBDatabase implements SupportsPolygonDatatype{
 	 * Creates a PostgreSQL connection for the DataSource.
 	 *
 	 * @param ds	ds
-	 * @throws java.sql.SQLException
 	 */
 	public PostgresDB(DataSource ds) {
 		super(new PostgresDBDefinition(), ds);

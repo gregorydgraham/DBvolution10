@@ -17,13 +17,12 @@ package nz.co.gregs.dbvolution.datatypes;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.HashSet;
-import java.util.Set;
 import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.DBReport;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.expressions.BooleanExpression;
+import nz.co.gregs.dbvolution.expressions.StringExpression;
 import nz.co.gregs.dbvolution.results.BooleanResult;
 import nz.co.gregs.dbvolution.operators.DBBooleanPermittedValuesOperator;
 import nz.co.gregs.dbvolution.operators.DBPermittedValuesOperator;
@@ -240,6 +239,11 @@ public class DBBoolean extends QueryableDatatype implements BooleanResult {
 			dbValue = null;
 		}
 		return dbValue;
+	}
+
+	@Override
+	public StringExpression stringResult() {
+		return BooleanExpression.value(this).stringResult();
 	}
 
 }

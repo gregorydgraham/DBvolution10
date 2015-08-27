@@ -66,7 +66,6 @@ public class MSSQLServerDB extends DBDatabase implements SupportsPolygonDatatype
 	 * @param jdbcURL jdbcURL
 	 * @param username username
 	 * @param password password
-	 * @throws java.sql.SQLException
 	 */
 	public MSSQLServerDB(String driverName, String jdbcURL, String username, String password)  {
 		super(new MSSQLServerDBDefinition(), driverName, jdbcURL, username, password);

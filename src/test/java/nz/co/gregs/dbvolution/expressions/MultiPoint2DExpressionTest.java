@@ -239,7 +239,7 @@ public class MultiPoint2DExpressionTest extends AbstractTest {
 		Point point = geometryFactory.createPoint(new Coordinate(3, 4));
 		final MultiPoint2DTestTable multiPointRow = new MultiPoint2DTestTable();
 		DBQuery dbQuery = database.getDBQuery(multiPointRow);
-		dbQuery.addCondition(multiPointRow.column(multiPointRow.multipoint).getPointAtIndex(2).is(point));
+		dbQuery.addCondition(multiPointRow.column(multiPointRow.multipoint).getPointAtIndexZeroBased(1).is(point));
 		dbQuery.setSortOrder(multiPointRow.column(multiPointRow.line_id));
 		List<MultiPoint2DTestTable> allRows = dbQuery.getAllInstancesOf(multiPointRow);
 		database.print(allRows);

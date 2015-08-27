@@ -158,4 +158,9 @@ public class DBDateRepeat extends QueryableDatatype implements DateRepeatResult 
 			return PeriodFormat.getDefault().print(period);
 		}
 	}
+
+	@Override
+	public StringExpression stringResult() {
+		return DateRepeatExpression.value(this).stringResult();
+	}
 }

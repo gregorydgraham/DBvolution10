@@ -22,6 +22,8 @@ import java.util.Collection;
 import java.util.List;
 import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
+import nz.co.gregs.dbvolution.expressions.NumberExpression;
+import nz.co.gregs.dbvolution.expressions.StringExpression;
 import nz.co.gregs.dbvolution.results.NumberResult;
 import nz.co.gregs.dbvolution.operators.DBPermittedRangeExclusiveOperator;
 import nz.co.gregs.dbvolution.operators.DBPermittedRangeInclusiveOperator;
@@ -726,5 +728,10 @@ public class DBInteger extends QueryableDatatype implements NumberResult {
 	@Override
 	public boolean getIncludesNull() {
 		return false;
+	}
+
+	@Override
+	public StringExpression stringResult() {
+		return NumberExpression.value(this).stringResult();
 	}
 }

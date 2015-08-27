@@ -24,6 +24,8 @@ import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.DBReport;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
+import nz.co.gregs.dbvolution.expressions.NumberExpression;
+import nz.co.gregs.dbvolution.expressions.StringExpression;
 import nz.co.gregs.dbvolution.results.NumberResult;
 import nz.co.gregs.dbvolution.operators.DBPermittedRangeExclusiveOperator;
 import nz.co.gregs.dbvolution.operators.DBPermittedRangeInclusiveOperator;
@@ -655,5 +657,10 @@ public class DBNumber extends QueryableDatatype implements NumberResult {
 				return null;
 			}
 		}
+	}
+
+	@Override
+	public StringExpression stringResult() {
+		return NumberExpression.value(this).stringResult();
 	}
 }

@@ -34,7 +34,7 @@ import nz.co.gregs.dbvolution.datatypes.spatial2D.DBMultiPoint2D;
 import nz.co.gregs.dbvolution.results.MultiPoint2DResult;
 
 /**
- * Represents SQL expressions that are a 2 dimensional path, a series of
+ * Represents SQL expressions that are a 2 dimensional path, as a series of
  * connected line segments with X and Y coordinates.
  *
  *
@@ -158,6 +158,16 @@ public class Line2DExpression implements Line2DResult, EqualComparable<Line2DRes
 	}
 
 	/**
+	 * Create a Line2DExpression representing the line.
+	 *
+	 * @param line
+	 * @return a Line2DExpression
+	 */
+	public static Line2DExpression value(DBLine2D line) {
+		return new Line2DExpression(line);
+	}
+
+	/**
 	 * Create a Line2DExpression representing the {@link MultiPoint2DExpression}
 	 * or {@link DBMultiPoint2D} as a line.
 	 *
@@ -241,6 +251,7 @@ public class Line2DExpression implements Line2DResult, EqualComparable<Line2DRes
 	 *
 	 * @return a StringExpression of the Line2D in WKT format.
 	 */
+	@Override
 	public StringExpression stringResult() {
 		return new StringExpression(new Line2DExpression.LineFunctionWithStringResult(this) {
 
@@ -488,6 +499,7 @@ public class Line2DExpression implements Line2DResult, EqualComparable<Line2DRes
 	 *
 	 * @return the numeric value of the largest X coordinate for the Line2D.
 	 */
+	@Override
 	public NumberExpression getMaxX() {
 
 		return new NumberExpression(new LineFunctionWithNumberResult(this) {
@@ -504,6 +516,7 @@ public class Line2DExpression implements Line2DResult, EqualComparable<Line2DRes
 	 *
 	 * @return the numeric value of the smallest X coordinate for the Line2D.
 	 */
+	@Override
 	public NumberExpression getMinX() {
 
 		return new NumberExpression(new LineFunctionWithNumberResult(this) {
@@ -520,6 +533,7 @@ public class Line2DExpression implements Line2DResult, EqualComparable<Line2DRes
 	 *
 	 * @return the numeric value of the largest Y coordinate for the Line2D.
 	 */
+	@Override
 	public NumberExpression getMaxY() {
 
 		return new NumberExpression(new LineFunctionWithNumberResult(this) {
@@ -536,6 +550,7 @@ public class Line2DExpression implements Line2DResult, EqualComparable<Line2DRes
 	 *
 	 * @return the numeric value of the smallest Y coordinate for the Line2D.
 	 */
+	@Override
 	public NumberExpression getMinY() {
 
 		return new NumberExpression(new LineFunctionWithNumberResult(this) {
@@ -748,6 +763,24 @@ public class Line2DExpression implements Line2DResult, EqualComparable<Line2DRes
 				return db.getDefinition().doLine2DIntersectionPointWithLine2DTransform(getFirst().toSQLString(db), getSecond().toSQLString(db));
 			}
 		});
+	}
+
+	/**
+	 * Provides a expression that represents the line2d value as a polygon2d
+	 * value.
+	 *
+	 * <P>
+	 * Points are added to the polygon in index order. If necessary the polygon is
+	 * closed by adding the first point to the end.
+	 *
+	 * <p>
+	 * Line2D values with less than 3 points will return NULL values.
+	 *
+	 * @return a polygon2d expression
+	 */
+	/* TODO implement public Polygon2DExpression polygon2DResult() {*/
+	public Polygon2DExpression polygon2DResult() {
+		throw new UnsupportedOperationException("NOT DONE YET, SORRY.");
 	}
 
 	private static abstract class LineLineWithBooleanResult extends BooleanExpression {

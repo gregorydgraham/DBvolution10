@@ -27,8 +27,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import nz.co.gregs.dbvolution.exceptions.IncorrectGeometryReturnedForDatatype;
 import nz.co.gregs.dbvolution.exceptions.ParsingSpatialValueException;
-import nz.co.gregs.dbvolution.expressions.BooleanExpression;
-import nz.co.gregs.dbvolution.expressions.NumberExpression;
+import nz.co.gregs.dbvolution.expressions.LineSegment2DExpression;
 import nz.co.gregs.dbvolution.expressions.StringExpression;
 import nz.co.gregs.dbvolution.results.LineSegment2DResult;
 
@@ -229,5 +228,10 @@ public class DBLineSegment2D extends QueryableDatatype implements LineSegment2DR
 //	public StringExpression toWKTFormat(){
 //		return StringExpression.value(jtsLineSegmentValue().toString());
 //	}
+
+	@Override
+	public StringExpression stringResult() {
+		return LineSegment2DExpression.value(this).stringResult();
+	}
 
 }

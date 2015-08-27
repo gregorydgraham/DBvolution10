@@ -134,8 +134,15 @@ public abstract class DBDatabase implements Cloneable {
 	}
 
 	/**
-	 * Define a new DBDatabase.
+
+	 * Provides a convenient constructor for DBDatabases that have configuration
+	 * details hardwired or are able to automatically retrieve the details.
 	 *
+	 * <p>
+	 * This constructor creates an empty DBDatabase with only the default
+	 * settings, in particular with no driver, URL, username, password, or
+	 * {@link DBDefinition}
+	 * 
 	 * <p>
 	 * Most programmers should not call this constructor directly. Check the
 	 * subclasses in {@code nz.co.gregs.dbvolution.databases} for your particular
@@ -147,7 +154,9 @@ public abstract class DBDatabase implements Cloneable {
 	 * a DataSource.
 	 *
 	 * @see DBDefinition
-	 * @see OracleDB
+	 * @see Oracle12DB
+	 * @see Oracle11XEDB
+	 * @see OracleAWS11DB
 	 * @see MySQLDB
 	 * @see MSSQLServerDB
 	 * @see H2DB
@@ -315,7 +324,7 @@ public abstract class DBDatabase implements Cloneable {
 			} catch (SQLException ex) {
 				Logger.getLogger(DBDatabase.class.getName()).log(Level.FINEST, null, ex);
 			}
-			if (connectionUsedForPersistentConnection(conn)){
+			if (connectionUsedForPersistentConnection(conn)) {
 				conn = null;
 			}
 		}
@@ -1736,6 +1745,20 @@ public abstract class DBDatabase implements Cloneable {
 		throw exp;
 	}
 
+	/**
+	 * Indicates whether the database requires a persistent connection to operate correctly.
+	 * 
+	 * <p>
+	 * Some, usually in-memory, databases requires a continuous connection to maintain their data.
+	 * 
+	 * <p>
+	 * DBvolution is usually clever with its connections and does not require this a persistent connection.
+	 * 
+	 * <p>
+	 * However if a continuous connection is required to maintain the data, override this method to return TRUE.
+	 *
+	 * @return TRUE if the database requires a continuous connection to maintain data, FALSE otherwise.
+	 */
 	protected boolean persistentConnectionRequired() {
 		return false;
 	}

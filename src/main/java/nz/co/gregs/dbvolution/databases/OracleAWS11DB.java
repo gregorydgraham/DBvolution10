@@ -38,6 +38,28 @@ import nz.co.gregs.dbvolution.databases.definitions.OracleAWSDBDefinition;
  */
 public class OracleAWS11DB extends OracleAWSDB {
 
+	/**
+	 *
+	 * Provides a convenient constructor for DBDatabases that have configuration
+	 * details hardwired or are able to automatically retrieve the details.
+	 *
+	 * <p>
+	 * This constructor creates an empty DBDatabase with only the default
+	 * settings, in particular with no driver, URL, username, password, or
+	 * {@link DBDefinition}
+	 *
+	 * <p>
+	 * Most programmers should not call this constructor directly. Instead you
+	 * should define a no-parameter constructor that supplies the details for
+	 * creating an instance using a more complete constructor.
+	 *
+	 * <p>
+	 * DBDatabase encapsulates the knowledge of the database, in particular the
+	 * syntax of the database in the DBDefinition and the connection details from
+	 * a DataSource.
+	 *
+	 * @see DBDefinition
+	 */
 	protected OracleAWS11DB() {
 	}
 
@@ -45,7 +67,6 @@ public class OracleAWS11DB extends OracleAWSDB {
 	 * Creates a DBDatabase instance tweaked for Oracle 11 and above.
 	 *
 	 * @param dataSource a datasource to an Oracle database
-	 * @throws java.sql.SQLException
 	 */
 	public OracleAWS11DB(DataSource dataSource) {
 		super(new OracleAWS11DBDefinition(), dataSource);
@@ -71,7 +92,6 @@ public class OracleAWS11DB extends OracleAWSDB {
 	 * @param jdbcURL jdbcURL
 	 * @param username username
 	 * @param password password
-	 * @throws java.sql.SQLException
 	 */
 	public OracleAWS11DB(String driverName, String jdbcURL, String username, String password) {
 		super(new OracleAWS11DBDefinition(), driverName, jdbcURL, username, password);
@@ -83,7 +103,6 @@ public class OracleAWS11DB extends OracleAWSDB {
 	 * @param jdbcURL jdbcURL
 	 * @param username username
 	 * @param password password
-	 * @throws java.sql.SQLException
 	 */
 	public OracleAWS11DB(String jdbcURL, String username, String password) {
 		super(new OracleAWS11DBDefinition(), "oracle.jdbc.driver.OracleDriver", jdbcURL, username, password);
@@ -97,7 +116,6 @@ public class OracleAWS11DB extends OracleAWSDB {
 	 * @param serviceName serviceName
 	 * @param password password
 	 * @param username username
-	 * @throws java.sql.SQLException
 	 */
 	public OracleAWS11DB(String host, int port, String serviceName, String username, String password) {
 		super(new OracleAWS11DBDefinition(), "oracle.jdbc.driver.OracleDriver", "jdbc:oracle:thin:@//" + host + ":" + port + "/" + serviceName, username, password);

@@ -23,19 +23,34 @@ import java.util.Set;
 import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.datatypes.spatial2D.DBPoint2D;
+import nz.co.gregs.dbvolution.results.PointResult;
 
 /**
+ * Represents SQL expressions that are a 2 dimensional points, that is a
+ * physical location in a 2D space with X and Y points.
+ *
+ * <p>
+ * Use these methods to manipulate and transform point2d values and results.
  *
  * @author gregorygraham
  */
-public class Point2DExpression implements Point2DResult, EqualComparable<Point2DResult>, Spatial2DExpression {
+public class Point2DExpression implements PointResult, Point2DResult, EqualComparable<Point2DResult>, Spatial2DExpression {
 
 	private Point2DResult innerPoint;
 	private boolean nullProtectionRequired;
 
+	/**
+	 * Default constructor
+	 *
+	 */
 	protected Point2DExpression() {
 	}
 
+	/**
+	 * Create a Point2DExpression that represents the point value provided.
+	 *
+	 * @param value
+	 */
 	public Point2DExpression(Point2DResult value) {
 		innerPoint = value;
 		if (value == null || innerPoint.getIncludesNull()) {
@@ -43,6 +58,11 @@ public class Point2DExpression implements Point2DResult, EqualComparable<Point2D
 		}
 	}
 
+	/**
+	 * Create a Point2DExpression that represents the point value provided.
+	 *
+	 * @param point 
+	 */
 	public Point2DExpression(Point point) {
 		innerPoint = new DBPoint2D(point);
 		if (point == null || innerPoint.getIncludesNull()) {
@@ -50,22 +70,66 @@ public class Point2DExpression implements Point2DResult, EqualComparable<Point2D
 		}
 	}
 
+	/**
+	 * Create a Point2DExpression that represents the point value provided.
+	 *
+	 * @param point 
+	 * @return  a Point2DExpression of the point.
+	 */
 	public static Point2DExpression value(Point point) {
 		return new Point2DExpression(point);
 	}
 
+	/**
+	 * Create a Point2DExpression that represents the point value provided.
+	 *
+	 * @param point 
+	 * @return  a Point2DExpression of the point.
+	 */
+	public static Point2DExpression value(Point2DResult point) {
+		return new Point2DExpression(point);
+	}
+
+	/**
+	 * Create a Point2DExpression that represents the values provided.
+	 *
+	 * @param xValue 
+	 * @param yValue 
+	 * @return  a Point2DExpression of the x and y values provided.
+	 */
 	public static Point2DExpression value(Integer xValue, Integer yValue) {
 		return value(NumberExpression.value(xValue), NumberExpression.value(yValue));
 	}
 
+	/**
+	 * Create a Point2DExpression that represents the values provided.
+	 *
+	 * @param xValue 
+	 * @param yValue 
+	 * @return  a Point2DExpression of the x and y values provided.
+	 */
 	public static Point2DExpression value(Long xValue, Long yValue) {
 		return value(NumberExpression.value(xValue), NumberExpression.value(yValue));
 	}
 
+	/**
+	 * Create a Point2DExpression that represents the values provided.
+	 *
+	 * @param xValue 
+	 * @param yValue 
+	 * @return  a Point2DExpression of the x and y values provided.
+	 */
 	public static Point2DExpression value(Double xValue, Double yValue) {
 		return value(NumberExpression.value(xValue), NumberExpression.value(yValue));
 	}
 
+	/**
+	 * Create a Point2DExpression that represents the values provided.
+	 *
+	 * @param xValue 
+	 * @param yValue 
+	 * @return  a Point2DExpression of the x and y values provided.
+	 */
 	public static Point2DExpression value(NumberExpression xValue, NumberExpression yValue) {
 		return new Point2DExpression(new NumberNumberFunctionWithPoint2DResult(xValue, yValue) {
 
@@ -138,10 +202,11 @@ public class Point2DExpression implements Point2DResult, EqualComparable<Point2D
 	}
 
 	@Override
-	public StringExpression toWKTFormat(){
+	public StringExpression toWKTFormat() {
 		return stringResult();
 	}
 
+	@Override
 	public StringExpression stringResult() {
 		return new StringExpression(new PointFunctionWithStringResult(this) {
 
@@ -156,6 +221,13 @@ public class Point2DExpression implements Point2DResult, EqualComparable<Point2D
 		});
 	}
 
+	/**
+	 * Creates a {@link BooleanExpression} that compares the 2 instances using the
+	 * EQUALS operation.
+	 *
+	 * @param rightHandSide 
+	 * @return a BooleanExpression
+	 */
 	public BooleanExpression is(Point rightHandSide) {
 		return is(new DBPoint2D(rightHandSide));
 	}
@@ -169,13 +241,12 @@ public class Point2DExpression implements Point2DResult, EqualComparable<Point2D
 				try {
 					return db.getDefinition().doPoint2DEqualsTransform(getFirst().toSQLString(db), getSecond().toSQLString(db));
 				} catch (UnsupportedOperationException unsupported) {
-					return 
-							BooleanExpression.allOf(
+					return BooleanExpression.allOf(
 							getFirst().stringResult().substringBetween("(", " ").numberResult()
 							.is(getSecond().stringResult().substringBetween("(", " ").numberResult()),
 							getFirst().stringResult().substringAfter("(").substringBetween(" ", ")").numberResult()
 							.is(getSecond().stringResult().substringAfter("(").substringBetween(" ", ")").numberResult())
-							).toSQLString(db);
+					).toSQLString(db);
 				}
 			}
 		});
@@ -190,18 +261,18 @@ public class Point2DExpression implements Point2DResult, EqualComparable<Point2D
 				try {
 					return db.getDefinition().doPoint2DEqualsTransform(getFirst().toSQLString(db), getSecond().toSQLString(db));
 				} catch (UnsupportedOperationException unsupported) {
-					return 
-							BooleanExpression.notAllOf(
+					return BooleanExpression.notAllOf(
 							getFirst().stringResult().substringBetween("(", " ").numberResult()
 							.is(getSecond().stringResult().substringBetween("(", " ").numberResult()),
 							getFirst().stringResult().substringAfter("(").substringBetween(" ", ")").numberResult()
 							.is(getSecond().stringResult().substringAfter("(").substringBetween(" ", ")").numberResult())
-							).toSQLString(db);
+					).toSQLString(db);
 				}
 			}
 		});
 	}
 
+	@Override
 	public NumberExpression getX() {
 		return new NumberExpression(new PointFunctionWithNumberResult(this) {
 
@@ -216,6 +287,7 @@ public class Point2DExpression implements Point2DResult, EqualComparable<Point2D
 		});
 	}
 
+	@Override
 	public NumberExpression getY() {
 		return new NumberExpression(new PointFunctionWithNumberResult(this) {
 
@@ -290,6 +362,18 @@ public class Point2DExpression implements Point2DResult, EqualComparable<Point2D
 		});
 	}
 
+	/**
+	 * Calculate the distance between this point and the other point.
+	 * 
+	 * <p>
+	 * Creates an SQL expression that will report the distance (in units) between these two points.
+	 * 
+	 * <p>
+	 * Essentially this utilizes a database specific method to calculate sqrt((x2-x1)^2+(y2-y1)^2).
+	 *
+	 * @param otherPoint
+	 * @return a number expression of the distance between the two points in units.
+	 */
 	public NumberExpression distanceBetween(Point2DExpression otherPoint) {
 		return new NumberExpression(new PointPointFunctionWithNumberResult(this, otherPoint) {
 

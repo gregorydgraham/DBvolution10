@@ -24,8 +24,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
-import nz.co.gregs.dbvolution.expressions.BooleanExpression;
-import nz.co.gregs.dbvolution.expressions.NumberExpression;
+import nz.co.gregs.dbvolution.expressions.Polygon2DExpression;
 import nz.co.gregs.dbvolution.expressions.StringExpression;
 import nz.co.gregs.dbvolution.results.Polygon2DResult;
 
@@ -175,4 +174,8 @@ public class DBPolygon2D extends QueryableDatatype implements TransformRequiredF
 //	public StringExpression toWKTFormat(){
 //		return StringExpression.value(jtsPolygonValue().toText());
 //	}
+	@Override
+	public StringExpression stringResult() {
+		return Polygon2DExpression.value(this).stringResult();
+	}
 }

@@ -188,6 +188,7 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 	 *
 	 * @return a StringExpression of the number expression.
 	 */
+	@Override
 	public StringExpression stringResult() {
 		return new StringExpression(new DBUnaryStringFunction(this) {
 			@Override
@@ -328,6 +329,7 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 	 * @return a BooleanExpression for use in {@link DBQuery#addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression)
 	 * }
 	 */
+	@Override
 	public BooleanExpression isNot(NumberResult number) {
 		return is(number).not();
 	}
@@ -696,6 +698,7 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 	 * @return a BooleanExpression for use in
 	 * {@link DBQuery#addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression)}
 	 */
+	@Override
 	public BooleanExpression isLessThan(NumberResult numberExpression) {
 		return new BooleanExpression(new DBBinaryBooleanArithmetic(this, numberExpression) {
 			@Override
@@ -730,6 +733,7 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 	 * @return a BooleanExpression for use in
 	 * {@link DBQuery#addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression)}
 	 */
+	@Override
 	public BooleanExpression isLessThanOrEqual(NumberResult numberExpression) {
 		return new BooleanExpression(new DBBinaryBooleanArithmetic(this, numberExpression) {
 			@Override
