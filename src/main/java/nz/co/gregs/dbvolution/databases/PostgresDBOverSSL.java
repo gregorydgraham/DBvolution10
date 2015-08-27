@@ -26,42 +26,42 @@ import nz.co.gregs.dbvolution.DBDatabase;
  */
 public class PostgresDBOverSSL extends PostgresDB {
 
+	protected PostgresDBOverSSL() {
+	}
+
 	/**
 	 * Creates a {@link DBDatabase } instance for the data source.
 	 *
 	 * @param ds	ds
-	 * @throws java.sql.SQLException
 	 */
-	public PostgresDBOverSSL(DataSource ds) throws SQLException {
+	public PostgresDBOverSSL(DataSource ds) {
 		super(ds);
 	}
 
 	/**
 	 * Creates a DBDatabase for a PostgreSQL database over SSL.
 	 *
-	 * @param hostname hostname
+	 * @param hostname host name
 	 * @param databaseName databaseName
 	 * @param port port
 	 * @param username username
 	 * @param password password
 	 * @param urlExtras urlExtras
-	 * @throws java.sql.SQLException
 	 */
-	public PostgresDBOverSSL(String hostname, int port, String databaseName, String username, String password, String urlExtras) throws SQLException {
+	public PostgresDBOverSSL(String hostname, int port, String databaseName, String username, String password, String urlExtras) {
 		super(hostname, port, databaseName, username, password, "ssl=true&sslfactory=org.postgresql.ssl.NonValidatingFactory" + (urlExtras == null || urlExtras.isEmpty() ? "" : "&" + urlExtras));
 	}
 
 	/**
 	 * Creates a DBDatabase for a PostgreSQL database over SSL.
 	 *
-	 * @param hostname hostname
+	 * @param hostname host name
 	 * @param password password
 	 * @param databaseName databaseName
 	 * @param port port
 	 * @param username username
-	 * @throws java.sql.SQLException
 	 */
-	public PostgresDBOverSSL(String hostname, int port, String databaseName, String username, String password) throws SQLException {
+	public PostgresDBOverSSL(String hostname, int port, String databaseName, String username, String password) {
 		this(hostname, port, databaseName, username, password, "");
 	}
 

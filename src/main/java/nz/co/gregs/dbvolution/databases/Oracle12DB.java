@@ -41,6 +41,9 @@ public class Oracle12DB extends OracleDB {
 	 *
 	 *
 	 */
+	protected Oracle12DB(){
+		super();
+	}
 //	public Oracle12DB(DBDefinition definition, String driverName, String jdbcURL, String username, String password) {
 //		super(definition, driverName, jdbcURL, username, password);
 //	}
@@ -48,9 +51,8 @@ public class Oracle12DB extends OracleDB {
 	 * Creates a DBDatabase instance tweaked for Oracle 12 and above.
 	 *
 	 * @param dataSource a datasource to an Oracle database
-	 * @throws java.sql.SQLException
 	 */
-	public Oracle12DB(DataSource dataSource) throws SQLException {
+	public Oracle12DB(DataSource dataSource) {
 		super(new Oracle12DBDefinition(), dataSource);
 	}
 
@@ -61,9 +63,8 @@ public class Oracle12DB extends OracleDB {
 	 * @param jdbcURL jdbcURL
 	 * @param password password
 	 * @param username username
-	 * @throws java.sql.SQLException
 	 */
-	public Oracle12DB(String driverName, String jdbcURL, String username, String password) throws SQLException {
+	public Oracle12DB(String driverName, String jdbcURL, String username, String password) {
 		super(new Oracle12DBDefinition(), driverName, jdbcURL, username, password);
 	}
 
@@ -73,9 +74,8 @@ public class Oracle12DB extends OracleDB {
 	 * @param jdbcURL jdbcURL
 	 * @param username username
 	 * @param password password
-	 * @throws java.sql.SQLException
 	 */
-	public Oracle12DB(String jdbcURL, String username, String password) throws SQLException {
+	public Oracle12DB(String jdbcURL, String username, String password) {
 		super(new Oracle12DBDefinition(), ORACLE_JDBC_DRIVER, jdbcURL, username, password);
 	}
 
@@ -87,9 +87,8 @@ public class Oracle12DB extends OracleDB {
 	 * @param serviceName serviceName
 	 * @param username username
 	 * @param password password
-	 * @throws java.sql.SQLException
 	 */
-	public Oracle12DB(String host, int port, String serviceName, String username, String password) throws SQLException {
+	public Oracle12DB(String host, int port, String serviceName, String username, String password) {
 		super(new Oracle12DBDefinition(), ORACLE_JDBC_DRIVER, "jdbc:oracle:thin:@//" + host + ":" + port + "/" + serviceName, username, password);
 	}
 

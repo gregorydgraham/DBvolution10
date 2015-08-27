@@ -49,13 +49,16 @@ public class PostgresDB extends DBDatabase implements SupportsPolygonDatatype{
 	 */
 	public static final String POSTGRES_DEFAULT_USERNAME = "postgres";
 
+	protected PostgresDB() {
+		super();
+	}
 	/**
 	 * Creates a PostgreSQL connection for the DataSource.
 	 *
 	 * @param ds	ds
 	 * @throws java.sql.SQLException
 	 */
-	public PostgresDB(DataSource ds) throws SQLException {
+	public PostgresDB(DataSource ds) {
 		super(new PostgresDBDefinition(), ds);
 	}
 
@@ -65,9 +68,8 @@ public class PostgresDB extends DBDatabase implements SupportsPolygonDatatype{
 	 * @param jdbcURL jdbcURL
 	 * @param username username
 	 * @param password password
-	 * @throws java.sql.SQLException
 	 */
-	public PostgresDB(String jdbcURL, String username, String password) throws SQLException {
+	public PostgresDB(String jdbcURL, String username, String password) {
 		super(new PostgresDBDefinition(), POSTGRES_DRIVER_NAME, jdbcURL, username, password);
 	}
 
@@ -80,9 +82,8 @@ public class PostgresDB extends DBDatabase implements SupportsPolygonDatatype{
 	 * @param databaseName databaseName
 	 * @param username username
 	 * @param password password
-	 * @throws java.sql.SQLException
 	 */
-	public PostgresDB(String hostname, int port, String databaseName, String username, String password) throws SQLException {
+	public PostgresDB(String hostname, int port, String databaseName, String username, String password) {
 		this(hostname, port, databaseName, username, password, null);
 	}
 
@@ -100,9 +101,8 @@ public class PostgresDB extends DBDatabase implements SupportsPolygonDatatype{
 	 * @param port port
 	 * @param username username
 	 * @param urlExtras urlExtras
-	 * @throws java.sql.SQLException
 	 */
-	public PostgresDB(String hostname, int port, String databaseName, String username, String password, String urlExtras) throws SQLException {
+	public PostgresDB(String hostname, int port, String databaseName, String username, String password, String urlExtras) {
 		super(new PostgresDBDefinition(),
 				POSTGRES_DRIVER_NAME,
 				"jdbc:postgresql://" + hostname + ":" + port + "/" + databaseName + (urlExtras == null || urlExtras.isEmpty() ? "" : "?" + urlExtras),
@@ -122,9 +122,8 @@ public class PostgresDB extends DBDatabase implements SupportsPolygonDatatype{
 	 * @param username username
 	 * @param password password
 	 * @param urlExtras urlExtras
-	 * @throws java.sql.SQLException
 	 */
-	public PostgresDB(String databaseName, String username, String password, String urlExtras) throws SQLException {
+	public PostgresDB(String databaseName, String username, String password, String urlExtras) {
 		this("localhost", POSTGRES_DEFAULT_PORT, databaseName, username, password, urlExtras);
 	}
 

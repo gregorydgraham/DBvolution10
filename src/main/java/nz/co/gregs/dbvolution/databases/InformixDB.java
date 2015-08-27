@@ -50,10 +50,9 @@ public class InformixDB extends DBDatabase {
 	 * @param driverName 
 	 * @param jdbcURL 
 	 * @param username 
-	 * @param password 
-	 * @throws SQLException
+	 * @param password
 	 */
-	protected InformixDB(DBDefinition definition, String driverName, String jdbcURL, String username, String password) throws SQLException {
+	protected InformixDB(DBDefinition definition, String driverName, String jdbcURL, String username, String password) {
 		super(definition, driverName, jdbcURL, username, password);
 		// Informix causes problems when using batched statements :(
 		setBatchSQLStatementsWhenPossible(false);

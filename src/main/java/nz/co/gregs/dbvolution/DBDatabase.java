@@ -83,6 +83,7 @@ public abstract class DBDatabase implements Cloneable {
 	private Connection transactionConnection;
 	private static final transient Map<DBDatabase, List<Connection>> busyConnections = new HashMap<DBDatabase, List<Connection>>();
 	private static final transient HashMap<DBDatabase, List<Connection>> freeConnections = new HashMap<DBDatabase, List<Connection>>();
+	private Boolean needToAddDatabaseSpecificFeatures = true;
 
 	/**
 	 * Clones the DBDatabase.
@@ -174,7 +175,6 @@ public abstract class DBDatabase implements Cloneable {
 	 * @param definition - the subclass of DBDefinition that provides the syntax
 	 * for your database.
 	 * @param ds - a DataSource for the required database.
-	 * @throws java.sql.SQLException
 	 * @see DBDefinition
 	 * @see OracleDB
 	 * @see MySQLDB
@@ -187,10 +187,9 @@ public abstract class DBDatabase implements Cloneable {
 	 * @see MariaClusterDB
 	 * @see NuoDB
 	 */
-	public DBDatabase(DBDefinition definition, DataSource ds) throws SQLException {
+	public DBDatabase(DBDefinition definition, DataSource ds) {
 		this.definition = definition;
 		this.dataSource = ds;
-		this.addDatabaseSpecificFeatures(getRawConnection().createStatement());
 	}
 
 	/**
@@ -210,7 +209,6 @@ public abstract class DBDatabase implements Cloneable {
 	 * @param jdbcURL - The JDBC URL to connect to the database.
 	 * @param username - The username to login to the database as.
 	 * @param password - The users password for the database.
-	 * @throws java.sql.SQLException
 	 * @see DBDefinition
 	 * @see OracleDB
 	 * @see MySQLDB
@@ -220,13 +218,12 @@ public abstract class DBDatabase implements Cloneable {
 	 * @see InformixDB
 	 * @see PostgresDB
 	 */
-	public DBDatabase(DBDefinition definition, String driverName, String jdbcURL, String username, String password) throws SQLException {
+	public DBDatabase(DBDefinition definition, String driverName, String jdbcURL, String username, String password) {
 		this.definition = definition;
 		this.driverName = driverName;
 		this.jdbcURL = jdbcURL;
 		this.password = password;
 		this.username = username;
-		this.addDatabaseSpecificFeatures(this.getRawConnection().createStatement());
 	}
 
 	private DBTransactionStatement getDBTransactionStatement() throws SQLException {
@@ -318,12 +315,15 @@ public abstract class DBDatabase implements Cloneable {
 			} catch (SQLException ex) {
 				Logger.getLogger(DBDatabase.class.getName()).log(Level.FINEST, null, ex);
 			}
+			if (connectionUsedForPersistentConnection(conn)){
+				conn = null;
+			}
 		}
 		usedConnection(conn);
 		return conn;
 	}
 
-	private Connection getRawConnection() throws UnableToFindJDBCDriver, UnableToCreateDatabaseConnectionException {
+	private Connection getRawConnection() throws UnableToFindJDBCDriver, UnableToCreateDatabaseConnectionException, SQLException {
 		Connection connection;
 		synchronized (getConnectionSynchronizeObject) {
 			if (this.dataSource == null) {
@@ -347,7 +347,28 @@ public abstract class DBDatabase implements Cloneable {
 			}
 //			connectionOpened(connection);
 		}
+		synchronized (this) {
+			if (needToAddDatabaseSpecificFeatures) {
+				addDatabaseSpecificFeatures(connection.createStatement());
+				needToAddDatabaseSpecificFeatures = false;
+			}
+		}
 		return connection;
+	}
+
+	/**
+	 * Used to hold the database open if required by the database.
+	 *
+	 */
+	protected Connection storedConnection;
+
+	private boolean connectionUsedForPersistentConnection(Connection connection) throws DBRuntimeException, SQLException {
+		if (storedConnection == null && persistentConnectionRequired()) {
+			this.storedConnection = connection;
+			this.storedConnection.createStatement();
+			return true;
+		}
+		return false;
 	}
 
 	/**
@@ -983,7 +1004,7 @@ public abstract class DBDatabase implements Cloneable {
 		final DBStatement dbStatement = getDBStatement();
 		try {
 			dbStatement.execute(sqlString);
-			
+
 			//Oracle style trigger based auto-increment keys
 			if (definition.prefersTriggerBasedIdentities() && pkFields.size() == 1) {
 				List<String> triggerBasedIdentitySQL = definition.getTriggerBasedIdentitySQL(this, definition.formatTableName(newTableRow), definition.formatColumnName(pkFields.get(0).columnName()));
@@ -991,14 +1012,14 @@ public abstract class DBDatabase implements Cloneable {
 					dbStatement.execute(sql);
 				}
 			}
-			
-			if (definition.requiresSpatial2DIndexes() && spatial2DFields.size() >0) {
+
+			if (definition.requiresSpatial2DIndexes() && spatial2DFields.size() > 0) {
 				List<String> triggerBasedIdentitySQL = definition.getSpatial2DIndexSQL(this, definition.formatTableName(newTableRow), definition.formatColumnName(spatial2DFields.get(0).columnName()));
 				for (String sql : triggerBasedIdentitySQL) {
 					dbStatement.execute(sql);
 				}
 			}
-			
+
 		} finally {
 			dbStatement.close();
 		}
@@ -1048,14 +1069,16 @@ public abstract class DBDatabase implements Cloneable {
 	}
 
 	/**
-	 * Drops All Foreign Key Constraints From The Supplied Table, does not affect &#64;DBForeignKey.
+	 * Drops All Foreign Key Constraints From The Supplied Table, does not affect
+	 * &#64;DBForeignKey.
 	 *
 	 * <p>
 	 * Generates and executes the required SQL to remove all foreign key
 	 * constraints on this table defined within the database.
 	 *
 	 * <p>
-	 * This methods is supplied as an inverse to {@link #createForeignKeyConstraints(nz.co.gregs.dbvolution.DBRow)}.
+	 * This methods is supplied as an inverse to
+	 * {@link #createForeignKeyConstraints(nz.co.gregs.dbvolution.DBRow)}.
 	 *
 	 * <p>
 	 * If a pair of tables have foreign keys constraints to each other it may be
@@ -1063,7 +1086,8 @@ public abstract class DBDatabase implements Cloneable {
 	 * DBvolution cannot to protect you from this situation, however this method
 	 * will remove some of the problem.
 	 *
-	 * @param newTableRow the data models version of the table that needs FKs removed
+	 * @param newTableRow the data models version of the table that needs FKs
+	 * removed
 	 * @throws SQLException
 	 */
 	public void removeForeignKeyConstraints(DBRow newTableRow) throws SQLException {
@@ -1291,7 +1315,8 @@ public abstract class DBDatabase implements Cloneable {
 	 * <p>
 	 * Do NOT Use This.
 	 *
-	 * @param databaseName the database to be permanently and completely destroyed.
+	 * @param databaseName the database to be permanently and completely
+	 * destroyed.
 	 * @param doIt don't do it.
 	 * @throws java.lang.Exception java.lang.Exception
 	 */
@@ -1700,7 +1725,7 @@ public abstract class DBDatabase implements Cloneable {
 	 * During a statement the database may throw an exception because a feature
 	 * has not yet been added. Use this method to parse the exception and install
 	 * the required feature.
-	 * 
+	 *
 	 * <p>
 	 * The statement will be automatically run after this method exits.
 	 *
@@ -1709,5 +1734,9 @@ public abstract class DBDatabase implements Cloneable {
 	 */
 	public void addFeatureToFixException(Exception exp) throws Exception {
 		throw exp;
+	}
+
+	protected boolean persistentConnectionRequired() {
+		return false;
 	}
 }

@@ -75,9 +75,8 @@ public class H2MemoryDB extends H2DB {
 	 * @param username username
 	 * @param password password
 	 * @param dummy dummy
-	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
-	public H2MemoryDB(String databaseName, String username, String password, boolean dummy) throws SQLException {
+	public H2MemoryDB(String databaseName, String username, String password, boolean dummy) {
 		super("jdbc:h2:mem:" + databaseName, username, password);
 		setDatabaseName(databaseName);
 	}

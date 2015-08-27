@@ -65,51 +65,49 @@ public abstract class AbstractTest {
 		List<Object[]> databases = new ArrayList<Object[]>();
 
 		if (System.getProperty("testSQLite") != null) {
-			final SQLiteDB sqliteDB = new SQLiteDB("jdbc:sqlite:dbvolutionTest.sqlite", "dbv", "dbv");
+			final SQLiteDB sqliteDB = new SQLiteTestDB();
 			databases.add(new Object[]{"SQLiteDB", sqliteDB});
 		}
 		if (System.getProperty("testMySQLMXJDB") != null) {
 			databases.add(new Object[]{"SQLMXJDB", MySQLMXJDBInitialisation.getMySQLDBInstance()});
 		}
 		if (System.getProperty("testMySQL") != null) {
-			databases.add(new Object[]{"MySQLDB", new MySQLDB("jdbc:mysql://localhost:3306/test?createDatabaseIfNotExist=true", "dbv", "dbv")});
+			databases.add(new Object[]{"MySQLDB", new MySQLTestDatabase()});
 		}
 		if (System.getProperty("testMySQLRDS") != null) {
-			databases.add(new Object[]{"MySQLDB-RDS", new MySQLDB("jdbc:mysql://dbvtest-mysql.cygjg2wvuyam.ap-southeast-2.rds.amazonaws.com:3306/test?createDatabaseIfNotExist=true", "dbv", "Testingdbv")});
+			databases.add(new Object[]{"MySQLDB-RDS", new MySQLRDSTestDatabase()});
 		}
 		if (System.getProperty("testH2DB") != null) {
-			databases.add(new Object[]{"H2DB", new H2DB("jdbc:h2:./directTest.h2db", "", "")});
+			databases.add(new Object[]{"H2DB", new H2TestDatabase()});
 		}
 		if (System.getProperty("testH2DataSourceDB") != null) {
 			JdbcDataSource h2DataSource = new JdbcDataSource();
 			h2DataSource.setUser("");
 			h2DataSource.setPassword("");
 			h2DataSource.setURL("jdbc:h2:./dataSourceTest.h2db");
-			databases.add(new Object[]{"H2DataSourceDB", new H2DB(h2DataSource)});
+			H2DB databaseFromDataSource = H2TestDatabase.getDatabaseFromDataSource(h2DataSource);
+			databases.add(new Object[]{"H2DataSourceDB", databaseFromDataSource});
 		}
 		if (System.getProperty("testPostgresSQL") != null) {
-			databases.add(new Object[]{"PostgresSQL", new PostgresDB("dbvtest", "dbv", "dbv", "")});
+			databases.add(new Object[]{"PostgresSQL", TestPostgreSQL.getLocalTestDatabase()});
 		}
 		if (System.getProperty("testPostgresSQLRDS") != null) {
-			databases.add(new Object[]{"PostgresSQL-RDS", new PostgresDB("dbvtest-postgresql.cygjg2wvuyam.ap-southeast-2.rds.amazonaws.com", 5432, "dbvtest", "dbv", "Testingdbv")});
+			databases.add(new Object[]{"PostgresSQL-RDS", TestPostgreSQL.getRDSTestDatabase()});
 		}
 		if (System.getProperty("testNuo") != null) {
 			databases.add(new Object[]{"NuoDB", new NuoDB("localhost", 48004L, "dbv", "dbv", "dbv", "dbv")});
 		}
 		if (System.getProperty("testOracleAWS") != null) {
-//			databases.addPoint2D(new Object[]{"OracleAWS11DB", new OracleAWS11DB("dbvtest.c0wzty6pgnq4.us-west-2.rds.amazonaws.com", 1521, "ORCL", "dbv", "Testingdbv")});
-			databases.add(new Object[]{"Oracle11DB", new OracleAWS11DB("dbvtest-oracle-se1.cygjg2wvuyam.ap-southeast-2.rds.amazonaws.com", 1521, "ORCL", "dbv", "Testingdbv")});
+			databases.add(new Object[]{"Oracle11DB", new OracleAWS11TestDB()});
 		}
 		if (System.getProperty("testOracleXE") != null) {
-//			databases.addPoint2D(new Object[]{"OracleAWS11DB", new OracleAWS11DB("dbvtest.c0wzty6pgnq4.us-west-2.rds.amazonaws.com", 1521, "ORCL", "dbv", "Testingdbv")});
-			databases.add(new Object[]{"Oracle11DB", new Oracle11XEDB("ec2-54-206-23-5.ap-southeast-2.compute.amazonaws.com", 1521, "XE", "DBV", "Testingdbv")});
+			databases.add(new Object[]{"Oracle11DB", new Oracle11XETestDB()});
 		}
 		if (System.getProperty("testOracle12") != null) {
 			databases.add(new Object[]{"Oracle12DB", new Oracle12DB("dbvtest-oracle12.cygjg2wvuyam.ap-southeast-2.rds.amazonaws.com", 1521, "ORCL", "dbv", "Testingdbv")});
 		}
 		if (System.getProperty("testMSSQLServer") != null) {
-//			databases.addPoint2D(new Object[]{"MSSQLServer", new MSSQLServerDB("dbvtest-mssql.c0wzty6pgnq4.us-west-2.rds.amazonaws.com", "dbvtest", "dbvtest", 1433, "dbv", "Testingdbv")});
-			databases.add(new Object[]{"MSSQLServer", new MSSQLServerDB("dbvtest-mssql.cygjg2wvuyam.ap-southeast-2.rds.amazonaws.com", "dbvtest", "dbvtest", 1433, "dbv", "Testingdbv")});
+			databases.add(new Object[]{"MSSQLServer", new MSSQLServerTestDB()});
 		}
 		if (System.getProperty("testJavaDBMemory") != null) {
 			databases.add(new Object[]{"JavaDBMemory", new JavaDBMemoryDB("localhost", 1527, "dbv", "dbv", "dbv")});
@@ -119,7 +117,7 @@ public abstract class AbstractTest {
 		}
 		if (databases.isEmpty() || System.getProperty("testH2MemoryDB") != null) {
 			// Do basic testing
-			final H2MemoryDB h2MemoryDB = new H2MemoryDB("memoryTest.h2db", "", "", false);
+			final H2MemoryDB h2MemoryDB = new H2MemoryTestDB();
 			databases.add(new Object[]{"H2MemoryDB", h2MemoryDB});
 		}
 
@@ -256,21 +254,76 @@ public abstract class AbstractTest {
 	}
 
 	public void tearDown(DBDatabase database) throws Exception {
-//		database.setPrintSQLBeforeExecuting(false);
-//		database.preventDroppingOfTables(false);
-//		database.dropTableNoExceptions(new LinkCarCompanyAndLogo());
-//		database.preventDroppingOfTables(false);
-//		database.dropTableNoExceptions(new CompanyLogo());
-//		database.preventDroppingOfTables(false);
-//		database.dropTableNoExceptions(myMarqueRow);
-//		database.preventDroppingOfTables(false);
-//		database.dropTableNoExceptions(myCarCompanyRow);
-//		try {
-//			database.preventDroppingOfTables(false);
-//			database.preventDroppingOfDatabases(false);
-//			database.dropDatabase(true);
-//		} catch (UnsupportedOperationException unsupported) {
-//			;
-//		}
+	}
+
+	private static class H2TestDatabase extends H2DB {
+
+		private static H2DB getDatabaseFromDataSource(JdbcDataSource h2DataSource) {
+			return new H2DB(h2DataSource);
+		}
+
+		public H2TestDatabase() throws SQLException {
+			super("jdbc:h2:./directTest.h2db", "", "");
+		}
+	}
+
+	private static class MySQLRDSTestDatabase extends MySQLDB {
+
+		public MySQLRDSTestDatabase() throws SQLException {
+			super("jdbc:mysql://dbvtest-mysql.cygjg2wvuyam.ap-southeast-2.rds.amazonaws.com:3306/test?createDatabaseIfNotExist=true", "dbv", "Testingdbv");
+		}
+	}
+
+	private static class MySQLTestDatabase extends MySQLDB {
+
+		public MySQLTestDatabase() throws SQLException {
+			super("jdbc:mysql://localhost:3306/test?createDatabaseIfNotExist=true", "dbv", "dbv");
+		}
+	}
+
+	private static class TestPostgreSQL extends PostgresDB {
+
+		protected static PostgresDB getRDSTestDatabase() throws SQLException {
+			return new PostgresDB("dbvtest-postgresql.cygjg2wvuyam.ap-southeast-2.rds.amazonaws.com", 5432, "dbvtest", "dbv", "Testingdbv");
+		}
+
+		protected static PostgresDB getLocalTestDatabase() throws SQLException {
+			return new PostgresDB("dbvtest", "dbv", "dbv", "");
+		}
+	}
+
+	private static class SQLiteTestDB extends SQLiteDB {
+
+		public SQLiteTestDB() throws SQLException {
+			super("jdbc:sqlite:dbvolutionTest.sqlite", "dbv", "dbv");
+		}
+	}
+
+	private static class OracleAWS11TestDB extends OracleAWS11DB{
+
+		public OracleAWS11TestDB() throws SQLException {
+			super("dbvtest-oracle-se1.cygjg2wvuyam.ap-southeast-2.rds.amazonaws.com", 1521, "ORCL", "dbv", "Testingdbv");
+		}
+	}
+
+	private static class Oracle11XETestDB extends Oracle11XEDB{
+
+		public Oracle11XETestDB() {
+			super("ec2-54-206-23-5.ap-southeast-2.compute.amazonaws.com", 1521, "XE", "DBV", "Testingdbv");
+		}
+	}
+
+	private static class MSSQLServerTestDB extends MSSQLServerDB{
+
+		public MSSQLServerTestDB() {
+			super("dbvtest-mssql.cygjg2wvuyam.ap-southeast-2.rds.amazonaws.com", "dbvtest", "dbvtest", 1433, "dbv", "Testingdbv");
+		}
+	}
+
+	private static class H2MemoryTestDB extends H2MemoryDB {
+
+		public H2MemoryTestDB() {
+			super("memoryTest.h2db", "", "", false);
+		}
 	}
 }

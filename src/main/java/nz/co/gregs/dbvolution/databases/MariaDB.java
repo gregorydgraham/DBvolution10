@@ -33,9 +33,8 @@ public class MariaDB extends DBDatabase {
 	 * Creates a {@link DBDatabase } instance for the data source.
 	 *
 	 * @param ds	ds
-	 * @throws java.sql.SQLException
 	 */
-	public MariaDB(DataSource ds) throws SQLException {
+	public MariaDB(DataSource ds) {
 		super(new MariaDBDefinition(), ds);
 	}
 
@@ -46,9 +45,8 @@ public class MariaDB extends DBDatabase {
 	 * @param jdbcURL jdbcURL
 	 * @param username username
 	 * @param password password
-	 * @throws java.sql.SQLException
 	 */
-	public MariaDB(String jdbcURL, String username, String password) throws SQLException {
+	public MariaDB(String jdbcURL, String username, String password) {
 		super(new MariaDBDefinition(), MARIADBDRIVERNAME, jdbcURL, username, password);
 	}
 
@@ -61,9 +59,8 @@ public class MariaDB extends DBDatabase {
 	 * @param port port
 	 * @param databaseName databaseName
 	 * @param username username
-	 * @throws java.sql.SQLException
 	 */
-	public MariaDB(String server, long port, String databaseName, String username, String password) throws SQLException {
+	public MariaDB(String server, long port, String databaseName, String username, String password) {
 		super(new MariaDBDefinition(),
 				MARIADBDRIVERNAME,
 				"jdbc:mariadb://" + server + ":" + port + "/" + databaseName,

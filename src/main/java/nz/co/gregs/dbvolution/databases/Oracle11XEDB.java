@@ -43,9 +43,8 @@ public class Oracle11XEDB extends OracleDB {
 	 * Creates a DBDatabase instance tweaked for Oracle 11 and above.
 	 *
 	 * @param dataSource a datasource to an Oracle database
-	 * @throws java.sql.SQLException
 	 */
-	public Oracle11XEDB(DataSource dataSource) throws SQLException {
+	public Oracle11XEDB(DataSource dataSource) {
 		super(new Oracle11XEDBDefinition(), dataSource);
 	}
 
@@ -57,9 +56,8 @@ public class Oracle11XEDB extends OracleDB {
 	 * @param driverName driverName
 	 * @param password password
 	 * @param username username
-	 * @throws java.sql.SQLException
 	 */
-	public Oracle11XEDB(OracleDBDefinition definition, String driverName, String jdbcURL, String username, String password) throws SQLException {
+	public Oracle11XEDB(OracleDBDefinition definition, String driverName, String jdbcURL, String username, String password) {
 		super(definition, driverName, jdbcURL, username, password);
 	}
 
@@ -70,9 +68,8 @@ public class Oracle11XEDB extends OracleDB {
 	 * @param jdbcURL jdbcURL
 	 * @param username username
 	 * @param password password
-	 * @throws java.sql.SQLException
 	 */
-	public Oracle11XEDB(String driverName, String jdbcURL, String username, String password) throws SQLException {
+	public Oracle11XEDB(String driverName, String jdbcURL, String username, String password) {
 		super(new Oracle11XEDBDefinition(), driverName, jdbcURL, username, password);
 	}
 
@@ -82,9 +79,8 @@ public class Oracle11XEDB extends OracleDB {
 	 * @param jdbcURL jdbcURL
 	 * @param username username
 	 * @param password password
-	 * @throws java.sql.SQLException
 	 */
-	public Oracle11XEDB(String jdbcURL, String username, String password) throws SQLException {
+	public Oracle11XEDB(String jdbcURL, String username, String password) {
 		super(new Oracle11XEDBDefinition(), "oracle.jdbc.driver.OracleDriver", jdbcURL, username, password);
 	}
 
@@ -96,9 +92,8 @@ public class Oracle11XEDB extends OracleDB {
 	 * @param serviceName serviceName
 	 * @param password password
 	 * @param username username
-	 * @throws java.sql.SQLException
 	 */
-	public Oracle11XEDB(String host, int port, String serviceName, String username, String password) throws SQLException {
+	public Oracle11XEDB(String host, int port, String serviceName, String username, String password) {
 		super(new Oracle11XEDBDefinition(), "oracle.jdbc.driver.OracleDriver", "jdbc:oracle:thin:@//" + host + ":" + port + "/" + serviceName, username, password);
 	}
 

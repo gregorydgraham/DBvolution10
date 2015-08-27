@@ -35,14 +35,16 @@ public class SQLiteDB extends DBDatabase implements SupportsDateRepeatDatatypeFu
 
 	private static final String SQLITE_DRIVER_NAME = "org.sqlite.JDBC";
 
+	protected SQLiteDB() {
+	}
+
 	/**
 	 * Creates a DBDatabase tweaked for a SQLite database on the DataSource
 	 * provided.
 	 *
 	 * @param ds	ds
-	 * @throws java.sql.SQLException
 	 */
-	public SQLiteDB(DataSource ds) throws SQLException {
+	public SQLiteDB(DataSource ds) {
 		super(new SQLiteDefinition(), ds);
 	}
 
@@ -53,9 +55,8 @@ public class SQLiteDB extends DBDatabase implements SupportsDateRepeatDatatypeFu
 	 * @param jdbcURL jdbcURL
 	 * @param username username
 	 * @param password password
-	 * @throws java.sql.SQLException
 	 */
-	public SQLiteDB(String jdbcURL, String username, String password) throws SQLException {
+	public SQLiteDB(String jdbcURL, String username, String password) {
 		super(new SQLiteDefinition(), SQLITE_DRIVER_NAME, jdbcURL, username, password);
 	}
 

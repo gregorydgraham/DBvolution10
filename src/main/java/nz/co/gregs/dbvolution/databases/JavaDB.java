@@ -44,9 +44,8 @@ public class JavaDB extends DBDatabase {
 	 * Creates a new JavaDB instance that will connect to the DataSource.
 	 *
 	 * @param dataSource	dataSource
-	 * @throws java.sql.SQLException
 	 */
-	public JavaDB(DataSource dataSource) throws SQLException {
+	public JavaDB(DataSource dataSource) {
 		super(new JavaDBDefinition(), dataSource);
 	}
 
@@ -57,9 +56,8 @@ public class JavaDB extends DBDatabase {
 	 * @param jdbcURL jdbcURL
 	 * @param username username
 	 * @param password password
-	 * @throws java.sql.SQLException
 	 */
-	public JavaDB(String jdbcURL, String username, String password) throws SQLException {
+	public JavaDB(String jdbcURL, String username, String password) {
 		super(new JavaDBDefinition(), driverName, jdbcURL, username, password);
 	}
 
@@ -72,9 +70,8 @@ public class JavaDB extends DBDatabase {
 	 * @param database database
 	 * @param password password
 	 * @param username username
-	 * @throws java.sql.SQLException
 	 */
-	public JavaDB(String host, int port, String database, String username, String password) throws SQLException {
+	public JavaDB(String host, int port, String database, String username, String password) {
 		super(new JavaDBDefinition(), driverName, "jdbc:derby://" + host + ":" + port + "/" + database + ";create=true", username, password);
 	}
 

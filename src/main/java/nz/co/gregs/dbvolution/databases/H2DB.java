@@ -37,21 +37,26 @@ import nz.co.gregs.dbvolution.internal.h2.*;
 public class H2DB extends DBDatabase implements SupportsDateRepeatDatatypeFunctions, SupportsPolygonDatatype {
 
 	private static Map<String, DBVFeature> featureMap = null;
-//	private static Map<String, DataTypes> dataTypeMap = null;
+
 	/**
-	 * Used to hold the database open
+	 * Default constructor, try not to use this.
 	 *
 	 */
-	protected Connection storedConnection;
+	protected H2DB() {
+		super();
+	}
 
 	/**
 	 * Creates a DBDatabase for a H2 database in the file supplied.
 	 *
+	 * <p>
+	 * This creates a database connection to a local H2 database stored in the
+	 * file provided.
 	 *
+	 * <p>
+	 * If the file does not exist the database will be created in the file.
 	 *
-	 *
-	 *
-	 * 1 Database exceptions may be thrown
+	 * Database exceptions may be thrown
 	 *
 	 * @param file file
 	 * @param username username
@@ -66,17 +71,14 @@ public class H2DB extends DBDatabase implements SupportsDateRepeatDatatypeFuncti
 	/**
 	 * Creates a DBDatabase for a H2 database.
 	 *
-	 *
-	 * 1 Database exceptions may be thrown
+	 * <p>
+	 * Database exceptions may be thrown
 	 *
 	 * @param dataSource dataSource
-	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
-	public H2DB(DataSource dataSource) throws SQLException {
+	public H2DB(DataSource dataSource) {
 		super(new H2DBDefinition(), dataSource);
-		jamDatabaseConnectionOpen();
-		final Statement stmt = getConnection().createStatement();
-		addDatabaseSpecificFeatures(stmt);
+//		jamDatabaseConnectionOpen();
 	}
 
 	/**
@@ -92,11 +94,9 @@ public class H2DB extends DBDatabase implements SupportsDateRepeatDatatypeFuncti
 	 * @param password password
 	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
-	public H2DB(String jdbcURL, String username, String password) throws SQLException {
+	public H2DB(String jdbcURL, String username, String password) {
 		super(new H2DBDefinition(), "org.h2.Driver", jdbcURL, username, password);
-		jamDatabaseConnectionOpen();
-		final Statement stmt = getConnection().createStatement();
-		addDatabaseSpecificFeatures(stmt);
+//		jamDatabaseConnectionOpen();
 	}
 
 	@Override
@@ -128,11 +128,11 @@ public class H2DB extends DBDatabase implements SupportsDateRepeatDatatypeFuncti
 			featureMap.put(datatype.alias(), datatype);
 		}
 	}
-
-	private void jamDatabaseConnectionOpen() throws DBRuntimeException, SQLException {
-		this.storedConnection = getConnection();
-		this.storedConnection.createStatement();
-	}
+//
+//	private void jamDatabaseConnectionOpen() throws DBRuntimeException, SQLException {
+//		this.storedConnection = getConnection();
+//		this.storedConnection.createStatement();
+//	}
 
 	@Override
 	public boolean supportsFullOuterJoinNatively() {
@@ -181,7 +181,7 @@ public class H2DB extends DBDatabase implements SupportsDateRepeatDatatypeFuncti
 				String[] split = message.split("method \"");
 				split = split[1].split("(");
 				String functionName = split[0];
-				System.out.println("ADDING FUNCTION: "+functionName);
+				System.out.println("ADDING FUNCTION: " + functionName);
 				DBVFeature functions = featureMap.get(functionName);
 				if (functions != null) {
 					functions.add(getConnection().createStatement());
@@ -201,6 +201,11 @@ public class H2DB extends DBDatabase implements SupportsDateRepeatDatatypeFuncti
 		if (!handledException) {
 			throw exp;
 		}
+	}
+
+	@Override
+	protected boolean persistentConnectionRequired() {
+		return true;
 	}
 
 }

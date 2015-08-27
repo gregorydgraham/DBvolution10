@@ -37,7 +37,10 @@ import nz.co.gregs.dbvolution.databases.supports.SupportsPolygonDatatype;
  * @see OracleAWS11DB
  * @see Oracle12DB
  */
-public abstract class OracleAWSDB extends OracleDB implements SupportsPolygonDatatype{
+public abstract class OracleAWSDB extends OracleDB implements SupportsPolygonDatatype {
+
+	protected OracleAWSDB() {
+	}
 
 	/**
 	 * Creates a DBDatabase instance for the definition and data source.
@@ -52,9 +55,8 @@ public abstract class OracleAWSDB extends OracleDB implements SupportsPolygonDat
 	 * @param jdbcURL jdbcURL
 	 * @param driverName driverName
 	 * @param username username
-	 * @throws java.sql.SQLException
 	 */
-	public OracleAWSDB(DBDefinition definition, String driverName, String jdbcURL, String username, String password) throws SQLException {
+	public OracleAWSDB(DBDefinition definition, String driverName, String jdbcURL, String username, String password) {
 		super(definition, driverName, jdbcURL, username, password);
 	}
 
@@ -63,9 +65,8 @@ public abstract class OracleAWSDB extends OracleDB implements SupportsPolygonDat
 	 *
 	 * @param dbDefinition an oracle database definition instance
 	 * @param dataSource a data source to an Oracle database
-	 * @throws java.sql.SQLException
 	 */
-	public OracleAWSDB(DBDefinition dbDefinition, DataSource dataSource) throws SQLException {
+	public OracleAWSDB(DBDefinition dbDefinition, DataSource dataSource) {
 		super(dbDefinition, dataSource);
 	}
 
@@ -87,7 +88,7 @@ public abstract class OracleAWSDB extends OracleDB implements SupportsPolygonDat
 	@Override
 	protected void addDatabaseSpecificFeatures(Statement statement) throws SQLException {
 		super.addDatabaseSpecificFeatures(statement);
-		
+
 		for (Line2DFunctions fn : Line2DFunctions.values()) {
 			fn.add(statement);
 		}

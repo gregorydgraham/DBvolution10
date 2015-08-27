@@ -36,7 +36,7 @@ public class MySQLDB extends DBDatabase implements SupportsPolygonDatatype{
 	 * @param ds	ds
 	 * @throws java.sql.SQLException
 	 */
-	public MySQLDB(DataSource ds) throws SQLException {
+	public MySQLDB(DataSource ds) {
 		super(new MySQLDBDefinition(), ds);
 	}
 
@@ -49,7 +49,7 @@ public class MySQLDB extends DBDatabase implements SupportsPolygonDatatype{
 	 * @param username username
 	 * @throws java.sql.SQLException
 	 */
-	public MySQLDB(String jdbcURL, String username, String password) throws SQLException {
+	public MySQLDB(String jdbcURL, String username, String password) {
 		super(new MySQLDBDefinition(), MYSQLDRIVERNAME, jdbcURL, username, password);
 	}
 
@@ -64,7 +64,7 @@ public class MySQLDB extends DBDatabase implements SupportsPolygonDatatype{
 	 * @param password the password required to login successfully.
 	 * @throws java.sql.SQLException
 	 */
-	public MySQLDB(String server, long port, String databaseName, String username, String password) throws SQLException {
+	public MySQLDB(String server, long port, String databaseName, String username, String password) {
 		super(new MySQLDBDefinition(),
 				MYSQLDRIVERNAME,
 				"jdbc:mysql://" + server + ":" + port + "/" + databaseName,

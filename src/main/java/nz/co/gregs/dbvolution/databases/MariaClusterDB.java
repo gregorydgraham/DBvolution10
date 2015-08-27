@@ -38,9 +38,8 @@ public class MariaClusterDB extends DBDatabase {
 	 * Creates a {@link DBDatabase } instance for the data source.
 	 *
 	 * @param ds	ds
-	 * @throws java.sql.SQLException
 	 */
-	public MariaClusterDB(DataSource ds) throws SQLException {
+	public MariaClusterDB(DataSource ds) {
 		super(new MariaDBDefinition(), ds);
 	}
 
@@ -52,9 +51,8 @@ public class MariaClusterDB extends DBDatabase {
 	 * @param jdbcURL jdbcURL
 	 * @param username username
 	 * @param password password
-	 * @throws java.sql.SQLException
 	 */
-	public MariaClusterDB(String jdbcURL, String username, String password) throws SQLException {
+	public MariaClusterDB(String jdbcURL, String username, String password) {
 		super(new MariaDBDefinition(), MARIADBDRIVERNAME, jdbcURL, username, password);
 	}
 
@@ -71,9 +69,8 @@ public class MariaClusterDB extends DBDatabase {
 	 * @param password password
 	 * @param username username
 	 * @param databaseName databaseName
-	 * @throws java.sql.SQLException
 	 */
-	public MariaClusterDB(String server, long port, String databaseName, String username, String password) throws SQLException {
+	public MariaClusterDB(String server, long port, String databaseName, String username, String password) {
 		super(new MariaDBDefinition(),
 				MARIADBDRIVERNAME,
 				"jdbc:mariadb://" + server + ":" + port + "/" + databaseName,

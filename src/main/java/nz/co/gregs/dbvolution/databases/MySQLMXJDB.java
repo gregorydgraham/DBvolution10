@@ -32,7 +32,7 @@ public class MySQLMXJDB extends MySQLDB {
 	 * @param ds	ds
 	 * @throws java.sql.SQLException
 	 */
-	public MySQLMXJDB(DataSource ds) throws SQLException {
+	public MySQLMXJDB(DataSource ds) {
 		super(ds);
 	}
 
@@ -44,7 +44,7 @@ public class MySQLMXJDB extends MySQLDB {
 	 * @param password password
 	 * @throws java.sql.SQLException
 	 */
-	public MySQLMXJDB(String jdbcURL, String username, String password) throws SQLException {
+	public MySQLMXJDB(String jdbcURL, String username, String password) {
 		super(jdbcURL, username, password);
 	}
 
@@ -59,7 +59,7 @@ public class MySQLMXJDB extends MySQLDB {
 	 * @param password the password required to login successfully.
 	 * @throws java.sql.SQLException
 	 */
-	public MySQLMXJDB(String server, long port, String databaseName, String databaseDir, String username, String password) throws SQLException {
+	public MySQLMXJDB(String server, long port, String databaseName, String databaseDir, String username, String password) {
 		super("jdbc:mysql:mxj://" + server + ":" + port + "/" + databaseName
 				+ "?" + "server.basedir=" + databaseDir
 				+ "&" + "createDatabaseIfNotExist=true"
