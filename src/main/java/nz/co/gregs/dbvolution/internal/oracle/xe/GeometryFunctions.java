@@ -24,6 +24,9 @@ import java.sql.Statement;
  */
 public enum GeometryFunctions {
 
+	/**
+	 *
+	 */
 	ASTEXT("VARCHAR", "p_geometry     IN MDSYS.SDO_GEOMETRY", ""
 			+ "     v_dims  PLS_INTEGER;    -- Number of dimensions in geometry\n"
 			+ "     v_spatialtype  VARCHAR(2);\n"
@@ -103,6 +106,10 @@ public enum GeometryFunctions {
 			+ "    return v_wkt||v_wktend;\n"
 			+ "-- return 'MULTIPOINT ((), (), ...)';\n"
 			+ "end;"),
+
+	/**
+	 *
+	 */
 	GETPOINTATINDEX("MDSYS.SDO_GEOMETRY", "p_geometry     IN MDSYS.SDO_GEOMETRY,\n"
 			+ "                          p_point_number IN NUMBER DEFAULT 1", ""
 			+ "      v_dims  PLS_INTEGER;    -- Number of dimensions in geometry\n"
@@ -181,6 +188,11 @@ public enum GeometryFunctions {
 		return "DBV_GEOM_" + name();
 	}
 
+	/**
+	 *
+	 * @param stmt
+	 * @throws SQLException
+	 */
 	public void add(Statement stmt) throws SQLException {
 		try {
 			if (!this.code.isEmpty()) {

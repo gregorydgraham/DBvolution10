@@ -205,7 +205,7 @@ public class LineSegment2DExpressionTest  extends AbstractTest {
 		final LineSegmentTestTable lineTestTable = new LineSegmentTestTable();
 		DBQuery dbQuery = database.getDBQuery(lineTestTable);
 		dbQuery.setSortOrder(lineTestTable.column(lineTestTable.line_id));
-		dbQuery.addCondition(lineTestTable.column(lineTestTable.line).getMaxX().is(4));
+		dbQuery.addCondition(lineTestTable.column(lineTestTable.line).maxX().is(4));
 		List<LineSegmentTestTable> allRows = dbQuery.getAllInstancesOf(lineTestTable);
 		database.print(allRows);
 		Assert.assertThat(allRows.size(), is(2));
@@ -219,7 +219,7 @@ public class LineSegment2DExpressionTest  extends AbstractTest {
 //		LineString line = geometryFactory.createLineString(new Coordinate[]{new Coordinate(2.0, 3.0), new Coordinate(3.0, 4.0)});
 		final LineSegmentTestTable lineTestTable = new LineSegmentTestTable();
 		DBQuery dbQuery = database.getDBQuery(lineTestTable);
-		dbQuery.addCondition(lineTestTable.column(lineTestTable.line).getMinX().is(3));
+		dbQuery.addCondition(lineTestTable.column(lineTestTable.line).minX().is(3));
 		List<LineSegmentTestTable> allRows = dbQuery.getAllInstancesOf(lineTestTable);
 		database.print(allRows);
 		Assert.assertThat(allRows.size(), is(1));
@@ -232,7 +232,7 @@ public class LineSegment2DExpressionTest  extends AbstractTest {
 //		LineString line = geometryFactory.createLineString(new Coordinate[]{new Coordinate(2.0, 3.0), new Coordinate(3.0, 4.0)});
 		final LineSegmentTestTable lineTestTable = new LineSegmentTestTable();
 		DBQuery dbQuery = database.getDBQuery(lineTestTable);
-		dbQuery.addCondition(lineTestTable.column(lineTestTable.line).getMaxY().is(4));
+		dbQuery.addCondition(lineTestTable.column(lineTestTable.line).maxY().is(4));
 		List<LineSegmentTestTable> allRows = dbQuery.getAllInstancesOf(lineTestTable);
 		database.print(allRows);
 		Assert.assertThat(allRows.size(), is(1));
@@ -245,7 +245,7 @@ public class LineSegment2DExpressionTest  extends AbstractTest {
 //		LineString line = geometryFactory.createLineString(new Coordinate[]{new Coordinate(2.0, 3.0), new Coordinate(3.0, 4.0)});
 		final LineSegmentTestTable lineTestTable = new LineSegmentTestTable();
 		DBQuery dbQuery = database.getDBQuery(lineTestTable);
-		dbQuery.addCondition(lineTestTable.column(lineTestTable.line).getMinY().is(3));
+		dbQuery.addCondition(lineTestTable.column(lineTestTable.line).minY().is(3));
 		List<LineSegmentTestTable> allRows = dbQuery.getAllInstancesOf(lineTestTable);
 		database.print(allRows);
 		Assert.assertThat(allRows.size(), is(2));
@@ -321,9 +321,9 @@ public class LineSegment2DExpressionTest  extends AbstractTest {
 		@DBColumn
 		public DBString stringLine = new DBString(this.column(this.line).stringResult().substringBetween("(", " "));
 //		@DBColumn
-//		public DBNumber getX = new DBNumber(this.column(this.line).getMaxX());
+//		public DBNumber getX = new DBNumber(this.column(this.line).maxX());
 //		@DBColumn
-//		public DBNumber getY = new DBNumber(this.column(this.line).getMaxY());
+//		public DBNumber getY = new DBNumber(this.column(this.line).maxY());
 		@DBColumn
 		public DBPolygon2D boundingBox = new DBPolygon2D(this.column(this.line).boundingBox());
 
@@ -334,7 +334,7 @@ public class LineSegment2DExpressionTest  extends AbstractTest {
 		System.out.println("boundingBox");
 		final BoundingBoxTest pointTestTable = new BoundingBoxTest();
 		DBQuery dbQuery = database.getDBQuery(pointTestTable).setBlankQueryAllowed(true);
-		dbQuery.addCondition(pointTestTable.column(pointTestTable.line).getMaxY().is(4));
+		dbQuery.addCondition(pointTestTable.column(pointTestTable.line).maxY().is(4));
 		List<BoundingBoxTest> allRows = dbQuery.getAllInstancesOf(pointTestTable);
 		database.print(allRows);
 		Assert.assertThat(allRows.size(), is(1));

@@ -24,6 +24,9 @@ import java.sql.Statement;
  */
 public enum DateRepeatFunctions implements DBVFeature {
 
+	/**
+	 *
+	 */
 	CREATE("String", "Date original, Date compareTo", ""
 			+ "import org.joda.time.Period;"
 			+ "import java.util.*;",
@@ -38,6 +41,10 @@ public enum DateRepeatFunctions implements DBVFeature {
 			+ "		String dateRepeatString = \"P\" + years + \"Y\" + months + \"M\" + days + \"D\" + hours + \"h\" + minutes + \"n\" + seconds + \"s\";\n"
 			+ "		return dateRepeatString;"
 			+ ""),
+
+	/**
+	 *
+	 */
 	EQUALS("boolean", "String original, String compareTo",
 			"import org.joda.time.Period;"
 			+ "import java.util.*;",
@@ -56,6 +63,10 @@ public enum DateRepeatFunctions implements DBVFeature {
 			+ "			}\n"
 			+ "		}\n"
 			+ "		return true;\n"),
+
+	/**
+	 *
+	 */
 	LESSTHAN("boolean", "String original, String compareTo",
 			"import org.joda.time.Period;"
 			+ "import java.util.*;",
@@ -74,6 +85,10 @@ public enum DateRepeatFunctions implements DBVFeature {
 			+ "			}\n"
 			+ "		}\n"
 			+ "		return false;\n"),
+
+	/**
+	 *
+	 */
 	LESSTHANEQUALS("boolean", "String original, String compareTo",
 			"import org.joda.time.Period;"
 			+ "import java.util.*;",
@@ -92,6 +107,10 @@ public enum DateRepeatFunctions implements DBVFeature {
 			+ "			}\n"
 			+ "		}\n"
 			+ "		return true;\n"),
+
+	/**
+	 *
+	 */
 	GREATERTHAN("boolean", "String original, String compareTo",
 			"import org.joda.time.Period;"
 			+ "import java.util.*;",
@@ -110,6 +129,10 @@ public enum DateRepeatFunctions implements DBVFeature {
 			+ "			}\n"
 			+ "		}\n"
 			+ "		return false;\n"),
+
+	/**
+	 *
+	 */
 	GREATERTHANEQUALS("boolean", "String original, String compareTo",
 			"import org.joda.time.Period;"
 			+ "import java.util.*;",
@@ -128,6 +151,10 @@ public enum DateRepeatFunctions implements DBVFeature {
 			+ "			}\n"
 			+ "		}\n"
 			+ "		return true;\n"),
+
+	/**
+	 *
+	 */
 	DATEADDITION("Date", "Date original, String dateRepeatStr",
 			"import org.joda.time.Period;\n"
 			+ "import java.util.*;\n"
@@ -150,6 +177,10 @@ public enum DateRepeatFunctions implements DBVFeature {
 			+ "		cal.add(Calendar.MINUTE, minutes);\n"
 			+ "		cal.add(Calendar.SECOND, seconds);\n"
 			+ "		return cal.getTime();"),
+
+	/**
+	 *
+	 */
 	DATESUBTRACTION("Date", "Date original, String dateRepeatInput",
 			"import org.joda.time.Period;"
 			+ "import java.util.*;",
@@ -175,21 +206,45 @@ public enum DateRepeatFunctions implements DBVFeature {
 			+ "		cal.add(Calendar.SECOND, -1 * seconds);\n"
 			+ "		return cal.getTime();"
 			+ ""),
+
+	/**
+	 *
+	 */
 	YEAR_PART("Integer", "String dateRepeatStr", "", "NumberFormatException",
 			"		if (dateRepeatStr==null||dateRepeatStr.length()==0){return null;}\n"
 			+ "		return Integer.parseInt(dateRepeatStr.replaceAll(\".*P([-0-9.]+)Y.*\", \"$1\"));\n"),
+
+	/**
+	 *
+	 */
 	MONTH_PART("Integer", "String dateRepeatStr", "", "NumberFormatException",
 			"		if (dateRepeatStr==null||dateRepeatStr.length()==0){return null;}\n"
 			+ "		return Integer.parseInt(dateRepeatStr.replaceAll(\".*Y([-0-9.]+)M.*\", \"$1\"));\n"),
+
+	/**
+	 *
+	 */
 	DAY_PART("Integer", "String dateRepeatStr", "", "NumberFormatException",
 			"		if (dateRepeatStr==null||dateRepeatStr.length()==0){return null;}\n"
 			+ "		return Integer.parseInt(dateRepeatStr.replaceAll(\".*M([-0-9.]+)D.*\", \"$1\"));\n"),
+
+	/**
+	 *
+	 */
 	HOUR_PART("Integer", "String dateRepeatStr", "", "NumberFormatException",
 			"		if (dateRepeatStr==null||dateRepeatStr.length()==0){return null;}\n"
 			+ "		return Integer.parseInt(dateRepeatStr.replaceAll(\".*D([-0-9.]+)h.*\", \"$1\"));\n"),
+
+	/**
+	 *
+	 */
 	MINUTE_PART("Integer", "String dateRepeatStr", "", "NumberFormatException",
 			"		if (dateRepeatStr==null||dateRepeatStr.length()==0){return null;}\n"
 			+ "		return Integer.parseInt(dateRepeatStr.replaceAll(\".*h([-0-9.]+)n.*\", \"$1\"));\n"),
+
+	/**
+	 *
+	 */
 	SECOND_PART("Integer", "String dateRepeatStr", "", "NumberFormatException",
 			"		if (dateRepeatStr==null||dateRepeatStr.length()==0){return null;}\n"
 			+ "		return Double.valueOf(dateRepeatStr.replaceAll(\".*n([-0-9.]+)s.*\", \"$1\")).intValue();\n");
@@ -223,11 +278,20 @@ public enum DateRepeatFunctions implements DBVFeature {
 		return "DBV_DATEREPEAT_" + name();
 	}
 
+	/**
+	 *
+	 * @return
+	 */
 	@Override
 	public String alias() {
 		return toString();
 	}
 
+	/**
+	 *
+	 * @param stmt
+	 * @throws SQLException
+	 */
 	@Override
 	public void add(Statement stmt) throws SQLException {
 		try {

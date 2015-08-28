@@ -24,6 +24,9 @@ import java.sql.Statement;
  */
 public enum Line2DFunctions {
 
+	/**
+	 *
+	 */
 	MAXY(Language.plpgsql, "decimal", "poly path", "DECLARE \n"
 			+ " result decimal;\n"
 			+ " num integer;\n"
@@ -54,6 +57,10 @@ public enum Line2DFunctions {
 			+ "  return result;\n"
 			+ " END IF;\n"
 			+ "END;"),
+
+	/**
+	 *
+	 */
 	MAXX(Language.plpgsql, "decimal", "poly path", "DECLARE \n"
 			+ " result decimal;\n"
 			+ " num integer;\n"
@@ -84,6 +91,10 @@ public enum Line2DFunctions {
 			+ "  return result;\n"
 			+ " END IF;\n"
 			+ "END;"),
+
+	/**
+	 *
+	 */
 	MINX(Language.plpgsql, "decimal", "poly path", "DECLARE \n"
 			+ " result decimal;\n"
 			+ " num integer;\n"
@@ -114,6 +125,10 @@ public enum Line2DFunctions {
 			+ "  return result;\n"
 			+ " END IF;\n"
 			+ "END;"),
+
+	/**
+	 *
+	 */
 	MINY(Language.plpgsql, "decimal", "poly path", "DECLARE \n"
 			+ " result decimal;\n"
 			+ " num integer;\n"
@@ -144,6 +159,10 @@ public enum Line2DFunctions {
 			+ "  return result;\n"
 			+ " END IF;\n"
 			+ "END;"),
+
+	/**
+	 *
+	 */
 	BOUNDINGBOX(Language.plpgsql, "polygon", "poly path", "DECLARE \n"
 			+ " result polygon;\n"
 			+ " maxx decimal;\n"
@@ -162,6 +181,10 @@ public enum Line2DFunctions {
 			+ "  return result;\n"
 			+ " END IF;\n"
 			+ "END;"),
+
+	/**
+	 *
+	 */
 	INTERSECTIONWITHLINE2D(Language.plpgsql, "point", "path1 path, path2 path", "DECLARE \n"
 			+ " intersectionPoly GEOMETRY;\n"
 			+ "BEGIN\n"
@@ -176,6 +199,10 @@ public enum Line2DFunctions {
 			+ "  END IF;\n"
 			+ " END IF;\n"
 			+ "END;"),
+
+	/**
+	 *
+	 */
 	INTERSECTIONPOINTSWITHLINE2D(Language.plpgsql, "geometry", "path1 path, path2 path", "DECLARE \n"
 			+ " intersectionPoly GEOMETRY;\n"
 			+ "BEGIN\n"
@@ -211,6 +238,11 @@ public enum Line2DFunctions {
 		return "DBV_LINE2DFN_" + name();
 	}
 
+	/**
+	 *
+	 * @param stmt
+	 * @throws SQLException
+	 */
 	public void add(Statement stmt) throws SQLException {
 		try {
 			stmt.execute("DROP FUNCTION " + this + "(" + this.parameters + ");");

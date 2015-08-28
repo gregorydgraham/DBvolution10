@@ -24,6 +24,9 @@ import java.sql.Statement;
  */
 public enum Line2DFunctions implements DBVFeature {
 
+	/**
+	 *
+	 */
 	CREATE("DBV_CREATE_LINE2D_FROM_COORDS", "String", "Double... coords", "\n"
 			+ "			Integer numberOfArguments = coords.length;\n"
 			+ "			if (numberOfArguments % 2 != 0) {\n"
@@ -44,12 +47,20 @@ public enum Line2DFunctions implements DBVFeature {
 			+ "				resultStr += \")\";\n"
 			+ "				return resultStr;\n"
 			+ "			}"),
+
+	/**
+	 *
+	 */
 	EQUALS("DBV_LINE2D_EQUALS", "Boolean", "String firstLine, String secondLine", "\n"
 			+ "			if (firstLine == null || secondLine == null) {\n"
 			+ "				return null;\n"
 			+ "			} else {\n"
 			+ "				return firstLine.equals(secondLine);\n"
 			+ "			}"),
+
+	/**
+	 *
+	 */
 	MAXX("DBV_LINE2D_MAXX", "Double", "String firstLine", "\n"
 			+ "			if (firstLine == null) {\n"
 			+ "				return null;\n"
@@ -64,6 +75,10 @@ public enum Line2DFunctions implements DBVFeature {
 			+ "				}\n"
 			+ "				return maxX;\n"
 			+ "			}"),
+
+	/**
+	 *
+	 */
 	MAXY("DBV_LINE2D_MAXY", "Double", "String firstLine", "\n"
 			+ "			if (firstLine == null) {\n"
 			+ "				return null;\n"
@@ -78,6 +93,10 @@ public enum Line2DFunctions implements DBVFeature {
 			+ "				}\n"
 			+ "				return maxY;\n"
 			+ "			}"),
+
+	/**
+	 *
+	 */
 	MINX("DBV_LINE2D_MINX", "Double", "String firstLine", "\n"
 			+ "			if (firstLine == null) {\n"
 			+ "				return null;\n"
@@ -92,6 +111,10 @@ public enum Line2DFunctions implements DBVFeature {
 			+ "				}\n"
 			+ "				return maxX;\n"
 			+ "			}"),
+
+	/**
+	 *
+	 */
 	MINY("DBV_LINE2D_MINY", "Double", "String firstLine", "\n"
 			+ "			if (firstLine == null) {\n"
 			+ "				return null;\n"
@@ -106,6 +129,10 @@ public enum Line2DFunctions implements DBVFeature {
 			+ "				}\n"
 			+ "				return maxY;\n"
 			+ "			}"),
+
+	/**
+	 *
+	 */
 	BOUNDINGBOX("DBV_LINE2D_BOUNDINGBOX", "String", "String firstLine", "\n"
 			+ "			if (firstLine == null) {\n"
 			+ "				return null;\n"
@@ -134,8 +161,20 @@ public enum Line2DFunctions implements DBVFeature {
 			+ "				String resultString = \"POLYGON ((\" + minX+\" \"+minY + \", \" + maxX+\" \"+minY + \", \" + maxX+\" \"+maxY + \", \" + minX+\" \"+maxY + \", \" + minX+\" \"+minY + \"))\";\n"
 			+ "				return resultString;\n"
 			+ "			}"),
+
+	/**
+	 *
+	 */
 	DIMENSION("DBV_LINE2D_DIMENSION", "Integer", "String firstLine", "return 1;"),
+
+	/**
+	 *
+	 */
 	ASTEXT("DBV_LINE2D_ASTEXT", "String", "String firstLine", "return firstLine;"),
+
+	/**
+	 *
+	 */
 	INTERSECTS_LINE2D("DBV_LINE2D_INTERSECTS_LINE2D", "Boolean", "String firstLine, String secondLine", "\n"
 			+ "		if (firstLine == null || secondLine == null) {\n"
 			+ "			return null;\n"
@@ -179,7 +218,11 @@ public enum Line2DFunctions implements DBVFeature {
 			+ "			}\n"
 			+ "		}\n"
 			+ "		return false;"),
-		INTERSECTIONWITH_LINE2D("DBV_LINE2D_INTERSECTIONWITH_LINE2D", "String", "String firstLine, String secondLine", "\n"
+
+	/**
+	 *
+	 */
+	INTERSECTIONWITH_LINE2D("DBV_LINE2D_INTERSECTIONWITH_LINE2D", "String", "String firstLine, String secondLine", "\n"
 			+ "		if (firstLine == null || secondLine == null) {\n"
 			+ "			return null;\n"
 			+ "		}\n"
@@ -222,7 +265,11 @@ public enum Line2DFunctions implements DBVFeature {
 			+ "			}\n"
 			+ "		}\n"
 			+ "		return null;"), 
-		ALLINTERSECTIONSWITH_LINE2D("DBV_LINE2D_ALLINTERSECTIONSWITH_LINE2D", "String", "String firstLine, String secondLine", "\n"
+
+	/**
+	 *
+	 */
+	ALLINTERSECTIONSWITH_LINE2D("DBV_LINE2D_ALLINTERSECTIONSWITH_LINE2D", "String", "String firstLine, String secondLine", "\n"
 			+ "		if (firstLine == null || secondLine == null) {\n"
 			+ "			return null;\n"
 			+ "		}\n"
@@ -283,6 +330,11 @@ public enum Line2DFunctions implements DBVFeature {
 		return functionName;
 	}
 
+	/**
+	 *
+	 * @param stmt
+	 * @throws SQLException
+	 */
 	@Override
 	public void add(Statement stmt) throws SQLException {
 		try {
@@ -339,6 +391,10 @@ public enum Line2DFunctions implements DBVFeature {
 		return false;
 	}
 
+	/**
+	 *
+	 * @return
+	 */
 	@Override
 	public String alias() {
 		return toString();

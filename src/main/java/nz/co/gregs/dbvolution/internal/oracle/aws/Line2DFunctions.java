@@ -25,6 +25,9 @@ import java.sql.Statement;
  */
 public enum Line2DFunctions {
 
+	/**
+	 *
+	 */
 	MAXY("NUMBER", "aLine VARCHAR", ""
 			+ "   result       NUMBER;\n"
 			+ "   coord        NUMBER;\n"
@@ -95,6 +98,10 @@ public enum Line2DFunctions {
 			+ "\n"
 			+ "   RETURN result;\n"
 			+ "END;"),
+
+	/**
+	 *
+	 */
 	MAXX("number", "aLine VARCHAR", ""
 			+ "   result       NUMBER;\n"
 			+ "   coord        NUMBER;\n"
@@ -165,6 +172,10 @@ public enum Line2DFunctions {
 			+ "\n"
 			+ "   RETURN result;\n"
 			+ "END;"),
+
+	/**
+	 *
+	 */
 	MINX("NUMBER", "aLine VARCHAR", ""
 			+ "   result       NUMBER;\n"
 			+ "   coord        NUMBER;\n"
@@ -235,6 +246,10 @@ public enum Line2DFunctions {
 			+ "\n"
 			+ "   RETURN result;\n"
 			+ "END;"),
+
+	/**
+	 *
+	 */
 	MINY("number", "aLine VARCHAR", ""
 			+ "   result       NUMBER;\n"
 			+ "   coord        NUMBER;\n"
@@ -305,6 +320,10 @@ public enum Line2DFunctions {
 			+ "\n"
 			+ "   RETURN result;\n"
 			+ "END;"),
+
+	/**
+	 *
+	 */
 	BOUNDINGBOX("VARCHAR", "lineString IN VARCHAR", ""
 			+ "   result   VARCHAR (2002);\n"
 			+ "   maxx     NUMBER;\n"
@@ -346,6 +365,10 @@ public enum Line2DFunctions {
 			+ "      RETURN result;\n"
 			+ "   END IF;\n"
 			+ "END;"),
+
+	/**
+	 *
+	 */
 	INTERSECTSLINE2D("NUMBER", "firstLine IN VARCHAR, secondLine IN VARCHAR", "   p0x           NUMBER;\n"
 			+ "   p0y           NUMBER;\n"
 			+ "   p1x           NUMBER;\n"
@@ -462,6 +485,10 @@ public enum Line2DFunctions {
 			+ "   -- No Collision\n"
 			+ "   RETURN 0;\n"
 			+ "END;"),
+
+	/**
+	 *
+	 */
 	INTERSECTNWLINE2D("VARCHAR", "firstLine IN VARCHAR, secondLine IN VARCHAR", ""
 			+ "   p0x           NUMBER;\n"
 			+ "   p0y           NUMBER;\n"
@@ -581,6 +608,10 @@ public enum Line2DFunctions {
 			+ "   -- No Collision\n"
 			+ "   RETURN '';\n"
 			+ "END;"),
+
+	/**
+	 *
+	 */
 	ALLINTERSECTSL2D("VARCHAR", "firstLine IN VARCHAR, secondLine IN VARCHAR", ""
 			+ "   p0x                 NUMBER;\n"
 			+ "   p0y                 NUMBER;\n"
@@ -726,6 +757,11 @@ public enum Line2DFunctions {
 		return "DBV_LINE2DFN_" + name();
 	}
 
+	/**
+	 *
+	 * @param stmt
+	 * @throws SQLException
+	 */
 	public void add(Statement stmt) throws SQLException {
 		try {
 			if (!this.code.isEmpty()) {

@@ -24,6 +24,9 @@ import java.sql.Statement;
  */
 public enum StringFunctions {
 
+	/**
+	 *
+	 */
 	SUBSTRINGBEFORE("VARCHAR", "sourceText VARCHAR, rightHandSide VARCHAR",
 			"BEGIN\n"
 			+ "   CASE\n"
@@ -34,6 +37,10 @@ public enum StringFunctions {
 			+ "         RETURN '';\n"
 			+ "   END CASE;\n"
 			+ "END;"),
+
+	/**
+	 *
+	 */
 	SUBSTRINGAFTER("VARCHAR", "sourceText VARCHAR, leftHandSide VARCHAR",
 			"BEGIN\n"
 			+ "   CASE\n"
@@ -66,6 +73,11 @@ public enum StringFunctions {
 		return "DBV_STRINGFN_" + name();
 	}
 
+	/**
+	 *
+	 * @param stmt
+	 * @throws SQLException
+	 */
 	public void add(Statement stmt) throws SQLException {
 		try {
 			stmt.execute("DROP FUNCTION " + this + "(" + parameters + ");");

@@ -25,7 +25,11 @@ import java.sql.Statement;
 public enum MultiPoint2DFunctions {
 	//MULTIPOINT(2 3,3 4)
 	//[ ( 2, 3 ), ( 3 , 4 ) ]
-	ASLINE2D(Language.plpgsql, "path", "path1 geometry", "DECLARE \n"
+
+	/**
+	 *
+	 */
+		ASLINE2D(Language.plpgsql, "path", "path1 geometry", "DECLARE \n"
 			+ " tempText text;\n"
 			+ "BEGIN\n"
 			+ " tempText = regexp_replace(ST_ASTEXT(path1), $$MULTIPOINT$$, $$$$, $$g$$); \n"
@@ -53,6 +57,11 @@ public enum MultiPoint2DFunctions {
 		return "DBV_MPOINT2DFN_" + name();
 	}
 
+	/**
+	 *
+	 * @param stmt
+	 * @throws SQLException
+	 */
 	public void add(Statement stmt) throws SQLException {
 		try {
 			stmt.execute("DROP FUNCTION " + this + "(" + this.parameters + ");");

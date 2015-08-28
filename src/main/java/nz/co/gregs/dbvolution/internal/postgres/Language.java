@@ -21,8 +21,19 @@ package nz.co.gregs.dbvolution.internal.postgres;
  */
 public enum Language {
 
+	/**
+	 *
+	 */
 	sql,
+
+	/**
+	 *
+	 */
 	plpgsql,
+
+	/**
+	 *
+	 */
 	c;
 
 }

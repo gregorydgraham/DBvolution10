@@ -32,24 +32,84 @@ import org.sqlite.Function;
  */
 public class DateRepeatFunctions {
 
+	/**
+	 *
+	 */
 	public static String DATEREPEAT_GREATERTHANEQUALS_FUNCTION = "DBV_DATEREPEAT_GREATERTHANEQUALS";
+
+	/**
+	 *
+	 */
 	public static String DATEREPEAT_MINUTE_PART_FUNCTION = "DBV_DATEREPEAT_MINUTE_PART";
+
+	/**
+	 *
+	 */
 	public static String DATEREPEAT_YEAR_PART_FUNCTION = "DBV_DATEREPEAT_YEAR_PART";
+
+	/**
+	 *
+	 */
 	public static String DATEREPEAT_CREATION_FUNCTION = "DBV_DATEREPEAT_CREATE";
+
+	/**
+	 *
+	 */
 	public static String DATEREPEAT_DATEADDITION_FUNCTION = "DBV_DATEREPEAT_DATEADD";
+
+	/**
+	 *
+	 */
 	public static String DATEREPEAT_DATESUBTRACTION_FUNCTION = "DBV_DATEREPEAT_DATEMINUS";
+
+	/**
+	 *
+	 */
 	public static String DATEREPEAT_DAY_PART_FUNCTION = "DBV_DATEREPEAT_DAY_PART";
+
+	/**
+	 *
+	 */
 	public static String DATEREPEAT_HOUR_PART_FUNCTION = "DBV_DATEREPEAT_HOUR_PART";
+
+	/**
+	 *
+	 */
 	public static String DATEREPEAT_SECOND_PART_FUNCTION = "DBV_DATEREPEAT_SECOND_PART";
+
+	/**
+	 *
+	 */
 	public static String DATEREPEAT_GREATERTHAN_FUNCTION = "DBV_DATEREPEAT_GREATERTHAN";
+
+	/**
+	 *
+	 */
 	public static String DATEREPEAT_MONTH_PART_FUNCTION = "DBV_DATEREPEAT_MONTH_PART";
+
+	/**
+	 *
+	 */
 	public static String DATEREPEAT_EQUALS_FUNCTION = "DBV_DATEREPEAT_EQUALS";
+
+	/**
+	 *
+	 */
 	public static String DATEREPEAT_LESSTHANEQUALS_FUNCTION = "DBV_DATEREPEAT_LESSTHANEQUALS";
+
+	/**
+	 *
+	 */
 	public static String DATEREPEAT_LESSTHAN_FUNCTION = "DBV_DATEREPEAT_LESSTHAN";
 
 	private DateRepeatFunctions() {
 	}
 
+	/**
+	 *
+	 * @param connection
+	 * @throws SQLException
+	 */
 	public static void addFunctions(java.sql.Connection connection) throws SQLException {
 		Function.create(connection, DATEREPEAT_CREATION_FUNCTION, new DateRepeatFunctions.Create());
 		Function.create(connection, DATEREPEAT_EQUALS_FUNCTION, new DateRepeatFunctions.Equals());
@@ -67,10 +127,19 @@ public class DateRepeatFunctions {
 		Function.create(connection, DATEREPEAT_SECOND_PART_FUNCTION, new DateRepeatFunctions.GetSecond());
 	}
 
+	/**
+	 *
+	 * @param date
+	 * @return
+	 * @throws ParseException
+	 */
 	public static String formatDateForGetString(Date date) throws ParseException {
 		return SQLiteDefinition.DATETIME_FORMAT.format(date);
 	}
 
+	/**
+	 *
+	 */
 	public static class Create extends Function {
 
 		@Override
@@ -94,8 +163,14 @@ public class DateRepeatFunctions {
 		}
 	}
 
+	/**
+	 *
+	 */
 	public static class DateAddition extends Function {
 
+		/**
+		 *
+		 */
 		public DateAddition() {
 		}
 
@@ -120,8 +195,14 @@ public class DateRepeatFunctions {
 
 	}
 
+	/**
+	 *
+	 */
 	public static class DateSubtraction extends Function {
 
+		/**
+		 *
+		 */
 		public DateSubtraction() {
 		}
 
@@ -146,6 +227,9 @@ public class DateRepeatFunctions {
 
 	}
 
+	/**
+	 *
+	 */
 	public static class Equals extends Function {
 
 		@Override
@@ -162,8 +246,14 @@ public class DateRepeatFunctions {
 
 	}
 
+	/**
+	 *
+	 */
 	public static class GetDay extends Function {
 
+		/**
+		 *
+		 */
 		public GetDay() {
 		}
 
@@ -180,8 +270,14 @@ public class DateRepeatFunctions {
 
 	}
 
+	/**
+	 *
+	 */
 	public static class GetHour extends Function {
 
+		/**
+		 *
+		 */
 		public GetHour() {
 		}
 
@@ -198,8 +294,14 @@ public class DateRepeatFunctions {
 
 	}
 
+	/**
+	 *
+	 */
 	public static class GetMinute extends Function {
 
+		/**
+		 *
+		 */
 		public GetMinute() {
 		}
 
@@ -216,8 +318,14 @@ public class DateRepeatFunctions {
 
 	}
 
+	/**
+	 *
+	 */
 	public static class GetMonth extends Function {
 
+		/**
+		 *
+		 */
 		public GetMonth() {
 		}
 
@@ -234,8 +342,14 @@ public class DateRepeatFunctions {
 
 	}
 
+	/**
+	 *
+	 */
 	public static class GetSecond extends Function {
 
+		/**
+		 *
+		 */
 		public GetSecond() {
 		}
 
@@ -252,8 +366,14 @@ public class DateRepeatFunctions {
 
 	}
 
+	/**
+	 *
+	 */
 	public static class GetYear extends Function {
 
+		/**
+		 *
+		 */
 		public GetYear() {
 		}
 
@@ -270,8 +390,14 @@ public class DateRepeatFunctions {
 
 	}
 
+	/**
+	 *
+	 */
 	public static class GreaterThan extends Function {
 
+		/**
+		 *
+		 */
 		public GreaterThan() {
 		}
 
@@ -289,8 +415,14 @@ public class DateRepeatFunctions {
 
 	}
 
+	/**
+	 *
+	 */
 	public static class GreaterThanOrEqual extends Function {
 
+		/**
+		 *
+		 */
 		public GreaterThanOrEqual() {
 		}
 
@@ -308,8 +440,14 @@ public class DateRepeatFunctions {
 
 	}
 
+	/**
+	 *
+	 */
 	public static class LessThan extends Function {
 
+		/**
+		 *
+		 */
 		public LessThan() {
 		}
 
@@ -327,8 +465,14 @@ public class DateRepeatFunctions {
 
 	}
 
+	/**
+	 *
+	 */
 	public static class LessThanOrEqual extends Function {
 
+		/**
+		 *
+		 */
 		public LessThanOrEqual() {
 		}
 

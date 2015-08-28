@@ -25,6 +25,9 @@ import java.sql.Statement;
  */
 public enum MultiPoint2DFunctions {
 
+	/**
+	 *
+	 */
 	MAXX("number", "aLine VARCHAR", ""
 			+ "   result       NUMBER;\n"
 			+ "   coord        NUMBER;\n"
@@ -97,6 +100,10 @@ public enum MultiPoint2DFunctions {
 			+ "\n"
 			+ "   RETURN result;\n"
 			+ "END;"),
+
+	/**
+	 *
+	 */
 	MINX("NUMBER", "aLine VARCHAR", ""
 			+ "   result       NUMBER;\n"
 			+ "   coord        NUMBER;\n"
@@ -169,6 +176,10 @@ public enum MultiPoint2DFunctions {
 			+ "\n"
 			+ "   RETURN result;\n"
 			+ "END;"),
+
+	/**
+	 *
+	 */
 	MAXY("NUMBER", "aLine VARCHAR", ""
 			+ "   result       NUMBER;\n"
 			+ "   coord        NUMBER;\n"
@@ -241,6 +252,10 @@ public enum MultiPoint2DFunctions {
 			+ "\n"
 			+ "   RETURN result;\n"
 			+ "END;"),
+
+	/**
+	 *
+	 */
 	MINY("NUMBER", "aLine VARCHAR", ""
 			+ "   result       NUMBER;\n"
 			+ "   coord        NUMBER;\n"
@@ -313,6 +328,10 @@ public enum MultiPoint2DFunctions {
 			+ "\n"
 			+ "   RETURN result;\n"
 			+ "END;"),
+
+	/**
+	 *
+	 */
 	BOUNDINGBOX("VARCHAR", "multiPoint IN VARCHAR", ""
 			+ "   result   VARCHAR (2002);\n"
 			+ "   maxx     NUMBER;\n"
@@ -354,10 +373,18 @@ public enum MultiPoint2DFunctions {
 			+ "      RETURN result;\n"
 			+ "   END IF;\n"
 			+ "END;"),
+
+	/**
+	 *
+	 */
 	EQUALS("NUMBER", "multiPoint1 IN VARCHAR, multiPoint2 IN VARCHAR", ""
 			+ "BEGIN\n"
 			+ "   RETURN CASE WHEN (multiPoint1 = multiPoint2) THEN 1 ELSE 0 END;\n"
 			+ "END;"),
+
+	/**
+	 *
+	 */
 	GETFROMINDEX("VARCHAR", "mpoint IN VARCHAR, indx IN INTEGER", ""
 			+ "   result         VARCHAR (4000);\n"
 			+ "   currentindex   NUMBER := 1;\n"
@@ -405,6 +432,10 @@ public enum MultiPoint2DFunctions {
 			+ "\n"
 			+ "   RETURN result;\n"
 			+ "END;"),
+
+	/**
+	 *
+	 */
 	POINTCOUNT("INTEGER", "mpoint IN VARCHAR", ""
 			+ "   result       NUMBER;\n"
 			+ "   pnt          VARCHAR (4000);\n"
@@ -434,10 +465,22 @@ public enum MultiPoint2DFunctions {
 			+ "\n"
 			+ "   RETURN result;\n"
 			+ "END;"),
+
+	/**
+	 *
+	 */
 	DIMENSION("INTEGER", "mpoint IN VARCHAR", "BEGIN\n"
 			+ "RETURN 0;\n"
 			+ "END;"),
+
+	/**
+	 *
+	 */
 	ASTEXT("VARCHAR", "mpoint IN VARCHAR", "BEGIN RETURN mpoint; END;"),
+
+	/**
+	 *
+	 */
 	ASLINE2D("VARCHAR", "mpoint IN VARCHAR", "BEGIN\n"
 			+ "   --'MULTIPOINT ((2 3), (3 4), (4 5))'\n"
 			+ "   --'LINESTRING (2 3, 3 4, 4 5)'\n"
@@ -464,6 +507,11 @@ public enum MultiPoint2DFunctions {
 		return "DBV_MPOINT2D_" + name();
 	}
 
+	/**
+	 *
+	 * @param stmt
+	 * @throws SQLException
+	 */
 	public void add(Statement stmt) throws SQLException {
 		try {
 			if (!this.code.isEmpty()) {

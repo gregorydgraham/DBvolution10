@@ -28,7 +28,11 @@ import java.sql.Statement;
 public enum MultiPoint2DFunctions implements DBVFeature {
 
 // MULTIPOINT ((1 2, 3 4, 5 6))
-	CREATE("String", "Double... coords", "\n"
+
+	/**
+	 *
+	 */
+		CREATE("String", "Double... coords", "\n"
 			+ "			Integer numberOfArguments = coords.length;\n"
 			+ "			if (numberOfArguments % 2 != 0) {\n"
 			+ "				return null;\n"
@@ -48,12 +52,20 @@ public enum MultiPoint2DFunctions implements DBVFeature {
 			+ "				resultStr += \")\";\n"
 			+ "				return resultStr;\n"
 			+ "			}"),
+
+	/**
+	 *
+	 */
 	EQUALS("Boolean", "String firstLine, String secondLine", "\n"
 			+ "			if (firstLine == null || secondLine == null) {\n"
 			+ "				return null;\n"
 			+ "			} else {\n"
 			+ "				return firstLine.equals(secondLine);\n"
 			+ "			}"),
+
+	/**
+	 *
+	 */
 	MAXX("Double", "String firstLine", "\n"
 			+ "			if (firstLine == null) {\n"
 			+ "				return null;\n"
@@ -68,6 +80,10 @@ public enum MultiPoint2DFunctions implements DBVFeature {
 			+ "				}\n"
 			+ "				return maxX;\n"
 			+ "			}"),
+
+	/**
+	 *
+	 */
 	MAXY("Double", "String firstLine", "\n"
 			+ "			if (firstLine == null) {\n"
 			+ "				return null;\n"
@@ -82,6 +98,10 @@ public enum MultiPoint2DFunctions implements DBVFeature {
 			+ "				}\n"
 			+ "				return maxY;\n"
 			+ "			}"),
+
+	/**
+	 *
+	 */
 	MINX("Double", "String firstLine", "\n"
 			+ "			if (firstLine == null) {\n"
 			+ "				return null;\n"
@@ -96,6 +116,10 @@ public enum MultiPoint2DFunctions implements DBVFeature {
 			+ "				}\n"
 			+ "				return maxX;\n"
 			+ "			}"),
+
+	/**
+	 *
+	 */
 	MINY("Double", "String firstLine", "\n"
 			+ "			if (firstLine == null) {\n"
 			+ "				return null;\n"
@@ -110,6 +134,10 @@ public enum MultiPoint2DFunctions implements DBVFeature {
 			+ "				}\n"
 			+ "				return maxY;\n"
 			+ "			}"),
+
+	/**
+	 *
+	 */
 	BOUNDINGBOX("String", "String firstLine", "\n"
 			+ "			if (firstLine == null) {\n"
 			+ "				return null;\n"
@@ -138,9 +166,25 @@ public enum MultiPoint2DFunctions implements DBVFeature {
 			+ "				String resultString = \"POLYGON ((\" + minX+\" \"+minY + \", \" + maxX+\" \"+minY + \", \" + maxX+\" \"+maxY + \", \" + minX+\" \"+maxY + \", \" + minX+\" \"+minY + \"))\";\n"
 			+ "				return resultString;\n"
 			+ "			}"),
+
+	/**
+	 *
+	 */
 	DIMENSION("Integer", "String firstLine", "return 0;"	),
+
+	/**
+	 *
+	 */
 	ASTEXT("String", "String firstLine", "return firstLine;"),
+
+	/**
+	 *
+	 */
 	ASLINE2D("String", "String multipoint", "return multipoint.replace(\"(\",\"\").replace(\")\",\"\").replace(\"MULTIPOINT \", \"LINESTRING (\")+\")\";"),
+
+	/**
+	 *
+	 */
 	GETNUMBEROFPOINTS_FUNCTION("Integer", "String multipoint", "\n"
 			+ "			if (multipoint == null||multipoint.equals(\"\")) {\n"
 			+ "				return null;\n"
@@ -156,7 +200,11 @@ public enum MultiPoint2DFunctions implements DBVFeature {
 //			+ "} else{"
 //			+ "	return multipoint.replace(\"), (\", \", \").replaceAll(\"\\\\(([-0-9.]+ [-0-9.]+)(.*)\\\\)\\\\)\", \"($1$2, $1))\").replace(\"MULTIPOINT\", \"POLYGON\");"
 //			+ "}"),
-	GETPOINTATINDEX_FUNCTION("String", "String multipoint, Integer index", "\n"
+
+	/**
+	 *
+	 */
+		GETPOINTATINDEX_FUNCTION("String", "String multipoint, Integer index", "\n"
 			+ "			final int indexInMPoint = index * 2;\n"
 			+ "			if (multipoint == null||indexInMPoint<=0) {\n"
 			+ "				return null;\n"
@@ -185,6 +233,10 @@ public enum MultiPoint2DFunctions implements DBVFeature {
 		this.code = code;
 	}
 	
+	/**
+	 *
+	 * @return
+	 */
 	static public int getCurrentVersion(){
 		return 2;
 	}
@@ -194,11 +246,20 @@ public enum MultiPoint2DFunctions implements DBVFeature {
 		return "DBV_MULTIPOINT2D_" + name();
 	}
 
+	/**
+	 *
+	 * @return
+	 */
 	@Override
 	public String alias() {
 		return toString();
 	}
 
+	/**
+	 *
+	 * @param stmt
+	 * @throws SQLException
+	 */
 	@Override
 	public void add(Statement stmt) throws SQLException {
 		try {

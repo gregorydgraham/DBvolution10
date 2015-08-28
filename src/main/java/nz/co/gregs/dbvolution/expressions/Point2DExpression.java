@@ -398,10 +398,10 @@ public class Point2DExpression implements PointResult, Point2DResult, EqualCompa
 					return db.getDefinition().doPoint2DGetBoundingBoxTransform(getFirst().toSQLString(db));
 				} catch (UnsupportedOperationException unsupported) {
 					final Point2DExpression first = getFirst();
-					final NumberExpression maxX = first.getMaxX();
-					final NumberExpression maxY = first.getMaxY();
-					final NumberExpression minX = first.getMinX();
-					final NumberExpression minY = first.getMinY();
+					final NumberExpression maxX = first.maxX();
+					final NumberExpression maxY = first.maxY();
+					final NumberExpression minX = first.minX();
+					final NumberExpression minY = first.minY();
 					return Polygon2DExpression.value(
 							Point2DExpression.value(minX, minY),
 							Point2DExpression.value(maxX, minY),
@@ -424,22 +424,22 @@ public class Point2DExpression implements PointResult, Point2DResult, EqualCompa
 	}
 
 	@Override
-	public NumberExpression getMaxX() {
+	public NumberExpression maxX() {
 		return this.getX();
 	}
 
 	@Override
-	public NumberExpression getMaxY() {
+	public NumberExpression maxY() {
 		return this.getY();
 	}
 
 	@Override
-	public NumberExpression getMinX() {
+	public NumberExpression minX() {
 		return this.getX();
 	}
 
 	@Override
-	public NumberExpression getMinY() {
+	public NumberExpression minY() {
 		return this.getY();
 	}
 

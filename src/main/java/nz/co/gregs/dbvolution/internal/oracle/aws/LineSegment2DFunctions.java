@@ -25,6 +25,9 @@ import java.sql.Statement;
  */
 public enum LineSegment2DFunctions {
 
+	/**
+	 *
+	 */
 	MAXY("NUMBER", "aLine VARCHAR", ""
 			+ "   result       NUMBER;\n"
 			+ "   coord        NUMBER;\n"
@@ -95,6 +98,10 @@ public enum LineSegment2DFunctions {
 			+ "\n"
 			+ "   RETURN result;\n"
 			+ "END;"),
+
+	/**
+	 *
+	 */
 	MAXX("number", "aLine VARCHAR", ""
 			+ "   result       NUMBER;\n"
 			+ "   coord        NUMBER;\n"
@@ -165,6 +172,10 @@ public enum LineSegment2DFunctions {
 			+ "\n"
 			+ "   RETURN result;\n"
 			+ "END;"),
+
+	/**
+	 *
+	 */
 	MINX("NUMBER", "aLine VARCHAR", ""
 			+ "   result       NUMBER;\n"
 			+ "   coord        NUMBER;\n"
@@ -235,6 +246,10 @@ public enum LineSegment2DFunctions {
 			+ "\n"
 			+ "   RETURN result;\n"
 			+ "END;"),
+
+	/**
+	 *
+	 */
 	MINY("number", "aLine VARCHAR", ""
 			+ "   result       NUMBER;\n"
 			+ "   coord        NUMBER;\n"
@@ -305,6 +320,10 @@ public enum LineSegment2DFunctions {
 			+ "\n"
 			+ "   RETURN result;\n"
 			+ "END;"),
+
+	/**
+	 *
+	 */
 	BOUNDINGBOX("VARCHAR", "lineString IN VARCHAR", ""
 			+ "   result   VARCHAR (2002);\n"
 			+ "   maxx     NUMBER;\n"
@@ -346,6 +365,10 @@ public enum LineSegment2DFunctions {
 			+ "      RETURN result;\n"
 			+ "   END IF;\n"
 			+ "END;"),
+
+	/**
+	 *
+	 */
 	INTERSECTS_LSEG2D("NUMBER", "firstLine IN VARCHAR, secondLine IN VARCHAR", "   p0x           NUMBER;\n"
 			+ "   p0y           NUMBER;\n"
 			+ "   p1x           NUMBER;\n"
@@ -421,10 +444,18 @@ public enum LineSegment2DFunctions {
 			+ "      RETURN 0;\n"
 			+ "   END IF;\n"
 			+ "END;"),
+
+	/**
+	 *
+	 */
 	EQUALS("NUMBER", "lineString1 IN VARCHAR, lineString2 IN VARCHAR", ""
 			+ "BEGIN\n"
 			+ "   RETURN CASE WHEN (lineString1 = lineString2) THEN 1 ELSE 0 END;\n"
 			+ "END;"),
+
+	/**
+	 *
+	 */
 	INTERSECTPT_LSEG2D("VARCHAR", "firstLine IN VARCHAR, secondLine IN VARCHAR", ""
 			+ "   p0x           NUMBER;\n"
 			+ "   p0y           NUMBER;\n"
@@ -519,6 +550,11 @@ public enum LineSegment2DFunctions {
 		return "DBV_LSEG2D_" + name();
 	}
 
+	/**
+	 *
+	 * @param stmt
+	 * @throws SQLException
+	 */
 	public void add(Statement stmt) throws SQLException {
 		try {
 			if (!this.code.isEmpty()) {

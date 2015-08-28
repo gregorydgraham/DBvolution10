@@ -24,6 +24,9 @@ import java.sql.Statement;
  */
 public enum Point2DFunctions {
 
+	/**
+	 *
+	 */
 	EQUALS("numeric(15,10)", "@poly1 GEOMETRY, @poly2 GEOMETRY", " DECLARE \n"
 			+ " @resultVal numeric(15,10),\n"
 			+ " @num integer,\n"
@@ -65,6 +68,11 @@ public enum Point2DFunctions {
 		return "dbo.DBV_POINT2DFN_" + name();
 	}
 
+	/**
+	 *
+	 * @param stmt
+	 * @throws SQLException
+	 */
 	public void add(Statement stmt) throws SQLException {
 		try {
 			stmt.execute("DROP FUNCTION " + this + ";");

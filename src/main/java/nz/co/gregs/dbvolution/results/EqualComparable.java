@@ -39,6 +39,7 @@ public interface EqualComparable<A> {
 	 * @return a BooleanExpression
 	 */
 	public BooleanExpression is(A anotherInstance);
+	
 	/**
 	 * Creates a {@link BooleanExpression} that compares the 2 values using the
 	 * NOT EQUALS operation.

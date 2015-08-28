@@ -23,7 +23,11 @@ import java.sql.Statement;
  * @author gregorygraham
  */
 public enum MultiPoint2DFunctions {
-			EQUALS("numeric(15,10)", "@poly1 GEOMETRY, @poly2 GEOMETRY", " DECLARE \n"
+
+	/**
+	 *
+	 */
+	EQUALS("numeric(15,10)", "@poly1 GEOMETRY, @poly2 GEOMETRY", " DECLARE \n"
 			+ " @resultVal numeric(15,10),\n"
 			+ " @num1 integer,\n"
 			+ " @num2 integer,\n"
@@ -64,7 +68,11 @@ public enum MultiPoint2DFunctions {
 			+ "  END\n"
 			+ " END\n"
 			+ " return(1)"),
-			MAXX("numeric(15,10)", "@poly GEOMETRY", " DECLARE \n"
+
+	/**
+	 *
+	 */
+	MAXX("numeric(15,10)", "@poly GEOMETRY", " DECLARE \n"
 			+ " @resultVal numeric(15,10),\n"
 			+ " @num integer,\n"
 			+ " @i integer,\n"
@@ -91,6 +99,10 @@ public enum MultiPoint2DFunctions {
 			+ "  END\n"
 			+ " END\n"
 			+ " return(@resultVal)"),
+
+	/**
+	 *
+	 */
 	MAXY("numeric(15,10)", "@poly GEOMETRY", " DECLARE \n"
 			+ " @resultVal numeric(15,10),\n"
 			+ " @num integer,\n"
@@ -118,6 +130,10 @@ public enum MultiPoint2DFunctions {
 			+ "  END\n"
 			+ " END\n"
 			+ " return(@resultVal)"),
+
+	/**
+	 *
+	 */
 	MINX("numeric(15,10)", "@poly GEOMETRY", " DECLARE \n"
 			+ " @resultVal numeric(15,10),\n"
 			+ " @num integer,\n"
@@ -145,6 +161,10 @@ public enum MultiPoint2DFunctions {
 			+ "  END\n"
 			+ " END\n"
 			+ " return(@resultVal)"),
+
+	/**
+	 *
+	 */
 	MINY("numeric(15,10)", "@poly GEOMETRY", " DECLARE \n"
 			+ " @resultVal numeric(15,10),\n"
 			+ " @num integer,\n"
@@ -188,6 +208,11 @@ public enum MultiPoint2DFunctions {
 		return "dbo.DBV_MULTIPOINT2DFN_" + name();
 	}
 
+	/**
+	 *
+	 * @param stmt
+	 * @throws SQLException
+	 */
 	public void add(Statement stmt) throws SQLException {
 		try {
 			stmt.execute("DROP FUNCTION " + this + ";");

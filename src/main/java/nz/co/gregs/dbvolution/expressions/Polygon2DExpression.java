@@ -71,7 +71,7 @@ public class Polygon2DExpression implements Spatial2DExpression, Polygon2DResult
 	 * }, and when creating column expressions using {@link DBPolygon2D#DBPolygon2D(nz.co.gregs.dbvolution.expressions.Polygon2DExpression)
 	 * } and similar methods.
 	 *
-	 * @param geometry 
+	 * @param geometry
 	 */
 	public Polygon2DExpression(Polygon geometry) {
 		innerGeometry = new DBPolygon2D(geometry);
@@ -86,7 +86,7 @@ public class Polygon2DExpression implements Spatial2DExpression, Polygon2DResult
 	 * } and similar methods.
 	 *
 	 * @param geometry
-	 * @return  a polygon2d expression
+	 * @return a polygon2d expression
 	 */
 	public static Polygon2DExpression value(Polygon geometry) {
 		return new Polygon2DExpression(geometry);
@@ -98,7 +98,7 @@ public class Polygon2DExpression implements Spatial2DExpression, Polygon2DResult
 	 * } and similar methods.
 	 *
 	 * @param geometry
-	 * @return  a polygon2d expression
+	 * @return a polygon2d expression
 	 */
 	public static Polygon2DExpression value(Polygon2DResult geometry) {
 		return new Polygon2DExpression(geometry);
@@ -109,8 +109,8 @@ public class Polygon2DExpression implements Spatial2DExpression, Polygon2DResult
 	 * }, and when creating column expressions using {@link DBPolygon2D#DBPolygon2D(nz.co.gregs.dbvolution.expressions.Polygon2DExpression)
 	 * } and similar methods.
 	 *
-	 * @param pointExpressions 
-	 * @return  a polygon2d expression
+	 * @param pointExpressions
+	 * @return a polygon2d expression
 	 */
 	public static Polygon2DExpression value(Point2DExpression... pointExpressions) {
 		return Polygon2DExpression.polygon2DFromPoint2DExpressionArray(pointExpressions);
@@ -121,21 +121,20 @@ public class Polygon2DExpression implements Spatial2DExpression, Polygon2DResult
 	 * }, and when creating column expressions using {@link DBPolygon2D#DBPolygon2D(nz.co.gregs.dbvolution.expressions.Polygon2DExpression)
 	 * } and similar methods.
 	 *
-	 * @param coordinateExpressions 
-	 * @return  a polygon2d expression
+	 * @param coordinateExpressions
+	 * @return a polygon2d expression
 	 */
 	public static Polygon2DExpression value(NumberExpression... coordinateExpressions) {
 		return Polygon2DExpression.polygon2DFromCoordinateArray(coordinateExpressions);
 	}
-
 
 	/**
 	 * Create a Polygon2DExpression that represents the value for use in {@link DBQuery#addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression)
 	 * }, and when creating column expressions using {@link DBPolygon2D#DBPolygon2D(nz.co.gregs.dbvolution.expressions.Polygon2DExpression)
 	 * } and similar methods.
 	 *
-	 * @param points  
-	 * @return  a polygon2d expression
+	 * @param points
+	 * @return a polygon2d expression
 	 */
 	public static Polygon2DExpression value(Point... points) {
 		List<Point2DExpression> exprs = new ArrayList<Point2DExpression>();
@@ -194,20 +193,24 @@ public class Polygon2DExpression implements Spatial2DExpression, Polygon2DResult
 	}
 
 	/**
-	 * Create a boolean expression that returns TRUE if the two polygons share any spatial coordinates.
+	 * Create a boolean expression that returns TRUE if the two polygons share any
+	 * spatial coordinates.
 	 *
 	 * @param rightHandSide
-	 * @return a boolean expression that is true if the polygons interact in any way.
+	 * @return a boolean expression that is true if the polygons interact in any
+	 * way.
 	 */
 	public BooleanExpression intersects(Polygon rightHandSide) {
 		return intersects(new DBPolygon2D(rightHandSide));
 	}
 
 	/**
-	 * Create a boolean expression that returns TRUE if the two polygons share any spatial coordinates.
+	 * Create a boolean expression that returns TRUE if the two polygons share any
+	 * spatial coordinates.
 	 *
 	 * @param rightHandSide
-	 * @return a boolean expression that is true if the polygons interact in any way.
+	 * @return a boolean expression that is true if the polygons interact in any
+	 * way.
 	 */
 	public BooleanExpression intersects(Polygon2DResult rightHandSide) {
 		return new BooleanExpression(new PolygonPolygonWithBooleanResult(this, new Polygon2DExpression(rightHandSide)) {
@@ -218,7 +221,6 @@ public class Polygon2DExpression implements Spatial2DExpression, Polygon2DResult
 			}
 		});
 	}
-
 
 	/**
 	 * Provides a expression that represents the multipoint2d value as a polygon2d
@@ -310,7 +312,7 @@ public class Polygon2DExpression implements Spatial2DExpression, Polygon2DResult
 	public BooleanExpression is(Polygon rightHandSide) {
 		return is(new DBPolygon2D(rightHandSide));
 	}
-	
+
 	@Override
 	public BooleanExpression is(Polygon2DResult rightHandSide) {
 		return new BooleanExpression(new PolygonPolygonWithBooleanResult(this, new Polygon2DExpression(rightHandSide)) {
@@ -323,7 +325,8 @@ public class Polygon2DExpression implements Spatial2DExpression, Polygon2DResult
 	}
 
 	/**
-	 * Returns an expression that will evaluate to true if the point is inside this polygon value.
+	 * Returns an expression that will evaluate to true if the point is inside
+	 * this polygon value.
 	 *
 	 * @param rightHandSide
 	 * @return a boolean expression
@@ -333,7 +336,8 @@ public class Polygon2DExpression implements Spatial2DExpression, Polygon2DResult
 	}
 
 	/**
-	 * Returns an expression that will evaluate to true if the point is inside this polygon value.
+	 * Returns an expression that will evaluate to true if the point is inside
+	 * this polygon value.
 	 *
 	 * @param rightHandSide
 	 * @return a boolean expression
@@ -343,7 +347,8 @@ public class Polygon2DExpression implements Spatial2DExpression, Polygon2DResult
 	}
 
 	/**
-	 * Returns an expression that will evaluate to true if the point is inside this polygon value.
+	 * Returns an expression that will evaluate to true if the point is inside
+	 * this polygon value.
 	 *
 	 * @param rightHandSide
 	 * @return a boolean expression
@@ -359,11 +364,12 @@ public class Polygon2DExpression implements Spatial2DExpression, Polygon2DResult
 	}
 
 	/**
-	 * Returns an expression that will evaluate to true if the polygon is completely inside this polygon value.
+	 * Returns an expression that will evaluate to true if the polygon is
+	 * completely inside this polygon value.
 	 *
 	 * <p>
 	 * A CONTAINS B implies B WITHIN A.
-	 * 
+	 *
 	 * @param rightHandSide
 	 * @return a boolean expression
 	 */
@@ -372,11 +378,18 @@ public class Polygon2DExpression implements Spatial2DExpression, Polygon2DResult
 	}
 
 	/**
-	 * Returns an expression that will evaluate to true if the polygon is completely inside this polygon value.
+	 * Returns an expression that will evaluate to true if the polygon is
+	 * completely inside this polygon value.
 	 *
 	 * <p>
-	 * A CONTAINS B implies B WITHIN A.
-	 * 
+	 * A CONTAINS B when A's exterior is outside the exterior of B and the spatial
+	 * intersection of A and B is B. It also implies that there are no
+	 * intersection points of the exterior rings of the polygons, that they do NOT touch and B is smaller
+	 * than A.
+	 *
+	 * <p>
+	 * This operation is the inverse of within: A CONTAINS B implies B WITHIN A.
+	 *
 	 * @param rightHandSide
 	 * @return a boolean expression
 	 */
@@ -390,10 +403,22 @@ public class Polygon2DExpression implements Spatial2DExpression, Polygon2DResult
 		});
 	}
 
+	/**
+	 * Creates an SQL expression that is TRUE when the two polygon2d values do NOT intersect in anyway.
+	 *
+	 * @param rightHandSide
+	 * @return a boolean expression that is TRUE if the 2 polygons do NOT intersect in anyway, otherwise FALSE.
+	 */
 	public BooleanExpression doesNotIntersect(Polygon rightHandSide) {
 		return doesNotIntersect(new DBPolygon2D(rightHandSide));
 	}
 
+	/**
+	 * Creates an SQL expression that is TRUE when the two polygon2d values do NOT intersect in anyway.
+	 *
+	 * @param rightHandSide
+	 * @return a boolean expression that is TRUE if the 2 polygons do NOT intersect in anyway, otherwise FALSE.
+	 */
 	public BooleanExpression doesNotIntersect(Polygon2DResult rightHandSide) {
 		return new BooleanExpression(new PolygonPolygonWithBooleanResult(this, new Polygon2DExpression(rightHandSide)) {
 
@@ -404,10 +429,34 @@ public class Polygon2DExpression implements Spatial2DExpression, Polygon2DResult
 		});
 	}
 
+	/**
+	 * Creates an SQL expression that is TRUE when the two polygon2d values intersect but neither contains or is within the other.
+	 * 
+	 * <p>
+	 * Overlapping polygons have some shared points but they also have unshared points.  This implies that they are also unequal.
+	 * 
+	 * <p>
+	 * Two polygon's overlap when their spatial intersection is non-zero but is not equal to A or B.
+	 *
+	 * @param rightHandSide
+	 * @return a boolean expression that is TRUE if the 2 polygons intersect but are not contained, within, or equal.
+	 */
 	public BooleanExpression overlaps(Polygon rightHandSide) {
 		return overlaps(new DBPolygon2D(rightHandSide));
 	}
 
+	/**
+	 * Creates an SQL expression that is TRUE when the two polygon2d values intersect but neither contains or is within the other.
+	 * 
+	 * <p>
+	 * Overlapping polygons have some shared points but they also have unshared points.  This implies that they are also unequal.
+	 * 
+	 * <p>
+	 * Two polygon's overlap when their spatial intersection is non-zero but is not equal to A or B.
+	 *
+	 * @param rightHandSide
+	 * @return a boolean expression that is TRUE if the 2 polygons intersect but are not contained, within, or equal.
+	 */
 	public BooleanExpression overlaps(Polygon2DResult rightHandSide) {
 		return new BooleanExpression(new PolygonPolygonWithBooleanResult(this, new Polygon2DExpression(rightHandSide)) {
 
@@ -454,10 +503,42 @@ public class Polygon2DExpression implements Spatial2DExpression, Polygon2DResult
 		});
 	}
 
+	/**
+	 * Returns an expression that will evaluate to true if the polygon is
+	 * completely envelopes this polygon value.
+	 *
+	 * <p>
+	 * A WITHIN B when A's exterior is inside the exterior of B and the spatial
+	 * intersection of A and B is A. It also implies that there are no
+	 * intersection points of the exterior rings of the polygons, that they do NOT touch and A is smaller
+	 * than B.
+	 *
+	 * <p>
+	 * This operation is the inverse of contains: A CONTAINS B implies B WITHIN A.
+	 *
+	 * @param rightHandSide
+	 * @return a boolean expression
+	 */
 	public BooleanExpression within(Polygon rightHandSide) {
 		return within(new DBPolygon2D(rightHandSide));
 	}
 
+	/**
+	 * Returns an expression that will evaluate to true if the polygon is
+	 * completely envelopes this polygon value.
+	 *
+	 * <p>
+	 * A WITHIN B when A's exterior is inside the exterior of B and the spatial
+	 * intersection of A and B is A. It also implies that there are no
+	 * intersection points of the exterior rings of the polygons, that they do NOT touch and A is smaller
+	 * than B.
+	 *
+	 * <p>
+	 * This operation is the inverse of contains: A CONTAINS B implies B WITHIN A.
+	 *
+	 * @param rightHandSide
+	 * @return a boolean expression
+	 */
 	public BooleanExpression within(Polygon2DResult rightHandSide) {
 		return new BooleanExpression(new PolygonPolygonWithBooleanResult(this, new Polygon2DExpression(rightHandSide)) {
 
@@ -524,6 +605,11 @@ public class Polygon2DExpression implements Spatial2DExpression, Polygon2DResult
 		});
 	}
 
+	/**
+	 * Returns the area of the polygon expressed in units.
+	 *
+	 * @return the area covered by the polygon in units.
+	 */
 	public NumberExpression area() {
 		return new NumberExpression(new Polygon2DFunctionWithNumberResult(this) {
 
@@ -534,45 +620,45 @@ public class Polygon2DExpression implements Spatial2DExpression, Polygon2DResult
 		});
 	}
 
-	public NumberExpression maxX() {
-		return new NumberExpression(new Polygon2DFunctionWithNumberResult(this) {
-
-			@Override
-			public String doExpressionTransform(DBDatabase db) {
-				return db.getDefinition().doPolygon2DGetMaxXTransform(getFirst().toSQLString(db));
-			}
-		});
-	}
-
-	public NumberExpression minX() {
-		return new NumberExpression(new Polygon2DFunctionWithNumberResult(this) {
-
-			@Override
-			public String doExpressionTransform(DBDatabase db) {
-				return db.getDefinition().doPolygon2DGetMinXTransform(getFirst().toSQLString(db));
-			}
-		});
-	}
-
-	public NumberExpression maxY() {
-		return new NumberExpression(new Polygon2DFunctionWithNumberResult(this) {
-
-			@Override
-			public String doExpressionTransform(DBDatabase db) {
-				return db.getDefinition().doPolygon2DGetMaxYTransform(getFirst().toSQLString(db));
-			}
-		});
-	}
-
-	public NumberExpression minY() {
-		return new NumberExpression(new Polygon2DFunctionWithNumberResult(this) {
-
-			@Override
-			public String doExpressionTransform(DBDatabase db) {
-				return db.getDefinition().doPolygon2DGetMinYTransform(getFirst().toSQLString(db));
-			}
-		});
-	}
+//	public NumberExpression wibbleX() {
+//		return new NumberExpression(new Polygon2DFunctionWithNumberResult(this) {
+//
+//			@Override
+//			public String doExpressionTransform(DBDatabase db) {
+//				return db.getDefinition().doPolygon2DGetMaxXTransform(getFirst().toSQLString(db));
+//			}
+//		});
+//	}
+//
+//	public NumberExpression bibbleX() {
+//		return new NumberExpression(new Polygon2DFunctionWithNumberResult(this) {
+//
+//			@Override
+//			public String doExpressionTransform(DBDatabase db) {
+//				return db.getDefinition().doPolygon2DGetMinXTransform(getFirst().toSQLString(db));
+//			}
+//		});
+//	}
+//
+//	public NumberExpression wibbleY() {
+//		return new NumberExpression(new Polygon2DFunctionWithNumberResult(this) {
+//
+//			@Override
+//			public String doExpressionTransform(DBDatabase db) {
+//				return db.getDefinition().doPolygon2DGetMaxYTransform(getFirst().toSQLString(db));
+//			}
+//		});
+//	}
+//
+//	public NumberExpression bibbleY() {
+//		return new NumberExpression(new Polygon2DFunctionWithNumberResult(this) {
+//
+//			@Override
+//			public String doExpressionTransform(DBDatabase db) {
+//				return db.getDefinition().doPolygon2DGetMinYTransform(getFirst().toSQLString(db));
+//			}
+//		});
+//	}
 
 	@Override
 	public Polygon2DExpression boundingBox() {
@@ -584,10 +670,10 @@ public class Polygon2DExpression implements Spatial2DExpression, Polygon2DResult
 					return db.getDefinition().doPolygon2DGetBoundingBoxTransform(getFirst().toSQLString(db));
 				} catch (UnsupportedOperationException unsupported) {
 					final Polygon2DExpression first = getFirst();
-					final NumberExpression maxX = first.getMaxX();
-					final NumberExpression maxY = first.getMaxY();
-					final NumberExpression minX = first.getMinX();
-					final NumberExpression minY = first.getMinY();
+					final NumberExpression maxX = first.maxX();
+					final NumberExpression maxY = first.maxY();
+					final NumberExpression minX = first.minX();
+					final NumberExpression minY = first.minY();
 					return Polygon2DExpression
 							.value(minX, minY, maxX, minY, maxX, maxY, minX, maxY, minX, minY)
 							.toSQLString(db);
@@ -618,8 +704,15 @@ public class Polygon2DExpression implements Spatial2DExpression, Polygon2DResult
 		return exteriorRingExpr;
 	}
 
+	/**
+	 * Creates a {@link BooleanExpression} that compares the 2 values using the
+	 * NOT EQUALS operation.
+	 *
+	 * @param geometry 
+	 * @return a BooleanExpression
+	 */
 	public BooleanExpression isNot(Polygon geometry) {
-		return this.is(geometry).not();
+		return this.isNot(Polygon2DExpression.value(geometry));
 	}
 
 	@Override
@@ -641,7 +734,7 @@ public class Polygon2DExpression implements Spatial2DExpression, Polygon2DResult
 	}
 
 	@Override
-	public NumberExpression getMaxX() {
+	public NumberExpression maxX() {
 		NumberExpression expr = new NumberExpression(new Polygon2DFunctionWithNumberResult(this) {
 
 			@Override
@@ -653,7 +746,7 @@ public class Polygon2DExpression implements Spatial2DExpression, Polygon2DResult
 	}
 
 	@Override
-	public NumberExpression getMaxY() {
+	public NumberExpression maxY() {
 		NumberExpression expr = new NumberExpression(new Polygon2DFunctionWithNumberResult(this) {
 
 			@Override
@@ -665,7 +758,7 @@ public class Polygon2DExpression implements Spatial2DExpression, Polygon2DResult
 	}
 
 	@Override
-	public NumberExpression getMinX() {
+	public NumberExpression minX() {
 		NumberExpression expr = new NumberExpression(new Polygon2DFunctionWithNumberResult(this) {
 
 			@Override
@@ -677,7 +770,7 @@ public class Polygon2DExpression implements Spatial2DExpression, Polygon2DResult
 	}
 
 	@Override
-	public NumberExpression getMinY() {
+	public NumberExpression minY() {
 		NumberExpression expr = new NumberExpression(new Polygon2DFunctionWithNumberResult(this) {
 
 			@Override

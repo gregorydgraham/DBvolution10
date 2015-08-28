@@ -38,28 +38,104 @@ import org.sqlite.Function;
  */
 public class Polygon2DFunctions {
 
+	/**
+	 *
+	 */
 	public static String CREATE_FROM_WKTPOLYGON2D = "DBV_CREATE_POLYGON2D_FROM_WKTPOLYGON";
+
+	/**
+	 *
+	 */
 	public static String CREATE_FROM_POINT2DS = "DBV_CREATE_POLYGON2D_FROM_POINTS2D";
+
+	/**
+	 *
+	 */
 	public static String EQUALS = "DBV_POLYGON2D_EQUALS";
+
+	/**
+	 *
+	 */
 	public static String AREA = "DBV_POLYGON2D_AREA";
+
+	/**
+	 *
+	 */
 	public static String DIMENSION = "DBV_POLYGON2D_DIMENSION";
+
+	/**
+	 *
+	 */
 	public static String MIN_Y = "DBV_POLYGON2D_MIN_Y2D_COORD";
+
+	/**
+	 *
+	 */
 	public static String MAX_Y = "DBV_POLYGON2D_MAX_Y2D_COORD";
+
+	/**
+	 *
+	 */
 	public static String MAX_X = "DBV_POLYGON2D_MAX_X2D_COORD";
+
+	/**
+	 *
+	 */
 	public static String MIN_X = "DBV_POLYGON2D_MIN_X2D_COORD";
+
+	/**
+	 *
+	 */
 	public static String BOUNDINGBOX = "DBV_POLYGON2D_BOUNDINGBOX2D";
+
+	/**
+	 *
+	 */
 	public static String TOUCHES = "DBV_POLYGON2D_TOUCHES";
+
+	/**
+	 *
+	 */
 	public static String EXTERIORRING = "DBV_POLYGON2D_EXTERIORRING";
+
+	/**
+	 *
+	 */
 	public static String CONTAINS_POLYGON2D = "DBV_POLYGON2D_CONTAINS";
+
+	/**
+	 *
+	 */
 	public static String WITHIN = "DBV_POLYGON2D_WITHIN";
+
+	/**
+	 *
+	 */
 	public static String OVERLAPS = "DBV_POLYGON2D_OVERLAPS";
+
+	/**
+	 *
+	 */
 	public static String INTERSECTS = "DBV_POLYGON2D_INTERSECTS";
+
+	/**
+	 *
+	 */
 	public static String DISJOINT = "DBV_POLYGON2D_DISJOINT";
+
+	/**
+	 *
+	 */
 	public static String CONTAINS_POINT2D = "DBV_POLYGON2D_CONTAINS_POINT2D";
 
 	private Polygon2DFunctions() {
 	}
 
+	/**
+	 *
+	 * @param connection
+	 * @throws SQLException
+	 */
 	public static void addFunctions(java.sql.Connection connection) throws SQLException {
 		add(connection, DIMENSION, new Dimension());
 		add(connection, EQUALS, new Equals());
@@ -86,6 +162,9 @@ public class Polygon2DFunctions {
 		Function.create(connection, functionName, function);
 	}
 
+	/**
+	 *
+	 */
 	public static class Dimension extends Function {
 
 		@Override
@@ -94,6 +173,9 @@ public class Polygon2DFunctions {
 		}
 	}
 
+	/**
+	 *
+	 */
 	public static class CreatePolygonFromWKTPolygon2D extends PolygonFunction {
 
 		@Override
@@ -108,6 +190,9 @@ public class Polygon2DFunctions {
 		}
 	}
 
+	/**
+	 *
+	 */
 	public static class CreatePolygonFromPoint2Ds extends Function {
 
 		@Override

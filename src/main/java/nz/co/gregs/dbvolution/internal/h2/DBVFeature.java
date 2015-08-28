@@ -23,7 +23,18 @@ import java.sql.Statement;
  * @author gregorygraham
  */
 public interface DBVFeature {
-		public void add(Statement stmt) throws SQLException;
-		public String alias();
+
+	/**
+	 *
+	 * @param stmt
+	 * @throws SQLException
+	 */
+	public void add(Statement stmt) throws SQLException;
+
+	/**
+	 *
+	 * @return
+	 */
+	public String alias();
 
 }

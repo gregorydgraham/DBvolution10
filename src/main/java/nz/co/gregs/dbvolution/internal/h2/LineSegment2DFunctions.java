@@ -24,6 +24,9 @@ import java.sql.Statement;
  */
 public enum LineSegment2DFunctions implements DBVFeature {
 
+	/**
+	 *
+	 */
 	CREATE("String", "Double... coords", "\n"
 			+ "			Integer numberOfArguments = coords.length;\n"
 			+ "			if (numberOfArguments % 2 != 0) {\n"
@@ -44,12 +47,20 @@ public enum LineSegment2DFunctions implements DBVFeature {
 			+ "				resultStr += \")\";\n"
 			+ "				return resultStr;\n"
 			+ "			}"),
+
+	/**
+	 *
+	 */
 	EQUALS("Boolean", "String firstLine, String secondLine", "\n"
 			+ "			if (firstLine == null || secondLine == null) {\n"
 			+ "				return null;\n"
 			+ "			} else {\n"
 			+ "				return firstLine.equals(secondLine);\n"
 			+ "			}"),
+
+	/**
+	 *
+	 */
 	MAXX("Double", "String firstLine", "\n"
 			+ "			if (firstLine == null) {\n"
 			+ "				return null;\n"
@@ -64,6 +75,10 @@ public enum LineSegment2DFunctions implements DBVFeature {
 			+ "				}\n"
 			+ "				return maxX;\n"
 			+ "			}"),
+
+	/**
+	 *
+	 */
 	MAXY("Double", "String firstLine", "\n"
 			+ "			if (firstLine == null) {\n"
 			+ "				return null;\n"
@@ -78,6 +93,10 @@ public enum LineSegment2DFunctions implements DBVFeature {
 			+ "				}\n"
 			+ "				return maxY;\n"
 			+ "			}"),
+
+	/**
+	 *
+	 */
 	MINX("Double", "String firstLine", "\n"
 			+ "			if (firstLine == null) {\n"
 			+ "				return null;\n"
@@ -92,6 +111,10 @@ public enum LineSegment2DFunctions implements DBVFeature {
 			+ "				}\n"
 			+ "				return maxX;\n"
 			+ "			}"),
+
+	/**
+	 *
+	 */
 	MINY("Double", "String firstLine", "\n"
 			+ "			if (firstLine == null) {\n"
 			+ "				return null;\n"
@@ -106,6 +129,10 @@ public enum LineSegment2DFunctions implements DBVFeature {
 			+ "				}\n"
 			+ "				return maxY;\n"
 			+ "			}"),
+
+	/**
+	 *
+	 */
 	BOUNDINGBOX("String", "String firstLine", "\n"
 			+ "			if (firstLine == null) {\n"
 			+ "				return null;\n"
@@ -134,8 +161,20 @@ public enum LineSegment2DFunctions implements DBVFeature {
 			+ "				String resultString = \"POLYGON ((\" + minX+\" \"+minY + \", \" + maxX+\" \"+minY + \", \" + maxX+\" \"+maxY + \", \" + minX+\" \"+maxY + \", \" + minX+\" \"+minY + \"))\";\n"
 			+ "				return resultString;\n"
 			+ "			}"),
+
+	/**
+	 *
+	 */
 	DIMENSION("Integer", "String firstLine", "return 1;"),
+
+	/**
+	 *
+	 */
 	ASTEXT("String", "String firstLine", "return firstLine;"),
+
+	/**
+	 *
+	 */
 	INTERSECTS_LINESEGMENT2D("Boolean", "String firstLine, String secondLine", ""
 			+ "		if (firstLine == null || secondLine == null) {\n"
 			+ "			return null;\n"
@@ -173,6 +212,10 @@ public enum LineSegment2DFunctions implements DBVFeature {
 			+ "			// No collision\n"
 			+ "			return false;\n"
 			+ "		} "),
+
+	/**
+	 *
+	 */
 	INTERSECTIONPOINT_LINESEGMENT2D("String", "String firstLine, String secondLine", ""
 			+ "		if (firstLine == null || secondLine == null) {\n"
 			+ "			return null;\n"
@@ -228,6 +271,11 @@ public enum LineSegment2DFunctions implements DBVFeature {
 		return "DBV_LINESEGMENT2D_" + name();
 	}
 
+	/**
+	 *
+	 * @param stmt
+	 * @throws SQLException
+	 */
 	@Override
 	public void add(Statement stmt) throws SQLException {
 		try {
@@ -278,6 +326,11 @@ public enum LineSegment2DFunctions implements DBVFeature {
 			return null;
 		}
 	}
+
+	/**
+	 *
+	 * @return
+	 */
 	@Override
 	public String alias() {
 		return toString();

@@ -24,7 +24,14 @@ import java.sql.Statement;
  */
 public enum Polygon2DFunctions implements DBVFeature {
 
+	/**
+	 *
+	 */
 	CREATE_FROM_WKTPOLYGON2D("String", "String wkt", "return wkt;"),
+
+	/**
+	 *
+	 */
 	CREATE_FROM_POINT2DS("String", "String... pointsArray", ""
 			+ "try {\n"
 			+ "				WKTReader wktReader = new WKTReader();\n"
@@ -54,6 +61,10 @@ public enum Polygon2DFunctions implements DBVFeature {
 			+ "			} catch (Exception ex) {\n"
 			+ "				throw new RuntimeException(\"Failed To Parse H2 Polygon2D\", ex);\n"
 			+ "			}"),
+
+	/**
+	 *
+	 */
 	EQUALS("Boolean", "String firstPolyStr, String secondPolyStr", "\n"
 			+ "			try {\n"
 			+ "				if (firstPolyStr == null || secondPolyStr == null) {\n"
@@ -78,6 +89,10 @@ public enum Polygon2DFunctions implements DBVFeature {
 			+ "			} catch (Exception ex) {\n"
 			+ "				throw new RuntimeException(\"Failed To Parse Polygon: either '\"+firstPolyStr+\"' or '\"+secondPolyStr+\"' is wrong somehow\", ex);\n"
 			+ "			}"),
+
+	/**
+	 *
+	 */
 	AREA("Double", "String firstPolyStr", "\n"
 			+ "			try {\n"
 			+ "				if (firstPolyStr == null) {\n"
@@ -97,7 +112,15 @@ public enum Polygon2DFunctions implements DBVFeature {
 			+ "			} catch (Exception ex) {\n"
 			+ "				throw new RuntimeException(\"Failed To Parse Polygon: '\"+firstPolyStr+\"'\", ex);\n"
 			+ "			}"),
+
+	/**
+	 *
+	 */
 	DIMENSION("Integer", "String firstPoly", "return 2;"),
+
+	/**
+	 *
+	 */
 	MIN_Y("Double", "String firstPoly", ""
 			+ "			try {\n"
 			+ "				WKTReader wktReader = new WKTReader();\n"
@@ -124,6 +147,10 @@ public enum Polygon2DFunctions implements DBVFeature {
 			+ "			} catch (Exception ex) {\n"
 			+ "				throw new RuntimeException(\"Failed To Parse Polygon\", ex);\n"
 			+ "			}"),
+
+	/**
+	 *
+	 */
 	MAX_Y("Double", "String firstPoly", ""
 			+ "			try {\n"
 			+ "				WKTReader wktReader = new WKTReader();\n"
@@ -148,6 +175,10 @@ public enum Polygon2DFunctions implements DBVFeature {
 			+ "			} catch (Exception ex) {\n"
 			+ "				throw new RuntimeException(\"Failed To Parse Polygon\", ex);\n"
 			+ "			}"),
+
+	/**
+	 *
+	 */
 	MAX_X("Double", "String firstPoly", ""
 			+ "			try {\n"
 			+ "				if (firstPoly == null) {\n"
@@ -172,6 +203,10 @@ public enum Polygon2DFunctions implements DBVFeature {
 			+ "			} catch (Exception ex) {\n"
 			+ "				throw new RuntimeException(\"Failed To Parse Polygon\", ex);\n"
 			+ "			}"),
+
+	/**
+	 *
+	 */
 	MIN_X("Double", "String firstPoly", "" + "			try {\n"
 			+ "				WKTReader wktReader = new WKTReader();\n"
 			+ "				if (firstPoly == null) {\n"
@@ -195,6 +230,10 @@ public enum Polygon2DFunctions implements DBVFeature {
 			+ "			} catch (Exception ex) {\n"
 			+ "				throw new RuntimeException(\"Failed To Parse Polygon\", ex);\n"
 			+ "			}"),
+
+	/**
+	 *
+	 */
 	BOUNDINGBOX("String", "String firstPoly", "\n"
 			+ "			try {\n"
 			+ "				if (firstPoly == null) {\n"
@@ -239,6 +278,10 @@ public enum Polygon2DFunctions implements DBVFeature {
 			+ "			} catch (Exception ex) {\n"
 			+ "				throw new RuntimeException(\"Failed To Parse Polygon\", ex);\n"
 			+ "			}\n"),
+
+	/**
+	 *
+	 */
 	TOUCHES("Boolean", "String firstPolyStr, String secondPolyStr", ""
 			+ "			try {\n"
 			+ "				if (firstPolyStr == null || secondPolyStr == null) {\n"
@@ -260,6 +303,10 @@ public enum Polygon2DFunctions implements DBVFeature {
 			+ "				throw new RuntimeException(\"Failed To Parse Polygon\", ex);\n"
 			+ "			}\n"
 			+ ""),
+
+	/**
+	 *
+	 */
 	EXTERIORRING("String", "String firstPolyStr", "\n"
 			+ "			try {\n"
 			+ "				if (firstPolyStr == null) {\n"
@@ -282,6 +329,10 @@ public enum Polygon2DFunctions implements DBVFeature {
 			+ "			} catch (Exception ex) {\n"
 			+ "				throw new RuntimeException(\"Failed To Parse SQLite Polygon\", ex);\n"
 			+ "			}"),
+
+	/**
+	 *
+	 */
 	CONTAINS_POLYGON2D("Boolean", "String firstPolyStr, String secondPolyStr", ""
 			+ "			try {\n"
 			+ "				if (firstPolyStr == null || secondPolyStr == null) {\n"
@@ -302,6 +353,10 @@ public enum Polygon2DFunctions implements DBVFeature {
 			+ "			} catch (Exception ex) {\n"
 			+ "				throw new RuntimeException(\"Failed To Parse Polygon\", ex);\n"
 			+ "			}"),
+
+	/**
+	 *
+	 */
 	CONTAINS_POINT2D("Boolean", "String firstPolyStr, String secondPolyStr", ""
 			+ "			try {\n"
 			+ "				if (firstPolyStr == null || secondPolyStr == null) {\n"
@@ -322,6 +377,10 @@ public enum Polygon2DFunctions implements DBVFeature {
 			+ "			} catch (Exception ex) {\n"
 			+ "				throw new RuntimeException(\"Failed To Parse Polygon\", ex);\n"
 			+ "			}"),
+
+	/**
+	 *
+	 */
 	WITHIN("Boolean", "String firstPolyStr, String secondPolyStr", ""
 			+ "			try {\n"
 			+ "				if (firstPolyStr == null || secondPolyStr == null) {\n"
@@ -342,6 +401,10 @@ public enum Polygon2DFunctions implements DBVFeature {
 			+ "			} catch (Exception ex) {\n"
 			+ "				throw new RuntimeException(\"Failed To Parse Polygon\", ex);\n"
 			+ "			}"),
+
+	/**
+	 *
+	 */
 	OVERLAPS("Boolean", "String firstPolyStr, String secondPolyStr", ""
 			+ "			try {\n"
 			+ "				if (firstPolyStr == null || secondPolyStr == null) {\n"
@@ -362,6 +425,10 @@ public enum Polygon2DFunctions implements DBVFeature {
 			+ "			} catch (Exception ex) {\n"
 			+ "				throw new RuntimeException(\"Failed To Parse Polygon\", ex);\n"
 			+ "			}"),
+
+	/**
+	 *
+	 */
 	INTERSECTS("Boolean", "String firstPolyStr, String secondPolyStr", ""
 			+ "			try {\n"
 			+ "				if (firstPolyStr == null || secondPolyStr == null) {\n"
@@ -382,6 +449,10 @@ public enum Polygon2DFunctions implements DBVFeature {
 			+ "			} catch (Exception ex) {\n"
 			+ "				throw new RuntimeException(\"Failed To Parse Polygon\", ex);\n"
 			+ "			}"),
+
+	/**
+	 *
+	 */
 	DISJOINT("Boolean", "String firstPolyStr, String secondPolyStr", ""
 			+ "			try {\n"
 			+ "				if (firstPolyStr == null || secondPolyStr == null) {\n"
@@ -417,10 +488,20 @@ public enum Polygon2DFunctions implements DBVFeature {
 	public String toString(){
 		return alias();
 	}
+
+	/**
+	 *
+	 * @return
+	 */
 	public String alias() {
 		return "DBV_POLYGON2D_" + name();
 	}
 
+	/**
+	 *
+	 * @param stmt
+	 * @throws SQLException
+	 */
 	@Override
 	public void add(Statement stmt) throws SQLException {
 		try {

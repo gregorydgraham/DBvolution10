@@ -24,6 +24,9 @@ import java.sql.Statement;
  */
 public enum Line2DFunctions {
 
+	/**
+	 *
+	 */
 	MAXX("numeric(15,10)", "@poly GEOMETRY", " DECLARE \n"
 			+ " @resultVal numeric(15,10),\n"
 			+ " @num integer,\n"
@@ -51,6 +54,10 @@ public enum Line2DFunctions {
 			+ "  END\n"
 			+ " END\n"
 			+ " return(@resultVal)"),
+
+	/**
+	 *
+	 */
 	MAXY("numeric(15,10)", "@poly GEOMETRY", " DECLARE \n"
 			+ " @resultVal numeric(15,10),\n"
 			+ " @num integer,\n"
@@ -78,6 +85,10 @@ public enum Line2DFunctions {
 			+ "  END\n"
 			+ " END\n"
 			+ " return(@resultVal)"),
+
+	/**
+	 *
+	 */
 	MINX("numeric(15,10)", "@poly GEOMETRY", " DECLARE \n"
 			+ " @resultVal numeric(15,10),\n"
 			+ " @num integer,\n"
@@ -105,6 +116,10 @@ public enum Line2DFunctions {
 			+ "  END\n"
 			+ " END\n"
 			+ " return(@resultVal)"),
+
+	/**
+	 *
+	 */
 	MINY("numeric(15,10)", "@poly GEOMETRY", " DECLARE \n"
 			+ " @resultVal numeric(15,10),\n"
 			+ " @num integer,\n"
@@ -148,6 +163,11 @@ public enum Line2DFunctions {
 		return "dbo.DBV_LINE2DFN_" + name();
 	}
 
+	/**
+	 *
+	 * @param stmt
+	 * @throws SQLException
+	 */
 	public void add(Statement stmt) throws SQLException {
 		try {
 			stmt.execute("DROP FUNCTION " + this + ";");

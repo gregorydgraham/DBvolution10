@@ -61,7 +61,7 @@ public interface Spatial2DExpression extends Spatial2DResult {
 	 *
 	 * @return a NumberExpression
 	 */
-	public NumberExpression getMaxX();
+	public NumberExpression maxX();
 
 	/**
 	 * Return a expression that provides the largest Y value within the spatial
@@ -69,7 +69,7 @@ public interface Spatial2DExpression extends Spatial2DResult {
 	 *
 	 * @return a NumberExpression
 	 */
-	public NumberExpression getMaxY();
+	public NumberExpression maxY();
 
 	/**
 	 * Return a expression that provides the smallest X value within the spatial
@@ -77,7 +77,7 @@ public interface Spatial2DExpression extends Spatial2DResult {
 	 *
 	 * @return a NumberExpression
 	 */
-	public NumberExpression getMinX();
+	public NumberExpression minX();
 
 	/**
 	 * Return a expression that provides the smallest Y value within the spatial
@@ -85,7 +85,7 @@ public interface Spatial2DExpression extends Spatial2DResult {
 	 *
 	 * @return a NumberExpression
 	 */
-	public NumberExpression getMinY();
+	public NumberExpression minY();
 
 	/**
 	 * Return the spatial dimensions of this expression.

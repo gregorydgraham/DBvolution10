@@ -255,7 +255,7 @@ public class MultiPoint2DExpressionTest extends AbstractTest {
 		final MultiPoint2DTestTable lineTestTable = new MultiPoint2DTestTable();
 		DBQuery dbQuery = database.getDBQuery(lineTestTable);
 		dbQuery.setSortOrder(lineTestTable.column(lineTestTable.line_id));
-		dbQuery.addCondition(lineTestTable.column(lineTestTable.multipoint).getMaxX().is(4));
+		dbQuery.addCondition(lineTestTable.column(lineTestTable.multipoint).maxX().is(4));
 		List<MultiPoint2DTestTable> allRows = dbQuery.getAllInstancesOf(lineTestTable);
 		database.print(allRows);
 		Assert.assertThat(allRows.size(), is(2));
@@ -269,7 +269,7 @@ public class MultiPoint2DExpressionTest extends AbstractTest {
 //		LineString multipoint = geometryFactory.createLineString(new Coordinate[]{new Coordinate(2.0, 3.0), new Coordinate(3.0, 4.0)});
 		final MultiPoint2DTestTable lineTestTable = new MultiPoint2DTestTable();
 		DBQuery dbQuery = database.getDBQuery(lineTestTable);
-		dbQuery.addCondition(lineTestTable.column(lineTestTable.multipoint).getMinX().is(3));
+		dbQuery.addCondition(lineTestTable.column(lineTestTable.multipoint).minX().is(3));
 		List<MultiPoint2DTestTable> allRows = dbQuery.getAllInstancesOf(lineTestTable);
 		database.print(allRows);
 		Assert.assertThat(allRows.size(), is(1));
@@ -282,7 +282,7 @@ public class MultiPoint2DExpressionTest extends AbstractTest {
 //		LineString multipoint = geometryFactory.createLineString(new Coordinate[]{new Coordinate(2.0, 3.0), new Coordinate(3.0, 4.0)});
 		final MultiPoint2DTestTable lineTestTable = new MultiPoint2DTestTable();
 		DBQuery dbQuery = database.getDBQuery(lineTestTable);
-		dbQuery.addCondition(lineTestTable.column(lineTestTable.multipoint).getMaxY().is(4));
+		dbQuery.addCondition(lineTestTable.column(lineTestTable.multipoint).maxY().is(4));
 		List<MultiPoint2DTestTable> allRows = dbQuery.getAllInstancesOf(lineTestTable);
 		database.print(allRows);
 		Assert.assertThat(allRows.size(), is(1));
@@ -295,7 +295,7 @@ public class MultiPoint2DExpressionTest extends AbstractTest {
 //		LineString multipoint = geometryFactory.createLineString(new Coordinate[]{new Coordinate(2.0, 3.0), new Coordinate(3.0, 4.0)});
 		final MultiPoint2DTestTable lineTestTable = new MultiPoint2DTestTable();
 		DBQuery dbQuery = database.getDBQuery(lineTestTable);
-		dbQuery.addCondition(lineTestTable.column(lineTestTable.multipoint).getMinY().is(3));
+		dbQuery.addCondition(lineTestTable.column(lineTestTable.multipoint).minY().is(3));
 		List<MultiPoint2DTestTable> allRows = dbQuery.getAllInstancesOf(lineTestTable);
 		database.print(allRows);
 		Assert.assertThat(allRows.size(), is(2));
@@ -324,13 +324,13 @@ public class MultiPoint2DExpressionTest extends AbstractTest {
 		@DBColumn
 		public DBString stringLine = new DBString(this.column(this.multipoint).stringResult().substringBetween("(", " "));
 //		@DBColumn
-//		public DBNumber getX = new DBNumber(this.column(this.multipoint).getMaxX());
+//		public DBNumber getX = new DBNumber(this.column(this.multipoint).maxX());
 //		@DBColumn
-//		public DBNumber getY = new DBNumber(this.column(this.multipoint).getMaxY());
+//		public DBNumber getY = new DBNumber(this.column(this.multipoint).maxY());
 		@DBColumn
 		public DBPolygon2D boundingBox = new DBPolygon2D(this.column(this.multipoint).boundingBox());
 //		@DBColumn
-//		public DBBoolean getXis2 = new DBBoolean(this.column(this.multipoint).getMaxX().is(2));
+//		public DBBoolean getXis2 = new DBBoolean(this.column(this.multipoint).maxX().is(2));
 
 	}
 
@@ -339,7 +339,7 @@ public class MultiPoint2DExpressionTest extends AbstractTest {
 		System.out.println("boundingBox");
 		final BoundingBoxTest pointTestTable = new BoundingBoxTest();
 		DBQuery dbQuery = database.getDBQuery(pointTestTable).setBlankQueryAllowed(true);
-		dbQuery.addCondition(pointTestTable.column(pointTestTable.multipoint).getMaxY().is(4));
+		dbQuery.addCondition(pointTestTable.column(pointTestTable.multipoint).maxY().is(4));
 		List<BoundingBoxTest> allRows = dbQuery.getAllInstancesOf(pointTestTable);
 		database.print(allRows);
 		Assert.assertThat(allRows.size(), is(1));

@@ -31,23 +31,75 @@ import org.sqlite.Function;
  */
 public class MultiPoint2DFunctions {
 
+	/**
+	 *
+	 */
 	public static String CREATE_FROM_COORDS_FUNCTION = "DBV_CREATE_MPOINT2D_FROM_COORDS";
+
+	/**
+	 *
+	 */
 	public static String EQUALS_FUNCTION = "DBV_MPOINT2D_EQUALS";
+
+	/**
+	 *
+	 */
 	public static String GETMAXX_FUNCTION = "DBV_MPOINT2D_GETMAXX";
+
+	/**
+	 *
+	 */
 	public static String GETMAXY_FUNCTION = "DBV_MPOINT2D_GETMAXY";
+
+	/**
+	 *
+	 */
 	public static String GETMINX_FUNCTION = "DBV_MPOINT2D_GETMINX";
+
+	/**
+	 *
+	 */
 	public static String GETMINY_FUNCTION = "DBV_MPOINT2D_GETMINY";
+
+	/**
+	 *
+	 */
 	public static String GETDIMENSION_FUNCTION = "DBV_MPOINT2D_GETDIMENSION";
+
+	/**
+	 *
+	 */
 	public static String GETBOUNDINGBOX_FUNCTION = "DBV_MPOINT2D_GETBOUNDINGBOX";
+
+	/**
+	 *
+	 */
 	public static String GETNUMBEROFPOINTS_FUNCTION = "DBV_MPOINT2D_GETNUMBEROFPOINTS";
+
+	/**
+	 *
+	 */
 	public static String GETPOINTATINDEX_FUNCTION = "DBV_MPOINT2D_GETPOINTATINDEX";
+
+	/**
+	 *
+	 */
 	public static String ASTEXT_FUNCTION = "DBV_MPOINT2D_ASTEXT";
+
+	/**
+	 *
+	 */
 	public static String ASLINE2D = "DBV_MPOINT2D_ASLINE2D";
 //	public static String ASPOLYGON2D = "DBV_MPOINT2D_ASPOLYGON2D";
 
 	private MultiPoint2DFunctions() {
 	}
 
+	/**
+	 *
+	 * @param connection
+	 * @throws SQLException
+	 */
 	public static void addFunctions(Connection connection) throws SQLException {
 		Function.create(connection, CREATE_FROM_COORDS_FUNCTION, new CreateFromCoords());
 		Function.create(connection, EQUALS_FUNCTION, new Equals());

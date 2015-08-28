@@ -24,8 +24,19 @@ import java.sql.Statement;
  */
 public enum Line2DFunctions {
 
+	/**
+	 *
+	 */
 	GETPOINTATINDEX(GeometryFunctions.GETPOINTATINDEX),
+
+	/**
+	 *
+	 */
 	NUMPOINTS("NUMBER", "p_geometry     IN MDSYS.SDO_GEOMETRY", " begin return p_geometry.sdo_ordinates.count/2; end;"),
+
+	/**
+	 *
+	 */
 	ASPOLY2D("MDSYS.SDO_GEOMETRY", "p_geometry     IN MDSYS.SDO_GEOMETRY", ""
 			+ "   BEGIN\n"
 			+ "    return MDSYS.SDO_GEOMETRY(\n"
@@ -36,6 +47,10 @@ public enum Line2DFunctions {
 			+ "      p_geometry.SDO_ORDINATES\n"
 			+ "    );\n"
 			+ "END;"),
+
+	/**
+	 *
+	 */
 	GETLNSEGMENT2DATINDEX("MDSYS.SDO_GEOMETRY", "p_geometry     IN MDSYS.SDO_GEOMETRY, p_index IN INTEGER", ""
 			+ "     v_dims  PLS_INTEGER;    -- Number of dimensions in geometry\n"
 			+ "     v_gtype NUMBER;         -- SDO_GTYPE of returned geometry\n"
@@ -196,6 +211,11 @@ public enum Line2DFunctions {
 		return "DBV_LN2D_" + name();
 	}
 
+	/**
+	 *
+	 * @param stmt
+	 * @throws SQLException
+	 */
 	public void add(Statement stmt) throws SQLException {
 		try {
 			if (!this.code.isEmpty()) {

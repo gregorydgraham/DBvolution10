@@ -32,25 +32,89 @@ import org.sqlite.Function;
  */
 public class LineSegment2DFunctions {
 
+	/**
+	 *
+	 */
 	public static String CREATE_FROM_COORDS_FUNCTION = "DBV_CREATE_LINESEGMENT2D_FROM_COORDS";
+
+	/**
+	 *
+	 */
 	public static String EQUALS_FUNCTION = "DBV_LINESEGMENT2D_EQUALS";
+
+	/**
+	 *
+	 */
 	public static String GETMAXX_FUNCTION = "DBV_LINESEGMENT2D_GETMAXX";
+
+	/**
+	 *
+	 */
 	public static String GETMAXY_FUNCTION = "DBV_LINESEGMENT2D_GETMAXY";
+
+	/**
+	 *
+	 */
 	public static String GETMINX_FUNCTION = "DBV_LINESEGMENT2D_GETMINX";
+
+	/**
+	 *
+	 */
 	public static String GETMINY_FUNCTION = "DBV_LINE2D_GETMINY";
+
+	/**
+	 *
+	 */
 	public static String GETDIMENSION_FUNCTION = "DBV_LINESEGMENT2D_GETDIMENSION";
+
+	/**
+	 *
+	 */
 	public static String GETBOUNDINGBOX_FUNCTION = "DBV_LINESEGMENT2D_GETBOUNDINGBOX";
+
+	/**
+	 *
+	 */
 	public static String ASTEXT_FUNCTION = "DBV_LINESEGMENT2D_ASTEXT";
+
+	/**
+	 *
+	 */
 	public static String SPATIAL_LINE_MIN_X_COORD_FUNCTION = "DBV_LINESEGMENT2D_MIN_X2D_COORD";
+
+	/**
+	 *
+	 */
 	public static String SPATIAL_LINE_MAX_Y_COORD_FUNCTION = "DBV_LINESEGMENT2D_MAX_Y2D_COORD";
+
+	/**
+	 *
+	 */
 	public static String SPATIAL_LINE_MIN_Y_COORD_FUNCTION = "DBV_LINESEGMENT2D_MIN_Y2D_COORD";
+
+	/**
+	 *
+	 */
 	public static String SPATIAL_LINE_MAX_X_COORD_FUNCTION = "DBV_LINESEGMENT2D_MAX_X2D_COORD";
+
+	/**
+	 *
+	 */
 	public static String INTERSECTS = "DBV_LINESEGMENT2D_INTERSECTS_LINESEGMENT2D";
+
+	/**
+	 *
+	 */
 	public static String INTERSECTIONWITH_LINESEGMENT2D = "DBV_LINESEGMENT2D_INTERSECTIONWITH_LINESEGMENT2D";
 
 	private LineSegment2DFunctions() {
 	}
 
+	/**
+	 *
+	 * @param connection
+	 * @throws SQLException
+	 */
 	public static void addFunctions(Connection connection) throws SQLException {
 		Function.create(connection, CREATE_FROM_COORDS_FUNCTION, new CreateFromCoords());
 		Function.create(connection, EQUALS_FUNCTION, new Equals());

@@ -378,10 +378,10 @@ public class LineSegment2DExpression implements LineSegment2DResult, EqualCompar
 					return db.getDefinition().doLineSegment2DGetBoundingBoxTransform(getFirst().toSQLString(db));
 				} catch (UnsupportedOperationException unsupported) {
 					final LineSegment2DExpression first = getFirst();
-					final NumberExpression maxX = first.getMaxX();
-					final NumberExpression maxY = first.getMaxY();
-					final NumberExpression minX = first.getMinX();
-					final NumberExpression minY = first.getMinY();
+					final NumberExpression maxX = first.maxX();
+					final NumberExpression maxY = first.maxY();
+					final NumberExpression minX = first.minX();
+					final NumberExpression minY = first.minY();
 					return Polygon2DExpression.value(
 							Point2DExpression.value(minX, minY),
 							Point2DExpression.value(maxX, minY),
@@ -394,7 +394,7 @@ public class LineSegment2DExpression implements LineSegment2DResult, EqualCompar
 		});
 	}
 
-	public NumberExpression getMaxX() {
+	public NumberExpression maxX() {
 
 		return new NumberExpression(new LineSegmentWithNumberResult(this) {
 
@@ -405,7 +405,7 @@ public class LineSegment2DExpression implements LineSegment2DResult, EqualCompar
 		});
 	}
 
-	public NumberExpression getMinX() {
+	public NumberExpression minX() {
 
 		return new NumberExpression(new LineSegmentWithNumberResult(this) {
 
@@ -416,7 +416,7 @@ public class LineSegment2DExpression implements LineSegment2DResult, EqualCompar
 		});
 	}
 
-	public NumberExpression getMaxY() {
+	public NumberExpression maxY() {
 
 		return new NumberExpression(new LineSegmentWithNumberResult(this) {
 
@@ -427,7 +427,7 @@ public class LineSegment2DExpression implements LineSegment2DResult, EqualCompar
 		});
 	}
 
-	public NumberExpression getMinY() {
+	public NumberExpression minY() {
 
 		return new NumberExpression(new LineSegmentWithNumberResult(this) {
 

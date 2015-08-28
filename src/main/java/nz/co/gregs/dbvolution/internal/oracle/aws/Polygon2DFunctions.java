@@ -25,10 +25,17 @@ import java.sql.Statement;
  */
 public enum Polygon2DFunctions {
 
+	/**
+	 *
+	 */
 	CREATE_WKTPOLY2D("VARCHAR", "wktOfPolygon2D VARCHAR", ""
 			+ "BEGIN\n"
 			+ "RETURN wktOfPolygon2D;"
 			+ "END;"),
+
+	/**
+	 *
+	 */
 	MAXY("NUMBER", "aPoly VARCHAR", ""
 			+ "   result       NUMBER;\n"
 			+ "   coord        NUMBER;\n"
@@ -99,6 +106,10 @@ public enum Polygon2DFunctions {
 			+ "\n"
 			+ "   RETURN result;\n"
 			+ "END;"),
+
+	/**
+	 *
+	 */
 	MAXX("number", "aPoly VARCHAR", ""
 			+ "   result       NUMBER;\n"
 			+ "   coord        NUMBER;\n"
@@ -169,6 +180,10 @@ public enum Polygon2DFunctions {
 			+ "\n"
 			+ "   RETURN result;\n"
 			+ "END;"),
+
+	/**
+	 *
+	 */
 	MINX("NUMBER", "aPoly VARCHAR", ""
 			+ "   result       NUMBER;\n"
 			+ "   coord        NUMBER;\n"
@@ -239,6 +254,10 @@ public enum Polygon2DFunctions {
 			+ "\n"
 			+ "   RETURN result;\n"
 			+ "END;"),
+
+	/**
+	 *
+	 */
 	MINY("number", "aPoly VARCHAR", ""
 			+ "   result       NUMBER;\n"
 			+ "   coord        NUMBER;\n"
@@ -309,6 +328,10 @@ public enum Polygon2DFunctions {
 			+ "\n"
 			+ "   RETURN result;\n"
 			+ "END;"),
+
+	/**
+	 *
+	 */
 	BOUNDINGBOX("VARCHAR", "polygon IN VARCHAR", ""
 			+ "   result   VARCHAR (2002);\n"
 			+ "   maxx     NUMBER;\n"
@@ -350,6 +373,10 @@ public enum Polygon2DFunctions {
 			+ "      RETURN result;\n"
 			+ "   END IF;\n"
 			+ "END;"),
+
+	/**
+	 *
+	 */
 	EXTERIORRING("VARCHAR", "polygon IN VARCHAR", ""
 			+ "   polyAsText   VARCHAR (4000);\n"
 			+ "   BEGIN\n"
@@ -361,6 +388,10 @@ public enum Polygon2DFunctions {
 			+ "         || ')';\n"
 			+ "   RETURN polyastext;"
 			+ "END;"),
+
+	/**
+	 *
+	 */
 	AREA("NUMBER", "polygon IN VARCHAR", ""
 			+ "   sumXtoY                NUMBER := 0;\n"
 			+ "   sumYtoX                NUMBER := 0;\n"
@@ -470,16 +501,52 @@ public enum Polygon2DFunctions {
 			+ "\n"
 			+ "   RETURN result;"
 			+ "END;"),
+
+	/**
+	 *
+	 */
 	DIMENSION("NUMBER", "firstPoly IN VARCHAR", "BEGIN RETURN 2; END;"),
+
+	/**
+	 *
+	 */
 	EQUALS("NUMBER", "firstPoly IN VARCHAR, secondPoly IN VARCHAR", "BEGIN \n"
 			+ "   RETURN CASE WHEN (firstpoly = secondPoly) THEN 1 ELSE 0 END;\n"
 			+ "   END;"),
+
+	/**
+	 *
+	 */
 	INTERSECTION("VARCHAR", "firstPoly IN VARCHAR, secondPoly IN VARCHAR", "BEGIN RETURN 2; END;"),
+
+	/**
+	 *
+	 */
 	INTERSECTS("BOOLEAN", "firstPoly IN VARCHAR, secondPoly IN VARCHAR", "BEGIN RETURN 2; END;"),
+
+	/**
+	 *
+	 */
 	CONTAINS("BOOLEAN", "firstPoly IN VARCHAR, secondPoly IN VARCHAR", "BEGIN RETURN 2; END;"),
+
+	/**
+	 *
+	 */
 	DISJOINT("BOOLEAN", "firstPoly IN VARCHAR, secondPoly IN VARCHAR", "BEGIN RETURN 2; END;"),
+
+	/**
+	 *
+	 */
 	OVERLAPS("BOOLEAN", "firstPoly IN VARCHAR, secondPoly IN VARCHAR", "BEGIN RETURN 2; END;"),
+
+	/**
+	 *
+	 */
 	TOUCHES("BOOLEAN", "firstPoly IN VARCHAR, secondPoly IN VARCHAR", "BEGIN RETURN 2; END;"),
+
+	/**
+	 *
+	 */
 	WITHIN("BOOLEAN", "firstPoly IN VARCHAR, secondPoly IN VARCHAR", "BEGIN RETURN 2; END;");
 
 	private final String returnType;
@@ -497,6 +564,11 @@ public enum Polygon2DFunctions {
 		return "DBVPOLY2D_" + name();
 	}
 
+	/**
+	 *
+	 * @param stmt
+	 * @throws SQLException
+	 */
 	public void add(Statement stmt) throws SQLException {
 		try {
 			if (!this.code.isEmpty()) {

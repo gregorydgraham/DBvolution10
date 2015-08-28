@@ -24,7 +24,14 @@ import java.sql.Statement;
  */
 public enum StringFunctions {
 
+	/**
+	 *
+	 */
 	SUBSTRINGBEFORE(Language.sql, "text", "sourceText text, rightHandSide text", "select (CASE WHEN POSITION(rightHandSide IN (sourceText)::VARCHAR) > 0 THEN  SUBSTRING((sourceText)::VARCHAR FROM 0 + 1 FOR POSITION(rightHandSide IN (sourceText)::VARCHAR) - 1 - 0)  ELSE $$$$ END);"),
+
+	/**
+	 *
+	 */
 	SUBSTRINGAFTER(Language.sql, "text", "sourceText text, leftHandSide text", " select (CASE WHEN POSITION(leftHandSide IN (sourceText)::VARCHAR) > 0 THEN  SUBSTRING((sourceText)::VARCHAR FROM POSITION(leftHandSide IN (sourceText)::VARCHAR) + 1 FOR  CHAR_LENGTH( (sourceText)::VARCHAR )  - POSITION(leftHandSide IN (sourceText)::VARCHAR))  ELSE $$$$ END);");
 
 //	private final String functionName;
@@ -46,6 +53,11 @@ public enum StringFunctions {
 		return "DBV_STRINGFN_" + name();
 	}
 
+	/**
+	 *
+	 * @param stmt
+	 * @throws SQLException
+	 */
 	public void add(Statement stmt) throws SQLException {
 		try {
 			stmt.execute("DROP FUNCTION " + this + "(" + parameters + ");");
