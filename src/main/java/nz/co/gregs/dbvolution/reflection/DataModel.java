@@ -45,7 +45,7 @@ public class DataModel {
 
 		final Set<Class<? extends DBDatabase>> usefulDBDatabases = new HashSet<Class<? extends DBDatabase>>();
 		for (Class<? extends DBDatabase> known : allKnownDBDatabases) {
-			if (!known.getPackage().getName().equals("nz.co.gregs.dbvolution.databases")){
+			if (!known.getPackage().getName().equals("nz.co.gregs.dbvolution.databases")) {
 				usefulDBDatabases.add(known);
 			}
 		}
@@ -71,7 +71,7 @@ public class DataModel {
 			Method[] meths = aDatabase.getDeclaredMethods();
 			for (Method meth : meths) {
 				// weed out the clone methods, as they copy not create DBDatabases
-				if (!(meth.getName().equals("clone") &&meth.getParameterCount() == 0)) {
+				if (!(meth.getName().equals("clone") && getMethodParameterCount(meth) == 0)) {
 					allMethods.add(meth);
 				}
 			}
@@ -79,11 +79,15 @@ public class DataModel {
 		return allMethods;
 	}
 
+	private static int getMethodParameterCount(Method meth) {
+		return meth.getParameterTypes().length;
+	}
+
 	public static List<Method> getDBDatabaseCreationMethodsStaticWithoutParameters() {
 		List<Method> creationMethods = new ArrayList<Method>();
 		for (Method meth : getDBDatabaseCreationMethods()) {
 			if (DBDatabase.class.isAssignableFrom(meth.getReturnType())) {
-				if ((meth.getParameterCount() == 0)&&(Modifier.isStatic(meth.getModifiers()))) {
+				if ((getMethodParameterCount(meth) == 0) && (Modifier.isStatic(meth.getModifiers()))) {
 					creationMethods.add(meth);
 				}
 			}
@@ -95,7 +99,7 @@ public class DataModel {
 		HashSet<Constructor<DBDatabase>> constructors = getDBDatabaseConstructors();
 		Set<Constructor<DBDatabase>> parameterlessConstructors = new HashSet<Constructor<DBDatabase>>();
 		for (Constructor<DBDatabase> constructor : constructors) {
-			if (constructor.getParameterTypes().length == 0&&Modifier.isPublic(constructor.getModifiers())) {
+			if (constructor.getParameterTypes().length == 0 && Modifier.isPublic(constructor.getModifiers())) {
 				parameterlessConstructors.add(constructor);
 			}
 		}

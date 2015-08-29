@@ -47,7 +47,7 @@ public class DataModelTest {
 		}
 		Assert.assertThat(result.size(), is(9));
 	}
-
+	
 	@Test
 	public void testGetDBDatabaseConstructors() {
 		System.out.println("getDBDatabaseConstructors");

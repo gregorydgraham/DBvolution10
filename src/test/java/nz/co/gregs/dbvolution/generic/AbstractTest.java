@@ -326,4 +326,4 @@ public abstract class AbstractTest {
 			super("memoryTest.h2db", "", "", false);
 		}
 	}
-}
+		}
