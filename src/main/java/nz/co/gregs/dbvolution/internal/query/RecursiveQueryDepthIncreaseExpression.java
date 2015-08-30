@@ -30,6 +30,10 @@ import nz.co.gregs.dbvolution.expressions.DBExpression;
  */
 public class RecursiveQueryDepthIncreaseExpression implements DBExpression {
 
+	/**
+	 * Creates a depth expression for the {@link DBRecursiveQuery} query.
+	 *
+	 */
 	public RecursiveQueryDepthIncreaseExpression() {
 	}
 

@@ -25,9 +25,18 @@ import org.apache.commons.collections15.Transformer;
  */
 public class QueryGraphVertexFillPaintTransformer implements Transformer<QueryGraphNode, Paint> {
 
+	/**
+	 * Fills vertexes.
+	 *
+	 */
 	public QueryGraphVertexFillPaintTransformer() {
 	}
 
+	/**
+	 *
+	 * @param i
+	 * @return
+	 */
 	@Override
 	public Paint transform(QueryGraphNode i) {
 		if (i.isRequiredNode()) {

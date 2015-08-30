@@ -20,8 +20,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.SQLWarning;
 import java.sql.Statement;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.exceptions.UnableToCreateDatabaseConnectionException;
@@ -97,12 +95,16 @@ public class DBStatement implements Statement {
 
 	private ResultSet addFeatureAndAttemptQueryAgain(Exception exp, String string) throws Exception {
 		ResultSet executeQuery;
-		System.out.println("Adding Feature for: " + exp.getMessage());
+		final String ln = System.getProperty("line.separator");
+		System.out.println("Adding Feature for: " + exp.getMessage()+ln+exp.toString());
+//		for (StackTraceElement el : exp.getStackTrace()) {
+//			System.out.println(""+el);
+//		}
 		try {
 			database.addFeatureToFixException(exp);
 		} catch (Exception ex) {
 			Exception ex1 = exp;
-			while (!ex1.getMessage().equals(ex)){
+			while (!ex1.getMessage().equals(ex.getMessage())){
 				database.addFeatureToFixException(ex);
 			}
 			throw new SQLException(ex);
@@ -406,7 +408,11 @@ public class DBStatement implements Statement {
 
 	private boolean addFeatureAndAttemptExecuteAgain(Exception exp, String string) throws SQLException {
 		boolean executeQuery;
-		System.out.println("Adding Feature for: " + exp.getMessage());
+		final String ln = System.getProperty("line.separator");
+		System.out.println("Adding Feature for: " + exp.getMessage()+ln+exp.toString());
+//		for (StackTraceElement el : exp.getStackTrace()) {
+//			System.out.println(""+el);
+//		}
 		try {
 			database.addFeatureToFixException(exp);
 		} catch (Exception ex) {

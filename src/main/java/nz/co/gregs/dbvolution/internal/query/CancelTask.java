@@ -20,13 +20,19 @@ import java.util.TimerTask;
 import nz.co.gregs.dbvolution.databases.DBStatement;
 
 /**
- *
+ * A TimerTask for canceling queries.
+ * 
  * @author gregory.graham
  */
 public class CancelTask extends TimerTask {
 
 	private final DBStatement query;
 
+	/**
+	 * Creates a CancelTask for the query.
+	 *
+	 * @param query
+	 */
 	public CancelTask(DBStatement query) {
 		this.query = query;
 	}
@@ -34,9 +40,7 @@ public class CancelTask extends TimerTask {
 	@Override
 	public void run() {
 		try {
-//			if (!query.isClosed()) {
 			query.cancel();
-//			}
 			System.err.println("CANCELLING TASK");
 		} catch (SQLException ex) {
 			if (!ex.getMessage().equals("'Statement' already closed.")) {

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package nz.co.gregs.dbvolution.datatypes;
+package nz.co.gregs.dbvolution.datatypes.spatial2D;
 
 import com.vividsolutions.jts.geom.*;
 import java.sql.SQLException;
@@ -25,7 +25,7 @@ import nz.co.gregs.dbvolution.annotations.DBAutoIncrement;
 import nz.co.gregs.dbvolution.annotations.DBColumn;
 import nz.co.gregs.dbvolution.annotations.DBPrimaryKey;
 import nz.co.gregs.dbvolution.databases.supports.SupportsPolygonDatatype;
-import nz.co.gregs.dbvolution.datatypes.spatial2D.DBPolygon2D;
+import nz.co.gregs.dbvolution.datatypes.DBInteger;
 import nz.co.gregs.dbvolution.exceptions.AccidentalDroppingOfTableException;
 import nz.co.gregs.dbvolution.exceptions.AutoCommitActionDuringTransactionException;
 import nz.co.gregs.dbvolution.expressions.Polygon2DExpression;

@@ -27,6 +27,10 @@ public class QueryGraphEdgeLabelTransformer extends ToStringLabeller<DBExpressio
 
 	private final DBQuery query;
 
+	/**
+	 *
+	 * @param originalQuery
+	 */
 	public QueryGraphEdgeLabelTransformer(final DBQuery originalQuery) {
 		this.query = originalQuery;
 	}

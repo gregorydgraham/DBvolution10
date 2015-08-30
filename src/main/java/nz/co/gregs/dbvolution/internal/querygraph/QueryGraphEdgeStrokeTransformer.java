@@ -32,10 +32,19 @@ public class QueryGraphEdgeStrokeTransformer implements Transformer<DBExpression
 
 	private final DBQuery query;
 
+	/**
+	 *
+	 * @param originalQuery
+	 */
 	public QueryGraphEdgeStrokeTransformer(final DBQuery originalQuery) {
 		this.query = originalQuery;
 	}
 
+	/**
+	 *
+	 * @param input
+	 * @return
+	 */
 	@Override
 	public Stroke transform(DBExpression input) {
 		boolean optionalExpr = false;
@@ -52,10 +61,18 @@ public class QueryGraphEdgeStrokeTransformer implements Transformer<DBExpression
 			return STROKE_FOR_REQUIRED_EXPRESSION;
 		}
 	}
+
+	/**
+	 *
+	 */
 	public static final BasicStroke STROKE_FOR_OPTIONAL_EXPRESSION = new BasicStroke(1.0f,
 			BasicStroke.CAP_BUTT,
 			BasicStroke.JOIN_MITER,
 			2.0f, new float[]{2.0f}, 0.0f);
+
+	/**
+	 *
+	 */
 	public static final BasicStroke STROKE_FOR_REQUIRED_EXPRESSION = new BasicStroke(1.0f,
 			BasicStroke.CAP_BUTT,
 			BasicStroke.JOIN_MITER);

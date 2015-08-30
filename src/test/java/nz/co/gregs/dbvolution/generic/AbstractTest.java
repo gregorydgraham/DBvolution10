@@ -262,32 +262,32 @@ public abstract class AbstractTest {
 			return new H2DB(h2DataSource);
 		}
 
-		public H2TestDatabase() throws SQLException {
+		public H2TestDatabase() {
 			super("jdbc:h2:./directTest.h2db", "", "");
 		}
 	}
 
 	private static class MySQLRDSTestDatabase extends MySQLDB {
 
-		public MySQLRDSTestDatabase() throws SQLException {
+		public MySQLRDSTestDatabase() {
 			super("jdbc:mysql://dbvtest-mysql.cygjg2wvuyam.ap-southeast-2.rds.amazonaws.com:3306/test?createDatabaseIfNotExist=true", "dbv", "Testingdbv");
 		}
 	}
 
 	private static class MySQLTestDatabase extends MySQLDB {
 
-		public MySQLTestDatabase() throws SQLException {
+		public MySQLTestDatabase() {
 			super("jdbc:mysql://localhost:3306/test?createDatabaseIfNotExist=true", "dbv", "dbv");
 		}
 	}
 
 	private static class TestPostgreSQL extends PostgresDB {
 
-		protected static PostgresDB getRDSTestDatabase() throws SQLException {
+		protected static PostgresDB getRDSTestDatabase() {
 			return new PostgresDB("dbvtest-postgresql.cygjg2wvuyam.ap-southeast-2.rds.amazonaws.com", 5432, "dbvtest", "dbv", "Testingdbv");
 		}
 
-		protected static PostgresDB getLocalTestDatabase() throws SQLException {
+		protected static PostgresDB getLocalTestDatabase() {
 			return new PostgresDB("dbvtest", "dbv", "dbv", "");
 		}
 	}
@@ -301,7 +301,7 @@ public abstract class AbstractTest {
 
 	private static class OracleAWS11TestDB extends OracleAWS11DB{
 
-		public OracleAWS11TestDB() throws SQLException {
+		public OracleAWS11TestDB() {
 			super("dbvtest-oracle-se1.cygjg2wvuyam.ap-southeast-2.rds.amazonaws.com", 1521, "ORCL", "dbv", "Testingdbv");
 		}
 	}

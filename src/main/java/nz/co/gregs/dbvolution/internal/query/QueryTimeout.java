@@ -32,6 +32,13 @@ public class QueryTimeout extends Timer {
 		this.task = task;
 	}
 
+	/**
+	 * Creates the timer and thread that stops this query from overrunning the timeout. 
+	 *
+	 * @param statement
+	 * @param timeoutInMilliseconds
+	 * @return this timer
+	 */
 	public static QueryTimeout scheduleTimeout(DBStatement statement, Integer timeoutInMilliseconds) {
 		QueryTimeout queryTimeout;
 		queryTimeout = new QueryTimeout(new CancelTask(statement));

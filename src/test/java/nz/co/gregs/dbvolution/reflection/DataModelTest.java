@@ -51,7 +51,7 @@ public class DataModelTest {
 	@Test
 	public void testGetDBDatabaseConstructors() {
 		System.out.println("getDBDatabaseConstructors");
-		HashSet<Constructor<DBDatabase>> result = DataModel.getDBDatabaseConstructors();
+		Set<Constructor<DBDatabase>> result = DataModel.getDBDatabaseConstructors();
 		for (Constructor<DBDatabase> result1 : result) {
 			System.out.println("Constructor: "+result1.getName());
 		}

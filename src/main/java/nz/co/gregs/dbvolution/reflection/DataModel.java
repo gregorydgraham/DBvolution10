@@ -31,6 +31,16 @@ import nz.co.gregs.dbvolution.DBRow;
 import org.reflections.Reflections;
 
 /**
+ * Provides convenient access to classes, instances, and methods that may be of
+ * use during reflection.
+ *
+ * <p>
+ * This is very experimental at the moment, use with caution.
+ *
+ * <p>
+ * The intent of this class is to provide access to methods that might define
+ * database connections, the schema of those databases, and methods to
+ * manipulate the schema objects in a generic way.
  *
  * @author gregory.graham
  */
@@ -39,6 +49,19 @@ public class DataModel {
 	private DataModel() {
 	}
 
+	/**
+	 * Scans all known classes and returns a set of all DBDatabase instances that
+	 * could be found.
+	 *
+	 * <p>
+	 * Excludes the standard DBDatabases in nz.co.gregs.dbvolution.databases.
+	 *
+	 * <p>
+	 * The intent of this method is to help provide access to classes that might
+	 * define database connections.
+	 *
+	 * @return a set of {@link DBDatabase} classes.
+	 */
 	protected static Set<Class<? extends DBDatabase>> getUseableDBDatabaseClasses() {
 		Reflections reflections = new Reflections("");
 		final Set<Class<? extends DBDatabase>> allKnownDBDatabases = reflections.getSubTypesOf(DBDatabase.class);
@@ -52,8 +75,15 @@ public class DataModel {
 		return usefulDBDatabases;
 	}
 
-	public static HashSet<Constructor<DBDatabase>> getDBDatabaseConstructors() {
-		HashSet<Constructor<DBDatabase>> constructors = new HashSet<Constructor<DBDatabase>>();
+	/**
+	 * Finds the constructors for
+	 * {@link #getUseableDBDatabaseClasses() all known databases}.
+	 *
+	 *
+	 * @return a set of all constructors for all the known databases.
+	 */
+	public static Set<Constructor<DBDatabase>> getDBDatabaseConstructors() {
+		Set<Constructor<DBDatabase>> constructors = new HashSet<Constructor<DBDatabase>>();
 		final Set<Class<? extends DBDatabase>> allKnownDBDatabases = getUseableDBDatabaseClasses();
 		for (Class<? extends DBDatabase> aDatabase : allKnownDBDatabases) {
 			@SuppressWarnings("unchecked")
@@ -63,6 +93,99 @@ public class DataModel {
 		return constructors;
 	}
 
+	/**
+	 * Scans across {@link #getUseableDBDatabaseClasses() all known databases} and
+	 * finds no-parameter methods that return a DBDatabase object.
+	 *
+	 * <p>
+	 * The intent of this method is to find DBDatabase subclasses that define
+	 * standard DBDatabase factory methods.
+	 *
+	 * <p>
+	 * For instance a useful pattern for your databases during development might
+	 * be something like this:
+	 * <p>
+	 * <code>
+	 * private static class TestPostgreSQL extends PostgresDB {<br>
+	 * <br>
+	 * protected static PostgresDB getTestDatabaseOnHost(String hostname) {<br>
+	 * return new PostgresDB(hostname, 5432, "testdb", "developer", "developer
+	 * password");<br>
+	 * }<br>
+	 * <br>
+	 * protected static PostgresDB getTestDatabase() {<br>
+	 * return new PostgresDB("testdb.mycompany.com", 5432, "testdb", "developer",
+	 * "developer password");<br>
+	 * }<br>
+	 * <br>
+	 * protected static PostgresDB getLocalTestDatabase() {<br>
+	 * return new PostgresDB("localhost", 5432, "testdb", "developer", "developer
+	 * password");<br>
+	 * }<br>
+	 * }<br>
+	 * <br>
+	 * </code>
+	 *	 
+* <p>
+	 * This method aims to find the getTestDatabase and getLocalTestDatabase
+	 * methods. The method getTestDatabaseOnHost(String) is excluded as it
+	 * requires a parameter to be supplied.
+	 *
+	 * @return a list of methods defined in DBDatabase classes that return a
+	 * DBDatabase and require no parameters.
+	 */
+	public static List<Method> getDBDatabaseSimpleCreationMethods() {
+		List<Method> allMethods = new ArrayList<Method>();
+		List<Method> meths = getDBDatabaseCreationMethods();
+		for (Method meth : meths) {
+			// weed out the clone methods, as they copy not create DBDatabases
+			if (getMethodParameterCount(meth) == 0) {
+				allMethods.add(meth);
+			}
+		}
+		return allMethods;
+	}
+
+	/**
+	 * Scans across {@link #getUseableDBDatabaseClasses() all known databases} and
+	 * finds methods that return a DBDatabase object.
+	 *
+	 * <p>
+	 * The intent of this method is to find DBDatabase subclasses that define
+	 * standard DBDatabase factory methods.
+	 *
+	 * <p>
+	 * For instance a useful pattern for your databases during development might
+	 * be something like this:
+	 * <p>
+	 * <code>
+	 * private static class TestPostgreSQL extends PostgresDB {<br>
+	 * <br>
+	 * protected static PostgresDB getTestDatabaseOnHost(String hostname) {<br>
+	 * return new PostgresDB(hostname, 5432, "testdb", "developer", "developer
+	 * password");<br>
+	 * }<br>
+	 * <br>
+	 * protected static PostgresDB getTestDatabase() {<br>
+	 * return new PostgresDB("testdb.mycompany.com", 5432, "testdb", "developer",
+	 * "developer password");<br>
+	 * }<br>
+	 * <br>
+	 * protected static PostgresDB getLocalTestDatabase() {<br>
+	 * return new PostgresDB("localhost", 5432, "testdb", "developer", "developer
+	 * password");<br>
+	 * }<br>
+	 * }<br>
+	 * <br>
+	 * </code>
+	 *	 
+* <p>
+	 * This method aims to find the getTestDatabaseOnHost(String),
+	 * getTestDatabase(), getLocalTestDatabase() methods.
+	 *
+	 * @return a list of methods defined in DBDatabase classes that return a
+	 * DBDatabase.
+	 */
 	public static List<Method> getDBDatabaseCreationMethods() {
 		List<Method> allMethods = new ArrayList<Method>();
 		final Set<Class<? extends DBDatabase>> allKnownDBDatabases = getUseableDBDatabaseClasses();
@@ -71,7 +194,8 @@ public class DataModel {
 			Method[] meths = aDatabase.getDeclaredMethods();
 			for (Method meth : meths) {
 				// weed out the clone methods, as they copy not create DBDatabases
-				if (!(meth.getName().equals("clone") && getMethodParameterCount(meth) == 0)) {
+				if (!(meth.getName().equals("clone"))
+						&& DBDatabase.class.isAssignableFrom(meth.getReturnType())) {
 					allMethods.add(meth);
 				}
 			}
@@ -85,7 +209,7 @@ public class DataModel {
 
 	public static List<Method> getDBDatabaseCreationMethodsStaticWithoutParameters() {
 		List<Method> creationMethods = new ArrayList<Method>();
-		for (Method meth : getDBDatabaseCreationMethods()) {
+		for (Method meth : getDBDatabaseSimpleCreationMethods()) {
 			if (DBDatabase.class.isAssignableFrom(meth.getReturnType())) {
 				if ((getMethodParameterCount(meth) == 0) && (Modifier.isStatic(meth.getModifiers()))) {
 					creationMethods.add(meth);
@@ -96,7 +220,7 @@ public class DataModel {
 	}
 
 	public static Set<Constructor<DBDatabase>> getDBDatabaseConstructorsPublicWithoutParameters() {
-		HashSet<Constructor<DBDatabase>> constructors = getDBDatabaseConstructors();
+		Set<Constructor<DBDatabase>> constructors = getDBDatabaseConstructors();
 		Set<Constructor<DBDatabase>> parameterlessConstructors = new HashSet<Constructor<DBDatabase>>();
 		for (Constructor<DBDatabase> constructor : constructors) {
 			if (constructor.getParameterTypes().length == 0 && Modifier.isPublic(constructor.getModifiers())) {

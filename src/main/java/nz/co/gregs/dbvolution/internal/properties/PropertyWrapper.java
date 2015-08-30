@@ -2,6 +2,7 @@ package nz.co.gregs.dbvolution.internal.properties;
 
 import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.DBRow;
+import nz.co.gregs.dbvolution.annotations.AutoFillDuringQueryIfPossible;
 import nz.co.gregs.dbvolution.annotations.DBForeignKey;
 import nz.co.gregs.dbvolution.datatypes.DBEnumValue;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
@@ -598,7 +599,17 @@ public class PropertyWrapper {
 		return propertyDefinition.isAutoIncrementColumn();
 	}
 
-	public boolean isSpatial2DType() {
+	/**
+	 * Returns true if the property wrapped is a Spatial2D column.
+	 *
+	 * <p>
+	 * This generally means that the column is a polygon, line, point, or other 2D geometry.
+	 * 
+	 * <p>
+	 * Spatial columns are special in that some databases need indexes to support them properly.
+	 *
+	 * @return TRUE if the value of this column is a 2D geometry type, otherwise FALSE.
+	 */	public boolean isSpatial2DType() {
 		return propertyDefinition.isSpatial2DType();
 	}
 	/**
@@ -611,6 +622,11 @@ public class PropertyWrapper {
 		return propertyDefinition.isAutoFilling();
 	}
 
+	/**
+	 * Returns the class provided to the {@link AutoFillDuringQueryIfPossible} annotation.
+	 * 
+	 * @return the class that should be auto-filled if it is present in the query.
+	 */
 	public Class<?> getAutoFillingClass() {
 		return propertyDefinition.getAutoFillingClass();
 	}
