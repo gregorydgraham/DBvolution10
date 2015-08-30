@@ -20,6 +20,7 @@ import java.util.Date;
 import java.util.List;
 import nz.co.gregs.dbvolution.datatypes.DBBoolean;
 import nz.co.gregs.dbvolution.datatypes.DBDate;
+import nz.co.gregs.dbvolution.datatypes.DBInteger;
 import nz.co.gregs.dbvolution.datatypes.DBIntegerEnum;
 import nz.co.gregs.dbvolution.datatypes.DBNumber;
 import nz.co.gregs.dbvolution.datatypes.DBString;
@@ -55,10 +56,40 @@ public class DefaultEncodingInterpreter implements EncodingInterpreter {
 			string.permittedValues(value);
 		} else if (qdt instanceof DBNumber) {
 			DBNumber num = (DBNumber) qdt;
-			num.permittedValues(new Double(value));
+			if (value.contains("...")) {
+				String[] split = value.split("\\.\\.\\.");
+				Double startOfRange = split[0] == null || split[0].isEmpty() ? null : new Double(split[0]);
+				Double endOfRange = split.length == 1 || split[1] == null || split[1].isEmpty() ? null : new Double(split[1]);
+				num.permittedRange(
+						startOfRange,
+						endOfRange);
+			} else {
+				num.permittedValues(new Double(value));
+			}
+		} else if (qdt instanceof DBInteger) {
+			DBInteger num = (DBInteger) qdt;
+			if (value.contains("...")) {
+				String[] split = value.split("\\.\\.\\.");
+				Long startOfRange = split[0] == null || split[0].isEmpty() ? null : new Long(split[0]);
+				Long endOfRange = split.length == 1 || split[1] == null || split[1].isEmpty() ? null : new Long(split[1]);
+				num.permittedRange(
+						startOfRange,
+						endOfRange);
+			} else {
+				num.permittedValues(new Double(value));
+			}
 		} else if (qdt instanceof DBIntegerEnum) {
 			DBIntegerEnum num = (DBIntegerEnum) qdt;
-			num.permittedValues(new Long(value));
+			if (value.contains("...")) {
+				String[] split = value.split("\\.\\.\\.");
+				Long startOfRange = split[0] == null || split[0].isEmpty() ? null : new Long(split[0]);
+				Long endOfRange = split.length == 1 || split[1] == null || split[1].isEmpty() ? null : new Long(split[1]);
+				num.permittedRange(
+						startOfRange,
+						endOfRange);
+			} else {
+				num.permittedValues(new Long(value));
+			}
 		} else if (qdt instanceof DBDate) {
 			DBDate date = (DBDate) qdt;
 			date.permittedValues(new Date(value));

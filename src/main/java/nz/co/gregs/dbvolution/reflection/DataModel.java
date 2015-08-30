@@ -319,7 +319,7 @@ public class DataModel {
 		String[] parameters = interpreter.splitParameters(encodedTablesPropertiesAndValues);
 		//String[] parameters = encodedTablesPropertiesAndValues.split(encodingSeparator);
 		for (String parameter : parameters) {
-			String[] tableSplit;
+//			String[] tableSplit;
 			String table = interpreter.getDBRowClassName(parameter);
 			DBRow newInstance = foundAlready.get(table);
 			if (newInstance == null) {

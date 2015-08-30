@@ -30,6 +30,7 @@ import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.example.CarCompany;
 import nz.co.gregs.dbvolution.example.Marque;
 import nz.co.gregs.dbvolution.exceptions.AccidentalBlankQueryException;
+import nz.co.gregs.dbvolution.exceptions.DBRuntimeException;
 import nz.co.gregs.dbvolution.generic.AbstractTest;
 import static org.hamcrest.Matchers.*;
 import org.junit.Assert;
@@ -130,6 +131,7 @@ public class DataModelTest extends AbstractTest {
 		Assert.assertThat(allRows.get(0).get(new CarCompany()).name.stringValue(), is("TOYOTA"));
 		Assert.assertThat(allRows.get(0).get(new Marque()).name.stringValue(), isOneOf("TOYOTA", "HYUNDAI"));
 		Assert.assertThat(allRows.get(1).get(new Marque()).name.stringValue(), isOneOf("TOYOTA", "HYUNDAI"));
+		
 		query = DataModel.createDBQueryFromEncodedTablesPropertiesAndValues(
 				database,
 				"nz.co.gregs.dbvolution.example.CarCompany&nz.co.gregs.dbvolution.example.Marque",
@@ -137,11 +139,57 @@ public class DataModelTest extends AbstractTest {
 		);
 		try {
 			database.print(query.getAllRows());
+			throw new DBRuntimeException("Failed To Create AccidentalBlankQueryException!");
 		} catch (AccidentalBlankQueryException blank) {
 			blank.printStackTrace();
 		}
 		query.setBlankQueryAllowed(true);
+		allRows = query.getAllRows();
+		database.print(allRows);
+
+		Assert.assertThat(allRows.size(), is(22));
+		
+		query = DataModel.createDBQueryFromEncodedTablesPropertiesAndValues(
+				database,
+				"nz.co.gregs.dbvolution.example.CarCompany-uidCarCompany=1&nz.co.gregs.dbvolution.example.Marque",
+				new DefaultEncodingInterpreter()
+		);
+		allRows = query.getAllRows();
+		database.print(allRows);
 
 		Assert.assertThat(allRows.size(), is(2));
+		
+		query = DataModel.createDBQueryFromEncodedTablesPropertiesAndValues(
+				database,
+				"nz.co.gregs.dbvolution.example.CarCompany-uidCarCompany=2...4&nz.co.gregs.dbvolution.example.Marque",
+				new DefaultEncodingInterpreter()
+		);
+		database.setPrintSQLBeforeExecuting(true);
+		allRows = query.getAllRows();
+		database.print(allRows);
+
+		Assert.assertThat(allRows.size(), is(19));
+		
+		query = DataModel.createDBQueryFromEncodedTablesPropertiesAndValues(
+				database,
+				"nz.co.gregs.dbvolution.example.CarCompany-uidCarCompany=...4&nz.co.gregs.dbvolution.example.Marque",
+				new DefaultEncodingInterpreter()
+		);
+		database.setPrintSQLBeforeExecuting(true);
+		allRows = query.getAllRows();
+		database.print(allRows);
+
+		Assert.assertThat(allRows.size(), is(22));
+		
+		query = DataModel.createDBQueryFromEncodedTablesPropertiesAndValues(
+				database,
+				"nz.co.gregs.dbvolution.example.CarCompany-uidCarCompany=2...&nz.co.gregs.dbvolution.example.Marque",
+				new DefaultEncodingInterpreter()
+		);
+		database.setPrintSQLBeforeExecuting(true);
+		allRows = query.getAllRows();
+		database.print(allRows);
+
+		Assert.assertThat(allRows.size(), is(19));
 	}
 }
