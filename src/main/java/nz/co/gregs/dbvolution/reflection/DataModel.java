@@ -20,14 +20,30 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javassist.Modifier;
 import nz.co.gregs.dbvolution.DBDatabase;
+import nz.co.gregs.dbvolution.DBQuery;
 import nz.co.gregs.dbvolution.DBRow;
+import nz.co.gregs.dbvolution.datatypes.DBBoolean;
+import nz.co.gregs.dbvolution.datatypes.DBDate;
+import nz.co.gregs.dbvolution.datatypes.DBIntegerEnum;
+import nz.co.gregs.dbvolution.datatypes.DBNumber;
+import nz.co.gregs.dbvolution.datatypes.DBString;
+import nz.co.gregs.dbvolution.datatypes.DBStringEnum;
+import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
+import nz.co.gregs.dbvolution.exceptions.DBRuntimeException;
+import nz.co.gregs.dbvolution.internal.properties.PropertyWrapper;
+import nz.co.gregs.dbvolution.internal.properties.RowDefinitionInstanceWrapper;
+import nz.co.gregs.dbvolution.internal.properties.RowDefinitionWrapperFactory;
+import nz.co.gregs.dbvolution.query.RowDefinition;
 import org.reflections.Reflections;
 
 /**
@@ -270,6 +286,63 @@ public class DataModel {
 			}
 		}
 		return dbrows;
+	}
+
+	/**
+	 * Creates a query from a string of tables,fields, and values separated by 3
+	 * different separators.
+	 *
+	 * <p>
+	 * Intended to create a DBQuery from a string like
+	 * {@code carcompany.name=toyota&marque.name=toyota} using the separators
+	 * "&amp;", ".", and "=".
+	 *
+	 * <p>
+	 * The greater intent is an extensible mechanism for parsing web links and
+	 * creating queries from them.
+	 *
+	 * @param db
+	 * @param encodedTablesPropertiesAndValues
+	 * @param encodingSeparator
+	 * @param tableAndPropertySeparator
+	 * @param propertyAndValueSeparator
+	 * @param interpreter
+	 * @return a DBQuery.
+	 * @throws ClassNotFoundException
+	 * @throws InstantiationException
+	 * @throws IllegalAccessException
+	 */
+	public static DBQuery createDBQueryFromEncodedTablesPropertiesAndValues(DBDatabase db, String encodedTablesPropertiesAndValues, EncodingInterpreter interpreter) throws ClassNotFoundException, InstantiationException, IllegalAccessException {
+		final RowDefinitionWrapperFactory rowDefinitionWrapperFactory = new RowDefinitionWrapperFactory();
+		final Map<String, DBRow> foundAlready = new HashMap<String, DBRow>();
+
+		String[] parameters = interpreter.splitParameters(encodedTablesPropertiesAndValues);
+		//String[] parameters = encodedTablesPropertiesAndValues.split(encodingSeparator);
+		for (String parameter : parameters) {
+			String[] tableSplit;
+			String table = interpreter.getDBRowClassName(parameter);
+			DBRow newInstance = foundAlready.get(table);
+			if (newInstance == null) {
+				Class<?> tableClass = Class.forName(table);
+				if (DBRow.class.isAssignableFrom(tableClass)) {
+					newInstance = (DBRow) tableClass.newInstance();
+					foundAlready.put(table, newInstance);
+				} else {
+					throw new DBRuntimeException("Class Specified Is Not A DBRow Sub-Class: expected " + tableClass + "(derived from " + table + ") to be a DBRow subclass but it was not.  Please only use DBRows with this method.");
+				}
+			}
+			if (newInstance != null) {
+				String propertyName = interpreter.getPropertyName(parameter);
+				if (propertyName!=null) {
+					String value = interpreter.getPropertyValue(parameter);
+					RowDefinitionInstanceWrapper instanceWrapper = rowDefinitionWrapperFactory.instanceWrapperFor(newInstance);
+					PropertyWrapper propertyWrapper = instanceWrapper.getPropertyByName(propertyName);
+					interpreter.setValue(propertyWrapper.getQueryableDatatype(), value);
+				}
+			}
+		}
+		final DBRow[] allTables = foundAlready.values().toArray(new DBRow[]{});
+		return db.getDBQuery(allTables);
 	}
 
 }

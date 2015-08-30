@@ -105,8 +105,8 @@ public class SafeOneWaySimpleTypeAdaptor {
 			InterfaceInfo interfaceInfo = new InterfaceInfo(DBTypeAdaptor.class, typeAdaptor);
 			ParameterBounds[] parameterBounds = interfaceInfo.getInterfaceParameterValueBounds();
 
-			ParameterBounds sourceBounds = null;
-			ParameterBounds targetBounds = null;
+			ParameterBounds sourceBounds;
+			ParameterBounds targetBounds;
 			if (direction == Direction.TO_EXTERNAL) {
 				sourceBounds = parameterBounds[1];
 				targetBounds = parameterBounds[0];
@@ -236,7 +236,8 @@ public class SafeOneWaySimpleTypeAdaptor {
 		}
 	}
 
-	private Object convertInternal(Object value) {
+	private Object convertInternal(Object incomingValue) {
+		Object value = incomingValue;
 		// validate source
 		if (sourceCast != null && value != null) {
 			if (!sourceCast.acceptsSource(value)) {

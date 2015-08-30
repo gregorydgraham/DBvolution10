@@ -18,13 +18,19 @@ package nz.co.gregs.dbvolution.reflection;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.HashSet;
+import java.sql.SQLException;
 import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import nz.co.gregs.dbvolution.DBDatabase;
+import nz.co.gregs.dbvolution.DBQuery;
+import nz.co.gregs.dbvolution.DBQueryRow;
 import nz.co.gregs.dbvolution.DBRow;
+import nz.co.gregs.dbvolution.example.CarCompany;
+import nz.co.gregs.dbvolution.example.Marque;
+import nz.co.gregs.dbvolution.exceptions.AccidentalBlankQueryException;
+import nz.co.gregs.dbvolution.generic.AbstractTest;
 import static org.hamcrest.Matchers.*;
 import org.junit.Assert;
 import org.junit.Test;
@@ -33,9 +39,10 @@ import org.junit.Test;
  *
  * @author gregorygraham
  */
-public class DataModelTest {
-	
-	public DataModelTest() {
+public class DataModelTest extends AbstractTest {
+
+	public DataModelTest(Object testIterationName, Object db) {
+		super(testIterationName, db);
 	}
 
 	@Test
@@ -43,17 +50,17 @@ public class DataModelTest {
 		System.out.println("getDatabases");
 		Set<Class<? extends DBDatabase>> result = DataModel.getUseableDBDatabaseClasses();
 		for (Class<? extends DBDatabase> result1 : result) {
-			System.out.println("DBDatabase: "+result1.getName());
+			System.out.println("DBDatabase: " + result1.getName());
 		}
 		Assert.assertThat(result.size(), is(9));
 	}
-	
+
 	@Test
 	public void testGetDBDatabaseConstructors() {
 		System.out.println("getDBDatabaseConstructors");
 		Set<Constructor<DBDatabase>> result = DataModel.getDBDatabaseConstructors();
 		for (Constructor<DBDatabase> result1 : result) {
-			System.out.println("Constructor: "+result1.getName());
+			System.out.println("Constructor: " + result1.getName());
 		}
 		Assert.assertThat(result.size(), is(9));
 	}
@@ -65,10 +72,10 @@ public class DataModelTest {
 		for (Constructor<DBDatabase> constr : result) {
 			try {
 				constr.setAccessible(true);
-				System.out.println("DBDatabase Constructor: "+constr.getName());
+				System.out.println("DBDatabase Constructor: " + constr.getName());
 				DBDatabase newInstance = constr.newInstance();
 				Assert.assertThat(newInstance, instanceOf(DBDatabase.class));
-				System.out.println("DBDatabase created: "+newInstance.getClass().getCanonicalName());
+				System.out.println("DBDatabase created: " + newInstance.getClass().getCanonicalName());
 			} catch (InstantiationException ex) {
 				Logger.getLogger(DataModelTest.class.getName()).log(Level.SEVERE, null, ex);
 			} catch (IllegalAccessException ex) {
@@ -88,26 +95,53 @@ public class DataModelTest {
 		Set<Class<? extends DBRow>> result = DataModel.getDBRowClasses();
 		Assert.assertThat(result.size(), is(184));
 	}
-	
+
 	@Test
-	public void testGetDBDatabaseCreationMethodsStaticWithoutParameters(){
+	public void testGetDBDatabaseCreationMethodsStaticWithoutParameters() {
 		System.out.println("getDBDatabaseCreationMethodsWithoutParameters");
 		List<Method> dbDatabaseCreationMethods = DataModel.getDBDatabaseCreationMethodsStaticWithoutParameters();
 		for (Method creator : dbDatabaseCreationMethods) {
-			System.out.println("Creator: "+creator.getDeclaringClass().getCanonicalName()+"."+creator.getName()+"()");
+			System.out.println("Creator: " + creator.getDeclaringClass().getCanonicalName() + "." + creator.getName() + "()");
 			creator.setAccessible(true);
 			try {
-				DBDatabase database = (DBDatabase)creator.invoke(null);
-				System.out.println("DBDatabase Created: "+database);
+				DBDatabase db = (DBDatabase) creator.invoke(null);
+				System.out.println("DBDatabase Created: " + db);
 			} catch (IllegalAccessException ex) {
-				Assert.fail("Unable to invoke "+creator.getDeclaringClass().getCanonicalName()+"."+creator.getName()+"()");
+				Assert.fail("Unable to invoke " + creator.getDeclaringClass().getCanonicalName() + "." + creator.getName() + "()");
 			} catch (IllegalArgumentException ex) {
-				Assert.fail("Unable to invoke "+creator.getDeclaringClass().getCanonicalName()+"."+creator.getName()+"()");
+				Assert.fail("Unable to invoke " + creator.getDeclaringClass().getCanonicalName() + "." + creator.getName() + "()");
 			} catch (InvocationTargetException ex) {
-				Assert.fail("Unable to invoke "+creator.getDeclaringClass().getCanonicalName()+"."+creator.getName()+"()");
+				Assert.fail("Unable to invoke " + creator.getDeclaringClass().getCanonicalName() + "." + creator.getName() + "()");
 			}
 		}
 		Assert.assertThat(dbDatabaseCreationMethods.size(), is(2));
 	}
-	
+
+	@Test
+	public void testCreateDBQueryFromEncodedTablePropertiesAndValues() throws ClassNotFoundException, InstantiationException, IllegalAccessException, SQLException {
+		DBQuery query = DataModel.createDBQueryFromEncodedTablesPropertiesAndValues(
+				database,
+				"nz.co.gregs.dbvolution.example.CarCompany-name=TOYOTA&nz.co.gregs.dbvolution.example.Marque",
+				new DefaultEncodingInterpreter()
+		);
+		List<DBQueryRow> allRows = query.getAllRows();
+		database.print(allRows);
+		Assert.assertThat(allRows.size(), is(2));
+		Assert.assertThat(allRows.get(0).get(new CarCompany()).name.stringValue(), is("TOYOTA"));
+		Assert.assertThat(allRows.get(0).get(new Marque()).name.stringValue(), isOneOf("TOYOTA", "HYUNDAI"));
+		Assert.assertThat(allRows.get(1).get(new Marque()).name.stringValue(), isOneOf("TOYOTA", "HYUNDAI"));
+		query = DataModel.createDBQueryFromEncodedTablesPropertiesAndValues(
+				database,
+				"nz.co.gregs.dbvolution.example.CarCompany&nz.co.gregs.dbvolution.example.Marque",
+				new DefaultEncodingInterpreter()
+		);
+		try {
+			database.print(query.getAllRows());
+		} catch (AccidentalBlankQueryException blank) {
+			blank.printStackTrace();
+		}
+		query.setBlankQueryAllowed(true);
+
+		Assert.assertThat(allRows.size(), is(2));
+	}
 }
