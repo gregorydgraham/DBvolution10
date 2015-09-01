@@ -31,6 +31,7 @@ import nz.co.gregs.dbvolution.DBReport;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.databases.supports.SupportsDateRepeatDatatypeFunctions;
 import nz.co.gregs.dbvolution.datatypes.*;
+import nz.co.gregs.dbvolution.results.InComparable;
 import org.joda.time.Period;
 
 /**
@@ -60,7 +61,7 @@ import org.joda.time.Period;
  *
  * @author Gregory Graham
  */
-public class DateExpression implements DateResult, RangeComparable<DateResult> {
+public class DateExpression implements DateResult, RangeComparable<DateResult>, InComparable<DateResult> {
 
 	/**
 	 * The integer used to represent the index for Sunday
@@ -988,7 +989,7 @@ public class DateExpression implements DateResult, RangeComparable<DateResult> {
 	/**
 	 * Create a DateRepeat value representing the difference between this date expression and the one provided
 	 *
-	 * @param date
+	 * @param date the other date which defines this DateRepeat
 	 * @return a DateRepeat expression
 	 */
 	public DateRepeatExpression getDateRepeatFrom(Date date) {
@@ -998,7 +999,7 @@ public class DateExpression implements DateResult, RangeComparable<DateResult> {
 	/**
 	 * Create a DateRepeat value representing the difference between this date expression and the one provided
 	 *
-	 * @param dateExpression 
+	 * @param dateExpression  the other date which defines this DateRepeat
 	 * @return DateRepeat expression
 	 */
 	public DateRepeatExpression getDateRepeatFrom(DateResult dateExpression) {
@@ -1035,7 +1036,7 @@ public class DateExpression implements DateResult, RangeComparable<DateResult> {
 	/**
 	 * Subtract the period/duration provided from this date expression to get an offset date.
 	 *
-	 * @param interval
+	 * @param interval the amount of time this date needs to be offset by. 
 	 * @return a Date expression
 	 */
 	public DateExpression minus(Period interval) {
@@ -1045,7 +1046,7 @@ public class DateExpression implements DateResult, RangeComparable<DateResult> {
 	/**
 	 * Subtract the period/duration provided from this date expression to get an offset date.
 	 *
-	 * @param intervalExpression 
+	 * @param intervalExpression the amount of time this date needs to be offset by. 
 	 * @return a Date expression
 	 */
 	public DateExpression minus(DateRepeatResult intervalExpression) {
@@ -1081,7 +1082,7 @@ public class DateExpression implements DateResult, RangeComparable<DateResult> {
 	/**
 	 * Add the period/duration provided from this date expression to get an offset date.
 	 *
-	 * @param interval
+	 * @param interval the amount of time this date needs to be offset by. 
 	 * @return a Date expression
 	 */
 	public DateExpression plus(Period interval) {
@@ -1091,7 +1092,7 @@ public class DateExpression implements DateResult, RangeComparable<DateResult> {
 	/**
 	 * Add the period/duration provided from this date expression to get an offset date.
 	 *
-	 * @param intervalExpression 
+	 * @param intervalExpression the amount of time this date needs to be offset by. 
 	 * @return a Date expression
 	 */
 	public DateExpression plus(DateRepeatResult intervalExpression) {
@@ -2158,10 +2159,10 @@ public class DateExpression implements DateResult, RangeComparable<DateResult> {
 	/**
 	 * Considering the first and second dates as end point for a time period and similarly for the third and fourth, tests whether the 2 time periods overlap.
 	 *
-	 * @param firstStartTime
-	 * @param firstEndTime
-	 * @param secondStartTime
-	 * @param secondEndtime
+	 * @param firstStartTime the beginning of the first interval
+	 * @param firstEndTime the end of the first interval
+	 * @param secondStartTime the beginning of the second interval
+	 * @param secondEndtime the end of the second interval
 	 * @return a boolean expression
 	 */
 	public static BooleanExpression overlaps(Date firstStartTime, Date firstEndTime, Date secondStartTime, Date secondEndtime) {
@@ -2174,10 +2175,10 @@ public class DateExpression implements DateResult, RangeComparable<DateResult> {
 	/**
 	 * Considering the first and second dates as end point for a time period and similarly for the third and fourth, tests whether the 2 time periods overlap.
 	 *
-	 * @param firstStartTime
-	 * @param firstEndTime
-	 * @param secondStartTime
-	 * @param secondEndtime
+	 * @param firstStartTime the beginning of the first interval
+	 * @param firstEndTime the end of the first interval
+	 * @param secondStartTime the beginning of the second interval
+	 * @param secondEndtime the end of the second interval
 	 * @return a boolean expression
 	 */
 	public BooleanExpression overlaps(DateResult firstStartTime, DateResult firstEndTime, DateResult secondStartTime, DateResult secondEndtime) {
@@ -2190,10 +2191,10 @@ public class DateExpression implements DateResult, RangeComparable<DateResult> {
 	/**
 	 * Considering the first and second dates as end point for a time period and similarly for the third and fourth, tests whether the 2 time periods overlap.
 	 *
-	 * @param firstStartTime
-	 * @param firstEndTime
-	 * @param secondStartTime
-	 * @param secondEndtime
+	 * @param firstStartTime the beginning of the first interval
+	 * @param firstEndTime the end of the first interval
+	 * @param secondStartTime the beginning of the second interval
+	 * @param secondEndtime the end of the second interval
 	 * @return a Boolean expression
 	 */
 	public static BooleanExpression overlaps(DateExpression firstStartTime, DateExpression firstEndTime, DateResult secondStartTime, DateResult secondEndtime) {

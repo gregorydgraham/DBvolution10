@@ -21,6 +21,7 @@ import nz.co.gregs.dbvolution.expressions.BooleanExpression;
 import nz.co.gregs.dbvolution.expressions.DBExpression;
 
 /**
+ * Provides a framework on which to build operators that are combinations of operators.
  *
  * @author Gregory Graham
  */

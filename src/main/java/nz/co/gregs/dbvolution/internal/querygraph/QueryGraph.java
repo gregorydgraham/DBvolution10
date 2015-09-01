@@ -25,13 +25,33 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.DBRow;
+import nz.co.gregs.dbvolution.exceptions.AccidentalCartesianJoinException;
 import nz.co.gregs.dbvolution.expressions.BooleanExpression;
 import nz.co.gregs.dbvolution.expressions.DBExpression;
 import nz.co.gregs.dbvolution.query.QueryOptions;
 
 /**
+ * A class to create a network of all the classes used in a query, using foreign
+ * keys and other relationships.
+ *
+ * <p>
+ * A undirected, possibly-cyclic, database-agnostic, graph of DBRow nodes
+ * connected by bi-directional edges created from known foreign keys and the
+ * expressions used in the query.
+ *
+ * <p>
+ * This class is used to identify cartesian joins by establishing which tables
+ * are included in the join, and which are not. If any node cannot be reached by
+ * traversing the graph, a {@link AccidentalCartesianJoinException} may be
+ * thrown during querying.
+ *
+ * <p>
+ * Ignored foreign keys are not included as edges.
+ *
+ * <p>
+ * DBRows returned by {@link DBExpression#getTablesInvolved() } will be used to
+ * creates edges from expressions in the query.
  *
  * @author Gregory Graham
  */
@@ -41,10 +61,22 @@ public class QueryGraph {
 	private final Map<Class<? extends DBRow>, DBRow> rows = new LinkedHashMap<Class<? extends DBRow>, DBRow>();
 	private edu.uci.ics.jung.graph.Graph<QueryGraphNode, DBExpression> jungGraph = new SparseMultigraph<QueryGraphNode, DBExpression>();
 
-	public QueryGraph(DBDatabase database, List<DBRow> allQueryTables, List<BooleanExpression> expressions, QueryOptions options) {
-		addAndConnectToRelevant(database, allQueryTables, expressions, options);
+	/**
+	 * Create a graph of the tables and connections for all the DBRows and
+	 * BooleanExpressions provided.
+	 *
+	 * @param allQueryTables
+	 * @param expressions
+	 */
+	public QueryGraph(List<DBRow> allQueryTables, List<BooleanExpression> expressions) {
+		addAndConnectToRelevant(allQueryTables, expressions);
 	}
 
+	/**
+	 * Removes all state and prepares the graph for re-initialization.
+	 *
+	 * @return this QueryGraph.
+	 */
 	public QueryGraph clear() {
 		nodes.clear();
 		rows.clear();
@@ -52,15 +84,45 @@ public class QueryGraph {
 		return this;
 	}
 
-	public final void addAndConnectToRelevant(DBDatabase database, List<DBRow> otherTables, List<BooleanExpression> expressions, QueryOptions options) {
-		addAndConnectToRelevant(database, otherTables, expressions, options, true);
+	/**
+	 * Add the provided DBRows/tables and expressions to this QueryGraph,
+	 * generating new nodes and edges as required.
+	 *
+	 * @param otherTables
+	 * @param expressions
+	 */
+	public final void addAndConnectToRelevant(List<DBRow> otherTables, List<BooleanExpression> expressions) {
+		addAndConnectToRelevant(otherTables, expressions, true);
 	}
 
-	public final void addOptionalAndConnectToRelevant(DBDatabase database, List<DBRow> otherTables, List<BooleanExpression> expressions, QueryOptions options) {
-		addAndConnectToRelevant(database, otherTables, expressions, options, false);
+	/**
+	 * Add the provided DBRows/tables and expressions to this QueryGraph,
+	 * generating new nodes and edges as required.
+	 *
+	 * <p>
+	 * The DBrows/tables will be added as optional (that is "outer join" tables)
+	 * and displayed as such.
+	 *
+	 * @param otherTables
+	 * @param expressions
+	 */
+	public final void addOptionalAndConnectToRelevant(List<DBRow> otherTables, List<BooleanExpression> expressions) {
+		addAndConnectToRelevant(otherTables, expressions, false);
 	}
 
-	public final void addAndConnectToRelevant(DBDatabase database, List<DBRow> otherTables, List<BooleanExpression> expressions, QueryOptions options, boolean requiredTables) {
+	/**
+	 * Add the provided DBRows/tables and expressions to this QueryGraph,
+	 * generating new nodes and edges as required.
+	 *
+	 * <p>
+	 * The DBrows/tables will be added as optional (that is "outer join" tables)
+	 * if requiredTables is FALSE.
+	 *
+	 * @param otherTables
+	 * @param expressions
+	 * @param requiredTables
+	 */
+	public final void addAndConnectToRelevant(List<DBRow> otherTables, List<BooleanExpression> expressions, boolean requiredTables) {
 
 		List<DBRow> tablesAdded = new ArrayList<DBRow>();
 		List<DBRow> tablesRemaining = new ArrayList<DBRow>();
@@ -74,12 +136,12 @@ public class QueryGraph {
 			QueryGraphNode node1 = getOrCreateNode(table1, table1Class, requiredTables);
 			for (DBRow table2 : tablesAdded) {
 				if (!table1.getClass().equals(table2.getClass())) {
-					if (table1.willBeConnectedTo(database, table2, options)) {
+					if (table1.willBeConnectedTo(table2)) {
 						Class<? extends DBRow> table2Class = table2.getClass();
 						QueryGraphNode node2 = getOrCreateNode(table2, table2Class, requiredTables);
 						node1.connectTable(table2Class);
 						node2.connectTable(table1Class);
-						addEdgesToDisplayGraph(database, table1, node1, table2, node2, options);
+						addEdgesToDisplayGraph(table1, node1, table2, node2);
 					}
 				}
 			}
@@ -125,8 +187,8 @@ public class QueryGraph {
 		}
 	}
 
-	private void addEdgesToDisplayGraph(DBDatabase database, DBRow table1, QueryGraphNode node1, DBRow table2, QueryGraphNode node2, QueryOptions options) {
-		for (DBExpression fk : table1.getRelationshipsAsBooleanExpressions(database, table2, options)) {
+	private void addEdgesToDisplayGraph(DBRow table1, QueryGraphNode node1, DBRow table2, QueryGraphNode node2) {
+		for (DBExpression fk : table1.getRelationshipsAsBooleanExpressions(table2)) {
 			if (!jungGraph.containsEdge(fk)) {
 				jungGraph.addEdge(fk, node1, node2);
 			}
@@ -141,9 +203,15 @@ public class QueryGraph {
 		}
 	}
 
-	public boolean willCreateCartesianJoin() { //willCreateCartesianJoin
+	/**
+	 * Scans the QueryGraph to detect disconnected DBRows/tables and returns TRUE
+	 * if a disconnection exists.
+	 *
+	 * @return TRUE if the current graph contains a discontinuity which will cause
+	 * a cartesian join to occur.
+	 */
+	public boolean willCreateCartesianJoin() {
 		Set<DBRow> returnTables = new HashSet<DBRow>();
-		//Class<? extends DBRow> startFrom = nodes.keySet().iterator().next();
 		returnTables.addAll(toList());
 
 		for (DBRow row : rows.values()) {
@@ -155,6 +223,16 @@ public class QueryGraph {
 		return false;
 	}
 
+	/**
+	 * Get an arbitrary table from the graph with which to start a traversal.
+	 *
+	 * <p>
+	 * This method prefers to return a required (that is an "inner join") table
+	 * over an optional, or "outer join", table. It also prefers tables with
+	 * actual conditions to unaltered join or leaf tables.
+	 *
+	 * @return the class of a DBRow from which to start a traversal.
+	 */
 	private Class<? extends DBRow> getStartTable() {
 		List<QueryGraphNode> innerNodes = new ArrayList<QueryGraphNode>();
 		List<QueryGraphNode> outerNodes = new ArrayList<QueryGraphNode>();
@@ -182,6 +260,28 @@ public class QueryGraph {
 		return nodesToCheck.get(0).getTable();
 	}
 
+	/**
+	 * Return tables in the QueryGraph as a list.
+	 *
+	 * <p>
+	 * Starting from a semi-random table (see {@link #getStartTable() }) traverse
+	 * the graph and add all nodes found to the list.
+	 *
+	 * <p>
+	 * This method does not check for discontinuities. If there is a cartesian
+	 * join/discontinuity present only some of the nodes will be returned. Use {@link #toListIncludingCartesian()
+	 * } if you need to span a discontinuity.
+	 *
+	 * <p>
+	 * Some optimization is attempted, by trying to include all the required/inner
+	 * tables first before adding the optional/outer tables. This avoids a common
+	 * problem of a query that spans the intersection of 2 optional/outer tables,
+	 * creating mid-query cartesian join that could have been avoided by including
+	 * a related required/inner table first.
+	 *
+	 * @return a list of all DBRows in this QueryGraph in a smart an order as
+	 * possible.
+	 */
 	public List<DBRow> toList() {
 		return toList(getStartTable());
 	}
@@ -230,6 +330,28 @@ public class QueryGraph {
 		return returnTables;
 	}
 
+	/**
+	 * Return all tables in the QueryGraph as a list.
+	 *
+	 * <p>
+	 * Starting from a semi-random table (see {@link #getStartTable() }) traverse
+	 * the graph and add all nodes found to the list.
+	 *
+	 * <p>
+	 * This method scans across discontinuities. If there is a cartesian
+	 * join/discontinuity present all of the nodes will be returned. Use {@link #toList() 
+	 * } if you need to avoid spanning a discontinuity.
+	 *
+	 * <p>
+	 * Some optimization is attempted, by trying to include all the required/inner
+	 * tables first before adding the optional/outer tables. This avoids a common
+	 * problem of a query that spans the intersection of 2 optional/outer tables,
+	 * creating mid-query cartesian join that could have been avoided by including
+	 * a related required/inner table first.
+	 *
+	 * @return a list of all DBRows in this QueryGraph in a smart an order as
+	 * possible.
+	 */
 	public List<DBRow> toListIncludingCartesian() {
 		Set<DBRow> returnTables = new HashSet<DBRow>();
 
@@ -250,6 +372,14 @@ public class QueryGraph {
 		return returnList;
 	}
 
+	/**
+	 * Create a Jung graph of this QueryGraph for display purposes.
+	 * 
+	 * <p>
+	 * Other graphs are available but we use {@link edu.uci.ics.jung.graph.Graph}.
+	 *
+	 * @return a Jung Graph.
+	 */
 	public edu.uci.ics.jung.graph.Graph<QueryGraphNode, DBExpression> getJungGraph() {
 		return jungGraph;
 	}

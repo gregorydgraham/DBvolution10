@@ -28,15 +28,22 @@ import nz.co.gregs.dbvolution.expressions.StringExpression;
 import nz.co.gregs.dbvolution.results.StringResult;
 
 /**
+ * Implements a type agnostic comparison that finds items between the 2 values
+ * but not the values themselves.
  *
  * @author Gregory Graham
  */
 public class DBBetweenExclusiveOperator extends DBOperator {
 
 	private static final long serialVersionUID = 1L;
-//	DBExpression lowest;
-//	DBExpression highest;
 
+/**
+ * Implements a type agnostic comparison that finds items between the 2 values
+ * but not the values themselves.
+ *
+	 * @param lowValue
+	 * @param highValue
+ */
 	public DBBetweenExclusiveOperator(DBExpression lowValue, DBExpression highValue) {
 		super(lowValue == null ? lowValue : lowValue.copy(),
 				highValue == null ? highValue : highValue.copy());

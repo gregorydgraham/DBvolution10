@@ -22,13 +22,20 @@ import nz.co.gregs.dbvolution.expressions.DBExpression;
 import nz.co.gregs.dbvolution.expressions.NumberExpression;
 import nz.co.gregs.dbvolution.results.NumberResult;
 
+/**
+ * Creates a bitwise comparison for boolean or number expressions
+ *
+ * @author gregorygraham
+ */
 public class DBBitwiseEqualsOperator extends DBEqualsOperator {
 
 	private static final long serialVersionUID = 1L;
 
-	public DBBitwiseEqualsOperator() {
-	}
-
+/**
+ * Creates a bitwise comparison for boolean or number expressions
+ *
+	 * @param equalTo
+ */
 	public DBBitwiseEqualsOperator(BooleanExpression equalTo) {
 		super(equalTo);
 	}
@@ -39,10 +46,11 @@ public class DBBitwiseEqualsOperator extends DBEqualsOperator {
 		BooleanExpression op = BooleanExpression.trueExpression();
 		if (genericExpression instanceof BooleanExpression) {
 			BooleanExpression expr = (BooleanExpression) genericExpression;
-			if (getFirstValue() instanceof BooleanResult) {
-				op = expr.is((BooleanResult) getFirstValue());
-			} else if (getFirstValue() instanceof NumberResult) {
-				op = expr.is(new NumberExpression((NumberResult) getFirstValue()).is(1));
+			final DBExpression firstValue = getFirstValue();
+			if (firstValue instanceof BooleanResult) {
+				op = expr.is((BooleanResult) firstValue);
+			} else if (firstValue instanceof NumberResult) {
+				op = expr.is(new NumberExpression((NumberResult) firstValue).is(1));
 			}
 		}
 		return this.invertOperator ? op.not() : op;

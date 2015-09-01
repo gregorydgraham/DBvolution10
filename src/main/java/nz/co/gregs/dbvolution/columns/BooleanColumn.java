@@ -103,7 +103,7 @@ public class BooleanColumn extends BooleanExpression implements ColumnProvider {
 	 * Create an expression to compare this column to the other column using
 	 * EQUALS.
 	 *
-	 * @param boolColumn
+	 * @param boolColumn an instance to compare to
 	 * @return a BooleanExpression
 	 */
 	public BooleanExpression is(DBBoolean boolColumn) {

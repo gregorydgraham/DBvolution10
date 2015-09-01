@@ -20,6 +20,7 @@ import java.util.Set;
 import nz.co.gregs.dbvolution.DBRow;
 
 /**
+ * Nodes (a.k.a. vertexes) of the {@link QueryGraph}
  *
  * @author Gregory Graham
  */
@@ -30,24 +31,58 @@ public class QueryGraphNode {
 	private final Class<? extends DBRow> table;
 	private final Set<Class<? extends DBRow>> connectedTables = new HashSet<Class<? extends DBRow>>();
 
+	/**
+	 * Create a node for the supplied table.
+	 *
+	 * <p>
+	 * The table is assumed to be a required/inner table.
+	 *
+	 * @param table
+	 */
 	public QueryGraphNode(Class<? extends DBRow> table) {
 		this.table = table;
 	}
 
+	/**
+	 * Create a node for the supplied table, with TRUE if the table is a
+	 * required/inner table or FALSE if it is optional/outer.
+	 *
+	 * @param table
+	 * @param requiredTable
+	 */
 	public QueryGraphNode(Class<? extends DBRow> table, boolean requiredTable) {
 		this.table = table;
 		requiredNode = requiredTable;
 	}
 
+	/**
+	 * Return all connected tables known by this node.
+	 *
+	 * <p>
+	 * Only includes DBRows/tables that have been connected to this node using {@link #connectTable(java.lang.Class)
+	 * }.
+	 *
+	 * @return
+	 */
 	public Set<Class<? extends DBRow>> getConnectedTables() {
 		return connectedTables;
 	}
 
+	/**
+	 * Add a connection from this node to the specified table.
+	 *
+	 * <p>
+	 * To retrieval all connected tables, use {@link #getConnectedTables() }.
+	 *
+	 * @param table
+	 */
 	public void connectTable(Class<? extends DBRow> table) {
 		connectedTables.add(table);
 	}
 
 	/**
+	 * Retrieves the table that this node contains.
+	 * 
 	 * @return the table
 	 */
 	public Class<? extends DBRow> getTable() {
@@ -77,6 +112,11 @@ public class QueryGraphNode {
 		return hash;
 	}
 
+	/**
+	 * Specifies whether this node represents a required/inner table, or an optional/outer table.
+	 *
+	 * @return TRUE if the table is a required/inner table, otherwise FALSE.
+	 */
 	public boolean isRequiredNode() {
 		return requiredNode;
 	}

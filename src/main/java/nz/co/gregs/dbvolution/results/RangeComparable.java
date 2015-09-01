@@ -33,7 +33,7 @@ public interface RangeComparable<A> extends EqualComparable<A> {
 	 * Creates a {@link BooleanExpression} that compares the 2 instances using the
 	 * LESSTHAN operation.
 	 *
-	 * @param anotherInstance
+	 * @param anotherInstance the instance to compare to
 	 * @return a BooleanExpression
 	 */
 	public BooleanExpression isLessThan(A anotherInstance);
@@ -42,7 +42,7 @@ public interface RangeComparable<A> extends EqualComparable<A> {
 	 * Creates a {@link BooleanExpression} that compares the 2 instances using the
 	 * GREATERTHAN operation.
 	 *
-	 * @param anotherInstance
+	 * @param anotherInstance the instance to compare to
 	 * @return a BooleanExpression
 	 */
 	public BooleanExpression isGreaterThan(A anotherInstance);
@@ -51,7 +51,7 @@ public interface RangeComparable<A> extends EqualComparable<A> {
 	 * Creates a {@link BooleanExpression} that compares the 2 instances using the
 	 * LESSTHAN operation.
 	 *
-	 * @param anotherInstance
+	 * @param anotherInstance the instance to compare to
 	 * @return a BooleanExpression
 	 */
 	public BooleanExpression isLessThanOrEqual(A anotherInstance);
@@ -60,7 +60,7 @@ public interface RangeComparable<A> extends EqualComparable<A> {
 	 * Creates a {@link BooleanExpression} that compares the 2 instances using the
 	 * GREATERTHAN operation.
 	 *
-	 * @param anotherInstance
+	 * @param anotherInstance the instance to compare to
 	 * @return a BooleanExpression
 	 */
 	public BooleanExpression isGreaterThanOrEqual(A anotherInstance);
@@ -74,8 +74,8 @@ public interface RangeComparable<A> extends EqualComparable<A> {
 	 * is returned instead. This helps apply the LESSTHAN operator across multiple
 	 * columns.
 	 *
-	 * @param anotherInstance
-	 * @param fallBackWhenEqual
+	 * @param anotherInstance the instance to compare to
+	 * @param fallBackWhenEqual expression to use when the values are equal
 	 * @return a BooleanExpression
 	 */
 	public BooleanExpression isLessThan(A anotherInstance, BooleanExpression fallBackWhenEqual);
@@ -84,8 +84,8 @@ public interface RangeComparable<A> extends EqualComparable<A> {
 	 * Creates a {@link BooleanExpression} that compares the 2 instances using the
 	 * GREATERTHAN operation.
 	 *
-	 * @param anotherInstance
-	 * @param fallBackWhenEqual
+	 * @param anotherInstance the instance to compare to
+	 * @param fallBackWhenEqual expression to use when the values are equal
 	 * @return a BooleanExpression
 	 */
 	public BooleanExpression isGreaterThan(A anotherInstance, BooleanExpression fallBackWhenEqual);

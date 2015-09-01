@@ -1164,13 +1164,11 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 	 * List the foreign keys and ad-hoc relationships from this instance to the
 	 * supplied example as DBRelationships
 	 *
-	 * @param db db
 	 * @param otherTable otherTable
-	 * @param options options
 	 * @return the foreign keys and ad-hoc relationships as an SQL String or a
 	 * null pointer
 	 */
-	public List<BooleanExpression> getRelationshipsAsBooleanExpressions(DBDatabase db, DBRow otherTable, QueryOptions options) {
+	public List<BooleanExpression> getRelationshipsAsBooleanExpressions(DBRow otherTable) {
 		List<BooleanExpression> rels = new ArrayList<BooleanExpression>();
 
 		List<PropertyWrapper> fks = getForeignKeyPropertyWrappers();
@@ -1204,15 +1202,13 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 	 * Tests whether this instance of DBRow and the otherTable instance of DBRow
 	 * will be connected given the specified database and query options.
 	 *
-	 * @param database database
 	 * @param otherTable otherTable
-	 * @param options options
 	 * @return TRUE if this instance and the otherTable will be connected, FALSE
 	 * otherwise.
 	 */
-	public boolean willBeConnectedTo(DBDatabase database, DBRow otherTable, QueryOptions options) {
-		List<BooleanExpression> relationshipsAsBooleanExpressions = this.getRelationshipsAsBooleanExpressions(database, otherTable, options);
-		relationshipsAsBooleanExpressions.addAll(otherTable.getRelationshipsAsBooleanExpressions(database, this, options));
+	public boolean willBeConnectedTo(DBRow otherTable) {
+		List<BooleanExpression> relationshipsAsBooleanExpressions = this.getRelationshipsAsBooleanExpressions(otherTable);
+		relationshipsAsBooleanExpressions.addAll(otherTable.getRelationshipsAsBooleanExpressions(this));
 		return (!relationshipsAsBooleanExpressions.isEmpty());
 	}
 

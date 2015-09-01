@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.Set;
 import nz.co.gregs.dbvolution.*;
 import nz.co.gregs.dbvolution.datatypes.*;
+import nz.co.gregs.dbvolution.results.InComparable;
 
 /**
  * NumberExpression implements standard functions that produce a numeric result,
@@ -47,7 +48,7 @@ import nz.co.gregs.dbvolution.datatypes.*;
  *
  * @author Gregory Graham
  */
-public class NumberExpression implements NumberResult, RangeComparable<NumberResult> {
+public class NumberExpression implements NumberResult, RangeComparable<NumberResult>, InComparable<NumberResult> {
 
 	static NumberExpression nullExpression() {
 		return new NumberExpression() {

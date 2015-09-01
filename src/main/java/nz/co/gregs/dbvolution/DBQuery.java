@@ -271,7 +271,7 @@ public class DBQuery {
 
 		//Store the expressions from the new table in the QueryState
 		for (DBRow otherTable : preExistingTables) {
-			queryState.remainingExpressions.addAll(newTable.getRelationshipsAsBooleanExpressions(database, otherTable, options));
+			queryState.remainingExpressions.addAll(newTable.getRelationshipsAsBooleanExpressions(otherTable));
 		}
 
 		// Add new table's conditions
@@ -2201,14 +2201,13 @@ public class DBQuery {
 	}
 
 	private void initialiseQueryGraph() {
-		final QueryOptions options = details.getOptions();
 		if (queryGraph == null) {
-			queryGraph = new QueryGraph(getDatabase(), details.getRequiredQueryTables(), getConditions(), options);
-			queryGraph.addOptionalAndConnectToRelevant(getDatabase(), details.getOptionalQueryTables(), getConditions(), options);
+			queryGraph = new QueryGraph(details.getRequiredQueryTables(), getConditions());
+			queryGraph.addOptionalAndConnectToRelevant(details.getOptionalQueryTables(), getConditions());
 		} else {
 			queryGraph.clear();
-			queryGraph.addAndConnectToRelevant(getDatabase(), details.getRequiredQueryTables(), getConditions(), options);
-			queryGraph.addOptionalAndConnectToRelevant(getDatabase(), details.getOptionalQueryTables(), getConditions(), options);
+			queryGraph.addAndConnectToRelevant(details.getRequiredQueryTables(), getConditions());
+			queryGraph.addOptionalAndConnectToRelevant(details.getOptionalQueryTables(), getConditions());
 		}
 	}
 

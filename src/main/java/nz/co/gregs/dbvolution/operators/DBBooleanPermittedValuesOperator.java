@@ -17,26 +17,29 @@ package nz.co.gregs.dbvolution.operators;
 
 import nz.co.gregs.dbvolution.expressions.BooleanExpression;
 
+/**
+ * Implements the EQUALS operator for DBBooleans
+ *
+ * @author gregorygraham
+ */
 public class DBBooleanPermittedValuesOperator extends DBPermittedValuesOperator {
 
 	private static final long serialVersionUID = 1L;
 
+	/**
+	 * Implements the EQUALS operator for DBBooleans.
+	 *
+	 * @author gregorygraham
+	 * @param permitted
+	 */
 	@SuppressWarnings("unchecked")
 	public DBBooleanPermittedValuesOperator(Boolean permitted) {
-		BooleanExpression expr = null;
+		BooleanExpression expr;
 		if (permitted == null) {
 			operator = new DBIsNullOperator();
 		} else {
-//			if (permitted == null) {
-//				this.includeNulls = true;
-//			} else {
 			expr = BooleanExpression.value(permitted);
-//			}
-//			if (expr==null) {
-//				operator = new DBIsNullOperator();
-//			} else{
 			operator = new DBBitwiseEqualsOperator(expr);
-//			}
 		}
 		operator.includeNulls = this.includeNulls;
 	}

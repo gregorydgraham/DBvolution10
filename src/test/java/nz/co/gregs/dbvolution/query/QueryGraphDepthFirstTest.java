@@ -66,8 +66,8 @@ public class QueryGraphDepthFirstTest extends AbstractTest {
 		optionalTables.add(new TableD());
 		optionalTables.add(new TableE());
 
-		QueryGraph graph = new QueryGraph(database, requiredTables, new ArrayList<BooleanExpression>(), new QueryOptions());
-		graph.addOptionalAndConnectToRelevant(database, optionalTables, new ArrayList<BooleanExpression>(), new QueryOptions());
+		QueryGraph graph = new QueryGraph(requiredTables, new ArrayList<BooleanExpression>());
+		graph.addOptionalAndConnectToRelevant(optionalTables, new ArrayList<BooleanExpression>());
 
 		List<DBRow> result = graph.toList();
 		for (DBRow dBRow : result) {
@@ -96,8 +96,8 @@ public class QueryGraphDepthFirstTest extends AbstractTest {
 		optionalTables.add(new TableD());
 		optionalTables.add(new TableE());
 
-		QueryGraph graph = new QueryGraph(database, requiredTables, new ArrayList<BooleanExpression>(), new QueryOptions());
-		graph.addOptionalAndConnectToRelevant(database, optionalTables, new ArrayList<BooleanExpression>(), new QueryOptions());
+		QueryGraph graph = new QueryGraph(requiredTables, new ArrayList<BooleanExpression>());
+		graph.addOptionalAndConnectToRelevant(optionalTables, new ArrayList<BooleanExpression>());
 
 		List<DBRow> result = graph.toList();
 		for (DBRow dBRow : result) {
@@ -123,8 +123,8 @@ public class QueryGraphDepthFirstTest extends AbstractTest {
 		requiredTables.add(new TableD());
 		requiredTables.add(new TableE());
 
-		QueryGraph graph = new QueryGraph(database, requiredTables, new ArrayList<BooleanExpression>(), new QueryOptions());
-		graph.addOptionalAndConnectToRelevant(database, optionalTables, new ArrayList<BooleanExpression>(), new QueryOptions());
+		QueryGraph graph = new QueryGraph(requiredTables, new ArrayList<BooleanExpression>());
+		graph.addOptionalAndConnectToRelevant(optionalTables, new ArrayList<BooleanExpression>());
 
 		List<? extends DBRow> result = graph.toList();
 		for (DBRow dBRow : result) {
@@ -163,8 +163,8 @@ public class QueryGraphDepthFirstTest extends AbstractTest {
 		requiredTables.add(tableD);
 		requiredTables.add(tableE);
 
-		QueryGraph graph = new QueryGraph(database, requiredTables, new ArrayList<BooleanExpression>(), new QueryOptions());
-		graph.addOptionalAndConnectToRelevant(database, optionalTables, new ArrayList<BooleanExpression>(), new QueryOptions());
+		QueryGraph graph = new QueryGraph(requiredTables, new ArrayList<BooleanExpression>());
+		graph.addOptionalAndConnectToRelevant(optionalTables, new ArrayList<BooleanExpression>());
 
 		List<DBRow> result = graph.toList();
 		for (DBRow dBRow : result) {
@@ -201,8 +201,8 @@ public class QueryGraphDepthFirstTest extends AbstractTest {
 		requiredTables.add(tableD);
 		requiredTables.add(tableE);
 
-		QueryGraph graph = new QueryGraph(database, requiredTables, new ArrayList<BooleanExpression>(), new QueryOptions());
-		graph.addOptionalAndConnectToRelevant(database, optionalTables, new ArrayList<BooleanExpression>(), new QueryOptions());
+		QueryGraph graph = new QueryGraph(requiredTables, new ArrayList<BooleanExpression>());
+		graph.addOptionalAndConnectToRelevant(optionalTables, new ArrayList<BooleanExpression>());
 
 		List<DBRow> result = graph.toList();
 		for (DBRow dBRow : result) {

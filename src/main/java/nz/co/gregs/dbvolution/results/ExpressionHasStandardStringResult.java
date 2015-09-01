@@ -16,6 +16,7 @@
 package nz.co.gregs.dbvolution.results;
 
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
+import nz.co.gregs.dbvolution.expressions.DBExpression;
 import nz.co.gregs.dbvolution.expressions.StringExpression;
 
 /**
@@ -34,7 +35,7 @@ public interface ExpressionHasStandardStringResult {
 	 *
 	 * <p>
 	 * Please note that this is not the SQL version of the expression
-	 * {@link DBExpression#toSQLString() (toSQLString() will provide that)}, nor
+	 * {@link DBExpression#toSQLString(nz.co.gregs.dbvolution.DBDatabase)  (toSQLString() will provide that)}, nor
 	 * does this provide a String of the value.
 	 *
 	 * <p>

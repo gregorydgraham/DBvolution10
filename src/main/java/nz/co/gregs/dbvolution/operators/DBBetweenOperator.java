@@ -28,6 +28,7 @@ import nz.co.gregs.dbvolution.expressions.StringExpression;
 import nz.co.gregs.dbvolution.results.StringResult;
 
 /**
+ * Uses the database's native BETWEEN operator and is thus not reliable.
  *
  * @author Gregory Graham
  */
@@ -35,18 +36,42 @@ public class DBBetweenOperator extends DBOperator {
 
 	private static final long serialVersionUID = 1L;
 
+	/**
+	 * Uses the database's native BETWEEN operator and is thus not reliable.
+	 *
+	 * @param lowValue
+	 * @param highValue
+	 */
 	public DBBetweenOperator(int lowValue, int highValue) {
 		this(NumberExpression.value(lowValue), NumberExpression.value(highValue));
 	}
 
+	/**
+	 * Uses the database's native BETWEEN operator and is thus not reliable.
+	 *
+	 * @param lowValue
+	 * @param highValue
+	 */
 	public DBBetweenOperator(String lowValue, String highValue) {
 		this(StringExpression.value(lowValue), StringExpression.value(highValue));
 	}
 
+	/**
+	 * Uses the database's native BETWEEN operator and is thus not reliable.
+	 *
+	 * @param lowValue
+	 * @param highValue
+	 */
 	public DBBetweenOperator(Date lowValue, Date highValue) {
 		this(DateExpression.value(lowValue), DateExpression.value(highValue));
 	}
 
+	/**
+	 * Uses the database's native BETWEEN operator and is thus not reliable.
+	 *
+	 * @param lowValue
+	 * @param highValue
+	 */
 	public DBBetweenOperator(DBExpression lowValue, DBExpression highValue) {
 		super(lowValue == null ? lowValue : lowValue.copy(),
 				highValue == null ? highValue : highValue.copy());

@@ -27,6 +27,8 @@ import nz.co.gregs.dbvolution.expressions.StringExpression;
 import nz.co.gregs.dbvolution.results.StringResult;
 
 /**
+ * Implements a type agnostic comparison that finds items between the 2 values
+ * including the values themselves.
  *
  * @author Gregory Graham
  */
@@ -34,8 +36,13 @@ public class DBBetweenInclusiveOperator extends DBOperator {
 
 	private static final long serialVersionUID = 1L;
 
-//    private final QueryableDatatype firstValue;
-//    private final QueryableDatatype secondValue;
+	/**
+	 * Implements a type agnostic comparison that finds items between the 2 values
+	 * including the values themselves.
+	 *
+	 * @param lowValue
+	 * @param highValue
+	 */
 	public DBBetweenInclusiveOperator(DBExpression lowValue, DBExpression highValue) {
 		super(lowValue == null ? lowValue : lowValue.copy(),
 				highValue == null ? highValue : highValue.copy());

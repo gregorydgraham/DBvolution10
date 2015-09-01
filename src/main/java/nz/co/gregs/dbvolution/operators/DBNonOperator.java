@@ -20,6 +20,11 @@ import nz.co.gregs.dbvolution.datatypes.QueryableDatatypeSyncer.DBSafeInternalQD
 import nz.co.gregs.dbvolution.expressions.BooleanExpression;
 import nz.co.gregs.dbvolution.expressions.DBExpression;
 
+/**
+ * Creates an operation that does nothing.
+ *
+ * @author gregorygraham
+ */
 public class DBNonOperator extends DBOperator {
 
 	private static final long serialVersionUID = 1L;

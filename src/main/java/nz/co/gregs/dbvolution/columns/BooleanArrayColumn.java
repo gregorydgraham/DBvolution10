@@ -109,7 +109,7 @@ public class BooleanArrayColumn extends BooleanArrayExpression implements Column
 	/**
 	 * Creates an expression that will compare this column to the other column.
 	 *
-	 * @param boolArrayColumn
+	 * @param boolArrayColumn the column to compare to
 	 * @return a BooleanExpression
 	 */
 	public BooleanExpression is(DBBooleanArray boolArrayColumn) {

@@ -22,23 +22,36 @@ import nz.co.gregs.dbvolution.expressions.DBExpression;
 import nz.co.gregs.dbvolution.expressions.StringExpression;
 
 /**
+ * Implements LIKE for all types that support it.
  *
  * @author Gregory Graham
  */
 public class DBLikeOperator extends DBOperator {
 
 	private static final long serialVersionUID = 1L;
-//    private final QueryableDatatype firstValue;
-//	private StringExpression likeableValue;
 
+	/**
+	 * Implements LIKE for all types that support it.
+	 *
+	 * @param likeableValue
+	 */
 	public DBLikeOperator(String likeableValue) {
 		super(likeableValue == null ? null : new StringExpression(likeableValue));
 	}
 
+	/**
+	 * Implements LIKE for all types that support it.
+	 *
+	 * @param likeableValue
+	 */
 	public DBLikeOperator(StringExpression likeableValue) {
 		super(likeableValue == null ? likeableValue : likeableValue.copy());
 	}
 
+	/**
+	 * Default constructor
+	 *
+	 */
 	public DBLikeOperator() {
 		super();
 	}

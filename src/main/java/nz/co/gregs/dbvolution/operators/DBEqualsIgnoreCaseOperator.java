@@ -26,33 +26,24 @@ import nz.co.gregs.dbvolution.results.NumberResult;
 import nz.co.gregs.dbvolution.expressions.StringExpression;
 import nz.co.gregs.dbvolution.results.StringResult;
 
+/**
+ * Implements the EQUALS operator for DBStrings, but case-insensitive.
+ *
+ * @author Gregory Graham
+ */
 public class DBEqualsIgnoreCaseOperator extends DBEqualsOperator {
 
 	private static final long serialVersionUID = 1L;
 
-	public DBEqualsIgnoreCaseOperator() {
-		super();
-	}
-
+	/**
+	 * Implements the EQUALS operator for DBStrings, but case-insensitive.
+	 *
+	 * @param equalTo
+	 */
 	public DBEqualsIgnoreCaseOperator(DBExpression equalTo) {
 		super(equalTo);
 	}
 
-//    @Override
-//    public String generateWhereLine(DBDatabase db, String columnName) {
-////        firstValue.setDatabase(database);
-//        DBDefinition defn = db.getDefinition();
-//        if (firstValue.toSQLString(db).equals(defn.getNull())) {
-//            DBIsNullOperator dbIsNullOperator = new DBIsNullOperator();
-//            return dbIsNullOperator.generateWhereLine(db, columnName);
-//        }
-//        return defn.toLowerCase(columnName) + (invertOperator ? getInverse(defn) : getOperator(defn)) + defn.toLowerCase(firstValue.toSQLString(db)) + " ";
-//    }
-//    @Override
-//    public String generateRelationship(DBDatabase database, String columnName, String otherColumnName) {
-//        DBDefinition defn = database.getDefinition();
-//        return defn.toLowerCase(columnName) + (invertOperator ? getInverse(defn) : getOperator(defn)) + defn.toLowerCase(otherColumnName);
-//    }
 	@Override
 	public DBEqualsIgnoreCaseOperator copyAndAdapt(DBSafeInternalQDTAdaptor typeAdaptor) {
 		DBEqualsIgnoreCaseOperator op = new DBEqualsIgnoreCaseOperator(typeAdaptor.convert(getFirstValue()));

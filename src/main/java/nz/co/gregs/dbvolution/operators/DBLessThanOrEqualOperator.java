@@ -16,7 +16,6 @@
 package nz.co.gregs.dbvolution.operators;
 
 import nz.co.gregs.dbvolution.DBDatabase;
-import nz.co.gregs.dbvolution.columns.ColumnProvider;
 import nz.co.gregs.dbvolution.expressions.DBExpression;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatypeSyncer.DBSafeInternalQDTAdaptor;
 import nz.co.gregs.dbvolution.expressions.BooleanExpression;
@@ -27,15 +26,28 @@ import nz.co.gregs.dbvolution.results.NumberResult;
 import nz.co.gregs.dbvolution.expressions.StringExpression;
 import nz.co.gregs.dbvolution.results.StringResult;
 
+	/**
+	 * Implements LESSTHANEQUALS for all types that support it.
+	 *
+	 * @author Gregory Graham
+	 */
 public class DBLessThanOrEqualOperator extends DBLessThanOperator {
 
 	private static final long serialVersionUID = 1L;
 
+	/**
+	 * Implements LESSTHANEQUALS for all types that support it.
+	 *
+	 * @param lessThanThis the expression to compare to.
+	 */
 	public DBLessThanOrEqualOperator(DBExpression lessThanThis) {
 		super(lessThanThis);
 	}
 
-	public DBLessThanOrEqualOperator() {
+	/**
+	 *Default constructor
+	 */
+	protected DBLessThanOrEqualOperator() {
 		super();
 	}
 

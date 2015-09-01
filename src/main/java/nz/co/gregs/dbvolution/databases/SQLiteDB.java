@@ -21,6 +21,7 @@ import java.sql.SQLException;
 import javax.sql.DataSource;
 import org.sqlite.SQLiteConfig;
 import nz.co.gregs.dbvolution.DBDatabase;
+import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.databases.definitions.SQLiteDefinition;
 import nz.co.gregs.dbvolution.databases.supports.SupportsDateRepeatDatatypeFunctions;
 import nz.co.gregs.dbvolution.databases.supports.SupportsPolygonDatatype;

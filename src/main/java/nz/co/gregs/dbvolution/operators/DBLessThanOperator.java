@@ -27,22 +27,27 @@ import nz.co.gregs.dbvolution.expressions.StringExpression;
 import nz.co.gregs.dbvolution.results.StringResult;
 
 /**
+ * Implements LESSTHAN for all types that support it.
  *
  * @author Gregory Graham
  */
 public class DBLessThanOperator extends DBOperator {
 
 	private static final long serialVersionUID = 1L;
-//    protected final QueryableDatatype firstValue;
 
 	/**
+	 * Implements LESSTHAN for all types that support it.
 	 *
 	 * @param lessThanThis the expression to compare to.
 	 */
 	public DBLessThanOperator(DBExpression lessThanThis) {
-		super((lessThanThis != null?lessThanThis.copy(): null));
+		super((lessThanThis != null ? lessThanThis.copy() : null));
 	}
 
+	/**
+	 * Default Constructor
+	 *
+	 */
 	public DBLessThanOperator() {
 		super();
 	}

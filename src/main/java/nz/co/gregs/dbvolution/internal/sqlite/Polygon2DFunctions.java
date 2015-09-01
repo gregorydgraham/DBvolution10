@@ -137,7 +137,7 @@ public class Polygon2DFunctions {
 	 * @throws SQLException
 	 */
 	public static void addFunctions(java.sql.Connection connection) throws SQLException {
-		add(connection, DIMENSION, new Dimension());
+		add(connection, DIMENSION, new SpatialDimension());
 		add(connection, EQUALS, new Equals());
 		add(connection, AREA, new Area());
 		add(connection, TOUCHES, new Touches());
@@ -163,9 +163,10 @@ public class Polygon2DFunctions {
 	}
 
 	/**
+	 * Implements Polygon2D DIMENSION for SQLite
 	 *
 	 */
-	public static class Dimension extends Function {
+	private static class SpatialDimension extends Function {
 
 		@Override
 		protected void xFunc() throws SQLException {
@@ -174,9 +175,10 @@ public class Polygon2DFunctions {
 	}
 
 	/**
+	 * Implements Polygon2D CREATE for SQLite
 	 *
 	 */
-	public static class CreatePolygonFromWKTPolygon2D extends PolygonFunction {
+	private static class CreatePolygonFromWKTPolygon2D extends PolygonFunction {
 
 		@Override
 		protected void xFunc() throws SQLException {
@@ -191,9 +193,10 @@ public class Polygon2DFunctions {
 	}
 
 	/**
+	 * Implements Polygon2D CREATE for SQLite
 	 *
 	 */
-	public static class CreatePolygonFromPoint2Ds extends Function {
+	private static class CreatePolygonFromPoint2Ds extends Function {
 
 		@Override
 		protected void xFunc() throws SQLException {

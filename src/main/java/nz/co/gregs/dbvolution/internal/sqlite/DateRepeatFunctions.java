@@ -138,6 +138,7 @@ public class DateRepeatFunctions {
 	}
 
 	/**
+	 * The function used to create DateRepeat values in the SQLite database
 	 *
 	 */
 	public static class Create extends Function {
@@ -164,12 +165,13 @@ public class DateRepeatFunctions {
 	}
 
 	/**
+	 * Implements DateRepeat arithmetic for SQLite
 	 *
 	 */
 	public static class DateAddition extends Function {
 
 		/**
-		 *
+		 * Implements DateRepeat arithmetic for SQLite
 		 */
 		public DateAddition() {
 		}
@@ -196,11 +198,13 @@ public class DateRepeatFunctions {
 	}
 
 	/**
+	 * Implements DateRepeat arithmetic for SQLite
 	 *
 	 */
 	public static class DateSubtraction extends Function {
 
 		/**
+		 * Implements DateRepeat arithmetic for SQLite
 		 *
 		 */
 		public DateSubtraction() {
@@ -228,6 +232,7 @@ public class DateRepeatFunctions {
 	}
 
 	/**
+	 * Implements DateRepeat EQUALS for SQLite
 	 *
 	 */
 	public static class Equals extends Function {
@@ -247,11 +252,13 @@ public class DateRepeatFunctions {
 	}
 
 	/**
+	 * Implements DateRepeat GETDAY for SQLite
 	 *
 	 */
 	public static class GetDay extends Function {
 
 		/**
+		 * Implements DateRepeat GETDAY for SQLite
 		 *
 		 */
 		public GetDay() {
@@ -271,11 +278,13 @@ public class DateRepeatFunctions {
 	}
 
 	/**
+	 * Implements DateRepeat GETHOUR for SQLite
 	 *
 	 */
 	public static class GetHour extends Function {
 
 		/**
+		 * Implements DateRepeat GETHOUR for SQLite
 		 *
 		 */
 		public GetHour() {
@@ -295,11 +304,13 @@ public class DateRepeatFunctions {
 	}
 
 	/**
+	 * Implements DateRepeat GETMINUTE for SQLite
 	 *
 	 */
 	public static class GetMinute extends Function {
 
 		/**
+		 * Implements DateRepeat GETMINUTE for SQLite
 		 *
 		 */
 		public GetMinute() {
@@ -319,11 +330,13 @@ public class DateRepeatFunctions {
 	}
 
 	/**
+	 * Implements DateRepeat GETMONTH for SQLite
 	 *
 	 */
 	public static class GetMonth extends Function {
 
 		/**
+		 * Implements DateRepeat GETMONTH for SQLite
 		 *
 		 */
 		public GetMonth() {
@@ -343,11 +356,13 @@ public class DateRepeatFunctions {
 	}
 
 	/**
+	 * Implements DateRepeat GETSECOND for SQLite
 	 *
 	 */
 	public static class GetSecond extends Function {
 
 		/**
+		 * Implements DateRepeat GETSECOND for SQLite
 		 *
 		 */
 		public GetSecond() {
@@ -367,11 +382,13 @@ public class DateRepeatFunctions {
 	}
 
 	/**
+	 * Implements DateRepeat GETYEAR for SQLite
 	 *
 	 */
 	public static class GetYear extends Function {
 
 		/**
+		 * Implements DateRepeat GETYEAR for SQLite
 		 *
 		 */
 		public GetYear() {
@@ -391,11 +408,13 @@ public class DateRepeatFunctions {
 	}
 
 	/**
+	 * Implements DateRepeat GREATERTHAN for SQLite
 	 *
 	 */
 	public static class GreaterThan extends Function {
 
 		/**
+		 * Implements DateRepeat GREATERTHAN for SQLite
 		 *
 		 */
 		public GreaterThan() {
@@ -416,11 +435,13 @@ public class DateRepeatFunctions {
 	}
 
 	/**
+	 * Implements DateRepeat GREATERTHANOREQUAL for SQLite
 	 *
 	 */
 	public static class GreaterThanOrEqual extends Function {
 
 		/**
+		 * Implements DateRepeat GREATERTHANOREQUAL for SQLite
 		 *
 		 */
 		public GreaterThanOrEqual() {
@@ -441,11 +462,13 @@ public class DateRepeatFunctions {
 	}
 
 	/**
+	 * Implements DateRepeat LESSTHAN for SQLite
 	 *
 	 */
 	public static class LessThan extends Function {
 
 		/**
+		 * Implements DateRepeat LESSTHAN for SQLite
 		 *
 		 */
 		public LessThan() {
@@ -466,11 +489,13 @@ public class DateRepeatFunctions {
 	}
 
 	/**
+	 * Implements DateRepeat LESSTHANOREQUAL for SQLite
 	 *
 	 */
 	public static class LessThanOrEqual extends Function {
 
 		/**
+		 * Implements DateRepeat LESSTHANOREQUAL for SQLite
 		 *
 		 */
 		public LessThanOrEqual() {

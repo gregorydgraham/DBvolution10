@@ -30,35 +30,47 @@ import nz.co.gregs.dbvolution.expressions.StringExpression;
 import nz.co.gregs.dbvolution.results.StringResult;
 
 /**
+ * Creates an operator that compares a column to a list of values using the IN
+ * operator or similar.
  *
  * @author Gregory Graham
  */
 public class DBInOperator extends DBOperator {
 
 	private static final long serialVersionUID = 1L;
-	protected final List<DBExpression> listOfPossibleValues = new ArrayList<DBExpression>();
-	protected final List<StringResult> listOfPossibleStrings = new ArrayList<StringResult>();
-	protected final ArrayList<NumberResult> listOfPossibleNumbers = new ArrayList<NumberResult>();
-	protected final ArrayList<DateResult> listOfPossibleDates = new ArrayList<DateResult>();
+	private final List<DBExpression> listOfPossibleValues = new ArrayList<DBExpression>();
+	private final List<StringResult> listOfPossibleStrings = new ArrayList<StringResult>();
+	private final List<NumberResult> listOfPossibleNumbers = new ArrayList<NumberResult>();
+	private final List<DateResult> listOfPossibleDates = new ArrayList<DateResult>();
 
+	/**
+	 * Creates an operator that compares a column to a list of values using the IN
+	 * operator or similar.
+	 *
+	 * @param listOfPossibleValues
+	 */
 	public DBInOperator(Collection<DBExpression> listOfPossibleValues) {
 		super();
-		for (DBExpression qdt : listOfPossibleValues) {
-			final DBExpression newQDT = qdt == null ? null : qdt.copy();
-			this.listOfPossibleValues.add(newQDT);
-			if (newQDT == null) {
+		for (DBExpression expr : listOfPossibleValues) {
+			final DBExpression newExpr = expr == null ? null : expr.copy();
+			this.listOfPossibleValues.add(newExpr);
+			if (newExpr == null) {
 				includeNulls = true;
-			} else if (newQDT instanceof StringResult) {
-				listOfPossibleStrings.add((StringResult) newQDT);
-			} else if ((newQDT instanceof NumberResult)) {
-				listOfPossibleNumbers.add((NumberResult) newQDT);
-			} else if ((newQDT instanceof DateResult)) {
-				listOfPossibleDates.add((DateResult) newQDT);
+			} else if (newExpr instanceof StringResult) {
+				listOfPossibleStrings.add((StringResult) newExpr);
+			} else if ((newExpr instanceof NumberResult)) {
+				listOfPossibleNumbers.add((NumberResult) newExpr);
+			} else if ((newExpr instanceof DateResult)) {
+				listOfPossibleDates.add((DateResult) newExpr);
 			}
 		}
 	}
 
-	public DBInOperator() {
+	/**
+	 * Default constructor
+	 *
+	 */
+	protected DBInOperator() {
 		super();
 	}
 
@@ -75,10 +87,10 @@ public class DBInOperator extends DBOperator {
 		} else {
 			if (other instanceof DBInOperator) {
 				DBInOperator otherIn = (DBInOperator) other;
-				if (listOfPossibleValues.size() != otherIn.listOfPossibleValues.size()) {
+				if (getListOfPossibleValues().size() != otherIn.getListOfPossibleValues().size()) {
 					return false;
 				} else {
-					for (DBExpression qdt : listOfPossibleValues) {
+					for (DBExpression qdt : getListOfPossibleValues()) {
 						if (!otherIn.listOfPossibleValues.contains(qdt)) {
 							return false;
 						}
@@ -94,7 +106,7 @@ public class DBInOperator extends DBOperator {
 	@Override
 	public DBInOperator copyAndAdapt(DBSafeInternalQDTAdaptor typeAdaptor) {
 		ArrayList<DBExpression> list = new ArrayList<DBExpression>();
-		for (DBExpression item : listOfPossibleValues) {
+		for (DBExpression item : getListOfPossibleValues()) {
 			list.add(typeAdaptor.convert(item));
 		}
 		DBInOperator op = new DBInOperator(list);
@@ -108,21 +120,21 @@ public class DBInOperator extends DBOperator {
 		DBExpression genericExpression = column;
 		BooleanExpression op = BooleanExpression.trueExpression();
 		if (genericExpression instanceof StringExpression) {
-			ArrayList<StringResult> listString = new ArrayList<StringResult>(listOfPossibleStrings);
+			ArrayList<StringResult> listString = new ArrayList<StringResult>(getListOfPossibleStrings());
 			if (this.includeNulls) {
 				listString.add(null);
 			}
 			StringExpression stringExpression = (StringExpression) genericExpression;
 			op = stringExpression.bracket().isIn(listString.toArray(new StringResult[]{}));
 		} else if (genericExpression instanceof NumberExpression) {
-			ArrayList<NumberResult> listNumbers = new ArrayList<NumberResult>(listOfPossibleNumbers);
+			ArrayList<NumberResult> listNumbers = new ArrayList<NumberResult>(getListOfPossibleNumbers());
 			if (this.includeNulls) {
 				listNumbers.add(null);
 			}
 			NumberExpression numberExpression = (NumberExpression) genericExpression;
 			op = numberExpression.isIn(listNumbers.toArray(new NumberResult[]{}));
 		} else if (genericExpression instanceof DateExpression) {
-			ArrayList<DateResult> listDate = new ArrayList<DateResult>(listOfPossibleDates);
+			ArrayList<DateResult> listDate = new ArrayList<DateResult>(getListOfPossibleDates());
 			if (this.includeNulls) {
 				listDate.add(null);
 			}
@@ -130,5 +142,40 @@ public class DBInOperator extends DBOperator {
 			op = dateExpression.isIn(listDate.toArray(new DateResult[]{}));
 		}
 		return this.invertOperator ? op.not() : op;
+	}
+
+	/**
+	 * List of supplied values.
+	 *
+	 * @return the listOfPossibleValues
+	 */
+	public List<DBExpression> getListOfPossibleValues() {
+		return listOfPossibleValues;
+	}
+
+	/**
+	 * List of strings derived, if any, from the supplied values.
+	 *
+	 * @return the listOfPossibleStrings
+	 */
+	public List<StringResult> getListOfPossibleStrings() {
+		return listOfPossibleStrings;
+	}
+
+	/**
+	 * List of numbers derived, if any, from the supplied values.
+	 * @return the listOfPossibleNumbers
+	 */
+	public List<NumberResult> getListOfPossibleNumbers() {
+		return listOfPossibleNumbers;
+	}
+
+	/**
+	 * List of dates derived, if any, from the supplied values.
+	 * 
+	 * @return the listOfPossibleDates
+	 */
+	public List<DateResult> getListOfPossibleDates() {
+		return listOfPossibleDates;
 	}
 }

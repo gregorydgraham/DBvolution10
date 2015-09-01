@@ -27,6 +27,13 @@ import nz.co.gregs.dbvolution.expressions.StringExpression;
 import nz.co.gregs.dbvolution.results.StringResult;
 
 /**
+ * Implements a type agnostic comparison that finds items between the 2 values
+ * including the first value but not the second.
+ *
+ * <p>
+ * This is the standard comparison for times, for instance an event that runs
+ * from 1PM until 3PM will not be running during the 3PM hour. As comparison an
+ * event that runs from the 1st until the 3rd will run during the 3rd day.
  *
  * @author Gregory Graham
  */
@@ -34,6 +41,19 @@ public class DBBetweenInclusiveExclusiveOperator extends DBOperator {
 
 	private static final long serialVersionUID = 1L;
 
+
+/**
+ * Implements a type agnostic comparison that finds items between the 2 values
+ * including the first value but not the second.
+ *
+ * <p>
+ * This is the standard comparison for times, for instance an event that runs
+ * from 1PM until 3PM will not be running during the 3PM hour. As comparison an
+ * event that runs from the 1st until the 3rd will run during the 3rd day.
+ * 
+	 * @param lowValue
+	 * @param highValue
+ */
 	public DBBetweenInclusiveExclusiveOperator(DBExpression lowValue, DBExpression highValue) {
 		super(lowValue == null ? lowValue : lowValue.copy(),
 				highValue == null ? highValue : highValue.copy());

@@ -16,9 +16,7 @@
 package nz.co.gregs.dbvolution.operators;
 
 import nz.co.gregs.dbvolution.DBDatabase;
-import nz.co.gregs.dbvolution.columns.ColumnProvider;
 import nz.co.gregs.dbvolution.expressions.DBExpression;
-import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatypeSyncer.DBSafeInternalQDTAdaptor;
 import nz.co.gregs.dbvolution.expressions.BooleanExpression;
 import nz.co.gregs.dbvolution.expressions.DateExpression;
@@ -29,6 +27,7 @@ import nz.co.gregs.dbvolution.expressions.StringExpression;
 import nz.co.gregs.dbvolution.results.StringResult;
 
 /**
+ * Implements GREATERTHANEQUALS for all types that support it.
  *
  * @author Gregory Graham
  */
@@ -36,10 +35,11 @@ public class DBGreaterThanOrEqualsOperator extends DBGreaterThanOperator {
 
 	private static final long serialVersionUID = 1L;
 
-	public DBGreaterThanOrEqualsOperator() {
-		super();
-	}
-
+	/**
+	 * Implements GREATERTHANEQUALS for all types that support it.
+	 *
+	 * @param greaterThanThis
+	 */
 	public DBGreaterThanOrEqualsOperator(DBExpression greaterThanThis) {
 		super(greaterThanThis);
 	}

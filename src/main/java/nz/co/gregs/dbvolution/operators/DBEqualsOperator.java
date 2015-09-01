@@ -36,6 +36,7 @@ import nz.co.gregs.dbvolution.expressions.StringExpression;
 import nz.co.gregs.dbvolution.results.StringResult;
 
 /**
+ * Implements the EQUALS operator.
  *
  * @author Gregory Graham
  */
@@ -44,16 +45,19 @@ public class DBEqualsOperator extends DBOperator {
 	private static final long serialVersionUID = 1L;
 
 	/**
+	 * Implements the EQUALS operator.
 	 *
+	 * @param equalTo
 	 */
-	public DBEqualsOperator() {
-		super();
-	}
-
 	public DBEqualsOperator(DBExpression equalTo) {
 		super(equalTo == null ? equalTo : equalTo.copy());
 	}
 
+	/**
+	 * Implements the EQUALS operator.
+	 *
+	 * @param equalTo
+	 */
 	public DBEqualsOperator(Object equalTo) {
 		super(QueryableDatatype.getQueryableDatatypeForObject(equalTo));
 	}

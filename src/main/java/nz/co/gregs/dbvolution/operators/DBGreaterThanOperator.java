@@ -27,6 +27,7 @@ import nz.co.gregs.dbvolution.expressions.StringExpression;
 import nz.co.gregs.dbvolution.results.StringResult;
 
 /**
+ * Implements GREATERTHAN for all types that support it.
  *
  * @author Gregory Graham
  */
@@ -35,22 +36,12 @@ public class DBGreaterThanOperator extends DBOperator {
 	private static final long serialVersionUID = 1L;
 
 	/**
+	 * Implements GREATERTHAN for all types that support it.
 	 *
+	 * @param greaterThanThis
 	 */
-	public DBGreaterThanOperator() {
-		super();
-	}
-
 	public DBGreaterThanOperator(DBExpression greaterThanThis) {
 		super(greaterThanThis == null ? greaterThanThis : greaterThanThis.copy());
-	}
-
-	public String getInverse() {
-		return " <= ";
-	}
-
-	public String getOperator() {
-		return " > ";
 	}
 
 	@Override

@@ -21,6 +21,7 @@ import nz.co.gregs.dbvolution.expressions.DBExpression;
 import nz.co.gregs.dbvolution.expressions.StringExpression;
 
 /**
+ * Implements LIKE for all types that support it, but with case-insensitivity.
  *
  * @author Gregory Graham
  */
@@ -28,15 +29,29 @@ public class DBLikeCaseInsensitiveOperator extends DBLikeOperator {
 
 	private static final long serialVersionUID = 1L;
 
+	/**
+	 * Implements LIKE for all types that support it, but with case-insensitivity.
+	 *
+	 * @param likeableValue
+	 */
 	public DBLikeCaseInsensitiveOperator(String likeableValue) {
 		super(likeableValue);
 	}
 
+	/**
+	 * Implements LIKE for all types that support it, but with case-insensitivity.
+	 *
+	 * @param likeableValue
+	 */
 	public DBLikeCaseInsensitiveOperator(StringExpression likeableValue) {
 		super(likeableValue);
 	}
 
-	public DBLikeCaseInsensitiveOperator() {
+	/**
+	 * Default constructor
+	 *
+	 */
+	protected DBLikeCaseInsensitiveOperator() {
 		super();
 	}
 

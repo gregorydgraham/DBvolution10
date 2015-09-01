@@ -589,8 +589,8 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 	 * The first expression is returned if this expression is TRUE, otherwise
 	 * the second is returned.
 	 *
-	 * @param thenExpr
-	 * @param elseExpr
+	 * @param thenExpr expression to use when this expression is TRUE
+	 * @param elseExpr expression to use when this expression is FALSE
 	 * @return an expression that will generate a SQL clause conceptually
 	 * similar to "if (this) then thenExpr else elseExpr".
 	 */
@@ -606,8 +606,8 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 	 * The first expression is returned if this expression is TRUE, otherwise
 	 * the second is returned.
 	 *
-	 * @param thenExpr
-	 * @param elseExpr
+	 * @param thenExpr expression to use when this expression is TRUE
+	 * @param elseExpr expression to use when this expression is FALSE
 	 * @return an expression that will generate a SQL clause conceptually
 	 * similar to "if (this) then thenExpr else elseExpr".
 	 */
@@ -640,8 +640,8 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 	 * The first expression is returned if this expression is TRUE, otherwise
 	 * the second is returned.
 	 *
-	 * @param thenExpr
-	 * @param elseExpr
+	 * @param thenExpr expression to use when this expression is TRUE
+	 * @param elseExpr expression to use when this expression is FALSE
 	 * @return an expression that will generate a SQL clause conceptually
 	 * similar to "if (this) then thenExpr else elseExpr".
 	 */
@@ -657,8 +657,8 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 	 * The first expression is returned if this expression is TRUE, otherwise
 	 * the second is returned.
 	 *
-	 * @param thenExpr
-	 * @param elseExpr
+	 * @param thenExpr expression to use when this expression is TRUE
+	 * @param elseExpr expression to use when this expression is FALSE
 	 * @return an expression that will generate a SQL clause conceptually
 	 * similar to "if (this) then thenExpr else elseExpr".
 	 */
@@ -690,8 +690,8 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 	 * The first expression is returned if this expression is TRUE, otherwise
 	 * the second is returned.
 	 *
-	 * @param thenExpr
-	 * @param elseExpr
+	 * @param thenExpr expression to use when this expression is TRUE
+	 * @param elseExpr expression to use when this expression is FALSE
 	 * @return an expression that will generate a SQL clause conceptually
 	 * similar to "if (this) then thenExpr else elseExpr".
 	 */
@@ -707,8 +707,8 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 	 * The first expression is returned if this expression is TRUE, otherwise
 	 * the second is returned.
 	 *
-	 * @param thenExpr
-	 * @param elseExpr
+	 * @param thenExpr expression to use when this expression is TRUE
+	 * @param elseExpr expression to use when this expression is FALSE
 	 * @return an expression that will generate a SQL clause conceptually
 	 * similar to "if (this) then thenExpr else elseExpr".
 	 */
@@ -741,8 +741,8 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 	 * The first expression is returned if this expression is TRUE, otherwise
 	 * the second is returned.
 	 *
-	 * @param thenExpr
-	 * @param elseExpr
+	 * @param thenExpr expression to use when this expression is TRUE
+	 * @param elseExpr expression to use when this expression is FALSE
 	 * @return an expression that will generate a SQL clause conceptually
 	 * similar to "if (this) then thenExpr else elseExpr".
 	 */
@@ -758,8 +758,8 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 	 * The first expression is returned if this expression is TRUE, otherwise
 	 * the second is returned.
 	 *
-	 * @param thenExpr
-	 * @param elseExpr
+	 * @param thenExpr expression to use when this expression is TRUE
+	 * @param elseExpr expression to use when this expression is FALSE
 	 * @return an expression that will generate a SQL clause conceptually
 	 * similar to "if (this) then thenExpr else elseExpr".
 	 */

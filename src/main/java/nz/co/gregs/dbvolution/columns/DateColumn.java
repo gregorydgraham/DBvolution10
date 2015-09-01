@@ -113,7 +113,7 @@ public class DateColumn extends DateExpression implements ColumnProvider {
 	 * Create an expression to compare this column to the other column using
 	 * EQUALS.
 	 *
-	 * @param dateColumn
+	 * @param dateColumn an instance to compare to
 	 * @return a BooleanExpression
 	 */
 	public BooleanExpression is(DBDate dateColumn) {

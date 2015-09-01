@@ -28,6 +28,7 @@ import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.columns.StringColumn;
 import nz.co.gregs.dbvolution.datatypes.*;
+import nz.co.gregs.dbvolution.results.InComparable;
 
 /**
  * StringExpression implements standard functions that produce a character or
@@ -48,7 +49,7 @@ import nz.co.gregs.dbvolution.datatypes.*;
  *
  * @author Gregory Graham
  */
-public class StringExpression implements StringResult, RangeComparable<StringResult> {
+public class StringExpression implements StringResult, RangeComparable<StringResult>, InComparable<StringResult> {
 
 	static StringExpression nullExpression() {
 		return new StringExpression() {
