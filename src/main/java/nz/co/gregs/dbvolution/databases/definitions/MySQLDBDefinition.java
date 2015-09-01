@@ -28,8 +28,6 @@ import nz.co.gregs.dbvolution.datatypes.spatial2D.DBLineSegment2D;
 import nz.co.gregs.dbvolution.datatypes.spatial2D.DBMultiPoint2D;
 import nz.co.gregs.dbvolution.datatypes.spatial2D.DBPoint2D;
 import nz.co.gregs.dbvolution.exceptions.IncorrectGeometryReturnedForDatatype;
-import nz.co.gregs.dbvolution.expressions.DBExpression;
-import nz.co.gregs.dbvolution.expressions.MultiPoint2DExpression;
 import nz.co.gregs.dbvolution.internal.properties.PropertyWrapper;
 
 /**
@@ -75,8 +73,6 @@ public class MySQLDBDefinition extends DBDefinition {
 			return " LONGBLOB ";
 		} else if (qdt instanceof DBBooleanArray) {
 			return " VARCHAR(64) ";
-//		} else if (qdt instanceof DBLine2D) {
-//			return " VARCHAR(2001) ";
 		} else {
 			return super.getSQLTypeOfDBDatatype(qdt);
 		}

@@ -41,7 +41,7 @@ import nz.co.gregs.dbvolution.internal.postgres.*;
  */
 public class PostgresDBDefinition extends DBDefinition {
 
-	private static final DateFormat DATETIME_FORMAT = new SimpleDateFormat("yyyyMMdd HH:mm:ss.SSS");
+	private static final DateFormat DATETIME_FORMAT = new SimpleDateFormat("yyyyMMdd HH:mm:ss.SSS Z");
 
 	private static final String[] reservedWordsArray = new String[]{"LIMIT", "END"};
 	private static final List<String> reservedWords = Arrays.asList(reservedWordsArray);
@@ -72,13 +72,15 @@ public class PostgresDBDefinition extends DBDefinition {
 
 	@Override
 	public String getDateFormattedForQuery(Date date) {
-		return "('" + DATETIME_FORMAT.format(date) + "'::timestamp)";
+		return "(TIMESTAMP WITH TIME ZONE '" + DATETIME_FORMAT.format(date) + "')";
 	}
 
 	@Override
 	public String getSQLTypeOfDBDatatype(QueryableDatatype qdt) {
 		if (qdt instanceof DBByteArray) {
 			return " BYTEA ";
+		} else if (qdt instanceof DBDate) {
+			return " TIMESTAMP WITH TIME ZONE ";
 		} else if (qdt instanceof DBLargeObject) {
 			return " BYTEA ";
 		} else if (qdt instanceof DBBoolean) {

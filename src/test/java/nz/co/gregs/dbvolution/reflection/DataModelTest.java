@@ -19,6 +19,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.sql.SQLException;
+import java.util.Date;
 import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
@@ -131,8 +132,12 @@ public class DataModelTest extends AbstractTest {
 		Assert.assertThat(allRows.get(0).get(new CarCompany()).name.stringValue(), is("TOYOTA"));
 		Assert.assertThat(allRows.get(0).get(new Marque()).name.stringValue(), isOneOf("TOYOTA", "HYUNDAI"));
 		Assert.assertThat(allRows.get(1).get(new Marque()).name.stringValue(), isOneOf("TOYOTA", "HYUNDAI"));
-		
-		query = DataModel.createDBQueryFromEncodedTablesPropertiesAndValues(
+
+	}
+
+	@Test
+	public void testCreateDBQueryFromEncodedThrowsBlankException() throws ClassNotFoundException, InstantiationException, IllegalAccessException, SQLException {
+		DBQuery query = DataModel.createDBQueryFromEncodedTablesPropertiesAndValues(
 				database,
 				"nz.co.gregs.dbvolution.example.CarCompany&nz.co.gregs.dbvolution.example.Marque",
 				new DefaultEncodingInterpreter()
@@ -141,55 +146,133 @@ public class DataModelTest extends AbstractTest {
 			database.print(query.getAllRows());
 			throw new DBRuntimeException("Failed To Create AccidentalBlankQueryException!");
 		} catch (AccidentalBlankQueryException blank) {
-			blank.printStackTrace();
 		}
 		query.setBlankQueryAllowed(true);
-		allRows = query.getAllRows();
+		List<DBQueryRow> allRows = query.getAllRows();
 		database.print(allRows);
 
 		Assert.assertThat(allRows.size(), is(22));
-		
-		query = DataModel.createDBQueryFromEncodedTablesPropertiesAndValues(
+
+	}
+
+	@Test
+	public void testCreateDBQueryFromEncodedAcceptsSimpleIntegerValue() throws ClassNotFoundException, InstantiationException, IllegalAccessException, SQLException {
+		DBQuery query = DataModel.createDBQueryFromEncodedTablesPropertiesAndValues(
 				database,
 				"nz.co.gregs.dbvolution.example.CarCompany-uidCarCompany=1&nz.co.gregs.dbvolution.example.Marque",
 				new DefaultEncodingInterpreter()
 		);
-		allRows = query.getAllRows();
+		List<DBQueryRow> allRows = query.getAllRows();
 		database.print(allRows);
 
 		Assert.assertThat(allRows.size(), is(2));
-		
-		query = DataModel.createDBQueryFromEncodedTablesPropertiesAndValues(
+
+	}
+
+	@Test
+	public void testCreateDBQueryFromEncodedAcceptsDoubleEndedIntegerRange() throws ClassNotFoundException, InstantiationException, IllegalAccessException, SQLException {
+		DBQuery query = DataModel.createDBQueryFromEncodedTablesPropertiesAndValues(
 				database,
-				"nz.co.gregs.dbvolution.example.CarCompany-uidCarCompany=2...4&nz.co.gregs.dbvolution.example.Marque",
+				"nz.co.gregs.dbvolution.example.CarCompany-uidCarCompany=3...4&nz.co.gregs.dbvolution.example.Marque",
 				new DefaultEncodingInterpreter()
 		);
 		database.setPrintSQLBeforeExecuting(true);
-		allRows = query.getAllRows();
+		List<DBQueryRow> allRows = query.getAllRows();
 		database.print(allRows);
 
 		Assert.assertThat(allRows.size(), is(19));
-		
-		query = DataModel.createDBQueryFromEncodedTablesPropertiesAndValues(
+
+	}
+
+	@Test
+	public void testCreateDBQueryFromEncodedAcceptsDownwardOpenEndedIntegerRange() throws ClassNotFoundException, InstantiationException, IllegalAccessException, SQLException {
+		DBQuery query = DataModel.createDBQueryFromEncodedTablesPropertiesAndValues(
 				database,
 				"nz.co.gregs.dbvolution.example.CarCompany-uidCarCompany=...4&nz.co.gregs.dbvolution.example.Marque",
 				new DefaultEncodingInterpreter()
 		);
 		database.setPrintSQLBeforeExecuting(true);
-		allRows = query.getAllRows();
+		List<DBQueryRow> allRows = query.getAllRows();
 		database.print(allRows);
 
 		Assert.assertThat(allRows.size(), is(22));
-		
-		query = DataModel.createDBQueryFromEncodedTablesPropertiesAndValues(
+
+	}
+
+	@Test
+	public void testCreateDBQueryFromEncodedAcceptsUpwardOpeEnded() throws ClassNotFoundException, InstantiationException, IllegalAccessException, SQLException {
+		DBQuery query = DataModel.createDBQueryFromEncodedTablesPropertiesAndValues(
 				database,
-				"nz.co.gregs.dbvolution.example.CarCompany-uidCarCompany=2...&nz.co.gregs.dbvolution.example.Marque",
+				"nz.co.gregs.dbvolution.example.CarCompany-uidCarCompany=3...&nz.co.gregs.dbvolution.example.Marque",
 				new DefaultEncodingInterpreter()
 		);
 		database.setPrintSQLBeforeExecuting(true);
-		allRows = query.getAllRows();
+		List<DBQueryRow> allRows = query.getAllRows();
 		database.print(allRows);
 
 		Assert.assertThat(allRows.size(), is(19));
+
+	}
+
+	@Test
+	@SuppressWarnings("deprecation")
+	public void testCreateDBQueryFromEncodedAcceptsSimpleDateValue() throws ClassNotFoundException, InstantiationException, IllegalAccessException, SQLException {
+		DBQuery query = DataModel.createDBQueryFromEncodedTablesPropertiesAndValues(
+				database,
+				"nz.co.gregs.dbvolution.example.CarCompany&nz.co.gregs.dbvolution.example.Marque-creationDate=23 Mar 2013 12:34:56 +1300",
+				new DefaultEncodingInterpreter()
+		);
+		database.setPrintSQLBeforeExecuting(true);
+		List<DBQueryRow> allRows = query.getAllRows();
+		database.print(allRows);
+
+		Assert.assertThat(allRows.size(), is(18));
+		Assert.assertThat(allRows.get(0).get(new Marque()).creationDate.dateValue(), is(new Date("23 Mar 2013 12:34:56 +1300")));
+	}
+
+	@Test
+	@SuppressWarnings("deprecation")
+	public void testCreateDBQueryFromEncodedAcceptsDateRangeValue() throws ClassNotFoundException, InstantiationException, IllegalAccessException, SQLException {
+		DBQuery query = DataModel.createDBQueryFromEncodedTablesPropertiesAndValues(
+				database,
+				"nz.co.gregs.dbvolution.example.CarCompany&nz.co.gregs.dbvolution.example.Marque-creationDate=22 Mar 2013 12:34:56 +1300...24 Mar 2013 12:34:56 +1300",
+				new DefaultEncodingInterpreter()
+		);
+		database.setPrintSQLBeforeExecuting(true);
+		List<DBQueryRow> allRows = query.getAllRows();
+		database.print(allRows);
+
+		Assert.assertThat(allRows.size(), is(18));
+		Assert.assertThat(allRows.get(0).get(new Marque()).creationDate.dateValue(), is(new Date("23 Mar 2013 12:34:56 +1300")));
+	}
+
+	@Test
+	public void testCreateDBQueryFromEncodedAcceptsSimpleNumberValue() throws ClassNotFoundException, InstantiationException, IllegalAccessException, SQLException {
+		DBQuery query = DataModel.createDBQueryFromEncodedTablesPropertiesAndValues(
+				database,
+				"nz.co.gregs.dbvolution.example.CarCompany&nz.co.gregs.dbvolution.example.Marque-statusClassID=1246974",
+				new DefaultEncodingInterpreter()
+		);
+		database.setPrintSQLBeforeExecuting(true);
+		List<DBQueryRow> allRows = query.getAllRows();
+		database.print(allRows);
+
+		Assert.assertThat(allRows.size(), is(21));
+		Assert.assertThat(allRows.get(0).get(new Marque()).statusClassID.intValue(), is(1246974));
+	}
+
+	@Test
+	public void testCreateDBQueryFromEncodedAcceptsSimpleNumberRange() throws ClassNotFoundException, InstantiationException, IllegalAccessException, SQLException {
+		DBQuery query = DataModel.createDBQueryFromEncodedTablesPropertiesAndValues(
+				database,
+				"nz.co.gregs.dbvolution.example.CarCompany&nz.co.gregs.dbvolution.example.Marque-statusClassID=1246972...1246974",
+				new DefaultEncodingInterpreter()
+		);
+		database.setPrintSQLBeforeExecuting(true);
+		List<DBQueryRow> allRows = query.getAllRows();
+		database.print(allRows);
+
+		Assert.assertThat(allRows.size(), is(22));
+		Assert.assertThat(allRows.get(0).get(new Marque()).statusClassID.intValue(), isOneOf(1246974,1246972));
 	}
 }
