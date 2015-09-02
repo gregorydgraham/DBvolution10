@@ -182,7 +182,7 @@ public class DataModel {
 	 * password");<br>
 	 * }<br>
 	 * <br>
-	 * protected static PostgresDB getTestDatabase() {<br>
+	 * protected PostgresDB getTestDatabase() {<br>
 	 * return new PostgresDB("testdb.mycompany.com", 5432, "testdb", "developer",
 	 * "developer password");<br>
 	 * }<br>
@@ -223,6 +223,46 @@ public class DataModel {
 		return meth.getParameterTypes().length;
 	}
 
+	/**
+	 * Scans the classpath for DBDatabase subclasses and returns all static
+	 * parameter-less methods that produce DBDatabase objects.
+	 *
+	 * <p>
+	 * The intent of this method is to find the easiest to use DBDatabase creation
+	 * methods. That is DBDatabase creating methods that require no state or
+	 * parameters.
+	 *
+	 * <p>
+	 * For instance a useful pattern for your databases during development might
+	 * be something like this:
+	 * <p>
+	 * <code>
+	 * private static class TestPostgreSQL extends PostgresDB {<br>
+	 * <br>
+	 * protected static PostgresDB getTestDatabaseOnHost(String hostname) {<br>
+	 * return new PostgresDB(hostname, 5432, "testdb", "developer", "developer
+	 * password");<br>
+	 * }<br>
+	 * <br>
+	 * protected PostgresDB getTestDatabase() {<br>
+	 * return new PostgresDB("testdb.mycompany.com", 5432, "testdb", "developer",
+	 * "developer password");<br>
+	 * }<br>
+	 * <br>
+	 * protected static PostgresDB getLocalTestDatabase() {<br>
+	 * return new PostgresDB("localhost", 5432, "testdb", "developer", "developer
+	 * password");<br>
+	 * }<br>
+	 * }<br>
+	 * <br>
+	 * </code>
+	 *
+	 * <p>
+	 * This method aims to find the getLocalTestDatabase() method.
+	 *
+	 * @return a list of static methods with no parameters defined in DBDatabase
+	 * classes that return a DBDatabase.
+	 */
 	public static List<Method> getDBDatabaseCreationMethodsStaticWithoutParameters() {
 		List<Method> creationMethods = new ArrayList<Method>();
 		for (Method meth : getDBDatabaseSimpleCreationMethods()) {
@@ -235,6 +275,16 @@ public class DataModel {
 		return creationMethods;
 	}
 
+	/**
+	 * Scan the classpath for DBDatabase subclasses with public parameterless
+	 * constructors and return those constructors.
+	 *
+	 * <p>
+	 * The intent of this method is to find easy to use constructors that MAY
+	 * directly create a usable DBDatabase object.
+	 *
+	 * @return
+	 */
 	public static Set<Constructor<DBDatabase>> getDBDatabaseConstructorsPublicWithoutParameters() {
 		Set<Constructor<DBDatabase>> constructors = getDBDatabaseConstructors();
 		Set<Constructor<DBDatabase>> parameterlessConstructors = new HashSet<Constructor<DBDatabase>>();
@@ -246,6 +296,13 @@ public class DataModel {
 		return parameterlessConstructors;
 	}
 
+	/**
+	 * Using {@link #getDBDatabaseConstructorsPublicWithoutParameters() } creates
+	 * instances of the accessible DBDatabases.
+	 *
+	 * @return all the instances that can be created from the constructors found
+	 * by {@link #getDBDatabaseConstructorsPublicWithoutParameters() }.
+	 */
 	public static List<DBDatabase> getDBDatabaseInstancesWithoutParameters() {
 		ArrayList<DBDatabase> databaseInstances = new ArrayList<DBDatabase>();
 		Set<Constructor<DBDatabase>> constructors = getDBDatabaseConstructorsPublicWithoutParameters();
@@ -267,11 +324,37 @@ public class DataModel {
 		return databaseInstances;
 	}
 
+	/**
+	 * Find all DBRow subclasses on the current classpath.
+	 *
+	 * @return all the subclasses of DBRow in the current classpath.
+	 */
 	public static Set<Class<? extends DBRow>> getDBRowClasses() {
 		Reflections reflections = new Reflections("");
 		return reflections.getSubTypesOf(DBRow.class);
 	}
 
+	/**
+	 * Find all DBRow subclasses on the current classpath, minus the example classes found in DBvolution.
+	 *
+	 * @return all the subclasses of DBRow in the current classpath, except DBV's examples.
+	 */
+	public static Set<Class<? extends DBRow>> getDBRowClassesExcludingDBvolutionExamples() {
+		Set<Class<? extends DBRow>> dbRowClasses = getDBRowClasses();
+		HashSet<Class<? extends DBRow>> returnSet = new HashSet<Class<? extends DBRow>>();
+		for (Class<? extends DBRow> dbrowClass : dbRowClasses) {
+			if (!dbrowClass.getPackage().getName().startsWith("nz.co.gregs.dbvolution")){
+				returnSet.add(dbrowClass);
+			}
+		}
+		return returnSet;
+	}
+
+	/**
+	 * Using the classes found by {@link #getDBRowClasses() }, creates an instance of as many classes as possible.
+	 *
+	 * @return an instance of every DBRow class that can be found and created easily.
+	 */
 	public static List<DBRow> getDBRowInstances() {
 		List<DBRow> dbrows = new ArrayList<DBRow>();
 		Set<Class<? extends DBRow>> dbRowClasses = getDBRowClasses();
@@ -280,9 +363,9 @@ public class DataModel {
 				DBRow newInstance = dbRowClass.newInstance();
 				dbrows.add(newInstance);
 			} catch (InstantiationException ex) {
-				Logger.getLogger(DataModel.class.getName()).log(Level.SEVERE, null, ex);
+				Logger.getLogger(DataModel.class.getName()).log(Level.INFO, null, ex);
 			} catch (IllegalAccessException ex) {
-				Logger.getLogger(DataModel.class.getName()).log(Level.SEVERE, null, ex);
+				Logger.getLogger(DataModel.class.getName()).log(Level.INFO, null, ex);
 			}
 		}
 		return dbrows;
@@ -303,9 +386,6 @@ public class DataModel {
 	 *
 	 * @param db
 	 * @param encodedTablesPropertiesAndValues
-	 * @param encodingSeparator
-	 * @param tableAndPropertySeparator
-	 * @param propertyAndValueSeparator
 	 * @param interpreter
 	 * @return a DBQuery.
 	 * @throws ClassNotFoundException
@@ -317,9 +397,7 @@ public class DataModel {
 		final Map<String, DBRow> foundAlready = new HashMap<String, DBRow>();
 
 		String[] parameters = interpreter.splitParameters(encodedTablesPropertiesAndValues);
-		//String[] parameters = encodedTablesPropertiesAndValues.split(encodingSeparator);
 		for (String parameter : parameters) {
-//			String[] tableSplit;
 			String table = interpreter.getDBRowClassName(parameter);
 			DBRow newInstance = foundAlready.get(table);
 			if (newInstance == null) {
@@ -333,7 +411,7 @@ public class DataModel {
 			}
 			if (newInstance != null) {
 				String propertyName = interpreter.getPropertyName(parameter);
-				if (propertyName!=null) {
+				if (propertyName != null) {
 					String value = interpreter.getPropertyValue(parameter);
 					RowDefinitionInstanceWrapper instanceWrapper = rowDefinitionWrapperFactory.instanceWrapperFor(newInstance);
 					PropertyWrapper propertyWrapper = instanceWrapper.getPropertyByName(propertyName);

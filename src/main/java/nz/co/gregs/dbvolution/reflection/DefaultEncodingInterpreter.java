@@ -16,8 +16,13 @@
 package nz.co.gregs.dbvolution.reflection;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import nz.co.gregs.dbvolution.DBQueryRow;
+import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.datatypes.DBBoolean;
 import nz.co.gregs.dbvolution.datatypes.DBDate;
 import nz.co.gregs.dbvolution.datatypes.DBInteger;
@@ -26,14 +31,17 @@ import nz.co.gregs.dbvolution.datatypes.DBNumber;
 import nz.co.gregs.dbvolution.datatypes.DBString;
 import nz.co.gregs.dbvolution.datatypes.DBStringEnum;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
+import nz.co.gregs.dbvolution.internal.properties.PropertyWrapper;
 
 /**
+ * A simple example implementation of {@link EncodingInterpreter} that uses "&",
+ * "-", and "=" to separate the encoded parts.
  *
- * @author gregorygraham
+ * @author Gregory Graham
  */
 public class DefaultEncodingInterpreter implements EncodingInterpreter {
 
-	List<String> trueVals = new ArrayList<String>() {
+	private static final List<String> trueVals = new ArrayList<String>() {
 		public static final long serialVersionUID = 1L;
 
 		{
@@ -44,9 +52,84 @@ public class DefaultEncodingInterpreter implements EncodingInterpreter {
 			this.add("1");
 		}
 	};
-	private String encodingSeparator = "&";
-	private String tableAndPropertySeparator = "-";
-	private String propertyAndValueSeparator = "=";
+	private static final String encodingSeparator = "&";
+	private static final String tableAndPropertySeparator = "-";
+	private static final String propertyAndValueSeparator = "=";
+
+	/**
+	 * For all rows in the collection of DBRows encode the class and any
+	 * {@link QueryableDatatype#hasBeenSet() set properties}.
+	 *
+	 * @param rows all the defined rows to be encoded.
+	 * @return an encoded string of the rows.
+	 */
+	@Override
+	public String encode(DBRow... rows) {
+		StringBuilder buf = new StringBuilder();
+		String parameterSep = "";
+		String actualParameterSeparator = getParameterSeparator();
+		Set<Class<? extends DBRow>> addedAlready = new HashSet<Class<? extends DBRow>>();
+		for (DBRow row : rows) {
+			Class<? extends DBRow> rowClass = row.getClass();
+			List<PropertyWrapper> props = row.getColumnPropertyWrappers();
+			for (PropertyWrapper prop : props) {
+				if (prop.getQueryableDatatype().hasBeenSet()) {
+					buf.append(parameterSep)
+							.append(rowClass.getCanonicalName())
+							.append(getTableAndPropertySeparator())
+							.append(prop.javaName())
+							.append(getPropertyAndValueSeparator())
+							.append(prop.getQueryableDatatype().stringValue());
+					parameterSep = actualParameterSeparator;
+				} else {
+					if (!row.getDefined() && !addedAlready.contains(rowClass)) {
+						buf.append(parameterSep)
+								.append(rowClass.getCanonicalName());
+						addedAlready.add(rowClass);
+						parameterSep = actualParameterSeparator;
+					}
+				}
+			}
+		}
+		return buf.toString();
+	}
+
+	/**
+	 * For all rows in the collection of DBRows encode the class and any
+	 * {@link QueryableDatatype#hasBeenSet() set properties}.
+	 *
+	 * @param rows all the defined rows to be encoded.
+	 * @return an encoded string of the rows.
+	 */
+	public String encode(Collection<DBRow> rows) {
+		return encode(rows.toArray(new DBRow[]{}));
+	}
+
+	/**
+	 * For all rows in the collection of DBRows encode the class and any
+	 * {@link QueryableDatatype#hasBeenSet() set properties}.
+	 *
+	 * @param queryRow  all the defined rows to be encoded.
+	 * @return an encoded string of the rows.
+	 */
+	public String encode(DBQueryRow queryRow) {
+		return encode(queryRow.values().toArray(new DBRow[]{}));
+	}
+
+	/**
+	 * For all rows in the collection of DBRows encode the class and any
+	 * {@link QueryableDatatype#hasBeenSet() set properties}.
+	 *
+	 * @param queryRows  all the defined rows to be encoded.
+	 * @return an encoded string of the rows.
+	 */
+	public String encode(List<DBQueryRow> queryRows) {
+		List<DBRow> rows = new ArrayList<DBRow>();
+		for (DBQueryRow queryRow : queryRows) {
+			rows.addAll(queryRow.values());
+		}
+		return encode(rows.toArray(new DBRow[]{}));
+	}
 
 	@Override
 	@SuppressWarnings("deprecation")
@@ -113,7 +196,7 @@ public class DefaultEncodingInterpreter implements EncodingInterpreter {
 
 	@Override
 	public String[] splitParameters(String encodedTablesPropertiesAndValues) {
-		return encodedTablesPropertiesAndValues.split(getEncodingSeparator());
+		return encodedTablesPropertiesAndValues.split(getParameterSeparator());
 	}
 
 	@Override
@@ -145,15 +228,8 @@ public class DefaultEncodingInterpreter implements EncodingInterpreter {
 	/**
 	 * @return the encodingSeparator
 	 */
-	public String getEncodingSeparator() {
+	public String getParameterSeparator() {
 		return encodingSeparator;
-	}
-
-	/**
-	 * @param encodingSeparator the encodingSeparator to set
-	 */
-	public void setEncodingSeparator(String encodingSeparator) {
-		this.encodingSeparator = encodingSeparator;
 	}
 
 	/**
@@ -164,24 +240,9 @@ public class DefaultEncodingInterpreter implements EncodingInterpreter {
 	}
 
 	/**
-	 * @param tableAndPropertySeparator the tableAndPropertySeparator to set
-	 */
-	public void setTableAndPropertySeparator(String tableAndPropertySeparator) {
-		this.tableAndPropertySeparator = tableAndPropertySeparator;
-	}
-
-	/**
 	 * @return the propertyAndValueSeparator
 	 */
 	public String getPropertyAndValueSeparator() {
 		return propertyAndValueSeparator;
 	}
-
-	/**
-	 * @param propertyAndValueSeparator the propertyAndValueSeparator to set
-	 */
-	public void setPropertyAndValueSeparator(String propertyAndValueSeparator) {
-		this.propertyAndValueSeparator = propertyAndValueSeparator;
-	}
-
 }

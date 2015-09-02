@@ -20,10 +20,28 @@ import java.util.Collection;
 import static nz.co.gregs.dbvolution.datatypes.QueryableDatatype.getQueryableDatatypeForObject;
 import nz.co.gregs.dbvolution.expressions.DBExpression;
 
+	/**
+	 * Provides an operator that checks that the column matches the provided
+	 * values.
+	 *
+	 * Creates a virtual operator that provides access to the ISNULL, EQUALS, or
+	 * IN operator as required.
+	 *
+	 * @author Gregory Graham
+	 */
 public class DBPermittedValuesOperator extends DBMetaOperator {
 
 	private static final long serialVersionUID = 1L;
 
+	/**
+	 * Provides an operator that checks that the column matches the provided
+	 * values.
+	 *
+	 * Creates a virtual operator that provides access to the ISNULL, EQUALS, or
+	 * IN operator as required.
+	 *
+	 * @param permitted a list of strings that are permitted values.
+	 */
 	@SuppressWarnings("unchecked")
 	public DBPermittedValuesOperator(Object... permitted) {
 		ArrayList<DBExpression> expressions = new ArrayList<DBExpression>();

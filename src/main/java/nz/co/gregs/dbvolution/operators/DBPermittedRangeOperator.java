@@ -17,10 +17,33 @@ package nz.co.gregs.dbvolution.operators;
 
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 
+/**
+ * Implements a BETWEEN operator that includes the beginning of the range but excludes the end.
+ *
+ * <p>
+ * Given a set of 1,2,3,4,5, using DBPermittedRangeExclusiveOperator(1,5) will
+ * produce an operation such that 1, 2, 3, and 4 will be returned, but not 5.
+ *
+ * <p>
+ * Unbounded ranges are created by passing null as the lower- or upper-bound.
+ * For example, DBPermittedRangeExclusiveOperator(1,null) will produce an
+ * operation such that every number larger than 1 will be returned.
+ *
+ * @author Gregory Graham
+ */
 public class DBPermittedRangeOperator extends DBMetaOperator {
 
 	private static final long serialVersionUID = 1L;
 
+	/**
+	 * Implements a BETWEEN operator that includes the  beginning of the range but excludes the end.
+	 * 
+	 * <p>
+	 * Use a null value to create open or unbounded ranges.
+	 * 
+	 * @param lowerBound the smallest value of the desired range
+	 * @param upperBound the smallest value larger than the desired range
+	 */	
 	public DBPermittedRangeOperator(Object lowerBound, Object upperBound) {
 		if (lowerBound != null && upperBound != null) {
 			operator = new DBBetweenInclusiveExclusiveOperator(
@@ -28,11 +51,9 @@ public class DBPermittedRangeOperator extends DBMetaOperator {
 					QueryableDatatype.getQueryableDatatypeForObject(upperBound));
 		} else if (lowerBound == null && upperBound != null) {
 			QueryableDatatype qdt = QueryableDatatype.getQueryableDatatypeForObject(upperBound);
-//            qdt.setLiteralValue(upperBound);
 			operator = new DBLessThanOrEqualOperator(qdt);
 		} else if (lowerBound != null && upperBound == null) {
 			final QueryableDatatype qdt = QueryableDatatype.getQueryableDatatypeForObject(lowerBound);
-//            qdt.setLiteralValue(lowerBound);
 			operator = new DBGreaterThanOperator(qdt);
 		}
 	}

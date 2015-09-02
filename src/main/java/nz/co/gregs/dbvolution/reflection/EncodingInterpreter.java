@@ -15,6 +15,7 @@
  */
 package nz.co.gregs.dbvolution.reflection;
 
+import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 
 /**
@@ -23,14 +24,103 @@ import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
  */
 public interface EncodingInterpreter {
 
+	/**
+	 * Set the supplied QueryableDatatype to the value supplied.
+	 *
+	 * <p>
+	 * Depending on the QueryableDatatype, you may be able to accomplish this by
+	 * calling {@link QueryableDatatype#setValue(java.lang.Object) }.
+	 *
+	 * @param qdt the DBRow field that needs to be set
+	 * @param value the encoded string version of the value required.
+	 */
 	public void setValue(QueryableDatatype qdt, String value);
 
+	/**
+	 * Given the entire encoded string, split the string into the individual
+	 * parameters and return an array of string, one for each parameter.
+	 *
+	 * <p>
+	 * For instance if the encoded string is
+	 * "myclass-myfield=myvalue&otherclass-fieldb=valueb" and the parameter
+	 * separator is "&", then this method should return the equivalent of
+	 * {@code new String[]{"myclass-myfield=myvalue","otherclass-fieldb=valueb"}}
+	 *
+	 * @param encodedTablesPropertiesAndValues the entire encoded string
+	 * @return the entire encoded string separated into individuals parameter
+	 * strings in an array.
+	 */
 	public String[] splitParameters(String encodedTablesPropertiesAndValues);
 
+	/**
+	 * From the entire parameter string separate out the name of the DBRow class.
+	 *
+	 * <p>
+	 * For instance, if the encoded parameter is "myclass-myproperty=myvalue" and
+	 * the separator between class and field is "-", then this method should
+	 * return {@code "myclass"}.
+	 *
+	 * <p>
+	 * You may need to supply the full canonical name of the the class as the
+	 * ClassLoader may not be able to find it by name. In the example above it
+	 * might be better to return "com.mycompany.mypackage.myclass" instead.
+	 *
+	 * @param parameter the entire encoded parameter including class, property,
+	 * and value
+	 * @return the preferably full, canonical name of the class.
+	 */
 	public String getDBRowClassName(String parameter);
 
+	/**
+	 * From the entire parameter string separate out the name of the DBRow's
+	 * property that needs to be set.
+	 *
+	 * <p>
+	 * For instance, if the encoded parameter is "myclass-myproperty=myvalue", the
+	 * class/property separator is "-", and the property/value separator is "=",
+	 * then this method should return {@code "myproperty"}.
+	 *
+	 * <p>
+	 * The property is the Java field or bean used within the DBRow class for a
+	 * database column value.
+	 *
+	 * @param parameter the entire encoded parameter including class, property,
+	 * and value
+	 * @return the Java name of the relevant field or bean..
+	 */
 	public String getPropertyName(String parameter);
 
+	/**
+	 * From the entire parameter string separate out the value that needs to be
+	 * set.
+	 *
+	 * <p>
+	 * For instance, if the encoded parameter is "myclass-myproperty=myvalue", the
+	 * class/property separator is "-", and the property/value separator is "=",
+	 * then this method should return {@code "myvalue"}.
+	 *
+	 * @param parameter the entire encoded parameter including class, property,
+	 * and value
+	 * @return the value to set the classes property to.
+	 */
 	public String getPropertyValue(String parameter);
-	
+
+	/**
+	 * Encode the rows in the collection.
+	 *
+	 * <p>
+	 * The encoding should allow the interpreter to retrieve a fully qualified
+	 * DBRow class name, a relevant property on that class, and the value the class
+	 * should be set to.
+	 *
+	 * <p>
+	 * For example an implementation that uses "&", "-", and "=" to separate the
+	 * parts might produce
+	 * {@code "myclass-myfield=myvalue&otherclass-fieldb=valueb"}.
+	 *
+	 * @param rows
+	 * @return an encoded string of the rows
+	 */
+	String encode(DBRow... rows);
+
 }

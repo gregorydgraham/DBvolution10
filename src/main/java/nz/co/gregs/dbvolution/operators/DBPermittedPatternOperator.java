@@ -17,18 +17,37 @@ package nz.co.gregs.dbvolution.operators;
 
 import nz.co.gregs.dbvolution.expressions.StringExpression;
 
+/**
+ * Implements the LIKE operator for Strings
+ *
+ * @author gregorygraham
+ */
 public class DBPermittedPatternOperator extends DBLikeOperator {
 
 	private static final long serialVersionUID = 1L;
 
+	/**
+	 * Implements the LIKE operator for Strings
+	 *
+	 * @param likeableValue a pattern to be used with the LIKE operator
+	 */
 	public DBPermittedPatternOperator(String likeableValue) {
 		super(new StringExpression(likeableValue));
 	}
 
+	/**
+	 * Implements the LIKE operator for Strings
+	 *
+	 * @param likeableValue a pattern to be used with the LIKE operator
+	 */
 	public DBPermittedPatternOperator(StringExpression likeableValue) {
 		super(likeableValue);
 	}
 
+	/**
+	 * Default constructor
+	 *
+	 */
 	public DBPermittedPatternOperator() {
 	}
 

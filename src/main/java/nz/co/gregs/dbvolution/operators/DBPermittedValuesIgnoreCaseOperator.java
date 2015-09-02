@@ -21,10 +21,30 @@ import static nz.co.gregs.dbvolution.datatypes.QueryableDatatype.getQueryableDat
 import nz.co.gregs.dbvolution.expressions.DBExpression;
 import nz.co.gregs.dbvolution.expressions.StringExpression;
 
+/**
+ * Provides an operator that checks that the column matches the provided values,
+ * while remaining case-insensitive.
+ *
+ * Creates a virtual operator that provides access to the ISNULL, EQUALS, or IN
+ * operator as required while ensuring that the actual operation is
+ * case-insensitive.
+ *
+ * @author gregorygraham
+ */
 public class DBPermittedValuesIgnoreCaseOperator extends DBMetaOperator {
 
 	private static final long serialVersionUID = 1L;
 
+	/**
+	 * Provides an operator that checks that the column matches the provided
+	 * values, while remaining case-insensitive.
+	 *
+	 * Creates a virtual operator that provides access to the ISNULL, EQUALS, or
+	 * IN operator as required while ensuring that the actual operation is
+	 * case-insensitive.
+	 *
+	 * @param permitted a list of strings that are permitted values.
+	 */
 	public DBPermittedValuesIgnoreCaseOperator(String... permitted) {
 		ArrayList<DBExpression> qdts = new ArrayList<DBExpression>();
 		for (String obj : permitted) {
@@ -41,6 +61,16 @@ public class DBPermittedValuesIgnoreCaseOperator extends DBMetaOperator {
 		}
 	}
 
+	/**
+	 * Provides an operator that checks that the column matches the provided
+	 * values, while remaining case-insensitive.
+	 *
+	 * Creates a virtual operator that provides access to the ISNULL, EQUALS, or
+	 * IN operator as required while ensuring that the actual operation is
+	 * case-insensitive.
+	 *
+	 * @param permitted a list of string expression that are permitted values.
+	 */
 	public DBPermittedValuesIgnoreCaseOperator(StringExpression[] permitted) {
 		ArrayList<DBExpression> qdts = new ArrayList<DBExpression>();
 		for (StringExpression obj : permitted) {
@@ -57,6 +87,16 @@ public class DBPermittedValuesIgnoreCaseOperator extends DBMetaOperator {
 		}
 	}
 
+	/**
+	 * Provides an operator that checks that the column matches the provided
+	 * values, while remaining case-insensitive.
+	 *
+	 * Creates a virtual operator that provides access to the ISNULL, EQUALS, or
+	 * IN operator as required while ensuring that the actual operation is
+	 * case-insensitive.
+	 *
+	 * @param permitted a list of strings that are permitted values.
+	 */
 	public DBPermittedValuesIgnoreCaseOperator(Collection<String> permitted) {
 		ArrayList<DBExpression> qdts = new ArrayList<DBExpression>();
 		for (String obj : permitted) {

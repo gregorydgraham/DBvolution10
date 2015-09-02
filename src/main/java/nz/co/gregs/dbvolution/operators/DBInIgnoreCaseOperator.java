@@ -25,14 +25,27 @@ import nz.co.gregs.dbvolution.expressions.DBExpression;
 import nz.co.gregs.dbvolution.expressions.StringExpression;
 import nz.co.gregs.dbvolution.results.StringResult;
 
+/**
+ * Implements a case-insensitive version of IN for Strings.
+ *
+ * @author gregorygraham
+ */
 public class DBInIgnoreCaseOperator extends DBInOperator {
 
 	private static final long serialVersionUID = 1L;
 
+	/**
+	 * Implements a case-insensitive version of IN for Strings.
+	 *
+	 * @param listOfPossibleValues
+	 */
 	public DBInIgnoreCaseOperator(List<DBExpression> listOfPossibleValues) {
 		super(listOfPossibleValues);
 	}
 
+	/**
+	 * Default constructor
+	 */
 	public DBInIgnoreCaseOperator() {
 		super();
 	}

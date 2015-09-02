@@ -18,6 +18,8 @@ package nz.co.gregs.dbvolution.operators;
 import nz.co.gregs.dbvolution.expressions.StringExpression;
 
 /**
+ * Implements a case-insensitive version of the LIKE operator for Strings
+ *
  *
  * @author Gregory Graham
  */
@@ -25,14 +27,30 @@ public class DBPermittedPatternIgnoreCaseOperator extends DBLikeCaseInsensitiveO
 
 	private static final long serialVersionUID = 1L;
 
+	/**
+	 * Implements a case-insensitive version of the LIKE operator for Strings
+	 *
+	 *
+	 * @author Gregory Graham
+	 * @param likeableValue
+	 */
 	public DBPermittedPatternIgnoreCaseOperator(String likeableValue) {
 		super(new StringExpression(likeableValue));
 	}
 
+	/**
+	 * Implements a case-insensitive version of the LIKE operator for Strings
+	 *
+	 *
+	 * @param likeableValue
+	 */
 	public DBPermittedPatternIgnoreCaseOperator(StringExpression likeableValue) {
 		super(likeableValue);
 	}
 
+	/**
+	 * Default constructor
+	 */
 	public DBPermittedPatternIgnoreCaseOperator() {
 	}
 }
