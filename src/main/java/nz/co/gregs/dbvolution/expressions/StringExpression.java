@@ -1420,7 +1420,7 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 	 * <p>
 	 * Within this expression, find the supplied value and return all characters before the value, not including the value itself.
 	 * 
-	 * @param splitBeforeThis
+	 * @param splitBeforeThis the value marks the end of the required string.
 	 * @return a string expression
 	 */
 	public StringExpression substringBefore(String splitBeforeThis) {
@@ -1436,7 +1436,7 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 	 * <p>
 	 * Within this expression, find the supplied value and return all characters before the value, not including the value itself.
 	 * 
-	 * @param splitBeforeThis
+	 * @param splitBeforeThis the value that marks the end of the required string
 	 * @return a string expression
 	 */
 	public StringExpression substringBefore(StringResult splitBeforeThis) {
@@ -1467,7 +1467,7 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 	 * <p>
 	 * Within this expression, find the supplied value and return all characters after the value, not including the value itself.
 	 * 
-	 * @param splitAfterThis 
+	 * @param splitAfterThis  the value that marks the beginning of the required string
 	 * @return a string expression
 	 */
 	public StringExpression substringAfter(String splitAfterThis) {
@@ -1483,7 +1483,7 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 	 * <p>
 	 * Within this expression, find the supplied value and return all characters after the value, not including the value itself.
 	 * 
-	 * @param splitAfterThis 
+	 * @param splitAfterThis  the value that marks the beginning of the required string
 	 * @return a string expression
 	 */
 	public StringExpression substringAfter(StringResult splitAfterThis) {
@@ -1517,8 +1517,8 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 	 * <p>
 	 * for an expression like "(1234)", substringBetween("(", ")") will return "1234".
 	 * 
-	 * @param splitAfterThis 
-	 * @param butBeforeThis 
+	 * @param splitAfterThis  the value that marks the beginning of the required string
+	 * @param butBeforeThis  the value that marks the end of the required string
 	 * @return a string expression
 	 */
 	public StringExpression substringBetween(String splitAfterThis, String butBeforeThis) {
@@ -1537,8 +1537,8 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 	 * <p>
 	 * for an expression like "(1234)", substringBetween("(", ")") will return "1234".
 	 * 
-	 * @param splitAfterThis 
-	 * @param butBeforeThis 
+	 * @param splitAfterThis  the value that marks the beginning of the required string
+	 * @param butBeforeThis  the value that marks the end of the required string
 	 * @return a string expression
 	 */
 	public StringExpression substringBetween(StringResult splitAfterThis, StringResult butBeforeThis) {

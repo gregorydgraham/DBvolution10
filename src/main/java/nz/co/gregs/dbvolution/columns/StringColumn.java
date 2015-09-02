@@ -124,7 +124,7 @@ public class StringColumn extends StringExpression implements ColumnProvider {
 	 * Create an expression to compare this column to the other column using
 	 * EQUALS.
 	 *
-	 * @param column
+	 * @param column the value to compare this column's value to.
 	 * @return a BooleanExpression
 	 */
 	public BooleanExpression is(DBString column) {

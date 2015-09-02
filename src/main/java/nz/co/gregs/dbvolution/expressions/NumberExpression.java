@@ -1368,7 +1368,7 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 
 	/**
 	 * Provides access to the database's absolute value function.
-	 * 
+	 *
 	 * <p>
 	 * Synonym for {@link #abs() }.
 	 *
@@ -1683,7 +1683,11 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 	/**
 	 * Implements support for rounding to an arbitrary number of decimal places.
 	 *
-	 * @param decimalPlaces
+	 * <p>
+	 * For instance if you require numbers like 12.345 you should use .round(3) to
+	 * get the 3 digits after the decimal point.
+	 *
+	 * @param decimalPlaces the number of significant places that are required.
 	 * @return the equation rounded to the nearest integer.
 	 */
 	public NumberExpression round(Integer decimalPlaces) {
@@ -1693,7 +1697,11 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 	/**
 	 * Implements support for rounding to an arbitrary number of decimal places.
 	 *
-	 * @param decimalPlaces
+	 * <p>
+	 * For instance if you require numbers like 12.345 you should use .round(3) to
+	 * get the 3 digits after the decimal point.
+	 *
+	 * @param decimalPlaces the number of significant places that are required.
 	 * @return the equation rounded to the nearest integer.
 	 */
 	public NumberExpression round(Long decimalPlaces) {
@@ -1703,7 +1711,11 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 	/**
 	 * Implements support for rounding to an arbitrary number of decimal places.
 	 *
-	 * @param decimalPlaces
+	 * <p>
+	 * For instance if you require numbers like 12.345 you should use .round(3) to
+	 * get the 3 digits after the decimal point.
+	 *
+	 * @param decimalPlaces the number of significant places that are required.
 	 * @return the equation rounded to the nearest integer.
 	 */
 	public NumberExpression round(NumberResult decimalPlaces) {
@@ -1713,7 +1725,11 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 	/**
 	 * Implements support for rounding to an arbitrary number of decimal places.
 	 *
-	 * @param decimalPlaces
+	 * <p>
+	 * For instance if you require numbers like 12.345 you should use .round(3) to
+	 * get the 3 digits after the decimal point.
+	 *
+	 * @param decimalPlaces the number of significant places that are required.
 	 * @return the equation rounded to the nearest integer.
 	 */
 	public NumberExpression round(NumberExpression decimalPlaces) {
@@ -2013,13 +2029,13 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 	 *
 	 * <p>
 	 * Based on the MS SQLServer CHOOSE function, this method will select the
-	 * string as though the list was a 1-based array of strings and this
+	 * string as though the list was a 0-based array of strings and this
 	 * expression were the index.
 	 *
-	 * Value 1 returns the first string, value 2 returns the second, etc. If the
+	 * Value 0 returns the first string, value 1 returns the second, etc. If the
 	 * index is too large the last string is returned.
 	 *
-	 * @param stringsToChooseFrom
+	 * @param stringsToChooseFrom a list of values that the should replace the number.
 	 * @return SQL that selects the string from the list based on this expression.
 	 */
 	public StringExpression choose(String... stringsToChooseFrom) {
@@ -2036,13 +2052,13 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 	 *
 	 * <p>
 	 * Based on the MS SQLServer CHOOSE function, this method will select the
-	 * string as though the list was a 1-based array of strings and this
+	 * string as though the list was a 0-based array of strings and this
 	 * expression were the index.
 	 *
-	 * Value 1 returns the first string, value 2 returns the second, etc. If the
+	 * Value 0 returns the first string, value 0 returns the second, etc. If the
 	 * index is too large the last string is returned.
 	 *
-	 * @param stringsToChooseFrom
+	 * @param stringsToChooseFrom a list of values that the should replace the number.
 	 * @return SQL that selects the string from the list based on this expression.
 	 */
 	public StringExpression choose(StringResult... stringsToChooseFrom) {
@@ -2055,7 +2071,7 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 						for (StringResult num : this.values) {
 							strs.add(num.toSQLString(db));
 						}
-						return db.getDefinition().doChooseTransformation(numberExpression.toSQLString(db), strs);
+						return db.getDefinition().doChooseTransformation(NumberExpression.value(numberExpression).plus(1).bracket().toSQLString(db), strs);
 					}
 
 					@Override
@@ -2211,7 +2227,7 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 	/**
 	 * Aggregrator that counts this row if the booleanResult is true.
 	 *
-	 * @param booleanResult
+	 * @param booleanResult an expression that will be TRUE when the row needs to be counted.
 	 * @return The number of rows where the test is true.
 	 */
 	public static NumberExpression countIf(BooleanResult booleanResult) {

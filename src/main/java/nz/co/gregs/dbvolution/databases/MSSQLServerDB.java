@@ -90,12 +90,12 @@ public class MSSQLServerDB extends DBDatabase implements SupportsPolygonDatatype
 	 * Connect to an MS SQLServer database using the connection details specified
 	 * and Microsoft's driver.
 	 *
-	 * @param hostname
-	 * @param instanceName
-	 * @param databaseName
-	 * @param portNumber
-	 * @param username
-	 * @param password
+	 * @param hostname the name of the server where the database resides
+	 * @param instanceName the name of the particular database instance to connect to  (can be null)
+	 * @param databaseName the name of the database within the instance (can be null)
+	 * @param portNumber the port number that the database is available on 
+	 * @param username the account to connect via
+	 * @param password the password to identify username.
 	 */
 	public MSSQLServerDB(String hostname, String instanceName, String databaseName, int portNumber, String username, String password) {
 		super(
@@ -111,13 +111,13 @@ public class MSSQLServerDB extends DBDatabase implements SupportsPolygonDatatype
 	 * Connect to an MS SQLServer database using the connection details specified
 	 * and Microsoft's driver.
 	 *
-	 * @param driverName
-	 * @param hostname
-	 * @param instanceName
-	 * @param databaseName
-	 * @param portNumber
-	 * @param username
-	 * @param password
+	 * @param driverName the JDBC driver class to use.
+	 * @param hostname the name of the server where the database resides.
+	 * @param instanceName the name of the particular database instance to connect to  (can be null).
+	 * @param databaseName the name of the database within the instance (can be null).
+	 * @param portNumber the port number that the database is available on .
+	 * @param username the account to connect via.
+	 * @param password the password to identify username.
 	 */
 	public MSSQLServerDB(String driverName, String hostname, String instanceName, String databaseName, int portNumber, String username, String password) {
 		super(

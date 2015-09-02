@@ -94,7 +94,7 @@ public class DateRepeatExpression implements DateRepeatResult, RangeComparable<D
 	 * Creates a new DateRepeatExression that represents the DateRepeat value
 	 * supplied.
 	 *
-	 * @param interval
+	 * @param interval the time period from which to create a DateRepeat value
 	 */
 	public DateRepeatExpression(DateRepeatResult interval) {
 		innerDateRepeatResult = interval;
@@ -109,7 +109,7 @@ public class DateRepeatExpression implements DateRepeatResult, RangeComparable<D
 	 * <p>
 	 * Equivalent to {@code new DateRepeatExpression(period)}
 	 *
-	 * @param period
+	 * @param period the time period from which to create a DateRepeat value
 	 * @return a DateRepeat expression representing the value supplied.
 	 */
 	public static DateRepeatExpression value(Period period) {
@@ -117,12 +117,12 @@ public class DateRepeatExpression implements DateRepeatResult, RangeComparable<D
 	}
 
 	/**
-	 * Creates a new DateRepeatExression that represents the value supplied.
+	 * Creates a new DateRepeatExpression that represents the value supplied.
 	 *
 	 * <p>
 	 * Equivalent to {@code new DateRepeatExpression(period)}
 	 *
-	 * @param period
+	 * @param period the time period from which to create a DateRepeat value
 	 * @return a DateRepeat expression representing the value supplied.
 	 */
 	public static DateRepeatExpression value(DateRepeatResult period) {
@@ -177,7 +177,7 @@ public class DateRepeatExpression implements DateRepeatResult, RangeComparable<D
 	 * Returns TRUE if this expression evaluates to a smaller or more negative
 	 * offset than the provided value, otherwise FALSE.
 	 *
-	 * @param period
+	 * @param period the time period that might be greater in duration than this expression
 	 * @return a BooleanExpression
 	 */
 	public BooleanExpression isLessThan(Period period) {
@@ -205,7 +205,7 @@ public class DateRepeatExpression implements DateRepeatResult, RangeComparable<D
 	 * Returns TRUE if this expression evaluates to a greater or less negative
 	 * offset than the provided value, otherwise FALSE.
 	 *
-	 * @param period
+	 * @param period the time period that might be lesser in duration than this expression
 	 * @return a BooleanExpression
 	 */
 	public BooleanExpression isGreaterThan(Period period) {
@@ -233,7 +233,7 @@ public class DateRepeatExpression implements DateRepeatResult, RangeComparable<D
 	 * Returns TRUE if this expression evaluates to an equal or smaller offset
 	 * than the provided value, otherwise FALSE.
 	 *
-	 * @param period
+	 * @param period the time period that might be greater in duration than this expression
 	 * @return a BooleanExpression
 	 */
 	public BooleanExpression isLessThanOrEqual(Period period) {
@@ -244,7 +244,7 @@ public class DateRepeatExpression implements DateRepeatResult, RangeComparable<D
 	 * Returns TRUE if this expression evaluates to an equal or smaller offset
 	 * than the provided value, otherwise FALSE.
 	 *
-	 * @param anotherInstance
+	 * @param anotherInstance the time period that might be greater in duration than this expression
 	 * @return a BooleanExpression
 	 */
 	@Override
@@ -262,7 +262,7 @@ public class DateRepeatExpression implements DateRepeatResult, RangeComparable<D
 	 * Returns TRUE if this expression evaluates to an equal or greater offset
 	 * than the provided value, otherwise FALSE.
 	 *
-	 * @param period
+	 * @param period the time period that might be lesser in duration than this expression
 	 * @return a BooleanExpression
 	 */
 	public BooleanExpression isGreaterThanOrEqual(Period period) {
@@ -273,7 +273,7 @@ public class DateRepeatExpression implements DateRepeatResult, RangeComparable<D
 	 * Returns TRUE if this expression evaluates to an equal or greater offset
 	 * than the provided value, otherwise FALSE.
 	 *
-	 * @param anotherInstance
+	 * @param anotherInstance the time period that might be lesser in duration than this expression
 	 * @return a BooleanExpression
 	 */
 	@Override
@@ -290,12 +290,12 @@ public class DateRepeatExpression implements DateRepeatResult, RangeComparable<D
 
 	/**
 	 * Returns TRUE if this expression evaluates to an smaller offset than the
-	 * provided value, FALSE when the it is greater than the provided value, and
+	 * provided value, FALSE when it is greater than the provided value, and
 	 * the value of the fallBackWhenEqual parameter when the 2 values are the
 	 * same.
 	 *
-	 * @param period
-	 * @param fallBackWhenEqual
+	 * @param period the time period that might be greater in duration than this expression
+	 * @param fallBackWhenEqual the expression to be evaluated when the DateRepeat values are equal
 	 * @return a BooleanExpression
 	 */
 	public BooleanExpression isLessThan(Period period, BooleanExpression fallBackWhenEqual) {
@@ -308,8 +308,8 @@ public class DateRepeatExpression implements DateRepeatResult, RangeComparable<D
 	 * the value of the fallBackWhenEqual parameter when the 2 values are the
 	 * same.
 	 *
-	 * @param anotherInstance
-	 * @param fallBackWhenEqual
+	 * @param anotherInstance the time period that might be greater in duration than this expression
+	 * @param fallBackWhenEqual the expression to be evaluated when the values are equal
 	 * @return a BooleanExpression
 	 */
 	@Override
@@ -323,8 +323,8 @@ public class DateRepeatExpression implements DateRepeatResult, RangeComparable<D
 	 * the value of the fallBackWhenEqual parameter when the 2 values are the
 	 * same.
 	 *
-	 * @param period
-	 * @param fallBackWhenEqual
+	 * @param period the time period that might be lesser in duration than this expression.
+	 * @param fallBackWhenEqual the expression to be evaluated when the values are equal.
 	 * @return a BooleanExpression
 	 */
 	public BooleanExpression isGreaterThan(Period period, BooleanExpression fallBackWhenEqual) {
@@ -337,8 +337,8 @@ public class DateRepeatExpression implements DateRepeatResult, RangeComparable<D
 	 * the value of the fallBackWhenEqual parameter when the 2 values are the
 	 * same.
 	 *
-	 * @param anotherInstance
-	 * @param fallBackWhenEqual
+	 * @param anotherInstance  the time period that might be lesser in duration than this expression.
+	 * @param fallBackWhenEqual the expression to be evaluated when the values are equal.
 	 * @return a BooleanExpression
 	 */
 	@Override
@@ -349,7 +349,7 @@ public class DateRepeatExpression implements DateRepeatResult, RangeComparable<D
 	/**
 	 * Returns TRUE if this expression and the provided value are the same.
 	 *
-	 * @param period
+	 * @param period the required value of the DateRepeat
 	 * @return a BooleanExpression
 	 */
 	public BooleanExpression is(Period period) {
@@ -359,7 +359,7 @@ public class DateRepeatExpression implements DateRepeatResult, RangeComparable<D
 	/**
 	 * Returns TRUE if this expression and the provided value are the same.
 	 *
-	 * @param anotherInstance 
+	 * @param anotherInstance the value that is to be found.
 	 * @return a BooleanExpression
 	 */
 	@Override
@@ -376,7 +376,7 @@ public class DateRepeatExpression implements DateRepeatResult, RangeComparable<D
 	/**
 	 * Returns FALSE if this expression and the provided value are the same.
 	 *
-	 * @param anotherInstance 
+	 * @param anotherInstance  a value that the expression should not match.
 	 * @return a BooleanExpression
 	 */
 	@Override

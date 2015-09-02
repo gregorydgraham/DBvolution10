@@ -256,7 +256,7 @@ public abstract class DBDatabase implements Cloneable {
 	 *
 	 * @return the DBStatement to be used: either a new one, or the current
 	 * transaction statement.
-	 * @throws java.sql.SQLException
+	 * @throws java.sql.SQLException interacts with the database layer.
 	 */
 	public DBStatement getDBStatement() throws SQLException {
 		DBStatement statement;
@@ -295,9 +295,12 @@ public abstract class DBDatabase implements Cloneable {
 	 * elsewhere.
 	 *
 	 * @return the Connection to be used.
-	 * @throws java.sql.SQLException
-	 * @throws UnableToCreateDatabaseConnectionException
-	 * @throws UnableToFindJDBCDriver
+	 * @throws java.sql.SQLException interacts with the database layer
+	 * @throws UnableToCreateDatabaseConnectionException thrown when there is an issue connecting
+	 * @throws UnableToFindJDBCDriver  may be thrown if the JDBCDriver is not on
+	 * the class path. DBvolution includes several JDBCDrivers already but
+	 * Oracle and MS SQLserver, in particular, need to be added to the path if you
+	 * wish to work with those databases.
 	 */
 	public Connection getConnection() throws UnableToCreateDatabaseConnectionException, UnableToFindJDBCDriver, SQLException {
 		if (isInATransaction && !this.transactionConnection.isClosed()) {
@@ -1097,7 +1100,7 @@ public abstract class DBDatabase implements Cloneable {
 	 *
 	 * @param newTableRow the data models version of the table that needs FKs
 	 * removed
-	 * @throws SQLException
+	 * @throws SQLException database exceptions
 	 */
 	public void removeForeignKeyConstraints(DBRow newTableRow) throws SQLException {
 
@@ -1140,7 +1143,7 @@ public abstract class DBDatabase implements Cloneable {
 	 * As usual, your mileage may vary and consult a DBA if trouble persists.
 	 *
 	 * @param newTableRow the data model's version of the table that needs indexes
-	 * @throws SQLException
+	 * @throws SQLException database exceptions
 	 */
 	public void createIndexesOnAllFields(DBRow newTableRow) throws SQLException {
 
@@ -1506,7 +1509,7 @@ public abstract class DBDatabase implements Cloneable {
 	 * @param report the report to be produced
 	 * @param examples DBRow subclasses that provide extra criteria
 	 * @return A list of the DBreports generated
-	 * @throws SQLException
+	 * @throws SQLException database exceptions
 	 */
 	public <A extends DBReport> List<A> getAllRows(A report, DBRow... examples) throws SQLException {
 		return DBReport.getAllRows(this, report, examples);
@@ -1713,8 +1716,8 @@ public abstract class DBDatabase implements Cloneable {
 	/**
 	 * Used By Subclasses To Inject Datatypes, Functions, Etc Into the Database.
 	 *
-	 * @param statement
-	 * @throws SQLException
+	 * @param statement the statement to use when adding features, DO NOT CLOSE THIS STATEMENT.
+	 * @throws SQLException database exceptions may occur
 	 * @see PostgresDB
 	 * @see H2DB
 	 * @see SQLiteDB
@@ -1738,8 +1741,8 @@ public abstract class DBDatabase implements Cloneable {
 	 * <p>
 	 * The statement will be automatically run after this method exits.
 	 *
-	 * @param exp
-	 * @throws SQLException
+	 * @param exp the exception throw by the database that may need fixing
+	 * @throws SQLException accessing the database may cause exceptions
 	 */
 	public void addFeatureToFixException(Exception exp) throws Exception {
 		throw exp;

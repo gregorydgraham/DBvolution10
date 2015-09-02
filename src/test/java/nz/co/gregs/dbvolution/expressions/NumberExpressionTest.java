@@ -601,11 +601,11 @@ public class NumberExpressionTest extends AbstractTest {
 		List<DBQueryRow> allRows = dbQuery.setBlankQueryAllowed(true).getAllRows();
 		database.print(allRows);
 		for (CarCompanyWithChoose carCompany : dbQuery.getAllInstancesOf(carCo)) {
-			if (carCompany.uidCarCompany.intValue() <= 1) {
+			if (carCompany.uidCarCompany.intValue() <= 0) {
 				Assert.assertThat(carCompany.chooseOnID.getValue(), is("too low"));
-			} else if (carCompany.uidCarCompany.intValue() == 2) {
+			} else if (carCompany.uidCarCompany.intValue() == 1) {
 				Assert.assertThat(carCompany.chooseOnID.getValue(), is("ok"));
-			} else if (carCompany.uidCarCompany.intValue() == 3) {
+			} else if (carCompany.uidCarCompany.intValue() == 2) {
 				Assert.assertThat(carCompany.chooseOnID.getValue(), is("high"));
 			} else {
 				Assert.assertThat(carCompany.chooseOnID.getValue(), is("too high"));

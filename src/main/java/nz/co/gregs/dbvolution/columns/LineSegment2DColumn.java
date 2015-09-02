@@ -35,8 +35,8 @@ public class LineSegment2DColumn extends LineSegment2DExpression implements Colu
 	 * Creates a portable reference to the column represented by the field of the
 	 * row.
 	 *
-	 * @param row
-	 * @param field
+	 * @param row the table defining object that includes the field
+	 * @param field the field that represents a column.
 	 */
 	public LineSegment2DColumn(RowDefinition row, DBLineSegment2D field) {
 		this.column = new AbstractColumn(row, field);

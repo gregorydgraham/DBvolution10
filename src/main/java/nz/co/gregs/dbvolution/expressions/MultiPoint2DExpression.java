@@ -92,7 +92,7 @@ public class MultiPoint2DExpression implements MultiPoint2DResult, EqualComparab
 	 * Create a {@link MultiPoint2DExpression} representing from provided
 	 * {@link Point JTS points}.
 	 *
-	 * @param points
+	 * @param points the points to include in this value
 	 * @return a MultiPoint2DExpression.
 	 */
 	public static MultiPoint2DExpression value(Point... points) {
@@ -103,7 +103,7 @@ public class MultiPoint2DExpression implements MultiPoint2DResult, EqualComparab
 	 * Create a {@link MultiPoint2DExpression} representing from provided
 	 * {@link Coordinate JTS coordinates}.
 	 *
-	 * @param coords
+	 * @param coords the points to include in this value
 	 * @return a MultiPoint2DExpression.
 	 */
 	public static MultiPoint2DExpression value(Coordinate... coords) {
@@ -116,7 +116,7 @@ public class MultiPoint2DExpression implements MultiPoint2DResult, EqualComparab
 	 * Create a {@link MultiPoint2DExpression} representing from the provided
 	 * {@link MultiPoint JTS multipoint}.
 	 *
-	 * @param points
+	 * @param points the points to include in this value
 	 * @return a MultiPoint2DExpression representing the points
 	 */
 	public static MultiPoint2DExpression value(MultiPoint points) {
@@ -127,7 +127,7 @@ public class MultiPoint2DExpression implements MultiPoint2DResult, EqualComparab
 	 * Create a {@link MultiPoint2DExpression} representing from the
 	 * {@link MultiPoint2DResult}.
 	 *
-	 * @param points
+	 * @param points the points to include in this value
 	 * @return a MultiPoint2DExpression representing the points
 	 */
 	public static MultiPoint2DExpression value(MultiPoint2DResult points) {
@@ -206,6 +206,7 @@ public class MultiPoint2DExpression implements MultiPoint2DResult, EqualComparab
 	 * @return a StringExpression representing the value transformed into a WKT
 	 * string.
 	 */
+	@Override
 	public StringExpression stringResult() {
 		return new StringExpression(new MultiPointFunctionWithStringResult(this) {
 
@@ -224,7 +225,7 @@ public class MultiPoint2DExpression implements MultiPoint2DResult, EqualComparab
 	 * Creates a {@link BooleanExpression} that compares the 2 instances using the
 	 * EQUALS operation.
 	 *
-	 * @param rightHandSide
+	 * @param rightHandSide the value to compare against
 	 * @return a BooleanExpression
 	 */
 	public BooleanExpression is(MultiPoint rightHandSide) {

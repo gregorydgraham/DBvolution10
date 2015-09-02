@@ -99,7 +99,7 @@ public class DateRepeatColumn extends DateRepeatExpression implements ColumnProv
 	 * Create an expression to compare this column to the other column using
 	 * EQUALS.
 	 *
-	 * @param intervalColumn
+	 * @param intervalColumn return TRUE if this expression and intervalColumn are the same value.
 	 * @return a BooleanExpression
 	 */
 	public BooleanExpression is(DBDateRepeat intervalColumn) {

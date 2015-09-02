@@ -35,8 +35,8 @@ public class Line2DColumn extends Line2DExpression implements ColumnProvider {
 	 * Creates a portable reference to the column represented by the field of the
 	 * row.
 	 *
-	 * @param row
-	 * @param field
+	 * @param row the table defining object that the field is a component of.
+	 * @param field a component of the row.
 	 */
 	public Line2DColumn(RowDefinition row, DBLine2D field) {
 		this.column = new AbstractColumn(row, field);

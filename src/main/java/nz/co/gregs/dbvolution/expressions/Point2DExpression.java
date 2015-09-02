@@ -61,7 +61,7 @@ public class Point2DExpression implements PointResult, Point2DResult, EqualCompa
 	/**
 	 * Create a Point2DExpression that represents the point value provided.
 	 *
-	 * @param point 
+	 * @param point
 	 */
 	public Point2DExpression(Point point) {
 		innerPoint = new DBPoint2D(point);
@@ -73,8 +73,8 @@ public class Point2DExpression implements PointResult, Point2DResult, EqualCompa
 	/**
 	 * Create a Point2DExpression that represents the point value provided.
 	 *
-	 * @param point 
-	 * @return  a Point2DExpression of the point.
+	 * @param point the value of this expression.
+	 * @return a Point2DExpression of the point.
 	 */
 	public static Point2DExpression value(Point point) {
 		return new Point2DExpression(point);
@@ -83,8 +83,8 @@ public class Point2DExpression implements PointResult, Point2DResult, EqualCompa
 	/**
 	 * Create a Point2DExpression that represents the point value provided.
 	 *
-	 * @param point 
-	 * @return  a Point2DExpression of the point.
+	 * @param point the value of this expression.
+	 * @return a Point2DExpression of the point.
 	 */
 	public static Point2DExpression value(Point2DResult point) {
 		return new Point2DExpression(point);
@@ -93,9 +93,9 @@ public class Point2DExpression implements PointResult, Point2DResult, EqualCompa
 	/**
 	 * Create a Point2DExpression that represents the values provided.
 	 *
-	 * @param xValue 
-	 * @param yValue 
-	 * @return  a Point2DExpression of the x and y values provided.
+	 * @param xValue the X value of this expression.
+	 * @param yValue the Y value of this expression.
+	 * @return a Point2DExpression of the x and y values provided.
 	 */
 	public static Point2DExpression value(Integer xValue, Integer yValue) {
 		return value(NumberExpression.value(xValue), NumberExpression.value(yValue));
@@ -104,9 +104,9 @@ public class Point2DExpression implements PointResult, Point2DResult, EqualCompa
 	/**
 	 * Create a Point2DExpression that represents the values provided.
 	 *
-	 * @param xValue 
-	 * @param yValue 
-	 * @return  a Point2DExpression of the x and y values provided.
+	 * @param xValue the X value of this expression.
+	 * @param yValue the Y value of this expression.
+	 * @return a Point2DExpression of the x and y values provided.
 	 */
 	public static Point2DExpression value(Long xValue, Long yValue) {
 		return value(NumberExpression.value(xValue), NumberExpression.value(yValue));
@@ -115,9 +115,9 @@ public class Point2DExpression implements PointResult, Point2DResult, EqualCompa
 	/**
 	 * Create a Point2DExpression that represents the values provided.
 	 *
-	 * @param xValue 
-	 * @param yValue 
-	 * @return  a Point2DExpression of the x and y values provided.
+	 * @param xValue the X value of this expression.
+	 * @param yValue the Y value of this expression.
+	 * @return a Point2DExpression of the x and y values provided.
 	 */
 	public static Point2DExpression value(Double xValue, Double yValue) {
 		return value(NumberExpression.value(xValue), NumberExpression.value(yValue));
@@ -126,9 +126,9 @@ public class Point2DExpression implements PointResult, Point2DResult, EqualCompa
 	/**
 	 * Create a Point2DExpression that represents the values provided.
 	 *
-	 * @param xValue 
-	 * @param yValue 
-	 * @return  a Point2DExpression of the x and y values provided.
+	 * @param xValue the X value of this expression.
+	 * @param yValue the Y value of this expression.
+	 * @return a Point2DExpression of the x and y values provided.
 	 */
 	public static Point2DExpression value(NumberExpression xValue, NumberExpression yValue) {
 		return new Point2DExpression(new NumberNumberFunctionWithPoint2DResult(xValue, yValue) {
@@ -225,7 +225,7 @@ public class Point2DExpression implements PointResult, Point2DResult, EqualCompa
 	 * Creates a {@link BooleanExpression} that compares the 2 instances using the
 	 * EQUALS operation.
 	 *
-	 * @param rightHandSide 
+	 * @param rightHandSide the value to compare against.
 	 * @return a BooleanExpression
 	 */
 	public BooleanExpression is(Point rightHandSide) {
@@ -364,15 +364,18 @@ public class Point2DExpression implements PointResult, Point2DResult, EqualCompa
 
 	/**
 	 * Calculate the distance between this point and the other point.
-	 * 
-	 * <p>
-	 * Creates an SQL expression that will report the distance (in units) between these two points.
-	 * 
-	 * <p>
-	 * Essentially this utilizes a database specific method to calculate sqrt((x2-x1)^2+(y2-y1)^2).
 	 *
-	 * @param otherPoint
-	 * @return a number expression of the distance between the two points in units.
+	 * <p>
+	 * Creates an SQL expression that will report the distance (in units) between
+	 * these two points.
+	 *
+	 * <p>
+	 * Essentially this utilizes a database specific method to calculate
+	 * sqrt((x2-x1)^2+(y2-y1)^2).
+	 *
+	 * @param otherPoint the point from which to derive the distance.
+	 * @return a number expression of the distance between the two points in
+	 * units.
 	 */
 	public NumberExpression distanceBetween(Point2DExpression otherPoint) {
 		return new NumberExpression(new PointPointFunctionWithNumberResult(this, otherPoint) {
@@ -409,15 +412,6 @@ public class Point2DExpression implements PointResult, Point2DResult, EqualCompa
 							Point2DExpression.value(minX, maxY),
 							Point2DExpression.value(minX, minY))
 							.toSQLString(db);
-//					final StringExpression coordinates = getFirst().stringResult().substringBetween("(", ")");
-//					return StringExpression.value("POLYGON((")
-//							.append(coordinates)
-//							.append(",").append(coordinates)
-//							.append(",").append(coordinates)
-//							.append(",").append(coordinates)
-//							.append(",").append(coordinates)
-//							.append("))")
-//							.toSQLString(db);
 				}
 			}
 		});

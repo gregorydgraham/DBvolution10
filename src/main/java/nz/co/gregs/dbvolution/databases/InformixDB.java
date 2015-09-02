@@ -33,11 +33,10 @@ public class InformixDB extends DBDatabase {
 	/**
 	 * Create a database object for a Informix 7+ database using the supplied definition and datasource.
 	 *
-	 * @param definition
-	 * @param ds
-	 * @throws SQLException
+	 * @param definition the DBDefiition that should be used with this database. Usually this will be a {@link InformixDBDefinition} but other definitions can be supplied.
+	 * @param ds the data source that defines the connection to the database.
 	 */
-	protected InformixDB(DBDefinition definition, DataSource ds) throws SQLException {
+	protected InformixDB(DBDefinition definition, DataSource ds) {
 		super(definition, ds);
 		// Informix causes problems when using batched statements :(
 		setBatchSQLStatementsWhenPossible(false);
@@ -46,11 +45,11 @@ public class InformixDB extends DBDatabase {
 	/**
 	 * Create a database object for a Informix 7+ database using the supplied definition and connection details.
 	 *
-	 * @param definition
-	 * @param driverName 
-	 * @param jdbcURL 
-	 * @param username 
-	 * @param password
+	 * @param definition the DBDefiition that should be used with this database. Usually this will be a {@link InformixDBDefinition} but other definitions can be supplied.
+	 * @param driverName the name of the driver class to use with this database.
+	 * @param jdbcURL the JDBC URL to the database
+	 * @param username the username to use when connecting to the database
+	 * @param password the password to use when connecting
 	 */
 	protected InformixDB(DBDefinition definition, String driverName, String jdbcURL, String username, String password) {
 		super(definition, driverName, jdbcURL, username, password);
@@ -69,15 +68,13 @@ public class InformixDB extends DBDatabase {
 	 *
 	 *
 	 *
-	 * 1 Database exceptions may be thrown
+	 * - Database exceptions may be thrown
 	 *
-	 * @param jdbcURL jdbcURL
-	 * @param username username
-	 * @param password password
-	 * @throws java.lang.ClassNotFoundException java.lang.ClassNotFoundException
-	 * @throws java.sql.SQLException java.sql.SQLException
+	 * @param jdbcURL jdbcURL the JDBC URL to use to connect to the database
+	 * @param username username the username used for the connection
+	 * @param password password the password required to connect the user to the database
 	 */
-	public InformixDB(String jdbcURL, String username, String password) throws ClassNotFoundException, SQLException {
+	public InformixDB(String jdbcURL, String username, String password) {
 		this(new InformixDBDefinition(), INFORMIXDRIVERNAME, jdbcURL, username, password);
 	}
 	/**
@@ -91,10 +88,8 @@ public class InformixDB extends DBDatabase {
 	 * 1 Database exceptions may be thrown
 	 *
 	 * @param dataSource dataSource
-	 * @throws java.lang.ClassNotFoundException java.lang.ClassNotFoundException
-	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
-	public InformixDB(DataSource dataSource) throws ClassNotFoundException, SQLException {
+	public InformixDB(DataSource dataSource) {
 		this(new InformixDBDefinition(), dataSource);
 	}
 

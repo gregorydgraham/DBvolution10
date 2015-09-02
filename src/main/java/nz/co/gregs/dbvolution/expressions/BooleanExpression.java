@@ -843,7 +843,7 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 	 * This is a convenience method that wraps this and anotherBooleanExpr in {@link BooleanExpression#anyOf(nz.co.gregs.dbvolution.expressions.BooleanExpression...)
 	 * }.
 	 *
-	 * @param anotherBooleanExpr
+	 * @param anotherBooleanExpr if this expression does not evaluate to TRUE, return the value of anotherBooleanExpression.
 	 * @return a expression that will evaluate to TRUE if either of the
 	 * expressions are TRUE.
 	 */
@@ -861,7 +861,7 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 	 * This is a convenience method that wraps this and anotherBooleanExpr in {@link BooleanExpression#allOf(nz.co.gregs.dbvolution.expressions.BooleanExpression...)
 	 * }.
 	 *
-	 * @param anotherBooleanExpr
+	 * @param anotherBooleanExpr only return TRUE if both this expression and anotherBooleanExpr evaluate to TRUE.
 	 * @return a expression that will evaluate to TRUE only if both of the
 	 * expressions are TRUE.
 	 */

@@ -18,6 +18,7 @@ package nz.co.gregs.dbvolution.databases;
 import java.sql.SQLException;
 import javax.sql.DataSource;
 import nz.co.gregs.dbvolution.DBDatabase;
+import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 
 /**
  * Extends the PostgreSQL database connection by adding SSL.

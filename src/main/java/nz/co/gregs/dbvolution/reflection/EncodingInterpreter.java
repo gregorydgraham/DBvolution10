@@ -42,8 +42,8 @@ public interface EncodingInterpreter {
 	 *
 	 * <p>
 	 * For instance if the encoded string is
-	 * "myclass-myfield=myvalue&otherclass-fieldb=valueb" and the parameter
-	 * separator is "&", then this method should return the equivalent of
+	 * "myclass-myfield=myvalue&amp;otherclass-fieldb=valueb" and the parameter
+	 * separator is "&amp;", then this method should return the equivalent of
 	 * {@code new String[]{"myclass-myfield=myvalue","otherclass-fieldb=valueb"}}
 	 *
 	 * @param encodedTablesPropertiesAndValues the entire encoded string
@@ -114,9 +114,9 @@ public interface EncodingInterpreter {
 	 * should be set to.
 	 *
 	 * <p>
-	 * For example an implementation that uses "&", "-", and "=" to separate the
+	 * For example an implementation that uses "&amp;", "-", and "=" to separate the
 	 * parts might produce
-	 * {@code "myclass-myfield=myvalue&otherclass-fieldb=valueb"}.
+	 * {@code "myclass-myfield=myvalue&amp;otherclass-fieldb=valueb"}.
 	 *
 	 * @param rows
 	 * @return an encoded string of the rows

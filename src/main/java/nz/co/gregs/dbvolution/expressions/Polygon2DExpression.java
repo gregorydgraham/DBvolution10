@@ -85,11 +85,11 @@ public class Polygon2DExpression implements Spatial2DExpression, Polygon2DResult
 	 * }, and when creating column expressions using {@link DBPolygon2D#DBPolygon2D(nz.co.gregs.dbvolution.expressions.Polygon2DExpression)
 	 * } and similar methods.
 	 *
-	 * @param geometry
+	 * @param polygon the value of this expression
 	 * @return a polygon2d expression
 	 */
-	public static Polygon2DExpression value(Polygon geometry) {
-		return new Polygon2DExpression(geometry);
+	public static Polygon2DExpression value(Polygon polygon) {
+		return new Polygon2DExpression(polygon);
 	}
 
 	/**
@@ -97,11 +97,11 @@ public class Polygon2DExpression implements Spatial2DExpression, Polygon2DResult
 	 * }, and when creating column expressions using {@link DBPolygon2D#DBPolygon2D(nz.co.gregs.dbvolution.expressions.Polygon2DExpression)
 	 * } and similar methods.
 	 *
-	 * @param geometry
+	 * @param polygon the value of this expression
 	 * @return a polygon2d expression
 	 */
-	public static Polygon2DExpression value(Polygon2DResult geometry) {
-		return new Polygon2DExpression(geometry);
+	public static Polygon2DExpression value(Polygon2DResult polygon) {
+		return new Polygon2DExpression(polygon);
 	}
 
 	/**
@@ -109,7 +109,8 @@ public class Polygon2DExpression implements Spatial2DExpression, Polygon2DResult
 	 * }, and when creating column expressions using {@link DBPolygon2D#DBPolygon2D(nz.co.gregs.dbvolution.expressions.Polygon2DExpression)
 	 * } and similar methods.
 	 *
-	 * @param pointExpressions
+	 * @param pointExpressions the points that define the polygon value of this
+	 * expression.
 	 * @return a polygon2d expression
 	 */
 	public static Polygon2DExpression value(Point2DExpression... pointExpressions) {
@@ -121,7 +122,8 @@ public class Polygon2DExpression implements Spatial2DExpression, Polygon2DResult
 	 * }, and when creating column expressions using {@link DBPolygon2D#DBPolygon2D(nz.co.gregs.dbvolution.expressions.Polygon2DExpression)
 	 * } and similar methods.
 	 *
-	 * @param coordinateExpressions
+	 * @param coordinateExpressions the individual numbers that are converted to
+	 * point that define the polygon value of this expression.
 	 * @return a polygon2d expression
 	 */
 	public static Polygon2DExpression value(NumberExpression... coordinateExpressions) {
@@ -133,7 +135,7 @@ public class Polygon2DExpression implements Spatial2DExpression, Polygon2DResult
 	 * }, and when creating column expressions using {@link DBPolygon2D#DBPolygon2D(nz.co.gregs.dbvolution.expressions.Polygon2DExpression)
 	 * } and similar methods.
 	 *
-	 * @param points
+	 * @param points the points that define the polygon value of this expression.
 	 * @return a polygon2d expression
 	 */
 	public static Polygon2DExpression value(Point... points) {
@@ -196,7 +198,7 @@ public class Polygon2DExpression implements Spatial2DExpression, Polygon2DResult
 	 * Create a boolean expression that returns TRUE if the two polygons share any
 	 * spatial coordinates.
 	 *
-	 * @param rightHandSide
+	 * @param rightHandSide the polygon to compare against.
 	 * @return a boolean expression that is true if the polygons interact in any
 	 * way.
 	 */
@@ -208,7 +210,7 @@ public class Polygon2DExpression implements Spatial2DExpression, Polygon2DResult
 	 * Create a boolean expression that returns TRUE if the two polygons share any
 	 * spatial coordinates.
 	 *
-	 * @param rightHandSide
+	 * @param rightHandSide the polygon to compare against
 	 * @return a boolean expression that is true if the polygons interact in any
 	 * way.
 	 */
@@ -306,7 +308,7 @@ public class Polygon2DExpression implements Spatial2DExpression, Polygon2DResult
 	 * Creates a {@link BooleanExpression} that compares the 2 values using the
 	 * EQUALS operation.
 	 *
-	 * @param rightHandSide
+	 * @param rightHandSide the polygon to compare against
 	 * @return a BooleanExpression
 	 */
 	public BooleanExpression is(Polygon rightHandSide) {
@@ -328,7 +330,7 @@ public class Polygon2DExpression implements Spatial2DExpression, Polygon2DResult
 	 * Returns an expression that will evaluate to true if the point is inside
 	 * this polygon value.
 	 *
-	 * @param rightHandSide
+	 * @param rightHandSide the polygon to compare against
 	 * @return a boolean expression
 	 */
 	public BooleanExpression contains(Point rightHandSide) {
@@ -339,7 +341,7 @@ public class Polygon2DExpression implements Spatial2DExpression, Polygon2DResult
 	 * Returns an expression that will evaluate to true if the point is inside
 	 * this polygon value.
 	 *
-	 * @param rightHandSide
+	 * @param rightHandSide the point to compare against
 	 * @return a boolean expression
 	 */
 	public BooleanExpression contains(Point2DResult rightHandSide) {
@@ -350,7 +352,7 @@ public class Polygon2DExpression implements Spatial2DExpression, Polygon2DResult
 	 * Returns an expression that will evaluate to true if the point is inside
 	 * this polygon value.
 	 *
-	 * @param rightHandSide
+	 * @param rightHandSide the point to compare against
 	 * @return a boolean expression
 	 */
 	public BooleanExpression contains(Point2DExpression rightHandSide) {
@@ -370,7 +372,7 @@ public class Polygon2DExpression implements Spatial2DExpression, Polygon2DResult
 	 * <p>
 	 * A CONTAINS B implies B WITHIN A.
 	 *
-	 * @param rightHandSide
+	 * @param rightHandSide the polygon to compare against
 	 * @return a boolean expression
 	 */
 	public BooleanExpression contains(Polygon rightHandSide) {
@@ -384,13 +386,13 @@ public class Polygon2DExpression implements Spatial2DExpression, Polygon2DResult
 	 * <p>
 	 * A CONTAINS B when A's exterior is outside the exterior of B and the spatial
 	 * intersection of A and B is B. It also implies that there are no
-	 * intersection points of the exterior rings of the polygons, that they do NOT touch and B is smaller
-	 * than A.
+	 * intersection points of the exterior rings of the polygons, that they do NOT
+	 * touch and B is smaller than A.
 	 *
 	 * <p>
 	 * This operation is the inverse of within: A CONTAINS B implies B WITHIN A.
 	 *
-	 * @param rightHandSide
+	 * @param rightHandSide the polygon to compare against
 	 * @return a boolean expression
 	 */
 	public BooleanExpression contains(Polygon2DResult rightHandSide) {
@@ -404,20 +406,24 @@ public class Polygon2DExpression implements Spatial2DExpression, Polygon2DResult
 	}
 
 	/**
-	 * Creates an SQL expression that is TRUE when the two polygon2d values do NOT intersect in anyway.
+	 * Creates an SQL expression that is TRUE when the two polygon2d values do NOT
+	 * intersect in anyway.
 	 *
-	 * @param rightHandSide
-	 * @return a boolean expression that is TRUE if the 2 polygons do NOT intersect in anyway, otherwise FALSE.
+	 * @param rightHandSide the polygon to compare against
+	 * @return a boolean expression that is TRUE if the 2 polygons do NOT
+	 * intersect in anyway, otherwise FALSE.
 	 */
 	public BooleanExpression doesNotIntersect(Polygon rightHandSide) {
 		return doesNotIntersect(new DBPolygon2D(rightHandSide));
 	}
 
 	/**
-	 * Creates an SQL expression that is TRUE when the two polygon2d values do NOT intersect in anyway.
+	 * Creates an SQL expression that is TRUE when the two polygon2d values do NOT
+	 * intersect in anyway.
 	 *
-	 * @param rightHandSide
-	 * @return a boolean expression that is TRUE if the 2 polygons do NOT intersect in anyway, otherwise FALSE.
+	 * @param rightHandSide the polygon to compare against
+	 * @return a boolean expression that is TRUE if the 2 polygons do NOT
+	 * intersect in anyway, otherwise FALSE.
 	 */
 	public BooleanExpression doesNotIntersect(Polygon2DResult rightHandSide) {
 		return new BooleanExpression(new PolygonPolygonWithBooleanResult(this, new Polygon2DExpression(rightHandSide)) {
@@ -430,32 +436,40 @@ public class Polygon2DExpression implements Spatial2DExpression, Polygon2DResult
 	}
 
 	/**
-	 * Creates an SQL expression that is TRUE when the two polygon2d values intersect but neither contains or is within the other.
-	 * 
-	 * <p>
-	 * Overlapping polygons have some shared points but they also have unshared points.  This implies that they are also unequal.
-	 * 
-	 * <p>
-	 * Two polygon's overlap when their spatial intersection is non-zero but is not equal to A or B.
+	 * Creates an SQL expression that is TRUE when the two polygon2d values
+	 * intersect but neither contains or is within the other.
 	 *
-	 * @param rightHandSide
-	 * @return a boolean expression that is TRUE if the 2 polygons intersect but are not contained, within, or equal.
+	 * <p>
+	 * Overlapping polygons have some shared points but they also have unshared
+	 * points. This implies that they are also unequal.
+	 *
+	 * <p>
+	 * Two polygon's overlap when their spatial intersection is non-zero but is
+	 * not equal to A or B.
+	 *
+	 * @param rightHandSide the polygon to compare against
+	 * @return a boolean expression that is TRUE if the 2 polygons intersect but
+	 * are not contained, within, or equal.
 	 */
 	public BooleanExpression overlaps(Polygon rightHandSide) {
 		return overlaps(new DBPolygon2D(rightHandSide));
 	}
 
 	/**
-	 * Creates an SQL expression that is TRUE when the two polygon2d values intersect but neither contains or is within the other.
-	 * 
-	 * <p>
-	 * Overlapping polygons have some shared points but they also have unshared points.  This implies that they are also unequal.
-	 * 
-	 * <p>
-	 * Two polygon's overlap when their spatial intersection is non-zero but is not equal to A or B.
+	 * Creates an SQL expression that is TRUE when the two polygon2d values
+	 * intersect but neither contains or is within the other.
 	 *
-	 * @param rightHandSide
-	 * @return a boolean expression that is TRUE if the 2 polygons intersect but are not contained, within, or equal.
+	 * <p>
+	 * Overlapping polygons have some shared points but they also have unshared
+	 * points. This implies that they are also unequal.
+	 *
+	 * <p>
+	 * Two polygon's overlap when their spatial intersection is non-zero but is
+	 * not equal to A or B.
+	 *
+	 * @param rightHandSide the polygon to compare against
+	 * @return a boolean expression that is TRUE if the 2 polygons intersect but
+	 * are not contained, within, or equal.
 	 */
 	public BooleanExpression overlaps(Polygon2DResult rightHandSide) {
 		return new BooleanExpression(new PolygonPolygonWithBooleanResult(this, new Polygon2DExpression(rightHandSide)) {
@@ -474,7 +488,7 @@ public class Polygon2DExpression implements Spatial2DExpression, Polygon2DResult
 	 * Checks that a) the polygons have at least on point in common and b) that
 	 * their interiors do not overlap.
 	 *
-	 * @param rightHandSide
+	 * @param rightHandSide the polygon to compare against
 	 * @return BooleanExpression that returns TRUE if and only if the polygons
 	 * touch without overlapping
 	 */
@@ -489,7 +503,7 @@ public class Polygon2DExpression implements Spatial2DExpression, Polygon2DResult
 	 * Checks that a) the polygons have at least on point in common and b) that
 	 * their interiors do not overlap.
 	 *
-	 * @param rightHandSide
+	 * @param rightHandSide the polygon to compare against
 	 * @return BooleanExpression that returns TRUE if and only if the polygons
 	 * touch without overlapping
 	 */
@@ -510,13 +524,13 @@ public class Polygon2DExpression implements Spatial2DExpression, Polygon2DResult
 	 * <p>
 	 * A WITHIN B when A's exterior is inside the exterior of B and the spatial
 	 * intersection of A and B is A. It also implies that there are no
-	 * intersection points of the exterior rings of the polygons, that they do NOT touch and A is smaller
-	 * than B.
+	 * intersection points of the exterior rings of the polygons, that they do NOT
+	 * touch and A is smaller than B.
 	 *
 	 * <p>
 	 * This operation is the inverse of contains: A CONTAINS B implies B WITHIN A.
 	 *
-	 * @param rightHandSide
+	 * @param rightHandSide the polygon to compare against
 	 * @return a boolean expression
 	 */
 	public BooleanExpression within(Polygon rightHandSide) {
@@ -530,13 +544,13 @@ public class Polygon2DExpression implements Spatial2DExpression, Polygon2DResult
 	 * <p>
 	 * A WITHIN B when A's exterior is inside the exterior of B and the spatial
 	 * intersection of A and B is A. It also implies that there are no
-	 * intersection points of the exterior rings of the polygons, that they do NOT touch and A is smaller
-	 * than B.
+	 * intersection points of the exterior rings of the polygons, that they do NOT
+	 * touch and A is smaller than B.
 	 *
 	 * <p>
 	 * This operation is the inverse of contains: A CONTAINS B implies B WITHIN A.
 	 *
-	 * @param rightHandSide
+	 * @param rightHandSide the polygon to compare against
 	 * @return a boolean expression
 	 */
 	public BooleanExpression within(Polygon2DResult rightHandSide) {
@@ -659,7 +673,6 @@ public class Polygon2DExpression implements Spatial2DExpression, Polygon2DResult
 //			}
 //		});
 //	}
-
 	@Override
 	public Polygon2DExpression boundingBox() {
 		return new Polygon2DExpression(new Polygon2DFunctionWithPolygon2DResult(this) {
@@ -708,7 +721,7 @@ public class Polygon2DExpression implements Spatial2DExpression, Polygon2DResult
 	 * Creates a {@link BooleanExpression} that compares the 2 values using the
 	 * NOT EQUALS operation.
 	 *
-	 * @param geometry 
+	 * @param geometry the polygon to compare against
 	 * @return a BooleanExpression
 	 */
 	public BooleanExpression isNot(Polygon geometry) {

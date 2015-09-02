@@ -35,8 +35,8 @@ public class Point2DColumn extends Point2DExpression implements ColumnProvider {
 	 * Creates a portable reference to the column represented by the field of the
 	 * row.
 	 *
-	 * @param row
-	 * @param field
+	 * @param row the table defining object the contains the field
+	 * @param field the field that defines the column.
 	 */
 	public Point2DColumn(RowDefinition row, DBPoint2D field) {
 		this.column = new AbstractColumn(row, field);

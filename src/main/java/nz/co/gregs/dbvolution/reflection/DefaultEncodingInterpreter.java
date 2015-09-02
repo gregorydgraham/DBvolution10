@@ -34,7 +34,7 @@ import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 import nz.co.gregs.dbvolution.internal.properties.PropertyWrapper;
 
 /**
- * A simple example implementation of {@link EncodingInterpreter} that uses "&",
+ * A simple example implementation of {@link EncodingInterpreter} that uses "&amp;",
  * "-", and "=" to separate the encoded parts.
  *
  * @author Gregory Graham

@@ -35,8 +35,8 @@ public class MultiPoint2DColumn extends MultiPoint2DExpression implements Column
 	 * Creates a portable reference to the column represented by the field of the
 	 * row.
 	 *
-	 * @param row
-	 * @param field
+	 * @param row the table defining object that includes the field.
+	 * @param field the field that defines the column.
 	 */
 	public MultiPoint2DColumn(RowDefinition row, DBMultiPoint2D field) {
 		this.column = new AbstractColumn(row, field);

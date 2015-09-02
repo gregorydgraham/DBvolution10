@@ -96,7 +96,7 @@ public class DBStatement implements Statement {
 	private ResultSet addFeatureAndAttemptQueryAgain(Exception exp, String string) throws Exception {
 		ResultSet executeQuery;
 		final String ln = System.getProperty("line.separator");
-		System.out.println("Adding Feature for: " + exp.getMessage()+ln+exp.toString());
+		System.out.println("Adding Feature for: " + exp.getMessage() + ln + exp.toString());
 //		for (StackTraceElement el : exp.getStackTrace()) {
 //			System.out.println(""+el);
 //		}
@@ -104,7 +104,7 @@ public class DBStatement implements Statement {
 			database.addFeatureToFixException(exp);
 		} catch (Exception ex) {
 			Exception ex1 = exp;
-			while (!ex1.getMessage().equals(ex.getMessage())){
+			while (!ex1.getMessage().equals(ex.getMessage())) {
 				database.addFeatureToFixException(ex);
 			}
 			throw new SQLException(ex);
@@ -305,9 +305,14 @@ public class DBStatement implements Statement {
 	 * the connection with the statement. Use {@link DBDefinition#willCloseConnectionOnStatementCancel()
 	 * } to detect this situation.
 	 *
-	 * @throws SQLException
-	 * @throws UnableToCreateDatabaseConnectionException
-	 * @throws UnableToFindJDBCDriver
+	 * @throws SQLException exceptions from connecting to the database and
+	 * creating a Statement.
+	 * @throws UnableToCreateDatabaseConnectionException may be thrown if there is
+	 * an issue with connecting.
+	 * @throws UnableToFindJDBCDriver may be thrown if the JDBCDriver is not on
+	 * the class path. DBvolution includes several JDBCDrivers already but
+	 * Oracle and MS SQLserver, in particular, need to be added to the path if you
+	 * wish to work with those databases.
 	 */
 	protected synchronized void replaceBrokenConnection() throws SQLException, UnableToCreateDatabaseConnectionException, UnableToFindJDBCDriver {
 		database.discardConnection(connection);
@@ -409,10 +414,7 @@ public class DBStatement implements Statement {
 	private boolean addFeatureAndAttemptExecuteAgain(Exception exp, String string) throws SQLException {
 		boolean executeQuery;
 		final String ln = System.getProperty("line.separator");
-		System.out.println("Adding Feature for: " + exp.getMessage()+ln+exp.toString());
-//		for (StackTraceElement el : exp.getStackTrace()) {
-//			System.out.println(""+el);
-//		}
+		System.out.println("Adding Feature for: " + exp.getMessage() + ln + exp.toString());
 		try {
 			database.addFeatureToFixException(exp);
 		} catch (Exception ex) {

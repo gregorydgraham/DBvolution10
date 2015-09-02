@@ -35,8 +35,8 @@ public class Polygon2DColumn extends Polygon2DExpression implements ColumnProvid
 	 * Creates a portable reference to the column represented by the field of the
 	 * row.
 	 *
-	 * @param row
-	 * @param field
+	 * @param row the table defining object that contains the field
+	 * @param field the field that defines the column
 	 */
 	public Polygon2DColumn(RowDefinition row, DBPolygon2D field) {
 		this.column = new AbstractColumn(row, field);

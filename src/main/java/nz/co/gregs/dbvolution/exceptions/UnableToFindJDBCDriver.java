@@ -18,6 +18,11 @@ package nz.co.gregs.dbvolution.exceptions;
 /**
  * Please supply a JDBC Driver for your database on the classpath.
  *
+ * <p>
+ * may be thrown if the JDBCDriver is not on the class path. DBvolution includes
+ * several JDBCDrivers already but Oracle and MS SQLserver, in particular, need
+ * to be added to the path if you wish to work with those databases.
+ *
  * @author Gregory Graham
  */
 public class UnableToFindJDBCDriver extends DBRuntimeException {

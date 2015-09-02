@@ -114,7 +114,7 @@ public class NumberColumn extends NumberExpression implements ColumnProvider {
 	 * Create an expression to compare this column to the other column using
 	 * EQUALS.
 	 *
-	 * @param column
+	 * @param column the value to compare against
 	 * @return a BooleanExpression
 	 */
 	public BooleanExpression is(DBInteger column) {
@@ -125,7 +125,7 @@ public class NumberColumn extends NumberExpression implements ColumnProvider {
 	 * Create an expression to compare this column to the other column using
 	 * EQUALS.
 	 *
-	 * @param column
+	 * @param column the value to compare against
 	 * @return a BooleanExpression
 	 */
 	public BooleanExpression is(DBNumber column) {
