@@ -1505,7 +1505,7 @@ public abstract class DBDatabase implements Cloneable {
 	 * Retrieves a list of report rows from the database using the constraints
 	 * supplied by the report and the examples supplied.
 	 *
-	 * @param <A>
+	 * @param <A> the DBReport to be derived from the database data.
 	 * @param report the report to be produced
 	 * @param examples DBRow subclasses that provide extra criteria
 	 * @return A list of the DBreports generated

@@ -124,8 +124,8 @@ public abstract class OracleDB extends DBDatabase implements SupportsPolygonData
 	/**
 	 * Allows the database to remove any spatial metadata that might exist for a table during DROP TABLE.
 	 *
-	 * @param <TR>
-	 * @param tableRow
+	 * @param <TR> the class of the object defining the table to have it's spatial meta-data removed.
+	 * @param tableRow the object defining the table to have it's spatial meta-data removed.
 	 * @throws SQLException
 	 */
 	protected <TR extends DBRow> void removeSpatialMetadata(TR tableRow) throws SQLException {
