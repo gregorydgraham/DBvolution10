@@ -201,8 +201,7 @@ public class DBDateRepeatTest extends AbstractTest {
 		DBQuery query = database.getDBQuery(marq);
 		database.print(query.setBlankQueryAllowed(true).getAllInstancesOf(marq));
 
-		query.addCondition(
-				marq.column(marq.creationDate).getDateRepeatFrom(march23rd2013).getDays().is(-21)
+		query.addCondition(marq.column(marq.creationDate).getDateRepeatFrom(march23rd2013).getDays().is(-21)
 		);
 		List<DBQueryRow> allRows = query.getAllRows();
 		database.print(allRows);

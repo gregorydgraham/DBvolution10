@@ -17,6 +17,7 @@ package nz.co.gregs.dbvolution.databases.definitions;
 
 import com.vividsolutions.jts.geom.*;
 import java.text.*;
+import java.time.format.TextStyle;
 import java.util.*;
 import nz.co.gregs.dbvolution.databases.PostgresDB;
 import nz.co.gregs.dbvolution.databases.PostgresDBOverSSL;
@@ -843,6 +844,12 @@ public class PostgresDBDefinition extends DBDefinition {
 	@Override
 	public String doMultiPoint2DGetMaxXTransform(String toSQLString) {
 		return "ST_XMAX(" + toSQLString + ")";
+	}	
+	
+	@Override
+	public String doDateAtTimeZoneTransform(String dateSQL, TimeZone timeZone) {
+		return "(("+dateSQL+") AT TIME ZONE '"+timeZone.toZoneId().getId()+"') ";
 	}
+
 
 }

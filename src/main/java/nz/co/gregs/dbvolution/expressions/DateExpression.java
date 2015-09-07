@@ -26,6 +26,7 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.TimeZone;
 import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.DBReport;
 import nz.co.gregs.dbvolution.DBRow;
@@ -555,7 +556,7 @@ public class DateExpression implements DateResult, RangeComparable<DateResult>, 
 	 */
 	@Override
 	public BooleanExpression is(DateResult dateExpression) {
-		BooleanExpression isExpr = new BooleanExpression(new DateDateExressionWithBooleanResult(this, dateExpression) {
+		BooleanExpression isExpr = new BooleanExpression(new DateDateExpressionWithBooleanResult(this, dateExpression) {
 			@Override
 			protected String getEquationOperator(DBDatabase db) {
 				return " = ";
@@ -578,7 +579,7 @@ public class DateExpression implements DateResult, RangeComparable<DateResult>, 
 	 */
 	@Override
 	public BooleanExpression isNot(DateResult dateExpression) {
-		BooleanExpression isExpr = new BooleanExpression(new DateDateExressionWithBooleanResult(this, dateExpression) {
+		BooleanExpression isExpr = new BooleanExpression(new DateDateExpressionWithBooleanResult(this, dateExpression) {
 			@Override
 			protected String getEquationOperator(DBDatabase db) {
 				return " <> ";
@@ -973,7 +974,7 @@ public class DateExpression implements DateResult, RangeComparable<DateResult>, 
 	 */
 	@Override
 	public BooleanExpression isLessThan(DateResult dateExpression) {
-		return new BooleanExpression(new DateExpression.DateDateExressionWithBooleanResult(this, dateExpression) {
+		return new BooleanExpression(new DateExpression.DateDateExpressionWithBooleanResult(this, dateExpression) {
 			@Override
 			protected String getEquationOperator(DBDatabase db) {
 				return " < ";
@@ -1129,7 +1130,7 @@ public class DateExpression implements DateResult, RangeComparable<DateResult>, 
 	 */
 	@Override
 	public BooleanExpression isLessThanOrEqual(DateResult dateExpression) {
-		return new BooleanExpression(new DateDateExressionWithBooleanResult(this, dateExpression) {
+		return new BooleanExpression(new DateDateExpressionWithBooleanResult(this, dateExpression) {
 			@Override
 			protected String getEquationOperator(DBDatabase db) {
 				return " <= ";
@@ -1162,7 +1163,7 @@ public class DateExpression implements DateResult, RangeComparable<DateResult>, 
 	 */
 	@Override
 	public BooleanExpression isGreaterThan(DateResult dateExpression) {
-		return new BooleanExpression(new DateDateExressionWithBooleanResult(this, dateExpression) {
+		return new BooleanExpression(new DateDateExpressionWithBooleanResult(this, dateExpression) {
 			@Override
 			protected String getEquationOperator(DBDatabase db) {
 				return " > ";
@@ -1195,7 +1196,7 @@ public class DateExpression implements DateResult, RangeComparable<DateResult>, 
 	 */
 	@Override
 	public BooleanExpression isGreaterThanOrEqual(DateResult dateExpression) {
-		return new BooleanExpression(new DateDateExressionWithBooleanResult(this, dateExpression) {
+		return new BooleanExpression(new DateDateExpressionWithBooleanResult(this, dateExpression) {
 			@Override
 			protected String getEquationOperator(DBDatabase db) {
 				return " >= ";
@@ -2343,6 +2344,17 @@ public class DateExpression implements DateResult, RangeComparable<DateResult>, 
 		return leastExpr;
 	}
 
+	public DateExpression atTimeZone(TimeZone timeZone) {
+		return new DateExpression(new DateTimeZoneExpressionWithDateResult(this, timeZone) {
+
+			@Override
+			public String toSQLString(DBDatabase db) {
+				return db.getDefinition().doDateAtTimeZoneTransform(getFirst().toSQLString(db), getSecond());
+			}
+			
+		});
+	}
+	
 	private static abstract class FunctionWithDateResult extends DateExpression {
 
 		FunctionWithDateResult() {
@@ -2535,13 +2547,13 @@ public class DateExpression implements DateResult, RangeComparable<DateResult>, 
 		}
 	}
 
-	private static abstract class DateDateExressionWithBooleanResult extends BooleanExpression {
+	private static abstract class DateDateExpressionWithBooleanResult extends BooleanExpression {
 
 		private DateExpression first;
 		private DateResult second;
 		private boolean requiresNullProtection = false;
 
-		DateDateExressionWithBooleanResult(DateExpression first, DateResult second) {
+		DateDateExpressionWithBooleanResult(DateExpression first, DateResult second) {
 			this.first = first;
 			this.second = second;
 			if (second == null || second.getIncludesNull()) {
@@ -2560,8 +2572,8 @@ public class DateExpression implements DateResult, RangeComparable<DateResult>, 
 		}
 
 		@Override
-		public DateDateExressionWithBooleanResult copy() {
-			DateDateExressionWithBooleanResult newInstance;
+		public DateDateExpressionWithBooleanResult copy() {
+			DateDateExpressionWithBooleanResult newInstance;
 			try {
 				newInstance = getClass().newInstance();
 			} catch (InstantiationException ex) {
@@ -2661,6 +2673,72 @@ public class DateExpression implements DateResult, RangeComparable<DateResult>, 
 		 * @return the second
 		 */
 		public DateResult getSecond() {
+			return second;
+		}
+	}
+
+	private static abstract class DateTimeZoneExpressionWithDateResult extends DateExpression {
+
+		private DateExpression first;
+		private TimeZone second;
+		private boolean requiresNullProtection = false;
+
+		DateTimeZoneExpressionWithDateResult(DateExpression first, TimeZone second) {
+			this.first = first;
+			this.second = second;
+			if (second == null) {
+				this.requiresNullProtection = true;
+			}
+		}
+
+		@Override
+		public DateTimeZoneExpressionWithDateResult copy() {
+			DateTimeZoneExpressionWithDateResult newInstance;
+			try {
+				newInstance = getClass().newInstance();
+			} catch (InstantiationException ex) {
+				throw new RuntimeException(ex);
+			} catch (IllegalAccessException ex) {
+				throw new RuntimeException(ex);
+			}
+			newInstance.first = getFirst().copy();
+			newInstance.second = getSecond();
+			return newInstance;
+		}
+
+		@Override
+		public Set<DBRow> getTablesInvolved() {
+			HashSet<DBRow> hashSet = new HashSet<DBRow>();
+			if (getFirst() != null) {
+				hashSet.addAll(getFirst().getTablesInvolved());
+			}
+//			if (getSecond() != null) {
+//				hashSet.addAll(getSecond().getTablesInvolved());
+//			}
+			return hashSet;
+		}
+
+		@Override
+		public boolean isAggregator() {
+			return getFirst().isAggregator() ;
+		}
+
+		@Override
+		public boolean getIncludesNull() {
+			return requiresNullProtection;
+		}
+
+		/**
+		 * @return the first
+		 */
+		public DateExpression getFirst() {
+			return first;
+		}
+
+		/**
+		 * @return the second
+		 */
+		public TimeZone getSecond() {
 			return second;
 		}
 	}

@@ -21,6 +21,7 @@ import nz.co.gregs.dbvolution.datatypes.spatial2D.DBPolygon2D;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.TimeZone;
 import nz.co.gregs.dbvolution.databases.MySQLDB;
 import nz.co.gregs.dbvolution.datatypes.*;
 import nz.co.gregs.dbvolution.datatypes.spatial2D.DBLine2D;
@@ -45,10 +46,18 @@ public class MySQLDBDefinition extends DBDefinition {
 	private static final DateFormat DATETIME_FORMAT = new SimpleDateFormat("dd,MM,yyyy HH:mm:ss.SSS");
 
 	@Override
+	@SuppressWarnings("deprecation")
 	public String getDateFormattedForQuery(Date date) {
-
 		return " STR_TO_DATE('" + DATETIME_FORMAT.format(date) + "', '%d,%m,%Y %H:%i:%s.%f') ";
+	}
 
+	@SuppressWarnings("deprecation")
+	public String getUTCDateFormattedForQuery(Date date) {
+		Double zoneOffset = (0.0+date.getTimezoneOffset())/60.0;
+		int hourPart = zoneOffset.intValue()*100;
+		int minutePart = (int) ((zoneOffset-(zoneOffset.intValue()))*60);
+//		String actualTimeZone = "GMT"+(zoneOffset<0?"-":"+")+Math.abs(hourPart)+Math.abs(minutePart);
+		return doAddMinutesTransform(doAddHoursTransform("STR_TO_DATE('" + DATETIME_FORMAT.format(date) + "', '%d,%m,%Y %H:%i:%s.%f')", ""+hourPart), ""+minutePart);
 	}
 
 	@Override
@@ -541,5 +550,10 @@ public class MySQLDBDefinition extends DBDefinition {
 	@Override
 	public String doMultiPoint2DGetMaxXTransform(String first) {
 		return "X(PointN(ExteriorRing(Envelope(" + first + ")),3))";
+	}
+	
+	@Override
+	public String doDateAtTimeZoneTransform(String dateSQL, TimeZone timeZone) {
+		return "CONVERT_TZ("+dateSQL+", 'SYSTEM', '"+timeZone.toZoneId().getId()+"') ";
 	}
 }

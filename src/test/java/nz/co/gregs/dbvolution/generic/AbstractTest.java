@@ -235,7 +235,9 @@ public abstract class AbstractTest {
 		marqueRows.add(new Marque(1, "False", 1246974, "", 0, "", "TOYOTA", "", "Y", firstDate, 1, null));
 		marqueRows.add(new Marque(2, "False", 1246974, "", 0, "", "HUMMER", "", "Y", secondDate, 3, null));
 
+		database.setPrintSQLBeforeExecuting(true);
 		marquesTable.insert(marqueRows);
+		database.setPrintSQLBeforeExecuting(false);
 
 		database.preventDroppingOfTables(false);
 		database.dropTableNoExceptions(new CompanyLogo());
@@ -299,21 +301,21 @@ public abstract class AbstractTest {
 		}
 	}
 
-	private static class OracleAWS11TestDB extends OracleAWS11DB{
+	private static class OracleAWS11TestDB extends OracleAWS11DB {
 
 		public OracleAWS11TestDB() {
 			super("dbvtest-oracle-se1.cygjg2wvuyam.ap-southeast-2.rds.amazonaws.com", 1521, "ORCL", "dbv", "Testingdbv");
 		}
 	}
 
-	private static class Oracle11XETestDB extends Oracle11XEDB{
+	private static class Oracle11XETestDB extends Oracle11XEDB {
 
 		public Oracle11XETestDB() {
 			super("ec2-54-206-23-5.ap-southeast-2.compute.amazonaws.com", 1521, "XE", "DBV", "Testingdbv");
 		}
 	}
 
-	private static class MSSQLServerTestDB extends MSSQLServerDB{
+	private static class MSSQLServerTestDB extends MSSQLServerDB {
 
 		public MSSQLServerTestDB() {
 			super("dbvtest-mssql.cygjg2wvuyam.ap-southeast-2.rds.amazonaws.com", "dbvtest", "dbvtest", 1433, "dbv", "Testingdbv");
@@ -326,4 +328,4 @@ public abstract class AbstractTest {
 			super("memoryTest.h2db", "", "", false);
 		}
 	}
-		}
+}

@@ -30,6 +30,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.TimeZone;
 import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.DBRecursiveQuery;
 import nz.co.gregs.dbvolution.DBRow;
@@ -4439,6 +4440,10 @@ public abstract class DBDefinition {
 	 * @return
 	 */
 	public String doEndOfMonthTransform(String dateSQL) {
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	}
+
+	public String doDateAtTimeZoneTransform(String dateSQL, TimeZone timeZone) {
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 }
