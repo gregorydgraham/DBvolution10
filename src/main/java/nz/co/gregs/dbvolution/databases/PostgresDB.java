@@ -157,16 +157,16 @@ public class PostgresDB extends DBDatabase implements SupportsPolygonDatatype{
 	/**
 	 * Assumes that the database and application are on the the same machine.
 	 *
-	 * @param table
-	 * @param file
-	 * @param delimiter
-	 * @param nullValue
-	 * @param escapeCharacter
-	 * @param quoteCharacter
+	 * @param table the table to be loaded
+	 * @param file the file to load data from
+	 * @param delimiter the separator between the values of each row
+	 * @param nullValue the string that represents NULL in this file.
+	 * @param escapeCharacter the character that escapes special values
+	 * @param quoteCharacter the character the surrounds strings.
 	 * @return either (1) the row count for SQL Data Manipulation Language (DML)
 	 * statements or (2) 0 for SQL statements that return nothing 1 Database
 	 * exceptions may be thrown
-	 * @throws SQLException
+	 * @throws SQLException database exceptions may be thrown.
 	 */
 	public int loadFromCSVFile(DBRow table, File file, String delimiter, String nullValue, String escapeCharacter, String quoteCharacter) throws SQLException {
 		int returnValue = 0;
@@ -187,7 +187,7 @@ public class PostgresDB extends DBDatabase implements SupportsPolygonDatatype{
 	 * database administrator (DBA).
 	 *
 	 * @param databaseName the name of the new database
-	 * @throws SQLException
+	 * @throws SQLException database exceptions may be thrown
 	 */
 	public void createDatabase(String databaseName) throws SQLException {
 		String sqlString = "CREATE DATABASE " + databaseName + ";";
@@ -206,9 +206,9 @@ public class PostgresDB extends DBDatabase implements SupportsPolygonDatatype{
 	 * Generally requires all sorts of privileges and is best performed by
 	 * database administrator (DBA).
 	 *
-	 * @param username
-	 * @param password
-	 * @throws SQLException
+	 * @param username The user to be created
+	 * @param password the password the user will use.
+	 * @throws SQLException database exceptions may be throwns.
 	 */
 	public void createUser(String username, String password) throws SQLException {
 		String sqlString = "CREATE USER \"" + username.replaceAll("\\\"", "") + "\" WITH PASSWORD '" + password.replaceAll("'", "") + "';";

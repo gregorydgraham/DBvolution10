@@ -30,6 +30,7 @@ import java.util.TimeZone;
 import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.DBReport;
 import nz.co.gregs.dbvolution.DBRow;
+import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.databases.supports.SupportsDateRepeatDatatypeFunctions;
 import nz.co.gregs.dbvolution.datatypes.*;
 import nz.co.gregs.dbvolution.results.InComparable;
@@ -487,13 +488,14 @@ public class DateExpression implements DateResult, RangeComparable<DateResult>, 
 					}
 				});
 	}
+
 	/**
-	 * Creates an SQL expression that returns the fractions of a second part of this date
-	 * expression.
+	 * Creates an SQL expression that returns the fractions of a second part of
+	 * this date expression.
 	 *
 	 * <p>
-	 * Contains only the fractional part of the seconds, that is always between 0 and 1, use {@link #second()} to retrieve the
-	 * integer part.
+	 * Contains only the fractional part of the seconds, that is always between 0
+	 * and 1, use {@link #second()} to retrieve the integer part.
 	 *
 	 * @return the second of this date expression as a number.
 	 */
@@ -570,8 +572,8 @@ public class DateExpression implements DateResult, RangeComparable<DateResult>, 
 	}
 
 	/**
-	 * Creates an SQL expression that test whether this date expression is NOT equal
-	 * to the supplied date.
+	 * Creates an SQL expression that test whether this date expression is NOT
+	 * equal to the supplied date.
 	 *
 	 * @param dateExpression the date the expression must not match
 	 * @return a BooleanExpression comparing the DateResult and this
@@ -988,7 +990,8 @@ public class DateExpression implements DateResult, RangeComparable<DateResult>, 
 	}
 
 	/**
-	 * Create a DateRepeat value representing the difference between this date expression and the one provided
+	 * Create a DateRepeat value representing the difference between this date
+	 * expression and the one provided
 	 *
 	 * @param date the other date which defines this DateRepeat
 	 * @return a DateRepeat expression
@@ -998,9 +1001,10 @@ public class DateExpression implements DateResult, RangeComparable<DateResult>, 
 	}
 
 	/**
-	 * Create a DateRepeat value representing the difference between this date expression and the one provided
+	 * Create a DateRepeat value representing the difference between this date
+	 * expression and the one provided
 	 *
-	 * @param dateExpression  the other date which defines this DateRepeat
+	 * @param dateExpression the other date which defines this DateRepeat
 	 * @return DateRepeat expression
 	 */
 	public DateRepeatExpression getDateRepeatFrom(DateResult dateExpression) {
@@ -1035,9 +1039,10 @@ public class DateExpression implements DateResult, RangeComparable<DateResult>, 
 	}
 
 	/**
-	 * Subtract the period/duration provided from this date expression to get an offset date.
+	 * Subtract the period/duration provided from this date expression to get an
+	 * offset date.
 	 *
-	 * @param interval the amount of time this date needs to be offset by. 
+	 * @param interval the amount of time this date needs to be offset by.
 	 * @return a Date expression
 	 */
 	public DateExpression minus(Period interval) {
@@ -1045,9 +1050,11 @@ public class DateExpression implements DateResult, RangeComparable<DateResult>, 
 	}
 
 	/**
-	 * Subtract the period/duration provided from this date expression to get an offset date.
+	 * Subtract the period/duration provided from this date expression to get an
+	 * offset date.
 	 *
-	 * @param intervalExpression the amount of time this date needs to be offset by. 
+	 * @param intervalExpression the amount of time this date needs to be offset
+	 * by.
 	 * @return a Date expression
 	 */
 	public DateExpression minus(DateRepeatResult intervalExpression) {
@@ -1081,9 +1088,10 @@ public class DateExpression implements DateResult, RangeComparable<DateResult>, 
 	}
 
 	/**
-	 * Add the period/duration provided from this date expression to get an offset date.
+	 * Add the period/duration provided from this date expression to get an offset
+	 * date.
 	 *
-	 * @param interval the amount of time this date needs to be offset by. 
+	 * @param interval the amount of time this date needs to be offset by.
 	 * @return a Date expression
 	 */
 	public DateExpression plus(Period interval) {
@@ -1091,9 +1099,11 @@ public class DateExpression implements DateResult, RangeComparable<DateResult>, 
 	}
 
 	/**
-	 * Add the period/duration provided from this date expression to get an offset date.
+	 * Add the period/duration provided from this date expression to get an offset
+	 * date.
 	 *
-	 * @param intervalExpression the amount of time this date needs to be offset by. 
+	 * @param intervalExpression the amount of time this date needs to be offset
+	 * by.
 	 * @return a Date expression
 	 */
 	public DateExpression plus(DateRepeatResult intervalExpression) {
@@ -2109,7 +2119,6 @@ public class DateExpression implements DateResult, RangeComparable<DateResult>, 
 //					}
 //				});
 //	}
-
 	/**
 	 * Derive the first day of the month for this date expression
 	 *
@@ -2141,8 +2150,9 @@ public class DateExpression implements DateResult, RangeComparable<DateResult>, 
 	}
 
 	/**
-	 * Return the index of the day of the week that this date expression refers to.
-	 * 
+	 * Return the index of the day of the week that this date expression refers
+	 * to.
+	 *
 	 * Refer to {@link #SUNDAY},  {@link #MONDAY}, etc
 	 *
 	 * @return an index of the day of the week.
@@ -2158,7 +2168,9 @@ public class DateExpression implements DateResult, RangeComparable<DateResult>, 
 	}
 
 	/**
-	 * Considering the first and second dates as end point for a time period and similarly for the third and fourth, tests whether the 2 time periods overlap.
+	 * Considering the first and second dates as end point for a time period and
+	 * similarly for the third and fourth, tests whether the 2 time periods
+	 * overlap.
 	 *
 	 * @param firstStartTime the beginning of the first interval
 	 * @param firstEndTime the end of the first interval
@@ -2174,7 +2186,9 @@ public class DateExpression implements DateResult, RangeComparable<DateResult>, 
 	}
 
 	/**
-	 * Considering the first and second dates as end point for a time period and similarly for the third and fourth, tests whether the 2 time periods overlap.
+	 * Considering the first and second dates as end point for a time period and
+	 * similarly for the third and fourth, tests whether the 2 time periods
+	 * overlap.
 	 *
 	 * @param firstStartTime the beginning of the first interval
 	 * @param firstEndTime the end of the first interval
@@ -2190,7 +2204,9 @@ public class DateExpression implements DateResult, RangeComparable<DateResult>, 
 	}
 
 	/**
-	 * Considering the first and second dates as end point for a time period and similarly for the third and fourth, tests whether the 2 time periods overlap.
+	 * Considering the first and second dates as end point for a time period and
+	 * similarly for the third and fourth, tests whether the 2 time periods
+	 * overlap.
 	 *
 	 * @param firstStartTime the beginning of the first interval
 	 * @param firstEndTime the end of the first interval
@@ -2344,17 +2360,41 @@ public class DateExpression implements DateResult, RangeComparable<DateResult>, 
 		return leastExpr;
 	}
 
+	/**
+	 * Roll the date value to the requested time zone.
+	 *
+	 * <p>
+	 * If not implemented natively, a default implementation is provided that uses
+	 * the raw offset to calculate the time zone change. This has several problem
+	 * so a native implementation is recommended.
+	 *
+	 * @param timeZone the desired time zone
+	 * @return a date expression that evaluates to the date value in the specified time zone.
+	 */
 	public DateExpression atTimeZone(TimeZone timeZone) {
 		return new DateExpression(new DateTimeZoneExpressionWithDateResult(this, timeZone) {
 
 			@Override
 			public String toSQLString(DBDatabase db) {
-				return db.getDefinition().doDateAtTimeZoneTransform(getFirst().toSQLString(db), getSecond());
+				DBDefinition defn = db.getDefinition();
+				try {
+					return defn.doDateAtTimeZoneTransform(getFirst().toSQLString(db), getSecond());
+				} catch (UnsupportedOperationException exp) {
+					Double zoneOffset = (0.0 + this.getSecond().getRawOffset()) / 60.0;
+
+					int hourPart = zoneOffset.intValue() * 100;
+					int minutePart = (int) ((zoneOffset - (zoneOffset.intValue())) * 60);
+					String hour = NumberExpression.value(hourPart).toSQLString(db);
+					String minute = NumberExpression.value(minutePart).toSQLString(db);
+					String date = getFirst().toSQLString(db);
+
+					return defn.doAddMinutesTransform(defn.doAddHoursTransform(date, hour), minute);
+				}
 			}
-			
+
 		});
 	}
-	
+
 	private static abstract class FunctionWithDateResult extends DateExpression {
 
 		FunctionWithDateResult() {
@@ -2720,7 +2760,7 @@ public class DateExpression implements DateResult, RangeComparable<DateResult>, 
 
 		@Override
 		public boolean isAggregator() {
-			return getFirst().isAggregator() ;
+			return getFirst().isAggregator();
 		}
 
 		@Override

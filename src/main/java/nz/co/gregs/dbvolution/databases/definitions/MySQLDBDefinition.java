@@ -51,15 +51,6 @@ public class MySQLDBDefinition extends DBDefinition {
 		return " STR_TO_DATE('" + DATETIME_FORMAT.format(date) + "', '%d,%m,%Y %H:%i:%s.%f') ";
 	}
 
-	@SuppressWarnings("deprecation")
-	public String getUTCDateFormattedForQuery(Date date) {
-		Double zoneOffset = (0.0+date.getTimezoneOffset())/60.0;
-		int hourPart = zoneOffset.intValue()*100;
-		int minutePart = (int) ((zoneOffset-(zoneOffset.intValue()))*60);
-//		String actualTimeZone = "GMT"+(zoneOffset<0?"-":"+")+Math.abs(hourPart)+Math.abs(minutePart);
-		return doAddMinutesTransform(doAddHoursTransform("STR_TO_DATE('" + DATETIME_FORMAT.format(date) + "', '%d,%m,%Y %H:%i:%s.%f')", ""+hourPart), ""+minutePart);
-	}
-
 	@Override
 	public String getEqualsComparator() {
 		return " = ";

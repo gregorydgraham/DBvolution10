@@ -73,6 +73,22 @@ public abstract class DBDefinition {
 	public abstract String getDateFormattedForQuery(Date date);
 
 	/**
+	 * Transforms the Date instance into UTC time zone date.
+	 *
+	 * @param date the local date to be rolled to UTC.
+	 * @return SQL that creates this Date as a UTC date in the database.
+	 */
+	@SuppressWarnings("deprecation")
+	public String getUTCDateFormattedForQuery(Date date) {
+		Double zoneOffset = (0.0 + date.getTimezoneOffset()) / 60.0;
+
+		int hourPart = zoneOffset.intValue() * 100;
+		int minutePart = (int) ((zoneOffset - (zoneOffset.intValue())) * 60);
+
+		return doAddMinutesTransform(doAddHoursTransform(getDateFormattedForQuery(date), "" + hourPart), "" + minutePart);
+	}
+
+	/**
 	 * Formats the raw column name to the required convention of the database.
 	 *
 	 * <p>
@@ -235,7 +251,8 @@ public abstract class DBDefinition {
 	 * This methods helps support database specific naming rules by allowing
 	 * post-processing of the object names to conform to the rules.
 	 *
-	 * @param sqlObjectName
+	 * @param sqlObjectName the Java object name to be transformed into a database
+	 * object name.
 	 * @return the object name formatted for use with this database
 	 */
 	protected String formatNameForDatabase(final String sqlObjectName) {
@@ -1139,10 +1156,8 @@ public abstract class DBDefinition {
 	 * @return SQL snippet
 	 * @see StringExpression#append(java.lang.String)
 	 * @see StringExpression#append(java.lang.Number)
-	 * @see
-	 * StringExpression#append(nz.co.gregs.dbvolution.expressions.StringResult)
-	 * @see
-	 * StringExpression#append(nz.co.gregs.dbvolution.expressions.NumberResult)
+	 * @see StringExpression#append(nz.co.gregs.dbvolution.results.StringResult)
+	 * @see StringExpression#append(nz.co.gregs.dbvolution.results.NumberResult)
 	 */
 	public String doConcatTransform(String firstString, String secondString) {
 		return firstString + "||" + secondString;
@@ -1309,7 +1324,7 @@ public abstract class DBDefinition {
 	 * This should return the most detailed possible value less than a second for
 	 * the date expression provided. It should always return a value less than 1s.
 	 *
-	 * @param dateExpression
+	 * @param dateExpression the date from which to get the subsecond part of.
 	 * @return SQL
 	 */
 	public String doSubsecondTransform(String dateExpression) {
@@ -1857,7 +1872,8 @@ public abstract class DBDefinition {
 	 * }
 	 *
 	 * @return return the date format required to interpret strings as dates.
-	 * @throws java.text.ParseException
+	 * @throws java.text.ParseException SimpleDateFormat may throw a parse
+	 * exception
 	 * @see #prefersDatesReadAsStrings()
 	 */
 	public Date parseDateFromGetString(String getStringDate) throws ParseException {
@@ -2265,13 +2281,11 @@ public abstract class DBDefinition {
 	 * @return "REPLACE(withinString, findString, replaceString)"
 	 * @see StringExpression#replace(java.lang.String, java.lang.String)
 	 * @see StringExpression#replace(java.lang.String,
-	 * nz.co.gregs.dbvolution.expressions.StringResult)
-	 * @see
-	 * StringExpression#replace(nz.co.gregs.dbvolution.expressions.StringResult,
+	 * nz.co.gregs.dbvolution.results.StringResult)
+	 * @see StringExpression#replace(nz.co.gregs.dbvolution.results.StringResult,
 	 * java.lang.String)
-	 * @see
-	 * StringExpression#replace(nz.co.gregs.dbvolution.expressions.StringResult,
-	 * nz.co.gregs.dbvolution.expressions.StringResult)
+	 * @see StringExpression#replace(nz.co.gregs.dbvolution.results.StringResult,
+	 * nz.co.gregs.dbvolution.results.StringResult)
 	 */
 	public String doReplaceTransform(String withinString, String findString, String replaceString) {
 		return "REPLACE(" + withinString + "," + findString + "," + replaceString + ")";
@@ -2486,7 +2500,7 @@ public abstract class DBDefinition {
 	/**
 	 * Returns FROM clause to be used for this table.
 	 *
-	 * @param table
+	 * @param table the table to transform into a FROM clause.
 	 * @return a SQL snippet for a FROM clause.
 	 */
 	public String getFromClause(DBRow table) {
@@ -2510,8 +2524,9 @@ public abstract class DBDefinition {
 	/**
 	 * Define the table to be used during a recursive query.
 	 *
-	 * @param recursiveTableAlias
-	 * @param recursiveColumnNames
+	 * @param recursiveTableAlias the table alias used during the recursive query.
+	 * @param recursiveColumnNames all the columns in the recursive part of the
+	 * query.
 	 * @return by default something like: ALIAS(COL1, COL2, ... )
 	 */
 	public String formatWithClauseTableDefinition(String recursiveTableAlias, String recursiveColumnNames) {
@@ -2562,8 +2577,8 @@ public abstract class DBDefinition {
 	 * Return the default select clause for the final query of a
 	 * {@link DBRecursiveQuery}.
 	 *
-	 * @param recursiveTableAlias
-	 * @param recursiveAliases
+	 * @param recursiveTableAlias the table alias used in the recursive query.
+	 * @param recursiveAliases all the column aliases used in the recursive query.
 	 * @return " SELECT ... FROM ... ORDER BY ... ASC; ";
 	 */
 	public String doSelectFromRecursiveTable(String recursiveTableAlias, String recursiveAliases) {
@@ -2594,7 +2609,7 @@ public abstract class DBDefinition {
 	 * Expresses whether the database has a particular datatype for primary key
 	 * columns.
 	 *
-	 * @param field
+	 * @param field the property to check
 	 * @return FALSE by default
 	 */
 	protected boolean hasSpecialPrimaryKeyTypeForDBDatatype(PropertyWrapper field) {
@@ -2605,7 +2620,7 @@ public abstract class DBDefinition {
 	 * Return the necessary SQL data type for this field to be a primary key in
 	 * this database.
 	 *
-	 * @param field
+	 * @param field the property to check
 	 * @return by default DBvolution returns the standard datatype for this field.
 	 */
 	protected String getSpecialPrimaryKeyTypeOfDBDatatype(PropertyWrapper field) {
@@ -2664,7 +2679,8 @@ public abstract class DBDefinition {
 	 * Most databases do not have a problem with this method but PostgreSQL likes
 	 * the column name to be lowercase in this particular instance.
 	 *
-	 * @param primaryKeyColumnName
+	 * @param primaryKeyColumnName the name of the primary key column formatted
+	 * for this database
 	 * @return the Primary Key formatted for this database.
 	 */
 	public String formatPrimaryKeyForRetrievingGeneratedKeys(String primaryKeyColumnName) {
@@ -2680,8 +2696,8 @@ public abstract class DBDefinition {
 	 * first string is returned, 2 returns the second and so forth. If the number
 	 * exceeds the number of strings the last string is returned.s
 	 *
-	 * @param numberToChooseWith
-	 * @param strs
+	 * @param numberToChooseWith the index to use
+	 * @param strs the options to choose from.
 	 * @return SQL
 	 */
 	public String doChooseTransformation(String numberToChooseWith, List<String> strs) {
@@ -2755,9 +2771,9 @@ public abstract class DBDefinition {
 	 * Returns the second parameter if the first is TRUE, otherwise returns the
 	 * third parameter.
 	 *
-	 * @param booleanTest
-	 * @param thenResult
-	 * @param elseResult
+	 * @param booleanTest the true/false test
+	 * @param thenResult the result to return if the test returns TRUE
+	 * @param elseResult the result to return if the test returns FALSE
 	 * @return IF the booleanTest is TRUE returns the thenResult, otherwise
 	 * returns elseResult.
 	 */
@@ -2772,7 +2788,7 @@ public abstract class DBDefinition {
 	 * Provides access to the day of the week as a number from 1 for Sunday to 7
 	 * for Saturday.
 	 *
-	 * @param dateSQL
+	 * @param dateSQL the date to get the day of the week for.
 	 * @return a number between 1 and 7 for the weekday.
 	 */
 	abstract public String doDayOfWeekTransform(String dateSQL);
@@ -2784,7 +2800,7 @@ public abstract class DBDefinition {
 	 * Used in {@link DBDatabase#createIndexesOnAllFields(nz.co.gregs.dbvolution.DBRow)
 	 * } to create indexes for the fields of the table.
 	 *
-	 * @param field
+	 * @param field the field to generate an index for
 	 * @return SQL
 	 */
 	public String getIndexClauseForCreateTable(PropertyWrapper field) {
@@ -2797,7 +2813,7 @@ public abstract class DBDefinition {
 	 * <p>
 	 * The default implementation changes the array into a string of 0s and 1s.
 	 *
-	 * @param bools
+	 * @param bools all the true/false values
 	 * @return a string of 1s and 0s representing the boolean array.
 	 */
 	public String doBooleanArrayTransform(Boolean[] bools) {
@@ -2816,7 +2832,7 @@ public abstract class DBDefinition {
 	 * The default implementation transforms a string of 0s and 1s into an array
 	 * of Booleans.
 	 *
-	 * @param stringOfBools
+	 * @param stringOfBools all the true/false values
 	 * @return an array of Booleans.
 	 */
 	public Boolean[] doBooleanArrayResultInterpretation(String stringOfBools) {
@@ -2844,11 +2860,7 @@ public abstract class DBDefinition {
 	/**
 	 * Implement this method if the database implements ARRAYs but not BOOLEAN.
 	 *
-	 * <p>
-	 * Not used at present but available if the array of booleans is stored as,
-	 * for instance, numbers.
-	 *
-	 * @param objRepresentingABoolean
+	 * @param objRepresentingABoolean an object to be used in the boolean array
 	 * @return a boolean derived from objRepresentingABoolean.
 	 */
 	public Boolean doBooleanArrayElementTransform(Object objRepresentingABoolean) {
@@ -2861,8 +2873,8 @@ public abstract class DBDefinition {
 	 * <p>
 	 * The default implementation is {@code leftHandSide + " = " + rightHandSide}.
 	 *
-	 * @param leftHandSide
-	 * @param rightHandSide
+	 * @param leftHandSide the first value to compare
+	 * @param rightHandSide the second value to compare
 	 * @return the SQL required to compare the two numbers.
 	 */
 	public String doNumberEqualsTransform(String leftHandSide, String rightHandSide) {
@@ -2875,8 +2887,8 @@ public abstract class DBDefinition {
 	 * <p>
 	 * Remember to check {@code field.isForeignKey()} first.
 	 *
-	 * @param newTableRow
-	 * @param field
+	 * @param newTableRow the table to be altered.
+	 * @param field the field to add a foreign key from
 	 * @return the SQL to add a foreign key.
 	 */
 	public String getAlterTableAddForeignKeyStatement(DBRow newTableRow, PropertyWrapper field) {
@@ -2893,8 +2905,8 @@ public abstract class DBDefinition {
 	 * <p>
 	 * Remember to check {@code field.isForeignKey()} first.
 	 *
-	 * @param newTableRow
-	 * @param field
+	 * @param newTableRow the table to be altered.
+	 * @param field the field to remove the foreign key from.
 	 * @return the SQL to remove a foreign key.
 	 */
 	public String getAlterTableDropForeignKeyStatement(DBRow newTableRow, PropertyWrapper field) {
@@ -2913,8 +2925,8 @@ public abstract class DBDefinition {
 	 * JDBC to be transformed into the necessary type (usually a String) to be
 	 * read by Java and DBvolution.
 	 *
-	 * @param qdt
-	 * @param selectableName
+	 * @param qdt the DBV value to be stored
+	 * @param selectableName the selectable value
 	 * @return SQL
 	 */
 	public String doColumnTransformForSelect(QueryableDatatype qdt, String selectableName) {
@@ -2924,7 +2936,7 @@ public abstract class DBDefinition {
 	/**
 	 * Creates a string representation of a DateRepeat from the Period
 	 *
-	 * @param interval
+	 * @param interval the interval to be transformed into a DateRepeat.
 	 * @return a DateRpeat as an SQL string
 	 */
 	public String transformPeriodIntoDateRepeat(Period interval) {
@@ -2943,8 +2955,8 @@ public abstract class DBDefinition {
 	/**
 	 * Create a DateRepeat by subtracting the 2 dates.
 	 *
-	 * @param leftHandSide
-	 * @param rightHandSide
+	 * @param leftHandSide the first date
+	 * @param rightHandSide the second date to subtract from the first
 	 * @return the SQL required to create a DateRepeat from the dates
 	 */
 	public String doDateMinusToDateRepeatTransformation(String leftHandSide, String rightHandSide) {
@@ -2954,8 +2966,8 @@ public abstract class DBDefinition {
 	/**
 	 * Compare 2 DateRepeats using EQUALS.
 	 *
-	 * @param leftHandSide
-	 * @param rightHandSide
+	 * @param leftHandSide the first value to compare
+	 * @param rightHandSide the second value to compare
 	 * @return the SQL required to create to compare DateRepeats
 	 */
 	public String doDateRepeatEqualsTransform(String leftHandSide, String rightHandSide) {
@@ -2965,8 +2977,8 @@ public abstract class DBDefinition {
 	/**
 	 * Compare 2 DateRepeats using NOT EQUALS.
 	 *
-	 * @param leftHandSide
-	 * @param rightHandSide
+	 * @param leftHandSide the first DateRepeat value to compare
+	 * @param rightHandSide the second DateRepeat value to compare
 	 * @return the SQL required to create to compare DateRepeats
 	 */
 	public String doDateRepeatNotEqualsTransform(String leftHandSide, String rightHandSide) {
@@ -2976,8 +2988,8 @@ public abstract class DBDefinition {
 	/**
 	 * Compare 2 DateRepeats using LESSTHAN.
 	 *
-	 * @param leftHandSide
-	 * @param rightHandSide
+	 * @param leftHandSide the first DateRepeat value to compare
+	 * @param rightHandSide the second DateRepeat value to compare
 	 * @return the SQL required to create to compare DateRepeats
 	 */
 	public String doDateRepeatLessThanTransform(String leftHandSide, String rightHandSide) {
@@ -2987,8 +2999,8 @@ public abstract class DBDefinition {
 	/**
 	 * Compare 2 DateRepeats using LESSTHANEQUALS.
 	 *
-	 * @param leftHandSide
-	 * @param rightHandSide
+	 * @param leftHandSide the first DateRepeat value to compare
+	 * @param rightHandSide the second DateRepeat value to compare
 	 * @return the SQL required to create to compare DateRepeats
 	 */
 	public String doDateRepeatLessThanEqualsTransform(String leftHandSide, String rightHandSide) {
@@ -2998,8 +3010,8 @@ public abstract class DBDefinition {
 	/**
 	 * Compare 2 DateRepeats using GREATERTHAN.
 	 *
-	 * @param leftHandSide
-	 * @param rightHandSide
+	 * @param leftHandSide the first DateRepeat value to compare
+	 * @param rightHandSide the second DateRepeat value to compare
 	 * @return the SQL required to create to compare DateRepeats
 	 */
 	public String doDateRepeatGreaterThanTransform(String leftHandSide, String rightHandSide) {
@@ -3009,8 +3021,8 @@ public abstract class DBDefinition {
 	/**
 	 * Compare 2 DateRepeats using GREATERTHANEQUALS.
 	 *
-	 * @param leftHandSide
-	 * @param rightHandSide
+	 * @param leftHandSide the first DateRepeat value to compare
+	 * @param rightHandSide the second DateRepeat value to compare
 	 * @return the SQL required to create to compare DateRepeats
 	 */
 	public String doDateRepeatGreaterThanEqualsTransform(String leftHandSide, String rightHandSide) {
@@ -3020,8 +3032,8 @@ public abstract class DBDefinition {
 	/**
 	 * Offset the date by the DateRepeat.
 	 *
-	 * @param leftHandSide
-	 * @param rightHandSide
+	 * @param leftHandSide the first DateRepeat value to compare
+	 * @param rightHandSide the second DateRepeat value to compare
 	 * @return the SQL required to change the date by the required amount.
 	 */
 	public String doDatePlusDateRepeatTransform(String leftHandSide, String rightHandSide) {
@@ -3031,8 +3043,8 @@ public abstract class DBDefinition {
 	/**
 	 * Offset the date by subtracting the DateRepeat.
 	 *
-	 * @param leftHandSide
-	 * @param rightHandSide
+	 * @param leftHandSide the first DateRepeat value to compare
+	 * @param rightHandSide the second DateRepeat value to compare
 	 * @return the SQL required to change the date by the required amount.
 	 */
 	public String doDateMinusDateRepeatTransform(String leftHandSide, String rightHandSide) {
@@ -3042,7 +3054,7 @@ public abstract class DBDefinition {
 	/**
 	 * Create a Period from the database version of the DateRepeat.
 	 *
-	 * @param intervalStr
+	 * @param intervalStr the DateRepeat value to convert into a Jodatime Period
 	 * @return a Period.
 	 */
 	public Period parseDateRepeatFromGetString(String intervalStr) {
@@ -3052,8 +3064,8 @@ public abstract class DBDefinition {
 	/**
 	 * Compare 2 polygons with EQUALS.
 	 *
-	 * @param firstGeometry
-	 * @param secondGeometry
+	 * @param firstGeometry the first polygon2d value to compare
+	 * @param secondGeometry the second polygon2d value to compare
 	 * @return SQL
 	 */
 	public String doPolygon2DEqualsTransform(String firstGeometry, String secondGeometry) {
@@ -3063,8 +3075,8 @@ public abstract class DBDefinition {
 	/**
 	 * Creates a Polygon2D representing the intersection of the Polygon2Ds.
 	 *
-	 * @param firstGeometry
-	 * @param secondGeometry
+	 * @param firstGeometry the first polygon2d value to compare
+	 * @param secondGeometry the second polygon2d value to compare
 	 * @return SQL that represents a polygon of the intersection, null if there is
 	 * no intersection.
 	 */
@@ -3075,8 +3087,8 @@ public abstract class DBDefinition {
 	/**
 	 * Test whether the 2 polygons intersect.
 	 *
-	 * @param firstGeometry
-	 * @param secondGeometry
+	 * @param firstGeometry the first polygon2d value to compare
+	 * @param secondGeometry the second polygon2d value to compare
 	 * @return SQL that returns TRUE if they intersect.
 	 */
 	public String doPolygon2DIntersectsTransform(String firstGeometry, String secondGeometry) {
@@ -3086,8 +3098,8 @@ public abstract class DBDefinition {
 	/**
 	 * Test whether the first polygon completely contains the second polygon.
 	 *
-	 * @param firstGeometry
-	 * @param secondGeometry
+	 * @param firstGeometry the first polygon2d value to compare
+	 * @param secondGeometry the second polygon2d value to compare
 	 * @return SQL that is TRUE if the first polygon contains the second.
 	 */
 	public String doPolygon2DContainsPolygon2DTransform(String firstGeometry, String secondGeometry) {
@@ -3098,8 +3110,8 @@ public abstract class DBDefinition {
 	 * Inverse of {@link #doPolygon2DIntersectsTransform(java.lang.String, java.lang.String)
 	 * }, tests whether the 2 polygons are non-coincident.
 	 *
-	 * @param firstGeometry
-	 * @param secondGeometry
+	 * @param firstGeometry the first polygon2d value to compare
+	 * @param secondGeometry the second polygon2d value to compare
 	 * @return SQL that is FALSE if the polygons intersect.
 	 */
 	public String doPolygon2DDoesNotIntersectTransform(String firstGeometry, String secondGeometry) {
@@ -3109,8 +3121,8 @@ public abstract class DBDefinition {
 	/**
 	 * Test whether the 2 polygons intersect but not contained or within.
 	 *
-	 * @param firstGeometry
-	 * @param secondGeometry
+	 * @param firstGeometry the first polygon2d value to compare
+	 * @param secondGeometry the second polygon2d value to compare
 	 * @return SQL that is TRUE if the polygons have intersecting and
 	 * non-intersecting parts.
 	 */
@@ -3125,8 +3137,8 @@ public abstract class DBDefinition {
 	 * Checks that a) the polygons have at least on point in common and b) that
 	 * their interiors do not overlap.
 	 *
-	 * @param firstGeometry
-	 * @param secondGeometry
+	 * @param firstGeometry the first polygon2d value to compare
+	 * @param secondGeometry the second polygon2d value to compare
 	 * @return SQL snippet
 	 */
 	public String doPolygon2DTouchesTransform(String firstGeometry, String secondGeometry) {
@@ -3140,8 +3152,8 @@ public abstract class DBDefinition {
 	 * Compare this to {@link #doPolygon2DContainsPolygon2DTransform(java.lang.String, java.lang.String)
 	 * }
 	 *
-	 * @param firstGeometry
-	 * @param secondGeometry
+	 * @param firstGeometry the first polygon2d value to compare
+	 * @param secondGeometry the second polygon2d value to compare
 	 * @return SQL that is TRUE if the first polygon is within the second.
 	 */
 	public String doPolygon2DWithinTransform(String firstGeometry, String secondGeometry) {
@@ -3156,30 +3168,30 @@ public abstract class DBDefinition {
 	 * <p>
 	 * This will be "2"
 	 *
-	 * @param toSQLString
+	 * @param polygon2DSQL a polygon2d value
 	 * @return "2" unless something has gone horribly wrong.
 	 */
-	public String doPolygon2DMeasurableDimensionsTransform(String toSQLString) {
+	public String doPolygon2DMeasurableDimensionsTransform(String polygon2DSQL) {
 		throw new UnsupportedOperationException("Geometry Operations Have Not Been Defined For This Database Yet.");
 	}
 
 	/**
 	 * Create a simple four sided bounding for the polygon.
 	 *
-	 * @param toSQLString
+	 * @param polygon2DSQL a polygon2D value
 	 * @return the SQL required to create a bounding box for the polygon.
 	 */
-	public String doPolygon2DGetBoundingBoxTransform(String toSQLString) {
+	public String doPolygon2DGetBoundingBoxTransform(String polygon2DSQL) {
 		throw new UnsupportedOperationException("Geometry Operations Have Not Been Defined For This Database Yet.");
 	}
 
 	/**
 	 * Retrieve the area of the polygon.
 	 *
-	 * @param toSQLString
+	 * @param polygon2DSQL a polygon2D value
 	 * @return SQL that will return the area of the Polygon2D
 	 */
-	public String doPolygon2DGetAreaTransform(String toSQLString) {
+	public String doPolygon2DGetAreaTransform(String polygon2DSQL) {
 		throw new UnsupportedOperationException("Geometry Operations Have Not Been Defined For This Database Yet.");
 	}
 
@@ -3187,7 +3199,7 @@ public abstract class DBDefinition {
 	 * Defines the transformation require to transform an SQL Polygon2D into a
 	 * linestring representing the exterior ring of the polygon.
 	 *
-	 * @param polygon2DSQL
+	 * @param polygon2DSQL a polygon2D value
 	 * @return SQL
 	 */
 	public String doPolygon2DGetExteriorRingTransform(String polygon2DSQL) {
@@ -3215,7 +3227,7 @@ public abstract class DBDefinition {
 	/**
 	 * Get the year part of the DateRepeat, an integer
 	 *
-	 * @param dateRepeatSQL
+	 * @param dateRepeatSQL a date repeat value
 	 * @return SQL
 	 */
 	public String doDateRepeatGetYearsTransform(String dateRepeatSQL) {
@@ -3225,7 +3237,7 @@ public abstract class DBDefinition {
 	/**
 	 * Get the month part of the DateRepeat, an integer
 	 *
-	 * @param dateRepeatSQL
+	 * @param dateRepeatSQL a date repeat value
 	 * @return SQL
 	 */
 	public String doDateRepeatGetMonthsTransform(String dateRepeatSQL) {
@@ -3235,7 +3247,7 @@ public abstract class DBDefinition {
 	/**
 	 * Get the Days part of the DateRepeat, an integer
 	 *
-	 * @param dateRepeatSQL
+	 * @param dateRepeatSQL a date repeat value
 	 * @return SQL
 	 */
 	public String doDateRepeatGetDaysTransform(String dateRepeatSQL) {
@@ -3245,7 +3257,7 @@ public abstract class DBDefinition {
 	/**
 	 * Get the hour part of the DateRepeat, an integer
 	 *
-	 * @param dateRepeatSQL
+	 * @param dateRepeatSQL a date repeat value
 	 * @return SQL
 	 */
 	public String doDateRepeatGetHoursTransform(String dateRepeatSQL) {
@@ -3255,7 +3267,7 @@ public abstract class DBDefinition {
 	/**
 	 * Get the minute part of the DateRepeat, an integer
 	 *
-	 * @param dateRepeatSQL
+	 * @param dateRepeatSQL a date repeat value
 	 * @return SQL
 	 */
 	public String doDateRepeatGetMinutesTransform(String dateRepeatSQL) {
@@ -3265,7 +3277,7 @@ public abstract class DBDefinition {
 	/**
 	 * Get the seconds part of the DateRepeat, a decimal number
 	 *
-	 * @param dateRepeatSQL
+	 * @param dateRepeatSQL a date repeat value
 	 * @return SQL
 	 */
 	public String doDateRepeatGetSecondsTransform(String dateRepeatSQL) {
@@ -3275,7 +3287,7 @@ public abstract class DBDefinition {
 	/**
 	 * Transform the DateRepeat into it's character based equivalent.
 	 *
-	 * @param dateRepeatSQL
+	 * @param dateRepeatSQL a date repeat value
 	 * @return SQL
 	 */
 	public String doDateRepeatToStringTransform(String dateRepeatSQL) {
@@ -3288,7 +3300,7 @@ public abstract class DBDefinition {
 	 * <p>
 	 * Full of ways to fail this is.
 	 *
-	 * @param stringResultContainingANumber
+	 * @param stringResultContainingANumber a number value to be coerced to string
 	 * @return SQL that converts the string value into number.
 	 */
 	public String doStringToNumberTransform(String stringResultContainingANumber) {
@@ -3319,8 +3331,11 @@ public abstract class DBDefinition {
 	 *
 	 * <p>
 	 * Used mostly to turn Booleans into numbers.
+	 * 
+	 * <p>
+	 * By default this method just returns the input DBExpression.
 	 *
-	 * @param columnExpression
+	 * @param columnExpression a column expression that might need to change type for this database
 	 * @return The DBExpression as a DBExpression supported by the database.
 	 */
 	public DBExpression transformToStorableType(DBExpression columnExpression) {
@@ -3330,8 +3345,8 @@ public abstract class DBDefinition {
 	/**
 	 * Provide the SQL to compare 2 Point2Ds
 	 *
-	 * @param firstPoint
-	 * @param secondPoint
+	 * @param firstPoint a point2d value to compare
+	 * @param secondPoint a point2d value to compare
 	 * @return SQL
 	 */
 	public String doPoint2DEqualsTransform(String firstPoint, String secondPoint) {
@@ -3341,7 +3356,7 @@ public abstract class DBDefinition {
 	/**
 	 * Provide the SQL to return the X coordinate of the Point2D
 	 *
-	 * @param pont2DSQL
+	 * @param pont2DSQL a point2d value
 	 * @return SQL
 	 */
 	public String doPoint2DGetXTransform(String pont2DSQL) {
@@ -3351,7 +3366,7 @@ public abstract class DBDefinition {
 	/**
 	 * Provide the SQL to return the Y coordinate of the Point2D
 	 *
-	 * @param point2DSQL
+	 * @param point2DSQL a point2d value
 	 * @return SQL
 	 */
 	public String doPoint2DGetYTransform(String point2DSQL) {
@@ -3364,7 +3379,7 @@ public abstract class DBDefinition {
 	 * <p>
 	 * Point is a 0-dimensional objects for this purpose.
 	 *
-	 * @param point2DSQL
+	 * @param point2DSQL a point2d value
 	 * @return SQL
 	 */
 	public String doPoint2DMeasurableDimensionsTransform(String point2DSQL) {
@@ -3375,7 +3390,7 @@ public abstract class DBDefinition {
 	 * Provide the SQL to derive the Polygon2D representing the Bounding Box of
 	 * the Point2D.
 	 *
-	 * @param point2DSQL
+	 * @param point2DSQL a point2d value
 	 * @return SQL
 	 */
 	public String doPoint2DGetBoundingBoxTransform(String point2DSQL) {
@@ -3395,7 +3410,7 @@ public abstract class DBDefinition {
 	/**
 	 * Provide the SQL that correctly represents this Point2D in this database.
 	 *
-	 * @param point
+	 * @param point a point to be turned into an SQL point2d value.
 	 * @return SQL
 	 */
 	public String transformPoint2DIntoDatabaseFormat(Point point) {
@@ -3412,8 +3427,8 @@ public abstract class DBDefinition {
 	 * {@link #transformPoint2DIntoDatabaseFormat(com.vividsolutions.jts.geom.Point)}
 	 * but for two coordinates as SQL.
 	 *
-	 * @param xValue
-	 * @param yValue
+	 * @param xValue a number value
+	 * @param yValue a number value
 	 * @return SQL
 	 */
 	public String transformCoordinatesIntoDatabasePoint2DFormat(String xValue, String yValue) {
@@ -3427,8 +3442,8 @@ public abstract class DBDefinition {
 	 * This is the inverse of {@link #transformPoint2DIntoDatabaseFormat(com.vividsolutions.jts.geom.Point)
 	 * }.
 	 *
-	 * @param pointAsString
-	 * @return a point.
+	 * @param pointAsString a point2d value
+	 * @return a point created from the point2d value
 	 * @throws com.vividsolutions.jts.io.ParseException
 	 */
 	public Point transformDatabasePoint2DValueToJTSPoint(String pointAsString) throws com.vividsolutions.jts.io.ParseException {
@@ -3450,8 +3465,8 @@ public abstract class DBDefinition {
 	 * This is the inverse of
 	 * {@link #transformPolygonIntoDatabasePolygon2DFormat(com.vividsolutions.jts.geom.Polygon)}.
 	 *
-	 * @param polygon2DSQL
-	 * @return a polygon.
+	 * @param polygon2DSQL a polygon2d value
+	 * @return a polygon created from the polygon2d value
 	 * @throws com.vividsolutions.jts.io.ParseException
 	 */
 	public Polygon transformDatabasePolygon2DToJTSPolygon(String polygon2DSQL) throws com.vividsolutions.jts.io.ParseException {
@@ -3477,8 +3492,8 @@ public abstract class DBDefinition {
 	 * This is the inverse of
 	 * {@link #transformPolygonIntoDatabasePolygon2DFormat(com.vividsolutions.jts.geom.Polygon)}.
 	 *
-	 * @param lineStringAsSQL
-	 * @return a line.
+	 * @param lineStringAsSQL a line2d value 
+	 * @return a linestring created from the line2d
 	 * @throws com.vividsolutions.jts.io.ParseException
 	 */
 	public LineString transformDatabaseLine2DValueToJTSLineString(String lineStringAsSQL) throws com.vividsolutions.jts.io.ParseException {
@@ -3496,23 +3511,11 @@ public abstract class DBDefinition {
 	/**
 	 * Provide the SQL that correctly represents this LineString in this database.
 	 *
-	 * @param lineString
+	 * @param lineString a linestring to transform in to a Line2D value
 	 * @return SQL
 	 */
 	public String transformLineStringIntoDatabaseLine2DFormat(LineString lineString) {
 		String wktValue = lineString.toText();
-		return "'" + wktValue + "'";
-	}
-
-	/**
-	 * Provide the SQL that correctly represents this Polygon2D in this database.
-	 *
-	 * @param polygon
-	 * @return SQL
-	 */
-	@Deprecated
-	public String OldtransformPolygonIntoDatabasePolygon2DFormat(Polygon polygon) {
-		String wktValue = polygon.toText();
 		return "'" + wktValue + "'";
 	}
 
@@ -4432,9 +4435,10 @@ public abstract class DBDefinition {
 	/**
 	 * Override this method to provide a specific transform that will derive the
 	 * last day of the month from the date value provided.
-	 * 
+	 *
 	 * <p>
-	 * If no override is provided for this method a default implementation will be used instead.
+	 * If no override is provided for this method a default implementation will be
+	 * used instead.
 	 *
 	 * @param dateSQL
 	 * @return
@@ -4443,7 +4447,25 @@ public abstract class DBDefinition {
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
-	public String doDateAtTimeZoneTransform(String dateSQL, TimeZone timeZone) {
+	/**
+	 * Override this method to implement changing a date to another time zone.
+	 *
+	 * <p>
+	 * The method should roll the time forward or backward to the correct time for
+	 * the time zone. That is if the date is 12/Aug/2015 10:13:34 GMT+1200 and the
+	 * new time zone is GMT+1000, then the new date should be 12/Aug/2015 8:13:34
+	 * GMT+1000.
+	 *
+	 * <p>
+	 * When implementing this method be aware that time zones are very complex,
+	 * and you will need to deal with "GMT+1345", "PST", "Pacific/Auckland", and
+	 * lots of other variants.
+	 *
+	 * @param dateSQL the date to be move to another time.
+	 * @param timeZone the required time zone
+	 * @return SQL representing the date value in the requested time zone.
+	 */
+	public String doDateAtTimeZoneTransform(String dateSQL, TimeZone timeZone) throws UnsupportedOperationException {
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 }
