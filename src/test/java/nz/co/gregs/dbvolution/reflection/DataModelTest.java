@@ -219,7 +219,7 @@ public class DataModelTest extends AbstractTest {
 	public void testCreateDBQueryFromEncodedAcceptsSimpleDateValue() throws ClassNotFoundException, InstantiationException, IllegalAccessException, SQLException {
 		DBQuery query = DataModel.createDBQueryFromEncodedTablesPropertiesAndValues(
 				database,
-				"nz.co.gregs.dbvolution.example.CarCompany&nz.co.gregs.dbvolution.example.Marque-creationDate=23 Mar 2013 12:34:56 +1300",
+				"nz.co.gregs.dbvolution.example.CarCompany&nz.co.gregs.dbvolution.example.Marque-creationDate=23 Mar 2013 12:34:56",
 				new DefaultEncodingInterpreter()
 		);
 		database.setPrintSQLBeforeExecuting(true);
@@ -227,7 +227,7 @@ public class DataModelTest extends AbstractTest {
 		database.print(allRows);
 
 		Assert.assertThat(allRows.size(), is(18));
-		Assert.assertThat(allRows.get(0).get(new Marque()).creationDate.dateValue(), is(new Date("23 Mar 2013 12:34:56 +1300")));
+		Assert.assertThat(allRows.get(0).get(new Marque()).creationDate.dateValue(), is(new Date("23 Mar 2013 12:34:56")));
 	}
 
 	@Test
@@ -235,7 +235,7 @@ public class DataModelTest extends AbstractTest {
 	public void testCreateDBQueryFromEncodedAcceptsDateRangeValue() throws ClassNotFoundException, InstantiationException, IllegalAccessException, SQLException {
 		DBQuery query = DataModel.createDBQueryFromEncodedTablesPropertiesAndValues(
 				database,
-				"nz.co.gregs.dbvolution.example.CarCompany&nz.co.gregs.dbvolution.example.Marque-creationDate=22 Mar 2013 12:34:56 +1300...24 Mar 2013 12:34:56 +1300",
+				"nz.co.gregs.dbvolution.example.CarCompany&nz.co.gregs.dbvolution.example.Marque-creationDate=22 Mar 2013 12:34:56...24 Mar 2013 12:34:56",
 				new DefaultEncodingInterpreter()
 		);
 		database.setPrintSQLBeforeExecuting(true);
@@ -243,7 +243,7 @@ public class DataModelTest extends AbstractTest {
 		database.print(allRows);
 
 		Assert.assertThat(allRows.size(), is(18));
-		Assert.assertThat(allRows.get(0).get(new Marque()).creationDate.dateValue(), is(new Date("23 Mar 2013 12:34:56 +1300")));
+		Assert.assertThat(allRows.get(0).get(new Marque()).creationDate.dateValue(), is(new Date("23 Mar 2013 12:34:56")));
 	}
 
 	@Test
