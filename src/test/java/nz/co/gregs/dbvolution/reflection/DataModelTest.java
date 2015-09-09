@@ -330,7 +330,17 @@ public class DataModelTest extends AbstractTest {
 						+ "nz.co.gregs.dbvolution.example.Marque-creationDate=Mar 23 12:34:56 2013&"
 						+ "nz.co.gregs.dbvolution.example.Marque-carCompany=1&"
 						+ "nz.co.gregs.dbvolution.example.CarCompany-name=TOYOTA&"
-						+ "nz.co.gregs.dbvolution.example.CarCompany-uidCarCompany=1"
+						+ "nz.co.gregs.dbvolution.example.CarCompany-uidCarCompany=1",
+						"nz.co.gregs.dbvolution.example.CarCompany-name=TOYOTA&"
+						+ "nz.co.gregs.dbvolution.example.CarCompany-uidCarCompany=1&"
+						+ "nz.co.gregs.dbvolution.example.Marque-uidMarque=1&"
+						+ "nz.co.gregs.dbvolution.example.Marque-isUsedForTAFROs=False&"
+						+ "nz.co.gregs.dbvolution.example.Marque-statusClassID=1246974&"
+						+ "nz.co.gregs.dbvolution.example.Marque-updateCount=0&"
+						+ "nz.co.gregs.dbvolution.example.Marque-name=TOYOTA&"
+						+ "nz.co.gregs.dbvolution.example.Marque-reservationsAllowed=Y&"
+						+ "nz.co.gregs.dbvolution.example.Marque-creationDate=Mar 23 12:34:56 2013&"
+						+ "nz.co.gregs.dbvolution.example.Marque-carCompany=1"
 				));
 
 		final String encodedQuery = encoder.encode(allRows.get(0).get(new CarCompany()), marque);
