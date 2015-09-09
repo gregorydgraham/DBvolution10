@@ -13,8 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package nz.co.gregs.dbvolution.reflection;
+package nz.co.gregs.dbvolution.example;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -32,14 +33,15 @@ import nz.co.gregs.dbvolution.datatypes.DBString;
 import nz.co.gregs.dbvolution.datatypes.DBStringEnum;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 import nz.co.gregs.dbvolution.internal.properties.PropertyWrapper;
+import nz.co.gregs.dbvolution.reflection.EncodingInterpreter;
 
 /**
- * A simple example implementation of {@link EncodingInterpreter} that uses "&amp;",
- * "-", and "=" to separate the encoded parts.
+ * A simple example implementation of {@link EncodingInterpreter} that uses
+ * "&amp;", "-", and "=" to separate the encoded parts.
  *
  * @author Gregory Graham
  */
-public class DefaultEncodingInterpreter implements EncodingInterpreter {
+public class ExampleEncodingInterpreter implements EncodingInterpreter {
 
 	private static final List<String> trueVals = new ArrayList<String>() {
 		public static final long serialVersionUID = 1L;
@@ -73,13 +75,23 @@ public class DefaultEncodingInterpreter implements EncodingInterpreter {
 			Class<? extends DBRow> rowClass = row.getClass();
 			List<PropertyWrapper> props = row.getColumnPropertyWrappers();
 			for (PropertyWrapper prop : props) {
-				if (prop.getQueryableDatatype().hasBeenSet()) {
+				QueryableDatatype qdt = prop.getQueryableDatatype();
+				if (qdt.hasBeenSet()) {
+					String stringValue = qdt.stringValue();
+					if (qdt instanceof DBDate) {
+						DBDate dateQDT = (DBDate) qdt;
+						Date dateValue = dateQDT.dateValue();
+						stringValue = (new SimpleDateFormat("MMM dd HH:mm:ss YYYY")).format(dateValue);
+					} else if (qdt instanceof DBNumber) {
+						DBNumber numberQDT = (DBNumber) qdt;
+						stringValue = "" + numberQDT.intValue();
+					}
 					buf.append(parameterSep)
 							.append(rowClass.getCanonicalName())
 							.append(getTableAndPropertySeparator())
 							.append(prop.javaName())
 							.append(getPropertyAndValueSeparator())
-							.append(prop.getQueryableDatatype().stringValue());
+							.append(stringValue);
 					parameterSep = actualParameterSeparator;
 				} else {
 					if (!row.getDefined() && !addedAlready.contains(rowClass)) {
@@ -109,7 +121,7 @@ public class DefaultEncodingInterpreter implements EncodingInterpreter {
 	 * For all rows in the collection of DBRows encode the class and any
 	 * {@link QueryableDatatype#hasBeenSet() set properties}.
 	 *
-	 * @param queryRow  all the defined rows to be encoded.
+	 * @param queryRow all the defined rows to be encoded.
 	 * @return an encoded string of the rows.
 	 */
 	public String encode(DBQueryRow queryRow) {
@@ -120,7 +132,7 @@ public class DefaultEncodingInterpreter implements EncodingInterpreter {
 	 * For all rows in the collection of DBRows encode the class and any
 	 * {@link QueryableDatatype#hasBeenSet() set properties}.
 	 *
-	 * @param queryRows  all the defined rows to be encoded.
+	 * @param queryRows all the defined rows to be encoded.
 	 * @return an encoded string of the rows.
 	 */
 	public String encode(List<DBQueryRow> queryRows) {

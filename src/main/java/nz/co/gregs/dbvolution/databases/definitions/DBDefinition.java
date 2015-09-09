@@ -3331,11 +3331,12 @@ public abstract class DBDefinition {
 	 *
 	 * <p>
 	 * Used mostly to turn Booleans into numbers.
-	 * 
+	 *
 	 * <p>
 	 * By default this method just returns the input DBExpression.
 	 *
-	 * @param columnExpression a column expression that might need to change type for this database
+	 * @param columnExpression a column expression that might need to change type
+	 * for this database
 	 * @return The DBExpression as a DBExpression supported by the database.
 	 */
 	public DBExpression transformToStorableType(DBExpression columnExpression) {
@@ -3400,7 +3401,7 @@ public abstract class DBDefinition {
 	/**
 	 * Provide the SQL to derive the WKT version of the Point2D.
 	 *
-	 * @param point2DSQL
+	 * @param point2DSQL a point2d value
 	 * @return SQL
 	 */
 	public String doPoint2DAsTextTransform(String point2DSQL) {
@@ -3444,7 +3445,8 @@ public abstract class DBDefinition {
 	 *
 	 * @param pointAsString a point2d value
 	 * @return a point created from the point2d value
-	 * @throws com.vividsolutions.jts.io.ParseException
+	 * @throws com.vividsolutions.jts.io.ParseException if the database result is
+	 * not a valid WKT
 	 */
 	public Point transformDatabasePoint2DValueToJTSPoint(String pointAsString) throws com.vividsolutions.jts.io.ParseException {
 		Point point = null;
@@ -3467,7 +3469,8 @@ public abstract class DBDefinition {
 	 *
 	 * @param polygon2DSQL a polygon2d value
 	 * @return a polygon created from the polygon2d value
-	 * @throws com.vividsolutions.jts.io.ParseException
+	 * @throws com.vividsolutions.jts.io.ParseException if the database result is
+	 * not a valid WKT
 	 */
 	public Polygon transformDatabasePolygon2DToJTSPolygon(String polygon2DSQL) throws com.vividsolutions.jts.io.ParseException {
 		Polygon poly = null;
@@ -3492,9 +3495,10 @@ public abstract class DBDefinition {
 	 * This is the inverse of
 	 * {@link #transformPolygonIntoDatabasePolygon2DFormat(com.vividsolutions.jts.geom.Polygon)}.
 	 *
-	 * @param lineStringAsSQL a line2d value 
+	 * @param lineStringAsSQL a line2d value
 	 * @return a linestring created from the line2d
-	 * @throws com.vividsolutions.jts.io.ParseException
+	 * @throws com.vividsolutions.jts.io.ParseException if the database result is
+	 * not a valid WKT
 	 */
 	public LineString transformDatabaseLine2DValueToJTSLineString(String lineStringAsSQL) throws com.vividsolutions.jts.io.ParseException {
 		LineString lineString = null;
@@ -3522,7 +3526,7 @@ public abstract class DBDefinition {
 	/**
 	 * Provide the SQL to derive the WKT version of the Line2D.
 	 *
-	 * @param line2DSQL
+	 * @param line2DSQL a line2d value
 	 * @return SQL
 	 */
 	public String doLine2DAsTextTransform(String line2DSQL) {
@@ -3532,8 +3536,8 @@ public abstract class DBDefinition {
 	/**
 	 * Transform the 2 Line2D SQL snippets into an EQUALS comparison of the 2
 	 *
-	 * @param line2DSQL
-	 * @param otherLine2DSQL
+	 * @param line2DSQL the first line2d value to compare
+	 * @param otherLine2DSQL the second line2d value to compare
 	 * @return SQL
 	 */
 	public String doLine2DEqualsTransform(String line2DSQL, String otherLine2DSQL) {
@@ -3543,8 +3547,8 @@ public abstract class DBDefinition {
 	/**
 	 * Transform the 2 Line2D SQL snippets into an NOT_EQUALS comparison of the 2
 	 *
-	 * @param line2DSQL
-	 * @param otherLine2DSQL
+	 * @param line2DSQL the first line2d value to compare
+	 * @param otherLine2DSQL the second line2d value to compare
 	 * @return SQL
 	 */
 	public String doLine2DNotEqualsTransform(String line2DSQL, String otherLine2DSQL) {
@@ -3554,7 +3558,7 @@ public abstract class DBDefinition {
 	/**
 	 * Create the SQL required to get the dimension of this Line2D SQL.
 	 *
-	 * @param line2DSQL
+	 * @param line2DSQL the line2d value
 	 * @return the dimension (probably 1)
 	 */
 	public String doLine2DMeasurableDimensionsTransform(String line2DSQL) {
@@ -3564,7 +3568,7 @@ public abstract class DBDefinition {
 	/**
 	 * Create the SQL to derive the bounding box of this Line2D SQL
 	 *
-	 * @param line2DSQL
+	 * @param line2DSQL the line2d value
 	 * @return SQL
 	 */
 	public String doLine2DGetBoundingBoxTransform(String line2DSQL) {
@@ -3574,7 +3578,7 @@ public abstract class DBDefinition {
 	/**
 	 * Create the SQL to transform a Point2DArray SQL into a Polygon2D
 	 *
-	 * @param pointSQL
+	 * @param pointSQL the point2d value
 	 * @return SQL
 	 */
 	public String doPoint2DArrayToPolygon2DTransform(List<String> pointSQL) {
@@ -3585,7 +3589,7 @@ public abstract class DBDefinition {
 	 * Generate the SQL that will return the largest X value within the Line2D
 	 * expression.
 	 *
-	 * @param line2DSQL
+	 * @param line2DSQL the line2d value
 	 * @return SQL
 	 */
 	public String doLine2DGetMaxXTransform(String line2DSQL) {
@@ -3596,7 +3600,7 @@ public abstract class DBDefinition {
 	 * Generate the SQL that will return the smallest X value within the Line2D
 	 * expression.
 	 *
-	 * @param line2DSQL
+	 * @param line2DSQL the line2d value
 	 * @return SQL
 	 */
 	public String doLine2DGetMinXTransform(String line2DSQL) {
@@ -3607,7 +3611,7 @@ public abstract class DBDefinition {
 	 * Generate the SQL that will return the largest Y value within the Line2D
 	 * expression.
 	 *
-	 * @param line2DSQL
+	 * @param line2DSQL the line2 value
 	 * @return SQL
 	 */
 	public String doLine2DGetMaxYTransform(String line2DSQL) {
@@ -3618,7 +3622,7 @@ public abstract class DBDefinition {
 	 * Generate the SQL that will return the smallest Y value within the Line2D
 	 * expression.
 	 *
-	 * @param line2DSQL
+	 * @param line2DSQL the line2d value
 	 * @return SQL
 	 */
 	public String doLine2DGetMinYTransform(String line2DSQL) {
@@ -3629,7 +3633,7 @@ public abstract class DBDefinition {
 	 * Generate the SQL that will return the largest X value within the Polygon2D
 	 * expression.
 	 *
-	 * @param polygon2DSQL
+	 * @param polygon2DSQL the polygon2d value
 	 * @return SQL
 	 */
 	public String doPolygon2DGetMaxXTransform(String polygon2DSQL) {
@@ -3640,7 +3644,7 @@ public abstract class DBDefinition {
 	 * Generate the SQL that will return the smallest X value within the Polygon2D
 	 * expression.
 	 *
-	 * @param polygon2DSQL
+	 * @param polygon2DSQL the polygon2d value
 	 * @return SQL
 	 */
 	public String doPolygon2DGetMinXTransform(String polygon2DSQL) {
@@ -3651,7 +3655,7 @@ public abstract class DBDefinition {
 	 * Generate the SQL that will return the largest X value within the Polygon2D
 	 * expression.
 	 *
-	 * @param polygon2DSQL
+	 * @param polygon2DSQL the polygon2d value
 	 * @return SQL
 	 */
 	public String doPolygon2DGetMaxYTransform(String polygon2DSQL) {
@@ -3662,7 +3666,7 @@ public abstract class DBDefinition {
 	 * Generate the SQL that will return the smallest Y value within the Polygon2D
 	 * expression.
 	 *
-	 * @param polygon2DSQL
+	 * @param polygon2DSQL the polygon2d value
 	 * @return SQL
 	 */
 	public String doPolygon2DGetMinYTransform(String polygon2DSQL) {
@@ -3673,7 +3677,7 @@ public abstract class DBDefinition {
 	 * Generate the SQL that will transform a WKT version of a Polygon2D into the
 	 * database's version of a Polygon2D.
 	 *
-	 * @param polygon2D
+	 * @param polygon2D the polygon2d value
 	 * @return SQL
 	 */
 	public String transformPolygonIntoDatabasePolygon2DFormat(Polygon polygon2D) {
@@ -3683,8 +3687,8 @@ public abstract class DBDefinition {
 	/**
 	 * Generate SQL to derive the distance between the two Polygon2D expressions.
 	 *
-	 * @param polygon2DSQL
-	 * @param otherPolygon2DSQL
+	 * @param polygon2DSQL the first polygon2d value to compare
+	 * @param otherPolygon2DSQL the second polygon2d value to compare
 	 * @return SQL:
 	 */
 	public String doPoint2DDistanceBetweenTransform(String polygon2DSQL, String otherPolygon2DSQL) {
@@ -3694,7 +3698,7 @@ public abstract class DBDefinition {
 	/**
 	 * Generate the SQL to apply rounding to the Number expressions
 	 *
-	 * @param numberSQL
+	 * @param numberSQL the number value
 	 * @return SQL
 	 */
 	public String doRoundTransform(String numberSQL) {
@@ -3705,8 +3709,8 @@ public abstract class DBDefinition {
 	 * Generate the SQL to apply rounding to the Number expressions with the
 	 * specified number of decimal places.
 	 *
-	 * @param number
-	 * @param decimalPlaces
+	 * @param number the number value
+	 * @param decimalPlaces the number value of the decimal places required.
 	 * @return SQL
 	 */
 	public String doRoundWithDecimalPlacesTransform(String number, String decimalPlaces) {
@@ -3717,8 +3721,9 @@ public abstract class DBDefinition {
 	 * Generate the SQL to use the SUBSTRING_BEFORE function with the 2 String
 	 * expressions.
 	 *
-	 * @param fromThis
-	 * @param beforeThis
+	 * @param fromThis the string value to be dissected
+	 * @param beforeThis the string value that indicates the end of the required
+	 * text. Not included in the returned value
 	 * @return SQL
 	 */
 	public String doSubstringBeforeTransform(String fromThis, String beforeThis) {
@@ -3729,8 +3734,9 @@ public abstract class DBDefinition {
 	 * Generate the SQL to use the SUBSTRING_AFTER function with the 2 String
 	 * expressions.
 	 *
-	 * @param fromThis
-	 * @param afterThis
+	 * @param fromThis the string value to be dissected
+	 * @param afterThis the string value that indicates the beginning of the
+	 * required text. Not included in the returned value.
 	 * @return SQL
 	 */
 	public String doSubstringAfterTransform(String fromThis, String afterThis) {
@@ -3766,8 +3772,8 @@ public abstract class DBDefinition {
 	 * Generates the SQL to determine whether the first (polygon) argument
 	 * contains the second point argument.
 	 *
-	 * @param polygon2DSQL
-	 * @param point2DSQL
+	 * @param polygon2DSQL the polygon2d to compare with
+	 * @param point2DSQL the point2d value that might be inside the polygon2d
 	 * @return SQL
 	 */
 	public String doPolygon2DContainsPoint2DTransform(String polygon2DSQL, String point2DSQL) {
@@ -3778,7 +3784,7 @@ public abstract class DBDefinition {
 	 * Generates the SQL to convert the polygon to the standard text version of a
 	 * polygon.
 	 *
-	 * @param polygonSQL
+	 * @param polygonSQL the polygon2d value
 	 * @return SQL
 	 */
 	public String doPolygon2DAsTextTransform(String polygonSQL) {
@@ -3788,8 +3794,8 @@ public abstract class DBDefinition {
 	/**
 	 * Generates the SQL required to find whether the 2 lines cross at any point.
 	 *
-	 * @param firstLine
-	 * @param secondLine
+	 * @param firstLine the first line2d value to compare
+	 * @param secondLine the second line2d value to compare
 	 * @return an SQL expression that will evaluate to TRUE FALSE or NULL,
 	 * depending on whether the lines cross at any point.
 	 */
@@ -3801,8 +3807,8 @@ public abstract class DBDefinition {
 	 * Generate the SQL required to find the intersection point of the 2 line
 	 * segment SQL expressions.
 	 *
-	 * @param firstLine
-	 * @param secondLine
+	 * @param firstLine the first line2d to compare
+	 * @param secondLine the second line2d to compare
 	 * @return an SQL expression that will evaluate to the intersection point of
 	 * the 2 line segments or NULL.
 	 */
@@ -3814,12 +3820,12 @@ public abstract class DBDefinition {
 	 * Generate the SQL required to find the complete set of all points of
 	 * intersection between the tow 2 lines.
 	 *
-	 * @param firstGeometry
-	 * @param secondGeometry
+	 * @param firstLine the first line2d to compare
+	 * @param secondLine the second line2d to compare
 	 * @return an SQL expression that will evaluate to the intersection point of
 	 * the 2 line segments or NULL.
 	 */
-	public String doLine2DAllIntersectionPointsWithLine2DTransform(String firstGeometry, String secondGeometry) {
+	public String doLine2DAllIntersectionPointsWithLine2DTransform(String firstLine, String secondLine) {
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
@@ -3827,7 +3833,8 @@ public abstract class DBDefinition {
 	 * Convert the String object returned by the database into a JTS LineSegment
 	 * object.
 	 *
-	 * @param lineSegmentAsSQL
+	 * @param lineSegmentAsSQL the database linesegment2d value to create a
+	 * {@link com.vividsolutions.jts.geom.LineSegment JTS LineSegment} with
 	 * @return a JTS LineSegment derived from the database's response, may be
 	 * null.
 	 * @throws com.vividsolutions.jts.io.ParseException
@@ -3851,8 +3858,11 @@ public abstract class DBDefinition {
 	/**
 	 * Convert the JTS LineSegment object into a SQL expression that the database
 	 * will accept as a line segment.
+	 * 
+	 * <p>
+	 * By default, creates a WKT representation
 	 *
-	 * @param lineSegment
+	 * @param lineSegment the LineSegment to convert to database format.
 	 * @return an SQL expression that can be interpreted by the database as a line
 	 * segment.
 	 */
@@ -3866,8 +3876,8 @@ public abstract class DBDefinition {
 	 * Generates the database specific SQL for testing whether the 2 line segment
 	 * expressions ever cross.
 	 *
-	 * @param firstSQL
-	 * @param secondSQL
+	 * @param firstSQL the first Line2D value to compare
+	 * @param secondSQL the second Line2D value to compare
 	 * @return an SQL expression that will report whether the 2 line segments
 	 * intersect.
 	 * @see
@@ -3882,7 +3892,7 @@ public abstract class DBDefinition {
 	 * Generate the SQL required to find the largest X value in the line segment
 	 * SQL expression.
 	 *
-	 * @param lineSegment
+	 * @param lineSegment the LineSegment2D value
 	 * @return SQL
 	 */
 	public String doLineSegment2DGetMaxXTransform(String lineSegment) {
@@ -3893,7 +3903,7 @@ public abstract class DBDefinition {
 	 * Generate the SQL required to find the smallest X value in the line segment
 	 * SQL expression.
 	 *
-	 * @param lineSegment
+	 * @param lineSegment the LineSegment2D value
 	 * @return SQL
 	 */
 	public String doLineSegment2DGetMinXTransform(String lineSegment) {
@@ -3904,7 +3914,7 @@ public abstract class DBDefinition {
 	 * Generate the SQL required to find the largest Y value in the line segment
 	 * SQL expression.
 	 *
-	 * @param lineSegment
+	 * @param lineSegment the LineSegment2D value
 	 * @return SQL
 	 */
 	public String doLineSegment2DGetMaxYTransform(String lineSegment) {
@@ -3915,7 +3925,7 @@ public abstract class DBDefinition {
 	 * Generate the SQL required to find the smallest Y value in the line segment
 	 * SQL expression.
 	 *
-	 * @param lineSegment
+	 * @param lineSegment the LineSegment2D value
 	 * @return SQL
 	 */
 	public String doLineSegment2DGetMinYTransform(String lineSegment) {
@@ -3926,7 +3936,7 @@ public abstract class DBDefinition {
 	 * Generate the SQL required to the rectangular boundary that fully encloses
 	 * the line segment SQL expression.
 	 *
-	 * @param lineSegment
+	 * @param lineSegment the LineSegment2D value
 	 * @return SQL
 	 */
 	public String doLineSegment2DGetBoundingBoxTransform(String lineSegment) {
@@ -3937,7 +3947,7 @@ public abstract class DBDefinition {
 	 * Generate the SQL required to find the dimension of the line segment SQL
 	 * expression.
 	 *
-	 * @param lineSegment
+	 * @param lineSegment the LineSegment2D value
 	 * @return SQL
 	 */
 	public String doLineSegment2DDimensionTransform(String lineSegment) {
@@ -3948,8 +3958,8 @@ public abstract class DBDefinition {
 	 * Generate the SQL required to find whether the 2 line segment SQL
 	 * expressions are NOT equal.
 	 *
-	 * @param firstLineSegment
-	 * @param secondLineSegment
+	 * @param firstLineSegment the first LineSegment2D value
+	 * @param secondLineSegment the second LineSegment2D value
 	 * @return SQL
 	 */
 	public String doLineSegment2DNotEqualsTransform(String firstLineSegment, String secondLineSegment) {
@@ -3960,8 +3970,8 @@ public abstract class DBDefinition {
 	 * Generate the SQL required to find whether the 2 line segment SQL
 	 * expressions are equal.
 	 *
-	 * @param firstLineSegment
-	 * @param secondLineSegment
+	 * @param firstLineSegment the first LineSegment2D value
+	 * @param secondLineSegment the second LineSegment2D value
 	 * @return SQL
 	 */
 	public String doLineSegment2DEqualsTransform(String firstLineSegment, String secondLineSegment) {
@@ -3972,7 +3982,7 @@ public abstract class DBDefinition {
 	 * Generate the SQL required to convert the line segment SQL expression into
 	 * the WKT string format.
 	 *
-	 * @param lineSegment
+	 * @param lineSegment the LineSegment2D value
 	 * @return SQL
 	 */
 	public String doLineSegment2DAsTextTransform(String lineSegment) {
@@ -3983,8 +3993,8 @@ public abstract class DBDefinition {
 	 * Generate the SQL required to find the intersection point of the 2 line
 	 * segment SQL expressions.
 	 *
-	 * @param firstLineSegment
-	 * @param secondLineSegment
+	 * @param firstLineSegment the first LineSegment2D value
+	 * @param secondLineSegment the second LineSegment2D value
 	 * @return an SQL expression that will evaluate to the intersection point of
 	 * the 2 line segments or NULL.
 	 */
@@ -3996,7 +4006,7 @@ public abstract class DBDefinition {
 	 * Generate the SQL required to return the starting point of the provided
 	 * LineSegment2D expression.
 	 *
-	 * @param lineSegmentSQL
+	 * @param lineSegmentSQL the LineSegment2D value
 	 * @return SQL
 	 */
 	public String doLineSegment2DStartPointTransform(String lineSegmentSQL) {
@@ -4007,7 +4017,7 @@ public abstract class DBDefinition {
 	 * Generate the SQL required to return the starting point of the provided
 	 * LineSegment2D expression.
 	 *
-	 * @param lineSegmentSQL
+	 * @param lineSegmentSQL the LineSegment2D value
 	 * @return SQL
 	 */
 	public String doLineSegment2DEndPointTransform(String lineSegmentSQL) {
@@ -4018,7 +4028,7 @@ public abstract class DBDefinition {
 	 * Provide the SQL that correctly represents this MultiPoint2D value in this
 	 * database.
 	 *
-	 * @param points
+	 * @param points the MultiPoint2D value
 	 * @return SQL
 	 */
 	public String transformMultiPoint2DToDatabaseMultiPoint2DValue(MultiPoint points) {
@@ -4030,8 +4040,8 @@ public abstract class DBDefinition {
 	 * Convert the database's string representation of a MultiPoint2D value into a
 	 * MultiPoint..
 	 *
-	 * @param pointsAsString
-	 * @return MultiPoint
+	 * @param pointsAsString the MultiPoint2D value to create a {@link com.vividsolutions.jts.geom.MultiPoint JTS MultiPoint} with.
+	 * @return the MultiPoint2D as a {@link com.vividsolutions.jts.geom.MultiPoint JTS MultiPoint} instance
 	 * @throws com.vividsolutions.jts.io.ParseException
 	 */
 	public MultiPoint transformDatabaseMultiPoint2DValueToJTSMultiPoint(String pointsAsString) throws com.vividsolutions.jts.io.ParseException {

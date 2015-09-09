@@ -15,6 +15,7 @@
  */
 package nz.co.gregs.dbvolution.reflection;
 
+import nz.co.gregs.dbvolution.example.ExampleEncodingInterpreter;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -124,7 +125,7 @@ public class DataModelTest extends AbstractTest {
 		DBQuery query = DataModel.createDBQueryFromEncodedTablesPropertiesAndValues(
 				database,
 				"nz.co.gregs.dbvolution.example.CarCompany-name=TOYOTA&nz.co.gregs.dbvolution.example.Marque",
-				new DefaultEncodingInterpreter()
+				new ExampleEncodingInterpreter()
 		);
 		List<DBQueryRow> allRows = query.getAllRows();
 		database.print(allRows);
@@ -140,7 +141,7 @@ public class DataModelTest extends AbstractTest {
 		DBQuery query = DataModel.createDBQueryFromEncodedTablesPropertiesAndValues(
 				database,
 				"nz.co.gregs.dbvolution.example.CarCompany&nz.co.gregs.dbvolution.example.Marque",
-				new DefaultEncodingInterpreter()
+				new ExampleEncodingInterpreter()
 		);
 		try {
 			database.print(query.getAllRows());
@@ -160,7 +161,7 @@ public class DataModelTest extends AbstractTest {
 		DBQuery query = DataModel.createDBQueryFromEncodedTablesPropertiesAndValues(
 				database,
 				"nz.co.gregs.dbvolution.example.CarCompany-uidCarCompany=1&nz.co.gregs.dbvolution.example.Marque",
-				new DefaultEncodingInterpreter()
+				new ExampleEncodingInterpreter()
 		);
 		List<DBQueryRow> allRows = query.getAllRows();
 		database.print(allRows);
@@ -174,7 +175,7 @@ public class DataModelTest extends AbstractTest {
 		DBQuery query = DataModel.createDBQueryFromEncodedTablesPropertiesAndValues(
 				database,
 				"nz.co.gregs.dbvolution.example.CarCompany-uidCarCompany=3...4&nz.co.gregs.dbvolution.example.Marque",
-				new DefaultEncodingInterpreter()
+				new ExampleEncodingInterpreter()
 		);
 		database.setPrintSQLBeforeExecuting(true);
 		List<DBQueryRow> allRows = query.getAllRows();
@@ -189,7 +190,7 @@ public class DataModelTest extends AbstractTest {
 		DBQuery query = DataModel.createDBQueryFromEncodedTablesPropertiesAndValues(
 				database,
 				"nz.co.gregs.dbvolution.example.CarCompany-uidCarCompany=...4&nz.co.gregs.dbvolution.example.Marque",
-				new DefaultEncodingInterpreter()
+				new ExampleEncodingInterpreter()
 		);
 		database.setPrintSQLBeforeExecuting(true);
 		List<DBQueryRow> allRows = query.getAllRows();
@@ -204,7 +205,7 @@ public class DataModelTest extends AbstractTest {
 		DBQuery query = DataModel.createDBQueryFromEncodedTablesPropertiesAndValues(
 				database,
 				"nz.co.gregs.dbvolution.example.CarCompany-uidCarCompany=3...&nz.co.gregs.dbvolution.example.Marque",
-				new DefaultEncodingInterpreter()
+				new ExampleEncodingInterpreter()
 		);
 		database.setPrintSQLBeforeExecuting(true);
 		List<DBQueryRow> allRows = query.getAllRows();
@@ -220,7 +221,7 @@ public class DataModelTest extends AbstractTest {
 		DBQuery query = DataModel.createDBQueryFromEncodedTablesPropertiesAndValues(
 				database,
 				"nz.co.gregs.dbvolution.example.CarCompany&nz.co.gregs.dbvolution.example.Marque-creationDate=23 Mar 2013 12:34:56",
-				new DefaultEncodingInterpreter()
+				new ExampleEncodingInterpreter()
 		);
 		database.setPrintSQLBeforeExecuting(true);
 		List<DBQueryRow> allRows = query.getAllRows();
@@ -236,7 +237,7 @@ public class DataModelTest extends AbstractTest {
 		DBQuery query = DataModel.createDBQueryFromEncodedTablesPropertiesAndValues(
 				database,
 				"nz.co.gregs.dbvolution.example.CarCompany&nz.co.gregs.dbvolution.example.Marque-creationDate=22 Mar 2013 12:34:56...24 Mar 2013 12:34:56",
-				new DefaultEncodingInterpreter()
+				new ExampleEncodingInterpreter()
 		);
 		database.setPrintSQLBeforeExecuting(true);
 		List<DBQueryRow> allRows = query.getAllRows();
@@ -251,7 +252,7 @@ public class DataModelTest extends AbstractTest {
 		DBQuery query = DataModel.createDBQueryFromEncodedTablesPropertiesAndValues(
 				database,
 				"nz.co.gregs.dbvolution.example.CarCompany&nz.co.gregs.dbvolution.example.Marque-statusClassID=1246974",
-				new DefaultEncodingInterpreter()
+				new ExampleEncodingInterpreter()
 		);
 		database.setPrintSQLBeforeExecuting(true);
 		List<DBQueryRow> allRows = query.getAllRows();
@@ -266,7 +267,7 @@ public class DataModelTest extends AbstractTest {
 		DBQuery query = DataModel.createDBQueryFromEncodedTablesPropertiesAndValues(
 				database,
 				"nz.co.gregs.dbvolution.example.CarCompany&nz.co.gregs.dbvolution.example.Marque-statusClassID=1246972...1246974",
-				new DefaultEncodingInterpreter()
+				new ExampleEncodingInterpreter()
 		);
 		database.setPrintSQLBeforeExecuting(true);
 		List<DBQueryRow> allRows = query.getAllRows();
@@ -290,10 +291,10 @@ public class DataModelTest extends AbstractTest {
 		Assert.assertThat(allRows.get(0).get(new CarCompany()).name.stringValue(), is("TOYOTA"));
 		Assert.assertThat(allRows.get(0).get(marque).name.stringValue(), isOneOf("TOYOTA"));
 
-		final DefaultEncodingInterpreter encoder = new DefaultEncodingInterpreter();
+		final ExampleEncodingInterpreter encoder = new ExampleEncodingInterpreter();
 
 		String encode = encoder.encode(allRows);
-		Assert.assertThat(encode.replaceAll("\\.00000", "").replaceAll("56 [^ ]* 2013", "56 2013"),
+		Assert.assertThat(encode,//.replaceAll("\\.00000", "").replaceAll(":56[.0]* [^ ]* 2013", ":56 2013"),
 				isOneOf("nz.co.gregs.dbvolution.example.CarCompany-name=TOYOTA&"
 						+ "nz.co.gregs.dbvolution.example.CarCompany-uidCarCompany=1&"
 						+ "nz.co.gregs.dbvolution.example.Marque-uidMarque=1&"
@@ -305,7 +306,7 @@ public class DataModelTest extends AbstractTest {
 						+ "nz.co.gregs.dbvolution.example.Marque-name=TOYOTA&"
 						+ "nz.co.gregs.dbvolution.example.Marque-pricingCodePrefix=&"
 						+ "nz.co.gregs.dbvolution.example.Marque-reservationsAllowed=Y&"
-						+ "nz.co.gregs.dbvolution.example.Marque-creationDate=Sat Mar 23 12:34:56 2013&"
+						+ "nz.co.gregs.dbvolution.example.Marque-creationDate=Mar 23 12:34:56 2013&"
 						+ "nz.co.gregs.dbvolution.example.Marque-carCompany=1",
 						"nz.co.gregs.dbvolution.example.Marque-uidMarque=1&"
 						+ "nz.co.gregs.dbvolution.example.Marque-isUsedForTAFROs=False&"
@@ -316,36 +317,20 @@ public class DataModelTest extends AbstractTest {
 						+ "nz.co.gregs.dbvolution.example.Marque-name=TOYOTA&"
 						+ "nz.co.gregs.dbvolution.example.Marque-pricingCodePrefix=&"
 						+ "nz.co.gregs.dbvolution.example.Marque-reservationsAllowed=Y&"
-						+ "nz.co.gregs.dbvolution.example.Marque-creationDate=Sat Mar 23 12:34:56 2013&"
+						+ "nz.co.gregs.dbvolution.example.Marque-creationDate=Mar 23 12:34:56 2013&"
+						+ "nz.co.gregs.dbvolution.example.Marque-carCompany=1&"
+						+ "nz.co.gregs.dbvolution.example.CarCompany-name=TOYOTA&"
+						+ "nz.co.gregs.dbvolution.example.CarCompany-uidCarCompany=1",
+						"nz.co.gregs.dbvolution.example.Marque-uidMarque=1&"
+						+ "nz.co.gregs.dbvolution.example.Marque-isUsedForTAFROs=False&"
+						+ "nz.co.gregs.dbvolution.example.Marque-statusClassID=1246974&"
+						+ "nz.co.gregs.dbvolution.example.Marque-updateCount=0&"
+						+ "nz.co.gregs.dbvolution.example.Marque-name=TOYOTA&"
+						+ "nz.co.gregs.dbvolution.example.Marque-reservationsAllowed=Y&"
+						+ "nz.co.gregs.dbvolution.example.Marque-creationDate=Mar 23 12:34:56 2013&"
 						+ "nz.co.gregs.dbvolution.example.Marque-carCompany=1&"
 						+ "nz.co.gregs.dbvolution.example.CarCompany-name=TOYOTA&"
 						+ "nz.co.gregs.dbvolution.example.CarCompany-uidCarCompany=1"
-//						"nz.co.gregs.dbvolution.example.Marque-uidMarque=1&"
-//						+ "nz.co.gregs.dbvolution.example.Marque-isUsedForTAFROs=False&"
-//						+ "nz.co.gregs.dbvolution.example.Marque-statusClassID=1246974&"
-//						+ "nz.co.gregs.dbvolution.example.Marque-individualAllocationsAllowed=&"
-//						+ "nz.co.gregs.dbvolution.example.Marque-updateCount=0&"
-//						+ "nz.co.gregs.dbvolution.example.Marque-auto_created=&"
-//						+ "nz.co.gregs.dbvolution.example.Marque-name=TOYOTA&"
-//						+ "nz.co.gregs.dbvolution.example.Marque-pricingCodePrefix=&"
-//						+ "nz.co.gregs.dbvolution.example.Marque-reservationsAllowed=Y&"
-//						+ "nz.co.gregs.dbvolution.example.Marque-creationDate=Sat Mar 23 12:34:56 NZDT 2013&"
-//						+ "nz.co.gregs.dbvolution.example.Marque-carCompany=1&"
-//						+ "nz.co.gregs.dbvolution.example.CarCompany-name=TOYOTA&"
-//						+ "nz.co.gregs.dbvolution.example.CarCompany-uidCarCompany=1",
-//						"nz.co.gregs.dbvolution.example.CarCompany-name=TOYOTA&"
-//						+ "nz.co.gregs.dbvolution.example.CarCompany-uidCarCompany=1&"
-//						+ "nz.co.gregs.dbvolution.example.Marque-uidMarque=1&"
-//						+ "nz.co.gregs.dbvolution.example.Marque-isUsedForTAFROs=False&"
-//						+ "nz.co.gregs.dbvolution.example.Marque-statusClassID=1246974&"
-//						+ "nz.co.gregs.dbvolution.example.Marque-individualAllocationsAllowed=&"
-//						+ "nz.co.gregs.dbvolution.example.Marque-updateCount=0&"
-//						+ "nz.co.gregs.dbvolution.example.Marque-auto_created=&"
-//						+ "nz.co.gregs.dbvolution.example.Marque-name=TOYOTA&"
-//						+ "nz.co.gregs.dbvolution.example.Marque-pricingCodePrefix=&"
-//						+ "nz.co.gregs.dbvolution.example.Marque-reservationsAllowed=Y&"
-//						+ "nz.co.gregs.dbvolution.example.Marque-creationDate=Sat Mar 23 12:34:56 NZDT 2013&"
-//						+ "nz.co.gregs.dbvolution.example.Marque-carCompany=1"
 				));
 
 		final String encodedQuery = encoder.encode(allRows.get(0).get(new CarCompany()), marque);
@@ -355,7 +340,7 @@ public class DataModelTest extends AbstractTest {
 
 		query = DataModel
 				.createDBQueryFromEncodedTablesPropertiesAndValues(database, encodedQuery,
-						new DefaultEncodingInterpreter()
+						new ExampleEncodingInterpreter()
 				);
 		allRows = query.getAllRows();
 		database.print(allRows);
