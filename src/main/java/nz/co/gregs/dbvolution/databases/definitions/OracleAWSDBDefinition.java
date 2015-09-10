@@ -269,138 +269,62 @@ public class OracleAWSDBDefinition extends OracleDBDefinition {
 		return "("+LineSegment2DFunctions.INTERSECTS_LSEG2D+"(("+firstSQL+"), ("+secondSQL+"))=1)";
 	}
 
-	/**
-	 * Generate the SQL required to find the largest X value in the line segment SQL expression.
-	 *
-	 * @param lineSegment
-	 * @return SQL
-	 */
 	@Override
 	public String doLineSegment2DGetMaxXTransform(String lineSegment) {
 		return LineSegment2DFunctions.MAXX+"("+lineSegment+")";
 	}
 
-	/**
-	 * Generate the SQL required to find the smallest X value in the line segment SQL expression.
-	 * 
-	 * @param lineSegment
-	 * @return SQL
-	 */
 	@Override
 	public String doLineSegment2DGetMinXTransform(String lineSegment) {
 		return LineSegment2DFunctions.MINX+"("+lineSegment+")";
 	}
 
-	/**
-	 * Generate the SQL required to find the largest Y value in the line segment SQL expression.
-	 *
-	 * @param lineSegment
-	 * @return SQL
-	 */
 	@Override
 	public String doLineSegment2DGetMaxYTransform(String lineSegment) {
 		return LineSegment2DFunctions.MAXY+"("+lineSegment+")";
 	}
 
-	/**
-	 * Generate the SQL required to find the smallest Y value in the line segment SQL expression.
-	 *
-	 * @param lineSegment
-	 * @return SQL
-	 */
 	@Override
 	public String doLineSegment2DGetMinYTransform(String lineSegment) {
 		return LineSegment2DFunctions.MINY+"("+lineSegment+")";
 	}
 
-	/**
-	 * Generate the SQL required to the rectangular boundary that fully encloses the line segment SQL expression.
-	 *
-	 * @param lineSegment
-	 * @return SQL
-	 */
 	@Override
 	public String doLineSegment2DGetBoundingBoxTransform(String lineSegment) {
 		return LineSegment2DFunctions.BOUNDINGBOX+"("+lineSegment+")";
 	}
 
-	/**
-	 * Generate the SQL required to find the dimension of the line segment SQL expression.
-	 *
-	 * @param lineSegment
-	 * @return SQL
-	 */
 	@Override
 	public String doLineSegment2DDimensionTransform(String lineSegment) {
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
-	/**
-	 * Generate the SQL required to find whether the 2 line segment SQL expressions are NOT equal.
-	 *
-	 * @param firstLineSegment
-	 * @param secondLineSegment
-	 * @return SQL
-	 */
 	@Override
 	public String doLineSegment2DNotEqualsTransform(String firstLineSegment, String secondLineSegment) {
 		return " NOT "+LineSegment2DFunctions.EQUALS+"(("+firstLineSegment+"), ("+secondLineSegment+"))";
 	}
 
-	/**
-	 * Generate the SQL required to find whether the 2 line segment SQL expressions are equal.
-	 *
-	 * @param firstLineSegment
-	 * @param secondLineSegment
-	 * @return SQL
-	 */
 	@Override
 	public String doLineSegment2DEqualsTransform(String firstLineSegment, String secondLineSegment) {
 		return "("+LineSegment2DFunctions.EQUALS+"(("+firstLineSegment+"), ("+secondLineSegment+"))=1)";
 	}
 
-	/**
-	 * Generate the SQL required to convert the line segment SQL expression into the WKT string format.
-	 *
-	 * @param lineSegment
-	 * @return SQL
-	 */
 	@Override
 	public String doLineSegment2DAsTextTransform(String lineSegment) {
 		return lineSegment;
 	}
 
-	/**
-	 * Generate the SQL required to find the intersection point of the 2 line segment SQL expressions.
-	 *
-	 * @param firstLineSegment
-	 * @param secondLineSegment
-	 * @return an SQL expression that will evaluate to the intersection point of the 2 line segments or NULL.
-	 */
 	@Override
 	public String doLineSegment2DIntersectionPointWithLineSegment2DTransform(String firstLineSegment, String secondLineSegment) {
 		return LineSegment2DFunctions.INTERSECTPT_LSEG2D+"(("+firstLineSegment+"), ("+secondLineSegment+"))";
 	}
 
-	/**
-	 * Provide the SQL that correctly represents this MultiPoint2D value in this database.
-	 *
-	 * @param points
-	 * @return SQL
-	 */
 	@Override
 	public String transformMultiPoint2DToDatabaseMultiPoint2DValue(MultiPoint points) {
 		String wktValue = points.toText();
 		return "'" + wktValue + "'";
 	}
 
-	/**
-	 * Convert the database's string representation of a MultiPoint2D value into a MultiPoint..
-	 *
-	 * @param pointsAsString 
-	 * @return MultiPoint
-	 * @throws com.vividsolutions.jts.io.ParseException
-	 */
 	@Override
 	public MultiPoint transformDatabaseMultiPoint2DValueToJTSMultiPoint(String pointsAsString) throws com.vividsolutions.jts.io.ParseException {
 		MultiPoint mpoint = null;
@@ -416,25 +340,11 @@ public class OracleAWSDBDefinition extends OracleDBDefinition {
 		return mpoint;
 	}
 
-	/**
-	 * Provide the SQL to compare 2 MultiPoint2Ds
-	 *
-	 * @param first
-	 * @param second
-	 * @return SQL
-	 */
 	@Override
 	public String doMultiPoint2DEqualsTransform(String first, String second) {
 		return "("+MultiPoint2DFunctions.EQUALS+"("+first+", "+second+")=1)";
 	}
 
-	/**
-	 * Provide the SQL to get point at the supplied index within the MultiPoint2D
-	 *
-	 * @param first
-	 * @param index 
-	 * @return SQL
-	 */
 	@Override
 	public String doMultiPoint2DGetPointAtIndexTransform(String first, String index) {
 		return ""+MultiPoint2DFunctions.GETFROMINDEX+"("+first+", "+index+")";
@@ -464,11 +374,6 @@ public class OracleAWSDBDefinition extends OracleDBDefinition {
 	public String doMultiPoint2DToLine2DTransform(String first) {
 		return ""+MultiPoint2DFunctions.ASLINE2D+"("+first+")";
 	}
-
-//	@Override
-//	public String doMultiPoint2DToPolygon2DTransform(String first) {
-//		return ""+MultiPoint2DFunctions.ASPOLY2D+"("+first+")";
-//	}
 
 	@Override
 	public String doMultiPoint2DGetMinYTransform(String first) {

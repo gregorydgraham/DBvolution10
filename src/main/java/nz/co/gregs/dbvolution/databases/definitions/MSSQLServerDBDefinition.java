@@ -178,8 +178,8 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 	 * While this seems useful, in fact it prevents checking for incorrect strings
 	 * and breaks the industrial standard.
 	 *
-	 * @param firstSQLExpression
-	 * @param secondSQLExpression
+	 * @param firstSQLExpression the first string value to compare
+	 * @param secondSQLExpression the second string value to compare
 	 * @return SQL
 	 */
 	@Override
@@ -474,7 +474,7 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 
 	@Override
 	public String doPoint2DEqualsTransform(String firstPoint, String secondPoint) {
-		return "("+Point2DFunctions.EQUALS+"((" + firstPoint + "), (" + secondPoint + "))=1)";
+		return "(" + Point2DFunctions.EQUALS + "((" + firstPoint + "), (" + secondPoint + "))=1)";
 	}
 
 	@Override
@@ -543,26 +543,25 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 	}
 
 	@Override
-	public String doLine2DIntersectsLine2DTransform(String firstLine, String secondLine) {		
-		return "((" + firstLine + ").STIntersects("+secondLine+")=1)";
+	public String doLine2DIntersectsLine2DTransform(String firstLine, String secondLine) {
+		return "((" + firstLine + ").STIntersects(" + secondLine + ")=1)";
 
 	}
-	
+
 	@Override
 	public String doLine2DIntersectionPointWithLine2DTransform(String firstLine, String secondLine) {
-		return "(" + firstLine + ").STIntersection("+secondLine+")";
+		return "(" + firstLine + ").STIntersection(" + secondLine + ")";
 	}
 
 	@Override
 	public String doLine2DAllIntersectionPointsWithLine2DTransform(String firstGeometry, String secondGeometry) {
-		return "(" + firstGeometry + ").STIntersection("+secondGeometry+")";
+		return "(" + firstGeometry + ").STIntersection(" + secondGeometry + ")";
 	}
 
 //	@Override
 //	public String OldtransformPolygonIntoDatabasePolygon2DFormat(Polygon polygon) {
 //		return "geometry::STGeomFromText ('" + polygon.toText() + "',0)";
 //	}
-
 	@Override
 	public String transformLineStringIntoDatabaseLine2DFormat(LineString line) {
 		return "geometry::STGeomFromText ('" + line.toText() + "',0)";
@@ -630,8 +629,8 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 	/**
 	 * Test whether the first polygon completely contains the second polygon.
 	 *
-	 * @param firstGeometry
-	 * @param secondGeometry
+	 * @param firstGeometry the first polygon2d value to compare
+	 * @param secondGeometry the second polygon2d value to compare
 	 * @return SQL that is TRUE if the first polygon contains the second.
 	 */
 	@Override
@@ -648,8 +647,8 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 	 * Inverse of {@link #doPolygon2DIntersectsTransform(java.lang.String, java.lang.String)
 	 * }, tests whether the 2 polygons are non-coincident.
 	 *
-	 * @param firstGeometry
-	 * @param secondGeometry
+	 * @param firstGeometry the first polygon2d value to compare
+	 * @param secondGeometry the second polygon2d value to compare
 	 * @return SQL that is FALSE if the polygons intersect.
 	 */
 	@Override
@@ -664,8 +663,8 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 	 * Compare this to {@link #doPolygon2DContainsPolygon2DTransform(java.lang.String, java.lang.String)
 	 * }
 	 *
-	 * @param firstGeometry
-	 * @param secondGeometry
+	 * @param firstGeometry the first polygon2d value to compare
+	 * @param secondGeometry the second polygon2d value to compare
 	 * @return SQL that is TRUE if the first polygon is within the second.
 	 */
 	@Override
@@ -681,74 +680,39 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 	 * <p>
 	 * This will be "2"
 	 *
-	 * @param toSQLString
+	 * @param polygon2DSQL a polygon2d value
 	 * @return "2" unless something has gone horribly wrong.
 	 */
 	@Override
-	public String doPolygon2DMeasurableDimensionsTransform(String toSQLString) {
-		return "((" + toSQLString + ").STDimension())";
+	public String doPolygon2DMeasurableDimensionsTransform(String polygon2DSQL) {
+		return "((" + polygon2DSQL + ").STDimension())";
 	}
 
-	/**
-	 * Defines the transformation require to transform an SQL Polygon2D into a
-	 * polygon representing the exterior ring of the polygon.
-	 *
-	 * @param polygon2DSQL
-	 * @return SQL
-	 */
 	@Override
 	public String doPolygon2DGetExteriorRingTransform(String polygon2DSQL) {
 		return "((" + polygon2DSQL + ").STExteriorRing())";
 	}
 
-	/**
-	 * Generate the SQL that will return the largest X value within the Polygon2D
-	 * expression.
-	 *
-	 * @param polygon2DSQL
-	 * @return SQL
-	 */
 	@Override
 	public String doPolygon2DGetMaxXTransform(String polygon2DSQL) {
 		return doPoint2DGetXTransform("((" + polygon2DSQL + ").STExteriorRing().STPointN(2))");
 	}
 
-	/**
-	 * Generate the SQL that will return the smallest X value within the Polygon2D
-	 * expression.
-	 *
-	 * @param polygon2DSQL
-	 * @return SQL
-	 */
 	@Override
 	public String doPolygon2DGetMinXTransform(String polygon2DSQL) {
 		return doPoint2DGetXTransform("((" + polygon2DSQL + ").STExteriorRing().STPointN(1))");
 	}
 
-	/**
-	 * Generate the SQL that will return the largest X value within the Polygon2D
-	 * expression.
-	 *
-	 * @param polygon2DSQL
-	 * @return SQL
-	 */
 	@Override
 	public String doPolygon2DGetMaxYTransform(String polygon2DSQL) {
 		return doPoint2DGetYTransform("((" + polygon2DSQL + ").STExteriorRing().STPointN(3))");
 	}
 
-	/**
-	 * Generate the SQL that will return the smallest Y value within the Polygon2D
-	 * expression.
-	 *
-	 * @param polygon2DSQL
-	 * @return SQL
-	 */
 	@Override
 	public String doPolygon2DGetMinYTransform(String polygon2DSQL) {
 		return doPoint2DGetYTransform("((" + polygon2DSQL + ").STExteriorRing().STPointN(1))");
 	}
-	
+
 	@Override
 	public LineSegment transformDatabaseLineSegment2DValueToJTSLineSegment(String lineSegmentAsSQL) throws com.vividsolutions.jts.io.ParseException {
 		return super.transformDatabaseLineSegment2DValueToJTSLineSegment(lineSegmentAsSQL);
@@ -756,7 +720,7 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 
 	@Override
 	public String transformLineSegmentIntoDatabaseLineSegment2DFormat(LineSegment lineSegment) {
-		LineString line = (new GeometryFactory()).createLineString(new Coordinate[]{lineSegment.getCoordinate(0),lineSegment.getCoordinate(1)});
+		LineString line = (new GeometryFactory()).createLineString(new Coordinate[]{lineSegment.getCoordinate(0), lineSegment.getCoordinate(1)});
 		return transformLineStringIntoDatabaseLine2DFormat(line);
 	}
 
@@ -809,16 +773,16 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 	public String doLineSegment2DAsTextTransform(String toSQLString) {
 		return doLine2DAsTextTransform(toSQLString);
 	}
+
 	@Override
 	public String doLineSegment2DIntersectionPointWithLineSegment2DTransform(String firstLineSegment, String secondLineSegment) {
-		return doLine2DIntersectionPointWithLine2DTransform(firstLineSegment,secondLineSegment);
+		return doLine2DIntersectionPointWithLine2DTransform(firstLineSegment, secondLineSegment);
 	}
 
 	@Override
 	public String transformMultiPoint2DToDatabaseMultiPoint2DValue(MultiPoint points) {
 		return "geometry::STGeomFromText ('" + points.toText() + "',0)";
 	}
-
 
 	@Override
 	public MultiPoint transformDatabaseMultiPoint2DValueToJTSMultiPoint(String pointsAsString) throws com.vividsolutions.jts.io.ParseException {
@@ -838,12 +802,12 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 
 	@Override
 	public String doMultiPoint2DEqualsTransform(String first, String second) {
-		return "("+MultiPoint2DFunctions.EQUALS+"((" + first + "), ("+second+"))=1)";
+		return "(" + MultiPoint2DFunctions.EQUALS + "((" + first + "), (" + second + "))=1)";
 	}
 
 	@Override
 	public String doMultiPoint2DGetPointAtIndexTransform(String first, String index) {
-		return "(" + first + ").STPointN("+index+")";
+		return "(" + first + ").STPointN(" + index + ")";
 	}
 
 	@Override
@@ -868,13 +832,8 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 
 	@Override
 	public String doMultiPoint2DToLine2DTransform(String first) {
-		return "geometry::STLineFromText('LINESTRING (' + replace(replace((SUBSTRING(("+first+").ToString(),11,9999999)),'(','' ),')', '')+')',0)"; 
+		return "geometry::STLineFromText('LINESTRING (' + replace(replace((SUBSTRING((" + first + ").ToString(),11,9999999)),'(','' ),')', '')+')',0)";
 	}
-
-//	@Override
-//	public String doMultiPoint2DToPolygon2DTransform(String first) {
-//		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-//	}
 
 	@Override
 	public String doMultiPoint2DGetMinYTransform(String first) {

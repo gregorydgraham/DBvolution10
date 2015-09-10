@@ -102,7 +102,7 @@ public class NuoDBDefinition extends DBDefinition {
 	}
 
 	/**
-	 * SQLServer follows the standard, unlike anyone else, and pads the short
+	 * NuoDB follows the standard, unlike anyone else, and pads the short
 	 * string with spaces before comparing.
 	 *
 	 * <p>
@@ -113,8 +113,8 @@ public class NuoDBDefinition extends DBDefinition {
 	 * While this seems useful, in fact it prevents checking for incorrect strings
 	 * and breaks the industrial standard.
 	 *
-	 * @param firstSQLExpression
-	 * @param secondSQLExpression
+	 * @param firstSQLExpression firstSQLExpression
+	 * @param secondSQLExpression secondSQLExpression
 	 * @return SQL
 	 */
 	@Override
@@ -171,11 +171,7 @@ public class NuoDBDefinition extends DBDefinition {
 	public String doSecondDifferenceTransform(String dateValue, String otherDateValue) {
 		return "ROUND((CAST(" + otherDateValue + " AS TIMESTAMP) - CAST(" + dateValue + " AS TIMESTAMP))*24*60*60)";
 	}
-
-//	@Override
-//	public String doMillisecondDifferenceTransform(String dateValue, String otherDateValue) {
-//		return "ROUND((CAST("+otherDateValue+" AS TIMESTAMP) - CAST("+dateValue+" AS TIMESTAMP))*24*60*60*1000)"; 
-//	}
+	
 	@Override
 	public String doDayOfWeekTransform(String dateSQL) {
 		return " DAYOFWEEK(" + dateSQL + ")";

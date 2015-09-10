@@ -28,6 +28,7 @@ import nz.co.gregs.dbvolution.expressions.Line2DExpression;
 import nz.co.gregs.dbvolution.expressions.MultiPoint2DExpression;
 import nz.co.gregs.dbvolution.expressions.Polygon2DExpression;
 import nz.co.gregs.dbvolution.internal.postgres.*;
+import nz.co.gregs.dbvolution.results.ExpressionHasStandardStringResult;
 
 /**
  * Defines the features of the PostgreSQL database that differ from the standard
@@ -311,13 +312,6 @@ public class PostgresDBDefinition extends DBDefinition {
 		return "ST_EQUALS((" + firstGeometry + ")::GEOMETRY , (" + secondGeometry + ")::GEOMETRY)";
 	}
 
-	/**
-	 * Test whether the first polygon completely contains the second polygon.
-	 *
-	 * @param firstGeometry
-	 * @param secondGeometry
-	 * @return SQL that is TRUE if the first polygon contains the second.
-	 */
 	@Override
 	public String doPolygon2DContainsPolygon2DTransform(String firstGeometry, String secondGeometry) {
 		return "ST_CONTAINS((" + firstGeometry + ")::GEOMETRY , (" + secondGeometry + ")::GEOMETRY)";
@@ -328,30 +322,11 @@ public class PostgresDBDefinition extends DBDefinition {
 		return "ST_CONTAINS((" + firstGeometry + ")::GEOMETRY , (" + secondGeometry + ")::GEOMETRY)";
 	}
 
-	/**
-	 * Inverse of {@link #doPolygon2DIntersectsTransform(java.lang.String, java.lang.String)
-	 * }, tests whether the 2 polygons are non-coincident.
-	 *
-	 * @param firstGeometry
-	 * @param secondGeometry
-	 * @return SQL that is FALSE if the polygons intersect.
-	 */
 	@Override
 	public String doPolygon2DDoesNotIntersectTransform(String firstGeometry, String secondGeometry) {
 		return "ST_DISJOINT((" + firstGeometry + ")::GEOMETRY , (" + secondGeometry + ")::GEOMETRY)";
 	}
 
-	/**
-	 * Test whether the first polygon is completely within the second polygon.
-	 *
-	 * <p>
-	 * Compare this to {@link #doPolygon2DContainsPolygon2DTransform(java.lang.String, java.lang.String)
-	 * }
-	 *
-	 * @param firstGeometry
-	 * @param secondGeometry
-	 * @return SQL that is TRUE if the first polygon is within the second.
-	 */
 	@Override
 	public String doPolygon2DWithinTransform(String firstGeometry, String secondGeometry) {
 		//indicate whether g1 is spatially within g2. This is the inverse of Contains(). 
@@ -359,75 +334,31 @@ public class PostgresDBDefinition extends DBDefinition {
 		return "ST_WITHIN((" + firstGeometry + ")::GEOMETRY , (" + secondGeometry + ")::GEOMETRY)";
 	}
 
-	/**
-	 * Returns the measurable dimensions of the polygon.
-	 *
-	 * <p>
-	 * This will be "2"
-	 *
-	 * @param toSQLString
-	 * @return "2" unless something has gone horribly wrong.
-	 */
 	@Override
 	public String doPolygon2DMeasurableDimensionsTransform(String toSQLString) {
 		return "ST_DIMENSION((" + toSQLString + ")::GEOMETRY)";
 	}
 
-	/**
-	 * Defines the transformation require to transform an SQL Polygon2D into a
-	 * linestring representing the exterior ring of the polygon.
-	 *
-	 * @param polygon2DSQL
-	 * @return SQL
-	 */
 	@Override
 	public String doPolygon2DGetExteriorRingTransform(String polygon2DSQL) {
 		return "PATH(ST_EXTERIORRING((" + polygon2DSQL + ")::GEOMETRY))";
 	}
 
-	/**
-	 * Generate the SQL that will return the largest X value within the Polygon2D
-	 * expression.
-	 *
-	 * @param polygon2DSQL
-	 * @return SQL
-	 */
 	@Override
 	public String doPolygon2DGetMaxXTransform(String polygon2DSQL) {
 		return "ST_XMAX((" + polygon2DSQL + ")::GEOMETRY)";
 	}
 
-	/**
-	 * Generate the SQL that will return the smallest X value within the Polygon2D
-	 * expression.
-	 *
-	 * @param polygon2DSQL
-	 * @return SQL
-	 */
 	@Override
 	public String doPolygon2DGetMinXTransform(String polygon2DSQL) {
 		return "ST_XMIN((" + polygon2DSQL + ")::GEOMETRY)";
 	}
 
-	/**
-	 * Generate the SQL that will return the largest X value within the Polygon2D
-	 * expression.
-	 *
-	 * @param polygon2DSQL
-	 * @return SQL
-	 */
 	@Override
 	public String doPolygon2DGetMaxYTransform(String polygon2DSQL) {
 		return "ST_YMAX((" + polygon2DSQL + ")::GEOMETRY)";
 	}
 
-	/**
-	 * Generate the SQL that will return the smallest Y value within the Polygon2D
-	 * expression.
-	 *
-	 * @param polygon2DSQL
-	 * @return SQL
-	 */
 	@Override
 	public String doPolygon2DGetMinYTransform(String polygon2DSQL) {
 		return "ST_YMIN((" + polygon2DSQL + ")::GEOMETRY)";
@@ -677,11 +608,11 @@ public class PostgresDBDefinition extends DBDefinition {
 	@Override
 	public DBExpression transformToStorableType(DBExpression columnExpression) {
 		if (columnExpression instanceof Line2DExpression) {
-			return ((Line2DExpression) columnExpression).stringResult();
+			return ((ExpressionHasStandardStringResult) columnExpression).stringResult();
 		} else if (columnExpression instanceof MultiPoint2DExpression) {
-			return ((MultiPoint2DExpression) columnExpression).stringResult();
+			return ((ExpressionHasStandardStringResult) columnExpression).stringResult();
 		} else if (columnExpression instanceof Polygon2DExpression) {
-			return ((Polygon2DExpression) columnExpression).stringResult();
+			return ((ExpressionHasStandardStringResult) columnExpression).stringResult();
 		} else {
 			return super.transformToStorableType(columnExpression);
 		}
@@ -691,16 +622,11 @@ public class PostgresDBDefinition extends DBDefinition {
 	public String transformLineSegmentIntoDatabaseLineSegment2DFormat(LineSegment lineSegment) {
 		LineString toGeometry = lineSegment.toGeometry(new GeometryFactory());
 		return transformLineStringIntoDatabaseLine2DFormat(toGeometry);
-//		String str;
-//		Coordinate coord1 = lineSegment.getCoordinate(0);
-//		Coordinate coord2 = lineSegment.getCoordinate(1);
-//		str = "LSEG (POINT '("+coord1.x+","+coord1.y+")',POINT '("+coord2.x+","+coord2.y+")')";
-//		return str;
 	}
 
 	@Override
 	public LineSegment transformDatabaseLineSegment2DValueToJTSLineSegment(String lineStringAsString) throws com.vividsolutions.jts.io.ParseException {
-		LineSegment lineString = null;
+		LineSegment lineString;
 		if (!lineStringAsString.matches("^ *LINESTRING.*")) {
 			String string = "LINESTRING " + lineStringAsString.replaceAll("\\),\\(", ", ").replaceAll("([-0-9.]+),([-0-9.]+)", "$1 $2");
 			String[] splits = lineStringAsString.split("[(),]+");
@@ -716,7 +642,6 @@ public class PostgresDBDefinition extends DBDefinition {
 				if (firstCoord == null) {
 					firstCoord = coordinate;
 				}
-//				i++;
 			}
 			coords.add(firstCoord);
 			lineString = new LineSegment(coords.get(0), coords.get(1));
