@@ -34,7 +34,7 @@ import nz.co.gregs.dbvolution.results.PointResult;
  *
  * @author gregorygraham
  */
-public class Point2DExpression implements PointResult, Point2DResult, EqualComparable<Point2DResult>, Spatial2DExpression {
+public class Point2DExpression implements PointResult, Point2DResult, EqualComparable<Point2DResult>, Spatial2DExpression, ColumnExpression<DBPoint2D> {
 
 	private Point2DResult innerPoint;
 	private boolean nullProtectionRequired;
@@ -435,6 +435,11 @@ public class Point2DExpression implements PointResult, Point2DResult, EqualCompa
 	@Override
 	public NumberExpression minY() {
 		return this.getY();
+	}
+
+	@Override
+	public DBPoint2D asColumnExpression() {
+		return new DBPoint2D(this);
 	}
 
 	private static abstract class PointPointFunctionWithBooleanResult extends BooleanExpression {

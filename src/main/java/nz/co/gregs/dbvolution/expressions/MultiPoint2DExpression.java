@@ -37,7 +37,7 @@ import nz.co.gregs.dbvolution.results.NumberResult;
  *
  * @author gregorygraham
  */
-public class MultiPoint2DExpression implements MultiPoint2DResult, EqualComparable<MultiPoint2DResult>, Spatial2DExpression {
+public class MultiPoint2DExpression implements MultiPoint2DResult, EqualComparable<MultiPoint2DResult>, Spatial2DExpression, ColumnExpression<DBMultiPoint2D> {
 
 	private MultiPoint2DResult innerPoint;
 	private boolean nullProtectionRequired;
@@ -508,6 +508,11 @@ public class MultiPoint2DExpression implements MultiPoint2DResult, EqualComparab
 	/* TODO implement public Polygon2DExpression polygon2DResult() {*/
 	public Polygon2DExpression polygon2DResult() {
 		throw new UnsupportedOperationException("NOT DONE YET, SORRY.");
+	}
+
+	@Override
+	public DBMultiPoint2D asColumnExpression() {
+		return new DBMultiPoint2D(this);
 	}
 
 	private static abstract class SingleArgumentLine2DFunction<A extends DBExpression> extends Line2DExpression {

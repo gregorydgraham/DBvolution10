@@ -20,7 +20,6 @@ import java.util.List;
 import nz.co.gregs.dbvolution.annotations.DBColumn;
 import nz.co.gregs.dbvolution.datatypes.*;
 import nz.co.gregs.dbvolution.example.CarCompany;
-import nz.co.gregs.dbvolution.example.CompanyLogo;
 import nz.co.gregs.dbvolution.example.Marque;
 import nz.co.gregs.dbvolution.expressions.NumberExpression;
 import nz.co.gregs.dbvolution.generic.AbstractTest;
@@ -211,7 +210,7 @@ public class DBReportTest extends AbstractTest {
 		@DBColumn
 		public DBNumber marqueUID = new DBNumber(marque.column(marque.uidMarque));
 		@DBColumn
-		public DBDate marqueCreated = new DBDate(marque.column(marque.creationDate));
+		public DBDate marqueCreated = marque.column(marque.creationDate).asColumnExpression();
 
 		{
 			marque.statusClassID.permittedValues(1246974);
@@ -325,8 +324,8 @@ public class DBReportTest extends AbstractTest {
 
 		private Marque marque = new Marque();
 		private CarCompany carCompany = new CarCompany();
-		public DBString carCompanyName = new DBString(carCompany.column(carCompany.name).uppercase());
-		public DBNumber countAll = new DBNumber(NumberExpression.countAll());
+		public DBString carCompanyName = carCompany.column(carCompany.name).uppercase().asColumnExpression();
+		public DBNumber countAll = NumberExpression.countAll().asColumnExpression();
 
 		{
 			carCompany.uidCarCompany.excludedValues((Integer) null);
@@ -365,8 +364,8 @@ public class DBReportTest extends AbstractTest {
 
 		private final Marque marque = new Marque();
 		private final CarCompany carCompany = new CarCompany();
-		private final DBString carCompanyName = new DBString(carCompany.column(carCompany.name).uppercase());
-		private final DBNumber countAll = new DBNumber(NumberExpression.countAll());
+		private final DBString carCompanyName = carCompany.column(carCompany.name).uppercase().asColumnExpression();
+		private final DBNumber countAll = NumberExpression.countAll().asColumnExpression();
 
 		{
 			carCompany.uidCarCompany.excludedValues((Integer) null);

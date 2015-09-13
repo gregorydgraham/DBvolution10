@@ -63,7 +63,7 @@ import org.joda.time.Period;
  *
  * @author Gregory Graham
  */
-public class DateExpression implements DateResult, RangeComparable<DateResult>, InComparable<DateResult> {
+public class DateExpression implements DateResult, RangeComparable<DateResult>, InComparable<DateResult>, ColumnExpression<DBDate> {
 
 	/**
 	 * The integer used to represent the index for Sunday
@@ -2393,6 +2393,11 @@ public class DateExpression implements DateResult, RangeComparable<DateResult>, 
 			}
 
 		});
+	}
+
+	@Override
+	public DBDate asColumnExpression() {
+		return new DBDate(this);
 	}
 
 	private static abstract class FunctionWithDateResult extends DateExpression {

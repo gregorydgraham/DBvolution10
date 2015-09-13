@@ -22,6 +22,7 @@ import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.DBQuery;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.datatypes.DBByteArray;
+import nz.co.gregs.dbvolution.datatypes.DBLargeObject;
 
 /**
  * LargeObjectExpression exposes database expressions for manipulating BLOBs,
@@ -29,7 +30,7 @@ import nz.co.gregs.dbvolution.datatypes.DBByteArray;
  *
  * @author gregorygraham
  */
-public class LargeObjectExpression implements LargeObjectResult {
+public class LargeObjectExpression implements LargeObjectResult, ColumnExpression<DBByteArray> {
 
 	private final LargeObjectResult blobResult;
 	private boolean nullProtectionRequired = false;
@@ -115,6 +116,11 @@ public class LargeObjectExpression implements LargeObjectResult {
 		} else {
 			return blobResult.isPurelyFunctional();
 		}
+	}
+
+	@Override
+	public DBByteArray asColumnExpression() {
+		return new DBByteArray(this);
 	}
 
 }

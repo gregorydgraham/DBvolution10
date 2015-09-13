@@ -19,9 +19,14 @@
 	</description>
 	<url>https://sourceforge.net/projects/dbvolution/</url>
 	<licenses>
-		<license>
+<!--		<license>
 			<name>The Apache Software License, Version 2.0</name>
 			<url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+			<distribution>repo</distribution>
+		</license>-->
+		<license>
+			<name>Non-commercial License</name>
+			<url>http://creativecommons.org/licenses/by-nc-sa/4.0/</url>
 			<distribution>repo</distribution>
 		</license>
 	</licenses>
@@ -29,8 +34,8 @@
 		<connection>scm:git:https://github.com/gregorydgraham/DBvolution.git</connection>
 		<developerConnection>scm:git:https://github.com/gregorydgraham/DBvolution.git</developerConnection>
 		<url>https://github.com/gregorydgraham/DBvolution.git</url>
-    <tag>HEAD</tag>
-  </scm>
+		<tag>HEAD</tag>
+	</scm>
 	<developers>
 		<developer>
 			<name>Gregory Graham</name>
@@ -704,12 +709,24 @@
 			<artifactId>tedhi</artifactId>
 			<version>0.9</version>
 			<scope>test</scope>
+			<exclusions>
+				<exclusion>
+					<groupId>commons-logging</groupId>
+					<artifactId>commons-logging</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>mysql</groupId>
 			<artifactId>mysql-connector-mxj</artifactId>
 			<version>5.0.12</version>
 			<scope>compile</scope>
+			<exclusions>
+				<exclusion>
+					<groupId>mysql</groupId>
+					<artifactId>mysql-connector-java</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>postgresql</groupId>

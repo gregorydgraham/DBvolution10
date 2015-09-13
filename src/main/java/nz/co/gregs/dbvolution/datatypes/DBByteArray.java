@@ -22,6 +22,7 @@ import java.util.logging.*;
 import nz.co.gregs.dbvolution.*;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.exceptions.DBRuntimeException;
+import nz.co.gregs.dbvolution.expressions.LargeObjectExpression;
 import org.apache.commons.codec.binary.Base64;
 
 /**
@@ -53,6 +54,10 @@ public class DBByteArray extends DBLargeObject {
 	 */
 	public DBByteArray() {
 		super();
+	}
+
+	public DBByteArray(LargeObjectExpression aThis) {
+		super(aThis);
 	}
 
 	/**
@@ -286,41 +291,41 @@ public class DBByteArray extends DBLargeObject {
 		return bytes;
 	}
 
-	private byte[] getBytesFromBinaryStream(ResultSet resultSet, InputStream inputStream) throws SQLException {
-		byte[] bytes = new byte[]{};
-		if (resultSet.wasNull()) {
-			inputStream = null;
-		}
-		if (inputStream == null) {
-			this.setToNull();
-		} else {
-			InputStream input = new BufferedInputStream(inputStream);
-			List<byte[]> byteArrays = new ArrayList<byte[]>();
-
-			int totalBytesRead = 0;
-			try {
-				byte[] resultSetBytes;
-				resultSetBytes = new byte[100000];
-				int bytesRead = input.read(resultSetBytes);
-				while (bytesRead > 0) {
-					totalBytesRead += bytesRead;
-					byteArrays.add(resultSetBytes);
-					resultSetBytes = new byte[100000];
-					bytesRead = input.read(resultSetBytes);
-				}
-			} catch (IOException ex) {
-				Logger.getLogger(DBByteArray.class.getName()).log(Level.SEVERE, null, ex);
-			}
-			bytes = new byte[totalBytesRead];
-			int bytesAdded = 0;
-			for (byte[] someBytes : byteArrays) {
-				System.arraycopy(someBytes, 0, bytes, bytesAdded, Math.min(someBytes.length, bytes.length - bytesAdded));
-				bytesAdded += someBytes.length;
-			}
-//			this.setValue(bytes);
-		}
-		return bytes;
-	}
+//	private byte[] getBytesFromBinaryStream(ResultSet resultSet, InputStream inputStream) throws SQLException {
+//		byte[] bytes = new byte[]{};
+//		if (resultSet.wasNull()) {
+//			inputStream = null;
+//		}
+//		if (inputStream == null) {
+//			this.setToNull();
+//		} else {
+//			InputStream input = new BufferedInputStream(inputStream);
+//			List<byte[]> byteArrays = new ArrayList<byte[]>();
+//
+//			int totalBytesRead = 0;
+//			try {
+//				byte[] resultSetBytes;
+//				resultSetBytes = new byte[100000];
+//				int bytesRead = input.read(resultSetBytes);
+//				while (bytesRead > 0) {
+//					totalBytesRead += bytesRead;
+//					byteArrays.add(resultSetBytes);
+//					resultSetBytes = new byte[100000];
+//					bytesRead = input.read(resultSetBytes);
+//				}
+//			} catch (IOException ex) {
+//				Logger.getLogger(DBByteArray.class.getName()).log(Level.SEVERE, null, ex);
+//			}
+//			bytes = new byte[totalBytesRead];
+//			int bytesAdded = 0;
+//			for (byte[] someBytes : byteArrays) {
+//				System.arraycopy(someBytes, 0, bytes, bytesAdded, Math.min(someBytes.length, bytes.length - bytesAdded));
+//				bytesAdded += someBytes.length;
+//			}
+////			this.setValue(bytes);
+//		}
+//		return bytes;
+//	}
 
 	@Override
 	public String formatValueForSQLStatement(DBDatabase db) {

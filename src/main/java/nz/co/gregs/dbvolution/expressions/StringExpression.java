@@ -49,7 +49,7 @@ import nz.co.gregs.dbvolution.results.InComparable;
  *
  * @author Gregory Graham
  */
-public class StringExpression implements StringResult, RangeComparable<StringResult>, InComparable<StringResult> {
+public class StringExpression implements StringResult, RangeComparable<StringResult>, InComparable<StringResult>, ColumnExpression<DBString> {
 
 	static StringExpression nullExpression() {
 		return new StringExpression() {
@@ -2041,6 +2041,10 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 						return "TO_NUMBER";
 					}
 				});
+	}
+
+	public DBString asColumnExpression() {
+		return new DBString(this);
 	}
 
 	private static abstract class DBBinaryStringArithmetic extends StringExpression {

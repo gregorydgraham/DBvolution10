@@ -48,7 +48,7 @@ import nz.co.gregs.dbvolution.results.InComparable;
  *
  * @author Gregory Graham
  */
-public class NumberExpression implements NumberResult, RangeComparable<NumberResult>, InComparable<NumberResult> {
+public class NumberExpression implements NumberResult, RangeComparable<NumberResult>, InComparable<NumberResult>, ColumnExpression<DBNumber> {
 
 	static NumberExpression nullExpression() {
 		return new NumberExpression() {
@@ -2288,6 +2288,10 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 	 */
 	public NumberExpression cubed() {
 		return this.squared().times(this.bracket());
+	}
+
+	public DBNumber asColumnExpression() {
+		return new DBNumber(this);
 	}
 
 	private static abstract class DBBinaryArithmetic extends NumberExpression {

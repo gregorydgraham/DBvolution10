@@ -32,7 +32,7 @@ import nz.co.gregs.dbvolution.datatypes.spatial2D.DBLineSegment2D;
  *
  * @author gregory.graham
  */
-public class LineSegment2DExpression implements LineSegment2DResult, EqualComparable<LineSegment2DResult>, Spatial2DExpression {
+public class LineSegment2DExpression implements LineSegment2DResult, EqualComparable<LineSegment2DResult>, Spatial2DExpression, ColumnExpression<DBLineSegment2D> {
 
 	private LineSegment2DResult innerLineString;
 	private boolean nullProtectionRequired;
@@ -573,6 +573,11 @@ public class LineSegment2DExpression implements LineSegment2DResult, EqualCompar
 				return db.getDefinition().doLineSegment2DIntersectionPointWithLineSegment2DTransform(getFirst().toSQLString(db), getSecond().toSQLString(db));
 			}
 		});
+	}
+
+	@Override
+	public DBLineSegment2D asColumnExpression() {
+		return new DBLineSegment2D(this);
 	}
 
 	private static abstract class LineSegmentLineSegmentWithBooleanResult extends BooleanExpression {
