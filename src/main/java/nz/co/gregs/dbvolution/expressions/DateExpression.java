@@ -63,7 +63,7 @@ import org.joda.time.Period;
  *
  * @author Gregory Graham
  */
-public class DateExpression implements DateResult, RangeComparable<DateResult>, InComparable<DateResult>, ColumnExpression<DBDate> {
+public class DateExpression implements DateResult, RangeComparable<DateResult>, InComparable<DateResult>, ExpressionColumn<DBDate> {
 
 	/**
 	 * The integer used to represent the index for Sunday
@@ -1362,6 +1362,7 @@ public class DateExpression implements DateResult, RangeComparable<DateResult>, 
 	 * @param possibleValues allowed values
 	 * @return a boolean expression representing the required comparison
 	 */
+	@Override
 	public BooleanExpression isIn(DateResult... possibleValues) {
 		BooleanExpression isInExpr = new BooleanExpression(new DateDateResultFunctionWithBooleanResult(this, possibleValues) {
 
@@ -2396,7 +2397,7 @@ public class DateExpression implements DateResult, RangeComparable<DateResult>, 
 	}
 
 	@Override
-	public DBDate asColumnExpression() {
+	public DBDate asExpressionColumn() {
 		return new DBDate(this);
 	}
 

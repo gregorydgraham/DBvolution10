@@ -30,7 +30,7 @@ import org.joda.time.Period;
  *
  * @author gregory.graham
  */
-public class DateRepeatExpression implements DateRepeatResult, RangeComparable<DateRepeatResult>, ColumnExpression<DBDateRepeat> {
+public class DateRepeatExpression implements DateRepeatResult, RangeComparable<DateRepeatResult>, ExpressionColumn<DBDateRepeat> {
 
 	DateRepeatResult innerDateRepeatResult = null;
 	private boolean nullProtectionRequired = false;
@@ -539,7 +539,7 @@ public class DateRepeatExpression implements DateRepeatResult, RangeComparable<D
 	}
 
 	@Override
-	public DBDateRepeat asColumnExpression() {
+	public DBDateRepeat asExpressionColumn() {
 		return new DBDateRepeat(this);
 	}
 

@@ -49,7 +49,7 @@ import nz.co.gregs.dbvolution.results.InComparable;
  *
  * @author Gregory Graham
  */
-public class StringExpression implements StringResult, RangeComparable<StringResult>, InComparable<StringResult>, ColumnExpression<DBString> {
+public class StringExpression implements StringResult, RangeComparable<StringResult>, InComparable<StringResult>, ExpressionColumn<DBString> {
 
 	static StringExpression nullExpression() {
 		return new StringExpression() {
@@ -2043,7 +2043,7 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 				});
 	}
 
-	public DBString asColumnExpression() {
+	public DBString asExpressionColumn() {
 		return new DBString(this);
 	}
 

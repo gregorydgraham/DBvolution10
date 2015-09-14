@@ -30,7 +30,7 @@ import nz.co.gregs.dbvolution.datatypes.DBLargeObject;
  *
  * @author gregorygraham
  */
-public class LargeObjectExpression implements LargeObjectResult, ColumnExpression<DBByteArray> {
+public class LargeObjectExpression implements LargeObjectResult, ExpressionColumn<DBByteArray> {
 
 	private final LargeObjectResult blobResult;
 	private boolean nullProtectionRequired = false;
@@ -119,7 +119,7 @@ public class LargeObjectExpression implements LargeObjectResult, ColumnExpressio
 	}
 
 	@Override
-	public DBByteArray asColumnExpression() {
+	public DBByteArray asExpressionColumn() {
 		return new DBByteArray(this);
 	}
 

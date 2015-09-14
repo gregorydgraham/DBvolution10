@@ -34,7 +34,7 @@ import nz.co.gregs.dbvolution.results.PointResult;
  *
  * @author gregorygraham
  */
-public class Point2DExpression implements PointResult, Point2DResult, EqualComparable<Point2DResult>, Spatial2DExpression, ColumnExpression<DBPoint2D> {
+public class Point2DExpression implements PointResult, Point2DResult, EqualComparable<Point2DResult>, Spatial2DExpression, ExpressionColumn<DBPoint2D> {
 
 	private Point2DResult innerPoint;
 	private boolean nullProtectionRequired;
@@ -438,7 +438,7 @@ public class Point2DExpression implements PointResult, Point2DResult, EqualCompa
 	}
 
 	@Override
-	public DBPoint2D asColumnExpression() {
+	public DBPoint2D asExpressionColumn() {
 		return new DBPoint2D(this);
 	}
 

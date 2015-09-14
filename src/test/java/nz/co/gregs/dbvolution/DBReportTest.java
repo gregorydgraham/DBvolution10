@@ -210,7 +210,7 @@ public class DBReportTest extends AbstractTest {
 		@DBColumn
 		public DBNumber marqueUID = new DBNumber(marque.column(marque.uidMarque));
 		@DBColumn
-		public DBDate marqueCreated = marque.column(marque.creationDate).asColumnExpression();
+		public DBDate marqueCreated = marque.column(marque.creationDate).asExpressionColumn();
 
 		{
 			marque.statusClassID.permittedValues(1246974);
@@ -324,8 +324,8 @@ public class DBReportTest extends AbstractTest {
 
 		private Marque marque = new Marque();
 		private CarCompany carCompany = new CarCompany();
-		public DBString carCompanyName = carCompany.column(carCompany.name).uppercase().asColumnExpression();
-		public DBNumber countAll = NumberExpression.countAll().asColumnExpression();
+		public DBString carCompanyName = carCompany.column(carCompany.name).uppercase().asExpressionColumn();
+		public DBNumber countAll = NumberExpression.countAll().asExpressionColumn();
 
 		{
 			carCompany.uidCarCompany.excludedValues((Integer) null);
@@ -364,8 +364,8 @@ public class DBReportTest extends AbstractTest {
 
 		private final Marque marque = new Marque();
 		private final CarCompany carCompany = new CarCompany();
-		private final DBString carCompanyName = carCompany.column(carCompany.name).uppercase().asColumnExpression();
-		private final DBNumber countAll = NumberExpression.countAll().asColumnExpression();
+		private final DBString carCompanyName = carCompany.column(carCompany.name).uppercase().asExpressionColumn();
+		private final DBNumber countAll = NumberExpression.countAll().asExpressionColumn();
 
 		{
 			carCompany.uidCarCompany.excludedValues((Integer) null);

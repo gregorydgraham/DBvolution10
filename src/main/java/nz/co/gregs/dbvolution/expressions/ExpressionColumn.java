@@ -6,17 +6,18 @@
 package nz.co.gregs.dbvolution.expressions;
 
 /**
- * Provides simple access to the column expression version of an expression
+ * Provides simple access to the expression column version of an expression
  *
  * @author gregorygraham
+ * @param <T> the type that should be used with this expression
  */
-interface ColumnExpression<T> {
+public interface ExpressionColumn<T> {
 
-		/**
-	 * Creates a QueryableDatatype version of the expression suitable for use as a expression column.
+	/**
+	 * Creates a QueryableDatatype version of the expression suitable for use as a column.
 	 *
 	 * @return a QDT version of the expression
 	 */
-	public T asColumnExpression();
+	public T asExpressionColumn();
 
 }

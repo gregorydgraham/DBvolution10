@@ -51,10 +51,10 @@ public class DBPermittedRangeOperator extends DBMetaOperator {
 					QueryableDatatype.getQueryableDatatypeForObject(upperBound));
 		} else if (lowerBound == null && upperBound != null) {
 			QueryableDatatype qdt = QueryableDatatype.getQueryableDatatypeForObject(upperBound);
-			operator = new DBLessThanOrEqualOperator(qdt);
+			operator = new DBLessThanOperator(qdt);
 		} else if (lowerBound != null && upperBound == null) {
 			final QueryableDatatype qdt = QueryableDatatype.getQueryableDatatypeForObject(lowerBound);
-			operator = new DBGreaterThanOperator(qdt);
+			operator = new DBGreaterThanOrEqualsOperator(qdt);
 		}
 	}
 

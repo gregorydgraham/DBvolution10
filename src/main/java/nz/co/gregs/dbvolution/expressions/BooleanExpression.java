@@ -73,7 +73,7 @@ import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
  *
  * @author Gregory Graham
  */
-public class BooleanExpression implements BooleanResult, EqualComparable<BooleanResult>, ColumnExpression<DBBoolean> {
+public class BooleanExpression implements BooleanResult, EqualComparable<BooleanResult>, ExpressionColumn<DBBoolean> {
 
 	private final BooleanResult onlyBool;
 	private boolean includeNulls = false;
@@ -1269,7 +1269,7 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 	}
 
 	@Override
-	public DBBoolean asColumnExpression() {
+	public DBBoolean asExpressionColumn() {
 		return new DBBoolean(this);
 	}
 

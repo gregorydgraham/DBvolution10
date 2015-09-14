@@ -41,7 +41,7 @@ import nz.co.gregs.dbvolution.results.MultiPoint2DResult;
  *
  * @author Gregory Graham
  */
-public class Line2DExpression implements Line2DResult, EqualComparable<Line2DResult>, Spatial2DExpression, ColumnExpression<DBLine2D> {
+public class Line2DExpression implements Line2DResult, EqualComparable<Line2DResult>, Spatial2DExpression, ExpressionColumn<DBLine2D> {
 
 	private Line2DResult innerLineString;
 	private boolean nullProtectionRequired;
@@ -784,7 +784,7 @@ public class Line2DExpression implements Line2DResult, EqualComparable<Line2DRes
 	}
 
 	@Override
-	public DBLine2D asColumnExpression() {
+	public DBLine2D asExpressionColumn() {
 		return new DBLine2D(this);
 	}
 

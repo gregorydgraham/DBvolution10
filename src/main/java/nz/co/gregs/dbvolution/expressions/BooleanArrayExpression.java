@@ -30,7 +30,7 @@ import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
  *
  * @author gregory.graham
  */
-public class BooleanArrayExpression implements BooleanArrayResult, EqualComparable<BooleanArrayResult>, ColumnExpression<DBBooleanArray> {
+public class BooleanArrayExpression implements BooleanArrayResult, EqualComparable<BooleanArrayResult>, ExpressionColumn<DBBooleanArray> {
 
 	private final BooleanArrayResult innerBooleanArrayResult;
 
@@ -176,7 +176,7 @@ public class BooleanArrayExpression implements BooleanArrayResult, EqualComparab
 	}
 
 	@Override
-	public DBBooleanArray asColumnExpression() {
+	public DBBooleanArray asExpressionColumn() {
 		return new DBBooleanArray(this);
 	}
 
