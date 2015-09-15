@@ -26,9 +26,9 @@ import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.annotations.DBColumn;
 import nz.co.gregs.dbvolution.annotations.DBPrimaryKey;
 import nz.co.gregs.dbvolution.generic.AbstractTest;
-import nz.co.gregs.dbvolution.datatypes.DBEnumTest.IntegerEnumTable.RecordType;
 import nz.co.gregs.dbvolution.datatypes.DBEnumTest.StringEnumTable.StringEnumType;
 import nz.co.gregs.dbvolution.expressions.NumberExpression;
+import nz.co.gregs.dbvolution.expressions.StringExpression;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -41,8 +41,8 @@ public class DBEnumTest extends AbstractTest {
 	@Test
 	public void createRecordUsingEnum() {
 		IntegerEnumTable row = new IntegerEnumTable();
-		row.recordType.setValue(RecordType.MOVEMENT_CANCELLATION_REQUEST); // nested class imported
-		row.recordType.setValue(IntegerEnumTable.RecordType.MOVEMENT_CANCELLATION_REQUEST); // explicit reference to nested class
+		row.recordType.setValue(IntEnum.MOVEMENT_CANCELLATION_REQUEST); // nested class imported
+		row.recordType.setValue(IntEnum.MOVEMENT_CANCELLATION_REQUEST); // explicit reference to nested class
 
 		String sqlFragment = row.recordType.toSQLString(database);
 		assertThat(sqlFragment, is("3"));
@@ -53,7 +53,7 @@ public class DBEnumTest extends AbstractTest {
 	public void createRecordUsingLiteral() {
 		IntegerEnumTable row = new IntegerEnumTable();
 		row.recordType.setLiteralValue(
-				IntegerEnumTable.RecordType.MOVEMENT_CANCELLATION_REQUEST.getCode());
+				IntEnum.MOVEMENT_CANCELLATION_REQUEST.getCode());
 
 		String sqlFragment = row.recordType.toSQLString(database);
 		assertThat(sqlFragment, is("3"));
@@ -64,8 +64,8 @@ public class DBEnumTest extends AbstractTest {
 	public void filterRecordUsingEnum() {
 		IntegerEnumTable rowExemplar = new IntegerEnumTable();
 		rowExemplar.recordType.permittedValues(
-				RecordType.MOVEMENT_REQUEST_RECORD,
-				RecordType.SHIPPING_MANIFEST_RECORD);
+				IntEnum.MOVEMENT_REQUEST_RECORD,
+				IntEnum.SHIPPING_MANIFEST_RECORD);
 
 		String sqlFragment = rowExemplar.recordType.getWhereClause(database, rowExemplar.column(rowExemplar.recordType));
 		System.out.println(sqlFragment);
@@ -76,8 +76,8 @@ public class DBEnumTest extends AbstractTest {
 	public void filterRecordUsingLiteral() {
 		IntegerEnumTable rowExemplar = new IntegerEnumTable();
 		rowExemplar.recordType.permittedValues(
-				RecordType.MOVEMENT_REQUEST_RECORD.getCode(),
-				RecordType.SHIPPING_MANIFEST_RECORD.getCode());
+				IntEnum.MOVEMENT_REQUEST_RECORD.getCode(),
+				IntEnum.SHIPPING_MANIFEST_RECORD.getCode());
 
 		String sqlFragment = rowExemplar.recordType.getWhereClause(database, rowExemplar.column(rowExemplar.recordType));
 		System.out.println(sqlFragment);
@@ -92,24 +92,52 @@ public class DBEnumTest extends AbstractTest {
 		database.createTable(integerTableExemplar);
 		try {
 			database.insert(
-					new IntegerEnumTable(1, RecordType.MOVEMENT_REQUEST_RECORD),
-					new IntegerEnumTable(2, RecordType.SHIPPING_MANIFEST_RECORD),
-					new IntegerEnumTable(4, RecordType.MOVEMENT_REQUEST_RECORD));
+					new IntegerEnumTable(1, IntEnum.MOVEMENT_REQUEST_RECORD),
+					new IntegerEnumTable(2, IntEnum.SHIPPING_MANIFEST_RECORD),
+					new IntegerEnumTable(4, IntEnum.MOVEMENT_REQUEST_RECORD));
 
 			integerTableExemplar.recordType.permittedValues(
-					RecordType.MOVEMENT_CANCELLATION_REQUEST,
-					RecordType.MOVEMENT_REQUEST_RECORD,
-					RecordType.SHIPPING_MANIFEST_RECORD);
+					IntEnum.MOVEMENT_CANCELLATION_REQUEST,
+					IntEnum.MOVEMENT_REQUEST_RECORD,
+					IntEnum.SHIPPING_MANIFEST_RECORD);
 			List<IntegerEnumTable> rows = database.get(integerTableExemplar);
 			database.print(rows);
 
 			for (IntegerEnumTable row : rows) {
 				if (row.uid_202.getValue().intValue() == 1) {
-					assertThat(row.recordType.enumValue(), is(RecordType.MOVEMENT_REQUEST_RECORD));
+					assertThat(row.recordType.enumValue(), is(IntEnum.MOVEMENT_REQUEST_RECORD));
 				}
 				if (row.uid_202.getValue().intValue() == 2) {
-					assertThat(row.recordType.enumValue(), is(RecordType.SHIPPING_MANIFEST_RECORD));
+					assertThat(row.recordType.enumValue(), is(IntEnum.SHIPPING_MANIFEST_RECORD));
 				}
+			}
+		} finally {
+			database.preventDroppingOfTables(false);
+			database.dropTableNoExceptions(integerTableExemplar);
+		}
+	}
+
+	@Test
+	public void processIntegerRecordWithValue() throws SQLException {
+		final IntegerEnumWithDefinedValuesTable integerTableExemplar = new IntegerEnumWithDefinedValuesTable();
+		database.preventDroppingOfTables(false);
+		database.dropTableNoExceptions(integerTableExemplar);
+		database.createTable(integerTableExemplar);
+		try {
+			database.insert(
+					new IntegerEnumWithDefinedValuesTable(1, IntEnum.MOVEMENT_REQUEST_RECORD),
+					new IntegerEnumWithDefinedValuesTable(2, IntEnum.SHIPPING_MANIFEST_RECORD),
+					new IntegerEnumWithDefinedValuesTable(4, IntEnum.MOVEMENT_REQUEST_RECORD));
+
+			integerTableExemplar.uid_202.permittedValues(
+					0,null);
+			List<IntegerEnumWithDefinedValuesTable> rows = database.get(integerTableExemplar);
+			database.print(rows);
+
+			for (IntegerEnumWithDefinedValuesTable row : rows) {
+					assertThat(row.request.enumValue(), is(IntEnum.MOVEMENT_REQUEST_RECORD));
+					assertThat(row.manifest.enumValue(), is(IntEnum.SHIPPING_MANIFEST_RECORD));
+					assertThat(row.cancel.enumValue(), is(IntEnum.MOVEMENT_CANCELLATION_REQUEST));
 			}
 		} finally {
 			database.preventDroppingOfTables(false);
@@ -125,108 +153,108 @@ public class DBEnumTest extends AbstractTest {
 		database.createTable(integerTableExemplar);
 		try {
 			database.insert(
-					new IntegerEnumTable(1, RecordType.MOVEMENT_REQUEST_RECORD),
-					new IntegerEnumTable(2, RecordType.SHIPPING_MANIFEST_RECORD),
-					new IntegerEnumTable(4, RecordType.MOVEMENT_REQUEST_RECORD));
+					new IntegerEnumTable(1, IntEnum.MOVEMENT_REQUEST_RECORD),
+					new IntegerEnumTable(2, IntEnum.SHIPPING_MANIFEST_RECORD),
+					new IntegerEnumTable(4, IntEnum.MOVEMENT_REQUEST_RECORD));
 
 			integerTableExemplar.recordType.permittedRange(
-					RecordType.MOVEMENT_REQUEST_RECORD, null);
+					IntEnum.MOVEMENT_REQUEST_RECORD, null);
 			List<IntegerEnumTable> rows = database.get(integerTableExemplar);
 			database.print(rows);
 
 			assertThat(rows.size(), is(2));
 
 			for (IntegerEnumTable row : rows) {
-				assertThat(row.recordType.enumValue(), is(RecordType.MOVEMENT_REQUEST_RECORD));
+				assertThat(row.recordType.enumValue(), is(IntEnum.MOVEMENT_REQUEST_RECORD));
 			}
 
 			integerTableExemplar.recordType.permittedRange(
-					null, RecordType.MOVEMENT_REQUEST_RECORD);
+					null, IntEnum.MOVEMENT_REQUEST_RECORD);
 			rows = database.get(integerTableExemplar);
 			database.print(rows);
 
 			assertThat(rows.size(), is(1));
 
 			for (IntegerEnumTable row : rows) {
-				assertThat(row.recordType.enumValue(), is(RecordType.SHIPPING_MANIFEST_RECORD));
+				assertThat(row.recordType.enumValue(), is(IntEnum.SHIPPING_MANIFEST_RECORD));
 			}
 
 			integerTableExemplar.recordType.permittedRangeInclusive(
-					null, RecordType.MOVEMENT_REQUEST_RECORD);
+					null, IntEnum.MOVEMENT_REQUEST_RECORD);
 			rows = database.get(integerTableExemplar);
 			database.print(rows);
 
 			assertThat(rows.size(), is(3));
 
 			for (IntegerEnumTable row : rows) {
-				assertThat(row.recordType.enumValue(), isOneOf(RecordType.SHIPPING_MANIFEST_RECORD, RecordType.MOVEMENT_REQUEST_RECORD));
+				assertThat(row.recordType.enumValue(), isOneOf(IntEnum.SHIPPING_MANIFEST_RECORD, IntEnum.MOVEMENT_REQUEST_RECORD));
 			}
 
 			integerTableExemplar.recordType.permittedRangeExclusive(
-					null, RecordType.MOVEMENT_REQUEST_RECORD);
+					null, IntEnum.MOVEMENT_REQUEST_RECORD);
 			rows = database.get(integerTableExemplar);
 			database.print(rows);
 
 			assertThat(rows.size(), is(1));
 
 			for (IntegerEnumTable row : rows) {
-				assertThat(row.recordType.enumValue(), is(RecordType.SHIPPING_MANIFEST_RECORD));
+				assertThat(row.recordType.enumValue(), is(IntEnum.SHIPPING_MANIFEST_RECORD));
 			}
 
 			integerTableExemplar.recordType.excludedRange(
-					null, RecordType.MOVEMENT_REQUEST_RECORD);
+					null, IntEnum.MOVEMENT_REQUEST_RECORD);
 			rows = database.get(integerTableExemplar);
 			database.print(rows);
 
 			assertThat(rows.size(), is(2));
 
 			for (IntegerEnumTable row : rows) {
-				assertThat(row.recordType.enumValue(), is(RecordType.MOVEMENT_REQUEST_RECORD));
+				assertThat(row.recordType.enumValue(), is(IntEnum.MOVEMENT_REQUEST_RECORD));
 			}
 
 
 			integerTableExemplar.recordType.permittedRangeInclusive(
-					null, RecordType.SHIPPING_MANIFEST_RECORD);
+					null, IntEnum.SHIPPING_MANIFEST_RECORD);
 			rows = database.get(integerTableExemplar);
 			database.print(rows);
 
 			assertThat(rows.size(), is(1));
 
 			for (IntegerEnumTable row : rows) {
-				assertThat(row.recordType.getValue().intValue(), is(RecordType.SHIPPING_MANIFEST_RECORD.code));
-				assertThat(row.recordType.numberValue().intValue(), is(RecordType.SHIPPING_MANIFEST_RECORD.code));
-				assertThat(row.recordType.longValue().intValue(), is(RecordType.SHIPPING_MANIFEST_RECORD.code));
+				assertThat(row.recordType.getValue().intValue(), is(IntEnum.SHIPPING_MANIFEST_RECORD.code));
+				assertThat(row.recordType.numberValue().intValue(), is(IntEnum.SHIPPING_MANIFEST_RECORD.code));
+				assertThat(row.recordType.longValue().intValue(), is(IntEnum.SHIPPING_MANIFEST_RECORD.code));
 			}
 
 			integerTableExemplar.recordType.permittedRangeExclusive(
-					null, RecordType.SHIPPING_MANIFEST_RECORD);
+					null, IntEnum.SHIPPING_MANIFEST_RECORD);
 			rows = database.get(integerTableExemplar);
 			database.print(rows);
 
 			assertThat(rows.size(), is(0));
 
 			integerTableExemplar.recordType.excludedRangeExclusive(
-					null, RecordType.SHIPPING_MANIFEST_RECORD);
+					null, IntEnum.SHIPPING_MANIFEST_RECORD);
 			rows = database.get(integerTableExemplar);
 			database.print(rows);
 
 			assertThat(rows.size(), is(3));
 
 			integerTableExemplar.recordType.excludedRangeInclusive(
-					null, RecordType.SHIPPING_MANIFEST_RECORD);
+					null, IntEnum.SHIPPING_MANIFEST_RECORD);
 			rows = database.get(integerTableExemplar);
 			database.print(rows);
 
 			assertThat(rows.size(), is(2));
 
 			integerTableExemplar.recordType.excludedValues(
-					null, RecordType.SHIPPING_MANIFEST_RECORD, RecordType.MOVEMENT_CANCELLATION_REQUEST);
+					null, IntEnum.SHIPPING_MANIFEST_RECORD, IntEnum.MOVEMENT_CANCELLATION_REQUEST);
 			rows = database.get(integerTableExemplar);
 			database.print(rows);
 
 			assertThat(rows.size(), is(2));
 			for (IntegerEnumTable row : rows) {
-				assertThat(row.recordType.intValue(), is(RecordType.MOVEMENT_REQUEST_RECORD.code));
+				assertThat(row.recordType.intValue(), is(IntEnum.MOVEMENT_REQUEST_RECORD.code));
 			}
 
 		} finally {
@@ -243,108 +271,108 @@ public class DBEnumTest extends AbstractTest {
 		database.createTable(integerTableExemplar);
 		try {
 			database.insert(
-					new IntegerEnumTable(1, RecordType.MOVEMENT_REQUEST_RECORD),
-					new IntegerEnumTable(2, RecordType.SHIPPING_MANIFEST_RECORD),
-					new IntegerEnumTable(4, RecordType.MOVEMENT_REQUEST_RECORD));
+					new IntegerEnumTable(1, IntEnum.MOVEMENT_REQUEST_RECORD),
+					new IntegerEnumTable(2, IntEnum.SHIPPING_MANIFEST_RECORD),
+					new IntegerEnumTable(4, IntEnum.MOVEMENT_REQUEST_RECORD));
 
 			integerTableExemplar.recordType.permittedRange(
-					RecordType.MOVEMENT_REQUEST_RECORD.code, null);
+					IntEnum.MOVEMENT_REQUEST_RECORD.code, null);
 			List<IntegerEnumTable> rows = database.get(integerTableExemplar);
 			database.print(rows);
 
 			assertThat(rows.size(), is(2));
 
 			for (IntegerEnumTable row : rows) {
-				assertThat(row.recordType.enumValue().code, is(RecordType.MOVEMENT_REQUEST_RECORD.code));
+				assertThat(row.recordType.enumValue().code, is(IntEnum.MOVEMENT_REQUEST_RECORD.code));
 			}
 
 			integerTableExemplar.recordType.permittedRange(
-					null, RecordType.MOVEMENT_REQUEST_RECORD.code);
+					null, IntEnum.MOVEMENT_REQUEST_RECORD.code);
 			rows = database.get(integerTableExemplar);
 			database.print(rows);
 
 			assertThat(rows.size(), is(1));
 
 			for (IntegerEnumTable row : rows) {
-				assertThat(row.recordType.enumValue(), is(RecordType.SHIPPING_MANIFEST_RECORD));
+				assertThat(row.recordType.enumValue(), is(IntEnum.SHIPPING_MANIFEST_RECORD));
 			}
 
 			integerTableExemplar.recordType.permittedRangeInclusive(
-					null, RecordType.MOVEMENT_REQUEST_RECORD.code);
+					null, IntEnum.MOVEMENT_REQUEST_RECORD.code);
 			rows = database.get(integerTableExemplar);
 			database.print(rows);
 
 			assertThat(rows.size(), is(3));
 
 			for (IntegerEnumTable row : rows) {
-				assertThat(row.recordType.enumValue(), isOneOf(RecordType.SHIPPING_MANIFEST_RECORD, RecordType.MOVEMENT_REQUEST_RECORD));
+				assertThat(row.recordType.enumValue(), isOneOf(IntEnum.SHIPPING_MANIFEST_RECORD, IntEnum.MOVEMENT_REQUEST_RECORD));
 			}
 
 			integerTableExemplar.recordType.permittedRangeExclusive(
-					null, RecordType.MOVEMENT_REQUEST_RECORD.code);
+					null, IntEnum.MOVEMENT_REQUEST_RECORD.code);
 			rows = database.get(integerTableExemplar);
 			database.print(rows);
 
 			assertThat(rows.size(), is(1));
 
 			for (IntegerEnumTable row : rows) {
-				assertThat(row.recordType.enumValue(), is(RecordType.SHIPPING_MANIFEST_RECORD));
+				assertThat(row.recordType.enumValue(), is(IntEnum.SHIPPING_MANIFEST_RECORD));
 			}
 
 			integerTableExemplar.recordType.excludedRange(
-					null, RecordType.MOVEMENT_REQUEST_RECORD.code);
+					null, IntEnum.MOVEMENT_REQUEST_RECORD.code);
 			rows = database.get(integerTableExemplar);
 			database.print(rows);
 
 			assertThat(rows.size(), is(2));
 
 			for (IntegerEnumTable row : rows) {
-				assertThat(row.recordType.enumValue(), is(RecordType.MOVEMENT_REQUEST_RECORD));
+				assertThat(row.recordType.enumValue(), is(IntEnum.MOVEMENT_REQUEST_RECORD));
 			}
 
 
 			integerTableExemplar.recordType.permittedRangeInclusive(
-					null, RecordType.SHIPPING_MANIFEST_RECORD.code);
+					null, IntEnum.SHIPPING_MANIFEST_RECORD.code);
 			rows = database.get(integerTableExemplar);
 			database.print(rows);
 
 			assertThat(rows.size(), is(1));
 
 			for (IntegerEnumTable row : rows) {
-				assertThat(row.recordType.getValue().intValue(), is(RecordType.SHIPPING_MANIFEST_RECORD.code));
-				assertThat(row.recordType.numberValue().intValue(), is(RecordType.SHIPPING_MANIFEST_RECORD.code));
-				assertThat(row.recordType.longValue().intValue(), is(RecordType.SHIPPING_MANIFEST_RECORD.code));
+				assertThat(row.recordType.getValue().intValue(), is(IntEnum.SHIPPING_MANIFEST_RECORD.code));
+				assertThat(row.recordType.numberValue().intValue(), is(IntEnum.SHIPPING_MANIFEST_RECORD.code));
+				assertThat(row.recordType.longValue().intValue(), is(IntEnum.SHIPPING_MANIFEST_RECORD.code));
 			}
 
 			integerTableExemplar.recordType.permittedRangeExclusive(
-					null, RecordType.SHIPPING_MANIFEST_RECORD.code);
+					null, IntEnum.SHIPPING_MANIFEST_RECORD.code);
 			rows = database.get(integerTableExemplar);
 			database.print(rows);
 
 			assertThat(rows.size(), is(0));
 
 			integerTableExemplar.recordType.excludedRangeExclusive(
-					null, RecordType.SHIPPING_MANIFEST_RECORD.code);
+					null, IntEnum.SHIPPING_MANIFEST_RECORD.code);
 			rows = database.get(integerTableExemplar);
 			database.print(rows);
 
 			assertThat(rows.size(), is(3));
 
 			integerTableExemplar.recordType.excludedRangeInclusive(
-					null, RecordType.SHIPPING_MANIFEST_RECORD.code);
+					null, IntEnum.SHIPPING_MANIFEST_RECORD.code);
 			rows = database.get(integerTableExemplar);
 			database.print(rows);
 
 			assertThat(rows.size(), is(2));
 
 			integerTableExemplar.recordType.excludedValues(
-					null, RecordType.SHIPPING_MANIFEST_RECORD.code, RecordType.MOVEMENT_CANCELLATION_REQUEST.code);
+					null, IntEnum.SHIPPING_MANIFEST_RECORD.code, IntEnum.MOVEMENT_CANCELLATION_REQUEST.code);
 			rows = database.get(integerTableExemplar);
 			database.print(rows);
 
 			assertThat(rows.size(), is(2));
 			for (IntegerEnumTable row : rows) {
-				assertThat(row.recordType.intValue(), is(RecordType.MOVEMENT_REQUEST_RECORD.code));
+				assertThat(row.recordType.intValue(), is(IntEnum.MOVEMENT_REQUEST_RECORD.code));
 			}
 
 		} finally {
@@ -361,118 +389,118 @@ public class DBEnumTest extends AbstractTest {
 		database.createTable(integerTableExemplar);
 		try {
 			database.insert(
-					new IntegerEnumTable(1, RecordType.MOVEMENT_REQUEST_RECORD),
-					new IntegerEnumTable(2, RecordType.SHIPPING_MANIFEST_RECORD),
-					new IntegerEnumTable(4, RecordType.MOVEMENT_REQUEST_RECORD));
+					new IntegerEnumTable(1, IntEnum.MOVEMENT_REQUEST_RECORD),
+					new IntegerEnumTable(2, IntEnum.SHIPPING_MANIFEST_RECORD),
+					new IntegerEnumTable(4, IntEnum.MOVEMENT_REQUEST_RECORD));
 
 			integerTableExemplar.recordType.permittedRange(
-					RecordType.MOVEMENT_REQUEST_RECORD.getLong(), null);
+					IntEnum.MOVEMENT_REQUEST_RECORD.getLong(), null);
 			List<IntegerEnumTable> rows = database.get(integerTableExemplar);
 			database.print(rows);
 
 			assertThat(rows.size(), is(2));
 
 			for (IntegerEnumTable row : rows) {
-				assertThat(row.recordType.enumValue().code, is(RecordType.MOVEMENT_REQUEST_RECORD.code));
+				assertThat(row.recordType.enumValue().code, is(IntEnum.MOVEMENT_REQUEST_RECORD.code));
 			}
 
 			integerTableExemplar.recordType.permittedRange(
-					null, RecordType.MOVEMENT_REQUEST_RECORD.getLong());
+					null, IntEnum.MOVEMENT_REQUEST_RECORD.getLong());
 			rows = database.get(integerTableExemplar);
 			database.print(rows);
 
 			assertThat(rows.size(), is(1));
 
 			for (IntegerEnumTable row : rows) {
-				assertThat(row.recordType.enumValue(), is(RecordType.SHIPPING_MANIFEST_RECORD));
+				assertThat(row.recordType.enumValue(), is(IntEnum.SHIPPING_MANIFEST_RECORD));
 			}
 
 			integerTableExemplar.recordType.permittedRangeInclusive(
-					null, RecordType.MOVEMENT_REQUEST_RECORD.getLong());
+					null, IntEnum.MOVEMENT_REQUEST_RECORD.getLong());
 			rows = database.get(integerTableExemplar);
 			database.print(rows);
 
 			assertThat(rows.size(), is(3));
 
 			for (IntegerEnumTable row : rows) {
-				assertThat(row.recordType.enumValue(), isOneOf(RecordType.SHIPPING_MANIFEST_RECORD, RecordType.MOVEMENT_REQUEST_RECORD));
+				assertThat(row.recordType.enumValue(), isOneOf(IntEnum.SHIPPING_MANIFEST_RECORD, IntEnum.MOVEMENT_REQUEST_RECORD));
 			}
 
 			integerTableExemplar.recordType.permittedRangeExclusive(
-					null, RecordType.MOVEMENT_REQUEST_RECORD.getLong());
+					null, IntEnum.MOVEMENT_REQUEST_RECORD.getLong());
 			rows = database.get(integerTableExemplar);
 			database.print(rows);
 
 			assertThat(rows.size(), is(1));
 
 			for (IntegerEnumTable row : rows) {
-				assertThat(row.recordType.enumValue(), is(RecordType.SHIPPING_MANIFEST_RECORD));
+				assertThat(row.recordType.enumValue(), is(IntEnum.SHIPPING_MANIFEST_RECORD));
 			}
 
 			integerTableExemplar.recordType.excludedRange(
-					null, RecordType.MOVEMENT_REQUEST_RECORD.getLong());
+					null, IntEnum.MOVEMENT_REQUEST_RECORD.getLong());
 			rows = database.get(integerTableExemplar);
 			database.print(rows);
 
 			assertThat(rows.size(), is(2));
 
 			for (IntegerEnumTable row : rows) {
-				assertThat(row.recordType.enumValue(), is(RecordType.MOVEMENT_REQUEST_RECORD));
+				assertThat(row.recordType.enumValue(), is(IntEnum.MOVEMENT_REQUEST_RECORD));
 			}
 
 
 			integerTableExemplar.recordType.permittedRangeInclusive(
-					null, RecordType.SHIPPING_MANIFEST_RECORD.getLong());
+					null, IntEnum.SHIPPING_MANIFEST_RECORD.getLong());
 			rows = database.get(integerTableExemplar);
 			database.print(rows);
 
 			assertThat(rows.size(), is(1));
 
 			for (IntegerEnumTable row : rows) {
-				assertThat(row.recordType.getValue().intValue(), is(RecordType.SHIPPING_MANIFEST_RECORD.code));
-				assertThat(row.recordType.numberValue().intValue(), is(RecordType.SHIPPING_MANIFEST_RECORD.code));
-				assertThat(row.recordType.longValue().intValue(), is(RecordType.SHIPPING_MANIFEST_RECORD.code));
+				assertThat(row.recordType.getValue().intValue(), is(IntEnum.SHIPPING_MANIFEST_RECORD.code));
+				assertThat(row.recordType.numberValue().intValue(), is(IntEnum.SHIPPING_MANIFEST_RECORD.code));
+				assertThat(row.recordType.longValue().intValue(), is(IntEnum.SHIPPING_MANIFEST_RECORD.code));
 			}
 
 			integerTableExemplar.recordType.permittedRangeExclusive(
-					null, RecordType.SHIPPING_MANIFEST_RECORD.getLong());
+					null, IntEnum.SHIPPING_MANIFEST_RECORD.getLong());
 			rows = database.get(integerTableExemplar);
 			database.print(rows);
 
 			assertThat(rows.size(), is(0));
 
 			integerTableExemplar.recordType.excludedRangeExclusive(
-					null, RecordType.SHIPPING_MANIFEST_RECORD.getLong());
+					null, IntEnum.SHIPPING_MANIFEST_RECORD.getLong());
 			rows = database.get(integerTableExemplar);
 			database.print(rows);
 
 			assertThat(rows.size(), is(3));
 
 			integerTableExemplar.recordType.excludedRangeInclusive(
-					null, RecordType.SHIPPING_MANIFEST_RECORD.getLong());
+					null, IntEnum.SHIPPING_MANIFEST_RECORD.getLong());
 			rows = database.get(integerTableExemplar);
 			database.print(rows);
 
 			assertThat(rows.size(), is(2));
 
 			integerTableExemplar.recordType.excludedValues(
-					null, RecordType.SHIPPING_MANIFEST_RECORD.getLong(), RecordType.MOVEMENT_CANCELLATION_REQUEST.getLong());
+					null, IntEnum.SHIPPING_MANIFEST_RECORD.getLong(), IntEnum.MOVEMENT_CANCELLATION_REQUEST.getLong());
 			rows = database.get(integerTableExemplar);
 			database.print(rows);
 
 			assertThat(rows.size(), is(2));
 			for (IntegerEnumTable row : rows) {
-				assertThat(row.recordType.intValue(), is(RecordType.MOVEMENT_REQUEST_RECORD.code));
+				assertThat(row.recordType.intValue(), is(IntEnum.MOVEMENT_REQUEST_RECORD.code));
 			}
 
 			integerTableExemplar.recordType.permittedValues(
-					null, RecordType.SHIPPING_MANIFEST_RECORD.getLong(), RecordType.MOVEMENT_CANCELLATION_REQUEST.getLong());
+					null, IntEnum.SHIPPING_MANIFEST_RECORD.getLong(), IntEnum.MOVEMENT_CANCELLATION_REQUEST.getLong());
 			rows = database.get(integerTableExemplar);
 			database.print(rows);
 
 			assertThat(rows.size(), is(1));
 			for (IntegerEnumTable row : rows) {
-				assertThat(row.recordType.longValue(), is(0L+RecordType.SHIPPING_MANIFEST_RECORD.code));
+				assertThat(row.recordType.longValue(), is(0L+IntEnum.SHIPPING_MANIFEST_RECORD.code));
 			}
 
 		} finally {
@@ -501,6 +529,7 @@ public class DBEnumTest extends AbstractTest {
 			database.print(rows);
 
 			Assert.assertThat(rows.size(), is(3));
+			Assert.assertThat(rows.get(0).movereq.enumValue(), is(StringEnumType.MOVEMENT_REQUEST_RECORD));
 			for (StringEnumTable row : rows) {
 				if (row.uid_202.getValue().intValue() == 1) {
 					assertThat(row.recordType.enumValue(), is(StringEnumType.MOVEMENT_REQUEST_RECORD));
@@ -523,12 +552,12 @@ public class DBEnumTest extends AbstractTest {
 	public void correctlyConvertsLongToIntegerEnum() {
 		// warm up enum type
 		IntegerEnumTable row = new IntegerEnumTable();
-		row.recordType.setValue(IntegerEnumTable.RecordType.SHIPPING_MANIFEST_RECORD);
+		row.recordType.setValue(IntEnum.SHIPPING_MANIFEST_RECORD);
 
 		// do test
-		long code = IntegerEnumTable.RecordType.MOVEMENT_CANCELLATION_REQUEST.code;
+		long code = IntEnum.MOVEMENT_CANCELLATION_REQUEST.code;
 		row.recordType.setLiteralValue(code);
-		assertThat(row.recordType.enumValue(), is(IntegerEnumTable.RecordType.MOVEMENT_CANCELLATION_REQUEST));
+		assertThat(row.recordType.enumValue(), is(IntEnum.MOVEMENT_CANCELLATION_REQUEST));
 	}
 
 	@Test
@@ -608,18 +637,19 @@ public class DBEnumTest extends AbstractTest {
 		public DBInteger uid_202 = new DBInteger();
 
 		@DBColumn("c_5")
-		public DBIntegerEnum<RecordType> recordType = new DBIntegerEnum<RecordType>();
+		public DBIntegerEnum<IntEnum> recordType = new DBIntegerEnum<IntEnum>();
 
 		@DBColumn("ordinal3")
-		public DBIntegerEnum<RecordType> justOrdinal3 = new DBIntegerEnum<RecordType>(NumberExpression.value(2));
+		public DBIntegerEnum<IntEnum> justOrdinal3 = new DBIntegerEnum<IntEnum>(NumberExpression.value(2));
 
 		public IntegerEnumTable() {
 		}
 
-		public IntegerEnumTable(Integer uid, RecordType recType) {
+		public IntegerEnumTable(Integer uid, IntEnum recType) {
 			this.uid_202.setValue(uid);
 			this.recordType.setValue(recType);
 		}
+	}
 
 		/**
 		 * Valid values for {@link #recordType}.
@@ -627,7 +657,7 @@ public class DBEnumTest extends AbstractTest {
 		 * <p>
 		 * Nested class to make it obvious which table the enum is for
 		 */
-		public static enum RecordType implements DBEnumValue<Integer> {
+		public static enum IntEnum implements DBEnumValue<Integer> {
 
 			SHIPPING_MANIFEST_RECORD(1, "Shipping Manifest Record"),
 			MOVEMENT_REQUEST_RECORD(2, "Movement Request Record"),
@@ -636,7 +666,7 @@ public class DBEnumTest extends AbstractTest {
 			private int code;
 			private String displayName;
 
-			private RecordType(int code, String displayName) {
+			private IntEnum(int code, String displayName) {
 				this.code = code;
 				this.displayName = displayName;
 			}
@@ -654,21 +684,41 @@ public class DBEnumTest extends AbstractTest {
 				return displayName;
 			}
 
-			public static RecordType valueOfCode(DBInteger code) {
+			public static IntEnum valueOfCode(DBInteger code) {
 				return valueOfCode(code == null ? null : code.getValue().intValue());
 			}
 
-			public static RecordType valueOfCode(Integer code) {
+			public static IntEnum valueOfCode(Integer code) {
 				if (code == null) {
 					return null;
 				}
-				for (RecordType recordType : values()) {
+				for (IntEnum recordType : values()) {
 					if (recordType.getCode().equals(code)) {
 						return recordType;
 					}
 				}
-				throw new IllegalArgumentException("Invalid " + RecordType.class.getSimpleName() + " code: " + code);
+				throw new IllegalArgumentException("Invalid " + IntEnum.class.getSimpleName() + " code: " + code);
 			}
+		}
+	
+
+	public static class IntegerEnumWithDefinedValuesTable extends DBRow {
+
+		private static final long serialVersionUID = 1L;
+
+		@DBColumn("uid_202")
+		@DBPrimaryKey
+		public DBInteger uid_202 = new DBInteger();
+
+		public DBIntegerEnum<IntEnum> manifest = new DBIntegerEnum<IntEnum>(1);
+		public DBIntegerEnum<IntEnum> request = new DBIntegerEnum<IntEnum>(2L);
+		public DBIntegerEnum<IntEnum> cancel = new DBIntegerEnum<IntEnum>(IntEnum.MOVEMENT_CANCELLATION_REQUEST);
+
+		public IntegerEnumWithDefinedValuesTable() {
+		}
+
+		public IntegerEnumWithDefinedValuesTable(Integer uid, IntEnum recType) {
+			this.uid_202.setValue(uid);
 		}
 	}
 
@@ -682,6 +732,9 @@ public class DBEnumTest extends AbstractTest {
 
 		@DBColumn("c_5")
 		public DBStringEnum<StringEnumType> recordType = new DBStringEnum<StringEnumType>();
+
+		@DBColumn
+		public DBStringEnum<StringEnumType> movereq = new DBStringEnum<StringEnumType>(StringExpression.value(StringEnumType.MOVEMENT_REQUEST_RECORD.literalValue));
 
 		public StringEnumTable() {
 		}
