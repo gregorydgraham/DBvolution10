@@ -28,6 +28,7 @@ import nz.co.gregs.dbvolution.annotations.DBPrimaryKey;
 import nz.co.gregs.dbvolution.generic.AbstractTest;
 import nz.co.gregs.dbvolution.datatypes.DBEnumTest.IntegerEnumTable.RecordType;
 import nz.co.gregs.dbvolution.datatypes.DBEnumTest.StringEnumTable.StringEnumType;
+import nz.co.gregs.dbvolution.expressions.NumberExpression;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -608,6 +609,9 @@ public class DBEnumTest extends AbstractTest {
 
 		@DBColumn("c_5")
 		public DBIntegerEnum<RecordType> recordType = new DBIntegerEnum<RecordType>();
+
+		@DBColumn("ordinal3")
+		public DBIntegerEnum<RecordType> justOrdinal3 = new DBIntegerEnum<RecordType>(NumberExpression.value(2));
 
 		public IntegerEnumTable() {
 		}

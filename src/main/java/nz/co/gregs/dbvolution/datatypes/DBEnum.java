@@ -1,6 +1,7 @@
 package nz.co.gregs.dbvolution.datatypes;
 
 import nz.co.gregs.dbvolution.DBDatabase;
+import nz.co.gregs.dbvolution.expressions.DBExpression;
 import nz.co.gregs.dbvolution.internal.properties.PropertyWrapperDefinition;
 
 /**
@@ -47,6 +48,23 @@ public abstract class DBEnum<E extends Enum<E> & DBEnumValue<?>> extends Queryab
 	 */
 	protected DBEnum(Object literalValue) {
 		super(literalValue);
+	}
+
+	/**
+	 * Create a DBEnum with a permanent column expression.
+	 *
+	 * <p>
+	 * Use this method within a DBRow sub-class to create a column that uses an
+	 * expression to create the value at query time.
+	 *
+	 * <p>
+	 * This is particularly useful for trimming strings or converting between
+	 * types but also allows for complex arithmetic and transformations.
+	 *
+	 * @param columnExpression	columnExpression
+	 */
+	protected DBEnum(DBExpression columnExpression) {
+		super(columnExpression);
 	}
 
 	/**

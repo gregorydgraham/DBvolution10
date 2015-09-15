@@ -22,6 +22,8 @@ import java.util.Set;
 import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.DBReport;
 import nz.co.gregs.dbvolution.DBRow;
+import nz.co.gregs.dbvolution.expressions.StringExpression;
+import nz.co.gregs.dbvolution.operators.DBEqualsOperator;
 import nz.co.gregs.dbvolution.results.NumberResult;
 import nz.co.gregs.dbvolution.operators.DBPermittedRangeExclusiveOperator;
 import nz.co.gregs.dbvolution.operators.DBPermittedRangeInclusiveOperator;
@@ -37,7 +39,7 @@ import nz.co.gregs.dbvolution.operators.DBPermittedValuesOperator;
  * @author Gregory Graham
  * @author Malcolm Lett
  */
-public class DBIntegerEnum<E extends Enum<E> & DBEnumValue<? extends Number>> extends DBEnum<E> {
+public class DBIntegerEnum<E extends Enum<E> & DBEnumValue<? extends Number>> extends DBEnum<E> implements NumberResult {
 
 	private static final long serialVersionUID = 1L;
 
@@ -52,7 +54,7 @@ public class DBIntegerEnum<E extends Enum<E> & DBEnumValue<? extends Number>> ex
 	}
 
 	/**
-	 * Creates a DBIntegerEnum set to the value supplied..
+	 * Creates a DBIntegerEnum set to the value supplied.
 	 *
 	 * @param value	value
 	 */
@@ -71,7 +73,7 @@ public class DBIntegerEnum<E extends Enum<E> & DBEnumValue<? extends Number>> ex
 
 	/**
 	 * Creates a DBIntegerEnum that will be evaluated on the database using the
-	 * expression .supplied.
+	 * expression supplied.
 	 *
 	 * <p>
 	 * This constructor is used in {@link DBReport DBReports} to generate new
@@ -684,5 +686,21 @@ public class DBIntegerEnum<E extends Enum<E> & DBEnumValue<? extends Number>> ex
 	@Override
 	protected Object getFromResultSet(DBDatabase database, ResultSet resultSet, String fullColumnName) throws SQLException {
 		return resultSet.getLong(fullColumnName);
+	}
+
+	@Override
+	@SuppressWarnings("unchecked")
+	public DBIntegerEnum<E> copy() {
+		return (DBIntegerEnum<E>) super.copy();
+	}
+
+	@Override
+	public boolean getIncludesNull() {
+		return isNull();
+	}
+
+	@Override
+	public StringExpression stringResult() {
+		return StringExpression.value("" + getValue());
 	}
 }
