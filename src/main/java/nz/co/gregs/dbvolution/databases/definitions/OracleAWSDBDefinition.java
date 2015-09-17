@@ -41,7 +41,7 @@ import nz.co.gregs.dbvolution.exceptions.IncorrectGeometryReturnedForDatatype;
 public class OracleAWSDBDefinition extends OracleDBDefinition {
 
 	@Override
-	public String getSQLTypeOfDBDatatype(QueryableDatatype qdt) {
+	public String getDatabaseDataTypeOfQueryableDatatype(QueryableDatatype qdt) {
 		if (qdt instanceof DBPoint2D) {
 			return " VARCHAR(2001) ";
 		} else if (qdt instanceof DBLine2D) {
@@ -53,7 +53,7 @@ public class OracleAWSDBDefinition extends OracleDBDefinition {
 		} else if (qdt instanceof DBMultiPoint2D) {
 			return " VARCHAR(2005) ";
 		} else {
-			return super.getSQLTypeOfDBDatatype(qdt);
+			return super.getDatabaseDataTypeOfQueryableDatatype(qdt);
 		}
 	}
 

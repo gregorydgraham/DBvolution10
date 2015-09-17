@@ -59,7 +59,7 @@ public class MariaDBDefinition extends DBDefinition {
 	}
 
 	@Override
-	public String getSQLTypeOfDBDatatype(QueryableDatatype qdt) {
+	public String getDatabaseDataTypeOfQueryableDatatype(QueryableDatatype qdt) {
 		if (qdt instanceof DBString) {
 			return " VARCHAR(1000) CHARACTER SET utf8 COLLATE utf8_bin ";
 		} else if (qdt instanceof DBDate) {
@@ -69,7 +69,7 @@ public class MariaDBDefinition extends DBDefinition {
 		} else if (qdt instanceof DBLargeObject) {
 			return " LONGBLOB ";
 		} else {
-			return super.getSQLTypeOfDBDatatype(qdt);
+			return super.getDatabaseDataTypeOfQueryableDatatype(qdt);
 		}
 	}
 

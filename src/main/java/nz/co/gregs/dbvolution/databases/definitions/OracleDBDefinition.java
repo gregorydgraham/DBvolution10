@@ -85,7 +85,7 @@ public class OracleDBDefinition extends DBDefinition {
 	}
 
 	@Override
-	public String getSQLTypeOfDBDatatype(QueryableDatatype qdt) {
+	public String getDatabaseDataTypeOfQueryableDatatype(QueryableDatatype qdt) {
 		if (qdt instanceof DBBoolean) {
 			return " NUMBER(1)";
 		} else if (qdt instanceof DBString) {
@@ -97,7 +97,7 @@ public class OracleDBDefinition extends DBDefinition {
 		} else if (qdt instanceof DBBooleanArray) {
 			return " VARCHAR(64) ";
 		} else {
-			return super.getSQLTypeOfDBDatatype(qdt);
+			return super.getDatabaseDataTypeOfQueryableDatatype(qdt);
 		}
 	}	
 	

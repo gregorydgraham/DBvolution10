@@ -263,6 +263,146 @@ public class DBEnumTest extends AbstractTest {
 		}
 	}
 
+
+	@Test
+	public void stringEnumPermittedRange() throws SQLException {
+		final StringEnumTable stringTableExemplar = new StringEnumTable();
+		database.preventDroppingOfTables(false);
+		database.dropTableNoExceptions(stringTableExemplar);
+		database.createTable(stringTableExemplar);
+		try {
+			database.insert(
+					new StringEnumTable(1, StringEnumType.MOVEMENT_REQUEST_RECORD),
+					new StringEnumTable(2, StringEnumType.SHIPPING_MANIFEST_RECORD),
+					new StringEnumTable(4, StringEnumType.MOVEMENT_REQUEST_RECORD));
+
+			stringTableExemplar.recordType.permittedRange(
+					StringEnumType.MOVEMENT_REQUEST_RECORD, null);
+			List<StringEnumTable> rows = database.get(stringTableExemplar);
+			database.print(rows);
+
+			assertThat(rows.size(), is(2));
+
+			for (StringEnumTable row : rows) {
+				assertThat(row.recordType.enumValue(), is(StringEnumType.MOVEMENT_REQUEST_RECORD));
+			}
+
+			stringTableExemplar.recordType.permittedRange(
+					null, StringEnumType.MOVEMENT_REQUEST_RECORD.literalValue);
+			rows = database.get(stringTableExemplar);
+			database.print(rows);
+
+			assertThat(rows.size(), is(1));
+
+			for (StringEnumTable row : rows) {
+				assertThat(row.recordType.enumValue(), is(StringEnumType.SHIPPING_MANIFEST_RECORD));
+			}
+
+			stringTableExemplar.recordType.permittedRangeInclusive(
+					null, StringEnumType.MOVEMENT_REQUEST_RECORD);
+			rows = database.get(stringTableExemplar);
+			database.print(rows);
+
+			assertThat(rows.size(), is(3));
+
+			for (StringEnumTable row : rows) {
+				assertThat(row.recordType.enumValue(), isOneOf(StringEnumType.SHIPPING_MANIFEST_RECORD, StringEnumType.MOVEMENT_REQUEST_RECORD));
+			}
+
+			stringTableExemplar.recordType.permittedRangeExclusive(
+					null, StringEnumType.MOVEMENT_REQUEST_RECORD);
+			rows = database.get(stringTableExemplar);
+			database.print(rows);
+
+			assertThat(rows.size(), is(1));
+
+			for (StringEnumTable row : rows) {
+				assertThat(row.recordType.enumValue(), is(StringEnumType.SHIPPING_MANIFEST_RECORD));
+			}
+
+			stringTableExemplar.recordType.excludedRange(
+					null, StringEnumType.MOVEMENT_REQUEST_RECORD);
+			rows = database.get(stringTableExemplar);
+			database.print(rows);
+
+			assertThat(rows.size(), is(2));
+
+			stringTableExemplar.recordType.excludedRange(
+					null, StringEnumType.MOVEMENT_REQUEST_RECORD.literalValue);
+			rows = database.get(stringTableExemplar);
+			database.print(rows);
+
+			assertThat(rows.size(), is(2));
+
+			for (StringEnumTable row : rows) {
+				assertThat(row.recordType.enumValue(), is(StringEnumType.MOVEMENT_REQUEST_RECORD));
+			}
+
+
+			stringTableExemplar.recordType.permittedRangeInclusive(
+					null, StringEnumType.SHIPPING_MANIFEST_RECORD.literalValue);
+			rows = database.get(stringTableExemplar);
+			database.print(rows);
+
+			assertThat(rows.size(), is(1));
+
+			stringTableExemplar.recordType.excludedRangeInclusive(
+					null, StringEnumType.SHIPPING_MANIFEST_RECORD.literalValue);
+			rows = database.get(stringTableExemplar);
+			database.print(rows);
+
+			assertThat(rows.size(), is(2));
+
+			stringTableExemplar.recordType.excludedRangeInclusive(
+					null, StringEnumType.SHIPPING_MANIFEST_RECORD);
+			rows = database.get(stringTableExemplar);
+			database.print(rows);
+
+			assertThat(rows.size(), is(2));
+
+			for (StringEnumTable row : rows) {
+				assertThat(row.recordType.getValue(), is(StringEnumType.MOVEMENT_REQUEST_RECORD.literalValue));
+				assertThat(row.recordType.enumValue().getCode(), is(StringEnumType.MOVEMENT_REQUEST_RECORD.getCode()));
+				assertThat(row.recordType.enumValue().getDisplayName(), is(IntEnum.MOVEMENT_REQUEST_RECORD.getDisplayName()));
+			}
+
+			stringTableExemplar.recordType.permittedRangeExclusive(
+					null, StringEnumType.SHIPPING_MANIFEST_RECORD.literalValue);
+			rows = database.get(stringTableExemplar);
+			database.print(rows);
+
+			assertThat(rows.size(), is(0));
+
+			stringTableExemplar.recordType.excludedRangeExclusive(
+					null, StringEnumType.SHIPPING_MANIFEST_RECORD);
+			rows = database.get(stringTableExemplar);
+			database.print(rows);
+
+			assertThat(rows.size(), is(3));
+
+			stringTableExemplar.recordType.excludedRangeExclusive(
+					null, StringEnumType.SHIPPING_MANIFEST_RECORD.literalValue);
+			rows = database.get(stringTableExemplar);
+			database.print(rows);
+
+			assertThat(rows.size(), is(3));
+
+			stringTableExemplar.recordType.excludedValues(
+					null, StringEnumType.SHIPPING_MANIFEST_RECORD, StringEnumType.MOVEMENT_CANCELLATION_REQUEST);
+			rows = database.get(stringTableExemplar);
+			database.print(rows);
+
+			assertThat(rows.size(), is(2));
+			for (StringEnumTable row : rows) {
+				assertThat(row.recordType.enumValue(), is(StringEnumType.MOVEMENT_REQUEST_RECORD));
+			}
+
+		} finally {
+			database.preventDroppingOfTables(false);
+			database.dropTableNoExceptions(stringTableExemplar);
+		}
+	}
+
 	@Test
 	public void integerPermittedRange() throws SQLException {
 		final IntegerEnumTable integerTableExemplar = new IntegerEnumTable();

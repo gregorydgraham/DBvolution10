@@ -27,7 +27,7 @@ import nz.co.gregs.dbvolution.datatypes.DBUnknownDatatype;
  */
 public class DBTableClass {
 
-	private long serialversionUIDBValue = 1L;
+	private final long serialversionUIDBValue = 1L;
 
 	private final Class<DBUnknownDatatype> unknownDatatype = DBUnknownDatatype.class;
 	private String packageName;
@@ -87,6 +87,8 @@ public class DBTableClass {
 		javaSrc.append("import ").append(importPackageName).append(".*;");
 		javaSrc.append(lineSeparator);
 		javaSrc.append("import ").append(importPackageName).append(".datatypes.*;");
+		javaSrc.append(lineSeparator);
+		javaSrc.append("import ").append(importPackageName).append(".datatypes.spatial2D.*;");
 		javaSrc.append(lineSeparator);
 		javaSrc.append("import ").append(importPackageName).append(".annotations.*;");
 		javaSrc.append(conceptBreak);

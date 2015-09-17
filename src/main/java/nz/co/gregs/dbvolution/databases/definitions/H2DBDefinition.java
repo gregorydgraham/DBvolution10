@@ -60,7 +60,7 @@ public class H2DBDefinition extends DBDefinition {
 	}
 
 	@Override
-	protected String getSQLTypeOfDBDatatype(QueryableDatatype qdt) {
+	protected String getDatabaseDataTypeOfQueryableDatatype(QueryableDatatype qdt) {
 		if (qdt instanceof DBDateRepeat) {
 			return DataTypes.DATEREPEAT.datatype();
 		} else if (qdt instanceof DBPoint2D) {
@@ -74,7 +74,7 @@ public class H2DBDefinition extends DBDefinition {
 		} else if (qdt instanceof DBMultiPoint2D) {
 			return DataTypes.MULTIPOINT2D.datatype();
 		} else {
-			return super.getSQLTypeOfDBDatatype(qdt);
+			return super.getDatabaseDataTypeOfQueryableDatatype(qdt);
 		}
 	}
 

@@ -37,6 +37,10 @@ import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.datatypes.DBInteger;
 import nz.co.gregs.dbvolution.datatypes.DBNumber;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
+import nz.co.gregs.dbvolution.datatypes.spatial2D.DBLine2D;
+import nz.co.gregs.dbvolution.datatypes.spatial2D.DBMultiPoint2D;
+import nz.co.gregs.dbvolution.datatypes.spatial2D.DBPoint2D;
+import nz.co.gregs.dbvolution.datatypes.spatial2D.DBPolygon2D;
 import nz.co.gregs.dbvolution.exceptions.AutoIncrementFieldClassAndDatatypeMismatch;
 import nz.co.gregs.dbvolution.exceptions.IncorrectGeometryReturnedForDatatype;
 import nz.co.gregs.dbvolution.expressions.DBExpression;
@@ -860,7 +864,7 @@ public abstract class DBDefinition {
 	}
 
 	private String getSQLTypeOfDBDatatype(PropertyWrapper field) {
-		return getSQLTypeOfDBDatatype(field.getQueryableDatatype());
+		return getDatabaseDataTypeOfQueryableDatatype(field.getQueryableDatatype());
 	}
 
 	/**
@@ -872,7 +876,7 @@ public abstract class DBDefinition {
 	 * @param qdt	qdt
 	 * @return the databases type for the QDT as a string
 	 */
-	protected String getSQLTypeOfDBDatatype(QueryableDatatype qdt) {
+	protected String getDatabaseDataTypeOfQueryableDatatype(QueryableDatatype qdt) {
 		return qdt.getSQLDatatype();
 	}
 
@@ -4481,4 +4485,34 @@ public abstract class DBDefinition {
 	public String doDateAtTimeZoneTransform(String dateSQL, TimeZone timeZone) throws UnsupportedOperationException {
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
+
+	/**
+	 * Returns the {@link QueryableDatatype} class to be used with the named
+	 * database specific datatype.
+	 *
+	 * <p>
+	 * This method is called during {@link DBTableClassGenerator} to resolve data
+	 * types that JDBC doesn't recognize into a QDT. In particular anything that
+	 * JDBC reports as {@link java.sql.Types#OTHER} will be resolved using this
+	 * method.
+	 * 
+	 * <p>
+	 * The default method returns NULL which causes the generator to use a DBJavaObject.
+	 *
+	 * @param typeName
+	 * @return the class of the QDT that can be used with this columns of this type name.
+	 */
+	public Class<? extends QueryableDatatype> getQueryableDatatypeClassForSQLDatatype(String typeName) {
+			if (typeName.toUpperCase().equals("POLYGON")) {
+			return DBPolygon2D.class;
+		} else if (typeName.toUpperCase().equals("LINESTRING")) {
+			return DBLine2D.class;
+		} else if (typeName.toUpperCase().equals("POINT")) {
+			return DBPoint2D.class;
+		} else if (typeName.toUpperCase().equals("MULTIPOINT")) {
+			return DBMultiPoint2D.class; // obviously this is not going to work in all cases 
+		} else {
+			return null;
+		}
+}
 }

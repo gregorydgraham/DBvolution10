@@ -17,7 +17,6 @@ package nz.co.gregs.dbvolution.databases.definitions;
 
 import com.vividsolutions.jts.geom.*;
 import java.text.*;
-import java.time.format.TextStyle;
 import java.util.*;
 import nz.co.gregs.dbvolution.databases.PostgresDB;
 import nz.co.gregs.dbvolution.databases.PostgresDBOverSSL;
@@ -78,7 +77,7 @@ public class PostgresDBDefinition extends DBDefinition {
 	}
 
 	@Override
-	public String getSQLTypeOfDBDatatype(QueryableDatatype qdt) {
+	public String getDatabaseDataTypeOfQueryableDatatype(QueryableDatatype qdt) {
 		if (qdt instanceof DBByteArray) {
 			return " BYTEA ";
 		} else if (qdt instanceof DBDate) {
@@ -96,7 +95,18 @@ public class PostgresDBDefinition extends DBDefinition {
 		} else if (qdt instanceof DBMultiPoint2D) {
 			return " GEOMETRY ";
 		} else {
-			return super.getSQLTypeOfDBDatatype(qdt);
+			return super.getDatabaseDataTypeOfQueryableDatatype(qdt);
+		}
+	}
+
+	@Override
+	public Class<? extends QueryableDatatype> getQueryableDatatypeClassForSQLDatatype(String typeName) {
+		if (typeName.equals("path")) {
+			return DBLine2D.class;
+		} else if (typeName.equals("geometry")) {
+			return DBMultiPoint2D.class;
+		} else {
+			return super.getQueryableDatatypeClassForSQLDatatype(typeName);
 		}
 	}
 
@@ -366,7 +376,7 @@ public class PostgresDBDefinition extends DBDefinition {
 
 	@Override
 	public String doPolygon2DAsTextTransform(String toSQLString) {
-		return "ST_ASTEXT(("+toSQLString+")::GEOMETRY)";
+		return "ST_ASTEXT((" + toSQLString + ")::GEOMETRY)";
 	}
 
 	@Override
@@ -490,7 +500,7 @@ public class PostgresDBDefinition extends DBDefinition {
 			}
 			i++;
 		}
-		if (coords.size()==1){
+		if (coords.size() == 1) {
 			coords.add(firstCoord);
 			coords.add(firstCoord);
 			coords.add(firstCoord);
@@ -503,7 +513,7 @@ public class PostgresDBDefinition extends DBDefinition {
 
 	@Override
 	public LineString transformDatabaseLine2DValueToJTSLineString(String lineStringAsString) throws com.vividsolutions.jts.io.ParseException {
-		LineString lineString = null;
+		LineString lineString;
 		if (!lineStringAsString.matches("^ *LINESTRING.*")) {
 			String string = "LINESTRING " + lineStringAsString.replaceAll("\\),\\(", ", ").replaceAll("([-0-9.]+),([-0-9.]+)", "$1 $2");
 			String[] splits = lineStringAsString.split("[(),]+");
@@ -571,14 +581,14 @@ public class PostgresDBDefinition extends DBDefinition {
 
 	@Override
 	public String doLine2DIntersectionPointWithLine2DTransform(String firstGeometry, String secondGeometry) {
-		return Line2DFunctions.INTERSECTIONWITHLINE2D+"((" + firstGeometry + ") , (" + secondGeometry + "))";
+		return Line2DFunctions.INTERSECTIONWITHLINE2D + "((" + firstGeometry + ") , (" + secondGeometry + "))";
 	}
 
 	@Override
 	public String doLine2DAllIntersectionPointsWithLine2DTransform(String firstGeometry, String secondGeometry) {
-		return Line2DFunctions.INTERSECTIONPOINTSWITHLINE2D+"((" + firstGeometry + ") , (" + secondGeometry + "))";
+		return Line2DFunctions.INTERSECTIONPOINTSWITHLINE2D + "((" + firstGeometry + ") , (" + secondGeometry + "))";
 	}
-	
+
 	@Override
 	public String doSubstringBeforeTransform(String fromThis, String beforeThis) {
 		return StringFunctions.SUBSTRINGBEFORE + "(" + fromThis + ", " + beforeThis + ")";
@@ -633,7 +643,7 @@ public class PostgresDBDefinition extends DBDefinition {
 			System.out.println(lineStringAsString + " => " + string);
 			Coordinate firstCoord = null;
 			List<Coordinate> coords = new ArrayList<Coordinate>();
-			for (int i = 1; i < splits.length - 1; i+=2) {
+			for (int i = 1; i < splits.length - 1; i += 2) {
 				String splitX = splits[i];
 				String splitY = splits[i + 1];
 				System.out.println("COORD: " + splitX + ", " + splitY);
@@ -658,44 +668,44 @@ public class PostgresDBDefinition extends DBDefinition {
 
 	@Override
 	public String doLineSegment2DGetMaxXTransform(String toSQLString) {
-		return Line2DFunctions.MAXX+"("+toSQLString+")";
+		return Line2DFunctions.MAXX + "(" + toSQLString + ")";
 	}
 
 	@Override
 	public String doLineSegment2DGetMinXTransform(String toSQLString) {
-		return Line2DFunctions.MINX+"("+toSQLString+")";
+		return Line2DFunctions.MINX + "(" + toSQLString + ")";
 	}
 
 	@Override
 	public String doLineSegment2DGetMaxYTransform(String toSQLString) {
-		return Line2DFunctions.MAXY+"("+toSQLString+")";
+		return Line2DFunctions.MAXY + "(" + toSQLString + ")";
 	}
 
 	@Override
 	public String doLineSegment2DGetMinYTransform(String toSQLString) {
-		return Line2DFunctions.MINY+"("+toSQLString+")";
+		return Line2DFunctions.MINY + "(" + toSQLString + ")";
 	}
 
 	@Override
 	public String doLineSegment2DGetBoundingBoxTransform(String toSQLString) {
-		return Line2DFunctions.BOUNDINGBOX+"(("+toSQLString+")::PATH)";
+		return Line2DFunctions.BOUNDINGBOX + "((" + toSQLString + ")::PATH)";
 	}
 
 	@Override
 	public String doLineSegment2DNotEqualsTransform(String toSQLString, String toSQLString0) {
-		return "(("+toSQLString+"):TEXT <> ("+toSQLString0+")::TEXT)";
+		return "((" + toSQLString + "):TEXT <> (" + toSQLString0 + ")::TEXT)";
 	}
 
 	@Override
 	public String doLineSegment2DEqualsTransform(String toSQLString, String toSQLString0) {
-		return "(("+toSQLString+")::TEXT = ("+toSQLString0+")::TEXT)";
+		return "((" + toSQLString + ")::TEXT = (" + toSQLString0 + ")::TEXT)";
 	}
 
 	@Override
 	public String doLineSegment2DAsTextTransform(String toSQLString) {
-		return "("+toSQLString+")::TEXT";
+		return "(" + toSQLString + ")::TEXT";
 	}
-	
+
 	@Override
 	public String doLineSegment2DIntersectionPointWithLineSegment2DTransform(String firstLineSegment, String secondLineSegment) {
 		return "ST_PointFROMTEXT(ST_ASTEXT(ST_INTERSECTION((" + firstLineSegment + ")::GEOMETRY , (" + secondLineSegment + ")::GEOMETRY)))::POINT";
@@ -743,14 +753,13 @@ public class PostgresDBDefinition extends DBDefinition {
 
 	@Override
 	public String doMultiPoint2DToLine2DTransform(String first) {
-		return MultiPoint2DFunctions.ASLINE2D+"(("+first+"))::PATH";
+		return MultiPoint2DFunctions.ASLINE2D + "((" + first + "))::PATH";
 	}
 
 //	@Override
 //	public String doMultiPoint2DToPolygon2DTransform(String first) {
 //		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 //	}
-
 	@Override
 	public String doMultiPoint2DGetMinYTransform(String toSQLString) {
 		return "ST_YMIN(" + toSQLString + ")";
@@ -769,12 +778,11 @@ public class PostgresDBDefinition extends DBDefinition {
 	@Override
 	public String doMultiPoint2DGetMaxXTransform(String toSQLString) {
 		return "ST_XMAX(" + toSQLString + ")";
-	}	
-	
-	@Override
-	public String doDateAtTimeZoneTransform(String dateSQL, TimeZone timeZone) {
-		return "(("+dateSQL+") AT TIME ZONE '"+timeZone.toZoneId().getId()+"') ";
 	}
 
+	@Override
+	public String doDateAtTimeZoneTransform(String dateSQL, TimeZone timeZone) {
+		return "((" + dateSQL + ") AT TIME ZONE '" + timeZone.toZoneId().getId() + "') ";
+	}
 
 }

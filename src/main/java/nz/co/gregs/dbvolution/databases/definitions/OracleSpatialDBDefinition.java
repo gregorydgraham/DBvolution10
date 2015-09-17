@@ -42,7 +42,7 @@ import nz.co.gregs.dbvolution.results.Spatial2DResult;
 public class OracleSpatialDBDefinition extends OracleDBDefinition {
 
 	@Override
-	public String getSQLTypeOfDBDatatype(QueryableDatatype qdt) {
+	public String getDatabaseDataTypeOfQueryableDatatype(QueryableDatatype qdt) {
 		if (qdt instanceof Spatial2DResult) {
 			return " SDO_GEOMETRY ";
 //		} else if (qdt instanceof DBLine2D) {
@@ -52,7 +52,7 @@ public class OracleSpatialDBDefinition extends OracleDBDefinition {
 //		} else if (qdt instanceof DBPolygon2D) {
 //			return " SDO_GEOMETRY ";
 		} else {
-			return super.getSQLTypeOfDBDatatype(qdt);
+			return super.getDatabaseDataTypeOfQueryableDatatype(qdt);
 		}
 	}
 

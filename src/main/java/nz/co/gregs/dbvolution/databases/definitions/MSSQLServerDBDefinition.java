@@ -63,7 +63,7 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 	}
 
 	@Override
-	protected String getSQLTypeOfDBDatatype(QueryableDatatype qdt) {
+	protected String getDatabaseDataTypeOfQueryableDatatype(QueryableDatatype qdt) {
 		if (qdt instanceof DBBoolean) {
 			return " BIT ";
 		} else if (qdt instanceof DBBooleanArray) {
@@ -85,7 +85,7 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 		} else if (qdt instanceof DBMultiPoint2D) {
 			return " GEOMETRY ";
 		} else {
-			return super.getSQLTypeOfDBDatatype(qdt);
+			return super.getDatabaseDataTypeOfQueryableDatatype(qdt);
 		}
 	}
 

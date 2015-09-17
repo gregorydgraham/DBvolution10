@@ -62,7 +62,7 @@ public class MySQLDBDefinition extends DBDefinition {
 	}
 
 	@Override
-	public String getSQLTypeOfDBDatatype(QueryableDatatype qdt) {
+	public String getDatabaseDataTypeOfQueryableDatatype(QueryableDatatype qdt) {
 		if (qdt instanceof DBString) {
 			return " VARCHAR(1000) CHARACTER SET utf8 COLLATE utf8_bin ";
 		} else if (qdt instanceof DBDate) {
@@ -74,7 +74,22 @@ public class MySQLDBDefinition extends DBDefinition {
 		} else if (qdt instanceof DBBooleanArray) {
 			return " VARCHAR(64) ";
 		} else {
-			return super.getSQLTypeOfDBDatatype(qdt);
+			return super.getDatabaseDataTypeOfQueryableDatatype(qdt);
+		}
+	}
+
+	@Override
+	public Class<? extends QueryableDatatype> getQueryableDatatypeClassForSQLDatatype(String typeName) {
+		if (typeName.equals("POLYGON")) {
+			return DBPolygon2D.class;
+		} else if (typeName.equals("LINESTRING")) {
+			return DBLine2D.class;
+		} else if (typeName.equals("POINT")) {
+			return DBPoint2D.class;
+		} else if (typeName.equals("MULTIPOINT")) {
+			return DBMultiPoint2D.class; // obviously this is not going to work in all cases 
+		} else {
+			return null;
 		}
 	}
 
@@ -235,7 +250,7 @@ public class MySQLDBDefinition extends DBDefinition {
 
 	@Override
 	public String doPolygon2DContainsPoint2DTransform(String polygon2DSQL, String point2DSQL) {
-		return "Contains(" + polygon2DSQL+ ", " + point2DSQL + ")";
+		return "Contains(" + polygon2DSQL + ", " + point2DSQL + ")";
 	}
 
 	@Override
@@ -378,19 +393,19 @@ public class MySQLDBDefinition extends DBDefinition {
 
 	@Override
 	public String doLine2DIntersectsLine2DTransform(String firstLine, String secondLine) {
-		return "Touches((" + firstLine + "), ("+secondLine+"))";
-	}	
-	
+		return "Touches((" + firstLine + "), (" + secondLine + "))";
+	}
+
 	@Override
 	public String doLine2DIntersectionPointWithLine2DTransform(String firstLine, String secondLine) {
-		return "ST_Intersection((" + firstLine + "), ("+secondLine+"))";
+		return "ST_Intersection((" + firstLine + "), (" + secondLine + "))";
 	}
 
 	@Override
 	public String doLine2DAllIntersectionPointsWithLine2DTransform(String firstGeometry, String secondGeometry) {
-		return "ST_Intersection((" + firstGeometry + "), ("+secondGeometry+"))";
+		return "ST_Intersection((" + firstGeometry + "), (" + secondGeometry + "))";
 	}
-	
+
 	@Override
 	public LineSegment transformDatabaseLineSegment2DValueToJTSLineSegment(String lineSegmentAsSQL) throws com.vividsolutions.jts.io.ParseException {
 		LineString line = transformDatabaseLine2DValueToJTSLineString(lineSegmentAsSQL);
@@ -400,7 +415,7 @@ public class MySQLDBDefinition extends DBDefinition {
 
 	@Override
 	public String transformLineSegmentIntoDatabaseLineSegment2DFormat(LineSegment lineSegment) {
-		LineString line = (new GeometryFactory()).createLineString(new Coordinate[]{lineSegment.getCoordinate(0),lineSegment.getCoordinate(1)});
+		LineString line = (new GeometryFactory()).createLineString(new Coordinate[]{lineSegment.getCoordinate(0), lineSegment.getCoordinate(1)});
 		return transformLineStringIntoDatabaseLine2DFormat(line);
 //		String wktValue = line.toText();
 //		return "'" + wktValue + "'";
@@ -455,9 +470,10 @@ public class MySQLDBDefinition extends DBDefinition {
 	public String doLineSegment2DAsTextTransform(String toSQLString) {
 		return doLine2DAsTextTransform(toSQLString);
 	}
+
 	@Override
 	public String doLineSegment2DIntersectionPointWithLineSegment2DTransform(String firstLineSegment, String secondLineSegment) {
-		return doLine2DIntersectionPointWithLine2DTransform(firstLineSegment,secondLineSegment);
+		return doLine2DIntersectionPointWithLine2DTransform(firstLineSegment, secondLineSegment);
 	}
 
 	@Override
@@ -468,7 +484,7 @@ public class MySQLDBDefinition extends DBDefinition {
 
 	@Override
 	public MultiPoint transformDatabaseMultiPoint2DValueToJTSMultiPoint(String pointsAsString) throws com.vividsolutions.jts.io.ParseException {
-		System.out.println(""+pointsAsString);
+		System.out.println("" + pointsAsString);
 		MultiPoint mpoint = null;
 		WKTReader wktReader = new WKTReader();
 		Geometry geometry = wktReader.read(pointsAsString);
@@ -478,19 +494,19 @@ public class MySQLDBDefinition extends DBDefinition {
 			Point point = (Point) geometry;
 			mpoint = (new GeometryFactory()).createMultiPoint(new Point[]{point});
 		} else {
-			throw new IncorrectGeometryReturnedForDatatype(geometry,  (new GeometryFactory()).createMultiPoint(new Point[]{}));
+			throw new IncorrectGeometryReturnedForDatatype(geometry, (new GeometryFactory()).createMultiPoint(new Point[]{}));
 		}
 		return mpoint;
 	}
 
 	@Override
 	public String doMultiPoint2DEqualsTransform(String first, String second) {
-		return "Equals(" + first + ", "+second+")";
+		return "Equals(" + first + ", " + second + ")";
 	}
 
 	@Override
 	public String doMultiPoint2DGetPointAtIndexTransform(String first, String index) {
-		return "PointN(" + doMultiPoint2DToLine2DTransform(first) + ", "+index+")";
+		return "PointN(" + doMultiPoint2DToLine2DTransform(first) + ", " + index + ")";
 	}
 
 	@Override
@@ -510,19 +526,18 @@ public class MySQLDBDefinition extends DBDefinition {
 
 	@Override
 	public String doMultiPoint2DAsTextTransform(String first) {
-		return "AsText("+first+")";
+		return "AsText(" + first + ")";
 	}
 
 	@Override
 	public String doMultiPoint2DToLine2DTransform(String first) {
-		return "LineFromText(REPLACE(ASTEXT(" + first + "),'MULTIPOINT', 'LINESTRING'))";	
+		return "LineFromText(REPLACE(ASTEXT(" + first + "),'MULTIPOINT', 'LINESTRING'))";
 	}
 
 //	@Override
 //	public String doMultiPoint2DToPolygon2DTransform(String first) {
 //		return "LineFromText(REPLACE(ASTEXT(" + first + "),'MULTIPOINT', 'POLYGON'))";	
 //	}
-
 	@Override
 	public String doMultiPoint2DGetMinYTransform(String first) {
 		return "Y(PointN(ExteriorRing(Envelope(" + first + ")),1))";
@@ -542,9 +557,9 @@ public class MySQLDBDefinition extends DBDefinition {
 	public String doMultiPoint2DGetMaxXTransform(String first) {
 		return "X(PointN(ExteriorRing(Envelope(" + first + ")),3))";
 	}
-	
+
 	@Override
 	public String doDateAtTimeZoneTransform(String dateSQL, TimeZone timeZone) {
-		return "CONVERT_TZ("+dateSQL+", 'SYSTEM', '"+timeZone.toZoneId().getId()+"') ";
+		return "CONVERT_TZ(" + dateSQL + ", 'SYSTEM', '" + timeZone.toZoneId().getId() + "') ";
 	}
 }

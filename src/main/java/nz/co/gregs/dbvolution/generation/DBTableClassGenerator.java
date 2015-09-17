@@ -37,6 +37,12 @@ import nz.co.gregs.dbvolution.databases.DBStatement;
 import nz.co.gregs.dbvolution.datatypes.*;
 
 /**
+ * Automatically generates Java files to be used in your data model.
+ *
+ * <p>
+ * DBvolution data model classes (DBRow subclasses) are designed to be easy to
+ * create and modify. However with a complex existing database it can be easier
+ * to use this class to generate the data model and then add the details.
  *
  * @author Gregory Graham
  */
@@ -118,20 +124,17 @@ public class DBTableClassGenerator {
 	 * Primary keys and foreign keys are created based on the definitions within
 	 * the database and the results from the PK and FK recognisors.
 	 *
-	 *
-	 *
-	 *
-	 *
-	 *
-	 *
-	 * 1 Database exceptions may be thrown
+	 * <p>
+	 * Database exceptions may be thrown
 	 *
 	 * @param database database
 	 * @param packageName packageName
 	 * @param baseDirectory baseDirectory
-	 * @param fkRecog fkRecog
+	 * @param fkRecog fkRecog an object that can recognize foreign key columns by
+	 * the column name and derive the related table
 	 * @param versionNumber versionNumber
-	 * @param pkRecog pkRecog
+	 * @param pkRecog pkRecog an object that can recognize primary key columns by
+	 * the column name
 	 * @throws java.sql.SQLException java.sql.SQLException
 	 * @throws java.io.FileNotFoundException java.io.FileNotFoundException
 	 * @throws java.io.IOException java.io.IOException
@@ -351,7 +354,8 @@ public class DBTableClassGenerator {
 								dbTableField.isAutoIncrement = isAutoIncr != null && isAutoIncr.equals("YES");
 								try {
 									dbTableField.sqlDataTypeInt = columns.getInt("DATA_TYPE");
-									dbTableField.columnType = getQueryableDatatypeNameOfSQLType(dbTableField.sqlDataTypeInt, dbTableField.precision);
+									dbTableField.sqlDataTypeName = columns.getString("TYPE_NAME");
+									dbTableField.columnType = getQueryableDatatypeNameOfSQLType(database, dbTableField);
 								} catch (UnknownJavaSQLTypeException ex) {
 									dbTableField.columnType = DBUnknownDatatype.class;
 									dbTableField.javaSQLDatatype = ex.getUnknownJavaSQLType();
@@ -430,7 +434,11 @@ public class DBTableClassGenerator {
 	 * @return a string of the appropriate QueryableDatatype for the specified
 	 * SQLType
 	 */
-	private static Class<? extends Object> getQueryableDatatypeNameOfSQLType(int columnType, int precision) throws UnknownJavaSQLTypeException {
+	private static Class<? extends Object> getQueryableDatatypeNameOfSQLType(DBDatabase database, DBTableField column) throws UnknownJavaSQLTypeException {
+		int columnType = column.sqlDataTypeInt;
+		int precision = column.precision;
+		String typeName = column.sqlDataTypeName;
+		
 		Class<? extends Object> value;
 		switch (columnType) {
 			case Types.BIT:
@@ -476,6 +484,11 @@ public class DBTableClassGenerator {
 				value = DBDate.class;
 				break;
 			case Types.OTHER:
+				Class<? extends QueryableDatatype> customType  = database.getDefinition().getQueryableDatatypeClassForSQLDatatype(typeName);
+				if (customType!=null){
+					value = customType;
+					break;
+				}
 			case Types.JAVA_OBJECT:
 				value = DBJavaObject.class;
 				break;

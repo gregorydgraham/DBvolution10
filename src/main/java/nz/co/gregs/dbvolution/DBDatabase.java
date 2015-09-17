@@ -27,6 +27,7 @@ import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.datatypes.DBLargeObject;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 import nz.co.gregs.dbvolution.exceptions.*;
+import nz.co.gregs.dbvolution.generation.DBTableClassGenerator;
 import nz.co.gregs.dbvolution.transactions.*;
 import nz.co.gregs.dbvolution.internal.properties.PropertyWrapper;
 import nz.co.gregs.dbvolution.query.QueryOptions;
@@ -134,7 +135,7 @@ public abstract class DBDatabase implements Cloneable {
 	}
 
 	/**
-
+	 *
 	 * Provides a convenient constructor for DBDatabases that have configuration
 	 * details hardwired or are able to automatically retrieve the details.
 	 *
@@ -142,7 +143,7 @@ public abstract class DBDatabase implements Cloneable {
 	 * This constructor creates an empty DBDatabase with only the default
 	 * settings, in particular with no driver, URL, username, password, or
 	 * {@link DBDefinition}
-	 * 
+	 *
 	 * <p>
 	 * Most programmers should not call this constructor directly. Check the
 	 * subclasses in {@code nz.co.gregs.dbvolution.databases} for your particular
@@ -296,11 +297,12 @@ public abstract class DBDatabase implements Cloneable {
 	 *
 	 * @return the Connection to be used.
 	 * @throws java.sql.SQLException interacts with the database layer
-	 * @throws UnableToCreateDatabaseConnectionException thrown when there is an issue connecting
-	 * @throws UnableToFindJDBCDriver  may be thrown if the JDBCDriver is not on
-	 * the class path. DBvolution includes several JDBCDrivers already but
-	 * Oracle and MS SQLserver, in particular, need to be added to the path if you
-	 * wish to work with those databases.
+	 * @throws UnableToCreateDatabaseConnectionException thrown when there is an
+	 * issue connecting
+	 * @throws UnableToFindJDBCDriver may be thrown if the JDBCDriver is not on
+	 * the class path. DBvolution includes several JDBCDrivers already but Oracle
+	 * and MS SQLserver, in particular, need to be added to the path if you wish
+	 * to work with those databases.
 	 */
 	public Connection getConnection() throws UnableToCreateDatabaseConnectionException, UnableToFindJDBCDriver, SQLException {
 		if (isInATransaction && !this.transactionConnection.isClosed()) {
@@ -1716,7 +1718,8 @@ public abstract class DBDatabase implements Cloneable {
 	/**
 	 * Used By Subclasses To Inject Datatypes, Functions, Etc Into the Database.
 	 *
-	 * @param statement the statement to use when adding features, DO NOT CLOSE THIS STATEMENT.
+	 * @param statement the statement to use when adding features, DO NOT CLOSE
+	 * THIS STATEMENT.
 	 * @throws SQLException database exceptions may occur
 	 * @see PostgresDB
 	 * @see H2DB
@@ -1749,18 +1752,23 @@ public abstract class DBDatabase implements Cloneable {
 	}
 
 	/**
-	 * Indicates whether the database requires a persistent connection to operate correctly.
-	 * 
-	 * <p>
-	 * Some, usually in-memory, databases requires a continuous connection to maintain their data.
-	 * 
-	 * <p>
-	 * DBvolution is usually clever with its connections and does not require this a persistent connection.
-	 * 
-	 * <p>
-	 * However if a continuous connection is required to maintain the data, override this method to return TRUE.
+	 * Indicates whether the database requires a persistent connection to operate
+	 * correctly.
 	 *
-	 * @return TRUE if the database requires a continuous connection to maintain data, FALSE otherwise.
+	 * <p>
+	 * Some, usually in-memory, databases requires a continuous connection to
+	 * maintain their data.
+	 *
+	 * <p>
+	 * DBvolution is usually clever with its connections and does not require this
+	 * a persistent connection.
+	 *
+	 * <p>
+	 * However if a continuous connection is required to maintain the data,
+	 * override this method to return TRUE.
+	 *
+	 * @return TRUE if the database requires a continuous connection to maintain
+	 * data, FALSE otherwise.
 	 */
 	protected boolean persistentConnectionRequired() {
 		return false;

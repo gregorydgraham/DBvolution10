@@ -81,7 +81,7 @@ public class SQLiteDefinition extends DBDefinition {
 	}
 
 	@Override
-	protected String getSQLTypeOfDBDatatype(QueryableDatatype qdt) {
+	protected String getDatabaseDataTypeOfQueryableDatatype(QueryableDatatype qdt) {
 		if (qdt instanceof DBLargeObject) {
 			return " TEXT ";
 		} else if (qdt instanceof DBBooleanArray) {
@@ -95,7 +95,7 @@ public class SQLiteDefinition extends DBDefinition {
 		} else if (qdt instanceof DBMultiPoint2D) {
 			return " VARCHAR(2002) ";
 		} else {
-			return super.getSQLTypeOfDBDatatype(qdt);
+			return super.getDatabaseDataTypeOfQueryableDatatype(qdt);
 		}
 	}
 

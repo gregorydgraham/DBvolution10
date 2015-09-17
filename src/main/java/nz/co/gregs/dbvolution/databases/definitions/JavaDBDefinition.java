@@ -45,7 +45,7 @@ public class JavaDBDefinition extends DBDefinition {
 	}
 
 	@Override
-	protected String getSQLTypeOfDBDatatype(QueryableDatatype qdt) {
+	protected String getDatabaseDataTypeOfQueryableDatatype(QueryableDatatype qdt) {
 		if (qdt instanceof DBBoolean) {
 			return "SMALLINT";
 		} else if (qdt instanceof DBJavaObject) {
@@ -53,7 +53,7 @@ public class JavaDBDefinition extends DBDefinition {
 		} else if (qdt instanceof DBDate) {
 			return "TIMESTAMP";
 		} else {
-			return super.getSQLTypeOfDBDatatype(qdt); //To change body of generated methods, choose Tools | Templates.
+			return super.getDatabaseDataTypeOfQueryableDatatype(qdt); //To change body of generated methods, choose Tools | Templates.
 		}
 	}
 
