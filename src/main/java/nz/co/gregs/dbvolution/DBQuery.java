@@ -104,6 +104,24 @@ public class DBQuery {
 		return details;
 	}
 
+	private String getHavingClause(DBDatabase database, QueryOptions options) {
+		BooleanExpression[] havingColumns = options.getHavingColumns();
+		String havingClauseStart = database.getDefinition().getHavingClauseStart();
+		if (havingColumns.length ==1) {
+			return havingClauseStart+ havingColumns[0].toSQLString(database);
+		} else if (havingColumns.length > 1) {
+			String sep = "";
+			String returnStr = havingClauseStart;
+			for (BooleanExpression havingColumn : havingColumns) {
+				returnStr+=sep+havingColumn.toSQLString(database);
+				sep=", ";
+			}
+			return returnStr;
+		} else {
+			return "";
+		}
+	}
+
 	private static enum QueryType {
 
 		COUNT, SELECT
@@ -239,8 +257,9 @@ public class DBQuery {
 	 *
 	 * <p>
 	 * Generates the SQL query for retrieving the objects but does not execute the
-	 * SQL. Use {@link #getAllRowsInternal(nz.co.gregs.dbvolution.query.QueryOptions) the get*Rows methods} to retrieve the
-	 * rows.
+	 * SQL. Use
+	 * {@link #getAllRowsInternal(nz.co.gregs.dbvolution.query.QueryOptions) the get*Rows methods}
+	 * to retrieve the rows.
 	 *
 	 * <p>
 	 * See also {@link DBQuery#getSQLForCount() getSQLForCount}
@@ -388,6 +407,7 @@ public class DBQuery {
 			final String initialWhereClause = new StringBuilder().append(defn.beginWhereClause()).append(defn.getWhereClauseBeginningCondition(options)).toString();
 			StringBuilder whereClause = new StringBuilder(initialWhereClause);
 			StringBuilder groupByClause = new StringBuilder().append(defn.beginGroupByClause());
+			String havingClause = "";
 			String lineSep = System.getProperty("line.separator");
 //			DBRow startQueryFromTable = requiredQueryTables.isEmpty() ? allQueryTables.get(0) : requiredQueryTables.get(0);
 			List<DBRow> sortedQueryTables = options.isCartesianJoinAllowed()
@@ -408,7 +428,8 @@ public class DBQuery {
 
 				List<PropertyWrapper> tabProps = tabRow.getSelectedProperties();
 				for (PropertyWrapper propWrapper : tabProps) {
-					selectClause.append(colSep).append(defn.doColumnTransformForSelect(propWrapper.getQueryableDatatype(), propWrapper.getSelectableName(getDatabase()))).append(" ").append(propWrapper.getColumnAlias(getDatabase()));
+					String selectColumn = defn.doColumnTransformForSelect(propWrapper.getQueryableDatatype(), propWrapper.getSelectableName(getDatabase()));
+					selectClause.append(colSep).append(selectColumn).append(" ").append(propWrapper.getColumnAlias(getDatabase()));
 					colSep = defn.getSubsequentSelectSubClauseSeparator() + lineSep;
 
 					// Now deal with the GROUP BY and ORDER BY clause requirements
@@ -424,6 +445,9 @@ public class DBQuery {
 						groupByColumnIndexSeparator = defn.getSubsequentGroupBySubClauseSeparator();
 						if (expression != null) {
 							groupByClause.append(groupByColSep).append(defn.transformToStorableType(expression).toSQLString(getDatabase()));
+							groupByColSep = defn.getSubsequentGroupBySubClauseSeparator() + lineSep;
+						}else{
+							groupByClause.append(groupByColSep).append(selectColumn);
 							groupByColSep = defn.getSubsequentGroupBySubClauseSeparator() + lineSep;
 						}
 
@@ -524,19 +548,29 @@ public class DBQuery {
 				if (!orderByClauseFinal.trim().isEmpty()) {
 					orderByClauseFinal += lineSep;
 				}
+				havingClause = getHavingClause(database, options);
+				if (!havingClause.trim().isEmpty()) {
+					havingClause += lineSep;
+				}
 				sqlString = defn.doWrapQueryForPaging(
 						selectClause.append(lineSep)
 						.append(fromClause).append(lineSep)
 						.append(whereClause).append(lineSep)
 						.append(rawSQLClauseFinal)
 						.append(groupByClauseFinal)
+						.append(havingClause)
 						.append(orderByClauseFinal)
 						.append(options.getRowLimit() > 0 ? defn.getLimitRowsSubClauseAfterWhereClause(options) : "")
 						.append(defn.endSQLStatement())
 						.toString(),
 						options);
 			} else if (queryType == QueryType.COUNT) {
-				sqlString = defn.beginSelectStatement() + defn.countStarClause() + lineSep + fromClause + lineSep + whereClause + lineSep + rawSQLClauseFinal + lineSep + defn.endSQLStatement();
+				sqlString = defn.beginSelectStatement()
+						+ defn.countStarClause() + lineSep
+						+ fromClause + lineSep
+						+ whereClause + lineSep
+						+ rawSQLClauseFinal + lineSep
+						+ defn.endSQLStatement();
 			}
 		}
 		return sqlString;
@@ -642,7 +676,6 @@ public class DBQuery {
 		prepareForQuery(options);
 
 //		final QueryOptions options = details.getOptions();
-
 		if (!options.isBlankQueryAllowed() && willCreateBlankQuery() && rawSQLClause.isEmpty()) {
 			throw new AccidentalBlankQueryException();
 		}
@@ -1112,7 +1145,8 @@ public class DBQuery {
 	 * Either: counts the results already retrieved, or creates a
 	 * {@link #getSQLForCount() count query} for this instance and retrieves the
 	 * number of rows that would have been returned had
-	 * {@link #getAllRowsInternal(nz.co.gregs.dbvolution.query.QueryOptions)  getAllRows()} been called.
+	 * {@link #getAllRowsInternal(nz.co.gregs.dbvolution.query.QueryOptions)  getAllRows()}
+	 * been called.
 	 *
 	 * @return the number of rows that have or will be retrieved. Database
 	 * exceptions may be thrown
@@ -1439,10 +1473,12 @@ public class DBQuery {
 	 * returning the rows found.
 	 *
 	 * <p>
-	 * Like {@link #getAllRowsInternal(nz.co.gregs.dbvolution.query.QueryOptions)  getAllRows()} this method retrieves all
-	 * the rows for this DBQuery. However it checks the number of rows retrieved
-	 * and throws a {@link UnexpectedNumberOfRowsException} if the number of rows
-	 * retrieved differs from the expected number.
+	 * Like
+	 * {@link #getAllRowsInternal(nz.co.gregs.dbvolution.query.QueryOptions)  getAllRows()}
+	 * this method retrieves all the rows for this DBQuery. However it checks the
+	 * number of rows retrieved and throws a
+	 * {@link UnexpectedNumberOfRowsException} if the number of rows retrieved
+	 * differs from the expected number.
 	 *
 	 * <p>
 	 * Adds all required DBRows as inner join tables and all optional DBRow as
@@ -1476,7 +1512,7 @@ public class DBQuery {
 	 * @throws nz.co.gregs.dbvolution.exceptions.UnexpectedNumberOfRowsException
 	 * nz.co.gregs.dbvolution.exceptions.UnexpectedNumberOfRowsException
 	 * @throws java.sql.SQLException java.sql.SQLException
-	 * @see #getAllRowsInternal(nz.co.gregs.dbvolution.query.QueryOptions) 
+	 * @see #getAllRowsInternal(nz.co.gregs.dbvolution.query.QueryOptions)
 	 */
 	public List<DBQueryRow> getAllRows(long expectedRows) throws UnexpectedNumberOfRowsException, SQLException {
 		List<DBQueryRow> allRows = getAllRows();
@@ -1793,7 +1829,7 @@ public class DBQuery {
 	}
 
 	/**
-	 * Provides all the DBQueryRow that the instance provided is part of.
+	 * Provides all the DBQueryRows that the instance provided is part of.
 	 *
 	 * <p>
 	 * This method returns the subset of this DBQuery's results that include the
@@ -1821,6 +1857,34 @@ public class DBQuery {
 			}
 		}
 		return returnList;
+	}
+
+	/**
+	 * Limits the query results by adding post query conditions, generally using a
+	 * HAVING clause.
+	 *
+	 * <p>
+	 * This method returns the subset of this DBQuery's results that match the
+	 * post query conditions
+	 *
+	 * <p>
+	 * The easiest way to get a list of duplicated identifiers, make a
+	 * query that returns the identifier and a count of the rows, and then add a
+	 * post condition that requires the count to be greater than 1.
+	 *
+	 * @param postQueryConditions all the post-query conditions that need to be
+	 * matched
+	 * @return A list of DBQueryRow instances that fulfill the post-query
+	 * conditions Database exceptions may be thrown
+	 * @throws java.sql.SQLException java.sql.SQLException
+	 */
+	public List<DBQueryRow> getAllRowsHaving(BooleanExpression... postQueryConditions) throws SQLException {
+		final QueryOptions options = details.getOptions();
+		options.setHavingColumns(postQueryConditions);
+		if (this.needsResults(options)) {
+			getAllRowsInternal(options);
+		}
+		return results;
 	}
 
 	/**
@@ -1874,10 +1938,10 @@ public class DBQuery {
 		} else {
 			if (database.getDefinition().supportsRowLimitsNatively(options)) {
 				QueryOptions tempOptions = options.copy();
-				tempOptions.setRowLimit((pageNumber+1)*options.getRowLimit());
-					if (this.needsResults(tempOptions)||tempOptions.getRowLimit()>results.size()) {
-						getAllRowsInternal(tempOptions);
-					}
+				tempOptions.setRowLimit((pageNumber + 1) * options.getRowLimit());
+				if (this.needsResults(tempOptions) || tempOptions.getRowLimit() > results.size()) {
+					getAllRowsInternal(tempOptions);
+				}
 			} else {
 				if (this.needsResults(options)) {
 					int rowLimit = options.getRowLimit();

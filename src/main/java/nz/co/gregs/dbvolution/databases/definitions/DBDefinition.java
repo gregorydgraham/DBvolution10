@@ -4515,4 +4515,8 @@ public abstract class DBDefinition {
 			return null;
 		}
 }
+
+	public String getHavingClauseStart() {
+		return "HAVING ";
+	}
 }

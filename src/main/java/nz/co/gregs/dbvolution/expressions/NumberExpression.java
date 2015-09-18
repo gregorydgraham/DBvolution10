@@ -2201,7 +2201,7 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 	}
 
 	/**
-	 * Returns the count of all the values from the column.
+	 * Aggregrator that counts all the rows of the query.
 	 *
 	 * @return the count of all the values from the column.
 	 */

@@ -17,6 +17,7 @@ package nz.co.gregs.dbvolution.query;
 
 import java.util.Arrays;
 import nz.co.gregs.dbvolution.columns.ColumnProvider;
+import nz.co.gregs.dbvolution.expressions.BooleanExpression;
 
 /**
  *
@@ -28,6 +29,7 @@ public class QueryOptions {
 	private int rowLimit = -1;
 	private int pageIndex = 0;
 	private ColumnProvider[] sortColumns = new ColumnProvider[]{};
+	private BooleanExpression[] havingColumns = new BooleanExpression[]{};
 	private boolean blankQueryAllowed = false;
 	private boolean cartesianJoinAllowed = false;
 	private boolean useANSISyntax = true;
@@ -226,6 +228,20 @@ public class QueryOptions {
 		opts.useANSISyntax = this.useANSISyntax;
 		opts.matchAnyRelationship = this.matchAnyRelationship;
 		return opts;
+	}
+
+	/**
+	 * @return the havingColumns
+	 */
+	public BooleanExpression[] getHavingColumns() {
+		return havingColumns;
+	}
+
+	/**
+	 * @param havingColumns the havingColumns to set
+	 */
+	public void setHavingColumns(BooleanExpression[] havingColumns) {
+		this.havingColumns = havingColumns;
 	}
 
 }
