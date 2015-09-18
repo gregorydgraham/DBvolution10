@@ -438,7 +438,7 @@ public class DBTableClassGenerator {
 		int columnType = column.sqlDataTypeInt;
 		int precision = column.precision;
 		String typeName = column.sqlDataTypeName;
-		
+
 		Class<? extends Object> value;
 		switch (columnType) {
 			case Types.BIT:
@@ -484,9 +484,12 @@ public class DBTableClassGenerator {
 				value = DBDate.class;
 				break;
 			case Types.OTHER:
-				Class<? extends QueryableDatatype> customType  = database.getDefinition().getQueryableDatatypeClassForSQLDatatype(typeName);
-				if (customType!=null){
+				Class<? extends QueryableDatatype> customType = database.getDefinition().getQueryableDatatypeClassForSQLDatatype(typeName);
+				if (customType != null) {
 					value = customType;
+					break;
+				} else {
+					value = DBJavaObject.class;
 					break;
 				}
 			case Types.JAVA_OBJECT:
