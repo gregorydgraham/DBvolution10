@@ -69,6 +69,8 @@ public class DBQueryHavingTest extends AbstractTest {
 
 	private static class MarqueCounter extends Marque {
 
+		private static final long serialVersionUID = 1L;
+
 		public MarqueCounter() {
 		}
 		@DBColumn
