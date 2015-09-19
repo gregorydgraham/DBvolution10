@@ -18,12 +18,14 @@ package nz.co.gregs.dbvolution;
 import java.lang.reflect.Field;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import nz.co.gregs.dbvolution.columns.ColumnProvider;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 import nz.co.gregs.dbvolution.exceptions.UnableToAccessDBReportFieldException;
 import nz.co.gregs.dbvolution.exceptions.UnableToInstantiateDBReportSubclassException;
 import nz.co.gregs.dbvolution.exceptions.UnableToSetDBReportFieldException;
+import nz.co.gregs.dbvolution.expressions.BooleanExpression;
 import nz.co.gregs.dbvolution.expressions.DBExpression;
 import nz.co.gregs.dbvolution.query.RowDefinition;
 
@@ -196,6 +198,46 @@ public class DBReport extends RowDefinition {
 		return reportRows;
 	}
 
+	/**
+	 * Gets all the report rows of the supplied DBReport limited by the supplied
+	 * example rows but reduce the result to only those that match the post-query
+	 * conditions.
+	 *
+	 * <p>
+	 * All post-query conditions should only reference the fields/column of the
+	 * DBReport.
+	 *
+	 * <p>
+	 * All supplied rows should be from a DBRow subclass that is included in the
+	 * report.
+	 *
+	 * <p>
+	 * Builtin report limitation will be used, the example rows supply further
+	 * details for constraining the report.
+	 *
+	 * <p>
+	 * This method allows you to create generic reports and apply dynamic
+	 * limitations such as date ranges, department name, and other highly variable
+	 * parameters.
+	 *
+	 * @param <A> DBReport type
+	 * @param database database
+	 * @param exampleReport exampleReport
+	 * @param rows rows example rows that provide extra criteria
+	 * @param postQueryConditions the post-query conditions that will be supplied
+	 * to the HAVING clause of the query
+	 * @return a list of DBReport instances representing the results of the report
+	 * query
+	 * @throws java.sql.SQLException Database exceptions may be thrown
+	 */
+	public static <A extends DBReport> List<A> getRowsHaving(DBDatabase database, A exampleReport, DBRow[] rows, BooleanExpression... postQueryConditions) throws SQLException {
+		DBQuery query = getDBQuery(database, exampleReport, rows);
+		List<A> reportRows;
+		List<DBQueryRow> allRows = query.getAllRowsHaving(postQueryConditions);
+		reportRows = getReportsFromQueryResults(allRows, exampleReport);
+		return reportRows;
+	}
+
 	private static <A extends DBReport> List<A> getReportsFromQueryResults(List<DBQueryRow> allRows, A exampleReport) {
 		List<A> reportRows = new ArrayList<A>();
 		for (DBQueryRow row : allRows) {
@@ -330,9 +372,7 @@ public class DBReport extends RowDefinition {
 	 * @param examples
 	 */
 	public void addAsOptionalTables(DBRow... examples) {
-		for (DBRow table : examples) {
-			optionalTables.add(table);
-		}
+		optionalTables.addAll(Arrays.asList(examples));
 	}
 
 	static <A extends DBReport> DBQuery getDBQuery(DBDatabase database, A exampleReport, DBRow... rows) {

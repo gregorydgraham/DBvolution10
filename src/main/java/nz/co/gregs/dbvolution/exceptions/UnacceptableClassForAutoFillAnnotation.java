@@ -15,7 +15,6 @@
  */
 package nz.co.gregs.dbvolution.exceptions;
 
-import java.lang.reflect.Field;
 import nz.co.gregs.dbvolution.annotations.AutoFillDuringQueryIfPossible;
 import nz.co.gregs.dbvolution.internal.properties.PropertyWrapper;
 

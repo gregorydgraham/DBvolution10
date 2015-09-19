@@ -51,6 +51,21 @@ public class DBIntegerTest extends AbstractTest {
 		assertThat(int1.equals(int2), is(true));
 	}
 
+//	@Ignore("DBOperator and QueryableDatatype overload instead of override Object.equals()")
+
+	@Test(expected = UnexpectedNumberOfRowsException.class)
+	public void nonExistentValueAndGetOnlyThrowsUnexpectedNumberOfRows() throws SQLException, UnexpectedNumberOfRowsException {
+		DBInteger int1 = new DBInteger();
+		int1.setValue(1);
+
+		Marque marqueEx = new Marque();
+		marqueEx.uidMarque.permittedValues(-1);
+		Marque result = database.getDBTable(marqueEx).getOnlyRow();
+		DBInteger int2 = result.uidMarque;
+
+		assertThat(int1.equals(int2), is(true));
+	}
+
 	@Test
 	public void notEqualGivenDifferentValuesFromDifferentSources() throws SQLException {
 		DBInteger int1 = new DBInteger();
