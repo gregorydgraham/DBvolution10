@@ -131,6 +131,41 @@ public class DBPolygonTest extends AbstractTest {
 	}
 
 	@Test
+	public void testIfThenElse() throws SQLException {
+		if (database instanceof SupportsPolygonDatatype) {
+			BasicSpatialTable spatial = new BasicSpatialTable();
+			database.preventDroppingOfTables(false);
+			database.dropTableNoExceptions(spatial);
+			database.createTable(spatial);
+
+			GeometryFactory fac = new GeometryFactory();
+			Point createPoint = fac.createPoint(new Coordinate(5, 10));
+			spatial.myfirstgeom.setValue(createPolygonFromPoint(createPoint));
+			database.insert(spatial);
+
+			createPoint = fac.createPoint(new Coordinate(12, 12));
+			spatial = new BasicSpatialTable();
+			spatial.myfirstgeom.setValue(createPolygonFromPoint(createPoint));
+			database.insert(spatial);
+
+			database.print(database.getDBTable(new BasicSpatialTable()).setBlankQueryAllowed(true).getAllRows());
+
+			Polygon polygon = fac.createPolygon(new Coordinate[]{new Coordinate(0, 0), new Coordinate(11, 0), new Coordinate(11, 11), new Coordinate(0, 11), new Coordinate(0, 0)});
+			Polygon thenPoly = fac.createPolygon(new Coordinate[]{new Coordinate(1, 0), new Coordinate(11, 0), new Coordinate(11, 11), new Coordinate(0, 11), new Coordinate(1, 0)});
+			Polygon elsePolygon = fac.createPolygon(new Coordinate[]{new Coordinate(2, 0), new Coordinate(11, 0), new Coordinate(11, 11), new Coordinate(0, 11), new Coordinate(2, 0)});
+			DBQuery query = database
+					.getDBQuery(new BasicSpatialTable())
+					.addCondition(
+							Polygon2DExpression.value(polygon).intersects(spatial.column(spatial.myfirstgeom))
+									.ifThenElse(thenPoly, elsePolygon).is(thenPoly));
+			List<BasicSpatialTable> allRows = query.getAllInstancesOf(spatial);
+			database.print(allRows);
+			Assert.assertThat(allRows.size(), is(1));
+			Assert.assertThat(allRows.get(0).pkid.intValue(), is(1));
+		}
+	}
+
+	@Test
 	public void testContains() throws SQLException {
 		if (database instanceof SupportsPolygonDatatype) {
 			BasicSpatialTable spatial = new BasicSpatialTable();

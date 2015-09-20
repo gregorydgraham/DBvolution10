@@ -2066,24 +2066,6 @@ public abstract class DBDefinition {
 	}
 
 	/**
-	 * Indicates whether the database differentiates between NULL and an empty
-	 * string.
-	 *
-	 * <p>
-	 * This method has been replaced by {@link DBDatabase#supportsDifferenceBetweenNullAndEmptyString()
-	 * }.
-	 *
-	 * @return the default implementation returns TRUE.
-	 */
-	@Deprecated
-	public Boolean supportsDifferenceBetweenNullAndEmptyString() {
-		return true;
-	}
-
-//	public String doAddMillisecondsTransform(String dateValue, String numberOfSeconds) {
-//		return "DATE_ADD(" + dateValue + ", INTERVAL (" + numberOfSeconds + ") MILLISECOND )";
-//	}
-	/**
 	 * Does the required transformation to produce an SQL snippet that adds
 	 * numberOfSeconds seconds to the dateValue.
 	 *

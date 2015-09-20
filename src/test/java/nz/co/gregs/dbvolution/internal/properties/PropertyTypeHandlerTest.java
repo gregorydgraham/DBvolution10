@@ -695,22 +695,6 @@ public class PropertyTypeHandlerTest {
 //		propertyHandler.setJavaPropertyAsQueryableDatatype(obj, new DBInteger(42));
 //		//assertThat(obj.field.getValue(), is((Object)"42"));
 //	}
-	@Test
-	@SuppressWarnings("deprecation")
-	public void nullifiesSimpleFieldsWhenClearingGivenTypeAdaptor() throws SQLException {
-		class MyClass extends DBRow {
-
-			@DBAdaptType(value = StringLongAdaptor.class)
-			@DBColumn
-			public DBString field = new DBString();
-		}
-
-		MyClass obj = new MyClass();
-		obj.field.permittedRange("10", "50");
-		obj.clear();
-
-		assertThat(obj.field.getOperator(), is(nullValue()));
-	}
 
 	private PropertyTypeHandler propertyHandlerOf(Class<?> clazz, String javaPropertyName) {
 		return new PropertyTypeHandler(propertyOf(clazz, javaPropertyName), false);

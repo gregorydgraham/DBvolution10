@@ -576,12 +576,7 @@ public class DBQuery {
 		return sqlString;
 	}
 
-	@SuppressWarnings("deprecation")
 	private void getNonANSIJoin(DBRow tabRow, StringBuilder whereClause, DBDefinition defn, List<DBRow> otherTables, String lineSep, QueryOptions options) {
-//		final QueryOptions options = details.getOptions();
-		for (DBExpression rel : tabRow.getAdHocRelationships()) {
-			whereClause.append(defn.beginConditionClauseLine(options)).append("(").append(rel.toSQLString(getDatabase())).append(")");
-		}
 
 		for (DBRow otherTab : otherTables) {
 			List<PropertyWrapper> otherTableFks = otherTab.getForeignKeyPropertyWrappers();
@@ -2567,9 +2562,6 @@ public class DBQuery {
 	 */
 	protected static class QueryState {
 
-//		private final DBQuery query;
-//		private final DBDatabase database;
-//		private final DBDefinition defn;
 		private QueryGraph graph;
 		private final List<BooleanExpression> remainingExpressions;
 		private final List<BooleanExpression> consumedExpressions = new ArrayList<BooleanExpression>();
@@ -2577,9 +2569,6 @@ public class DBQuery {
 		private final List<String> optionalConditions = new ArrayList<String>();
 
 		QueryState(DBQuery query, DBDatabase database) {
-//			this.query = query;
-//			this.database = database;
-//			this.defn = database.getDefinition();
 			this.remainingExpressions = new ArrayList<BooleanExpression>(query.getConditions());
 		}
 

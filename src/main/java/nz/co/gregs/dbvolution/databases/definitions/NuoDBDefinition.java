@@ -85,23 +85,6 @@ public class NuoDBDefinition extends DBDefinition {
 	}
 
 	/**
-	 * God-awful hack to get past a bug in NuoDB LTRIM.
-	 *
-	 * <p>
-	 * To be removed as soon as NuoDB fixes the bug.
-	 *
-	 * @param toSQLString toSQLString
-	 * @return a hack masquerading as SQL.
-	 * @deprecated
-	 */
-	@Override
-	@Deprecated
-	public String doLeftTrimTransform(String toSQLString) {
-		return super.doLeftTrimTransform(toSQLString);
-//		return " (("+toSQLString+") not like '% ') and LTRIM("+toSQLString+")";
-	}
-
-	/**
 	 * NuoDB follows the standard, unlike anyone else, and pads the short
 	 * string with spaces before comparing.
 	 *

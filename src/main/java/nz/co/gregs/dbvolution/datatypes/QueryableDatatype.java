@@ -261,23 +261,6 @@ public abstract class QueryableDatatype extends Object implements Serializable, 
 	/**
 	 * Remove the conditions, criteria, and operators applied to this QDT.
 	 *
-	 * Deprecated as confusingly named. Use {@link #removeConstraints() }
-	 * instead.
-	 *
-	 * <p>
-	 * After calling this method, this object will not cause a where clause to be
-	 * generated in any subsequent queries.
-	 *
-	 * @return this instance.
-	 */
-	@Deprecated
-	protected QueryableDatatype blankQuery() {
-		return removeConstraints();
-	}
-
-	/**
-	 * Remove the conditions, criteria, and operators applied to this QDT.
-	 *
 	 * <p>
 	 * After calling this method, this object will not cause a where clause to be
 	 * generated in any subsequent queries.

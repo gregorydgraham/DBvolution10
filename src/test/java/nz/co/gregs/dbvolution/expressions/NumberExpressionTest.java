@@ -20,7 +20,6 @@ import java.util.ArrayList;
 import java.util.List;
 import nz.co.gregs.dbvolution.DBQuery;
 import nz.co.gregs.dbvolution.DBQueryRow;
-import nz.co.gregs.dbvolution.DBReport;
 import nz.co.gregs.dbvolution.annotations.DBColumn;
 import nz.co.gregs.dbvolution.datatypes.DBNumber;
 import nz.co.gregs.dbvolution.datatypes.DBString;
@@ -61,6 +60,36 @@ public class NumberExpressionTest extends AbstractTest {
 		DBQuery dbQuery = database.getDBQuery(marq);
 		dbQuery.addCondition(marq.column(marq.uidMarque).mod(2).is(0));
 //		dbQuery.addCondition(NumberExpression.value(0).is(marq.column(marq.uidMarque).mod(2)));
+		List<DBQueryRow> allRows = dbQuery.getAllRows();
+
+		Assert.assertThat(allRows.size(), is(11));
+		for (Marque marque : dbQuery.getAllInstancesOf(marq)) {
+			Assert.assertThat(marque.uidMarque.getValue().intValue() % 2, is(0));
+		}
+
+	}
+	
+	@Test
+	public void testIfThenElse() throws SQLException {
+
+		Marque marq = new Marque();
+		DBQuery dbQuery = database.getDBQuery(marq);
+		dbQuery.addCondition(marq.column(marq.uidMarque).mod(2).is(0).ifThenElse(2, 1).is(2));
+		List<DBQueryRow> allRows = dbQuery.getAllRows();
+
+		Assert.assertThat(allRows.size(), is(11));
+		for (Marque marque : dbQuery.getAllInstancesOf(marq)) {
+			Assert.assertThat(marque.uidMarque.getValue().intValue() % 2, is(0));
+		}
+
+	}
+	
+	@Test
+	public void testBooleanConvertToInteger() throws SQLException {
+
+		Marque marq = new Marque();
+		DBQuery dbQuery = database.getDBQuery(marq);
+		dbQuery.addCondition(marq.column(marq.uidMarque).mod(2).is(0).convertToInteger().is(1));
 		List<DBQueryRow> allRows = dbQuery.getAllRows();
 
 		Assert.assertThat(allRows.size(), is(11));

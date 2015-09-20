@@ -268,6 +268,21 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 
 	/**
 	 * Compare this BooleanExpression and the given {@link BooleanResult} using
+	 * the inequality operator, that is "&lt;&gt;" or similar.
+	 *
+	 * <p>
+	 * BooleanResult includes {@link BooleanExpression} and {@link DBBoolean}.
+	 *
+	 * @param bool the boolean value to be tested
+	 * @return a BooleanExpression that compares the previous BooleanExpression
+	 * to the Boolean supplied.
+	 */
+	public BooleanExpression isNot(Boolean bool) {
+		return this.isNot(BooleanExpression.value(bool));
+	}
+
+	/**
+	 * Compare this BooleanExpression and the given {@link BooleanResult} using
 	 * the Exclusive OR operator, that is "=" or similar.
 	 *
 	 * <p>
@@ -1549,22 +1564,10 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 			this.second = second;
 		}
 
-//		DBBinaryBooleanArithmetic(BooleanResult first, BooleanExpression second) {
-//			this(new BooleanExpression(first), second);
-////			this.first = new BooleanExpression(first);
-////			this.second = second;
-//		}
 		DBBinaryBooleanArithmetic(BooleanExpression first, BooleanResult second) {
 			this(first, new BooleanExpression(second));
-//			this.first = first;
-//			this.second = new BooleanExpression(second);
 		}
 
-//		DBBinaryBooleanArithmetic(BooleanResult first, BooleanResult second) {
-//			this(new BooleanExpression(first),new BooleanExpression(second));
-////			this.first = new BooleanExpression(first);
-////			this.second = new BooleanExpression(second);
-//		}
 		@Override
 		public DBBoolean getQueryableDatatypeForExpressionValue() {
 			return new DBBoolean();

@@ -179,7 +179,11 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 	public static <T extends DBRow> T copyDBRow(T originalRow) {
 		@SuppressWarnings("unchecked")
 		T newRow = (T) DBRow.getDBRow(originalRow.getClass());
-		newRow.setDefined(originalRow.getDefined());
+		if (originalRow.getDefined()) {
+			newRow.setDefined();
+		} else {
+			newRow.setUndefined();
+		}
 		for (PropertyWrapperDefinition defn : originalRow.getIgnoredForeignKeys()) {
 			newRow.getIgnoredForeignKeys().add(defn);
 		}
@@ -190,9 +194,6 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 			}
 		} else {
 			newRow.setReturnColumns(null);
-		}
-		for (BooleanExpression adhoc : originalRow.getAdHocRelationships()) {
-			newRow.getAdHocRelationships().add(adhoc);
 		}
 
 		List<PropertyWrapper> subclassFields = originalRow.getColumnPropertyWrappers();
@@ -212,26 +213,6 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 		return newRow;
 	}
 	private String recursiveTableAlias = null;
-
-	/**
-	 * Remove all the settings on all the fields of this DBRow.
-	 *
-	 * <p>
-	 * Deprecated as it is inefficient and promotes unsafe programming practices.
-	 * Use {@code new DBRowSubclass()} instead.
-	 */
-	@Deprecated
-	public void clear() {
-		for (PropertyWrapper prop : getColumnPropertyWrappers()) {
-			QueryableDatatype qdt = prop.getQueryableDatatype();
-			if (qdt != null) {
-				qdt.clear();
-
-				// ensure field set when using type adaptors
-				prop.setQueryableDatatype(qdt);
-			}
-		}
-	}
 
 	/**
 	 * Returns the QueryableDatatype instance of the Primary Key of This DBRow
@@ -294,23 +275,6 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 		} else {
 			return primaryKeyPropertyWrapper.getDefinition().getColumnIndex();
 		}
-	}
-
-	/**
-	 *
-	 * Indicates that the DBRow is a defined row within the database.
-	 *
-	 * Deprecated. Please use {@link #setDefined() } or {@link #setUndefined() }
-	 * instead.
-	 *
-	 * Example objects and blank rows from an optional table are "undefined".
-	 *
-	 * @param newValue TRUE if this row exists within the database.
-	 * @deprecated
-	 */
-	@Deprecated
-	protected void setDefined(boolean newValue) {
-		isDefined = newValue;
 	}
 
 	/**
@@ -580,33 +544,6 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 	}
 
 	/**
-	 * Returns a list of the column names used by the database.
-	 *
-	 * @param db	db
-	 * @return A list of all raw, unformatted column names
-	 */
-	@Deprecated
-	protected List<String> getColumnNames(DBDatabase db) {
-		final DBDefinition defn = db.getDefinition();
-		ArrayList<String> columnNames = new ArrayList<String>();
-		List<PropertyWrapper> props = getWrapper().getColumnPropertyWrappers();
-
-		for (PropertyWrapper prop : props) {
-			if (prop.isColumn()) {
-				if (prop.hasColumnExpression()) {
-					columnNames.add(prop.getColumnExpression().toSQLString(db));
-				} else if (getReturnColumns() == null || getReturnColumns().contains(prop.getDefinition())) {
-					String dbColumnName = prop.columnName();
-					if (dbColumnName != null) {
-						columnNames.add(defn.formatTableAliasAndColumnNameForSelectClause(this, dbColumnName));
-					}
-				}
-			}
-		}
-		return columnNames;
-	}
-
-	/**
 	 *
 	 * @return a list of all foreign keys, MINUS the ignored foreign keys
 	 */
@@ -786,165 +723,6 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 	}
 
 	/**
-	 * Creates a foreign key like relationship between columns on 2 different
-	 * DBRow objects.
-	 *
-	 * <p>
-	 * It is recommended that you use an <a
-	 * href="http://dbvolution.gregs.co.nz/usingExpressions.html">expression</a>
-	 * instead.
-	 *
-	 * <p>
-	 * This function relies on the QueryableDatatypes being part of the DBRows
-	 * that are also passed. So every call to this function should be similar to:
-	 *
-	 * <p>
-	 * myRow.addRelationship(myRow.someField, myOtherRow, myOtherRow.otherField);
-	 *
-	 * <p>
-	 * Uses the default DBEqualsOperator.
-	 *
-	 * @param thisTableField thisTableField
-	 * @param otherTable otherTable
-	 * @param otherTableField otherTableField
-	 */
-	@Deprecated
-	public void addRelationship(DBBoolean thisTableField, DBRow otherTable, DBBoolean otherTableField) {
-		getAdHocRelationships().add(this.column(thisTableField).is(otherTable.column(otherTableField)));
-	}
-
-	/**
-	 * Creates a foreign key like relationship between columns on 2 different
-	 * DBRow objects.
-	 *
-	 * <p>
-	 * It is recommended that you use an <a
-	 * href="http://dbvolution.gregs.co.nz/usingExpressions.html">expression</a>
-	 * instead.
-	 *
-	 * <p>
-	 * This function relies on the QueryableDatatypes being part of the DBRows
-	 * that are also passed. So every call to this function should be similar to:
-	 *
-	 * <p>
-	 * myRow.addRelationship(myRow.someField, myOtherRow, myOtherRow.otherField);
-	 *
-	 * <p>
-	 * Uses the default DBEqualsOperator.
-	 *
-	 * @param thisTableField thisTableField
-	 * @param otherTable otherTable
-	 * @param otherTableField otherTableField
-	 */
-	@Deprecated
-	public void addRelationship(DBDate thisTableField, DBRow otherTable, DBDate otherTableField) {
-		getAdHocRelationships().add(this.column(thisTableField).is(otherTable.column(otherTableField)));
-	}
-
-	/**
-	 * Creates a foreign key like relationship between columns on 2 different
-	 * DBRow objects.
-	 *
-	 * <p>
-	 * It is recommended that you use an <a
-	 * href="http://dbvolution.gregs.co.nz/usingExpressions.html">expression</a>
-	 * instead.
-	 *
-	 * <p>
-	 * This function relies on the QueryableDatatypes being part of the DBRows
-	 * that are also passed. So every call to this function should be similar to:
-	 *
-	 * <p>
-	 * myRow.addRelationship(myRow.someField, myOtherRow, myOtherRow.otherField);
-	 *
-	 * <p>
-	 * Uses the default DBEqualsOperator.
-	 *
-	 * @param thisTableField thisTableField
-	 * @param otherTable otherTable
-	 * @param otherTableField otherTableField
-	 */
-	@Deprecated
-	public void addRelationship(DBInteger thisTableField, DBRow otherTable, DBInteger otherTableField) {
-		getAdHocRelationships().add(this.column(thisTableField).is(otherTable.column(otherTableField)));
-	}
-
-	/**
-	 * Creates a foreign key like relationship between columns on 2 different
-	 * DBRow objects.
-	 *
-	 * <p>
-	 * It is recommended that you use an <a
-	 * href="http://dbvolution.gregs.co.nz/usingExpressions.html">expression</a>
-	 * instead.
-	 *
-	 * <p>
-	 * This function relies on the QueryableDatatypes being part of the DBRows
-	 * that are also passed. So every call to this function should be similar to:
-	 *
-	 * <p>
-	 * myRow.addRelationship(myRow.someField, myOtherRow, myOtherRow.otherField);
-	 *
-	 * <p>
-	 * Uses the default DBEqualsOperator.
-	 *
-	 * @param thisTableField thisTableField
-	 * @param otherTable otherTable
-	 * @param otherTableField otherTableField
-	 */
-	@Deprecated
-	public void addRelationship(DBNumber thisTableField, DBRow otherTable, DBNumber otherTableField) {
-		getAdHocRelationships().add(this.column(thisTableField).is(otherTable.column(otherTableField)));
-	}
-
-	/**
-	 * Creates a foreign key like relationship between columns on 2 different
-	 * DBRow objects.
-	 *
-	 * <p>
-	 * It is recommended that you use an <a
-	 * href="http://dbvolution.gregs.co.nz/usingExpressions.html">expression</a>
-	 * instead.
-	 *
-	 * <p>
-	 * This function relies on the QueryableDatatypes being part of the DBRows
-	 * that are also passed. So every call to this function should be similar to:
-	 *
-	 * <p>
-	 * myRow.addRelationship(myRow.someField, myOtherRow, myOtherRow.otherField);
-	 *
-	 * <p>
-	 * Uses the default DBEqualsOperator.
-	 *
-	 * @param thisTableField thisTableField
-	 * @param otherTable otherTable
-	 * @param otherTableField otherTableField
-	 */
-	@Deprecated
-	public void addRelationship(DBString thisTableField, DBRow otherTable, DBString otherTableField) {
-		getAdHocRelationships().add(this.column(thisTableField).is(otherTable.column(otherTableField)));
-	}
-
-	/**
-	 * Remove all added relationships.
-	 *
-	 * @see DBRow#addRelationship(nz.co.gregs.dbvolution.datatypes.DBBoolean,
-	 * nz.co.gregs.dbvolution.DBRow, nz.co.gregs.dbvolution.datatypes.DBBoolean)
-	 * @see DBRow#addRelationship(nz.co.gregs.dbvolution.datatypes.DBDate,
-	 * nz.co.gregs.dbvolution.DBRow, nz.co.gregs.dbvolution.datatypes.DBDate)
-	 * @see DBRow#addRelationship(nz.co.gregs.dbvolution.datatypes.DBInteger,
-	 * nz.co.gregs.dbvolution.DBRow, nz.co.gregs.dbvolution.datatypes.DBInteger)
-	 * @see DBRow#addRelationship(nz.co.gregs.dbvolution.datatypes.DBNumber,
-	 * nz.co.gregs.dbvolution.DBRow, nz.co.gregs.dbvolution.datatypes.DBNumber)
-	 * @see DBRow#addRelationship(nz.co.gregs.dbvolution.datatypes.DBString,
-	 * nz.co.gregs.dbvolution.DBRow, nz.co.gregs.dbvolution.datatypes.DBString)
-	 */
-	@Deprecated
-	public void clearRelationships() {
-		this.getAdHocRelationships().clear();
-	}
-
-	/**
 	 * Indicates if the DBRow has {@link DBLargeObject} (BLOB) columns.
 	 *
 	 * If the DBrow has columns that represent BLOB, CLOB, TEXT, JAVA_OBJECT, or
@@ -1072,95 +850,6 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 	}
 
 	/**
-	 * Returns the List of DBRelationships defined for this instance.
-	 *
-	 * @return the adHocRelationships
-	 */
-	@Deprecated
-	protected List<BooleanExpression> getAdHocRelationships() {
-		return adHocRelationships;
-	}
-
-	/**
-	 * the foreign keys and ad-hoc relationships as an SQL String or a null
-	 * pointer
-	 *
-	 * @param db db
-	 * @param newTable newTable
-	 * @param options options
-	 * @return the foreign keys and ad-hoc relationships as an SQL String or a
-	 * null pointer
-	 */
-	@Deprecated
-	public String getRelationshipsAsSQL(DBDatabase db, DBRow newTable, QueryOptions options) {
-		StringBuilder rels = new StringBuilder();
-		DBDefinition defn = db.getDefinition();
-
-		List<PropertyWrapper> fks = getForeignKeyPropertyWrappers();
-		String joinSeparator = "";
-		for (PropertyWrapper fk : fks) {
-			Class<? extends DBRow> referencedClass = fk.referencedClass();
-
-			if (referencedClass.isAssignableFrom(newTable.getClass()) || newTable.getClass().isAssignableFrom(referencedClass)) {
-				String formattedForeignKey = defn.formatTableAliasAndColumnName(
-						this, fk.columnName());
-
-				String formattedReferencedColumn = defn.formatTableAliasAndColumnName(
-						newTable, fk.referencedColumnName());
-
-				rels.append(joinSeparator)
-						.append(formattedForeignKey)
-						.append(defn.getEqualsComparator())
-						.append(formattedReferencedColumn);
-
-				joinSeparator = defn.beginConditionClauseLine(options);
-			}
-		}
-		List<BooleanExpression> adHocs = getAdHocRelationships();
-		for (DBExpression adhoc : adHocs) {
-
-			rels.append(joinSeparator)
-					.append(adhoc.toSQLString(db));
-
-			joinSeparator = defn.beginConditionClauseLine(options);
-		}
-
-		adHocs = newTable.getAdHocRelationships();
-		for (DBExpression adhoc : adHocs) {
-
-			rels.append(joinSeparator)
-					.append(adhoc.toSQLString(db));
-
-			joinSeparator = defn.beginConditionClauseLine(options);
-		}
-
-		fks = newTable.getForeignKeyPropertyWrappers();
-		for (PropertyWrapper fk : fks) {
-			Class<? extends DBRow> value = fk.referencedClass();
-
-			if (this.getClass().isAssignableFrom(value)) {
-
-				String fkColumnName = fk.columnName();
-				String formattedForeignKey = defn.formatTableAliasAndColumnName(
-						newTable,
-						fkColumnName);
-
-				String formattedPrimaryKey = defn.formatTableAliasAndColumnName(
-						this,
-						this.getPrimaryKeyColumnName());
-
-				rels.append(joinSeparator)
-						.append(formattedPrimaryKey)
-						.append(defn.getEqualsComparator())
-						.append(formattedForeignKey);
-
-				joinSeparator = defn.beginConditionClauseLine(options);
-			}
-		}
-		return rels.toString();
-	}
-
-	/**
 	 * List the foreign keys and ad-hoc relationships from this instance to the
 	 * supplied example as DBRelationships
 	 *
@@ -1187,12 +876,6 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 			if (referencedClass.isAssignableFrom(this.getClass())) {
 				rels.add(getRelationshipExpressionFor(otherTable, fk, this));
 			}
-		}
-
-		List<BooleanExpression> adHocs = getAdHocRelationships();
-		rels.addAll(adHocs);
-		for (BooleanExpression adhoc : adHocs) {
-			rels.add(adhoc);
 		}
 
 		return rels;
@@ -1749,7 +1432,7 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 			throw new RuntimeException("Unable To AutoFill Field", ex);
 		}
 	}
-	
+
 	/**
 	 * Default sorting for DBRow in the various collections in DBRow and DBQuery.
 	 *

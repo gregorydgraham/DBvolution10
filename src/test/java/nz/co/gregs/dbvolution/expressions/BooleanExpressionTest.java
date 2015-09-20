@@ -178,7 +178,7 @@ public class BooleanExpressionTest extends AbstractTest {
 		database.print(allRows);
 		Assert.assertThat(allRows.size(), is(1));
 	}
-
+	
 	@Test
 	public void testStringIsIgnoreCase() throws SQLException {
 		Marque marque = new Marque();
@@ -349,7 +349,8 @@ public class BooleanExpressionTest extends AbstractTest {
 		DBQuery dbQuery = database.getDBQuery(marque);
 
 		dbQuery.addCondition(marque.column(marque.uidMarque).is(1));
-		dbQuery.addCondition(BooleanExpression.value((Boolean) null).is((Boolean) null));
+		Boolean nullBool = null;
+		dbQuery.addCondition(BooleanExpression.value(nullBool).is(nullBool));
 
 		List<DBQueryRow> allRows = dbQuery.getAllRows();
 		database.print(allRows);
@@ -357,12 +358,12 @@ public class BooleanExpressionTest extends AbstractTest {
 	}
 
 	@Test
-	public void testBooleanIsnt() throws SQLException {
+	public void testBooleanIsNot() throws SQLException {
 		Marque marque = new Marque();
 		DBQuery dbQuery = database.getDBQuery(marque);
 
 		dbQuery.addCondition(marque.column(marque.uidMarque).is(1));
-		dbQuery.addCondition(BooleanExpression.value(Boolean.TRUE).is(Boolean.FALSE));
+		dbQuery.addCondition(BooleanExpression.value(Boolean.TRUE).isNot(Boolean.TRUE));
 
 		List<DBQueryRow> allRows = dbQuery.getAllRows();
 		database.print(allRows);
