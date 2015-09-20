@@ -1539,12 +1539,12 @@ public abstract class DBDefinition {
 	 * <p>
 	 * Used to allow comparison of bit columns in some databases.
 	 *
-	 * @param bitExpression	bitExpression
+	 * @param booleanExpression	bitExpression
 	 * @return the transformation necessary to transform bitExpression into an
 	 * integer expression in the SQL.
 	 */
-	public String doBitsToIntegerTransform(String bitExpression) {
-		return bitExpression;
+	public String doBooleanToIntegerTransform(String booleanExpression) {
+		return booleanExpression;
 	}
 
 	/**

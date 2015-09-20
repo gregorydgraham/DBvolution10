@@ -272,16 +272,7 @@ public abstract class QueryableDatatype extends Object implements Serializable, 
 		this.operator = null;
 		return this;
 	}
-
-	/**
-	 *
-	 *
-	 *
-	 * @return the section of the SQL query between WHERE and ORDER BY
-	 */
-//	public String getWhereClause(DBDatabase db, String columnName) {
-//		return getWhereClauseUsingOperators(db, columnName);
-//	}
+	
 	/**
 	 *
 	 * @param db db
@@ -292,14 +283,6 @@ public abstract class QueryableDatatype extends Object implements Serializable, 
 		return getWhereClauseUsingOperators(db, column);
 	}
 
-//	private String getWhereClauseUsingOperators(DBDatabase db, String columnName) {
-//		String whereClause = "";
-//		DBOperator op = this.getOperator();
-//		if (op != null) {
-//			whereClause = op.generateWhereLine(db, columnName);
-//		}
-//		return whereClause;
-//	}
 	private String getWhereClauseUsingOperators(DBDatabase db, ColumnProvider column) {
 		String whereClause = "";
 		DBOperator op = this.getOperator();
@@ -545,17 +528,12 @@ public abstract class QueryableDatatype extends Object implements Serializable, 
 	 * <p>
 	 * Note that most of the method is dedicated to detecting NULL values. This is
 	 * very important as are the calls to {@link #setUnchanged() } and {@link #setDefined(boolean)
-	 * }.
-	 *
-	 *
-	 *
-	 *
-	 * 1 Database exceptions may be thrown
+	 * }
 	 *
 	 * @param database database
 	 * @param resultSet resultSet
 	 * @param resultSetColumnName resultSetColumnName
-	 * @throws java.sql.SQLException java.sql.SQLException
+	 * @throws java.sql.SQLException Database exceptions may be thrown
 	 */
 	public void setFromResultSet(DBDatabase database, ResultSet resultSet, String resultSetColumnName) throws SQLException {
 		removeConstraints();

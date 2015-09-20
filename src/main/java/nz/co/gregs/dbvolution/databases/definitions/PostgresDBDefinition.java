@@ -127,8 +127,8 @@ public class PostgresDBDefinition extends DBDefinition {
 	}
 
 	@Override
-	public String doBitsToIntegerTransform(String columnName) {
-		return columnName + "::integer";
+	public String doBooleanToIntegerTransform(String columnName) {
+		return "("+columnName + ")::integer";
 	}
 
 	@Override

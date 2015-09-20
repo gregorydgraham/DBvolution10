@@ -436,8 +436,11 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 
 	/**
 	 * Converts boolean values to the database integer representation.
+	 * 
+	 * <p>
+	 * TRUE values will become 1 and FALSE values will become 0.
 	 *
-	 * @return a boolean
+	 * @return a 0 or 1 depending on the expression
 	 */
 	public NumberExpression convertToInteger() {
 		return new NumberExpression() {
@@ -445,7 +448,7 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 
 			@Override
 			public String toSQLString(DBDatabase db) {
-				return db.getDefinition().doBitsToIntegerTransform(this.innerBool.toSQLString(db));
+				return db.getDefinition().doBooleanToIntegerTransform(this.innerBool.toSQLString(db));
 			}
 
 			@Override
