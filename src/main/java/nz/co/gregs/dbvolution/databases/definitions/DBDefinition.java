@@ -1544,7 +1544,7 @@ public abstract class DBDefinition {
 	 * integer expression in the SQL.
 	 */
 	public String doBooleanToIntegerTransform(String booleanExpression) {
-		return booleanExpression;
+		return doIfThenElseTransform(booleanExpression, ""+1, ""+0);
 	}
 
 	/**

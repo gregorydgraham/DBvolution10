@@ -235,12 +235,12 @@ public class MySQLDBDefinition extends DBDefinition {
 
 	@Override
 	public String doPolygon2DEqualsTransform(String firstGeometry, String secondGeometry) {
-		return "Equals(" + firstGeometry + ", " + secondGeometry + ")";
+		return "ST_Equals(" + firstGeometry + ", " + secondGeometry + ")";
 	}
 
 	@Override
 	public String doPolygon2DIntersectsTransform(String firstGeometry, String secondGeometry) {
-		return "Intersects(" + firstGeometry + ", " + secondGeometry + ")";
+		return "ST_Intersects(" + firstGeometry + ", " + secondGeometry + ")";
 	}
 
 	@Override
@@ -255,7 +255,7 @@ public class MySQLDBDefinition extends DBDefinition {
 
 	@Override
 	public String doPolygon2DDoesNotIntersectTransform(String firstGeometry, String secondGeometry) {
-		return "Disjoint(" + firstGeometry + ", " + secondGeometry + ")";
+		return "ST_Disjoint(" + firstGeometry + ", " + secondGeometry + ")";
 	}
 
 	@Override
@@ -265,7 +265,7 @@ public class MySQLDBDefinition extends DBDefinition {
 
 	@Override
 	public String doPolygon2DTouchesTransform(String firstGeometry, String secondGeometry) {
-		return "Touches(" + firstGeometry + ", " + secondGeometry + ")";
+		return "ST_Touches(" + firstGeometry + ", " + secondGeometry + ")";
 	}
 
 	@Override
@@ -276,7 +276,7 @@ public class MySQLDBDefinition extends DBDefinition {
 
 	@Override
 	public String doPolygon2DMeasurableDimensionsTransform(String thisGeometry) {
-		return "Dimension(" + thisGeometry + ")";
+		return "ST_Dimension(" + thisGeometry + ")";
 	}
 
 	@Override

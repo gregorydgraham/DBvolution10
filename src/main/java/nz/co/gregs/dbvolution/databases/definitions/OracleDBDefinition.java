@@ -212,7 +212,7 @@ public class OracleDBDefinition extends DBDefinition {
 	public String doModulusTransform(String firstNumber, String secondNumber) {
 		return " remainder(" + firstNumber + ", " + secondNumber + ")";
 	}
-
+	
 	@Override
 	public String doAddSecondsTransform(String dateValue, String numberOfSeconds) {
 		return "(" + dateValue + " + numtodsinterval( " + numberOfSeconds + ", 'SECOND'))";
