@@ -780,9 +780,10 @@ public class PostgresDBDefinition extends DBDefinition {
 		return "ST_XMAX(" + toSQLString + ")";
 	}
 
-	@Override
-	public String doDateAtTimeZoneTransform(String dateSQL, TimeZone timeZone) {
-		return "((" + dateSQL + ") AT TIME ZONE '" + timeZone.toZoneId().getId() + "') ";
-	}
+	// Relies on Java8 :(
+//	@Override
+//	public String doDateAtTimeZoneTransform(String dateSQL, TimeZone timeZone) {
+//		return "((" + dateSQL + ") AT TIME ZONE '" + timeZone.toZoneId().getId() + "') ";
+//	}
 
 }
