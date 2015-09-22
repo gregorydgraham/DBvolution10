@@ -349,7 +349,7 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 	 * them using NOT and OR repeatedly.
 	 *
 	 * <p>
-	 * This expression returns true if and only if some the component expressions
+	 * This expression returns true if and only if some of the component expressions
 	 * are false.
 	 *
 	 * @param booleanExpressions the boolean expressions to be tested
@@ -364,6 +364,27 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 			notBools.add(booleanExpression.not());
 		}
 		return anyOf(notBools.toArray(booleanExpressions));
+	}
+
+
+	/**
+	 * Collects the expressions together and requires that at least one of them to be false and at least one to be false.
+	 *
+	 * <p>
+	 * This expression returns true if and only if some of the component expressions
+	 * are false  and some are true.
+	 *
+	 * @param booleanExpressions the boolean expressions to be tested
+	 * @return a boolean expression that returns true IFF some of the
+	 * booleanExpressions are false AND some of the booleanExpressions are true
+	 * @see #anyOf(BooleanExpression...)
+	 * @see #allOf(BooleanExpression...)
+	 */
+	public static BooleanExpression someButNotAllOf(final BooleanExpression... booleanExpressions) {
+		return allOf(
+				BooleanExpression.allOf(booleanExpressions).not(),
+				BooleanExpression.noneOf(booleanExpressions).not()
+				);
 	}
 
 
