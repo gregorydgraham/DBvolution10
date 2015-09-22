@@ -558,8 +558,9 @@ public class MySQLDBDefinition extends DBDefinition {
 		return "X(PointN(ExteriorRing(Envelope(" + first + ")),3))";
 	}
 
-	@Override
-	public String doDateAtTimeZoneTransform(String dateSQL, TimeZone timeZone) {
-		return "CONVERT_TZ(" + dateSQL + ", 'SYSTEM', '" + timeZone.toZoneId().getId() + "') ";
-	}
+	// Relies on Java8 :(
+//	@Override
+//	public String doDateAtTimeZoneTransform(String dateSQL, TimeZone timeZone) {
+//		return "CONVERT_TZ(" + dateSQL + ", 'SYSTEM', '" + timeZone.toZoneId().getId() + "') ";
+//	}
 }

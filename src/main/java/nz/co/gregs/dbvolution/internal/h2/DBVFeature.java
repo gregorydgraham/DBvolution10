@@ -33,7 +33,7 @@ public interface DBVFeature {
 
 	/**
 	 *
-	 * @return
+	 * @return the name used during SQL statement for this feature
 	 */
 	public String alias();
 

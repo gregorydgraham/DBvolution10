@@ -16,6 +16,13 @@
 package nz.co.gregs.dbvolution.reflection;
 
 import nz.co.gregs.dbvolution.DBRow;
+import nz.co.gregs.dbvolution.datatypes.DBBoolean;
+import nz.co.gregs.dbvolution.datatypes.DBDate;
+import nz.co.gregs.dbvolution.datatypes.DBInteger;
+import nz.co.gregs.dbvolution.datatypes.DBIntegerEnum;
+import nz.co.gregs.dbvolution.datatypes.DBNumber;
+import nz.co.gregs.dbvolution.datatypes.DBString;
+import nz.co.gregs.dbvolution.datatypes.DBStringEnum;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 
 /**
@@ -122,5 +129,19 @@ public interface EncodingInterpreter {
 	 * @return an encoded string of the rows
 	 */
 	String encode(DBRow... rows);
+
+	void decodeBooleanValue(DBBoolean field, String value);
+
+	void decodeDateValue(String value, DBDate date);
+
+	void decodeIntegerEnum(String value, DBIntegerEnum<?> num) throws NumberFormatException;
+
+	void decodeIntegerValue(String value, DBInteger num) throws NumberFormatException;
+
+	void decodeNumberValue(String value, DBNumber num) throws NumberFormatException;
+
+	void decodeStringEnum(DBStringEnum<?> string, String value);
+
+	void decodeStringValue(DBString string, String value);
 
 }

@@ -277,11 +277,7 @@ public enum DateRepeatFunctions implements DBVFeature {
 	public String toString() {
 		return "DBV_DATEREPEAT_" + name();
 	}
-
-	/**
-	 *
-	 * @return
-	 */
+	
 	@Override
 	public String alias() {
 		return toString();

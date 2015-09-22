@@ -489,10 +489,7 @@ public enum Polygon2DFunctions implements DBVFeature {
 		return alias();
 	}
 
-	/**
-	 *
-	 * @return
-	 */
+	@Override
 	public String alias() {
 		return "DBV_POLYGON2D_" + name();
 	}

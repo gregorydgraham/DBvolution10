@@ -327,10 +327,6 @@ public enum LineSegment2DFunctions implements DBVFeature {
 		}
 	}
 
-	/**
-	 *
-	 * @return
-	 */
 	@Override
 	public String alias() {
 		return toString();

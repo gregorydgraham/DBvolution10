@@ -832,7 +832,6 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 	 * If you are using this for pagination, remember to sort by the columns as
 	 * well
 	 *
-	 * @author Gregory Graham
 	 * @param value the right side of the internal comparison
 	 * @param fallBackWhenEquals the comparison used when the two values are
 	 * equal.
@@ -855,7 +854,6 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 	 * If you are using this for pagination, remember to sort by the columns as
 	 * well
 	 *
-	 * @author Gregory Graham
 	 * @param value the right side of the internal comparison
 	 * @param fallBackWhenEquals the comparison used when the two values are
 	 * equal.
@@ -878,7 +876,6 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 	 * If you are using this for pagination, remember to sort by the columns as
 	 * well
 	 *
-	 * @author Gregory Graham
 	 * @param value the right side of the internal comparison
 	 * @param fallBackWhenEquals the comparison used when the two values are
 	 * equal.
@@ -902,7 +899,6 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 	 * If you are using this for pagination, remember to sort by the columns as
 	 * well
 	 *
-	 * @author Gregory Graham
 	 * @param value the right side of the internal comparison
 	 * @param fallBackWhenEquals the comparison used when the two values are
 	 * equal.
@@ -2157,7 +2153,7 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 	 *
 	 * <p>
 	 * Similar to
-	 * {@link #greatestOf(nz.co.gregs.dbvolution.expressions.NumberResult...)} but
+	 * {@link #greatestOf(nz.co.gregs.dbvolution.results.NumberResult...) } but
 	 * this aggregates the column or expression provided, rather than scanning a
 	 * list.
 	 *
@@ -2171,7 +2167,7 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 	 * Returns the least/smallest value from the column.
 	 *
 	 * <p>
-	 * Similar to {@link #leastOf(nz.co.gregs.dbvolution.expressions.NumberResult...)
+	 * Similar to {@link #leastOf(nz.co.gregs.dbvolution.results.NumberResult...) 
 	 * } but this aggregates the column or expression provided, rather than
 	 * scanning a list.
 	 *

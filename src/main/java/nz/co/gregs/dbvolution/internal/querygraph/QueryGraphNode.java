@@ -62,7 +62,7 @@ public class QueryGraphNode {
 	 * Only includes DBRows/tables that have been connected to this node using {@link #connectTable(java.lang.Class)
 	 * }.
 	 *
-	 * @return
+	 * @return a set of all classes used in this query
 	 */
 	public Set<Class<? extends DBRow>> getConnectedTables() {
 		return connectedTables;

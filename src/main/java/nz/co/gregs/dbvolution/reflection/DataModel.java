@@ -20,7 +20,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -32,18 +31,10 @@ import javassist.Modifier;
 import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.DBQuery;
 import nz.co.gregs.dbvolution.DBRow;
-import nz.co.gregs.dbvolution.datatypes.DBBoolean;
-import nz.co.gregs.dbvolution.datatypes.DBDate;
-import nz.co.gregs.dbvolution.datatypes.DBIntegerEnum;
-import nz.co.gregs.dbvolution.datatypes.DBNumber;
-import nz.co.gregs.dbvolution.datatypes.DBString;
-import nz.co.gregs.dbvolution.datatypes.DBStringEnum;
-import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 import nz.co.gregs.dbvolution.exceptions.DBRuntimeException;
 import nz.co.gregs.dbvolution.internal.properties.PropertyWrapper;
 import nz.co.gregs.dbvolution.internal.properties.RowDefinitionInstanceWrapper;
 import nz.co.gregs.dbvolution.internal.properties.RowDefinitionWrapperFactory;
-import nz.co.gregs.dbvolution.query.RowDefinition;
 import org.reflections.Reflections;
 
 /**
@@ -283,7 +274,7 @@ public class DataModel {
 	 * The intent of this method is to find easy to use constructors that MAY
 	 * directly create a usable DBDatabase object.
 	 *
-	 * @return
+	 * @return a list of easy to invoke DBDatabase constructors
 	 */
 	public static Set<Constructor<DBDatabase>> getDBDatabaseConstructorsPublicWithoutParameters() {
 		Set<Constructor<DBDatabase>> constructors = getDBDatabaseConstructors();

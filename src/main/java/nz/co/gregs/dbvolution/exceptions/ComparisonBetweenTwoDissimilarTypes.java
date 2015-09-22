@@ -52,7 +52,6 @@ public class ComparisonBetweenTwoDissimilarTypes extends DBRuntimeException {
 	 * <p>
 	 * Alternatively inform the developers and they will fix it.
 	 *
-	 * @author Gregory Graham
 	 * @param db
 	 * @param genericExpression
 	 * @param firstValue

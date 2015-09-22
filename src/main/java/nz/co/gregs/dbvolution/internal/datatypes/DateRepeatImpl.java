@@ -37,7 +37,7 @@ public class DateRepeatImpl {
 
 	/**
 	 *
-	 * @return
+	 * @return the DateRepeat version of Zero
 	 */
 	public static String getZeroDateRepeatString() {
 		return ZERO_DATEREPEAT_STRING;
@@ -47,7 +47,7 @@ public class DateRepeatImpl {
 	 *
 	 * @param original
 	 * @param compareTo
-	 * @return
+	 * @return the DateRepeat the represents the difference between these 2 dates
 	 */
 	@SuppressWarnings("deprecation")
 	public static String repeatFromTwoDates(Date original, Date compareTo) {
@@ -68,7 +68,7 @@ public class DateRepeatImpl {
 	/**
 	 *
 	 * @param interval
-	 * @return
+	 * @return the DateRepeat equivalent of the Period value
 	 */
 	public static String getDateRepeatString(Period interval) {
 		if (interval == null) {
@@ -90,7 +90,7 @@ public class DateRepeatImpl {
 	 *
 	 * @param original
 	 * @param compareTo
-	 * @return
+	 * @return TRUE if the DateRepeats are the same, otherwise FALSE
 	 */
 	public static boolean isEqualTo(String original, String compareTo) {
 		return compareDateRepeatStrings(original, compareTo) == 0;
@@ -100,7 +100,7 @@ public class DateRepeatImpl {
 	 *
 	 * @param original
 	 * @param compareTo
-	 * @return
+	 * @return TRUE if the first DateRepeat value is greater than the second, otherwise FALSE
 	 */
 	public static boolean isGreaterThan(String original, String compareTo) {
 		return compareDateRepeatStrings(original, compareTo) == 1;
@@ -110,7 +110,7 @@ public class DateRepeatImpl {
 	 *
 	 * @param original
 	 * @param compareTo
-	 * @return
+	 * @return TRUE if the first DateRepeat value is less than the second, otherwise FALSE
 	 */
 	public static boolean isLessThan(String original, String compareTo) {
 		return compareDateRepeatStrings(original, compareTo) == -1;
@@ -120,7 +120,7 @@ public class DateRepeatImpl {
 	 *
 	 * @param original
 	 * @param compareTo
-	 * @return
+	 * @return -1 if the first DateRepeat is the smallest, 0 if they are equal, and 1 if the first is the largest.
 	 */
 	public static Integer compareDateRepeatStrings(String original, String compareTo) {
 		if (original == null || compareTo == null) {
@@ -146,7 +146,7 @@ public class DateRepeatImpl {
 	 *
 	 * @param original
 	 * @param intervalStr
-	 * @return
+	 * @return the Date value offset by the DateRepeat value.
 	 */
 	public static Date addDateAndDateRepeatString(Date original, String intervalStr) {
 		if (original == null || intervalStr == null || intervalStr.length() == 0 || original.toString().length() == 0) {
@@ -177,7 +177,7 @@ public class DateRepeatImpl {
 	 *
 	 * @param original
 	 * @param intervalInput
-	 * @return
+	 * @return the Date shift backwards (towards the past) by the DateRepeat value.
 	 */
 	public static Date subtractDateAndDateRepeatString(Date original, String intervalInput) {
 		if (original == null || intervalInput == null || intervalInput.length() == 0) {
@@ -207,7 +207,7 @@ public class DateRepeatImpl {
 	/**
 	 *
 	 * @param intervalStr
-	 * @return
+	 * @return the DateRepeat value represented by the String value
 	 */
 	public static Period parseDateRepeatFromGetString(String intervalStr) {
 		if (intervalStr == null || intervalStr.length() == 0) {
@@ -228,7 +228,7 @@ public class DateRepeatImpl {
 	/**
 	 *
 	 * @param intervalStr
-	 * @return
+	 * @return get the fractional seconds to millisecond precision
 	 * @throws NumberFormatException
 	 */
 	public static Integer getMillisecondPart(String intervalStr) throws NumberFormatException {
@@ -244,7 +244,7 @@ public class DateRepeatImpl {
 	/**
 	 *
 	 * @param intervalStr
-	 * @return
+	 * @return get the integer and fractional seconds part of the DateRepeat
 	 * @throws NumberFormatException
 	 */
 	public static Integer getSecondPart(String intervalStr) throws NumberFormatException {
@@ -261,7 +261,7 @@ public class DateRepeatImpl {
 	/**
 	 *
 	 * @param intervalStr
-	 * @return
+	 * @return get the minutes part of the DateRepeat
 	 * @throws NumberFormatException
 	 */
 	public static Integer getMinutePart(String intervalStr) throws NumberFormatException {
@@ -274,7 +274,7 @@ public class DateRepeatImpl {
 	/**
 	 *
 	 * @param intervalStr
-	 * @return
+	 * @return get the hour part of the DateRepeat value
 	 * @throws NumberFormatException
 	 */
 	public static Integer getHourPart(String intervalStr) throws NumberFormatException {
@@ -287,7 +287,7 @@ public class DateRepeatImpl {
 	/**
 	 *
 	 * @param intervalStr
-	 * @return
+	 * @return get the day part of the DateRepeat value
 	 * @throws NumberFormatException
 	 */
 	public static Integer getDayPart(String intervalStr) throws NumberFormatException {
@@ -300,7 +300,7 @@ public class DateRepeatImpl {
 	/**
 	 *
 	 * @param intervalStr
-	 * @return
+	 * @return get the month part of the DateRepeat value
 	 * @throws NumberFormatException
 	 */
 	public static Integer getMonthPart(String intervalStr) throws NumberFormatException {
@@ -313,7 +313,7 @@ public class DateRepeatImpl {
 	/**
 	 *
 	 * @param intervalStr
-	 * @return
+	 * @return get the year part of the DateRepeat value
 	 * @throws NumberFormatException
 	 */
 	public static Integer getYearPart(String intervalStr) throws NumberFormatException {
