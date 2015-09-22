@@ -31,7 +31,6 @@ public class DBPermittedPatternIgnoreCaseOperator extends DBLikeCaseInsensitiveO
 	 * Implements a case-insensitive version of the LIKE operator for Strings
 	 *
 	 *
-	 * @author Gregory Graham
 	 * @param likeableValue
 	 */
 	public DBPermittedPatternIgnoreCaseOperator(String likeableValue) {

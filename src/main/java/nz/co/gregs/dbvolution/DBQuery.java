@@ -627,8 +627,7 @@ public class DBQuery {
 	 * <p>
 	 * Uses the defined
 	 * {@link nz.co.gregs.dbvolution.annotations.DBForeignKey foreign keys} on the
-	 * DBRow and
-	 * {@link nz.co.gregs.dbvolution.DBRow#addRelationship(nz.co.gregs.dbvolution.datatypes.DBNumber, nz.co.gregs.dbvolution.DBRow, nz.co.gregs.dbvolution.datatypes.DBNumber)  added relationships}
+	 * DBRow 
 	 * to connect the tables. Foreign keys that have been
 	 * {@link nz.co.gregs.dbvolution.DBRow#ignoreForeignKey(java.lang.Object) ignored}
 	 * are not used.
@@ -1481,8 +1480,7 @@ public class DBQuery {
 	 * <p>
 	 * Uses the defined
 	 * {@link nz.co.gregs.dbvolution.annotations.DBForeignKey foreign keys} on the
-	 * DBRow and
-	 * {@link nz.co.gregs.dbvolution.DBRow#addRelationship(nz.co.gregs.dbvolution.datatypes.DBNumber, nz.co.gregs.dbvolution.DBRow, nz.co.gregs.dbvolution.datatypes.DBNumber)  added relationships}
+	 * DBRow and multi-table conditions
 	 * to connect the tables. Foreign keys that have been
 	 * {@link nz.co.gregs.dbvolution.DBRow#ignoreForeignKey(java.lang.Object) ignored}
 	 * are not used.
@@ -2224,8 +2222,7 @@ public class DBQuery {
 	 * at this time. The graph cannot be altered through the window but it can be
 	 * moved to help show the parts of the graph. You can manipulate the query
 	 * graph by
-	 * {@link DBQuery#add(nz.co.gregs.dbvolution.DBRow[])  adding tables}, {@link DBRow#addRelationship(nz.co.gregs.dbvolution.datatypes.DBNumber, nz.co.gregs.dbvolution.DBRow, nz.co.gregs.dbvolution.datatypes.DBNumber) adding relationships to the DBRow}
-	 * instances, or
+	 * {@link DBQuery#add(nz.co.gregs.dbvolution.DBRow[])  adding tables}, {@link DBQuery#addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression) using expressions that connect tables}, or
 	 * {@link DBRow#ignoreForeignKey(java.lang.Object) ignoring inappropriate foreign keys}.
 	 *
 	 */

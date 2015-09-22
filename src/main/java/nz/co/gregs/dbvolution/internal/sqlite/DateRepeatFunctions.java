@@ -130,7 +130,7 @@ public class DateRepeatFunctions {
 	/**
 	 *
 	 * @param date
-	 * @return
+	 * @return the date as an SQLite SQL statement
 	 * @throws ParseException
 	 */
 	public static String formatDateForGetString(Date date) throws ParseException {

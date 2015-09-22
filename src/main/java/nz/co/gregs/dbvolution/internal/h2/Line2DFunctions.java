@@ -390,11 +390,7 @@ public enum Line2DFunctions implements DBVFeature {
 		}
 		return false;
 	}
-
-	/**
-	 *
-	 * @return
-	 */
+	
 	@Override
 	public String alias() {
 		return toString();

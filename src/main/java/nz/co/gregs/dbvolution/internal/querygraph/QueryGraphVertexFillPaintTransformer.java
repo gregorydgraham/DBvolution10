@@ -35,7 +35,7 @@ public class QueryGraphVertexFillPaintTransformer implements Transformer<QueryGr
 	/**
 	 *
 	 * @param i
-	 * @return
+	 * @return the Paint used to draw nodes/vertexes
 	 */
 	@Override
 	public Paint transform(QueryGraphNode i) {

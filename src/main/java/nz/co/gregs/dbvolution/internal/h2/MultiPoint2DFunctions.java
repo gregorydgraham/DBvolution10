@@ -235,7 +235,7 @@ public enum MultiPoint2DFunctions implements DBVFeature {
 	
 	/**
 	 *
-	 * @return
+	 * @return the integer version number of the function to be used
 	 */
 	static public int getCurrentVersion(){
 		return 2;
@@ -245,11 +245,7 @@ public enum MultiPoint2DFunctions implements DBVFeature {
 	public String toString() {
 		return "DBV_MULTIPOINT2D_" + name();
 	}
-
-	/**
-	 *
-	 * @return
-	 */
+	
 	@Override
 	public String alias() {
 		return toString();

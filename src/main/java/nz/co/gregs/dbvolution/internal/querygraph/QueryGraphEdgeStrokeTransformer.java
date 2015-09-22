@@ -43,7 +43,7 @@ public class QueryGraphEdgeStrokeTransformer implements Transformer<DBExpression
 	/**
 	 *
 	 * @param input
-	 * @return
+	 * @return the Stroke used to draw an edge
 	 */
 	@Override
 	public Stroke transform(DBExpression input) {

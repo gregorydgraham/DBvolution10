@@ -89,11 +89,7 @@ public enum Point2DFunctions implements DBVFeature{
 //		}
 		stmt.execute("CREATE ALIAS IF NOT EXISTS " + functionName + " DETERMINISTIC AS $$ \n" + "@CODE " + returnType + " " + functionName + "(" + parameters + ") {\n" + code + "} $$;");
 	}
-
-	/**
-	 *
-	 * @return
-	 */
+	
 	@Override
 	public String alias() {
 		return toString();

@@ -905,7 +905,6 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 	 * If you are using this for pagination, remember to sort by the columns as
 	 * well
 	 *
-	 * @author Gregory Graham
 	 * @param <A> a value that can be compared to Z, probably StringResult,
 	 * NumberResult, or DateResult
 	 * @param <Z> an expression or column that implements RangeComparable,
@@ -938,7 +937,6 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 	 * If you are using this for pagination, remember to sort by the columns as
 	 * well
 	 *
-	 * @author Gregory Graham
 	 * @param <A> a value that can be compared to Z, probably StringResult,
 	 * NumberResult, or DateResult
 	 * @param <Z> an expression or column that implements RangeComparable,
@@ -971,7 +969,6 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 	 * If you are using this for pagination, remember to sort by the columns as
 	 * well
 	 *
-	 * @author Gregory Graham
 	 * @param <RangeComparableY> a value that can be compared to Z, probably
 	 * StringResult, NumberResult, or DateResult
 	 * @param <RangeComparableZ> an expression or column that implements
@@ -1014,7 +1011,6 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 	 * If you are using this for pagination, remember to sort by the columns as
 	 * well
 	 *
-	 * @author Gregory Graham
 	 * @param <RangeComparableZ> an expression or column that implements
 	 * RangeComparable, probably StringExpression, NumberExpression,
 	 * DateExpression or a column type of the same.
@@ -1057,7 +1053,6 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 	 * If you are using this for pagination, remember to sort by the columns as
 	 * well
 	 *
-	 * @author Gregory Graham
 	 * @param <RangeComparableZ> an expression or column that implements
 	 * RangeComparable, probably StringExpression, NumberExpression,
 	 * DateExpression or a column type of the same.
@@ -1105,7 +1100,6 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 	 * If you are using this for pagination, remember to sort by the columns as
 	 * well
 	 *
-	 * @author Gregory Graham
 	 * @param <RangeComparableZ> an expression or column that implements
 	 * RangeComparable, probably StringExpression, NumberExpression,
 	 * DateExpression or a column type of the same.
@@ -1158,7 +1152,6 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 	 * If you are using this for pagination, remember to sort by the columns as
 	 * well
 	 *
-	 * @author Gregory Graham
 	 * @param <RangeComparableZ> an expression or column that implements
 	 * RangeComparable, probably StringExpression, NumberExpression,
 	 * DateExpression or a column type of the same.
@@ -1206,7 +1199,6 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 	 * If you are using this for pagination, remember to sort by the columns as
 	 * well
 	 *
-	 * @author Gregory Graham
 	 * @param <RangeComparableZ> an expression or column that implements
 	 * RangeComparable, probably StringExpression, NumberExpression,
 	 * DateExpression or a column type of the same.

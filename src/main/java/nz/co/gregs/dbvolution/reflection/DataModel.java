@@ -283,7 +283,7 @@ public class DataModel {
 	 * The intent of this method is to find easy to use constructors that MAY
 	 * directly create a usable DBDatabase object.
 	 *
-	 * @return
+	 * @return a list of easy to invoke DBDatabase constructors
 	 */
 	public static Set<Constructor<DBDatabase>> getDBDatabaseConstructorsPublicWithoutParameters() {
 		Set<Constructor<DBDatabase>> constructors = getDBDatabaseConstructors();

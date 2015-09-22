@@ -1232,7 +1232,6 @@ public class DateExpression implements DateResult, RangeComparable<DateResult>, 
 	 * If you are using this for pagination, remember to sort by the columns as
 	 * well
 	 *
-	 * @author Gregory Graham
 	 * @param value the right side of the internal comparison
 	 * @param fallBackWhenEquals the comparison used when the two values are
 	 * equal.
@@ -1255,7 +1254,6 @@ public class DateExpression implements DateResult, RangeComparable<DateResult>, 
 	 * If you are using this for pagination, remember to sort by the columns as
 	 * well
 	 *
-	 * @author Gregory Graham
 	 * @param value the right side of the internal comparison
 	 * @param fallBackWhenEquals the comparison used when the two values are
 	 * equal.
@@ -1278,7 +1276,6 @@ public class DateExpression implements DateResult, RangeComparable<DateResult>, 
 	 * If you are using this for pagination, remember to sort by the columns as
 	 * well
 	 *
-	 * @author Gregory Graham
 	 * @param value the right side of the internal comparison
 	 * @param fallBackWhenEquals the comparison used when the two values are
 	 * equal.
@@ -1302,7 +1299,6 @@ public class DateExpression implements DateResult, RangeComparable<DateResult>, 
 	 * If you are using this for pagination, remember to sort by the columns as
 	 * well
 	 *
-	 * @author Gregory Graham
 	 * @param value the right side of the internal comparison
 	 * @param fallBackWhenEquals the comparison used when the two values are
 	 * equal.

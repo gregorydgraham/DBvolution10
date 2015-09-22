@@ -31,7 +31,6 @@ public class IncorrectGeometryReturnedForDatatype extends DBRuntimeException {
 	 * Thrown when the database has returned a geometry that cannot be interpreted
 	 * as the geometry expected.
 	 *
-	 * @author Gregory Graham
 	 * @param databaseReturned
 	 * @param wasExpecting
 	 */

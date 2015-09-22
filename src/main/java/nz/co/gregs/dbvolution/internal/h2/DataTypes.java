@@ -73,6 +73,7 @@ public enum DataTypes implements DBVFeature{
 	 * @param stmt
 	 * @throws SQLException
 	 */
+	@Override
 	public void add(Statement stmt) throws SQLException {
 //		try {
 //			stmt.execute("DROP DOMAIN " + datatype + "; ");
@@ -92,14 +93,11 @@ public enum DataTypes implements DBVFeature{
 	 * @throws SQLException
 	 */
 	public static void addAll(Statement stmt) throws SQLException{
-//		for (DataTypes datatype : values()) {
-//			datatype.add(stmt);
-//		}
 	}
 
 	/**
 	 *
-	 * @return
+	 * @return the DBvolution data type of this abstracted datatype
 	 */
 	public String datatype() {
 		return datatype;
@@ -107,7 +105,7 @@ public enum DataTypes implements DBVFeature{
 
 	/**
 	 *
-	 * @return
+	 * @return the DBvolution data type as a String
 	 */
 	@Override
 	public String alias() {
