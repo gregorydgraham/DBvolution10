@@ -148,61 +148,97 @@ public class ExampleEncodingInterpreter implements EncodingInterpreter {
 	public void setValue(QueryableDatatype qdt, String value) {
 		if (qdt instanceof DBString) {
 			DBString string = (DBString) qdt;
-			string.permittedValues(value);
+			decodeStringValue(string, value);
 		} else if (qdt instanceof DBStringEnum) {
 			DBStringEnum<?> string = (DBStringEnum<?>) qdt;
-			string.permittedValues(value);
+			decodeStringEnum(string, value);
 		} else if (qdt instanceof DBNumber) {
 			DBNumber num = (DBNumber) qdt;
-			if (value.contains("...")) {
-				String[] split = value.split("\\.\\.\\.");
-				Double startOfRange = split[0] == null || split[0].isEmpty() ? null : new Double(split[0]);
-				Double endOfRange = split.length == 1 || split[1] == null || split[1].isEmpty() ? null : new Double(split[1]);
-				num.permittedRangeInclusive(
-						startOfRange,
-						endOfRange);
-			} else {
-				num.permittedValues(new Double(value));
-			}
+			decodeNumberValue(value, num);
 		} else if (qdt instanceof DBInteger) {
 			DBInteger num = (DBInteger) qdt;
-			if (value.contains("...")) {
-				String[] split = value.split("\\.\\.\\.");
-				Long startOfRange = split[0] == null || split[0].isEmpty() ? null : new Long(split[0]);
-				Long endOfRange = split.length == 1 || split[1] == null || split[1].isEmpty() ? null : new Long(split[1]);
-				num.permittedRangeInclusive(
-						startOfRange,
-						endOfRange);
-			} else {
-				num.permittedValues(new Double(value));
-			}
+			decodeIntegerValue(value, num);
 		} else if (qdt instanceof DBIntegerEnum) {
 			DBIntegerEnum<?> num = (DBIntegerEnum<?>) qdt;
-			if (value.contains("...")) {
-				String[] split = value.split("\\.\\.\\.");
-				Long startOfRange = split[0] == null || split[0].isEmpty() ? null : new Long(split[0]);
-				Long endOfRange = split.length == 1 || split[1] == null || split[1].isEmpty() ? null : new Long(split[1]);
-				num.permittedRangeInclusive(
-						startOfRange,
-						endOfRange);
-			} else {
-				num.permittedValues(new Long(value));
-			}
+			decodeIntegerEnum(value, num);
 		} else if (qdt instanceof DBDate) {
 			DBDate date = (DBDate) qdt;
-			if (value.contains("...")) {
-				String[] split = value.split("\\.\\.\\.");
-				Date startOfRange = split[0] == null || split[0].isEmpty() ? null : new Date(split[0]);
-				Date endOfRange = split.length == 1 || split[1] == null || split[1].isEmpty() ? null : new Date(split[1]);
-				date.permittedRangeInclusive(
-						startOfRange,
-						endOfRange);
-			} else {
-				date.permittedValues(new Date(value));
-			}
+			decodeDateValue(value, date);
 		} else if (qdt instanceof DBBoolean) {
 			DBBoolean field = (DBBoolean) qdt;
-			field.permittedValues(trueVals.contains(value.toLowerCase()));
+			decodeBooleanValue(field, value);
+		}
+	}
+
+	@Override
+	public void decodeBooleanValue(DBBoolean field, String value) {
+		field.permittedValues(trueVals.contains(value.toLowerCase()));
+	}
+
+	@Override
+	@SuppressWarnings("deprecation")
+	public void decodeDateValue(String value, DBDate date) {
+		if (value.contains("...")) {
+			String[] split = value.split("\\.\\.\\.");
+			Date startOfRange = split[0] == null || split[0].isEmpty() ? null : new Date(split[0]);
+			Date endOfRange = split.length == 1 || split[1] == null || split[1].isEmpty() ? null : new Date(split[1]);
+			date.permittedRangeInclusive(
+					startOfRange,
+					endOfRange);
+		} else {
+			date.permittedValues(new Date(value));
+		}
+	}
+
+	@Override
+	public void decodeIntegerEnum(String value, DBIntegerEnum<?> num) throws NumberFormatException {
+		if (value.contains("...")) {
+			String[] split = value.split("\\.\\.\\.");
+			Long startOfRange = split[0] == null || split[0].isEmpty() ? null : new Long(split[0]);
+			Long endOfRange = split.length == 1 || split[1] == null || split[1].isEmpty() ? null : new Long(split[1]);
+			num.permittedRangeInclusive(
+					startOfRange,
+					endOfRange);
+		} else {
+			num.permittedValues(new Long(value));
+		}
+	}
+
+	@Override
+	public void decodeNumberValue(String value, DBNumber num) throws NumberFormatException {
+		if (value.contains("...")) {
+			String[] split = value.split("\\.\\.\\.");
+			Double startOfRange = split[0] == null || split[0].isEmpty() ? null : new Double(split[0]);
+			Double endOfRange = split.length == 1 || split[1] == null || split[1].isEmpty() ? null : new Double(split[1]);
+			num.permittedRangeInclusive(
+					startOfRange,
+					endOfRange);
+		} else {
+			num.permittedValues(new Double(value));
+		}
+	}
+
+	@Override
+	public void decodeStringEnum(DBStringEnum<?> string, String value) {
+		string.permittedValues(value);
+	}
+
+	@Override
+	public void decodeStringValue(DBString string, String value) {
+		string.permittedValues(value);
+	}
+
+	@Override
+	public void decodeIntegerValue(String value, DBInteger num) throws NumberFormatException {
+		if (value.contains("...")) {
+			String[] split = value.split("\\.\\.\\.");
+			Long startOfRange = split[0] == null || split[0].isEmpty() ? null : new Long(split[0]);
+			Long endOfRange = split.length == 1 || split[1] == null || split[1].isEmpty() ? null : new Long(split[1]);
+			num.permittedRangeInclusive(
+					startOfRange,
+					endOfRange);
+		} else {
+			num.permittedValues(new Double(value));
 		}
 	}
 
