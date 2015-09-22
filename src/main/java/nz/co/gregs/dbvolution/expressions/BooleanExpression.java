@@ -112,8 +112,8 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 	 *
 	 * <p>
 	 * BooleanExpressions generally wrap other BooleanExpressions or similar
-	 * objects and add functionality to them. Use this constructor to wrap a
-	 * known value for use in a BooleanExpression.
+	 * objects and add functionality to them. Use this constructor to wrap a known
+	 * value for use in a BooleanExpression.
 	 *
 	 *
 	 */
@@ -146,10 +146,9 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 	 * little trickier.
 	 *
 	 * <p>
-	 * This method provides the easy route to a *Expression from a literal
-	 * value. Just call, for instance,
-	 * {@code StringExpression.value("STARTING STRING")} to get a
-	 * StringExpression and start the expression chain.
+	 * This method provides the easy route to a *Expression from a literal value.
+	 * Just call, for instance, {@code StringExpression.value("STARTING STRING")}
+	 * to get a StringExpression and start the expression chain.
 	 *
 	 * <ul>
 	 * <li>Only object classes that are appropriate need to be handle by the
@@ -158,13 +157,12 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 	 * </ul>
 	 *
 	 * @param bool the boolean value to be tested
-	 * @return a DBExpression instance that is appropriate to the subclass and
-	 * the value supplied.
+	 * @return a DBExpression instance that is appropriate to the subclass and the
+	 * value supplied.
 	 */
 	public static BooleanExpression value(Boolean bool) {
 		return new BooleanExpression(bool);
 	}
-
 
 	/**
 	 * Create An Appropriate BooleanExpression Object For This Object
@@ -178,10 +176,9 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 	 * little trickier.
 	 *
 	 * <p>
-	 * This method provides the easy route to a *Expression from a literal
-	 * value. Just call, for instance,
-	 * {@code StringExpression.value("STARTING STRING")} to get a
-	 * StringExpression and start the expression chain.
+	 * This method provides the easy route to a *Expression from a literal value.
+	 * Just call, for instance, {@code StringExpression.value("STARTING STRING")}
+	 * to get a StringExpression and start the expression chain.
 	 *
 	 * <ul>
 	 * <li>Only object classes that are appropriate need to be handle by the
@@ -190,8 +187,8 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 	 * </ul>
 	 *
 	 * @param bool the boolean value to be tested
-	 * @return a DBExpression instance that is appropriate to the subclass and
-	 * the value supplied.
+	 * @return a DBExpression instance that is appropriate to the subclass and the
+	 * value supplied.
 	 */
 	public static BooleanExpression value(BooleanResult bool) {
 		return new BooleanExpression(bool);
@@ -202,8 +199,8 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 	 * operator, that is "=" or similar.
 	 *
 	 * @param bool the boolean value to be tested
-	 * @return a BooleanExpression that compares the previous BooleanExpression
-	 * to the Boolean supplied.
+	 * @return a BooleanExpression that compares the previous BooleanExpression to
+	 * the Boolean supplied.
 	 */
 	public BooleanExpression is(Boolean bool) {
 		return is(new BooleanExpression(bool));
@@ -217,8 +214,8 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 	 * BooleanResult includes {@link BooleanExpression} and {@link DBBoolean}.
 	 *
 	 * @param bool the boolean value to be tested
-	 * @return a BooleanExpression that compares the previous BooleanExpression
-	 * to the Boolean supplied.
+	 * @return a BooleanExpression that compares the previous BooleanExpression to
+	 * the Boolean supplied.
 	 */
 	public BooleanExpression is(BooleanExpression bool) {
 		return is((BooleanResult) bool);
@@ -232,8 +229,8 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 	 * BooleanResult includes {@link BooleanExpression} and {@link DBBoolean}.
 	 *
 	 * @param bool the boolean value to be tested
-	 * @return a BooleanExpression that compares the previous BooleanExpression
-	 * to the Boolean supplied.
+	 * @return a BooleanExpression that compares the previous BooleanExpression to
+	 * the Boolean supplied.
 	 */
 	@Override
 	public BooleanExpression is(BooleanResult bool) {
@@ -253,8 +250,8 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 	 * BooleanResult includes {@link BooleanExpression} and {@link DBBoolean}.
 	 *
 	 * @param bool the boolean value to be tested
-	 * @return a BooleanExpression that compares the previous BooleanExpression
-	 * to the Boolean supplied.
+	 * @return a BooleanExpression that compares the previous BooleanExpression to
+	 * the Boolean supplied.
 	 */
 	@Override
 	public BooleanExpression isNot(BooleanResult bool) {
@@ -274,8 +271,8 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 	 * BooleanResult includes {@link BooleanExpression} and {@link DBBoolean}.
 	 *
 	 * @param bool the boolean value to be tested
-	 * @return a BooleanExpression that compares the previous BooleanExpression
-	 * to the Boolean supplied.
+	 * @return a BooleanExpression that compares the previous BooleanExpression to
+	 * the Boolean supplied.
 	 */
 	public BooleanExpression isNot(Boolean bool) {
 		return this.isNot(BooleanExpression.value(bool));
@@ -340,17 +337,23 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 			}
 		});
 	}
-	
+
 	/**
-	 * Collects the expressions together and requires that at least one of them to be false.
+	 * Collects the expressions together and requires that at least one of them to
+	 * be false.
+	 *
+	 * <p>
+	 * Please note that this expression does not exclude the cases where all tests
+	 * fail. To exclude the ALL and NONE cases, use
+	 * {@link #someButNotAllOf(nz.co.gregs.dbvolution.expressions.BooleanExpression...) the SOME method}.
 	 *
 	 * <p>
 	 * Creates a BooleanExpression of several Boolean Expressions by connecting
 	 * them using NOT and OR repeatedly.
 	 *
 	 * <p>
-	 * This expression returns true if and only if some of the component expressions
-	 * are false.
+	 * This expression returns true if and only if some of the component
+	 * expressions are false.
 	 *
 	 * @param booleanExpressions the boolean expressions to be tested
 	 * @return a boolean expression that returns true IFF some of the
@@ -366,13 +369,19 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 		return anyOf(notBools.toArray(booleanExpressions));
 	}
 
-
 	/**
-	 * Collects the expressions together and requires that at least one of them to be false and at least one to be false.
+	 * Collects the expressions together and requires that at least one of them to
+	 * be false and at least one to be false.
+	 * 
+	 * <p>
+	 * This expression specifically excludes the cases where ALL and NONE of the tests pass.
+	 * 
+	 * <p>
+	 * This expression facilties finding partial matches that may need to be handled separately.
 	 *
 	 * <p>
-	 * This expression returns true if and only if some of the component expressions
-	 * are false  and some are true.
+	 * This expression returns true if and only if some of the component
+	 * expressions are false and some are true.
 	 *
 	 * @param booleanExpressions the boolean expressions to be tested
 	 * @return a boolean expression that returns true IFF some of the
@@ -384,9 +393,8 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 		return allOf(
 				BooleanExpression.allOf(booleanExpressions).not(),
 				BooleanExpression.noneOf(booleanExpressions).not()
-				);
+		);
 	}
-
 
 	/**
 	 * Collects the expressions together and only requires one to be true.
@@ -457,7 +465,7 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 
 	/**
 	 * Converts boolean values to the database integer representation.
-	 * 
+	 *
 	 * <p>
 	 * TRUE values will become 1 and FALSE values will become 0.
 	 *
@@ -591,8 +599,8 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 	}
 
 	/**
-	 * Returns TRUE if the given {@link DBExpression} evaluates to NULL,
-	 * otherwise FALSE.
+	 * Returns TRUE if the given {@link DBExpression} evaluates to NULL, otherwise
+	 * FALSE.
 	 *
 	 * <p>
 	 * DBExpression subclasses include
@@ -625,13 +633,13 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 	 * boolean expression.
 	 *
 	 * <p>
-	 * The first expression is returned if this expression is TRUE, otherwise
-	 * the second is returned.
+	 * The first expression is returned if this expression is TRUE, otherwise the
+	 * second is returned.
 	 *
 	 * @param thenExpr expression to use when this expression is TRUE
 	 * @param elseExpr expression to use when this expression is FALSE
-	 * @return an expression that will generate a SQL clause conceptually
-	 * similar to "if (this) then thenExpr else elseExpr".
+	 * @return an expression that will generate a SQL clause conceptually similar
+	 * to "if (this) then thenExpr else elseExpr".
 	 */
 	public StringExpression ifThenElse(String thenExpr, String elseExpr) {
 		return this.ifThenElse(new StringExpression(thenExpr), new StringExpression(elseExpr));
@@ -642,13 +650,13 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 	 * boolean expression.
 	 *
 	 * <p>
-	 * The first expression is returned if this expression is TRUE, otherwise
-	 * the second is returned.
+	 * The first expression is returned if this expression is TRUE, otherwise the
+	 * second is returned.
 	 *
 	 * @param thenExpr expression to use when this expression is TRUE
 	 * @param elseExpr expression to use when this expression is FALSE
-	 * @return an expression that will generate a SQL clause conceptually
-	 * similar to "if (this) then thenExpr else elseExpr".
+	 * @return an expression that will generate a SQL clause conceptually similar
+	 * to "if (this) then thenExpr else elseExpr".
 	 */
 	public StringExpression ifThenElse(StringExpression thenExpr, StringExpression elseExpr) {
 		return new StringExpression(new DBBooleanStringStringFunction(this, thenExpr, elseExpr) {
@@ -676,13 +684,13 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 	 * boolean expression.
 	 *
 	 * <p>
-	 * The first expression is returned if this expression is TRUE, otherwise
-	 * the second is returned.
+	 * The first expression is returned if this expression is TRUE, otherwise the
+	 * second is returned.
 	 *
 	 * @param thenExpr expression to use when this expression is TRUE
 	 * @param elseExpr expression to use when this expression is FALSE
-	 * @return an expression that will generate a SQL clause conceptually
-	 * similar to "if (this) then thenExpr else elseExpr".
+	 * @return an expression that will generate a SQL clause conceptually similar
+	 * to "if (this) then thenExpr else elseExpr".
 	 */
 	public NumberExpression ifThenElse(Number thenExpr, Number elseExpr) {
 		return this.ifThenElse(new NumberExpression(thenExpr), new NumberExpression(elseExpr));
@@ -693,13 +701,13 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 	 * boolean expression.
 	 *
 	 * <p>
-	 * The first expression is returned if this expression is TRUE, otherwise
-	 * the second is returned.
+	 * The first expression is returned if this expression is TRUE, otherwise the
+	 * second is returned.
 	 *
 	 * @param thenExpr expression to use when this expression is TRUE
 	 * @param elseExpr expression to use when this expression is FALSE
-	 * @return an expression that will generate a SQL clause conceptually
-	 * similar to "if (this) then thenExpr else elseExpr".
+	 * @return an expression that will generate a SQL clause conceptually similar
+	 * to "if (this) then thenExpr else elseExpr".
 	 */
 	public NumberExpression ifThenElse(NumberResult thenExpr, NumberResult elseExpr) {
 		return new NumberExpression(new DBBooleanNumberNumberFunction(this, thenExpr, elseExpr) {
@@ -726,13 +734,13 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 	 * boolean expression.
 	 *
 	 * <p>
-	 * The first expression is returned if this expression is TRUE, otherwise
-	 * the second is returned.
+	 * The first expression is returned if this expression is TRUE, otherwise the
+	 * second is returned.
 	 *
 	 * @param thenExpr expression to use when this expression is TRUE
 	 * @param elseExpr expression to use when this expression is FALSE
-	 * @return an expression that will generate a SQL clause conceptually
-	 * similar to "if (this) then thenExpr else elseExpr".
+	 * @return an expression that will generate a SQL clause conceptually similar
+	 * to "if (this) then thenExpr else elseExpr".
 	 */
 	public DateExpression ifThenElse(Date thenExpr, Date elseExpr) {
 		return this.ifThenElse(new DateExpression(thenExpr), new DateExpression(elseExpr));
@@ -743,13 +751,13 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 	 * boolean expression.
 	 *
 	 * <p>
-	 * The first expression is returned if this expression is TRUE, otherwise
-	 * the second is returned.
+	 * The first expression is returned if this expression is TRUE, otherwise the
+	 * second is returned.
 	 *
 	 * @param thenExpr expression to use when this expression is TRUE
 	 * @param elseExpr expression to use when this expression is FALSE
-	 * @return an expression that will generate a SQL clause conceptually
-	 * similar to "if (this) then thenExpr else elseExpr".
+	 * @return an expression that will generate a SQL clause conceptually similar
+	 * to "if (this) then thenExpr else elseExpr".
 	 */
 	public DateExpression ifThenElse(DateExpression thenExpr, DateExpression elseExpr) {
 		return new DateExpression(new DBBinaryDateDateFunction(this, thenExpr, elseExpr) {
@@ -777,13 +785,13 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 	 * boolean expression.
 	 *
 	 * <p>
-	 * The first expression is returned if this expression is TRUE, otherwise
-	 * the second is returned.
+	 * The first expression is returned if this expression is TRUE, otherwise the
+	 * second is returned.
 	 *
 	 * @param thenExpr expression to use when this expression is TRUE
 	 * @param elseExpr expression to use when this expression is FALSE
-	 * @return an expression that will generate a SQL clause conceptually
-	 * similar to "if (this) then thenExpr else elseExpr".
+	 * @return an expression that will generate a SQL clause conceptually similar
+	 * to "if (this) then thenExpr else elseExpr".
 	 */
 	public Polygon2DExpression ifThenElse(Polygon thenExpr, Polygon elseExpr) {
 		return this.ifThenElse(new Polygon2DExpression(thenExpr), new Polygon2DExpression(elseExpr));
@@ -794,13 +802,13 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 	 * boolean expression.
 	 *
 	 * <p>
-	 * The first expression is returned if this expression is TRUE, otherwise
-	 * the second is returned.
+	 * The first expression is returned if this expression is TRUE, otherwise the
+	 * second is returned.
 	 *
 	 * @param thenExpr expression to use when this expression is TRUE
 	 * @param elseExpr expression to use when this expression is FALSE
-	 * @return an expression that will generate a SQL clause conceptually
-	 * similar to "if (this) then thenExpr else elseExpr".
+	 * @return an expression that will generate a SQL clause conceptually similar
+	 * to "if (this) then thenExpr else elseExpr".
 	 */
 	public Polygon2DExpression ifThenElse(Polygon2DExpression thenExpr, Polygon2DExpression elseExpr) {
 		return new Polygon2DExpression(new DBBinaryGeometryGeometryFunction(this, thenExpr, elseExpr) {
@@ -882,7 +890,8 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 	 * This is a convenience method that wraps this and anotherBooleanExpr in {@link BooleanExpression#anyOf(nz.co.gregs.dbvolution.expressions.BooleanExpression...)
 	 * }.
 	 *
-	 * @param anotherBooleanExpr if this expression does not evaluate to TRUE, return the value of anotherBooleanExpression.
+	 * @param anotherBooleanExpr if this expression does not evaluate to TRUE,
+	 * return the value of anotherBooleanExpression.
 	 * @return a expression that will evaluate to TRUE if either of the
 	 * expressions are TRUE.
 	 */
@@ -900,7 +909,8 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 	 * This is a convenience method that wraps this and anotherBooleanExpr in {@link BooleanExpression#allOf(nz.co.gregs.dbvolution.expressions.BooleanExpression...)
 	 * }.
 	 *
-	 * @param anotherBooleanExpr only return TRUE if both this expression and anotherBooleanExpr evaluate to TRUE.
+	 * @param anotherBooleanExpr only return TRUE if both this expression and
+	 * anotherBooleanExpr evaluate to TRUE.
 	 * @return a expression that will evaluate to TRUE only if both of the
 	 * expressions are TRUE.
 	 */
@@ -914,9 +924,9 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 	 * Implements the little-known (and implemented) SQL Row Value syntax.
 	 *
 	 * <p>
-	 * in PostgreSQL you can do (colA, colB) &lt; (valA, valB). In other
-	 * databases you need to write: ((colA &lt; valA) OR (colA = valA AND colB
-	 * &lt; valB)). Similarly for &gt;.
+	 * in PostgreSQL you can do (colA, colB) &lt; (valA, valB). In other databases
+	 * you need to write: ((colA &lt; valA) OR (colA = valA AND colB &lt; valB)).
+	 * Similarly for &gt;.
 	 *
 	 * <p>
 	 * Essentially seek looks at both parameters and returns the rows that sort
@@ -946,9 +956,9 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 	 * Implements the little-known (and implemented) SQL Row Value syntax.
 	 *
 	 * <p>
-	 * in PostgreSQL you can do (colA, colB) &lt; (valA, valB). In other
-	 * databases you need to write: ((colA &lt; valA) OR (colA = valA AND colB
-	 * &lt; valB)). Similarly for &gt;.
+	 * in PostgreSQL you can do (colA, colB) &lt; (valA, valB). In other databases
+	 * you need to write: ((colA &lt; valA) OR (colA = valA AND colB &lt; valB)).
+	 * Similarly for &gt;.
 	 *
 	 * <p>
 	 * Essentially seek looks at both parameters and returns the rows that sort
@@ -978,9 +988,9 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 	 * Implements the little-known (and implemented) SQL Row Value syntax.
 	 *
 	 * <p>
-	 * in PostgreSQL you can do (colA, colB) &lt; (valA, valB). In other
-	 * databases you need to write: ((colA &lt; valA) OR (colA = valA AND colB
-	 * &lt; valB)). Similarly for &gt;.
+	 * in PostgreSQL you can do (colA, colB) &lt; (valA, valB). In other databases
+	 * you need to write: ((colA &lt; valA) OR (colA = valA AND colB &lt; valB)).
+	 * Similarly for &gt;.
 	 *
 	 * <p>
 	 * Essentially seek looks at both parameters and returns the rows that sort
@@ -1015,9 +1025,9 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 	 * Implements the little-known (and implemented) SQL Row Value syntax.
 	 *
 	 * <p>
-	 * in PostgreSQL you can do (colA, colB) &lt; (valA, valB). In other
-	 * databases you need to write: ((colA &lt; valA) OR (colA = valA AND colB
-	 * &lt; valB)). Similarly for &gt;.
+	 * in PostgreSQL you can do (colA, colB) &lt; (valA, valB). In other databases
+	 * you need to write: ((colA &lt; valA) OR (colA = valA AND colB &lt; valB)).
+	 * Similarly for &gt;.
 	 *
 	 * <p>
 	 * Essentially seek looks at both parameters and returns the rows that sort
@@ -1057,17 +1067,17 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 	 * Implements the little-known (and implemented) SQL Row Value syntax.
 	 *
 	 * <p>
-	 * in PostgreSQL you can do (colA, colB) &lt; (valA, valB). In other
-	 * databases you need to write: ((colA &lt; valA) OR (colA = valA AND colB
-	 * &lt; valB)). Similarly for &gt;.
+	 * in PostgreSQL you can do (colA, colB) &lt; (valA, valB). In other databases
+	 * you need to write: ((colA &lt; valA) OR (colA = valA AND colB &lt; valB)).
+	 * Similarly for &gt;.
 	 *
 	 * <p>
 	 * Essentially seek looks at both parameters and returns the rows that sort
 	 * below both.
 	 *
 	 * <p>
-	 * This version provides three levels of sorting. If you only need to seek
-	 * on one column/value use {@link #seekGreaterThan(nz.co.gregs.dbvolution.results.RangeComparable, nz.co.gregs.dbvolution.expressions.DBExpression, nz.co.gregs.dbvolution.expressions.BooleanExpression)
+	 * This version provides three levels of sorting. If you only need to seek on
+	 * one column/value use {@link #seekGreaterThan(nz.co.gregs.dbvolution.results.RangeComparable, nz.co.gregs.dbvolution.expressions.DBExpression, nz.co.gregs.dbvolution.expressions.BooleanExpression)
 	 * }
 	 *
 	 * <p>
@@ -1104,17 +1114,17 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 	 * Implements the little-known (and implemented) SQL Row Value syntax.
 	 *
 	 * <p>
-	 * in PostgreSQL you can do (colA, colB) &lt; (valA, valB). In other
-	 * databases you need to write: ((colA &lt; valA) OR (colA = valA AND colB
-	 * &lt; valB)). Similarly for &gt;.
+	 * in PostgreSQL you can do (colA, colB) &lt; (valA, valB). In other databases
+	 * you need to write: ((colA &lt; valA) OR (colA = valA AND colB &lt; valB)).
+	 * Similarly for &gt;.
 	 *
 	 * <p>
 	 * Essentially seek looks at both parameters and returns the rows that sort
 	 * below both.
 	 *
 	 * <p>
-	 * This version provides four levels of sorting. If you only need to seek
-	 * on one column/value use {@link #seekLessThan(nz.co.gregs.dbvolution.results.RangeComparable, nz.co.gregs.dbvolution.expressions.DBExpression, nz.co.gregs.dbvolution.expressions.BooleanExpression)
+	 * This version provides four levels of sorting. If you only need to seek on
+	 * one column/value use {@link #seekLessThan(nz.co.gregs.dbvolution.results.RangeComparable, nz.co.gregs.dbvolution.expressions.DBExpression, nz.co.gregs.dbvolution.expressions.BooleanExpression)
 	 * }
 	 *
 	 * <p>
@@ -1156,17 +1166,17 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 	 * Implements the little-known (and implemented) SQL Row Value syntax.
 	 *
 	 * <p>
-	 * in PostgreSQL you can do (colA, colB) &lt; (valA, valB). In other
-	 * databases you need to write: ((colA &lt; valA) OR (colA = valA AND colB
-	 * &lt; valB)). Similarly for &gt;.
+	 * in PostgreSQL you can do (colA, colB) &lt; (valA, valB). In other databases
+	 * you need to write: ((colA &lt; valA) OR (colA = valA AND colB &lt; valB)).
+	 * Similarly for &gt;.
 	 *
 	 * <p>
 	 * Essentially seek looks at both parameters and returns the rows that sort
 	 * below both.
 	 *
 	 * <p>
-	 * This version provides 3 levels of sorting. If you only need to seek
-	 * on one column/value use {@link #seekLessThan(nz.co.gregs.dbvolution.results.RangeComparable, nz.co.gregs.dbvolution.expressions.DBExpression, nz.co.gregs.dbvolution.expressions.BooleanExpression)
+	 * This version provides 3 levels of sorting. If you only need to seek on one
+	 * column/value use {@link #seekLessThan(nz.co.gregs.dbvolution.results.RangeComparable, nz.co.gregs.dbvolution.expressions.DBExpression, nz.co.gregs.dbvolution.expressions.BooleanExpression)
 	 * }
 	 *
 	 * <p>
@@ -1203,17 +1213,17 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 	 * Implements the little-known (and implemented) SQL Row Value syntax.
 	 *
 	 * <p>
-	 * in PostgreSQL you can do (colA, colB) &lt; (valA, valB). In other
-	 * databases you need to write: ((colA &lt; valA) OR (colA = valA AND colB
-	 * &lt; valB)). Similarly for &gt;.
+	 * in PostgreSQL you can do (colA, colB) &lt; (valA, valB). In other databases
+	 * you need to write: ((colA &lt; valA) OR (colA = valA AND colB &lt; valB)).
+	 * Similarly for &gt;.
 	 *
 	 * <p>
 	 * Essentially seek looks at both parameters and returns the rows that sort
 	 * above both.
 	 *
 	 * <p>
-	 * This version provides four levels of sorting. If you only need to seek
-	 * on one column/value use {@link #seekLessThan(nz.co.gregs.dbvolution.results.RangeComparable, nz.co.gregs.dbvolution.expressions.DBExpression, nz.co.gregs.dbvolution.expressions.BooleanExpression)
+	 * This version provides four levels of sorting. If you only need to seek on
+	 * one column/value use {@link #seekLessThan(nz.co.gregs.dbvolution.results.RangeComparable, nz.co.gregs.dbvolution.expressions.DBExpression, nz.co.gregs.dbvolution.expressions.BooleanExpression)
 	 * }
 	 *
 	 * <p>
@@ -1280,8 +1290,7 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 	}
 
 	/**
-	 * Indicates if this expression is a relationship between 2, or more,
-	 * tables.
+	 * Indicates if this expression is a relationship between 2, or more, tables.
 	 *
 	 * @return the relationship
 	 */

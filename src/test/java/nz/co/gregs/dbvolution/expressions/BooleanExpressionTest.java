@@ -487,6 +487,37 @@ public class BooleanExpressionTest extends AbstractTest {
 	}
 
 	@Test
+	public void testNotAllOf() throws SQLException {
+		Marque marque = new Marque();
+		DBQuery dbQuery = database.getDBQuery(marque);
+
+		dbQuery.addCondition(
+				BooleanExpression.notAllOf(
+						marque.column(marque.name).is("TOYOTA"),
+						marque.column(marque.carCompany).is(4)
+				));
+
+		List<DBQueryRow> allRows = dbQuery.getAllRows();
+		database.print(allRows);
+		Assert.assertThat(allRows.size(), is(22));
+	}
+	@Test
+	public void testSomeButNotAllOf() throws SQLException {
+		Marque marque = new Marque();
+		DBQuery dbQuery = database.getDBQuery(marque);
+
+		dbQuery.addCondition(
+				BooleanExpression.someButNotAllOf(
+						marque.column(marque.name).is("TOYOTA"),
+						marque.column(marque.carCompany).is(4)
+				));
+
+		List<DBQueryRow> allRows = dbQuery.getAllRows();
+		database.print(allRows);
+		Assert.assertThat(allRows.size(), is(17));
+	}
+
+	@Test
 	public void testIsAnyOfWithNulls() throws SQLException, ParseException {
 		CarCompany carCo = new CarCompany();
 		DBQuery dbQuery = database.getDBQuery(carCo);
