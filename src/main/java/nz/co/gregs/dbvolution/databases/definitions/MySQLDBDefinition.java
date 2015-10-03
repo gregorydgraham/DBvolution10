@@ -21,7 +21,6 @@ import nz.co.gregs.dbvolution.datatypes.spatial2D.DBPolygon2D;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.TimeZone;
 import nz.co.gregs.dbvolution.databases.MySQLDB;
 import nz.co.gregs.dbvolution.datatypes.*;
 import nz.co.gregs.dbvolution.datatypes.spatial2D.DBLine2D;
@@ -30,6 +29,7 @@ import nz.co.gregs.dbvolution.datatypes.spatial2D.DBMultiPoint2D;
 import nz.co.gregs.dbvolution.datatypes.spatial2D.DBPoint2D;
 import nz.co.gregs.dbvolution.exceptions.IncorrectGeometryReturnedForDatatype;
 import nz.co.gregs.dbvolution.internal.properties.PropertyWrapper;
+import nz.co.gregs.dbvolution.query.QueryOptions;
 
 /**
  * Defines the features of the MySQL database that differ from the standard
@@ -558,7 +558,7 @@ public class MySQLDBDefinition extends DBDefinition {
 		return "X(PointN(ExteriorRing(Envelope(" + first + ")),3))";
 	}
 
-	// Relies on Java8 :(
+// Relies on Java8 :(
 //	@Override
 //	public String doDateAtTimeZoneTransform(String dateSQL, TimeZone timeZone) {
 //		return "CONVERT_TZ(" + dateSQL + ", 'SYSTEM', '" + timeZone.toZoneId().getId() + "') ";

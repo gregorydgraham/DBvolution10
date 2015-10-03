@@ -2,7 +2,6 @@ package nz.co.gregs.dbvolution;
 
 import java.io.Serializable;
 import java.lang.reflect.Array;
-import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
@@ -26,7 +25,6 @@ import nz.co.gregs.dbvolution.exceptions.UndefinedPrimaryKeyException;
 import nz.co.gregs.dbvolution.expressions.BooleanExpression;
 import nz.co.gregs.dbvolution.expressions.DBExpression;
 import nz.co.gregs.dbvolution.internal.properties.*;
-import nz.co.gregs.dbvolution.query.QueryOptions;
 import nz.co.gregs.dbvolution.query.RowDefinition;
 import org.reflections.Reflections;
 
@@ -34,13 +32,8 @@ import org.reflections.Reflections;
  * DBRow is the representation of a table and its structure.
  *
  * <p>
- * DBvolution is available on <a
- * href="https://sourceforge.net/projects/dbvolution/">SourceForge</a> complete
- * with <a href="https://sourceforge.net/p/dbvolution/blog/">BLOG</a>.
- * <p>
  * A fuller description of creating a DBRow subclass is at <a
- * href="https://sourceforge.net/p/dbvolution/blog/2014/02/how-to-write-a-dbrow-subclass/">the
- * sourceforge blog</a>
+ * href="https://dbvolution.gregs.co.nz/usingDBRow.html">the DBvolution website</a>
  * <p>
  * A fundamental difference between Object Oriented Programming and Relational
  * Databases is that DBs are based on persistent tables that store information.

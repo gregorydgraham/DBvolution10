@@ -27,7 +27,6 @@ import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.datatypes.DBLargeObject;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 import nz.co.gregs.dbvolution.exceptions.*;
-import nz.co.gregs.dbvolution.generation.DBTableClassGenerator;
 import nz.co.gregs.dbvolution.transactions.*;
 import nz.co.gregs.dbvolution.internal.properties.PropertyWrapper;
 import nz.co.gregs.dbvolution.query.QueryOptions;
@@ -36,11 +35,6 @@ import org.apache.commons.logging.LogFactory;
 
 /**
  * DBDatabase is the repository of all knowledge about your database.
- *
- * <p>
- * Available on <a href="https://sourceforge.net/projects/dbvolution/">
- * SourceForge</a> complete with <a
- * href="https://sourceforge.net/p/dbvolution/blog/">BLOG</a>
  *
  * <p>
  * All DBvolution projects need a DBDatabase object to provide the database
@@ -1452,7 +1446,8 @@ public abstract class DBDatabase implements Cloneable {
 	 * otherwise.
 	 */
 	public boolean supportsFullOuterJoin() {
-		return supportsFullOuterJoinNatively();
+		return true;
+//		return supportsFullOuterJoinNatively();
 	}
 
 	/**

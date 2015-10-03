@@ -34,12 +34,7 @@ import nz.co.gregs.dbvolution.actions.DBActionList;
  * Use {@link DBDatabase#implement(nz.co.gregs.dbvolution.DBScript)} or 
  * {@link DBScript#implement(nz.co.gregs.dbvolution.DBDatabase) } to run the
  * script within a Committed Transaction.
- *
- * <p>
- * DBvolution is available on <a
- * href="https://sourceforge.net/projects/dbvolution/">SourceForge</a> complete
- * with <a href="https://sourceforge.net/p/dbvolution/blog/">BLOG</a>
- *
+ * 
  * @author Gregory Graham
  */
 public abstract class DBScript {

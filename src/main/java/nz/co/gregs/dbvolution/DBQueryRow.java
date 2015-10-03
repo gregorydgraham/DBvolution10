@@ -30,11 +30,6 @@ import java.util.Map;
  * DBQuery request.
  *
  * <p>
- * DBvolution is available on <a
- * href="https://sourceforge.net/projects/dbvolution/">SourceForge</a> complete
- * with <a href="https://sourceforge.net/p/dbvolution/blog/">BLOG</a>
- *
- * <p>
  * DBQueryRow represents an individual line within the results of a query.
  * However the results within the line are contained in instances of all the
  * DBRow subclasses included in the DBQuery.

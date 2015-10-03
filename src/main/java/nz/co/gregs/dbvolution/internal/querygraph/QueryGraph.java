@@ -18,6 +18,7 @@ package nz.co.gregs.dbvolution.internal.querygraph;
 import edu.uci.ics.jung.graph.SparseMultigraph;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -29,7 +30,6 @@ import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.exceptions.AccidentalCartesianJoinException;
 import nz.co.gregs.dbvolution.expressions.BooleanExpression;
 import nz.co.gregs.dbvolution.expressions.DBExpression;
-import nz.co.gregs.dbvolution.query.QueryOptions;
 
 /**
  * A class to create a network of all the classes used in a query, using foreign
@@ -224,6 +224,21 @@ public class QueryGraph {
 	}
 
 	/**
+	 * Scans the QueryGraph to detect full outer join.
+	 *
+	 * @return TRUE contains only optional tables, FALSE otherwise.
+	 */
+	public boolean willCreateFullOuterJoin() {
+		Collection<QueryGraphNode> vertices = jungGraph.getVertices();
+		for (QueryGraphNode node : vertices) {
+			if (node.isRequiredNode()) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	/**
 	 * Get an arbitrary table from the graph with which to start a traversal.
 	 *
 	 * <p>
@@ -339,7 +354,7 @@ public class QueryGraph {
 	 *
 	 * <p>
 	 * This method scans across discontinuities. If there is a cartesian
-	 * join/discontinuity present all of the nodes will be returned. Use {@link #toList() 
+	 * join/discontinuity present all of the nodes will be returned. Use {@link #toList()
 	 * } if you need to avoid spanning a discontinuity.
 	 *
 	 * <p>
@@ -374,7 +389,7 @@ public class QueryGraph {
 
 	/**
 	 * Create a Jung graph of this QueryGraph for display purposes.
-	 * 
+	 *
 	 * <p>
 	 * Other graphs are available but we use {@link edu.uci.ics.jung.graph.Graph}.
 	 *

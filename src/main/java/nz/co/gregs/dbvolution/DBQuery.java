@@ -44,11 +44,6 @@ import nz.co.gregs.dbvolution.internal.query.*;
  * The Definition of a Query on a Database
  *
  * <p>
- * DBvolution is available on <a
- * href="https://sourceforge.net/projects/dbvolution/">SourceForge</a> complete
- * with <a href="https://sourceforge.net/p/dbvolution/blog/">BLOG</a>
- *
- * <p>
  * DBQuery brings together several DBRow classes into a single database query.
  *
  * <p>
@@ -107,14 +102,14 @@ public class DBQuery {
 	private String getHavingClause(DBDatabase database, QueryOptions options) {
 		BooleanExpression[] havingColumns = options.getHavingColumns();
 		String havingClauseStart = database.getDefinition().getHavingClauseStart();
-		if (havingColumns.length ==1) {
-			return havingClauseStart+ havingColumns[0].toSQLString(database);
+		if (havingColumns.length == 1) {
+			return havingClauseStart + havingColumns[0].toSQLString(database);
 		} else if (havingColumns.length > 1) {
 			String sep = "";
 			String returnStr = havingClauseStart;
 			for (BooleanExpression havingColumn : havingColumns) {
-				returnStr+=sep+havingColumn.toSQLString(database);
-				sep=", ";
+				returnStr += sep + havingColumn.toSQLString(database);
+				sep = ", ";
 			}
 			return returnStr;
 		} else {
@@ -284,8 +279,12 @@ public class DBQuery {
 
 		if (details.getRequiredQueryTables().isEmpty() && details.getOptionalQueryTables().size() == details.getAllQueryTables().size()) {
 			isFullOuterJoin = true;
+			queryState.addedFullOuterJoinToQuery();
 		} else if (details.getOptionalQueryTables().contains(newTable)) {
 			isLeftOuterJoin = true;
+			queryState.addedLeftOuterJoinToQuery();
+		}else{
+			queryState.addedInnerJoinToQuery();
 		}
 
 		//Store the expressions from the new table in the QueryState
@@ -418,7 +417,7 @@ public class DBQuery {
 				selectClause.append(defn.getLimitRowsSubClauseDuringSelectClause(options));
 			}
 
-			String separator = "";
+			String fromClauseTableSeparator = "";
 			String colSep = defn.getStartingSelectSubClauseSeparator();
 			String groupByColSep = "";
 			String tableName;
@@ -446,7 +445,7 @@ public class DBQuery {
 						if (expression != null) {
 							groupByClause.append(groupByColSep).append(defn.transformToStorableType(expression).toSQLString(getDatabase()));
 							groupByColSep = defn.getSubsequentGroupBySubClauseSeparator() + lineSep;
-						}else{
+						} else {
 							groupByClause.append(groupByColSep).append(selectColumn);
 							groupByColSep = defn.getSubsequentGroupBySubClauseSeparator() + lineSep;
 						}
@@ -457,7 +456,8 @@ public class DBQuery {
 					columnIndex++;
 				}
 				if (!options.isUseANSISyntax()) {
-					fromClause.append(separator).append(tableName);
+					fromClause.append(fromClauseTableSeparator).append(tableName);
+					queryState.addedInnerJoinToQuery();
 				} else {
 					fromClause.append(getANSIJoinClause(getDatabase(), queryState, tabRow, joinedTables, options));
 				}
@@ -473,7 +473,7 @@ public class DBQuery {
 					getNonANSIJoin(tabRow, whereClause, defn, joinedTables, lineSep, options);
 				}
 
-				separator = ", " + lineSep;
+				fromClauseTableSeparator = ", " + lineSep;
 			}
 
 			//add conditions found during the ANSI Join creation
@@ -572,6 +572,10 @@ public class DBQuery {
 						+ rawSQLClauseFinal + lineSep
 						+ defn.endSQLStatement();
 			}
+			if (queryState.isFullOuterJoin()&&
+					!database.supportsFullOuterJoinNatively()) {
+				sqlString = defn.doWrapQueryToFakeFullOuterJoin(sqlString, options);
+			}
 		}
 		return sqlString;
 	}
@@ -627,8 +631,7 @@ public class DBQuery {
 	 * <p>
 	 * Uses the defined
 	 * {@link nz.co.gregs.dbvolution.annotations.DBForeignKey foreign keys} on the
-	 * DBRow 
-	 * to connect the tables. Foreign keys that have been
+	 * DBRow to connect the tables. Foreign keys that have been
 	 * {@link nz.co.gregs.dbvolution.DBRow#ignoreForeignKey(java.lang.Object) ignored}
 	 * are not used.
 	 * <p>
@@ -1480,8 +1483,8 @@ public class DBQuery {
 	 * <p>
 	 * Uses the defined
 	 * {@link nz.co.gregs.dbvolution.annotations.DBForeignKey foreign keys} on the
-	 * DBRow and multi-table conditions
-	 * to connect the tables. Foreign keys that have been
+	 * DBRow and multi-table conditions to connect the tables. Foreign keys that
+	 * have been
 	 * {@link nz.co.gregs.dbvolution.DBRow#ignoreForeignKey(java.lang.Object) ignored}
 	 * are not used.
 	 * <p>
@@ -1861,9 +1864,9 @@ public class DBQuery {
 	 * post query conditions
 	 *
 	 * <p>
-	 * The easiest way to get a list of duplicated identifiers, make a
-	 * query that returns the identifier and a count of the rows, and then add a
-	 * post condition that requires the count to be greater than 1.
+	 * The easiest way to get a list of duplicated identifiers, make a query that
+	 * returns the identifier and a count of the rows, and then add a post
+	 * condition that requires the count to be greater than 1.
 	 *
 	 * @param postQueryConditions all the post-query conditions that need to be
 	 * matched
@@ -2222,7 +2225,8 @@ public class DBQuery {
 	 * at this time. The graph cannot be altered through the window but it can be
 	 * moved to help show the parts of the graph. You can manipulate the query
 	 * graph by
-	 * {@link DBQuery#add(nz.co.gregs.dbvolution.DBRow[])  adding tables}, {@link DBQuery#addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression) using expressions that connect tables}, or
+	 * {@link DBQuery#add(nz.co.gregs.dbvolution.DBRow[])  adding tables}, {@link DBQuery#addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression) using expressions that connect tables},
+	 * or
 	 * {@link DBRow#ignoreForeignKey(java.lang.Object) ignoring inappropriate foreign keys}.
 	 *
 	 */
@@ -2564,6 +2568,8 @@ public class DBQuery {
 		private final List<BooleanExpression> consumedExpressions = new ArrayList<BooleanExpression>();
 		private final List<String> requiredConditions = new ArrayList<String>();
 		private final List<String> optionalConditions = new ArrayList<String>();
+		private boolean queryIsFullOuterJoin=true;
+		private boolean queryIsLeftOuterJoin=true;
 
 		QueryState(DBQuery query, DBDatabase database) {
 			this.remainingExpressions = new ArrayList<BooleanExpression>(query.getConditions());
@@ -2621,6 +2627,25 @@ public class DBQuery {
 		 */
 		protected List<String> getOptionalConditions() {
 			return optionalConditions;
+		}
+
+		private void addedFullOuterJoinToQuery() {
+			queryIsFullOuterJoin= queryIsFullOuterJoin&&true;
+			queryIsLeftOuterJoin=false;
+		}
+
+		private void addedLeftOuterJoinToQuery() {
+			queryIsLeftOuterJoin= queryIsLeftOuterJoin&&true;
+			queryIsFullOuterJoin=false;
+		}
+
+		private void addedInnerJoinToQuery() {
+			queryIsLeftOuterJoin=false;
+			queryIsFullOuterJoin=false;
+		}
+
+		private boolean isFullOuterJoin() {
+			return queryIsFullOuterJoin;
 		}
 	}
 

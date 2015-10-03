@@ -1544,7 +1544,7 @@ public abstract class DBDefinition {
 	 * integer expression in the SQL.
 	 */
 	public String doBooleanToIntegerTransform(String booleanExpression) {
-		return doIfThenElseTransform(booleanExpression, ""+1, ""+0);
+		return doIfThenElseTransform(booleanExpression, "" + 1, "" + 0);
 	}
 
 	/**
@@ -3823,7 +3823,8 @@ public abstract class DBDefinition {
 	 * {@link com.vividsolutions.jts.geom.LineSegment JTS LineSegment} with
 	 * @return a JTS LineSegment derived from the database's response, may be
 	 * null.
-	 * @throws com.vividsolutions.jts.io.ParseException malformed WKT will throw an exception
+	 * @throws com.vividsolutions.jts.io.ParseException malformed WKT will throw
+	 * an exception
 	 */
 	public LineSegment transformDatabaseLineSegment2DValueToJTSLineSegment(String lineSegmentAsSQL) throws com.vividsolutions.jts.io.ParseException {
 		LineString lineString = null;
@@ -3844,7 +3845,7 @@ public abstract class DBDefinition {
 	/**
 	 * Convert the JTS LineSegment object into a SQL expression that the database
 	 * will accept as a line segment.
-	 * 
+	 *
 	 * <p>
 	 * By default, creates a WKT representation
 	 *
@@ -4026,9 +4027,12 @@ public abstract class DBDefinition {
 	 * Convert the database's string representation of a MultiPoint2D value into a
 	 * MultiPoint..
 	 *
-	 * @param pointsAsString the MultiPoint2D value to create a {@link com.vividsolutions.jts.geom.MultiPoint JTS MultiPoint} with.
-	 * @return the MultiPoint2D as a {@link com.vividsolutions.jts.geom.MultiPoint JTS MultiPoint} instance
-	 * @throws com.vividsolutions.jts.io.ParseException malformed WKT values will throw an exception
+	 * @param pointsAsString the MultiPoint2D value to create a
+	 * {@link com.vividsolutions.jts.geom.MultiPoint JTS MultiPoint} with.
+	 * @return the MultiPoint2D as a
+	 * {@link com.vividsolutions.jts.geom.MultiPoint JTS MultiPoint} instance
+	 * @throws com.vividsolutions.jts.io.ParseException malformed WKT values will
+	 * throw an exception
 	 */
 	public MultiPoint transformDatabaseMultiPoint2DValueToJTSMultiPoint(String pointsAsString) throws com.vividsolutions.jts.io.ParseException {
 		MultiPoint mpoint = null;
@@ -4048,7 +4052,7 @@ public abstract class DBDefinition {
 	 * Provide the SQL to compare 2 MultiPoint2Ds using the equivalent of EQUALS.
 	 *
 	 * @param firstMultiPointValue the first MultiPoint2D value to compare
- 	 * @param secondMultiPointValue the second MultiPoint2D value to compare
+	 * @param secondMultiPointValue the second MultiPoint2D value to compare
 	 * @return SQL
 	 */
 	public String doMultiPoint2DEqualsTransform(String firstMultiPointValue, String secondMultiPointValue) {
@@ -4218,7 +4222,7 @@ public abstract class DBDefinition {
 	 *
 	 * <p>
 	 * Required to support Oracle's ROWNUM-based paging "system".
-	 * 
+	 *
 	 * <p>
 	 * By default the method just returns the sqlQuery.
 	 *
@@ -4477,15 +4481,17 @@ public abstract class DBDefinition {
 	 * types that JDBC doesn't recognize into a QDT. In particular anything that
 	 * JDBC reports as {@link java.sql.Types#OTHER} will be resolved using this
 	 * method.
-	 * 
+	 *
 	 * <p>
-	 * The default method returns NULL which causes the generator to use a DBJavaObject.
+	 * The default method returns NULL which causes the generator to use a
+	 * DBJavaObject.
 	 *
 	 * @param typeName
-	 * @return the class of the QDT that can be used with this columns of this type name.
+	 * @return the class of the QDT that can be used with this columns of this
+	 * type name.
 	 */
 	public Class<? extends QueryableDatatype> getQueryableDatatypeClassForSQLDatatype(String typeName) {
-			if (typeName.toUpperCase().equals("POLYGON")) {
+		if (typeName.toUpperCase().equals("POLYGON")) {
 			return DBPolygon2D.class;
 		} else if (typeName.toUpperCase().equals("LINESTRING")) {
 			return DBLine2D.class;
@@ -4496,9 +4502,32 @@ public abstract class DBDefinition {
 		} else {
 			return null;
 		}
-}
+	}
 
 	public String getHavingClauseStart() {
 		return "HAVING ";
+	}
+
+	/**
+	 * Adapts the query to work for a database that does not support full outer
+	 * join queries.
+	 *
+	 * <p>
+	 * Full outer join queries in this sense use a FULL OUTER join for ALL joins
+	 * in the query.
+	 *
+	 * <p>
+	 * The standard implementation replaces the query with a LEFT OUTER join query
+	 * UNIONed with a RIGHT OUTER join query.
+	 *
+	 * @param querySQL
+	 * @param options
+	 * @return a fake full outer join query for databases that don't support FULL
+	 * OUTER joins
+	 */
+	public String doWrapQueryToFakeFullOuterJoin(String querySQL, QueryOptions options) {
+		return "" + querySQL.replaceAll(" FULL OUTER ", " LEFT OUTER ").replaceFirst("; *$", "")
+				+ " UNION DISTINCT "
+				+ querySQL.replaceAll(" FULL OUTER ", " RIGHT OUTER ");
 	}
 }
