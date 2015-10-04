@@ -471,6 +471,7 @@ public class DBQuery {
 						}
 					}
 					getNonANSIJoin(tabRow, whereClause, defn, joinedTables, lineSep, options);
+					queryState.addedInnerJoinToQuery();
 				}
 
 				fromClauseTableSeparator = ", " + lineSep;
