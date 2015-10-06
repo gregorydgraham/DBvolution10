@@ -77,6 +77,9 @@ public abstract class AbstractTest {
 		if (System.getProperty("testMySQLRDS") != null) {
 			databases.add(new Object[]{"MySQLDB-RDS", new MySQLRDSTestDatabase()});
 		}
+		if (System.getProperty("testMySQL56") != null) {
+			databases.add(new Object[]{"MySQLDB-5.6", new MySQL56TestDatabase()});
+		}
 		if (System.getProperty("testH2DB") != null) {
 			databases.add(new Object[]{"H2DB", new H2TestDatabase()});
 		}
@@ -235,7 +238,7 @@ public abstract class AbstractTest {
 		marqueRows.add(new Marque(1, "False", 1246974, "", 0, "", "TOYOTA", "", "Y", firstDate, 1, null));
 		marqueRows.add(new Marque(2, "False", 1246974, "", 0, "", "HUMMER", "", "Y", secondDate, 3, null));
 
-		database.setPrintSQLBeforeExecuting(true);
+		database.setPrintSQLBeforeExecuting(false);
 		marquesTable.insert(marqueRows);
 		database.setPrintSQLBeforeExecuting(false);
 
@@ -273,6 +276,14 @@ public abstract class AbstractTest {
 
 		public MySQLRDSTestDatabase() {
 			super("jdbc:mysql://dbvtest-mysql.cygjg2wvuyam.ap-southeast-2.rds.amazonaws.com:3306/test?createDatabaseIfNotExist=true", "dbv", "Testingdbv");
+		}
+	}
+
+	private static class MySQL56TestDatabase extends MySQLDB {
+
+		public MySQL56TestDatabase() {
+			//super("jdbc:mysql://dbvtest-mysql.cygjg2wvuyam.ap-southeast-2.rds.amazonaws.com:3306/test?createDatabaseIfNotExist=true", "dbv", "Testingdbv");
+			super("jdbc:mysql://52.64.179.175:3306/dbv?createDatabaseIfNotExist=true", "dbv", "dbv");
 		}
 	}
 

@@ -29,7 +29,6 @@ import nz.co.gregs.dbvolution.datatypes.spatial2D.DBMultiPoint2D;
 import nz.co.gregs.dbvolution.datatypes.spatial2D.DBPoint2D;
 import nz.co.gregs.dbvolution.exceptions.IncorrectGeometryReturnedForDatatype;
 import nz.co.gregs.dbvolution.internal.properties.PropertyWrapper;
-import nz.co.gregs.dbvolution.query.QueryOptions;
 
 /**
  * Defines the features of the MySQL database that differ from the standard
