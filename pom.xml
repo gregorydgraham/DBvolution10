@@ -301,7 +301,7 @@
 								<testH2DB>true</testH2DB>
 								<testH2DataSourceDB>true</testH2DataSourceDB>
 								<testH2MemoryDB>true</testH2MemoryDB>
-								<testMySQ56>true</testMySQL56>
+								<testMySQ56>true</testMySQ56>
 								<testPostgresSQLRDS>true</testPostgresSQLRDS>
 								<testOracle>true</testOracle>
 								<testMSSQLServer>true</testMSSQLServer>
