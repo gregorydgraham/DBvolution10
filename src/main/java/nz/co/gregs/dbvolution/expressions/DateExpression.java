@@ -1110,7 +1110,22 @@ public class DateExpression implements DateResult, RangeComparable<DateResult>, 
 		return new DateExpression(new DateDateRepeatArithmeticDateResult(this, intervalExpression) {
 			@Override
 			protected String doExpressionTransformation(DBDatabase db) {
-				return db.getDefinition().doDatePlusDateRepeatTransform(getFirst().toSQLString(db), getSecond().toSQLString(db));
+				if (db instanceof SupportsDateRepeatDatatypeFunctions) {
+					return db.getDefinition().doDateMinusDateRepeatTransform(getFirst().toSQLString(db), getSecond().toSQLString(db));
+				} else {
+					final DateExpression left = getFirst();
+					final DateRepeatExpression right = new DateRepeatExpression(getSecond());
+					return BooleanExpression.anyOf(left.isNull(), right.isNull())
+							.ifThenElse(
+									DateExpression.nullExpression(),
+									left.addYears(right.getYears())
+									.addMonths(right.getMonths())
+									.addDays(right.getDays())
+									.addHours(right.getHours())
+									.addMinutes(right.getMinutes())
+									.addSeconds(right.getSeconds())
+							).toSQLString(db);
+				}
 			}
 
 			@Override
@@ -1118,6 +1133,17 @@ public class DateExpression implements DateResult, RangeComparable<DateResult>, 
 				return false;
 			}
 		});
+//		return new DateExpression(new DateDateRepeatArithmeticDateResult(this, intervalExpression) {
+//			@Override
+//			protected String doExpressionTransformation(DBDatabase db) {
+//				return db.getDefinition().doDatePlusDateRepeatTransform(getFirst().toSQLString(db), getSecond().toSQLString(db));
+//			}
+//
+//			@Override
+//			public boolean getIncludesNull() {
+//				return false;
+//			}
+//		});
 	}
 
 	/**

@@ -39,7 +39,7 @@ import org.joda.time.Period;
 
 /**
  *
- * @author gregory.graham
+ * @author Gregory Graham
  */
 public class DBDateRepeatTest extends AbstractTest {
 
@@ -124,12 +124,12 @@ public class DBDateRepeatTest extends AbstractTest {
 		marq.creationDate.excludedValues((Date) null);
 		DBQuery query = database.getDBQuery(marq);
 		final DateColumn creationDateCol = marq.column(marq.creationDate);
-		final DateExpression creationDateMinus5Days = creationDateCol.plus(new Period().withDays(5));
-		final DateExpression march23rd2013Minus5Weeks = DateExpression.value(march23rd2013).plus(new Period().withWeeks(5));
-		final DateExpression march23rd2013minus2Days = DateExpression.value(march23rd2013).plus(new Period().withDays(2));
+		final DateExpression creationDatePlus5Days = creationDateCol.plus(new Period().withDays(5));
+		final DateExpression march23rd2013Plus5Weeks = DateExpression.value(march23rd2013).plus(new Period().withWeeks(5));
+		final DateExpression march23rd2013plus2Days = DateExpression.value(march23rd2013).plus(new Period().withDays(2));
 		query.addCondition(DateExpression.overlaps(
-				creationDateCol, creationDateMinus5Days,
-				march23rd2013Minus5Weeks, march23rd2013minus2Days)
+				creationDateCol, creationDatePlus5Days,
+				march23rd2013Plus5Weeks, march23rd2013plus2Days)
 		);
 		List<DBQueryRow> allRows = query.getAllRows();
 		database.print(allRows);
