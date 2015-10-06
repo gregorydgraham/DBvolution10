@@ -2193,7 +2193,7 @@ public class DateExpression implements DateResult, RangeComparable<DateResult>, 
 	 * @param secondEndtime the end of the second interval
 	 * @return a boolean expression
 	 */
-	public BooleanExpression overlaps(DateResult firstStartTime, DateResult firstEndTime, DateResult secondStartTime, DateResult secondEndtime) {
+	public static BooleanExpression overlaps(DateResult firstStartTime, DateResult firstEndTime, DateResult secondStartTime, DateResult secondEndtime) {
 		return DateExpression.overlaps(
 				new DateExpression(firstStartTime), new DateExpression(firstEndTime),
 				secondStartTime, secondEndtime

@@ -155,28 +155,31 @@ public enum DateRepeatFunctions implements DBVFeature {
 	/**
 	 *
 	 */
-	DATEADDITION("Date", "Date original, String dateRepeatStr",
-			"import org.joda.time.Period;\n"
-			+ "import java.util.*;\n"
-			+ "import java.lang.*;",
-			"		if (original==null||dateRepeatStr==null||dateRepeatStr.length()==0||original.toString().length()==0||original.getTime()==0){return null;}else{\n"
+	DATEADDITION("Date", "Date original, String dateRepeatInput",
+			"import org.joda.time.Period;"
+			+ "import java.util.*;",
+			"\n"
+			+ "		if (original == null || dateRepeatInput == null || dateRepeatInput.length() == 0) {\n"
+			+ "			return null;\n"
+			+ "		}\n"
+			+ "		String dateRepeatStr = dateRepeatInput.replaceAll(\"[^-.PYMDhns0-9]+\", \"\");\n"
 			+ "		Calendar cal = new GregorianCalendar();\n"
-			+ "		try{cal.setTime(original);}catch(Exception except){return null;}\n"
+			+ "		cal.setTime(original);\n"
 			+ "		int years = Integer.parseInt(dateRepeatStr.replaceAll(\".*P([-0-9.]+)Y.*\", \"$1\"));\n"
 			+ "		int months = Integer.parseInt(dateRepeatStr.replaceAll(\".*Y([-0-9.]+)M.*\", \"$1\"));\n"
 			+ "		int days = Integer.parseInt(dateRepeatStr.replaceAll(\".*M([-0-9.]+)D.*\", \"$1\"));\n"
 			+ "		int hours = Integer.parseInt(dateRepeatStr.replaceAll(\".*D([-0-9.]+)h.*\", \"$1\"));\n"
 			+ "		int minutes = Integer.parseInt(dateRepeatStr.replaceAll(\".*h([-0-9.]+)n.*\", \"$1\"));\n"
-			+ "		int seconds = Integer.parseInt(dateRepeatStr.replaceAll(\".*m([-0-9.]+)s.*\", \"$1\"));\n"
-			+ "		final Double secondsDouble = Double.parseDouble(dateRepeatStr.replaceAll(\".*n([-0-9.]+)s.*\", \"$1\"));\n"
-			+ "		final int secondsInt = secondsDouble.intValue();\n"
+			+ "		int seconds = Integer.valueOf(dateRepeatStr.replaceAll(\".*n([-0-9.]+)s.*\", \"$1\"));\n"
+			+ "\n"
 			+ "		cal.add(Calendar.YEAR, years);\n"
 			+ "		cal.add(Calendar.MONTH, months);\n"
 			+ "		cal.add(Calendar.DAY_OF_MONTH, days);\n"
 			+ "		cal.add(Calendar.HOUR, hours);\n"
 			+ "		cal.add(Calendar.MINUTE, minutes);\n"
 			+ "		cal.add(Calendar.SECOND, seconds);\n"
-			+ "		return cal.getTime();"),
+			+ "		return cal.getTime();"
+					+ ""),
 
 	/**
 	 *

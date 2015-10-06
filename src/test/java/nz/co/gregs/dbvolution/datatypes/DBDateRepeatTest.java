@@ -101,7 +101,7 @@ public class DBDateRepeatTest extends AbstractTest {
 	}
 
 	@Test
-	public void testOverlaps() throws SQLException {
+	public void testOverlapsWithMinus() throws SQLException {
 		Marque marq = new Marque();
 		marq.creationDate.excludedValues((Date) null);
 		DBQuery query = database.getDBQuery(marq);
@@ -109,6 +109,24 @@ public class DBDateRepeatTest extends AbstractTest {
 		final DateExpression creationDateMinus5Days = creationDateCol.minus(new Period().withDays(5));
 		final DateExpression march23rd2013Minus5Weeks = DateExpression.value(march23rd2013).minus(new Period().withWeeks(5));
 		final DateExpression march23rd2013minus2Days = DateExpression.value(march23rd2013).minus(new Period().withDays(2));
+		query.addCondition(DateExpression.overlaps(
+				creationDateCol, creationDateMinus5Days,
+				march23rd2013Minus5Weeks, march23rd2013minus2Days)
+		);
+		List<DBQueryRow> allRows = query.getAllRows();
+		database.print(allRows);
+		Assert.assertThat(allRows.size(), is(18));
+	}
+
+	@Test
+	public void testOverlapsWithPlus() throws SQLException {
+		Marque marq = new Marque();
+		marq.creationDate.excludedValues((Date) null);
+		DBQuery query = database.getDBQuery(marq);
+		final DateColumn creationDateCol = marq.column(marq.creationDate);
+		final DateExpression creationDateMinus5Days = creationDateCol.plus(new Period().withDays(5));
+		final DateExpression march23rd2013Minus5Weeks = DateExpression.value(march23rd2013).plus(new Period().withWeeks(5));
+		final DateExpression march23rd2013minus2Days = DateExpression.value(march23rd2013).plus(new Period().withDays(2));
 		query.addCondition(DateExpression.overlaps(
 				creationDateCol, creationDateMinus5Days,
 				march23rd2013Minus5Weeks, march23rd2013minus2Days)
