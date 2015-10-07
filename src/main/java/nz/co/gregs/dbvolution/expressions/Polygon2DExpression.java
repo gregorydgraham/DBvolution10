@@ -122,6 +122,23 @@ public class Polygon2DExpression implements Spatial2DExpression, Polygon2DResult
 	 * }, and when creating column expressions using {@link DBPolygon2D#DBPolygon2D(nz.co.gregs.dbvolution.expressions.Polygon2DExpression)
 	 * } and similar methods.
 	 *
+	 * @param coordinates  the individual numbers that are converted to
+	 * point that define the polygon value of this expression.
+	 * @return a polygon2d expression
+	 */
+	public static Polygon2DExpression value(Number... coordinates) {
+		ArrayList<NumberExpression> exprs = new ArrayList<NumberExpression>();
+		for (Number coord : coordinates) {
+			exprs.add(NumberExpression.value(coord));
+		}
+		return value(exprs.toArray(new NumberExpression[]{}));
+	}
+
+	/**
+	 * Create a Polygon2DExpression that represents the value for use in {@link DBQuery#addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression)
+	 * }, and when creating column expressions using {@link DBPolygon2D#DBPolygon2D(nz.co.gregs.dbvolution.expressions.Polygon2DExpression)
+	 * } and similar methods.
+	 *
 	 * @param coordinateExpressions the individual numbers that are converted to
 	 * point that define the polygon value of this expression.
 	 * @return a polygon2d expression

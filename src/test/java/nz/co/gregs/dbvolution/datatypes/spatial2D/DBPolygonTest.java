@@ -17,6 +17,7 @@ package nz.co.gregs.dbvolution.datatypes.spatial2D;
 
 import com.vividsolutions.jts.geom.*;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.DBQuery;
@@ -87,6 +88,115 @@ public class DBPolygonTest extends AbstractTest {
 			allRows = database.getDBTable(new BasicSpatialTable()).setBlankQueryAllowed(true).getAllRows();
 			database.print(allRows);
 			Assert.assertThat(allRows.size(), is(2));
+		}
+	}
+
+	@Test
+	public void testValueFromPointArrayWithIntersects() throws SQLException {
+		if (database instanceof SupportsPolygonDatatype) {
+			BasicSpatialTable spatial = new BasicSpatialTable();
+			database.preventDroppingOfTables(false);
+			database.dropTableNoExceptions(spatial);
+			database.createTable(spatial);
+
+			GeometryFactory fac = new GeometryFactory();
+			Point createPoint = fac.createPoint(new Coordinate(5, 10));
+			spatial.myfirstgeom.setValue(createPolygonFromPoint(createPoint));
+			database.insert(spatial);
+
+			createPoint = fac.createPoint(new Coordinate(12, 12));
+			spatial = new BasicSpatialTable();
+			spatial.myfirstgeom.setValue(createPolygonFromPoint(createPoint));
+			database.insert(spatial);
+
+			database.print(database.getDBTable(new BasicSpatialTable()).setBlankQueryAllowed(true).getAllRows());
+			
+			GeometryFactory geomFactory = new GeometryFactory();
+			Coordinate[] coordArray = new Coordinate[]{new Coordinate(0, 0), new Coordinate(11, 0), new Coordinate(11, 11), new Coordinate(0, 11), new Coordinate(0, 0)};
+			List<Point> pointList = new ArrayList<Point>();
+			for (Coordinate coordArray1 : coordArray) {
+				Point point = geomFactory.createPoint(coordArray1);
+				pointList.add(point);
+			}
+			Point[] pointArray = pointList.toArray(new Point[]{});
+
+//			Polygon polygon = fac.createPolygon(coordArray);
+			DBQuery query = database.getDBQuery(new BasicSpatialTable()).addCondition(Polygon2DExpression.value(pointArray).intersects(spatial.column(spatial.myfirstgeom)));
+			List<BasicSpatialTable> allRows = query.getAllInstancesOf(spatial);
+			database.print(allRows);
+			Assert.assertThat(allRows.size(), is(1));
+			Assert.assertThat(allRows.get(0).pkid.intValue(), is(1));
+		}
+	}
+
+	@Test
+	public void testValueFromPolygonResultWithIntersects() throws SQLException {
+		if (database instanceof SupportsPolygonDatatype) {
+			BasicSpatialTable spatial = new BasicSpatialTable();
+			database.preventDroppingOfTables(false);
+			database.dropTableNoExceptions(spatial);
+			database.createTable(spatial);
+
+			GeometryFactory fac = new GeometryFactory();
+			Point createPoint = fac.createPoint(new Coordinate(5, 10));
+			spatial.myfirstgeom.setValue(createPolygonFromPoint(createPoint));
+			database.insert(spatial);
+
+			createPoint = fac.createPoint(new Coordinate(12, 12));
+			spatial = new BasicSpatialTable();
+			spatial.myfirstgeom.setValue(createPolygonFromPoint(createPoint));
+			database.insert(spatial);
+
+			database.print(database.getDBTable(new BasicSpatialTable()).setBlankQueryAllowed(true).getAllRows());
+			
+			GeometryFactory geomFactory = new GeometryFactory();
+			Coordinate[] coordArray = new Coordinate[]{new Coordinate(0, 0), new Coordinate(11, 0), new Coordinate(11, 11), new Coordinate(0, 11), new Coordinate(0, 0)};
+			List<Point> pointList = new ArrayList<Point>();
+			for (Coordinate coordArray1 : coordArray) {
+				Point point = geomFactory.createPoint(coordArray1);
+				pointList.add(point);
+			}
+			Point[] pointArray = pointList.toArray(new Point[]{});
+			Polygon2DExpression polygonResult = Polygon2DExpression.value(pointArray);
+
+//			Polygon polygon = fac.createPolygon(coordArray);
+			DBQuery query = database.getDBQuery(new BasicSpatialTable()).addCondition(Polygon2DExpression.value(polygonResult).intersects(spatial.column(spatial.myfirstgeom)));
+			List<BasicSpatialTable> allRows = query.getAllInstancesOf(spatial);
+			database.print(allRows);
+			Assert.assertThat(allRows.size(), is(1));
+			Assert.assertThat(allRows.get(0).pkid.intValue(), is(1));
+		}
+	}
+
+	@Test
+	public void testValueFromNumberArrayWithIntersects() throws SQLException {
+		if (database instanceof SupportsPolygonDatatype) {
+			BasicSpatialTable spatial = new BasicSpatialTable();
+			database.preventDroppingOfTables(false);
+			database.dropTableNoExceptions(spatial);
+			database.createTable(spatial);
+
+			GeometryFactory fac = new GeometryFactory();
+			Point createPoint = fac.createPoint(new Coordinate(5, 10));
+			spatial.myfirstgeom.setValue(createPolygonFromPoint(createPoint));
+			database.insert(spatial);
+
+			createPoint = fac.createPoint(new Coordinate(12, 12));
+			spatial = new BasicSpatialTable();
+			spatial.myfirstgeom.setValue(createPolygonFromPoint(createPoint));
+			database.insert(spatial);
+
+			database.print(database.getDBTable(new BasicSpatialTable()).setBlankQueryAllowed(true).getAllRows());
+			
+			GeometryFactory geomFactory = new GeometryFactory();
+			Number[] coordArray = new Number[]{0, 0, 11, 0, 11, 11, 0, 11, 0, 0};
+
+//			Polygon polygon = fac.createPolygon(coordArray);
+			DBQuery query = database.getDBQuery(new BasicSpatialTable()).addCondition(Polygon2DExpression.value(coordArray).intersects(spatial.column(spatial.myfirstgeom)));
+			List<BasicSpatialTable> allRows = query.getAllInstancesOf(spatial);
+			database.print(allRows);
+			Assert.assertThat(allRows.size(), is(1));
+			Assert.assertThat(allRows.get(0).pkid.intValue(), is(1));
 		}
 	}
 
