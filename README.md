@@ -13,4 +13,4 @@ Transactions are encapsulated into a thread-like API, allowing you to write comp
 
 The actions performed by DBvolution are always available for debugging and checking by DBAs before release.
 
-There are a demonstration project at https://github.com/gregorydgraham/DBvolution-Demo, examples in nz.co.gregs.dbvolution.examples, and documentation at http://dbvolution.gregs.co.nz
+There a demonstration project at https://github.com/gregorydgraham/DBvolution-Demo, examples in http://nz.co.gregs.dbvolution.examples, and documentation at http://dbvolution.gregs.co.nz
