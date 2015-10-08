@@ -31,6 +31,7 @@ import nz.co.gregs.dbvolution.exceptions.AccidentalDroppingOfTableException;
 import nz.co.gregs.dbvolution.exceptions.AutoCommitActionDuringTransactionException;
 import nz.co.gregs.dbvolution.expressions.Polygon2DExpression;
 import nz.co.gregs.dbvolution.expressions.NumberExpression;
+import nz.co.gregs.dbvolution.expressions.Point2DExpression;
 import nz.co.gregs.dbvolution.generic.AbstractTest;
 import static org.hamcrest.Matchers.*;
 import org.junit.Assert;
@@ -119,6 +120,44 @@ public class DBPolygonTest extends AbstractTest {
 				pointList.add(point);
 			}
 			Point[] pointArray = pointList.toArray(new Point[]{});
+
+//			Polygon polygon = fac.createPolygon(coordArray);
+			DBQuery query = database.getDBQuery(new BasicSpatialTable()).addCondition(Polygon2DExpression.value(pointArray).intersects(spatial.column(spatial.myfirstgeom)));
+			List<BasicSpatialTable> allRows = query.getAllInstancesOf(spatial);
+			database.print(allRows);
+			Assert.assertThat(allRows.size(), is(1));
+			Assert.assertThat(allRows.get(0).pkid.intValue(), is(1));
+		}
+	}
+
+	@Test
+	public void testValueFromPointExpressionArrayWithIntersects() throws SQLException {
+		if (database instanceof SupportsPolygonDatatype) {
+			BasicSpatialTable spatial = new BasicSpatialTable();
+			database.preventDroppingOfTables(false);
+			database.dropTableNoExceptions(spatial);
+			database.createTable(spatial);
+
+			GeometryFactory fac = new GeometryFactory();
+			Point createPoint = fac.createPoint(new Coordinate(5, 10));
+			spatial.myfirstgeom.setValue(createPolygonFromPoint(createPoint));
+			database.insert(spatial);
+
+			createPoint = fac.createPoint(new Coordinate(12, 12));
+			spatial = new BasicSpatialTable();
+			spatial.myfirstgeom.setValue(createPolygonFromPoint(createPoint));
+			database.insert(spatial);
+
+			database.print(database.getDBTable(new BasicSpatialTable()).setBlankQueryAllowed(true).getAllRows());
+			
+			GeometryFactory geomFactory = new GeometryFactory();
+			Coordinate[] coordArray = new Coordinate[]{new Coordinate(0, 0), new Coordinate(11, 0), new Coordinate(11, 11), new Coordinate(0, 11), new Coordinate(0, 0)};
+			List<Point2DExpression> pointList = new ArrayList<Point2DExpression>();
+			for (Coordinate coordArray1 : coordArray) {
+				Point point = geomFactory.createPoint(coordArray1);
+				pointList.add(Point2DExpression.value(point));
+			}
+			Point2DExpression[] pointArray = pointList.toArray(new Point2DExpression[]{});
 
 //			Polygon polygon = fac.createPolygon(coordArray);
 			DBQuery query = database.getDBQuery(new BasicSpatialTable()).addCondition(Polygon2DExpression.value(pointArray).intersects(spatial.column(spatial.myfirstgeom)));
