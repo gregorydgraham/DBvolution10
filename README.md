@@ -1,7 +1,7 @@
 # DBvolution
-Advanced Library to Remove Object Relational Impedance. 
-
 DBvolution is a java library that reduces SQL access to simple java calls.
+
+Advanced Library to Remove Object Relational Impedance. 
 
 DBvolution translates all database concepts into Object Oriented concepts, allowing you to spend all your time writing Java rather than fixing broken and awkward SQL.
 
@@ -13,4 +13,4 @@ Transactions are encapsulated into a thread-like API, allowing you to write comp
 
 The actions performed by DBvolution are always available for debugging and checking by DBAs before release.
 
-There a demonstration project at https://github.com/gregorydgraham/DBvolution-Demo, examples in http://nz.co.gregs.dbvolution.examples, and documentation at http://dbvolution.gregs.co.nz
+		There are examples in nz.co.gregs.dbvolution.examples, and documentation at http://dbvolution.gregs.co.nz and http://sourceforge.net/p/dbvolution/blog/
