@@ -614,6 +614,33 @@ public class PostgresDBDefinition extends DBDefinition {
 
 		return "POLYGON '(" + str + ")'";
 	}
+	
+	@Override
+	public String transformCoordinateArrayToDatabasePolygon2DFormat(List<String> coordinateSQL) {
+		
+		StringBuilder str = new StringBuilder();
+		String separator = "";
+		for (String coordinate : coordinateSQL) {
+			str.append(separator).append(coordinate);
+			separator = ",";
+		}
+
+		return "POLYGON '(" + str + ")'";
+	}
+	
+	@Override
+	public String transformPoint2DArrayToDatabasePolygon2DFormat(List<String> pointSQL) {
+		//POINT (0.0, 0.0) => POLYGON((0.0, 0.0), ... )
+		StringBuilder str = new StringBuilder();
+		String separator = "";
+		for (String point : pointSQL) {
+			final String coordsOnly = point.replaceAll("POINT ", "");
+			str.append(separator).append(coordsOnly);
+			separator = ",";
+		}
+
+		return "POLYGON '(" + str + ")'";
+	}
 
 	@Override
 	public DBExpression transformToStorableType(DBExpression columnExpression) {

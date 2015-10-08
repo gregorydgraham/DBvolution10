@@ -79,7 +79,7 @@ public class OracleAWSDBDefinition extends OracleDBDefinition {
 	}
 
 	@Override
-	public String doPoint2DArrayToPolygon2DTransform(List<String> pointSQL) {
+	public String transformPoint2DArrayToDatabasePolygon2DFormat(List<String> pointSQL) {
 		throw new UnsupportedOperationException("Spatial functions have been removed from AWS Oracle");
 	}
 

@@ -270,7 +270,7 @@ public class Polygon2DExpression implements Spatial2DExpression, Polygon2DResult
 					pointSQL.add(pointExpr.toSQLString(db));
 				}
 				try {
-					return db.getDefinition().doPoint2DArrayToPolygon2DTransform(pointSQL);
+					return db.getDefinition().transformPoint2DArrayToDatabasePolygon2DFormat(pointSQL);
 				} catch (UnsupportedOperationException ex) {
 					StringExpression newPolygon = StringExpression.value("POLYGON ((");
 					String separator = "";
@@ -298,7 +298,7 @@ public class Polygon2DExpression implements Spatial2DExpression, Polygon2DResult
 					pointSQL.add(pointExpr.toSQLString(db));
 				}
 				try {
-					return db.getDefinition().doCoordinateArrayToPolygon2DTransform(pointSQL);
+					return db.getDefinition().transformCoordinateArrayToDatabasePolygon2DFormat(pointSQL);
 				} catch (UnsupportedOperationException ex) {
 					StringExpression newPolygon = StringExpression.value("POLYGON ((");
 					String separator = "";

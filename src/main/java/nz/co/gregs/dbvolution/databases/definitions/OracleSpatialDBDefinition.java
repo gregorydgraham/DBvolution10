@@ -153,7 +153,7 @@ public class OracleSpatialDBDefinition extends OracleDBDefinition {
 	}
 
 	@Override
-	public String doPoint2DArrayToPolygon2DTransform(List<String> pointSQL) {
+	public String transformPoint2DArrayToDatabasePolygon2DFormat(List<String> pointSQL) {
 		StringBuilder ordinateArray = new StringBuilder("MDSYS.SDO_ORDINATE_ARRAY(");
 		final String ordinateSep = ", ";
 		String pairSep = "";
@@ -174,7 +174,7 @@ public class OracleSpatialDBDefinition extends OracleDBDefinition {
 	}
 
 	@Override
-	public String doCoordinateArrayToPolygon2DTransform(List<String> pointSQL) {
+	public String transformCoordinateArrayToDatabasePolygon2DFormat(List<String> pointSQL) {
 		StringBuilder ordinateArray = new StringBuilder("MDSYS.SDO_ORDINATE_ARRAY(");
 		final String ordinateSep = ", ";
 		String pairSep = "";

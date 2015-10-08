@@ -3567,7 +3567,7 @@ public abstract class DBDefinition {
 	 * @param pointSQL the point2d value
 	 * @return SQL
 	 */
-	public String doPoint2DArrayToPolygon2DTransform(List<String> pointSQL) {
+	public String transformPoint2DArrayToDatabasePolygon2DFormat(List<String> pointSQL) {
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
@@ -4431,7 +4431,7 @@ public abstract class DBDefinition {
 	 * @param coordinateSQL lots of numbers
 	 * @return a polygon2d value
 	 */
-	public String doCoordinateArrayToPolygon2DTransform(List<String> coordinateSQL) {
+	public String transformCoordinateArrayToDatabasePolygon2DFormat(List<String> coordinateSQL) {
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 

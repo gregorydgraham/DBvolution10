@@ -21,6 +21,7 @@ import nz.co.gregs.dbvolution.datatypes.spatial2D.DBPolygon2D;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 import nz.co.gregs.dbvolution.databases.MySQLDB;
 import nz.co.gregs.dbvolution.datatypes.*;
 import nz.co.gregs.dbvolution.datatypes.spatial2D.DBLine2D;
@@ -231,6 +232,33 @@ public class MySQLDBDefinition extends DBDefinition {
 		String wktValue = geom.toText();
 		return "PolyFromText('" + wktValue + "')";
 	}
+	
+//	@Override
+//	public String transformCoordinateArrayToDatabasePolygon2DFormat(List<String> coordinateSQL) {
+//		
+//		StringBuilder str = new StringBuilder();
+//		String separator = "";
+//		for (String coordinate : coordinateSQL) {
+//			str.append(separator).append(coordinate);
+//			separator = ",";
+//		}
+////'POLYGON ((12 12, 13 12, 13 13, 12 13, 12 12))'
+//		return "PolyFromText('POLYGON (" + str + ")')";
+//	}
+//	
+//	@Override
+//	public String transformPoint2DArrayToDatabasePolygon2DFormat(List<String> pointSQL) {
+//		//POINT (0.0, 0.0) => POLYGON((0.0, 0.0), ... )
+//		StringBuilder str = new StringBuilder();
+//		String separator = "";
+//		for (String point : pointSQL) {
+//			final String coordsOnly = point.replaceAll("POINT ", "");
+//			str.append(separator).append(coordsOnly);
+//			separator = ",";
+//		}
+//
+//		return "PolyFromText('POLYGON (" + str + ")')";
+//	}
 
 	@Override
 	public String doPolygon2DEqualsTransform(String firstGeometry, String secondGeometry) {
