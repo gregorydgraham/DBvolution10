@@ -232,7 +232,38 @@ public class MySQLDBDefinition extends DBDefinition {
 		String wktValue = geom.toText();
 		return "PolyFromText('" + wktValue + "')";
 	}
-	
+
+	@Override
+	public String transformCoordinateArrayToDatabasePolygon2DFormat(List<String> coordinateSQL) {
+
+		StringBuilder str = new StringBuilder();
+		String separator = "";
+		for (String coordinate : coordinateSQL) {
+			str.append(separator).append(coordinate);
+			if (separator.equals(" ")) {
+				separator = ",";
+			} else {
+				separator = " ";
+			}
+		}
+//'POLYGON ((12 12, 13 12, 13 13, 12 13, 12 12))'
+		return "PolyFromText('POLYGON ((" + str + "))')";
+	}
+
+	@Override
+	public String transformPoint2DArrayToDatabasePolygon2DFormat(List<String> pointSQL) {
+		//PointFromText('POINT (0 0)') => POLYGON((0.0, 0.0), ... )
+		StringBuilder str = new StringBuilder();
+		String separator = "";
+		for (String point : pointSQL) {
+			final String coordsOnly = point.replaceAll("PointFromText\\('POINT \\(", "").replaceAll("\\)'\\)", "");
+			str.append(separator).append(coordsOnly);
+			separator = ",";
+		}
+
+		return "PolyFromText('POLYGON ((" + str + "))')";
+	}
+
 //	@Override
 //	public String transformCoordinateArrayToDatabasePolygon2DFormat(List<String> coordinateSQL) {
 //		
@@ -259,7 +290,6 @@ public class MySQLDBDefinition extends DBDefinition {
 //
 //		return "PolyFromText('POLYGON (" + str + ")')";
 //	}
-
 	@Override
 	public String doPolygon2DEqualsTransform(String firstGeometry, String secondGeometry) {
 		return "ST_Equals(" + firstGeometry + ", " + secondGeometry + ")";
