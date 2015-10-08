@@ -594,6 +594,37 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 
 		return "geometry::STGeomFromText('POLYGON ((" + str + "))', 0)";
 	}
+	@Override
+	public String transformCoordinateArrayToDatabasePolygon2DFormat(List<String> coordinateSQL) {
+
+		StringBuilder str = new StringBuilder();
+		String separator = "";
+		for (String coordinate : coordinateSQL) {
+			str.append(separator).append(coordinate);
+			if (separator.equals(" ")) {
+				separator = ",";
+			} else {
+				separator = " ";
+			}
+		}
+//'POLYGON ((12 12, 13 12, 13 13, 12 13, 12 12))'
+		return "geometry::STGeomFromText('POLYGON ((" + str + "))', 0)";
+	}
+
+	@Override
+	public String transformPoint2DArrayToDatabasePolygon2DFormat(List<String> pointSQL) {
+		//PointFromText('POINT (0 0)') => POLYGON((0.0, 0.0), ... )
+		StringBuilder str = new StringBuilder();
+		String separator = "";
+		for (String point : pointSQL) {
+			System.out.println(""+point);
+			final String coordsOnly = point.replaceAll("geometry::STGeomFromText \\('POINT \\(", "").replaceAll("\\)',0\\)", "");
+			str.append(separator).append(coordsOnly);
+			separator = ",";
+		}
+
+		return "geometry::STGeomFromText('POLYGON ((" + str + "))', 0)";
+	}
 
 	@Override
 	public String doPolygon2DIntersectionTransform(String firstGeometry, String secondGeometry) {
