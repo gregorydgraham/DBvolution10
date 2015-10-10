@@ -97,6 +97,19 @@ public class Line2DExpressionTest extends AbstractTest {
 	}
 
 	@Test
+	public void testValueWithLine2DResult() throws SQLException {
+		System.out.println("value");
+		LineString point = geometryFactory.createLineString(new Coordinate[]{new Coordinate(2.0, 3.0), new Coordinate(3.0, 4.0)});
+		final LineTestTable pointTestTable = new LineTestTable();
+		DBQuery dbQuery = database.getDBQuery(pointTestTable);
+		dbQuery.addCondition(Line2DExpression.value(pointTestTable.column(pointTestTable.line)).is(point));
+		List<LineTestTable> allRows = dbQuery.getAllInstancesOf(pointTestTable);
+		Assert.assertThat(allRows.size(), is(1));
+		Assert.assertThat(allRows.get(0).line_id.intValue(), is(1));
+		Assert.assertThat(allRows.get(0).line.jtsLineStringValue(), is(point));
+	}
+
+	@Test
 	public void testGetQueryableDatatypeForExpressionValue() {
 		System.out.println("getQueryableDatatypeForExpressionValue");
 		Line2DExpression instance = new Line2DExpression();
@@ -265,6 +278,36 @@ public class Line2DExpressionTest extends AbstractTest {
 	}
 
 	@Test
+	public void testHasMagnitude() throws SQLException {
+		System.out.println("dimension");
+		final LineTestTable lineTestTable = new LineTestTable();
+		DBQuery dbQuery = database.getDBQuery(lineTestTable);
+		dbQuery.addCondition(lineTestTable.column(lineTestTable.line).hasMagnitude().isNot(true));
+		List<LineTestTable> allRows = dbQuery.getAllInstancesOf(lineTestTable);
+		Assert.assertThat(allRows.size(), is(3));
+	}
+
+	@Test
+	public void testMagnitude() throws SQLException {
+		System.out.println("dimension");
+		final LineTestTable lineTestTable = new LineTestTable();
+		DBQuery dbQuery = database.getDBQuery(lineTestTable);
+		dbQuery.addCondition(lineTestTable.column(lineTestTable.line).magnitude().isNull());
+		List<LineTestTable> allRows = dbQuery.getAllInstancesOf(lineTestTable);
+		Assert.assertThat(allRows.size(), is(3));
+	}
+
+	@Test
+	public void testSpatialDimension() throws SQLException {
+		System.out.println("dimension");
+		final LineTestTable lineTestTable = new LineTestTable();
+		DBQuery dbQuery = database.getDBQuery(lineTestTable);
+		dbQuery.addCondition(lineTestTable.column(lineTestTable.line).spatialDimensions().is(2));
+		List<LineTestTable> allRows = dbQuery.getAllInstancesOf(lineTestTable);
+		Assert.assertThat(allRows.size(), is(3));
+	}
+
+	@Test
 	public void testIntersects() throws SQLException {
 		System.out.println("intersects");
 		final LineTestTable lineTestTable = new LineTestTable();
@@ -276,6 +319,72 @@ public class Line2DExpressionTest extends AbstractTest {
 		Coordinate coordinateA = new Coordinate(3, 3);
 		Coordinate coordinateB = new Coordinate(2, 4);
 		final Line2DExpression crossingLine = Line2DExpression.value(coordinateA, coordinateB);
+
+		dbQuery.addCondition(lineTestTable.column(lineTestTable.line).intersects(crossingLine));
+		List<LineTestTable> allRows = dbQuery.getAllInstancesOf(lineTestTable);
+		Assert.assertThat(allRows.size(), is(2));
+		dbQuery = database.getDBQuery(lineTestTable);
+		dbQuery.addCondition(lineTestTable.column(lineTestTable.line).intersects(nonCrossingLine));
+		allRows = dbQuery.getAllInstancesOf(lineTestTable);
+		Assert.assertThat(allRows.size(), is(0));
+	}
+
+	@Test
+	public void testIntersectsUsingCoordsArray() throws SQLException {
+		System.out.println("intersects");
+		final LineTestTable lineTestTable = new LineTestTable();
+		DBQuery dbQuery = database.getDBQuery(lineTestTable);
+		Coordinate coordinate1 = new Coordinate(1, 2);
+		Coordinate coordinate2 = new Coordinate(1, 3);
+		final Coordinate[] nonCrossingLine = new Coordinate[]{coordinate1, coordinate2};
+		
+		Coordinate coordinateA = new Coordinate(3, 3);
+		Coordinate coordinateB = new Coordinate(2, 4);
+		final Coordinate[] crossingLine = new Coordinate[]{coordinateA, coordinateB};
+
+		dbQuery.addCondition(lineTestTable.column(lineTestTable.line).intersects(crossingLine));
+		List<LineTestTable> allRows = dbQuery.getAllInstancesOf(lineTestTable);
+		Assert.assertThat(allRows.size(), is(2));
+		dbQuery = database.getDBQuery(lineTestTable);
+		dbQuery.addCondition(lineTestTable.column(lineTestTable.line).intersects(nonCrossingLine));
+		allRows = dbQuery.getAllInstancesOf(lineTestTable);
+		Assert.assertThat(allRows.size(), is(0));
+	}
+
+	@Test
+	public void testIntersectsUsingLineString() throws SQLException {
+		System.out.println("intersects");
+		final LineTestTable lineTestTable = new LineTestTable();
+		DBQuery dbQuery = database.getDBQuery(lineTestTable);
+		Coordinate coordinate1 = new Coordinate(1, 2);
+		Coordinate coordinate2 = new Coordinate(1, 3);
+		final LineString nonCrossingLine = geometryFactory.createLineString(new Coordinate[]{coordinate1, coordinate2});
+		
+		Coordinate coordinateA = new Coordinate(3, 3);
+		Coordinate coordinateB = new Coordinate(2, 4);
+		final LineString crossingLine = geometryFactory.createLineString(new Coordinate[]{coordinateA, coordinateB});
+
+		dbQuery.addCondition(lineTestTable.column(lineTestTable.line).intersects(crossingLine));
+		List<LineTestTable> allRows = dbQuery.getAllInstancesOf(lineTestTable);
+		Assert.assertThat(allRows.size(), is(2));
+		dbQuery = database.getDBQuery(lineTestTable);
+		dbQuery.addCondition(lineTestTable.column(lineTestTable.line).intersects(nonCrossingLine));
+		allRows = dbQuery.getAllInstancesOf(lineTestTable);
+		Assert.assertThat(allRows.size(), is(0));
+	}
+
+	@Test
+	public void testIntersectsUsingPointArray() throws SQLException {
+		System.out.println("intersects");
+		final LineTestTable lineTestTable = new LineTestTable();
+		DBQuery dbQuery = database.getDBQuery(lineTestTable);
+		Point coordinate1 = geometryFactory.createPoint(new Coordinate(1, 2));
+		Point coordinate2 = geometryFactory.createPoint(new Coordinate(1, 3));
+		final Point[] nonCrossingLine = new Point[]{coordinate1, coordinate2};
+		
+		Point coordinateA = geometryFactory.createPoint(new Coordinate(3, 3));
+		Point coordinateB = geometryFactory.createPoint(new Coordinate(2, 4));
+		final Point[] crossingLine = new Point[]{coordinateA, coordinateB};
 
 		dbQuery.addCondition(lineTestTable.column(lineTestTable.line).intersects(crossingLine));
 		List<LineTestTable> allRows = dbQuery.getAllInstancesOf(lineTestTable);
@@ -300,6 +409,121 @@ public class Line2DExpressionTest extends AbstractTest {
 		Coordinate coordinateB = new Coordinate(2, 4);
 		Coordinate coordinateC = new Coordinate(1, 4);
 		final Line2DExpression crossingLine = Line2DExpression.value(coordinateA, coordinateB, coordinateC);
+		dbQuery.setBlankQueryAllowed(true);
+		database.print(dbQuery.getAllRows());
+
+		dbQuery.addCondition(lineTestTable.column(lineTestTable.line).intersectionWith(crossingLine).is(Point2DExpression.value(2.5D, 3.5D)));
+		List<LineTestTable> allRows = dbQuery.getAllInstancesOf(lineTestTable);
+		database.print(allRows);
+		Assert.assertThat(allRows.size(), is(2));
+		dbQuery = database.getDBQuery(lineTestTable);
+		dbQuery.addCondition(lineTestTable.column(lineTestTable.line).intersectionWith(nonCrossingLine).is((Point)null));
+		allRows = dbQuery.getAllInstancesOf(lineTestTable);
+		Assert.assertThat(allRows.size(), is(0));
+	}
+
+	@Test
+	public void testIntersectionWithCoordArray() throws SQLException {
+		System.out.println("intersects");
+		final LineTestTable lineTestTable = new LineTestTable();
+		DBQuery dbQuery = database.getDBQuery(lineTestTable);
+		Coordinate coordinate1 = new Coordinate(1, 2);
+		Coordinate coordinate2 = new Coordinate(1, 3);
+		Coordinate coordinate3 = new Coordinate(5, 3);
+		final Coordinate[] nonCrossingLine = new Coordinate[]{coordinate1, coordinate2, coordinate3};
+		
+		Coordinate coordinateA = new Coordinate(3, 3);
+		Coordinate coordinateB = new Coordinate(2, 4);
+		Coordinate coordinateC = new Coordinate(1, 4);
+		Coordinate[] crossingLine = new Coordinate[]{coordinateA, coordinateB, coordinateC};
+//		final Line2DExpression crossingLine = Line2DExpression.value(coordinateA, coordinateB, coordinateC);
+		dbQuery.setBlankQueryAllowed(true);
+		database.print(dbQuery.getAllRows());
+
+		dbQuery.addCondition(lineTestTable.column(lineTestTable.line).intersectionWith(crossingLine).is(Point2DExpression.value(2.5D, 3.5D)));
+		List<LineTestTable> allRows = dbQuery.getAllInstancesOf(lineTestTable);
+		database.print(allRows);
+		Assert.assertThat(allRows.size(), is(2));
+		dbQuery = database.getDBQuery(lineTestTable);
+		dbQuery.addCondition(lineTestTable.column(lineTestTable.line).intersectionWith(nonCrossingLine).is((Point)null));
+		allRows = dbQuery.getAllInstancesOf(lineTestTable);
+		Assert.assertThat(allRows.size(), is(0));
+	}
+
+	@Test
+	public void testIntersectionWithLineString() throws SQLException {
+		System.out.println("intersects");
+		final LineTestTable lineTestTable = new LineTestTable();
+		DBQuery dbQuery = database.getDBQuery(lineTestTable);
+		Coordinate coordinate1 = new Coordinate(1, 2);
+		Coordinate coordinate2 = new Coordinate(1, 3);
+		Coordinate coordinate3 = new Coordinate(5, 3);
+		final Coordinate[] nonCrossingLine = new Coordinate[]{coordinate1, coordinate2, coordinate3};
+		
+		Coordinate coordinateA = new Coordinate(3, 3);
+		Coordinate coordinateB = new Coordinate(2, 4);
+		Coordinate coordinateC = new Coordinate(1, 4);
+		Coordinate[] coords = new Coordinate[]{coordinateA, coordinateB, coordinateC};
+		LineString crossingLine = geometryFactory.createLineString(coords);
+//		final Line2DExpression crossingLine = Line2DExpression.value(coordinateA, coordinateB, coordinateC);
+		dbQuery.setBlankQueryAllowed(true);
+		database.print(dbQuery.getAllRows());
+
+		dbQuery.addCondition(lineTestTable.column(lineTestTable.line).intersectionWith(crossingLine).is(Point2DExpression.value(2.5D, 3.5D)));
+		List<LineTestTable> allRows = dbQuery.getAllInstancesOf(lineTestTable);
+		database.print(allRows);
+		Assert.assertThat(allRows.size(), is(2));
+		dbQuery = database.getDBQuery(lineTestTable);
+		dbQuery.addCondition(lineTestTable.column(lineTestTable.line).intersectionWith(nonCrossingLine).is((Point)null));
+		allRows = dbQuery.getAllInstancesOf(lineTestTable);
+		Assert.assertThat(allRows.size(), is(0));
+	}
+
+	@Test
+	public void testIntersectionWithMultiPoint2DExpression() throws SQLException {
+		System.out.println("intersects");
+		final LineTestTable lineTestTable = new LineTestTable();
+		DBQuery dbQuery = database.getDBQuery(lineTestTable);
+		Coordinate coordinate1 = new Coordinate(1, 2);
+		Coordinate coordinate2 = new Coordinate(1, 3);
+		Coordinate coordinate3 = new Coordinate(5, 3);
+		final MultiPoint2DExpression nonCrossingLine = MultiPoint2DExpression.value(coordinate1, coordinate2, coordinate3);
+		
+		Coordinate coordinateA = new Coordinate(3, 3);
+		Coordinate coordinateB = new Coordinate(2, 4);
+		Coordinate coordinateC = new Coordinate(1, 4);
+		MultiPoint2DExpression crossingLine = MultiPoint2DExpression.value(coordinateA, coordinateB, coordinateC);
+//		LineString lineString = geometryFactory.createLineString(coords);
+//		final Line2DExpression crossingLine = Line2DExpression.value(coordinateA, coordinateB, coordinateC);
+		dbQuery.setBlankQueryAllowed(true);
+		database.print(dbQuery.getAllRows());
+
+		dbQuery.addCondition(lineTestTable.column(lineTestTable.line).intersectionWith(crossingLine).is(Point2DExpression.value(2.5D, 3.5D)));
+		List<LineTestTable> allRows = dbQuery.getAllInstancesOf(lineTestTable);
+		database.print(allRows);
+		Assert.assertThat(allRows.size(), is(2));
+		dbQuery = database.getDBQuery(lineTestTable);
+		dbQuery.addCondition(lineTestTable.column(lineTestTable.line).intersectionWith(nonCrossingLine).is((Point)null));
+		allRows = dbQuery.getAllInstancesOf(lineTestTable);
+		Assert.assertThat(allRows.size(), is(0));
+	}
+
+	@Test
+	public void testIntersectionWithPointArray() throws SQLException {
+		System.out.println("intersects");
+		final LineTestTable lineTestTable = new LineTestTable();
+		DBQuery dbQuery = database.getDBQuery(lineTestTable);
+		Point coordinate1 = geometryFactory.createPoint(new Coordinate(1, 2));
+		Point coordinate2 = geometryFactory.createPoint(new Coordinate(1, 3));
+		Point coordinate3 = geometryFactory.createPoint(new Coordinate(5, 3));
+		final Point[] nonCrossingLine = new Point[]{coordinate1, coordinate2, coordinate3};
+		
+		Point coordinateA = geometryFactory.createPoint(new Coordinate(3, 3));
+		Point coordinateB = geometryFactory.createPoint(new Coordinate(2, 4));
+		Point coordinateC = geometryFactory.createPoint(new Coordinate(1, 4));
+		Point[] crossingLine = new Point[]{coordinateA, coordinateB, coordinateC};
+//		LineString lineString = geometryFactory.createLineString(coords);
+//		final Line2DExpression crossingLine = Line2DExpression.value(coordinateA, coordinateB, coordinateC);
 		dbQuery.setBlankQueryAllowed(true);
 		database.print(dbQuery.getAllRows());
 

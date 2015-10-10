@@ -252,24 +252,36 @@ public class Point2DExpression implements PointResult, Point2DResult, EqualCompa
 		});
 	}
 
+	/**
+	 * Creates a {@link BooleanExpression} that compares the 2 instances using the
+	 * NOT EQUALS operation.
+	 *
+	 * @param rightHandSide the value to compare against.
+	 * @return a BooleanExpression
+	 */
+	public BooleanExpression isNot(Point rightHandSide) {
+		return isNot(new DBPoint2D(rightHandSide));
+	}
+
 	@Override
 	public BooleanExpression isNot(Point2DResult rightHandSide) {
-		return new BooleanExpression(new PointPointFunctionWithBooleanResult(this, new Point2DExpression(rightHandSide)) {
-
-			@Override
-			public String doExpressionTransform(DBDatabase db) {
-				try {
-					return db.getDefinition().doPoint2DEqualsTransform(getFirst().toSQLString(db), getSecond().toSQLString(db));
-				} catch (UnsupportedOperationException unsupported) {
-					return BooleanExpression.notAllOf(
-							getFirst().stringResult().substringBetween("(", " ").numberResult()
-							.is(getSecond().stringResult().substringBetween("(", " ").numberResult()),
-							getFirst().stringResult().substringAfter("(").substringBetween(" ", ")").numberResult()
-							.is(getSecond().stringResult().substringAfter("(").substringBetween(" ", ")").numberResult())
-					).toSQLString(db);
-				}
-			}
-		});
+		return this.is(rightHandSide).not();
+//		return new BooleanExpression(new PointPointFunctionWithBooleanResult(this, new Point2DExpression(rightHandSide)) {
+//
+//			@Override
+//			public String doExpressionTransform(DBDatabase db) {
+//				try {
+//					return db.getDefinition().doPoint2DEqualsTransform(getFirst().toSQLString(db), getSecond().toSQLString(db));
+//				} catch (UnsupportedOperationException unsupported) {
+//					return BooleanExpression.notAllOf(
+//							getFirst().stringResult().substringBetween("(", " ").numberResult()
+//							.is(getSecond().stringResult().substringBetween("(", " ").numberResult()),
+//							getFirst().stringResult().substringAfter("(").substringBetween(" ", ")").numberResult()
+//							.is(getSecond().stringResult().substringAfter("(").substringBetween(" ", ")").numberResult())
+//					).toSQLString(db);
+//				}
+//			}
+//		});
 	}
 
 	@Override
@@ -377,7 +389,7 @@ public class Point2DExpression implements PointResult, Point2DResult, EqualCompa
 	 * @return a number expression of the distance between the two points in
 	 * units.
 	 */
-	public NumberExpression distanceBetween(Point2DExpression otherPoint) {
+	public NumberExpression distanceTo(Point2DExpression otherPoint) {
 		return new NumberExpression(new PointPointFunctionWithNumberResult(this, otherPoint) {
 
 			@Override

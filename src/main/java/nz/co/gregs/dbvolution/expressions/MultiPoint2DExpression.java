@@ -247,6 +247,17 @@ public class MultiPoint2DExpression implements MultiPoint2DResult, EqualComparab
 		});
 	}
 
+	/**
+	 * Creates a {@link BooleanExpression} that compares the 2 values using the
+	 * NOT EQUALS operation.
+	 *
+	 * @param rightHandSide  the {@link MultiPoint} to compare to
+	 * @return a BooleanExpression
+	 */
+	public BooleanExpression isNot(MultiPoint rightHandSide) {
+		return this.is(rightHandSide).not();
+	}
+
 	@Override
 	public BooleanExpression isNot(MultiPoint2DResult rightHandSide) {
 		return is(rightHandSide).not();
@@ -798,76 +809,76 @@ public class MultiPoint2DExpression implements MultiPoint2DResult, EqualComparab
 		}
 	}
 
-	private static abstract class MultiPointMultiPointFunctionWithNumberResult extends NumberExpression {
-
-		private MultiPoint2DExpression first;
-		private MultiPoint2DExpression second;
-		private boolean requiresNullProtection;
-
-		MultiPointMultiPointFunctionWithNumberResult(MultiPoint2DExpression first, MultiPoint2DExpression second) {
-			this.first = first;
-			this.second = second;
-			if (this.second == null || this.second.getIncludesNull()) {
-				this.requiresNullProtection = true;
-			}
-		}
-
-		MultiPoint2DExpression getFirst() {
-			return first;
-		}
-
-		MultiPoint2DExpression getSecond() {
-			return second;
-		}
-
-		@Override
-		public final String toSQLString(DBDatabase db) {
-			if (this.getIncludesNull()) {
-				return BooleanExpression.isNull(first).toSQLString(db);
-			} else {
-				return doExpressionTransform(db);
-			}
-		}
-
-		@Override
-		public MultiPointMultiPointFunctionWithNumberResult copy() {
-			MultiPointMultiPointFunctionWithNumberResult newInstance;
-			try {
-				newInstance = getClass().newInstance();
-			} catch (InstantiationException ex) {
-				throw new RuntimeException(ex);
-			} catch (IllegalAccessException ex) {
-				throw new RuntimeException(ex);
-			}
-			newInstance.first = first.copy();
-			newInstance.second = second.copy();
-			return newInstance;
-		}
-
-		protected abstract String doExpressionTransform(DBDatabase db);
-
-		@Override
-		public Set<DBRow> getTablesInvolved() {
-			HashSet<DBRow> hashSet = new HashSet<DBRow>();
-			if (first != null) {
-				hashSet.addAll(first.getTablesInvolved());
-			}
-			if (second != null) {
-				hashSet.addAll(second.getTablesInvolved());
-			}
-			return hashSet;
-		}
-
-		@Override
-		public boolean isAggregator() {
-			return first.isAggregator() || second.isAggregator();
-		}
-
-		@Override
-		public boolean getIncludesNull() {
-			return requiresNullProtection;
-		}
-	}
+//	private static abstract class MultiPointMultiPointFunctionWithNumberResult extends NumberExpression {
+//
+//		private MultiPoint2DExpression first;
+//		private MultiPoint2DExpression second;
+//		private boolean requiresNullProtection;
+//
+//		MultiPointMultiPointFunctionWithNumberResult(MultiPoint2DExpression first, MultiPoint2DExpression second) {
+//			this.first = first;
+//			this.second = second;
+//			if (this.second == null || this.second.getIncludesNull()) {
+//				this.requiresNullProtection = true;
+//			}
+//		}
+//
+//		MultiPoint2DExpression getFirst() {
+//			return first;
+//		}
+//
+//		MultiPoint2DExpression getSecond() {
+//			return second;
+//		}
+//
+//		@Override
+//		public final String toSQLString(DBDatabase db) {
+//			if (this.getIncludesNull()) {
+//				return BooleanExpression.isNull(first).toSQLString(db);
+//			} else {
+//				return doExpressionTransform(db);
+//			}
+//		}
+//
+//		@Override
+//		public MultiPointMultiPointFunctionWithNumberResult copy() {
+//			MultiPointMultiPointFunctionWithNumberResult newInstance;
+//			try {
+//				newInstance = getClass().newInstance();
+//			} catch (InstantiationException ex) {
+//				throw new RuntimeException(ex);
+//			} catch (IllegalAccessException ex) {
+//				throw new RuntimeException(ex);
+//			}
+//			newInstance.first = first.copy();
+//			newInstance.second = second.copy();
+//			return newInstance;
+//		}
+//
+//		protected abstract String doExpressionTransform(DBDatabase db);
+//
+//		@Override
+//		public Set<DBRow> getTablesInvolved() {
+//			HashSet<DBRow> hashSet = new HashSet<DBRow>();
+//			if (first != null) {
+//				hashSet.addAll(first.getTablesInvolved());
+//			}
+//			if (second != null) {
+//				hashSet.addAll(second.getTablesInvolved());
+//			}
+//			return hashSet;
+//		}
+//
+//		@Override
+//		public boolean isAggregator() {
+//			return first.isAggregator() || second.isAggregator();
+//		}
+//
+//		@Override
+//		public boolean getIncludesNull() {
+//			return requiresNullProtection;
+//		}
+//	}
 
 //	private static abstract class NumberNumberFunctionWithMultiPoint2DResult extends MultiPoint2DExpression {
 //

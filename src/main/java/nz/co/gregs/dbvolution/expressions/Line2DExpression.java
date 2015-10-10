@@ -118,16 +118,6 @@ public class Line2DExpression implements Line2DResult, EqualComparable<Line2DRes
 	}
 
 	/**
-	 * Create a Line2DExpression representing the {@link MultiPoint2DExpression}
-	 * or {@link DBMultiPoint2D} as a line.
-	 *
-	 * @param multipoint2DExpression
-	 */
-	public Line2DExpression(MultiPoint2DResult multipoint2DExpression) {
-		initInnerLine(multipoint2DExpression, new DBLine2D(multipoint2DExpression));
-	}
-
-	/**
 	 * Create a Line2DExpression representing the set of points as a line.
 	 *
 	 * @param points a series of points that constitute a line.
@@ -163,7 +153,7 @@ public class Line2DExpression implements Line2DResult, EqualComparable<Line2DRes
 	 * @param line create a Line2DExpression from this line.
 	 * @return a Line2DExpression
 	 */
-	public static Line2DExpression value(DBLine2D line) {
+	public static Line2DExpression value(Line2DResult line) {
 		return new Line2DExpression(line);
 	}
 
@@ -175,7 +165,7 @@ public class Line2DExpression implements Line2DResult, EqualComparable<Line2DRes
 	 * @return a Line2DExpression
 	 */
 	public static Line2DExpression value(MultiPoint2DResult multipoint2DExpression) {
-		return new Line2DExpression(multipoint2DExpression);
+		return MultiPoint2DExpression.value(multipoint2DExpression).line2DResult();
 	}
 	
 	@Override

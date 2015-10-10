@@ -73,12 +73,51 @@ public class Point2DExpressionTest extends AbstractTest {
 	}
 
 	@Test
+	public void testToWKTValue() throws SQLException {
+		System.out.println("value");
+		Point point = geometryFactory.createPoint(new Coordinate(2.0, 3.0));
+		final PointTestTable pointTestTable = new PointTestTable();
+		DBQuery dbQuery = database.getDBQuery(pointTestTable);
+		dbQuery.addCondition(Point2DExpression.value(point).toWKTFormat().is(pointTestTable.column(pointTestTable.point).toWKTFormat()));
+		List<PointTestTable> allRows = dbQuery.getAllInstancesOf(pointTestTable);
+		Assert.assertThat(allRows.size(), is(1));
+		Assert.assertThat(allRows.get(0).point_id.intValue(), is(1));
+		Assert.assertThat(allRows.get(0).point.jtsPointValue(), is(point));
+	}
+
+	@Test
 	public void testValue() throws SQLException {
 		System.out.println("value");
 		Point point = geometryFactory.createPoint(new Coordinate(2.0, 3.0));
 		final PointTestTable pointTestTable = new PointTestTable();
 		DBQuery dbQuery = database.getDBQuery(pointTestTable);
 		dbQuery.addCondition(Point2DExpression.value(point).is(pointTestTable.column(pointTestTable.point)));
+		List<PointTestTable> allRows = dbQuery.getAllInstancesOf(pointTestTable);
+		Assert.assertThat(allRows.size(), is(1));
+		Assert.assertThat(allRows.get(0).point_id.intValue(), is(1));
+		Assert.assertThat(allRows.get(0).point.jtsPointValue(), is(point));
+	}
+
+	@Test
+	public void testValueUsingLongs() throws SQLException {
+		System.out.println("value");
+		Point point = geometryFactory.createPoint(new Coordinate(2.0, 3.0));
+		final PointTestTable pointTestTable = new PointTestTable();
+		DBQuery dbQuery = database.getDBQuery(pointTestTable);
+		dbQuery.addCondition(Point2DExpression.value(2L,3L).is(pointTestTable.column(pointTestTable.point)));
+		List<PointTestTable> allRows = dbQuery.getAllInstancesOf(pointTestTable);
+		Assert.assertThat(allRows.size(), is(1));
+		Assert.assertThat(allRows.get(0).point_id.intValue(), is(1));
+		Assert.assertThat(allRows.get(0).point.jtsPointValue(), is(point));
+	}
+
+	@Test
+	public void testValueUsingPoint2DResult() throws SQLException {
+		System.out.println("value");
+		Point point = geometryFactory.createPoint(new Coordinate(2.0, 3.0));
+		final PointTestTable pointTestTable = new PointTestTable();
+		DBQuery dbQuery = database.getDBQuery(pointTestTable);
+		dbQuery.addCondition(Point2DExpression.value(Point2DExpression.value(point)).is(pointTestTable.column(pointTestTable.point)));
 		List<PointTestTable> allRows = dbQuery.getAllInstancesOf(pointTestTable);
 		Assert.assertThat(allRows.size(), is(1));
 		Assert.assertThat(allRows.get(0).point_id.intValue(), is(1));
@@ -184,6 +223,18 @@ public class Point2DExpressionTest extends AbstractTest {
 	}
 
 	@Test
+	public void testIsNot_Point2D() throws SQLException {
+		System.out.println("isNot");
+		Point point = geometryFactory.createPoint(new Coordinate(2.0, 3.0));
+		final PointTestTable pointTestTable = new PointTestTable();
+		DBQuery dbQuery = database.getDBQuery(pointTestTable);
+		dbQuery.addCondition(pointTestTable.column(pointTestTable.point).isNot(point));
+		List<PointTestTable> allRows = dbQuery.getAllInstancesOf(pointTestTable);
+		Assert.assertThat(allRows.size(), is(2));
+		Assert.assertThat(allRows.get(0).point_id.intValue(), isOneOf(2,3));
+	}
+
+	@Test
 	public void testGetX() throws SQLException {
 		System.out.println("getX");
 		final PointTestTable pointTestTable = new PointTestTable();
@@ -218,11 +269,109 @@ public class Point2DExpressionTest extends AbstractTest {
 	}
 
 	@Test
+	public void testMaxX() throws SQLException {
+		System.out.println("maxX");
+		final PointTestTable pointTestTable = new PointTestTable();
+		DBQuery dbQuery = database.getDBQuery(pointTestTable);
+		dbQuery.addCondition(pointTestTable.column(pointTestTable.point).maxX().is(2));
+		List<PointTestTable> allRows = dbQuery.getAllInstancesOf(pointTestTable);
+		Assert.assertThat(allRows.size(), is(1));
+		Assert.assertThat(allRows.get(0).point_id.intValue(), is(1));
+
+		dbQuery = database.getDBQuery(pointTestTable);
+		dbQuery.addCondition(pointTestTable.column(pointTestTable.point).maxX().is(4));
+		allRows = dbQuery.getAllInstancesOf(pointTestTable);
+		Assert.assertThat(allRows.size(), is(1));
+		Assert.assertThat(allRows.get(0).point_id.intValue(), is(2));
+	}
+
+	@Test
+	public void testMaxY() throws SQLException {
+		System.out.println("maxY");
+		final PointTestTable pointTestTable = new PointTestTable();
+		DBQuery dbQuery = database.getDBQuery(pointTestTable);
+		dbQuery.addCondition(pointTestTable.column(pointTestTable.point).maxY().is(3));
+		List<PointTestTable> allRows = dbQuery.getAllInstancesOf(pointTestTable);
+		Assert.assertThat(allRows.size(), is(1));
+		Assert.assertThat(allRows.get(0).point_id.intValue(), is(1));
+
+		dbQuery = database.getDBQuery(pointTestTable);
+		dbQuery.addCondition(pointTestTable.column(pointTestTable.point).maxY().is(6));
+		allRows = dbQuery.getAllInstancesOf(pointTestTable);
+		Assert.assertThat(allRows.size(), is(1));
+		Assert.assertThat(allRows.get(0).point_id.intValue(), is(2));
+	}
+
+	@Test
+	public void testMinX() throws SQLException {
+		System.out.println("minX");
+		final PointTestTable pointTestTable = new PointTestTable();
+		DBQuery dbQuery = database.getDBQuery(pointTestTable);
+		dbQuery.addCondition(pointTestTable.column(pointTestTable.point).minX().is(2));
+		List<PointTestTable> allRows = dbQuery.getAllInstancesOf(pointTestTable);
+		Assert.assertThat(allRows.size(), is(1));
+		Assert.assertThat(allRows.get(0).point_id.intValue(), is(1));
+
+		dbQuery = database.getDBQuery(pointTestTable);
+		dbQuery.addCondition(pointTestTable.column(pointTestTable.point).minX().is(4));
+		allRows = dbQuery.getAllInstancesOf(pointTestTable);
+		Assert.assertThat(allRows.size(), is(1));
+		Assert.assertThat(allRows.get(0).point_id.intValue(), is(2));
+	}
+
+	@Test
+	public void testMinY() throws SQLException {
+		System.out.println("minY");
+		final PointTestTable pointTestTable = new PointTestTable();
+		DBQuery dbQuery = database.getDBQuery(pointTestTable);
+		dbQuery.addCondition(pointTestTable.column(pointTestTable.point).minY().is(3));
+		List<PointTestTable> allRows = dbQuery.getAllInstancesOf(pointTestTable);
+		Assert.assertThat(allRows.size(), is(1));
+		Assert.assertThat(allRows.get(0).point_id.intValue(), is(1));
+
+		dbQuery = database.getDBQuery(pointTestTable);
+		dbQuery.addCondition(pointTestTable.column(pointTestTable.point).minY().is(6));
+		allRows = dbQuery.getAllInstancesOf(pointTestTable);
+		Assert.assertThat(allRows.size(), is(1));
+		Assert.assertThat(allRows.get(0).point_id.intValue(), is(2));
+	}
+
+	@Test
 	public void testDimension() throws SQLException {
 		System.out.println("dimension");
 		final PointTestTable pointTestTable = new PointTestTable();
 		DBQuery dbQuery = database.getDBQuery(pointTestTable);
 		dbQuery.addCondition(pointTestTable.column(pointTestTable.point).measurableDimensions().is(0));
+		List<PointTestTable> allRows = dbQuery.getAllInstancesOf(pointTestTable);
+		Assert.assertThat(allRows.size(), is(3));
+	}
+
+	@Test
+	public void testHasMagnitude() throws SQLException {
+		System.out.println("dimension");
+		final PointTestTable pointTestTable = new PointTestTable();
+		DBQuery dbQuery = database.getDBQuery(pointTestTable);
+		dbQuery.addCondition(pointTestTable.column(pointTestTable.point).hasMagnitude().isNot(Boolean.TRUE));
+		List<PointTestTable> allRows = dbQuery.getAllInstancesOf(pointTestTable);
+		Assert.assertThat(allRows.size(), is(3));
+	}
+
+	@Test
+	public void testMagnitude() throws SQLException {
+		System.out.println("dimension");
+		final PointTestTable pointTestTable = new PointTestTable();
+		DBQuery dbQuery = database.getDBQuery(pointTestTable);
+		dbQuery.addCondition(pointTestTable.column(pointTestTable.point).magnitude().isNull());
+		List<PointTestTable> allRows = dbQuery.getAllInstancesOf(pointTestTable);
+		Assert.assertThat(allRows.size(), is(3));
+	}
+
+	@Test
+	public void testSpatialDimension() throws SQLException {
+		System.out.println("dimension");
+		final PointTestTable pointTestTable = new PointTestTable();
+		DBQuery dbQuery = database.getDBQuery(pointTestTable);
+		dbQuery.addCondition(pointTestTable.column(pointTestTable.point).spatialDimensions().is(2));
 		List<PointTestTable> allRows = dbQuery.getAllInstancesOf(pointTestTable);
 		Assert.assertThat(allRows.size(), is(3));
 	}
@@ -286,7 +435,7 @@ public class Point2DExpressionTest extends AbstractTest {
 		@DBColumn
 		public DBNumber getY2 = new DBNumber(Point2DExpression.value(2, 3).getY());
 		@DBColumn
-		public DBNumber distance = new DBNumber(this.column(this.point).distanceBetween(Point2DExpression.value(2, 3)));
+		public DBNumber distance = new DBNumber(this.column(this.point).distanceTo(Point2DExpression.value(2, 3)));
 	}
 
 	@Test
