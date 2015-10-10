@@ -1358,7 +1358,12 @@ public abstract class DBDefinition {
 	 */
 	public String getIfNullFunctionName() {
 		return "COALESCE";
+	}	
+	
+	public boolean supportsComparingBooleanResults() {
+		return true;
 	}
+
 
 	/**
 	 * Returns the function name of the function that negates boolean values.

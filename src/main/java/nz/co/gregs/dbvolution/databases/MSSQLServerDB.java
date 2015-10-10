@@ -146,5 +146,4 @@ public class MSSQLServerDB extends DBDatabase implements SupportsPolygonDatatype
 			fn.add(statement);
 		}
 	}
-
 }

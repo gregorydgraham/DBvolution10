@@ -382,6 +382,15 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 	public String doSubsecondTransform(String dateExpression) {
 		return "(DATEPART(MILLISECOND , " + dateExpression + ")/1000.0000)";
 	}
+	
+	@Override
+	public boolean supportsComparingBooleanResults() {
+		return false;
+	}
+
+	public String doBooleanValueTransform(Boolean boolValue) {
+		return (boolValue ? "(1=1)" : "(0=1)");
+	}
 
 	/**
 	 * MS SQLServer does not support the LEASTOF operation natively.

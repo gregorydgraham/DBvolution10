@@ -235,6 +235,20 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 	@Override
 	public BooleanExpression is(BooleanResult bool) {
 		return new BooleanExpression(new DBBinaryBooleanArithmetic(this, bool) {
+
+			@Override
+			public String toSQLString(DBDatabase db) {
+				if (db.getDefinition().supportsComparingBooleanResults()) {
+					return super.toSQLString(db); //To change body of generated methods, choose Tools | Templates.
+				} else{
+					return BooleanExpression.anyOf(
+							BooleanExpression.allOf(this.getFirst(), this.getSecond()),
+							BooleanExpression.allOf(this.getFirst().not(), this.getSecond().not()
+							)
+					).toSQLString(db);
+				}
+			}
+			
 			@Override
 			protected String getEquationOperator(DBDatabase db) {
 				return " = ";
@@ -256,6 +270,20 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 	@Override
 	public BooleanExpression isNot(BooleanResult bool) {
 		return new BooleanExpression(new DBBinaryBooleanArithmetic(this, bool) {
+
+			@Override
+			public String toSQLString(DBDatabase db) {
+				if (db.getDefinition().supportsComparingBooleanResults()) {
+					return super.toSQLString(db); //To change body of generated methods, choose Tools | Templates.
+				} else{
+					return BooleanExpression.anyOf(
+							BooleanExpression.allOf(this.getFirst(), this.getSecond().not()),
+							BooleanExpression.allOf(this.getFirst().not(), this.getSecond()
+							)
+					).toSQLString(db);
+				}
+			}
+			
 			@Override
 			protected String getEquationOperator(DBDatabase db) {
 				return " <> ";
