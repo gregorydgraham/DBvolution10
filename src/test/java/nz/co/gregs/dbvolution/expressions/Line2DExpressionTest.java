@@ -282,7 +282,7 @@ public class Line2DExpressionTest extends AbstractTest {
 		System.out.println("dimension");
 		final LineTestTable lineTestTable = new LineTestTable();
 		DBQuery dbQuery = database.getDBQuery(lineTestTable);
-		dbQuery.addCondition(lineTestTable.column(lineTestTable.line).hasMagnitude().isNot(true));
+		dbQuery.addCondition(lineTestTable.column(lineTestTable.line).hasMagnitude().not());
 		List<LineTestTable> allRows = dbQuery.getAllInstancesOf(lineTestTable);
 		Assert.assertThat(allRows.size(), is(3));
 	}

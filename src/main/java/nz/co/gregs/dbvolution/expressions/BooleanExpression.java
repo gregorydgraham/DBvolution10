@@ -275,12 +275,8 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 	 * the Boolean supplied.
 	 */
 	public BooleanExpression isNot(Boolean bool) {
-		if (bool) {
-			return this.negate();
-		} else {
-			return this;
+		return this.isNot(BooleanExpression.value(bool));
 		}
-	}
 
 	/**
 	 * Compare this BooleanExpression and the given {@link BooleanResult} using
