@@ -678,7 +678,7 @@ public abstract class DBDefinition {
 	 * @return " 1=0 " or equivalent
 	 */
 	public String getFalseOperation() {
-		return " 1=0 ";
+		return " (1=0) ";
 	}
 
 	/**
@@ -687,7 +687,7 @@ public abstract class DBDefinition {
 	 * @return " 1=1 " or equivalent
 	 */
 	public String getTrueOperation() {
-		return " 1=1 ";
+		return " (1=1) ";
 	}
 
 	/**

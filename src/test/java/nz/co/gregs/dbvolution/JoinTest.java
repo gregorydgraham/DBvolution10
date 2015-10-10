@@ -51,9 +51,9 @@ public class JoinTest extends AbstractTest {
 		String expectedResult1
 				= "select __296612642.uidcompany, __296612642.fkstatistic2, __77293264.uidstatistic, __77293264.stat2id from company as __296612642 inner join statistic as __77293264 on( ((__296612642.uidcompany = 234)) and (__296612642.fkstatistic2 = __77293264.uidstatistic) ) ;";
 		String expectedResult2
-				= "select __296612642.uidcompany, __296612642.fkstatistic2, __77293264.uidstatistic, __77293264.stat2id from company as __296612642 inner join statistic as __77293264 on( __296612642.fkstatistic2 = __77293264.uidstatistic ) where 1=1 and (__296612642.uidcompany = 234) ;";
+				= "select __296612642.uidcompany, __296612642.fkstatistic2, __77293264.uidstatistic, __77293264.stat2id from company as __296612642 inner join statistic as __77293264 on( __296612642.fkstatistic2 = __77293264.uidstatistic ) where (1=1) and (__296612642.uidcompany = 234) ;";
 		String expectedResult3
-				= "select oo296612642.uidcompany, oo296612642.fkstatistic2, oo77293264.uidstatistic, oo77293264.stat2id from company as oo296612642 inner join statistic as oo77293264 on( oo296612642.fkstatistic2 = oo77293264.uidstatistic ) where 1=1 and (oo296612642.uidcompany = 234) ;";
+				= "select oo296612642.uidcompany, oo296612642.fkstatistic2, oo77293264.uidstatistic, oo77293264.stat2id from company as oo296612642 inner join statistic as oo77293264 on( oo296612642.fkstatistic2 = oo77293264.uidstatistic ) where (1=1) and (oo296612642.uidcompany = 234) ;";
 		System.out.println(expectedResult1);
 		System.out.println(generateSQLString);
 		assertThat(dbQuery.isUseANSISyntax(), is(true));
@@ -83,7 +83,7 @@ public class JoinTest extends AbstractTest {
 				+ "__77293264.uidstatistic, "
 				+ "__77293264.stat2id "
 				+ "from company, statistic "
-				+ "where 1=1 "
+				+ "where (1=1) "
 				+ "and (__296612642.uidcompany = 234) "
 				+ "and (__296612642.fkstatistic2 = __77293264.uidstatistic)"
 				+ " ;";
@@ -107,7 +107,7 @@ public class JoinTest extends AbstractTest {
 		String expectedResult1
 				= "select __1641109531.uidcompany, __1641109531.fkstatistic2, __77293264.uidstatistic, __77293264.stat2id from company as __1641109531 inner join statistic as __77293264 on( ((__1641109531.uidcompany = 234)) and (__1641109531.fkstatistic2 = __77293264.uidstatistic) ) ;";
 		String expectedResult2
-				= "select __1641109531.uidcompany, __1641109531.fkstatistic2, __77293264.uidstatistic, __77293264.stat2id from company as __1641109531 inner join statistic as __77293264 on( __1641109531.fkstatistic2 = __77293264.uidstatistic ) where 1=1 and (__1641109531.uidcompany = 234) ;";
+				= "select __1641109531.uidcompany, __1641109531.fkstatistic2, __77293264.uidstatistic, __77293264.stat2id from company as __1641109531 inner join statistic as __77293264 on( __1641109531.fkstatistic2 = __77293264.uidstatistic ) where (1=1) and (__1641109531.uidcompany = 234) ;";
 		System.out.println(testableSQLWithoutColumnAliases(expectedResult2));
 		System.out.println(testableSQLWithoutColumnAliases(generateSQLString));
 		System.out.println(generateSQLString);
@@ -136,7 +136,7 @@ public class JoinTest extends AbstractTest {
 				+ "__77293264.uidstatistic, "
 				+ "__77293264.stat2id "
 				+ "from company, statistic "
-				+ "where 1=1 "
+				+ "where (1=1) "
 				+ "and (__1641109531.uidcompany = 234) "
 				+ "and (__1641109531.fkstatistic2 = __77293264.stat2id) "
 				+ ";";
