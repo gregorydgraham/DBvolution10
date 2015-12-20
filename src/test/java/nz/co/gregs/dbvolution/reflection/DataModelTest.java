@@ -34,6 +34,7 @@ import nz.co.gregs.dbvolution.example.Marque;
 import nz.co.gregs.dbvolution.exceptions.AccidentalBlankQueryException;
 import nz.co.gregs.dbvolution.exceptions.DBRuntimeException;
 import nz.co.gregs.dbvolution.generic.AbstractTest;
+import org.hamcrest.Matchers;
 import static org.hamcrest.Matchers.*;
 import org.junit.Assert;
 import org.junit.Test;
@@ -294,82 +295,20 @@ public class DataModelTest extends AbstractTest {
 		final ExampleEncodingInterpreter encoder = new ExampleEncodingInterpreter();
 
 		String encode = encoder.encode(allRows);
-		Assert.assertThat(encode.replaceAll("\\.00000", "").replaceAll(":56[.0]* [^ ]* 2013", ":56 2013"),
-				isOneOf("nz.co.gregs.dbvolution.example.CarCompany-name=TOYOTA&"
-						+ "nz.co.gregs.dbvolution.example.CarCompany-uidCarCompany=1&"
-						+ "nz.co.gregs.dbvolution.example.Marque-uidMarque=1&"
-						+ "nz.co.gregs.dbvolution.example.Marque-isUsedForTAFROs=False&"
-						+ "nz.co.gregs.dbvolution.example.Marque-statusClassID=1246974&"
-						+ "nz.co.gregs.dbvolution.example.Marque-individualAllocationsAllowed=&"
-						+ "nz.co.gregs.dbvolution.example.Marque-updateCount=0&"
-						+ "nz.co.gregs.dbvolution.example.Marque-auto_created=&"
-						+ "nz.co.gregs.dbvolution.example.Marque-name=TOYOTA&"
-						+ "nz.co.gregs.dbvolution.example.Marque-pricingCodePrefix=&"
-						+ "nz.co.gregs.dbvolution.example.Marque-reservationsAllowed=Y&"
-						+ "nz.co.gregs.dbvolution.example.Marque-creationDate=Mar 23 12:34:56 2013&"
-						+ "nz.co.gregs.dbvolution.example.Marque-carCompany=1",
-						"nz.co.gregs.dbvolution.example.Marque-uidMarque=1&"
-						+ "nz.co.gregs.dbvolution.example.Marque-isUsedForTAFROs=False&"
-						+ "nz.co.gregs.dbvolution.example.Marque-statusClassID=1246974&"
-						+ "nz.co.gregs.dbvolution.example.Marque-individualAllocationsAllowed=&"
-						+ "nz.co.gregs.dbvolution.example.Marque-updateCount=0&"
-						+ "nz.co.gregs.dbvolution.example.Marque-auto_created=&"
-						+ "nz.co.gregs.dbvolution.example.Marque-name=TOYOTA&"
-						+ "nz.co.gregs.dbvolution.example.Marque-pricingCodePrefix=&"
-						+ "nz.co.gregs.dbvolution.example.Marque-reservationsAllowed=Y&"
-						+ "nz.co.gregs.dbvolution.example.Marque-creationDate=Mar 23 12:34:56 2013&"
-						+ "nz.co.gregs.dbvolution.example.Marque-carCompany=1&"
-						+ "nz.co.gregs.dbvolution.example.CarCompany-name=TOYOTA&"
-						+ "nz.co.gregs.dbvolution.example.CarCompany-uidCarCompany=1",
-						"nz.co.gregs.dbvolution.example.Marque-uidMarque=1&"
-						+ "nz.co.gregs.dbvolution.example.Marque-isUsedForTAFROs=False&"
-						+ "nz.co.gregs.dbvolution.example.Marque-statusClassID=1246974&"
-						+ "nz.co.gregs.dbvolution.example.Marque-individualAllocationsAllowed=&"
-						+ "nz.co.gregs.dbvolution.example.Marque-updateCount=0&"
-						+ "nz.co.gregs.dbvolution.example.Marque-auto_created=&"
-						+ "nz.co.gregs.dbvolution.example.Marque-name=TOYOTA&"
-						+ "nz.co.gregs.dbvolution.example.Marque-pricingCodePrefix=&"
-						+ "nz.co.gregs.dbvolution.example.Marque-reservationsAllowed=Y&"
-						+ "nz.co.gregs.dbvolution.example.Marque-creationDate=Mar 23 12:34:56 2013&"
-						+ "nz.co.gregs.dbvolution.example.Marque-enabled=true&"
-						+ "nz.co.gregs.dbvolution.example.Marque-carCompany=1&"
-						+ "nz.co.gregs.dbvolution.example.CarCompany-name=TOYOTA&"
-						+ "nz.co.gregs.dbvolution.example.CarCompany-uidCarCompany=1",
-						"nz.co.gregs.dbvolution.example.Marque-uidMarque=1&"
-						+ "nz.co.gregs.dbvolution.example.Marque-isUsedForTAFROs=False&"
-						+ "nz.co.gregs.dbvolution.example.Marque-statusClassID=1246974&"
-						+ "nz.co.gregs.dbvolution.example.Marque-updateCount=0&"
-						+ "nz.co.gregs.dbvolution.example.Marque-name=TOYOTA&"
-						+ "nz.co.gregs.dbvolution.example.Marque-reservationsAllowed=Y&"
-						+ "nz.co.gregs.dbvolution.example.Marque-creationDate=Mar 23 12:34:56 2013&"
-						+ "nz.co.gregs.dbvolution.example.Marque-carCompany=1&"
-						+ "nz.co.gregs.dbvolution.example.CarCompany-name=TOYOTA&"
-						+ "nz.co.gregs.dbvolution.example.CarCompany-uidCarCompany=1",
-						"nz.co.gregs.dbvolution.example.CarCompany-name=TOYOTA&"
-						+ "nz.co.gregs.dbvolution.example.CarCompany-uidCarCompany=1&"
-						+ "nz.co.gregs.dbvolution.example.Marque-uidMarque=1&"
-						+ "nz.co.gregs.dbvolution.example.Marque-isUsedForTAFROs=False&"
-						+ "nz.co.gregs.dbvolution.example.Marque-statusClassID=1246974&"
-						+ "nz.co.gregs.dbvolution.example.Marque-updateCount=0&"
-						+ "nz.co.gregs.dbvolution.example.Marque-name=TOYOTA&"
-						+ "nz.co.gregs.dbvolution.example.Marque-reservationsAllowed=Y&"
-						+ "nz.co.gregs.dbvolution.example.Marque-creationDate=Mar 23 12:34:56 2013&"
-						+ "nz.co.gregs.dbvolution.example.Marque-carCompany=1",
-						"nz.co.gregs.dbvolution.example.CarCompany-name=TOYOTA&\"\n" +
-"						+ \"nz.co.gregs.dbvolution.example.CarCompany-uidCarCompany=1&\"\n" +
-"						+ \"nz.co.gregs.dbvolution.example.Marque-uidMarque=1&\"\n" +
-"						+ \"nz.co.gregs.dbvolution.example.Marque-isUsedForTAFROs=False&\"\n" +
-"						+ \"nz.co.gregs.dbvolution.example.Marque-statusClassID=1246974&\"\n" +
-"						+ \"nz.co.gregs.dbvolution.example.Marque-individualAllocationsAllowed=&\"\n" +
-"						+ \"nz.co.gregs.dbvolution.example.Marque-updateCount=0&\"\n" +
-"						+ \"nz.co.gregs.dbvolution.example.Marque-auto_created=&\"\n" +
-"						+ \"nz.co.gregs.dbvolution.example.Marque-name=TOYOTA&\"\n" +
-"						+ \"nz.co.gregs.dbvolution.example.Marque-pricingCodePrefix=&\"\n" +
-"						+ \"nz.co.gregs.dbvolution.example.Marque-reservationsAllowed=Y&\"\n" +
-"						+ \"nz.co.gregs.dbvolution.example.Marque-creationDate=Mar 23 12:34:56 2013&\"\n" +
-"						+ \"nz.co.gregs.dbvolution.example.Marque-enabled=true&\"\n" +
-"						+ \"nz.co.gregs.dbvolution.example.Marque-carCompany=1"
-				));
+		String safeEncoded = encode.replaceAll("\\.00000", "").replaceAll(":56[.0]* [^ ]* 2013", ":56 2013");
+		Assert.assertThat(safeEncoded, Matchers.containsString("nz.co.gregs.dbvolution.example.CarCompany-name=TOYOTA"));
+		Assert.assertThat(safeEncoded, Matchers.containsString("nz.co.gregs.dbvolution.example.CarCompany-uidCarCompany=1"));
+		Assert.assertThat(safeEncoded, Matchers.containsString("nz.co.gregs.dbvolution.example.Marque-uidMarque=1"));
+		Assert.assertThat(safeEncoded, Matchers.containsString("nz.co.gregs.dbvolution.example.Marque-isUsedForTAFROs=False&"));
+		Assert.assertThat(safeEncoded, Matchers.containsString("nz.co.gregs.dbvolution.example.Marque-statusClassID=1246974&"));
+		Assert.assertThat(safeEncoded, Matchers.containsString("nz.co.gregs.dbvolution.example.Marque-individualAllocationsAllowed=&"));
+		Assert.assertThat(safeEncoded, Matchers.containsString("nz.co.gregs.dbvolution.example.Marque-updateCount=0&"));
+		Assert.assertThat(safeEncoded, Matchers.containsString("nz.co.gregs.dbvolution.example.Marque-auto_created=&"));
+		Assert.assertThat(safeEncoded, Matchers.containsString("nz.co.gregs.dbvolution.example.Marque-name=TOYOTA&"));
+		Assert.assertThat(safeEncoded, Matchers.containsString( "nz.co.gregs.dbvolution.example.Marque-pricingCodePrefix=&"));
+		Assert.assertThat(safeEncoded, Matchers.containsString("nz.co.gregs.dbvolution.example.Marque-reservationsAllowed=Y&"));
+		Assert.assertThat(safeEncoded, Matchers.containsString("nz.co.gregs.dbvolution.example.Marque-creationDate=Mar 23 12:34:56 2013&"));
+		Assert.assertThat(safeEncoded, Matchers.containsString("nz.co.gregs.dbvolution.example.Marque-carCompany=1"));
 
 		final String encodedQuery = encoder.encode(allRows.get(0).get(new CarCompany()), marque);
 		Assert.assertThat(encodedQuery, is("nz.co.gregs.dbvolution.example.CarCompany-name=TOYOTA&"
