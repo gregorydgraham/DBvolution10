@@ -48,8 +48,8 @@ import nz.co.gregs.dbvolution.datatypes.*;
  */
 public class DBTableClassGenerator {
 
-	private static final String[] javaReservedWordsArray = new String[]{"null", "true", "false", "abstract", "continue", "for", "new", "switch", "assert", "default", "goto", "package", "synchronized", "boolean", "do", "if", "private", "this", "break", "double", "implements", "", "protected", "throw", "byte", "else", "import", "public", "throws", "case", "enum", "instanceof", "return", "transient", "catch", "extends", "int", "short", "try", "char", "final", "interface", "static", "", "void", "class", "finally", "long", "strictfp", "volatile", "const", "float", "native", "super", "while"};
-	private static final List<String> javaReservedWords = Arrays.asList(javaReservedWordsArray);
+	private static final String[] JAVA_RESERVED_WORDS_ARRAY = new String[]{"null", "true", "false", "abstract", "continue", "for", "new", "switch", "assert", "default", "goto", "package", "synchronized", "boolean", "do", "if", "private", "this", "break", "double", "implements", "", "protected", "throw", "byte", "else", "import", "public", "throws", "case", "enum", "instanceof", "return", "transient", "catch", "extends", "int", "short", "try", "char", "final", "interface", "static", "", "void", "class", "finally", "long", "strictfp", "volatile", "const", "float", "native", "super", "while"};
+	private static final List<String> JAVA_RESERVED_WORDS = Arrays.asList(JAVA_RESERVED_WORDS_ARRAY);
 
 	/**
 	 *
@@ -519,13 +519,17 @@ public class DBTableClassGenerator {
 	 */
 	public static String toClassCase(String s) {
 		String classCaseString = "";
-		if (s.matches("[lLtT]+_[0-9]+(_[0-9]+)*")) {
-			classCaseString = s.toUpperCase();
+		if (s == null) {
+			return null;
 		} else {
+			if (s.matches("[lLtT]+_[0-9]+(_[0-9]+)*")) {
+				classCaseString = s.toUpperCase();
+			} else {
 //            System.out.println("Splitting: " + s);
-			String[] parts = s.split("[^a-zA-Z0-9]");//"[_$#]");
-			for (String part : parts) {
-				classCaseString += toProperCase(part);
+				String[] parts = s.split("[^a-zA-Z0-9]");//"[_$#]");
+				for (String part : parts) {
+					classCaseString += toProperCase(part);
+				}
 			}
 		}
 		return classCaseString;
@@ -544,7 +548,7 @@ public class DBTableClassGenerator {
 		String classClass = toClassCase(s);
 		String camelCaseString = classClass.substring(0, 1).toLowerCase() + classClass.substring(1);
 		camelCaseString = camelCaseString.replaceAll("[^a-zA-Z0-9_$]", "_");
-		if (javaReservedWords.contains(camelCaseString)) {
+		if (JAVA_RESERVED_WORDS.contains(camelCaseString)) {
 			camelCaseString += "_";
 		}
 		return camelCaseString;
@@ -571,5 +575,8 @@ public class DBTableClassGenerator {
 				return firstChar.toUpperCase() + rest;
 			}
 		}
+	}
+
+	private DBTableClassGenerator() {
 	}
 }

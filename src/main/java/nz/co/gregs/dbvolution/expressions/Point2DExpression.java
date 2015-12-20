@@ -346,7 +346,7 @@ public class Point2DExpression implements PointResult, Point2DResult, EqualCompa
 
 	@Override
 	public BooleanExpression hasMagnitude() {
-		return new BooleanExpression(new PointWithBooleanResult(this) {
+		return new BooleanExpression(new PointFunctionWithBooleanResult(this) {
 
 			@Override
 			public String doExpressionTransform(DBDatabase db) {
@@ -356,6 +356,12 @@ public class Point2DExpression implements PointResult, Point2DResult, EqualCompa
 					return BooleanExpression.falseExpression().toSQLString(db);
 				}
 			}
+
+			@Override
+			public boolean isBooleanStatement() {
+				return true;
+			}
+
 		});
 	}
 
@@ -525,12 +531,12 @@ public class Point2DExpression implements PointResult, Point2DResult, EqualCompa
 		}
 	}
 
-	private static abstract class PointWithBooleanResult extends BooleanExpression {
+	private static abstract class PointFunctionWithBooleanResult extends BooleanExpression {
 
 		private Point2DExpression first;
 		private boolean requiresNullProtection;
 
-		PointWithBooleanResult(Point2DExpression first) {
+		PointFunctionWithBooleanResult(Point2DExpression first) {
 			this.first = first;
 		}
 
@@ -548,8 +554,8 @@ public class Point2DExpression implements PointResult, Point2DResult, EqualCompa
 		}
 
 		@Override
-		public PointWithBooleanResult copy() {
-			PointWithBooleanResult newInstance;
+		public PointFunctionWithBooleanResult copy() {
+			PointFunctionWithBooleanResult newInstance;
 			try {
 				newInstance = getClass().newInstance();
 			} catch (InstantiationException ex) {

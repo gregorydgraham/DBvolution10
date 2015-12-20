@@ -738,4 +738,14 @@ public class SQLiteDefinition extends DBDefinition {
 	public String doMultiPoint2DGetMaxXTransform(String first) {
 		return MultiPoint2DFunctions.GETMAXX_FUNCTION+"("+first+")";
 	}
+
+	@Override
+	public String getTrueValue() {
+		return " 1 ";
+	}
+
+	@Override
+	public String getFalseValue() {
+		return " 0 ";
+	}
 }

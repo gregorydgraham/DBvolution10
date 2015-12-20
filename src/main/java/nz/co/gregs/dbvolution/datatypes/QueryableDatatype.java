@@ -729,7 +729,7 @@ public abstract class QueryableDatatype extends Object implements Serializable, 
 	/**
 	 * @return the undefined
 	 */
-	protected boolean isDefined() {
+	public boolean isDefined() {
 		return !undefined;
 	}
 

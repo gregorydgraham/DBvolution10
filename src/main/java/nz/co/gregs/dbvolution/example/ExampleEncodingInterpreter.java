@@ -81,7 +81,7 @@ public class ExampleEncodingInterpreter implements EncodingInterpreter {
 					if (qdt instanceof DBDate) {
 						DBDate dateQDT = (DBDate) qdt;
 						Date dateValue = dateQDT.dateValue();
-						stringValue = (new SimpleDateFormat("MMM dd HH:mm:ss YYYY")).format(dateValue);
+						stringValue = (new SimpleDateFormat("MMM dd HH:mm:ss yyyy")).format(dateValue);
 					} else if (qdt instanceof DBNumber) {
 						DBNumber numberQDT = (DBNumber) qdt;
 						stringValue = "" + numberQDT.intValue();

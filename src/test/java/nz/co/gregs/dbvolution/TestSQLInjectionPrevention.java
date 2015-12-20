@@ -33,14 +33,40 @@ public class TestSQLInjectionPrevention extends AbstractTest {
 	@Test
 	public void testSQLInjectionPrevention() throws SQLException {
 		Marque newMarque1 = new Marque();
-		newMarque1.getUidMarque().setValue(998);
-		newMarque1.getName().setValue("TOYOTA'; drop table marques;");
+		int newID = 998;
+		newMarque1.getUidMarque().setValue(newID);
+		String nastyString = "TOYOTA'; drop table marques;";
+		newMarque1.getName().setValue(nastyString);
 		newMarque1.getNumericCode().setValue(10);
 
 		DBActionList changes = database.insert(newMarque1);
 		List<Marque> allRows = marquesTable.setBlankQueryAllowed(true).getAllRows();
 		Assert.assertThat(allRows.size(), is(23));
 		marquesTable.print();
+		
+		newMarque1 = new Marque();
+		newMarque1.uidMarque.permittedValues(newID);
+		List<Marque> allRows1 = database.getDBTable(newMarque1).getAllRows();
+		Assert.assertThat(allRows1.size(), is(1));
+		Assert.assertThat(allRows1.get(0).name.stringValue(), is(nastyString));
+		
+	}
+
+
+	@Test
+	public void testSQLInjectionPreventionDuringLIKE() throws SQLException {
+
+		String nastyString = "TOYOTA'; drop table marques;";
+		Marque newMarque1 = new Marque();
+		newMarque1.name.permittedPattern(nastyString);
+		List<Marque> allRows1 = database.getDBTable(newMarque1).getAllRows();
+		Assert.assertThat(allRows1.size(), is(0));
+
+		List<Marque> allRows = marquesTable.setBlankQueryAllowed(true).getAllRows();
+		Assert.assertThat(allRows.size(), is(22));
+		marquesTable.print();
+		
+		
 	}
 
 }

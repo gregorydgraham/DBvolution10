@@ -19,10 +19,7 @@ import java.util.Set;
 import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.datatypes.DBBoolean;
-import nz.co.gregs.dbvolution.datatypes.DBBooleanArray;
-import nz.co.gregs.dbvolution.results.BooleanArrayResult;
 import nz.co.gregs.dbvolution.expressions.BooleanExpression;
-import nz.co.gregs.dbvolution.results.BooleanResult;
 import nz.co.gregs.dbvolution.query.RowDefinition;
 
 /**
@@ -77,7 +74,7 @@ public class BooleanColumn extends BooleanExpression implements ColumnProvider {
 	@Override
 	public BooleanColumn copy() {
 		return (BooleanColumn) super.copy();
-	}
+		}
 
 	@Override
 	public AbstractColumn getColumn() {
@@ -108,5 +105,10 @@ public class BooleanColumn extends BooleanExpression implements ColumnProvider {
 	 */
 	public BooleanExpression is(DBBoolean boolColumn) {
 		return super.is(boolColumn);
+	}
+
+	@Override
+	public boolean isBooleanStatement() {
+		return false;
 	}
 }

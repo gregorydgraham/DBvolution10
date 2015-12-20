@@ -41,8 +41,8 @@ public class QueryGraphVisualisationTest {
 		DBDatabase database;
 		database = new H2MemoryDB("dbvolutionTest", "", "", false);
 
-		QueryGraphVisualisationTest myObject = new QueryGraphVisualisationTest();
-		myObject.setup(database);
+		//QueryGraphVisualisationTest myObject = new QueryGraphVisualisationTest();
+		QueryGraphVisualisationTest.setup(database);
 		final LinkCarCompanyAndLogoWithPreviousLink linkCarCompanyAndLogoWithPreviousLink = new LinkCarCompanyAndLogoWithPreviousLink();
 
 		DBQuery dbQuery = database.getDBQuery(new CarCompany(), new Marque());
@@ -52,7 +52,7 @@ public class QueryGraphVisualisationTest {
 		tearDown(database);
 	}
 
-	private void setup(DBDatabase database) throws Exception {
+	private static void setup(DBDatabase database) throws Exception {
 		database.setPrintSQLBeforeExecuting(false);
 		database.preventDroppingOfTables(false);
 		database.dropTableNoExceptions(new Marque());

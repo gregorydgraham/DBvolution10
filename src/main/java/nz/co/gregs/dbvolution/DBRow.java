@@ -25,6 +25,7 @@ import nz.co.gregs.dbvolution.exceptions.UndefinedPrimaryKeyException;
 import nz.co.gregs.dbvolution.expressions.BooleanExpression;
 import nz.co.gregs.dbvolution.expressions.DBExpression;
 import nz.co.gregs.dbvolution.internal.properties.*;
+import nz.co.gregs.dbvolution.operators.DBOperator;
 import nz.co.gregs.dbvolution.query.RowDefinition;
 import org.reflections.Reflections;
 

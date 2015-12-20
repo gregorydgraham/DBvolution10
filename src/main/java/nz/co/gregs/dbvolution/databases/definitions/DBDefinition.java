@@ -1358,12 +1358,26 @@ public abstract class DBDefinition {
 	 */
 	public String getIfNullFunctionName() {
 		return "COALESCE";
-	}	
-	
+	}
+
+	/**
+	 * Indicates whether the database supports statements that compares to boolean
+	 * values using EQUALS, NOT EQUALS, etc.
+	 *
+	 * <p>
+	 * If the database supports statements that resolve to "true = true", this
+	 * method will return TRUE.
+	 *
+	 * <p>
+	 * Internally this method is used to allow DBvolution to alter the SQL for MS
+	 * SQLServer so that DBBoolean columns can be compared like with other
+	 * databases.
+	 *
+	 * @return TRUE if this database can compare boolean values, FALSE otherwise.
+	 */
 	public boolean supportsComparingBooleanResults() {
 		return true;
 	}
-
 
 	/**
 	 * Returns the function name of the function that negates boolean values.
@@ -2161,7 +2175,14 @@ public abstract class DBDefinition {
 	 * @return an SQL snippet
 	 */
 	public String doBooleanValueTransform(Boolean boolValue) {
-		return beginNumberValue() + (boolValue ? 1 : 0) + endNumberValue();
+		if (boolValue == null) {
+			return getNull();
+		} else if (boolValue) {
+			return getTrueValue();
+		} else {
+			return getFalseValue();
+		}
+//		return beginNumberValue() + (boolValue ? 1 : 0) + endNumberValue();
 	}
 
 	/**
@@ -4509,6 +4530,14 @@ public abstract class DBDefinition {
 		}
 	}
 
+	/**
+	 * Supplies the beginning of the HAVING clause.
+	 *
+	 * <p>
+	 * Default implementation returns "HAVING ".
+	 *
+	 * @return "HAVING "
+	 */
 	public String getHavingClauseStart() {
 		return "HAVING ";
 	}
@@ -4534,5 +4563,61 @@ public abstract class DBDefinition {
 		return "" + querySQL.replaceAll(" FULL OUTER ", " LEFT OUTER ").replaceFirst("; *$", "")
 				+ " UNION DISTINCT "
 				+ querySQL.replaceAll(" FULL OUTER ", " RIGHT OUTER ");
+	}
+
+	/**
+	 * The value used for TRUE boolean values.
+	 *
+	 * <p>
+	 * The default method returns " TRUE ".
+	 *
+	 * @return " TRUE "
+	 */
+	public String getTrueValue() {
+		return " TRUE ";
+	}
+
+	/**
+	 * The value used for FALSE boolean values.
+	 *
+	 * <p>
+	 * The default method returns " FALSE ".
+	 *
+	 * @return " FALSE "
+	 */
+	public String getFalseValue() {
+		return " FALSE ";
+	}
+
+	/**
+	 * Transforms the boolean statement to a value that can be compared by this
+	 * database.
+	 *
+	 * <p>
+	 * If the database supports comparing booleans (see {@link #supportsComparingBooleanResults()
+	 * }) just return the input.
+	 *
+	 * @param booleanStatement
+	 * @return the statement transformed so that the value can be compared using
+	 * the standard operators, by default the method returns the input unchanged.
+	 */
+	public String doBooleanStatementToBooleanComparisonValueTransform(String booleanStatement) {
+		return booleanStatement;
+	}
+
+	/**
+	 * Transforms the boolean value (as an SQL snippet) to a value that can be compared by this
+	 * database.
+	 *
+	 * <p>
+	 * If the database supports comparing booleans (see {@link #supportsComparingBooleanResults()
+	 * }) just return the input.
+	 *
+	 * @param booleanValue 
+	 * @return the statement transformed so that the value can be compared using
+	 * the standard operators, by default the method returns the input unchanged.
+	 */
+	public String doBooleanValueToBooleanComparisonValueTransform(String booleanValue) {
+		return booleanValue;
 	}
 }

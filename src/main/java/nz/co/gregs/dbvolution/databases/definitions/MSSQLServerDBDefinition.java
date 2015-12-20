@@ -382,16 +382,11 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 	public String doSubsecondTransform(String dateExpression) {
 		return "(DATEPART(MILLISECOND , " + dateExpression + ")/1000.0000)";
 	}
-	
+
 	@Override
 	public boolean supportsComparingBooleanResults() {
 		return false;
 	}
-
-	public String doBooleanValueTransform(Boolean boolValue) {
-		return (boolValue ? "(1=1)" : "(0=1)");
-	}
-
 	/**
 	 * MS SQLServer does not support the LEASTOF operation natively.
 	 *
@@ -485,7 +480,7 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 			return super.transformToStorableType(columnExpression);
 		}
 	}
-
+	
 	@Override
 	public String doPoint2DEqualsTransform(String firstPoint, String secondPoint) {
 		return "(" + Point2DFunctions.EQUALS + "((" + firstPoint + "), (" + secondPoint + "))=1)";
@@ -898,5 +893,25 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 	@Override
 	public String doMultiPoint2DGetMaxXTransform(String first) {
 		return MultiPoint2DFunctions.MAXX + "(" + first + ")";
+	}
+
+	@Override
+	public String getTrueValue() {
+		return " 1 ";
+	}
+
+	@Override
+	public String getFalseValue() {
+		return " 0 ";
+	}
+	
+	@Override
+	public String doBooleanStatementToBooleanComparisonValueTransform(String booleanStatement) {
+		return " CASE WHEN "+booleanStatement+" THEN "+getTrueValue()+" WHEN NOT "+booleanStatement+" THEN "+getFalseValue()+" ELSE -1 END ";
+	}
+	
+	@Override
+	public String doBooleanValueToBooleanComparisonValueTransform(String booleanValue) {
+		return " CASE WHEN "+booleanValue+" IS NULL THEN -1 ELSE "+booleanValue+" END ";
 	}
 }

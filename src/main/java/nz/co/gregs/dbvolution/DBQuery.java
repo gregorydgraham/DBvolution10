@@ -276,8 +276,10 @@ public class DBQuery {
 		final ArrayList<DBRow> preExistingTables = new ArrayList<DBRow>();
 		preExistingTables.addAll(previousTables);
 		preExistingTables.addAll(details.getAssumedQueryTables());
+		
+		List<DBRow> requiredQueryTables = details.getRequiredQueryTables();
 
-		if (details.getRequiredQueryTables().isEmpty() && details.getOptionalQueryTables().size() == details.getAllQueryTables().size()) {
+		if (requiredQueryTables.isEmpty() && details.getOptionalQueryTables().size() == details.getAllQueryTables().size()) {
 			isFullOuterJoin = true;
 			queryState.addedFullOuterJoinToQuery();
 		} else if (details.getOptionalQueryTables().contains(newTable)) {
@@ -294,7 +296,7 @@ public class DBQuery {
 
 		// Add new table's conditions
 		List<String> newTableConditions = newTable.getWhereClausesWithAliases(database);
-		if (details.getRequiredQueryTables().contains(newTable)) {
+		if (requiredQueryTables.contains(newTable)) {
 			queryState.addRequiredConditions(newTableConditions);
 		} else {
 			conditionClauses.addAll(newTableConditions);
@@ -303,8 +305,12 @@ public class DBQuery {
 		// Since the first table can not have a ON clause we need to add it's ON clause to the second table's.
 		if (previousTables.size() == 1) {
 			final DBRow firstTable = previousTables.get(0);
-			if (!details.getRequiredQueryTables().contains(firstTable)) {
-				List<String> firstTableConditions = firstTable.getWhereClausesWithAliases(database);
+			List<String> firstTableConditions = firstTable.getWhereClausesWithAliases(database);
+			if (requiredQueryTables.contains(firstTable)) {
+				// move the stored conditions from the query state into the condition clauses
+				conditionClauses.addAll(queryState.getRequiredConditions());
+				queryState.getRequiredConditions().clear();
+			}else{
 				conditionClauses.addAll(firstTableConditions);
 			}
 		}
@@ -321,7 +327,7 @@ public class DBQuery {
 						if (expr.isRelationship()) {
 							joinClauses.add(expr.toSQLString(database));
 						} else {
-							if (details.getRequiredQueryTables().containsAll(tablesInvolved)) {
+							if (requiredQueryTables.containsAll(tablesInvolved)) {
 								queryState.addRequiredCondition(expr.toSQLString(database));
 							} else {
 								conditionClauses.add(expr.toSQLString(database));

@@ -104,6 +104,8 @@ public class DateExpressionTest extends AbstractTest {
 	
 	public static class MarqueWithDateAggregators extends Marque {
 
+		private static final long  serialVersionUID  = 1L;
+		
 		@DBColumn
 		DBNumber countOfDates = new DBNumber(this.column(this.creationDate).count());
 		@DBColumn

@@ -38,4 +38,6 @@ public interface BooleanResult extends DBExpression, ExpressionCanHaveNullValues
 	@Override
 	public BooleanResult copy();
 
+	boolean isBooleanStatement();
+
 }

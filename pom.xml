@@ -17,7 +17,7 @@
 		The actions performed by DBvolution are always available for debugging and checking by DBAs before release.
 		There are examples in nz.co.gregs.dbvolution.examples, and documentation at http://dbvolution.gregs.co.nz and http://sourceforge.net/p/dbvolution/blog/
 	</description>
-	<url>https://sourceforge.net/projects/dbvolution/</url>
+	<url>http://dbvolution.gregs.co.nz</url>
 	<licenses>
 <!--		<license>
 			<name>The Apache Software License, Version 2.0</name>
