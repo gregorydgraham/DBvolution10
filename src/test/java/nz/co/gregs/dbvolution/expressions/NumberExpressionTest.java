@@ -30,6 +30,21 @@ import org.hamcrest.Matchers;
 import static org.hamcrest.Matchers.is;
 import org.junit.Assert;
 import org.junit.Test;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.is;
 
 public class NumberExpressionTest extends AbstractTest {
 

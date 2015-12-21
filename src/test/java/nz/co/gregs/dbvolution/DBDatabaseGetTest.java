@@ -217,7 +217,7 @@ public class DBDatabaseGetTest extends AbstractTest {
 
 		Date beforeAllTheDates = FlexibleDateFormat.parse("July 2010", Locale.ENGLISH).toDate();
 		Date afterAllTheDates = FlexibleDateFormat.parse("July 2013", Locale.ENGLISH).toDate();
-		DateRange coversFirstDate = tedhiRangeFormat.parse("March 2013");
+		DateRange coversFirstDate = TEDHI_RANGE_FORMAT.parse("March 2013");
 
 		Marque oldQuery = new Marque();
 //        oldQuery.getCreationDate().permittedRange(new Date(0L), afterAllTheDates);

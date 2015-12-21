@@ -20,9 +20,9 @@ import java.util.List;
 import nz.co.gregs.dbvolution.actions.DBActionList;
 import nz.co.gregs.dbvolution.example.Marque;
 import nz.co.gregs.dbvolution.generic.AbstractTest;
-import static org.hamcrest.Matchers.is;
 import org.junit.Assert;
 import org.junit.Test;
+import static org.hamcrest.Matchers.is;
 
 public class TestSQLInjectionPrevention extends AbstractTest {
 

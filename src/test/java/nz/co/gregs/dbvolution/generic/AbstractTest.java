@@ -51,9 +51,9 @@ public abstract class AbstractTest {
 	DBTable<CarCompany> carCompanies;
 	public List<Marque> marqueRows = new ArrayList<Marque>();
 	public List<CarCompany> carTableRows = new ArrayList<CarCompany>();
-	public static final FlexibleDateFormat tedhiFormat = FlexibleDateFormat.getPatternInstance("dd/M/yyyy h:m:s", Locale.UK);
-	public static final SimpleDateFormat datetimeFormat = new SimpleDateFormat("dd/MMM/yyyy HH:mm:ss", Locale.UK);
-	public static final FlexibleDateRangeFormat tedhiRangeFormat = FlexibleDateRangeFormat.getPatternInstance("M yyyy", Locale.UK);
+	public static final FlexibleDateFormat TEDHI_FORMAT = FlexibleDateFormat.getPatternInstance("dd/M/yyyy h:m:s", Locale.UK);
+	public static final SimpleDateFormat DATETIME_FORMAT = new SimpleDateFormat("dd/MMM/yyyy HH:mm:ss", Locale.UK);
+	public static final FlexibleDateRangeFormat TEDHI_RANGE_FORMAT = FlexibleDateRangeFormat.getPatternInstance("M yyyy", Locale.UK);
 	public static String firstDateStr = "23/March/2013 12:34:56";
 	public static String secondDateStr = "2/April/2011 1:02:03";
 	public static Date march23rd2013 = (new GregorianCalendar(2013, 2, 23, 12, 34, 56)).getTime();
@@ -212,8 +212,8 @@ public abstract class AbstractTest {
 		carTableRows.add(new CarCompany("OTHER", 4));
 		carCompanies.insert(carTableRows);
 
-		Date firstDate = datetimeFormat.parse(firstDateStr);
-		Date secondDate = datetimeFormat.parse(secondDateStr);
+		Date firstDate = DATETIME_FORMAT.parse(firstDateStr);
+		Date secondDate = DATETIME_FORMAT.parse(secondDateStr);
 
 		marqueRows.add(new Marque(4893059, "True", 1246974, null, 3, "UV", "PEUGEOT", null, "Y", null, 4, true));
 		marqueRows.add(new Marque(4893090, "False", 1246974, "", 1, "UV", "FORD", "", "Y", firstDate, 2, false));

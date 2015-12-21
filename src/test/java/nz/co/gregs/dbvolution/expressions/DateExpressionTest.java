@@ -741,7 +741,7 @@ public class DateExpressionTest extends AbstractTest {
 		DBQuery dbQuery = database.getDBQuery(marque);
 		
 		dbQuery.addCondition(
-				marque.column(marque.creationDate).isIn((Date) null, datetimeFormat.parse(firstDateStr))
+				marque.column(marque.creationDate).isIn((Date) null, DATETIME_FORMAT.parse(firstDateStr))
 		);
 		
 		List<DBQueryRow> allRows = dbQuery.getAllRows();
@@ -757,7 +757,7 @@ public class DateExpressionTest extends AbstractTest {
 		database.print(allRows);
 		
 		dbQuery.addCondition(
-				marque.column(marque.creationDate).isIn((Date) null, datetimeFormat.parse(firstDateStr))
+				marque.column(marque.creationDate).isIn((Date) null, DATETIME_FORMAT.parse(firstDateStr))
 		);
 		
 		allRows = dbQuery.getAllRows();
@@ -875,7 +875,7 @@ public class DateExpressionTest extends AbstractTest {
 		numberOfRowsWithACreationDate = database.getDBTable(nonNullMarque).setBlankQueryAllowed(true).count().intValue();
 		Assert.assertThat(got.size(), is(numberOfRowsWithACreationDate));
 		
-		Date secondDate = AbstractTest.datetimeFormat.parse(AbstractTest.secondDateStr);
+		Date secondDate = AbstractTest.DATETIME_FORMAT.parse(AbstractTest.secondDateStr);
 		marq = new Marque();
 		query = database.getDBQuery(marq);
 		query.addCondition(
@@ -907,7 +907,7 @@ public class DateExpressionTest extends AbstractTest {
 		int numberOfRowsWithACreationDate = database.getDBTable(nonNullMarque).setBlankQueryAllowed(true).count().intValue();
 		Assert.assertThat(got.size(), is(numberOfRowsWithACreationDate));
 		
-		Date secondDate = AbstractTest.datetimeFormat.parse(AbstractTest.secondDateStr);
+		Date secondDate = AbstractTest.DATETIME_FORMAT.parse(AbstractTest.secondDateStr);
 		marq = new Marque();
 		query = database.getDBQuery(marq);
 		query.addCondition(
@@ -939,7 +939,7 @@ public class DateExpressionTest extends AbstractTest {
 		int numberOfRowsWithACreationDate = database.getDBTable(nonNullMarque).setBlankQueryAllowed(true).count().intValue();
 		Assert.assertThat(got.size(), is(numberOfRowsWithACreationDate));
 		
-		Date secondDate = AbstractTest.datetimeFormat.parse(AbstractTest.secondDateStr);
+		Date secondDate = AbstractTest.DATETIME_FORMAT.parse(AbstractTest.secondDateStr);
 		marq = new Marque();
 		query = database.getDBQuery(marq);
 		query.addCondition(
@@ -971,7 +971,7 @@ public class DateExpressionTest extends AbstractTest {
 		int numberOfRowsWithACreationDate = database.getDBTable(nonNullMarque).setBlankQueryAllowed(true).count().intValue();
 		Assert.assertThat(got.size(), is(numberOfRowsWithACreationDate));
 		
-		Date secondDate = AbstractTest.datetimeFormat.parse(AbstractTest.secondDateStr);
+		Date secondDate = AbstractTest.DATETIME_FORMAT.parse(AbstractTest.secondDateStr);
 		marq = new Marque();
 		query = database.getDBQuery(marq);
 		query.addCondition(
@@ -1003,7 +1003,7 @@ public class DateExpressionTest extends AbstractTest {
 		int numberOfRowsWithACreationDate = database.getDBTable(nonNullMarque).setBlankQueryAllowed(true).count().intValue();
 		Assert.assertThat(got.size(), is(numberOfRowsWithACreationDate));
 		
-		Date secondDate = AbstractTest.datetimeFormat.parse(AbstractTest.secondDateStr);
+		Date secondDate = AbstractTest.DATETIME_FORMAT.parse(AbstractTest.secondDateStr);
 		marq = new Marque();
 		query = database.getDBQuery(marq);
 		query.addCondition(
@@ -1035,7 +1035,7 @@ public class DateExpressionTest extends AbstractTest {
 		int numberOfRowsWithACreationDate = database.getDBTable(nonNullMarque).setBlankQueryAllowed(true).count().intValue();
 		Assert.assertThat(got.size(), is(numberOfRowsWithACreationDate));
 		
-		Date secondDate = AbstractTest.datetimeFormat.parse(AbstractTest.secondDateStr);
+		Date secondDate = AbstractTest.DATETIME_FORMAT.parse(AbstractTest.secondDateStr);
 		marq = new Marque();
 		query = database.getDBQuery(marq);
 		query.addCondition(
@@ -1067,7 +1067,7 @@ public class DateExpressionTest extends AbstractTest {
 		int numberOfRowsWithACreationDate = database.getDBTable(nonNullMarque).setBlankQueryAllowed(true).count().intValue();
 		Assert.assertThat(got.size(), is(numberOfRowsWithACreationDate));
 		
-		Date secondDate = AbstractTest.datetimeFormat.parse(AbstractTest.secondDateStr);
+		Date secondDate = AbstractTest.DATETIME_FORMAT.parse(AbstractTest.secondDateStr);
 		marq = new Marque();
 		query = database.getDBQuery(marq);
 		query.addCondition(
@@ -1116,7 +1116,7 @@ public class DateExpressionTest extends AbstractTest {
 //		int numberOfRowsWithACreationDate = database.getDBTable(nonNullMarque).setBlankQueryAllowed(true).count().intValue();
 //		Assert.assertThat(got.size(), is(numberOfRowsWithACreationDate));
 //
-//		Date secondDate = AbstractTest.datetimeFormat.parse(AbstractTest.secondDateStr);
+//		Date secondDate = AbstractTest.DATETIME_FORMAT.parse(AbstractTest.secondDateStr);
 //		marq = new Marque();
 //		query = database.getDBQuery(marq);
 //		query.addCondition(
