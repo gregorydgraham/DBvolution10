@@ -97,7 +97,10 @@ public class DataModelTest extends AbstractTest {
 	public void testGetDBRowClasses() {
 		System.out.println("getDBRowClasses");
 		Set<Class<? extends DBRow>> result = DataModel.getDBRowClasses();
-		Assert.assertThat(result.size(), is(187));
+		for (Class<? extends DBRow> class1 : result) {
+			System.out.println(class1.getName());
+		}
+		Assert.assertThat(result.size(), is(192));
 	}
 
 	@Test

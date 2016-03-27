@@ -364,6 +364,49 @@ public class OracleDBDefinition extends DBDefinition {
 	public boolean supportsCotangentFunction() {
 		return false;
 	}
+	/**
+	 * Transform a Java Boolean into the equivalent in an SQL snippet.
+	 *
+	 * @param boolValue	boolValue
+	 * @return an SQL snippet
+	 */
+	@Override
+	public String doBooleanValueTransform(Boolean boolValue) {
+		if (boolValue == null) {
+			return getNull();
+		} else if (boolValue) {
+			return getTrueValue();
+		} else {
+			return getFalseValue();
+		}
+//		return beginNumberValue() + (boolValue ? 1 : 0) + endNumberValue();
+	}
+
+	/**
+	 * The value used for TRUE boolean values.
+	 *
+	 * <p>
+	 * The default method returns " TRUE ".
+	 *
+	 * @return " TRUE "
+	 */
+	@Override
+	public String getTrueValue() {
+		return " 1 ";
+	}
+
+	/**
+	 * The value used for FALSE boolean values.
+	 *
+	 * <p>
+	 * The default method returns " FALSE ".
+	 *
+	 * @return " FALSE "
+	 */
+	@Override
+	public String getFalseValue() {
+		return " 0 ";
+	}
 
 	@Override
 	public DBExpression transformToStorableType(DBExpression columnExpression) {

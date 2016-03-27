@@ -305,12 +305,8 @@ public class DBQuery {
 		// Since the first table can not have a ON clause we need to add it's ON clause to the second table's.
 		if (previousTables.size() == 1) {
 			final DBRow firstTable = previousTables.get(0);
-			List<String> firstTableConditions = firstTable.getWhereClausesWithAliases(database);
-			if (requiredQueryTables.contains(firstTable)) {
-				// move the stored conditions from the query state into the condition clauses
-				conditionClauses.addAll(queryState.getRequiredConditions());
-				queryState.getRequiredConditions().clear();
-			}else{
+			if (!details.getRequiredQueryTables().contains(firstTable)) {
+				List<String> firstTableConditions = firstTable.getWhereClausesWithAliases(database);
 				conditionClauses.addAll(firstTableConditions);
 			}
 		}

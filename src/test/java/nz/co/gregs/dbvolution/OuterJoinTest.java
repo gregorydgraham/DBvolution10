@@ -17,18 +17,31 @@ package nz.co.gregs.dbvolution;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import nz.co.gregs.dbvolution.annotations.DBAutoIncrement;
+import nz.co.gregs.dbvolution.annotations.DBColumn;
+import nz.co.gregs.dbvolution.annotations.DBForeignKey;
+import nz.co.gregs.dbvolution.annotations.DBPrimaryKey;
+import nz.co.gregs.dbvolution.datatypes.DBBoolean;
+import nz.co.gregs.dbvolution.datatypes.DBDate;
+import nz.co.gregs.dbvolution.datatypes.DBInteger;
+import nz.co.gregs.dbvolution.datatypes.DBString;
 import nz.co.gregs.dbvolution.example.*;
+import nz.co.gregs.dbvolution.exceptions.AutoCommitActionDuringTransactionException;
 import nz.co.gregs.dbvolution.generic.AbstractTest;
 import nz.co.gregs.dbvolution.query.QueryOptions;
 import org.junit.Assert;
 import org.junit.Test;
 import static org.hamcrest.Matchers.*;
+import org.junit.Before;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
 @RunWith(Parameterized.class)
 public class OuterJoinTest extends AbstractTest {
+
+	private boolean tablesCreated = false;
 
 	public OuterJoinTest(Object testIterationName, Object db) {
 		super(testIterationName, db);
@@ -266,7 +279,7 @@ public class OuterJoinTest extends AbstractTest {
 	public void testSimpleCriteriaInOnClause() throws SQLException {
 		DBQuery dbquery = database.getDBQuery();
 		final CarCompany carCompany = new CarCompany();
-		carCompany.name.permittedRangeInclusive("ford", "TOYOTA");
+		carCompany.name.permittedRangeInclusive("Ford", "TOYOTA");
 		dbquery.add(carCompany);
 		final Marque marque = new Marque();
 		marque.enabled.permittedValues(true);
@@ -305,7 +318,7 @@ public class OuterJoinTest extends AbstractTest {
 		final CarCompany carCompany = new CarCompany();
 		final Marque marque = new Marque();
 
-		carCompany.name.permittedRangeInclusive("ford", "TOYOTA");
+		carCompany.name.permittedRangeInclusive("Ford", "TOYOTA");
 		marque.enabled.permittedValues(Boolean.TRUE);
 
 		dbquery.addOptional(marque);
@@ -333,7 +346,7 @@ public class OuterJoinTest extends AbstractTest {
 		if (database.supportsFullOuterJoin()) {
 			List<DBQueryRow> allRows = dbquery.getAllRows();
 			database.print(allRows);
-			Assert.assertThat(allRows.size(), is(26));
+			Assert.assertThat(allRows.size(), is(24));
 		}
 	}
 
@@ -360,7 +373,7 @@ public class OuterJoinTest extends AbstractTest {
 	public void testSimpleLeftOuterJoin() throws SQLException{
 		//Create some examples
 		final CarCompany carCompany = new CarCompany();
-		carCompany.name.permittedRangeInclusive("ford", "TOYOTA");
+		carCompany.name.permittedRangeInclusive("Ford", "TOYOTA");
 		
 		final Marque marque = new Marque();
 		marque.enabled.permittedValues(true);
@@ -376,5 +389,197 @@ public class OuterJoinTest extends AbstractTest {
 		
 		database.print(allRows);
 		Assert.assertThat(allRows.size(), is(4));
+	}	@Test
+	
+	public void demonstrateAccessingEachRowWithOptionalTables() throws SQLException {
+		// We're going to list all of the encounters that earned 100 or more experience
+		// and the antagonist involved
+		// So we need example Encounter and Antagonist objects
+		final Encounter encounterExample = new Encounter();
+		final Antagonist antagonistExample = new Antagonist();
+
+		// limit the results to only encounters with 100 or more experienceEarned
+		encounterExample.experienceEarned.permittedRangeInclusive(100, null);
+
+		// We'll need a DBQuery so we can use more than one table.
+		nz.co.gregs.dbvolution.DBQuery dbQuery
+				= database.getDBQuery(encounterExample);
+
+		// and add an instance of Antagonist to the mix
+		// Optional means we don't require this table to have 
+		// data connecting it to the rest of the query, 
+		// DBvolution will create an outer join to accomodate our instruction
+		dbQuery.addOptional(antagonistExample);
+
+		// getting all the rows is similar to DBTable 
+		// but returns a collection of DBQueryRows
+		List<nz.co.gregs.dbvolution.DBQueryRow> allQueryRows
+				= dbQuery.getAllRows();
+
+		Assert.assertThat(allQueryRows.size(), is(3));
+
+		// Now loop through the individual rows processing as you go
+		System.out.println("");
+		System.out.println("VALUABLE ENCOUNTERS including THE ANTAGONIST INVOLVED");
+		int antagonistFound = 0;
+		for (nz.co.gregs.dbvolution.DBQueryRow queryRow : allQueryRows) {
+
+			// A DBQueryRow contains all the individual rows from the table 
+			// that are associated with each other.
+			// Use the get method with an instance of the class you want to get
+			// the relevant row.
+			Encounter encounter = queryRow.get(encounterExample);
+			// Using blank instances is also ok
+			Antagonist antagonist = queryRow.get(new Antagonist());
+
+			// Simple processing of the required rows
+			System.out.println("" + encounter);
+
+			// Watch out though!  
+			// Optional rows will be NULL if there is no relevant row
+			if (antagonist != null) {
+				System.out.println("" + antagonist);
+				antagonistFound++;
+			} else {
+				System.out.println("NO ANTAGONIST INVOLVED");
+			}
+		}
+		Assert.assertThat(antagonistFound, is(2));
 	}
+
+	@Before
+	public void createTables() throws SQLException {
+		try {
+			database.createTable(new Encounter());
+			database.createTable(new Antagonist());
+			tablesCreated = true;
+		} catch (SQLException ex) {
+			; // An exception is thrown if the table already exists
+		} catch (AutoCommitActionDuringTransactionException ex) {
+			; // An exception is thrown if the table already exists
+		}
+
+		// To avoid duplicated rows, 
+		// only insert if the tables are freshly created
+		if (tablesCreated) {
+
+			//Create some antagonists to fight
+			//Note that the antagonists will not have valid IDs 
+			//until they're inserted into the database
+			Antagonist goblin = new Antagonist("Goblin");
+			Antagonist guard = new Antagonist("Guard");
+			Antagonist dragon = new Antagonist("Dragon");
+			database.insert(goblin, guard, dragon);
+
+			//Now that the antagonists have been inserted 
+			//they have valid IDs 
+			//and we can create some encounters
+			Encounter encounter1 = new Encounter("First encounter", goblin, 20, new Date());
+			Encounter encounter2 = new Encounter("Taking the guardtower", guard, 100, new Date());
+			Encounter encounter3 = new Encounter("Slaying the dragon", dragon, 30000, new Date());
+
+			//This one doesn't have a antagonist, 
+			//and will demonstrate outer joins later
+			Encounter encounter4 = new Encounter("Defeating the trap", 300, new Date());
+			database.insert(encounter1, encounter2, encounter3, encounter4);
+		}
+	}
+
+	public static class Encounter extends DBRow {
+
+		private static final long serialVersionUID = 1;
+
+		@DBColumn
+		@DBPrimaryKey
+		@DBAutoIncrement
+		public DBInteger encounter_pk = new DBInteger();
+
+		@DBColumn
+		public DBString name = new DBString();
+
+		@DBColumn
+		@DBForeignKey(Antagonist.class)
+		public DBInteger antagonist = new DBInteger();
+
+		@DBColumn
+		public DBInteger experienceEarned = new DBInteger();
+
+		@DBColumn
+		public DBDate dateEncountered = new DBDate();
+
+		public Encounter() {
+			super();
+		}
+
+		public Encounter(String name, Integer exp, Date date) {
+			super();
+			this.name.setValue(name);
+			this.experienceEarned.setValue(exp);
+			this.dateEncountered.setValue(date);
+		}
+
+		public Encounter(String name, Antagonist anatagonist, Integer exp, Date date) {
+			super();
+			this.name.setValue(name);
+			this.antagonist.setValue(anatagonist.antagonistID.intValue());
+			this.experienceEarned.setValue(exp);
+			this.dateEncountered.setValue(date);
+		}
+
+	}
+
+	public static class Antagonist extends DBRow {
+
+		private static final long serialVersionUID = 1;
+		@DBColumn
+		@DBPrimaryKey
+		@DBAutoIncrement
+		public DBInteger antagonistID = new DBInteger();
+
+		@DBColumn
+		public DBString name = new DBString();
+
+		@DBColumn
+		public DBBoolean npc = new DBBoolean();
+
+		public Antagonist(String name) {
+			super();
+			this.name.setValue(name);
+			this.npc.setValue(false);
+		}
+
+		public Antagonist() {
+			super();
+		}
+
+		// Some examples of pre-defined selections
+		public static class Dragon extends Antagonist {
+
+			private static final long serialVersionUID = 1;
+
+			{
+				this.name.permittedPatternIgnoreCase("%dragon%");
+			}
+		}
+
+		public static class NPC extends Antagonist {
+
+			private static final long serialVersionUID = 1;
+
+			{
+				this.npc.permittedValues(Boolean.TRUE);
+			}
+		}
+
+		public static class Monster extends Antagonist {
+
+			private static final long serialVersionUID = 1;
+
+			{
+				this.npc.permittedValues(Boolean.FALSE);
+			}
+		}
+
+	}
+
 }
