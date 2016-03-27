@@ -54,9 +54,9 @@ public class ExampleEncodingInterpreter implements EncodingInterpreter {
 			this.add("1");
 		}
 	};
-	private static final String encodingSeparator = "&";
-	private static final String tableAndPropertySeparator = "-";
-	private static final String propertyAndValueSeparator = "=";
+	private static final String ENCODING_SEPARATOR = "&";
+	private static final String TABLE_AND_PROPERTY_SEPARATOR = "-";
+	private static final String PROPERTY_AND_VALUE_SEPARATOR = "=";
 
 	/**
 	 * For all rows in the collection of DBRows encode the class and any
@@ -277,20 +277,20 @@ public class ExampleEncodingInterpreter implements EncodingInterpreter {
 	 * @return the encodingSeparator
 	 */
 	public String getParameterSeparator() {
-		return encodingSeparator;
+		return ENCODING_SEPARATOR;
 	}
 
 	/**
-	 * @return the tableAndPropertySeparator
+	 * @return the TABLE_AND_PROPERTY_SEPARATOR
 	 */
 	public String getTableAndPropertySeparator() {
-		return tableAndPropertySeparator;
+		return TABLE_AND_PROPERTY_SEPARATOR;
 	}
 
 	/**
-	 * @return the propertyAndValueSeparator
+	 * @return the PROPERTY_AND_VALUE_SEPARATOR
 	 */
 	public String getPropertyAndValueSeparator() {
-		return propertyAndValueSeparator;
+		return PROPERTY_AND_VALUE_SEPARATOR;
 	}
 }
