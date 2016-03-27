@@ -204,14 +204,15 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 	 * the Boolean supplied.
 	 */
 	public BooleanExpression is(Boolean bool) {
+		return is(new BooleanExpression(bool));
 //		return this.is(BooleanExpression.value(bool));
-		if (bool == null) {
-			return this.isNull();
-		} else if (bool) {
-			return this;
-		} else {
-			return this.not();
-		}
+//		if (bool == null) {
+//			return this.isNull();
+//		} else if (bool) {
+//			return this;
+//		} else {
+//			return this.not();
+//		}
 	}
 
 	/**
@@ -368,14 +369,15 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 	 * the Boolean supplied.
 	 */
 	public BooleanExpression isNot(Boolean bool) {
+		return isNot(new BooleanExpression(bool));
 //		return this.isNot(BooleanExpression.value(bool));
-		if (bool == null) {
-			return this.isNotNull();
-		} else if (bool) {
-			return this.not();
-		} else {
-			return this;
-		}
+//		if (bool == null) {
+//			return this.isNotNull();
+//		} else if (bool) {
+//			return this.not();
+//		} else {
+//			return this;
+//		}
 	}
 
 	/**
