@@ -4602,22 +4602,30 @@ public abstract class DBDefinition {
 	 * the standard operators, by default the method returns the input unchanged.
 	 */
 	public String doBooleanStatementToBooleanComparisonValueTransform(String booleanStatement) {
-		return booleanStatement;
+		if (this.supportsComparingBooleanResults()) {
+			return booleanStatement;
+		} else {
+			return " CASE WHEN " + booleanStatement + " THEN " + getTrueValue() + " WHEN NOT " + booleanStatement + " THEN " + getFalseValue() + " ELSE -1 END ";
+		}
 	}
 
 	/**
-	 * Transforms the boolean value (as an SQL snippet) to a value that can be compared by this
-	 * database.
+	 * Transforms the boolean value (as an SQL snippet) to a value that can be
+	 * compared by this database.
 	 *
 	 * <p>
 	 * If the database supports comparing booleans (see {@link #supportsComparingBooleanResults()
 	 * }) just return the input.
 	 *
-	 * @param booleanValue 
+	 * @param booleanValue
 	 * @return the statement transformed so that the value can be compared using
 	 * the standard operators, by default the method returns the input unchanged.
 	 */
 	public String doBooleanValueToBooleanComparisonValueTransform(String booleanValue) {
-		return booleanValue;
+		if (this.supportsComparingBooleanResults()) {
+			return booleanValue;
+		} else {
+			return " CASE WHEN " + booleanValue + " IS NULL THEN -1 ELSE " + booleanValue + " END ";
+		}
 	}
 }

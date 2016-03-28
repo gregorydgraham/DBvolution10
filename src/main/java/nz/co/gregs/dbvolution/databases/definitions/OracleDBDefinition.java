@@ -364,6 +364,7 @@ public class OracleDBDefinition extends DBDefinition {
 	public boolean supportsCotangentFunction() {
 		return false;
 	}
+	
 	/**
 	 * Transform a Java Boolean into the equivalent in an SQL snippet.
 	 *
@@ -408,6 +409,32 @@ public class OracleDBDefinition extends DBDefinition {
 		return " 0 ";
 	}
 
+
+	/**
+	 * An SQL snippet that always evaluates to FALSE for this database.
+	 *
+	 * @return " 1=0 " or equivalent
+	 */
+	@Override
+	public String getFalseOperation() {
+		return " (1=0) ";
+	}
+
+	/**
+	 * An SQL snippet that always evaluates to TRUE for this database.
+	 *
+	 * @return " 1=1 " or equivalent
+	 */
+	@Override
+	public String getTrueOperation() {
+		return " (1=1) ";
+	}
+
+	@Override
+	public boolean supportsComparingBooleanResults() {
+		return false;
+	}
+	
 	@Override
 	public DBExpression transformToStorableType(DBExpression columnExpression) {
 		if (columnExpression instanceof BooleanExpression) {

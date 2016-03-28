@@ -904,14 +904,4 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 	public String getFalseValue() {
 		return " 0 ";
 	}
-	
-	@Override
-	public String doBooleanStatementToBooleanComparisonValueTransform(String booleanStatement) {
-		return " CASE WHEN "+booleanStatement+" THEN "+getTrueValue()+" WHEN NOT "+booleanStatement+" THEN "+getFalseValue()+" ELSE -1 END ";
-	}
-	
-	@Override
-	public String doBooleanValueToBooleanComparisonValueTransform(String booleanValue) {
-		return " CASE WHEN "+booleanValue+" IS NULL THEN -1 ELSE "+booleanValue+" END ";
-	}
 }
