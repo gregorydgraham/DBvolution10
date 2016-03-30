@@ -57,7 +57,7 @@ public enum MultiPoint2DFunctions {
 			+ "      2002,\n"
 			+ "      p_geometry.SDO_SRID,\n"
 			+ "      p_geometry.SDO_POINT,\n"
-			+ "      p_geometry.SDO_ELEM_INFO,\n"
+			+ "      MDSYS.SDO_ELEM_INFO_ARRAY(1,2,1),\n"
 			+ "      p_geometry.SDO_ORDINATES\n"
 			+ "    );\n"
 			+ "END;"),
