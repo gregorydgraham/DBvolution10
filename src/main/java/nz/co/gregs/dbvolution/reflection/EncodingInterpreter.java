@@ -117,12 +117,12 @@ public interface EncodingInterpreter {
 	 *
 	 * <p>
 	 * The encoding should allow the interpreter to retrieve a fully qualified
-	 * DBRow class name, a relevant property on that class, and the value the class
-	 * should be set to.
+	 * DBRow class name, a relevant property on that class, and the value the
+	 * class should be set to.
 	 *
 	 * <p>
-	 * For example an implementation that uses "&amp;", "-", and "=" to separate the
-	 * parts might produce
+	 * For example an implementation that uses "&amp;", "-", and "=" to separate
+	 * the parts might produce
 	 * {@code "myclass-myfield=myvalue&amp;otherclass-fieldb=valueb"}.
 	 *
 	 * @param rows
@@ -130,18 +130,95 @@ public interface EncodingInterpreter {
 	 */
 	String encode(DBRow... rows);
 
-	void decodeBooleanValue(DBBoolean field, String value);
+	/**
+	 * Decode the value and store it into the field
+	 *
+	 * <p>
+	 * Used by
+	 * {@link #setValue(nz.co.gregs.dbvolution.datatypes.QueryableDatatype, java.lang.String) setValues}
+	 * to set boolean values used in the query.
+	 *
+	 * @param value
+	 * @param field
+	 */
+	void decodeValue(String value, DBBoolean field);
 
-	void decodeDateValue(String value, DBDate date);
+	/**
+	 * Decode the value and store it into the field
+	 *
+	 * <p>
+	 * Used by
+	 * {@link #setValue(nz.co.gregs.dbvolution.datatypes.QueryableDatatype, java.lang.String) setValues}
+	 * to set boolean values used in the query.
+	 *
+	 * @param value
+	 * @param field
+	 */
+	void decodeValue(String value, DBDate field);
 
-	void decodeIntegerEnum(String value, DBIntegerEnum<?> num) throws NumberFormatException;
+	/**
+	 * Decode the value and store it into the field
+	 *
+	 * <p>
+	 * Used by
+	 * {@link #setValue(nz.co.gregs.dbvolution.datatypes.QueryableDatatype, java.lang.String) setValues}
+	 * to set boolean values used in the query.
+	 *
+	 * @param value
+	 * @param field
+	 */
+	void decodeValue(String value, DBIntegerEnum<?> field) throws NumberFormatException;
 
-	void decodeIntegerValue(String value, DBInteger num) throws NumberFormatException;
+	/**
+	 * Decode the value and store it into the field
+	 *
+	 * <p>
+	 * Used by
+	 * {@link #setValue(nz.co.gregs.dbvolution.datatypes.QueryableDatatype, java.lang.String) setValues}
+	 * to set boolean values used in the query.
+	 *
+	 * @param value
+	 * @param field
+	 */
+	void decodeValue(String value, DBInteger field) throws NumberFormatException;
 
-	void decodeNumberValue(String value, DBNumber num) throws NumberFormatException;
+	/**
+	 * Decode the value and store it into the field
+	 *
+	 * <p>
+	 * Used by
+	 * {@link #setValue(nz.co.gregs.dbvolution.datatypes.QueryableDatatype, java.lang.String) setValues}
+	 * to set boolean values used in the query.
+	 *
+	 * @param value
+	 * @param field
+	 */
+	void decodeValue(String value, DBNumber field) throws NumberFormatException;
 
-	void decodeStringEnum(DBStringEnum<?> string, String value);
+	/**
+	 * Decode the value and store it into the field
+	 *
+	 * <p>
+	 * Used by
+	 * {@link #setValue(nz.co.gregs.dbvolution.datatypes.QueryableDatatype, java.lang.String) setValues}
+	 * to set boolean values used in the query.
+	 *
+	 * @param value
+	 * @param field
+	 */
+	void decodeValue(String value, DBStringEnum<?> field);
 
-	void decodeStringValue(DBString string, String value);
+	/**
+	 * Decode the value and store it into the field
+	 *
+	 * <p>
+	 * Used by
+	 * {@link #setValue(nz.co.gregs.dbvolution.datatypes.QueryableDatatype, java.lang.String) setValues}
+	 * to set boolean values used in the query.
+	 *
+	 * @param value
+	 * @param field
+	 */
+	void decodeValue(String value, DBString field);
 
 }

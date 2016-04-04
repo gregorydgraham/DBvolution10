@@ -148,36 +148,36 @@ public class ExampleEncodingInterpreter implements EncodingInterpreter {
 	public void setValue(QueryableDatatype qdt, String value) {
 		if (qdt instanceof DBString) {
 			DBString string = (DBString) qdt;
-			decodeStringValue(string, value);
+			decodeValue(value, string);
 		} else if (qdt instanceof DBStringEnum) {
 			DBStringEnum<?> string = (DBStringEnum<?>) qdt;
-			decodeStringEnum(string, value);
+			decodeValue(value, string);
 		} else if (qdt instanceof DBNumber) {
 			DBNumber num = (DBNumber) qdt;
-			decodeNumberValue(value, num);
+			decodeValue(value, num);
 		} else if (qdt instanceof DBInteger) {
 			DBInteger num = (DBInteger) qdt;
-			decodeIntegerValue(value, num);
+			decodeValue(value, num);
 		} else if (qdt instanceof DBIntegerEnum) {
 			DBIntegerEnum<?> num = (DBIntegerEnum<?>) qdt;
-			decodeIntegerEnum(value, num);
+			decodeValue(value, num);
 		} else if (qdt instanceof DBDate) {
 			DBDate date = (DBDate) qdt;
-			decodeDateValue(value, date);
+			decodeValue(value, date);
 		} else if (qdt instanceof DBBoolean) {
 			DBBoolean field = (DBBoolean) qdt;
-			decodeBooleanValue(field, value);
+			decodeValue(value, field);
 		}
 	}
 
 	@Override
-	public void decodeBooleanValue(DBBoolean field, String value) {
+	public void decodeValue(String value, DBBoolean field) {
 		field.permittedValues(trueVals.contains(value.toLowerCase()));
 	}
 
 	@Override
 	@SuppressWarnings("deprecation")
-	public void decodeDateValue(String value, DBDate date) {
+	public void decodeValue(String value, DBDate date) {
 		if (value.contains("...")) {
 			String[] split = value.split("\\.\\.\\.");
 			Date startOfRange = split[0] == null || split[0].isEmpty() ? null : new Date(split[0]);
@@ -191,7 +191,7 @@ public class ExampleEncodingInterpreter implements EncodingInterpreter {
 	}
 
 	@Override
-	public void decodeIntegerEnum(String value, DBIntegerEnum<?> num) throws NumberFormatException {
+	public void decodeValue(String value, DBIntegerEnum<?> num) throws NumberFormatException {
 		if (value.contains("...")) {
 			String[] split = value.split("\\.\\.\\.");
 			Long startOfRange = split[0] == null || split[0].isEmpty() ? null : new Long(split[0]);
@@ -205,7 +205,7 @@ public class ExampleEncodingInterpreter implements EncodingInterpreter {
 	}
 
 	@Override
-	public void decodeNumberValue(String value, DBNumber num) throws NumberFormatException {
+	public void decodeValue(String value, DBNumber num) throws NumberFormatException {
 		if (value.contains("...")) {
 			String[] split = value.split("\\.\\.\\.");
 			Double startOfRange = split[0] == null || split[0].isEmpty() ? null : new Double(split[0]);
@@ -219,17 +219,17 @@ public class ExampleEncodingInterpreter implements EncodingInterpreter {
 	}
 
 	@Override
-	public void decodeStringEnum(DBStringEnum<?> string, String value) {
+	public void decodeValue(String value, DBStringEnum<?> string) {
 		string.permittedValues(value);
 	}
 
 	@Override
-	public void decodeStringValue(DBString string, String value) {
+	public void decodeValue(String value, DBString string) {
 		string.permittedValues(value);
 	}
 
 	@Override
-	public void decodeIntegerValue(String value, DBInteger num) throws NumberFormatException {
+	public void decodeValue(String value, DBInteger num) throws NumberFormatException {
 		if (value.contains("...")) {
 			String[] split = value.split("\\.\\.\\.");
 			Long startOfRange = split[0] == null || split[0].isEmpty() ? null : new Long(split[0]);

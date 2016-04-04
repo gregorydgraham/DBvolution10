@@ -56,6 +56,18 @@ public class DBByteArray extends DBLargeObject {
 		super();
 	}
 
+
+
+	/**
+	 * Creates a column expression with a large object result from the expression
+	 * provided.
+	 *
+	 * <p>
+	 * Used in {@link DBReport}, and some {@link DBRow}, sub-classes to derive
+	 * data from the database prior to retrieval.
+	 *
+	 * @param aThis 	an expression that will result in a large object value
+	 */
 	public DBByteArray(LargeObjectExpression aThis) {
 		super(aThis);
 	}

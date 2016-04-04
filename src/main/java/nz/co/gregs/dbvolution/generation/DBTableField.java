@@ -94,6 +94,10 @@ public class DBTableField {
 	 * Stores the data type of the DBTableField as reported from the database.
 	 */
 	public int sqlDataTypeInt;
+
+	/**
+	 * Stores the data type name of the DBTableField as reported from the database.
+	 */
 	public String sqlDataTypeName;
 
 	@Override
