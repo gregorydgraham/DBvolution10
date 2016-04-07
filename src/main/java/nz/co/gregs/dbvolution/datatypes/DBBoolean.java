@@ -82,7 +82,7 @@ public class DBBoolean extends QueryableDatatype implements BooleanResult {
 	 *
 	 * @param bool	bool
 	 */
-	public DBBoolean(BooleanResult bool) {
+	public DBBoolean(BooleanExpression bool) {
 		super(bool);
 	}
 

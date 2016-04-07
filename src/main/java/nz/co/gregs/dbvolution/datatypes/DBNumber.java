@@ -74,7 +74,7 @@ public class DBNumber extends QueryableDatatype implements NumberResult {
 	 *
 	 * @param numberExpression	numberExpression
 	 */
-	public DBNumber(NumberResult numberExpression) {
+	public DBNumber(NumberExpression numberExpression) {
 		super(numberExpression);
 	}
 

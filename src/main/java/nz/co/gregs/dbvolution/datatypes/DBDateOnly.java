@@ -21,6 +21,7 @@ import java.util.Date;
 import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.DBReport;
 import nz.co.gregs.dbvolution.DBRow;
+import nz.co.gregs.dbvolution.expressions.DateExpression;
 import nz.co.gregs.dbvolution.results.DateResult;
 
 /**
@@ -89,7 +90,7 @@ public class DBDateOnly extends DBDate {
 	 *
 	 * @param dateExpression	dateExpression
 	 */
-	public DBDateOnly(DateResult dateExpression) {
+	public DBDateOnly(DateExpression dateExpression) {
 		super(dateExpression);
 	}
 

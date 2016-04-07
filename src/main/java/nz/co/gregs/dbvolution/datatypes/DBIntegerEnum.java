@@ -22,6 +22,7 @@ import java.util.Set;
 import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.DBReport;
 import nz.co.gregs.dbvolution.DBRow;
+import nz.co.gregs.dbvolution.expressions.NumberExpression;
 import nz.co.gregs.dbvolution.expressions.StringExpression;
 import nz.co.gregs.dbvolution.results.NumberResult;
 import nz.co.gregs.dbvolution.operators.DBPermittedRangeExclusiveOperator;
@@ -80,7 +81,7 @@ public class DBIntegerEnum<E extends Enum<E> & DBEnumValue<? extends Number>> ex
 	 *
 	 * @param numberExpression	numberExpression
 	 */
-	public DBIntegerEnum(NumberResult numberExpression) {
+	public DBIntegerEnum(NumberExpression numberExpression) {
 		super(numberExpression);
 	}
 

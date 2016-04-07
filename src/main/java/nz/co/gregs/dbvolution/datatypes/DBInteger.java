@@ -92,7 +92,7 @@ public class DBInteger extends QueryableDatatype implements NumberResult {
 	 *
 	 * @param value	value
 	 */
-	public DBInteger(NumberResult value) {
+	public DBInteger(NumberExpression value) {
 		super(value);
 	}
 

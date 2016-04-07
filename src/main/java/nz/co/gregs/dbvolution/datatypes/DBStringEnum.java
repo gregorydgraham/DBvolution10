@@ -86,7 +86,7 @@ public class DBStringEnum<E extends Enum<E> & DBEnumValue<String>> extends DBEnu
 	 *
 	 * @param stringExpression	stringExpression
 	 */
-	public DBStringEnum(StringResult stringExpression) {
+	public DBStringEnum(StringExpression stringExpression) {
 		super(stringExpression);
 	}
 

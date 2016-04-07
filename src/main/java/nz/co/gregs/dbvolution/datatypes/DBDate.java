@@ -87,7 +87,7 @@ public class DBDate extends QueryableDatatype implements DateResult {
 	 *
 	 * @param dateExpression	dateExpression
 	 */
-	public DBDate(DateResult dateExpression) {
+	public DBDate(DateExpression dateExpression) {
 		super(dateExpression);
 	}
 

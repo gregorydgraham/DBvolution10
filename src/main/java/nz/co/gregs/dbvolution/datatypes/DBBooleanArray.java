@@ -25,6 +25,7 @@ import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.DBReport;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
+import nz.co.gregs.dbvolution.expressions.BooleanArrayExpression;
 import nz.co.gregs.dbvolution.results.BooleanArrayResult;
 
 /**
@@ -82,7 +83,7 @@ public class DBBooleanArray extends QueryableDatatype implements BooleanArrayRes
 	 *
 	 * @param bools	bits
 	 */
-	public DBBooleanArray(BooleanArrayResult bools) {
+	public DBBooleanArray(BooleanArrayExpression bools) {
 		super(bools);
 	}
 

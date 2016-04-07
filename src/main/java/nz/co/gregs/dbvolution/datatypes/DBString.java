@@ -102,7 +102,7 @@ public class DBString extends QueryableDatatype implements StringResult {
 	 *
 	 * @param stringExpression	stringExpression
 	 */
-	public DBString(StringResult stringExpression) {
+	public DBString(StringExpression stringExpression) {
 		super(stringExpression);
 	}
 
