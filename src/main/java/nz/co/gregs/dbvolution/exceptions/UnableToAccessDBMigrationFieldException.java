@@ -6,7 +6,6 @@
 package nz.co.gregs.dbvolution.exceptions;
 
 import java.lang.reflect.Field;
-import nz.co.gregs.dbvolution.DBMapping;
 
 /**
  * Thrown when DBvolution is unable to access a field it needs.
@@ -17,7 +16,7 @@ import nz.co.gregs.dbvolution.DBMapping;
  *
  * @author Gregory Graham
  */
-public class UnableToAccessDBMappingFieldException extends RuntimeException {
+public class UnableToAccessDBMigrationFieldException extends RuntimeException {
 	
 	private static final long serialVersionUID = 1L;
 
@@ -32,8 +31,8 @@ public class UnableToAccessDBMappingFieldException extends RuntimeException {
 	 * @param field field
 	 * @param ex ex
 	 */
-	public UnableToAccessDBMappingFieldException(Object target, Field field, Exception ex) {
-		super("Unable To Access DBMapping Field: please ensure that all fields on " + target.getClass().getSimpleName() + " are Public and Non-Null: Especially field: " + field.getName(), ex);
+	public UnableToAccessDBMigrationFieldException(Object target, Field field, Exception ex) {
+		super("Unable To Access DBMigration Field: please ensure that all fields on " + target.getClass().getSimpleName() + " are Public and Non-Null: Especially field: " + field.getName(), ex);
 	}
 
 	/**
@@ -46,8 +45,8 @@ public class UnableToAccessDBMappingFieldException extends RuntimeException {
 	 * @param target  aMapping
 	 * @param ex ex
 	 */
-	public UnableToAccessDBMappingFieldException(Object target, Exception ex) {
-		super("Unable To Access DBMapping Field: please ensure that all fields on " + target.getClass().getSimpleName() + " are Public and Non-Null.", ex);
+	public UnableToAccessDBMigrationFieldException(Object target, Exception ex) {
+		super("Unable To Access DBMigration Field: please ensure that all fields on " + target.getClass().getSimpleName() + " are Public and Non-Null.", ex);
 	}
 	
 }

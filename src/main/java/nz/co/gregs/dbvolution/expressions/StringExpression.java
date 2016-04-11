@@ -2039,6 +2039,7 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 				});
 	}
 
+	@Override
 	public DBString asExpressionColumn() {
 		return new DBString(this);
 	}

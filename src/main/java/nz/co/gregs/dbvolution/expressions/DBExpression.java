@@ -41,6 +41,16 @@ import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 public interface DBExpression {
 
 	/**
+	 * Provides a blank instance of the {@link QueryableDatatype} used by this
+	 * expression.
+	 *
+	 * <p>
+	 * You are probably looking for {@link ExpressionColumn#asExpressionColumn()
+	 * }.
+	 *
+	 * <p>
+	 * Note that this method is not good for use in everyday DBvolution code and
+	 * should probably be reserved for meta-programming.
 	 *
 	 * @return the QueryableDatatype subclass that corresponds to the results of
 	 * this expression

@@ -19,7 +19,7 @@ package nz.co.gregs.dbvolution.exceptions;
  *
  * @author Gregory Graham
  */
-public class UnableToInstantiateDBMappingSubclassException extends RuntimeException {
+public class UnableToInstantiateDBMigrationSubclassException extends RuntimeException {
 
 	private static final long serialVersionUID = 1L;
 
@@ -34,7 +34,7 @@ public class UnableToInstantiateDBMappingSubclassException extends RuntimeExcept
 	 * @param aMapping  aMapping
 	 * @param ex ex
 	 */
-	public UnableToInstantiateDBMappingSubclassException(Object aMapping, Exception ex) {
-		super("Unable To Create DBMapping Instance: please ensure that your DBReport subclass, " + aMapping.getClass().getSimpleName() + ", has a Public, No Parameter Constructor. The class itself may need to be \"public static\" as well.", ex);
+	public UnableToInstantiateDBMigrationSubclassException(Object aMapping, Exception ex) {
+		super("Unable To Create DBMigration Instance: please ensure that your DBMigration subclass, " + aMapping.getClass().getSimpleName() + ", has a Public, No Parameter Constructor. The class itself may need to be \"public static\" as well.", ex);
 	}
 }

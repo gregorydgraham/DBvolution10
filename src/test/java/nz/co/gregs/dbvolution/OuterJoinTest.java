@@ -450,6 +450,10 @@ public class OuterJoinTest extends AbstractTest {
 	@Before
 	public void createTables() throws SQLException {
 		try {
+			database.preventDroppingOfTables(false);
+			database.dropTableNoExceptions(new Encounter());
+			database.preventDroppingOfTables(false);
+			database.dropTableNoExceptions(new Antagonist());
 			database.createTable(new Encounter());
 			database.createTable(new Antagonist());
 			tablesCreated = true;

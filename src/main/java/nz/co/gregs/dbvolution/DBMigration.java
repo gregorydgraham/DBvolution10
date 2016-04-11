@@ -6,39 +6,127 @@
 package nz.co.gregs.dbvolution;
 
 import java.lang.reflect.Field;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import nz.co.gregs.dbvolution.columns.ColumnProvider;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
-//import nz.co.gregs.dbvolution.exceptions.UnableToAccessDBReportFieldException;
-//import nz.co.gregs.dbvolution.exceptions.UnableToInstantiateDBReportSubclassException;
-//import nz.co.gregs.dbvolution.exceptions.UnableToSetDBReportFieldException;
-import nz.co.gregs.dbvolution.exceptions.UnableToAccessDBMappingFieldException;
-import nz.co.gregs.dbvolution.exceptions.UnableToAccessDBReportFieldException;
-import nz.co.gregs.dbvolution.exceptions.UnableToInstantiateDBMappingSubclassException;
-import nz.co.gregs.dbvolution.exceptions.UnableToInstantiateDBReportSubclassException;
-import nz.co.gregs.dbvolution.exceptions.UnableToSetDBMappingFieldException;
-import nz.co.gregs.dbvolution.exceptions.UnableToSetDBReportFieldException;
+import nz.co.gregs.dbvolution.exceptions.UnableToAccessDBMigrationFieldException;
+import nz.co.gregs.dbvolution.exceptions.UnableToInstantiateDBMigrationSubclassException;
+import nz.co.gregs.dbvolution.exceptions.UnableToSetDBMigrationFieldException;
 import nz.co.gregs.dbvolution.expressions.BooleanExpression;
 import nz.co.gregs.dbvolution.expressions.DBExpression;
 import nz.co.gregs.dbvolution.query.RowDefinition;
 
-/**
- *
- * @author gregorygraham
- * @param <R> the target table
- */
-public class DBMapping<R extends DBRow> extends RowDefinition {
+public class DBMigration<M extends DBRow> extends RowDefinition {
+
+	private final DBDatabase database;
+	private final M mapper;
+
+	DBMigration(DBDatabase db, M migrationMapper) {
+		this.database = db;
+		this.mapper = migrationMapper;
+	}
+
+	@SuppressWarnings("unchecked")
+	public List<M> getAllRows() throws SQLException {
+		return getAllRows(database);
+	}
+
+	DBMigration<M> addTablesAndExpressions(DBQuery query) {
+		Field[] fields = mapper.getClass().getFields();
+		if (fields.length == 0) {
+			throw new UnableToAccessDBMigrationFieldException(this, null);
+		}
+		for (Field field : fields) {
+			field.setAccessible(true);
+			final Object value;
+			try {
+				value = field.get(mapper);
+				if (value != null && DBRow.class.isAssignableFrom(value.getClass())) {
+					if (value instanceof DBRow) {
+						final DBRow dbRow = (DBRow) value;
+						dbRow.removeAllFieldsFromResults();
+						if (optionalTables.contains(dbRow)) {
+							query.addOptional(dbRow);
+						} else {
+							query.add(dbRow);
+						}
+					}
+				} else if (value != null && QueryableDatatype.class.isAssignableFrom(value.getClass())) {
+					if ((value instanceof QueryableDatatype) && ((QueryableDatatype) value).hasColumnExpression()) {
+						final DBExpression columnExpression = ((QueryableDatatype) value).getColumnExpression();
+						query.addExpressionColumn(value, columnExpression);
+						if (!columnExpression.isAggregator()) {
+							query.addGroupByColumn(value, columnExpression);
+						}
+					}
+				}
+			} catch (IllegalArgumentException ex) {
+				throw new UnableToAccessDBMigrationFieldException(this, field, ex);
+			} catch (IllegalAccessException ex) {
+				throw new UnableToAccessDBMigrationFieldException(this, field, ex);
+			}
+		}
+		return this;
+	}
+
+	@SuppressWarnings("unchecked")
+	M createInstanceOfMappingTarget() throws InstantiationException, IllegalAccessException {
+		Class<? extends DBRow> aClass = mapper.getClass();
+		return (M) aClass.newInstance();
+	}
+
+	M getMappedTarget(DBQueryRow row) {
+		try {
+			M newTarget = createInstanceOfMappingTarget();
+			Field[] fields = mapper.getClass().getFields();
+			for (Field field : fields) {
+				field.setAccessible(true);
+				final Object value;
+				try {
+					value = field.get(mapper);
+					if (value != null && DBRow.class.isAssignableFrom(value.getClass())) {
+						if (value instanceof DBRow) {
+							DBRow gotDefinedRow = row.get((DBRow) value);
+							try {
+								Field targetField = newTarget.getClass().getField(field.getName());
+								targetField.set(newTarget, gotDefinedRow);
+							} catch (NoSuchFieldException ex) {
+//								throw new UnableToSetDBMigrationFieldException(newTarget, field, ex);
+							}
+						}
+					} else if (value != null && QueryableDatatype.class.isAssignableFrom(value.getClass())) {
+						if ((value instanceof QueryableDatatype) && ((QueryableDatatype) value).hasColumnExpression()) {
+							final QueryableDatatype expressionColumnValue = row.getExpressionColumnValue(value);
+							try {
+								Field targetField = newTarget.getClass().getField(field.getName());
+								targetField.set(newTarget, expressionColumnValue);
+							} catch (NoSuchFieldException ex) {
+//								throw new UnableToSetDBMigrationFieldException(newTarget, field, ex);
+							}
+						}
+					}
+				} catch (IllegalArgumentException ex) {
+					throw new UnableToSetDBMigrationFieldException(newTarget, field, ex);
+				} catch (IllegalAccessException ex) {
+					throw new UnableToAccessDBMigrationFieldException(newTarget, field, ex);
+				}
+			}
+			return newTarget;
+		} catch (InstantiationException ex) {
+			throw new UnableToInstantiateDBMigrationSubclassException(this, ex);
+		} catch (IllegalAccessException ex) {
+			throw new UnableToInstantiateDBMigrationSubclassException(this, ex);
+		}
+	}
 
 	private static final long serialVersionUID = 1L;
 
 	private transient ColumnProvider[] sortColumns = new ColumnProvider[]{};
-	private Boolean cartesian;
-	private Boolean blank;
+	Boolean cartesian = false;
+	Boolean blank = false;
 
 	/**
 	 * Gets all the report rows of the supplied DBReport using only conditions
@@ -58,7 +146,7 @@ public class DBMapping<R extends DBRow> extends RowDefinition {
 	 * query. 1 Database exceptions may be thrown
 	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
-	public List<R> getAllRows(DBDatabase database) throws SQLException {
+	public List<M> getAllRows(DBDatabase database) throws SQLException {
 		return getAllRows(database, new DBRow[]{});
 	}
 
@@ -76,14 +164,14 @@ public class DBMapping<R extends DBRow> extends RowDefinition {
 	 * query. 1 Database exceptions may be thrown
 	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
-	public List<R> getAllRows(DBDatabase database, DBRow... extraExamples) throws SQLException {
+	public List<M> getAllRows(DBDatabase database, DBRow... extraExamples) throws SQLException {
 		DBQuery query = getDBQuery(database, extraExamples);
 //		query.setBlankQueryAllowed(true);
 		List<DBQueryRow> allRows = query.getAllRows();
-		List<R> reportRows = getReportsFromQueryResults(allRows);
+		List<M> reportRows = getReportsFromQueryResults(allRows);
 		return reportRows;
 	}
-	private final List<DBRow> optionalTables = new ArrayList<DBRow>();
+	final List<DBRow> optionalTables = new ArrayList<DBRow>();
 
 	@Override
 	public String toString() {
@@ -106,9 +194,9 @@ public class DBMapping<R extends DBRow> extends RowDefinition {
 					}
 				}
 			} catch (IllegalArgumentException ex) {
-				throw new UnableToAccessDBMappingFieldException(this, field, ex);
+				throw new UnableToAccessDBMigrationFieldException(this, field, ex);
 			} catch (IllegalAccessException ex) {
-				throw new UnableToAccessDBMappingFieldException(this, field, ex);
+				throw new UnableToAccessDBMigrationFieldException(this, field, ex);
 			}
 		}
 		return str.toString();
@@ -137,10 +225,10 @@ public class DBMapping<R extends DBRow> extends RowDefinition {
 	 * query. 1 Database exceptions may be thrown
 	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
-	public List<R> getRows(DBDatabase database, DBRow... rows) throws SQLException {
+	public List<M> getRows(DBDatabase database, DBRow... rows) throws SQLException {
 		DBQuery query = getDBQuery(database, rows);
 		List<DBQueryRow> allRows = query.getAllRows();
-		List<R> reportRows = getReportsFromQueryResults(allRows);
+		List<M> reportRows = getReportsFromQueryResults(allRows);
 		return reportRows;
 	}
 
@@ -174,16 +262,16 @@ public class DBMapping<R extends DBRow> extends RowDefinition {
 	 * query
 	 * @throws java.sql.SQLException Database exceptions may be thrown
 	 */
-	public List<R> getRowsHaving(DBDatabase database, DBRow[] rows, BooleanExpression... postQueryConditions) throws SQLException {
+	public List<M> getRowsHaving(DBDatabase database, DBRow[] rows, BooleanExpression... postQueryConditions) throws SQLException {
 		DBQuery query = getDBQuery(database, rows);
-		List<R> reportRows;
+		List<M> reportRows;
 		List<DBQueryRow> allRows = query.getAllRowsHaving(postQueryConditions);
 		reportRows = getReportsFromQueryResults(allRows);
 		return reportRows;
 	}
 
-	private List<R> getReportsFromQueryResults(List<DBQueryRow> allRows) {
-		List<R> reportRows = new ArrayList<R>();
+	private List<M> getReportsFromQueryResults(List<DBQueryRow> allRows) {
+		List<M> reportRows = new ArrayList<M>();
 		for (DBQueryRow row : allRows) {
 			reportRows.add(getMappedTarget(row));
 		}
@@ -273,7 +361,7 @@ public class DBMapping<R extends DBRow> extends RowDefinition {
 	 * @param columns a list of columns to sort the query by.
 	 * @return this DBReport instance
 	 */
-	public DBMapping<R> setSortOrder(ColumnProvider... columns) {
+	public DBMigration<M> setSortOrder(ColumnProvider... columns) {
 		sortColumns = new ColumnProvider[columns.length];
 		System.arraycopy(columns, 0, getSortColumns(), 0, columns.length);
 		return this;
@@ -296,7 +384,7 @@ public class DBMapping<R extends DBRow> extends RowDefinition {
 	 * @param columns a list of columns to sort the query by.
 	 * @return this DBReport instance
 	 */
-	public DBMapping<R> setSortOrder(QueryableDatatype... columns) {
+	public DBMigration<M> setSortOrder(QueryableDatatype... columns) {
 		List<ColumnProvider> columnProviders = new ArrayList<ColumnProvider>();
 		for (QueryableDatatype qdt : columns) {
 			final ColumnProvider expr = this.column(qdt);
@@ -325,136 +413,6 @@ public class DBMapping<R extends DBRow> extends RowDefinition {
 		return query;
 	}
 
-	DBMapping<R> addTablesAndExpressions(DBQuery query) {
-		Field[] fields = this.getClass().getDeclaredFields();
-		if (fields.length == 0) {
-			throw new UnableToAccessDBMappingFieldException(this, null);
-		}
-		for (Field field : fields) {
-			field.setAccessible(true);
-			final Object value;
-			try {
-				value = field.get(this);
-				if (value != null && DBRow.class.isAssignableFrom(value.getClass())) {
-					if (value instanceof DBRow) {
-						final DBRow dbRow = (DBRow) value;
-						dbRow.removeAllFieldsFromResults();
-						if (optionalTables.contains(dbRow)) {
-							query.addOptional(dbRow);
-						} else {
-							query.add(dbRow);
-						}
-					}
-				} else if (value != null && QueryableDatatype.class.isAssignableFrom(value.getClass())) {
-					if ((value instanceof QueryableDatatype) && ((QueryableDatatype) value).hasColumnExpression()) {
-						final DBExpression columnExpression = ((QueryableDatatype) value).getColumnExpression();
-						query.addExpressionColumn(value, columnExpression);
-						if (!columnExpression.isAggregator()) {
-							query.addGroupByColumn(value, columnExpression);
-						}
-					}
-				}
-			} catch (IllegalArgumentException ex) {
-				throw new UnableToAccessDBMappingFieldException(this, field, ex);
-			} catch (IllegalAccessException ex) {
-				throw new UnableToAccessDBMappingFieldException(this, field, ex);
-			}
-		}
-		return this;
-	}
-
-	@SuppressWarnings("unchecked")
-	R createInstanceOfMappingTarget() throws InstantiationException, IllegalAccessException {
-		final Class<? extends DBMapping> aClass = this.getClass();
-		final Type genericSuperclass = aClass.
-				getGenericSuperclass();
-		final Type actualTypeArgument = ((ParameterizedType) genericSuperclass).getActualTypeArguments()[0];
-		final Class<R> typeClass = (Class<R>) actualTypeArgument;
-		return typeClass.newInstance();
-	}
-
-//	@SuppressWarnings("unchecked")
-//	private DBMapping<R> getMappingInstance(DBQueryRow row) {
-//		try {
-//			DBMapping<R> newMapping = this.getClass().newInstance();
-//			Field[] fields = this.getClass().getDeclaredFields();
-//			for (Field field : fields) {
-//				field.setAccessible(true);
-//				final Object value;
-//				try {
-//					value = field.get(this);
-//					if (value != null && DBRow.class.isAssignableFrom(value.getClass())) {
-//						if (value instanceof DBRow) {
-//							DBRow gotDefinedRow = row.get((DBRow) value);
-//							field.set(newMapping, gotDefinedRow);
-//						}
-//					} else if (value != null && QueryableDatatype.class.isAssignableFrom(value.getClass())) {
-//						if ((value instanceof QueryableDatatype) && ((QueryableDatatype) value).hasColumnExpression()) {
-//							final QueryableDatatype expressionColumnValue = row.getExpressionColumnValue(value);
-//							field.set(newMapping, expressionColumnValue);
-//						}
-//					}
-//				} catch (IllegalArgumentException ex) {
-//					throw new UnableToSetDBMappingFieldException(newMapping, field, ex);
-//				} catch (IllegalAccessException ex) {
-//					throw new UnableToAccessDBMappingFieldException(newMapping, field, ex);
-//				}
-//			}
-//			return newMapping;
-//		} catch (InstantiationException ex) {
-//			throw new UnableToInstantiateDBMappingSubclassException(this, ex);
-//		} catch (IllegalAccessException ex) {
-//			throw new UnableToInstantiateDBMappingSubclassException(this, ex);
-//		}
-//	}
-
-	@SuppressWarnings("unchecked")
-	private R getMappedTarget(DBQueryRow row) {
-		try {
-//			DBMapping<R> mappingInstance = getMappingInstance(row);
-
-			R newTarget = createInstanceOfMappingTarget();
-			Field[] fields = this.getClass().getDeclaredFields();
-			for (Field field : fields) {
-				field.setAccessible(true);
-				final Object value;
-				try {
-					value = field.get(this);
-					if (value != null && DBRow.class.isAssignableFrom(value.getClass())) {
-						if (value instanceof DBRow) {
-							DBRow gotDefinedRow = row.get((DBRow) value);
-							try {
-								Field targetField = newTarget.getClass().getDeclaredField(field.getName());
-								targetField.set(newTarget, gotDefinedRow);
-							} catch (NoSuchFieldException ex) {
-//								throw new UnableToSetDBMappingFieldException(newTarget, field, ex);
-							}
-						}
-					} else if (value != null && QueryableDatatype.class.isAssignableFrom(value.getClass())) {
-						if ((value instanceof QueryableDatatype) && ((QueryableDatatype) value).hasColumnExpression()) {
-							final QueryableDatatype expressionColumnValue = row.getExpressionColumnValue(value);
-							try {
-								Field targetField = newTarget.getClass().getDeclaredField(field.getName());
-								targetField.set(newTarget, expressionColumnValue);
-							} catch (NoSuchFieldException ex) {
-//								throw new UnableToSetDBMappingFieldException(newTarget, field, ex);
-							}
-						}
-					}
-				} catch (IllegalArgumentException ex) {
-					throw new UnableToSetDBMappingFieldException(newTarget, field, ex);
-				} catch (IllegalAccessException ex) {
-					throw new UnableToAccessDBMappingFieldException(newTarget, field, ex);
-				}
-			}
-			return newTarget;
-		} catch (InstantiationException ex) {
-			throw new UnableToInstantiateDBMappingSubclassException(this, ex);
-		} catch (IllegalAccessException ex) {
-			throw new UnableToInstantiateDBMappingSubclassException(this, ex);
-		}
-	}
-
 	/**
 	 * Returns the list of sort columns
 	 *
@@ -464,14 +422,18 @@ public class DBMapping<R extends DBRow> extends RowDefinition {
 		return sortColumns;
 	}
 
-	public DBMapping<R> setCartesianJoinAllowed(Boolean setting) {
+	public DBMigration<M> setCartesianJoinAllowed(Boolean setting) {
 		cartesian = setting;
 		return this;
 	}
 
-	public DBMapping<R> setBlankQueryAllowed(Boolean setting) {
+	public DBMigration<M> setBlankQueryAllowed(Boolean setting) {
 		blank = setting;
 		return this;
+	}
+
+	public void migrateAllRows() {
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
 }

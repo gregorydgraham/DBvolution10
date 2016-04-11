@@ -455,10 +455,25 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 					column = this.column(qdt);
 				}
 				column.setUseTableAlias(useTableAlias);
-				possibleWhereClause = qdt.getWhereClause(db, column);
+				possibleWhereClause = getQDTWhereClause(db, column, qdt);
 				if (!possibleWhereClause.replaceAll(" ", "").isEmpty()) {
 					whereClause.add("(" + possibleWhereClause + ")");
 				}
+			}
+		}
+		return whereClause;
+	}
+	
+	private String getQDTWhereClause(DBDatabase db, ColumnProvider column, QueryableDatatype qdt) {
+		String whereClause = "";
+		DBOperator op = qdt.getOperator();
+		if (op != null) {
+			if (column instanceof DBExpression) {
+				DBExpression requiredExpression = (DBExpression) column;
+				if (qdt.hasColumnExpression()) {
+					requiredExpression = qdt.getColumnExpression();
+				}
+				whereClause = op.generateWhereExpression(db, requiredExpression).toSQLString(db);
 			}
 		}
 		return whereClause;

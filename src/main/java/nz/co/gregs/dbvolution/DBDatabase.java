@@ -57,7 +57,7 @@ import org.apache.commons.logging.LogFactory;
  */
 public abstract class DBDatabase implements Cloneable {
 
-	private static final Log log = LogFactory.getLog(DBDatabase.class);
+	private static final Log LOG = LogFactory.getLog(DBDatabase.class);
 
 	private String driverName = "";
 	private String jdbcURL = "";
@@ -671,11 +671,11 @@ public abstract class DBDatabase implements Cloneable {
 				returnValues = dbTransaction.doTransaction(db);
 				if (commit) {
 					db.transactionConnection.commit();
-					log.info("Transaction Successful: Commit Performed");
+					LOG.info("Transaction Successful: Commit Performed");
 				} else {
 					try {
 						db.transactionConnection.rollback();
-						log.info("Transaction Successful: ROLLBACK Performed");
+						LOG.info("Transaction Successful: ROLLBACK Performed");
 					} catch (SQLException rollbackFailed) {
 						System.out.println("ROLLBACK FAILED");
 //						rollbackFailed.printStackTrace();
@@ -685,11 +685,11 @@ public abstract class DBDatabase implements Cloneable {
 				}
 			} catch (Exception ex) {
 				try {
-					log.warn("Exception Occurred: Attempting ROLLBACK - " + ex.getMessage(), ex);
+					LOG.warn("Exception Occurred: Attempting ROLLBACK - " + ex.getMessage(), ex);
 					db.transactionConnection.rollback();
-					log.warn("Exception Occurred: ROLLBACK Succeeded!");
+					LOG.warn("Exception Occurred: ROLLBACK Succeeded!");
 				} catch (Exception excp) {
-					log.warn("Exception Occurred During Rollback: " + ex.getMessage(), excp);
+					LOG.warn("Exception Occurred During Rollback: " + ex.getMessage(), excp);
 				}
 				throw ex;
 			}
@@ -1309,7 +1309,7 @@ public abstract class DBDatabase implements Cloneable {
 		String dropStr = getDefinition().getDropDatabase(getDatabaseName());
 
 		printSQLIfRequested(dropStr);
-		log.info(dropStr);
+		LOG.info(dropStr);
 		if (doIt) {
 			this.doTransaction(new DBRawSQLTransaction(dropStr));
 		}
@@ -1340,7 +1340,7 @@ public abstract class DBDatabase implements Cloneable {
 		String dropStr = getDefinition().getDropDatabase(databaseName);
 
 		printSQLIfRequested(dropStr);
-		log.info(dropStr);
+		LOG.info(dropStr);
 		if (doIt) {
 			this.doTransaction(new DBRawSQLTransaction(dropStr));
 		}
@@ -1751,11 +1751,11 @@ public abstract class DBDatabase implements Cloneable {
 	 * correctly.
 	 *
 	 * <p>
-	 * Some, usually in-memory, databases requires a continuous connection to
+	 * Some, usually in-memory, databases require a continuous connection to
 	 * maintain their data.
 	 *
 	 * <p>
-	 * DBvolution is usually clever with its connections and does not require this
+	 * DBvolution is usually clever with its connections and does not require 
 	 * a persistent connection.
 	 *
 	 * <p>
@@ -1767,5 +1767,9 @@ public abstract class DBDatabase implements Cloneable {
 	 */
 	protected boolean persistentConnectionRequired() {
 		return false;
+	}
+
+	public <K extends DBRow> DBMigration<K> getDBMigrationMap(K mapper) {
+		return new DBMigration<K>(this, mapper);
 	}
 }

@@ -5,16 +5,25 @@
  */
 package nz.co.gregs.dbvolution.expressions;
 
+import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
+
 /**
  * Provides simple access to the expression column version of an expression
  *
  * @author gregorygraham
  * @param <T> the type that should be used with this expression
  */
-public interface ExpressionColumn<T> {
+public interface ExpressionColumn<T extends QueryableDatatype> {
 
 	/**
-	 * Creates a QueryableDatatype version of the expression suitable for use as a column.
+	 * Creates a QueryableDatatype version of the expression suitable for use as a
+	 * column.
+	 *
+	 * <p>
+	 * For example:
+	 * <code>@DBColumn public DBString title =
+	 * person.column(person.fullname).substringBefore("
+	 * ").asExpressionColumn();</code>
 	 *
 	 * @return a QDT version of the expression
 	 */

@@ -272,31 +272,6 @@ public abstract class QueryableDatatype extends Object implements Serializable, 
 		this.operator = null;
 		return this;
 	}
-	
-	/**
-	 *
-	 * @param db db
-	 * @param column column
-	 * @return the section of the SQL query between WHERE and ORDER BY
-	 */
-	public String getWhereClause(DBDatabase db, ColumnProvider column) {
-		return getWhereClauseUsingOperators(db, column);
-	}
-
-	private String getWhereClauseUsingOperators(DBDatabase db, ColumnProvider column) {
-		String whereClause = "";
-		DBOperator op = this.getOperator();
-		if (op != null) {
-			if (column instanceof DBExpression) {
-				DBExpression requiredExpression = (DBExpression) column;
-				if (this.hasColumnExpression()) {
-					requiredExpression = this.getColumnExpression();
-				}
-				whereClause = op.generateWhereExpression(db, requiredExpression).toSQLString(db);
-			}
-		}
-		return whereClause;
-	}
 
 	/**
 	 * Negate the meaning of the comparison associated with this object.
@@ -709,9 +684,7 @@ public abstract class QueryableDatatype extends Object implements Serializable, 
 	public boolean equals(Object otherObject) {
 		if (otherObject instanceof QueryableDatatype) {
 			QueryableDatatype other = (QueryableDatatype) otherObject;
-			if (other == null) {
-				return false;
-			} else if (this.operator == null && other.operator == null) {
+			if (this.operator == null && other.operator == null) {
 				return this.getLiteralValue().equals(other.getLiteralValue());
 //			return true;
 			} else if (this.operator != null && other.operator == null) {

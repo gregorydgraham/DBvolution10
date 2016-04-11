@@ -27,7 +27,7 @@ import java.lang.reflect.Field;
  *
  * @author Gregory Graham
  */
-public class UnableToSetDBMappingFieldException extends DBRuntimeException {
+public class UnableToSetDBMigrationFieldException extends DBRuntimeException {
 
 	private static final long serialVersionUID = 1L;
 
@@ -42,8 +42,8 @@ public class UnableToSetDBMappingFieldException extends DBRuntimeException {
 	 * @param field field
 	 * @param ex ex
 	 */
-	public UnableToSetDBMappingFieldException(Object badMapping, Field field, Exception ex) {
-		super("Unable To Set DBMapping Field: please ensure that all fields on " + badMapping.getClass().getSimpleName() + " have the correct datatype: Especially field: " + field.getName(), ex);
+	public UnableToSetDBMigrationFieldException(Object badMapping, Field field, Exception ex) {
+		super("Unable To Set DBMigration Field: please ensure that all fields on " + badMapping.getClass().getSimpleName() + " have the correct datatype: Especially field: " + field.getName(), ex);
 	}
 
 	/**
@@ -56,7 +56,7 @@ public class UnableToSetDBMappingFieldException extends DBRuntimeException {
 	 * @param badMapping badReport
 	 * @param ex ex
 	 */
-	public UnableToSetDBMappingFieldException(Object badMapping, Exception ex) {
-		super("Unable To Set DBMapping Field: please ensure that all fields on " + badMapping.getClass().getSimpleName() + " have the correct datatype.", ex);
+	public UnableToSetDBMigrationFieldException(Object badMapping, Exception ex) {
+		super("Unable To Set DBMigration Field: please ensure that all fields on " + badMapping.getClass().getSimpleName() + " have the correct datatype.", ex);
 	}
 }

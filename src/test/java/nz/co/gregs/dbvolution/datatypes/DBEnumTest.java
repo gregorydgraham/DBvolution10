@@ -66,8 +66,9 @@ public class DBEnumTest extends AbstractTest {
 		rowExemplar.recordType.permittedValues(
 				IntEnum.MOVEMENT_REQUEST_RECORD,
 				IntEnum.SHIPPING_MANIFEST_RECORD);
-
-		String sqlFragment = rowExemplar.recordType.getWhereClause(database, rowExemplar.column(rowExemplar.recordType));
+		
+		String sqlFragment = database.getDBQuery(rowExemplar).getSQLForQuery();
+//		String sqlFragment = rowExemplar.recordType.getWhereClause(database, rowExemplar.column(rowExemplar.recordType));
 		System.out.println(sqlFragment);
 		assertThat(sqlFragment.toLowerCase(), containsString("c_5 in ( 2, 1)"));
 	}
@@ -79,7 +80,8 @@ public class DBEnumTest extends AbstractTest {
 				IntEnum.MOVEMENT_REQUEST_RECORD.getCode(),
 				IntEnum.SHIPPING_MANIFEST_RECORD.getCode());
 
-		String sqlFragment = rowExemplar.recordType.getWhereClause(database, rowExemplar.column(rowExemplar.recordType));
+		String sqlFragment = database.getDBQuery(rowExemplar).getSQLForQuery();
+//		String sqlFragment = rowExemplar.recordType.getWhereClause(database, rowExemplar.column(rowExemplar.recordType));
 		System.out.println(sqlFragment);
 		assertThat(sqlFragment.toLowerCase(), containsString("c_5 in ( 2, 1)"));
 	}
