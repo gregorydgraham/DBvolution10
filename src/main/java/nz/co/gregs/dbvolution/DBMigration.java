@@ -10,6 +10,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import nz.co.gregs.dbvolution.actions.DBMigrate;
 import nz.co.gregs.dbvolution.columns.ColumnProvider;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 import nz.co.gregs.dbvolution.exceptions.UnableToAccessDBMigrationFieldException;
@@ -299,9 +300,8 @@ public class DBMigration<M extends DBRow> extends RowDefinition {
 	 * @param rows additional conditions to apply to the report.
 	 * @return a String of the SQL that will be used by this DBQuery. 1 Database
 	 * exceptions may be thrown
-	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
-	public String getSQLForQuery(DBDatabase database, DBRow... rows) throws SQLException {
+	public String getSQLForQuery(DBDatabase database, DBRow... rows) {
 		DBQuery query = getDBQuery(database, rows);
 		return query.getSQLForQuery();
 	}
@@ -432,8 +432,9 @@ public class DBMigration<M extends DBRow> extends RowDefinition {
 		return this;
 	}
 
-	public void migrateAllRows() {
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	public void migrateAllRows(DBRow... extraExamples) throws SQLException {
+		DBMigrate migrate = new DBMigrate<M>(this, this.mapper, extraExamples);
+		migrate.migrate(database);
 	}
 
 }

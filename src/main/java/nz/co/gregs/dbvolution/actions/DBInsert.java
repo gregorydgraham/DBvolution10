@@ -49,7 +49,7 @@ import org.apache.commons.logging.LogFactory;
  */
 public class DBInsert extends DBAction {
 
-	private static final Log log = LogFactory.getLog(DBInsert.class);
+	private static final Log LOG = LogFactory.getLog(DBInsert.class);
 
 	private transient StringBuilder allChangedColumns;
 	private transient StringBuilder allSetValues;
