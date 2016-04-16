@@ -40,7 +40,7 @@ import nz.co.gregs.dbvolution.datatypes.spatial2D.DBPolygon2D;
  *
  * @author gregorygraham
  */
-public class Polygon2DExpression implements Spatial2DExpression, Polygon2DResult, EqualComparable<Polygon2DResult>, ExpressionColumn<DBPolygon2D> {
+public class Polygon2DExpression implements Polygon2DResult, EqualComparable<Polygon2DResult>, ExpressionColumn<DBPolygon2D>, Spatial2DExpression {
 
 	private Polygon2DResult innerGeometry;
 	private boolean nullProtectionRequired;
@@ -351,7 +351,7 @@ public class Polygon2DExpression implements Spatial2DExpression, Polygon2DResult
 	 * @return a boolean expression
 	 */
 	public BooleanExpression contains(Point rightHandSide) {
-		return contains(new Point2DExpression(rightHandSide));
+		return contains(Point2DExpression.value(rightHandSide));
 	}
 
 	/**
@@ -362,18 +362,7 @@ public class Polygon2DExpression implements Spatial2DExpression, Polygon2DResult
 	 * @return a boolean expression
 	 */
 	public BooleanExpression contains(Point2DResult rightHandSide) {
-		return contains(new Point2DExpression(rightHandSide));
-	}
-
-	/**
-	 * Returns an expression that will evaluate to true if the point is inside
-	 * this polygon value.
-	 *
-	 * @param rightHandSide the point to compare against
-	 * @return a boolean expression
-	 */
-	public BooleanExpression contains(Point2DExpression rightHandSide) {
-		return new BooleanExpression(new PolygonPointWithBooleanResult(this, rightHandSide) {
+		return new BooleanExpression(new PolygonPointWithBooleanResult(this, new Point2DExpression(rightHandSide)) {
 
 			@Override
 			public String doExpressionTransform(DBDatabase db) {

@@ -25,6 +25,7 @@ import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.annotations.DBAutoIncrement;
 import nz.co.gregs.dbvolution.annotations.DBColumn;
 import nz.co.gregs.dbvolution.annotations.DBPrimaryKey;
+import nz.co.gregs.dbvolution.columns.Polygon2DColumn;
 import nz.co.gregs.dbvolution.databases.supports.SupportsPolygonDatatype;
 import nz.co.gregs.dbvolution.datatypes.DBInteger;
 import nz.co.gregs.dbvolution.exceptions.AccidentalDroppingOfTableException;
@@ -335,19 +336,20 @@ public class DBPolygonTest extends AbstractTest {
 			database.print(database.getDBTable(new BasicSpatialTable()).setBlankQueryAllowed(true).getAllRows());
 
 			Polygon polygon = fac.createPolygon(new Coordinate[]{new Coordinate(0, 0), new Coordinate(11, 0), new Coordinate(11, 11), new Coordinate(0, 11), new Coordinate(0, 0)});
-			DBQuery query = database.getDBQuery(new BasicSpatialTable()).addCondition(Polygon2DExpression.value(polygon).contains(spatial.column(spatial.myfirstgeom)));
+			final Polygon2DColumn column = spatial.column(spatial.myfirstgeom);
+			DBQuery query = database.getDBQuery(new BasicSpatialTable()).addCondition(Polygon2DExpression.value(polygon).contains(column));
 			List<BasicSpatialTable> allRows = query.getAllInstancesOf(spatial);
 			database.print(allRows);
 			Assert.assertThat(allRows.size(), is(1));
 			Assert.assertThat(allRows.get(0).pkid.intValue(), is(1));
 
 			polygon = fac.createPolygon(new Coordinate[]{new Coordinate(0, 0), new Coordinate(13, 0), new Coordinate(13, 13), new Coordinate(0, 13), new Coordinate(0, 0)});
-			query = database.getDBQuery(new BasicSpatialTable()).addCondition(Polygon2DExpression.value(polygon).contains(spatial.column(spatial.myfirstgeom)));
+			query = database.getDBQuery(new BasicSpatialTable()).addCondition(Polygon2DExpression.value(polygon).contains(column));
 			allRows = query.getAllInstancesOf(spatial);
 			database.print(allRows);
 			Assert.assertThat(allRows.size(), is(2));
 
-			query = database.getDBQuery(new BasicSpatialTable()).addCondition(spatial.column(spatial.myfirstgeom).contains(polygon));
+			query = database.getDBQuery(new BasicSpatialTable()).addCondition(column.contains(polygon));
 			allRows = query.getAllInstancesOf(spatial);
 			database.print(allRows);
 			Assert.assertThat(allRows.size(), is(0));
