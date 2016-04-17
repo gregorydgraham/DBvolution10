@@ -322,7 +322,7 @@ public abstract class AbstractTest {
 	private static class Oracle11XETestDB extends Oracle11XEDB {
 
 		public Oracle11XETestDB() {
-			super("54.206.70.155", 1521, "XE", "DBV", "Testingdbv");
+			super("54.206.70.155", 1521, "XE", "DBV", "Testingdbv2");
 			//super("ec2-54-206-23-5.ap-southeast-2.compute.amazonaws.com", 1521, "XE", "DBV", "Testingdbv");
 		}
 	}
