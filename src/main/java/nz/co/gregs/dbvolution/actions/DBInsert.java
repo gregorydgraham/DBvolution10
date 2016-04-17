@@ -178,7 +178,8 @@ public class DBInsert extends DBAction {
 				} else {
 					try {
 						statement.execute(sql);
-						if (row.getPrimaryKey().hasBeenSet() == false && defn.supportsRetrievingLastInsertedRowViaSQL()) {
+						final QueryableDatatype primaryKey = row.getPrimaryKey();
+						if (primaryKey != null && primaryKey.hasBeenSet() == false && defn.supportsRetrievingLastInsertedRowViaSQL()) {
 							String retrieveSQL = defn.getRetrieveLastInsertedRowSQL();
 							ResultSet rs = statement.executeQuery(retrieveSQL);
 							try {
