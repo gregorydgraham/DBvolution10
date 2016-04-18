@@ -278,7 +278,7 @@ public abstract class OutputFormat {
 
 		@Override
 		protected String getHeaderEnd(String tableRowCSSClass) {
-			return "<tr>";
+			return "</tr>"+System.getProperty("line.separator");
 		}
 
 		@Override
@@ -293,12 +293,12 @@ public abstract class OutputFormat {
 
 		@Override
 		protected String getHeaderFieldBetween() {
-			return "</th><th>";
+			return "";
 		}
 
 		@Override
-		protected String getRowFieldPrefix(String tableRowCSSClass) {
-			return "<td class=\"" + tableRowCSSClass + "\">";
+		protected String getRowFieldPrefix(String tableFieldCSSClass) {
+			return "<td class=\"" + tableFieldCSSClass + "\">";
 		}
 
 		@Override
@@ -308,12 +308,12 @@ public abstract class OutputFormat {
 
 		@Override
 		protected String getRowFieldBetween() {
-			return "</td><td>";
+			return "";
 		}
 
 		@Override
 		protected String getRowEnd(String tableRowCSSClass) {
-			return "</tr>";
+			return "</tr>"+System.getProperty("line.separator");
 		}
 	}
 
