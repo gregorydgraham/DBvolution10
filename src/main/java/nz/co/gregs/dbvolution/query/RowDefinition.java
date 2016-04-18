@@ -52,8 +52,8 @@ public class RowDefinition implements Serializable {
 	 * property's object reference.
 	 *
 	 * <p>
-	 * For example the following code snippet will get a property wrapper for
-	 * the {@literal name} field:
+	 * For example the following code snippet will get a property wrapper for the
+	 * {@literal name} field:
 	 * <pre>
 	 * Customer customer = ...;
 	 * getPropertyWrapperOf(customer.name);
@@ -504,8 +504,8 @@ public class RowDefinition implements Serializable {
 	}
 
 	/**
-	 * Creates a new StringExpression for the field with a default value for
-	 * NULL entries.
+	 * Creates a new StringExpression for the field with a default value for NULL
+	 * entries.
 	 *
 	 * <p>
 	 * This method is the easy way to create a reference to the database column
@@ -526,8 +526,8 @@ public class RowDefinition implements Serializable {
 	}
 
 	/**
-	 * Creates a new StringExpression for the field with a default value for
-	 * NULL entries.
+	 * Creates a new StringExpression for the field with a default value for NULL
+	 * entries.
 	 *
 	 * <p>
 	 * This method is the easy way to create a reference to the database column
@@ -548,8 +548,8 @@ public class RowDefinition implements Serializable {
 	}
 
 	/**
-	 * Creates a new StringExpression for the field with a default value for
-	 * NULL entries.
+	 * Creates a new StringExpression for the field with a default value for NULL
+	 * entries.
 	 *
 	 * <p>
 	 * This method is the easy way to create a reference to the database column
@@ -570,8 +570,8 @@ public class RowDefinition implements Serializable {
 	}
 
 	/**
-	 * Creates a new StringExpression for the field with a default value for
-	 * NULL entries.
+	 * Creates a new StringExpression for the field with a default value for NULL
+	 * entries.
 	 *
 	 * <p>
 	 * This method is the easy way to create a reference to the database column
@@ -1036,144 +1036,6 @@ public class RowDefinition implements Serializable {
 	}
 
 	/**
-	 * Convenience method to change this RowDefinition into a series of values
-	 * separated by the supplied separator.
-	 *
-	 * <p>
-	 * Useful for creating TSV and CSV lines.
-	 *
-	 * @param separatorToUse
-	 * @return a string of all the values in this RowDefinition
-	 */
-	public String toSeparatedLine(String separatorToUse) {
-		StringBuilder string = new StringBuilder();
-		List<PropertyWrapper> fields = getWrapper().getColumnPropertyWrappers();
-
-		String separator = "" + this.getClass().getSimpleName();
-
-		for (PropertyWrapper field : fields) {
-			if (field.isColumn()) {
-				string.append(separator).append(field.getQueryableDatatype().toString().trim().replaceAll("\"", "\"\""));
-				separator = separatorToUse;
-			}
-		}
-		return string.toString();
-	}
-
-	/**
-	 * Convenience method to change the field names into a series of values
-	 * separated by the supplied separator.
-	 *
-	 * <p>
-	 * Useful for creating TSV and CSV headers.
-	 *
-	 * @param separatorToUse
-	 * @return a string of all the fields in this RowDefinition
-	 */
-	public String toSeparatedHeader(String separatorToUse) {
-		StringBuilder string = new StringBuilder();
-		List<PropertyWrapper> fields = getWrapper().getColumnPropertyWrappers();
-
-		String separator = "" + this.getClass().getSimpleName();
-
-		for (PropertyWrapper field : fields) {
-			if (field.isColumn()) {
-				string.append(separator).append(field.javaName());
-				separator = separatorToUse;
-			}
-		}
-		return string.toString();
-	}
-
-	/**
-	 * Convenience method to change the field names into a series of values
-	 * separated by the a comma ",".
-	 *
-	 * @return a string of all the fields in this RowDefinition
-	 */
-	public String toCSVHeader() {
-		return toSeparatedHeader(",");
-	}
-
-	/**
-	 * Convenience method to change the values into a series of values separated
-	 * by the a comma ",".
-	 *
-	 * @return a string of all the values in this RowDefinition
-	 */
-	public String toCSVLine() {
-		return toSeparatedLine(",");
-	}
-
-	/**
-	 * Convenience method to change the field names into a series of values
-	 * separated by the a tab "\t".
-	 *
-	 * @return a string of all the fields in this RowDefinition
-	 */
-	public String toTabbedHeader() {
-		return toSeparatedHeader("\t");
-	}
-
-	/**
-	 * Convenience method to change the values into a series of values separated
-	 * by the a tab "\t".
-	 *
-	 * @return a string of all the values in this RowDefinition
-	 * @throws java.lang.IllegalAccessException
-	 */
-	public String toTabbedLine() throws IllegalArgumentException, IllegalAccessException {
-		return toSeparatedLine("\t");
-	}
-
-	/**
-	 * Convenience method to change the values into a series of HTML table
-	 * cells.
-	 *
-	 * @param tableRowCSSClass
-	 * @return a string of all the values in this RowDefinition
-	 */
-	public String getHTMLTableRow(String tableRowCSSClass) {
-		StringBuilder string = new StringBuilder();
-		List<PropertyWrapper> fields = getWrapper().getColumnPropertyWrappers();
-
-		string.append("<tr class=\"").append(tableRowCSSClass).append("\">");
-		for (PropertyWrapper field : fields) {
-			if (field.isColumn()) {
-				string.append("<td>");
-				string.append(field.getQueryableDatatype().stringValue());
-				string.append("</td>");
-			}
-		}
-		string.append("</tr>");
-		return string.toString();
-	}
-
-	/**
-	 * Convenience method to change the field names into a series of HTML table
-	 * cells.
-	 *
-	 * @param tableRowCSSClass
-	 * @param tableHeaderCellCSSClass
-	 * @return a string of all the fields in this RowDefinition
-	 */
-	public String getHTMLTableHeader(String tableRowCSSClass, String tableHeaderCellCSSClass) {
-		StringBuilder string = new StringBuilder();
-		List<PropertyWrapper> fields = getWrapper().getColumnPropertyWrappers();
-
-		string.append("<tr class=\"").append(tableRowCSSClass).append("\">");
-		for (PropertyWrapper field : fields) {
-			if (field.isColumn()) {
-				string.append("<th class=\"").append(tableHeaderCellCSSClass).append("\">");
-				string.append(field.javaName());
-				string.append("</th>");
-			}
-		}
-		string.append("</tr>");
-		return string.toString();
-	}
-
-	/**
 	 * Returns all the fields names from all fields in this DBRow.
 	 *
 	 * <p>
@@ -1216,7 +1078,7 @@ public class RowDefinition implements Serializable {
 	 * @return a list of field names.
 	 *
 	 */
-	public Collection<? extends String> getFieldValues(SimpleDateFormat dateFormat) {
+	public Collection<String> getFieldValues(SimpleDateFormat dateFormat) {
 		List<String> returnList = new ArrayList<String>();
 		for (PropertyWrapperDefinition prop : this.getReturnColumns()) {
 			QueryableDatatype qdt = prop.getQueryableDatatype(this);
@@ -1277,5 +1139,6 @@ public class RowDefinition implements Serializable {
 		}
 		return columns;
 	}
+
 
 }

@@ -111,12 +111,10 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 
 	private boolean isDefined = false;
 	private final List<PropertyWrapperDefinition> ignoredForeignKeys = Collections.synchronizedList(new ArrayList<PropertyWrapperDefinition>());
-	private final List<BooleanExpression> adHocRelationships = Collections.synchronizedList(new ArrayList<BooleanExpression>());
 	private transient Boolean hasBlobs;
 	private transient final List<PropertyWrapper> fkFields = new ArrayList<PropertyWrapper>();
 	private transient final List<PropertyWrapper> blobColumns = new ArrayList<PropertyWrapper>();
 	private transient final SortedSet<Class<? extends DBRow>> referencedTables = new TreeSet<Class<? extends DBRow>>(new DBRow.ClassNameComparator());
-//	private String tableAlias;
 	private Boolean emptyRow = true;
 
 	/**

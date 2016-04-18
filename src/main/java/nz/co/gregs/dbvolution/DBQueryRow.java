@@ -83,6 +83,17 @@ public class DBQueryRow extends HashMap<Class<?>, DBRow> {
 	}
 
 	/**
+	 * Returns the all DBRow instances contained within this DBQueryRow.
+	 *
+	 * @return all DBRow instances that are in this DBQueryRow instance
+	 */
+	public List<DBRow> getAll() {
+		final ArrayList<DBRow> arrayList = new ArrayList<DBRow>();
+		arrayList.addAll(this.values());
+		return arrayList;
+	}
+
+	/**
 	 * Print the specified columns to the specified PrintStream as one line.
 	 *
 	 * @param ps ps
@@ -307,11 +318,5 @@ public class DBQueryRow extends HashMap<Class<?>, DBRow> {
 	@Override
 	public DBQueryRow clone() {
 		return (DBQueryRow) super.clone(); //To change body of generated methods, choose Tools | Templates.
-	}
-
-	List<DBRow> getAll() {
-		final ArrayList<DBRow> arrayList = new ArrayList<DBRow>();
-		arrayList.addAll(this.values());
-		return arrayList;
 	}
 }
