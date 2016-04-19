@@ -10,7 +10,6 @@ import java.util.List;
 import nz.co.gregs.dbvolution.example.CarCompany;
 import nz.co.gregs.dbvolution.example.Marque;
 import nz.co.gregs.dbvolution.generic.AbstractTest;
-import nz.co.gregs.dbvolution.query.RowDefinition;
 import static org.hamcrest.Matchers.is;
 import org.junit.Assert;
 import org.junit.Test;
@@ -32,8 +31,10 @@ public class OutputFormatTest extends AbstractTest {
 		DBQuery dbQuery = database.getDBQuery();
 		CarCompany carCompany = new CarCompany();
 		carCompany.name.permittedValues("TOYOTA");
-		dbQuery.add(new Marque());
+		final Marque marque = new Marque();
+		dbQuery.add(marque);
 		dbQuery.add(carCompany);
+		dbQuery.setSortOrder(marque.column(marque.uidMarque));
 		// make sure it works
 		List<DBQueryRow> allRows = dbQuery.getAllRows();
 		Assert.assertThat(allRows.size(), is(2));
@@ -96,8 +97,11 @@ public class OutputFormatTest extends AbstractTest {
 		DBQuery dbQuery = database.getDBQuery();
 		CarCompany carCompany = new CarCompany();
 		carCompany.name.permittedValues("TOYOTA");
-		dbQuery.add(new Marque());
+		final Marque marque = new Marque();
+		marque.numericCode.setSortOrderDescending();
+		dbQuery.add(marque);
 		dbQuery.add(carCompany);
+		dbQuery.setSortOrder(marque.column(marque.uidMarque));
 		// make sure it works
 		List<DBQueryRow> allRows = dbQuery.getAllRows();
 		Assert.assertThat(allRows.size(), is(2));
@@ -140,8 +144,11 @@ public class OutputFormatTest extends AbstractTest {
 		DBQuery dbQuery = database.getDBQuery();
 		CarCompany carCompany = new CarCompany();
 		carCompany.name.permittedValues("TOYOTA");
-		dbQuery.add(new Marque());
+		final Marque marque = new Marque();
+		dbQuery.add(marque);
 		dbQuery.add(carCompany);
+		dbQuery.setSortOrder(marque.column(marque.uidMarque));
+
 		// make sure it works
 		List<DBQueryRow> allRows = dbQuery.getAllRows();
 		Assert.assertThat(allRows.size(), is(2));
