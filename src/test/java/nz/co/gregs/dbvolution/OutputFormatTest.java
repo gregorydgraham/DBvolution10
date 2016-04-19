@@ -41,9 +41,9 @@ public class OutputFormatTest extends AbstractTest {
 		String formatDBQueryRows = OutputFormat.TSV.formatDBQueryRows("headerrow", "headercell", "rowstyle", DATETIME_FORMAT, allRows);
 		System.out.println(formatDBQueryRows);
 		final String newline = System.getProperty("line.separator");
-		Assert.assertThat(formatDBQueryRows, is("Marque:numericCode	Marque:uidMarque	Marque:isUsedForTAFROs	Marque:statusClassID	Marque:individualAllocationsAllowed	Marque:updateCount	Marque:auto_created	Marque:name	Marque:pricingCodePrefix	Marque:reservationsAllowed	Marque:creationDate	Marque:enabled	Marque:carCompany	CarCompany:name	CarCompany:uidCarCompany" + newline
-				+ "	1	False	1246974.00000		0		TOYOTA		Y	23/Mar/2013 12:34:56	true	1	TOYOTA	1" + newline
-				+ "	4896300	False	1246974.00000		2	UV	HYUNDAI		Y	23/Mar/2013 12:34:56		1	TOYOTA	1" + newline));
+		Assert.assertThat(formatDBQueryRows.replaceAll(".00000", ""), is("Marque:numericCode	Marque:uidMarque	Marque:isUsedForTAFROs	Marque:statusClassID	Marque:individualAllocationsAllowed	Marque:updateCount	Marque:auto_created	Marque:name	Marque:pricingCodePrefix	Marque:reservationsAllowed	Marque:creationDate	Marque:enabled	Marque:carCompany	CarCompany:name	CarCompany:uidCarCompany" + newline
+				+ "	1	False	1246974		0		TOYOTA		Y	23/Mar/2013 12:34:56	true	1	TOYOTA	1" + newline
+				+ "	4896300	False	1246974		2	UV	HYUNDAI		Y	23/Mar/2013 12:34:56		1	TOYOTA	1" + newline));
 	}
 
 	@Test
