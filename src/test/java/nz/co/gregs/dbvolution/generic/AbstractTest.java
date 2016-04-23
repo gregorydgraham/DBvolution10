@@ -112,6 +112,9 @@ public abstract class AbstractTest {
 		if (System.getProperty("testMSSQLServer") != null) {
 			databases.add(new Object[]{"MSSQLServer", new MSSQLServerTestDB()});
 		}
+		if (System.getProperty("testJTDSSQLServer") != null) {
+			databases.add(new Object[]{"JTDSSQLServer", new JTDSSQLServerTestDB()});
+		}
 		if (System.getProperty("testJavaDBMemory") != null) {
 			databases.add(new Object[]{"JavaDBMemory", new JavaDBMemoryDB("localhost", 1527, "dbv", "dbv", "dbv")});
 		}
@@ -150,6 +153,8 @@ public abstract class AbstractTest {
 				return trimStr.replaceAll("\\(\\(([^)]*)\\)=true\\)", "$1");
 			} else if (database instanceof MSSQLServerDB) {
 				return trimStr.replaceAll("[\\[\\]]", "");
+			} else if (database instanceof JTDSSQLServerDB) {
+				return trimStr.replaceAll("[\\[\\]]", "");
 			} else {
 				return trimStr;
 			}
@@ -175,7 +180,7 @@ public abstract class AbstractTest {
 						.replaceAll(" as ", " ");
 			} else if ((database instanceof NuoDB)) {
 				return trimStr.replaceAll("\\(\\(([^)]*)\\)=true\\)", "$1");
-			} else if ((database instanceof MSSQLServerDB)) {
+			} else if ((database instanceof MSSQLServerDB)|| database instanceof JTDSSQLServerDB) {
 				return trimStr
 						.replaceAll("\\[", "")
 						.replaceAll("]", "")
@@ -330,6 +335,13 @@ public abstract class AbstractTest {
 	private static class MSSQLServerTestDB extends MSSQLServerDB {
 
 		public MSSQLServerTestDB() {
+			super("dbvtest-mssql.cygjg2wvuyam.ap-southeast-2.rds.amazonaws.com", "dbvtest", "dbvtest", 1433, "dbv", "Testingdbv");
+		}
+	}
+
+	private static class JTDSSQLServerTestDB extends JTDSSQLServerDB {
+
+		public JTDSSQLServerTestDB() {
 			super("dbvtest-mssql.cygjg2wvuyam.ap-southeast-2.rds.amazonaws.com", "dbvtest", "dbvtest", 1433, "dbv", "Testingdbv");
 		}
 	}

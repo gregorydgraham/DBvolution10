@@ -433,7 +433,7 @@ public class DBMigration<M extends DBRow> extends RowDefinition {
 	}
 
 	public void migrateAllRows(DBRow... extraExamples) throws SQLException {
-		DBMigrate migrate = new DBMigrate<M>(this, this.mapper, extraExamples);
+		DBMigrate<M> migrate = new DBMigrate<M>(this, this.mapper, extraExamples);
 		migrate.migrate(database);
 	}
 
