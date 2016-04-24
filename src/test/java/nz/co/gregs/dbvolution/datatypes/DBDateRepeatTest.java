@@ -157,7 +157,17 @@ public class DBDateRepeatTest extends AbstractTest {
 		DBNumber numberOfYears = new DBNumber(this.column(this.creationDate).getDateRepeatFrom(march23rd2013).getYears());
 	}
 
-	public static class DateRepeatMaths extends Marque {
+	public static class DateRepeatMinutes extends Marque {
+
+		private static final long serialVersionUID = 1L;
+
+		@DBColumn
+		DBString intervalString = new DBString(this.column(this.creationDate).getDateRepeatFrom(march23rd2013).stringResult());
+		@DBColumn
+		DBNumber numberOfMinutes = new DBNumber(this.column(this.creationDate).getDateRepeatFrom(march23rd2013).getMinutes());
+	}
+	
+	public static class DateRepeatHours extends Marque {
 
 		private static final long serialVersionUID = 1L;
 
@@ -165,24 +175,29 @@ public class DBDateRepeatTest extends AbstractTest {
 		DBString intervalString = new DBString(this.column(this.creationDate).getDateRepeatFrom(march23rd2013).stringResult());
 
 		@DBColumn
-		DBNumber numberOfYears = new DBNumber(this.column(this.creationDate).getDateRepeatFrom(march23rd2013).getYears());
+		DBNumber numberOfHours = new DBNumber(this.column(this.creationDate).getDateRepeatFrom(march23rd2013).getHours());
+	}
+
+	public static class DateRepeatDays extends Marque {
+
+		private static final long serialVersionUID = 1L;
 
 		@DBColumn
-		DBNumber numberOfMonths = new DBNumber(this.column(this.creationDate).getDateRepeatFrom(march23rd2013).getMonths());
+		DBString intervalString = new DBString(this.column(this.creationDate).getDateRepeatFrom(march23rd2013).stringResult());
 
 		@DBColumn
 		DBNumber numberOfDays = new DBNumber(this.column(this.creationDate).getDateRepeatFrom(march23rd2013).getDays());
+	}
+
+	public static class DateRepeatMonths extends Marque {
+
+		private static final long serialVersionUID = 1L;
 
 		@DBColumn
-		DBNumber numberOfHours = new DBNumber(this.column(this.creationDate).getDateRepeatFrom(march23rd2013).getHours());
+		DBString intervalString = new DBString(this.column(this.creationDate).getDateRepeatFrom(march23rd2013).stringResult());
 
 		@DBColumn
-		DBNumber numberOfMinutes = new DBNumber(this.column(this.creationDate).getDateRepeatFrom(march23rd2013).getMinutes());
-
-//		@DBColumn
-//		DBNumber numberOfSeconds = new DBNumber(this.column(this.creationDate).getDateRepeatFrom(march23rd2013).getSeconds());
-//		@DBColumn
-//		DBNumber numberOfMillis = new DBNumber(this.column(this.creationDate).getDateRepeatFrom(march23rd2013).getMilliseconds());
+		DBNumber numberOfMonths = new DBNumber(this.column(this.creationDate).getDateRepeatFrom(march23rd2013).getMonths());
 	}
 
 	@Test
@@ -201,7 +216,7 @@ public class DBDateRepeatTest extends AbstractTest {
 
 	@Test
 	public void testGetMonths() throws SQLException {
-		DateRepeatMaths marq = new DateRepeatMaths();
+		DateRepeatMonths marq = new DateRepeatMonths();
 		DBQuery query = database.getDBQuery(marq);
 		database.print(query.setBlankQueryAllowed(true).getAllInstancesOf(marq));
 
@@ -215,7 +230,7 @@ public class DBDateRepeatTest extends AbstractTest {
 
 	@Test
 	public void testGetDays() throws SQLException {
-		DateRepeatMaths marq = new DateRepeatMaths();
+		DateRepeatDays marq = new DateRepeatDays();
 		DBQuery query = database.getDBQuery(marq);
 		database.print(query.setBlankQueryAllowed(true).getAllInstancesOf(marq));
 
@@ -228,7 +243,7 @@ public class DBDateRepeatTest extends AbstractTest {
 
 	@Test
 	public void testGetHours() throws SQLException {
-		DateRepeatMaths marq = new DateRepeatMaths();
+		DateRepeatHours marq = new DateRepeatHours();
 		DBQuery query = database.getDBQuery(marq);
 		//database.print(query.setBlankQueryAllowed(true).getAllInstancesOf(marq));
 
@@ -242,7 +257,7 @@ public class DBDateRepeatTest extends AbstractTest {
 
 	@Test
 	public void testGetMinutes() throws SQLException {
-		DateRepeatMaths marq = new DateRepeatMaths();
+		DateRepeatMinutes marq = new DateRepeatMinutes();
 		DBQuery query = database.getDBQuery(marq);
 		database.print(query.setBlankQueryAllowed(true).getAllInstancesOf(marq));
 
