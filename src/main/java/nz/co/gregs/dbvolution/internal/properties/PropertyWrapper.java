@@ -5,6 +5,7 @@ import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.annotations.AutoFillDuringQueryIfPossible;
 import nz.co.gregs.dbvolution.annotations.DBForeignKey;
 import nz.co.gregs.dbvolution.datatypes.DBEnumValue;
+import nz.co.gregs.dbvolution.datatypes.DBLargeObject;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 import nz.co.gregs.dbvolution.exceptions.DBThrownByEndUserCodeException;
 import nz.co.gregs.dbvolution.expressions.BooleanExpression;
@@ -222,8 +223,9 @@ public class PropertyWrapper {
 	 *
 	 * @return the Class of the QDT used internally to handle database values.
 	 */
-	public Class<? extends QueryableDatatype> type() {
-		return propertyDefinition.type();
+	@SuppressWarnings("unchecked")
+	public Class<? extends QueryableDatatype<?>> type() {
+		return (Class<? extends QueryableDatatype<?>>) propertyDefinition.type();
 	}
 
 	/**
@@ -234,8 +236,19 @@ public class PropertyWrapper {
 	 * @return TRUE if this property's internal QueryableDatatype is the similar
 	 * to that of the supplied instance.
 	 */
-	public boolean isInstanceOf(Class<? extends QueryableDatatype> refType) {
+	public boolean isInstanceOf(Class<? extends QueryableDatatype<?>> refType) {
 		return propertyDefinition.isInstanceOf(refType);
+	}
+
+	/**
+	 * Convenience method for testing the type of the QueryableDatatype.
+	 * Equivalent to {@code refType.isAssignableFrom(this.type())}.
+	 *
+	 * @return TRUE if this property's internal QueryableDatatype is the similar
+	 * to that of the supplied instance.
+	 */
+	public boolean isInstanceOfLargeObject() {
+		return propertyDefinition.isInstanceOfLargeObject();
 	}
 
 	/**
@@ -416,7 +429,7 @@ public class PropertyWrapper {
 	 * exception
 	 */
 	@SuppressWarnings("unchecked")
-	public <A extends QueryableDatatype> A getQueryableDatatype() {
+	public <A extends QueryableDatatype<?>> A getQueryableDatatype() {
 		return (A) propertyDefinition.getQueryableDatatype(target);
 	}
 
@@ -435,7 +448,7 @@ public class PropertyWrapper {
 	 * @throws DBThrownByEndUserCodeException if any user code throws an
 	 * exception
 	 */
-	public void setQueryableDatatype(QueryableDatatype value) {
+	public void setQueryableDatatype(QueryableDatatype<?> value) {
 		propertyDefinition.setQueryableDatatype(target, value);
 	}
 

@@ -48,7 +48,7 @@ import nz.co.gregs.dbvolution.operators.*;
  *
  * @author Gregory Graham
  */
-public class DBString extends QueryableDatatype implements StringResult {
+public class DBString extends QueryableDatatype<String> implements StringResult {
 
 	private static final long serialVersionUID = 1L;
 	private boolean isDBEmptyString = false;
@@ -61,7 +61,7 @@ public class DBString extends QueryableDatatype implements StringResult {
 	 * @return the defined values of all the DBStrings.
 	 */
 	public static List<String> toStringList(List<DBString> dbStrings) {
-		ArrayList<String> strings = new ArrayList<String>();
+		ArrayList<String> strings = new ArrayList<>();
 		for (DBString dBString : dbStrings) {
 			strings.add(dBString.stringValue());
 		}
@@ -106,20 +106,12 @@ public class DBString extends QueryableDatatype implements StringResult {
 		super(stringExpression);
 	}
 
-	@Override
-	void setValue(Object newLiteralValue) {
-		if (newLiteralValue instanceof String) {
-			setValue((String) newLiteralValue);
-		} else {
-			throw new ClassCastException(this.getClass().getSimpleName() + ".setValue() Called With A Non-String: Use only Strings with this class");
-		}
-	}
-
 	/**
 	 * Sets the value of this DBString to the value provided.
 	 *
 	 * @param str	str
 	 */
+	@Override
 	public void setValue(String str) {
 		super.setLiteralValue(str);
 	}
@@ -145,12 +137,10 @@ public class DBString extends QueryableDatatype implements StringResult {
 	public String formatValueForSQLStatement(DBDatabase db) {
 		DBDefinition defn = db.getDefinition();
 
-		if (getLiteralValue() instanceof Date) {
-			return defn.getDateFormattedForQuery((Date) getLiteralValue());
-		} else if (getLiteralValue().equals("")) {
+		if (getLiteralValue().isEmpty()) {
 			return defn.getEmptyString();
 		} else {
-			String unsafeValue = getLiteralValue().toString();
+			String unsafeValue = getLiteralValue();
 			return defn.beginStringValue() + defn.safeString(unsafeValue) + defn.endStringValue();
 		}
 	}
@@ -172,7 +162,7 @@ public class DBString extends QueryableDatatype implements StringResult {
 
 	@Override
 	public Set<DBRow> getTablesInvolved() {
-		return new HashSet<DBRow>();
+		return new HashSet<>();
 	}
 
 	/**
@@ -731,7 +721,7 @@ public class DBString extends QueryableDatatype implements StringResult {
 	}
 
 	@Override
-	protected Object getFromResultSet(DBDatabase database, ResultSet resultSet, String fullColumnName) throws SQLException {
+	protected String getFromResultSet(DBDatabase database, ResultSet resultSet, String fullColumnName) throws SQLException {
 		String gotString = resultSet.getString(fullColumnName);
 		if (!database.supportsDifferenceBetweenNullAndEmptyString()) {
 			if (gotString != null && gotString.isEmpty()) {
@@ -775,5 +765,10 @@ public class DBString extends QueryableDatatype implements StringResult {
 	 */
 	public boolean isEmptyOrNullString() {
 		return isEmptyString() || isNull();
+	}
+
+	@Override
+	protected void setValueFromStandardStringEncoding(String encodedValue) {
+		setValue(encodedValue);
 	}
 }

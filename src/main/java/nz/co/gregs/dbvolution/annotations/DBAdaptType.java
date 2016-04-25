@@ -71,5 +71,5 @@ public @interface DBAdaptType {
 	 *
 	 * @return the QueryableDatatype class used internally for DB communication
 	 */
-	Class<? extends QueryableDatatype> type() default DBUnknownDatatype.class;
+	Class<? extends QueryableDatatype<?>> type() default DBUnknownDatatype.class;
 }

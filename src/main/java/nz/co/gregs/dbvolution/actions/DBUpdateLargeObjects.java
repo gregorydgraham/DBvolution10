@@ -70,7 +70,7 @@ public class DBUpdateLargeObjects extends DBUpdate {
 			actions = new DBActionList();
 			for (PropertyWrapper prop : getInterestingLargeObjects(row)) {
 				final String col = prop.columnName();
-				final DBLargeObject largeObject = (DBLargeObject) prop.getQueryableDatatype();
+				final DBLargeObject<?> largeObject = (DBLargeObject<?>) prop.getQueryableDatatype();
 
 				if (largeObject.isNull()) {
 					setToNullUsingStringValue(defn, row, col, largeObject, db, statement);
@@ -98,7 +98,7 @@ public class DBUpdateLargeObjects extends DBUpdate {
 		return actions;
 	}
 
-	private void setUsingStringValue(DBDefinition defn, DBRow row, final String col, final DBLargeObject largeObject, DBDatabase db, DBStatement statement) throws SQLException {
+	private void setUsingStringValue(DBDefinition defn, DBRow row, final String col, final DBLargeObject<?> largeObject, DBDatabase db, DBStatement statement) throws SQLException {
 		String sqlString = defn.beginUpdateLine()
 				+ defn.formatTableName(row)
 				+ defn.beginSetClause()
@@ -115,7 +115,7 @@ public class DBUpdateLargeObjects extends DBUpdate {
 		statement.execute(sqlString);
 	}
 
-	private void setToNullUsingStringValue(DBDefinition defn, DBRow row, final String col, final DBLargeObject largeObject, DBDatabase db, DBStatement statement) throws SQLException {
+	private void setToNullUsingStringValue(DBDefinition defn, DBRow row, final String col, final DBLargeObject<?> largeObject, DBDatabase db, DBStatement statement) throws SQLException {
 		String sqlString = defn.beginUpdateLine()
 				+ defn.formatTableName(row)
 				+ defn.beginSetClause()
@@ -132,7 +132,7 @@ public class DBUpdateLargeObjects extends DBUpdate {
 		statement.execute(sqlString);
 	}
 
-	private void setUsingBinaryStream(DBDefinition defn, DBRow row, final String col, final DBLargeObject largeObject, DBDatabase db, DBStatement statement) throws SQLException {
+	private void setUsingBinaryStream(DBDefinition defn, DBRow row, final String col, final DBLargeObject<?> largeObject, DBDatabase db, DBStatement statement) throws SQLException {
 		String sqlString = defn.beginUpdateLine()
 				+ defn.formatTableName(row)
 				+ defn.beginSetClause()
@@ -163,7 +163,7 @@ public class DBUpdateLargeObjects extends DBUpdate {
 		}
 	}
 
-	private void setUsingBLOB(DBDefinition defn, DBRow row, String col, DBLargeObject largeObject, DBDatabase db, DBStatement statement) throws SQLException {
+	private void setUsingBLOB(DBDefinition defn, DBRow row, String col, DBLargeObject<?> largeObject, DBDatabase db, DBStatement statement) throws SQLException {
 		String sqlString = defn.beginUpdateLine()
 				+ defn.formatTableName(row)
 				+ defn.beginSetClause()
@@ -186,7 +186,7 @@ public class DBUpdateLargeObjects extends DBUpdate {
 		}
 	}
 
-	private void setUsingBase64String(DBDefinition defn, DBRow row, final String col, final DBLargeObject largeObject, DBDatabase db, DBStatement statement) throws SQLException, IOException {
+	private void setUsingBase64String(DBDefinition defn, DBRow row, final String col, final DBLargeObject<?> largeObject, DBDatabase db, DBStatement statement) throws SQLException, IOException {
 		String sqlString = defn.beginUpdateLine()
 				+ defn.formatTableName(row)
 				+ defn.beginSetClause()
@@ -206,7 +206,7 @@ public class DBUpdateLargeObjects extends DBUpdate {
 
 			InputStream input = new BufferedInputStream(inputStream);
 			try {
-				List<byte[]> byteArrays = new ArrayList<byte[]>();
+				List<byte[]> byteArrays = new ArrayList<>();
 
 				int totalBytesRead = 0;
 				byte[] resultSetBytes;
@@ -236,7 +236,7 @@ public class DBUpdateLargeObjects extends DBUpdate {
 		}
 	}
 
-	private void setUsingCharacterStream(DBDefinition defn, DBRow row, final String col, final DBLargeObject largeObject, DBDatabase db, DBStatement statement) throws SQLException {
+	private void setUsingCharacterStream(DBDefinition defn, DBRow row, final String col, final DBLargeObject<?> largeObject, DBDatabase db, DBStatement statement) throws SQLException {
 		String sqlString = defn.beginUpdateLine()
 				+ defn.formatTableName(row)
 				+ defn.beginSetClause()
@@ -262,7 +262,7 @@ public class DBUpdateLargeObjects extends DBUpdate {
 	@Override
 	public List<String> getSQLStatements(DBDatabase db) {
 		DBRow row = getRow();
-		List<String> strs = new ArrayList<String>();
+		List<String> strs = new ArrayList<>();
 		strs.add(db.getDefinition().startMultilineComment() + " SAVE BINARY DATA" + db.getDefinition().endMultilineComment());
 		return strs;
 	}
@@ -288,11 +288,11 @@ public class DBUpdateLargeObjects extends DBUpdate {
 	}
 
 	private List<PropertyWrapper> getChangedLargeObjects(DBRow row) {
-		List<PropertyWrapper> changed = new ArrayList<PropertyWrapper>();
+		List<PropertyWrapper> changed = new ArrayList<>();
 		if (row.hasLargeObjects()) {
-			for (QueryableDatatype qdt : row.getLargeObjects()) {
+			for (QueryableDatatype<?> qdt : row.getLargeObjects()) {
 				if (qdt instanceof DBLargeObject) {
-					DBLargeObject large = (DBLargeObject) qdt;
+					DBLargeObject<?> large = (DBLargeObject<?>) qdt;
 					if (large.hasChanged()) {
 						changed.add(row.getPropertyWrapperOf(qdt));
 					}

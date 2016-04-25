@@ -46,7 +46,7 @@ import nz.co.gregs.dbvolution.results.BooleanArrayResult;
  *
  * @author Gregory Graham
  */
-public class DBBooleanArray extends QueryableDatatype implements BooleanArrayResult {
+public class DBBooleanArray extends QueryableDatatype<Boolean[]> implements BooleanArrayResult {
 
 	private static final long serialVersionUID = 1L;
 
@@ -138,15 +138,8 @@ public class DBBooleanArray extends QueryableDatatype implements BooleanArrayRes
 		return result;
 	}
 
-	@Override
-	void setValue(Object newLiteralValue) {
-		if (newLiteralValue instanceof Boolean[]) {
-			setValue((Boolean[]) newLiteralValue);
-		} else if (newLiteralValue instanceof DBBooleanArray) {
-			setValue(((DBBooleanArray) newLiteralValue).booleanArrayValue());
-		} else {
-			throw new ClassCastException(this.getClass().getSimpleName() + ".setValue() Called With A Non-Boolean[]: Use only Boolean[1-100] with this class");
-		}
+	void setValue(DBBooleanArray newLiteralValue) {
+		setValue(newLiteralValue.booleanArrayValue());
 	}
 
 	/**
@@ -154,6 +147,7 @@ public class DBBooleanArray extends QueryableDatatype implements BooleanArrayRes
 	 *
 	 * @param newLiteralValue	newLiteralValue
 	 */
+	@Override
 	public void setValue(Boolean[] newLiteralValue) {
 		super.setLiteralValue(newLiteralValue);
 	}
@@ -162,7 +156,7 @@ public class DBBooleanArray extends QueryableDatatype implements BooleanArrayRes
 	public String formatValueForSQLStatement(DBDatabase db) {
 		DBDefinition defn = db.getDefinition();
 		if (getLiteralValue() != null) {
-			Boolean[] booleanArray = (Boolean[]) getLiteralValue();
+			Boolean[] booleanArray = getLiteralValue();
 			return defn.doBooleanArrayTransform(booleanArray);
 		}
 		return defn.getNull();
@@ -176,7 +170,7 @@ public class DBBooleanArray extends QueryableDatatype implements BooleanArrayRes
 	 */
 	public Boolean[] booleanArrayValue() {
 		if (this.getLiteralValue() != null) {
-			return (Boolean[]) this.getLiteralValue();
+			return this.getLiteralValue();
 		} else {
 			return null;
 		}
@@ -204,7 +198,7 @@ public class DBBooleanArray extends QueryableDatatype implements BooleanArrayRes
 
 	@Override
 	public Set<DBRow> getTablesInvolved() {
-		return new HashSet<DBRow>();
+		return new HashSet<>();
 	}
 
 	/**
@@ -220,6 +214,11 @@ public class DBBooleanArray extends QueryableDatatype implements BooleanArrayRes
 	@Override
 	public int hashCode() {
 		return super.hashCode();
+	}
+
+	@Override
+	protected void setValueFromStandardStringEncoding(String encodedValue) {
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
 }

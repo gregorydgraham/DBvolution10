@@ -95,21 +95,10 @@ public class DBBooleanArrayTest extends AbstractTest {
 	@Test
 	public void testSetValue_Object() {
 		System.out.println("setValue");
-		Object newLiteralValue = new Boolean[]{true, false, true};
+		Boolean[] newLiteralValue = new Boolean[]{true, false, true};
 		DBBooleanArray instance = new DBBooleanArray();
 		instance.setValue(newLiteralValue);
 		Assert.assertThat(instance.booleanArrayValue(), is(newLiteralValue));
-	}
-
-	/**
-	 * Test of setValue method, of class DBBooleanArray.
-	 */
-	@Test(expected = ClassCastException.class)
-	public void testSetValue_BadObject() {
-
-		Object newLiteralValue = 5;
-		DBBooleanArray instance = new DBBooleanArray();
-		instance.setValue(newLiteralValue);
 	}
 
 	/**

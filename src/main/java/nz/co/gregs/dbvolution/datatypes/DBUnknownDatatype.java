@@ -29,7 +29,7 @@ import nz.co.gregs.dbvolution.DBRow;
  *
  * @author Gregory Graham
  */
-public class DBUnknownDatatype extends QueryableDatatype {
+public class DBUnknownDatatype extends QueryableDatatype<Object> {
 
 	private static final long serialVersionUID = 1L;
 
@@ -70,37 +70,16 @@ public class DBUnknownDatatype extends QueryableDatatype {
 
 	@Override
 	public Set<DBRow> getTablesInvolved() {
-		return new HashSet<DBRow>();
+		return new HashSet<>();
 	}
-
-//	@Override
-//	public void setFromResultSet(DBDatabase database, ResultSet resultSet, String resultSetColumnName) throws SQLException {
-//		removeConstraints();
-//		if (resultSet == null || resultSetColumnName == null) {
-//			this.setToNull();
-//		} else {
-//			String dbValue;
-//			try {
-//				dbValue = resultSet.getString(resultSetColumnName);
-//				if (resultSet.wasNull()) {
-//					dbValue = null;
-//				}
-//			} catch (SQLException ex) {
-//				// Probably means the column wasn't selected.
-//				dbValue = null;
-//			}
-//			if (dbValue == null) {
-//				this.setToNull();
-//			} else {
-//				this.setLiteralValue(dbValue);
-//			}
-//		}
-//		setUnchanged();
-//		setDefined(true);
-//		propertyWrapper = null;
-//	}
+	
 	@Override
 	protected Object getFromResultSet(DBDatabase database, ResultSet resultSet, String fullColumnName) throws SQLException {
 		return resultSet.getString(fullColumnName);
+	}
+
+	@Override
+	protected void setValueFromStandardStringEncoding(String encodedValue) {
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 }

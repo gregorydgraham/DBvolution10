@@ -22,7 +22,6 @@ import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.DBReport;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.expressions.DateExpression;
-import nz.co.gregs.dbvolution.results.DateResult;
 
 /**
  * Encapsulates date values that only include year, month, and day values.

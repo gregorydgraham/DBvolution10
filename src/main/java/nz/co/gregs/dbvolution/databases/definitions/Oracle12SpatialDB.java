@@ -33,7 +33,7 @@ import nz.co.gregs.dbvolution.results.Spatial2DResult;
 public class Oracle12SpatialDB extends Oracle12DBDefinition {
 
 	@Override
-	public String getDatabaseDataTypeOfQueryableDatatype(QueryableDatatype qdt) {
+	public String getDatabaseDataTypeOfQueryableDatatype(QueryableDatatype<?> qdt) {
 		if (qdt instanceof Spatial2DResult) {
 			return " SDO_GEOMETRY ";
 		} else {

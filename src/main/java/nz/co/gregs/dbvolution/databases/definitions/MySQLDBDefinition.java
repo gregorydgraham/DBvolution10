@@ -62,7 +62,7 @@ public class MySQLDBDefinition extends DBDefinition {
 	}
 
 	@Override
-	public String getDatabaseDataTypeOfQueryableDatatype(QueryableDatatype qdt) {
+	public String getDatabaseDataTypeOfQueryableDatatype(QueryableDatatype<?> qdt) {
 		if (qdt instanceof DBString) {
 			return " VARCHAR(1000) CHARACTER SET utf8 COLLATE utf8_bin ";
 		} else if (qdt instanceof DBDate) {
@@ -79,7 +79,7 @@ public class MySQLDBDefinition extends DBDefinition {
 	}
 
 	@Override
-	public Class<? extends QueryableDatatype> getQueryableDatatypeClassForSQLDatatype(String typeName) {
+	public Class<? extends QueryableDatatype<?>> getQueryableDatatypeClassForSQLDatatype(String typeName) {
 		if (typeName.equals("POLYGON")) {
 			return DBPolygon2D.class;
 		} else if (typeName.equals("LINESTRING")) {
@@ -94,7 +94,7 @@ public class MySQLDBDefinition extends DBDefinition {
 	}
 
 	@Override
-	public String doColumnTransformForSelect(QueryableDatatype qdt, String selectableName) {
+	public String doColumnTransformForSelect(QueryableDatatype<?> qdt, String selectableName) {
 		if (qdt instanceof DBPolygon2D) {
 			return "AsText(" + selectableName + ")";
 		} else if (qdt instanceof DBPoint2D) {

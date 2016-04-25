@@ -4,7 +4,6 @@ import static nz.co.gregs.dbvolution.internal.properties.PropertyMatchers.*;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.*;
 
-import java.sql.SQLException;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -14,7 +13,6 @@ import nz.co.gregs.dbvolution.annotations.DBAdaptType;
 import nz.co.gregs.dbvolution.annotations.DBColumn;
 import nz.co.gregs.dbvolution.datatypes.DBDate;
 import nz.co.gregs.dbvolution.datatypes.DBInteger;
-import nz.co.gregs.dbvolution.datatypes.DBNumber;
 import nz.co.gregs.dbvolution.datatypes.DBString;
 import nz.co.gregs.dbvolution.datatypes.DBTypeAdaptor;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
@@ -102,20 +100,20 @@ public class PropertyTypeHandlerTest {
 		new PropertyTypeHandler(propertyOf(MyClass.class, "field"), false);
 	}
 
-	@Test
-	public void errorsOnConstructionGivenTypeAdaptorWithAbstractExplicitType() {
-		class MyClass extends DBRow {
-
-			@DBColumn
-			@DBAdaptType(value = IntegerLongAdaptor.class, type = QueryableDatatype.class)
-			public Integer field;
-		}
-
-		thrown.expect(InvalidDeclaredTypeException.class);
-		thrown.expectMessage("must be");
-		thrown.expectMessage("concrete");
-		new PropertyTypeHandler(propertyOf(MyClass.class, "field"), false);
-	}
+//	@Test
+//	public void errorsOnConstructionGivenTypeAdaptorWithAbstractExplicitType() {
+//		class MyClass extends DBRow {
+//
+//			@DBColumn
+//			@DBAdaptType(value = IntegerLongAdaptor.class, type = QueryableDatatype.class)
+//			public Integer field;
+//		}
+//
+//		thrown.expect(InvalidDeclaredTypeException.class);
+//		thrown.expectMessage("must be");
+//		thrown.expectMessage("concrete");
+//		new PropertyTypeHandler(propertyOf(MyClass.class, "field"), false);
+//	}
 
 	@Test
 	public void acceptsOnConstructionGivenValidTypeAdaptorWithImplicitDBvType() {

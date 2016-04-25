@@ -59,7 +59,7 @@ public class DBUpdateSimpleTypes extends DBUpdate {
 	@Override
 	public List<String> getSQLStatements(DBDatabase db) {
 		DBRow row = getRow();
-		List<String> sqls = new ArrayList<String>();
+		List<String> sqls = new ArrayList<>();
 		DBDefinition defn = db.getDefinition();
 
 		String sql = defn.beginUpdateLine()
@@ -88,7 +88,7 @@ public class DBUpdateSimpleTypes extends DBUpdate {
 		String separator = defn.getStartingSetSubClauseSeparator();
 		for (PropertyWrapper field : fields) {
 			if (field.isColumn()) {
-				final QueryableDatatype qdt = field.getQueryableDatatype();
+				final QueryableDatatype<?> qdt = field.getQueryableDatatype();
 				if (qdt.hasChanged()) {
 					String columnName = field.columnName();
 					sql.append(separator)
@@ -119,7 +119,7 @@ public class DBUpdateSimpleTypes extends DBUpdate {
 	 */
 	protected String getWhereClause(DBDatabase db, DBRow row) {
 		DBDefinition defn = db.getDefinition();
-		QueryableDatatype primaryKey = row.getPrimaryKey();
+		QueryableDatatype<?> primaryKey = row.getPrimaryKey();
 		String pkOriginalValue = (primaryKey.hasChanged() ? primaryKey.getPreviousSQLValue(db) : primaryKey.toSQLString(db));
 		return defn.formatColumnName(row.getPrimaryKeyColumnName())
 				+ defn.getEqualsComparator()

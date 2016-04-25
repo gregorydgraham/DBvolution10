@@ -15,6 +15,11 @@
  */
 package nz.co.gregs.dbvolution.datatypes;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 /**
  * Syncs between a simple-type external value and a QDT internal value.
  *
@@ -34,7 +39,7 @@ public class SimpleValueQueryableDatatypeSyncer extends QueryableDatatypeSyncer 
 	 *
 	 *
 	 */
-	public SimpleValueQueryableDatatypeSyncer(String propertyName, Class<? extends QueryableDatatype> internalQdtType,
+	public SimpleValueQueryableDatatypeSyncer(String propertyName, Class<? extends QueryableDatatype<?>> internalQdtType,
 			Class<?> internalQdtLiteralType, Class<?> externalSimpleType, DBTypeAdaptor<Object, Object> typeAdaptor) {
 		super(propertyName, internalQdtType, internalQdtLiteralType, externalSimpleType, typeAdaptor);
 	}
@@ -46,9 +51,9 @@ public class SimpleValueQueryableDatatypeSyncer extends QueryableDatatypeSyncer 
 	 * @param externalValue may be null
 	 * @return the updated internal QDT
 	 */
-	public QueryableDatatype setInternalQDTFromExternalSimpleValue(Object externalValue) {
+	public QueryableDatatype<?> setInternalQDTFromExternalSimpleValue(Object externalValue) {
 		Object internalValue = getToInternalSimpleTypeAdaptor().convert(externalValue);
-		QueryableDatatype internalQDT = getInternalQueryableDatatype();
+		QueryableDatatype<?> internalQDT = getInternalQueryableDatatype();
 		if (internalValue == null) {
 			// TODO complete this
 			internalQDT.setDefined(false);
@@ -57,11 +62,11 @@ public class SimpleValueQueryableDatatypeSyncer extends QueryableDatatypeSyncer 
 			internalQDT.setChanged(false);
 			internalQDT.setPreviousValue(null);
 		} else {
-			// TODO what type checking can/should be done here?
-			internalQDT.setValue(internalValue);
+			setQDTValueUsingDangerousReflection(internalQDT, internalValue);
 		}
 		return internalQDT;
 	}
+
 
 	/**
 	 * Warning: this directly returns the value from the type adaptor, without

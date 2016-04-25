@@ -48,7 +48,7 @@ public class NuoDBDefinition extends DBDefinition {
 	}
 
 	@Override
-	protected String getDatabaseDataTypeOfQueryableDatatype(QueryableDatatype qdt) {
+	protected String getDatabaseDataTypeOfQueryableDatatype(QueryableDatatype<?> qdt) {
 		if (qdt instanceof DBBoolean) {
 			return " boolean ";
 		} else if (qdt instanceof DBBooleanArray) {

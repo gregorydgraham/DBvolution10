@@ -32,8 +32,9 @@ import nz.co.gregs.dbvolution.results.LargeObjectResult;
  * Java objects directly in the database.
  *
  * @author Gregory Graham
+ * @param <T>
  */
-public abstract class DBLargeObject extends QueryableDatatype implements LargeObjectResult {
+public abstract class DBLargeObject<T> extends QueryableDatatype<T> implements LargeObjectResult {
 
 	private static final long serialVersionUID = 1L;
 
@@ -79,8 +80,8 @@ public abstract class DBLargeObject extends QueryableDatatype implements LargeOb
 	}
 
 	@Override
-	public DBLargeObject copy() {
-		return (DBLargeObject) super.copy();
+	public DBLargeObject<T> copy() {
+		return (DBLargeObject<T>) super.copy();
 	}
 
 }

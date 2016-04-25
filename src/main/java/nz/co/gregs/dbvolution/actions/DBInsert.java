@@ -92,7 +92,7 @@ public class DBInsert extends DBAction {
 		DBInsert dbInsert = new DBInsert(row);
 		final DBActionList executedActions = dbInsert.execute(database);
 		if (dbInsert.generatedKeys.size() == 1 && !row.getPrimaryKey().hasBeenSet()) {
-			final QueryableDatatype pkQDT = row.getPrimaryKey();
+			final QueryableDatatype<?> pkQDT = row.getPrimaryKey();
 			new InternalQueryableDatatypeProxy(pkQDT).setValue(dbInsert.generatedKeys.get(0));
 		}
 		return executedActions;
@@ -104,7 +104,7 @@ public class DBInsert extends DBAction {
 		DBDefinition defn = db.getDefinition();
 		processAllFieldsForInsert(db, row);
 
-		ArrayList<String> strs = new ArrayList<String>();
+		ArrayList<String> strs = new ArrayList<>();
 		if (allChangedColumns.length() != 0) {
 			strs.add(defn.beginInsertLine()
 					+ defn.formatTableName(row)
@@ -154,7 +154,7 @@ public class DBInsert extends DBAction {
 										final long pkValue = generatedKeysResultSet.getLong(pkIndex);
 										if (pkValue > 0) {
 											this.getGeneratedPrimaryKeys().add(pkValue);
-											QueryableDatatype pkQDT = this.originalRow.getPrimaryKey();
+											QueryableDatatype<?> pkQDT = this.originalRow.getPrimaryKey();
 											new InternalQueryableDatatypeProxy(pkQDT).setValue(pkValue);
 											pkQDT = row.getPrimaryKey();
 											new InternalQueryableDatatypeProxy(pkQDT).setValue(pkValue);
@@ -178,13 +178,13 @@ public class DBInsert extends DBAction {
 				} else {
 					try {
 						statement.execute(sql);
-						final QueryableDatatype primaryKey = row.getPrimaryKey();
+						final QueryableDatatype<?> primaryKey = row.getPrimaryKey();
 						if (primaryKey != null && primaryKey.hasBeenSet() == false && defn.supportsRetrievingLastInsertedRowViaSQL()) {
 							String retrieveSQL = defn.getRetrieveLastInsertedRowSQL();
 							ResultSet rs = statement.executeQuery(retrieveSQL);
 							try {
-								QueryableDatatype originalPK = this.originalRow.getPrimaryKey();
-								QueryableDatatype rowPK = row.getPrimaryKey();
+								QueryableDatatype<?> originalPK = this.originalRow.getPrimaryKey();
+								QueryableDatatype<?> rowPK = row.getPrimaryKey();
 								if ((originalPK instanceof DBInteger) && (rowPK instanceof DBInteger)) {
 									DBInteger inPK = (DBInteger) originalPK;
 									DBInteger inRowPK = (DBInteger) rowPK;
@@ -233,7 +233,7 @@ public class DBInsert extends DBAction {
 		for (PropertyWrapper prop : props) {
 			// BLOBS are not inserted normally so don't include them
 			if (prop.isColumn()) {
-				final QueryableDatatype qdt = prop.getQueryableDatatype();
+				final QueryableDatatype<?> qdt = prop.getQueryableDatatype();
 				if (!(qdt instanceof DBLargeObject)) {
 					//support for inserting empty rows in a table with an autoincrementing pk
 					if (!prop.isAutoIncrement()) {

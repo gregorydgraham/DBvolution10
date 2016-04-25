@@ -54,7 +54,7 @@ public class DBUpdateToPreviousValues extends DBUpdateSimpleTypes {
 		String separator = defn.getStartingSetSubClauseSeparator();
 		for (PropertyWrapper field : fields) {
 			if (field.isColumn()) {
-				final QueryableDatatype qdt = field.getQueryableDatatype();
+				final QueryableDatatype<?> qdt = field.getQueryableDatatype();
 				if (qdt.hasChanged()) {
 					String previousSQLValue = qdt.getPreviousSQLValue(db);
 					if (previousSQLValue == null) {
@@ -83,7 +83,7 @@ public class DBUpdateToPreviousValues extends DBUpdateSimpleTypes {
 	@Override
 	protected String getWhereClause(DBDatabase db, DBRow row) {
 		DBDefinition defn = db.getDefinition();
-		QueryableDatatype primaryKey = row.getPrimaryKey();
+		QueryableDatatype<?> primaryKey = row.getPrimaryKey();
 		String pkCurrentValue = primaryKey.toSQLString(db);
 		return defn.formatColumnName(row.getPrimaryKeyColumnName())
 				+ defn.getEqualsComparator()

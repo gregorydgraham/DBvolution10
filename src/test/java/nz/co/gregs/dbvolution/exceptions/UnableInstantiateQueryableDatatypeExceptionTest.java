@@ -33,10 +33,10 @@ public class UnableInstantiateQueryableDatatypeExceptionTest {
 	@Test(expected = UnableInstantiateQueryableDatatypeException.class)
 	public void testSomeMethod() {
 		AQDT aqdt = new AQDT();
-		QueryableDatatype copy = aqdt.copy();
+		QueryableDatatype<Object> copy = aqdt.copy();
 	}
 
-	public class AQDT extends QueryableDatatype {
+	public class AQDT extends QueryableDatatype<Object> {
 
 		private static final long serialVersionUID = 1L;
 		private final Object undefined = null;
@@ -58,6 +58,11 @@ public class UnableInstantiateQueryableDatatypeExceptionTest {
 
 		@Override
 		public boolean isAggregator() {
+			throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+		}
+
+		@Override
+		protected void setValueFromStandardStringEncoding(String encodedValue) {
 			throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 		}
 	}

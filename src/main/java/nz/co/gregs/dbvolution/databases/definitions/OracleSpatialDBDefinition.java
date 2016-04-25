@@ -30,7 +30,6 @@ import nz.co.gregs.dbvolution.datatypes.spatial2D.DBLineSegment2D;
 import nz.co.gregs.dbvolution.datatypes.spatial2D.DBMultiPoint2D;
 import nz.co.gregs.dbvolution.datatypes.spatial2D.DBPoint2D;
 import nz.co.gregs.dbvolution.datatypes.spatial2D.DBPolygon2D;
-import nz.co.gregs.dbvolution.results.Line2DResult;
 import nz.co.gregs.dbvolution.results.Spatial2DResult;
 
 /**
@@ -42,7 +41,7 @@ import nz.co.gregs.dbvolution.results.Spatial2DResult;
 public class OracleSpatialDBDefinition extends OracleDBDefinition {
 
 	@Override
-	public String getDatabaseDataTypeOfQueryableDatatype(QueryableDatatype qdt) {
+	public String getDatabaseDataTypeOfQueryableDatatype(QueryableDatatype<?> qdt) {
 		if (qdt instanceof Spatial2DResult) {
 			return " SDO_GEOMETRY ";
 //		} else if (qdt instanceof DBLine2D) {
@@ -57,7 +56,7 @@ public class OracleSpatialDBDefinition extends OracleDBDefinition {
 	}
 
 	@Override
-	public String doColumnTransformForSelect(QueryableDatatype qdt, String selectableName) {
+	public String doColumnTransformForSelect(QueryableDatatype<?> qdt, String selectableName) {
 		if (qdt instanceof DBPolygon2D) {
 			return doPolygon2DAsTextTransform(selectableName);
 		} else if (qdt instanceof DBLine2D) {

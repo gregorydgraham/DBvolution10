@@ -98,7 +98,7 @@ public class DBTable<E extends DBRow> {
 	 * @return an instance of the supplied example
 	 */
 	public static <E extends DBRow> DBTable<E> getInstance(DBDatabase database, E example) {
-		DBTable<E> dbTable = new DBTable<E>(database, example);
+		DBTable<E> dbTable = new DBTable<>(database, example);
 		return dbTable;
 	}
 
@@ -284,7 +284,7 @@ public class DBTable<E extends DBRow> {
 
 	private List<E> getRowsByPrimaryKeyObject(Object pkValue) throws SQLException, ClassNotFoundException {
 		DBRow newInstance = DBRow.getDBRow(exemplar.getClass());
-		final QueryableDatatype primaryKey = newInstance.getPrimaryKey();
+		final QueryableDatatype<?> primaryKey = newInstance.getPrimaryKey();
 		if ((primaryKey instanceof DBString) && (pkValue instanceof String)) {
 			((DBString) primaryKey).permittedValues((String) pkValue);
 		} else if ((primaryKey instanceof DBInteger) && (pkValue instanceof Long)) {
@@ -324,11 +324,11 @@ public class DBTable<E extends DBRow> {
 		query.refreshQuery();
 		applyConfigs();
 		List<DBQueryRow> allRowsForPage = query.getAllRowsForPage(pageNumber);
-		Set<E> set = new HashSet<E>();
+		Set<E> set = new HashSet<>();
 		for (DBQueryRow row : allRowsForPage) {
 			set.add(row.get(exemplar));
 		}
-		return new ArrayList<E>(set);
+		return new ArrayList<>(set);
 	}
 
 	/**
@@ -593,9 +593,9 @@ public class DBTable<E extends DBRow> {
 	 */
 	public List<Long> getPrimaryKeysAsLong() throws SQLException {
 		List<E> allRows = getAllRows();
-		List<Long> longPKs = new ArrayList<Long>();
+		List<Long> longPKs = new ArrayList<>();
 		for (E row : allRows) {
-			QueryableDatatype primaryKey = row.getPrimaryKey();
+			QueryableDatatype<?> primaryKey = row.getPrimaryKey();
 			if (DBNumber.class.isAssignableFrom(primaryKey.getClass())) {
 				DBNumber num = (DBNumber) primaryKey;
 				longPKs.add(num.longValue());
@@ -616,7 +616,7 @@ public class DBTable<E extends DBRow> {
 	 */
 	public List<String> getPrimaryKeysAsString() throws SQLException {
 		List<E> allRows = getAllRows();
-		List<String> stringPKs = new ArrayList<String>();
+		List<String> stringPKs = new ArrayList<>();
 		for (E row : allRows) {
 			stringPKs.add(row.getPrimaryKey().stringValue());
 		}
@@ -634,7 +634,7 @@ public class DBTable<E extends DBRow> {
 	 *
 	 */
 	public void compare(DBTable<E> secondTable) throws SQLException {
-		HashMap<String, E> secondMap = new HashMap<String, E>();
+		HashMap<String, E> secondMap = new HashMap<>();
 		for (E row : secondTable.getAllRows()) {
 			secondMap.put(row.getPrimaryKey().toString(), row);
 		}
@@ -853,13 +853,13 @@ public class DBTable<E extends DBRow> {
 	 */
 	@SuppressWarnings("unchecked")
 	public <A> List<A> getDistinctValuesOfColumn(A fieldOfProvidedRow) throws AccidentalBlankQueryException, IncorrectRowProviderInstanceSuppliedException, SQLException {
-		ArrayList<A> returnList = new ArrayList<A>();
+		ArrayList<A> returnList = new ArrayList<>();
 		final PropertyWrapper fieldProp = original.getPropertyWrapperOf(fieldOfProvidedRow);
 		if (fieldProp == null) {
 			throw new IncorrectRowProviderInstanceSuppliedException();
 		}
 		final PropertyWrapperDefinition fieldDefn = fieldProp.getDefinition();
-		QueryableDatatype thisQDT = fieldDefn.getQueryableDatatype(exemplar);
+		QueryableDatatype<?> thisQDT = fieldDefn.getQueryableDatatype(exemplar);
 		exemplar.setReturnFields(thisQDT);
 		DBQuery distinctQuery = database.getDBQuery(exemplar);
 		distinctQuery.setBlankQueryAllowed(true);

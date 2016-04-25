@@ -52,7 +52,7 @@ public class DBUpdateSimpleTypesUsingAllColumns extends DBUpdateSimpleTypes {
 				+ defn.beginWhereClause()
 				+ defn.getWhereClauseBeginningCondition();
 		for (PropertyWrapper prop : row.getColumnPropertyWrappers()) {
-			QueryableDatatype qdt = prop.getQueryableDatatype();
+			QueryableDatatype<?> qdt = prop.getQueryableDatatype();
 			if (qdt.isNull()) {
 				sql += defn.beginAndLine() + BooleanExpression.isNull(row.column(qdt)).toSQLString(db);
 //				DBIsNullOperator isNullOp = new DBIsNullOperator();
@@ -66,7 +66,7 @@ public class DBUpdateSimpleTypesUsingAllColumns extends DBUpdateSimpleTypes {
 			}
 		}
 		sql += defn.endDeleteLine();
-		List<String> sqls = new ArrayList<String>();
+		List<String> sqls = new ArrayList<>();
 		sqls.add(sql);
 		return sqls;
 	}

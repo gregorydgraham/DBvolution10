@@ -40,7 +40,7 @@ public class UnableToCopyQueryableDatatypeException extends DBRuntimeException {
 	 * @param qdt qdt
 	 * @param ex ex
 	 */
-	public UnableToCopyQueryableDatatypeException(QueryableDatatype qdt, IllegalAccessException ex) {
+	public UnableToCopyQueryableDatatypeException(QueryableDatatype<?> qdt, IllegalAccessException ex) {
 		super("Unable To Copy " + qdt.getClass().getSimpleName() + " Due To " + ex.getClass().getSimpleName() + ": Please ensure that all fields are accessible.", ex);
 	}
 

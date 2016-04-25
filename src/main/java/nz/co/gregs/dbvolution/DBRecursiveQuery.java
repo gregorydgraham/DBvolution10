@@ -184,7 +184,7 @@ public class DBRecursiveQuery<T extends DBRow> {
 	 *
 	 */
 	private List<DBQueryRow> getRowsFromRecursiveQuery(RecursiveSQLDirection direction) throws SQLException {
-		List<DBQueryRow> returnList = new ArrayList<DBQueryRow>();
+		List<DBQueryRow> returnList = new ArrayList<>();
 		if (originalQuery.getDatabase().supportsRecursiveQueriesNatively()) {
 			returnList = performNativeRecursiveQuery(direction, returnList);
 		} else {
@@ -343,9 +343,9 @@ public class DBRecursiveQuery<T extends DBRow> {
 
 	@SuppressWarnings("unchecked")
 	private void addAscendingExpressionToQuery(DBRow originatingRow, ColumnProvider foreignKeyToFollow, final DBRow referencedRow, DBQuery newQuery) throws IncorrectRowProviderInstanceSuppliedException {
-		final QueryableDatatype primaryKey = originatingRow.getPrimaryKey();
+		final QueryableDatatype<?> primaryKey = originatingRow.getPrimaryKey();
 		final ColumnProvider pkColumn = originatingRow.column(primaryKey);
-		final QueryableDatatype qdt = foreignKeyToFollow.getColumn().getAppropriateQDTFromRow(referencedRow);
+		final QueryableDatatype<?> qdt = foreignKeyToFollow.getColumn().getAppropriateQDTFromRow(referencedRow);
 		if ((qdt instanceof DBNumber) && (pkColumn instanceof EqualComparable) && (primaryKey instanceof NumberResult)) {
 			DBNumber fkValue = (DBNumber) qdt;
 			NumberColumn newFKColumn = referencedRow.column(fkValue);
@@ -389,7 +389,7 @@ public class DBRecursiveQuery<T extends DBRow> {
 	 * @throws SQLException
 	 */
 	public List<T> getDescendants() throws SQLException {
-		List<T> resultsList = new ArrayList<T>();
+		List<T> resultsList = new ArrayList<>();
 		List<DBQueryRow> descendants = this.getRowsFromRecursiveQuery(RecursiveSQLDirection.TOWARDS_LEAVES);
 		for (DBQueryRow descendant : descendants) {
 			resultsList.add(descendant.get(getReturnType()));
@@ -411,7 +411,7 @@ public class DBRecursiveQuery<T extends DBRow> {
 	 * @throws SQLException
 	 */
 	public List<T> getAncestors() throws SQLException {
-		List<T> resultsList = new ArrayList<T>();
+		List<T> resultsList = new ArrayList<>();
 		List<DBQueryRow> ancestors = this.getRowsFromRecursiveQuery(RecursiveSQLDirection.TOWARDS_ROOT);
 		for (DBQueryRow ancestor : ancestors) {
 			resultsList.add(ancestor.get(getReturnType()));
@@ -463,11 +463,11 @@ public class DBRecursiveQuery<T extends DBRow> {
 	 */
 	public List<TreeNode<T>> getPathsToRoot() throws SQLException {
 		List<T> ancestors = getAncestors();
-		List<TreeNode<T>> paths = new ArrayList<TreeNode<T>>();
-		Map<String, TreeNode<T>> parentMap = new HashMap<String, TreeNode<T>>();
-		Map<String, List<TreeNode<T>>> childrenMap = new HashMap<String, List< TreeNode<T>>>();
+		List<TreeNode<T>> paths = new ArrayList<>();
+		Map<String, TreeNode<T>> parentMap = new HashMap<>();
+		Map<String, List<TreeNode<T>>> childrenMap = new HashMap<>();
 		for (T currentRow : ancestors) {
-			TreeNode<T> currentNode = new TreeNode<T>(currentRow);
+			TreeNode<T> currentNode = new TreeNode<>(currentRow);
 			final String parentPKValue = keyToFollow.getColumn().getAppropriateQDTFromRow(currentRow).stringValue();
 			TreeNode<T> parent = parentMap.get(parentPKValue);
 			if (parent != null) {
@@ -475,7 +475,7 @@ public class DBRecursiveQuery<T extends DBRow> {
 			} else {
 				List<TreeNode<T>> listOfChildren = childrenMap.get(parentPKValue);
 				if (listOfChildren == null) {
-					listOfChildren = new ArrayList<TreeNode<T>>();
+					listOfChildren = new ArrayList<>();
 					childrenMap.put(parentPKValue, listOfChildren);
 				}
 				listOfChildren.add(currentNode);
@@ -531,13 +531,13 @@ public class DBRecursiveQuery<T extends DBRow> {
 	public List<TreeNode<T>> getTrees() throws SQLException {
 		List<T> descendants = getDescendants();
 		originalQuery.getDatabase().print(descendants);
-		List<TreeNode<T>> trees = new ArrayList<TreeNode<T>>();
-		Map<String, TreeNode<T>> parentMap = new HashMap<String, TreeNode<T>>();
-		Map<String, List<TreeNode<T>>> childrenMap = new HashMap<String, List< TreeNode<T>>>();
+		List<TreeNode<T>> trees = new ArrayList<>();
+		Map<String, TreeNode<T>> parentMap = new HashMap<>();
+		Map<String, List<TreeNode<T>>> childrenMap = new HashMap<>();
 		for (T currentRow : descendants) {
 			String parentPKValue = keyToFollow.getColumn().getAppropriateQDTFromRow(currentRow).stringValue();
 			String pkValue = currentRow.getPrimaryKey().stringValue();
-			TreeNode<T> currentNode = new TreeNode<T>(currentRow);
+			TreeNode<T> currentNode = new TreeNode<>(currentRow);
 			List<TreeNode<T>> children = childrenMap.get(pkValue);
 			if (children != null) {
 				for (TreeNode<T> child : children) {
@@ -552,7 +552,7 @@ public class DBRecursiveQuery<T extends DBRow> {
 			} else {
 				List<TreeNode<T>> listOfChildren = childrenMap.get(parentPKValue);
 				if (listOfChildren == null) {
-					listOfChildren = new ArrayList<TreeNode<T>>();
+					listOfChildren = new ArrayList<>();
 					childrenMap.put(parentPKValue, listOfChildren);
 				}
 				listOfChildren.add(currentNode);
@@ -569,17 +569,17 @@ public class DBRecursiveQuery<T extends DBRow> {
 	private List<DBQueryRow> performRecursiveQueryEmulation(RecursiveSQLDirection direction) throws SQLException {
 
 		final T returnType = getReturnType();
-		List<DBQueryRow> returnList = new ArrayList<DBQueryRow>();
+		List<DBQueryRow> returnList = new ArrayList<>();
 		Integer timeout = this.timeoutInMilliseconds;
 		long start = new java.util.Date().getTime();
 		this.originalQuery.setTimeoutInMilliseconds(timeout);
 		List<DBQueryRow> primingRows = this.originalQuery.getAllRows();
 		this.originalQuery.getDatabase().print(primingRows);
-		List<String> values = new ArrayList<String>();
+		List<String> values = new ArrayList<>();
 
 		for (DBQueryRow row : primingRows) {
 			final T tab = row.get(returnType);
-			QueryableDatatype qdt = tab.getPrimaryKey();
+			QueryableDatatype<?> qdt = tab.getPrimaryKey();
 			if (!qdt.isNull()) {
 				String stringValue = qdt.stringValue();
 				values.add(stringValue);
@@ -596,7 +596,7 @@ public class DBRecursiveQuery<T extends DBRow> {
 			returnList.addAll(allRows);
 			for (DBQueryRow row : allRows) {
 				final T tab = row.get(getReturnType());
-				QueryableDatatype qdt;
+				QueryableDatatype<?> qdt;
 				if (direction.equals(RecursiveSQLDirection.TOWARDS_ROOT)) {
 					qdt = this.keyToFollow.getColumn().getAppropriateQDTFromRow(tab);
 				} else {
@@ -612,7 +612,7 @@ public class DBRecursiveQuery<T extends DBRow> {
 				allRows.clear();
 			} else {
 				instanceOfRow = this.keyToFollow.getColumn().getInstanceOfRow();
-				QueryableDatatype qdt;
+				QueryableDatatype<?> qdt;
 				if (direction.equals(RecursiveSQLDirection.TOWARDS_ROOT)) {
 					qdt = instanceOfRow.getPrimaryKey();
 				} else {
@@ -629,17 +629,17 @@ public class DBRecursiveQuery<T extends DBRow> {
 		return returnList;
 	}
 
-	private void setQDTPermittedValues(QueryableDatatype primaryKey, List<String> values) {
+	private void setQDTPermittedValues(QueryableDatatype<?> primaryKey, List<String> values) {
 		if (primaryKey instanceof DBInteger) {
 			DBInteger qdt = (DBInteger) primaryKey;
-			List<Long> longs = new ArrayList<Long>();
+			List<Long> longs = new ArrayList<>();
 			for (String value : values) {
 				longs.add(Long.parseLong(value));
 			}
 			qdt.permittedValues(longs);
 		} else if (primaryKey instanceof DBNumber) {
 			DBNumber qdt = (DBNumber) primaryKey;
-			List<Number> longs = new ArrayList<Number>();
+			List<Number> longs = new ArrayList<>();
 			for (String value : values) {
 				longs.add(Double.parseDouble(value));
 			}

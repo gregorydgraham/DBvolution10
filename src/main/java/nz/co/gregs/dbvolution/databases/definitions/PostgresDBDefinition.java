@@ -77,7 +77,7 @@ public class PostgresDBDefinition extends DBDefinition {
 	}
 
 	@Override
-	public String getDatabaseDataTypeOfQueryableDatatype(QueryableDatatype qdt) {
+	public String getDatabaseDataTypeOfQueryableDatatype(QueryableDatatype<?> qdt) {
 		if (qdt instanceof DBByteArray) {
 			return " BYTEA ";
 		} else if (qdt instanceof DBDate) {
@@ -100,13 +100,14 @@ public class PostgresDBDefinition extends DBDefinition {
 	}
 
 	@Override
-	public Class<? extends QueryableDatatype> getQueryableDatatypeClassForSQLDatatype(String typeName) {
-		if (typeName.equals("path")) {
-			return DBLine2D.class;
-		} else if (typeName.equals("geometry")) {
-			return DBMultiPoint2D.class;
-		} else {
-			return super.getQueryableDatatypeClassForSQLDatatype(typeName);
+	public Class<? extends QueryableDatatype<?>> getQueryableDatatypeClassForSQLDatatype(String typeName) {
+		switch (typeName) {
+			case "path":
+				return DBLine2D.class;
+			case "geometry":
+				return DBMultiPoint2D.class;
+			default:
+				return super.getQueryableDatatypeClassForSQLDatatype(typeName);
 		}
 	}
 
@@ -271,17 +272,18 @@ public class PostgresDBDefinition extends DBDefinition {
 		StringBuilder str = new StringBuilder();
 		str.append("'{");
 		String separator = "";
-		if (bools.length == 0) {
-			return "'{}'";
-		} else if (bools.length == 1) {
-			return "'{" + bools[0] + "}'";
-		} else {
-			for (Boolean bool : bools) {
-				str.append(separator).append(bool ? 1 : 0);
-				separator = ",";
-			}
-			str.append("}'");
-			return str.toString();
+		switch (bools.length) {
+			case 0:
+				return "'{}'";
+			case 1:
+				return "'{" + bools[0] + "}'";
+			default:
+				for (Boolean bool : bools) {
+					str.append(separator).append(bool ? 1 : 0);
+					separator = ",";
+				}
+				str.append("}'");
+				return str.toString();
 		}
 	}
 
@@ -448,7 +450,7 @@ public class PostgresDBDefinition extends DBDefinition {
 	}
 
 	@Override
-	public String doColumnTransformForSelect(QueryableDatatype qdt, String selectableName) {
+	public String doColumnTransformForSelect(QueryableDatatype<?> qdt, String selectableName) {
 		if (qdt instanceof DBPolygon2D) {
 			return "(" + selectableName + ")::VARCHAR";
 		} else if (qdt instanceof DBPoint2D) {
@@ -487,7 +489,7 @@ public class PostgresDBDefinition extends DBDefinition {
 		String string = "POLYGON " + geometryAsString.replaceAll("\\),\\(", ", ").replaceAll("([-0-9.]+),([-0-9.]+)", "$1 $2");
 		System.out.println(geometryAsString + " => " + string);
 		String[] splits = geometryAsString.split("[^0-9.]+");
-		List<Coordinate> coords = new ArrayList<Coordinate>();
+		List<Coordinate> coords = new ArrayList<>();
 		Coordinate firstCoord = null;
 		for (int i = 1; i < splits.length; i++) {
 			String splitX = splits[i];
@@ -519,7 +521,7 @@ public class PostgresDBDefinition extends DBDefinition {
 			String[] splits = lineStringAsString.split("[(),]+");
 			System.out.println(lineStringAsString + " => " + string);
 			Coordinate firstCoord = null;
-			List<Coordinate> coords = new ArrayList<Coordinate>();
+			List<Coordinate> coords = new ArrayList<>();
 			for (int i = 1; i < splits.length - 1; i++) {
 				String splitX = splits[i];
 				String splitY = splits[i + 1];
@@ -669,7 +671,7 @@ public class PostgresDBDefinition extends DBDefinition {
 			String[] splits = lineStringAsString.split("[(),]+");
 			System.out.println(lineStringAsString + " => " + string);
 			Coordinate firstCoord = null;
-			List<Coordinate> coords = new ArrayList<Coordinate>();
+			List<Coordinate> coords = new ArrayList<>();
 			for (int i = 1; i < splits.length - 1; i += 2) {
 				String splitX = splits[i];
 				String splitY = splits[i + 1];

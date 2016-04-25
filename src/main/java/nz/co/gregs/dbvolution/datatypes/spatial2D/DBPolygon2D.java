@@ -43,7 +43,7 @@ import nz.co.gregs.dbvolution.results.Polygon2DResult;
  *
  * @author Gregory Graham
  */
-public class DBPolygon2D extends QueryableDatatype implements TransformRequiredForSelectClause, Polygon2DResult {
+public class DBPolygon2D extends QueryableDatatype<Polygon> implements TransformRequiredForSelectClause, Polygon2DResult {
 
 	private static final long serialVersionUID = 1L;
 
@@ -101,12 +101,12 @@ public class DBPolygon2D extends QueryableDatatype implements TransformRequiredF
 
 	@Override
 	protected String formatValueForSQLStatement(DBDatabase db) {
-		Polygon geom = (Polygon) getLiteralValue();
+		Polygon geom = getLiteralValue();
 		return db.getDefinition().transformPolygonIntoDatabasePolygon2DFormat(geom);
 	}
 
 	@Override
-	protected Object getFromResultSet(DBDatabase database, ResultSet resultSet, String fullColumnName) throws SQLException {
+	protected Polygon getFromResultSet(DBDatabase database, ResultSet resultSet, String fullColumnName) throws SQLException {
 
 		Polygon geometry = null;
 		String string = resultSet.getString(fullColumnName);
@@ -132,7 +132,7 @@ public class DBPolygon2D extends QueryableDatatype implements TransformRequiredF
 	 * @return the set value of this object as a JTS Polygon object.
 	 */
 	public Polygon jtsPolygonValue() {
-		return (Polygon) ((this.getLiteralValue() != null) ? this.getLiteralValue() : null);
+		return (this.getLiteralValue() != null) ? this.getLiteralValue() : null;
 	}
 
 	@Override
@@ -177,5 +177,10 @@ public class DBPolygon2D extends QueryableDatatype implements TransformRequiredF
 	@Override
 	public StringExpression stringResult() {
 		return Polygon2DExpression.value(this).stringResult();
+	}
+
+	@Override
+	protected void setValueFromStandardStringEncoding(String encodedValue) {
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 }

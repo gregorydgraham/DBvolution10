@@ -45,8 +45,8 @@ public class DBInsertLargeObjects extends DBUpdateLargeObjects {
 	 */
 	@Override
 	protected List<PropertyWrapper> getInterestingLargeObjects(DBRow row) {
-		ArrayList<PropertyWrapper> returnList = new ArrayList<PropertyWrapper>();
-		for (QueryableDatatype qdt : row.getLargeObjects()) {
+		ArrayList<PropertyWrapper> returnList = new ArrayList<>();
+		for (QueryableDatatype<?> qdt : row.getLargeObjects()) {
 			returnList.add(row.getPropertyWrapperOf(qdt));
 		}
 		return returnList;

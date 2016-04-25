@@ -44,7 +44,7 @@ import nz.co.gregs.dbvolution.results.Point2DResult;
  *
  * @author Gregory Graham
  */
-public class DBPoint2D extends QueryableDatatype implements Point2DResult {
+public class DBPoint2D extends QueryableDatatype<Point> implements Point2DResult {
 
 	private static final long serialVersionUID = 1L;
 
@@ -74,7 +74,7 @@ public class DBPoint2D extends QueryableDatatype implements Point2DResult {
 		if (!isDefined() || isNull()) {
 			return null;
 		} else {
-			return (Point) getLiteralValue();
+			return getLiteralValue();
 		}
 	}
 
@@ -132,7 +132,7 @@ public class DBPoint2D extends QueryableDatatype implements Point2DResult {
 	}
 
 	@Override
-	protected Object getFromResultSet(DBDatabase database, ResultSet resultSet, String fullColumnName) throws SQLException, IncorrectGeometryReturnedForDatatype {
+	protected Point getFromResultSet(DBDatabase database, ResultSet resultSet, String fullColumnName) throws SQLException, IncorrectGeometryReturnedForDatatype {
 
 		Point point = null;
 		String string = resultSet.getString(fullColumnName);
@@ -187,6 +187,11 @@ public class DBPoint2D extends QueryableDatatype implements Point2DResult {
 	@Override
 	public StringExpression stringResult() {
 		return Point2DExpression.value(this).stringResult();
+	}
+
+	@Override
+	protected void setValueFromStandardStringEncoding(String encodedValue) {
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
 }

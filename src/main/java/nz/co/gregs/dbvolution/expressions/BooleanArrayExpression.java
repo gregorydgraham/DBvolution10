@@ -60,7 +60,7 @@ public class BooleanArrayExpression implements BooleanArrayResult, EqualComparab
 	}
 
 	@Override
-	public QueryableDatatype getQueryableDatatypeForExpressionValue() {
+	public DBBooleanArray getQueryableDatatypeForExpressionValue() {
 		return new DBBooleanArray();
 	}
 
@@ -87,7 +87,7 @@ public class BooleanArrayExpression implements BooleanArrayResult, EqualComparab
 		if (innerBooleanArrayResult != null) {
 			return innerBooleanArrayResult.getTablesInvolved();
 		} else {
-			return new HashSet<DBRow>();
+			return new HashSet<>();
 		}
 	}
 
@@ -227,7 +227,7 @@ public class BooleanArrayExpression implements BooleanArrayResult, EqualComparab
 
 		@Override
 		public Set<DBRow> getTablesInvolved() {
-			HashSet<DBRow> hashSet = new HashSet<DBRow>();
+			HashSet<DBRow> hashSet = new HashSet<>();
 			if (first != null) {
 				hashSet.addAll(first.getTablesInvolved());
 			}

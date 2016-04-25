@@ -41,7 +41,7 @@ public interface EncodingInterpreter {
 	 * @param qdt the DBRow field that needs to be set
 	 * @param value the encoded string version of the value required.
 	 */
-	public void setValue(QueryableDatatype qdt, String value);
+	public void setValue(QueryableDatatype<?> qdt, String value);
 
 	/**
 	 * Given the entire encoded string, split the string into the individual

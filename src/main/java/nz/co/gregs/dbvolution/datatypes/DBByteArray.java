@@ -43,7 +43,7 @@ import org.apache.commons.codec.binary.Base64;
  *
  * @author Gregory Graham
  */
-public class DBByteArray extends DBLargeObject {
+public class DBByteArray extends DBLargeObject<byte[]> {
 
 	private static final long serialVersionUID = 1;
 	transient InputStream byteStream = null;
@@ -56,17 +56,15 @@ public class DBByteArray extends DBLargeObject {
 		super();
 	}
 
-
-
 	/**
-	 * Creates a column expression with a large object result from the expression
-	 * provided.
+	 * Creates a column expression with a large object result from the
+	 * expression provided.
 	 *
 	 * <p>
 	 * Used in {@link DBReport}, and some {@link DBRow}, sub-classes to derive
 	 * data from the database prior to retrieval.
 	 *
-	 * @param aThis 	an expression that will result in a large object value
+	 * @param aThis an expression that will result in a large object value
 	 */
 	public DBByteArray(LargeObjectExpression aThis) {
 		super(aThis);
@@ -74,7 +72,8 @@ public class DBByteArray extends DBLargeObject {
 
 	/**
 	 *
-	 * @return the standard SQL datatype that corresponds to this QDT as a String
+	 * @return the standard SQL datatype that corresponds to this QDT as a
+	 * String
 	 */
 	@Override
 	public String getSQLDatatype() {
@@ -86,6 +85,7 @@ public class DBByteArray extends DBLargeObject {
 	 *
 	 * @param byteArray	byteArray
 	 */
+	@Override
 	public void setValue(byte[] byteArray) {
 		super.setLiteralValue(byteArray);
 		if (byteArray == null) {
@@ -105,7 +105,7 @@ public class DBByteArray extends DBLargeObject {
 	 * @param inputViaStream	inputViaStream
 	 */
 	public void setValue(InputStream inputViaStream) {
-		super.setLiteralValue(inputViaStream);
+		super.setLiteralValue(null);
 		byteStream = new BufferedInputStream(inputViaStream);
 	}
 
@@ -115,7 +115,8 @@ public class DBByteArray extends DBLargeObject {
 	 * <p>
 	 * Unlike {@link #setValue(java.io.InputStream) setting an InputStream}, the
 	 * file is read immediately and stored internally. If you would prefer to
-	 * delay the reading of the file, wrap the file in a {@link FileInputStream}.
+	 * delay the reading of the file, wrap the file in a
+	 * {@link FileInputStream}.
 	 *
 	 * @param fileToRead fileToRead
 	 * @throws java.io.IOException java.io.IOException
@@ -133,19 +134,8 @@ public class DBByteArray extends DBLargeObject {
 		setValue(string.getBytes());
 	}
 
-	@Override
-	void setValue(Object newLiteralValue) {
-		if (newLiteralValue instanceof byte[]) {
-			setValue((byte[]) newLiteralValue);
-		} else if (newLiteralValue instanceof DBByteArray) {
-			final DBByteArray valBytes = (DBByteArray) newLiteralValue;
-			setValue(valBytes.getValue());
-		} else if (newLiteralValue instanceof String) {
-			final String valBytes = (String) newLiteralValue;
-			setValue(valBytes.getBytes());
-		} else {
-			throw new ClassCastException(this.getClass().getSimpleName() + ".setValue() Called With A Non-Byte[]: Use only byte arrays with this class");
-		}
+	void setValue(DBByteArray newLiteralValue) {
+		setValue(newLiteralValue.getValue());
 	}
 
 	private byte[] getFromBinaryStream(ResultSet resultSet, String fullColumnName) throws SQLException {
@@ -181,7 +171,7 @@ public class DBByteArray extends DBLargeObject {
 	private byte[] getBytesFromInputStream(InputStream inputStream) {
 		byte[] bytes;
 		InputStream input = new BufferedInputStream(inputStream);
-		List<byte[]> byteArrays = new ArrayList<byte[]>();
+		List<byte[]> byteArrays = new ArrayList<>();
 		int totalBytesRead = 0;
 		try {
 			byte[] resultSetBytes;
@@ -225,7 +215,7 @@ public class DBByteArray extends DBLargeObject {
 				this.setToNull();
 			} else {
 				BufferedReader input = new BufferedReader(inputReader);
-				List<byte[]> byteArrays = new ArrayList<byte[]>();
+				List<byte[]> byteArrays = new ArrayList<>();
 
 				int totalBytesRead = 0;
 				try {
@@ -265,7 +255,7 @@ public class DBByteArray extends DBLargeObject {
 			final Reader characterStream = clob.getCharacterStream();
 			try {
 				BufferedReader input = new BufferedReader(characterStream);
-				List<byte[]> byteArrays = new ArrayList<byte[]>();
+				List<byte[]> byteArrays = new ArrayList<>();
 
 				int totalBytesRead = 0;
 				try {
@@ -298,47 +288,10 @@ public class DBByteArray extends DBLargeObject {
 					Logger.getLogger(DBByteArray.class.getName()).log(Level.SEVERE, null, ex);
 				}
 			}
-//			this.setValue(bytes);
 		}
 		return bytes;
 	}
-
-//	private byte[] getBytesFromBinaryStream(ResultSet resultSet, InputStream inputStream) throws SQLException {
-//		byte[] bytes = new byte[]{};
-//		if (resultSet.wasNull()) {
-//			inputStream = null;
-//		}
-//		if (inputStream == null) {
-//			this.setToNull();
-//		} else {
-//			InputStream input = new BufferedInputStream(inputStream);
-//			List<byte[]> byteArrays = new ArrayList<byte[]>();
-//
-//			int totalBytesRead = 0;
-//			try {
-//				byte[] resultSetBytes;
-//				resultSetBytes = new byte[100000];
-//				int bytesRead = input.read(resultSetBytes);
-//				while (bytesRead > 0) {
-//					totalBytesRead += bytesRead;
-//					byteArrays.add(resultSetBytes);
-//					resultSetBytes = new byte[100000];
-//					bytesRead = input.read(resultSetBytes);
-//				}
-//			} catch (IOException ex) {
-//				Logger.getLogger(DBByteArray.class.getName()).log(Level.SEVERE, null, ex);
-//			}
-//			bytes = new byte[totalBytesRead];
-//			int bytesAdded = 0;
-//			for (byte[] someBytes : byteArrays) {
-//				System.arraycopy(someBytes, 0, bytes, bytesAdded, Math.min(someBytes.length, bytes.length - bytesAdded));
-//				bytesAdded += someBytes.length;
-//			}
-////			this.setValue(bytes);
-//		}
-//		return bytes;
-//	}
-
+	
 	@Override
 	public String formatValueForSQLStatement(DBDatabase db) {
 		throw new UnsupportedOperationException("Binary datatypes like " + this.getClass().getSimpleName() + " do not have a simple SQL representation. Do not call getSQLValue(), use the getInputStream() method instead.");
@@ -498,12 +451,13 @@ public class DBByteArray extends DBLargeObject {
 	}
 
 	/**
-	 * Returns the byte[] used internally to store the value of this DBByteArray.
+	 * Returns the byte[] used internally to store the value of this
+	 * DBByteArray.
 	 *
 	 * @return the byte[] value of this DBByteArray.
 	 */
 	public byte[] getBytes() {
-		return (byte[]) this.getLiteralValue();
+		return this.getLiteralValue();
 	}
 
 	@Override
@@ -543,11 +497,11 @@ public class DBByteArray extends DBLargeObject {
 
 	@Override
 	public Set<DBRow> getTablesInvolved() {
-		return new HashSet<DBRow>();
+		return new HashSet<>();
 	}
 
 	@Override
-	protected Object getFromResultSet(DBDatabase database, ResultSet resultSet, String fullColumnName) throws SQLException {
+	protected byte[] getFromResultSet(DBDatabase database, ResultSet resultSet, String fullColumnName) throws SQLException {
 		byte[] bytes = new byte[]{};
 		DBDefinition defn = database.getDefinition();
 		if (defn.prefersLargeObjectsReadAsBase64CharacterStream()) {
@@ -571,6 +525,11 @@ public class DBByteArray extends DBLargeObject {
 	@Override
 	public boolean getIncludesNull() {
 		return false;
+	}
+
+	@Override
+	protected void setValueFromStandardStringEncoding(String encodedValue) {
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
 }

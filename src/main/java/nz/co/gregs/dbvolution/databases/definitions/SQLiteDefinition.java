@@ -81,7 +81,7 @@ public class SQLiteDefinition extends DBDefinition {
 	}
 
 	@Override
-	protected String getDatabaseDataTypeOfQueryableDatatype(QueryableDatatype qdt) {
+	protected String getDatabaseDataTypeOfQueryableDatatype(QueryableDatatype<?> qdt) {
 		if (qdt instanceof DBLargeObject) {
 			return " TEXT ";
 		} else if (qdt instanceof DBBooleanArray) {

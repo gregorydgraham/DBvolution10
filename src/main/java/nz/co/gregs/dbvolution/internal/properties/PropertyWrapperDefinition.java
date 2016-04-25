@@ -6,13 +6,9 @@ import nz.co.gregs.dbvolution.annotations.AutoFillDuringQueryIfPossible;
 import nz.co.gregs.dbvolution.annotations.DBForeignKey;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.datatypes.DBEnumValue;
+import nz.co.gregs.dbvolution.datatypes.DBLargeObject;
 import nz.co.gregs.dbvolution.datatypes.InternalQueryableDatatypeProxy;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
-import nz.co.gregs.dbvolution.datatypes.spatial2D.DBLine2D;
-import nz.co.gregs.dbvolution.datatypes.spatial2D.DBLineSegment2D;
-import nz.co.gregs.dbvolution.datatypes.spatial2D.DBMultiPoint2D;
-import nz.co.gregs.dbvolution.datatypes.spatial2D.DBPoint2D;
-import nz.co.gregs.dbvolution.datatypes.spatial2D.DBPolygon2D;
 import nz.co.gregs.dbvolution.exceptions.DBThrownByEndUserCodeException;
 import nz.co.gregs.dbvolution.expressions.DBExpression;
 import nz.co.gregs.dbvolution.query.RowDefinition;
@@ -209,8 +205,9 @@ public class PropertyWrapperDefinition {
 	 *
 	 * @return the Class of the internal QueryableDatatype used by this property
 	 */
-	public Class<? extends QueryableDatatype> type() {
-		return typeHandler.getQueryableDatatypeClass();
+	@SuppressWarnings("unchecked")
+	public Class<QueryableDatatype<?>> type() {
+		return (Class<QueryableDatatype<?>>) typeHandler.getQueryableDatatypeClass();
 	}
 
 	/**
@@ -221,8 +218,19 @@ public class PropertyWrapperDefinition {
 	 * @return TRUE if the supplied type is assignable from the internal
 	 * QueryableDatatype, FALSE otherwise.
 	 */
-	public boolean isInstanceOf(Class<? extends QueryableDatatype> refType) {
+	public boolean isInstanceOf(Class<? extends QueryableDatatype<?>> refType) {
 		return refType.isAssignableFrom(type());
+	}
+
+	/**
+	 * Convenience method for testing the type. Equivalent to
+	 * {@code this.type().isAssignableFrom(DBLargeObject.class)}.
+	 *
+	 * @return TRUE if a DBLargeObject is assignable from the internal
+	 * QueryableDatatype, FALSE otherwise.
+	 */
+	public boolean isInstanceOfLargeObject() {
+		return type().isAssignableFrom(DBLargeObject.class);
 	}
 
 	/**
@@ -399,8 +407,8 @@ public class PropertyWrapperDefinition {
 	 * isReadable() first)
 	 * @throws DBThrownByEndUserCodeException if any user code throws an exception
 	 */
-	public QueryableDatatype getQueryableDatatype(Object target) {
-		QueryableDatatype qdt = typeHandler.getJavaPropertyAsQueryableDatatype(target);
+	public QueryableDatatype<?> getQueryableDatatype(Object target) {
+		QueryableDatatype<?> qdt = typeHandler.getJavaPropertyAsQueryableDatatype(target);
 		new InternalQueryableDatatypeProxy(qdt).setPropertyWrapper(this);
 		return qdt;
 	}
@@ -421,7 +429,7 @@ public class PropertyWrapperDefinition {
 	 * isWritable() first)
 	 * @throws DBThrownByEndUserCodeException if any user code throws an exception
 	 */
-	public void setQueryableDatatype(Object target, QueryableDatatype value) {
+	public void setQueryableDatatype(Object target, QueryableDatatype<?> value) {
 		new InternalQueryableDatatypeProxy(value).setPropertyWrapper(this);
 		typeHandler.setJavaPropertyAsQueryableDatatype(target, value);
 	}
@@ -539,7 +547,7 @@ public class PropertyWrapperDefinition {
 		if (!checkedForColumnExpression && !hasColumnExpression()) {
 			Object value = this.getRawJavaProperty().get(actualRow);
 			if (value != null && QueryableDatatype.class.isAssignableFrom(value.getClass())) {
-				QueryableDatatype qdt = (QueryableDatatype) value;
+				QueryableDatatype<?> qdt = (QueryableDatatype) value;
 				if (qdt.hasColumnExpression()) {
 					this.setColumnExpression(qdt.getColumnExpression());
 				}
@@ -568,7 +576,7 @@ public class PropertyWrapperDefinition {
 	}
 
 	boolean isSpatial2DType() {
-		Class<? extends QueryableDatatype> qdt = type();
+		Class<? extends QueryableDatatype<?>> qdt = type();
 		return (Spatial2DResult.class.isAssignableFrom(qdt));
 	}
 	

@@ -17,6 +17,10 @@ package nz.co.gregs.dbvolution.datatypes;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.DBReport;
 import nz.co.gregs.dbvolution.DBRow;
@@ -45,7 +49,7 @@ import nz.co.gregs.dbvolution.operators.DBPermittedValuesOperator;
  *
  * @author Gregory Graham
  */
-public class DBBoolean extends QueryableDatatype implements BooleanResult {
+public class DBBoolean extends QueryableDatatype<Boolean> implements BooleanResult {
 
 	private static final long serialVersionUID = 1L;
 
@@ -111,15 +115,8 @@ public class DBBoolean extends QueryableDatatype implements BooleanResult {
 		return "BIT(1)";
 	}
 
-	@Override
-	void setValue(Object newLiteralValue) {
-		if (newLiteralValue instanceof Boolean) {
-			setValue((Boolean) newLiteralValue);
-		} else if (newLiteralValue instanceof DBBoolean) {
-			setValue(((DBBoolean) newLiteralValue).getValue());
-		} else {
-			throw new ClassCastException(this.getClass().getSimpleName() + ".setValue() Called With A Non-Boolean: Use only Booleans with this class");
-		}
+	void setValue(DBBoolean newLiteralValue) {
+		setValue(newLiteralValue.getValue());
 	}
 
 	/**
@@ -127,6 +124,7 @@ public class DBBoolean extends QueryableDatatype implements BooleanResult {
 	 *
 	 * @param newLiteralValue	newLiteralValue
 	 */
+	@Override
 	public void setValue(Boolean newLiteralValue) {
 		super.setLiteralValue(newLiteralValue);
 	}
@@ -135,7 +133,7 @@ public class DBBoolean extends QueryableDatatype implements BooleanResult {
 	public String formatValueForSQLStatement(DBDatabase db) {
 		DBDefinition defn = db.getDefinition();
 		if (getLiteralValue() instanceof Boolean) {
-			Boolean boolValue = (Boolean) getLiteralValue();
+			Boolean boolValue = getLiteralValue();
 //			if (boolValue==null){
 //				return defn.getNull();
 //			} else if (boolValue) {
@@ -159,7 +157,7 @@ public class DBBoolean extends QueryableDatatype implements BooleanResult {
 	 */
 	public Boolean booleanValue() {
 		if (this.getLiteralValue() instanceof Boolean) {
-			return (Boolean) this.getLiteralValue();
+			return this.getLiteralValue();
 		} else {
 			return null;
 		}
@@ -187,7 +185,8 @@ public class DBBoolean extends QueryableDatatype implements BooleanResult {
 
 	/**
 	 *
-	 * reduces the rows to only the object, Set, List, Array, or vararg of objects
+	 * reduces the rows to only the object, Set, List, Array, or vararg of
+	 * objects
 	 *
 	 * @param permitted	permitted
 	 */
@@ -209,7 +208,8 @@ public class DBBoolean extends QueryableDatatype implements BooleanResult {
 
 	/**
 	 *
-	 * reduces the rows to only the object, Set, List, Array, or vararg of objects
+	 * reduces the rows to only the object, Set, List, Array, or vararg of
+	 * objects
 	 *
 	 * @param permitted	permitted
 	 */
@@ -259,6 +259,22 @@ public class DBBoolean extends QueryableDatatype implements BooleanResult {
 			return true;
 		}
 		return hasColumnExpression();
+	}
+
+	private final String[] trueValuesArray = new String[]{"YES", "TRUE", "1"};
+	private final List<String> trueValues = Arrays.asList(trueValuesArray);
+
+	@Override
+	protected void setValueFromStandardStringEncoding(String encodedValue) {
+		final String upper = encodedValue.toUpperCase();
+		if (upper.equals("NULL")) {
+			setValue((Boolean) null);
+		} else if (trueValues.contains(encodedValue)) {
+			setValue(true);
+		} else {
+			setValue(false);
+		}
+
 	}
 
 }

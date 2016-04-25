@@ -131,7 +131,7 @@ public class AbstractColumn implements DBExpression {
 	}
 
 	@Override
-	public QueryableDatatype getQueryableDatatypeForExpressionValue() {
+	public QueryableDatatype<?> getQueryableDatatypeForExpressionValue() {
 		return QueryableDatatype.getQueryableDatatypeForObject(getField());
 	}
 
@@ -142,12 +142,12 @@ public class AbstractColumn implements DBExpression {
 
 	@Override
 	public boolean isPurelyFunctional() {
-		return getTablesInvolved().size() == 0;
+		return getTablesInvolved().isEmpty();
 	}
 
 	@Override
 	public Set<DBRow> getTablesInvolved() {
-		HashSet<DBRow> hashSet = new HashSet<DBRow>();
+		HashSet<DBRow> hashSet = new HashSet<>();
 		if (DBRow.class.isAssignableFrom(getRowDefinition().getClass())) {
 			hashSet.add((DBRow) getRowDefinition());
 		}
@@ -180,7 +180,7 @@ public class AbstractColumn implements DBExpression {
 	 * QueryableDatatype that is appropriate
 	 * @return the QDT version of the field on the DBRow
 	 */
-	public QueryableDatatype getAppropriateQDTFromRow(RowDefinition row) {
+	public QueryableDatatype<?> getAppropriateQDTFromRow(RowDefinition row) {
 		return this.getPropertyWrapper().getDefinition().getQueryableDatatype(row);
 	}
 

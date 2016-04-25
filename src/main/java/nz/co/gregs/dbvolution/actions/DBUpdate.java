@@ -111,7 +111,7 @@ public abstract class DBUpdate extends DBAction {
 
 	private static boolean hasChangedLargeObjects(DBRow row) {
 		if (row.hasLargeObjects()) {
-			for (QueryableDatatype qdt : row.getLargeObjects()) {
+			for (QueryableDatatype<?> qdt : row.getLargeObjects()) {
 				if (qdt.hasChanged()) {
 					return true;
 				}

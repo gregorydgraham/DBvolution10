@@ -44,7 +44,7 @@ import java.util.Map;
 public class DBQueryRow extends HashMap<Class<?>, DBRow> {
 
 	private static final long serialVersionUID = 1;
-	private final Map<Object, QueryableDatatype> expressionColumnValues = new LinkedHashMap<Object, QueryableDatatype>();
+	private final Map<Object, QueryableDatatype<?>> expressionColumnValues = new LinkedHashMap<>();
 	private transient final DBQuery baseQuery;
 
 	DBQueryRow(DBQuery queryThatThisRowWasGeneratedFor) {
@@ -88,7 +88,7 @@ public class DBQueryRow extends HashMap<Class<?>, DBRow> {
 	 * @return all DBRow instances that are in this DBQueryRow instance
 	 */
 	public List<DBRow> getAll() {
-		final ArrayList<DBRow> arrayList = new ArrayList<DBRow>();
+		final ArrayList<DBRow> arrayList = new ArrayList<>();
 		arrayList.addAll(this.values());
 		return arrayList;
 	}
@@ -99,8 +99,8 @@ public class DBQueryRow extends HashMap<Class<?>, DBRow> {
 	 * @param ps ps
 	 * @param columns columns
 	 */
-	public void print(PrintStream ps, QueryableDatatype... columns) {
-		for (QueryableDatatype qdt : columns) {
+	public void print(PrintStream ps, QueryableDatatype<?>... columns) {
+		for (QueryableDatatype<?> qdt : columns) {
 			ps.print("" + qdt + " ");
 		}
 		ps.println();
@@ -117,11 +117,11 @@ public class DBQueryRow extends HashMap<Class<?>, DBRow> {
 		}
 	}
 
-	void addExpressionColumnValue(Object key, QueryableDatatype expressionQDT) {
+	void addExpressionColumnValue(Object key, QueryableDatatype<?> expressionQDT) {
 		expressionColumnValues.put(key, expressionQDT);
 	}
 
-	QueryableDatatype getExpressionColumnValue(Object key) {
+	QueryableDatatype<?> getExpressionColumnValue(Object key) {
 		return expressionColumnValues.get(key);
 	}
 

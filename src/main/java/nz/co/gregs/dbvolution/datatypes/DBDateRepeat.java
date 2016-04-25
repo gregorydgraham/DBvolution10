@@ -41,7 +41,7 @@ import org.joda.time.format.PeriodFormat;
  *
  * @author Gregory Graham
  */
-public class DBDateRepeat extends QueryableDatatype implements DateRepeatResult {
+public class DBDateRepeat extends QueryableDatatype<Period> implements DateRepeatResult {
 
 	private static final long serialVersionUID = 1L;
 
@@ -82,6 +82,7 @@ public class DBDateRepeat extends QueryableDatatype implements DateRepeatResult 
 	 *
 	 * @param newLiteralValue
 	 */
+	@Override
 	public void setValue(Period newLiteralValue) {
 		super.setLiteralValue(newLiteralValue);
 	}
@@ -99,7 +100,7 @@ public class DBDateRepeat extends QueryableDatatype implements DateRepeatResult 
 		if (!isDefined() || isNull()) {
 			return null;
 		} else {
-			return (Period) getLiteralValue();
+			return getLiteralValue();
 		}
 	}
 
@@ -115,7 +116,7 @@ public class DBDateRepeat extends QueryableDatatype implements DateRepeatResult 
 
 	@Override
 	protected String formatValueForSQLStatement(DBDatabase db) {
-		Period interval = (Period) getLiteralValue();
+		Period interval = getLiteralValue();
 		if (interval == null) {
 			return "NULL";
 		} else {
@@ -127,7 +128,7 @@ public class DBDateRepeat extends QueryableDatatype implements DateRepeatResult 
 	@Override
 	protected Period getFromResultSet(DBDatabase database, ResultSet resultSet, String fullColumnName) throws SQLException {
 		String intervalStr = resultSet.getString(fullColumnName);
-		if (intervalStr == null || intervalStr.equals("")) {
+		if (intervalStr == null || intervalStr.isEmpty()) {
 			return null;
 		} else {
 			return database.getDefinition().parseDateRepeatFromGetString(intervalStr);
@@ -154,7 +155,7 @@ public class DBDateRepeat extends QueryableDatatype implements DateRepeatResult 
 		if (getLiteralValue() == null) {
 			return super.toString(); //To change body of generated methods, choose Tools | Templates.
 		} else {
-			Period period = (Period) getLiteralValue();
+			Period period = getLiteralValue();
 			return PeriodFormat.getDefault().print(period);
 		}
 	}
@@ -162,5 +163,10 @@ public class DBDateRepeat extends QueryableDatatype implements DateRepeatResult 
 	@Override
 	public StringExpression stringResult() {
 		return DateRepeatExpression.value(this).stringResult();
+	}
+
+	@Override
+	protected void setValueFromStandardStringEncoding(String encodedValue) {
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 }

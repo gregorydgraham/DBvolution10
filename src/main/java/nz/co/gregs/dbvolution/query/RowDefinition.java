@@ -126,7 +126,7 @@ public class RowDefinition implements Serializable {
 	 * @param fieldOfThisInstance	fieldOfThisInstance
 	 * @return A LargeObjectColumn representing the supplied field
 	 */
-	public LargeObjectColumn column(DBLargeObject fieldOfThisInstance) {
+	public LargeObjectColumn column(DBLargeObject<?> fieldOfThisInstance) {
 		return new LargeObjectColumn(this, fieldOfThisInstance);
 	}
 
@@ -286,7 +286,7 @@ public class RowDefinition implements Serializable {
 	 * @param fieldOfThisInstance	fieldOfThisInstance
 	 * @return A ColumnProvider representing the supplied field
 	 */
-	public ColumnProvider column(QueryableDatatype fieldOfThisInstance) throws IncorrectRowProviderInstanceSuppliedException {
+	public ColumnProvider column(QueryableDatatype<?> fieldOfThisInstance) throws IncorrectRowProviderInstanceSuppliedException {
 		ColumnProvider col = null;
 		if (DBBoolean.class.isAssignableFrom(fieldOfThisInstance.getClass())) {
 			col = this.column((DBBoolean) fieldOfThisInstance);
@@ -382,7 +382,7 @@ public class RowDefinition implements Serializable {
 	 * @param fieldOfThisInstance	fieldOfThisInstance
 	 * @return A DBExpression representing the supplied field
 	 */
-	public DBExpression getDBExpression(QueryableDatatype fieldOfThisInstance) throws IncorrectRowProviderInstanceSuppliedException {
+	public DBExpression getDBExpression(QueryableDatatype<?> fieldOfThisInstance) throws IncorrectRowProviderInstanceSuppliedException {
 		DBExpression col = null;
 		if (DBBoolean.class.isAssignableFrom(fieldOfThisInstance.getClass())) {
 			col = this.column((DBBoolean) fieldOfThisInstance);
@@ -1079,9 +1079,9 @@ public class RowDefinition implements Serializable {
 	 *
 	 */
 	public Collection<String> getFieldValues(SimpleDateFormat dateFormat) {
-		List<String> returnList = new ArrayList<String>();
+		List<String> returnList = new ArrayList<>();
 		for (PropertyWrapperDefinition prop : this.getReturnColumns()) {
-			QueryableDatatype qdt = prop.getQueryableDatatype(this);
+			QueryableDatatype<?> qdt = prop.getQueryableDatatype(this);
 			if (dateFormat != null && DBDate.class.isAssignableFrom(qdt.getClass())) {
 				DBDate dBDate = (DBDate) qdt;
 				Date dateValue = dBDate.dateValue();

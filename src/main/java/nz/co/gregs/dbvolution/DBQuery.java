@@ -795,7 +795,7 @@ public class DBQuery {
 		DBRow existingInstance = newInstance;
 		final PropertyWrapper primaryKey = newInstance.getPrimaryKeyPropertyWrapper();
 		if (primaryKey != null) {
-			final QueryableDatatype qdt = primaryKey.getQueryableDatatype();
+			final QueryableDatatype<?> qdt = primaryKey.getQueryableDatatype();
 			if (qdt != null) {
 				existingInstance = existingInstancesOfThisTableRow.get(qdt.toSQLString(this.getDatabase()));
 				if (existingInstance == null) {
@@ -817,7 +817,7 @@ public class DBQuery {
 	protected Map<String, DBRow> setExistingInstancesForTable(Map<String, DBRow> existingInstancesOfThisTableRow, DBRow newInstance) {
 		Map<String, DBRow> hashMap = existingInstancesOfThisTableRow;
 		if (hashMap == null) {
-			hashMap = new HashMap<String, DBRow>();
+			hashMap = new HashMap<>();
 		}
 		details.getExistingInstances().put(newInstance.getClass(), hashMap);
 		return hashMap;
@@ -842,7 +842,7 @@ public class DBQuery {
 		List<PropertyWrapper> selectedProperties = oldInstance.getSelectedProperties();
 		List<PropertyWrapper> newProperties = newInstance.getColumnPropertyWrappers();
 		for (PropertyWrapper newProp : newProperties) {
-			QueryableDatatype qdt = newProp.getQueryableDatatype();
+			QueryableDatatype<?> qdt = newProp.getQueryableDatatype();
 			for (PropertyWrapper propertyWrapper : selectedProperties) {
 				if (propertyWrapper.getDefinition().equals(newProp.getDefinition())) {
 
@@ -873,14 +873,14 @@ public class DBQuery {
 	protected void setExpressionColumns(ResultSet resultSet, DBQueryRow queryRow) throws SQLException {
 		for (Map.Entry<Object, DBExpression> entry : details.getExpressionColumns().entrySet()) {
 			String expressionAlias = getDatabase().getDefinition().formatExpressionAlias(entry.getKey());
-			QueryableDatatype expressionQDT = entry.getValue().getQueryableDatatypeForExpressionValue();
+			QueryableDatatype<?> expressionQDT = entry.getValue().getQueryableDatatypeForExpressionValue();
 			expressionQDT.setFromResultSet(getDatabase(), resultSet, expressionAlias);
 			queryRow.addExpressionColumnValue(entry.getKey(), expressionQDT);
 		}
 	}
 
 	private void prepareForQuery(QueryOptions options) throws SQLException {
-		results = new ArrayList<DBQueryRow>();
+		results = new ArrayList<>();
 //		final QueryOptions options = details.getOptions();
 		resultsRowLimit = options.getRowLimit();
 		resultsPageIndex = options.getPageIndex();
@@ -1108,7 +1108,7 @@ public class DBQuery {
 			for (DBRow tab : this.details.getAllQueryTables()) {
 				DBRow rowPart = row.get(tab);
 				if (rowPart != null) {
-					final QueryableDatatype primaryKey = rowPart.getPrimaryKey();
+					final QueryableDatatype<?> primaryKey = rowPart.getPrimaryKey();
 					if (primaryKey != null) {
 						String rowPartStr = primaryKey.toSQLString(this.getDatabase());
 						ps.print(" " + rowPart.getPrimaryKeyColumnName() + ": " + rowPartStr);
@@ -1375,7 +1375,7 @@ public class DBQuery {
 			String sortSeparator = defn.getStartingOrderByClauseSeparator();
 			for (ColumnProvider column : sortOrderColumns) {
 				PropertyWrapper prop = column.getColumn().getPropertyWrapper();
-				QueryableDatatype qdt = prop.getQueryableDatatype();
+				QueryableDatatype<?> qdt = prop.getQueryableDatatype();
 				PropertyWrapperDefinition propDefn = prop.getDefinition();
 				if (prefersIndexBasedOrderByClause) {
 					Integer columnIndex = indexesOfSelectedProperties.get(propDefn);

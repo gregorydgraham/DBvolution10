@@ -14,21 +14,20 @@ import nz.co.gregs.dbvolution.datatypes.DBEnumValue;
 import nz.co.gregs.dbvolution.exceptions.InvalidDeclaredTypeException;
 import nz.co.gregs.dbvolution.internal.properties.JavaPropertyFinder.PropertyType;
 import nz.co.gregs.dbvolution.internal.properties.JavaPropertyFinder.Visibility;
-import nz.co.gregs.dbvolution.internal.properties.EnumTypeHandler;
 
 import org.junit.Test;
 
 @SuppressWarnings({"serial", "unused"})
 public class EnumTypeHandlerTest {
 
-	private JavaPropertyFinder privateFieldPublicBeanFinder = new JavaPropertyFinder(
+	private final JavaPropertyFinder privateFieldPublicBeanFinder = new JavaPropertyFinder(
 			Visibility.PRIVATE, Visibility.PUBLIC, null, (PropertyType[]) null);
 
 	@Test
 	public void acceptsInvalidDeclarationGivenNonColumn() {
 		class TestClass extends DBRow {
 
-			public DBEnum<?> field;
+			public DBEnum<?,?> field;
 		}
 
 		try {
@@ -45,7 +44,7 @@ public class EnumTypeHandlerTest {
 		class TestClass extends DBRow {
 
 			@DBColumn
-			public DBEnum<MyIntegerEnum> field;
+			public DBEnum<MyIntegerEnum, Integer> field;
 		}
 
 		try {
@@ -74,7 +73,7 @@ public class EnumTypeHandlerTest {
 		class TestClass extends DBRow {
 
 			@DBColumn
-			public DBEnum<?> field;
+			public DBEnum<?, ?> field;
 		}
 
 		typeHandlerOf(TestClass.class, "field");
@@ -85,7 +84,7 @@ public class EnumTypeHandlerTest {
 		class TestClass extends DBRow {
 
 			@DBColumn
-			public DBEnum<? extends MyIntegerEnum> field;
+			public DBEnum<? extends MyIntegerEnum, Integer> field;
 		}
 
 		typeHandlerOf(TestClass.class, "field");
@@ -96,7 +95,7 @@ public class EnumTypeHandlerTest {
 		class TestClass extends DBRow {
 
 			@DBColumn
-			public DBEnum<MyIntegerEnum> field;
+			public DBEnum<MyIntegerEnum, Integer> field;
 		}
 
 		EnumTypeHandler enumTypeHandler = typeHandlerOf(TestClass.class, "field");
@@ -108,7 +107,7 @@ public class EnumTypeHandlerTest {
 		class TestClass extends DBRow {
 
 			@DBColumn
-			public DBEnum<MyIntegerEnum> field;
+			public DBEnum<MyIntegerEnum, Integer> field;
 		}
 
 		EnumTypeHandler enumTypeHandler = typeHandlerOf(TestClass.class, "field");
@@ -120,7 +119,7 @@ public class EnumTypeHandlerTest {
 		class TestClass extends DBRow {
 
 			@DBColumn
-			public DBEnum<MyStringEnum> field;
+			public DBEnum<MyStringEnum, String> field;
 		}
 
 		EnumTypeHandler enumTypeHandler = typeHandlerOf(TestClass.class, "field");

@@ -1,5 +1,7 @@
 package nz.co.gregs.dbvolution.datatypes;
 
+import java.lang.reflect.Array;
+import java.lang.reflect.Type;
 import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.expressions.DBExpression;
 import nz.co.gregs.dbvolution.internal.properties.PropertyWrapperDefinition;
@@ -16,8 +18,9 @@ import nz.co.gregs.dbvolution.internal.properties.PropertyWrapperDefinition;
  * isn't in the enumeration.
  *
  * @param <E> the enumeration type. Must implement {@link DBEnumValue}.
+ * @param <T> the base type used on the database.
  */
-public abstract class DBEnum<E extends Enum<E> & DBEnumValue<?>> extends QueryableDatatype {
+public abstract class DBEnum<E extends Enum<E> & DBEnumValue<T>, T> extends QueryableDatatype<T> {
 
 	private static final long serialVersionUID = 1L;
 	private Class<E> enumType;
@@ -41,12 +44,12 @@ public abstract class DBEnum<E extends Enum<E> & DBEnumValue<?>> extends Queryab
 	 * Creates a DBEnum with the value provided.
 	 *
 	 * <p>
-	 * The resulting DBEnum will be set as having the value provided but will not
-	 * be defined in the database.
+	 * The resulting DBEnum will be set as having the value provided but will
+	 * not be defined in the database.
 	 *
 	 * @param literalValue	literalValue
 	 */
-	protected DBEnum(Object literalValue) {
+	protected DBEnum(T literalValue) {
 		super(literalValue);
 	}
 
@@ -74,7 +77,7 @@ public abstract class DBEnum<E extends Enum<E> & DBEnumValue<?>> extends Queryab
 	 * Creates an undefined DBEnum object.
 	 *
 	 * <p>
-	 * Normal used in your DBRow sub-classes as:
+	 * Normally used in your DBRow sub-classes as:
 	 * {@code			public DBEnum<MyDBEnumValue> field = new DBEnum<MyDBEnumValue>();}
 	 * Where MyDBEnumValue is a sub-class of {@link DBEnumValue} and probably a
 	 * {@link DBIntegerEnum} or {@link DBStringEnum}.
@@ -100,8 +103,8 @@ public abstract class DBEnum<E extends Enum<E> & DBEnumValue<?>> extends Queryab
 
 	/**
 	 * Validates whether the given type is acceptable as a literal value. Enum
-	 * values with null literal values are tolerated and should not be rejected by
-	 * this method. See documentation for {@link DBEnumValue#getCode()}.
+	 * values with null literal values are tolerated and should not be rejected
+	 * by this method. See documentation for {@link DBEnumValue#getCode()}.
 	 *
 	 * @param enumValue non-null enum value, for which the literal value may be
 	 * null
@@ -115,8 +118,8 @@ public abstract class DBEnum<E extends Enum<E> & DBEnumValue<?>> extends Queryab
 	 * Converts in-line from the database's raw value to the enum type.
 	 *
 	 * @return the Enumeration instance that is appropriate to this instance
-	 * @throws IllegalArgumentException if the database's raw value does not have
-	 * a corresponding value in the enum
+	 * @throws IllegalArgumentException if the database's raw value does not
+	 * have a corresponding value in the enum
 	 */
 	public E enumValue() {
 		// get actual literal value: a String or a Long
@@ -143,8 +146,8 @@ public abstract class DBEnum<E extends Enum<E> & DBEnumValue<?>> extends Queryab
 	 *
 	 *
 	 *
-	 * @return {@code true} if both null or equivalent on value, {@code false} if
-	 * not equal
+	 * @return {@code true} if both null or equivalent on value, {@code false}
+	 * if not equal
 	 * @throws IncompatibleClassChangeError if can't recognise the type
 	 */
 	private static boolean areLiteralValuesEqual(Object o1, Object o2) {
@@ -204,8 +207,8 @@ public abstract class DBEnum<E extends Enum<E> & DBEnumValue<?>> extends Queryab
 	}
 
 	/**
-	 * Checks whether its one of the recognised types that can be easily converted
-	 * between each other in {@link #areLiteralValuesEqual()}.
+	 * Checks whether its one of the recognised types that can be easily
+	 * converted between each other in {@link #areLiteralValuesEqual()}.
 	 */
 	private static boolean isRecognisedRealOrIntegerType(Number n) {
 		return (n instanceof Double)
@@ -251,7 +254,7 @@ public abstract class DBEnum<E extends Enum<E> & DBEnumValue<?>> extends Queryab
 		if (databaseValue == null) {
 			return db.getDefinition().getNull();
 		} else {
-			QueryableDatatype qdt = QueryableDatatype.getQueryableDatatypeForObject(databaseValue);
+			QueryableDatatype<?> qdt = QueryableDatatype.getQueryableDatatypeForObject(databaseValue);
 			return qdt.formatValueForSQLStatement(db);
 		}
 	}
@@ -262,8 +265,13 @@ public abstract class DBEnum<E extends Enum<E> & DBEnumValue<?>> extends Queryab
 	 * @param enumValues	enumValues
 	 * @return a list of the literal database values for the enumeration values.
 	 */
-	protected Object[] convertToLiteral(E... enumValues) {
-		Object[] result = new Object[enumValues.length];
+	protected T[] convertToLiteral(E... enumValues) {
+		// Use Array native method to create array
+		// of a type only known at run time
+		Class<? extends Type> baseType = this.getClass().getGenericInterfaces()[0].getClass();
+		@SuppressWarnings("unchecked")
+		final T[] result = (T[]) Array.newInstance(baseType, enumValues.length);
+		
 		for (int i = 0; i < enumValues.length; i++) {
 			E enumValue = enumValues[i];
 			result[i] = convertToLiteral(enumValue);
@@ -277,12 +285,12 @@ public abstract class DBEnum<E extends Enum<E> & DBEnumValue<?>> extends Queryab
 	 * @param enumValue	enumValue
 	 * @return the literal database value for the enumeration value.
 	 */
-	protected final Object convertToLiteral(E enumValue) {
+	protected final T convertToLiteral(E enumValue) {
 		if (enumValue == null || enumValue.getCode() == null) {
 			return null;
 		} else {
 			validateLiteralValue(enumValue);
-			Object newLiteralValue = enumValue.getCode();
+			T newLiteralValue = enumValue.getCode();
 			return newLiteralValue;
 		}
 	}

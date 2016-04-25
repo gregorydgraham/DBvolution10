@@ -1146,7 +1146,7 @@ public abstract class DBDatabase implements Cloneable {
 		List<PropertyWrapper> fields = newTableRow.getColumnPropertyWrappers();
 		List<String> indexClauses = new ArrayList<String>();
 		for (PropertyWrapper field : fields) {
-			final QueryableDatatype qdt = field.getQueryableDatatype();
+			final QueryableDatatype<?> qdt = field.getQueryableDatatype();
 			if (field.isColumn() && !qdt.hasColumnExpression() && !(qdt instanceof DBLargeObject)) {
 				String indexClause = definition.getIndexClauseForCreateTable(field);
 				if (!indexClause.isEmpty()) {

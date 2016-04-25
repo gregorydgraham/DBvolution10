@@ -55,7 +55,7 @@ public interface DBExpression {
 	 * @return the QueryableDatatype subclass that corresponds to the results of
 	 * this expression
 	 */
-	public QueryableDatatype getQueryableDatatypeForExpressionValue();
+	public QueryableDatatype<?> getQueryableDatatypeForExpressionValue();
 
 	/**
 	 * Produces the snippet provided by this class.

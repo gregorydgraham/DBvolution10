@@ -35,8 +35,8 @@ import nz.co.gregs.dbvolution.query.QueryOptions;
 public class JavaDBDefinition extends DBDefinition {
 
 	private static final DateFormat DATETIME_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
-	private static final String[] reservedWordsArray = new String[]{};
-	private static final List<String> reservedWords = Arrays.asList(reservedWordsArray);
+	private static final String[] RESERVED_WORD_ARRAY = new String[]{};
+	private static final List<String> RESERVED_WORDS = Arrays.asList(RESERVED_WORD_ARRAY);
 
 	@Override
 	public String getDateFormattedForQuery(Date date) {
@@ -45,7 +45,7 @@ public class JavaDBDefinition extends DBDefinition {
 	}
 
 	@Override
-	protected String getDatabaseDataTypeOfQueryableDatatype(QueryableDatatype qdt) {
+	protected String getDatabaseDataTypeOfQueryableDatatype(QueryableDatatype<?> qdt) {
 		if (qdt instanceof DBBoolean) {
 			return "SMALLINT";
 		} else if (qdt instanceof DBJavaObject) {
@@ -83,7 +83,7 @@ public class JavaDBDefinition extends DBDefinition {
 	}
 
 	private static String formatNameForJavaDB(final String sqlObjectName) {
-		if (sqlObjectName.length() < 30 && !(reservedWords.contains(sqlObjectName.toUpperCase()))) {
+		if (sqlObjectName.length() < 30 && !(RESERVED_WORDS.contains(sqlObjectName.toUpperCase()))) {
 			return sqlObjectName.replaceAll("^[_-]", "O").replaceAll("-", "_");
 		} else {
 			return ("O" + sqlObjectName.hashCode()).replaceAll("^[_-]", "O").replaceAll("-", "_");

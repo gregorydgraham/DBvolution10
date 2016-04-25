@@ -152,7 +152,7 @@ public class DBReport extends RowDefinition {
 					}
 				} else if (value != null && QueryableDatatype.class.isAssignableFrom(value.getClass())) {
 					if ((value instanceof QueryableDatatype)) {
-						QueryableDatatype qdt = (QueryableDatatype) value;
+						QueryableDatatype<?> qdt = (QueryableDatatype) value;
 						str.append(field.getName()).append(": ").append(qdt.toString()).append(" ");
 					}
 				}
@@ -356,9 +356,9 @@ public class DBReport extends RowDefinition {
 	 * @param columns a list of columns to sort the query by.
 	 * @return this DBReport instance
 	 */
-	public DBReport setSortOrder(QueryableDatatype... columns) {
-		List<ColumnProvider> columnProviders = new ArrayList<ColumnProvider>();
-		for (QueryableDatatype qdt : columns) {
+	public DBReport setSortOrder(QueryableDatatype<?>... columns) {
+		List<ColumnProvider> columnProviders = new ArrayList<>();
+		for (QueryableDatatype<?> qdt : columns) {
 			final ColumnProvider expr = this.column(qdt);
 			columnProviders.add(expr);
 		}

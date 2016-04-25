@@ -13,7 +13,7 @@ import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
  * @author gregorygraham
  * @param <T> the type that should be used with this expression
  */
-public interface ExpressionColumn<T extends QueryableDatatype> {
+public interface ExpressionColumn<T extends QueryableDatatype<?>> {
 
 	/**
 	 * Creates a QueryableDatatype version of the expression suitable for use as a

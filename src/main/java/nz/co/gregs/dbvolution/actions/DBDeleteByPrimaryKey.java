@@ -37,7 +37,7 @@ import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
  */
 public class DBDeleteByPrimaryKey extends DBDelete {
 
-	private final List<DBRow> savedRows = new ArrayList<DBRow>();
+	private final List<DBRow> savedRows = new ArrayList<>();
 
 	/**
 	 * Creates a DBDeleteByPrimaryKey action for the supplied example DBRow on the
@@ -53,7 +53,7 @@ public class DBDeleteByPrimaryKey extends DBDelete {
 	private <R extends DBRow> DBDeleteByPrimaryKey(DBDatabase db, R row) throws SQLException {
 		super(row);
 		DBRow example = DBRow.getDBRow(row.getClass());
-		final QueryableDatatype pkQDT = example.getPrimaryKey();
+		final QueryableDatatype<?> pkQDT = example.getPrimaryKey();
 		InternalQueryableDatatypeProxy pkQDTProxy = new InternalQueryableDatatypeProxy(pkQDT);
 		pkQDTProxy.setValue(row.getPrimaryKey());
 		List<DBRow> gotRows = db.get(example);
@@ -68,7 +68,7 @@ public class DBDeleteByPrimaryKey extends DBDelete {
 		final DBDeleteByPrimaryKey newDeleteAction = new DBDeleteByPrimaryKey(row);
 		DBActionList actions = new DBActionList(newDeleteAction);
 		DBRow example = DBRow.getDBRow(row.getClass());
-		final QueryableDatatype pkQDT = example.getPrimaryKey();
+		final QueryableDatatype<?> pkQDT = example.getPrimaryKey();
 		new InternalQueryableDatatypeProxy(pkQDT).setValue(row.getPrimaryKey());
 		List<DBRow> rowsToBeDeleted = db.get(example);
 		for (DBRow deletingRow : rowsToBeDeleted) {
@@ -90,7 +90,7 @@ public class DBDeleteByPrimaryKey extends DBDelete {
 		DBDefinition defn = db.getDefinition();
 		DBRow row = getRow();
 
-		ArrayList<String> strs = new ArrayList<String>();
+		ArrayList<String> strs = new ArrayList<>();
 		strs.add(defn.beginDeleteLine()
 				+ defn.formatTableName(row)
 				+ defn.beginWhereClause()

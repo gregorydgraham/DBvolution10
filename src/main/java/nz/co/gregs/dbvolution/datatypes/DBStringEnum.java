@@ -44,7 +44,7 @@ import nz.co.gregs.dbvolution.operators.*;
  * @param <E> an enumeration class that implements the {@link DBEnumValue}
  * interface for String values.
  */
-public class DBStringEnum<E extends Enum<E> & DBEnumValue<String>> extends DBEnum<E> {
+public class DBStringEnum<E extends Enum<E> & DBEnumValue<String>> extends DBEnum<E, String> {
 
 	private static final long serialVersionUID = 1L;
 
@@ -130,7 +130,7 @@ public class DBStringEnum<E extends Enum<E> & DBEnumValue<String>> extends DBEnu
 
 	@Override
 	public Set<DBRow> getTablesInvolved() {
-		return new HashSet<DBRow>();
+		return new HashSet<>();
 	}
 
 	/**
@@ -157,7 +157,7 @@ public class DBStringEnum<E extends Enum<E> & DBEnumValue<String>> extends DBEnu
 	 *
 	 */
 	private String[] convertToLiteralString(Collection<E> enumValues) {
-		ArrayList<String> result = new ArrayList<String>();
+		ArrayList<String> result = new ArrayList<>();
 		for (E e : enumValues) {
 			result.add(convertToLiteralString(e));
 		}
@@ -800,7 +800,12 @@ public class DBStringEnum<E extends Enum<E> & DBEnumValue<String>> extends DBEnu
 //		propertyWrapper = null;
 //	}
 	@Override
-	protected Object getFromResultSet(DBDatabase database, ResultSet resultSet, String fullColumnName) throws SQLException {
+	protected String getFromResultSet(DBDatabase database, ResultSet resultSet, String fullColumnName) throws SQLException {
 		return resultSet.getString(fullColumnName);
+	}
+
+	@Override
+	protected void setValueFromStandardStringEncoding(String encodedValue) {
+		setValue(encodedValue);
 	}
 }

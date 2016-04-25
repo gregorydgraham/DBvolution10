@@ -57,7 +57,7 @@ import nz.co.gregs.dbvolution.results.MultiPoint2DResult;
  *
  * @author gregorygraham
  */
-public class DBLine2D extends QueryableDatatype implements Line2DResult {
+public class DBLine2D extends QueryableDatatype<LineString> implements Line2DResult {
 
 	private static final long serialVersionUID = 1L;
 
@@ -136,7 +136,7 @@ public class DBLine2D extends QueryableDatatype implements Line2DResult {
 	 */
 	public void setValue(Point... points) {
 		GeometryFactory geometryFactory = new GeometryFactory();
-		List<Coordinate> coords = new ArrayList<Coordinate>();
+		List<Coordinate> coords = new ArrayList<>();
 		for (Point point : points) {
 			coords.add(point.getCoordinate());
 		}
@@ -167,7 +167,7 @@ public class DBLine2D extends QueryableDatatype implements Line2DResult {
 		if (!isDefined() || isNull()) {
 			return null;
 		} else {
-			return (LineString) getLiteralValue();
+			return getLiteralValue();
 		}
 	}
 
@@ -198,7 +198,7 @@ public class DBLine2D extends QueryableDatatype implements Line2DResult {
 	}
 
 	@Override
-	protected Object getFromResultSet(DBDatabase database, ResultSet resultSet, String fullColumnName) throws SQLException, IncorrectGeometryReturnedForDatatype {
+	protected LineString getFromResultSet(DBDatabase database, ResultSet resultSet, String fullColumnName) throws SQLException, IncorrectGeometryReturnedForDatatype {
 
 		LineString lineString = null;
 		String string = resultSet.getString(fullColumnName);
@@ -230,4 +230,8 @@ public class DBLine2D extends QueryableDatatype implements Line2DResult {
 		return Line2DExpression.value(this).stringResult();
 	}
 
+	@Override
+	protected void setValueFromStandardStringEncoding(String encodedValue) {
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	}
 }

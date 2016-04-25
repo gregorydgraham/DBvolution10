@@ -70,12 +70,12 @@ public class ExampleEncodingInterpreter implements EncodingInterpreter {
 		StringBuilder buf = new StringBuilder();
 		String parameterSep = "";
 		String actualParameterSeparator = getParameterSeparator();
-		Set<Class<? extends DBRow>> addedAlready = new HashSet<Class<? extends DBRow>>();
+		Set<Class<? extends DBRow>> addedAlready = new HashSet<>();
 		for (DBRow row : rows) {
 			Class<? extends DBRow> rowClass = row.getClass();
 			List<PropertyWrapper> props = row.getColumnPropertyWrappers();
 			for (PropertyWrapper prop : props) {
-				QueryableDatatype qdt = prop.getQueryableDatatype();
+				QueryableDatatype<?> qdt = prop.getQueryableDatatype();
 				if (qdt.hasBeenSet()) {
 					String stringValue = qdt.stringValue();
 					if (qdt instanceof DBDate) {
@@ -136,7 +136,7 @@ public class ExampleEncodingInterpreter implements EncodingInterpreter {
 	 * @return an encoded string of the rows.
 	 */
 	public String encode(List<DBQueryRow> queryRows) {
-		List<DBRow> rows = new ArrayList<DBRow>();
+		List<DBRow> rows = new ArrayList<>();
 		for (DBQueryRow queryRow : queryRows) {
 			rows.addAll(queryRow.values());
 		}
@@ -145,7 +145,7 @@ public class ExampleEncodingInterpreter implements EncodingInterpreter {
 
 	@Override
 	@SuppressWarnings("deprecation")
-	public void setValue(QueryableDatatype qdt, String value) {
+	public void setValue(QueryableDatatype<?> qdt, String value) {
 		if (qdt instanceof DBString) {
 			DBString string = (DBString) qdt;
 			decodeValue(value, string);

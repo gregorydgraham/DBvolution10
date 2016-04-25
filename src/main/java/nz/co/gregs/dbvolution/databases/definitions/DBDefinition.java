@@ -876,7 +876,7 @@ public abstract class DBDefinition {
 	 * @param qdt	qdt
 	 * @return the databases type for the QDT as a string
 	 */
-	protected String getDatabaseDataTypeOfQueryableDatatype(QueryableDatatype qdt) {
+	protected String getDatabaseDataTypeOfQueryableDatatype(QueryableDatatype<?> qdt) {
 		return qdt.getSQLDatatype();
 	}
 
@@ -1701,7 +1701,7 @@ public abstract class DBDefinition {
 	 * autoincrement feature.
 	 */
 	private boolean propertyWrapperConformsToAutoIncrementType(PropertyWrapper field) {
-		final QueryableDatatype qdt = field.getQueryableDatatype();
+		final QueryableDatatype<?> qdt = field.getQueryableDatatype();
 		return propertyWrapperConformsToAutoIncrementType(qdt);
 	}
 
@@ -1713,7 +1713,7 @@ public abstract class DBDefinition {
 	 * @return the default implementation returns TRUE for DBNumber or DBString,
 	 * FALSE otherwise.
 	 */
-	protected boolean propertyWrapperConformsToAutoIncrementType(QueryableDatatype qdt) {
+	protected boolean propertyWrapperConformsToAutoIncrementType(QueryableDatatype<?> qdt) {
 		return (qdt instanceof DBNumber) || (qdt instanceof DBInteger);
 	}
 
@@ -2941,7 +2941,7 @@ public abstract class DBDefinition {
 	 * @param selectableName the selectable value
 	 * @return SQL
 	 */
-	public String doColumnTransformForSelect(QueryableDatatype qdt, String selectableName) {
+	public String doColumnTransformForSelect(QueryableDatatype<?> qdt, String selectableName) {
 		return selectableName;
 	}
 
@@ -4516,17 +4516,18 @@ public abstract class DBDefinition {
 	 * @return the class of the QDT that can be used with this columns of this
 	 * type name.
 	 */
-	public Class<? extends QueryableDatatype> getQueryableDatatypeClassForSQLDatatype(String typeName) {
-		if (typeName.toUpperCase().equals("POLYGON")) {
-			return DBPolygon2D.class;
-		} else if (typeName.toUpperCase().equals("LINESTRING")) {
-			return DBLine2D.class;
-		} else if (typeName.toUpperCase().equals("POINT")) {
-			return DBPoint2D.class;
-		} else if (typeName.toUpperCase().equals("MULTIPOINT")) {
-			return DBMultiPoint2D.class; // obviously this is not going to work in all cases 
-		} else {
-			return null;
+	public Class<? extends QueryableDatatype<?>> getQueryableDatatypeClassForSQLDatatype(String typeName) {
+		switch (typeName.toUpperCase()) {
+			case "POLYGON":
+				return DBPolygon2D.class;
+			case "LINESTRING":
+				return DBLine2D.class;
+			case "POINT":
+				return DBPoint2D.class;
+			case "MULTIPOINT":
+				return DBMultiPoint2D.class; // obviously this is not going to work in all cases 
+			default:
+				return null;
 		}
 	}
 

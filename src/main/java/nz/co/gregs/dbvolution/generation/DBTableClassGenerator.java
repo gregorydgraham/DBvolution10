@@ -147,7 +147,7 @@ public class DBTableClassGenerator {
 		String tablesPackage = packageName + ".tables";
 		String tablesPath = tablesPackage.replaceAll("[.]", "/");
 		List<DBTableClass> generatedTables = DBTableClassGenerator.generateClassesOfTables(database, tablesPackage, pkRecog, fkRecog);
-		List<DBTableClass> allGeneratedClasses = new ArrayList<DBTableClass>();
+		List<DBTableClass> allGeneratedClasses = new ArrayList<>();
 		allGeneratedClasses.addAll(generatedViews);
 		allGeneratedClasses.addAll(generatedTables);
 		generateAllJavaSource(allGeneratedClasses);
@@ -269,7 +269,7 @@ public class DBTableClassGenerator {
 	 * found on the database 1 Database exceptions may be thrown
 	 */
 	private static List<DBTableClass> generateClassesOfObjectTypes(DBDatabase database, String packageName, PrimaryKeyRecognisor pkRecognisor, ForeignKeyRecognisor fkRecogisor, String... dbObjectTypes) throws SQLException {
-		List<DBTableClass> dbTableClasses = new ArrayList<DBTableClass>();
+		List<DBTableClass> dbTableClasses = new ArrayList<>();
 		PrimaryKeyRecognisor pkRecog = pkRecognisor;
 		if (pkRecognisor == null) {
 			pkRecog = new PrimaryKeyRecognisor();
@@ -314,7 +314,7 @@ public class DBTableClassGenerator {
 						DBTableClass dbTableClass = new DBTableClass(tableName, packageName, className);
 
 						ResultSet primaryKeysRS = metaData.getPrimaryKeys(catalog, schema, dbTableClass.getTableName());
-						List<String> pkNames = new ArrayList<String>();
+						List<String> pkNames = new ArrayList<>();
 						try {
 							while (primaryKeysRS.next()) {
 								String pkColumnName = primaryKeysRS.getString("COLUMN_NAME");
@@ -325,7 +325,7 @@ public class DBTableClassGenerator {
 						}
 
 						ResultSet foreignKeysRS = metaData.getImportedKeys(catalog, schema, dbTableClass.getTableName());
-						Map<String, String[]> fkNames = new HashMap<String, String[]>();
+						Map<String, String[]> fkNames = new HashMap<>();
 						try {
 							while (foreignKeysRS.next()) {
 								String pkTableName = foreignKeysRS.getString("PKTABLE_NAME");
@@ -398,7 +398,7 @@ public class DBTableClassGenerator {
 	}
 
 	static void generateAllJavaSource(List<DBTableClass> dbTableClasses) {
-		List<String> dbTableClassNames = new ArrayList<String>();
+		List<String> dbTableClassNames = new ArrayList<>();
 
 		for (DBTableClass dbt : dbTableClasses) {
 			dbTableClassNames.add(dbt.getClassName());
@@ -407,7 +407,7 @@ public class DBTableClassGenerator {
 			for (DBTableField dbf : dbt.getFields()) {
 				if (dbf.isForeignKey) {
 					if (!dbTableClassNames.contains(dbf.referencesClass)) {
-						List<String> matchingNames = new ArrayList<String>();
+						List<String> matchingNames = new ArrayList<>();
 						for (String name : dbTableClassNames) {
 							if (name.toLowerCase().startsWith(dbf.referencesClass.toLowerCase())) {
 								matchingNames.add(name);
@@ -484,7 +484,7 @@ public class DBTableClassGenerator {
 				value = DBDate.class;
 				break;
 			case Types.OTHER:
-				Class<? extends QueryableDatatype> customType = database.getDefinition().getQueryableDatatypeClassForSQLDatatype(typeName);
+				Class<? extends QueryableDatatype<?>> customType = database.getDefinition().getQueryableDatatypeClassForSQLDatatype(typeName);
 				if (customType != null) {
 					value = customType;
 					break;
@@ -562,18 +562,19 @@ public class DBTableClassGenerator {
 	 * @return Capitalizes the first letter of the string
 	 */
 	private static String toProperCase(String s) {
-		if (s.length() == 0) {
-			return s;
-		} else if (s.length() == 1) {
-			return s.toUpperCase();
-		} else {
-			String firstChar = s.substring(0, 1);
-			String rest = s.substring(1).toLowerCase();
-			if (firstChar.matches("[^a-zA-Z]")) {
-				return "_" + firstChar + rest;
-			} else {
-				return firstChar.toUpperCase() + rest;
-			}
+		switch (s.length()) {
+			case 0:
+				return s;
+			case 1:
+				return s.toUpperCase();
+			default:
+				String firstChar = s.substring(0, 1);
+				String rest = s.substring(1).toLowerCase();
+				if (firstChar.matches("[^a-zA-Z]")) {
+					return "_" + firstChar + rest;
+				} else {
+					return firstChar.toUpperCase() + rest;
+				}
 		}
 	}
 

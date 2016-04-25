@@ -50,12 +50,15 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 		DateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
 		DateFormat tzFormat = new SimpleDateFormat("Z");
 		String tz = tzFormat.format(date);
-		if (tz.length() == 4) {
-			tz = "+" + tz.substring(0, 2) + ":" + tz.substring(2, 4);
-		} else if (tz.length() == 5) {
-			tz = tz.substring(0, 3) + ":" + tz.substring(3, 5);
-		} else {
-			throw new DBRuntimeException("TIMEZONE was :\"" + tz + "\"");
+		switch (tz.length()) {
+			case 4:
+				tz = "+" + tz.substring(0, 2) + ":" + tz.substring(2, 4);
+				break;
+			case 5:
+				tz = tz.substring(0, 3) + ":" + tz.substring(3, 5);
+				break;
+			default:
+				throw new DBRuntimeException("TIMEZONE was :\"" + tz + "\"");
 		}
 		final String result = " CAST('" + format.format(date) + " " + tz + "' as DATETIMEOFFSET) ";
 //		System.out.println(""+result);
@@ -63,7 +66,7 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 	}
 
 	@Override
-	protected String getDatabaseDataTypeOfQueryableDatatype(QueryableDatatype qdt) {
+	protected String getDatabaseDataTypeOfQueryableDatatype(QueryableDatatype<?> qdt) {
 		if (qdt instanceof DBBoolean) {
 			return " BIT ";
 		} else if (qdt instanceof DBBooleanArray) {
@@ -90,7 +93,7 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 	}
 
 	@Override
-	public String doColumnTransformForSelect(QueryableDatatype qdt, String selectableName) {
+	public String doColumnTransformForSelect(QueryableDatatype<?> qdt, String selectableName) {
 		if (qdt instanceof DBPolygon2D) {
 			return "(" + selectableName + ").STAsText()";
 		} else if (qdt instanceof DBPoint2D) {

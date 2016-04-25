@@ -53,7 +53,7 @@ import nz.co.gregs.dbvolution.results.LineSegment2DResult;
  *
  * @author gregorygraham
  */
-public class DBLineSegment2D extends QueryableDatatype implements LineSegment2DResult {
+public class DBLineSegment2D extends QueryableDatatype<LineSegment> implements LineSegment2DResult {
 
 	private static final long serialVersionUID = 1L;
 
@@ -146,7 +146,7 @@ public class DBLineSegment2D extends QueryableDatatype implements LineSegment2DR
 		if (!isDefined() || isNull()) {
 			return null;
 		} else {
-			return (LineSegment) getLiteralValue();
+			return getLiteralValue();
 		}
 	}
 
@@ -177,7 +177,7 @@ public class DBLineSegment2D extends QueryableDatatype implements LineSegment2DR
 	}
 
 	@Override
-	protected Object getFromResultSet(DBDatabase database, ResultSet resultSet, String fullColumnName) throws SQLException, IncorrectGeometryReturnedForDatatype {
+	protected LineSegment getFromResultSet(DBDatabase database, ResultSet resultSet, String fullColumnName) throws SQLException, IncorrectGeometryReturnedForDatatype {
 
 		LineSegment lineSegment = null;
 		String string = resultSet.getString(fullColumnName);
@@ -232,6 +232,11 @@ public class DBLineSegment2D extends QueryableDatatype implements LineSegment2DR
 	@Override
 	public StringExpression stringResult() {
 		return LineSegment2DExpression.value(this).stringResult();
+	}
+
+	@Override
+	protected void setValueFromStandardStringEncoding(String encodedValue) {
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
 }

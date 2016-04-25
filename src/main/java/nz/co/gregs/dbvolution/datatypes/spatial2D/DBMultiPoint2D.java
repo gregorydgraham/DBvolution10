@@ -46,7 +46,7 @@ import nz.co.gregs.dbvolution.results.MultiPoint2DResult;
  *
  * @author Gregory Graham
  */
-public class DBMultiPoint2D extends QueryableDatatype implements MultiPoint2DResult {
+public class DBMultiPoint2D extends QueryableDatatype<MultiPoint> implements MultiPoint2DResult {
 
 	private static final long serialVersionUID = 1L;
 
@@ -182,7 +182,7 @@ public class DBMultiPoint2D extends QueryableDatatype implements MultiPoint2DRes
 	}
 
 	@Override
-	protected Object getFromResultSet(DBDatabase database, ResultSet resultSet, String fullColumnName) throws SQLException, IncorrectGeometryReturnedForDatatype {
+	protected MultiPoint getFromResultSet(DBDatabase database, ResultSet resultSet, String fullColumnName) throws SQLException, IncorrectGeometryReturnedForDatatype {
 
 		MultiPoint point = null;
 		String string = resultSet.getString(fullColumnName);
@@ -237,6 +237,11 @@ public class DBMultiPoint2D extends QueryableDatatype implements MultiPoint2DRes
 	@Override
 	public StringExpression stringResult() {
 		return MultiPoint2DExpression.value(this).stringResult();
+	}
+
+	@Override
+	protected void setValueFromStandardStringEncoding(String encodedValue) {
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 	
 }

@@ -39,7 +39,7 @@ import nz.co.gregs.dbvolution.operators.DBPermittedValuesOperator;
  * @author Gregory Graham
  * @author Malcolm Lett
  */
-public class DBIntegerEnum<E extends Enum<E> & DBEnumValue<? extends Number>> extends DBEnum<E> implements NumberResult {
+public class DBIntegerEnum<E extends Enum<E> & DBEnumValue<Long>> extends DBEnum<E, Long> implements NumberResult {
 
 	private static final long serialVersionUID = 1L;
 
@@ -129,7 +129,8 @@ public class DBIntegerEnum<E extends Enum<E> & DBEnumValue<? extends Number>> ex
 
 	/**
 	 *
-	 * reduces the rows to only the object, Set, List, Array, or vararg of objects
+	 * reduces the rows to only the object, Set, List, Array, or vararg of
+	 * objects
 	 *
 	 * @param permitted	permitted
 	 */
@@ -152,8 +153,8 @@ public class DBIntegerEnum<E extends Enum<E> & DBEnumValue<? extends Number>> ex
 	/**
 	 * Performs searches based on a range.
 	 *
-	 * if both ends of the range are specified the lower-bound will be included in
-	 * the search and the upper-bound excluded. I.e permittedRange(1,3) will
+	 * if both ends of the range are specified the lower-bound will be included
+	 * in the search and the upper-bound excluded. I.e permittedRange(1,3) will
 	 * return 1 and 2.
 	 *
 	 * <p>
@@ -224,8 +225,8 @@ public class DBIntegerEnum<E extends Enum<E> & DBEnumValue<? extends Number>> ex
 	/**
 	 * Performs searches based on a range.
 	 *
-	 * if both ends of the range are specified the lower-bound will be included in
-	 * the search and the upper-bound excluded. I.e excludedRange(1,3) will
+	 * if both ends of the range are specified the lower-bound will be included
+	 * in the search and the upper-bound excluded. I.e excludedRange(1,3) will
 	 * exclude 1 and 2.
 	 *
 	 * <p>
@@ -297,7 +298,8 @@ public class DBIntegerEnum<E extends Enum<E> & DBEnumValue<? extends Number>> ex
 	}
 
 	/**
-	 * Reduces the rows to only the object, Set, List, Array, or vararg of objects
+	 * Reduces the rows to only the object, Set, List, Array, or vararg of
+	 * objects
 	 *
 	 * @param permitted	permitted
 	 */
@@ -320,8 +322,8 @@ public class DBIntegerEnum<E extends Enum<E> & DBEnumValue<? extends Number>> ex
 	/**
 	 * Performs searches based on a range.
 	 *
-	 * if both ends of the range are specified the lower-bound will be included in
-	 * the search and the upper-bound excluded. I.e permittedRange(1,3) will
+	 * if both ends of the range are specified the lower-bound will be included
+	 * in the search and the upper-bound excluded. I.e permittedRange(1,3) will
 	 * return 1 and 2.
 	 *
 	 * <p>
@@ -392,8 +394,8 @@ public class DBIntegerEnum<E extends Enum<E> & DBEnumValue<? extends Number>> ex
 	/**
 	 * Performs searches based on a range.
 	 *
-	 * if both ends of the range are specified the lower-bound will be included in
-	 * the search and the upper-bound excluded. I.e excludedRange(1,3) will
+	 * if both ends of the range are specified the lower-bound will be included
+	 * in the search and the upper-bound excluded. I.e excludedRange(1,3) will
 	 * exclude 1 and 2.
 	 *
 	 * <p>
@@ -466,7 +468,8 @@ public class DBIntegerEnum<E extends Enum<E> & DBEnumValue<? extends Number>> ex
 
 	/**
 	 *
-	 * reduces the rows to only the object, Set, List, Array, or vararg of objects
+	 * reduces the rows to only the object, Set, List, Array, or vararg of
+	 * objects
 	 *
 	 * @param permitted	permitted
 	 */
@@ -489,8 +492,8 @@ public class DBIntegerEnum<E extends Enum<E> & DBEnumValue<? extends Number>> ex
 	/**
 	 * Performs searches based on a range.
 	 *
-	 * if both ends of the range are specified the lower-bound will be included in
-	 * the search and the upper-bound excluded. I.e permittedRange(1,3) will
+	 * if both ends of the range are specified the lower-bound will be included
+	 * in the search and the upper-bound excluded. I.e permittedRange(1,3) will
 	 * return 1 and 2.
 	 *
 	 * <p>
@@ -561,8 +564,8 @@ public class DBIntegerEnum<E extends Enum<E> & DBEnumValue<? extends Number>> ex
 	/**
 	 * Performs searches based on a range.
 	 *
-	 * if both ends of the range are specified the lower-bound will be included in
-	 * the search and the upper-bound excluded. I.e excludedRange(1,3) will
+	 * if both ends of the range are specified the lower-bound will be included
+	 * in the search and the upper-bound excluded. I.e excludedRange(1,3) will
 	 * exclude 1 and 2.
 	 *
 	 * <p>
@@ -671,8 +674,6 @@ public class DBIntegerEnum<E extends Enum<E> & DBEnumValue<? extends Number>> ex
 	public Integer intValue() {
 		if (getLiteralValue() == null) {
 			return null;
-		} else if (getLiteralValue() instanceof Integer) {
-			return (Integer) getLiteralValue();
 		} else {
 			return Integer.parseInt(getLiteralValue().toString());
 		}
@@ -684,7 +685,7 @@ public class DBIntegerEnum<E extends Enum<E> & DBEnumValue<? extends Number>> ex
 	}
 
 	@Override
-	protected Object getFromResultSet(DBDatabase database, ResultSet resultSet, String fullColumnName) throws SQLException {
+	protected Long getFromResultSet(DBDatabase database, ResultSet resultSet, String fullColumnName) throws SQLException {
 		return resultSet.getLong(fullColumnName);
 	}
 
@@ -702,5 +703,25 @@ public class DBIntegerEnum<E extends Enum<E> & DBEnumValue<? extends Number>> ex
 	@Override
 	public StringExpression stringResult() {
 		return StringExpression.value("" + getValue());
+	}
+
+	@Override
+	public boolean isPurelyFunctional() {
+		return false;
+	}
+
+	@Override
+	protected void setValueFromStandardStringEncoding(String encodedValue) {
+		if (encodedValue.isEmpty()) {
+			super.setLiteralValue(null);
+		} else {
+			try {
+				Double parseDouble = Double.parseDouble(encodedValue);
+				Long literalLong = parseDouble.longValue();
+				setLiteralValue(literalLong);
+			} catch (NumberFormatException noFormat) {
+				setLiteralValue(null);
+			}
+		}
 	}
 }

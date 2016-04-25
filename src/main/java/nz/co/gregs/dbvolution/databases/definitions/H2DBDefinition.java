@@ -60,7 +60,7 @@ public class H2DBDefinition extends DBDefinition {
 	}
 
 	@Override
-	protected String getDatabaseDataTypeOfQueryableDatatype(QueryableDatatype qdt) {
+	protected String getDatabaseDataTypeOfQueryableDatatype(QueryableDatatype<?> qdt) {
 		if (qdt instanceof DBDateRepeat) {
 			return DataTypes.DATEREPEAT.datatype();
 		} else if (qdt instanceof DBPoint2D) {
@@ -147,17 +147,18 @@ public class H2DBDefinition extends DBDefinition {
 		StringBuilder str = new StringBuilder();
 		str.append("(");
 		String separator = "";
-		if (bools.length == 0) {
-			return "()";
-		} else if (bools.length == 1) {
-			return "(" + bools[0] + ",)";
-		} else {
-			for (Boolean bool : bools) {
-				str.append(separator).append(bool.toString().toUpperCase());
-				separator = ",";
-			}
-			str.append(")");
-			return str.toString();
+		switch (bools.length) {
+			case 0:
+				return "()";
+			case 1:
+				return "(" + bools[0] + ",)";
+			default:
+				for (Boolean bool : bools) {
+					str.append(separator).append(bool.toString().toUpperCase());
+					separator = ",";
+				}
+				str.append(")");
+				return str.toString();
 		}
 	}
 

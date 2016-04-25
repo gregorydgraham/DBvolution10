@@ -38,7 +38,7 @@ public class UnableInstantiateQueryableDatatypeException extends DBRuntimeExcept
 	 * @param qdt qdt
 	 * @param exception exception
 	 */
-	public UnableInstantiateQueryableDatatypeException(QueryableDatatype qdt, Exception exception) {
+	public UnableInstantiateQueryableDatatypeException(QueryableDatatype<?> qdt, Exception exception) {
 		super("Unable To Copy " + qdt.getClass().getSimpleName() + " Due To " + exception.getClass().getSimpleName() + ": Please ensure the newInstance() method works correctly.", exception);
 	}
 

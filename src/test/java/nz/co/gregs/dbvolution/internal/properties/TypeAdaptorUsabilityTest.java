@@ -236,7 +236,7 @@ public class TypeAdaptorUsabilityTest {
 	@Test
 	public void stringFieldAdaptedAsCustomQDT_whenAdaptingOnSimpleTypes() {
 
-		class MyQDT extends QueryableDatatype {
+		class MyQDT extends QueryableDatatype<Object> {
 
 			@SuppressWarnings("unused")
 			public MyQDT() {
@@ -262,6 +262,11 @@ public class TypeAdaptorUsabilityTest {
 			protected Object getFromResultSet(DBDatabase database, ResultSet resultSet, String fullColumnName) throws SQLException {
 				return resultSet.getString(fullColumnName);
 			}
+
+			@Override
+			protected void setValueFromStandardStringEncoding(String encodedValue) {
+				throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+			}
 		}
 
 		class MyTypeAdaptor implements DBTypeAdaptor<String, Integer> {
@@ -286,9 +291,6 @@ public class TypeAdaptorUsabilityTest {
 		}
 	}
 
-// not trying to support just yet
-//    @Ignore
-//    @Test
 	public
 			void stringFieldAdaptedAsCustomQDT_whenAdaptingOnComplexPOJOTypes() {
 		class MyDataType {
@@ -303,7 +305,7 @@ public class TypeAdaptorUsabilityTest {
 			}
 		}
 
-		class MyQDT extends QueryableDatatype {
+		class MyQDT extends QueryableDatatype<Object> {
 
 			@SuppressWarnings("unused")
 			public MyQDT() {
@@ -328,6 +330,11 @@ public class TypeAdaptorUsabilityTest {
 			@Override
 			protected Object getFromResultSet(DBDatabase database, ResultSet resultSet, String fullColumnName) throws SQLException {
 				return resultSet.getString(fullColumnName);
+			}
+
+			@Override
+			protected void setValueFromStandardStringEncoding(String encodedValue) {
+				throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 			}
 		}
 

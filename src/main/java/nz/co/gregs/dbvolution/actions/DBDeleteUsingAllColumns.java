@@ -37,7 +37,7 @@ import nz.co.gregs.dbvolution.internal.properties.PropertyWrapper;
  */
 public class DBDeleteUsingAllColumns extends DBDelete {
 
-	private List<DBRow> savedRows = new ArrayList<DBRow>();
+	private List<DBRow> savedRows = new ArrayList<>();
 
 	/**
 	 * Creates a DBDeleteUsingAllColumns action for the supplied example DBRow on
@@ -87,7 +87,7 @@ public class DBDeleteUsingAllColumns extends DBDelete {
 				+ defn.beginWhereClause()
 				+ defn.getWhereClauseBeginningCondition();
 		for (PropertyWrapper prop : row.getColumnPropertyWrappers()) {
-			QueryableDatatype qdt = prop.getQueryableDatatype();
+			QueryableDatatype<?> qdt = prop.getQueryableDatatype();
 			sql = sql
 					+ defn.beginWhereClauseLine()
 					+ prop.columnName()
@@ -95,7 +95,7 @@ public class DBDeleteUsingAllColumns extends DBDelete {
 					+ (qdt.hasChanged() ? qdt.getPreviousSQLValue(db) : qdt.toSQLString(db));
 		}
 		sql += defn.endDeleteLine();
-		ArrayList<String> strs = new ArrayList<String>();
+		ArrayList<String> strs = new ArrayList<>();
 		strs.add(sql);
 		return strs;
 	}

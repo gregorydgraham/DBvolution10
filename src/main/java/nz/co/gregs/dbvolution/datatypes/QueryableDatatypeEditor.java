@@ -42,12 +42,12 @@ public class QueryableDatatypeEditor extends PropertyEditorSupport {
 		}
 		Object value = getValue();
 		if (value instanceof QueryableDatatype) {
-			QueryableDatatype qdt = (QueryableDatatype) value;
-			qdt.setValue(inputText);
+			QueryableDatatype<?> qdt = (QueryableDatatype<?>) value;
+			qdt.setValueFromStandardStringEncoding(inputText);
 			setValue(qdt);
 		} else {
-			QueryableDatatype type = new DBString();
-			type.setValue(inputText);
+			DBString type = new DBString();
+			type.setValueFromStandardStringEncoding(inputText);
 			setValue(type);
 		}
 	}

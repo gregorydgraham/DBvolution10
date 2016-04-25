@@ -33,7 +33,7 @@ import org.apache.commons.codec.binary.Base64;
  * @author Gregory Graham
  * @param <O> the specific type of the objects to be stored.
  */
-public class DBJavaObject<O> extends DBLargeObject {
+public class DBJavaObject<O> extends DBLargeObject<O> {
 
 	private static final long serialVersionUID = 1;
 	private transient InputStream byteStream = null;
@@ -57,7 +57,8 @@ public class DBJavaObject<O> extends DBLargeObject {
 					ByteArrayOutputStream tempByteStream = new ByteArrayOutputStream();
 					ObjectOutputStream oStream = new ObjectOutputStream(tempByteStream);
 					oStream.writeObject(literalObject);
-					setLiteralValue(tempByteStream.toByteArray());
+					setLiteralValue(null);
+//					setLiteralValue(tempByteStream.toByteArray());
 				} catch (IOException ex) {
 					throw new RuntimeException(ex);
 				}
@@ -141,7 +142,7 @@ public class DBJavaObject<O> extends DBLargeObject {
 			} else {
 				BufferedReader input = new BufferedReader(inputReader);
 				try {
-					List<byte[]> byteArrays = new ArrayList<byte[]>();
+					List<byte[]> byteArrays = new ArrayList<>();
 
 					int totalBytesRead = 0;
 					try {
@@ -190,7 +191,7 @@ public class DBJavaObject<O> extends DBLargeObject {
 			try {
 				BufferedReader input = new BufferedReader(clob.getCharacterStream());
 				try {
-					List<byte[]> byteArrays = new ArrayList<byte[]>();
+					List<byte[]> byteArrays = new ArrayList<>();
 
 					int totalBytesRead = 0;
 					try {
@@ -235,7 +236,7 @@ public class DBJavaObject<O> extends DBLargeObject {
 
 	@Override
 	public DBJavaObject<O> getQueryableDatatypeForExpressionValue() {
-		return new DBJavaObject<O>();
+		return new DBJavaObject<>();
 	}
 
 	@Override
@@ -245,7 +246,7 @@ public class DBJavaObject<O> extends DBLargeObject {
 
 	@Override
 	public Set<DBRow> getTablesInvolved() {
-		return new HashSet<DBRow>();
+		return new HashSet<>();
 	}
 
 	/**
@@ -322,5 +323,10 @@ public class DBJavaObject<O> extends DBLargeObject {
 	@Override
 	public boolean getIncludesNull() {
 		return false;
+	}
+
+	@Override
+	protected void setValueFromStandardStringEncoding(String encodedValue) {
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 }
