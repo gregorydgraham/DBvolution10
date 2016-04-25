@@ -39,7 +39,7 @@ import org.junit.Test;
 public class DBDatabaseGetTest extends AbstractTest {
 
 	Marque myTableRow = new Marque();
-	List<Marque> myTableRows = new ArrayList<Marque>();
+	List<Marque> myTableRows = new ArrayList<>();
 
 	public DBDatabaseGetTest(Object testIterationName, Object db) {
 		super(testIterationName, db);
@@ -56,7 +56,7 @@ public class DBDatabaseGetTest extends AbstractTest {
 
 	@Test
 	public void testGetFirstAndPrimaryKey() throws SQLException {
-		List<Marque> singleMarque = new ArrayList<Marque>();
+		List<Marque> singleMarque = new ArrayList<>();
 		DBRow row = marqueRows.get(0);
 		Object primaryKey;
 		if (row != null) {
@@ -143,7 +143,7 @@ public class DBDatabaseGetTest extends AbstractTest {
 		literalQuery.individualAllocationsAllowed.permittedValues((Object) null);
 		List<Marque> gotMarques = database.get(literalQuery);
 		if (database.supportsDifferenceBetweenNullAndEmptyString()) {
-			Assert.assertEquals(gotMarques.size(), 2);
+			Assert.assertEquals(2, gotMarques.size());
 		} else {
 			database.print(gotMarques);
 			Assert.assertEquals(gotMarques.size(), database.getDBTable(new Marque()).count() - 1);
@@ -160,7 +160,7 @@ public class DBDatabaseGetTest extends AbstractTest {
 			Assert.assertEquals(gotMarques.size(), database.getDBTable(new Marque()).count() - 2);
 		} else {
 			database.print(gotMarques);
-			Assert.assertEquals(gotMarques.size(), 1);
+			Assert.assertEquals(1, gotMarques.size());
 		}
 		Assert.assertEquals(true, gotMarques.get(0).individualAllocationsAllowed.isNotNull());
 	}
@@ -190,7 +190,7 @@ public class DBDatabaseGetTest extends AbstractTest {
 	@SuppressWarnings("unchecked")
 	public void testIsInWithList() throws SQLException {
 		Marque hummerQuery = new Marque();
-		List<String> permittedMarques = new ArrayList<String>();
+		List<String> permittedMarques = new ArrayList<>();
 		permittedMarques.add("PEUGEOT");
 		permittedMarques.add("HUMMER");
 		hummerQuery.getName().permittedValues(permittedMarques);
@@ -203,7 +203,7 @@ public class DBDatabaseGetTest extends AbstractTest {
 	public void testIsExcludedWithList() throws SQLException {
 		Marque hummerQuery = new Marque();
 		List<Marque> allMarques = database.getDBTable(hummerQuery).setBlankQueryAllowed(true).getAllRows();
-		List<String> permittedMarques = new ArrayList<String>();
+		List<String> permittedMarques = new ArrayList<>();
 		permittedMarques.add("PEUGEOT");
 		permittedMarques.add("HUMMER");
 		hummerQuery.getName().excludedValues(permittedMarques);

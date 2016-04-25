@@ -57,7 +57,7 @@ public class InternalQueryableDatatypeProxy {
 	public void setValue(Object obj) {
 		Method method;
 		try {
-			method = qdt.getClass().getMethod("setLiteralValue", Object.class);
+			method = qdt.getClass().getMethod("setValue", obj.getClass());
 			try {
 				method.invoke(qdt, obj);
 			} catch (IllegalAccessException ex) {

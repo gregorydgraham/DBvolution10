@@ -694,7 +694,7 @@ public class DBInteger extends QueryableDatatype<Long> implements NumberResult {
 		if (isNull()) {
 			return defn.getNull();
 		}
-		return defn.beginNumberValue() + getLiteralValue().toString() + defn.endNumberValue();
+		return defn.beginNumberValue() + getLiteralValue() + defn.endNumberValue();
 	}
 
 	@Override
