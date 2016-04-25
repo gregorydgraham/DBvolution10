@@ -4,6 +4,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import nz.co.gregs.dbvolution.exceptions.DBRuntimeException;
 import nz.co.gregs.dbvolution.internal.properties.PropertyWrapperDefinition;
 
 /**
@@ -55,22 +56,18 @@ public class InternalQueryableDatatypeProxy {
 	 * @param obj	obj
 	 */
 	public void setValue(Object obj) {
-		Method method;
 		try {
-			method = qdt.getClass().getMethod("setValue", obj.getClass());
-			try {
+			// TODO what type checking can/should be done here?
+			//internalQDT.setValue(internalValue);
+			if (obj == null) {
+				qdt.setToNull();
+			} else {
+				Method method = qdt.getClass().getMethod("setValue", obj.getClass());
 				method.invoke(qdt, obj);
-			} catch (IllegalAccessException ex) {
-				Logger.getLogger(InternalQueryableDatatypeProxy.class.getName()).log(Level.SEVERE, null, ex);
-			} catch (IllegalArgumentException ex) {
-				Logger.getLogger(InternalQueryableDatatypeProxy.class.getName()).log(Level.SEVERE, null, ex);
-			} catch (InvocationTargetException ex) {
-				Logger.getLogger(InternalQueryableDatatypeProxy.class.getName()).log(Level.SEVERE, null, ex);
 			}
-		} catch (NoSuchMethodException ex) {
-			Logger.getLogger(InternalQueryableDatatypeProxy.class.getName()).log(Level.SEVERE, null, ex);
-		} catch (SecurityException ex) {
-			Logger.getLogger(InternalQueryableDatatypeProxy.class.getName()).log(Level.SEVERE, null, ex);
+		} catch (NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
+			throw new DBRuntimeException("Synchronisation Failed:" + ex.getMessage(), ex);
 		}
+
 	}
 }

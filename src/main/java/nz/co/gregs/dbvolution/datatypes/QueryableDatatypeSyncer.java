@@ -194,21 +194,16 @@ public class QueryableDatatypeSyncer {
 		try {
 			// TODO what type checking can/should be done here?
 			//internalQDT.setValue(internalValue);
-			Method method = internalQDT.getClass().getMethod("setLiteralValue", Object.class);
-			try {
-				method.invoke(internalValue, internalValue);
-			} catch (IllegalAccessException ex) {
-				Logger.getLogger(SimpleValueQueryableDatatypeSyncer.class.getName()).log(Level.SEVERE, null, ex);
-			} catch (IllegalArgumentException ex) {
-				Logger.getLogger(SimpleValueQueryableDatatypeSyncer.class.getName()).log(Level.SEVERE, null, ex);
-			} catch (InvocationTargetException ex) {
-				Logger.getLogger(SimpleValueQueryableDatatypeSyncer.class.getName()).log(Level.SEVERE, null, ex);
+			if (internalValue == null) {
+				internalQDT.setToNull();
+			} else {
+				Method method = internalQDT.getClass().getMethod("setValue", internalValue.getClass());
+				method.invoke(internalQDT, internalValue);
 			}
-		} catch (NoSuchMethodException ex) {
-			Logger.getLogger(SimpleValueQueryableDatatypeSyncer.class.getName()).log(Level.SEVERE, null, ex);
-		} catch (SecurityException ex) {
-			Logger.getLogger(SimpleValueQueryableDatatypeSyncer.class.getName()).log(Level.SEVERE, null, ex);
+		} catch (NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
+			throw new DBRuntimeException("Synchronisation Failed:"+ex.getMessage(), ex);
 		}
+
 	}
 
 	/**

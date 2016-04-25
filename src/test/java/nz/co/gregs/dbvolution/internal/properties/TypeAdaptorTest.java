@@ -155,6 +155,7 @@ public class TypeAdaptorTest {
 		CustomerWithDBInteger q = new CustomerWithDBInteger();
 		q.uid.permittedValues(50);
 		List<CustomerWithDBInteger> rows = db.get(q);
+		db.print(rows);
 		assertThat(rows.size(), is(1));
 		assertThat(rows.get(0).uid.getValue().intValue(), is(50));
 		assertThat(rows.get(0).year.getValue().intValue(), is(2050));

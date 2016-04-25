@@ -140,6 +140,7 @@ public class InterfaceInfoTest {
 		abstract class AbstractPartialReImplementationOfWildcardTypeWithWildcardType<I extends Integer>
 				extends AbstractPartialImplementationWithWildcardType<I, DBInteger> {
 
+			@Override
 			public DBInteger toDBvValue(I objectValue) {
 				return null;
 			}
@@ -245,7 +246,7 @@ public class InterfaceInfoTest {
 
 		ParameterBounds[] bounds = InterfaceInfo.getParameterBounds(MultiBoundedInterface.class, MySubclass.class);
 		System.out.println(Arrays.toString(bounds));
-		assertThat(Arrays.asList(bounds[0].upperClasses()), contains((Object) Serializable.class, (Object) Map.class));
+		assertThat(Arrays.asList(bounds[0].upperClasses()), contains(Serializable.class, (Object) Map.class));
 		assertThat(bounds[0].lowerTypes(), is(nullValue()));
 	}
 
@@ -409,7 +410,7 @@ public class InterfaceInfoTest {
 		}
 	}
 
-	public abstract class AbstractPartialImplementationWithWildcardType<T extends Number, Q extends QueryableDatatype> implements MyInterface<T, Q> {
+	public abstract class AbstractPartialImplementationWithWildcardType<T extends Number, Q extends QueryableDatatype<?>> implements MyInterface<T, Q> {
 
 		@Override
 		public T toObjectValue(Q dbvValue) {
