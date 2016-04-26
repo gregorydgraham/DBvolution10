@@ -230,7 +230,7 @@ public class PropertyWrapperDefinition {
 	 * QueryableDatatype, FALSE otherwise.
 	 */
 	public boolean isInstanceOfLargeObject() {
-		return type().isAssignableFrom(DBLargeObject.class);
+		return DBLargeObject.class.isAssignableFrom(type());
 	}
 
 	/**

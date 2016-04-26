@@ -46,7 +46,7 @@ public class DBJavaObject<O> extends DBLargeObject<O> {
 	}
 
 	@SuppressWarnings("unchecked")
-	private void setInternalValue(Object newLiteralValue) {
+	private void setInternalValue(O newLiteralValue) {
 		if (!internalValueHasBeenSet) {
 			if (newLiteralValue instanceof DBJavaObject) {
 				final DBJavaObject<O> valBytes = (DBJavaObject<O>) newLiteralValue;
@@ -57,7 +57,7 @@ public class DBJavaObject<O> extends DBLargeObject<O> {
 					ByteArrayOutputStream tempByteStream = new ByteArrayOutputStream();
 					ObjectOutputStream oStream = new ObjectOutputStream(tempByteStream);
 					oStream.writeObject(literalObject);
-					setLiteralValue(null);
+					setLiteralValue(literalObject);
 //					setLiteralValue(tempByteStream.toByteArray());
 				} catch (IOException ex) {
 					throw new RuntimeException(ex);
