@@ -659,10 +659,8 @@ public class DBIntegerEnum<E extends Enum<E> & DBEnumValue<Long>> extends DBEnum
 	public Long longValue() {
 		if (getLiteralValue() == null) {
 			return null;
-		} else if (getLiteralValue() instanceof Long) {
-			return (Long) getLiteralValue();
 		} else {
-			return Long.parseLong(getLiteralValue().toString());
+			return getLiteralValue();
 		}
 	}
 

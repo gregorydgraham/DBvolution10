@@ -1,6 +1,7 @@
 package nz.co.gregs.dbvolution.datatypes;
 
 import java.lang.reflect.Array;
+import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.expressions.DBExpression;
@@ -265,18 +266,35 @@ public abstract class DBEnum<E extends Enum<E> & DBEnumValue<T>, T> extends Quer
 	 * @param enumValues	enumValues
 	 * @return a list of the literal database values for the enumeration values.
 	 */
+	@SuppressWarnings("unchecked")
 	protected T[] convertToLiteral(E... enumValues) {
 		// Use Array native method to create array
 		// of a type only known at run time
-		Class<? extends Type> baseType = this.getClass().getGenericInterfaces()[0].getClass();
-		@SuppressWarnings("unchecked")
-		final T[] result = (T[]) Array.newInstance(baseType, enumValues.length);
-		
-		for (int i = 0; i < enumValues.length; i++) {
-			E enumValue = enumValues[i];
-			result[i] = convertToLiteral(enumValue);
+		if (enumValues.length == 0) {
+			return (T[]) new Object[]{};
+		} else {
+			int index = 0;
+			E firstValue = null;
+			while (firstValue == null && index < enumValues.length) {
+				index++;
+				firstValue = enumValues[index];
+			}
+			Class<T> persistentClass = (Class<T>) ((ParameterizedType) getClass().getGenericSuperclass())
+					.getActualTypeArguments()[0];
+			if (firstValue == null) {
+				return (T[]) new Object[]{};
+			} else {
+				Class<?> baseType = convertToLiteral(enumValues[0]).getClass();
+//		Class<? extends Type> baseType = this.getClass().getGenericInterfaces()[0].getClass();
+				@SuppressWarnings("unchecked")
+				final T[] result = (T[]) Array.newInstance(baseType, enumValues.length);
+				for (int i = 0; i < enumValues.length; i++) {
+					E enumValue = enumValues[i];
+					result[i] = convertToLiteral(enumValue);
+				}
+				return result;
+			}
 		}
-		return result;
 	}
 
 	/**

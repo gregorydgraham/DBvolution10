@@ -53,7 +53,7 @@ public class DBJavaObject<O> extends DBLargeObject<O> {
 				setValue(valBytes.getValue());
 			} else {
 				try {
-					literalObject = (O) newLiteralValue;
+					literalObject = newLiteralValue;
 					ByteArrayOutputStream tempByteStream = new ByteArrayOutputStream();
 					ObjectOutputStream oStream = new ObjectOutputStream(tempByteStream);
 					oStream.writeObject(literalObject);
