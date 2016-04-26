@@ -279,15 +279,16 @@ public abstract class DBEnum<E extends Enum<E> & DBEnumValue<T>, T> extends Quer
 				index++;
 				firstValue = enumValues[index];
 			}
-			Class<T> persistentClass = (Class<T>) ((ParameterizedType) getClass().getGenericSuperclass())
-					.getActualTypeArguments()[0];
-			if (firstValue == null) {
+//			Class<T> persistentClass = (Class<T>) ((ParameterizedType) getClass().getGenericSuperclass())
+//					.getActualTypeArguments()[0];
+			if (enumType==null &&firstValue == null) {
 				return (T[]) new Object[]{};
 			} else {
-				Class<?> baseType = convertToLiteral(enumValues[0]).getClass();
+				Class<?> baseType = convertToLiteral(firstValue).getClass();
+				enumType = (Class<E>) baseType;
 //		Class<? extends Type> baseType = this.getClass().getGenericInterfaces()[0].getClass();
 				@SuppressWarnings("unchecked")
-				final T[] result = (T[]) Array.newInstance(baseType, enumValues.length);
+				final T[] result = (T[]) Array.newInstance(enumType, enumValues.length);
 				for (int i = 0; i < enumValues.length; i++) {
 					E enumValue = enumValues[i];
 					result[i] = convertToLiteral(enumValue);
