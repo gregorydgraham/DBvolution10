@@ -202,7 +202,7 @@ public class DBBoolean extends QueryableDatatype<Boolean> implements BooleanResu
 	 * @param excluded	excluded
 	 */
 	public void excludedValues(Boolean excluded) {
-		this.setOperator(new DBPermittedValuesOperator(excluded));
+		this.setOperator(new DBPermittedValuesOperator<Boolean>(excluded));
 		negateOperator();
 	}
 
@@ -214,7 +214,7 @@ public class DBBoolean extends QueryableDatatype<Boolean> implements BooleanResu
 	 * @param permitted	permitted
 	 */
 	public void permittedValues(BooleanExpression permitted) {
-		this.setOperator(new DBPermittedValuesOperator(permitted));
+		this.setOperator(new DBPermittedValuesOperator<BooleanExpression>(permitted));
 	}
 
 	/**
@@ -225,7 +225,7 @@ public class DBBoolean extends QueryableDatatype<Boolean> implements BooleanResu
 	 * @param excluded	excluded
 	 */
 	public void excludedValues(BooleanExpression excluded) {
-		this.setOperator(new DBPermittedValuesOperator(excluded));
+		this.setOperator(new DBPermittedValuesOperator<BooleanExpression>(excluded));
 		negateOperator();
 	}
 

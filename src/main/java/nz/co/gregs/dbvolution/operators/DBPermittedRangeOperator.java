@@ -31,7 +31,7 @@ import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
  *
  * @author Gregory Graham
  */
-public class DBPermittedRangeOperator extends DBMetaOperator {
+public class DBPermittedRangeOperator<T> extends DBMetaOperator {
 
 	private static final long serialVersionUID = 1L;
 
@@ -44,7 +44,7 @@ public class DBPermittedRangeOperator extends DBMetaOperator {
 	 * @param lowerBound the smallest value of the desired range
 	 * @param upperBound the smallest value larger than the desired range
 	 */	
-	public DBPermittedRangeOperator(Object lowerBound, Object upperBound) {
+	public DBPermittedRangeOperator(T lowerBound, T upperBound) {
 		if (lowerBound != null && upperBound != null) {
 			operator = new DBBetweenInclusiveExclusiveOperator(
 					QueryableDatatype.getQueryableDatatypeForObject(lowerBound),

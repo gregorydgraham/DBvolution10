@@ -283,7 +283,7 @@ public class DBDate extends QueryableDatatype<Date> implements DateResult {
 	 * @param permitted	permitted
 	 */
 	public void permittedValues(Date... permitted) {
-		this.setOperator(new DBPermittedValuesOperator((Object[]) permitted));
+		this.setOperator(new DBPermittedValuesOperator<Date>(permitted));
 	}
 
 	/**
@@ -294,7 +294,7 @@ public class DBDate extends QueryableDatatype<Date> implements DateResult {
 	 * @param excluded	excluded
 	 */
 	public void excludedValues(Date... excluded) {
-		this.setOperator(new DBPermittedValuesOperator((Object[]) excluded));
+		this.setOperator(new DBPermittedValuesOperator<Date>(excluded));
 		negateOperator();
 	}
 
@@ -321,7 +321,7 @@ public class DBDate extends QueryableDatatype<Date> implements DateResult {
 	 * @param upperBound upperBound
 	 */
 	public void permittedRange(Date lowerBound, Date upperBound) {
-		setOperator(new DBPermittedRangeOperator(lowerBound, upperBound));
+		setOperator(new DBPermittedRangeOperator<Date>(lowerBound, upperBound));
 	}
 
 	/**
@@ -399,7 +399,7 @@ public class DBDate extends QueryableDatatype<Date> implements DateResult {
 	 * @param upperBound upperBound
 	 */
 	public void excludedRange(Date lowerBound, Date upperBound) {
-		setOperator(new DBPermittedRangeOperator(lowerBound, upperBound));
+		setOperator(new DBPermittedRangeOperator<Date>(lowerBound, upperBound));
 		negateOperator();
 	}
 
@@ -464,7 +464,7 @@ public class DBDate extends QueryableDatatype<Date> implements DateResult {
 	 * @param permitted	permitted
 	 */
 	public void permittedValues(DateExpression... permitted) {
-		this.setOperator(new DBPermittedValuesOperator((Object[]) permitted));
+		this.setOperator(new DBPermittedValuesOperator<DateExpression>(permitted));
 	}
 
 	/**
@@ -475,7 +475,7 @@ public class DBDate extends QueryableDatatype<Date> implements DateResult {
 	 * @param excluded	excluded
 	 */
 	public void excludedValues(DateExpression... excluded) {
-		this.setOperator(new DBPermittedValuesOperator((Object[]) excluded));
+		this.setOperator(new DBPermittedValuesOperator<DateExpression>(excluded));
 		negateOperator();
 	}
 
@@ -502,7 +502,7 @@ public class DBDate extends QueryableDatatype<Date> implements DateResult {
 	 * @param upperBound upperBound
 	 */
 	public void permittedRange(DateExpression lowerBound, DateExpression upperBound) {
-		setOperator(new DBPermittedRangeOperator(lowerBound, upperBound));
+		setOperator(new DBPermittedRangeOperator<DateExpression>(lowerBound, upperBound));
 	}
 
 	/**
@@ -580,7 +580,7 @@ public class DBDate extends QueryableDatatype<Date> implements DateResult {
 	 * @param upperBound upperBound
 	 */
 	public void excludedRange(DateExpression lowerBound, DateExpression upperBound) {
-		setOperator(new DBPermittedRangeOperator(lowerBound, upperBound));
+		setOperator(new DBPermittedRangeOperator<DateExpression>(lowerBound, upperBound));
 		negateOperator();
 	}
 

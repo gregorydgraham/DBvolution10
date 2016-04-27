@@ -64,7 +64,7 @@ public class DBBooleanArrayTest extends AbstractTest {
 	public void testEquals() {
 		System.out.println("equals");
 		final Boolean[] trueFalseTrueArray = new Boolean[]{true, false, true};
-		QueryableDatatype other = new DBBooleanArray(trueFalseTrueArray);
+		QueryableDatatype<?> other = new DBBooleanArray(trueFalseTrueArray);
 		final Boolean[] allTrueArray = new Boolean[]{true, true, true};
 		DBBooleanArray instance = new DBBooleanArray(allTrueArray);
 		boolean expResult = false;

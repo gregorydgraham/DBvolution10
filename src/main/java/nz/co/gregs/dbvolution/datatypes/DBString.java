@@ -19,7 +19,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -172,7 +171,7 @@ public class DBString extends QueryableDatatype<String> implements StringResult 
 	 * @param permitted	permitted
 	 */
 	public void permittedValues(String... permitted) {
-		this.setOperator(new DBPermittedValuesOperator((Object[]) permitted));
+		this.setOperator(new DBPermittedValuesOperator<String>(permitted));
 	}
 
 	/**
@@ -182,7 +181,7 @@ public class DBString extends QueryableDatatype<String> implements StringResult 
 	 * @param permitted	permitted
 	 */
 	public void permittedValues(Object... permitted) {
-		this.setOperator(new DBPermittedValuesOperator(permitted));
+		this.setOperator(new DBPermittedValuesOperator<Object>(permitted));
 	}
 
 	/**
@@ -192,7 +191,7 @@ public class DBString extends QueryableDatatype<String> implements StringResult 
 	 * @param permitted	permitted
 	 */
 	public void permittedValues(Collection<String> permitted) {
-		this.setOperator(new DBPermittedValuesOperator(permitted));
+		this.setOperator(new DBPermittedValuesOperator<String>(permitted));
 	}
 
 	/**
@@ -288,7 +287,7 @@ public class DBString extends QueryableDatatype<String> implements StringResult 
 	 * @param excluded	excluded
 	 */
 	public void excludedValues(String... excluded) {
-		this.setOperator(new DBPermittedValuesOperator((Object[]) excluded));
+		this.setOperator(new DBPermittedValuesOperator<String>(excluded));
 		negateOperator();
 	}
 
@@ -300,7 +299,7 @@ public class DBString extends QueryableDatatype<String> implements StringResult 
 	 * @param excluded	excluded
 	 */
 	public void excludedValues(Collection<String> excluded) {
-		this.setOperator(new DBPermittedValuesOperator(excluded));
+		this.setOperator(new DBPermittedValuesOperator<String>(excluded));
 		negateOperator();
 	}
 
@@ -325,7 +324,7 @@ public class DBString extends QueryableDatatype<String> implements StringResult 
 	 * @param upperBound upperBound
 	 */
 	public void permittedRange(String lowerBound, String upperBound) {
-		setOperator(new DBPermittedRangeOperator(lowerBound, upperBound));
+		setOperator(new DBPermittedRangeOperator<String>(lowerBound, upperBound));
 	}
 
 	/**
@@ -397,7 +396,7 @@ public class DBString extends QueryableDatatype<String> implements StringResult 
 	 * @param upperBound upperBound
 	 */
 	public void excludedRange(String lowerBound, String upperBound) {
-		setOperator(new DBPermittedRangeOperator(lowerBound, upperBound));
+		setOperator(new DBPermittedRangeOperator<String>(lowerBound, upperBound));
 		negateOperator();
 	}
 
@@ -532,7 +531,7 @@ public class DBString extends QueryableDatatype<String> implements StringResult 
 	 * @param permitted	permitted
 	 */
 	public void permittedValues(StringExpression... permitted) {
-		this.setOperator(new DBPermittedValuesOperator((Object[]) permitted));
+		this.setOperator(new DBPermittedValuesOperator<StringExpression>(permitted));
 	}
 
 	/**
@@ -543,7 +542,7 @@ public class DBString extends QueryableDatatype<String> implements StringResult 
 	 * @param excluded	excluded
 	 */
 	public void excludedValues(StringExpression... excluded) {
-		this.setOperator(new DBPermittedValuesOperator((Object[]) excluded));
+		this.setOperator(new DBPermittedValuesOperator<StringExpression>(excluded));
 		negateOperator();
 	}
 
@@ -568,7 +567,7 @@ public class DBString extends QueryableDatatype<String> implements StringResult 
 	 * @param upperBound upperBound
 	 */
 	public void permittedRange(StringExpression lowerBound, StringExpression upperBound) {
-		setOperator(new DBPermittedRangeOperator(lowerBound, upperBound));
+		setOperator(new DBPermittedRangeOperator<StringExpression>(lowerBound, upperBound));
 	}
 
 	/**
@@ -640,7 +639,7 @@ public class DBString extends QueryableDatatype<String> implements StringResult 
 	 * @param upperBound upperBound
 	 */
 	public void excludedRange(StringExpression lowerBound, StringExpression upperBound) {
-		setOperator(new DBPermittedRangeOperator(lowerBound, upperBound));
+		setOperator(new DBPermittedRangeOperator<StringExpression>(lowerBound, upperBound));
 		negateOperator();
 	}
 

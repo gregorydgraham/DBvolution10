@@ -22,7 +22,7 @@ import nz.co.gregs.dbvolution.expressions.BooleanExpression;
  *
  * @author gregorygraham
  */
-public class DBBooleanPermittedValuesOperator extends DBPermittedValuesOperator {
+public class DBBooleanPermittedValuesOperator extends DBPermittedValuesOperator<Boolean> {
 
 	private static final long serialVersionUID = 1L;
 

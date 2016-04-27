@@ -1,10 +1,6 @@
 package nz.co.gregs.dbvolution.internal.properties;
 
 import java.sql.SQLException;
-import nz.co.gregs.dbvolution.internal.properties.RowDefinitionClassWrapper;
-import nz.co.gregs.dbvolution.internal.properties.RowDefinitionInstanceWrapper;
-import nz.co.gregs.dbvolution.internal.properties.RowDefinitionWrapperFactory;
-import nz.co.gregs.dbvolution.internal.properties.PropertyWrapper;
 import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.annotations.DBColumn;
@@ -20,8 +16,8 @@ import org.junit.Test;
 @SuppressWarnings("unused")
 public class DBRowClassWrapperUsabilityTest {
 
-	private MyExampleTableClass obj = new MyExampleTableClass();
-	private RowDefinitionWrapperFactory factory = new RowDefinitionWrapperFactory();
+	private final MyExampleTableClass obj = new MyExampleTableClass();
+	private final RowDefinitionWrapperFactory factory = new RowDefinitionWrapperFactory();
 	private static DBDatabase database;
 
 	@BeforeClass
@@ -31,7 +27,7 @@ public class DBRowClassWrapperUsabilityTest {
 
 	@Test
 	public void easyToGetSpecificPropertyValueOnObjectWhenDoingInline() {
-		QueryableDatatype qdt = new RowDefinitionClassWrapper(MyExampleTableClass.class)
+		QueryableDatatype<?> qdt = new RowDefinitionClassWrapper(MyExampleTableClass.class)
 				.instanceWrapperFor(obj)
 				.getPropertyByColumn(database, "column1")
 				.getQueryableDatatype();
@@ -43,7 +39,7 @@ public class DBRowClassWrapperUsabilityTest {
 		RowDefinitionInstanceWrapper objectWrapper = classWrapper.instanceWrapperFor(obj);
 		PropertyWrapper property = objectWrapper.getPropertyByColumn(database, "column1");
 		if (property != null) {
-			QueryableDatatype qdt = property.getQueryableDatatype();
+			QueryableDatatype<?> qdt = property.getQueryableDatatype();
 			property.setQueryableDatatype(qdt);
 		}
 	}
@@ -57,7 +53,7 @@ public class DBRowClassWrapperUsabilityTest {
 	public void easyToIterateOverPropertiesUsingFactory() {
 		RowDefinitionInstanceWrapper objectWrapper = factory.instanceWrapperFor(obj);
 		for (PropertyWrapper property : objectWrapper.getColumnPropertyWrappers()) {
-			QueryableDatatype qdt = property.getQueryableDatatype();
+			QueryableDatatype<?> qdt = property.getQueryableDatatype();
 			property.columnName();
 			property.isForeignKey();
 			property.isColumn();

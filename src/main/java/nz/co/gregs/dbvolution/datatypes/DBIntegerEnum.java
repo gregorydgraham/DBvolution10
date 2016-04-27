@@ -135,7 +135,7 @@ public class DBIntegerEnum<E extends Enum<E> & DBEnumValue<Long>> extends DBEnum
 	 * @param permitted	permitted
 	 */
 	public void permittedValues(E... permitted) {
-		this.setOperator(new DBPermittedValuesOperator(convertToLiteral(permitted)));
+		this.setOperator(new DBPermittedValuesOperator<Long>(convertToLiteral(permitted)));
 	}
 
 	/**
@@ -146,7 +146,7 @@ public class DBIntegerEnum<E extends Enum<E> & DBEnumValue<Long>> extends DBEnum
 	 * @param excluded	excluded
 	 */
 	public void excludedValues(E... excluded) {
-		this.setOperator(new DBPermittedValuesOperator(convertToLiteral(excluded)));
+		this.setOperator(new DBPermittedValuesOperator<Long>(convertToLiteral(excluded)));
 		negateOperator();
 	}
 
@@ -171,7 +171,7 @@ public class DBIntegerEnum<E extends Enum<E> & DBEnumValue<Long>> extends DBEnum
 	 * @param upperBound upperBound
 	 */
 	public void permittedRange(E lowerBound, E upperBound) {
-		setOperator(new DBPermittedRangeOperator(convertToLiteral(lowerBound), convertToLiteral(upperBound)));
+		setOperator(new DBPermittedRangeOperator<Long>(convertToLiteral(lowerBound), convertToLiteral(upperBound)));
 	}
 
 	/**
@@ -243,7 +243,7 @@ public class DBIntegerEnum<E extends Enum<E> & DBEnumValue<Long>> extends DBEnum
 	 * @param upperBound upperBound
 	 */
 	public void excludedRange(E lowerBound, E upperBound) {
-		setOperator(new DBPermittedRangeOperator(convertToLiteral(lowerBound), convertToLiteral(upperBound)));
+		setOperator(new DBPermittedRangeOperator<Long>(convertToLiteral(lowerBound), convertToLiteral(upperBound)));
 		negateOperator();
 	}
 
@@ -304,7 +304,7 @@ public class DBIntegerEnum<E extends Enum<E> & DBEnumValue<Long>> extends DBEnum
 	 * @param permitted	permitted
 	 */
 	public void permittedValues(Long... permitted) {
-		this.setOperator(new DBPermittedValuesOperator((Object[]) permitted));
+		this.setOperator(new DBPermittedValuesOperator<Long>(permitted));
 	}
 
 	/**
@@ -315,7 +315,7 @@ public class DBIntegerEnum<E extends Enum<E> & DBEnumValue<Long>> extends DBEnum
 	 * @param excluded	excluded
 	 */
 	public void excludedValues(Long... excluded) {
-		this.setOperator(new DBPermittedValuesOperator((Object[]) excluded));
+		this.setOperator(new DBPermittedValuesOperator<Long>(excluded));
 		negateOperator();
 	}
 
@@ -340,7 +340,7 @@ public class DBIntegerEnum<E extends Enum<E> & DBEnumValue<Long>> extends DBEnum
 	 * @param upperBound upperBound
 	 */
 	public void permittedRange(Long lowerBound, Long upperBound) {
-		setOperator(new DBPermittedRangeOperator(lowerBound, upperBound));
+		setOperator(new DBPermittedRangeOperator<Long>(lowerBound, upperBound));
 	}
 
 	/**
@@ -412,7 +412,7 @@ public class DBIntegerEnum<E extends Enum<E> & DBEnumValue<Long>> extends DBEnum
 	 * @param upperBound upperBound
 	 */
 	public void excludedRange(Long lowerBound, Long upperBound) {
-		setOperator(new DBPermittedRangeOperator(lowerBound, upperBound));
+		setOperator(new DBPermittedRangeOperator<Long>(lowerBound, upperBound));
 		negateOperator();
 	}
 
@@ -474,7 +474,7 @@ public class DBIntegerEnum<E extends Enum<E> & DBEnumValue<Long>> extends DBEnum
 	 * @param permitted	permitted
 	 */
 	public void permittedValues(Integer... permitted) {
-		this.setOperator(new DBPermittedValuesOperator((Object[]) permitted));
+		this.setOperator(new DBPermittedValuesOperator<Integer>(permitted));
 	}
 
 	/**
@@ -485,7 +485,7 @@ public class DBIntegerEnum<E extends Enum<E> & DBEnumValue<Long>> extends DBEnum
 	 * @param excluded	excluded
 	 */
 	public void excludedValues(Integer... excluded) {
-		this.setOperator(new DBPermittedValuesOperator((Object[]) excluded));
+		this.setOperator(new DBPermittedValuesOperator<Integer>(excluded));
 		negateOperator();
 	}
 
@@ -510,7 +510,7 @@ public class DBIntegerEnum<E extends Enum<E> & DBEnumValue<Long>> extends DBEnum
 	 * @param upperBound upperBound
 	 */
 	public void permittedRange(Integer lowerBound, Integer upperBound) {
-		setOperator(new DBPermittedRangeOperator(lowerBound, upperBound));
+		setOperator(new DBPermittedRangeOperator<Integer>(lowerBound, upperBound));
 	}
 
 	/**
@@ -582,7 +582,7 @@ public class DBIntegerEnum<E extends Enum<E> & DBEnumValue<Long>> extends DBEnum
 	 * @param upperBound upperBound
 	 */
 	public void excludedRange(Integer lowerBound, Integer upperBound) {
-		setOperator(new DBPermittedRangeOperator(lowerBound, upperBound));
+		setOperator(new DBPermittedRangeOperator<Integer>(lowerBound, upperBound));
 		negateOperator();
 	}
 
@@ -645,7 +645,7 @@ public class DBIntegerEnum<E extends Enum<E> & DBEnumValue<Long>> extends DBEnum
 		if (getLiteralValue() == null) {
 			return null;
 		} else if (getLiteralValue() instanceof Number) {
-			return (Number) getLiteralValue();
+			return getLiteralValue();
 		} else {
 			return Long.parseLong(getLiteralValue().toString());
 		}

@@ -25,7 +25,6 @@ import java.util.Set;
 import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.expressions.StringExpression;
-import nz.co.gregs.dbvolution.results.StringResult;
 import nz.co.gregs.dbvolution.operators.*;
 
 /**
@@ -187,7 +186,7 @@ public class DBStringEnum<E extends Enum<E> & DBEnumValue<String>> extends DBEnu
 	 * @param permitted	permitted
 	 */
 	public void permittedValues(String... permitted) {
-		this.setOperator(new DBPermittedValuesOperator((Object[]) permitted));
+		this.setOperator(new DBPermittedValuesOperator<String>(permitted));
 	}
 
 	/**
@@ -327,7 +326,7 @@ public class DBStringEnum<E extends Enum<E> & DBEnumValue<String>> extends DBEnu
 	 * @param excluded	excluded
 	 */
 	public void excludedValues(String... excluded) {
-		this.setOperator(new DBPermittedValuesOperator((Object[]) excluded));
+		this.setOperator(new DBPermittedValuesOperator<String>(excluded));
 		negateOperator();
 	}
 
@@ -352,7 +351,7 @@ public class DBStringEnum<E extends Enum<E> & DBEnumValue<String>> extends DBEnu
 	 * @param upperBound upperBound
 	 */
 	public void permittedRange(String lowerBound, String upperBound) {
-		setOperator(new DBPermittedRangeOperator(lowerBound, upperBound));
+		setOperator(new DBPermittedRangeOperator<String>(lowerBound, upperBound));
 	}
 
 	/**
@@ -426,7 +425,7 @@ public class DBStringEnum<E extends Enum<E> & DBEnumValue<String>> extends DBEnu
 	 * @param upperBound upperBound
 	 */
 	public void excludedRange(String lowerBound, String upperBound) {
-		setOperator(new DBPermittedRangeOperator(lowerBound, upperBound));
+		setOperator(new DBPermittedRangeOperator<String>(lowerBound, upperBound));
 		negateOperator();
 	}
 
@@ -563,7 +562,7 @@ public class DBStringEnum<E extends Enum<E> & DBEnumValue<String>> extends DBEnu
 	 * @param permitted	permitted
 	 */
 	public void permittedValues(E... permitted) {
-		this.setOperator(new DBPermittedValuesOperator(convertToLiteral(permitted)));
+		this.setOperator(new DBPermittedValuesOperator<String>(convertToLiteral(permitted)));
 	}
 
 	/**
@@ -574,7 +573,7 @@ public class DBStringEnum<E extends Enum<E> & DBEnumValue<String>> extends DBEnu
 	 * @param permitted	permitted
 	 */
 	public void permittedValuesIgnoreCase(E... permitted) {
-		this.setOperator(new DBPermittedValuesIgnoreCaseOperator((String[]) convertToLiteral(permitted)));
+		this.setOperator(new DBPermittedValuesIgnoreCaseOperator(convertToLiteral(permitted)));
 	}
 
 	/**
@@ -607,7 +606,7 @@ public class DBStringEnum<E extends Enum<E> & DBEnumValue<String>> extends DBEnu
 	 * @param excluded	excluded
 	 */
 	public void excludedValues(E... excluded) {
-		this.setOperator(new DBPermittedValuesOperator((Object[]) convertToLiteralString(excluded)));
+		this.setOperator(new DBPermittedValuesOperator<String>(convertToLiteralString(excluded)));
 		negateOperator();
 	}
 
@@ -632,7 +631,7 @@ public class DBStringEnum<E extends Enum<E> & DBEnumValue<String>> extends DBEnu
 	 * @param upperBound upperBound
 	 */
 	public void permittedRange(E lowerBound, E upperBound) {
-		setOperator(new DBPermittedRangeOperator(convertToLiteralString(lowerBound), convertToLiteralString(upperBound)));
+		setOperator(new DBPermittedRangeOperator<String>(convertToLiteralString(lowerBound), convertToLiteralString(upperBound)));
 	}
 
 	/**
@@ -705,7 +704,7 @@ public class DBStringEnum<E extends Enum<E> & DBEnumValue<String>> extends DBEnu
 	 * @param upperBound upperBound
 	 */
 	public void excludedRange(E lowerBound, E upperBound) {
-		setOperator(new DBPermittedRangeOperator(convertToLiteralString(lowerBound), convertToLiteralString(upperBound)));
+		setOperator(new DBPermittedRangeOperator<String>(convertToLiteralString(lowerBound), convertToLiteralString(upperBound)));
 		negateOperator();
 	}
 

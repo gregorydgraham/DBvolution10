@@ -48,7 +48,7 @@ public class ExpressionColumnTests extends AbstractTest {
 		Assert.assertThat(sqlForQuery, containsString(database.getDefinition().doCurrentDateOnlyTransform().trim()));
 
 		for (DBQueryRow row : query.getAllRows()) {
-			QueryableDatatype expressionColumnValue = row.getExpressionColumnValue(dateKey);
+			QueryableDatatype<?> expressionColumnValue = row.getExpressionColumnValue(dateKey);
 			System.out.println(expressionColumnValue.toSQLString(database));
 			if (expressionColumnValue instanceof DBDate) {
 				DBDate currentDate = (DBDate) expressionColumnValue;
@@ -73,7 +73,7 @@ public class ExpressionColumnTests extends AbstractTest {
 		Assert.assertThat(sqlForQuery, containsString("SUBSTR"));
 
 		for (DBQueryRow row : query.getAllRows()) {
-			QueryableDatatype expressionColumnValue = row.getExpressionColumnValue(shortMarqueName);
+			QueryableDatatype<?> expressionColumnValue = row.getExpressionColumnValue(shortMarqueName);
 			System.out.println(expressionColumnValue.toSQLString(database));
 			if (expressionColumnValue instanceof DBString) {
 				DBString shortName = (DBString) expressionColumnValue;
@@ -97,7 +97,7 @@ public class ExpressionColumnTests extends AbstractTest {
 
 		for (DBQueryRow row : query.getAllRows()) {
 			Long uid = row.get(new Marque()).uidMarque.getValue();
-			QueryableDatatype expressionColumnValue = row.getExpressionColumnValue(strangeEquation);
+			QueryableDatatype<?> expressionColumnValue = row.getExpressionColumnValue(strangeEquation);
 			System.out.println(expressionColumnValue.toSQLString(database));
 			if (expressionColumnValue instanceof DBNumber) {
 				DBNumber eqValue = (DBNumber) expressionColumnValue;

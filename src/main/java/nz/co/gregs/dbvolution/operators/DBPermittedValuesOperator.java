@@ -20,16 +20,16 @@ import java.util.Collection;
 import static nz.co.gregs.dbvolution.datatypes.QueryableDatatype.getQueryableDatatypeForObject;
 import nz.co.gregs.dbvolution.expressions.DBExpression;
 
-	/**
-	 * Provides an operator that checks that the column matches the provided
-	 * values.
-	 *
-	 * Creates a virtual operator that provides access to the ISNULL, EQUALS, or
-	 * IN operator as required.
-	 *
-	 * @author Gregory Graham
-	 */
-public class DBPermittedValuesOperator extends DBMetaOperator {
+/**
+ * Provides an operator that checks that the column matches the provided values.
+ *
+ * Creates a virtual operator that provides access to the ISNULL, EQUALS, or IN
+ * operator as required.
+ *
+ * @author Gregory Graham
+ * @param <T>
+ */
+public class DBPermittedValuesOperator<T> extends DBMetaOperator {
 
 	private static final long serialVersionUID = 1L;
 
@@ -42,17 +42,62 @@ public class DBPermittedValuesOperator extends DBMetaOperator {
 	 *
 	 * @param permitted a list of strings that are permitted values.
 	 */
-	@SuppressWarnings("unchecked")
-	public DBPermittedValuesOperator(Object... permitted) {
+	public DBPermittedValuesOperator(Collection<T> permitted) {
 		ArrayList<DBExpression> expressions = new ArrayList<DBExpression>();
 		int objectCount = 0;
 		if (permitted == null) {
 			operator = new DBIsNullOperator();
 		} else {
-			for (Object obj : permitted) {
+			for (T obj : permitted) {
 				if (obj == null) {
 					this.includeNulls = true;
-//					expressions.add(null);
+					objectCount++;
+				} else if (obj instanceof Collection) {
+					@SuppressWarnings("unchecked")
+					Collection<Object> myList = (Collection) obj;
+					for (Object obj1 : myList) {
+						if (obj1 == null) {
+							this.includeNulls = true;
+						} else {
+							expressions.add(getQueryableDatatypeForObject(obj1));
+							objectCount++;
+						}
+					}
+				} else {
+					expressions.add(getQueryableDatatypeForObject(obj));
+					objectCount++;
+				}
+			}
+			if (objectCount == 0 || expressions.isEmpty()) {
+				operator = new DBIsNullOperator();
+			} else if (objectCount == 1) {
+				operator = new DBEqualsOperator(expressions.get(0));
+			} else {
+				operator = new DBInOperator(expressions);
+			}
+		}
+		operator.includeNulls = this.includeNulls;
+	}
+
+	/**
+	 * Provides an operator that checks that the column matches the provided
+	 * values.
+	 *
+	 * Creates a virtual operator that provides access to the ISNULL, EQUALS, or
+	 * IN operator as required.
+	 *
+	 * @param permitted a list of strings that are permitted values.
+	 */
+	@SuppressWarnings("unchecked")
+	public DBPermittedValuesOperator(T... permitted) {
+		ArrayList<DBExpression> expressions = new ArrayList<DBExpression>();
+		int objectCount = 0;
+		if (permitted == null) {
+			operator = new DBIsNullOperator();
+		} else {
+			for (T obj : permitted) {
+				if (obj == null) {
+					this.includeNulls = true;
 					objectCount++;
 				} else if (obj instanceof Collection) {
 					Collection<Object> myList = (Collection) obj;

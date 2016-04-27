@@ -176,7 +176,7 @@ public class DBInteger extends QueryableDatatype<Long> implements NumberResult {
 	 * @param permitted	permitted
 	 */
 	public void permittedValues(Long... permitted) {
-		this.setOperator(new DBPermittedValuesOperator((Object[]) permitted));
+		this.setOperator(new DBPermittedValuesOperator<Long>(permitted));
 	}
 
 	/**
@@ -187,7 +187,7 @@ public class DBInteger extends QueryableDatatype<Long> implements NumberResult {
 	 * @param permitted	permitted
 	 */
 	public void permittedValues(NumberResult... permitted) {
-		this.setOperator(new DBPermittedValuesOperator((Object[]) permitted));
+		this.setOperator(new DBPermittedValuesOperator<NumberResult>(permitted));
 	}
 
 	/**
@@ -203,7 +203,7 @@ public class DBInteger extends QueryableDatatype<Long> implements NumberResult {
 			ints.add(dbint.longValue());
 		}
 		final Long[] longArray = ints.toArray(new Long[]{});
-		this.setOperator(new DBPermittedValuesOperator((Object[]) longArray));
+		this.setOperator(new DBPermittedValuesOperator<Long>(longArray));
 	}
 
 	/**
@@ -219,7 +219,7 @@ public class DBInteger extends QueryableDatatype<Long> implements NumberResult {
 			ints.add(dbint.getValue());
 		}
 		final Long[] longArray = ints.toArray(new Long[]{});
-		this.setOperator(new DBPermittedValuesOperator((Object[]) longArray));
+		this.setOperator(new DBPermittedValuesOperator<Long>(longArray));
 	}
 
 	/**
@@ -235,7 +235,7 @@ public class DBInteger extends QueryableDatatype<Long> implements NumberResult {
 			ints.add(dbint.getValue().longValue());
 		}
 		final Long[] longArray = ints.toArray(new Long[]{});
-		this.setOperator(new DBPermittedValuesOperator((Object[]) longArray));
+		this.setOperator(new DBPermittedValuesOperator<Long>(longArray));
 	}
 
 	/**
@@ -246,7 +246,7 @@ public class DBInteger extends QueryableDatatype<Long> implements NumberResult {
 	 * @param permitted	permitted
 	 */
 	public void permittedValues(Collection<Long> permitted) {
-		this.setOperator(new DBPermittedValuesOperator(permitted));
+		this.setOperator(new DBPermittedValuesOperator<Long>(permitted));
 	}
 
 	/**
@@ -257,7 +257,7 @@ public class DBInteger extends QueryableDatatype<Long> implements NumberResult {
 	 * @param permitted	permitted
 	 */
 	public void permittedValuesInteger(Collection<Integer> permitted) {
-		this.setOperator(new DBPermittedValuesOperator(permitted));
+		this.setOperator(new DBPermittedValuesOperator<Integer>(permitted));
 	}
 
 	/**
@@ -268,7 +268,7 @@ public class DBInteger extends QueryableDatatype<Long> implements NumberResult {
 	 * @param permitted	permitted
 	 */
 	public void permittedValues(Integer... permitted) {
-		this.setOperator(new DBPermittedValuesOperator((Object[]) permitted));
+		this.setOperator(new DBPermittedValuesOperator<Integer>(permitted));
 	}
 
 	/**
@@ -279,7 +279,7 @@ public class DBInteger extends QueryableDatatype<Long> implements NumberResult {
 	 * @param excluded	excluded
 	 */
 	public void excludedValues(Long... excluded) {
-		this.setOperator(new DBPermittedValuesOperator((Object[]) excluded));
+		this.setOperator(new DBPermittedValuesOperator<Long>(excluded));
 		negateOperator();
 	}
 
@@ -291,7 +291,7 @@ public class DBInteger extends QueryableDatatype<Long> implements NumberResult {
 	 * @param excluded	excluded
 	 */
 	public void excludedValues(DBInteger... excluded) {
-		this.setOperator(new DBPermittedValuesOperator((Object[]) excluded));
+		this.setOperator(new DBPermittedValuesOperator<DBInteger>(excluded));
 		negateOperator();
 	}
 
@@ -303,7 +303,7 @@ public class DBInteger extends QueryableDatatype<Long> implements NumberResult {
 	 * @param excluded	excluded
 	 */
 	public void excludedValues(Integer... excluded) {
-		this.setOperator(new DBPermittedValuesOperator((Object[]) excluded));
+		this.setOperator(new DBPermittedValuesOperator<Integer>(excluded));
 		negateOperator();
 	}
 
@@ -315,7 +315,7 @@ public class DBInteger extends QueryableDatatype<Long> implements NumberResult {
 	 * @param excluded	excluded
 	 */
 	public void excludedValuesLong(List<Long> excluded) {
-		this.setOperator(new DBPermittedValuesOperator(excluded));
+		this.setOperator(new DBPermittedValuesOperator<Long>(excluded));
 		negateOperator();
 	}
 
@@ -327,7 +327,7 @@ public class DBInteger extends QueryableDatatype<Long> implements NumberResult {
 	 * @param excluded	excluded
 	 */
 	public void excludedValuesInteger(List<Integer> excluded) {
-		this.setOperator(new DBPermittedValuesOperator(excluded));
+		this.setOperator(new DBPermittedValuesOperator<Integer>(excluded));
 		negateOperator();
 	}
 
@@ -352,7 +352,7 @@ public class DBInteger extends QueryableDatatype<Long> implements NumberResult {
 	 * @param upperBound upperBound
 	 */
 	public void permittedRange(Long lowerBound, Long upperBound) {
-		setOperator(new DBPermittedRangeOperator(lowerBound, upperBound));
+		setOperator(new DBPermittedRangeOperator<Long>(lowerBound, upperBound));
 	}
 
 	/**
@@ -376,7 +376,7 @@ public class DBInteger extends QueryableDatatype<Long> implements NumberResult {
 	 * @param upperBound upperBound
 	 */
 	public void permittedRange(Integer lowerBound, Integer upperBound) {
-		setOperator(new DBPermittedRangeOperator(lowerBound, upperBound));
+		setOperator(new DBPermittedRangeOperator<Integer>(lowerBound, upperBound));
 	}
 
 	/**
@@ -496,7 +496,7 @@ public class DBInteger extends QueryableDatatype<Long> implements NumberResult {
 	 * @param upperBound upperBound
 	 */
 	public void excludedRange(Long lowerBound, Long upperBound) {
-		setOperator(new DBPermittedRangeOperator(lowerBound, upperBound));
+		setOperator(new DBPermittedRangeOperator<Long>(lowerBound, upperBound));
 		negateOperator();
 	}
 
@@ -521,7 +521,7 @@ public class DBInteger extends QueryableDatatype<Long> implements NumberResult {
 	 * @param upperBound upperBound
 	 */
 	public void excludedRange(Integer lowerBound, Integer upperBound) {
-		setOperator(new DBPermittedRangeOperator(lowerBound, upperBound));
+		setOperator(new DBPermittedRangeOperator<Integer>(lowerBound, upperBound));
 		negateOperator();
 	}
 

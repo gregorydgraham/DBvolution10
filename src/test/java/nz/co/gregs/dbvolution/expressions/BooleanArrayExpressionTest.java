@@ -47,8 +47,8 @@ public class BooleanArrayExpressionTest extends AbstractTest {
 	public void testGetQueryableDatatypeForExpressionValue() {
 		System.out.println("getQueryableDatatypeForExpressionValue");
 		BooleanArrayExpression instance = new BooleanArrayExpression();
-		QueryableDatatype expResult = new DBBooleanArray();
-		QueryableDatatype result = instance.getQueryableDatatypeForExpressionValue();
+		QueryableDatatype<?> expResult = new DBBooleanArray();
+		QueryableDatatype<?> result = instance.getQueryableDatatypeForExpressionValue();
 		assertEquals(expResult.getClass(), result.getClass());
 	}
 

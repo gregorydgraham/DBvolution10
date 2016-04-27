@@ -190,7 +190,7 @@ public class PropertyTypeHandlerTest {
 		}
 
 		PropertyTypeHandler propertyHandler = propertyHandlerOf(MyClass.class, "field");
-		QueryableDatatype qdt = propertyHandler.getJavaPropertyAsQueryableDatatype(new MyClass());
+		QueryableDatatype<?> qdt = propertyHandler.getJavaPropertyAsQueryableDatatype(new MyClass());
 		assertThat(propertyHandler.getQueryableDatatypeClass(), is((Object) DBInteger.class));
 		assertThat(qdt, is(instanceOf(DBInteger.class)));
 		assertThat(qdt.getValue(), is(instanceOf(Long.class)));
@@ -207,7 +207,7 @@ public class PropertyTypeHandlerTest {
 		}
 
 		PropertyTypeHandler propertyHandler = propertyHandlerOf(MyClass.class, "field");
-		QueryableDatatype qdt = propertyHandler.getJavaPropertyAsQueryableDatatype(new MyClass());
+		QueryableDatatype<?> qdt = propertyHandler.getJavaPropertyAsQueryableDatatype(new MyClass());
 		assertThat(propertyHandler.getQueryableDatatypeClass(), is((Object) DBInteger.class));
 		assertThat(qdt, is(instanceOf(DBInteger.class)));
 		assertThat(qdt.getValue(), is(instanceOf(Long.class)));
@@ -224,7 +224,7 @@ public class PropertyTypeHandlerTest {
 		}
 
 		PropertyTypeHandler propertyHandler = propertyHandlerOf(MyClass.class, "field");
-		QueryableDatatype qdt = propertyHandler.getJavaPropertyAsQueryableDatatype(new MyClass());
+		QueryableDatatype<?> qdt = propertyHandler.getJavaPropertyAsQueryableDatatype(new MyClass());
 		assertThat(propertyHandler.getQueryableDatatypeClass(), is((Object) DBInteger.class));
 		assertThat(qdt, is(instanceOf(DBInteger.class)));
 		assertThat(qdt.getValue(), is(instanceOf(Long.class)));
@@ -241,7 +241,7 @@ public class PropertyTypeHandlerTest {
 		}
 
 		PropertyTypeHandler propertyHandler = propertyHandlerOf(MyClass.class, "field");
-		QueryableDatatype qdt = propertyHandler.getJavaPropertyAsQueryableDatatype(new MyClass());
+		QueryableDatatype<?> qdt = propertyHandler.getJavaPropertyAsQueryableDatatype(new MyClass());
 		assertThat(propertyHandler.getQueryableDatatypeClass(), is((Object) DBInteger.class));
 		assertThat(qdt, is(instanceOf(DBInteger.class)));
 		assertThat(qdt.getValue(), is(instanceOf(Long.class)));
@@ -258,7 +258,7 @@ public class PropertyTypeHandlerTest {
 		}
 
 		PropertyTypeHandler propertyHandler = propertyHandlerOf(MyClass.class, "field");
-		QueryableDatatype qdt = propertyHandler.getJavaPropertyAsQueryableDatatype(new MyClass());
+		QueryableDatatype<?> qdt = propertyHandler.getJavaPropertyAsQueryableDatatype(new MyClass());
 		assertThat(propertyHandler.getQueryableDatatypeClass(), is((Object) DBString.class));
 		assertThat(qdt, is(instanceOf(DBString.class)));
 		assertThat(qdt.getValue(), is(instanceOf(String.class)));
@@ -275,7 +275,7 @@ public class PropertyTypeHandlerTest {
 		}
 
 		PropertyTypeHandler propertyHandler = propertyHandlerOf(MyClass.class, "field");
-		QueryableDatatype qdt = propertyHandler.getJavaPropertyAsQueryableDatatype(new MyClass());
+		QueryableDatatype<?> qdt = propertyHandler.getJavaPropertyAsQueryableDatatype(new MyClass());
 		assertThat(propertyHandler.getQueryableDatatypeClass(), is((Object) DBString.class));
 		assertThat(qdt, is(instanceOf(DBString.class)));
 		assertThat(qdt.getValue(), is(instanceOf(String.class)));
@@ -292,7 +292,7 @@ public class PropertyTypeHandlerTest {
 		}
 
 		PropertyTypeHandler propertyHandler = propertyHandlerOf(MyClass.class, "field");
-		QueryableDatatype qdt = propertyHandler.getJavaPropertyAsQueryableDatatype(new MyClass());
+		QueryableDatatype<?> qdt = propertyHandler.getJavaPropertyAsQueryableDatatype(new MyClass());
 		assertThat(propertyHandler.getQueryableDatatypeClass(), is((Object) DBString.class));
 		assertThat(qdt, is(instanceOf(DBString.class)));
 		assertThat(qdt.getValue(), is(instanceOf(String.class)));
@@ -309,7 +309,7 @@ public class PropertyTypeHandlerTest {
 		}
 
 		PropertyTypeHandler propertyHandler = propertyHandlerOf(MyClass.class, "field");
-		QueryableDatatype qdt = propertyHandler.getJavaPropertyAsQueryableDatatype(new MyClass());
+		QueryableDatatype<?> qdt = propertyHandler.getJavaPropertyAsQueryableDatatype(new MyClass());
 		assertThat(propertyHandler.getQueryableDatatypeClass(), is((Object) DBString.class));
 		assertThat(qdt, is(instanceOf(DBString.class)));
 		assertThat(qdt.getValue(), is(instanceOf(String.class)));
@@ -326,7 +326,7 @@ public class PropertyTypeHandlerTest {
 		}
 
 		PropertyTypeHandler propertyHandler = propertyHandlerOf(MyClass.class, "field");
-		QueryableDatatype qdt = propertyHandler.getJavaPropertyAsQueryableDatatype(new MyClass());
+		QueryableDatatype<?> qdt = propertyHandler.getJavaPropertyAsQueryableDatatype(new MyClass());
 		assertThat(propertyHandler.getQueryableDatatypeClass(), is((Object) DBInteger.class));
 		assertThat(qdt, is(instanceOf(DBInteger.class)));
 		assertThat(qdt.getValue(), is(instanceOf(Long.class)));
@@ -343,7 +343,7 @@ public class PropertyTypeHandlerTest {
 		}
 
 		PropertyTypeHandler propertyHandler = propertyHandlerOf(MyClass.class, "field");
-		QueryableDatatype qdt = propertyHandler.getJavaPropertyAsQueryableDatatype(new MyClass());
+		QueryableDatatype<?> qdt = propertyHandler.getJavaPropertyAsQueryableDatatype(new MyClass());
 		assertThat(propertyHandler.getQueryableDatatypeClass(), is((Object) DBDate.class));
 		assertThat(qdt, is(instanceOf(DBDate.class)));
 		assertThat(qdt.getValue(), is(instanceOf(Date.class)));
@@ -360,7 +360,7 @@ public class PropertyTypeHandlerTest {
 		}
 
 		PropertyTypeHandler propertyHandler = propertyHandlerOf(MyClass.class, "field");
-		QueryableDatatype qdt = propertyHandler.getJavaPropertyAsQueryableDatatype(new MyClass());
+		QueryableDatatype<?> qdt = propertyHandler.getJavaPropertyAsQueryableDatatype(new MyClass());
 		assertThat(propertyHandler.getQueryableDatatypeClass(), is((Object) DBInteger.class));
 		assertThat(qdt, is(instanceOf(DBInteger.class)));
 		assertThat(qdt.getValue(), is(instanceOf(Long.class)));
@@ -439,7 +439,7 @@ public class PropertyTypeHandlerTest {
 		MyClass myObj = new MyClass();
 
 		PropertyTypeHandler propertyHandler = propertyHandlerOf(MyClass.class, "field");
-		QueryableDatatype qdt = propertyHandler.getJavaPropertyAsQueryableDatatype(myObj);
+		QueryableDatatype<?> qdt = propertyHandler.getJavaPropertyAsQueryableDatatype(myObj);
 		assertThat(qdt, is(nullValue()));
 	}
 
@@ -455,7 +455,7 @@ public class PropertyTypeHandlerTest {
 		MyClass myObj = new MyClass();
 
 		PropertyTypeHandler propertyHandler = propertyHandlerOf(MyClass.class, "field");
-		QueryableDatatype qdt = propertyHandler.getJavaPropertyAsQueryableDatatype(myObj);
+		QueryableDatatype<?> qdt = propertyHandler.getJavaPropertyAsQueryableDatatype(myObj);
 		assertThat(qdt, is(not(nullValue())));
 		assertThat(qdt.isNull(), is(true));
 	}
@@ -470,7 +470,7 @@ public class PropertyTypeHandlerTest {
 		}
 
 		PropertyTypeHandler propertyHandler = propertyHandlerOf(MyClass.class, "field");
-		QueryableDatatype qdt = propertyHandler.getJavaPropertyAsQueryableDatatype(new MyClass());
+		QueryableDatatype<?> qdt = propertyHandler.getJavaPropertyAsQueryableDatatype(new MyClass());
 		assertThat(qdt, is(instanceOf(DBString.class)));
 	}
 
@@ -864,7 +864,7 @@ public class PropertyTypeHandlerTest {
 		}
 	}
 
-	public static interface AdaptorInterface extends DBTypeAdaptor<Object, QueryableDatatype> {
+	public static interface AdaptorInterface extends DBTypeAdaptor<Object, QueryableDatatype<?>> {
 		// empty
 	}
 }

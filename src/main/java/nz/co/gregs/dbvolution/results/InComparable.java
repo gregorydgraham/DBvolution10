@@ -29,7 +29,7 @@ import nz.co.gregs.dbvolution.expressions.BooleanExpression;
  * @param <A> the class that can be compared using the "IN" operator
  *
  */
-public interface InComparable<A extends Object> extends EqualComparable<A>{
+public interface InComparable<A> extends EqualComparable<A>{
 
 	/**
 	 * Creates a {@link BooleanExpression} that compares the 2 values using the IN

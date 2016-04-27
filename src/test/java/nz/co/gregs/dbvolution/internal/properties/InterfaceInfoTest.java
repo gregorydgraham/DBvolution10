@@ -167,7 +167,7 @@ public class InterfaceInfoTest {
 		assertThat(bounds[0].upperType(), is((Object) Object.class));
 		assertThat(bounds[0].lowerType(), is(nullValue()));
 
-		assertThat(bounds[1].upperType(), is((Object) QueryableDatatype.class));
+		assertThat(bounds[1].upperType().getTypeName(), is("nz.co.gregs.dbvolution.datatypes.QueryableDatatype<?>"));
 		assertThat(bounds[1].lowerType(), is(nullValue()));
 	}
 
@@ -178,7 +178,7 @@ public class InterfaceInfoTest {
 		assertThat(bounds[0].upperType(), is((Object) Object.class));
 		assertThat(bounds[0].lowerType(), is(nullValue()));
 
-		assertThat(bounds[1].upperType(), is((Object) QueryableDatatype.class));
+		assertThat(bounds[1].upperType().getTypeName(), is("nz.co.gregs.dbvolution.datatypes.QueryableDatatype<?>"));
 		assertThat(bounds[1].lowerType(), is(nullValue()));
 	}
 
@@ -232,7 +232,7 @@ public class InterfaceInfoTest {
 		assertThat(bounds[0].upperType(), is((Object) Object.class));
 		assertThat(bounds[0].lowerType(), is(nullValue()));
 
-		assertThat(bounds[1].upperType(), is((Object) QueryableDatatype.class));
+		assertThat(bounds[1].upperType().getTypeName(), is("nz.co.gregs.dbvolution.datatypes.QueryableDatatype<?>"));
 		assertThat(bounds[1].lowerType(), is(nullValue()));
 	}
 
@@ -327,20 +327,20 @@ public class InterfaceInfoTest {
 
 	@Test
 	public void acceptsAnonymousImpl() {
-		InterfaceInfo interfaceInfo = new InterfaceInfo(MyInterface.class, new MyInterface<Object, QueryableDatatype>() {
+		InterfaceInfo interfaceInfo = new InterfaceInfo(MyInterface.class, new MyInterface<Object, QueryableDatatype<?>>() {
 			@Override
-			public Object toObjectValue(QueryableDatatype dbvValue) {
+			public Object toObjectValue(QueryableDatatype<?> dbvValue) {
 				return null;
 			}
 
 			@Override
-			public QueryableDatatype toDBvValue(Object objectValue) {
+			public QueryableDatatype<?> toDBvValue(Object objectValue) {
 				return null;
 			}
 		}.getClass());
 	}
 
-	public interface MyInterface<T, Q extends QueryableDatatype> {
+	public interface MyInterface<T, Q extends QueryableDatatype<?>> {
 
 		public T toObjectValue(Q dbvValue);
 
