@@ -505,4 +505,8 @@ public class RowDefinitionClassWrapper {
 		}
 		return list;
 	}
+
+	String schemaName() {
+		return tableHandler.getSchemaName();
+	}
 }

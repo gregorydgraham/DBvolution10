@@ -1440,6 +1440,10 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 		}
 	}
 
+	public String getSchemaName() {
+		return getWrapper().schemaName();
+	}
+
 	/**
 	 * Default sorting for DBRow in the various collections in DBRow and DBQuery.
 	 *

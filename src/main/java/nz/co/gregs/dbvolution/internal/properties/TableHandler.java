@@ -85,4 +85,13 @@ class TableHandler {
 	public DBTableName getDBTableNameAnnotation() {
 		return tableNameAnnotation;
 	}
+
+	String getSchemaName() {
+		final DBTableName dbTableNameAnnotation = getDBTableNameAnnotation();
+		if (dbTableNameAnnotation == null) {
+			return "";
+		} else {
+			return dbTableNameAnnotation.schema();
+		}
+	}
 }

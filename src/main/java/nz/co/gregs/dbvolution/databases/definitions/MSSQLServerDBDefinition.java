@@ -128,7 +128,12 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 
 	@Override
 	public String formatTableName(DBRow table) {
-		return "[" + table.getTableName() + "]";
+		final String schemaName = table.getSchemaName();
+		if (table.getSchemaName() == null || "".equals(schemaName)) {
+			return "[" + table.getTableName() + "]";
+		} else {
+			return "[" + table.getSchemaName() + "].[" + table.getTableName() + "]";
+		}
 	}
 
 	@Override
@@ -264,7 +269,7 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 
 	@Override
 	public String doBooleanToIntegerTransform(String booleanExpression) {
-		return "(case when ("+booleanExpression + ") then 1 else 0 end)";
+		return "(case when (" + booleanExpression + ") then 1 else 0 end)";
 	}
 
 //	@Override
@@ -390,6 +395,7 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 	public boolean supportsComparingBooleanResults() {
 		return false;
 	}
+
 	/**
 	 * MS SQLServer does not support the LEASTOF operation natively.
 	 *
@@ -483,7 +489,7 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 			return super.transformToStorableType(columnExpression);
 		}
 	}
-	
+
 	@Override
 	public String doPoint2DEqualsTransform(String firstPoint, String secondPoint) {
 		return "(" + Point2DFunctions.EQUALS + "((" + firstPoint + "), (" + secondPoint + "))=1)";
@@ -601,6 +607,7 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 
 		return "geometry::STGeomFromText('POLYGON ((" + str + "))', 0)";
 	}
+
 	@Override
 	public String transformCoordinateArrayToDatabasePolygon2DFormat(List<String> coordinateSQL) {
 
@@ -624,7 +631,7 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 		StringBuilder str = new StringBuilder();
 		String separator = "";
 		for (String point : pointSQL) {
-			System.out.println(""+point);
+			System.out.println("" + point);
 			final String coordsOnly = point.replaceAll("geometry::STGeomFromText \\('POINT \\(", "").replaceAll("\\)',0\\)", "");
 			str.append(separator).append(coordsOnly);
 			separator = ",";

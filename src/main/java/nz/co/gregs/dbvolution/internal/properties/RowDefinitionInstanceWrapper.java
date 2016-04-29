@@ -354,4 +354,8 @@ public class RowDefinitionInstanceWrapper {
 	public List<PropertyWrapperDefinition> getColumnPropertyDefinitions() {
 		return classWrapper.getColumnPropertyDefinitions();
 	}
+
+	public String schemaName() {
+		return classWrapper.schemaName();
+	}
 }

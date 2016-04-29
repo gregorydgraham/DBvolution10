@@ -96,9 +96,11 @@ public class DBTableField {
 	public int sqlDataTypeInt;
 
 	/**
-	 * Stores the data type name of the DBTableField as reported from the database.
+	 * Stores the data type name of the DBTableField as reported from the
+	 * database.
 	 */
 	public String sqlDataTypeName;
+	String referencedTable;
 
 	@Override
 	public boolean equals(Object obj) {

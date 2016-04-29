@@ -309,9 +309,12 @@ public class DBTableClassGenerator {
 			try {
 				while (tables.next()) {
 					final String tableName = tables.getString("TABLE_NAME");
+					if (schema == null) {
+						schema = tables.getString("TABLE_SCHEM");
+					}
 					if (tableName.matches(database.getDefinition().getSystemTableExclusionPattern())) {
 						final String className = toClassCase(tableName);
-						DBTableClass dbTableClass = new DBTableClass(tableName, packageName, className);
+						DBTableClass dbTableClass = new DBTableClass(tableName, schema, packageName, className);
 
 						ResultSet primaryKeysRS = metaData.getPrimaryKeys(catalog, schema, dbTableClass.getTableName());
 						List<String> pkNames = new ArrayList<>();
@@ -343,6 +346,11 @@ public class DBTableClassGenerator {
 								DBTableField dbTableField = new DBTableField();
 								dbTableField.columnName = columns.getString("COLUMN_NAME");
 								dbTableField.fieldName = toFieldCase(dbTableField.columnName);
+								try {
+									dbTableField.referencedTable = columns.getString("SCOPE_TABLE");
+								} catch (SQLException exp) {
+									; // MSSQLServer throws an exception on this
+								}
 								dbTableField.precision = columns.getInt("COLUMN_SIZE");
 								dbTableField.comments = columns.getString("REMARKS");
 								String isAutoIncr = null;
@@ -521,15 +529,13 @@ public class DBTableClassGenerator {
 		String classCaseString = "";
 		if (s == null) {
 			return null;
+		} else if (s.matches("[lLtT]+_[0-9]+(_[0-9]+)*")) {
+			classCaseString = s.toUpperCase();
 		} else {
-			if (s.matches("[lLtT]+_[0-9]+(_[0-9]+)*")) {
-				classCaseString = s.toUpperCase();
-			} else {
 //            System.out.println("Splitting: " + s);
-				String[] parts = s.split("[^a-zA-Z0-9]");//"[_$#]");
-				for (String part : parts) {
-					classCaseString += toProperCase(part);
-				}
+			String[] parts = s.split("[^a-zA-Z0-9]");//"[_$#]");
+			for (String part : parts) {
+				classCaseString += toProperCase(part);
 			}
 		}
 		return classCaseString;

@@ -39,5 +39,13 @@ public @interface DBTableName {
 	 *
 	 * @return the table name.
 	 */
-	String value();
+	String value();	
+	
+	/**
+	 * The raw schema name as stored in the database.
+	 *
+	 * @return the schema name.
+	 */
+	String schema() default "";
+
 }

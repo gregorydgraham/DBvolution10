@@ -33,6 +33,7 @@ public class DBTableClass {
 	private String packageName;
 	private String className;
 	private String tableName;
+	private String tableSchema;
 	private String javaSource;
 	private final List<DBTableField> fields = new ArrayList<DBTableField>();
 	private final String lineSeparator = System.getProperty("line.separator");
@@ -43,11 +44,13 @@ public class DBTableClass {
 	 * class.
 	 *
 	 * @param tableName tableName
+	 * @param tableSchema
 	 * @param packageName packageName
 	 * @param className className
 	 */
-	public DBTableClass(String tableName, String packageName, String className) {
+	public DBTableClass(String tableName, String tableSchema, String packageName, String className) {
 		this.tableName = tableName;
+		this.tableSchema = tableSchema;
 		this.packageName = packageName;
 		this.className = className;
 	}
@@ -101,7 +104,12 @@ public class DBTableClass {
 		final String foreignKeyAnnotation = DBForeignKey.class.getSimpleName();
 		final String unknownJavaSQLTypeAnnotation = DBUnknownJavaSQLType.class.getSimpleName();
 
-		javaSrc.append("@").append(tableNameAnnotation).append("(\"").append(this.getTableName()).append("\") ");
+		if (this.tableSchema == null || "PUBLIC".equals(tableSchema.toUpperCase()) || "dbo".equals(tableSchema)) {
+			javaSrc.append("@").append(tableNameAnnotation).append("(\"").append(this.getTableName()).append("\") ");
+		} else {
+			javaSrc.append("@").append(tableNameAnnotation).append("(value=\"").append(this.getTableName()).append("\", schema=\"").append(this.tableSchema).append("\") ");
+		}
+
 		javaSrc.append(lineSeparator);
 		javaSrc.append("public class ").append(this.getClassName()).append(" extends ").append(dbRowClassName).append(" {");
 		javaSrc.append(conceptBreak);
