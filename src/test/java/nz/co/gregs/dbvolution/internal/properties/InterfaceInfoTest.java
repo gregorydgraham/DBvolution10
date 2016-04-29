@@ -167,7 +167,7 @@ public class InterfaceInfoTest {
 		assertThat(bounds[0].upperType(), is((Object) Object.class));
 		assertThat(bounds[0].lowerType(), is(nullValue()));
 
-		assertThat(bounds[1].upperType().getTypeName(), is("nz.co.gregs.dbvolution.datatypes.QueryableDatatype<?>"));
+		assertThat(bounds[1].upperType().toString(), is("nz.co.gregs.dbvolution.datatypes.QueryableDatatype<?>"));
 		assertThat(bounds[1].lowerType(), is(nullValue()));
 	}
 
@@ -178,7 +178,7 @@ public class InterfaceInfoTest {
 		assertThat(bounds[0].upperType(), is((Object) Object.class));
 		assertThat(bounds[0].lowerType(), is(nullValue()));
 
-		assertThat(bounds[1].upperType().getTypeName(), is("nz.co.gregs.dbvolution.datatypes.QueryableDatatype<?>"));
+		assertThat(bounds[1].upperType().toString(), is("nz.co.gregs.dbvolution.datatypes.QueryableDatatype<?>"));
 		assertThat(bounds[1].lowerType(), is(nullValue()));
 	}
 
@@ -232,7 +232,7 @@ public class InterfaceInfoTest {
 		assertThat(bounds[0].upperType(), is((Object) Object.class));
 		assertThat(bounds[0].lowerType(), is(nullValue()));
 
-		assertThat(bounds[1].upperType().getTypeName(), is("nz.co.gregs.dbvolution.datatypes.QueryableDatatype<?>"));
+		assertThat(bounds[1].upperType().toString(), is("nz.co.gregs.dbvolution.datatypes.QueryableDatatype<?>"));
 		assertThat(bounds[1].lowerType(), is(nullValue()));
 	}
 
