@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 import nz.co.gregs.dbvolution.DBRecursiveQuery;
 import nz.co.gregs.dbvolution.DBRow;
+import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 
 /**
  * Encapsulates a DBRow class for use in {@link DBRecursiveQuery} tree or path.
@@ -33,7 +34,7 @@ import nz.co.gregs.dbvolution.DBRow;
 public class TreeNode<T extends DBRow> {
 
 	private final List<TreeNode<T>> children = new ArrayList<TreeNode<T>>();
-	private final List<String> childrenData = new ArrayList<String>();
+	private final List<String> childrenKeys = new ArrayList<String>();
 	private TreeNode<T> parent = null;
 	private T data = null;
 
@@ -84,7 +85,7 @@ public class TreeNode<T extends DBRow> {
 //		child.setParent(this);
 //		if (notAlreadyIncluded(child)) {
 //			this.children.add(child);
-//			this.childrenData.add(data.getPrimaryKey().stringValue());
+//			this.childrenData.add(data.getPrimaryKeys().stringValue());
 //		}
 	}
 
@@ -100,12 +101,12 @@ public class TreeNode<T extends DBRow> {
 		child.setParent(this);
 		if (notAlreadyIncluded(child)) {
 			this.children.add(child);
-			this.childrenData.add(child.getData().getPrimaryKey().stringValue());
+			this.childrenKeys.add(child.getKey());
 		}
 	}
 
 	private boolean notAlreadyIncluded(TreeNode<T> child) {
-		return !this.children.contains(child) && !childrenData.contains(child.getData().getPrimaryKey().stringValue());
+		return !this.children.contains(child) && !childrenKeys.contains(child.getKey());
 	}
 
 	/**
@@ -164,5 +165,14 @@ public class TreeNode<T extends DBRow> {
 	@Override
 	public String toString() {
 		return this.getData().toString();
+	}
+
+	private String getKey() {
+		String returnString = "";
+		final List<QueryableDatatype<?>> pks = this.getData().getPrimaryKeys();
+		for(QueryableDatatype<?> pk : pks) {
+			returnString+="&&"+pk.stringValue();
+		}
+		return returnString;
 	}
 }

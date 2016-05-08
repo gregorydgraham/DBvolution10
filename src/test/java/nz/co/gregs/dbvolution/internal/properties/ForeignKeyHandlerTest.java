@@ -18,6 +18,7 @@ import nz.co.gregs.dbvolution.datatypes.DBInteger;
 import nz.co.gregs.dbvolution.datatypes.DBTypeAdaptor;
 import nz.co.gregs.dbvolution.exceptions.DBPebkacException;
 import nz.co.gregs.dbvolution.exceptions.InvalidDeclaredTypeException;
+import nz.co.gregs.dbvolution.exceptions.ReferenceToUndefinedPrimaryKeyException;
 import nz.co.gregs.dbvolution.internal.properties.JavaPropertyFinder.PropertyType;
 import nz.co.gregs.dbvolution.internal.properties.JavaPropertyFinder.Visibility;
 
@@ -267,7 +268,7 @@ public class ForeignKeyHandlerTest {
 		foreignKeyHandlerOf(TestCustomer.class, "fkAddress2");
 	}
 
-	@Test(expected = DBPebkacException.class)
+	@Test(expected = ReferenceToUndefinedPrimaryKeyException.class)
 	public void errorsWhenColumnExplicitlySpecifiedGivenIncorrectColumnName() {
 		class TestCustomer extends DBRow {
 
@@ -283,7 +284,7 @@ public class ForeignKeyHandlerTest {
 		foreignKeyHandlerOf(TestCustomer.class, "fkAddress2");
 	}
 
-	@Test(expected = DBPebkacException.class)
+	@Test(expected = ReferenceToUndefinedPrimaryKeyException.class)
 	public void errorsWhenColumnExplicitlySpecifiedGivenDuplicateReferencedColumnName() {
 		class TestAddress extends DBRow {
 
@@ -311,7 +312,7 @@ public class ForeignKeyHandlerTest {
 		foreignKeyHandlerOf(TestCustomer.class, "fkAddress2");
 	}
 
-	@Test(expected = DBPebkacException.class)
+	@Test(expected = ReferenceToUndefinedPrimaryKeyException.class)
 	public void errorsWhenColumnExplicitlySpecifiedGivenDuplicateButDifferingCaseReferencedColumnName() {
 		class TestAddress extends DBRow {
 
@@ -339,7 +340,7 @@ public class ForeignKeyHandlerTest {
 		foreignKeyHandlerOf(TestCustomer.class, "fkAddress2");
 	}
 
-	@Test(expected = DBPebkacException.class)
+	@Test(expected = ReferenceToUndefinedPrimaryKeyException.class)
 	public void errorsGivenColumnUnspecifiedOnAnnotationAndNoPrimaryKey() {
 		class TestAddress extends DBRow {
 

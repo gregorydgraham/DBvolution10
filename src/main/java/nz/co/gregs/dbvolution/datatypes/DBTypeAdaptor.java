@@ -41,7 +41,9 @@ package nz.co.gregs.dbvolution.datatypes;
 public interface DBTypeAdaptor<J, D> {
 
 	/**
-	 * Null values must be handled correctly.
+	 * Converts a value from the database into the datatype expected by the Java.
+	 * <p>
+	 * Null values must be handled correctly.</p>
 	 *
 	 * @param dbValue	dbValue
 	 * @return The database value transformed into the Java value
@@ -49,7 +51,10 @@ public interface DBTypeAdaptor<J, D> {
 	public J fromDatabaseValue(D dbValue);
 
 	/**
-	 * Null values must be handled correctly.
+	 * Translates the Java value into the database equivalent.
+	 *
+	 * <p>
+	 * Null values must be handled correctly.</p>
 	 *
 	 * @param javaValue	javaValue
 	 * @return The Java value transformed into the database value

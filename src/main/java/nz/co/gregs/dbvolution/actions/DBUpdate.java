@@ -16,6 +16,7 @@
 package nz.co.gregs.dbvolution.actions;
 
 import java.sql.SQLException;
+import java.util.List;
 import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
@@ -93,7 +94,8 @@ public abstract class DBUpdate extends DBAction {
 		for (DBRow row : rows) {
 			if (row.getDefined()) {
 				if (row.hasChangedSimpleTypes()) {
-					if (row.getPrimaryKey() == null) {
+					final List<QueryableDatatype<?>> primaryKeys = row.getPrimaryKeys();
+					if (primaryKeys == null||primaryKeys.isEmpty()) {
 						updates.add(new DBUpdateSimpleTypesUsingAllColumns(row));
 					} else {
 						updates.add(new DBUpdateSimpleTypes(row));

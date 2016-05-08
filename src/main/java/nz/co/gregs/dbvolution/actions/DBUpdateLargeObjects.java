@@ -99,6 +99,7 @@ public class DBUpdateLargeObjects extends DBUpdate {
 	}
 
 	private void setUsingStringValue(DBDefinition defn, DBRow row, final String col, final DBLargeObject<?> largeObject, DBDatabase db, DBStatement statement) throws SQLException {
+		
 		String sqlString = defn.beginUpdateLine()
 				+ defn.formatTableName(row)
 				+ defn.beginSetClause()
@@ -106,10 +107,8 @@ public class DBUpdateLargeObjects extends DBUpdate {
 				+ defn.getEqualsComparator()
 				+ "'" + largeObject.stringValue() + "'"
 				+ defn.beginWhereClause()
-				+ defn.formatColumnName(row.getPrimaryKeyColumnName())
-				+ defn.getEqualsComparator()
-				+ row.getPrimaryKey().toSQLString(db)
-				+ defn.endSQLStatement();
+				+getPrimaryKeySQL(defn, row, db)
+				+defn.endSQLStatement();
 //					db.printSQLIfRequested(sqlString);
 		log.debug(sqlString);
 		statement.execute(sqlString);
@@ -123,9 +122,7 @@ public class DBUpdateLargeObjects extends DBUpdate {
 				+ defn.getEqualsComparator()
 				+ defn.getNull()
 				+ defn.beginWhereClause()
-				+ defn.formatColumnName(row.getPrimaryKeyColumnName())
-				+ defn.getEqualsComparator()
-				+ row.getPrimaryKey().toSQLString(db)
+				+ getPrimaryKeySQL(defn, row, db)
 				+ defn.endSQLStatement();
 //					db.printSQLIfRequested(sqlString);
 		log.debug(sqlString);
@@ -140,11 +137,9 @@ public class DBUpdateLargeObjects extends DBUpdate {
 				+ defn.getEqualsComparator()
 				+ defn.getPreparedVariableSymbol()
 				+ defn.beginWhereClause()
-				+ defn.formatColumnName(row.getPrimaryKeyColumnName())
-				+ defn.getEqualsComparator()
-				+ row.getPrimaryKey().toSQLString(db)
+				+ getPrimaryKeySQL(defn, row, db)
 				+ defn.endSQLStatement();
-//					db.printSQLIfRequested(sqlString);
+					db.printSQLIfRequested(sqlString);
 		log.debug(sqlString);
 		PreparedStatement prep = statement.getConnection().prepareStatement(sqlString);
 		try {
@@ -171,9 +166,7 @@ public class DBUpdateLargeObjects extends DBUpdate {
 				+ defn.getEqualsComparator()
 				+ defn.getPreparedVariableSymbol()
 				+ defn.beginWhereClause()
-				+ defn.formatColumnName(row.getPrimaryKeyColumnName())
-				+ defn.getEqualsComparator()
-				+ row.getPrimaryKey().toSQLString(db)
+				+ getPrimaryKeySQL(defn, row, db)
 				+ defn.endSQLStatement();
 //					db.printSQLIfRequested(sqlString);
 		log.debug(sqlString);
@@ -194,9 +187,7 @@ public class DBUpdateLargeObjects extends DBUpdate {
 				+ defn.getEqualsComparator()
 				+ defn.getPreparedVariableSymbol()
 				+ defn.beginWhereClause()
-				+ defn.formatColumnName(row.getPrimaryKeyColumnName())
-				+ defn.getEqualsComparator()
-				+ row.getPrimaryKey().toSQLString(db)
+				+ getPrimaryKeySQL(defn, row, db)
 				+ defn.endSQLStatement();
 //					db.printSQLIfRequested(sqlString);
 		log.debug(sqlString);
@@ -244,9 +235,7 @@ public class DBUpdateLargeObjects extends DBUpdate {
 				+ defn.getEqualsComparator()
 				+ defn.getPreparedVariableSymbol()
 				+ defn.beginWhereClause()
-				+ defn.formatColumnName(row.getPrimaryKeyColumnName())
-				+ defn.getEqualsComparator()
-				+ row.getPrimaryKey().toSQLString(db)
+				+ getPrimaryKeySQL(defn, row, db)
 				+ defn.endSQLStatement();
 //					db.printSQLIfRequested(sqlString);
 		log.info(sqlString);
@@ -301,4 +290,5 @@ public class DBUpdateLargeObjects extends DBUpdate {
 		}
 		return changed;
 	}
+
 }

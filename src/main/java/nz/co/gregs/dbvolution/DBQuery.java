@@ -764,7 +764,12 @@ public class DBQuery {
 			if (newInstance.isEmptyRow()) {
 				queryRow.put(newInstance.getClass(), null);
 			} else {
-				if (isGroupedQuery || newInstance.getPrimaryKey() == null || !newInstance.getPrimaryKey().hasBeenSet()) {
+				final List<QueryableDatatype<?>> primaryKeys = newInstance.getPrimaryKeys();
+				boolean pksHaveBeenSet = true;
+				for (QueryableDatatype<?> pk : primaryKeys) {
+					pksHaveBeenSet = pksHaveBeenSet&&pk.hasBeenSet();
+				}
+				if (isGroupedQuery || primaryKeys == null || primaryKeys.isEmpty()|| !pksHaveBeenSet) {
 					queryRow.put(newInstance.getClass(), newInstance);
 				} else {
 					DBRow existingInstance = getOrSetExistingInstanceForRow(newInstance, existingInstancesOfThisTableRow);
@@ -793,14 +798,16 @@ public class DBQuery {
 	 */
 	protected DBRow getOrSetExistingInstanceForRow(DBRow newInstance, Map<String, DBRow> existingInstancesOfThisTableRow) {
 		DBRow existingInstance = newInstance;
-		final PropertyWrapper primaryKey = newInstance.getPrimaryKeyPropertyWrapper();
-		if (primaryKey != null) {
-			final QueryableDatatype<?> qdt = primaryKey.getQueryableDatatype();
-			if (qdt != null) {
-				existingInstance = existingInstancesOfThisTableRow.get(qdt.toSQLString(this.getDatabase()));
-				if (existingInstance == null) {
-					existingInstance = newInstance;
-					existingInstancesOfThisTableRow.put(qdt.toSQLString(this.getDatabase()), existingInstance);
+		final List<PropertyWrapper> primaryKeys = newInstance.getPrimaryKeyPropertyWrappers();
+		for (PropertyWrapper primaryKey : primaryKeys) {
+			if (primaryKey != null) {
+				final QueryableDatatype<?> qdt = primaryKey.getQueryableDatatype();
+				if (qdt != null) {
+					existingInstance = existingInstancesOfThisTableRow.get(qdt.toSQLString(this.getDatabase()));
+					if (existingInstance == null) {
+						existingInstance = newInstance;
+						existingInstancesOfThisTableRow.put(qdt.toSQLString(this.getDatabase()), existingInstance);
+					}
 				}
 			}
 		}
@@ -1108,10 +1115,12 @@ public class DBQuery {
 			for (DBRow tab : this.details.getAllQueryTables()) {
 				DBRow rowPart = row.get(tab);
 				if (rowPart != null) {
-					final QueryableDatatype<?> primaryKey = rowPart.getPrimaryKey();
-					if (primaryKey != null) {
-						String rowPartStr = primaryKey.toSQLString(this.getDatabase());
-						ps.print(" " + rowPart.getPrimaryKeyColumnName() + ": " + rowPartStr);
+					final List<QueryableDatatype<?>> primaryKeys = rowPart.getPrimaryKeys();
+					for (QueryableDatatype<?> primaryKey : primaryKeys) {
+						if (primaryKey != null) {
+							String rowPartStr = primaryKey.toSQLString(this.getDatabase());
+							ps.print(" " + rowPart.getPrimaryKeyColumnNames() + ": " + rowPartStr);
+						}
 					}
 				}
 			}

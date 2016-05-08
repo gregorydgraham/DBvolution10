@@ -64,7 +64,7 @@ public class DBTableGetTest extends AbstractTest {
 		DBRow row = marqueRows.get(0);
 		String primaryKey;
 		if (row != null) {
-			primaryKey = row.getPrimaryKey().toSQLString(database);
+			primaryKey = row.getPrimaryKeys().get(0).toSQLString(database);
 			singleMarque.getRowsByPrimaryKey(Long.parseLong(primaryKey));
 			singleMarque.print();
 		}
@@ -147,7 +147,7 @@ public class DBTableGetTest extends AbstractTest {
 		List<Marque> rowsByExample = marquesTable.getRowsByExample(literalQuery);
 		marquesTable.print();
 		Assert.assertEquals(1, rowsByExample.size());
-		Assert.assertEquals("" + 4893059, rowsByExample.get(0).getPrimaryKey().toSQLString(database));
+		Assert.assertEquals("" + 4893059, rowsByExample.get(0).getPrimaryKeys().get(0).toSQLString(database));
 	}
 
 	@Test
@@ -166,7 +166,7 @@ public class DBTableGetTest extends AbstractTest {
 		List<Marque> rowsByExample = marquesTable.getRowsByExample(likeQuery);
 		marquesTable.print();
 		Assert.assertEquals(1, rowsByExample.size());
-		Assert.assertEquals("" + 1, rowsByExample.get(0).getPrimaryKey().toSQLString(database));
+		Assert.assertEquals("" + 1, rowsByExample.get(0).getPrimaryKeys().get(0).toSQLString(database));
 	}
 
 	@Test
@@ -176,7 +176,7 @@ public class DBTableGetTest extends AbstractTest {
 		List<Marque> rowsByExample = marquesTable.getRowsByExample(likeQuery);
 		marquesTable.print();
 		Assert.assertEquals(1, rowsByExample.size());
-		Assert.assertEquals("" + 1, rowsByExample.get(0).getPrimaryKey().toSQLString(database));
+		Assert.assertEquals("" + 1, rowsByExample.get(0).getPrimaryKeys().get(0).toSQLString(database));
 	}
 
 	@Test
@@ -224,8 +224,8 @@ public class DBTableGetTest extends AbstractTest {
 		List<Marque> rowsByExample = marquesTable.getRowsByExample(literalQuery);
 		marquesTable.print();
 		Assert.assertEquals(2, rowsByExample.size());
-		Assert.assertEquals("" + 4893059, rowsByExample.get(0).getPrimaryKey().toSQLString(database));
-		Assert.assertEquals("" + 4893090, rowsByExample.get(1).getPrimaryKey().toSQLString(database));
+		Assert.assertEquals("" + 4893059, rowsByExample.get(0).getPrimaryKeys().get(0).toSQLString(database));
+		Assert.assertEquals("" + 4893090, rowsByExample.get(1).getPrimaryKeys().get(0).toSQLString(database));
 	}
 
 	@Test

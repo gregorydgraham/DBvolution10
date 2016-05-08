@@ -118,12 +118,13 @@ public class DBUpdateSimpleTypes extends DBUpdate {
 	 * @return The WHERE clause of the UPDATE statement.
 	 */
 	protected String getWhereClause(DBDatabase db, DBRow row) {
-		DBDefinition defn = db.getDefinition();
-		QueryableDatatype<?> primaryKey = row.getPrimaryKey();
-		String pkOriginalValue = (primaryKey.hasChanged() ? primaryKey.getPreviousSQLValue(db) : primaryKey.toSQLString(db));
-		return defn.formatColumnName(row.getPrimaryKeyColumnName())
-				+ defn.getEqualsComparator()
-				+ pkOriginalValue;
+		return getPrimaryKeySQL(db.getDefinition(), row, db);
+//		DBDefinition defn = db.getDefinition();
+//		QueryableDatatype<?> primaryKey = row.getPrimaryKeys();
+//		String pkOriginalValue = (primaryKey.hasChanged() ? primaryKey.getPreviousSQLValue(db) : primaryKey.toSQLString(db));
+//		return defn.formatColumnName(row.getPrimaryKeyColumnNames())
+//				+ defn.getEqualsComparator()
+//				+ pkOriginalValue;
 	}
 
 	@Override

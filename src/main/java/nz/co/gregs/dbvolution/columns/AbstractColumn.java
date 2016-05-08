@@ -78,14 +78,16 @@ public class AbstractColumn implements DBExpression {
 			DBExpression columnExpression = ((QueryableDatatype) field).getColumnExpression();
 			return columnExpression.toSQLString(db);
 		} else {
+				String formattedColumnName="";
 			if (useTableAlias) {
-				return db.getDefinition().formatTableAliasAndColumnName(rowDefn, propertyWrapper.columnName());
+				formattedColumnName = db.getDefinition().formatTableAliasAndColumnName(rowDefn, propertyWrapper.columnName());
 			} else if (rowDefn instanceof DBRow) {
 				DBRow dbRow = (DBRow) rowDefn;
-				return db.getDefinition().formatTableAndColumnName(dbRow, propertyWrapper.columnName());
+				formattedColumnName = db.getDefinition().formatTableAndColumnName(dbRow, propertyWrapper.columnName());
 			}
+				return propertyWrapper.getDefinition().getQueryableDatatype(this.dbrow).formatColumnForSQLStatement(db, formattedColumnName);
 		}
-		return "";
+//		return "";
 	}
 
 	@Override

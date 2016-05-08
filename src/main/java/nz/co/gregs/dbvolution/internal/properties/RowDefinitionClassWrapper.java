@@ -9,6 +9,7 @@ import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.annotations.DBTableName;
 import nz.co.gregs.dbvolution.exceptions.DBPebkacException;
 import nz.co.gregs.dbvolution.exceptions.DBRuntimeException;
+import nz.co.gregs.dbvolution.exceptions.ReferenceToUndefinedPrimaryKeyException;
 import nz.co.gregs.dbvolution.internal.properties.JavaPropertyFinder.PropertyType;
 import nz.co.gregs.dbvolution.internal.properties.JavaPropertyFinder.Visibility;
 import nz.co.gregs.dbvolution.query.RowDefinition;
@@ -42,7 +43,7 @@ public class RowDefinitionClassWrapper {
 	/**
 	 * The property that forms the primary key, null if none.
 	 */
-	private final PropertyWrapperDefinition primaryKeyProperty;
+	private final PropertyWrapperDefinition[] primaryKeyProperties;
 	/**
 	 * All properties of which DBvolution is aware, ordered as first encountered.
 	 * Properties are only included if they are columns.
@@ -149,17 +150,18 @@ public class RowDefinitionClassWrapper {
 		}
 
 		// pre-calculate primary key
-		List<PropertyWrapperDefinition> primaryKeyProperties = new ArrayList<PropertyWrapperDefinition>();
+		List<PropertyWrapperDefinition> pkProperties = new ArrayList<PropertyWrapperDefinition>();
 		for (PropertyWrapperDefinition property : columnProperties) {
 			if (property.isPrimaryKey()) {
-				primaryKeyProperties.add(property);
+				pkProperties.add(property);
 			}
 		}
-		if (primaryKeyProperties.size() > 1) {
-			throw new UnsupportedOperationException("Multi-Column Primary Keys are not yet supported: Please remove the excess @PrimaryKey statements from " + clazz.getSimpleName());
-		} else {
-			this.primaryKeyProperty = primaryKeyProperties.isEmpty() ? null : primaryKeyProperties.get(0);
-		}
+		this.primaryKeyProperties = pkProperties.toArray(new PropertyWrapperDefinition[]{});
+//		if (primaryKeyProperties.size() > 1) {
+//			throw new UnsupportedOperationException("Multi-Column Primary Keys are not yet supported: Please remove the excess @PrimaryKey statements from " + clazz.getSimpleName());
+//		} else {
+//			this.primaryKeyProperty = primaryKeyProperties.isEmpty() ? null : primaryKeyProperties.get(0);
+//		}
 
 		// pre-calculate properties index
 		columnPropertiesByCaseSensitiveColumnName = new HashMap<String, PropertyWrapperDefinition>();
@@ -176,7 +178,7 @@ public class RowDefinitionClassWrapper {
 				// (error immediately on collisions)
 				if (columnPropertiesByCaseSensitiveColumnName.containsKey(property.getColumnName())) {
 					if (!processIdentityOnly) {
-						throw new DBPebkacException("Class " + clazz.getName() + " has multiple properties for column " + property.getColumnName());
+						throw new ReferenceToUndefinedPrimaryKeyException("Class " + clazz.getName() + " has multiple properties for column " + property.getColumnName());
 					}
 				} else {
 					columnPropertiesByCaseSensitiveColumnName.put(property.getColumnName(), property);
@@ -380,8 +382,8 @@ public class RowDefinitionClassWrapper {
 	 *
 	 * @return the primary key property or null if no primary key
 	 */
-	public PropertyWrapperDefinition primaryKeyDefinition() {
-		return primaryKeyProperty;
+	public PropertyWrapperDefinition[] primaryKeyDefinitions() {
+		return primaryKeyProperties;
 	}
 
 	/**

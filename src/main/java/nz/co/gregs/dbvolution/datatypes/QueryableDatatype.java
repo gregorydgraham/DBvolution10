@@ -892,4 +892,12 @@ public abstract class QueryableDatatype<T> extends Object implements Serializabl
 			return getColumnExpression().isPurelyFunctional();
 		}
 	}
+
+	public String formatColumnForSQLStatement(DBDatabase db, String formattedColumnName) {
+		return formattedColumnName;
+	}
+
+	public PropertyWrapperDefinition getDefinition() {
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	}
 }

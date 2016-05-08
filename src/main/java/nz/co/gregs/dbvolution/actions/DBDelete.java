@@ -17,8 +17,10 @@ package nz.co.gregs.dbvolution.actions;
 
 import java.sql.SQLException;
 import java.util.Collection;
+import java.util.List;
 import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.DBRow;
+import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 
 /**
  * Provides support for the abstract concept of deleting rows.
@@ -74,7 +76,8 @@ public abstract class DBDelete extends DBAction {
 		DBActionList actions = new DBActionList();
 		for (DBRow row : rows) {
 			if (row.getDefined()) {
-				if (row.getPrimaryKey() == null) {
+				final List<QueryableDatatype<?>> primaryKeys = row.getPrimaryKeys();
+				if (primaryKeys == null||primaryKeys.isEmpty()) {
 					DBDeleteUsingAllColumns allCols = new DBDeleteUsingAllColumns(row);
 					actions.addAll(allCols.getActions());
 				} else {
@@ -110,7 +113,8 @@ public abstract class DBDelete extends DBAction {
 		DBActionList actions = new DBActionList();
 		for (DBRow row : rows) {
 			if (row.getDefined()) {
-				if (row.getPrimaryKey() == null) {
+				final List<QueryableDatatype<?>> primaryKeys = row.getPrimaryKeys();
+				if (primaryKeys == null||primaryKeys.isEmpty()) {
 					DBDeleteUsingAllColumns allCols = new DBDeleteUsingAllColumns(row);
 					actions.addAll(allCols.getActions(db, row));
 				} else {
@@ -146,7 +150,8 @@ public abstract class DBDelete extends DBAction {
 		DBActionList actions = new DBActionList();
 		for (DBRow row : rows) {
 			if (row.getDefined()) {
-				if (row.getPrimaryKey() == null) {
+				final List<QueryableDatatype<?>> primaryKeys = row.getPrimaryKeys();
+				if (primaryKeys == null||primaryKeys.isEmpty()) {
 					DBDeleteUsingAllColumns allCols = new DBDeleteUsingAllColumns(row);
 					actions.addAll(allCols.getActions(db, row));
 				} else {

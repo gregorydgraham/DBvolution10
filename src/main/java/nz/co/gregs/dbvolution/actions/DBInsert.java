@@ -33,6 +33,7 @@ import nz.co.gregs.dbvolution.datatypes.DBString;
 import nz.co.gregs.dbvolution.datatypes.InternalQueryableDatatypeProxy;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 import nz.co.gregs.dbvolution.internal.properties.PropertyWrapper;
+import nz.co.gregs.dbvolution.internal.properties.PropertyWrapperDefinition;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -91,8 +92,13 @@ public class DBInsert extends DBAction {
 	public static DBActionList save(DBDatabase database, DBRow row) throws SQLException {
 		DBInsert dbInsert = new DBInsert(row);
 		final DBActionList executedActions = dbInsert.execute(database);
-		if (dbInsert.generatedKeys.size() == 1 && !row.getPrimaryKey().hasBeenSet()) {
-			final QueryableDatatype<?> pkQDT = row.getPrimaryKey();
+		final List<QueryableDatatype<?>> primaryKeys = row.getPrimaryKeys();
+		boolean pksHaveBeenSet = true;
+		for (QueryableDatatype<?> pk : primaryKeys) {
+			pksHaveBeenSet = pksHaveBeenSet && pk.hasBeenSet();
+		}
+		if (!dbInsert.generatedKeys.isEmpty() && !pksHaveBeenSet) {
+			final QueryableDatatype<?> pkQDT = primaryKeys.get(0);
 			new InternalQueryableDatatypeProxy(pkQDT).setValue(dbInsert.generatedKeys.get(0));
 		}
 		return executedActions;
@@ -136,34 +142,40 @@ public class DBInsert extends DBAction {
 			for (String sql : getSQLStatements(db)) {
 				if (defn.supportsGeneratedKeys()) {
 					try {
-						String primaryKeyColumnName = row.getPrimaryKeyColumnName();
-						Integer pkIndex = row.getPrimaryKeyIndex();
-						if (pkIndex == null || primaryKeyColumnName == null) {
+						final List<QueryableDatatype<?>> primaryKeys = row.getPrimaryKeys();
+						if (primaryKeys == null | primaryKeys.size() == 0) {
 							statement.execute(sql);
-						} else {
-							if (primaryKeyColumnName.isEmpty()) {
-								statement.execute(sql, Statement.RETURN_GENERATED_KEYS);
+						} else if (primaryKeys.size() == 1) {
+							QueryableDatatype<?> primaryKey = primaryKeys.get(0);
+							String primaryKeyColumnName = row.getPrimaryKeyColumnNames().get(0);
+							Integer pkIndex = row.getPrimaryKeyIndexes().get(0);
+							if (pkIndex == null || primaryKeyColumnName == null) {
+								statement.execute(sql);
 							} else {
-								statement.execute(sql, new String[]{db.getDefinition().formatPrimaryKeyForRetrievingGeneratedKeys(primaryKeyColumnName)});
-								pkIndex = 1;
-							}
-							if (row.getPrimaryKey().hasBeenSet() == false) {
-								ResultSet generatedKeysResultSet = statement.getGeneratedKeys();
-								try {
-									while (generatedKeysResultSet.next()) {
-										final long pkValue = generatedKeysResultSet.getLong(pkIndex);
-										if (pkValue > 0) {
-											this.getGeneratedPrimaryKeys().add(pkValue);
-											QueryableDatatype<?> pkQDT = this.originalRow.getPrimaryKey();
-											new InternalQueryableDatatypeProxy(pkQDT).setValue(pkValue);
-											pkQDT = row.getPrimaryKey();
-											new InternalQueryableDatatypeProxy(pkQDT).setValue(pkValue);
+								if (primaryKeyColumnName.isEmpty()) {
+									statement.execute(sql, Statement.RETURN_GENERATED_KEYS);
+								} else {
+									statement.execute(sql, new String[]{db.getDefinition().formatPrimaryKeyForRetrievingGeneratedKeys(primaryKeyColumnName)});
+									pkIndex = 1;
+								}
+								if (primaryKey.hasBeenSet() == false) {
+									ResultSet generatedKeysResultSet = statement.getGeneratedKeys();
+									try {
+										while (generatedKeysResultSet.next()) {
+											final long pkValue = generatedKeysResultSet.getLong(pkIndex);
+											if (pkValue > 0) {
+												this.getGeneratedPrimaryKeys().add(pkValue);
+												QueryableDatatype<?> pkQDT = this.originalRow.getPrimaryKeys().get(0);
+												new InternalQueryableDatatypeProxy(pkQDT).setValue(pkValue);
+												pkQDT = row.getPrimaryKeys().get(0);
+												new InternalQueryableDatatypeProxy(pkQDT).setValue(pkValue);
+											}
 										}
+									} catch (SQLException ex) {
+										throw new RuntimeException(ex);
+									} finally {
+										generatedKeysResultSet.close();
 									}
-								} catch (SQLException ex) {
-									throw new RuntimeException(ex);
-								} finally {
-									generatedKeysResultSet.close();
 								}
 							}
 						}
@@ -178,30 +190,42 @@ public class DBInsert extends DBAction {
 				} else {
 					try {
 						statement.execute(sql);
-						final QueryableDatatype<?> primaryKey = row.getPrimaryKey();
-						if (primaryKey != null && primaryKey.hasBeenSet() == false && defn.supportsRetrievingLastInsertedRowViaSQL()) {
-							String retrieveSQL = defn.getRetrieveLastInsertedRowSQL();
-							ResultSet rs = statement.executeQuery(retrieveSQL);
-							try {
-								QueryableDatatype<?> originalPK = this.originalRow.getPrimaryKey();
-								QueryableDatatype<?> rowPK = row.getPrimaryKey();
-								if ((originalPK instanceof DBInteger) && (rowPK instanceof DBInteger)) {
-									DBInteger inPK = (DBInteger) originalPK;
-									DBInteger inRowPK = (DBInteger) rowPK;
-									inPK.setValue(rs.getLong(1));
-									inRowPK.setValue(rs.getLong(1));
-								} else if ((originalPK instanceof DBNumber) && (rowPK instanceof DBInteger)) {
-									DBNumber inPK = (DBNumber) originalPK;
-									inPK.setValue(rs.getBigDecimal(1));
-									((DBInteger) rowPK).setValue(rs.getLong(1));
-								} else if ((originalPK instanceof DBString) && (rowPK instanceof DBString)) {
-									DBString inPK = (DBString) originalPK;
-									inPK.setValue(rs.getString(1));
-									inPK = (DBString) rowPK;
-									inPK.setValue(rs.getString(1));
+						//QueryableDatatype<?> primaryKey = null;
+						final List<PropertyWrapper> primaryKeyWrappers = row.getPrimaryKeyPropertyWrappers();
+						if (primaryKeyWrappers.size() > 0) {
+							if (defn.supportsRetrievingLastInsertedRowViaSQL()) {
+//							primaryKey = primaryKeys.get(0);
+								String retrieveSQL = defn.getRetrieveLastInsertedRowSQL();
+								ResultSet rs = statement.executeQuery(retrieveSQL);
+								try {
+									for (PropertyWrapper primaryKeyWrapper : primaryKeyWrappers) {
+										PropertyWrapperDefinition definition = primaryKeyWrapper.getDefinition();
+										QueryableDatatype<?> originalPK = definition.getQueryableDatatype(this.originalRow);
+										QueryableDatatype<?> rowPK = definition.getQueryableDatatype(row);
+
+										if (originalPK.hasBeenSet() == false) {
+//											QueryableDatatype<?> originalPK = this.originalRow.getPrimaryKeys().get(0);
+//											QueryableDatatype<?> rowPK = row.getPrimaryKeys().get(0);
+											if ((originalPK instanceof DBInteger) && (rowPK instanceof DBInteger)) {
+												DBInteger inPK = (DBInteger) originalPK;
+												DBInteger inRowPK = (DBInteger) rowPK;
+												inPK.setValue(rs.getLong(1));
+												inRowPK.setValue(rs.getLong(1));
+											} else if ((originalPK instanceof DBNumber) && (rowPK instanceof DBInteger)) {
+												DBNumber inPK = (DBNumber) originalPK;
+												inPK.setValue(rs.getBigDecimal(1));
+												((DBInteger) rowPK).setValue(rs.getLong(1));
+											} else if ((originalPK instanceof DBString) && (rowPK instanceof DBString)) {
+												DBString inPK = (DBString) originalPK;
+												inPK.setValue(rs.getString(1));
+												inPK = (DBString) rowPK;
+												inPK.setValue(rs.getString(1));
+											}
+										}
+									}
+								} finally {
+									rs.close();
 								}
-							} finally {
-								rs.close();
 							}
 						}
 					} catch (SQLException ex) {
@@ -269,7 +293,7 @@ public class DBInsert extends DBAction {
 	protected DBActionList getRevertDBActionList() {
 		DBActionList reverts = new DBActionList();
 		DBRow row = DBRow.copyDBRow(originalRow);
-		if (this.getRow().getPrimaryKey() == null) {
+		if (this.getRow().getPrimaryKeys() == null) {
 			reverts.add(new DBDeleteUsingAllColumns(row));
 		} else {
 			reverts.add(new DBDeleteByPrimaryKey(row));
@@ -308,5 +332,23 @@ public class DBInsert extends DBAction {
 	 */
 	public List<Long> getGeneratedPrimaryKeys() {
 		return generatedKeys;
+	}
+
+	@Override
+	protected String getPrimaryKeySQL(DBDefinition defn, DBRow row, DBDatabase db) {
+		String sqlString = "";
+		List<QueryableDatatype<?>> primaryKeys = row.getPrimaryKeys();
+		String separator = "";
+		for (QueryableDatatype<?> pk : primaryKeys) {
+			PropertyWrapper wrapper = row.getPropertyWrapperOf(pk);
+			String pkValue = pk.toSQLString(db);
+			//String pkValue = (pk.hasChanged() ? pk.getPreviousSQLValue(db) : pk.toSQLString(db));
+			sqlString += separator + defn.formatColumnName(wrapper.columnName()) + defn.getEqualsComparator() + pkValue;
+			//				+ defn.formatColumnName(row.getPrimaryKeyColumnNames())
+			//				+ defn.getEqualsComparator()
+			//				+ row.getPrimaryKeys().toSQLString(db)
+			separator = defn.beginAndLine();
+		}
+		return sqlString;
 	}
 }

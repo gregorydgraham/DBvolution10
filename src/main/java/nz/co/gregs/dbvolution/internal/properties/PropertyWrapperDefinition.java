@@ -407,7 +407,7 @@ public class PropertyWrapperDefinition {
 	 * isReadable() first)
 	 * @throws DBThrownByEndUserCodeException if any user code throws an exception
 	 */
-	public QueryableDatatype<?> getQueryableDatatype(Object target) {
+	public QueryableDatatype<?> getQueryableDatatype(RowDefinition target) {
 		QueryableDatatype<?> qdt = typeHandler.getJavaPropertyAsQueryableDatatype(target);
 		new InternalQueryableDatatypeProxy(qdt).setPropertyWrapper(this);
 		return qdt;

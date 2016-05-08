@@ -20,6 +20,7 @@ import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.datatypes.*;
 import nz.co.gregs.dbvolution.exceptions.AccidentalCartesianJoinException;
 import nz.co.gregs.dbvolution.exceptions.IncorrectRowProviderInstanceSuppliedException;
+import nz.co.gregs.dbvolution.exceptions.SingularReferenceToMultiColumnPrimaryKeyException;
 import nz.co.gregs.dbvolution.exceptions.UnableToInstantiateDBRowSubclassException;
 import nz.co.gregs.dbvolution.exceptions.UnacceptableClassForAutoFillAnnotation;
 import nz.co.gregs.dbvolution.exceptions.UndefinedPrimaryKeyException;
@@ -35,7 +36,8 @@ import org.reflections.Reflections;
  *
  * <p>
  * A fuller description of creating a DBRow subclass is at <a
- * href="https://dbvolution.gregs.co.nz/usingDBRow.html">the DBvolution website</a>
+ * href="https://dbvolution.gregs.co.nz/usingDBRow.html">the DBvolution
+ * website</a>
  * <p>
  * A fundamental difference between Object Oriented Programming and Relational
  * Databases is that DBs are based on persistent tables that store information.
@@ -154,10 +156,21 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 	 */
 	public static <R extends DBRow> R getPrimaryKeyExample(R sourceRow) {
 		@SuppressWarnings("unchecked")
-		R dbRow = (R) getDBRow(sourceRow.getClass());
-		final QueryableDatatype<?> pkQDT = dbRow.getPrimaryKey();
-		new InternalQueryableDatatypeProxy(pkQDT).setValue(sourceRow.getPrimaryKey());
-		return dbRow;
+		R newRow = (R) getDBRow(sourceRow.getClass());
+		final List<PropertyWrapper> wrappers = sourceRow.getPrimaryKeyPropertyWrappers();
+		for (PropertyWrapper wrapper : wrappers) {
+			PropertyWrapperDefinition definition = wrapper.getDefinition();
+			QueryableDatatype<?> sourceQDT = definition.getQueryableDatatype(sourceRow);
+			QueryableDatatype<?> newQDT = definition.getQueryableDatatype(newRow);
+			
+			new InternalQueryableDatatypeProxy(newQDT).setValue(sourceQDT);
+//			final RowDefinitionInstanceWrapper newInstanceWrapper = wrapper.getDefinition().getRowDefinitionClassWrapper().instanceWrapperFor(newRow);
+//			final PropertyWrapper newProperty = newInstanceWrapper.getPropertyByName(wrapper.javaName());
+//			new InternalQueryableDatatypeProxy(newProperty.getQueryableDatatype()).setValue(wrapper.rawJavaValue());
+
+//			new InternalQueryableDatatypeProxy(newQDT).setValue(sourceRow.getPrimaryKeys());
+		}
+		return newRow;
 	}
 
 	/**
@@ -214,16 +227,19 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 	 * If the DBRow class has a {@link DBPrimaryKey @DBPrimaryKey} designated
 	 * field, then the QueryableDatatype instance of that field is returned.
 	 *
-	 * @param <A>	QDT
 	 * @return the QDT of the primary key or null if there is no primary key.
 	 */
-	public <A extends QueryableDatatype<?>> A getPrimaryKey() {
-		final PropertyWrapper primaryKeyPropertyWrapper = getPrimaryKeyPropertyWrapper();
-		if (primaryKeyPropertyWrapper == null) {
+	public List<QueryableDatatype<?>> getPrimaryKeys() {
+		List<PropertyWrapper> primaryKeyPropertyWrappers = getPrimaryKeyPropertyWrappers();
+
+		if (primaryKeyPropertyWrappers == null) {
 			return null;
 		} else {
-			A queryableValueOfField = primaryKeyPropertyWrapper.getQueryableDatatype();
-			return queryableValueOfField;
+			List<QueryableDatatype<?>> names = new ArrayList<>();
+			for (PropertyWrapper pk : primaryKeyPropertyWrappers) {
+				names.add(pk.getQueryableDatatype());
+			}
+			return names;
 		}
 	}
 
@@ -243,12 +259,14 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 	 * @see DBAutoIncrement
 	 */
 	public void setPrimaryKey(Object newPKValue) throws ClassCastException {
-		final QueryableDatatype<?> primaryKey = getPrimaryKey();
-		if (primaryKey == null) {
+		final List<QueryableDatatype<?>> primaryKeys = getPrimaryKeys();
+		if (primaryKeys == null||primaryKeys.isEmpty()) {
 			throw new UndefinedPrimaryKeyException(this);
-		} else {
-			InternalQueryableDatatypeProxy proxy = new InternalQueryableDatatypeProxy(primaryKey);
+		} else if (primaryKeys.size() == 1) {
+			InternalQueryableDatatypeProxy proxy = new InternalQueryableDatatypeProxy(primaryKeys.get(0));
 			proxy.setValue(newPKValue);
+		} else {
+			throw new SingularReferenceToMultiColumnPrimaryKeyException(this, primaryKeys);
 		}
 	}
 
@@ -261,12 +279,16 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 	 *
 	 * @return the index of the primary key or null if there is no primary key.
 	 */
-	public Integer getPrimaryKeyIndex() {
-		final PropertyWrapper primaryKeyPropertyWrapper = getPrimaryKeyPropertyWrapper();
-		if (primaryKeyPropertyWrapper == null) {
+	public List<Integer> getPrimaryKeyIndexes() {
+		final List<PropertyWrapper> primaryKeyPropertyWrappers = getPrimaryKeyPropertyWrappers();
+		if (primaryKeyPropertyWrappers == null) {
 			return null;
 		} else {
-			return primaryKeyPropertyWrapper.getDefinition().getColumnIndex();
+			List<Integer> names = new ArrayList<>();
+			for (PropertyWrapper pk : primaryKeyPropertyWrappers) {
+				names.add(pk.getDefinition().getColumnIndex());
+			}
+			return names;
 		}
 	}
 
@@ -349,12 +371,16 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 	 *
 	 * @return the column of the primary key
 	 */
-	public String getPrimaryKeyColumnName() {
-		PropertyWrapper primaryKeyPropertyWrapper = getPrimaryKeyPropertyWrapper();
-		if (primaryKeyPropertyWrapper == null) {
+	public List<String> getPrimaryKeyColumnNames() {
+		List<PropertyWrapper> primaryKeyPropertyWrappers = getPrimaryKeyPropertyWrappers();
+		if (primaryKeyPropertyWrappers == null) {
 			return null;
 		} else {
-			return primaryKeyPropertyWrapper.columnName();
+			List<String> names = new ArrayList<>();
+			for (PropertyWrapper pk : primaryKeyPropertyWrappers) {
+				names.add(pk.columnName());
+			}
+			return names;
 		}
 	}
 
@@ -363,12 +389,16 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 	 *
 	 * @return the java field name of the primary key
 	 */
-	public String getPrimaryKeyFieldName() {
-		PropertyWrapper primaryKeyPropertyWrapper = getPrimaryKeyPropertyWrapper();
-		if (primaryKeyPropertyWrapper == null) {
+	public List<String> getPrimaryKeyFieldName() {
+		List<PropertyWrapper> primaryKeyPropertyWrappers = getPrimaryKeyPropertyWrappers();
+		if (primaryKeyPropertyWrappers == null) {
 			return null;
 		} else {
-			return primaryKeyPropertyWrapper.javaName();
+			List<String> names = new ArrayList<>();
+			for (PropertyWrapper pk : primaryKeyPropertyWrappers) {
+				names.add(pk.javaName());
+			}
+			return names;
 		}
 	}
 
@@ -377,8 +407,8 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 	 *
 	 * @return the PropertyWrapper for the primary key.
 	 */
-	protected PropertyWrapper getPrimaryKeyPropertyWrapper() {
-		return getWrapper().primaryKey();
+	public List<PropertyWrapper> getPrimaryKeyPropertyWrappers() {
+		return getWrapper().primaryKeys();
 	}
 
 	/**
@@ -462,7 +492,7 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 		}
 		return whereClause;
 	}
-	
+
 	private String getQDTWhereClause(DBDatabase db, ColumnProvider column, QueryableDatatype<?> qdt) {
 		String whereClause = "";
 		DBOperator op = qdt.getOperator();
@@ -1168,7 +1198,10 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 			if (propertyWrapper.isForeignKeyTo(target)) {
 				RowDefinition source = propertyWrapper.getRowDefinitionInstanceWrapper().adapteeRowDefinition();
 				final QueryableDatatype<?> sourceFK = propertyWrapper.getQueryableDatatype();
-				final QueryableDatatype<?> targetPK = target.getPrimaryKey().getQueryableDatatypeForExpressionValue();
+				PropertyWrapperDefinition targetPropertyDefinition = propertyWrapper.getDefinition().referencedPropertyDefinitionIdentity();
+				PropertyWrapper targetProperty = target.getWrapper().getPropertyByName(targetPropertyDefinition.javaName());
+				QueryableDatatype<?> targetPK = targetProperty.getQueryableDatatype().getQueryableDatatypeForExpressionValue();
+//				final QueryableDatatype<?> targetPK = target.getPrimaryKeys().getQueryableDatatypeForExpressionValue();
 
 				Object column = source.column(sourceFK);
 				try {
@@ -1180,15 +1213,15 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 						}
 					}
 				} catch (IllegalAccessException ex) {
-					throw new nz.co.gregs.dbvolution.exceptions.ForeignKeyCannotBeComparedToPrimaryKey(ex, source, propertyWrapper, target, target.getPropertyWrapperOf(target.getPrimaryKey()));
+					throw new nz.co.gregs.dbvolution.exceptions.ForeignKeyCannotBeComparedToPrimaryKey(ex, source, propertyWrapper, target, targetProperty);
 				} catch (IllegalArgumentException ex) {
-					throw new nz.co.gregs.dbvolution.exceptions.ForeignKeyCannotBeComparedToPrimaryKey(ex, source, propertyWrapper, target, target.getPropertyWrapperOf(target.getPrimaryKey()));
+					throw new nz.co.gregs.dbvolution.exceptions.ForeignKeyCannotBeComparedToPrimaryKey(ex, source, propertyWrapper, target, targetProperty);
 				} catch (NoSuchMethodException ex) {
-					throw new nz.co.gregs.dbvolution.exceptions.ForeignKeyCannotBeComparedToPrimaryKey(ex, source, propertyWrapper, target, target.getPropertyWrapperOf(target.getPrimaryKey()));
+					throw new nz.co.gregs.dbvolution.exceptions.ForeignKeyCannotBeComparedToPrimaryKey(ex, source, propertyWrapper, target, targetProperty);
 				} catch (SecurityException ex) {
-					throw new nz.co.gregs.dbvolution.exceptions.ForeignKeyCannotBeComparedToPrimaryKey(ex, source, propertyWrapper, target, target.getPropertyWrapperOf(target.getPrimaryKey()));
+					throw new nz.co.gregs.dbvolution.exceptions.ForeignKeyCannotBeComparedToPrimaryKey(ex, source, propertyWrapper, target, targetProperty);
 				} catch (InvocationTargetException ex) {
-					throw new nz.co.gregs.dbvolution.exceptions.ForeignKeyCannotBeComparedToPrimaryKey(ex, source, propertyWrapper, target, target.getPropertyWrapperOf(target.getPrimaryKey()));
+					throw new nz.co.gregs.dbvolution.exceptions.ForeignKeyCannotBeComparedToPrimaryKey(ex, source, propertyWrapper, target, targetProperty);
 				}
 			}
 		}
@@ -1257,8 +1290,15 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 
 	private static BooleanExpression getRelationshipExpressionFor(DBRow fkTable, PropertyWrapper fk, DBRow otherTable) {
 		BooleanExpression expr = BooleanExpression.falseExpression();
-		QueryableDatatype<?> fkQDT = fk.getQueryableDatatype();
-		QueryableDatatype<?> pkQDT = otherTable.getPrimaryKey();
+		final PropertyWrapperDefinition fkDefn = fk.getDefinition();				
+		QueryableDatatype<?> fkQDT = fkDefn.getQueryableDatatype(fkTable);				
+		
+//		PropertyWrapper propertyWrapper = fkTable.getPropertyWrapperOf(fkQDT);
+		PropertyWrapperDefinition targetPropertyDefinition = fkDefn.referencedPropertyDefinitionIdentity();
+		PropertyWrapper targetProperty = otherTable.getWrapper().getPropertyByName(targetPropertyDefinition.javaName());
+		QueryableDatatype<?> pkQDT = targetProperty.getQueryableDatatype();
+
+//		QueryableDatatype<?> pkQDT = otherTable.getPrimaryKeys();
 		if (fkQDT.getClass().isAssignableFrom(pkQDT.getClass())
 				|| pkQDT.getClass().isAssignableFrom(fkQDT.getClass())) {
 			if (DBBoolean.class.isAssignableFrom(fkQDT.getClass())) {
@@ -1425,12 +1465,10 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 							field.setRawJavaValue(newInstance);
 						} else if (listRequired) {
 							field.setRawJavaValue(relatedInstancesFromQuery);
+						} else if (relatedInstancesFromQuery.isEmpty()) {
+							field.setRawJavaValue(null);
 						} else {
-							if (relatedInstancesFromQuery.isEmpty()) {
-								field.setRawJavaValue(null);
-							} else {
-								field.setRawJavaValue(relatedInstancesFromQuery.get(0));
-							}
+							field.setRawJavaValue(relatedInstancesFromQuery.get(0));
 						}
 					}
 				}

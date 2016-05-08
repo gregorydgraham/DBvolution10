@@ -113,8 +113,8 @@ public class DBByteArrayTest extends AbstractTest {
 		Assert.assertThat(newFile.length(), is(image.length()));
 //		newFile.delete();
 
-		database.preventDroppingOfTables(false);
-		database.dropTableNoExceptions(blobTable);
+//		database.preventDroppingOfTables(false);
+//		database.dropTableNoExceptions(blobTable);
 	}
 
 	@Test
@@ -138,8 +138,8 @@ public class DBByteArrayTest extends AbstractTest {
 		String stringValue = firstRow.imageBytes.stringValue();
 		Assert.assertThat(stringValue, is(sourceDataAsString));
 
-		database.preventDroppingOfTables(false);
-		database.dropTableNoExceptions(clobTable);
+//		database.preventDroppingOfTables(false);
+//		database.dropTableNoExceptions(clobTable);
 
 	}
 
@@ -162,8 +162,8 @@ public class DBByteArrayTest extends AbstractTest {
 		String stringValue = firstRow.imageBytes.stringValue();
 		Assert.assertThat(stringValue, is(sourceDataAsString));
 
-		database.preventDroppingOfTables(false);
-		database.dropTableNoExceptions(testRow);
+//		database.preventDroppingOfTables(false);
+//		database.dropTableNoExceptions(testRow);
 	}
 
 	@DBTableName("bytearraywithautoincrement")

@@ -83,10 +83,19 @@ public class DBUpdateToPreviousValues extends DBUpdateSimpleTypes {
 	@Override
 	protected String getWhereClause(DBDatabase db, DBRow row) {
 		DBDefinition defn = db.getDefinition();
-		QueryableDatatype<?> primaryKey = row.getPrimaryKey();
-		String pkCurrentValue = primaryKey.toSQLString(db);
-		return defn.formatColumnName(row.getPrimaryKeyColumnName())
-				+ defn.getEqualsComparator()
-				+ pkCurrentValue;
+		String sqlString = "";
+		List<QueryableDatatype<?>> primaryKeys = row.getPrimaryKeys();
+		String separator = "";
+		for (QueryableDatatype<?> pk : primaryKeys) {
+			PropertyWrapper wrapper = row.getPropertyWrapperOf(pk);
+			String pkValue = pk.toSQLString(db);
+			sqlString += separator + defn.formatColumnName(wrapper.columnName()) + defn.getEqualsComparator() + pkValue;
+			//				+ defn.formatColumnName(row.getPrimaryKeyColumnNames())
+			//				+ defn.getEqualsComparator()
+			//				+ row.getPrimaryKeys().toSQLString(db)
+			separator = defn.beginAndLine();
+		}
+		return sqlString;
+
 	}
 }

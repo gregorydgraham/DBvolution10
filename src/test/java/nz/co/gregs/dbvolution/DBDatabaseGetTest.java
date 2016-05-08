@@ -60,7 +60,7 @@ public class DBDatabaseGetTest extends AbstractTest {
 		DBRow row = marqueRows.get(0);
 		Object primaryKey;
 		if (row != null) {
-			primaryKey = row.getPrimaryKey().getValue();
+			primaryKey = row.getPrimaryKeys().get(0).getValue();
 			Marque marque = new Marque();
 			if (primaryKey instanceof Long) {
 				marque.uidMarque.permittedValues((Long) primaryKey);
@@ -134,7 +134,7 @@ public class DBDatabaseGetTest extends AbstractTest {
 		literalQuery.getUidMarque().permittedValues(4893059);
 		List<Marque> gotMarques = database.get(literalQuery);
 		Assert.assertEquals(1, gotMarques.size());
-		Assert.assertEquals("" + 4893059, gotMarques.get(0).getPrimaryKey().toSQLString(database));
+		Assert.assertEquals("" + 4893059, gotMarques.get(0).getPrimaryKeys().get(0).toSQLString(database));
 	}
 
 	@Test
@@ -171,8 +171,8 @@ public class DBDatabaseGetTest extends AbstractTest {
 		literalQuery.getUidMarque().permittedValues(4893059, 4893090);
 		List<Marque> gotMarques = database.get(literalQuery);
 		Assert.assertThat(gotMarques.size(), is(2));
-		Assert.assertThat(gotMarques.get(0).getPrimaryKey().toSQLString(database), is("" + 4893059));
-		Assert.assertThat(gotMarques.get(1).getPrimaryKey().toSQLString(database), is("" + 4893090));
+		Assert.assertThat(gotMarques.get(0).getPrimaryKeys().get(0).toSQLString(database), is("" + 4893059));
+		Assert.assertThat(gotMarques.get(1).getPrimaryKeys().get(0).toSQLString(database), is("" + 4893090));
 	}
 
 	@Test

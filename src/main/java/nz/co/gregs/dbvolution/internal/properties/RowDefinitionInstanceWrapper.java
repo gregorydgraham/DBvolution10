@@ -38,6 +38,7 @@ public class RowDefinitionInstanceWrapper {
 	private final List<PropertyWrapper> columnProperties;
 	private final List<PropertyWrapper> autoFillingProperties;
 	private final List<PropertyWrapper> foreignKeyProperties;
+	private List<PropertyWrapper> primaryKeyProperties;
 
 	/**
 	 * Called by
@@ -245,12 +246,20 @@ public class RowDefinitionInstanceWrapper {
 	 *
 	 * @return the primary key property or null if no primary key
 	 */
-	public PropertyWrapper primaryKey() {
-		if (classWrapper.primaryKeyDefinition() != null) {
-			return new PropertyWrapper(this, classWrapper.primaryKeyDefinition(), rowDefinition);
-		} else {
-			return null;
+	public List<PropertyWrapper> primaryKeys() {
+		if (primaryKeyProperties == null) {
+			primaryKeyProperties = new ArrayList<>();
+
+			final PropertyWrapperDefinition[] pkDefs = classWrapper.primaryKeyDefinitions();
+			if (pkDefs != null) {
+				for (PropertyWrapperDefinition pkDefn : pkDefs) {
+					primaryKeyProperties.add(new PropertyWrapper(this, pkDefn, rowDefinition));
+				}
+			} else {
+				return null;
+			}
 		}
+		return primaryKeyProperties;
 	}
 
 	/**

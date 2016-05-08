@@ -11,7 +11,7 @@ import nz.co.gregs.dbvolution.exceptions.DBThrownByEndUserCodeException;
  *
  * @author Malcolm Lett
  */
-interface JavaProperty {
+public interface JavaProperty {
 
 	/**
 	 * Gets a string that clearly identifies the field or bean-property, suitable

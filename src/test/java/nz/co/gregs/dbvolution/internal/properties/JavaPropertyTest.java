@@ -15,6 +15,7 @@ import nz.co.gregs.dbvolution.datatypes.DBString;
 import nz.co.gregs.dbvolution.datatypes.DBTypeAdaptor;
 import nz.co.gregs.dbvolution.exceptions.DBPebkacException;
 import nz.co.gregs.dbvolution.exceptions.DBThrownByEndUserCodeException;
+import nz.co.gregs.dbvolution.exceptions.ReferenceToUndefinedPrimaryKeyException;
 import nz.co.gregs.dbvolution.internal.properties.JavaPropertyFinder.PropertyType;
 import nz.co.gregs.dbvolution.internal.properties.JavaPropertyFinder.Visibility;
 
@@ -450,7 +451,7 @@ public class JavaPropertyTest {
 		assertThat(property.getAnnotation(DBColumn.class), is(not(nullValue())));
 	}
 
-	@Test(expected = DBPebkacException.class)
+	@Test(expected = ReferenceToUndefinedPrimaryKeyException.class)
 	public void errorsWhenRetrievingAnnotationGivenDifferentDuplicatedSimpleAnnotationOnGetterAndSetter() {
 		class TestClass {
 
@@ -486,7 +487,7 @@ public class JavaPropertyTest {
 		assertThat(property.getAnnotation(DBColumn.class), is(not(nullValue())));
 	}
 
-	@Test(expected = DBPebkacException.class)
+	@Test(expected = ReferenceToUndefinedPrimaryKeyException.class)
 	public void errorsWhenRetrievingAnnotationGivenDifferentDuplicatedComplexAnnotationOnGetterAndSetter() {
 		class MyAdaptor implements DBTypeAdaptor<Object, DBInteger> {
 
@@ -515,7 +516,7 @@ public class JavaPropertyTest {
 		property.getAnnotation(DBAdaptType.class);
 	}
 
-	@Test(expected = DBPebkacException.class)
+	@Test(expected = ReferenceToUndefinedPrimaryKeyException.class)
 	public void errorsWhenRetrievingAnnotationGivenDifferentDuplicatedDefaultedComplexAnnotationOnGetterAndSetter() {
 		class MyAdaptor implements DBTypeAdaptor<Object, DBInteger> {
 

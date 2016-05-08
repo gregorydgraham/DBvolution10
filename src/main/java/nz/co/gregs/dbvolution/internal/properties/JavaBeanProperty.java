@@ -22,9 +22,9 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
-import nz.co.gregs.dbvolution.exceptions.DBPebkacException;
 import nz.co.gregs.dbvolution.exceptions.DBRuntimeException;
 import nz.co.gregs.dbvolution.exceptions.DBThrownByEndUserCodeException;
+import nz.co.gregs.dbvolution.exceptions.ReferenceToUndefinedPrimaryKeyException;
 
 /**
  * Implementation over bean properties.
@@ -236,7 +236,7 @@ public class JavaBeanProperty implements JavaProperty {
 		if (getterAnnotation != null && setterAnnotation != null) {
 			if (!annotationsEqual(getterAnnotation, setterAnnotation)) {
 				String name = annotationClass.getSimpleName();
-				throw new DBPebkacException("@" + name + " different on " + qualifiedName() + " getter and setter ");
+				throw new ReferenceToUndefinedPrimaryKeyException("@" + name + " different on " + qualifiedName() + " getter and setter ");
 			}
 		}
 		if (getterAnnotation != null) {

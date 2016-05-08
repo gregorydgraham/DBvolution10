@@ -7,6 +7,8 @@ import nz.co.gregs.dbvolution.annotations.DBColumn;
 import nz.co.gregs.dbvolution.annotations.DBForeignKey;
 import nz.co.gregs.dbvolution.exceptions.DBPebkacException;
 import nz.co.gregs.dbvolution.exceptions.DBRuntimeException;
+import nz.co.gregs.dbvolution.exceptions.ReferenceToUndefinedPrimaryKeyException;
+import nz.co.gregs.dbvolution.exceptions.SingularReferenceToMultiColumnPrimaryKeyException;
 
 /**
  * Handles annotation processing, business logic, validation rules, defaulting,
@@ -62,7 +64,7 @@ class ForeignKeyHandler {
 
 			// validate: referenced class is valid enough for the purposes of doing queries on this class
 			if (!referencedClassWrapper.isTable()) {
-				throw new DBPebkacException(adaptee.qualifiedName() + " is a foreign key to class " + referencedClassWrapper.javaName()
+				throw new ReferenceToUndefinedPrimaryKeyException(adaptee.qualifiedName() + " is a foreign key to class " + referencedClassWrapper.javaName()
 						+ ", which is not a table");
 			}
 			if (referencedClassWrapper.tableName() == null) {
@@ -75,11 +77,11 @@ class ForeignKeyHandler {
 			if (declaredReferencedColumnName != null) {
 				List<PropertyWrapperDefinition> properties = referencedClassWrapper.getPropertyDefinitionIdentitiesByColumnNameCaseInsensitive(declaredReferencedColumnName);
 				if (properties.size() > 1) {
-					throw new DBPebkacException(adaptee.qualifiedName() + " references column " + declaredReferencedColumnName
+					throw new ReferenceToUndefinedPrimaryKeyException(adaptee.qualifiedName() + " references column " + declaredReferencedColumnName
 							+ ", however there are " + properties.size() + " such properties in " + referencedClassWrapper.javaName() + ".");
 				}
 				if (properties.isEmpty()) {
-					throw new DBPebkacException("Property " + adaptee.qualifiedName() + " references class " + referencedClassWrapper.javaName()
+					throw new ReferenceToUndefinedPrimaryKeyException("Property " + adaptee.qualifiedName() + " references class " + referencedClassWrapper.javaName()
 							+ " and column " + declaredReferencedColumnName + ", but the column doesn't exist");
 				}
 
@@ -89,21 +91,15 @@ class ForeignKeyHandler {
 
 			// validate: referenced class has single primary key when implicitly referencing primary key column
 			if (declaredReferencedColumnName == null) {
-				PropertyWrapperDefinition primaryKey = referencedClassWrapper.primaryKeyDefinition();
-				if (primaryKey == null) {
-					throw new DBPebkacException("Property " + adaptee.qualifiedName() + " references class " + referencedClassWrapper.javaName()
-							+ ", which does not have a primary key. Please identify the primary key on that class or specify the column in the"
-							+ " @" + DBForeignKey.class.getSimpleName() + " declaration.");
+				PropertyWrapperDefinition[] primaryKeys = referencedClassWrapper.primaryKeyDefinitions();
+				if (primaryKeys == null || primaryKeys.length == 0) {
+					throw new ReferenceToUndefinedPrimaryKeyException(adaptee, referencedClassWrapper);
+				} else if (primaryKeys.length > 1) {
+					throw new SingularReferenceToMultiColumnPrimaryKeyException(adaptee, referencedClassWrapper, primaryKeys);
+
+				} else {
+					identifiedReferencedProperty = primaryKeys[0];
 				}
-//				else {
-//					// TODO once support multiple primary keys
-//					if (primaryKeyProperties.size() > 1) {
-//						throw new DBPebkacException("Property "+qualifiedJavaName()+" references class "+referencedClassWrapper.javaName()
-//								+" using an implicit primary key reference, but the referenced class has "+primaryKeyProperties.size()
-//								+" primary key columns. You must include explicit foreign column names.");
-//					}
-//				}
-				identifiedReferencedProperty = primaryKey;
 			}
 		}
 		this.identityOnlyReferencedProperty = identifiedReferencedProperty;

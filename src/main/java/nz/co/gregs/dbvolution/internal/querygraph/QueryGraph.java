@@ -196,7 +196,6 @@ public class QueryGraph {
 	}
 
 	private void addEdgeToDisplayGraph(QueryGraphNode node1, QueryGraphNode node2, DBExpression fk) {
-//		DBRelationship fk = DBRelationship.get(table1, table1.getPrimaryKey(), table2, table2.getPrimaryKey());
 
 		if (!jungGraph.containsEdge(fk)) {
 			jungGraph.addEdge(fk, node1, node2);

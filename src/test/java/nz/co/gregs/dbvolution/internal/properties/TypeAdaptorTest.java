@@ -18,6 +18,7 @@ import nz.co.gregs.dbvolution.databases.H2MemoryDB;
 import nz.co.gregs.dbvolution.datatypes.DBInteger;
 import nz.co.gregs.dbvolution.datatypes.DBString;
 import nz.co.gregs.dbvolution.datatypes.DBTypeAdaptor;
+import nz.co.gregs.dbvolution.generic.AbstractTest;
 
 import org.junit.After;
 import org.junit.Before;
@@ -29,14 +30,19 @@ import org.junit.Test;
  * functionality is in {@link PropertyTypeHandlerTest}.
  */
 @SuppressWarnings("serial")
-public class TypeAdaptorTest {
+public class TypeAdaptorTest extends AbstractTest{
 
 	private DBDatabase db;
 
+	public TypeAdaptorTest(Object testIterationName, Object db) {
+		super(testIterationName, db);
+	}
+
 	@Before
 	public void setup() throws SQLException {
-		this.db = new H2MemoryDB("dbvolutionTest", "", "", false);
-		this.db.setPrintSQLBeforeExecuting(false);
+		this.db = database;
+		//this.db = new H2MemoryDB("dbvolutionTest", "", "", false);
+		this.db.setPrintSQLBeforeExecuting(true);
 
 		db.preventDroppingOfTables(false);
 		db.dropTableNoExceptions(new CustomerWithDBInteger());
@@ -62,16 +68,16 @@ public class TypeAdaptorTest {
 
 	@After
 	public void tearDown() throws Exception {
-		db.setPrintSQLBeforeExecuting(false);
-		db.preventDroppingOfTables(false);
-		db.dropTable(new CustomerWithDBInteger());
-		try {
-			db.preventDroppingOfTables(false);
-			db.preventDroppingOfDatabases(false);
-			db.dropDatabase(true);
-		} catch (UnsupportedOperationException ex) {
-			;
-		}
+//		db.setPrintSQLBeforeExecuting(false);
+//		db.preventDroppingOfTables(false);
+//		db.dropTable(new CustomerWithDBInteger());
+//		try {
+//			db.preventDroppingOfTables(false);
+//			db.preventDroppingOfDatabases(false);
+//			db.dropDatabase(true);
+//		} catch (UnsupportedOperationException ex) {
+//			;
+//		}
 	}
 
 	@Test
@@ -110,6 +116,7 @@ public class TypeAdaptorTest {
 		CustomerWithDBStringIntegerTypeAdaptor query = new CustomerWithDBStringIntegerTypeAdaptor();
 		query.year.permittedRange("25", "3000");
 
+		db.setPrintSQLBeforeExecuting(true);
 		List<CustomerWithDBStringIntegerTypeAdaptor> rows = db.get(query);
 		List<String> whereClauses = query.getWhereClausesWithoutAliases(db);
 		String allClauses = "";

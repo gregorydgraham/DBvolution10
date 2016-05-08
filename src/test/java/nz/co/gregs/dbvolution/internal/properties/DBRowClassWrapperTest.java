@@ -1,7 +1,6 @@
 package nz.co.gregs.dbvolution.internal.properties;
 
 import java.sql.SQLException;
-import nz.co.gregs.dbvolution.internal.properties.RowDefinitionClassWrapper;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.*;
 import nz.co.gregs.dbvolution.DBDatabase;
@@ -13,6 +12,9 @@ import nz.co.gregs.dbvolution.annotations.DBTableName;
 import nz.co.gregs.dbvolution.databases.H2MemoryDB;
 import nz.co.gregs.dbvolution.datatypes.DBInteger;
 import nz.co.gregs.dbvolution.datatypes.DBString;
+import org.hamcrest.Matcher;
+import org.hamcrest.Matchers.*;
+import org.junit.Assert;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -30,12 +32,10 @@ public class DBRowClassWrapperTest {
 	@Test
 	public void getsPrimaryKeyPropertiesGivenOnePrimaryKeyColumn() {
 		RowDefinitionClassWrapper classWrapper = new RowDefinitionClassWrapper(MyTable1.class);
-		assertThat(classWrapper.primaryKeyDefinition(), is(not(nullValue())));
-		assertThat(classWrapper.primaryKeyDefinition().getColumnName(), is("uid"));
+		assertThat(classWrapper.primaryKeyDefinitions()[0], is(not(nullValue())));
+		assertThat(classWrapper.primaryKeyDefinitions()[0].getColumnName(), is("uid"));
 	}
 
-	@SuppressWarnings("serial")
-	@Test(expected = UnsupportedOperationException.class)
 	public void errorsWhenConstructingGivenTwoPrimaryKeyColumns() {
 		@DBTableName("table1")
 		class TestClass extends DBRow {
@@ -51,7 +51,8 @@ public class DBRowClassWrapperTest {
 			public DBInteger fkTable2 = new DBInteger();
 		}
 
-		new RowDefinitionClassWrapper(TestClass.class);
+		RowDefinitionClassWrapper rowDefinitionClassWrapper = new RowDefinitionClassWrapper(TestClass.class);
+		Assert.assertThat(rowDefinitionClassWrapper, notNullValue());
 	}
 
 //	@Test

@@ -37,28 +37,28 @@ public class DBRowMiscTests extends AbstractTest {
 	@Test
 	public void testPrimaryKeyColumnNameForUnspecifiedColumnName() {
 		UnspecifiedColumnName unchangedPK = new UnspecifiedColumnName();
-		String primaryKeyColumnName = unchangedPK.getPrimaryKeyColumnName();
+		String primaryKeyColumnName = unchangedPK.getPrimaryKeyColumnNames().get(0);
 		Assert.assertThat(primaryKeyColumnName, is("pkuid"));
 	}
 
 	@Test
 	public void testPrimaryKeyColumnNameForSpecifiedColumnName() {
 		SpecifiedColumnName changedPK = new SpecifiedColumnName();
-		String primaryKeyColumnName = changedPK.getPrimaryKeyColumnName();
+		String primaryKeyColumnName = changedPK.getPrimaryKeyColumnNames().get(0);
 		Assert.assertThat(primaryKeyColumnName, is("pk_unique_id"));
 	}
 
 	@Test
 	public void testPrimaryKeyFieldNameForUnspecifiedColumnName() {
 		UnspecifiedColumnName unchangedPK = new UnspecifiedColumnName();
-		String primaryKeyColumnName = unchangedPK.getPrimaryKeyFieldName();
+		String primaryKeyColumnName = unchangedPK.getPrimaryKeyFieldName().get(0);
 		Assert.assertThat(primaryKeyColumnName, is("pkuid"));
 	}
 
 	@Test
 	public void testPrimaryKeyFieldNameForSpecifiedColumnName() {
 		SpecifiedColumnName changedPK = new SpecifiedColumnName();
-		String primaryKeyColumnName = changedPK.getPrimaryKeyFieldName();
+		String primaryKeyColumnName = changedPK.getPrimaryKeyFieldName().get(0);
 		Assert.assertThat(primaryKeyColumnName, is("pkuid"));
 	}
 

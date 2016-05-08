@@ -55,7 +55,7 @@ public class PropertyWrapper {
 
 	private final RowDefinitionInstanceWrapper dbRowInstanceWrapper;
 	private final PropertyWrapperDefinition propertyDefinition;
-	private final Object target;
+	private final RowDefinition target;
 
 	/**
 	 * @param instanceWrapper instanceWrapper
@@ -63,7 +63,7 @@ public class PropertyWrapper {
 	 * @param target the target object containing the given property
 	 */
 	public PropertyWrapper(RowDefinitionInstanceWrapper instanceWrapper,
-			PropertyWrapperDefinition classProperty, Object target) {
+			PropertyWrapperDefinition classProperty, RowDefinition target) {
 		this.dbRowInstanceWrapper = instanceWrapper;
 		this.propertyDefinition = classProperty;
 		this.target = target;

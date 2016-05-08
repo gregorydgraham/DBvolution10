@@ -284,21 +284,23 @@ public class DBTable<E extends DBRow> {
 
 	private List<E> getRowsByPrimaryKeyObject(Object pkValue) throws SQLException, ClassNotFoundException {
 		DBRow newInstance = DBRow.getDBRow(exemplar.getClass());
-		final QueryableDatatype<?> primaryKey = newInstance.getPrimaryKey();
-		if ((primaryKey instanceof DBString) && (pkValue instanceof String)) {
-			((DBString) primaryKey).permittedValues((String) pkValue);
-		} else if ((primaryKey instanceof DBInteger) && (pkValue instanceof Long)) {
-			((DBInteger) primaryKey).permittedValues((Long) pkValue);
-		} else if ((primaryKey instanceof DBInteger) && (pkValue instanceof Integer)) {
-			((DBInteger) primaryKey).permittedValues((Integer) pkValue);
-		} else if ((primaryKey instanceof DBNumber) && (pkValue instanceof Number)) {
-			((DBNumber) primaryKey).permittedValues((Number) pkValue);
-		} else if ((primaryKey instanceof DBDate) && (pkValue instanceof Date)) {
-			((DBDate) primaryKey).permittedValues((Date) pkValue);
-		} else if ((primaryKey instanceof DBBoolean) && (pkValue instanceof Boolean)) {
-			((DBBoolean) primaryKey).permittedValues((Boolean) pkValue);
-		} else {
-			throw new ClassNotFoundException("The value supplied is not in a supported class or it does not match the primary key class.");
+		final List<QueryableDatatype<?>> primaryKeys = newInstance.getPrimaryKeys();
+		for(QueryableDatatype<?> primaryKey : primaryKeys) {
+			if ((primaryKey instanceof DBString) && (pkValue instanceof String)) {
+				((DBString) primaryKey).permittedValues((String) pkValue);
+			} else if ((primaryKey instanceof DBInteger) && (pkValue instanceof Long)) {
+				((DBInteger) primaryKey).permittedValues((Long) pkValue);
+			} else if ((primaryKey instanceof DBInteger) && (pkValue instanceof Integer)) {
+				((DBInteger) primaryKey).permittedValues((Integer) pkValue);
+			} else if ((primaryKey instanceof DBNumber) && (pkValue instanceof Number)) {
+				((DBNumber) primaryKey).permittedValues((Number) pkValue);
+			} else if ((primaryKey instanceof DBDate) && (pkValue instanceof Date)) {
+				((DBDate) primaryKey).permittedValues((Date) pkValue);
+			} else if ((primaryKey instanceof DBBoolean) && (pkValue instanceof Boolean)) {
+				((DBBoolean) primaryKey).permittedValues((Boolean) pkValue);
+			} else {
+				throw new ClassNotFoundException("The value supplied is not in a supported class or it does not match the primary key class.");
+			}
 		}
 		this.query = database.getDBQuery(newInstance);
 		return getAllRows();
@@ -595,10 +597,12 @@ public class DBTable<E extends DBRow> {
 		List<E> allRows = getAllRows();
 		List<Long> longPKs = new ArrayList<>();
 		for (E row : allRows) {
-			QueryableDatatype<?> primaryKey = row.getPrimaryKey();
-			if (DBNumber.class.isAssignableFrom(primaryKey.getClass())) {
-				DBNumber num = (DBNumber) primaryKey;
-				longPKs.add(num.longValue());
+			List<QueryableDatatype<?>> primaryKeys = row.getPrimaryKeys();
+			for(QueryableDatatype<?> primaryKey:primaryKeys){
+				if (DBNumber.class.isAssignableFrom(primaryKey.getClass())) {
+					DBNumber num = (DBNumber) primaryKey;
+					longPKs.add(num.longValue());
+				}
 			}
 		}
 		return longPKs;
@@ -618,7 +622,10 @@ public class DBTable<E extends DBRow> {
 		List<E> allRows = getAllRows();
 		List<String> stringPKs = new ArrayList<>();
 		for (E row : allRows) {
-			stringPKs.add(row.getPrimaryKey().stringValue());
+			final List<QueryableDatatype<?>> primaryKeys = row.getPrimaryKeys();
+			for (QueryableDatatype<?> primaryKey : primaryKeys) {
+				stringPKs.add(primaryKey.stringValue());
+			}
 		}
 		return stringPKs;
 	}
@@ -636,10 +643,10 @@ public class DBTable<E extends DBRow> {
 	public void compare(DBTable<E> secondTable) throws SQLException {
 		HashMap<String, E> secondMap = new HashMap<>();
 		for (E row : secondTable.getAllRows()) {
-			secondMap.put(row.getPrimaryKey().toString(), row);
+			secondMap.put(row.getPrimaryKeys().toString(), row);
 		}
 		for (E row : this.getAllRows()) {
-			E foundRow = secondMap.get(row.getPrimaryKey().toString());
+			E foundRow = secondMap.get(row.getPrimaryKeys().toString());
 			if (foundRow == null) {
 				System.out.println("NOT FOUND: " + row);
 			} else if (!row.toString().equals(foundRow.toString())) {

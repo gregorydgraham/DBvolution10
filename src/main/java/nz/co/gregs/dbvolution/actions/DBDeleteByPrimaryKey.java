@@ -52,10 +52,11 @@ public class DBDeleteByPrimaryKey extends DBDelete {
 
 	private <R extends DBRow> DBDeleteByPrimaryKey(DBDatabase db, R row) throws SQLException {
 		super(row);
-		DBRow example = DBRow.getDBRow(row.getClass());
-		final QueryableDatatype<?> pkQDT = example.getPrimaryKey();
-		InternalQueryableDatatypeProxy pkQDTProxy = new InternalQueryableDatatypeProxy(pkQDT);
-		pkQDTProxy.setValue(row.getPrimaryKey());
+		DBRow example = DBRow.getPrimaryKeyExample(row);
+//		DBRow example = DBRow.getDBRow(row.getClass());
+//		final QueryableDatatype<?> pkQDT = example.getPrimaryKeys();
+//		InternalQueryableDatatypeProxy pkQDTProxy = new InternalQueryableDatatypeProxy(pkQDT);
+//		pkQDTProxy.setValue(row.getPrimaryKeys());
 		List<DBRow> gotRows = db.get(example);
 		for (DBRow gotRow : gotRows) {
 			savedRows.add(gotRow);
@@ -67,9 +68,10 @@ public class DBDeleteByPrimaryKey extends DBDelete {
 		DBRow row = getRow();
 		final DBDeleteByPrimaryKey newDeleteAction = new DBDeleteByPrimaryKey(row);
 		DBActionList actions = new DBActionList(newDeleteAction);
-		DBRow example = DBRow.getDBRow(row.getClass());
-		final QueryableDatatype<?> pkQDT = example.getPrimaryKey();
-		new InternalQueryableDatatypeProxy(pkQDT).setValue(row.getPrimaryKey());
+		DBRow example = DBRow.getPrimaryKeyExample(row);
+//		DBRow example = DBRow.getDBRow(row.getClass());
+//		final QueryableDatatype<?> pkQDT = example.getPrimaryKeys();
+//		new InternalQueryableDatatypeProxy(pkQDT).setValue(row.getPrimaryKeys());
 		List<DBRow> rowsToBeDeleted = db.get(example);
 		for (DBRow deletingRow : rowsToBeDeleted) {
 			newDeleteAction.savedRows.add(DBRow.copyDBRow(deletingRow));
@@ -91,13 +93,24 @@ public class DBDeleteByPrimaryKey extends DBDelete {
 		DBRow row = getRow();
 
 		ArrayList<String> strs = new ArrayList<>();
-		strs.add(defn.beginDeleteLine()
+		String sql = defn.beginDeleteLine()
 				+ defn.formatTableName(row)
-				+ defn.beginWhereClause()
-				+ defn.formatColumnName(row.getPrimaryKeyColumnName())
+				+ defn.beginWhereClause();
+		List<QueryableDatatype<?>> primaryKeys = row.getPrimaryKeys();
+		for(QueryableDatatype<?> pk:primaryKeys){
+				sql+= defn.formatColumnName(row.getPropertyWrapperOf(pk).columnName())
 				+ defn.getEqualsComparator()
-				+ row.getPrimaryKey().toSQLString(db)
-				+ defn.endDeleteLine());
+				+ pk.toSQLString(db);
+						}
+				sql+= defn.endDeleteLine();
+		strs.add(sql);
+//		strs.add(defn.beginDeleteLine()
+//				+ defn.formatTableName(row)
+//				+ defn.beginWhereClause()
+//				+ defn.formatColumnName(row.getPrimaryKeyColumnNames())
+//				+ defn.getEqualsComparator()
+//				+ row.getPrimaryKeys().toSQLString(db)
+//				+ defn.endDeleteLine());
 		return strs;
 	}
 
