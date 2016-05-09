@@ -344,7 +344,7 @@ public class DBRecursiveQuery<T extends DBRow> {
 	@SuppressWarnings("unchecked")
 	private void addAscendingExpressionToQuery(DBRow originatingRow, ColumnProvider foreignKeyToFollow, final DBRow referencedRow, DBQuery newQuery) throws IncorrectRowProviderInstanceSuppliedException {
 		final List<QueryableDatatype<?>> primaryKeys = originatingRow.getPrimaryKeys();
-		for(QueryableDatatype<?> primaryKey:primaryKeys){
+		for (QueryableDatatype<?> primaryKey : primaryKeys) {
 			final ColumnProvider pkColumn = originatingRow.column(primaryKey);
 			final QueryableDatatype<?> qdt = foreignKeyToFollow.getColumn().getAppropriateQDTFromRow(referencedRow);
 			if ((qdt instanceof DBNumber) && (pkColumn instanceof EqualComparable) && (primaryKey instanceof NumberResult)) {
@@ -583,38 +583,38 @@ public class DBRecursiveQuery<T extends DBRow> {
 		this.originalQuery.setTimeoutInMilliseconds(timeout);
 		List<DBQueryRow> primingRows = this.originalQuery.getAllRows();
 		this.originalQuery.getDatabase().print(primingRows);
-//		List<String> values = new ArrayList<>();
-		Map<PropertyWrapperDefinition, List<String>> pkValues = new HashMap<>();
+		Map<String, List<String>> pkValues = new HashMap<>();
+		Map<String, PropertyWrapperDefinition> pkDefs = new HashMap<>();
 
 		for (DBQueryRow row : primingRows) {
 			final T tab = row.get(returnType);
 			List<QueryableDatatype<?>> qdts = tab.getPrimaryKeys();
 			for (QueryableDatatype<?> qdt : qdts) {
 				final PropertyWrapperDefinition propDefn = tab.getPropertyWrapperOf(qdt).getDefinition();
-				if(!pkValues.containsKey(propDefn))				{
-					pkValues.put(propDefn, new ArrayList<String>());
+				if (!pkValues.containsKey(propDefn.toString())) {
+					pkValues.put(propDefn.toString(), new ArrayList<String>());
+					pkDefs.put(propDefn.toString(), propDefn);
 				}
 				if (!qdt.isNull()) {
 					String stringValue = qdt.stringValue();
-					pkValues.get(propDefn).add(stringValue);
+					pkValues.get(propDefn.toString()).add(stringValue);
 				}
 			}
 		}
 		DBRow instanceOfRow = this.keyToFollow.getColumn().getInstanceOfRow();
-		for (Map.Entry<PropertyWrapperDefinition, List<String>> entry : pkValues.entrySet()) {
-			PropertyWrapperDefinition key = entry.getKey();
+		for (Map.Entry<String, List<String>> entry : pkValues.entrySet()) {
+			String key = entry.getKey();
+			PropertyWrapperDefinition def = pkDefs.get(key);
 			List<String> value = entry.getValue();
-			setQDTPermittedValues(key.getQueryableDatatype(instanceOfRow), value);			
+			setQDTPermittedValues(def.getQueryableDatatype(instanceOfRow), value);
 		}
-//		setQDTPermittedValues(instanceOfRow.getPrimaryKey(), values);
-		
-		
+
 		final DBQuery dbQuery = this.originalQuery.getDatabase().getDBQuery(instanceOfRow);
 		dbQuery.setTimeoutInMilliseconds((int) (timeout - (new java.util.Date().getTime() - start)));
 		List<DBQueryRow> allRows = dbQuery.getAllRows();
-		this.originalQuery.getDatabase().print(allRows);
+
 		while (allRows.size() > 0) {
-			pkValues.clear();
+			List<String> recurseValues = new ArrayList<>();
 			returnList.addAll(allRows);
 			for (DBQueryRow row : allRows) {
 				final T tab = row.get(getReturnType());
@@ -622,47 +622,35 @@ public class DBRecursiveQuery<T extends DBRow> {
 				if (direction.equals(RecursiveSQLDirection.TOWARDS_ROOT)) {
 					qdt = this.keyToFollow.getColumn().getAppropriateQDTFromRow(tab);
 					if (!qdt.isNull()) {
-						ArrayList<String> arrayList = new ArrayList<String>();
-						arrayList.add(qdt.stringValue());
-						pkValues.put(tab.getPropertyWrapperOf(qdt).getDefinition(), arrayList);
+						recurseValues.add(qdt.stringValue());
 					}
 				} else {
 					List<QueryableDatatype<?>> primaryKeys = tab.getPrimaryKeys();
 					for (QueryableDatatype<?> pk : primaryKeys) {
 						if (!pk.isNull()) {
-							ArrayList<String> arrayList = new ArrayList<String>();
-							arrayList.add(pk.stringValue());
-							pkValues.put(tab.getPropertyWrapperOf(pk).getDefinition(), arrayList);
+							recurseValues.add(pk.stringValue());
 						}
 					}
 				}
-//				if (!qdt.isNull()) {
-//					String intValue = qdt.stringValue();
-//					pkValues.add(intValue);
-//				}
 			}
 
-			if (pkValues.isEmpty()) {
+			if (recurseValues.isEmpty()) {
 				allRows.clear();
 			} else {
 				instanceOfRow = this.keyToFollow.getColumn().getInstanceOfRow();
-				List<QueryableDatatype<?>> qdts;
+				if (instanceOfRow.getPrimaryKeys().size() > 1) {
+					throw new SingularReferenceToMultiColumnPrimaryKeyException(instanceOfRow, instanceOfRow.getPrimaryKeys());
+				}
+				QueryableDatatype<?> qdt;
 				if (direction.equals(RecursiveSQLDirection.TOWARDS_ROOT)) {
-					qdts = instanceOfRow.getPrimaryKeys();
+					qdt = instanceOfRow.getPrimaryKeys().get(0);
 				} else {
-					qdts = new ArrayList<>();
-					qdts.add(this.keyToFollow.getColumn().getAppropriateQDTFromRow(instanceOfRow));
+					qdt = this.keyToFollow.getColumn().getAppropriateQDTFromRow(instanceOfRow);
 				}
-				for (QueryableDatatype<?> qdt : qdts) {
-					PropertyWrapperDefinition defn = instanceOfRow.getPropertyWrapperOf(qdt).getDefinition();
-					if (pkValues.containsKey(defn)) {
-						setQDTPermittedValues(defn.getQueryableDatatype(instanceOfRow), pkValues.get(defn));
-					}
-				}
+				setQDTPermittedValues(qdt, recurseValues);
 				final DBQuery dbQuery1 = this.originalQuery.getDatabase().getDBQuery(instanceOfRow);
 				dbQuery1.setTimeoutInMilliseconds((int) (timeout - (new java.util.Date().getTime() - start)));
 				allRows = dbQuery1.getAllRows();
-				this.originalQuery.getDatabase().print(allRows);
 			}
 		}
 
