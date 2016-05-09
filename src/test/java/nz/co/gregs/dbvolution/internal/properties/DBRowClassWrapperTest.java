@@ -3,17 +3,13 @@ package nz.co.gregs.dbvolution.internal.properties;
 import java.sql.SQLException;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.*;
-import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.annotations.DBColumn;
 import nz.co.gregs.dbvolution.annotations.DBForeignKey;
 import nz.co.gregs.dbvolution.annotations.DBPrimaryKey;
 import nz.co.gregs.dbvolution.annotations.DBTableName;
-import nz.co.gregs.dbvolution.databases.H2MemoryDB;
 import nz.co.gregs.dbvolution.datatypes.DBInteger;
 import nz.co.gregs.dbvolution.datatypes.DBString;
-import org.hamcrest.Matcher;
-import org.hamcrest.Matchers.*;
 import org.junit.Assert;
 
 import org.junit.BeforeClass;
@@ -22,11 +18,11 @@ import org.junit.Test;
 @SuppressWarnings("warnings")
 public class DBRowClassWrapperTest {
 
-	private static DBDatabase database;
+//	private static DBDatabase database;
 
 	@BeforeClass
 	public static void setup() throws SQLException {
-		database = new H2MemoryDB("dbvolutionTest", "", "", false);
+//		database = new H2MemoryDB("dbvolutionTest", "", "", false);
 	}
 
 	@Test
@@ -39,6 +35,7 @@ public class DBRowClassWrapperTest {
 	public void errorsWhenConstructingGivenTwoPrimaryKeyColumns() {
 		@DBTableName("table1")
 		class TestClass extends DBRow {
+			private static final long serialVersionUID = 1L;
 
 			@DBPrimaryKey
 			@DBColumn

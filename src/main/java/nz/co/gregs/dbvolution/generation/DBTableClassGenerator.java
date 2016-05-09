@@ -78,7 +78,7 @@ public class DBTableClassGenerator {
 	 * @throws java.io.IOException java.io.IOException
 	 */
 	public static void generateClasses(DBDatabase database, String packageName, String baseDirectory) throws SQLException, FileNotFoundException, IOException {
-		generateClasses(database, packageName, baseDirectory, 1L, new PrimaryKeyRecognisor(), new ForeignKeyRecognisor());
+		generateClasses(database, packageName, baseDirectory, 1L, new PrimaryKeyRecognisor(), new ForeignKeyRecognisor(), false);
 	}
 
 	/**
@@ -108,7 +108,7 @@ public class DBTableClassGenerator {
 	 *
 	 */
 	public static void generateClasses(DBDatabase database, String packageName, String baseDirectory, Long versionNumber) throws SQLException, FileNotFoundException, IOException {
-		generateClasses(database, packageName, baseDirectory, versionNumber, new PrimaryKeyRecognisor(), new ForeignKeyRecognisor());
+		generateClasses(database, packageName, baseDirectory, versionNumber, new PrimaryKeyRecognisor(), new ForeignKeyRecognisor(), false);
 	}
 
 	/**
@@ -139,14 +139,14 @@ public class DBTableClassGenerator {
 	 * @throws java.io.FileNotFoundException java.io.FileNotFoundException
 	 * @throws java.io.IOException java.io.IOException
 	 */
-	public static void generateClasses(DBDatabase database, String packageName, String baseDirectory, Long versionNumber, PrimaryKeyRecognisor pkRecog, ForeignKeyRecognisor fkRecog) throws SQLException, FileNotFoundException, IOException {
+	public static void generateClasses(DBDatabase database, String packageName, String baseDirectory, Long versionNumber, PrimaryKeyRecognisor pkRecog, ForeignKeyRecognisor fkRecog, Boolean trimCharColumns) throws SQLException, FileNotFoundException, IOException {
 		String viewsPackage = packageName + ".views";
 		String viewsPath = viewsPackage.replaceAll("[.]", "/");
-		List<DBTableClass> generatedViews = DBTableClassGenerator.generateClassesOfViews(database, viewsPackage, pkRecog, fkRecog);
+		List<DBTableClass> generatedViews = DBTableClassGenerator.generateClassesOfViews(database, viewsPackage, pkRecog, fkRecog, trimCharColumns);
 
 		String tablesPackage = packageName + ".tables";
 		String tablesPath = tablesPackage.replaceAll("[.]", "/");
-		List<DBTableClass> generatedTables = DBTableClassGenerator.generateClassesOfTables(database, tablesPackage, pkRecog, fkRecog);
+		List<DBTableClass> generatedTables = DBTableClassGenerator.generateClassesOfTables(database, tablesPackage, pkRecog, fkRecog, trimCharColumns);
 		List<DBTableClass> allGeneratedClasses = new ArrayList<>();
 		allGeneratedClasses.addAll(generatedViews);
 		allGeneratedClasses.addAll(generatedTables);
@@ -224,8 +224,57 @@ public class DBTableClassGenerator {
 	 * the database 1 Database exceptions may be thrown
 	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
+	public static List<DBTableClass> generateClassesOfTables(DBDatabase database, String packageName, PrimaryKeyRecognisor pkRecog, ForeignKeyRecognisor fkRecog, Boolean trimCharColumns) throws SQLException {
+		return generateClassesOfObjectTypes(database, packageName, pkRecog, fkRecog, trimCharColumns, "TABLE");
+	}
+
+	/**
+	 * Generate the required Java classes for all the Tables on the database.
+	 *
+	 * <p>
+	 * Connects to the database using the DBDatabase instance supplied and
+	 * generates class for the tables it can find.
+	 *
+	 * <p>
+	 * Classes will be in the package supplied, serialVersionUID will be set to
+	 * the version number supplied and the supplied {@link PrimaryKeyRecognisor}
+	 * and {@link ForeignKeyRecognisor} will be used.
+	 *
+	 *
+	 * @param database database
+	 * @param packageName packageName
+	 * @param pkRecog pkRecog
+	 * @param fkRecog fkRecog
+	 * @return a List of DBTableClass instances representing the tables found on
+	 * the database 1 Database exceptions may be thrown
+	 * @throws java.sql.SQLException java.sql.SQLException
+	 */
 	public static List<DBTableClass> generateClassesOfTables(DBDatabase database, String packageName, PrimaryKeyRecognisor pkRecog, ForeignKeyRecognisor fkRecog) throws SQLException {
-		return generateClassesOfObjectTypes(database, packageName, pkRecog, fkRecog, "TABLE");
+		return generateClassesOfObjectTypes(database, packageName, pkRecog, fkRecog, false, "TABLE");
+	}
+
+	/**
+	 * Generate the required Java classes for all the Views on the database.
+	 *
+	 * <p>
+	 * Connects to the database using the DBDatabase instance supplied and
+	 * generates class for the views it can find.
+	 *
+	 * <p>
+	 * Classes will be in the package supplied, serialVersionUID will be set to
+	 * the version number supplied and the supplied {@link PrimaryKeyRecognisor}
+	 * and {@link ForeignKeyRecognisor} will be used.
+	 *
+	 * @param database database
+	 * @param packageName packageName
+	 * @param pkRecog pkRecog
+	 * @param fkRecog fkRecog
+	 * @return a List of DBTableClass instances representing the views found on
+	 * the database 1 Database exceptions may be thrown
+	 * @throws java.sql.SQLException java.sql.SQLException
+	 */
+	public static List<DBTableClass> generateClassesOfViews(DBDatabase database, String packageName, PrimaryKeyRecognisor pkRecog, ForeignKeyRecognisor fkRecog, Boolean trimCharColumns) throws SQLException {
+		return generateClassesOfObjectTypes(database, packageName, pkRecog, fkRecog, trimCharColumns, "VIEW");
 	}
 
 	/**
@@ -249,7 +298,7 @@ public class DBTableClassGenerator {
 	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
 	public static List<DBTableClass> generateClassesOfViews(DBDatabase database, String packageName, PrimaryKeyRecognisor pkRecog, ForeignKeyRecognisor fkRecog) throws SQLException {
-		return generateClassesOfObjectTypes(database, packageName, pkRecog, fkRecog, "VIEW");
+		return generateClassesOfObjectTypes(database, packageName, pkRecog, fkRecog, false, "VIEW");
 	}
 
 	/**
@@ -268,7 +317,7 @@ public class DBTableClassGenerator {
 	 * @return a List of DBTableClass instances representing the tables and views
 	 * found on the database 1 Database exceptions may be thrown
 	 */
-	private static List<DBTableClass> generateClassesOfObjectTypes(DBDatabase database, String packageName, PrimaryKeyRecognisor pkRecognisor, ForeignKeyRecognisor fkRecogisor, String... dbObjectTypes) throws SQLException {
+	private static List<DBTableClass> generateClassesOfObjectTypes(DBDatabase database, String packageName, PrimaryKeyRecognisor pkRecognisor, ForeignKeyRecognisor fkRecogisor, Boolean trimCharColumns, String... dbObjectTypes) throws SQLException {
 		List<DBTableClass> dbTableClasses = new ArrayList<>();
 		PrimaryKeyRecognisor pkRecog = pkRecognisor;
 		if (pkRecognisor == null) {
@@ -363,7 +412,7 @@ public class DBTableClassGenerator {
 								try {
 									dbTableField.sqlDataTypeInt = columns.getInt("DATA_TYPE");
 									dbTableField.sqlDataTypeName = columns.getString("TYPE_NAME");
-									dbTableField.columnType = getQueryableDatatypeNameOfSQLType(database, dbTableField);
+									dbTableField.columnType = getQueryableDatatypeNameOfSQLType(database, dbTableField, trimCharColumns);
 								} catch (UnknownJavaSQLTypeException ex) {
 									dbTableField.columnType = DBUnknownDatatype.class;
 									dbTableField.javaSQLDatatype = ex.getUnknownJavaSQLType();
@@ -443,6 +492,19 @@ public class DBTableClassGenerator {
 	 * SQLType
 	 */
 	private static Class<? extends Object> getQueryableDatatypeNameOfSQLType(DBDatabase database, DBTableField column) throws UnknownJavaSQLTypeException {
+		return getQueryableDatatypeNameOfSQLType(database, column, false);
+	}
+	
+	/**
+	 *
+	 * Returns a string of the appropriate QueryableDatatype for the specified
+	 * SQLType
+	 *
+	 *
+	 * @return a string of the appropriate QueryableDatatype for the specified
+	 * SQLType
+	 */
+	private static Class<? extends Object> getQueryableDatatypeNameOfSQLType(DBDatabase database, DBTableField column, Boolean trimCharColumns) throws UnknownJavaSQLTypeException {
 		int columnType = column.sqlDataTypeInt;
 		int precision = column.precision;
 		String typeName = column.sqlDataTypeName;
@@ -476,9 +538,15 @@ public class DBTableClassGenerator {
 			case Types.REAL:
 				value = DBNumber.class;
 				break;
-			case Types.VARCHAR:
 			case Types.CHAR:
 			case Types.NCHAR:
+				if (trimCharColumns){
+					value = DBStringTrimmed.class;
+				} else {
+					value = DBString.class;
+				}
+				break;
+			case Types.VARCHAR:
 			case Types.NVARCHAR:
 			case Types.CLOB:
 			case Types.NCLOB:
