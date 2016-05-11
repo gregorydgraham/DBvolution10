@@ -269,9 +269,10 @@ public class OuterJoinTest extends AbstractTest {
 		List<DBQueryRow> allRows = dbQuery.getAllRows();
 		Assert.assertThat(allRows.size(), is(4));
 		List<LinkCarCompanyAndLogo> links = dbQuery.getAllInstancesOf(new LinkCarCompanyAndLogo());
-		Assert.assertThat(links.size(), is(0));
+		database.print(links);
+		Assert.assertThat(links.size(), is(1));
 		for (DBQueryRow queryrow : allRows) {
-			Assert.assertThat(queryrow.get(new LinkCarCompanyAndLogo()), is(nullValue()));
+			Assert.assertThat(queryrow.get(new LinkCarCompanyAndLogo()).isEmptyRow(), is(true));
 		}
 	}
 
@@ -437,7 +438,7 @@ public class OuterJoinTest extends AbstractTest {
 
 			// Watch out though!  
 			// Optional rows will be NULL if there is no relevant row
-			if (antagonist != null) {
+			if (antagonist != null && !antagonist.isEmptyRow()) {
 				System.out.println("" + antagonist);
 				antagonistFound++;
 			} else {

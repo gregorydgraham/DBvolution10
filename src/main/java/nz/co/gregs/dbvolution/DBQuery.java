@@ -94,6 +94,7 @@ public class DBQuery {
 	private List<PropertyWrapper> sortOrder = null;
 	private Integer timeoutInMilliseconds = DEFAULT_TIMEOUT_MILLISECONDS;
 	private QueryTimeout timeout;
+	private final Map<Class<? extends DBRow>, DBRow> emptyRows = new HashMap<>();
 
 	QueryDetails getQueryDetails() {
 		return details;
@@ -760,9 +761,16 @@ public class DBQuery {
 
 			Map<String, DBRow> existingInstancesOfThisTableRow = details.getExistingInstances().get(tableRow.getClass());
 			existingInstancesOfThisTableRow = setExistingInstancesForTable(existingInstancesOfThisTableRow, newInstance);
+			final Class<? extends DBRow> newInstanceClass = newInstance.getClass();
 
 			if (newInstance.isEmptyRow()) {
-				queryRow.put(newInstance.getClass(), null);
+				DBRow emptyRow = emptyRows.get(newInstanceClass);
+				if (emptyRow!=null){
+					queryRow.put(newInstanceClass,emptyRow);
+				}else{
+					emptyRows.put(newInstanceClass, newInstance);
+					queryRow.put(newInstanceClass, newInstance);
+				}
 			} else {
 				final List<QueryableDatatype<?>> primaryKeys = newInstance.getPrimaryKeys();
 				boolean pksHaveBeenSet = true;
@@ -770,7 +778,7 @@ public class DBQuery {
 					pksHaveBeenSet = pksHaveBeenSet&&pk.hasBeenSet();
 				}
 				if (isGroupedQuery || primaryKeys == null || primaryKeys.isEmpty()|| !pksHaveBeenSet) {
-					queryRow.put(newInstance.getClass(), newInstance);
+					queryRow.put(newInstanceClass, newInstance);
 				} else {
 					DBRow existingInstance = getOrSetExistingInstanceForRow(newInstance, existingInstancesOfThisTableRow);
 					queryRow.put(existingInstance.getClass(), existingInstance);

@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.SortedSet;
@@ -1336,8 +1337,8 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
 	@SuppressWarnings("unchecked")
-	public <A> List<A> getDistinctValuesOfColumn(DBDatabase database, A fieldOfThisInstance) throws SQLException {
-		List<A> results = new ArrayList<>();
+	public <A> Set<A> getDistinctValuesOfColumn(DBDatabase database, A fieldOfThisInstance) throws SQLException {
+		Set<A> results = new HashSet<>();
 		final PropertyWrapper fieldProp = this.getPropertyWrapperOf(fieldOfThisInstance);
 		QueryableDatatype<?> thisQDT = fieldProp.getDefinition().getQueryableDatatype(this);
 		this.setReturnFields(fieldOfThisInstance);
@@ -1347,8 +1348,8 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 		dbQuery.setSortOrder(columnProvider);
 		dbQuery.setBlankQueryAllowed(true);
 		List<DBQueryRow> allRows = dbQuery.getAllRows();
-		for (DBQueryRow dBQueryRow : allRows) {
-			DBRow get = dBQueryRow.get(this);
+		for (DBQueryRow row : allRows) {
+			DBRow get = row.get(this);
 			results.add(get == null ? null : (A) fieldProp.getDefinition().rawJavaValue(get));
 		}
 		return results;
