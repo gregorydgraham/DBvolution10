@@ -30,19 +30,14 @@ import org.junit.Test;
  * functionality is in {@link PropertyTypeHandlerTest}.
  */
 @SuppressWarnings("serial")
-public class TypeAdaptorTest extends AbstractTest{
+public class TypeAdaptorTest {
 
 	private DBDatabase db;
 
-	public TypeAdaptorTest(Object testIterationName, Object db) {
-		super(testIterationName, db);
-	}
-
 	@Before
 	public void setup() throws SQLException {
-		this.db = database;
-		//this.db = new H2MemoryDB("dbvolutionTest", "", "", false);
-		this.db.setPrintSQLBeforeExecuting(true);
+		this.db = new H2MemoryDB("dbvolutionTest", "", "", false);
+		this.db.setPrintSQLBeforeExecuting(false);
 
 		db.preventDroppingOfTables(false);
 		db.dropTableNoExceptions(new CustomerWithDBInteger());
@@ -68,16 +63,16 @@ public class TypeAdaptorTest extends AbstractTest{
 
 	@After
 	public void tearDown() throws Exception {
-//		db.setPrintSQLBeforeExecuting(false);
-//		db.preventDroppingOfTables(false);
-//		db.dropTable(new CustomerWithDBInteger());
-//		try {
-//			db.preventDroppingOfTables(false);
-//			db.preventDroppingOfDatabases(false);
-//			db.dropDatabase(true);
-//		} catch (UnsupportedOperationException ex) {
-//			;
-//		}
+		db.setPrintSQLBeforeExecuting(false);
+		db.preventDroppingOfTables(false);
+		db.dropTable(new CustomerWithDBInteger());
+		try {
+			db.preventDroppingOfTables(false);
+			db.preventDroppingOfDatabases(false);
+			db.dropDatabase(true);
+		} catch (UnsupportedOperationException ex) {
+			;
+	}
 	}
 
 	@Test
@@ -116,7 +111,6 @@ public class TypeAdaptorTest extends AbstractTest{
 		CustomerWithDBStringIntegerTypeAdaptor query = new CustomerWithDBStringIntegerTypeAdaptor();
 		query.year.permittedRange("25", "3000");
 
-		db.setPrintSQLBeforeExecuting(true);
 		List<CustomerWithDBStringIntegerTypeAdaptor> rows = db.get(query);
 		List<String> whereClauses = query.getWhereClausesWithoutAliases(db);
 		String allClauses = "";

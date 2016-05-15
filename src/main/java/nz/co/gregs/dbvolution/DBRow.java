@@ -1337,8 +1337,8 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
 	@SuppressWarnings("unchecked")
-	public <A> Set<A> getDistinctValuesOfColumn(DBDatabase database, A fieldOfThisInstance) throws SQLException {
-		Set<A> results = new HashSet<>();
+	public <A> List<A> getDistinctValuesOfColumn(DBDatabase database, A fieldOfThisInstance) throws SQLException {
+		List<A> results = new ArrayList<>();
 		final PropertyWrapper fieldProp = this.getPropertyWrapperOf(fieldOfThisInstance);
 		QueryableDatatype<?> thisQDT = fieldProp.getDefinition().getQueryableDatatype(this);
 		this.setReturnFields(fieldOfThisInstance);

@@ -859,8 +859,8 @@ public class DBTable<E extends DBRow> {
 	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
 	@SuppressWarnings("unchecked")
-	public <A> Set<A> getDistinctValuesOfColumn(A fieldOfProvidedRow) throws AccidentalBlankQueryException, IncorrectRowProviderInstanceSuppliedException, SQLException {
-		Set<A> returnList = new HashSet<>();
+	public <A> List<A> getDistinctValuesOfColumn(A fieldOfProvidedRow) throws AccidentalBlankQueryException, IncorrectRowProviderInstanceSuppliedException, SQLException {
+		List<A> returnList = new ArrayList<>();
 		final PropertyWrapper fieldProp = original.getPropertyWrapperOf(fieldOfProvidedRow);
 		if (fieldProp == null) {
 			throw new IncorrectRowProviderInstanceSuppliedException();

@@ -110,7 +110,8 @@ public class ExistsExpression extends BooleanExpression {
 		this.outerQuery.getAllQueryTables().add(newOuter);
 		for (DBRow innerTable : innerTables) {
 			final DBRow newInner = DBRow.copyDBRow(innerTable);
-			newInner.setReturnFields(newInner.getPrimaryKeys().toArray(new QueryableDatatype[]{}));
+			final QueryableDatatype<?>[] emptyArray = new QueryableDatatype[]{};
+			newInner.setReturnFields(newInner.getPrimaryKeys().toArray(emptyArray));
 			this.innerQuery.getRequiredQueryTables().add(newInner);
 			this.innerQuery.getAllQueryTables().add(newInner);
 		}
@@ -132,13 +133,15 @@ public class ExistsExpression extends BooleanExpression {
 		}
 		for (DBRow innerTable : innerQuery.getRequiredTables()) {
 			final DBRow newInner = DBRow.copyDBRow(innerTable);
-			newInner.setReturnFields(newInner.getPrimaryKeys().toArray(new QueryableDatatype[]{}));
+			final QueryableDatatype<?>[] emptyArray = new QueryableDatatype<?>[]{};
+			newInner.setReturnFields(newInner.getPrimaryKeys().toArray(emptyArray));
 			this.innerQuery.getRequiredQueryTables().add(newInner);
 			this.innerQuery.getAllQueryTables().add(newInner);
 		}
 		for (DBRow innerTable : innerQuery.getOptionalTables()) {
 			final DBRow newInner = DBRow.copyDBRow(innerTable);
-			newInner.setReturnFields(newInner.getPrimaryKeys().toArray(new QueryableDatatype[]{}));
+			final QueryableDatatype<?>[] emptyArray = new QueryableDatatype<?>[]{};
+			newInner.setReturnFields(newInner.getPrimaryKeys().toArray(emptyArray));
 			this.innerQuery.getOptionalQueryTables().add(newInner);
 			this.innerQuery.getAllQueryTables().add(newInner);
 		}
@@ -157,7 +160,8 @@ public class ExistsExpression extends BooleanExpression {
 		this.outerQuery.getRequiredQueryTables().add(newOuter);
 		this.outerQuery.getAllQueryTables().add(newOuter);
 		final DBRow newInner = DBRow.copyDBRow(innerTable);
-		newInner.setReturnFields(newInner.getPrimaryKeys().toArray(new QueryableDatatype[]{}));
+		final QueryableDatatype[] emptyArray = new QueryableDatatype[]{};
+		newInner.setReturnFields(newInner.getPrimaryKeys().toArray(emptyArray));
 		this.innerQuery.getRequiredQueryTables().add(newInner);
 		this.innerQuery.getAllQueryTables().add(newInner);
 	}

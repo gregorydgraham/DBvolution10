@@ -515,7 +515,7 @@ public abstract class QueryableDatatype<T> extends Object implements Serializabl
 	public void setFromResultSet(DBDatabase database, ResultSet resultSet, String resultSetColumnName) throws SQLException {
 		removeConstraints();
 		if (resultSet == null || resultSetColumnName == null) {
-			this.setToNull();
+			this.setToNull(database);
 		} else {
 			T dbValue;
 			try {
