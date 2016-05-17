@@ -105,9 +105,9 @@ public class DBMigrationTest extends AbstractTest {
 	@Test
 	public void testMapping1ColumnWithDBmigrationMap() throws SQLException{
 		database.setPrintSQLBeforeExecuting(true);
-		DBMigration<MapVillainToProfessional> migration = database.getDBMigrationMap(new MapVillainToProfessional());
+		DBMigration<MigrateVillainToProfessional> migration = database.getDBMigration(new MigrateVillainToProfessional());
 		migration.setBlankQueryAllowed(Boolean.TRUE);
-		List<MapVillainToProfessional> rows = migration.getAllRows();
+		List<MigrateVillainToProfessional> rows = migration.getAllRows();
 		
 		for(Professional prof: rows){
 			Assert.assertThat(prof.title.stringValue(), Matchers.is("Dr"));
@@ -131,7 +131,7 @@ public class DBMigrationTest extends AbstractTest {
 		}
 	}
 
-	public static class MapVillainToProfessional extends Professional{
+	public static class MigrateVillainToProfessional extends Professional{
 		private static final long serialVersionUID = 1L;
 		public Villain baddy = new Villain();
 
@@ -142,7 +142,7 @@ public class DBMigrationTest extends AbstractTest {
 		}
 	}
 	
-	public static class MapHeroAndVillianToFight extends Fight {
+	public static class MigrateHeroAndVillianToFight extends Fight {
 		private static final long serialVersionUID = 1L;
 
 		public Villain baddy = new Villain();
@@ -155,12 +155,12 @@ public class DBMigrationTest extends AbstractTest {
 	}
 
 	@Test
-	public void testJoining2TablesWithDBMigationMap() throws SQLException, UnexpectedNumberOfRowsException {
+	public void testJoining2TablesWithDBMigation() throws SQLException, UnexpectedNumberOfRowsException {
 
-		DBMigration<MapHeroAndVillianToFight> migration = database.getDBMigrationMap(new MapHeroAndVillianToFight());
+		DBMigration<MigrateHeroAndVillianToFight> migration = database.getDBMigration(new MigrateHeroAndVillianToFight());
 		migration.setBlankQueryAllowed(Boolean.TRUE);
 		migration.setCartesianJoinAllowed(Boolean.TRUE);
-		List<MapHeroAndVillianToFight> fights = migration.getAllRows();
+		List<MigrateHeroAndVillianToFight> fights = migration.getAllRows();
 		database.print(fights);
 		Assert.assertThat(fights.size(), Matchers.is(9));
 		Assert.assertThat(fights.get(0).villain.stringValue(), Matchers.isOneOf("Dr Nonono", "Dr Karma", "Dr Dark"));

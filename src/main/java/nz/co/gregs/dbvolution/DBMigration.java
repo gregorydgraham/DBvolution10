@@ -20,6 +20,72 @@ import nz.co.gregs.dbvolution.expressions.BooleanExpression;
 import nz.co.gregs.dbvolution.expressions.DBExpression;
 import nz.co.gregs.dbvolution.query.RowDefinition;
 
+/**
+ * DBMigration performs a migration of data from one table to another.
+ *
+ * <p>
+ * DBMigration allows you to create a query that produces rows of another
+ * table/DBRow.</p>
+ *
+ * <p>
+ * Additionally the rows that can be either returned like a normal DBTable style
+ * query or inserted directly into the target table.</p>
+ *
+ * <p>
+ * The functionality is analogous to the standard SQL INSERT... INTO... FROM
+ * pattern.</p>
+ *
+ * <p>
+ * The easiest way to create a DBMigration is using {@link DBDatabase#getDBMigration(nz.co.gregs.dbvolution.DBRow)
+ * }</p>
+ *
+ * <p>
+ * a DBMigration requires a subclass of the DBRow to work. That is called the
+ * migration target and needs to be extend to produce a migration mapper.</p>
+ *
+ * <p>
+ * The migration mapper is an extension of the migration target that includes
+ * sources tables, source criteria, and field mappings as described below.</p>
+ *
+ * <p>
+ * Source tables are DBRow instances added to the migration mapping as new
+ * fields. These are added together in a DBQuery to produce the underlying
+ * database query that the source data will come from.</p>
+ *
+ * <p>
+ * Criteria can be added to the source tables in an initialization block and
+ * will restrict the underlying query to a subset of rows</p>
+ *
+ * <p>
+ * Field mappings are also added into the initialization block, by replacing the
+ * target table's field values with column expressions that map the columns of
+ * the source tables to the fields off the target table.</p>
+ * 
+ * <p>For instance to map the integer A field and the string B field of the AB table to the single string C field of the CD table, you should  use</p>
+ * 
+ * <code>
+ * <br>
+ * public class AB extends DBRow{<br>
+ *{@literal @}DBColumn DBInteger a = new DBInteger();<br>
+ * {@literal @}DBColumn DBString b = new DBString();<br>
+ * }<br>
+ *<br>
+ * public class CD extends DBRow{<br>
+ *{@literal @}DBColumn DBString c = new DBString();<br>
+ * }<br>
+ * <br>
+ * public class ABCDMapping extends CD{<br>
+ * public AB ab = new AB();<br>
+ * <br>
+ * {<br>
+ * c = new DBString(ab.column(ab.a).append(ab.column(ab.b)));<br>
+ * }<br>
+ * <br>
+ * dbDatabase.getDBMigration(ABCDMapping);
+ *</code>
+ * @author gregorygraham
+ * @param <M>
+ */
 public class DBMigration<M extends DBRow> extends RowDefinition {
 
 	private final DBDatabase database;
@@ -35,7 +101,7 @@ public class DBMigration<M extends DBRow> extends RowDefinition {
 		return getAllRows(database);
 	}
 
-	DBMigration<M> addTablesAndExpressions(DBQuery query) {
+	private DBMigration<M> addTablesAndExpressions(DBQuery query) {
 		Field[] fields = mapper.getClass().getFields();
 		if (fields.length == 0) {
 			throw new UnableToAccessDBMigrationFieldException(this, null);
