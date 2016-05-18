@@ -12,6 +12,7 @@ import nz.co.gregs.dbvolution.datatypes.DBString;
 import nz.co.gregs.dbvolution.exceptions.UnexpectedNumberOfRowsException;
 import nz.co.gregs.dbvolution.generic.AbstractTest;
 import org.hamcrest.Matchers;
+import static org.hamcrest.Matchers.is;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -177,6 +178,42 @@ public class DBMigrationTest extends AbstractTest {
 		database.createTable(fight);
 		
 		migration.migrateAllRows();
+		
+		DBTable<Fight> query = database.getDBTable(fight);
+		List<Fight> allRows = query.setBlankQueryAllowed(true).getAllRows();
+		Assert.assertThat(allRows.size(), Matchers.is(9));
+		for(Fight newFight: allRows){
+			Assert.assertThat(newFight.villain.stringValue(), Matchers.isOneOf("Dr Nonono","Dr Karma","Dr Dark"));
+			Assert.assertThat(newFight.hero.stringValue(), Matchers.isOneOf("James Security","Straw Richards","Lightwing"));
+		}
+		
+	}
+
+	@Test
+	public void testvalidating2TablesWithDBMigation() throws SQLException, UnexpectedNumberOfRowsException {
+
+		DBMigration<MigrateHeroAndVillianToFight> migration = database.getDBMigration(new MigrateHeroAndVillianToFight());
+		migration.setBlankQueryAllowed(Boolean.TRUE);
+		migration.setCartesianJoinAllowed(Boolean.TRUE);
+		List<MigrateHeroAndVillianToFight> fights = migration.getAllRows();
+		database.print(fights);
+		Assert.assertThat(fights.size(), Matchers.is(9));
+		Assert.assertThat(fights.get(0).villain.stringValue(), Matchers.isOneOf("Dr Nonono", "Dr Karma", "Dr Dark"));
+		Assert.assertThat(fights.get(0).hero.stringValue(), Matchers.isOneOf("James Security", "Straw Richards", "Lightwing"));
+		
+		for(Fight fight: fights){
+			Assert.assertThat(fight.villain.stringValue(), Matchers.isOneOf("Dr Nonono","Dr Karma","Dr Dark"));
+			Assert.assertThat(fight.hero.stringValue(), Matchers.isOneOf("James Security","Straw Richards","Lightwing"));
+		}
+		
+		database.preventDroppingOfTables(false);
+		final Fight fight = new Fight();
+		database.dropTableNoExceptions(fight);
+		database.createTable(fight);
+		
+		migration.validateAllRows();
+		
+		Assert.assertThat(false, is(true));
 		
 		DBTable<Fight> query = database.getDBTable(fight);
 		List<Fight> allRows = query.setBlankQueryAllowed(true).getAllRows();

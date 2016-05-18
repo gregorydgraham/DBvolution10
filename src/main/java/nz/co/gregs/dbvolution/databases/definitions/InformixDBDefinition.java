@@ -89,7 +89,7 @@ public class InformixDBDefinition extends DBDefinition {
 	}
 
 	@Override
-	public Object getLimitRowsSubClauseAfterWhereClause(QueryOptions options) {
+	public String getLimitRowsSubClauseAfterWhereClause(QueryOptions options) {
 		return "";
 	}
 

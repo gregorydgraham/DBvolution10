@@ -45,7 +45,7 @@ public class Oracle11XEDBDefinition extends OracleSpatialDBDefinition {
 	}
 
 	@Override
-	public Object getLimitRowsSubClauseAfterWhereClause(QueryOptions options) {
+	public String getLimitRowsSubClauseAfterWhereClause(QueryOptions options) {
 		return "";
 	}
 

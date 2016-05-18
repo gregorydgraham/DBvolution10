@@ -38,7 +38,7 @@ import org.apache.commons.logging.LogFactory;
  */
 public class DBMigrate<R extends DBRow> extends DBAction {
 
-	private static final Log LOG = LogFactory.getLog(DBInsert.class);
+	private static final Log LOG = LogFactory.getLog(DBMigrate.class);
 
 	private transient StringBuilder allChangedColumns;
 	private transient StringBuilder allSetValues;
@@ -61,7 +61,7 @@ public class DBMigrate<R extends DBRow> extends DBAction {
 	}
 
 	public DBActionList migrate(DBDatabase database) throws SQLException {
-		DBMigrate<R> migrate = new DBMigrate<R>(sourceMigration, getRow());
+		DBMigrate<R> migrate = new DBMigrate<>(sourceMigration, getRow());
 		final DBActionList executedActions = migrate.execute(database);
 		return executedActions;
 	}
@@ -73,7 +73,7 @@ public class DBMigrate<R extends DBRow> extends DBAction {
 		DBDefinition defn = db.getDefinition();
 		processAllFieldsForMigration(db, (R) getRow());
 
-		ArrayList<String> strs = new ArrayList<String>();
+		ArrayList<String> strs = new ArrayList<>();
 			strs.add(defn.beginInsertLine()
 					+ defn.formatTableName(row)
 					+ defn.beginInsertColumnList()
@@ -86,24 +86,20 @@ public class DBMigrate<R extends DBRow> extends DBAction {
 	@Override
 	protected DBActionList execute(DBDatabase db) throws SQLException {
 		final DBDefinition defn = db.getDefinition();
-		DBActionList actions = new DBActionList(new DBMigrate<R>(sourceMigration, getRow(), extraExamples));
+		DBActionList actions = new DBActionList(new DBMigrate<>(sourceMigration, getRow(), extraExamples));
 
-		DBStatement statement = db.getDBStatement();
-		try {
+		try (DBStatement statement = db.getDBStatement()) {
 			for (String sql : getSQLStatements(db)) {
 					try {
 						statement.execute(sql);
 					} catch (SQLException sqlex) {
 						try {
-							sqlex.printStackTrace();
 							statement.execute(sql);
 						} catch (SQLException ex) {
 							throw new RuntimeException(sql, ex);
 						}
 					}
 			}
-		} finally {
-			statement.close();
 		}
 		return actions;
 	}

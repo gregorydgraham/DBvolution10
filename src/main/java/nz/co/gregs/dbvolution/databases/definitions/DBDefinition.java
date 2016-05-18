@@ -898,7 +898,7 @@ public abstract class DBDefinition {
 	 * @param options	options
 	 * @return the row limiting sub-clause or ""
 	 */
-	public Object getLimitRowsSubClauseAfterWhereClause(QueryOptions options) {
+	public String getLimitRowsSubClauseAfterWhereClause(QueryOptions options) {
 		int rowLimit = options.getRowLimit();
 		Integer pageNumber = options.getPageIndex();
 		if (rowLimit > 0 && supportsPagingNatively(options)) {
@@ -1614,7 +1614,7 @@ public abstract class DBDefinition {
 	 * java.lang.String, java.lang.String)
 	 */
 	public List<String> getTriggerBasedIdentitySQL(DBDatabase db, String table, String column) {
-		return new ArrayList<String>();
+		return new ArrayList<>();
 	}
 
 	/**

@@ -36,7 +36,7 @@ public class MSSQLServer2012DBDefinition extends MSSQLServerDBDefinition {
 	}
 
 	@Override
-	public Object getLimitRowsSubClauseAfterWhereClause(QueryOptions options) {
+	public String getLimitRowsSubClauseAfterWhereClause(QueryOptions options) {
 		String returnString = "";
 		if (options.getSortColumns().length == 0) {
 			returnString = " order by 1";

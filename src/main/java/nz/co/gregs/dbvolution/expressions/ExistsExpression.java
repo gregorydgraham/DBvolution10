@@ -88,7 +88,7 @@ public class ExistsExpression extends BooleanExpression {
 		}
 		for (DBRow innerTable : innerTables) {
 			final DBRow newInner = DBRow.copyDBRow(innerTable);
-			final QueryableDatatype<?>[] emptyArray = new QueryableDatatype[]{};
+			final QueryableDatatype<?>[] emptyArray = new QueryableDatatype<?>[]{};
 			newInner.setReturnFields(newInner.getPrimaryKeys().toArray(emptyArray));
 			this.innerQuery.getRequiredQueryTables().add(newInner);
 		}
@@ -160,7 +160,7 @@ public class ExistsExpression extends BooleanExpression {
 		this.outerQuery.getRequiredQueryTables().add(newOuter);
 		this.outerQuery.getAllQueryTables().add(newOuter);
 		final DBRow newInner = DBRow.copyDBRow(innerTable);
-		final QueryableDatatype[] emptyArray = new QueryableDatatype[]{};
+		final QueryableDatatype<?>[] emptyArray = new QueryableDatatype<?>[]{};
 		newInner.setReturnFields(newInner.getPrimaryKeys().toArray(emptyArray));
 		this.innerQuery.getRequiredQueryTables().add(newInner);
 		this.innerQuery.getAllQueryTables().add(newInner);

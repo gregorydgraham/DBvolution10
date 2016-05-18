@@ -126,7 +126,7 @@ public class OracleDBDefinition extends DBDefinition {
 	}
 
 	@Override
-	public Object getLimitRowsSubClauseAfterWhereClause(QueryOptions options) {
+	public String getLimitRowsSubClauseAfterWhereClause(QueryOptions options) {
 		return "";
 	}
 	

@@ -31,7 +31,7 @@ import nz.co.gregs.dbvolution.query.QueryOptions;
 public class Oracle12DBDefinition extends OracleSpatialDBDefinition {
 
 	@Override
-	public Object getLimitRowsSubClauseAfterWhereClause(QueryOptions options) {
+	public String getLimitRowsSubClauseAfterWhereClause(QueryOptions options) {
 		int rowLimit = options.getRowLimit();
 		Integer pageNumber = options.getPageIndex();
 		if (rowLimit < 1) {

@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import nz.co.gregs.dbvolution.actions.DBMigrate;
+import nz.co.gregs.dbvolution.actions.DBValidate;
 import nz.co.gregs.dbvolution.columns.ColumnProvider;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 import nz.co.gregs.dbvolution.exceptions.UnableToAccessDBMigrationFieldException;
@@ -238,7 +239,7 @@ public class DBMigration<M extends DBRow> extends RowDefinition {
 		List<M> reportRows = getReportsFromQueryResults(allRows);
 		return reportRows;
 	}
-	final List<DBRow> optionalTables = new ArrayList<DBRow>();
+	final List<DBRow> optionalTables = new ArrayList<>();
 
 	@Override
 	public String toString() {
@@ -338,7 +339,7 @@ public class DBMigration<M extends DBRow> extends RowDefinition {
 	}
 
 	private List<M> getReportsFromQueryResults(List<DBQueryRow> allRows) {
-		List<M> reportRows = new ArrayList<M>();
+		List<M> reportRows = new ArrayList<>();
 		for (DBQueryRow row : allRows) {
 			reportRows.add(getMappedTarget(row));
 		}
@@ -499,8 +500,13 @@ public class DBMigration<M extends DBRow> extends RowDefinition {
 	}
 
 	public void migrateAllRows(DBRow... extraExamples) throws SQLException {
-		DBMigrate<M> migrate = new DBMigrate<M>(this, this.mapper, extraExamples);
+		DBMigrate<M> migrate = new DBMigrate<>(this, this.mapper, extraExamples);
 		migrate.migrate(database);
 	}
+
+	public DBValidate.Results validateAllRows(DBRow... extraExamples) throws SQLException {
+
+		DBValidate<M> validate = new DBValidate<>(this, this.mapper, extraExamples);
+		return validate.validate(database);	}
 
 }
