@@ -10,7 +10,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.SortedSet;
@@ -504,6 +503,58 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 					requiredExpression = qdt.getColumnExpression();
 				}
 				whereClause = op.generateWhereExpression(db, requiredExpression).toSQLString(db);
+			}
+		}
+		return whereClause;
+	}
+
+	public final List<BooleanExpression> getWhereClauseExpressions(DBDatabase db, boolean useTableAlias) //throws InstantiationException, IllegalAccessException 
+	{
+//		DBDefinition defn = db.getDefinition();
+		List<BooleanExpression> whereClause = new ArrayList<>();
+		List<PropertyWrapper> props = getWrapper().getColumnPropertyWrappers();
+		for (PropertyWrapper prop : props) {
+			if (prop.isColumn()) {
+				QueryableDatatype<?> qdt = prop.getQueryableDatatype();
+				ColumnProvider column;
+				if (prop.isTypeAdapted()) {
+					Object rawJavaValue = prop.rawJavaValue();
+					if (rawJavaValue == null) {
+//						rawJavaValue = prop.getRawJavaType().newInstance();
+						try {
+							rawJavaValue = prop.getRawJavaType().newInstance();
+						} catch (InstantiationException ex) {
+							// note: InstantiationException tends to be thrown without a message
+							throw new RuntimeException("Unable to instantiate instance of " + prop.toString(), ex);
+						} catch (IllegalAccessException ex) {
+							throw new RuntimeException("Unable to instantiate instance of " + prop.toString(), ex);
+						}
+						prop.setRawJavaValue(rawJavaValue);
+					}
+					column = this.column(rawJavaValue);
+				} else {
+					column = this.column(qdt);
+				}
+				column.setUseTableAlias(useTableAlias);
+				BooleanExpression possibleWhereClause = getQDTWhereClauseExpression(db, column, qdt);
+				if (possibleWhereClause!=null) {
+					whereClause.add(possibleWhereClause);
+				}
+			}
+		}
+		return whereClause;
+	}
+
+	private BooleanExpression getQDTWhereClauseExpression(DBDatabase db, ColumnProvider column, QueryableDatatype<?> qdt) {
+		BooleanExpression whereClause = null;
+		DBOperator op = qdt.getOperator();
+		if (op != null) {
+			if (column instanceof DBExpression) {
+				DBExpression requiredExpression = (DBExpression) column;
+				if (qdt.hasColumnExpression()) {
+					requiredExpression = qdt.getColumnExpression();
+				}
+				whereClause = op.generateWhereExpression(db, requiredExpression);
 			}
 		}
 		return whereClause;

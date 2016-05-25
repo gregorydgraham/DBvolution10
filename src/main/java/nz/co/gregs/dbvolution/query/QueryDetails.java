@@ -20,6 +20,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.expressions.BooleanExpression;
 import nz.co.gregs.dbvolution.expressions.DBExpression;
@@ -37,11 +38,12 @@ public class QueryDetails {
 //	private final List<DBQuery> intersectingQueries;
 	private final QueryOptions options = new QueryOptions();
 	private final List<DBRow> extraExamples = new ArrayList<DBRow>();
-	private final List<BooleanExpression> conditions = new ArrayList<BooleanExpression>();
+	private final List<BooleanExpression> conditions = new ArrayList<>();
 	private final Map<Object, DBExpression> expressionColumns = new LinkedHashMap<Object, DBExpression>();
 	private final Map<Object, DBExpression> dbReportGroupByColumns = new LinkedHashMap<Object, DBExpression>();
 	private final Map<Class<?>, Map<String, DBRow>> existingInstances = new HashMap<Class<?>, Map<String, DBRow>>();
 	private boolean groupByRequiredByAggregator = false;
+	public DBDatabase database = null;
 
 	/**
 	 * @return the allQueryTables
@@ -85,6 +87,14 @@ public class QueryDetails {
 		return extraExamples;
 	}
 
+	public List<BooleanExpression> getAllConditions() {
+		List<BooleanExpression> allConditions = new ArrayList<>();
+		for (DBRow entry : allQueryTables) {
+			allConditions.addAll(entry.getWhereClauseExpressions(database, true));
+		}
+		return allConditions;
+	}
+
 	/**
 	 * @return the conditions
 	 */
@@ -121,7 +131,7 @@ public class QueryDetails {
 	public void setGroupByRequiredByAggregator(boolean b) {
 		this.groupByRequiredByAggregator = true;
 	}
-	
+
 	private boolean getGroupByRequiredByAggregator() {
 		return this.groupByRequiredByAggregator;
 	}

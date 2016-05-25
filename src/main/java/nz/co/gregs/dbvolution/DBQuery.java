@@ -125,6 +125,7 @@ public class DBQuery {
 
 	private DBQuery(DBDatabase database) {
 		this.database = database;
+		this.details.database = database;
 		blankResults();
 	}
 

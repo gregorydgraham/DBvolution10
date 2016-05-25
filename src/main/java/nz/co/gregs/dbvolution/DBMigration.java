@@ -11,7 +11,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import nz.co.gregs.dbvolution.actions.DBMigrate;
-import nz.co.gregs.dbvolution.actions.DBValidate;
 import nz.co.gregs.dbvolution.columns.ColumnProvider;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 import nz.co.gregs.dbvolution.exceptions.UnableToAccessDBMigrationFieldException;
@@ -19,6 +18,7 @@ import nz.co.gregs.dbvolution.exceptions.UnableToInstantiateDBMigrationSubclassE
 import nz.co.gregs.dbvolution.exceptions.UnableToSetDBMigrationFieldException;
 import nz.co.gregs.dbvolution.expressions.BooleanExpression;
 import nz.co.gregs.dbvolution.expressions.DBExpression;
+import nz.co.gregs.dbvolution.query.QueryDetails;
 import nz.co.gregs.dbvolution.query.RowDefinition;
 
 /**
@@ -504,9 +504,13 @@ public class DBMigration<M extends DBRow> extends RowDefinition {
 		migrate.migrate(database);
 	}
 
-	public DBValidate.Results validateAllRows(DBRow... extraExamples) throws SQLException {
+	public DBValidation.Results validateAllRows(DBRow... extraExamples) throws SQLException {
 
-		DBValidate<M> validate = new DBValidate<>(this, this.mapper, extraExamples);
+		DBValidation<M> validate = new DBValidation<>(this, this.mapper, extraExamples);
 		return validate.validate(database);	}
+
+	QueryDetails getQueryDetails() {
+		return this.getDBQuery(database).getQueryDetails();
+	}
 
 }
