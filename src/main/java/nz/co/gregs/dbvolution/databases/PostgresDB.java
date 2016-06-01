@@ -19,6 +19,7 @@ import java.io.File;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.TimeZone;
 import nz.co.gregs.dbvolution.DBDatabase;
 import javax.sql.DataSource;
 import nz.co.gregs.dbvolution.DBRow;
@@ -36,7 +37,7 @@ import nz.co.gregs.dbvolution.internal.postgres.StringFunctions;
  *
  * @author Gregory Graham
  */
-public class PostgresDB extends DBDatabase implements SupportsPolygonDatatype{
+public class PostgresDB extends DBDatabase implements SupportsPolygonDatatype {
 
 	private static final String POSTGRES_DRIVER_NAME = "org.postgresql.Driver";
 
@@ -49,8 +50,10 @@ public class PostgresDB extends DBDatabase implements SupportsPolygonDatatype{
 	 * The default username used by PostgreSQL.
 	 */
 	public static final String POSTGRES_DEFAULT_USERNAME = "postgres";
+	private boolean postGISTopologyAlreadyTried = false;
+	private boolean postGISAlreadyTried = false;
 
-/**
+	/**
 	 *
 	 * Provides a convenient constructor for DBDatabases that have configuration
 	 * details hardwired or are able to automatically retrieve the details.
@@ -75,6 +78,7 @@ public class PostgresDB extends DBDatabase implements SupportsPolygonDatatype{
 	protected PostgresDB() {
 		super();
 	}
+
 	/**
 	 * Creates a PostgreSQL connection for the DataSource.
 	 *
@@ -233,6 +237,7 @@ public class PostgresDB extends DBDatabase implements SupportsPolygonDatatype{
 
 	@Override
 	protected void addDatabaseSpecificFeatures(Statement stmnt) throws SQLException {
+		setTimeZone(stmnt);
 		createPostGISExtension(stmnt);
 		createPostGISTopologyExtension(stmnt);
 		for (StringFunctions fn : StringFunctions.values()) {
@@ -246,13 +251,21 @@ public class PostgresDB extends DBDatabase implements SupportsPolygonDatatype{
 		}
 	}
 
+	private void setTimeZone(Statement stmnt) throws SQLException {
+		String tzName = TimeZone.getDefault().getID();
+		stmnt.execute("set time zone '"+tzName+"';");
+	}
+
 	private void createPostGISTopologyExtension(Statement stmnt) {
 		try {
-			boolean execute = stmnt.execute("select * from pg_extension where extname = 'postgis_topology';");
-			final ResultSet resultSet = stmnt.getResultSet();
-			boolean postGISAlreadyCreated = resultSet.next();
-			if (!postGISAlreadyCreated) {
-				stmnt.execute("CREATE EXTENSION IF NOT EXISTS postgis_topology;");
+			if (!postGISTopologyAlreadyTried) {
+				postGISTopologyAlreadyTried = true;
+				boolean execute = stmnt.execute("select * from pg_extension where extname = 'postgis_topology';");
+				final ResultSet resultSet = stmnt.getResultSet();
+				boolean postGISAlreadyCreated = resultSet.next();
+				if (!postGISAlreadyCreated) {
+					stmnt.execute("CREATE EXTENSION IF NOT EXISTS postgis_topology;");
+				}
 			}
 		} catch (SQLException sqlex) {
 			System.out.println("" + sqlex.getMessage());;
@@ -261,11 +274,14 @@ public class PostgresDB extends DBDatabase implements SupportsPolygonDatatype{
 
 	private void createPostGISExtension(Statement stmnt) {
 		try {
-			boolean execute = stmnt.execute("select * from pg_extension where extname = 'postgis';");
-			final ResultSet resultSet = stmnt.getResultSet();
-			boolean postGISAlreadyCreated = resultSet.next();
-			if (!postGISAlreadyCreated) {
-				stmnt.execute("CREATE EXTENSION IF NOT EXISTS postgis;");
+			if (!postGISAlreadyTried) {
+				postGISAlreadyTried = true;
+				boolean execute = stmnt.execute("select * from pg_extension where extname = 'postgis';");
+				final ResultSet resultSet = stmnt.getResultSet();
+				boolean postGISAlreadyCreated = resultSet.next();
+				if (!postGISAlreadyCreated) {
+					stmnt.execute("CREATE EXTENSION IF NOT EXISTS postgis;");
+				}
 			}
 		} catch (SQLException sqlex) {
 			System.out.println("" + sqlex.getMessage());;

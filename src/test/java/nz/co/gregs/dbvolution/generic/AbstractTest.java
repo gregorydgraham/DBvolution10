@@ -280,6 +280,7 @@ public abstract class AbstractTest {
 	private static class MySQLRDSTestDatabase extends MySQLDB {
 
 		public MySQLRDSTestDatabase() {
+			//super("jdbc:mysql://150.242.43.218:3306/test?createDatabaseIfNotExist=true", "dbv", "Testingdbv");
 			super("jdbc:mysql://dbvtest-mysql.cygjg2wvuyam.ap-southeast-2.rds.amazonaws.com:3306/test?createDatabaseIfNotExist=true", "dbv", "Testingdbv");
 		}
 	}
@@ -302,6 +303,7 @@ public abstract class AbstractTest {
 	private static class TestPostgreSQL extends PostgresDB {
 
 		protected static PostgresDB getRDSTestDatabase() {
+			//return new PostgresDB("150.242.43.218", 5432, "dbvtest", "dbv", "Testingdbv");
 			return new PostgresDB("dbvtest-postgresql.cygjg2wvuyam.ap-southeast-2.rds.amazonaws.com", 5432, "dbvtest", "dbv", "Testingdbv");
 		}
 

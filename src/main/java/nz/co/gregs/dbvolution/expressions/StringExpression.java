@@ -237,21 +237,21 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 		return new StringExpression(
 				new StringExpression.DBBinaryStringFunction(this, new StringExpression(alternative)) {
 
-					@Override
-					public String toSQLString(DBDatabase db) {
-						return db.getDefinition().doStringIfNullTransform(this.getFirst().toSQLString(db), getSecond().toSQLString(db));
-					}
+			@Override
+			public String toSQLString(DBDatabase db) {
+				return db.getDefinition().doStringIfNullTransform(this.getFirst().toSQLString(db), getSecond().toSQLString(db));
+			}
 
-					@Override
-					String getFunctionName(DBDatabase db) {
-						return db.getDefinition().getIfNullFunctionName();
-					}
+			@Override
+			String getFunctionName(DBDatabase db) {
+				return db.getDefinition().getIfNullFunctionName();
+			}
 
-					@Override
-					public boolean getIncludesNull() {
-						return false;
-					}
-				});
+			@Override
+			public boolean getIncludesNull() {
+				return false;
+			}
+		});
 	}
 
 	/**
@@ -555,7 +555,11 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 	 * @return a BooleanExpression of the SQL comparison.
 	 */
 	public BooleanExpression is(String equivalentString) {
-		return this.is(value(equivalentString));
+		if (equivalentString == null) {
+			return this.isNull();
+		} else {
+			return this.is(value(equivalentString));
+		}
 	}
 
 	/**
@@ -614,10 +618,8 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 	public BooleanExpression is(StringResult equivalentString) {
 		if (equivalentString == null) {
 			return new BooleanExpression(this.isNull());
-		} else if (equivalentString.getIncludesNull()) {
-			return new BooleanExpression(this.isNull());
 		} else {
-			return new BooleanExpression(new DBBinaryBooleanArithmetic(this, equivalentString) {
+			final BooleanExpression is = new BooleanExpression(new DBBinaryBooleanArithmetic(this, equivalentString) {
 
 				@Override
 				public String toSQLString(DBDatabase db) {
@@ -634,6 +636,11 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 					return false;
 				}
 			});
+			if (equivalentString.getIncludesNull()) {
+				return BooleanExpression.anyOf(this.isNull(), is);
+			} else {
+				return is;
+			}
 		}
 	}
 
@@ -1386,36 +1393,37 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 		return new StringExpression(
 				new DBTrinaryStringFunction(this, findString, replaceValue) {
 
-					@Override
-					public String toSQLString(DBDatabase db) {
-						return db.getDefinition().doReplaceTransform(
-								this.getFirst().toSQLString(db),
-								this.getSecond().toSQLString(db),
-								this.getThird().toSQLString(db));
-					}
+			@Override
+			public String toSQLString(DBDatabase db) {
+				return db.getDefinition().doReplaceTransform(
+						this.getFirst().toSQLString(db),
+						this.getSecond().toSQLString(db),
+						this.getThird().toSQLString(db));
+			}
 
-					@Override
-					String getFunctionName(DBDatabase db) {
-						return "REPLACE";
-					}
+			@Override
+			String getFunctionName(DBDatabase db) {
+				return "REPLACE";
+			}
 
-					@Override
-					public boolean getIncludesNull() {
-						// handled before creation
-						return false;
-					}
-				});
+			@Override
+			public boolean getIncludesNull() {
+				// handled before creation
+				return false;
+			}
+		});
 	}
 
 	/**
 	 * Retrieve the substring that precedes the supplied value.
-	 * 
+	 *
 	 * <p>
 	 * Complements {@link #substringAfter(java.lang.String) }.
-	 * 
+	 *
 	 * <p>
-	 * Within this expression, find the supplied value and return all characters before the value, not including the value itself.
-	 * 
+	 * Within this expression, find the supplied value and return all characters
+	 * before the value, not including the value itself.
+	 *
 	 * @param splitBeforeThis the value marks the end of the required string.
 	 * @return a string expression
 	 */
@@ -1425,13 +1433,14 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 
 	/**
 	 * Retrieve the substring that precedes the supplied value.
-	 * 
+	 *
 	 * <p>
 	 * Complements {@link #substringAfter(java.lang.String) }.
-	 * 
+	 *
 	 * <p>
-	 * Within this expression, find the supplied value and return all characters before the value, not including the value itself.
-	 * 
+	 * Within this expression, find the supplied value and return all characters
+	 * before the value, not including the value itself.
+	 *
 	 * @param splitBeforeThis the value that marks the end of the required string
 	 * @return a string expression
 	 */
@@ -1456,14 +1465,16 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 
 	/**
 	 * Retrieve the substring that follows the supplied value.
-	 * 
+	 *
 	 * <p>
 	 * Complements {@link #substringBefore(java.lang.String) }.
-	 * 
+	 *
 	 * <p>
-	 * Within this expression, find the supplied value and return all characters after the value, not including the value itself.
-	 * 
-	 * @param splitAfterThis  the value that marks the beginning of the required string
+	 * Within this expression, find the supplied value and return all characters
+	 * after the value, not including the value itself.
+	 *
+	 * @param splitAfterThis the value that marks the beginning of the required
+	 * string
 	 * @return a string expression
 	 */
 	public StringExpression substringAfter(String splitAfterThis) {
@@ -1472,14 +1483,16 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 
 	/**
 	 * Retrieve the substring that follows the supplied value.
-	 * 
+	 *
 	 * <p>
 	 * Complements {@link #substringBefore(java.lang.String) }.
-	 * 
+	 *
 	 * <p>
-	 * Within this expression, find the supplied value and return all characters after the value, not including the value itself.
-	 * 
-	 * @param splitAfterThis  the value that marks the beginning of the required string
+	 * Within this expression, find the supplied value and return all characters
+	 * after the value, not including the value itself.
+	 *
+	 * @param splitAfterThis the value that marks the beginning of the required
+	 * string
 	 * @return a string expression
 	 */
 	public StringExpression substringAfter(StringResult splitAfterThis) {
@@ -1502,19 +1515,25 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 	}
 
 	/**
-	 * Retrieve the substring that follows the first supplied value but precedes the second value.
-	 * 
+	 * Retrieve the substring that follows the first supplied value but precedes
+	 * the second value.
+	 *
 	 * <p>
-	 * Complements {@link #substringBefore(java.lang.String) } and {@link #substringAfter(java.lang.String) }.
-	 * 
+	 * Complements {@link #substringBefore(java.lang.String) } and {@link #substringAfter(java.lang.String)
+	 * }.
+	 *
 	 * <p>
-	 * Within this expression, find the first supplied value and return all characters after the value, not including the value itself, but prior to the second value.
-	 * 
+	 * Within this expression, find the first supplied value and return all
+	 * characters after the value, not including the value itself, but prior to
+	 * the second value.
+	 *
 	 * <p>
-	 * for an expression like "(1234)", substringBetween("(", ")") will return "1234".
-	 * 
-	 * @param splitAfterThis  the value that marks the beginning of the required string
-	 * @param butBeforeThis  the value that marks the end of the required string
+	 * for an expression like "(1234)", substringBetween("(", ")") will return
+	 * "1234".
+	 *
+	 * @param splitAfterThis the value that marks the beginning of the required
+	 * string
+	 * @param butBeforeThis the value that marks the end of the required string
 	 * @return a string expression
 	 */
 	public StringExpression substringBetween(String splitAfterThis, String butBeforeThis) {
@@ -1522,19 +1541,25 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 	}
 
 	/**
-	 * Retrieve the substring that follows the first supplied value but precedes the second value.
-	 * 
+	 * Retrieve the substring that follows the first supplied value but precedes
+	 * the second value.
+	 *
 	 * <p>
-	 * Complements {@link #substringBefore(java.lang.String) } and {@link #substringAfter(java.lang.String) }.
-	 * 
+	 * Complements {@link #substringBefore(java.lang.String) } and {@link #substringAfter(java.lang.String)
+	 * }.
+	 *
 	 * <p>
-	 * Within this expression, find the first supplied value and return all characters after the value, not including the value itself, but prior to the second value.
-	 * 
+	 * Within this expression, find the first supplied value and return all
+	 * characters after the value, not including the value itself, but prior to
+	 * the second value.
+	 *
 	 * <p>
-	 * for an expression like "(1234)", substringBetween("(", ")") will return "1234".
-	 * 
-	 * @param splitAfterThis  the value that marks the beginning of the required string
-	 * @param butBeforeThis  the value that marks the end of the required string
+	 * for an expression like "(1234)", substringBetween("(", ")") will return
+	 * "1234".
+	 *
+	 * @param splitAfterThis the value that marks the beginning of the required
+	 * string
+	 * @param butBeforeThis the value that marks the end of the required string
 	 * @return a string expression
 	 */
 	public StringExpression substringBetween(StringResult splitAfterThis, StringResult butBeforeThis) {
@@ -1550,16 +1575,16 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 	public StringExpression trim() {
 		return new StringExpression(
 				new DBUnaryStringFunction(this) {
-					@Override
-					public String toSQLString(DBDatabase db) {
-						return db.getDefinition().doTrimFunction(this.only.toSQLString(db));
-					}
+			@Override
+			public String toSQLString(DBDatabase db) {
+				return db.getDefinition().doTrimFunction(this.only.toSQLString(db));
+			}
 
-					@Override
-					String getFunctionName(DBDatabase db) {
-						return "NOT USED BECAUSE SQLSERVER DOESN'T IMPLEMENT TRIM";
-					}
-				});
+			@Override
+			String getFunctionName(DBDatabase db) {
+				return "NOT USED BECAUSE SQLSERVER DOESN'T IMPLEMENT TRIM";
+			}
+		});
 	}
 
 	/**
@@ -1571,16 +1596,16 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 	public StringExpression leftTrim() {
 		return new StringExpression(
 				new DBUnaryStringFunction(this) {
-					@Override
-					public String toSQLString(DBDatabase db) {
-						return db.getDefinition().doLeftTrimTransform(this.only.toSQLString(db));
-					}
+			@Override
+			public String toSQLString(DBDatabase db) {
+				return db.getDefinition().doLeftTrimTransform(this.only.toSQLString(db));
+			}
 
-					@Override
-					String getFunctionName(DBDatabase db) {
-						return "";
-					}
-				});
+			@Override
+			String getFunctionName(DBDatabase db) {
+				return "";
+			}
+		});
 	}
 
 	/**
@@ -1592,11 +1617,11 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 	public StringExpression rightTrim() {
 		return new StringExpression(
 				new DBUnaryStringFunction(this) {
-					@Override
-					String getFunctionName(DBDatabase db) {
-						return db.getDefinition().getRightTrimFunctionName();
-					}
-				});
+			@Override
+			String getFunctionName(DBDatabase db) {
+				return db.getDefinition().getRightTrimFunctionName();
+			}
+		});
 	}
 
 	/**
@@ -1608,11 +1633,11 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 	public StringExpression lowercase() {
 		return new StringExpression(
 				new DBUnaryStringFunction(this) {
-					@Override
-					String getFunctionName(DBDatabase db) {
-						return db.getDefinition().getLowercaseFunctionName();
-					}
-				});
+			@Override
+			String getFunctionName(DBDatabase db) {
+				return db.getDefinition().getLowercaseFunctionName();
+			}
+		});
 	}
 
 	/**
@@ -1624,11 +1649,11 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 	public StringExpression uppercase() {
 		return new StringExpression(
 				new DBUnaryStringFunction(this) {
-					@Override
-					String getFunctionName(DBDatabase db) {
-						return db.getDefinition().getUppercaseFunctionName();
-					}
-				});
+			@Override
+			String getFunctionName(DBDatabase db) {
+				return db.getDefinition().getUppercaseFunctionName();
+			}
+		});
 	}
 
 	/**
@@ -1728,16 +1753,16 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 		return new NumberExpression(
 				new DBUnaryNumberFunction(this) {
 
-					@Override
-					public String toSQLString(DBDatabase db) {
-						return db.getDefinition().doStringLengthTransform(only.toSQLString(db));
-					}
+			@Override
+			public String toSQLString(DBDatabase db) {
+				return db.getDefinition().doStringLengthTransform(only.toSQLString(db));
+			}
 
-					@Override
-					String getFunctionName(DBDatabase db) {
-						return db.getDefinition().getStringLengthFunctionName();
-					}
-				});
+			@Override
+			String getFunctionName(DBDatabase db) {
+				return db.getDefinition().getStringLengthFunctionName();
+			}
+		});
 	}
 
 	/**
@@ -1753,11 +1778,11 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 	public static StringExpression currentUser() {
 		return new StringExpression(
 				new DBNonaryStringFunction() {
-					@Override
-					String getFunctionName(DBDatabase db) {
-						return db.getDefinition().getCurrentUserFunctionName();
-					}
-				});
+			@Override
+			String getFunctionName(DBDatabase db) {
+				return db.getDefinition().getCurrentUserFunctionName();
+			}
+		});
 	}
 
 	/**
@@ -2013,11 +2038,13 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 	}
 
 	/**
-	 * In so far as it is possible, transform the value of this expression into a number.
-	 * 
+	 * In so far as it is possible, transform the value of this expression into a
+	 * number.
+	 *
 	 * <p>
-	 * Uses the database's own facilities to parse the value of this expression into a number.
-	 * 
+	 * Uses the database's own facilities to parse the value of this expression
+	 * into a number.
+	 *
 	 * <p>
 	 * May return NULL and all sorts of crazy things.
 	 *
@@ -2027,16 +2054,16 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 		return new NumberExpression(
 				new DBUnaryNumberFunction(this) {
 
-					@Override
-					public String toSQLString(DBDatabase db) {
-						return db.getDefinition().doStringToNumberTransform(this.only.toSQLString(db));
-					}
+			@Override
+			public String toSQLString(DBDatabase db) {
+				return db.getDefinition().doStringToNumberTransform(this.only.toSQLString(db));
+			}
 
-					@Override
-					String getFunctionName(DBDatabase db) {
-						return "TO_NUMBER";
-					}
-				});
+			@Override
+			String getFunctionName(DBDatabase db) {
+				return "TO_NUMBER";
+			}
+		});
 	}
 
 	@Override

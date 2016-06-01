@@ -11,7 +11,6 @@ import nz.co.gregs.dbvolution.annotations.DBColumn;
 import nz.co.gregs.dbvolution.datatypes.DBString;
 import nz.co.gregs.dbvolution.exceptions.UnexpectedNumberOfRowsException;
 import nz.co.gregs.dbvolution.generic.AbstractTest;
-import org.hamcrest.Matchers;
 import static org.hamcrest.Matchers.*;
 import org.junit.After;
 import org.junit.Assert;
@@ -111,8 +110,8 @@ public class DBMigrationTest extends AbstractTest {
 		List<MigrateVillainToProfessional> rows = migration.getAllRows();
 
 		for (Professional prof : rows) {
-			Assert.assertThat(prof.title.stringValue(), Matchers.is("Dr"));
-			Assert.assertThat(prof.surname.stringValue(), Matchers.isOneOf("Nonono", "Karma", "Dark"));
+			Assert.assertThat(prof.title.stringValue(), is("Dr"));
+			Assert.assertThat(prof.surname.stringValue(), isOneOf("Nonono", "Karma", "Dark"));
 		}
 		database.setPrintSQLBeforeExecuting(false);
 
@@ -125,10 +124,10 @@ public class DBMigrationTest extends AbstractTest {
 
 		DBTable<Professional> table = database.getDBTable(professional);
 		List<Professional> allRows = table.setBlankQueryAllowed(true).getAllRows();
-		Assert.assertThat(allRows.size(), Matchers.is(3));
+		Assert.assertThat(allRows.size(), is(3));
 		for (Professional prof : allRows) {
-			Assert.assertThat(prof.title.stringValue(), Matchers.is("Dr"));
-			Assert.assertThat(prof.surname.stringValue(), Matchers.isOneOf("Nonono", "Karma", "Dark"));
+			Assert.assertThat(prof.title.stringValue(), is("Dr"));
+			Assert.assertThat(prof.surname.stringValue(), isOneOf("Nonono", "Karma", "Dark"));
 		}
 	}
 
@@ -166,13 +165,13 @@ public class DBMigrationTest extends AbstractTest {
 		migration.setCartesianJoinAllowed(Boolean.TRUE);
 		List<MigrateHeroAndVillianToFight> fights = migration.getAllRows();
 		database.print(fights);
-		Assert.assertThat(fights.size(), Matchers.is(9));
-		Assert.assertThat(fights.get(0).villain.stringValue(), Matchers.isOneOf("Dr Nonono", "Dr Karma", "Dr Dark"));
-		Assert.assertThat(fights.get(0).hero.stringValue(), Matchers.isOneOf("James Security", "Straw Richards", "Lightwing"));
+		Assert.assertThat(fights.size(), is(9));
+		Assert.assertThat(fights.get(0).villain.stringValue(), isOneOf("Dr Nonono", "Dr Karma", "Dr Dark"));
+		Assert.assertThat(fights.get(0).hero.stringValue(), isOneOf("James Security", "Straw Richards", "Lightwing"));
 
 		for (Fight fight : fights) {
-			Assert.assertThat(fight.villain.stringValue(), Matchers.isOneOf("Dr Nonono", "Dr Karma", "Dr Dark"));
-			Assert.assertThat(fight.hero.stringValue(), Matchers.isOneOf("James Security", "Straw Richards", "Lightwing"));
+			Assert.assertThat(fight.villain.stringValue(), isOneOf("Dr Nonono", "Dr Karma", "Dr Dark"));
+			Assert.assertThat(fight.hero.stringValue(), isOneOf("James Security", "Straw Richards", "Lightwing"));
 		}
 
 		database.preventDroppingOfTables(false);
@@ -184,54 +183,12 @@ public class DBMigrationTest extends AbstractTest {
 
 		DBTable<Fight> query = database.getDBTable(fight);
 		List<Fight> allRows = query.setBlankQueryAllowed(true).getAllRows();
-		Assert.assertThat(allRows.size(), Matchers.is(9));
+		Assert.assertThat(allRows.size(), is(9));
 		for (Fight newFight : allRows) {
-			Assert.assertThat(newFight.villain.stringValue(), Matchers.isOneOf("Dr Nonono", "Dr Karma", "Dr Dark"));
-			Assert.assertThat(newFight.hero.stringValue(), Matchers.isOneOf("James Security", "Straw Richards", "Lightwing"));
+			Assert.assertThat(newFight.villain.stringValue(), isOneOf("Dr Nonono", "Dr Karma", "Dr Dark"));
+			Assert.assertThat(newFight.hero.stringValue(), isOneOf("James Security", "Straw Richards", "Lightwing"));
 		}
 
-	}
-
-	public static class MigrateJamesAndAllVilliansToFight extends Fight {
-
-		private static final long serialVersionUID = 1L;
-
-		public Villain baddy = new Villain();
-		public Hero goody = new Hero();
-
-		{
-			goody.name.permittedPattern("James%");
-			hero = goody.column(goody.name).asExpressionColumn();
-			villain = baddy.column(baddy.name).asExpressionColumn();
-		}
-	}
-
-	@Test
-	public void testvalidating2TablesWithDBMigation() throws SQLException, UnexpectedNumberOfRowsException {
-
-		DBMigration<MigrateJamesAndAllVilliansToFight> migration = database.getDBMigration(new MigrateJamesAndAllVilliansToFight());
-		migration.setBlankQueryAllowed(Boolean.TRUE);
-		migration.setCartesianJoinAllowed(Boolean.TRUE);
-
-		final Fight fight = new Fight();
-
-		System.out.println(migration.getSQLForQuery(database));
-		DBValidation.Results validateAllRows = migration.validateAllRows();
-
-		Assert.assertThat(validateAllRows.size(), Matchers.is(9));
-		for (DBValidation.Result valid : validateAllRows) {
-			System.out.println(""
-					+ (valid.willBeProcessed ? "processed: " : "REJECTED: ")
-					+ valid.getRow(new Hero()).name.stringValue()
-					+ " versus "
-					+ valid.getRow(new Villain()).name.stringValue()
-			);
-			if (valid.willBeProcessed) {
-				Assert.assertThat(valid.getRow(new Hero()).name.stringValue(), is("James Security"));
-			} else {
-				Assert.assertThat(valid.getRow(new Hero()).name.stringValue(), not("James Security"));
-			}
-		}
 	}
 
 }
