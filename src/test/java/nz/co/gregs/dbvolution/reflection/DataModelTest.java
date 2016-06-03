@@ -91,7 +91,7 @@ public class DataModelTest extends AbstractTest {
 				Logger.getLogger(DataModelTest.class.getName()).log(Level.SEVERE, null, ex);
 			}
 		}
-		Assert.assertThat(result.size(), is(10));
+		Assert.assertThat(result.size(), is(2));
 	}
 
 	@Test
@@ -122,7 +122,7 @@ public class DataModelTest extends AbstractTest {
 				Assert.fail("Unable to invoke " + creator.getDeclaringClass().getCanonicalName() + "." + creator.getName() + "()");
 			}
 		}
-		Assert.assertThat(dbDatabaseCreationMethods.size(), is(2));
+		Assert.assertThat(dbDatabaseCreationMethods.size(), is(1));
 	}
 
 	@Test
