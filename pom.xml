@@ -218,7 +218,7 @@
 				</plugins>
 			</build>
 		</profile>
-		<profile>
+<!--		<profile>
 			<id>AllDatabasesTest</id>
 			<build>
 				<plugins>
@@ -246,8 +246,8 @@
 					</plugin>
 				</plugins>
 			</build>
-		</profile>
-		<profile>
+		</profile>-->
+<!--		<profile>
 			<id>UnsupportedDBsTest</id>
 			<build>
 				<plugins>
@@ -271,8 +271,8 @@
 					</plugin>
 				</plugins>
 			</build>
-		</profile>
-		<profile>
+		</profile>-->
+<!--		<profile>
 			<id>TestableDBsTest</id>
 			<dependencies>
 				<dependency>
@@ -305,8 +305,8 @@
 								<testPostgresSQLRDS>true</testPostgresSQLRDS>
 								<testOracle>true</testOracle>
 								<testMSSQLServer>true</testMSSQLServer>
-								<!--testNuo>true</testNuo-->
-								<!--testJavaDB>true</testJavaDB-->
+								testNuo>true</testNuo
+								testJavaDB>true</testJavaDB
 							</systemPropertyVariables>
 							<includes>
 								<include>**/*.java</include>
@@ -317,7 +317,7 @@
 					</plugin>
 				</plugins>
 			</build>
-		</profile>
+		</profile>-->
 		<profile>
 			<id>SQLiteTest</id>
 			<build>
@@ -329,6 +329,13 @@
 						<configuration>
 							<systemPropertyVariables>
 								<testSQLite>true</testSQLite>
+								<dbv.url>${sqlite.url}</dbv.url>
+								<dbv.host></dbv.host>
+								<dbv.port></dbv.port>
+								<dbv.instance></dbv.instance>
+								<dbv.username>${sqlite.username}</dbv.username>
+								<dbv.password>${sqlite.password}</dbv.password>
+								<dbv.schema></dbv.schema>
 							</systemPropertyVariables>
 							<includes>
 								<include>**/*.java</include>
@@ -340,7 +347,7 @@
 				</plugins>
 			</build>
 		</profile>
-		<profile>
+<!--		<profile>
 			<id>OracleAWSTest</id>
 			<dependencies>
 				<dependency>
@@ -359,6 +366,13 @@
 						<configuration>
 							<systemPropertyVariables>
 								<testOracleAWS>true</testOracleAWS>
+								<dbv.url>${oracleaws.url}</dbv.url>
+								<dbv.host>${oracleaws.host}</dbv.host>
+								<dbv.port>${oracleaws.port}</dbv.port>
+								<dbv.instance>${oracleaws.instance}</dbv.instance>
+								<dbv.username>${oracleaws.username}</dbv.username>
+								<dbv.password>${oracleaws.password}</dbv.password>
+								<dbv.schema>${oracleaws.schema}</dbv.schema>
 							</systemPropertyVariables>
 							<includes>
 								<include>**/*.java</include>
@@ -369,7 +383,7 @@
 					</plugin>
 				</plugins>
 			</build>
-		</profile>
+		</profile>-->
 		<profile>
 			<id>OracleXETest</id>
 			<dependencies>
@@ -389,6 +403,13 @@
 						<configuration>
 							<systemPropertyVariables>
 								<testOracleXE>true</testOracleXE>
+								<dbv.url>${oraclexe.url}</dbv.url>
+								<dbv.host>${oraclexe.host}</dbv.host>
+								<dbv.port>${oraclexe.port}</dbv.port>
+								<dbv.instance>${oraclexe.instance}</dbv.instance>
+								<dbv.username>${oraclexe.username}</dbv.username>
+								<dbv.password>${oraclexe.password}</dbv.password>
+								<dbv.schema>${oraclexe.schema}</dbv.schema>
 							</systemPropertyVariables>
 							<includes>
 								<include>**/*.java</include>
@@ -419,6 +440,13 @@
 						<configuration>
 							<systemPropertyVariables>
 								<testMSSQLServer>true</testMSSQLServer>
+								<dbv.url>${sqlserver.url}</dbv.url>
+								<dbv.host>${sqlserver.host}</dbv.host>
+								<dbv.port>${sqlserver.port}</dbv.port>
+								<dbv.instance>${sqlserver.instance}</dbv.instance>
+								<dbv.username>${sqlserver.username}</dbv.username>
+								<dbv.password>${sqlserver.password}</dbv.password>
+								<dbv.schema>${sqlserver.schema}</dbv.schema>
 							</systemPropertyVariables>
 							<includes>
 								<include>**/*.java</include>
@@ -432,14 +460,6 @@
 		</profile>
 		<profile>
 			<id>JTDSSQLServerTest</id>
-			<dependencies>
-<!--				<dependency>
-					<groupId>com.microsoft</groupId>
-					<artifactId>mssqlserver-jdbc</artifactId>
-					<scope>test</scope>
-					<version>1.0</version>
-				</dependency>-->
-			</dependencies>
 			<build>
 				<plugins>
 					<plugin>
@@ -449,6 +469,13 @@
 						<configuration>
 							<systemPropertyVariables>
 								<testJTDSSQLServer>true</testJTDSSQLServer>
+								<dbv.url>${sqlserver.url}</dbv.url>
+								<dbv.host>${sqlserver.host}</dbv.host>
+								<dbv.port>${sqlserver.port}</dbv.port>
+								<dbv.instance>${sqlserver.instance}</dbv.instance>
+								<dbv.username>${sqlserver.username}</dbv.username>
+								<dbv.password>${sqlserver.password}</dbv.password>
+								<dbv.schema>${sqlserver.schema}</dbv.schema>
 							</systemPropertyVariables>
 							<includes>
 								<include>**/*.java</include>
@@ -460,7 +487,7 @@
 				</plugins>
 			</build>
 		</profile>
-		<profile>
+<!--		<profile>
 			<id>MySQLMXJDBTest</id>
 			<build>
 				<plugins>
@@ -481,7 +508,7 @@
 					</plugin>
 				</plugins>
 			</build>
-		</profile>
+		</profile>-->
 		<profile>
 			<id>H2DBTest</id>
 			<build>
@@ -493,6 +520,13 @@
 						<configuration>
 							<systemPropertyVariables>
 								<testH2DB>true</testH2DB>
+								<dbv.url>${h2.url}</dbv.url>
+								<dbv.host>${h2.host}</dbv.host>
+								<dbv.port>${h2.port}</dbv.port>
+								<dbv.instance>${h2.instance}</dbv.instance>
+								<dbv.username>${h2.username}</dbv.username>
+								<dbv.password>${h2.password}</dbv.password>
+								<dbv.schema>${h2.schema}</dbv.schema>
 							</systemPropertyVariables>
 							<includes>
 								<include>**/*.java</include>
@@ -515,6 +549,13 @@
 						<configuration>
 							<systemPropertyVariables>
 								<testH2MemoryDB>true</testH2MemoryDB>
+								<dbv.url>${h2memory.url}</dbv.url>
+								<dbv.host>${h2memory.host}</dbv.host>
+								<dbv.port>${h2memory.port}</dbv.port>
+								<dbv.instance>${h2memory.instance}</dbv.instance>
+								<dbv.username>${h2memory.username}</dbv.username>
+								<dbv.password>${h2memory.password}</dbv.password>
+								<dbv.schema>${h2memory.schema}</dbv.schema>
 							</systemPropertyVariables>
 							<includes>
 								<include>**/*.java</include>
@@ -537,6 +578,13 @@
 						<configuration>
 							<systemPropertyVariables>
 								<testH2DataSourceDB>true</testH2DataSourceDB>
+								<dbv.url>${h2datasource.url}</dbv.url>
+								<dbv.host>${h2datasource.host}</dbv.host>
+								<dbv.port>${h2datasource.port}</dbv.port>
+								<dbv.instance>${h2datasource.instance}</dbv.instance>
+								<dbv.username>${h2datasource.username}</dbv.username>
+								<dbv.password>${h2datasource.password}</dbv.password>
+								<dbv.schema>${h2datasource.schema}</dbv.schema>
 							</systemPropertyVariables>
 							<includes>
 								<include>**/*.java</include>
@@ -559,6 +607,13 @@
 						<configuration>
 							<systemPropertyVariables>
 								<testMySQL>true</testMySQL>
+								<dbv.url>${mysql.url}</dbv.url>
+								<dbv.host>${mysql.host}</dbv.host>
+								<dbv.port>${mysql.port}</dbv.port>
+								<dbv.instance>${mysql.instance}</dbv.instance>
+								<dbv.username>${mysql.username}</dbv.username>
+								<dbv.password>${mysql.password}</dbv.password>
+								<dbv.schema>${mysql.schema}</dbv.schema>
 							</systemPropertyVariables>
 							<includes>
 								<include>**/*.java</include>
@@ -570,14 +625,14 @@
 				</plugins>
 			</build>
 		</profile>
-		<profile>
+<!--		<profile>
 			<id>MySQLRDSTest</id>
 			<build>
 				<plugins>
 					<plugin>
 						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-surefire-plugin</artifactId>
-						<!--<version>2.18</version>-->
+						<version>2.18</version>
 						<configuration>
 							<systemPropertyVariables>
 								<testMySQLRDS>true</testMySQLRDS>
@@ -591,7 +646,7 @@
 					</plugin>
 				</plugins>
 			</build>
-		</profile>
+		</profile>-->
 		<profile>
 			<id>MySQL56Test</id>
 			<build>
@@ -603,6 +658,13 @@
 						<configuration>
 							<systemPropertyVariables>
 								<testMySQL56>true</testMySQL56>
+								<dbv.url>${mysql56.url}</dbv.url>
+								<dbv.host>${mysql56.host}</dbv.host>
+								<dbv.port>${mysql56.port}</dbv.port>
+								<dbv.instance>${mysql56.instance}</dbv.instance>
+								<dbv.username>${mysql56.username}</dbv.username>
+								<dbv.password>${mysql56.password}</dbv.password>
+								<dbv.schema>${mysql56.schema}</dbv.schema>
 							</systemPropertyVariables>
 							<includes>
 								<include>**/*.java</include>
@@ -625,6 +687,13 @@
 						<configuration>
 							<systemPropertyVariables>
 								<testPostgresSQL>true</testPostgresSQL>
+								<dbv.url>${postgres.url}</dbv.url>
+								<dbv.host>${postgres.host}</dbv.host>
+								<dbv.port>${postgres.port}</dbv.port>
+								<dbv.instance>${postgres.instance}</dbv.instance>
+								<dbv.username>${postgres.username}</dbv.username>
+								<dbv.password>${postgres.password}</dbv.password>
+								<dbv.schema>${postgres.schema}</dbv.schema>
 							</systemPropertyVariables>
 							<includes>
 								<include>**/*.java</include>
@@ -636,14 +705,14 @@
 				</plugins>
 			</build>
 		</profile>
-		<profile>
+<!--		<profile>
 			<id>PostgresRDSTest</id>
 			<build>
 				<plugins>
 					<plugin>
 						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-surefire-plugin</artifactId>
-						<!--<version>2.18</version>-->
+						<version>2.18</version>
 						<configuration>
 							<systemPropertyVariables>
 								<testPostgresSQLRDS>true</testPostgresSQLRDS>
@@ -657,7 +726,7 @@
 					</plugin>
 				</plugins>
 			</build>
-		</profile>
+		</profile>-->
 		<profile>
 			<id>NuoTest</id>
 			<build>
@@ -665,7 +734,7 @@
 					<plugin>
 						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-surefire-plugin</artifactId>
-						<!--<version>2.18</version>-->
+						<version>2.18</version>
 						<configuration>
 							<systemPropertyVariables>
 								<testNuo>true</testNuo>
@@ -680,14 +749,14 @@
 				</plugins>
 			</build>
 		</profile>
-		<profile>
+<!--		<profile>
 			<id>JavaDBTest</id>
 			<build>
 				<plugins>
 					<plugin>
 						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-surefire-plugin</artifactId>
-						<!--<version>2.18</version>-->
+						<version>2.18</version>
 						<configuration>
 							<systemPropertyVariables>
 								<testJavaDB>true</testJavaDB>
@@ -701,15 +770,15 @@
 					</plugin>
 				</plugins>
 			</build>
-		</profile>
-		<profile>
+		</profile>-->
+<!--		<profile>
 			<id>JavaDBMemoryTest</id>
 			<build>
 				<plugins>
 					<plugin>
 						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-surefire-plugin</artifactId>
-						<!--<version>2.18</version>-->
+						<version>2.18</version>
 						<configuration>
 							<systemPropertyVariables>
 								<testJavaDBMemory>true</testJavaDBMemory>
@@ -723,7 +792,7 @@
 					</plugin>
 				</plugins>
 			</build>
-		</profile>
+		</profile>-->
 	</profiles>
   
 	<dependencies>

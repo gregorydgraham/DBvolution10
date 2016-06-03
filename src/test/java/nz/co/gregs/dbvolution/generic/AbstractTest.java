@@ -64,66 +64,82 @@ public abstract class AbstractTest {
 
 		List<Object[]> databases = new ArrayList<Object[]>();
 
+		String url = System.getProperty("dbv.url");
+		String host = System.getProperty("dbv.host");
+		String port = System.getProperty("dbv.port");
+		String instance = System.getProperty("dbv.instance");
+		String database = System.getProperty("dbv.database");
+		String username = System.getProperty("dbv.username");
+		String password = System.getProperty("dbv.password");
+		String schema = System.getProperty("dbv.schema");
+
 		if (System.getProperty("testSQLite") != null) {
-			final SQLiteDB sqliteDB = new SQLiteTestDB();
+			final SQLiteDB sqliteDB = new SQLiteTestDB(url, username, password);
 			databases.add(new Object[]{"SQLiteDB", sqliteDB});
 		}
-		if (System.getProperty("testMySQLMXJDB") != null) {
-			databases.add(new Object[]{"SQLMXJDB", MySQLMXJDBInitialisation.getMySQLDBInstance()});
-		}
+//		if (System.getProperty("testMySQLMXJDB") != null) {
+//			databases.add(new Object[]{"SQLMXJDB", MySQLMXJDBInitialisation.getMySQLDBInstance()});
+//		}
 		if (System.getProperty("testMySQL") != null) {
-			databases.add(new Object[]{"MySQLDB", new MySQLTestDatabase()});
+			databases.add(new Object[]{"MySQLDB", new MySQLTestDatabase(url, username, password)});
 		}
-		if (System.getProperty("testMySQLRDS") != null) {
-			databases.add(new Object[]{"MySQLDB-RDS", new MySQLRDSTestDatabase()});
-		}
+//		if (System.getProperty("testMySQLRDS") != null) {
+//			databases.add(new Object[]{"MySQLDB-RDS", new MySQLRDSTestDatabase()});
+//		}
 		if (System.getProperty("testMySQL56") != null) {
-			databases.add(new Object[]{"MySQLDB-5.6", new MySQL56TestDatabase()});
+			databases.add(new Object[]{"MySQLDB-5.6", new MySQL56TestDatabase(url, username, password)});
 		}
 		if (System.getProperty("testH2DB") != null) {
-			databases.add(new Object[]{"H2DB", new H2TestDatabase()});
+			databases.add(new Object[]{"H2DB", new H2TestDatabase(url, username, password)});
 		}
 		if (System.getProperty("testH2DataSourceDB") != null) {
 			JdbcDataSource h2DataSource = new JdbcDataSource();
-			h2DataSource.setUser("");
-			h2DataSource.setPassword("");
-			h2DataSource.setURL("jdbc:h2:./dataSourceTest.h2db");
+			h2DataSource.setUser(username);
+			h2DataSource.setPassword(password);
+			h2DataSource.setURL(url);
+//			h2DataSource.setUser("");
+//			h2DataSource.setPassword("");
+//			h2DataSource.setURL("jdbc:h2:./dataSourceTest.h2db");
 			H2DB databaseFromDataSource = H2TestDatabase.getDatabaseFromDataSource(h2DataSource);
 			databases.add(new Object[]{"H2DataSourceDB", databaseFromDataSource});
 		}
 		if (System.getProperty("testPostgresSQL") != null) {
-			databases.add(new Object[]{"PostgresSQL", TestPostgreSQL.getLocalTestDatabase()});
+//			if (host != null) {
+//				databases.add(new Object[]{"PostgresSQL", TestPostgreSQL.getTestDatabase()});
+//			} else {
+				databases.add(new Object[]{"PostgresSQL", TestPostgreSQL.getTestDatabase(url, host, port, instance, username, password, schema)});
+//			}
 		}
-		if (System.getProperty("testPostgresSQLRDS") != null) {
-			databases.add(new Object[]{"PostgresSQL-RDS", TestPostgreSQL.getRDSTestDatabase()});
-		}
+//		if (System.getProperty("testPostgresSQLRDS") != null) {
+//			databases.add(new Object[]{"PostgresSQL-RDS", TestPostgreSQL.getRDSTestDatabase()});
+//		}
 		if (System.getProperty("testNuo") != null) {
 			databases.add(new Object[]{"NuoDB", new NuoDB("localhost", 48004L, "dbv", "dbv", "dbv", "dbv")});
 		}
-		if (System.getProperty("testOracleAWS") != null) {
-			databases.add(new Object[]{"Oracle11DB", new OracleAWS11TestDB()});
-		}
+//		if (System.getProperty("testOracleAWS") != null) {
+//			databases.add(new Object[]{"Oracle11DB", new OracleAWS11TestDB()});
+//		}
 		if (System.getProperty("testOracleXE") != null) {
-			databases.add(new Object[]{"Oracle11DB", new Oracle11XETestDB()});
+			databases.add(new Object[]{"Oracle11DB", new Oracle11XETestDB(host, port, instance, username, password)});
 		}
-		if (System.getProperty("testOracle12") != null) {
-			databases.add(new Object[]{"Oracle12DB", new Oracle12DB("dbvtest-oracle12.cygjg2wvuyam.ap-southeast-2.rds.amazonaws.com", 1521, "ORCL", "dbv", "Testingdbv")});
-		}
+//		if (System.getProperty("testOracle12") != null) {
+//			databases.add(new Object[]{"Oracle12DB", new Oracle12DB("dbvtest-oracle12.cygjg2wvuyam.ap-southeast-2.rds.amazonaws.com", 1521, "ORCL", "dbv", "Testingdbv")});
+//		}
 		if (System.getProperty("testMSSQLServer") != null) {
-			databases.add(new Object[]{"MSSQLServer", new MSSQLServerTestDB()});
+			databases.add(new Object[]{"MSSQLServer", new MSSQLServerTestDB(host, instance, database, port, username, password)});
 		}
 		if (System.getProperty("testJTDSSQLServer") != null) {
-			databases.add(new Object[]{"JTDSSQLServer", new JTDSSQLServerTestDB()});
+			databases.add(new Object[]{"JTDSSQLServer", new JTDSSQLServerTestDB(host, instance, database, port, username, password)});
 		}
-		if (System.getProperty("testJavaDBMemory") != null) {
-			databases.add(new Object[]{"JavaDBMemory", new JavaDBMemoryDB("localhost", 1527, "dbv", "dbv", "dbv")});
-		}
-		if (System.getProperty("testJavaDB") != null) {
-			databases.add(new Object[]{"JavaDB", new JavaDB("localhost", 1527, "dbv", "dbv", "dbv")});
-		}
+//		if (System.getProperty("testJavaDBMemory") != null) {
+//			databases.add(new Object[]{"JavaDBMemory", new JavaDBMemoryDB("localhost", 1527, "dbv", "dbv", "dbv")});
+//		}
+//		if (System.getProperty("testJavaDB") != null) {
+//			databases.add(new Object[]{"JavaDB", new JavaDB("localhost", 1527, "dbv", "dbv", "dbv")});
+//		}
 		if (databases.isEmpty() || System.getProperty("testH2MemoryDB") != null) {
 			// Do basic testing
-			final H2MemoryDB h2MemoryDB = new H2MemoryTestDB();
+			final H2MemoryDB h2MemoryDB = new H2MemoryTestDB(instance, username, password);
 			databases.add(new Object[]{"H2MemoryDB", h2MemoryDB});
 		}
 
@@ -180,7 +196,7 @@ public abstract class AbstractTest {
 						.replaceAll(" as ", " ");
 			} else if ((database instanceof NuoDB)) {
 				return trimStr.replaceAll("\\(\\(([^)]*)\\)=true\\)", "$1");
-			} else if ((database instanceof MSSQLServerDB)|| database instanceof JTDSSQLServerDB) {
+			} else if ((database instanceof MSSQLServerDB) || database instanceof JTDSSQLServerDB) {
 				return trimStr
 						.replaceAll("\\[", "")
 						.replaceAll("]", "")
@@ -272,8 +288,12 @@ public abstract class AbstractTest {
 			return new H2DB(h2DataSource);
 		}
 
-		public H2TestDatabase() {
-			super("jdbc:h2:./directTest.h2db", "", "");
+		public H2DB H2TestDatabaseFromFilename(String instance, String username, String password) {
+			return new H2DB(instance,username, password, false);
+		}
+
+		public H2TestDatabase(String url, String username, String password) {
+			super(url,username, password);
 		}
 	}
 
@@ -287,35 +307,42 @@ public abstract class AbstractTest {
 
 	private static class MySQL56TestDatabase extends MySQLDB {
 
-		public MySQL56TestDatabase() {
-			//super("jdbc:mysql://dbvtest-mysql.cygjg2wvuyam.ap-southeast-2.rds.amazonaws.com:3306/test?createDatabaseIfNotExist=true", "dbv", "Testingdbv");
-			super("jdbc:mysql://52.64.179.175:3306/dbv?createDatabaseIfNotExist=true", "dbv", "dbv");
+		public MySQL56TestDatabase(String url, String username, String password) {
+			super(url, username, password);
+//			super("jdbc:mysql://52.64.179.175:3306/dbv?createDatabaseIfNotExist=true", "dbv", "dbv");
 		}
 	}
 
 	private static class MySQLTestDatabase extends MySQLDB {
 
-		public MySQLTestDatabase() {
-			super("jdbc:mysql://localhost:3306/test?createDatabaseIfNotExist=true", "dbv", "dbv");
+		public MySQLTestDatabase(String url, String username, String password) {
+			super(url,username, password);
+//			super("jdbc:mysql://localhost:3306/test?createDatabaseIfNotExist=true", "dbv", "dbv");
 		}
 	}
 
 	private static class TestPostgreSQL extends PostgresDB {
+
+		protected static PostgresDB getTestDatabase(String url, String host, String port, String database, String username, String password, String schema) {
+			//return new PostgresDB("150.242.43.218", 5432, "dbvtest", "dbv", "Testingdbv");
+			return new PostgresDB(host, new Integer(port), database, username, password);
+		}
 
 		protected static PostgresDB getRDSTestDatabase() {
 			//return new PostgresDB("150.242.43.218", 5432, "dbvtest", "dbv", "Testingdbv");
 			return new PostgresDB("dbvtest-postgresql.cygjg2wvuyam.ap-southeast-2.rds.amazonaws.com", 5432, "dbvtest", "dbv", "Testingdbv");
 		}
 
-		protected static PostgresDB getLocalTestDatabase() {
-			return new PostgresDB("dbvtest", "dbv", "dbv", "");
-		}
+//		protected static PostgresDB getLocalTestDatabase() {
+//			return new PostgresDB("dbvtest", "dbv", "dbv", "");
+//		}
 	}
 
 	private static class SQLiteTestDB extends SQLiteDB {
 
-		public SQLiteTestDB() throws SQLException {
-			super("jdbc:sqlite:dbvolutionTest.sqlite", "dbv", "dbv");
+		public SQLiteTestDB(String url, String username, String password) throws SQLException {
+			//super("jdbc:sqlite:dbvolutionTest.sqlite", "dbv", "dbv");
+			super(url, username, password);
 		}
 	}
 
@@ -328,30 +355,34 @@ public abstract class AbstractTest {
 
 	private static class Oracle11XETestDB extends Oracle11XEDB {
 
-		public Oracle11XETestDB() {
-			super("54.206.70.155", 1521, "XE", "DBV", "Testingdbv2");
+		public Oracle11XETestDB(String host, String port, String instance, String username, String password) {
+			super(host, Integer.getInteger(port), instance, username, password);
+			//super("54.206.70.155", 1521, "XE", "DBV", "Testingdbv2");
 			//super("ec2-54-206-23-5.ap-southeast-2.compute.amazonaws.com", 1521, "XE", "DBV", "Testingdbv");
 		}
 	}
 
 	private static class MSSQLServerTestDB extends MSSQLServerDB {
 
-		public MSSQLServerTestDB() {
-			super("dbvtest-mssql.cygjg2wvuyam.ap-southeast-2.rds.amazonaws.com", "dbvtest", "dbvtest", 1433, "dbv", "Testingdbv");
+		public MSSQLServerTestDB(String host, String instance, String database, String port, String username, String password) {
+			super(host, instance, database, Integer.getInteger(port), username, password);
+//			super("dbvtest-mssql.cygjg2wvuyam.ap-southeast-2.rds.amazonaws.com", "dbvtest", "dbvtest", 1433, "dbv", "Testingdbv");
 		}
 	}
 
 	private static class JTDSSQLServerTestDB extends JTDSSQLServerDB {
 
-		public JTDSSQLServerTestDB() {
-			super("dbvtest-mssql.cygjg2wvuyam.ap-southeast-2.rds.amazonaws.com", "dbvtest", "dbvtest", 1433, "dbv", "Testingdbv");
+		public JTDSSQLServerTestDB(String host, String instance, String database, String port, String username, String password) {
+			super(host, instance, database, Integer.getInteger(port), username, password);
+//			super("dbvtest-mssql.cygjg2wvuyam.ap-southeast-2.rds.amazonaws.com", "dbvtest", "dbvtest", 1433, "dbv", "Testingdbv");
 		}
 	}
 
 	private static class H2MemoryTestDB extends H2MemoryDB {
 
-		public H2MemoryTestDB() {
-			super("memoryTest.h2db", "", "", false);
+		public H2MemoryTestDB(String instance, String username, String password) {
+			super(instance,username, password, false);
+//			super("memoryTest.h2db", "", "", false);
 		}
 	}
 }

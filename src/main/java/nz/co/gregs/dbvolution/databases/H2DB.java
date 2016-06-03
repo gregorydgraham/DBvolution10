@@ -98,6 +98,24 @@ public class H2DB extends DBDatabase implements SupportsDateRepeatDatatypeFuncti
 //		jamDatabaseConnectionOpen();
 	}
 
+	/**
+	 * Creates a DBDatabase for a H2 database.
+	 *
+	 *
+	 *
+	 *
+	 * 1 Database exceptions may be thrown
+	 *
+	 * @param databaseFilename  the name and path of the database file
+	 * @param username username
+	 * @param password password
+	 * @param dummy unused
+	 */
+	public H2DB(String databaseFilename, String username, String password, boolean dummy) {
+		super(new H2DBDefinition(), "org.h2.Driver", "jdbc:h2:"+databaseFilename, username, password);
+//		jamDatabaseConnectionOpen();
+	}
+
 	@Override
 	protected void addDatabaseSpecificFeatures(final Statement stmt) throws SQLException {
 //		DateRepeatFunctions.addFunctions(stmt);
