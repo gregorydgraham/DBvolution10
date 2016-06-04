@@ -139,6 +139,9 @@ public abstract class AbstractTest {
 //		}
 		if (databases.isEmpty() || System.getProperty("testH2MemoryDB") != null) {
 			// Do basic testing
+			System.out.println("INSTANCE: "+instance);
+			System.out.println("USERNAME: '"+username+"'");
+			System.out.println("PASSWORD: '"+password+"'");
 			final H2MemoryDB h2MemoryDB = new H2MemoryTestDB(instance, username, password);
 			databases.add(new Object[]{"H2MemoryDB", h2MemoryDB});
 		}
