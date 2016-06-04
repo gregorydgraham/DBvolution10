@@ -71,7 +71,15 @@ public abstract class AbstractTest {
 		String database = System.getProperty("dbv.database");
 		String username = System.getProperty("dbv.username");
 		String password = System.getProperty("dbv.password");
-		String schema = System.getProperty("dbv.schema");
+		String schema = System.getProperty("dbv.schema");		
+		
+		System.out.println("URL: "+url);
+			System.out.println("HOST: '"+host+"'");
+			System.out.println("PORT: '"+port+"'");
+System.out.println("INSTANCE: "+instance);
+			System.out.println("USERNAME: '"+username+"'");
+			System.out.println("PASSWORD: '"+password+"'");
+
 
 		if (System.getProperty("testSQLite") != null) {
 			final SQLiteDB sqliteDB = new SQLiteTestDB(url, username, password);
@@ -139,9 +147,6 @@ public abstract class AbstractTest {
 //		}
 		if (databases.isEmpty() || System.getProperty("testH2MemoryDB") != null) {
 			// Do basic testing
-			System.out.println("INSTANCE: "+instance);
-			System.out.println("USERNAME: '"+username+"'");
-			System.out.println("PASSWORD: '"+password+"'");
 			final H2MemoryDB h2MemoryDB = new H2MemoryTestDB(instance, username, password);
 			databases.add(new Object[]{"H2MemoryDB", h2MemoryDB});
 		}
