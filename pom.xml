@@ -539,6 +539,36 @@
 			</build>
 		</profile>
 		<profile>
+			<id>H2DBFileTest</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-surefire-plugin</artifactId>
+						<!--<version>2.18</version>-->
+						<configuration>
+							<systemPropertyVariables>
+								<testH2FileDB>true</testH2FileDB>
+								<dbv.url>${h2.url}</dbv.url>
+								<dbv.host>${h2.host}</dbv.host>
+								<dbv.port>${h2.port}</dbv.port>
+								<dbv.database>${h2.database}</dbv.database>
+								<dbv.instance>${h2.instance}</dbv.instance>
+								<dbv.username>${h2.username}</dbv.username>
+								<dbv.password>${h2.password}</dbv.password>
+								<dbv.schema>${h2.schema}</dbv.schema>
+							</systemPropertyVariables>
+							<includes>
+								<include>**/*.java</include>
+							</includes>
+							<threadCount>1</threadCount>
+							<forkCount>1</forkCount>
+						</configuration>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+		<profile>
 			<id>H2MemoryDBTest</id>
 			<build>
 				<plugins>

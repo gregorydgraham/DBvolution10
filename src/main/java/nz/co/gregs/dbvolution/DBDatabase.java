@@ -1415,7 +1415,7 @@ public abstract class DBDatabase implements Cloneable {
 	 */
 	public void preventDroppingOfTables(boolean droppingTablesIsAMistake) {
 		this.preventAccidentalDroppingOfTables = droppingTablesIsAMistake;
-	}
+		}
 
 	/**
 	 *
@@ -1423,7 +1423,7 @@ public abstract class DBDatabase implements Cloneable {
 	 */
 	public void preventDroppingOfDatabases(boolean justLeaveThisAtTrue) {
 		this.preventAccidentalDroppingDatabase = justLeaveThisAtTrue;
-	}
+		}
 
 	/**
 	 * Indicates whether this database supports full outer joins.
@@ -1755,8 +1755,8 @@ public abstract class DBDatabase implements Cloneable {
 	 * maintain their data.
 	 *
 	 * <p>
-	 * DBvolution is usually clever with its connections and does not require 
-	 * a persistent connection.
+	 * DBvolution is usually clever with its connections and does not require a
+	 * persistent connection.
 	 *
 	 * <p>
 	 * However if a continuous connection is required to maintain the data,
@@ -1770,14 +1770,20 @@ public abstract class DBDatabase implements Cloneable {
 	}
 
 	/**
-	 *Creates a  DBmigration that will do a conversion from one or more database tables to another database table.
-	 * 
-	 * <p>The mapper class should be an extension of a intended DBRow class that has instances of the DBRows required in the query, constraints, and mappings to fill the required columns set in the initialization clause. </p>
-	 * 
-	 * <p>See DBMigrationTest for examples.</p>
-	 * 
+	 * Creates a DBmigration that will do a conversion from one or more database
+	 * tables to another database table.
+	 *
+	 * <p>
+	 * The mapper class should be an extension of a intended DBRow class that has
+	 * instances of the DBRows required in the query, constraints, and mappings to
+	 * fill the required columns set in the initialization clause. </p>
+	 *
+	 * <p>
+	 * See DBMigrationTest for examples.</p>
+	 *
 	 * @param <K>
-	 * @param mapper a class that can be used to map one or more database tables to a single table.
+	 * @param mapper a class that can be used to map one or more database tables
+	 * to a single table.
 	 * @return a DBMigration for the mapper class
 	 */
 	public <K extends DBRow> DBMigration<K> getDBMigration(K mapper) {

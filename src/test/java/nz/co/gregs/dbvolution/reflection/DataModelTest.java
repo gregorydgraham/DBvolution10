@@ -57,7 +57,7 @@ public class DataModelTest extends AbstractTest {
 		for (Class<? extends DBDatabase> result1 : result) {
 			System.out.println("DBDatabase: " + result1.getName());
 		}
-		Assert.assertThat(result.size(), is(11));
+		Assert.assertThat(result.size(), is(9));
 	}
 
 	@Test
@@ -67,7 +67,7 @@ public class DataModelTest extends AbstractTest {
 		for (Constructor<DBDatabase> result1 : result) {
 			System.out.println("Constructor: " + result1.getName());
 		}
-		Assert.assertThat(result.size(), is(11));
+		Assert.assertThat(result.size(), is(10));
 	}
 
 	@Test
@@ -91,7 +91,7 @@ public class DataModelTest extends AbstractTest {
 				Logger.getLogger(DataModelTest.class.getName()).log(Level.SEVERE, null, ex);
 			}
 		}
-		Assert.assertThat(result.size(), is(2));
+		Assert.assertThat(result.size(), is(1));
 	}
 
 	@Test

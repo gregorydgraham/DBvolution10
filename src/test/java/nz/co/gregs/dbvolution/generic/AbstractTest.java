@@ -29,7 +29,6 @@ import net.sourceforge.tedhi.FlexibleDateRangeFormat;
 import nz.co.gregs.dbvolution.DBTable;
 import nz.co.gregs.dbvolution.databases.*;
 import nz.co.gregs.dbvolution.example.*;
-import nz.co.gregs.dbvolution.mysql.MySQLMXJDBInitialisation;
 import org.h2.jdbcx.JdbcDataSource;
 import org.junit.After;
 import org.junit.Before;
@@ -73,14 +72,6 @@ public abstract class AbstractTest {
 		String password = System.getProperty("dbv.password");
 		String schema = System.getProperty("dbv.schema");		
 		
-		System.out.println("URL: "+url);
-			System.out.println("HOST: '"+host+"'");
-			System.out.println("PORT: '"+port+"'");
-System.out.println("INSTANCE: "+instance);
-			System.out.println("USERNAME: '"+username+"'");
-			System.out.println("PASSWORD: '"+password+"'");
-
-
 		if (System.getProperty("testSQLite") != null) {
 			final SQLiteDB sqliteDB = new SQLiteTestDB(url, username, password);
 			databases.add(new Object[]{"SQLiteDB", sqliteDB});
@@ -99,6 +90,9 @@ System.out.println("INSTANCE: "+instance);
 		}
 		if (System.getProperty("testH2DB") != null) {
 			databases.add(new Object[]{"H2DB", new H2TestDatabase(url, username, password)});
+		}
+		if (System.getProperty("testH2FileDB") != null) {
+			databases.add(new Object[]{"H2FileDB",  H2TestDatabase.H2TestDatabaseFromFilename(database, username, password)});
 		}
 		if (System.getProperty("testH2DataSourceDB") != null) {
 			JdbcDataSource h2DataSource = new JdbcDataSource();
@@ -145,10 +139,13 @@ System.out.println("INSTANCE: "+instance);
 //		if (System.getProperty("testJavaDB") != null) {
 //			databases.add(new Object[]{"JavaDB", new JavaDB("localhost", 1527, "dbv", "dbv", "dbv")});
 //		}
-		if (databases.isEmpty() || System.getProperty("testH2MemoryDB") != null) {
+		if (System.getProperty("testH2MemoryDB") != null) {
 			// Do basic testing
 			final H2MemoryDB h2MemoryDB = new H2MemoryTestDB(instance, username, password);
 			databases.add(new Object[]{"H2MemoryDB", h2MemoryDB});
+		}
+		if(databases.isEmpty() ){
+			databases.add(new Object[]{"H2BlankDB",  H2MemoryTestDB.blankDB()});
 		}
 
 		return databases;
@@ -267,7 +264,7 @@ System.out.println("INSTANCE: "+instance);
 		marqueRows.add(new Marque(1, "False", 1246974, "", 0, "", "TOYOTA", "", "Y", firstDate, 1, true));
 		marqueRows.add(new Marque(2, "False", 1246974, "", 0, "", "HUMMER", "", "Y", secondDate, 3, null));
 
-		database.setPrintSQLBeforeExecuting(true);
+//		database.setPrintSQLBeforeExecuting(true);
 		marquesTable.insert(marqueRows);
 		database.setPrintSQLBeforeExecuting(false);
 
@@ -296,7 +293,7 @@ System.out.println("INSTANCE: "+instance);
 			return new H2DB(h2DataSource);
 		}
 
-		public H2DB H2TestDatabaseFromFilename(String instance, String username, String password) {
+		public static H2DB H2TestDatabaseFromFilename(String instance, String username, String password) {
 			return new H2DB(instance,username, password, false);
 		}
 
@@ -305,13 +302,13 @@ System.out.println("INSTANCE: "+instance);
 		}
 	}
 
-	private static class MySQLRDSTestDatabase extends MySQLDB {
-
-		public MySQLRDSTestDatabase() {
-			//super("jdbc:mysql://150.242.43.218:3306/test?createDatabaseIfNotExist=true", "dbv", "Testingdbv");
-			super("jdbc:mysql://dbvtest-mysql.cygjg2wvuyam.ap-southeast-2.rds.amazonaws.com:3306/test?createDatabaseIfNotExist=true", "dbv", "Testingdbv");
-		}
-	}
+//	private static class MySQLRDSTestDatabase extends MySQLDB {
+//
+//		public MySQLRDSTestDatabase() {
+//			//super("jdbc:mysql://150.242.43.218:3306/test?createDatabaseIfNotExist=true", "dbv", "Testingdbv");
+//			super("jdbc:mysql://dbvtest-mysql.cygjg2wvuyam.ap-southeast-2.rds.amazonaws.com:3306/test?createDatabaseIfNotExist=true", "dbv", "Testingdbv");
+//		}
+//	}
 
 	private static class MySQL56TestDatabase extends MySQLDB {
 
@@ -336,10 +333,10 @@ System.out.println("INSTANCE: "+instance);
 			return new PostgresDB(host, new Integer(port), database, username, password);
 		}
 
-		protected static PostgresDB getRDSTestDatabase() {
+//		protected static PostgresDB getRDSTestDatabase() {
 			//return new PostgresDB("150.242.43.218", 5432, "dbvtest", "dbv", "Testingdbv");
-			return new PostgresDB("dbvtest-postgresql.cygjg2wvuyam.ap-southeast-2.rds.amazonaws.com", 5432, "dbvtest", "dbv", "Testingdbv");
-		}
+//			return new PostgresDB("dbvtest-postgresql.cygjg2wvuyam.ap-southeast-2.rds.amazonaws.com", 5432, "dbvtest", "dbv", "Testingdbv");
+//		}
 
 //		protected static PostgresDB getLocalTestDatabase() {
 //			return new PostgresDB("dbvtest", "dbv", "dbv", "");
@@ -354,12 +351,12 @@ System.out.println("INSTANCE: "+instance);
 		}
 	}
 
-	private static class OracleAWS11TestDB extends OracleAWS11DB {
-
-		public OracleAWS11TestDB() {
-			super("dbvtest-oracle-se1.cygjg2wvuyam.ap-southeast-2.rds.amazonaws.com", 1521, "ORCL", "dbv", "Testingdbv");
-		}
-	}
+//	private static class OracleAWS11TestDB extends OracleAWS11DB {
+//
+//		public OracleAWS11TestDB() {
+//			super("dbvtest-oracle-se1.cygjg2wvuyam.ap-southeast-2.rds.amazonaws.com", 1521, "ORCL", "dbv", "Testingdbv");
+//		}
+//	}
 
 	private static class Oracle11XETestDB extends Oracle11XEDB {
 
@@ -388,6 +385,14 @@ System.out.println("INSTANCE: "+instance);
 
 	private static class H2MemoryTestDB extends H2MemoryDB {
 
+		public static H2MemoryTestDB blankDB() {
+			return new H2MemoryTestDB();
+		}
+		
+		public H2MemoryTestDB() {
+			this("memoryTest.h2db", "", "");
+		}
+		
 		public H2MemoryTestDB(String instance, String username, String password) {
 			super(instance,username, password, false);
 //			super("memoryTest.h2db", "", "", false);
