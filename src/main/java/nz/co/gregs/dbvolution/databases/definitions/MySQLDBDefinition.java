@@ -588,7 +588,7 @@ public class MySQLDBDefinition extends DBDefinition {
 
 	@Override
 	public String doMultiPoint2DToLine2DTransform(String first) {
-		return "LineFromText(REPLACE(ASTEXT(" + first + "),'MULTIPOINT', 'LINESTRING'))";
+		return "LineFromText(REPLACE(REPLACE(REPLACE(REPLACE(ASTEXT(" + first + "),'MULTIPOINT', 'LINESTRING'),'((','('),'),(',','),'))',')'))";
 	}
 
 //	@Override
