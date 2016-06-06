@@ -450,7 +450,7 @@ public class MySQLDBDefinition extends DBDefinition {
 
 	@Override
 	public String doLine2DIntersectsLine2DTransform(String firstLine, String secondLine) {
-		return "Touches((" + firstLine + "), (" + secondLine + "))";
+		return "ST_Intersects((" + firstLine + "), (" + secondLine + "))";
 	}
 
 	@Override
