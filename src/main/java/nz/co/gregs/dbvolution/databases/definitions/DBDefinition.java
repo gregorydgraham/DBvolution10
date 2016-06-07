@@ -3494,6 +3494,10 @@ public abstract class DBDefinition {
 			GeometryFactory geofactory = new GeometryFactory();
 			LineString lineString = (LineString) geometry;
 			poly = geofactory.createPolygon(lineString.getCoordinateSequence());
+		} else if (geometry instanceof Point) {
+			GeometryFactory geofactory = new GeometryFactory();
+			Point point = (Point) geometry;
+			poly = geofactory.createPolygon(new Coordinate[]{point.getCoordinate(), point.getCoordinate(),point.getCoordinate(),point.getCoordinate(),point.getCoordinate()});
 		} else {
 			throw new IncorrectGeometryReturnedForDatatype(geometry, poly);
 		}

@@ -24,22 +24,7 @@ import nz.co.gregs.dbvolution.annotations.DBTableName;
 import nz.co.gregs.dbvolution.datatypes.DBInteger;
 import nz.co.gregs.dbvolution.example.CarCompany;
 import nz.co.gregs.dbvolution.generic.AbstractTest;
-import static org.hamcrest.Matchers.is;
 import org.junit.*;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.is;
 
 public class DoubleJoinTest extends AbstractTest {
