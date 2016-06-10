@@ -361,7 +361,7 @@ public abstract class AbstractTest {
 	private static class Oracle11XETestDB extends Oracle11XEDB {
 
 		public Oracle11XETestDB(String host, String port, String instance, String username, String password) {
-			super(host, Integer.getInteger(port), instance, username, password);
+			super(host, Integer.parseInt(port), instance, username, password);
 			//super("54.206.70.155", 1521, "XE", "DBV", "Testingdbv2");
 			//super("ec2-54-206-23-5.ap-southeast-2.compute.amazonaws.com", 1521, "XE", "DBV", "Testingdbv");
 		}
@@ -370,7 +370,7 @@ public abstract class AbstractTest {
 	private static class MSSQLServerTestDB extends MSSQLServerDB {
 
 		public MSSQLServerTestDB(String host, String instance, String database, String port, String username, String password) {
-			super(host, instance, database, Integer.getInteger(port), username, password);
+			super(host, instance, database, Integer.parseInt(port), username, password);
 //			super("dbvtest-mssql.cygjg2wvuyam.ap-southeast-2.rds.amazonaws.com", "dbvtest", "dbvtest", 1433, "dbv", "Testingdbv");
 		}
 	}
@@ -378,7 +378,7 @@ public abstract class AbstractTest {
 	private static class JTDSSQLServerTestDB extends JTDSSQLServerDB {
 
 		public JTDSSQLServerTestDB(String host, String instance, String database, String port, String username, String password) {
-			super(host, instance, database, Integer.getInteger(port), username, password);
+			super(host, instance, database, Integer.parseInt(port), username, password);
 //			super("dbvtest-mssql.cygjg2wvuyam.ap-southeast-2.rds.amazonaws.com", "dbvtest", "dbvtest", 1433, "dbv", "Testingdbv");
 		}
 	}
