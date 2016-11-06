@@ -242,6 +242,21 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 			return names;
 		}
 	}
+	
+	
+	/**
+	 * Returns the QueryableDatatype instance of the Primary Key of This DBRow, as an array in case there a 
+	 *
+	 * <p>
+	 * If the DBRow class has a {@link DBPrimaryKey @DBPrimaryKey} designated
+	 * field, then the QueryableDatatype instance of that field is returned.
+	 *
+	 * @return the QDT of the primary key or an empty array if there is no primary key.
+	 */
+	public QueryableDatatype<?>[] getPrimaryKeysAsArray() {
+		return getPrimaryKeys().toArray(new QueryableDatatype<?>[]{});
+	}
+	
 
 	/**
 	 * Set the value of the Primary Key field/column in this DBRow.
@@ -879,7 +894,6 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 	 *
 	 * @param fields a list of fields/methods from this object
 	 */
-	//@SafeVarargs
 	public final void setReturnFields(Object... fields) throws IncorrectRowProviderInstanceSuppliedException {
 		setReturnColumns(new ArrayList<PropertyWrapperDefinition>());
 		PropertyWrapper propWrapper;

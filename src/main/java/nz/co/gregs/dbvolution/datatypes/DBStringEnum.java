@@ -567,11 +567,10 @@ public class DBStringEnum<E extends Enum<E> & DBEnumValue<String>> extends DBEnu
 		this.setOperator(new DBPermittedValuesOperator<String>(convertToLiteral(permitted)));
 	}
 	
-	@SafeVarargs	
-	@SuppressWarnings("unchecked")
 	@Override
+	@SafeVarargs	
 	protected final String[] convertToLiteral(E... enumValues) {
-		return super.convertToLiteral(enumValues);
+		return convertToLiteralString(enumValues);
 	}
 
 	/**

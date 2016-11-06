@@ -143,7 +143,43 @@ public class DBIntegerEnum<E extends Enum<E> & DBEnumValue<Long>> extends DBEnum
 	@SuppressWarnings("unchecked")
 	@Override
 	protected final Long[] convertToLiteral(E... enumValues) {
-		return super.convertToLiteral(enumValues);
+		return convertToLiteralLong(enumValues);
+	}
+
+	/**
+	 * Create an array of Longs containing the literal values of the provided
+	 * Enums.
+	 *
+	 * <p>
+	 * Provided as a convenience function
+	 *
+	 *
+	 * @return a Long[] of the enums values.
+	 */
+	@SafeVarargs
+	private final Long[] convertToLiteralLong(E... enumValues) {
+		Long[] result = new Long[enumValues.length];
+		for (int i = 0; i < enumValues.length; i++) {
+			E enumValue = enumValues[i];
+			result[i] = convertToLiteralLong(enumValue);
+		}
+		return result;
+	}
+
+	/**
+	 * Convert the enum to its Long literal value.
+	 *
+	 *
+	 * @return the literal value of the enum.
+	 */
+	private Long convertToLiteralLong(E enumValue) {
+		if (enumValue == null || enumValue.getCode() == null) {
+			return null;
+		} else {
+			validateLiteralValue(enumValue);
+			Long newLiteralValue = enumValue.getCode();
+			return newLiteralValue;
+		}
 	}
 
 	/**
