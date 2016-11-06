@@ -27,6 +27,7 @@ public interface JavaProperty {
 	 * {@code "Invalid valid for field com.mycompany.myproject.MyTable.fieldName"}
 	 * </ul>
 	 * </ul>
+	 * @return 
 	 */
 	@Override
 	public String toString();
@@ -34,12 +35,15 @@ public interface JavaProperty {
 	/**
 	 * Tests for equality, based entirely on whether the underlying java field or
 	 * bean-property is the same.
+	 * @param other
+	 * @return 
 	 */
 	@Override
 	public boolean equals(Object other);
 
 	/**
 	 * Hash-code based on the underlying java field or bean-property.
+	 * @return 
 	 */
 	@Override
 	public int hashCode();
@@ -188,6 +192,7 @@ public interface JavaProperty {
 	 * thrown.
 	 *
 	 * A is the annotation type
+	 * @param <A>
 	 * @param annotationClass the annotation to check for
 	 * @return the annotation, or null if not found
 	 * @throws DBPebkacException if the annotation is duplicated and different

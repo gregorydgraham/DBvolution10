@@ -75,8 +75,13 @@ public class AbstractColumn implements DBExpression {
 	public String toSQLString(DBDatabase db) {
 		RowDefinition rowDefn = this.getRowDefinition();
 		if ((field instanceof QueryableDatatype) && ((QueryableDatatype) field).hasColumnExpression()) {
-			DBExpression columnExpression = ((QueryableDatatype) field).getColumnExpression();
-			return columnExpression.toSQLString(db);
+			final QueryableDatatype<?> qdtField = (QueryableDatatype) field;
+			DBExpression[] columnExpressions = qdtField.getColumnExpression();
+			String toSQLString="";
+			for (DBExpression columnExpression : columnExpressions) {
+				toSQLString += columnExpression.toSQLString(db);
+			}
+			return toSQLString;
 		} else {
 				String formattedColumnName="";
 			if (useTableAlias) {

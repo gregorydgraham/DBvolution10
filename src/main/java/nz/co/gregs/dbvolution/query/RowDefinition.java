@@ -318,6 +318,8 @@ public class RowDefinition implements Serializable {
 			col = this.column((DBLineSegment2D) fieldOfThisInstance);
 		} else if (DBMultiPoint2D.class.isAssignableFrom(fieldOfThisInstance.getClass())) {
 			col = this.column((DBMultiPoint2D) fieldOfThisInstance);
+		} else if (DBNumberStatistics.class.isAssignableFrom(fieldOfThisInstance.getClass())) {
+			col = this.column((DBNumber) fieldOfThisInstance);
 		}
 		if (col == null) {
 			throw new IncorrectRowProviderInstanceSuppliedException(this, fieldOfThisInstance);

@@ -142,7 +142,8 @@ public class DBStringEnum<E extends Enum<E> & DBEnumValue<String>> extends DBEnu
 	 *
 	 * @return a String[] of the enums values.
 	 */
-	private String[] convertToLiteralString(E... enumValues) {
+	@SafeVarargs
+	private final String[] convertToLiteralString(E... enumValues) {
 		String[] result = new String[enumValues.length];
 		for (int i = 0; i < enumValues.length; i++) {
 			E enumValue = enumValues[i];
@@ -561,8 +562,16 @@ public class DBStringEnum<E extends Enum<E> & DBEnumValue<String>> extends DBEnu
 	 *
 	 * @param permitted	permitted
 	 */
-	public void permittedValues(E... permitted) {
+	@SafeVarargs
+	public final void permittedValues(E... permitted) {
 		this.setOperator(new DBPermittedValuesOperator<String>(convertToLiteral(permitted)));
+	}
+	
+	@SafeVarargs	
+	@SuppressWarnings("unchecked")
+	@Override
+	protected final String[] convertToLiteral(E... enumValues) {
+		return super.convertToLiteral(enumValues);
 	}
 
 	/**
@@ -572,7 +581,8 @@ public class DBStringEnum<E extends Enum<E> & DBEnumValue<String>> extends DBEnu
 	 *
 	 * @param permitted	permitted
 	 */
-	public void permittedValuesIgnoreCase(E... permitted) {
+	@SafeVarargs
+	public final void permittedValuesIgnoreCase(E... permitted) {
 		this.setOperator(new DBPermittedValuesIgnoreCaseOperator(convertToLiteral(permitted)));
 	}
 
@@ -582,7 +592,8 @@ public class DBStringEnum<E extends Enum<E> & DBEnumValue<String>> extends DBEnu
 	 *
 	 * @param excluded	excluded
 	 */
-	public void excludedValuesIgnoreCase(E... excluded) {
+	@SafeVarargs
+	public final void excludedValuesIgnoreCase(E... excluded) {
 		setOperator(new DBPermittedValuesIgnoreCaseOperator(convertToLiteralString(excluded)));
 		negateOperator();
 	}
@@ -605,7 +616,8 @@ public class DBStringEnum<E extends Enum<E> & DBEnumValue<String>> extends DBEnu
 	 *
 	 * @param excluded	excluded
 	 */
-	public void excludedValues(E... excluded) {
+	@SafeVarargs
+	public final void excludedValues(E... excluded) {
 		this.setOperator(new DBPermittedValuesOperator<String>(convertToLiteralString(excluded)));
 		negateOperator();
 	}

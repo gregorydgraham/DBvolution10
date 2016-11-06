@@ -478,6 +478,7 @@ public class DBTable<E extends DBRow> {
 	 * may be thrown
 	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
+	@SafeVarargs
 	public final DBActionList insert(E... newRows) throws SQLException {
 		DBActionList actions = new DBActionList();
 		for (E row : newRows) {
@@ -513,7 +514,7 @@ public class DBTable<E extends DBRow> {
 	 * may be thrown
 	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
-	//@SafeVarargs
+	@SafeVarargs
 	public final DBActionList delete(E... oldRows) throws SQLException {
 		DBActionList actions = new DBActionList();
 		for (E row : oldRows) {

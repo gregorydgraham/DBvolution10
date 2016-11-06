@@ -38,5 +38,6 @@ public interface InComparable<A> extends EqualComparable<A>{
 	 * @param otherInstances  the values which are to be considered
 	 * @return a BooleanExpression
 	 */
+	@SuppressWarnings ({"unchecked", "varargs"})
 	public BooleanExpression isIn(A... otherInstances);
 }

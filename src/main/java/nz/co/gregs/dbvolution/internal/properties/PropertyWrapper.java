@@ -1,11 +1,13 @@
 package nz.co.gregs.dbvolution.internal.properties;
 
+import java.util.List;
 import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.annotations.AutoFillDuringQueryIfPossible;
 import nz.co.gregs.dbvolution.annotations.DBForeignKey;
 import nz.co.gregs.dbvolution.datatypes.DBEnumValue;
 import nz.co.gregs.dbvolution.datatypes.DBLargeObject;
+import nz.co.gregs.dbvolution.datatypes.DBNumberStatistics;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 import nz.co.gregs.dbvolution.exceptions.DBThrownByEndUserCodeException;
 import nz.co.gregs.dbvolution.expressions.BooleanExpression;
@@ -558,8 +560,25 @@ public class PropertyWrapper {
 	 * @return the expression used by this property to generate values, or null.
 	 *
 	 */
-	public DBExpression getColumnExpression() throws ClassCastException {
+		public DBExpression[] getColumnExpression() throws ClassCastException {
 		return this.getQueryableDatatype().getColumnExpression();
+	}
+
+	/**
+	 * The names and aliases of this property as it will appear in a SELECT and WHERE
+	 * clauses.
+	 * 
+	 * <p>
+	 * Multiple names and aliases are supported for
+	 * {@link QueryableDatatype QueryableDatatypes} like
+	 * {@link DBNumberStatistics} which retrieve several expressions at once.</p>
+	 *
+	 * @param db db
+	 * @return A map of all the selectable name and column aliases for this property.
+	 */
+	public List<PropertyWrapperDefinition.ColumnAspects> getColumnAspects(DBDatabase db) {
+		final RowDefinition adapteeRowProvider = this.getRowDefinitionInstanceWrapper().adapteeRowDefinition();
+		return getDefinition().getColumnAspects(db, adapteeRowProvider);
 	}
 
 	/**
@@ -569,10 +588,10 @@ public class PropertyWrapper {
 	 * @param db db
 	 * @return A String of the property for use in SELECT and WHERE clauses.
 	 */
-	public String getSelectableName(DBDatabase db) {
-		final RowDefinition adapteeRowProvider = this.getRowDefinitionInstanceWrapper().adapteeRowDefinition();
-		return getDefinition().getSelectableName(db, adapteeRowProvider);
-	}
+//	private String[] getSelectableName(DBDatabase db) {
+//		final RowDefinition adapteeRowProvider = this.getRowDefinitionInstanceWrapper().adapteeRowDefinition();
+//		return getDefinition().getSelectableName(db, adapteeRowProvider);
+//	}
 
 	/**
 	 * The alias to the column for use in the select clause and during value
@@ -581,7 +600,7 @@ public class PropertyWrapper {
 	 * @param db db
 	 * @return the column alias for this property.
 	 */
-	public String getColumnAlias(DBDatabase db) {
+	public String[] getColumnAlias(DBDatabase db) {
 		final RowDefinition actualRow = this.getRowDefinitionInstanceWrapper().adapteeRowDefinition();
 		return propertyDefinition.getColumnAlias(db, actualRow);
 	}

@@ -30,6 +30,7 @@ import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
  * operation such that every number larger than 1 will be returned.
  *
  * @author Gregory Graham
+ * @param <T>
  */
 public class DBPermittedRangeOperator<T> extends DBMetaOperator {
 

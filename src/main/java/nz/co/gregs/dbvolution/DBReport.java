@@ -404,11 +404,14 @@ public class DBReport extends RowDefinition {
 						}
 					}
 				} else if (value != null && QueryableDatatype.class.isAssignableFrom(value.getClass())) {
-					if ((value instanceof QueryableDatatype) && ((QueryableDatatype) value).hasColumnExpression()) {
-						final DBExpression columnExpression = ((QueryableDatatype) value).getColumnExpression();
+					final QueryableDatatype<?> qdtValue = (QueryableDatatype) value;
+					if ((value instanceof QueryableDatatype) && qdtValue.hasColumnExpression()) {
+						final DBExpression[] columnExpressions = qdtValue.getColumnExpression();
+						for (DBExpression columnExpression : columnExpressions) {
 						query.addExpressionColumn(value, columnExpression);
-						if (!columnExpression.isAggregator()) {
-							query.addGroupByColumn(value, columnExpression);
+							if (!columnExpression.isAggregator()) {
+								query.addGroupByColumn(value, columnExpression);
+							}
 						}
 					}
 				}

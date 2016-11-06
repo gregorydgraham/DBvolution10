@@ -4633,4 +4633,8 @@ public abstract class DBDefinition {
 			return " CASE WHEN " + booleanValue + " IS NULL THEN -1 ELSE " + booleanValue + " END ";
 		}
 	}
+
+	public String getUnionDistinctOperator() {
+		return " UNION  ";
+	}
 }

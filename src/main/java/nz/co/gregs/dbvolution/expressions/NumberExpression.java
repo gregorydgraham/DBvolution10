@@ -1938,12 +1938,20 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 	 * @return a NumberExpression
 	 */
 	public NumberExpression dividedBy(NumberResult number) {
-		return new NumberExpression(new DBBinaryArithmetic(this, new NumberExpression(number)) {
+		return new NumberExpression(new DBBinaryArithmetic(this, 
+				new NumberExpression(number)) {
 			@Override
 			protected String getEquationOperator(DBDatabase db) {
 				return " / ";
 			}
-		});
+
+			@Override
+			public String toSQLString(DBDatabase db) {
+				return  "(0.0+"+first.toSQLString(db)+")" + this.getEquationOperator(db) + second.toSQLString(db);
+			}
+			
+		}
+		);
 	}
 
 	/**

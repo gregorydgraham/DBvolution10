@@ -44,6 +44,7 @@ public class QueryDetails {
 	private final Map<Class<?>, Map<String, DBRow>> existingInstances = new HashMap<Class<?>, Map<String, DBRow>>();
 	private boolean groupByRequiredByAggregator = false;
 	public DBDatabase database = null;
+	private String selectClause;
 
 	/**
 	 * @return the allQueryTables
@@ -143,6 +144,14 @@ public class QueryDetails {
 	 */
 	public boolean isGroupedQuery() {
 		return getDBReportGroupByColumns().size() > 0 || getGroupByRequiredByAggregator();
+	}
+
+	public void setSelectClause(String selectClause) {
+		this.selectClause = selectClause;
+	}
+
+	public String getSelectClause() {
+		return selectClause;
 	}
 
 }

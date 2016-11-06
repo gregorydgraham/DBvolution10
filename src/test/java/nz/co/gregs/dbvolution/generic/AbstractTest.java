@@ -131,7 +131,7 @@ public abstract class AbstractTest {
 			databases.add(new Object[]{"MSSQLServer", new MSSQLServerTestDB(host, instance, database, port, username, password)});
 		}
 		if (System.getProperty("testJTDSSQLServer") != null) {
-			databases.add(new Object[]{"JTDSSQLServer", new JTDSSQLServerTestDB(host, instance, database, port, username, password)});
+			databases.add(new Object[]{"JTDSSQLServer", new JTDSSQLServerTestDB(host, instance, database, Integer.parseInt(port), username, password)});
 		}
 //		if (System.getProperty("testJavaDBMemory") != null) {
 //			databases.add(new Object[]{"JavaDBMemory", new JavaDBMemoryDB("localhost", 1527, "dbv", "dbv", "dbv")});
@@ -370,15 +370,15 @@ public abstract class AbstractTest {
 	private static class MSSQLServerTestDB extends MSSQLServerDB {
 
 		public MSSQLServerTestDB(String host, String instance, String database, String port, String username, String password) {
-			super(host, instance, database, Integer.getInteger(port), username, password);
+			super(host, instance, database, Integer.parseInt(port), username, password);
 //			super("dbvtest-mssql.cygjg2wvuyam.ap-southeast-2.rds.amazonaws.com", "dbvtest", "dbvtest", 1433, "dbv", "Testingdbv");
 		}
 	}
 
 	private static class JTDSSQLServerTestDB extends JTDSSQLServerDB {
 
-		public JTDSSQLServerTestDB(String host, String instance, String database, String port, String username, String password) {
-			super(host, instance, database, Integer.getInteger(port), username, password);
+		public JTDSSQLServerTestDB(String host, String instance, String database, int port, String username, String password) {
+			super(host, instance, database, port, username, password);
 //			super("dbvtest-mssql.cygjg2wvuyam.ap-southeast-2.rds.amazonaws.com", "dbvtest", "dbvtest", 1433, "dbv", "Testingdbv");
 		}
 	}

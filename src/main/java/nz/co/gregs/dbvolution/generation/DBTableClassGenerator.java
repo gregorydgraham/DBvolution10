@@ -135,6 +135,7 @@ public class DBTableClassGenerator {
 	 * @param versionNumber versionNumber
 	 * @param pkRecog pkRecog an object that can recognize primary key columns by
 	 * the column name
+	 * @param trimCharColumns
 	 * @throws java.sql.SQLException java.sql.SQLException
 	 * @throws java.io.FileNotFoundException java.io.FileNotFoundException
 	 * @throws java.io.IOException java.io.IOException
@@ -220,6 +221,7 @@ public class DBTableClassGenerator {
 	 * @param packageName packageName
 	 * @param pkRecog pkRecog
 	 * @param fkRecog fkRecog
+	 * @param trimCharColumns
 	 * @return a List of DBTableClass instances representing the tables found on
 	 * the database 1 Database exceptions may be thrown
 	 * @throws java.sql.SQLException java.sql.SQLException
@@ -269,6 +271,7 @@ public class DBTableClassGenerator {
 	 * @param packageName packageName
 	 * @param pkRecog pkRecog
 	 * @param fkRecog fkRecog
+	 * @param trimCharColumns
 	 * @return a List of DBTableClass instances representing the views found on
 	 * the database 1 Database exceptions may be thrown
 	 * @throws java.sql.SQLException java.sql.SQLException

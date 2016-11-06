@@ -231,10 +231,18 @@ public class DBRecursiveQuery<T extends DBRow> {
 			List<PropertyWrapper> propertyWrappers = adapteeRowDefinition.getColumnPropertyWrappers();
 			String separator = "";
 			for (PropertyWrapper propertyWrapper : propertyWrappers) {
-				final String columnName = defn.formatColumnName(propertyWrapper.getDefinition().getColumnName());
-				recursiveColumnNames += separator + columnName;
-				recursiveAliases += separator + columnName + " " + propertyWrapper.getColumnAlias(database);
-				separator = ", ";
+				for (PropertyWrapperDefinition.ColumnAspects entry : propertyWrapper.getColumnAspects(database)) {
+//					String selectableName = entry.selectableName;
+					String alias = entry.columnAlias;
+					final String columnName = defn.formatColumnName(propertyWrapper.columnName());
+					recursiveColumnNames += separator + columnName;
+					recursiveAliases += separator + columnName + " " + alias;
+					separator = ", ";	
+				}
+//				final String columnName = defn.formatColumnName(propertyWrapper.getDefinition().getColumnName());
+//				recursiveColumnNames += separator + columnName;
+//				recursiveAliases += separator + columnName + " " + propertyWrapper.getColumnAlias(database);
+//				separator = ", ";
 			}
 			recursiveColumnNames += separator + defn.getRecursiveQueryDepthColumnName();
 

@@ -116,6 +116,8 @@ public class DBValidation<R extends DBRow> {
 
 	public static class Results extends ArrayList<Result> {
 
+		protected final static long serialVersionUID = 1L;
+		
 		private List<DBQueryRow> rows;
 		private DBRow mapper;
 

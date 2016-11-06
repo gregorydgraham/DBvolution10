@@ -134,8 +134,16 @@ public class DBIntegerEnum<E extends Enum<E> & DBEnumValue<Long>> extends DBEnum
 	 *
 	 * @param permitted	permitted
 	 */
-	public void permittedValues(E... permitted) {
+	@SafeVarargs
+	public final void permittedValues(E... permitted) {
 		this.setOperator(new DBPermittedValuesOperator<Long>(convertToLiteral(permitted)));
+	}
+
+	@SafeVarargs
+	@SuppressWarnings("unchecked")
+	@Override
+	protected final Long[] convertToLiteral(E... enumValues) {
+		return super.convertToLiteral(enumValues);
 	}
 
 	/**
@@ -145,7 +153,8 @@ public class DBIntegerEnum<E extends Enum<E> & DBEnumValue<Long>> extends DBEnum
 	 *
 	 * @param excluded	excluded
 	 */
-	public void excludedValues(E... excluded) {
+	@SafeVarargs
+	public final void excludedValues(E... excluded) {
 		this.setOperator(new DBPermittedValuesOperator<Long>(convertToLiteral(excluded)));
 		negateOperator();
 	}

@@ -13,6 +13,7 @@ import java.util.List;
 import nz.co.gregs.dbvolution.actions.DBMigrate;
 import nz.co.gregs.dbvolution.columns.ColumnProvider;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
+import nz.co.gregs.dbvolution.exceptions.AccidentalCartesianJoinException;
 import nz.co.gregs.dbvolution.exceptions.UnableToAccessDBMigrationFieldException;
 import nz.co.gregs.dbvolution.exceptions.UnableToInstantiateDBMigrationSubclassException;
 import nz.co.gregs.dbvolution.exceptions.UnableToSetDBMigrationFieldException;
@@ -61,18 +62,19 @@ import nz.co.gregs.dbvolution.query.RowDefinition;
  * Field mappings are also added into the initialization block, by replacing the
  * target table's field values with column expressions that map the columns of
  * the source tables to the fields off the target table.</p>
- * 
- * <p>For instance to map the integer A field and the string B field of the AB table to the single string C field of the CD table, you should  use</p>
- * 
+ *
+ * <p>
+ * For instance to map the integer A field and the string B field of the AB
+ * table to the single string C field of the CD table, you should use</p>
+ *
  * <code>
  * <br>
- * public class AB extends DBRow{<br>
- *{@literal @}DBColumn DBInteger a = new DBInteger();<br>
- * {@literal @}DBColumn DBString b = new DBString();<br>
+ * public class AB extends DBRow{<br> {@literal @}DBColumn DBInteger a = new
+ * DBInteger();<br> {@literal @}DBColumn DBString b = new DBString();<br>
  * }<br>
- *<br>
- * public class CD extends DBRow{<br>
- *{@literal @}DBColumn DBString c = new DBString();<br>
+ * <br>
+ * public class CD extends DBRow{<br> {@literal @}DBColumn DBString c = new
+ * DBString();<br>
  * }<br>
  * <br>
  * public class ABCDMapping extends CD{<br>
@@ -82,8 +84,22 @@ import nz.co.gregs.dbvolution.query.RowDefinition;
  * c = new DBString(ab.column(ab.a).append(ab.column(ab.b)));<br>
  * }<br>
  * <br>
- * dbDatabase.getDBMigration(ABCDMapping);
- *</code>
+ * DBMigration&lt;?&gt; migration = dbDatabase.getDBMigration(ABCDMapping);
+ * </code>
+ *
+ * <p>
+ * Retrieve all the rows in the migrated form using {@link #getAllRows() }:</p>
+ * <code>
+ * migration.getAllRows();
+ * </code>
+ *
+ * <p>
+ * Migrate all the rows from one table to the other (does not delete anything)
+ * with {@link #migrateAllRows(nz.co.gregs.dbvolution.DBRow...) }:</p>
+ * <code>
+ * migration.migrateAllRows();
+ * </code>
+ *
  * @author gregorygraham
  * @param <M>
  */
@@ -97,7 +113,23 @@ public class DBMigration<M extends DBRow> extends RowDefinition {
 		this.mapper = migrationMapper;
 	}
 
-	@SuppressWarnings("unchecked")
+	/**
+	 * Gets all the migrated rows using only conditions supplied within the
+	 * supplied DBReport.
+	 *
+	 * <p>
+	 * Use this method to retrieve all rows when the criteria have been supplied
+	 * as part of the DBMigration subclass.
+	 *
+	 * <p>
+	 * If you require extra criteria to be add to the DBReport, limiting the
+	 * results to a subset, use the
+	 * {@link DBReport#getAllRows(nz.co.gregs.dbvolution.DBRow...) other getAllRows method}.
+	 *
+	 * @return a list of DBReport instances representing the results of the report
+	 * query. Database exceptions may be thrown
+	 * @throws java.sql.SQLException java.sql.SQLException
+	 */
 	public List<M> getAllRows() throws SQLException {
 		return getAllRows(database);
 	}
@@ -123,11 +155,14 @@ public class DBMigration<M extends DBRow> extends RowDefinition {
 						}
 					}
 				} else if (value != null && QueryableDatatype.class.isAssignableFrom(value.getClass())) {
-					if ((value instanceof QueryableDatatype) && ((QueryableDatatype) value).hasColumnExpression()) {
-						final DBExpression columnExpression = ((QueryableDatatype) value).getColumnExpression();
-						query.addExpressionColumn(value, columnExpression);
-						if (!columnExpression.isAggregator()) {
-							query.addGroupByColumn(value, columnExpression);
+					final QueryableDatatype<?> qdtValue = (QueryableDatatype) value;
+					if ((value instanceof QueryableDatatype) && qdtValue.hasColumnExpression()) {
+						final DBExpression[] columnExpressions = qdtValue.getColumnExpression();
+						for (DBExpression columnExpression : columnExpressions) {
+							query.addExpressionColumn(value, columnExpression);
+							if (!columnExpression.isAggregator()) {
+								query.addGroupByColumn(value, columnExpression);
+							}
 						}
 					}
 				}
@@ -146,7 +181,7 @@ public class DBMigration<M extends DBRow> extends RowDefinition {
 		return (M) aClass.newInstance();
 	}
 
-	M getMappedTarget(DBQueryRow row) {
+	private M getMappedTarget(DBQueryRow row) {
 		try {
 			M newTarget = createInstanceOfMappingTarget();
 			Field[] fields = mapper.getClass().getFields();
@@ -197,46 +232,23 @@ public class DBMigration<M extends DBRow> extends RowDefinition {
 	Boolean blank = false;
 
 	/**
-	 * Gets all the report rows of the supplied DBReport using only conditions
-	 * supplied within the supplied DBReport.
+	 * Gets all the migrated rows using conditions in the DBMigration and the
+	 * supplied examples.
 	 *
-	 * <p>
-	 * Use this method to retrieve all rows when the criteria have been supplied
-	 * as part of the DBReport subclass.
-	 *
-	 * <p>
-	 * If you require extra criteria to be add to the DBReport, limiting the
-	 * results to a subset, use the
-	 * {@link DBReport#getAllRows(nz.co.gregs.dbvolution.DBDatabase, nz.co.gregs.dbvolution.DBReport, nz.co.gregs.dbvolution.DBRow...) getRows method}.
-	 *
-	 * @param database database
+	 * @param extraExamples extra rows defining additional criteria
 	 * @return a list of DBReport instances representing the results of the report
 	 * query. 1 Database exceptions may be thrown
 	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
-	public List<M> getAllRows(DBDatabase database) throws SQLException {
-		return getAllRows(database, new DBRow[]{});
+	public List<M> getAllRows(DBRow... extraExamples) throws SQLException {
+		return getAllRows(database, extraExamples);
 	}
 
-	/**
-	 * Gets all the report rows of the supplied DBReport using conditions in the
-	 * DBreport and the supplied examples.
-	 *
-	 * <p>
-	 * Use this method to retrieve all rows when the criteria have been supplied
-	 * as part of the DBReport subclass.
-	 *
-	 * @param database database
-	 * @param extraExamples
-	 * @return a list of DBReport instances representing the results of the report
-	 * query. 1 Database exceptions may be thrown
-	 * @throws java.sql.SQLException java.sql.SQLException
-	 */
-	public List<M> getAllRows(DBDatabase database, DBRow... extraExamples) throws SQLException {
+	private List<M> getAllRows(DBDatabase database, DBRow... extraExamples) throws SQLException {
 		DBQuery query = getDBQuery(database, extraExamples);
 //		query.setBlankQueryAllowed(true);
 		List<DBQueryRow> allRows = query.getAllRows();
-		List<M> reportRows = getReportsFromQueryResults(allRows);
+		List<M> reportRows = getMigratedRowsFromQueryResults(allRows);
 		return reportRows;
 	}
 	final List<DBRow> optionalTables = new ArrayList<>();
@@ -296,7 +308,7 @@ public class DBMigration<M extends DBRow> extends RowDefinition {
 	public List<M> getRows(DBDatabase database, DBRow... rows) throws SQLException {
 		DBQuery query = getDBQuery(database, rows);
 		List<DBQueryRow> allRows = query.getAllRows();
-		List<M> reportRows = getReportsFromQueryResults(allRows);
+		List<M> reportRows = getMigratedRowsFromQueryResults(allRows);
 		return reportRows;
 	}
 
@@ -334,11 +346,11 @@ public class DBMigration<M extends DBRow> extends RowDefinition {
 		DBQuery query = getDBQuery(database, rows);
 		List<M> reportRows;
 		List<DBQueryRow> allRows = query.getAllRowsHaving(postQueryConditions);
-		reportRows = getReportsFromQueryResults(allRows);
+		reportRows = getMigratedRowsFromQueryResults(allRows);
 		return reportRows;
 	}
 
-	private List<M> getReportsFromQueryResults(List<DBQueryRow> allRows) {
+	private List<M> getMigratedRowsFromQueryResults(List<DBQueryRow> allRows) {
 		List<M> reportRows = new ArrayList<>();
 		for (DBQueryRow row : allRows) {
 			reportRows.add(getMappedTarget(row));
@@ -356,12 +368,12 @@ public class DBMigration<M extends DBRow> extends RowDefinition {
 	 * <p>
 	 * Generates the SQL query for retrieving the objects but does not execute the
 	 * SQL. Use
-	 * {@link #getAllRows(nz.co.gregs.dbvolution.DBDatabase, nz.co.gregs.dbvolution.DBReport)  the getAllRows method}
+	 * {@link #getAllRows(nz.co.gregs.dbvolution.DBDatabase, nz.co.gregs.dbvolution.DBRow...) the getAllRows method}
 	 * to retrieve the rows.
 	 *
 	 * <p>
 	 * See also
-	 * {@link #getSQLForCount(nz.co.gregs.dbvolution.DBDatabase, nz.co.gregs.dbvolution.DBReport, nz.co.gregs.dbvolution.DBRow...)}
+	 * {@link #getSQLForCount(nz.co.gregs.dbvolution.DBDatabase, nz.co.gregs.dbvolution.DBRow...) }
 	 *
 	 * @param database the database the SQL will be run against.
 	 * @param rows additional conditions to apply to the report.
@@ -397,10 +409,10 @@ public class DBMigration<M extends DBRow> extends RowDefinition {
 	 *
 	 * <p>
 	 * Creates a
-	 * {@link #getSQLForCount(nz.co.gregs.dbvolution.DBDatabase, nz.co.gregs.dbvolution.DBReport, nz.co.gregs.dbvolution.DBRow...)  count query}
+	 * {@link #getSQLForCount(nz.co.gregs.dbvolution.DBDatabase, nz.co.gregs.dbvolution.DBRow...)  count query}
 	 * for the report and conditions and retrieves the number of rows that would
 	 * have been returned had
-	 * {@link #getAllRows(nz.co.gregs.dbvolution.DBDatabase, nz.co.gregs.dbvolution.DBReport)  getAllRows method}
+	 * {@link #getAllRows(nz.co.gregs.dbvolution.DBDatabase, nz.co.gregs.dbvolution.DBRow...) getAllRows method}
 	 * been called.
 	 *
 	 * @param database the database to format the query for.
@@ -489,6 +501,34 @@ public class DBMigration<M extends DBRow> extends RowDefinition {
 		return sortColumns;
 	}
 
+	/**
+	 * Suppresses Cartesian join error protection.
+	 *
+	 * <p>
+	 * DBvolution protects you from accidental Cartesian joins but use this
+	 * function if a Cartesian is required.</p>
+	 *
+	 * <p>
+	 * Cartesian joins occur when there is no connection between 2 (or more)
+	 * tables. Normally all tables are connect by a chain of relationships,
+	 * usually primary key to foreign key.</p>
+	 * <p>
+	 * Sometimes a connection is missed: for instance 2 unrelated tables are being
+	 * compared by price, but the price relating expression has not been added. In
+	 * this case DBvolution will throw an {@link AccidentalCartesianJoinException}
+	 * and abort the query. This exception avoids creating a probably massive
+	 * dataset that will reduce database and network performance
+	 * significantly.</p>
+	 * <p>
+	 * However there are valid cases for a Cartesian join: finding all possible
+	 * combinations of cake and coffee for instance.</p>
+	 * <p>
+	 * If you are sure you need a Cartesian join, use this method to avoid the
+	 * error-checking and the {@link AccidentalCartesianJoinException}</p>
+	 *
+	 * @param setting True if you need a Cartesian join in this DBMigration.
+	 * @return this DBMigration object
+	 */
 	public DBMigration<M> setCartesianJoinAllowed(Boolean setting) {
 		cartesian = setting;
 		return this;
@@ -507,7 +547,8 @@ public class DBMigration<M extends DBRow> extends RowDefinition {
 	public DBValidation.Results validateAllRows(DBRow... extraExamples) throws SQLException {
 
 		DBValidation<M> validate = new DBValidation<>(this, this.mapper, extraExamples);
-		return validate.validate(database);	}
+		return validate.validate(database);
+	}
 
 	QueryDetails getQueryDetails() {
 		return this.getDBQuery(database).getQueryDetails();
