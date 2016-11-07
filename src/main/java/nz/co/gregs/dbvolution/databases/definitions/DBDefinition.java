@@ -835,6 +835,16 @@ public abstract class DBDefinition {
 
 	/**
 	 * Used during the creation of an ANSI join to add an optional table using a
+	 * Right Outer Join.
+	 *
+	 * @return the default implementation returns " RIGHT OUTER JOIN "
+	 */
+	public String beginRightOuterJoin() {
+		return " RIGHT OUTER JOIN ";
+	}
+
+	/**
+	 * Used during the creation of an ANSI join to add an optional table using a
 	 * Full Outer Join.
 	 *
 	 * @return the default implementation returns " FULL OUTER JOIN ".
@@ -4548,29 +4558,6 @@ public abstract class DBDefinition {
 	}
 
 	/**
-	 * Adapts the query to work for a database that does not support full outer
-	 * join queries.
-	 *
-	 * <p>
-	 * Full outer join queries in this sense use a FULL OUTER join for ALL joins
-	 * in the query.
-	 *
-	 * <p>
-	 * The standard implementation replaces the query with a LEFT OUTER join query
-	 * UNIONed with a RIGHT OUTER join query.
-	 *
-	 * @param querySQL
-	 * @param options
-	 * @return a fake full outer join query for databases that don't support FULL
-	 * OUTER joins
-	 */
-	public String doWrapQueryToFakeFullOuterJoin(String querySQL, QueryOptions options) {
-		return "" + querySQL.replaceAll(" FULL OUTER ", " LEFT OUTER ").replaceFirst("; *$", "")
-				+ " UNION DISTINCT "
-				+ querySQL.replaceAll(" FULL OUTER ", " RIGHT OUTER ");
-	}
-
-	/**
 	 * The value used for TRUE boolean values.
 	 *
 	 * <p>
@@ -4635,6 +4622,6 @@ public abstract class DBDefinition {
 	}
 
 	public String getUnionDistinctOperator() {
-		return " UNION  ";
+		return " UNION DISTINCT  ";
 	}
 }

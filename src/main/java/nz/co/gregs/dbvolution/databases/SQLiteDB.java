@@ -92,6 +92,12 @@ public class SQLiteDB extends DBDatabase implements SupportsDateRepeatDatatypeFu
 	public boolean supportsFullOuterJoin() {
 		return false;
 	}
+	
+	@Override
+	protected boolean supportsRightOuterJoinNatively() {
+		return false;
+	}
+
 
 	@Override
 	protected Connection getConnectionFromDriverManager() throws SQLException {

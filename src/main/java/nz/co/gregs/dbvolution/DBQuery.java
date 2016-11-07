@@ -589,32 +589,41 @@ public class DBQuery {
 			if (queryState.isFullOuterJoin()&&
 					!database.supportsFullOuterJoinNatively()) {
 				sqlString = getSQLForFakeFullOuterJoin(sqlString, details, options, queryType);
-//				sqlString = defn.doWrapQueryToFakeFullOuterJoin(sqlString, options);
 			}
 		}
 		return sqlString;
 	}
 	
-		private String getSQLForFakeFullOuterJoin(String existingSQL, QueryDetails details, QueryOptions options, QueryType queryType) {
-		DBDefinition defn = this.database.getDefinition();
-		String sqlForQuery = "";
-		String unionOperator = "";
-		Pattern replaceSelect = Pattern.compile("SELECT .* FROM", Pattern.DOTALL|Pattern.MULTILINE);
-		for(DBRow tab: details.getAllQueryTables()){
-			DBQuery query = database.getDBQuery(tab);
-			List<DBRow> optTabs = new ArrayList<>(details.getAllQueryTables());
-			optTabs.remove(tab);
-			for(DBRow opt: optTabs){
-				query.addOptional(opt);
-			}
-			String sql = query.getSQLForQuery(queryType, options);
-			sql = sql.replaceAll("; *$", " ");
-			sql = replaceSelect.matcher(sql).replaceAll(details.getSelectClause()+" FROM");
-			sqlForQuery += unionOperator+ sql;
-			unionOperator = defn.getUnionDistinctOperator();
-		}
-		return sqlForQuery+defn.endSQLStatement();
+/**
+	 * Adapts the query to work for a database that does not support full outer
+	 * join queries.
+	 *
+	 * <p>
+	 * Full outer join queries in this sense use a FULL OUTER join for ALL joins
+	 * in the query.
+	 *
+	 * <p>
+	 * The standard implementation replaces the query with a LEFT OUTER join query
+	 * UNIONed with a RIGHT OUTER join query.
+	 *
+	 * @param querySQL
+	 * @param options
+	 * @return a fake full outer join query for databases that don't support FULL
+	 * OUTER joins
+	 */
+	private String getSQLForFakeFullOuterJoin(String existingSQL, QueryDetails details, QueryOptions options, QueryType queryType) {
+		if (this.database.supportsRightOuterJoinNatively()) {
+			DBDefinition defn = this.database.getDefinition();
+			String sqlForQuery = "";
+			String unionOperator = defn.getUnionDistinctOperator();
+
+			sqlForQuery = existingSQL.replaceAll("; *$", " ").replaceAll(defn.beginFullOuterJoin(), defn.beginLeftOuterJoin());
+			sqlForQuery += unionOperator + existingSQL.replaceAll(defn.beginFullOuterJoin(), defn.beginRightOuterJoin());
+			return sqlForQuery;
 //		return defn.doWrapQueryToFakeFullOuterJoin(existingSQL, options);
+		} else {
+			throw new FullAndRightOuterJoinNotSupportedException();
+		}
 	}
 
 

@@ -1467,6 +1467,10 @@ public abstract class DBDatabase implements Cloneable {
 	protected boolean supportsFullOuterJoinNatively() {
 		return true;
 	}
+	
+	protected boolean supportsRightOuterJoinNatively() {
+		return true;
+	}
 
 	/**
 	 * Get The Rows For The Supplied DBReport Constrained By The Examples.
