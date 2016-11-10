@@ -17,6 +17,7 @@ package nz.co.gregs.dbvolution;
 
 import java.sql.SQLException;
 import java.util.List;
+
 import java.util.SortedSet;
 import static org.hamcrest.Matchers.*;
 import nz.co.gregs.dbvolution.example.CarCompany;
@@ -56,27 +57,36 @@ public class DBQueryTest extends AbstractTest {
 
 	@Test
 	public void testQueryExecution() throws SQLException {
-		DBQuery dbQuery = database.getDBQuery();
-		CarCompany carCompany = new CarCompany();
-		carCompany.name.permittedValues("TOYOTA");
-		dbQuery.add(carCompany);
-		dbQuery.add(new Marque());
+		Object[][] tests = new Object[][]{
+			{"TOYOTA", 2, new long[]{1l, 4896300l}},
+			{"TATA", 0, null},
+			{"Ford", 1, 4893090}
+		};
+		for (Object[] test : tests) {
+			DBQuery dbQuery = database.getDBQuery();
+			CarCompany carCompany = new CarCompany();
+			carCompany.name.permittedValues(test[0]);
+			dbQuery.add(carCompany);
+			dbQuery.add(new Marque());
 
-		List<DBQueryRow> results = dbQuery.getAllRows();
-		dbQuery.print();
-		assertEquals(2, results.size());
+			List<DBQueryRow> results = dbQuery.getAllRows();
+			dbQuery.print();
+			assertEquals(test[1], results.size());
 
-		for (DBQueryRow queryRow : results) {
+			for (DBQueryRow queryRow : results) {
 
-			CarCompany carCo = queryRow.get(carCompany);
-			String carCoName = carCo.name.toString();
+				CarCompany carCo = queryRow.get(carCompany);
+				String carCoName = carCo.name.toString();
 
-			Marque marque = queryRow.get(new Marque());
-			Long marqueUID = marque.getUidMarque().getValue();
+				Marque marque = queryRow.get(new Marque());
+				Long marqueUID = marque.getUidMarque().getValue();
 
-			System.out.println(carCoName + ": " + marqueUID);
-			assertTrue(carCoName.equals("TOYOTA"));
-			assertTrue(marqueUID == 1 || marqueUID == 4896300);
+				System.out.println(carCoName + ": " + marqueUID);
+				assertTrue(carCoName.equals(test[0]));
+				if (test[0] == "TOYOTA") {
+					assertTrue(marqueUID == 1 || marqueUID == 4896300);
+				}
+			}
 		}
 	}
 
