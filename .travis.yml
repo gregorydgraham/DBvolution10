@@ -1,3 +1,5 @@
 language: java
 ## YAML Template.
 ---
+script:
+  - jdk_switcher use oraclejdk7
