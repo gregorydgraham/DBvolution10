@@ -4,7 +4,7 @@
  
 	<groupId>nz.co.gregs</groupId>
 	<artifactId>dbvolution7</artifactId>
-	<version>0.9.0</version>
+	<version>0.9.0-SNAPSHOT</version>
 	<packaging>jar</packaging>
     
 	<name>DBvolution 7</name>
@@ -34,7 +34,7 @@
 		<connection>scm:git:https://github.com/gregorydgraham/DBvolution.git</connection>
 		<developerConnection>scm:git:https://github.com/gregorydgraham/DBvolution.git</developerConnection>
 		<url>https://github.com/gregorydgraham/DBvolution.git</url>
-		<tag>dbvolution7-0.9.0</tag>
+		<tag>HEAD</tag>
 	</scm>
 	<developers>
 		<developer>
@@ -305,7 +305,9 @@
 								<testPostgresSQLRDS>true</testPostgresSQLRDS>
 								<testOracle>true</testOracle>
 								<testMSSQLServer>true</testMSSQLServer>
-								testNuo>true</testNuo testJavaDB>true</testJavaDB </systemPropertyVariables>
+								testNuo>true</testNuo
+								testJavaDB>true</testJavaDB
+							</systemPropertyVariables>
 							<includes>
 								<include>**/*.java</include>
 							</includes>
@@ -328,12 +330,12 @@
 							<systemPropertyVariables>
 								<testSQLite>true</testSQLite>
 								<dbv.url>${sqlite.url}</dbv.url>
-								<dbv.host />
-								<dbv.port />
-								<dbv.instance />
+								<dbv.host></dbv.host>
+								<dbv.port></dbv.port>
+								<dbv.instance></dbv.instance>
 								<dbv.username>${sqlite.username}</dbv.username>
 								<dbv.password>${sqlite.password}</dbv.password>
-								<dbv.schema />
+								<dbv.schema></dbv.schema>
 							</systemPropertyVariables>
 							<includes>
 								<include>**/*.java</include>
