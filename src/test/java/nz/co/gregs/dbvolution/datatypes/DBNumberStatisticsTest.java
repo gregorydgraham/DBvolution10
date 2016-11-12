@@ -96,6 +96,8 @@ public class DBNumberStatisticsTest extends AbstractTest {
 
 	public static class StatsTest extends Marque {
 
+		private static final long serialVersionUID = 1L;
+
 		public StatsTest(){}
 		
 		@DBColumn

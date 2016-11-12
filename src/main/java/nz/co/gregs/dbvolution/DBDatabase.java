@@ -899,6 +899,62 @@ public abstract class DBDatabase implements Cloneable {
 	}
 
 	/**
+	 * Creates tables on the database based on the DBRows.
+	 *
+	 * <p>
+	 * Implemented to facilitate testing, this method creates actual tables on
+	 * the database using the default data types supplied by the fields of the
+	 * DBRows.
+	 *
+	 * @param newTables the tables to create
+	 * @throws AutoCommitActionDuringTransactionException thrown if this action is
+	 * used during a DBTransaction or DBScript
+	 */
+		
+	public void createTablesNoExceptions(DBRow... newTables) {
+		for (DBRow tab : newTables){
+			try{
+				createTable(tab, false);
+			} catch (SQLException| AutoCommitActionDuringTransactionException ex){
+			}
+		}
+	}
+	
+	/**
+	 * Creates tables on the database based on the DBRows, and creates the
+	 * required database foreign key constraints.
+	 *
+	 * <p>
+	 * Implemented to facilitate testing, this method creates actual tables on
+	 * the database using the default data types supplied by the fields of the
+	 * DBRow.
+	 *
+	 * <p>
+	 * DBvolution does not require actual foreign keys constraints to exist in the
+	 * database but there are some advantages in terms of data integrity and
+	 * schema transparency.
+	 *
+	 * <p>
+	 * Unfortunately there are also problems caused by creating foreign key
+	 * constraints: insertion order sensitivity for instance.
+	 *
+	 * <p>
+	 * Personally I prefer the foreign keys to exist, however database constraints
+	 * have been described as the "ambulance at the bottom of the cliff" so you
+	 * might be better off without them.
+	 *
+	 * @param newTables table
+	 *
+	 */public void createTablesWithForeignKeysNoExceptions(DBRow... newTables) {
+		for (DBRow tab : newTables) {
+			try {
+				createTable(tab, true);
+			} catch (SQLException | AutoCommitActionDuringTransactionException ex) {
+			}
+		}
+	}
+
+	/**
 	 * Creates a table on the database based on the DBRow.
 	 *
 	 * <p>

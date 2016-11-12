@@ -26,7 +26,6 @@ import java.awt.Dimension;
 import java.io.PrintStream;
 import java.sql.*;
 import java.util.*;
-import java.util.regex.Pattern;
 import javax.swing.JFrame;
 
 import nz.co.gregs.dbvolution.annotations.DBForeignKey;
@@ -269,14 +268,14 @@ public class DBQuery {
 	}
 
 	String getANSIJoinClause(DBDatabase database, QueryState queryState, DBRow newTable, List<DBRow> previousTables, QueryOptions options) {
-		List<String> joinClauses = new ArrayList<String>();
-		List<String> conditionClauses = new ArrayList<String>();
+		List<String> joinClauses = new ArrayList<>();
+		List<String> conditionClauses = new ArrayList<>();
 		String lineSep = System.getProperty("line.separator");
 		DBDefinition defn = database.getDefinition();
 		boolean isLeftOuterJoin = false;
 		boolean isFullOuterJoin = false;
 
-		final ArrayList<DBRow> preExistingTables = new ArrayList<DBRow>();
+		final ArrayList<DBRow> preExistingTables = new ArrayList<>();
 		preExistingTables.addAll(previousTables);
 		preExistingTables.addAll(details.getAssumedQueryTables());
 		
@@ -317,7 +316,7 @@ public class DBQuery {
 		// Add all the expressions we can
 		if (previousTables.size() > 0) {
 			for (BooleanExpression expr : queryState.getRemainingExpressions()) {
-				Set<DBRow> tablesInvolved = new HashSet<DBRow>(expr.getTablesInvolved());
+				Set<DBRow> tablesInvolved = new HashSet<>(expr.getTablesInvolved());
 				if (tablesInvolved.contains(newTable)) {
 					tablesInvolved.remove(newTable);
 				}
@@ -404,14 +403,14 @@ public class DBQuery {
 			boolean groupByIsRequired = false;
 			String groupByColumnIndex = defn.beginGroupByClause();
 			String groupByColumnIndexSeparator = "";
-			HashMap<PropertyWrapperDefinition, Integer> indexesOfSelectedColumns = new HashMap<PropertyWrapperDefinition, Integer>();
-			HashMap<DBExpression, Integer> indexesOfSelectedExpressions = new HashMap<DBExpression, Integer>();
+			HashMap<PropertyWrapperDefinition, Integer> indexesOfSelectedColumns = new HashMap<>();
+			HashMap<DBExpression, Integer> indexesOfSelectedExpressions = new HashMap<>();
 			StringBuilder fromClause = new StringBuilder().append(defn.beginFromClause());
-			List<DBRow> joinedTables = new ArrayList<DBRow>();
+			List<DBRow> joinedTables = new ArrayList<>();
 			final String initialWhereClause = new StringBuilder().append(defn.beginWhereClause()).append(defn.getWhereClauseBeginningCondition(options)).toString();
 			StringBuilder whereClause = new StringBuilder(initialWhereClause);
 			StringBuilder groupByClause = new StringBuilder().append(defn.beginGroupByClause());
-			String havingClause = "";
+			String havingClause;
 			String lineSep = System.getProperty("line.separator");
 //			DBRow startQueryFromTable = requiredQueryTables.isEmpty() ? allQueryTables.get(0) : requiredQueryTables.get(0);
 			List<DBRow> sortedQueryTables = options.isCartesianJoinAllowed()
@@ -614,7 +613,7 @@ public class DBQuery {
 	private String getSQLForFakeFullOuterJoin(String existingSQL, QueryDetails details, QueryOptions options, QueryType queryType) {
 		if (this.database.supportsRightOuterJoinNatively()) {
 			DBDefinition defn = this.database.getDefinition();
-			String sqlForQuery = "";
+			String sqlForQuery;
 			String unionOperator = defn.getUnionDistinctOperator();
 
 			sqlForQuery = existingSQL.replaceAll("; *$", " ").replaceAll(defn.beginFullOuterJoin(), defn.beginLeftOuterJoin());
@@ -731,26 +730,19 @@ public class DBQuery {
 
 		DBQueryRow queryRow;
 
-		DBStatement dbStatement = getDatabase().getDBStatement();
-		try {
-			ResultSet resultSet = getResultSetForSQL(dbStatement, resultSQL);
-			try {
-				while (resultSet.next()) {
+		try (DBStatement dbStatement = getDatabase().getDBStatement(); 
+				ResultSet resultSet = getResultSetForSQL(dbStatement, resultSQL)) {
+			while (resultSet.next()) {
 //						&& ((getDatabase().getDefinition().supportsPagingNatively(options) || options.getRowLimit() < 0) // No paging required or it is natively supported
 //						|| (!database.getDefinition().supportsPagingNatively(options) && results.size() < options.getRowLimit()) // paging not supported and required so truncate it
 //						)) {
-					queryRow = new DBQueryRow(this);
+queryRow = new DBQueryRow(this);
 
-					setExpressionColumns(resultSet, queryRow);
+setExpressionColumns(resultSet, queryRow);
 
-					setQueryRowFromResultSet(resultSet, queryRow, details.isGroupedQuery());
-					results.add(queryRow);
-				}
-			} finally {
-				resultSet.close();
+setQueryRowFromResultSet(resultSet, queryRow, details.isGroupedQuery());
+results.add(queryRow);
 			}
-		} finally {
-			dbStatement.close();
 		}
 		for (DBQueryRow result : results) {
 			List<DBRow> rows = result.getAll();
@@ -1051,7 +1043,7 @@ public class DBQuery {
 	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
 	public <R extends DBRow> List<R> getAllInstancesOf(R exemplar) throws SQLException {
-		List<R> arrayList = new ArrayList<R>();
+		List<R> arrayList = new ArrayList<>();
 		final QueryOptions options = details.getOptions();
 		if (this.needsResults(options)) {
 			getAllRowsInternal(options);
@@ -1221,19 +1213,13 @@ public class DBQuery {
 		} else {
 			Long result = 0L;
 
-			DBStatement dbStatement = getDatabase().getDBStatement();
-			try {
+			try (DBStatement dbStatement = getDatabase().getDBStatement()) {
 				final String sqlForCount = this.getSQLForCount();
-				ResultSet resultSet = dbStatement.executeQuery(sqlForCount);
-				try {
+				try (ResultSet resultSet = dbStatement.executeQuery(sqlForCount)) {
 					while (resultSet.next()) {
 						result = resultSet.getLong(1);
 					}
-				} finally {
-					resultSet.close();
 				}
-			} finally {
-				dbStatement.close();
 			}
 			return result;
 		}
@@ -1340,7 +1326,7 @@ public class DBQuery {
 
 		sortOrderColumns = Arrays.copyOf(sortColumns, sortColumns.length);
 
-		sortOrder = new ArrayList<PropertyWrapper>();
+		sortOrder = new ArrayList<>();
 		PropertyWrapper prop;
 		for (ColumnProvider col : sortColumns) {
 			prop = col.getColumn().getPropertyWrapper();
@@ -1377,7 +1363,7 @@ public class DBQuery {
 	public DBQuery addToSortOrder(ColumnProvider... sortColumns) {
 		if (sortColumns != null) {
 			blankResults();
-			List<ColumnProvider> sortOrderColumnsList = new LinkedList<ColumnProvider>();
+			List<ColumnProvider> sortOrderColumnsList = new LinkedList<>();
 			if (sortOrderColumns != null) {
 				sortOrderColumnsList.addAll(Arrays.asList(sortOrderColumns));
 			}
@@ -1653,9 +1639,9 @@ public class DBQuery {
 	 */
 	public SortedSet<DBRow> getRelatedTables() throws UnableToInstantiateDBRowSubclassException {
 		SortedSet<Class<? extends DBRow>> resultClasses;
-		resultClasses = new TreeSet<Class<? extends DBRow>>(new DBRowClassNameComparator());
+		resultClasses = new TreeSet<>(new DBRowClassNameComparator());
 
-		SortedSet<DBRow> result = new TreeSet<DBRow>(new DBRowNameComparator());
+		SortedSet<DBRow> result = new TreeSet<>(new DBRowNameComparator());
 		for (DBRow table : details.getAllQueryTables()) {
 			SortedSet<Class<? extends DBRow>> allRelatedTables = table.getRelatedTables();
 			for (Class<? extends DBRow> connectedTable : allRelatedTables) {
@@ -1695,7 +1681,7 @@ public class DBQuery {
 	 */
 	@SuppressWarnings("unchecked")
 	public SortedSet<DBRow> getReferencedTables() {
-		SortedSet<DBRow> result = new TreeSet<DBRow>(new DBRowNameComparator());
+		SortedSet<DBRow> result = new TreeSet<>(new DBRowNameComparator());
 		for (DBRow table : details.getAllQueryTables()) {
 			Set<Class<? extends DBRow>> allRelatedTables = table.getReferencedTables();
 			for (Class<? extends DBRow> connectedTable : allRelatedTables) {
@@ -1772,9 +1758,48 @@ public class DBQuery {
 	 * @throws UnableToInstantiateDBRowSubclassException
 	 */
 	public DBQuery addAllConnectedTables() throws UnableToInstantiateDBRowSubclassException {
-		List<DBRow> tablesToAdd = new ArrayList<DBRow>();
+		List<DBRow> tablesToAdd = new ArrayList<>();
 		for (DBRow table : details.getAllQueryTables()) {
 			Set<Class<? extends DBRow>> allConnectedTables = table.getAllConnectedTables();
+//			for (Class<? extends DBRow> ConnectedTable : allConnectedTables) {
+//				tablesToAdd.add(ConnectedTable.newInstance());
+			for (Class<? extends DBRow> connectedTable : allConnectedTables) {
+				try {
+					tablesToAdd.add(connectedTable.newInstance());
+				} catch (InstantiationException ex) {
+					throw new UnableToInstantiateDBRowSubclassException(connectedTable, ex);
+				} catch (IllegalAccessException ex) {
+					throw new UnableToInstantiateDBRowSubclassException(connectedTable, ex);
+				}
+			}
+		}
+		add(tablesToAdd.toArray(new DBRow[]{}));
+
+		return this;
+	}
+
+	/**
+	 * Search the classpath and add any DBRow classes that are connected to the
+	 * DBRows within this DBQuery
+	 *
+	 * <p>
+	 * This method automatically enlarges the query by finding all associated
+	 * DBRow classes and adding them to the query.
+	 *
+	 * <p>
+	 * In a sense this expands the query out by one level of indirection.
+	 *
+	 * <p>
+	 * N.B. for any realistic database, repeatedly calling this method will
+	 * quickly make the query impossibly large.
+	 *
+	 * @return this DBQuery instance
+	 * @throws UnableToInstantiateDBRowSubclassException
+	 */
+	public DBQuery addAllConnectedBaseTables() throws UnableToInstantiateDBRowSubclassException {
+		List<DBRow> tablesToAdd = new ArrayList<>();
+		for (DBRow table : details.getAllQueryTables()) {
+			Set<Class<? extends DBRow>> allConnectedTables = table.getAllConnectedBaseTables();
 //			for (Class<? extends DBRow> ConnectedTable : allConnectedTables) {
 //				tablesToAdd.add(ConnectedTable.newInstance());
 			for (Class<? extends DBRow> connectedTable : allConnectedTables) {
@@ -1811,8 +1836,8 @@ public class DBQuery {
 	 * @throws UnableToInstantiateDBRowSubclassException
 	 */
 	public DBQuery addAllConnectedTablesAsOptional() throws UnableToInstantiateDBRowSubclassException {
-		Set<DBRow> tablesToAdd = new HashSet<DBRow>();
-		List<Class<DBRow>> alreadyAddedClasses = new ArrayList<Class<DBRow>>();
+		Set<DBRow> tablesToAdd = new HashSet<>();
+		List<Class<DBRow>> alreadyAddedClasses = new ArrayList<>();
 		for (DBRow table : details.getAllQueryTables()) {
 			@SuppressWarnings("unchecked")
 			Class<DBRow> aClass = (Class<DBRow>) table.getClass();
@@ -1820,6 +1845,57 @@ public class DBQuery {
 		}
 		for (DBRow table : details.getAllQueryTables()) {
 			Set<Class<? extends DBRow>> allRelatedTables = table.getAllConnectedTables();
+			for (Class<? extends DBRow> relatedTable : allRelatedTables) {
+//				DBRow newInstance = relatedTable.newInstance();
+				DBRow newInstance;
+				try {
+					newInstance = relatedTable.newInstance();
+				} catch (InstantiationException ex) {
+					throw new UnableToInstantiateDBRowSubclassException(relatedTable, ex);
+				} catch (IllegalAccessException ex) {
+					throw new UnableToInstantiateDBRowSubclassException(relatedTable, ex);
+				}
+				@SuppressWarnings("unchecked")
+				final Class<DBRow> newInstanceClass = (Class<DBRow>) newInstance.getClass();
+				if (!alreadyAddedClasses.contains(newInstanceClass)) {
+					tablesToAdd.add(newInstance);
+					alreadyAddedClasses.add(newInstanceClass);
+				}
+			}
+		}
+		addOptional(tablesToAdd.toArray(new DBRow[]{}));
+
+		return this;
+	}
+
+	/**
+	 * Search the classpath and add, as optional, any DBRow classes that reference
+	 * the DBRows within this DBQuery
+	 *
+	 * <p>
+	 * This method automatically enlarges the query by finding all associated
+	 * DBRow classes and adding them to the query as optional tables.
+	 *
+	 * <p>
+	 * In a sense this expands the query out by one level of indirection.
+	 *
+	 * <p>
+	 * N.B. for any realistic database, repeatedly calling this method will
+	 * quickly make the query impossibly large.
+	 *
+	 * @return this DBQuery instance
+	 * @throws UnableToInstantiateDBRowSubclassException
+	 */
+	public DBQuery addAllConnectedBaseTablesAsOptional() throws UnableToInstantiateDBRowSubclassException {
+		Set<DBRow> tablesToAdd = new HashSet<>();
+		List<Class<DBRow>> alreadyAddedClasses = new ArrayList<>();
+		for (DBRow table : details.getAllQueryTables()) {
+			@SuppressWarnings("unchecked")
+			Class<DBRow> aClass = (Class<DBRow>) table.getClass();
+			alreadyAddedClasses.add(aClass);
+		}
+		for (DBRow table : details.getAllQueryTables()) {
+			Set<Class<? extends DBRow>> allRelatedTables = table.getAllConnectedBaseTables();
 			for (Class<? extends DBRow> relatedTable : allRelatedTables) {
 //				DBRow newInstance = relatedTable.newInstance();
 				DBRow newInstance;
@@ -1859,8 +1935,8 @@ public class DBQuery {
 	 * @throws UnableToInstantiateDBRowSubclassException
 	 */
 	public DBQuery addAllConnectedTablesAsOptionalWithoutInternalRelations() throws UnableToInstantiateDBRowSubclassException {
-		Set<DBRow> tablesToAdd = new HashSet<DBRow>();
-		List<Class<DBRow>> alreadyAddedClasses = new ArrayList<Class<DBRow>>();
+		Set<DBRow> tablesToAdd = new HashSet<>();
+		List<Class<DBRow>> alreadyAddedClasses = new ArrayList<>();
 		final List<DBRow> allQueryTables = details.getAllQueryTables();
 		DBRow[] originalTables = allQueryTables.toArray(new DBRow[]{});
 
@@ -1917,7 +1993,7 @@ public class DBQuery {
 		if (this.needsResults(options)) {
 			getAllRowsInternal(options);
 		}
-		List<DBQueryRow> returnList = new ArrayList<DBQueryRow>();
+		List<DBQueryRow> returnList = new ArrayList<>();
 		for (DBQueryRow row : results) {
 			if (row.get(instance) == instance) {
 				returnList.add(row);
@@ -2023,7 +2099,7 @@ public class DBQuery {
 			int stopIndex = rowLimit * (pageNumber + 1);
 			stopIndex = (stopIndex >= results.size() ? results.size() : stopIndex);
 			if (stopIndex - startIndex < 1) {
-				return new ArrayList<DBQueryRow>();
+				return new ArrayList<>();
 			} else {
 				return results.subList(startIndex, stopIndex);
 			}
@@ -2306,13 +2382,13 @@ public class DBQuery {
 
 		Graph<QueryGraphNode, DBExpression> jungGraph = queryGraph.getJungGraph();
 
-		FRLayout<QueryGraphNode, DBExpression> layout = new FRLayout<QueryGraphNode, DBExpression>(jungGraph);
+		FRLayout<QueryGraphNode, DBExpression> layout = new FRLayout<>(jungGraph);
 		layout.setSize(new Dimension(550, 400));
 
-		VisualizationViewer<QueryGraphNode, DBExpression> vv = new VisualizationViewer<QueryGraphNode, DBExpression>(layout);
+		VisualizationViewer<QueryGraphNode, DBExpression> vv = new VisualizationViewer<>(layout);
 		vv.setPreferredSize(new Dimension(600, 480));
 
-		DefaultModalGraphMouse<QueryGraphNode, String> gm = new DefaultModalGraphMouse<QueryGraphNode, String>();
+		DefaultModalGraphMouse<QueryGraphNode, String> gm = new DefaultModalGraphMouse<>();
 		gm.setMode(ModalGraphMouse.Mode.PICKING);
 		vv.setGraphMouse(gm);
 
@@ -2386,7 +2462,7 @@ public class DBQuery {
 	 */
 	@SuppressWarnings({"unchecked", "empty-statement"})
 	public List<DBQueryRow> getDistinctCombinationsOfColumnValues(Object... fieldsOfProvidedRows) throws AccidentalBlankQueryException, SQLException {
-		List<DBQueryRow> returnList = new ArrayList<DBQueryRow>();
+		List<DBQueryRow> returnList = new ArrayList<>();
 
 		DBQuery distinctQuery = getDatabase().getDBQuery();
 		for (DBRow row : details.getRequiredQueryTables()) {
@@ -2446,7 +2522,7 @@ public class DBQuery {
 	 * @return all DBRows used in this DBQuery
 	 */
 	public List<DBRow> getAllTables() {
-		ArrayList<DBRow> arrayList = new ArrayList<DBRow>();
+		ArrayList<DBRow> arrayList = new ArrayList<>();
 		arrayList.addAll(details.getAllQueryTables());
 		return arrayList;
 	}
@@ -2457,7 +2533,7 @@ public class DBQuery {
 	 * @return all DBRows required by this DBQuery
 	 */
 	public List<DBRow> getRequiredTables() {
-		ArrayList<DBRow> arrayList = new ArrayList<DBRow>();
+		ArrayList<DBRow> arrayList = new ArrayList<>();
 		arrayList.addAll(details.getRequiredQueryTables());
 		return arrayList;
 	}
@@ -2468,7 +2544,7 @@ public class DBQuery {
 	 * @return all DBRows optionally returned by this DBQuery
 	 */
 	public List<DBRow> getOptionalTables() {
-		ArrayList<DBRow> arrayList = new ArrayList<DBRow>();
+		ArrayList<DBRow> arrayList = new ArrayList<>();
 		arrayList.addAll(details.getOptionalQueryTables());
 		return arrayList;
 	}
@@ -2636,18 +2712,18 @@ public class DBQuery {
 
 		private QueryGraph graph;
 		private final List<BooleanExpression> remainingExpressions;
-		private final List<BooleanExpression> consumedExpressions = new ArrayList<BooleanExpression>();
-		private final List<String> requiredConditions = new ArrayList<String>();
-		private final List<String> optionalConditions = new ArrayList<String>();
+		private final List<BooleanExpression> consumedExpressions = new ArrayList<>();
+		private final List<String> requiredConditions = new ArrayList<>();
+		private final List<String> optionalConditions = new ArrayList<>();
 		private boolean queryIsFullOuterJoin=true;
 		private boolean queryIsLeftOuterJoin=true;
 
 		QueryState(DBQuery query, DBDatabase database) {
-			this.remainingExpressions = new ArrayList<BooleanExpression>(query.getConditions());
+			this.remainingExpressions = new ArrayList<>(query.getConditions());
 		}
 
 		private Iterable<BooleanExpression> getRemainingExpressions() {
-			return new ArrayList<BooleanExpression>(remainingExpressions);
+			return new ArrayList<>(remainingExpressions);
 		}
 
 		private void consumeExpression(BooleanExpression expr) {

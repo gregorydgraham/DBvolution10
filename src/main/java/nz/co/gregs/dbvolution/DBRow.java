@@ -1043,6 +1043,39 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 	}
 
 	/**
+	 * Returns all the DBRow subclasses referenced by this class with foreign keys
+	 *
+	 * <p>
+	 * Similar to {@link #getAllConnectedTables() } but where this class directly
+	 * references the external DBRow subclass with an {@code @DBForeignKey}
+	 * annotation.
+	 *
+	 * <p>
+	 * That is to say: where A is this class, returns a List of B such that A
+	 * =&gt; B
+	 *
+	 * @return A set of DBRow subclasses referenced with {@code @DBForeignKey}
+	 *
+	 */
+	@SuppressWarnings("unchecked")
+	public SortedSet<Class<? extends DBRow>> getReferencedBaseTables() {
+		synchronized (referencedTables) {
+			if (referencedTables.isEmpty()) {
+				List<PropertyWrapper> props = getWrapper().getForeignKeyPropertyWrappers();
+				for (PropertyWrapper prop : props) {
+					final Class<? extends DBRow> referencedClass = prop.referencedClass();
+					if(referencedClass.getSuperclass().equals(DBRow.class)){
+						referencedTables.add(referencedClass);
+					}
+				}
+			}
+		}
+		final SortedSet<Class<? extends DBRow>> returnSet = new TreeSet<>(new DBRow.ClassNameComparator());
+		returnSet.addAll(referencedTables);
+		return returnSet;
+	}
+
+	/**
 	 * Creates a set of all DBRow subclasses that are connected to this class.
 	 *
 	 * <p>
@@ -1061,6 +1094,32 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 		final SortedSet<Class<? extends DBRow>> relatedTables = new TreeSet<>(new DBRow.ClassNameComparator());
 		relatedTables.addAll(getRelatedTables());
 		relatedTables.addAll(getReferencedTables());
+		return relatedTables;
+	}
+
+	/**
+	 * Creates a set of all DBRow direct subclasses that are connected to this class.
+	 *
+	 * <p>
+	 * Uses {@link #getReferencedBaseTables() } and {@link #getRelatedBaseTables() } to
+	 * produce a complete list of base tables connected by a foreign key to this DBRow
+	 * class.
+	 *
+	 * <p>
+	 * That is to say: where A is this class, returns a List of B such that B
+	 * =&gt; A or A =&gt; B
+	 * 
+	 * <p>
+	 * Base tables are direct subclasses of DBRow, generally this means they
+	 * represent actual database tables and not a subset of a base table. 
+	 *
+	 * @return a set of classes that have a {@code @DBForeignKey} reference to or
+	 * from this class
+	 */
+	public SortedSet<Class<? extends DBRow>> getAllConnectedBaseTables() {
+		final SortedSet<Class<? extends DBRow>> relatedTables = new TreeSet<>(new DBRow.ClassNameComparator());
+		relatedTables.addAll(getRelatedBaseTables());
+		relatedTables.addAll(getReferencedBaseTables());
 		return relatedTables;
 	}
 
@@ -1100,6 +1159,49 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 				throw new UnableToInstantiateDBRowSubclassException(tableClass, ex);
 			} catch (IllegalAccessException ex) {
 				throw new UnableToInstantiateDBRowSubclassException(tableClass, ex);
+			}
+		}
+		return relatedTables;
+	}
+
+	/**
+	 * Creates a set of all DBRow subclasses that reference this class with
+	 * foreign keys.
+	 *
+	 * <p>
+	 * Similar to {@link #getReferencedTables() } but where this class is being
+	 * referenced by the external DBRow subclass.
+	 *
+	 * <p>
+	 * That is to say: where A is this class, returns a List of B such that B
+	 * =&gt; A
+	 *
+	 * @return a set of classes that have a {@code @DBForeignKey} reference to
+	 * this class
+	 */
+	public SortedSet<Class<? extends DBRow>> getRelatedBaseTables() throws UnableToInstantiateDBRowSubclassException {
+		SortedSet<Class<? extends DBRow>> relatedTables = new TreeSet<>(new DBRow.ClassNameComparator());
+		Reflections reflections = new Reflections(this.getClass().getPackage().getName());
+
+		Set<Class<? extends DBRow>> subTypes = reflections.getSubTypesOf(DBRow.class);
+		for (Class<? extends DBRow> tableClass : subTypes) {
+			//DBRow newInstance;
+			if (tableClass.getSuperclass().equals(DBRow.class)) {
+				try {
+					//newInstance = tableClass.newInstance();
+					//if (newInstance.getReferencedTables().contains(this.getClass())) {
+					//	relatedTables.add(tableClass);
+					if (!Modifier.isAbstract(tableClass.getModifiers())) {
+						DBRow newInstance = tableClass.newInstance();
+						if (newInstance.getReferencedTables().contains(this.getClass())) {
+							relatedTables.add(tableClass);
+						}
+					}
+				} catch (InstantiationException ex) {
+					throw new UnableToInstantiateDBRowSubclassException(tableClass, ex);
+				} catch (IllegalAccessException ex) {
+					throw new UnableToInstantiateDBRowSubclassException(tableClass, ex);
+				}
 			}
 		}
 		return relatedTables;

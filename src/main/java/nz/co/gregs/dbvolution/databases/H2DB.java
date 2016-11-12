@@ -17,7 +17,6 @@ package nz.co.gregs.dbvolution.databases;
 
 import java.io.File;
 import java.io.IOException;
-import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.*;
@@ -26,7 +25,6 @@ import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.databases.definitions.H2DBDefinition;
 import nz.co.gregs.dbvolution.databases.supports.SupportsDateRepeatDatatypeFunctions;
 import nz.co.gregs.dbvolution.databases.supports.SupportsPolygonDatatype;
-import nz.co.gregs.dbvolution.exceptions.DBRuntimeException;
 import nz.co.gregs.dbvolution.internal.h2.*;
 
 /**
@@ -106,13 +104,13 @@ public class H2DB extends DBDatabase implements SupportsDateRepeatDatatypeFuncti
 	 *
 	 * 1 Database exceptions may be thrown
 	 *
-	 * @param databaseFilename  the name and path of the database file
+	 * @param databaseFilename the name and path of the database file
 	 * @param username username
 	 * @param password password
 	 * @param dummy unused
 	 */
 	public H2DB(String databaseFilename, String username, String password, boolean dummy) {
-		super(new H2DBDefinition(), "org.h2.Driver", "jdbc:h2:"+databaseFilename, username, password);
+		super(new H2DBDefinition(), "org.h2.Driver", "jdbc:h2:" + databaseFilename, username, password);
 //		jamDatabaseConnectionOpen();
 	}
 
@@ -121,7 +119,7 @@ public class H2DB extends DBDatabase implements SupportsDateRepeatDatatypeFuncti
 //		DateRepeatFunctions.addFunctions(stmt);
 		DataTypes.addAll(stmt);
 		if (featureMap == null) {
-			featureMap = new HashMap<String, DBVFeature>();
+			featureMap = new HashMap<>();
 			for (DBVFeature function : DateRepeatFunctions.values()) {
 				featureMap.put(function.alias(), function);
 			}
@@ -196,7 +194,7 @@ public class H2DB extends DBDatabase implements SupportsDateRepeatDatatypeFuncti
 				//symbol:   method DBV_MULTIPOINT2D_BOUNDINGBOX(
 			} else if (message.matches(": +method \"DBV_[A-Z_0-9]+")) {
 				String[] split = message.split("method \"");
-				split = split[1].split("(");
+				split = split[1].split("\\(");
 				String functionName = split[0];
 				System.out.println("ADDING FUNCTION: " + functionName);
 				DBVFeature functions = featureMap.get(functionName);
