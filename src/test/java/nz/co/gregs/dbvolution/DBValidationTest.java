@@ -110,7 +110,7 @@ public class DBValidationTest extends AbstractTest{
 		DBMigration<MigrateJamesAndAllVilliansToFight> migration = database.getDBMigration(new MigrateJamesAndAllVilliansToFight());
 		migration.setBlankQueryAllowed(Boolean.TRUE);
 		migration.setCartesianJoinAllowed(Boolean.TRUE);
-		//final Fight fight = new Fight();
+		
 		System.out.println(migration.getSQLForQuery(database));
 		DBValidation.Results validateAllRows = migration.validateAllRows();
 		Assert.assertThat(validateAllRows.size(), is(9));

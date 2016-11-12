@@ -106,7 +106,8 @@ import nz.co.gregs.dbvolution.query.RowDefinition;
 public class DBMigration<M extends DBRow> extends RowDefinition {
 
 	private final DBDatabase database;
-	private final M mapper;
+	private final M mapper;	
+	private final List<DBRow> optionalTables = new ArrayList<>();
 
 	DBMigration(DBDatabase db, M migrationMapper) {
 		this.database = db;
@@ -251,7 +252,6 @@ public class DBMigration<M extends DBRow> extends RowDefinition {
 		List<M> reportRows = getMigratedRowsFromQueryResults(allRows);
 		return reportRows;
 	}
-	final List<DBRow> optionalTables = new ArrayList<>();
 
 	@Override
 	public String toString() {
