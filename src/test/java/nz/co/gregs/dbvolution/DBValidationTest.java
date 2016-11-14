@@ -112,27 +112,30 @@ public class DBValidationTest extends AbstractTest{
 		migration.setCartesianJoinAllowed(Boolean.TRUE);
 		
 		System.out.println(migration.getSQLForQuery(database));
-		DBValidation.Results validateAllRows = migration.validateAllRows();
-		Assert.assertThat(validateAllRows.size(), is(9));
-		for (DBValidation.Result valid : validateAllRows) {
-			System.out.println("" + (valid.willBeProcessed ? "processed: " : "REJECTED: ") + valid.getRow(new Hero()).name.stringValue() + " versus " + valid.getRow(new Villain()).name.stringValue());
-			if (valid.willBeProcessed) {
-				Assert.assertThat(valid.getRow(new Hero()).name.stringValue(), is("James Security"));
-			} else {
-				Assert.assertThat(valid.getRow(new Hero()).name.stringValue(), not("James Security"));
-			}
-			Map<String, String> map = valid.getMap();
-			Assert.assertThat(map.size(), greaterThan(0));
-			for (Map.Entry<String, String> entry : map.entrySet()) {
-				String key = entry.getKey();
-				String value = entry.getValue();
-				System.out.println(key + ": " + value);
-				Assert.assertThat(value, isOneOf("success", "NO DATA"));
-				if (key.equals("villian")) {
-					if (value.equals("success")) {
-						Assert.assertThat(valid.getRow(new DBMigrationTest.Villain()).name.stringValue(), not("Dr Nonono"));
-					} else {
-						Assert.assertThat(valid.getRow(new DBMigrationTest.Villain()).name.stringValue(), is("Dr Nonono"));
+		
+		if (database.supportsFullOuterJoin()) {
+			DBValidation.Results validateAllRows = migration.validateAllRows();
+			Assert.assertThat(validateAllRows.size(), is(9));
+			for (DBValidation.Result valid : validateAllRows) {
+				System.out.println("" + (valid.willBeProcessed ? "processed: " : "REJECTED: ") + valid.getRow(new Hero()).name.stringValue() + " versus " + valid.getRow(new Villain()).name.stringValue());
+				if (valid.willBeProcessed) {
+					Assert.assertThat(valid.getRow(new Hero()).name.stringValue(), is("James Security"));
+				} else {
+					Assert.assertThat(valid.getRow(new Hero()).name.stringValue(), not("James Security"));
+				}
+				Map<String, String> map = valid.getMap();
+				Assert.assertThat(map.size(), greaterThan(0));
+				for (Map.Entry<String, String> entry : map.entrySet()) {
+					String key = entry.getKey();
+					String value = entry.getValue();
+					System.out.println(key + ": " + value);
+					Assert.assertThat(value, isOneOf("success", "NO DATA"));
+					if (key.equals("villian")) {
+						if (value.equals("success")) {
+							Assert.assertThat(valid.getRow(new DBMigrationTest.Villain()).name.stringValue(), not("Dr Nonono"));
+						} else {
+							Assert.assertThat(valid.getRow(new DBMigrationTest.Villain()).name.stringValue(), is("Dr Nonono"));
+						}
 					}
 				}
 			}

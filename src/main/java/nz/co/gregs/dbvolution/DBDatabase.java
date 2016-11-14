@@ -1502,8 +1502,7 @@ public abstract class DBDatabase implements Cloneable {
 	 * otherwise.
 	 */
 	public boolean supportsFullOuterJoin() {
-		return true;
-//		return supportsFullOuterJoinNatively();
+		return supportsFullOuterJoinNatively()||supportsRightOuterJoinNatively();
 	}
 
 	/**
