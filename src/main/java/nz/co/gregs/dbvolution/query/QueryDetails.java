@@ -31,17 +31,17 @@ import nz.co.gregs.dbvolution.expressions.DBExpression;
  */
 public class QueryDetails {
 
-	private final List<DBRow> allQueryTables = new ArrayList<DBRow>();
-	private final List<DBRow> requiredQueryTables = new ArrayList<DBRow>();
-	private final List<DBRow> optionalQueryTables = new ArrayList<DBRow>();
-	private final List<DBRow> assumedQueryTables = new ArrayList<DBRow>();
+	private final List<DBRow> allQueryTables = new ArrayList<>();
+	private final List<DBRow> requiredQueryTables = new ArrayList<>();
+	private final List<DBRow> optionalQueryTables = new ArrayList<>();
+	private final List<DBRow> assumedQueryTables = new ArrayList<>();
 //	private final List<DBQuery> intersectingQueries;
 	private final QueryOptions options = new QueryOptions();
-	private final List<DBRow> extraExamples = new ArrayList<DBRow>();
+	private final List<DBRow> extraExamples = new ArrayList<>();
 	private final List<BooleanExpression> conditions = new ArrayList<>();
-	private final Map<Object, DBExpression> expressionColumns = new LinkedHashMap<Object, DBExpression>();
-	private final Map<Object, DBExpression> dbReportGroupByColumns = new LinkedHashMap<Object, DBExpression>();
-	private final Map<Class<?>, Map<String, DBRow>> existingInstances = new HashMap<Class<?>, Map<String, DBRow>>();
+	private final Map<Object, DBExpression> expressionColumns = new LinkedHashMap<>();
+	private final Map<Object, DBExpression> dbReportGroupByColumns = new LinkedHashMap<>();
+	private final Map<Class<?>, Map<String, DBRow>> existingInstances = new HashMap<>();
 	private boolean groupByRequiredByAggregator = false;
 	public DBDatabase database = null;
 	private String selectClause;

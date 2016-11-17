@@ -297,15 +297,18 @@ public class QueryGraph {
 	 * possible.
 	 */
 	public List<DBRow> toList() {
-		return toList(getStartTable());
+		return toList(getStartTable(), false);
+	}
+	public List<DBRow> toListReversed() {
+		return toList(getStartTable(), true);
 	}
 
 	@SuppressWarnings("unchecked")
-	private List<DBRow> toList(Class<? extends DBRow> startFrom) {
-		LinkedHashSet<Class<? extends DBRow>> sortedInnerTables = new LinkedHashSet<Class<? extends DBRow>>();
-		LinkedHashSet<Class<? extends DBRow>> sortedAllTables = new LinkedHashSet<Class<? extends DBRow>>();
-		List<Class<? extends DBRow>> addedInnerTables = new ArrayList<Class<? extends DBRow>>();
-		List<Class<? extends DBRow>> addedAllTables = new ArrayList<Class<? extends DBRow>>();
+	private List<DBRow> toList(Class<? extends DBRow> startFrom, boolean reverse) {
+		LinkedHashSet<Class<? extends DBRow>> sortedInnerTables = new LinkedHashSet<>();
+		LinkedHashSet<Class<? extends DBRow>> sortedAllTables = new LinkedHashSet<>();
+		List<Class<? extends DBRow>> addedInnerTables = new ArrayList<>();
+		List<Class<? extends DBRow>> addedAllTables = new ArrayList<>();
 		QueryGraphNode nodeA = nodes.get(startFrom);
 		sortedAllTables.add(nodeA.getTable());
 		int sortedAllBeforeLoop = 0;
@@ -337,9 +340,12 @@ public class QueryGraph {
 			}
 			sortedAllTables.addAll(addedAllTables);
 		}
-		List<DBRow> returnTables = new ArrayList<DBRow>();
+		List<DBRow> returnTables = new ArrayList<>();
 		for (Class<? extends DBRow> rowClass : sortedInnerTables) {
 			returnTables.add(rows.get(rowClass));
+		}
+		if (reverse){
+			Collections.reverse(returnTables);
 		}
 		return returnTables;
 	}
@@ -367,7 +373,28 @@ public class QueryGraph {
 	 * possible.
 	 */
 	public List<DBRow> toListIncludingCartesian() {
-		Set<DBRow> returnTables = new HashSet<DBRow>();
+		return toListIncludingCartesianReversable(false);
+//		Set<DBRow> returnTables = new HashSet<DBRow>();
+//
+//		returnTables.addAll(toList());
+//		boolean changed = true;
+//
+//		while (changed) {
+//			for (DBRow row : rows.values()) {
+//				changed = false;
+//				if (!returnTables.contains(row)) {
+//					returnTables.addAll(toList(row.getClass()));
+//					changed = true;
+//				}
+//			}
+//		}
+//		final List<DBRow> returnList = new ArrayList<DBRow>();
+//		returnList.addAll(returnTables);
+//		return returnList;
+	}
+	
+	public List<DBRow> toListIncludingCartesianReversable(Boolean reverse) {
+		Set<DBRow> returnTables = new HashSet<>();
 
 		returnTables.addAll(toList());
 		boolean changed = true;
@@ -376,13 +403,16 @@ public class QueryGraph {
 			for (DBRow row : rows.values()) {
 				changed = false;
 				if (!returnTables.contains(row)) {
-					returnTables.addAll(toList(row.getClass()));
+					returnTables.addAll(toList(row.getClass(),false));
 					changed = true;
 				}
 			}
 		}
-		final List<DBRow> returnList = new ArrayList<DBRow>();
+		final List<DBRow> returnList = new ArrayList<>();
 		returnList.addAll(returnTables);
+		if (reverse){
+			Collections.reverse(returnList);
+		}
 		return returnList;
 	}
 

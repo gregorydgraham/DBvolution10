@@ -587,7 +587,7 @@ public class DBQuery {
 			}
 			if (queryState.isFullOuterJoin()&&
 					!database.supportsFullOuterJoinNatively()) {
-				sqlString = getSQLForFakeFullOuterJoin(sqlString, details, options, queryType);
+				sqlString = getSQLForFakeFullOuterJoin(sqlString, queryState, details, options, queryType);
 			}
 		}
 		return sqlString;
@@ -610,7 +610,7 @@ public class DBQuery {
 	 * @return a fake full outer join query for databases that don't support FULL
 	 * OUTER joins
 	 */
-	private String getSQLForFakeFullOuterJoin(String existingSQL, QueryDetails details, QueryOptions options, QueryType queryType) {
+	private String getSQLForFakeFullOuterJoin(String existingSQL, QueryState queryState, QueryDetails details, QueryOptions options, QueryType queryType) {
 		if (this.database.supportsRightOuterJoinNatively()) {
 			DBDefinition defn = this.database.getDefinition();
 			String sqlForQuery;
