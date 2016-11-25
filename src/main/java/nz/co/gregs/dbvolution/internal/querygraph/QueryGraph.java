@@ -299,8 +299,8 @@ public class QueryGraph {
 	public List<DBRow> toList() {
 		return toList(getStartTable(), false);
 	}
-	public List<DBRow> toListReversed() {
-		return toList(getStartTable(), true);
+	public List<DBRow> toListReversable(boolean reversed) {
+		return toList(getStartTable(), reversed);
 	}
 
 	@SuppressWarnings("unchecked")

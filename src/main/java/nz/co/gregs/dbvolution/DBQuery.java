@@ -26,6 +26,8 @@ import java.awt.Dimension;
 import java.io.PrintStream;
 import java.sql.*;
 import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JFrame;
 
 import nz.co.gregs.dbvolution.annotations.DBForeignKey;
@@ -120,7 +122,7 @@ public class DBQuery {
 
 	private static enum QueryType {
 
-		COUNT, SELECT
+		COUNT, SELECT, REVERSESELECT
 	};
 
 	private DBQuery(DBDatabase database) {
@@ -264,7 +266,7 @@ public class DBQuery {
 	 * @return a String of the SQL that will be used by this DBQuery.
 	 */
 	public String getSQLForQuery() {
-		return getSQLForQuery(QueryType.SELECT, this.details.getOptions());
+		return getSQLForQuery(new QueryState(this, getDatabase()), QueryType.SELECT, this.details.getOptions());
 	}
 
 	String getANSIJoinClause(DBDatabase database, QueryState queryState, DBRow newTable, List<DBRow> previousTables, QueryOptions options) {
@@ -387,12 +389,11 @@ public class DBQuery {
 		return sqlToReturn;
 	}
 
-	private String getSQLForQuery(QueryType queryType, QueryOptions options) {
+	private String getSQLForQuery(QueryState queryState, QueryType queryType, QueryOptions options) {
 		String sqlString = "";
 //		final QueryOptions options = details.getOptions();
 
 		if (details.getAllQueryTables().size() > 0) {
-			QueryState queryState = new QueryState(this, getDatabase());
 
 			initialiseQueryGraph();
 			queryState.setGraph(this.queryGraph);
@@ -414,8 +415,8 @@ public class DBQuery {
 			String lineSep = System.getProperty("line.separator");
 //			DBRow startQueryFromTable = requiredQueryTables.isEmpty() ? allQueryTables.get(0) : requiredQueryTables.get(0);
 			List<DBRow> sortedQueryTables = options.isCartesianJoinAllowed()
-					? queryGraph.toListIncludingCartesian()
-					: queryGraph.toList();
+					? queryGraph.toListIncludingCartesianReversable(queryType==QueryType.REVERSESELECT)
+					: queryGraph.toListReversable(queryType==QueryType.REVERSESELECT);
 
 			if (options.getRowLimit() > 0) {
 				selectClause.append(defn.getLimitRowsSubClauseDuringSelectClause(options));
@@ -546,8 +547,14 @@ public class DBQuery {
 				whereClause = new StringBuilder("");
 			}
 
-			if (queryType == QueryType.SELECT) {
-				details.setSelectClause(selectClause.toString());
+			if (queryType == QueryType.SELECT
+				||queryType==QueryType.REVERSESELECT) {
+				if(details.getSelectClause()==null){
+					details.setSelectClause(selectClause.toString());
+				}
+				if(queryType==QueryType.REVERSESELECT){
+					selectClause = new StringBuilder(details.getSelectClause());
+				}
 				String groupByClauseFinal = "";
 				if (details.isGroupedQuery() && groupByIsRequired) {
 					if (useColumnIndexGroupBy) {
@@ -585,7 +592,8 @@ public class DBQuery {
 						+ rawSQLClauseFinal + lineSep
 						+ defn.endSQLStatement();
 			}
-			if (queryState.isFullOuterJoin()&&
+			if (options.creatingNativeQuery()&&
+					queryState.isFullOuterJoin()&&
 					!database.supportsFullOuterJoinNatively()) {
 				sqlString = getSQLForFakeFullOuterJoin(sqlString, queryState, details, options, queryType);
 			}
@@ -611,18 +619,31 @@ public class DBQuery {
 	 * OUTER joins
 	 */
 	private String getSQLForFakeFullOuterJoin(String existingSQL, QueryState queryState, QueryDetails details, QueryOptions options, QueryType queryType) {
+		String sqlForQuery;
+		String unionOperator;
+		DBDefinition defn = this.database.getDefinition();
+		if (database.supportsUnionDistinct()){
+			unionOperator = defn.getUnionDistinctOperator();
+		}else{
+			unionOperator = defn.getUnionOperator();
+		}
+
 		if (this.database.supportsRightOuterJoinNatively()) {
-			DBDefinition defn = this.database.getDefinition();
-			String sqlForQuery;
-			String unionOperator = defn.getUnionDistinctOperator();
+			// Fake the outer join by revering the left outer joins to right outer joins
 
 			sqlForQuery = existingSQL.replaceAll("; *$", " ").replaceAll(defn.beginFullOuterJoin(), defn.beginLeftOuterJoin());
 			sqlForQuery += unionOperator + existingSQL.replaceAll(defn.beginFullOuterJoin(), defn.beginRightOuterJoin());
-			return sqlForQuery;
-//		return defn.doWrapQueryToFakeFullOuterJoin(existingSQL, options);
 		} else {
-			throw new FullAndRightOuterJoinNotSupportedException();
+			// Watch out for the infinite loop
+			options.setCreatingNativeQuery(false);
+			String reversedQuery = this.getSQLForQuery(queryState, QueryType.REVERSESELECT, options);
+			options.setCreatingNativeQuery(true);
+
+			sqlForQuery = existingSQL.replaceAll("; *$", " ").replaceAll(defn.beginFullOuterJoin(), defn.beginLeftOuterJoin());
+			sqlForQuery += unionOperator;
+			sqlForQuery += reversedQuery.replaceAll("; *$", " ").replaceAll(defn.beginFullOuterJoin(), defn.beginLeftOuterJoin());
 		}
+		return sqlForQuery;
 	}
 
 
@@ -665,7 +686,7 @@ public class DBQuery {
 	 * returned by this query
 	 */
 	public String getSQLForCount() {
-		return getSQLForQuery(QueryType.COUNT, details.getOptions());
+		return getSQLForQuery(new QueryState(this, getDatabase()), QueryType.COUNT, details.getOptions());
 	}
 
 	/**
@@ -937,7 +958,7 @@ results.add(queryRow);
 //		final QueryOptions options = details.getOptions();
 		resultsRowLimit = options.getRowLimit();
 		resultsPageIndex = options.getPageIndex();
-		resultSQL = this.getSQLForQuery(QueryType.SELECT, options);
+		resultSQL = this.getSQLForQuery(new QueryState(this, getDatabase()), QueryType.SELECT, options);
 	}
 
 	/**
@@ -1021,7 +1042,7 @@ results.add(queryRow);
 				|| resultSQL == null
 				|| !resultsPageIndex.equals(options.getPageIndex())
 				|| !resultsRowLimit.equals(options.getRowLimit())
-				|| !resultSQL.equals(getSQLForQuery(QueryType.SELECT, options));
+				|| !resultSQL.equals(getSQLForQuery(new QueryState(this, getDatabase()), QueryType.SELECT, options));
 	}
 
 	/**
@@ -2717,6 +2738,7 @@ results.add(queryRow);
 		private final List<String> optionalConditions = new ArrayList<>();
 		private boolean queryIsFullOuterJoin=true;
 		private boolean queryIsLeftOuterJoin=true;
+		private boolean queryIsNativeQuery = true;
 
 		QueryState(DBQuery query, DBDatabase database) {
 			this.remainingExpressions = new ArrayList<>(query.getConditions());
@@ -2776,22 +2798,22 @@ results.add(queryRow);
 			return optionalConditions;
 		}
 
-		private void addedFullOuterJoinToQuery() {
+		public void addedFullOuterJoinToQuery() {
 			queryIsFullOuterJoin= queryIsFullOuterJoin&&true;
 			queryIsLeftOuterJoin=false;
 		}
 
-		private void addedLeftOuterJoinToQuery() {
+		public void addedLeftOuterJoinToQuery() {
 			queryIsLeftOuterJoin= queryIsLeftOuterJoin&&true;
 			queryIsFullOuterJoin=false;
 		}
 
-		private void addedInnerJoinToQuery() {
+		public void addedInnerJoinToQuery() {
 			queryIsLeftOuterJoin=false;
 			queryIsFullOuterJoin=false;
 		}
 
-		private boolean isFullOuterJoin() {
+		public boolean isFullOuterJoin() {
 			return queryIsFullOuterJoin;
 		}
 	}

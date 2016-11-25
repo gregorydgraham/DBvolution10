@@ -44,7 +44,7 @@ public class QueryDetails {
 	private final Map<Class<?>, Map<String, DBRow>> existingInstances = new HashMap<>();
 	private boolean groupByRequiredByAggregator = false;
 	public DBDatabase database = null;
-	private String selectClause;
+	private String selectClause = null;
 
 	/**
 	 * @return the allQueryTables

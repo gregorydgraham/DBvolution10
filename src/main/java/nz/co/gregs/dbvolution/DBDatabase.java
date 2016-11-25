@@ -1005,8 +1005,8 @@ public abstract class DBDatabase implements Cloneable {
 	private void createTable(DBRow newTableRow, boolean includeForeignKeyClauses) throws SQLException, AutoCommitActionDuringTransactionException {
 		preventDDLDuringTransaction("DBDatabase.createTable()");
 		StringBuilder sqlScript = new StringBuilder();
-		List<PropertyWrapper> pkFields = new ArrayList<PropertyWrapper>();
-		List<PropertyWrapper> spatial2DFields = new ArrayList<PropertyWrapper>();
+		List<PropertyWrapper> pkFields = new ArrayList<>();
+		List<PropertyWrapper> spatial2DFields = new ArrayList<>();
 		String lineSeparator = System.getProperty("line.separator");
 		// table name
 
@@ -1016,7 +1016,7 @@ public abstract class DBDatabase implements Cloneable {
 		String sep = "";
 		String nextSep = definition.getCreateTableColumnsSeparator();
 		List<PropertyWrapper> fields = newTableRow.getColumnPropertyWrappers();
-		List<String> fkClauses = new ArrayList<String>();
+		List<String> fkClauses = new ArrayList<>();
 		for (PropertyWrapper field : fields) {
 			if (field.isColumn() && !field.getQueryableDatatype().hasColumnExpression()) {
 				String colName = field.columnName();
@@ -1065,8 +1065,7 @@ public abstract class DBDatabase implements Cloneable {
 		//finish
 		sqlScript.append(definition.getCreateTableColumnsEnd()).append(lineSeparator).append(definition.endSQLStatement());
 		String sqlString = sqlScript.toString();
-		final DBStatement dbStatement = getDBStatement();
-		try {
+		try (DBStatement dbStatement = getDBStatement()) {
 			dbStatement.execute(sqlString);
 
 			//Oracle style trigger based auto-increment keys
@@ -1084,8 +1083,6 @@ public abstract class DBDatabase implements Cloneable {
 				}
 			}
 
-		} finally {
-			dbStatement.close();
 		}
 	}
 
@@ -1111,7 +1108,7 @@ public abstract class DBDatabase implements Cloneable {
 	public void createForeignKeyConstraints(DBRow newTableRow) throws SQLException {
 
 		List<PropertyWrapper> fields = newTableRow.getColumnPropertyWrappers();
-		List<String> fkClauses = new ArrayList<String>();
+		List<String> fkClauses = new ArrayList<>();
 		for (PropertyWrapper field : fields) {
 			if (field.isColumn() && !field.getQueryableDatatype().hasColumnExpression()) {
 				final String alterTableAddForeignKeyStatement = definition.getAlterTableAddForeignKeyStatement(newTableRow, field);
@@ -1121,13 +1118,10 @@ public abstract class DBDatabase implements Cloneable {
 			}
 		}
 		if (fkClauses.size() > 0) {
-			final DBStatement statement = getDBStatement();
-			try {
+			try (DBStatement statement = getDBStatement()) {
 				for (String fkClause : fkClauses) {
 					statement.execute(fkClause);
 				}
-			} finally {
-				statement.close();
 			}
 		}
 	}
@@ -1157,7 +1151,7 @@ public abstract class DBDatabase implements Cloneable {
 	public void removeForeignKeyConstraints(DBRow newTableRow) throws SQLException {
 
 		List<PropertyWrapper> fields = newTableRow.getColumnPropertyWrappers();
-		List<String> fkClauses = new ArrayList<String>();
+		List<String> fkClauses = new ArrayList<>();
 		for (PropertyWrapper field : fields) {
 			if (field.isColumn() && !field.getQueryableDatatype().hasColumnExpression()) {
 				final String alterTableDropForeignKeyStatement = definition.getAlterTableDropForeignKeyStatement(newTableRow, field);
@@ -1167,13 +1161,10 @@ public abstract class DBDatabase implements Cloneable {
 			}
 		}
 		if (fkClauses.size() > 0) {
-			final DBStatement statement = getDBStatement();
-			try {
+			try (DBStatement statement = getDBStatement()) {
 				for (String fkClause : fkClauses) {
 					statement.execute(fkClause);
 				}
-			} finally {
-				statement.close();
 			}
 		}
 	}
@@ -1200,7 +1191,7 @@ public abstract class DBDatabase implements Cloneable {
 	public void createIndexesOnAllFields(DBRow newTableRow) throws SQLException {
 
 		List<PropertyWrapper> fields = newTableRow.getColumnPropertyWrappers();
-		List<String> indexClauses = new ArrayList<String>();
+		List<String> indexClauses = new ArrayList<>();
 		for (PropertyWrapper field : fields) {
 			final QueryableDatatype<?> qdt = field.getQueryableDatatype();
 			if (field.isColumn() && !qdt.hasColumnExpression() && !(qdt instanceof DBLargeObject)) {
@@ -1212,13 +1203,10 @@ public abstract class DBDatabase implements Cloneable {
 		}
 		//Create indexes
 		if (indexClauses.size() > 0) {
-			final DBStatement statement = getDBStatement();
-			try {
+			try (DBStatement statement = getDBStatement()) {
 				for (String indexClause : indexClauses) {
 					statement.execute(indexClause);
 				}
-			} finally {
-				statement.close();
 			}
 		}
 	}
@@ -1253,12 +1241,9 @@ public abstract class DBDatabase implements Cloneable {
 
 		sqlScript.append(dropTableStart).append(formatTableName).append(endSQLStatement);
 		String sqlString = sqlScript.toString();
-		final DBStatement dbStatement = getDBStatement();
-		try {
+		try (DBStatement dbStatement = getDBStatement()) {
 			dbStatement.execute(sqlString);
 			dropAnyAssociatedDatabaseObjects(tableRow);
-		} finally {
-			dbStatement.close();
 		}
 		preventAccidentalDroppingOfTables = true;
 	}
@@ -1502,7 +1487,8 @@ public abstract class DBDatabase implements Cloneable {
 	 * otherwise.
 	 */
 	public boolean supportsFullOuterJoin() {
-		return supportsFullOuterJoinNatively()||supportsRightOuterJoinNatively();
+		return true;
+		//return supportsFullOuterJoinNatively()||supportsRightOuterJoinNatively();
 	}
 
 	/**
@@ -1735,7 +1721,7 @@ public abstract class DBDatabase implements Cloneable {
 	private synchronized List<Connection> getConnectionList(Map<DBDatabase, List<Connection>> connectionMap) {
 		List<Connection> connList = connectionMap.get(this);
 		if (connList == null) {
-			connList = new ArrayList<Connection>();
+			connList = new ArrayList<>();
 			connectionMap.put(this, connList);
 		}
 		return connList;
@@ -1747,6 +1733,10 @@ public abstract class DBDatabase implements Cloneable {
 	 * @return FALSE.
 	 */
 	public Boolean supportsDifferenceBetweenNullAndEmptyString() {
+		return true;
+	}
+
+	public Boolean supportsUnionDistinct() {
 		return true;
 	}
 
@@ -1782,6 +1772,7 @@ public abstract class DBDatabase implements Cloneable {
 	 * @see MSSQLServerDB
 	 * @see MySQLDB
 	 */
+	@SuppressWarnings("empty-statement")
 	protected void addDatabaseSpecificFeatures(Statement statement) throws SQLException {
 		// by default there are no extras to be added to the database
 		;
@@ -1846,6 +1837,6 @@ public abstract class DBDatabase implements Cloneable {
 	 * @return a DBMigration for the mapper class
 	 */
 	public <K extends DBRow> DBMigration<K> getDBMigration(K mapper) {
-		return new DBMigration<K>(this, mapper);
+		return new DBMigration<>(this, mapper);
 	}
 }

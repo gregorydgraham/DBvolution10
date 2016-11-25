@@ -34,6 +34,7 @@ public class QueryOptions {
 	private boolean cartesianJoinAllowed = false;
 	private boolean useANSISyntax = true;
 	private boolean matchAnyRelationship = false;
+	private boolean queryIsNativeQuery = true;
 
 	/**
 	 * Indicates whether this query will use AND rather than OR to add the
@@ -242,6 +243,14 @@ public class QueryOptions {
 	 */
 	public void setHavingColumns(BooleanExpression[] havingColumns) {
 		this.havingColumns = havingColumns;
+	}
+
+	public boolean creatingNativeQuery() {
+		return queryIsNativeQuery;
+	}
+
+	public void setCreatingNativeQuery(boolean creatingNativeQuery) {
+		queryIsNativeQuery = creatingNativeQuery;
 	}
 
 }

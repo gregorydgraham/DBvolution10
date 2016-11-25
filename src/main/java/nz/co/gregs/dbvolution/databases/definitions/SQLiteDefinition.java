@@ -748,10 +748,4 @@ public class SQLiteDefinition extends DBDefinition {
 	public String getFalseValue() {
 		return " 0 ";
 	}	
-	
-	@Override
-	public String getUnionDistinctOperator() {
-		return " UNION  ";
-	}
-
 }

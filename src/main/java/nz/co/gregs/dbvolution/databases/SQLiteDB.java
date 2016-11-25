@@ -87,11 +87,6 @@ public class SQLiteDB extends DBDatabase implements SupportsDateRepeatDatatypeFu
 	protected boolean supportsFullOuterJoinNatively() {
 		return false;
 	}
-
-	@Override
-	public boolean supportsFullOuterJoin() {
-		return false;
-	}
 	
 	@Override
 	protected boolean supportsRightOuterJoinNatively() {
@@ -122,6 +117,12 @@ public class SQLiteDB extends DBDatabase implements SupportsDateRepeatDatatypeFu
 	@Override
 	public DBDatabase clone() throws CloneNotSupportedException {
 		return super.clone(); //To change body of generated methods, choose Tools | Templates.
+	}	
+	
+	@Override
+	public Boolean supportsUnionDistinct() {
+		return false;
 	}
+
 
 }

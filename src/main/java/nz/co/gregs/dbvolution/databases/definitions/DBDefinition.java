@@ -4624,4 +4624,8 @@ public abstract class DBDefinition {
 	public String getUnionDistinctOperator() {
 		return " UNION DISTINCT  ";
 	}
+
+	public String getUnionOperator() {
+		return " UNION "; //To change body of generated methods, choose Tools | Templates.
+	}
 }

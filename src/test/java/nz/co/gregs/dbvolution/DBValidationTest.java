@@ -115,13 +115,14 @@ public class DBValidationTest extends AbstractTest{
 		
 		if (database.supportsFullOuterJoin()) {
 			DBValidation.Results validateAllRows = migration.validateAllRows();
-			Assert.assertThat(validateAllRows.size(), is(9));
 			for (DBValidation.Result valid : validateAllRows) {
-				System.out.println("" + (valid.willBeProcessed ? "processed: " : "REJECTED: ") + valid.getRow(new Hero()).name.stringValue() + " versus " + valid.getRow(new Villain()).name.stringValue());
+				final Hero hero = valid.getRow(new Hero());
+				final Villain villain = valid.getRow(new Villain());
+				System.out.println("" + (valid.willBeProcessed ? "processed: " : "REJECTED: ") + hero.name.stringValue() + " versus " + villain.name.stringValue());
 				if (valid.willBeProcessed) {
-					Assert.assertThat(valid.getRow(new Hero()).name.stringValue(), is("James Security"));
+					Assert.assertThat(hero.name.stringValue(), is("James Security"));
 				} else {
-					Assert.assertThat(valid.getRow(new Hero()).name.stringValue(), not("James Security"));
+					Assert.assertThat(hero.name.stringValue(), not("James Security"));
 				}
 				Map<String, String> map = valid.getMap();
 				Assert.assertThat(map.size(), greaterThan(0));
@@ -139,6 +140,7 @@ public class DBValidationTest extends AbstractTest{
 					}
 				}
 			}
+			Assert.assertThat(validateAllRows.size(), is(9));
 		}
 	}
 	
