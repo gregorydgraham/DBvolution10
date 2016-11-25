@@ -76,8 +76,8 @@ public abstract class DBDatabase implements Cloneable {
 	private final Object getStatementSynchronizeObject = new Object();
 	private final Object getConnectionSynchronizeObject = new Object();
 	private Connection transactionConnection;
-	private static final transient Map<DBDatabase, List<Connection>> busyConnections = new HashMap<DBDatabase, List<Connection>>();
-	private static final transient HashMap<DBDatabase, List<Connection>> freeConnections = new HashMap<DBDatabase, List<Connection>>();
+	private static final transient Map<DBDatabase, List<Connection>> BUSY_CONNECTION = new HashMap<>();
+	private static final transient HashMap<DBDatabase, List<Connection>> FREE_CONNECTIONS = new HashMap<>();
 	private Boolean needToAddDatabaseSpecificFeatures = true;
 
 	/**
@@ -305,11 +305,11 @@ public abstract class DBDatabase implements Cloneable {
 		Connection conn = null;
 		while (conn == null) {
 			if (supportsPooledConnections()) {
-				synchronized (freeConnections) {
-					if (freeConnections.isEmpty() || getConnectionList(freeConnections).isEmpty()) {
+				synchronized (FREE_CONNECTIONS) {
+					if (FREE_CONNECTIONS.isEmpty() || getConnectionList(FREE_CONNECTIONS).isEmpty()) {
 						conn = getRawConnection();
 					} else {
-						conn = getConnectionList(freeConnections).get(0);
+						conn = getConnectionList(FREE_CONNECTIONS).get(0);
 					}
 				}
 			} else {
@@ -1669,8 +1669,8 @@ public abstract class DBDatabase implements Cloneable {
 	 */
 	public synchronized void unusedConnection(Connection connection) throws SQLException {
 		if (supportsPooledConnections()) {
-			getConnectionList(busyConnections).remove(connection);
-			getConnectionList(freeConnections).add(connection);
+			getConnectionList(BUSY_CONNECTION).remove(connection);
+			getConnectionList(FREE_CONNECTIONS).add(connection);
 		} else {
 			discardConnection(connection);
 		}
@@ -1692,8 +1692,8 @@ public abstract class DBDatabase implements Cloneable {
 
 	private synchronized void usedConnection(Connection connection) {
 		if (supportsPooledConnections()) {
-			getConnectionList(freeConnections).remove(connection);
-			getConnectionList(busyConnections).add(connection);
+			getConnectionList(FREE_CONNECTIONS).remove(connection);
+			getConnectionList(BUSY_CONNECTION).add(connection);
 		}
 	}
 
@@ -1706,8 +1706,8 @@ public abstract class DBDatabase implements Cloneable {
 	 * @param connection the JDBC connection to be removed
 	 */
 	public synchronized void discardConnection(Connection connection) {
-		getConnectionList(busyConnections).remove(connection);
-		getConnectionList(freeConnections).remove(connection);
+		getConnectionList(BUSY_CONNECTION).remove(connection);
+		getConnectionList(FREE_CONNECTIONS).remove(connection);
 		try {
 			connection.close();
 

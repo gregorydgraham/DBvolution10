@@ -57,9 +57,9 @@ import nz.co.gregs.dbvolution.expressions.DBExpression;
  */
 public class QueryGraph {
 
-	private final Map<Class<? extends DBRow>, QueryGraphNode> nodes = new LinkedHashMap<Class<? extends DBRow>, QueryGraphNode>();
-	private final Map<Class<? extends DBRow>, DBRow> rows = new LinkedHashMap<Class<? extends DBRow>, DBRow>();
-	private edu.uci.ics.jung.graph.Graph<QueryGraphNode, DBExpression> jungGraph = new SparseMultigraph<QueryGraphNode, DBExpression>();
+	private final Map<Class<? extends DBRow>, QueryGraphNode> nodes = new LinkedHashMap<>();
+	private final Map<Class<? extends DBRow>, DBRow> rows = new LinkedHashMap<>();
+	private edu.uci.ics.jung.graph.Graph<QueryGraphNode, DBExpression> jungGraph = new SparseMultigraph<>();
 
 	/**
 	 * Create a graph of the tables and connections for all the DBRows and
@@ -124,8 +124,8 @@ public class QueryGraph {
 	 */
 	public final void addAndConnectToRelevant(List<DBRow> otherTables, List<BooleanExpression> expressions, boolean requiredTables) {
 
-		List<DBRow> tablesAdded = new ArrayList<DBRow>();
-		List<DBRow> tablesRemaining = new ArrayList<DBRow>();
+		List<DBRow> tablesAdded = new ArrayList<>();
+		List<DBRow> tablesRemaining = new ArrayList<>();
 		tablesRemaining.addAll(rows.values());
 		tablesRemaining.addAll(otherTables);
 		clearDisplayGraph();
@@ -153,7 +153,7 @@ public class QueryGraph {
 			Set<DBRow> tables = expr.getTablesInvolved();
 			if (tables.size() > 0) {
 				DBRow table1 = tables.iterator().next();
-				Set<DBRow> tablesToConnectTo = new HashSet<DBRow>(tables);
+				Set<DBRow> tablesToConnectTo = new HashSet<>(tables);
 				tablesToConnectTo.remove(table1);
 				final Class<? extends DBRow> table1Class = table1.getClass();
 				final QueryGraphNode node1 = getOrCreateNode(table1, table1Class, requiredTables);
@@ -210,7 +210,7 @@ public class QueryGraph {
 	 * a cartesian join to occur.
 	 */
 	public boolean willCreateCartesianJoin() {
-		Set<DBRow> returnTables = new HashSet<DBRow>();
+		Set<DBRow> returnTables = new HashSet<>();
 		returnTables.addAll(toList());
 
 		for (DBRow row : rows.values()) {
@@ -248,8 +248,8 @@ public class QueryGraph {
 	 * @return the class of a DBRow from which to start a traversal.
 	 */
 	private Class<? extends DBRow> getStartTable() {
-		List<QueryGraphNode> innerNodes = new ArrayList<QueryGraphNode>();
-		List<QueryGraphNode> outerNodes = new ArrayList<QueryGraphNode>();
+		List<QueryGraphNode> innerNodes = new ArrayList<>();
+		List<QueryGraphNode> outerNodes = new ArrayList<>();
 
 		for (QueryGraphNode node : nodes.values()) {
 			if (node.isRequiredNode()) {
@@ -429,7 +429,7 @@ public class QueryGraph {
 	}
 
 	private void clearDisplayGraph() {
-		jungGraph = new SparseMultigraph<QueryGraphNode, DBExpression>();
+		jungGraph = new SparseMultigraph<>();
 	}
 
 }
