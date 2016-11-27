@@ -20,7 +20,7 @@ import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.datatypes.*;
 import nz.co.gregs.dbvolution.exceptions.AccidentalCartesianJoinException;
 import nz.co.gregs.dbvolution.exceptions.IncorrectRowProviderInstanceSuppliedException;
-import nz.co.gregs.dbvolution.exceptions.SingularReferenceToMultiColumnPrimaryKeyException;
+import nz.co.gregs.dbvolution.exceptions.UnableToInterpolateReferencedColumnInMultiColumnPrimaryKeyException;
 import nz.co.gregs.dbvolution.exceptions.UnableToInstantiateDBRowSubclassException;
 import nz.co.gregs.dbvolution.exceptions.UnacceptableClassForAutoFillAnnotation;
 import nz.co.gregs.dbvolution.exceptions.UndefinedPrimaryKeyException;
@@ -281,7 +281,7 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 			InternalQueryableDatatypeProxy proxy = new InternalQueryableDatatypeProxy(primaryKeys.get(0));
 			proxy.setValue(newPKValue);
 		} else {
-			throw new SingularReferenceToMultiColumnPrimaryKeyException(this, primaryKeys);
+			throw new UnableToInterpolateReferencedColumnInMultiColumnPrimaryKeyException(this, primaryKeys);
 		}
 	}
 

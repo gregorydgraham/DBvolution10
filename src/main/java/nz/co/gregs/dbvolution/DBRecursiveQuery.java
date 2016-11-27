@@ -647,7 +647,7 @@ public class DBRecursiveQuery<T extends DBRow> {
 			} else {
 				instanceOfRow = this.keyToFollow.getColumn().getInstanceOfRow();
 				if (instanceOfRow.getPrimaryKeys().size() > 1) {
-					throw new SingularReferenceToMultiColumnPrimaryKeyException(instanceOfRow, instanceOfRow.getPrimaryKeys());
+					throw new UnableToInterpolateReferencedColumnInMultiColumnPrimaryKeyException(instanceOfRow, instanceOfRow.getPrimaryKeys());
 				}
 				QueryableDatatype<?> qdt;
 				if (direction.equals(RecursiveSQLDirection.TOWARDS_ROOT)) {

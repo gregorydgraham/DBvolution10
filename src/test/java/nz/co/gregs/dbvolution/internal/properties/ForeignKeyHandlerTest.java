@@ -16,9 +16,9 @@ import nz.co.gregs.dbvolution.annotations.DBTableName;
 import nz.co.gregs.dbvolution.datatypes.DBDate;
 import nz.co.gregs.dbvolution.datatypes.DBInteger;
 import nz.co.gregs.dbvolution.datatypes.DBTypeAdaptor;
-import nz.co.gregs.dbvolution.exceptions.DBPebkacException;
 import nz.co.gregs.dbvolution.exceptions.InvalidDeclaredTypeException;
 import nz.co.gregs.dbvolution.exceptions.ReferenceToUndefinedPrimaryKeyException;
+import nz.co.gregs.dbvolution.exceptions.UnableToInterpolateReferencedColumnInMultiColumnPrimaryKeyException;
 import nz.co.gregs.dbvolution.internal.properties.JavaPropertyFinder.PropertyType;
 import nz.co.gregs.dbvolution.internal.properties.JavaPropertyFinder.Visibility;
 
@@ -27,7 +27,7 @@ import org.junit.Test;
 @SuppressWarnings({"serial", "unused"})
 public class ForeignKeyHandlerTest {
 
-	private JavaPropertyFinder privateFieldPublicBeanFinder = new JavaPropertyFinder(
+	private final JavaPropertyFinder privateFieldPublicBeanFinder = new JavaPropertyFinder(
 			Visibility.PRIVATE, Visibility.PUBLIC, null, (PropertyType[]) null);
 
 	@Test
@@ -397,5 +397,79 @@ public class ForeignKeyHandlerTest {
 			throw new IllegalArgumentException("No property found with java name '" + javaPropertyName + "'");
 		}
 		return property;
+	}
+	
+	@Test()
+	public void guessesForeignKeyReferenceOfMultiplePrimaryKeyTable() {
+		class TestAddress extends DBRow {
+
+			@DBColumn
+			public DBInteger addressUid;
+
+			@DBColumn()
+			@DBPrimaryKey
+			public DBInteger addressUid2;
+
+			@DBColumn("bl_id")
+			@DBPrimaryKey
+			public DBInteger blId;
+
+			@DBColumn
+			public DBInteger intValue;
+		}
+
+		class TestCustomer extends DBRow {
+
+			@DBPrimaryKey
+			@DBColumn
+			public DBInteger customerUid;
+
+			@DBForeignKey(TestAddress.class)
+			@DBColumn
+			public DBInteger fkAddress2;
+			
+			@DBForeignKey(TestAddress.class)
+			@DBColumn
+			public DBInteger fromBlId;
+		}
+
+		foreignKeyHandlerOf(TestCustomer.class, "fromBlId");
+	}
+	
+	@Test(expected = UnableToInterpolateReferencedColumnInMultiColumnPrimaryKeyException.class)
+	public void failsToGuessForeignKeyReferenceOfMultiplePrimaryKeyTable() {
+		class TestAddress extends DBRow {
+
+			@DBColumn
+			public DBInteger addressUid;
+
+			@DBColumn()
+			@DBPrimaryKey
+			public DBInteger addressUid2;
+
+			@DBColumn("bl_id")
+			@DBPrimaryKey
+			public DBInteger blId;
+
+			@DBColumn
+			public DBInteger intValue;
+		}
+
+		class TestCustomer extends DBRow {
+
+			@DBPrimaryKey
+			@DBColumn
+			public DBInteger customerUid;
+
+			@DBForeignKey(TestAddress.class)
+			@DBColumn
+			public DBInteger fkAddress2;
+			
+			@DBForeignKey(TestAddress.class)
+			@DBColumn
+			public DBInteger from;
+		}
+
+		foreignKeyHandlerOf(TestCustomer.class, "from");
 	}
 }

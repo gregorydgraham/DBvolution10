@@ -9,12 +9,14 @@ import nz.co.gregs.dbvolution.annotations.DBColumn;
 import nz.co.gregs.dbvolution.annotations.DBForeignKey;
 import nz.co.gregs.dbvolution.exceptions.DBRuntimeException;
 import nz.co.gregs.dbvolution.exceptions.ReferenceToUndefinedPrimaryKeyException;
-import nz.co.gregs.dbvolution.exceptions.SingularReferenceToMultiColumnPrimaryKeyException;
+import nz.co.gregs.dbvolution.exceptions.UnableToInterpolateReferencedColumnInMultiColumnPrimaryKeyException;
 import org.simmetrics.StringMetric;
 import static org.simmetrics.builders.StringMetricBuilder.with;
 import org.simmetrics.metrics.CosineSimilarity;
+import org.simmetrics.metrics.DamerauLevenshtein;
 import org.simmetrics.simplifiers.Simplifiers;
 import org.simmetrics.tokenizers.Tokenizers;
+import static org.simmetrics.builders.StringMetricBuilder.with;
 
 /**
  * Handles annotation processing, business logic, validation rules, defaulting,
@@ -104,9 +106,9 @@ class ForeignKeyHandler {
 					throw new ReferenceToUndefinedPrimaryKeyException(adaptee, referencedClassWrapper);
 				} else if (primaryKeys.length > 1) {
 					final String columnName = originalColumn.getColumnName();
-					StringMetric metric = with(new CosineSimilarity<String>())
-						.simplify(Simplifiers.replaceNonWord())
-						.tokenize(Tokenizers.whitespace())
+					StringMetric metric = with(new DamerauLevenshtein())
+							.simplify(Simplifiers.replaceNonWord())
+							.simplify(Simplifiers.toLowerCase())
 						.build();
 					Map<Float, PropertyWrapperDefinition> pkComps = new HashMap<>();
 					Map<PropertyWrapperDefinition, Float> pkMetrics = new HashMap<>();
@@ -119,8 +121,8 @@ class ForeignKeyHandler {
 						pkMetrics.put(primaryKey,result);
 						maxComp = maxComp>result?maxComp:result;
 					}
-					if (maxComp == 0.0F) {
-						throw new SingularReferenceToMultiColumnPrimaryKeyException(adaptee, referencedClassWrapper, primaryKeys);
+					if (maxComp <= 0.2F) {
+						throw new UnableToInterpolateReferencedColumnInMultiColumnPrimaryKeyException(adaptee, referencedClassWrapper, primaryKeys);
 					}else{
 						identifiedReferencedProperty = pkComps.get(maxComp);
 					}

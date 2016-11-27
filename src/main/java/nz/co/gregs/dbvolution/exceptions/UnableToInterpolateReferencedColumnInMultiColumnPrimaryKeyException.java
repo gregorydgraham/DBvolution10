@@ -16,19 +16,19 @@ import nz.co.gregs.dbvolution.internal.properties.RowDefinitionClassWrapper;
  *
  * @author gregorygraham
  */
-public class SingularReferenceToMultiColumnPrimaryKeyException extends DBRuntimeException {
+public class UnableToInterpolateReferencedColumnInMultiColumnPrimaryKeyException extends DBRuntimeException {
 
 	private static final long serialVersionUID = 1L;
 
-	public SingularReferenceToMultiColumnPrimaryKeyException(JavaProperty adaptee, RowDefinitionClassWrapper referencedClassWrapper, PropertyWrapperDefinition[] primaryKeys) {
+	public UnableToInterpolateReferencedColumnInMultiColumnPrimaryKeyException(JavaProperty adaptee, RowDefinitionClassWrapper referencedClassWrapper, PropertyWrapperDefinition[] primaryKeys) {
 		super("Property " + adaptee.qualifiedName() + " references class " + referencedClassWrapper.javaName()
 				+ " using an implicit primary key reference, but the referenced class has " + primaryKeys.length
-				+ " primary key columns. You must include explicit foreign column names.");
+				+ " primary key columns and none are similar to the FK column name. You must use an explicit column name in the @DBForeignKey.");
 	}
 
-	public SingularReferenceToMultiColumnPrimaryKeyException(DBRow aThis, List<QueryableDatatype<?>> primaryKeys) {
+	public UnableToInterpolateReferencedColumnInMultiColumnPrimaryKeyException(DBRow aThis, List<QueryableDatatype<?>> primaryKeys) {
 		throw new UnsupportedOperationException(" Class " + aThis.getClass().getCanonicalName()
-				+ "has a " + primaryKeys.size() + "columns in it's primary key but an attempt has been made to reference the PK as a sinlge column.  Switch to a multi-column method to set the PK columns"); //To change body of generated methods, choose Tools | Templates.
+				+ "has a " + primaryKeys.size() + "columns in it's primary key but an attempt has been made to reference the PK as a single column.  Switch to a multi-column method to set the PK columns"); 
 	}
 
 }
