@@ -1,14 +1,20 @@
 package nz.co.gregs.dbvolution.internal.properties;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.annotations.DBColumn;
 import nz.co.gregs.dbvolution.annotations.DBForeignKey;
-import nz.co.gregs.dbvolution.exceptions.DBPebkacException;
 import nz.co.gregs.dbvolution.exceptions.DBRuntimeException;
 import nz.co.gregs.dbvolution.exceptions.ReferenceToUndefinedPrimaryKeyException;
 import nz.co.gregs.dbvolution.exceptions.SingularReferenceToMultiColumnPrimaryKeyException;
+import org.simmetrics.StringMetric;
+import static org.simmetrics.builders.StringMetricBuilder.with;
+import org.simmetrics.metrics.CosineSimilarity;
+import org.simmetrics.simplifiers.Simplifiers;
+import org.simmetrics.tokenizers.Tokenizers;
 
 /**
  * Handles annotation processing, business logic, validation rules, defaulting,
@@ -30,8 +36,10 @@ class ForeignKeyHandler {
 	private final Class<? extends DBRow> referencedClass;
 	private final PropertyWrapperDefinition identityOnlyReferencedProperty; // stores identity info only
 	private final DBForeignKey foreignKeyAnnotation; // null if not present on property
+	private final ColumnHandler originalColumn;
 
 	ForeignKeyHandler(JavaProperty adaptee, boolean processIdentityOnly) {
+		this.originalColumn = new ColumnHandler(adaptee);
 		if (processIdentityOnly) {
 			// skip processing of foreign keys
 			this.foreignKeyAnnotation = null;
@@ -95,8 +103,27 @@ class ForeignKeyHandler {
 				if (primaryKeys == null || primaryKeys.length == 0) {
 					throw new ReferenceToUndefinedPrimaryKeyException(adaptee, referencedClassWrapper);
 				} else if (primaryKeys.length > 1) {
-					throw new SingularReferenceToMultiColumnPrimaryKeyException(adaptee, referencedClassWrapper, primaryKeys);
-
+					final String columnName = originalColumn.getColumnName();
+					StringMetric metric = with(new CosineSimilarity<String>())
+						.simplify(Simplifiers.replaceNonWord())
+						.tokenize(Tokenizers.whitespace())
+						.build();
+					Map<Float, PropertyWrapperDefinition> pkComps = new HashMap<>();
+					Map<PropertyWrapperDefinition, Float> pkMetrics = new HashMap<>();
+					Float maxComp = 0.0F;
+					
+					for (PropertyWrapperDefinition primaryKey : primaryKeys) {
+						final String pkName = primaryKey.getColumnName();
+					    float result = metric.compare(columnName, pkName);
+						pkComps.put(result, primaryKey);
+						pkMetrics.put(primaryKey,result);
+						maxComp = maxComp>result?maxComp:result;
+					}
+					if (maxComp == 0.0F) {
+						throw new SingularReferenceToMultiColumnPrimaryKeyException(adaptee, referencedClassWrapper, primaryKeys);
+					}else{
+						identifiedReferencedProperty = pkComps.get(maxComp);
+					}
 				} else {
 					identifiedReferencedProperty = primaryKeys[0];
 				}

@@ -72,7 +72,7 @@ public class OuterJoinTest extends AbstractTest {
 		CompanyLogo logo = new CompanyLogo();
 
 		DBQuery dbQuery = database.getDBQuery(mrq);
-		List<DBRow> tables = new ArrayList<DBRow>();
+		List<DBRow> tables = new ArrayList<>();
 		StringBuilder ansiJoinClause = new StringBuilder();
 		ansiJoinClause.append(dbQuery.getANSIJoinClause(database, new DBQuery.QueryState(dbQuery, database), carCo, tables, new QueryOptions()));
 		System.out.println("=============");
@@ -238,9 +238,7 @@ public class OuterJoinTest extends AbstractTest {
 			}else{
 				Assert.assertThat(
 						testableSQLWithoutColumnAliases(sqlForQuery),
-						anyOf(
 								is(reversedFullOuterQuery2)
-						)
 				);
 			}
 		}
