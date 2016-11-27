@@ -101,7 +101,7 @@ public class DataModelTest extends AbstractTest {
 		for (Class<? extends DBRow> class1 : result) {
 			System.out.println(class1.getName());
 		}
-		Assert.assertThat(result.size(), is(209));
+		Assert.assertThat(result.size(), is(211));
 	}
 
 	@Test

@@ -121,7 +121,7 @@ class ForeignKeyHandler {
 						pkMetrics.put(primaryKey,result);
 						maxComp = maxComp>result?maxComp:result;
 					}
-					if (maxComp <= 0.2F) {
+					if (maxComp <= 0.15F) {
 						throw new UnableToInterpolateReferencedColumnInMultiColumnPrimaryKeyException(adaptee, referencedClassWrapper, primaryKeys);
 					}else{
 						identifiedReferencedProperty = pkComps.get(maxComp);

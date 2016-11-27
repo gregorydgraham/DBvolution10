@@ -472,4 +472,42 @@ public class ForeignKeyHandlerTest {
 
 		foreignKeyHandlerOf(TestCustomer.class, "from");
 	}
+	
+	public void SuccessfullyGuessForeignKeyReferenceOfMultiplePrimaryKeyTable() {
+		class TestAddress extends DBRow {
+
+			@DBColumn
+			public DBInteger addressUid;
+
+			@DBColumn("version_name")
+			@DBPrimaryKey
+			public DBInteger versionName;
+
+			@DBColumn("version_type")
+			@DBPrimaryKey
+			public DBInteger versionType;
+
+			@DBColumn
+			public DBInteger intValue;
+		}
+
+		class TestCustomer extends DBRow {
+
+			@DBPrimaryKey
+			@DBColumn
+			public DBInteger customerUid;
+
+			@DBColumn("waste_sol_version")
+			@DBForeignKey(TestAddress.class)
+			public DBInteger wasteSolVersion = new DBInteger();
+
+			@DBColumn("waste_sol_version_type")
+			@DBForeignKey(TestAddress.class)
+			public DBInteger wasteSolVersionType = new DBInteger();
+
+		}
+
+		foreignKeyHandlerOf(TestCustomer.class, "wasteSolVersionType");
+		foreignKeyHandlerOf(TestCustomer.class, "wasteSolVersion");
+	}
 }
