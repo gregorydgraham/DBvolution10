@@ -101,6 +101,7 @@ public class GeneratedMarqueTest extends AbstractTest {
 			List<String> testClassNames = Arrays.asList(new String[]{"CreateTableForeignKey"});
 			List<String> testClasses = new ArrayList<String>();
 			testClasses.add("package nz.co.gregs.dbvolution.generation;\n\nimport nz.co.gregs.dbvolution.*;\nimport nz.co.gregs.dbvolution.datatypes.*;\nimport nz.co.gregs.dbvolution.datatypes.spatial2D.*;\nimport nz.co.gregs.dbvolution.annotations.*;\n\n@DBTableName(\"CREATE_TABLE_FOREIGN_KEY\") \npublic class CreateTableForeignKey extends DBRow {\n\n    public static final long serialVersionUID = 1L;\n\n    @DBColumn(\"NAME\")\n    public DBString name = new DBString();\n\n    @DBColumn(\"MARQUEFOREIGNKEY\")\n    @DBForeignKey(Marque.class)\n    public DBInteger marqueforeignkey = new DBInteger();\n\n    @DBColumn(\"CARCOFOREIGNKEY\")\n    @DBForeignKey(CarCompany.class)\n    public DBInteger carcoforeignkey = new DBInteger();\n\n}\n\n");
+			testClasses.add("package nz.co.gregs.dbvolution.generation;\n\nimport nz.co.gregs.dbvolution.*;\nimport nz.co.gregs.dbvolution.datatypes.*;\nimport nz.co.gregs.dbvolution.datatypes.spatial2D.*;\nimport nz.co.gregs.dbvolution.annotations.*;\n\n@DBTableName(\"CREATE_TABLE_FOREIGN_KEY\") \npublic class CreateTableForeignKey extends DBRow {\n\n    public static final long serialVersionUID = 1L;\n\n    @DBColumn(\"NAME\")\n    public DBString name = new DBString();\n\n    @DBColumn(\"MARQUEFOREIGNKEY\")\n    @DBForeignKey(value=Marque.class, column = \"UID_MARQUE\")\n    public DBInteger marqueforeignkey = new DBInteger();\n\n    @DBColumn(\"CARCOFOREIGNKEY\")\n    @DBForeignKey(value=CarCompany.class, column = \"UID_CARCOMPANY\")\n    public DBInteger carcoforeignkey = new DBInteger();\n\n}\n\n");
 			generateSchema = DBTableClassGenerator.generateClassesOfTables(database, "nz.co.gregs.dbvolution.generation", null, null);
 			for (DBTableClass dbcl : generateSchema) {
 				if (testClassNames.contains(dbcl.getClassName())) {
@@ -180,14 +181,21 @@ public class GeneratedMarqueTest extends AbstractTest {
 					DBRow row = (DBRow) newInstance;
 					List<DBRow> rows = database.getDBTable(row).setBlankQueryAllowed(true).getAllRows();
 					database.print(rows);
-					if (row.getTableName().equals("CAR_COMPANY")) {
-						Assert.assertThat(rows.size(), is(4));
-					} else if (row.getTableName().equals("MARQUE")) {
-						Assert.assertThat(rows.size(), is(22));
-					} else if (row.getTableName().equals("LT_CARCO_LOGO")) {
-						Assert.assertThat(rows.size(), is(0));
-					} else if (row.getTableName().equals("COMPANYLOGO")) {
-						Assert.assertThat(rows.size(), is(0));
+					switch (row.getTableName()) {
+						case "CAR_COMPANY":
+							Assert.assertThat(rows.size(), is(4));
+							break;
+						case "MARQUE":
+							Assert.assertThat(rows.size(), is(22));
+							break;
+						case "LT_CARCO_LOGO":
+							Assert.assertThat(rows.size(), is(0));
+							break;
+						case "COMPANYLOGO":
+							Assert.assertThat(rows.size(), is(0));
+							break;
+						default:
+							break;
 					}
 				} else {
 					System.out.println("SKIPPED: " + dbcl.getTableName());

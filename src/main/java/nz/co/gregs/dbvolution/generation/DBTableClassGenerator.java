@@ -332,33 +332,24 @@ public class DBTableClassGenerator {
 			fkRecog = new ForeignKeyRecognisor();
 		}
 
-		DBStatement dbStatement = database.getDBStatement();
-		try {
+		try (DBStatement dbStatement = database.getDBStatement()) {
 			Connection connection = dbStatement.getConnection();
 			String catalog = connection.getCatalog();
 			String schema = null;
 			try {
-				Method method = connection.getClass().getMethod("getSchema");
-				schema = (String) method.invoke(connection);
-				//schema = connection.getSchema();
-			} catch (java.lang.AbstractMethodError exp) {
+				//Method method = connection.getClass().getMethod("getSchema");
+				//schema = (String) method.invoke(connection);
+				schema = connection.getSchema();
+			}catch (java.lang.AbstractMethodError exp) {
 				// NOT USING Java 1.7+ apparently
-			} catch (IllegalAccessException ex) {
+			}catch (IllegalArgumentException ex) {
 				// NOT USING Java 1.7+ apparently
-			} catch (IllegalArgumentException ex) {
-				// NOT USING Java 1.7+ apparently
-			} catch (NoSuchMethodException ex) {
-				// NOT USING Java 1.7+ apparently
-			} catch (SecurityException ex) {
-				// NOT USING Java 1.7+ apparently
-			} catch (InvocationTargetException ex) {
+			}catch (SecurityException ex) {
 				// NOT USING Java 1.7+ apparently
 			}
 
 			DatabaseMetaData metaData = connection.getMetaData();
-			ResultSet tables = metaData.getTables(catalog, schema, null, dbObjectTypes);
-
-			try {
+			try (ResultSet tables = metaData.getTables(catalog, schema, null, dbObjectTypes)) {
 				while (tables.next()) {
 					final String tableName = tables.getString("TABLE_NAME");
 					if (schema == null) {
@@ -392,8 +383,7 @@ public class DBTableClassGenerator {
 							foreignKeysRS.close();
 						}
 
-						ResultSet columns = metaData.getColumns(catalog, schema, dbTableClass.getTableName(), null);
-						try {
+						try (ResultSet columns = metaData.getColumns(catalog, schema, dbTableClass.getTableName(), null)) {
 							while (columns.next()) {
 								DBTableField dbTableField = new DBTableField();
 								dbTableField.columnName = columns.getString("COLUMN_NAME");
@@ -440,19 +430,13 @@ public class DBTableClassGenerator {
 									dbTableClass.getFields().add(dbTableField);
 								}
 							}
-						} finally {
-							columns.close();
 						}
 
 						dbTableClasses.add(dbTableClass);
 					}
 				}
-			} finally {
-				tables.close();
 			}
 			generateAllJavaSource(dbTableClasses);
-		} finally {
-			dbStatement.close();
 		}
 		return dbTableClasses;
 	}
