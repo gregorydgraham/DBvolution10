@@ -33,7 +33,7 @@ public class DBTableClass {
 	private String packageName;
 	private String className;
 	private String tableName;
-	private String tableSchema;
+	private final String tableSchema;
 	private String javaSource;
 	private final List<DBTableField> fields = new ArrayList<DBTableField>();
 	private final String lineSeparator = System.getProperty("line.separator");
@@ -76,9 +76,10 @@ public class DBTableClass {
 	 * After all available information has been set for this DBTableClass, this
 	 * method is called to generate the required Java source.
 	 *
+	 * @param options
 	 * @return a String of the source code of the new DBRow class.
 	 */
-	public String generateJavaSource() {
+	public String generateJavaSource(DBTableClassGenerator.Options options) {
 		StringBuilder javaSrc = new StringBuilder();
 		final String outputPackageName = this.getPackageName();
 		if (outputPackageName != null) {
@@ -132,7 +133,11 @@ public class DBTableClass {
 				javaSrc.append("    @").append(autoIncrementAnnotation).append(lineSeparator);
 			}
 			if (field.isForeignKey) {
-				javaSrc.append("    @").append(foreignKeyAnnotation).append("(").append(field.referencesClass).append(".class)");
+				if(options.includeForeignKeyColumnName){
+					javaSrc.append("    @").append(foreignKeyAnnotation).append("(value = ").append(field.referencesClass).append(".class, column = \"").append(field.referencesField).append("\")");
+				} else {
+					javaSrc.append("    @").append(foreignKeyAnnotation).append("(").append(field.referencesClass).append(".class)");
+				}
 				javaSrc.append(lineSeparator);
 			}
 			if (unknownDatatype.equals(field.columnType)) {

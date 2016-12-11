@@ -20,8 +20,6 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
@@ -78,7 +76,7 @@ public class DBTableClassGenerator {
 	 * @throws java.io.IOException java.io.IOException
 	 */
 	public static void generateClasses(DBDatabase database, String packageName, String baseDirectory) throws SQLException, FileNotFoundException, IOException {
-		generateClasses(database, packageName, baseDirectory, 1L, new PrimaryKeyRecognisor(), new ForeignKeyRecognisor(), false);
+		generateClasses(database, packageName, baseDirectory, new Options());
 	}
 
 	/**
@@ -108,7 +106,9 @@ public class DBTableClassGenerator {
 	 *
 	 */
 	public static void generateClasses(DBDatabase database, String packageName, String baseDirectory, Long versionNumber) throws SQLException, FileNotFoundException, IOException {
-		generateClasses(database, packageName, baseDirectory, versionNumber, new PrimaryKeyRecognisor(), new ForeignKeyRecognisor(), false);
+		Options opts = new Options();
+		opts.versionNumber = versionNumber;
+		generateClasses(database, packageName, baseDirectory, opts);
 	}
 
 	/**
@@ -130,28 +130,23 @@ public class DBTableClassGenerator {
 	 * @param database database
 	 * @param packageName packageName
 	 * @param baseDirectory baseDirectory
-	 * @param fkRecog fkRecog an object that can recognize foreign key columns by
-	 * the column name and derive the related table
-	 * @param versionNumber versionNumber
-	 * @param pkRecog pkRecog an object that can recognize primary key columns by
-	 * the column name
-	 * @param trimCharColumns
+	 * @param options
 	 * @throws java.sql.SQLException java.sql.SQLException
 	 * @throws java.io.FileNotFoundException java.io.FileNotFoundException
 	 * @throws java.io.IOException java.io.IOException
 	 */
-	public static void generateClasses(DBDatabase database, String packageName, String baseDirectory, Long versionNumber, PrimaryKeyRecognisor pkRecog, ForeignKeyRecognisor fkRecog, Boolean trimCharColumns) throws SQLException, FileNotFoundException, IOException {
+	public static void generateClasses(DBDatabase database, String packageName, String baseDirectory, Options options) throws SQLException, FileNotFoundException, IOException {
 		String viewsPackage = packageName + ".views";
 		String viewsPath = viewsPackage.replaceAll("[.]", "/");
-		List<DBTableClass> generatedViews = DBTableClassGenerator.generateClassesOfViews(database, viewsPackage, pkRecog, fkRecog, trimCharColumns);
+		List<DBTableClass> generatedViews = DBTableClassGenerator.generateClassesOfViews(database, viewsPackage, options);
 
 		String tablesPackage = packageName + ".tables";
 		String tablesPath = tablesPackage.replaceAll("[.]", "/");
-		List<DBTableClass> generatedTables = DBTableClassGenerator.generateClassesOfTables(database, tablesPackage, pkRecog, fkRecog, trimCharColumns);
+		List<DBTableClass> generatedTables = DBTableClassGenerator.generateClassesOfTables(database, tablesPackage, options);
 		List<DBTableClass> allGeneratedClasses = new ArrayList<>();
 		allGeneratedClasses.addAll(generatedViews);
 		allGeneratedClasses.addAll(generatedTables);
-		generateAllJavaSource(allGeneratedClasses);
+		generateAllJavaSource(allGeneratedClasses, options);
 
 		File dir = new File(baseDirectory + "/" + viewsPath);
 		if (dir.mkdirs() || dir.exists()) {
@@ -219,40 +214,13 @@ public class DBTableClassGenerator {
 	 *
 	 * @param database database
 	 * @param packageName packageName
-	 * @param pkRecog pkRecog
-	 * @param fkRecog fkRecog
-	 * @param trimCharColumns
+	 * @param options
 	 * @return a List of DBTableClass instances representing the tables found on
 	 * the database 1 Database exceptions may be thrown
 	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
-	public static List<DBTableClass> generateClassesOfTables(DBDatabase database, String packageName, PrimaryKeyRecognisor pkRecog, ForeignKeyRecognisor fkRecog, Boolean trimCharColumns) throws SQLException {
-		return generateClassesOfObjectTypes(database, packageName, pkRecog, fkRecog, trimCharColumns, "TABLE");
-	}
-
-	/**
-	 * Generate the required Java classes for all the Tables on the database.
-	 *
-	 * <p>
-	 * Connects to the database using the DBDatabase instance supplied and
-	 * generates class for the tables it can find.
-	 *
-	 * <p>
-	 * Classes will be in the package supplied, serialVersionUID will be set to
-	 * the version number supplied and the supplied {@link PrimaryKeyRecognisor}
-	 * and {@link ForeignKeyRecognisor} will be used.
-	 *
-	 *
-	 * @param database database
-	 * @param packageName packageName
-	 * @param pkRecog pkRecog
-	 * @param fkRecog fkRecog
-	 * @return a List of DBTableClass instances representing the tables found on
-	 * the database 1 Database exceptions may be thrown
-	 * @throws java.sql.SQLException java.sql.SQLException
-	 */
-	public static List<DBTableClass> generateClassesOfTables(DBDatabase database, String packageName, PrimaryKeyRecognisor pkRecog, ForeignKeyRecognisor fkRecog) throws SQLException {
-		return generateClassesOfObjectTypes(database, packageName, pkRecog, fkRecog, false, "TABLE");
+	public static List<DBTableClass> generateClassesOfTables(DBDatabase database, String packageName, Options options) throws SQLException {
+		return generateClassesOfObjectTypes(database, packageName, options, "TABLE");
 	}
 
 	/**
@@ -269,39 +237,13 @@ public class DBTableClassGenerator {
 	 *
 	 * @param database database
 	 * @param packageName packageName
-	 * @param pkRecog pkRecog
-	 * @param fkRecog fkRecog
-	 * @param trimCharColumns
+	 * @param options
 	 * @return a List of DBTableClass instances representing the views found on
 	 * the database 1 Database exceptions may be thrown
 	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
-	public static List<DBTableClass> generateClassesOfViews(DBDatabase database, String packageName, PrimaryKeyRecognisor pkRecog, ForeignKeyRecognisor fkRecog, Boolean trimCharColumns) throws SQLException {
-		return generateClassesOfObjectTypes(database, packageName, pkRecog, fkRecog, trimCharColumns, "VIEW");
-	}
-
-	/**
-	 * Generate the required Java classes for all the Views on the database.
-	 *
-	 * <p>
-	 * Connects to the database using the DBDatabase instance supplied and
-	 * generates class for the views it can find.
-	 *
-	 * <p>
-	 * Classes will be in the package supplied, serialVersionUID will be set to
-	 * the version number supplied and the supplied {@link PrimaryKeyRecognisor}
-	 * and {@link ForeignKeyRecognisor} will be used.
-	 *
-	 * @param database database
-	 * @param packageName packageName
-	 * @param pkRecog pkRecog
-	 * @param fkRecog fkRecog
-	 * @return a List of DBTableClass instances representing the views found on
-	 * the database 1 Database exceptions may be thrown
-	 * @throws java.sql.SQLException java.sql.SQLException
-	 */
-	public static List<DBTableClass> generateClassesOfViews(DBDatabase database, String packageName, PrimaryKeyRecognisor pkRecog, ForeignKeyRecognisor fkRecog) throws SQLException {
-		return generateClassesOfObjectTypes(database, packageName, pkRecog, fkRecog, false, "VIEW");
+	public static List<DBTableClass> generateClassesOfViews(DBDatabase database, String packageName, Options options) throws SQLException {
+		return generateClassesOfObjectTypes(database, packageName, options, "VIEW");
 	}
 
 	/**
@@ -320,17 +262,8 @@ public class DBTableClassGenerator {
 	 * @return a List of DBTableClass instances representing the tables and views
 	 * found on the database 1 Database exceptions may be thrown
 	 */
-	private static List<DBTableClass> generateClassesOfObjectTypes(DBDatabase database, String packageName, PrimaryKeyRecognisor pkRecognisor, ForeignKeyRecognisor fkRecogisor, Boolean trimCharColumns, String... dbObjectTypes) throws SQLException {
+	private static List<DBTableClass> generateClassesOfObjectTypes(DBDatabase database, String packageName, Options options, String... dbObjectTypes) throws SQLException {
 		List<DBTableClass> dbTableClasses = new ArrayList<>();
-		PrimaryKeyRecognisor pkRecog = pkRecognisor;
-		if (pkRecognisor == null) {
-			pkRecog = new PrimaryKeyRecognisor();
-		}
-
-		ForeignKeyRecognisor fkRecog = fkRecogisor;
-		if (fkRecogisor == null) {
-			fkRecog = new ForeignKeyRecognisor();
-		}
 
 		try (DBStatement dbStatement = database.getDBStatement()) {
 			Connection connection = dbStatement.getConnection();
@@ -405,12 +338,12 @@ public class DBTableClassGenerator {
 								try {
 									dbTableField.sqlDataTypeInt = columns.getInt("DATA_TYPE");
 									dbTableField.sqlDataTypeName = columns.getString("TYPE_NAME");
-									dbTableField.columnType = getQueryableDatatypeNameOfSQLType(database, dbTableField, trimCharColumns);
+									dbTableField.columnType = getQueryableDatatypeNameOfSQLType(database, dbTableField, options.trimCharColumns);
 								} catch (UnknownJavaSQLTypeException ex) {
 									dbTableField.columnType = DBUnknownDatatype.class;
 									dbTableField.javaSQLDatatype = ex.getUnknownJavaSQLType();
 								}
-								if (pkNames.contains(dbTableField.columnName) || pkRecog.isPrimaryKeyColumn(dbTableClass.getTableName(), dbTableField.columnName)) {
+								if (pkNames.contains(dbTableField.columnName) || options.pkRecog.isPrimaryKeyColumn(dbTableClass.getTableName(), dbTableField.columnName)) {
 									dbTableField.isPrimaryKey = true;
 								}
 
@@ -421,10 +354,10 @@ public class DBTableClassGenerator {
 									dbTableField.isForeignKey = true;
 									dbTableField.referencesClass = toClassCase(pkData[0]);
 									dbTableField.referencesField = pkData[1];
-								} else if (fkRecog.isForeignKeyColumn(dbTableClass.getTableName(), dbTableField.columnName)) {
+								} else if (options.fkRecog.isForeignKeyColumn(dbTableClass.getTableName(), dbTableField.columnName)) {
 									dbTableField.isForeignKey = true;
-									dbTableField.referencesField = fkRecog.getReferencedColumn(dbTableClass.getTableName(), dbTableField.columnName);
-									dbTableField.referencesClass = toClassCase(fkRecog.getReferencedTable(dbTableClass.getTableName(), dbTableField.columnName));
+									dbTableField.referencesField = options.fkRecog.getReferencedColumn(dbTableClass.getTableName(), dbTableField.columnName);
+									dbTableField.referencesClass = toClassCase(options.fkRecog.getReferencedTable(dbTableClass.getTableName(), dbTableField.columnName));
 								}
 								if (!dbTableClass.getFields().contains(dbTableField)) {
 									dbTableClass.getFields().add(dbTableField);
@@ -436,12 +369,12 @@ public class DBTableClassGenerator {
 					}
 				}
 			}
-			generateAllJavaSource(dbTableClasses);
+			generateAllJavaSource(dbTableClasses, options);
 		}
 		return dbTableClasses;
 	}
 
-	static void generateAllJavaSource(List<DBTableClass> dbTableClasses) {
+	static void generateAllJavaSource(List<DBTableClass> dbTableClasses, Options options) {
 		List<String> dbTableClassNames = new ArrayList<>();
 
 		for (DBTableClass dbt : dbTableClasses) {
@@ -464,7 +397,7 @@ public class DBTableClassGenerator {
 					}
 				}
 			}
-			dbt.generateJavaSource();
+			dbt.generateJavaSource(options);
 //            System.out.println(dbt.javaSource);
 		}
 	}
@@ -640,5 +573,33 @@ public class DBTableClassGenerator {
 	}
 
 	private DBTableClassGenerator() {
+	}
+	
+	/*
+	 * @param fkRecog fkRecog an object that can recognize foreign key columns by
+	 * the column name and derive the related table
+	 * @param versionNumber versionNumber
+	 * @param pkRecog pkRecog an object that can recognize primary key columns by
+	 * the column name
+	 * @param trimCharColumns
+
+	*/
+	public static class Options{
+		
+		public Long versionNumber = 1l;
+		public PrimaryKeyRecognisor pkRecog = new PrimaryKeyRecognisor();
+		public ForeignKeyRecognisor fkRecog = new ForeignKeyRecognisor();
+		public Boolean trimCharColumns = false;
+		public Boolean includeForeignKeyColumnName = false;
+		
+		public Options(){}
+		public Options(Long versionNumber, PrimaryKeyRecognisor pkRecog, ForeignKeyRecognisor fkRecog, Boolean trimCharColumns){
+			this.versionNumber=versionNumber;
+			this.pkRecog = pkRecog;
+			this.fkRecog = fkRecog;
+			this.trimCharColumns = trimCharColumns;
+			
+		}
+		
 	}
 }
