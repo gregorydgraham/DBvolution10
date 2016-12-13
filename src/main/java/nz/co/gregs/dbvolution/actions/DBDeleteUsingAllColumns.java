@@ -37,7 +37,7 @@ import nz.co.gregs.dbvolution.internal.properties.PropertyWrapper;
  */
 public class DBDeleteUsingAllColumns extends DBDelete {
 
-	private List<DBRow> savedRows = new ArrayList<>();
+	private final List<DBRow> savedRows = new ArrayList<>();
 
 	/**
 	 * Creates a DBDeleteUsingAllColumns action for the supplied example DBRow on
@@ -61,18 +61,16 @@ public class DBDeleteUsingAllColumns extends DBDelete {
 	@Override
 	public DBActionList execute(DBDatabase db) throws SQLException {
 		DBRow row = getRow();
-		DBActionList actions = new DBActionList(new DBDeleteUsingAllColumns(row));
-		DBStatement statement = db.getDBStatement();
-		try {
+		final DBDeleteUsingAllColumns dbDeleteUsingAllColumns = new DBDeleteUsingAllColumns(row);
+		DBActionList actions = new DBActionList(dbDeleteUsingAllColumns);
+		try (DBStatement statement = db.getDBStatement()) {
 			List<DBRow> rowsToBeDeleted = db.get(row);
 			for (DBRow deletingRow : rowsToBeDeleted) {
-				savedRows.add(DBRow.copyDBRow(deletingRow));
+				dbDeleteUsingAllColumns.savedRows.add(DBRow.copyDBRow(deletingRow));
 			}
 			for (String str : getSQLStatements(db)) {
 				statement.execute(str);
 			}
-		} finally {
-			statement.close();
 		}
 		return actions;
 	}

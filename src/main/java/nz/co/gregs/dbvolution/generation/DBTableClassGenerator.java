@@ -273,6 +273,8 @@ public class DBTableClassGenerator {
 				//Method method = connection.getClass().getMethod("getSchema");
 				//schema = (String) method.invoke(connection);
 				schema = connection.getSchema();
+			}catch(java.sql.SQLFeatureNotSupportedException nope){
+				// SOMEONE DIDN'T WRITE THEIR DRIVER PROPERLY
 			}catch (java.lang.AbstractMethodError exp) {
 				// NOT USING Java 1.7+ apparently
 			}catch (IllegalArgumentException ex) {

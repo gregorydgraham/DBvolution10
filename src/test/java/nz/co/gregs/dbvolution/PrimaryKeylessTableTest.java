@@ -16,7 +16,6 @@
 package nz.co.gregs.dbvolution;
 
 import java.sql.SQLException;
-import nz.co.gregs.dbvolution.DBQuery;
 import nz.co.gregs.dbvolution.example.CarCompany;
 import nz.co.gregs.dbvolution.example.CompanyLogo;
 import nz.co.gregs.dbvolution.example.LinkCarCompanyAndLogo;
@@ -57,7 +56,7 @@ public class PrimaryKeylessTableTest extends AbstractTest {
 		dbQuery.print();
 	}
 
-	@Test
+		@Test
 	public void testCartesianJoinProtection() throws SQLException, Exception {
 		try {
 			DBQuery dbQuery = database.getDBQuery(new Marque(), new CompanyLogo());

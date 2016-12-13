@@ -30,6 +30,7 @@ import nz.co.gregs.dbvolution.datatypes.DBInteger;
 import nz.co.gregs.dbvolution.datatypes.DBString;
 import nz.co.gregs.dbvolution.example.CarCompany;
 import nz.co.gregs.dbvolution.example.CompanyLogo;
+import nz.co.gregs.dbvolution.example.LinkCarCompanyAndLogo;
 import nz.co.gregs.dbvolution.example.Marque;
 import nz.co.gregs.dbvolution.exceptions.UnexpectedNumberOfRowsException;
 import nz.co.gregs.dbvolution.generic.AbstractTest;
@@ -224,6 +225,33 @@ public class DBActionListCreationTest extends AbstractTest {
 		revertActionList.execute(database);
 		foundToyota = database.get(example);
 		Assert.assertThat(foundToyota.size(), is(1));
+	}
+	
+	@Test
+	public void deleteUsingAllColumnsAndRevertTest() throws SQLException {
+		database.setPrintSQLBeforeExecuting(true);
+		LinkCarCompanyAndLogo example = new LinkCarCompanyAndLogo();
+		example.fkCarCompany.setValue(1);
+		example.fkCompanyLogo.setValue(1);
+		database.getDBTable(example).insert(example);
+		List<LinkCarCompanyAndLogo> foundLinks = database.get(example);
+		Assert.assertThat(foundLinks.size(), is(1));
+
+		DBActionList deleteActions = database.delete(foundLinks.get(0));
+		Assert.assertThat(deleteActions.size(), is(1));
+		Assert.assertThat(deleteActions.get(0), instanceOf(DBDeleteUsingAllColumns.class));
+
+		foundLinks = database.get(example);
+		Assert.assertThat(foundLinks.size(), is(0));
+
+		DBActionList revertActionList = deleteActions.getRevertActionList();
+		Assert.assertThat(revertActionList.size(), is(1));
+		Assert.assertThat(revertActionList.get(0), instanceOf(DBInsert.class));
+
+		revertActionList.execute(database);
+		foundLinks = database.get(example);
+		Assert.assertThat(foundLinks.size(), is(1));
+		database.delete(example);
 	}
 
 	@Test
