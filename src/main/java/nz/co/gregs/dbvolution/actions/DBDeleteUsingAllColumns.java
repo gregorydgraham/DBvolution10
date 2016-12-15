@@ -63,11 +63,11 @@ public class DBDeleteUsingAllColumns extends DBDelete {
 		DBRow row = getRow();
 		final DBDeleteUsingAllColumns dbDeleteUsingAllColumns = new DBDeleteUsingAllColumns(row);
 		DBActionList actions = new DBActionList(dbDeleteUsingAllColumns);
+		List<DBRow> rowsToBeDeleted = db.get(row);
+		for (DBRow deletingRow : rowsToBeDeleted) {
+			dbDeleteUsingAllColumns.savedRows.add(DBRow.copyDBRow(deletingRow));
+		}
 		try (DBStatement statement = db.getDBStatement()) {
-			List<DBRow> rowsToBeDeleted = db.get(row);
-			for (DBRow deletingRow : rowsToBeDeleted) {
-				dbDeleteUsingAllColumns.savedRows.add(DBRow.copyDBRow(deletingRow));
-			}
 			for (String str : getSQLStatements(db)) {
 				statement.execute(str);
 			}
