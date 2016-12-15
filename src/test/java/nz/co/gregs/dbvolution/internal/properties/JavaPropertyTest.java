@@ -13,7 +13,6 @@ import nz.co.gregs.dbvolution.annotations.DBPrimaryKey;
 import nz.co.gregs.dbvolution.datatypes.DBInteger;
 import nz.co.gregs.dbvolution.datatypes.DBString;
 import nz.co.gregs.dbvolution.datatypes.DBTypeAdaptor;
-import nz.co.gregs.dbvolution.exceptions.DBPebkacException;
 import nz.co.gregs.dbvolution.exceptions.DBThrownByEndUserCodeException;
 import nz.co.gregs.dbvolution.exceptions.ReferenceToUndefinedPrimaryKeyException;
 import nz.co.gregs.dbvolution.internal.properties.JavaPropertyFinder.PropertyType;
@@ -491,10 +490,12 @@ public class JavaPropertyTest {
 	public void errorsWhenRetrievingAnnotationGivenDifferentDuplicatedComplexAnnotationOnGetterAndSetter() {
 		class MyAdaptor implements DBTypeAdaptor<Object, DBInteger> {
 
+			@Override
 			public Object fromDatabaseValue(DBInteger dbvValue) {
 				return null;
 			}
 
+			@Override
 			public DBInteger toDatabaseValue(Object objectValue) {
 				return null;
 			}
@@ -520,10 +521,12 @@ public class JavaPropertyTest {
 	public void errorsWhenRetrievingAnnotationGivenDifferentDuplicatedDefaultedComplexAnnotationOnGetterAndSetter() {
 		class MyAdaptor implements DBTypeAdaptor<Object, DBInteger> {
 
+			@Override
 			public Object fromDatabaseValue(DBInteger dbvValue) {
 				return null;
 			}
 
+			@Override
 			public DBInteger toDatabaseValue(Object objectValue) {
 				return null;
 			}

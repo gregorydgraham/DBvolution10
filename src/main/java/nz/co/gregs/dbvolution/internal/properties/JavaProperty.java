@@ -3,7 +3,6 @@ package nz.co.gregs.dbvolution.internal.properties;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 
-import nz.co.gregs.dbvolution.exceptions.DBPebkacException;
 import nz.co.gregs.dbvolution.exceptions.DBThrownByEndUserCodeException;
 
 /**
@@ -97,8 +96,6 @@ public interface JavaProperty {
 	 * reference type that can be used when calling both the getter and setter.
 	 *
 	 * @return the type if a single consistent type can be resolved
-	 * @throws DBPebkacException if the types are different and unable to be
-	 * resolved to a single type
 	 */
 	public Class<?> type();
 
@@ -195,7 +192,6 @@ public interface JavaProperty {
 	 * @param <A>
 	 * @param annotationClass the annotation to check for
 	 * @return the annotation, or null if not found
-	 * @throws DBPebkacException if the annotation is duplicated and different
 	 */
 	public <A extends Annotation> A getAnnotation(Class<A> annotationClass);
 

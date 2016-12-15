@@ -54,6 +54,8 @@ public class DateExpressionTest extends AbstractTest {
 		@DBColumn
 		public DBDate currentDate = new DBDate(DateExpression.currentDateOnly());
 		@DBColumn
+		public DBNumber dayFromCurrentDate = new DBNumber(DateExpression.currentDateOnly().day());
+		@DBColumn
 		public DBDate currentDateTime = new DBDate(DateExpression.currentDate());
 		@DBColumn
 		public DBDate currentDateTimeMinus10Seconds = new DBDate(DateExpression.currentDate().addSeconds(-10));

@@ -7,7 +7,6 @@ import java.util.Map;
 
 import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.annotations.DBTableName;
-import nz.co.gregs.dbvolution.exceptions.DBPebkacException;
 import nz.co.gregs.dbvolution.exceptions.DBRuntimeException;
 import nz.co.gregs.dbvolution.exceptions.ReferenceToUndefinedPrimaryKeyException;
 import nz.co.gregs.dbvolution.internal.properties.JavaPropertyFinder.PropertyType;
@@ -87,7 +86,6 @@ public class RowDefinitionClassWrapper {
 	 * validations that can be performed up front.
 	 *
 	 * @param clazz the {@code DBRow} class to wrap
-	 * @throws DBPebkacException on any validation errors
 	 */
 	public RowDefinitionClassWrapper(Class<? extends RowDefinition> clazz) {
 		this(clazz, false);
