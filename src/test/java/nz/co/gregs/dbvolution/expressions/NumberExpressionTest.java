@@ -27,23 +27,8 @@ import nz.co.gregs.dbvolution.example.CarCompany;
 import nz.co.gregs.dbvolution.example.Marque;
 import nz.co.gregs.dbvolution.generic.AbstractTest;
 import org.hamcrest.Matchers;
-import static org.hamcrest.Matchers.is;
 import org.junit.Assert;
 import org.junit.Test;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.is;
 
 public class NumberExpressionTest extends AbstractTest {
@@ -379,6 +364,29 @@ public class NumberExpressionTest extends AbstractTest {
 		Assert.assertThat(allRows.size(), is(2));
 		Marque marque = allRows.get(0).get(marq);
 		Assert.assertThat(marque.uidMarque.getValue().intValue(), is(1));
+	}
+
+	@Test
+	public void testIn() throws SQLException {
+		Marque marq = new Marque();
+		DBQuery dbQuery = database.getDBQuery(marq);
+		dbQuery.addCondition(
+				marq.column(marq.statusClassID).isIn(1,2,3,4,5)
+		);
+		List<DBQueryRow> allRows = dbQuery.getAllRows();
+//        database.print(allRows);
+		Assert.assertThat(allRows.size(), is(0));
+		
+		
+		dbQuery = database.getDBQuery(marq);
+		dbQuery.addCondition(
+				marq.column(marq.statusClassID).isIn(1,2,3,4,5, 1246974)
+		);
+		allRows = dbQuery.getAllRows();
+//        database.print(allRows);
+		Assert.assertThat(allRows.size(), is(21));
+		Marque marque = allRows.get(0).get(marq);
+		Assert.assertThat(marque.statusClassID.getValue().intValue(), is(1246974));
 	}
 
 	@Test

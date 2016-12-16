@@ -918,7 +918,7 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 	 * {@link DBQuery#addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression)}
 	 */
 	public BooleanExpression isIn(Number... possibleValues) {
-		List<NumberExpression> possVals = new ArrayList<NumberExpression>();
+		List<NumberExpression> possVals = new ArrayList<>();
 		for (Number num : possibleValues) {
 			if (num == null) {
 				possVals.add(null);
@@ -938,7 +938,7 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 	 * {@link DBQuery#addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression)}
 	 */
 	public BooleanExpression isIn(Collection<? extends Number> possibleValues) {
-		List<NumberExpression> possVals = new ArrayList<NumberExpression>();
+		List<NumberExpression> possVals = new ArrayList<>();
 		for (Number num : possibleValues) {
 			possVals.add(value(num));
 		}
@@ -953,13 +953,14 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 	 * @return a BooleanExpression for use in
 	 * {@link DBQuery#addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression)}
 	 */
+	@Override
 	public BooleanExpression isIn(NumberResult... possibleValues) {
 		BooleanExpression isinExpr
 				= new BooleanExpression(new DBNnaryBooleanFunction(this, possibleValues) {
 
 					@Override
 					public String toSQLString(DBDatabase db) {
-						List<String> sqlValues = new ArrayList<String>();
+						List<String> sqlValues = new ArrayList<>();
 						for (NumberResult value : this.getValues()) {
 							sqlValues.add(value.toSQLString(db));
 						}
@@ -989,7 +990,7 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 	 * @return the least/smallest value from the list.
 	 */
 	public static NumberExpression leastOf(Number... possibleValues) {
-		List<NumberExpression> possVals = new ArrayList<NumberExpression>();
+		List<NumberExpression> possVals = new ArrayList<>();
 		for (Number num : possibleValues) {
 			possVals.add(value(num));
 		}
@@ -1007,7 +1008,7 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 	 * @return the least/smallest value from the list.
 	 */
 	public static NumberExpression leastOf(Collection<? extends NumberResult> possibleValues) {
-		List<NumberExpression> possVals = new ArrayList<NumberExpression>();
+		List<NumberExpression> possVals = new ArrayList<>();
 		for (NumberResult num : possibleValues) {
 			possVals.add(new NumberExpression(num));
 		}
@@ -1030,7 +1031,7 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 
 					@Override
 					public String toSQLString(DBDatabase db) {
-						List<String> strs = new ArrayList<String>();
+						List<String> strs = new ArrayList<>();
 						for (NumberResult num : this.values) {
 							strs.add(num.toSQLString(db));
 						}
@@ -1056,7 +1057,7 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 	 * @return the greatest/largest value from the list.
 	 */
 	public static NumberExpression greatestOf(Number... possibleValues) {
-		List<NumberExpression> possVals = new ArrayList<NumberExpression>();
+		List<NumberExpression> possVals = new ArrayList<>();
 		for (Number num : possibleValues) {
 			possVals.add(value(num));
 		}
@@ -1074,7 +1075,7 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 	 * @return the greatest/largest value from the list.
 	 */
 	public static NumberExpression greatestOf(Collection<? extends Number> possibleValues) {
-		List<NumberExpression> possVals = new ArrayList<NumberExpression>();
+		List<NumberExpression> possVals = new ArrayList<>();
 		for (Number num : possibleValues) {
 			possVals.add(value(num));
 		}
@@ -1096,7 +1097,7 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 				= new NumberExpression(new DBNnaryNumberFunction(possibleValues) {
 					@Override
 					public String toSQLString(DBDatabase db) {
-						List<String> strs = new ArrayList<String>();
+						List<String> strs = new ArrayList<>();
 						for (NumberResult num : this.values) {
 							strs.add(num.toSQLString(db));
 						}
@@ -2043,7 +2044,7 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 	 * @return SQL that selects the string from the list based on this expression.
 	 */
 	public StringExpression choose(String... stringsToChooseFrom) {
-		List<StringResult> strResult = new ArrayList<StringResult>();
+		List<StringResult> strResult = new ArrayList<>();
 		for (String str : stringsToChooseFrom) {
 			strResult.add(new StringExpression(str));
 		}
@@ -2071,7 +2072,7 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 
 					@Override
 					public String toSQLString(DBDatabase db) {
-						List<String> strs = new ArrayList<String>();
+						List<String> strs = new ArrayList<>();
 						for (StringResult num : this.values) {
 							strs.add(num.toSQLString(db));
 						}
@@ -2250,7 +2251,7 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 
 	@Override
 	public Set<DBRow> getTablesInvolved() {
-		HashSet<DBRow> hashSet = new HashSet<DBRow>();
+		HashSet<DBRow> hashSet = new HashSet<>();
 		if (getInnerNumberResult() != null) {
 			hashSet.addAll(getInnerNumberResult().getTablesInvolved());
 		}
@@ -2791,127 +2792,127 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 		}
 	}
 
-	private static abstract class DBBinaryStringNumberFunction implements StringResult {
+//	private static abstract class DBBinaryStringNumberFunction implements StringResult {
+//
+//		private DBExpression first;
+//		private DBExpression second;
+//
+//		DBBinaryStringNumberFunction(StringResult first, NumberResult second) {
+//			this.first = first;
+//			this.second = second;
+//		}
+//
+//		@Override
+//		public DBNumber getQueryableDatatypeForExpressionValue() {
+//			return new DBNumber();
+//		}
+//
+//		@Override
+//		abstract public String toSQLString(DBDatabase db);
+//
+//		@Override
+//		public DBBinaryStringNumberFunction copy() {
+//			DBBinaryStringNumberFunction newInstance;
+//			try {
+//				newInstance = getClass().newInstance();
+//			} catch (InstantiationException ex) {
+//				throw new RuntimeException(ex);
+//			} catch (IllegalAccessException ex) {
+//				throw new RuntimeException(ex);
+//			}
+//			newInstance.first = first.copy();
+//			newInstance.second = second.copy();
+//			return newInstance;
+//		}
+//
+//		@Override
+//		public Set<DBRow> getTablesInvolved() {
+//			HashSet<DBRow> hashSet = new HashSet<DBRow>();
+//			if (first != null) {
+//				hashSet.addAll(first.getTablesInvolved());
+//			}
+//			if (second != null) {
+//				hashSet.addAll(second.getTablesInvolved());
+//			}
+//			return hashSet;
+//		}
+//
+//		@Override
+//		public boolean isAggregator() {
+//			return first.isAggregator() || second.isAggregator();
+//		}
+//
+//		@Override
+//		public boolean getIncludesNull() {
+//			return false;
+//		}
+//	}
 
-		private DBExpression first;
-		private DBExpression second;
-
-		DBBinaryStringNumberFunction(StringResult first, NumberResult second) {
-			this.first = first;
-			this.second = second;
-		}
-
-		@Override
-		public DBNumber getQueryableDatatypeForExpressionValue() {
-			return new DBNumber();
-		}
-
-		@Override
-		abstract public String toSQLString(DBDatabase db);
-
-		@Override
-		public DBBinaryStringNumberFunction copy() {
-			DBBinaryStringNumberFunction newInstance;
-			try {
-				newInstance = getClass().newInstance();
-			} catch (InstantiationException ex) {
-				throw new RuntimeException(ex);
-			} catch (IllegalAccessException ex) {
-				throw new RuntimeException(ex);
-			}
-			newInstance.first = first.copy();
-			newInstance.second = second.copy();
-			return newInstance;
-		}
-
-		@Override
-		public Set<DBRow> getTablesInvolved() {
-			HashSet<DBRow> hashSet = new HashSet<DBRow>();
-			if (first != null) {
-				hashSet.addAll(first.getTablesInvolved());
-			}
-			if (second != null) {
-				hashSet.addAll(second.getTablesInvolved());
-			}
-			return hashSet;
-		}
-
-		@Override
-		public boolean isAggregator() {
-			return first.isAggregator() || second.isAggregator();
-		}
-
-		@Override
-		public boolean getIncludesNull() {
-			return false;
-		}
-	}
-
-	private static abstract class DBTrinaryFunction implements NumberResult {
-
-		private DBExpression first;
-		private DBExpression second;
-		private DBExpression third;
-
-		DBTrinaryFunction(DBExpression first) {
-			this.first = first;
-			this.second = null;
-			this.third = null;
-		}
-
-		DBTrinaryFunction(DBExpression first, DBExpression second) {
-			this.first = first;
-			this.second = second;
-		}
-
-		DBTrinaryFunction(DBExpression first, DBExpression second, DBExpression third) {
-			this.first = first;
-			this.second = second;
-			this.third = third;
-		}
-
-		@Override
-		public String toSQLString(DBDatabase db) {
-			return this.beforeValue(db) + first.toSQLString(db)
-					+ this.getSeparator(db) + (second == null ? "" : second.toSQLString(db))
-					+ this.getSeparator(db) + (third == null ? "" : third.toSQLString(db))
-					+ this.afterValue(db);
-		}
-
-		@Override
-		public DBTrinaryFunction copy() {
-			DBTrinaryFunction newInstance;
-			try {
-				newInstance = getClass().newInstance();
-			} catch (InstantiationException ex) {
-				throw new RuntimeException(ex);
-			} catch (IllegalAccessException ex) {
-				throw new RuntimeException(ex);
-			}
-			newInstance.first = first == null ? null : first.copy();
-			newInstance.second = second == null ? null : second.copy();
-			return newInstance;
-		}
-
-		abstract String getFunctionName(DBDatabase db);
-
-		protected String beforeValue(DBDatabase db) {
-			return " " + getFunctionName(db) + "( ";
-		}
-
-		protected String getSeparator(DBDatabase db) {
-			return ", ";
-		}
-
-		protected String afterValue(DBDatabase db) {
-			return ") ";
-		}
-
-		@Override
-		public boolean isAggregator() {
-			return first.isAggregator() || second.isAggregator() || third.isAggregator();
-		}
-	}
+//	private static abstract class DBTrinaryFunction implements NumberResult {
+//
+//		private DBExpression first;
+//		private DBExpression second;
+//		private DBExpression third;
+//
+//		DBTrinaryFunction(DBExpression first) {
+//			this.first = first;
+//			this.second = null;
+//			this.third = null;
+//		}
+//
+//		DBTrinaryFunction(DBExpression first, DBExpression second) {
+//			this.first = first;
+//			this.second = second;
+//		}
+//
+//		DBTrinaryFunction(DBExpression first, DBExpression second, DBExpression third) {
+//			this.first = first;
+//			this.second = second;
+//			this.third = third;
+//		}
+//
+//		@Override
+//		public String toSQLString(DBDatabase db) {
+//			return this.beforeValue(db) + first.toSQLString(db)
+//					+ this.getSeparator(db) + (second == null ? "" : second.toSQLString(db))
+//					+ this.getSeparator(db) + (third == null ? "" : third.toSQLString(db))
+//					+ this.afterValue(db);
+//		}
+//
+//		@Override
+//		public DBTrinaryFunction copy() {
+//			DBTrinaryFunction newInstance;
+//			try {
+//				newInstance = getClass().newInstance();
+//			} catch (InstantiationException ex) {
+//				throw new RuntimeException(ex);
+//			} catch (IllegalAccessException ex) {
+//				throw new RuntimeException(ex);
+//			}
+//			newInstance.first = first == null ? null : first.copy();
+//			newInstance.second = second == null ? null : second.copy();
+//			return newInstance;
+//		}
+//
+//		abstract String getFunctionName(DBDatabase db);
+//
+//		protected String beforeValue(DBDatabase db) {
+//			return " " + getFunctionName(db) + "( ";
+//		}
+//
+//		protected String getSeparator(DBDatabase db) {
+//			return ", ";
+//		}
+//
+//		protected String afterValue(DBDatabase db) {
+//			return ") ";
+//		}
+//
+//		@Override
+//		public boolean isAggregator() {
+//			return first.isAggregator() || second.isAggregator() || third.isAggregator();
+//		}
+//	}
 
 	private static abstract class DBBinaryBooleanArithmetic extends BooleanExpression {
 
