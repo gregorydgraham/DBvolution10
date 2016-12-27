@@ -20,6 +20,7 @@ import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
+import nz.co.gregs.dbvolution.expressions.BooleanExpression;
 import nz.co.gregs.dbvolution.internal.properties.PropertyWrapper;
 
 /**
@@ -86,14 +87,31 @@ public class DBUpdateToPreviousValues extends DBUpdateSimpleTypes {
 		String sqlString = "";
 		List<QueryableDatatype<?>> primaryKeys = row.getPrimaryKeys();
 		String separator = "";
-		for (QueryableDatatype<?> pk : primaryKeys) {
-			PropertyWrapper wrapper = row.getPropertyWrapperOf(pk);
-			String pkValue = pk.toSQLString(db);
-			sqlString += separator + defn.formatColumnName(wrapper.columnName()) + defn.getEqualsComparator() + pkValue;
-			//				+ defn.formatColumnName(row.getPrimaryKeyColumnNames())
-			//				+ defn.getEqualsComparator()
-			//				+ row.getPrimaryKeys().toSQLString(db)
-			separator = defn.beginAndLine();
+		if (primaryKeys.size() > 0) {
+			for (QueryableDatatype<?> pk : primaryKeys) {
+				PropertyWrapper wrapper = row.getPropertyWrapperOf(pk);
+				String pkValue = pk.toSQLString(db);
+				sqlString += separator + defn.formatColumnName(wrapper.columnName()) + defn.getEqualsComparator() + pkValue;
+				//				+ defn.formatColumnName(row.getPrimaryKeyColumnNames())
+				//				+ defn.getEqualsComparator()
+				//				+ row.getPrimaryKeys().toSQLString(db)
+				separator = defn.beginAndLine();
+			}
+		} else {
+			for (PropertyWrapper prop : row.getColumnPropertyWrappers()) {
+				QueryableDatatype<?> qdt = prop.getQueryableDatatype();
+				if (qdt.isNull()) {
+					sqlString += separator + BooleanExpression.isNull(row.column(qdt)).toSQLString(db);
+//				DBIsNullOperator isNullOp = new DBIsNullOperator();
+//				sql += isNullOp.generateWhereLine(db, prop.columnName());
+				} else {
+					sqlString += separator
+							+ prop.columnName()
+							+ defn.getEqualsComparator()
+							+ qdt.toSQLString(db);
+				}
+				separator = defn.beginAndLine();
+			}
 		}
 		return sqlString;
 
