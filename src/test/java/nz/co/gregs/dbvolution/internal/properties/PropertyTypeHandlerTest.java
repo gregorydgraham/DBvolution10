@@ -14,6 +14,7 @@ import nz.co.gregs.dbvolution.annotations.DBColumn;
 import nz.co.gregs.dbvolution.datatypes.DBDate;
 import nz.co.gregs.dbvolution.datatypes.DBInteger;
 import nz.co.gregs.dbvolution.datatypes.DBString;
+import nz.co.gregs.dbvolution.datatypes.DBStringTrimmed;
 import nz.co.gregs.dbvolution.datatypes.DBTypeAdaptor;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 import nz.co.gregs.dbvolution.exceptions.InvalidDeclaredTypeException;
@@ -187,6 +188,23 @@ public class PropertyTypeHandlerTest {
 			@DBAdaptType(value = StringLongAdaptor.class)
 			@DBColumn
 			public DBString field = new DBString("23");
+		}
+
+		PropertyTypeHandler propertyHandler = propertyHandlerOf(MyClass.class, "field");
+		QueryableDatatype<?> qdt = propertyHandler.getJavaPropertyAsQueryableDatatype(new MyClass());
+		assertThat(propertyHandler.getQueryableDatatypeClass(), is((Object) DBInteger.class));
+		assertThat(qdt, is(instanceOf(DBInteger.class)));
+		assertThat(qdt.getValue(), is(instanceOf(Long.class)));
+		propertyHandler.setJavaPropertyAsQueryableDatatype(new MyClass(), new DBInteger(42));
+	}
+
+	@Test
+	public void infersDBIntegerGivenStringTrimmedLongAdaptorOnDBStringField() {
+		class MyClass extends DBRow {
+
+			@DBAdaptType(value = StringTrimmedLongAdaptor.class)
+			@DBColumn
+			public DBStringTrimmed field = new DBStringTrimmed("23");
 		}
 
 		PropertyTypeHandler propertyHandler = propertyHandlerOf(MyClass.class, "field");
@@ -765,6 +783,25 @@ public class PropertyTypeHandlerTest {
 	}
 
 	public static class StringLongAdaptor implements DBTypeAdaptor<String, Long> {
+
+		@Override
+		public String fromDatabaseValue(Long dbvValue) {
+			if (dbvValue != null) {
+				return dbvValue.toString();
+			}
+			return null;
+		}
+
+		@Override
+		public Long toDatabaseValue(String objectValue) {
+			if (objectValue != null) {
+				return Long.parseLong(objectValue);
+			}
+			return null;
+		}
+	}
+
+	public static class StringTrimmedLongAdaptor implements DBTypeAdaptor<String, Long> {
 
 		@Override
 		public String fromDatabaseValue(Long dbvValue) {

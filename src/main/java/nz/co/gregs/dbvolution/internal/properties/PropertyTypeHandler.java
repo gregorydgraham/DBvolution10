@@ -12,6 +12,7 @@ import nz.co.gregs.dbvolution.datatypes.DBDate;
 import nz.co.gregs.dbvolution.datatypes.DBInteger;
 import nz.co.gregs.dbvolution.datatypes.DBNumber;
 import nz.co.gregs.dbvolution.datatypes.DBString;
+import nz.co.gregs.dbvolution.datatypes.DBStringTrimmed;
 import nz.co.gregs.dbvolution.datatypes.DBTypeAdaptor;
 import nz.co.gregs.dbvolution.datatypes.DBUnknownDatatype;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
@@ -387,6 +388,8 @@ class PropertyTypeHandler {
 	 */
 	private static Class<?> literalTypeOf(Class<? extends QueryableDatatype<?>> qdtType) {
 		if (qdtType.equals(DBString.class)) {
+			return String.class;
+		} else if (qdtType.equals(DBStringTrimmed.class)) {
 			return String.class;
 		} else if (qdtType.equals(DBNumber.class)) {
 			return Double.class;

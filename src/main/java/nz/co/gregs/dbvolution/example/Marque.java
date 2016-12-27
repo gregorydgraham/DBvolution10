@@ -11,6 +11,7 @@ import nz.co.gregs.dbvolution.annotations.DBColumn;
 import nz.co.gregs.dbvolution.annotations.DBForeignKey;
 import nz.co.gregs.dbvolution.annotations.DBTableName;
 import nz.co.gregs.dbvolution.annotations.DBPrimaryKey;
+import nz.co.gregs.dbvolution.datatypes.DBStringTrimmed;
 
 /**
  * A DBRow Java class that represents the "marque" table.
@@ -145,7 +146,7 @@ public class Marque extends DBRow {
 	 *
 	 */
 	@DBColumn
-	public DBString auto_created = new DBString();
+	public DBStringTrimmed auto_created = new DBStringTrimmed();
 
 	/**
 	 * A DBString field representing the "name" column in the database.
