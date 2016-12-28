@@ -2341,20 +2341,20 @@ public abstract class DBDefinition {
 	 * @return SQL snippet.
 	 */
 	public String doBitsValueTransform(boolean[] booleanArray) {
-		String result = "";
+		StringBuilder result = new StringBuilder("");
 		String separator = "ARRAY(";
 		for (boolean c : booleanArray) {
 			if (c) {
-				result += separator + "true";
+				result.append(separator).append("true");
 			} else {
-				result += separator + "false";
+				result.append(separator).append("false");
 			}
 			separator = ",";
 		}
 		if (!separator.equals("(")) {
-			result += ")";
+			result.append( ")");
 		}
-		return result;
+		return result.toString();
 	}
 
 	/**
@@ -2736,8 +2736,8 @@ public abstract class DBDefinition {
 	}
 
 	private String fakeChooseTransformation(String numberToChooseWith, List<String> strs) {
-		String sql = "(case ";
-		String prevCase = null;
+		StringBuilder sql = new StringBuilder("(case ");
+		
 		if (strs.size() == 1) {
 			return strs.get(0);
 		}
@@ -2745,13 +2745,18 @@ public abstract class DBDefinition {
 		for (int index = 0; index < strs.size(); index++) {
 			String str = strs.get(index);
 			if (index == strs.size() - 1) {
-				sql += " else " + str + " end)";
+				sql.append(" else ").append(str).append(" end)");
 			} else {
-				sql += " when " + numberToChooseWith + op + (index + 1) + " then " + str + System.getProperty("line.separator");
+				sql.append(" when ")
+						.append(numberToChooseWith)
+						.append(op).append(index + 1)
+						.append(" then ")
+						.append(str)
+						.append(System.getProperty("line.separator"));
 				op = " = ";
 			}
 		}
-		return sql;
+		return sql.toString();
 	}
 
 	/**
@@ -3471,7 +3476,7 @@ public abstract class DBDefinition {
 	 * not a valid WKT
 	 */
 	public Point transformDatabasePoint2DValueToJTSPoint(String pointAsString) throws com.vividsolutions.jts.io.ParseException {
-		Point point = null;
+		Point point = (new GeometryFactory()).createPoint(new Coordinate(0,0));
 		WKTReader wktReader = new WKTReader();
 		Geometry geometry = wktReader.read(pointAsString);
 		if (geometry instanceof Point) {
@@ -3495,7 +3500,7 @@ public abstract class DBDefinition {
 	 * not a valid WKT
 	 */
 	public Polygon transformDatabasePolygon2DToJTSPolygon(String polygon2DSQL) throws com.vividsolutions.jts.io.ParseException {
-		Polygon poly = null;
+		Polygon poly = (new GeometryFactory()).createPolygon(new Coordinate[]{});
 		WKTReader wktReader = new WKTReader();
 		Geometry geometry = wktReader.read(polygon2DSQL);
 		if (geometry instanceof Polygon) {
@@ -3527,7 +3532,7 @@ public abstract class DBDefinition {
 	 * not a valid WKT
 	 */
 	public LineString transformDatabaseLine2DValueToJTSLineString(String lineStringAsSQL) throws com.vividsolutions.jts.io.ParseException {
-		LineString lineString = null;
+		LineString lineString = (new GeometryFactory()).createLineString(new Coordinate[]{});
 		WKTReader wktReader = new WKTReader();
 		Geometry geometry = wktReader.read(lineStringAsSQL);
 		if (geometry instanceof LineString) {
@@ -3867,7 +3872,7 @@ public abstract class DBDefinition {
 	 * an exception
 	 */
 	public LineSegment transformDatabaseLineSegment2DValueToJTSLineSegment(String lineSegmentAsSQL) throws com.vividsolutions.jts.io.ParseException {
-		LineString lineString = null;
+		LineString lineString = (new GeometryFactory()).createLineString(new Coordinate[]{});
 		WKTReader wktReader = new WKTReader();
 		Geometry geometry = wktReader.read(lineSegmentAsSQL);
 		if (geometry instanceof LineString) {
@@ -4075,7 +4080,7 @@ public abstract class DBDefinition {
 	 * throw an exception
 	 */
 	public MultiPoint transformDatabaseMultiPoint2DValueToJTSMultiPoint(String pointsAsString) throws com.vividsolutions.jts.io.ParseException {
-		MultiPoint mpoint = null;
+		MultiPoint mpoint = (new GeometryFactory()).createMultiPoint(new Coordinate[]{});
 		WKTReader wktReader = new WKTReader();
 		Geometry geometry = wktReader.read(pointsAsString);
 		if (geometry instanceof MultiPoint) {

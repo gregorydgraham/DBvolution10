@@ -143,7 +143,7 @@ public class DBInsert extends DBAction {
 				if (defn.supportsGeneratedKeys()) {
 					try {
 						final List<QueryableDatatype<?>> primaryKeys = row.getPrimaryKeys();
-						if (primaryKeys == null | primaryKeys.size() == 0) {
+						if (primaryKeys == null || primaryKeys.size() == 0) {
 							statement.execute(sql);
 						} else if (primaryKeys.size() == 1) {
 							QueryableDatatype<?> primaryKey = primaryKeys.get(0);

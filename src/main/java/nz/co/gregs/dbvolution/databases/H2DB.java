@@ -34,7 +34,32 @@ import nz.co.gregs.dbvolution.internal.h2.*;
  */
 public class H2DB extends DBDatabase implements SupportsDateRepeatDatatypeFunctions, SupportsPolygonDatatype {
 
-	private static Map<String, DBVFeature> featureMap = null;
+	private final static Map<String, DBVFeature> featureMap = new HashMap<>();
+	private static boolean dataTypesNotProcessed = true;
+
+	static {
+		for (DBVFeature function : DateRepeatFunctions.values()) {
+			featureMap.put(function.alias(), function);
+		}
+		for (DBVFeature function : Point2DFunctions.values()) {
+			featureMap.put(function.alias(), function);
+		}
+		for (DBVFeature function : LineSegment2DFunctions.values()) {
+			featureMap.put(function.alias(), function);
+		}
+		for (DBVFeature function : Line2DFunctions.values()) {
+			featureMap.put(function.alias(), function);
+		}
+		for (DBVFeature function : Polygon2DFunctions.values()) {
+			featureMap.put(function.alias(), function);
+		}
+		for (DBVFeature function : MultiPoint2DFunctions.values()) {
+			featureMap.put(function.alias(), function);
+		}
+		for (DataTypes datatype : DataTypes.values()) {
+			featureMap.put(datatype.alias(), datatype);
+		}
+	}
 
 	/**
 	 * Default constructor, try not to use this.
@@ -115,32 +140,33 @@ public class H2DB extends DBDatabase implements SupportsDateRepeatDatatypeFuncti
 	}
 
 	@Override
-	protected void addDatabaseSpecificFeatures(final Statement stmt) throws SQLException {
+	protected synchronized void addDatabaseSpecificFeatures(final Statement stmt) throws SQLException {
 //		DateRepeatFunctions.addFunctions(stmt);
 		DataTypes.addAll(stmt);
-		if (featureMap == null) {
-			featureMap = new HashMap<>();
-			for (DBVFeature function : DateRepeatFunctions.values()) {
-				featureMap.put(function.alias(), function);
+		if (dataTypesNotProcessed) {
+//		if (featureMap.isEmpty()) {
+//			for (DBVFeature function : DateRepeatFunctions.values()) {
+//				featureMap.put(function.alias(), function);
+//			}
+//			for (DBVFeature function : Point2DFunctions.values()) {
+//				featureMap.put(function.alias(), function);
+//			}
+//			for (DBVFeature function : LineSegment2DFunctions.values()) {
+//				featureMap.put(function.alias(), function);
+//			}
+//			for (DBVFeature function : Line2DFunctions.values()) {
+//				featureMap.put(function.alias(), function);
+//			}
+//			for (DBVFeature function : Polygon2DFunctions.values()) {
+//				featureMap.put(function.alias(), function);
+//			}
+//			for (DBVFeature function : MultiPoint2DFunctions.values()) {
+//				featureMap.put(function.alias(), function);
+//			}
+			for (DataTypes datatype : DataTypes.values()) {
+				featureMap.put(datatype.alias(), datatype);
 			}
-			for (DBVFeature function : Point2DFunctions.values()) {
-				featureMap.put(function.alias(), function);
-			}
-			for (DBVFeature function : LineSegment2DFunctions.values()) {
-				featureMap.put(function.alias(), function);
-			}
-			for (DBVFeature function : Line2DFunctions.values()) {
-				featureMap.put(function.alias(), function);
-			}
-			for (DBVFeature function : Polygon2DFunctions.values()) {
-				featureMap.put(function.alias(), function);
-			}
-			for (DBVFeature function : MultiPoint2DFunctions.values()) {
-				featureMap.put(function.alias(), function);
-			}
-		}
-		for (DataTypes datatype : DataTypes.values()) {
-			featureMap.put(datatype.alias(), datatype);
+			dataTypesNotProcessed = false;
 		}
 	}
 //

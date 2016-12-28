@@ -253,7 +253,8 @@ public class PostgresDB extends DBDatabase implements SupportsPolygonDatatype {
 
 	private void setTimeZone(Statement stmnt) throws SQLException {
 		String tzName = TimeZone.getDefault().getID();
-		stmnt.execute("set time zone '"+tzName+"';");
+		final String setTheTimezone = "set time zone '"+tzName+"';";
+		stmnt.execute(setTheTimezone);
 	}
 
 	private void createPostGISTopologyExtension(Statement stmnt) {
