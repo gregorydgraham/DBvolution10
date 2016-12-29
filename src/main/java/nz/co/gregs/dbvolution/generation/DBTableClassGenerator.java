@@ -20,6 +20,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
@@ -190,7 +191,7 @@ public class DBTableClassGenerator {
 				file = new File(classDirectory, clazz.getClassName() + ".java");
 				fileOutputStream = new FileOutputStream(file);
 				try {
-					fileOutputStream.write(clazz.getJavaSource().getBytes());
+					fileOutputStream.write(clazz.getJavaSource().getBytes(Charset.forName("UTF8")));
 					fileOutputStream.close();
 				} finally {
 					fileOutputStream.close();
@@ -400,21 +401,7 @@ public class DBTableClassGenerator {
 				}
 			}
 			dbt.generateJavaSource(options);
-//            System.out.println(dbt.javaSource);
 		}
-	}
-
-	/**
-	 *
-	 * Returns a string of the appropriate QueryableDatatype for the specified
-	 * SQLType
-	 *
-	 *
-	 * @return a string of the appropriate QueryableDatatype for the specified
-	 * SQLType
-	 */
-	private static Class<? extends Object> getQueryableDatatypeNameOfSQLType(DBDatabase database, DBTableField column) throws UnknownJavaSQLTypeException {
-		return getQueryableDatatypeNameOfSQLType(database, column, false);
 	}
 	
 	/**
@@ -516,19 +503,19 @@ public class DBTableClassGenerator {
 	 * @return camel case version of the String
 	 */
 	public static String toClassCase(String s) {
-		String classCaseString = "";
+		StringBuilder classCaseString = new StringBuilder("");
 		if (s == null) {
 			return null;
 		} else if (s.matches("[lLtT]+_[0-9]+(_[0-9]+)*")) {
-			classCaseString = s.toUpperCase();
+			classCaseString.append(s.toUpperCase());
 		} else {
 //            System.out.println("Splitting: " + s);
 			String[] parts = s.split("[^a-zA-Z0-9]");//"[_$#]");
 			for (String part : parts) {
-				classCaseString += toProperCase(part);
+				classCaseString.append(toProperCase(part));
 			}
 		}
-		return classCaseString;
+		return classCaseString.toString();
 	}
 
 	/**

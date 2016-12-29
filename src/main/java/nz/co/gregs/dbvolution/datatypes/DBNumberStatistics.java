@@ -19,7 +19,7 @@ public class DBNumberStatistics extends DBNumber {
 
 	private static final long serialVersionUID = 1;
 
-	protected NumberExpression originalExpression;
+	protected transient NumberExpression originalExpression;
 	protected final DBNumber numberProxy = new DBNumber();
 	protected Number minNumber;
 	protected Number maxNumber;
@@ -28,11 +28,11 @@ public class DBNumberStatistics extends DBNumber {
 	protected Number firstQuartileNumber;
 	protected Number thirdQuartileNumber;
 	protected Number countOfRows;
-	private NumberExpression averageExpression;
-	private NumberExpression maxExpr;
-	private NumberExpression minExpr;
-	private NumberExpression sumExpr;
-	private NumberExpression countExpr;
+	private transient NumberExpression averageExpression;
+	private transient NumberExpression maxExpr;
+	private transient NumberExpression minExpr;
+	private transient NumberExpression sumExpr;
+	private transient NumberExpression countExpr;
 	private Number sumNumber;
 
 	public DBNumberStatistics() {

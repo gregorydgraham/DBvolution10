@@ -60,11 +60,13 @@ public enum StringFunctions {
 	 */
 	public void add(Statement stmt) throws SQLException {
 		try {
-			stmt.execute("DROP FUNCTION " + this + "(" + parameters + ");");
+			final String drop = "DROP FUNCTION " + this + "(" + parameters + ");";
+			stmt.execute(drop);
 		} catch (SQLException sqlex) {
 			;
 		}
-		stmt.execute("CREATE OR REPLACE FUNCTION " + this + "(" + this.parameters + ")\n" + "    RETURNS " + this.returnType + " AS\n" + "'\n" + this.code + "'\n" + "LANGUAGE '" + this.language.name() + "';");
+		final String add = "CREATE OR REPLACE FUNCTION " + this + "(" + this.parameters + ")\n" + "    RETURNS " + this.returnType + " AS\n" + "'\n" + this.code + "'\n" + "LANGUAGE '" + this.language.name() + "';";
+		stmt.execute(add);
 
 	}
 

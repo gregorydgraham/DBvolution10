@@ -64,7 +64,8 @@ public enum MultiPoint2DFunctions {
 	 */
 	public void add(Statement stmt) throws SQLException {
 		try {
-			stmt.execute("DROP FUNCTION " + this + "(" + this.parameters + ");");
+			final String drop = "DROP FUNCTION " + this + "(" + this.parameters + ");";
+			stmt.execute(drop);
 		} catch (SQLException sqlex) {
 			;
 		}

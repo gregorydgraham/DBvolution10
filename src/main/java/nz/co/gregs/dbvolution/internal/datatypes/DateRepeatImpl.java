@@ -237,7 +237,8 @@ public class DateRepeatImpl {
 		}
 		final Double secondsDouble = Double.parseDouble(intervalStr.replaceAll(".*n([-0-9.]+)s.*", "$1"));
 		final int secondsInt = secondsDouble.intValue();
-		final int millis = new Double(secondsDouble * 1000.0 - secondsInt * 1000).intValue();
+		final double millisDouble = secondsDouble * 1000.0 - secondsInt * 1000;
+		final int millis = new Double(millisDouble).intValue();
 		return millis;
 	}
 
@@ -252,9 +253,6 @@ public class DateRepeatImpl {
 			return null;
 		}
 		final Double valueOf = Double.valueOf(intervalStr.replaceAll(".*n([-0-9.]+)s.*", "$1"));
-		if (valueOf == null) {
-			return null;
-		}
 		return valueOf.intValue();
 	}
 

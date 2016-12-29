@@ -259,7 +259,8 @@ public enum MultiPoint2DFunctions implements DBVFeature {
 	@Override
 	public void add(Statement stmt) throws SQLException {
 		try {
-			stmt.execute("DROP ALIAS " + this + ";");
+			final String dropStatement = "DROP ALIAS " + this + ";";
+			stmt.execute(dropStatement);
 		} catch (SQLException sqlex) {
 			;// Not an issue.
 		}
