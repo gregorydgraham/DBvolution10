@@ -85,10 +85,21 @@ public class StringExpressionTest extends AbstractTest {
 	}
 
 	@Test
+	public void testIsStringExpressionAggregator() throws SQLException {
+		Marque marq = new Marque();
+		DBQuery q = database.getDBQuery(marq);
+		q.addCondition(marq.column(marq.name).min().is("FORD"));
+		List<Marque> rowsByExample = q.getAllInstancesOf(marq);
+		database.print(rowsByExample);
+		Assert.assertEquals(1, rowsByExample.size());
+	}
+
+	@Test
 	public void testIsStringExpressionAggregators() throws SQLException {
 		Marque marq = new Marque();
 		DBQuery q = database.getDBQuery(marq);
 		q.addCondition(marq.column(marq.name).min().is("FORD"));
+		q.addCondition(marq.column(marq.name).max().is("FORD"));
 		List<Marque> rowsByExample = q.getAllInstancesOf(marq);
 		database.print(rowsByExample);
 		Assert.assertEquals(1, rowsByExample.size());

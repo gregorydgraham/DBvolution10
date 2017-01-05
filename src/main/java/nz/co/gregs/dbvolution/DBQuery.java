@@ -107,10 +107,11 @@ public class DBQuery {
 			return havingClauseStart + havingColumns[0].toSQLString(database);
 		} else if (havingColumns.length > 1) {
 			String sep = "";
+			final String beginAndLine = database.getDefinition().beginAndLine();
 			String returnStr = havingClauseStart;
 			for (BooleanExpression havingColumn : havingColumns) {
 				returnStr += sep + havingColumn.toSQLString(database);
-				sep = ", ";
+				sep = beginAndLine;
 			}
 			return returnStr;
 		} else {
