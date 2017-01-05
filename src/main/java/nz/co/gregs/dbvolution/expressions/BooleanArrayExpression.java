@@ -238,7 +238,15 @@ public class BooleanArrayExpression implements BooleanArrayResult, EqualComparab
 
 		@Override
 		public boolean isAggregator() {
-			return first.isAggregator() || second.isAggregator();
+			if (first == null && second == null) {
+				return false;
+			} else if (first == null) {
+				return second.isAggregator();
+			} else if (second == null) {
+				return first.isAggregator();
+			} else {
+				return first.isAggregator() || second.isAggregator();
+			}
 		}
 
 		@Override

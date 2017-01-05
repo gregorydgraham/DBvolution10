@@ -3207,7 +3207,10 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 
 		@Override
 		public boolean isAggregator() {
-			boolean result = column.isAggregator();
+			boolean result = false;
+			if (column != null){
+				result = column.isAggregator();
+			}
 			for (NumberResult numer : values) {
 				result = result || numer.isAggregator();
 			}

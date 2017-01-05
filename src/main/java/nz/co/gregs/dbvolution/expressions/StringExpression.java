@@ -51,7 +51,12 @@ import nz.co.gregs.dbvolution.results.InComparable;
  */
 public class StringExpression implements StringResult, RangeComparable<StringResult>, InComparable<StringResult>, ExpressionColumn<DBString> {
 
-	static StringExpression nullExpression() {
+	/**
+	 * Creates a StringExpression that will return a database NULL.
+	 *
+	 * @return a StringExpression that resolves to NULL within the database
+	 */
+	public static StringExpression nullExpression() {
 		return new StringExpression() {
 			@Override
 			public String toSQLString(DBDatabase db) {
@@ -242,10 +247,10 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 				return db.getDefinition().doStringIfNullTransform(this.getFirst().toSQLString(db), getSecond().toSQLString(db));
 			}
 
-			@Override
-			String getFunctionName(DBDatabase db) {
-				return db.getDefinition().getIfNullFunctionName();
-			}
+//			@Override
+//			String getFunctionName(DBDatabase db) {
+//				return db.getDefinition().getIfNullFunctionName();
+//			}
 
 			@Override
 			public boolean getIncludesNull() {
@@ -1456,10 +1461,10 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 				}
 			}
 
-			@Override
-			String getFunctionName(DBDatabase db) {
-				throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-			}
+//			@Override
+//			String getFunctionName(DBDatabase db) {
+//				throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+//			}
 		});
 	}
 
@@ -1507,10 +1512,10 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 				}
 			}
 
-			@Override
-			String getFunctionName(DBDatabase db) {
-				throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-			}
+//			@Override
+//			String getFunctionName(DBDatabase db) {
+//				throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+//			}
 		});
 	}
 
@@ -2545,12 +2550,12 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 			return new DBString();
 		}
 
-		@Override
-		public String toSQLString(DBDatabase db) {
-			return this.beforeValue(db) + getFirst().toSQLString(db)
-					+ this.getSeparator(db) + (getSecond() == null ? "" : getSecond().toSQLString(db))
-					+ this.afterValue(db);
-		}
+//		@Override
+//		public String toSQLString(DBDatabase db) {
+//			return this.beforeValue(db) + getFirst().toSQLString(db)
+//					+ this.getSeparator(db) + (getSecond() == null ? "" : getSecond().toSQLString(db))
+//					+ this.afterValue(db);
+//		}
 
 		@Override
 		public DBBinaryStringFunction copy() {
@@ -2567,11 +2572,11 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 			return newInstance;
 		}
 
-		abstract String getFunctionName(DBDatabase db);
+		//abstract String getFunctionName(DBDatabase db);
 
-		protected String beforeValue(DBDatabase db) {
-			return " " + getFunctionName(db) + "( ";
-		}
+//		protected String beforeValue(DBDatabase db) {
+//			return " " + getFunctionName(db) + "( ";
+//		}
 
 		protected String getSeparator(DBDatabase db) {
 			return ", ";

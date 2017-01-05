@@ -2964,7 +2964,10 @@ public class DateExpression implements DateResult, RangeComparable<DateResult>, 
 
 		@Override
 		public boolean isAggregator() {
-			boolean result = column.isAggregator();
+			boolean result = false;
+			if (column!=null){
+				result = column.isAggregator();
+			}
 			for (DateResult numer : values) {
 				result = result || numer.isAggregator();
 			}

@@ -16,6 +16,7 @@
 package nz.co.gregs.dbvolution.query;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -45,6 +46,7 @@ public class QueryDetails {
 	private boolean groupByRequiredByAggregator = false;
 	public DBDatabase database = null;
 	private String selectClause = null;
+	private final ArrayList<BooleanExpression> havingColumns = new ArrayList<>();
 
 	/**
 	 * @return the allQueryTables
@@ -153,5 +155,20 @@ public class QueryDetails {
 	public String getSelectClause() {
 		return selectClause;
 	}
+
+	/**
+	 * @return the havingColumns
+	 */
+	public BooleanExpression[] getHavingColumns() {
+		return havingColumns.toArray(new BooleanExpression[]{});
+	}
+
+	/**
+	 * @param havingColumns the havingColumns to set
+	 */
+	public void setHavingColumns(BooleanExpression... havingColumns) {
+		Collections.addAll(this.havingColumns, havingColumns);
+	}
+
 
 }

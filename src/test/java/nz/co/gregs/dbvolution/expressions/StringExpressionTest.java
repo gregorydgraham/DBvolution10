@@ -46,6 +46,55 @@ public class StringExpressionTest extends AbstractTest {
 	}
 
 	@Test
+	public void testIsNotLikeStringExpressionUsingDBString() throws SQLException {
+		Marque likeQuery = new Marque();
+		final DBString str = new DBString("%e%");
+		likeQuery.name.excludedPattern(new StringExpression(str).uppercase());
+		List<Marque> rowsByExample = marquesTable.getRowsByExample(likeQuery);
+		marquesTable.print();
+		Assert.assertEquals(14, rowsByExample.size());
+	}
+
+	@Test
+	public void testIsNotLikeStringExpressionUsingNumber() throws SQLException {
+		Marque likeQuery = new Marque();
+		likeQuery.name.excludedPattern(new StringExpression(5).uppercase());
+		List<Marque> rowsByExample = marquesTable.getRowsByExample(likeQuery);
+		marquesTable.print();
+		Assert.assertEquals(22, rowsByExample.size());
+	}
+
+	@Test
+	public void testIsNotLikeStringExpressionUsingNumberResult() throws SQLException {
+		Marque likeQuery = new Marque();
+		final NumberExpression num = new NumberExpression(5);
+		likeQuery.name.excludedPattern(new StringExpression(num).uppercase());
+		List<Marque> rowsByExample = marquesTable.getRowsByExample(likeQuery);
+		marquesTable.print();
+		Assert.assertEquals(22, rowsByExample.size());
+	}
+
+	@Test
+	public void testIsStringExpressionNull() throws SQLException {
+		Marque likeQuery = new Marque();
+		final StringExpression nullExpr =  StringExpression.nullExpression();
+		likeQuery.auto_created.excludedValues(nullExpr);
+		List<Marque> rowsByExample = marquesTable.getRowsByExample(likeQuery);
+		marquesTable.print();
+		Assert.assertEquals(0, rowsByExample.size());
+	}
+
+	@Test
+	public void testIsStringExpressionAggregators() throws SQLException {
+		Marque marq = new Marque();
+		DBQuery q = database.getDBQuery(marq);
+		q.addCondition(marq.column(marq.name).min().is("FORD"));
+		List<Marque> rowsByExample = q.getAllInstancesOf(marq);
+		database.print(rowsByExample);
+		Assert.assertEquals(1, rowsByExample.size());
+	}
+
+	@Test
 	public void testTrimTransform() throws SQLException {
 		database.setPrintSQLBeforeExecuting(true);
 		database.insert(new Marque(3, "False", 1246974, "", 0, "", "     HUMMER               ", "", "Y", new Date(), 3, null));

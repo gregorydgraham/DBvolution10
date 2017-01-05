@@ -47,7 +47,7 @@ import org.apache.commons.logging.LogFactory;
  */
 public class DBStatement implements Statement {
 
-	static final private Log log = LogFactory.getLog(DBStatement.class);
+	static final private Log LOG = LogFactory.getLog(DBStatement.class);
 
 	private Statement internalStatement;
 	private boolean batchHasEntries;
@@ -79,7 +79,7 @@ public class DBStatement implements Statement {
 	public ResultSet executeQuery(String string) throws SQLException {
 		final String logSQL = "EXECUTING QUERY: " + string;
 		database.printSQLIfRequested(logSQL);
-		log.debug(logSQL);
+		LOG.debug(logSQL);
 		ResultSet executeQuery = null;
 		try {
 			executeQuery = getInternalStatement().executeQuery(string);
@@ -158,7 +158,7 @@ public class DBStatement implements Statement {
 		} catch (Exception e) {
 			// Someone please tell me how you are supposed to cope 
 			// with an exception during the close method????????
-			log.warn("Exception occurred during close(): " + e.getMessage(), e);
+			LOG.warn("Exception occurred during close(): " + e.getMessage(), e);
 //			throw e;
 			e.printStackTrace(System.err);
 		}
@@ -401,7 +401,7 @@ public class DBStatement implements Statement {
 	public boolean execute(String string) throws SQLException {
 		final String logSQL = "EXECUTING: " + string;
 		database.printSQLIfRequested(logSQL);
-		log.debug(logSQL);
+		LOG.debug(logSQL);
 		final boolean execute;
 		try {
 			execute = getInternalStatement().execute(string);
@@ -773,7 +773,7 @@ public class DBStatement implements Statement {
 	public int executeUpdate(String string, String[] strings) throws SQLException {
 		final String logSQL = "EXECUTING UPDATE: " + string;
 		database.printSQLIfRequested(logSQL);
-		log.debug(logSQL);
+		LOG.debug(logSQL);
 		return getInternalStatement().executeUpdate(string, strings);
 	}
 
@@ -805,7 +805,7 @@ public class DBStatement implements Statement {
 	public boolean execute(String string, int i) throws SQLException {
 		final String logSQL = "EXECUTING: " + string;
 		database.printSQLIfRequested(logSQL);
-		log.debug(logSQL);
+		LOG.debug(logSQL);
 		return getInternalStatement().execute(string, i);
 	}
 
@@ -839,7 +839,7 @@ public class DBStatement implements Statement {
 	public boolean execute(String string, int[] ints) throws SQLException {
 		final String logSQL = "EXECUTING: " + string;
 		database.printSQLIfRequested(logSQL);
-		log.debug(logSQL);
+		LOG.debug(logSQL);
 		return getInternalStatement().execute(string, ints);
 	}
 
@@ -874,7 +874,7 @@ public class DBStatement implements Statement {
 	public boolean execute(String string, String[] strings) throws SQLException {
 		final String logSQL = "EXECUTING: " + string;
 		database.printSQLIfRequested(logSQL);
-		log.debug(logSQL);
+		LOG.debug(logSQL);
 		return getInternalStatement().execute(string, strings);
 	}
 
@@ -1013,6 +1013,7 @@ public class DBStatement implements Statement {
 	 *
 	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
+	@Override
 	public void closeOnCompletion() throws SQLException {
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
@@ -1023,6 +1024,7 @@ public class DBStatement implements Statement {
 	 * @return unsupported 1 Database exceptions may be thrown
 	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
+	@Override
 	public boolean isCloseOnCompletion() throws SQLException {
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}

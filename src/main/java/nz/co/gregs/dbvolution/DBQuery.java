@@ -101,7 +101,7 @@ public class DBQuery {
 	}
 
 	private String getHavingClause(DBDatabase database, QueryOptions options) {
-		BooleanExpression[] havingColumns = options.getHavingColumns();
+		BooleanExpression[] havingColumns = details.getHavingColumns();
 		String havingClauseStart = database.getDefinition().getHavingClauseStart();
 		if (havingColumns.length == 1) {
 			return havingClauseStart + havingColumns[0].toSQLString(database);
@@ -1271,6 +1271,7 @@ results.add(queryRow);
 		for (DBRow table : details.getExtraExamples()) {
 			willCreateBlankQuery = willCreateBlankQuery && table.willCreateBlankQuery(this.getDatabase());
 		}
+		willCreateBlankQuery = willCreateBlankQuery && details.getHavingColumns().length==0;
 		return willCreateBlankQuery && (details.getConditions().isEmpty());
 	}
 
@@ -2042,7 +2043,7 @@ results.add(queryRow);
 	 */
 	public List<DBQueryRow> getAllRowsHaving(BooleanExpression... postQueryConditions) throws SQLException {
 		final QueryOptions options = details.getOptions();
-		options.setHavingColumns(postQueryConditions);
+		details.setHavingColumns(postQueryConditions);
 		if (this.needsResults(options)) {
 			getAllRowsInternal(options);
 		}
@@ -2159,7 +2160,12 @@ results.add(queryRow);
 	 * @return this DBQuery instance
 	 */
 	public DBQuery addCondition(BooleanExpression condition) {
-		details.getConditions().add(condition);
+		if(condition.isAggregator()){
+			details.setHavingColumns(condition);		
+			details.setGroupByRequiredByAggregator(true);
+		}else{
+			details.getConditions().add(condition);
+		}
 		blankResults();
 		return this;
 	}
