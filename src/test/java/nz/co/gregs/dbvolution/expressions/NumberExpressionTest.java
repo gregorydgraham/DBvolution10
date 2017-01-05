@@ -83,7 +83,28 @@ public class NumberExpressionTest extends AbstractTest {
 		}
 
 	}
-	
+
+	@Test
+	public void testIsStringExpressionAggregator() throws SQLException {
+		Marque marq = new Marque();
+		DBQuery q = database.getDBQuery(marq);
+		q.addCondition(marq.column(marq.uidMarque).mod(2).is(0).ifThenElse(2, 1).min().is(2));
+		List<Marque> rowsByExample = q.getAllInstancesOf(marq);
+		database.print(rowsByExample);
+		Assert.assertEquals(11, rowsByExample.size());
+	}
+
+	@Test
+	public void testIsStringExpressionAggregators() throws SQLException {
+		Marque marq = new Marque();
+		DBQuery q = database.getDBQuery(marq);
+		q.addCondition(marq.column(marq.uidMarque).mod(2).is(0).ifThenElse(2, 1).min().is(2));
+		q.addCondition(marq.column(marq.uidMarque).mod(2).is(0).ifThenElse(2, 1).max().is(2));
+		List<Marque> rowsByExample = q.getAllInstancesOf(marq);
+		database.print(rowsByExample);
+		Assert.assertEquals(11, rowsByExample.size());
+	}
+
 	@Test
 	public void testBooleanConvertToInteger() throws SQLException {
 
