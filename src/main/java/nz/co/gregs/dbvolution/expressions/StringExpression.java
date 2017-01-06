@@ -137,7 +137,7 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 	 *
 	 * @param numberVariable	numberVariable
 	 */
-	public StringExpression(NumberExpression numberVariable) {
+	public StringExpression(NumberResult numberVariable) {
 		if (numberVariable == null) {
 			string1 = null;
 			nullProtectionRequired = true;
@@ -171,7 +171,11 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 
 	@Override
 	public String toSQLString(DBDatabase db) {
-		return getStringInput().toSQLString(db);
+		StringResult stringInput = getStringInput();
+		if(stringInput==null){
+			stringInput = StringExpression.value("<NULL>");
+		}
+		return stringInput.toSQLString(db);
 	}
 
 	@Override
@@ -298,7 +302,8 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 	 * @return a BooleanExpression
 	 */
 	public BooleanExpression isLessThan(String value, BooleanExpression fallBackWhenEquals) {
-		return this.isLessThan(value).or(this.is(value).and(fallBackWhenEquals));
+		return this.isLessThan(StringExpression.value(value), fallBackWhenEquals);
+//		return this.isLessThan(value).or(this.is(value).and(fallBackWhenEquals));
 	}
 
 	/**
@@ -320,7 +325,8 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 	 * @return a BooleanExpression
 	 */
 	public BooleanExpression isGreaterThan(String value, BooleanExpression fallBackWhenEquals) {
-		return this.isGreaterThan(value).or(this.is(value).and(fallBackWhenEquals));
+		return this.isGreaterThan(StringExpression.value(value), fallBackWhenEquals);
+//		return this.isGreaterThan(value).or(this.is(value).and(fallBackWhenEquals));
 	}
 
 	/**
@@ -497,7 +503,7 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 	 * @param numberResult	numberResult
 	 * @return a BooleanExpression of the SQL comparison.
 	 */
-	public BooleanExpression isIgnoreCase(NumberExpression numberResult) {
+	public BooleanExpression isIgnoreCase(NumberResult numberResult) {
 		return isIgnoreCase(numberResult.stringResult().lowercase());
 	}
 
@@ -577,7 +583,7 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 	 * @param numberResult	numberResult
 	 * @return a BooleanExpression of the SQL comparison.
 	 */
-	public BooleanExpression is(NumberExpression numberResult) {
+	public BooleanExpression is(NumberResult numberResult) {
 		return this.is(numberResult.stringResult());
 	}
 
@@ -673,7 +679,7 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 	 * @param numberResult	numberResult
 	 * @return a BooleanExpression of the SQL comparison.
 	 */
-	public BooleanExpression isNot(NumberExpression numberResult) {
+	public BooleanExpression isNot(NumberResult numberResult) {
 		return this.is(numberResult.stringResult()).not();
 	}
 
@@ -1685,7 +1691,7 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 	 * @param startingIndex0Based	startingIndex0Based
 	 * @return a StringExpression
 	 */
-	public StringExpression substring(NumberExpression startingIndex0Based) {
+	public StringExpression substring(NumberResult startingIndex0Based) {
 		return new Substring(this, startingIndex0Based);
 	}
 
@@ -1715,7 +1721,7 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 	 * @param endIndex0Based endIndex0Based
 	 * @return a StringExpression
 	 */
-	public StringExpression substring(NumberExpression startingIndex0Based, Number endIndex0Based) {
+	public StringExpression substring(NumberResult startingIndex0Based, Number endIndex0Based) {
 		return new Substring(this, startingIndex0Based, new NumberExpression(endIndex0Based));
 	}
 
@@ -1745,7 +1751,7 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 	 * @param endIndex0Based endIndex0Based
 	 * @return a StringExpression
 	 */
-	public StringExpression substring(NumberExpression startingIndex0Based, NumberExpression endIndex0Based) {
+	public StringExpression substring(NumberResult startingIndex0Based, NumberResult endIndex0Based) {
 		return new Substring(this, startingIndex0Based, endIndex0Based);
 	}
 

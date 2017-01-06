@@ -26,7 +26,7 @@ public interface JavaProperty {
 	 * {@code "Invalid valid for field com.mycompany.myproject.MyTable.fieldName"}
 	 * </ul>
 	 * </ul>
-	 * @return 
+	 * @return the JavaProperty as a string
 	 */
 	@Override
 	public String toString();
@@ -35,14 +35,14 @@ public interface JavaProperty {
 	 * Tests for equality, based entirely on whether the underlying java field or
 	 * bean-property is the same.
 	 * @param other
-	 * @return 
+	 * @return true if the 2 objects are the same
 	 */
 	@Override
 	public boolean equals(Object other);
 
 	/**
 	 * Hash-code based on the underlying java field or bean-property.
-	 * @return 
+	 * @return the hash code for this object
 	 */
 	@Override
 	public int hashCode();

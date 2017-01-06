@@ -838,7 +838,7 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 	 * @return a BooleanExpression
 	 */
 	public BooleanExpression isLessThan(Number value, BooleanExpression fallBackWhenEquals) {
-		return this.isLessThan(value).or(this.is(value).and(fallBackWhenEquals));
+		return this.isLessThan(NumberExpression.value(value), fallBackWhenEquals);
 	}
 
 	/**
@@ -860,7 +860,7 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 	 * @return a BooleanExpression
 	 */
 	public BooleanExpression isGreaterThan(Number value, BooleanExpression fallBackWhenEquals) {
-		return this.isGreaterThan(value).or(this.is(value).and(fallBackWhenEquals));
+		return this.isGreaterThan(NumberExpression.value(value),fallBackWhenEquals);
 	}
 
 	/**

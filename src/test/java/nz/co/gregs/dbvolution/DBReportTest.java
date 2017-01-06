@@ -66,6 +66,7 @@ public class DBReportTest extends AbstractTest {
 			Assert.assertThat(simp.marqueName.stringValue(), is("TOYOTA"));
 			Assert.assertThat(simp.carCompanyName.stringValue(), is("TOYOTA"));
 			Assert.assertThat(simp.carCompanyAndMarque.stringValue(), is("TOYOTA: TOYOTA"));
+			Assert.assertThat(simp.carCompanyAndANumber.stringValue(), is("TOYOTA: 5"));
 		}
 	}
 
@@ -207,6 +208,8 @@ public class DBReportTest extends AbstractTest {
 		public DBString marqueName = new DBString(marque.column(marque.name));
 		@DBColumn
 		public DBString carCompanyAndMarque = new DBString(carCompany.column(carCompany.name).append(": ").append(marque.column(marque.name)));
+		@DBColumn
+		public DBString carCompanyAndANumber = new DBString(carCompany.column(carCompany.name).append(": ").append(5));
 		@DBColumn
 		public DBNumber marqueUID = new DBNumber(marque.column(marque.uidMarque));
 		@DBColumn

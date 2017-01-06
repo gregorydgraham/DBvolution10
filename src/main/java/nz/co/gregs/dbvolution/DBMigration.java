@@ -123,9 +123,9 @@ public class DBMigration<M extends DBRow> extends RowDefinition {
 	 * as part of the DBMigration subclass.
 	 *
 	 * <p>
-	 * If you require extra criteria to be add to the DBReport, limiting the
+	 * If you require extra criteria to be add to the DBMigration, limiting the
 	 * results to a subset, use the
-	 * {@link DBReport#getAllRows(nz.co.gregs.dbvolution.DBRow...) other getAllRows method}.
+	 * {@link #getAllRows(nz.co.gregs.dbvolution.DBRow...) other getAllRows method}.
 	 *
 	 * @return a list of DBReport instances representing the results of the report
 	 * query. Database exceptions may be thrown
