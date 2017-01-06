@@ -106,6 +106,11 @@ public class BooleanArrayColumn extends BooleanArrayExpression implements Column
 		return getTablesInvolved().isEmpty();
 	}
 
+	@Override
+	public boolean isAggregator() {
+		return column.isAggregator();
+	}
+
 	/**
 	 * Creates an expression that will compare this column to the other column.
 	 *

@@ -2041,7 +2041,9 @@ results.add(queryRow);
 	 * @return A list of DBQueryRow instances that fulfill the post-query
 	 * conditions Database exceptions may be thrown
 	 * @throws java.sql.SQLException java.sql.SQLException
+	 * @deprecated Use {@link #addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression) } to add all conditions to the query instead.
 	 */
+	@Deprecated
 	public List<DBQueryRow> getAllRowsHaving(BooleanExpression... postQueryConditions) throws SQLException {
 		final QueryOptions options = details.getOptions();
 		details.setHavingColumns(postQueryConditions);
@@ -2168,6 +2170,87 @@ results.add(queryRow);
 			details.getConditions().add(condition);
 		}
 		blankResults();
+		return this;
+	}
+
+
+	/**
+	 * Use this method to add complex conditions to the DBQuery.
+	 *
+	 * <p>
+	 * This method takes BooleanExpressions and adds them to the where clause of
+	 * the Query
+	 *
+	 * <p>
+	 * The easiest way to get a BooleanExpression is the DBRow.column() method and
+	 * then apply the functions you require until you get a BooleanExpression
+	 * back.
+	 *
+	 * <p>
+	 * StringExpression, NumberExpression, DateExpression, and BooleanExpression
+	 * all provide methods that will help. In particular they have the value()
+	 * method to convert base Java types to expressions.
+	 *
+	 * <p>
+	 * Standard uses of this method are:
+	 * <pre>
+	 * addConditions(myRow.column(myRow.myColumn).like("%THis%"));
+	 * addConditions(myRow.column(myRow.myNumber).cos().greaterThan(0.5));
+	 * addConditions(StringExpression.value("THis").like(myRwo.column(myRow.myColumn)));
+	 * addConditions(BooleanExpression.anyOf(
+	 * myRow.columns(myRow.myColumn).between("That", "This"),
+	 * myRow.columns(myRow.myColumn).is("Something"))
+	 * );
+	 * </pre>
+	 *
+	 * @param conditions boolean expressions that define required limits on the
+	 * results of the query
+	 * @return this DBQuery instance
+	 */
+	public DBQuery addConditions(BooleanExpression... conditions) {
+		for (BooleanExpression condition : conditions) {
+			addCondition(condition);
+		}
+		return this;
+	}
+
+	/**
+	 * Use this method to add complex conditions to the DBQuery.
+	 *
+	 * <p>
+	 * This method takes BooleanExpressions and adds them to the where clause of
+	 * the Query
+	 *
+	 * <p>
+	 * The easiest way to get a BooleanExpression is the DBRow.column() method and
+	 * then apply the functions you require until you get a BooleanExpression
+	 * back.
+	 *
+	 * <p>
+	 * StringExpression, NumberExpression, DateExpression, and BooleanExpression
+	 * all provide methods that will help. In particular they have the value()
+	 * method to convert base Java types to expressions.
+	 *
+	 * <p>
+	 * Standard uses of this method are:
+	 * <pre>
+	 * addConditions(myRow.column(myRow.myColumn).like("%THis%"));
+	 * addConditions(myRow.column(myRow.myNumber).cos().greaterThan(0.5));
+	 * addConditions(StringExpression.value("THis").like(myRwo.column(myRow.myColumn)));
+	 * addConditions(BooleanExpression.anyOf(
+	 * myRow.columns(myRow.myColumn).between("That", "This"),
+	 * myRow.columns(myRow.myColumn).is("Something"))
+	 * );
+	 * </pre>
+	 *
+	 * @param conditions boolean expressions that define required limits on the
+	 * results of the query
+	 * @return this DBQuery instance
+	 */
+	public DBQuery addConditions(Collection<BooleanExpression> conditions) {
+		for (BooleanExpression condition : conditions) {
+			addCondition(condition);
+		}
 		return this;
 	}
 

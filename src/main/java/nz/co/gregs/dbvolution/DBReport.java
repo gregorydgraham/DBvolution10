@@ -200,11 +200,11 @@ public class DBReport extends RowDefinition {
 
 	/**
 	 * Gets all the report rows of the supplied DBReport limited by the supplied
-	 * example rows but reduce the result to only those that match the post-query
+	 * example rows but reduce the result to only those that match the
 	 * conditions.
 	 *
 	 * <p>
-	 * All post-query conditions should only reference the fields/column of the
+	 * All conditions should only reference the fields/column of the
 	 * DBReport.
 	 *
 	 * <p>
@@ -224,16 +224,16 @@ public class DBReport extends RowDefinition {
 	 * @param database database
 	 * @param exampleReport exampleReport
 	 * @param rows rows example rows that provide extra criteria
-	 * @param postQueryConditions the post-query conditions that will be supplied
-	 * to the HAVING clause of the query
+	 * @param conditions extra conditions that will be supplied
+	 * to the WHERE or HAVING clause of the query
 	 * @return a list of DBReport instances representing the results of the report
 	 * query
 	 * @throws java.sql.SQLException Database exceptions may be thrown
 	 */
-	public static <A extends DBReport> List<A> getRowsHaving(DBDatabase database, A exampleReport, DBRow[] rows, BooleanExpression... postQueryConditions) throws SQLException {
+	public static <A extends DBReport> List<A> getRowsHaving(DBDatabase database, A exampleReport, DBRow[] rows, BooleanExpression... conditions) throws SQLException {
 		DBQuery query = getDBQuery(database, exampleReport, rows);
 		List<A> reportRows;
-		List<DBQueryRow> allRows = query.getAllRowsHaving(postQueryConditions);
+		List<DBQueryRow> allRows = query.addConditions(conditions).getAllRows();
 		reportRows = getReportsFromQueryResults(allRows, exampleReport);
 		return reportRows;
 	}

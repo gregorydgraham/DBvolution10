@@ -144,7 +144,15 @@ public class AbstractColumn implements DBExpression {
 
 	@Override
 	public boolean isAggregator() {
-		return false;
+		boolean aggregator = false;
+		if ((field instanceof QueryableDatatype) && ((QueryableDatatype) field).hasColumnExpression()) {
+			final QueryableDatatype<?> qdtField = (QueryableDatatype) field;
+			DBExpression[] columnExpressions = qdtField.getColumnExpression();
+			for (DBExpression columnExpression : columnExpressions) {
+				aggregator = aggregator || columnExpression.isAggregator();
+			}
+		}
+		return aggregator;
 	}
 
 	@Override

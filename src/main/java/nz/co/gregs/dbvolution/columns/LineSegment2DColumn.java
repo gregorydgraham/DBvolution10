@@ -66,4 +66,9 @@ public class LineSegment2DColumn extends LineSegment2DExpression implements Colu
 	public boolean isPurelyFunctional() {
 		return column.isPurelyFunctional();
 	}
+
+	@Override
+	public boolean isAggregator() {
+		return column.isAggregator();
+	}
 }

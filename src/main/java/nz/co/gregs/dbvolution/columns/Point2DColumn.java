@@ -66,4 +66,9 @@ public class Point2DColumn extends Point2DExpression implements ColumnProvider {
 	public boolean isPurelyFunctional() {
 		return column.isPurelyFunctional();
 	}
+
+	@Override
+	public boolean isAggregator() {
+		return column.isAggregator();
+	}
 }

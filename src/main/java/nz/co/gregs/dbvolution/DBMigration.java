@@ -314,11 +314,11 @@ public class DBMigration<M extends DBRow> extends RowDefinition {
 
 	/**
 	 * Gets all the report rows of the supplied DBReport limited by the supplied
-	 * example rows but reduce the result to only those that match the post-query
+	 * example rows but reduce the result to only those that match the
 	 * conditions.
 	 *
 	 * <p>
-	 * All post-query conditions should only reference the fields/column of the
+	 * All conditions should only reference the fields/column of the
 	 * DBReport.
 	 *
 	 * <p>
@@ -326,7 +326,7 @@ public class DBMigration<M extends DBRow> extends RowDefinition {
 	 * report.
 	 *
 	 * <p>
-	 * Builtin report limitation will be used, the example rows supply further
+	 * Built-in report limitation will be used, the example rows supply further
 	 * details for constraining the report.
 	 *
 	 * <p>
@@ -336,16 +336,16 @@ public class DBMigration<M extends DBRow> extends RowDefinition {
 	 *
 	 * @param database database
 	 * @param rows rows example rows that provide extra criteria
-	 * @param postQueryConditions the post-query conditions that will be supplied
-	 * to the HAVING clause of the query
+	 * @param conditions the conditions that will be supplied
+	 * to the WHERE or HAVING clause of the query
 	 * @return a list of DBReport instances representing the results of the report
 	 * query
-	 * @throws java.sql.SQLException Database exceptions may be thrown
+	 * @throws java.sql.SQLException Database exceptions may be thrown 
 	 */
-	public List<M> getRowsHaving(DBDatabase database, DBRow[] rows, BooleanExpression... postQueryConditions) throws SQLException {
+	public List<M> getRowsHaving(DBDatabase database, DBRow[] rows, BooleanExpression... conditions) throws SQLException {
 		DBQuery query = getDBQuery(database, rows);
 		List<M> reportRows;
-		List<DBQueryRow> allRows = query.getAllRowsHaving(postQueryConditions);
+		List<DBQueryRow> allRows = query.addConditions(conditions).getAllRows();
 		reportRows = getMigratedRowsFromQueryResults(allRows);
 		return reportRows;
 	}

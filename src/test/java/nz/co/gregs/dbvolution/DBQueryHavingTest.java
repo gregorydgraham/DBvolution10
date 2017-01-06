@@ -55,9 +55,8 @@ public class DBQueryHavingTest extends AbstractTest {
 		rows = database
 				.getDBQuery(new CarCompany(), marqueCounter)
 				.setSortOrder(marqueCounter.column(marqueCounter.carCompany))
-				.getAllRowsHaving(
-						marqueCounter.column(marqueCounter.counted).isGreaterThan(1)
-				);
+				.addCondition(marqueCounter.column(marqueCounter.counted).isGreaterThan(1))
+				.getAllRows();
 
 		database.print(rows);
 		Assert.assertThat(rows.size(), is(3));

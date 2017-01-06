@@ -66,4 +66,9 @@ public class Line2DColumn extends Line2DExpression implements ColumnProvider {
 	public boolean isPurelyFunctional() {
 		return column.isPurelyFunctional();
 	}
+
+	@Override
+	public boolean isAggregator() {
+		return column.isAggregator();
+	}
 }

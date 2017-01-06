@@ -66,4 +66,9 @@ public class MultiPoint2DColumn extends MultiPoint2DExpression implements Column
 	public boolean isPurelyFunctional() {
 		return column.isPurelyFunctional();
 	}
+
+	@Override
+	public boolean isAggregator() {
+		return column.isAggregator();
+	}
 }

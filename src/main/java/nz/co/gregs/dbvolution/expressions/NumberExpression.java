@@ -2216,6 +2216,11 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 			String getFunctionName(DBDatabase db) {
 				return db.getDefinition().getCountFunctionName();
 			}
+			
+			@Override
+			public NumberResult getInnerNumberResult() {
+				return this;
+			}
 
 			@Override
 			protected String afterValue(DBDatabase db) {
