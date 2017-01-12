@@ -60,8 +60,9 @@ public class DBInsertLargeObjects extends DBUpdateLargeObjects {
 	}
 
 	@Override
-	protected String getPrimaryKeySQL(DBDefinition defn, DBRow row, DBDatabase db) {
+	protected String getPrimaryKeySQL(DBDatabase db, DBRow row) {
 		String sqlString = "";
+		DBDefinition defn = db.getDefinition();
 		List<QueryableDatatype<?>> primaryKeys = row.getPrimaryKeys();
 		String separator = "";
 		for (QueryableDatatype<?> pk : primaryKeys) {

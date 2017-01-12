@@ -2886,22 +2886,22 @@ results.add(queryRow);
 			return optionalConditions;
 		}
 
-		public void addedFullOuterJoinToQuery() {
+		void addedFullOuterJoinToQuery() {
 			queryIsFullOuterJoin= queryIsFullOuterJoin&&true;
 			queryIsLeftOuterJoin=false;
 		}
 
-		public void addedLeftOuterJoinToQuery() {
+		void addedLeftOuterJoinToQuery() {
 			queryIsLeftOuterJoin= queryIsLeftOuterJoin&&true;
 			queryIsFullOuterJoin=false;
 		}
 
-		public void addedInnerJoinToQuery() {
+		void addedInnerJoinToQuery() {
 			queryIsLeftOuterJoin=false;
 			queryIsFullOuterJoin=false;
 		}
 
-		public boolean isFullOuterJoin() {
+		boolean isFullOuterJoin() {
 			return queryIsFullOuterJoin;
 		}
 	}

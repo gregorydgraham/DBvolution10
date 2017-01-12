@@ -107,7 +107,7 @@ public class DBUpdateLargeObjects extends DBUpdate {
 				+ defn.getEqualsComparator()
 				+ "'" + largeObject.stringValue() + "'"
 				+ defn.beginWhereClause()
-				+getPrimaryKeySQL(defn, row, db)
+				+getPrimaryKeySQL(db, row)
 				+defn.endSQLStatement();
 //					db.printSQLIfRequested(sqlString);
 		log.debug(sqlString);
@@ -122,7 +122,7 @@ public class DBUpdateLargeObjects extends DBUpdate {
 				+ defn.getEqualsComparator()
 				+ defn.getNull()
 				+ defn.beginWhereClause()
-				+ getPrimaryKeySQL(defn, row, db)
+				+ getPrimaryKeySQL(db, row)
 				+ defn.endSQLStatement();
 //					db.printSQLIfRequested(sqlString);
 		log.debug(sqlString);
@@ -137,7 +137,7 @@ public class DBUpdateLargeObjects extends DBUpdate {
 				+ defn.getEqualsComparator()
 				+ defn.getPreparedVariableSymbol()
 				+ defn.beginWhereClause()
-				+ getPrimaryKeySQL(defn, row, db)
+				+ getPrimaryKeySQL(db, row)
 				+ defn.endSQLStatement();
 					db.printSQLIfRequested(sqlString);
 		log.debug(sqlString);
@@ -166,7 +166,7 @@ public class DBUpdateLargeObjects extends DBUpdate {
 				+ defn.getEqualsComparator()
 				+ defn.getPreparedVariableSymbol()
 				+ defn.beginWhereClause()
-				+ getPrimaryKeySQL(defn, row, db)
+				+ getPrimaryKeySQL(db, row)
 				+ defn.endSQLStatement();
 //					db.printSQLIfRequested(sqlString);
 		log.debug(sqlString);
@@ -187,7 +187,7 @@ public class DBUpdateLargeObjects extends DBUpdate {
 				+ defn.getEqualsComparator()
 				+ defn.getPreparedVariableSymbol()
 				+ defn.beginWhereClause()
-				+ getPrimaryKeySQL(defn, row, db)
+				+ getPrimaryKeySQL(db, row)
 				+ defn.endSQLStatement();
 //					db.printSQLIfRequested(sqlString);
 		log.debug(sqlString);
@@ -235,7 +235,7 @@ public class DBUpdateLargeObjects extends DBUpdate {
 				+ defn.getEqualsComparator()
 				+ defn.getPreparedVariableSymbol()
 				+ defn.beginWhereClause()
-				+ getPrimaryKeySQL(defn, row, db)
+				+ getPrimaryKeySQL(db, row)
 				+ defn.endSQLStatement();
 //					db.printSQLIfRequested(sqlString);
 		log.info(sqlString);

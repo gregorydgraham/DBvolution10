@@ -64,6 +64,13 @@ public class DBValidation<R extends DBRow> {
 		extraExamples = examples;
 	}
 
+	/**
+	 * Perform the validation
+	 *
+	 * @param database
+	 * @return
+	 * @throws SQLException
+	 */
 	public Results validate(DBDatabase database) throws SQLException {
 
 		QueryDetails details = sourceMigration.getQueryDetails();

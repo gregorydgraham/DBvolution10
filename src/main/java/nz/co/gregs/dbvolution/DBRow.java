@@ -529,6 +529,13 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 		return whereClause;
 	}
 
+	/**
+	 * USED INTERNALLY
+	 *
+	 * @param db
+	 * @param useTableAlias
+	 * @return a list of the DBExpressions that are defined for this exemplar.
+	 */
 	public final List<BooleanExpression> getWhereClauseExpressions(DBDatabase db, boolean useTableAlias) //throws InstantiationException, IllegalAccessException 
 	{
 //		DBDefinition defn = db.getDefinition();
@@ -1660,6 +1667,11 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 		}
 	}
 
+	/**
+	 * Returns the schema defined for this DBRow in the DBTableName annotation, if there is one.
+	 * 
+	 * @return the defined schema name.
+	 */
 	public String getSchemaName() {
 		return getWrapper().schemaName();
 	}

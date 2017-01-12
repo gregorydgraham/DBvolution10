@@ -129,10 +129,20 @@ public abstract class DBAction {
 		return DBRow.copyDBRow(row);
 	}
 
-	protected String getPrimaryKeySQL(DBDefinition defn, DBRow row, DBDatabase db) {
+	/**
+	 * Returns a string that can be used in the WHERE clause to identify the rows affected by this DBAction.
+	 * 
+	 * <p>Used internally during UPDATE and INSERT.</p>
+	 *
+	 * @param row
+	 * @param db
+	 * @return a string representing the 
+	 */
+	protected String getPrimaryKeySQL(DBDatabase db, DBRow row) {
 		String sqlString = "";
+		DBDefinition defn = db.getDefinition();
 		List<QueryableDatatype<?>> primaryKeys = row.getPrimaryKeys();
-		String separator = "";
+		String separator = "(";
 		for (QueryableDatatype<?> pk : primaryKeys) {
 			PropertyWrapper wrapper = row.getPropertyWrapperOf(pk);
 			String pkValue = (pk.hasChanged() ? pk.getPreviousSQLValue(db) : pk.toSQLString(db));
@@ -140,9 +150,9 @@ public abstract class DBAction {
 			//				+ defn.formatColumnName(row.getPrimaryKeyColumnNames())
 			//				+ defn.getEqualsComparator()
 			//				+ row.getPrimaryKeys().toSQLString(db)
-			separator = defn.beginAndLine();
+			separator = defn.beginOrLine();
 		}
-		return sqlString;
+		return sqlString+")";
 	}
 
 }

@@ -118,7 +118,7 @@ public class DBUpdateSimpleTypes extends DBUpdate {
 	 * @return The WHERE clause of the UPDATE statement.
 	 */
 	protected String getWhereClause(DBDatabase db, DBRow row) {
-		return getPrimaryKeySQL(db.getDefinition(), row, db);
+		return getPrimaryKeySQL(db, row);
 //		DBDefinition defn = db.getDefinition();
 //		QueryableDatatype<?> primaryKey = row.getPrimaryKeys();
 //		String pkOriginalValue = (primaryKey.hasChanged() ? primaryKey.getPreviousSQLValue(db) : primaryKey.toSQLString(db));

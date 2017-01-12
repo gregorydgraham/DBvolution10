@@ -1509,6 +1509,11 @@ public abstract class DBDatabase implements Cloneable {
 		return true;
 	}
 	
+	/**
+	* Indicates whether this database supports the RIGHT OUTER JOIN syntax.
+	*
+	* @return Returns TRUE if this database supports RIGHT OUTER JOIN, otherwise FALSE
+	*/
 	protected boolean supportsRightOuterJoinNatively() {
 		return true;
 	}
@@ -1736,6 +1741,11 @@ public abstract class DBDatabase implements Cloneable {
 		return true;
 	}
 
+	/**
+	 * Indicates that the database supports the UNION DISTINCT syntax
+	 *
+	 * @return TRUE if this database supports the UNION DISTINCT syntax, FALSE otherwise.
+	 */
 	public Boolean supportsUnionDistinct() {
 		return true;
 	}

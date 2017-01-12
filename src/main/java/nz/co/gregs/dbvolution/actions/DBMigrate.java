@@ -60,6 +60,13 @@ public class DBMigrate<R extends DBRow> extends DBAction {
 		extraExamples = examples;
 	}
 
+	/**
+	 * Perform the migration
+	 *
+	 * @param database
+	 * @return
+	 * @throws SQLException
+	 */
 	public DBActionList migrate(DBDatabase database) throws SQLException {
 		DBMigrate<R> migrate = new DBMigrate<>(sourceMigration, getRow());
 		final DBActionList executedActions = migrate.execute(database);

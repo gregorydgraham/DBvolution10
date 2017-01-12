@@ -4626,10 +4626,20 @@ public abstract class DBDefinition {
 		}
 	}
 
+	/**
+	 * Returns this database's version of the UNION DISTINCT syntax
+	 *
+	 * @return the standard definition returns " UNION DISTINCT "
+	 */
 	public String getUnionDistinctOperator() {
 		return " UNION DISTINCT  ";
 	}
 
+	/**
+	 * Returns this database's version of the UNION syntax
+	 *
+	 * @return the standard definition returns " UNION "
+	 */
 	public String getUnionOperator() {
 		return " UNION "; //To change body of generated methods, choose Tools | Templates.
 	}
