@@ -299,6 +299,32 @@ public class QueryGraph {
 	public List<DBRow> toList() {
 		return toList(getStartTable(), false);
 	}
+	
+	
+
+	/**
+	 * Return tables in the QueryGraph as a list.
+	 *
+	 * <p>
+	 * Starting from a semi-random table (see {@link #getStartTable() }) traverse
+	 * the graph and add all nodes found to the list.
+	 *
+	 * <p>
+	 * This method does not check for discontinuities. If there is a cartesian
+	 * join/discontinuity present only some of the nodes will be returned. Use {@link #toListIncludingCartesian()
+	 * } if you need to span a discontinuity.
+	 *
+	 * <p>
+	 * Some optimization is attempted, by trying to include all the required/inner
+	 * tables first before adding the optional/outer tables. This avoids a common
+	 * problem of a query that spans the intersection of 2 optional/outer tables,
+	 * creating mid-query cartesian join that could have been avoided by including
+	 * a related required/inner table first.
+	 *
+	 * @param reversed TRUE if the list should be reversed, FALSE otherwise
+	 * @return a list of all DBRows in this QueryGraph in a smart an order as
+	 * possible.
+	 */
 	public List<DBRow> toListReversable(boolean reversed) {
 		return toList(getStartTable(), reversed);
 	}
@@ -374,25 +400,31 @@ public class QueryGraph {
 	 */
 	public List<DBRow> toListIncludingCartesian() {
 		return toListIncludingCartesianReversable(false);
-//		Set<DBRow> returnTables = new HashSet<DBRow>();
-//
-//		returnTables.addAll(toList());
-//		boolean changed = true;
-//
-//		while (changed) {
-//			for (DBRow row : rows.values()) {
-//				changed = false;
-//				if (!returnTables.contains(row)) {
-//					returnTables.addAll(toList(row.getClass()));
-//					changed = true;
-//				}
-//			}
-//		}
-//		final List<DBRow> returnList = new ArrayList<DBRow>();
-//		returnList.addAll(returnTables);
-//		return returnList;
 	}
 	
+	/**
+	 * Return all tables in the QueryGraph as a list.
+	 *
+	 * <p>
+	 * Starting from a semi-random table (see {@link #getStartTable() }) traverse
+	 * the graph and add all nodes found to the list.
+	 *
+	 * <p>
+	 * This method scans across discontinuities. If there is a cartesian
+	 * join/discontinuity present all of the nodes will be returned. Use {@link #toList()
+	 * } if you need to avoid spanning a discontinuity.
+	 *
+	 * <p>
+	 * Some optimization is attempted, by trying to include all the required/inner
+	 * tables first before adding the optional/outer tables. This avoids a common
+	 * problem of a query that spans the intersection of 2 optional/outer tables,
+	 * creating mid-query cartesian join that could have been avoided by including
+	 * a related required/inner table first.
+	 *
+	 * @param reverse TRUE if the list needs to be reversed, FALSE otherwise
+	 * @return a list of all DBRows in this QueryGraph in a smart an order as
+	 * possible.
+	 */
 	public List<DBRow> toListIncludingCartesianReversable(Boolean reverse) {
 		Set<DBRow> returnTables = new HashSet<>();
 

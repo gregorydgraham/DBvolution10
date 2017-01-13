@@ -19,15 +19,15 @@ public class DBNumberStatistics extends DBNumber {
 
 	private static final long serialVersionUID = 1;
 
-	protected transient NumberExpression originalExpression;
-	protected final DBNumber numberProxy = new DBNumber();
-	protected Number minNumber;
-	protected Number maxNumber;
-	protected Number medianNumber;
-	protected Number averageNumber;
-	protected Number firstQuartileNumber;
-	protected Number thirdQuartileNumber;
-	protected Number countOfRows;
+	private transient NumberExpression originalExpression;
+	private final DBNumber numberProxy = new DBNumber();
+	private Number minNumber;
+	private Number maxNumber;
+	private Number medianNumber;
+	private Number averageNumber;
+	private Number firstQuartileNumber;
+	private Number thirdQuartileNumber;
+	private Number countOfRows;
 	private transient NumberExpression averageExpression;
 	private transient NumberExpression maxExpr;
 	private transient NumberExpression minExpr;
@@ -35,9 +35,27 @@ public class DBNumberStatistics extends DBNumber {
 	private transient NumberExpression countExpr;
 	private Number sumNumber;
 
+	/**
+	 * The default constructor for DBNumberStatistics.
+	 *
+	 * <p>Creates an unset undefined DBNumber object.</p>
+	 * 
+	 * <p>Use {@link #DBNumberStatistics(nz.co.gregs.dbvolution.expressions.NumberExpression) } instead.</p>
+	 *
+	 */
 	public DBNumberStatistics() {
 	}
 
+	/**
+	 * Creates a column expression with a statistics result from the expression
+	 * provided.
+	 *
+	 * <p>
+	 * Used in {@link DBReport}, and some {@link DBRow}, sub-classes to derive
+	 * data from the database prior to retrieval.
+	 *
+	 * @param numberExpressionToGenerateStatsFrom 	numberExpression
+	 */
 	public DBNumberStatistics(NumberExpression numberExpressionToGenerateStatsFrom) {
 		super();
 		averageExpression = numberExpressionToGenerateStatsFrom.sum().dividedBy(NumberExpression.countAll());
@@ -57,38 +75,75 @@ public class DBNumberStatistics extends DBNumber {
 
 	}
 
+	/**
+	 * Count of the rows included in this set of statistics
+	 *
+	 * @return the size of the statistics collection
+	 */
 	public Number count() {
 		return this.countOfRows;
 	}
 
+	/**
+	 *
+	 * @return
+	 */
 	public Number sum() {
 		return this.sumNumber;
 	}
 
+	/**
+	 *
+	 * @return
+	 */
 	public Number min() {
 		return this.minNumber;
 	}
 
+	/**
+	 *
+	 * @return
+	 */
 	public Number max() {
 		return this.maxNumber;
 	}
 
+	/**
+	 *
+	 * @return
+	 */
 	public Number median() {
 		return this.medianNumber;
 	}
 
+	/**
+	 *
+	 * @return
+	 */
 	public Number average() {
 		return this.averageNumber;
 	}
 
+	/**
+	 *
+	 * @return
+	 */
 	public Number firstQuartile() {
 		return this.firstQuartileNumber;
 	}
 
+	/**
+	 *
+	 * @return
+	 */
 	public Number thirdQuartile() {
 		return this.thirdQuartileNumber;
 	}
 
+	/**
+	 *
+	 * @return
+	 */
 	public Number secondQuartile() {
 		return this.medianNumber;
 	}

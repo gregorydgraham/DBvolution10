@@ -190,6 +190,11 @@ public class QueryableDatatypeSyncer {
 		return toInternalSimpleTypeAdaptor;
 	}
 
+	/**
+	 *
+	 * @param internalQDT
+	 * @param internalValue
+	 */
 	protected static final void setQDTValueUsingDangerousReflection(QueryableDatatype<?> internalQDT, Object internalValue) {
 		try {
 			// TODO what type checking can/should be done here?

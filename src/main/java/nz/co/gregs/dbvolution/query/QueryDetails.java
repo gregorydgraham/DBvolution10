@@ -44,7 +44,7 @@ public class QueryDetails {
 	private final Map<Object, DBExpression> dbReportGroupByColumns = new LinkedHashMap<>();
 	private final Map<Class<?>, Map<String, DBRow>> existingInstances = new HashMap<>();
 	private boolean groupByRequiredByAggregator = false;
-	public DBDatabase database = null;
+	private DBDatabase database = null;
 	private String selectClause = null;
 	private final ArrayList<BooleanExpression> havingColumns = new ArrayList<>();
 
@@ -90,6 +90,11 @@ public class QueryDetails {
 		return extraExamples;
 	}
 
+	/**
+	 * Get all conditions involved in this query.
+	 *
+	 * @return all conditions in the query
+	 */
 	public List<BooleanExpression> getAllConditions() {
 		List<BooleanExpression> allConditions = new ArrayList<>();
 		for (DBRow entry : allQueryTables) {
@@ -148,10 +153,20 @@ public class QueryDetails {
 		return getDBReportGroupByColumns().size() > 0 || getGroupByRequiredByAggregator();
 	}
 
+	/**
+	 * Define the SELECT clause used during the query.
+	 *
+	 * @param selectClause
+	 */
 	public void setSelectClause(String selectClause) {
 		this.selectClause = selectClause;
 	}
 
+	/**
+	 * Get the SELECT clause used during the query.
+	 *
+	 * @return the SELECT clause defined earlier
+	 */
 	public String getSelectClause() {
 		return selectClause;
 	}
@@ -168,6 +183,10 @@ public class QueryDetails {
 	 */
 	public void setHavingColumns(BooleanExpression... havingColumns) {
 		Collections.addAll(this.havingColumns, havingColumns);
+	}
+
+	public void setDatabase(DBDatabase database) {
+		this.database = database;
 	}
 
 

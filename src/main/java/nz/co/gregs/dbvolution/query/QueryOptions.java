@@ -232,10 +232,21 @@ public class QueryOptions {
 		return opts;
 	}
 
+
+	/**
+	 * Used while simulating OUTER JOIN to indicate that the simulation is occurring.
+	 *
+	 * @return TRUE if the query is native, FALSE otherwise
+	 */
 	public boolean creatingNativeQuery() {
 		return queryIsNativeQuery;
 	}
 
+	/**
+	 * Used while simulating OUTER JOIN to indicate that the simulation is occurring.
+	 *
+	 * @param creatingNativeQuery
+	 */
 	public void setCreatingNativeQuery(boolean creatingNativeQuery) {
 		queryIsNativeQuery = creatingNativeQuery;
 	}

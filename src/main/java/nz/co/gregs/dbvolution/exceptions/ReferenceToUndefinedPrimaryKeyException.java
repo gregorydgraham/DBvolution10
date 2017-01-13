@@ -19,13 +19,6 @@ public class ReferenceToUndefinedPrimaryKeyException extends DBRuntimeException 
 
 	/**
 	 * Please use another Exception as this one is too generic.
-	 */
-	public ReferenceToUndefinedPrimaryKeyException() {
-		super();
-	}
-
-	/**
-	 * Please use another Exception as this one is too generic.
 	 *
 	 * @param message	message
 	 */
@@ -34,24 +27,11 @@ public class ReferenceToUndefinedPrimaryKeyException extends DBRuntimeException 
 	}
 
 	/**
-	 * Please use another Exception as this one is too generic.
 	 *
-	 * @param cause	cause
-	 */
-	public ReferenceToUndefinedPrimaryKeyException(Throwable cause) {
-		super(cause);
-	}
-
-	/**
-	 * Please use another Exception as this one is too generic.
 	 *
-	 * @param message message
-	 * @param cause cause
+	 * @param adaptee
+	 * @param referencedClassWrapper
 	 */
-	public ReferenceToUndefinedPrimaryKeyException(String message, Throwable cause) {
-		super(message, cause);
-	}
-
 	public ReferenceToUndefinedPrimaryKeyException(JavaProperty adaptee, RowDefinitionClassWrapper referencedClassWrapper) {
 		super("Property " + adaptee.qualifiedName() + " references class " + referencedClassWrapper.javaName()
 				+ ", which does not have a primary key. Please identify the primary key on that class or specify the column in the"
