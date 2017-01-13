@@ -55,6 +55,26 @@ public class DBTableDeleteTest extends AbstractTest {
 	}
 
 	@Test
+	public void testDeleteArrayOfRows() throws SQLException {
+		List<Marque> rowList = marquesTable.setBlankQueryAllowed(true).getAllRows();
+		int originalSize = rowList.size();
+		System.out.println("rowList.size()==" + rowList.size());
+		ArrayList<Marque> deleteList = new ArrayList<Marque>();
+		for (Marque row : rowList) {
+			if (row.getIsUsedForTAFROs().toString().equals("False")) {
+				deleteList.add(row);
+			}
+		}
+		Marque[] deleteArray = deleteList.toArray(new Marque[]{});
+		marquesTable.delete(deleteArray);
+		marquesTable.getAllRows();
+		System.out.println("rowList.size()==" + marquesTable.getAllRows().size());
+		//assertThat("All 'False' rows have not been deleted", originalSize - deleteList.size() == marquesTable.toList().size());
+		Assert.assertThat(originalSize - deleteList.size(), is(marquesTable.getAllRows().size()));
+
+	}
+
+	@Test
 	public void testDeleteByExample() throws SQLException {
 		List<Marque> beforeList = marquesTable.setBlankQueryAllowed(true).getAllRows();
 		System.out.println("rowList.size()==" + beforeList.size());

@@ -518,9 +518,7 @@ public class DBTable<E extends DBRow> {
 	@SafeVarargs
 	public final DBActionList delete(E... oldRows) throws SQLException {
 		DBActionList actions = new DBActionList();
-		for (E row : oldRows) {
-			actions.addAll(DBDelete.delete(database, row));
-		}
+		actions.addAll(DBDelete.delete(database, oldRows));
 		query.refreshQuery();
 		return actions;
 	}
@@ -535,9 +533,7 @@ public class DBTable<E extends DBRow> {
 	 */
 	public DBActionList delete(Collection<E> oldRows) throws SQLException {
 		DBActionList actions = new DBActionList();
-		for (E row : oldRows) {
-			actions.addAll(DBDelete.delete(database, row));
-		}
+		actions.addAll(DBDelete.delete(database, oldRows));
 		query.refreshQuery();
 		return actions;
 	}

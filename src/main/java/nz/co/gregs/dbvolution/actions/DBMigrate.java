@@ -64,7 +64,7 @@ public class DBMigrate<R extends DBRow> extends DBAction {
 	 * Perform the migration
 	 *
 	 * @param database
-	 * @return
+	 * @return a DBActionList of the migration's effects
 	 * @throws SQLException
 	 */
 	public DBActionList migrate(DBDatabase database) throws SQLException {

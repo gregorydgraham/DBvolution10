@@ -54,6 +54,34 @@ public abstract class DBDelete extends DBAction {
 	}
 
 	/**
+	 * Deletes the specified row or example from the database and returns the
+	 * actions performed.
+	 *
+	 * @param database the target database
+	 * @param rows the row to be deleted
+	 * @return the actions executed as a DBActionList
+	 * @throws SQLException database exceptions
+	 */
+	public static DBActionList delete(DBDatabase database, DBRow... rows) throws SQLException {
+		DBActionList delete = getDeletes(database, rows);
+		return delete.execute(database);
+	}
+
+	/**
+	 * Deletes the specified row or example from the database and returns the
+	 * actions performed.
+	 *
+	 * @param database the target database
+	 * @param rows the row to be deleted
+	 * @return the actions executed as a DBActionList
+	 * @throws SQLException database exceptions
+	 */
+	public static DBActionList delete(DBDatabase database, Collection<? extends DBRow> rows) throws SQLException {
+		DBActionList delete = getDeletes(database, rows);
+		return delete.execute(database);
+	}
+
+	/**
 	 * Creates a DBActionList of delete actions for the rows.
 	 * <p>
 	 * You probably want to use {@link #getDeletes(nz.co.gregs.dbvolution.DBDatabase, nz.co.gregs.dbvolution.DBRow...)
