@@ -26,6 +26,7 @@ import nz.co.gregs.dbvolution.datatypes.DBString;
 import nz.co.gregs.dbvolution.example.CarCompany;
 import nz.co.gregs.dbvolution.example.Marque;
 import nz.co.gregs.dbvolution.generic.AbstractTest;
+import nz.co.gregs.dbvolution.results.NumberResult;
 import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Test;
@@ -369,6 +370,40 @@ public class NumberExpressionTest extends AbstractTest {
 	}
 
 	@Test
+	public void testGreatestOfCollection() throws SQLException {
+		Marque marq = new Marque();
+		DBQuery dbQuery = database.getDBQuery(marq);
+		ArrayList<NumberResult> vals = new ArrayList<NumberResult>();
+		vals.add(marq.column(marq.uidMarque));
+		vals.add(NumberExpression.value(900000));
+		vals.add(NumberExpression.value(800000));
+		dbQuery.addCondition(
+				NumberExpression.greatestOf(vals)
+				.is(marq.column(marq.uidMarque))
+		);
+		List<DBQueryRow> allRows = dbQuery.getAllRows();
+//        database.print(allRows);
+		Assert.assertThat(allRows.size(), is(20));
+		Marque marque = allRows.get(0).get(marq);
+		Assert.assertThat(marque.uidMarque.getValue().intValue(), is(4893059));
+	}
+
+	@Test
+	public void testGreatestOfNumberArray() throws SQLException {
+		Marque marq = new Marque();
+		DBQuery dbQuery = database.getDBQuery(marq);
+		dbQuery.addCondition(
+				NumberExpression.greatestOf(800000, 900000, 4893059)
+				.is(marq.column(marq.uidMarque))
+		);
+		List<DBQueryRow> allRows = dbQuery.getAllRows();
+//        database.print(allRows);
+		Assert.assertThat(allRows.size(), is(1));
+		Marque marque = allRows.get(0).get(marq);
+		Assert.assertThat(marque.uidMarque.getValue().intValue(), is(4893059));
+	}
+
+	@Test
 	public void testLeastOf() throws SQLException {
 		Marque marq = new Marque();
 		DBQuery dbQuery = database.getDBQuery(marq);
@@ -404,7 +439,78 @@ public class NumberExpressionTest extends AbstractTest {
 				marq.column(marq.statusClassID).isIn(1,2,3,4,5, 1246974)
 		);
 		allRows = dbQuery.getAllRows();
+        database.print(allRows);
+		Assert.assertThat(allRows.size(), is(21));
+		Marque marque = allRows.get(0).get(marq);
+		Assert.assertThat(marque.statusClassID.getValue().intValue(), is(1246974));
+	}
+
+	@Test
+	public void testIsBetween() throws SQLException {
+		Marque marq = new Marque();
+		DBQuery dbQuery = database.getDBQuery(marq);
+		dbQuery.addCondition(
+				marq.column(marq.statusClassID).isBetween(1,5)
+		);
+		List<DBQueryRow> allRows = dbQuery.getAllRows();
 //        database.print(allRows);
+		Assert.assertThat(allRows.size(), is(0));
+		
+		
+		dbQuery = database.getDBQuery(marq);
+		dbQuery.addCondition(
+				marq.column(marq.statusClassID).isBetween(1246972, 1246974)
+		);
+		allRows = dbQuery.getAllRows();
+        database.print(allRows);
+		Assert.assertThat(allRows.size(), is(21));
+		Marque marque = allRows.get(0).get(marq);
+		Assert.assertThat(marque.statusClassID.getValue().intValue(), is(1246974));
+	}
+
+
+	@Test
+	public void testIsBetweenExclusive() throws SQLException {
+		Marque marq = new Marque();
+		DBQuery dbQuery = database.getDBQuery(marq);
+		dbQuery.addCondition(
+				marq.column(marq.statusClassID).isBetweenExclusive(1246972, 1246974)
+		);
+		List<DBQueryRow> allRows = dbQuery.getAllRows();
+//        database.print(allRows);
+		Assert.assertThat(allRows.size(), is(0));
+		
+		
+		dbQuery = database.getDBQuery(marq);
+		dbQuery.addCondition(
+				marq.column(marq.statusClassID).isBetweenExclusive(1246972, 1246975)
+		);
+		allRows = dbQuery.getAllRows();
+        database.print(allRows);
+		Assert.assertThat(allRows.size(), is(21));
+		Marque marque = allRows.get(0).get(marq);
+		Assert.assertThat(marque.statusClassID.getValue().intValue(), is(1246974));
+	}
+
+
+	@Test
+	public void testIsBetweenInclusive() throws SQLException {
+		Marque marq = new Marque();
+		DBQuery dbQuery = database.getDBQuery(marq);
+		dbQuery.addCondition(
+				marq.column(marq.statusClassID).isBetweenInclusive(1246972, 1246974)
+		);
+		List<DBQueryRow> allRows = dbQuery.getAllRows();
+//        database.print(allRows);
+		Assert.assertThat(allRows.size(), is(22));
+		
+		
+		dbQuery = database.getDBQuery(marq);
+		dbQuery.addCondition(
+				marq.column(marq.statusClassID).isBetweenInclusive(1246973, 1246975)
+		);
+		allRows = dbQuery.getAllRows();
+        database.print(allRows);
 		Assert.assertThat(allRows.size(), is(21));
 		Marque marque = allRows.get(0).get(marq);
 		Assert.assertThat(marque.statusClassID.getValue().intValue(), is(1246974));

@@ -385,10 +385,7 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 	 * @return a boolean expression representing the required comparison
 	 */
 	public BooleanExpression isBetween(Number lowerBound, NumberResult upperBound) {
-		return BooleanExpression.allOf(
-				this.isGreaterThan(lowerBound),
-				this.isLessThanOrEqual(upperBound)
-		);
+		return isBetween(value(lowerBound), upperBound);
 	}
 
 	/**
@@ -413,10 +410,7 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 	 * @return a boolean expression representing the required comparison
 	 */
 	public BooleanExpression isBetween(NumberResult lowerBound, Number upperBound) {
-		return BooleanExpression.allOf(
-				this.isGreaterThan(lowerBound),
-				this.isLessThanOrEqual(upperBound)
-		);
+		return isBetween(lowerBound, value(upperBound));
 	}
 
 	/**
@@ -441,10 +435,7 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 	 * @return a boolean expression representing the required comparison
 	 */
 	public BooleanExpression isBetween(Number lowerBound, Number upperBound) {
-		return BooleanExpression.allOf(
-				this.isGreaterThan(lowerBound),
-				this.isLessThanOrEqual(upperBound)
-		);
+		return isBetween(value(lowerBound), value(upperBound));
 	}
 
 	/**
@@ -497,10 +488,7 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 	 * @return a boolean expression representing the required comparison
 	 */
 	public BooleanExpression isBetweenInclusive(Number lowerBound, NumberResult upperBound) {
-		return BooleanExpression.allOf(
-				this.isGreaterThanOrEqual(lowerBound),
-				this.isLessThanOrEqual(upperBound)
-		);
+		return isBetweenInclusive(value(lowerBound), upperBound);
 	}
 
 	/**
@@ -525,10 +513,7 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 	 * @return a boolean expression representing the required comparison
 	 */
 	public BooleanExpression isBetweenInclusive(NumberResult lowerBound, Number upperBound) {
-		return BooleanExpression.allOf(
-				this.isGreaterThanOrEqual(lowerBound),
-				this.isLessThanOrEqual(upperBound)
-		);
+		return isBetweenInclusive(lowerBound, value(upperBound));
 	}
 
 	/**
@@ -553,10 +538,7 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 	 * @return a boolean expression representing the required comparison
 	 */
 	public BooleanExpression isBetweenInclusive(Number lowerBound, Number upperBound) {
-		return BooleanExpression.allOf(
-				this.isGreaterThanOrEqual(lowerBound),
-				this.isLessThanOrEqual(upperBound)
-		);
+		return isBetweenInclusive(value(lowerBound), value(upperBound));
 	}
 
 	/**
@@ -613,10 +595,7 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 	 * @return a boolean expression representing the required comparison
 	 */
 	public BooleanExpression isBetweenExclusive(Number lowerBound, NumberResult upperBound) {
-		return BooleanExpression.allOf(
-				this.isGreaterThan(lowerBound),
-				this.isLessThan(upperBound)
-		);
+		return isBetweenExclusive(value(lowerBound), upperBound);
 	}
 
 	/**
@@ -643,10 +622,7 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 	 * @return a boolean expression representing the required comparison
 	 */
 	public BooleanExpression isBetweenExclusive(NumberResult lowerBound, Number upperBound) {
-		return BooleanExpression.allOf(
-				this.isGreaterThan(lowerBound),
-				this.isLessThan(upperBound)
-		);
+		return isBetweenExclusive(lowerBound, value(upperBound));
 	}
 
 	/**
@@ -673,10 +649,7 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 	 * @return a boolean expression representing the required comparison
 	 */
 	public BooleanExpression isBetweenExclusive(Number lowerBound, Number upperBound) {
-		return BooleanExpression.allOf(
-				this.isGreaterThan(lowerBound),
-				this.isLessThan(upperBound)
-		);
+		return isBetweenExclusive(value(lowerBound), value(upperBound));
 	}
 
 	/**
@@ -1061,7 +1034,7 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 		for (Number num : possibleValues) {
 			possVals.add(value(num));
 		}
-		return greatestOf(possVals.toArray(new NumberExpression[]{}));
+		return greatestOf(possVals);
 	}
 
 	/**
@@ -1074,12 +1047,8 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 	 * @param possibleValues needs to be the largest of these
 	 * @return the greatest/largest value from the list.
 	 */
-	public static NumberExpression greatestOf(Collection<? extends Number> possibleValues) {
-		List<NumberExpression> possVals = new ArrayList<>();
-		for (Number num : possibleValues) {
-			possVals.add(value(num));
-		}
-		return greatestOf(possVals.toArray(new NumberExpression[]{}));
+	public static NumberExpression greatestOf(Collection<? extends NumberResult> possibleValues) {
+		return greatestOf(possibleValues.toArray(new NumberResult[]{}));
 	}
 
 	/**
@@ -1117,7 +1086,7 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 	 *
 	 * @param sequenceName the name of the sequence
 	 * @return a NumberExpression representing the database operation required to
-	 * retrieve the names sequence's value.
+	 * retrieve the named sequence's value.
 	 */
 	public static NumberExpression getNextSequenceValue(String sequenceName) {
 		return getNextSequenceValue(null, sequenceName);
@@ -2268,13 +2237,6 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 	 */
 	public NumberResult getInnerNumberResult() {
 		return innerNumberResult;
-	}
-
-	/**
-	 * @param innerNumberResult the innerNumberResult to set
-	 */
-	public void setInnerNumberResult(NumberResult innerNumberResult) {
-		this.innerNumberResult = innerNumberResult;
 	}
 
 	@Override

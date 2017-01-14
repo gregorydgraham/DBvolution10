@@ -25,6 +25,7 @@ public class DBNumberStatistics extends DBNumber {
 	private Number maxNumber;
 	private Number medianNumber;
 	private Number averageNumber;
+	private Number stdDev;
 	private Number firstQuartileNumber;
 	private Number thirdQuartileNumber;
 	private Number countOfRows;
@@ -33,6 +34,7 @@ public class DBNumberStatistics extends DBNumber {
 	private transient NumberExpression minExpr;
 	private transient NumberExpression sumExpr;
 	private transient NumberExpression countExpr;
+	private transient NumberExpression stdDevExpression;
 	private Number sumNumber;
 
 	/**
@@ -63,13 +65,15 @@ public class DBNumberStatistics extends DBNumber {
 		minExpr=	numberExpressionToGenerateStatsFrom.min();
 		sumExpr=	numberExpressionToGenerateStatsFrom.sum();
 		countExpr= NumberExpression.countAll();
+		stdDevExpression = numberExpressionToGenerateStatsFrom.stddev();
 
 		this.setColumnExpression(new NumberExpression[]{
 			averageExpression,
 			maxExpr,
 			minExpr,
 			sumExpr,
-			countExpr
+			countExpr,
+			stdDevExpression
 		});
 		this.originalExpression = numberExpressionToGenerateStatsFrom;
 
@@ -162,6 +166,7 @@ public class DBNumberStatistics extends DBNumber {
 	public DBNumberStatistics copy() {
 		DBNumberStatistics copy = (DBNumberStatistics) super.copy();
 		copy.averageNumber = this.averageNumber;
+		copy.stdDev = this.stdDev;
 		copy.countOfRows = this.countOfRows;
 		copy.sumNumber = this.sumNumber;
 		copy.firstQuartileNumber = this.firstQuartileNumber;
@@ -216,7 +221,9 @@ public class DBNumberStatistics extends DBNumber {
 					String minColumnAlias = propertyWrapperDefinition.allColumnAspects.get(2).columnAlias;
 					String sumColumnAlias = propertyWrapperDefinition.allColumnAspects.get(3).columnAlias;
 					String countColumnAlias = propertyWrapperDefinition.allColumnAspects.get(4).columnAlias;
+					String stdDevColumnAlias = propertyWrapperDefinition.allColumnAspects.get(5).columnAlias;
 					averageNumber = getFromResultSet(database, resultSet, averageColumnAlias);
+					stdDev = getFromResultSet(database, resultSet, stdDevColumnAlias);
 					maxNumber = getFromResultSet(database, resultSet, maxColumnAlias);
 					minNumber = getFromResultSet(database, resultSet, minColumnAlias);
 					sumNumber = getFromResultSet(database, resultSet, sumColumnAlias);
@@ -233,7 +240,11 @@ public class DBNumberStatistics extends DBNumber {
 
 	@Override
 	public String toString() {
-		return (averageNumber == null ? "" : "count="+countOfRows+"sum="+sumNumber+"ave="+averageNumber+":max="+maxNumber+":min="+minNumber);
+		return (averageNumber == null ? "" : "count="+countOfRows+"sum="+sumNumber+"ave="+averageNumber+"stdDev="+stdDev+":max="+maxNumber+":min="+minNumber);
+	}
+
+	public Number standardDeviation() {
+		return this.stdDev;
 	}
 	
 
