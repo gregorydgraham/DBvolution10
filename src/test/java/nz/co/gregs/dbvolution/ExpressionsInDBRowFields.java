@@ -203,5 +203,8 @@ public class ExpressionsInDBRowFields extends AbstractTest {
 		@DBColumn
 		DBString uidNameAndNVLYear = new DBString(this.column(this.uidMarque).ifDBNull(NumberExpression.value(-1).times(NumberExpression.value(2))).append("-").append(this.column(this.name).ifDBNull("UNKNOWN")).append("-").append(this.column(this.creationDate).ifDBNull(DateExpression.currentDateOnly()).year().ifDBNull(2000)));
 
+		@DBColumn
+		DBString uidNameAndNVLYearWithDate = new DBString(this.column(this.uidMarque).ifDBNull(NumberExpression.value(-1).times(NumberExpression.value(2))).append("-").append(this.column(this.name).ifDBNull("UNKNOWN")).append("-").append(this.column(this.creationDate).ifDBNull(april2nd2011).year().ifDBNull(2000)));
+
 	}
 }

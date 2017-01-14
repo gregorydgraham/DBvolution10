@@ -213,11 +213,6 @@ public class DateExpression implements DateResult, RangeComparable<DateResult>, 
 					public String toSQLString(DBDatabase db) {
 						return db.getDefinition().doCurrentDateOnlyTransform();
 					}
-
-					@Override
-					String getFunctionName(DBDatabase db) {
-						return "";
-					}
 				});
 	}
 
@@ -237,11 +232,6 @@ public class DateExpression implements DateResult, RangeComparable<DateResult>, 
 					@Override
 					public String toSQLString(DBDatabase db) {
 						return db.getDefinition().doCurrentDateTimeTransform();
-					}
-
-					@Override
-					String getFunctionName(DBDatabase db) {
-						return "";
 					}
 				});
 	}
@@ -263,11 +253,6 @@ public class DateExpression implements DateResult, RangeComparable<DateResult>, 
 					@Override
 					public String toSQLString(DBDatabase db) {
 						return db.getDefinition().doCurrentTimeTransform();
-					}
-
-					@Override
-					String getFunctionName(DBDatabase db) {
-						return "";
 					}
 				});
 	}
@@ -575,6 +560,18 @@ public class DateExpression implements DateResult, RangeComparable<DateResult>, 
 	 * Creates an SQL expression that test whether this date expression is NOT
 	 * equal to the supplied date.
 	 *
+	 * @param date  the date the expression must not match
+	 * @return a BooleanExpression comparing the DateResult and this
+	 * DateExpression.
+	 */
+	public BooleanExpression isNot(Date date) {
+		return this.isNot(value(date));
+	}
+
+	/**
+	 * Creates an SQL expression that test whether this date expression is NOT
+	 * equal to the supplied date.
+	 *
 	 * @param dateExpression the date the expression must not match
 	 * @return a BooleanExpression comparing the DateResult and this
 	 * DateExpression.
@@ -774,10 +771,7 @@ public class DateExpression implements DateResult, RangeComparable<DateResult>, 
 	 * @return a boolean expression representing the required comparison
 	 */
 	public BooleanExpression isBetweenInclusive(Date lowerBound, DateResult upperBound) {
-		return BooleanExpression.allOf(
-				this.isGreaterThanOrEqual(lowerBound),
-				this.isLessThanOrEqual(upperBound)
-		);
+		return isBetweenInclusive(value(lowerBound), upperBound);
 	}
 
 	/**
@@ -802,10 +796,7 @@ public class DateExpression implements DateResult, RangeComparable<DateResult>, 
 	 * @return a boolean expression representing the required comparison
 	 */
 	public BooleanExpression isBetweenInclusive(DateResult lowerBound, Date upperBound) {
-		return BooleanExpression.allOf(
-				this.isGreaterThanOrEqual(lowerBound),
-				this.isLessThanOrEqual(upperBound)
-		);
+		return isBetweenInclusive(lowerBound, value(upperBound));
 	}
 
 	/**
@@ -830,10 +821,7 @@ public class DateExpression implements DateResult, RangeComparable<DateResult>, 
 	 * @return a boolean expression representing the required comparison
 	 */
 	public BooleanExpression isBetweenInclusive(Date lowerBound, Date upperBound) {
-		return BooleanExpression.allOf(
-				this.isGreaterThanOrEqual(lowerBound),
-				this.isLessThanOrEqual(upperBound)
-		);
+		return isBetweenInclusive(value(lowerBound), value(upperBound));
 	}
 
 	/**
@@ -890,10 +878,7 @@ public class DateExpression implements DateResult, RangeComparable<DateResult>, 
 	 * @return a boolean expression representing the required comparison
 	 */
 	public BooleanExpression isBetweenExclusive(Date lowerBound, DateResult upperBound) {
-		return BooleanExpression.allOf(
-				this.isGreaterThan(lowerBound),
-				this.isLessThan(upperBound)
-		);
+		return isBetweenExclusive(value(lowerBound), upperBound);
 	}
 
 	/**
@@ -920,10 +905,7 @@ public class DateExpression implements DateResult, RangeComparable<DateResult>, 
 	 * @return a boolean expression representing the required comparison
 	 */
 	public BooleanExpression isBetweenExclusive(DateResult lowerBound, Date upperBound) {
-		return BooleanExpression.allOf(
-				this.isGreaterThan(lowerBound),
-				this.isLessThan(upperBound)
-		);
+		return isBetween(lowerBound, value(upperBound));
 	}
 
 	/**
@@ -950,10 +932,7 @@ public class DateExpression implements DateResult, RangeComparable<DateResult>, 
 	 * @return a boolean expression representing the required comparison
 	 */
 	public BooleanExpression isBetweenExclusive(Date lowerBound, Date upperBound) {
-		return BooleanExpression.allOf(
-				this.isGreaterThan(lowerBound),
-				this.isLessThan(upperBound)
-		);
+		return isBetween(value(lowerBound), value(upperBound));
 	}
 
 	/**
@@ -1365,12 +1344,12 @@ public class DateExpression implements DateResult, RangeComparable<DateResult>, 
 	 * @param possibleValues allowed values
 	 * @return a boolean expression representing the required comparison
 	 */
-	public BooleanExpression isIn(Collection<? extends Date> possibleValues) {
-		List<DateExpression> possVals = new ArrayList<DateExpression>();
-		for (Date num : possibleValues) {
-			possVals.add(value(num));
-		}
-		return isIn(possVals.toArray(new DateExpression[]{}));
+	public BooleanExpression isIn(Collection<? extends DateResult> possibleValues) {
+		//List<DateExpression> possVals = new ArrayList<DateExpression>();
+		//for (Date num : possibleValues) {
+		//	possVals.add(value(num));
+		//}
+		return isIn(possibleValues.toArray(new DateResult[]{}));
 	}
 
 	/**
@@ -1396,11 +1375,6 @@ public class DateExpression implements DateResult, RangeComparable<DateResult>, 
 				}
 				return db.getDefinition().doInTransform(getColumn().toSQLString(db), sqlValues);
 			}
-
-			@Override
-			protected String getFunctionName(DBDatabase db) {
-				return " IN ";
-			}
 		});
 		if (isInExpr.getIncludesNull()) {
 			return BooleanExpression.anyOf(BooleanExpression.isNull(this), isInExpr);
@@ -1422,7 +1396,7 @@ public class DateExpression implements DateResult, RangeComparable<DateResult>, 
 		return new DateExpression(
 				new DateExpression.DateDateFunctionWithDateResult(this, new DateExpression(alternative)) {
 					@Override
-					String getFunctionName(DBDatabase db) {
+					protected String getFunctionName(DBDatabase db) {
 						return db.getDefinition().getIfNullFunctionName();
 					}
 
@@ -1453,7 +1427,7 @@ public class DateExpression implements DateResult, RangeComparable<DateResult>, 
 					}
 
 					@Override
-					String getFunctionName(DBDatabase db) {
+					protected String getFunctionName(DBDatabase db) {
 						return db.getDefinition().getIfNullFunctionName();
 					}
 
@@ -1472,7 +1446,7 @@ public class DateExpression implements DateResult, RangeComparable<DateResult>, 
 	public NumberExpression count() {
 		return new NumberExpression(new DateFunctionWithNumberResult(this) {
 			@Override
-			String getFunctionName(DBDatabase db) {
+			protected String getFunctionName(DBDatabase db) {
 				return db.getDefinition().getCountFunctionName();
 			}
 
@@ -1495,7 +1469,7 @@ public class DateExpression implements DateResult, RangeComparable<DateResult>, 
 	public DateExpression max() {
 		return new DateExpression(new DateFunctionWithDateResult(this) {
 			@Override
-			String getFunctionName(DBDatabase db) {
+			protected String getFunctionName(DBDatabase db) {
 				return db.getDefinition().getMaxFunctionName();
 			}
 
@@ -1523,7 +1497,7 @@ public class DateExpression implements DateResult, RangeComparable<DateResult>, 
 	public DateExpression min() {
 		return new DateExpression(new DateFunctionWithDateResult(this) {
 			@Override
-			String getFunctionName(DBDatabase db) {
+			protected String getFunctionName(DBDatabase db) {
 				return db.getDefinition().getMinFunctionName();
 			}
 
@@ -2428,7 +2402,9 @@ public class DateExpression implements DateResult, RangeComparable<DateResult>, 
 		FunctionWithDateResult() {
 		}
 
-		abstract String getFunctionName(DBDatabase db);
+		protected String getFunctionName(DBDatabase db){
+			return"";
+		}
 
 		@Override
 		public DBDate getQueryableDatatypeForExpressionValue() {
@@ -2906,7 +2882,9 @@ public class DateExpression implements DateResult, RangeComparable<DateResult>, 
 			}
 		}
 
-		abstract String getFunctionName(DBDatabase db);
+		protected String getFunctionName(DBDatabase db){
+			return"";
+		}
 
 		protected String beforeValue(DBDatabase db) {
 			return "( ";
@@ -3022,7 +3000,9 @@ public class DateExpression implements DateResult, RangeComparable<DateResult>, 
 			return new DBBoolean();
 		}
 
-		abstract String getFunctionName(DBDatabase db);
+		protected String getFunctionName(DBDatabase db){
+			return "";
+		}
 
 		protected String beforeValue(DBDatabase db) {
 			return "( ";
@@ -3159,7 +3139,9 @@ public class DateExpression implements DateResult, RangeComparable<DateResult>, 
 			return hashSet;
 		}
 
-		abstract String getFunctionName(DBDatabase db);
+		protected String getFunctionName(DBDatabase db){
+			return"";
+		}
 
 		protected String beforeValue(DBDatabase db) {
 			return " " + getFunctionName(db) + "( ";
@@ -3219,7 +3201,9 @@ public class DateExpression implements DateResult, RangeComparable<DateResult>, 
 			return new DBNumber();
 		}
 
-		abstract String getFunctionName(DBDatabase db);
+		protected String getFunctionName(DBDatabase db){
+			return"";
+		}
 
 		protected String beforeValue(DBDatabase db) {
 			return "" + getFunctionName(db) + "( ";
@@ -3285,11 +3269,9 @@ public class DateExpression implements DateResult, RangeComparable<DateResult>, 
 			this.only = only;
 		}
 
-//		@Override
-//		public DBString getQueryableDatatypeForExpressionValue() {
-//			return new DBString();
-//		}
-		abstract String getFunctionName(DBDatabase db);
+		protected String getFunctionName(DBDatabase db){
+			return "";
+		}
 
 		protected String beforeValue(DBDatabase db) {
 			return "" + getFunctionName(db) + "( ";

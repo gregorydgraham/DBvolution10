@@ -17,6 +17,7 @@ package nz.co.gregs.dbvolution.expressions;
 
 import java.sql.SQLException;
 import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
@@ -25,6 +26,7 @@ import nz.co.gregs.dbvolution.DBQueryRow;
 import nz.co.gregs.dbvolution.DBReport;
 import nz.co.gregs.dbvolution.DBTable;
 import nz.co.gregs.dbvolution.annotations.DBColumn;
+import nz.co.gregs.dbvolution.columns.DateColumn;
 import nz.co.gregs.dbvolution.datatypes.DBDate;
 import nz.co.gregs.dbvolution.datatypes.DBDateOnly;
 import nz.co.gregs.dbvolution.datatypes.DBNumber;
@@ -64,6 +66,150 @@ public class DateExpressionTest extends AbstractTest {
 	}
 	
 	@Test
+	public void testIsNotDateExpression() throws SQLException {
+		Marque marq = new Marque();
+		DBQuery query = database.getDBQuery(marq);
+		final DateExpression fiveDaysPriorToCreation = marq.column(marq.creationDate).addDays(-5);
+		query.addCondition(
+				DateExpression.leastOf(
+					marq.column(marq.creationDate),
+					fiveDaysPriorToCreation,
+					DateExpression.value(march23rd2013).addWeeks(-5), 
+					DateExpression.value(march23rd2013).addDays(-2))
+				.isNot(fiveDaysPriorToCreation)
+		);
+		List<DBQueryRow> allRows = query.getAllRows();
+//		database.print(allRows);
+		Assert.assertThat(allRows.size(), is(18));
+	}
+	
+	@Test
+	public void testIsNotDate() throws SQLException {
+		Marque marq = new Marque();
+		DBQuery query = database.getDBQuery(marq);
+		final DateExpression fiveDaysPriorToCreation = marq.column(marq.creationDate).addDays(-5);
+		query.addCondition(
+				DateExpression.leastOf(
+					marq.column(marq.creationDate),
+					fiveDaysPriorToCreation,
+					DateExpression.value(march23rd2013).addWeeks(-5), 
+					DateExpression.value(march23rd2013).addDays(-2))
+				.isNot(april2nd2011)
+		);
+		List<DBQueryRow> allRows = query.getAllRows();
+//		database.print(allRows);
+		Assert.assertThat(allRows.size(), is(21));
+	}
+	
+	@Test
+	public void testLeastOf() throws SQLException {
+		Marque marq = new Marque();
+		DBQuery query = database.getDBQuery(marq);
+		final DateExpression fiveDaysPriorToCreation = marq.column(marq.creationDate).addDays(-5);
+		query.addCondition(
+				DateExpression.leastOf(
+					marq.column(marq.creationDate),
+					fiveDaysPriorToCreation,
+					DateExpression.value(march23rd2013).addWeeks(-5), DateExpression.value(march23rd2013).addDays(-2))
+				.is(fiveDaysPriorToCreation)
+		);
+		List<DBQueryRow> allRows = query.getAllRows();
+//		database.print(allRows);
+		Assert.assertThat(allRows.size(), is(3));
+	}
+	
+	@Test
+	public void testLeastOfWithList() throws SQLException {
+		Marque marq = new Marque();
+		DBQuery query = database.getDBQuery(marq);
+		final DateColumn creationDate = marq.column(marq.creationDate);
+		final DateExpression fiveDaysPriorToCreation = creationDate.addDays(-5);
+		List<DateExpression> poss = new ArrayList<>();
+		poss.add(creationDate);
+		poss.add(fiveDaysPriorToCreation);
+		poss.add(DateExpression.value(march23rd2013).addWeeks(-5));
+		poss.add(DateExpression.value(march23rd2013).addDays(-2));
+		query.addCondition(
+				DateExpression.leastOf(
+						poss)
+				.is(fiveDaysPriorToCreation)
+		);
+		List<DBQueryRow> allRows = query.getAllRows();
+//		database.print(allRows);
+		Assert.assertThat(allRows.size(), is(3));
+	}
+	
+	@Test
+	public void testLeastOfWithDates() throws SQLException {
+		Marque marq = new Marque();
+		DBQuery query = database.getDBQuery(marq);
+		final DateColumn creationDate = marq.column(marq.creationDate);		
+		query.addCondition(
+				DateExpression.leastOf(
+						march23rd2013, 
+						april2nd2011)
+				.is(april2nd2011)
+		);
+		List<DBQueryRow> allRows = query.getAllRows();
+//		database.print(allRows);
+		Assert.assertThat(allRows.size(), is(22));
+	}
+	
+	@Test
+	public void testGreatestOf() throws SQLException {
+		Marque marq = new Marque();
+		DBQuery query = database.getDBQuery(marq);
+		final DateColumn creationDate = marq.column(marq.creationDate);
+		final DateExpression fiveDaysPriorToCreation = creationDate.addDays(-5);
+		query.addCondition(
+				DateExpression.greatestOf(
+						creationDate,
+						fiveDaysPriorToCreation,
+						DateExpression.value(march23rd2013).addWeeks(-5), DateExpression.value(march23rd2013).addDays(-2))
+				.is(creationDate)
+		);
+		List<DBQueryRow> allRows = query.getAllRows();
+//		database.print(allRows);
+		Assert.assertThat(allRows.size(), is(18));
+	}
+	
+	@Test
+	public void testGreatestOfWithList() throws SQLException {
+		Marque marq = new Marque();
+		DBQuery query = database.getDBQuery(marq);
+		final DateColumn creationDate = marq.column(marq.creationDate);
+		final DateExpression fiveDaysPriorToCreation = creationDate.addDays(-5);
+		List<DateExpression> poss = new ArrayList<>();
+		poss.add(creationDate);
+		poss.add(fiveDaysPriorToCreation);
+		poss.add(DateExpression.value(march23rd2013).addWeeks(-5));
+		poss.add(DateExpression.value(march23rd2013).addDays(-2));
+		query.addCondition(
+				DateExpression.greatestOf(
+						poss)
+				.is(creationDate)
+		);
+		List<DBQueryRow> allRows = query.getAllRows();
+//		database.print(allRows);
+		Assert.assertThat(allRows.size(), is(18));
+	}
+	
+	@Test
+	public void testGreatestOfWithDates() throws SQLException {
+		Marque marq = new Marque();
+		DBQuery query = database.getDBQuery(marq);
+		query.addCondition(
+				DateExpression.greatestOf(
+						march23rd2013, 
+						april2nd2011)
+				.is(march23rd2013)
+		);
+		List<DBQueryRow> allRows = query.getAllRows();
+//		database.print(allRows);
+		Assert.assertThat(allRows.size(), is(22));
+	}
+	
+	@Test
 	public void testOverlapsDateExpressionDateResult() throws SQLException {
 		Marque marq = new Marque();
 		DBQuery query = database.getDBQuery(marq);
@@ -72,7 +218,7 @@ public class DateExpressionTest extends AbstractTest {
 				DateExpression.value(march23rd2013).addWeeks(-5), DateExpression.value(march23rd2013).addDays(-2))
 		);
 		List<DBQueryRow> allRows = query.getAllRows();
-		database.print(allRows);
+//		database.print(allRows);
 		Assert.assertThat(allRows.size(), is(18));
 	}
 	
@@ -85,7 +231,7 @@ public class DateExpressionTest extends AbstractTest {
 				DateExpression.value(march23rd2013).addWeeks(-5), DateExpression.value(march23rd2013).addDays(-2))
 		);
 		List<DBQueryRow> allRows = query.getAllRows();
-		database.print(allRows);
+//		database.print(allRows);
 		Assert.assertThat(allRows.size(), is(18));
 	}
 	
@@ -94,7 +240,7 @@ public class DateExpressionTest extends AbstractTest {
 		MarqueWithDateAggregators marq = new MarqueWithDateAggregators();
 		DBQuery query = database.getDBQuery(marq).setBlankQueryAllowed(true);
 		List<DBQueryRow> allRows = query.getAllRows();
-		database.print(allRows);
+//		database.print(allRows);
 		Assert.assertThat(allRows.size(), is(1));
 		MarqueWithDateAggregators got = allRows.get(0).get(marq);
 		Assert.assertThat(got.countOfDates.intValue(), is(21));
@@ -765,6 +911,70 @@ public class DateExpressionTest extends AbstractTest {
 		allRows = dbQuery.getAllRows();
 		database.print(allRows);
 		Assert.assertThat(allRows.size(), is(20));
+	}
+	
+	@Test
+	public void testIsIn() throws SQLException, ParseException {
+		Marque marque = new Marque();
+		DBQuery dbQuery = database.getDBQuery(marque);
+		
+		dbQuery.addCondition(
+				marque.column(marque.creationDate).isIn((Date) null, DATETIME_FORMAT.parse(firstDateStr))
+		);
+		
+		List<DBQueryRow> allRows = dbQuery.getAllRows();
+		database.print(allRows);
+		Assert.assertThat(allRows.size(), is(19));
+		
+		Marque newMarque = new Marque(178, "False", 1246974, "", null, "UV", "HULME", "", "Y", null, 4, null);
+		database.insert(newMarque);
+		
+		dbQuery = database.getDBQuery(marque);
+		dbQuery.setBlankQueryAllowed(true);
+		allRows = dbQuery.getAllRows();
+		database.print(allRows);
+		
+		dbQuery.addCondition(
+				marque.column(marque.creationDate).isIn(april2nd2011, march23rd2013)
+		);
+		
+		allRows = dbQuery.getAllRows();
+		database.print(allRows);
+		Assert.assertThat(allRows.size(), is(21));
+	}
+	
+	@Test
+	public void testIsInWithList() throws SQLException, ParseException {
+		Marque marque = new Marque();
+		DBQuery dbQuery = database.getDBQuery(marque);
+		
+		dbQuery.addCondition(
+				marque.column(marque.creationDate).isIn((Date) null, DATETIME_FORMAT.parse(firstDateStr))
+		);
+		
+		List<DBQueryRow> allRows = dbQuery.getAllRows();
+		database.print(allRows);
+		Assert.assertThat(allRows.size(), is(19));
+		
+		Marque newMarque = new Marque(178, "False", 1246974, "", null, "UV", "HULME", "", "Y", null, 4, null);
+		database.insert(newMarque);
+		
+		dbQuery = database.getDBQuery(marque);
+		dbQuery.setBlankQueryAllowed(true);
+		allRows = dbQuery.getAllRows();
+		database.print(allRows);
+		
+		List<DateExpression> dates = new ArrayList<DateExpression>();
+		dates.add(DateExpression.value(march23rd2013));
+		dates.add(DateExpression.value(april2nd2011));
+		
+		dbQuery.addCondition(
+				marque.column(marque.creationDate).isIn(dates)
+		);
+		
+		allRows = dbQuery.getAllRows();
+		database.print(allRows);
+		Assert.assertThat(allRows.size(), is(21));
 	}
 	
 	@Test
