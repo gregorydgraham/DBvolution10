@@ -97,8 +97,8 @@ public class DateExpressionTest extends AbstractTest {
 				.isNot(april2nd2011)
 		);
 		List<DBQueryRow> allRows = query.getAllRows();
-//		database.print(allRows);
-		Assert.assertThat(allRows.size(), is(21));
+		database.print(allRows);
+		Assert.assertThat(allRows.size(), is(22));
 	}
 	
 	@Test

@@ -103,7 +103,7 @@ public class DBValidation<R extends DBRow> {
 			if (qdt instanceof DBString) {
 				StringColumn column = mapper.column((DBString) qdt);
 				dbQuery.addExpressionColumn(prop,
-						column.isNullOrEmpty().ifThenElse(StringExpression.value("NO DATA"), StringExpression.value("success")));
+						column.isNullOrEmpty().ifThenElse(StringExpression.value("NO DATA"), StringExpression.value("success")).asExpressionColumn());
 			}
 		}
 	}
@@ -111,7 +111,7 @@ public class DBValidation<R extends DBRow> {
 	private void addProcessingColumnToValidationQuery(List<BooleanExpression> conditions, DBQuery dbQuery) {
 		final BooleanExpression criteria = BooleanExpression.allOf(conditions.toArray(new BooleanExpression[]{}));
 
-		dbQuery.addExpressionColumn(PROCESSED_COLUMN, criteria);
+		dbQuery.addExpressionColumn(PROCESSED_COLUMN, criteria.asExpressionColumn());
 		//dbQuery.addToSortOrder(criteria);
 	}
 

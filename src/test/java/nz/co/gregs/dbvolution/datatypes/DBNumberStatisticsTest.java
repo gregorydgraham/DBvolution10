@@ -40,7 +40,7 @@ public class DBNumberStatisticsTest extends AbstractTest {
 		assertThat(row.stats.sum().intValue(), is(128625259));
 		assertThat(row.stats.max().intValue(), is(13224369));
 		assertThat(row.stats.min().intValue(), is(1));
-		assertThat(row.stats.standardDeviation().doubleValue(), is(2890652.35763688D));
+		assertThat(Math.rint(row.stats.standardDeviation().doubleValue()*10000), is(28906523576D));
 		BigDecimal bd = new BigDecimal(row.stats.average().doubleValue());
 		bd = bd.round(new MathContext(7+5));
 		double rounded = bd.doubleValue();

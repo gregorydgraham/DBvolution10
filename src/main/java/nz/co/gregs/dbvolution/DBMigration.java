@@ -153,9 +153,10 @@ public class DBMigration<M extends DBRow> extends RowDefinition {
 				} else if (value != null && QueryableDatatype.class.isAssignableFrom(value.getClass())) {
 					final QueryableDatatype<?> qdtValue = (QueryableDatatype) value;
 					if ((value instanceof QueryableDatatype) && qdtValue.hasColumnExpression()) {
+						query.addExpressionColumn(value, qdtValue);
 						final DBExpression[] columnExpressions = qdtValue.getColumnExpression();
 						for (DBExpression columnExpression : columnExpressions) {
-							query.addExpressionColumn(value, columnExpression);
+//							query.addExpressionColumn(value, columnExpression);
 							if (!columnExpression.isAggregator()) {
 								query.addGroupByColumn(value, columnExpression);
 							}

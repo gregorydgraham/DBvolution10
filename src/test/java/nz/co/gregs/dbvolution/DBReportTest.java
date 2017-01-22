@@ -86,8 +86,8 @@ public class DBReportTest extends AbstractTest {
 		Assert.assertThat(otherRow.carCompanyName.stringValue(), is("OTHER"));
 		Assert.assertThat(Math.round(otherRow.average.doubleValue() * 100), is(587L));
 		Assert.assertThat(Math.round(otherRow.stddev.doubleValue() * 100), is(207L));
-//		Assert.assertThat(Math.round(otherRow.stats.average().doubleValue() * 100), is(587L));
-//		Assert.assertThat(Math.round(otherRow.stats.standardDeviation().doubleValue() * 100), is(207L));
+		Assert.assertThat(Math.round(otherRow.stats.average().doubleValue() * 100), is(587L));
+		Assert.assertThat(Math.round(otherRow.stats.standardDeviation().doubleValue() * 100), is(207L));
 	}
 
 	@Test
@@ -239,8 +239,8 @@ public class DBReportTest extends AbstractTest {
 		public DBNumber average = new DBNumber(marque.column(marque.name).length().average());
 		@DBColumn
 		public DBNumber stddev = new DBNumber(marque.column(marque.name).length().standardDeviation());
-//		@DBColumn
-//		public DBNumberStatistics stats = new DBNumberStatistics(marque.column(marque.name).length());
+		@DBColumn
+		public DBNumberStatistics stats = new DBNumberStatistics(marque.column(marque.name).length());
 
 		{
 			marque.statusClassID.permittedValues(1246974);

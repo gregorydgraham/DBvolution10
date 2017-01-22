@@ -22,13 +22,14 @@ import nz.co.gregs.dbvolution.DBRecursiveQuery;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.datatypes.DBNumber;
 import nz.co.gregs.dbvolution.expressions.DBExpression;
+import nz.co.gregs.dbvolution.expressions.NumberExpression;
 
 /**
  * Creates a depth expression for the {@link DBRecursiveQuery} query.
  *
  * @author Gregory Graham
  */
-public class RecursiveQueryDepthIncreaseExpression implements DBExpression {
+public class RecursiveQueryDepthIncreaseExpression extends NumberExpression {
 
 	/**
 	 * Creates a depth expression for the {@link DBRecursiveQuery} query.
@@ -66,5 +67,4 @@ public class RecursiveQueryDepthIncreaseExpression implements DBExpression {
 	public boolean isPurelyFunctional() {
 		return false;
 	}
-
 }

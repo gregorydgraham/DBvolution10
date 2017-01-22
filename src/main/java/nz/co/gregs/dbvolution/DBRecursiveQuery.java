@@ -303,7 +303,7 @@ public class DBRecursiveQuery<T extends DBRow> {
 		}
 		newQuery.addExpressionColumn(
 				database.getDefinition().getRecursiveQueryDepthColumnName(),
-				NumberExpression.value(1)
+				NumberExpression.value(1).asExpressionColumn()
 		);
 
 		return newQuery;
@@ -337,7 +337,7 @@ public class DBRecursiveQuery<T extends DBRow> {
 			}
 
 			newQuery.addExpressionColumn(database.getDefinition().getRecursiveQueryDepthColumnName(),
-					new RecursiveQueryDepthIncreaseExpression()
+					new RecursiveQueryDepthIncreaseExpression().asExpressionColumn()
 			);
 
 		} catch (InstantiationException ex) {

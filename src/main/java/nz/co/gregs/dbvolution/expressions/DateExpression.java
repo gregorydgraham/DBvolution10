@@ -585,7 +585,7 @@ public class DateExpression implements DateResult, RangeComparable<DateResult>, 
 			}
 		});
 		if (isExpr.getIncludesNull()) {
-			return BooleanExpression.isNull(this);
+			return BooleanExpression.isNotNull(this);
 		} else {
 			return isExpr;
 		}

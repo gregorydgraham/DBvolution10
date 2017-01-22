@@ -406,9 +406,10 @@ public class DBReport extends RowDefinition {
 				} else if (value != null && QueryableDatatype.class.isAssignableFrom(value.getClass())) {
 					final QueryableDatatype<?> qdtValue = (QueryableDatatype) value;
 					if ((value instanceof QueryableDatatype) && qdtValue.hasColumnExpression()) {
+						query.addExpressionColumn(value, qdtValue);
 						final DBExpression[] columnExpressions = qdtValue.getColumnExpression();
 						for (DBExpression columnExpression : columnExpressions) {
-						query.addExpressionColumn(value, columnExpression);
+//							query.addExpressionColumn(columnExpression, columnExpression);
 							if (!columnExpression.isAggregator()) {
 								query.addGroupByColumn(value, columnExpression);
 							}
@@ -430,17 +431,31 @@ public class DBReport extends RowDefinition {
 			Field[] fields = exampleReport.getClass().getDeclaredFields();
 			for (Field field : fields) {
 				field.setAccessible(true);
-				final Object value;
+				final Object exampleFieldValue;
 				try {
-					value = field.get(exampleReport);
-					if (value != null && DBRow.class.isAssignableFrom(value.getClass())) {
-						if (value instanceof DBRow) {
-							DBRow gotDefinedRow = row.get((DBRow) value);
+					exampleFieldValue = field.get(exampleReport);
+					if (exampleFieldValue != null && DBRow.class.isAssignableFrom(exampleFieldValue.getClass())) {
+						if (exampleFieldValue instanceof DBRow) {
+							DBRow gotDefinedRow = row.get((DBRow) exampleFieldValue);
 							field.set(newReport, gotDefinedRow);
 						}
-					} else if (value != null && QueryableDatatype.class.isAssignableFrom(value.getClass())) {
-						if ((value instanceof QueryableDatatype) && ((QueryableDatatype) value).hasColumnExpression()) {
-							field.set(newReport, row.getExpressionColumnValue(value));
+					} else if (exampleFieldValue != null && QueryableDatatype.class.isAssignableFrom(exampleFieldValue.getClass())) {
+						final QueryableDatatype<?> qdt = (QueryableDatatype) exampleFieldValue;
+						if ((exampleFieldValue instanceof QueryableDatatype) && qdt.hasColumnExpression()) {
+							final QueryableDatatype<?> expressionColumnValue = row.getExpressionColumnValue(qdt);
+							field.set(newReport, expressionColumnValue);
+//							if (qdt.getColumnExpression().length > 1) {
+//								DBExpression[] expressions = qdt.getColumnExpression();
+//								for (DBExpression expression : expressions) {
+//									final QueryableDatatype<?> expressionColumnValue = row.getExpressionColumnValue(expression);
+//									field.set(newReport, expressionColumnValue);
+//								}
+//							} else {
+//								DBExpression[] expressions = qdt.getColumnExpression();
+//								for (DBExpression expression : expressions) {
+//									field.set(newReport, row.getExpressionColumnValue(expression));
+//								}
+//							}
 						}
 					}
 				} catch (IllegalArgumentException ex) {

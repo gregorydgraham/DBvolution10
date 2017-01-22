@@ -195,6 +195,28 @@ public class DBNumberStatistics extends DBNumber {
 		}
 	}
 
+	protected Number getFromResultSet(DBDatabase database, ResultSet resultSet, String fullColumnName, int offset) throws SQLException {
+		int columnIndex = resultSet.findColumn(fullColumnName)+offset;
+		try {
+			return resultSet.getBigDecimal(columnIndex);
+		} catch (SQLException ex) {
+			try {
+				return resultSet.getDouble(columnIndex);
+			} catch (SQLException ex2) {
+				try {
+					return resultSet.getLong(columnIndex);
+				} catch (SQLException ex3) {
+					return null;
+				}
+			}
+		}
+	}
+
+	@Override
+	public DBNumber getQueryableDatatypeForExpressionValue() {
+		return new DBNumberStatistics();
+	}
+	
 	@Override
 	public void setFromResultSet(DBDatabase database, ResultSet resultSet, String resultSetColumnName) throws SQLException {
 		removeConstraints();
@@ -217,18 +239,25 @@ public class DBNumberStatistics extends DBNumber {
 				PropertyWrapperDefinition propertyWrapperDefinition = getPropertyWrapperDefinition();
 				if (propertyWrapperDefinition!=null && propertyWrapperDefinition.allColumnAspects != null) {
 					final String averageColumnAlias = propertyWrapperDefinition.allColumnAspects.get(0).columnAlias;
-					String maxColumnAlias = propertyWrapperDefinition.allColumnAspects.get(1).columnAlias;
-					String minColumnAlias = propertyWrapperDefinition.allColumnAspects.get(2).columnAlias;
-					String sumColumnAlias = propertyWrapperDefinition.allColumnAspects.get(3).columnAlias;
-					String countColumnAlias = propertyWrapperDefinition.allColumnAspects.get(4).columnAlias;
-					String stdDevColumnAlias = propertyWrapperDefinition.allColumnAspects.get(5).columnAlias;
+					final String maxColumnAlias = propertyWrapperDefinition.allColumnAspects.get(1).columnAlias;
+					final String minColumnAlias = propertyWrapperDefinition.allColumnAspects.get(2).columnAlias;
+					final String sumColumnAlias = propertyWrapperDefinition.allColumnAspects.get(3).columnAlias;
+					final String countColumnAlias = propertyWrapperDefinition.allColumnAspects.get(4).columnAlias;
+					final String stdDevColumnAlias = propertyWrapperDefinition.allColumnAspects.get(5).columnAlias;
 					averageNumber = getFromResultSet(database, resultSet, averageColumnAlias);
 					stdDev = getFromResultSet(database, resultSet, stdDevColumnAlias);
 					maxNumber = getFromResultSet(database, resultSet, maxColumnAlias);
 					minNumber = getFromResultSet(database, resultSet, minColumnAlias);
 					sumNumber = getFromResultSet(database, resultSet, sumColumnAlias);
 					countOfRows = getFromResultSet(database, resultSet, countColumnAlias);
-				}
+				}else{		
+					averageNumber = getFromResultSet(database, resultSet, resultSetColumnName, 0);
+					maxNumber = getFromResultSet(database, resultSet, resultSetColumnName, 1);
+					minNumber = getFromResultSet(database, resultSet, resultSetColumnName, 2);
+					sumNumber = getFromResultSet(database, resultSet, resultSetColumnName, 3);
+					countOfRows = getFromResultSet(database, resultSet, resultSetColumnName, 4);		
+					stdDev = getFromResultSet(database, resultSet, resultSetColumnName, 5);
+					}
 				this.setLiteralValue(dbValue);
 			}
 		}

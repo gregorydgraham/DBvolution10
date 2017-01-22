@@ -2262,6 +2262,7 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 		return this.squared().times(this.bracket());
 	}
 
+	@Override
 	public DBNumber asExpressionColumn() {
 		return new DBNumber(this);
 	}

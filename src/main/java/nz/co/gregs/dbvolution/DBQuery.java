@@ -507,25 +507,28 @@ public class DBQuery {
 				queryState.consumeExpression(expression);
 			}
 
-			for (Map.Entry<Object, DBExpression> entry : details.getExpressionColumns().entrySet()) {
+			for (Map.Entry<Object, QueryableDatatype<?>> entry : details.getExpressionColumns().entrySet()) {
 				final Object key = entry.getKey();
-				final DBExpression expression = entry.getValue();
-				selectClause.append(colSep).append(defn.transformToStorableType(expression).toSQLString(getDatabase())).append(" ").append(defn.formatExpressionAlias(key));
-				colSep = defn.getSubsequentSelectSubClauseSeparator() + lineSep;
-				if (expression.isAggregator()) {
-					details.setGroupByRequiredByAggregator(true);
-				}
-				if (!expression.isAggregator()
-						&& (!expression.isPurelyFunctional() || defn.supportsPurelyFunctionalGroupByColumns())) {
-					groupByIsRequired = true;
-					groupByColumnIndex += groupByColumnIndexSeparator + columnIndex;
-					groupByColumnIndexSeparator = defn.getSubsequentGroupBySubClauseSeparator();
-					groupByClause.append(groupByColSep).append(defn.transformToStorableType(expression).toSQLString(getDatabase()));
-					groupByColSep = defn.getSubsequentGroupBySubClauseSeparator() + lineSep;
+				final QueryableDatatype<?> qdt = entry.getValue();
+				DBExpression[] expressions = qdt.getColumnExpression();
+				for (DBExpression expression : expressions) {
+					selectClause.append(colSep).append(defn.transformToStorableType(expression).toSQLString(getDatabase())).append(" ").append(defn.formatExpressionAlias(key));
+					colSep = defn.getSubsequentSelectSubClauseSeparator() + lineSep;
+					if (expression.isAggregator()) {
+						details.setGroupByRequiredByAggregator(true);
+					}
+					if (!expression.isAggregator()
+							&& (!expression.isPurelyFunctional() || defn.supportsPurelyFunctionalGroupByColumns())) {
+						groupByIsRequired = true;
+						groupByColumnIndex += groupByColumnIndexSeparator + columnIndex;
+						groupByColumnIndexSeparator = defn.getSubsequentGroupBySubClauseSeparator();
+						groupByClause.append(groupByColSep).append(defn.transformToStorableType(expression).toSQLString(getDatabase()));
+						groupByColSep = defn.getSubsequentGroupBySubClauseSeparator() + lineSep;
 
+					}
+					indexesOfSelectedExpressions.put(expression, columnIndex);
+					columnIndex++;
 				}
-				indexesOfSelectedExpressions.put(expression, columnIndex);
-				columnIndex++;
 			}
 
 			for (Map.Entry<Object, DBExpression> entry : details.getDBReportGroupByColumns().entrySet()) {
@@ -917,15 +920,15 @@ results.add(queryRow);
 			for (PropertyWrapper propertyWrapper : selectedProperties) {
 				if (propertyWrapper.getDefinition().equals(newProp.getDefinition())) {
 
-					String[] resultSetColumnNames = newProp.getColumnAlias(getDatabase());
-					for (String resultSetColumnName : resultSetColumnNames) {
+					String resultSetColumnName = newProp.getColumnAlias(getDatabase())[0];
+					//for (String resultSetColumnName : resultSetColumnNames) {
 
 						qdt.setFromResultSet(getDatabase(), resultSet, resultSetColumnName);
 
 						if (newInstance.isEmptyRow() && !qdt.isNull()) {
 							newInstance.setEmptyRow(false);
 						}
-					}
+					//}
 				}
 			}
 
@@ -944,11 +947,17 @@ results.add(queryRow);
 	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
 	protected void setExpressionColumns(ResultSet resultSet, DBQueryRow queryRow) throws SQLException {
-		for (Map.Entry<Object, DBExpression> entry : details.getExpressionColumns().entrySet()) {
-			String expressionAlias = getDatabase().getDefinition().formatExpressionAlias(entry.getKey());
-			QueryableDatatype<?> expressionQDT = entry.getValue().getQueryableDatatypeForExpressionValue();
-			expressionQDT.setFromResultSet(getDatabase(), resultSet, expressionAlias);
-			queryRow.addExpressionColumnValue(entry.getKey(), expressionQDT);
+		for (Map.Entry<Object, QueryableDatatype<?>> entry : details.getExpressionColumns().entrySet()) {
+			final Object key = entry.getKey();
+			final QueryableDatatype<?> value = entry.getValue();
+			String expressionAlias = getDatabase().getDefinition().formatExpressionAlias(key);
+			QueryableDatatype<?> expressionQDT = value.getQueryableDatatypeForExpressionValue();
+			if (value.hasColumnExpression() && value.getColumnExpression().length > 1) {
+				expressionQDT.setFromResultSet(getDatabase(), resultSet, expressionAlias);
+			} else {
+				expressionQDT.setFromResultSet(getDatabase(), resultSet, expressionAlias);
+			}
+			queryRow.addExpressionColumnValue(key, expressionQDT);
 		}
 	}
 
@@ -2405,7 +2414,7 @@ results.add(queryRow);
 	 * @param expressionToAdd expressionToAdd
 	 * @return this DBQuery instance
 	 */
-	public DBQuery addExpressionColumn(Object identifyingObject, DBExpression expressionToAdd) {
+	public DBQuery addExpressionColumn(Object identifyingObject, QueryableDatatype<?> expressionToAdd) {
 		details.getExpressionColumns().put(identifyingObject, expressionToAdd);
 		blankResults();
 		return this;

@@ -42,7 +42,7 @@ public class ExpressionColumnTests extends AbstractTest {
 		DBQuery query = database.getDBQuery(marque, carCompany);
 
 		final Date dateKey = new Date();
-		query.addExpressionColumn(dateKey, DateExpression.currentDateOnly());
+		query.addExpressionColumn(dateKey, DateExpression.currentDateOnly().asExpressionColumn());
 
 		final String sqlForQuery = query.getSQLForQuery();
 		Assert.assertThat(sqlForQuery, containsString(database.getDefinition().doCurrentDateOnlyTransform().trim()));
@@ -67,7 +67,7 @@ public class ExpressionColumnTests extends AbstractTest {
 		DBQuery query = database.getDBQuery(marque, carCompany);
 
 		final String shortMarqueName = "Short marque name";
-		query.addExpressionColumn(shortMarqueName, marque.column(marque.name).substring(0, 3));
+		query.addExpressionColumn(shortMarqueName, marque.column(marque.name).substring(0, 3).asExpressionColumn());
 
 		final String sqlForQuery = query.getSQLForQuery();
 		Assert.assertThat(sqlForQuery, containsString("SUBSTR"));
@@ -93,7 +93,7 @@ public class ExpressionColumnTests extends AbstractTest {
 		DBQuery query = database.getDBQuery(marque, carCompany);
 
 		final String strangeEquation = "strange equation";
-		query.addExpressionColumn(strangeEquation, marque.column(marque.uidMarque).times(5).dividedBy(3).plus(2));
+		query.addExpressionColumn(strangeEquation, marque.column(marque.uidMarque).times(5).dividedBy(3).plus(2).asExpressionColumn());
 
 		for (DBQueryRow row : query.getAllRows()) {
 			Long uid = row.get(new Marque()).uidMarque.getValue();

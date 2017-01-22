@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Map;
 import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.DBRow;
+import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 import nz.co.gregs.dbvolution.expressions.BooleanExpression;
 import nz.co.gregs.dbvolution.expressions.DBExpression;
 
@@ -40,7 +41,7 @@ public class QueryDetails {
 	private final QueryOptions options = new QueryOptions();
 	private final List<DBRow> extraExamples = new ArrayList<>();
 	private final List<BooleanExpression> conditions = new ArrayList<>();
-	private final Map<Object, DBExpression> expressionColumns = new LinkedHashMap<>();
+	private final Map<Object, QueryableDatatype<?>> expressionColumns = new LinkedHashMap<>();
 	private final Map<Object, DBExpression> dbReportGroupByColumns = new LinkedHashMap<>();
 	private final Map<Class<?>, Map<String, DBRow>> existingInstances = new HashMap<>();
 	private boolean groupByRequiredByAggregator = false;
@@ -113,7 +114,7 @@ public class QueryDetails {
 	/**
 	 * @return the expressionColumns
 	 */
-	public Map<Object, DBExpression> getExpressionColumns() {
+	public Map<Object, QueryableDatatype<?>> getExpressionColumns() {
 		return expressionColumns;
 	}
 
