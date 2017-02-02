@@ -8,6 +8,8 @@ package nz.co.gregs.dbvolution.datatypes;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import nz.co.gregs.dbvolution.DBDatabase;
+import nz.co.gregs.dbvolution.DBReport;
+import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.expressions.NumberExpression;
 import nz.co.gregs.dbvolution.internal.properties.PropertyWrapperDefinition;
 
@@ -69,7 +71,7 @@ public class DBNumberStatistics extends DBNumber {
 
 		this.setColumnExpression(new NumberExpression[]{
 			averageExpression,
-			maxExpr,
+				maxExpr,
 			minExpr,
 			sumExpr,
 			countExpr,
@@ -89,8 +91,9 @@ public class DBNumberStatistics extends DBNumber {
 	}
 
 	/**
+	 * Returns the sum of all the numbers in this group.
 	 *
-	 * @return
+	 * @return the sum of all values in this grouping
 	 */
 	public Number sum() {
 		return this.sumNumber;
@@ -98,7 +101,7 @@ public class DBNumberStatistics extends DBNumber {
 
 	/**
 	 *
-	 * @return
+	 * @return the minimum (smallest) value in this grouping
 	 */
 	public Number min() {
 		return this.minNumber;
@@ -106,23 +109,25 @@ public class DBNumberStatistics extends DBNumber {
 
 	/**
 	 *
-	 * @return
+	 * @return the maximum (largest) value in this grouping
 	 */
 	public Number max() {
 		return this.maxNumber;
 	}
 
 	/**
+	 * The middle term in the grouping.
 	 *
-	 * @return
+	 * @return the median value in this grouping 
 	 */
 	public Number median() {
 		return this.medianNumber;
 	}
 
 	/**
+	 * The average value of the grouping.
 	 *
-	 * @return
+	 * @return the average value of the grouping
 	 */
 	public Number average() {
 		return this.averageNumber;
@@ -130,7 +135,7 @@ public class DBNumberStatistics extends DBNumber {
 
 	/**
 	 *
-	 * @return
+	 * @return the middle number between the median and the smallest value.
 	 */
 	public Number firstQuartile() {
 		return this.firstQuartileNumber;
@@ -138,15 +143,16 @@ public class DBNumberStatistics extends DBNumber {
 
 	/**
 	 *
-	 * @return
+	 * @return the middle number between the median and the largest value.
 	 */
 	public Number thirdQuartile() {
 		return this.thirdQuartileNumber;
 	}
 
 	/**
+	 * The middle term in the grouping.
 	 *
-	 * @return
+	 * @return the median value in this grouping 
 	 */
 	public Number secondQuartile() {
 		return this.medianNumber;

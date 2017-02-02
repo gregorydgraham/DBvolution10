@@ -2029,7 +2029,7 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 	 * string as though the list was a 0-based array of strings and this
 	 * expression were the index.
 	 *
-	 * Value 0 returns the first string, value 0 returns the second, etc. If the
+	 * Value 0 returns the first string, value 1 returns the second, etc. If the
 	 * index is too large the last string is returned.
 	 *
 	 * @param stringsToChooseFrom a list of values that the should replace the number.
@@ -2048,10 +2048,10 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 						return db.getDefinition().doChooseTransformation(NumberExpression.value(numberExpression).plus(1).bracket().toSQLString(db), strs);
 					}
 
-					@Override
-					protected String getFunctionName(DBDatabase db) {
-						return db.getDefinition().getChooseFunctionName();
-					}
+//					@Override
+//					protected String getFunctionName(DBDatabase db) {
+//						return db.getDefinition().getChooseFunctionName();
+//					}
 				});
 		return leastExpr;
 	}
@@ -3232,32 +3232,33 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 			return new DBString();
 		}
 
-		abstract String getFunctionName(DBDatabase db);
+//		abstract String getFunctionName(DBDatabase db);
 
-		protected String beforeValue(DBDatabase db) {
-			return "( ";
-		}
-
-		protected String afterValue(DBDatabase db) {
-			return ") ";
-		}
+//		protected String beforeValue(DBDatabase db) {
+//			return "( ";
+//		}
+//
+//		protected String afterValue(DBDatabase db) {
+//			return ") ";
+//		}
 
 		@Override
-		public String toSQLString(DBDatabase db) {
-			StringBuilder builder = new StringBuilder();
-			builder
-					.append(this.getFunctionName(db))
-					.append(this.beforeValue(db));
-			String separator = "";
-			for (StringResult val : values) {
-				if (val != null) {
-					builder.append(separator).append(val.toSQLString(db));
-				}
-				separator = ", ";
-			}
-			builder.append(this.afterValue(db));
-			return builder.toString();
-		}
+		abstract public String toSQLString(DBDatabase db);
+//		{
+//			StringBuilder builder = new StringBuilder();
+//			builder
+//					.append(this.getFunctionName(db))
+//					.append(this.beforeValue(db));
+//			String separator = "";
+//			for (StringResult val : values) {
+//				if (val != null) {
+//					builder.append(separator).append(val.toSQLString(db));
+//				}
+//				separator = ", ";
+//			}
+//			builder.append(this.afterValue(db));
+//			return builder.toString();
+//		}
 
 		@Override
 		public DBNumberAndNnaryStringFunction copy() {
