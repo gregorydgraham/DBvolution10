@@ -6,6 +6,8 @@
 package nz.co.gregs.dbvolution.datatypes;
 
 import nz.co.gregs.dbvolution.DBDatabase;
+import nz.co.gregs.dbvolution.DBReport;
+import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.expressions.StringExpression;
 
 /**

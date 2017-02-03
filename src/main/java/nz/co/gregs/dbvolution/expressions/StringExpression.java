@@ -761,10 +761,7 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 	 * @return a boolean expression representing the required comparison
 	 */
 	public BooleanExpression isBetween(String lowerBound, StringResult upperBound) {
-		return BooleanExpression.allOf(
-				this.isGreaterThan(lowerBound),
-				this.isLessThanOrEqual(upperBound)
-		);
+		return this.isBetween(value(lowerBound), upperBound);
 	}
 
 	/**
@@ -789,10 +786,7 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 	 * @return a boolean expression representing the required comparison
 	 */
 	public BooleanExpression isBetween(StringResult lowerBound, String upperBound) {
-		return BooleanExpression.allOf(
-				this.isGreaterThan(lowerBound),
-				this.isLessThanOrEqual(upperBound)
-		);
+		return this.isBetween(lowerBound, value(upperBound));
 	}
 
 	/**
@@ -817,10 +811,7 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 	 * @return a boolean expression representing the required comparison
 	 */
 	public BooleanExpression isBetween(String lowerBound, String upperBound) {
-		return BooleanExpression.allOf(
-				this.isGreaterThan(lowerBound),
-				this.isLessThanOrEqual(upperBound)
-		);
+		return this.isBetween(value(lowerBound), value(upperBound));
 	}
 
 	/**
@@ -873,10 +864,7 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 	 * @return a boolean expression representing the required comparison
 	 */
 	public BooleanExpression isBetweenInclusive(String lowerBound, StringResult upperBound) {
-		return BooleanExpression.allOf(
-				this.isGreaterThanOrEqual(lowerBound),
-				this.isLessThanOrEqual(upperBound)
-		);
+		return this.isBetweenInclusive(value(lowerBound), upperBound);
 	}
 
 	/**
@@ -901,10 +889,7 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 	 * @return a boolean expression representing the required comparison
 	 */
 	public BooleanExpression isBetweenInclusive(StringResult lowerBound, String upperBound) {
-		return BooleanExpression.allOf(
-				this.isGreaterThanOrEqual(lowerBound),
-				this.isLessThanOrEqual(upperBound)
-		);
+				return this.isBetweenInclusive(lowerBound, value(upperBound));
 	}
 
 	/**
@@ -929,10 +914,7 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 	 * @return a boolean expression representing the required comparison
 	 */
 	public BooleanExpression isBetweenInclusive(String lowerBound, String upperBound) {
-		return BooleanExpression.allOf(
-				this.isGreaterThanOrEqual(lowerBound),
-				this.isLessThanOrEqual(upperBound)
-		);
+		return this.isBetweenInclusive(value(lowerBound), value(upperBound));
 	}
 
 	/**
@@ -989,10 +971,7 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 	 * @return a boolean expression representing the required comparison
 	 */
 	public BooleanExpression isBetweenExclusive(String lowerBound, StringResult upperBound) {
-		return BooleanExpression.allOf(
-				this.isGreaterThan(lowerBound),
-				this.isLessThan(upperBound)
-		);
+		return this.isBetweenExclusive(value(lowerBound), upperBound);
 	}
 
 	/**
@@ -1019,10 +998,7 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 	 * @return a boolean expression representing the required comparison
 	 */
 	public BooleanExpression isBetweenExclusive(StringResult lowerBound, String upperBound) {
-		return BooleanExpression.allOf(
-				this.isGreaterThan(lowerBound),
-				this.isLessThan(upperBound)
-		);
+		return this.isBetweenExclusive(lowerBound, value(upperBound));
 	}
 
 	/**
@@ -1049,10 +1025,7 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 	 * @return a boolean expression representing the required comparison
 	 */
 	public BooleanExpression isBetweenExclusive(String lowerBound, String upperBound) {
-		return BooleanExpression.allOf(
-				this.isGreaterThan(lowerBound),
-				this.isLessThan(upperBound)
-		);
+				return this.isBetweenExclusive(value(lowerBound), value(upperBound));
 	}
 
 	/**

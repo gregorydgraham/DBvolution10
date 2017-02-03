@@ -34,62 +34,62 @@ public class MultiPoint2DFunctions {
 	/**
 	 *
 	 */
-	public static String CREATE_FROM_COORDS_FUNCTION = "DBV_CREATE_MPOINT2D_FROM_COORDS";
+	public final static String CREATE_FROM_COORDS_FUNCTION = "DBV_CREATE_MPOINT2D_FROM_COORDS";
 
 	/**
 	 *
 	 */
-	public static String EQUALS_FUNCTION = "DBV_MPOINT2D_EQUALS";
+	public final static String EQUALS_FUNCTION = "DBV_MPOINT2D_EQUALS";
 
 	/**
 	 *
 	 */
-	public static String GETMAXX_FUNCTION = "DBV_MPOINT2D_GETMAXX";
+	public final static String GETMAXX_FUNCTION = "DBV_MPOINT2D_GETMAXX";
 
 	/**
 	 *
 	 */
-	public static String GETMAXY_FUNCTION = "DBV_MPOINT2D_GETMAXY";
+	public final static String GETMAXY_FUNCTION = "DBV_MPOINT2D_GETMAXY";
 
 	/**
 	 *
 	 */
-	public static String GETMINX_FUNCTION = "DBV_MPOINT2D_GETMINX";
+	public final static String GETMINX_FUNCTION = "DBV_MPOINT2D_GETMINX";
 
 	/**
 	 *
 	 */
-	public static String GETMINY_FUNCTION = "DBV_MPOINT2D_GETMINY";
+	public final static String GETMINY_FUNCTION = "DBV_MPOINT2D_GETMINY";
 
 	/**
 	 *
 	 */
-	public static String GETDIMENSION_FUNCTION = "DBV_MPOINT2D_GETDIMENSION";
+	public final static String GETDIMENSION_FUNCTION = "DBV_MPOINT2D_GETDIMENSION";
 
 	/**
 	 *
 	 */
-	public static String GETBOUNDINGBOX_FUNCTION = "DBV_MPOINT2D_GETBOUNDINGBOX";
+	public final static String GETBOUNDINGBOX_FUNCTION = "DBV_MPOINT2D_GETBOUNDINGBOX";
 
 	/**
 	 *
 	 */
-	public static String GETNUMBEROFPOINTS_FUNCTION = "DBV_MPOINT2D_GETNUMBEROFPOINTS";
+	public final static String GETNUMBEROFPOINTS_FUNCTION = "DBV_MPOINT2D_GETNUMBEROFPOINTS";
 
 	/**
 	 *
 	 */
-	public static String GETPOINTATINDEX_FUNCTION = "DBV_MPOINT2D_GETPOINTATINDEX";
+	public final static String GETPOINTATINDEX_FUNCTION = "DBV_MPOINT2D_GETPOINTATINDEX";
 
 	/**
 	 *
 	 */
-	public static String ASTEXT_FUNCTION = "DBV_MPOINT2D_ASTEXT";
+	public final static String ASTEXT_FUNCTION = "DBV_MPOINT2D_ASTEXT";
 
 	/**
 	 *
 	 */
-	public static String ASLINE2D = "DBV_MPOINT2D_ASLINE2D";
+	public final static String ASLINE2D = "DBV_MPOINT2D_ASLINE2D";
 //	public static String ASPOLYGON2D = "DBV_MPOINT2D_ASPOLYGON2D";
 
 	private MultiPoint2DFunctions() {

@@ -333,6 +333,156 @@ public class StringExpressionTest extends AbstractTest {
 	}
 
 	@Test
+	public void testStringBetween() throws SQLException {
+		database.setPrintSQLBeforeExecuting(true);
+		Marque marq = new Marque();
+		marq.name.clear();
+		DBQuery query = database.getDBQuery(marq);
+
+		query.addCondition(marq.column(marq.name).lowercase().isBetween("toy", "tup" ));
+		query.setSortOrder(marq.column(marq.name));
+		List<Marque> got = query.getAllInstancesOf(marq);
+		database.print(got);
+		Assert.assertThat(got.size(), is(1));
+		Assert.assertThat(got.get(0).name.stringValue(), is("TOYOTA"));
+	}
+
+	@Test
+	public void testStringBetweenResultLeft() throws SQLException {
+		database.setPrintSQLBeforeExecuting(true);
+		Marque marq = new Marque();
+		marq.name.clear();
+		DBQuery query = database.getDBQuery(marq);
+
+		query.addCondition(
+				marq.column(marq.name).lowercase()
+						.isBetween(StringExpression.value("toy"), "tup" ));
+		query.setSortOrder(marq.column(marq.name));
+		List<Marque> got = query.getAllInstancesOf(marq);
+		database.print(got);
+		Assert.assertThat(got.size(), is(1));
+		Assert.assertThat(got.get(0).name.stringValue(), is("TOYOTA"));
+	}
+
+	@Test
+	public void testStringBetweenResultRight() throws SQLException {
+		database.setPrintSQLBeforeExecuting(true);
+		Marque marq = new Marque();
+		marq.name.clear();
+		DBQuery query = database.getDBQuery(marq);
+
+		query.addCondition(
+				marq.column(marq.name).lowercase()
+						.isBetween("toy", StringExpression.value("tup")));
+		query.setSortOrder(marq.column(marq.name));
+		List<Marque> got = query.getAllInstancesOf(marq);
+		database.print(got);
+		Assert.assertThat(got.size(), is(1));
+		Assert.assertThat(got.get(0).name.stringValue(), is("TOYOTA"));
+	}
+
+	@Test
+	public void testStringBetweenExclusive() throws SQLException {
+		database.setPrintSQLBeforeExecuting(true);
+		Marque marq = new Marque();
+		marq.name.clear();
+		DBQuery query = database.getDBQuery(marq);
+
+		query.addCondition(marq.column(marq.name).lowercase().isBetweenExclusive("toy", "volvo" ));
+		query.setSortOrder(marq.column(marq.name));
+		List<Marque> got = query.getAllInstancesOf(marq);
+		database.print(got);
+		Assert.assertThat(got.size(), is(1));
+		Assert.assertThat(got.get(0).name.stringValue(), is("TOYOTA"));
+	}
+
+	@Test
+	public void testStringBetweenExclusiveResultLeft() throws SQLException {
+		database.setPrintSQLBeforeExecuting(true);
+		Marque marq = new Marque();
+		marq.name.clear();
+		DBQuery query = database.getDBQuery(marq);
+
+		query.addCondition(
+				marq.column(marq.name).lowercase()
+						.isBetweenExclusive(StringExpression.value("toy"), "volvo" ));
+		query.setSortOrder(marq.column(marq.name));
+		List<Marque> got = query.getAllInstancesOf(marq);
+		database.print(got);
+		Assert.assertThat(got.size(), is(1));
+		Assert.assertThat(got.get(0).name.stringValue(), is("TOYOTA"));
+	}
+
+	@Test
+	public void testStringBetweenExclusiveResultRight() throws SQLException {
+		database.setPrintSQLBeforeExecuting(true);
+		Marque marq = new Marque();
+		marq.name.clear();
+		DBQuery query = database.getDBQuery(marq);
+
+		query.addCondition(
+				marq.column(marq.name).lowercase()
+						.isBetweenExclusive("toy", StringExpression.value("volvo")));
+		query.setSortOrder(marq.column(marq.name));
+		List<Marque> got = query.getAllInstancesOf(marq);
+		database.print(got);
+		Assert.assertThat(got.size(), is(1));
+		Assert.assertThat(got.get(0).name.stringValue(), is("TOYOTA"));
+	}
+
+	@Test
+	public void testStringBetweenInclusive() throws SQLException {
+		database.setPrintSQLBeforeExecuting(true);
+		Marque marq = new Marque();
+		marq.name.clear();
+		DBQuery query = database.getDBQuery(marq);
+
+		query.addCondition(marq.column(marq.name).lowercase().isBetweenInclusive("toy", "volvo" ));
+		query.setSortOrder(marq.column(marq.name));
+		List<Marque> got = query.getAllInstancesOf(marq);
+		database.print(got);
+		Assert.assertThat(got.size(), is(2));
+		Assert.assertThat(got.get(0).name.stringValue(), is("TOYOTA"));
+		Assert.assertThat(got.get(1).name.stringValue(), is("VOLVO"));
+	}
+
+	@Test
+	public void testStringBetweenInclusiveResultLeft() throws SQLException {
+		database.setPrintSQLBeforeExecuting(true);
+		Marque marq = new Marque();
+		marq.name.clear();
+		DBQuery query = database.getDBQuery(marq);
+
+		query.addCondition(
+				marq.column(marq.name).lowercase()
+						.isBetweenInclusive(StringExpression.value("toy"), "volvo" ));
+		query.setSortOrder(marq.column(marq.name));
+		List<Marque> got = query.getAllInstancesOf(marq);
+		database.print(got);
+		Assert.assertThat(got.size(), is(2));
+		Assert.assertThat(got.get(0).name.stringValue(), is("TOYOTA"));
+		Assert.assertThat(got.get(1).name.stringValue(), is("VOLVO"));
+	}
+
+	@Test
+	public void testStringBetweenInclusiveResultRight() throws SQLException {
+		database.setPrintSQLBeforeExecuting(true);
+		Marque marq = new Marque();
+		marq.name.clear();
+		DBQuery query = database.getDBQuery(marq);
+
+		query.addCondition(
+				marq.column(marq.name).lowercase()
+						.isBetweenInclusive("toy", StringExpression.value("volvo")));
+		query.setSortOrder(marq.column(marq.name));
+		List<Marque> got = query.getAllInstancesOf(marq);
+		database.print(got);
+		Assert.assertThat(got.size(), is(2));
+		Assert.assertThat(got.get(0).name.stringValue(), is("TOYOTA"));
+		Assert.assertThat(got.get(1).name.stringValue(), is("VOLVO"));
+	}
+
+	@Test
 	public void testReplaceTransform() throws SQLException {
 		database.setPrintSQLBeforeExecuting(true);
 		Marque marq = new Marque();

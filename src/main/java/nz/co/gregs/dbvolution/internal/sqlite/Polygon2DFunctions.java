@@ -41,92 +41,92 @@ public class Polygon2DFunctions {
 	/**
 	 *
 	 */
-	public static String CREATE_FROM_WKTPOLYGON2D = "DBV_CREATE_POLYGON2D_FROM_WKTPOLYGON";
+	public final static String CREATE_FROM_WKTPOLYGON2D = "DBV_CREATE_POLYGON2D_FROM_WKTPOLYGON";
 
 	/**
 	 *
 	 */
-	public static String CREATE_FROM_POINT2DS = "DBV_CREATE_POLYGON2D_FROM_POINTS2D";
+	public final static String CREATE_FROM_POINT2DS = "DBV_CREATE_POLYGON2D_FROM_POINTS2D";
 
 	/**
 	 *
 	 */
-	public static String EQUALS = "DBV_POLYGON2D_EQUALS";
+	public final static String EQUALS = "DBV_POLYGON2D_EQUALS";
 
 	/**
 	 *
 	 */
-	public static String AREA = "DBV_POLYGON2D_AREA";
+	public final static String AREA = "DBV_POLYGON2D_AREA";
 
 	/**
 	 *
 	 */
-	public static String DIMENSION = "DBV_POLYGON2D_DIMENSION";
+	public final static String DIMENSION = "DBV_POLYGON2D_DIMENSION";
 
 	/**
 	 *
 	 */
-	public static String MIN_Y = "DBV_POLYGON2D_MIN_Y2D_COORD";
+	public final static String MIN_Y = "DBV_POLYGON2D_MIN_Y2D_COORD";
 
 	/**
 	 *
 	 */
-	public static String MAX_Y = "DBV_POLYGON2D_MAX_Y2D_COORD";
+	public final static String MAX_Y = "DBV_POLYGON2D_MAX_Y2D_COORD";
 
 	/**
 	 *
 	 */
-	public static String MAX_X = "DBV_POLYGON2D_MAX_X2D_COORD";
+	public final static String MAX_X = "DBV_POLYGON2D_MAX_X2D_COORD";
 
 	/**
 	 *
 	 */
-	public static String MIN_X = "DBV_POLYGON2D_MIN_X2D_COORD";
+	public final static String MIN_X = "DBV_POLYGON2D_MIN_X2D_COORD";
 
 	/**
 	 *
 	 */
-	public static String BOUNDINGBOX = "DBV_POLYGON2D_BOUNDINGBOX2D";
+	public final static String BOUNDINGBOX = "DBV_POLYGON2D_BOUNDINGBOX2D";
 
 	/**
 	 *
 	 */
-	public static String TOUCHES = "DBV_POLYGON2D_TOUCHES";
+	public final static String TOUCHES = "DBV_POLYGON2D_TOUCHES";
 
 	/**
 	 *
 	 */
-	public static String EXTERIORRING = "DBV_POLYGON2D_EXTERIORRING";
+	public final static String EXTERIORRING = "DBV_POLYGON2D_EXTERIORRING";
 
 	/**
 	 *
 	 */
-	public static String CONTAINS_POLYGON2D = "DBV_POLYGON2D_CONTAINS";
+	public final static String CONTAINS_POLYGON2D = "DBV_POLYGON2D_CONTAINS";
 
 	/**
 	 *
 	 */
-	public static String WITHIN = "DBV_POLYGON2D_WITHIN";
+	public final static String WITHIN = "DBV_POLYGON2D_WITHIN";
 
 	/**
 	 *
 	 */
-	public static String OVERLAPS = "DBV_POLYGON2D_OVERLAPS";
+	public final static String OVERLAPS = "DBV_POLYGON2D_OVERLAPS";
 
 	/**
 	 *
 	 */
-	public static String INTERSECTS = "DBV_POLYGON2D_INTERSECTS";
+	public final static String INTERSECTS = "DBV_POLYGON2D_INTERSECTS";
 
 	/**
 	 *
 	 */
-	public static String DISJOINT = "DBV_POLYGON2D_DISJOINT";
+	public final static String DISJOINT = "DBV_POLYGON2D_DISJOINT";
 
 	/**
 	 *
 	 */
-	public static String CONTAINS_POINT2D = "DBV_POLYGON2D_CONTAINS_POINT2D";
+	public final static String CONTAINS_POINT2D = "DBV_POLYGON2D_CONTAINS_POINT2D";
 
 	private Polygon2DFunctions() {
 	}

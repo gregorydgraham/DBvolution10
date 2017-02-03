@@ -48,10 +48,10 @@ public class SQLiteDefinition extends DBDefinition {
 	 * The date format used internally within DBvolution's SQLite implementation.
 	 *
 	 */
-	public static final DateFormat DATETIME_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+	public final DateFormat DATETIME_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
 
 	@Override
-	public String getDateFormattedForQuery(Date date) {
+	public synchronized String getDateFormattedForQuery(Date date) {
 		return " strftime('%Y-%m-%d %H:%M:%f', '" + DATETIME_FORMAT.format(date) + "') ";
 	}
 
@@ -219,7 +219,7 @@ public class SQLiteDefinition extends DBDefinition {
 	}
 
 	@Override
-	public Date parseDateFromGetString(String getStringDate) throws ParseException {
+	public synchronized Date parseDateFromGetString(String getStringDate) throws ParseException {
 		return DATETIME_FORMAT.parse(getStringDate);
 	}
 
@@ -602,7 +602,7 @@ public class SQLiteDefinition extends DBDefinition {
 	
 	@Override
 	public LineSegment transformDatabaseLineSegment2DValueToJTSLineSegment(String lineSegmentAsSQL) throws com.vividsolutions.jts.io.ParseException {
-		LineString lineString = null;
+		LineString lineString = (new GeometryFactory()).createLineString(new Coordinate[]{});
 		WKTReader wktReader = new WKTReader();
 		Geometry geometry = wktReader.read(lineSegmentAsSQL);
 		if (geometry instanceof LineString) {

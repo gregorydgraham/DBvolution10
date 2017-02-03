@@ -35,72 +35,72 @@ public class DateRepeatFunctions {
 	/**
 	 *
 	 */
-	public static String DATEREPEAT_GREATERTHANEQUALS_FUNCTION = "DBV_DATEREPEAT_GREATERTHANEQUALS";
+	public final static String DATEREPEAT_GREATERTHANEQUALS_FUNCTION = "DBV_DATEREPEAT_GREATERTHANEQUALS";
 
 	/**
 	 *
 	 */
-	public static String DATEREPEAT_MINUTE_PART_FUNCTION = "DBV_DATEREPEAT_MINUTE_PART";
+	public final static String DATEREPEAT_MINUTE_PART_FUNCTION = "DBV_DATEREPEAT_MINUTE_PART";
 
 	/**
 	 *
 	 */
-	public static String DATEREPEAT_YEAR_PART_FUNCTION = "DBV_DATEREPEAT_YEAR_PART";
+	public final static String DATEREPEAT_YEAR_PART_FUNCTION = "DBV_DATEREPEAT_YEAR_PART";
 
 	/**
 	 *
 	 */
-	public static String DATEREPEAT_CREATION_FUNCTION = "DBV_DATEREPEAT_CREATE";
+	public final static String DATEREPEAT_CREATION_FUNCTION = "DBV_DATEREPEAT_CREATE";
 
 	/**
 	 *
 	 */
-	public static String DATEREPEAT_DATEADDITION_FUNCTION = "DBV_DATEREPEAT_DATEADD";
+	public final static String DATEREPEAT_DATEADDITION_FUNCTION = "DBV_DATEREPEAT_DATEADD";
 
 	/**
 	 *
 	 */
-	public static String DATEREPEAT_DATESUBTRACTION_FUNCTION = "DBV_DATEREPEAT_DATEMINUS";
+	public final static String DATEREPEAT_DATESUBTRACTION_FUNCTION = "DBV_DATEREPEAT_DATEMINUS";
 
 	/**
 	 *
 	 */
-	public static String DATEREPEAT_DAY_PART_FUNCTION = "DBV_DATEREPEAT_DAY_PART";
+	public final static String DATEREPEAT_DAY_PART_FUNCTION = "DBV_DATEREPEAT_DAY_PART";
 
 	/**
 	 *
 	 */
-	public static String DATEREPEAT_HOUR_PART_FUNCTION = "DBV_DATEREPEAT_HOUR_PART";
+	public final static String DATEREPEAT_HOUR_PART_FUNCTION = "DBV_DATEREPEAT_HOUR_PART";
 
 	/**
 	 *
 	 */
-	public static String DATEREPEAT_SECOND_PART_FUNCTION = "DBV_DATEREPEAT_SECOND_PART";
+	public final static String DATEREPEAT_SECOND_PART_FUNCTION = "DBV_DATEREPEAT_SECOND_PART";
 
 	/**
 	 *
 	 */
-	public static String DATEREPEAT_GREATERTHAN_FUNCTION = "DBV_DATEREPEAT_GREATERTHAN";
+	public final static String DATEREPEAT_GREATERTHAN_FUNCTION = "DBV_DATEREPEAT_GREATERTHAN";
 
 	/**
 	 *
 	 */
-	public static String DATEREPEAT_MONTH_PART_FUNCTION = "DBV_DATEREPEAT_MONTH_PART";
+	public final static String DATEREPEAT_MONTH_PART_FUNCTION = "DBV_DATEREPEAT_MONTH_PART";
 
 	/**
 	 *
 	 */
-	public static String DATEREPEAT_EQUALS_FUNCTION = "DBV_DATEREPEAT_EQUALS";
+	public final static String DATEREPEAT_EQUALS_FUNCTION = "DBV_DATEREPEAT_EQUALS";
 
 	/**
 	 *
 	 */
-	public static String DATEREPEAT_LESSTHANEQUALS_FUNCTION = "DBV_DATEREPEAT_LESSTHANEQUALS";
+	public final static String DATEREPEAT_LESSTHANEQUALS_FUNCTION = "DBV_DATEREPEAT_LESSTHANEQUALS";
 
 	/**
 	 *
 	 */
-	public static String DATEREPEAT_LESSTHAN_FUNCTION = "DBV_DATEREPEAT_LESSTHAN";
+	public final static String DATEREPEAT_LESSTHAN_FUNCTION = "DBV_DATEREPEAT_LESSTHAN";
 
 	private DateRepeatFunctions() {
 	}
@@ -134,7 +134,7 @@ public class DateRepeatFunctions {
 	 * @throws ParseException
 	 */
 	public static String formatDateForGetString(Date date) throws ParseException {
-		return SQLiteDefinition.DATETIME_FORMAT.format(date);
+		return (new SQLiteDefinition()).DATETIME_FORMAT.format(date);
 	}
 
 	/**

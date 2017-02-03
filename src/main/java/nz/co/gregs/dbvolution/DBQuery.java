@@ -952,11 +952,7 @@ results.add(queryRow);
 			final QueryableDatatype<?> value = entry.getValue();
 			String expressionAlias = getDatabase().getDefinition().formatExpressionAlias(key);
 			QueryableDatatype<?> expressionQDT = value.getQueryableDatatypeForExpressionValue();
-			if (value.hasColumnExpression() && value.getColumnExpression().length > 1) {
-				expressionQDT.setFromResultSet(getDatabase(), resultSet, expressionAlias);
-			} else {
-				expressionQDT.setFromResultSet(getDatabase(), resultSet, expressionAlias);
-			}
+			expressionQDT.setFromResultSet(getDatabase(), resultSet, expressionAlias);
 			queryRow.addExpressionColumnValue(key, expressionQDT);
 		}
 	}

@@ -68,7 +68,7 @@ public class DBValidation<R extends DBRow> {
 	 * Perform the validation
 	 *
 	 * @param database
-	 * @return
+	 * @return the results of the validation
 	 * @throws SQLException
 	 */
 	public Results validate(DBDatabase database) throws SQLException {
@@ -194,7 +194,7 @@ public class DBValidation<R extends DBRow> {
 		/**
 		 * All the details of the results
 		 *
-		 * @return
+		 * @return the names of the mappings with the resulting status
 		 */
 		public Map<String, String> getMap(){
 			return new HashMap<>(this.map);
