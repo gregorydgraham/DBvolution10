@@ -437,7 +437,6 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 	 */
 	@Override
 	public String doNumberToStringTransform(String numberExpression) {
-		DBString dbs = new DBString();
 		return "CONVERT(NVARCHAR(1000), " + numberExpression + ")";
 	}
 
@@ -838,14 +837,18 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 	public MultiPoint transformDatabaseMultiPoint2DValueToJTSMultiPoint(String pointsAsString) throws com.vividsolutions.jts.io.ParseException {
 		MultiPoint mpoint = null;
 		WKTReader wktReader = new WKTReader();
-		Geometry geometry = wktReader.read(pointsAsString);
-		if (geometry instanceof MultiPoint) {
-			mpoint = (MultiPoint) geometry;
-		} else if (geometry instanceof Point) {
-			Point point = (Point) geometry;
-			mpoint = (new GeometryFactory()).createMultiPoint(new Point[]{point});
+		if (pointsAsString == null || pointsAsString.isEmpty()) {
+			mpoint = (new GeometryFactory()).createMultiPoint(new Point[]{});
 		} else {
-			throw new IncorrectGeometryReturnedForDatatype(geometry, mpoint);
+			Geometry geometry = wktReader.read(pointsAsString);
+			if (geometry instanceof MultiPoint) {
+				mpoint = (MultiPoint) geometry;
+			} else if (geometry instanceof Point) {
+				Point point = (Point) geometry;
+				mpoint = (new GeometryFactory()).createMultiPoint(new Point[]{point});
+			} else {
+				throw new IncorrectGeometryReturnedForDatatype(geometry, mpoint);
+			}
 		}
 		return mpoint;
 	}

@@ -412,11 +412,9 @@ public class DBByteArray extends DBLargeObject<byte[]> {
 	 * @throws java.io.IOException java.io.IOException
 	 */
 	public void writeToFileSystem(File originalFile) throws FileNotFoundException, IOException {
-		boolean createdNewFile = false;
 		if (getLiteralValue() != null && originalFile != null) {
-//			System.out.println("FILE: " + originalFile.getAbsolutePath());
 			if (!originalFile.exists()) {
-				createdNewFile = originalFile.createNewFile();
+				originalFile.createNewFile();
 			}
 			if (originalFile.exists()) {
 				OutputStream output = null;

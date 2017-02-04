@@ -778,7 +778,7 @@ public abstract class QueryableDatatype<T> extends Object implements Serializabl
 	 * @return the underlying expression if there is one, or NULL otherwise.
 	 */
 	public final DBExpression[] getColumnExpression() {
-		return columnExpression;
+		return columnExpression.clone();
 	}
 
 	/**

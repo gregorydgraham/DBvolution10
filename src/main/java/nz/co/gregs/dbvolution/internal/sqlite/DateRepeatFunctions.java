@@ -134,7 +134,7 @@ public class DateRepeatFunctions {
 	 * @throws ParseException
 	 */
 	public static String formatDateForGetString(Date date) throws ParseException {
-		return (new SQLiteDefinition()).DATETIME_FORMAT.format(date);
+		return (new SQLiteDefinition()).getDateTimeFormat().format(date);
 	}
 
 	/**

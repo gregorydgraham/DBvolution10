@@ -66,7 +66,7 @@ public class DBInteger extends QueryableDatatype<Long> implements NumberResult {
 	 * @param value	value
 	 */
 	public DBInteger(Integer value) {
-		super(new Long(value));
+		super(Long.valueOf(value));
 	}
 
 	/**

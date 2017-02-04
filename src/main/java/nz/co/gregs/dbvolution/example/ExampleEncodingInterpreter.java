@@ -194,8 +194,8 @@ public class ExampleEncodingInterpreter implements EncodingInterpreter {
 	public void decodeValue(String value, DBIntegerEnum<?> num) throws NumberFormatException {
 		if (value.contains("...")) {
 			String[] split = value.split("\\.\\.\\.");
-			Long startOfRange = split[0] == null || split[0].isEmpty() ? null : new Long(split[0]);
-			Long endOfRange = split.length == 1 || split[1] == null || split[1].isEmpty() ? null : new Long(split[1]);
+			Long startOfRange = split[0] == null || split[0].isEmpty() ? null : Long.valueOf(split[0]);
+			Long endOfRange = split.length == 1 || split[1] == null || split[1].isEmpty() ? null :  Long.valueOf(split[1]);
 			num.permittedRangeInclusive(
 					startOfRange,
 					endOfRange);
@@ -232,8 +232,8 @@ public class ExampleEncodingInterpreter implements EncodingInterpreter {
 	public void decodeValue(String value, DBInteger num) throws NumberFormatException {
 		if (value.contains("...")) {
 			String[] split = value.split("\\.\\.\\.");
-			Long startOfRange = split[0] == null || split[0].isEmpty() ? null : new Long(split[0]);
-			Long endOfRange = split.length == 1 || split[1] == null || split[1].isEmpty() ? null : new Long(split[1]);
+			Long startOfRange = split[0] == null || split[0].isEmpty() ? null :  Long.valueOf(split[0]);
+			Long endOfRange = split.length == 1 || split[1] == null || split[1].isEmpty() ? null :  Long.valueOf(split[1]);
 			num.permittedRangeInclusive(
 					startOfRange,
 					endOfRange);

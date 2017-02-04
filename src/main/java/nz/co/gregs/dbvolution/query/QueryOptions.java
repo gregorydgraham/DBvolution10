@@ -96,14 +96,14 @@ public class QueryOptions {
 	 * @return the sortColumns
 	 */
 	public ColumnProvider[] getSortColumns() {
-		return sortColumns;
+		return Arrays.copyOf(sortColumns, sortColumns.length);
 	}
 
 	/**
 	 * @param sortColumns the sortColumns to set
 	 */
 	public void setSortColumns(ColumnProvider[] sortColumns) {
-		this.sortColumns = sortColumns;
+		this.sortColumns = Arrays.copyOf(sortColumns, sortColumns.length);
 	}
 
 	/**

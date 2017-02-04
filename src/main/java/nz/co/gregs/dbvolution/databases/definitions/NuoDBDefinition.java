@@ -37,7 +37,7 @@ import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
  */
 public class NuoDBDefinition extends DBDefinition {
 
-	private static final DateFormat DATETIME_FORMAT = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss.SSS");
+	private final DateFormat DATETIME_FORMAT = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss.SSS");
 
 	@Override
 	@SuppressWarnings("deprecation")

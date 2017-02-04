@@ -108,12 +108,12 @@ public class DBQuery {
 		} else if (havingColumns.length > 1) {
 			String sep = "";
 			final String beginAndLine = database.getDefinition().beginAndLine();
-			String returnStr = havingClauseStart;
+			StringBuilder returnStr = new StringBuilder(havingClauseStart);
 			for (BooleanExpression havingColumn : havingColumns) {
-				returnStr += sep + havingColumn.toSQLString(database);
+				returnStr.append(sep).append(havingColumn.toSQLString(database));
 				sep = beginAndLine;
 			}
-			return returnStr;
+			return returnStr.toString();
 		} else {
 			return "";
 		}
@@ -338,54 +338,54 @@ public class DBQuery {
 			}
 		}
 
-		String sqlToReturn;
+		StringBuilder sqlToReturn = new StringBuilder();
 		if (previousTables.isEmpty()) {
-			sqlToReturn = " " + defn.getFromClause(newTable);
+			sqlToReturn.append(" ").append(defn.getFromClause(newTable));
 		} else {
 			if (isFullOuterJoin) {
-				sqlToReturn = lineSep + defn.beginFullOuterJoin();
+				sqlToReturn.append(lineSep).append(defn.beginFullOuterJoin());
 			} else if (isLeftOuterJoin) {
-				sqlToReturn = lineSep + defn.beginLeftOuterJoin();
+				sqlToReturn.append(lineSep).append(defn.beginLeftOuterJoin());
 			} else {
-				sqlToReturn = lineSep + defn.beginInnerJoin();
+				sqlToReturn.append(lineSep).append(defn.beginInnerJoin());
 			}
-			sqlToReturn += defn.getFromClause(newTable);
-			sqlToReturn += defn.beginOnClause();
+			sqlToReturn.append( defn.getFromClause(newTable));
+			sqlToReturn.append( defn.beginOnClause());
 			if (!conditionClauses.isEmpty()) {
 				if (!joinClauses.isEmpty()) {
-					sqlToReturn += "(";
+					sqlToReturn.append( "(");
 				}
-				sqlToReturn += mergeConditionsIntoSQLClause(conditionClauses, defn, options);
+				sqlToReturn.append( mergeConditionsIntoSQLClause(conditionClauses, defn, options));
 			}
 			if (!joinClauses.isEmpty()) {
 				if (!conditionClauses.isEmpty()) {
-					sqlToReturn += ")" + defn.beginAndLine() + "(";
+					sqlToReturn.append(")").append(defn.beginAndLine()).append("(");
 				}
 				String separator = "";
 				for (String join : joinClauses) {
-					sqlToReturn += separator + join;
+					sqlToReturn.append(separator).append(join);
 					separator = defn.beginJoinClauseLine(options);
 				}
 				if (!conditionClauses.isEmpty()) {
-					sqlToReturn += ")";
+					sqlToReturn.append( ")");
 				}
 			}
 			if (conditionClauses.isEmpty() && joinClauses.isEmpty()) {
-				sqlToReturn += defn.getWhereClauseBeginningCondition(options);
+				sqlToReturn .append( defn.getWhereClauseBeginningCondition(options));
 			}
-			sqlToReturn += defn.endOnClause();
+			sqlToReturn .append( defn.endOnClause());
 		}
-		return sqlToReturn;
+		return sqlToReturn.toString();
 	}
 
 	private String mergeConditionsIntoSQLClause(List<String> conditionClauses, DBDefinition defn, QueryOptions options) {
 		String separator = "";
-		String sqlToReturn = "";
+		StringBuilder sqlToReturn = new StringBuilder();
 		for (String cond : conditionClauses) {
-			sqlToReturn += separator + cond;
+			sqlToReturn.append(separator).append(cond);
 			separator = defn.beginConditionClauseLine(options);
 		}
-		return sqlToReturn;
+		return sqlToReturn.toString();
 	}
 
 	private String getSQLForQuery(QueryState queryState, QueryType queryType, QueryOptions options) {
@@ -836,7 +836,7 @@ results.add(queryRow);
 				for (QueryableDatatype<?> pk : primaryKeys) {
 					pksHaveBeenSet = pksHaveBeenSet&&pk.hasBeenSet();
 				}
-				if (isGroupedQuery || primaryKeys == null || primaryKeys.isEmpty()|| !pksHaveBeenSet) {
+				if (isGroupedQuery || primaryKeys.isEmpty()|| !pksHaveBeenSet) {
 					queryRow.put(newInstanceClass, newInstance);
 				} else {
 					DBRow existingInstance = getOrSetExistingInstanceForRow(newInstance, existingInstancesOfThisTableRow);
@@ -2809,7 +2809,7 @@ results.add(queryRow);
 	 *
 	 * @return this DBQuery object
 	 */
-	public DBQuery clearTimeout() {
+	public synchronized DBQuery clearTimeout() {
 		this.timeoutInMilliseconds = null;
 		if (this.timeout != null) {
 			this.timeout.cancel();
@@ -2831,7 +2831,7 @@ results.add(queryRow);
 		private final List<String> optionalConditions = new ArrayList<>();
 		private boolean queryIsFullOuterJoin=true;
 		private boolean queryIsLeftOuterJoin=true;
-		private boolean queryIsNativeQuery = true;
+//		private final boolean queryIsNativeQuery = true;
 
 		QueryState(DBQuery query, DBDatabase database) {
 			this.remainingExpressions = new ArrayList<>(query.getConditions());

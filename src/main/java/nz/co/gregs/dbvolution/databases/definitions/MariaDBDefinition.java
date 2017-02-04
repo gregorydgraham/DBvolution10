@@ -38,7 +38,7 @@ import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
  */
 public class MariaDBDefinition extends DBDefinition {
 
-	private static final DateFormat DATETIME_FORMAT = new SimpleDateFormat("dd,MM,yyyy HH:mm:ss");
+	private final DateFormat DATETIME_FORMAT = new SimpleDateFormat("dd,MM,yyyy HH:mm:ss");
 
 	@Override
 	@SuppressWarnings("deprecation")

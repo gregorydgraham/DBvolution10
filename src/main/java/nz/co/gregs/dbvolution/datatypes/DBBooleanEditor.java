@@ -23,14 +23,14 @@ import java.beans.PropertyEditorSupport;
  */
 public class DBBooleanEditor extends PropertyEditorSupport {
 
-	private String format;
+	//private String format;
 
 	/**
 	 *
 	 * @param format format
 	 */
 	public void setFormat(String format) {
-		this.format = format;
+		//this.format = format;
 	}
 
 	/**

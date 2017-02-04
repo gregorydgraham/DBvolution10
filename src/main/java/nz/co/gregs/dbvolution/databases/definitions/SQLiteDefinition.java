@@ -48,10 +48,10 @@ public class SQLiteDefinition extends DBDefinition {
 	 * The date format used internally within DBvolution's SQLite implementation.
 	 *
 	 */
-	public final DateFormat DATETIME_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+	private final DateFormat DATETIME_FORMAT = getDateTimeFormat();//
 
 	@Override
-	public synchronized String getDateFormattedForQuery(Date date) {
+	public String getDateFormattedForQuery(Date date) {
 		return " strftime('%Y-%m-%d %H:%M:%f', '" + DATETIME_FORMAT.format(date) + "') ";
 	}
 
@@ -748,4 +748,8 @@ public class SQLiteDefinition extends DBDefinition {
 	public String getFalseValue() {
 		return " 0 ";
 	}	
+
+	public DateFormat getDateTimeFormat() {
+		return new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+	}
 }

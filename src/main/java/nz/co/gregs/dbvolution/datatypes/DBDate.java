@@ -51,7 +51,7 @@ import nz.co.gregs.dbvolution.operators.DBPermittedValuesOperator;
 public class DBDate extends QueryableDatatype<Date> implements DateResult {
 
 	private static final long serialVersionUID = 1L;
-	private static SimpleDateFormat toStringFormat = new SimpleDateFormat("yyyy-MM-dd KK:mm:ss.SSSa ZZZZ");
+	private final SimpleDateFormat toStringFormat = new SimpleDateFormat("yyyy-MM-dd KK:mm:ss.SSSa ZZZZ");
 
 	/**
 	 * The default constructor for DBDate.

@@ -188,7 +188,7 @@ public class BooleanArrayExpression implements BooleanArrayResult, EqualComparab
 		DBBinaryBooleanArithmetic(BooleanArrayExpression first, BooleanArrayResult second) {
 			this.first = first;
 			this.second = second;
-			if (this.second == null || this.second == null || this.second.getIncludesNull()) {
+			if (this.first == null||this.first.getIncludesNull() || this.second == null || this.second.getIncludesNull()) {
 				this.requiresNullProtection = true;
 			}
 		}

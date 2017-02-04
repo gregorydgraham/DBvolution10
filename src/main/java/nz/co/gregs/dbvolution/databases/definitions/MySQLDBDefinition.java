@@ -43,7 +43,7 @@ import nz.co.gregs.dbvolution.internal.properties.PropertyWrapper;
  */
 public class MySQLDBDefinition extends DBDefinition {
 
-	private static final DateFormat DATETIME_FORMAT = new SimpleDateFormat("dd,MM,yyyy HH:mm:ss.SSS");
+	private final DateFormat DATETIME_FORMAT = new SimpleDateFormat("dd,MM,yyyy HH:mm:ss.SSS");
 
 	@Override
 	@SuppressWarnings("deprecation")

@@ -42,7 +42,7 @@ import nz.co.gregs.dbvolution.results.ExpressionHasStandardStringResult;
  */
 public class PostgresDBDefinition extends DBDefinition {
 
-	private static final DateFormat DATETIME_FORMAT = new SimpleDateFormat("yyyyMMdd HH:mm:ss.SSS Z");
+	private final DateFormat DATETIME_FORMAT = new SimpleDateFormat("yyyyMMdd HH:mm:ss.SSS Z");
 
 	private static final String[] reservedWordsArray = new String[]{"LIMIT", "END"};
 	private static final List<String> reservedWords = Arrays.asList(reservedWordsArray);
@@ -139,15 +139,15 @@ public class PostgresDBDefinition extends DBDefinition {
 
 	@Override
 	public String doBitsValueTransform(boolean[] boolArray) {
-		String boolStr = "";
+		StringBuilder boolStr = new StringBuilder();
 		for (boolean c : boolArray) {
 			if (c) {
-				boolStr += "1";
+				boolStr .append("1");
 			} else {
-				boolStr += "0";
+				boolStr .append( "0");
 			}
 		}
-		return "B'" + boolStr + "'";
+		return "B'" + boolStr.toString() + "'";
 	}
 
 	@Override
