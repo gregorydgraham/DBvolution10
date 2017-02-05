@@ -70,8 +70,8 @@ public abstract class AbstractTest {
 		String database = System.getProperty("dbv.database");
 		String username = System.getProperty("dbv.username");
 		String password = System.getProperty("dbv.password");
-		String schema = System.getProperty("dbv.schema");		
-		
+		String schema = System.getProperty("dbv.schema");
+
 		if (System.getProperty("testSQLite") != null) {
 			final SQLiteDB sqliteDB = new SQLiteTestDB(url, username, password);
 			databases.add(new Object[]{"SQLiteDB", sqliteDB});
@@ -86,7 +86,7 @@ public abstract class AbstractTest {
 			databases.add(new Object[]{"H2DB", new H2TestDatabase(url, username, password)});
 		}
 		if (System.getProperty("testH2FileDB") != null) {
-			databases.add(new Object[]{"H2FileDB",  H2TestDatabase.H2TestDatabaseFromFilename(database, username, password)});
+			databases.add(new Object[]{"H2FileDB", H2TestDatabase.H2TestDatabaseFromFilename(database, username, password)});
 		}
 		if (System.getProperty("testH2DataSourceDB") != null) {
 			JdbcDataSource h2DataSource = new JdbcDataSource();
@@ -97,7 +97,7 @@ public abstract class AbstractTest {
 			databases.add(new Object[]{"H2DataSourceDB", databaseFromDataSource});
 		}
 		if (System.getProperty("testPostgresSQL") != null) {
-				databases.add(new Object[]{"PostgresSQL", TestPostgreSQL.getTestDatabase(url, host, port, instance, username, password, schema)});
+			databases.add(new Object[]{"PostgresSQL", TestPostgreSQL.getTestDatabase(url, host, port, instance, username, password, schema)});
 		}
 		if (System.getProperty("testNuo") != null) {
 			databases.add(new Object[]{"NuoDB", new NuoDB("localhost", 48004L, "dbv", "dbv", "dbv", "dbv")});
@@ -116,8 +116,8 @@ public abstract class AbstractTest {
 			final H2MemoryDB h2MemoryDB = new H2MemoryTestDB(instance, username, password);
 			databases.add(new Object[]{"H2MemoryDB", h2MemoryDB});
 		}
-		if(databases.isEmpty() ){
-			databases.add(new Object[]{"H2BlankDB",  H2MemoryTestDB.blankDB()});
+		if (databases.isEmpty()) {
+			databases.add(new Object[]{"H2BlankDB", H2MemoryTestDB.blankDB()});
 		}
 
 		return databases;
@@ -261,16 +261,18 @@ public abstract class AbstractTest {
 
 	private static class H2TestDatabase extends H2DB {
 
+		public static final long serialVersionUID = 1l;
+
 		private static H2DB getDatabaseFromDataSource(JdbcDataSource h2DataSource) {
 			return new H2DB(h2DataSource);
 		}
 
 		public static H2DB H2TestDatabaseFromFilename(String instance, String username, String password) {
-			return new H2DB(instance,username, password, false);
+			return new H2DB(instance, username, password, false);
 		}
 
 		public H2TestDatabase(String url, String username, String password) {
-			super(url,username, password);
+			super(url, username, password);
 		}
 	}
 
@@ -281,8 +283,9 @@ public abstract class AbstractTest {
 //			super("jdbc:mysql://dbvtest-mysql.cygjg2wvuyam.ap-southeast-2.rds.amazonaws.com:3306/test?createDatabaseIfNotExist=true", "dbv", "Testingdbv");
 //		}
 //	}
-
 	private static class MySQL56TestDatabase extends MySQLDB {
+
+		public static final long serialVersionUID = 1l;
 
 		public MySQL56TestDatabase(String url, String username, String password) {
 			super(url, username, password);
@@ -292,13 +295,17 @@ public abstract class AbstractTest {
 
 	private static class MySQLTestDatabase extends MySQLDB {
 
+		public static final long serialVersionUID = 1l;
+
 		public MySQLTestDatabase(String url, String username, String password) {
-			super(url,username, password);
+			super(url, username, password);
 //			super("jdbc:mysql://localhost:3306/test?createDatabaseIfNotExist=true", "dbv", "dbv");
 		}
 	}
 
 	private static class TestPostgreSQL extends PostgresDB {
+
+		public static final long serialVersionUID = 1l;
 
 		protected static PostgresDB getTestDatabase(String url, String host, String port, String database, String username, String password, String schema) {
 			return new PostgresDB(host, new Integer(port), database, username, password);
@@ -307,12 +314,16 @@ public abstract class AbstractTest {
 
 	private static class SQLiteTestDB extends SQLiteDB {
 
+		public static final long serialVersionUID = 1l;
+
 		public SQLiteTestDB(String url, String username, String password) throws SQLException {
 			super(url, username, password);
 		}
 	}
 
 	private static class Oracle11XETestDB extends Oracle11XEDB {
+
+		public static final long serialVersionUID = 1l;
 
 		public Oracle11XETestDB(String host, String port, String instance, String username, String password) {
 			super(host, Integer.parseInt(port), instance, username, password);
@@ -321,12 +332,16 @@ public abstract class AbstractTest {
 
 	private static class MSSQLServerTestDB extends MSSQLServerDB {
 
+		public static final long serialVersionUID = 1l;
+
 		public MSSQLServerTestDB(String host, String instance, String database, String port, String username, String password) {
 			super(host, instance, database, Integer.parseInt(port), username, password);
 		}
 	}
 
 	private static class JTDSSQLServerTestDB extends JTDSSQLServerDB {
+
+		public static final long serialVersionUID = 1l;
 
 		public JTDSSQLServerTestDB(String host, String instance, String database, String port, String username, String password) {
 			super(host, instance, database, Integer.parseInt(port), username, password);
@@ -335,16 +350,18 @@ public abstract class AbstractTest {
 
 	private static class H2MemoryTestDB extends H2MemoryDB {
 
+		public static final long serialVersionUID = 1l;
+
 		public static H2MemoryTestDB blankDB() {
 			return new H2MemoryTestDB();
 		}
-		
+
 		public H2MemoryTestDB() {
 			this("memoryTest.h2db", "", "");
 		}
-		
+
 		public H2MemoryTestDB(String instance, String username, String password) {
-			super(instance,username, password, false);
+			super(instance, username, password, false);
 		}
 	}
 }

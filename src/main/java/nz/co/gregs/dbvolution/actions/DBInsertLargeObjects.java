@@ -61,7 +61,7 @@ public class DBInsertLargeObjects extends DBUpdateLargeObjects {
 
 	@Override
 	protected String getPrimaryKeySQL(DBDatabase db, DBRow row) {
-		String sqlString = "";
+		StringBuilder sqlString = new StringBuilder();
 		DBDefinition defn = db.getDefinition();
 		List<QueryableDatatype<?>> primaryKeys = row.getPrimaryKeys();
 		String separator = "";
@@ -69,13 +69,13 @@ public class DBInsertLargeObjects extends DBUpdateLargeObjects {
 			PropertyWrapper wrapper = row.getPropertyWrapperOf(pk);
 			String pkValue = pk.toSQLString(db);
 			//String pkValue = (pk.hasChanged() ? pk.getPreviousSQLValue(db) : pk.toSQLString(db));
-			sqlString += separator + defn.formatColumnName(wrapper.columnName()) + defn.getEqualsComparator() + pkValue;
-			//				+ defn.formatColumnName(row.getPrimaryKeyColumnNames())
-			//				+ defn.getEqualsComparator()
-			//				+ row.getPrimaryKeys().toSQLString(db)
+			sqlString.append(separator)
+					.append(defn.formatColumnName(wrapper.columnName()))
+					.append(defn.getEqualsComparator())
+					.append(pkValue);
 			separator = defn.beginAndLine();
 		}
-		return sqlString;
+		return sqlString.toString();
 	}
 
 }

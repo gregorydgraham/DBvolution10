@@ -92,7 +92,6 @@ public class DBMigrate<R extends DBRow> extends DBAction {
 
 	@Override
 	protected DBActionList execute(DBDatabase db) throws SQLException {
-		final DBDefinition defn = db.getDefinition();
 		DBActionList actions = new DBActionList(new DBMigrate<>(sourceMigration, getRow(), extraExamples));
 
 		try (DBStatement statement = db.getDBStatement()) {

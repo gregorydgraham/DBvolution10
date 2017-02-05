@@ -32,6 +32,7 @@ public class NuoDB extends DBDatabase {
 	private static final int NUODB_DEFAULT_PORT = 48004;
 	private static final String NUODB_DRIVER = "com.nuodb.jdbc.Driver";
 	private static final String NUODB_URL_PREFIX = "jdbc:com.nuodb://";
+	public static final long serialVersionUID = 1l;
 
 	@Override
 	public DBDatabase clone() throws CloneNotSupportedException {
@@ -58,12 +59,15 @@ public class NuoDB extends DBDatabase {
 	 * @param username username
 	 */
 	public NuoDB(List<String> brokers, String databaseName, String schema, String username, String password) {
-		String hosts = "";
+		StringBuilder hosts = new StringBuilder();
 		String sep = "";
 
 		for (String server : brokers) {
 			int port = NUODB_DEFAULT_PORT;
-			hosts += sep + server + ":" + port;
+			hosts.append(sep)
+					.append(server)
+					.append(":")
+					.append(port);
 			sep = ",";
 		}
 
@@ -110,13 +114,16 @@ public class NuoDB extends DBDatabase {
 	}
 
 	private void initNuoDB(List<String> brokers, List<Long> ports, String databaseName, String schema, String username, String password) {
-		String hosts = "";
+		StringBuilder hosts = new StringBuilder();
 		String sep = "";
 		if (brokers.size() == ports.size()) {
 			for (int i = 0; i < brokers.size(); i++) {
 				String server = brokers.get(i);
 				Long port = ports.get(i);
-				hosts += sep + server + ":" + port;
+				hosts.append(sep)
+						.append(server)
+						.append(":")
+						.append(port);
 				sep = ",";
 			}
 		}

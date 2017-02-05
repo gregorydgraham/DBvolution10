@@ -29,6 +29,7 @@ import nz.co.gregs.dbvolution.internal.sqlserver.*;
  * @author Gregory Graham
  */
 public class JTDSSQLServerDB extends DBDatabase implements SupportsPolygonDatatype{
+	public static final long serialVersionUID = 1l;
 
 	/**
 	 * The Microsoft Driver used to connect to MS SQLServer databases.

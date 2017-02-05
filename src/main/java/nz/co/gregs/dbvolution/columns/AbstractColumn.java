@@ -77,11 +77,11 @@ public class AbstractColumn implements DBExpression {
 		if ((field instanceof QueryableDatatype) && ((QueryableDatatype) field).hasColumnExpression()) {
 			final QueryableDatatype<?> qdtField = (QueryableDatatype) field;
 			DBExpression[] columnExpressions = qdtField.getColumnExpression();
-			String toSQLString="";
+			StringBuilder toSQLString=new StringBuilder();
 			for (DBExpression columnExpression : columnExpressions) {
-				toSQLString += columnExpression.toSQLString(db);
+				toSQLString .append(columnExpression.toSQLString(db));
 			}
-			return toSQLString;
+			return toSQLString.toString();
 		} else {
 				String formattedColumnName="";
 			if (useTableAlias) {
@@ -92,7 +92,6 @@ public class AbstractColumn implements DBExpression {
 			}
 				return propertyWrapper.getDefinition().getQueryableDatatype(this.dbrow).formatColumnForSQLStatement(db, formattedColumnName);
 		}
-//		return "";
 	}
 
 	@Override

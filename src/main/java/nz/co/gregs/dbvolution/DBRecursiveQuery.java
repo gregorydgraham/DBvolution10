@@ -225,24 +225,19 @@ public class DBRecursiveQuery<T extends DBRow> {
 			final DBRow newInstance = referencedClass.newInstance();
 			final String recursiveTableAlias = database.getDefinition().getTableAlias(newInstance);
 			String recursiveColumnNames = "";
-			String recursiveAliases = "";
+			StringBuilder recursiveAliases = new StringBuilder();
 			final RowDefinitionInstanceWrapper rowDefinitionInstanceWrapper = foreignKeyToFollow.getColumn().getPropertyWrapper().getRowDefinitionInstanceWrapper();
 			RowDefinition adapteeRowDefinition = rowDefinitionInstanceWrapper.adapteeRowDefinition();
 			List<PropertyWrapper> propertyWrappers = adapteeRowDefinition.getColumnPropertyWrappers();
 			String separator = "";
 			for (PropertyWrapper propertyWrapper : propertyWrappers) {
 				for (PropertyWrapperDefinition.ColumnAspects entry : propertyWrapper.getColumnAspects(database)) {
-//					String selectableName = entry.selectableName;
 					String alias = entry.columnAlias;
 					final String columnName = defn.formatColumnName(propertyWrapper.columnName());
 					recursiveColumnNames += separator + columnName;
-					recursiveAliases += separator + columnName + " " + alias;
+					recursiveAliases.append(separator).append(columnName).append(" ").append(alias);
 					separator = ", ";	
 				}
-//				final String columnName = defn.formatColumnName(propertyWrapper.getDefinition().getColumnName());
-//				recursiveColumnNames += separator + columnName;
-//				recursiveAliases += separator + columnName + " " + propertyWrapper.getColumnAlias(database);
-//				separator = ", ";
 			}
 			recursiveColumnNames += separator + defn.getRecursiveQueryDepthColumnName();
 
@@ -257,7 +252,7 @@ public class DBRecursiveQuery<T extends DBRow> {
 					+ defn.beginWithClauseRecursiveQuery()
 					+ removeTrailingSemicolon(recursiveSubQuery.getSQLForQuery())
 					+ defn.endWithClauseRecursiveQuery()
-					+ defn.doSelectFromRecursiveTable(recursiveTableAlias, recursiveAliases);
+					+ defn.doSelectFromRecursiveTable(recursiveTableAlias, recursiveAliases.toString());
 			return recursiveQuery;
 		} catch (InstantiationException ex) {
 			throw new UnableToInstantiateDBRowSubclassException(referencedClass, ex);

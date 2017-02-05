@@ -472,7 +472,6 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 
 	private List<String> getWhereClauses(DBDatabase db, boolean useTableAlias) //throws InstantiationException, IllegalAccessException 
 	{
-		DBDefinition defn = db.getDefinition();
 		List<String> whereClause = new ArrayList<>();
 		List<PropertyWrapper> props = getWrapper().getColumnPropertyWrappers();
 		for (PropertyWrapper prop : props) {
@@ -483,7 +482,6 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 				if (prop.isTypeAdapted()) {
 					Object rawJavaValue = prop.rawJavaValue();
 					if (rawJavaValue == null) {
-//						rawJavaValue = prop.getRawJavaType().newInstance();
 						try {
 							rawJavaValue = prop.getRawJavaType().newInstance();
 						} catch (InstantiationException ex) {
@@ -509,7 +507,7 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 	}
 
 	private String getQDTWhereClause(DBDatabase db, ColumnProvider column, QueryableDatatype<?> qdt) {
-		String whereClause = "";
+		StringBuilder whereClause = new StringBuilder();
 		DBOperator op = qdt.getOperator();
 		if (op != null) {
 			if (column instanceof DBExpression) {
@@ -518,15 +516,15 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 					DBExpression[] columnExpression = qdt.getColumnExpression();
 					String sep = "";
 					for (DBExpression dBExpression : columnExpression) {
-						whereClause += sep + op.generateWhereExpression(db, dBExpression).toSQLString(db);
+						whereClause.append(sep).append(op.generateWhereExpression(db, dBExpression).toSQLString(db));
 						sep = db.getDefinition().beginAndLine();
 					}
 				} else {
-					whereClause = op.generateWhereExpression(db, requiredExpression).toSQLString(db);
+					whereClause = new StringBuilder(op.generateWhereExpression(db, requiredExpression).toSQLString(db));
 				}
 			}
 		}
-		return whereClause;
+		return whereClause.toString();
 	}
 
 	/**

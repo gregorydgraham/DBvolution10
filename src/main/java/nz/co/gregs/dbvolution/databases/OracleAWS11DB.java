@@ -38,6 +38,7 @@ import nz.co.gregs.dbvolution.databases.definitions.OracleAWSDBDefinition;
  * @see Oracle12DBDefinition
  */
 public class OracleAWS11DB extends OracleAWSDB {
+	public static final long serialVersionUID = 1l;
 
 	/**
 	 *

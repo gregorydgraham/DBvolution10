@@ -33,19 +33,19 @@ public abstract class OutputFormat {
 	}
 
 	public String formatDBRows(String headerRowStyle, String headerCellStyle, String rowStyle, SimpleDateFormat dateFormat, RowDefinition... rows) {
-		String result = formatHeader(rows[0], headerRowStyle, headerCellStyle);
+		StringBuilder result = new StringBuilder(formatHeader(rows[0], headerRowStyle, headerCellStyle));
 		for (RowDefinition row : rows) {
-			result += formatRow(row, rowStyle, dateFormat);
+			result.append( formatRow(row, rowStyle, dateFormat));
 		}
-		return result;
+		return result.toString();
 	}
 
 	public String formatDBQueryRows(String headerRowStyle, String headerCellStyle, String rowStyle, SimpleDateFormat dateFormat, List<DBQueryRow> queryRows) {
-		String result = formatHeader(queryRows.get(0), headerRowStyle, headerCellStyle);
+		StringBuilder result = new StringBuilder(formatHeader(queryRows.get(0), headerRowStyle, headerCellStyle));
 		for (DBQueryRow row : queryRows) {
-			result += formatRow(row, rowStyle, dateFormat);
+			result.append( formatRow(row, rowStyle, dateFormat));
 		}
-		return result;
+		return result.toString();
 	}
 
 	String formatRow(RowDefinition row, String tableRowCSSClass, SimpleDateFormat dateFormat) {

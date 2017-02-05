@@ -80,7 +80,7 @@ public class DBQuery {
 	/**
 	 * The default timeout value used to prevent accidental long running queries
 	 */
-	public final int DEFAULT_TIMEOUT_MILLISECONDS = 10000;
+	private static final int DEFAULT_TIMEOUT_MILLISECONDS = 10000;
 	private final DBDatabase database;
 	private final QueryDetails details = new QueryDetails();
 	private String resultSQL;
@@ -395,7 +395,7 @@ public class DBQuery {
 		if (details.getAllQueryTables().size() > 0) {
 
 			initialiseQueryGraph();
-			queryState.setGraph(this.queryGraph);
+//			queryState.setGraph(this.queryGraph);
 
 			DBDefinition defn = getDatabase().getDefinition();
 			StringBuilder selectClause = new StringBuilder().append(defn.beginSelectStatement());
@@ -2792,7 +2792,7 @@ results.add(queryRow);
 	 * @param milliseconds
 	 * @return this query.
 	 */
-	public DBQuery setTimeoutInMilliseconds(int milliseconds) {
+	public synchronized DBQuery setTimeoutInMilliseconds(int milliseconds) {
 		this.timeoutInMilliseconds = milliseconds;
 		return this;
 	}
@@ -2824,7 +2824,7 @@ results.add(queryRow);
 	 */
 	protected static class QueryState {
 
-		private QueryGraph graph;
+//		private QueryGraph graph;
 		private final List<BooleanExpression> remainingExpressions;
 		private final List<BooleanExpression> consumedExpressions = new ArrayList<>();
 		private final List<String> requiredConditions = new ArrayList<>();
@@ -2846,9 +2846,9 @@ results.add(queryRow);
 			consumedExpressions.add(expr);
 		}
 
-		private void setGraph(QueryGraph queryGraph) {
-			this.graph = queryGraph;
-		}
+//		private void setGraph(QueryGraph queryGraph) {
+//			this.graph = queryGraph;
+//		}
 
 		/**
 		 * Adds a condition that pertains to a required table.

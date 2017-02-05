@@ -28,6 +28,7 @@ import nz.co.gregs.dbvolution.databases.definitions.MariaDBDefinition;
 public class MariaDB extends DBDatabase {
 
 	private final static String MARIADBDRIVERNAME = "com.mariadb.jdbc.Driver";
+	public static final long serialVersionUID = 1l;
 
 	/**
 	 * Creates a {@link DBDatabase } instance for the data source.

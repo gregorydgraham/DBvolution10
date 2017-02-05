@@ -139,20 +139,20 @@ public abstract class DBAction {
 	 * @return a string representing the 
 	 */
 	protected String getPrimaryKeySQL(DBDatabase db, DBRow row) {
-		String sqlString = "";
+		StringBuilder sqlString = new StringBuilder();
 		DBDefinition defn = db.getDefinition();
 		List<QueryableDatatype<?>> primaryKeys = row.getPrimaryKeys();
 		String separator = "(";
 		for (QueryableDatatype<?> pk : primaryKeys) {
 			PropertyWrapper wrapper = row.getPropertyWrapperOf(pk);
 			String pkValue = (pk.hasChanged() ? pk.getPreviousSQLValue(db) : pk.toSQLString(db));
-			sqlString += separator + defn.formatColumnName(wrapper.columnName()) + defn.getEqualsComparator() + pkValue;
+			sqlString.append(separator).append(defn.formatColumnName(wrapper.columnName())).append(defn.getEqualsComparator()).append(pkValue);
 			//				+ defn.formatColumnName(row.getPrimaryKeyColumnNames())
 			//				+ defn.getEqualsComparator()
 			//				+ row.getPrimaryKeys().toSQLString(db)
 			separator = defn.beginOrLine();
 		}
-		return sqlString+")";
+		return sqlString.append(")").toString();
 	}
 
 }

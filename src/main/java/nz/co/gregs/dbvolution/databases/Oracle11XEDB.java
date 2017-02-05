@@ -39,7 +39,8 @@ import nz.co.gregs.dbvolution.internal.oracle.xe.*;
  * @see Oracle12DBDefinition
  */
 public class Oracle11XEDB extends OracleDB {
-	
+	public static final long serialVersionUID = 1l;
+
 /**
 	 *
 	 * Provides a convenient constructor for DBDatabases that have configuration

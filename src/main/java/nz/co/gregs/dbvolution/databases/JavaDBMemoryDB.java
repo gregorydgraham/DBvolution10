@@ -25,6 +25,7 @@ import nz.co.gregs.dbvolution.exceptions.UnableToFindJDBCDriver;
  * @author gregory.graham
  */
 public class JavaDBMemoryDB extends JavaDB {
+	public static final long serialVersionUID = 1l;
 
 //	private Connection storedConnection;
 

@@ -28,6 +28,7 @@ import nz.co.gregs.dbvolution.databases.supports.SupportsPolygonDatatype;
 public class MySQLDB extends DBDatabase implements SupportsPolygonDatatype{
 
 	private final static String MYSQLDRIVERNAME = "com.mysql.jdbc.Driver";
+	public static final long serialVersionUID = 1l;
 
 	/**
 	 * Creates a {@link DBDatabase } instance for the data source.

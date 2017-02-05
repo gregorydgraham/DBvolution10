@@ -93,24 +93,15 @@ public class DBDeleteByPrimaryKey extends DBDelete {
 		DBRow row = getRow();
 
 		ArrayList<String> strs = new ArrayList<>();
-		String sql = defn.beginDeleteLine()
+		StringBuilder sql = new StringBuilder(defn.beginDeleteLine()
 				+ defn.formatTableName(row)
-				+ defn.beginWhereClause();
+				+ defn.beginWhereClause());
 		List<QueryableDatatype<?>> primaryKeys = row.getPrimaryKeys();
 		for(QueryableDatatype<?> pk:primaryKeys){
-				sql+= defn.formatColumnName(row.getPropertyWrapperOf(pk).columnName())
-				+ defn.getEqualsComparator()
-				+ pk.toSQLString(db);
+				sql.append(defn.formatColumnName(row.getPropertyWrapperOf(pk).columnName())).append(defn.getEqualsComparator()).append(pk.toSQLString(db));
 						}
-				sql+= defn.endDeleteLine();
-		strs.add(sql);
-//		strs.add(defn.beginDeleteLine()
-//				+ defn.formatTableName(row)
-//				+ defn.beginWhereClause()
-//				+ defn.formatColumnName(row.getPrimaryKeyColumnNames())
-//				+ defn.getEqualsComparator()
-//				+ row.getPrimaryKeys().toSQLString(db)
-//				+ defn.endDeleteLine());
+				sql.append(defn.endDeleteLine());
+		strs.add(sql.toString());
 		return strs;
 	}
 

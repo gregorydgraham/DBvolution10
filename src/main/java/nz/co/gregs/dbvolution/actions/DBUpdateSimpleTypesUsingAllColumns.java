@@ -45,29 +45,30 @@ public class DBUpdateSimpleTypesUsingAllColumns extends DBUpdateSimpleTypes {
 		DBRow row = getRow();
 		DBDefinition defn = db.getDefinition();
 
-		String sql = defn.beginUpdateLine()
-				+ defn.formatTableName(row)
-				+ defn.beginSetClause()
-				+ getSetClause(db, row)
-				+ defn.beginWhereClause()
-				+ defn.getWhereClauseBeginningCondition();
+		StringBuilder sql = new StringBuilder()
+				.append(defn.beginUpdateLine())
+				.append(defn.formatTableName(row))
+				.append(defn.beginSetClause())
+				.append(getSetClause(db, row))
+				.append(defn.beginWhereClause())
+				.append(defn.getWhereClauseBeginningCondition());
 		for (PropertyWrapper prop : row.getColumnPropertyWrappers()) {
 			QueryableDatatype<?> qdt = prop.getQueryableDatatype();
 			if (qdt.isNull()) {
-				sql += defn.beginAndLine() + BooleanExpression.isNull(row.column(qdt)).toSQLString(db);
+				sql.append(defn.beginAndLine())
+						.append(BooleanExpression.isNull(row.column(qdt)).toSQLString(db));
 //				DBIsNullOperator isNullOp = new DBIsNullOperator();
 //				sql += isNullOp.generateWhereLine(db, prop.columnName());
 			} else {
-				sql = sql
-						+ defn.beginWhereClauseLine()
-						+ prop.columnName()
-						+ defn.getEqualsComparator()
-						+ (qdt.hasChanged() ? qdt.getPreviousSQLValue(db) : qdt.toSQLString(db));
+				sql.append(defn.beginWhereClauseLine())
+						.append(prop.columnName())
+						.append(defn.getEqualsComparator()) 
+						.append(qdt.hasChanged() ? qdt.getPreviousSQLValue(db) : qdt.toSQLString(db));
 			}
 		}
-		sql += defn.endDeleteLine();
+		sql.append(defn.endDeleteLine());
 		List<String> sqls = new ArrayList<>();
-		sqls.add(sql);
+		sqls.add(sql.toString());
 		return sqls;
 	}
 }

@@ -80,21 +80,20 @@ public class DBDeleteUsingAllColumns extends DBDelete {
 		DBRow row = getRow();
 		DBDefinition defn = db.getDefinition();
 
-		String sql = defn.beginDeleteLine()
+		StringBuilder sql = new StringBuilder(defn.beginDeleteLine()
 				+ defn.formatTableName(row)
 				+ defn.beginWhereClause()
-				+ defn.getWhereClauseBeginningCondition();
+				+ defn.getWhereClauseBeginningCondition());
 		for (PropertyWrapper prop : row.getColumnPropertyWrappers()) {
 			QueryableDatatype<?> qdt = prop.getQueryableDatatype();
-			sql = sql
-					+ defn.beginWhereClauseLine()
+			sql .append(defn.beginWhereClauseLine()
 					+ prop.columnName()
 					+ defn.getEqualsComparator()
-					+ (qdt.hasChanged() ? qdt.getPreviousSQLValue(db) : qdt.toSQLString(db));
+					+ (qdt.hasChanged() ? qdt.getPreviousSQLValue(db) : qdt.toSQLString(db)));
 		}
-		sql += defn.endDeleteLine();
+		sql.append(defn.endDeleteLine());
 		ArrayList<String> strs = new ArrayList<>();
-		strs.add(sql);
+		strs.add(sql.toString());
 		return strs;
 	}
 

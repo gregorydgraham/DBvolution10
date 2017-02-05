@@ -37,16 +37,16 @@ import nz.co.gregs.dbvolution.internal.h2.*;
  */
 public class H2DBDefinition extends DBDefinition {
 
-	private final String dateFormatStr = "yyyy-M-d HH:mm:ss.SSS Z";
-	private final String h2DateFormatStr = "yyyy-M-d HH:mm:ss.SSS Z";
-	private final SimpleDateFormat strToDateFormat = new SimpleDateFormat(dateFormatStr);
+	private static final String DATE_FORMAT_STR = "yyyy-M-d HH:mm:ss.SSS Z";
+	private static final String H2_DATE_FORMAT_STR = "yyyy-M-d HH:mm:ss.SSS Z";
+	private final SimpleDateFormat strToDateFormat = new SimpleDateFormat(DATE_FORMAT_STR);
 
 	@Override
 	public String getDateFormattedForQuery(Date date) {
 		if (date == null) {
 			return getNull();
 		}
-		return "PARSEDATETIME('" + strToDateFormat.format(date) + "','" + h2DateFormatStr + "')";
+		return "PARSEDATETIME('" + strToDateFormat.format(date) + "','" + H2_DATE_FORMAT_STR + "')";
 	}
 
 	@Override

@@ -63,7 +63,7 @@ public class DBUpdateLargeObjects extends DBUpdate {
 	@Override
 	protected DBActionList execute(DBDatabase db) throws SQLException {
 		DBRow row = getRow();
-		DBActionList actions = new DBActionList();
+		DBActionList actions;
 		DBDefinition defn = db.getDefinition();
 		DBStatement statement = db.getDBStatement();
 		try {
@@ -247,7 +247,6 @@ public class DBUpdateLargeObjects extends DBUpdate {
 
 	@Override
 	public List<String> getSQLStatements(DBDatabase db) {
-		DBRow row = getRow();
 		List<String> strs = new ArrayList<>();
 		strs.add(db.getDefinition().startMultilineComment() + " SAVE BINARY DATA" + db.getDefinition().endMultilineComment());
 		return strs;

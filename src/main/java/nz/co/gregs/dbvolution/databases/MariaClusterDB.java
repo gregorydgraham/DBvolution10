@@ -33,6 +33,7 @@ import nz.co.gregs.dbvolution.databases.definitions.MariaDBDefinition;
 public class MariaClusterDB extends DBDatabase {
 
 	private final static String MARIADBDRIVERNAME = "com.mariadb.jdbc.Driver";
+	public static final long serialVersionUID = 1l;
 
 	/**
 	 * Creates a {@link DBDatabase } instance for the data source.
@@ -93,13 +94,16 @@ public class MariaClusterDB extends DBDatabase {
 	 * @param password password
 	 */
 	public MariaClusterDB(List<String> servers, List<Long> ports, String databaseName, String username, String password) {
-		String hosts = "";
+		StringBuilder hosts = new StringBuilder();
 		String sep = "";
 		if (servers.size() == ports.size()) {
 			for (int i = 0; i < servers.size(); i++) {
 				String server = servers.get(i);
 				Long port = ports.get(i);
-				hosts += sep + server + ":" + port;
+				hosts.append(sep)
+						.append(server)
+						.append(":")
+						.append(port);
 				sep = ",";
 			}
 		}

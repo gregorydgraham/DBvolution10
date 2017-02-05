@@ -16,6 +16,7 @@
 package nz.co.gregs.dbvolution;
 
 import java.io.PrintStream;
+import java.io.Serializable;
 import java.sql.*;
 import java.util.*;
 import java.util.logging.Level;
@@ -55,8 +56,9 @@ import org.apache.commons.logging.LogFactory;
  *
  * @author Gregory Graham
  */
-public abstract class DBDatabase implements Cloneable {
+public abstract class DBDatabase implements Serializable, Cloneable {
 
+	public static final long serialVersionUID = 1l;
 	private static final Log LOG = LogFactory.getLog(DBDatabase.class);
 
 	private String driverName = "";

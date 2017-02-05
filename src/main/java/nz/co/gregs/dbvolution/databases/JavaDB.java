@@ -15,7 +15,6 @@
  */
 package nz.co.gregs.dbvolution.databases;
 
-import java.sql.SQLException;
 import javax.sql.DataSource;
 import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.databases.definitions.JavaDBDefinition;
@@ -31,7 +30,8 @@ import nz.co.gregs.dbvolution.databases.definitions.JavaDBDefinition;
  */
 public class JavaDB extends DBDatabase {
 
-	private static final String driverName = "org.apache.derby.jdbc.ClientDriver";
+	private static final String DRIVER_NAME = "org.apache.derby.jdbc.ClientDriver";
+	public static final long serialVersionUID = 1l;
 
 	/**
 	 * Default Constructor.
@@ -58,7 +58,7 @@ public class JavaDB extends DBDatabase {
 	 * @param password password
 	 */
 	public JavaDB(String jdbcURL, String username, String password) {
-		super(new JavaDBDefinition(), driverName, jdbcURL, username, password);
+		super(new JavaDBDefinition(), DRIVER_NAME, jdbcURL, username, password);
 	}
 
 	/**
@@ -72,7 +72,7 @@ public class JavaDB extends DBDatabase {
 	 * @param username username
 	 */
 	public JavaDB(String host, int port, String database, String username, String password) {
-		super(new JavaDBDefinition(), driverName, "jdbc:derby://" + host + ":" + port + "/" + database + ";create=true", username, password);
+		super(new JavaDBDefinition(), DRIVER_NAME, "jdbc:derby://" + host + ":" + port + "/" + database + ";create=true", username, password);
 	}
 
 	@Override

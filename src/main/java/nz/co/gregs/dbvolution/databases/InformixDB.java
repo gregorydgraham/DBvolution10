@@ -29,6 +29,7 @@ import nz.co.gregs.dbvolution.databases.definitions.InformixDBDefinition;
 public class InformixDB extends DBDatabase {
 
 	private final static String INFORMIXDRIVERNAME = "com.informix.jdbc.IfxDriver";
+	public static final long serialVersionUID = 1l;
 
 	/**
 	 * Create a database object for a Informix 7+ database using the supplied definition and datasource.

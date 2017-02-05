@@ -26,6 +26,7 @@ import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
  * @author Gregory Graham
  */
 public class PostgresDBOverSSL extends PostgresDB {
+	public static final long serialVersionUID = 1l;
 
 /**
 	 *

@@ -414,7 +414,14 @@ public class DBByteArray extends DBLargeObject<byte[]> {
 	public void writeToFileSystem(File originalFile) throws FileNotFoundException, IOException {
 		if (getLiteralValue() != null && originalFile != null) {
 			if (!originalFile.exists()) {
-				originalFile.createNewFile();
+				boolean createNewFile = originalFile.createNewFile();
+				if (!createNewFile){
+					originalFile.delete(); 
+					createNewFile = originalFile.createNewFile();
+					if (!createNewFile){
+						throw new IOException("Unable to create file: "+originalFile.getPath()+" could not be created, check the permissions of the file, directory, drive, and current user.");
+					}
+				}
 			}
 			if (originalFile.exists()) {
 				OutputStream output = null;

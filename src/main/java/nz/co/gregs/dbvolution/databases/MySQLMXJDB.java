@@ -25,6 +25,7 @@ import nz.co.gregs.dbvolution.DBDatabase;
  * @author Gregory Graham
  */
 public class MySQLMXJDB extends MySQLDB {
+	public static final long serialVersionUID = 1l;
 
 	/**
 	 * Creates a {@link DBDatabase } instance for the data source.

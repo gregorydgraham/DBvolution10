@@ -38,6 +38,7 @@ import nz.co.gregs.dbvolution.internal.postgres.StringFunctions;
  * @author Gregory Graham
  */
 public class PostgresDB extends DBDatabase implements SupportsPolygonDatatype {
+	public static final long serialVersionUID = 1l;
 
 	private static final String POSTGRES_DRIVER_NAME = "org.postgresql.Driver";
 

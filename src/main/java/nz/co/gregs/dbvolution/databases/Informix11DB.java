@@ -28,6 +28,7 @@ import nz.co.gregs.dbvolution.databases.definitions.Informix11DBDefinition;
 public class Informix11DB extends InformixDB {
 
 	private final static String INFORMIXDRIVERNAME = "com.informix.jdbc.IfxDriver";
+	public static final long serialVersionUID = 1l;
 
 	/**
 	 * Creates a DBDatabase configured for Informix with the given JDBC URL,

@@ -80,9 +80,9 @@ public class DBDeleteByExample extends DBDelete {
 	public List<String> getSQLStatements(DBDatabase db) {
 		DBRow row = getRow();
 		DBDefinition defn = db.getDefinition();
-		String whereClause = "";
+		StringBuilder whereClause = new StringBuilder();
 		for (String clause : row.getWhereClausesWithoutAliases(db)) {
-			whereClause += defn.beginAndLine() + clause;
+			whereClause.append(defn.beginAndLine()).append(clause);
 		}
 
 		ArrayList<String> strs = new ArrayList<String>();

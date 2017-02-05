@@ -1,3 +1,4 @@
+
 /*
  * Copyright 2013 Gregory Graham.
  *
@@ -95,11 +96,6 @@ public class DBStatement implements Statement {
 
 	private ResultSet addFeatureAndAttemptQueryAgain(Exception exp, String string) throws Exception {
 		ResultSet executeQuery;
-		final String ln = System.getProperty("line.separator");
-//		System.out.println("Adding Feature for: " + exp.getMessage() + ln + exp.toString());
-//		for (StackTraceElement el : exp.getStackTrace()) {
-//			System.out.println(""+el);
-//		}
 		try {
 			database.addFeatureToFixException(exp);
 		} catch (Exception ex) {
@@ -413,8 +409,6 @@ public class DBStatement implements Statement {
 
 	private boolean addFeatureAndAttemptExecuteAgain(Exception exp, String string) throws SQLException {
 		boolean executeQuery;
-		final String ln = System.getProperty("line.separator");
-//		System.out.println("Adding Feature for: " + exp.getMessage() + ln + exp.toString());
 		try {
 			database.addFeatureToFixException(exp);
 		} catch (Exception ex) {

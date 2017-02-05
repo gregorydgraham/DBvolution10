@@ -92,9 +92,6 @@ public class DBUpdateToPreviousValues extends DBUpdateSimpleTypes {
 				PropertyWrapper wrapper = row.getPropertyWrapperOf(pk);
 				String pkValue = pk.toSQLString(db);
 				sqlString += separator + defn.formatColumnName(wrapper.columnName()) + defn.getEqualsComparator() + pkValue;
-				//				+ defn.formatColumnName(row.getPrimaryKeyColumnNames())
-				//				+ defn.getEqualsComparator()
-				//				+ row.getPrimaryKeys().toSQLString(db)
 				separator = defn.beginAndLine();
 			}
 		} else {
@@ -102,8 +99,6 @@ public class DBUpdateToPreviousValues extends DBUpdateSimpleTypes {
 				QueryableDatatype<?> qdt = prop.getQueryableDatatype();
 				if (qdt.isNull()) {
 					sqlString += separator + BooleanExpression.isNull(row.column(qdt)).toSQLString(db);
-//				DBIsNullOperator isNullOp = new DBIsNullOperator();
-//				sql += isNullOp.generateWhereLine(db, prop.columnName());
 				} else {
 					sqlString += separator
 							+ prop.columnName()
