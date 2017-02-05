@@ -1709,7 +1709,7 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 	 * @param endIndex0Based endIndex0Based
 	 * @return a StringExpression
 	 */
-	public StringExpression substring(Number startingIndex0Based, NumberExpression endIndex0Based) {
+	public StringExpression substring(Number startingIndex0Based, NumberResult endIndex0Based) {
 		return new Substring(this, new NumberExpression(startingIndex0Based), endIndex0Based);
 	}
 

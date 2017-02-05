@@ -16,13 +16,16 @@
 package nz.co.gregs.dbvolution.expressions;
 
 import java.sql.SQLException;
+import java.text.ParseException;
 import java.util.Date;
 import java.util.List;
 import nz.co.gregs.dbvolution.DBQuery;
+import nz.co.gregs.dbvolution.DBQueryRow;
 import nz.co.gregs.dbvolution.annotations.DBColumn;
 import nz.co.gregs.dbvolution.example.Marque;
 import nz.co.gregs.dbvolution.columns.StringColumn;
 import nz.co.gregs.dbvolution.datatypes.DBString;
+import nz.co.gregs.dbvolution.example.CarCompany;
 import nz.co.gregs.dbvolution.generic.AbstractTest;
 import static org.hamcrest.Matchers.*;
 import org.junit.Assert;
@@ -43,6 +46,48 @@ public class StringExpressionTest extends AbstractTest {
 		database.print(got);
 		System.out.println(query.getSQLForQuery());
 		Assert.assertThat(got.size(), is(0));
+	}
+
+	@Test
+	public void testIsNotNullAndEmptyString() throws SQLException, ParseException {
+		CarCompany carCo = new CarCompany();
+		DBQuery dbQuery = database.getDBQuery(carCo);
+
+		dbQuery.addCondition(
+				carCo.column(carCo.name).isNotNullAndNotEmpty()
+		);
+
+		List<DBQueryRow> allRows = dbQuery.getAllRows();
+		database.print(allRows);
+		Assert.assertThat(allRows.size(), is(4));
+		
+		CarCompany newCarCo = new CarCompany(null, 18);
+		database.insert(newCarCo);
+
+		allRows = dbQuery.getAllRows();
+		database.print(allRows);
+		Assert.assertThat(allRows.size(), is(4));
+	}
+
+	@Test
+	public void testIsNullOrEmptyString() throws SQLException, ParseException {
+		CarCompany carCo = new CarCompany();
+		DBQuery dbQuery = database.getDBQuery(carCo);
+
+		dbQuery.addCondition(
+				carCo.column(carCo.name).isNullOrEmpty()
+		);
+
+		List<DBQueryRow> allRows = dbQuery.getAllRows();
+		database.print(allRows);
+		Assert.assertThat(allRows.size(), is(0));
+		
+		CarCompany newCarCo = new CarCompany(null, 18);
+		database.insert(newCarCo);
+
+		allRows = dbQuery.getAllRows();
+		database.print(allRows);
+		Assert.assertThat(allRows.size(), is(1));
 	}
 
 	@Test
@@ -240,12 +285,12 @@ public class StringExpressionTest extends AbstractTest {
 		Assert.assertThat(got.get(0).name.stringValue(), is("HUMMER"));
 
 		dbQuery = database.getDBQuery(marq);
-		dbQuery.addCondition(marq.column(marq.name).substring(3, 6).is(first3LettersOfHUMMER));
+		dbQuery.addCondition(marq.column(marq.name).substring(NumberExpression.value(3), 6).is(first3LettersOfHUMMER));
 		got = dbQuery.getAllInstancesOf(marq);
 		Assert.assertThat(got.size(), is(0));
 
 		dbQuery = database.getDBQuery(marq);
-		dbQuery.addCondition(marq.column(marq.name).substring(3, 6).is(last3LettersOfHUMMER));
+		dbQuery.addCondition(marq.column(marq.name).substring(3, NumberExpression.value(6)).is(last3LettersOfHUMMER));
 		got = dbQuery.getAllInstancesOf(marq);
 		database.print(got);
 		Assert.assertThat(got.size(), is(1));
