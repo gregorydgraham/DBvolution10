@@ -24,8 +24,8 @@ import nz.co.gregs.dbvolution.DBQueryRow;
 import nz.co.gregs.dbvolution.annotations.DBColumn;
 import nz.co.gregs.dbvolution.example.Marque;
 import nz.co.gregs.dbvolution.columns.StringColumn;
-import nz.co.gregs.dbvolution.datatypes.DBNumber;
 import nz.co.gregs.dbvolution.datatypes.DBString;
+import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 import nz.co.gregs.dbvolution.example.CarCompany;
 import nz.co.gregs.dbvolution.generic.AbstractTest;
 import static org.hamcrest.Matchers.*;
@@ -47,6 +47,13 @@ public class StringExpressionTest extends AbstractTest {
 		database.print(got);
 		System.out.println(query.getSQLForQuery());
 		Assert.assertThat(got.size(), is(0));
+	}
+
+	@Test
+	public void testQDTOfExpression() throws SQLException {
+		final StringExpression currentUser = StringExpression.currentUser();
+		DBString qdt = currentUser.getQueryableDatatypeForExpressionValue();
+		Assert.assertThat(qdt, isA(DBString.class));
 	}
 
 	@Test
