@@ -31,6 +31,10 @@ import nz.co.gregs.dbvolution.datatypes.DBBoolean;
  */
 public class BooleanArrayExpression implements BooleanArrayResult, EqualComparable<BooleanArrayResult>, ExpressionColumn<DBBooleanArray> {
 
+	public static BooleanArrayExpression value(Boolean[] i) {
+		return new BooleanArrayExpression(i);
+	}
+
 	private final BooleanArrayResult innerBooleanArrayResult;
 
 	/**
@@ -152,6 +156,20 @@ public class BooleanArrayExpression implements BooleanArrayResult, EqualComparab
 				return " = ";
 			}
 		});
+	}
+
+
+	/**
+	 * Create a BooleanExpression that will compare the BooleanArrayResult
+	 * provided to this BooleanArrayExpression using the equivalent of the NOT EQUALS
+	 * operator.
+	 *
+	 * @param i the value to compare this expression to
+	 * @return a BooleanExpresson of the Bit comparison of the number and this
+	 * expression.
+	 */
+	public BooleanExpression isNot(Boolean[] i) {
+		return this.isNot(BooleanArrayExpression.value(i));
 	}
 
 
