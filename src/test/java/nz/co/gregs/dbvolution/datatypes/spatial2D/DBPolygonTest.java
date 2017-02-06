@@ -788,6 +788,26 @@ public class DBPolygonTest extends AbstractTest {
 	}
 
 	@Test
+	public void testStringResult() throws SQLException {
+		if (database instanceof SupportsPolygonDatatype) {
+			GeometryFactory fac = addStandardDataSet();
+
+			Polygon polygon = fac.createPolygon(new Coordinate[]{new Coordinate(-1, -1), new Coordinate(2, -1), new Coordinate(2, 2), new Coordinate(-1, 2), new Coordinate(-1, -1)});
+			BasicSpatialTable spatial = new BasicSpatialTable();
+			spatial.myfirstgeom.setValue(polygon);
+			database.insert(spatial);
+
+			database.print(database.getDBTable(new BasicSpatialTable()).setBlankQueryAllowed(true).getAllRows());
+
+			DBQuery query = database.getDBQuery(new BasicSpatialTable()).addCondition(spatial.column(spatial.myfirstgeom).stringResult().isLike("%13%"));
+			List<BasicSpatialTable> allRows = query.getAllInstancesOf(spatial);
+			database.print(allRows);
+			Assert.assertThat(allRows.size(), is(1));
+			Assert.assertThat(allRows.get(0).pkid.getValue(), is(2l));
+		}
+	}
+
+	@Test
 	public void testExteriorRing() throws SQLException {
 		if (database instanceof SupportsPolygonDatatype) {
 			GeometryFactory fac = addStandardDataSet();
