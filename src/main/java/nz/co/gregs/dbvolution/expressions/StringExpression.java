@@ -200,8 +200,30 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 	 * way to get that is the {@code DBRow.column()} method.
 	 *
 	 * <p>
-	 * However if you wish your expression to start with a literal value it is a
-	 * little trickier.
+	 * This method provides the easy route to a *Expression from a literal value.
+	 * Just call, for instance, {@code StringExpression.value("STARTING STRING")}
+	 * to get a StringExpression and start the expression chain.
+	 *
+	 * <ul>
+	 * <li>Only object classes that are appropriate need to be handle by the
+	 * DBExpression subclass.<li>
+	 * <li>The implementation should be {@code static}</li>
+	 * </ul>
+	 *
+	 * @param string	string
+	 * @return a DBExpression instance that is appropriate to the subclass and the
+	 * value supplied.
+	 */
+	public static StringExpression value(String string) {
+		return new StringExpression(string);
+	}
+
+	/**
+	 * Create An Appropriate Expression Object For This Object
+	 *
+	 * <p>
+	 * The expression framework requires a *Expression to work with. The easiest
+	 * way to get that is the {@code DBRow.column()} method.
 	 *
 	 * <p>
 	 * This method provides the easy route to a *Expression from a literal value.
@@ -218,7 +240,7 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 	 * @return a DBExpression instance that is appropriate to the subclass and the
 	 * value supplied.
 	 */
-	public static StringExpression value(String string) {
+	public static StringExpression value(StringResult string) {
 		return new StringExpression(string);
 	}
 
@@ -450,29 +472,7 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 	 * @return a BooleanExpression of the SQL comparison.
 	 */
 	public BooleanExpression isLikeIgnoreCase(StringResult sqlPattern) {
-		return this.isLikeIgnoreCase(new StringExpression(sqlPattern));
-	}
-
-	/**
-	 * Creates a query comparison using the LIKE operator and the LOWERCASE
-	 * function.
-	 *
-	 * <p>
-	 * Use this comparison to generate a BooleanExpression that compares the
-	 * current StringExpression to the supplied SQL pattern changing both
-	 * expressions to lowercase first.
-	 *
-	 * <p>
-	 * DBvolution does not process the SQL pattern so please ensure that it
-	 * conforms to the database's implementation of LIKE. Most implementations
-	 * only provide access to the "_" and "%" wildcards but there may be
-	 * exceptions.
-	 *
-	 * @param sqlPattern	sqlPattern
-	 * @return a BooleanExpression of the SQL comparison.
-	 */
-	public BooleanExpression isLikeIgnoreCase(StringExpression sqlPattern) {
-		return this.lowercase().isLike(sqlPattern.lowercase());
+		return this.lowercase().isLike(value(sqlPattern).lowercase());
 	}
 
 	/**
@@ -520,7 +520,7 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 	 * @return a BooleanExpression of the SQL comparison.
 	 */
 	public BooleanExpression isIgnoreCase(Number number) {
-		return isIgnoreCase(NumberExpression.value(number).stringResult().lowercase());
+		return isIgnoreCase(NumberExpression.value(number));
 	}
 
 	/**
@@ -598,7 +598,7 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 	 * @return a BooleanExpression of the SQL comparison.
 	 */
 	public BooleanExpression is(Number number) {
-		return is(NumberExpression.value(number).stringResult());
+		return is(NumberExpression.value(number));
 	}
 
 	/**
@@ -666,7 +666,7 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 	 * @return a BooleanExpression of the SQL comparison.
 	 */
 	public BooleanExpression isNot(String equivalentString) {
-		return this.is(value(equivalentString)).not();
+		return this.isNot(value(equivalentString));
 	}
 
 	/**
@@ -680,7 +680,7 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 	 * @return a BooleanExpression of the SQL comparison.
 	 */
 	public BooleanExpression isNot(NumberResult numberResult) {
-		return this.is(numberResult.stringResult()).not();
+		return this.isNot(numberResult.stringResult());
 	}
 
 	/**
@@ -694,7 +694,7 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 	 * @return a BooleanExpression of the SQL comparison.
 	 */
 	public BooleanExpression isNot(Number number) {
-		return is(NumberExpression.value(number).stringResult()).not();
+		return isNot(NumberExpression.value(number));
 	}
 
 	/**
@@ -1651,7 +1651,7 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 	 * @return a StringExpression
 	 */
 	public StringExpression substring(Number startingIndex0Based) {
-		return new Substring(this, startingIndex0Based);
+		return substring(NumberExpression.value(startingIndex0Based));
 	}
 
 	/**

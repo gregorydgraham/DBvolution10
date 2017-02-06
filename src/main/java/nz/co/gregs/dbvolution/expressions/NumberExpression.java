@@ -185,7 +185,12 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 	}
 
 	/**
-	 * Converts the number expression into a string/character expression.
+	 * Converts the number expression into a string/character expression within
+	 * the query.
+	 *
+	 * <p>
+	 * Not that this does not produce a String like {@link Object#toString() },
+	 * but a {@link StringExpression} for use on the database side.</p>
 	 *
 	 * @return a StringExpression of the number expression.
 	 */
@@ -833,7 +838,7 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 	 * @return a BooleanExpression
 	 */
 	public BooleanExpression isGreaterThan(Number value, BooleanExpression fallBackWhenEquals) {
-		return this.isGreaterThan(NumberExpression.value(value),fallBackWhenEquals);
+		return this.isGreaterThan(NumberExpression.value(value), fallBackWhenEquals);
 	}
 
 	/**
@@ -1104,19 +1109,19 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 		if (schemaName != null) {
 			return new NumberExpression(
 					new StringStringFunctionNumberResult(StringExpression.value(schemaName), StringExpression.value(sequenceName)) {
-						@Override
-						String getFunctionName(DBDatabase db) {
-							return db.getDefinition().getNextSequenceValueFunctionName();
-						}
-					});
+				@Override
+				String getFunctionName(DBDatabase db) {
+					return db.getDefinition().getNextSequenceValueFunctionName();
+				}
+			});
 		} else {
 			return new NumberExpression(
 					new DBUnaryStringFunctionNumberResult(StringExpression.value(sequenceName)) {
-						@Override
-						String getFunctionName(DBDatabase db) {
-							return db.getDefinition().getNextSequenceValueFunctionName();
-						}
-					});
+				@Override
+				String getFunctionName(DBDatabase db) {
+					return db.getDefinition().getNextSequenceValueFunctionName();
+				}
+			});
 		}
 	}
 
@@ -1144,16 +1149,16 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 		return new NumberExpression(
 				new NumberNumberFunctionNumberResult(this, alternative) {
 
-					@Override
-					public String toSQLString(DBDatabase db) {
-						return db.getDefinition().doNumberIfNullTransform(this.getFirst().toSQLString(db), getSecond().toSQLString(db));
-					}
+			@Override
+			public String toSQLString(DBDatabase db) {
+				return db.getDefinition().doNumberIfNullTransform(this.getFirst().toSQLString(db), getSecond().toSQLString(db));
+			}
 
-					@Override
-					String getFunctionName(DBDatabase db) {
-						return db.getDefinition().getIfNullFunctionName();
-					}
-				});
+			@Override
+			String getFunctionName(DBDatabase db) {
+				return db.getDefinition().getIfNullFunctionName();
+			}
+		});
 	}
 
 	/**
@@ -1908,7 +1913,7 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 	 * @return a NumberExpression
 	 */
 	public NumberExpression dividedBy(NumberResult number) {
-		return new NumberExpression(new DBBinaryArithmetic(this, 
+		return new NumberExpression(new DBBinaryArithmetic(this,
 				new NumberExpression(number)) {
 			@Override
 			protected String getEquationOperator(DBDatabase db) {
@@ -1917,9 +1922,9 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 
 			@Override
 			public String toSQLString(DBDatabase db) {
-				return  "(0.0+"+first.toSQLString(db)+")" + this.getEquationOperator(db) + second.toSQLString(db);
+				return "(0.0+" + first.toSQLString(db) + ")" + this.getEquationOperator(db) + second.toSQLString(db);
 			}
-			
+
 		}
 		);
 	}
@@ -2009,7 +2014,8 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 	 * Value 0 returns the first string, value 1 returns the second, etc. If the
 	 * index is too large the last string is returned.
 	 *
-	 * @param stringsToChooseFrom a list of values that the should replace the number.
+	 * @param stringsToChooseFrom a list of values that the should replace the
+	 * number.
 	 * @return SQL that selects the string from the list based on this expression.
 	 */
 	public StringExpression choose(String... stringsToChooseFrom) {
@@ -2032,7 +2038,8 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 	 * Value 0 returns the first string, value 1 returns the second, etc. If the
 	 * index is too large the last string is returned.
 	 *
-	 * @param stringsToChooseFrom a list of values that the should replace the number.
+	 * @param stringsToChooseFrom a list of values that the should replace the
+	 * number.
 	 * @return SQL that selects the string from the list based on this expression.
 	 */
 	public StringExpression choose(StringResult... stringsToChooseFrom) {
@@ -2104,13 +2111,11 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 			public String toSQLString(DBDatabase db) {
 				if (db.getDefinition().supportsStandardDeviationFunction()) {
 					return super.toSQLString(db);
+				} else if (this.only instanceof NumberExpression) {
+					NumberExpression numb = this.only;
+					return new NumberExpression(numb).max().minus(new NumberExpression(numb).min()).bracket().dividedBy(6).toSQLString(db);
 				} else {
-					if (this.only instanceof NumberExpression) {
-						NumberExpression numb = this.only;
-						return new NumberExpression(numb).max().minus(new NumberExpression(numb).min()).bracket().dividedBy(6).toSQLString(db);
-					} else {
-						return null;
-					}
+					return null;
 				}
 			}
 
@@ -2145,7 +2150,7 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 	 * Returns the least/smallest value from the column.
 	 *
 	 * <p>
-	 * Similar to {@link #leastOf(nz.co.gregs.dbvolution.results.NumberResult...) 
+	 * Similar to {@link #leastOf(nz.co.gregs.dbvolution.results.NumberResult...)
 	 * } but this aggregates the column or expression provided, rather than
 	 * scanning a list.
 	 *
@@ -2185,7 +2190,7 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 			String getFunctionName(DBDatabase db) {
 				return db.getDefinition().getCountFunctionName();
 			}
-			
+
 			@Override
 			public NumberResult getInnerNumberResult() {
 				return this;
@@ -2206,7 +2211,8 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 	/**
 	 * Aggregrator that counts this row if the booleanResult is true.
 	 *
-	 * @param booleanResult an expression that will be TRUE when the row needs to be counted.
+	 * @param booleanResult an expression that will be TRUE when the row needs to
+	 * be counted.
 	 * @return The number of rows where the test is true.
 	 */
 	public static NumberExpression countIf(BooleanResult booleanResult) {
@@ -2815,7 +2821,6 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 //			return false;
 //		}
 //	}
-
 //	private static abstract class DBTrinaryFunction implements NumberResult {
 //
 //		private DBExpression first;
@@ -2881,7 +2886,6 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 //			return first.isAggregator() || second.isAggregator() || third.isAggregator();
 //		}
 //	}
-
 	private static abstract class DBBinaryBooleanArithmetic extends BooleanExpression {
 
 		private NumberExpression first;
@@ -3176,7 +3180,7 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 		@Override
 		public boolean isAggregator() {
 			boolean result = false;
-			if (column != null){
+			if (column != null) {
 				result = column.isAggregator();
 			}
 			for (NumberResult numer : values) {
@@ -3233,7 +3237,6 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 		}
 
 //		abstract String getFunctionName(DBDatabase db);
-
 //		protected String beforeValue(DBDatabase db) {
 //			return "( ";
 //		}
@@ -3241,7 +3244,6 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 //		protected String afterValue(DBDatabase db) {
 //			return ") ";
 //		}
-
 		@Override
 		abstract public String toSQLString(DBDatabase db);
 //		{
