@@ -460,11 +460,6 @@ public class OracleSpatialDBDefinition extends OracleDBDefinition {
 	}
 
 	@Override
-	public String doPolygon2DHasMagnitudeTransform(String polygon2DSQL) {
-		return super.doPolygon2DHasMagnitudeTransform(polygon2DSQL); //To change body of generated methods, choose Tools | Templates.
-	}
-
-	@Override
 	public String doPolygon2DSpatialDimensionsTransform(String polygon2DSQL) {
 		return "(" + polygon2DSQL + ").GET_DIMS()";
 	}
