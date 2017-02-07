@@ -86,7 +86,6 @@ public class DBDateRepeatTest extends AbstractTest {
 		List<DBQueryRow> allRows = query.getAllRows();
 		database.print(allRows);
 		final Period oneYear = new Period().withYears(1);
-//		query.addCondition(marq.column(marq.creationDate).getDateRepeatFrom(oneYear).isGreaterThan(april2nd2011));
 		query.addCondition(marq.column(marq.creationDate).getDateRepeatFrom(april2nd2011).isGreaterThan(oneYear));
 		allRows = query.getAllRows();
 		database.print(allRows);
@@ -95,6 +94,72 @@ public class DBDateRepeatTest extends AbstractTest {
 		query = database.getDBQuery(marq);
 		query.addCondition(marq.column(marq.creationDate).minus(oneYear).isLessThan(april2nd2011));
 		query.addCondition(marq.column(marq.creationDate).getDateRepeatFrom(april2nd2011).isLessThan(oneYear));
+		allRows = query.getAllRows();
+		database.print(allRows);
+		Assert.assertThat(allRows.size(), is(3));
+	}
+
+	@Test
+	public void testGreaterThanOrEqual() throws SQLException {
+		MarqueWithDateRepeatExprCol marq;
+		marq = new MarqueWithDateRepeatExprCol();
+		DBQuery query = database.getDBQuery(marq).setBlankQueryAllowed(true);
+		List<DBQueryRow> allRows = query.getAllRows();
+		database.print(allRows);
+		final Period oneYear = new Period().withYears(1);
+		query.addCondition(marq.column(marq.creationDate).getDateRepeatFrom(april2nd2011).isGreaterThanOrEqual(oneYear));
+		allRows = query.getAllRows();
+		database.print(allRows);
+		Assert.assertThat(allRows.size(), is(18));
+
+		query = database.getDBQuery(marq);
+		query.addCondition(marq.column(marq.creationDate).getDateRepeatFrom(april2nd2011).isLessThanOrEqual(oneYear));
+		allRows = query.getAllRows();
+		database.print(allRows);
+		Assert.assertThat(allRows.size(), is(3));
+	}
+
+	@Test
+	public void testDateRepeatIs() throws SQLException {
+		MarqueWithDateRepeatExprCol marq;
+		marq = new MarqueWithDateRepeatExprCol();
+		DBQuery query = database.getDBQuery(marq).setBlankQueryAllowed(true);
+		List<DBQueryRow> allRows = query.getAllRows();
+		database.print(allRows);
+		final Period zero = new Period();
+		query.addCondition(marq.column(marq.creationDate).getDateRepeatFrom(april2nd2011).is(zero));
+		allRows = query.getAllRows();
+		database.print(allRows);
+		Assert.assertThat(allRows.size(), is(3));
+
+		query = database.getDBQuery(marq);
+		query.addCondition(marq.column(marq.creationDate).getDateRepeatFrom(april2nd2011).isNot(zero));
+		allRows = query.getAllRows();
+		database.print(allRows);
+		Assert.assertThat(allRows.size(), is(19));
+		
+		query = database.getDBQuery(marq);
+		query.addCondition(marq.column(marq.creationDate).getDateRepeatFrom(april2nd2011).isNull());
+		allRows = query.getAllRows();
+		database.print(allRows);
+		Assert.assertThat(allRows.size(), is(1));
+	}
+
+	@Test
+	public void testGreaterThanOrEqualWithFallback() throws SQLException {
+		MarqueWithDateRepeatExprCol marq;
+		marq = new MarqueWithDateRepeatExprCol();
+		DBQuery query = database.getDBQuery(marq).setBlankQueryAllowed(true);
+		List<DBQueryRow> allRows = query.getAllRows();
+		database.print(allRows);
+		final Period oneYear = new Period().withYears(1);
+		query.addCondition(marq.column(marq.creationDate).getDateRepeatFrom(april2nd2011).isGreaterThan(oneYear, marq.column(marq.name).isGreaterThan("T")));
+		allRows = query.getAllRows();
+		database.print(allRows);
+		Assert.assertThat(allRows.size(), is(18));
+
+		query = database.getDBQuery(marq);
+		query.addCondition(marq.column(marq.creationDate).getDateRepeatFrom(april2nd2011).isLessThan(oneYear, marq.column(marq.name).isGreaterThan("T")));
 		allRows = query.getAllRows();
 		database.print(allRows);
 		Assert.assertThat(allRows.size(), is(3));

@@ -379,6 +379,16 @@ public class DateRepeatExpression implements DateRepeatResult, RangeComparable<D
 	 * @param anotherInstance  a value that the expression should not match.
 	 * @return a BooleanExpression
 	 */
+	public BooleanExpression isNot(Period anotherInstance) {
+		return isNot(value(anotherInstance));
+	}
+
+	/**
+	 * Returns FALSE if this expression and the provided value are the same.
+	 *
+	 * @param anotherInstance  a value that the expression should not match.
+	 * @return a BooleanExpression
+	 */
 	@Override
 	public BooleanExpression isNot(DateRepeatResult anotherInstance) {
 		return is(anotherInstance).not();
