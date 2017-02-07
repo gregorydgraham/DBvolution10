@@ -568,6 +568,17 @@ public class DateExpressionTest extends AbstractTest {
 	}
 	
 	@Test
+	public void testIsNotNull() throws SQLException {
+		Marque marq = new Marque();
+		DBQuery query = database.getDBQuery(marq);
+		query.addCondition(
+				marq.column(marq.creationDate).firstOfMonth().isNotNull());
+		List<Marque> got = query.getAllInstancesOf(marq);
+		database.print(got);
+		Assert.assertThat(got.size(), is(21));
+	}
+	
+	@Test
 	public void testBetweenInclusiveFunction() throws SQLException {
 		final Date march1st2013 = (new GregorianCalendar(2013, 2, 1)).getTime();
 		final Date march2nd2013 = (new GregorianCalendar(2013, 2, 2)).getTime();
@@ -610,6 +621,18 @@ public class DateExpressionTest extends AbstractTest {
 		database.print(got);
 		Assert.assertThat(got.size(), is(1));
 		
+	}
+	
+	@Test
+	public void testisGreaterThan() throws SQLException {
+		final Date march1st2013 = (new GregorianCalendar(2013, 2, 1)).getTime();
+		Marque marq = new Marque();
+		DBQuery query = database.getDBQuery(marq);
+		query.addCondition(
+				marq.column(marq.creationDate).firstOfMonth().isGreaterThan(march1st2013));
+		List<Marque> got = query.getAllInstancesOf(marq);
+		database.print(got);
+		Assert.assertThat(got.size(), is(18));
 	}
 	
 	@Test
