@@ -39,6 +39,7 @@ import nz.co.gregs.dbvolution.databases.supports.SupportsPolygonDatatype;
  */
 public abstract class OracleAWSDB extends OracleDB implements SupportsPolygonDatatype {
 
+	public static final long serialVersionUID = 1l;
 	/**
 
 	 * Provides a convenient constructor for DBDatabases that have configuration
