@@ -18,6 +18,7 @@ package nz.co.gregs.dbvolution.datatypes;
 import java.sql.SQLException;
 import java.util.List;
 import nz.co.gregs.dbvolution.DBRow;
+import nz.co.gregs.dbvolution.DBTable;
 import nz.co.gregs.dbvolution.actions.DBActionList;
 import nz.co.gregs.dbvolution.annotations.DBAutoIncrement;
 import nz.co.gregs.dbvolution.annotations.DBColumn;
@@ -60,8 +61,10 @@ public class DBJavaObjectTest extends AbstractTest {
 		row.javaInteger.setValue(3);
 		row.javaString.setValue("Thisland");
 		DBActionList insert = database.insert(row);
+		
+		final DBTable<DBJavaObjectTable> tableQuery = database.getDBTable(new DBJavaObjectTable()).setBlankQueryAllowed(true);
 
-		List<DBJavaObjectTable> allRows = database.getDBTable(new DBJavaObjectTable()).setBlankQueryAllowed(true).getAllRows();
+		List<DBJavaObjectTable> allRows = tableQuery.getAllRows();
 		Assert.assertThat(allRows.size(), is(1));
 		final DBJavaObjectTable foundRow = allRows.get(0);
 		Assert.assertThat(foundRow.javaInteger.getSize(), is(81));

@@ -75,36 +75,36 @@ public class DBUpdateLargeObjects extends DBUpdate {
 				if (largeObject.isNull()) {
 					setToNullUsingStringValue(defn, row, col, largeObject, db, statement);
 				} else {
-					if (defn.prefersLargeObjectsSetAsCharacterStream()) {
-						setUsingCharacterStream(defn, row, col, largeObject, db, statement);
-					} else if (defn.prefersLargeObjectsSetAsBase64String()) {
-						setUsingBase64String(defn, row, col, largeObject, db, statement);
-					} else if (defn.prefersLargeObjectsSetAsBLOB()) {
-						setUsingBLOB(defn, row, col, largeObject, db, statement);
-					} else {
-						setUsingBinaryStream(defn, row, col, largeObject, db, statement);
-					}
-//					try {
+//					if (defn.prefersLargeObjectsSetAsCharacterStream(largeObject)) {
+//						setUsingCharacterStream(defn, row, col, largeObject, db, statement);
+//					} else if (defn.prefersLargeObjectsSetAsBase64String(largeObject)) {
+//						setUsingBase64String(defn, row, col, largeObject, db, statement);
+//					} else if (defn.prefersLargeObjectsSetAsBLOB(largeObject)) {
+//						setUsingBLOB(defn, row, col, largeObject, db, statement);
+//					} else {
 //						setUsingBinaryStream(defn, row, col, largeObject, db, statement);
-//					} catch (Throwable exp1) {
-//						try {
-//							Logger.getLogger(DBUpdateLargeObjects.class.getName()).log(Level.WARNING, "Database rejected Binary Stream method", exp1);
-//							setUsingBLOB(defn, row, col, largeObject, db, statement);
-//						} catch (Throwable exp2) {
-//							try {
-//								Logger.getLogger(DBUpdateLargeObjects.class.getName()).log(Level.WARNING, "Database rejected BLOB method", exp2);
-//								setUsingBase64String(defn, row, col, largeObject, db, statement);
-//							} catch (Throwable exp3) {
-//								try {
-//									Logger.getLogger(DBUpdateLargeObjects.class.getName()).log(Level.WARNING, "Database rejected Base64 method", exp3);
-//									setUsingCharacterStream(defn, row, col, largeObject, db, statement);
-//								} catch (Throwable exp4) {
-//									Logger.getLogger(DBUpdateLargeObjects.class.getName()).log(Level.SEVERE, "Database rejected all implemented methods", exp4);
-//									throw exp1;
-//								}
-//							}
-//						}
 //					}
+					try {
+						setUsingBinaryStream(defn, row, col, largeObject, db, statement);
+					} catch (Throwable exp1) {
+						try {
+							Logger.getLogger(DBUpdateLargeObjects.class.getName()).log(Level.WARNING, "Database rejected Binary Stream method", exp1);
+							setUsingBLOB(defn, row, col, largeObject, db, statement);
+						} catch (Throwable exp2) {
+							try {
+								Logger.getLogger(DBUpdateLargeObjects.class.getName()).log(Level.WARNING, "Database rejected BLOB method", exp2);
+								setUsingBase64String(defn, row, col, largeObject, db, statement);
+							} catch (Throwable exp3) {
+								try {
+									Logger.getLogger(DBUpdateLargeObjects.class.getName()).log(Level.WARNING, "Database rejected Base64 method", exp3);
+									setUsingCharacterStream(defn, row, col, largeObject, db, statement);
+								} catch (Throwable exp4) {
+									Logger.getLogger(DBUpdateLargeObjects.class.getName()).log(Level.SEVERE, "Database rejected all implemented methods", exp4);
+									throw exp1;
+								}
+							}
+						}
+					}
 				}
 				DBUpdateLargeObjects update = new DBUpdateLargeObjects(row);
 				actions.add(update);

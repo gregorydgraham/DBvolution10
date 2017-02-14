@@ -15,11 +15,11 @@
  */
 package nz.co.gregs.dbvolution.example;
 
-import nz.co.gregs.dbvolution.datatypes.DBByteArray;
 import nz.co.gregs.dbvolution.datatypes.DBInteger;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.datatypes.DBString;
 import nz.co.gregs.dbvolution.annotations.*;
+import nz.co.gregs.dbvolution.datatypes.DBBinaryObject;
 
 /**
  * A DBRow Java class that represents the "CompanyLogo" table.
@@ -91,7 +91,7 @@ public class CompanyLogo extends DBRow {
 	 *
 	 */
 	@DBColumn("image_file")
-	public DBByteArray imageBytes = new DBByteArray();
+	public DBBinaryObject imageBytes = new DBBinaryObject();
 
 	/**
 	 * A DBString field representing the "image_name" column in the database.

@@ -82,8 +82,12 @@ public class SQLiteDefinition extends DBDefinition {
 
 	@Override
 	protected String getDatabaseDataTypeOfQueryableDatatype(QueryableDatatype<?> qdt) {
-		if (qdt instanceof DBLargeObject) {
+		if (qdt instanceof DBByteObject) {
 			return " TEXT ";
+		} else if (qdt instanceof DBJavaObject) {
+			return " TEXT ";
+		} else if (qdt instanceof DBBinaryObject) {
+			return " BLOB ";
 		} else if (qdt instanceof DBBooleanArray) {
 			return " VARCHAR(64) ";
 		} else if (qdt instanceof DBDate) {
@@ -107,12 +111,12 @@ public class SQLiteDefinition extends DBDefinition {
 	}
 
 	@Override
-	public boolean prefersLargeObjectsReadAsBase64CharacterStream() {
+	public boolean prefersLargeObjectsReadAsBase64CharacterStream(DBLargeObject<?> lob) {
 		return true;
 	}
 
 	@Override
-	public boolean prefersLargeObjectsSetAsBase64String() {
+	public boolean prefersLargeObjectsSetAsBase64String(DBLargeObject<?> lob) {
 		return true;
 	}
 
