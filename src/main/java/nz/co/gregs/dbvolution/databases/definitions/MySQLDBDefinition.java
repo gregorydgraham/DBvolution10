@@ -22,6 +22,7 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+import java.util.TimeZone;
 import nz.co.gregs.dbvolution.databases.MySQLDB;
 import nz.co.gregs.dbvolution.datatypes.*;
 import nz.co.gregs.dbvolution.datatypes.spatial2D.DBLine2D;
@@ -211,6 +212,11 @@ public class MySQLDBDefinition extends DBDefinition {
 	@Override
 	public String doDayOfWeekTransform(String dateSQL) {
 		return " DAYOFWEEK(" + dateSQL + ")";
+	}	
+	
+	@Override
+	public String doDateAtTimeZoneTransform(String dateSQL, TimeZone timeZone) throws UnsupportedOperationException {
+		return "CONVERT_TZ("+dateSQL+" , 'SYSTEM', '"+timeZone.getDisplayName(false, TimeZone.SHORT)+"')";
 	}
 
 	@Override

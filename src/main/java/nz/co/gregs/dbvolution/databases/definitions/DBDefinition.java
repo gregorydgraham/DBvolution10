@@ -44,6 +44,7 @@ import nz.co.gregs.dbvolution.datatypes.spatial2D.DBPolygon2D;
 import nz.co.gregs.dbvolution.exceptions.AutoIncrementFieldClassAndDatatypeMismatch;
 import nz.co.gregs.dbvolution.exceptions.IncorrectGeometryReturnedForDatatype;
 import nz.co.gregs.dbvolution.expressions.DBExpression;
+import nz.co.gregs.dbvolution.expressions.DateExpression;
 import nz.co.gregs.dbvolution.expressions.DateRepeatExpression;
 import nz.co.gregs.dbvolution.expressions.NumberExpression;
 import nz.co.gregs.dbvolution.expressions.StringExpression;
@@ -75,7 +76,10 @@ public abstract class DBDefinition {
 	 * interpret as a date.
 	 */
 	public abstract String getDateFormattedForQuery(Date date);
-
+	public String getDatePartsFormattedForQuery(String years, String months, String days, String hours, String minutes, String seconds, String timeZoneHourOffset, String timeZoneMinuteOffSet){
+		return "";
+	}
+	
 	/**
 	 * Transforms the Date instance into UTC time zone date.
 	 *
@@ -4514,7 +4518,16 @@ public abstract class DBDefinition {
 	 * @return SQL representing the date value in the requested time zone.
 	 */
 	public String doDateAtTimeZoneTransform(String dateSQL, TimeZone timeZone) throws UnsupportedOperationException {
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+		return "("+dateSQL+" AT TIME ZONE '"+timeZone.getDisplayName(false, TimeZone.SHORT)+"')";
+//		Double zoneOffset = 0.0 + timeZone.getRawOffset();//(0.0 + this.getSecond().getRawOffset()) / 60.0;
+//		final double inHours = zoneOffset / 1000 / 60 / 60;
+//
+//		int hourPart = Double.valueOf(inHours).intValue();
+//		int minutePart = Double.valueOf((inHours-hourPart)*60).intValue();
+//		return "("+dateSQL+ " AT TIME ZONE INTERVAL '"
+//				+(hourPart>0?"+":"-")+(hourPart<10?"0"+hourPart:""+hourPart)+":"
+//				+(minutePart<10?"0"+minutePart:""+minutePart)+"')";
+//		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
 	/**
