@@ -73,6 +73,8 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 			return " VARCHAR(64) ";
 		} else if (qdt instanceof DBDate) {
 			return " DATETIMEOFFSET ";
+		} else if (qdt instanceof DBBinaryObject) {
+			return " IMAGE ";
 		} else if (qdt instanceof DBLargeObject) {
 			return " NTEXT ";
 		} else if (qdt instanceof DBString) {
@@ -253,13 +255,13 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 	}
 
 	@Override
-	public boolean prefersLargeObjectsSetAsBase64String() {
-		return true;
+	public boolean prefersLargeObjectsSetAsBase64String(DBLargeObject<?> lob) {
+		return !(lob instanceof DBBinaryObject);
 	}
 
 	@Override
-	public boolean prefersLargeObjectsReadAsBase64CharacterStream() {
-		return true;
+	public boolean prefersLargeObjectsReadAsBase64CharacterStream(DBLargeObject<?> lob) {
+		return !(lob instanceof DBBinaryObject);
 	}
 
 	@Override

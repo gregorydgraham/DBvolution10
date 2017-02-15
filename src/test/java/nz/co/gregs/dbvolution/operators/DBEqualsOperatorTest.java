@@ -15,20 +15,16 @@
  */
 package nz.co.gregs.dbvolution.operators;
 
-import nz.co.gregs.dbvolution.DBDatabase;
-import nz.co.gregs.dbvolution.datatypes.DBByteArray;
-import nz.co.gregs.dbvolution.datatypes.QueryableDatatypeSyncer;
+import nz.co.gregs.dbvolution.datatypes.DBBinaryObject;
 import nz.co.gregs.dbvolution.exceptions.ComparisonBetweenTwoDissimilarTypes;
 import nz.co.gregs.dbvolution.exceptions.IncomparableTypeUsedInComparison;
 import nz.co.gregs.dbvolution.expressions.BooleanExpression;
 import nz.co.gregs.dbvolution.expressions.DBExpression;
 import nz.co.gregs.dbvolution.expressions.DateExpression;
 import nz.co.gregs.dbvolution.expressions.LargeObjectExpression;
-import nz.co.gregs.dbvolution.results.LargeObjectResult;
 import nz.co.gregs.dbvolution.expressions.StringExpression;
 import nz.co.gregs.dbvolution.generic.AbstractTest;
 import org.junit.Test;
-import static org.junit.Assert.*;
 
 /**
  *
@@ -59,7 +55,7 @@ public class DBEqualsOperatorTest extends AbstractTest {
 	@Test(expected = IncomparableTypeUsedInComparison.class)
 	public void testGenerateWhereExpressionThrowsDissimilarComparisonExceptionNotEqualsComparable() {
 		System.out.println("generateWhereExpression");
-		DBExpression column = new LargeObjectExpression(new DBByteArray());
+		DBExpression column = new LargeObjectExpression(new DBBinaryObject());
 		DBEqualsOperator instance = new DBEqualsOperator(new StringExpression("a string"));
 		BooleanExpression result = instance.generateWhereExpression(database, column);
 	}

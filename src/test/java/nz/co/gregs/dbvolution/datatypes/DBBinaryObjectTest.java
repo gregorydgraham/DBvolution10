@@ -38,14 +38,14 @@ import static org.hamcrest.Matchers.*;
  *
  * @author Gregory Graham
  */
-public class DBByteArrayTest extends AbstractTest {
+public class DBBinaryObjectTest extends AbstractTest {
 
-	public DBByteArrayTest(Object testIterationName, Object db) {
+	public DBBinaryObjectTest(Object testIterationName, Object db) {
 		super(testIterationName, db);
 	}
 
 	@Test
-	public void createRowWithByteArray() throws FileNotFoundException, IOException, SQLException, UnexpectedNumberOfRowsException {
+	public void createRowWithBinaryObject() throws FileNotFoundException, IOException, SQLException, UnexpectedNumberOfRowsException {
 
 		CompanyLogo companyLogo = new CompanyLogo();
 		companyLogo.logoID.setValue(1);
@@ -74,16 +74,16 @@ public class DBByteArrayTest extends AbstractTest {
 		Assert.assertThat(foundLogo.logoID.intValue(), is(2));
 		Assert.assertThat(foundLogo.imageFilename.stringValue(), is("ford_logo.jpg"));
 		Assert.assertThat(foundLogo.imageBytes.isNull(), is(false));
-		File tempFile = new File("tempfileForCreateRowWithByteArray.jpg");
+		File tempFile = new File("tempfileForCreateRowWithBinaryObject.jpg");
 		foundLogo.imageBytes.writeToFileSystem(tempFile.getAbsoluteFile());
 		Assert.assertThat(tempFile.length(), is(fordLogoFile.length()));
 		tempFile.delete();
 	}
 
 	@Test
-	public void retrieveRowWithByteArray() throws FileNotFoundException, IOException, SQLException, UnexpectedNumberOfRowsException, ClassNotFoundException, InstantiationException {
+	public void retrieveRowWithBinaryObject() throws FileNotFoundException, IOException, SQLException, UnexpectedNumberOfRowsException, ClassNotFoundException, InstantiationException {
 
-		CompanyLogoForRetreivingByteArray blobTable = new CompanyLogoForRetreivingByteArray();
+		CompanyLogoForRetreivingBinaryObject blobTable = new CompanyLogoForRetreivingBinaryObject();
 
 		database.preventDroppingOfTables(false);
 		database.dropTableNoExceptions(blobTable);
@@ -99,15 +99,15 @@ public class DBByteArrayTest extends AbstractTest {
 
 		database.print(database.getDBTable(new CompanyLogo()).setBlankQueryAllowed(true).getAllRows());
 
-		File newFile = new File("retrieveRowWithByteArray.jpg");
+		File newFile = new File("retrieveRowWithBinaryObject.jpg");
 		try {
 			newFile.delete();
 		} catch (Exception exp) {
 			;// I just need it gone
 		}
 
-		blobTable = new CompanyLogoForRetreivingByteArray();
-		CompanyLogoForRetreivingByteArray firstRow = database.getDBTable(blobTable).getRowsByPrimaryKey(primaryKey).get(0);
+		blobTable = new CompanyLogoForRetreivingBinaryObject();
+		CompanyLogoForRetreivingBinaryObject firstRow = database.getDBTable(blobTable).getRowsByPrimaryKey(primaryKey).get(0);
 		database.print(database.getDBTable(blobTable).getRowsByPrimaryKey(primaryKey));
 		firstRow.imageBytes.writeToFileSystem(newFile);
 		Assert.assertThat(newFile.length(), is(image.length()));
@@ -118,7 +118,7 @@ public class DBByteArrayTest extends AbstractTest {
 	}
 
 	@Test
-	public void retrieveStringWithByteArray() throws FileNotFoundException, IOException, SQLException, UnexpectedNumberOfRowsException, ClassNotFoundException, InstantiationException {
+	public void retrieveStringWithBinaryObject() throws FileNotFoundException, IOException, SQLException, UnexpectedNumberOfRowsException, ClassNotFoundException, InstantiationException {
 
 		CompanyLogoForRetreivingString clobTable = new CompanyLogoForRetreivingString();
 
@@ -144,9 +144,9 @@ public class DBByteArrayTest extends AbstractTest {
 	}
 
 	@Test
-	public void retrieveStringWithByteArrayAndAutoIncrement() throws FileNotFoundException, IOException, SQLException, UnexpectedNumberOfRowsException, ClassNotFoundException, InstantiationException {
+	public void retrieveStringWithBinaryObjectAndAutoIncrement() throws FileNotFoundException, IOException, SQLException, UnexpectedNumberOfRowsException, ClassNotFoundException, InstantiationException {
 
-		ByteArrayWithAutoIncrement testRow = new ByteArrayWithAutoIncrement();
+		BinaryObjectWithAutoIncrement testRow = new BinaryObjectWithAutoIncrement();
 		database.preventDroppingOfTables(false);
 		database.dropTableNoExceptions(testRow);
 		database.createTable(testRow);
@@ -157,7 +157,7 @@ public class DBByteArrayTest extends AbstractTest {
 		testRow.imageBytes.setValue(sourceDataAsString);
 		database.insert(testRow);
 
-		ByteArrayWithAutoIncrement firstRow = database.getDBTable(new ByteArrayWithAutoIncrement()).setBlankQueryAllowed(true).getOnlyRow();
+		BinaryObjectWithAutoIncrement firstRow = database.getDBTable(new BinaryObjectWithAutoIncrement()).setBlankQueryAllowed(true).getOnlyRow();
 		System.out.println("row = " + firstRow.toString());
 		String stringValue = firstRow.imageBytes.stringValue();
 		Assert.assertThat(stringValue, is(sourceDataAsString));
@@ -167,7 +167,7 @@ public class DBByteArrayTest extends AbstractTest {
 	}
 
 	@DBTableName("bytearraywithautoincrement")
-	public static class ByteArrayWithAutoIncrement extends DBRow {
+	public static class BinaryObjectWithAutoIncrement extends DBRow {
 
 		public static final long serialVersionUID = 1L;
 
@@ -181,14 +181,14 @@ public class DBByteArrayTest extends AbstractTest {
 		public DBInteger carCompany = new DBInteger();
 
 		@DBColumn("image_file")
-		public DBByteArray imageBytes = new DBByteArray();
+		public DBBinaryObject imageBytes = new DBBinaryObject();
 
 		@DBColumn("image_name")
 		public DBString imageFilename = new DBString();
 	}
 
 	@DBTableName("bigblob")
-	public static class CompanyLogoForRetreivingByteArray extends DBRow {
+	public static class CompanyLogoForRetreivingBinaryObject extends DBRow {
 
 		private static final long serialVersionUID = 1L;
 
@@ -201,7 +201,7 @@ public class DBByteArrayTest extends AbstractTest {
 		public DBInteger carCompany = new DBInteger();
 
 		@DBColumn("image_file")
-		public DBByteArray imageBytes = new DBByteArray();
+		public DBBinaryObject imageBytes = new DBBinaryObject();
 
 		@DBColumn("image_name")
 		public DBString imageFilename = new DBString();
@@ -221,7 +221,7 @@ public class DBByteArrayTest extends AbstractTest {
 		public DBInteger carCompany = new DBInteger();
 
 		@DBColumn("image_file")
-		public DBByteArray imageBytes = new DBByteArray();
+		public DBBinaryObject imageBytes = new DBBinaryObject();
 
 		@DBColumn("image_name")
 		public DBString imageFilename = new DBString();
@@ -231,7 +231,7 @@ public class DBByteArrayTest extends AbstractTest {
 			+ "-------------------------------------------------------\n"
 			+ " T E S T S\n"
 			+ "-------------------------------------------------------\n"
-			+ "Running nz.co.gregs.dbvolution.datatypes.DBByteArrayTest\n"
+			+ "Running nz.co.gregs.dbvolution.datatypes.DBBinaryObjectTest\n"
 			+ "INFO  DBStatement - EXECUTING: DROP TABLE marque;\n"
 			+ "INFO  DBStatement - EXECUTING: CREATE TABLE marque(\n"
 			+ "numeric_code NUMERIC(15,5), \n"
@@ -510,7 +510,7 @@ public class DBByteArrayTest extends AbstractTest {
 			+ "INFO  DBStatement - EXECUTING: DROP TABLE CompanyLogo;\n"
 			+ "INFO  DBStatement - EXECUTING: DROP TABLE marque;\n"
 			+ "INFO  DBStatement - EXECUTING: DROP TABLE car_company;\n"
-			+ "Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 6.338 sec - in nz.co.gregs.dbvolution.datatypes.DBByteArrayTest\n"
+			+ "Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 6.338 sec - in nz.co.gregs.dbvolution.datatypes.DBBinaryObjectTest\n"
 			+ "\n"
 			+ "Results :\n"
 			+ "\n"

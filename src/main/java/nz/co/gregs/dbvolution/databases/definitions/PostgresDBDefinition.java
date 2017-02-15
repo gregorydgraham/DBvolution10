@@ -78,7 +78,7 @@ public class PostgresDBDefinition extends DBDefinition {
 
 	@Override
 	public String getDatabaseDataTypeOfQueryableDatatype(QueryableDatatype<?> qdt) {
-		if (qdt instanceof DBByteArray) {
+		if (qdt instanceof DBByteObject) {
 			return " BYTEA ";
 		} else if (qdt instanceof DBDate) {
 			return " TIMESTAMP WITH TIME ZONE ";

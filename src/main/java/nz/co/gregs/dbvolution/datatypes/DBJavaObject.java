@@ -156,7 +156,7 @@ public class DBJavaObject<O> extends DBLargeObject<O> {
 							bytesRead = input.read(resultSetBytes);
 						}
 					} catch (IOException ex) {
-						Logger.getLogger(DBByteArray.class.getName()).log(Level.SEVERE, null, ex);
+						Logger.getLogger(DBJavaObject.class.getName()).log(Level.SEVERE, null, ex);
 					}
 					byte[] bytes = new byte[totalBytesRead];
 					int bytesAdded = 0;
@@ -205,7 +205,7 @@ public class DBJavaObject<O> extends DBLargeObject<O> {
 							bytesRead = input.read(resultSetBytes);
 						}
 					} catch (IOException ex) {
-						Logger.getLogger(DBByteArray.class.getName()).log(Level.SEVERE, null, ex);
+						Logger.getLogger(DBJavaObject.class.getName()).log(Level.SEVERE, null, ex);
 					}
 					byte[] bytes = new byte[totalBytesRead];
 					int bytesAdded = 0;
@@ -268,9 +268,9 @@ public class DBJavaObject<O> extends DBLargeObject<O> {
 	}
 
 	/**
-	 * Returns the byte[] used internally to store the value of this DBByteArray.
+	 * Returns the byte[] used internally to store the value of this DBJavaObject.
 	 *
-	 * @return the byte[] value of this DBByteArray.
+	 * @return the byte[] value of this DBJavaObject.
 	 * @throws java.io.IOException java.io.IOException
 	 *
 	 */
@@ -304,7 +304,7 @@ public class DBJavaObject<O> extends DBLargeObject<O> {
 	protected O getFromResultSet(DBDatabase database, ResultSet resultSet, String fullColumnName) throws SQLException {
 		O obj = null;
 		DBDefinition defn = database.getDefinition();
-		if (defn.prefersLargeObjectsReadAsBase64CharacterStream()) {
+		if (defn.prefersLargeObjectsReadAsBase64CharacterStream(this)) {
 			try {
 				obj = getFromCharacterReader(resultSet, fullColumnName);
 			} catch (IOException ex) {

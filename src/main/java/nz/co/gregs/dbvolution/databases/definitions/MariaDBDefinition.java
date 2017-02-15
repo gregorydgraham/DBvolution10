@@ -20,7 +20,8 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import nz.co.gregs.dbvolution.databases.MariaClusterDB;
 import nz.co.gregs.dbvolution.databases.MariaDB;
-import nz.co.gregs.dbvolution.datatypes.DBByteArray;
+import nz.co.gregs.dbvolution.datatypes.DBBinaryObject;
+import nz.co.gregs.dbvolution.datatypes.DBByteObject;
 import nz.co.gregs.dbvolution.datatypes.DBDate;
 import nz.co.gregs.dbvolution.datatypes.DBLargeObject;
 import nz.co.gregs.dbvolution.datatypes.DBString;
@@ -64,8 +65,10 @@ public class MariaDBDefinition extends DBDefinition {
 			return " VARCHAR(1000) CHARACTER SET utf8 COLLATE utf8_bin ";
 		} else if (qdt instanceof DBDate) {
 			return " DATETIME ";
-		} else if (qdt instanceof DBByteArray) {
+		} else if (qdt instanceof DBBinaryObject) {
 			return " LONGBLOB ";
+		} else if (qdt instanceof DBByteObject) {
+			return " LONGTEXT ";
 		} else if (qdt instanceof DBLargeObject) {
 			return " LONGBLOB ";
 		} else {

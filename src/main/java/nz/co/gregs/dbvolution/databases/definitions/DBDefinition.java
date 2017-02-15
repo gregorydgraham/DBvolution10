@@ -35,6 +35,7 @@ import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.DBRecursiveQuery;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.datatypes.DBInteger;
+import nz.co.gregs.dbvolution.datatypes.DBLargeObject;
 import nz.co.gregs.dbvolution.datatypes.DBNumber;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 import nz.co.gregs.dbvolution.datatypes.spatial2D.DBLine2D;
@@ -1755,9 +1756,10 @@ public abstract class DBDefinition {
 	 * Indicates whether the database requires LargeObjects to be encoded as
 	 * Base64 CLOBS using the CharacterStream method to read the value.
 	 *
+	 * @param lob
 	 * @return the default implementation returns FALSE.
 	 */
-	public boolean prefersLargeObjectsReadAsBase64CharacterStream() {
+	public boolean prefersLargeObjectsReadAsBase64CharacterStream(DBLargeObject<?> lob) {
 		return false;
 	}
 
@@ -1819,9 +1821,10 @@ public abstract class DBDefinition {
 	 * {@link #prefersLargeObjectsSetAsBase64String()} return FALSE, DBvolution
 	 * will use the setBinaryStream method to set the value.
 	 *
+	 * @param lob
 	 * @return the default implementation returns FALSE.
 	 */
-	public boolean prefersLargeObjectsSetAsCharacterStream() {
+	public boolean prefersLargeObjectsSetAsCharacterStream(DBLargeObject<?> lob) {
 		return false;
 	}
 
@@ -1834,9 +1837,10 @@ public abstract class DBDefinition {
 	 * {@link #prefersLargeObjectsSetAsBase64String()} return FALSE, DBvolution
 	 * will use the setBinaryStream method to set the value.
 	 *
+	 * @param lob
 	 * @return the default implementation returns FALSE.
 	 */
-	public boolean prefersLargeObjectsSetAsBLOB() {
+	public boolean prefersLargeObjectsSetAsBLOB(DBLargeObject<?> lob) {
 		return false;
 	}
 
@@ -1849,9 +1853,10 @@ public abstract class DBDefinition {
 	 * {@link #prefersLargeObjectsSetAsBase64String()} return FALSE, DBvolution
 	 * will use the setBinaryStream method to set the value.
 	 *
+	 * @param lob
 	 * @return the default implementation returns FALSE.
 	 */
-	public boolean prefersLargeObjectsSetAsBase64String() {
+	public boolean prefersLargeObjectsSetAsBase64String(DBLargeObject<?> lob) {
 		return false;
 	}
 
