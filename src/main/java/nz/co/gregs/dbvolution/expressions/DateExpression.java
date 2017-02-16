@@ -1243,7 +1243,7 @@ public class DateExpression implements DateResult, RangeComparable<DateResult>, 
 	 * @return a BooleanExpression
 	 */
 	public BooleanExpression isLessThan(Date value, BooleanExpression fallBackWhenEquals) {
-		return this.isLessThan(value).or(this.is(value).and(fallBackWhenEquals));
+		return this.isLessThan(value(value), fallBackWhenEquals);
 	}
 
 	/**
@@ -1265,7 +1265,7 @@ public class DateExpression implements DateResult, RangeComparable<DateResult>, 
 	 * @return a BooleanExpression
 	 */
 	public BooleanExpression isGreaterThan(Date value, BooleanExpression fallBackWhenEquals) {
-		return this.isGreaterThan(value).or(this.is(value).and(fallBackWhenEquals));
+		return this.isGreaterThan(value(value), fallBackWhenEquals);
 	}
 
 	/**
@@ -2377,15 +2377,26 @@ public class DateExpression implements DateResult, RangeComparable<DateResult>, 
 				try {
 					return defn.doDateAtTimeZoneTransform(getFirst().toSQLString(db), getSecond());
 				} catch (UnsupportedOperationException exp) {
-					Double zoneOffset = (0.0 + this.getSecond().getRawOffset()) / 60.0;
+					Double zoneOffset = 0.0 + this.getSecond().getRawOffset();//(0.0 + this.getSecond().getRawOffset()) / 60.0;
+					final double inHours = zoneOffset /1000/60/60;
 
-					int hourPart = zoneOffset.intValue() * 100;
-					int minutePart = (int) ((zoneOffset - (zoneOffset.intValue())) * 60);
-					String hour = NumberExpression.value(hourPart).toSQLString(db);
-					String minute = NumberExpression.value(minutePart).toSQLString(db);
-					String date = getFirst().toSQLString(db);
+					int tzHourPart = Double.valueOf(inHours).intValue();
+					int tzMinutePart = Double.valueOf((inHours-tzHourPart)*60).intValue();//(int) ((zoneOffset - (zoneOffset.intValue())) * 60);
+					String tzHourSQL = NumberExpression.value(tzHourPart).stringResult().toSQLString(db);
+					String tzMinuteSQL = NumberExpression.value(tzMinutePart).stringResult().toSQLString(db);
+					//String date = getFirst().toSQLString(db);
 
-					return defn.doAddMinutesTransform(defn.doAddHoursTransform(date, hour), minute);
+					return defn.getDatePartsFormattedForQuery(
+							getFirst().year().stringResult().toSQLString(db),
+							getFirst().month().stringResult().toSQLString(db), 
+							getFirst().day().stringResult().toSQLString(db), 
+							getFirst().hour().stringResult().toSQLString(db), 
+							getFirst().minute().stringResult().toSQLString(db), 
+							getFirst().second().stringResult().toSQLString(db), 
+							tzHourSQL, 
+							tzMinuteSQL
+					);
+					//return defn.doAddMinutesTransform(defn.doAddHoursTransform(date, hour), minute);
 				}
 			}
 

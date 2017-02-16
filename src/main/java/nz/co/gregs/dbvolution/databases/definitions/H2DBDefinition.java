@@ -18,12 +18,17 @@ package nz.co.gregs.dbvolution.databases.definitions;
 import com.vividsolutions.jts.geom.Polygon;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Set;
+import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.databases.H2DB;
 import nz.co.gregs.dbvolution.datatypes.DBDateRepeat;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 import nz.co.gregs.dbvolution.datatypes.spatial2D.*;
+import nz.co.gregs.dbvolution.expressions.DateExpression;
+import nz.co.gregs.dbvolution.expressions.NumberExpression;
 import nz.co.gregs.dbvolution.internal.h2.*;
+import nz.co.gregs.dbvolution.results.NumberResult;
 
 /**
  * Defines the features of the H2 database that differ from the standard
@@ -47,6 +52,22 @@ public class H2DBDefinition extends DBDefinition {
 			return getNull();
 		}
 		return "PARSEDATETIME('" + strToDateFormat.format(date) + "','" + H2_DATE_FORMAT_STR + "')";
+	}
+	
+	@Override
+	public String getDatePartsFormattedForQuery(String years, String months, String days, String hours, String minutes, String seconds, String timeZoneHourOffset, String timeZoneMinuteOffSet)
+	{
+		return "PARSEDATETIME("
+				+years
+				+"+'-'+"+months
+				+"+'-'+"+days
+				+"+' '+"+hours
+				+"+':'+"+minutes
+				+"+':'+"+seconds
+				+"+' '+"+timeZoneHourOffset
+				+"+':'+"+timeZoneMinuteOffSet
+				+",'" + H2_DATE_FORMAT_STR + "')";
+		//return "PARSEDATETIME('" + years + "','" + H2_DATE_FORMAT_STR + "')";
 	}
 
 	@Override

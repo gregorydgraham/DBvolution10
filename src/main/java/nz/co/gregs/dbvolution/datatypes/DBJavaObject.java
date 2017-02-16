@@ -113,12 +113,41 @@ public class DBJavaObject<O> extends DBLargeObject<O> {
 	}
 
 	@SuppressWarnings("unchecked")
+	private O getFromBLOB(ResultSet resultSet, String fullColumnName) throws SQLException {
+		O returnValue = null;
+		Blob blob = resultSet.getBlob(fullColumnName);
+		if (resultSet.wasNull()) {
+			blob = null;
+		}
+		if (blob == null) {
+			this.setToNull();
+		} else {
+			InputStream inputStream = blob.getBinaryStream();
+			if (inputStream == null) {
+				this.setToNull();
+			} else {
+				final BufferedInputStream bufferedInputStream = new BufferedInputStream(inputStream);
+				try {
+					try (ObjectInputStream input = new ObjectInputStream(bufferedInputStream)) {
+						returnValue = (O) input.readObject();
+					}
+				} catch (IOException ex) {
+					Logger.getLogger(DBJavaObject.class.getName()).log(Level.SEVERE, null, ex);
+				} catch (ClassNotFoundException ex) {
+					Logger.getLogger(DBJavaObject.class.getName()).log(Level.SEVERE, null, ex);
+				}
+			}
+		}
+		return returnValue;
+	}
+
+	@SuppressWarnings("unchecked")
 	private O getFromGetBytes(ResultSet resultSet, String fullColumnName) throws SQLException {
 		try {
 			byte[] bytes = resultSet.getBytes(fullColumnName);
-			ObjectInputStream input = new ObjectInputStream(new ByteArrayInputStream(bytes));
-//			this.setValue(input.readObject());
-			return (O) input.readObject();
+			try (ObjectInputStream input = new ObjectInputStream(new ByteArrayInputStream(bytes))) {
+				return (O) input.readObject();
+			}
 		} catch (IOException ex) {
 			Logger.getLogger(DBJavaObject.class.getName()).log(Level.SEVERE, null, ex);
 		} catch (ClassNotFoundException ex) {
@@ -304,18 +333,44 @@ public class DBJavaObject<O> extends DBLargeObject<O> {
 	protected O getFromResultSet(DBDatabase database, ResultSet resultSet, String fullColumnName) throws SQLException {
 		O obj = null;
 		DBDefinition defn = database.getDefinition();
-		if (defn.prefersLargeObjectsReadAsBase64CharacterStream(this)) {
-			try {
-				obj = getFromCharacterReader(resultSet, fullColumnName);
-			} catch (IOException ex) {
-				throw new DBRuntimeException("Unable To Set Value: " + ex.getMessage(), ex);
-			}
-		} else if (defn.prefersLargeObjectsReadAsBytes()) {
-			obj = getFromGetBytes(resultSet, fullColumnName);
-		} else if (defn.prefersLargeObjectsReadAsCLOB()) {
-			obj = getFromCLOB(resultSet, fullColumnName);
-		} else {
+//		if (defn.prefersLargeObjectsReadAsBase64CharacterStream(this)) {
+//			try {
+//				obj = getFromCharacterReader(resultSet, fullColumnName);
+//			} catch (IOException ex) {
+//				throw new DBRuntimeException("Unable To Set Value: " + ex.getMessage(), ex);
+//			}
+//		} else if (defn.prefersLargeObjectsReadAsBytes()) {
+//			obj = getFromGetBytes(resultSet, fullColumnName);
+//		} else if (defn.prefersLargeObjectsReadAsCLOB()) {
+//			obj = getFromCLOB(resultSet, fullColumnName);
+//		} else {
+//			obj = getFromBinaryStream(resultSet, fullColumnName);
+//		}
+
+		try {
 			obj = getFromBinaryStream(resultSet, fullColumnName);
+		} catch (Throwable exp1) {
+			Logger.getLogger(DBBinaryObject.class.getName()).log(Level.WARNING, "Database rejected Binary Stream method", exp1);
+			try {
+				obj = getFromBLOB(resultSet, fullColumnName);
+			} catch (Throwable exp2) {
+				Logger.getLogger(DBBinaryObject.class.getName()).log(Level.WARNING, "Database rejected Binary Stream method", exp1);
+				try {
+					obj = getFromGetBytes(resultSet, fullColumnName);
+				} catch (Throwable exp3) {
+					Logger.getLogger(DBBinaryObject.class.getName()).log(Level.WARNING, "Database rejected BLOB method", exp2);
+					try {
+						obj = getFromCLOB(resultSet, fullColumnName);
+					} catch (Throwable exp4) {
+						Logger.getLogger(DBBinaryObject.class.getName()).log(Level.WARNING, "Database rejected Bytes method", exp4);
+						try {
+							obj = getFromCharacterReader(resultSet, fullColumnName);
+						} catch (Throwable exp5) {
+							Logger.getLogger(DBBinaryObject.class.getName()).log(Level.SEVERE, "Database rejected Character Reader method", exp5);
+						}
+					}
+				}
+			}
 		}
 		return obj;
 	}

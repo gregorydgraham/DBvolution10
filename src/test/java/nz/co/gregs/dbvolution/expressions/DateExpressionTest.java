@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
+import java.util.TimeZone;
 import nz.co.gregs.dbvolution.DBQuery;
 import nz.co.gregs.dbvolution.DBQueryRow;
 import nz.co.gregs.dbvolution.DBReport;
@@ -63,6 +64,12 @@ public class DateExpressionTest extends AbstractTest {
 		public DBDate currentDateTimeMinus10Seconds = new DBDate(DateExpression.currentDate().addSeconds(-10));
 		@DBColumn
 		public DBDate currentDateTimePlus10Seconds = new DBDate(DateExpression.currentDate().addSeconds(10));
+		@DBColumn
+		public DBDate created = marque.column(marque.creationDate).asExpressionColumn();
+		@DBColumn
+		public DBDate createdInSydney = marque.column(marque.creationDate).atTimeZone(TimeZone.getTimeZone("Australia/Sydney")).asExpressionColumn();
+		@DBColumn
+		public DBNumber hourInSydney = marque.column(marque.creationDate).atTimeZone(TimeZone.getTimeZone("Australia/Sydney")).hour().asExpressionColumn();
 	}
 	
 	@Test
@@ -636,6 +643,54 @@ public class DateExpressionTest extends AbstractTest {
 	}
 	
 	@Test
+	public void testisGreaterThanOrEqual() throws SQLException {
+		final Date march1st2013 = (new GregorianCalendar(2013, 2, 1)).getTime();
+		Marque marq = new Marque();
+		DBQuery query = database.getDBQuery(marq);
+		query.addCondition(
+				marq.column(marq.creationDate).firstOfMonth().isGreaterThanOrEqual(march1st2013));
+		List<Marque> got = query.getAllInstancesOf(marq);
+		database.print(got);
+		Assert.assertThat(got.size(), is(18));
+	}
+	
+	@Test
+	public void testisGreaterThanWithFallback() throws SQLException {
+		final Date march1st2013 = (new GregorianCalendar(2013, 2, 1)).getTime();
+		Marque marq = new Marque();
+		DBQuery query = database.getDBQuery(marq);
+		query.addCondition(
+				marq.column(marq.creationDate).firstOfMonth().isGreaterThan(march1st2013, marq.column(marq.name).isGreaterThan("T")));
+		List<Marque> got = query.getAllInstancesOf(marq);
+		database.print(got);
+		Assert.assertThat(got.size(), is(18));
+	}
+	
+	@Test
+	public void testisLessThan() throws SQLException {
+		final Date march1st2013 = (new GregorianCalendar(2013, 2, 1)).getTime();
+		Marque marq = new Marque();
+		DBQuery query = database.getDBQuery(marq);
+		query.addCondition(
+				marq.column(marq.creationDate).firstOfMonth().isLessThan(march1st2013));
+		List<Marque> got = query.getAllInstancesOf(marq);
+		database.print(got);
+		Assert.assertThat(got.size(), is(3));
+	}
+	
+	@Test
+	public void testisLessThanWithFallback() throws SQLException {
+		final Date march1st2013 = (new GregorianCalendar(2013, 2, 1)).getTime();
+		Marque marq = new Marque();
+		DBQuery query = database.getDBQuery(marq);
+		query.addCondition(
+				marq.column(marq.creationDate).firstOfMonth().isLessThan(march1st2013, marq.column(marq.name).isGreaterThan("T")));
+		List<Marque> got = query.getAllInstancesOf(marq);
+		database.print(got);
+		Assert.assertThat(got.size(), is(3));
+	}
+	
+	@Test
 	public void testBetweenExclusiveFunction() throws SQLException {
 		final Date march1st2013 = (new GregorianCalendar(2013, 2, 1)).getTime();
 		final Date march2nd2013 = (new GregorianCalendar(2013, 2, 2)).getTime();
@@ -799,6 +854,18 @@ public class DateExpressionTest extends AbstractTest {
 		database.print(got);
 		Assert.assertThat(got.size(), is(3));
 		
+	}
+	
+	@Test
+	public void testTimezoneFunction() throws SQLException {
+//        database.setPrintSQLBeforeExecuting(true);
+		Marque marq = new Marque();
+		DBQuery query = database.getDBQuery(marq);
+		query.addCondition(
+				marq.column(marq.creationDate).atTimeZone(TimeZone.getTimeZone("Australia/Sydney")).hourIs(9));
+		List<Marque> got = query.getAllInstancesOf(marq);
+		database.print(got);
+		Assert.assertThat(got.size(), is(18));
 	}
 	
 	@Test

@@ -85,7 +85,7 @@ public class SQLiteDefinition extends DBDefinition {
 		if (qdt instanceof DBByteObject) {
 			return " TEXT ";
 		} else if (qdt instanceof DBJavaObject) {
-			return " TEXT ";
+			return " BLOB ";
 		} else if (qdt instanceof DBBinaryObject) {
 			return " BLOB ";
 		} else if (qdt instanceof DBBooleanArray) {
