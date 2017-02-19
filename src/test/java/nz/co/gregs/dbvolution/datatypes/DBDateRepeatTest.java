@@ -16,9 +16,7 @@
 package nz.co.gregs.dbvolution.datatypes;
 
 import java.sql.SQLException;
-import java.util.Calendar;
 import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.List;
 import nz.co.gregs.dbvolution.DBQuery;
 import nz.co.gregs.dbvolution.DBQueryRow;
@@ -133,7 +131,7 @@ public class DBDateRepeatTest extends AbstractTest {
 		query.addCondition(marq.column(marq.creationDate).getDateRepeatFrom(april2nd2011).is(zero));
 		allRows = query.getAllRows();
 		database.print(allRows);
-		Assert.assertThat(allRows.size(), is(30));
+		Assert.assertThat(allRows.size(), is(3));
 
 		query = database.getDBQuery(marq);
 		query.addCondition(marq.column(marq.creationDate).getDateRepeatFrom(april2nd2011).isNot(zero));
