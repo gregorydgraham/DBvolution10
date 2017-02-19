@@ -1090,7 +1090,7 @@ public class DateExpression implements DateResult, RangeComparable<DateResult>, 
 			@Override
 			protected String doExpressionTransformation(DBDatabase db) {
 				if (db instanceof SupportsDateRepeatDatatypeFunctions) {
-					return db.getDefinition().doDateMinusDateRepeatTransform(getFirst().toSQLString(db), getSecond().toSQLString(db));
+					return db.getDefinition().doDatePlusDateRepeatTransform(getFirst().toSQLString(db), getSecond().toSQLString(db));
 				} else {
 					final DateExpression left = getFirst();
 					final DateRepeatExpression right = new DateRepeatExpression(getSecond());
@@ -2286,6 +2286,11 @@ public class DateExpression implements DateResult, RangeComparable<DateResult>, 
 					protected String getFunctionName(DBDatabase db) {
 						return db.getDefinition().getLeastOfFunctionName();
 					}
+
+			@Override
+			public boolean getIncludesNull() {
+				return true;
+			}
 				});
 		return leastExpr;
 	}
@@ -2368,36 +2373,14 @@ public class DateExpression implements DateResult, RangeComparable<DateResult>, 
 	 * @param timeZone the desired time zone
 	 * @return a date expression that evaluates to the date value in the specified time zone.
 	 */
-	public DateExpression atTimeZone(TimeZone timeZone) {
+	public DateExpression atTimeZone(TimeZone timeZone) throws UnsupportedOperationException
+	{
 		return new DateExpression(new DateTimeZoneExpressionWithDateResult(this, timeZone) {
 
 			@Override
 			public String toSQLString(DBDatabase db) {
 				DBDefinition defn = db.getDefinition();
-				try {
 					return defn.doDateAtTimeZoneTransform(getFirst().toSQLString(db), getSecond());
-				} catch (UnsupportedOperationException exp) {
-					Double zoneOffset = 0.0 + this.getSecond().getRawOffset();//(0.0 + this.getSecond().getRawOffset()) / 60.0;
-					final double inHours = zoneOffset /1000/60/60;
-
-					int tzHourPart = Double.valueOf(inHours).intValue();
-					int tzMinutePart = Double.valueOf((inHours-tzHourPart)*60).intValue();//(int) ((zoneOffset - (zoneOffset.intValue())) * 60);
-					String tzHourSQL = NumberExpression.value(tzHourPart).stringResult().toSQLString(db);
-					String tzMinuteSQL = NumberExpression.value(tzMinutePart).stringResult().toSQLString(db);
-					//String date = getFirst().toSQLString(db);
-
-					return defn.getDatePartsFormattedForQuery(
-							getFirst().year().stringResult().toSQLString(db),
-							getFirst().month().stringResult().toSQLString(db), 
-							getFirst().day().stringResult().toSQLString(db), 
-							getFirst().hour().stringResult().toSQLString(db), 
-							getFirst().minute().stringResult().toSQLString(db), 
-							getFirst().second().stringResult().toSQLString(db), 
-							tzHourSQL, 
-							tzMinuteSQL
-					);
-					//return defn.doAddMinutesTransform(defn.doAddHoursTransform(date, hour), minute);
-				}
 			}
 
 		});

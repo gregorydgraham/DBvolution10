@@ -85,6 +85,7 @@ public class DBReport extends RowDefinition {
 	private static final long serialVersionUID = 1L;
 
 	private transient ColumnProvider[] sortColumns = new ColumnProvider[]{};
+	protected boolean blankQueryAllowed = false;
 
 	/**
 	 * Gets all the report rows of the supplied DBReport using only conditions
@@ -108,6 +109,29 @@ public class DBReport extends RowDefinition {
 	 */
 	public static <A extends DBReport> List<A> getAllRows(DBDatabase database, A exampleReport) throws SQLException {
 		return getAllRows(database, exampleReport, new DBRow[]{});
+	}
+	
+	/**
+	 * Change the Default Setting of Disallowing Blank Queries
+	 *
+	 * <p>
+	 * A common mistake is creating a query without supplying criteria and
+	 * accidently retrieving a huge number of rows.
+	 *
+	 * <p>
+	 * DBvolution detects this situation and, by default, throws a
+	 * {@link nz.co.gregs.dbvolution.exceptions.AccidentalBlankQueryException AccidentalBlankQueryException}
+	 * when it happens.
+	 *
+	 * <p>
+	 * To change this behaviour, and allow blank queries, call
+	 * {@code setBlankQueriesAllowed(true)}.
+	 *
+	 * @param allow - TRUE to allow blank queries, FALSE to return it to the
+	 * default setting.
+	 */
+	public void setBlankQueryAllowed(boolean allow) {
+		this.blankQueryAllowed = allow;
 	}
 
 	/**
@@ -192,6 +216,7 @@ public class DBReport extends RowDefinition {
 	 */
 	public static <A extends DBReport> List<A> getRows(DBDatabase database, A exampleReport, DBRow... rows) throws SQLException {
 		DBQuery query = getDBQuery(database, exampleReport, rows);
+		query.setBlankQueryAllowed(exampleReport.blankQueryAllowed);
 		List<A> reportRows;
 		List<DBQueryRow> allRows = query.getAllRows();
 		reportRows = getReportsFromQueryResults(allRows, exampleReport);

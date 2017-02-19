@@ -547,6 +547,11 @@ public class SQLiteDefinition extends DBDefinition {
 		//indicate whether g1 is spatially within g2. This is the inverse of Contains(). 
 		// i.e. G1.within(G2) === G2.contains(G1)
 		return Polygon2DFunctions.CONTAINS_POINT2D + "(" + firstGeometry + ", " + secondGeometry + ")";
+	}	
+	
+	@Override
+	public String doPolygon2DAsTextTransform(String polygonSQL) {
+		return Polygon2DFunctions.ASTEXT_FUNCTION + "(" + polygonSQL + ")";
 	}
 
 	@Override

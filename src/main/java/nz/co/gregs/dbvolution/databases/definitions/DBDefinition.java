@@ -77,7 +77,29 @@ public abstract class DBDefinition {
 	 * interpret as a date.
 	 */
 	public abstract String getDateFormattedForQuery(Date date);
-	public String getDatePartsFormattedForQuery(String years, String months, String days, String hours, String minutes, String seconds, String timeZoneHourOffset, String timeZoneMinuteOffSet){
+	
+	
+	/**
+	 * Transforms the specific parts of a date from their SQL snippets into a SQL snippet that can be used as a date
+	 * in a query.
+	 *
+	 * <p>
+	 * For instance the date parts might be transformed into a string like "
+	 * DATETIME('2013-03-23 00:00:00') "
+	 *
+	 * @param years
+	 * @param months
+	 * @param days
+	 * @param minutes
+	 * @param hours
+	 * @param seconds
+	 * @param subsecond
+	 * @param timeZoneSign
+	 * @param timeZoneMinuteOffSet
+	 * @param timeZoneHourOffset
+	 * @return the date formatted as a string that the database will be correctly interpret as a date.
+	 */
+	public String getDatePartsFormattedForQuery(String years, String months, String days, String hours, String minutes, String seconds, String subsecond, String timeZoneSign, String timeZoneHourOffset, String timeZoneMinuteOffSet){
 		return "";
 	}
 	
@@ -2983,7 +3005,7 @@ public abstract class DBDefinition {
 		str.append(interval.getDays() + (interval.getWeeks() * 7)).append(DateRepeatExpression.DAY_SUFFIX);
 		str.append(interval.getHours()).append(DateRepeatExpression.HOUR_SUFFIX);
 		str.append(interval.getMinutes()).append(DateRepeatExpression.MINUTE_SUFFIX);
-		str.append(interval.getSeconds()).append(DateRepeatExpression.SECOND_SUFFIX);
+		str.append(Integer.valueOf(interval.getSeconds()).doubleValue()).append(DateRepeatExpression.SECOND_SUFFIX);
 		str.append("'");
 		return str.toString();
 	}

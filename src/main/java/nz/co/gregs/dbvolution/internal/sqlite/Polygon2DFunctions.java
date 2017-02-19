@@ -127,6 +127,7 @@ public class Polygon2DFunctions {
 	 *
 	 */
 	public final static String CONTAINS_POINT2D = "DBV_POLYGON2D_CONTAINS_POINT2D";
+	public final static String ASTEXT_FUNCTION = "DBV_POLYGON2D_ASTEXT";
 
 	private Polygon2DFunctions() {
 	}
@@ -155,6 +156,7 @@ public class Polygon2DFunctions {
 		add(connection, MIN_Y, new MinY());
 		add(connection, BOUNDINGBOX, new BoundingBox());
 		add(connection, CONTAINS_POINT2D, new ContainsPoint2D());
+		add(connection, ASTEXT_FUNCTION, new AsText());
 	}
 
 	private static void add(java.sql.Connection connection, String functionName, Function function) throws SQLException {
@@ -171,6 +173,21 @@ public class Polygon2DFunctions {
 		@Override
 		protected void xFunc() throws SQLException {
 			result(2);
+		}
+	}
+
+	
+
+	/**
+	 * Implements Polygon2D AsText for SQLite
+	 *
+	 */
+	private static class AsText extends Function {
+
+		@Override
+		protected void xFunc() throws SQLException {
+			String point = value_text(0);
+			result(point);
 		}
 	}
 

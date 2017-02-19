@@ -66,11 +66,7 @@ public class DateExpressionTest extends AbstractTest {
 		public DBDate currentDateTimePlus10Seconds = new DBDate(DateExpression.currentDate().addSeconds(10));
 		@DBColumn
 		public DBDate created = marque.column(marque.creationDate).asExpressionColumn();
-		@DBColumn
-		public DBDate createdInSydney = marque.column(marque.creationDate).atTimeZone(TimeZone.getTimeZone("Australia/Sydney")).asExpressionColumn();
-		@DBColumn
-		public DBNumber hourInSydney = marque.column(marque.creationDate).atTimeZone(TimeZone.getTimeZone("Australia/Sydney")).hour().asExpressionColumn();
-	}
+		}
 	
 	@Test
 	public void testIsNotDateExpression() throws SQLException {
@@ -94,18 +90,13 @@ public class DateExpressionTest extends AbstractTest {
 	public void testIsNotDate() throws SQLException {
 		Marque marq = new Marque();
 		DBQuery query = database.getDBQuery(marq);
-		final DateExpression fiveDaysPriorToCreation = marq.column(marq.creationDate).addDays(-5);
+//		final DateExpression fiveDaysPriorToCreation = marq.column(marq.creationDate).addDays(-5);
 		query.addCondition(
-				DateExpression.leastOf(
-					marq.column(marq.creationDate),
-					fiveDaysPriorToCreation,
-					DateExpression.value(march23rd2013).addWeeks(-5), 
-					DateExpression.value(march23rd2013).addDays(-2))
-				.isNot(april2nd2011)
+					marq.column(marq.creationDate).isNot(april2nd2011)
 		);
 		List<DBQueryRow> allRows = query.getAllRows();
 		database.print(allRows);
-		Assert.assertThat(allRows.size(), is(22));
+		Assert.assertThat(allRows.size(), is(18));
 	}
 	
 	@Test
@@ -856,17 +847,6 @@ public class DateExpressionTest extends AbstractTest {
 		
 	}
 	
-	@Test
-	public void testTimezoneFunction() throws SQLException {
-//        database.setPrintSQLBeforeExecuting(true);
-		Marque marq = new Marque();
-		DBQuery query = database.getDBQuery(marq);
-		query.addCondition(
-				marq.column(marq.creationDate).atTimeZone(TimeZone.getTimeZone("Australia/Sydney")).hourIs(9));
-		List<Marque> got = query.getAllInstancesOf(marq);
-		database.print(got);
-		Assert.assertThat(got.size(), is(18));
-	}
 	
 	@Test
 	public void testMinuteFunction() throws SQLException {

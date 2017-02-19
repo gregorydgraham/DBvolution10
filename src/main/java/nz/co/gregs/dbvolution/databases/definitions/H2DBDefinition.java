@@ -19,6 +19,7 @@ import com.vividsolutions.jts.geom.Polygon;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Set;
+import java.util.TimeZone;
 import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.databases.H2DB;
@@ -43,7 +44,7 @@ import nz.co.gregs.dbvolution.results.NumberResult;
 public class H2DBDefinition extends DBDefinition {
 
 	private static final String DATE_FORMAT_STR = "yyyy-M-d HH:mm:ss.SSS Z";
-	private static final String H2_DATE_FORMAT_STR = "yyyy-M-d HH:mm:ss.SSS Z";
+	private static final String H2_DATE_FORMAT_STR = "yyyy-M-d HH:mm:ss.SSS Z";//2017-02-18 18:59:59.000 +10:00
 	private final SimpleDateFormat strToDateFormat = new SimpleDateFormat(DATE_FORMAT_STR);
 
 	@Override
@@ -55,18 +56,20 @@ public class H2DBDefinition extends DBDefinition {
 	}
 	
 	@Override
-	public String getDatePartsFormattedForQuery(String years, String months, String days, String hours, String minutes, String seconds, String timeZoneHourOffset, String timeZoneMinuteOffSet)
+	public String getDatePartsFormattedForQuery(String years, String months, String days, String hours, String minutes, String seconds, String subsecond, String timeZoneSign, String timeZoneHourOffset, String timeZoneMinuteOffSet)
 	{
 		return "PARSEDATETIME("
 				+years
-				+"+'-'+"+months
-				+"+'-'+"+days
-				+"+' '+"+hours
-				+"+':'+"+minutes
-				+"+':'+"+seconds
-				+"+' '+"+timeZoneHourOffset
-				+"+':'+"+timeZoneMinuteOffSet
-				+",'" + H2_DATE_FORMAT_STR + "')";
+				+"||'-'||"+months
+				+"||'-'||"+days
+				+"||' '||"+hours
+				+"||':'||"+minutes
+				+"||':'||"+seconds
+//				+"||'.'||"+subsecond
+				+"||' '||"+timeZoneSign
+				+"||"+timeZoneHourOffset
+				+"||"+timeZoneMinuteOffSet
+				+", '" + H2_DATE_FORMAT_STR + "')";
 		//return "PARSEDATETIME('" + years + "','" + H2_DATE_FORMAT_STR + "')";
 	}
 
@@ -102,6 +105,11 @@ public class H2DBDefinition extends DBDefinition {
 	@Override
 	public String doStringLengthTransform(String enclosedValue) {
 		return " CAST(" + getStringLengthFunctionName() + "( " + enclosedValue + " ) as NUMERIC(15,10))";
+	}
+	
+	@Override
+	public String doDateAtTimeZoneTransform(String dateSQL, TimeZone timeZone) throws UnsupportedOperationException {
+		throw new UnsupportedOperationException();
 	}
 
 	@Override

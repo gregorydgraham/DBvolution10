@@ -170,7 +170,8 @@ public enum DateRepeatFunctions implements DBVFeature {
 			+ "		int days = Integer.parseInt(dateRepeatStr.replaceAll(\".*M([-0-9.]+)D.*\", \"$1\"));\n"
 			+ "		int hours = Integer.parseInt(dateRepeatStr.replaceAll(\".*D([-0-9.]+)h.*\", \"$1\"));\n"
 			+ "		int minutes = Integer.parseInt(dateRepeatStr.replaceAll(\".*h([-0-9.]+)n.*\", \"$1\"));\n"
-			+ "		int seconds = Integer.valueOf(dateRepeatStr.replaceAll(\".*n([-0-9.]+)s.*\", \"$1\"));\n"
+			+ "		int seconds = Integer.valueOf(dateRepeatStr.replaceAll(\".*n([-0-9]+)[.]*(0-9)*s.*\", \"$1\"));\n"
+			+ "		int millis = Integer.valueOf(dateRepeatStr.replaceAll(\".*n([-0-9]+)[.]*(0-9)*s.*\", \"$2\"));\n"
 			+ "\n"
 			+ "		cal.add(Calendar.YEAR, years);\n"
 			+ "		cal.add(Calendar.MONTH, months);\n"
@@ -178,6 +179,7 @@ public enum DateRepeatFunctions implements DBVFeature {
 			+ "		cal.add(Calendar.HOUR, hours);\n"
 			+ "		cal.add(Calendar.MINUTE, minutes);\n"
 			+ "		cal.add(Calendar.SECOND, seconds);\n"
+			+ "		cal.add(Calendar.MILLISECOND, millis);\n"
 			+ "		return cal.getTime();"
 					+ ""),
 
@@ -199,14 +201,15 @@ public enum DateRepeatFunctions implements DBVFeature {
 			+ "		int days = Integer.parseInt(dateRepeatStr.replaceAll(\".*M([-0-9.]+)D.*\", \"$1\"));\n"
 			+ "		int hours = Integer.parseInt(dateRepeatStr.replaceAll(\".*D([-0-9.]+)h.*\", \"$1\"));\n"
 			+ "		int minutes = Integer.parseInt(dateRepeatStr.replaceAll(\".*h([-0-9.]+)n.*\", \"$1\"));\n"
-			+ "		int seconds = Integer.valueOf(dateRepeatStr.replaceAll(\".*n([-0-9.]+)s.*\", \"$1\"));\n"
+			+ "		int seconds = Integer.valueOf(dateRepeatStr.replaceAll(\".*n([-0-9]+)[.]*(0-9)*s.*\", \"$1\"));\n"
+			+ "		int millis = Integer.valueOf(dateRepeatStr.replaceAll(\".*n([-0-9]+)[.]*(0-9)*s.*\", \"$2\"));\n"
 			+ "\n"
 			+ "		cal.add(Calendar.YEAR, -1 * years);\n"
 			+ "		cal.add(Calendar.MONTH, -1 * months);\n"
 			+ "		cal.add(Calendar.DAY_OF_MONTH, -1 * days);\n"
 			+ "		cal.add(Calendar.HOUR, -1 * hours);\n"
 			+ "		cal.add(Calendar.MINUTE, -1 * minutes);\n"
-			+ "		cal.add(Calendar.SECOND, -1 * seconds);\n"
+			+ "		cal.add(Calendar.MILLISECOND, -1 * seconds);\n"
 			+ "		return cal.getTime();"
 			+ ""),
 
