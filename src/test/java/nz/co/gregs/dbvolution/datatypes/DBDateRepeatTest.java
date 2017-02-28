@@ -69,7 +69,7 @@ public class DBDateRepeatTest extends AbstractTest {
 		private static final long serialVersionUID = 1L;
 
 		@DBColumn
-		DBDateRepeat interval = new DBDateRepeat(this.column(this.creationDate).getDateRepeatFrom(april2nd2011));
+		DBString interval = new DBString(this.column(this.creationDate).getDateRepeatFrom(april2nd2011).stringResult());
 
 		@DBColumn
 		DBNumber yearPart = new DBNumber(this.column(this.creationDate).getDateRepeatFrom(april2nd2011).getYears());

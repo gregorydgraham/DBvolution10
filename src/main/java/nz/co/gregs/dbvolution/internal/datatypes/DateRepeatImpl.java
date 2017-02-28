@@ -54,14 +54,20 @@ public class DateRepeatImpl {
 		if (original == null || compareTo == null) {
 			return null;
 		}
-		int years = original.getYear() - compareTo.getYear();
-		int months = original.getMonth() - compareTo.getMonth();
-		int days = original.getDate() - compareTo.getDate();
-		int hours = original.getHours() - compareTo.getHours();
-		int minutes = original.getMinutes() - compareTo.getMinutes();
-		int seconds = original.getSeconds() - compareTo.getSeconds();
+		Calendar origCal = GregorianCalendar.getInstance();
+		origCal.setTime(original);
+		Calendar compCal = GregorianCalendar.getInstance();
+		compCal.setTime(compareTo);
+		
+		int years = origCal.get(Calendar.YEAR) - compCal.get(Calendar.YEAR);
+		int months = origCal.get(Calendar.MONTH) - compCal.get(Calendar.MONTH);
+		int days = origCal.get(Calendar.DAY_OF_MONTH) - compCal.get(Calendar.DAY_OF_MONTH);
+		int hours = origCal.get(Calendar.HOUR_OF_DAY) - compCal.get(Calendar.HOUR_OF_DAY);
+		int minutes = origCal.get(Calendar.MINUTE) - compCal.get(Calendar.MINUTE);
+		int seconds = origCal.get(Calendar.SECOND) - compCal.get(Calendar.SECOND);
+		int millis = origCal.get(Calendar.MILLISECOND) - compCal.get(Calendar.MILLISECOND);
 
-		String intervalString = "P" + years + "Y" + months + "M" + days + "D" + hours + "h" + minutes + "n" + seconds + "s";
+		String intervalString = "P" + years + "Y" + months + "M" + days + "D" + hours + "h" + minutes + "n" + seconds+"."+millis + "s";
 		return intervalString;
 	}
 
