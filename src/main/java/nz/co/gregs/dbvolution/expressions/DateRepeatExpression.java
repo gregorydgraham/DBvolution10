@@ -174,6 +174,15 @@ public class DateRepeatExpression implements DateRepeatResult, RangeComparable<D
 	}
 
 	/**
+	 * Returns FALSE if this expression evaluates to NULL, otherwise TRUE.
+	 *
+	 * @return a BooleanExpression
+	 */
+	public BooleanExpression isNotNull() {
+		return BooleanExpression.isNotNull(this);
+	}
+
+	/**
 	 * Returns TRUE if this expression evaluates to a smaller or more negative
 	 * offset than the provided value, otherwise FALSE.
 	 *
@@ -391,7 +400,9 @@ public class DateRepeatExpression implements DateRepeatResult, RangeComparable<D
 	 */
 	@Override
 	public BooleanExpression isNot(DateRepeatResult anotherInstance) {
-		return is(anotherInstance).not();
+		return BooleanExpression.allOf(
+				is(anotherInstance).not(),
+				isNotNull());
 	}
 
 	/**

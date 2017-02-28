@@ -137,7 +137,7 @@ public class DBDateRepeatTest extends AbstractTest {
 		query.addCondition(marq.column(marq.creationDate).getDateRepeatFrom(april2nd2011).isNot(zero));
 		allRows = query.getAllRows();
 		database.print(allRows);
-		Assert.assertThat(allRows.size(), is(19));
+		Assert.assertThat(allRows.size(), is(18));
 		
 		query = database.getDBQuery(marq);
 		query.addCondition(marq.column(marq.creationDate).getDateRepeatFrom(april2nd2011).isNull());
