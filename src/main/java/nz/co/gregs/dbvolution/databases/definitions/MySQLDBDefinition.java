@@ -319,6 +319,11 @@ public class MySQLDBDefinition extends DBDefinition {
 	}
 
 	@Override
+	public String doPolygon2DAsTextTransform(String polygonSQL) {
+		return "ST_AsText("+polygonSQL+")";
+	}
+
+	@Override
 	public String doPolygon2DDoesNotIntersectTransform(String firstGeometry, String secondGeometry) {
 		return "ST_Disjoint(" + firstGeometry + ", " + secondGeometry + ")";
 	}

@@ -3029,7 +3029,8 @@ public abstract class DBDefinition {
 	 * @return the SQL required to create to compare DateRepeats
 	 */
 	public String doDateRepeatEqualsTransform(String leftHandSide, String rightHandSide) {
-		return "(" + leftHandSide + " = " + rightHandSide + ")";
+		//return "(" + leftHandSide + " = " + rightHandSide + ")";
+		throw new UnsupportedOperationException("No Native Support For DateRepeat Has Been Implemented");
 	}
 
 	/**

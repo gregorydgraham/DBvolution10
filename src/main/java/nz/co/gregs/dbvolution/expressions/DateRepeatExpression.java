@@ -377,7 +377,20 @@ public class DateRepeatExpression implements DateRepeatResult, RangeComparable<D
 
 			@Override
 			protected String doExpressionTransform(DBDatabase db) {
-				return db.getDefinition().doDateRepeatEqualsTransform(getFirst().toSQLString(db), getSecond().toSQLString(db));
+				try{
+					return db.getDefinition().doDateRepeatEqualsTransform(getFirst().toSQLString(db), getSecond().toSQLString(db));
+				}catch (UnsupportedOperationException exp){
+					final DateRepeatExpression left = this.getFirst();
+					final DateRepeatExpression right = this.getSecond();
+					return BooleanExpression.allOf(
+							left.getYears().is(right.getYears()),
+							left.getMonths().is(right.getMonths()),
+							left.getDays().is(right.getDays()),
+							left.getHours().is(right.getHours()),
+							left.getMinutes().is(right.getMinutes()),
+							left.getSeconds().is(right.getSeconds())									
+					).toSQLString(db);
+				}
 			}
 		});
 	}
@@ -567,12 +580,12 @@ public class DateRepeatExpression implements DateRepeatResult, RangeComparable<D
 	private static abstract class DateRepeatDateRepeatWithBooleanResult extends BooleanExpression {
 
 		private DateRepeatExpression first;
-		private DateRepeatResult second;
+		private DateRepeatExpression second;
 		private boolean requiresNullProtection;
 
 		DateRepeatDateRepeatWithBooleanResult(DateRepeatExpression first, DateRepeatResult second) {
 			this.first = first;
-			this.second = second;
+			this.second = new DateRepeatExpression(second);
 			if (this.second == null || this.second.getIncludesNull()) {
 				this.requiresNullProtection = true;
 			}
@@ -582,7 +595,7 @@ public class DateRepeatExpression implements DateRepeatResult, RangeComparable<D
 			return first;
 		}
 
-		DateRepeatResult getSecond() {
+		DateRepeatExpression getSecond() {
 			return second;
 		}
 

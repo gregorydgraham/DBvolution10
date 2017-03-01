@@ -1007,7 +1007,7 @@ public class DateExpression implements DateResult, RangeComparable<DateResult>, 
 									.append(left.minute().minus(right.minute()).bracket()).append(MINUTE_SUFFIX)
 									.append(left.second().minus(right.second()).bracket())
 											.append(".")
-											.append(left.subsecond().minus(right.subsecond()).absoluteValue())
+											.append(left.subsecond().minus(right.subsecond()).absoluteValue().stringResult().substringAfter("."))
 											.append(SECOND_SUFFIX)
 							).toSQLString(db);
 				}
