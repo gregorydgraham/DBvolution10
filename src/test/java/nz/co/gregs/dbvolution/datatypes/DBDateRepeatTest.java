@@ -75,6 +75,9 @@ public class DBDateRepeatTest extends AbstractTest {
 		DBNumber yearPart = new DBNumber(this.column(this.creationDate).getDateRepeatFrom(april2nd2011).getYears());
 
 		@DBColumn
+		DBNumber secondpart = new DBNumber(this.column(this.creationDate).getDateRepeatFrom(april2nd2011).getSeconds());
+
+		@DBColumn
 		DBDate creationDatePlus1Year = new DBDate(this.column(this.creationDate).minus(new Period().withYears(1)));
 	}
 

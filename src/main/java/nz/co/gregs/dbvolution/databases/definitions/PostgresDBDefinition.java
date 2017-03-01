@@ -170,6 +170,11 @@ public class PostgresDBDefinition extends DBDefinition {
 		return false;
 	}
 
+
+	public String doSubsecondTransform(String dateExpression) {
+		return "((EXTRACT(MILLISECOND FROM " + dateExpression + ")/1000.0000) - ("+doTruncTransform(doSecondTransform(dateExpression),"0")+"))";
+	}
+
 //	@Override
 //	public String doAddMillisecondsTransform(String dateValue, String numberOfSeconds) {
 //		return "(" + dateValue + "+ (" + numberOfSeconds + ")*INTERVAL '1 MILLISECOND' )";
