@@ -31,28 +31,28 @@ import org.apache.commons.codec.binary.Base64;
  * files stored in the database.
  *
  * <p>
- * Use DBByteObject for files, streams, and exceptionally long text. Store Java
+ Use DBLargeBinary for files and streams.  Store exceptionally long text in {@link DBByteObject} and Java
  * instances/objects as {@link DBJavaObject} for greater convenience.
  *
  * <p>
- * Generally DBBoolean is declared inside your DBRow sub-class as:
- * {@code @DBColumn public DBByteObject myByteColumn = new DBByteObject();}
+ Generally DBLargeBinary is declared inside your DBRow sub-class as:
+ {@code @DBColumn public DBLargeBinary myBinaryColumn = new DBLargeBinary();}
  *
  * <p>
- * DBByteObject is the standard type of {@link DBLargeObject BLOB columns}.
+ DBLargeBinary is the standard type of {@link DBLargeObject BLOB columns}.
  *
  * @author Gregory Graham
  */
-public class DBByteObject extends DBLargeObject<byte[]> {
+public class DBLargeBinary extends DBLargeObject<byte[]> {
 
 	private static final long serialVersionUID = 1;
 	transient InputStream byteStream = null;
 
 	/**
-	 * The Default constructor for a DBByteObject.
+	 * The Default constructor for a DBBinaryObject.
 	 *
 	 */
-	public DBByteObject() {
+	public DBLargeBinary() {
 		super();
 	}
 
@@ -66,7 +66,7 @@ public class DBByteObject extends DBLargeObject<byte[]> {
 	 *
 	 * @param aThis an expression that will result in a large object value
 	 */
-	public DBByteObject(LargeObjectExpression aThis) {
+	public DBLargeBinary(LargeObjectExpression aThis) {
 		super(aThis);
 	}
 
@@ -81,7 +81,7 @@ public class DBByteObject extends DBLargeObject<byte[]> {
 	}
 
 	/**
-	 * Sets the value of this DBByteObject to the byte array supplied.
+	 * Sets the value of this DBLargeBinary to the byte array supplied.
 	 *
 	 * @param byteArray	byteArray
 	 */
@@ -96,7 +96,7 @@ public class DBByteObject extends DBLargeObject<byte[]> {
 	}
 
 	/**
-	 * Sets the value of this DBByteObject to the InputStream supplied.
+	 * Sets the value of this DBLargeBinary to the InputStream supplied.
 	 *
 	 * <p>
 	 * The input stream will not be read until the containing DBRow is
@@ -110,7 +110,7 @@ public class DBByteObject extends DBLargeObject<byte[]> {
 	}
 
 	/**
-	 * Sets the value of this DBByteObject to the file supplied.
+	 * Sets the value of this DBLargeBinary to the file supplied.
 	 *
 	 * <p>
 	 * Unlike {@link #setValue(java.io.InputStream) setting an InputStream}, the
@@ -126,7 +126,7 @@ public class DBByteObject extends DBLargeObject<byte[]> {
 	}
 
 	/**
-	 * Set the value of the DBByteObject to the String provided.
+	 * Set the value of the DBLargeBinary to the String provided.
 	 *
 	 * @param string	string
 	 */
@@ -134,7 +134,7 @@ public class DBByteObject extends DBLargeObject<byte[]> {
 		setValue(string.getBytes());
 	}
 
-	void setValue(DBByteObject newLiteralValue) {
+	void setValue(DBLargeBinary newLiteralValue) {
 		setValue(newLiteralValue.getValue());
 	}
 
@@ -184,7 +184,7 @@ public class DBByteObject extends DBLargeObject<byte[]> {
 				bytesRead = input.read(resultSetBytes);
 			}
 		} catch (IOException ex) {
-			Logger.getLogger(DBByteObject.class.getName()).log(Level.SEVERE, null, ex);
+			Logger.getLogger(DBLargeBinary.class.getName()).log(Level.SEVERE, null, ex);
 		}
 		bytes = new byte[totalBytesRead];
 		int bytesAdded = 0;
@@ -229,7 +229,7 @@ public class DBByteObject extends DBLargeObject<byte[]> {
 						bytesRead = input.read(resultSetBytes);
 					}
 				} catch (IOException ex) {
-					Logger.getLogger(DBByteObject.class.getName()).log(Level.SEVERE, null, ex);
+					Logger.getLogger(DBLargeBinary.class.getName()).log(Level.SEVERE, null, ex);
 				} finally {
 					input.close();
 				}
@@ -273,7 +273,7 @@ public class DBByteObject extends DBLargeObject<byte[]> {
 						input.close();
 					}
 				} catch (IOException ex) {
-					Logger.getLogger(DBByteObject.class.getName()).log(Level.SEVERE, null, ex);
+					Logger.getLogger(DBLargeBinary.class.getName()).log(Level.SEVERE, null, ex);
 				}
 				bytes = new byte[totalBytesRead];
 				int bytesAdded = 0;
@@ -285,7 +285,7 @@ public class DBByteObject extends DBLargeObject<byte[]> {
 				try {
 					characterStream.close();
 				} catch (IOException ex) {
-					Logger.getLogger(DBByteObject.class.getName()).log(Level.SEVERE, null, ex);
+					Logger.getLogger(DBLargeBinary.class.getName()).log(Level.SEVERE, null, ex);
 				}
 			}
 		}
@@ -373,7 +373,7 @@ public class DBByteObject extends DBLargeObject<byte[]> {
 	}
 
 	/**
-	 * Tries to write the contents of this DBByteObject to the file supplied.
+	 * Tries to write the contents of this DBLargeBinary to the file supplied.
 	 *
 	 * <p>
 	 * Convenience method for {@link #writeToFileSystem(java.io.File) }.
@@ -388,7 +388,7 @@ public class DBByteObject extends DBLargeObject<byte[]> {
 	}
 
 	/**
-	 * Tries to write the contents of this DBByteObject to the file supplied.
+	 * Tries to write the contents of this DBLargeBinary to the file supplied.
 	 *
 	 * <p>
 	 * Convenience method for {@link #writeToFileSystem(java.io.File) }.
@@ -402,7 +402,7 @@ public class DBByteObject extends DBLargeObject<byte[]> {
 	}
 
 	/**
-	 * Tries to write the contents of this DBByteObject to the file supplied.
+	 * Tries to write the contents of this DBLargeBinary to the file supplied.
 	 *
 	 * <p>
 	 * Convenience method for {@link #writeToFileSystem(java.io.File) }.
@@ -457,9 +457,9 @@ public class DBByteObject extends DBLargeObject<byte[]> {
 
 	/**
 	 * Returns the byte[] used internally to store the value of this
-	 * DBByteObject.
+ DBLargeBinary.
 	 *
-	 * @return the byte[] value of this DBByteObject.
+	 * @return the byte[] value of this DBLargeBinary.
 	 */
 	public byte[] getBytes() {
 		return this.getLiteralValue();
@@ -491,8 +491,8 @@ public class DBByteObject extends DBLargeObject<byte[]> {
 	}
 
 	@Override
-	public DBByteObject getQueryableDatatypeForExpressionValue() {
-		return new DBByteObject();
+	public DBLargeBinary getQueryableDatatypeForExpressionValue() {
+		return new DBLargeBinary();
 	}
 
 	@Override
@@ -509,46 +509,46 @@ public class DBByteObject extends DBLargeObject<byte[]> {
 	protected byte[] getFromResultSet(DBDatabase database, ResultSet resultSet, String fullColumnName) throws SQLException {
 		byte[] bytes = new byte[]{};
 		DBDefinition defn = database.getDefinition();
-		if (defn.prefersLargeObjectsReadAsBase64CharacterStream(this)) {
-			try {
-				bytes = getFromCharacterReader(resultSet, fullColumnName);
-			} catch (IOException ex) {
-				throw new DBRuntimeException("Unable To Set Value: " + ex.getMessage(), ex);
-			}
-		} else if (defn.prefersLargeObjectsReadAsBytes()) {
-			bytes = getFromGetBytes(resultSet, fullColumnName);
-		} else if (defn.prefersLargeObjectsReadAsCLOB()) {
-			bytes = getFromCLOB(resultSet, fullColumnName);
-		} else if (defn.prefersLargeObjectsReadAsBLOB()) {
-			bytes = getFromBLOB(resultSet, fullColumnName);
-		} else {
-			bytes = getFromBinaryStream(resultSet, fullColumnName);
-		}
-//		try{
-//			bytes = getFromBinaryStream(resultSet, fullColumnName);
-//		} catch (Throwable exp1) {
-//			Logger.getLogger(DBByteObject.class.getName()).log(Level.WARNING, "Database rejected Binary Stream method", exp1);
+//		if (defn.prefersLargeObjectsReadAsBase64CharacterStream()) {
 //			try {
-//				bytes = getFromBLOB(resultSet, fullColumnName);
-//			} catch (Throwable exp2) {
-//				Logger.getLogger(DBByteObject.class.getName()).log(Level.WARNING, "Database rejected BLOB method", exp2);
-//				try {
-//					bytes = getFromCLOB(resultSet, fullColumnName);
-//				} catch (Throwable exp3) {
-//					Logger.getLogger(DBByteObject.class.getName()).log(Level.WARNING, "Database rejected CLOB method", exp3);
-//					try {
-//						bytes = getFromGetBytes(resultSet, fullColumnName);
-//					} catch (Throwable exp4) {
-//						Logger.getLogger(DBByteObject.class.getName()).log(Level.WARNING, "Database rejected Bytes method", exp4);
-//						try {
-//							bytes = getFromCharacterReader(resultSet, fullColumnName);
-//						} catch (Throwable exp5) {
-//							Logger.getLogger(DBByteObject.class.getName()).log(Level.SEVERE, "Database rejected Character Reader method", exp5);
-//						}
-//					}
-//				}
+//				bytes = getFromCharacterReader(resultSet, fullColumnName);
+//			} catch (IOException ex) {
+//				throw new DBRuntimeException("Unable To Set Value: " + ex.getMessage(), ex);
 //			}
+//		} else if (defn.prefersLargeObjectsReadAsBytes()) {
+//			bytes = getFromGetBytes(resultSet, fullColumnName);
+//		} else if (defn.prefersLargeObjectsReadAsCLOB()) {
+//			bytes = getFromCLOB(resultSet, fullColumnName);
+//		} else if (defn.prefersLargeObjectsReadAsBLOB()) {
+//			bytes = getFromBLOB(resultSet, fullColumnName);
+//		} else {
+//			bytes = getFromBinaryStream(resultSet, fullColumnName);
 //		}
+		try{
+			bytes = getFromBinaryStream(resultSet, fullColumnName);
+		} catch (Throwable exp1) {
+			Logger.getLogger(DBLargeBinary.class.getName()).log(Level.WARNING, "Database rejected Binary Stream method", exp1);
+			try {
+				bytes = getFromBLOB(resultSet, fullColumnName);
+			} catch (Throwable exp2) {
+				Logger.getLogger(DBLargeBinary.class.getName()).log(Level.WARNING, "Database rejected BLOB method", exp2);
+				try {
+					bytes = getFromGetBytes(resultSet, fullColumnName);
+				} catch (Throwable exp4) {
+					Logger.getLogger(DBLargeBinary.class.getName()).log(Level.WARNING, "Database rejected Bytes method", exp4);
+					try {
+						bytes = getFromCLOB(resultSet, fullColumnName);
+					} catch (Throwable exp3) {
+						Logger.getLogger(DBLargeBinary.class.getName()).log(Level.WARNING, "Database rejected CLOB method", exp3);
+						try {
+							bytes = getFromCharacterReader(resultSet, fullColumnName);
+						} catch (Throwable exp5) {
+							Logger.getLogger(DBLargeBinary.class.getName()).log(Level.SEVERE, "Database rejected Character Reader method", exp5);
+						}
+					}
+				}
+			}
+		}
 		return bytes;
 	}
 

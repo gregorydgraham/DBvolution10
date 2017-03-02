@@ -350,23 +350,23 @@ public class DBJavaObject<O> extends DBLargeObject<O> {
 		try {
 			obj = getFromBinaryStream(resultSet, fullColumnName);
 		} catch (Throwable exp1) {
-			Logger.getLogger(DBBinaryObject.class.getName()).log(Level.WARNING, "Database rejected Binary Stream method", exp1);
+			Logger.getLogger(DBLargeBinary.class.getName()).log(Level.WARNING, "Database rejected Binary Stream method", exp1);
 			try {
 				obj = getFromBLOB(resultSet, fullColumnName);
 			} catch (Throwable exp2) {
-				Logger.getLogger(DBBinaryObject.class.getName()).log(Level.WARNING, "Database rejected Binary Stream method", exp1);
+				Logger.getLogger(DBLargeBinary.class.getName()).log(Level.WARNING, "Database rejected Binary Stream method", exp1);
 				try {
 					obj = getFromGetBytes(resultSet, fullColumnName);
 				} catch (Throwable exp3) {
-					Logger.getLogger(DBBinaryObject.class.getName()).log(Level.WARNING, "Database rejected BLOB method", exp2);
+					Logger.getLogger(DBLargeBinary.class.getName()).log(Level.WARNING, "Database rejected BLOB method", exp2);
 					try {
 						obj = getFromCLOB(resultSet, fullColumnName);
 					} catch (Throwable exp4) {
-						Logger.getLogger(DBBinaryObject.class.getName()).log(Level.WARNING, "Database rejected Bytes method", exp4);
+						Logger.getLogger(DBLargeBinary.class.getName()).log(Level.WARNING, "Database rejected Bytes method", exp4);
 						try {
 							obj = getFromCharacterReader(resultSet, fullColumnName);
 						} catch (Throwable exp5) {
-							Logger.getLogger(DBBinaryObject.class.getName()).log(Level.SEVERE, "Database rejected Character Reader method", exp5);
+							Logger.getLogger(DBLargeBinary.class.getName()).log(Level.SEVERE, "Database rejected Character Reader method", exp5);
 						}
 					}
 				}

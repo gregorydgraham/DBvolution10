@@ -181,7 +181,7 @@ public class DBBinaryObjectTest extends AbstractTest {
 		public DBInteger carCompany = new DBInteger();
 
 		@DBColumn("image_file")
-		public DBBinaryObject imageBytes = new DBBinaryObject();
+		public DBLargeBinary imageBytes = new DBLargeBinary();
 
 		@DBColumn("image_name")
 		public DBString imageFilename = new DBString();
@@ -201,7 +201,7 @@ public class DBBinaryObjectTest extends AbstractTest {
 		public DBInteger carCompany = new DBInteger();
 
 		@DBColumn("image_file")
-		public DBBinaryObject imageBytes = new DBBinaryObject();
+		public DBLargeBinary imageBytes = new DBLargeBinary();
 
 		@DBColumn("image_name")
 		public DBString imageFilename = new DBString();
@@ -221,7 +221,7 @@ public class DBBinaryObjectTest extends AbstractTest {
 		public DBInteger carCompany = new DBInteger();
 
 		@DBColumn("image_file")
-		public DBBinaryObject imageBytes = new DBBinaryObject();
+		public DBLargeBinary imageBytes = new DBLargeBinary();
 
 		@DBColumn("image_name")
 		public DBString imageFilename = new DBString();

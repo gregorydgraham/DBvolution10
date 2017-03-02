@@ -68,9 +68,9 @@ public class MySQLDBDefinition extends DBDefinition {
 			return " VARCHAR(1000) CHARACTER SET utf8 COLLATE utf8_bin ";
 		} else if (qdt instanceof DBDate) {
 			return " DATETIME(6) ";
-		} else if (qdt instanceof DBBinaryObject) {
+		} else if (qdt instanceof DBLargeBinary) {
 			return " LONGBLOB ";
-		} else if (qdt instanceof DBByteObject) {
+		} else if (qdt instanceof DBLargeText) {
 			return " LONGTEXT ";
 		} else if (qdt instanceof DBLargeObject) {
 			return " LONGBLOB ";

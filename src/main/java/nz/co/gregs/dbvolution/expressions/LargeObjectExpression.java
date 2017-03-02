@@ -21,7 +21,7 @@ import java.util.Set;
 import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.DBQuery;
 import nz.co.gregs.dbvolution.DBRow;
-import nz.co.gregs.dbvolution.datatypes.DBBinaryObject;
+import nz.co.gregs.dbvolution.datatypes.DBLargeBinary;
 
 /**
  * LargeObjectExpression exposes database expressions for manipulating BLOBs,
@@ -29,7 +29,7 @@ import nz.co.gregs.dbvolution.datatypes.DBBinaryObject;
  *
  * @author gregorygraham
  */
-public class LargeObjectExpression implements LargeObjectResult, ExpressionColumn<DBBinaryObject> {
+public class LargeObjectExpression implements LargeObjectResult, ExpressionColumn<DBLargeBinary> {
 
 	private final LargeObjectResult blobResult;
 	private boolean nullProtectionRequired = false;
@@ -38,7 +38,7 @@ public class LargeObjectExpression implements LargeObjectResult, ExpressionColum
 	 * Default Constructor.
 	 */
 	protected LargeObjectExpression() {
-		blobResult = new DBBinaryObject();
+		blobResult = new DBLargeBinary();
 	}
 
 	/**
@@ -65,8 +65,8 @@ public class LargeObjectExpression implements LargeObjectResult, ExpressionColum
 	}
 
 	@Override
-	public DBBinaryObject getQueryableDatatypeForExpressionValue() {
-		return new DBBinaryObject();
+	public DBLargeBinary getQueryableDatatypeForExpressionValue() {
+		return new DBLargeBinary();
 	}
 
 	@Override
@@ -118,8 +118,8 @@ public class LargeObjectExpression implements LargeObjectResult, ExpressionColum
 	}
 
 	@Override
-	public DBBinaryObject asExpressionColumn() {
-		return new DBBinaryObject(this);
+	public DBLargeBinary asExpressionColumn() {
+		return new DBLargeBinary(this);
 	}
 
 }

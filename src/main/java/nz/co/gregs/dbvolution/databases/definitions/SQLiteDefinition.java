@@ -82,11 +82,11 @@ public class SQLiteDefinition extends DBDefinition {
 
 	@Override
 	protected String getDatabaseDataTypeOfQueryableDatatype(QueryableDatatype<?> qdt) {
-		if (qdt instanceof DBByteObject) {
+		if (qdt instanceof DBLargeText) {
 			return " TEXT ";
 		} else if (qdt instanceof DBJavaObject) {
 			return " BLOB ";
-		} else if (qdt instanceof DBBinaryObject) {
+		} else if (qdt instanceof DBLargeBinary) {
 			return " BLOB ";
 		} else if (qdt instanceof DBBooleanArray) {
 			return " VARCHAR(64) ";

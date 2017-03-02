@@ -424,7 +424,7 @@ public class DBTableClassGenerator {
 				if (precision == 1) {
 					value = DBBoolean.class;
 				} else {
-					value = DBBinaryObject.class;
+					value = DBLargeBinary.class;
 				}
 				break;
 			case Types.TINYINT:
@@ -480,14 +480,14 @@ public class DBTableClassGenerator {
 				break;
 			case Types.CLOB:
 			case Types.NCLOB:
-				value = DBByteObject.class;
+				value = DBLargeText.class;
 				break;
 			case Types.VARBINARY:
 			case Types.LONGVARBINARY:
 			case Types.BLOB:
 			case Types.ARRAY:
 			case Types.SQLXML:
-				value = DBBinaryObject.class;
+				value = DBLargeBinary.class;
 				break;
 			default:
 				throw new UnknownJavaSQLTypeException("Unknown Java SQL Type: " + columnType, columnType);

@@ -15,7 +15,7 @@
  */
 package nz.co.gregs.dbvolution.operators;
 
-import nz.co.gregs.dbvolution.datatypes.DBBinaryObject;
+import nz.co.gregs.dbvolution.datatypes.DBLargeBinary;
 import nz.co.gregs.dbvolution.exceptions.ComparisonBetweenTwoDissimilarTypes;
 import nz.co.gregs.dbvolution.exceptions.IncomparableTypeUsedInComparison;
 import nz.co.gregs.dbvolution.expressions.BooleanExpression;
@@ -55,7 +55,7 @@ public class DBEqualsOperatorTest extends AbstractTest {
 	@Test(expected = IncomparableTypeUsedInComparison.class)
 	public void testGenerateWhereExpressionThrowsDissimilarComparisonExceptionNotEqualsComparable() {
 		System.out.println("generateWhereExpression");
-		DBExpression column = new LargeObjectExpression(new DBBinaryObject());
+		DBExpression column = new LargeObjectExpression(new DBLargeBinary());
 		DBEqualsOperator instance = new DBEqualsOperator(new StringExpression("a string"));
 		BooleanExpression result = instance.generateWhereExpression(database, column);
 	}

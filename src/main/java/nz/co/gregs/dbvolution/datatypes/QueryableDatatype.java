@@ -196,7 +196,7 @@ public abstract class QueryableDatatype<T> extends Object implements Serializabl
 		} else if (o instanceof Date) {
 			qdt = (QueryableDatatype<S>) new DBDate();
 		} else if (o instanceof Byte[]) {
-			qdt = (QueryableDatatype<S>) new DBBinaryObject();
+			qdt = (QueryableDatatype<S>) new DBLargeBinary();
 		} else if (o instanceof Boolean) {
 			qdt = (QueryableDatatype<S>) new DBBoolean();
 		} else if (o instanceof NumberResult) {
@@ -206,7 +206,7 @@ public abstract class QueryableDatatype<T> extends Object implements Serializabl
 		} else if (o instanceof DateResult) {
 			qdt = (QueryableDatatype<S>) new DBDate();
 		} else if (o instanceof LargeObjectResult) {
-			qdt = (QueryableDatatype<S>) new DBBinaryObject();
+			qdt = (QueryableDatatype<S>) new DBLargeBinary();
 		} else if (o instanceof BooleanResult) {
 			qdt = (QueryableDatatype<S>) new DBBoolean();
 		} else {

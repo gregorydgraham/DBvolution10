@@ -73,10 +73,12 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 			return " VARCHAR(64) ";
 		} else if (qdt instanceof DBDate) {
 			return " DATETIMEOFFSET ";
-		} else if (qdt instanceof DBBinaryObject) {
+		} else if (qdt instanceof DBLargeBinary) {
 			return " IMAGE ";
-		} else if (qdt instanceof DBLargeObject) {
+		} else if (qdt instanceof DBLargeText) {
 			return " NTEXT ";
+		} else if (qdt instanceof DBLargeObject) {
+			return " IMAGE ";
 		} else if (qdt instanceof DBString) {
 			return " NVARCHAR(1000) COLLATE Latin1_General_CS_AS_KS_WS ";
 		} else if (qdt instanceof DBPoint2D) {
@@ -261,12 +263,12 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 
 	@Override
 	public boolean prefersLargeObjectsSetAsBase64String(DBLargeObject<?> lob) {
-		return !(lob instanceof DBBinaryObject);
+		return !(lob instanceof DBLargeBinary);
 	}
 
 	@Override
 	public boolean prefersLargeObjectsReadAsBase64CharacterStream(DBLargeObject<?> lob) {
-		return !(lob instanceof DBBinaryObject);
+		return !(lob instanceof DBLargeBinary);
 	}
 
 	@Override

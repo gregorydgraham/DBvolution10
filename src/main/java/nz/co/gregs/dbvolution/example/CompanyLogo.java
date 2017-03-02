@@ -19,7 +19,7 @@ import nz.co.gregs.dbvolution.datatypes.DBInteger;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.datatypes.DBString;
 import nz.co.gregs.dbvolution.annotations.*;
-import nz.co.gregs.dbvolution.datatypes.DBBinaryObject;
+import nz.co.gregs.dbvolution.datatypes.DBLargeBinary;
 
 /**
  * A DBRow Java class that represents the "CompanyLogo" table.
@@ -91,7 +91,7 @@ public class CompanyLogo extends DBRow {
 	 *
 	 */
 	@DBColumn("image_file")
-	public DBBinaryObject imageBytes = new DBBinaryObject();
+	public DBLargeBinary imageBytes = new DBLargeBinary();
 
 	/**
 	 * A DBString field representing the "image_name" column in the database.

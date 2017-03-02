@@ -24,7 +24,7 @@ import nz.co.gregs.dbvolution.DBQuery;
 import nz.co.gregs.dbvolution.DBQueryRow;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.columns.LargeObjectColumn;
-import nz.co.gregs.dbvolution.datatypes.DBBinaryObject;
+import nz.co.gregs.dbvolution.datatypes.DBLargeBinary;
 import nz.co.gregs.dbvolution.example.CompanyLogo;
 import nz.co.gregs.dbvolution.generic.AbstractTest;
 import static org.hamcrest.Matchers.*;
@@ -56,8 +56,8 @@ public class LargeObjectExpressionTest extends AbstractTest {
 		System.out.println("getQueryableDatatypeForExpressionValue");
 		CompanyLogo companyLogo = new CompanyLogo();
 		LargeObjectColumn instance = companyLogo.column(companyLogo.imageBytes);
-		DBBinaryObject expResult = new DBBinaryObject();
-		DBBinaryObject result = instance.getQueryableDatatypeForExpressionValue();
+		DBLargeBinary expResult = new DBLargeBinary();
+		DBLargeBinary result = instance.getQueryableDatatypeForExpressionValue();
 		assertEquals(expResult.getClass(), result.getClass());
 	}
 
