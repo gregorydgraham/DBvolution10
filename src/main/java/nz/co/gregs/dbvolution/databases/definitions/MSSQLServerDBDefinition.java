@@ -150,6 +150,11 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 	public Object endSQLStatement() {
 		return "";
 	}
+	
+	@Override
+	public String beginStringValue() {
+		return " N'";
+	}
 
 	@Override
 	public Object getLimitRowsSubClauseDuringSelectClause(QueryOptions options) {
