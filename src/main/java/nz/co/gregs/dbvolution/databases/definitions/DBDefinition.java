@@ -2266,12 +2266,12 @@ public abstract class DBDefinition {
 
 	private String fakeLeastOfTransformation(List<String> strs) {
 		String sql = "";
-		String prevCase = null;
+		String prevCase;
 		if (strs.size() == 1) {
 			return strs.get(0);
 		}
 		for (String str : strs) {
-			if (sql == "") {
+			if ("".equals(sql)) {
 				sql = "(" + str + ")";
 			} else {
 				prevCase = sql;
@@ -2311,15 +2311,16 @@ public abstract class DBDefinition {
 
 	private String fakeGreatestOfTransformation(List<String> strs) {
 		String sql = "";
-		String prevCase = null;
+		String prevCase;
 		if (strs.size() == 1) {
 			return strs.get(0);
 		}
 		for (String str : strs) {
-			if (prevCase == null) {
-				prevCase = "(" + str + ")";
+			if ("".equals(sql)) {
+				sql = "(" + str + ")";
 			} else {
-				sql = "(case when " + str + " > " + prevCase + " then " + str + " else " + prevCase + " end)";
+				prevCase = sql;
+				sql = "(case when (" + str + ") > (" + prevCase + ") then (" + str + ") else (" + prevCase + ") end)";
 			}
 		}
 		return sql;
