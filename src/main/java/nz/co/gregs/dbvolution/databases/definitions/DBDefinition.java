@@ -2271,10 +2271,11 @@ public abstract class DBDefinition {
 			return strs.get(0);
 		}
 		for (String str : strs) {
-			if (prevCase == null) {
-				prevCase = "(" + str + ")";
+			if (sql == "") {
+				sql = "(" + str + ")";
 			} else {
-				sql = "(case when " + str + " < " + prevCase + " then " + str + " else " + prevCase + " end)";
+				prevCase = sql;
+				sql = "(case when (" + str + ") < (" + prevCase + ") then (" + str + ") else (" + prevCase + ") end)";
 			}
 		}
 		return sql;

@@ -455,6 +455,11 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 	}
 
 	@Override
+	protected String getCurrentDateTimeFunction() {
+		return " SYSDATETIMEOFFSET() ";
+	}
+
+	@Override
 	public String doDayOfWeekTransform(String dateSQL) {
 		return " datepart(dw,(" + dateSQL + "))";
 	}
