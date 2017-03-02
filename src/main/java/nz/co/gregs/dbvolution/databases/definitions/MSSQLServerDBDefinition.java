@@ -649,6 +649,11 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 	}
 
 	@Override
+	public String doPolygon2DAsTextTransform(String polygonSQL) {
+		return "((" + polygonSQL + ").STAsText())";
+	}
+
+	@Override
 	public String doPolygon2DIntersectionTransform(String firstGeometry, String secondGeometry) {
 		return "((" + firstGeometry + ").STIntersection(" + secondGeometry + "))";
 	}
