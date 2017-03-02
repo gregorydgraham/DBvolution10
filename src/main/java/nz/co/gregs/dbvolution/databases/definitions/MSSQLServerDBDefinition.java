@@ -486,7 +486,7 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 
 	@Override
 	public String doStringToNumberTransform(String stringResultContainingANumber) {
-		return "(CAST(0.0 as numeric(15,10))+(" + stringResultContainingANumber + "))";
+		return "(CAST(0.0 as numeric(15,10))+(CAST (" + stringResultContainingANumber + " as float)))";
 	}
 
 	@Override

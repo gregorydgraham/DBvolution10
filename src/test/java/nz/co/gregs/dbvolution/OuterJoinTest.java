@@ -308,8 +308,12 @@ public class OuterJoinTest extends AbstractTest {
 		System.out.println(sqlForQuery);
 		Assert.assertThat(testableSQL(sqlForQuery),
 				allOf(
-						containsString(testableSQL("( __78874071.name) >= 'ford'")),
-						containsString(testableSQL("( __78874071.name) <= 'toyota'")),
+						anyOf(
+							containsString(testableSQL("( __78874071.name) >= 'ford'")),
+							containsString(testableSQL("( __78874071.name) >= N'ford'"))),
+						anyOf(
+							containsString(testableSQL("( __78874071.name) <= 'toyota'")),
+							containsString(testableSQL("( __78874071.name) <= N'toyota'"))),
 						anyOf(containsString(testableSQL("__1997432637.enabled = TRUE")),
 								containsString(testableSQL("__1997432637.enabled = 1")),
 								containsString(testableSQL("( CASE WHEN __1997432637.enabled IS NULL THEN -1 ELSE __1997432637.enabled END ) = ( CASE WHEN  1  IS NULL THEN -1 ELSE  1  END )")))

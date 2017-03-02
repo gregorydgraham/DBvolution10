@@ -38,8 +38,9 @@ public class UpdateTest extends AbstractTest {
 		insertedRow.individualAllocationsAllowed.setValue("Y");
 		String sqlForUpdate = marquesTable.update(insertedRow).get(0).getSQLStatements(database).get(0);
 		final String testableQueryString = testableSQL("UPDATE MARQUE SET INTINDALLOCALLOWED = 'Y' WHERE (UID_MARQUE = 4);");
+		final String testableSQLServerQueryString = testableSQL("UPDATE MARQUE SET INTINDALLOCALLOWED = N'Y' WHERE (UID_MARQUE = 4);");
 		Assert.assertThat(testableSQL(sqlForUpdate),
-				is(testableQueryString));
+				isIn(new String[]{testableQueryString,testableSQLServerQueryString}));
 //        marquesTable.update(insertedRow);
 		insertedRow = marquesTable.getRowsByPrimaryKey(4).get(0);
 		Assert.assertThat(insertedRow.individualAllocationsAllowed.toString(), is("Y"));
@@ -56,8 +57,12 @@ public class UpdateTest extends AbstractTest {
 		peugeot.individualAllocationsAllowed.setValue("Y");
 		String sqlForUpdate = marquesTable.update(peugeot).get(0).getSQLStatements(database).get(0);
 		final String updateQueryStr = testableSQL("UPDATE MARQUE SET INTINDALLOCALLOWED = 'Y' WHERE (UID_MARQUE = 4893059);");
+		final String updateSQLServerQueryStr = testableSQL("UPDATE MARQUE SET INTINDALLOCALLOWED = N'Y' WHERE (UID_MARQUE = 4893059);");
 		Assert.assertThat(testableSQL(sqlForUpdate),
-				is(updateQueryStr));
+				isIn(new String[]{
+					updateQueryStr,
+					updateSQLServerQueryStr
+				}));
 		marquesTable.update(peugeot);
 		Marque updatePeugeot = marquesTable.getRowsByExample(marque).get(0);
 		Assert.assertThat(updatePeugeot.individualAllocationsAllowed.toString(), is("Y"));
