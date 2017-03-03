@@ -134,8 +134,8 @@ public abstract class DBAction {
 	 * 
 	 * <p>Used internally during UPDATE and INSERT.</p>
 	 *
-	 * @param row
-	 * @param db
+	 * @param row the row that will be used in the method
+	 * @param db the database to exact the DBAction on
 	 * @return a string representing the 
 	 */
 	protected String getPrimaryKeySQL(DBDatabase db, DBRow row) {

@@ -174,8 +174,8 @@ public abstract class QueryableDatatype<T> extends Object implements Serializabl
 	 * NumberResult, StringResult, DateResult, LargeObjectResult, BooleanResult
 	 * and defaults everything else to DBJavaObject.
 	 *
-	 * @param <S>
-	 * @param o	o
+	 * @param <S> the base datatype returned by the QDT
+	 * @param o	the object to be encapsulated in the QDT
 	 * @return a QDT that will provide good results for the provided object.
 	 */
 	@SuppressWarnings("unchecked")
@@ -340,6 +340,8 @@ public abstract class QueryableDatatype<T> extends Object implements Serializabl
 
 	/**
 	 * Set the value of this QDT to the value provided.
+	 * 
+	 * @param newLiteralValue the new value
 	 */
 	void setValue(T newLiteralValue) {
 		this.setLiteralValue(newLiteralValue);
@@ -353,7 +355,7 @@ public abstract class QueryableDatatype<T> extends Object implements Serializabl
 	 * Subclass writers should ensure that the method handles nulls correctly and
 	 * throws an exception if an inappropriate value is supplied.
 	 *
-	 * @param encodedValue
+	 * @param encodedValue the value of the QDT in the appropriate encoding 
 	 */
 	protected abstract void setValueFromStandardStringEncoding(String encodedValue);
 
@@ -932,7 +934,7 @@ public abstract class QueryableDatatype<T> extends Object implements Serializabl
 	 * for an example.</p>
 	 *
 	 * @param db	db
-	 * @param formattedColumnName
+	 * @param formattedColumnName the name of the database column or similar expression ready to be used in an SQL excerpt
 	 * @return the formatted column ready to be used in an SQL statement
 	 */
 	public String formatColumnForSQLStatement(DBDatabase db, String formattedColumnName) {

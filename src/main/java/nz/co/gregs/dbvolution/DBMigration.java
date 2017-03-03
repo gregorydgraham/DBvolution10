@@ -38,7 +38,7 @@ import nz.co.gregs.dbvolution.query.*;
  *
  * <p>
  * a DBMigration requires a subclass of the DBRow to work. That is called the
- * migration target and needs to be extend to produce a migration mapper.</p>
+ * migration target and needs to be extended to produce a migration mapper.</p>
  *
  * <p>
  * The migration mapper is an extension of the migration target that includes

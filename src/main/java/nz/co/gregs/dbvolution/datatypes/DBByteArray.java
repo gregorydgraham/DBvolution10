@@ -41,7 +41,7 @@ import org.apache.commons.codec.binary.Base64;
  * <p>
  * DBByteArray is the standard type of {@link DBLargeObject BLOB columns}.
  *
- * @deprecated DBByteArray does not correctly differentiate between CLOB and BLOB producing inconsistencies between databases.  Move to {@link DBBinaryObject} for binaries like images or {@link DBByteObject} for XML, HTML, or other large text values.
+ * @deprecated DBByteArray does not correctly differentiate between CLOB and BLOB producing inconsistencies between databases.  Move to {@link DBLargeBinary} for binaries like images or {@link DBLargeText} for XML, HTML, or other large text values.
  * @author Gregory Graham
  */
 @Deprecated()

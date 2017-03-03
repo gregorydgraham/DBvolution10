@@ -34,7 +34,7 @@ import org.apache.commons.logging.LogFactory;
  *
  *
  * @author Gregory Graham
- * @param <R>
+ * @param <R> the resulting DBRow from this DBMigrate
  */
 public class DBMigrate<R extends DBRow> extends DBAction {
 
@@ -50,12 +50,12 @@ public class DBMigrate<R extends DBRow> extends DBAction {
 	/**
 	 * Creates a DBMigrate action for the row.
 	 *
-	 * @param migration the row to insert
-	 * @param source
-	 * @param examples
+	 * @param migration the mapping to transform the source data
+	 * @param resultRow the resulting DBRow produced by the mapping
+	 * @param examples extra examples used to reduce the source data set.
 	 */
-	public DBMigrate(DBMigration<R> migration, DBRow source, DBRow... examples) {
-		super(source);
+	public DBMigrate(DBMigration<R> migration, DBRow resultRow, DBRow... examples) {
+		super(resultRow);
 		sourceMigration = migration;
 		extraExamples = examples;
 	}
@@ -63,9 +63,9 @@ public class DBMigrate<R extends DBRow> extends DBAction {
 	/**
 	 * Perform the migration
 	 *
-	 * @param database
+	 * @param database the database used by this action
 	 * @return a DBActionList of the migration's effects
-	 * @throws SQLException
+	 * @throws SQLException SQL Exceptions may be thrown
 	 */
 	public DBActionList migrate(DBDatabase database) throws SQLException {
 		DBMigrate<R> migrate = new DBMigrate<>(sourceMigration, getRow());

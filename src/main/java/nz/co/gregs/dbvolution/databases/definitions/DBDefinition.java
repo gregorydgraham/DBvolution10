@@ -87,16 +87,16 @@ public abstract class DBDefinition {
 	 * For instance the date parts might be transformed into a string like "
 	 * DATETIME('2013-03-23 00:00:00') "
 	 *
-	 * @param years
-	 * @param months
-	 * @param days
-	 * @param minutes
-	 * @param hours
-	 * @param seconds
-	 * @param subsecond
-	 * @param timeZoneSign
-	 * @param timeZoneMinuteOffSet
-	 * @param timeZoneHourOffset
+	 * @param years the sql representing the years part of the date
+	 * @param months the sql representing the months (1-12) part of the date
+	 * @param days the sql representing the days (0-31) part of the date
+	 * @param minutes the sql representing the minutes (0-60) part of the date
+	 * @param hours the sql representing the hours (0-24) part of the date
+	 * @param seconds the sql representing the seconds (0-59) part of the date
+	 * @param subsecond  the sql representing the subsecond (0.0-0.9999) part of the date, precision is based on the database's limitations
+	 * @param timeZoneSign + or -
+	 * @param timeZoneMinuteOffSet the sql representing the hours (0-13) part of the date's time zone
+	 * @param timeZoneHourOffset the sql representing the minutes (0-59) part of the date's time zone
 	 * @return the date formatted as a string that the database will be correctly interpret as a date.
 	 */
 	public String getDatePartsFormattedForQuery(String years, String months, String days, String hours, String minutes, String seconds, String subsecond, String timeZoneSign, String timeZoneHourOffset, String timeZoneMinuteOffSet){
@@ -1778,7 +1778,7 @@ public abstract class DBDefinition {
 	 * Indicates whether the database requires LargeObjects to be encoded as
 	 * Base64 CLOBS using the CharacterStream method to read the value.
 	 *
-	 * @param lob
+	 * @param lob the DBLargeObject which we are querying about.
 	 * @return the default implementation returns FALSE.
 	 */
 	public boolean prefersLargeObjectsReadAsBase64CharacterStream(DBLargeObject<?> lob) {
@@ -1839,11 +1839,11 @@ public abstract class DBDefinition {
 	 * setCharacterStream method.
 	 *
 	 * <p>
-	 * If both {@link #prefersLargeObjectsSetAsCharacterStream() } and
-	 * {@link #prefersLargeObjectsSetAsBase64String()} return FALSE, DBvolution
+	 * If both {@link #prefersLargeObjectsSetAsCharacterStream(nz.co.gregs.dbvolution.datatypes.DBLargeObject) } and
+	 * {@link #prefersLargeObjectsSetAsBase64String(nz.co.gregs.dbvolution.datatypes.DBLargeObject) } return FALSE, DBvolution
 	 * will use the setBinaryStream method to set the value.
 	 *
-	 * @param lob
+	 * @param lob the DBLargeObject which we are querying about.
 	 * @return the default implementation returns FALSE.
 	 */
 	public boolean prefersLargeObjectsSetAsCharacterStream(DBLargeObject<?> lob) {
@@ -1855,11 +1855,11 @@ public abstract class DBDefinition {
 	 * setBLOB method.
 	 *
 	 * <p>
-	 * If both {@link #prefersLargeObjectsSetAsCharacterStream() } and
-	 * {@link #prefersLargeObjectsSetAsBase64String()} return FALSE, DBvolution
+	 * If both {@link #prefersLargeObjectsSetAsCharacterStream(nz.co.gregs.dbvolution.datatypes.DBLargeObject)  } and
+	 * {@link #prefersLargeObjectsSetAsBase64String(nz.co.gregs.dbvolution.datatypes.DBLargeObject) } return FALSE, DBvolution
 	 * will use the setBinaryStream method to set the value.
 	 *
-	 * @param lob
+	 * @param lob the DBLargeObject which we are querying about.
 	 * @return the default implementation returns FALSE.
 	 */
 	public boolean prefersLargeObjectsSetAsBLOB(DBLargeObject<?> lob) {
@@ -1871,11 +1871,11 @@ public abstract class DBDefinition {
 	 * setCharacterStream method.
 	 *
 	 * <p>
-	 * If both {@link #prefersLargeObjectsSetAsCharacterStream() } and
-	 * {@link #prefersLargeObjectsSetAsBase64String()} return FALSE, DBvolution
+	 * If both {@link #prefersLargeObjectsSetAsCharacterStream(nz.co.gregs.dbvolution.datatypes.DBLargeObject) } and
+	 * {@link #prefersLargeObjectsSetAsBase64String(nz.co.gregs.dbvolution.datatypes.DBLargeObject) } return FALSE, DBvolution
 	 * will use the setBinaryStream method to set the value.
 	 *
-	 * @param lob
+	 * @param lob the DBLargeObject which we are querying about.
 	 * @return the default implementation returns FALSE.
 	 */
 	public boolean prefersLargeObjectsSetAsBase64String(DBLargeObject<?> lob) {
@@ -4574,7 +4574,7 @@ public abstract class DBDefinition {
 	 * The default method returns NULL which causes the generator to use a
 	 * DBJavaObject.
 	 *
-	 * @param typeName
+	 * @param typeName the name of the SQL data type as reported by JDBC
 	 * @return the class of the QDT that can be used with this columns of this
 	 * type name.
 	 */
@@ -4637,7 +4637,7 @@ public abstract class DBDefinition {
 	 * If the database supports comparing booleans (see {@link #supportsComparingBooleanResults()
 	 * }) just return the input.
 	 *
-	 * @param booleanStatement
+	 * @param booleanStatement SQL the resolves to a boolean statement
 	 * @return the statement transformed so that the value can be compared using
 	 * the standard operators, by default the method returns the input unchanged.
 	 */
@@ -4657,7 +4657,7 @@ public abstract class DBDefinition {
 	 * If the database supports comparing booleans (see {@link #supportsComparingBooleanResults()
 	 * }) just return the input.
 	 *
-	 * @param booleanValue
+	 * @param booleanValueSQL the resolves to a boolean statement
 	 * @return the statement transformed so that the value can be compared using
 	 * the standard operators, by default the method returns the input unchanged.
 	 */

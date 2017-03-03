@@ -56,7 +56,7 @@ public class DBDateRepeat extends QueryableDatatype<Period> implements DateRepea
 	/**
 	 * Creates a new DBDateRepeat with the value specified.
 	 *
-	 * @param interval
+	 * @param interval the interval that this QDT will represent
 	 */
 	public DBDateRepeat(Period interval) {
 		super(interval);
@@ -68,7 +68,7 @@ public class DBDateRepeat extends QueryableDatatype<Period> implements DateRepea
 	 * <p>
 	 * Very useful for adding column expressions to a DBRow subclass.
 	 *
-	 * @param interval
+	 * @param interval the interval that this QDT will represent
 	 */
 	public DBDateRepeat(DateRepeatExpression interval) {
 		super(interval);
@@ -80,7 +80,7 @@ public class DBDateRepeat extends QueryableDatatype<Period> implements DateRepea
 	 * <p>
 	 * Use this method before inserting the value into the database.
 	 *
-	 * @param newLiteralValue
+	 * @param newLiteralValue the new value
 	 */
 	@Override
 	public void setValue(Period newLiteralValue) {

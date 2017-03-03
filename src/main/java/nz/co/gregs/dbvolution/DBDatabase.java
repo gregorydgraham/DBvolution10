@@ -1864,7 +1864,7 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 	 * <p>
 	 * See DBMigrationTest for examples.</p>
 	 *
-	 * @param <K>
+	 * @param <K> the DBRow extension that maps fields of internal DBRows to all the fields of it's superclass.
 	 * @param mapper a class that can be used to map one or more database tables
 	 * to a single table.
 	 * @return a DBMigration for the mapper class
