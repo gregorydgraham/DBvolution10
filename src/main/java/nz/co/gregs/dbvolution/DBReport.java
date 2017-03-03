@@ -85,7 +85,7 @@ public class DBReport extends RowDefinition {
 	private static final long serialVersionUID = 1L;
 
 	private transient ColumnProvider[] sortColumns = new ColumnProvider[]{};
-	protected boolean blankQueryAllowed = false;
+	private boolean blankQueryAllowed = false;
 
 	/**
 	 * Gets all the report rows of the supplied DBReport using only conditions
@@ -132,6 +132,15 @@ public class DBReport extends RowDefinition {
 	 */
 	public void setBlankQueryAllowed(boolean allow) {
 		this.blankQueryAllowed = allow;
+	}
+
+	/**
+	 * Reports whether or not this DBReport is allowed to return all rows without restriction.
+	 *
+	 * @return TRUE if blank queries are allowed, otherwise FALSE
+	 */
+	public boolean getBlankQueryAllowed() {
+		return this.blankQueryAllowed;
 	}
 
 	/**
@@ -216,7 +225,7 @@ public class DBReport extends RowDefinition {
 	 */
 	public static <A extends DBReport> List<A> getRows(DBDatabase database, A exampleReport, DBRow... rows) throws SQLException {
 		DBQuery query = getDBQuery(database, exampleReport, rows);
-		query.setBlankQueryAllowed(exampleReport.blankQueryAllowed);
+		query.setBlankQueryAllowed(exampleReport.getBlankQueryAllowed());
 		List<A> reportRows;
 		List<DBQueryRow> allRows = query.getAllRows();
 		reportRows = getReportsFromQueryResults(allRows, exampleReport);

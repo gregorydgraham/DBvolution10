@@ -24,7 +24,7 @@ import javax.sql.DataSource;
  * @author Gregory Graham
  */
 public class H2MemoryDB extends H2DB {
-	public static final long serialVersionUID = 1l;
+	private static final long serialVersionUID = 1l;
 
 	/**
 	 * Creates a DBDatabase instance for an H2 Memory database with the given JDBC

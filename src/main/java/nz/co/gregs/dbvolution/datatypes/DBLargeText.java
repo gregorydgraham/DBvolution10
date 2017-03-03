@@ -31,7 +31,7 @@ import org.apache.commons.codec.binary.Base64;
  *
  * <p>
  * Use DBLargeText for exceptionally long text. Store Java
- * instances/objects as {@link DBJavaObject} and files as {@link DBBinaryObject} for greater convenience.
+ * instances/objects as {@link DBJavaObject} and files as {@link DBLargeBinary} for greater convenience.
  *
  * <p>
  * Generally DBLargeText is declared inside your DBRow sub-class as:

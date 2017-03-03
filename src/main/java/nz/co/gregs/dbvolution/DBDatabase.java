@@ -58,7 +58,7 @@ import org.apache.commons.logging.LogFactory;
  */
 public abstract class DBDatabase implements Serializable, Cloneable {
 
-	public static final long serialVersionUID = 1l;
+	private static final long serialVersionUID = 1l;
 	private static final Log LOG = LogFactory.getLog(DBDatabase.class);
 
 	private String driverName = "";

@@ -4661,11 +4661,11 @@ public abstract class DBDefinition {
 	 * @return the statement transformed so that the value can be compared using
 	 * the standard operators, by default the method returns the input unchanged.
 	 */
-	public String doBooleanValueToBooleanComparisonValueTransform(String booleanValue) {
+	public String doBooleanValueToBooleanComparisonValueTransform(String booleanValueSQL) {
 		if (this.supportsComparingBooleanResults()) {
-			return booleanValue;
+			return booleanValueSQL;
 		} else {
-			return " CASE WHEN " + booleanValue + " IS NULL THEN -1 ELSE " + booleanValue + " END ";
+			return " CASE WHEN " + booleanValueSQL + " IS NULL THEN -1 ELSE " + booleanValueSQL + " END ";
 		}
 	}
 

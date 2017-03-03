@@ -31,7 +31,7 @@ import org.apache.commons.codec.binary.Base64;
  * files stored in the database.
  *
  * <p>
- Use DBLargeBinary for files and streams.  Store exceptionally long text in {@link DBByteObject} and Java
+ Use DBLargeBinary for files and streams.  Store exceptionally long text in {@link DBLargeText} and Java
  * instances/objects as {@link DBJavaObject} for greater convenience.
  *
  * <p>
