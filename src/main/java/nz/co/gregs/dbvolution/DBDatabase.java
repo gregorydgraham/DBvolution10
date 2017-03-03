@@ -164,6 +164,8 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 	 * @see NuoDB
 	 */
 	protected DBDatabase() {
+		SLEEP_BETWEEN_CONNECTION_RETRIES_MILLIS = 10;
+		MAX_CONNECTION_RETRIES = 3;
 	}
 
 	/**
@@ -194,6 +196,8 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 	 * @see NuoDB
 	 */
 	public DBDatabase(DBDefinition definition, DataSource ds) {
+		SLEEP_BETWEEN_CONNECTION_RETRIES_MILLIS = 10;
+		MAX_CONNECTION_RETRIES = 3;
 		this.definition = definition;
 		this.dataSource = ds;
 	}
@@ -225,6 +229,8 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 	 * @see PostgresDB
 	 */
 	public DBDatabase(DBDefinition definition, String driverName, String jdbcURL, String username, String password) {
+		SLEEP_BETWEEN_CONNECTION_RETRIES_MILLIS = 10;
+		MAX_CONNECTION_RETRIES = 3;
 		this.definition = definition;
 		this.driverName = driverName;
 		this.jdbcURL = jdbcURL;
@@ -334,7 +340,8 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 	}
 
 	private Connection getRawConnection() throws UnableToFindJDBCDriver, UnableToCreateDatabaseConnectionException, SQLException {
-		Connection connection;
+		Connection connection = null;
+		int retries = 0;
 		synchronized (getConnectionSynchronizeObject) {
 			if (this.dataSource == null) {
 				try {
@@ -343,10 +350,22 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 				} catch (ClassNotFoundException noDriver) {
 					throw new UnableToFindJDBCDriver(getDriverName(), noDriver);
 				}
-				try {
-					connection = getConnectionFromDriverManager();
-				} catch (SQLException noConnection) {
-					throw new UnableToCreateDatabaseConnectionException(getJdbcURL(), getUsername(), noConnection);
+				while (connection == null) {
+					try {
+						connection = getConnectionFromDriverManager();
+					} catch (SQLException noConnection) {
+						if (retries < MAX_CONNECTION_RETRIES) {
+							retries++;
+							try {
+								Thread.sleep(SLEEP_BETWEEN_CONNECTION_RETRIES_MILLIS);
+//					throw new UnableToCreateDatabaseConnectionException(getJdbcURL(), getUsername(), noConnection);
+							} catch (InterruptedException ex) {
+								Logger.getLogger(DBDatabase.class.getName()).log(Level.SEVERE, null, ex);
+							}
+						} else {
+							throw noConnection;
+						}
+					}
 				}
 			} else {
 				try {
@@ -365,6 +384,8 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 		}
 		return connection;
 	}
+	private final int SLEEP_BETWEEN_CONNECTION_RETRIES_MILLIS;
+	private final int MAX_CONNECTION_RETRIES;
 
 	/**
 	 * Used to hold the database open if required by the database.
