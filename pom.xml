@@ -740,6 +740,12 @@
             <artifactId>reflections</artifactId>
             <version>0.9.10</version>
             <type>jar</type>
+						<exclusions>
+							<exclusion>
+								<groupId>com.google.guava</groupId>
+								<artifactId>guava</artifactId>
+							</exclusion>
+						</exclusions>
         </dependency>
         <dependency>
             <groupId>commons-logging</groupId>
@@ -834,7 +840,7 @@
     <distributionManagement>
         <site>
             <id>dbv-website-reports</id>
-            <url>ftp://www.gregs.co.nz/subdomains/dbvolution/httpdocs/site</url>
+            <url>http://www.gregs.co.nz/dbvolution/reports/</url>
         </site>
         <snapshotRepository>
             <id>ossrh</id>
