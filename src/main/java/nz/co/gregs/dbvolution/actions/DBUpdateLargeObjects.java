@@ -16,6 +16,7 @@
 package nz.co.gregs.dbvolution.actions;
 
 import java.io.BufferedInputStream;
+import java.io.IOError;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -29,8 +30,10 @@ import java.util.logging.Logger;
 import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.databases.DBStatement;
+import nz.co.gregs.dbvolution.databases.PostgresDB;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.datatypes.DBLargeObject;
+import nz.co.gregs.dbvolution.datatypes.DBLargeText;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 import nz.co.gregs.dbvolution.exceptions.DBRuntimeException;
 import nz.co.gregs.dbvolution.internal.properties.PropertyWrapper;
@@ -74,33 +77,68 @@ public class DBUpdateLargeObjects extends DBUpdate {
 
 				if (largeObject.isNull()) {
 					setToNullUsingStringValue(defn, row, col, largeObject, db, statement);
-				} else {
-//					if (defn.prefersLargeObjectsSetAsCharacterStream(largeObject)) {
-//						setUsingCharacterStream(defn, row, col, largeObject, db, statement);
-//					} else if (defn.prefersLargeObjectsSetAsBase64String(largeObject)) {
-//						setUsingBase64String(defn, row, col, largeObject, db, statement);
-//					} else if (defn.prefersLargeObjectsSetAsBLOB(largeObject)) {
-//						setUsingBLOB(defn, row, col, largeObject, db, statement);
-//					} else {
-//						setUsingBinaryStream(defn, row, col, largeObject, db, statement);
-//					}
-					try {
-						setUsingBinaryStream(defn, row, col, largeObject, db, statement);
-					} catch (Throwable exp1) {
+				} else //					if (defn.prefersLargeObjectsSetAsCharacterStream(largeObject)) {
+				//						setUsingCharacterStream(defn, row, col, largeObject, db, statement);
+				//					} else if (defn.prefersLargeObjectsSetAsBase64String(largeObject)) {
+				//						setUsingBase64String(defn, row, col, largeObject, db, statement);
+				//					} else if (defn.prefersLargeObjectsSetAsBLOB(largeObject)) {
+				//						setUsingBLOB(defn, row, col, largeObject, db, statement);
+				//					} else {
+				//						setUsingBinaryStream(defn, row, col, largeObject, db, statement);
+				//					}
+				{
+					if (largeObject instanceof DBLargeText) {
 						try {
-							Logger.getLogger(DBUpdateLargeObjects.class.getName()).log(Level.WARNING, "Database rejected Binary Stream method", exp1);
-							setUsingBLOB(defn, row, col, largeObject, db, statement);
-						} catch (Throwable exp2) {
+							setUsingCLOB(defn, row, col, largeObject, db, statement);
+						} catch (Throwable exp0) {
 							try {
-								Logger.getLogger(DBUpdateLargeObjects.class.getName()).log(Level.WARNING, "Database rejected BLOB method", exp2);
-								setUsingBase64String(defn, row, col, largeObject, db, statement);
-							} catch (Throwable exp3) {
+								Logger.getLogger(DBUpdateLargeObjects.class.getName()).log(Level.WARNING, "Database rejected CLOB method", exp0);
+								setUsingStringValue(defn, row, col, largeObject, db, statement);
+							} catch (Throwable expa) {
 								try {
-									Logger.getLogger(DBUpdateLargeObjects.class.getName()).log(Level.WARNING, "Database rejected Base64 method", exp3);
+									Logger.getLogger(DBUpdateLargeObjects.class.getName()).log(Level.WARNING, "Database rejected CLOB method", expa);
 									setUsingCharacterStream(defn, row, col, largeObject, db, statement);
-								} catch (Throwable exp4) {
-									Logger.getLogger(DBUpdateLargeObjects.class.getName()).log(Level.SEVERE, "Database rejected all implemented methods", exp4);
-									throw exp1;
+								} catch (Throwable exp1) {
+									try {
+										Logger.getLogger(DBUpdateLargeObjects.class.getName()).log(Level.WARNING, "Database rejected Character Stream method", exp1);
+										setUsingBase64String(defn, row, col, largeObject, db, statement);
+									} catch (Throwable exp2) {
+										try {
+											Logger.getLogger(DBUpdateLargeObjects.class.getName()).log(Level.WARNING, "Database rejected Base64String method", exp2);
+											setUsingBLOB(defn, row, col, largeObject, db, statement);
+										} catch (Throwable exp3) {
+											try {
+												Logger.getLogger(DBUpdateLargeObjects.class.getName()).log(Level.WARNING, "Database rejected BLOB method", exp3);
+												setUsingBinaryStream(defn, row, col, largeObject, db, statement);
+											} catch (Throwable exp4) {
+												Logger.getLogger(DBUpdateLargeObjects.class.getName()).log(Level.WARNING, "Database rejected Binary Stream method", exp3);
+												Logger.getLogger(DBUpdateLargeObjects.class.getName()).log(Level.SEVERE, "Database rejected all implemented methods", exp4);
+												throw exp1;
+											}
+										}
+									}
+								}
+							}
+						}
+					} else {
+						try {
+							setUsingBinaryStream(defn, row, col, largeObject, db, statement);
+						} catch (Throwable exp1) {
+							try {
+								Logger.getLogger(DBUpdateLargeObjects.class.getName()).log(Level.WARNING, "Database rejected Binary Stream method", exp1);
+								setUsingBLOB(defn, row, col, largeObject, db, statement);
+							} catch (Throwable exp2) {
+								try {
+									Logger.getLogger(DBUpdateLargeObjects.class.getName()).log(Level.WARNING, "Database rejected BLOB method", exp2);
+									setUsingBase64String(defn, row, col, largeObject, db, statement);
+								} catch (Throwable exp3) {
+									try {
+										Logger.getLogger(DBUpdateLargeObjects.class.getName()).log(Level.WARNING, "Database rejected Base64 method", exp3);
+										setUsingCharacterStream(defn, row, col, largeObject, db, statement);
+									} catch (Throwable exp4) {
+										Logger.getLogger(DBUpdateLargeObjects.class.getName()).log(Level.SEVERE, "Database rejected all implemented methods", exp4);
+										throw exp1;
+									}
 								}
 							}
 						}
@@ -122,14 +160,14 @@ public class DBUpdateLargeObjects extends DBUpdate {
 	private void setUsingStringValue(DBDefinition defn, DBRow row, final String col, final DBLargeObject<?> largeObject, DBDatabase db, DBStatement statement) throws SQLException {
 
 		String sqlString = defn.beginUpdateLine()
-			+ defn.formatTableName(row)
-			+ defn.beginSetClause()
-			+ defn.formatColumnName(col)
-			+ defn.getEqualsComparator()
-			+ "'" + largeObject.stringValue() + "'"
-			+ defn.beginWhereClause()
-			+ getPrimaryKeySQL(db, row)
-			+ defn.endSQLStatement();
+				+ defn.formatTableName(row)
+				+ defn.beginSetClause()
+				+ defn.formatColumnName(col)
+				+ defn.getEqualsComparator()
+				+ "'" + largeObject.stringValue() + "'"
+				+ defn.beginWhereClause()
+				+ getPrimaryKeySQL(db, row)
+				+ defn.endSQLStatement();
 //					db.printSQLIfRequested(sqlString);
 		log.debug(sqlString);
 		statement.execute(sqlString);
@@ -137,14 +175,14 @@ public class DBUpdateLargeObjects extends DBUpdate {
 
 	private void setToNullUsingStringValue(DBDefinition defn, DBRow row, final String col, final DBLargeObject<?> largeObject, DBDatabase db, DBStatement statement) throws SQLException {
 		String sqlString = defn.beginUpdateLine()
-			+ defn.formatTableName(row)
-			+ defn.beginSetClause()
-			+ defn.formatColumnName(col)
-			+ defn.getEqualsComparator()
-			+ defn.getNull()
-			+ defn.beginWhereClause()
-			+ getPrimaryKeySQL(db, row)
-			+ defn.endSQLStatement();
+				+ defn.formatTableName(row)
+				+ defn.beginSetClause()
+				+ defn.formatColumnName(col)
+				+ defn.getEqualsComparator()
+				+ defn.getNull()
+				+ defn.beginWhereClause()
+				+ getPrimaryKeySQL(db, row)
+				+ defn.endSQLStatement();
 //					db.printSQLIfRequested(sqlString);
 		log.debug(sqlString);
 		statement.execute(sqlString);
@@ -152,14 +190,14 @@ public class DBUpdateLargeObjects extends DBUpdate {
 
 	private void setUsingBinaryStream(DBDefinition defn, DBRow row, final String col, final DBLargeObject<?> largeObject, DBDatabase db, DBStatement statement) throws SQLException {
 		String sqlString = defn.beginUpdateLine()
-			+ defn.formatTableName(row)
-			+ defn.beginSetClause()
-			+ defn.formatColumnName(col)
-			+ defn.getEqualsComparator()
-			+ defn.getPreparedVariableSymbol()
-			+ defn.beginWhereClause()
-			+ getPrimaryKeySQL(db, row)
-			+ defn.endSQLStatement();
+				+ defn.formatTableName(row)
+				+ defn.beginSetClause()
+				+ defn.formatColumnName(col)
+				+ defn.getEqualsComparator()
+				+ defn.getPreparedVariableSymbol()
+				+ defn.beginWhereClause()
+				+ getPrimaryKeySQL(db, row)
+				+ defn.endSQLStatement();
 		db.printSQLIfRequested(sqlString);
 		log.debug(sqlString);
 		PreparedStatement prep = statement.getConnection().prepareStatement(sqlString);
@@ -181,14 +219,14 @@ public class DBUpdateLargeObjects extends DBUpdate {
 
 	private void setUsingBLOB(DBDefinition defn, DBRow row, String col, DBLargeObject<?> largeObject, DBDatabase db, DBStatement statement) throws SQLException {
 		String sqlString = defn.beginUpdateLine()
-			+ defn.formatTableName(row)
-			+ defn.beginSetClause()
-			+ defn.formatColumnName(col)
-			+ defn.getEqualsComparator()
-			+ defn.getPreparedVariableSymbol()
-			+ defn.beginWhereClause()
-			+ getPrimaryKeySQL(db, row)
-			+ defn.endSQLStatement();
+				+ defn.formatTableName(row)
+				+ defn.beginSetClause()
+				+ defn.formatColumnName(col)
+				+ defn.getEqualsComparator()
+				+ defn.getPreparedVariableSymbol()
+				+ defn.beginWhereClause()
+				+ getPrimaryKeySQL(db, row)
+				+ defn.endSQLStatement();
 //					db.printSQLIfRequested(sqlString);
 		log.debug(sqlString);
 		PreparedStatement prep = statement.getConnection().prepareStatement(sqlString);
@@ -200,16 +238,37 @@ public class DBUpdateLargeObjects extends DBUpdate {
 		}
 	}
 
+	private void setUsingCLOB(DBDefinition defn, DBRow row, String col, DBLargeObject<?> largeObject, DBDatabase db, DBStatement statement) throws SQLException {
+		String sqlString = defn.beginUpdateLine()
+				+ defn.formatTableName(row)
+				+ defn.beginSetClause()
+				+ defn.formatColumnName(col)
+				+ defn.getEqualsComparator()
+				+ defn.getPreparedVariableSymbol()
+				+ defn.beginWhereClause()
+				+ getPrimaryKeySQL(db, row)
+				+ defn.endSQLStatement();
+//					db.printSQLIfRequested(sqlString);
+		log.debug(sqlString);
+		PreparedStatement prep = statement.getConnection().prepareStatement(sqlString);
+		try {
+			prep.setClob(1, new InputStreamReader(largeObject.getInputStream()), largeObject.getSize());
+			prep.execute();
+		} finally {
+			prep.close();
+		}
+	}
+
 	private void setUsingBase64String(DBDefinition defn, DBRow row, final String col, final DBLargeObject<?> largeObject, DBDatabase db, DBStatement statement) throws SQLException, IOException {
 		String sqlString = defn.beginUpdateLine()
-			+ defn.formatTableName(row)
-			+ defn.beginSetClause()
-			+ defn.formatColumnName(col)
-			+ defn.getEqualsComparator()
-			+ defn.getPreparedVariableSymbol()
-			+ defn.beginWhereClause()
-			+ getPrimaryKeySQL(db, row)
-			+ defn.endSQLStatement();
+				+ defn.formatTableName(row)
+				+ defn.beginSetClause()
+				+ defn.formatColumnName(col)
+				+ defn.getEqualsComparator()
+				+ defn.getPreparedVariableSymbol()
+				+ defn.beginWhereClause()
+				+ getPrimaryKeySQL(db, row)
+				+ defn.endSQLStatement();
 //					db.printSQLIfRequested(sqlString);
 		log.debug(sqlString);
 		PreparedStatement prep = statement.getConnection().prepareStatement(sqlString);
@@ -248,21 +307,20 @@ public class DBUpdateLargeObjects extends DBUpdate {
 		}
 	}
 
-	private void setUsingCharacterStream(DBDefinition defn, DBRow row, final String col, final DBLargeObject<?> largeObject, DBDatabase db, DBStatement statement) throws SQLException {
+	private void setUsingCharacterStream(DBDefinition defn, DBRow row, final String col, final DBLargeObject<?> largeObject, DBDatabase db, DBStatement statement) throws SQLException, IOError {
 		String sqlString = defn.beginUpdateLine()
-			+ defn.formatTableName(row)
-			+ defn.beginSetClause()
-			+ defn.formatColumnName(col)
-			+ defn.getEqualsComparator()
-			+ defn.getPreparedVariableSymbol()
-			+ defn.beginWhereClause()
-			+ getPrimaryKeySQL(db, row)
-			+ defn.endSQLStatement();
+				+ defn.formatTableName(row)
+				+ defn.beginSetClause()
+				+ defn.formatColumnName(col)
+				+ defn.getEqualsComparator()
+				+ defn.getPreparedVariableSymbol()
+				+ defn.beginWhereClause()
+				+ getPrimaryKeySQL(db, row)
+				+ defn.endSQLStatement();
 //					db.printSQLIfRequested(sqlString);
 		log.info(sqlString);
 		try (PreparedStatement prep = statement.getConnection().prepareStatement(sqlString)) {
 			prep.setCharacterStream(1, new InputStreamReader(largeObject.getInputStream()));
-			prep.execute();
 		}
 	}
 

@@ -21,7 +21,6 @@ import java.util.*;
 import java.util.logging.*;
 import nz.co.gregs.dbvolution.*;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
-import nz.co.gregs.dbvolution.exceptions.DBRuntimeException;
 import nz.co.gregs.dbvolution.expressions.LargeObjectExpression;
 import org.apache.commons.codec.binary.Base64;
 

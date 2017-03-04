@@ -24,6 +24,7 @@ import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.datatypes.DBBoolean;
 import nz.co.gregs.dbvolution.datatypes.DBDate;
 import nz.co.gregs.dbvolution.datatypes.DBJavaObject;
+import nz.co.gregs.dbvolution.datatypes.DBLargeObject;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 import nz.co.gregs.dbvolution.query.QueryOptions;
 
@@ -137,7 +138,7 @@ public class JavaDBDefinition extends DBDefinition {
 	}
 
 	@Override
-	public boolean prefersLargeObjectsReadAsBLOB() {
+	public boolean prefersLargeObjectsReadAsBLOB(DBLargeObject<?> lob) {
 		return true;
 	}
 

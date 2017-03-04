@@ -1791,7 +1791,7 @@ public abstract class DBDefinition {
 	 *
 	 * @return the default implementation returns FALSE
 	 */
-	public boolean prefersLargeObjectsReadAsBytes() {
+	public boolean prefersLargeObjectsReadAsBytes(DBLargeObject<?> lob) {
 		return false;
 	}
 
@@ -1801,7 +1801,7 @@ public abstract class DBDefinition {
 	 *
 	 * @return the default implementation returns FALSE
 	 */
-	public boolean prefersLargeObjectsReadAsCLOB() {
+	public boolean prefersLargeObjectsReadAsCLOB(DBLargeObject<?> lob) {
 		return false;
 	}
 
@@ -1811,7 +1811,7 @@ public abstract class DBDefinition {
 	 *
 	 * @return the default implementation returns FALSE
 	 */
-	public boolean prefersLargeObjectsReadAsBLOB() {
+	public boolean prefersLargeObjectsReadAsBLOB(DBLargeObject<?> lob) {
 		return false;
 	}
 

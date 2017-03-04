@@ -517,11 +517,11 @@ public class DBByteArray extends DBLargeObject<byte[]> {
 			} catch (IOException ex) {
 				throw new DBRuntimeException("Unable To Set Value: " + ex.getMessage(), ex);
 			}
-		} else if (defn.prefersLargeObjectsReadAsBytes()) {
+		} else if (defn.prefersLargeObjectsReadAsBytes(this)) {
 			bytes = getFromGetBytes(resultSet, fullColumnName);
-		} else if (defn.prefersLargeObjectsReadAsCLOB()) {
+		} else if (defn.prefersLargeObjectsReadAsCLOB(this)) {
 			bytes = getFromCLOB(resultSet, fullColumnName);
-		} else if (defn.prefersLargeObjectsReadAsBLOB()) {
+		} else if (defn.prefersLargeObjectsReadAsBLOB(this)) {
 			bytes = getFromBLOB(resultSet, fullColumnName);
 		} else {
 			bytes = getFromBinaryStream(resultSet, fullColumnName);

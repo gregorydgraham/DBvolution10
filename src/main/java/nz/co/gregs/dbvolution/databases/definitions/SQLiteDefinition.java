@@ -83,7 +83,7 @@ public class SQLiteDefinition extends DBDefinition {
 	@Override
 	protected String getDatabaseDataTypeOfQueryableDatatype(QueryableDatatype<?> qdt) {
 		if (qdt instanceof DBLargeText) {
-			return " TEXT ";
+			return " NTEXT ";
 		} else if (qdt instanceof DBJavaObject) {
 			return " BLOB ";
 		} else if (qdt instanceof DBLargeBinary) {
@@ -112,13 +112,89 @@ public class SQLiteDefinition extends DBDefinition {
 
 	@Override
 	public boolean prefersLargeObjectsReadAsBase64CharacterStream(DBLargeObject<?> lob) {
-		return true;
+		if (!(lob instanceof DBLargeText)) {
+			return true;
+		} else {
+			return false;
+		}
 	}
 
 	@Override
 	public boolean prefersLargeObjectsSetAsBase64String(DBLargeObject<?> lob) {
-		return true;
+		if (!(lob instanceof DBLargeText)) {
+			return true;
+		} else {
+			return false;
+		}
 	}
+
+	/**
+	 * Indicates whether the database prefers reading BLOBs using the getBytes()
+	 * method.
+	 *
+	 * @return the default implementation returns FALSE
+	 */
+	@Override
+	public boolean prefersLargeObjectsReadAsBytes(DBLargeObject<?> lob) {
+		return false;
+	}
+
+	/**
+	 * Indicates whether the database prefers reading BLOBs using the getClob()
+	 * method.
+	 *
+	 * @return the default implementation returns FALSE
+	 */
+	@Override
+	public boolean prefersLargeObjectsReadAsCLOB(DBLargeObject<?> lob) {
+		return false;
+	}
+
+	/**
+	 * Indicates whether the database prefers reading BLOBs using the getBlob()
+	 * method.
+	 *
+	 * @return the default implementation returns FALSE
+	 */
+	@Override
+	public boolean prefersLargeObjectsReadAsBLOB(DBLargeObject<?> lob) {
+		return false;
+	}
+	
+		/**
+	 * Indicates that the database prefers Large Object values to be set using the
+	 * setCharacterStream method.
+	 *
+	 * <p>
+	 * If both {@link #prefersLargeObjectsSetAsCharacterStream(nz.co.gregs.dbvolution.datatypes.DBLargeObject) } and
+	 * {@link #prefersLargeObjectsSetAsBase64String(nz.co.gregs.dbvolution.datatypes.DBLargeObject) } return FALSE, DBvolution
+	 * will use the setBinaryStream method to set the value.
+	 *
+	 * @param lob the DBLargeObject which we are querying about.
+	 * @return the default implementation returns FALSE.
+	 */
+	@Override
+	public boolean prefersLargeObjectsSetAsCharacterStream(DBLargeObject<?> lob) {
+		return false;
+	}
+
+	/**
+	 * Indicates that the database prefers Large Object values to be set using the
+	 * setBLOB method.
+	 *
+	 * <p>
+	 * If both {@link #prefersLargeObjectsSetAsCharacterStream(nz.co.gregs.dbvolution.datatypes.DBLargeObject)  } and
+	 * {@link #prefersLargeObjectsSetAsBase64String(nz.co.gregs.dbvolution.datatypes.DBLargeObject) } return FALSE, DBvolution
+	 * will use the setBinaryStream method to set the value.
+	 *
+	 * @param lob the DBLargeObject which we are querying about.
+	 * @return the default implementation returns FALSE.
+	 */
+	@Override
+	public boolean prefersLargeObjectsSetAsBLOB(DBLargeObject<?> lob) {
+		return false;
+	}
+
 
 	@Override
 	public String doSubstringTransform(String originalString, String start, String length) {

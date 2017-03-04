@@ -508,46 +508,46 @@ public class DBLargeText extends DBLargeObject<byte[]> {
 	protected byte[] getFromResultSet(DBDatabase database, ResultSet resultSet, String fullColumnName) throws SQLException {
 		byte[] bytes = new byte[]{};
 		DBDefinition defn = database.getDefinition();
-		if (defn.prefersLargeObjectsReadAsBase64CharacterStream(this)) {
-			try {
-				bytes = getFromCharacterReader(resultSet, fullColumnName);
-			} catch (IOException ex) {
-				throw new DBRuntimeException("Unable To Set Value: " + ex.getMessage(), ex);
-			}
-		} else if (defn.prefersLargeObjectsReadAsBytes()) {
-			bytes = getFromGetBytes(resultSet, fullColumnName);
-		} else if (defn.prefersLargeObjectsReadAsCLOB()) {
-			bytes = getFromCLOB(resultSet, fullColumnName);
-		} else if (defn.prefersLargeObjectsReadAsBLOB()) {
-			bytes = getFromBLOB(resultSet, fullColumnName);
-		} else {
-			bytes = getFromBinaryStream(resultSet, fullColumnName);
-		}
-//		try{
-//			bytes = getFromBinaryStream(resultSet, fullColumnName);
-//		} catch (Throwable exp1) {
-//			Logger.getLogger(DBByteObject.class.getName()).log(Level.WARNING, "Database rejected Binary Stream method", exp1);
+//		if (defn.prefersLargeObjectsReadAsBase64CharacterStream(this)) {
 //			try {
-//				bytes = getFromBLOB(resultSet, fullColumnName);
-//			} catch (Throwable exp2) {
-//				Logger.getLogger(DBByteObject.class.getName()).log(Level.WARNING, "Database rejected BLOB method", exp2);
-//				try {
-//					bytes = getFromCLOB(resultSet, fullColumnName);
-//				} catch (Throwable exp3) {
-//					Logger.getLogger(DBByteObject.class.getName()).log(Level.WARNING, "Database rejected CLOB method", exp3);
-//					try {
-//						bytes = getFromGetBytes(resultSet, fullColumnName);
-//					} catch (Throwable exp4) {
-//						Logger.getLogger(DBByteObject.class.getName()).log(Level.WARNING, "Database rejected Bytes method", exp4);
-//						try {
-//							bytes = getFromCharacterReader(resultSet, fullColumnName);
-//						} catch (Throwable exp5) {
-//							Logger.getLogger(DBByteObject.class.getName()).log(Level.SEVERE, "Database rejected Character Reader method", exp5);
-//						}
-//					}
-//				}
+//				bytes = getFromCharacterReader(resultSet, fullColumnName);
+//			} catch (IOException ex) {
+//				throw new DBRuntimeException("Unable To Set Value: " + ex.getMessage(), ex);
 //			}
+//		} else if (defn.prefersLargeObjectsReadAsBytes(this)) {
+//			bytes = getFromGetBytes(resultSet, fullColumnName);
+//		} else if (defn.prefersLargeObjectsReadAsCLOB(this)) {
+//			bytes = getFromCLOB(resultSet, fullColumnName);
+//		} else if (defn.prefersLargeObjectsReadAsBLOB(this)) {
+//			bytes = getFromBLOB(resultSet, fullColumnName);
+//		} else {
+//			bytes = getFromBinaryStream(resultSet, fullColumnName);
 //		}
+		try {
+			bytes = getFromCharacterReader(resultSet, fullColumnName);
+		} catch (Throwable exp1) {
+			Logger.getLogger(DBLargeText.class.getName()).log(Level.WARNING, "Database rejected Character Reader method", exp1);
+			try {
+				bytes = getFromGetBytes(resultSet, fullColumnName);
+			} catch (Throwable exp2) {
+				Logger.getLogger(DBLargeText.class.getName()).log(Level.WARNING, "Database rejected Bytes method", exp2);
+				try {
+					bytes = getFromCLOB(resultSet, fullColumnName);
+				} catch (Throwable exp3) {
+					Logger.getLogger(DBLargeText.class.getName()).log(Level.WARNING, "Database rejected CLOB method", exp3);
+					try {
+						bytes = getFromBLOB(resultSet, fullColumnName);
+					} catch (Throwable exp4) {
+						Logger.getLogger(DBLargeText.class.getName()).log(Level.WARNING, "Database rejected BLOB method", exp4);
+						try {
+							bytes = getFromBinaryStream(resultSet, fullColumnName);
+						} catch (Throwable exp5) {
+							Logger.getLogger(DBLargeText.class.getName()).log(Level.SEVERE, "Database rejected Binary Stream method", exp5);
+						}
+					}
+				}
+			}
+		}
 		return bytes;
 	}
 
