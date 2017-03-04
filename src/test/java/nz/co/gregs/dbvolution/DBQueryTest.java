@@ -32,6 +32,7 @@ import org.junit.Assert;
 import org.junit.Test;
 import static junit.framework.TestCase.assertEquals;
 import static junit.framework.TestCase.assertTrue;
+import nz.co.gregs.dbvolution.example.CompanyText;
 
 /**
  *
@@ -285,13 +286,14 @@ public class DBQueryTest extends AbstractTest {
 		CarCompany carco = new CarCompany();
 		SortedSet<DBRow> relatedTables = database.getDBQuery(carco).getRelatedTables();
 
-		Assert.assertThat(relatedTables.size(), is(5));
+		Assert.assertThat(relatedTables.size(), is(6));
 		final DBRow[] rowArray = relatedTables.toArray(new DBRow[]{});
 		Assert.assertEquals(CompanyLogo.class, rowArray[0].getClass());
-		Assert.assertEquals(LinkCarCompanyAndLogo.class, rowArray[1].getClass());
-		Assert.assertEquals(LinkCarCompanyAndLogoWithPreviousLink.class, rowArray[2].getClass());
-		Assert.assertEquals(Marque.class, rowArray[3].getClass());
-		Assert.assertEquals(MarqueSelectQuery.class, rowArray[4].getClass());
+		Assert.assertEquals(CompanyText.class, rowArray[1].getClass());
+		Assert.assertEquals(LinkCarCompanyAndLogo.class, rowArray[2].getClass());
+		Assert.assertEquals(LinkCarCompanyAndLogoWithPreviousLink.class, rowArray[3].getClass());
+		Assert.assertEquals(Marque.class, rowArray[4].getClass());
+		Assert.assertEquals(MarqueSelectQuery.class, rowArray[5].getClass());
 	}
 
 	@Test
