@@ -39,7 +39,7 @@ public class DoubleJoinTest extends AbstractTest {
 
 	@Test
 	public void doubleJoinTest() throws SQLException {
-		database.setPrintSQLBeforeExecuting(true);
+//		database.setPrintSQLBeforeExecuting(true);
 		database.preventDroppingOfTables(false);
 		database.dropTableNoExceptions(new DoubleJoinTest.DoubleLinkedWithSubclasses());
 		database.createTable(new DoubleJoinTest.DoubleLinkedWithSubclasses());
@@ -71,7 +71,7 @@ public class DoubleJoinTest extends AbstractTest {
 
 	@Test
 	public void doubleJoinWithSameClassTest() throws SQLException {
-		database.setPrintSQLBeforeExecuting(true);
+//		database.setPrintSQLBeforeExecuting(true);
 		database.preventDroppingOfTables(false);
 		database.dropTableNoExceptions(new DoubleJoinTest.DoubleLinkedWithClass());
 		database.createTable(new DoubleJoinTest.DoubleLinkedWithClass());
@@ -98,7 +98,7 @@ public class DoubleJoinTest extends AbstractTest {
 
 	@Test
 	public void doubleJoinWithSameClassAndIDTest() throws SQLException {
-		database.setPrintSQLBeforeExecuting(true);
+//		database.setPrintSQLBeforeExecuting(true);
 		database.preventDroppingOfTables(false);
 		database.dropTableNoExceptions(new DoubleJoinTest.DoubleLinkedWithClass());
 		database.createTable(new DoubleJoinTest.DoubleLinkedWithClass());

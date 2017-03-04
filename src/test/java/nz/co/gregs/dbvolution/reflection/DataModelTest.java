@@ -182,7 +182,7 @@ public class DataModelTest extends AbstractTest {
 				"nz.co.gregs.dbvolution.example.CarCompany-uidCarCompany=3...4&nz.co.gregs.dbvolution.example.Marque",
 				new ExampleEncodingInterpreter()
 		);
-		database.setPrintSQLBeforeExecuting(true);
+//		database.setPrintSQLBeforeExecuting(true);
 		List<DBQueryRow> allRows = query.getAllRows();
 		database.print(allRows);
 
@@ -197,7 +197,7 @@ public class DataModelTest extends AbstractTest {
 				"nz.co.gregs.dbvolution.example.CarCompany-uidCarCompany=...4&nz.co.gregs.dbvolution.example.Marque",
 				new ExampleEncodingInterpreter()
 		);
-		database.setPrintSQLBeforeExecuting(true);
+//		database.setPrintSQLBeforeExecuting(true);
 		List<DBQueryRow> allRows = query.getAllRows();
 		database.print(allRows);
 
@@ -212,7 +212,7 @@ public class DataModelTest extends AbstractTest {
 				"nz.co.gregs.dbvolution.example.CarCompany-uidCarCompany=3...&nz.co.gregs.dbvolution.example.Marque",
 				new ExampleEncodingInterpreter()
 		);
-		database.setPrintSQLBeforeExecuting(true);
+//		database.setPrintSQLBeforeExecuting(true);
 		List<DBQueryRow> allRows = query.getAllRows();
 		database.print(allRows);
 
@@ -228,7 +228,7 @@ public class DataModelTest extends AbstractTest {
 				"nz.co.gregs.dbvolution.example.CarCompany&nz.co.gregs.dbvolution.example.Marque-creationDate=23 Mar 2013 12:34:56",
 				new ExampleEncodingInterpreter()
 		);
-		database.setPrintSQLBeforeExecuting(true);
+//		database.setPrintSQLBeforeExecuting(true);
 		List<DBQueryRow> allRows = query.getAllRows();
 		database.print(allRows);
 
@@ -244,7 +244,7 @@ public class DataModelTest extends AbstractTest {
 				"nz.co.gregs.dbvolution.example.CarCompany&nz.co.gregs.dbvolution.example.Marque-creationDate=22 Mar 2013 12:34:56...24 Mar 2013 12:34:56",
 				new ExampleEncodingInterpreter()
 		);
-		database.setPrintSQLBeforeExecuting(true);
+//		database.setPrintSQLBeforeExecuting(true);
 		List<DBQueryRow> allRows = query.getAllRows();
 		database.print(allRows);
 
@@ -259,7 +259,7 @@ public class DataModelTest extends AbstractTest {
 				"nz.co.gregs.dbvolution.example.CarCompany&nz.co.gregs.dbvolution.example.Marque-statusClassID=1246974",
 				new ExampleEncodingInterpreter()
 		);
-		database.setPrintSQLBeforeExecuting(true);
+//		database.setPrintSQLBeforeExecuting(true);
 		List<DBQueryRow> allRows = query.getAllRows();
 		database.print(allRows);
 
@@ -274,7 +274,7 @@ public class DataModelTest extends AbstractTest {
 				"nz.co.gregs.dbvolution.example.CarCompany&nz.co.gregs.dbvolution.example.Marque-statusClassID=1246972...1246974",
 				new ExampleEncodingInterpreter()
 		);
-		database.setPrintSQLBeforeExecuting(true);
+//		database.setPrintSQLBeforeExecuting(true);
 		List<DBQueryRow> allRows = query.getAllRows();
 		database.print(allRows);
 

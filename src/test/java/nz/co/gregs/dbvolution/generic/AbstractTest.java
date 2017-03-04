@@ -126,7 +126,7 @@ public abstract class AbstractTest {
 	public AbstractTest(Object testIterationName, Object db) {
 		if (db instanceof DBDatabase) {
 			this.database = (DBDatabase) db;
-			database.setPrintSQLBeforeExecuting(true);
+//			database.setPrintSQLBeforeExecuting(true);
 		}
 	}
 
@@ -238,7 +238,7 @@ public abstract class AbstractTest {
 
 //		database.setPrintSQLBeforeExecuting(true);
 		marquesTable.insert(marqueRows);
-		database.setPrintSQLBeforeExecuting(false);
+//		database.setPrintSQLBeforeExecuting(false);
 
 		database.preventDroppingOfTables(false);
 		database.dropTableNoExceptions(new CompanyLogo());
@@ -248,7 +248,7 @@ public abstract class AbstractTest {
 		database.dropTableNoExceptions(new LinkCarCompanyAndLogo());
 		database.createTable(new LinkCarCompanyAndLogo());
 
-		database.setPrintSQLBeforeExecuting(true);
+		database.setPrintSQLBeforeExecuting(false);
 	}
 
 	@After

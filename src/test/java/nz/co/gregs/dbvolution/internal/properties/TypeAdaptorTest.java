@@ -37,7 +37,7 @@ public class TypeAdaptorTest {
 	@Before
 	public void setup() throws SQLException {
 		this.db = new H2MemoryDB("dbvolutionTest", "", "", false);
-		this.db.setPrintSQLBeforeExecuting(false);
+//		this.db.setPrintSQLBeforeExecuting(false);
 
 		db.preventDroppingOfTables(false);
 		db.dropTableNoExceptions(new CustomerWithDBInteger());
@@ -58,7 +58,7 @@ public class TypeAdaptorTest {
 		c.year.setValue(2012);
 		db.insert(c);
 
-		this.db.setPrintSQLBeforeExecuting(true);
+//		this.db.setPrintSQLBeforeExecuting(true);
 	}
 
 	@After

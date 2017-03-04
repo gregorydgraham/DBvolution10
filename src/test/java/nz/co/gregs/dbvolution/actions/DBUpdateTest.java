@@ -50,7 +50,7 @@ public class DBUpdateTest extends AbstractTest {
 
 	@Test
 	public void updateUsingAllColumnsAndRevertTest() throws SQLException {
-		database.setPrintSQLBeforeExecuting(true);
+//		database.setPrintSQLBeforeExecuting(true);
 		LinkCarCompanyAndLogo example = new LinkCarCompanyAndLogo();
 		example.fkCarCompany.setValue(1);
 		example.fkCompanyLogo.setValue(1);

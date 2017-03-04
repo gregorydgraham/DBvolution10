@@ -233,7 +233,7 @@ public class StringExpressionTest extends AbstractTest {
 
 	@Test
 	public void testTrimTransform() throws SQLException {
-		database.setPrintSQLBeforeExecuting(true);
+//		database.setPrintSQLBeforeExecuting(true);
 		database.insert(new Marque(3, "False", 1246974, "", 0, "", "     HUMMER               ", "", "Y", new Date(), 3, null));
 		Marque marq = new Marque();
 		marq.name.permittedValuesIgnoreCase("HUMMER");
@@ -260,7 +260,7 @@ public class StringExpressionTest extends AbstractTest {
 
 	@Test
 	public void testLeftAndRightTrimTransforms() throws SQLException {
-		database.setPrintSQLBeforeExecuting(true);
+//		database.setPrintSQLBeforeExecuting(true);
 		database.insert(new Marque(3, "False", 1246974, "", 0, "", "     HUMMER               ", "", "Y", new Date(), 3, null));
 		trimmedMarque marq = new trimmedMarque();
 		marq.name.permittedValuesIgnoreCase("HUMMER");
@@ -291,7 +291,7 @@ public class StringExpressionTest extends AbstractTest {
 
 	@Test
 	public void testUpperAndLowercaseTransforms() throws SQLException {
-		database.setPrintSQLBeforeExecuting(true);
+//		database.setPrintSQLBeforeExecuting(true);
 		Marque marq = new Marque();
 
 		marq.name.permittedValues("HUMMER");
@@ -327,7 +327,7 @@ public class StringExpressionTest extends AbstractTest {
 
 	@Test
 	public void testSubstringTransform() throws SQLException {
-		database.setPrintSQLBeforeExecuting(true);
+//		database.setPrintSQLBeforeExecuting(true);
 		Marque marq = new Marque();
 		marq.name.permittedValues("HUMMER".substring(0, 3));
 		DBQuery dbQuery = database.getDBQuery(marq);
@@ -379,7 +379,7 @@ public class StringExpressionTest extends AbstractTest {
 
 	@Test
 	public void testStringLengthTransform() throws SQLException {
-		database.setPrintSQLBeforeExecuting(true);
+//		database.setPrintSQLBeforeExecuting(true);
 		Marque marq = new Marque();
 		marq.name.clear();
 		DBQuery query = database.getDBQuery(marq);
@@ -395,7 +395,7 @@ public class StringExpressionTest extends AbstractTest {
 
 	@Test
 	public void testStringBefore() throws SQLException {
-		database.setPrintSQLBeforeExecuting(true);
+//		database.setPrintSQLBeforeExecuting(true);
 		Marque marq = new Marque();
 		marq.name.clear();
 		DBQuery query = database.getDBQuery(marq);
@@ -410,7 +410,7 @@ public class StringExpressionTest extends AbstractTest {
 
 	@Test
 	public void testStringAfter() throws SQLException {
-		database.setPrintSQLBeforeExecuting(true);
+//		database.setPrintSQLBeforeExecuting(true);
 		Marque marq = new Marque();
 		marq.name.clear();
 		DBQuery query = database.getDBQuery(marq);
@@ -425,7 +425,7 @@ public class StringExpressionTest extends AbstractTest {
 
 	@Test
 	public void testStringBeforeAndAfter() throws SQLException {
-		database.setPrintSQLBeforeExecuting(true);
+//		database.setPrintSQLBeforeExecuting(true);
 		Marque marq = new Marque();
 		marq.name.clear();
 		DBQuery query = database.getDBQuery(marq);
@@ -440,7 +440,7 @@ public class StringExpressionTest extends AbstractTest {
 
 	@Test
 	public void testStringBetween() throws SQLException {
-		database.setPrintSQLBeforeExecuting(true);
+//		database.setPrintSQLBeforeExecuting(true);
 		Marque marq = new Marque();
 		marq.name.clear();
 		DBQuery query = database.getDBQuery(marq);
@@ -455,7 +455,7 @@ public class StringExpressionTest extends AbstractTest {
 
 	@Test
 	public void testStringBetweenResultLeft() throws SQLException {
-		database.setPrintSQLBeforeExecuting(true);
+//		database.setPrintSQLBeforeExecuting(true);
 		Marque marq = new Marque();
 		marq.name.clear();
 		DBQuery query = database.getDBQuery(marq);
@@ -472,7 +472,7 @@ public class StringExpressionTest extends AbstractTest {
 
 	@Test
 	public void testStringBetweenResultRight() throws SQLException {
-		database.setPrintSQLBeforeExecuting(true);
+//		database.setPrintSQLBeforeExecuting(true);
 		Marque marq = new Marque();
 		marq.name.clear();
 		DBQuery query = database.getDBQuery(marq);
@@ -489,7 +489,7 @@ public class StringExpressionTest extends AbstractTest {
 
 	@Test
 	public void testStringBetweenExclusive() throws SQLException {
-		database.setPrintSQLBeforeExecuting(true);
+//		database.setPrintSQLBeforeExecuting(true);
 		Marque marq = new Marque();
 		marq.name.clear();
 		DBQuery query = database.getDBQuery(marq);
@@ -504,7 +504,7 @@ public class StringExpressionTest extends AbstractTest {
 
 	@Test
 	public void testStringBetweenExclusiveResultLeft() throws SQLException {
-		database.setPrintSQLBeforeExecuting(true);
+//		database.setPrintSQLBeforeExecuting(true);
 		Marque marq = new Marque();
 		marq.name.clear();
 		DBQuery query = database.getDBQuery(marq);
@@ -521,7 +521,7 @@ public class StringExpressionTest extends AbstractTest {
 
 	@Test
 	public void testStringBetweenExclusiveResultRight() throws SQLException {
-		database.setPrintSQLBeforeExecuting(true);
+//		database.setPrintSQLBeforeExecuting(true);
 		Marque marq = new Marque();
 		marq.name.clear();
 		DBQuery query = database.getDBQuery(marq);
@@ -538,7 +538,7 @@ public class StringExpressionTest extends AbstractTest {
 
 	@Test
 	public void testStringBetweenInclusive() throws SQLException {
-		database.setPrintSQLBeforeExecuting(true);
+//		database.setPrintSQLBeforeExecuting(true);
 		Marque marq = new Marque();
 		marq.name.clear();
 		DBQuery query = database.getDBQuery(marq);
@@ -554,7 +554,7 @@ public class StringExpressionTest extends AbstractTest {
 
 	@Test
 	public void testStringBetweenInclusiveResultLeft() throws SQLException {
-		database.setPrintSQLBeforeExecuting(true);
+//		database.setPrintSQLBeforeExecuting(true);
 		Marque marq = new Marque();
 		marq.name.clear();
 		DBQuery query = database.getDBQuery(marq);
@@ -572,7 +572,7 @@ public class StringExpressionTest extends AbstractTest {
 
 	@Test
 	public void testStringBetweenInclusiveResultRight() throws SQLException {
-		database.setPrintSQLBeforeExecuting(true);
+//		database.setPrintSQLBeforeExecuting(true);
 		Marque marq = new Marque();
 		marq.name.clear();
 		DBQuery query = database.getDBQuery(marq);
@@ -590,7 +590,7 @@ public class StringExpressionTest extends AbstractTest {
 
 	@Test
 	public void testReplaceTransform() throws SQLException {
-		database.setPrintSQLBeforeExecuting(true);
+//		database.setPrintSQLBeforeExecuting(true);
 		Marque marq = new Marque();
 		DBQuery query = database.getDBQuery(marq);
 		final StringColumn nameColumn = marq.column(marq.name);
@@ -640,7 +640,7 @@ public class StringExpressionTest extends AbstractTest {
 
 	@Test
 	public void testConcatTransform() throws SQLException {
-		database.setPrintSQLBeforeExecuting(true);
+//		database.setPrintSQLBeforeExecuting(true);
 		Marque marq = new Marque();
 		DBQuery query;
 		List<Marque> got;

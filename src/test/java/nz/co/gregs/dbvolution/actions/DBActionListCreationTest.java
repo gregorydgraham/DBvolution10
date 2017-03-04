@@ -205,7 +205,7 @@ public class DBActionListCreationTest extends AbstractTest {
 
 	@Test
 	public void deleteAndRevertTest() throws SQLException {
-		database.setPrintSQLBeforeExecuting(true);
+//		database.setPrintSQLBeforeExecuting(true);
 		Marque example = new Marque();
 		example.name.permittedValuesIgnoreCase("toyota");
 		List<Marque> foundToyota = database.get(example);
@@ -229,7 +229,7 @@ public class DBActionListCreationTest extends AbstractTest {
 	
 	@Test
 	public void deleteUsingAllColumnsAndRevertTest() throws SQLException {
-		database.setPrintSQLBeforeExecuting(true);
+//		database.setPrintSQLBeforeExecuting(true);
 		LinkCarCompanyAndLogo example = new LinkCarCompanyAndLogo();
 		example.fkCarCompany.setValue(1);
 		example.fkCompanyLogo.setValue(1);

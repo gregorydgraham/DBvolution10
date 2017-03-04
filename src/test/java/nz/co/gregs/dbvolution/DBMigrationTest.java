@@ -37,7 +37,7 @@ public class DBMigrationTest extends AbstractTest {
 		database.createTable(new Villain());
 		database.createTable(new Hero());
 
-		database.setPrintSQLBeforeExecuting(true);
+//		database.setPrintSQLBeforeExecuting(true);
 		database.insert(new Villain("Dr Nonono"), new Villain("Dr Karma"), new Villain("Dr Dark"));
 		database.insert(new Hero("James Security"), new Hero("Straw Richards"), new Hero("Lightwing"));
 	}
@@ -104,7 +104,7 @@ public class DBMigrationTest extends AbstractTest {
 
 	@Test
 	public void testMapping1ColumnWithDBmigrationMap() throws SQLException {
-		database.setPrintSQLBeforeExecuting(true);
+//		database.setPrintSQLBeforeExecuting(true);
 		DBMigration<MigrateVillainToProfessional> migration = database.getDBMigration(new MigrateVillainToProfessional());
 		migration.setBlankQueryAllowed(Boolean.TRUE);
 		List<MigrateVillainToProfessional> rows = migration.getAllRows();
@@ -113,7 +113,7 @@ public class DBMigrationTest extends AbstractTest {
 			Assert.assertThat(prof.title.stringValue(), is("Dr"));
 			Assert.assertThat(prof.surname.stringValue(), isOneOf("Nonono", "Karma", "Dark"));
 		}
-		database.setPrintSQLBeforeExecuting(false);
+//		database.setPrintSQLBeforeExecuting(false);
 
 		database.preventDroppingOfTables(false);
 		final Professional professional = new Professional();

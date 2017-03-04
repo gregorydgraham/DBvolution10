@@ -37,7 +37,7 @@ public class DBValidationTest extends AbstractTest{
 		database.createTable(new Villain());
 		database.createTable(new Hero());
 
-		database.setPrintSQLBeforeExecuting(true);
+//		database.setPrintSQLBeforeExecuting(true);
 		database.insert(new Villain("Dr Nonono"), new Villain("Dr Karma"), new Villain("Dr Dark"));
 		database.insert(new Hero("James Security"), new Hero("Straw Richards"), new Hero("Lightwing"));
 	}
