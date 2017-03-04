@@ -38,9 +38,9 @@ import static org.hamcrest.Matchers.*;
  *
  * @author Gregory Graham
  */
-public class DBBinaryObjectTest extends AbstractTest {
+public class DBLargeBinaryTest extends AbstractTest {
 
-	public DBBinaryObjectTest(Object testIterationName, Object db) {
+	public DBLargeBinaryTest(Object testIterationName, Object db) {
 		super(testIterationName, db);
 	}
 

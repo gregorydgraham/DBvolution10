@@ -245,6 +245,10 @@ public abstract class AbstractTest {
 		database.createTable(new CompanyLogo());
 
 		database.preventDroppingOfTables(false);
+		database.dropTableNoExceptions(new CompanyText());
+		database.createTable(new CompanyText());
+
+		database.preventDroppingOfTables(false);
 		database.dropTableNoExceptions(new LinkCarCompanyAndLogo());
 		database.createTable(new LinkCarCompanyAndLogo());
 
