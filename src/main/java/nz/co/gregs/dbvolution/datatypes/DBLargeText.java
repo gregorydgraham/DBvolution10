@@ -21,24 +21,26 @@ import java.util.*;
 import java.util.logging.*;
 import nz.co.gregs.dbvolution.*;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
-import nz.co.gregs.dbvolution.exceptions.DBRuntimeException;
 import nz.co.gregs.dbvolution.expressions.LargeObjectExpression;
 import org.apache.commons.codec.binary.Base64;
 
 /**
  *
- * Implements the abstractions necessary to handle exceptionally large texts stored in the database.
+ * Implements the abstractions necessary to handle exceptionally large texts
+ * stored in the database.
  *
  * <p>
- * Use DBLargeText for exceptionally long text. Store Java
- * instances/objects as {@link DBJavaObject} and files as {@link DBLargeBinary} for greater convenience.
+ * Use DBLargeText for exceptionally long text. Store Java instances/objects as
+ * {@link DBJavaObject} and files as {@link DBLargeBinary} for greater
+ * convenience.
  *
  * <p>
  * Generally DBLargeText is declared inside your DBRow sub-class as:
  * {@code @DBColumn public DBLargeText myByteColumn = new DBLargeText();}
  *
  * <p>
- * DBLargeText is the standard type of {@link DBLargeObject CLOB and Text columns}.
+ * DBLargeText is the standard type of
+ * {@link DBLargeObject CLOB and Text columns}.
  *
  * @author Gregory Graham
  */
@@ -56,8 +58,8 @@ public class DBLargeText extends DBLargeObject<byte[]> {
 	}
 
 	/**
-	 * Creates a column expression with a large object result from the
-	 * expression provided.
+	 * Creates a column expression with a large object result from the expression
+	 * provided.
 	 *
 	 * <p>
 	 * Used in {@link DBReport}, and some {@link DBRow}, sub-classes to derive
@@ -71,8 +73,7 @@ public class DBLargeText extends DBLargeObject<byte[]> {
 
 	/**
 	 *
-	 * @return the standard SQL datatype that corresponds to this QDT as a
-	 * String
+	 * @return the standard SQL datatype that corresponds to this QDT as a String
 	 */
 	@Override
 	public String getSQLDatatype() {
@@ -114,8 +115,7 @@ public class DBLargeText extends DBLargeObject<byte[]> {
 	 * <p>
 	 * Unlike {@link #setValue(java.io.InputStream) setting an InputStream}, the
 	 * file is read immediately and stored internally. If you would prefer to
-	 * delay the reading of the file, wrap the file in a
-	 * {@link FileInputStream}.
+	 * delay the reading of the file, wrap the file in a {@link FileInputStream}.
 	 *
 	 * @param fileToRead fileToRead
 	 * @throws java.io.IOException java.io.IOException
@@ -201,7 +201,12 @@ public class DBLargeText extends DBLargeObject<byte[]> {
 		return bytes;
 	}
 
-	private byte[] getFromCharacterReader(ResultSet resultSet, String fullColumnName) throws SQLException, IOException {
+		private byte[] getFromString(ResultSet resultSet, String fullColumnName) throws SQLException {
+		String gotString = resultSet.getString(fullColumnName);
+		return gotString.getBytes();
+	}
+
+		private byte[] getFromCharacterReader(ResultSet resultSet, String fullColumnName) throws SQLException, IOException {
 		byte[] decodeBuffer = new byte[]{};
 		Reader inputReader = null;
 		try {
@@ -290,7 +295,7 @@ public class DBLargeText extends DBLargeObject<byte[]> {
 		}
 		return bytes;
 	}
-	
+
 	@Override
 	public String formatValueForSQLStatement(DBDatabase db) {
 		throw new UnsupportedOperationException("Binary datatypes like " + this.getClass().getSimpleName() + " do not have a simple SQL representation. Do not call getSQLValue(), use the getInputStream() method instead.");
@@ -414,11 +419,11 @@ public class DBLargeText extends DBLargeObject<byte[]> {
 		if (getLiteralValue() != null && originalFile != null) {
 			if (!originalFile.exists()) {
 				boolean createNewFile = originalFile.createNewFile();
-				if (!createNewFile){
-					originalFile.delete(); 
+				if (!createNewFile) {
+					originalFile.delete();
 					createNewFile = originalFile.createNewFile();
-					if (!createNewFile){
-						throw new IOException("Unable to create file: "+originalFile.getPath()+" could not be created, check the permissions of the file, directory, drive, and current user.");
+					if (!createNewFile) {
+						throw new IOException("Unable to create file: " + originalFile.getPath() + " could not be created, check the permissions of the file, directory, drive, and current user.");
 					}
 				}
 			}
@@ -455,8 +460,7 @@ public class DBLargeText extends DBLargeObject<byte[]> {
 	}
 
 	/**
-	 * Returns the byte[] used internally to store the value of this
-	 * DBByteObject.
+	 * Returns the byte[] used internally to store the value of this DBByteObject.
 	 *
 	 * @return the byte[] value of this DBByteObject.
 	 */
@@ -524,25 +528,30 @@ public class DBLargeText extends DBLargeObject<byte[]> {
 //			bytes = getFromBinaryStream(resultSet, fullColumnName);
 //		}
 		try {
-			bytes = getFromCharacterReader(resultSet, fullColumnName);
-		} catch (Throwable exp1) {
-			Logger.getLogger(DBLargeText.class.getName()).log(Level.WARNING, "Database rejected Character Reader method", exp1);
-			try {
-				bytes = getFromGetBytes(resultSet, fullColumnName);
-			} catch (Throwable exp2) {
-				Logger.getLogger(DBLargeText.class.getName()).log(Level.WARNING, "Database rejected Bytes method", exp2);
+				bytes = getFromCharacterReader(resultSet, fullColumnName);
+			} catch (Throwable exp1) {
+				Logger.getLogger(DBLargeText.class.getName()).log(Level.WARNING, "Database rejected Character Reader method", exp1);
 				try {
-					bytes = getFromCLOB(resultSet, fullColumnName);
-				} catch (Throwable exp3) {
-					Logger.getLogger(DBLargeText.class.getName()).log(Level.WARNING, "Database rejected CLOB method", exp3);
+					bytes = getFromGetBytes(resultSet, fullColumnName);
+				} catch (Throwable exp2) {
+					Logger.getLogger(DBLargeText.class.getName()).log(Level.WARNING, "Database rejected Bytes method", exp2);
 					try {
-						bytes = getFromBLOB(resultSet, fullColumnName);
-					} catch (Throwable exp4) {
-						Logger.getLogger(DBLargeText.class.getName()).log(Level.WARNING, "Database rejected BLOB method", exp4);
+						bytes = getFromCLOB(resultSet, fullColumnName);
+					} catch (Throwable exp3) {
+						Logger.getLogger(DBLargeText.class.getName()).log(Level.WARNING, "Database rejected CLOB method", exp3);
 						try {
-							bytes = getFromBinaryStream(resultSet, fullColumnName);
-						} catch (Throwable exp5) {
-							Logger.getLogger(DBLargeText.class.getName()).log(Level.SEVERE, "Database rejected Binary Stream method", exp5);
+			bytes = getFromString(resultSet, fullColumnName);
+		} catch (Throwable exp0) {
+			Logger.getLogger(DBLargeText.class.getName()).log(Level.WARNING, "Database rejected String method", exp0);
+					try {
+							bytes = getFromBLOB(resultSet, fullColumnName);
+						} catch (Throwable exp4) {
+							Logger.getLogger(DBLargeText.class.getName()).log(Level.WARNING, "Database rejected BLOB method", exp4);
+							try {
+								bytes = getFromBinaryStream(resultSet, fullColumnName);
+							} catch (Throwable exp5) {
+								Logger.getLogger(DBLargeText.class.getName()).log(Level.SEVERE, "Database rejected Binary Stream method", exp5);
+							}
 						}
 					}
 				}

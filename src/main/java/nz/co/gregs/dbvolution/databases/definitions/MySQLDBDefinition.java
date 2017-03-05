@@ -71,7 +71,7 @@ public class MySQLDBDefinition extends DBDefinition {
 		} else if (qdt instanceof DBLargeBinary) {
 			return " LONGBLOB ";
 		} else if (qdt instanceof DBLargeText) {
-			return " LONGTEXT ";
+			return " LONGTEXT CHARACTER SET utf8 COLLATE utf8_bin ";
 		} else if (qdt instanceof DBLargeObject) {
 			return " LONGBLOB ";
 		} else if (qdt instanceof DBBooleanArray) {

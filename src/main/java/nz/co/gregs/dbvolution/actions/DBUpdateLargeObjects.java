@@ -30,7 +30,6 @@ import java.util.logging.Logger;
 import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.databases.DBStatement;
-import nz.co.gregs.dbvolution.databases.PostgresDB;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.datatypes.DBLargeObject;
 import nz.co.gregs.dbvolution.datatypes.DBLargeText;
@@ -52,7 +51,7 @@ import org.apache.commons.logging.LogFactory;
  */
 public class DBUpdateLargeObjects extends DBUpdate {
 
-	private static final Log log = LogFactory.getLog(DBUpdateLargeObjects.class);
+	private static final Log LOG = LogFactory.getLog(DBUpdateLargeObjects.class);
 
 	/**
 	 * Creates a DBUpdateLargeObjects action for the supplied row.
@@ -90,21 +89,21 @@ public class DBUpdateLargeObjects extends DBUpdate {
 					if (largeObject instanceof DBLargeText) {
 						try {
 							setUsingCLOB(defn, row, col, largeObject, db, statement);
-						} catch (Throwable exp0) {
+						} catch (Throwable expa) {
 							try {
-								Logger.getLogger(DBUpdateLargeObjects.class.getName()).log(Level.WARNING, "Database rejected CLOB method", exp0);
-								setUsingStringValue(defn, row, col, largeObject, db, statement);
-							} catch (Throwable expa) {
+								Logger.getLogger(DBUpdateLargeObjects.class.getName()).log(Level.WARNING, "Database rejected CLOB method", expa);
+								setUsingCharacterStream(defn, row, col, largeObject, db, statement);
+							} catch (Throwable exp1) {
 								try {
-									Logger.getLogger(DBUpdateLargeObjects.class.getName()).log(Level.WARNING, "Database rejected CLOB method", expa);
-									setUsingCharacterStream(defn, row, col, largeObject, db, statement);
-								} catch (Throwable exp1) {
+									Logger.getLogger(DBUpdateLargeObjects.class.getName()).log(Level.WARNING, "Database rejected Character Stream method", exp1);
+									setUsingBase64String(defn, row, col, largeObject, db, statement);
+								} catch (Throwable exp2) {
 									try {
-										Logger.getLogger(DBUpdateLargeObjects.class.getName()).log(Level.WARNING, "Database rejected Character Stream method", exp1);
-										setUsingBase64String(defn, row, col, largeObject, db, statement);
-									} catch (Throwable exp2) {
+										Logger.getLogger(DBUpdateLargeObjects.class.getName()).log(Level.WARNING, "Database rejected Base64String method", exp2);
+										setUsingStringValue(defn, row, col, largeObject, db, statement);
+									} catch (Throwable exp0) {
 										try {
-											Logger.getLogger(DBUpdateLargeObjects.class.getName()).log(Level.WARNING, "Database rejected Base64String method", exp2);
+											Logger.getLogger(DBUpdateLargeObjects.class.getName()).log(Level.WARNING, "Database rejected String method", exp0);
 											setUsingBLOB(defn, row, col, largeObject, db, statement);
 										} catch (Throwable exp3) {
 											try {
@@ -169,7 +168,7 @@ public class DBUpdateLargeObjects extends DBUpdate {
 				+ getPrimaryKeySQL(db, row)
 				+ defn.endSQLStatement();
 //					db.printSQLIfRequested(sqlString);
-		log.debug(sqlString);
+		LOG.debug(sqlString);
 		statement.execute(sqlString);
 	}
 
@@ -184,7 +183,7 @@ public class DBUpdateLargeObjects extends DBUpdate {
 				+ getPrimaryKeySQL(db, row)
 				+ defn.endSQLStatement();
 //					db.printSQLIfRequested(sqlString);
-		log.debug(sqlString);
+		LOG.debug(sqlString);
 		statement.execute(sqlString);
 	}
 
@@ -199,7 +198,7 @@ public class DBUpdateLargeObjects extends DBUpdate {
 				+ getPrimaryKeySQL(db, row)
 				+ defn.endSQLStatement();
 		db.printSQLIfRequested(sqlString);
-		log.debug(sqlString);
+		LOG.debug(sqlString);
 		PreparedStatement prep = statement.getConnection().prepareStatement(sqlString);
 		try {
 			try {
@@ -228,7 +227,7 @@ public class DBUpdateLargeObjects extends DBUpdate {
 				+ getPrimaryKeySQL(db, row)
 				+ defn.endSQLStatement();
 //					db.printSQLIfRequested(sqlString);
-		log.debug(sqlString);
+		LOG.debug(sqlString);
 		PreparedStatement prep = statement.getConnection().prepareStatement(sqlString);
 		try {
 			prep.setBlob(1, largeObject.getInputStream(), largeObject.getSize());
@@ -249,7 +248,7 @@ public class DBUpdateLargeObjects extends DBUpdate {
 				+ getPrimaryKeySQL(db, row)
 				+ defn.endSQLStatement();
 //					db.printSQLIfRequested(sqlString);
-		log.debug(sqlString);
+		LOG.debug(sqlString);
 		PreparedStatement prep = statement.getConnection().prepareStatement(sqlString);
 		try {
 			prep.setClob(1, new InputStreamReader(largeObject.getInputStream()), largeObject.getSize());
@@ -270,7 +269,7 @@ public class DBUpdateLargeObjects extends DBUpdate {
 				+ getPrimaryKeySQL(db, row)
 				+ defn.endSQLStatement();
 //					db.printSQLIfRequested(sqlString);
-		log.debug(sqlString);
+		LOG.debug(sqlString);
 		PreparedStatement prep = statement.getConnection().prepareStatement(sqlString);
 		try {
 			InputStream inputStream = largeObject.getInputStream();
@@ -318,7 +317,7 @@ public class DBUpdateLargeObjects extends DBUpdate {
 				+ getPrimaryKeySQL(db, row)
 				+ defn.endSQLStatement();
 //					db.printSQLIfRequested(sqlString);
-		log.info(sqlString);
+		LOG.info(sqlString);
 		try (PreparedStatement prep = statement.getConnection().prepareStatement(sqlString)) {
 			prep.setCharacterStream(1, new InputStreamReader(largeObject.getInputStream()));
 		}
