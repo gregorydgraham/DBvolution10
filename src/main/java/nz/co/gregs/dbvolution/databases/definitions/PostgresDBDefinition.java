@@ -820,4 +820,29 @@ public class PostgresDBDefinition extends DBDefinition {
 //		return "((" + dateSQL + ") AT TIME ZONE '" + timeZone.toZoneId().getId() + "') ";
 //	}
 
+	@Override
+	public LargeObjectHandler preferredLargeObjectWriter(DBLargeObject<?> lob) {
+		if (lob instanceof DBLargeBinary) {
+			return LargeObjectHandler.BINARYSTREAM;
+		} else if (lob instanceof DBLargeText) {
+			return LargeObjectHandler.CHARSTREAM;
+		} else if (lob instanceof DBJavaObject) {
+			return LargeObjectHandler.BINARYSTREAM;
+		} else {
+			return super.preferredLargeObjectWriter(lob);
+		}
+	}
+
+	@Override
+	public LargeObjectHandler preferredLargeObjectReader(DBLargeObject<?> lob) {
+		if (lob instanceof DBLargeBinary) {
+			return LargeObjectHandler.BINARYSTREAM;
+		} else if (lob instanceof DBLargeText) {
+			return LargeObjectHandler.STRING;
+		} else if (lob instanceof DBJavaObject) {
+			return LargeObjectHandler.BINARYSTREAM;
+		} else {
+			return super.preferredLargeObjectReader(lob);
+		}
+	}
 }

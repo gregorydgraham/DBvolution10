@@ -21,6 +21,7 @@ import java.util.*;
 import java.util.logging.*;
 import nz.co.gregs.dbvolution.*;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
+import nz.co.gregs.dbvolution.exceptions.DBRuntimeException;
 import nz.co.gregs.dbvolution.expressions.LargeObjectExpression;
 import org.apache.commons.codec.binary.Base64;
 
@@ -508,6 +509,37 @@ public class DBLargeBinary extends DBLargeObject<byte[]> {
 	protected byte[] getFromResultSet(DBDatabase database, ResultSet resultSet, String fullColumnName) throws SQLException {
 		byte[] bytes = new byte[]{};
 		DBDefinition defn = database.getDefinition();
+		DBDefinition.LargeObjectHandler handler = defn.preferredLargeObjectReader(this);
+		switch (handler) {
+			case BLOB:
+				bytes = getFromBLOB(resultSet, fullColumnName);
+				break;
+			case BASE64:
+				bytes = getFromBase64(resultSet, fullColumnName);
+				break;
+			case BINARYSTREAM:
+				bytes = getFromBinaryStream(resultSet, fullColumnName);
+				break;
+			case CHARSTREAM:
+				try {
+					bytes = getFromCharacterReader(resultSet, fullColumnName);
+				} catch (IOException exp) {
+					throw new DBRuntimeException(exp);
+				}
+				break;
+			case CLOB:
+				bytes = getFromCLOB(resultSet, fullColumnName);
+				break;
+			case STRING:
+				bytes = getFromString(resultSet, fullColumnName);
+				break;
+			case JAVAOBJECT:
+				bytes = getFromJavaObject(resultSet, fullColumnName);
+				break;
+			case BYTE:
+				bytes = getFromGetBytes(resultSet, fullColumnName);
+				break;
+		}
 //		if (defn.prefersLargeObjectsReadAsBase64CharacterStream()) {
 //			try {
 //				bytes = getFromCharacterReader(resultSet, fullColumnName);
@@ -523,31 +555,31 @@ public class DBLargeBinary extends DBLargeObject<byte[]> {
 //		} else {
 //			bytes = getFromBinaryStream(resultSet, fullColumnName);
 //		}
-		try{
-			bytes = getFromBinaryStream(resultSet, fullColumnName);
-		} catch (Throwable exp1) {
-			Logger.getLogger(DBLargeBinary.class.getName()).log(Level.WARNING, "Database rejected Binary Stream method", exp1);
-			try {
-				bytes = getFromBLOB(resultSet, fullColumnName);
-			} catch (Throwable exp2) {
-				Logger.getLogger(DBLargeBinary.class.getName()).log(Level.WARNING, "Database rejected BLOB method", exp2);
-				try {
-					bytes = getFromGetBytes(resultSet, fullColumnName);
-				} catch (Throwable exp4) {
-					Logger.getLogger(DBLargeBinary.class.getName()).log(Level.WARNING, "Database rejected Bytes method", exp4);
-					try {
-						bytes = getFromCLOB(resultSet, fullColumnName);
-					} catch (Throwable exp3) {
-						Logger.getLogger(DBLargeBinary.class.getName()).log(Level.WARNING, "Database rejected CLOB method", exp3);
-						try {
-							bytes = getFromCharacterReader(resultSet, fullColumnName);
-						} catch (Throwable exp5) {
-							Logger.getLogger(DBLargeBinary.class.getName()).log(Level.SEVERE, "Database rejected Character Reader method", exp5);
-						}
-					}
-				}
-			}
-		}
+//		try{
+//			bytes = getFromBinaryStream(resultSet, fullColumnName);
+//		} catch (Throwable exp1) {
+//			Logger.getLogger(DBLargeBinary.class.getName()).log(Level.WARNING, "Database rejected Binary Stream method", exp1);
+//			try {
+//				bytes = getFromBLOB(resultSet, fullColumnName);
+//			} catch (Throwable exp2) {
+//				Logger.getLogger(DBLargeBinary.class.getName()).log(Level.WARNING, "Database rejected BLOB method", exp2);
+//				try {
+//					bytes = getFromGetBytes(resultSet, fullColumnName);
+//				} catch (Throwable exp4) {
+//					Logger.getLogger(DBLargeBinary.class.getName()).log(Level.WARNING, "Database rejected Bytes method", exp4);
+//					try {
+//						bytes = getFromCLOB(resultSet, fullColumnName);
+//					} catch (Throwable exp3) {
+//						Logger.getLogger(DBLargeBinary.class.getName()).log(Level.WARNING, "Database rejected CLOB method", exp3);
+//						try {
+//							bytes = getFromCharacterReader(resultSet, fullColumnName);
+//						} catch (Throwable exp5) {
+//							Logger.getLogger(DBLargeBinary.class.getName()).log(Level.SEVERE, "Database rejected Character Reader method", exp5);
+//						}
+//					}
+//				}
+//			}
+//		}
 		return bytes;
 	}
 
@@ -558,6 +590,18 @@ public class DBLargeBinary extends DBLargeObject<byte[]> {
 
 	@Override
 	protected void setValueFromStandardStringEncoding(String encodedValue) {
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	}
+
+	private byte[] getFromBase64(ResultSet resultSet, String fullColumnName) {
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	}
+
+	private byte[] getFromString(ResultSet resultSet, String fullColumnName) {
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	}
+
+	private byte[] getFromJavaObject(ResultSet resultSet, String fullColumnName) {
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 

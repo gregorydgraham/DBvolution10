@@ -15,3 +15,4 @@
 /directTest.h2db.mv.db.trace.db
 /hs_err_pid10368.log
 /retrieveRowWithLargeText.txt
+/tempfileForCreateRowWithLargeText.txt

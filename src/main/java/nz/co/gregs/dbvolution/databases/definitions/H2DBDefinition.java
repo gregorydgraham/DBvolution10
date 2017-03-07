@@ -18,18 +18,16 @@ package nz.co.gregs.dbvolution.databases.definitions;
 import com.vividsolutions.jts.geom.Polygon;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.Set;
 import java.util.TimeZone;
-import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.databases.H2DB;
 import nz.co.gregs.dbvolution.datatypes.DBDateRepeat;
+import nz.co.gregs.dbvolution.datatypes.DBJavaObject;
+import nz.co.gregs.dbvolution.datatypes.DBLargeObject;
+import nz.co.gregs.dbvolution.datatypes.DBLargeText;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 import nz.co.gregs.dbvolution.datatypes.spatial2D.*;
-import nz.co.gregs.dbvolution.expressions.DateExpression;
-import nz.co.gregs.dbvolution.expressions.NumberExpression;
 import nz.co.gregs.dbvolution.internal.h2.*;
-import nz.co.gregs.dbvolution.results.NumberResult;
 
 /**
  * Defines the features of the H2 database that differ from the standard
@@ -565,5 +563,27 @@ public class H2DBDefinition extends DBDefinition {
 	@Override
 	public String doMultiPoint2DGetMaxXTransform(String first) {
 		return MultiPoint2DFunctions.MAXX+"("+first+", "+MultiPoint2DFunctions.getCurrentVersion()+")";
+	}
+
+	@Override
+	public LargeObjectHandler preferredLargeObjectWriter(DBLargeObject<?> lob) {
+		if (lob instanceof DBLargeText) {
+			return LargeObjectHandler.CLOB;
+		} else if (lob instanceof DBJavaObject) {
+			return LargeObjectHandler.BINARYSTREAM;
+		} else {
+			return super.preferredLargeObjectWriter(lob);
+		}
+	}
+
+	@Override
+	public LargeObjectHandler preferredLargeObjectReader(DBLargeObject<?> lob) {
+		if (lob instanceof DBLargeText) {
+			return LargeObjectHandler.BLOB;
+		} else if (lob instanceof DBJavaObject) {
+			return LargeObjectHandler.BINARYSTREAM;
+		} else {
+			return super.preferredLargeObjectReader(lob);
+		}
 	}
 }

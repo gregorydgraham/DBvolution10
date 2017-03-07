@@ -633,4 +633,25 @@ public class MySQLDBDefinition extends DBDefinition {
 //	public String doDateAtTimeZoneTransform(String dateSQL, TimeZone timeZone) {
 //		return "CONVERT_TZ(" + dateSQL + ", 'SYSTEM', '" + timeZone.toZoneId().getId() + "') ";
 //	}
+	@Override
+	public LargeObjectHandler preferredLargeObjectWriter(DBLargeObject<?> lob) {
+		if (lob instanceof DBLargeText) {
+			return LargeObjectHandler.CLOB;
+		} else if (lob instanceof DBJavaObject) {
+			return LargeObjectHandler.BLOB;
+		} else {
+			return super.preferredLargeObjectWriter(lob);
+		}
+	}
+
+	@Override
+	public LargeObjectHandler preferredLargeObjectReader(DBLargeObject<?> lob) {
+		if (lob instanceof DBLargeText) {
+			return LargeObjectHandler.CLOB;
+		} else if (lob instanceof DBJavaObject) {
+			return LargeObjectHandler.BLOB;
+		} else {
+			return super.preferredLargeObjectReader(lob);
+		}
+	}
 }

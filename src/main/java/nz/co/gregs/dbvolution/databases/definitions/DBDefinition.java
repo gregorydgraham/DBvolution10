@@ -35,7 +35,10 @@ import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.DBRecursiveQuery;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.datatypes.DBInteger;
+import nz.co.gregs.dbvolution.datatypes.DBJavaObject;
+import nz.co.gregs.dbvolution.datatypes.DBLargeBinary;
 import nz.co.gregs.dbvolution.datatypes.DBLargeObject;
+import nz.co.gregs.dbvolution.datatypes.DBLargeText;
 import nz.co.gregs.dbvolution.datatypes.DBNumber;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 import nz.co.gregs.dbvolution.datatypes.spatial2D.DBLine2D;
@@ -4684,5 +4687,29 @@ public abstract class DBDefinition {
 	 */
 	public String getUnionOperator() {
 		return " UNION "; //To change body of generated methods, choose Tools | Templates.
+	}
+	
+	public enum LargeObjectHandler {
+		STRING, BYTE, CLOB, BLOB, CHARSTREAM, BINARYSTREAM, BASE64, JAVAOBJECT
+	}
+
+	public LargeObjectHandler preferredLargeObjectWriter(DBLargeObject<?> lob) {
+		if (lob instanceof DBLargeText) {
+			return LargeObjectHandler.CLOB;
+		} else if (lob instanceof DBJavaObject) {
+			return LargeObjectHandler.JAVAOBJECT;
+		} else {
+			return LargeObjectHandler.BLOB;
+		}
+	}
+
+	public LargeObjectHandler preferredLargeObjectReader(DBLargeObject<?> lob) {
+		if (lob instanceof DBLargeText) {
+			return LargeObjectHandler.CLOB;
+		} else if (lob instanceof DBJavaObject) {
+			return LargeObjectHandler.JAVAOBJECT;
+		} else {
+			return LargeObjectHandler.BLOB;
+		}
 	}
 }

@@ -837,4 +837,30 @@ public class SQLiteDefinition extends DBDefinition {
 	public DateFormat getDateTimeFormat() {
 		return new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
 	}
+
+	@Override
+	public LargeObjectHandler preferredLargeObjectWriter(DBLargeObject<?> lob) {
+		if (lob instanceof DBLargeBinary) {
+			return LargeObjectHandler.BYTE;
+		} else if (lob instanceof DBLargeText) {
+			return LargeObjectHandler.BASE64;
+		} else if (lob instanceof DBJavaObject) {
+			return LargeObjectHandler.JAVAOBJECT;
+		} else {
+			return super.preferredLargeObjectWriter(lob);
+		}
+	}
+
+	@Override
+	public LargeObjectHandler preferredLargeObjectReader(DBLargeObject<?> lob) {
+		if (lob instanceof DBLargeBinary) {
+			return LargeObjectHandler.BINARYSTREAM;
+		} else if (lob instanceof DBLargeText) {
+			return LargeObjectHandler.BASE64;
+		} else if (lob instanceof DBJavaObject) {
+			return LargeObjectHandler.JAVAOBJECT;
+		} else {
+			return super.preferredLargeObjectReader(lob);
+		}
+	}
 }

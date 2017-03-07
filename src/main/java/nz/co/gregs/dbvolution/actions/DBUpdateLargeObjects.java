@@ -15,11 +15,14 @@
  */
 package nz.co.gregs.dbvolution.actions;
 
+import com.google.common.base.Charsets;
 import java.io.BufferedInputStream;
+import java.io.ByteArrayInputStream;
 import java.io.IOError;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.nio.charset.Charset;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -37,8 +40,10 @@ import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 import nz.co.gregs.dbvolution.exceptions.DBRuntimeException;
 import nz.co.gregs.dbvolution.internal.properties.PropertyWrapper;
 import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.lang3.CharSetUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import sun.text.normalizer.UnicodeSet;
 
 /**
  * Provides support for the abstract concept of updating rows with BLOB columns.
@@ -76,72 +81,93 @@ public class DBUpdateLargeObjects extends DBUpdate {
 
 				if (largeObject.isNull()) {
 					setToNullUsingStringValue(defn, row, col, largeObject, db, statement);
-				} else //					if (defn.prefersLargeObjectsSetAsCharacterStream(largeObject)) {
-				//						setUsingCharacterStream(defn, row, col, largeObject, db, statement);
-				//					} else if (defn.prefersLargeObjectsSetAsBase64String(largeObject)) {
-				//						setUsingBase64String(defn, row, col, largeObject, db, statement);
-				//					} else if (defn.prefersLargeObjectsSetAsBLOB(largeObject)) {
-				//						setUsingBLOB(defn, row, col, largeObject, db, statement);
-				//					} else {
-				//						setUsingBinaryStream(defn, row, col, largeObject, db, statement);
-				//					}
-				{
-					if (largeObject instanceof DBLargeText) {
-						try {
-							setUsingCLOB(defn, row, col, largeObject, db, statement);
-						} catch (Throwable expa) {
-							try {
-								Logger.getLogger(DBUpdateLargeObjects.class.getName()).log(Level.WARNING, "Database rejected CLOB method", expa);
-								setUsingCharacterStream(defn, row, col, largeObject, db, statement);
-							} catch (Throwable exp1) {
-								try {
-									Logger.getLogger(DBUpdateLargeObjects.class.getName()).log(Level.WARNING, "Database rejected Character Stream method", exp1);
-									setUsingBase64String(defn, row, col, largeObject, db, statement);
-								} catch (Throwable exp2) {
-									try {
-										Logger.getLogger(DBUpdateLargeObjects.class.getName()).log(Level.WARNING, "Database rejected Base64String method", exp2);
-										setUsingStringValue(defn, row, col, largeObject, db, statement);
-									} catch (Throwable exp0) {
-										try {
-											Logger.getLogger(DBUpdateLargeObjects.class.getName()).log(Level.WARNING, "Database rejected String method", exp0);
-											setUsingBLOB(defn, row, col, largeObject, db, statement);
-										} catch (Throwable exp3) {
-											try {
-												Logger.getLogger(DBUpdateLargeObjects.class.getName()).log(Level.WARNING, "Database rejected BLOB method", exp3);
-												setUsingBinaryStream(defn, row, col, largeObject, db, statement);
-											} catch (Throwable exp4) {
-												Logger.getLogger(DBUpdateLargeObjects.class.getName()).log(Level.WARNING, "Database rejected Binary Stream method", exp3);
-												Logger.getLogger(DBUpdateLargeObjects.class.getName()).log(Level.SEVERE, "Database rejected all implemented methods", exp4);
-												throw exp1;
-											}
-										}
-									}
-								}
-							}
-						}
-					} else {
-						try {
+				} else {
+					DBDefinition.LargeObjectHandler handler = defn.preferredLargeObjectWriter(largeObject);
+					switch (handler){
+						case BLOB:
+							setUsingBLOB(defn, row, col, largeObject, db, statement);
+							break;
+						case BASE64:
+							setUsingBase64String(defn, row, col, largeObject, db, statement);
+							break;
+						case BINARYSTREAM:
 							setUsingBinaryStream(defn, row, col, largeObject, db, statement);
-						} catch (Throwable exp1) {
-							try {
-								Logger.getLogger(DBUpdateLargeObjects.class.getName()).log(Level.WARNING, "Database rejected Binary Stream method", exp1);
-								setUsingBLOB(defn, row, col, largeObject, db, statement);
-							} catch (Throwable exp2) {
-								try {
-									Logger.getLogger(DBUpdateLargeObjects.class.getName()).log(Level.WARNING, "Database rejected BLOB method", exp2);
-									setUsingBase64String(defn, row, col, largeObject, db, statement);
-								} catch (Throwable exp3) {
-									try {
-										Logger.getLogger(DBUpdateLargeObjects.class.getName()).log(Level.WARNING, "Database rejected Base64 method", exp3);
-										setUsingCharacterStream(defn, row, col, largeObject, db, statement);
-									} catch (Throwable exp4) {
-										Logger.getLogger(DBUpdateLargeObjects.class.getName()).log(Level.SEVERE, "Database rejected all implemented methods", exp4);
-										throw exp1;
-									}
-								}
-							}
-						}
+							break;
+						case CHARSTREAM:
+							setUsingCharacterStream(defn, row, col, largeObject, db, statement);
+							break;
+						case CLOB:
+							setUsingCLOB(defn, row, col, largeObject, db, statement);
+							break;
+						case STRING:
+							setUsingStringValue(defn, row, col, largeObject, db, statement);
+							break;
+						case JAVAOBJECT:
+							setUsingJavaObject(defn, row, col, largeObject, db, statement);
+							break;
+						case BYTE:
+							setUsingByteArray(defn, row, col, largeObject, db, statement);
+							break;
+//						case UNICODESTREAM:
+//							setUsingUnicodeStream(defn, row, col, largeObject, db, statement);
+//							break;
 					}
+//					if (largeObject instanceof DBLargeText) {
+//						try {
+//							setUsingCLOB(defn, row, col, largeObject, db, statement);
+//						} catch (Throwable expa) {
+//							try {
+//								Logger.getLogger(DBUpdateLargeObjects.class.getName()).log(Level.WARNING, "Database rejected CLOB method", expa);
+//								setUsingCharacterStream(defn, row, col, largeObject, db, statement);
+//							} catch (Throwable exp1) {
+//								try {
+//									Logger.getLogger(DBUpdateLargeObjects.class.getName()).log(Level.WARNING, "Database rejected Character Stream method", exp1);
+//									setUsingBase64String(defn, row, col, largeObject, db, statement);
+//								} catch (Throwable exp2) {
+//									try {
+//										Logger.getLogger(DBUpdateLargeObjects.class.getName()).log(Level.WARNING, "Database rejected Base64String method", exp2);
+//										setUsingStringValue(defn, row, col, largeObject, db, statement);
+//									} catch (Throwable exp0) {
+//										try {
+//											Logger.getLogger(DBUpdateLargeObjects.class.getName()).log(Level.WARNING, "Database rejected String method", exp0);
+//											setUsingBLOB(defn, row, col, largeObject, db, statement);
+//										} catch (Throwable exp3) {
+//											try {
+//												Logger.getLogger(DBUpdateLargeObjects.class.getName()).log(Level.WARNING, "Database rejected BLOB method", exp3);
+//												setUsingBinaryStream(defn, row, col, largeObject, db, statement);
+//											} catch (Throwable exp4) {
+//												Logger.getLogger(DBUpdateLargeObjects.class.getName()).log(Level.WARNING, "Database rejected Binary Stream method", exp3);
+//												Logger.getLogger(DBUpdateLargeObjects.class.getName()).log(Level.SEVERE, "Database rejected all implemented methods", exp4);
+//												throw exp1;
+//											}
+//										}
+//									}
+//								}
+//							}
+//						}
+//					} else {
+//						try {
+//							setUsingBinaryStream(defn, row, col, largeObject, db, statement);
+//						} catch (Throwable exp1) {
+//							try {
+//								Logger.getLogger(DBUpdateLargeObjects.class.getName()).log(Level.WARNING, "Database rejected Binary Stream method", exp1);
+//								setUsingBLOB(defn, row, col, largeObject, db, statement);
+//							} catch (Throwable exp2) {
+//								try {
+//									Logger.getLogger(DBUpdateLargeObjects.class.getName()).log(Level.WARNING, "Database rejected BLOB method", exp2);
+//									setUsingBase64String(defn, row, col, largeObject, db, statement);
+//								} catch (Throwable exp3) {
+//									try {
+//										Logger.getLogger(DBUpdateLargeObjects.class.getName()).log(Level.WARNING, "Database rejected Base64 method", exp3);
+//										setUsingCharacterStream(defn, row, col, largeObject, db, statement);
+//									} catch (Throwable exp4) {
+//										Logger.getLogger(DBUpdateLargeObjects.class.getName()).log(Level.SEVERE, "Database rejected all implemented methods", exp4);
+//										throw exp1;
+//									}
+//								}
+//							}
+//						}
+//					}
 				}
 				DBUpdateLargeObjects update = new DBUpdateLargeObjects(row);
 				actions.add(update);
@@ -163,12 +189,21 @@ public class DBUpdateLargeObjects extends DBUpdate {
 				+ defn.beginSetClause()
 				+ defn.formatColumnName(col)
 				+ defn.getEqualsComparator()
-				+ "'" + largeObject.stringValue() + "'"
+				//+ "'" + largeObject.stringValue() + "'"
+				+" ? "
 				+ defn.beginWhereClause()
 				+ getPrimaryKeySQL(db, row)
 				+ defn.endSQLStatement();
 //					db.printSQLIfRequested(sqlString);
 		LOG.debug(sqlString);
+		PreparedStatement prep = statement.getConnection().prepareStatement(sqlString);
+		try {
+			prep.setString(1, largeObject.stringValue());
+			prep.execute();
+		} finally {
+			prep.close();
+		}
+
 		statement.execute(sqlString);
 	}
 
@@ -251,7 +286,7 @@ public class DBUpdateLargeObjects extends DBUpdate {
 		LOG.debug(sqlString);
 		PreparedStatement prep = statement.getConnection().prepareStatement(sqlString);
 		try {
-			prep.setClob(1, new InputStreamReader(largeObject.getInputStream()), largeObject.getSize());
+			prep.setClob(1, new InputStreamReader(largeObject.getInputStream(), Charset.forName("UTF-8")), largeObject.getSize());
 			prep.execute();
 		} finally {
 			prep.close();
@@ -306,8 +341,23 @@ public class DBUpdateLargeObjects extends DBUpdate {
 		}
 	}
 
-	private void setUsingCharacterStream(DBDefinition defn, DBRow row, final String col, final DBLargeObject<?> largeObject, DBDatabase db, DBStatement statement) throws SQLException, IOError {
-		String sqlString = defn.beginUpdateLine()
+	private void setUsingCharacterStream(DBDefinition defn, DBRow row, final String col, final DBLargeObject<?> largeObject, DBDatabase db, DBStatement statement) throws SQLException, IOError, IOException {
+//		String sqlString = defn.beginUpdateLine()
+//				+ defn.formatTableName(row)
+//				+ defn.beginSetClause()
+//				+ defn.formatColumnName(col)
+//				+ defn.getEqualsComparator()
+//				+ defn.getPreparedVariableSymbol()
+//				+ defn.beginWhereClause()
+//				+ getPrimaryKeySQL(db, row)
+//				+ defn.endSQLStatement();
+////					db.printSQLIfRequested(sqlString);
+//		LOG.info(sqlString);
+//		try (PreparedStatement prep = statement.getConnection().prepareStatement(sqlString)) {
+//			prep.setCharacterStream(1, new InputStreamReader(largeObject.getInputStream()));
+//		}
+//	}
+String sqlString = defn.beginUpdateLine()
 				+ defn.formatTableName(row)
 				+ defn.beginSetClause()
 				+ defn.formatColumnName(col)
@@ -317,9 +367,40 @@ public class DBUpdateLargeObjects extends DBUpdate {
 				+ getPrimaryKeySQL(db, row)
 				+ defn.endSQLStatement();
 //					db.printSQLIfRequested(sqlString);
-		LOG.info(sqlString);
-		try (PreparedStatement prep = statement.getConnection().prepareStatement(sqlString)) {
-			prep.setCharacterStream(1, new InputStreamReader(largeObject.getInputStream()));
+		LOG.debug(sqlString);
+		PreparedStatement prep = statement.getConnection().prepareStatement(sqlString);
+		try {
+			InputStream inputStream = largeObject.getInputStream();
+
+			InputStream input = new BufferedInputStream(inputStream);
+			try {
+				List<byte[]> byteArrays = new ArrayList<>();
+
+				int totalBytesRead = 0;
+				byte[] resultSetBytes;
+				resultSetBytes = new byte[100000];
+				int bytesRead = input.read(resultSetBytes);
+				while (bytesRead > 0) {
+					totalBytesRead += bytesRead;
+					byteArrays.add(resultSetBytes);
+					resultSetBytes = new byte[100000];
+					bytesRead = input.read(resultSetBytes);
+				}
+				byte[] bytes = new byte[totalBytesRead];
+				int bytesAdded = 0;
+				for (byte[] someBytes : byteArrays) {
+					System.arraycopy(someBytes, 0, bytes, bytesAdded, Math.min(someBytes.length, bytes.length - bytesAdded));
+					bytesAdded += someBytes.length;
+				}
+//				String b64encoded = Base64.encodeBase64String(bytes);
+				//System.out.println("BYTES TO WRITE: " + Arrays.toString(bytes));
+				prep.setCharacterStream(1, new InputStreamReader(new ByteArrayInputStream(bytes)), bytes.length);
+				prep.execute();
+			} finally {
+				input.close();
+			}
+		} finally {
+			prep.close();
 		}
 	}
 
@@ -364,5 +445,119 @@ public class DBUpdateLargeObjects extends DBUpdate {
 		}
 		return changed;
 	}
+
+	private void setUsingJavaObject(DBDefinition defn, DBRow row, String col, DBLargeObject<?> largeObject, DBDatabase db, DBStatement statement) throws SQLException {
+		String sqlString = defn.beginUpdateLine()
+				+ defn.formatTableName(row)
+				+ defn.beginSetClause()
+				+ defn.formatColumnName(col)
+				+ defn.getEqualsComparator()
+				+ defn.getPreparedVariableSymbol()
+				+ defn.beginWhereClause()
+				+ getPrimaryKeySQL(db, row)
+				+ defn.endSQLStatement();
+//					db.printSQLIfRequested(sqlString);
+		LOG.debug(sqlString);
+		try (PreparedStatement prep = statement.getConnection().prepareStatement(sqlString)) {
+			prep.setObject(1, largeObject.getValue());
+			prep.execute();
+		}
+	}
+
+	private void setUsingByteArray(DBDefinition defn, DBRow row, String col, DBLargeObject<?> largeObject, DBDatabase db, DBStatement statement) throws SQLException, IOException {
+		String sqlString = defn.beginUpdateLine()
+				+ defn.formatTableName(row)
+				+ defn.beginSetClause()
+				+ defn.formatColumnName(col)
+				+ defn.getEqualsComparator()
+				+ defn.getPreparedVariableSymbol()
+				+ defn.beginWhereClause()
+				+ getPrimaryKeySQL(db, row)
+				+ defn.endSQLStatement();
+//					db.printSQLIfRequested(sqlString);
+		LOG.debug(sqlString);
+		PreparedStatement prep = statement.getConnection().prepareStatement(sqlString);
+		try {
+			InputStream inputStream = largeObject.getInputStream();
+
+			InputStream input = new BufferedInputStream(inputStream);
+			try {
+				List<byte[]> byteArrays = new ArrayList<>();
+
+				int totalBytesRead = 0;
+				byte[] resultSetBytes;
+				resultSetBytes = new byte[100000];
+				int bytesRead = input.read(resultSetBytes);
+				while (bytesRead > 0) {
+					totalBytesRead += bytesRead;
+					byteArrays.add(resultSetBytes);
+					resultSetBytes = new byte[100000];
+					bytesRead = input.read(resultSetBytes);
+				}
+				byte[] bytes = new byte[totalBytesRead];
+				int bytesAdded = 0;
+				for (byte[] someBytes : byteArrays) {
+					System.arraycopy(someBytes, 0, bytes, bytesAdded, Math.min(someBytes.length, bytes.length - bytesAdded));
+					bytesAdded += someBytes.length;
+				}
+//				String b64encoded = Base64.encodeBase64String(bytes);
+				//System.out.println("BYTES TO WRITE: " + Arrays.toString(bytes));
+				prep.setBytes(1, bytes);
+				prep.execute();
+			} finally {
+				input.close();
+			}
+		} finally {
+			prep.close();
+		}
+	}
+
+//	private void setUsingUnicodeStream(DBDefinition defn, DBRow row, String col, DBLargeObject<?> largeObject, DBDatabase db, DBStatement statement) throws SQLException, IOException {
+//		String sqlString = defn.beginUpdateLine()
+//				+ defn.formatTableName(row)
+//				+ defn.beginSetClause()
+//				+ defn.formatColumnName(col)
+//				+ defn.getEqualsComparator()
+//				+ defn.getPreparedVariableSymbol()
+//				+ defn.beginWhereClause()
+//				+ getPrimaryKeySQL(db, row)
+//				+ defn.endSQLStatement();
+////					db.printSQLIfRequested(sqlString);
+//		LOG.debug(sqlString);
+//		PreparedStatement prep = statement.getConnection().prepareStatement(sqlString);
+//		try {
+//			InputStream inputStream = largeObject.getInputStream();
+//
+//			InputStream input = new BufferedInputStream(inputStream);
+//			try {
+//				List<byte[]> byteArrays = new ArrayList<>();
+//
+//				int totalBytesRead = 0;
+//				byte[] resultSetBytes;
+//				resultSetBytes = new byte[100000];
+//				int bytesRead = input.read(resultSetBytes);
+//				while (bytesRead > 0) {
+//					totalBytesRead += bytesRead;
+//					byteArrays.add(resultSetBytes);
+//					resultSetBytes = new byte[100000];
+//					bytesRead = input.read(resultSetBytes);
+//				}
+//				byte[] bytes = new byte[totalBytesRead];
+//				int bytesAdded = 0;
+//				for (byte[] someBytes : byteArrays) {
+//					System.arraycopy(someBytes, 0, bytes, bytesAdded, Math.min(someBytes.length, bytes.length - bytesAdded));
+//					bytesAdded += someBytes.length;
+//				}
+////				String b64encoded = Base64.encodeBase64String(bytes);
+//				//System.out.println("BYTES TO WRITE: " + Arrays.toString(bytes));
+//				prep.setUnicodeStream(1, new ByteArrayInputStream(bytes), bytes.length);
+//				prep.execute();
+//			} finally {
+//				input.close();
+//			}
+//		} finally {
+//			prep.close();
+//		}
+//	}
 
 }

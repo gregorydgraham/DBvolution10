@@ -333,6 +333,37 @@ public class DBJavaObject<O> extends DBLargeObject<O> {
 	protected O getFromResultSet(DBDatabase database, ResultSet resultSet, String fullColumnName) throws SQLException {
 		O obj = null;
 		DBDefinition defn = database.getDefinition();
+		DBDefinition.LargeObjectHandler handler = defn.preferredLargeObjectReader(this);
+		switch (handler) {
+			case BLOB:
+				obj = getFromBLOB(resultSet, fullColumnName);
+				break;
+			case BASE64:
+				obj = getFromBase64(resultSet, fullColumnName);
+				break;
+			case BINARYSTREAM:
+				obj = getFromBinaryStream(resultSet, fullColumnName);
+				break;
+			case CHARSTREAM:
+				try {
+					obj = getFromCharacterReader(resultSet, fullColumnName);
+				} catch (IOException exp) {
+					throw new DBRuntimeException(exp);
+				}
+				break;
+			case CLOB:
+				obj = getFromCLOB(resultSet, fullColumnName);
+				break;
+			case STRING:
+				obj = getFromString(resultSet, fullColumnName);
+				break;
+			case JAVAOBJECT:
+				obj = getFromJavaObject(resultSet, fullColumnName);
+				break;
+			case BYTE:
+				obj = getFromGetBytes(resultSet, fullColumnName);
+				break;
+		}
 //		if (defn.prefersLargeObjectsReadAsBase64CharacterStream(this)) {
 //			try {
 //				obj = getFromCharacterReader(resultSet, fullColumnName);
@@ -347,31 +378,31 @@ public class DBJavaObject<O> extends DBLargeObject<O> {
 //			obj = getFromBinaryStream(resultSet, fullColumnName);
 //		}
 
-		try {
-			obj = getFromBinaryStream(resultSet, fullColumnName);
-		} catch (Throwable exp1) {
-			Logger.getLogger(DBLargeBinary.class.getName()).log(Level.WARNING, "Database rejected Binary Stream method", exp1);
-			try {
-				obj = getFromBLOB(resultSet, fullColumnName);
-			} catch (Throwable exp2) {
-				Logger.getLogger(DBLargeBinary.class.getName()).log(Level.WARNING, "Database rejected Binary Stream method", exp1);
-				try {
-					obj = getFromGetBytes(resultSet, fullColumnName);
-				} catch (Throwable exp3) {
-					Logger.getLogger(DBLargeBinary.class.getName()).log(Level.WARNING, "Database rejected BLOB method", exp2);
-					try {
-						obj = getFromCLOB(resultSet, fullColumnName);
-					} catch (Throwable exp4) {
-						Logger.getLogger(DBLargeBinary.class.getName()).log(Level.WARNING, "Database rejected Bytes method", exp4);
-						try {
-							obj = getFromCharacterReader(resultSet, fullColumnName);
-						} catch (Throwable exp5) {
-							Logger.getLogger(DBLargeBinary.class.getName()).log(Level.SEVERE, "Database rejected Character Reader method", exp5);
-						}
-					}
-				}
-			}
-		}
+//		try {
+//			obj = getFromBinaryStream(resultSet, fullColumnName);
+//		} catch (Throwable exp1) {
+//			Logger.getLogger(DBLargeBinary.class.getName()).log(Level.WARNING, "Database rejected Binary Stream method", exp1);
+//			try {
+//				obj = getFromBLOB(resultSet, fullColumnName);
+//			} catch (Throwable exp2) {
+//				Logger.getLogger(DBLargeBinary.class.getName()).log(Level.WARNING, "Database rejected Binary Stream method", exp1);
+//				try {
+//					obj = getFromGetBytes(resultSet, fullColumnName);
+//				} catch (Throwable exp3) {
+//					Logger.getLogger(DBLargeBinary.class.getName()).log(Level.WARNING, "Database rejected BLOB method", exp2);
+//					try {
+//						obj = getFromCLOB(resultSet, fullColumnName);
+//					} catch (Throwable exp4) {
+//						Logger.getLogger(DBLargeBinary.class.getName()).log(Level.WARNING, "Database rejected Bytes method", exp4);
+//						try {
+//							obj = getFromCharacterReader(resultSet, fullColumnName);
+//						} catch (Throwable exp5) {
+//							Logger.getLogger(DBLargeBinary.class.getName()).log(Level.SEVERE, "Database rejected Character Reader method", exp5);
+//						}
+//					}
+//				}
+//			}
+//		}
 		return obj;
 	}
 
@@ -382,6 +413,29 @@ public class DBJavaObject<O> extends DBLargeObject<O> {
 
 	@Override
 	protected void setValueFromStandardStringEncoding(String encodedValue) {
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	}
+
+	private O getFromString(ResultSet resultSet, String fullColumnName) {
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	}
+
+	@SuppressWarnings("unchecked")
+	private O getFromJavaObject(ResultSet resultSet, String fullColumnName) throws SQLException {
+		O returnValue = null;
+		Object blob = resultSet.getObject(fullColumnName);
+		if (resultSet.wasNull()) {
+			blob = null;
+		}
+		if (blob == null) {
+			this.setToNull();
+		} else {
+			returnValue = (O) blob;
+		}
+		return returnValue;
+	}
+
+	private O getFromBase64(ResultSet resultSet, String fullColumnName) {
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 }
