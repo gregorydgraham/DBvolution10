@@ -15,11 +15,13 @@
  */
 package nz.co.gregs.dbvolution.datatypes;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.List;
 import java.sql.SQLException;
+import java.util.Arrays;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.annotations.DBAutoIncrement;
 import nz.co.gregs.dbvolution.annotations.DBColumn;
@@ -83,6 +85,8 @@ public class DBLargeTextTest extends AbstractTest {
 	@Test
 	public void retrieveRowWithBinaryObject() throws FileNotFoundException, IOException, SQLException, UnexpectedNumberOfRowsException, ClassNotFoundException, InstantiationException {
 
+		database.setPrintSQLBeforeExecuting(true);
+		
 		CompanyTextForRetreivingBinaryObject blobTable = new CompanyTextForRetreivingBinaryObject();
 
 		database.preventDroppingOfTables(false);
@@ -111,6 +115,11 @@ public class DBLargeTextTest extends AbstractTest {
 		database.print(database.getDBTable(blobTable).getRowsByPrimaryKey(primaryKey));
 		firstRow.fileText.writeToFileSystem(newFile);
 		Assert.assertThat(newFile.length(), is(image.length()));
+
+//		firstRow = database.getDBTable(blobTable).getRowsByPrimaryKey(primaryKey).get(0);
+//		final String valueOf = new String(firstRow.fileText.getBytes());
+//		System.err.println(valueOf);
+//		Assert.assertThat(valueOf, containsString("Maranhão"));
 	}
 
 	@Test

@@ -65,7 +65,7 @@ public class MySQLDBDefinition extends DBDefinition {
 	@Override
 	public String getDatabaseDataTypeOfQueryableDatatype(QueryableDatatype<?> qdt) {
 		if (qdt instanceof DBString) {
-			return " VARCHAR(1000) CHARACTER SET utf8 COLLATE utf8_bin ";
+			return " NVARCHAR(1000) COLLATE utf8_bin ";
 		} else if (qdt instanceof DBDate) {
 			return " DATETIME(6) ";
 		} else if (qdt instanceof DBLargeBinary) {
@@ -636,7 +636,7 @@ public class MySQLDBDefinition extends DBDefinition {
 	@Override
 	public LargeObjectHandler preferredLargeObjectWriter(DBLargeObject<?> lob) {
 		if (lob instanceof DBLargeText) {
-			return LargeObjectHandler.CLOB;
+			return LargeObjectHandler.BINARYSTREAM;
 		} else if (lob instanceof DBJavaObject) {
 			return LargeObjectHandler.BLOB;
 		} else {
@@ -647,7 +647,7 @@ public class MySQLDBDefinition extends DBDefinition {
 	@Override
 	public LargeObjectHandler preferredLargeObjectReader(DBLargeObject<?> lob) {
 		if (lob instanceof DBLargeText) {
-			return LargeObjectHandler.CLOB;
+			return LargeObjectHandler.STRING;
 		} else if (lob instanceof DBJavaObject) {
 			return LargeObjectHandler.BLOB;
 		} else {

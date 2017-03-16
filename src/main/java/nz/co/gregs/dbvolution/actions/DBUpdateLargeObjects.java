@@ -15,9 +15,10 @@
  */
 package nz.co.gregs.dbvolution.actions;
 
-import com.google.common.base.Charsets;
 import java.io.BufferedInputStream;
+import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
+import java.io.CharArrayReader;
 import java.io.IOError;
 import java.io.IOException;
 import java.io.InputStream;
@@ -35,15 +36,12 @@ import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.databases.DBStatement;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.datatypes.DBLargeObject;
-import nz.co.gregs.dbvolution.datatypes.DBLargeText;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 import nz.co.gregs.dbvolution.exceptions.DBRuntimeException;
 import nz.co.gregs.dbvolution.internal.properties.PropertyWrapper;
 import org.apache.commons.codec.binary.Base64;
-import org.apache.commons.lang3.CharSetUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import sun.text.normalizer.UnicodeSet;
 
 /**
  * Provides support for the abstract concept of updating rows with BLOB columns.
@@ -342,22 +340,7 @@ public class DBUpdateLargeObjects extends DBUpdate {
 	}
 
 	private void setUsingCharacterStream(DBDefinition defn, DBRow row, final String col, final DBLargeObject<?> largeObject, DBDatabase db, DBStatement statement) throws SQLException, IOError, IOException {
-//		String sqlString = defn.beginUpdateLine()
-//				+ defn.formatTableName(row)
-//				+ defn.beginSetClause()
-//				+ defn.formatColumnName(col)
-//				+ defn.getEqualsComparator()
-//				+ defn.getPreparedVariableSymbol()
-//				+ defn.beginWhereClause()
-//				+ getPrimaryKeySQL(db, row)
-//				+ defn.endSQLStatement();
-////					db.printSQLIfRequested(sqlString);
-//		LOG.info(sqlString);
-//		try (PreparedStatement prep = statement.getConnection().prepareStatement(sqlString)) {
-//			prep.setCharacterStream(1, new InputStreamReader(largeObject.getInputStream()));
-//		}
-//	}
-String sqlString = defn.beginUpdateLine()
+		String sqlString = defn.beginUpdateLine()
 				+ defn.formatTableName(row)
 				+ defn.beginSetClause()
 				+ defn.formatColumnName(col)
@@ -366,35 +349,33 @@ String sqlString = defn.beginUpdateLine()
 				+ defn.beginWhereClause()
 				+ getPrimaryKeySQL(db, row)
 				+ defn.endSQLStatement();
-//					db.printSQLIfRequested(sqlString);
+		db.printSQLIfRequested(sqlString);
 		LOG.debug(sqlString);
 		PreparedStatement prep = statement.getConnection().prepareStatement(sqlString);
 		try {
 			InputStream inputStream = largeObject.getInputStream();
 
-			InputStream input = new BufferedInputStream(inputStream);
+			InputStreamReader input = new InputStreamReader(inputStream, "UTF-8");
 			try {
-				List<byte[]> byteArrays = new ArrayList<>();
+				List<char[]> byteArrays = new ArrayList<>();
 
 				int totalBytesRead = 0;
-				byte[] resultSetBytes;
-				resultSetBytes = new byte[100000];
+				char[] resultSetBytes;
+				resultSetBytes = new char[100000];
 				int bytesRead = input.read(resultSetBytes);
 				while (bytesRead > 0) {
 					totalBytesRead += bytesRead;
 					byteArrays.add(resultSetBytes);
-					resultSetBytes = new byte[100000];
+					resultSetBytes = new char[100000];
 					bytesRead = input.read(resultSetBytes);
 				}
-				byte[] bytes = new byte[totalBytesRead];
+				char[] bytes = new char[totalBytesRead];
 				int bytesAdded = 0;
-				for (byte[] someBytes : byteArrays) {
+				for (char[] someBytes : byteArrays) {
 					System.arraycopy(someBytes, 0, bytes, bytesAdded, Math.min(someBytes.length, bytes.length - bytesAdded));
 					bytesAdded += someBytes.length;
 				}
-//				String b64encoded = Base64.encodeBase64String(bytes);
-				//System.out.println("BYTES TO WRITE: " + Arrays.toString(bytes));
-				prep.setCharacterStream(1, new InputStreamReader(new ByteArrayInputStream(bytes)), bytes.length);
+				prep.setCharacterStream(1, new BufferedReader(new CharArrayReader(bytes)), bytes.length);
 				prep.execute();
 			} finally {
 				input.close();
