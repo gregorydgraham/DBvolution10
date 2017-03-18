@@ -62,7 +62,7 @@ public class MariaDBDefinition extends DBDefinition {
 	@Override
 	public String getDatabaseDataTypeOfQueryableDatatype(QueryableDatatype<?> qdt) {
 		if (qdt instanceof DBString) {
-			return " VARCHAR(1000) CHARACTER SET utf8 COLLATE utf8_bin ";
+			return " NVARCHAR(1000) CHARACTER SET utf8 COLLATE utf8_bin ";
 		} else if (qdt instanceof DBDate) {
 			return " DATETIME ";
 		} else if (qdt instanceof DBLargeBinary) {
