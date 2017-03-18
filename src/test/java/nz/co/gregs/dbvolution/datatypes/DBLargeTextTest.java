@@ -85,8 +85,6 @@ public class DBLargeTextTest extends AbstractTest {
 	@Test
 	public void retrieveRowWithBinaryObject() throws FileNotFoundException, IOException, SQLException, UnexpectedNumberOfRowsException, ClassNotFoundException, InstantiationException {
 
-		database.setPrintSQLBeforeExecuting(true);
-		
 		CompanyTextForRetreivingBinaryObject blobTable = new CompanyTextForRetreivingBinaryObject();
 
 		database.preventDroppingOfTables(false);
@@ -120,8 +118,6 @@ public class DBLargeTextTest extends AbstractTest {
 	@Test
 	public void retrieveStringWithUnicode() throws FileNotFoundException, IOException, SQLException, UnexpectedNumberOfRowsException, ClassNotFoundException, InstantiationException {
 
-		database.setPrintSQLBeforeExecuting(true);
-		
 		CompanyTextForRetreivingBinaryObject blobTable = new CompanyTextForRetreivingBinaryObject();
 
 		database.preventDroppingOfTables(false);
