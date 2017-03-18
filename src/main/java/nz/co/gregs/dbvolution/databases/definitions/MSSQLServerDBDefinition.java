@@ -101,13 +101,13 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 		if (qdt instanceof DBPolygon2D) {
 			return "(" + selectableName + ").STAsText()";
 		} else if (qdt instanceof DBPoint2D) {
-			return "CAST((" + selectableName + ").STAsText() AS VARCHAR(2000))";
+			return "CAST((" + selectableName + ").STAsText() AS NVARCHAR(2000))";
 		} else if (qdt instanceof DBLine2D) {
-			return "CAST((" + selectableName + ").STAsText() AS VARCHAR(2000))";
+			return "CAST((" + selectableName + ").STAsText() AS NVARCHAR(2000))";
 		} else if (qdt instanceof DBLineSegment2D) {
-			return "CAST((" + selectableName + ").STAsText() AS VARCHAR(2000))";
+			return "CAST((" + selectableName + ").STAsText() AS NVARCHAR(2000))";
 		} else if (qdt instanceof DBMultiPoint2D) {
-			return "CAST((" + selectableName + ").STAsText() AS VARCHAR(2000))";
+			return "CAST((" + selectableName + ").STAsText() AS NVARCHAR(2000))";
 		} else {
 			return selectableName;
 		}

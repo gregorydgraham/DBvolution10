@@ -22,23 +22,8 @@ import nz.co.gregs.dbvolution.annotations.DBAutoIncrement;
 import nz.co.gregs.dbvolution.annotations.DBColumn;
 import nz.co.gregs.dbvolution.annotations.DBPrimaryKey;
 import nz.co.gregs.dbvolution.generic.AbstractTest;
-import static org.hamcrest.Matchers.is;
 import org.junit.Assert;
 import org.junit.Test;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.is;
 
 /**

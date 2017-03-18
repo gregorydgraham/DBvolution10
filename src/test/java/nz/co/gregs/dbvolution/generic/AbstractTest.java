@@ -77,7 +77,8 @@ public abstract class AbstractTest {
 			databases.add(new Object[]{"SQLiteDB", sqliteDB});
 		}
 		if (System.getProperty("testMySQL") != null) {
-			databases.add(new Object[]{"MySQLDB", new MySQLTestDatabase(url, username, password)});
+			databases.add(new Object[]{"MySQLDB", new MySQLTestDatabase(host, port, instance, username, password, schema)});
+//			databases.add(new Object[]{"MySQLDB", new MySQLTestDatabase(url, username, password)});
 		}
 		if (System.getProperty("testMySQL56") != null) {
 			databases.add(new Object[]{"MySQLDB-5.6", new MySQL56TestDatabase(url, username, password)});
@@ -301,8 +302,12 @@ public abstract class AbstractTest {
 
 		public static final long serialVersionUID = 1l;
 
+		public MySQLTestDatabase(String host, String port, String database, String username, String password, String schema) {
+			super(host, new Integer(port), database, username, password);
+		}
 		public MySQLTestDatabase(String url, String username, String password) {
 			super(url, username, password);
+//			super(url, username, password);
 //			super("jdbc:mysql://localhost:3306/test?createDatabaseIfNotExist=true", "dbv", "dbv");
 		}
 	}

@@ -67,7 +67,7 @@ public class DataModelTest extends AbstractTest {
 		for (Constructor<DBDatabase> result1 : result) {
 			System.out.println("Constructor: " + result1.getName());
 		}
-		Assert.assertThat(result.size(), is(10));
+		Assert.assertThat(result.size(), is(11));
 	}
 
 	@Test

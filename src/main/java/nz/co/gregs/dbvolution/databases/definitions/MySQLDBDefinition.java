@@ -65,13 +65,13 @@ public class MySQLDBDefinition extends DBDefinition {
 	@Override
 	public String getDatabaseDataTypeOfQueryableDatatype(QueryableDatatype<?> qdt) {
 		if (qdt instanceof DBString) {
-			return " NVARCHAR(1000) COLLATE utf8_bin ";
+			return "  VARCHAR(1000) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin";
 		} else if (qdt instanceof DBDate) {
 			return " DATETIME(6) ";
 		} else if (qdt instanceof DBLargeBinary) {
 			return " LONGBLOB ";
 		} else if (qdt instanceof DBLargeText) {
-			return " LONGTEXT CHARACTER SET utf8 COLLATE utf8_bin ";
+			return " LONGTEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_bin ";
 		} else if (qdt instanceof DBLargeObject) {
 			return " LONGBLOB ";
 		} else if (qdt instanceof DBBooleanArray) {
@@ -111,6 +111,16 @@ public class MySQLDBDefinition extends DBDefinition {
 		} else {
 			return selectableName;
 		}
+	}	
+	
+	@Override
+	public String beginStringValue() {
+		return " '";
+	}
+
+	@Override
+	public Object getCreateTableColumnsEnd() {
+		return ")" + "CHARACTER SET utf8mb4 COLLATE utf8mb4_bin";
 	}
 
 	@Override
@@ -224,7 +234,7 @@ public class MySQLDBDefinition extends DBDefinition {
 	@Override
 	public String getIndexClauseForCreateTable(PropertyWrapper field) {
 		if (field.getQueryableDatatype() instanceof DBString) {
-			return "CREATE INDEX " + formatNameForDatabase("DBI_" + field.tableName() + "_" + field.columnName()) + " ON " + formatNameForDatabase(field.tableName()) + "(" + formatNameForDatabase(field.columnName()) + "(255))";
+			return "CREATE INDEX " + formatNameForDatabase("DBI_" + field.tableName() + "_" + field.columnName()) + " ON " + formatNameForDatabase(field.tableName()) + "(" + formatNameForDatabase(field.columnName()) + "(190))";
 		} else {
 			return super.getIndexClauseForCreateTable(field);
 		}
