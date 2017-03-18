@@ -193,13 +193,11 @@ public class DBLargeText extends DBLargeObject<byte[]> {
 			System.arraycopy(someBytes, 0, bytes, bytesAdded, Math.min(someBytes.length, bytes.length - bytesAdded));
 			bytesAdded += someBytes.length;
 		}
-//			this.setValue(bytes);
 		return bytes;
 	}
 
 	private byte[] getFromGetBytes(ResultSet resultSet, String fullColumnName) throws SQLException {
 		byte[] bytes = resultSet.getBytes(fullColumnName);
-//		this.setValue(bytes);
 		return bytes;
 	}
 
@@ -246,7 +244,6 @@ public class DBLargeText extends DBLargeObject<byte[]> {
 					bytesAdded += someBytes.length;
 				}
 				decodeBuffer = Base64.decodeBase64(bytes);
-//				this.setValue(decodeBuffer);
 			}
 		}
 		return decodeBuffer;
@@ -350,7 +347,6 @@ public class DBLargeText extends DBLargeObject<byte[]> {
 	 *
 	 */
 	public byte[] setFromFileSystem(File originalFile) throws FileNotFoundException, IOException {
-//		System.out.println("FILE: " + originalFile.getAbsolutePath());
 		byte[] bytes = new byte[(int) originalFile.length()];
 		InputStream input = null;
 		try {
@@ -364,11 +360,6 @@ public class DBLargeText extends DBLargeObject<byte[]> {
 					totalBytesRead += bytesRead;
 				}
 			}
-			/*
-			 the above style is a bit tricky: it places bytes into the 'result' array;
-			 'result' is an output parameter;
-			 the while loop usually has a single iteration only.
-			 */
 		} finally {
 			if (input != null) {
 				input.close();
@@ -544,46 +535,7 @@ public class DBLargeText extends DBLargeObject<byte[]> {
 			case BYTE:
 				bytes = getFromByteArray(resultSet, fullColumnName);
 				break;
-//			case UNICODESTREAM:
-//		{
-//			try {
-//				bytes = getFromUnicodeStream(resultSet, fullColumnName);
-//			} catch (IOException ex) {
-//				throw new DBRuntimeException(ex);
-//			}
-//		}
-//				break;
 		}
-//		try {
-//				bytes = getFromCharacterReader(resultSet, fullColumnName);
-//			} catch (Throwable exp1) {
-//				Logger.getLogger(DBLargeText.class.getName()).log(Level.WARNING, "Database rejected Character Reader method", exp1);
-//				try {
-//					bytes = getFromGetBytes(resultSet, fullColumnName);
-//				} catch (Throwable exp2) {
-//					Logger.getLogger(DBLargeText.class.getName()).log(Level.WARNING, "Database rejected Bytes method", exp2);
-//					try {
-//						bytes = getFromCLOB(resultSet, fullColumnName);
-//					} catch (Throwable exp3) {
-//						Logger.getLogger(DBLargeText.class.getName()).log(Level.WARNING, "Database rejected CLOB method", exp3);
-//						try {
-//			bytes = getFromString(resultSet, fullColumnName);
-//		} catch (Throwable exp0) {
-//			Logger.getLogger(DBLargeText.class.getName()).log(Level.WARNING, "Database rejected String method", exp0);
-//					try {
-//							bytes = getFromBLOB(resultSet, fullColumnName);
-//						} catch (Throwable exp4) {
-//							Logger.getLogger(DBLargeText.class.getName()).log(Level.WARNING, "Database rejected BLOB method", exp4);
-//							try {
-//								bytes = getFromBinaryStream(resultSet, fullColumnName);
-//							} catch (Throwable exp5) {
-//								Logger.getLogger(DBLargeText.class.getName()).log(Level.SEVERE, "Database rejected Binary Stream method", exp5);
-//							}
-//						}
-//					}
-//				}
-//			}
-//		}
 		return bytes;
 	}
 
@@ -610,49 +562,6 @@ public class DBLargeText extends DBLargeObject<byte[]> {
 		byte[] gotBytes = resultSet.getBytes(fullColumnName);
 		return gotBytes;
 	}
-
-//	private byte[] getFromUnicodeStream(ResultSet resultSet, String fullColumnName) throws SQLException, IOException {
-//		byte[] decodeBuffer = new byte[]{};
-//		Reader inputReader = null;
-//		try {
-//			inputReader = new InputStreamReader(resultSet.getUnicodeStream(fullColumnName),Charset.forName("UTF8"));
-//		} catch (NullPointerException nullEx) {
-//			;// NullPointerException is thrown by a SQLite-JDBC bug sometimes.
-//		}
-//		if (inputReader != null) {
-//			if (resultSet.wasNull()) {
-//				this.setToNull();
-//			} else {
-//				BufferedReader input = new BufferedReader(inputReader);
-//				List<byte[]> byteArrays = new ArrayList<>();
-//
-//				int totalBytesRead = 0;
-//				try {
-//					char[] resultSetBytes;
-//					resultSetBytes = new char[100000];
-//					int bytesRead = input.read(resultSetBytes);
-//					while (bytesRead > 0) {
-//						totalBytesRead += bytesRead;
-//						byteArrays.add(String.valueOf(resultSetBytes).getBytes());
-//						resultSetBytes = new char[100000];
-//						bytesRead = input.read(resultSetBytes);
-//					}
-//				} catch (IOException ex) {
-//					Logger.getLogger(DBLargeText.class.getName()).log(Level.SEVERE, null, ex);
-//				} finally {
-//					input.close();
-//				}
-//				byte[] bytes = new byte[totalBytesRead];
-//				int bytesAdded = 0;
-//				for (byte[] someBytes : byteArrays) {
-//					System.arraycopy(someBytes, 0, bytes, bytesAdded, Math.min(someBytes.length, bytes.length - bytesAdded));
-//					bytesAdded += someBytes.length;
-//				}
-//				decodeBuffer = Base64.decodeBase64(bytes);
-////				this.setValue(decodeBuffer);
-//			}
-//		}
-//		return decodeBuffer;
-//	}
-
+	
+	
 }

@@ -115,11 +115,32 @@ public class DBLargeTextTest extends AbstractTest {
 		database.print(database.getDBTable(blobTable).getRowsByPrimaryKey(primaryKey));
 		firstRow.fileText.writeToFileSystem(newFile);
 		Assert.assertThat(newFile.length(), is(image.length()));
+	}
 
-//		firstRow = database.getDBTable(blobTable).getRowsByPrimaryKey(primaryKey).get(0);
-//		final String valueOf = new String(firstRow.fileText.getBytes());
-//		System.err.println(valueOf);
-//		Assert.assertThat(valueOf, containsString("Maranhão"));
+	@Test
+	public void retrieveStringWithUnicode() throws FileNotFoundException, IOException, SQLException, UnexpectedNumberOfRowsException, ClassNotFoundException, InstantiationException {
+
+		database.setPrintSQLBeforeExecuting(true);
+		
+		CompanyTextForRetreivingBinaryObject blobTable = new CompanyTextForRetreivingBinaryObject();
+
+		database.preventDroppingOfTables(false);
+		database.dropTableNoExceptions(blobTable);
+		database.createTable(blobTable);
+
+		int primaryKey = 3;
+		blobTable.textID.setValue(primaryKey);
+		blobTable.carCompany.setValue(1);//Toyota
+		blobTable.textFilename.setValue("history.txt");
+		File image = new File("history.txt");
+		blobTable.fileText.setFromFileSystem(image);
+		database.insert(blobTable);
+
+		blobTable = new CompanyTextForRetreivingBinaryObject();
+		
+		CompanyTextForRetreivingBinaryObject firstRow = database.getDBTable(blobTable).getRowsByPrimaryKey(primaryKey).get(0);
+		final String valueOf = firstRow.fileText.stringValue();//new String(firstRow.fileText.getBytes());
+		Assert.assertThat(valueOf, containsString("Maranhāo"));
 	}
 
 	@Test
