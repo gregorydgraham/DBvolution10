@@ -269,7 +269,7 @@ public class DateExpressionTest extends AbstractTest {
 
 		Marque marq = new Marque();
 		DBQuery query = database.getDBQuery(marq);
-		query.addConditions(marq.column(marq.creationDate).isBetween(DateExpression.currentDate(), (Date)null));
+		query.addConditions(marq.column(marq.creationDate).isBetween(DateExpression.currentDate(), DateExpression.nullExpression()));
 		System.out.println("nz.co.gregs.dbvolution.expressions.DateExpressionTest.testCurrentTime() - "+query.getSQLForQuery());
 		List<DBQueryRow> got = query.getAllRows();
 		//database.print(got);
