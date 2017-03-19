@@ -15,6 +15,7 @@
  */
 package nz.co.gregs.dbvolution.databases.definitions;
 
+import nz.co.gregs.dbvolution.internal.query.LargeObjectHandlerType;
 import com.vividsolutions.jts.geom.*;
 import com.vividsolutions.jts.io.WKTReader;
 import java.text.DateFormat;
@@ -841,26 +842,26 @@ public class SQLiteDefinition extends DBDefinition {
 	}
 
 	@Override
-	public LargeObjectHandler preferredLargeObjectWriter(DBLargeObject<?> lob) {
+	public LargeObjectHandlerType preferredLargeObjectWriter(DBLargeObject<?> lob) {
 		if (lob instanceof DBLargeBinary) {
-			return LargeObjectHandler.BYTE;
+			return LargeObjectHandlerType.BYTE;
 		} else if (lob instanceof DBLargeText) {
-			return LargeObjectHandler.BASE64;
+			return LargeObjectHandlerType.BASE64;
 		} else if (lob instanceof DBJavaObject) {
-			return LargeObjectHandler.JAVAOBJECT;
+			return LargeObjectHandlerType.JAVAOBJECT;
 		} else {
 			return super.preferredLargeObjectWriter(lob);
 		}
 	}
 
 	@Override
-	public LargeObjectHandler preferredLargeObjectReader(DBLargeObject<?> lob) {
+	public LargeObjectHandlerType preferredLargeObjectReader(DBLargeObject<?> lob) {
 		if (lob instanceof DBLargeBinary) {
-			return LargeObjectHandler.BINARYSTREAM;
+			return LargeObjectHandlerType.BINARYSTREAM;
 		} else if (lob instanceof DBLargeText) {
-			return LargeObjectHandler.BASE64;
+			return LargeObjectHandlerType.BASE64;
 		} else if (lob instanceof DBJavaObject) {
-			return LargeObjectHandler.JAVAOBJECT;
+			return LargeObjectHandlerType.JAVAOBJECT;
 		} else {
 			return super.preferredLargeObjectReader(lob);
 		}

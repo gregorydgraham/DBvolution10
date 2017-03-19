@@ -22,6 +22,7 @@ import java.util.logging.*;
 import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
+import nz.co.gregs.dbvolution.internal.query.LargeObjectHandlerType;
 import nz.co.gregs.dbvolution.exceptions.DBRuntimeException;
 import org.apache.commons.codec.binary.Base64;
 
@@ -333,7 +334,7 @@ public class DBJavaObject<O> extends DBLargeObject<O> {
 	protected O getFromResultSet(DBDatabase database, ResultSet resultSet, String fullColumnName) throws SQLException {
 		O obj = null;
 		DBDefinition defn = database.getDefinition();
-		DBDefinition.LargeObjectHandler handler = defn.preferredLargeObjectReader(this);
+		LargeObjectHandlerType handler = defn.preferredLargeObjectReader(this);
 		switch (handler) {
 			case BLOB:
 				obj = getFromBLOB(resultSet, fullColumnName);

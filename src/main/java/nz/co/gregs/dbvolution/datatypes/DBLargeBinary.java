@@ -21,6 +21,7 @@ import java.util.*;
 import java.util.logging.*;
 import nz.co.gregs.dbvolution.*;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
+import nz.co.gregs.dbvolution.internal.query.LargeObjectHandlerType;
 import nz.co.gregs.dbvolution.exceptions.DBRuntimeException;
 import nz.co.gregs.dbvolution.expressions.LargeObjectExpression;
 import org.apache.commons.codec.binary.Base64;
@@ -509,7 +510,7 @@ public class DBLargeBinary extends DBLargeObject<byte[]> {
 	protected byte[] getFromResultSet(DBDatabase database, ResultSet resultSet, String fullColumnName) throws SQLException {
 		byte[] bytes = new byte[]{};
 		DBDefinition defn = database.getDefinition();
-		DBDefinition.LargeObjectHandler handler = defn.preferredLargeObjectReader(this);
+		LargeObjectHandlerType handler = defn.preferredLargeObjectReader(this);
 		switch (handler) {
 			case BLOB:
 				bytes = getFromBLOB(resultSet, fullColumnName);

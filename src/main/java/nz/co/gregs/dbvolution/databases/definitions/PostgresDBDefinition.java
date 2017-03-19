@@ -15,6 +15,7 @@
  */
 package nz.co.gregs.dbvolution.databases.definitions;
 
+import nz.co.gregs.dbvolution.internal.query.LargeObjectHandlerType;
 import com.vividsolutions.jts.geom.*;
 import java.text.*;
 import java.util.*;
@@ -821,26 +822,26 @@ public class PostgresDBDefinition extends DBDefinition {
 //	}
 
 	@Override
-	public LargeObjectHandler preferredLargeObjectWriter(DBLargeObject<?> lob) {
+	public LargeObjectHandlerType preferredLargeObjectWriter(DBLargeObject<?> lob) {
 		if (lob instanceof DBLargeBinary) {
-			return LargeObjectHandler.BINARYSTREAM;
+			return LargeObjectHandlerType.BINARYSTREAM;
 		} else if (lob instanceof DBLargeText) {
-			return LargeObjectHandler.CHARSTREAM;
+			return LargeObjectHandlerType.CHARSTREAM;
 		} else if (lob instanceof DBJavaObject) {
-			return LargeObjectHandler.BINARYSTREAM;
+			return LargeObjectHandlerType.BINARYSTREAM;
 		} else {
 			return super.preferredLargeObjectWriter(lob);
 		}
 	}
 
 	@Override
-	public LargeObjectHandler preferredLargeObjectReader(DBLargeObject<?> lob) {
+	public LargeObjectHandlerType preferredLargeObjectReader(DBLargeObject<?> lob) {
 		if (lob instanceof DBLargeBinary) {
-			return LargeObjectHandler.BINARYSTREAM;
+			return LargeObjectHandlerType.BINARYSTREAM;
 		} else if (lob instanceof DBLargeText) {
-			return LargeObjectHandler.STRING;
+			return LargeObjectHandlerType.STRING;
 		} else if (lob instanceof DBJavaObject) {
-			return LargeObjectHandler.BINARYSTREAM;
+			return LargeObjectHandlerType.BINARYSTREAM;
 		} else {
 			return super.preferredLargeObjectReader(lob);
 		}

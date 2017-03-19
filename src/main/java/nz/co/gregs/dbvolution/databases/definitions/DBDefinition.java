@@ -15,6 +15,7 @@
  */
 package nz.co.gregs.dbvolution.databases.definitions;
 
+import nz.co.gregs.dbvolution.internal.query.LargeObjectHandlerType;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
@@ -1790,6 +1791,7 @@ public abstract class DBDefinition {
 	 * Indicates whether the database prefers reading BLOBs using the getBytes()
 	 * method.
 	 *
+	 * @param lob the type of Large Object being processed
 	 * @return the default implementation returns FALSE
 	 */
 	public boolean prefersLargeObjectsReadAsBytes(DBLargeObject<?> lob) {
@@ -1800,6 +1802,7 @@ public abstract class DBDefinition {
 	 * Indicates whether the database prefers reading BLOBs using the getClob()
 	 * method.
 	 *
+	 * @param lob the type of Large Object being processed
 	 * @return the default implementation returns FALSE
 	 */
 	public boolean prefersLargeObjectsReadAsCLOB(DBLargeObject<?> lob) {
@@ -1810,6 +1813,7 @@ public abstract class DBDefinition {
 	 * Indicates whether the database prefers reading BLOBs using the getBlob()
 	 * method.
 	 *
+	 * @param lob the type of Large Object being processed
 	 * @return the default implementation returns FALSE
 	 */
 	public boolean prefersLargeObjectsReadAsBLOB(DBLargeObject<?> lob) {
@@ -4688,27 +4692,24 @@ public abstract class DBDefinition {
 		return " UNION "; //To change body of generated methods, choose Tools | Templates.
 	}
 	
-	public enum LargeObjectHandler {
-		STRING, BYTE, CLOB, BLOB, CHARSTREAM, BINARYSTREAM, BASE64, JAVAOBJECT
-	}
 
-	public LargeObjectHandler preferredLargeObjectWriter(DBLargeObject<?> lob) {
+	public LargeObjectHandlerType preferredLargeObjectWriter(DBLargeObject<?> lob) {
 		if (lob instanceof DBLargeText) {
-			return LargeObjectHandler.CLOB;
+			return LargeObjectHandlerType.CLOB;
 		} else if (lob instanceof DBJavaObject) {
-			return LargeObjectHandler.JAVAOBJECT;
+			return LargeObjectHandlerType.JAVAOBJECT;
 		} else {
-			return LargeObjectHandler.BLOB;
+			return LargeObjectHandlerType.BLOB;
 		}
 	}
 
-	public LargeObjectHandler preferredLargeObjectReader(DBLargeObject<?> lob) {
+	public LargeObjectHandlerType preferredLargeObjectReader(DBLargeObject<?> lob) {
 		if (lob instanceof DBLargeText) {
-			return LargeObjectHandler.CLOB;
+			return LargeObjectHandlerType.CLOB;
 		} else if (lob instanceof DBJavaObject) {
-			return LargeObjectHandler.JAVAOBJECT;
+			return LargeObjectHandlerType.JAVAOBJECT;
 		} else {
-			return LargeObjectHandler.BLOB;
+			return LargeObjectHandlerType.BLOB;
 		}
 	}
 }

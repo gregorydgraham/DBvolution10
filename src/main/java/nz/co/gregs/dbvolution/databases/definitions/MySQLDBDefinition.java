@@ -15,6 +15,7 @@
  */
 package nz.co.gregs.dbvolution.databases.definitions;
 
+import nz.co.gregs.dbvolution.internal.query.LargeObjectHandlerType;
 import com.vividsolutions.jts.geom.*;
 import com.vividsolutions.jts.io.WKTReader;
 import nz.co.gregs.dbvolution.datatypes.spatial2D.DBPolygon2D;
@@ -644,22 +645,22 @@ public class MySQLDBDefinition extends DBDefinition {
 //		return "CONVERT_TZ(" + dateSQL + ", 'SYSTEM', '" + timeZone.toZoneId().getId() + "') ";
 //	}
 	@Override
-	public LargeObjectHandler preferredLargeObjectWriter(DBLargeObject<?> lob) {
+	public LargeObjectHandlerType preferredLargeObjectWriter(DBLargeObject<?> lob) {
 		if (lob instanceof DBLargeText) {
-			return LargeObjectHandler.BINARYSTREAM;
+			return LargeObjectHandlerType.BINARYSTREAM;
 		} else if (lob instanceof DBJavaObject) {
-			return LargeObjectHandler.BLOB;
+			return LargeObjectHandlerType.BLOB;
 		} else {
 			return super.preferredLargeObjectWriter(lob);
 		}
 	}
 
 	@Override
-	public LargeObjectHandler preferredLargeObjectReader(DBLargeObject<?> lob) {
+	public LargeObjectHandlerType preferredLargeObjectReader(DBLargeObject<?> lob) {
 		if (lob instanceof DBLargeText) {
-			return LargeObjectHandler.STRING;
+			return LargeObjectHandlerType.STRING;
 		} else if (lob instanceof DBJavaObject) {
-			return LargeObjectHandler.BLOB;
+			return LargeObjectHandlerType.BLOB;
 		} else {
 			return super.preferredLargeObjectReader(lob);
 		}

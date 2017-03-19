@@ -35,6 +35,7 @@ import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.databases.DBStatement;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
+import nz.co.gregs.dbvolution.internal.query.LargeObjectHandlerType;
 import nz.co.gregs.dbvolution.datatypes.DBLargeObject;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 import nz.co.gregs.dbvolution.exceptions.DBRuntimeException;
@@ -80,7 +81,7 @@ public class DBUpdateLargeObjects extends DBUpdate {
 				if (largeObject.isNull()) {
 					setToNullUsingStringValue(defn, row, col, largeObject, db, statement);
 				} else {
-					DBDefinition.LargeObjectHandler handler = defn.preferredLargeObjectWriter(largeObject);
+					LargeObjectHandlerType handler = defn.preferredLargeObjectWriter(largeObject);
 					switch (handler){
 						case BLOB:
 							setUsingBLOB(defn, row, col, largeObject, db, statement);
