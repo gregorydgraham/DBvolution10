@@ -48,11 +48,12 @@ public class SQLiteDefinition extends DBDefinition {
 	 * The date format used internally within DBvolution's SQLite implementation.
 	 *
 	 */
-	private final DateFormat DATETIME_FORMAT = getDateTimeFormat();//
+	private final DateFormat DATETIME_PRECISE_FORMAT = getDateTimeFormat();//
+	private static final SimpleDateFormat DATETIME_SIMPLE_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
 	@Override
 	public String getDateFormattedForQuery(Date date) {
-		return " strftime('%Y-%m-%d %H:%M:%f', '" + DATETIME_FORMAT.format(date) + "') ";
+		return " strftime('%Y-%m-%d %H:%M:%f', '" + DATETIME_PRECISE_FORMAT.format(date) + "') ";
 	}
 
 	@Override
@@ -112,26 +113,19 @@ public class SQLiteDefinition extends DBDefinition {
 
 	@Override
 	public boolean prefersLargeObjectsReadAsBase64CharacterStream(DBLargeObject<?> lob) {
-		if (!(lob instanceof DBLargeText)) {
-			return true;
-		} else {
-			return false;
-		}
+		return !(lob instanceof DBLargeText);
 	}
 
 	@Override
 	public boolean prefersLargeObjectsSetAsBase64String(DBLargeObject<?> lob) {
-		if (!(lob instanceof DBLargeText)) {
-			return true;
-		} else {
-			return false;
-		}
+		return !(lob instanceof DBLargeText);
 	}
 
 	/**
 	 * Indicates whether the database prefers reading BLOBs using the getBytes()
 	 * method.
 	 *
+	 * @param lob the type of large object that is being processed
 	 * @return the default implementation returns FALSE
 	 */
 	@Override
@@ -143,6 +137,7 @@ public class SQLiteDefinition extends DBDefinition {
 	 * Indicates whether the database prefers reading BLOBs using the getClob()
 	 * method.
 	 *
+	 * @param lob the type of large object that is being processed
 	 * @return the default implementation returns FALSE
 	 */
 	@Override
@@ -154,21 +149,24 @@ public class SQLiteDefinition extends DBDefinition {
 	 * Indicates whether the database prefers reading BLOBs using the getBlob()
 	 * method.
 	 *
+	 * @param lob the type of large object that is being processed
 	 * @return the default implementation returns FALSE
 	 */
 	@Override
 	public boolean prefersLargeObjectsReadAsBLOB(DBLargeObject<?> lob) {
 		return false;
 	}
-	
-		/**
+
+	/**
 	 * Indicates that the database prefers Large Object values to be set using the
 	 * setCharacterStream method.
 	 *
 	 * <p>
-	 * If both {@link #prefersLargeObjectsSetAsCharacterStream(nz.co.gregs.dbvolution.datatypes.DBLargeObject) } and
-	 * {@link #prefersLargeObjectsSetAsBase64String(nz.co.gregs.dbvolution.datatypes.DBLargeObject) } return FALSE, DBvolution
-	 * will use the setBinaryStream method to set the value.
+	 * If both {@link #prefersLargeObjectsSetAsCharacterStream(nz.co.gregs.dbvolution.datatypes.DBLargeObject)
+	 * } and
+	 * {@link #prefersLargeObjectsSetAsBase64String(nz.co.gregs.dbvolution.datatypes.DBLargeObject) }
+	 * return FALSE, DBvolution will use the setBinaryStream method to set the
+	 * value.
 	 *
 	 * @param lob the DBLargeObject which we are querying about.
 	 * @return the default implementation returns FALSE.
@@ -183,9 +181,11 @@ public class SQLiteDefinition extends DBDefinition {
 	 * setBLOB method.
 	 *
 	 * <p>
-	 * If both {@link #prefersLargeObjectsSetAsCharacterStream(nz.co.gregs.dbvolution.datatypes.DBLargeObject)  } and
-	 * {@link #prefersLargeObjectsSetAsBase64String(nz.co.gregs.dbvolution.datatypes.DBLargeObject) } return FALSE, DBvolution
-	 * will use the setBinaryStream method to set the value.
+	 * If both {@link #prefersLargeObjectsSetAsCharacterStream(nz.co.gregs.dbvolution.datatypes.DBLargeObject)
+	 * } and
+	 * {@link #prefersLargeObjectsSetAsBase64String(nz.co.gregs.dbvolution.datatypes.DBLargeObject) }
+	 * return FALSE, DBvolution will use the setBinaryStream method to set the
+	 * value.
 	 *
 	 * @param lob the DBLargeObject which we are querying about.
 	 * @return the default implementation returns FALSE.
@@ -194,7 +194,6 @@ public class SQLiteDefinition extends DBDefinition {
 	public boolean prefersLargeObjectsSetAsBLOB(DBLargeObject<?> lob) {
 		return false;
 	}
-
 
 	@Override
 	public String doSubstringTransform(String originalString, String start, String length) {
@@ -300,7 +299,11 @@ public class SQLiteDefinition extends DBDefinition {
 
 	@Override
 	public synchronized Date parseDateFromGetString(String getStringDate) throws ParseException {
-		return DATETIME_FORMAT.parse(getStringDate);
+		try {
+			return DATETIME_PRECISE_FORMAT.parse(getStringDate);
+		} catch (ParseException ex) {
+			return (DATETIME_SIMPLE_FORMAT).parse(getStringDate);
+		}
 	}
 
 	@Override
@@ -623,8 +626,8 @@ public class SQLiteDefinition extends DBDefinition {
 		//indicate whether g1 is spatially within g2. This is the inverse of Contains(). 
 		// i.e. G1.within(G2) === G2.contains(G1)
 		return Polygon2DFunctions.CONTAINS_POINT2D + "(" + firstGeometry + ", " + secondGeometry + ")";
-	}	
-	
+	}
+
 	@Override
 	public String doPolygon2DAsTextTransform(String polygonSQL) {
 		return Polygon2DFunctions.ASTEXT_FUNCTION + "(" + polygonSQL + ")";
@@ -672,19 +675,19 @@ public class SQLiteDefinition extends DBDefinition {
 
 	@Override
 	public String doLine2DIntersectsLine2DTransform(String toSQLString, String toSQLString0) {
-		return Line2DFunctions.INTERSECTS + "(" + toSQLString + ", "+toSQLString0+")";
+		return Line2DFunctions.INTERSECTS + "(" + toSQLString + ", " + toSQLString0 + ")";
 	}
 
 	@Override
 	public String doLine2DIntersectionPointWithLine2DTransform(String toSQLString, String toSQLString0) {
-		return Line2DFunctions.INTERSECTIONWITH_LINE2D + "((" + toSQLString +"), ("+toSQLString0+ "))";
+		return Line2DFunctions.INTERSECTIONWITH_LINE2D + "((" + toSQLString + "), (" + toSQLString0 + "))";
 	}
 
 	@Override
 	public String doLine2DAllIntersectionPointsWithLine2DTransform(String toSQLString, String toSQLString0) {
-		return Line2DFunctions.ALLINTERSECTIONSWITH_LINE2D + "((" + toSQLString +"), ("+toSQLString0+ "))";
+		return Line2DFunctions.ALLINTERSECTIONSWITH_LINE2D + "((" + toSQLString + "), (" + toSQLString0 + "))";
 	}
-	
+
 	@Override
 	public LineSegment transformDatabaseLineSegment2DValueToJTSLineSegment(String lineSegmentAsSQL) throws com.vividsolutions.jts.io.ParseException {
 		LineString lineString = (new GeometryFactory()).createLineString(new Coordinate[]{});
@@ -704,7 +707,7 @@ public class SQLiteDefinition extends DBDefinition {
 
 	@Override
 	public String transformLineSegmentIntoDatabaseLineSegment2DFormat(LineSegment lineSegment) {
-		LineString line = (new GeometryFactory()).createLineString(new Coordinate[]{lineSegment.getCoordinate(0),lineSegment.getCoordinate(1)});
+		LineString line = (new GeometryFactory()).createLineString(new Coordinate[]{lineSegment.getCoordinate(0), lineSegment.getCoordinate(1)});
 		String wktValue = line.toText();
 		return "'" + wktValue + "'";
 	}
@@ -716,112 +719,111 @@ public class SQLiteDefinition extends DBDefinition {
 
 	@Override
 	public String doLineSegment2DGetMaxXTransform(String toSQLString) {
-		return LineSegment2DFunctions.GETMAXX_FUNCTION+"("+toSQLString+")";
+		return LineSegment2DFunctions.GETMAXX_FUNCTION + "(" + toSQLString + ")";
 	}
 
 	@Override
 	public String doLineSegment2DGetMinXTransform(String toSQLString) {
-		return LineSegment2DFunctions.GETMINX_FUNCTION+"("+toSQLString+")";
+		return LineSegment2DFunctions.GETMINX_FUNCTION + "(" + toSQLString + ")";
 	}
 
 	@Override
 	public String doLineSegment2DGetMaxYTransform(String toSQLString) {
-		return LineSegment2DFunctions.GETMAXY_FUNCTION+"("+toSQLString+")";
+		return LineSegment2DFunctions.GETMAXY_FUNCTION + "(" + toSQLString + ")";
 	}
 
 	@Override
 	public String doLineSegment2DGetMinYTransform(String toSQLString) {
-		return LineSegment2DFunctions.GETMINY_FUNCTION+"("+toSQLString+")";
+		return LineSegment2DFunctions.GETMINY_FUNCTION + "(" + toSQLString + ")";
 	}
 
 	@Override
 	public String doLineSegment2DGetBoundingBoxTransform(String toSQLString) {
-		return LineSegment2DFunctions.GETBOUNDINGBOX_FUNCTION+"("+toSQLString+")";
+		return LineSegment2DFunctions.GETBOUNDINGBOX_FUNCTION + "(" + toSQLString + ")";
 	}
 
 	@Override
 	public String doLineSegment2DDimensionTransform(String toSQLString) {
-		return LineSegment2DFunctions.GETDIMENSION_FUNCTION+"("+toSQLString+")";
+		return LineSegment2DFunctions.GETDIMENSION_FUNCTION + "(" + toSQLString + ")";
 	}
 
 	@Override
 	public String doLineSegment2DNotEqualsTransform(String toSQLString, String toSQLString0) {
-		return "!("+LineSegment2DFunctions.EQUALS_FUNCTION+"(("+toSQLString+"),("+toSQLString0+")))";
+		return "!(" + LineSegment2DFunctions.EQUALS_FUNCTION + "((" + toSQLString + "),(" + toSQLString0 + ")))";
 	}
 
 	@Override
 	public String doLineSegment2DEqualsTransform(String toSQLString, String toSQLString0) {
-		return LineSegment2DFunctions.EQUALS_FUNCTION+"(("+toSQLString+"),("+toSQLString0+"))";
+		return LineSegment2DFunctions.EQUALS_FUNCTION + "((" + toSQLString + "),(" + toSQLString0 + "))";
 	}
 
 	@Override
 	public String doLineSegment2DAsTextTransform(String toSQLString) {
-		return LineSegment2DFunctions.ASTEXT_FUNCTION+"("+toSQLString+")";
+		return LineSegment2DFunctions.ASTEXT_FUNCTION + "(" + toSQLString + ")";
 	}
-	
+
 	@Override
 	public String doLineSegment2DIntersectionPointWithLineSegment2DTransform(String toSQLString, String toSQLString0) {
-		return LineSegment2DFunctions.INTERSECTIONWITH_LINESEGMENT2D+"(("+toSQLString+"), ("+toSQLString0+"))";
+		return LineSegment2DFunctions.INTERSECTIONWITH_LINESEGMENT2D + "((" + toSQLString + "), (" + toSQLString0 + "))";
 	}
 
 	@Override
 	public String doMultiPoint2DEqualsTransform(String first, String second) {
-		return MultiPoint2DFunctions.EQUALS_FUNCTION+"(("+first+"), ("+second+"))";
+		return MultiPoint2DFunctions.EQUALS_FUNCTION + "((" + first + "), (" + second + "))";
 	}
 
 	@Override
 	public String doMultiPoint2DGetPointAtIndexTransform(String first, String index) {
-		return MultiPoint2DFunctions.GETPOINTATINDEX_FUNCTION+"(("+first+"), ("+index+"))";
+		return MultiPoint2DFunctions.GETPOINTATINDEX_FUNCTION + "((" + first + "), (" + index + "))";
 	}
 
 	@Override
 	public String doMultiPoint2DGetNumberOfPointsTransform(String first) {
-		return MultiPoint2DFunctions.GETNUMBEROFPOINTS_FUNCTION+"("+first+")";
+		return MultiPoint2DFunctions.GETNUMBEROFPOINTS_FUNCTION + "(" + first + ")";
 	}
 
 	@Override
 	public String doMultiPoint2DMeasurableDimensionsTransform(String first) {
-		return MultiPoint2DFunctions.GETDIMENSION_FUNCTION+"("+first+")";
+		return MultiPoint2DFunctions.GETDIMENSION_FUNCTION + "(" + first + ")";
 	}
 
 	@Override
 	public String doMultiPoint2DGetBoundingBoxTransform(String first) {
-		return MultiPoint2DFunctions.GETBOUNDINGBOX_FUNCTION+"("+first+")";
+		return MultiPoint2DFunctions.GETBOUNDINGBOX_FUNCTION + "(" + first + ")";
 	}
 
 	@Override
 	public String doMultiPoint2DAsTextTransform(String first) {
-		return MultiPoint2DFunctions.ASTEXT_FUNCTION+"("+first+")";
+		return MultiPoint2DFunctions.ASTEXT_FUNCTION + "(" + first + ")";
 	}
 
 	@Override
 	public String doMultiPoint2DToLine2DTransform(String first) {
-		return MultiPoint2DFunctions.ASLINE2D+"("+first+")";
+		return MultiPoint2DFunctions.ASLINE2D + "(" + first + ")";
 	}
 
 //	@Override
 //	public String doMultiPoint2DToPolygon2DTransform(String first) {
 //		return MultiPoint2DFunctions.ASPOLYGON2D+"("+first+")";
 //	}
-
 	@Override
 	public String doMultiPoint2DGetMinYTransform(String first) {
-		return MultiPoint2DFunctions.GETMINY_FUNCTION+"("+first+")";
+		return MultiPoint2DFunctions.GETMINY_FUNCTION + "(" + first + ")";
 	}
 
 	@Override
 	public String doMultiPoint2DGetMinXTransform(String first) {
-		return MultiPoint2DFunctions.GETMINX_FUNCTION+"("+first+")";
+		return MultiPoint2DFunctions.GETMINX_FUNCTION + "(" + first + ")";
 	}
 
 	@Override
 	public String doMultiPoint2DGetMaxYTransform(String first) {
-		return MultiPoint2DFunctions.GETMAXY_FUNCTION+"("+first+")";
+		return MultiPoint2DFunctions.GETMAXY_FUNCTION + "(" + first + ")";
 	}
 
 	@Override
 	public String doMultiPoint2DGetMaxXTransform(String first) {
-		return MultiPoint2DFunctions.GETMAXX_FUNCTION+"("+first+")";
+		return MultiPoint2DFunctions.GETMAXX_FUNCTION + "(" + first + ")";
 	}
 
 	@Override
@@ -832,7 +834,7 @@ public class SQLiteDefinition extends DBDefinition {
 	@Override
 	public String getFalseValue() {
 		return " 0 ";
-	}	
+	}
 
 	public DateFormat getDateTimeFormat() {
 		return new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
