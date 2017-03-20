@@ -23,12 +23,15 @@ import nz.co.gregs.dbvolution.datatypes.DBBoolean;
 import nz.co.gregs.dbvolution.datatypes.DBBooleanArray;
 import nz.co.gregs.dbvolution.datatypes.DBDate;
 import nz.co.gregs.dbvolution.datatypes.DBJavaObject;
+import nz.co.gregs.dbvolution.datatypes.DBLargeObject;
+import nz.co.gregs.dbvolution.datatypes.DBLargeText;
 import nz.co.gregs.dbvolution.datatypes.DBString;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 import nz.co.gregs.dbvolution.expressions.BooleanExpression;
 import nz.co.gregs.dbvolution.expressions.DBExpression;
 import nz.co.gregs.dbvolution.generation.DBTableClassGenerator;
 import nz.co.gregs.dbvolution.internal.oracle.StringFunctions;
+import nz.co.gregs.dbvolution.internal.query.LargeObjectHandlerType;
 import nz.co.gregs.dbvolution.query.QueryOptions;
 
 /**
@@ -99,8 +102,8 @@ public class OracleDBDefinition extends DBDefinition {
 		} else {
 			return super.getDatabaseDataTypeOfQueryableDatatype(qdt);
 		}
-	}	
-	
+	}
+
 	@Override
 	public boolean supportsArraysNatively() {
 		return false;
@@ -129,24 +132,23 @@ public class OracleDBDefinition extends DBDefinition {
 	public String getLimitRowsSubClauseAfterWhereClause(QueryOptions options) {
 		return "";
 	}
-	
+
 	@Override
 	public String doWrapQueryForPaging(String sqlQuery, QueryOptions options) {
 		if (options.getRowLimit() > -1) {
-			final int firstRowOfNextPage = (options.getPageIndex() + 1) * options.getRowLimit()+1;
-			final int firstRowOfPage = options.getPageIndex() * options.getRowLimit()+1;
+			final int firstRowOfNextPage = (options.getPageIndex() + 1) * options.getRowLimit() + 1;
+			final int firstRowOfPage = options.getPageIndex() * options.getRowLimit() + 1;
 			return "select *\n"
-					+ "  from ( select /*+ FIRST_ROWS(n) */\n"
-					+ "  a.*, ROWNUM rnum\n"
-					+ "      from ( " + sqlQuery + " ) a\n"
-					+ "      where ROWNUM <" + firstRowOfNextPage + "\n"
-					+ "      )\n"
-					+ "where rnum  >= " + firstRowOfPage +"";
+				+ "  from ( select /*+ FIRST_ROWS(n) */\n"
+				+ "  a.*, ROWNUM rnum\n"
+				+ "      from ( " + sqlQuery + " ) a\n"
+				+ "      where ROWNUM <" + firstRowOfNextPage + "\n"
+				+ "      )\n"
+				+ "where rnum  >= " + firstRowOfPage + "";
 		} else {
 			return super.doWrapQueryForPaging(sqlQuery, options);
 		}
 	}
-
 
 	@Override
 	public String getCurrentUserFunctionName() {
@@ -166,16 +168,16 @@ public class OracleDBDefinition extends DBDefinition {
 	@Override
 	public String doStringIfNullTransform(String possiblyNullValue, String alternativeIfNull) {
 		return "DECODE(" + possiblyNullValue + ","
-				+ "NULL," + (alternativeIfNull == null ? "NULL" : alternativeIfNull)
-				+ ",''," + (alternativeIfNull == null ? "NULL" : alternativeIfNull)
-				+ "," + possiblyNullValue + ")";
+			+ "NULL," + (alternativeIfNull == null ? "NULL" : alternativeIfNull)
+			+ ",''," + (alternativeIfNull == null ? "NULL" : alternativeIfNull)
+			+ "," + possiblyNullValue + ")";
 	}
 
 	@Override
 	public String doNumberIfNullTransform(String possiblyNullValue, String alternativeIfNull) {
 		return "DECODE(" + possiblyNullValue
-				+ ",NULL," + (alternativeIfNull == null ? "NULL" : alternativeIfNull)
-				+ "," + possiblyNullValue + ")";
+			+ ",NULL," + (alternativeIfNull == null ? "NULL" : alternativeIfNull)
+			+ "," + possiblyNullValue + ")";
 	}
 
 	@Override
@@ -191,11 +193,11 @@ public class OracleDBDefinition extends DBDefinition {
 	@Override
 	public String doSubstringTransform(String originalString, String start, String length) {
 		return " SUBSTR("
-				+ originalString
-				+ ", "
-				+ start
-				+ (length.trim().isEmpty() ? "" : ", " + length)
-				+ ") ";
+			+ originalString
+			+ ", "
+			+ start
+			+ (length.trim().isEmpty() ? "" : ", " + length)
+			+ ") ";
 	}
 
 	@Override
@@ -212,7 +214,7 @@ public class OracleDBDefinition extends DBDefinition {
 	public String doModulusTransform(String firstNumber, String secondNumber) {
 		return " remainder(" + firstNumber + ", " + secondNumber + ")";
 	}
-	
+
 	@Override
 	public String doAddSecondsTransform(String dateValue, String numberOfSeconds) {
 		return "(" + dateValue + " + numtodsinterval( " + numberOfSeconds + ", 'SECOND'))";
@@ -230,7 +232,7 @@ public class OracleDBDefinition extends DBDefinition {
 
 	@Override
 	public String doAddDaysTransform(String dateValue, String numberOfDays) {
-		return "((" + dateValue + ")+(INTERVAL '1' DAY*(" + numberOfDays +")))";
+		return "((" + dateValue + ")+(INTERVAL '1' DAY*(" + numberOfDays + ")))";
 	}
 
 	@Override
@@ -276,19 +278,19 @@ public class OracleDBDefinition extends DBDefinition {
 	@Override
 	public String doHourDifferenceTransform(String dateValue, String otherDateValue) {
 		return "(EXTRACT(HOUR FROM (CAST(" + otherDateValue + " AS TIMESTAMP) - CAST(" + dateValue + " AS TIMESTAMP)))"
-				+ "+(" + doDayDifferenceTransform(dateValue, otherDateValue) + "*24))";
+			+ "+(" + doDayDifferenceTransform(dateValue, otherDateValue) + "*24))";
 	}
 
 	@Override
 	public String doMinuteDifferenceTransform(String dateValue, String otherDateValue) {
 		return "(EXTRACT(MINUTE FROM (CAST(" + otherDateValue + " AS TIMESTAMP) - CAST(" + dateValue + " AS TIMESTAMP)))"
-				+ "+(" + doHourDifferenceTransform(dateValue, otherDateValue) + "*60))";
+			+ "+(" + doHourDifferenceTransform(dateValue, otherDateValue) + "*60))";
 	}
 
 	@Override
 	public String doSecondDifferenceTransform(String dateValue, String otherDateValue) {
 		return "(EXTRACT(SECOND FROM (CAST(" + otherDateValue + " AS TIMESTAMP) - CAST(" + dateValue + " AS TIMESTAMP)))"
-				+ "+(" + doMinuteDifferenceTransform(dateValue, otherDateValue) + "*60))";
+			+ "+(" + doMinuteDifferenceTransform(dateValue, otherDateValue) + "*60))";
 	}
 
 	@Override
@@ -300,8 +302,8 @@ public class OracleDBDefinition extends DBDefinition {
 	public String doInTransform(String column, List<String> values) {
 		StringBuilder builder = new StringBuilder();
 		builder.append("(")
-				.append(column)
-				.append(" IN ( ");
+			.append(column)
+			.append(" IN ( ");
 		String separator = "";
 		for (String val : values) {
 			if (val != null && !val.equals(getEmptyString())) {
@@ -364,7 +366,7 @@ public class OracleDBDefinition extends DBDefinition {
 	public boolean supportsCotangentFunction() {
 		return false;
 	}
-	
+
 	/**
 	 * Transform a Java Boolean into the equivalent in an SQL snippet.
 	 *
@@ -409,7 +411,6 @@ public class OracleDBDefinition extends DBDefinition {
 		return " 0 ";
 	}
 
-
 	/**
 	 * An SQL snippet that always evaluates to FALSE for this database.
 	 *
@@ -434,7 +435,7 @@ public class OracleDBDefinition extends DBDefinition {
 	public boolean supportsComparingBooleanResults() {
 		return false;
 	}
-	
+
 	@Override
 	public DBExpression transformToStorableType(DBExpression columnExpression) {
 		if (columnExpression instanceof BooleanExpression) {
@@ -456,6 +457,28 @@ public class OracleDBDefinition extends DBDefinition {
 
 	@Override
 	public String doEndOfMonthTransform(String dateSQL) {
-		return "LAST_DAY("+dateSQL+")";
+		return "LAST_DAY(" + dateSQL + ")";
+	}
+
+	@Override
+	public LargeObjectHandlerType preferredLargeObjectWriter(DBLargeObject<?> lob) {
+		if (lob instanceof DBLargeText) {
+			return LargeObjectHandlerType.CHARSTREAM;
+		} else if (lob instanceof DBJavaObject) {
+			return LargeObjectHandlerType.BLOB;
+		} else {
+			return super.preferredLargeObjectWriter(lob);
+		}
+	}
+
+	@Override
+	public LargeObjectHandlerType preferredLargeObjectReader(DBLargeObject<?> lob) {
+		if (lob instanceof DBLargeText) {
+			return LargeObjectHandlerType.STRING;
+		} else if (lob instanceof DBJavaObject) {
+			return LargeObjectHandlerType.BLOB;
+		} else {
+			return super.preferredLargeObjectReader(lob);
+		}
 	}
 }

@@ -15,13 +15,11 @@
  */
 package nz.co.gregs.dbvolution.datatypes;
 
-import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.List;
 import java.sql.SQLException;
-import java.util.Arrays;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.annotations.DBAutoIncrement;
 import nz.co.gregs.dbvolution.annotations.DBColumn;
@@ -152,13 +150,13 @@ public class DBLargeTextTest extends AbstractTest {
 		clobTable.textID.setValue(primaryKey);
 		clobTable.carCompany.setValue(1);
 		clobTable.textFilename.setValue("history.txt");
-		clobTable.filetext.setValue(sourceDataAsString);
+		clobTable.filetext.setValue(SOURCEDATAASSTRING);
 		database.insert(clobTable);
 
 		CompanyTextForRetreivingString firstRow = database.getDBTable(new CompanyTextForRetreivingString()).getRowsByPrimaryKey(primaryKey).get(0);
 		System.out.println("row = " + firstRow.toString());
 		String stringValue = firstRow.filetext.stringValue();
-		Assert.assertThat(stringValue, is(sourceDataAsString));
+		Assert.assertThat(stringValue, is(SOURCEDATAASSTRING));
 	}
 
 	@Test
@@ -172,13 +170,13 @@ public class DBLargeTextTest extends AbstractTest {
 		testRow.carCompany.setValue(1);
 		testRow.imageFilename.setValue("history.txt");
 		File image = new File("history.txt");
-		testRow.imageBytes.setValue(sourceDataAsString);
+		testRow.imageBytes.setValue(SOURCEDATAASSTRING);
 		database.insert(testRow);
 
 		TextObjectWithAutoIncrement firstRow = database.getDBTable(new TextObjectWithAutoIncrement()).setBlankQueryAllowed(true).getOnlyRow();
 		System.out.println("row = " + firstRow.toString());
 		String stringValue = firstRow.imageBytes.stringValue();
-		Assert.assertThat(stringValue, is(sourceDataAsString));
+		Assert.assertThat(stringValue, is(SOURCEDATAASSTRING));
 
 //		database.preventDroppingOfTables(false);
 //		database.dropTableNoExceptions(testRow);
@@ -245,7 +243,7 @@ public class DBLargeTextTest extends AbstractTest {
 		public DBString textFilename = new DBString();
 	}
 
-	static final String sourceDataAsString = "\n"
+	static final String SOURCEDATAASSTRING = "\n"
 			+ "-------------------------------------------------------\n"
 			+ " T E S T S\n"
 			+ "-------------------------------------------------------\n"
