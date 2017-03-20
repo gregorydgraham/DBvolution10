@@ -27,6 +27,7 @@ import nz.co.gregs.dbvolution.exceptions.DBRuntimeException;
 import nz.co.gregs.dbvolution.exceptions.IncorrectGeometryReturnedForDatatype;
 import nz.co.gregs.dbvolution.expressions.BooleanExpression;
 import nz.co.gregs.dbvolution.expressions.DBExpression;
+import nz.co.gregs.dbvolution.internal.query.LargeObjectHandlerType;
 import nz.co.gregs.dbvolution.internal.sqlserver.*;
 import nz.co.gregs.dbvolution.query.QueryOptions;
 
@@ -935,5 +936,26 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 	@Override
 	public String getFalseValue() {
 		return " 0 ";
+	}
+	@Override
+	public LargeObjectHandlerType preferredLargeObjectWriter(DBLargeObject<?> lob) {
+		if (lob instanceof DBLargeText) {
+			return LargeObjectHandlerType.CHARSTREAM;
+		} else if (lob instanceof DBJavaObject) {
+			return LargeObjectHandlerType.BLOB;
+		} else {
+			return super.preferredLargeObjectWriter(lob);
+		}
+	}
+
+	@Override
+	public LargeObjectHandlerType preferredLargeObjectReader(DBLargeObject<?> lob) {
+		if (lob instanceof DBLargeText) {
+			return LargeObjectHandlerType.STRING;
+		} else if (lob instanceof DBJavaObject) {
+			return LargeObjectHandlerType.BLOB;
+		} else {
+			return super.preferredLargeObjectReader(lob);
+		}
 	}
 }
