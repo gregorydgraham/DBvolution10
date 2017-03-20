@@ -2273,8 +2273,13 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 		return new DBNumber(this);
 	}
 
-	StringExpression signPlusMinus() {
-		return this.isGreaterThan(0).ifThenElse("+", "-");
+	/**
+	 * Returns "+" for all zero or positive numbers and "-" for all negative numbers.
+	 *
+	 * @return a StringExpression that is either "+" or "-"
+	 */
+	public StringExpression signPlusMinus() {
+		return this.isGreaterThanOrEqual(0).ifThenElse("+", "-");
 	}
 
 	private static abstract class DBBinaryArithmetic extends NumberExpression {
