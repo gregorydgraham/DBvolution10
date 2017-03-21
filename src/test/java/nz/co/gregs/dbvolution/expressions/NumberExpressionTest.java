@@ -224,6 +224,8 @@ public class NumberExpressionTest extends AbstractTest {
 		Assert.assertThat(allRows.size(), is(1));
 		Marque marque = allRows.get(0).get(marq);
 		Assert.assertThat(marque.uidMarque.getValue().intValue(), is(1));
+		
+		marq.uidMarque.permittedRange(0, 10000);
 
 		dbQuery = database.getDBQuery(marq);
 		dbQuery.addCondition(

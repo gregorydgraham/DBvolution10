@@ -4712,4 +4712,14 @@ public abstract class DBDefinition {
 			return LargeObjectHandlerType.BLOB;
 		}
 	}
+
+	/**
+	 * Return the function name for the RoundUp function.
+	 * 
+	 * <p>By default this method returns <b>ceil</b></p>
+	 * @return the name of the function to use when rounding numbers up
+	 */
+	public String getRoundUpFunctionName() {
+		return "ceil";
+	}
 }

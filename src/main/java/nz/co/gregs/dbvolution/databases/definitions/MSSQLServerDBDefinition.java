@@ -958,4 +958,15 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 			return super.preferredLargeObjectReader(lob);
 		}
 	}
+	
+	/**
+	 * Return the function name for the RoundUp function.
+	 * 
+	 * <p>For MS SQLServer this method returns <b>ceiling</b></p>
+	 * @return the name of the function to use when rounding numbers up
+	 */
+	@Override
+	public String getRoundUpFunctionName() {
+		return "ceiling";
+	}
 }

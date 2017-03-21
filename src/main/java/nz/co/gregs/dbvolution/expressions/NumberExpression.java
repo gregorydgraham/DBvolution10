@@ -1626,7 +1626,7 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 		return new NumberExpression(new DBUnaryFunction(this) {
 			@Override
 			String getFunctionName(DBDatabase db) {
-				return "ceil";
+				return db.getDefinition().getRoundUpFunctionName();
 			}
 		});
 	}
