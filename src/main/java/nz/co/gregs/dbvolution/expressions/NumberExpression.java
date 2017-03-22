@@ -1190,7 +1190,7 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 			@Override
 			public String toSQLString(DBDatabase db) {
 				if (!db.getDefinition().supportsExpFunction() && (this.only instanceof NumberExpression)) {
-					return (new NumberExpression(Math.E)).power(this.only).toSQLString(db);
+					return (new NumberExpression(Math.E)).power(this.only.isGreaterThan(799).ifThenElse(null, this.only)).toSQLString(db);
 				} else {
 					return super.toSQLString(db); //To change body of generated methods, choose Tools | Templates.
 				}
@@ -1206,6 +1206,11 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 	/**
 	 * Provides access to the database's cosine function.
 	 *
+	 * <p>
+	 * Computes the cosine of the expression assuming that the previous
+	 * expression is in RADIANS. Use {@link #radians() } to convert degrees into
+	 * radians.
+	 *
 	 * @return a NumberExpression representing the cosine of the current number
 	 * expression.
 	 */
@@ -1220,6 +1225,11 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 
 	/**
 	 * Provides access to the database's hyperbolic cosine function.
+	 *
+	 * <p>
+	 * Computes the hyperbolic cosine of the expression assuming that the previous
+	 * expression is in RADIANS. Use {@link #radians() } to convert degrees into
+	 * radians.
 	 *
 	 * @return a NumberExpression representing the hyperbolic cosine of the
 	 * current number expression.
@@ -1248,10 +1258,15 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 	/**
 	 * Provides access to the database's sine function.
 	 *
+	 * <p>
+	 * Computes the sine of the expression assuming that the previous
+	 * expression is in RADIANS. Use {@link #radians() } to convert degrees into
+	 * radians.
+	 *
 	 * @return a NumberExpression representing the sine of the current number
 	 * expression.
 	 */
-	public NumberExpression sin() {
+	public NumberExpression sine() {
 		return new NumberExpression(new DBUnaryFunction(this) {
 			@Override
 			String getFunctionName(DBDatabase db) {
@@ -1263,11 +1278,30 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 	/**
 	 * Provides access to the database's hyperbolic sine function.
 	 *
+	 * <p>
+	 * Computes the hyperbolic sine of the expression assuming that the previous
+	 * expression is in RADIANS. Use {@link #radians() } to convert degrees into
+	 * radians.
+	 *
 	 * @return a NumberExpression representing the hyperbolic sine of the current
 	 * number expression.
 	 */
 	public NumberExpression sinh() {
 		return new NumberExpression(new DBUnaryFunction(this) {
+
+			@Override
+			public String toSQLString(DBDatabase db) {
+				if (db.getDefinition().supportsHyperbolicFunctionsNatively()) {
+					return super.toSQLString(db); //To change body of generated methods, choose Tools | Templates.
+				} else {
+					NumberExpression first = this.only;
+					//(e^x - e^-x)/2
+					return this.only.isGreaterThan(799).ifThenElse(null, 
+							first.exp().minus(first.times(-1).exp().bracket()).bracket().dividedBy(2).bracket()
+					).toSQLString(db);
+				}
+			}
+
 			@Override
 			String getFunctionName(DBDatabase db) {
 				return "sinh";
@@ -1297,6 +1331,11 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 
 	/**
 	 * Provides access to the database's hyperbolic tangent function.
+	 *
+	 * <p>
+	 * Computes the hyperbolic tangent of the expression assuming that the previous
+	 * expression is in RADIANS. Use {@link #radians() } to convert degrees into
+	 * radians.
 	 *
 	 * @return a NumberExpression representing the hyperbolic tangent of the
 	 * current number expression.
@@ -1450,7 +1489,7 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 				if (db.getDefinition().supportsCotangentFunction()) {
 					return super.toSQLString(db);
 				} else {
-					return only.cos().dividedBy(only.sin()).bracket().toSQLString(db);
+					return only.cos().dividedBy(only.sine()).bracket().toSQLString(db);
 				}
 			}
 

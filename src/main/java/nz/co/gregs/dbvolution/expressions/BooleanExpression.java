@@ -76,6 +76,17 @@ import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
  */
 public class BooleanExpression implements BooleanResult, EqualComparable<BooleanResult>, ExpressionColumn<DBBoolean> {
 
+	static BooleanExpression nullExpression() {
+		return new BooleanExpression() {
+			@Override
+			public String toSQLString(DBDatabase db) {
+				return db.getDefinition().getNull();
+			}
+
+		};
+	}
+
+
 	private final BooleanResult onlyBool;
 	private boolean includeNulls = false;
 
@@ -1887,9 +1898,9 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 		}
 
 		DBBooleanNumberNumberFunction(BooleanExpression only, NumberResult first, NumberResult second) {
-			this.onlyBool = only;
-			this.first = first;
-			this.second = second;
+			this.onlyBool = (only==null?BooleanExpression.nullExpression():only);
+			this.first = (first==null?NumberExpression.nullExpression():first);
+			this.second = (second==null?NumberExpression.nullExpression():second);
 		}
 
 		abstract String getFunctionName(DBDatabase db);
