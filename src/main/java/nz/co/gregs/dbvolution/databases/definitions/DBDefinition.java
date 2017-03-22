@@ -4722,4 +4722,24 @@ public abstract class DBDefinition {
 	public String getRoundUpFunctionName() {
 		return "ceil";
 	}
+
+	/**
+	 * Return the function name for the Natural Logarithm function.
+	 * 
+	 * <p>By default this method returns <b>ln</b></p>
+	 * @return the name of the function to use when rounding numbers up
+	 */
+	public String getNaturalLogFunctionName() {
+		return "ln";
+	}
+
+	/**
+	 * Return the function name for the Logarithm Base10 function.
+	 * 
+	 * <p>By default this method returns <b>log10</b></p>
+	 * @return the name of the function to use when rounding numbers up
+	 */
+	public String getLogBase10FunctionName() {
+		return "log10";
+	}
 }

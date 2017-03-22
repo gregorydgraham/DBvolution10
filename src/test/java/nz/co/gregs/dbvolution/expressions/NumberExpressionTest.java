@@ -955,7 +955,7 @@ public class NumberExpressionTest extends AbstractTest {
 		DBQuery dbQuery = database.getDBQuery(marq);
 		dbQuery.addCondition(
 				marq.column(marq.uidMarque).sinh().round(5).is(3.62686));
-		System.out.println(""+dbQuery.getSQLForQuery());
+//		System.out.println(""+dbQuery.getSQLForQuery());
 		List<DBQueryRow> allRows = dbQuery.getAllRows();
 //        database.print(allRows);
 		Assert.assertThat(allRows.size(), is(1));
@@ -968,8 +968,22 @@ public class NumberExpressionTest extends AbstractTest {
 		Marque marq = new Marque();
 		DBQuery dbQuery = database.getDBQuery(marq);
 		dbQuery.addCondition(
-				marq.column(marq.uidMarque).log().round(5).is(0.30103));
-		System.out.println(""+dbQuery.getSQLForQuery());
+				marq.column(marq.uidMarque).log().round(6).is(0.693147));
+//		System.out.println(""+dbQuery.getSQLForQuery());
+		List<DBQueryRow> allRows = dbQuery.getAllRows();
+//        database.print(allRows);
+		Assert.assertThat(allRows.size(), is(1));
+		Marque marque = allRows.get(0).get(marq);
+		Assert.assertThat(marque.uidMarque.getValue().intValue(), is(2));
+	}
+
+	@Test
+	public void testLOG10() throws SQLException {
+		Marque marq = new Marque();
+		DBQuery dbQuery = database.getDBQuery(marq);
+		dbQuery.addCondition(
+				marq.column(marq.uidMarque).logBase10().round(5).is(0.30103));
+//		System.out.println(""+dbQuery.getSQLForQuery());
 		List<DBQueryRow> allRows = dbQuery.getAllRows();
 //        database.print(allRows);
 		Assert.assertThat(allRows.size(), is(1));

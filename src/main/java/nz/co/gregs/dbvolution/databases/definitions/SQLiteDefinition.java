@@ -865,5 +865,17 @@ public class SQLiteDefinition extends DBDefinition {
 		} else {
 			return super.preferredLargeObjectReader(lob);
 		}
+	}	
+	
+	/**
+	 * Return the function name for the Natural Logarithm function.
+	 * 
+	 * <p>For SQLite  this method returns <b>log</b></p>
+	 * @return the name of the function to use when rounding numbers up
+	 */
+	@Override
+	public String getNaturalLogFunctionName() {
+		return "log";
 	}
+
 }

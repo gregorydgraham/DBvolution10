@@ -1565,7 +1565,7 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 		return new NumberExpression(new DBUnaryFunction(this) {
 			@Override
 			String getFunctionName(DBDatabase db) {
-				return "log";
+				return db.getDefinition().getNaturalLogFunctionName();
 			}
 		});
 	}
@@ -1580,7 +1580,7 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 		return new NumberExpression(new DBUnaryFunction(this) {
 			@Override
 			String getFunctionName(DBDatabase db) {
-				return "log10";
+				return db.getDefinition().getLogBase10FunctionName();
 			}
 		});
 	}

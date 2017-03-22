@@ -846,4 +846,15 @@ public class PostgresDBDefinition extends DBDefinition {
 			return super.preferredLargeObjectReader(lob);
 		}
 	}
+
+	/**
+	 * Return the function name for the Logarithm Base10 function.
+	 * 
+	 * <p>By default this method returns <b>log10</b></p>
+	 * @return the name of the function to use when rounding numbers up
+	 */
+	@Override
+	public String getLogBase10FunctionName() {
+		return "log";
+	}
 }
