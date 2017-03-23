@@ -1610,12 +1610,23 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 	 * @return a NumberExpression that provides a random number when used in a
 	 * query.
 	 */
-	public NumberExpression random() {
-		return new NumberExpression(new DBUnaryFunction(this) {
+	static public NumberExpression random() {
+		return new NumberExpression(new DBNonaryFunction() {
 			@Override
 			String getFunctionName(DBDatabase db) {
 				return "rand";
 			}
+
+			@Override
+			protected String beforeValue(DBDatabase db) {
+				return " " + getFunctionName(db) + "(";
+			}
+
+			@Override
+			protected String afterValue(DBDatabase db) {
+				return ") ";
+			}
+
 		});
 	}
 

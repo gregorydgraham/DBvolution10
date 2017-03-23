@@ -17,6 +17,7 @@ package nz.co.gregs.dbvolution.expressions;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import nz.co.gregs.dbvolution.DBQuery;
 import nz.co.gregs.dbvolution.DBQueryRow;
@@ -30,6 +31,7 @@ import nz.co.gregs.dbvolution.results.NumberResult;
 import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Test;
+import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.is;
 
 public class NumberExpressionTest extends AbstractTest {
@@ -264,7 +266,7 @@ public class NumberExpressionTest extends AbstractTest {
 	}
 
 	@Test
-	public void testRoundNumberResult() throws SQLException {
+	public void testRoundNumberExpression() throws SQLException {
 		Marque marq = new Marque();
 		DBQuery dbQuery = database.getDBQuery(marq);
 		dbQuery.addCondition(
@@ -279,6 +281,30 @@ public class NumberExpressionTest extends AbstractTest {
 		dbQuery.addCondition(
 				marq.column(marq.uidMarque).dividedBy(335)
 				.round(NumberExpression.value(5))
+				.is(23074.69254));
+		allRows = dbQuery.getAllRows();
+//         database.print(allRows);
+		Assert.assertThat(allRows.size(), is(1));
+		marque = allRows.get(0).get(marq);
+		Assert.assertThat(marque.uidMarque.getValue().intValue(), is(7730022));
+	}
+
+	@Test
+	public void testRoundNumberResult() throws SQLException {
+		Marque marq = new Marque();
+		DBQuery dbQuery = database.getDBQuery(marq);
+		dbQuery.addCondition(
+				marq.column(marq.uidMarque).plus(2).minus(4).bracket().times(6).bracket().dividedBy(3).is(-2));
+		List<DBQueryRow> allRows = dbQuery.getAllRows();
+//        database.print(allRows);
+		Assert.assertThat(allRows.size(), is(1));
+		Marque marque = allRows.get(0).get(marq);
+		Assert.assertThat(marque.uidMarque.getValue().intValue(), is(1));
+
+		dbQuery = database.getDBQuery(marq);
+		dbQuery.addCondition(
+				marq.column(marq.uidMarque).dividedBy(335)
+				.round(new DBNumber(5))
 				.is(23074.69254));
 		allRows = dbQuery.getAllRows();
 //         database.print(allRows);
@@ -843,6 +869,19 @@ public class NumberExpressionTest extends AbstractTest {
 	}
 
 	@Test
+	public void testAbsoluteValue() throws SQLException {
+		Marque marq = new Marque();
+		DBQuery dbQuery = database.getDBQuery(marq);
+		dbQuery.addCondition(
+				marq.column(marq.uidMarque)
+				.times(-2).absoluteValue().is(4)
+		);
+		List<DBQueryRow> allRows = dbQuery.getAllRows();
+//		database.print(allRows);
+		Assert.assertThat(allRows.size(), is(1));
+	}
+
+	@Test
 	public void testDecimalPart() throws SQLException {
 		Marque marq = new Marque();
 		DBQuery dbQuery = database.getDBQuery(marq);
@@ -1014,6 +1053,8 @@ public class NumberExpressionTest extends AbstractTest {
 		DBNumber radians = new DBNumber(this.column(this.uidCarCompany).degrees().radians());
 		@DBColumn
 		DBNumber tangent = new DBNumber(this.column(this.uidCarCompany).degrees().tan());
+		@DBColumn
+		DBNumber randomNumber = new DBNumber(NumberExpression.random());
 	}
 
 	@Test
@@ -1032,6 +1073,26 @@ public class NumberExpressionTest extends AbstractTest {
 			Assert.assertThat(Math.tan(Math.toDegrees(carCompany.uidCarCompany.getValue().doubleValue())) > 0,
 					is(true));
 		}
+	}
+
+	public static class RandomRow extends Marque {
+
+		private static final long serialVersionUID = 1L;
+
+		@DBColumn
+		DBNumber randomNumber = new DBNumber(NumberExpression.random());
+	}
+	
+	@Test
+	public void testRandom() throws SQLException {
+		RandomRow randRow = new RandomRow();
+		DBQuery dbQuery = database.getDBQuery(randRow).setBlankQueryAllowed(true);
+		List<DBQueryRow> allRows = dbQuery.getDistinctCombinationsOfColumnValues(randRow.randomNumber);
+		HashSet<Double> hashSet = new HashSet<Double>();
+		for(DBQueryRow row: allRows){
+			hashSet.add(row.get(randRow).randomNumber.doubleValue());
+		}
+		Assert.assertThat(hashSet.size(), is(22));
 	}
 
 	@Test
