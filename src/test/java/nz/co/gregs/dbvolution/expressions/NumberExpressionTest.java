@@ -1095,6 +1095,39 @@ public class NumberExpressionTest extends AbstractTest {
 		Assert.assertThat(hashSet.size(), is(22));
 	}
 
+	public static class CountIfRow extends Marque {
+
+		private static final long serialVersionUID = 1L;
+
+		@DBColumn
+		DBString bigger = new DBString(this.column(uidMarque).isGreaterThan(10).ifThenElse("Bigger", "Smaller"));
+
+		@DBColumn
+		DBNumber countif = new DBNumber(NumberExpression.countIf(this.column(uidMarque).isGreaterThan(10)));
+
+		@DBColumn
+		DBNumber count = new DBNumber(NumberExpression.countAll());
+		
+		{
+			this.setReturnFields(bigger, countif, count);
+		}
+	}
+	
+	@Test
+	public void testCountIf() throws SQLException {
+		CountIfRow randRow = new CountIfRow();
+		DBQuery dbQuery = database.getDBQuery(randRow).setBlankQueryAllowed(true);
+		List<DBQueryRow> allRows = dbQuery.getAllRows();
+		database.print(allRows);
+		Assert.assertThat(allRows.size(), is(2));
+		Assert.assertThat(allRows.get(0).get(randRow).bigger.stringValue(), is("Smaller"));
+		Assert.assertThat(allRows.get(0).get(randRow).countif.intValue(), is(0));
+		Assert.assertThat(allRows.get(0).get(randRow).count.intValue(), is(2));
+		Assert.assertThat(allRows.get(1).get(randRow).bigger.stringValue(), is("Bigger"));
+		Assert.assertThat(allRows.get(1).get(randRow).countif.intValue(), is(20));
+		Assert.assertThat(allRows.get(1).get(randRow).count.intValue(), is(20));
+	}
+
 	@Test
 	public void testRadians() throws SQLException {
 		CarCompany carCo = new CarCompany();
