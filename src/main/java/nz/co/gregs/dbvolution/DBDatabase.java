@@ -165,7 +165,7 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 	 */
 	protected DBDatabase() {
 		SLEEP_BETWEEN_CONNECTION_RETRIES_MILLIS = 10;
-		MAX_CONNECTION_RETRIES = 3;
+		MAX_CONNECTION_RETRIES = 6;
 	}
 
 	/**
@@ -197,7 +197,7 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 	 */
 	public DBDatabase(DBDefinition definition, DataSource ds) {
 		SLEEP_BETWEEN_CONNECTION_RETRIES_MILLIS = 10;
-		MAX_CONNECTION_RETRIES = 3;
+		MAX_CONNECTION_RETRIES = 6;
 		this.definition = definition;
 		this.dataSource = ds;
 	}
@@ -230,7 +230,7 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 	 */
 	public DBDatabase(DBDefinition definition, String driverName, String jdbcURL, String username, String password) {
 		SLEEP_BETWEEN_CONNECTION_RETRIES_MILLIS = 10;
-		MAX_CONNECTION_RETRIES = 3;
+		MAX_CONNECTION_RETRIES = 6;
 		this.definition = definition;
 		this.driverName = driverName;
 		this.jdbcURL = jdbcURL;

@@ -969,4 +969,25 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 	public String getRoundUpFunctionName() {
 		return "ceiling";
 	}
+
+	/**
+	 * Return the function name for the Natural Logarithm function.
+	 * 
+	 * <p>For SQLServer this method returns <b>log</b></p>
+	 * @return the name of the function to use when rounding numbers up
+	 */
+	@Override
+	public String getNaturalLogFunctionName() {
+		return "log";
+	}
+
+	/**
+	 * Return the function name for the Logarithm Base10 function.
+	 * 
+	 * <p>By default this method returns <b>log10</b></p>
+	 * @return the name of the function to use when rounding numbers up
+	 */
+	public String getLogBase10FunctionName() {
+		return "log10";
+	}
 }

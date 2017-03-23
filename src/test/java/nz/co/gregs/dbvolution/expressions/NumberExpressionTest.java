@@ -954,8 +954,8 @@ public class NumberExpressionTest extends AbstractTest {
 		Marque marq = new Marque();
 		DBQuery dbQuery = database.getDBQuery(marq);
 		dbQuery.addCondition(
-				marq.column(marq.uidMarque).sinh().round(5).is(3.62686));
-//		System.out.println(""+dbQuery.getSQLForQuery());
+				marq.column(marq.uidMarque).sinh().round(5).isBetween(3.62685, 3.62686));
+		System.out.println(""+dbQuery.getSQLForQuery());
 		List<DBQueryRow> allRows = dbQuery.getAllRows();
 //        database.print(allRows);
 		Assert.assertThat(allRows.size(), is(1));
@@ -968,7 +968,7 @@ public class NumberExpressionTest extends AbstractTest {
 		Marque marq = new Marque();
 		DBQuery dbQuery = database.getDBQuery(marq);
 		dbQuery.addCondition(
-				marq.column(marq.uidMarque).log().round(6).is(0.693147));
+				marq.column(marq.uidMarque).logN().round(6).is(0.693147));
 //		System.out.println(""+dbQuery.getSQLForQuery());
 		List<DBQueryRow> allRows = dbQuery.getAllRows();
 //        database.print(allRows);

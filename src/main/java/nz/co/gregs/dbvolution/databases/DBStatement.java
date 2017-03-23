@@ -415,6 +415,7 @@ public class DBStatement implements Statement {
 			throw new SQLException(ex);
 		}
 		try {
+			System.out.print("addFeatureAndAttemptExecuteAgain: "+string);
 			executeQuery = getInternalStatement().execute(string);
 			return executeQuery;
 		} catch (Exception exp2) {

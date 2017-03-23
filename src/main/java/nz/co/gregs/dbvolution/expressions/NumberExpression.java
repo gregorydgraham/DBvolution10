@@ -1561,7 +1561,7 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 	 * @return a NimberExpression of the natural logarithm of the current
 	 * expression.
 	 */
-	public NumberExpression log() {
+	public NumberExpression logN() {
 		return new NumberExpression(new DBUnaryFunction(this) {
 			@Override
 			String getFunctionName(DBDatabase db) {
