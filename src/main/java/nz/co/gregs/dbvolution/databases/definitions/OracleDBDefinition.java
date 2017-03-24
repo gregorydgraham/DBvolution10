@@ -481,4 +481,26 @@ public class OracleDBDefinition extends DBDefinition {
 			return super.preferredLargeObjectReader(lob);
 		}
 	}
+
+	/**
+	 * Returns the required code to generate a random number.
+	 *
+	 * <p>
+	 * For each call of this method a new random number is generated.
+	 * </p>
+	 *
+	 * <p>
+	 * This method DOES NOT use the SQLServer built-in function as it does not
+	 * produce a different result for different rows in a single query.</p>
+	 *
+	 * @return random number generating code
+	 */
+	@Override
+	public String doRandomNumberTransform() {
+		return " DBMS_RANDOM.VALUE ";
+	}
+
+	public String doLogBase10NumberTransform(String sql) {
+		return "log(10, ("+sql+"))";
+	}
 }

@@ -153,7 +153,7 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 	public Object endSQLStatement() {
 		return "";
 	}
-	
+
 	@Override
 	public String beginStringValue() {
 		return " N'";
@@ -172,11 +172,11 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 	@Override
 	public String doSubstringTransform(String originalString, String start, String length) {
 		return " SUBSTRING("
-				+ originalString
-				+ ", "
-				+ start
-				+ (length.trim().isEmpty() ? "" : ", " + length)
-				+ ") ";
+			+ originalString
+			+ ", "
+			+ start
+			+ (length.trim().isEmpty() ? "" : ", " + length)
+			+ ") ";
 	}
 
 	@Override
@@ -193,8 +193,8 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 	 * like it or not.
 	 *
 	 * <p>
-	 * While this seems useful, in fact it prevents checking for incorrect strings
-	 * and breaks the industrial standard.
+	 * While this seems useful, in fact it prevents checking for incorrect
+	 * strings and breaks the industrial standard.
 	 *
 	 * @param firstSQLExpression the first string value to compare
 	 * @param secondSQLExpression the second string value to compare
@@ -241,8 +241,8 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 	}
 
 	/**
-	 * Wraps the provided SQL snippet in a statement that the length of the value
-	 * of the snippet.
+	 * Wraps the provided SQL snippet in a statement that the length of the
+	 * value of the snippet.
 	 *
 	 * @param enclosedValue	enclosedValue
 	 * @return SQL snippet
@@ -438,12 +438,12 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 	}
 
 	/**
-	 * Transforms a SQL snippet of a number expression into a character expression
-	 * for this database.
+	 * Transforms a SQL snippet of a number expression into a character
+	 * expression for this database.
 	 *
 	 * @param numberExpression	numberExpression
-	 * @return a String of the SQL required to transform the number supplied into
-	 * a character or String type.
+	 * @return a String of the SQL required to transform the number supplied
+	 * into a character or String type.
 	 */
 	@Override
 	public String doNumberToStringTransform(String numberExpression) {
@@ -937,6 +937,7 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 	public String getFalseValue() {
 		return " 0 ";
 	}
+
 	@Override
 	public LargeObjectHandlerType preferredLargeObjectWriter(DBLargeObject<?> lob) {
 		if (lob instanceof DBLargeText) {
@@ -958,11 +959,13 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 			return super.preferredLargeObjectReader(lob);
 		}
 	}
-	
+
 	/**
 	 * Return the function name for the RoundUp function.
-	 * 
-	 * <p>For MS SQLServer this method returns <b>ceiling</b></p>
+	 *
+	 * <p>
+	 * For MS SQLServer this method returns <b>ceiling</b></p>
+	 *
 	 * @return the name of the function to use when rounding numbers up
 	 */
 	@Override
@@ -972,8 +975,10 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 
 	/**
 	 * Return the function name for the Natural Logarithm function.
-	 * 
-	 * <p>For SQLServer this method returns <b>log</b></p>
+	 *
+	 * <p>
+	 * For SQLServer this method returns <b>log</b></p>
+	 *
 	 * @return the name of the function to use when rounding numbers up
 	 */
 	@Override
@@ -983,11 +988,32 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 
 	/**
 	 * Return the function name for the Logarithm Base10 function.
-	 * 
-	 * <p>By default this method returns <b>log10</b></p>
+	 *
+	 * <p>
+	 * By default this method returns <b>log10</b></p>
+	 *
 	 * @return the name of the function to use when rounding numbers up
 	 */
+	@Override
 	public String getLogBase10FunctionName() {
 		return "log10";
+	}
+
+	/**
+	 * Returns the required code to generate a random number.
+	 *
+	 * <p>
+	 * For each call of this method a new random number is generated.
+	 * </p>
+	 *
+	 * <p>
+	 * This method DOES NOT use the SQLServer built-in function as it does not
+	 * produce a different result for different rows in a single query.</p>
+	 *
+	 * @return random number generating code
+	 */
+	@Override
+	public String doRandomNumberTransform() {
+		return " (ABS(cast(CHECKSUM(NewId())as BIGINT))/2147483648) ";
 	}
 }

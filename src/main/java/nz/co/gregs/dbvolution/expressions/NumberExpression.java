@@ -1579,6 +1579,10 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 	public NumberExpression logBase10() {
 		return new NumberExpression(new DBUnaryFunction(this) {
 			@Override
+			public String toSQLString(DBDatabase db) {
+				return db.getDefinition().doLogBase10NumberTransform(this.only.toSQLString(db));
+			}
+			@Override
 			String getFunctionName(DBDatabase db) {
 				return db.getDefinition().getLogBase10FunctionName();
 			}
@@ -1613,18 +1617,13 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 	static public NumberExpression random() {
 		return new NumberExpression(new DBNonaryFunction() {
 			@Override
+			public String toSQLString(DBDatabase db) {
+				return db.getDefinition().doRandomNumberTransform();
+			}
+
+			@Override
 			String getFunctionName(DBDatabase db) {
 				return "rand";
-			}
-
-			@Override
-			protected String beforeValue(DBDatabase db) {
-				return " " + getFunctionName(db) + "(";
-			}
-
-			@Override
-			protected String afterValue(DBDatabase db) {
-				return ") ";
 			}
 
 		});

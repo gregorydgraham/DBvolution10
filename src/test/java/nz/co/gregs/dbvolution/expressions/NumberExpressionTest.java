@@ -1053,8 +1053,6 @@ public class NumberExpressionTest extends AbstractTest {
 		DBNumber radians = new DBNumber(this.column(this.uidCarCompany).degrees().radians());
 		@DBColumn
 		DBNumber tangent = new DBNumber(this.column(this.uidCarCompany).degrees().tan());
-		@DBColumn
-		DBNumber randomNumber = new DBNumber(NumberExpression.random());
 	}
 
 	@Test
@@ -1087,7 +1085,9 @@ public class NumberExpressionTest extends AbstractTest {
 	public void testRandom() throws SQLException {
 		RandomRow randRow = new RandomRow();
 		DBQuery dbQuery = database.getDBQuery(randRow).setBlankQueryAllowed(true);
+		System.out.println("nz.co.gregs.dbvolution.expressions.NumberExpressionTest.testRandom(): "+dbQuery.getSQLForQuery());
 		List<DBQueryRow> allRows = dbQuery.getDistinctCombinationsOfColumnValues(randRow.randomNumber);
+		database.print(allRows);
 		HashSet<Double> hashSet = new HashSet<Double>();
 		for(DBQueryRow row: allRows){
 			hashSet.add(row.get(randRow).randomNumber.doubleValue());
@@ -1117,6 +1117,7 @@ public class NumberExpressionTest extends AbstractTest {
 	public void testCountIf() throws SQLException {
 		CountIfRow randRow = new CountIfRow();
 		DBQuery dbQuery = database.getDBQuery(randRow).setBlankQueryAllowed(true);
+		dbQuery.setSortOrder(randRow.column(randRow.countif));
 		List<DBQueryRow> allRows = dbQuery.getAllRows();
 		database.print(allRows);
 		Assert.assertThat(allRows.size(), is(2));

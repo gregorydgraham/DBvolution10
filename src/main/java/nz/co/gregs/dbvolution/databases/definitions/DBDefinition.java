@@ -4742,4 +4742,22 @@ public abstract class DBDefinition {
 	public String getLogBase10FunctionName() {
 		return "log10";
 	}
+
+	/**
+	 * Returns the required code to generate a random number.
+	 * 
+	 * <p>
+	 * For each call of this method a new random number is generated.
+	 * </p>
+	 * 
+	 * <p>By default this method returns <b>rand()</b></p>
+	 * @return the name of the function to use when creating random numbers
+	 */
+	public String doRandomNumberTransform() {
+		return " rand() ";
+	}
+
+	public String doLogBase10NumberTransform(String sql) {
+		return "log10("+sql+")";
+	}
 }
