@@ -2365,30 +2365,6 @@ public class DateExpression implements DateResult, RangeComparable<DateResult>, 
 		return leastExpr;
 	}
 
-	/**
-	 * Roll the date value to the requested time zone.
-	 *
-	 * <p>
-	 * If not implemented natively, a default implementation is provided that uses
-	 * the raw offset to calculate the time zone change. This has several problem
-	 * so a native implementation is recommended.
-	 *
-	 * @param timeZone the desired time zone
-	 * @return a date expression that evaluates to the date value in the specified time zone.
-	 */
-	public DateExpression atTimeZone(TimeZone timeZone) throws UnsupportedOperationException
-	{
-		return new DateExpression(new DateTimeZoneExpressionWithDateResult(this, timeZone) {
-
-			@Override
-			public String toSQLString(DBDatabase db) {
-				DBDefinition defn = db.getDefinition();
-					return defn.doDateAtTimeZoneTransform(getFirst().toSQLString(db), getSecond());
-			}
-
-		});
-	}
-
 	@Override
 	public DBDate asExpressionColumn() {
 		return new DBDate(this);
@@ -2714,72 +2690,6 @@ public class DateExpression implements DateResult, RangeComparable<DateResult>, 
 		 * @return the second
 		 */
 		public DateResult getSecond() {
-			return second;
-		}
-	}
-
-	private static abstract class DateTimeZoneExpressionWithDateResult extends DateExpression {
-
-		private DateExpression first;
-		private TimeZone second;
-		private boolean requiresNullProtection = false;
-
-		DateTimeZoneExpressionWithDateResult(DateExpression first, TimeZone second) {
-			this.first = first;
-			this.second = second;
-			if (second == null) {
-				this.requiresNullProtection = true;
-			}
-		}
-
-		@Override
-		public DateTimeZoneExpressionWithDateResult copy() {
-			DateTimeZoneExpressionWithDateResult newInstance;
-			try {
-				newInstance = getClass().newInstance();
-			} catch (InstantiationException ex) {
-				throw new RuntimeException(ex);
-			} catch (IllegalAccessException ex) {
-				throw new RuntimeException(ex);
-			}
-			newInstance.first = getFirst().copy();
-			newInstance.second = getSecond();
-			return newInstance;
-		}
-
-		@Override
-		public Set<DBRow> getTablesInvolved() {
-			HashSet<DBRow> hashSet = new HashSet<DBRow>();
-			if (getFirst() != null) {
-				hashSet.addAll(getFirst().getTablesInvolved());
-			}
-//			if (getSecond() != null) {
-//				hashSet.addAll(getSecond().getTablesInvolved());
-//			}
-			return hashSet;
-		}
-
-		@Override
-		public boolean isAggregator() {
-			return getFirst().isAggregator();
-		}
-
-		@Override
-		public boolean getIncludesNull() {
-			return requiresNullProtection;
-		}
-
-		/**
-		 * @return the first
-		 */
-		public DateExpression getFirst() {
-			return first;
-		}
-
-		/**
-		 * @return the second
-		 */
-		public TimeZone getSecond() {
 			return second;
 		}
 	}
