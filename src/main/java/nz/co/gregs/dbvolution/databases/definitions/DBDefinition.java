@@ -1655,6 +1655,9 @@ public abstract class DBDefinition {
 	public List<String> getTriggerBasedIdentitySQL(DBDatabase db, String table, String column) {
 		return new ArrayList<>();
 	}
+	public List<String> dropTriggerBasedIdentitySQL(DBDatabase db, String table, String column) {
+		return new ArrayList<>();
+	}
 
 	/**
 	 * Provides the SQL type and modifiers required to create the column

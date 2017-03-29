@@ -387,22 +387,22 @@ public class DBStatement implements Statement {
 	 * to retrieve the result, and getMoreResults to move to any subsequent
 	 * result(s).
 	 *
-	 * @param string	string
+	 * @param sql	string
 	 * @return <code>TRUE</code> if the first result is a <code>ResultSet</code>
 	 * object; <code>FALSE</code> if it is an update count or there are no results
 	 * 1 Database exceptions may be thrown
 	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
 	@Override
-	public boolean execute(String string) throws SQLException {
-		final String logSQL = "EXECUTING: " + string;
+	public boolean execute(String sql) throws SQLException {
+		final String logSQL = "EXECUTING: " + sql;
 		database.printSQLIfRequested(logSQL);
 		LOG.debug(logSQL);
 		final boolean execute;
 		try {
-			execute = getInternalStatement().execute(string);
+			execute = getInternalStatement().execute(sql);
 		} catch (Exception exp) {
-			return addFeatureAndAttemptExecuteAgain(exp, string);
+			return addFeatureAndAttemptExecuteAgain(exp, sql);
 		}
 		return execute;
 	}
