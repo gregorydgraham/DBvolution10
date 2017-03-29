@@ -62,12 +62,13 @@ public class Oracle11XEDBDefinition extends OracleSpatialDBDefinition {
 	@Override
 	public List<String> getTriggerBasedIdentitySQL(DBDatabase DB, String table, String column) {
 
-		List<String> result = new ArrayList<String>();
+		List<String> result = new ArrayList<>();
 		String sequenceName = getPrimaryKeySequenceName(table, column);
+		final String primaryKeyTriggerName = getPrimaryKeyTriggerName(table, column);
+		result.add("DROP TRIGGER " + primaryKeyTriggerName+"");
+		result.add("DROP SEQUENCE " + sequenceName+"");
 		result.add("CREATE SEQUENCE " + sequenceName);
-
-		String triggerName = getPrimaryKeyTriggerName(table, column);
-		result.add("CREATE OR REPLACE TRIGGER " + DB.getUsername() + "." + triggerName + " \n"
+		result.add("CREATE OR REPLACE TRIGGER " + DB.getUsername() + "." + primaryKeyTriggerName + " \n"
 				+ "    BEFORE INSERT ON " + DB.getUsername() + "." + table + " \n"
 				+ "    FOR EACH ROW\n"
 				+ "    WHEN (new." + column + " IS NULL)\n"
@@ -78,6 +79,15 @@ public class Oracle11XEDBDefinition extends OracleSpatialDBDefinition {
 				//				+ ":new."+column+" := "+sequenceName+".nextval; \n"
 				+ "    END;\n");
 
+		return result;
+	}
+
+	@Override
+	public List<String> dropTriggerBasedIdentitySQL(DBDatabase DB, String table, String column) {
+
+		List<String> result = new ArrayList<>();
+		result.add("DROP TRIGGER " + getPrimaryKeyTriggerName(table, column)+";\n");
+		result.add("DROP SEQUENCE " + getPrimaryKeySequenceName(table, column)+";\n");
 		return result;
 	}
 	

@@ -83,9 +83,13 @@ public class OracleSpatialDBDefinition extends OracleDBDefinition {
 			public static final long serialVersionUID = 1;
 
 			{
+				//add("DROP INDEX " + formatNameForDatabase("DBV_" + formatTableName + "_" + formatColumnName + "_sp2didx")+"");
+				add("delete from USER_SDO_GEOM_METADATA "
+					+ "where table_name = '" + formatTableName.toUpperCase() + "' "
+					+ "and column_name = '" + formatColumnName.toUpperCase() + "'");
 				add(
 						"INSERT INTO USER_SDO_GEOM_METADATA \n"
-						+ "  VALUES (\n"
+						+ "  select \n"
 						+ "  '" + formatTableName + "',\n"
 						+ "  '" + formatColumnName + "',\n"
 						+ "  MDSYS.SDO_DIM_ARRAY(\n"
@@ -93,7 +97,10 @@ public class OracleSpatialDBDefinition extends OracleDBDefinition {
 						+ "    MDSYS.SDO_DIM_ELEMENT('Y', -9999999999, 9999999999, 0.0000000001)\n"
 						+ "     ),\n"
 						+ "  NULL   -- SRID\n"
-						+ ")");
+						+ " from dual where not exists ("
+							+ "select * from USER_SDO_GEOM_METADATA  "
+							+ "where table_name = '" + formatTableName.toUpperCase() + "' "
+							+ "and column_name = '" + formatColumnName.toUpperCase() + "')");
 				add("CREATE INDEX " + formatNameForDatabase("DBV_" + formatTableName + "_" + formatColumnName + "_sp2didx") + " ON " + formatTableName + " (" + formatColumnName + ") INDEXTYPE IS MDSYS.SPATIAL_INDEX");
 			}
 		};

@@ -18,11 +18,14 @@ package nz.co.gregs.dbvolution.databases;
 import nz.co.gregs.dbvolution.internal.oracle.StringFunctions;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
 import javax.sql.DataSource;
 import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.databases.supports.SupportsPolygonDatatype;
+import nz.co.gregs.dbvolution.internal.properties.PropertyWrapper;
 
 /**
  * Super class for connecting the different versions of the Oracle DB.
@@ -119,8 +122,39 @@ public abstract class OracleDB extends DBDatabase implements SupportsPolygonData
 
 	@Override
 	protected <TR extends DBRow> void dropAnyAssociatedDatabaseObjects(TR tableRow) throws SQLException {
-		
+
+		dropAnyTriggerBasedPrimaryKeyObject(tableRow);
 		removeSpatialMetadata(tableRow);
+	}
+	
+	protected <TR extends DBRow> void dropAnyTriggerBasedPrimaryKeyObject(TR tableRow) throws SQLException {
+		List<PropertyWrapper> fields = tableRow.getColumnPropertyWrappers();
+		List<String> triggerBasedIdentitySQL = new ArrayList<>();
+		final DBDefinition definition = this.getDefinition();
+		if (definition.prefersTriggerBasedIdentities()) {
+			List<PropertyWrapper> pkFields = new ArrayList<>();
+			for (PropertyWrapper field : fields) {
+				if (field.isColumn() && !field.getQueryableDatatype().hasColumnExpression()) {
+					if (field.isPrimaryKey()) {
+						pkFields.add(field);
+					}
+				}
+			}
+			if (pkFields.size() == 1) {
+				triggerBasedIdentitySQL = definition.dropTriggerBasedIdentitySQL(this, definition.formatTableName(tableRow), definition.formatColumnName(pkFields.get(0).columnName()));
+			}
+		}
+		try (DBStatement dbStatement = getDBStatement()) {
+			for (String sql : triggerBasedIdentitySQL) {
+				dbStatement.execute(sql);
+			}
+		}
+	}
+	
+	
+	@Override
+	public void addFeatureToFixException(Exception exp) throws Exception {
+		throw exp;
 	}
 
 	/**
@@ -133,12 +167,9 @@ public abstract class OracleDB extends DBDatabase implements SupportsPolygonData
 	protected <TR extends DBRow> void removeSpatialMetadata(TR tableRow) throws SQLException {
 		DBDefinition definition = getDefinition();
 		final String formattedTableName = definition.formatTableName(tableRow);
-		final DBStatement dbStatement3 = getDBStatement();
-		try {
-			dbStatement3.execute("DELETE FROM USER_SDO_GEOM_METADATA WHERE TABLE_NAME = '" + formattedTableName.toUpperCase() + "'");
-		} finally {
-			dbStatement3.close();
+		try (DBStatement dbStatement3 = getDBStatement()) {
+			dbStatement3.execute("DELETE FROM MDSYS.SDO_GEOM_METADATA WHERE TABLE_NAME = '" + formattedTableName.toUpperCase() + "'");
 		}
 	}
-
+	
 }

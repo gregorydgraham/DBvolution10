@@ -315,11 +315,11 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 			if (supportsPooledConnections()) {
 				synchronized (FREE_CONNECTIONS) {
 					if (FREE_CONNECTIONS.isEmpty() || getConnectionList(FREE_CONNECTIONS).isEmpty()) {
-						conn = getRawConnection();
+							conn = getRawConnection();
 					} else {
 						conn = getConnectionList(FREE_CONNECTIONS).get(0);
+						}
 					}
-				}
 			} else {
 				conn = getRawConnection();
 			}
@@ -1095,7 +1095,12 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 			if (definition.prefersTriggerBasedIdentities() && pkFields.size() == 1) {
 				List<String> triggerBasedIdentitySQL = definition.getTriggerBasedIdentitySQL(this, definition.formatTableName(newTableRow), definition.formatColumnName(pkFields.get(0).columnName()));
 				for (String sql : triggerBasedIdentitySQL) {
-					dbStatement.execute(sql);
+					try{
+						dbStatement.execute(sql);
+					}catch (SQLException sqlex){
+						System.out.println(""+sqlex.getMessage());
+						//sqlex.printStackTrace();
+					}
 				}
 			}
 
@@ -1200,15 +1205,16 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 	 * only necessary once and should really be performed by a DBA.
 	 *
 	 * <p>
-	 * Adding indexes can improve response time for queries, but has consequences
-	 * for storage and insertion time. However in a small database the query
-	 * improvement will far out weigh the down sides and this is a recommend route
-	 * to improvements.
+	 * Adding indexes can improve response time for queries, but has
+	 * consequences for storage and insertion time. However in a small database
+	 * the query improvement will far out weigh the down sides and this is a
+	 * recommend route to improvements.
 	 *
 	 * <p>
 	 * As usual, your mileage may vary and consult a DBA if trouble persists.
 	 *
-	 * @param newTableRow the data model's version of the table that needs indexes
+	 * @param newTableRow the data model's version of the table that needs
+	 * indexes
 	 * @throws SQLException database exceptions
 	 */
 	public void createIndexesOnAllFields(DBRow newTableRow) throws SQLException {
@@ -1297,7 +1303,7 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 		try {
 			this.dropTable(tableRow);
 		} catch (SQLException exp) {
-//			exp.printStackTrace();
+			exp.printStackTrace();
 		}
 	}
 
