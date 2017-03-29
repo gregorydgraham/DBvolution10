@@ -1087,45 +1087,6 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 	}
 
 	/**
-	 * Retrieves the next value from the given sequence.
-	 *
-	 * @param sequenceName the name of the sequence
-	 * @return a NumberExpression representing the database operation required to
-	 * retrieve the named sequence's value.
-	 */
-	public static NumberExpression getNextSequenceValue(String sequenceName) {
-		return getNextSequenceValue(null, sequenceName);
-	}
-
-	/**
-	 * Retrieves the next value from the given sequence within the given schema.
-	 *
-	 * @param schemaName the name of the schema as the database understands it
-	 * @param sequenceName the name of the sequence
-	 * @return a NumberExpression representing the database operation required to
-	 * retrieve the names sequence's value.
-	 */
-	public static NumberExpression getNextSequenceValue(String schemaName, String sequenceName) {
-		if (schemaName != null) {
-			return new NumberExpression(
-					new StringStringFunctionNumberResult(StringExpression.value(schemaName), StringExpression.value(sequenceName)) {
-				@Override
-				String getFunctionName(DBDatabase db) {
-					return db.getDefinition().getNextSequenceValueFunctionName();
-				}
-			});
-		} else {
-			return new NumberExpression(
-					new DBUnaryStringFunctionNumberResult(StringExpression.value(sequenceName)) {
-				@Override
-				String getFunctionName(DBDatabase db) {
-					return db.getDefinition().getNextSequenceValueFunctionName();
-				}
-			});
-		}
-	}
-
-	/**
 	 * Provides a default option when the NumberExpression resolves to NULL within
 	 * the query.
 	 *
@@ -1207,9 +1168,8 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 	 * Provides access to the database's cosine function.
 	 *
 	 * <p>
-	 * Computes the cosine of the expression assuming that the previous
-	 * expression is in RADIANS. Use {@link #radians() } to convert degrees into
-	 * radians.
+	 * Computes the cosine of the expression assuming that the previous expression
+	 * is in RADIANS. Use {@link #radians() } to convert degrees into radians.
 	 *
 	 * @return a NumberExpression representing the cosine of the current number
 	 * expression.
@@ -1259,9 +1219,8 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 	 * Provides access to the database's sine function.
 	 *
 	 * <p>
-	 * Computes the sine of the expression assuming that the previous
-	 * expression is in RADIANS. Use {@link #radians() } to convert degrees into
-	 * radians.
+	 * Computes the sine of the expression assuming that the previous expression
+	 * is in RADIANS. Use {@link #radians() } to convert degrees into radians.
 	 *
 	 * @return a NumberExpression representing the sine of the current number
 	 * expression.
@@ -1296,7 +1255,7 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 				} else {
 					NumberExpression first = this.only;
 					//(e^x - e^-x)/2
-					return this.only.isGreaterThan(799).ifThenElse(null, 
+					return this.only.isGreaterThan(799).ifThenElse(null,
 							first.exp().minus(first.times(-1).exp().bracket()).bracket().dividedBy(2).bracket()
 					).toSQLString(db);
 				}
@@ -1333,9 +1292,9 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 	 * Provides access to the database's hyperbolic tangent function.
 	 *
 	 * <p>
-	 * Computes the hyperbolic tangent of the expression assuming that the previous
-	 * expression is in RADIANS. Use {@link #radians() } to convert degrees into
-	 * radians.
+	 * Computes the hyperbolic tangent of the expression assuming that the
+	 * previous expression is in RADIANS. Use {@link #radians() } to convert
+	 * degrees into radians.
 	 *
 	 * @return a NumberExpression representing the hyperbolic tangent of the
 	 * current number expression.
@@ -1582,6 +1541,7 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 			public String toSQLString(DBDatabase db) {
 				return db.getDefinition().doLogBase10NumberTransform(this.only.toSQLString(db));
 			}
+
 			@Override
 			String getFunctionName(DBDatabase db) {
 				return db.getDefinition().getLogBase10FunctionName();
@@ -2323,7 +2283,8 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 	}
 
 	/**
-	 * Returns "+" for all zero or positive numbers and "-" for all negative numbers.
+	 * Returns "+" for all zero or positive numbers and "-" for all negative
+	 * numbers.
 	 *
 	 * @return a StringExpression that is either "+" or "-"
 	 */
@@ -2541,84 +2502,6 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 		}
 	}
 
-	private static abstract class DBUnaryStringFunctionNumberResult extends NumberExpression {
-
-		protected StringExpression only;
-
-		DBUnaryStringFunctionNumberResult() {
-			this.only = null;
-		}
-
-		DBUnaryStringFunctionNumberResult(StringExpression only) {
-			this.only = only;
-		}
-
-//		DBUnaryFunction(DBExpression only) {
-//			this.only = only;
-//		}
-		@Override
-		public DBNumber getQueryableDatatypeForExpressionValue() {
-			return new DBNumber();
-		}
-
-		abstract String getFunctionName(DBDatabase db);
-
-		protected String beforeValue(DBDatabase db) {
-			return "" + getFunctionName(db) + "( ";
-		}
-
-		protected String afterValue(DBDatabase db) {
-			return ") ";
-		}
-
-		@Override
-		public String toSQLString(DBDatabase db) {
-			return this.beforeValue(db) + (only == null ? "" : only.toSQLString(db)) + this.afterValue(db);
-		}
-
-		@Override
-		public DBUnaryStringFunctionNumberResult copy() {
-			DBUnaryStringFunctionNumberResult newInstance;
-			try {
-				newInstance = getClass().newInstance();
-			} catch (InstantiationException ex) {
-				throw new RuntimeException(ex);
-			} catch (IllegalAccessException ex) {
-				throw new RuntimeException(ex);
-			}
-			newInstance.only = only.copy();
-			return newInstance;
-		}
-
-		@Override
-		public Set<DBRow> getTablesInvolved() {
-			HashSet<DBRow> hashSet = new HashSet<DBRow>();
-			if (only != null) {
-				hashSet.addAll(only.getTablesInvolved());
-			}
-			return hashSet;
-		}
-
-		@Override
-		public boolean isAggregator() {
-			return only.isAggregator();
-		}
-
-		@Override
-		public boolean getIncludesNull() {
-			return false;
-		}
-
-		@Override
-		public boolean isPurelyFunctional() {
-			if (only == null) {
-				return true;
-			} else {
-				return only.isPurelyFunctional();
-			}
-		}
-	}
-
 	private static abstract class NumberNumberFunctionNumberResult extends NumberExpression {
 
 		protected NumberExpression first;
@@ -2724,226 +2607,6 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 		}
 	}
 
-	private static abstract class StringStringFunctionNumberResult extends NumberExpression {
-
-		protected StringExpression first;
-		protected StringExpression second;
-
-		StringStringFunctionNumberResult(StringExpression first) {
-			this.first = first;
-			this.second = null;
-		}
-
-		StringStringFunctionNumberResult(StringExpression first, StringExpression second) {
-			this.first = first;
-			this.second = second;
-		}
-
-		@Override
-		public DBNumber getQueryableDatatypeForExpressionValue() {
-			return new DBNumber();
-		}
-
-		@Override
-		public String toSQLString(DBDatabase db) {
-			return this.beforeValue(db) + getFirst().toSQLString(db) + this.getSeparator(db) + (getSecond() == null ? "" : getSecond().toSQLString(db)) + this.afterValue(db);
-		}
-
-		@Override
-		public StringStringFunctionNumberResult copy() {
-			StringStringFunctionNumberResult newInstance;
-			try {
-				newInstance = getClass().newInstance();
-			} catch (InstantiationException ex) {
-				throw new RuntimeException(ex);
-			} catch (IllegalAccessException ex) {
-				throw new RuntimeException(ex);
-			}
-			newInstance.first = getFirst().copy();
-			newInstance.second = getSecond().copy();
-			return newInstance;
-		}
-
-		abstract String getFunctionName(DBDatabase db);
-
-		protected String beforeValue(DBDatabase db) {
-			return " " + getFunctionName(db) + "( ";
-		}
-
-		protected String getSeparator(DBDatabase db) {
-			return ", ";
-		}
-
-		protected String afterValue(DBDatabase db) {
-			return ") ";
-		}
-
-		@Override
-		public Set<DBRow> getTablesInvolved() {
-			HashSet<DBRow> hashSet = new HashSet<DBRow>();
-			if (getFirst() != null) {
-				hashSet.addAll(getFirst().getTablesInvolved());
-			}
-			if (getSecond() != null) {
-				hashSet.addAll(getSecond().getTablesInvolved());
-			}
-			return hashSet;
-		}
-
-		@Override
-		public boolean isAggregator() {
-			return getFirst().isAggregator() || getSecond().isAggregator();
-		}
-
-		@Override
-		public boolean getIncludesNull() {
-			return false;
-		}
-
-		/**
-		 * @return the first
-		 */
-		protected StringExpression getFirst() {
-			return first;
-		}
-
-		/**
-		 * @return the second
-		 */
-		protected StringExpression getSecond() {
-			return second;
-		}
-
-		@Override
-		public boolean isPurelyFunctional() {
-			if (first == null && second == null) {
-				return true;
-			} else {
-				return first.isPurelyFunctional() && second.isPurelyFunctional();
-			}
-		}
-	}
-
-//	private static abstract class DBBinaryStringNumberFunction implements StringResult {
-//
-//		private DBExpression first;
-//		private DBExpression second;
-//
-//		DBBinaryStringNumberFunction(StringResult first, NumberResult second) {
-//			this.first = first;
-//			this.second = second;
-//		}
-//
-//		@Override
-//		public DBNumber getQueryableDatatypeForExpressionValue() {
-//			return new DBNumber();
-//		}
-//
-//		@Override
-//		abstract public String toSQLString(DBDatabase db);
-//
-//		@Override
-//		public DBBinaryStringNumberFunction copy() {
-//			DBBinaryStringNumberFunction newInstance;
-//			try {
-//				newInstance = getClass().newInstance();
-//			} catch (InstantiationException ex) {
-//				throw new RuntimeException(ex);
-//			} catch (IllegalAccessException ex) {
-//				throw new RuntimeException(ex);
-//			}
-//			newInstance.first = first.copy();
-//			newInstance.second = second.copy();
-//			return newInstance;
-//		}
-//
-//		@Override
-//		public Set<DBRow> getTablesInvolved() {
-//			HashSet<DBRow> hashSet = new HashSet<DBRow>();
-//			if (first != null) {
-//				hashSet.addAll(first.getTablesInvolved());
-//			}
-//			if (second != null) {
-//				hashSet.addAll(second.getTablesInvolved());
-//			}
-//			return hashSet;
-//		}
-//
-//		@Override
-//		public boolean isAggregator() {
-//			return first.isAggregator() || second.isAggregator();
-//		}
-//
-//		@Override
-//		public boolean getIncludesNull() {
-//			return false;
-//		}
-//	}
-//	private static abstract class DBTrinaryFunction implements NumberResult {
-//
-//		private DBExpression first;
-//		private DBExpression second;
-//		private DBExpression third;
-//
-//		DBTrinaryFunction(DBExpression first) {
-//			this.first = first;
-//			this.second = null;
-//			this.third = null;
-//		}
-//
-//		DBTrinaryFunction(DBExpression first, DBExpression second) {
-//			this.first = first;
-//			this.second = second;
-//		}
-//
-//		DBTrinaryFunction(DBExpression first, DBExpression second, DBExpression third) {
-//			this.first = first;
-//			this.second = second;
-//			this.third = third;
-//		}
-//
-//		@Override
-//		public String toSQLString(DBDatabase db) {
-//			return this.beforeValue(db) + first.toSQLString(db)
-//					+ this.getSeparator(db) + (second == null ? "" : second.toSQLString(db))
-//					+ this.getSeparator(db) + (third == null ? "" : third.toSQLString(db))
-//					+ this.afterValue(db);
-//		}
-//
-//		@Override
-//		public DBTrinaryFunction copy() {
-//			DBTrinaryFunction newInstance;
-//			try {
-//				newInstance = getClass().newInstance();
-//			} catch (InstantiationException ex) {
-//				throw new RuntimeException(ex);
-//			} catch (IllegalAccessException ex) {
-//				throw new RuntimeException(ex);
-//			}
-//			newInstance.first = first == null ? null : first.copy();
-//			newInstance.second = second == null ? null : second.copy();
-//			return newInstance;
-//		}
-//
-//		abstract String getFunctionName(DBDatabase db);
-//
-//		protected String beforeValue(DBDatabase db) {
-//			return " " + getFunctionName(db) + "( ";
-//		}
-//
-//		protected String getSeparator(DBDatabase db) {
-//			return ", ";
-//		}
-//
-//		protected String afterValue(DBDatabase db) {
-//			return ") ";
-//		}
-//
-//		@Override
-//		public boolean isAggregator() {
-//			return first.isAggregator() || second.isAggregator() || third.isAggregator();
-//		}
-//	}
 	private static abstract class DBBinaryBooleanArithmetic extends BooleanExpression {
 
 		private NumberExpression first;

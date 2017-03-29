@@ -32,7 +32,6 @@ import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Test;
 import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.is;
 
 public class NumberExpressionTest extends AbstractTest {
 
@@ -1059,12 +1058,12 @@ public class NumberExpressionTest extends AbstractTest {
 	public void testDegrees() throws SQLException {
 		degreeRow carCo = new degreeRow();
 		DBQuery dbQuery = database.getDBQuery(carCo).setBlankQueryAllowed(true);
-		List<DBQueryRow> allRows = dbQuery.getAllRows();
+		//List<DBQueryRow> allRows; = dbQuery.getAllRows();
 //		database.print(allRows);
 
 		dbQuery.addCondition(
 				carCo.column(carCo.uidCarCompany).degrees().tan().isGreaterThan(0));
-		allRows = dbQuery.getAllRows();
+		List<DBQueryRow> allRows = dbQuery.getAllRows();
 //		database.print(allRows);
 		Assert.assertThat(allRows.size(), is(2));
 		for (CarCompany carCompany : dbQuery.getAllInstancesOf(carCo)) {
@@ -1119,7 +1118,7 @@ public class NumberExpressionTest extends AbstractTest {
 		DBQuery dbQuery = database.getDBQuery(randRow).setBlankQueryAllowed(true);
 		dbQuery.setSortOrder(randRow.column(randRow.countif));
 		List<DBQueryRow> allRows = dbQuery.getAllRows();
-		database.print(allRows);
+//		database.print(allRows);
 		Assert.assertThat(allRows.size(), is(2));
 		Assert.assertThat(allRows.get(0).get(randRow).bigger.stringValue(), is("Smaller"));
 		Assert.assertThat(allRows.get(0).get(randRow).countif.intValue(), is(0));

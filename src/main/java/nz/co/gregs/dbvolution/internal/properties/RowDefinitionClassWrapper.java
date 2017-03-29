@@ -140,7 +140,7 @@ public class RowDefinitionClassWrapper {
 					property.setColumnIndex(columnIndex);
 					columnProperties.add(property);
 					allProperties.add(property);
-				}else{
+				} else {
 					autoFillingProperties.add(property);
 					allProperties.add(property);
 				}
@@ -202,7 +202,8 @@ public class RowDefinitionClassWrapper {
 	/**
 	 * Gets a new instance of the java property finder, configured as required
 	 *
-	 * @return A new JavePropertyFinder for all fields, public methods, that have DBColumn annotation, and are fields or beans.
+	 * @return A new JavePropertyFinder for all fields, public methods, that have
+	 * DBColumn annotation, and are fields or beans.
 	 */
 	private static JavaPropertyFinder getColumnPropertyFinder() {
 		return new JavaPropertyFinder(
@@ -210,6 +211,7 @@ public class RowDefinitionClassWrapper {
 				JavaPropertyFilter.COLUMN_PROPERTY_FILTER,
 				PropertyType.FIELD, PropertyType.BEAN_PROPERTY);
 	}
+
 	private static JavaPropertyFinder getColumnOrAutoFillablePropertyFinder() {
 		return new JavaPropertyFinder(
 				Visibility.PRIVATE, Visibility.PUBLIC,
