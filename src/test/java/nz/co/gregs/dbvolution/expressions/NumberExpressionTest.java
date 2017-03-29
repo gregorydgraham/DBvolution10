@@ -31,7 +31,7 @@ import nz.co.gregs.dbvolution.results.NumberResult;
 import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Test;
-import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.*;
 
 public class NumberExpressionTest extends AbstractTest {
 
@@ -1088,10 +1088,20 @@ public class NumberExpressionTest extends AbstractTest {
 		List<DBQueryRow> allRows = dbQuery.getDistinctCombinationsOfColumnValues(randRow.randomNumber);
 		database.print(allRows);
 		HashSet<Double> hashSet = new HashSet<Double>();
+			Double maxRand =0d;
+			Double minRand = 1d;
 		for(DBQueryRow row: allRows){
-			hashSet.add(row.get(randRow).randomNumber.doubleValue());
+			final Double doubleRand = row.get(randRow).randomNumber.doubleValue();
+			hashSet.add(doubleRand);
+			if(doubleRand> maxRand){
+				maxRand = doubleRand;
+			}else if (doubleRand<minRand) {
+				minRand = doubleRand;
+			}
 		}
 		Assert.assertThat(hashSet.size(), is(22));
+		Assert.assertThat(maxRand, lessThanOrEqualTo(1d));
+		Assert.assertThat(minRand, greaterThanOrEqualTo(0d));
 	}
 
 	public static class CountIfRow extends Marque {

@@ -500,6 +500,7 @@ public class OracleDBDefinition extends DBDefinition {
 		return " DBMS_RANDOM.VALUE ";
 	}
 
+	@Override
 	public String doLogBase10NumberTransform(String sql) {
 		return "log(10, ("+sql+"))";
 	}

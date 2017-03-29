@@ -4760,6 +4760,13 @@ public abstract class DBDefinition {
 		return " rand() ";
 	}
 
+	/**
+	 * Return the Natural Logarithm.
+	 * 
+	 * <p>By default this method returns <b>log10(sql)</b></p>
+	 * @param sql
+	 * @return the name of the function to use when rounding numbers up
+	 */
 	public String doLogBase10NumberTransform(String sql) {
 		return "log10("+sql+")";
 	}

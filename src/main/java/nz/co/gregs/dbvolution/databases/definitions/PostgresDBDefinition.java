@@ -856,5 +856,18 @@ public class PostgresDBDefinition extends DBDefinition {
 	@Override
 	public String getLogBase10FunctionName() {
 		return "log";
+	}		
+	
+	@Override
+	public String doLogBase10NumberTransform(String sql) {
+		return "log("+sql+")";
 	}
+
+	
+	@Override
+	public String doRandomNumberTransform() {
+		return " (RANDOM())";
+	}
+
+
 }

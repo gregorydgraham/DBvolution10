@@ -878,4 +878,9 @@ public class SQLiteDefinition extends DBDefinition {
 		return "log";
 	}
 
+	@Override
+	public String doRandomNumberTransform() {
+		return " ABS(RANDOM()/9223372036854775808)";
+	}
+
 }
