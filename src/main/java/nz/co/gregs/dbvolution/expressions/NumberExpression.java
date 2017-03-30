@@ -1246,7 +1246,15 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 	 * number expression.
 	 */
 	public NumberExpression sinh() {
-		return new NumberExpression(new DBUnaryFunction(this) {
+		
+		return new SinhFunction(this);
+	}
+	
+	public static class SinhFunction extends  DBUnaryFunction{
+			
+			public SinhFunction(NumberExpression only) {
+				this.only = only.isGreaterThan(700).ifThenElse(NumberExpression.nullExpression(), only);
+			}
 
 			@Override
 			public String toSQLString(DBDatabase db) {
@@ -1255,18 +1263,15 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 				} else {
 					NumberExpression first = this.only;
 					//(e^x - e^-x)/2
-					return this.only.isGreaterThan(799).ifThenElse(null,
-							first.exp().minus(first.times(-1).exp().bracket()).bracket().dividedBy(2).bracket()
-					).toSQLString(db);
+					return first.exp().minus(first.times(-1).exp().bracket()).bracket().dividedBy(2).bracket()
+						.toSQLString(db);
 				}
 			}
 
 			@Override
 			String getFunctionName(DBDatabase db) {
 				return "sinh";
-			}
-		});
-	}
+			}};
 
 	/**
 	 * Provides access to the database's tangent function.
