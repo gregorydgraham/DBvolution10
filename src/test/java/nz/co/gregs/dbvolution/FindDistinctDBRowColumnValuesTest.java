@@ -27,6 +27,7 @@ import static org.hamcrest.Matchers.*;
 import nz.co.gregs.dbvolution.example.*;
 import nz.co.gregs.dbvolution.exceptions.AccidentalBlankQueryException;
 import nz.co.gregs.dbvolution.generic.AbstractTest;
+import org.hamcrest.core.IsNull;
 
 /**
  *
@@ -144,6 +145,7 @@ public class FindDistinctDBRowColumnValuesTest extends AbstractTest {
 	public void testDBTableMethodWithDBString() throws SQLException {
 		Marque marque = new Marque();
 		final DBTable<Marque> dbTable = database.getDBTable(marque);
+		database.setPrintSQLBeforeExecuting(true);
 		List<DBString> distinctValuesForColumn = dbTable.getDistinctValuesOfColumn(marque.individualAllocationsAllowed);
 
 		List<String> foundStrings = new ArrayList<String>();
@@ -156,22 +158,24 @@ public class FindDistinctDBRowColumnValuesTest extends AbstractTest {
 								is("")
 						)
 				);
-				foundStrings.add((val.toString()));
 			} else {
 				System.out.println("DISTINCT VAL: NULL");
 			}
+			foundStrings.add((val.toString()));
 		}
 		if (database.supportsDifferenceBetweenNullAndEmptyString()) {
 			Assert.assertThat(distinctValuesForColumn.size(), is(3));
 //			Assert.assertThat(distinctValuesForColumn, hasItem((DBString) null));
-			Assert.assertThat(foundStrings.size(), is(2));
+			Assert.assertThat(foundStrings.size(), is(3));
 			Assert.assertThat(foundStrings.get(0), is(""));
-			Assert.assertThat(foundStrings.get(1), is("Y"));
+			Assert.assertThat(foundStrings.get(1), is(""));
+			Assert.assertThat(foundStrings.get(2), is("Y"));
 		} else {
 			Assert.assertThat(distinctValuesForColumn.size(), is(2));
-			Assert.assertThat(distinctValuesForColumn, hasItem((DBString) null));
-			Assert.assertThat(foundStrings.size(), is(1));
-			Assert.assertThat(foundStrings.get(0), is("Y"));
+//			Assert.assertThat(distinctValuesForColumn, hasItem((DBString) null));
+			Assert.assertThat(foundStrings.size(), is(2));
+			Assert.assertThat(foundStrings.get(1), is("Y"));
+			Assert.assertThat(foundStrings.get(0), is(""));
 		}
 	}
 

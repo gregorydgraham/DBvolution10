@@ -80,14 +80,14 @@ public class Oracle11XEDBDefinition extends OracleSpatialDBDefinition {
 				+ "    END;\n");
 
 		return result;
-	}
-
+	}	
+	
 	@Override
 	public List<String> dropTriggerBasedIdentitySQL(DBDatabase DB, String table, String column) {
 
 		List<String> result = new ArrayList<>();
-		result.add("DROP TRIGGER " + getPrimaryKeyTriggerName(table, column)+";\n");
-		result.add("DROP SEQUENCE " + getPrimaryKeySequenceName(table, column)+";\n");
+		result.add("DROP TRIGGER " + getPrimaryKeyTriggerName(table, column)+"");
+		result.add("DROP SEQUENCE " + getPrimaryKeySequenceName(table, column)+"");
 		return result;
 	}
 	

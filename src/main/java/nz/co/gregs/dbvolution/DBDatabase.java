@@ -1098,7 +1098,7 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 					try{
 						dbStatement.execute(sql);
 					}catch (SQLException sqlex){
-						System.out.println(""+sqlex.getMessage());
+//						System.out.println(""+sqlex.getMessage());
 						//sqlex.printStackTrace();
 					}
 				}
@@ -1303,7 +1303,7 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 		try {
 			this.dropTable(tableRow);
 		} catch (SQLException exp) {
-			exp.printStackTrace();
+//			exp.printStackTrace();
 		}
 	}
 

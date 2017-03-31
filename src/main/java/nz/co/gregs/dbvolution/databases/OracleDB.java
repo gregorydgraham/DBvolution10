@@ -168,7 +168,7 @@ public abstract class OracleDB extends DBDatabase implements SupportsPolygonData
 		DBDefinition definition = getDefinition();
 		final String formattedTableName = definition.formatTableName(tableRow);
 		try (DBStatement dbStatement3 = getDBStatement()) {
-			dbStatement3.execute("DELETE FROM MDSYS.SDO_GEOM_METADATA WHERE TABLE_NAME = '" + formattedTableName.toUpperCase() + "'");
+			dbStatement3.execute("DELETE FROM USER_SDO_GEOM_METADATA WHERE TABLE_NAME = '" + formattedTableName.toUpperCase() + "'");
 		}
 	}
 	
