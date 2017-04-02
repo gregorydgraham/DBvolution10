@@ -415,6 +415,29 @@ public class DBTable<E extends DBRow> {
 	}
 
 	/**
+	 * Generates and returns the actual SQL that will be used by {@link #getRowsByExample(nz.co.gregs.dbvolution.DBRow)
+	 * } now.
+	 *
+	 * <p>
+	 * Good for debugging and great for DBAs, this is how you find out what
+	 * DBvolution is really doing.
+	 *
+	 * <p>
+	 * Generates the SQL query for retrieving the objects but does not execute the
+	 * SQL. Use {@link #getRowsByExample(nz.co.gregs.dbvolution.DBRow) the get* methods} to retrieve the rows.
+	 *
+	 * <p>
+	 * See also {@link #getSQLForCount() getSQLForCount} and {@link #getSQLForQuery() }
+	 *
+	 * @param exemplar
+	 * @return a String of the SQL that will be used by {@link #getRowsByExample(nz.co.gregs.dbvolution.DBRow)  }. 1
+	 * Database exceptions may be thrown
+	 * @throws java.sql.SQLException java.sql.SQLException
+	 */
+	public String getSQLForQuery(DBRow exemplar) throws SQLException {
+		return database.getDBQuery(exemplar).getSQLForQuery();
+	}
+	/**
 	 * Returns the SQL query that will used to count the rows
 	 *
 	 * <p>
