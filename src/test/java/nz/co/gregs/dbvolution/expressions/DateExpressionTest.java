@@ -288,13 +288,17 @@ public class DateExpressionTest extends AbstractTest {
 		Assert.assertThat(reportRows.size(), is(1));
 		
 		 query = database.getDBQuery(marq);
-		query.addConditions(marq.column(marq.creationDate)
-				.hour().isIn(
-						DateExpression.currentDate().addSeconds(-10).hour(),
-						DateExpression.currentDate().addSeconds(10).hour()));
+		query.addConditions(
+				marq.column(marq.creationDate)
+						.hour().isIn(
+								DateExpression.currentDate().addSeconds(-10).hour(),
+								DateExpression.currentDate().addSeconds(10).hour()
+						),
+				marq.column(marq.creationDate).isGreaterThan(march23rd2013)
+		);
 		System.out.println(""+query.getSQLForQuery());
 		got = query.getAllRows();
-//		database.print(got);
+		database.print(got);
 		Assert.assertThat(got.size(), is(1));
 
 	}

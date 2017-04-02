@@ -19,11 +19,6 @@
 	</description>
 	<url>http://dbvolution.gregs.co.nz</url>
 	<licenses>
-		<!--		<license>
-																																																																																																																																		<name>The Apache Software License, Version 2.0</name>
-																																																																																																																																		<url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
-																																																																																																																																		<distribution>repo</distribution>
-		</license>-->
 		<license>
 			<name>Non-commercial License</name>
 			<url>http://creativecommons.org/licenses/by-nc-sa/4.0/</url>
@@ -725,12 +720,12 @@
 			<artifactId>reflections</artifactId>
 			<version>0.9.11</version>
 			<type>jar</type>
-			<exclusions>
+			<!--<exclusions>
 				<exclusion>
 					<groupId>com.google.guava</groupId>
 					<artifactId>guava</artifactId>
 				</exclusion>
-			</exclusions>
+			</exclusions>-->
 		</dependency>
 		<dependency>
 			<groupId>commons-logging</groupId>
