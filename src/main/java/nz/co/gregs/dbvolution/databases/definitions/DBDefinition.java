@@ -1586,7 +1586,7 @@ public abstract class DBDefinition {
 	 * @param firstSQLExpression firstSQLExpression
 	 * @param secondSQLExpression secondSQLExpression
 	 * @return SQL snippet comparing the 2 strings
-	 */
+	 */	
 	public String doStringEqualsTransform(String firstSQLExpression, String secondSQLExpression) {
 		return firstSQLExpression + " = " + secondSQLExpression;
 	}

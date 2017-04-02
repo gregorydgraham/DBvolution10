@@ -707,6 +707,7 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 	 * @param equivalentString	equivalentString
 	 * @return a BooleanExpression of the SQL comparison.
 	 */
+	@Override
 	public BooleanExpression isNot(StringResult equivalentString) {
 		return is(equivalentString).not();
 	}
@@ -1211,7 +1212,7 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 	 * @return a BooleanExpression of the SQL comparison.
 	 */
 	public BooleanExpression isIn(String... possibleValues) {
-		List<StringExpression> possVals = new ArrayList<StringExpression>();
+		List<StringExpression> possVals = new ArrayList<>();
 		for (String str : possibleValues) {
 			possVals.add(StringExpression.value(str));
 		}
@@ -1229,7 +1230,7 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 	 * @return a BooleanExpression of the SQL comparison.
 	 */
 	public BooleanExpression isIn(Collection<String> possibleValues) {
-		List<StringExpression> possVals = new ArrayList<StringExpression>();
+		List<StringExpression> possVals = new ArrayList<>();
 		for (String str : possibleValues) {
 			possVals.add(StringExpression.value(str));
 		}
@@ -1246,13 +1247,14 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 	 * @param possibleValues	possibleValues
 	 * @return a BooleanExpression of the SQL comparison.
 	 */
+	@Override
 	public BooleanExpression isIn(StringResult... possibleValues) {
 		final BooleanExpression isInExpression
 				= new BooleanExpression(new DBNnaryBooleanFunction(this, possibleValues) {
 
 					@Override
 					public String toSQLString(DBDatabase db) {
-						List<String> sqlValues = new ArrayList<String>();
+						List<String> sqlValues = new ArrayList<>();
 						for (StringResult value : values) {
 							sqlValues.add(value.toSQLString(db));
 						}
@@ -1891,7 +1893,7 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 
 	@Override
 	public Set<DBRow> getTablesInvolved() {
-		HashSet<DBRow> hashSet = new HashSet<DBRow>();
+		HashSet<DBRow> hashSet = new HashSet<>();
 		if (string1 != null) {
 			hashSet.addAll(string1.getTablesInvolved());
 		}
@@ -1934,7 +1936,7 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 	public BooleanExpression isNotNullAndNotEmpty() {
 		return BooleanExpression.allOf(
 				BooleanExpression.isNotNull(this),
-				this.is("").not()
+				this.isNot("")
 		);
 	}
 
@@ -2006,7 +2008,7 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 	 * @return a BooleanExpression
 	 */
 	public BooleanExpression isInIgnoreCase(StringResult[] potentialValues) {
-		List<StringResult> lowerStrings = new ArrayList<StringResult>();
+		List<StringResult> lowerStrings = new ArrayList<>();
 		for (StringResult toArray1 : potentialValues) {
 			StringExpression lowercase = new StringExpression(toArray1).lowercase();
 			lowerStrings.add(lowercase);
@@ -2095,7 +2097,7 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 
 		@Override
 		public Set<DBRow> getTablesInvolved() {
-			HashSet<DBRow> hashSet = new HashSet<DBRow>();
+			HashSet<DBRow> hashSet = new HashSet<>();
 			if (first != null) {
 				hashSet.addAll(first.getTablesInvolved());
 			}
@@ -2160,7 +2162,7 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 
 		@Override
 		public Set<DBRow> getTablesInvolved() {
-			HashSet<DBRow> hashSet = new HashSet<DBRow>();
+			HashSet<DBRow> hashSet = new HashSet<>();
 			return hashSet;
 		}
 
@@ -2228,7 +2230,7 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 
 		@Override
 		public Set<DBRow> getTablesInvolved() {
-			HashSet<DBRow> hashSet = new HashSet<DBRow>();
+			HashSet<DBRow> hashSet = new HashSet<>();
 			if (only != null) {
 				hashSet.addAll(only.getTablesInvolved());
 			}
@@ -2374,7 +2376,7 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 
 		@Override
 		public Set<DBRow> getTablesInvolved() {
-			HashSet<DBRow> hashSet = new HashSet<DBRow>();
+			HashSet<DBRow> hashSet = new HashSet<>();
 			if (only != null) {
 				hashSet.addAll(only.getTablesInvolved());
 			}
@@ -2460,7 +2462,7 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 
 		@Override
 		public Set<DBRow> getTablesInvolved() {
-			HashSet<DBRow> hashSet = new HashSet<DBRow>();
+			HashSet<DBRow> hashSet = new HashSet<>();
 			if (getFirst() != null) {
 				hashSet.addAll(getFirst().getTablesInvolved());
 			}
@@ -2567,7 +2569,7 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 
 		@Override
 		public Set<DBRow> getTablesInvolved() {
-			HashSet<DBRow> hashSet = new HashSet<DBRow>();
+			HashSet<DBRow> hashSet = new HashSet<>();
 			if (getFirst() != null) {
 				hashSet.addAll(getFirst().getTablesInvolved());
 			}
@@ -2645,7 +2647,7 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 
 		@Override
 		public Set<DBRow> getTablesInvolved() {
-			HashSet<DBRow> hashSet = new HashSet<DBRow>();
+			HashSet<DBRow> hashSet = new HashSet<>();
 			if (first != null) {
 				hashSet.addAll(first.getTablesInvolved());
 			}
@@ -2783,7 +2785,7 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 
 		@Override
 		public Set<DBRow> getTablesInvolved() {
-			HashSet<DBRow> hashSet = new HashSet<DBRow>();
+			HashSet<DBRow> hashSet = new HashSet<>();
 			if (first != null) {
 				hashSet.addAll(first.getTablesInvolved());
 			}
@@ -2802,7 +2804,7 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 	private static abstract class DBNnaryBooleanFunction extends BooleanExpression {
 
 		protected StringExpression column;
-		protected List<StringResult> values = new ArrayList<StringResult>();
+		protected List<StringResult> values = new ArrayList<>();
 		private boolean includesNulls = false;
 
 		DBNnaryBooleanFunction() {
@@ -2871,7 +2873,7 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 
 		@Override
 		public Set<DBRow> getTablesInvolved() {
-			HashSet<DBRow> hashSet = new HashSet<DBRow>();
+			HashSet<DBRow> hashSet = new HashSet<>();
 			if (column != null) {
 				hashSet.addAll(column.getTablesInvolved());
 			}

@@ -25,7 +25,6 @@ import nz.co.gregs.dbvolution.annotations.DBColumn;
 import nz.co.gregs.dbvolution.example.Marque;
 import nz.co.gregs.dbvolution.columns.StringColumn;
 import nz.co.gregs.dbvolution.datatypes.DBString;
-import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 import nz.co.gregs.dbvolution.example.CarCompany;
 import nz.co.gregs.dbvolution.generic.AbstractTest;
 import static org.hamcrest.Matchers.*;
@@ -64,7 +63,7 @@ public class StringExpressionTest extends AbstractTest {
 		dbQuery.addCondition(
 				carCo.column(carCo.name).isNotNullAndNotEmpty()
 		);
-
+		
 		List<DBQueryRow> allRows = dbQuery.getAllRows();
 		database.print(allRows);
 		Assert.assertThat(allRows.size(), is(4));
@@ -73,7 +72,7 @@ public class StringExpressionTest extends AbstractTest {
 		database.insert(newCarCo);
 
 		allRows = dbQuery.getAllRows();
-		database.print(allRows);
+		//database.print(allRows);
 		Assert.assertThat(allRows.size(), is(4));
 	}
 
