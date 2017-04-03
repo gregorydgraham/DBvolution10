@@ -357,8 +357,8 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 						if (retries < MAX_CONNECTION_RETRIES) {
 							retries++;
 							try {
-								Thread.sleep(SLEEP_BETWEEN_CONNECTION_RETRIES_MILLIS);
-//					throw new UnableToCreateDatabaseConnectionException(getJdbcURL(), getUsername(), noConnection);
+								getConnectionSynchronizeObject.wait(SLEEP_BETWEEN_CONNECTION_RETRIES_MILLIS);
+//								Thread.sleep(SLEEP_BETWEEN_CONNECTION_RETRIES_MILLIS);
 							} catch (InterruptedException ex) {
 								Logger.getLogger(DBDatabase.class.getName()).log(Level.SEVERE, null, ex);
 							}
