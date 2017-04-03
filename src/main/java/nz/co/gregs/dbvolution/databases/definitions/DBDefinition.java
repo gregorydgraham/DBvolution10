@@ -1588,7 +1588,7 @@ public abstract class DBDefinition {
 	 * @return SQL snippet comparing the 2 strings
 	 */	
 	public String doStringEqualsTransform(String firstSQLExpression, String secondSQLExpression) {
-		return firstSQLExpression + " = " + secondSQLExpression;
+		return doStringIfNullTransform(firstSQLExpression, "'<DBVOLUTION NULL PROTECTION>'") + " = " + doStringIfNullTransform(secondSQLExpression, "'<DBVOLUTION NULL PROTECTION>'");
 	}
 
 	/**

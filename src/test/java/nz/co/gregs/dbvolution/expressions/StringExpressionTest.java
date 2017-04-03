@@ -27,6 +27,7 @@ import nz.co.gregs.dbvolution.columns.StringColumn;
 import nz.co.gregs.dbvolution.datatypes.DBString;
 import nz.co.gregs.dbvolution.example.CarCompany;
 import nz.co.gregs.dbvolution.generic.AbstractTest;
+import nz.co.gregs.dbvolution.results.NumberResult;
 import static org.hamcrest.Matchers.*;
 import org.junit.Assert;
 import org.junit.Test;
@@ -140,7 +141,7 @@ public class StringExpressionTest extends AbstractTest {
 	public void testIsNotLikeStringExpressionUsingNullNumberResult() throws SQLException {
 		Marque likeQuery = new Marque();
 		final NumberExpression num = new NumberExpression(5);
-		likeQuery.name.excludedPattern(new StringExpression((NumberExpression)null).uppercase());
+		likeQuery.name.excludedPattern(new StringExpression((NumberResult)null).uppercase());
 		List<Marque> rowsByExample = marquesTable.getRowsByExample(likeQuery);
 		marquesTable.print();
 		Assert.assertEquals(22, rowsByExample.size());
@@ -151,9 +152,10 @@ public class StringExpressionTest extends AbstractTest {
 		Marque likeQuery = new Marque();
 		final StringExpression nullExpr =  StringExpression.nullExpression();
 		likeQuery.auto_created.excludedValues(nullExpr);
+		System.out.println(""+marquesTable.getSQLForQuery(likeQuery));
 		List<Marque> rowsByExample = marquesTable.getRowsByExample(likeQuery);
 		marquesTable.print();
-		Assert.assertEquals(0, rowsByExample.size());
+		Assert.assertEquals(22, rowsByExample.size());
 	}
 
 	@Test

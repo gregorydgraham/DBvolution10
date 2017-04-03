@@ -136,7 +136,8 @@ public class MySQLDBDefinition extends DBDefinition {
 
 	@Override
 	public String doStringEqualsTransform(String firstString, String secondString) {
-		return "(" + firstString + " = binary " + secondString + ")";
+		//return "(" + firstString + " = binary " + secondString + ")";
+		return doStringIfNullTransform(firstString, "'<DBVOLUTION NULL PROTECTION>'") + " = binary " + doStringIfNullTransform(secondString, "'<DBVOLUTION NULL PROTECTION>'");
 	}
 
 	@Override
