@@ -271,7 +271,7 @@ public class DateExpressionTest extends AbstractTest {
 		Marque marq = new Marque();
 		DBQuery query = database.getDBQuery(marq);
 		query.addConditions(marq.column(marq.creationDate).isBetween(DateExpression.currentDate(), DateExpression.nullExpression()));
-		System.out.println("nz.co.gregs.dbvolution.expressions.DateExpressionTest.testCurrentTime() - "+query.getSQLForQuery());
+//		System.out.println("nz.co.gregs.dbvolution.expressions.DateExpressionTest.testCurrentTime() - "+query.getSQLForQuery());
 		List<DBQueryRow> got = query.getAllRows();
 		//database.print(got);
 		Assert.assertThat(got.size(), is(0));
@@ -282,19 +282,18 @@ public class DateExpressionTest extends AbstractTest {
 		reportLimitingMarque.name.permittedPatternIgnoreCase("% HUMMER %");
 		CurrentDateReport currentDateReport = new CurrentDateReport();
 
-		System.out.println(DBReport.getSQLForQuery(database, currentDateReport, reportLimitingMarque));
+//		System.out.println(DBReport.getSQLForQuery(database, currentDateReport, reportLimitingMarque));
 		final List<CurrentDateReport> reportRows = DBReport.getRows(database, currentDateReport, reportLimitingMarque);
 //		database.print(reportRows);
 		Assert.assertThat(reportRows.size(), is(1));
 		
 		 query = database.getDBQuery(marq);
 		query.addConditions(
-				marq.column(marq.creationDate)
-						.hour().isIn(
-								DateExpression.currentDate().addSeconds(-10).hour(),
-								DateExpression.currentDate().addSeconds(10).hour()
-						),
-				marq.column(marq.creationDate).isGreaterThan(march23rd2013)
+			marq.column(marq.creationDate)
+				.hour().isIn(
+					DateExpression.currentDate().addSeconds(-100).hour(),
+					DateExpression.currentDate().addSeconds(100).hour()),
+			marq.column(marq.creationDate).isGreaterThan(march23rd2013)
 		);
 		System.out.println(""+query.getSQLForQuery());
 		got = query.getAllRows();
@@ -820,7 +819,6 @@ public class DateExpressionTest extends AbstractTest {
 		query.addCondition(
 				marq.column(marq.creationDate).dayIs(23));
 		List<Marque> got = query.getAllInstancesOf(marq);
-		//database.print(got);
 		Assert.assertThat(got.size(), is(18));
 		
 		query = database.getDBQuery(marq);
@@ -847,7 +845,7 @@ public class DateExpressionTest extends AbstractTest {
 		query.addCondition(
 				marq.column(marq.creationDate).hour().is(12));
 		List<Marque> got = query.getAllInstancesOf(marq);
-		//database.print(got);
+//		database.print(got);
 		Assert.assertThat(got.size(), is(18));
 		
 		query = database.getDBQuery(marq);
@@ -980,18 +978,7 @@ public class DateExpressionTest extends AbstractTest {
 		Assert.assertThat(got.size(), is(3));
 		
 	}
-
-//	@Test
-//	public void testMillisecondFunction() throws SQLException {
-////        database.setPrintSQLBeforeExecuting(true);
-//		Marque marq = new Marque();
-//		DBQuery query = database.getDBQuery(marq);
-//		query.addCondition(
-//				marq.column(marq.creationDate).addMilliseconds(5).milliseconds().is(5));
-//		List<Marque> got = query.getAllInstancesOf(marq);
-//		//database.print(got);
-//		Assert.assertThat(got.size(), is(21));
-//	}
+	
 	@Test
 	public void testIsInWithNulls() throws SQLException, ParseException {
 		Marque marque = new Marque();

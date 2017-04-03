@@ -509,5 +509,20 @@ public class OracleDBDefinition extends DBDefinition {
 	public String doStringEqualsTransform(String firstSQLExpression, String secondSQLExpression) {
 		return "(NVL("+firstSQLExpression + ", 'DBVOLUTION ORACLE NULL PROTECTION') = NVL(" + secondSQLExpression+", 'DBVOLUTION ORACLE NULL PROTECTION'))";
 	}
+	
+	public String doDayTransform(String dateExpression) {
+		return "(cast(to_char("+dateExpression+", 'DD') as number))";
+	}
+	public String doHourTransform(String dateExpression) {
+		return "(cast(to_char("+dateExpression+", 'HH24') as number))";
+	}
+
+	public String doMonthTransform(String dateExpression) {
+		return "(cast(to_char("+dateExpression+", 'MM') as number))";
+	}
+	public String doYearTransform(String dateExpression) {
+		return "(cast(to_char("+dateExpression+", 'YYYY') as number))";
+	}
+
 
 }

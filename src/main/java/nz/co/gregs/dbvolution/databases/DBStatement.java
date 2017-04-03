@@ -412,7 +412,7 @@ public class DBStatement implements Statement {
 		try {
 			database.addFeatureToFixException(exp);
 		} catch (Exception ex) {
-			throw new SQLException(ex);
+			throw new SQLException("Failed To Add Support For SQL: "+exp.getMessage()+" : Original Query: "+string, ex);
 		}
 		try {
 			System.out.print("addFeatureAndAttemptExecuteAgain: "+string);
