@@ -229,7 +229,7 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 	 * @see PostgresDB
 	 */
 	public DBDatabase(DBDefinition definition, String driverName, String jdbcURL, String username, String password) {
-		SLEEP_BETWEEN_CONNECTION_RETRIES_MILLIS = 10;
+		SLEEP_BETWEEN_CONNECTION_RETRIES_MILLIS = 1;
 		MAX_CONNECTION_RETRIES = 6;
 		this.definition = definition;
 		this.driverName = driverName;
@@ -315,7 +315,7 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 			if (supportsPooledConnections()) {
 				synchronized (FREE_CONNECTIONS) {
 					if (FREE_CONNECTIONS.isEmpty() || getConnectionList(FREE_CONNECTIONS).isEmpty()) {
-							conn = getRawConnection();
+						conn = getRawConnection();
 					} else {
 						conn = getConnectionList(FREE_CONNECTIONS).get(0);
 						}
@@ -1272,7 +1272,7 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 		String sqlString = sqlScript.toString();
 		try (DBStatement dbStatement = getDBStatement()) {
 			dbStatement.execute(sqlString);
-			dropAnyAssociatedDatabaseObjects(tableRow);
+			dropAnyAssociatedDatabaseObjects(dbStatement, tableRow);
 		}
 		preventAccidentalDroppingOfTables = true;
 	}
@@ -1687,7 +1687,7 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
 	@SuppressWarnings("empty-statement")
-	protected <R extends DBRow> void dropAnyAssociatedDatabaseObjects(R tableRow) throws SQLException {
+	protected <R extends DBRow> void dropAnyAssociatedDatabaseObjects(DBStatement dbStatement, R tableRow) throws SQLException {
 		;
 	}
 
@@ -1728,6 +1728,7 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 		if (supportsPooledConnections()) {
 			getConnectionList(FREE_CONNECTIONS).remove(connection);
 			getConnectionList(BUSY_CONNECTION).add(connection);
+			System.out.println("AFTER USED - FREE: "+getConnectionList(FREE_CONNECTIONS).size()+ " : BUSY: "+ getConnectionList(BUSY_CONNECTION).size());
 		}
 	}
 
@@ -1742,6 +1743,7 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 	public synchronized void discardConnection(Connection connection) {
 		getConnectionList(BUSY_CONNECTION).remove(connection);
 		getConnectionList(FREE_CONNECTIONS).remove(connection);
+		System.out.println("AFTER DICARD - FREE: "+getConnectionList(FREE_CONNECTIONS).size()+ " : BUSY: "+ getConnectionList(BUSY_CONNECTION).size());
 		try {
 			connection.close();
 

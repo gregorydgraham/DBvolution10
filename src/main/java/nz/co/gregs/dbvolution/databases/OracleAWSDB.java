@@ -128,7 +128,7 @@ public abstract class OracleAWSDB extends OracleDB implements SupportsPolygonDat
 	}
 
 	@Override
-	protected <TR extends DBRow> void removeSpatialMetadata(TR tableRow) throws SQLException {
+	protected <TR extends DBRow> void removeSpatialMetadata(DBStatement dbStatement, TR tableRow) throws SQLException {
 	}
 
 }

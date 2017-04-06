@@ -126,23 +126,23 @@ public class Oracle11XEDB extends OracleDB {
 	}
 
 	@Override
-	protected <TR extends DBRow> void dropAnyAssociatedDatabaseObjects(TR tableRow) throws SQLException {
+	protected <TR extends DBRow> void dropAnyAssociatedDatabaseObjects(DBStatement dbStatement, TR tableRow) throws SQLException {
 
 		if (tableRow.getPrimaryKeys() != null) {
 			DBDefinition definition = getDefinition();
-			final DBStatement dbStatement = getDBStatement();
+//			final DBStatement dbStatement = getDBStatement();
 			final String formattedTableName = definition.formatTableName(tableRow);
 			final List<String> primaryKeyColumnNames = tableRow.getPrimaryKeyColumnNames();
 			for(String primaryKeyColumnName:primaryKeyColumnNames) {
 				final String formattedColumnName = definition.formatColumnName(primaryKeyColumnName);
-				try {
+//				try {
 					dbStatement.execute("DROP SEQUENCE " + definition.getPrimaryKeySequenceName(formattedTableName, formattedColumnName));
-				} finally {
-					dbStatement.close();
-				}
+//				} finally {
+//					dbStatement.close();
+//				}
 			}
 		}
-		super.dropAnyAssociatedDatabaseObjects(tableRow);
+		super.dropAnyAssociatedDatabaseObjects(dbStatement, tableRow);
 	}
 
 	@Override

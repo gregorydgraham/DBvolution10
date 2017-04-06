@@ -121,13 +121,13 @@ public abstract class OracleDB extends DBDatabase implements SupportsPolygonData
 	}
 
 	@Override
-	protected <TR extends DBRow> void dropAnyAssociatedDatabaseObjects(TR tableRow) throws SQLException {
+	protected <TR extends DBRow> void dropAnyAssociatedDatabaseObjects(DBStatement dbStatement, TR tableRow) throws SQLException {
 
-		dropAnyTriggerBasedPrimaryKeyObject(tableRow);
-		removeSpatialMetadata(tableRow);
+		dropAnyTriggerBasedPrimaryKeyObject(dbStatement, tableRow);
+		removeSpatialMetadata(dbStatement, tableRow);
 	}
 	
-	protected <TR extends DBRow> void dropAnyTriggerBasedPrimaryKeyObject(TR tableRow) throws SQLException {
+	protected <TR extends DBRow> void dropAnyTriggerBasedPrimaryKeyObject(DBStatement dbStatement, TR tableRow) throws SQLException {
 		List<PropertyWrapper> fields = tableRow.getColumnPropertyWrappers();
 		List<String> triggerBasedIdentitySQL = new ArrayList<>();
 		final DBDefinition definition = this.getDefinition();
@@ -144,11 +144,11 @@ public abstract class OracleDB extends DBDatabase implements SupportsPolygonData
 				triggerBasedIdentitySQL = definition.dropTriggerBasedIdentitySQL(this, definition.formatTableName(tableRow), definition.formatColumnName(pkFields.get(0).columnName()));
 			}
 		}
-		try (DBStatement dbStatement = getDBStatement()) {
+//		try (DBStatement dbStatement = getDBStatement()) {
 			for (String sql : triggerBasedIdentitySQL) {
 				dbStatement.execute(sql);
 			}
-		}
+//		}
 	}
 	
 	
@@ -164,12 +164,12 @@ public abstract class OracleDB extends DBDatabase implements SupportsPolygonData
 	 * @param tableRow the object defining the table to have it's spatial meta-data removed.
 	 * @throws SQLException database exceptions may be thrown.
 	 */
-	protected <TR extends DBRow> void removeSpatialMetadata(TR tableRow) throws SQLException {
+	protected <TR extends DBRow> void removeSpatialMetadata(DBStatement statement, TR tableRow) throws SQLException {
 		DBDefinition definition = getDefinition();
 		final String formattedTableName = definition.formatTableName(tableRow);
-		try (DBStatement dbStatement3 = getDBStatement()) {
-			dbStatement3.execute("DELETE FROM USER_SDO_GEOM_METADATA WHERE TABLE_NAME = '" + formattedTableName.toUpperCase() + "'");
-		}
+//		try (DBStatement dbStatement3 = getDBStatement()) {
+			statement.execute("DELETE FROM USER_SDO_GEOM_METADATA WHERE TABLE_NAME = '" + formattedTableName.toUpperCase() + "'");
+//		}
 	}
 	
 }
