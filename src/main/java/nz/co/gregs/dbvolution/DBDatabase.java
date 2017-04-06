@@ -1615,33 +1615,7 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 	boolean supportsPaging(QueryOptions options) {
 		return definition.supportsPagingNatively(options);
 	}
-
-	/**
-	 * Indicates to the DBSDatabase that the provided connection has been opened.
-	 *
-	 * <p>
-	 * This is used internally for reference counting.
-	 *
-	 * @param connection	connection
-	 */
-//	public void connectionOpened(Connection connection) {
-//		synchronized (getConnectionSynchronizeObject) {
-//			connectionsActive++;
-//		}
-//	}
-	/**
-	 * Indicates to the DBDatabase that the provided connection has been closed.
-	 *
-	 * <p>
-	 * This is used internally for reference counting.
-	 *
-	 * @param connection	connection
-	 */
-//	public void connectionClosed(Connection connection) {
-//		synchronized (getConnectionSynchronizeObject) {
-//			connectionsActive--;
-//		}
-//	}
+	
 	/**
 	 * Provided to allow DBDatabase sub-classes to tweak their connections before
 	 * use.
@@ -1683,6 +1657,7 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 	 * objects created with the table.
 	 *
 	 * @param <R> DBRow type
+	 * @param dbStatement statement for executing the changes, don't close it!
 	 * @param tableRow tableRow
 	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
@@ -1728,7 +1703,6 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 		if (supportsPooledConnections()) {
 			getConnectionList(FREE_CONNECTIONS).remove(connection);
 			getConnectionList(BUSY_CONNECTION).add(connection);
-			System.out.println("AFTER USED - FREE: "+getConnectionList(FREE_CONNECTIONS).size()+ " : BUSY: "+ getConnectionList(BUSY_CONNECTION).size());
 		}
 	}
 
@@ -1743,7 +1717,6 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 	public synchronized void discardConnection(Connection connection) {
 		getConnectionList(BUSY_CONNECTION).remove(connection);
 		getConnectionList(FREE_CONNECTIONS).remove(connection);
-		System.out.println("AFTER DICARD - FREE: "+getConnectionList(FREE_CONNECTIONS).size()+ " : BUSY: "+ getConnectionList(BUSY_CONNECTION).size());
 		try {
 			connection.close();
 
@@ -1751,7 +1724,6 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 			Logger.getLogger(DBDatabase.class
 					.getName()).log(Level.WARNING, null, ex);
 		}
-//		connectionClosed(connection);
 	}
 
 	private synchronized List<Connection> getConnectionList(Map<DBDatabase, List<Connection>> connectionMap) {
