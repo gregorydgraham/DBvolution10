@@ -36,7 +36,7 @@ public class DBReportTest extends AbstractTest {
 	@Test
 	public void createReportTest() throws SQLException {
 		SimpleReport reportExample = new SimpleReport();
-		System.out.println(DBReport.getSQLForQuery(database, reportExample));
+		
 		List<SimpleReport> simpleReportRows = DBReport.getAllRows(database, reportExample);
 		Assert.assertThat(simpleReportRows.size(), is(21));
 		for (SimpleReport simp : simpleReportRows) {
@@ -44,9 +44,6 @@ public class DBReportTest extends AbstractTest {
 			Assert.assertThat(simp.marqueName.stringValue(), not(isEmptyOrNullString()));
 			Assert.assertThat(simp.carCompanyName.stringValue(), not(isEmptyOrNullString()));
 			Assert.assertThat(simp.carCompanyAndMarque.stringValue(), not(isEmptyOrNullString()));
-			System.out.println("" + simp.marqueName);
-			System.out.println("" + simp.carCompanyName);
-			System.out.println("" + simp.carCompanyAndMarque.stringValue());
 		}
 	}
 
@@ -60,9 +57,6 @@ public class DBReportTest extends AbstractTest {
 		for (SimpleReport simp : simpleReportRows) {
 			Assert.assertThat(simp.marqueUID.stringValue(), not(isEmptyOrNullString()));
 			Assert.assertThat(simp.carCompanyAndMarque.stringValue(), not(isEmptyOrNullString()));
-			System.out.println("" + simp.marque);
-			System.out.println("" + simp.carCompany);
-			System.out.println("" + simp.carCompanyAndMarque.stringValue());
 			Assert.assertThat(simp.marqueName.stringValue(), is("TOYOTA"));
 			Assert.assertThat(simp.carCompanyName.stringValue(), is("TOYOTA"));
 			Assert.assertThat(simp.carCompanyAndMarque.stringValue(), is("TOYOTA: TOYOTA"));
@@ -72,14 +66,10 @@ public class DBReportTest extends AbstractTest {
 
 	@Test
 	public void GroupTest() throws SQLException {
-		System.out.println("GroupTest");
 		GroupReport reportExample = new GroupReport();
 		List<GroupReport> foundGroupReports = database.getRows(reportExample);
 		Assert.assertThat(foundGroupReports.size(), is(4));
-		database.print(foundGroupReports);
-		for (GroupReport rep : foundGroupReports) {
-			System.out.println("" + rep.carCompanyName.stringValue() + ": " + rep.average.stringValue() + ": " + rep.stddev.stringValue());
-		}
+
 		final GroupReport otherRow = foundGroupReports.get(2);
 		// TOYOTA: 6: 0.7071067811865476
 		//OTHER: 5.8667: 1.9955506062794353
@@ -96,7 +86,6 @@ public class DBReportTest extends AbstractTest {
 		List<CountAllReport> foundGroupReports = database.getRows(reportExample);
 		Assert.assertThat(foundGroupReports.size(), is(4));
 		for (CountAllReport rep : foundGroupReports) {
-			System.out.println("" + rep.carCompanyName.stringValue() + ": " + rep.countAll.stringValue());
 			switch (rep.countAll.intValue()) {
 				case 1:
 					Assert.assertThat(rep.carCompanyName.stringValue(), is("FORD"));
@@ -122,7 +111,6 @@ public class DBReportTest extends AbstractTest {
 		List<MinMaxSumReport> foundGroupReports = database.getRows(reportExample);
 		Assert.assertThat(foundGroupReports.size(), is(4));
 		for (MinMaxSumReport rep : foundGroupReports) {
-			System.out.println("" + rep.carCompanyName.stringValue() + ": " + rep.min.stringValue() + ": " + rep.max.stringValue() + ": " + rep.sum.stringValue());
 			if (rep.carCompanyName.stringValue().equals("TOYOTA")) {
 				//TOYOTA: 1: 4896300: 4896301
 				Assert.assertThat(rep.min.intValue(), is(1));
@@ -137,14 +125,13 @@ public class DBReportTest extends AbstractTest {
 		MinMaxSumReport reportExample = new MinMaxSumReport();
 		reportExample.setSortOrder(reportExample.carCompanyName.setSortOrderAscending(), reportExample.min.setSortOrderAscending());
 		List<MinMaxSumReport> foundGroupReports = database.getRows(reportExample);
-		database.print(foundGroupReports);
+
 		Assert.assertThat(foundGroupReports.size(), is(4));
 		Assert.assertThat(foundGroupReports.get(0).carCompanyName.stringValue(), is("FORD"));
 		Assert.assertThat(foundGroupReports.get(1).carCompanyName.stringValue(), is("GENERAL MOTORS"));
 		Assert.assertThat(foundGroupReports.get(2).carCompanyName.stringValue(), is("OTHER"));
 		Assert.assertThat(foundGroupReports.get(3).carCompanyName.stringValue(), is("TOYOTA"));
 		for (MinMaxSumReport rep : foundGroupReports) {
-			System.out.println("" + rep.carCompanyName.stringValue() + ": " + rep.min.stringValue() + ": " + rep.max.stringValue() + ": " + rep.sum.stringValue());
 			if (rep.carCompanyName.stringValue().equals("TOYOTA")) {
 				//TOYOTA: 1: 4896300: 4896301
 				Assert.assertThat(rep.min.intValue(), is(1));
@@ -168,13 +155,12 @@ public class DBReportTest extends AbstractTest {
 		CarCompany carCo = new CarCompany();
 		carCo.name.permittedPattern("%T%");
 		List<MinMaxSumReport> foundGroupReports = DBReport.getRows(database, reportExample, carCo);
-		database.print(foundGroupReports);
+
 		Assert.assertThat(foundGroupReports.size(), is(3));
 		Assert.assertThat(foundGroupReports.get(0).carCompanyName.stringValue(), is("GENERAL MOTORS"));
 		Assert.assertThat(foundGroupReports.get(1).carCompanyName.stringValue(), is("OTHER"));
 		Assert.assertThat(foundGroupReports.get(2).carCompanyName.stringValue(), is("TOYOTA"));
 		for (MinMaxSumReport rep : foundGroupReports) {
-			System.out.println("" + rep.carCompanyName.stringValue() + ": " + rep.min.stringValue() + ": " + rep.max.stringValue() + ": " + rep.sum.stringValue());
 			if (rep.carCompanyName.stringValue().equals("TOYOTA")) {
 				//TOYOTA: 1: 4896300: 4896301
 				Assert.assertThat(rep.min.intValue(), is(1));
@@ -191,7 +177,7 @@ public class DBReportTest extends AbstractTest {
 
 		reportExample.setSortOrder(reportExample.min.setSortOrderAscending());
 		foundGroupReports = database.getRows(reportExample, carCo);
-		database.print(foundGroupReports);
+
 		Assert.assertThat(foundGroupReports.size(), is(3));
 		Assert.assertThat(foundGroupReports.get(0).carCompanyName.stringValue(), is("TOYOTA"));
 		Assert.assertThat(foundGroupReports.get(1).carCompanyName.stringValue(), is("GENERAL MOTORS"));
@@ -305,7 +291,6 @@ public class DBReportTest extends AbstractTest {
 		List<ProtectedDBRowsReport> foundGroupReports = database.getRows(reportExample);
 		Assert.assertThat(foundGroupReports.size(), is(4));
 		for (ProtectedDBRowsReport rep : foundGroupReports) {
-			System.out.println("" + rep.carCompanyName.stringValue() + ": " + rep.countAll.stringValue());
 			switch (rep.countAll.intValue()) {
 				case 1:
 					Assert.assertThat(rep.carCompanyName.stringValue(), is("FORD"));
@@ -345,7 +330,6 @@ public class DBReportTest extends AbstractTest {
 		List<PrivateDBRowsReport> foundGroupReports = database.getRows(reportExample);
 		Assert.assertThat(foundGroupReports.size(), is(4));
 		for (PrivateDBRowsReport rep : foundGroupReports) {
-			System.out.println("" + rep.carCompanyName.stringValue() + ": " + rep.countAll.stringValue());
 			switch (rep.countAll.intValue()) {
 				case 1:
 					Assert.assertThat(rep.carCompanyName.stringValue(), is("FORD"));
@@ -385,7 +369,6 @@ public class DBReportTest extends AbstractTest {
 		List<PrivateFieldsReport> foundGroupReports = database.getRows(reportExample);
 		Assert.assertThat(foundGroupReports.size(), is(4));
 		for (PrivateFieldsReport rep : foundGroupReports) {
-			System.out.println("" + rep.carCompanyName.stringValue() + ": " + rep.countAll.stringValue());
 			switch (rep.countAll.intValue()) {
 				case 1:
 					Assert.assertThat(rep.carCompanyName.stringValue(), is("FORD"));
