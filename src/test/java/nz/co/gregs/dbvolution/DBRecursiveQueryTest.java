@@ -309,10 +309,6 @@ public class DBRecursiveQueryTest extends AbstractTest {
 		recursive = new DBRecursiveQuery<Parts>(baseQuery, part.column(part.subPartOf));
 		trees = recursive.getTrees();
 
-		for (TreeNode<Parts> tree : trees) {
-			System.out.println("TREE; " + tree);
-		}
-
 		Assert.assertThat(trees.size(), is(1));
 		final TreeNode<Parts> wingProbably = trees.get(0);
 		Assert.assertThat(wingProbably.getData().name.stringValue(), is("wing"));
@@ -322,9 +318,6 @@ public class DBRecursiveQueryTest extends AbstractTest {
 		Assert.assertThat(aileronProbably.getData().name.stringValue(), is("aileron"));
 		final List<TreeNode<Parts>> aileronChildren = aileronProbably.getChildren();
 
-		for (TreeNode<Parts> tree : aileronChildren) {
-			System.out.println("TREE; " + tree);
-		}
 		Assert.assertThat(aileronChildren.size(), is(2));
 		Assert.assertThat(aileronChildren.get(0).getData().name.stringValue(), anyOf(is("lever"), is("screw")));
 		Assert.assertThat(aileronChildren.get(1).getData().name.stringValue(), anyOf(is("lever"), is("screw")));

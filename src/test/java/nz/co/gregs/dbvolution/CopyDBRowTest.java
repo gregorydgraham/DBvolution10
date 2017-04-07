@@ -34,8 +34,7 @@ public class CopyDBRowTest extends AbstractTest {
 		marqs.setBlankQueryAllowed(true);
 		Marque first = marqs.getAllRows().get(0);
 		Marque firstCopy = DBRow.copyDBRow(first);
-		System.out.println(first);
-		System.out.println(firstCopy);
+
 		Assert.assertThat(firstCopy, is(not(first)));
 		Assert.assertThat(firstCopy.name, not(sameInstance(first.name)));
 		Assert.assertThat(firstCopy.name, is(first.name));

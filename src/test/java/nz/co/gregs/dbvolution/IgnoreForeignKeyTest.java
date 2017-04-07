@@ -43,7 +43,7 @@ public class IgnoreForeignKeyTest extends AbstractTest {
 		DBQuery dbQuery = database.getDBQuery(carCompany, marque);
 		dbQuery.setBlankQueryAllowed(true);
 		List<DBQueryRow> allRows = dbQuery.getAllRows();
-		dbQuery.print();
+
 		Assert.assertTrue("Number of rows should be 22", allRows.size() == 22);
 
 		marque.ignoreForeignKey(marque.getCarCompany());
@@ -52,14 +52,14 @@ public class IgnoreForeignKeyTest extends AbstractTest {
 		dbQuery.setCartesianJoinsAllowed(true);
 		System.out.println(dbQuery.getSQLForQuery());
 		allRows = dbQuery.getAllRows();
-		dbQuery.print();
+
 		Assert.assertThat(allRows.size(), is(88));
 
 		marque.useAllForeignKeys();
 		dbQuery = database.getDBQuery(carCompany, marque);
 		dbQuery.setBlankQueryAllowed(true);
 		allRows = dbQuery.getAllRows();
-		dbQuery.print();
+
 		Assert.assertTrue("Number of rows should be 88", allRows.size() == 22);
 
 		marque.ignoreAllForeignKeys();
@@ -67,7 +67,7 @@ public class IgnoreForeignKeyTest extends AbstractTest {
 		dbQuery.setBlankQueryAllowed(true);
 		dbQuery.setCartesianJoinsAllowed(true);
 		allRows = dbQuery.getAllRows();
-		dbQuery.print();
+
 		Assert.assertTrue("Number of rows should be 88", allRows.size() == 88);
 
 	}
@@ -79,7 +79,7 @@ public class IgnoreForeignKeyTest extends AbstractTest {
 		DBQuery dbQuery = database.getDBQuery(carCompany, marque);
 		dbQuery.setBlankQueryAllowed(true);
 		List<DBQueryRow> allRows = dbQuery.getAllRows();
-		dbQuery.print();
+
 		Assert.assertTrue("Number of rows should be 22", allRows.size() == 22);
 		final IntegerColumn carCompanyColumn = marque.column(marque.carCompany);
 
@@ -89,14 +89,14 @@ public class IgnoreForeignKeyTest extends AbstractTest {
 		dbQuery.setCartesianJoinsAllowed(true);
 		System.out.println(dbQuery.getSQLForQuery());
 		allRows = dbQuery.getAllRows();
-		dbQuery.print();
+
 		Assert.assertThat(allRows.size(), is(88));
 
 		marque.useAllForeignKeys();
 		dbQuery = database.getDBQuery(carCompany, marque);
 		dbQuery.setBlankQueryAllowed(true);
 		allRows = dbQuery.getAllRows();
-		dbQuery.print();
+
 		Assert.assertTrue("Number of rows should be 22", allRows.size() == 22);
 	}
 
@@ -107,7 +107,7 @@ public class IgnoreForeignKeyTest extends AbstractTest {
 		DBQuery dbQuery = database.getDBQuery(carCompany, marque);
 		dbQuery.setBlankQueryAllowed(true);
 		List<DBQueryRow> allRows = dbQuery.getAllRows();
-		dbQuery.print();
+
 		Assert.assertTrue("Number of rows should be 22", allRows.size() == 22);
 		final IntegerColumn carCompanyColumn = marque.column(marque.carCompany);
 
@@ -118,14 +118,14 @@ public class IgnoreForeignKeyTest extends AbstractTest {
 		dbQuery.setCartesianJoinsAllowed(true);
 		System.out.println(dbQuery.getSQLForQuery());
 		allRows = dbQuery.getAllRows();
-		dbQuery.print();
+
 		Assert.assertThat(allRows.size(), is(88));
 
 		marque.useAllForeignKeys();
 		dbQuery = database.getDBQuery(carCompany, marque);
 		dbQuery.setBlankQueryAllowed(true);
 		allRows = dbQuery.getAllRows();
-		dbQuery.print();
+
 		Assert.assertTrue("Number of rows should be 22", allRows.size() == 22);
 	}
 }

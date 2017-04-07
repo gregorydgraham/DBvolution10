@@ -71,7 +71,7 @@ public class DBQueryTest extends AbstractTest {
 			dbQuery.add(new Marque());
 
 			List<DBQueryRow> results = dbQuery.getAllRows();
-			dbQuery.print();
+			
 			assertEquals(test[1], results.size());
 
 			for (DBQueryRow queryRow : results) {
@@ -82,7 +82,6 @@ public class DBQueryTest extends AbstractTest {
 				Marque marque = queryRow.get(new Marque());
 				Long marqueUID = marque.getUidMarque().getValue();
 
-				System.out.println(carCoName + ": " + marqueUID);
 				assertTrue(carCoName.equals(test[0]));
 				if (test[0] == "TOYOTA") {
 					assertTrue(marqueUID == 1 || marqueUID == 4896300);
@@ -103,7 +102,7 @@ public class DBQueryTest extends AbstractTest {
 		dbQuery.add(marque);
 
 		List<DBQueryRow> results = dbQuery.getAllRows();
-		dbQuery.print();
+		
 		assertEquals(2, results.size());
 		boolean foundToyota = false;
 		boolean foundHyundai = false;
@@ -116,7 +115,6 @@ public class DBQueryTest extends AbstractTest {
 			marque = queryRow.get(new Marque());
 			Long marqueUID = marque.getUidMarque().getValue();
 
-			System.out.println(carCoName + ": " + marqueUID);
 			assertTrue(carCoName.equals("TOYOTA"));
 			assertTrue(marque.name.stringValue().equals("TOYOTA") || marque.name.stringValue().equals("HYUNDAI"));
 			if (marque.name.stringValue().equals("TOYOTA")) {
@@ -137,8 +135,7 @@ public class DBQueryTest extends AbstractTest {
 		DBQuery dbQuery = database.getDBQuery(carCompany, new Marque());
 
 		List<DBQueryRow> results = dbQuery.getAllRows();
-		System.out.println(dbQuery.getSQLForQuery());
-		dbQuery.print();
+		
 		assertEquals(2, results.size());
 
 		for (DBQueryRow queryRow : results) {
@@ -149,7 +146,6 @@ public class DBQueryTest extends AbstractTest {
 			Marque marque = queryRow.get(new Marque());
 			Long marqueUID = marque.getUidMarque().getValue();
 
-			System.out.println(carCoName + ": " + marqueUID);
 			assertTrue(carCoName.equals("TOYOTA"));
 			assertTrue(marqueUID == 1 || marqueUID == 4896300);
 		}
@@ -162,8 +158,7 @@ public class DBQueryTest extends AbstractTest {
 		DBQuery dbQuery = database.getDBQuery(carCompany, new Marque());
 
 		List<DBQueryRow> results = dbQuery.getAllRows();
-		System.out.println(dbQuery.getSQLForQuery());
-		dbQuery.print();
+		
 		assertEquals(2, results.size());
 
 		DBQueryRow[] rows = new DBQueryRow[2];
@@ -212,10 +207,6 @@ public class DBQueryTest extends AbstractTest {
 		marqueQuery.ignoreForeignKey(marqueQuery.carCompany);
 		query.setCartesianJoinsAllowed(true);
 		List<DBQueryRow> rows = query.getAllRows();
-//		System.out.println(query.getSQLForQuery());
-//
-//		System.out.println();
-//		System.out.println(rows);
 	}
 
 	@Test
@@ -233,10 +224,6 @@ public class DBQueryTest extends AbstractTest {
 		marqueQuery.ignoreForeignKey(marqueQuery.carCompany);
 		query.setCartesianJoinsAllowed(true);
 		List<DBQueryRow> rows = query.getAllRows();
-//		System.out.println(query.getSQLForQuery());
-//
-//		System.out.println();
-//		System.out.println(rows);
 	}
 
 	@Test
@@ -254,10 +241,6 @@ public class DBQueryTest extends AbstractTest {
 		marqueQuery.ignoreForeignKeys(marqueQuery.column(marqueQuery.carCompany), marqueQuery.column(marqueQuery.carCompany));
 		query.setCartesianJoinsAllowed(true);
 		List<DBQueryRow> rows = query.getAllRows();
-//		System.out.println(query.getSQLForQuery());
-//
-//		System.out.println();
-//		System.out.println(rows);
 	}
 
 	@Test
@@ -275,10 +258,6 @@ public class DBQueryTest extends AbstractTest {
 		marqueQuery.ignoreAllForeignKeysExcept(marqueQuery.carCompany);
 		query.setCartesianJoinsAllowed(true);
 		List<DBQueryRow> rows = query.getAllRows();
-//		System.out.println(query.getSQLForQuery());
-//
-//		System.out.println();
-//		System.out.println(rows);
 	}
 
 	@Test

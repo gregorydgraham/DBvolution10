@@ -180,9 +180,7 @@ public class DBDatabaseGetTest extends AbstractTest {
 		Marque hummerQuery = new Marque();
 		hummerQuery.getName().permittedValues("PEUGEOT", "HUMMER");
 		List<Marque> gotMarques = database.get(hummerQuery);
-		for (Marque row : gotMarques) {
-			System.out.println(row);
-		}
+
 		Assert.assertThat(gotMarques.size(), is(2));
 	}
 
@@ -241,42 +239,30 @@ public class DBDatabaseGetTest extends AbstractTest {
 		Assert.assertTrue("Wrong number of rows selected, should be all but one of them", gotMarques.size() == marqueRows.size() - 1);
 		oldQuery.getCreationDate().permittedRange(future, null);
 		gotMarques = database.get(oldQuery);
-		for (Marque row : gotMarques) {
-			System.out.println(row);
-		}
+		
 		Assert.assertTrue("Wrong number of rows selected, should be NONE of them", gotMarques.isEmpty());
 		oldQuery = new Marque();
 		oldQuery.getCreationDate().permittedRangeInclusive(null, future);
 		gotMarques = database.get(oldQuery);
-		for (Marque row : gotMarques) {
-			System.out.println(row);
-		}
+		
 		Assert.assertTrue("Wrong number of rows selected, should be all but one of them", gotMarques.size() == marqueRows.size() - 1);
 		oldQuery = new Marque();
 		oldQuery.getCreationDate().permittedRangeExclusive(null, future);
 		gotMarques = database.get(oldQuery);
-		for (Marque row : gotMarques) {
-			System.out.println(row);
-		}
+		
 		Assert.assertTrue("Wrong number of rows selected, should be all but one of them", gotMarques.size() == marqueRows.size() - 1);
 		oldQuery.getCreationDate().permittedRange(new Date(0L), null);
 		gotMarques = database.get(oldQuery);
-		for (Marque row : gotMarques) {
-			System.out.println(row);
-		}
+		
 		Assert.assertTrue("Wrong number of rows selected, should be all but one of them", gotMarques.size() == marqueRows.size() - 1);
 		oldQuery.getCreationDate().permittedRange(null, new Date(0L));
 		gotMarques = database.get(oldQuery);
-		for (Marque row : gotMarques) {
-			System.out.println(row);
-		}
+		
 		Assert.assertTrue("Wrong number of rows selected, should be NONE of them", gotMarques.isEmpty());
 		oldQuery = new Marque();
 		oldQuery.getCreationDate().permittedRangeInclusive(new Date(0L), null);
 		gotMarques = database.get(oldQuery);
-		for (Marque row : gotMarques) {
-			System.out.println(row);
-		}
+		
 		Assert.assertTrue("Wrong number of rows selected, should be all but one of them", gotMarques.size() == marqueRows.size() - 1);
 	}
 
@@ -286,7 +272,6 @@ public class DBDatabaseGetTest extends AbstractTest {
 		myMarqueRow.setReturnFields(myMarqueRow.name, myMarqueRow.uidMarque, myMarqueRow.carCompany);
 		List<Marque> rowsByExample = database.getDBTable(myMarqueRow).setBlankQueryAllowed(true).getAllRows();
 		for (Marque marq : rowsByExample) {
-			System.out.println("" + marq);
 			Assert.assertThat(marq.auto_created.isNull(), is(true));
 			Assert.assertThat(marq.creationDate.isNull(), is(true));
 			Assert.assertThat(marq.enabled.isNull(), is(true));
@@ -317,7 +302,6 @@ public class DBDatabaseGetTest extends AbstractTest {
 
 		List<Marque> rowsByExample = database.getDBTable(myMarqueRow).getAllRows();
 		for (Marque marq : rowsByExample) {
-			System.out.println("" + marq);
 			Assert.assertThat(marq.auto_created.isNull(), is(false));
 			Assert.assertThat(marq.isUsedForTAFROs.isNull(), is(false));
 			Assert.assertThat(marq.reservationsAllowed.isNull(), is(false));
@@ -336,7 +320,6 @@ public class DBDatabaseGetTest extends AbstractTest {
 		List<DBQueryRow> rowsByExample = dbQuery.getAllRows();
 		for (DBQueryRow row : rowsByExample) {
 			Marque marq = row.get(new Marque());
-			System.out.println("" + marq);
 			Assert.assertThat(marq.auto_created.isNull(), is(true));
 			Assert.assertThat(marq.creationDate.isNull(), is(true));
 			Assert.assertThat(marq.enabled.isNull(), is(true));
@@ -371,7 +354,6 @@ public class DBDatabaseGetTest extends AbstractTest {
 		List<DBQueryRow> rowsByExample = dbQuery.getAllRows();
 		for (DBQueryRow row : rowsByExample) {
 			Marque marq = row.get(new Marque());
-			System.out.println("" + marq);
 			Assert.assertThat(marq.auto_created.isNull(), is(false));
 			Assert.assertThat(marq.isUsedForTAFROs.isNull(), is(false));
 			Assert.assertThat(marq.reservationsAllowed.isNull(), is(false));
