@@ -261,7 +261,7 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 	 * transaction statement.
 	 * @throws java.sql.SQLException interacts with the database layer.
 	 */
-	public DBStatement getDBStatement() throws SQLException {
+	public final DBStatement getDBStatement() throws SQLException {
 		DBStatement statement;
 		synchronized (getStatementSynchronizeObject) {
 			if (isInATransaction) {
@@ -394,10 +394,14 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 	protected Connection storedConnection;
 
 	private boolean connectionUsedForPersistentConnection(Connection connection) throws DBRuntimeException, SQLException {
-		if (storedConnection == null && persistentConnectionRequired()) {
-			this.storedConnection = connection;
-			this.storedConnection.createStatement();
-			return true;
+		if(persistentConnectionRequired()){
+			if (storedConnection == null) {
+				this.storedConnection = connection;
+				this.storedConnection.createStatement();
+			}
+			if (storedConnection.equals(connection)){
+				return true;
+			}
 		}
 		return false;
 	}

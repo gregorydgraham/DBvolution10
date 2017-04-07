@@ -33,6 +33,7 @@ import nz.co.gregs.dbvolution.internal.h2.*;
  * @author Gregory Graham
  */
 public class H2DB extends DBDatabase implements SupportsDateRepeatDatatypeFunctions, SupportsPolygonDatatype {
+
 	private static final long serialVersionUID = 1l;
 
 	private final static Map<String, DBVFeature> featureMap = new HashMap<>();
@@ -102,7 +103,6 @@ public class H2DB extends DBDatabase implements SupportsDateRepeatDatatypeFuncti
 	 */
 	public H2DB(DataSource dataSource) {
 		super(new H2DBDefinition(), dataSource);
-//		jamDatabaseConnectionOpen();
 	}
 
 	/**
@@ -119,7 +119,6 @@ public class H2DB extends DBDatabase implements SupportsDateRepeatDatatypeFuncti
 	 */
 	public H2DB(String jdbcURL, String username, String password) {
 		super(new H2DBDefinition(), "org.h2.Driver", jdbcURL, username, password);
-//		jamDatabaseConnectionOpen();
 	}
 
 	/**
@@ -137,44 +136,18 @@ public class H2DB extends DBDatabase implements SupportsDateRepeatDatatypeFuncti
 	 */
 	public H2DB(String databaseFilename, String username, String password, boolean dummy) {
 		super(new H2DBDefinition(), "org.h2.Driver", "jdbc:h2:" + databaseFilename, username, password);
-//		jamDatabaseConnectionOpen();
 	}
 
 	@Override
 	protected synchronized void addDatabaseSpecificFeatures(final Statement stmt) throws SQLException {
-//		DateRepeatFunctions.addFunctions(stmt);
 		DataTypes.addAll(stmt);
 		if (dataTypesNotProcessed) {
-//		if (featureMap.isEmpty()) {
-//			for (DBVFeature function : DateRepeatFunctions.values()) {
-//				featureMap.put(function.alias(), function);
-//			}
-//			for (DBVFeature function : Point2DFunctions.values()) {
-//				featureMap.put(function.alias(), function);
-//			}
-//			for (DBVFeature function : LineSegment2DFunctions.values()) {
-//				featureMap.put(function.alias(), function);
-//			}
-//			for (DBVFeature function : Line2DFunctions.values()) {
-//				featureMap.put(function.alias(), function);
-//			}
-//			for (DBVFeature function : Polygon2DFunctions.values()) {
-//				featureMap.put(function.alias(), function);
-//			}
-//			for (DBVFeature function : MultiPoint2DFunctions.values()) {
-//				featureMap.put(function.alias(), function);
-//			}
 			for (DataTypes datatype : DataTypes.values()) {
 				featureMap.put(datatype.alias(), datatype);
 			}
 			dataTypesNotProcessed = false;
 		}
 	}
-//
-//	private void jamDatabaseConnectionOpen() throws DBRuntimeException, SQLException {
-//		this.storedConnection = getConnection();
-//		this.storedConnection.createStatement();
-//	}
 
 	@Override
 	public boolean supportsFullOuterJoinNatively() {

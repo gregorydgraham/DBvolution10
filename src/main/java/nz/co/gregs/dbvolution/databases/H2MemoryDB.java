@@ -16,7 +16,11 @@
 package nz.co.gregs.dbvolution.databases;
 
 import java.sql.SQLException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.sql.DataSource;
+import nz.co.gregs.dbvolution.exceptions.UnableToCreateDatabaseConnectionException;
+import nz.co.gregs.dbvolution.exceptions.UnableToFindJDBCDriver;
 
 /**
  * Stores all the required functionality to use an H2 database in memory.
@@ -24,6 +28,7 @@ import javax.sql.DataSource;
  * @author Gregory Graham
  */
 public class H2MemoryDB extends H2DB {
+
 	private static final long serialVersionUID = 1l;
 
 	/**
@@ -42,6 +47,8 @@ public class H2MemoryDB extends H2DB {
 	 */
 	public H2MemoryDB(String jdbcURL, String username, String password) throws SQLException {
 		super(jdbcURL, username, password);
+		jamDatabaseConnectionOpen();
+
 	}
 
 	/**
@@ -56,6 +63,7 @@ public class H2MemoryDB extends H2DB {
 	 */
 	public H2MemoryDB(DataSource dataSource) throws SQLException {
 		super(dataSource);
+		jamDatabaseConnectionOpen();
 	}
 
 	/**
@@ -80,10 +88,25 @@ public class H2MemoryDB extends H2DB {
 	public H2MemoryDB(String databaseName, String username, String password, boolean dummy) {
 		super("jdbc:h2:mem:" + databaseName, username, password);
 		setDatabaseName(databaseName);
+		jamDatabaseConnectionOpen();
 	}
 
 	@Override
 	public H2MemoryDB clone() throws CloneNotSupportedException {
 		return (H2MemoryDB) super.clone(); //To change body of generated methods, choose Tools | Templates.
 	}
+
+	private void jamDatabaseConnectionOpen() {
+		try {
+			this.storedConnection = getConnection();
+			this.storedConnection.createStatement();
+		} catch (UnableToCreateDatabaseConnectionException ex) {
+			Logger.getLogger(H2DB.class.getName()).log(Level.SEVERE, null, ex);
+		} catch (UnableToFindJDBCDriver ex) {
+			Logger.getLogger(H2DB.class.getName()).log(Level.SEVERE, null, ex);
+		} catch (SQLException ex) {
+			Logger.getLogger(H2DB.class.getName()).log(Level.SEVERE, null, ex);
+		}
+	}
+
 }
