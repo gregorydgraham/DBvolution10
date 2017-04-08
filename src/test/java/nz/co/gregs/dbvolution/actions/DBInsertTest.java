@@ -46,14 +46,6 @@ public class DBInsertTest extends AbstractTest {
 		DBRow row = new CarCompany("TATA", 123);
 		DBActionList result = DBInsert.save(database, row);
 		Assert.assertThat(result.size(), is(1));
-		DBAction act = result.get(0);
-		if (act instanceof DBInsert) {
-			DBInsert insert = (DBInsert) act;
-			final List<Long> generatedKeys = insert.getGeneratedPrimaryKeys();
-			if (generatedKeys.size() > 0) {
-				System.out.println("Primary Key Returned: " + generatedKeys.get(0));
-			}
-		}
 	}
 
 	@Test
