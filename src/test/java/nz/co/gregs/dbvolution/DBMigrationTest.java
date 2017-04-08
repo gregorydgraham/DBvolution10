@@ -37,17 +37,12 @@ public class DBMigrationTest extends AbstractTest {
 		database.createTable(new Villain());
 		database.createTable(new Hero());
 
-//		database.setPrintSQLBeforeExecuting(true);
 		database.insert(new Villain("Dr Nonono"), new Villain("Dr Karma"), new Villain("Dr Dark"));
 		database.insert(new Hero("James Security"), new Hero("Straw Richards"), new Hero("Lightwing"));
 	}
 
 	@After
 	public void teardown() throws SQLException {
-//		database.preventDroppingOfTables(false);
-//		database.dropTableNoExceptions(new Villain());
-//		database.preventDroppingOfTables(false);
-//		database.dropTableNoExceptions(new Hero());
 	}
 
 	public static class Villain extends DBRow {
@@ -104,7 +99,6 @@ public class DBMigrationTest extends AbstractTest {
 
 	@Test
 	public void testMapping1ColumnWithDBmigrationMap() throws SQLException {
-//		database.setPrintSQLBeforeExecuting(true);
 		DBMigration<MigrateVillainToProfessional> migration = database.getDBMigration(new MigrateVillainToProfessional());
 		migration.setBlankQueryAllowed(Boolean.TRUE);
 		List<MigrateVillainToProfessional> rows = migration.getAllRows();
@@ -113,7 +107,6 @@ public class DBMigrationTest extends AbstractTest {
 			Assert.assertThat(prof.title.stringValue(), is("Dr"));
 			Assert.assertThat(prof.surname.stringValue(), isOneOf("Nonono", "Karma", "Dark"));
 		}
-//		database.setPrintSQLBeforeExecuting(false);
 
 		database.preventDroppingOfTables(false);
 		final Professional professional = new Professional();
@@ -164,7 +157,7 @@ public class DBMigrationTest extends AbstractTest {
 		migration.setBlankQueryAllowed(Boolean.TRUE);
 		migration.setCartesianJoinAllowed(Boolean.TRUE);
 		List<MigrateHeroAndVillianToFight> fights = migration.getAllRows();
-		database.print(fights);
+
 		Assert.assertThat(fights.size(), is(9));
 		Assert.assertThat(fights.get(0).villain.stringValue(), isOneOf("Dr Nonono", "Dr Karma", "Dr Dark"));
 		Assert.assertThat(fights.get(0).hero.stringValue(), isOneOf("James Security", "Straw Richards", "Lightwing"));
