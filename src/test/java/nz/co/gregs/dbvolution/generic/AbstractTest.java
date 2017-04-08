@@ -237,9 +237,7 @@ public abstract class AbstractTest {
 		marqueRows.add(new Marque(1, "False", 1246974, "", 0, "", "TOYOTA", "", "Y", firstDate, 1, true));
 		marqueRows.add(new Marque(2, "False", 1246974, "", 0, "", "HUMMER", "", "Y", secondDate, 3, null));
 
-//		database.setPrintSQLBeforeExecuting(true);
 		marquesTable.insert(marqueRows);
-//		database.setPrintSQLBeforeExecuting(false);
 
 		database.preventDroppingOfTables(false);
 		database.dropTableNoExceptions(new CompanyLogo());
@@ -252,8 +250,6 @@ public abstract class AbstractTest {
 		database.preventDroppingOfTables(false);
 		database.dropTableNoExceptions(new LinkCarCompanyAndLogo());
 		database.createTable(new LinkCarCompanyAndLogo());
-
-		database.setPrintSQLBeforeExecuting(false);
 	}
 
 	@After
