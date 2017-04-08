@@ -65,18 +65,13 @@ public class DBActionListCreationTest extends AbstractTest {
 		final String microsoftUpdateSQL = "UPDATE [MARQUE] SET UID_MARQUE = 1 WHERE UID_MARQUE = 99999;";
 		final String oracleUpdateSQL = "UPDATE OO1081299805 SET UID_MARQUE = 1 WHERE UID_MARQUE = 99999";
 		final String actualUpdateSQL = this.testableSQLWithoutColumnAliases(revertStrings.get(0));
-		System.out.println("ACTUAL SQL: "+actualUpdateSQL);
-//		final String oracleStandardUpdateSQL = "UPDATE MARQUE SET UID_MARQUE = 1 WHERE UID_MARQUE = 99999";
+
 		Assert.assertThat(actualUpdateSQL,
 				anyOf(
 						is(this.testableSQLWithoutColumnAliases(standardUpdateSQL)),
 						is(this.testableSQLWithoutColumnAliases(microsoftUpdateSQL)),
 						is(this.testableSQLWithoutColumnAliases(oracleUpdateSQL))
 				));
-		System.out.println("REVERT:");
-		for (String revert : revertStrings) {
-			System.out.println(revert);
-		}
 	}
 
 	@Test
@@ -101,10 +96,6 @@ public class DBActionListCreationTest extends AbstractTest {
 
 		DBActionList reverts = updates.getRevertActionList();
 		Assert.assertThat(reverts.size(), is(2));
-		System.out.println("REVERTS: ");
-		for (String revert : reverts.getSQL(database)) {
-			System.out.println(revert);
-		}
 
 		reverts.execute(database);
 		marqueExample = new Marque();
@@ -205,7 +196,6 @@ public class DBActionListCreationTest extends AbstractTest {
 
 	@Test
 	public void deleteAndRevertTest() throws SQLException {
-//		database.setPrintSQLBeforeExecuting(true);
 		Marque example = new Marque();
 		example.name.permittedValuesIgnoreCase("toyota");
 		List<Marque> foundToyota = database.get(example);
@@ -229,7 +219,6 @@ public class DBActionListCreationTest extends AbstractTest {
 	
 	@Test
 	public void deleteUsingAllColumnsAndRevertTest() throws SQLException {
-//		database.setPrintSQLBeforeExecuting(true);
 		LinkCarCompanyAndLogo example = new LinkCarCompanyAndLogo();
 		example.fkCarCompany.setValue(1);
 		example.fkCompanyLogo.setValue(1);
@@ -281,16 +270,7 @@ public class DBActionListCreationTest extends AbstractTest {
 
 		dataChanges.addAll(database.delete(example));
 
-		System.out.println("Data Changes: ");
-		for (String sql : dataChanges.getSQL(database)) {
-			System.out.println(sql);
-		}
-
 		final DBActionList revertActionList = dataChanges.getRevertActionList();
-		System.out.println("Revert Actions: ");
-		for (String sql : revertActionList.getSQL(database)) {
-			System.out.println(sql);
-		}
 
 		revertActionList.execute(database);
 
@@ -344,11 +324,6 @@ public class DBActionListCreationTest extends AbstractTest {
 						is(this.testableSQLWithoutColumnAliases(oracleStandardSQL))
 				)
 		);
-
-		System.out.println("REVERT:");
-		for (String revert : revertStrings) {
-			System.out.println(revert);
-		}
 	}
 
 	@Test
@@ -376,16 +351,7 @@ public class DBActionListCreationTest extends AbstractTest {
 		logo.imageBytes.setFromFileSystem("toyota_share_logo.jpg");
 		dataChanges.addAll(database.insert(logo));
 
-		System.out.println("Data Changes: ");
-		for (String sql : dataChanges.getSQL(database)) {
-			System.out.println(sql);
-		}
-
 		final DBActionList revertActionList = dataChanges.getRevertActionList();
-		System.out.println("Revert Actions: ");
-		for (String sql : revertActionList.getSQL(database)) {
-			System.out.println(sql);
-		}
 
 		Assert.assertThat(revertActionList.get(0), instanceOf(DBDelete.class));
 		Assert.assertThat(revertActionList.get(1), instanceOf(DBInsert.class));
