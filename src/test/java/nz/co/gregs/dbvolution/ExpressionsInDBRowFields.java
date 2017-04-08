@@ -89,7 +89,7 @@ public class ExpressionsInDBRowFields extends AbstractTest {
 		sqlForQuery = query.getSQLForQuery();
 		Assert.assertThat(sqlForQuery, containsString(database.getDefinition().doCurrentDateOnlyTransform()));
 		final List<DBQueryRow> allRows = query.getAllRows();
-		database.print(allRows);
+
 		Assert.assertThat(allRows.size(), is(0));
 	}
 
@@ -100,10 +100,9 @@ public class ExpressionsInDBRowFields extends AbstractTest {
 		DBTable<ExpressionRow> table = database.getDBTable(exprExample);
 
 		final String sqlForQuery = table.getSQLForQuery();
-//		System.out.println(sqlForQuery);
+
 		Assert.assertThat(sqlForQuery, containsString(database.getDefinition().doCurrentDateOnlyTransform()));
 		final List<ExpressionRow> rowsByExample = table.getAllRows();
-		database.print(rowsByExample);
 
 		for (ExpressionRow expressionRow : table.getAllRows()) {
 			DBDate currentDate = expressionRow.sysDateColumnOnClass;
@@ -121,7 +120,6 @@ public class ExpressionsInDBRowFields extends AbstractTest {
 		final ExpressionRow expressionRow = new ExpressionRow();
 		final DBTable<ExpressionRow> expressionTable = database.getDBTable(expressionRow);
 		final List<ExpressionRow> allMarques = expressionTable.setBlankQueryAllowed(true).getAllRows();
-		database.print(allMarques);
 
 		for (ExpressionRow row : allMarques) {
 			Assert.assertThat(row.uidAndName.stringValue(),
