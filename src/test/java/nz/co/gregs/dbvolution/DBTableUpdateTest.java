@@ -36,7 +36,6 @@ public class DBTableUpdateTest extends AbstractTest {
 		marqueExample.getUidMarque().permittedValues(1);
 
 		marquesTable.getRowsByExample(marqueExample);
-		marquesTable.print();
 		Marque toyota = marquesTable.getOnlyRowByExample(marqueExample);
 		toyota.uidMarque.setValue(99999);
 		DBActionList updateList = marquesTable.update(toyota);
@@ -67,9 +66,9 @@ public class DBTableUpdateTest extends AbstractTest {
 		myTableRow.getUidMarque().permittedValues(1);
 
 		marquesTable.getRowsByExample(myTableRow);
-		marquesTable.print();
+		
 		Marque toyota = marquesTable.getFirstRow();
-		System.out.println("===" + toyota.name.toString());
+
 		Assert.assertEquals("The row retrieved should be TOYOTA", "TOYOTA", toyota.name.toString());
 
 		toyota.name.setValue("NOTTOYOTA");
@@ -85,7 +84,7 @@ public class DBTableUpdateTest extends AbstractTest {
 		marquesTable.update(toyota);
 
 		marquesTable.getRowsByExample(myTableRow);
-		marquesTable.print();
+
 		toyota = marquesTable.getFirstRow();
 		Assert.assertEquals("The row retrieved should be NOTTOYOTA", "NOTTOYOTA", toyota.name.toString());
 	}
