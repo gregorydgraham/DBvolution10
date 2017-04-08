@@ -47,14 +47,11 @@ public class RowDefinitionGetFieldNamesAndValuesTest extends AbstractTest {
 		dbQuery.setSortOrder(marque.column(marque.name), carCompany.column(carCompany.name));
 		List<DBQueryRow> rows = dbQuery.setBlankQueryAllowed(true).getAllRows();
 
-		database.print(rows);
 		if (rows.size() > 0) {
 			String header = "" + rows.get(0).toCSVHeader();
 			Assert.assertThat(header, is("\"Marque:name\",\"CarCompany:name\",\"CarCompany:uidCarCompany\""));
-			System.out.println(header);
 			for (DBQueryRow row : rows) {
 				String csvLine = "" + row.toCSVLine();
-				System.out.println(csvLine);
 				lines.add(csvLine);
 
 			}
