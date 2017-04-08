@@ -41,9 +41,8 @@ public class AutoFillDuringQueryIfPossibleTest extends AbstractTest {
 		DBQuery query = database.getDBQuery(new FilledMarque(), new CarCompany()).setBlankQueryAllowed(true);
 		query.getAllRows();
 		List<FilledMarque> instances = query.getAllInstancesOf(new FilledMarque());
-		database.print(instances);
+
 		for (FilledMarque instance : instances) {
-			System.out.println("" + instance.actualCarCo);
 			final CarCompany relatedCarCo = instance.getRelatedInstancesFromQuery(query, new CarCompany()).get(0);
 			final CarCompany actualCarCo = instance.actualCarCo;
 			if (actualCarCo == null) {
@@ -55,37 +54,30 @@ public class AutoFillDuringQueryIfPossibleTest extends AbstractTest {
 	}
 
 	@Test
-	public void testFillingArray() throws SQLException {
+	public void testFillingArray() throws SQLException, Exception {
 		DBQuery query = database.getDBQuery(new FilledCarCoWithArray(), new Marque()).setBlankQueryAllowed(true);
 		query.getAllRows();
 		List<FilledCarCoWithArray> instances = query.getAllInstancesOf(new FilledCarCoWithArray());
-		database.print(instances);
+
 		for (FilledCarCoWithArray instance : instances) {
 			if (instance.marques != null) {
-				for (Marque marq : instance.marques) {
-					System.out.println("" + marq);
-				}
 				final List<Marque> relateds = instance.getRelatedInstancesFromQuery(query, new Marque());
 				final Marque[] actuals = instance.marques;
 				Assert.assertThat(relateds, contains(actuals));
 			} else {
-				System.out.println("No Marques Found For " + instance.name);
+				throw new Exception("Marque should have been found for "+instance.name);
 			}
 		}
 	}
 
 	@Test
-	public void testFillingList() throws SQLException {
+	public void testFillingList() throws SQLException, Exception {
 		final FilledCarCoWithList testExample = new FilledCarCoWithList();
 		DBQuery query = database.getDBQuery(testExample, new Marque()).setBlankQueryAllowed(true);
 		query.getAllRows();
 		List<FilledCarCoWithList> instances = query.getAllInstancesOf(testExample);
-		database.print(instances);
 		for (FilledCarCoWithList instance : instances) {
 			if (instance.marques != null) {
-				for (Marque marq : instance.marques) {
-					System.out.println("" + marq);
-				}
 				final List<Marque> relateds = instance.getRelatedInstancesFromQuery(query, new Marque());
 				List<String> relatedNames = new ArrayList<String>();
 				List<String> actualNames = new ArrayList<String>();
@@ -98,7 +90,7 @@ public class AutoFillDuringQueryIfPossibleTest extends AbstractTest {
 				}
 				Assert.assertThat(relatedNames, contains(actualNames.toArray(new String[]{})));
 			} else {
-				System.out.println("No Marques Found For " + instance.name);
+				throw new Exception("Marque should have been found for "+instance.name);
 			}
 		}
 	}
