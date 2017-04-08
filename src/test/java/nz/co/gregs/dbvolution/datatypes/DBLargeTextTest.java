@@ -68,7 +68,7 @@ public class DBLargeTextTest extends AbstractTest {
 		CompanyText logoExample = new CompanyText();
 		logoExample.carCompany.permittedValues(ford.uidCarCompany);
 		List<CompanyText> foundLogos = database.get(logoExample);
-		database.print(foundLogos);
+		
 		Assert.assertThat(foundLogos.size(), is(1));
 		final CompanyText foundLogo = foundLogos.get(0);
 		Assert.assertThat(foundLogo.textID.intValue(), is(2));
@@ -97,7 +97,7 @@ public class DBLargeTextTest extends AbstractTest {
 		blobTable.fileText.setFromFileSystem(image);
 		database.insert(blobTable);
 
-		database.print(database.getDBTable(new CompanyText()).setBlankQueryAllowed(true).getAllRows());
+//		database.print(database.getDBTable(new CompanyText()).setBlankQueryAllowed(true).getAllRows());
 
 		File newFile = new File("retrieveRowWithLargeText.txt");
 		try {
@@ -108,7 +108,7 @@ public class DBLargeTextTest extends AbstractTest {
 
 		blobTable = new CompanyTextForRetreivingBinaryObject();
 		CompanyTextForRetreivingBinaryObject firstRow = database.getDBTable(blobTable).getRowsByPrimaryKey(primaryKey).get(0);
-		database.print(database.getDBTable(blobTable).getRowsByPrimaryKey(primaryKey));
+//		database.print(database.getDBTable(blobTable).getRowsByPrimaryKey(primaryKey));
 		firstRow.fileText.writeToFileSystem(newFile);
 		Assert.assertThat(newFile.length(), is(image.length()));
 	}
@@ -154,7 +154,7 @@ public class DBLargeTextTest extends AbstractTest {
 		database.insert(clobTable);
 
 		CompanyTextForRetreivingString firstRow = database.getDBTable(new CompanyTextForRetreivingString()).getRowsByPrimaryKey(primaryKey).get(0);
-		System.out.println("row = " + firstRow.toString());
+		
 		String stringValue = firstRow.filetext.stringValue();
 		Assert.assertThat(stringValue, is(SOURCEDATAASSTRING));
 	}
@@ -174,7 +174,7 @@ public class DBLargeTextTest extends AbstractTest {
 		database.insert(testRow);
 
 		TextObjectWithAutoIncrement firstRow = database.getDBTable(new TextObjectWithAutoIncrement()).setBlankQueryAllowed(true).getOnlyRow();
-		System.out.println("row = " + firstRow.toString());
+		
 		String stringValue = firstRow.imageBytes.stringValue();
 		Assert.assertThat(stringValue, is(SOURCEDATAASSTRING));
 

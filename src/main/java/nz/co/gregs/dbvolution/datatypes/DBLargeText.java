@@ -16,7 +16,7 @@
 package nz.co.gregs.dbvolution.datatypes;
 
 import java.io.*;
-import java.nio.charset.Charset;
+import static java.nio.charset.StandardCharsets.UTF_8;
 import java.sql.*;
 import java.util.*;
 import java.util.logging.*;
@@ -133,7 +133,7 @@ public class DBLargeText extends DBLargeObject<byte[]> {
 	 * @param string	string
 	 */
 	public void setValue(String string) {
-		setValue(string.getBytes());
+		setValue(string.getBytes(UTF_8));
 	}
 
 	void setValue(DBLargeText newLiteralValue) {
@@ -204,7 +204,7 @@ public class DBLargeText extends DBLargeObject<byte[]> {
 
 	private byte[] getFromString(ResultSet resultSet, String fullColumnName) throws SQLException {
 		String gotString = resultSet.getString(fullColumnName);
-		return gotString.getBytes();
+		return gotString.getBytes(UTF_8);
 	}
 
 	private byte[] getFromCharacterReader(ResultSet resultSet, String fullColumnName) throws SQLException, IOException {
@@ -229,7 +229,7 @@ public class DBLargeText extends DBLargeObject<byte[]> {
 					int bytesRead = input.read(resultSetBytes);
 					while (bytesRead > 0) {
 						totalBytesRead += bytesRead;
-						byteArrays.add(String.valueOf(resultSetBytes).getBytes());
+						byteArrays.add(String.valueOf(resultSetBytes).getBytes(UTF_8));
 						resultSetBytes = new char[100000];
 						bytesRead = input.read(resultSetBytes);
 					}
@@ -269,7 +269,7 @@ public class DBLargeText extends DBLargeObject<byte[]> {
 						int bytesRead = input.read(resultSetBytes);
 						while (bytesRead > 0) {
 							totalBytesRead += bytesRead;
-							byteArrays.add(String.valueOf(resultSetBytes).getBytes());
+							byteArrays.add(String.valueOf(resultSetBytes).getBytes(UTF_8));
 							resultSetBytes = new char[100000];
 							bytesRead = input.read(resultSetBytes);
 						}
@@ -468,7 +468,7 @@ public class DBLargeText extends DBLargeObject<byte[]> {
 		if (this.isNull()) {
 			return super.stringValue();
 		} else {
-			return new String(value);
+			return new String(value, UTF_8);
 		}
 	}
 
@@ -552,7 +552,7 @@ public class DBLargeText extends DBLargeObject<byte[]> {
 
 	private byte[] getFromBase64(ResultSet resultSet, String fullColumnName) throws SQLException {
 		String gotString = resultSet.getString(fullColumnName);
-		return Base64.decodeBase64(gotString.getBytes());
+		return Base64.decodeBase64(gotString.getBytes(UTF_8));
 	}
 
 	private byte[] getFromJavaObject(ResultSet resultSet, String fullColumnName) {

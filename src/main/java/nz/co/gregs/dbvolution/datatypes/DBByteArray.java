@@ -16,6 +16,7 @@
 package nz.co.gregs.dbvolution.datatypes;
 
 import java.io.*;
+import static java.nio.charset.StandardCharsets.UTF_8;
 import java.sql.*;
 import java.util.*;
 import java.util.logging.*;
@@ -133,7 +134,7 @@ public class DBByteArray extends DBLargeObject<byte[]> {
 	 * @param string	string
 	 */
 	public void setValue(String string) {
-		setValue(string.getBytes());
+		setValue(string.getBytes(UTF_8));
 	}
 
 	void setValue(DBByteArray newLiteralValue) {
@@ -226,7 +227,7 @@ public class DBByteArray extends DBLargeObject<byte[]> {
 					int bytesRead = input.read(resultSetBytes);
 					while (bytesRead > 0) {
 						totalBytesRead += bytesRead;
-						byteArrays.add(String.valueOf(resultSetBytes).getBytes());
+						byteArrays.add(String.valueOf(resultSetBytes).getBytes(UTF_8));
 						resultSetBytes = new char[100000];
 						bytesRead = input.read(resultSetBytes);
 					}
@@ -267,7 +268,7 @@ public class DBByteArray extends DBLargeObject<byte[]> {
 						int bytesRead = input.read(resultSetBytes);
 						while (bytesRead > 0) {
 							totalBytesRead += bytesRead;
-							byteArrays.add(String.valueOf(resultSetBytes).getBytes());
+							byteArrays.add(String.valueOf(resultSetBytes).getBytes(UTF_8));
 							resultSetBytes = new char[100000];
 							bytesRead = input.read(resultSetBytes);
 						}
@@ -473,7 +474,7 @@ public class DBByteArray extends DBLargeObject<byte[]> {
 		if (this.isNull()) {
 			return super.stringValue();
 		} else {
-			return new String(value);
+			return new String(value, UTF_8);
 		}
 	}
 

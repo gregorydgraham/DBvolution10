@@ -16,6 +16,7 @@
 package nz.co.gregs.dbvolution.datatypes;
 
 import java.io.*;
+import static java.nio.charset.StandardCharsets.UTF_8;
 import java.sql.*;
 import java.util.*;
 import java.util.logging.*;
@@ -132,7 +133,7 @@ public class DBLargeBinary extends DBLargeObject<byte[]> {
 	 * @param string	string
 	 */
 	public void setValue(String string) {
-		setValue(string.getBytes());
+		setValue(string.getBytes(UTF_8));
 	}
 
 	void setValue(DBLargeBinary newLiteralValue) {
@@ -225,7 +226,7 @@ public class DBLargeBinary extends DBLargeObject<byte[]> {
 					int bytesRead = input.read(resultSetBytes);
 					while (bytesRead > 0) {
 						totalBytesRead += bytesRead;
-						byteArrays.add(String.valueOf(resultSetBytes).getBytes());
+						byteArrays.add(String.valueOf(resultSetBytes).getBytes(UTF_8));
 						resultSetBytes = new char[100000];
 						bytesRead = input.read(resultSetBytes);
 					}
@@ -266,7 +267,7 @@ public class DBLargeBinary extends DBLargeObject<byte[]> {
 						int bytesRead = input.read(resultSetBytes);
 						while (bytesRead > 0) {
 							totalBytesRead += bytesRead;
-							byteArrays.add(String.valueOf(resultSetBytes).getBytes());
+							byteArrays.add(String.valueOf(resultSetBytes).getBytes(UTF_8));
 							resultSetBytes = new char[100000];
 							bytesRead = input.read(resultSetBytes);
 						}
@@ -472,7 +473,7 @@ public class DBLargeBinary extends DBLargeObject<byte[]> {
 		if (this.isNull()) {
 			return super.stringValue();
 		} else {
-			return new String(value);
+			return new String(value, UTF_8);
 		}
 	}
 
@@ -541,46 +542,6 @@ public class DBLargeBinary extends DBLargeObject<byte[]> {
 				bytes = getFromGetBytes(resultSet, fullColumnName);
 				break;
 		}
-//		if (defn.prefersLargeObjectsReadAsBase64CharacterStream()) {
-//			try {
-//				bytes = getFromCharacterReader(resultSet, fullColumnName);
-//			} catch (IOException ex) {
-//				throw new DBRuntimeException("Unable To Set Value: " + ex.getMessage(), ex);
-//			}
-//		} else if (defn.prefersLargeObjectsReadAsBytes()) {
-//			bytes = getFromGetBytes(resultSet, fullColumnName);
-//		} else if (defn.prefersLargeObjectsReadAsCLOB()) {
-//			bytes = getFromCLOB(resultSet, fullColumnName);
-//		} else if (defn.prefersLargeObjectsReadAsBLOB()) {
-//			bytes = getFromBLOB(resultSet, fullColumnName);
-//		} else {
-//			bytes = getFromBinaryStream(resultSet, fullColumnName);
-//		}
-//		try{
-//			bytes = getFromBinaryStream(resultSet, fullColumnName);
-//		} catch (Throwable exp1) {
-//			Logger.getLogger(DBLargeBinary.class.getName()).log(Level.WARNING, "Database rejected Binary Stream method", exp1);
-//			try {
-//				bytes = getFromBLOB(resultSet, fullColumnName);
-//			} catch (Throwable exp2) {
-//				Logger.getLogger(DBLargeBinary.class.getName()).log(Level.WARNING, "Database rejected BLOB method", exp2);
-//				try {
-//					bytes = getFromGetBytes(resultSet, fullColumnName);
-//				} catch (Throwable exp4) {
-//					Logger.getLogger(DBLargeBinary.class.getName()).log(Level.WARNING, "Database rejected Bytes method", exp4);
-//					try {
-//						bytes = getFromCLOB(resultSet, fullColumnName);
-//					} catch (Throwable exp3) {
-//						Logger.getLogger(DBLargeBinary.class.getName()).log(Level.WARNING, "Database rejected CLOB method", exp3);
-//						try {
-//							bytes = getFromCharacterReader(resultSet, fullColumnName);
-//						} catch (Throwable exp5) {
-//							Logger.getLogger(DBLargeBinary.class.getName()).log(Level.SEVERE, "Database rejected Character Reader method", exp5);
-//						}
-//					}
-//				}
-//			}
-//		}
 		return bytes;
 	}
 
