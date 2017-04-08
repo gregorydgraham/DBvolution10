@@ -704,9 +704,7 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 						db.transactionConnection.rollback();
 						LOG.info("Transaction Successful: ROLLBACK Performed");
 					} catch (SQLException rollbackFailed) {
-						System.out.println("ROLLBACK FAILED");
-//						rollbackFailed.printStackTrace();
-						System.out.println("CONTINUING REGARDLESS");
+						LOG.warn("ROLLBACK FAILED: CONTINUING REGARDLESS");
 						discardConnection(db.transactionConnection);
 					}
 				}
@@ -1102,8 +1100,6 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 					try{
 						dbStatement.execute(sql);
 					}catch (SQLException sqlex){
-//						System.out.println(""+sqlex.getMessage());
-						//sqlex.printStackTrace();
 					}
 				}
 			}
@@ -1307,7 +1303,6 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 		try {
 			this.dropTable(tableRow);
 		} catch (SQLException exp) {
-//			exp.printStackTrace();
 		}
 	}
 

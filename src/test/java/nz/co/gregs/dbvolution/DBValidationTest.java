@@ -37,7 +37,6 @@ public class DBValidationTest extends AbstractTest{
 		database.createTable(new Villain());
 		database.createTable(new Hero());
 
-//		database.setPrintSQLBeforeExecuting(true);
 		database.insert(new Villain("Dr Nonono"), new Villain("Dr Karma"), new Villain("Dr Dark"));
 		database.insert(new Hero("James Security"), new Hero("Straw Richards"), new Hero("Lightwing"));
 	}
@@ -111,14 +110,12 @@ public class DBValidationTest extends AbstractTest{
 		migration.setBlankQueryAllowed(Boolean.TRUE);
 		migration.setCartesianJoinAllowed(Boolean.TRUE);
 		
-		System.out.println(migration.getSQLForQuery(database));
-		
 		if (database.supportsFullOuterJoin()) {
 			DBValidation.Results validateAllRows = migration.validateAllRows();
 			for (DBValidation.Result valid : validateAllRows) {
 				final Hero hero = valid.getRow(new Hero());
 				final Villain villain = valid.getRow(new Villain());
-				System.out.println("" + (valid.willBeProcessed ? "processed: " : "REJECTED: ") + hero.name.stringValue() + " versus " + villain.name.stringValue());
+				
 				if (valid.willBeProcessed) {
 					Assert.assertThat(hero.name.stringValue(), is("James Security"));
 				} else {
@@ -129,7 +126,7 @@ public class DBValidationTest extends AbstractTest{
 				for (Map.Entry<String, String> entry : map.entrySet()) {
 					String key = entry.getKey();
 					String value = entry.getValue();
-					System.out.println(key + ": " + value);
+					
 					Assert.assertThat(value, isOneOf("success", "NO DATA"));
 					if (key.equals("villian")) {
 						if (value.equals("success")) {

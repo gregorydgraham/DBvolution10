@@ -538,7 +538,6 @@ public class DBRecursiveQuery<T extends DBRow> {
 	 */
 	public List<TreeNode<T>> getTrees() throws SQLException {
 		List<T> descendants = getDescendants();
-		originalQuery.getDatabase().print(descendants);
 		List<TreeNode<T>> trees = new ArrayList<>();
 		Map<String, TreeNode<T>> parentMap = new HashMap<>();
 		Map<String, List<TreeNode<T>>> childrenMap = new HashMap<>();
@@ -585,7 +584,7 @@ public class DBRecursiveQuery<T extends DBRow> {
 		long start = new java.util.Date().getTime();
 		this.originalQuery.setTimeoutInMilliseconds(timeout);
 		List<DBQueryRow> primingRows = this.originalQuery.getAllRows();
-		this.originalQuery.getDatabase().print(primingRows);
+		
 		Map<String, List<String>> pkValues = new HashMap<>();
 		Map<String, PropertyWrapperDefinition> pkDefs = new HashMap<>();
 
