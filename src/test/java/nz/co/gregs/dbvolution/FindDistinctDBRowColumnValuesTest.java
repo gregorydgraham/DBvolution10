@@ -49,7 +49,7 @@ public class FindDistinctDBRowColumnValuesTest extends AbstractTest {
 				.setSortOrder(marque.column(marque.creationDate));
 		dbQuery.setBlankQueryAllowed(true);
 		List<DBQueryRow> allRows = dbQuery.getAllRows();
-		database.print(allRows);
+
 		Assert.assertThat(allRows.size(), is(3));
 		for (DBQueryRow dBQueryRow : allRows) {
 			Marque get = dBQueryRow.get(marque);
@@ -57,12 +57,10 @@ public class FindDistinctDBRowColumnValuesTest extends AbstractTest {
 		}
 		Assert.assertThat(creationDates.size(), is(3));
 		Assert.assertThat(creationDates.get(0).isNull(), is(true));
-//		Assert.assertThat(creationDates, hasItem((DBDate) null));
 
 		List<String> foundStrings = new ArrayList<String>();
 		for (DBDate dBDate : creationDates) {
 			if (dBDate != null&&dBDate.isNotNull()) {
-				System.out.println("DISTINCT CREATION DATE: " + dBDate.toString());
 				Assert.assertThat(dBDate.toString(),
 						anyOf(
 								startsWith("2013-03-23"),
@@ -89,7 +87,6 @@ public class FindDistinctDBRowColumnValuesTest extends AbstractTest {
 		List<String> foundStrings = new ArrayList<String>();
 		for (DBDate dBDate : distinctValuesForColumn) {
 			if (dBDate != null&&dBDate.isNotNull()) {
-				System.out.println("DISTINCT CREATION DATE: " + dBDate.toString());
 				Assert.assertThat(dBDate.toString(),
 						anyOf(
 								startsWith("2013-03-23"),
@@ -119,7 +116,6 @@ public class FindDistinctDBRowColumnValuesTest extends AbstractTest {
 		List<String> foundStrings = new ArrayList<>();
 		for (DBString val : distinctValuesForColumn) {
 			if (val != null&&val.isNotNull()) {
-				System.out.println("DISTINCT VAL: " + val.toString());
 				Assert.assertThat(val.toString(),
 						anyOf(
 								is("Y"),
@@ -145,21 +141,17 @@ public class FindDistinctDBRowColumnValuesTest extends AbstractTest {
 	public void testDBTableMethodWithDBString() throws SQLException {
 		Marque marque = new Marque();
 		final DBTable<Marque> dbTable = database.getDBTable(marque);
-		database.setPrintSQLBeforeExecuting(true);
 		List<DBString> distinctValuesForColumn = dbTable.getDistinctValuesOfColumn(marque.individualAllocationsAllowed);
 
 		List<String> foundStrings = new ArrayList<String>();
 		for (DBString val : distinctValuesForColumn) {
 			if (val != null&&val.isNotNull()) {
-				System.out.println("DISTINCT VAL: " + val.toString());
 				Assert.assertThat(val.toString(),
 						anyOf(
 								is("Y"),
 								is("")
 						)
 				);
-			} else {
-				System.out.println("DISTINCT VAL: NULL");
 			}
 			foundStrings.add((val.toString()));
 		}
@@ -190,7 +182,7 @@ public class FindDistinctDBRowColumnValuesTest extends AbstractTest {
 				.getDBQuery(carCo, marque)
 				.setBlankQueryAllowed(true)
 				.getDistinctCombinationsOfColumnValues(marque.individualAllocationsAllowed, carCo.name);
-		database.print(distinctCombinationsOfColumnValues);
+
 		if (database.supportsDifferenceBetweenNullAndEmptyString()) {
 			Assert.assertThat(distinctCombinationsOfColumnValues.size(), is(3));
 			Assert.assertThat(distinctCombinationsOfColumnValues.get(0).get(marque).isEmptyRow(), is(true));
