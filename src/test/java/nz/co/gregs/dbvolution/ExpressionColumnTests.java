@@ -49,10 +49,8 @@ public class ExpressionColumnTests extends AbstractTest {
 
 		for (DBQueryRow row : query.getAllRows()) {
 			QueryableDatatype<?> expressionColumnValue = row.getExpressionColumnValue(dateKey);
-			System.out.println(expressionColumnValue.toSQLString(database));
 			if (expressionColumnValue instanceof DBDate) {
 				DBDate currentDate = (DBDate) expressionColumnValue;
-				System.out.println("" + currentDate.dateValue());
 			} else {
 				throw new RuntimeException("CurrentDate Expression Failed To Create DBDate Instance");
 			}
@@ -74,10 +72,8 @@ public class ExpressionColumnTests extends AbstractTest {
 
 		for (DBQueryRow row : query.getAllRows()) {
 			QueryableDatatype<?> expressionColumnValue = row.getExpressionColumnValue(shortMarqueName);
-			System.out.println(expressionColumnValue.toSQLString(database));
 			if (expressionColumnValue instanceof DBString) {
 				DBString shortName = (DBString) expressionColumnValue;
-				System.out.println("" + shortName.stringValue());
 				Assert.assertThat(shortName.toString(), is("TOYOTA".substring(0, 3)));
 			} else {
 				throw new RuntimeException("String Expression Failed To Create DBString Instance");
@@ -98,13 +94,11 @@ public class ExpressionColumnTests extends AbstractTest {
 		for (DBQueryRow row : query.getAllRows()) {
 			Long uid = row.get(new Marque()).uidMarque.getValue();
 			QueryableDatatype<?> expressionColumnValue = row.getExpressionColumnValue(strangeEquation);
-			System.out.println(expressionColumnValue.toSQLString(database));
 			if (expressionColumnValue instanceof DBNumber) {
 				DBNumber eqValue = (DBNumber) expressionColumnValue;
-				System.out.println("" + eqValue.numberValue());
 				Assert.assertThat(eqValue.longValue(), is(uid * 5 / 3 + 2));
 			} else {
-				throw new RuntimeException("String Expression Failed To Create DBString Instance");
+				throw new RuntimeException("String Expression Failed To Create DBNumber Instance");
 			}
 		}
 	}
