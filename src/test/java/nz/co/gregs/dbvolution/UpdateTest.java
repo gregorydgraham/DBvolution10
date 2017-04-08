@@ -53,7 +53,7 @@ public class UpdateTest extends AbstractTest {
 		List<Marque> rowsByExample = marquesTable.getRowsByExample(marque);
 		Assert.assertThat(rowsByExample.size(), is(1));
 		Marque peugeot = rowsByExample.get(0);
-		System.out.println(peugeot);
+
 		peugeot.individualAllocationsAllowed.setValue("Y");
 		String sqlForUpdate = marquesTable.update(peugeot).get(0).getSQLStatements(database).get(0);
 		final String updateQueryStr = testableSQL("UPDATE MARQUE SET INTINDALLOCALLOWED = 'Y' WHERE (UID_MARQUE = 4893059);");
