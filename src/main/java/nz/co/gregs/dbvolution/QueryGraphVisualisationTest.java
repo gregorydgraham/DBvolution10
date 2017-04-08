@@ -53,7 +53,6 @@ public class QueryGraphVisualisationTest {
 	}
 
 	private static void setup(DBDatabase database) throws Exception {
-		database.setPrintSQLBeforeExecuting(false);
 		database.preventDroppingOfTables(false);
 		database.dropTableNoExceptions(new Marque());
 		database.createTable(new Marque());
@@ -69,9 +68,6 @@ public class QueryGraphVisualisationTest {
 
 		database.dropTableNoExceptions(new LinkCarCompanyAndLogoWithPreviousLink());
 		database.createTable(new LinkCarCompanyAndLogoWithPreviousLink());
-
-		database.setPrintSQLBeforeExecuting(true);
-		database.preventDroppingOfTables(true);
 	}
 
 	private static void tearDown(DBDatabase database) {

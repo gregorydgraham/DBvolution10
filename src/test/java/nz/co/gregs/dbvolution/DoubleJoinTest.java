@@ -39,7 +39,6 @@ public class DoubleJoinTest extends AbstractTest {
 
 	@Test
 	public void doubleJoinTest() throws SQLException {
-//		database.setPrintSQLBeforeExecuting(true);
 		database.preventDroppingOfTables(false);
 		database.dropTableNoExceptions(new DoubleJoinTest.DoubleLinkedWithSubclasses());
 		database.createTable(new DoubleJoinTest.DoubleLinkedWithSubclasses());
@@ -53,7 +52,7 @@ public class DoubleJoinTest extends AbstractTest {
 		final Marketer marketer = new DoubleJoinTest.Marketer();
 		DBQuery query = database.getDBQuery(doubleLinked1, manufacturer, marketer);
 		query.setBlankQueryAllowed(true);
-		System.out.println(query.getSQLForQuery());
+
 		List<DBQueryRow> allRows = query.getAllRows();
 		Assert.assertThat(allRows.size(),
 				is(1));
@@ -63,15 +62,12 @@ public class DoubleJoinTest extends AbstractTest {
 				is(doubleLinked.manufacturer.getValue().intValue())
 		);
 
-		database.print(allRows);
-
 		database.preventDroppingOfTables(false);
 		database.dropTableNoExceptions(new DoubleJoinTest.DoubleLinkedWithSubclasses());
 	}
 
 	@Test
 	public void doubleJoinWithSameClassTest() throws SQLException {
-//		database.setPrintSQLBeforeExecuting(true);
 		database.preventDroppingOfTables(false);
 		database.dropTableNoExceptions(new DoubleJoinTest.DoubleLinkedWithClass());
 		database.createTable(new DoubleJoinTest.DoubleLinkedWithClass());
@@ -84,7 +80,7 @@ public class DoubleJoinTest extends AbstractTest {
 		final CarCompany carco = new CarCompany();
 		DBQuery query = database.getDBQuery(doubleLinked1, carco);
 		query.setBlankQueryAllowed(true);
-		System.out.println(query.getSQLForQuery());
+
 		List<DBQueryRow> allRows = query.getAllRows();
 
 		Assert.assertThat(
@@ -98,7 +94,6 @@ public class DoubleJoinTest extends AbstractTest {
 
 	@Test
 	public void doubleJoinWithSameClassAndIDTest() throws SQLException {
-//		database.setPrintSQLBeforeExecuting(true);
 		database.preventDroppingOfTables(false);
 		database.dropTableNoExceptions(new DoubleJoinTest.DoubleLinkedWithClass());
 		database.createTable(new DoubleJoinTest.DoubleLinkedWithClass());
@@ -111,14 +106,13 @@ public class DoubleJoinTest extends AbstractTest {
 		final CarCompany carco = new CarCompany();
 		DBQuery query = database.getDBQuery(doubleLinked1, carco);
 		query.setBlankQueryAllowed(true);
-		System.out.println(query.getSQLForQuery());
+
 		List<DBQueryRow> allRows = query.getAllRows();
 
 		Assert.assertThat(
 				allRows.size(),
 				is(1));
 
-		database.print(allRows);
 		database.preventDroppingOfTables(false);
 		database.dropTableNoExceptions(new DoubleJoinTest.DoubleLinkedWithClass());
 	}
