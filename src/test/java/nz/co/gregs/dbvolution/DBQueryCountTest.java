@@ -101,7 +101,7 @@ public class DBQueryCountTest extends AbstractTest {
 		dbQuery.add(carCompany);
 		// make sure it works
 		count = dbQuery.count();
-		database.print(dbQuery.getAllRows());
+
 		Assert.assertThat(count, is(3L));
 
 		carCompany.name.permittedRange("F", "O");
