@@ -50,7 +50,6 @@ public class IgnoreForeignKeyTest extends AbstractTest {
 		dbQuery = database.getDBQuery(carCompany, marque);
 		dbQuery.setBlankQueryAllowed(true);
 		dbQuery.setCartesianJoinsAllowed(true);
-		System.out.println(dbQuery.getSQLForQuery());
 		allRows = dbQuery.getAllRows();
 
 		Assert.assertThat(allRows.size(), is(88));
@@ -87,7 +86,6 @@ public class IgnoreForeignKeyTest extends AbstractTest {
 		dbQuery = database.getDBQuery(carCompany, marque);
 		dbQuery.setBlankQueryAllowed(true);
 		dbQuery.setCartesianJoinsAllowed(true);
-		System.out.println(dbQuery.getSQLForQuery());
 		allRows = dbQuery.getAllRows();
 
 		Assert.assertThat(allRows.size(), is(88));
@@ -116,7 +114,6 @@ public class IgnoreForeignKeyTest extends AbstractTest {
 		dbQuery = database.getDBQuery(carCompany, marque);
 		dbQuery.setBlankQueryAllowed(true);
 		dbQuery.setCartesianJoinsAllowed(true);
-		System.out.println(dbQuery.getSQLForQuery());
 		allRows = dbQuery.getAllRows();
 
 		Assert.assertThat(allRows.size(), is(88));
