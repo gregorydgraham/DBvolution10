@@ -62,7 +62,6 @@ public class DBBooleanArrayTest extends AbstractTest {
 	 */
 	@Test
 	public void testEquals() {
-		System.out.println("equals");
 		final Boolean[] trueFalseTrueArray = new Boolean[]{true, false, true};
 		QueryableDatatype<?> other = new DBBooleanArray(trueFalseTrueArray);
 		final Boolean[] allTrueArray = new Boolean[]{true, true, true};
@@ -82,7 +81,6 @@ public class DBBooleanArrayTest extends AbstractTest {
 	 */
 	@Test
 	public void testGetSQLDatatype() {
-		System.out.println("getSQLDatatype");
 		DBBooleanArray instance = new DBBooleanArray();
 		String expResult = "ARRAY";
 		String result = instance.getSQLDatatype();
@@ -94,7 +92,6 @@ public class DBBooleanArrayTest extends AbstractTest {
 	 */
 	@Test
 	public void testSetValue_Object() {
-		System.out.println("setValue");
 		Boolean[] newLiteralValue = new Boolean[]{true, false, true};
 		DBBooleanArray instance = new DBBooleanArray();
 		instance.setValue(newLiteralValue);
@@ -107,7 +104,6 @@ public class DBBooleanArrayTest extends AbstractTest {
 //	@Ignore
 	@Test
 	public void testFormatValueForSQLStatement() {
-		System.out.println("formatValueForSQLStatement");
 		DBBooleanArray instance = new DBBooleanArray();
 		Boolean[] expResult = new Boolean[]{false, true, true};
 		instance.setValue(expResult);
@@ -128,7 +124,6 @@ public class DBBooleanArrayTest extends AbstractTest {
 	 */
 	@Test
 	public void testByteArrayValue() {
-		System.out.println("byteArrayValue");
 		DBBooleanArray instance = new DBBooleanArray();
 		Boolean[] tftArray = new Boolean[]{true, false, true};
 		instance.setValue(tftArray);
@@ -141,7 +136,6 @@ public class DBBooleanArrayTest extends AbstractTest {
 	 */
 	@Test
 	public void testCopy() {
-		System.out.println("copy");
 		Boolean[] tftArray = new Boolean[]{true, false, true};
 		DBBooleanArray instance = new DBBooleanArray(tftArray);
 		DBBooleanArray result = instance.copy();
@@ -153,7 +147,6 @@ public class DBBooleanArrayTest extends AbstractTest {
 	 */
 	@Test
 	public void testGetValue() {
-		System.out.println("getValue");
 		final String theValueStr = "The Value";
 		Boolean[] tftArray = new Boolean[]{true, false, true};
 		DBBooleanArray instance = new DBBooleanArray(tftArray);
@@ -168,7 +161,6 @@ public class DBBooleanArrayTest extends AbstractTest {
 	 */
 	@Test
 	public void testGetQueryableDatatypeForExpressionValue() {
-		System.out.println("getQueryableDatatypeForExpressionValue");
 		DBBooleanArray instance = new DBBooleanArray();
 		DBBooleanArray result = instance.getQueryableDatatypeForExpressionValue();
 		assertEquals(instance.getClass(), result.getClass());
@@ -179,7 +171,6 @@ public class DBBooleanArrayTest extends AbstractTest {
 	 */
 	@Test
 	public void testIsAggregator() {
-		System.out.println("isAggregator");
 		DBBooleanArray instance = new DBBooleanArray();
 		boolean expResult = false;
 		boolean result = instance.isAggregator();
@@ -191,7 +182,6 @@ public class DBBooleanArrayTest extends AbstractTest {
 	 */
 	@Test
 	public void testGetTablesInvolved() {
-		System.out.println("getTablesInvolved");
 		DBBooleanArray instance = new DBBooleanArray();
 		Set<DBRow> result = instance.getTablesInvolved();
 		assertEquals(0, result.size());
@@ -202,7 +192,6 @@ public class DBBooleanArrayTest extends AbstractTest {
 	 */
 	@Test
 	public void testGetIncludesNull() {
-		System.out.println("getIncludesNull");
 		DBBooleanArray instance = new DBBooleanArray();
 		boolean expResult = false;
 		boolean result = instance.getIncludesNull();
@@ -217,7 +206,6 @@ public class DBBooleanArrayTest extends AbstractTest {
 //	@Ignore
 	@Test
 	public void testGetFromResultSet() throws Exception {
-		System.out.println("getFromResultSet");
 		final BooleanArrayTable boolArrayTable = new BooleanArrayTable();
 		database.preventDroppingOfTables(false);
 		database.dropTableNoExceptions(boolArrayTable);
