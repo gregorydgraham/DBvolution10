@@ -42,7 +42,6 @@ public class DBUpdateTest extends AbstractTest {
 	 */
 	@Test(expected = AccidentalUpdateOfUndefinedRowException.class)
 	public void testGetUpdates() throws Exception {
-		System.out.println("getUpdates");
 		Marque marque = new Marque();
 		marque.name.setValue("Not a Marque");
 		DBUpdate.getUpdates(marque);
@@ -50,7 +49,6 @@ public class DBUpdateTest extends AbstractTest {
 
 	@Test
 	public void updateUsingAllColumnsAndRevertTest() throws SQLException {
-//		database.setPrintSQLBeforeExecuting(true);
 		LinkCarCompanyAndLogo example = new LinkCarCompanyAndLogo();
 		example.fkCarCompany.setValue(1);
 		example.fkCompanyLogo.setValue(1);
