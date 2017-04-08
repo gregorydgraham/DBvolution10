@@ -51,7 +51,6 @@ public class DBScriptTest extends AbstractTest {
 	 */
 	@Test
 	public void testImplement() throws Exception {
-		System.out.println("test");
 		List<Marque> allMarques = database.getDBTable(new Marque()).setBlankQueryAllowed(true).getAllRows();
 		DBScript script = new ScriptThatAdds2Marques();
 		DBActionList result = script.implement(database);
@@ -68,7 +67,6 @@ public class DBScriptTest extends AbstractTest {
 	 */
 	@Test
 	public void testTest() throws Exception {
-		System.out.println("test");
 		List<Marque> allMarques = database.getDBTable(new Marque()).setBlankQueryAllowed(true).getAllRows();
 		DBScript script = new ScriptThatAdds2Marques();
 		DBActionList result = script.test(database);
@@ -80,7 +78,6 @@ public class DBScriptTest extends AbstractTest {
 
 	@Test(expected = IndexOutOfBoundsException.class)
 	public void testExceptionThrowing() throws Exception {
-		System.out.println("test");
 		List<Marque> allMarques = database.getDBTable(new Marque()).setBlankQueryAllowed(true).getAllRows();
 		DBScript script = new ScriptThatThrowsAnException(new IndexOutOfBoundsException("Correct Exception"));
 		DBActionList result = script.test(database);
@@ -179,7 +176,6 @@ public class DBScriptTest extends AbstractTest {
 			myTableRow.getNumericCode().setValue(10);
 			actions.addAll(marques.insert(myTableRow));
 			marques.setBlankQueryAllowed(true).getAllRows();
-			marques.print();
 
 			List<Marque> myTableRows = new ArrayList<Marque>();
 			myTableRows.add(new Marque(3, "False", 1246974, "", 3, "UV", "TVR", "", "Y", new Date(), 4, null));
@@ -187,7 +183,6 @@ public class DBScriptTest extends AbstractTest {
 			actions.addAll(marques.insert(myTableRows));
 
 			marques.getAllRows();
-			marques.print();
 			return actions;
 		}
 	}
@@ -209,7 +204,7 @@ public class DBScriptTest extends AbstractTest {
 			actions.addAll(table.insert(myTableRow));
 
 			List<ScriptTestTable> allRows = table.setBlankQueryAllowed(true).getAllRows();
-			table.print();
+
 			Assert.assertThat(allRows.size(), is(origRows.size() + 1));
 			final ScriptTestTable newRow = new ScriptTestTable("False");
 			myTableRows.add(newRow);
@@ -217,14 +212,14 @@ public class DBScriptTest extends AbstractTest {
 			actions.addAll(table.insert(newRow));
 
 			allRows = table.setBlankQueryAllowed(true).getAllRows();
-			table.print();
+
 			Assert.assertThat(allRows.size(), is(origRows.size() + 2));
 
 			table.getAllRows();
-			table.print();
+
 			table.delete(myTableRows);
 			allRows = table.setBlankQueryAllowed(true).getAllRows();
-			table.print();
+
 			Assert.assertThat(allRows.size(), is(origRows.size()));
 
 			return actions;
