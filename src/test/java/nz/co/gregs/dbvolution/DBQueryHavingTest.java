@@ -13,23 +13,8 @@ import nz.co.gregs.dbvolution.example.CarCompany;
 import nz.co.gregs.dbvolution.example.Marque;
 import nz.co.gregs.dbvolution.expressions.NumberExpression;
 import nz.co.gregs.dbvolution.generic.AbstractTest;
-import static org.hamcrest.Matchers.is;
 import org.junit.Assert;
 import org.junit.Test;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.is;
 
 /**
@@ -50,7 +35,6 @@ public class DBQueryHavingTest extends AbstractTest {
 		query.setSortOrder(marqueCounter.column(marqueCounter.carCompany));
 
 		List<DBQueryRow> rows = query.getAllRows();
-		database.print(rows);
 
 		rows = database
 				.getDBQuery(new CarCompany(), marqueCounter)
@@ -58,7 +42,6 @@ public class DBQueryHavingTest extends AbstractTest {
 				.addCondition(marqueCounter.column(marqueCounter.counted).isGreaterThan(1))
 				.getAllRows();
 
-		database.print(rows);
 		Assert.assertThat(rows.size(), is(3));
 
 		CarCompany currentCarCo = rows.get(0).get(new CarCompany());
