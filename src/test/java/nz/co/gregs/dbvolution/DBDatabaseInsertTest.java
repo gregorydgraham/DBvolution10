@@ -57,8 +57,7 @@ public class DBDatabaseInsertTest extends AbstractTest {
 		DBActionList changes = database.insert(myTableRows);
 		changes.addAll(database.insert(carCompany));
 		marquesTable.getAllRows();
-		marquesTable.print();
-		database.print(allCarCompanies.getAllRows());
+
 		final int updatedNumberOfCarCompanies = allCarCompanies.getAllRows().size();
 		Assert.assertThat(changes.size(), is(3));
 		Assert.assertThat(marquesTable.getAllRows().size(), is(originalNumberOfMarques + 2));
