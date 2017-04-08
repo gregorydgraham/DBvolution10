@@ -48,30 +48,25 @@ public class SerializableTest extends AbstractTest {
 			hummerExample.getName().permittedValues("PEUGEOT", "HUMMER");
 			List<Marque> marqueList = database.getDBTable(hummerExample).getRowsByExample(hummerExample);
 
-			ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(filename));
-
-			oos.writeObject(marqueList);
-			oos.close();
+			try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(filename))) {
+				oos.writeObject(marqueList);
+			}
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}
 		try {
-			ObjectInputStream ois = new ObjectInputStream(new BufferedInputStream(new FileInputStream(filename)));
-			Object object = ois.readObject();
-			if (object instanceof List) {
-				List<Object> list = (List<Object>) object;
-				for (Object obj : list) {
-					if (obj instanceof Marque) {
-						System.out.println("" + obj);
-					} else {
-						throw new RuntimeException("Unable to reload the object correctly");
+			try (ObjectInputStream ois = new ObjectInputStream(new BufferedInputStream(new FileInputStream(filename)))) {
+				Object object = ois.readObject();
+				if (object instanceof List) {
+					List<Object> list = (List<Object>) object;
+					for (Object obj : list) {
+						if (!(obj instanceof Marque)) {
+							throw new RuntimeException("Unable to reload the object correctly");
+						}
 					}
 				}
 			}
-			ois.close();
-		} catch (ClassNotFoundException e) {
-			throw new RuntimeException(e);
-		} catch (IOException e) {
+		} catch (ClassNotFoundException | IOException e) {
 			throw new RuntimeException(e);
 		}
 	}
