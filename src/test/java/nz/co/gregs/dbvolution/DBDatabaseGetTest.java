@@ -124,7 +124,7 @@ public class DBDatabaseGetTest extends AbstractTest {
 		Marque marqueQuery = new Marque();
 		marqueQuery.name.permittedRangeExclusive("FORD", "TOYOTA");
 		List<Marque> gotMarques = database.get(marqueQuery);
-		database.print(gotMarques);
+
 		Assert.assertThat(gotMarques.size(), is(14));
 	}
 
@@ -145,7 +145,6 @@ public class DBDatabaseGetTest extends AbstractTest {
 		if (database.supportsDifferenceBetweenNullAndEmptyString()) {
 			Assert.assertEquals(2, gotMarques.size());
 		} else {
-			database.print(gotMarques);
 			Assert.assertEquals(gotMarques.size(), database.getDBTable(new Marque()).count() - 1);
 		}
 		Assert.assertEquals(true, gotMarques.get(0).individualAllocationsAllowed.isNull());
@@ -159,7 +158,6 @@ public class DBDatabaseGetTest extends AbstractTest {
 		if (database.supportsDifferenceBetweenNullAndEmptyString()) {
 			Assert.assertEquals(gotMarques.size(), database.getDBTable(new Marque()).count() - 2);
 		} else {
-			database.print(gotMarques);
 			Assert.assertEquals(1, gotMarques.size());
 		}
 		Assert.assertEquals(true, gotMarques.get(0).individualAllocationsAllowed.isNotNull());
@@ -206,7 +204,7 @@ public class DBDatabaseGetTest extends AbstractTest {
 		permittedMarques.add("HUMMER");
 		hummerQuery.getName().excludedValues(permittedMarques);
 		List<Marque> gotMarques = database.get(hummerQuery);
-		database.print(gotMarques);
+		
 		Assert.assertThat(gotMarques.size(), is(allMarques.size() - 2));
 	}
 
