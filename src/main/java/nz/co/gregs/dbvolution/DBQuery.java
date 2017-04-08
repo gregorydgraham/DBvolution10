@@ -688,7 +688,11 @@ public class DBQuery {
 	 * returned by this query
 	 */
 	public String getSQLForCount() {
-		return getSQLForQuery(new QueryState(this, getDatabase()), QueryType.COUNT, details.getOptions());
+		if (!database.supportsFullOuterJoinNatively()){
+			return "SELECT COUNT(*) FROM ("+getSQLForQuery(new QueryState(this, getDatabase()), QueryType.SELECT, details.getOptions()).replaceAll("; *$", "")+") A"+database.getDefinition().endSQLStatement();
+		}else{
+			return getSQLForQuery(new QueryState(this, getDatabase()), QueryType.COUNT, details.getOptions());
+		}
 	}
 
 	/**
