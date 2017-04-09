@@ -68,7 +68,7 @@ public class DBLargeBinaryTest extends AbstractTest {
 		CompanyLogo logoExample = new CompanyLogo();
 		logoExample.carCompany.permittedValues(ford.uidCarCompany);
 		List<CompanyLogo> foundLogos = database.get(logoExample);
-		database.print(foundLogos);
+		
 		Assert.assertThat(foundLogos.size(), is(1));
 		final CompanyLogo foundLogo = foundLogos.get(0);
 		Assert.assertThat(foundLogo.logoID.intValue(), is(2));
@@ -97,8 +97,6 @@ public class DBLargeBinaryTest extends AbstractTest {
 		blobTable.imageBytes.setFromFileSystem(image);
 		database.insert(blobTable);
 
-		database.print(database.getDBTable(new CompanyLogo()).setBlankQueryAllowed(true).getAllRows());
-
 		File newFile = new File("retrieveRowWithBinaryObject.jpg");
 		try {
 			newFile.delete();
@@ -108,13 +106,9 @@ public class DBLargeBinaryTest extends AbstractTest {
 
 		blobTable = new CompanyLogoForRetreivingBinaryObject();
 		CompanyLogoForRetreivingBinaryObject firstRow = database.getDBTable(blobTable).getRowsByPrimaryKey(primaryKey).get(0);
-		database.print(database.getDBTable(blobTable).getRowsByPrimaryKey(primaryKey));
+		
 		firstRow.imageBytes.writeToFileSystem(newFile);
 		Assert.assertThat(newFile.length(), is(image.length()));
-//		newFile.delete();
-
-//		database.preventDroppingOfTables(false);
-//		database.dropTableNoExceptions(blobTable);
 	}
 
 	@Test
@@ -130,17 +124,12 @@ public class DBLargeBinaryTest extends AbstractTest {
 		clobTable.logoID.setValue(primaryKey);
 		clobTable.carCompany.setValue(1);
 		clobTable.imageFilename.setValue("toyota_logo.jpg");
-		clobTable.imageBytes.setValue(sourceDataAsString);
+		clobTable.imageBytes.setValue(SOURCE_DATA_AS_STRING);
 		database.insert(clobTable);
 
 		CompanyLogoForRetreivingString firstRow = database.getDBTable(new CompanyLogoForRetreivingString()).getRowsByPrimaryKey(primaryKey).get(0);
-		System.out.println("row = " + firstRow.toString());
 		String stringValue = firstRow.imageBytes.stringValue();
-		Assert.assertThat(stringValue, is(sourceDataAsString));
-
-//		database.preventDroppingOfTables(false);
-//		database.dropTableNoExceptions(clobTable);
-
+		Assert.assertThat(stringValue, is(SOURCE_DATA_AS_STRING));
 	}
 
 	@Test
@@ -154,16 +143,12 @@ public class DBLargeBinaryTest extends AbstractTest {
 		testRow.carCompany.setValue(1);
 		testRow.imageFilename.setValue("toyota_logo.jpg");
 		File image = new File("toyota_share_logo.jpg");
-		testRow.imageBytes.setValue(sourceDataAsString);
+		testRow.imageBytes.setValue(SOURCE_DATA_AS_STRING);
 		database.insert(testRow);
 
 		BinaryObjectWithAutoIncrement firstRow = database.getDBTable(new BinaryObjectWithAutoIncrement()).setBlankQueryAllowed(true).getOnlyRow();
-		System.out.println("row = " + firstRow.toString());
 		String stringValue = firstRow.imageBytes.stringValue();
-		Assert.assertThat(stringValue, is(sourceDataAsString));
-
-//		database.preventDroppingOfTables(false);
-//		database.dropTableNoExceptions(testRow);
+		Assert.assertThat(stringValue, is(SOURCE_DATA_AS_STRING));
 	}
 
 	@DBTableName("bytearraywithautoincrement")
@@ -227,7 +212,7 @@ public class DBLargeBinaryTest extends AbstractTest {
 		public DBString imageFilename = new DBString();
 	}
 
-	static final String sourceDataAsString = "\n"
+	static final String SOURCE_DATA_AS_STRING = "\n"
 			+ "-------------------------------------------------------\n"
 			+ " T E S T S\n"
 			+ "-------------------------------------------------------\n"

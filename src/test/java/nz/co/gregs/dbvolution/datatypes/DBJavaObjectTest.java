@@ -73,8 +73,7 @@ public class DBJavaObjectTest extends AbstractTest {
 		Assert.assertThat(foundRow.javaString.getSize(), is(15));
 		Assert.assertThat(foundRow.javaString.getValue(), is("Thisland"));
 		Assert.assertThat(foundRow.javaString.stringValue(), is("Thisland"));
-		System.out.println(foundRow);
-
+		
 		database.preventDroppingOfTables(false);
 		database.dropTableNoExceptions(foundRow);
 	}
