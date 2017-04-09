@@ -36,7 +36,6 @@ public class DBPoint2DTest extends AbstractTest {
 
 	@Test
 	public void testSetValue() {
-		System.out.println("setValue");
 		Coordinate coordinate = new Coordinate(2, 3);
 		GeometryFactory geomFactory = new GeometryFactory();
 		Point point = geomFactory.createPoint(coordinate);
@@ -49,7 +48,6 @@ public class DBPoint2DTest extends AbstractTest {
 
 	@Test
 	public void testGetSQLDatatype() {
-		System.out.println("getSQLDatatype");
 		DBPoint2D instance = new DBPoint2D();
 		String expResult = " POINT ";
 		String result = instance.getSQLDatatype();
@@ -58,7 +56,6 @@ public class DBPoint2DTest extends AbstractTest {
 
 	@Test
 	public void testIsAggregator() {
-		System.out.println("isAggregator");
 		DBPoint2D instance = new DBPoint2D();
 		boolean expResult = false;
 		boolean result = instance.isAggregator();
@@ -67,7 +64,6 @@ public class DBPoint2DTest extends AbstractTest {
 
 	@Test
 	public void testGetIncludesNull() {
-		System.out.println("getIncludesNull");
 		DBPoint2D instance = new DBPoint2D();
 		boolean expResult = false;
 		boolean result = instance.getIncludesNull();

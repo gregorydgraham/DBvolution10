@@ -37,7 +37,6 @@ public class DBLine2DTest extends AbstractTest {
 
 	@Test
 	public void testSetValueLineString() {
-		System.out.println("setValue");
 		Coordinate coordinate1 = new Coordinate(2, 3);
 		Coordinate coordinate2 = new Coordinate(3, 4);
 		Coordinate coordinate3 = new Coordinate(4, 5);
@@ -52,7 +51,6 @@ public class DBLine2DTest extends AbstractTest {
 
 	@Test
 	public void testSetValueCoorrdinates() {
-		System.out.println("setValue");
 		Coordinate coordinate1 = new Coordinate(2, 3);
 		Coordinate coordinate2 = new Coordinate(3, 4);
 		Coordinate coordinate3 = new Coordinate(4, 5);
@@ -65,7 +63,6 @@ public class DBLine2DTest extends AbstractTest {
 
 	@Test
 	public void testSetValuePoints() {
-		System.out.println("setValue");
 		GeometryFactory geomFactory = new GeometryFactory();
 		Coordinate coordinate1 = new Coordinate(2, 3);
 		Coordinate coordinate2 = new Coordinate(3, 4);
@@ -82,7 +79,6 @@ public class DBLine2DTest extends AbstractTest {
 
 	@Test
 	public void testGetSQLDatatype() {
-		System.out.println("getSQLDatatype");
 		DBLine2D instance = new DBLine2D();
 		String expResult = " LINESTRING ";
 		String result = instance.getSQLDatatype();
@@ -91,7 +87,6 @@ public class DBLine2DTest extends AbstractTest {
 
 	@Test
 	public void testIsAggregator() {
-		System.out.println("isAggregator");
 		DBLine2D instance = new DBLine2D();
 		boolean expResult = false;
 		boolean result = instance.isAggregator();
@@ -100,7 +95,6 @@ public class DBLine2DTest extends AbstractTest {
 
 	@Test
 	public void testGetIncludesNull() {
-		System.out.println("getIncludesNull");
 		DBLine2D instance = new DBLine2D();
 		boolean expResult = false;
 		boolean result = instance.getIncludesNull();
