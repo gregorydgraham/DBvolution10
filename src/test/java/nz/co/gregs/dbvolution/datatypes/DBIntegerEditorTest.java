@@ -44,7 +44,6 @@ public class DBIntegerEditorTest {
 	 */
 	@Test
 	public void testSetFormat() {
-		System.out.println("setFormat");
 		String format = "";
 		DBIntegerEditor instance = new DBIntegerEditor();
 		instance.setFormat(format);
@@ -57,7 +56,6 @@ public class DBIntegerEditorTest {
 	@Test
 	@SuppressWarnings("deprecation")
 	public void testSetAsText() {
-		System.out.println("setAsText");
 		String text = "5";
 		DBIntegerEditor instance = new DBIntegerEditor();
 		instance.setAsText(text);
