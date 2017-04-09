@@ -135,7 +135,6 @@ public class DateRepeatImpl {
 		String[] splitOriginal = original.split("[A-Za-z]");
 		String[] splitCompareTo = compareTo.split("[A-Za-z]");
 		for (int i = 1; i < splitCompareTo.length; i++) { // Start at 1 because the first split is empty
-			System.out.println("SPLITORIGINAL " + i + ": " + splitOriginal[i]);
 			double intOriginal = Double.parseDouble(splitOriginal[i]);
 			double intCompareTo = Double.parseDouble(splitCompareTo[i]);
 			if (intOriginal > intCompareTo) {
@@ -219,7 +218,7 @@ public class DateRepeatImpl {
 		if (intervalStr == null || intervalStr.length() == 0) {
 			return null;
 		}
-		System.out.println("DBV INTERVAL: " + intervalStr);
+
 		Period interval = new Period();
 		interval = interval.withYears(getYearPart(intervalStr));
 		interval = interval.withMonths(getMonthPart(intervalStr));
