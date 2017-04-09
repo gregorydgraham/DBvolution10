@@ -46,7 +46,6 @@ public class DBEnumTest extends AbstractTest {
 
 		String sqlFragment = row.recordType.toSQLString(database);
 		assertThat(sqlFragment, is("3"));
-		System.out.println(sqlFragment);
 	}
 
 	@Test
@@ -57,7 +56,6 @@ public class DBEnumTest extends AbstractTest {
 
 		String sqlFragment = row.recordType.toSQLString(database);
 		assertThat(sqlFragment, is("3"));
-		System.out.println(sqlFragment);
 	}
 
 	@Test
@@ -68,8 +66,6 @@ public class DBEnumTest extends AbstractTest {
 				IntEnum.SHIPPING_MANIFEST_RECORD);
 		
 		String sqlFragment = database.getDBQuery(rowExemplar).getSQLForQuery();
-//		String sqlFragment = rowExemplar.recordType.getWhereClause(database, rowExemplar.column(rowExemplar.recordType));
-		System.out.println(sqlFragment);
 		assertThat(sqlFragment.toLowerCase(), containsString("c_5 in ( 2, 1)"));
 	}
 
@@ -81,8 +77,6 @@ public class DBEnumTest extends AbstractTest {
 				IntEnum.SHIPPING_MANIFEST_RECORD.getCode());
 
 		String sqlFragment = database.getDBQuery(rowExemplar).getSQLForQuery();
-//		String sqlFragment = rowExemplar.recordType.getWhereClause(database, rowExemplar.column(rowExemplar.recordType));
-		System.out.println(sqlFragment);
 		assertThat(sqlFragment.toLowerCase(), containsString("c_5 in ( 2, 1)"));
 	}
 
@@ -103,7 +97,6 @@ public class DBEnumTest extends AbstractTest {
 					IntEnum.MOVEMENT_REQUEST_RECORD,
 					IntEnum.SHIPPING_MANIFEST_RECORD);
 			List<IntegerEnumTable> rows = database.get(integerTableExemplar);
-			database.print(rows);
 
 			for (IntegerEnumTable row : rows) {
 				if (row.uid_202.getValue().intValue() == 1) {
@@ -134,7 +127,6 @@ public class DBEnumTest extends AbstractTest {
 			integerTableExemplar.uid_202.permittedValues(
 					0,null);
 			List<IntegerEnumWithDefinedValuesTable> rows = database.get(integerTableExemplar);
-			database.print(rows);
 
 			for (IntegerEnumWithDefinedValuesTable row : rows) {
 					assertThat(row.request.enumValue(), is(IntEnum.MOVEMENT_REQUEST_RECORD));
@@ -162,7 +154,6 @@ public class DBEnumTest extends AbstractTest {
 			integerTableExemplar.recordType.permittedRange(
 					IntEnum.MOVEMENT_REQUEST_RECORD, null);
 			List<IntegerEnumTable> rows = database.get(integerTableExemplar);
-			database.print(rows);
 
 			assertThat(rows.size(), is(2));
 
@@ -173,7 +164,6 @@ public class DBEnumTest extends AbstractTest {
 			integerTableExemplar.recordType.permittedRange(
 					null, IntEnum.MOVEMENT_REQUEST_RECORD);
 			rows = database.get(integerTableExemplar);
-			database.print(rows);
 
 			assertThat(rows.size(), is(1));
 
@@ -184,7 +174,6 @@ public class DBEnumTest extends AbstractTest {
 			integerTableExemplar.recordType.permittedRangeInclusive(
 					null, IntEnum.MOVEMENT_REQUEST_RECORD);
 			rows = database.get(integerTableExemplar);
-			database.print(rows);
 
 			assertThat(rows.size(), is(3));
 
@@ -195,7 +184,6 @@ public class DBEnumTest extends AbstractTest {
 			integerTableExemplar.recordType.permittedRangeExclusive(
 					null, IntEnum.MOVEMENT_REQUEST_RECORD);
 			rows = database.get(integerTableExemplar);
-			database.print(rows);
 
 			assertThat(rows.size(), is(1));
 
@@ -206,8 +194,7 @@ public class DBEnumTest extends AbstractTest {
 			integerTableExemplar.recordType.excludedRange(
 					null, IntEnum.MOVEMENT_REQUEST_RECORD);
 			rows = database.get(integerTableExemplar);
-			database.print(rows);
-
+			
 			assertThat(rows.size(), is(2));
 
 			for (IntegerEnumTable row : rows) {
@@ -218,7 +205,6 @@ public class DBEnumTest extends AbstractTest {
 			integerTableExemplar.recordType.permittedRangeInclusive(
 					null, IntEnum.SHIPPING_MANIFEST_RECORD);
 			rows = database.get(integerTableExemplar);
-			database.print(rows);
 
 			assertThat(rows.size(), is(1));
 
@@ -231,28 +217,24 @@ public class DBEnumTest extends AbstractTest {
 			integerTableExemplar.recordType.permittedRangeExclusive(
 					null, IntEnum.SHIPPING_MANIFEST_RECORD);
 			rows = database.get(integerTableExemplar);
-			database.print(rows);
 
 			assertThat(rows.size(), is(0));
 
 			integerTableExemplar.recordType.excludedRangeExclusive(
 					null, IntEnum.SHIPPING_MANIFEST_RECORD);
 			rows = database.get(integerTableExemplar);
-			database.print(rows);
 
 			assertThat(rows.size(), is(3));
 
 			integerTableExemplar.recordType.excludedRangeInclusive(
 					null, IntEnum.SHIPPING_MANIFEST_RECORD);
 			rows = database.get(integerTableExemplar);
-			database.print(rows);
 
 			assertThat(rows.size(), is(2));
 
 			integerTableExemplar.recordType.excludedValues(
 					null, IntEnum.SHIPPING_MANIFEST_RECORD, IntEnum.MOVEMENT_CANCELLATION_REQUEST);
 			rows = database.get(integerTableExemplar);
-			database.print(rows);
 
 			assertThat(rows.size(), is(2));
 			for (IntegerEnumTable row : rows) {
@@ -281,7 +263,6 @@ public class DBEnumTest extends AbstractTest {
 			stringTableExemplar.recordType.permittedRange(
 					StringEnumType.MOVEMENT_REQUEST_RECORD, null);
 			List<StringEnumTable> rows = database.get(stringTableExemplar);
-			database.print(rows);
 
 			assertThat(rows.size(), is(2));
 
@@ -292,7 +273,6 @@ public class DBEnumTest extends AbstractTest {
 			stringTableExemplar.recordType.permittedRange(
 					null, StringEnumType.MOVEMENT_REQUEST_RECORD.literalValue);
 			rows = database.get(stringTableExemplar);
-			database.print(rows);
 
 			assertThat(rows.size(), is(1));
 
@@ -303,7 +283,6 @@ public class DBEnumTest extends AbstractTest {
 			stringTableExemplar.recordType.permittedRangeInclusive(
 					null, StringEnumType.MOVEMENT_REQUEST_RECORD);
 			rows = database.get(stringTableExemplar);
-			database.print(rows);
 
 			assertThat(rows.size(), is(3));
 
@@ -314,7 +293,6 @@ public class DBEnumTest extends AbstractTest {
 			stringTableExemplar.recordType.permittedRangeExclusive(
 					null, StringEnumType.MOVEMENT_REQUEST_RECORD);
 			rows = database.get(stringTableExemplar);
-			database.print(rows);
 
 			assertThat(rows.size(), is(1));
 
@@ -325,14 +303,12 @@ public class DBEnumTest extends AbstractTest {
 			stringTableExemplar.recordType.excludedRange(
 					null, StringEnumType.MOVEMENT_REQUEST_RECORD);
 			rows = database.get(stringTableExemplar);
-			database.print(rows);
 
 			assertThat(rows.size(), is(2));
 
 			stringTableExemplar.recordType.excludedRange(
 					null, StringEnumType.MOVEMENT_REQUEST_RECORD.literalValue);
 			rows = database.get(stringTableExemplar);
-			database.print(rows);
 
 			assertThat(rows.size(), is(2));
 
@@ -344,21 +320,18 @@ public class DBEnumTest extends AbstractTest {
 			stringTableExemplar.recordType.permittedRangeInclusive(
 					null, StringEnumType.SHIPPING_MANIFEST_RECORD.literalValue);
 			rows = database.get(stringTableExemplar);
-			database.print(rows);
 
 			assertThat(rows.size(), is(1));
 
 			stringTableExemplar.recordType.excludedRangeInclusive(
 					null, StringEnumType.SHIPPING_MANIFEST_RECORD.literalValue);
 			rows = database.get(stringTableExemplar);
-			database.print(rows);
 
 			assertThat(rows.size(), is(2));
 
 			stringTableExemplar.recordType.excludedRangeInclusive(
 					null, StringEnumType.SHIPPING_MANIFEST_RECORD);
 			rows = database.get(stringTableExemplar);
-			database.print(rows);
 
 			assertThat(rows.size(), is(2));
 
@@ -371,28 +344,24 @@ public class DBEnumTest extends AbstractTest {
 			stringTableExemplar.recordType.permittedRangeExclusive(
 					null, StringEnumType.SHIPPING_MANIFEST_RECORD.literalValue);
 			rows = database.get(stringTableExemplar);
-			database.print(rows);
 
 			assertThat(rows.size(), is(0));
 
 			stringTableExemplar.recordType.excludedRangeExclusive(
 					null, StringEnumType.SHIPPING_MANIFEST_RECORD);
 			rows = database.get(stringTableExemplar);
-			database.print(rows);
 
 			assertThat(rows.size(), is(3));
 
 			stringTableExemplar.recordType.excludedRangeExclusive(
 					null, StringEnumType.SHIPPING_MANIFEST_RECORD.literalValue);
 			rows = database.get(stringTableExemplar);
-			database.print(rows);
 
 			assertThat(rows.size(), is(3));
 
 			stringTableExemplar.recordType.excludedValues(
 					null, StringEnumType.SHIPPING_MANIFEST_RECORD, StringEnumType.MOVEMENT_CANCELLATION_REQUEST);
 			rows = database.get(stringTableExemplar);
-			database.print(rows);
 
 			assertThat(rows.size(), is(2));
 			for (StringEnumTable row : rows) {
@@ -420,7 +389,6 @@ public class DBEnumTest extends AbstractTest {
 			integerTableExemplar.recordType.permittedRange(
 					IntEnum.MOVEMENT_REQUEST_RECORD.code, null);
 			List<IntegerEnumTable> rows = database.get(integerTableExemplar);
-			database.print(rows);
 
 			assertThat(rows.size(), is(2));
 
@@ -431,7 +399,6 @@ public class DBEnumTest extends AbstractTest {
 			integerTableExemplar.recordType.permittedRange(
 					null, IntEnum.MOVEMENT_REQUEST_RECORD.code);
 			rows = database.get(integerTableExemplar);
-			database.print(rows);
 
 			assertThat(rows.size(), is(1));
 
@@ -442,7 +409,6 @@ public class DBEnumTest extends AbstractTest {
 			integerTableExemplar.recordType.permittedRangeInclusive(
 					null, IntEnum.MOVEMENT_REQUEST_RECORD.code);
 			rows = database.get(integerTableExemplar);
-			database.print(rows);
 
 			assertThat(rows.size(), is(3));
 
@@ -453,7 +419,6 @@ public class DBEnumTest extends AbstractTest {
 			integerTableExemplar.recordType.permittedRangeExclusive(
 					null, IntEnum.MOVEMENT_REQUEST_RECORD.code);
 			rows = database.get(integerTableExemplar);
-			database.print(rows);
 
 			assertThat(rows.size(), is(1));
 
@@ -464,7 +429,6 @@ public class DBEnumTest extends AbstractTest {
 			integerTableExemplar.recordType.excludedRange(
 					null, IntEnum.MOVEMENT_REQUEST_RECORD.code);
 			rows = database.get(integerTableExemplar);
-			database.print(rows);
 
 			assertThat(rows.size(), is(2));
 
@@ -476,7 +440,6 @@ public class DBEnumTest extends AbstractTest {
 			integerTableExemplar.recordType.permittedRangeInclusive(
 					null, IntEnum.SHIPPING_MANIFEST_RECORD.code);
 			rows = database.get(integerTableExemplar);
-			database.print(rows);
 
 			assertThat(rows.size(), is(1));
 
@@ -489,28 +452,24 @@ public class DBEnumTest extends AbstractTest {
 			integerTableExemplar.recordType.permittedRangeExclusive(
 					null, IntEnum.SHIPPING_MANIFEST_RECORD.code);
 			rows = database.get(integerTableExemplar);
-			database.print(rows);
 
 			assertThat(rows.size(), is(0));
 
 			integerTableExemplar.recordType.excludedRangeExclusive(
 					null, IntEnum.SHIPPING_MANIFEST_RECORD.code);
 			rows = database.get(integerTableExemplar);
-			database.print(rows);
 
 			assertThat(rows.size(), is(3));
 
 			integerTableExemplar.recordType.excludedRangeInclusive(
 					null, IntEnum.SHIPPING_MANIFEST_RECORD.code);
 			rows = database.get(integerTableExemplar);
-			database.print(rows);
 
 			assertThat(rows.size(), is(2));
 
 			integerTableExemplar.recordType.excludedValues(
 					null, IntEnum.SHIPPING_MANIFEST_RECORD.code, IntEnum.MOVEMENT_CANCELLATION_REQUEST.code);
 			rows = database.get(integerTableExemplar);
-			database.print(rows);
 
 			assertThat(rows.size(), is(2));
 			for (IntegerEnumTable row : rows) {
@@ -538,7 +497,6 @@ public class DBEnumTest extends AbstractTest {
 			integerTableExemplar.recordType.permittedRange(
 					IntEnum.MOVEMENT_REQUEST_RECORD.getLong(), null);
 			List<IntegerEnumTable> rows = database.get(integerTableExemplar);
-			database.print(rows);
 
 			assertThat(rows.size(), is(2));
 
@@ -549,7 +507,6 @@ public class DBEnumTest extends AbstractTest {
 			integerTableExemplar.recordType.permittedRange(
 					null, IntEnum.MOVEMENT_REQUEST_RECORD.getLong());
 			rows = database.get(integerTableExemplar);
-			database.print(rows);
 
 			assertThat(rows.size(), is(1));
 
@@ -560,7 +517,6 @@ public class DBEnumTest extends AbstractTest {
 			integerTableExemplar.recordType.permittedRangeInclusive(
 					null, IntEnum.MOVEMENT_REQUEST_RECORD.getLong());
 			rows = database.get(integerTableExemplar);
-			database.print(rows);
 
 			assertThat(rows.size(), is(3));
 
@@ -571,7 +527,6 @@ public class DBEnumTest extends AbstractTest {
 			integerTableExemplar.recordType.permittedRangeExclusive(
 					null, IntEnum.MOVEMENT_REQUEST_RECORD.getLong());
 			rows = database.get(integerTableExemplar);
-			database.print(rows);
 
 			assertThat(rows.size(), is(1));
 
@@ -582,7 +537,6 @@ public class DBEnumTest extends AbstractTest {
 			integerTableExemplar.recordType.excludedRange(
 					null, IntEnum.MOVEMENT_REQUEST_RECORD.getLong());
 			rows = database.get(integerTableExemplar);
-			database.print(rows);
 
 			assertThat(rows.size(), is(2));
 
@@ -594,7 +548,6 @@ public class DBEnumTest extends AbstractTest {
 			integerTableExemplar.recordType.permittedRangeInclusive(
 					null, IntEnum.SHIPPING_MANIFEST_RECORD.getLong());
 			rows = database.get(integerTableExemplar);
-			database.print(rows);
 
 			assertThat(rows.size(), is(1));
 
@@ -607,28 +560,24 @@ public class DBEnumTest extends AbstractTest {
 			integerTableExemplar.recordType.permittedRangeExclusive(
 					null, IntEnum.SHIPPING_MANIFEST_RECORD.getLong());
 			rows = database.get(integerTableExemplar);
-			database.print(rows);
 
 			assertThat(rows.size(), is(0));
 
 			integerTableExemplar.recordType.excludedRangeExclusive(
 					null, IntEnum.SHIPPING_MANIFEST_RECORD.getLong());
 			rows = database.get(integerTableExemplar);
-			database.print(rows);
 
 			assertThat(rows.size(), is(3));
 
 			integerTableExemplar.recordType.excludedRangeInclusive(
 					null, IntEnum.SHIPPING_MANIFEST_RECORD.getLong());
 			rows = database.get(integerTableExemplar);
-			database.print(rows);
 
 			assertThat(rows.size(), is(2));
 
 			integerTableExemplar.recordType.excludedValues(
 					null, IntEnum.SHIPPING_MANIFEST_RECORD.getLong(), IntEnum.MOVEMENT_CANCELLATION_REQUEST.getLong());
 			rows = database.get(integerTableExemplar);
-			database.print(rows);
 
 			assertThat(rows.size(), is(2));
 			for (IntegerEnumTable row : rows) {
@@ -638,7 +587,6 @@ public class DBEnumTest extends AbstractTest {
 			integerTableExemplar.recordType.permittedValues(
 					null, IntEnum.SHIPPING_MANIFEST_RECORD.getLong(), IntEnum.MOVEMENT_CANCELLATION_REQUEST.getLong());
 			rows = database.get(integerTableExemplar);
-			database.print(rows);
 
 			assertThat(rows.size(), is(1));
 			for (IntegerEnumTable row : rows) {
@@ -668,7 +616,6 @@ public class DBEnumTest extends AbstractTest {
 					StringEnumType.MOVEMENT_REQUEST_RECORD,
 					StringEnumType.SHIPPING_MANIFEST_RECORD);
 			List<StringEnumTable> rows = database.get(stringTableExemplar);
-			database.print(rows);
 
 			Assert.assertThat(rows.size(), is(3));
 			Assert.assertThat(rows.get(0).movereq.enumValue(), is(StringEnumType.MOVEMENT_REQUEST_RECORD));
@@ -717,7 +664,7 @@ public class DBEnumTest extends AbstractTest {
 				StringEnumType.MOVEMENT_CANCELLATION_REQUEST,
 				StringEnumType.MOVEMENT_REQUEST_RECORD);
 		List<StringEnumTable> rows = database.get(stringTableExemplar);
-		database.print(rows);
+		
 		Assert.assertThat(rows.size(), is(2));
 
 		stringTableExemplar.recordType.excludedValues(
@@ -725,7 +672,7 @@ public class DBEnumTest extends AbstractTest {
 				StringEnumType.MOVEMENT_CANCELLATION_REQUEST
 		);
 		rows = database.get(stringTableExemplar);
-		database.print(rows);
+		
 		Assert.assertThat(rows.size(), is(2));
 
 		stringTableExemplar.recordType.permittedRangeInclusive(
@@ -733,7 +680,7 @@ public class DBEnumTest extends AbstractTest {
 				null
 		);
 		rows = database.get(stringTableExemplar);
-		database.print(rows);
+		
 		Assert.assertThat(rows.size(), is(2));
 
 		stringTableExemplar.recordType.excludedRangeInclusive(
@@ -741,17 +688,14 @@ public class DBEnumTest extends AbstractTest {
 				StringEnumType.SHIPPING_MANIFEST_RECORD
 		);
 		rows = database.get(stringTableExemplar);
-		database.print(rows);
 		Assert.assertThat(rows.size(), is(2));
 
 		stringTableExemplar.recordType.excludedPattern(StringEnumType.SHIPPING_MANIFEST_RECORD.literalValue);
 		rows = database.get(stringTableExemplar);
-		database.print(rows);
 		Assert.assertThat(rows.size(), is(2));
 
 		stringTableExemplar.recordType.permittedPattern(StringEnumType.MOVEMENT_REQUEST_RECORD.literalValue);
 		rows = database.get(stringTableExemplar);
-		database.print(rows);
 		Assert.assertThat(rows.size(), is(2));
 
 		ArrayList<StringEnumType> arrayList = new ArrayList<>();
@@ -759,14 +703,12 @@ public class DBEnumTest extends AbstractTest {
 		arrayList.add(StringEnumType.MOVEMENT_CANCELLATION_REQUEST);
 		stringTableExemplar.recordType.excludedValuesIgnoreCase(arrayList);
 		rows = database.get(stringTableExemplar);
-		database.print(rows);
 		Assert.assertThat(rows.size(), is(2));
 
 		arrayList.clear();
 		arrayList.add(StringEnumType.MOVEMENT_REQUEST_RECORD);
 		stringTableExemplar.recordType.permittedValuesIgnoreCase(arrayList);
 		rows = database.get(stringTableExemplar);
-		database.print(rows);
 		Assert.assertThat(rows.size(), is(2));
 	}
 
