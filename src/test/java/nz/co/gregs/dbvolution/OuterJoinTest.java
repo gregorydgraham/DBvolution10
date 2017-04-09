@@ -117,7 +117,7 @@ public class OuterJoinTest extends AbstractTest {
 				testableSQLWithoutColumnAliases(sqlForQuery),
 				anyOf(is(testableSQLWithoutColumnAliases(expected2TableQuery1)), is(testableSQLWithoutColumnAliases(expected2TableQuery2))));
 		Assert.assertThat(dbQuery.count(), is(22L));
-		dbQuery.printAllDataColumns(System.out);
+
 		LinkCarCompanyAndLogo linkCoAndLogo = new LinkCarCompanyAndLogo();
 
 		dbQuery.add(linkCoAndLogo);
@@ -134,7 +134,6 @@ public class OuterJoinTest extends AbstractTest {
 						is(testableSQLWithoutColumnAliases("select __78874071.name, __78874071.uid_carcompany, __1997432637.numeric_code, __1997432637.uid_marque, __1997432637.isusedfortafros, __1997432637.fk_toystatusclass, __1997432637.intindallocallowed, __1997432637.upd_count, __1997432637.auto_created, __1997432637.name, __1997432637.pricingcodeprefix, __1997432637.reservationsalwd, __1997432637.creation_date, __1997432637.enabled, __1997432637.fk_carcompany, _1617907935.fk_car_company, _1617907935.fk_company_logo from car_company as __78874071 inner join marque as __1997432637 on( __1997432637.fk_carcompany = __78874071.uid_carcompany ) inner join lt_carco_logo as _1617907935 on( _1617907935.fk_car_company = __78874071.uid_carcompany ) ;"))
 				));
 		Assert.assertThat(dbQuery.count(), is(0L));
-		dbQuery.printAllDataColumns(System.out);
 
 		dbQuery.remove(linkCoAndLogo);
 		dbQuery.addOptional(linkCoAndLogo);
@@ -153,7 +152,6 @@ public class OuterJoinTest extends AbstractTest {
 						is(expected1OptionalTableQuery3),
 						is(testableSQLWithoutColumnAliases("select __78874071.name, __78874071.uid_carcompany, __1997432637.numeric_code, __1997432637.uid_marque, __1997432637.isusedfortafros, __1997432637.fk_toystatusclass, __1997432637.intindallocallowed, __1997432637.upd_count, __1997432637.auto_created, __1997432637.name, __1997432637.pricingcodeprefix, __1997432637.reservationsalwd, __1997432637.creation_date, __1997432637.enabled, __1997432637.fk_carcompany, _1617907935.fk_car_company, _1617907935.fk_company_logo from car_company as __78874071 inner join marque as __1997432637 on( __1997432637.fk_carcompany = __78874071.uid_carcompany ) left outer join lt_carco_logo as _1617907935 on( _1617907935.fk_car_company = __78874071.uid_carcompany ) ;"))
 				));
-		dbQuery.print(System.out);
 		Assert.assertThat(dbQuery.count(), is(22L));
 
 		dbQuery.addOptional(new CompanyLogo());
@@ -184,7 +182,6 @@ public class OuterJoinTest extends AbstractTest {
 		// FULL OUTER JOIN not supported natively by H2, SQLite, or MySqldb
 		if (database.supportsFullOuterJoin()) {
 			String sqlForQuery = dbQuery.getSQLForQuery();
-			dbQuery.print(System.out);
 			Assert.assertThat(dbQuery.count(), is(22L));
 
 			String expectedFullOuterQuery = testableSQLWithoutColumnAliases("select __1997432637.numeric_code, __1997432637.uid_marque, __1997432637.isusedfortafros, __1997432637.fk_toystatusclass, __1997432637.intindallocallowed, __1997432637.upd_count, __1997432637.auto_created, __1997432637.name, __1997432637.pricingcodeprefix, __1997432637.reservationsalwd, __1997432637.creation_date, __1997432637.enabled, __1997432637.fk_carcompany, __78874071.name, __78874071.uid_carcompany, _1159239592.logo_id, _1159239592.car_company_fk, _1159239592.image_file, _1159239592.image_name, _1617907935.fk_car_company, _1617907935.fk_company_logo from marque as __1997432637 full outer join car_company as __78874071 on( __1997432637.fk_carcompany = __78874071.uid_carcompany ) full outer join companylogo as _1159239592 on( _1159239592.car_company_fk = __78874071.uid_carcompany ) full outer join lt_carco_logo as _1617907935 on( _1617907935.fk_car_company = __78874071.uid_carcompany and _1617907935.fk_company_logo = _1159239592.logo_id ) ;");

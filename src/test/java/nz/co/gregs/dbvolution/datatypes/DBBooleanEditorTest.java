@@ -44,7 +44,6 @@ public class DBBooleanEditorTest {
 	 */
 	@Test
 	public void testSetFormat() {
-		System.out.println("setFormat");
 		String format = "";
 		DBBooleanEditor instance = new DBBooleanEditor();
 		instance.setFormat(format);
@@ -56,7 +55,6 @@ public class DBBooleanEditorTest {
 	 */
 	@Test
 	public void testSetAsText() {
-		System.out.println("setAsText");
 		String text = "true";
 		DBBooleanEditor instance = new DBBooleanEditor();
 		instance.setAsText(text);

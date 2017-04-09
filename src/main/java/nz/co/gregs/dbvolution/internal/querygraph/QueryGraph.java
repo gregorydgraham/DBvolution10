@@ -215,7 +215,6 @@ public class QueryGraph {
 
 		for (DBRow row : rows.values()) {
 			if (!returnTables.contains(row)) {
-				System.err.println("COULD NOT FIND TABLE: " + row.getClass().getSimpleName());
 				return true;
 			}
 		}

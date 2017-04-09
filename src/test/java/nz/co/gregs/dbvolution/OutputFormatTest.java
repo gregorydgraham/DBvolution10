@@ -58,7 +58,7 @@ public class OutputFormatTest extends AbstractTest {
 		final CarCompany[] allRowsArray = allRows.toArray(new CarCompany[]{});
 
 		String formatDBRows = OutputFormat.TSV.formatDBRows("headerrow", "headercell", "rowstyle", DATETIME_FORMAT, allRowsArray);
-		System.out.println(formatDBRows);
+		
 		Assert.assertThat(formatDBRows, is("name	uidCarCompany" + newline +  "TOYOTA	1" + newline));
 
 		formatDBRows = OutputFormat.TSV.formatDBRows(DATETIME_FORMAT, allRowsArray);

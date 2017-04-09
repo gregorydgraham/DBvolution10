@@ -79,6 +79,6 @@ public class PrimaryKeylessTableTest extends AbstractTest {
 	public void testCartesianJoinProtection() throws SQLException, Exception {
 		DBQuery dbQuery = database.getDBQuery(new Marque(), new CompanyLogo());
 		dbQuery.setBlankQueryAllowed(true);
-		dbQuery.print();
+		List<DBQueryRow> allRows = dbQuery.getAllRows();
 	}
 }

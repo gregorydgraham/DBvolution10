@@ -44,7 +44,6 @@ public class DBDateEditorTest {
 	 */
 	@Test
 	public void testSetFormat() {
-		System.out.println("setFormat");
 		String format = "";
 		DBDateEditor instance = new DBDateEditor();
 		instance.setFormat(format);
@@ -57,7 +56,6 @@ public class DBDateEditorTest {
 	@Test
 	@SuppressWarnings("deprecation")
 	public void testSetAsText() {
-		System.out.println("setAsText");
 		String text = "Sat, 12 Aug 1995 13:30:00 GMT";
 		DBDateEditor instance = new DBDateEditor();
 		instance.setAsText(text);
