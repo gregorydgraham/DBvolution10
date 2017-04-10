@@ -45,7 +45,6 @@ public class BooleanArrayExpressionTest extends AbstractTest {
 
 	@Test
 	public void testGetQueryableDatatypeForExpressionValue() {
-		System.out.println("getQueryableDatatypeForExpressionValue");
 		BooleanArrayExpression instance = new BooleanArrayExpression();
 		QueryableDatatype<?> expResult = new DBBooleanArray();
 		QueryableDatatype<?> result = instance.getQueryableDatatypeForExpressionValue();
@@ -54,7 +53,6 @@ public class BooleanArrayExpressionTest extends AbstractTest {
 
 	@Test
 	public void testIsAggregator() {
-		System.out.println("isAggregator");
 		BooleanArrayExpression instance = new BooleanArrayExpression();
 		boolean expResult = false;
 		boolean result = instance.isAggregator();
@@ -63,7 +61,6 @@ public class BooleanArrayExpressionTest extends AbstractTest {
 
 	@Test
 	public void testGetTablesInvolved() {
-		System.out.println("getTablesInvolved");
 		BooleanArrayExpression instance = new BooleanArrayExpression();
 		Set<DBRow> expResult = null;
 		Set<DBRow> result = instance.getTablesInvolved();
@@ -72,7 +69,6 @@ public class BooleanArrayExpressionTest extends AbstractTest {
 
 	@Test
 	public void testGetIncludesNull() {
-		System.out.println("getIncludesNull");
 		BooleanArrayExpression instance = new BooleanArrayExpression();
 		boolean expResult = false;
 		boolean result = instance.getIncludesNull();
@@ -81,7 +77,6 @@ public class BooleanArrayExpressionTest extends AbstractTest {
 
 	@Test
 	public void testIsPurelyFunctional() {
-		System.out.println("isPurelyFunctional");
 		BooleanArrayExpression instance = new BooleanArrayExpression();
 		boolean expResult = true;
 		boolean result = instance.isPurelyFunctional();
@@ -90,7 +85,6 @@ public class BooleanArrayExpressionTest extends AbstractTest {
 
 	@Test
 	public void testAsExpressionColumn() {
-		System.out.println("isPurelyFunctional");
 		BooleanArrayExpression instance = new BooleanArrayExpression();
 		DBBooleanArray result = instance.asExpressionColumn();
 		Assert.assertThat(result, isA(DBBooleanArray.class));

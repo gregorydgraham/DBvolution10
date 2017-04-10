@@ -40,7 +40,6 @@ public class DBStringEditorTest {
 	 */
 	@Test
 	public void testSetFormat() {
-		System.out.println("setFormat");
 		String format = "";
 		DBStringEditor instance = new DBStringEditor();
 		instance.setFormat(format);
@@ -52,7 +51,6 @@ public class DBStringEditorTest {
 	@Test
 	@SuppressWarnings("deprecation")
 	public void testSetAsText() {
-		System.out.println("setAsText");
 		String text = "5.1";
 		DBStringEditor instance = new DBStringEditor();
 		instance.setAsText(text);

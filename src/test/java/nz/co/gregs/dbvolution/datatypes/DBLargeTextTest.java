@@ -97,8 +97,6 @@ public class DBLargeTextTest extends AbstractTest {
 		blobTable.fileText.setFromFileSystem(image);
 		database.insert(blobTable);
 
-//		database.print(database.getDBTable(new CompanyText()).setBlankQueryAllowed(true).getAllRows());
-
 		File newFile = new File("retrieveRowWithLargeText.txt");
 		try {
 			newFile.delete();
@@ -108,7 +106,6 @@ public class DBLargeTextTest extends AbstractTest {
 
 		blobTable = new CompanyTextForRetreivingBinaryObject();
 		CompanyTextForRetreivingBinaryObject firstRow = database.getDBTable(blobTable).getRowsByPrimaryKey(primaryKey).get(0);
-//		database.print(database.getDBTable(blobTable).getRowsByPrimaryKey(primaryKey));
 		firstRow.fileText.writeToFileSystem(newFile);
 		Assert.assertThat(newFile.length(), is(image.length()));
 	}

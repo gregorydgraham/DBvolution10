@@ -32,7 +32,6 @@ public class DBUnknownDatatypeTest {
 
 	@Test(expected = UnsupportedOperationException.class)
 	public void testGetSQLDatatype() {
-		System.out.println("getSQLDatatype");
 		DBUnknownDatatype instance = new DBUnknownDatatype();
 		String expResult = "";
 		String result = instance.getSQLDatatype();
@@ -40,7 +39,6 @@ public class DBUnknownDatatypeTest {
 
 	@Test(expected = UnsupportedOperationException.class)
 	public void testFormatValueForSQLStatement() {
-		System.out.println("formatValueForSQLStatement");
 		DBDatabase db = null;
 		DBUnknownDatatype instance = new DBUnknownDatatype();
 		String expResult = "";
@@ -49,7 +47,6 @@ public class DBUnknownDatatypeTest {
 
 	@Test
 	public void testGetQueryableDatatypeForExpressionValue() {
-		System.out.println("getQueryableDatatypeForExpressionValue");
 		DBUnknownDatatype instance = new DBUnknownDatatype();
 		DBUnknownDatatype expResult = new DBUnknownDatatype();
 		DBUnknownDatatype result = instance.getQueryableDatatypeForExpressionValue();
@@ -58,7 +55,6 @@ public class DBUnknownDatatypeTest {
 
 	@Test
 	public void testIsAggregator() {
-		System.out.println("isAggregator");
 		DBUnknownDatatype instance = new DBUnknownDatatype();
 		boolean expResult = false;
 		boolean result = instance.isAggregator();
@@ -67,7 +63,6 @@ public class DBUnknownDatatypeTest {
 
 	@Test
 	public void testGetTablesInvolved() {
-		System.out.println("getTablesInvolved");
 		DBUnknownDatatype instance = new DBUnknownDatatype();
 		Set<DBRow> expResult = null;
 		Set<DBRow> result = instance.getTablesInvolved();

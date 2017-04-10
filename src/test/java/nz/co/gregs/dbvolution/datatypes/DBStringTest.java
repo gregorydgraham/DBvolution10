@@ -35,11 +35,10 @@ public class DBStringTest extends AbstractTest {
 
 	@Test
 	public void testGetValueHandlesUnicode() throws SQLException {
-		database.setPrintSQLBeforeExecuting(true);
 		Marque marque = new Marque();
 		marque.name.permittedValuesIgnoreCase("TOYOTA");
 		List<Marque> got = database.get(marque);
-		System.out.println(got.get(0).isUsedForTAFROs.stringValue());
+		
 		got.get(0).isUsedForTAFROs.setValue("Marahāo, Taupō, Años, Grégory");
 		database.update(got);
 		
@@ -53,11 +52,9 @@ public class DBStringTest extends AbstractTest {
 
 	@Test
 	public void testGetValueHandlesChinese() throws SQLException {
-		database.setPrintSQLBeforeExecuting(true);
 		Marque marque = new Marque();
 		marque.name.permittedValuesIgnoreCase("Toyota");
 		List<Marque> got = database.get(marque);
-		System.out.println(got.get(0).isUsedForTAFROs.stringValue());
 		got.get(0).isUsedForTAFROs.setValue("数据库应该很容易");
 		database.update(got);
 		

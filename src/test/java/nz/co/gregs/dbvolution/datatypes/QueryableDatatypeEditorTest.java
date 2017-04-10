@@ -40,7 +40,6 @@ public class QueryableDatatypeEditorTest {
 	 */
 	@Test
 	public void testSetFormat() {
-		System.out.println("setFormat");
 		String format = "";
 		QueryableDatatypeEditor instance = new QueryableDatatypeEditor();
 		instance.setFormat(format);
@@ -52,7 +51,6 @@ public class QueryableDatatypeEditorTest {
 	@Test
 	@SuppressWarnings("deprecation")
 	public void testSetAsText() {
-		System.out.println("setAsText");
 		String fivePointOne = "5.1";
 		QueryableDatatypeEditor instance = new QueryableDatatypeEditor();
 		instance.setAsText(fivePointOne);

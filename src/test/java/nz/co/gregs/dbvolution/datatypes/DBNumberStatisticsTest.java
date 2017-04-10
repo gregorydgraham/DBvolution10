@@ -33,7 +33,7 @@ public class DBNumberStatisticsTest extends AbstractTest {
 		
 		DBQuery dbQuery = database.getDBQuery(new StatsTest()).setBlankQueryAllowed(true);
 		List<DBQueryRow> allRows = dbQuery.getAllRows();
-		database.print(allRows);
+		
 		assertThat(allRows.size(), is(1));
 		final StatsTest row = allRows.get(0).get(new StatsTest());
 		assertThat(row.stats.count().intValue(), is(22));

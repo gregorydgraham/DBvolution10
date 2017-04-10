@@ -43,7 +43,6 @@ public class DBNumberEditorTest {
 	 */
 	@Test
 	public void testSetFormat() {
-		System.out.println("setFormat");
 		String format = "";
 		DBNumberEditor instance = new DBNumberEditor();
 		instance.setFormat(format);
@@ -56,7 +55,6 @@ public class DBNumberEditorTest {
 	@Test
 	@SuppressWarnings("deprecation")
 	public void testSetAsText() {
-		System.out.println("setAsText");
 		String text = "5.1";
 		DBNumberEditor instance = new DBNumberEditor();
 		instance.setAsText(text);
