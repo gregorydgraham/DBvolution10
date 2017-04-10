@@ -44,7 +44,6 @@ public class LargeObjectExpressionTest extends AbstractTest {
 
 	@Test
 	public void testCopy() {
-		System.out.println("copy");
 		CompanyLogo companyLogo = new CompanyLogo();
 		LargeObjectExpression instance = new LargeObjectExpression(companyLogo.column(companyLogo.imageBytes));
 		LargeObjectExpression result = instance.copy();
@@ -53,7 +52,6 @@ public class LargeObjectExpressionTest extends AbstractTest {
 
 	@Test
 	public void testGetQueryableDatatypeForExpressionValue() {
-		System.out.println("getQueryableDatatypeForExpressionValue");
 		CompanyLogo companyLogo = new CompanyLogo();
 		LargeObjectColumn instance = companyLogo.column(companyLogo.imageBytes);
 		DBLargeBinary expResult = new DBLargeBinary();
@@ -63,7 +61,6 @@ public class LargeObjectExpressionTest extends AbstractTest {
 
 	@Test
 	public void testIsAggregator() {
-		System.out.println("isAggregator");
 		LargeObjectExpression instance = new LargeObjectExpression();
 		boolean expResult = false;
 		boolean result = instance.isAggregator();
@@ -72,7 +69,6 @@ public class LargeObjectExpressionTest extends AbstractTest {
 
 	@Test
 	public void testGetTablesInvolved() {
-		System.out.println("getTablesInvolved");
 		CompanyLogo companyLogo = new CompanyLogo();
 		LargeObjectExpression instance = new LargeObjectExpression(companyLogo.column(companyLogo.imageBytes));
 		Set<DBRow> result = instance.getTablesInvolved();
@@ -83,7 +79,6 @@ public class LargeObjectExpressionTest extends AbstractTest {
 
 	@Test
 	public void testIsNotNull() throws SQLException, IOException {
-		System.out.println("isNotNull");
 		CompanyLogo companyLogo = new CompanyLogo();
 
 		DBQuery dbQuery = database.getDBQuery(companyLogo);
@@ -107,14 +102,13 @@ public class LargeObjectExpressionTest extends AbstractTest {
 		dbQuery = database.getDBQuery(new CompanyLogo()).setBlankQueryAllowed(true);
 		dbQuery.addCondition(imageBytesColumn.isNotNull());
 		allRows = dbQuery.getAllRows();
-		database.print(allRows);
+		
 		Assert.assertThat(allRows.size(), is(1));
 		Assert.assertThat(allRows.get(0).get(companyLogo).logoID.intValue(), is(1));
 	}
 
 	@Test
 	public void testIsNull() throws SQLException, IOException {
-		System.out.println("isNull");
 		CompanyLogo companyLogo = new CompanyLogo();
 
 		DBQuery dbQuery = database.getDBQuery(companyLogo);
@@ -138,14 +132,13 @@ public class LargeObjectExpressionTest extends AbstractTest {
 		dbQuery = database.getDBQuery(new CompanyLogo()).setBlankQueryAllowed(true);
 		dbQuery.addCondition(imageBytesColumn.isNull());
 		allRows = dbQuery.getAllRows();
-		database.print(allRows);
+		
 		Assert.assertThat(allRows.size(), is(1));
 		Assert.assertThat(allRows.get(0).get(companyLogo).logoID.intValue(), is(2));
 	}
 
 	@Test
 	public void testGetIncludesNull() {
-		System.out.println("getIncludesNull");
 		LargeObjectExpression instance = new LargeObjectExpression();
 		boolean expResult = false;
 		boolean result = instance.getIncludesNull();
@@ -159,7 +152,6 @@ public class LargeObjectExpressionTest extends AbstractTest {
 
 	@Test
 	public void testIsPurelyFunctional() {
-		System.out.println("isPurelyFunctional");
 		LargeObjectExpression instance = new LargeObjectExpression();
 		boolean result = instance.isPurelyFunctional();
 		assertEquals(true, instance.isPurelyFunctional());
