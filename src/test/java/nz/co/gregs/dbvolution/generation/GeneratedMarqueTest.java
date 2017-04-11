@@ -209,7 +209,7 @@ public class GeneratedMarqueTest extends AbstractTest {
 
 	@Test
 	public void testEssenceCompiling() throws SQLException, InstantiationException, IllegalAccessException, Exception {
-		if (database instanceof H2MemoryDB) {
+		if (database instanceof H2MemoryDB && database.getDatabaseName().equalsIgnoreCase("blank")) {
 			CachedCompiler cc = CompilerUtils.DEBUGGING
 					? new CachedCompiler(new File(System.getProperty("user.dir"), "src/test/java"), new File(System.getProperty("user.dir"), "target/compiled"))
 					: CompilerUtils.CACHED_COMPILER;

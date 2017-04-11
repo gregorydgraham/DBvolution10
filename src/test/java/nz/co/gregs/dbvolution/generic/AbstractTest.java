@@ -99,10 +99,12 @@ public abstract class AbstractTest {
 			databases.add(new Object[]{"NuoDB", new NuoDB("localhost", 48004L, "dbv", "dbv", "dbv", "dbv")});
 		}
 		if (System.getProperty("testOracleXE") != null) {
-			databases.add(new Object[]{"Oracle11DB", new Oracle11XETestDB(host, port, instance, username, password)});
+//			databases.add(new Object[]{"Oracle11DB", new Oracle11XETestDB(host, port, instance, username, password)});
+			databases.add(new Object[]{"Oracle11DB", Oracle11XETestDB.getFromSettings("oraclexe")});
 		}
 		if (System.getProperty("testMSSQLServer") != null) {
-			databases.add(new Object[]{"MSSQLServer", new MSSQLServerTestDB(host, instance, database, port, username, password)});
+			//databases.add(new Object[]{"MSSQLServer", new MSSQLServerTestDB(host, instance, database, port, username, password)});
+			databases.add(new Object[]{"MSSQLServer", MSSQLServerTestDB.getFromSettings("sqlserver")});
 		}
 		if (System.getProperty("testJTDSSQLServer") != null) {
 			databases.add(new Object[]{"JTDSSQLServer", new JTDSSQLServerTestDB(host, instance, database, port, username, password)});
@@ -122,7 +124,6 @@ public abstract class AbstractTest {
 	public AbstractTest(Object testIterationName, Object db) {
 		if (db instanceof DBDatabase) {
 			this.database = (DBDatabase) db;
-//			database.setPrintSQLBeforeExecuting(true);
 		}
 	}
 
@@ -298,8 +299,8 @@ public abstract class AbstractTest {
 			return new H2DB(h2DataSource);
 		}
 
-		public static H2DB H2TestDatabaseFromFilename(String instance, String username, String password) {
-			return new H2DB(instance, username, password, false);
+		public static H2DB H2TestDatabaseFromFilename(String file, String username, String password) {
+			return new H2DB(file, username, password, false);
 		}
 
 		public H2TestDatabase(String url, String username, String password) {
@@ -470,7 +471,7 @@ public abstract class AbstractTest {
 		}
 		
 		public static H2MemoryTestDB blankDB() {
-			return new H2MemoryTestDB();
+			return new H2MemoryTestDB("Blank", "", "");
 		}
 
 		public H2MemoryTestDB() {

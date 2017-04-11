@@ -62,7 +62,6 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 				throw new DBRuntimeException("TIMEZONE was :\"" + tz + "\"");
 		}
 		final String result = " CAST('" + format.format(date) + " " + tz + "' as DATETIMEOFFSET) ";
-//		System.out.println(""+result);
 		return result;
 	}
 
@@ -590,10 +589,6 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 		return "(" + firstGeometry + ").STIntersection(" + secondGeometry + ")";
 	}
 
-//	@Override
-//	public String OldtransformPolygonIntoDatabasePolygon2DFormat(Polygon polygon) {
-//		return "geometry::STGeomFromText ('" + polygon.toText() + "',0)";
-//	}
 	@Override
 	public String transformLineStringIntoDatabaseLine2DFormat(LineString line) {
 		return "geometry::STGeomFromText ('" + line.toText() + "',0)";
@@ -645,7 +640,6 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 		StringBuilder str = new StringBuilder();
 		String separator = "";
 		for (String point : pointSQL) {
-			System.out.println("" + point);
 			final String coordsOnly = point.replaceAll("geometry::STGeomFromText \\('POINT \\(", "").replaceAll("\\)',0\\)", "");
 			str.append(separator).append(coordsOnly);
 			separator = ",";
