@@ -93,7 +93,8 @@ public abstract class AbstractTest {
 			databases.add(new Object[]{"H2DataSourceDB", H2TestDatabase.getFromSettingsUsingDataSource("h2datasource")});
 		}
 		if (System.getProperty("testPostgresSQL") != null) {
-			databases.add(new Object[]{"PostgresSQL", TestPostgreSQL.getTestDatabase(url, host, port, instance, username, password, schema)});
+			databases.add(new Object[]{"PostgresSQL", TestPostgreSQL.getFromSettings("postgres")});
+//			databases.add(new Object[]{"PostgresSQL", TestPostgreSQL.getTestDatabase(url, host, port, instance, username, password, schema)});
 		}
 		if (System.getProperty("testNuo") != null) {
 			databases.add(new Object[]{"NuoDB", new NuoDB("localhost", 48004L, "dbv", "dbv", "dbv", "dbv")});
@@ -367,7 +368,7 @@ public abstract class AbstractTest {
 			String username = System.getProperty(""+prefix+".username");
 			String password = System.getProperty(""+prefix+".password");
 			String schema = System.getProperty(""+prefix+".schema");
-			return TestPostgreSQL.getTestDatabase(url, host, port, database, username, password, schema);
+			return TestPostgreSQL.getTestDatabase(url, host, port, instance, username, password, schema);
 		}
 
 		protected static PostgresDB getTestDatabase(String url, String host, String port, String database, String username, String password, String schema) {
