@@ -201,7 +201,7 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 	 */
 	@Override
 	public String doStringEqualsTransform(String firstSQLExpression, String secondSQLExpression) {
-		return "(" + firstSQLExpression + "+'@') = (" + secondSQLExpression + "+'@')";
+		return super.doStringEqualsTransform(firstSQLExpression + "+'@'", secondSQLExpression + "+'@'");
 	}
 
 	@Override
