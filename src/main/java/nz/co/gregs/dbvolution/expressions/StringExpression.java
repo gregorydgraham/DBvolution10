@@ -709,7 +709,29 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 	 */
 	@Override
 	public BooleanExpression isNot(StringResult equivalentString) {
-		return is(equivalentString).not();
+
+		if (equivalentString.getIncludesNull()) {
+			return this.isNotNull();
+		} else {
+			return new BooleanExpression(new DBBinaryBooleanArithmetic(this, equivalentString) {
+				@Override
+				public String toSQLString(DBDatabase db) {
+					return (new StringExpression(first)).ifDBNull("<DBV NULL PROTECTION>").toSQLString(db) 
+						+ this.getEquationOperator(db) 
+						+ (new StringExpression(second)).ifDBNull("<DBV NULL PROTECTION>").toSQLString(db);
+				}
+				@Override
+				protected String getEquationOperator(DBDatabase db) {
+					return " <> ";
+				}
+
+				@Override
+				public boolean getIncludesNull() {
+					return false;
+				}
+			});
+		}
+//		return is(equivalentString).not();
 	}
 
 	/**
@@ -2753,8 +2775,8 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 
 	private static abstract class DBBinaryBooleanArithmetic extends BooleanExpression {
 
-		private StringResult first;
-		private StringResult second;
+		protected StringResult first;
+		protected StringResult second;
 
 		DBBinaryBooleanArithmetic(StringResult first, StringResult second) {
 			this.first = first;

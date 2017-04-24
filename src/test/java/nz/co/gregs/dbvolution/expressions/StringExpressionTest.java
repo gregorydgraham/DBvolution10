@@ -140,22 +140,20 @@ public class StringExpressionTest extends AbstractTest {
 	@Test
 	public void testIsNotLikeStringExpressionUsingNullNumberResult() throws SQLException {
 		Marque likeQuery = new Marque();
-		final NumberExpression num = new NumberExpression(5);
 		likeQuery.name.excludedPattern(new StringExpression((NumberResult)null).uppercase());
 		List<Marque> rowsByExample = marquesTable.getRowsByExample(likeQuery);
-//		marquesTable.print();
 		Assert.assertEquals(22, rowsByExample.size());
 	}
 
 	@Test
-	public void testIsStringExpressionNull() throws SQLException {
+	public void testIsNotStringExpressionNull() throws SQLException {
 		Marque likeQuery = new Marque();
 		final StringExpression nullExpr =  StringExpression.nullExpression();
-		likeQuery.auto_created.excludedValues(nullExpr);
-//		System.out.println(""+marquesTable.getSQLForQuery(likeQuery));
+		likeQuery.individualAllocationsAllowed.excludedValues(nullExpr);
+		System.out.println(""+marquesTable.getSQLForQuery(likeQuery));
 		List<Marque> rowsByExample = marquesTable.getRowsByExample(likeQuery);
 		marquesTable.print();
-		Assert.assertEquals(22, rowsByExample.size());
+		Assert.assertEquals(20, rowsByExample.size());
 	}
 
 	@Test
