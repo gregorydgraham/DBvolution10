@@ -28,7 +28,9 @@ import nz.co.gregs.dbvolution.exceptions.AccidentalDroppingOfTableException;
 import nz.co.gregs.dbvolution.exceptions.AutoCommitActionDuringTransactionException;
 import nz.co.gregs.dbvolution.exceptions.DBRuntimeException;
 import nz.co.gregs.dbvolution.generic.AbstractTest;
+import static org.hamcrest.Matchers.*;
 import org.junit.After;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -66,18 +68,17 @@ public class DBDatabaseTest extends AbstractTest {
 			database.preventDroppingOfTables(false);
 			database.dropTableNoExceptions(new CreateTableTestClass());
 		} catch (AutoCommitActionDuringTransactionException ex) {
-			System.out.println("SETUP: CreateTableTestClass table not dropped, probably doesn't exist: " + ex.getMessage());
+//			SETUP: CreateTableTestClass table not dropped, probably doesn't exist
 		}
 
 		final CreateTableTestClass createTableTestClass = new CreateTableTestClass();
 		database.createTable(createTableTestClass);
-		System.out.println("CreateTableTestClass table created successfully");
+		Assert.assertThat(database.getDBTable(createTableTestClass).setBlankQueryAllowed(true).getAllRows().size(), is(0));
 
 		try {
 			database.preventDroppingOfTables(false);
 			database.dropTableNoExceptions(new CreateTableTestClass());
 		} catch (AutoCommitActionDuringTransactionException ex) {
-			System.out.println("SETUP: CreateTableTestClass table not dropped, probably doesn't exist: " + ex.getMessage());
 		}
 	}
 
@@ -88,7 +89,7 @@ public class DBDatabaseTest extends AbstractTest {
 			database.preventDroppingOfTables(false);
 			database.dropTableNoExceptions(new CreateTableWithForeignKeyTestClass());
 		} catch (AutoCommitActionDuringTransactionException ex) {
-			System.out.println("SETUP: CreateTableWithForeignKeyTestClass table not dropped, probably doesn't exist: " + ex.getMessage());
+			//SETUP: CreateTableWithForeignKeyTestClass table not dropped, probably doesn't exist
 		}
 		try {
 			database.preventDroppingOfTables(false);
@@ -98,18 +99,19 @@ public class DBDatabaseTest extends AbstractTest {
 
 		final CreateTableTestClass createTableClass = new CreateTableTestClass();
 		database.createTableWithForeignKeys(createTableClass);
+		// This will throw an error if the table doesn't exist
+		Assert.assertThat(database.getDBTable(createTableClass).setBlankQueryAllowed(true).getAllRows().size(), is(0));
 
 		final CreateTableWithForeignKeyTestClass createTableTestClass = new CreateTableWithForeignKeyTestClass();
 		database.createTableWithForeignKeys(createTableTestClass);
-		System.out.println("CreateTableWithForeignKeyTestClass table created successfully");
+		// This will throw an error if the table doesn't exist
+		Assert.assertThat(database.getDBTable(createTableTestClass).setBlankQueryAllowed(true).getAllRows().size(), is(0));
 		database.createIndexesOnAllFields(createTableTestClass);
-		System.out.println("CreateTableWithForeignKeyTestClass indexes created successfully");
-
+		
 		try {
 			database.preventDroppingOfTables(false);
 			database.dropTableNoExceptions(new CreateTableWithForeignKeyTestClass());
 		} catch (AutoCommitActionDuringTransactionException ex) {
-			System.out.println("SETUP: CreateTableWithForeignKeyTestClass table not dropped, probably doesn't exist: " + ex.getMessage());
 		}
 	}
 
@@ -120,7 +122,7 @@ public class DBDatabaseTest extends AbstractTest {
 			database.preventDroppingOfTables(false);
 			database.dropTableNoExceptions(new CreateTableWithForeignKeyTestClass2());
 		} catch (Exception ex) {
-			System.out.println("SETUP: CreateTableWithForeignKeyTestClass table not dropped, probably doesn't exist: " + ex.getMessage());
+			//SETUP: CreateTableWithForeignKeyTestClass table not dropped, probably doesn't exist
 		}
 		try {
 			database.preventDroppingOfTables(false);
@@ -130,31 +132,29 @@ public class DBDatabaseTest extends AbstractTest {
 
 		final CreateTableTestClass2 createTableClass = new CreateTableTestClass2();
 		database.createTable(createTableClass);
+		Assert.assertThat(database.getDBTable(createTableClass).setBlankQueryAllowed(true).getAllRows().size(), is(0));
 
 		final CreateTableWithForeignKeyTestClass2 createTableTestClass = new CreateTableWithForeignKeyTestClass2();
 		database.createTable(createTableTestClass);
+		Assert.assertThat(database.getDBTable(createTableTestClass).setBlankQueryAllowed(true).getAllRows().size(), is(0));
 		if (!(database instanceof SQLiteDB)) {
 			database.createForeignKeyConstraints(createTableTestClass);
-			System.out.println("CreateTableWithForeignKeyTestClass foreign keys created successfully");
 		}
 		database.createIndexesOnAllFields(createTableTestClass);
-		System.out.println("CreateTableWithForeignKeyTestClass indexes created successfully");
 
 		try {
 			database.preventDroppingOfTables(false);
 			database.dropTableNoExceptions(new CreateTableWithForeignKeyTestClass2());
 		} catch (AutoCommitActionDuringTransactionException ex) {
-			System.out.println("SETUP: CreateTableWithForeignKeyTestClass2 table not dropped, probably doesn't exist: " + ex.getMessage());
 		}
 		try {
 			database.preventDroppingOfTables(false);
 			database.dropTableNoExceptions(new CreateTableWithForeignKeyTestClass());
 		} catch (AutoCommitActionDuringTransactionException ex) {
-			System.out.println("SETUP: CreateTableWithForeignKeyTestClass table not dropped, probably doesn't exist: " + ex.getMessage());
 		}
 	}
 
-	@Test
+	@Test(expected = AccidentalDroppingOfTableException.class)
 	public void testDropTableException() throws SQLException {
 		database.preventDroppingOfTables(true);
 		try {
@@ -164,37 +164,43 @@ public class DBDatabaseTest extends AbstractTest {
 		} catch (AutoCommitActionDuringTransactionException ex) {
 			System.out.println("SETUP: DropTable2TestClass table not created, because you are in a transaction.");
 		}
+		database.dropTable(new DropTable2TestClass());
+	}
+
+	@Test(expected = AccidentalDroppingOfTableException.class)
+	public void testDropTableAllowedOnlyOnceException() throws SQLException {
+		database.preventDroppingOfTables(true);
 		try {
-			database.dropTable(new DropTable2TestClass());
-			throw new DBRuntimeException("Drop Table Method failed to throw a AccidentalDroppingOfTableException exception.");
-		} catch (AccidentalDroppingOfTableException oops) {
-			System.out.println("AccidentalDroppingOfTableException successfully thrown");
+			database.createTable(new DropTable2TestClass());
+		} catch (SQLException ex) {
+		} catch (AutoCommitActionDuringTransactionException ex) {
 		}
 		try {
 			database.preventDroppingOfTables(false);
 			database.dropTable(new DropTable2TestClass());
-			database.createTable(new DropTable2TestClass());
-			database.dropTable(new DropTable2TestClass());
-			throw new DBRuntimeException("Drop Table Method failed to throw a AccidentalDroppingOfTableException exception.");
-		} catch (AccidentalDroppingOfTableException oops) {
-			System.out.println("AccidentalDroppingOfTableException successfully thrown");
-		}
-		database.preventDroppingOfTables(false);
+		} catch (AccidentalDroppingOfTableException oops) {}
+		database.createTable(new DropTable2TestClass());
 		database.dropTable(new DropTable2TestClass());
 	}
 
-	@Test
+	@Test(expected = RuntimeException.class)
 	public void testDropTable() throws SQLException {
 		try {
 			database.createTable(new DropTableTestClass());
 		} catch (SQLException ex) {
-			System.out.println("SETUP: DropTableTestClass table not created, probably already exists" + ex.getMessage());
+			//SETUP: DropTableTestClass table not created, probably already exists
 		} catch (AutoCommitActionDuringTransactionException ex) {
-			System.out.println("SETUP: DropTableTestClass table not created, probably already exists" + ex.getMessage());
+			//SETUP: DropTableTestClass table not created, probably already exists
 		}
+		//Prove that the table exists
+		Assert.assertThat(database.getDBTable(new DropTableTestClass()).setBlankQueryAllowed(true).getAllRows().size(),is(0));
 		database.preventDroppingOfTables(false);
 		database.dropTable(new DropTableTestClass());
-		System.out.println("DropTableTestClass table dropped successfully");
+		try{
+			Assert.assertThat(database.getDBTable(new DropTableTestClass()).setBlankQueryAllowed(true).getAllRows().size(),is(0));
+		}catch(SQLException exp){
+			throw new DBRuntimeException();
+		}
 	}
 
 	@Test(expected = AccidentalDroppingOfDatabaseException.class)
