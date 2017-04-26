@@ -167,17 +167,12 @@ public class OracleDBDefinition extends DBDefinition {
 
 	@Override
 	public String doStringIfNullTransform(String possiblyNullValue, String alternativeIfNull) {
-		return "DECODE(" + possiblyNullValue + ","
-			+ "NULL," + (alternativeIfNull == null ? "NULL" : alternativeIfNull)
-			+ ",''," + (alternativeIfNull == null ? "NULL" : alternativeIfNull)
-			+ "," + possiblyNullValue + ")";
+		return "NVL("+possiblyNullValue+", "+alternativeIfNull+")";
 	}
 
 	@Override
 	public String doNumberIfNullTransform(String possiblyNullValue, String alternativeIfNull) {
-		return "DECODE(" + possiblyNullValue
-			+ ",NULL," + (alternativeIfNull == null ? "NULL" : alternativeIfNull)
-			+ "," + possiblyNullValue + ")";
+		return "NVL("+possiblyNullValue+", "+alternativeIfNull+")";
 	}
 
 	@Override
@@ -504,11 +499,6 @@ public class OracleDBDefinition extends DBDefinition {
 	public String doLogBase10NumberTransform(String sql) {
 		return "log(10, ("+sql+"))";
 	}	
-	
-	@Override
-	public String doStringEqualsTransform(String firstSQLExpression, String secondSQLExpression) {
-		return "(NVL("+firstSQLExpression + ", 'DBVOLUTION ORACLE NULL PROTECTION') = NVL(" + secondSQLExpression+", 'DBVOLUTION ORACLE NULL PROTECTION'))";
-	}
 	
 	@Override
 	public String doDayTransform(String dateExpression) {
