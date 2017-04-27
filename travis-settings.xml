@@ -55,6 +55,21 @@
                 <h2datasource.password></h2datasource.password>
                 <h2datasource.schema></h2datasource.schema>
                 
+                <mysql.url>jdbc:mysql://127.0.0.1/test?createDatabaseIfNotExist=dbvtrue</mysql.url>
+				<mysql.password></mysql.password>
+				<mysql.host>127.0.0.1</mysql.host>
+				<mysql.port>3306</mysql.port>
+				<mysql.instance>dbvtest</mysql.instance>
+				<mysql.username>root</mysql.username>
+				<mysql.schema></mysql.schema>
+				
+				<postgres.url></postgres.url>
+				<postgres.host>127.0.0.1</postgres.host>
+				<postgres.port>5432</postgres.port>
+				<postgres.instance>dbvtest</postgres.instance>
+				<postgres.username>postgres</postgres.username>
+				<postgres.password></postgres.password>
+				<postgres.schema></postgres.schema>
             </properties>
         </profile>
     </profiles>

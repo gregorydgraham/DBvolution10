@@ -1,8 +1,14 @@
 language: java
 ## YAML Template.
 ---
+services:
+  - mysql
+  - postgresql
 jdk:
   - oraclejdk7
 notifications:
   email: false
-script: mvn test -B -s travis-settings.xml -P DBs-Bundled
+before_install:
+  - mysql -e 'CREATE DATABASE IF NOT EXISTS dbvtest;'
+  - psql -c 'create database dbvtest;' -U postgres
+script: mvn test -B -s travis-settings.xml -P DBs-OpenSource
