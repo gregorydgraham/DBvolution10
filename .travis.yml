@@ -5,4 +5,4 @@ jdk:
   - oraclejdk7
 notifications:
   email: false
-script: mvn test -B --settings travis-settings.xml --activate-profiles DBs-Bundled
+script: mvn test -B --settings travis-settings.xml
