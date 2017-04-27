@@ -1,8 +1,7 @@
 language: java
 ## YAML Template.
 ---
-install: true
-test: "mvn -B -s travis-settings.xml -P DBs-OpenSource test "
+install: "mvn -B -s travis-settings.xml -P DBs-OpenSource test "
 services:
   - mysql
   - postgresql
