@@ -32,7 +32,7 @@ public class InterfaceInfoTest {
 	public void getsBoundsGivenDirectImplementationUsingClassTypeArguments() {
 		ParameterBounds[] bounds = InterfaceInfo.getParameterBounds(MyInterface.class,
 				SimpleIntegerDBIntegerImpl.class);
-		System.out.println(Arrays.toString(bounds));
+		
 		assertThat(bounds[0].upperType(), is((Object) Integer.class));
 		assertThat(bounds[0].lowerType(), is(nullValue()));
 
@@ -55,8 +55,7 @@ public class InterfaceInfoTest {
 
 		ParameterBounds[] bounds = InterfaceInfo.getParameterBounds(MyInterface.class,
 				GenericIntegerDBIntegerImpl.class);
-		System.out.println(Arrays.toString(bounds));
-
+		
 		assertThat(bounds[0].upperType(), is((Object) Number.class));
 		assertThat(bounds[0].lowerType(), is(nullValue()));
 
@@ -87,7 +86,7 @@ public class InterfaceInfoTest {
 
 		ParameterBounds[] bounds = InterfaceInfo.getParameterBounds(MyInterface.class,
 				MyIntegerDBIntegerAdaptorWithNumberDBNumberMethods.class);
-		System.out.println(Arrays.toString(bounds));
+		
 		assertThat(bounds[0].upperType(), is((Object) Integer.class));
 		assertThat(bounds[0].lowerType(), is(nullValue()));
 
@@ -107,7 +106,7 @@ public class InterfaceInfoTest {
 
 		ParameterBounds[] bounds = InterfaceInfo.getParameterBounds(MyInterface.class,
 				ConcretePartialImplementationOfConcreteType.class);
-		System.out.println(Arrays.toString(bounds));
+		
 		assertThat(bounds[0].upperType(), is((Object) Number.class));
 		assertThat(bounds[0].lowerType(), is(nullValue()));
 
@@ -127,7 +126,7 @@ public class InterfaceInfoTest {
 
 		ParameterBounds[] bounds = InterfaceInfo.getParameterBounds(MyInterface.class,
 				ConcretePartialImplementationOfWildcardType.class);
-		System.out.println(Arrays.toString(bounds));
+		
 		assertThat(bounds[0].upperType(), is((Object) Integer.class));
 		assertThat(bounds[0].lowerType(), is(nullValue()));
 
@@ -152,7 +151,7 @@ public class InterfaceInfoTest {
 
 		ParameterBounds[] bounds = InterfaceInfo.getParameterBounds(MyInterface.class,
 				ConcretePartialReImplementationOfWildcardTypeWithWildcardType.class);
-		System.out.println(Arrays.toString(bounds));
+		
 		assertThat(bounds[0].upperType(), is((Object) Integer.class));
 		assertThat(bounds[0].lowerType(), is(nullValue()));
 
@@ -163,7 +162,7 @@ public class InterfaceInfoTest {
 	@Test
 	public void getsDefaultBoundsGivenItself() {
 		ParameterBounds[] bounds = InterfaceInfo.getParameterBounds(MyInterface.class, MyInterface.class);
-		System.out.println(Arrays.toString(bounds));
+		
 		assertThat(bounds[0].upperType(), is((Object) Object.class));
 		assertThat(bounds[0].lowerType(), is(nullValue()));
 
@@ -174,7 +173,7 @@ public class InterfaceInfoTest {
 	@Test
 	public void getsDefaultBoundsGivenOnClassWhenUsingConvenienceMethod() {
 		ParameterBounds[] bounds = InterfaceInfo.getParameterBounds(MyInterface.class);
-		System.out.println(Arrays.toString(bounds));
+		
 		assertThat(bounds[0].upperType(), is((Object) Object.class));
 		assertThat(bounds[0].lowerType(), is(nullValue()));
 
@@ -185,15 +184,14 @@ public class InterfaceInfoTest {
 	@Test
 	public void getsDefaultBoundsOnObjectClass() {
 		ParameterBounds[] bounds = InterfaceInfo.getParameterBounds(Object.class);
-		System.out.println(Arrays.toString(bounds));
+		
 		assertThat(bounds.length, is(0));
 	}
 
 	@Test
 	public void getsDefaultBoundsOnClassClass() {
 		ParameterBounds[] bounds = InterfaceInfo.getParameterBounds(Class.class);
-		System.out.println(Arrays.toString(bounds));
-
+		
 		assertThat(bounds[0].upperType(), is((Object) Object.class));
 		assertThat(bounds[0].lowerType(), is(nullValue()));
 	}
@@ -201,8 +199,7 @@ public class InterfaceInfoTest {
 	@Test
 	public void getsDefaultBoundsOnEnumClass() throws UnsupportedType {
 		ParameterBounds[] bounds = InterfaceInfo.getParameterBounds(Enum.class);
-		System.out.println(Arrays.toString(bounds));
-
+		
 		assertThat(bounds[0].upperClass(), is((Object) Enum.class));
 		assertThat(bounds[0].lowerType(), is(nullValue()));
 	}
@@ -228,7 +225,7 @@ public class InterfaceInfoTest {
 						return null;
 					}
 				}.getClass());
-		System.out.println(Arrays.toString(bounds));
+		
 		assertThat(bounds[0].upperType(), is((Object) Object.class));
 		assertThat(bounds[0].lowerType(), is(nullValue()));
 
@@ -245,7 +242,7 @@ public class InterfaceInfoTest {
 		}
 
 		ParameterBounds[] bounds = InterfaceInfo.getParameterBounds(MultiBoundedInterface.class, MySubclass.class);
-		System.out.println(Arrays.toString(bounds));
+		
 		assertThat(Arrays.asList(bounds[0].upperClasses()), contains(Serializable.class, (Object) Map.class));
 		assertThat(bounds[0].lowerTypes(), is(nullValue()));
 	}
@@ -260,7 +257,7 @@ public class InterfaceInfoTest {
 
 		ParameterBounds[] bounds = InterfaceInfo.getParameterBounds(ParamaterizedArgumentInterface.class,
 				MySubclass.class);
-		System.out.println(Arrays.toString(bounds));
+		
 		assertThat(bounds[0].upperClass(), is((Object) HashMap.class));
 		assertThat(bounds[0].lowerClass(), is(nullValue()));
 	}
@@ -276,7 +273,7 @@ public class InterfaceInfoTest {
 
 		ParameterBounds[] bounds = InterfaceInfo.getParameterBounds(ParamaterizedArgumentInterface.class,
 				MySubclass.class);
-		System.out.println(Arrays.toString(bounds));
+		
 		assertThat(bounds[0].upperClass(), is((Object) Map.class));
 		assertThat(bounds[0].lowerClass(), is(nullValue()));
 	}
@@ -292,7 +289,7 @@ public class InterfaceInfoTest {
 
 		ParameterBounds[] bounds = InterfaceInfo.getParameterBounds(ParamaterizedArgumentInterface.class,
 				MySubclass.class);
-		System.out.println(Arrays.toString(bounds));
+		
 		assertThat(bounds[0].upperClass(), is((Object) Enum.class));
 		assertThat(bounds[0].lowerClass(), is(nullValue()));
 	}
@@ -313,7 +310,7 @@ public class InterfaceInfoTest {
 	public void acceptsWhenImplIsAbstract() throws UnsupportedType {
 		InterfaceInfo info = new InterfaceInfo(MyInterface.class, AbstractPartialImplementationWithWildcardType.class);
 		assertThat(info.getInterfaceParameterValueBounds(), is(not(nullValue())));
-		System.out.println(Arrays.toString(info.getInterfaceParameterValueBounds()));
+		
 		assertThat(info.getInterfaceParameterValueBounds().length, is(2));
 		assertThat(info.getInterfaceParameterValueBounds()[0].upperClass(), is((Object) Number.class));
 		assertThat(info.getInterfaceParameterValueBounds()[1].upperClass(), is((Object) QueryableDatatype.class));
@@ -360,48 +357,6 @@ public class InterfaceInfoTest {
 		}
 	}
 
-//	public static class MyIntegerDBIntegerAdaptorWithNumberDBNumberMethods implements MyInterface<Integer, DBInteger> {
-//		@Override
-//		public Integer toObjectValue(DBInteger dbvValue) {
-//			throw new UnsupportedOperationException("toObjectValue(DBInteger): Integer");
-//		}
-//
-//		//@Override
-//		public Number toObjectValue(DBNumber dbvValue) {
-//			throw new UnsupportedOperationException("toObjectValue(DBNumber): Number");
-//		}
-//
-//		@Override
-//		public DBInteger toDBvValue(Integer objectValue) {
-//			throw new UnsupportedOperationException("toDBvValue(Integer): DBInteger");
-//		}
-//		
-//		//@Override
-//		public DBNumber toDBvValue(Number objectValue) {
-//			throw new UnsupportedOperationException("toDBvValue(Number): DBNumber");
-//		}
-//	}
-//	private static class MyNumberDBNumberAdaptorWithIntegerDBIntegerMethods implements MyInterface<Number, DBNumber> {
-//		//@Override
-//		public Integer toObjectValue(DBInteger dbvValue) {
-//			throw new UnsupportedOperationException("toObjectValue(DBInteger): Integer");
-//		}
-//
-//		@Override
-//		public Number toObjectValue(DBNumber dbvValue) {
-//			throw new UnsupportedOperationException("toObjectValue(DBNumber): Number");
-//		}
-//
-//		//@Override
-//		public DBInteger toDBvValue(Integer objectValue) {
-//			throw new UnsupportedOperationException("toDBvValue(Integer): DBInteger");
-//		}
-//		
-//		@Override
-//		public DBNumber toDBvValue(Number objectValue) {
-//			throw new UnsupportedOperationException("toDBvValue(Number): DBNumber");
-//		}
-//	}
 	public abstract class AbstractPartialImplementationWithConcreteType implements MyInterface<Number, DBNumber> {
 
 		@Override
@@ -417,17 +372,4 @@ public class InterfaceInfoTest {
 			return null;
 		}
 	}
-
-//	public class ConcretePartialImplementationOfConcreteType extends AbstractPartialImplementationWithConcreteType {
-//		@Override
-//		public DBNumber toDBvValue(Number objectValue) {
-//			return null;
-//		}
-//	}
-//	public class ConcretePartialImplementationOfWildcardType extends AbstractPartialImplementationWithWildcardType<Integer, DBInteger> {
-//		@Override
-//		public DBInteger toDBvValue(Integer objectValue) {
-//			return null;
-//		}
-//	}
 }
