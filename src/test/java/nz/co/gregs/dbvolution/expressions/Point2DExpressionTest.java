@@ -74,7 +74,6 @@ public class Point2DExpressionTest extends AbstractTest {
 
 	@Test
 	public void testToWKTValue() throws SQLException {
-		System.out.println("value");
 		Point point = geometryFactory.createPoint(new Coordinate(2.0, 3.0));
 		final PointTestTable pointTestTable = new PointTestTable();
 		DBQuery dbQuery = database.getDBQuery(pointTestTable);
@@ -87,7 +86,6 @@ public class Point2DExpressionTest extends AbstractTest {
 
 	@Test
 	public void testValue() throws SQLException {
-		System.out.println("value");
 		Point point = geometryFactory.createPoint(new Coordinate(2.0, 3.0));
 		final PointTestTable pointTestTable = new PointTestTable();
 		DBQuery dbQuery = database.getDBQuery(pointTestTable);
@@ -100,7 +98,6 @@ public class Point2DExpressionTest extends AbstractTest {
 
 	@Test
 	public void testValueUsingLongs() throws SQLException {
-		System.out.println("value");
 		Point point = geometryFactory.createPoint(new Coordinate(2.0, 3.0));
 		final PointTestTable pointTestTable = new PointTestTable();
 		DBQuery dbQuery = database.getDBQuery(pointTestTable);
@@ -409,7 +406,7 @@ public class Point2DExpressionTest extends AbstractTest {
 		DBQuery dbQuery = database.getDBQuery(pointTestTable).setBlankQueryAllowed(true);
 		dbQuery.addCondition(pointTestTable.column(pointTestTable.point).getY().is(3));
 		List<BoundingBoxTest> allRows = dbQuery.getAllInstancesOf(pointTestTable);
-		database.print(allRows);
+
 		Assert.assertThat(allRows.size(), is(1));
 		Assert.assertThat(allRows.get(0).point_id.intValue(), is(1));
 		final String boundingText = allRows.get(0).boundingBox.jtsPolygonValue().toText();
@@ -445,20 +442,19 @@ public class Point2DExpressionTest extends AbstractTest {
 
 	@Test
 	public void testDistance() throws SQLException {
-		System.out.println("distance");
 		final DistanceTest pointTestTable = new DistanceTest();
 		DBQuery dbQuery = database.getDBQuery(pointTestTable).setBlankQueryAllowed(true);
-		database.print(dbQuery.getAllInstancesOf(pointTestTable));
+		
 		dbQuery.addCondition(pointTestTable.column(pointTestTable.distance).is(0));
 		List<DistanceTest> allRows = dbQuery.getAllInstancesOf(pointTestTable);
-		database.print(allRows);
+		
 		Assert.assertThat(allRows.size(), is(1));
 		Assert.assertThat(allRows.get(0).point_id.intValue(), is(1));
 
 		dbQuery = database.getDBQuery(pointTestTable).setBlankQueryAllowed(true);
 		dbQuery.addCondition(pointTestTable.column(pointTestTable.distance).round(2).is(3.61));
 		allRows = dbQuery.getAllInstancesOf(pointTestTable);
-		database.print(allRows);
+		
 		Assert.assertThat(allRows.size(), is(2));
 	}
 }
