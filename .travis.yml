@@ -1,6 +1,8 @@
 language: java
 ## YAML Template.
 ---
+install: true
+script: "mvn -B -s travis-settings.xml -P DBs-OpenSource test "
 services:
   - mysql
   - postgresql
@@ -11,4 +13,3 @@ notifications:
 before_install:
   - mysql -e 'CREATE DATABASE IF NOT EXISTS dbvtest;'
   - psql -c 'create database dbvtest;' -U postgres
-script: "mvn test -B -s travis-settings.xml -P DBs-OpenSource "
