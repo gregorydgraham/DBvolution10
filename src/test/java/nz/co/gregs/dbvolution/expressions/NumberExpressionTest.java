@@ -41,13 +41,12 @@ public class NumberExpressionTest extends AbstractTest {
 
 	@Test
 	public void testSimpleEquation() throws SQLException {
-//        database.setPrintSQLBeforeExecuting(true);
 
 		Marque marq = new Marque();
 		DBQuery dbQuery = database.getDBQuery(marq);
 		dbQuery.addCondition(marq.column(marq.uidMarque).mod(2).is(0));
 		List<DBQueryRow> allRows = dbQuery.getAllRows();
-//        database.print(allRows);
+		
 		Assert.assertThat(allRows.size(), is(11));
 		for (Marque marque : dbQuery.getAllInstancesOf(marq)) {
 			Assert.assertThat(marque.uidMarque.getValue().intValue() % 2, is(0));
@@ -61,7 +60,7 @@ public class NumberExpressionTest extends AbstractTest {
 		Marque marq = new Marque();
 		DBQuery dbQuery = database.getDBQuery(marq);
 		dbQuery.addCondition(marq.column(marq.uidMarque).mod(2).is(0));
-//		dbQuery.addCondition(NumberExpression.value(0).is(marq.column(marq.uidMarque).mod(2)));
+		
 		List<DBQueryRow> allRows = dbQuery.getAllRows();
 
 		Assert.assertThat(allRows.size(), is(11));
@@ -92,7 +91,7 @@ public class NumberExpressionTest extends AbstractTest {
 		DBQuery q = database.getDBQuery(marq);
 		q.addCondition(marq.column(marq.uidMarque).mod(2).is(0).ifThenElse(2, 1).min().is(2));
 		List<Marque> rowsByExample = q.getAllInstancesOf(marq);
-//		database.print(rowsByExample);
+		
 		Assert.assertEquals(11, rowsByExample.size());
 	}
 
@@ -103,7 +102,7 @@ public class NumberExpressionTest extends AbstractTest {
 		q.addCondition(marq.column(marq.uidMarque).mod(2).is(0).ifThenElse(2, 1).min().is(2));
 		q.addCondition(marq.column(marq.uidMarque).mod(2).is(0).ifThenElse(2, 1).max().is(2));
 		List<Marque> rowsByExample = q.getAllInstancesOf(marq);
-//		database.print(rowsByExample);
+		
 		Assert.assertEquals(11, rowsByExample.size());
 	}
 
@@ -135,7 +134,7 @@ public class NumberExpressionTest extends AbstractTest {
 				.mod(5)
 				.is(0));
 		List<DBQueryRow> allRows = dbQuery.getAllRows();
-//		database.print(allRows);
+		
 		Assert.assertThat(allRows.size(), is(2));
 		for (DBQueryRow dBQueryRow : allRows) {
 			Marque marque = dBQueryRow.get(marq);
@@ -163,7 +162,7 @@ public class NumberExpressionTest extends AbstractTest {
 				.dividedBy(3)
 				.is(-2));
 		List<DBQueryRow> allRows = dbQuery.getAllRows();
-//        database.print(allRows);
+		
 		Assert.assertThat(allRows.size(), is(1));
 		Marque marque = allRows.get(0).get(marq);
 		Assert.assertThat(marque.uidMarque.getValue().intValue(), is(1));
@@ -179,7 +178,7 @@ public class NumberExpressionTest extends AbstractTest {
 				.dividedBy(3)
 				.is(-2));
 		allRows = dbQuery.getAllRows();
-//        database.print(allRows);
+		
 		Assert.assertThat(allRows.size(), is(1));
 		marque = allRows.get(0).get(marq);
 		Assert.assertThat(marque.uidMarque.getValue().intValue(), is(1));
@@ -192,7 +191,7 @@ public class NumberExpressionTest extends AbstractTest {
 		dbQuery.addCondition(
 				marq.column(marq.uidMarque).plus(2).minus(4).bracket().times(6).bracket().dividedBy(3).is(-2));
 		List<DBQueryRow> allRows = dbQuery.getAllRows();
-//        database.print(allRows);
+		
 		Assert.assertThat(allRows.size(), is(1));
 		Marque marque = allRows.get(0).get(marq);
 		Assert.assertThat(marque.uidMarque.getValue().intValue(), is(1));
@@ -208,7 +207,7 @@ public class NumberExpressionTest extends AbstractTest {
 				.dividedBy(3)
 				.is(-2));
 		allRows = dbQuery.getAllRows();
-//        database.print(allRows);
+		
 		Assert.assertThat(allRows.size(), is(1));
 		marque = allRows.get(0).get(marq);
 		Assert.assertThat(marque.uidMarque.getValue().intValue(), is(1));
@@ -221,7 +220,7 @@ public class NumberExpressionTest extends AbstractTest {
 		dbQuery.addCondition(
 				marq.column(marq.uidMarque).plus(2).minus(4).bracket().times(6).bracket().dividedBy(3).is(-2));
 		List<DBQueryRow> allRows = dbQuery.getAllRows();
-//        database.print(allRows);
+		
 		Assert.assertThat(allRows.size(), is(1));
 		Marque marque = allRows.get(0).get(marq);
 		Assert.assertThat(marque.uidMarque.getValue().intValue(), is(1));
@@ -234,7 +233,7 @@ public class NumberExpressionTest extends AbstractTest {
 				.cubed()
 				.is(8));
 		allRows = dbQuery.getAllRows();
-//         database.print(allRows);
+		
 		Assert.assertThat(allRows.size(), is(1));
 		marque = allRows.get(0).get(marq);
 		Assert.assertThat(marque.uidMarque.getValue().intValue(), is(2));
@@ -247,7 +246,7 @@ public class NumberExpressionTest extends AbstractTest {
 		dbQuery.addCondition(
 				marq.column(marq.uidMarque).plus(2).minus(4).bracket().times(6).bracket().dividedBy(3).is(-2));
 		List<DBQueryRow> allRows = dbQuery.getAllRows();
-//        database.print(allRows);
+		
 		Assert.assertThat(allRows.size(), is(1));
 		Marque marque = allRows.get(0).get(marq);
 		Assert.assertThat(marque.uidMarque.getValue().intValue(), is(1));
@@ -258,7 +257,7 @@ public class NumberExpressionTest extends AbstractTest {
 				.round(5L)
 				.is(23074.69254));
 		allRows = dbQuery.getAllRows();
-//         database.print(allRows);
+		
 		Assert.assertThat(allRows.size(), is(1));
 		marque = allRows.get(0).get(marq);
 		Assert.assertThat(marque.uidMarque.getValue().intValue(), is(7730022));
@@ -271,7 +270,7 @@ public class NumberExpressionTest extends AbstractTest {
 		dbQuery.addCondition(
 				marq.column(marq.uidMarque).plus(2).minus(4).bracket().times(6).bracket().dividedBy(3).is(-2));
 		List<DBQueryRow> allRows = dbQuery.getAllRows();
-//        database.print(allRows);
+		
 		Assert.assertThat(allRows.size(), is(1));
 		Marque marque = allRows.get(0).get(marq);
 		Assert.assertThat(marque.uidMarque.getValue().intValue(), is(1));
@@ -282,7 +281,7 @@ public class NumberExpressionTest extends AbstractTest {
 				.round(NumberExpression.value(5))
 				.is(23074.69254));
 		allRows = dbQuery.getAllRows();
-//         database.print(allRows);
+		
 		Assert.assertThat(allRows.size(), is(1));
 		marque = allRows.get(0).get(marq);
 		Assert.assertThat(marque.uidMarque.getValue().intValue(), is(7730022));
@@ -295,7 +294,7 @@ public class NumberExpressionTest extends AbstractTest {
 		dbQuery.addCondition(
 				marq.column(marq.uidMarque).plus(2).minus(4).bracket().times(6).bracket().dividedBy(3).is(-2));
 		List<DBQueryRow> allRows = dbQuery.getAllRows();
-//        database.print(allRows);
+		
 		Assert.assertThat(allRows.size(), is(1));
 		Marque marque = allRows.get(0).get(marq);
 		Assert.assertThat(marque.uidMarque.getValue().intValue(), is(1));
@@ -306,7 +305,7 @@ public class NumberExpressionTest extends AbstractTest {
 				.round(new DBNumber(5))
 				.is(23074.69254));
 		allRows = dbQuery.getAllRows();
-//         database.print(allRows);
+		
 		Assert.assertThat(allRows.size(), is(1));
 		marque = allRows.get(0).get(marq);
 		Assert.assertThat(marque.uidMarque.getValue().intValue(), is(7730022));
@@ -319,7 +318,7 @@ public class NumberExpressionTest extends AbstractTest {
 		dbQuery.addCondition(
 				marq.column(marq.uidMarque).plus(2).minus(4).bracket().times(6).bracket().dividedBy(3).is(-2));
 		List<DBQueryRow> allRows = dbQuery.getAllRows();
-//        database.print(allRows);
+		
 		Assert.assertThat(allRows.size(), is(1));
 		Marque marque = allRows.get(0).get(marq);
 		Assert.assertThat(marque.uidMarque.getValue().intValue(), is(1));
@@ -330,7 +329,7 @@ public class NumberExpressionTest extends AbstractTest {
 				.roundDown()
 				.is(23074));
 		allRows = dbQuery.getAllRows();
-//         database.print(allRows);
+		
 		Assert.assertThat(allRows.size(), is(1));
 		marque = allRows.get(0).get(marq);
 		Assert.assertThat(marque.uidMarque.getValue().intValue(), is(7730022));
@@ -343,7 +342,7 @@ public class NumberExpressionTest extends AbstractTest {
 		dbQuery.addCondition(
 				marq.column(marq.uidMarque).plus(2).minus(4).bracket().times(6).bracket().dividedBy(3).is(-2));
 		List<DBQueryRow> allRows = dbQuery.getAllRows();
-//        database.print(allRows);
+		
 		Assert.assertThat(allRows.size(), is(1));
 		Marque marque = allRows.get(0).get(marq);
 		Assert.assertThat(marque.uidMarque.getValue().intValue(), is(1));
@@ -354,7 +353,7 @@ public class NumberExpressionTest extends AbstractTest {
 				.roundUp()
 				.is(23214));
 		allRows = dbQuery.getAllRows();
-//         database.print(allRows);
+		
 		Assert.assertThat(allRows.size(), is(1));
 		marque = allRows.get(0).get(marq);
 		Assert.assertThat(marque.uidMarque.getValue().intValue(), is(7730022));
@@ -367,7 +366,7 @@ public class NumberExpressionTest extends AbstractTest {
 		dbQuery.addCondition(
 				marq.column(marq.uidMarque).plus(2).minus(4).bracket().times(6).bracket().dividedBy(3).is(-2));
 		List<DBQueryRow> allRows = dbQuery.getAllRows();
-//        database.print(allRows);
+		
 		Assert.assertThat(allRows.size(), is(1));
 		Marque marque = allRows.get(0).get(marq);
 		Assert.assertThat(marque.uidMarque.getValue().intValue(), is(1));
@@ -379,7 +378,7 @@ public class NumberExpressionTest extends AbstractTest {
 				.signPlusMinus()
 				.is("+"));
 		allRows = dbQuery.getAllRows();
-//         database.print(allRows);
+		
 		Assert.assertThat(allRows.size(), is(1));
 		marque = allRows.get(0).get(marq);
 		Assert.assertThat(marque.uidMarque.getValue().intValue(), is(7730022));
@@ -390,7 +389,7 @@ public class NumberExpressionTest extends AbstractTest {
 				.signPlusMinus()
 				.is("-"));
 		allRows = dbQuery.getAllRows();
-//         database.print(allRows);
+		
 		Assert.assertThat(allRows.size(), is(1));
 		marque = allRows.get(0).get(marq);
 		Assert.assertThat(marque.uidMarque.getValue().intValue(), is(7730022));
@@ -401,7 +400,7 @@ public class NumberExpressionTest extends AbstractTest {
 				.signPlusMinus()
 				.is("+"));
 		allRows = dbQuery.getAllRows();
-//         database.print(allRows);
+		
 		Assert.assertThat(allRows.size(), is(1));
 		marque = allRows.get(0).get(marq);
 		Assert.assertThat(marque.uidMarque.getValue().intValue(), is(7730022));
@@ -414,7 +413,7 @@ public class NumberExpressionTest extends AbstractTest {
 		dbQuery.addCondition(
 				marq.column(marq.uidMarque).plus(2).minus(4).bracket().times(6).bracket().dividedBy(3).is(-2));
 		List<DBQueryRow> allRows = dbQuery.getAllRows();
-//        database.print(allRows);
+		
 		Assert.assertThat(allRows.size(), is(1));
 		Marque marque = allRows.get(0).get(marq);
 		Assert.assertThat(marque.uidMarque.getValue().intValue(), is(1));
@@ -426,7 +425,7 @@ public class NumberExpressionTest extends AbstractTest {
 				.sign()
 				.is(1));
 		allRows = dbQuery.getAllRows();
-//         database.print(allRows);
+		
 		Assert.assertThat(allRows.size(), is(1));
 		marque = allRows.get(0).get(marq);
 		Assert.assertThat(marque.uidMarque.getValue().intValue(), is(7730022));
@@ -437,7 +436,7 @@ public class NumberExpressionTest extends AbstractTest {
 				.sign()
 				.is(-1));
 		allRows = dbQuery.getAllRows();
-//         database.print(allRows);
+		
 		Assert.assertThat(allRows.size(), is(1));
 		marque = allRows.get(0).get(marq);
 		Assert.assertThat(marque.uidMarque.getValue().intValue(), is(7730022));
@@ -448,7 +447,7 @@ public class NumberExpressionTest extends AbstractTest {
 				.sign()
 				.is(0));
 		allRows = dbQuery.getAllRows();
-//         database.print(allRows);
+		
 		Assert.assertThat(allRows.size(), is(1));
 		marque = allRows.get(0).get(marq);
 		Assert.assertThat(marque.uidMarque.getValue().intValue(), is(7730022));
@@ -468,7 +467,7 @@ public class NumberExpressionTest extends AbstractTest {
 				.is(0)
 		);
 		List<DBQueryRow> allRows = dbQuery.getAllRows();
-//        database.print(allRows);
+		
 		Assert.assertThat(allRows.size(), is(1));
 		Marque marque = allRows.get(0).get(marq);
 		Assert.assertThat(marque.uidMarque.getValue().intValue(), is(1));
@@ -489,7 +488,7 @@ public class NumberExpressionTest extends AbstractTest {
 				.isBetween(0.3, 0.31)
 		);
 		List<DBQueryRow> allRows = dbQuery.getAllRows();
-//        database.print(allRows);
+		
 		Assert.assertThat(allRows.size(), is(1));
 		Marque marque = allRows.get(0).get(marq);
 		Assert.assertThat(marque.uidMarque.getValue().intValue(), is(1));
@@ -509,7 +508,7 @@ public class NumberExpressionTest extends AbstractTest {
 				.isBetween(0.78, 0.79)
 		);
 		List<DBQueryRow> allRows = dbQuery.getAllRows();
-//        database.print(allRows);
+		
 		Assert.assertThat(allRows.size(), is(1));
 		Marque marque = allRows.get(0).get(marq);
 		Assert.assertThat(marque.uidMarque.getValue().intValue(), is(1));
@@ -529,7 +528,7 @@ public class NumberExpressionTest extends AbstractTest {
 				.isBetween(0.46, 0.47)
 		);
 		List<DBQueryRow> allRows = dbQuery.getAllRows();
-//        database.print(allRows);
+		
 		Assert.assertThat(allRows.size(), is(1));
 		Marque marque = allRows.get(0).get(marq);
 		Assert.assertThat(marque.uidMarque.getValue().intValue(), is(1));
@@ -549,7 +548,7 @@ public class NumberExpressionTest extends AbstractTest {
 				.isBetween(0.64, 0.65)
 		);
 		List<DBQueryRow> allRows = dbQuery.getAllRows();
-//        database.print(allRows);
+		
 		Assert.assertThat(allRows.size(), is(1));
 		Marque marque = allRows.get(0).get(marq);
 		Assert.assertThat(marque.uidMarque.getValue().intValue(), is(1));
@@ -569,7 +568,7 @@ public class NumberExpressionTest extends AbstractTest {
 				.isBetween(1.54, 1.55)
 		);
 		List<DBQueryRow> allRows = dbQuery.getAllRows();
-//        database.print(allRows);
+		
 		Assert.assertThat(allRows.size(), is(1));
 		Marque marque = allRows.get(0).get(marq);
 		Assert.assertThat(marque.uidMarque.getValue().intValue(), is(1));
@@ -589,7 +588,7 @@ public class NumberExpressionTest extends AbstractTest {
 				.isLessThan(1)
 		);
 		List<DBQueryRow> allRows = dbQuery.getAllRows();
-//        database.print(allRows);
+		
 		Assert.assertThat(allRows.size(), is(2));
 		Marque marque = allRows.get(0).get(marq);
 		Assert.assertThat(marque.uidMarque.getValue().intValue(), is(1));
@@ -604,7 +603,7 @@ public class NumberExpressionTest extends AbstractTest {
 				.is(marq.column(marq.uidMarque))
 		);
 		List<DBQueryRow> allRows = dbQuery.getAllRows();
-//        database.print(allRows);
+		
 		Assert.assertThat(allRows.size(), is(20));
 		Marque marque = allRows.get(0).get(marq);
 		Assert.assertThat(marque.uidMarque.getValue().intValue(), is(4893059));
@@ -623,7 +622,7 @@ public class NumberExpressionTest extends AbstractTest {
 				.is(marq.column(marq.uidMarque))
 		);
 		List<DBQueryRow> allRows = dbQuery.getAllRows();
-//        database.print(allRows);
+		
 		Assert.assertThat(allRows.size(), is(20));
 		Marque marque = allRows.get(0).get(marq);
 		Assert.assertThat(marque.uidMarque.getValue().intValue(), is(4893059));
@@ -638,7 +637,7 @@ public class NumberExpressionTest extends AbstractTest {
 				.is(marq.column(marq.uidMarque))
 		);
 		List<DBQueryRow> allRows = dbQuery.getAllRows();
-//        database.print(allRows);
+		
 		Assert.assertThat(allRows.size(), is(1));
 		Marque marque = allRows.get(0).get(marq);
 		Assert.assertThat(marque.uidMarque.getValue().intValue(), is(4893059));
@@ -657,7 +656,7 @@ public class NumberExpressionTest extends AbstractTest {
 				.is(marq.column(marq.uidMarque))
 		);
 		List<DBQueryRow> allRows = dbQuery.getAllRows();
-//        database.print(allRows);
+		
 		Assert.assertThat(allRows.size(), is(2));
 		Marque marque = allRows.get(0).get(marq);
 		Assert.assertThat(marque.uidMarque.getValue().intValue(), is(1));
@@ -671,7 +670,7 @@ public class NumberExpressionTest extends AbstractTest {
 				marq.column(marq.statusClassID).isIn(1,2,3,4,5)
 		);
 		List<DBQueryRow> allRows = dbQuery.getAllRows();
-//        database.print(allRows);
+		
 		Assert.assertThat(allRows.size(), is(0));
 		
 		
@@ -680,7 +679,7 @@ public class NumberExpressionTest extends AbstractTest {
 				marq.column(marq.statusClassID).isIn(1,2,3,4,5, 1246974)
 		);
 		allRows = dbQuery.getAllRows();
-//        database.print(allRows);
+		
 		Assert.assertThat(allRows.size(), is(21));
 		Marque marque = allRows.get(0).get(marq);
 		Assert.assertThat(marque.statusClassID.getValue().intValue(), is(1246974));
@@ -694,7 +693,7 @@ public class NumberExpressionTest extends AbstractTest {
 				marq.column(marq.statusClassID).isBetween(1,5)
 		);
 		List<DBQueryRow> allRows = dbQuery.getAllRows();
-//        database.print(allRows);
+		
 		Assert.assertThat(allRows.size(), is(0));
 		
 		
@@ -703,7 +702,7 @@ public class NumberExpressionTest extends AbstractTest {
 				marq.column(marq.statusClassID).isBetween(1246972, 1246974)
 		);
 		allRows = dbQuery.getAllRows();
-//        database.print(allRows);
+		
 		Assert.assertThat(allRows.size(), is(21));
 		Marque marque = allRows.get(0).get(marq);
 		Assert.assertThat(marque.statusClassID.getValue().intValue(), is(1246974));
@@ -713,7 +712,7 @@ public class NumberExpressionTest extends AbstractTest {
 				marq.column(marq.statusClassID).isBetween(NumberExpression.value(1246972), 1246974)
 		);
 		allRows = dbQuery.getAllRows();
-//        database.print(allRows);
+		
 		Assert.assertThat(allRows.size(), is(21));
 		marque = allRows.get(0).get(marq);
 		Assert.assertThat(marque.statusClassID.getValue().intValue(), is(1246974));
@@ -723,7 +722,7 @@ public class NumberExpressionTest extends AbstractTest {
 				marq.column(marq.statusClassID).isBetween(1246972, NumberExpression.value(1246974))
 		);
 		allRows = dbQuery.getAllRows();
-//        database.print(allRows);
+		
 		Assert.assertThat(allRows.size(), is(21));
 		marque = allRows.get(0).get(marq);
 		Assert.assertThat(marque.statusClassID.getValue().intValue(), is(1246974));
@@ -738,7 +737,7 @@ public class NumberExpressionTest extends AbstractTest {
 				marq.column(marq.statusClassID).isBetweenExclusive(1246972, 1246974)
 		);
 		List<DBQueryRow> allRows = dbQuery.getAllRows();
-//        database.print(allRows);
+		
 		Assert.assertThat(allRows.size(), is(0));
 		
 		
@@ -747,7 +746,7 @@ public class NumberExpressionTest extends AbstractTest {
 				marq.column(marq.statusClassID).isBetweenExclusive(1246972, 1246975)
 		);
 		allRows = dbQuery.getAllRows();
-//        database.print(allRows);
+		
 		Assert.assertThat(allRows.size(), is(21));
 		Marque marque = allRows.get(0).get(marq);
 		Assert.assertThat(marque.statusClassID.getValue().intValue(), is(1246974));
@@ -757,7 +756,7 @@ public class NumberExpressionTest extends AbstractTest {
 				marq.column(marq.statusClassID).isBetweenExclusive(NumberExpression.value(1246972), 1246975)
 		);
 		allRows = dbQuery.getAllRows();
-//        database.print(allRows);
+		
 		Assert.assertThat(allRows.size(), is(21));
 		marque = allRows.get(0).get(marq);
 		Assert.assertThat(marque.statusClassID.getValue().intValue(), is(1246974));
@@ -767,7 +766,7 @@ public class NumberExpressionTest extends AbstractTest {
 				marq.column(marq.statusClassID).isBetweenExclusive(1246972, NumberExpression.value(1246975))
 		);
 		allRows = dbQuery.getAllRows();
-//        database.print(allRows);
+		
 		Assert.assertThat(allRows.size(), is(21));
 		marque = allRows.get(0).get(marq);
 		Assert.assertThat(marque.statusClassID.getValue().intValue(), is(1246974));
@@ -782,7 +781,7 @@ public class NumberExpressionTest extends AbstractTest {
 				marq.column(marq.statusClassID).isBetweenInclusive(1246972, 1246974)
 		);
 		List<DBQueryRow> allRows = dbQuery.getAllRows();
-//        database.print(allRows);
+		
 		Assert.assertThat(allRows.size(), is(22));
 		
 		
@@ -791,7 +790,7 @@ public class NumberExpressionTest extends AbstractTest {
 				marq.column(marq.statusClassID).isBetweenInclusive(1246973, 1246975)
 		);
 		allRows = dbQuery.getAllRows();
-//        database.print(allRows);
+		
 		Assert.assertThat(allRows.size(), is(21));
 		Marque marque = allRows.get(0).get(marq);
 		Assert.assertThat(marque.statusClassID.getValue().intValue(), is(1246974));
@@ -801,7 +800,7 @@ public class NumberExpressionTest extends AbstractTest {
 				marq.column(marq.statusClassID).isBetweenInclusive(NumberExpression.value(1246973), 1246975)
 		);
 		allRows = dbQuery.getAllRows();
-//        database.print(allRows);
+		
 		Assert.assertThat(allRows.size(), is(21));
 		marque = allRows.get(0).get(marq);
 		Assert.assertThat(marque.statusClassID.getValue().intValue(), is(1246974));
@@ -811,7 +810,7 @@ public class NumberExpressionTest extends AbstractTest {
 				marq.column(marq.statusClassID).isBetweenInclusive(1246973, NumberExpression.value(1246975))
 		);
 		allRows = dbQuery.getAllRows();
-//        database.print(allRows);
+		
 		Assert.assertThat(allRows.size(), is(21));
 		marque = allRows.get(0).get(marq);
 		Assert.assertThat(marque.statusClassID.getValue().intValue(), is(1246974));
@@ -827,7 +826,7 @@ public class NumberExpressionTest extends AbstractTest {
 				.isLike("%2$")
 		);
 		List<DBQueryRow> allRows = dbQuery.getAllRows();
-//        database.print(allRows);
+		
 		Assert.assertThat(allRows.size(), is(3));
 
 		dbQuery = database.getDBQuery(marq);
@@ -837,7 +836,7 @@ public class NumberExpressionTest extends AbstractTest {
 				.isLike("%2$")
 		);
 		allRows = dbQuery.getAllRows();
-//        database.print(allRows);
+		
 		Assert.assertThat(allRows.size(), is(3));
 	}
 
@@ -850,7 +849,7 @@ public class NumberExpressionTest extends AbstractTest {
 				.isEven()
 		);
 		List<DBQueryRow> allRows = dbQuery.getAllRows();
-//		database.print(allRows);
+		
 		Assert.assertThat(allRows.size(), is(11));
 	}
 
@@ -863,7 +862,7 @@ public class NumberExpressionTest extends AbstractTest {
 				.times(-2).abs().is(4)
 		);
 		List<DBQueryRow> allRows = dbQuery.getAllRows();
-//		database.print(allRows);
+		
 		Assert.assertThat(allRows.size(), is(1));
 	}
 
@@ -876,7 +875,7 @@ public class NumberExpressionTest extends AbstractTest {
 				.times(-2).absoluteValue().is(4)
 		);
 		List<DBQueryRow> allRows = dbQuery.getAllRows();
-//		database.print(allRows);
+		
 		Assert.assertThat(allRows.size(), is(1));
 	}
 
@@ -889,7 +888,7 @@ public class NumberExpressionTest extends AbstractTest {
 				.dividedBy(2).bracket().decimalPart().is(0.5)
 		);
 		List<DBQueryRow> allRows = dbQuery.getAllRows();
-//		database.print(allRows);
+		
 		Assert.assertThat(allRows.size(), is(11));
 	}
 
@@ -902,7 +901,7 @@ public class NumberExpressionTest extends AbstractTest {
 				.dividedBy(2).integerPart().is(1)
 		);
 		List<DBQueryRow> allRows = dbQuery.getAllRows();
-//		database.print(allRows);
+		
 		Assert.assertThat(allRows.size(), is(1));
 	}
 
@@ -915,7 +914,7 @@ public class NumberExpressionTest extends AbstractTest {
 				.isOdd()
 		);
 		List<DBQueryRow> allRows = dbQuery.getAllRows();
-//		database.print(allRows);
+		
 		Assert.assertThat(allRows.size(), is(11));
 	}
 
@@ -928,7 +927,7 @@ public class NumberExpressionTest extends AbstractTest {
 				.isNotNull()
 		);
 		List<DBQueryRow> allRows = dbQuery.getAllRows();
-//		database.print(allRows);
+		
 		Assert.assertThat(allRows.size(), is(20));
 	}
 
@@ -941,7 +940,7 @@ public class NumberExpressionTest extends AbstractTest {
 				.isNull()
 		);
 		List<DBQueryRow> allRows = dbQuery.getAllRows();
-//		database.print(allRows);
+		
 		Assert.assertThat(allRows.size(), is(2));
 	}
 
@@ -954,7 +953,7 @@ public class NumberExpressionTest extends AbstractTest {
 				.is(marq.column(marq.uidMarque))
 		);
 		List<DBQueryRow> allRows = dbQuery.getAllRows();
-//        database.print(allRows);
+		
 		Assert.assertThat(allRows.size(), is(1));
 		Marque marque = allRows.get(0).get(marq);
 		Assert.assertThat(marque.uidMarque.getValue().intValue(), is(1));
@@ -967,7 +966,7 @@ public class NumberExpressionTest extends AbstractTest {
 		dbQuery.addCondition(
 				marq.column(marq.uidMarque).minus(1).cos().is(1));
 		List<DBQueryRow> allRows = dbQuery.getAllRows();
-//        database.print(allRows);
+		
 		Assert.assertThat(allRows.size(), is(1));
 		Marque marque = allRows.get(0).get(marq);
 		Assert.assertThat(marque.uidMarque.getValue().intValue(), is(1));
@@ -979,9 +978,9 @@ public class NumberExpressionTest extends AbstractTest {
 		DBQuery dbQuery = database.getDBQuery(marq);
 		dbQuery.addCondition(
 				marq.column(marq.uidMarque).sine().round(4).is(0.9093));
-//		System.out.println(""+dbQuery.getSQLForQuery());
+		
 		List<DBQueryRow> allRows = dbQuery.getAllRows();
-//        database.print(allRows);
+		
 		Assert.assertThat(allRows.size(), is(1));
 		Marque marque = allRows.get(0).get(marq);
 		Assert.assertThat(marque.uidMarque.getValue().intValue(), is(2));
@@ -993,9 +992,9 @@ public class NumberExpressionTest extends AbstractTest {
 		DBQuery dbQuery = database.getDBQuery(marq);
 		dbQuery.addCondition(
 				marq.column(marq.uidMarque).sinh().round(5).isBetween(3.62685, 3.62686));
-		System.out.println(""+dbQuery.getSQLForQuery());
+		
 		List<DBQueryRow> allRows = dbQuery.getAllRows();
-//        database.print(allRows);
+		
 		Assert.assertThat(allRows.size(), is(1));
 		Marque marque = allRows.get(0).get(marq);
 		Assert.assertThat(marque.uidMarque.getValue().intValue(), is(2));
@@ -1007,9 +1006,9 @@ public class NumberExpressionTest extends AbstractTest {
 		DBQuery dbQuery = database.getDBQuery(marq);
 		dbQuery.addCondition(
 				marq.column(marq.uidMarque).logN().round(6).is(0.693147));
-//		System.out.println(""+dbQuery.getSQLForQuery());
+		
 		List<DBQueryRow> allRows = dbQuery.getAllRows();
-//        database.print(allRows);
+		
 		Assert.assertThat(allRows.size(), is(1));
 		Marque marque = allRows.get(0).get(marq);
 		Assert.assertThat(marque.uidMarque.getValue().intValue(), is(2));
@@ -1021,9 +1020,9 @@ public class NumberExpressionTest extends AbstractTest {
 		DBQuery dbQuery = database.getDBQuery(marq);
 		dbQuery.addCondition(
 				marq.column(marq.uidMarque).logBase10().round(5).is(0.30103));
-//		System.out.println(""+dbQuery.getSQLForQuery());
+		
 		List<DBQueryRow> allRows = dbQuery.getAllRows();
-//        database.print(allRows);
+		
 		Assert.assertThat(allRows.size(), is(1));
 		Marque marque = allRows.get(0).get(marq);
 		Assert.assertThat(marque.uidMarque.getValue().intValue(), is(2));
@@ -1036,7 +1035,7 @@ public class NumberExpressionTest extends AbstractTest {
 		dbQuery.addCondition(
 				carCo.column(carCo.uidCarCompany).exp().times(1000).trunc().is(7389));
 		List<DBQueryRow> allRows = dbQuery.getAllRows();
-//		database.print(allRows);
+		
 		Assert.assertThat(allRows.size(), is(1));
 		CarCompany carCompany = allRows.get(0).get(carCo);
 		Assert.assertThat(carCompany.uidCarCompany.getValue().intValue(), is(2));
@@ -1058,13 +1057,11 @@ public class NumberExpressionTest extends AbstractTest {
 	public void testDegrees() throws SQLException {
 		degreeRow carCo = new degreeRow();
 		DBQuery dbQuery = database.getDBQuery(carCo).setBlankQueryAllowed(true);
-		//List<DBQueryRow> allRows; = dbQuery.getAllRows();
-//		database.print(allRows);
 
 		dbQuery.addCondition(
 				carCo.column(carCo.uidCarCompany).degrees().tan().isGreaterThan(0));
 		List<DBQueryRow> allRows = dbQuery.getAllRows();
-//		database.print(allRows);
+		
 		Assert.assertThat(allRows.size(), is(2));
 		for (CarCompany carCompany : dbQuery.getAllInstancesOf(carCo)) {
 			Assert.assertThat(Math.tan(Math.toDegrees(carCompany.uidCarCompany.getValue().doubleValue())) > 0,
@@ -1084,9 +1081,9 @@ public class NumberExpressionTest extends AbstractTest {
 	public void testRandom() throws SQLException {
 		RandomRow randRow = new RandomRow();
 		DBQuery dbQuery = database.getDBQuery(randRow).setBlankQueryAllowed(true);
-		System.out.println("nz.co.gregs.dbvolution.expressions.NumberExpressionTest.testRandom(): "+dbQuery.getSQLForQuery());
+		
 		List<DBQueryRow> allRows = dbQuery.getDistinctCombinationsOfColumnValues(randRow.randomNumber);
-		database.print(allRows);
+		
 		HashSet<Double> hashSet = new HashSet<Double>();
 			Double maxRand =0d;
 			Double minRand = 1d;
@@ -1128,7 +1125,7 @@ public class NumberExpressionTest extends AbstractTest {
 		DBQuery dbQuery = database.getDBQuery(randRow).setBlankQueryAllowed(true);
 		dbQuery.setSortOrder(randRow.column(randRow.countif));
 		List<DBQueryRow> allRows = dbQuery.getAllRows();
-//		database.print(allRows);
+		
 		Assert.assertThat(allRows.size(), is(2));
 		Assert.assertThat(allRows.get(0).get(randRow).bigger.stringValue(), is("Smaller"));
 		Assert.assertThat(allRows.get(0).get(randRow).countif.intValue(), is(0));
@@ -1144,7 +1141,7 @@ public class NumberExpressionTest extends AbstractTest {
 		DBQuery dbQuery = database.getDBQuery(carCo);
 		dbQuery.addCondition(carCo.column(carCo.uidCarCompany).degrees().radians().degrees().tan().isGreaterThan(0));
 		List<DBQueryRow> allRows = dbQuery.getAllRows();
-//		database.print(allRows);
+		
 		Assert.assertThat(allRows.size(), is(2));
 		for (CarCompany carCompany : dbQuery.getAllInstancesOf(carCo)) {
 			Assert.assertThat(Math.tan(Math.toDegrees(carCompany.uidCarCompany.getValue().doubleValue())) > 0,
@@ -1158,7 +1155,7 @@ public class NumberExpressionTest extends AbstractTest {
 		carCo.uidCarCompany.permittedValues(carCo.column(carCo.name).length().minus(1));
 		DBQuery dbQuery = database.getDBQuery(carCo);
 		List<DBQueryRow> allRows = dbQuery.getAllRows();
-//		database.print(allRows);
+		
 		Assert.assertThat(allRows.size(), is(1));
 		for (CarCompany carCompany : dbQuery.getAllInstancesOf(carCo)) {
 			Assert.assertThat(carCompany.uidCarCompany.getValue().intValue(),
@@ -1172,7 +1169,7 @@ public class NumberExpressionTest extends AbstractTest {
 		carCo.uidCarCompany.permittedValues(carCo.column(carCo.name).locationOf("ord"));
 		DBQuery dbQuery = database.getDBQuery(carCo);
 		List<DBQueryRow> allRows = dbQuery.getAllRows();
-//		database.print(allRows);
+		
 		Assert.assertThat(allRows.size(), is(1));
 		for (CarCompany carCompany : dbQuery.getAllInstancesOf(carCo)) {
 			Assert.assertThat(carCompany.uidCarCompany.getValue().intValue(),
@@ -1187,10 +1184,9 @@ public class NumberExpressionTest extends AbstractTest {
 		DBQuery dbQuery = database.getDBQuery(carCo);
 		dbQuery.setBlankQueryAllowed(true);
 		List<DBQueryRow> allRows = dbQuery.getAllRows();
-//		database.print(allRows);
+		
 		Assert.assertThat(allRows.size(), is(4));
 		for (ExtendedCarCompany carCompany : dbQuery.getAllInstancesOf(carCo)) {
-			System.out.println("LOCATION OF 'ORD': " + carCompany.locationOfORD.getValue().intValue() + " == " + carCompany.name.stringValue().indexOf("ord"));
 			Assert.assertThat(carCompany.locationOfORD.getValue().intValue(),
 					is(Matchers.isOneOf(0, carCompany.name.stringValue().indexOf("ord") + 1)));
 		}
@@ -1213,8 +1209,8 @@ public class NumberExpressionTest extends AbstractTest {
 	public void testChoose() throws SQLException {
 		CarCompanyWithChoose carCo = new CarCompanyWithChoose();
 		DBQuery dbQuery = database.getDBQuery(carCo);
-		List<DBQueryRow> allRows = dbQuery.setBlankQueryAllowed(true).getAllRows();
-//		database.print(allRows);
+		dbQuery.setBlankQueryAllowed(true);
+		
 		for (CarCompanyWithChoose carCompany : dbQuery.getAllInstancesOf(carCo)) {
 			if (carCompany.uidCarCompany.intValue() <= 0) {
 				Assert.assertThat(carCompany.chooseOnID.getValue(), is("too low"));
