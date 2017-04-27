@@ -80,8 +80,6 @@ public class GeneratedMarqueTest extends AbstractTest {
 						}
 					}
 					Assert.assertTrue("Unable to find: \n\"" + dbcl.getJavaSource() + "\"", found);
-				} else {
-					System.out.println("SKIPPED: " + dbcl.getClassName());
 				}
 			}
 			Assert.assertThat(classesTested, is(5));
@@ -102,7 +100,7 @@ public class GeneratedMarqueTest extends AbstractTest {
 			List<String> testClassNames = Arrays.asList(new String[]{"CreateTableForeignKey"});
 			List<String> testClasses = new ArrayList<String>();
 			testClasses.add("package nz.co.gregs.dbvolution.generation;\n\nimport nz.co.gregs.dbvolution.*;\nimport nz.co.gregs.dbvolution.datatypes.*;\nimport nz.co.gregs.dbvolution.datatypes.spatial2D.*;\nimport nz.co.gregs.dbvolution.annotations.*;\n\n@DBTableName(\"CREATE_TABLE_FOREIGN_KEY\") \npublic class CreateTableForeignKey extends DBRow {\n\n    public static final long serialVersionUID = 1L;\n\n    @DBColumn(\"NAME\")\n    public DBString name = new DBString();\n\n    @DBColumn(\"MARQUEFOREIGNKEY\")\n    @DBForeignKey(Marque.class)\n    public DBInteger marqueforeignkey = new DBInteger();\n\n    @DBColumn(\"CARCOFOREIGNKEY\")\n    @DBForeignKey(CarCompany.class)\n    public DBInteger carcoforeignkey = new DBInteger();\n\n}\n\n");
-//			testClasses.add("package nz.co.gregs.dbvolution.generation;\n\nimport nz.co.gregs.dbvolution.*;\nimport nz.co.gregs.dbvolution.datatypes.*;\nimport nz.co.gregs.dbvolution.datatypes.spatial2D.*;\nimport nz.co.gregs.dbvolution.annotations.*;\n\n@DBTableName(\"CREATE_TABLE_FOREIGN_KEY\") \npublic class CreateTableForeignKey extends DBRow {\n\n    public static final long serialVersionUID = 1L;\n\n    @DBColumn(\"NAME\")\n    public DBString name = new DBString();\n\n    @DBColumn(\"MARQUEFOREIGNKEY\")\n    @DBForeignKey(value = Marque.class, column = \"UID_MARQUE\")\n    public DBInteger marqueforeignkey = new DBInteger();\n\n    @DBColumn(\"CARCOFOREIGNKEY\")\n    @DBForeignKey(value = CarCompany.class, column = \"UID_CARCOMPANY\")\n    public DBInteger carcoforeignkey = new DBInteger();\n\n}\n\n");
+
 			generateSchema = DBTableClassGenerator.generateClassesOfTables(database, "nz.co.gregs.dbvolution.generation", new DBTableClassGenerator.Options());
 			for (DBTableClass dbcl : generateSchema) {
 				if (testClassNames.contains(dbcl.getClassName())) {
@@ -111,15 +109,12 @@ public class GeneratedMarqueTest extends AbstractTest {
 					for (String str : testClasses) {
 						final String testcaseLowercase = str.toLowerCase().replaceAll("[ \n\r\t]+", " ");
 						final String sourceLowercase = dbcl.getJavaSource().toLowerCase().replaceAll("[ \n\r\t]+", " ");
-//						System.out.println(""+testcaseLowercase);
-//						System.out.println(""+sourceLowercase);
+
 						if (testcaseLowercase.equals(sourceLowercase)) {
 							found = true;
 						}
 					}
 					Assert.assertTrue("Unable to find: \n\"" + dbcl.getJavaSource() + "\"", found);
-				} else {
-					System.out.println("SKIPPED: " + dbcl.getClassName());
 				}
 			}
 			Assert.assertThat(classesTested, is(1));
@@ -151,15 +146,12 @@ public class GeneratedMarqueTest extends AbstractTest {
 					for (String str : testClasses) {
 						final String testcaseLowercase = str.toLowerCase().replaceAll("[ \n\r\t]+", " ");
 						final String sourceLowercase = dbcl.getJavaSource().toLowerCase().replaceAll("[ \n\r\t]+", " ");
-						System.out.println(""+testcaseLowercase);
-						System.out.println(""+sourceLowercase);
+						
 						if (testcaseLowercase.equals(sourceLowercase)) {
 							found = true;
 						}
 					}
 					Assert.assertTrue("Unable to find: \n\"" + dbcl.getJavaSource() + "\"", found);
-				} else {
-					System.out.println("SKIPPED: " + dbcl.getClassName());
 				}
 			}
 			Assert.assertThat(classesTested, is(1));
@@ -199,8 +191,6 @@ public class GeneratedMarqueTest extends AbstractTest {
 						}
 					}
 					Assert.assertTrue("Unable to find: \n\"" + dbcl.getJavaSource() + "\"", found);
-				} else {
-					System.out.println("SKIPPED: " + dbcl.getClassName());
 				}
 			}
 			Assert.assertThat(classesTested, is(4));
@@ -221,12 +211,12 @@ public class GeneratedMarqueTest extends AbstractTest {
 						|| dbcl.getTableName().equals("LT_CARCO_LOGO")
 						|| dbcl.getTableName().equals("COMPANYLOGO")) {
 					final String javaSource = dbcl.getJavaSource();
-					System.out.println("" + javaSource);
+					
 					Class<?> compiledClass = cc.loadFromJava(dbcl.getFullyQualifiedName(), javaSource);
 					Object newInstance = compiledClass.newInstance();
 					DBRow row = (DBRow) newInstance;
 					List<DBRow> rows = database.getDBTable(row).setBlankQueryAllowed(true).getAllRows();
-					database.print(rows);
+					
 					switch (row.getTableName()) {
 						case "CAR_COMPANY":
 							Assert.assertThat(rows.size(), is(4));
@@ -243,8 +233,6 @@ public class GeneratedMarqueTest extends AbstractTest {
 						default:
 							break;
 					}
-				} else {
-					System.out.println("SKIPPED: " + dbcl.getTableName());
 				}
 			}
 		}
@@ -255,7 +243,6 @@ public class GeneratedMarqueTest extends AbstractTest {
 		List<JavaSourceFromString> compilationUnits = new ArrayList<JavaSourceFromString>(); // input for first compilation task
 		List<DBTableClass> generateSchema = DBTableClassGenerator.generateClassesOfTables(database, "nz.co.gregs.dbvolution.generation", new Options());
 		for (DBTableClass dbcl : generateSchema) {
-			System.out.println(dbcl.getJavaSource());
 			compilationUnits.add(new JavaSourceFromString(dbcl.getFullyQualifiedName(), dbcl.getJavaSource()));
 		}
 		JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
@@ -274,16 +261,10 @@ public class GeneratedMarqueTest extends AbstractTest {
 			JavaCompiler.CompilationTask task = compiler.getTask(null, fileManager, diagnostics, null, null, compilationUnits);
 			succeeded = task.call();
 			for (Diagnostic<?> diagnostic : diagnostics.getDiagnostics()) {
-				System.out.println("Error on line " + diagnostic.getLineNumber() + " in \"" + diagnostic.getSource() + "\"");
 				succeeded = false;
 			}
 		}
-		if (succeeded) {
-			System.out.println("Everything compiled correctly");
-		} else {
-			throw new Exception("There were compilation ERRORS");
-
-		}
+		Assert.assertThat(succeeded, is(true));
 	}
 
 	/**
@@ -321,29 +302,27 @@ public class GeneratedMarqueTest extends AbstractTest {
 		String test = "T_31";
 		String expected = "T_31";
 		String result = DBTableClassGenerator.toClassCase(test);
-		System.out.println(test + " => " + result + "(" + expected + ")");
 		Assert.assertEquals(result, expected);
+		
 		test = "T_3_1";
 		expected = "T_3_1";
 		result = DBTableClassGenerator.toClassCase(test);
-		System.out.println(test + " => " + result + "(" + expected + ")");
 		Assert.assertEquals(result, expected);
+		
 		test = "car_company";
 		expected = "CarCompany";
 		result = DBTableClassGenerator.toClassCase(test);
-		System.out.println(test + " => " + result + "(" + expected + ")");
 		Assert.assertEquals(result, expected);
+		
 		test = "CAR_COMPANY";
 		expected = "CarCompany";
 		result = DBTableClassGenerator.toClassCase(test);
-		System.out.println(test + " => " + result + "(" + expected + ")");
 		Assert.assertEquals(result, expected);
+		
 		test = "CARCOMPANY";
 		expected = "Carcompany";
 		result = DBTableClassGenerator.toClassCase(test);
-		System.out.println(test + " => " + result + "(" + expected + ")");
 		Assert.assertEquals(result, expected);
-
 	}
 
 	@DBTableName("test_auto_increment_detection")
