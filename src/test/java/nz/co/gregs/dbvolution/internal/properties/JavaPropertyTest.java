@@ -158,7 +158,7 @@ public class JavaPropertyTest {
 	@SuppressWarnings("unchecked")
 	public void getsOnlyPropertiesGivenOtherStuff() {
 		List<JavaProperty> properties = privateFieldPublicBeanFinder.getPropertiesOf(ThreePropertiesAndOtherStuffClass.class);
-		//System.out.println(properties);
+		
 		assertThat(properties,
 				anyOf(
 						containsInAnyOrder(
@@ -342,77 +342,6 @@ public class JavaPropertyTest {
 		assertThat(property.type(), is((Object) Integer.class));
 	}
 
-//  // Turns out java.beans.PropertyDescriptor only returns the getter
-//  // if the types are different, and the setter just gets dropped
-//    @Test
-//    public void getsMostConcreteTypeGivenSetterIsSupertypeOfGetter() {
-//        class TestClass {
-//			public Integer getProperty() {
-//				return 0;
-//			}
-//			
-//			public void setProperty(Number value) {
-//            }
-//        }
-//
-//        // assert this test is sane
-//        TestClass obj = new TestClass();
-//        Integer valueAsInteger = obj.getProperty();
-//        Number valueAsNumber = obj.getProperty();
-//        obj.setProperty(valueAsInteger);
-//        obj.setProperty(valueAsNumber);
-//
-//        // assert implementation is correct
-//        JavaProperty property = propertyOf(TestClass.class, "property");
-//        assertThat(property.type(), is((Object)Number.class));
-//    }
-//    // Turns out java.beans.PropertyDescriptor only returns the getter
-//    // if the types are different, and the setter just gets dropped
-//    @Test(expected=DBPebkacException.class)
-//    public void errorsWhenRetrievingTypeGivenGetterIsSupertypeOfSetter() {
-//        class TestClass {
-//			public Number getProperty() {
-//				return 0;
-//			}
-//			
-//			public void setProperty(Integer value) {
-//            }
-//        }
-//        
-//        // assert this test is sane
-//        TestClass obj = new TestClass();
-//        Integer valueAsInteger = null;
-//        Number valueAsNumber = null;
-//        //valueAsInteger = obj.getProperty(); // won't compile
-//        valueAsNumber = obj.getProperty(); // can't write using this type
-//        obj.setProperty(valueAsInteger); // can't read using this type
-//        //obj.setProperty(valueAsNumber); // won't compile
-//
-//        // assert implementation is correct
-//        JavaProperty property = propertyOf(TestClass.class, "property");
-//        property.type();
-//    }
-//  // Turns out java.beans.PropertyDescriptor only returns the getter
-//  // if the types are different, and the setter just gets dropped
-//    @Test(expected=DBPebkacException.class)
-//    public void errorsWhenRetrievingTypeGivenInconsistentOnAccessorMethods() {
-//        class TestClass {
-//			public int getProperty() {
-//				return 0;
-//			}
-//			
-//			public void setProperty(String value) {
-//            }
-//        }
-//
-//        List<JavaProperty> properties = privateFieldPublicBeanFinder.getPropertiesOf(TestClass.class);
-//        for (JavaProperty prop: properties) {
-//        	System.out.println(prop);
-//        }
-//        
-//        JavaProperty property = propertyOf(TestClass.class, "property");
-//        property.type();
-//    }
 	// check handling of annotations (including duplicates)
 	@Test
 	public void retrievesAnnotationGivenExactlyDuplicatedAnnotationOnGetterAndSetter() {
