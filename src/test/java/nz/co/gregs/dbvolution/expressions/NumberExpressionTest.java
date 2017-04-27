@@ -1209,7 +1209,7 @@ public class NumberExpressionTest extends AbstractTest {
 	public void testChoose() throws SQLException {
 		CarCompanyWithChoose carCo = new CarCompanyWithChoose();
 		DBQuery dbQuery = database.getDBQuery(carCo);
-		//dbQuery.setBlankQueryAllowed(true);
+		dbQuery.setBlankQueryAllowed(true);
 		
 		for (CarCompanyWithChoose carCompany : dbQuery.getAllInstancesOf(carCo)) {
 			if (carCompany.uidCarCompany.intValue() <= 0) {
