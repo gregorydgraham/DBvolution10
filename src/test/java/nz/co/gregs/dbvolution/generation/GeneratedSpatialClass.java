@@ -70,20 +70,17 @@ public class GeneratedSpatialClass extends AbstractTest {
 			generateSchema = DBTableClassGenerator.generateClassesOfTables(database, "nz.co.gregs.dbvolution.generation", new DBTableClassGenerator.Options());
 			for (DBTableClass dbcl : generateSchema) {
 				if (testClassNames.contains(dbcl.getClassName())) {
-					System.out.println("CHECKING: " + dbcl.getClassName());
-					System.out.println("" + dbcl.getJavaSource());
 					classesTested++;
 					boolean found = false;
 					for (String str : testClasses) {
 						final String testcaseLowercase = str.toLowerCase().replaceAll("[ \n\r\t]+", " ");
 						final String sourceLowercase = dbcl.getJavaSource().toLowerCase().replaceAll("[ \n\r\t]+", " ");
+						Assert.assertThat(sourceLowercase, is(testcaseLowercase));
 						if (testcaseLowercase.equals(sourceLowercase)) {
 							found = true;
 						}
 					}
 					Assert.assertTrue("Unable to find: \n\"" + dbcl.getJavaSource() + "\"", found);
-				} else {
-					System.out.println("SKIPPED: " + dbcl.getClassName());
 				}
 			}
 			Assert.assertThat(classesTested, is(1));
