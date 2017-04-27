@@ -160,9 +160,9 @@ public class DBDatabaseTest extends AbstractTest {
 		try {
 			database.createTable(new DropTable2TestClass());
 		} catch (SQLException ex) {
-			System.out.println("SETUP: DropTable2TestClass table not created, probably already exists" + ex.getMessage());
+			//SETUP: DropTable2TestClass table not created, probably already exists
 		} catch (AutoCommitActionDuringTransactionException ex) {
-			System.out.println("SETUP: DropTable2TestClass table not created, because you are in a transaction.");
+			//SETUP: DropTable2TestClass table not created, because you are in a transaction
 		}
 		database.dropTable(new DropTable2TestClass());
 	}
