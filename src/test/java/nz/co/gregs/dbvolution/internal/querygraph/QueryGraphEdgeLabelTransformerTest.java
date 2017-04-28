@@ -58,7 +58,6 @@ public class QueryGraphEdgeLabelTransformerTest extends AbstractTest {
 	 */
 	@Test
 	public void testTransform() {
-		System.out.println("transform");
 		Marque marque = new Marque();
 		DBExpression v = marque.column(marque.carCompany).is(2);
 		DBQuery dbQuery = database.getDBQuery(marque);
