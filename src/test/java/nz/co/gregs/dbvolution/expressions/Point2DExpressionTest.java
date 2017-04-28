@@ -110,7 +110,6 @@ public class Point2DExpressionTest extends AbstractTest {
 
 	@Test
 	public void testValueUsingPoint2DResult() throws SQLException {
-		System.out.println("value");
 		Point point = geometryFactory.createPoint(new Coordinate(2.0, 3.0));
 		final PointTestTable pointTestTable = new PointTestTable();
 		DBQuery dbQuery = database.getDBQuery(pointTestTable);
@@ -123,7 +122,6 @@ public class Point2DExpressionTest extends AbstractTest {
 
 	@Test
 	public void testGetQueryableDatatypeForExpressionValue() {
-		System.out.println("getQueryableDatatypeForExpressionValue");
 		Point2DExpression instance = new Point2DExpression();
 		DBPoint2D result = instance.getQueryableDatatypeForExpressionValue();
 		assertEquals(DBPoint2D.class, result.getClass());
@@ -131,7 +129,6 @@ public class Point2DExpressionTest extends AbstractTest {
 
 	@Test
 	public void testCopy() {
-		System.out.println("copy");
 		Point2DExpression instance = new Point2DExpression();
 		Point2DExpression result = instance.copy();
 		assertEquals(instance, result);
@@ -139,7 +136,6 @@ public class Point2DExpressionTest extends AbstractTest {
 
 	@Test
 	public void testIsAggregator() {
-		System.out.println("isAggregator");
 		Point2DExpression instance = new Point2DExpression();
 		boolean expResult = false;
 		boolean result = instance.isAggregator();
@@ -148,7 +144,6 @@ public class Point2DExpressionTest extends AbstractTest {
 
 	@Test
 	public void testGetTablesInvolved() {
-		System.out.println("getTablesInvolved");
 		final PointTestTable pointTestTable = new PointTestTable();
 		Point2DExpression instance = new Point2DExpression(pointTestTable.column(pointTestTable.point));
 		Set<DBRow> result = instance.getTablesInvolved();
@@ -162,7 +157,6 @@ public class Point2DExpressionTest extends AbstractTest {
 
 	@Test
 	public void testIsPurelyFunctional() {
-		System.out.println("isPurelyFunctional");
 		Point2DExpression instance = new Point2DExpression();
 		boolean result = instance.isPurelyFunctional();
 		Assert.assertThat(result, is(true));
@@ -174,7 +168,6 @@ public class Point2DExpressionTest extends AbstractTest {
 
 	@Test
 	public void testGetIncludesNull() {
-		System.out.println("getIncludesNull");
 		Point2DExpression instance = new Point2DExpression((Point) null);
 		Assert.assertThat(instance.getIncludesNull(), is(true));
 
@@ -185,7 +178,6 @@ public class Point2DExpressionTest extends AbstractTest {
 
 	@Test
 	public void testStringResult() throws SQLException {
-		System.out.println("stringResult");
 		Point point = geometryFactory.createPoint(new Coordinate(2.0, 3.0));
 		final PointTestTable pointTestTable = new PointTestTable();
 		DBQuery dbQuery = database.getDBQuery(pointTestTable);
@@ -197,7 +189,6 @@ public class Point2DExpressionTest extends AbstractTest {
 
 	@Test
 	public void testIs_Point() throws SQLException {
-		System.out.println("is");
 		Point point = geometryFactory.createPoint(new Coordinate(2.0, 3.0));
 		final PointTestTable pointTestTable = new PointTestTable();
 		DBQuery dbQuery = database.getDBQuery(pointTestTable);
@@ -209,7 +200,6 @@ public class Point2DExpressionTest extends AbstractTest {
 
 	@Test
 	public void testIs_Point2DResult() throws SQLException {
-		System.out.println("is");
 		Point point = geometryFactory.createPoint(new Coordinate(2.0, 3.0));
 		final PointTestTable pointTestTable = new PointTestTable();
 		DBQuery dbQuery = database.getDBQuery(pointTestTable);
@@ -221,7 +211,6 @@ public class Point2DExpressionTest extends AbstractTest {
 
 	@Test
 	public void testIsNot_Point2D() throws SQLException {
-		System.out.println("isNot");
 		Point point = geometryFactory.createPoint(new Coordinate(2.0, 3.0));
 		final PointTestTable pointTestTable = new PointTestTable();
 		DBQuery dbQuery = database.getDBQuery(pointTestTable);
@@ -233,7 +222,6 @@ public class Point2DExpressionTest extends AbstractTest {
 
 	@Test
 	public void testGetX() throws SQLException {
-		System.out.println("getX");
 		final PointTestTable pointTestTable = new PointTestTable();
 		DBQuery dbQuery = database.getDBQuery(pointTestTable);
 		dbQuery.addCondition(pointTestTable.column(pointTestTable.point).getX().is(2));
@@ -250,7 +238,6 @@ public class Point2DExpressionTest extends AbstractTest {
 
 	@Test
 	public void testGetY() throws SQLException {
-		System.out.println("getY");
 		final PointTestTable pointTestTable = new PointTestTable();
 		DBQuery dbQuery = database.getDBQuery(pointTestTable);
 		dbQuery.addCondition(pointTestTable.column(pointTestTable.point).getY().is(3));
@@ -267,7 +254,6 @@ public class Point2DExpressionTest extends AbstractTest {
 
 	@Test
 	public void testMaxX() throws SQLException {
-		System.out.println("maxX");
 		final PointTestTable pointTestTable = new PointTestTable();
 		DBQuery dbQuery = database.getDBQuery(pointTestTable);
 		dbQuery.addCondition(pointTestTable.column(pointTestTable.point).maxX().is(2));
@@ -284,7 +270,6 @@ public class Point2DExpressionTest extends AbstractTest {
 
 	@Test
 	public void testMaxY() throws SQLException {
-		System.out.println("maxY");
 		final PointTestTable pointTestTable = new PointTestTable();
 		DBQuery dbQuery = database.getDBQuery(pointTestTable);
 		dbQuery.addCondition(pointTestTable.column(pointTestTable.point).maxY().is(3));
@@ -301,7 +286,6 @@ public class Point2DExpressionTest extends AbstractTest {
 
 	@Test
 	public void testMinX() throws SQLException {
-		System.out.println("minX");
 		final PointTestTable pointTestTable = new PointTestTable();
 		DBQuery dbQuery = database.getDBQuery(pointTestTable);
 		dbQuery.addCondition(pointTestTable.column(pointTestTable.point).minX().is(2));
@@ -318,7 +302,6 @@ public class Point2DExpressionTest extends AbstractTest {
 
 	@Test
 	public void testMinY() throws SQLException {
-		System.out.println("minY");
 		final PointTestTable pointTestTable = new PointTestTable();
 		DBQuery dbQuery = database.getDBQuery(pointTestTable);
 		dbQuery.addCondition(pointTestTable.column(pointTestTable.point).minY().is(3));
@@ -335,7 +318,6 @@ public class Point2DExpressionTest extends AbstractTest {
 
 	@Test
 	public void testDimension() throws SQLException {
-		System.out.println("dimension");
 		final PointTestTable pointTestTable = new PointTestTable();
 		DBQuery dbQuery = database.getDBQuery(pointTestTable);
 		dbQuery.addCondition(pointTestTable.column(pointTestTable.point).measurableDimensions().is(0));
@@ -345,7 +327,6 @@ public class Point2DExpressionTest extends AbstractTest {
 
 	@Test
 	public void testHasMagnitude() throws SQLException {
-		System.out.println("dimension");
 		final PointTestTable pointTestTable = new PointTestTable();
 		DBQuery dbQuery = database.getDBQuery(pointTestTable);
 		dbQuery.addCondition(pointTestTable.column(pointTestTable.point).hasMagnitude().isNot(Boolean.TRUE));
@@ -360,7 +341,6 @@ public class Point2DExpressionTest extends AbstractTest {
 
 	@Test
 	public void testMagnitude() throws SQLException {
-		System.out.println("dimension");
 		final PointTestTable pointTestTable = new PointTestTable();
 		DBQuery dbQuery = database.getDBQuery(pointTestTable);
 		dbQuery.addCondition(pointTestTable.column(pointTestTable.point).magnitude().isNull());
@@ -370,7 +350,6 @@ public class Point2DExpressionTest extends AbstractTest {
 
 	@Test
 	public void testSpatialDimension() throws SQLException {
-		System.out.println("dimension");
 		final PointTestTable pointTestTable = new PointTestTable();
 		DBQuery dbQuery = database.getDBQuery(pointTestTable);
 		dbQuery.addCondition(pointTestTable.column(pointTestTable.point).spatialDimensions().is(2));
@@ -401,7 +380,6 @@ public class Point2DExpressionTest extends AbstractTest {
 
 	@Test
 	public void testBoundingBox() throws SQLException {
-		System.out.println("boundingBox");
 		final BoundingBoxTest pointTestTable = new BoundingBoxTest();
 		DBQuery dbQuery = database.getDBQuery(pointTestTable).setBlankQueryAllowed(true);
 		dbQuery.addCondition(pointTestTable.column(pointTestTable.point).getY().is(3));
@@ -413,7 +391,6 @@ public class Point2DExpressionTest extends AbstractTest {
 		String[] splits = boundingText.split("[^-0-9.]+");
 		int numbersTested = 0;
 		for (String split : splits) {
-			System.out.println("SPLIT: " + split);
 			if (split.length() > 0) {
 				Assert.assertThat(Math.round(Double.parseDouble(split) * 1000) / 1000.0, isOneOf(2.0, 3.0));
 				numbersTested++;
