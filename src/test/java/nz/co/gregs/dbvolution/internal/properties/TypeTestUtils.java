@@ -21,22 +21,12 @@ public class TypeTestUtils {
 
 		TypeVariable<? extends Class<?>>[] typeVariables = classToDescribe.getTypeParameters();
 		if (typeVariables != null && typeVariables.length > 0) {
-//			System.out.print("  (class: typeVariables=<");
-//			boolean first = true;
-//			for (TypeVariable<? extends Class<?>> typeVariable: typeVariables) {
-//				if (!first) System.out.print(",");
-//				System.out.print(typeVariable);
-//				first = false;
-//			}
-//			System.out.print(">, ");
 
 			System.out.println("  (class: typeVariables=<" + descriptionOf(typeVariables, classToDescribe) + ">)");
 		}
 
 		if (classToDescribe.getSuperclass() != null) {
 			System.out.print("  (class: supertype=");
-//			System.out.print(classToDescribe.getSuperclass().getSimpleName());
-//			System.out.print("/");
 			System.out.print(descriptionOf(classToDescribe.getGenericSuperclass(), classToDescribe));
 			System.out.println(")");
 		}
@@ -90,8 +80,7 @@ public class TypeTestUtils {
 		buf.append(")");
 
 		buf.append(": ");
-//		buf.append(method.getReturnType() == null ? "void" : method.getReturnType().getSimpleName());
-//		buf.append("/");
+		
 		buf.append(method.getGenericReturnType() == null ? "void" : descriptionOf(method.getGenericReturnType(), context));
 
 		if (method.isSynthetic() || method.isBridge() || Modifier.isAbstract(method.getModifiers())) {
