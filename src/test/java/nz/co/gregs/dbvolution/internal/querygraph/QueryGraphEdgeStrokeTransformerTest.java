@@ -61,7 +61,6 @@ public class QueryGraphEdgeStrokeTransformerTest extends AbstractTest {
 	 */
 	@Test
 	public void testTransform() {
-		System.out.println("transform");
 		Marque marque = new Marque();
 		DBQuery dbQuery = database.getDBQuery(marque);
 		DBExpression input = marque.column(marque.carCompany).is(2);
