@@ -181,7 +181,6 @@ public class DBInsert extends DBAction {
 						}
 					} catch (SQLException sqlex) {
 						try {
-//							sqlex.printStackTrace();
 							statement.execute(sql);
 						} catch (SQLException ex) {
 							throw new RuntimeException(sql, ex);
@@ -190,11 +189,9 @@ public class DBInsert extends DBAction {
 				} else {
 					try {
 						statement.execute(sql);
-						//QueryableDatatype<?> primaryKey = null;
 						final List<PropertyWrapper> primaryKeyWrappers = row.getPrimaryKeyPropertyWrappers();
 						if (primaryKeyWrappers.size() > 0) {
 							if (defn.supportsRetrievingLastInsertedRowViaSQL()) {
-//							primaryKey = primaryKeys.get(0);
 								String retrieveSQL = defn.getRetrieveLastInsertedRowSQL();
 								ResultSet rs = statement.executeQuery(retrieveSQL);
 								try {
@@ -204,8 +201,6 @@ public class DBInsert extends DBAction {
 										QueryableDatatype<?> rowPK = definition.getQueryableDatatype(row);
 
 										if (originalPK.hasBeenSet() == false) {
-//											QueryableDatatype<?> originalPK = this.originalRow.getPrimaryKeys().get(0);
-//											QueryableDatatype<?> rowPK = row.getPrimaryKeys().get(0);
 											if ((originalPK instanceof DBInteger) && (rowPK instanceof DBInteger)) {
 												DBInteger inPK = (DBInteger) originalPK;
 												DBInteger inRowPK = (DBInteger) rowPK;
@@ -229,7 +224,6 @@ public class DBInsert extends DBAction {
 							}
 						}
 					} catch (SQLException ex) {
-//						ex.printStackTrace();
 						throw new RuntimeException(ex);
 					}
 				}
