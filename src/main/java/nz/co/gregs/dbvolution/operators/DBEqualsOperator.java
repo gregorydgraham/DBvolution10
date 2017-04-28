@@ -85,7 +85,6 @@ public class DBEqualsOperator extends DBOperator {
 				}
 				return op;
 			} catch (Exception exp) {
-				exp.printStackTrace();
 				if (genericExpression instanceof StringExpression) {
 					StringExpression stringExpression = (StringExpression) genericExpression;
 					if ((getFirstValue() instanceof StringResult) || getFirstValue() == null) {
