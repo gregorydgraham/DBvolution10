@@ -57,7 +57,6 @@ public class QueryGraphVertexFillPaintTransformerTest extends AbstractTest {
 	 */
 	@Test
 	public void testTransform() {
-		System.out.println("transform");
 		QueryGraphNode i = new QueryGraphNode((new Marque()).getClass());
 		QueryGraphVertexFillPaintTransformer instance = new QueryGraphVertexFillPaintTransformer();
 		Paint expResult = Color.RED;
