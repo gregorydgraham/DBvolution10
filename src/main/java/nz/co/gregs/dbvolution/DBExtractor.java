@@ -224,7 +224,6 @@ public abstract class DBExtractor extends DBScript {
 					System.out.println("RETRIEVED: " + getLowerBound() + "-" + getUpperBound() + " (+" + getBoundIncrease() + ") after " + timeTaken + " at " + timePerRecord + "ms/record.");
 				}
 			} catch (Exception ex) {
-				ex.printStackTrace();
 				if (getBoundIncrease() == getMinBoundIncrease()) {
 					// We can't get this row so acknowledge the error
 					System.out.println("Unable to access records: " + getLowerBound() + " - " + getUpperBound());
