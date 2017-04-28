@@ -222,7 +222,6 @@ public enum Line2DFunctions {
 				final String createFn = "CREATE OR REPLACE FUNCTION " + this + "(" + this.parameters + ")\n"
 						+ "    RETURN " + this.returnType
 						+ " AS \n" + "\n" + this.code;
-//				System.out.println(createFn);
 				stmt.execute(createFn);
 			}
 		} catch (SQLException ex) {

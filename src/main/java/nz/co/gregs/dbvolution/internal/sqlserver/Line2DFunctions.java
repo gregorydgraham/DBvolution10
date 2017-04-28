@@ -179,7 +179,6 @@ public enum Line2DFunctions {
 					+ "    RETURNS " + this.returnType
 					+ " AS BEGIN\n" + "\n" + this.code
 					+ "\n END;";
-//			System.out.println("" + createFn);
 			stmt.execute(createFn);
 		}
 	}

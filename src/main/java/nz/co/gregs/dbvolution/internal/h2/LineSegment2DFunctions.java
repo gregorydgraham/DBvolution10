@@ -284,7 +284,6 @@ public enum LineSegment2DFunctions implements DBVFeature {
 			;
 		}
 		final String createFunctionStatement = "CREATE ALIAS IF NOT EXISTS " + this + " DETERMINISTIC AS $$ \n" + "@CODE " + returnType + " " + this + "(" + parameters + ") {\n" + code + "} $$;";
-//		System.out.println(createFunctionStatement);
 		stmt.execute(createFunctionStatement);
 	}
 

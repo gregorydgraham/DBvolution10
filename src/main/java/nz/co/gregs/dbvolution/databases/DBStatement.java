@@ -155,8 +155,6 @@ public class DBStatement implements Statement {
 			// Someone please tell me how you are supposed to cope 
 			// with an exception during the close method????????
 			LOG.warn("Exception occurred during close(): " + e.getMessage(), e);
-//			throw e;
-			e.printStackTrace(System.err);
 		}
 	}
 
@@ -415,7 +413,6 @@ public class DBStatement implements Statement {
 			throw new SQLException("Failed To Add Support For SQL: "+exp.getMessage()+" : Original Query: "+string, ex);
 		}
 		try {
-			System.out.print("addFeatureAndAttemptExecuteAgain: "+string);
 			executeQuery = getInternalStatement().execute(string);
 			return executeQuery;
 		} catch (Exception exp2) {

@@ -181,7 +181,7 @@ public class DBInsert extends DBAction {
 						}
 					} catch (SQLException sqlex) {
 						try {
-							sqlex.printStackTrace();
+//							sqlex.printStackTrace();
 							statement.execute(sql);
 						} catch (SQLException ex) {
 							throw new RuntimeException(sql, ex);
@@ -229,7 +229,7 @@ public class DBInsert extends DBAction {
 							}
 						}
 					} catch (SQLException ex) {
-						ex.printStackTrace();
+//						ex.printStackTrace();
 						throw new RuntimeException(ex);
 					}
 				}

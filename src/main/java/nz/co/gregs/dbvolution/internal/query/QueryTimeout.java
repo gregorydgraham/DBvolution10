@@ -44,7 +44,6 @@ public class QueryTimeout extends Timer {
 		queryTimeout = new QueryTimeout(new CancelTask(statement));
 		Calendar cal = new GregorianCalendar();
 		cal.add(Calendar.MILLISECOND, timeoutInMilliseconds);
-//		System.out.println("SCHEDULING TIMEOUT: " + DateFormat.getDateTimeInstance().format(cal.getTime()));
 		queryTimeout.schedule(queryTimeout.task, cal.getTime());
 		return queryTimeout;
 	}

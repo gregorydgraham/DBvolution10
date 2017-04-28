@@ -70,9 +70,7 @@ public enum MultiPoint2DFunctions {
 			;
 		}
 		final String createFunctionStatement = "CREATE OR REPLACE FUNCTION " + this + "(" + this.parameters + ")\n" + "    RETURNS " + this.returnType + " AS\n" + "'\n" + this.code + "'\n" + "LANGUAGE '" + language + "' IMMUTABLE;";
-//		System.out.println("" + createFunctionStatement);
 		stmt.execute(createFunctionStatement);
-
 	}
 
 }

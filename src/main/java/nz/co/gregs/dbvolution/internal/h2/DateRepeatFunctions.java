@@ -297,7 +297,6 @@ public enum DateRepeatFunctions implements DBVFeature {
 			;// Not an issue.
 		}
 		final String createFunctionStatement = "CREATE ALIAS IF NOT EXISTS " + this + " DETERMINISTIC AS $$ \n" + imports + "\n\n" + "@CODE " + returnType + " " + this + "(" + parameters + ") " + (exceptions.equals("") ? "" : "throws " + exceptions) + "{\n" + code + "} $$;";
-		System.out.println(createFunctionStatement);
 		stmt.execute(createFunctionStatement);
 	}	
 }

@@ -196,7 +196,7 @@ public class H2DB extends DBDatabase implements SupportsDateRepeatDatatypeFuncti
 				String[] split = message.split("method \"");
 				split = split[1].split("\\(");
 				String functionName = split[0];
-				System.out.println("ADDING FUNCTION: " + functionName);
+				
 				DBVFeature functions = featureMap.get(functionName);
 				if (functions != null) {
 					functions.add(getConnection().createStatement());

@@ -566,7 +566,6 @@ public class MySQLDBDefinition extends DBDefinition {
 
 	@Override
 	public MultiPoint transformDatabaseMultiPoint2DValueToJTSMultiPoint(String pointsAsString) throws com.vividsolutions.jts.io.ParseException {
-		System.out.println("" + pointsAsString);
 		MultiPoint mpoint = null;
 		WKTReader wktReader = new WKTReader();
 		Geometry geometry = wktReader.read(pointsAsString);

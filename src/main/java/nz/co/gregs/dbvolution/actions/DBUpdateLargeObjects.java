@@ -133,7 +133,6 @@ public class DBUpdateLargeObjects extends DBUpdate {
 				+ defn.beginWhereClause()
 				+ getPrimaryKeySQL(db, row)
 				+ defn.endSQLStatement();
-//					db.printSQLIfRequested(sqlString);
 		LOG.debug(sqlString);
 		PreparedStatement prep = statement.getConnection().prepareStatement(sqlString);
 		try {
@@ -156,7 +155,6 @@ public class DBUpdateLargeObjects extends DBUpdate {
 				+ defn.beginWhereClause()
 				+ getPrimaryKeySQL(db, row)
 				+ defn.endSQLStatement();
-//					db.printSQLIfRequested(sqlString);
 		LOG.debug(sqlString);
 		statement.execute(sqlString);
 	}
@@ -200,7 +198,6 @@ public class DBUpdateLargeObjects extends DBUpdate {
 				+ defn.beginWhereClause()
 				+ getPrimaryKeySQL(db, row)
 				+ defn.endSQLStatement();
-//					db.printSQLIfRequested(sqlString);
 		LOG.debug(sqlString);
 		PreparedStatement prep = statement.getConnection().prepareStatement(sqlString);
 		try {
@@ -221,7 +218,6 @@ public class DBUpdateLargeObjects extends DBUpdate {
 				+ defn.beginWhereClause()
 				+ getPrimaryKeySQL(db, row)
 				+ defn.endSQLStatement();
-//					db.printSQLIfRequested(sqlString);
 		LOG.debug(sqlString);
 		PreparedStatement prep = statement.getConnection().prepareStatement(sqlString);
 		try {
@@ -242,7 +238,6 @@ public class DBUpdateLargeObjects extends DBUpdate {
 				+ defn.beginWhereClause()
 				+ getPrimaryKeySQL(db, row)
 				+ defn.endSQLStatement();
-//					db.printSQLIfRequested(sqlString);
 		LOG.debug(sqlString);
 		PreparedStatement prep = statement.getConnection().prepareStatement(sqlString);
 		try {
@@ -269,7 +264,6 @@ public class DBUpdateLargeObjects extends DBUpdate {
 					bytesAdded += someBytes.length;
 				}
 				String b64encoded = Base64.encodeBase64String(bytes);
-				//System.out.println("BYTES TO WRITE: " + Arrays.toString(bytes));
 				prep.setString(1, b64encoded);
 				prep.execute();
 			} finally {
@@ -378,7 +372,6 @@ public class DBUpdateLargeObjects extends DBUpdate {
 				+ defn.beginWhereClause()
 				+ getPrimaryKeySQL(db, row)
 				+ defn.endSQLStatement();
-//					db.printSQLIfRequested(sqlString);
 		LOG.debug(sqlString);
 		try (PreparedStatement prep = statement.getConnection().prepareStatement(sqlString)) {
 			prep.setObject(1, largeObject.getValue());
@@ -396,7 +389,6 @@ public class DBUpdateLargeObjects extends DBUpdate {
 				+ defn.beginWhereClause()
 				+ getPrimaryKeySQL(db, row)
 				+ defn.endSQLStatement();
-//					db.printSQLIfRequested(sqlString);
 		LOG.debug(sqlString);
 		PreparedStatement prep = statement.getConnection().prepareStatement(sqlString);
 		try {
@@ -422,8 +414,6 @@ public class DBUpdateLargeObjects extends DBUpdate {
 					System.arraycopy(someBytes, 0, bytes, bytesAdded, Math.min(someBytes.length, bytes.length - bytesAdded));
 					bytesAdded += someBytes.length;
 				}
-//				String b64encoded = Base64.encodeBase64String(bytes);
-				//System.out.println("BYTES TO WRITE: " + Arrays.toString(bytes));
 				prep.setBytes(1, bytes);
 				prep.execute();
 			} finally {
@@ -433,53 +423,4 @@ public class DBUpdateLargeObjects extends DBUpdate {
 			prep.close();
 		}
 	}
-
-//	private void setUsingUnicodeStream(DBDefinition defn, DBRow row, String col, DBLargeObject<?> largeObject, DBDatabase db, DBStatement statement) throws SQLException, IOException {
-//		String sqlString = defn.beginUpdateLine()
-//				+ defn.formatTableName(row)
-//				+ defn.beginSetClause()
-//				+ defn.formatColumnName(col)
-//				+ defn.getEqualsComparator()
-//				+ defn.getPreparedVariableSymbol()
-//				+ defn.beginWhereClause()
-//				+ getPrimaryKeySQL(db, row)
-//				+ defn.endSQLStatement();
-////					db.printSQLIfRequested(sqlString);
-//		LOG.debug(sqlString);
-//		PreparedStatement prep = statement.getConnection().prepareStatement(sqlString);
-//		try {
-//			InputStream inputStream = largeObject.getInputStream();
-//
-//			InputStream input = new BufferedInputStream(inputStream);
-//			try {
-//				List<byte[]> byteArrays = new ArrayList<>();
-//
-//				int totalBytesRead = 0;
-//				byte[] resultSetBytes;
-//				resultSetBytes = new byte[100000];
-//				int bytesRead = input.read(resultSetBytes);
-//				while (bytesRead > 0) {
-//					totalBytesRead += bytesRead;
-//					byteArrays.add(resultSetBytes);
-//					resultSetBytes = new byte[100000];
-//					bytesRead = input.read(resultSetBytes);
-//				}
-//				byte[] bytes = new byte[totalBytesRead];
-//				int bytesAdded = 0;
-//				for (byte[] someBytes : byteArrays) {
-//					System.arraycopy(someBytes, 0, bytes, bytesAdded, Math.min(someBytes.length, bytes.length - bytesAdded));
-//					bytesAdded += someBytes.length;
-//				}
-////				String b64encoded = Base64.encodeBase64String(bytes);
-//				//System.out.println("BYTES TO WRITE: " + Arrays.toString(bytes));
-//				prep.setUnicodeStream(1, new ByteArrayInputStream(bytes), bytes.length);
-//				prep.execute();
-//			} finally {
-//				input.close();
-//			}
-//		} finally {
-//			prep.close();
-//		}
-//	}
-
 }

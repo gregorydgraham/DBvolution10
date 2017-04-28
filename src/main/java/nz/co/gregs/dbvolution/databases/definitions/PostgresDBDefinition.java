@@ -475,9 +475,7 @@ public class PostgresDBDefinition extends DBDefinition {
 		Point point = null;
 		if (pointAsString.matches(" *\\( *[-0-9.]+, *[-0-9.]+ *\\) *")) {
 			String[] split = pointAsString.split("[^-0-9.]+");
-			for (String split1 : split) {
-				System.out.println("DATABASE VALUE: " + split1);
-			}
+			
 			GeometryFactory geometryFactory = new GeometryFactory();
 			final double x = Double.parseDouble(split[1]);
 			final double y = Double.parseDouble(split[2]);
@@ -493,14 +491,12 @@ public class PostgresDBDefinition extends DBDefinition {
 	@Override
 	public Polygon transformDatabasePolygon2DToJTSPolygon(String geometryAsString) throws com.vividsolutions.jts.io.ParseException {
 		String string = "POLYGON " + geometryAsString.replaceAll("\\),\\(", ", ").replaceAll("([-0-9.]+),([-0-9.]+)", "$1 $2");
-		System.out.println(geometryAsString + " => " + string);
 		String[] splits = geometryAsString.split("[^0-9.]+");
 		List<Coordinate> coords = new ArrayList<>();
 		Coordinate firstCoord = null;
 		for (int i = 1; i < splits.length; i++) {
 			String splitX = splits[i];
 			String splitY = splits[i + 1];
-			System.out.println("COORD: " + splitX + ", " + splitY);
 			final Coordinate coordinate = new Coordinate(Double.parseDouble(splitX), Double.parseDouble(splitY));
 			coords.add(coordinate);
 			if (firstCoord == null) {
@@ -525,13 +521,11 @@ public class PostgresDBDefinition extends DBDefinition {
 		if (!lineStringAsString.matches("^ *LINESTRING.*")) {
 			String string = "LINESTRING " + lineStringAsString.replaceAll("\\),\\(", ", ").replaceAll("([-0-9.]+),([-0-9.]+)", "$1 $2");
 			String[] splits = lineStringAsString.split("[(),]+");
-			System.out.println(lineStringAsString + " => " + string);
 			Coordinate firstCoord = null;
 			List<Coordinate> coords = new ArrayList<>();
 			for (int i = 1; i < splits.length - 1; i++) {
 				String splitX = splits[i];
 				String splitY = splits[i + 1];
-				System.out.println("COORD: " + splitX + ", " + splitY);
 				final Coordinate coordinate = new Coordinate(Double.parseDouble(splitX), Double.parseDouble(splitY));
 				coords.add(coordinate);
 				if (firstCoord == null) {
@@ -675,13 +669,11 @@ public class PostgresDBDefinition extends DBDefinition {
 		if (!lineStringAsString.matches("^ *LINESTRING.*")) {
 			String string = "LINESTRING " + lineStringAsString.replaceAll("\\),\\(", ", ").replaceAll("([-0-9.]+),([-0-9.]+)", "$1 $2");
 			String[] splits = lineStringAsString.split("[(),]+");
-			System.out.println(lineStringAsString + " => " + string);
 			Coordinate firstCoord = null;
 			List<Coordinate> coords = new ArrayList<>();
 			for (int i = 1; i < splits.length - 1; i += 2) {
 				String splitX = splits[i];
 				String splitY = splits[i + 1];
-				System.out.println("COORD: " + splitX + ", " + splitY);
 				final Coordinate coordinate = new Coordinate(Double.parseDouble(splitX), Double.parseDouble(splitY));
 				coords.add(coordinate);
 				if (firstCoord == null) {

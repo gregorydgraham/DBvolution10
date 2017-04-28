@@ -346,7 +346,6 @@ public class DBLargeBinary extends DBLargeObject<byte[]> {
 	 *
 	 */
 	public byte[] setFromFileSystem(File originalFile) throws FileNotFoundException, IOException {
-//		System.out.println("FILE: " + originalFile.getAbsolutePath());
 		byte[] bytes = new byte[(int) originalFile.length()];
 		InputStream input = null;
 		try {

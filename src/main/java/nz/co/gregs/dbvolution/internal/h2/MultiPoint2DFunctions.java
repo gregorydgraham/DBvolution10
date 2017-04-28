@@ -271,7 +271,6 @@ public enum MultiPoint2DFunctions implements DBVFeature {
 				+ code
 				+ "}\n"
 				+ "} $$;";
-		System.out.println(createFunctionStatement);
 		stmt.execute(createFunctionStatement);
 	}
 

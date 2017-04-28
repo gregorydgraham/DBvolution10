@@ -230,9 +230,7 @@ public class PostgresDB extends DBDatabase implements SupportsPolygonDatatype {
 		try {
 			this.dropTable(tableRow);
 		} catch (org.postgresql.util.PSQLException exp) {
-//			exp.printStackTrace();
 		} catch (SQLException exp) {
-//			exp.printStackTrace();
 		}
 	}
 
@@ -270,7 +268,6 @@ public class PostgresDB extends DBDatabase implements SupportsPolygonDatatype {
 				}
 			}
 		} catch (SQLException sqlex) {
-			System.out.println("" + sqlex.getMessage());;
 		}
 	}
 
@@ -286,7 +283,6 @@ public class PostgresDB extends DBDatabase implements SupportsPolygonDatatype {
 				}
 			}
 		} catch (SQLException sqlex) {
-			System.out.println("" + sqlex.getMessage());;
 		}
 	}
 }
