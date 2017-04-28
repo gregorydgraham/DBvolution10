@@ -2463,11 +2463,13 @@ public class DBQuery {
 	 * They will NOT be added as tables however, for that use
 	 * {@link #add(nz.co.gregs.dbvolution.DBRow...) add and related methods}.
 	 *
-	 *
+	 * @param extraExamples
+	 * @return this DBQuery with the extra examples added
 	 */
-	void addExtraExamples(DBRow... extraExamples) {
+	public DBQuery addExtraExamples(DBRow... extraExamples) {
 		this.details.getExtraExamples().addAll(Arrays.asList(extraExamples));
 		blankResults();
+		return this;
 	}
 
 	private void blankResults() {
