@@ -19,53 +19,8 @@ import nz.co.gregs.dbvolution.DBTable;
 import nz.co.gregs.dbvolution.example.Marque;
 import nz.co.gregs.dbvolution.generic.AbstractTest;
 import org.hamcrest.Matchers;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.not;
-import static org.hamcrest.Matchers.nullValue;
 import org.junit.Assert;
 import org.junit.Test;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.not;
-import static org.hamcrest.Matchers.nullValue;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.not;
-import static org.hamcrest.Matchers.nullValue;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.not;
-import static org.hamcrest.Matchers.nullValue;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.not;
-import static org.hamcrest.Matchers.nullValue;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.not;
-import static org.hamcrest.Matchers.nullValue;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.not;
-import static org.hamcrest.Matchers.nullValue;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.not;
-import static org.hamcrest.Matchers.nullValue;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.not;
-import static org.hamcrest.Matchers.nullValue;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.not;
-import static org.hamcrest.Matchers.nullValue;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.not;
-import static org.hamcrest.Matchers.nullValue;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.not;
-import static org.hamcrest.Matchers.nullValue;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.not;
-import static org.hamcrest.Matchers.nullValue;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.not;
-import static org.hamcrest.Matchers.nullValue;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.not;
-import static org.hamcrest.Matchers.nullValue;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.nullValue;
@@ -84,7 +39,6 @@ public class RawSQLTransactionTest extends AbstractTest {
 		Marque mrq = new Marque();
 		mrq.name.permittedValues("PEUGEOT");
 		Marque peugeot = database.getDBTable(mrq).getOnlyRowByExample(mrq);
-		System.out.println("" + peugeot);
 		Assert.assertThat(peugeot, is(not(nullValue())));
 	}
 
@@ -96,7 +50,6 @@ public class RawSQLTransactionTest extends AbstractTest {
 		Marque mrq = new Marque();
 		mrq.name.permittedValues("Peugeot");
 		Marque peugeot = database.getDBTable(mrq).getOnlyRowByExample(mrq);
-		System.out.println("" + peugeot);
 		Assert.assertThat(peugeot, is(not(nullValue())));
 	}
 
@@ -112,7 +65,6 @@ public class RawSQLTransactionTest extends AbstractTest {
 		Marque mrq = new Marque();
 		mrq.name.permittedValues("Peugeot", "Toyota");
 		DBTable<Marque> rows = database.getDBTable(mrq);
-		rows.print();
 		Assert.assertThat(rows.toList(), is(not(Matchers.empty())));
 		Assert.assertThat(rows.toList().size(), is(2));
 	}
