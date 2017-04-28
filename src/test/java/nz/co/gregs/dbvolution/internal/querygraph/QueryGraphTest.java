@@ -62,7 +62,6 @@ public class QueryGraphTest extends AbstractTest {
 	 */
 	@Test
 	public void testGetJungGraph() {
-		System.out.println("getJungGraph");
 		QueryGraph instance = new QueryGraph(new ArrayList<DBRow>(), new ArrayList<BooleanExpression>());
 		Graph<QueryGraphNode, DBExpression> expResult = new SparseMultigraph<QueryGraphNode, DBExpression>();
 		Graph<QueryGraphNode, DBExpression> result = instance.getJungGraph();
