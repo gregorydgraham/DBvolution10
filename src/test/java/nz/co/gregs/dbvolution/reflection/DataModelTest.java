@@ -52,35 +52,24 @@ public class DataModelTest extends AbstractTest {
 
 	@Test
 	public void testGetDatabases() {
-		System.out.println("getDatabases");
 		Set<Class<? extends DBDatabase>> result = DataModel.getUseableDBDatabaseClasses();
-		for (Class<? extends DBDatabase> result1 : result) {
-			System.out.println("DBDatabase: " + result1.getName());
-		}
 		Assert.assertThat(result.size(), is(9));
 	}
 
 	@Test
 	public void testGetDBDatabaseConstructors() {
-		System.out.println("getDBDatabaseConstructors");
 		Set<Constructor<DBDatabase>> result = DataModel.getDBDatabaseConstructors();
-		for (Constructor<DBDatabase> result1 : result) {
-			System.out.println("Constructor: " + result1.getName());
-		}
 		Assert.assertThat(result.size(), is(11));
 	}
 
 	@Test
 	public void testGetDBDatabaseConstructorsPublicWithoutParameters() {
-		System.out.println("getDBDatabaseConstructorsPublicWithoutParameters");
 		Set<Constructor<DBDatabase>> result = DataModel.getDBDatabaseConstructorsPublicWithoutParameters();
 		for (Constructor<DBDatabase> constr : result) {
 			try {
 				constr.setAccessible(true);
-				System.out.println("DBDatabase Constructor: " + constr.getName());
 				DBDatabase newInstance = constr.newInstance();
 				Assert.assertThat(newInstance, instanceOf(DBDatabase.class));
-				System.out.println("DBDatabase created: " + newInstance.getClass().getCanonicalName());
 			} catch (InstantiationException ex) {
 				Logger.getLogger(DataModelTest.class.getName()).log(Level.SEVERE, null, ex);
 			} catch (IllegalAccessException ex) {
@@ -96,24 +85,17 @@ public class DataModelTest extends AbstractTest {
 
 	@Test
 	public void testGetDBRowClasses() {
-		System.out.println("getDBRowClasses");
 		Set<Class<? extends DBRow>> result = DataModel.getDBRowClasses();
-		for (Class<? extends DBRow> class1 : result) {
-			System.out.println(class1.getName());
-		}
 		Assert.assertThat(result.size(), is(219));
 	}
 
 	@Test
 	public void testGetDBDatabaseCreationMethodsStaticWithoutParameters() {
-		System.out.println("getDBDatabaseCreationMethodsWithoutParameters");
 		List<Method> dbDatabaseCreationMethods = DataModel.getDBDatabaseCreationMethodsStaticWithoutParameters();
 		for (Method creator : dbDatabaseCreationMethods) {
-			System.out.println("Creator: " + creator.getDeclaringClass().getCanonicalName() + "." + creator.getName() + "()");
 			creator.setAccessible(true);
 			try {
 				DBDatabase db = (DBDatabase) creator.invoke(null);
-				System.out.println("DBDatabase Created: " + db);
 			} catch (IllegalAccessException ex) {
 				Assert.fail("Unable to invoke " + creator.getDeclaringClass().getCanonicalName() + "." + creator.getName() + "()");
 			} catch (IllegalArgumentException ex) {
@@ -133,7 +115,6 @@ public class DataModelTest extends AbstractTest {
 				new ExampleEncodingInterpreter()
 		);
 		List<DBQueryRow> allRows = query.getAllRows();
-		database.print(allRows);
 		Assert.assertThat(allRows.size(), is(2));
 		Assert.assertThat(allRows.get(0).get(new CarCompany()).name.stringValue(), is("TOYOTA"));
 		Assert.assertThat(allRows.get(0).get(new Marque()).name.stringValue(), isOneOf("TOYOTA", "HYUNDAI"));
@@ -149,14 +130,13 @@ public class DataModelTest extends AbstractTest {
 				new ExampleEncodingInterpreter()
 		);
 		try {
-			database.print(query.getAllRows());
+			List<DBQueryRow> allRows = query.getAllRows();
 			throw new DBRuntimeException("Failed To Create AccidentalBlankQueryException!");
 		} catch (AccidentalBlankQueryException blank) {
 		}
 		query.setBlankQueryAllowed(true);
 		List<DBQueryRow> allRows = query.getAllRows();
-		database.print(allRows);
-
+		
 		Assert.assertThat(allRows.size(), is(22));
 
 	}
@@ -169,8 +149,7 @@ public class DataModelTest extends AbstractTest {
 				new ExampleEncodingInterpreter()
 		);
 		List<DBQueryRow> allRows = query.getAllRows();
-		database.print(allRows);
-
+		
 		Assert.assertThat(allRows.size(), is(2));
 
 	}
@@ -182,9 +161,7 @@ public class DataModelTest extends AbstractTest {
 				"nz.co.gregs.dbvolution.example.CarCompany-uidCarCompany=3...4&nz.co.gregs.dbvolution.example.Marque",
 				new ExampleEncodingInterpreter()
 		);
-//		database.setPrintSQLBeforeExecuting(true);
 		List<DBQueryRow> allRows = query.getAllRows();
-		database.print(allRows);
 
 		Assert.assertThat(allRows.size(), is(19));
 
@@ -197,9 +174,7 @@ public class DataModelTest extends AbstractTest {
 				"nz.co.gregs.dbvolution.example.CarCompany-uidCarCompany=...4&nz.co.gregs.dbvolution.example.Marque",
 				new ExampleEncodingInterpreter()
 		);
-//		database.setPrintSQLBeforeExecuting(true);
 		List<DBQueryRow> allRows = query.getAllRows();
-		database.print(allRows);
 
 		Assert.assertThat(allRows.size(), is(22));
 
@@ -212,9 +187,7 @@ public class DataModelTest extends AbstractTest {
 				"nz.co.gregs.dbvolution.example.CarCompany-uidCarCompany=3...&nz.co.gregs.dbvolution.example.Marque",
 				new ExampleEncodingInterpreter()
 		);
-//		database.setPrintSQLBeforeExecuting(true);
 		List<DBQueryRow> allRows = query.getAllRows();
-		database.print(allRows);
 
 		Assert.assertThat(allRows.size(), is(19));
 
@@ -228,9 +201,7 @@ public class DataModelTest extends AbstractTest {
 				"nz.co.gregs.dbvolution.example.CarCompany&nz.co.gregs.dbvolution.example.Marque-creationDate=23 Mar 2013 12:34:56",
 				new ExampleEncodingInterpreter()
 		);
-//		database.setPrintSQLBeforeExecuting(true);
 		List<DBQueryRow> allRows = query.getAllRows();
-		database.print(allRows);
 
 		Assert.assertThat(allRows.size(), is(18));
 		Assert.assertThat(allRows.get(0).get(new Marque()).creationDate.dateValue(), is(new Date("23 Mar 2013 12:34:56")));
@@ -244,9 +215,7 @@ public class DataModelTest extends AbstractTest {
 				"nz.co.gregs.dbvolution.example.CarCompany&nz.co.gregs.dbvolution.example.Marque-creationDate=22 Mar 2013 12:34:56...24 Mar 2013 12:34:56",
 				new ExampleEncodingInterpreter()
 		);
-//		database.setPrintSQLBeforeExecuting(true);
 		List<DBQueryRow> allRows = query.getAllRows();
-		database.print(allRows);
 
 		Assert.assertThat(allRows.size(), is(18));
 		Assert.assertThat(allRows.get(0).get(new Marque()).creationDate.dateValue(), is(new Date("23 Mar 2013 12:34:56")));
@@ -259,9 +228,7 @@ public class DataModelTest extends AbstractTest {
 				"nz.co.gregs.dbvolution.example.CarCompany&nz.co.gregs.dbvolution.example.Marque-statusClassID=1246974",
 				new ExampleEncodingInterpreter()
 		);
-//		database.setPrintSQLBeforeExecuting(true);
 		List<DBQueryRow> allRows = query.getAllRows();
-		database.print(allRows);
 
 		Assert.assertThat(allRows.size(), is(21));
 		Assert.assertThat(allRows.get(0).get(new Marque()).statusClassID.intValue(), is(1246974));
@@ -274,9 +241,7 @@ public class DataModelTest extends AbstractTest {
 				"nz.co.gregs.dbvolution.example.CarCompany&nz.co.gregs.dbvolution.example.Marque-statusClassID=1246972...1246974",
 				new ExampleEncodingInterpreter()
 		);
-//		database.setPrintSQLBeforeExecuting(true);
 		List<DBQueryRow> allRows = query.getAllRows();
-		database.print(allRows);
 
 		Assert.assertThat(allRows.size(), is(22));
 		Assert.assertThat(allRows.get(0).get(new Marque()).statusClassID.intValue(), isOneOf(1246974, 1246972));
@@ -291,7 +256,6 @@ public class DataModelTest extends AbstractTest {
 		DBQuery query = database.getDBQuery(marque, carCompany);
 
 		List<DBQueryRow> allRows = query.getAllRows();
-		database.print(allRows);
 		Assert.assertThat(allRows.size(), is(1));
 		Assert.assertThat(allRows.get(0).get(new CarCompany()).name.stringValue(), is("TOYOTA"));
 		Assert.assertThat(allRows.get(0).get(marque).name.stringValue(), isOneOf("TOYOTA"));
@@ -318,7 +282,6 @@ public class DataModelTest extends AbstractTest {
 		Assert.assertThat(safeEncoded, Matchers.containsString("nz.co.gregs.dbvolution.example.Marque-carCompany=1"));
 
 		final String encodedQuery = encoder.encode(allRows.get(0).get(new CarCompany()), marque);
-		System.out.println(encodedQuery);
 
 		Assert.assertThat(encodedQuery, is("nz.co.gregs.dbvolution.example.CarCompany-name=TOYOTA&"
 				+ "nz.co.gregs.dbvolution.example.CarCompany-uidCarCompany=1&"
@@ -329,7 +292,6 @@ public class DataModelTest extends AbstractTest {
 						new ExampleEncodingInterpreter()
 				);
 		allRows = query.getAllRows();
-		database.print(allRows);
 		Assert.assertThat(allRows.size(), is(2));
 		Assert.assertThat(allRows.get(0).get(new CarCompany()).name.stringValue(), is("TOYOTA"));
 		Assert.assertThat(allRows.get(0).get(marque).name.stringValue(), isOneOf("TOYOTA", "HYUNDAI"));
