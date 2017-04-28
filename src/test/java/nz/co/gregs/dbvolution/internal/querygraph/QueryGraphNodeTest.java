@@ -56,7 +56,6 @@ public class QueryGraphNodeTest {
 	 */
 	@Test
 	public void testToString() {
-		System.out.println("toString");
 		QueryGraphNode instance = new QueryGraphNode(new Marque().getClass());
 		String expResult = "Marque";
 		String result = instance.toString();
@@ -68,7 +67,6 @@ public class QueryGraphNodeTest {
 	 */
 	@Test
 	public void testEquals() {
-		System.out.println("equals");
 		Object o = new QueryGraphNode(new CarCompany().getClass());
 		QueryGraphNode instance = new QueryGraphNode(new Marque().getClass());
 		boolean expResult = false;
