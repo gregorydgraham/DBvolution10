@@ -33,12 +33,16 @@ import nz.co.gregs.dbvolution.annotations.DBColumn;
 import nz.co.gregs.dbvolution.annotations.DBPrimaryKey;
 import nz.co.gregs.dbvolution.datatypes.DBInteger;
 import nz.co.gregs.dbvolution.datatypes.DBString;
+import org.junit.rules.ExpectedException;
 
 /**
  *
  * @author Gregory Graham
  */
 public class DBScriptTest extends AbstractTest {
+
+	@Rule
+	public ExpectedException thrown = ExpectedException.none();
 
 	public DBScriptTest(Object testIterationName, Object db) {
 		super(testIterationName, db);
@@ -76,10 +80,12 @@ public class DBScriptTest extends AbstractTest {
 				is(allMarques.size()));
 	}
 
-	@Test(expected = IndexOutOfBoundsException.class)
+	@Test//(expected = IndexOutOfBoundsException.class)
 	public void testExceptionThrowing() throws Exception {
 		List<Marque> allMarques = database.getDBTable(new Marque()).setBlankQueryAllowed(true).getAllRows();
-		DBScript script = new ScriptThatThrowsAnException(new IndexOutOfBoundsException("Correct Exception"));
+		
+		thrown.expect(IndexOutOfBoundsException.class);
+		DBScript script = new ScriptThatThrowsAnException();
 		DBActionList result = script.test(database);
 		List<Marque> allMarques2 = database.getDBTable(new Marque()).setBlankQueryAllowed(true).getAllRows();
 		Assert.assertThat(
@@ -101,18 +107,15 @@ public class DBScriptTest extends AbstractTest {
 		database.createTable(scriptTestTable);
 		List<ScriptTestTable> origRows = table.setBlankQueryAllowed(true).getAllRows();
 
-//		ParallelTaskGroup<DBActionList> taskGroup;
-//		taskGroup = new ParallelTaskGroup<DBActionList>();
 		ExecutorService threadpool = Executors.newFixedThreadPool(10);
 		ArrayList<Callable<DBActionList>> taskGroup = new ArrayList<Callable<DBActionList>>();
-		taskGroup.add(new CallableTestScript<DBActionList>(database));
-		taskGroup.add(new CallableTestScript<DBActionList>(database));
-		taskGroup.add(new CallableTestScript<DBActionList>(database));
-		taskGroup.add(new CallableTestScript<DBActionList>(database));
-		taskGroup.add(new CallableTestScript<DBActionList>(database));
-		taskGroup.add(new CallableTestScript<DBActionList>(database));
-		taskGroup.add(new CallableTestScript<DBActionList>(database));
-//		TaskExecutor.execute(taskGroup);
+		taskGroup.add(new CallableTestScript<>(database));
+		taskGroup.add(new CallableTestScript<>(database));
+		taskGroup.add(new CallableTestScript<>(database));
+		taskGroup.add(new CallableTestScript<>(database));
+		taskGroup.add(new CallableTestScript<>(database));
+		taskGroup.add(new CallableTestScript<>(database));
+		taskGroup.add(new CallableTestScript<>(database));
 		threadpool.invokeAll(taskGroup);
 
 		List<ScriptTestTable> allRows = table.setBlankQueryAllowed(true).getAllRows();
@@ -131,14 +134,14 @@ public class DBScriptTest extends AbstractTest {
 		List<ScriptTestTable> origRows = table.setBlankQueryAllowed(true).getAllRows();
 
 		ExecutorService threadpool = Executors.newFixedThreadPool(10);
-		ArrayList<Callable<DBActionList>> taskGroup = new ArrayList<Callable<DBActionList>>();
-		taskGroup.add(new CallableImplementScript<DBActionList>(database));
-		taskGroup.add(new CallableImplementScript<DBActionList>(database));
-		taskGroup.add(new CallableImplementScript<DBActionList>(database));
-		taskGroup.add(new CallableImplementScript<DBActionList>(database));
-		taskGroup.add(new CallableImplementScript<DBActionList>(database));
-		taskGroup.add(new CallableImplementScript<DBActionList>(database));
-		taskGroup.add(new CallableImplementScript<DBActionList>(database));
+		ArrayList<Callable<DBActionList>> taskGroup = new ArrayList<>();
+		taskGroup.add(new CallableImplementScript<>(database));
+		taskGroup.add(new CallableImplementScript<>(database));
+		taskGroup.add(new CallableImplementScript<>(database));
+		taskGroup.add(new CallableImplementScript<>(database));
+		taskGroup.add(new CallableImplementScript<>(database));
+		taskGroup.add(new CallableImplementScript<>(database));
+		taskGroup.add(new CallableImplementScript<>(database));
 		threadpool.invokeAll(taskGroup);
 
 		List<ScriptTestTable> allRows = table.setBlankQueryAllowed(true).getAllRows();
@@ -149,18 +152,16 @@ public class DBScriptTest extends AbstractTest {
 
 	public class ScriptThatThrowsAnException extends DBScript {
 
-		private Exception exc;
-
-		public ScriptThatThrowsAnException(Exception exception) {
-			this.exc = exception;
+		public ScriptThatThrowsAnException() {
 		}
 
 		@Override
 		public DBActionList script(DBDatabase db) throws Exception {
-			if (exc != null) {
-				throw exc;
-			}
-			return new DBActionList();
+			final IndexOutOfBoundsException indexOutOfBoundsException = new IndexOutOfBoundsException("Correct Exception");
+			StackTraceElement[] stackTrace = indexOutOfBoundsException.getStackTrace();
+			indexOutOfBoundsException.setStackTrace(new StackTraceElement[]{stackTrace[0]});
+			
+			throw indexOutOfBoundsException;
 		}
 	}
 
@@ -190,12 +191,13 @@ public class DBScriptTest extends AbstractTest {
 	public class ScriptThatAddsAndRemoves2Rows extends DBScript {
 
 		@Override
-		public DBActionList script(DBDatabase db) throws Exception {
+		public synchronized DBActionList script(DBDatabase db) throws Exception {
 			DBActionList actions = new DBActionList();
 			ArrayList<ScriptTestTable> myTableRows = new ArrayList<ScriptTestTable>();
 
-			ScriptTestTable myTableRow = new ScriptTestTable();
+			ScriptTestTable myTableRow = new ScriptTestTable("yada");
 			myTableRows.add(myTableRow);
+//			DBTable<ScriptTestTable> table = database.getDBTable(new ScriptTestTable());
 			DBTable<ScriptTestTable> table = DBTable.getInstance(db, myTableRow);
 
 			List<ScriptTestTable> origRows = table.setBlankQueryAllowed(true).getAllRows();
@@ -270,11 +272,11 @@ public class DBScriptTest extends AbstractTest {
 		DBInteger uid = new DBInteger();
 
 		@DBColumn
-		DBString name = new DBString();
+		 DBString name = new DBString();
 
-		public ScriptTestTable(String aFalse) {
+		public ScriptTestTable(String name) {
 			super();
-			name.setValue(aFalse);
+			this.name.setValue(name);
 		}
 
 		public ScriptTestTable() {
