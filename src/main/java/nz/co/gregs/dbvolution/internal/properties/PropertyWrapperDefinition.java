@@ -527,17 +527,7 @@ public class PropertyWrapperDefinition {
 		return getColumnExpression().length >0;
 	}
 
-//	String getSelectableName(DBDatabase db, RowDefinition actualRow) {
-//		DBDefinition defn = db.getDefinition();
-//		checkForColumnAlias(actualRow);
-//		if (hasColumnExpression()) {
-//			return db.getDefinition().transformToStorableType(getColumnExpression()).toSQLString(db);
-//		} else {
-//			return defn.formatTableAliasAndColumnName(actualRow, getColumnName());
-//		}
-//	}
-
-	public List<ColumnAspects> getColumnAspects(DBDatabase db, RowDefinition actualRow) {
+	public synchronized List<ColumnAspects> getColumnAspects(DBDatabase db, RowDefinition actualRow) {
 		DBDefinition defn = db.getDefinition();
 		allColumnAspects = new ArrayList<ColumnAspects>();
 		checkForColumnExpression(actualRow);
