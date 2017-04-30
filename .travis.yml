@@ -1,4 +1,6 @@
 language: java
+dist: trusty
+sudo: required
 script: "mvn -B -s travis-settings.xml -P MySQLTest test "
 services:
   - mysql
