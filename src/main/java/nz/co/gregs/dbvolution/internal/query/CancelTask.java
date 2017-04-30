@@ -42,7 +42,7 @@ public class CancelTask extends TimerTask {
 		try {
 			query.cancel();
 		} catch (SQLException ex) {
-			if (!ex.getMessage().equals("'Statement' already closed.")) {
+			if (!ex.getMessage().equals("'Statement' already closed.")||!ex.getMessage().equals("The object is already closed")) {
 				throw new RuntimeException("Exception Occurred During Query Timeout.", ex);
 			}
 		}
