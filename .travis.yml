@@ -11,4 +11,5 @@ notifications:
   email: false
 before_install:
   - mysql -e 'CREATE DATABASE IF NOT EXISTS dbvtest;'
+  - mysql -V
   - psql -c 'create database dbvtest;' -U postgres
