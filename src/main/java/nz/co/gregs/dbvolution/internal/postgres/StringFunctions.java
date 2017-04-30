@@ -27,12 +27,12 @@ public enum StringFunctions {
 	/**
 	 *
 	 */
-	SUBSTRINGBEFORE(Language.sql, "text", "sourcetext text, righthandside text", "select (CASE WHEN POSITION(righthandside IN (sourcetext)::VARCHAR) > 0 THEN  SUBSTRING((sourcetext)::VARCHAR FROM 0 + 1 FOR POSITION(righthandside IN (sourcetext)::VARCHAR) - 1 - 0)  ELSE $$$$ END);"),
+	SUBSTRINGBEFORE(Language.sql, "text", "sourceText text, rightHandSide text", "select (CASE WHEN POSITION(rightHandSide IN (sourceText)::VARCHAR) > 0 THEN  SUBSTRING((sourceText)::VARCHAR FROM 0 + 1 FOR POSITION(rightHandSide IN (sourceText)::VARCHAR) - 1 - 0)  ELSE $$$$ END);"),
 
 	/**
 	 *
 	 */
-	SUBSTRINGAFTER(Language.sql, "text", "sourcetext text, lefthandside text", " select (CASE WHEN POSITION(lefthandside IN (sourcetext)::VARCHAR) > 0 THEN  SUBSTRING((sourcetext)::VARCHAR FROM POSITION(lefthandside IN (sourcetext)::VARCHAR) + 1 FOR  CHAR_LENGTH( (sourcetext)::VARCHAR )  - POSITION(lefthandside IN (sourcetext)::VARCHAR))  ELSE $$$$ END);");
+	SUBSTRINGAFTER(Language.sql, "text", "sourceText text, leftHandSide text", " select (CASE WHEN POSITION(leftHandSide IN (sourceText)::VARCHAR) > 0 THEN  SUBSTRING((sourceText)::VARCHAR FROM POSITION(leftHandSide IN (sourceText)::VARCHAR) + 1 FOR  CHAR_LENGTH( (sourceText)::VARCHAR )  - POSITION(leftHandSide IN (sourceText)::VARCHAR))  ELSE $$$$ END);");
 
 //	private final String functionName;
 	private final Language language;
