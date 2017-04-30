@@ -58,7 +58,7 @@
 				<mysql.url>jdbc:mysql://127.0.0.1:3306/dbvtest?createDatabaseIfNotExist=true</mysql.url>
 				<mysql.host>127.0.0.1</mysql.host>
 				<mysql.port>3306</mysql.port>
-				<mysql.database></mysql.database>
+				<mysql.database>dbvtest</mysql.database>
 				<mysql.instance>dbvtest</mysql.instance>
 				<mysql.username>root</mysql.username>
 				<mysql.password></mysql.password>
