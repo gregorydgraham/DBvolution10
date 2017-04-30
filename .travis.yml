@@ -6,7 +6,7 @@ services:
   - mysql
   - postgresql
 addons:
-    postgresql: "9.3"
+    postgresql: "9.6"
 jdk:
   - oraclejdk7
 notifications:
