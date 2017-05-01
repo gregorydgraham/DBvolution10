@@ -14,5 +14,5 @@ before_install:
   - mysql -V
   - psql -c 'create database dbvtest;' -U postgres
   - psql --version
-  - apt-get install -y postgis postgresql-9.3-postgis-2.1
+  - sudo apt-get install -y postgis postgresql-9.3-postgis-2.1
 before_script:
