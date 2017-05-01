@@ -1,6 +1,6 @@
 language: java
 dist: trusty
-sudo: false
+sudo: required
 script: "mvn -B -s travis-settings.xml -P DBs-OpenSource test "
 services:
   - mysql
@@ -19,6 +19,6 @@ before_install:
   - mysql -V
   - psql -c 'create database dbvtest;' -U postgres
   - psql --version
-before_script:
   - psql -U postgres -c 'create extension postgis;'
   - psql -U postgres -c 'create extension postgis_topology;'
+before_script:
