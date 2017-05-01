@@ -1,7 +1,7 @@
 language: java
-##dist: trusty
+dist: trusty
 sudo: required
-script: "mvn -B -s travis-settings.xml -P PostgresTest test "
+script: "mvn -B -s travis-settings.xml -P DBs-Bundled,MySQLTest test "
 services:
   - mysql
   - postgresql
@@ -14,6 +14,4 @@ before_install:
   - mysql -V
   - psql -c 'create database dbvtest;' -U postgres
   - psql --version
-  - psql -U postgres -c 'create extension postgis;'
-  - psql -U postgres -c 'create extension postgis_topology;'
 before_script:
