@@ -6,13 +6,7 @@ services:
   - mysql
   - postgresql
 addons:
-    apt:
-        sources:
-        - ubuntu-toolchain-r-test
-        - precise-pgdg-9.6
-        packages:
-        - postgresql-contrib-9.6
-    postgresql: "9.6"
+    postgresql: "9.5"
 jdk:
   - oraclejdk7
 notifications:
