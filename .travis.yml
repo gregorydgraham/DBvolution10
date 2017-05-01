@@ -20,4 +20,5 @@ before_install:
   - psql -c 'create database dbvtest;' -U postgres
   - psql --version
 before_script:
-  - psql -U postgres -c 'create extension where not exists postgis;'
+  - psql -U postgres -c 'create extension postgis;'
+  - psql -U postgres -c 'create extension postgis_topology;'
