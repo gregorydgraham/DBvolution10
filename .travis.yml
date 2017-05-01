@@ -6,6 +6,9 @@ services:
   - mysql
   - postgresql
 addons:
+    apt:
+        packages:
+        - postgresql-contrib-9.6
     postgresql: "9.6"
 jdk:
   - oraclejdk7
@@ -17,4 +20,4 @@ before_install:
   - psql -c 'create database dbvtest;' -U postgres
   - psql --version
 before_script:
-  - psql -U postgres -c 'create extension postgis;'
+  - psql -U postgres -c 'create extension where not exists postgis;'
