@@ -5,8 +5,6 @@ script: "mvn -B -s travis-settings.xml -P DBs-PostgresTest test "
 services:
   - mysql
   - postgresql
-addons:
-    postgresql: "9.5"
 jdk:
   - oraclejdk7
 notifications:
