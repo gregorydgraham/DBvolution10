@@ -40,6 +40,7 @@ import org.apache.commons.logging.LogFactory;
  * @author Gregory Graham
  */
 public class PostgresDB extends DBDatabase implements SupportsPolygonDatatype {
+
 	public static final long serialVersionUID = 1l;
 
 	private static final Log LOG = LogFactory.getLog(PostgresDB.class);
@@ -56,6 +57,7 @@ public class PostgresDB extends DBDatabase implements SupportsPolygonDatatype {
 	public static final String POSTGRES_DEFAULT_USERNAME = "postgres";
 	private boolean postGISTopologyAlreadyTried = false;
 	private boolean postGISAlreadyTried = false;
+	private boolean postGISInstalled = false;
 
 	/**
 	 *
@@ -74,8 +76,8 @@ public class PostgresDB extends DBDatabase implements SupportsPolygonDatatype {
 	 *
 	 * <p>
 	 * DBDatabase encapsulates the knowledge of the database, in particular the
-	 * syntax of the database in the DBDefinition and the connection details from
-	 * a DataSource.
+	 * syntax of the database in the DBDefinition and the connection details
+	 * from a DataSource.
 	 *
 	 * @see DBDefinition
 	 */
@@ -134,9 +136,9 @@ public class PostgresDB extends DBDatabase implements SupportsPolygonDatatype {
 	 */
 	public PostgresDB(String hostname, int port, String databaseName, String username, String password, String urlExtras) {
 		super(new PostgresDBDefinition(),
-				POSTGRES_DRIVER_NAME,
-				"jdbc:postgresql://" + hostname + ":" + port + "/" + databaseName + (urlExtras == null || urlExtras.isEmpty() ? "" : "?" + urlExtras),
-				username, password);
+			POSTGRES_DRIVER_NAME,
+			"jdbc:postgresql://" + hostname + ":" + port + "/" + databaseName + (urlExtras == null || urlExtras.isEmpty() ? "" : "?" + urlExtras),
+			username, password);
 		this.setDatabaseName(databaseName);
 	}
 
@@ -241,21 +243,25 @@ public class PostgresDB extends DBDatabase implements SupportsPolygonDatatype {
 	protected void addDatabaseSpecificFeatures(Statement stmnt) throws SQLException {
 		setTimeZone(stmnt);
 		createPostGISExtension(stmnt);
-		createPostGISTopologyExtension(stmnt);
+		if (postGISInstalled) {
+			createPostGISTopologyExtension(stmnt);
+		}
 		for (StringFunctions fn : StringFunctions.values()) {
 			fn.add(stmnt);
 		}
-		for (Line2DFunctions fn : Line2DFunctions.values()) {
-			fn.add(stmnt);
-		}
-		for (MultiPoint2DFunctions fn : MultiPoint2DFunctions.values()) {
-			fn.add(stmnt);
+		if (postGISInstalled) {
+			for (Line2DFunctions fn : Line2DFunctions.values()) {
+				fn.add(stmnt);
+			}
+			for (MultiPoint2DFunctions fn : MultiPoint2DFunctions.values()) {
+				fn.add(stmnt);
+			}
 		}
 	}
 
 	private void setTimeZone(Statement stmnt) throws SQLException {
 		String tzName = TimeZone.getDefault().getID();
-		final String setTheTimezone = "set time zone '"+tzName+"';";
+		final String setTheTimezone = "set time zone '" + tzName + "';";
 		stmnt.execute(setTheTimezone);
 	}
 
@@ -270,7 +276,7 @@ public class PostgresDB extends DBDatabase implements SupportsPolygonDatatype {
 					stmnt.execute("CREATE EXTENSION IF NOT EXISTS postgis_topology;");
 				}
 			}
-		} catch(org.postgresql.util.PSQLException pexc){
+		} catch (org.postgresql.util.PSQLException pexc) {
 			LOG.warn("POSTGIS TOPOLOGY Rejected: Spatial operations will NOT function.", pexc);
 		} catch (Exception sqlex) {
 		}
@@ -286,10 +292,12 @@ public class PostgresDB extends DBDatabase implements SupportsPolygonDatatype {
 				if (!postGISAlreadyCreated) {
 					stmnt.execute("CREATE EXTENSION IF NOT EXISTS postgis;");
 				}
+				postGISInstalled = true;
 			}
-		} catch(org.postgresql.util.PSQLException pexc){
+		} catch (org.postgresql.util.PSQLException pexc) {
 			LOG.warn("POSTGIS Rejected: Spatial operations will NOT function.", pexc);
-		}catch (SQLException sqlex) {
+			postGISInstalled = false;
+		} catch (SQLException sqlex) {
 		}
 	}
 }
