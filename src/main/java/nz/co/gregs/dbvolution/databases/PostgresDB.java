@@ -31,6 +31,8 @@ import nz.co.gregs.dbvolution.exceptions.AutoCommitActionDuringTransactionExcept
 import nz.co.gregs.dbvolution.internal.postgres.Line2DFunctions;
 import nz.co.gregs.dbvolution.internal.postgres.MultiPoint2DFunctions;
 import nz.co.gregs.dbvolution.internal.postgres.StringFunctions;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
  * A DBDatabase tweaked for PostgreSQL.
@@ -40,6 +42,7 @@ import nz.co.gregs.dbvolution.internal.postgres.StringFunctions;
 public class PostgresDB extends DBDatabase implements SupportsPolygonDatatype {
 	public static final long serialVersionUID = 1l;
 
+	private static final Log LOG = LogFactory.getLog(PostgresDB.class);
 	private static final String POSTGRES_DRIVER_NAME = "org.postgresql.Driver";
 
 	/**
@@ -267,7 +270,9 @@ public class PostgresDB extends DBDatabase implements SupportsPolygonDatatype {
 					stmnt.execute("CREATE EXTENSION IF NOT EXISTS postgis_topology;");
 				}
 			}
-		} catch (SQLException sqlex) {
+		} catch(org.postgresql.util.PSQLException pexc){
+			LOG.warn("POSTGIS TOPOLOGY Rejected: Spatial operations will NOT function.", pexc);
+		} catch (Exception sqlex) {
 		}
 	}
 
@@ -282,7 +287,9 @@ public class PostgresDB extends DBDatabase implements SupportsPolygonDatatype {
 					stmnt.execute("CREATE EXTENSION IF NOT EXISTS postgis;");
 				}
 			}
-		} catch (SQLException sqlex) {
+		} catch(org.postgresql.util.PSQLException pexc){
+			LOG.warn("POSTGIS Rejected: Spatial operations will NOT function.", pexc);
+		}catch (SQLException sqlex) {
 		}
 	}
 }
