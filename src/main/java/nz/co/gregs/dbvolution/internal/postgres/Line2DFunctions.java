@@ -17,6 +17,8 @@ package nz.co.gregs.dbvolution.internal.postgres;
 
 import java.sql.SQLException;
 import java.sql.Statement;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
  *
@@ -244,11 +246,12 @@ public enum Line2DFunctions {
 	 * @throws SQLException
 	 */
 	public void add(Statement stmt) throws SQLException {
+		Log LOG = LogFactory.getLog(Line2DFunctions.class);
 		try {
 			final String drop = "DROP FUNCTION " + this + "(" + this.parameters + ");";
 			stmt.execute(drop);
 		} catch (SQLException sqlex) {
-			;
+			LOG.warn(""+this+" INSTALL FAILED", sqlex);
 		}
 		final String createFunctionStatement = "CREATE OR REPLACE FUNCTION " + this + "(" + this.parameters + ")\n" + "    RETURNS " + this.returnType + " AS\n" + "'\n" + this.code + "'\n" + "LANGUAGE '" + language + "' IMMUTABLE;";
 		stmt.execute(createFunctionStatement);
