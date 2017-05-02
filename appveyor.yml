@@ -21,5 +21,4 @@ build_script:
 test_script:
   - mvn test -P MySQLTest --batch-mode -s appveyor-settings.xml
 cache:
-  - C:\Program Files (x86)\Apache\Maven
   - C:\Users\appveyor\.m2
