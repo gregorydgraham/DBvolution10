@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+                User-specific configuration for maven. Includes things that should not 
+                be distributed with the pom.xml file, such as developer identity, along with 
+                local settings, like proxy information. The default location for the
+                settings file is ~/.m2/settings.xml 
+-->
+<settings xmlns="http://maven.apache.org/SETTINGS/1.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.0.0 http://maven.apache.org/xsd/settings-1.0.0.xsd">
+    
+    <profiles>
+        <profile>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <properties>
+                
+                <oraclexe.url></oraclexe.url>
+                <!--<oraclexe.host>150.242.43.218</oraclexe.host>-->
+                <!--<oraclexe.host>localhost</oraclexe.host>>-->
+                <oraclexe.host>localhost</oraclexe.host>
+                <oraclexe.port>1521</oraclexe.port>
+                <oraclexe.instance>XE</oraclexe.instance>
+                <oraclexe.username>DBV</oraclexe.username>
+                <oraclexe.password>Testingdbv</oraclexe.password>
+                <oraclexe.schema></oraclexe.schema>
+				
+                <sqlserver.url></sqlserver.url>
+                <sqlserver.host>localhost</sqlserver.host>
+                <sqlserver.port>1433</sqlserver.port>
+                <sqlserver.instance></sqlserver.instance>
+                <sqlserver.database></sqlserver.database>
+                <sqlserver.username>sa</sqlserver.username>
+                <sqlserver.password>Password12!</sqlserver.password>
+                <sqlserver.schema></sqlserver.schema>
+                
+                <sqlite.url>jdbc:sqlite:dbvolutionTest.sqlite</sqlite.url>
+                <sqlite.username>dbv</sqlite.username>
+                <sqlite.password>dbv</sqlite.password>
+				
+                <h2.url>jdbc:h2:./directTest.h2db</h2.url>
+                <h2.host></h2.host>
+                <h2.port></h2.port>
+                <h2.database>~/dbvtest.h2db</h2.database>
+                <h2.instance>./directTest.h2db</h2.instance>
+                <h2.username></h2.username>
+                <h2.password></h2.password>
+                <h2.schema></h2.schema>
+                <h2.file></h2.file>
+                
+                <h2file.url>jdbc:h2:./directTest.h2db</h2file.url>
+                <h2file.host></h2file.host>
+                <h2file.port></h2file.port>
+                <h2file.database>~/dbvtest.h2db</h2file.database>
+                <h2file.instance>./directTest.h2db</h2file.instance>
+                <h2file.username></h2file.username>
+                <h2file.password></h2file.password>
+                <h2file.schema></h2file.schema>
+                <h2file.file>./directTest.h2db</h2file.file>
+                
+				
+                <h2memory.url>jdbc:h2:mem:memoryTest.h2db</h2memory.url>
+                <h2memory.host></h2memory.host>
+                <h2memory.port></h2memory.port>
+                <h2memory.instance>memoryTest.h2db</h2memory.instance>
+                <h2memory.username></h2memory.username>
+                <h2memory.password></h2memory.password>
+                <h2memory.schema></h2memory.schema>
+				
+                <h2datasource.url>jdbc:h2:./dataSourceTest.h2db</h2datasource.url>
+                <h2datasource.host></h2datasource.host>
+                <h2datasource.port></h2datasource.port>
+                <h2datasource.instance>./dataSourceTest.h2db</h2datasource.instance>
+                <h2datasource.username></h2datasource.username>
+                <h2datasource.password></h2datasource.password>
+                <h2datasource.schema></h2datasource.schema>
+                
+                <mysql.url>jdbc:mysql://127.0.0.1:3306/dbvtest?createDatabaseIfNotExist=true</mysql.url>
+                <mysql.host>127.0.0.1</mysql.host>
+                <mysql.port>3306</mysql.port>
+                <mysql.database>dbvtest</mysql.database>
+                <mysql.instance>dbvtest</mysql.instance>
+                <mysql.username>root</mysql.username>
+                <mysql.password></mysql.password>
+                <mysql.schema></mysql.schema>
+				
+                <postgres.url></postgres.url>
+                <postgres.host>localhost</postgres.host>
+                <postgres.port>5432</postgres.port>
+                <postgres.database></postgres.database>
+                <postgres.instance>dbvtest</postgres.instance>
+                <postgres.username>postgres</postgres.username>
+                <postgres.password></postgres.password>
+                <postgres.schema></postgres.schema>
+            </properties>
+        </profile>
+    </profiles>
+</settings>
