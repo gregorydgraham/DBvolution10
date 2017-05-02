@@ -28,8 +28,8 @@
                 <sqlserver.url></sqlserver.url>
                 <sqlserver.host>localhost</sqlserver.host>
                 <sqlserver.port>1433</sqlserver.port>
-                <sqlserver.instance></sqlserver.instance>
-                <sqlserver.database></sqlserver.database>
+                <sqlserver.instance>SQL2012SP1</sqlserver.instance>
+                <sqlserver.database>master</sqlserver.database>
                 <sqlserver.username>sa</sqlserver.username>
                 <sqlserver.password>Password12!</sqlserver.password>
                 <sqlserver.schema></sqlserver.schema>
