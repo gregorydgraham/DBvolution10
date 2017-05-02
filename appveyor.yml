@@ -1,5 +1,8 @@
 version: '{build}'
 os: Windows Server 2012
+services:
+  - postgresql95
+  - mysql
 install:
   - ps: |
       Add-Type -AssemblyName System.IO.Compression.FileSystem
@@ -16,7 +19,7 @@ install:
 build_script:
   - mvn clean compile --batch-mode -DskipTest
 test_script:
-  - mvn test -P MSSQLServerTest,H2DBTest --batch-mode -s appveyor-settings.xml
+  - mvn test -P PostgresTest --batch-mode -s appveyor-settings.xml
 cache:
   - C:\Program Files (x86)\Apache\Maven
   - C:\Users\appveyor\.m2
