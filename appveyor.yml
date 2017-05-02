@@ -14,9 +14,9 @@ install:
   - cmd: SET MAVEN_OPTS=-XX:MaxPermSize=2g -Xmx4g
   - cmd: SET JAVA_OPTS=-XX:MaxPermSize=2g -Xmx4g
 build_script:
-  - mvn clean package --batch-mode -DskipTest
+  - mvn clean compile --batch-mode -DskipTest
 test_script:
-  - mvn clean test -P MSSQLServerTest --batch-mode -s appveyor-settings.xml
+  - mvn test -P MSSQLServerTest,H2DBTest --batch-mode -s appveyor-settings.xml
 cache:
   - C:\Program Files (x86)\Apache\Maven
   - C:\Users\appveyor\.m2
