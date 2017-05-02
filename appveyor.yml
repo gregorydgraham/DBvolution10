@@ -19,7 +19,7 @@ install:
 build_script:
   - mvn clean compile --batch-mode -DskipTest
 test_script:
-  - mvn test -P PostgresTest --batch-mode -s appveyor-settings.xml
+  - mvn test -P MySQLTest --batch-mode -s appveyor-settings.xml
 cache:
   - C:\Program Files (x86)\Apache\Maven
   - C:\Users\appveyor\.m2
