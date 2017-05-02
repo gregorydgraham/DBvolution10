@@ -75,22 +75,22 @@
                 <h2datasource.password></h2datasource.password>
                 <h2datasource.schema></h2datasource.schema>
                 
-                <mysql.url>jdbc:mysql://127.0.0.1:3306/dbvtest?createDatabaseIfNotExist=true</mysql.url>
-                <mysql.host>127.0.0.1</mysql.host>
+                <mysql.url>jdbc:mysql://localhost:3306/dbvtest?createDatabaseIfNotExist=true</mysql.url>
+                <mysql.host>localhost</mysql.host>
                 <mysql.port>3306</mysql.port>
                 <mysql.database>dbvtest</mysql.database>
                 <mysql.instance>dbvtest</mysql.instance>
                 <mysql.username>root</mysql.username>
-                <mysql.password></mysql.password>
+                <mysql.password>Password12!</mysql.password>
                 <mysql.schema></mysql.schema>
 				
                 <postgres.url></postgres.url>
                 <postgres.host>localhost</postgres.host>
                 <postgres.port>5432</postgres.port>
                 <postgres.database></postgres.database>
-                <postgres.instance>dbvtest</postgres.instance>
+                <postgres.instance></postgres.instance>
                 <postgres.username>postgres</postgres.username>
-                <postgres.password></postgres.password>
+                <postgres.password>Password12!</postgres.password>
                 <postgres.schema></postgres.schema>
             </properties>
         </profile>
