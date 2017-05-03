@@ -19,6 +19,6 @@ install:
 build_script:
   - mvn clean compile --batch-mode -DskipTest
 test_script:
-  - mvn test -P PostgresTest,H2DBTest,SQLiteTest --batch-mode -s appveyor-settings.xml
+  - mvn test -P MySQLTest --batch-mode -s appveyor-settings.xml
 cache:
   - C:\Users\appveyor\.m2
