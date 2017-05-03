@@ -22,3 +22,4 @@ test_script:
   - mvn test -P MySQLTest --batch-mode -s appveyor-settings.xml
 cache:
   - C:\Users\appveyor\.m2
+  
