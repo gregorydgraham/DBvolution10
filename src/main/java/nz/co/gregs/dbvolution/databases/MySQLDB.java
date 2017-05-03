@@ -64,7 +64,7 @@ public class MySQLDB extends DBDatabase implements SupportsPolygonDatatype{
 	public MySQLDB(String server, long port, String databaseName, String username, String password) {
 		super(new MySQLDBDefinition(),
 				MYSQLDRIVERNAME,
-				"jdbc:mysql://" + server + ":" + port + "/" + databaseName+"?useUnicode=yes&characterEncoding=utf8&characterSetResults=utf8&autoReconnect=true&useSSL=false",
+				"jdbc:mysql://" + server + ":" + port + "/" + databaseName+"?useUnicode=yes&characterEncoding=utf8&characterSetResults=utf8&verifyServerCertificate=false&useSSL=true",
 				username,
 				password);
 		this.setDatabaseName(databaseName);
