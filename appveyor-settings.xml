@@ -75,7 +75,7 @@
                 <h2datasource.password></h2datasource.password>
                 <h2datasource.schema></h2datasource.schema>
                 
-                <mysql.url>jdbc:mysql://localhost:3306/dbvtest?createDatabaseIfNotExist=true&useUnicode=yes&characterEncoding=utf8&characterSetResults=utf8&verifyServerCertificate=false&useSSL=true</mysql.url>
+                <mysql.url>jdbc:mysql://localhost:3306/dbvtest?createDatabaseIfNotExist=true&amp;useUnicode=yes&amp;characterEncoding=utf8&amp;characterSetResults=utf8&amp;verifyServerCertificate=false&amp;useSSL=true</mysql.url>
                 <mysql.host>localhost</mysql.host>
                 <mysql.port>3306</mysql.port>
                 <mysql.database>dbvtest</mysql.database>
