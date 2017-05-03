@@ -75,10 +75,10 @@
                 <h2datasource.password></h2datasource.password>
                 <h2datasource.schema></h2datasource.schema>
                 
-                <mysql.url>jdbc:mysql://localhost:3306/</mysql.url>
+                <mysql.url>jdbc:mysql://localhost:3306/dbvtest?createDatabaseIfNotExist=true&useUnicode=yes&characterEncoding=utf8&characterSetResults=utf8&verifyServerCertificate=false&useSSL=true</mysql.url>
                 <mysql.host>localhost</mysql.host>
                 <mysql.port>3306</mysql.port>
-                <mysql.database></mysql.database>
+                <mysql.database>dbvtest</mysql.database>
                 <mysql.instance></mysql.instance>
                 <mysql.username>root</mysql.username>
                 <mysql.password>Password12!</mysql.password>
