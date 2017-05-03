@@ -47,7 +47,7 @@ public class DBValidation<R extends DBRow> {
 
 	private static String PROCESSED_COLUMN = "Processed Column";
 
-	private final DBMigration<R> sourceMigration;
+	private final DBQueryInsert<R> sourceMigration;
 	private final DBRow[] extraExamples;
 	private final DBRow mapper;
 
@@ -58,7 +58,7 @@ public class DBValidation<R extends DBRow> {
 	 * @param mapper
 	 * @param examples
 	 */
-	public DBValidation(DBMigration<R> migration, DBRow mapper, DBRow... examples) {
+	public DBValidation(DBQueryInsert<R> migration, DBRow mapper, DBRow... examples) {
 		sourceMigration = migration;
 		this.mapper = mapper;
 		extraExamples = examples;
@@ -80,7 +80,8 @@ public class DBValidation<R extends DBRow> {
 
 		DBQuery dbQuery = database.getDBQuery()
 				.setBlankQueryAllowed(options.isBlankQueryAllowed())
-				.setCartesianJoinsAllowed(options.isCartesianJoinAllowed());
+				.setCartesianJoinsAllowed(options.isCartesianJoinAllowed())
+				.addExtraExamples(extraExamples);
 
 		addAllTablesToValidationQuery(allQueryTables, dbQuery);
 		addProcessingColumnToValidationQuery(conditions, dbQuery);
@@ -111,7 +112,6 @@ public class DBValidation<R extends DBRow> {
 		final BooleanExpression criteria = BooleanExpression.allOf(conditions.toArray(new BooleanExpression[]{}));
 
 		dbQuery.addExpressionColumn(PROCESSED_COLUMN, criteria.asExpressionColumn());
-		//dbQuery.addToSortOrder(criteria);
 	}
 
 	private void addAllTablesToValidationQuery(List<DBRow> allQueryTables, DBQuery dbQuery) throws UnableToInstantiateDBRowSubclassException {
@@ -131,16 +131,11 @@ public class DBValidation<R extends DBRow> {
 		 */
 		protected final static long serialVersionUID = 1L;
 		
-//		private List<DBQueryRow> rows;
-//		private DBRow mapper;
-
 		private Results() {
 			super();
 		}
 
 		private Results(DBRow mapper, List<DBQueryRow> rows) {
-//			this.mapper = mapper;
-//			this.rows = rows;
 			for (DBQueryRow row : rows) {
 				this.add(new Result(mapper, row));
 			}
@@ -161,14 +156,12 @@ public class DBValidation<R extends DBRow> {
 		public Boolean willBeProcessed = false;
 
 		private DBQueryRow row = null;
-//		private DBRow mapper = null;
 		private final Map<String, String> map = new HashMap<>();
 
 		private Result() {
 		}
 
 		private Result(DBRow mapper, DBQueryRow row) {
-//			this.mapper = mapper;
 			this.row = row;
 			final QueryableDatatype<?> expressionColumnValue = row.getExpressionColumnValue(DBValidation.PROCESSED_COLUMN);
 			if (expressionColumnValue != null && expressionColumnValue instanceof DBBoolean) {

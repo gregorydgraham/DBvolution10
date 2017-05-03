@@ -1846,9 +1846,9 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 	 * @param <K> the DBRow extension that maps fields of internal DBRows to all the fields of it's superclass.
 	 * @param mapper a class that can be used to map one or more database tables
 	 * to a single table.
-	 * @return a DBMigration for the mapper class
+	 * @return a DBQueryInsert for the mapper class
 	 */
-	public <K extends DBRow> DBMigration<K> getDBMigration(K mapper) {
-		return new DBMigration<>(this, mapper);
+	public <K extends DBRow> DBQueryInsert<K> getDBQueryInsert(K mapper) {
+		return new DBQueryInsert<>(this, mapper);
 	}
 }

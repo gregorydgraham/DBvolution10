@@ -21,9 +21,9 @@ import org.junit.Test;
  *
  * @author gregorygraham
  */
-public class DBMigrationTest extends AbstractTest {
+public class DBQueryInsertTest extends AbstractTest {
 
-	public DBMigrationTest(Object testIterationName, Object db) {
+	public DBQueryInsertTest(Object testIterationName, Object db) {
 		super(testIterationName, db);
 	}
 
@@ -99,9 +99,9 @@ public class DBMigrationTest extends AbstractTest {
 
 	@Test
 	public void testMapping1ColumnWithDBmigrationMap() throws SQLException {
-		DBMigration<MigrateVillainToProfessional> migration = database.getDBMigration(new MigrateVillainToProfessional());
-		migration.setBlankQueryAllowed(Boolean.TRUE);
-		List<MigrateVillainToProfessional> rows = migration.getAllRows();
+		DBQueryInsert<MigrateVillainToProfessional> queryInsert = database.getDBQueryInsert(new MigrateVillainToProfessional());
+		queryInsert.setBlankQueryAllowed(Boolean.TRUE);
+		List<MigrateVillainToProfessional> rows = queryInsert.getAllRows();
 
 		for (Professional prof : rows) {
 			Assert.assertThat(prof.title.stringValue(), is("Dr"));
@@ -113,7 +113,7 @@ public class DBMigrationTest extends AbstractTest {
 		database.dropTableNoExceptions(professional);
 		database.createTable(professional);
 
-		migration.migrateAllRows();
+		queryInsert.insertAllRows();
 
 		DBTable<Professional> table = database.getDBTable(professional);
 		List<Professional> allRows = table.setBlankQueryAllowed(true).getAllRows();
@@ -153,10 +153,10 @@ public class DBMigrationTest extends AbstractTest {
 	@Test
 	public void testJoining2TablesWithDBMigation() throws SQLException, UnexpectedNumberOfRowsException {
 
-		DBMigration<MigrateHeroAndVillianToFight> migration = database.getDBMigration(new MigrateHeroAndVillianToFight());
-		migration.setBlankQueryAllowed(Boolean.TRUE);
-		migration.setCartesianJoinAllowed(Boolean.TRUE);
-		List<MigrateHeroAndVillianToFight> fights = migration.getAllRows();
+		DBQueryInsert<MigrateHeroAndVillianToFight> queryInsert = database.getDBQueryInsert(new MigrateHeroAndVillianToFight());
+		queryInsert.setBlankQueryAllowed(Boolean.TRUE);
+		queryInsert.setCartesianJoinAllowed(Boolean.TRUE);
+		List<MigrateHeroAndVillianToFight> fights = queryInsert.getAllRows();
 
 		Assert.assertThat(fights.size(), is(9));
 		Assert.assertThat(fights.get(0).villain.stringValue(), isOneOf("Dr Nonono", "Dr Karma", "Dr Dark"));
@@ -172,7 +172,7 @@ public class DBMigrationTest extends AbstractTest {
 		database.dropTableNoExceptions(fight);
 		database.createTable(fight);
 
-		migration.migrateAllRows();
+		queryInsert.insertAllRows();
 
 		DBTable<Fight> query = database.getDBTable(fight);
 		List<Fight> allRows = query.setBlankQueryAllowed(true).getAllRows();

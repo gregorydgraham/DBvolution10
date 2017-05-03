@@ -10,7 +10,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import nz.co.gregs.dbvolution.actions.DBMigrate;
+import nz.co.gregs.dbvolution.actions.DBQueryInsertAction;
 import nz.co.gregs.dbvolution.columns.ColumnProvider;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 import nz.co.gregs.dbvolution.exceptions.*;
@@ -18,10 +18,11 @@ import nz.co.gregs.dbvolution.expressions.*;
 import nz.co.gregs.dbvolution.query.*;
 
 /**
- * DBMigration performs a migration of data from one table to another.
+ * DBQueryInsert performs a SELECT...INTO query of data from one table to
+ * another.
  *
  * <p>
- * DBMigration allows you to create a query that produces rows of another
+ * DBQueryInsert allows you to create a query that produces rows of another
  * table/DBRow.</p>
  *
  * <p>
@@ -29,15 +30,15 @@ import nz.co.gregs.dbvolution.query.*;
  * query or inserted directly into the target table.</p>
  *
  * <p>
- * The functionality is analogous to the standard SQL INSERT... INTO... FROM
- * pattern.</p>
+ * The functionality is analogous to the standard SQL SELECT... INTO... and the
+ * INSERT ... SELECT patterns.</p>
  *
  * <p>
- * The easiest way to create a DBMigration is using {@link DBDatabase#getDBMigration(nz.co.gregs.dbvolution.DBRow)
+ * The easiest way to create a DBQueryInsert is using {@link DBDatabase#getDBQueryInsert(nz.co.gregs.dbvolution.DBRow)
  * }</p>
  *
  * <p>
- * a DBMigration requires a subclass of the DBRow to work. That is called the
+ * a DBQueryInsert requires a subclass of the DBRow to work. That is called the
  * migration target and needs to be extended to produce a migration mapper.</p>
  *
  * <p>
@@ -79,7 +80,7 @@ import nz.co.gregs.dbvolution.query.*;
  * c = new DBString(ab.column(ab.a).append(ab.column(ab.b)));<br>
  * }<br>
  * <br>
- * DBMigration&lt;?&gt; migration = dbDatabase.getDBMigration(ABCDMapping);
+ * DBQueryInsert&lt;?&gt; migration = dbDatabase.getDBQueryInsert(ABCDMapping);
  * </code>
  *
  * <p>
@@ -90,21 +91,21 @@ import nz.co.gregs.dbvolution.query.*;
  *
  * <p>
  * Migrate all the rows from one table to the other (does not delete anything)
- * with {@link #migrateAllRows(nz.co.gregs.dbvolution.DBRow...) }:</p>
+ * with {@link #insertAllRows(nz.co.gregs.dbvolution.DBRow[]) }:</p>
  * <code>
- * migration.migrateAllRows();
+ * migration.insertAllRows();
  * </code>
  *
  * @author gregorygraham
  * @param <M>
  */
-public class DBMigration<M extends DBRow> extends RowDefinition {
+public class DBQueryInsert<M extends DBRow> extends RowDefinition {
 
 	private final DBDatabase database;
 	private final M mapper;
 	private final List<DBRow> optionalTables = new ArrayList<>();
 
-	DBMigration(DBDatabase db, M migrationMapper) {
+	DBQueryInsert(DBDatabase db, M migrationMapper) {
 		this.database = db;
 		this.mapper = migrationMapper;
 	}
@@ -115,10 +116,10 @@ public class DBMigration<M extends DBRow> extends RowDefinition {
 	 *
 	 * <p>
 	 * Use this method to retrieve all rows when the criteria have been supplied
-	 * as part of the DBMigration subclass.
+	 * as part of the DBQueryInsert subclass.
 	 *
 	 * <p>
-	 * If you require extra criteria to be add to the DBMigration, limiting the
+	 * If you require extra criteria to be add to the DBQueryInsert, limiting the
 	 * results to a subset, use the
 	 * {@link #getAllRows(nz.co.gregs.dbvolution.DBRow...) other getAllRows method}.
 	 *
@@ -130,7 +131,7 @@ public class DBMigration<M extends DBRow> extends RowDefinition {
 		return getAllRows(database);
 	}
 
-	private DBMigration<M> addTablesAndExpressions(DBQuery query) {
+	private DBQueryInsert<M> addTablesAndExpressions(DBQuery query) {
 		Field[] fields = mapper.getClass().getFields();
 		if (fields.length == 0) {
 			throw new UnableToAccessDBMigrationFieldException(this, null);
@@ -229,7 +230,7 @@ public class DBMigration<M extends DBRow> extends RowDefinition {
 	Boolean blank = false;
 
 	/**
-	 * Gets all the migrated rows using conditions in the DBMigration and the
+	 * Gets all the migrated rows using conditions in the DBQueryInsert and the
 	 * supplied examples.
 	 *
 	 * @param extraExamples extra rows defining additional criteria
@@ -245,7 +246,7 @@ public class DBMigration<M extends DBRow> extends RowDefinition {
 		DBQuery query = getDBQuery(database, extraExamples);
 //		query.setBlankQueryAllowed(true);
 		List<DBQueryRow> allRows = query.getAllRows();
-		List<M> reportRows = getMigratedRowsFromQueryResults(allRows);
+		List<M> reportRows = getInsertedRowsFromQueryResults(allRows);
 		return reportRows;
 	}
 
@@ -304,7 +305,7 @@ public class DBMigration<M extends DBRow> extends RowDefinition {
 	public List<M> getRows(DBDatabase database, DBRow... rows) throws SQLException {
 		DBQuery query = getDBQuery(database, rows);
 		List<DBQueryRow> allRows = query.getAllRows();
-		List<M> reportRows = getMigratedRowsFromQueryResults(allRows);
+		List<M> reportRows = getInsertedRowsFromQueryResults(allRows);
 		return reportRows;
 	}
 
@@ -340,11 +341,11 @@ public class DBMigration<M extends DBRow> extends RowDefinition {
 		DBQuery query = getDBQuery(database, rows);
 		List<M> reportRows;
 		List<DBQueryRow> allRows = query.addConditions(conditions).getAllRows();
-		reportRows = getMigratedRowsFromQueryResults(allRows);
+		reportRows = getInsertedRowsFromQueryResults(allRows);
 		return reportRows;
 	}
 
-	private List<M> getMigratedRowsFromQueryResults(List<DBQueryRow> allRows) {
+	private List<M> getInsertedRowsFromQueryResults(List<DBQueryRow> allRows) {
 		List<M> reportRows = new ArrayList<>();
 		for (DBQueryRow row : allRows) {
 			reportRows.add(getMappedTarget(row));
@@ -353,7 +354,8 @@ public class DBMigration<M extends DBRow> extends RowDefinition {
 	}
 
 	/**
-	 * Generates and returns the actual SQL to be used by this DBReport.
+	 * Generates and returns the actual SQL to be used by this DBQueryInsert to
+	 * select the rows to insert.
 	 *
 	 * <p>
 	 * Good for debugging and great for DBAs, this is how you find out what
@@ -377,6 +379,39 @@ public class DBMigration<M extends DBRow> extends RowDefinition {
 	public String getSQLForQuery(DBDatabase database, DBRow... rows) {
 		DBQuery query = getDBQuery(database, rows);
 		return query.getSQLForQuery();
+	}
+
+	/**
+	 * Generates and returns the actual SQL to be used by this DBQueryInsert to
+	 * insert the queried rows.
+	 *
+	 * <p>
+	 * Good for debugging and great for DBAs, this is how you find out what
+	 * DBvolution is really doing.
+	 *
+	 * <p>
+	 * Generates the SQL query for retrieving the objects but does not execute the
+	 * SQL. Use
+	 * {@link #getAllRows(nz.co.gregs.dbvolution.DBDatabase, nz.co.gregs.dbvolution.DBRow...) the getAllRows method}
+	 * to retrieve the rows.
+	 *
+	 * <p>
+	 * See also
+	 * {@link #getSQLForCount(nz.co.gregs.dbvolution.DBDatabase, nz.co.gregs.dbvolution.DBRow...) }
+	 *
+	 * @param database the database the SQL will be run against.
+	 * @param rows additional conditions to apply to the report.
+	 * @return a String of the SQL that will be used by this DBQuery. 1 Database
+	 * exceptions may be thrown
+	 */
+	public String getSQLForInsert(DBDatabase database, DBRow... rows) {
+		DBQueryInsertAction<M> action = getDBQueryInsertAction(rows);
+		ArrayList<String> sqlStatements = action.getSQLStatements(database);
+		if (sqlStatements.size() > 0) {
+			return sqlStatements.get(0);
+		} else {
+			return "";
+		}
 	}
 
 	/**
@@ -434,7 +469,7 @@ public class DBMigration<M extends DBRow> extends RowDefinition {
 	 * @param columns a list of columns to sort the query by.
 	 * @return this DBReport instance
 	 */
-	public DBMigration<M> setSortOrder(ColumnProvider... columns) {
+	public DBQueryInsert<M> setSortOrder(ColumnProvider... columns) {
 		sortColumns = new ColumnProvider[columns.length];
 		System.arraycopy(columns, 0, getSortColumns(), 0, columns.length);
 		return this;
@@ -457,7 +492,7 @@ public class DBMigration<M extends DBRow> extends RowDefinition {
 	 * @param columns a list of columns to sort the query by.
 	 * @return this DBReport instance
 	 */
-	public DBMigration<M> setSortOrder(QueryableDatatype<?>... columns) {
+	public DBQueryInsert<M> setSortOrder(QueryableDatatype<?>... columns) {
 		List<ColumnProvider> columnProviders = new ArrayList<>();
 		for (QueryableDatatype<?> qdt : columns) {
 			final ColumnProvider expr = this.column(qdt);
@@ -520,10 +555,10 @@ public class DBMigration<M extends DBRow> extends RowDefinition {
 	 * If you are sure you need a Cartesian join, use this method to avoid the
 	 * error-checking and the {@link AccidentalCartesianJoinException}</p>
 	 *
-	 * @param setting True if you need a Cartesian join in this DBMigration.
-	 * @return this DBMigration object
+	 * @param setting True if you need a Cartesian join in this DBQueryInsert.
+	 * @return this DBQueryInsert object
 	 */
-	public DBMigration<M> setCartesianJoinAllowed(Boolean setting) {
+	public DBQueryInsert<M> setCartesianJoinAllowed(Boolean setting) {
 		cartesian = setting;
 		return this;
 	}
@@ -546,18 +581,18 @@ public class DBMigration<M extends DBRow> extends RowDefinition {
 	 *
 	 * @param setting - TRUE to allow blank queries, FALSE to return it to the
 	 * default setting.
-	 * @return this DBMigration instance
+	 * @return this DBQueryInsert instance
 	 */
-	public DBMigration<M> setBlankQueryAllowed(Boolean setting) {
+	public DBQueryInsert<M> setBlankQueryAllowed(Boolean setting) {
 		blank = setting;
 		return this;
 	}
 
 	/**
-	 * Perform the full migration defined by this DBMigration.
+	 * Perform the full migration defined by this DBQueryInsert.
 	 *
 	 * <p>
-	 * DBMigration allows you to create a query that produces rows of another
+	 * DBQueryInsert allows you to create a query that produces rows of another
 	 * table/DBRow.</p>
 	 *
 	 * <p>
@@ -569,12 +604,13 @@ public class DBMigration<M extends DBRow> extends RowDefinition {
 	 * pattern.</p>
 	 *
 	 * <p>
-	 * The easiest way to create a DBMigration is using {@link DBDatabase#getDBMigration(nz.co.gregs.dbvolution.DBRow)
+	 * The easiest way to create a DBQueryInsert is using {@link DBDatabase#getDBQueryInsert(nz.co.gregs.dbvolution.DBRow)
 	 * }</p>
 	 *
 	 * <p>
-	 * a DBMigration requires a subclass of the DBRow to work. That is called the
-	 * migration target and needs to be extend to produce a migration mapper.</p>
+	 * a DBQueryInsert requires a subclass of the DBRow to work. That is called
+	 * the migration target and needs to be extend to produce a migration
+	 * mapper.</p>
 	 *
 	 * <p>
 	 * The migration mapper is an extension of the migration target that includes
@@ -615,7 +651,8 @@ public class DBMigration<M extends DBRow> extends RowDefinition {
 	 * c = new DBString(ab.column(ab.a).append(ab.column(ab.b)));<br>
 	 * }<br>
 	 * <br>
-	 * DBMigration&lt;?&gt; migration = dbDatabase.getDBMigration(ABCDMapping);
+	 * DBQueryInsert&lt;?&gt; migration =
+	 * dbDatabase.getDBQueryInsert(ABCDMapping);
 	 * </code>
 	 *
 	 * <p>
@@ -627,26 +664,29 @@ public class DBMigration<M extends DBRow> extends RowDefinition {
 	 *
 	 * <p>
 	 * Migrate all the rows from one table to the other (does not delete anything)
-	 * with {@link #migrateAllRows(nz.co.gregs.dbvolution.DBRow...) }:</p>
+	 * with {@link #insertAllRows(nz.co.gregs.dbvolution.DBRow[]) }:</p>
 	 * <code>
-	 * migration.migrateAllRows();
+	 * migration.insertAllRows();
 	 * </code>
 	 *
 	 * @param extraExamples
 	 * @throws SQLException
 	 */
-	public void migrateAllRows(DBRow... extraExamples) throws SQLException {
-		DBMigrate<M> migrate = new DBMigrate<>(this, this.mapper, extraExamples);
+	public void insertAllRows(DBRow... extraExamples) throws SQLException {
+		DBQueryInsertAction<M> migrate = getDBQueryInsertAction(extraExamples);
 		migrate.migrate(database);
 	}
 
-
+	private DBQueryInsertAction<M> getDBQueryInsertAction(DBRow[] extraExamples) {
+		return new DBQueryInsertAction<>(this, this.mapper, extraExamples);
+	}
 
 	/**
-	 * Validate the migration defined by this DBMigration but do not make perform any actual inserts.
+	 * Validate the migration defined by this DBQueryInsert but do not make
+	 * perform any actual inserts.
 	 *
 	 * <p>
-	 * DBMigration allows you to create a query that produces rows of another
+	 * DBQueryInsert allows you to create a query that produces rows of another
 	 * table/DBRow.</p>
 	 *
 	 * <p>
@@ -658,12 +698,13 @@ public class DBMigration<M extends DBRow> extends RowDefinition {
 	 * pattern.</p>
 	 *
 	 * <p>
-	 * The easiest way to create a DBMigration is using {@link DBDatabase#getDBMigration(nz.co.gregs.dbvolution.DBRow)
+	 * The easiest way to create a DBQueryInsert is using {@link DBDatabase#getDBQueryInsert(nz.co.gregs.dbvolution.DBRow)
 	 * }</p>
 	 *
 	 * <p>
-	 * a DBMigration requires a subclass of the DBRow to work. That is called the
-	 * migration target and needs to be extend to produce a migration mapper.</p>
+	 * a DBQueryInsert requires a subclass of the DBRow to work. That is called
+	 * the migration target and needs to be extend to produce a migration
+	 * mapper.</p>
 	 *
 	 * <p>
 	 * The migration mapper is an extension of the migration target that includes
@@ -704,7 +745,8 @@ public class DBMigration<M extends DBRow> extends RowDefinition {
 	 * c = new DBString(ab.column(ab.a).append(ab.column(ab.b)));<br>
 	 * }<br>
 	 * <br>
-	 * DBMigration&lt;?&gt; migration = dbDatabase.getDBMigration(ABCDMapping);
+	 * DBQueryInsert&lt;?&gt; migration =
+	 * dbDatabase.getDBQueryInsert(ABCDMapping);
 	 * </code>
 	 *
 	 * <p>
@@ -716,9 +758,9 @@ public class DBMigration<M extends DBRow> extends RowDefinition {
 	 *
 	 * <p>
 	 * Migrate all the rows from one table to the other (does not delete anything)
-	 * with {@link #migrateAllRows(nz.co.gregs.dbvolution.DBRow...) }:</p>
+	 * with {@link #insertAllRows(nz.co.gregs.dbvolution.DBRow[]) }:</p>
 	 * <code>
-	 * migration.migrateAllRows();
+	 * migration.insertAllRows();
 	 * </code>
 	 *
 	 * @param extraExamples

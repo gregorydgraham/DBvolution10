@@ -106,7 +106,7 @@ public class DBValidationTest extends AbstractTest{
 
 	@Test
 	public void testvalidating2TablesWithDBMigation() throws SQLException, UnexpectedNumberOfRowsException {
-		DBMigration<MigrateJamesAndAllVilliansToFight> migration = database.getDBMigration(new MigrateJamesAndAllVilliansToFight());
+		DBQueryInsert<MigrateJamesAndAllVilliansToFight> migration = database.getDBQueryInsert(new MigrateJamesAndAllVilliansToFight());
 		migration.setBlankQueryAllowed(Boolean.TRUE);
 		migration.setCartesianJoinAllowed(Boolean.TRUE);
 		
@@ -130,9 +130,9 @@ public class DBValidationTest extends AbstractTest{
 					Assert.assertThat(value, isOneOf("success", "NO DATA"));
 					if (key.equals("villian")) {
 						if (value.equals("success")) {
-							Assert.assertThat(valid.getRow(new DBMigrationTest.Villain()).name.stringValue(), not("Dr Nonono"));
+							Assert.assertThat(valid.getRow(new DBQueryInsertTest.Villain()).name.stringValue(), not("Dr Nonono"));
 						} else {
-							Assert.assertThat(valid.getRow(new DBMigrationTest.Villain()).name.stringValue(), is("Dr Nonono"));
+							Assert.assertThat(valid.getRow(new DBQueryInsertTest.Villain()).name.stringValue(), is("Dr Nonono"));
 						}
 					}
 				}

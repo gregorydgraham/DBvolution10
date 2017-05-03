@@ -19,7 +19,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import nz.co.gregs.dbvolution.DBDatabase;
-import nz.co.gregs.dbvolution.DBMigration;
+import nz.co.gregs.dbvolution.DBQueryInsert;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.databases.DBStatement;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
@@ -34,15 +34,15 @@ import org.apache.commons.logging.LogFactory;
  *
  *
  * @author Gregory Graham
- * @param <R> the resulting DBRow from this DBMigrate
+ * @param <R> the resulting DBRow from this DBQueryInsertAction
  */
-public class DBMigrate<R extends DBRow> extends DBAction {
+public class DBQueryInsertAction<R extends DBRow> extends DBAction {
 
-	private static final Log LOG = LogFactory.getLog(DBMigrate.class);
+	private static final Log LOG = LogFactory.getLog(DBQueryInsertAction.class);
 
 	private transient StringBuilder allChangedColumns;
 	private transient StringBuilder allSetValues;
-	private final DBMigration<R> sourceMigration;
+	private final DBQueryInsert<R> sourceMigration;
 	private final DBRow[] extraExamples;
 	private StringBuilder allColumns;
 	private StringBuilder allValues;
@@ -54,7 +54,7 @@ public class DBMigrate<R extends DBRow> extends DBAction {
 	 * @param resultRow the resulting DBRow produced by the mapping
 	 * @param examples extra examples used to reduce the source data set.
 	 */
-	public DBMigrate(DBMigration<R> migration, DBRow resultRow, DBRow... examples) {
+	public DBQueryInsertAction(DBQueryInsert<R> migration, DBRow resultRow, DBRow... examples) {
 		super(resultRow);
 		sourceMigration = migration;
 		extraExamples = examples;
@@ -68,7 +68,7 @@ public class DBMigrate<R extends DBRow> extends DBAction {
 	 * @throws SQLException SQL Exceptions may be thrown
 	 */
 	public DBActionList migrate(DBDatabase database) throws SQLException {
-		DBMigrate<R> migrate = new DBMigrate<>(sourceMigration, getRow());
+		DBQueryInsertAction<R> migrate = new DBQueryInsertAction<>(sourceMigration, getRow());
 		final DBActionList executedActions = migrate.execute(database);
 		return executedActions;
 	}
@@ -92,7 +92,7 @@ public class DBMigrate<R extends DBRow> extends DBAction {
 
 	@Override
 	protected DBActionList execute(DBDatabase db) throws SQLException {
-		DBActionList actions = new DBActionList(new DBMigrate<>(sourceMigration, getRow(), extraExamples));
+		DBActionList actions = new DBActionList(new DBQueryInsertAction<>(sourceMigration, getRow(), extraExamples));
 
 		try (DBStatement statement = db.getDBStatement()) {
 			for (String sql : getSQLStatements(db)) {
