@@ -213,6 +213,44 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 			}
 		});
 	}
+	
+	/**
+	 * Derives the length in digits of this expression.
+	 * 
+	 * <p>This method is useful to test numbers will fit within a specific field size</p>
+	 *
+	 * @return a the number of digits required to display or store this expression.
+	 */
+	public NumberExpression lengthOfIntegerPart() {
+		return this.is(0).ifThenElse(value(1), this.abs().logBase10().integerPart().plus(1));
+	}
+	
+	/**
+	 * Derives the length in digits of this expression.
+	 * 
+	 * <p>This method is useful to test numbers will fit within a specific field size</p>
+	 *
+	 * @return a the number of digits required to display or store this expression.
+	 */
+	public NumberExpression lengthOfDecimalPart() {
+		return this.stringResult().substringAfter(".").length();
+	}
+	
+	/**
+	 * Tests that a expression is shorter than or equal to the specified lengths.
+	 * 
+	 * <p>This method is useful to test values will fit within a specific field size</p>
+	 *
+	 * @param maxIntegerLength
+	 * @param maxDecimals
+	 * @return a StringExpression.
+	 */
+	public BooleanExpression isShorterThanOrAsLongAs(int maxIntegerLength, int maxDecimals) {
+		return BooleanExpression.allOf(
+				this.lengthOfIntegerPart().isLessThanOrEqual(maxIntegerLength),
+				this.lengthOfDecimalPart().isLessThanOrEqual(maxDecimals)
+		);
+	}
 
 	/**
 	 * Converts the number expression to a string and appends the supplied String.
@@ -1801,6 +1839,19 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 	 * @return a NumberExpression
 	 */
 	public NumberExpression integerPart() {
+		return this.trunc();
+	}
+
+	/**
+	 * Removes the decimal part, if there is any, from this number and returns
+	 * only the integer part.
+	 *
+	 * <p>
+	 * For example value(3.5).floor() = 3
+	 *
+	 * @return a NumberExpression
+	 */
+	public NumberExpression floor() {
 		return this.trunc();
 	}
 

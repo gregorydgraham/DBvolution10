@@ -1596,6 +1596,17 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 	}
 
 	/**
+	 * Tests that a string expression is shorter than or equal to the specified length.
+	 * 
+	 * <p>This method is useful to test strings  will fit within a specific field size</p>
+	 *
+	 * @return a StringExpression.
+	 */
+	public BooleanExpression isShorterThanOrAsLongAs(int maxLength) {
+		return this.length().isLessThanOrEqual(maxLength);
+	}
+
+	/**
 	 * Creates a query expression that trims all leading spaces from the current
 	 * StringExpression.
 	 *
