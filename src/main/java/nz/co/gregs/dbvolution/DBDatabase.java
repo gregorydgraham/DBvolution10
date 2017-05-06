@@ -1851,4 +1851,8 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 	public <K extends DBRow> DBQueryInsert<K> getDBQueryInsert(K mapper) {
 		return new DBQueryInsert<>(this, mapper);
 	}
+	
+	public <K extends DBRow> DBMigration<K> getDBMigration(K mapper) {
+		return new DBMigration<K>(this, mapper);
+	}
 }
