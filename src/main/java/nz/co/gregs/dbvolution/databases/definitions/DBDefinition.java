@@ -4770,4 +4770,8 @@ public abstract class DBDefinition {
 	public String doLogBase10NumberTransform(String sql) {
 		return "log10("+sql+")";
 	}
+
+	public String doFindNumberInStringTransform(String toSQLString) {
+		return "(case when regexp_replace("+toSQLString+",'.*?([-]?[0-9]+(\\.[0-9]+)?).*', '$1') = "+toSQLString+" then null else regexp_replace("+toSQLString+",'.*?([-]?[0-9]+(\\.[0-9]+)?).*', '$1') end)";
+	}
 }
