@@ -394,7 +394,7 @@ public class PostgresDBDefinition extends DBDefinition {
 
 	@Override
 	public String doStringToNumberTransform(String stringResultContainingANumber) {
-		return "(CASE WHEN (" + stringResultContainingANumber + ") IS NULL OR (" + stringResultContainingANumber + ") = '' THEN 0 ELSE TO_NUMBER(" + stringResultContainingANumber + ", 'S999999999999999D9999999') END)";
+		return "(CASE WHEN (" + stringResultContainingANumber + ") IS NULL OR (" + stringResultContainingANumber + ") = '' THEN NULL ELSE TO_NUMBER(" + stringResultContainingANumber + ", 'S999999999999999D9999999') END)";
 	}
 
 	@Override
