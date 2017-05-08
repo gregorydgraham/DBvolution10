@@ -15,10 +15,13 @@
  */
 package nz.co.gregs.dbvolution.databases;
 
+import java.sql.SQLException;
+import java.sql.Statement;
 import javax.sql.DataSource;
 import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.databases.definitions.MySQLDBDefinition;
 import nz.co.gregs.dbvolution.databases.supports.SupportsPolygonDatatype;
+import nz.co.gregs.dbvolution.internal.mysql.RegexFunctions;
 
 /**
  * A DBDatabase tweaked for MySQL databases
@@ -83,6 +86,13 @@ public class MySQLDB extends DBDatabase implements SupportsPolygonDatatype{
 	@Override
 	public boolean supportsRecursiveQueriesNatively() {
 		return false;
+	}
+
+	@Override
+	protected void addDatabaseSpecificFeatures(Statement statement) throws SQLException {
+		for (RegexFunctions fn : RegexFunctions.values()) {
+			fn.add(statement);
+		}
 	}
 
 }
