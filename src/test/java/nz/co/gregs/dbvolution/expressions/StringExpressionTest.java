@@ -720,8 +720,8 @@ public class StringExpressionTest extends AbstractTest {
 		Assert.assertThat(allRows.size(), is(7));
 		for(FindFirstNumberTable fab: allRows){
 			System.out.println(fab.sample);
-			Assert.assertThat(fab.expectString.getValue(), is(fab.actualString.getValue()));
-			Assert.assertThat(fab.expectNumber.doubleValue(), is(fab.actualNumber.doubleValue()));
+			Assert.assertThat(fab.actualString.getValue(), is(fab.expectString.getValue()));
+			Assert.assertThat(fab.actualNumber.doubleValue(), is(fab.expectNumber.doubleValue()));
 		}
 	}
 
