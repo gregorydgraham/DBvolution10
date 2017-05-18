@@ -704,6 +704,12 @@ public class StringExpressionTest extends AbstractTest {
 			new FindFirstNumberTable("aaa -09.90 yabber", "-09.90", -9.9),
 			new FindFirstNumberTable("aab 09.90 y", "09.90", 9.9),
 			new FindFirstNumberTable("aac 900.90 y", "900.90", 900.9),
+			new FindFirstNumberTable("aad 900.90.90 y", "900.90", 900.9),
+			new FindFirstNumberTable("aad 900.90 -0.90 y", "900.90", 900.9),
+			new FindFirstNumberTable("aad -900.90.90 0.90 y", "-900.90", -900.9),
+			new FindFirstNumberTable("aad 900. -0.90 y", "900", 900),
+			new FindFirstNumberTable("aad - 900 0.90 y", "900", 900),
+			new FindFirstNumberTable("900.90.90 y", "900.90", 900.9),
 			new FindFirstNumberTable("c 9.90 c", "9.90", 9.9),
 			new FindFirstNumberTable("d 9 d", "9", 9),
 			new FindFirstNumberTable("e -9 e", "-9", -9),
@@ -717,7 +723,7 @@ public class StringExpressionTest extends AbstractTest {
 		List<FindFirstNumberTable> allRows = query
 				.getAllRows();
 
-		Assert.assertThat(allRows.size(), is(7));
+		Assert.assertThat(allRows.size(), is(13));
 		for(FindFirstNumberTable fab: allRows){
 			System.out.println(fab.sample);
 			Assert.assertThat(fab.actualString.getValue(), is(fab.expectString.getValue()));
