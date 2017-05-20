@@ -708,6 +708,7 @@ public class StringExpressionTest extends AbstractTest {
 			new FindFirstNumberTable("aad 900.90 -0.90 y", "900.90", 900.9),
 			new FindFirstNumberTable("aad -900.90.90 0.90 y", "-900.90", -900.9),
 			new FindFirstNumberTable("aad 900. -0.90 y", "900", 900),
+			new FindFirstNumberTable("aad 900.", "900", 900),
 			new FindFirstNumberTable("aad - 900 0.90 y", "900", 900),
 			new FindFirstNumberTable("900.90.90 y", "900.90", 900.9),
 			new FindFirstNumberTable("c 9.90 c", "9.90", 9.9),
@@ -723,7 +724,7 @@ public class StringExpressionTest extends AbstractTest {
 		List<FindFirstNumberTable> allRows = query
 				.getAllRows();
 
-		Assert.assertThat(allRows.size(), is(13));
+		Assert.assertThat(allRows.size(), is(14));
 		for(FindFirstNumberTable fab: allRows){
 			System.out.println(fab.sample);
 			Assert.assertThat(fab.actualString.getValue(), is(fab.expectString.getValue()));

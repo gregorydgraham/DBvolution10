@@ -21,7 +21,7 @@ import javax.sql.DataSource;
 import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.databases.definitions.MySQLDBDefinition;
 import nz.co.gregs.dbvolution.databases.supports.SupportsPolygonDatatype;
-import nz.co.gregs.dbvolution.internal.mysql.RegexFunctions;
+import nz.co.gregs.dbvolution.internal.mysql.MigrationFunctions;
 
 /**
  * A DBDatabase tweaked for MySQL databases
@@ -90,7 +90,7 @@ public class MySQLDB extends DBDatabase implements SupportsPolygonDatatype{
 
 	@Override
 	protected void addDatabaseSpecificFeatures(Statement statement) throws SQLException {
-		for (RegexFunctions fn : RegexFunctions.values()) {
+		for (MigrationFunctions fn : MigrationFunctions.values()) {
 			fn.add(statement);
 		}
 	}
