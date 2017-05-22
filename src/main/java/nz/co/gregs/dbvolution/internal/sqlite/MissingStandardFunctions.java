@@ -39,10 +39,10 @@ public class MissingStandardFunctions {
 		Function.create(connection, "LOCATION_OF", new LocationOf());
 		Function.create(connection, "CURRENT_USER", new CurrentUser(db.getUsername()));
 		Function.create(connection, "STDEV", new StandardDeviation());
-		Function.create(connection, "REGEXP_REPLACE", new RegexpRePlace());
+		Function.create(connection, "REGEXP_REPLACE", new RegexpReplace());
 	}
 
-	private static class RegexpRePlace extends Function {
+	private static class RegexpReplace extends Function {
 
 		@Override
 		protected void xFunc() throws SQLException {
