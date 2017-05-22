@@ -719,14 +719,12 @@ public class StringExpressionTest extends AbstractTest {
 		final DBTable<FindFirstNumberTable> query = database.getDBTable(tab)
 				.setBlankQueryAllowed(true)
 				.setSortOrder(tab.column(tab.sample));
-		System.out.println(query.getSQLForQuery());
 		
 		List<FindFirstNumberTable> allRows = query
 				.getAllRows();
 
 		Assert.assertThat(allRows.size(), is(14));
 		for(FindFirstNumberTable fab: allRows){
-			System.out.println(fab.sample);
 			Assert.assertThat(fab.actualString.getValue(), is(fab.expectString.getValue()));
 			Assert.assertThat(fab.actualNumber.doubleValue(), is(fab.expectNumber.doubleValue()));
 		}
