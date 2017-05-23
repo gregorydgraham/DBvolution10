@@ -21,9 +21,15 @@ import java.util.Date;
 import java.util.List;
 import nz.co.gregs.dbvolution.DBQuery;
 import nz.co.gregs.dbvolution.DBQueryRow;
+import nz.co.gregs.dbvolution.DBRow;
+import nz.co.gregs.dbvolution.DBTable;
+import nz.co.gregs.dbvolution.annotations.DBAutoIncrement;
 import nz.co.gregs.dbvolution.annotations.DBColumn;
+import nz.co.gregs.dbvolution.annotations.DBPrimaryKey;
 import nz.co.gregs.dbvolution.example.Marque;
 import nz.co.gregs.dbvolution.columns.StringColumn;
+import nz.co.gregs.dbvolution.datatypes.DBInteger;
+import nz.co.gregs.dbvolution.datatypes.DBNumber;
 import nz.co.gregs.dbvolution.datatypes.DBString;
 import nz.co.gregs.dbvolution.example.CarCompany;
 import nz.co.gregs.dbvolution.generic.AbstractTest;
@@ -61,7 +67,7 @@ public class StringExpressionTest extends AbstractTest {
 		DBQuery dbQuery = database.getDBQuery(carCo);
 
 		dbQuery.addCondition(
-			carCo.column(carCo.name).isNotNullAndNotEmpty()
+				carCo.column(carCo.name).isNotNullAndNotEmpty()
 		);
 
 		List<DBQueryRow> allRows = dbQuery.getAllRows();
@@ -80,7 +86,7 @@ public class StringExpressionTest extends AbstractTest {
 		DBQuery dbQuery = database.getDBQuery(carCo);
 
 		dbQuery.addCondition(
-			carCo.column(carCo.name).isNullOrEmpty()
+				carCo.column(carCo.name).isNullOrEmpty()
 		);
 
 		List<DBQueryRow> allRows = dbQuery.getAllRows();
@@ -268,7 +274,7 @@ public class StringExpressionTest extends AbstractTest {
 
 		dbQuery = database.getDBQuery(marq);
 		dbQuery.addCondition(
-			marq.column(marq.name).leftTrim().is("HUMMER")
+				marq.column(marq.name).leftTrim().is("HUMMER")
 		);
 		got = dbQuery.getAllInstancesOf(marq);
 		Assert.assertThat(got.size(), is(1));
@@ -346,19 +352,19 @@ public class StringExpressionTest extends AbstractTest {
 		dbQuery = database.getDBQuery(marq);
 		dbQuery.addCondition(marq.column(marq.name).substring(3, NumberExpression.value(6)).is(last3LettersOfHUMMER));
 		got = dbQuery.getAllInstancesOf(marq);
-		
+
 		Assert.assertThat(got.size(), is(1));
 
 		dbQuery = database.getDBQuery(marq);
 		dbQuery.addCondition(marq.column(marq.name).substring(3, 6).lowercase().is(last3LettersOfHUMMER));
 		got = dbQuery.getAllInstancesOf(marq);
-		
+
 		Assert.assertThat(got.size(), is(0));
 
 		dbQuery = database.getDBQuery(marq);
 		dbQuery.addCondition(marq.column(marq.name).substring(3, 6).lowercase().uppercase().is(last3LettersOfHUMMER));
 		got = dbQuery.getAllInstancesOf(marq);
-		
+
 		Assert.assertThat(got.size(), is(1));
 
 		database.insert(new Marque(3, "False", 1246974, "", 0, "", "     HUMMER               ", "", "Y", new Date(), 3, null));
@@ -366,13 +372,13 @@ public class StringExpressionTest extends AbstractTest {
 		dbQuery = database.getDBQuery(marq);
 		dbQuery.addCondition(marq.column(marq.name).trim().uppercase().substring(3, 6).is(last3LettersOfHUMMER));
 		got = dbQuery.getAllInstancesOf(marq);
-		
+
 		Assert.assertThat(got.size(), is(2));
 	}
 
 	@Test
 	public void testStringLengthTransform() throws SQLException {
-		
+
 		Marque marq = new Marque();
 		marq.name.clear();
 		DBQuery query = database.getDBQuery(marq);
@@ -452,8 +458,8 @@ public class StringExpressionTest extends AbstractTest {
 		DBQuery query = database.getDBQuery(marq);
 
 		query.addCondition(
-			marq.column(marq.name).lowercase()
-				.isBetween(StringExpression.value("toy"), "tup"));
+				marq.column(marq.name).lowercase()
+						.isBetween(StringExpression.value("toy"), "tup"));
 		query.setSortOrder(marq.column(marq.name));
 		List<Marque> got = query.getAllInstancesOf(marq);
 
@@ -469,8 +475,8 @@ public class StringExpressionTest extends AbstractTest {
 		DBQuery query = database.getDBQuery(marq);
 
 		query.addCondition(
-			marq.column(marq.name).lowercase()
-				.isBetween("toy", StringExpression.value("tup")));
+				marq.column(marq.name).lowercase()
+						.isBetween("toy", StringExpression.value("tup")));
 		query.setSortOrder(marq.column(marq.name));
 		List<Marque> got = query.getAllInstancesOf(marq);
 
@@ -501,8 +507,8 @@ public class StringExpressionTest extends AbstractTest {
 		DBQuery query = database.getDBQuery(marq);
 
 		query.addCondition(
-			marq.column(marq.name).lowercase()
-				.isBetweenExclusive(StringExpression.value("toy"), "volvo"));
+				marq.column(marq.name).lowercase()
+						.isBetweenExclusive(StringExpression.value("toy"), "volvo"));
 		query.setSortOrder(marq.column(marq.name));
 		List<Marque> got = query.getAllInstancesOf(marq);
 
@@ -518,8 +524,8 @@ public class StringExpressionTest extends AbstractTest {
 		DBQuery query = database.getDBQuery(marq);
 
 		query.addCondition(
-			marq.column(marq.name).lowercase()
-				.isBetweenExclusive("toy", StringExpression.value("volvo")));
+				marq.column(marq.name).lowercase()
+						.isBetweenExclusive("toy", StringExpression.value("volvo")));
 		query.setSortOrder(marq.column(marq.name));
 		List<Marque> got = query.getAllInstancesOf(marq);
 
@@ -551,8 +557,8 @@ public class StringExpressionTest extends AbstractTest {
 		DBQuery query = database.getDBQuery(marq);
 
 		query.addCondition(
-			marq.column(marq.name).lowercase()
-				.isBetweenInclusive(StringExpression.value("toy"), "volvo"));
+				marq.column(marq.name).lowercase()
+						.isBetweenInclusive(StringExpression.value("toy"), "volvo"));
 		query.setSortOrder(marq.column(marq.name));
 		List<Marque> got = query.getAllInstancesOf(marq);
 
@@ -569,8 +575,8 @@ public class StringExpressionTest extends AbstractTest {
 		DBQuery query = database.getDBQuery(marq);
 
 		query.addCondition(
-			marq.column(marq.name).lowercase()
-				.isBetweenInclusive("toy", StringExpression.value("volvo")));
+				marq.column(marq.name).lowercase()
+						.isBetweenInclusive("toy", StringExpression.value("volvo")));
 		query.setSortOrder(marq.column(marq.name));
 		List<Marque> got = query.getAllInstancesOf(marq);
 
@@ -673,11 +679,11 @@ public class StringExpressionTest extends AbstractTest {
 		Marque marque = new Marque();
 		marque.setReturnFields(marque.carCompany);
 		DBQuery query = database.getDBQuery(marque)
-			.addCondition(
-				marque.column(marque.carCompany)
-					.stringResult()
-					.count()
-					.isGreaterThan(1));
+				.addCondition(
+						marque.column(marque.carCompany)
+								.stringResult()
+								.count()
+								.isGreaterThan(1));
 		query.setSortOrder(marque.column(marque.carCompany));
 		List<DBQueryRow> allRows = query.getAllRows();
 
@@ -687,4 +693,74 @@ public class StringExpressionTest extends AbstractTest {
 		Assert.assertThat(allRows.get(2).get(marque).carCompany.getValue(), is(4l));
 
 	}
+
+	@Test
+	public void testFindFirstNumber() throws SQLException {
+		FindFirstNumberTable tab = new FindFirstNumberTable();
+		database.preventDroppingOfTables(false);
+		database.dropTableNoExceptions(tab);
+		database.createTable(tab);
+		database.insert(new FindFirstNumberTable[]{
+			new FindFirstNumberTable("aaa -09.90 yabber", "-09.90", -9.9),
+			new FindFirstNumberTable("aab 09.90 y", "09.90", 9.9),
+			new FindFirstNumberTable("aac 900.90 y", "900.90", 900.9),
+			new FindFirstNumberTable("aad 900.90.90 y", "900.90", 900.9),
+			new FindFirstNumberTable("aad 900.90 -0.90 y", "900.90", 900.9),
+			new FindFirstNumberTable("aad -900.90.90 0.90 y", "-900.90", -900.9),
+			new FindFirstNumberTable("aad 900. -0.90 y", "900", 900),
+			new FindFirstNumberTable("aad 900.", "900", 900),
+			new FindFirstNumberTable("aad - 900 0.90 y", "900", 900),
+			new FindFirstNumberTable("900.90.90 y", "900.90", 900.9),
+			new FindFirstNumberTable("c 9.90 c", "9.90", 9.9),
+			new FindFirstNumberTable("d 9 d", "9", 9),
+			new FindFirstNumberTable("e -9 e", "-9", -9),
+			new FindFirstNumberTable("f A e", null, null)
+		});
+		final DBTable<FindFirstNumberTable> query = database.getDBTable(tab)
+				.setBlankQueryAllowed(true)
+				.setSortOrder(tab.column(tab.sample));
+		
+		List<FindFirstNumberTable> allRows = query
+				.getAllRows();
+
+		Assert.assertThat(allRows.size(), is(14));
+		for(FindFirstNumberTable fab: allRows){
+			Assert.assertThat(fab.actualString.getValue(), is(fab.expectString.getValue()));
+			Assert.assertThat(fab.actualNumber.doubleValue(), is(fab.expectNumber.doubleValue()));
+		}
+	}
+
+	public static class FindFirstNumberTable extends DBRow {
+
+		@DBAutoIncrement
+		@DBPrimaryKey
+		@DBColumn
+		public DBInteger pkid = new DBInteger();
+
+		@DBColumn
+		public DBString sample = new DBString();
+
+		@DBColumn
+		public DBString expectString = new DBString();
+
+		@DBColumn
+		public DBString actualString = new DBString(this.column(sample).getFirstNumber());
+
+		@DBColumn
+		public DBNumber expectNumber = new DBNumber();
+
+		@DBColumn
+		public DBNumber actualNumber = new DBNumber(this.column(sample).getFirstNumber().numberResult());
+
+		public FindFirstNumberTable() {
+			super();
+		}
+
+		public FindFirstNumberTable(String sample, String expect, Number expectNumber) {
+			this.sample.setValue(sample);
+			this.expectString.setValue(expect);
+			this.expectNumber.setValue(expectNumber);
+		}
+	}
+
 }

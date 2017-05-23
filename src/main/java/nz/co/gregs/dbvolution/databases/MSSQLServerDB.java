@@ -137,6 +137,9 @@ public class MSSQLServerDB extends DBDatabase implements SupportsPolygonDatatype
 
 	@Override
 	protected void addDatabaseSpecificFeatures(Statement statement) throws SQLException {
+		for (MigrationFunctions fn : MigrationFunctions.values()) {
+			fn.add(statement);
+		}
 		for (Point2DFunctions fn : Point2DFunctions.values()) {
 			fn.add(statement);
 		}

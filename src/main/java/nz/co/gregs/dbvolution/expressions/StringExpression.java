@@ -1596,6 +1596,40 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 	}
 
 	/**
+	 * Tests that a string expression is shorter than or equal to the specified length.
+	 * 
+	 * <p>This method is useful to test strings  will fit within a specific field size</p>
+	 *
+	 * @param maxLength the longest possible number of characters
+	 * @return a StringExpression.
+	 */
+	public BooleanExpression isShorterThanOrAsLongAs(int maxLength) {
+		return this.length().isLessThanOrEqual(maxLength);
+	}
+
+	/**
+	 * Finds and returns the first number in the string or NULL if no number is found.
+	 * 
+	 * @return a NumberExpression.
+	 */
+	public StringExpression getFirstNumber() {
+			return new StringExpression(
+				new DBUnaryStringFunction(this) {
+
+			@Override
+			public String toSQLString(DBDatabase db) {
+				return db.getDefinition().doFindNumberInStringTransform(this.only.toSQLString(db));
+			}
+
+			@Override
+			String getFunctionName(DBDatabase db) {
+				return "";
+			}
+		});
+	
+	}
+
+	/**
 	 * Creates a query expression that trims all leading spaces from the current
 	 * StringExpression.
 	 *

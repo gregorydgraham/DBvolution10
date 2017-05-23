@@ -517,6 +517,9 @@ public class OracleDBDefinition extends DBDefinition {
 	public String doYearTransform(String dateExpression) {
 		return "(cast(to_char("+dateExpression+", 'YYYY') as number))";
 	}
-
-
+	
+	@Override
+	public String doFindNumberInStringTransform(String toSQLString) {
+		return "(case when regexp_replace("+toSQLString+",'.*?([-]?[0-9]+(\\.[0-9]+)?).*$', '\\1') = "+toSQLString+" then null else regexp_replace("+toSQLString+",'.*?([-]?[0-9]+(\\.[0-9]+)?).*$', '\\1') end)";
+	}
 }

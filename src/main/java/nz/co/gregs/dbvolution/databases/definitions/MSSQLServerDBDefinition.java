@@ -1010,4 +1010,9 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 	public String doRandomNumberTransform() {
 		return " (ABS(cast(CHECKSUM(NewId())as BIGINT))/2147483648) ";
 	}
+
+	@Override
+	public String doFindNumberInStringTransform(String toSQLString) {
+		return MigrationFunctions.FINDFIRSTNUMBER+"("+toSQLString+')';
+	}
 }

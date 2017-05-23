@@ -31,6 +31,7 @@ import nz.co.gregs.dbvolution.datatypes.spatial2D.DBLineSegment2D;
 import nz.co.gregs.dbvolution.datatypes.spatial2D.DBMultiPoint2D;
 import nz.co.gregs.dbvolution.datatypes.spatial2D.DBPoint2D;
 import nz.co.gregs.dbvolution.exceptions.IncorrectGeometryReturnedForDatatype;
+import nz.co.gregs.dbvolution.internal.mysql.MigrationFunctions;
 import nz.co.gregs.dbvolution.internal.properties.PropertyWrapper;
 
 /**
@@ -664,5 +665,10 @@ public class MySQLDBDefinition extends DBDefinition {
 		} else {
 			return super.preferredLargeObjectReader(lob);
 		}
+	}
+	
+	@Override
+	public String doFindNumberInStringTransform(String toSQLString) {
+		return MigrationFunctions.FINDFIRSTNUMER+"("+toSQLString+")";
 	}
 }

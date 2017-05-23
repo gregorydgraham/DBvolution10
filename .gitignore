@@ -18,3 +18,5 @@
 /tempfileForCreateRowWithLargeText.txt
 /dataSourceTest.h2db.mv.db
 /dataSourceTest.h2db.trace.db
+/jdbc:h2:./directTest.h2db.mv.db
+/jdbc:h2:./directTest.h2db.trace.db
