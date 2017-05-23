@@ -30,6 +30,7 @@ import nz.co.gregs.dbvolution.exceptions.UnexpectedNumberOfRowsException;
 import nz.co.gregs.dbvolution.example.CarCompany;
 import nz.co.gregs.dbvolution.example.CompanyLogo;
 import nz.co.gregs.dbvolution.generic.AbstractTest;
+import org.apache.commons.codec.binary.Hex;
 import org.junit.Assert;
 import org.junit.Test;
 import static org.hamcrest.Matchers.*;
@@ -78,6 +79,34 @@ public class DBLargeBinaryTest extends AbstractTest {
 		foundLogo.imageBytes.writeToFileSystem(tempFile.getAbsoluteFile());
 		Assert.assertThat(tempFile.length(), is(fordLogoFile.length()));
 		tempFile.delete();
+	}
+	
+	@Test
+	public void testHexValueOfStoredFile() throws FileNotFoundException, IOException, SQLException, UnexpectedNumberOfRowsException, ClassNotFoundException, InstantiationException {
+
+		CarCompany carCompany = new CarCompany();
+		carCompany.name.permittedValuesIgnoreCase("FORD");
+		CarCompany ford = database.getDBTable(carCompany).getOnlyRowByExample(carCompany);
+
+		CompanyLogo companyLogo = new CompanyLogo();
+		companyLogo.logoID.setValue(2);
+		companyLogo.carCompany.setValue(ford.uidCarCompany.getValue());
+		companyLogo.imageFilename.setValue("ford_logo.jpg");
+		File fordLogoFile = new File("ford_logo.jpg");
+		companyLogo.imageBytes.setFromFileSystem(fordLogoFile);
+		database.insert(companyLogo);
+
+		CompanyLogo logoExample = new CompanyLogo();
+		logoExample.carCompany.permittedValues(ford.uidCarCompany);
+		List<CompanyLogo> foundLogos = database.get(logoExample);
+		
+		final CompanyLogo foundLogo = foundLogos.get(0);
+		
+		Assert.assertThat(foundLogos.size(), is(1));
+		String hexValueFromDatabase = "0x" + Hex.encodeHexString(foundLogo.imageBytes.getBytes());
+		byte[] fil = new DBLargeBinary().setFromFileSystem("ford_logo.jpg");
+		String hexValueFromFileSystem = "0x" + Hex.encodeHexString(fil);
+		Assert.assertThat(hexValueFromFileSystem, is(hexValueFromDatabase));
 	}
 
 	@Test

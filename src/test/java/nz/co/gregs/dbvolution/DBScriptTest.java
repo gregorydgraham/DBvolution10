@@ -195,7 +195,7 @@ public class DBScriptTest extends AbstractTest {
 			DBActionList actions = new DBActionList();
 			ArrayList<ScriptTestTable> myTableRows = new ArrayList<ScriptTestTable>();
 
-			ScriptTestTable myTableRow = new ScriptTestTable("yada");
+			ScriptTestTable myTableRow = new ScriptTestTable();
 			myTableRows.add(myTableRow);
 //			DBTable<ScriptTestTable> table = database.getDBTable(new ScriptTestTable());
 			DBTable<ScriptTestTable> table = DBTable.getInstance(db, myTableRow);
@@ -204,6 +204,7 @@ public class DBScriptTest extends AbstractTest {
 
 			myTableRow.name.setValue("TOYOTA");
 			actions.addAll(table.insert(myTableRow));
+			database.print(database.getDBTable(myTableRow).getAllRows());
 
 			List<ScriptTestTable> allRows = table.setBlankQueryAllowed(true).getAllRows();
 
