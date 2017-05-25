@@ -669,6 +669,11 @@ public class MySQLDBDefinition extends DBDefinition {
 	
 	@Override
 	public String doFindNumberInStringTransform(String toSQLString) {
-		return MigrationFunctions.FINDFIRSTNUMER+"("+toSQLString+")";
+		return MigrationFunctions.FINDFIRSTNUMBER+"("+toSQLString+")";
+	}
+	
+	@Override
+	public String doFindIntegerInStringTransform(String toSQLString) {
+		return MigrationFunctions.FINDFIRSTINTEGER+"("+toSQLString+")";
 	}
 }

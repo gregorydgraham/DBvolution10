@@ -1630,6 +1630,28 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 	}
 
 	/**
+	 * Finds and returns the first integer in the string or NULL if no integer is found.
+	 * 
+	 * @return a NumberExpression.
+	 */
+	public StringExpression getFirstInteger() {
+			return new StringExpression(
+				new DBUnaryStringFunction(this) {
+
+			@Override
+			public String toSQLString(DBDatabase db) {
+				return db.getDefinition().doFindIntegerInStringTransform(this.only.toSQLString(db));
+			}
+
+			@Override
+			String getFunctionName(DBDatabase db) {
+				return "";
+			}
+		});
+	
+	}
+
+	/**
 	 * Creates a query expression that trims all leading spaces from the current
 	 * StringExpression.
 	 *

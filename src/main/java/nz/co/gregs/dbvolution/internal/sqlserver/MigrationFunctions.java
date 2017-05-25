@@ -66,6 +66,31 @@ public enum MigrationFunctions {
 "		set @return = @numberSign+@beforeTheDecimal+@decimalPoint+@afterTheDecimal;\n" +
 "	else \n" +
 "		set @return = null;\n" +
+"	return @return;"),
+	FINDFIRSTINTEGER("nvarchar(max)", "@string as NVARCHAR(max)", "declare @numberSign as nvarchar(1) = '';\n" +
+"declare @decimalPoint as nvarchar(1) = '';\n" +
+"declare @numberAndRight as nvarchar(max) = '';\n" +
+"declare @beforeTheDecimal as nvarchar(max) = '';\n" +
+"declare @afterTheDecimal as nvarchar(max) = '';\n" +
+"declare @startOfDigits int = patindex('%[0-9]%',@string);\n" +
+"declare @firstNonNumber as int = 0;\n" +
+"declare @return as nvarchar(max) = '';\n" +
+"\n" +
+"if (@startOfDigits<>0) \n" +
+"BEGIN\n" +
+"	if (@startOfDigits > 1 and substring(@string, @startOfDigits-1, 1) = '-')\n" +
+"	BEGIN\n" +
+"		set @numberSign = '-';\n" +
+"	END\n" +
+"	\n" +
+"	set @numberAndRight = substring(@string, @startOfDigits, len(@string));\n" +
+"	set @firstNonNumber = patindex('%[^0-9]%', @numberAndRight);\n" +
+"	set @beforeTheDecimal = left(@numberAndRight, @firstNonNumber-1);\n" +
+"END\n" +
+"	if (@beforeTheDecimal is not null and @beforeTheDecimal <> '')\n" +
+"		set @return = @numberSign+@beforeTheDecimal;\n" +
+"	else \n" +
+"		set @return = null;\n" +
 "	return @return;");
 
 	private final String returnType;

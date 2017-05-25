@@ -730,6 +730,42 @@ public class StringExpressionTest extends AbstractTest {
 		}
 	}
 
+	@Test
+	public void testFindFirstInteger() throws SQLException {
+		FindFirstNumberTable tab = new FindFirstNumberTable();
+		database.preventDroppingOfTables(false);
+		database.dropTableNoExceptions(tab);
+		database.createTable(tab);
+		database.insert(new FindFirstNumberTable[]{
+			new FindFirstNumberTable("aaa -09.90 yabber", "-09", -9),
+			new FindFirstNumberTable("aab 09.90 y", "09", 9),
+			new FindFirstNumberTable("aac 900.90 y", "900", 900),
+			new FindFirstNumberTable("aad 900.90.90 y", "900", 900),
+			new FindFirstNumberTable("aad 900.90 -0.90 y", "900", 900),
+			new FindFirstNumberTable("aad -900.90.90 0.90 y", "-900", -900),
+			new FindFirstNumberTable("aad 900. -0.90 y", "900", 900),
+			new FindFirstNumberTable("aad 900.", "900", 900),
+			new FindFirstNumberTable("aad - 900 0.90 y", "900", 900),
+			new FindFirstNumberTable("900.90.90 y", "900", 900),
+			new FindFirstNumberTable("c 9.90 c", "9", 9),
+			new FindFirstNumberTable("d 9 d", "9", 9),
+			new FindFirstNumberTable("e -9 e", "-9", -9),
+			new FindFirstNumberTable("f A e", null, null)
+		});
+		final DBTable<FindFirstNumberTable> query = database.getDBTable(tab)
+				.setBlankQueryAllowed(true)
+				.setSortOrder(tab.column(tab.sample));
+		
+		List<FindFirstNumberTable> allRows = query
+				.getAllRows();
+
+		Assert.assertThat(allRows.size(), is(14));
+		for(FindFirstNumberTable fab: allRows){
+			Assert.assertThat(fab.actualIntegerString.getValue(), is(fab.expectString.getValue()));
+			Assert.assertThat(fab.actualInteger.longValue(), is(fab.expectNumber.longValue()));
+		}
+	}
+
 	public static class FindFirstNumberTable extends DBRow {
 
 		@DBAutoIncrement
@@ -751,6 +787,12 @@ public class StringExpressionTest extends AbstractTest {
 
 		@DBColumn
 		public DBNumber actualNumber = new DBNumber(this.column(sample).getFirstNumber().numberResult());
+
+		@DBColumn
+		public DBString actualIntegerString = new DBString(this.column(sample).getFirstInteger());
+
+		@DBColumn
+		public DBInteger actualInteger = new DBInteger(this.column(sample).getFirstInteger().numberResult());
 
 		public FindFirstNumberTable() {
 			super();

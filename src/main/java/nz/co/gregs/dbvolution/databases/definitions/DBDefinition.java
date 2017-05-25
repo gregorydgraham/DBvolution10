@@ -4774,4 +4774,8 @@ public abstract class DBDefinition {
 	public String doFindNumberInStringTransform(String toSQLString) {
 		return "(case when regexp_replace("+toSQLString+",'.*?([-]?[0-9]+(\\.[0-9]+)?).*', '$1') = "+toSQLString+" then null else regexp_replace("+toSQLString+",'.*?([-]?[0-9]+(\\.[0-9]+)?).*', '$1') end)";
 	}
+
+	public String doFindIntegerInStringTransform(String toSQLString) {
+		return "(case when regexp_replace("+toSQLString+",'.*?([-]?[0-9]+).*', '$1') = "+toSQLString+" then null else regexp_replace("+toSQLString+",'.*?([-]?[0-9]+).*', '$1') end)";
+	}
 }

@@ -1015,4 +1015,9 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 	public String doFindNumberInStringTransform(String toSQLString) {
 		return MigrationFunctions.FINDFIRSTNUMBER+"("+toSQLString+')';
 	}
+
+	@Override
+	public String doFindIntegerInStringTransform(String toSQLString) {
+		return MigrationFunctions.FINDFIRSTINTEGER+"("+toSQLString+')';
+	}
 }

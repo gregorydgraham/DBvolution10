@@ -859,6 +859,11 @@ public class PostgresDBDefinition extends DBDefinition {
 	public String doFindNumberInStringTransform(String toSQLString) {
 		return "(substring("+toSQLString+" from '([-]?[0-9]+(\\.[0-9]+)?)'))";
 	}
+
+	@Override
+	public String doFindIntegerInStringTransform(String toSQLString) {
+		return "(substring("+toSQLString+" from '([-]?[0-9]+)'))";
+	}
 	
 	@Override
 	public String doRandomNumberTransform() {
