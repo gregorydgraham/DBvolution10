@@ -17,6 +17,7 @@ package nz.co.gregs.dbvolution.internal.sqlserver;
 
 import java.sql.SQLException;
 import java.sql.Statement;
+import nz.co.gregs.dbvolution.datatypes.DBNumber;
 
 /**
  *
@@ -27,11 +28,11 @@ public enum Line2DFunctions {
 	/**
 	 *
 	 */
-	MAXX("numeric(15,10)", "@poly GEOMETRY", " DECLARE \n"
-			+ " @resultVal numeric(15,10),\n"
+	MAXX("numeric("+DBNumber.getNumericPrecision()+","+DBNumber.getNumericScale()+")", "@poly GEOMETRY", " DECLARE \n"
+			+ " @resultVal numeric("+DBNumber.getNumericPrecision()+","+DBNumber.getNumericScale()+"),\n"
 			+ " @num integer,\n"
 			+ " @i integer,\n"
-			+ " @currentcoord numeric(15,10),\n"
+			+ " @currentcoord numeric("+DBNumber.getNumericPrecision()+","+DBNumber.getNumericScale()+"),\n"
 			+ " @pnt GEOMETRY\n"
 			+ " if @poly is null begin \n"
 			+ "  return(null) \n"
@@ -58,11 +59,11 @@ public enum Line2DFunctions {
 	/**
 	 *
 	 */
-	MAXY("numeric(15,10)", "@poly GEOMETRY", " DECLARE \n"
-			+ " @resultVal numeric(15,10),\n"
+	MAXY("numeric("+DBNumber.getNumericPrecision()+","+DBNumber.getNumericScale()+")", "@poly GEOMETRY", " DECLARE \n"
+			+ " @resultVal numeric("+DBNumber.getNumericPrecision()+","+DBNumber.getNumericScale()+"),\n"
 			+ " @num integer,\n"
 			+ " @i integer,\n"
-			+ " @currentcoord numeric(15,10),\n"
+			+ " @currentcoord numeric("+DBNumber.getNumericPrecision()+","+DBNumber.getNumericScale()+"),\n"
 			+ " @pnt GEOMETRY\n"
 			+ " if @poly is null begin \n"
 			+ "  return(null) \n"
@@ -89,11 +90,11 @@ public enum Line2DFunctions {
 	/**
 	 *
 	 */
-	MINX("numeric(15,10)", "@poly GEOMETRY", " DECLARE \n"
-			+ " @resultVal numeric(15,10),\n"
+	MINX("numeric("+DBNumber.getNumericPrecision()+","+DBNumber.getNumericScale()+")", "@poly GEOMETRY", " DECLARE \n"
+			+ " @resultVal numeric("+DBNumber.getNumericPrecision()+","+DBNumber.getNumericScale()+"),\n"
 			+ " @num integer,\n"
 			+ " @i integer,\n"
-			+ " @currentcoord numeric(15,10),\n"
+			+ " @currentcoord numeric("+DBNumber.getNumericPrecision()+","+DBNumber.getNumericScale()+"),\n"
 			+ " @pnt GEOMETRY\n"
 			+ " if @poly is null begin \n"
 			+ "  return(null) \n"
@@ -120,11 +121,11 @@ public enum Line2DFunctions {
 	/**
 	 *
 	 */
-	MINY("numeric(15,10)", "@poly GEOMETRY", " DECLARE \n"
-			+ " @resultVal numeric(15,10),\n"
+	MINY("numeric("+DBNumber.getNumericPrecision()+","+DBNumber.getNumericScale()+")", "@poly GEOMETRY", " DECLARE \n"
+			+ " @resultVal numeric("+DBNumber.getNumericPrecision()+","+DBNumber.getNumericScale()+"),\n"
 			+ " @num integer,\n"
 			+ " @i integer,\n"
-			+ " @currentcoord numeric(15,10),\n"
+			+ " @currentcoord numeric("+DBNumber.getNumericPrecision()+","+DBNumber.getNumericScale()+"),\n"
 			+ " @pnt GEOMETRY\n"
 			+ " if @poly is null begin \n"
 			+ "  return(null) \n"

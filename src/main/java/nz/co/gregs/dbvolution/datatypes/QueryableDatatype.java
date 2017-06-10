@@ -340,7 +340,7 @@ public abstract class QueryableDatatype<T> extends Object implements Serializabl
 
 	/**
 	 * Set the value of this QDT to the value provided.
-	 * 
+	 *
 	 * @param newLiteralValue the new value
 	 */
 	void setValue(T newLiteralValue) {
@@ -355,7 +355,7 @@ public abstract class QueryableDatatype<T> extends Object implements Serializabl
 	 * Subclass writers should ensure that the method handles nulls correctly and
 	 * throws an exception if an inappropriate value is supplied.
 	 *
-	 * @param encodedValue the value of the QDT in the appropriate encoding 
+	 * @param encodedValue the value of the QDT in the appropriate encoding
 	 */
 	protected abstract void setValueFromStandardStringEncoding(String encodedValue);
 
@@ -423,11 +423,17 @@ public abstract class QueryableDatatype<T> extends Object implements Serializabl
 
 	/**
 	 *
-	 * Provides the SQL datatype used by default for this type of object
+	 * Provides the SQL datatype used by default for this type of object.
 	 *
-	 * This should be overridden in each subclass
+	 * <p>
+	 * This should be overridden in each subclass</p>
 	 *
-	 * Example return value: "VARCHAR(1000)"
+	 * <p>
+	 * Example return value: "VARCHAR(1000)"</p>
+	 *
+	 * <p>
+	 * Database specific datatypes are provided by the DBDefinition in the method
+	 * {@link DBDefinition#getDatabaseDataTypeOfQueryableDatatype}</p>
 	 *
 	 * @return the standard SQL datatype that corresponds to this QDT as a String
 	 */
@@ -803,6 +809,7 @@ public abstract class QueryableDatatype<T> extends Object implements Serializabl
 			for (DBExpression dBExpression : columnExpression) {
 				hashSet.addAll(dBExpression.getTablesInvolved());
 			}
+			return hashSet;
 		}
 		return new HashSet<DBRow>();
 	}
@@ -934,7 +941,8 @@ public abstract class QueryableDatatype<T> extends Object implements Serializabl
 	 * for an example.</p>
 	 *
 	 * @param db	db
-	 * @param formattedColumnName the name of the database column or similar expression ready to be used in an SQL excerpt
+	 * @param formattedColumnName the name of the database column or similar
+	 * expression ready to be used in an SQL excerpt
 	 * @return the formatted column ready to be used in an SQL statement
 	 */
 	public String formatColumnForSQLStatement(DBDatabase db, String formattedColumnName) {

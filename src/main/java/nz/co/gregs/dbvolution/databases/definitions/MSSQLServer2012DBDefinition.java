@@ -15,6 +15,7 @@
  */
 package nz.co.gregs.dbvolution.databases.definitions;
 
+import nz.co.gregs.dbvolution.datatypes.DBNumber;
 import nz.co.gregs.dbvolution.query.QueryOptions;
 
 /**
@@ -59,5 +60,11 @@ public class MSSQLServer2012DBDefinition extends MSSQLServerDBDefinition {
 	public String doIfThenElseTransform(String booleanTest, String thenResult, String elseResult) {
 		return " IFF( (" + booleanTest + "), (" + thenResult + "), (" + elseResult + "))";
 	}
+	
+	@Override
+	public int  getNumericPrecision() {
+		return 38;
+	}
+
 
 }

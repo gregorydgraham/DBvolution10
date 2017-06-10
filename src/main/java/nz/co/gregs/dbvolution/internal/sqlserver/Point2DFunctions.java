@@ -17,6 +17,7 @@ package nz.co.gregs.dbvolution.internal.sqlserver;
 
 import java.sql.SQLException;
 import java.sql.Statement;
+import nz.co.gregs.dbvolution.datatypes.DBNumber;
 
 /**
  *
@@ -27,11 +28,11 @@ public enum Point2DFunctions {
 	/**
 	 *
 	 */
-	EQUALS("numeric(15,10)", "@poly1 GEOMETRY, @poly2 GEOMETRY", " DECLARE \n"
-			+ " @resultVal numeric(15,10),\n"
+	EQUALS("numeric("+DBNumber.getNumericPrecision()+","+DBNumber.getNumericScale()+")", "@poly1 GEOMETRY, @poly2 GEOMETRY", " DECLARE \n"
+			+ " @resultVal numeric("+DBNumber.getNumericPrecision()+","+DBNumber.getNumericScale()+"),\n"
 			+ " @num integer,\n"
 			+ " @i integer,\n"
-			+ " @currentcoord numeric(15,10),\n"
+			+ " @currentcoord numeric("+DBNumber.getNumericPrecision()+","+DBNumber.getNumericScale()+"),\n"
 			+ " @pnt1 GEOMETRY,\n"
 			+ " @pnt2 GEOMETRY\n"
 			+ " if @poly1 is null or @poly2 is null begin \n"

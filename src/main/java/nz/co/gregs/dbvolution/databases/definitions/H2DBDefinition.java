@@ -26,6 +26,7 @@ import nz.co.gregs.dbvolution.datatypes.DBDateRepeat;
 import nz.co.gregs.dbvolution.datatypes.DBJavaObject;
 import nz.co.gregs.dbvolution.datatypes.DBLargeObject;
 import nz.co.gregs.dbvolution.datatypes.DBLargeText;
+import nz.co.gregs.dbvolution.datatypes.DBNumber;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 import nz.co.gregs.dbvolution.datatypes.spatial2D.*;
 import nz.co.gregs.dbvolution.internal.h2.*;
@@ -103,7 +104,7 @@ public class H2DBDefinition extends DBDefinition {
 
 	@Override
 	public String doStringLengthTransform(String enclosedValue) {
-		return " CAST(" + getStringLengthFunctionName() + "( " + enclosedValue + " ) as NUMERIC(15,10))";
+		return " CAST(" + getStringLengthFunctionName() + "( " + enclosedValue + " ) as NUMERIC("+getNumericPrecision()+","+getNumericScale()+"))";
 	}
 	
 	@Override

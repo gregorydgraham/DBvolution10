@@ -248,7 +248,7 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 	 */
 	@Override
 	public String doStringLengthTransform(String enclosedValue) {
-		return " CAST(" + getStringLengthFunctionName() + "( " + enclosedValue + " ) as NUMERIC(15,10))";
+		return " CAST(" + getStringLengthFunctionName() + "( " + enclosedValue + " ) as NUMERIC("+getNumericPrecision()+","+getNumericScale()+"))";
 	}
 
 	@Override
@@ -491,7 +491,7 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 
 	@Override
 	public String doStringToNumberTransform(String stringResultContainingANumber) {
-		return "(CAST(0.0 as numeric(15,10))+(CAST (" + stringResultContainingANumber + " as float)))";
+		return "(CAST(0.0 as numeric("+getNumericPrecision()+","+getNumericScale()+"))+(CAST (" + stringResultContainingANumber + " as float)))";
 	}
 
 	@Override

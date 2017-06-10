@@ -65,6 +65,14 @@ import org.joda.time.Period;
  * @author Gregory Graham
  */
 public abstract class DBDefinition {
+	
+	public int  getNumericPrecision() {
+		return DBNumber.getNumericPrecision();
+	}
+
+	public int getNumericScale() {
+		return DBNumber.getNumericScale();
+	}
 
 	/**
 	 * Transforms the Date instance into a SQL snippet that can be used as a date
