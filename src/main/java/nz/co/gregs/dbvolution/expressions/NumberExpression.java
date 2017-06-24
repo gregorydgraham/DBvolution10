@@ -1188,7 +1188,7 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 
 			@Override
 			public String toSQLString(DBDatabase db) {
-				if (!db.getDefinition().supportsExpFunction() && (this.only instanceof NumberExpression)) {
+				if (!db.getDefinition().supportsExpFunction()) {
 					return (new NumberExpression(Math.E)).power(this.only.isGreaterThan(799).ifThenElse(null, this.only)).toSQLString(db);
 				} else {
 					return super.toSQLString(db); //To change body of generated methods, choose Tools | Templates.

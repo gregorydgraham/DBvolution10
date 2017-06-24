@@ -366,11 +366,10 @@ public abstract class QueryableDatatype<T> extends Object implements Serializabl
 	 * @param newLiteralValue the literalValue to set
 	 */
 	protected void setLiteralValue(T newLiteralValue) {
+		QueryableDatatype.this.moveCurrentValueToPreviousValue(newLiteralValue);
 		if (newLiteralValue == null) {
-			QueryableDatatype.this.moveCurrentValueToPreviousValue(newLiteralValue);
 			setToNull();
 		} else {
-			QueryableDatatype.this.moveCurrentValueToPreviousValue(newLiteralValue);
 			this.literalValue = newLiteralValue;
 			if (newLiteralValue instanceof Date) {
 				this.setOperator(new DBEqualsOperator(new DBDate((Date) newLiteralValue)));

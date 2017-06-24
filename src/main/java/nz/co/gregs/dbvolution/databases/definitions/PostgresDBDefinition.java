@@ -490,7 +490,7 @@ public class PostgresDBDefinition extends DBDefinition {
 	// POLYGON((2 3,2 4,3 4,3 3,2 3))
 	@Override
 	public Polygon transformDatabasePolygon2DToJTSPolygon(String geometryAsString) throws com.vividsolutions.jts.io.ParseException {
-		String string = "POLYGON " + geometryAsString.replaceAll("\\),\\(", ", ").replaceAll("([-0-9.]+),([-0-9.]+)", "$1 $2");
+		//String string = "POLYGON " + geometryAsString.replaceAll("\\),\\(", ", ").replaceAll("([-0-9.]+),([-0-9.]+)", "$1 $2");
 		String[] splits = geometryAsString.split("[^0-9.]+");
 		List<Coordinate> coords = new ArrayList<>();
 		Coordinate firstCoord = null;
@@ -519,7 +519,7 @@ public class PostgresDBDefinition extends DBDefinition {
 	public LineString transformDatabaseLine2DValueToJTSLineString(String lineStringAsString) throws com.vividsolutions.jts.io.ParseException {
 		LineString lineString;
 		if (!lineStringAsString.matches("^ *LINESTRING.*")) {
-			String string = "LINESTRING " + lineStringAsString.replaceAll("\\),\\(", ", ").replaceAll("([-0-9.]+),([-0-9.]+)", "$1 $2");
+			//String string = "LINESTRING " + lineStringAsString.replaceAll("\\),\\(", ", ").replaceAll("([-0-9.]+),([-0-9.]+)", "$1 $2");
 			String[] splits = lineStringAsString.split("[(),]+");
 			Coordinate firstCoord = null;
 			List<Coordinate> coords = new ArrayList<>();
@@ -667,7 +667,7 @@ public class PostgresDBDefinition extends DBDefinition {
 	public LineSegment transformDatabaseLineSegment2DValueToJTSLineSegment(String lineStringAsString) throws com.vividsolutions.jts.io.ParseException {
 		LineSegment lineString;
 		if (!lineStringAsString.matches("^ *LINESTRING.*")) {
-			String string = "LINESTRING " + lineStringAsString.replaceAll("\\),\\(", ", ").replaceAll("([-0-9.]+),([-0-9.]+)", "$1 $2");
+			//String string = "LINESTRING " + lineStringAsString.replaceAll("\\),\\(", ", ").replaceAll("([-0-9.]+),([-0-9.]+)", "$1 $2");
 			String[] splits = lineStringAsString.split("[(),]+");
 			Coordinate firstCoord = null;
 			List<Coordinate> coords = new ArrayList<>();

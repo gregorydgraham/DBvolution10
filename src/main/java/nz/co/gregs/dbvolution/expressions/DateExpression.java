@@ -2867,7 +2867,7 @@ public class DateExpression implements DateResult, RangeComparable<DateResult>, 
 			if (column == null && values.isEmpty()) {
 				return true;
 			} else {
-				boolean result = column.isPurelyFunctional();
+				boolean result = column == null ? true : column.isPurelyFunctional();
 				for (DateResult value : values) {
 					result &= value.isPurelyFunctional();
 				}
@@ -3083,6 +3083,10 @@ public class DateExpression implements DateResult, RangeComparable<DateResult>, 
 		public boolean isPurelyFunctional() {
 			if (first == null && second == null) {
 				return true;
+			} else if (first == null) {
+				return second.isPurelyFunctional();
+			} else if (second == null) {
+				return first.isPurelyFunctional();
 			} else {
 				return first.isPurelyFunctional() && second.isPurelyFunctional();
 			}
@@ -3276,6 +3280,10 @@ public class DateExpression implements DateResult, RangeComparable<DateResult>, 
 		public boolean isPurelyFunctional() {
 			if (first == null && second == null) {
 				return true;
+			} else if (first == null) {
+				return second.isPurelyFunctional();
+			} else if (second == null) {
+				return first.isPurelyFunctional();
 			} else {
 				return first.isPurelyFunctional() && second.isPurelyFunctional();
 			}
@@ -3331,6 +3339,10 @@ public class DateExpression implements DateResult, RangeComparable<DateResult>, 
 		public boolean isPurelyFunctional() {
 			if (first == null && second == null) {
 				return true;
+			} else if (first == null) {
+				return second.isPurelyFunctional();
+			} else if (second == null) {
+				return first.isPurelyFunctional();
 			} else {
 				return first.isPurelyFunctional() && second.isPurelyFunctional();
 			}

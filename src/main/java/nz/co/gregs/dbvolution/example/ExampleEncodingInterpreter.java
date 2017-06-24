@@ -200,7 +200,7 @@ public class ExampleEncodingInterpreter implements EncodingInterpreter {
 					startOfRange,
 					endOfRange);
 		} else {
-			num.permittedValues(new Long(value));
+			num.permittedValues(Long.valueOf(value));
 		}
 	}
 

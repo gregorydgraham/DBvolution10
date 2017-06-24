@@ -112,7 +112,7 @@ public class DBUpdateLargeObjects extends DBUpdate {
 				actions.add(update);
 				largeObject.setUnchanged();
 			}
-		} catch (Exception ex) {
+		} catch (SQLException | IOException ex) {
 			Logger.getLogger(DBUpdateLargeObjects.class.getName()).log(Level.SEVERE, null, ex);
 			throw new DBRuntimeException("Can't Set LargeObject: IOError", ex);
 		} finally {

@@ -1524,11 +1524,11 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 
 		@Override
 		public String toSQLString(DBDatabase db) {
-			String returnStr = "";
+			StringBuilder returnStr = new StringBuilder();
 			String separator = "";
 			String op = this.getEquationOperator(db);
 			for (BooleanResult boo : bools) {
-				returnStr += separator + boo.toSQLString(db);
+				returnStr.append(separator).append(boo.toSQLString(db));
 				separator = op;
 			}
 			return "(" + returnStr + ")";
@@ -1812,6 +1812,10 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 		public boolean isPurelyFunctional() {
 			if (first == null && second == null) {
 				return true;
+			} else if (first == null) {
+				return second.isPurelyFunctional();
+			} else if (second == null) {
+				return second.isPurelyFunctional();
 			} else {
 				return first.isPurelyFunctional() && second.isPurelyFunctional();
 			}

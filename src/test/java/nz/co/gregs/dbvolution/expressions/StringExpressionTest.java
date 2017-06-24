@@ -768,6 +768,8 @@ public class StringExpressionTest extends AbstractTest {
 
 	public static class FindFirstNumberTable extends DBRow {
 
+		private static final long serialVersionUID = 1L;
+
 		@DBAutoIncrement
 		@DBPrimaryKey
 		@DBColumn

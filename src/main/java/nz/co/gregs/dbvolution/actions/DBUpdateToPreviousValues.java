@@ -84,31 +84,28 @@ public class DBUpdateToPreviousValues extends DBUpdateSimpleTypes {
 	@Override
 	protected String getWhereClause(DBDatabase db, DBRow row) {
 		DBDefinition defn = db.getDefinition();
-		String sqlString = "";
+		StringBuilder sqlString = new StringBuilder();
 		List<QueryableDatatype<?>> primaryKeys = row.getPrimaryKeys();
 		String separator = "";
 		if (primaryKeys.size() > 0) {
 			for (QueryableDatatype<?> pk : primaryKeys) {
 				PropertyWrapper wrapper = row.getPropertyWrapperOf(pk);
 				String pkValue = pk.toSQLString(db);
-				sqlString += separator + defn.formatColumnName(wrapper.columnName()) + defn.getEqualsComparator() + pkValue;
+				sqlString.append(separator).append(defn.formatColumnName(wrapper.columnName())).append(defn.getEqualsComparator()) .append(pkValue);
 				separator = defn.beginAndLine();
 			}
 		} else {
 			for (PropertyWrapper prop : row.getColumnPropertyWrappers()) {
 				QueryableDatatype<?> qdt = prop.getQueryableDatatype();
 				if (qdt.isNull()) {
-					sqlString += separator + BooleanExpression.isNull(row.column(qdt)).toSQLString(db);
+					sqlString.append(separator).append(BooleanExpression.isNull(row.column(qdt)).toSQLString(db));
 				} else {
-					sqlString += separator
-							+ prop.columnName()
-							+ defn.getEqualsComparator()
-							+ qdt.toSQLString(db);
+					sqlString.append(separator).append(prop.columnName()).append(defn.getEqualsComparator()) .append(qdt.toSQLString(db));
 				}
 				separator = defn.beginAndLine();
 			}
 		}
-		return sqlString;
+		return sqlString.toString();
 
 	}
 }

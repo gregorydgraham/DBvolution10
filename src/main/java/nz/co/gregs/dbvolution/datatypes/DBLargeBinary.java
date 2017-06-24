@@ -417,7 +417,9 @@ public class DBLargeBinary extends DBLargeObject<byte[]> {
 			if (!originalFile.exists()) {
 				boolean createNewFile = originalFile.createNewFile();
 				if (!createNewFile){
-					originalFile.delete(); 
+					boolean delete = originalFile.delete(); if(!delete){
+						throw new IOException("Unable to delete file: "+originalFile.getPath()+" could not be deleted, check the permissions of the file, directory, drive, and current user.");
+					}
 					createNewFile = originalFile.createNewFile();
 					if (!createNewFile){
 						throw new IOException("Unable to create file: "+originalFile.getPath()+" could not be created, check the permissions of the file, directory, drive, and current user.");
