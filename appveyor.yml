@@ -17,26 +17,6 @@ install:
   - cmd: SET PATH=C:\maven\apache-maven-3.2.5\bin;%JAVA_HOME%\bin;%PATH%
   - cmd: SET MAVEN_OPTS=-XX:MaxPermSize=2g -Xmx4g
   - cmd: SET JAVA_OPTS=-XX:MaxPermSize=2g -Xmx4g
-  
-  
-  # Get the latest stable version of Node.js or io.js
-  - ps: Install-Product node $env:nodejs_version x64
-  # Start Oracle Setup
-  - git clone https://github.com/apatitejs/appveyor-oracle-setup
-  - npm install ./appveyor-oracle-setup/
-  - md temp
-  - node ./appveyor-oracle-setup/app.js
-  - 7z.exe e "temp/ora11gr2setup.zip.001" -o"orasetup"
-  - orasetup\setup.exe /s /f1"%CD%\appveyor-oracle-setup\OracleXE-Install.iss" /f2"%CD%\orasetup\setup.log"
-  - PATH=%APPVEYOR_BUILD_FOLDER%\oraxeinstall\app\oracle\product\11.2.0\server\bin;%PATH%
-  - SET OCI_LIB_DIR=%APPVEYOR_BUILD_FOLDER%\oraxeinstall\app\oracle\product\11.2.0\server\oci\lib\msvc
-  - SET OCI_INC_DIR=%APPVEYOR_BUILD_FOLDER%\oraxeinstall\app\oracle\product\11.2.0\server\oci\include
-  - cd appveyor-oracle-setup
-  - npm install oracledb@1.13.0
-  - node orasetup.js
-  - cd..
-  # End Oracle Setup
-  
 build_script:
   - mvn clean compile --batch-mode -DskipTest
 test_script:
