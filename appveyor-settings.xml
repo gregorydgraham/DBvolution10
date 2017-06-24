@@ -21,8 +21,8 @@
                 <oraclexe.host>localhost</oraclexe.host>
                 <oraclexe.port>1521</oraclexe.port>
                 <oraclexe.instance>XE</oraclexe.instance>
-                <oraclexe.username>DBV</oraclexe.username>
-                <oraclexe.password>Testingdbv</oraclexe.password>
+                <oraclexe.username>system</oraclexe.username>
+                <oraclexe.password>Password12!</oraclexe.password>
                 <oraclexe.schema></oraclexe.schema>
 				
                 <sqlserver.url></sqlserver.url>
