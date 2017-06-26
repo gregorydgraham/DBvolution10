@@ -27,7 +27,7 @@ import nz.co.gregs.dbvolution.datatypes.DBUnknownDatatype;
  */
 public class DBTableClass {
 
-	private final long serialversionUIDBValue = 1L;
+	private static final long serialVersionUID = 1L;
 
 	private final Class<DBUnknownDatatype> unknownDatatype = DBUnknownDatatype.class;
 	private String packageName;
@@ -115,7 +115,7 @@ public class DBTableClass {
 		javaSrc.append("public class ").append(this.getClassName()).append(" extends ").append(dbRowClassName).append(" {");
 		javaSrc.append(conceptBreak);
 
-		javaSrc.append("    public static final long serialVersionUID = ").append(serialversionUIDBValue).append("L;");
+		javaSrc.append("    public static final long serialVersionUID = ").append(options.versionNumber).append("L;");
 		javaSrc.append(conceptBreak);
 
 		for (DBTableField field : getFields()) {

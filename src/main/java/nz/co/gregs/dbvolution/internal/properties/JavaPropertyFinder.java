@@ -195,9 +195,9 @@ class JavaPropertyFinder {
 		return visibilityOf(field.getModifiers());
 	}
 
-	private static Visibility visibilityOf(Method method) {
-		return visibilityOf(method.getModifiers());
-	}
+//	private static Visibility visibilityOf(Method method) {
+//		return visibilityOf(method.getModifiers());
+//	}
 
 	private static Visibility visibilityOf(int modifiers) {
 		if (Modifier.isPublic(modifiers)) {

@@ -576,11 +576,11 @@ public class DBTableClassGenerator {
 	*/
 	public static class Options{
 		
-		public Long versionNumber = 1l;
-		public PrimaryKeyRecognisor pkRecog = new PrimaryKeyRecognisor();
-		public ForeignKeyRecognisor fkRecog = new ForeignKeyRecognisor();
-		public Boolean trimCharColumns = false;
-		public Boolean includeForeignKeyColumnName = false;
+		Long versionNumber = 1l;
+		PrimaryKeyRecognisor pkRecog = new PrimaryKeyRecognisor();
+		ForeignKeyRecognisor fkRecog = new ForeignKeyRecognisor();
+		Boolean trimCharColumns = false;
+		Boolean includeForeignKeyColumnName = false;
 		
 		public Options(){}
 		public Options(Long versionNumber, PrimaryKeyRecognisor pkRecog, ForeignKeyRecognisor fkRecog, Boolean trimCharColumns){

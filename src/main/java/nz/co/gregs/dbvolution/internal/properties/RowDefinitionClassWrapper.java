@@ -1,6 +1,7 @@
 package nz.co.gregs.dbvolution.internal.properties;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -383,7 +384,7 @@ public class RowDefinitionClassWrapper {
 	 * @return the primary key property or null if no primary key
 	 */
 	public PropertyWrapperDefinition[] primaryKeyDefinitions() {
-		return primaryKeyProperties;
+		return Arrays.copyOf(primaryKeyProperties, primaryKeyProperties.length);
 	}
 
 	/**

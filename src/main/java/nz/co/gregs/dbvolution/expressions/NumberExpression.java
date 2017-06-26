@@ -297,7 +297,7 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 
 			@Override
 			public String toSQLString(DBDatabase db) {
-				if (this.getIncludesNull()) {
+				if (super.getIncludesNull()) {
 					return BooleanExpression.isNull(getFirst()).toSQLString(db);
 				} else {
 					return db.getDefinition().doNumberEqualsTransform(getFirst().toSQLString(db), getSecond().toSQLString(db));
@@ -2176,7 +2176,7 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 			public String toSQLString(DBDatabase db) {
 				if (db.getDefinition().supportsStandardDeviationFunction()) {
 					return super.toSQLString(db);
-				} else if (this.only instanceof NumberExpression) {
+				} else if (this.only != null) {
 					NumberExpression numb = this.only;
 					return new NumberExpression(numb).max().minus(new NumberExpression(numb).min()).bracket().dividedBy(6).toSQLString(db);
 				} else {
@@ -2416,6 +2416,10 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 		public boolean isPurelyFunctional() {
 			if (first == null && second == null) {
 				return true;
+			} else if (first == null) {
+				return second.isPurelyFunctional();
+			} else if (second == null) {
+				return first.isPurelyFunctional();
 			} else {
 				return first.isPurelyFunctional() && second.isPurelyFunctional();
 			}
@@ -2657,6 +2661,10 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 		public boolean isPurelyFunctional() {
 			if (first == null && second == null) {
 				return true;
+			} else if (first == null) {
+				return second.isPurelyFunctional();
+			} else if (second == null) {
+				return first.isPurelyFunctional();
 			} else {
 				return first.isPurelyFunctional() && second.isPurelyFunctional();
 			}
@@ -2976,7 +2984,7 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 			if (column == null && values.isEmpty()) {
 				return true;
 			} else {
-				boolean result = column.isPurelyFunctional();
+				boolean result = column==null?true:column.isPurelyFunctional();
 				for (NumberResult value : values) {
 					result &= value.isPurelyFunctional();
 				}
@@ -3087,7 +3095,7 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 			if (numberExpression == null && values.isEmpty()) {
 				return true;
 			} else {
-				boolean result = numberExpression.isPurelyFunctional();
+				boolean result = numberExpression==null?true:numberExpression.isPurelyFunctional();
 				for (StringResult value : values) {
 					result &= value.isPurelyFunctional();
 				}

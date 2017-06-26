@@ -2194,6 +2194,10 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 		public boolean isPurelyFunctional() {
 			if (first == null && second == null) {
 				return true;
+			} else if (first == null) {
+				return second.isPurelyFunctional();
+			} else if (second == null) {
+				return first.isPurelyFunctional();
 			} else {
 				return first.isPurelyFunctional() && second.isPurelyFunctional();
 			}
@@ -2583,6 +2587,10 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 		public boolean isPurelyFunctional() {
 			if (first == null && second == null && third == null) {
 				return true;
+			} else if (first == null) {
+				return second.isPurelyFunctional();
+			} else if (second == null) {
+				return first.isPurelyFunctional();
 			} else {
 				return first.isPurelyFunctional() && second.isPurelyFunctional() && third.isPurelyFunctional();
 			}
@@ -2680,6 +2688,10 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 		public boolean isPurelyFunctional() {
 			if (first == null && second == null) {
 				return true;
+			} else if (first == null) {
+				return second.isPurelyFunctional();
+			} else if (second == null) {
+				return first.isPurelyFunctional();
 			} else {
 				return first.isPurelyFunctional() && second.isPurelyFunctional();
 			}
@@ -2749,6 +2761,10 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 		public boolean isPurelyFunctional() {
 			if (first == null && second == null) {
 				return true;
+			} else if (first == null) {
+				return second.isPurelyFunctional();
+			} else if (second == null) {
+				return first.isPurelyFunctional();
 			} else {
 				return first.isPurelyFunctional() && second.isPurelyFunctional();
 			}

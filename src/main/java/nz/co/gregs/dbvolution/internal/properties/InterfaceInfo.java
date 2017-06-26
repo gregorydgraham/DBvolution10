@@ -82,7 +82,11 @@ public class InterfaceInfo {
 	 * class does not implement or extend the interface or supertype.
 	 */
 	public ParameterBounds[] getInterfaceParameterValueBounds() {
-		return typeArgumentBounds;
+		if (typeArgumentBounds == null) {
+			return null;
+		} else {
+			return Arrays.copyOf(typeArgumentBounds, typeArgumentBounds.length);
+		}
 	}
 
 	/**
@@ -767,7 +771,11 @@ public class InterfaceInfo {
 		 * @return non-empty upper bounding types (usually only one)
 		 */
 		public Type[] upperTypes() {
-			return upperTypes;
+			if (upperTypes == null) {
+				return null;
+			} else {
+				return Arrays.copyOf(upperTypes, upperTypes.length);
+			}
 		}
 
 		/**
@@ -784,7 +792,11 @@ public class InterfaceInfo {
 		 * one)
 		 */
 		public Type[] lowerTypes() {
-			return lowerTypes;
+			if (lowerTypes == null) {
+				return null;
+			} else {
+				return Arrays.copyOf(lowerTypes, lowerTypes.length);
+			}
 		}
 	}
 

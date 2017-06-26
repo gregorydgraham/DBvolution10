@@ -516,7 +516,7 @@ public class PropertyWrapperDefinition {
 	 * @return the columnExpression
 	 */
 	public DBExpression[] getColumnExpression() {
-		return columnExpression;
+		return Arrays.copyOf(columnExpression, columnExpression.length);
 	}
 
 	void setColumnExpression(DBExpression... expression) {
