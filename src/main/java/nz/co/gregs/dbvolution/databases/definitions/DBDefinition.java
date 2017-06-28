@@ -3147,6 +3147,17 @@ public abstract class DBDefinition {
 	}
 
 	/**
+	 * Compare 2 3D polygons with EQUALS.
+	 *
+	 * @param firstGeometry the first polygon3d value to compare
+	 * @param secondGeometry the second polygon3d value to compare
+	 * @return SQL
+	 */
+	public String doPolygon3DEqualsTransform(String firstGeometry, String secondGeometry) {
+		throw new UnsupportedOperationException("Spatial Operations Haven't Been Defined Yet");
+	}
+
+	/**
 	 * Creates a Polygon2D representing the intersection of the Polygon2Ds.
 	 *
 	 * @param firstGeometry the first polygon2d value to compare
@@ -3170,6 +3181,17 @@ public abstract class DBDefinition {
 	}
 
 	/**
+	 * Test whether the 2 3D polygons intersect.
+	 *
+	 * @param firstGeometry the first polygon3d value to compare
+	 * @param secondGeometry the second polygon3d value to compare
+	 * @return SQL that returns TRUE if they intersect.
+	 */
+	public String doPolygon3DIntersectsTransform(String firstGeometry, String secondGeometry) {
+		throw new UnsupportedOperationException("Spatial Operations Haven't Been Defined Yet");
+	}
+
+	/**
 	 * Test whether the first polygon completely contains the second polygon.
 	 *
 	 * @param firstGeometry the first polygon2d value to compare
@@ -3177,6 +3199,17 @@ public abstract class DBDefinition {
 	 * @return SQL that is TRUE if the first polygon contains the second.
 	 */
 	public String doPolygon2DContainsPolygon2DTransform(String firstGeometry, String secondGeometry) {
+		throw new UnsupportedOperationException("Geometry Operations Have Not Been Defined For This Database Yet.");
+	}
+
+	/**
+	 * Test whether the first polygon completely contains the second polygon.
+	 *
+	 * @param firstGeometry the first polygon3d value to compare
+	 * @param secondGeometry the second polygon3d value to compare
+	 * @return SQL that is TRUE if the first polygon contains the second.
+	 */
+	public String doPolygon3DContainsPolygon3DTransform(String firstGeometry, String secondGeometry) {
 		throw new UnsupportedOperationException("Geometry Operations Have Not Been Defined For This Database Yet.");
 	}
 
@@ -3193,6 +3226,18 @@ public abstract class DBDefinition {
 	}
 
 	/**
+	 * Inverse of {@link #doPolygon3DIntersectsTransform(java.lang.String, java.lang.String)
+	 * }, tests whether the 2 polygons are non-coincident.
+	 *
+	 * @param firstGeometry the first polygon2d value to compare
+	 * @param secondGeometry the second polygon2d value to compare
+	 * @return SQL that is FALSE if the polygons intersect.
+	 */
+	public String doPolygon3DDoesNotIntersectTransform(String firstGeometry, String secondGeometry) {
+		throw new UnsupportedOperationException("Geometry Operations Have Not Been Defined For This Database Yet.");
+	}
+
+	/**
 	 * Test whether the 2 polygons intersect but not contained or within.
 	 *
 	 * @param firstGeometry the first polygon2d value to compare
@@ -3201,6 +3246,18 @@ public abstract class DBDefinition {
 	 * non-intersecting parts.
 	 */
 	public String doPolygon2DOverlapsTransform(String firstGeometry, String secondGeometry) {
+		throw new UnsupportedOperationException("Geometry Operations Have Not Been Defined For This Database Yet.");
+	}
+
+	/**
+	 * Test whether the 2 polygons intersect but not contained or within.
+	 *
+	 * @param firstGeometry the first polygon2d value to compare
+	 * @param secondGeometry the second polygon2d value to compare
+	 * @return SQL that is TRUE if the polygons have intersecting and
+	 * non-intersecting parts.
+	 */
+	public String doPolygon3DOverlapsTransform(String firstGeometry, String secondGeometry) {
 		throw new UnsupportedOperationException("Geometry Operations Have Not Been Defined For This Database Yet.");
 	}
 
@@ -3216,6 +3273,21 @@ public abstract class DBDefinition {
 	 * @return SQL snippet
 	 */
 	public String doPolygon2DTouchesTransform(String firstGeometry, String secondGeometry) {
+		throw new UnsupportedOperationException("Geometry Operations Have Not Been Defined For This Database Yet.");
+	}
+
+	/**
+	 * Tests whether the polygons touch.
+	 *
+	 * <p>
+	 * Checks that a) the polygons have at least on point in common and b) that
+	 * their interiors do not overlap.
+	 *
+	 * @param firstGeometry the first polygon3d value to compare
+	 * @param secondGeometry the second polygon3d value to compare
+	 * @return SQL snippet
+	 */
+	public String doPolygon3DTouchesTransform(String firstGeometry, String secondGeometry) {
 		throw new UnsupportedOperationException("Geometry Operations Have Not Been Defined For This Database Yet.");
 	}
 
@@ -3237,6 +3309,23 @@ public abstract class DBDefinition {
 	}
 
 	/**
+	 * Test whether the first polygon is completely within the second polygon.
+	 *
+	 * <p>
+	 * Compare this to {@link #doPolygon2DContainsPolygon2DTransform(java.lang.String, java.lang.String)
+	 * }
+	 *
+	 * @param firstGeometry the first polygon3d value to compare
+	 * @param secondGeometry the second polygon3d value to compare
+	 * @return SQL that is TRUE if the first polygon is within the second.
+	 */
+	public String doPolygon3DWithinTransform(String firstGeometry, String secondGeometry) {
+		//indicate whether g1 is spatially within g2. This is the inverse of Contains(). 
+		// i.e. G1.within(G2) === G2.contains(G1)
+		throw new UnsupportedOperationException("Geometry Operations Have Not Been Defined For This Database Yet.");
+	}
+
+	/**
 	 * Returns the dimension of the polygon.
 	 *
 	 * <p>
@@ -3246,6 +3335,19 @@ public abstract class DBDefinition {
 	 * @return "2" unless something has gone horribly wrong.
 	 */
 	public String doPolygon2DMeasurableDimensionsTransform(String polygon2DSQL) {
+		throw new UnsupportedOperationException("Geometry Operations Have Not Been Defined For This Database Yet.");
+	}
+
+	/**
+	 * Returns the dimension of the polygon.
+	 *
+	 * <p>
+	 * This will be "3"
+	 *
+	 * @param polygon2DSQL a polygon3d value
+	 * @return "3" unless something has gone horribly wrong.
+	 */
+	public String doPolygon3DMeasurableDimensionsTransform(String polygon2DSQL) {
 		throw new UnsupportedOperationException("Geometry Operations Have Not Been Defined For This Database Yet.");
 	}
 
@@ -3260,12 +3362,32 @@ public abstract class DBDefinition {
 	}
 
 	/**
+	 * Create a simple four sided bounding for the polygon.
+	 *
+	 * @param polygon3DSQL a polygon3D value
+	 * @return the SQL required to create a bounding box for the polygon.
+	 */
+	public String doPolygon3DGetBoundingBoxTransform(String polygon3DSQL) {
+		throw new UnsupportedOperationException("Geometry Operations Have Not Been Defined For This Database Yet.");
+	}
+
+	/**
 	 * Retrieve the area of the polygon.
 	 *
 	 * @param polygon2DSQL a polygon2D value
 	 * @return SQL that will return the area of the Polygon2D
 	 */
 	public String doPolygon2DGetAreaTransform(String polygon2DSQL) {
+		throw new UnsupportedOperationException("Geometry Operations Have Not Been Defined For This Database Yet.");
+	}
+
+	/**
+	 * Retrieve the area of the polygon.
+	 *
+	 * @param polygon3DSQL a polygon3D value
+	 * @return SQL that will return the area of the Polygon3D
+	 */
+	public String doPolygon3DGetAreaTransform(String polygon3DSQL) {
 		throw new UnsupportedOperationException("Geometry Operations Have Not Been Defined For This Database Yet.");
 	}
 
@@ -3277,6 +3399,17 @@ public abstract class DBDefinition {
 	 * @return SQL
 	 */
 	public String doPolygon2DGetExteriorRingTransform(String polygon2DSQL) {
+		throw new UnsupportedOperationException("Geometry Operations Have Not Been Defined For This Database Yet.");
+	}
+
+	/**
+	 * Defines the transformation require to transform an SQL Polygon3D into a
+	 * linestring representing the exterior ring of the polygon.
+	 *
+	 * @param polygon3DSQL a polygon3D value
+	 * @return SQL
+	 */
+	public String doPolygon3DGetExteriorRingTransform(String polygon3DSQL) {
 		throw new UnsupportedOperationException("Geometry Operations Have Not Been Defined For This Database Yet.");
 	}
 
@@ -3511,6 +3644,109 @@ public abstract class DBDefinition {
 	}
 
 	/**
+	 * Provide the SQL to compare 2 Point3Ds
+	 *
+	 * @param firstPoint a point3d value to compare
+	 * @param secondPoint a point3d value to compare
+	 * @return SQL
+	 */
+	public String doPoint3DEqualsTransform(String firstPoint, String secondPoint) {
+		throw new UnsupportedOperationException("Spatial Operations Haven't Been Defined Yet");
+	}
+
+	/**
+	 * Provide the SQL to return the X coordinate of the Point3D
+	 *
+	 * @param point3DSQL a point3d value
+	 * @return SQL
+	 */
+	public String doPoint3DGetXTransform(String point3DSQL) {
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	}
+
+	/**
+	 * Provide the SQL to return the Y coordinate of the Point3D
+	 *
+	 * @param point3DSQL a point3d value
+	 * @return SQL
+	 */
+	public String doPoint3DGetYTransform(String point3DSQL) {
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	}
+
+	/**
+	 * Provide the SQL to return the Z coordinate of the Point3D
+	 *
+	 * @param point3DSQL a point3d value
+	 * @return SQL
+	 */
+	public String doPoint3DGetZTransform(String point3DSQL) {
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	}
+
+	/**
+	 * Provide the SQL to return the dimension of the Point3D
+	 *
+	 * <p>
+	 * Point is a 0-dimensional objects for this purpose.
+	 *
+	 * @param point3DSQL a point3d value
+	 * @return SQL
+	 */
+	public String doPoint3DMeasurableDimensionsTransform(String point3DSQL) {
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	}
+
+	/**
+	 * Provide the SQL to derive the Polygon3D representing the Bounding Box of
+	 * the Point3D.
+	 *
+	 * @param point3DSQL a point23d value
+	 * @return SQL
+	 */
+	public String doPoint3DGetBoundingBoxTransform(String point3DSQL) {
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	}
+
+	/**
+	 * Provide the SQL to derive the WKT version of the Point2D.
+	 *
+	 * @param point2DSQL a point2d value
+	 * @return SQL
+	 */
+	public String doPoint3DAsTextTransform(String point3DSQL) {
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	}
+
+	/**
+	 * Provide the SQL that correctly represents this Point2D in this database.
+	 *
+	 * @param point a point to be turned into an SQL point2d value.
+	 * @return SQL
+	 */
+	public String transformPoint3DIntoDatabaseFormat(Point point) {
+		String wktValue = point.toText();
+		return "'" + wktValue + "'";
+	}
+
+	/**
+	 * Provide the SQL that correctly represents these coordinates in this
+	 * database.
+	 *
+	 * <p>
+	 * The same as
+	 * {@link #transformPoint2DIntoDatabaseFormat(com.vividsolutions.jts.geom.Point)}
+	 * but for two coordinates as SQL.
+	 *
+	 * @param xValue a number value
+	 * @param yValue a number value
+	 * @return SQL
+	 */
+	public String transformCoordinatesIntoDatabasePoint3DFormat(String xValue, String yValue, String zValue) {
+		return "'POINT(" + xValue + " " + yValue + " " + zValue + ")'";
+	}
+
+	/**
 	 * From the database's representation of a Point2D create a JTS Point.
 	 *
 	 * <p>
@@ -3550,6 +3786,38 @@ public abstract class DBDefinition {
 		Polygon poly = (new GeometryFactory()).createPolygon(new Coordinate[]{});
 		WKTReader wktReader = new WKTReader();
 		Geometry geometry = wktReader.read(polygon2DSQL);
+		if (geometry instanceof Polygon) {
+			poly = (Polygon) geometry;
+		} else if (geometry instanceof LineString) {
+			GeometryFactory geofactory = new GeometryFactory();
+			LineString lineString = (LineString) geometry;
+			poly = geofactory.createPolygon(lineString.getCoordinateSequence());
+		} else if (geometry instanceof Point) {
+			GeometryFactory geofactory = new GeometryFactory();
+			Point point = (Point) geometry;
+			poly = geofactory.createPolygon(new Coordinate[]{point.getCoordinate(), point.getCoordinate(),point.getCoordinate(),point.getCoordinate(),point.getCoordinate()});
+		} else {
+			throw new IncorrectGeometryReturnedForDatatype(geometry, poly);
+		}
+		return poly;
+	}
+
+	/**
+	 * From the database's representation of a Polygon3D create a JTS Polygon.
+	 *
+	 * <p>
+	 * This is the inverse of
+	 * {@link #transformPolygonIntoDatabasePolygon3DFormat(com.vividsolutions.jts.geom.Polygon)}.
+	 *
+	 * @param polygon3DSQL a polygon3d value
+	 * @return a polygon created from the polygon3d value
+	 * @throws com.vividsolutions.jts.io.ParseException if the database result is
+	 * not a valid WKT
+	 */
+	public Polygon transformDatabasePolygon3DToJTSPolygon(String polygon3DSQL) throws com.vividsolutions.jts.io.ParseException {
+		Polygon poly = (new GeometryFactory()).createPolygon(new Coordinate[]{});
+		WKTReader wktReader = new WKTReader();
+		Geometry geometry = wktReader.read(polygon3DSQL);
 		if (geometry instanceof Polygon) {
 			poly = (Polygon) geometry;
 		} else if (geometry instanceof LineString) {
@@ -3612,6 +3880,16 @@ public abstract class DBDefinition {
 	}
 
 	/**
+	 * Provide the SQL to derive the WKT version of the Line3D.
+	 *
+	 * @param line3DSQL a line3d value
+	 * @return SQL
+	 */
+	public String doLine3DAsTextTransform(String line3DSQL) {
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	}
+
+	/**
 	 * Transform the 2 Line2D SQL snippets into an EQUALS comparison of the 2
 	 *
 	 * @param line2DSQL the first line2d value to compare
@@ -3619,6 +3897,17 @@ public abstract class DBDefinition {
 	 * @return SQL
 	 */
 	public String doLine2DEqualsTransform(String line2DSQL, String otherLine2DSQL) {
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	}
+
+	/**
+	 * Transform the 2 Line3D SQL snippets into an EQUALS comparison of the 2
+	 *
+	 * @param line3DSQL the first line3d value to compare
+	 * @param otherLine3DSQL the second line3d value to compare
+	 * @return SQL
+	 */
+	public String doLine3DEqualsTransform(String line3DSQL, String otherLine3DSQL) {
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
@@ -3634,12 +3923,33 @@ public abstract class DBDefinition {
 	}
 
 	/**
+	 * Transform the 2 Line3D SQL snippets into an NOT_EQUALS comparison of the 2
+	 *
+	 * @param line3DSQL the first line3d value to compare
+	 * @param otherLine3DSQL the second line3d value to compare
+	 * @return SQL
+	 */
+	public String doLine3DNotEqualsTransform(String line3DSQL, String otherLine3DSQL) {
+		return "NOT (" + doLine2DEqualsTransform(line3DSQL, otherLine3DSQL) + ")";
+	}
+
+	/**
 	 * Create the SQL required to get the dimension of this Line2D SQL.
 	 *
 	 * @param line2DSQL the line2d value
 	 * @return the dimension (probably 1)
 	 */
 	public String doLine2DMeasurableDimensionsTransform(String line2DSQL) {
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	}
+
+	/**
+	 * Create the SQL required to get the dimension of this Line3D SQL.
+	 *
+	 * @param line3DSQL the line3d value
+	 * @return the dimension (probably 1)
+	 */
+	public String doLine3DMeasurableDimensionsTransform(String line3DSQL) {
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
@@ -3654,12 +3964,32 @@ public abstract class DBDefinition {
 	}
 
 	/**
+	 * Create the SQL to derive the bounding box of this Line3D SQL
+	 *
+	 * @param line3DSQL the line3d value
+	 * @return SQL
+	 */
+	public String doLine3DGetBoundingBoxTransform(String line2DSQL) {
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	}
+
+	/**
 	 * Create the SQL to transform a Point2DArray SQL into a Polygon2D
 	 *
 	 * @param pointSQL the point2d value
 	 * @return SQL
 	 */
 	public String transformPoint2DArrayToDatabasePolygon2DFormat(List<String> pointSQL) {
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	}
+
+	/**
+	 * Create the SQL to transform a Point2DArray SQL into a Polygon2D
+	 *
+	 * @param pointSQL the point2d value
+	 * @return SQL
+	 */
+	public String transformPoint3DArrayToDatabasePolygon3DFormat(List<String> pointSQL) {
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
@@ -3675,6 +4005,17 @@ public abstract class DBDefinition {
 	}
 
 	/**
+	 * Generate the SQL that will return the largest X value within the Line3D
+	 * expression.
+	 *
+	 * @param line3DSQL the line3d value
+	 * @return SQL
+	 */
+	public String doLine3DGetMaxXTransform(String line3DSQL) {
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	}
+
+	/**
 	 * Generate the SQL that will return the smallest X value within the Line2D
 	 * expression.
 	 *
@@ -3682,6 +4023,17 @@ public abstract class DBDefinition {
 	 * @return SQL
 	 */
 	public String doLine2DGetMinXTransform(String line2DSQL) {
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	}
+
+	/**
+	 * Generate the SQL that will return the smallest X value within the Line3D
+	 * expression.
+	 *
+	 * @param line3DSQL the line3d value
+	 * @return SQL
+	 */
+	public String doLine3DGetMinXTransform(String line3DSQL) {
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
@@ -3697,6 +4049,17 @@ public abstract class DBDefinition {
 	}
 
 	/**
+	 * Generate the SQL that will return the largest Y value within the Line3D
+	 * expression.
+	 *
+	 * @param line3DSQL the line3 value
+	 * @return SQL
+	 */
+	public String doLine3DGetMaxYTransform(String line3DSQL) {
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	}
+
+	/**
 	 * Generate the SQL that will return the smallest Y value within the Line2D
 	 * expression.
 	 *
@@ -3704,6 +4067,39 @@ public abstract class DBDefinition {
 	 * @return SQL
 	 */
 	public String doLine2DGetMinYTransform(String line2DSQL) {
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	}
+
+	/**
+	 * Generate the SQL that will return the largest Z value within the Line3D
+	 * expression.
+	 *
+	 * @param line3DSQL the line3 value
+	 * @return SQL
+	 */
+	public String doLine3DGetMaxZTransform(String line3DSQL) {
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	}
+
+	/**
+	 * Generate the SQL that will return the smallest Z value within the Line2D
+	 * expression.
+	 *
+	 * @param line2DSQL the line2d value
+	 * @return SQL
+	 */
+	public String doLine3DGetMinZTransform(String line2DSQL) {
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	}
+
+	/**
+	 * Generate the SQL that will return the smallest Y value within the Line3D
+	 * expression.
+	 *
+	 * @param line3DSQL the line3d value
+	 * @return SQL
+	 */
+	public String doLine3DGetMinYTransform(String line3DSQL) {
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
@@ -3719,6 +4115,17 @@ public abstract class DBDefinition {
 	}
 
 	/**
+	 * Generate the SQL that will return the largest X value within the Polygon3D
+	 * expression.
+	 *
+	 * @param polygon3DSQL the polygon3d value
+	 * @return SQL
+	 */
+	public String doPolygon3DGetMaxXTransform(String polygon3DSQL) {
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	}
+
+	/**
 	 * Generate the SQL that will return the smallest X value within the Polygon2D
 	 * expression.
 	 *
@@ -3726,6 +4133,17 @@ public abstract class DBDefinition {
 	 * @return SQL
 	 */
 	public String doPolygon2DGetMinXTransform(String polygon2DSQL) {
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	}
+
+	/**
+	 * Generate the SQL that will return the smallest X value within the Polygon3D
+	 * expression.
+	 *
+	 * @param polygon3DSQL the polygon3d value
+	 * @return SQL
+	 */
+	public String doPolygon3DGetMinXTransform(String polygon3DSQL) {
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
@@ -3741,6 +4159,28 @@ public abstract class DBDefinition {
 	}
 
 	/**
+	 * Generate the SQL that will return the largest X value within the Polygon3D
+	 * expression.
+	 *
+	 * @param polygon3DSQL the polygon3d value
+	 * @return SQL
+	 */
+	public String doPolygon3DGetMaxYTransform(String polygon2DSQL) {
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	}
+
+	/**
+	 * Generate the SQL that will return the largest Z value within the Polygon3D
+	 * expression.
+	 *
+	 * @param polygon3DSQL the polygon3d value
+	 * @return SQL
+	 */
+	public String doPolygon3DGetMaxZTransform(String polygon2DSQL) {
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	}
+
+	/**
 	 * Generate the SQL that will return the smallest Y value within the Polygon2D
 	 * expression.
 	 *
@@ -3748,6 +4188,28 @@ public abstract class DBDefinition {
 	 * @return SQL
 	 */
 	public String doPolygon2DGetMinYTransform(String polygon2DSQL) {
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	}
+
+	/**
+	 * Generate the SQL that will return the smallest Y value within the Polygon3D
+	 * expression.
+	 *
+	 * @param polygon3DSQL the polygon3d value
+	 * @return SQL
+	 */
+	public String doPolygon3DGetMinYTransform(String polygon3DSQL) {
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	}
+
+	/**
+	 * Generate the SQL that will return the smallest Z value within the Polygon3D
+	 * expression.
+	 *
+	 * @param polygon3DSQL the polygon3d value
+	 * @return SQL
+	 */
+	public String doPolygon3DGetMinZTransform(String polygon3DSQL) {
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
@@ -3763,13 +4225,35 @@ public abstract class DBDefinition {
 	}
 
 	/**
-	 * Generate SQL to derive the distance between the two Polygon2D expressions.
+	 * Generate the SQL that will transform a WKT version of a Polygon#D into the
+	 * database's version of a Polygon3D.
 	 *
-	 * @param polygon2DSQL the first polygon2d value to compare
-	 * @param otherPolygon2DSQL the second polygon2d value to compare
+	 * @param polygon2D the polygon2d value
+	 * @return SQL
+	 */
+	public String transformPolygonIntoDatabasePolygon3DFormat(Polygon polygon2D) {
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	}
+
+	/**
+	 * Generate SQL to derive the distance between the two Point2D expressions.
+	 *
+	 * @param point2DSQL the first polygon2d value to compare
+	 * @param otherPoint2DSQL the second polygon2d value to compare
 	 * @return SQL:
 	 */
-	public String doPoint2DDistanceBetweenTransform(String polygon2DSQL, String otherPolygon2DSQL) {
+	public String doPoint2DDistanceBetweenTransform(String point2DSQL, String otherPoint2DSQL) {
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	}
+
+	/**
+	 * Generate SQL to derive the distance between the two Point3D expressions.
+	 *
+	 * @param point3DSQL the first polygon2d value to compare
+	 * @param otherPoint3DSQL the second polygon2d value to compare
+	 * @return SQL:
+	 */
+	public String doPoint3DDistanceBetweenTransform(String point3DSQL, String otherPoint3DSQL) {
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
@@ -3859,6 +4343,18 @@ public abstract class DBDefinition {
 	}
 
 	/**
+	 * Generates the SQL to determine whether the first (polygon) argument
+	 * contains the second point argument.
+	 *
+	 * @param polygon3DSQL the polygon3d to compare with
+	 * @param point3DSQL the point3d value that might be inside the polygon2d
+	 * @return SQL
+	 */
+	public String doPolygon3DContainsPoint3DTransform(String polygon3DSQL, String point3DSQL) {
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	}
+
+	/**
 	 * Generates the SQL to convert the polygon to the standard text version of a
 	 * polygon.
 	 *
@@ -3866,6 +4362,17 @@ public abstract class DBDefinition {
 	 * @return SQL
 	 */
 	public String doPolygon2DAsTextTransform(String polygonSQL) {
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	}
+
+	/**
+	 * Generates the SQL to convert the polygon to the standard text version of a
+	 * polygon.
+	 *
+	 * @param polygonSQL the polygon3d value
+	 * @return SQL
+	 */
+	public String doPolygon3DAsTextTransform(String polygonSQL) {
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
@@ -3878,6 +4385,18 @@ public abstract class DBDefinition {
 	 * depending on whether the lines cross at any point.
 	 */
 	public String doLine2DIntersectsLine2DTransform(String firstLine, String secondLine) {
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	}
+
+	/**
+	 * Generates the SQL required to find whether the 2 lines cross at any point.
+	 *
+	 * @param firstLine the first line3d value to compare
+	 * @param secondLine the second line3d value to compare
+	 * @return an SQL expression that will evaluate to TRUE FALSE or NULL,
+	 * depending on whether the lines cross at any point.
+	 */
+	public String doLine3DIntersectsLine3DTransform(String firstLine, String secondLine) {
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
@@ -3895,6 +4414,19 @@ public abstract class DBDefinition {
 	}
 
 	/**
+	 * Generate the SQL required to find the intersection point of the 2 line
+	 * segment SQL expressions.
+	 *
+	 * @param firstLine the first line3d to compare
+	 * @param secondLine the second line3d to compare
+	 * @return an SQL expression that will evaluate to the intersection point of
+	 * the 2 line segments or NULL.
+	 */
+	public String doLine3DIntersectionPointWithLine3DTransform(String firstLine, String secondLine) {
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	}
+
+	/**
 	 * Generate the SQL required to find the complete set of all points of
 	 * intersection between the tow 2 lines.
 	 *
@@ -3904,6 +4436,19 @@ public abstract class DBDefinition {
 	 * the 2 line segments or NULL.
 	 */
 	public String doLine2DAllIntersectionPointsWithLine2DTransform(String firstLine, String secondLine) {
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	}
+
+	/**
+	 * Generate the SQL required to find the complete set of all points of
+	 * intersection between the tow 2 lines.
+	 *
+	 * @param firstLine the first line3d to compare
+	 * @param secondLine the second line3d to compare
+	 * @return an SQL expression that will evaluate to the intersection point of
+	 * the 2 line segments or NULL.
+	 */
+	public String doLine3DAllIntersectionPointsWithLine3DTransform(String firstLine, String secondLine) {
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
@@ -3919,6 +4464,33 @@ public abstract class DBDefinition {
 	 * an exception
 	 */
 	public LineSegment transformDatabaseLineSegment2DValueToJTSLineSegment(String lineSegmentAsSQL) throws com.vividsolutions.jts.io.ParseException {
+		LineString lineString = (new GeometryFactory()).createLineString(new Coordinate[]{});
+		WKTReader wktReader = new WKTReader();
+		Geometry geometry = wktReader.read(lineSegmentAsSQL);
+		if (geometry instanceof LineString) {
+			lineString = (LineString) geometry;
+			if (lineSegmentAsSQL == null) {
+				return null;
+			} else {
+				return new LineSegment(lineString.getCoordinateN(0), lineString.getCoordinateN(1));
+			}
+		} else {
+			throw new IncorrectGeometryReturnedForDatatype(geometry, lineString);
+		}
+	}
+
+	/**
+	 * Convert the String object returned by the database into a JTS LineSegment
+	 * object.
+	 *
+	 * @param lineSegmentAsSQL the database linesegment3d value to create a
+	 * {@link com.vividsolutions.jts.geom.LineSegment JTS LineSegment} with
+	 * @return a JTS LineSegment derived from the database's response, may be
+	 * null.
+	 * @throws com.vividsolutions.jts.io.ParseException malformed WKT will throw
+	 * an exception
+	 */
+	public LineSegment transformDatabaseLineSegment3DValueToJTSLineSegment(String lineSegmentAsSQL) throws com.vividsolutions.jts.io.ParseException {
 		LineString lineString = (new GeometryFactory()).createLineString(new Coordinate[]{});
 		WKTReader wktReader = new WKTReader();
 		Geometry geometry = wktReader.read(lineSegmentAsSQL);
@@ -3952,6 +4524,23 @@ public abstract class DBDefinition {
 	}
 
 	/**
+	 * Convert the JTS LineSegment object into a SQL expression that the database
+	 * will accept as a line segment.
+	 *
+	 * <p>
+	 * By default, creates a WKT representation
+	 *
+	 * @param lineSegment the LineSegment to convert to database format.
+	 * @return an SQL expression that can be interpreted by the database as a line
+	 * segment.
+	 */
+	public String transformLineSegmentIntoDatabaseLineSegment3DFormat(LineSegment lineSegment) {
+		LineString line = (new GeometryFactory()).createLineString(new Coordinate[]{lineSegment.getCoordinate(0), lineSegment.getCoordinate(1)});
+		String wktValue = line.toText();
+		return "'" + wktValue + "'";
+	}
+
+	/**
 	 * Generates the database specific SQL for testing whether the 2 line segment
 	 * expressions ever cross.
 	 *
@@ -3968,6 +4557,22 @@ public abstract class DBDefinition {
 	}
 
 	/**
+	 * Generates the database specific SQL for testing whether the 2 line segment
+	 * expressions ever cross.
+	 *
+	 * @param firstSQL the first Line3D value to compare
+	 * @param secondSQL the second Line3D value to compare
+	 * @return an SQL expression that will report whether the 2 line segments
+	 * intersect.
+	 * @see
+	 * #doLineSegment3DIntersectionPointWithLineSegment3DTransform(java.lang.String,
+	 * java.lang.String)
+	 */
+	public String doLineSegment3DIntersectsLineSegment3DTransform(String firstSQL, String secondSQL) {
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	}
+
+	/**
 	 * Generate the SQL required to find the largest X value in the line segment
 	 * SQL expression.
 	 *
@@ -3975,6 +4580,17 @@ public abstract class DBDefinition {
 	 * @return SQL
 	 */
 	public String doLineSegment2DGetMaxXTransform(String lineSegment) {
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	}
+
+	/**
+	 * Generate the SQL required to find the largest X value in the line segment
+	 * SQL expression.
+	 *
+	 * @param lineSegment the LineSegment3D value
+	 * @return SQL
+	 */
+	public String doLineSegment3DGetMaxXTransform(String lineSegment) {
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
@@ -3990,6 +4606,17 @@ public abstract class DBDefinition {
 	}
 
 	/**
+	 * Generate the SQL required to find the smallest X value in the line segment
+	 * SQL expression.
+	 *
+	 * @param lineSegment the LineSegment3D value
+	 * @return SQL
+	 */
+	public String doLineSegment3DGetMinXTransform(String lineSegment) {
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	}
+
+	/**
 	 * Generate the SQL required to find the largest Y value in the line segment
 	 * SQL expression.
 	 *
@@ -3997,6 +4624,17 @@ public abstract class DBDefinition {
 	 * @return SQL
 	 */
 	public String doLineSegment2DGetMaxYTransform(String lineSegment) {
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	}
+
+	/**
+	 * Generate the SQL required to find the largest Y value in the line segment
+	 * SQL expression.
+	 *
+	 * @param lineSegment the LineSegment2D value
+	 * @return SQL
+	 */
+	public String doLineSegment3DGetMaxYTransform(String lineSegment) {
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
@@ -4012,6 +4650,39 @@ public abstract class DBDefinition {
 	}
 
 	/**
+	 * Generate the SQL required to find the largest Z value in the line segment
+	 * SQL expression.
+	 *
+	 * @param lineSegment the LineSegment2D value
+	 * @return SQL
+	 */
+	public String doLineSegment3DGetMaxZTransform(String lineSegment) {
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	}
+
+	/**
+	 * Generate the SQL required to find the smallest Z value in the line segment
+	 * SQL expression.
+	 *
+	 * @param lineSegment the LineSegment2D value
+	 * @return SQL
+	 */
+	public String doLineSegment3DGetMinZTransform(String lineSegment) {
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	}
+
+	/**
+	 * Generate the SQL required to find the smallest Y value in the line segment
+	 * SQL expression.
+	 *
+	 * @param lineSegment the LineSegment3D value
+	 * @return SQL
+	 */
+	public String doLineSegment3DGetMinYTransform(String lineSegment) {
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	}
+
+	/**
 	 * Generate the SQL required to the rectangular boundary that fully encloses
 	 * the line segment SQL expression.
 	 *
@@ -4023,6 +4694,17 @@ public abstract class DBDefinition {
 	}
 
 	/**
+	 * Generate the SQL required to the rectangular boundary that fully encloses
+	 * the line segment SQL expression.
+	 *
+	 * @param lineSegment the LineSegment3D value
+	 * @return SQL
+	 */
+	public String doLineSegment3DGetBoundingBoxTransform(String lineSegment) {
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	}
+
+	/**
 	 * Generate the SQL required to find the dimension of the line segment SQL
 	 * expression.
 	 *
@@ -4030,6 +4712,17 @@ public abstract class DBDefinition {
 	 * @return SQL
 	 */
 	public String doLineSegment2DDimensionTransform(String lineSegment) {
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	}
+
+	/**
+	 * Generate the SQL required to find the dimension of the line segment SQL
+	 * expression.
+	 *
+	 * @param lineSegment the LineSegment3D value
+	 * @return SQL
+	 */
+	public String doLineSegment3DDimensionTransform(String lineSegment) {
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
@@ -4047,6 +4740,18 @@ public abstract class DBDefinition {
 
 	/**
 	 * Generate the SQL required to find whether the 2 line segment SQL
+	 * expressions are NOT equal.
+	 *
+	 * @param firstLineSegment the first LineSegment3D value
+	 * @param secondLineSegment the second LineSegment3D value
+	 * @return SQL
+	 */
+	public String doLineSegment3DNotEqualsTransform(String firstLineSegment, String secondLineSegment) {
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	}
+
+	/**
+	 * Generate the SQL required to find whether the 2 line segment SQL
 	 * expressions are equal.
 	 *
 	 * @param firstLineSegment the first LineSegment2D value
@@ -4058,6 +4763,18 @@ public abstract class DBDefinition {
 	}
 
 	/**
+	 * Generate the SQL required to find whether the 2 line segment SQL
+	 * expressions are equal.
+	 *
+	 * @param firstLineSegment the first LineSegment3D value
+	 * @param secondLineSegment the second LineSegment3D value
+	 * @return SQL
+	 */
+	public String doLineSegment3DEqualsTransform(String firstLineSegment, String secondLineSegment) {
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	}
+
+	/**
 	 * Generate the SQL required to convert the line segment SQL expression into
 	 * the WKT string format.
 	 *
@@ -4065,6 +4782,17 @@ public abstract class DBDefinition {
 	 * @return SQL
 	 */
 	public String doLineSegment2DAsTextTransform(String lineSegment) {
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	}
+
+	/**
+	 * Generate the SQL required to convert the line segment SQL expression into
+	 * the WKT string format.
+	 *
+	 * @param lineSegment the LineSegment3D value
+	 * @return SQL
+	 */
+	public String doLineSegment3DAsTextTransform(String lineSegment) {
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
@@ -4082,6 +4810,19 @@ public abstract class DBDefinition {
 	}
 
 	/**
+	 * Generate the SQL required to find the intersection point of the 2 line
+	 * segment SQL expressions.
+	 *
+	 * @param firstLineSegment the first LineSegment3D value
+	 * @param secondLineSegment the second LineSegment3D value
+	 * @return an SQL expression that will evaluate to the intersection point of
+	 * the 2 line segments or NULL.
+	 */
+	public String doLineSegment3DIntersectionPointWithLineSegment3DTransform(String firstLineSegment, String secondLineSegment) {
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	}
+
+	/**
 	 * Generate the SQL required to return the starting point of the provided
 	 * LineSegment2D expression.
 	 *
@@ -4089,6 +4830,17 @@ public abstract class DBDefinition {
 	 * @return SQL
 	 */
 	public String doLineSegment2DStartPointTransform(String lineSegmentSQL) {
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	}
+
+	/**
+	 * Generate the SQL required to return the starting point of the provided
+	 * LineSegment3D expression.
+	 *
+	 * @param lineSegmentSQL the LineSegment3D value
+	 * @return SQL
+	 */
+	public String doLineSegment3DStartPointTransform(String lineSegmentSQL) {
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
@@ -4104,6 +4856,17 @@ public abstract class DBDefinition {
 	}
 
 	/**
+	 * Generate the SQL required to return the starting point of the provided
+	 * LineSegment2D expression.
+	 *
+	 * @param lineSegmentSQL the LineSegment3D value
+	 * @return SQL
+	 */
+	public String doLineSegment3DEndPointTransform(String lineSegmentSQL) {
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	}
+
+	/**
 	 * Provide the SQL that correctly represents this MultiPoint2D value in this
 	 * database.
 	 *
@@ -4111,6 +4874,18 @@ public abstract class DBDefinition {
 	 * @return SQL
 	 */
 	public String transformMultiPoint2DToDatabaseMultiPoint2DValue(MultiPoint points) {
+		String wktValue = points.toText();
+		return "'" + wktValue + "'";
+	}
+
+	/**
+	 * Provide the SQL that correctly represents this MultiPoint3D value in this
+	 * database.
+	 *
+	 * @param points the MultiPoint3D value
+	 * @return SQL
+	 */
+	public String transformMultiPoint3DToDatabaseMultiPoint3DValue(MultiPoint points) {
 		String wktValue = points.toText();
 		return "'" + wktValue + "'";
 	}
@@ -4141,6 +4916,31 @@ public abstract class DBDefinition {
 	}
 
 	/**
+	 * Convert the database's string representation of a MultiPoint3D value into a
+	 * MultiPoint..
+	 *
+	 * @param pointsAsString the MultiPoint3D value to create a
+	 * {@link com.vividsolutions.jts.geom.MultiPoint JTS MultiPoint} with.
+	 * @return the MultiPoint3D as a
+	 * {@link com.vividsolutions.jts.geom.MultiPoint JTS MultiPoint} instance
+	 * @throws com.vividsolutions.jts.io.ParseException malformed WKT values will
+	 * throw an exception
+	 */
+	public MultiPoint transformDatabaseMultiPoint3DValueToJTSMultiPoint(String pointsAsString) throws com.vividsolutions.jts.io.ParseException {
+		MultiPoint mpoint = (new GeometryFactory()).createMultiPoint(new Coordinate[]{});
+		WKTReader wktReader = new WKTReader();
+		Geometry geometry = wktReader.read(pointsAsString);
+		if (geometry instanceof MultiPoint) {
+			mpoint = (MultiPoint) geometry;
+		} else if (geometry instanceof Point) {
+			mpoint = (new GeometryFactory().createMultiPoint(new Point[]{((Point) geometry)}));
+		} else {
+			throw new IncorrectGeometryReturnedForDatatype(geometry, geometry);
+		}
+		return mpoint;
+	}
+
+	/**
 	 * Provide the SQL to compare 2 MultiPoint2Ds using the equivalent of EQUALS.
 	 *
 	 * @param firstMultiPointValue the first MultiPoint2D value to compare
@@ -4148,6 +4948,17 @@ public abstract class DBDefinition {
 	 * @return SQL
 	 */
 	public String doMultiPoint2DEqualsTransform(String firstMultiPointValue, String secondMultiPointValue) {
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	}
+
+	/**
+	 * Provide the SQL to compare 2 MultiPoint3Ds using the equivalent of EQUALS.
+	 *
+	 * @param firstMultiPointValue the first MultiPoint3D value to compare
+	 * @param secondMultiPointValue the second MultiPoint3D value to compare
+	 * @return SQL
+	 */
+	public String doMultiPoint3DEqualsTransform(String firstMultiPointValue, String secondMultiPointValue) {
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
@@ -4275,6 +5086,151 @@ public abstract class DBDefinition {
 	}
 
 	/**
+	 * Provide the SQL to compare 2 MultiPoint2Ds using the equivalent of NOT
+	 * EQUALS.
+	 *
+	 * @param first the first MultiPoint2D value to compare
+	 * @param second the second MultiPoint2D value to compare
+	 * @return SQL
+	 */
+	public String doMultiPoint3DNotEqualsTransform(String first, String second) {
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	}
+
+	/**
+	 * Provide the SQL to get point at the supplied index within the MultiPoint2D
+	 *
+	 * @param first the first MultiPoint2D value to retrieve a point from.
+	 * @param index the index at which the required point is at.
+	 * @return SQL
+	 */
+	public String doMultiPoint3DGetPointAtIndexTransform(String first, String index) {
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	}
+
+	/**
+	 * Provides the SQL the derive the number of points in the multipoint2d value.
+	 *
+	 * @param multiPoint2D the MultiPoint2D value
+	 * @return SQL
+	 */
+	public String doMultiPoint3DGetNumberOfPointsTransform(String multiPoint2D) {
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	}
+
+	/**
+	 * Provides the SQL the derive the dimension (2 basically) of the MultiPoint2D
+	 * value.
+	 *
+	 * @param multipoint2D the MultiPoint2D value
+	 * @return SQL
+	 */
+	public String doMultiPoint3DMeasurableDimensionsTransform(String multipoint2D) {
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	}
+
+	/**
+	 * Provides the SQL the derive the bounding box containing all the points in
+	 * the MultiPoint2D value.
+	 *
+	 * @param multiPoint2D the MultiPoint2D value
+	 * @return SQL
+	 */
+	public String doMultiPoint3DGetBoundingBoxTransform(String multiPoint2D) {
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	}
+
+	/**
+	 * Provides the SQL the transform the MultiPoint2D value into a WKT value.
+	 *
+	 * @param multiPoint2D the MultiPoint2D value
+	 * @return SQL
+	 */
+	public String doMultiPoint3DAsTextTransform(String multiPoint2D) {
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	}
+
+	/**
+	 * Provides the SQL the transform the MultiPoint2D value into a
+	 * {@link Line2DResult} value.
+	 *
+	 * @param multiPoint2D the MultiPoint2D value
+	 * @return SQL
+	 */
+	public String doMultiPoint3DToLine3DTransform(String multiPoint2D) {
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	}
+
+//	public String doMultiPoint2DToPolygon2DTransform(String first) {
+//		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+//	}
+	/**
+	 * Provides the SQL that will derive the smallest Y value of all the points in
+	 * the MultiPoint2D value
+	 *
+	 * @param multiPoint2D the MultiPoint2D value
+	 * @return SQL
+	 */
+	public String doMultiPoint3DGetMinYTransform(String multiPoint2D) {
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	}
+
+	/**
+	 * Provides the SQL that will derive the smallest X value of all the points in
+	 * the MultiPoint2D value
+	 *
+	 * @param multiPoint2D the MultiPoint2D value
+	 * @return SQL
+	 */
+	public String doMultiPoint3DGetMinXTransform(String multiPoint2D) {
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	}
+
+	/**
+	 * Provides the SQL that will derive the smallest Z value of all the points in
+	 * the MultiPoint3D value
+	 *
+	 * @param multiPoint3D the MultiPoint3D value
+	 * @return SQL
+	 */
+	public String doMultiPoint3DGetMinZTransform(String multiPoint3D) {
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	}
+
+	/**
+	 * Provides the SQL that will derive the largest Y value of all the points in
+	 * the MultiPoint2D value
+	 *
+	 * @param multiPoint2D the MultiPoint2D value
+	 * @return SQL
+	 */
+	public String doMultiPoint3DGetMaxYTransform(String multiPoint2D) {
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	}
+
+	/**
+	 * Provides the SQL that will derive the largest X value of all the points in
+	 * the MultiPoint2D value
+	 *
+	 * @param multiPoint2D the MultiPoint2D value
+	 * @return SQL
+	 */
+	public String doMultiPoint3DGetMaxXTransform(String multiPoint2D) {
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	}
+
+	/**
+	 * Provides the SQL that will derive the largest Z value of all the points in
+	 * the MultiPoint2D value
+	 *
+	 * @param multiPoint2D the MultiPoint2D value
+	 * @return SQL
+	 */
+	public String doMultiPoint3DGetMaxZTransform(String multiPoint2D) {
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	}
+
+	/**
 	 * Returns true if the database supports has built-in support for limiting
 	 * number of rows returned by a query.
 	 *
@@ -4340,6 +5296,19 @@ public abstract class DBDefinition {
 	}
 
 	/**
+	 * Return the number of spatial dimensions that this geometry is defined in.
+	 *
+	 * <p>
+	 * Effectively indicates whether the geometry is 2D, 3D, etc.
+	 *
+	 * @param line3DSQL the Line3D value
+	 * @return the number of spatial dimensions that this geometry is defined in.
+	 */
+	public String doLine3DSpatialDimensionsTransform(String line3DSQL) {
+		return "3";
+	}
+
+	/**
 	 * Return whether this geometry includes a magnitude (M) value along with X,
 	 * Y, etc.
 	 *
@@ -4347,6 +5316,17 @@ public abstract class DBDefinition {
 	 * @return TRUE or FALSE
 	 */
 	public String doLine2DHasMagnitudeTransform(String line2DSQL) {
+		return this.getFalseOperation();
+	}
+
+	/**
+	 * Return whether this geometry includes a magnitude (M) value along with X,
+	 * Y, etc.
+	 *
+	 * @param line3DSQL the Line3D value
+	 * @return TRUE or FALSE
+	 */
+	public String doLine3DHasMagnitudeTransform(String line3DSQL) {
 		return this.getFalseOperation();
 	}
 
@@ -4364,6 +5344,19 @@ public abstract class DBDefinition {
 	}
 
 	/**
+	 * Return the magnitude (M) value of this line.
+	 *
+	 * <p>
+	 * Effectively indicates whether the geometry is 2D or 3D.
+	 *
+	 * @param line3DSQL the Line3D value
+	 * @return the value for the magnitude, or NULL if there is no magnitude.
+	 */
+	public String doLine3DGetMagnitudeTransform(String line3DSQL) {
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	}
+
+	/**
 	 * Return the number of spatial dimensions that this geometry is defined in.
 	 *
 	 * <p>
@@ -4374,6 +5367,19 @@ public abstract class DBDefinition {
 	 */
 	public String doPoint2DSpatialDimensionsTransform(String point2DSQL) {
 		return "2";
+	}
+
+	/**
+	 * Return the number of spatial dimensions that this geometry is defined in.
+	 *
+	 * <p>
+	 * Effectively indicates whether the geometry is 2D, 3D, etc.
+	 *
+	 * @param point3DSQL the Point3D value
+	 * @return the number of spatial dimensions that this geometry is defined in.
+	 */
+	public String doPoint3DSpatialDimensionsTransform(String point3DSQL) {
+		return "3";
 	}
 
 	/**
@@ -4388,7 +5394,18 @@ public abstract class DBDefinition {
 	}
 
 	/**
-	 * Return the magnitude (M) value of this line.
+	 * Return whether this geometry includes a magnitude (M) value along with X,
+	 * Y, etc.
+	 *
+	 * @param point3DSQL the Point3D value
+	 * @return TRUE or FALSE
+	 */
+	public String doPoint3DHasMagnitudeTransform(String point3DSQL) {
+		return this.getFalseOperation();
+	}
+
+	/**
+	 * Return the magnitude (M) value of this point.
 	 *
 	 * <p>
 	 * Effectively indicates whether the geometry is 2D or 3D.
@@ -4397,6 +5414,19 @@ public abstract class DBDefinition {
 	 * @return the value for the magnitude, or NULL if there is no magnitude.
 	 */
 	public String doPoint2DGetMagnitudeTransform(String point2DSQL) {
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	}
+
+	/**
+	 * Return the magnitude (M) value of this point.
+	 *
+	 * <p>
+	 * Effectively indicates whether the geometry is 2D or 3D.
+	 *
+	 * @param point3DSQL the Point3D value
+	 * @return the value for the magnitude, or NULL if there is no magnitude.
+	 */
+	public String doPoint3DGetMagnitudeTransform(String point3DSQL) {
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
@@ -4414,6 +5444,19 @@ public abstract class DBDefinition {
 	}
 
 	/**
+	 * Return the number of spatial dimensions that this geometry is defined in.
+	 *
+	 * <p>
+	 * Effectively indicates whether the geometry is 2D, 3D, etc.
+	 *
+	 * @param multipoint3DSQL the MultiPoint3D value
+	 * @return the number of spatial dimensions that this geometry is defined in.
+	 */
+	public String doMultiPoint3DSpatialDimensionsTransform(String multipoint3DSQL) {
+		return "3";
+	}
+
+	/**
 	 * Return whether this geometry includes a magnitude (M) value along with X,
 	 * Y, etc.
 	 *
@@ -4421,6 +5464,17 @@ public abstract class DBDefinition {
 	 * @return TRUE or FALSE
 	 */
 	public String doMultiPoint2DHasMagnitudeTransform(String multipoint2DSQL) {
+		return this.getFalseOperation();
+	}
+
+	/**
+	 * Return whether this geometry includes a magnitude (M) value along with X,
+	 * Y, etc.
+	 *
+	 * @param multipoint3DSQL the MultiPoint3D value
+	 * @return TRUE or FALSE
+	 */
+	public String doMultiPoint3DHasMagnitudeTransform(String multipoint3DSQL) {
 		return this.getFalseOperation();
 	}
 
@@ -4438,6 +5492,19 @@ public abstract class DBDefinition {
 	}
 
 	/**
+	 * Return the magnitude (M) value of this line.
+	 *
+	 * <p>
+	 * Effectively indicates whether the geometry is 2D or 3D.
+	 *
+	 * @param multipoint3DSQL the MultiPoint3D value
+	 * @return the value for the magnitude, or NULL if there is no magnitude.
+	 */
+	public String doMultiPoint3DGetMagnitudeTransform(String multipoint3DSQL) {
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	}
+
+	/**
 	 * Return the number of spatial dimensions that this geometry is defined in.
 	 *
 	 * <p>
@@ -4451,6 +5518,19 @@ public abstract class DBDefinition {
 	}
 
 	/**
+	 * Return the number of spatial dimensions that this geometry is defined in.
+	 *
+	 * <p>
+	 * Effectively indicates whether the geometry is 2D, 3D, etc.
+	 *
+	 * @param polygon3DSQL the Polygon3D value
+	 * @return the number of spatial dimensions that this geometry is defined in.
+	 */
+	public String doPolygon3DSpatialDimensionsTransform(String polygon3DSQL) {
+		return "3";
+	}
+
+	/**
 	 * Return whether this geometry includes a magnitude (M) value along with X,
 	 * Y, etc.
 	 *
@@ -4458,6 +5538,17 @@ public abstract class DBDefinition {
 	 * @return TRUE or FALSE
 	 */
 	public String doPolygon2DHasMagnitudeTransform(String polygon2DSQL) {
+		return this.getFalseOperation();
+	}
+
+	/**
+	 * Return whether this geometry includes a magnitude (M) value along with X,
+	 * Y, etc.
+	 *
+	 * @param polygon3DSQL the Polygon3D value
+	 * @return TRUE or FALSE
+	 */
+	public String doPolygon3DHasMagnitudeTransform(String polygon3DSQL) {
 		return this.getFalseOperation();
 	}
 
@@ -4475,6 +5566,19 @@ public abstract class DBDefinition {
 	}
 
 	/**
+	 * Return the magnitude (M) value of this line.
+	 *
+	 * <p>
+	 * Effectively indicates whether the geometry is 2D or 3D.
+	 *
+	 * @param polygon3DSQL the Polygon3D value
+	 * @return the value for the magnitude, or NULL if there is no magnitude.
+	 */
+	public String doPolygon3DGetMagnitudeTransform(String polygon3DSQL) {
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	}
+
+	/**
 	 * Return the number of spatial dimensions that this geometry is defined in.
 	 *
 	 * <p>
@@ -4488,6 +5592,19 @@ public abstract class DBDefinition {
 	}
 
 	/**
+	 * Return the number of spatial dimensions that this geometry is defined in.
+	 *
+	 * <p>
+	 * Effectively indicates whether the geometry is 2D, 3D, etc.
+	 *
+	 * @param lineSegment2DSQL the LineSegment2D value
+	 * @return the number of spatial dimensions that this geometry is defined in.
+	 */
+	public String doLineSegment3DSpatialDimensionsTransform(String lineSegment2DSQL) {
+		return "3";
+	}
+
+	/**
 	 * Return whether this geometry includes a magnitude (M) value along with X,
 	 * Y, etc.
 	 *
@@ -4495,6 +5612,17 @@ public abstract class DBDefinition {
 	 * @return TRUE or FALSE
 	 */
 	public String doLineSegment2DHasMagnitudeTransform(String lineSegment2DSQL) {
+		return this.getFalseOperation();
+	}
+
+	/**
+	 * Return whether this geometry includes a magnitude (M) value along with X,
+	 * Y, etc.
+	 *
+	 * @param lineSegment3DSQL the LineSegment3D value
+	 * @return TRUE or FALSE
+	 */
+	public String doLineSegment3DHasMagnitudeTransform(String lineSegment3DSQL) {
 		return this.getFalseOperation();
 	}
 
@@ -4512,6 +5640,19 @@ public abstract class DBDefinition {
 	}
 
 	/**
+	 * Return the magnitude (M) value of this line.
+	 *
+	 * <p>
+	 * Effectively indicates whether the geometry is 2D or 3D.
+	 *
+	 * @param lineSegment3DSQL the LineSegment3D value
+	 * @return the value for the magnitude, or NULL if there is no magnitude.
+	 */
+	public String doLineSegment3DGetMagnitudeTransform(String lineSegment3DSQL) {
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	}
+
+	/**
 	 * Override this method to provide the SQL that will create a database
 	 * Polygon2D value from the list of presumed coordinates.
 	 *
@@ -4524,6 +5665,22 @@ public abstract class DBDefinition {
 	 * @return a polygon2d value
 	 */
 	public String transformCoordinateArrayToDatabasePolygon2DFormat(List<String> coordinateSQL) {
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	}
+
+	/**
+	 * Override this method to provide the SQL that will create a database
+	 * Polygon3D value from the list of presumed coordinates.
+	 *
+	 * <p>
+	 * Coordinates are a series of number values that are presumed to be triples of
+	 * X, Y, and Z values. That is to say the list is a list number values with no
+	 * formatting other than that required to express the values as numbers.
+	 *
+	 * @param coordinateSQL lots of numbers
+	 * @return a polygon3d value
+	 */
+	public String transformCoordinateArrayToDatabasePolygon3DFormat(List<String> coordinateSQL) {
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
