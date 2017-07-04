@@ -382,13 +382,13 @@ public enum Polygon3DFunctions implements DBVFeature {
 			+ "					return null;\n"
 			+ "				} else {\n"
 			+ "					WKTReader wktReader = new WKTReader();\n"
-			+ "					GeometryFactory factory = new GeometryFactory();\n"
+			+ "					GeometryFactory3D factory = new GeometryFactory3D();\n"
 			+ "					Geometry firstGeometry = wktReader.read(firstPolyStr);\n"
 			+ "					if ((firstGeometry instanceof Polygon)) {\n"
-			+ "						Polygon firstPoly = (Polygon) firstGeometry;\n"
-			+ "						final LineString exteriorRing = firstPoly.getExteriorRing();\n"
+			+ "						PolygonZ firstPoly = factory.createPolygonZ((Polygon) firstGeometry);\n"
+			+ "						final LineStringZ exteriorRing = firstPoly.getExteriorRing();\n"
 			+ "						exteriorRing.normalize();\n"
-			+ "						LineString createLineString = (new GeometryFactory()).createLineString(exteriorRing.getCoordinateSequence());\n"
+			+ "						LineStringZ createLineString = factory.createLineStringZ(exteriorRing.getCoordinateSequence());\n"
 			+ "						Geometry reverse = createLineString.reverse();\n"
 			+ "						return reverse.toText();\n"
 			+ "					} else {\n"
@@ -580,7 +580,7 @@ public enum Polygon3DFunctions implements DBVFeature {
 					+ "import com.vividsolutions.jts.geom.*; import com.vividsolutions.jts.io.*;\n import java.util.*;\n" + "@CODE " + returnType + " " + alias() + "(" + parameters + ") {\n throw new UnsupportedOperationException(\"Not supported yet.\");} $$;");
 		} else {
 			stmt.execute("CREATE ALIAS IF NOT EXISTS " + alias() + " DETERMINISTIC AS $$ \n"
-					+ "import com.vividsolutions.jts.geom.*; import com.vividsolutions.jts.io.*;\n import java.util.*;\n" + "@CODE " + returnType + " " + alias() + "(" + parameters + ") {\n" + code + "} $$;");
+					+ "import com.vividsolutions.jts.geom.*;import nz.co.gregs.dbvolution.datatypes.spatial3D.*;import com.vividsolutions.jts.geom.*; import com.vividsolutions.jts.io.*;\n import java.util.*;\n" + "@CODE " + returnType + " " + alias() + "(" + parameters + ") {\n" + code + "} $$;");
 		}
 	}
 }

@@ -46,6 +46,7 @@ import nz.co.gregs.dbvolution.datatypes.spatial2D.DBMultiPoint2D;
 import nz.co.gregs.dbvolution.datatypes.spatial2D.DBPoint2D;
 import nz.co.gregs.dbvolution.datatypes.spatial2D.DBPolygon2D;
 import nz.co.gregs.dbvolution.datatypes.spatial3D.GeometryFactory3D;
+import nz.co.gregs.dbvolution.datatypes.spatial3D.LineStringZ;
 import nz.co.gregs.dbvolution.datatypes.spatial3D.PointZ;
 import nz.co.gregs.dbvolution.datatypes.spatial3D.PolygonZ;
 import nz.co.gregs.dbvolution.exceptions.AutoIncrementFieldClassAndDatatypeMismatch;
@@ -3881,6 +3882,31 @@ public abstract class DBDefinition {
 		Geometry geometry = wktReader.read(lineStringAsSQL);
 		if (geometry instanceof LineString) {
 			lineString = (LineString) geometry;
+		} else {
+			throw new IncorrectGeometryReturnedForDatatype(geometry, lineString);
+		}
+		return lineString;
+	}
+
+	/**
+	 * From the database's representation of a Lin2D create a JTS LineString.
+	 *
+	 * <p>
+	 * This is the inverse of
+	 * {@link #transformPolygonIntoDatabasePolygon2DFormat(com.vividsolutions.jts.geom.Polygon)}.
+	 *
+	 * @param lineStringAsSQL a line2d value
+	 * @return a linestring created from the line2d
+	 * @throws com.vividsolutions.jts.io.ParseException if the database result is
+	 * not a valid WKT
+	 */
+	public LineStringZ transformDatabaseLine3DValueToLineStringZ(String lineStringAsSQL) throws com.vividsolutions.jts.io.ParseException {
+		final GeometryFactory3D geomFact = new GeometryFactory3D();
+		LineStringZ lineString = geomFact.createLineStringZ(new Coordinate[]{});
+		WKTReader wktReader = new WKTReader();
+		Geometry geometry = wktReader.read(lineStringAsSQL);
+		if (geometry instanceof LineString) {
+			lineString = geomFact.createLineStringZ((LineString) geometry);
 		} else {
 			throw new IncorrectGeometryReturnedForDatatype(geometry, lineString);
 		}

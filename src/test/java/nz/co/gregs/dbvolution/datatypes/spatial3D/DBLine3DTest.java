@@ -40,8 +40,8 @@ public class DBLine3DTest extends AbstractTest {
 		Coordinate coordinate1 = new Coordinate(2, 3,5);
 		Coordinate coordinate2 = new Coordinate(3, 4,6);
 		Coordinate coordinate3 = new Coordinate(4, 5,7);
-		GeometryFactory geomFactory = new GeometryFactory();
-		LineString line = geomFactory.createLineString(new Coordinate[]{coordinate1, coordinate2, coordinate3});
+		GeometryFactory3D geomFactory = new GeometryFactory3D();
+		LineStringZ line = geomFactory.createLineStringZ(new Coordinate[]{coordinate1, coordinate2, coordinate3});
 		DBLine3D instance = new DBLine3D();
 		instance.setValue(line);
 		LineString value = instance.getValue();
@@ -65,13 +65,13 @@ public class DBLine3DTest extends AbstractTest {
 
 	@Test
 	public void testSetValuePoints() {
-		GeometryFactory geomFactory = new GeometryFactory();
+		GeometryFactory3D geomFactory = new GeometryFactory3D();
 		Coordinate coordinate1 = new Coordinate(2, 3, 5);
 		Coordinate coordinate2 = new Coordinate(3, 4, 5);
 		Coordinate coordinate3 = new Coordinate(4, 5, 5);
-		Point point1 = geomFactory.createPoint(coordinate1);
-		Point point2 = geomFactory.createPoint(coordinate2);
-		Point point3 = geomFactory.createPoint(coordinate3);
+		PointZ point1 = geomFactory.createPointZ(coordinate1);
+		PointZ point2 = geomFactory.createPointZ(coordinate2);
+		PointZ point3 = geomFactory.createPointZ(coordinate3);
 		DBLine3D instance = new DBLine3D();
 		instance.setValue(point1, point2, point3);
 		LineString value = instance.getValue();
@@ -83,7 +83,7 @@ public class DBLine3DTest extends AbstractTest {
 	@Test
 	public void testGetSQLDatatype() {
 		DBLine3D instance = new DBLine3D();
-		String expResult = " LINESTRING ";
+		String expResult = " LINESTRINGZ ";
 		String result = instance.getSQLDatatype();
 		assertEquals(expResult, result);
 	}

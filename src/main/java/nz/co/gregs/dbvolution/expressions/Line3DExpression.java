@@ -18,10 +18,6 @@ package nz.co.gregs.dbvolution.expressions;
 import nz.co.gregs.dbvolution.results.EqualComparable;
 import nz.co.gregs.dbvolution.results.Line3DResult;
 import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.GeometryFactory;
-import com.vividsolutions.jts.geom.LineString;
-import com.vividsolutions.jts.geom.Point;
-import com.vividsolutions.jts.geom.Polygon;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -31,6 +27,10 @@ import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.datatypes.spatial3D.DBLine3D;
 import nz.co.gregs.dbvolution.datatypes.spatial3D.DBMultiPoint3D;
+import nz.co.gregs.dbvolution.datatypes.spatial3D.GeometryFactory3D;
+import nz.co.gregs.dbvolution.datatypes.spatial3D.LineStringZ;
+import nz.co.gregs.dbvolution.datatypes.spatial3D.PointZ;
+import nz.co.gregs.dbvolution.datatypes.spatial3D.PolygonZ;
 import nz.co.gregs.dbvolution.results.MultiPoint3DResult;
 
 /**
@@ -84,7 +84,7 @@ public class Line3DExpression implements Line3DResult, EqualComparable<Line3DRes
 	 *
 	 * @param line
 	 */
-	public Line3DExpression(LineString line) {
+	public Line3DExpression(LineStringZ line) {
 //		innerLineString = new DBLine3D(line);
 		initInnerLine(line, new DBLine3D(line));
 	}
@@ -94,13 +94,13 @@ public class Line3DExpression implements Line3DResult, EqualComparable<Line3DRes
 	 *
 	 * @param points
 	 */
-	public Line3DExpression(Point... points) {
-		GeometryFactory geometryFactory = new GeometryFactory();
+	public Line3DExpression(PointZ... points) {
+		GeometryFactory3D geometryFactory = new GeometryFactory3D();
 		List<Coordinate> coords = new ArrayList<Coordinate>();
-		for (Point point : points) {
+		for (PointZ point : points) {
 			coords.add(point.getCoordinate());
 		}
-		LineString line = geometryFactory.createLineString(coords.toArray(new Coordinate[]{}));
+		LineStringZ line = geometryFactory.createLineStringZ(coords.toArray(new Coordinate[]{}));
 //		innerLineString = new DBLine3D(line);
 		initInnerLine(points, new DBLine3D(line));
 	}
@@ -111,8 +111,8 @@ public class Line3DExpression implements Line3DResult, EqualComparable<Line3DRes
 	 * @param coords
 	 */
 	public Line3DExpression(Coordinate... coords) {
-		GeometryFactory geometryFactory = new GeometryFactory();
-		LineString line = geometryFactory.createLineString(coords);
+		GeometryFactory3D geometryFactory = new GeometryFactory3D();
+		LineStringZ line = geometryFactory.createLineStringZ(coords);
 //		innerLineString = new DBLine3D(line);
 		initInnerLine(coords, new DBLine3D(line));
 	}
@@ -123,7 +123,7 @@ public class Line3DExpression implements Line3DResult, EqualComparable<Line3DRes
 	 * @param points a series of points that constitute a line.
 	 * @return a Line3DExpression
 	 */
-	public static Line3DExpression value(Point... points) {
+	public static Line3DExpression value(PointZ... points) {
 		return new Line3DExpression(points);
 	}
 
@@ -143,7 +143,7 @@ public class Line3DExpression implements Line3DResult, EqualComparable<Line3DRes
 	 * @param line create a Line3DExpression from this line.
 	 * @return a Line3DExpression
 	 */
-	public static Line3DExpression value(LineString line) {
+	public static Line3DExpression value(LineStringZ line) {
 		return new Line3DExpression(line);
 	}
 
@@ -272,7 +272,7 @@ public class Line3DExpression implements Line3DResult, EqualComparable<Line3DRes
 	 * @param rightHandSide the value this expression may equal.
 	 * @return a BooleanExpression that will be TRUE when the two expressions are functionally equivalent, otherwise FALSE.
 	 */
-	public BooleanExpression is(LineString rightHandSide) {
+	public BooleanExpression is(LineStringZ rightHandSide) {
 		return is(new DBLine3D(rightHandSide));
 	}
 
@@ -292,7 +292,7 @@ public class Line3DExpression implements Line3DResult, EqualComparable<Line3DRes
 	 * @param rightHandSide the polygon whose exterior ring may equal this line
 	 * @return a BooleanExpression that will be TRUE when the two expressions are functionally equivalent, otherwise FALSE.
 	 */
-	public BooleanExpression is(Polygon rightHandSide) {
+	public BooleanExpression is(PolygonZ rightHandSide) {
 		return is(rightHandSide.getExteriorRing());
 	}
 
@@ -343,7 +343,7 @@ public class Line3DExpression implements Line3DResult, EqualComparable<Line3DRes
 	 * @param rightHandSide the line that this expression might equal
 	 * @return a BooleanExpression that will be FALSE when the two expressions are functionally equivalent, otherwise TRUE.
 	 */
-	public BooleanExpression isNot(LineString rightHandSide) {
+	public BooleanExpression isNot(LineStringZ rightHandSide) {
 		return isNot(new DBLine3D(rightHandSide));
 	}
 
@@ -363,7 +363,7 @@ public class Line3DExpression implements Line3DResult, EqualComparable<Line3DRes
 	 * @param rightHandSide the polygon whose exterior ring might not equal this expression's value.
 	 * @return a BooleanExpression that will be FALSE when the two expressions are functionally equivalent, otherwise TRUE.
 	 */
-	public BooleanExpression isNot(Polygon rightHandSide) {
+	public BooleanExpression isNot(PolygonZ rightHandSide) {
 		return isNot(rightHandSide.getExteriorRing());
 	}
 
@@ -605,7 +605,7 @@ public class Line3DExpression implements Line3DResult, EqualComparable<Line3DRes
 	 * @return a BooleanExpression that will be TRUE if the lines ever cross,
 	 * otherwise FALSE.
 	 */
-	public BooleanExpression intersects(Point... points) {
+	public BooleanExpression intersects(PointZ... points) {
 		return this.intersects(value(points));
 	}
 
@@ -644,7 +644,7 @@ public class Line3DExpression implements Line3DResult, EqualComparable<Line3DRes
 	 * @return a BooleanExpression that will be TRUE if the lines ever cross,
 	 * otherwise FALSE.
 	 */
-	public BooleanExpression intersects(LineString lineString) {
+	public BooleanExpression intersects(LineStringZ lineString) {
 		return this.intersects(value(lineString));
 	}
 
@@ -705,7 +705,7 @@ public class Line3DExpression implements Line3DResult, EqualComparable<Line3DRes
 	 * @return a BooleanExpression that will be TRUE if the lines ever cross,
 	 * otherwise FALSE.
 	 */
-	public Point3DExpression intersectionWith(Point... crossingLine) {
+	public Point3DExpression intersectionWith(PointZ... crossingLine) {
 		return intersectionWith(value(crossingLine));
 	}
 
@@ -744,7 +744,7 @@ public class Line3DExpression implements Line3DResult, EqualComparable<Line3DRes
 	 * @return a BooleanExpression that will be TRUE if the lines ever cross,
 	 * otherwise FALSE.
 	 */
-	public Point3DExpression intersectionWith(LineString crossingLine) {
+	public Point3DExpression intersectionWith(LineStringZ crossingLine) {
 		return intersectionWith(value(crossingLine));
 	}
 

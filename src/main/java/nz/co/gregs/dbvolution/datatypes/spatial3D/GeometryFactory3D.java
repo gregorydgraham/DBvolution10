@@ -17,7 +17,7 @@ import com.vividsolutions.jts.geom.Polygon;
  *
  * @author gregorygraham
  */
-public class GeometryFactory3D  extends GeometryFactory{
+public class GeometryFactory3D extends GeometryFactory {
 
 	private static final long serialVersionUID = 1L;
 
@@ -29,7 +29,27 @@ public class GeometryFactory3D  extends GeometryFactory{
 		return new PointZ(coordinate != null ? getCoordinateSequenceFactory().create(new Coordinate[]{coordinate}) : null, this);
 	}
 
-	public PolygonZ createPolygonZ(Coordinate[] coords){
+	public LineStringZ createLineStringZ(LineString line) {
+		return createLineStringZ(line.getCoordinateSequence());
+	}
+
+	public LineStringZ createLineStringZ(CoordinateSequence coordinates) {
+		return new LineStringZ(coordinates, this);
+	}
+
+	public LineStringZ createLineStringZ(Coordinate[] coordinates) {
+		return createLineStringZ(coordinates != null ? getCoordinateSequenceFactory().create(coordinates) : null);
+	}
+
+	public LinearRing createLinearRingZ(CoordinateSequence coordinates) {
+		return new LinearRingZ(coordinates, this);
+	}
+
+	public LinearRingZ createLinearRingZ(Coordinate[] coordinates) {
+		return new LinearRingZ(coordinates);
+	}
+
+	public PolygonZ createPolygonZ(Coordinate[] coords) {
 		return createPolygonZ(createLinearRing(coords));
 	}
 
@@ -43,22 +63,20 @@ public class GeometryFactory3D  extends GeometryFactory{
 
 	public PolygonZ createPolygonZ(LinearRing shell, LinearRing[] holes) {
 		return new PolygonZ(shell, holes, this);
-	} 
+	}
 
 	public PolygonZ createPolygonZ(Polygon poly) {
-		LinearRing shell = this.createLinearRing(poly.getExteriorRing().getCoordinates());
-		LinearRing[] holes = null;
+		LinearRingZ shell = this.createLinearRingZ(poly.getExteriorRing().getCoordinates());
+		LinearRingZ[] holes = null;
 		final int numInteriorRing = poly.getNumInteriorRing();
-		if (numInteriorRing>0){
-			holes = new LinearRing[numInteriorRing];
-			for(int i = 0; i<numInteriorRing;i++){
-				LineString interiorRingN = poly.getInteriorRingN(i);
-				holes[i] = this.createLinearRing(interiorRingN.getCoordinates());
+		if (numInteriorRing > 0) {
+			holes = new LinearRingZ[numInteriorRing];
+			for (int i = 0; i < numInteriorRing; i++) {
+				LineStringZ interiorRingN = this.createLineStringZ(poly.getInteriorRingN(i));
+				holes[i] = this.createLinearRingZ(interiorRingN.getCoordinates());
 			}
 		}
 		return createPolygonZ(shell, holes);
 	}
-	
-	
-	
+
 }

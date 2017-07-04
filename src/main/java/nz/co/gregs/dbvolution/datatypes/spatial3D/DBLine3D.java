@@ -57,7 +57,7 @@ import nz.co.gregs.dbvolution.results.MultiPoint3DResult;
  *
  * @author gregorygraham
  */
-public class DBLine3D extends QueryableDatatype<LineString> implements Line3DResult {
+public class DBLine3D extends QueryableDatatype<LineStringZ> implements Line3DResult {
 
 	private static final long serialVersionUID = 1L;
 
@@ -79,7 +79,7 @@ public class DBLine3D extends QueryableDatatype<LineString> implements Line3DRes
 	 *
 	 * @param lineString
 	 */
-	public DBLine3D(LineString lineString) {
+	public DBLine3D(LineStringZ lineString) {
 		super(lineString);
 	}
 
@@ -118,7 +118,7 @@ public class DBLine3D extends QueryableDatatype<LineString> implements Line3DRes
 	 *
 	 * @param line
 	 */
-	public void setValue(LineString line) {
+	public void setValue(LineStringZ line) {
 		setLiteralValue(line);
 	}
 
@@ -134,13 +134,13 @@ public class DBLine3D extends QueryableDatatype<LineString> implements Line3DRes
 	 *
 	 * @param points
 	 */
-	public void setValue(Point... points) {
-		GeometryFactory geometryFactory = new GeometryFactory();
+	public void setValue(PointZ... points) {
+		GeometryFactory3D geometryFactory = new GeometryFactory3D();
 		List<Coordinate> coords = new ArrayList<>();
-		for (Point point : points) {
+		for (PointZ point : points) {
 			coords.add(point.getCoordinate());
 		}
-		LineString line = geometryFactory.createLineString(coords.toArray(new Coordinate[]{}));
+		LineStringZ line = geometryFactory.createLineStringZ(coords.toArray(new Coordinate[]{}));
 		setLiteralValue(line);
 	}
 
@@ -157,8 +157,8 @@ public class DBLine3D extends QueryableDatatype<LineString> implements Line3DRes
 	 * @param coords
 	 */
 	public void setValue(Coordinate... coords) {
-		GeometryFactory geometryFactory = new GeometryFactory();
-		LineString line = geometryFactory.createLineString(coords);
+		GeometryFactory3D geometryFactory = new GeometryFactory3D();
+		LineStringZ line = geometryFactory.createLineStringZ(coords);
 		setLiteralValue(line);
 	}
 
@@ -183,7 +183,7 @@ public class DBLine3D extends QueryableDatatype<LineString> implements Line3DRes
 
 	@Override
 	public String getSQLDatatype() {
-		return " LINESTRING ";
+		return " LINESTRINGZ ";
 	}
 
 	@Override
@@ -198,15 +198,15 @@ public class DBLine3D extends QueryableDatatype<LineString> implements Line3DRes
 	}
 
 	@Override
-	protected LineString getFromResultSet(DBDatabase database, ResultSet resultSet, String fullColumnName) throws SQLException, IncorrectGeometryReturnedForDatatype {
+	protected LineStringZ getFromResultSet(DBDatabase database, ResultSet resultSet, String fullColumnName) throws SQLException, IncorrectGeometryReturnedForDatatype {
 
-		LineString lineString = null;
+		LineStringZ lineString = null;
 		String string = resultSet.getString(fullColumnName);
 		if (string == null) {
 			return null;
 		} else {
 			try {
-				lineString = database.getDefinition().transformDatabaseLine2DValueToJTSLineString(string);
+				lineString = database.getDefinition().transformDatabaseLine3DValueToLineStringZ(string);
 			} catch (com.vividsolutions.jts.io.ParseException ex) {
 				Logger.getLogger(DBPoint3D.class.getName()).log(Level.SEVERE, null, ex);
 				throw new ParsingSpatialValueException(fullColumnName, string,ex);
