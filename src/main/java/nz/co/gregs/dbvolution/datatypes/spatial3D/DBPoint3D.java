@@ -15,6 +15,7 @@
  */
 package nz.co.gregs.dbvolution.datatypes.spatial3D;
 
+import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.io.ParseException;
 import java.sql.ResultSet;
@@ -44,7 +45,7 @@ import nz.co.gregs.dbvolution.results.Point3DResult;
  *
  * @author Gregory Graham
  */
-public class DBPoint3D extends QueryableDatatype<Point> implements Point3DResult {
+public class DBPoint3D extends QueryableDatatype<Coordinate> implements Point3DResult {
 
 	private static final long serialVersionUID = 1L;
 
@@ -65,12 +66,12 @@ public class DBPoint3D extends QueryableDatatype<Point> implements Point3DResult
 	 *
 	 * @param point the value to be set in the database.
 	 */
-	public void setValue(Point point) {
+	public void setValue(Coordinate point) {
 		setLiteralValue(point);
 	}
 
 	@Override
-	public Point getValue() {
+	public Coordinate getValue() {
 		if (!isDefined() || isNull()) {
 			return null;
 		} else {
@@ -86,7 +87,7 @@ public class DBPoint3D extends QueryableDatatype<Point> implements Point3DResult
 	 *
 	 * @return the set value of this object as a JTS Point object.
 	 */
-	public Point jtsPointValue() {
+	public Coordinate jtsCoordinateValue() {
 		return getValue();
 	}
 
@@ -111,7 +112,7 @@ public class DBPoint3D extends QueryableDatatype<Point> implements Point3DResult
 	 *
 	 * @param point
 	 */
-	public DBPoint3D(Point point) {
+	public DBPoint3D(Coordinate point) {
 		super(point);
 	}
 
@@ -122,25 +123,25 @@ public class DBPoint3D extends QueryableDatatype<Point> implements Point3DResult
 
 	@Override
 	protected String formatValueForSQLStatement(DBDatabase db) {
-		Point point = getValue();
+		Coordinate point = getValue();
 		if (point == null) {
 			return db.getDefinition().getNull();
 		} else {
-			String str = db.getDefinition().transformPoint2DIntoDatabaseFormat(point);
+			String str = db.getDefinition().transformPoint3DIntoDatabaseFormat(point);
 			return str;
 		}
 	}
 
 	@Override
-	protected Point getFromResultSet(DBDatabase database, ResultSet resultSet, String fullColumnName) throws SQLException, IncorrectGeometryReturnedForDatatype {
+	protected Coordinate getFromResultSet(DBDatabase database, ResultSet resultSet, String fullColumnName) throws SQLException, IncorrectGeometryReturnedForDatatype {
 
-		Point point = null;
+		Coordinate point = null;
 		String string = resultSet.getString(fullColumnName);
 		if (string == null) {
 			return null;
 		} else {
 			try {
-				point = database.getDefinition().transformDatabasePoint2DValueToJTSPoint(string);
+				point = database.getDefinition().transformDatabasePoint3DValueToCoordinate(string);
 			} catch (ParseException ex) {
 				Logger.getLogger(DBPoint3D.class.getName()).log(Level.SEVERE, null, ex);
 				throw new ParsingSpatialValueException(fullColumnName, string,ex);

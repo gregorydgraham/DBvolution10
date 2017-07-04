@@ -15,6 +15,7 @@
  */
 package nz.co.gregs.dbvolution.expressions;
 
+import com.vividsolutions.jts.geom.Coordinate;
 import nz.co.gregs.dbvolution.results.EqualComparable;
 import nz.co.gregs.dbvolution.results.Point3DResult;
 import com.vividsolutions.jts.geom.Point;
@@ -63,7 +64,7 @@ public class Point3DExpression implements PointResult, Point3DResult, EqualCompa
 	 *
 	 * @param point
 	 */
-	public Point3DExpression(Point point) {
+	public Point3DExpression(Coordinate point) {
 		innerPoint = new DBPoint3D(point);
 		if (point == null || innerPoint.getIncludesNull()) {
 			nullProtectionRequired = true;
@@ -76,7 +77,7 @@ public class Point3DExpression implements PointResult, Point3DResult, EqualCompa
 	 * @param point the value of this expression.
 	 * @return a Point3DExpression of the point.
 	 */
-	public static Point3DExpression value(Point point) {
+	public static Point3DExpression value(Coordinate point) {
 		return new Point3DExpression(point);
 	}
 
@@ -232,7 +233,7 @@ public class Point3DExpression implements PointResult, Point3DResult, EqualCompa
 	 * @param rightHandSide the value to compare against.
 	 * @return a BooleanExpression
 	 */
-	public BooleanExpression is(Point rightHandSide) {
+	public BooleanExpression is(Coordinate rightHandSide) {
 		return is(new DBPoint3D(rightHandSide));
 	}
 
@@ -265,7 +266,7 @@ public class Point3DExpression implements PointResult, Point3DResult, EqualCompa
 	 * @param rightHandSide the value to compare against.
 	 * @return a BooleanExpression
 	 */
-	public BooleanExpression isNot(Point rightHandSide) {
+	public BooleanExpression isNot(Coordinate rightHandSide) {
 		return isNot(new DBPoint3D(rightHandSide));
 	}
 

@@ -57,7 +57,7 @@
 		<libDirectory>${basedir}/lib</libDirectory>
 		<argLine />
 	</properties>
-    
+	    
 	<reporting>
 		<plugins>
 			<plugin>
@@ -939,6 +939,18 @@
 			<artifactId>mssql-jdbc</artifactId>
 			<version>6.1.5.jre7-preview</version>
 		</dependency>
+		<dependency>
+			<!-- Provides the basic classes for 3d graphics objects -->
+			<groupId>org.jmonkeyengine</groupId>
+			<artifactId>jme3-core</artifactId>
+			<version>3.1.0-stable</version>
+		</dependency>
+		<dependency>
+			<!-- Provides the basic classes for spatial objects -->
+			<groupId>org.geotools</groupId>
+			<artifactId>gt-main</artifactId>
+			<version>17.1</version>
+		</dependency>
 	</dependencies>
 	<distributionManagement>
 		<site>
@@ -960,6 +972,21 @@
 		<repository>
 			<id>SourceForge</id>
 			<url>http://csvjdbc.sourceforge.net/maven2</url>
+		</repository>
+		<repository>
+			<id>JMonkeyEngineRepo</id>
+			<name>JMonkeyEngine Repo</name>
+			<url>https://dl.bintray.com/jmonkeyengine/org.jmonkeyengine/</url>
+		</repository>
+		<repository>
+			<id>Boundless</id>
+			<name>Boundless</name>
+			<url>http://repo.boundlessgeo.com/main/</url>
+		</repository>
+		<repository>
+			<id>OSGeo</id>
+			<name>OSGeo - for JGridShift</name>
+			<url>http://download.osgeo.org/webdav/geotools/</url>
 		</repository>
 	</repositories>
 </project>

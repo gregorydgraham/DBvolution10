@@ -36,30 +36,45 @@ public class H2DB extends DBDatabase implements SupportsDateRepeatDatatypeFuncti
 
 	private static final long serialVersionUID = 1l;
 
-	private final static Map<String, DBVFeature> featureMap = new HashMap<>();
+	private final static Map<String, DBVFeature> FEATURE_MAP = new HashMap<>();
 	private static boolean dataTypesNotProcessed = true;
 
 	static {
 		for (DBVFeature function : DateRepeatFunctions.values()) {
-			featureMap.put(function.alias(), function);
+			FEATURE_MAP.put(function.alias(), function);
 		}
 		for (DBVFeature function : Point2DFunctions.values()) {
-			featureMap.put(function.alias(), function);
+			FEATURE_MAP.put(function.alias(), function);
 		}
 		for (DBVFeature function : LineSegment2DFunctions.values()) {
-			featureMap.put(function.alias(), function);
+			FEATURE_MAP.put(function.alias(), function);
 		}
 		for (DBVFeature function : Line2DFunctions.values()) {
-			featureMap.put(function.alias(), function);
+			FEATURE_MAP.put(function.alias(), function);
 		}
 		for (DBVFeature function : Polygon2DFunctions.values()) {
-			featureMap.put(function.alias(), function);
+			FEATURE_MAP.put(function.alias(), function);
 		}
 		for (DBVFeature function : MultiPoint2DFunctions.values()) {
-			featureMap.put(function.alias(), function);
+			FEATURE_MAP.put(function.alias(), function);
+		}
+		for (DBVFeature function : Point3DFunctions.values()) {
+			FEATURE_MAP.put(function.alias(), function);
+		}
+		for (DBVFeature function : LineSegment3DFunctions.values()) {
+			FEATURE_MAP.put(function.alias(), function);
+		}
+		for (DBVFeature function : Line3DFunctions.values()) {
+			FEATURE_MAP.put(function.alias(), function);
+		}
+		for (DBVFeature function : Polygon3DFunctions.values()) {
+			FEATURE_MAP.put(function.alias(), function);
+		}
+		for (DBVFeature function : MultiPoint3DFunctions.values()) {
+			FEATURE_MAP.put(function.alias(), function);
 		}
 		for (DataTypes datatype : DataTypes.values()) {
-			featureMap.put(datatype.alias(), datatype);
+			FEATURE_MAP.put(datatype.alias(), datatype);
 		}
 	}
 
@@ -143,7 +158,7 @@ public class H2DB extends DBDatabase implements SupportsDateRepeatDatatypeFuncti
 		DataTypes.addAll(stmt);
 		if (dataTypesNotProcessed) {
 			for (DataTypes datatype : DataTypes.values()) {
-				featureMap.put(datatype.alias(), datatype);
+				FEATURE_MAP.put(datatype.alias(), datatype);
 			}
 			dataTypesNotProcessed = false;
 		}
@@ -178,7 +193,7 @@ public class H2DB extends DBDatabase implements SupportsDateRepeatDatatypeFuncti
 					|| (message.startsWith("Method \"DBV_") && message.contains("\" not found"))) {
 				String[] split = message.split("[\" ]+");
 				String functionName = split[1];
-				DBVFeature functions = featureMap.get(functionName);
+				DBVFeature functions = FEATURE_MAP.get(functionName);
 				if (functions != null) {
 					functions.add(getConnection().createStatement());
 					handledException = true;
@@ -186,7 +201,7 @@ public class H2DB extends DBDatabase implements SupportsDateRepeatDatatypeFuncti
 			} else if (message.startsWith("Unknown data type: \"DBV_")) {
 				String[] split = message.split("\"");
 				String functionName = split[1];
-				DBVFeature datatype = featureMap.get(functionName);
+				DBVFeature datatype = FEATURE_MAP.get(functionName);
 				if (datatype != null) {
 					datatype.add(getConnection().createStatement());
 					handledException = true;
@@ -197,13 +212,13 @@ public class H2DB extends DBDatabase implements SupportsDateRepeatDatatypeFuncti
 				split = split[1].split("\\(");
 				String functionName = split[0];
 				
-				DBVFeature functions = featureMap.get(functionName);
+				DBVFeature functions = FEATURE_MAP.get(functionName);
 				if (functions != null) {
 					functions.add(getConnection().createStatement());
 					handledException = true;
 				}
 			} else {
-				for (Map.Entry<String, DBVFeature> entrySet : featureMap.entrySet()) {
+				for (Map.Entry<String, DBVFeature> entrySet : FEATURE_MAP.entrySet()) {
 					String key = entrySet.getKey();
 					DBVFeature value = entrySet.getValue();
 					if (message.contains(key)) {

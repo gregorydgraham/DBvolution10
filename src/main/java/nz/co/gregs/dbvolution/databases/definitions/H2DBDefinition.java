@@ -26,9 +26,9 @@ import nz.co.gregs.dbvolution.datatypes.DBDateRepeat;
 import nz.co.gregs.dbvolution.datatypes.DBJavaObject;
 import nz.co.gregs.dbvolution.datatypes.DBLargeObject;
 import nz.co.gregs.dbvolution.datatypes.DBLargeText;
-import nz.co.gregs.dbvolution.datatypes.DBNumber;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 import nz.co.gregs.dbvolution.datatypes.spatial2D.*;
+import nz.co.gregs.dbvolution.datatypes.spatial3D.*;
 import nz.co.gregs.dbvolution.internal.h2.*;
 
 /**
@@ -97,6 +97,16 @@ public class H2DBDefinition extends DBDefinition {
 			return DataTypes.POLYGON2D.datatype();
 		} else if (qdt instanceof DBMultiPoint2D) {
 			return DataTypes.MULTIPOINT2D.datatype();
+		} else if (qdt instanceof DBPoint3D) {
+			return DataTypes.POINT3D.datatype();
+		} else if (qdt instanceof DBLineSegment3D) {
+			return DataTypes.LINESEGMENT3D.datatype();
+		} else if (qdt instanceof DBLine3D) {
+			return DataTypes.LINE3D.datatype();
+		} else if (qdt instanceof DBPolygon3D) {
+			return DataTypes.POLYGON3D.datatype();
+		} else if (qdt instanceof DBMultiPoint3D) {
+			return DataTypes.MULTIPOINT3D.datatype();
 		} else {
 			return super.getDatabaseDataTypeOfQueryableDatatype(qdt);
 		}
@@ -588,4 +598,326 @@ public class H2DBDefinition extends DBDefinition {
 			return super.preferredLargeObjectReader(lob);
 		}
 	}
-}
+	
+	@Override
+	public String doLine3DAsTextTransform(String toSQLString) {
+		return Line3DFunctions.ASTEXT + "(" + toSQLString + ")";
+	}
+
+	@Override
+	public String doLine3DEqualsTransform(String toSQLString, String toSQLString0) {
+		return Line3DFunctions.EQUALS + "(" + toSQLString + ", " + toSQLString0 + ")";
+	}
+
+	@Override
+	public String doLine3DMeasurableDimensionsTransform(String toSQLString) {
+		return Line3DFunctions.DIMENSION + "(" + toSQLString + ")";
+	}
+
+	@Override
+	public String doLine3DGetBoundingBoxTransform(String toSQLString) {
+		return Line3DFunctions.BOUNDINGBOX + "(" + toSQLString + ")";
+	}
+
+	@Override
+	public String doLine3DGetMaxXTransform(String toSQLString) {
+		return Line3DFunctions.MAXX + "(" + toSQLString + ")";
+	}
+
+	@Override
+	public String doLine3DGetMinXTransform(String toSQLString) {
+		return Line3DFunctions.MINX + "(" + toSQLString + ")";
+	}
+
+	@Override
+	public String doLine3DGetMaxYTransform(String toSQLString) {
+		return Line3DFunctions.MAXY + "(" + toSQLString + ")";
+	}
+
+	@Override
+	public String doLine3DGetMinYTransform(String toSQLString) {
+		return Line3DFunctions.MINY + "(" + toSQLString + ")";
+	}
+
+	@Override
+	public String doLine3DGetMaxZTransform(String toSQLString) {
+		return Line3DFunctions.MAXZ + "(" + toSQLString + ")";
+	}
+
+	@Override
+	public String doLine3DGetMinZTransform(String toSQLString) {
+		return Line3DFunctions.MINZ + "(" + toSQLString + ")";
+	}
+
+	@Override
+	public String doLine3DIntersectsLine3DTransform(String toSQLString, String toSQLString0) {
+		return Line3DFunctions.INTERSECTS_LINE3D + "((" + toSQLString +"), ("+toSQLString0+ "))";
+	}
+
+	@Override
+	public String doLine3DIntersectionPointWithLine3DTransform(String toSQLString, String toSQLString0) {
+		return Line3DFunctions.INTERSECTIONWITH_LINE3D + "((" + toSQLString +"), ("+toSQLString0+ "))";
+	}
+
+	@Override
+	public String doLine3DAllIntersectionPointsWithLine3DTransform(String toSQLString, String toSQLString0) {
+		return Line3DFunctions.ALLINTERSECTIONSWITH_LINE3D + "((" + toSQLString +"), ("+toSQLString0+ "))";
+	}
+
+	@Override
+	public String doPoint3DEqualsTransform(String firstPoint, String secondPoint) {
+		return Point3DFunctions.EQUALS + "(" + firstPoint + ", " + secondPoint + ")";
+	}
+
+	@Override
+	public String doPoint3DGetXTransform(String toSQLString) {
+		return Point3DFunctions.GETX + "(" + toSQLString + ")";
+	}
+
+	@Override
+	public String doPoint3DGetYTransform(String toSQLString) {
+		return Point3DFunctions.GETY + "(" + toSQLString + ")";
+	}
+
+	@Override
+	public String doPoint3DGetZTransform(String toSQLString) {
+		return Point3DFunctions.GETZ + "(" + toSQLString + ")";
+	}
+
+	@Override
+	public String doPoint3DMeasurableDimensionsTransform(String toSQLString) {
+		return Point3DFunctions.DIMENSION + "(" + toSQLString + ")";
+	}
+
+	@Override
+	public String doPoint3DGetBoundingBoxTransform(String toSQLString) {
+		return Point3DFunctions.BOUNDINGBOX + "(" + toSQLString + ")";
+	}
+
+	@Override
+	public String transformCoordinatesIntoDatabasePoint3DFormat(String xValue, String yValue, String zValue) {
+		return "'POINT (" + xValue + " " + yValue + " " + zValue + ")'";
+	}
+
+	@Override
+	public String doPoint3DAsTextTransform(String toSQLString) {
+		return Point3DFunctions.ASTEXT + "(" + toSQLString + ")";
+	}
+
+	@Override
+	public String transformPolygonIntoDatabasePolygon3DFormat(PolygonZ geom) {
+		String wktValue = geom.toText();
+		return Polygon3DFunctions.CREATE_FROM_WKTPOLYGON3D.alias() + "('" + wktValue + "')";
+	}
+	
+	@Override
+	public String doPolygon3DAsTextTransform(String polygonSQL) {
+		return polygonSQL;
+	}
+
+	@Override
+	public String doPolygon3DEqualsTransform(String firstGeometry, String secondGeometry) {
+		return Polygon3DFunctions.EQUALS.alias() + "(" + firstGeometry + ", " + secondGeometry + ") ";
+	}
+
+	@Override
+	public String doPolygon3DIntersectsTransform(String firstGeometry, String secondGeometry) {
+		return Polygon3DFunctions.INTERSECTS.alias() + "(" + firstGeometry + ", " + secondGeometry + ")";
+	}
+
+	@Override
+	public String doPolygon3DContainsPolygon3DTransform(String firstGeometry, String secondGeometry) {
+		return Polygon3DFunctions.CONTAINS_POLYGON3D.alias() + "(" + firstGeometry + ", " + secondGeometry + ")";
+	}
+
+	@Override
+	public String doPolygon3DContainsPoint3DTransform(String polygon3DSQL, String point3DSQL) {
+		return Polygon3DFunctions.CONTAINS_POINT3D.alias() + "(" + polygon3DSQL + ", " + point3DSQL + ")";
+	}
+
+	@Override
+	public String doPolygon3DDoesNotIntersectTransform(String firstGeometry, String secondGeometry) {
+		return Polygon3DFunctions.DISJOINT.alias() + "(" + firstGeometry + ", " + secondGeometry + ")";
+	}
+
+	@Override
+	public String doPolygon3DOverlapsTransform(String firstGeometry, String secondGeometry) {
+		return Polygon3DFunctions.OVERLAPS.alias() + "(" + firstGeometry + ", " + secondGeometry + ")";
+	}
+
+	@Override
+	public String doPolygon3DTouchesTransform(String firstGeometry, String secondGeometry) {
+		return Polygon3DFunctions.TOUCHES.alias() + "(" + firstGeometry + ", " + secondGeometry + ")";
+	}
+
+	@Override
+	public String doPolygon3DWithinTransform(String firstGeometry, String secondGeometry) {
+		//indicate whether g1 is spatially within g2. This is the inverse of Contains(). 
+		// i.e. G1.within(G2) === G2.contains(G1)
+		return Polygon3DFunctions.WITHIN.alias() + "(" + firstGeometry + ", " + secondGeometry + ")";
+	}
+
+	@Override
+	public String doPolygon3DMeasurableDimensionsTransform(String toSQLString) {
+		return Polygon3DFunctions.MEASURABLE_DIMENSIONS.alias() + "(" + toSQLString + ")";
+	}
+
+	@Override
+	public String doPolygon3DGetBoundingBoxTransform(String toSQLString) {
+		return Polygon3DFunctions.BOUNDINGBOX.alias() + "(" + toSQLString + ")";
+	}
+
+	@Override
+	public String doPolygon3DGetAreaTransform(String toSQLString) {
+		return Polygon3DFunctions.AREA.alias() + "(" + toSQLString + ")";
+	}
+
+	@Override
+	public String doPolygon3DGetExteriorRingTransform(String toSQLString) {
+		return Polygon3DFunctions.EXTERIORRING.alias() + "(" + toSQLString + ")";
+	}
+
+	@Override
+	public String doPolygon3DGetMaxXTransform(String toSQLString) {
+		return Polygon3DFunctions.MAX_X.alias() + "(" + toSQLString + ")";
+	}
+
+	@Override
+	public String doPolygon3DGetMinXTransform(String toSQLString) {
+		return Polygon3DFunctions.MIN_Y.alias() + "(" + toSQLString + ")";
+	}
+
+	@Override
+	public String doPolygon3DGetMaxYTransform(String toSQLString) {
+		return Polygon3DFunctions.MAX_Y.alias() + "(" + toSQLString + ")";
+	}
+
+	@Override
+	public String doPolygon3DGetMinYTransform(String toSQLString) {
+		return Polygon3DFunctions.MIN_Y.alias() + "(" + toSQLString + ")";
+	}
+
+	@Override
+	public String doPolygon3DGetMaxZTransform(String toSQLString) {
+		return Polygon3DFunctions.MAX_Z.alias() + "(" + toSQLString + ")";
+	}
+
+	@Override
+	public String doPolygon3DGetMinZTransform(String toSQLString) {
+		return Polygon3DFunctions.MIN_Z.alias() + "(" + toSQLString + ")";
+	}
+
+	@Override
+	public String doLineSegment3DIntersectsLineSegment3DTransform(String toSQLString, String toSQLString0) {
+		return LineSegment3DFunctions.INTERSECTS_LINESEGMENT3D+"(("+toSQLString+"), ("+toSQLString0+"))";
+	}
+
+	@Override
+	public String doLineSegment3DGetMaxXTransform(String toSQLString) {
+		return LineSegment3DFunctions.MAXX+"("+toSQLString+")";
+	}
+
+	@Override
+	public String doLineSegment3DGetMinXTransform(String toSQLString) {
+		return LineSegment3DFunctions.MINX+"("+toSQLString+")";
+	}
+
+	@Override
+	public String doLineSegment3DGetMaxYTransform(String toSQLString) {
+		return LineSegment3DFunctions.MAXY+"("+toSQLString+")";
+	}
+
+	@Override
+	public String doLineSegment3DGetMinYTransform(String toSQLString) {
+		return LineSegment3DFunctions.MINY+"("+toSQLString+")";
+	}
+
+	@Override
+	public String doLineSegment3DGetBoundingBoxTransform(String toSQLString) {
+		return LineSegment3DFunctions.BOUNDINGBOX+"("+toSQLString+")";
+	}
+
+	@Override
+	public String doLineSegment3DDimensionTransform(String toSQLString) {
+		return LineSegment3DFunctions.DIMENSION+"("+toSQLString+")";
+	}
+
+	@Override
+	public String doLineSegment3DNotEqualsTransform(String toSQLString, String toSQLString0) {
+		return "!"+LineSegment3DFunctions.EQUALS+"(("+toSQLString+"), ("+toSQLString0+"))";
+	}
+
+	@Override
+	public String doLineSegment3DEqualsTransform(String toSQLString, String toSQLString0) {
+		return LineSegment3DFunctions.EQUALS+"(("+toSQLString+"), ("+toSQLString0+"))";
+	}
+
+	@Override
+	public String doLineSegment3DAsTextTransform(String toSQLString) {
+		return LineSegment3DFunctions.ASTEXT+"("+toSQLString+")";
+	}
+	
+	@Override
+	public String doLineSegment3DIntersectionPointWithLineSegment3DTransform(String toSQLString, String toSQLString0) {
+		return LineSegment3DFunctions.INTERSECTIONPOINT_LINESEGMENT3D+"(("+toSQLString+"), ("+toSQLString0+"))";
+	}
+
+	@Override
+	public String doMultiPoint3DEqualsTransform(String first, String second) {
+		return MultiPoint3DFunctions.EQUALS+"(("+first+"), ("+second+"), "+MultiPoint3DFunctions.getCurrentVersion()+")";
+	}
+
+	@Override
+	public String doMultiPoint3DGetPointAtIndexTransform(String first, String index) {
+		return MultiPoint3DFunctions.GETPOINTATINDEX_FUNCTION+"(("+first+"), ("+index+"), "+MultiPoint3DFunctions.getCurrentVersion()+")";
+	}
+
+	@Override
+	public String doMultiPoint3DGetNumberOfPointsTransform(String first) {
+		return MultiPoint3DFunctions.GETNUMBEROFPOINTS_FUNCTION+"("+first+", "+MultiPoint3DFunctions.getCurrentVersion()+")";
+	}
+
+	@Override
+	public String doMultiPoint3DMeasurableDimensionsTransform(String first) {
+		return MultiPoint3DFunctions.DIMENSION+"("+first+", "+MultiPoint3DFunctions.getCurrentVersion()+")";
+	}
+
+	@Override
+	public String doMultiPoint3DGetBoundingBoxTransform(String first) {
+		return MultiPoint3DFunctions.BOUNDINGBOX+"("+first+", "+MultiPoint3DFunctions.getCurrentVersion()+")";
+	}
+
+	@Override
+	public String doMultiPoint3DAsTextTransform(String first) {
+		return MultiPoint3DFunctions.ASTEXT+"("+first+", "+MultiPoint3DFunctions.getCurrentVersion()+")";
+	}
+
+	@Override
+	public String doMultiPoint3DToLine3DTransform(String first) {
+		return MultiPoint3DFunctions.ASLINE3D+"("+first+", "+MultiPoint3DFunctions.getCurrentVersion()+")";
+	}
+
+//	@Override
+//	public String doMultiPoint3DToPolygon3DTransform(String first) {
+//		return MultiPoint3DFunctions.ASPOLYGON3D+"("+first+", "+MultiPoint3DFunctions.getCurrentVersion()+")";
+//	}
+
+	@Override
+	public String doMultiPoint3DGetMinYTransform(String first) {
+		return MultiPoint3DFunctions.MINY+"("+first+", "+MultiPoint3DFunctions.getCurrentVersion()+")";
+	}
+
+	@Override
+	public String doMultiPoint3DGetMinXTransform(String first) {
+		return MultiPoint3DFunctions.MINX+"("+first+", "+MultiPoint3DFunctions.getCurrentVersion()+")";
+	}
+
+	@Override
+	public String doMultiPoint3DGetMaxYTransform(String first) {
+		return MultiPoint3DFunctions.MAXY+"("+first+", "+MultiPoint3DFunctions.getCurrentVersion()+")";
+	}
+
+	@Override
+	public String doMultiPoint3DGetMaxXTransform(String first) {
+		return MultiPoint3DFunctions.MAXX+"("+first+", "+MultiPoint3DFunctions.getCurrentVersion()+")";
+	}}

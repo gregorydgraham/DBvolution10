@@ -16,11 +16,10 @@
 package nz.co.gregs.dbvolution.expressions;
 
 //import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.Coordinate;
 import nz.co.gregs.dbvolution.results.EqualComparable;
 import nz.co.gregs.dbvolution.results.Point3DResult;
 import nz.co.gregs.dbvolution.results.Polygon3DResult;
-import com.vividsolutions.jts.geom.Point;
-import com.vividsolutions.jts.geom.Polygon;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -30,6 +29,7 @@ import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.DBQuery;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.datatypes.spatial3D.DBPolygon3D;
+import nz.co.gregs.dbvolution.datatypes.spatial3D.PolygonZ;
 
 /**
  * Creates and transforms Polygon3D values within your database queries.
@@ -73,7 +73,7 @@ public class Polygon3DExpression implements Polygon3DResult, EqualComparable<Pol
 	 *
 	 * @param geometry
 	 */
-	public Polygon3DExpression(Polygon geometry) {
+	public Polygon3DExpression(PolygonZ geometry) {
 		innerGeometry = new DBPolygon3D(geometry);
 		if (geometry == null || innerGeometry.getIncludesNull()) {
 			nullProtectionRequired = true;
@@ -88,7 +88,7 @@ public class Polygon3DExpression implements Polygon3DResult, EqualComparable<Pol
 	 * @param polygon the value of this expression
 	 * @return a polygon3D expression
 	 */
-	public static Polygon3DExpression value(Polygon polygon) {
+	public static Polygon3DExpression value(PolygonZ polygon) {
 		return new Polygon3DExpression(polygon);
 	}
 
@@ -155,9 +155,9 @@ public class Polygon3DExpression implements Polygon3DResult, EqualComparable<Pol
 	 * @param points the points that define the polygon value of this expression.
 	 * @return a polygon3D expression
 	 */
-	public static Polygon3DExpression value(Point... points) {
+	public static Polygon3DExpression value(Coordinate... points) {
 		List<Point3DExpression> exprs = new ArrayList<Point3DExpression>();
-		for (Point point : points) {
+		for (Coordinate point : points) {
 			exprs.add(Point3DExpression.value(point));
 		}
 		return polygon3DFromPoint3DExpressionArray(exprs.toArray(new Point3DExpression[]{}));
@@ -219,7 +219,7 @@ public class Polygon3DExpression implements Polygon3DResult, EqualComparable<Pol
 	 * @return a boolean expression that is true if the polygons interact in any
 	 * way.
 	 */
-	public BooleanExpression intersects(Polygon rightHandSide) {
+	public BooleanExpression intersects(PolygonZ rightHandSide) {
 		return intersects(new DBPolygon3D(rightHandSide));
 	}
 
@@ -328,7 +328,7 @@ public class Polygon3DExpression implements Polygon3DResult, EqualComparable<Pol
 	 * @param rightHandSide the polygon to compare against
 	 * @return a BooleanExpression
 	 */
-	public BooleanExpression is(Polygon rightHandSide) {
+	public BooleanExpression is(PolygonZ rightHandSide) {
 		return is(new DBPolygon3D(rightHandSide));
 	}
 
@@ -350,7 +350,7 @@ public class Polygon3DExpression implements Polygon3DResult, EqualComparable<Pol
 	 * @param rightHandSide the polygon to compare against
 	 * @return a boolean expression
 	 */
-	public BooleanExpression contains(Point rightHandSide) {
+	public BooleanExpression contains(Coordinate rightHandSide) {
 		return contains(Point3DExpression.value(rightHandSide));
 	}
 
@@ -381,7 +381,7 @@ public class Polygon3DExpression implements Polygon3DResult, EqualComparable<Pol
 	 * @param rightHandSide the polygon to compare against
 	 * @return a boolean expression
 	 */
-	public BooleanExpression contains(Polygon rightHandSide) {
+	public BooleanExpression contains(PolygonZ rightHandSide) {
 		return contains(new DBPolygon3D(rightHandSide));
 	}
 
@@ -419,7 +419,7 @@ public class Polygon3DExpression implements Polygon3DResult, EqualComparable<Pol
 	 * @return a boolean expression that is TRUE if the 2 polygons do NOT
 	 * intersect in anyway, otherwise FALSE.
 	 */
-	public BooleanExpression doesNotIntersect(Polygon rightHandSide) {
+	public BooleanExpression doesNotIntersect(PolygonZ rightHandSide) {
 		return doesNotIntersect(new DBPolygon3D(rightHandSide));
 	}
 
@@ -457,7 +457,7 @@ public class Polygon3DExpression implements Polygon3DResult, EqualComparable<Pol
 	 * @return a boolean expression that is TRUE if the 2 polygons intersect but
 	 * are not contained, within, or equal.
 	 */
-	public BooleanExpression overlaps(Polygon rightHandSide) {
+	public BooleanExpression overlaps(PolygonZ rightHandSide) {
 		return overlaps(new DBPolygon3D(rightHandSide));
 	}
 
@@ -498,7 +498,7 @@ public class Polygon3DExpression implements Polygon3DResult, EqualComparable<Pol
 	 * @return BooleanExpression that returns TRUE if and only if the polygons
 	 * touch without overlapping
 	 */
-	public BooleanExpression touches(Polygon rightHandSide) {
+	public BooleanExpression touches(PolygonZ rightHandSide) {
 		return touches(new DBPolygon3D(rightHandSide));
 	}
 
@@ -539,7 +539,7 @@ public class Polygon3DExpression implements Polygon3DResult, EqualComparable<Pol
 	 * @param rightHandSide the polygon to compare against
 	 * @return a boolean expression
 	 */
-	public BooleanExpression within(Polygon rightHandSide) {
+	public BooleanExpression within(PolygonZ rightHandSide) {
 		return within(new DBPolygon3D(rightHandSide));
 	}
 
@@ -626,9 +626,9 @@ public class Polygon3DExpression implements Polygon3DResult, EqualComparable<Pol
 	}
 
 	/**
-	 * Returns the area of the polygon expressed in units.
+	 * Returns the volume of the polygon expressed in units.
 	 *
-	 * @return the area covered by the polygon in units.
+	 * @return the volume covered by the polygon in units.
 	 */
 	public NumberExpression area() {
 		return new NumberExpression(new Polygon3DFunctionWithNumberResult(this) {
@@ -640,45 +640,6 @@ public class Polygon3DExpression implements Polygon3DResult, EqualComparable<Pol
 		});
 	}
 
-//	public NumberExpression wibbleX() {
-//		return new NumberExpression(new Polygon3DFunctionWithNumberResult(this) {
-//
-//			@Override
-//			public String doExpressionTransform(DBDatabase db) {
-//				return db.getDefinition().doPolygon3DGetMaxXTransform(getFirst().toSQLString(db));
-//			}
-//		});
-//	}
-//
-//	public NumberExpression bibbleX() {
-//		return new NumberExpression(new Polygon3DFunctionWithNumberResult(this) {
-//
-//			@Override
-//			public String doExpressionTransform(DBDatabase db) {
-//				return db.getDefinition().doPolygon3DGetMinXTransform(getFirst().toSQLString(db));
-//			}
-//		});
-//	}
-//
-//	public NumberExpression wibbleY() {
-//		return new NumberExpression(new Polygon3DFunctionWithNumberResult(this) {
-//
-//			@Override
-//			public String doExpressionTransform(DBDatabase db) {
-//				return db.getDefinition().doPolygon3DGetMaxYTransform(getFirst().toSQLString(db));
-//			}
-//		});
-//	}
-//
-//	public NumberExpression bibbleY() {
-//		return new NumberExpression(new Polygon3DFunctionWithNumberResult(this) {
-//
-//			@Override
-//			public String doExpressionTransform(DBDatabase db) {
-//				return db.getDefinition().doPolygon3DGetMinYTransform(getFirst().toSQLString(db));
-//			}
-//		});
-//	}
 	@Override
 	public Polygon3DExpression boundingBox() {
 		return new Polygon3DExpression(new Polygon3DFunctionWithPolygon3DResult(this) {
@@ -730,7 +691,7 @@ public class Polygon3DExpression implements Polygon3DResult, EqualComparable<Pol
 	 * @param geometry the polygon to compare against
 	 * @return a BooleanExpression
 	 */
-	public BooleanExpression isNot(Polygon geometry) {
+	public BooleanExpression isNot(PolygonZ geometry) {
 		return this.isNot(Polygon3DExpression.value(geometry));
 	}
 

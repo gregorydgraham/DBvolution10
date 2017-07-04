@@ -1058,6 +1058,9 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 				if (field.isSpatial2DType()) {
 					spatial2DFields.add(field);
 				}
+				if (field.isSpatial3DType()) {
+					spatial2DFields.add(field);
+				}
 				String fkClause = definition.getForeignKeyClauseForCreateTable(field);
 				if (!fkClause.isEmpty()) {
 					fkClauses.add(fkClause);

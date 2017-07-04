@@ -45,6 +45,8 @@ import nz.co.gregs.dbvolution.datatypes.spatial2D.DBLine2D;
 import nz.co.gregs.dbvolution.datatypes.spatial2D.DBMultiPoint2D;
 import nz.co.gregs.dbvolution.datatypes.spatial2D.DBPoint2D;
 import nz.co.gregs.dbvolution.datatypes.spatial2D.DBPolygon2D;
+import nz.co.gregs.dbvolution.datatypes.spatial3D.GeometryFactory3D;
+import nz.co.gregs.dbvolution.datatypes.spatial3D.PolygonZ;
 import nz.co.gregs.dbvolution.exceptions.AutoIncrementFieldClassAndDatatypeMismatch;
 import nz.co.gregs.dbvolution.exceptions.IncorrectGeometryReturnedForDatatype;
 import nz.co.gregs.dbvolution.expressions.DBExpression;
@@ -3339,15 +3341,15 @@ public abstract class DBDefinition {
 	}
 
 	/**
-	 * Returns the dimension of the polygon.
+	 * Returns the number of measurable dimensions of the polygon.
 	 *
 	 * <p>
-	 * This will be "3"
+	 * As a 3D polygon are essentially a surface so the measurable dimensions will be "2": length, and width
 	 *
-	 * @param polygon2DSQL a polygon3d value
+	 * @param polygon3DSQL a polygon3d value
 	 * @return "3" unless something has gone horribly wrong.
 	 */
-	public String doPolygon3DMeasurableDimensionsTransform(String polygon2DSQL) {
+	public String doPolygon3DMeasurableDimensionsTransform(String polygon3DSQL) {
 		throw new UnsupportedOperationException("Geometry Operations Have Not Been Defined For This Database Yet.");
 	}
 
@@ -3719,14 +3721,13 @@ public abstract class DBDefinition {
 	}
 
 	/**
-	 * Provide the SQL that correctly represents this Point2D in this database.
+	 * Provide the SQL that correctly represents this Point3D in this database.
 	 *
 	 * @param point a point to be turned into an SQL point2d value.
 	 * @return SQL
 	 */
-	public String transformPoint3DIntoDatabaseFormat(Point point) {
-		String wktValue = point.toText();
-		return "'" + wktValue + "'";
+	public String transformPoint3DIntoDatabaseFormat(Coordinate point) {
+		return transformCoordinatesIntoDatabasePoint3DFormat(""+point.x, ""+point.y, ""+point.z);
 	}
 
 	/**
@@ -3735,11 +3736,12 @@ public abstract class DBDefinition {
 	 *
 	 * <p>
 	 * The same as
-	 * {@link #transformPoint2DIntoDatabaseFormat(com.vividsolutions.jts.geom.Point)}
+	 * {@link #transformPoint2DIntoDatabaseFormat(com.vividsolutions.jts.geom.Coordinate)}
 	 * but for two coordinates as SQL.
 	 *
 	 * @param xValue a number value
 	 * @param yValue a number value
+	 * @param zValue
 	 * @return SQL
 	 */
 	public String transformCoordinatesIntoDatabasePoint3DFormat(String xValue, String yValue, String zValue) {
@@ -3766,6 +3768,30 @@ public abstract class DBDefinition {
 			point = (Point) geometry;
 		} else {
 			throw new IncorrectGeometryReturnedForDatatype(geometry, point);
+		}
+		return point;
+	}
+
+	/**
+	 * From the database's representation of a Point2D create a JTS Point.
+	 *
+	 * <p>
+	 * This is the inverse of {@link #transformPoint2DIntoDatabaseFormat(com.vividsolutions.jts.geom.Point)
+	 * }.
+	 *
+	 * @param pointAsString a point2d value
+	 * @return a point created from the point2d value
+	 * @throws com.vividsolutions.jts.io.ParseException if the database result is
+	 * not a valid WKT
+	 */
+	public Coordinate transformDatabasePoint3DValueToCoordinate(String pointAsString) throws com.vividsolutions.jts.io.ParseException {
+		Coordinate point = new Coordinate(0,0,0);
+		WKTReader wktReader = new WKTReader();
+		Geometry geometry = wktReader.read(pointAsString);
+		if (geometry instanceof Point) {
+			point = geometry.getCoordinates()[0];
+		} else {
+			throw new IncorrectGeometryReturnedForDatatype(geometry, geometry.getCentroid());
 		}
 		return point;
 	}
@@ -3814,24 +3840,24 @@ public abstract class DBDefinition {
 	 * @throws com.vividsolutions.jts.io.ParseException if the database result is
 	 * not a valid WKT
 	 */
-	public Polygon transformDatabasePolygon3DToJTSPolygon(String polygon3DSQL) throws com.vividsolutions.jts.io.ParseException {
+	public PolygonZ transformDatabasePolygon3DToPolygonZ(String polygon3DSQL) throws com.vividsolutions.jts.io.ParseException {
 		Polygon poly = (new GeometryFactory()).createPolygon(new Coordinate[]{});
 		WKTReader wktReader = new WKTReader();
 		Geometry geometry = wktReader.read(polygon3DSQL);
 		if (geometry instanceof Polygon) {
 			poly = (Polygon) geometry;
+			return (new GeometryFactory3D()).createPolygonZ(poly);
 		} else if (geometry instanceof LineString) {
-			GeometryFactory geofactory = new GeometryFactory();
+			GeometryFactory3D geofactory = new GeometryFactory3D();
 			LineString lineString = (LineString) geometry;
-			poly = geofactory.createPolygon(lineString.getCoordinateSequence());
+			return geofactory.createPolygonZ(lineString.getCoordinateSequence());
 		} else if (geometry instanceof Point) {
-			GeometryFactory geofactory = new GeometryFactory();
+			GeometryFactory3D geofactory = new GeometryFactory3D();
 			Point point = (Point) geometry;
-			poly = geofactory.createPolygon(new Coordinate[]{point.getCoordinate(), point.getCoordinate(),point.getCoordinate(),point.getCoordinate(),point.getCoordinate()});
+			return geofactory.createPolygonZ(new Coordinate[]{point.getCoordinate(), point.getCoordinate(),point.getCoordinate(),point.getCoordinate(),point.getCoordinate()});
 		} else {
 			throw new IncorrectGeometryReturnedForDatatype(geometry, poly);
 		}
-		return poly;
 	}
 
 	/**
@@ -4165,7 +4191,7 @@ public abstract class DBDefinition {
 	 * @param polygon3DSQL the polygon3d value
 	 * @return SQL
 	 */
-	public String doPolygon3DGetMaxYTransform(String polygon2DSQL) {
+	public String doPolygon3DGetMaxYTransform(String polygon3DSQL) {
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
@@ -4176,7 +4202,7 @@ public abstract class DBDefinition {
 	 * @param polygon3DSQL the polygon3d value
 	 * @return SQL
 	 */
-	public String doPolygon3DGetMaxZTransform(String polygon2DSQL) {
+	public String doPolygon3DGetMaxZTransform(String polygon3DSQL) {
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
@@ -4228,10 +4254,10 @@ public abstract class DBDefinition {
 	 * Generate the SQL that will transform a WKT version of a Polygon#D into the
 	 * database's version of a Polygon3D.
 	 *
-	 * @param polygon2D the polygon2d value
+	 * @param polygon3D the polygon2d value
 	 * @return SQL
 	 */
-	public String transformPolygonIntoDatabasePolygon3DFormat(Polygon polygon2D) {
+	public String transformPolygonIntoDatabasePolygon3DFormat(PolygonZ polygon3D) {
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 

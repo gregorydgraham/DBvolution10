@@ -28,6 +28,11 @@ import nz.co.gregs.dbvolution.datatypes.spatial2D.DBLine2D;
 import nz.co.gregs.dbvolution.datatypes.spatial2D.DBLineSegment2D;
 import nz.co.gregs.dbvolution.datatypes.spatial2D.DBMultiPoint2D;
 import nz.co.gregs.dbvolution.datatypes.spatial2D.DBPoint2D;
+import nz.co.gregs.dbvolution.datatypes.spatial3D.DBLine3D;
+import nz.co.gregs.dbvolution.datatypes.spatial3D.DBLineSegment3D;
+import nz.co.gregs.dbvolution.datatypes.spatial3D.DBMultiPoint3D;
+import nz.co.gregs.dbvolution.datatypes.spatial3D.DBPoint3D;
+import nz.co.gregs.dbvolution.datatypes.spatial3D.DBPolygon3D;
 import nz.co.gregs.dbvolution.exceptions.IncorrectRowProviderInstanceSuppliedException;
 import nz.co.gregs.dbvolution.expressions.*;
 import nz.co.gregs.dbvolution.internal.properties.*;
@@ -191,6 +196,26 @@ public class RowDefinition implements Serializable {
 	}
 
 	/**
+	 * Creates a new {@link Polygon3DColumn} instance to help create
+	 * {@link DBExpression expressions}
+	 *
+	 * <p>
+	 * This method is the easy way to create a reference to the database column
+	 * represented by the field for use in creating complex expressions within
+	 * your query.
+	 *
+	 * <p>
+	 * For use with the
+	 * {@link DBQuery#addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression) DBQuery addCondition method}
+	 *
+	 * @param fieldOfThisInstance	fieldOfThisInstance
+	 * @return A {@link Polygon3DColumn} representing the supplied field
+	 */
+	public Polygon3DColumn column(DBPolygon3D fieldOfThisInstance) {
+		return new Polygon3DColumn(this, fieldOfThisInstance);
+	}
+
+	/**
 	 * Creates a new {@link Point2DColumn} instance to help create
 	 * {@link DBExpression expressions}
 	 *
@@ -318,6 +343,16 @@ public class RowDefinition implements Serializable {
 			col = this.column((DBLineSegment2D) fieldOfThisInstance);
 		} else if (DBMultiPoint2D.class.isAssignableFrom(fieldOfThisInstance.getClass())) {
 			col = this.column((DBMultiPoint2D) fieldOfThisInstance);
+		} else if (DBPolygon3D.class.isAssignableFrom(fieldOfThisInstance.getClass())) {
+			col = this.column((DBPolygon3D) fieldOfThisInstance);
+		} else if (DBPoint3D.class.isAssignableFrom(fieldOfThisInstance.getClass())) {
+			col = this.column((DBPoint3D) fieldOfThisInstance);
+		} else if (DBLine3D.class.isAssignableFrom(fieldOfThisInstance.getClass())) {
+			col = this.column((DBLine3D) fieldOfThisInstance);
+		} else if (DBLineSegment3D.class.isAssignableFrom(fieldOfThisInstance.getClass())) {
+			col = this.column((DBLineSegment3D) fieldOfThisInstance);
+		} else if (DBMultiPoint3D.class.isAssignableFrom(fieldOfThisInstance.getClass())) {
+			col = this.column((DBMultiPoint3D) fieldOfThisInstance);
 		} else if (DBNumberStatistics.class.isAssignableFrom(fieldOfThisInstance.getClass())) {
 			col = this.column((DBNumber) fieldOfThisInstance);
 		}

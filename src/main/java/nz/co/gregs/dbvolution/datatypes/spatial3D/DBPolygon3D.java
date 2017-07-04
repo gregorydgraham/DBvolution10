@@ -15,8 +15,8 @@
  */
 package nz.co.gregs.dbvolution.datatypes.spatial3D;
 
-import nz.co.gregs.dbvolution.datatypes.TransformRequiredForSelectClause;
 import com.vividsolutions.jts.geom.Polygon;
+import nz.co.gregs.dbvolution.datatypes.TransformRequiredForSelectClause;
 import com.vividsolutions.jts.io.ParseException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -43,7 +43,7 @@ import nz.co.gregs.dbvolution.results.Polygon3DResult;
  *
  * @author Gregory Graham
  */
-public class DBPolygon3D extends QueryableDatatype<Polygon> implements TransformRequiredForSelectClause, Polygon3DResult {
+public class DBPolygon3D extends QueryableDatatype<PolygonZ> implements TransformRequiredForSelectClause, Polygon3DResult {
 
 	private static final long serialVersionUID = 1L;
 
@@ -64,7 +64,7 @@ public class DBPolygon3D extends QueryableDatatype<Polygon> implements Transform
 	 *
 	 * @param polygon the value to be set in the database.
 	 */
-	public void setValue(Polygon polygon) {
+	public void setValue(PolygonZ polygon) {
 		setLiteralValue(polygon);
 	}
 
@@ -90,7 +90,7 @@ public class DBPolygon3D extends QueryableDatatype<Polygon> implements Transform
 	 *
 	 * @param polygon
 	 */
-	public DBPolygon3D(Polygon polygon) {
+	public DBPolygon3D(PolygonZ polygon) {
 		super(polygon);
 	}
 
@@ -101,26 +101,38 @@ public class DBPolygon3D extends QueryableDatatype<Polygon> implements Transform
 
 	@Override
 	protected String formatValueForSQLStatement(DBDatabase db) {
-		Polygon geom = getLiteralValue();
+		PolygonZ geom = getLiteralValue();
 		return db.getDefinition().transformPolygonIntoDatabasePolygon3DFormat(geom);
 	}
 
 	@Override
-	protected Polygon getFromResultSet(DBDatabase database, ResultSet resultSet, String fullColumnName) throws SQLException {
+	protected PolygonZ getFromResultSet(DBDatabase database, ResultSet resultSet, String fullColumnName) throws SQLException {
 
-		Polygon geometry = null;
+		PolygonZ geometry = null;
 		String string = resultSet.getString(fullColumnName);
 		if (string == null) {
 			return null;
 		} else {
 			try {
-				geometry = database.getDefinition().transformDatabasePolygon3DToJTSPolygon(string);
+				geometry =database.getDefinition().transformDatabasePolygon3DToPolygonZ(string);
 			} catch (ParseException ex) {
 				Logger.getLogger(DBPolygon3D.class.getName()).log(Level.SEVERE, null, ex);
 				throw new nz.co.gregs.dbvolution.exceptions.ParsingSpatialValueException(fullColumnName, string, ex);
 			}
 			return geometry;
 		}
+	}
+
+	/**
+	 * Convert the value of this object to a {@link PolygonZ}.
+	 *
+	 * <p>
+	 * NULL is valid result from this method.
+	 *
+	 * @return the set value of this object as a PolygonZ object.
+	 */
+	public PolygonZ polygonZValue() {
+		return (this.getLiteralValue() != null) ? this.getLiteralValue() : null;
 	}
 
 	/**
@@ -132,12 +144,12 @@ public class DBPolygon3D extends QueryableDatatype<Polygon> implements Transform
 	 * @return the set value of this object as a JTS Polygon object.
 	 */
 	public Polygon jtsPolygonValue() {
-		return (this.getLiteralValue() != null) ? this.getLiteralValue() : null;
+		return polygonZValue();
 	}
 
 	@Override
-	public Polygon getValue() {
-		return jtsPolygonValue();
+	public PolygonZ getValue() {
+		return polygonZValue();
 	}
 
 	@Override
@@ -150,30 +162,6 @@ public class DBPolygon3D extends QueryableDatatype<Polygon> implements Transform
 		return false;
 	}
 
-//	@Override
-//	public NumberExpression measurableDimensions() {
-//		return NumberExpression.value(2);
-//	}
-//
-//	@Override
-//	public NumberExpression spatialDimensions() {
-//		return NumberExpression.value(2);
-//	}
-//
-//	@Override
-//	public BooleanExpression hasMagnitude() {
-//		return BooleanExpression.falseExpression();
-//	}
-//
-//	@Override
-//	public NumberExpression magnitude() {
-//		return NumberExpression.value((Number)null);
-//	}
-//	
-//	@Override
-//	public StringExpression toWKTFormat(){
-//		return StringExpression.value(jtsPolygonValue().toText());
-//	}
 	@Override
 	public StringExpression stringResult() {
 		return Polygon3DExpression.value(this).stringResult();

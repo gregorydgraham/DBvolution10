@@ -38,9 +38,9 @@ import static org.hamcrest.Matchers.*;
 import org.junit.Assert;
 import org.junit.Test;
 
-public class DBPolygonTest extends AbstractTest {
+public class DBPolygon2DTest extends AbstractTest {
 
-	public DBPolygonTest(Object testIterationName, Object db) {
+	public DBPolygon2DTest(Object testIterationName, Object db) {
 		super(testIterationName, db);
 	}
 

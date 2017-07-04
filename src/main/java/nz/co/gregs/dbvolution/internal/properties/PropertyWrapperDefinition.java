@@ -16,6 +16,7 @@ import nz.co.gregs.dbvolution.exceptions.DBThrownByEndUserCodeException;
 import nz.co.gregs.dbvolution.expressions.DBExpression;
 import nz.co.gregs.dbvolution.query.RowDefinition;
 import nz.co.gregs.dbvolution.results.Spatial2DResult;
+import nz.co.gregs.dbvolution.results.Spatial3DResult;
 
 /**
  * Abstracts a java field or bean-property as a DBvolution-centric property,
@@ -601,6 +602,11 @@ public class PropertyWrapperDefinition {
 	boolean isSpatial2DType() {
 		Class<? extends QueryableDatatype<?>> qdt = type();
 		return (Spatial2DResult.class.isAssignableFrom(qdt));
+	}
+	
+	boolean isSpatial3DType() {
+		Class<? extends QueryableDatatype<?>> qdt = type();
+		return (Spatial3DResult.class.isAssignableFrom(qdt));
 	}
 	
 	boolean isAutoFilling() {
