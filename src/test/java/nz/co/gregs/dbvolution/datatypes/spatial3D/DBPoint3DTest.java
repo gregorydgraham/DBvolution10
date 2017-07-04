@@ -36,19 +36,20 @@ public class DBPoint3DTest extends AbstractTest {
 
 	@Test
 	public void testSetValue() {
-		Coordinate coordinate = new Coordinate(2, 3, 5);
+		PointZ point = new GeometryFactory3D().createPointZ(new Coordinate(2, 3, 5));
 		DBPoint3D instance = new DBPoint3D();
-		instance.setValue(coordinate);
-		Coordinate value = instance.getValue();
-		Assert.assertThat(value.x, Matchers.is(2.0));
-		Assert.assertThat(value.y, Matchers.is(3.0));
-		Assert.assertThat(value.z, Matchers.is(5.0));
+		instance.setValue(point);
+		PointZ value = instance.getValue();
+		final Coordinate coordinate = value.getCoordinate();
+		Assert.assertThat(coordinate.x, Matchers.is(2.0));
+		Assert.assertThat(coordinate.y, Matchers.is(3.0));
+		Assert.assertThat(coordinate.z, Matchers.is(5.0));
 	}
 
 	@Test
 	public void testGetSQLDatatype() {
 		DBPoint3D instance = new DBPoint3D();
-		String expResult = " POINT ";
+		String expResult = " POINTZ ";
 		String result = instance.getSQLDatatype();
 		assertEquals(expResult, result);
 	}

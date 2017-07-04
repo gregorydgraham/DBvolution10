@@ -24,6 +24,8 @@ import java.util.Set;
 import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.datatypes.spatial3D.DBPoint3D;
+import nz.co.gregs.dbvolution.datatypes.spatial3D.GeometryFactory3D;
+import nz.co.gregs.dbvolution.datatypes.spatial3D.PointZ;
 import nz.co.gregs.dbvolution.results.PointResult;
 
 /**
@@ -64,8 +66,20 @@ public class Point3DExpression implements PointResult, Point3DResult, EqualCompa
 	 *
 	 * @param point
 	 */
-	public Point3DExpression(Coordinate point) {
+	public Point3DExpression(PointZ point) {
 		innerPoint = new DBPoint3D(point);
+		if (point == null || innerPoint.getIncludesNull()) {
+			nullProtectionRequired = true;
+		}
+	}
+
+	/**
+	 * Create a Point3DExpression that represents the point value provided.
+	 *
+	 * @param point
+	 */
+	public Point3DExpression(Coordinate point) {
+		innerPoint = new DBPoint3D(new GeometryFactory3D().createPointZ(point));
 		if (point == null || innerPoint.getIncludesNull()) {
 			nullProtectionRequired = true;
 		}
@@ -78,6 +92,16 @@ public class Point3DExpression implements PointResult, Point3DResult, EqualCompa
 	 * @return a Point3DExpression of the point.
 	 */
 	public static Point3DExpression value(Coordinate point) {
+		return new Point3DExpression(point);
+	}
+
+	/**
+	 * Create a Point3DExpression that represents the point value provided.
+	 *
+	 * @param point the value of this expression.
+	 * @return a Point3DExpression of the point.
+	 */
+	public static Point3DExpression value(PointZ point) {
 		return new Point3DExpression(point);
 	}
 
@@ -233,7 +257,7 @@ public class Point3DExpression implements PointResult, Point3DResult, EqualCompa
 	 * @param rightHandSide the value to compare against.
 	 * @return a BooleanExpression
 	 */
-	public BooleanExpression is(Coordinate rightHandSide) {
+	public BooleanExpression is(PointZ rightHandSide) {
 		return is(new DBPoint3D(rightHandSide));
 	}
 
@@ -266,7 +290,7 @@ public class Point3DExpression implements PointResult, Point3DResult, EqualCompa
 	 * @param rightHandSide the value to compare against.
 	 * @return a BooleanExpression
 	 */
-	public BooleanExpression isNot(Coordinate rightHandSide) {
+	public BooleanExpression isNot(PointZ rightHandSide) {
 		return isNot(new DBPoint3D(rightHandSide));
 	}
 

@@ -46,6 +46,7 @@ import nz.co.gregs.dbvolution.datatypes.spatial2D.DBMultiPoint2D;
 import nz.co.gregs.dbvolution.datatypes.spatial2D.DBPoint2D;
 import nz.co.gregs.dbvolution.datatypes.spatial2D.DBPolygon2D;
 import nz.co.gregs.dbvolution.datatypes.spatial3D.GeometryFactory3D;
+import nz.co.gregs.dbvolution.datatypes.spatial3D.PointZ;
 import nz.co.gregs.dbvolution.datatypes.spatial3D.PolygonZ;
 import nz.co.gregs.dbvolution.exceptions.AutoIncrementFieldClassAndDatatypeMismatch;
 import nz.co.gregs.dbvolution.exceptions.IncorrectGeometryReturnedForDatatype;
@@ -3726,8 +3727,9 @@ public abstract class DBDefinition {
 	 * @param point a point to be turned into an SQL point2d value.
 	 * @return SQL
 	 */
-	public String transformPoint3DIntoDatabaseFormat(Coordinate point) {
-		return transformCoordinatesIntoDatabasePoint3DFormat(""+point.x, ""+point.y, ""+point.z);
+	public String transformPointZIntoDatabaseFormat(PointZ point) {
+		Coordinate coordinate = point.getCoordinate();
+		return transformCoordinatesIntoDatabasePoint3DFormat(""+coordinate.x, ""+coordinate.y, ""+coordinate.z);
 	}
 
 	/**
@@ -3784,12 +3786,13 @@ public abstract class DBDefinition {
 	 * @throws com.vividsolutions.jts.io.ParseException if the database result is
 	 * not a valid WKT
 	 */
-	public Coordinate transformDatabasePoint3DValueToCoordinate(String pointAsString) throws com.vividsolutions.jts.io.ParseException {
-		Coordinate point = new Coordinate(0,0,0);
+	public PointZ transformDatabasePoint3DValueToPointZ(String pointAsString) throws com.vividsolutions.jts.io.ParseException {
+		final GeometryFactory3D geometryFactory = new GeometryFactory3D();
+		PointZ point = geometryFactory.createPointZ(new Coordinate(0,0,0));
 		WKTReader wktReader = new WKTReader();
 		Geometry geometry = wktReader.read(pointAsString);
 		if (geometry instanceof Point) {
-			point = geometry.getCoordinates()[0];
+			point = (PointZ)geometry;
 		} else {
 			throw new IncorrectGeometryReturnedForDatatype(geometry, geometry.getCentroid());
 		}

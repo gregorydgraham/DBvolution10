@@ -29,6 +29,7 @@ import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.DBQuery;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.datatypes.spatial3D.DBPolygon3D;
+import nz.co.gregs.dbvolution.datatypes.spatial3D.PointZ;
 import nz.co.gregs.dbvolution.datatypes.spatial3D.PolygonZ;
 
 /**
@@ -158,6 +159,22 @@ public class Polygon3DExpression implements Polygon3DResult, EqualComparable<Pol
 	public static Polygon3DExpression value(Coordinate... points) {
 		List<Point3DExpression> exprs = new ArrayList<Point3DExpression>();
 		for (Coordinate point : points) {
+			exprs.add(Point3DExpression.value(point));
+		}
+		return polygon3DFromPoint3DExpressionArray(exprs.toArray(new Point3DExpression[]{}));
+	}
+
+	/**
+	 * Create a Polygon3DExpression that represents the value for use in {@link DBQuery#addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression)
+	 * }, and when creating column expressions using {@link DBPolygon3D#DBPolygon3D(nz.co.gregs.dbvolution.expressions.Polygon3DExpression)
+	 * } and similar methods.
+	 *
+	 * @param points the points that define the polygon value of this expression.
+	 * @return a polygon3D expression
+	 */
+	public static Polygon3DExpression value(PointZ... points) {
+		List<Point3DExpression> exprs = new ArrayList<Point3DExpression>();
+		for (PointZ point : points) {
 			exprs.add(Point3DExpression.value(point));
 		}
 		return polygon3DFromPoint3DExpressionArray(exprs.toArray(new Point3DExpression[]{}));
@@ -351,6 +368,17 @@ public class Polygon3DExpression implements Polygon3DResult, EqualComparable<Pol
 	 * @return a boolean expression
 	 */
 	public BooleanExpression contains(Coordinate rightHandSide) {
+		return contains(Point3DExpression.value(rightHandSide));
+	}
+
+	/**
+	 * Returns an expression that will evaluate to true if the point is inside
+	 * this polygon value.
+	 *
+	 * @param rightHandSide the polygon to compare against
+	 * @return a boolean expression
+	 */
+	public BooleanExpression contains(PointZ rightHandSide) {
 		return contains(Point3DExpression.value(rightHandSide));
 	}
 

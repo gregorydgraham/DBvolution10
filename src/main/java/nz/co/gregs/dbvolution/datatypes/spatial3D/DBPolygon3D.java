@@ -96,7 +96,7 @@ public class DBPolygon3D extends QueryableDatatype<PolygonZ> implements Transfor
 
 	@Override
 	public String getSQLDatatype() {
-		return "POLYGON";
+		return "POLYGONZ";
 	}
 
 	@Override

@@ -10,6 +10,7 @@ import com.vividsolutions.jts.geom.CoordinateSequence;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.LinearRing;
+import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.geom.Polygon;
 
 /**
@@ -19,6 +20,14 @@ import com.vividsolutions.jts.geom.Polygon;
 public class GeometryFactory3D  extends GeometryFactory{
 
 	private static final long serialVersionUID = 1L;
+
+	public PointZ createPointZ(CoordinateSequence coordinates) {
+		return new PointZ(coordinates, this); //To change body of generated methods, choose Tools | Templates.
+	}
+
+	public PointZ createPointZ(Coordinate coordinate) {
+		return new PointZ(coordinate != null ? getCoordinateSequenceFactory().create(new Coordinate[]{coordinate}) : null, this);
+	}
 
 	public PolygonZ createPolygonZ(Coordinate[] coords){
 		return createPolygonZ(createLinearRing(coords));
