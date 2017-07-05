@@ -7,9 +7,11 @@ package nz.co.gregs.dbvolution.datatypes.spatial3D;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.CoordinateSequence;
+import com.vividsolutions.jts.geom.CoordinateSequences;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.LinearRing;
+import com.vividsolutions.jts.geom.MultiPoint;
 import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.geom.Polygon;
 
@@ -27,6 +29,11 @@ public class GeometryFactory3D extends GeometryFactory {
 
 	public PointZ createPointZ(Coordinate coordinate) {
 		return new PointZ(coordinate != null ? getCoordinateSequenceFactory().create(new Coordinate[]{coordinate}) : null, this);
+	}
+
+	public PointZ createPointZ(Point point) {
+		final Coordinate coord = point.getCoordinate();
+		return createPointZ(new Coordinate(coord.x, coord.y, Double.isNaN(coord.z) ? 0.0 : coord.z));
 	}
 
 	public LineStringZ createLineStringZ(LineString line) {
@@ -77,6 +84,46 @@ public class GeometryFactory3D extends GeometryFactory {
 			}
 		}
 		return createPolygonZ(shell, holes);
+	}
+
+	public MultiPointZ createMultiPointZ(CoordinateSequence coordinates) {
+		if (coordinates == null) {
+			return createMultiPointZ(new PointZ[0]);
+		}
+		PointZ[] points = new PointZ[coordinates.size()];
+		for (int i = 0; i < coordinates.size(); i++) {
+			CoordinateSequence ptSeq = getCoordinateSequenceFactory()
+					.create(1, coordinates.getDimension());
+			CoordinateSequences.copy(coordinates, i, ptSeq, 0, 1);
+			if (Double.isNaN(ptSeq.getOrdinate(i, 2))) {
+				ptSeq.setOrdinate(i, 2, 0);
+			}
+			points[i] = createPointZ(ptSeq);
+		}
+
+		return createMultiPointZ(points);
+	}
+
+	public MultiPointZ createMultiPointZ(Coordinate[] coordinates) {
+		return createMultiPointZ(coordinates != null
+				? getCoordinateSequenceFactory().create(coordinates)
+				: null);
+	}
+
+	public MultiPointZ createMultiPointZ(MultiPoint point) {
+		return createMultiPointZ(point.getCoordinates());
+	}
+
+	public MultiPointZ createMultiPointZ(PointZ[] point) {
+		return new MultiPointZ(point, this);
+	}
+
+	public MultiPointZ createMultiPointZ(Point[] points) {
+		PointZ[] zPoints = new PointZ[points.length];
+		for (int i = 0; i < points.length; i++) {
+			zPoints[i] = createPointZ(points[i]);
+		}
+		return createMultiPointZ(zPoints);
 	}
 
 }

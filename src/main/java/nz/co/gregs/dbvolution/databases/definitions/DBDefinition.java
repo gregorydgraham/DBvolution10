@@ -46,7 +46,9 @@ import nz.co.gregs.dbvolution.datatypes.spatial2D.DBMultiPoint2D;
 import nz.co.gregs.dbvolution.datatypes.spatial2D.DBPoint2D;
 import nz.co.gregs.dbvolution.datatypes.spatial2D.DBPolygon2D;
 import nz.co.gregs.dbvolution.datatypes.spatial3D.GeometryFactory3D;
+import nz.co.gregs.dbvolution.datatypes.spatial3D.LineSegmentZ;
 import nz.co.gregs.dbvolution.datatypes.spatial3D.LineStringZ;
+import nz.co.gregs.dbvolution.datatypes.spatial3D.MultiPointZ;
 import nz.co.gregs.dbvolution.datatypes.spatial3D.PointZ;
 import nz.co.gregs.dbvolution.datatypes.spatial3D.PolygonZ;
 import nz.co.gregs.dbvolution.exceptions.AutoIncrementFieldClassAndDatatypeMismatch;
@@ -4545,16 +4547,17 @@ public abstract class DBDefinition {
 	 * @throws com.vividsolutions.jts.io.ParseException malformed WKT will throw
 	 * an exception
 	 */
-	public LineSegment transformDatabaseLineSegment3DValueToJTSLineSegment(String lineSegmentAsSQL) throws com.vividsolutions.jts.io.ParseException {
-		LineString lineString = (new GeometryFactory()).createLineString(new Coordinate[]{});
+	public LineSegmentZ transformDatabaseLineSegment3DValueToLineSegmentZ(String lineSegmentAsSQL) throws com.vividsolutions.jts.io.ParseException {
+		final GeometryFactory3D factory = new GeometryFactory3D();
+		LineStringZ lineString = factory.createLineStringZ(new Coordinate[]{});
 		WKTReader wktReader = new WKTReader();
 		Geometry geometry = wktReader.read(lineSegmentAsSQL);
 		if (geometry instanceof LineString) {
-			lineString = (LineString) geometry;
+			lineString = factory.createLineStringZ((LineString)geometry);
 			if (lineSegmentAsSQL == null) {
 				return null;
 			} else {
-				return new LineSegment(lineString.getCoordinateN(0), lineString.getCoordinateN(1));
+				return new LineSegmentZ(lineString.getCoordinateN(0), lineString.getCoordinateN(1));
 			}
 		} else {
 			throw new IncorrectGeometryReturnedForDatatype(geometry, lineString);
@@ -4589,8 +4592,8 @@ public abstract class DBDefinition {
 	 * @return an SQL expression that can be interpreted by the database as a line
 	 * segment.
 	 */
-	public String transformLineSegmentIntoDatabaseLineSegment3DFormat(LineSegment lineSegment) {
-		LineString line = (new GeometryFactory()).createLineString(new Coordinate[]{lineSegment.getCoordinate(0), lineSegment.getCoordinate(1)});
+	public String transformLineSegmentZIntoDatabaseLineSegment3DFormat(LineSegmentZ lineSegment) {
+		LineStringZ line = (new GeometryFactory3D()).createLineStringZ(new Coordinate[]{lineSegment.getCoordinateN(0), lineSegment.getCoordinateN(1)});
 		String wktValue = line.toText();
 		return "'" + wktValue + "'";
 	}
@@ -4981,14 +4984,15 @@ public abstract class DBDefinition {
 	 * @throws com.vividsolutions.jts.io.ParseException malformed WKT values will
 	 * throw an exception
 	 */
-	public MultiPoint transformDatabaseMultiPoint3DValueToJTSMultiPoint(String pointsAsString) throws com.vividsolutions.jts.io.ParseException {
-		MultiPoint mpoint = (new GeometryFactory()).createMultiPoint(new Coordinate[]{});
+	public MultiPointZ transformDatabaseMultiPoint3DValueToMultiPointZ(String pointsAsString) throws com.vividsolutions.jts.io.ParseException {
+		final GeometryFactory3D factory = new GeometryFactory3D();
+		MultiPointZ mpoint = factory.createMultiPointZ(new Coordinate[]{});
 		WKTReader wktReader = new WKTReader();
 		Geometry geometry = wktReader.read(pointsAsString);
 		if (geometry instanceof MultiPoint) {
-			mpoint = (MultiPoint) geometry;
+			mpoint =factory.createMultiPointZ((MultiPoint)geometry);
 		} else if (geometry instanceof Point) {
-			mpoint = (new GeometryFactory().createMultiPoint(new Point[]{((Point) geometry)}));
+			mpoint = factory.createMultiPointZ(new Point[]{((Point) geometry)});
 		} else {
 			throw new IncorrectGeometryReturnedForDatatype(geometry, geometry);
 		}

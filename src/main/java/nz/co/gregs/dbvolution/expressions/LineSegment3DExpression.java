@@ -18,13 +18,13 @@ package nz.co.gregs.dbvolution.expressions;
 import nz.co.gregs.dbvolution.results.EqualComparable;
 import nz.co.gregs.dbvolution.results.LineSegment3DResult;
 import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.LineSegment;
 import com.vividsolutions.jts.geom.Point;
 import java.util.HashSet;
 import java.util.Set;
 import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.datatypes.spatial3D.DBLineSegment3D;
+import nz.co.gregs.dbvolution.datatypes.spatial3D.LineSegmentZ;
 
 /**
  * Represents expressions that produce a geometry consisting of 2 points and
@@ -65,7 +65,7 @@ public class LineSegment3DExpression implements LineSegment3DResult, EqualCompar
 	 *
 	 * @param line
 	 */
-	public LineSegment3DExpression(LineSegment line) {
+	public LineSegment3DExpression(LineSegmentZ line) {
 		innerLineString = new DBLineSegment3D(line);
 		initInnerLine(line, line, innerLineString);
 	}
@@ -79,9 +79,9 @@ public class LineSegment3DExpression implements LineSegment3DResult, EqualCompar
 	 * @param point2y
 	 */
 	public LineSegment3DExpression(Double point1x, Double point1y, Double point2x, Double point2y) {
-		LineSegment line = null;
+		LineSegmentZ line = null;
 		if (point1x != null && point1y != null && point2x != null && point2y != null) {
-			line = new LineSegment(point1x, point1y, point2x, point2y);
+			line = new LineSegmentZ(point1x, point1y, point2x, point2y);
 			innerLineString = new DBLineSegment3D(line);
 		} else {
 			innerLineString = new DBLineSegment3D(line);
@@ -97,9 +97,9 @@ public class LineSegment3DExpression implements LineSegment3DResult, EqualCompar
 	 *
 	 */
 	public LineSegment3DExpression(Point point1, Point point2) {
-		LineSegment line = null;
+		LineSegmentZ line = null;
 		if (point1 != null && point2 != null) {
-			line = new LineSegment(point1.getCoordinate(), point2.getCoordinate());
+			line = new LineSegmentZ(point1.getCoordinate(), point2.getCoordinate());
 			innerLineString = new DBLineSegment3D(line);
 		} else {
 			innerLineString = new DBLineSegment3D(line);
@@ -114,9 +114,9 @@ public class LineSegment3DExpression implements LineSegment3DResult, EqualCompar
 	 * @param coord2
 	 */
 	public LineSegment3DExpression(Coordinate coord1, Coordinate coord2) {
-		LineSegment line = null;
+		LineSegmentZ line = null;
 		if (coord1 != null && coord2 != null) {
-			line = new LineSegment(coord1, coord2);
+			line = new LineSegmentZ(coord1, coord2);
 			innerLineString = new DBLineSegment3D(line);
 		} else {
 			innerLineString = new DBLineSegment3D(line);
@@ -166,7 +166,7 @@ public class LineSegment3DExpression implements LineSegment3DResult, EqualCompar
 	 * @param line the value of this line expression
 	 * @return a LineSegment3D expression
 	 */
-	public static LineSegment3DExpression value(LineSegment line) {
+	public static LineSegment3DExpression value(LineSegmentZ line) {
 		return new LineSegment3DExpression(line);
 	}
 
@@ -273,7 +273,7 @@ public class LineSegment3DExpression implements LineSegment3DResult, EqualCompar
 	 * @param rightHandSide the value to compare against
 	 * @return a BooleanExpression
 	 */
-	public BooleanExpression is(LineSegment rightHandSide) {
+	public BooleanExpression is(LineSegmentZ rightHandSide) {
 		return is(new DBLineSegment3D(rightHandSide));
 	}
 
@@ -300,7 +300,7 @@ public class LineSegment3DExpression implements LineSegment3DResult, EqualCompar
 	 * @return a BooleanExpression returning TRUE if the two line segments are
 	 * different, otherwise FALSE.
 	 */
-	public BooleanExpression isNot(LineSegment rightHandSide) {
+	public BooleanExpression isNot(LineSegmentZ rightHandSide) {
 		return isNot(new DBLineSegment3D(rightHandSide));
 	}
 
@@ -516,7 +516,7 @@ public class LineSegment3DExpression implements LineSegment3DResult, EqualCompar
 	 * @return a BooleanExpression that will be TRUE if the lines ever cross,
 	 * otherwise FALSE.
 	 */
-	public BooleanExpression intersects(LineSegment linesegment) {
+	public BooleanExpression intersects(LineSegmentZ linesegment) {
 		return this.intersects(new LineSegment3DExpression(linesegment));
 	}
 
@@ -586,7 +586,7 @@ public class LineSegment3DExpression implements LineSegment3DResult, EqualCompar
 	 * @param lineString the line segment to compare against
 	 * @return a Point3DExpression
 	 */
-	public Point3DExpression intersectionWith(LineSegment lineString) {
+	public Point3DExpression intersectionWith(LineSegmentZ lineString) {
 		return this.intersectionWith(new LineSegment3DExpression(lineString));
 	}
 

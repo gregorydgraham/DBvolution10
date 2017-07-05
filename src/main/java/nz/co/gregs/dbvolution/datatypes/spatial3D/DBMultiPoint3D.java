@@ -46,7 +46,7 @@ import nz.co.gregs.dbvolution.results.MultiPoint3DResult;
  *
  * @author Gregory Graham
  */
-public class DBMultiPoint3D extends QueryableDatatype<MultiPoint> implements MultiPoint3DResult {
+public class DBMultiPoint3D extends QueryableDatatype<MultiPointZ> implements MultiPoint3DResult {
 
 	private static final long serialVersionUID = 1L;
 
@@ -64,7 +64,7 @@ public class DBMultiPoint3D extends QueryableDatatype<MultiPoint> implements Mul
 	 *
 	 * @param points the collection of points that are the value of this DBMultiPoint2D
 	 */
-	public DBMultiPoint3D(MultiPoint points) {
+	public DBMultiPoint3D(MultiPointZ points) {
 		super(points);
 	}
 
@@ -77,7 +77,7 @@ public class DBMultiPoint3D extends QueryableDatatype<MultiPoint> implements Mul
 	 *
 	 * @param point the value to be set in the database.
 	 */
-	public void setValue(MultiPoint point) {
+	public void setValue(MultiPointZ point) {
 		setLiteralValue(point);
 	}
 
@@ -91,8 +91,8 @@ public class DBMultiPoint3D extends QueryableDatatype<MultiPoint> implements Mul
 	 * @param coordinates the value to be set in the database.
 	 */
 	public void setValue(Coordinate... coordinates) {
-		GeometryFactory geometryFactory = new GeometryFactory();
-		MultiPoint mpoint = geometryFactory.createMultiPoint(coordinates);
+		GeometryFactory3D geometryFactory = new GeometryFactory3D();
+		MultiPointZ mpoint = geometryFactory.createMultiPointZ(coordinates);
 		this.setValue(mpoint);
 	}
 
@@ -106,8 +106,8 @@ public class DBMultiPoint3D extends QueryableDatatype<MultiPoint> implements Mul
 	 * @param points the value to be set in the database.
 	 */
 	public void setValue(Point... points) {
-		GeometryFactory geometryFactory = new GeometryFactory();
-		MultiPoint mpoint = geometryFactory.createMultiPoint(points);
+		GeometryFactory3D geometryFactory = new GeometryFactory3D();
+		MultiPointZ mpoint = geometryFactory.createMultiPointZ(points);
 		this.setValue(mpoint);
 	}
 
@@ -161,8 +161,8 @@ public class DBMultiPoint3D extends QueryableDatatype<MultiPoint> implements Mul
 	 *
 	 * @param points
 	 */
-	public DBMultiPoint3D(Point... points) {
-		super(new MultiPoint(points, new GeometryFactory()));
+	public DBMultiPoint3D(PointZ... points) {
+		super(new MultiPointZ(points, new GeometryFactory()));
 	}
 
 	@Override
@@ -182,15 +182,15 @@ public class DBMultiPoint3D extends QueryableDatatype<MultiPoint> implements Mul
 	}
 
 	@Override
-	protected MultiPoint getFromResultSet(DBDatabase database, ResultSet resultSet, String fullColumnName) throws SQLException, IncorrectGeometryReturnedForDatatype {
+	protected MultiPointZ getFromResultSet(DBDatabase database, ResultSet resultSet, String fullColumnName) throws SQLException, IncorrectGeometryReturnedForDatatype {
 
-		MultiPoint point = null;
+		MultiPointZ point = null;
 		String string = resultSet.getString(fullColumnName);
 		if (string == null) {
 			return null;
 		} else {
 			try {
-				point = database.getDefinition().transformDatabaseMultiPoint2DValueToJTSMultiPoint(string);
+				point = database.getDefinition().transformDatabaseMultiPoint3DValueToMultiPointZ(string);
 			} catch (ParseException ex) {
 				Logger.getLogger(DBPoint3D.class.getName()).log(Level.SEVERE, null, ex);
 				throw new ParsingSpatialValueException(fullColumnName, string,ex);

@@ -39,12 +39,12 @@ public class DBLineSegment3DTest extends AbstractTest{
 	public void testSetValueLineString() {
 		Coordinate coordinate1 = new Coordinate(2, 3, 5);
 		Coordinate coordinate2 = new Coordinate(3, 4, 6);
-		LineSegment line = new LineSegment(coordinate1, coordinate2);
+		LineSegmentZ line = new LineSegmentZ(coordinate1, coordinate2);
 		DBLineSegment3D instance = new DBLineSegment3D();
 		instance.setValue(line);
-		LineSegment value = instance.getValue();
-		Assert.assertThat(value.getCoordinate(0).x, is(2.0));
-		Assert.assertThat(value.getCoordinate(0).y, is(3.0));
+		LineSegmentZ value = instance.getValue();
+		Assert.assertThat(value.getCoordinateN(0).x, is(2.0));
+		Assert.assertThat(value.getCoordinateN(0).y, is(3.0));
 		Assert.assertThat(value.getCoordinate(0).z, is(5.0));
 	}
 
@@ -54,7 +54,7 @@ public class DBLineSegment3DTest extends AbstractTest{
 		Coordinate coordinate2 = new Coordinate(3, 4, 6);
 		DBLineSegment3D instance = new DBLineSegment3D();
 		instance.setValue(coordinate1, coordinate2);
-		LineSegment value = instance.getValue();
+		LineSegmentZ value = instance.getValue();
 		Assert.assertThat(value.getCoordinate(0).x, is(2.0));
 		Assert.assertThat(value.getCoordinate(0).y, is(3.0));
 		Assert.assertThat(value.getCoordinate(0).z, is(5.0));
@@ -69,7 +69,7 @@ public class DBLineSegment3DTest extends AbstractTest{
 		Point point2 = geomFactory.createPoint(coordinate2);
 		DBLineSegment3D instance = new DBLineSegment3D();
 		instance.setValue(point1, point2);
-		LineSegment value = instance.getValue();
+		LineSegmentZ value = instance.getValue();
 		Assert.assertThat(value.getCoordinate(0).x, is(2.0));
 		Assert.assertThat(value.getCoordinate(0).y, is(3.0));
 		Assert.assertThat(value.getCoordinate(0).z, is(5.0));

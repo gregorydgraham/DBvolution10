@@ -53,7 +53,7 @@ import nz.co.gregs.dbvolution.results.LineSegment3DResult;
  *
  * @author gregorygraham
  */
-public class DBLineSegment3D extends QueryableDatatype<LineSegment> implements LineSegment3DResult {
+public class DBLineSegment3D extends QueryableDatatype<LineSegmentZ> implements LineSegment3DResult {
 
 	private static final long serialVersionUID = 1L;
 
@@ -75,7 +75,7 @@ public class DBLineSegment3D extends QueryableDatatype<LineSegment> implements L
 	 *
 	 * @param lineSegment 
 	 */
-	public DBLineSegment3D(LineSegment lineSegment) {
+	public DBLineSegment3D(LineSegmentZ lineSegment) {
 		super(lineSegment);
 	}
 
@@ -101,7 +101,7 @@ public class DBLineSegment3D extends QueryableDatatype<LineSegment> implements L
 	 *
 	 * @param line
 	 */
-	public void setValue(LineSegment line) {
+	public void setValue(LineSegmentZ line) {
 		setLiteralValue(line);
 	}
 
@@ -119,7 +119,7 @@ public class DBLineSegment3D extends QueryableDatatype<LineSegment> implements L
 	 * @param point2
 	 */
 	public void setValue(Point point1, Point point2) {
-		LineSegment line = new LineSegment(point1.getCoordinate(), point2.getCoordinate());
+		LineSegmentZ line = new LineSegmentZ(point1.getCoordinate(), point2.getCoordinate());
 		setLiteralValue(line);
 	}
 
@@ -137,12 +137,12 @@ public class DBLineSegment3D extends QueryableDatatype<LineSegment> implements L
 	 * @param coord2 
 	 */
 	public void setValue(Coordinate coord1, Coordinate coord2) {
-		LineSegment line = new LineSegment(coord1, coord2);
+		LineSegmentZ line = new LineSegmentZ(coord1, coord2);
 		setLiteralValue(line);
 	}
 
 	@Override
-	public LineSegment getValue() {
+	public LineSegmentZ getValue() {
 		if (!isDefined() || isNull()) {
 			return null;
 		} else {
@@ -156,7 +156,7 @@ public class DBLineSegment3D extends QueryableDatatype<LineSegment> implements L
 	 *
 	 * @return the value of this object if defined and not NULL, NULL otherwise.
 	 */
-	public LineSegment jtsLineSegmentValue() {
+	public LineSegmentZ jtsLineSegmentValue() {
 		return getValue();
 	}
 
@@ -167,25 +167,25 @@ public class DBLineSegment3D extends QueryableDatatype<LineSegment> implements L
 
 	@Override
 	protected String formatValueForSQLStatement(DBDatabase db) {
-		LineSegment lineString = getValue();
+		LineSegmentZ lineString = getValue();
 		if (lineString == null) {
 			return db.getDefinition().getNull();
 		} else {
-			String str = db.getDefinition().transformLineSegmentIntoDatabaseLineSegment3DFormat(lineString);
+			String str = db.getDefinition().transformLineSegmentZIntoDatabaseLineSegment3DFormat(lineString);
 			return str;
 		}
 	}
 
 	@Override
-	protected LineSegment getFromResultSet(DBDatabase database, ResultSet resultSet, String fullColumnName) throws SQLException, IncorrectGeometryReturnedForDatatype {
+	protected LineSegmentZ getFromResultSet(DBDatabase database, ResultSet resultSet, String fullColumnName) throws SQLException, IncorrectGeometryReturnedForDatatype {
 
-		LineSegment lineSegment = null;
+		LineSegmentZ lineSegment = null;
 		String string = resultSet.getString(fullColumnName);
 		if (string == null) {
 			return null;
 		} else {
 			try {
-				lineSegment = database.getDefinition().transformDatabaseLineSegment3DValueToJTSLineSegment(string);
+				lineSegment = database.getDefinition().transformDatabaseLineSegment3DValueToLineSegmentZ(string);
 			} catch (com.vividsolutions.jts.io.ParseException ex) {
 				Logger.getLogger(DBLineSegment3D.class.getName()).log(Level.SEVERE, null, ex);
 				throw new ParsingSpatialValueException(fullColumnName, string,ex);

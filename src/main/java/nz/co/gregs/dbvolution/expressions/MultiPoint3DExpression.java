@@ -16,8 +16,6 @@
 package nz.co.gregs.dbvolution.expressions;
 
 import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.GeometryFactory;
-import com.vividsolutions.jts.geom.MultiPoint;
 import nz.co.gregs.dbvolution.results.EqualComparable;
 import com.vividsolutions.jts.geom.Point;
 import java.util.HashSet;
@@ -25,6 +23,9 @@ import java.util.Set;
 import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.datatypes.spatial3D.DBMultiPoint3D;
+import nz.co.gregs.dbvolution.datatypes.spatial3D.GeometryFactory3D;
+import nz.co.gregs.dbvolution.datatypes.spatial3D.MultiPointZ;
+import nz.co.gregs.dbvolution.datatypes.spatial3D.PointZ;
 import nz.co.gregs.dbvolution.results.MultiPoint3DResult;
 import nz.co.gregs.dbvolution.results.NumberResult;
 
@@ -68,7 +69,7 @@ public class MultiPoint3DExpression implements MultiPoint3DResult, EqualComparab
 	 *
 	 * @param points
 	 */
-	public MultiPoint3DExpression(Point... points) {
+	public MultiPoint3DExpression(PointZ... points) {
 		innerPoint = new DBMultiPoint3D(points);
 		if (points == null || points.length == 0 || innerPoint.getIncludesNull()) {
 			nullProtectionRequired = true;
@@ -81,7 +82,7 @@ public class MultiPoint3DExpression implements MultiPoint3DResult, EqualComparab
 	 *
 	 * @param points
 	 */
-	public MultiPoint3DExpression(MultiPoint points) {
+	public MultiPoint3DExpression(MultiPointZ points) {
 		innerPoint = new DBMultiPoint3D(points);
 		if (points == null || innerPoint.getIncludesNull()) {
 			nullProtectionRequired = true;
@@ -95,7 +96,7 @@ public class MultiPoint3DExpression implements MultiPoint3DResult, EqualComparab
 	 * @param points the points to include in this value
 	 * @return a MultiPoint3DExpression.
 	 */
-	public static MultiPoint3DExpression value(Point... points) {
+	public static MultiPoint3DExpression value(PointZ... points) {
 		return new MultiPoint3DExpression(points);
 	}
 
@@ -107,8 +108,8 @@ public class MultiPoint3DExpression implements MultiPoint3DResult, EqualComparab
 	 * @return a MultiPoint3DExpression.
 	 */
 	public static MultiPoint3DExpression value(Coordinate... coords) {
-		GeometryFactory geometryFactory = new GeometryFactory();
-		MultiPoint multiPoint = geometryFactory.createMultiPoint(coords);
+		GeometryFactory3D geometryFactory = new GeometryFactory3D();
+		MultiPointZ multiPoint = geometryFactory.createMultiPointZ(coords);
 		return new MultiPoint3DExpression(multiPoint);
 	}
 
@@ -119,7 +120,7 @@ public class MultiPoint3DExpression implements MultiPoint3DResult, EqualComparab
 	 * @param points the points to include in this value
 	 * @return a MultiPoint3DExpression representing the points
 	 */
-	public static MultiPoint3DExpression value(MultiPoint points) {
+	public static MultiPoint3DExpression value(MultiPointZ points) {
 		return new MultiPoint3DExpression(points);
 	}
 
@@ -228,7 +229,7 @@ public class MultiPoint3DExpression implements MultiPoint3DResult, EqualComparab
 	 * @param rightHandSide the value to compare against
 	 * @return a BooleanExpression
 	 */
-	public BooleanExpression is(MultiPoint rightHandSide) {
+	public BooleanExpression is(MultiPointZ rightHandSide) {
 		return is(new DBMultiPoint3D(rightHandSide));
 	}
 
@@ -254,7 +255,7 @@ public class MultiPoint3DExpression implements MultiPoint3DResult, EqualComparab
 	 * @param rightHandSide  the {@link MultiPoint} to compare to
 	 * @return a BooleanExpression
 	 */
-	public BooleanExpression isNot(MultiPoint rightHandSide) {
+	public BooleanExpression isNot(MultiPointZ rightHandSide) {
 		return this.is(rightHandSide).not();
 	}
 
