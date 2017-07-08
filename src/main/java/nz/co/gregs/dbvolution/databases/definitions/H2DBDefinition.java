@@ -833,6 +833,16 @@ public class H2DBDefinition extends DBDefinition {
 	}
 
 	@Override
+	public String doLineSegment3DGetMaxZTransform(String toSQLString) {
+		return LineSegment3DFunctions.MAXZ+"("+toSQLString+")";
+	}
+
+	@Override
+	public String doLineSegment3DGetMinZTransform(String toSQLString) {
+		return LineSegment3DFunctions.MINZ+"("+toSQLString+")";
+	}
+
+	@Override
 	public String doLineSegment3DGetBoundingBoxTransform(String toSQLString) {
 		return LineSegment3DFunctions.BOUNDINGBOX+"("+toSQLString+")";
 	}
