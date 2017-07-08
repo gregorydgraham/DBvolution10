@@ -56,7 +56,7 @@ public enum Point3DFunctions implements DBVFeature {
 	/**
 	 *
 	 */
-	BOUNDINGBOX("DBV_POINT3D_GETBOUNDINGBOX", "String", "String firstPoint", "			if (firstPoint == null) {\n" + "				return null;\n" + "			} else {\n" + "				String[] split = firstPoint.split(\"[ ()]+\");\n" + "				double x = Double.parseDouble(split[1]);\n" + "				double y = Double.parseDouble(split[2]);\n" + "				double z = Double.parseDouble(split[3]);\n" + "				String point = x+\" \"+y\" \"+z;\n" + "				String resultString = \"POLYGON ((\"+point+\", \"+point+\", \"+point+\", \"+point+\", \"+point+\"))\";\n" + "				return resultString;\n" + "			}"),
+	BOUNDINGBOX("DBV_POINT3D_GETBOUNDINGBOX", "String", "String firstPoint", "			if (firstPoint == null) {\n" + "				return null;\n" + "			} else {\n" + "				String[] split = firstPoint.split(\"[ ()]+\");\n" + "				double x = Double.parseDouble(split[1]);\n" + "				double y = Double.parseDouble(split[2]);\n" + "				double z = Double.parseDouble(split[3]);\n" + "				String point = x+\" \"+y+\" \"+z;\n" + "				String resultString = \"POLYGON ((\"+point+\", \"+point+\", \"+point+\", \"+point+\", \"+point+\"))\";\n" + "				return resultString;\n" + "			}"),
 	/**
 	 *
 	 */

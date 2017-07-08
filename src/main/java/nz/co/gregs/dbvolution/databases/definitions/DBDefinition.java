@@ -3795,7 +3795,7 @@ public abstract class DBDefinition {
 		WKTReader wktReader = new WKTReader();
 		Geometry geometry = wktReader.read(pointAsString);
 		if (geometry instanceof Point) {
-			point = (PointZ)geometry;
+			point = geometryFactory.createPointZ((Point)geometry);
 		} else {
 			throw new IncorrectGeometryReturnedForDatatype(geometry, geometry.getCentroid());
 		}

@@ -90,7 +90,6 @@ public class Line3DExpressionTest extends AbstractTest {
 		Assert.assertThat(allRows.size(), is(1));
 		Assert.assertThat(allRows.get(0).line_id.intValue(), is(1));
 		Assert.assertThat(allRows.get(0).line.lineStringZValue(), is(line));
-		Assert.fail();
 	}
 
 	@Test

@@ -72,7 +72,7 @@ public class Point3DExpressionTest extends AbstractTest {
 
 	@Test
 	public void testToWKTValue() throws SQLException {
-		PointZ point = geometryFactory.createPointZ(new Coordinate(2.0, 3.0));
+		PointZ point = geometryFactory.createPointZ(new Coordinate(2.0, 3.0, 4.0));
 		final PointTestTable pointTestTable = new PointTestTable();
 		DBQuery dbQuery = database.getDBQuery(pointTestTable);
 		dbQuery.addCondition(Point3DExpression.value(point).toWKTFormat().is(pointTestTable.column(pointTestTable.point).toWKTFormat()));
@@ -84,7 +84,7 @@ public class Point3DExpressionTest extends AbstractTest {
 
 	@Test
 	public void testValue() throws SQLException {
-		PointZ point = geometryFactory.createPointZ(new Coordinate(2.0, 3.0));
+		PointZ point = geometryFactory.createPointZ(new Coordinate(2.0, 3.0, 4.0));
 		final PointTestTable pointTestTable = new PointTestTable();
 		DBQuery dbQuery = database.getDBQuery(pointTestTable);
 		dbQuery.addCondition(Point3DExpression.value(point).is(pointTestTable.column(pointTestTable.point)));
@@ -96,7 +96,7 @@ public class Point3DExpressionTest extends AbstractTest {
 
 	@Test
 	public void testValueUsingLongs() throws SQLException {
-		PointZ point = geometryFactory.createPointZ(new Coordinate(2.0, 3.0));
+		PointZ point = geometryFactory.createPointZ(new Coordinate(2.0, 3.0, 4.0));
 		final PointTestTable pointTestTable = new PointTestTable();
 		DBQuery dbQuery = database.getDBQuery(pointTestTable);
 		dbQuery.addCondition(Point3DExpression.value(2L,3L,4L).is(pointTestTable.column(pointTestTable.point)));
@@ -259,7 +259,7 @@ public class Point3DExpressionTest extends AbstractTest {
 		Assert.assertThat(allRows.size(), is(3));
 
 		dbQuery = database.getDBQuery(pointTestTable);
-		dbQuery.addCondition(pointTestTable.column(pointTestTable.point).getY().is(6));
+		dbQuery.addCondition(pointTestTable.column(pointTestTable.point).getZ().is(6));
 		allRows = dbQuery.getAllInstancesOf(pointTestTable);
 		Assert.assertThat(allRows.size(), is(0));
 	}
@@ -364,7 +364,7 @@ public class Point3DExpressionTest extends AbstractTest {
 	public void testSpatialDimension() throws SQLException {
 		final PointTestTable pointTestTable = new PointTestTable();
 		DBQuery dbQuery = database.getDBQuery(pointTestTable);
-		dbQuery.addCondition(pointTestTable.column(pointTestTable.point).spatialDimensions().is(2));
+		dbQuery.addCondition(pointTestTable.column(pointTestTable.point).spatialDimensions().is(3));
 		List<PointTestTable> allRows = dbQuery.getAllInstancesOf(pointTestTable);
 		Assert.assertThat(allRows.size(), is(3));
 	}
@@ -400,15 +400,7 @@ public class Point3DExpressionTest extends AbstractTest {
 		Assert.assertThat(allRows.size(), is(1));
 		Assert.assertThat(allRows.get(0).point_id.intValue(), is(1));
 		final String boundingText = allRows.get(0).boundingBox.jtsPolygonValue().toText();
-		String[] splits = boundingText.split("[^-0-9.]+");
-		int numbersTested = 0;
-		for (String split : splits) {
-			if (split.length() > 0) {
-				Assert.assertThat(Math.round(Double.parseDouble(split) * 1000) / 1000.0, isOneOf(2.0, 3.0));
-				numbersTested++;
-			}
-		}
-		Assert.assertThat(numbersTested, is(10));
+		Assert.assertThat(boundingText, is("POLYGON ((2 3 4, 2 3 4, 2 3 4, 2 3 4, 2 3 4))"));
 	}
 
 	public static class DistanceTest extends PointTestTable {

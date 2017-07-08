@@ -408,7 +408,7 @@ public class MultiPoint3DExpressionTest extends AbstractTest {
 		Assert.assertThat(allRows.size(), is(1));
 		Assert.assertThat(allRows.get(0).line_id.intValue(), is(1));
 		final String boundingText = allRows.get(0).boundingBox.jtsPolygonValue().toText();
-		Assert.assertThat(boundingText, is("POLYGON ((2 3, 3 3, 3 4, 2 4, 2 3))"));
+		Assert.assertThat(boundingText, is("POLYGON ((2 3 0, 3 3 0, 3 4 0, 3 4 1, 2 4 1, 2 3 1, 2 3 0))"));
 	}
 
 }
