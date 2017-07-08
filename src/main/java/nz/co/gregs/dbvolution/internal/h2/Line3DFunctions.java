@@ -29,12 +29,12 @@ public enum Line3DFunctions implements DBVFeature {
 	 */
 	CREATE("DBV_CREATE_LINE3D_FROM_COORDS", "String", "Double... coords", "\n"
 			+ "			Integer numberOfArguments = coords.length;\n"
-			+ "			if (numberOfArguments % 2 != 0) {\n"
+			+ "			if (numberOfArguments % 3 != 0) {\n"
 			+ "				return null;\n"
 			+ "			} else {\n"
 			+ "				String resultStr = \"LINESTRING (\";\n"
 			+ "				String sep = \"\";\n"
-			+ "				for (int i = 0; i < numberOfArguments; i += 2) {\n"
+			+ "				for (int i = 0; i < numberOfArguments; i += 3) {\n"
 			+ "					Double x = coords[i];\n"
 			+ "					Double y = coords[i + 1];\n"
 			+ "					Double z = coords[i + 2];\n"
@@ -68,7 +68,7 @@ public enum Line3DFunctions implements DBVFeature {
 			+ "			} else {\n"
 			+ "				Double maxX = null;\n"
 			+ "				String[] split = firstLine.split(\"[ (),]+\");\n"
-			+ "				for (int i = 1; i < split.length; i += 2) {\n"
+			+ "				for (int i = 1; i < split.length; i += 3) {\n"
 			+ "					double x = Double.parseDouble(split[i]);\n"
 			+ "					if (maxX==null || maxX<x){\n"
 			+ "						maxX = x;\n"
@@ -86,7 +86,7 @@ public enum Line3DFunctions implements DBVFeature {
 			+ "			} else {\n"
 			+ "				Double maxY = null;\n"
 			+ "				String[] split = firstLine.split(\"[ (),]+\");\n"
-			+ "				for (int i = 1; i < split.length; i += 2) {\n"
+			+ "				for (int i = 1; i < split.length; i += 3) {\n"
 			+ "					double y = Double.parseDouble(split[i + 1]);\n"
 			+ "					if (maxY==null || maxY<y){\n"
 			+ "						maxY = y;\n"
@@ -104,7 +104,7 @@ public enum Line3DFunctions implements DBVFeature {
 			+ "			} else {\n"
 			+ "				Double maxZ = null;\n"
 			+ "				String[] split = firstLine.split(\"[ (),]+\");\n"
-			+ "				for (int i = 1; i < split.length; i += 2) {\n"
+			+ "				for (int i = 1; i < split.length; i += 3) {\n"
 			+ "					double z = Double.parseDouble(split[i + 2]);\n"
 			+ "					if (maxZ==null || maxZ<z){\n"
 			+ "						maxZ = z;\n"
@@ -122,7 +122,7 @@ public enum Line3DFunctions implements DBVFeature {
 			+ "			} else {\n"
 			+ "				Double maxX = null;\n"
 			+ "				String[] split = firstLine.split(\"[ (),]+\");\n"
-			+ "				for (int i = 1; i < split.length; i += 2) {\n"
+			+ "				for (int i = 1; i < split.length; i += 3) {\n"
 			+ "					double x = Double.parseDouble(split[i]);\n"
 			+ "					if (maxX==null || maxX>x){\n"
 			+ "						maxX = x;\n"
@@ -140,7 +140,7 @@ public enum Line3DFunctions implements DBVFeature {
 			+ "			} else {\n"
 			+ "				Double maxY = null;\n"
 			+ "				String[] split = firstLine.split(\"[ (),]+\");\n"
-			+ "				for (int i = 1; i < split.length; i += 2) {\n"
+			+ "				for (int i = 1; i < split.length; i += 3) {\n"
 			+ "					double y = Double.parseDouble(split[i + 1]);\n"
 			+ "					if (maxY==null || maxY>y){\n"
 			+ "						maxY = y;\n"
@@ -158,7 +158,7 @@ public enum Line3DFunctions implements DBVFeature {
 			+ "			} else {\n"
 			+ "				Double maxZ = null;\n"
 			+ "				String[] split = firstLine.split(\"[ (),]+\");\n"
-			+ "				for (int i = 1; i < split.length; i += 2) {\n"
+			+ "				for (int i = 1; i < split.length; i += 3) {\n"
 			+ "					double z = Double.parseDouble(split[i + @]);\n"
 			+ "					if (maxZ==null || maxZ>z){\n"
 			+ "						maxZ = z;\n"
@@ -181,7 +181,7 @@ public enum Line3DFunctions implements DBVFeature {
 			+ "				Double minY = null;\n"
 			+ "				Double minZ = null;\n"
 			+ "				String[] split = firstLine.split(\"[ (),]+\");\n"
-			+ "				for (int i = 1; i < split.length; i += 2) {\n"
+			+ "				for (int i = 1; i < split.length; i += 3) {\n"
 			+ "					double x = Double.parseDouble(split[i]);\n"
 			+ "					double y = Double.parseDouble(split[i + 1]);\n"
 			+ "					double z = Double.parseDouble(split[i + 2]);\n"
@@ -227,7 +227,7 @@ public enum Line3DFunctions implements DBVFeature {
 			+ "		}\n"
 			+ "		String[] split1 = firstLine.split(\"[ (),]+\");\n"
 			+ "		String[] split2 = secondLine.split(\"[ (),]+\");\n"
-			+ "		for (int index1 = 0; index1 < split1.length - 3; index1 += 3) {\n"
+			+ "		for (int index1 = 0; index1 < split1.length - 4; index1 += 3) {\n"
 			+ "			double p0x = Double.parseDouble(split1[index1 + 1]);\n"
 			+ "			double p0y = Double.parseDouble(split1[index1 + 2]);\n"
 			+ "			double p0z = Double.parseDouble(split1[index1 + 3]);\n"
@@ -235,7 +235,7 @@ public enum Line3DFunctions implements DBVFeature {
 			+ "			double p1y = Double.parseDouble(split1[index1 + 5]);\n"
 			+ "			double p1z = Double.parseDouble(split1[index1 + 6]);\n"
 			+ "\n"
-			+ "			for (int index2 = 0; index2 < split2.length - 3; index2 += 3) {\n"
+			+ "			for (int index2 = 0; index2 < split2.length - 4; index2 += 3) {\n"
 			+ "				double p2x = Double.parseDouble(split2[index2 + 1]);\n"
 			+ "				double p2y = Double.parseDouble(split2[index2 + 2]);\n"
 			+ "				double p2z = Double.parseDouble(split2[index2 + 3]);\n"
@@ -285,7 +285,7 @@ public enum Line3DFunctions implements DBVFeature {
 			+ "		}\n"
 			+ "		String[] split1 = firstLine.split(\"[ (),]+\");\n"
 			+ "		String[] split2 = secondLine.split(\"[ (),]+\");\n"
-			+ "		for (int index1 = 0; index1 < split1.length - 3; index1 += 3) {\n"
+			+ "		for (int index1 = 0; index1 < split1.length - 4; index1 += 3) {\n"
 			+ "			double p0x = Double.parseDouble(split1[index1 + 1]);\n"
 			+ "			double p0y = Double.parseDouble(split1[index1 + 2]);\n"
 			+ "			double p0z = Double.parseDouble(split1[index1 + 3]);\n"
@@ -293,7 +293,7 @@ public enum Line3DFunctions implements DBVFeature {
 			+ "			double p1y = Double.parseDouble(split1[index1 + 5]);\n"
 			+ "			double p1z = Double.parseDouble(split1[index1 + 6]);\n"
 			+ "\n"
-			+ "			for (int index2 = 0; index2 < split2.length - 3; index2 += 3) {\n"
+			+ "			for (int index2 = 0; index2 < split2.length - 4; index2 += 3) {\n"
 			+ "				double p2x = Double.parseDouble(split2[index2 + 1]);\n"
 			+ "				double p2y = Double.parseDouble(split2[index2 + 2]);\n"
 			+ "				double p2z = Double.parseDouble(split2[index2 + 3]);\n"
@@ -342,17 +342,21 @@ public enum Line3DFunctions implements DBVFeature {
 			+ "		String pointSeparator = \"\";\n"
 			+ "		String[] split1 = firstLine.split(\"[ (),]+\");\n"
 			+ "		String[] split2 = secondLine.split(\"[ (),]+\");\n"
-			+ "		for (int index1 = 0; index1 < split1.length - 3; index1 += 2) {\n"
+			+ "		for (int index1 = 0; index1 < split1.length - 4; index1 += 3) {\n"
 			+ "			double p0x = Double.parseDouble(split1[index1 + 1]);\n"
 			+ "			double p0y = Double.parseDouble(split1[index1 + 2]);\n"
-			+ "			double p1x = Double.parseDouble(split1[index1 + 3]);\n"
-			+ "			double p1y = Double.parseDouble(split1[index1 + 4]);\n"
+			+ "			double p0z = Double.parseDouble(split1[index1 + 3]);\n"
+			+ "			double p1x = Double.parseDouble(split1[index1 + 4]);\n"
+			+ "			double p1y = Double.parseDouble(split1[index1 + 5]);\n"
+			+ "			double p1z = Double.parseDouble(split1[index1 + 6]);\n"
 			+ "\n"
-			+ "			for (int index2 = 0; index2 < split2.length - 3; index2 += 2) {\n"
+			+ "			for (int index2 = 0; index2 < split2.length - 4; index2 += 3) {\n"
 			+ "				double p2x = Double.parseDouble(split2[index2 + 1]);\n"
 			+ "				double p2y = Double.parseDouble(split2[index2 + 2]);\n"
-			+ "				double p3x = Double.parseDouble(split2[index2 + 3]);\n"
-			+ "				double p3y = Double.parseDouble(split2[index2 + 4]);\n"
+			+ "				double p2z = Double.parseDouble(split2[index2 + 3]);\n"
+			+ "				double p3x = Double.parseDouble(split2[index2 + 4]);\n"
+			+ "				double p3y = Double.parseDouble(split2[index2 + 5]);\n"
+			+ "				double p3z = Double.parseDouble(split2[index2 + 6]);\n"
 			+ "\n"
 			+ "				double s1_x, s1_y, s2_x, s2_y;\n"
 			+ "				double i_x, i_y;\n"
@@ -367,8 +371,11 @@ public enum Line3DFunctions implements DBVFeature {
 			+ "				t = (s2_x * (p0y - p2y) - s2_y * (p0x - p2x)) / (-s2_x * s1_y + s1_x * s2_y);\n"
 			+ "\n"
 			+ "				if (s >= 0 && s <= 1 && t >= 0 && t <= 1) {\n"
-			+ "					double t_z = p0z + (t * s1_z);\n"
-			+ "					double s_z = p2z + (s * s2_z);\n"
+			+ "					double s1_z, s2_z, t_z, s_z;\n"
+			+ "					s1_z = p1z - p0z;\n"
+			+ "					s2_z = p3z - p2z;\n"
+			+ "					t_z = p0z + (t * s1_z);\n"
+			+ "					s_z = p2z + (s * s2_z);\n"
 			+ "					if (t_z == s_z) {\n"
 			+ "						// t and s create the same z so there is an inersection\n"
 			+ "					     // Collision detected\n"
@@ -415,52 +422,59 @@ public enum Line3DFunctions implements DBVFeature {
 		stmt.execute("CREATE ALIAS IF NOT EXISTS " + functionName + " DETERMINISTIC AS $$ \n" + "@CODE " + returnType + " " + functionName + "(" + parameters + ") {\n" + code + "} $$;");
 	}
 
-//	private Boolean intersects(String firstLine, String secondLine) {
-//		//List<String> pointsFound = new ArrayList<String>();
-//		if (firstLine == null || secondLine == null) {
-//			return null;
-//		}
-//		String[] split1 = firstLine.split("[ (),]+");
-//		String[] split2 = secondLine.split("[ (),]+");
-//		for (int index1 = 0; index1 < split1.length - 3; index1 += 2) {
-//			double p0x = Double.parseDouble(split1[index1 + 1]);
-//			double p0y = Double.parseDouble(split1[index1 + 2]);
-//			double p1x = Double.parseDouble(split1[index1 + 3]);
-//			double p1y = Double.parseDouble(split1[index1 + 4]);
-//
-//			for (int index2 = 0; index2 < split2.length - 3; index2 += 2) {
-//				double p2x = Double.parseDouble(split2[index2 + 1]);
-//				double p2y = Double.parseDouble(split2[index2 + 2]);
-//				double p3x = Double.parseDouble(split2[index2 + 3]);
-//				double p3y = Double.parseDouble(split2[index2 + 4]);
-//
-//				double s1_x, s1_y, s2_x, s2_y;
-//				double i_x, i_y;
-//				s1_x = p1x - p0x;
-//				s1_y = p1y - p0y;
-//				s2_x = p3x - p2x;
-//				s2_y = p3y - p2y;
-//
-//				double s, t;
-//
-//				s = (-s1_y * (p0x - p2x) + s1_x * (p0y - p2y)) / (-s2_x * s1_y + s1_x * s2_y);
-//				t = (s2_x * (p0y - p2y) - s2_y * (p0x - p2x)) / (-s2_x * s1_y + s1_x * s2_y);
-//
-//				if (s >= 0 && s <= 1 && t >= 0 && t <= 1) {
-//					// Collision detected
-//					return true;
-//					//i_x = p0x + (t * s1_x);
-//					//i_y = p0y + (t * s1_y);
-//					//pointsFound.add("POINT (" + i_x + " " + i_y + ")");
-//				} else {
-//					// No collision
-//					//return null;
-//				}
-//			}
-//		}
-//		return false;
-//	}
-	
+	private String intersects(String firstLine, String secondLine) {
+		if (firstLine == null || secondLine == null) {
+			return null;
+		}
+		String[] split1 = firstLine.split("[ (),]+");
+		String[] split2 = secondLine.split("[ (),]+");
+		for (int index1 = 0; index1 < split1.length - 3; index1 += 3) {
+			double p0x = Double.parseDouble(split1[index1 + 1]);
+			double p0y = Double.parseDouble(split1[index1 + 2]);
+			double p0z = Double.parseDouble(split1[index1 + 3]);
+			double p1x = Double.parseDouble(split1[index1 + 4]);
+			double p1y = Double.parseDouble(split1[index1 + 5]);
+			double p1z = Double.parseDouble(split1[index1 + 6]);
+
+			for (int index2 = 0; index2 < split2.length - 3; index2 += 3) {
+				double p2x = Double.parseDouble(split2[index2 + 1]);
+				double p2y = Double.parseDouble(split2[index2 + 2]);
+				double p2z = Double.parseDouble(split2[index2 + 3]);
+				double p3x = Double.parseDouble(split2[index2 + 4]);
+				double p3y = Double.parseDouble(split2[index2 + 5]);
+				double p3z = Double.parseDouble(split2[index2 + 6]);
+
+				double s1_x, s1_y, s1_z, s2_x, s2_y, s2_z;
+				double i_x, i_y, t_z, s_z;
+				s1_x = p1x - p0x;
+				s1_y = p1y - p0y;
+				s1_z = p1z - p0z;
+				s2_x = p3x - p2x;
+				s2_y = p3y - p2y;
+				s2_z = p3z - p2z;
+
+				double s, t;
+
+				s = (-s1_y * (p0x - p2x) + s1_x * (p0y - p2y)) / (-s2_x * s1_y + s1_x * s2_y);
+				t = (s2_x * (p0y - p2y) - s2_y * (p0x - p2x)) / (-s2_x * s1_y + s1_x * s2_y);
+
+				if (s >= 0 && s <= 1 && t >= 0 && t <= 1) {
+					t_z = p0z + (t * s1_z);
+					s_z = p2z + (s * s2_z);
+					if (t_z == s_z) {
+						// t and s create the same z so there is an inersection
+						// Collision detected
+						//return true;
+						i_x = p0x + (t * s1_x);
+						i_y = p0y + (t * s1_y);
+						return "POINT (" + i_x + " " + i_y + " " + t_z + ")";
+					}
+				}
+			}
+		}
+		return null;
+	}
+
 	@Override
 	public String alias() {
 		return toString();

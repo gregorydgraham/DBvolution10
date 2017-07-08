@@ -16,9 +16,6 @@
 package nz.co.gregs.dbvolution.datatypes.spatial3D;
 
 import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.GeometryFactory;
-import com.vividsolutions.jts.geom.MultiPoint;
-import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.io.ParseException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -59,17 +56,17 @@ public class DBMultiPoint3D extends QueryableDatatype<MultiPointZ> implements Mu
 	}
 
 	/**
-	 * Create a DBPoint2D object to represent a Point column or
+	 * Create a DBPoint3D object to represent a Point column or
 	 * value using the value supplied.
 	 *
-	 * @param points the collection of points that are the value of this DBMultiPoint2D
+	 * @param points the collection of points that are the value of this DBMultiPoint3D
 	 */
 	public DBMultiPoint3D(MultiPointZ points) {
 		super(points);
 	}
 
 	/**
-	 * Set the value of this DBPoint2D to the {@link Point} specified.
+	 * Set the value of this DBPoint3D to the {@link Point} specified.
 	 *
 	 * <p>
 	 * Set values are used to add the value to the database. Without a set value
@@ -82,7 +79,7 @@ public class DBMultiPoint3D extends QueryableDatatype<MultiPointZ> implements Mu
 	}
 
 	/**
-	 * Set the value of this DBPoint2D to the {@link Coordinate coordinates} specified.
+	 * Set the value of this DBPoint3D to the {@link Coordinate coordinates} specified.
 	 *
 	 * <p>
 	 * Set values are used to add the value to the database. Without a set value
@@ -97,7 +94,7 @@ public class DBMultiPoint3D extends QueryableDatatype<MultiPointZ> implements Mu
 	}
 
 	/**
-	 * Set the value of this DBPoint2D to the {@link Point points} specified.
+	 * Set the value of this DBPoint3D to the {@link Point points} specified.
 	 *
 	 * <p>
 	 * Set values are used to add the value to the database. Without a set value
@@ -105,7 +102,7 @@ public class DBMultiPoint3D extends QueryableDatatype<MultiPointZ> implements Mu
 	 *
 	 * @param points the value to be set in the database.
 	 */
-	public void setValue(Point... points) {
+	public void setValue(PointZ... points) {
 		GeometryFactory3D geometryFactory = new GeometryFactory3D();
 		MultiPointZ mpoint = geometryFactory.createMultiPointZ(points);
 		this.setValue(mpoint);
@@ -113,15 +110,15 @@ public class DBMultiPoint3D extends QueryableDatatype<MultiPointZ> implements Mu
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public MultiPoint getValue() {
+	public MultiPointZ getValue() {
 		if (!isDefined() || isNull()) {
 			return null;
 		} else {
 			final Object literalValue = getLiteralValue();
 			if (literalValue == null) {
 				return null;
-			} else if (literalValue instanceof MultiPoint) {
-				return (MultiPoint) literalValue;
+			} else if (literalValue instanceof MultiPointZ) {
+				return (MultiPointZ) literalValue;
 			}else {
 				throw new DBRuntimeException("Unable to convert value to NULL or JTS MultiPoint: Please check that the value is NULL or an appropiate MULTIPOINT type value for this database");
 			}
@@ -136,7 +133,7 @@ public class DBMultiPoint3D extends QueryableDatatype<MultiPointZ> implements Mu
 	 *
 	 * @return the set value of this object as a JTS Point object.
 	 */
-	public MultiPoint jtsMultiPointValue() {
+	public MultiPointZ multiPointZValue() {
 		return getValue();
 	}
 
@@ -162,7 +159,7 @@ public class DBMultiPoint3D extends QueryableDatatype<MultiPointZ> implements Mu
 	 * @param points
 	 */
 	public DBMultiPoint3D(PointZ... points) {
-		super(new MultiPointZ(points, new GeometryFactory()));
+		super(new MultiPointZ(points, new GeometryFactory3D()));
 	}
 
 	@Override
@@ -172,11 +169,11 @@ public class DBMultiPoint3D extends QueryableDatatype<MultiPointZ> implements Mu
 
 	@Override
 	protected String formatValueForSQLStatement(DBDatabase db) {
-		MultiPoint points = getValue();
+		MultiPointZ points = getValue();
 		if (points == null) {
 			return db.getDefinition().getNull();
 		} else {
-			String str = db.getDefinition().transformMultiPoint2DToDatabaseMultiPoint2DValue(points);
+			String str = db.getDefinition().transformMultiPoint3DToDatabaseMultiPoint3DValue(points);
 			return str;
 		}
 	}

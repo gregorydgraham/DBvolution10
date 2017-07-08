@@ -236,6 +236,26 @@ public class RowDefinition implements Serializable {
 	}
 
 	/**
+	 * Creates a new {@link Point2DColumn} instance to help create
+	 * {@link DBExpression expressions}
+	 *
+	 * <p>
+	 * This method is the easy way to create a reference to the database column
+	 * represented by the field for use in creating complex expressions within
+	 * your query.
+	 *
+	 * <p>
+	 * For use with the
+	 * {@link DBQuery#addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression) DBQuery addCondition method}
+	 *
+	 * @param fieldOfThisInstance	fieldOfThisInstance
+	 * @return A {@link Point2DColumn} representing the supplied field
+	 */
+	public Point3DColumn column(DBPoint3D fieldOfThisInstance) {
+		return new Point3DColumn(this, fieldOfThisInstance);
+	}
+
+	/**
 	 * Creates a new {@link Line2DColumn} instance to help create
 	 * {@link DBExpression expressions}
 	 *
@@ -253,6 +273,26 @@ public class RowDefinition implements Serializable {
 	 */
 	public Line2DColumn column(DBLine2D fieldOfThisInstance) {
 		return new Line2DColumn(this, fieldOfThisInstance);
+	}
+
+	/**
+	 * Creates a new {@link Line3DColumn} instance to help create
+	 * {@link DBExpression expressions}
+	 *
+	 * <p>
+	 * This method is the easy way to create a reference to the database column
+	 * represented by the field for use in creating complex expressions within
+	 * your query.
+	 *
+	 * <p>
+	 * For use with the
+	 * {@link DBQuery#addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression) DBQuery addCondition method}
+	 *
+	 * @param fieldOfThisInstance	fieldOfThisInstance
+	 * @return A {@link Line3DColumn} representing the supplied field
+	 */
+	public Line3DColumn column(DBLine3D fieldOfThisInstance) {
+		return new Line3DColumn(this, fieldOfThisInstance);
 	}
 
 	/**
@@ -276,6 +316,26 @@ public class RowDefinition implements Serializable {
 	}
 
 	/**
+	 * Creates a new {@link LineSegment3DColumn} instance to help create
+	 * {@link DBExpression expressions}
+	 *
+	 * <p>
+	 * This method is the easy way to create a reference to the database column
+	 * represented by the field for use in creating complex expressions within
+	 * your query.
+	 *
+	 * <p>
+	 * For use with the
+	 * {@link DBQuery#addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression) DBQuery addCondition method}
+	 *
+	 * @param fieldOfThisInstance	fieldOfThisInstance
+	 * @return A {@link LineSegment3DColumn} representing the supplied field
+	 */
+	public LineSegment3DColumn column(DBLineSegment3D fieldOfThisInstance) {
+		return new LineSegment3DColumn(this, fieldOfThisInstance);
+	}
+
+	/**
 	 * Creates a new {@link MultiPoint2DColumn} instance to help create
 	 * {@link DBExpression expressions}
 	 *
@@ -293,6 +353,26 @@ public class RowDefinition implements Serializable {
 	 */
 	public MultiPoint2DColumn column(DBMultiPoint2D fieldOfThisInstance) {
 		return new MultiPoint2DColumn(this, fieldOfThisInstance);
+	}
+
+	/**
+	 * Creates a new {@link MultiPoint3DColumn} instance to help create
+	 * {@link DBExpression expressions}
+	 *
+	 * <p>
+	 * This method is the easy way to create a reference to the database column
+	 * represented by the field for use in creating complex expressions within
+	 * your query.
+	 *
+	 * <p>
+	 * For use with the
+	 * {@link DBQuery#addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression) DBQuery addCondition method}
+	 *
+	 * @param fieldOfThisInstance	fieldOfThisInstance
+	 * @return A {@link MultiPoint3DColumn} representing the supplied field
+	 */
+	public MultiPoint3DColumn column(DBMultiPoint3D fieldOfThisInstance) {
+		return new MultiPoint3DColumn(this, fieldOfThisInstance);
 	}
 
 	/**
@@ -382,8 +462,8 @@ public class RowDefinition implements Serializable {
 		ColumnProvider col = null;
 		if (QueryableDatatype.class.isAssignableFrom(fieldOfThisInstance.getClass())) {
 			col = this.column((QueryableDatatype) fieldOfThisInstance);
-		} else if (Period.class.isAssignableFrom(fieldOfThisInstance.getClass())) {
-			col = this.column((Period) fieldOfThisInstance);
+//		} else if (Period.class.isAssignableFrom(fieldOfThisInstance.getClass())) {
+//			col = this.column((Period) fieldOfThisInstance);
 		} else if (Date.class.isAssignableFrom(fieldOfThisInstance.getClass())) {
 			col = this.column((Date) fieldOfThisInstance);
 		} else if (Boolean.class.isAssignableFrom(fieldOfThisInstance.getClass())) {

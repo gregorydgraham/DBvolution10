@@ -16,7 +16,6 @@
 package nz.co.gregs.dbvolution.internal.sqlite;
 
 import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.geom.Polygon;
@@ -27,95 +26,109 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import nz.co.gregs.dbvolution.datatypes.spatial3D.GeometryFactory3D;
+import nz.co.gregs.dbvolution.datatypes.spatial3D.LineStringZ;
+import nz.co.gregs.dbvolution.datatypes.spatial3D.PointZ;
+import nz.co.gregs.dbvolution.datatypes.spatial3D.PolygonZ;
 import org.sqlite.Function;
 
 /**
  *
  * @author gregorygraham
  */
-public class Line2DFunctions {
+public class Line3DFunctions {
 
 	/**
 	 *
 	 */
-	public final static String CREATE_FROM_COORDS_FUNCTION = "DBV_CREATE_LINE2D_FROM_COORDS";
+	public final static String CREATE_FROM_COORDS_FUNCTION = "DBV_CREATE_LINE3D_FROM_COORDS";
 
 	/**
 	 *
 	 */
-	public final static String EQUALS_FUNCTION = "DBV_LINE2D_EQUALS";
+	public final static String EQUALS_FUNCTION = "DBV_LINE3D_EQUALS";
 
 	/**
 	 *
 	 */
-	public final static String GETMAXX_FUNCTION = "DBV_LINE2D_GETMAXX";
+	public final static String GETMAXX_FUNCTION = "DBV_LINE3D_GETMAXX";
 
 	/**
 	 *
 	 */
-	public final static String GETMAXY_FUNCTION = "DBV_LINE2D_GETMAXY";
+	public final static String GETMAXY_FUNCTION = "DBV_LINE3D_GETMAXY";
 
 	/**
 	 *
 	 */
-	public final static String GETMINX_FUNCTION = "DBV_LINE2D_GETMINX";
+	public final static String GETMINX_FUNCTION = "DBV_LINE3D_GETMINX";
 
 	/**
 	 *
 	 */
-	public final static String GETMINY_FUNCTION = "DBV_LINE2D_GETMINY";
+	public final static String GETMINY_FUNCTION = "DBV_LINE3D_GETMINY";
 
 	/**
 	 *
 	 */
-	public final static String GETDIMENSION_FUNCTION = "DBV_LINE2D_GETDIMENSION";
+	public final static String GETMAXZ_FUNCTION = "DBV_LINE3D_GETMAXZ";
 
 	/**
 	 *
 	 */
-	public final static String GETBOUNDINGBOX_FUNCTION = "DBV_LINE2D_GETBOUNDINGBOX";
+	public final static String GETMINZ_FUNCTION = "DBV_LINE3D_GETMINZ";
 
 	/**
 	 *
 	 */
-	public final static String ASTEXT_FUNCTION = "DBV_LINE2D_ASTEXT";
+	public final static String GETDIMENSION_FUNCTION = "DBV_LINE3D_GETDIMENSION";
 
 	/**
 	 *
 	 */
-//	public final static String SPATIAL_LINE_MIN_X_COORD_FUNCTION = "DBV_LINE_MIN_X2D_COORD";
+	public final static String GETBOUNDINGBOX_FUNCTION = "DBV_LINE3D_GETBOUNDINGBOX";
 
 	/**
 	 *
 	 */
-//	public final static String SPATIAL_LINE_MAX_Y_COORD_FUNCTION = "DBV_LINE_MAX_Y2D_COORD";
+	public final static String ASTEXT_FUNCTION = "DBV_LINE3D_ASTEXT";
 
 	/**
 	 *
 	 */
-//	public final static String SPATIAL_LINE_MIN_Y_COORD_FUNCTION = "DBV_LINE_MIN_Y2D_COORD";
+//	public final static String SPATIAL_LINE_MIN_X_COORD_FUNCTION = "DBV_LINE_MIN_X3D_COORD";
 
 	/**
 	 *
 	 */
-//	public final static String SPATIAL_LINE_MAX_X_COORD_FUNCTION = "DBV_LINE_MAX_X2D_COORD";
+//	public final static String SPATIAL_LINE_MAX_Y_COORD_FUNCTION = "DBV_LINE_MAX_Y3D_COORD";
 
 	/**
 	 *
 	 */
-	public final static String INTERSECTS = "DBV_LINE2D_INTERSECTS_LINE2D";
+//	public final static String SPATIAL_LINE_MIN_Y_COORD_FUNCTION = "DBV_LINE_MIN_Y3D_COORD";
 
 	/**
 	 *
 	 */
-	public final static String INTERSECTIONWITH_LINE2D = "DBV_LINE2D_INTERSECTIONWITH_LINE2D";
+//	public final static String SPATIAL_LINE_MAX_Z_COORD_FUNCTION = "DBV_LINE_MAX_Z3D_COORD";
 
 	/**
 	 *
 	 */
-	public final static String ALLINTERSECTIONSWITH_LINE2D = "DBV_LINE2D_ALLINTERSECTIONSWITH_LINE2D";
+	public final static String INTERSECTS = "DBV_LINE3D_INTERSECTS_LINE3D";
 
-	private Line2DFunctions() {
+	/**
+	 *
+	 */
+	public final static String INTERSECTIONWITH_LINE3D = "DBV_LINE3D_INTERSECTIONWITH_LINE3D";
+
+	/**
+	 *
+	 */
+	public final static String ALLINTERSECTIONSWITH_LINE3D = "DBV_LINE3D_ALLINTERSECTIONSWITH_LINE3D";
+
+	private Line3DFunctions() {
 	}
 
 	/**
@@ -130,12 +143,14 @@ public class Line2DFunctions {
 		Function.create(connection, GETMAXY_FUNCTION, new GetMaxY());
 		Function.create(connection, GETMINX_FUNCTION, new GetMinX());
 		Function.create(connection, GETMINY_FUNCTION, new GetMinY());
+		Function.create(connection, GETMAXZ_FUNCTION, new GetMaxZ());
+		Function.create(connection, GETMINZ_FUNCTION, new GetMinZ());
 		Function.create(connection, GETDIMENSION_FUNCTION, new GetDimension());
 		Function.create(connection, GETBOUNDINGBOX_FUNCTION, new GetBoundingBox());
 		Function.create(connection, ASTEXT_FUNCTION, new AsText());
 		Function.create(connection, INTERSECTS, new Intersects());
-		Function.create(connection, INTERSECTIONWITH_LINE2D, new IntersectionWith());
-		Function.create(connection, ALLINTERSECTIONSWITH_LINE2D, new AllIntersectionsWith());
+		Function.create(connection, INTERSECTIONWITH_LINE3D, new IntersectionWith());
+		Function.create(connection, ALLINTERSECTIONSWITH_LINE3D, new AllIntersectionsWith());
 	}
 
 	private static class CreateFromCoords extends PolygonFunction {
@@ -144,19 +159,20 @@ public class Line2DFunctions {
 		@Override
 		protected void xFunc() throws SQLException {
 			Integer numberOfArguments = args();
-			if (numberOfArguments % 2 != 0) {
+			if (numberOfArguments % 3 != 0) {
 				result();
 			} else {
 				String resultStr = "LINESTRING (";
 				String sep = "";
-				for (int i = 0; i < numberOfArguments; i += 2) {
+				for (int i = 0; i < numberOfArguments; i += 3) {
 					Double x = value_double(i);
 					Double y = value_double(i + 1);
-					if (x == null || y == null) {
+					Double z = value_double(i + 2);
+					if (x == null || y == null || z == null) {
 						result();
 						return;
 					} else {
-						resultStr += sep + x + " " + y;
+						resultStr += sep + x + " " + y + " " + z;
 						sep = ", ";
 					}
 				}
@@ -190,9 +206,8 @@ public class Line2DFunctions {
 			} else {
 				Double maxX = null;
 				String[] split = firstLine.split("[ (),]+");
-				for (int i = 1; i < split.length; i += 2) {
+				for (int i = 1; i < split.length; i += 3) {
 					double x = Double.parseDouble(split[i]);
-//					double y = Double.parseDouble(split[i + 1]);
 					if (maxX == null || maxX < x) {
 						maxX = x;
 					}
@@ -213,8 +228,7 @@ public class Line2DFunctions {
 			} else {
 				Double maxY = null;
 				String[] split = firstPoint.split("[ (),]+");
-				for (int i = 1; i < split.length; i += 2) {
-//					double x = Double.parseDouble(split[i]);
+				for (int i = 1; i < split.length; i += 3) {
 					double y = Double.parseDouble(split[i + 1]);
 					if (maxY == null || maxY < y) {
 						maxY = y;
@@ -235,9 +249,8 @@ public class Line2DFunctions {
 			} else {
 				Double minX = null;
 				String[] split = firstPoint.split("[ (),]+");
-				for (int i = 1; i < split.length; i += 2) {
+				for (int i = 1; i < split.length; i += 3) {
 					double x = Double.parseDouble(split[i]);
-//					double y = Double.parseDouble(split[i + 1]);
 					if (minX == null || minX > x) {
 						minX = x;
 					}
@@ -258,8 +271,7 @@ public class Line2DFunctions {
 			} else {
 				Double minY = null;
 				String[] split = firstPoint.split("[ (),]+");
-				for (int i = 1; i < split.length; i += 2) {
-//					double x = Double.parseDouble(split[i]);
+				for (int i = 1; i < split.length; i += 3) {
 					double y = Double.parseDouble(split[i + 1]);
 					if (minY == null || minY > y) {
 						minY = y;
@@ -268,6 +280,49 @@ public class Line2DFunctions {
 				result(minY);
 			}
 		}
+	}
+
+	private static class GetMaxZ extends PolygonFunction {
+
+		@Override
+		protected void xFunc() throws SQLException {
+			String firstPoint = value_text(0);
+			if (firstPoint == null) {
+				result();
+			} else {
+				Double max = null;
+				String[] split = firstPoint.split("[ (),]+");
+				for (int i = 1; i < split.length; i += 3) {
+					double z = Double.parseDouble(split[i + 2]);
+					if (max == null || max < z) {
+						max = z;
+					}
+				}
+				result(max);
+			}
+		}
+	}
+
+	private static class GetMinZ extends PolygonFunction {
+
+		@Override
+		protected void xFunc() throws SQLException {
+			String firstPoint = value_text(0);
+			if (firstPoint == null) {
+				result();
+			} else {
+				Double min = null;
+				String[] split = firstPoint.split("[ (),]+");
+				for (int i = 1; i < split.length; i += 3) {
+					double z = Double.parseDouble(split[i]);
+					if (min == null || min > z) {
+						min = z;
+					}
+				}
+				result(min);
+			}
+		}
+
 	}
 
 	private static class Intersects extends PolygonFunction {
@@ -282,8 +337,8 @@ public class Line2DFunctions {
 				} else if (secondLineStr == null) {
 					result();
 				} else {
-					LineString firstLine = getLineString(firstLineStr);
-					LineString secondLine = getLineString(secondLineStr);
+					LineStringZ firstLine = getLineStringZ(firstLineStr);
+					LineStringZ secondLine = getLineStringZ(secondLineStr);
 					if (firstLine == null || secondLine == null) {
 						result();
 					} else {
@@ -309,8 +364,8 @@ public class Line2DFunctions {
 				} else if (secondLineStr == null) {
 					result();
 				} else {
-					LineString firstLine = getLineString(firstLineStr);
-					LineString secondLine = getLineString(secondLineStr);
+					LineStringZ firstLine = getLineStringZ(firstLineStr);
+					LineStringZ secondLine = getLineStringZ(secondLineStr);
 					if (firstLine == null || secondLine == null) {
 						result();
 					} else {
@@ -341,12 +396,12 @@ public class Line2DFunctions {
 				} else if (secondLineStr == null) {
 					result();
 				} else {
-					LineString firstLine = getLineString(firstLineStr);
-					LineString secondLine = getLineString(secondLineStr);
+					LineStringZ firstLine = getLineStringZ(firstLineStr);
+					LineStringZ secondLine = getLineStringZ(secondLineStr);
 					if (firstLine == null || secondLine == null) {
 						result();
 					} else {
-						List<Point> pointList = new ArrayList<Point>();
+						List<PointZ> pointList = new ArrayList<>();
 						final Geometry intersection = firstLine.intersection(secondLine);
 						if (intersection == null || intersection.isEmpty()) {
 							result();
@@ -355,15 +410,15 @@ public class Line2DFunctions {
 							for (int i = 0; i < numPoints; i++) {
 								Geometry geometryN = intersection.getGeometryN(i);
 								if ((geometryN!=null)&&(geometryN instanceof Point)) {
-									pointList.add((Point) geometryN);
+									pointList.add(new GeometryFactory3D().createPointZ((Point) geometryN));
 								}
 							}
 							if (pointList.isEmpty()) {
 								result();
 							} else {
-								Point[] pointArray = new Point[numPoints];
+								PointZ[] pointArray = new PointZ[numPoints];
 								pointArray = pointList.toArray(pointArray);
-								result((new GeometryFactory()).createMultiPoint(pointArray).toText());
+								result((new GeometryFactory3D()).createMultiPointZ(pointArray).toText());
 							}
 						}
 					}
@@ -393,17 +448,23 @@ public class Line2DFunctions {
 			} else {
 				Double maxX = null;
 				Double maxY = null;
+				Double maxZ = null;
 				Double minX = null;
 				Double minY = null;
+				Double minZ = null;
 				String[] split = firstLine.split("[ (),]+");
-				for (int i = 1; i < split.length; i += 2) {
+				for (int i = 1; i < split.length; i += 3) {
 					double x = Double.parseDouble(split[i]);
 					double y = Double.parseDouble(split[i + 1]);
+					double z = Double.parseDouble(split[i + 2]);
 					if (maxX == null || maxX < x) {
 						maxX = x;
 					}
 					if (maxY == null || maxY < y) {
 						maxY = y;
+					}
+					if (maxZ == null || maxZ < z) {
+						maxZ = z;
 					}
 					if (minX == null || minX > x) {
 						minX = x;
@@ -411,8 +472,11 @@ public class Line2DFunctions {
 					if (minY == null || minY > y) {
 						minY = y;
 					}
+					if (minZ == null || minZ > z) {
+						minZ = z;
+					}
 				}
-				String resultString = "POLYGON ((" + minX + " " + minY + ", " + maxX + " " + minY + ", " + maxX + " " + maxY + ", " + minX + " " + maxY + ", " + minX + " " + minY + "))";
+				String resultString = "POLYGON ((" + minX + " " + minY + " " + minZ + ", " + maxX + " " + minY + " " + minZ + ", " + maxX + " " + maxY + " " + minZ + ", " + maxX + " " + maxY + " " + maxZ + ", " + minX + " " + maxY + " " + maxZ + ", " + minX + " " + minY + " " + maxZ + ", " + minX + " " + minY + " " + minZ + "))";
 				result(resultString);
 			}
 		}
@@ -429,29 +493,29 @@ public class Line2DFunctions {
 
 	private static abstract class PolygonFunction extends Function {
 
-		Polygon getPolygon(String possiblePoly) throws com.vividsolutions.jts.io.ParseException {
+		PolygonZ getPolygonZ(String possiblePoly) throws com.vividsolutions.jts.io.ParseException {
 			WKTReader wktReader = new WKTReader();
 			Geometry firstGeom = wktReader.read(possiblePoly);
 			if (firstGeom instanceof Polygon) {
-				return (Polygon) firstGeom;
+				return new GeometryFactory3D().createPolygonZ((Polygon) firstGeom);
 			}
 			return null;
 		}
 
-		LineString getLineString(String possiblePoly) throws com.vividsolutions.jts.io.ParseException {
+		LineStringZ getLineStringZ(String possiblePoly) throws com.vividsolutions.jts.io.ParseException {
 			WKTReader wktReader = new WKTReader();
 			Geometry firstGeom = wktReader.read(possiblePoly);
 			if (firstGeom instanceof LineString) {
-				return (LineString) firstGeom;
+				return new GeometryFactory3D().createLineStringZ((LineString) firstGeom);
 			}
 			return null;
 		}
 
-		Point getPoint(String possiblePoly) throws com.vividsolutions.jts.io.ParseException {
+		PointZ getPointZ(String possiblePoly) throws com.vividsolutions.jts.io.ParseException {
 			WKTReader wktReader = new WKTReader();
 			Geometry firstGeom = wktReader.read(possiblePoly);
 			if (firstGeom instanceof Point) {
-				return (Point) firstGeom;
+				return new GeometryFactory3D().createPointZ((Point) firstGeom);
 			}
 			return null;
 		}

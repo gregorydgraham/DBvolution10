@@ -95,8 +95,8 @@ public class GeometryFactory3D extends GeometryFactory {
 			CoordinateSequence ptSeq = getCoordinateSequenceFactory()
 					.create(1, coordinates.getDimension());
 			CoordinateSequences.copy(coordinates, i, ptSeq, 0, 1);
-			if (Double.isNaN(ptSeq.getOrdinate(i, 2))) {
-				ptSeq.setOrdinate(i, 2, 0);
+			if (Double.isNaN(ptSeq.getOrdinate(0, 2))) {
+				ptSeq.setOrdinate(0, 2, 0);
 			}
 			points[i] = createPointZ(ptSeq);
 		}

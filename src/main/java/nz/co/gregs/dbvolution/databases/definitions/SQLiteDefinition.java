@@ -26,6 +26,7 @@ import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.databases.SQLiteDB;
 import nz.co.gregs.dbvolution.datatypes.*;
 import nz.co.gregs.dbvolution.datatypes.spatial2D.*;
+import nz.co.gregs.dbvolution.datatypes.spatial3D.PolygonZ;
 import nz.co.gregs.dbvolution.exceptions.IncorrectGeometryReturnedForDatatype;
 import nz.co.gregs.dbvolution.generation.DBTableField;
 import nz.co.gregs.dbvolution.internal.datatypes.DateRepeatImpl;
@@ -632,6 +633,101 @@ public class SQLiteDefinition extends DBDefinition {
 	@Override
 	public String doPolygon2DAsTextTransform(String polygonSQL) {
 		return Polygon2DFunctions.ASTEXT_FUNCTION + "(" + polygonSQL + ")";
+	}
+
+	@Override
+	public String transformPolygonIntoDatabasePolygon3DFormat(PolygonZ geom) {
+		String wktValue = geom.toText();
+		return Polygon3DFunctions.CREATE_FROM_WKTPOLYGON3D + "('" + wktValue + "')";
+	}
+
+	@Override
+	public String doPolygon3DGetMaxXTransform(String toSQLString) {
+		return Polygon3DFunctions.MAX_X + "(" + toSQLString + ")";
+	}
+
+	@Override
+	public String doPolygon3DGetMinXTransform(String toSQLString) {
+		return Polygon3DFunctions.MIN_X + "(" + toSQLString + ")";
+	}
+
+	@Override
+	public String doPolygon3DGetMaxYTransform(String toSQLString) {
+		return Polygon3DFunctions.MAX_Y + "(" + toSQLString + ")";
+	}
+
+	@Override
+	public String doPolygon3DGetMinYTransform(String toSQLString) {
+		return Polygon3DFunctions.MIN_Y + "(" + toSQLString + ")";
+	}
+
+	@Override
+	public String doPolygon3DMeasurableDimensionsTransform(String toSQLString) {
+		return Polygon3DFunctions.DIMENSION + "(" + toSQLString + ")";
+	}
+
+	@Override
+	public String doPolygon3DGetBoundingBoxTransform(String toSQLString) {
+		return Polygon3DFunctions.BOUNDINGBOX + "(" + toSQLString + ")";
+	}
+
+	@Override
+	public String doPolygon3DGetAreaTransform(String polygonSQL) {
+		return Polygon3DFunctions.AREA + "(" + polygonSQL + ")";
+	}
+
+	@Override
+	public String doPolygon3DGetExteriorRingTransform(String firstGeometry) {
+		return Polygon3DFunctions.EXTERIORRING + "(" + firstGeometry + ")";
+	}
+
+	@Override
+	public String doPolygon3DEqualsTransform(String firstGeometry, String secondGeometry) {
+		return Polygon3DFunctions.EQUALS + "(" + firstGeometry + ", " + secondGeometry + ")";
+	}
+
+	@Override
+	public String doPolygon3DIntersectsTransform(String firstGeometry, String secondGeometry) {
+		return Polygon3DFunctions.INTERSECTS + "(" + firstGeometry + ", " + secondGeometry + ")";
+	}
+
+	@Override
+	public String doPolygon3DContainsPolygon3DTransform(String firstGeometry, String secondGeometry) {
+		return Polygon3DFunctions.CONTAINS_POLYGON3D + "(" + firstGeometry + ", " + secondGeometry + ")";
+	}
+
+	@Override
+	public String doPolygon3DDoesNotIntersectTransform(String firstGeometry, String secondGeometry) {
+		return Polygon3DFunctions.DISJOINT + "(" + firstGeometry + ", " + secondGeometry + ")";
+	}
+
+	@Override
+	public String doPolygon3DOverlapsTransform(String firstGeometry, String secondGeometry) {
+		return Polygon3DFunctions.OVERLAPS + "(" + firstGeometry + ", " + secondGeometry + ")";
+	}
+
+	@Override
+	public String doPolygon3DTouchesTransform(String firstGeometry, String secondGeometry) {
+		return Polygon3DFunctions.TOUCHES + "(" + firstGeometry + ", " + secondGeometry + ")";
+	}
+
+	@Override
+	public String doPolygon3DWithinTransform(String firstGeometry, String secondGeometry) {
+		//indicate whether g1 is spatially within g2. This is the inverse of Contains(). 
+		// i.e. G1.within(G2) === G2.contains(G1)
+		return Polygon3DFunctions.WITHIN + "(" + firstGeometry + ", " + secondGeometry + ")";
+	}
+
+	@Override
+	public String doPolygon3DContainsPoint3DTransform(String firstGeometry, String secondGeometry) {
+		//indicate whether g1 is spatially within g2. This is the inverse of Contains(). 
+		// i.e. G1.within(G2) === G2.contains(G1)
+		return Polygon3DFunctions.CONTAINS_POINT3D + "(" + firstGeometry + ", " + secondGeometry + ")";
+	}
+
+	@Override
+	public String doPolygon3DAsTextTransform(String polygonSQL) {
+		return Polygon3DFunctions.ASTEXT_FUNCTION + "(" + polygonSQL + ")";
 	}
 
 	@Override

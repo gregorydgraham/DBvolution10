@@ -161,7 +161,7 @@ public class DBLine3D extends QueryableDatatype<LineStringZ> implements Line3DRe
 	}
 
 	@Override
-	public LineString getValue() {
+	public LineStringZ getValue() {
 		if (!isDefined() || isNull()) {
 			return null;
 		} else {
@@ -175,7 +175,7 @@ public class DBLine3D extends QueryableDatatype<LineStringZ> implements Line3DRe
 	 *
 	 * @return the value of this object if defined and not NULL, NULL otherwise.
 	 */
-	public LineString jtsLineStringValue() {
+	public LineStringZ lineStringZValue() {
 		return getValue();
 	}
 

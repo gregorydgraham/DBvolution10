@@ -3927,6 +3927,17 @@ public abstract class DBDefinition {
 	}
 
 	/**
+	 * Provide the SQL that correctly represents this LineStringZ in this database.
+	 *
+	 * @param lineString a linestringZ to transform in to a Line3D value
+	 * @return SQL
+	 */
+	public String transformLineStringIntoDatabaseLine3DFormat(LineStringZ lineString) {
+		String wktValue = lineString.toText();
+		return "'" + wktValue + "'";
+	}
+
+	/**
 	 * Provide the SQL to derive the WKT version of the Line2D.
 	 *
 	 * @param line2DSQL a line2d value

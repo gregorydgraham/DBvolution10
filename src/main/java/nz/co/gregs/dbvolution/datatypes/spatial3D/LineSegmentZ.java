@@ -6,7 +6,6 @@
 package nz.co.gregs.dbvolution.datatypes.spatial3D;
 
 import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.CoordinateArrays;
 import com.vividsolutions.jts.geom.CoordinateSequence;
 import com.vividsolutions.jts.geom.CoordinateSequences;
 import com.vividsolutions.jts.geom.Geometry;
@@ -31,8 +30,8 @@ public class LineSegmentZ extends LineString {
 		super(new GeometryFactory3D().getCoordinateSequenceFactory().create(coordinates), new GeometryFactory3D());
 	}
 
-	public LineSegmentZ(double x1, double y1, double x2, double y2) {
-		super(new GeometryFactory3D().getCoordinateSequenceFactory().create(new Coordinate[]{new Coordinate(x1, y1), new Coordinate(x2, y2)}), new GeometryFactory3D());
+	public LineSegmentZ(double x1, double y1, double z1, double x2, double y2, double z2) {
+		super(new GeometryFactory3D().getCoordinateSequenceFactory().create(new Coordinate[]{new Coordinate(x1, y1, z1), new Coordinate(x2, y2, z2)}), new GeometryFactory3D());
 	}
 
 	@SuppressWarnings("deprecation")

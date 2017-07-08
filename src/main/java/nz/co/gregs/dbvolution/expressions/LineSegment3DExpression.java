@@ -78,10 +78,10 @@ public class LineSegment3DExpression implements LineSegment3DResult, EqualCompar
 	 * @param point2x
 	 * @param point2y
 	 */
-	public LineSegment3DExpression(Double point1x, Double point1y, Double point2x, Double point2y) {
+	public LineSegment3DExpression(Double point1x, Double point1y, Double point1z, Double point2x, Double point2y, Double point2z) {
 		LineSegmentZ line = null;
-		if (point1x != null && point1y != null && point2x != null && point2y != null) {
-			line = new LineSegmentZ(point1x, point1y, point2x, point2y);
+		if (point1x != null && point1y != null && point1z != null && point2x != null && point2y != null && point2z != null) {
+			line = new LineSegmentZ(point1x, point1y, point1z, point2x, point2y, point2z);
 			innerLineString = new DBLineSegment3D(line);
 		} else {
 			innerLineString = new DBLineSegment3D(line);
@@ -563,8 +563,8 @@ public class LineSegment3DExpression implements LineSegment3DResult, EqualCompar
 	 * @param point2y the last Y of the line segment to compare against
 	 * @return a Point3DExpression
 	 */
-	public Point3DExpression intersectionWith(Double point1x, Double point1y, Double point2x, Double point2y) {
-		return this.intersectionWith(new LineSegment3DExpression(point1x, point1y, point2x, point2y));
+	public Point3DExpression intersectionWith(Double point1x, Double point1y, Double point1z, Double point2x, Double point2y, Double point2z) {
+		return this.intersectionWith(new LineSegment3DExpression(point1x, point1y, point1z, point2x, point2y, point1z));
 	}
 
 	/**
