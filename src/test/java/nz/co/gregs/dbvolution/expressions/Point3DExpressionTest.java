@@ -107,6 +107,44 @@ public class Point3DExpressionTest extends AbstractTest {
 	}
 
 	@Test
+	public void testValueUsingInts() throws SQLException {
+		PointZ point = geometryFactory.createPointZ(new Coordinate(2.0, 3.0, 4.0));
+		final PointTestTable pointTestTable = new PointTestTable();
+		DBQuery dbQuery = database.getDBQuery(pointTestTable);
+		dbQuery.addCondition(Point3DExpression.value(2,3,4).is(pointTestTable.column(pointTestTable.point)));
+		System.out.println(dbQuery.getSQLForQuery());
+		List<PointTestTable> allRows = dbQuery.getAllInstancesOf(pointTestTable);
+		Assert.assertThat(allRows.size(), is(1));
+		Assert.assertThat(allRows.get(0).point_id.intValue(), is(1));
+		Assert.assertThat(allRows.get(0).point.pointZValue(), is(point));
+	}
+
+	@Test
+	public void testValueUsingFloats() throws SQLException {
+		PointZ point = geometryFactory.createPointZ(new Coordinate(2.0, 3.0, 4.0));
+		final PointTestTable pointTestTable = new PointTestTable();
+		DBQuery dbQuery = database.getDBQuery(pointTestTable);
+		dbQuery.addCondition(Point3DExpression.value(2.0,3.0,4.0).is(pointTestTable.column(pointTestTable.point)));
+		System.out.println(dbQuery.getSQLForQuery());
+		List<PointTestTable> allRows = dbQuery.getAllInstancesOf(pointTestTable);
+		Assert.assertThat(allRows.size(), is(1));
+		Assert.assertThat(allRows.get(0).point_id.intValue(), is(1));
+		Assert.assertThat(allRows.get(0).point.pointZValue(), is(point));
+	}
+
+	@Test
+	public void testValueUsingDoubles() throws SQLException {
+		PointZ point = geometryFactory.createPointZ(new Coordinate(2.0, 3.0, 4.0));
+		final PointTestTable pointTestTable = new PointTestTable();
+		DBQuery dbQuery = database.getDBQuery(pointTestTable);
+		dbQuery.addCondition(Point3DExpression.value(2.0D,3.0D,4.0D).is(pointTestTable.column(pointTestTable.point)));
+		List<PointTestTable> allRows = dbQuery.getAllInstancesOf(pointTestTable);
+		Assert.assertThat(allRows.size(), is(1));
+		Assert.assertThat(allRows.get(0).point_id.intValue(), is(1));
+		Assert.assertThat(allRows.get(0).point.pointZValue(), is(point));
+	}
+
+	@Test
 	public void testValueUsingPoint3DResult() throws SQLException {
 		PointZ point = geometryFactory.createPointZ(new Coordinate(2.0, 3.0,4.0));
 		final PointTestTable pointTestTable = new PointTestTable();

@@ -160,7 +160,7 @@ public class Point3DExpression implements PointResult, Point3DResult, EqualCompa
 	 * @return a Point2DExpression of the x, y, and z values provided.
 	 */
 	public static Point3DExpression value(NumberExpression xValue, NumberExpression yValue, NumberExpression zValue) {
-		return new Point3DExpression(new NumberNumberFunctionWithPoint3DResult(xValue, yValue, zValue) {
+		return new Point3DExpression(new NumberNumberNumberFunctionWithPoint3DResult(xValue, yValue, zValue) {
 
 			@Override
 			protected String doExpressionTransform(DBDatabase db) {
@@ -722,14 +722,14 @@ public class Point3DExpression implements PointResult, Point3DResult, EqualCompa
 		}
 	}
 
-	private static abstract class NumberNumberFunctionWithPoint3DResult extends Point3DExpression {
+	private static abstract class NumberNumberNumberFunctionWithPoint3DResult extends Point3DExpression {
 
 		private NumberExpression first;
 		private NumberExpression second;
 		private NumberExpression third;
 		private boolean requiresNullProtection;
 
-		NumberNumberFunctionWithPoint3DResult(NumberExpression first, NumberExpression second, NumberExpression third) {
+		NumberNumberNumberFunctionWithPoint3DResult(NumberExpression first, NumberExpression second, NumberExpression third) {
 			this.first = first;
 			this.second = second;
 			this.third = third;
@@ -760,8 +760,8 @@ public class Point3DExpression implements PointResult, Point3DResult, EqualCompa
 		}
 
 		@Override
-		public NumberNumberFunctionWithPoint3DResult copy() {
-			NumberNumberFunctionWithPoint3DResult newInstance;
+		public NumberNumberNumberFunctionWithPoint3DResult copy() {
+			NumberNumberNumberFunctionWithPoint3DResult newInstance;
 			try {
 				newInstance = getClass().newInstance();
 			} catch (InstantiationException ex) {
