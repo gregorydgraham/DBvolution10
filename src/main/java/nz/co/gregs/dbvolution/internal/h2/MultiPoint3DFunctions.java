@@ -19,20 +19,19 @@ import java.sql.SQLException;
 import java.sql.Statement;
 
 /**
- * a MultiPoint in H2 is a String formatted as MULTIPOINT ((1 2 3, 4 5 6, 7 8 9))
- * where each triple of numbers is a point and the entire string is less than 2000
- * characters
+ * a MultiPoint in H2 is a String formatted as MULTIPOINT ((1 2 3, 4 5 6, 7 8
+ * 9)) where each triple of numbers is a point and the entire string is less
+ * than 2000 characters
  *
  * @author gregorygraham
  */
 public enum MultiPoint3DFunctions implements DBVFeature {
 
 // MULTIPOINT ((1 2 3, 4 5 6, 7 8 9))
-
 	/**
 	 *
 	 */
-		CREATE("String", "Double... coords", "\n"
+	CREATE("String", "Double... coords", "\n"
 			+ "			Integer numberOfArguments = coords.length;\n"
 			+ "			if (numberOfArguments % 3 != 0) {\n"
 			+ "				return null;\n"
@@ -53,17 +52,28 @@ public enum MultiPoint3DFunctions implements DBVFeature {
 			+ "				resultStr += \")\";\n"
 			+ "				return resultStr;\n"
 			+ "			}"),
-
 	/**
 	 *
 	 */
-	EQUALS("Boolean", "String firstLine, String secondLine", "\n"
-			+ "			if (firstLine == null || secondLine == null) {\n"
-			+ "				return null;\n"
-			+ "			} else {\n"
-			+ "				return firstLine.equals(secondLine);\n"
-			+ "			}"),
-
+	EQUALS("Boolean", "String firstMP, String secondMP",
+			"		if (firstMP == null || secondMP == null) {\n"
+			+ "			return false;\n"
+			+ "		}\n"
+			+ "		String[] split1 = firstMP.split(\"[ (),]+\");\n"
+			+ "		String[] split2 = secondMP.split(\"[ (),]+\");\n"
+			+ "		if (split1.length != split2.length) {\n"
+			+ "			return false;\n"
+			+ "		} else {\n"
+			+ "			for (int i = 1; i < split1.length; i++) {\n"
+			+ "				double value1 = Double.parseDouble(split1[i]);\n"
+			+ "				double value2 = Double.parseDouble(split2[i]);\n"
+			+ "				if (value1 != value2) {\n"
+			+ "					return false;\n"
+			+ "				}\n"
+			+ "			}\n"
+			+ "		}\n"
+			+ "		return true;\n"
+	),
 	/**
 	 *
 	 */
@@ -81,7 +91,6 @@ public enum MultiPoint3DFunctions implements DBVFeature {
 			+ "				}\n"
 			+ "				return maxX;\n"
 			+ "			}"),
-
 	/**
 	 *
 	 */
@@ -99,7 +108,6 @@ public enum MultiPoint3DFunctions implements DBVFeature {
 			+ "				}\n"
 			+ "				return maxY;\n"
 			+ "			}"),
-
 	/**
 	 *
 	 */
@@ -117,7 +125,6 @@ public enum MultiPoint3DFunctions implements DBVFeature {
 			+ "				}\n"
 			+ "				return max;\n"
 			+ "			}"),
-
 	/**
 	 *
 	 */
@@ -135,7 +142,6 @@ public enum MultiPoint3DFunctions implements DBVFeature {
 			+ "				}\n"
 			+ "				return maxX;\n"
 			+ "			}"),
-
 	/**
 	 *
 	 */
@@ -153,7 +159,6 @@ public enum MultiPoint3DFunctions implements DBVFeature {
 			+ "				}\n"
 			+ "				return maxY;\n"
 			+ "			}"),
-
 	/**
 	 *
 	 */
@@ -171,7 +176,6 @@ public enum MultiPoint3DFunctions implements DBVFeature {
 			+ "				}\n"
 			+ "				return max;\n"
 			+ "			}"),
-
 	/**
 	 *
 	 */
@@ -212,22 +216,18 @@ public enum MultiPoint3DFunctions implements DBVFeature {
 			+ "				String resultString = \"POLYGON ((\" + minX+\" \"+minY+\" \"+minZ + \", \" + maxX+\" \"+minY+\" \"+minZ + \", \" + maxX+\" \"+maxY+\" \"+minZ + \", \" + maxX+\" \"+maxY+\" \"+maxZ + \", \" + minX+\" \"+maxY+\" \"+maxZ + \", \" + minX+\" \"+minY+\" \"+maxZ + \", \" + minX+\" \"+minY+\" \"+minZ + \"))\";\n"
 			+ "				return resultString;\n"
 			+ "			}"),
-
 	/**
 	 *
 	 */
-	DIMENSION("Integer", "String firstLine", "return 0;"	),
-
+	DIMENSION("Integer", "String firstLine", "return 0;"),
 	/**
 	 *
 	 */
 	ASTEXT("String", "String firstLine", "return firstLine;"),
-
 	/**
 	 *
 	 */
 	ASLINE3D("String", "String multipoint", "return multipoint.replace(\"(\",\"\").replace(\")\",\"\").replace(\"MULTIPOINT \", \"LINESTRING (\")+\")\";"),
-
 	/**
 	 *
 	 */
@@ -236,28 +236,26 @@ public enum MultiPoint3DFunctions implements DBVFeature {
 			+ "				return null;\n"
 			+ "			} else {\n"
 			+ "				String[] split = multipoint.trim().split(\"[ (),]+\");\n"
-			+ "				return (split.length - 1)/2;\n"
+			+ "				return (split.length - 1)/3;\n"
 			+ "			}"),
-
 	/**
 	 *
 	 */
-		GETPOINTATINDEX_FUNCTION("String", "String multipoint, Integer index", "\n"
-			+ "			final int indexInMPoint = index * 2;\n"
+	GETPOINTATINDEX_FUNCTION("String", "String multipoint, Integer index", "\n"
+			+ "			final int indexInMPoint = (index-1) * 3+1;\n"
 			+ "			if (multipoint == null||indexInMPoint<=0) {\n"
 			+ "				return null;\n"
 			+ "			} else {\n"
 			+ "				String[] split = multipoint.split(\"[ (),]+\");\n"
-			+ "				if (indexInMPoint > split.length) {\n"
+			+ "				if (indexInMPoint >= (split.length)) {\n"
 			+ "					return null;\n"
 			+ "				} else {\n"
-			+ "					String x = split[indexInMPoint - 1];\n"
-			+ "					String y = split[indexInMPoint];\n"
-			+ "					String z = split[indexInMPoint+1];\n"
+			+ "					String x = split[indexInMPoint];\n"
+			+ "					String y = split[indexInMPoint+1];\n"
+			+ "					String z = split[indexInMPoint+2];\n"
 			+ "					return \"POINT (\" + x + \" \" + y  + \" \" + z + \")\";\n"
 			+ "				}\n"
 			+ "			}");
-
 
 //	private final String functionName;
 	private final String returnType;
@@ -271,12 +269,12 @@ public enum MultiPoint3DFunctions implements DBVFeature {
 		this.parameters = parameters;
 		this.code = code;
 	}
-	
+
 	/**
 	 *
 	 * @return the integer version number of the function to be used
 	 */
-	static public int getCurrentVersion(){
+	static public int getCurrentVersion() {
 		return 1;
 	}
 
@@ -284,7 +282,7 @@ public enum MultiPoint3DFunctions implements DBVFeature {
 	public String toString() {
 		return "DBV_MULTIPOINT3D_" + name();
 	}
-	
+
 	@Override
 	public String alias() {
 		return toString();
@@ -304,7 +302,7 @@ public enum MultiPoint3DFunctions implements DBVFeature {
 			;// Not an issue.
 		}
 		final String createFunctionStatement = "CREATE ALIAS IF NOT EXISTS " + this + " DETERMINISTIC AS $$ \n" + "@CODE " + returnType + " " + this + "(" + parameters + ", Integer version) throws org.h2.jdbc.JdbcSQLException {\n"
-				+ "if (version!="+getCurrentVersion()+"){\n"
+				+ "if (version!=" + getCurrentVersion() + "){\n"
 				+ "	throw new org.h2.jdbc.JdbcSQLException(\"Function " + this + " not found\", \"Function " + this + " not found\", \"Function " + this + " not found\", version, null, \"Function " + this + " not found\"); \n"
 				+ "}else{\n"
 				+ code
@@ -313,42 +311,23 @@ public enum MultiPoint3DFunctions implements DBVFeature {
 		stmt.execute(createFunctionStatement);
 	}
 
-//	private String intersection(String firstLine, String secondLine) {
-//		if (firstLine == null || secondLine == null) {
-//			return null;
-//		}
-//		String[] split = firstLine.split("[ (),]+");
-//		double p0x = Double.parseDouble(split[1]);
-//		double p0y = Double.parseDouble(split[2]);
-//		double p1x = Double.parseDouble(split[3]);
-//		double p1y = Double.parseDouble(split[4]);
-//
-//		split = secondLine.split("[ (),]+");
-//		double p2x = Double.parseDouble(split[1]);
-//		double p2y = Double.parseDouble(split[2]);
-//		double p3x = Double.parseDouble(split[3]);
-//		double p3y = Double.parseDouble(split[4]);
-//
-//		double s1_x, s1_y, s2_x, s2_y;
-//		double i_x, i_y;
-//		s1_x = p1x - p0x;
-//		s1_y = p1y - p0y;
-//		s2_x = p3x - p2x;
-//		s2_y = p3y - p2y;
-//
-//		double s, t;
-//
-//		s = (-s1_y * (p0x - p2x) + s1_x * (p0y - p2y)) / (-s2_x * s1_y + s1_x * s2_y);
-//		t = (s2_x * (p0y - p2y) - s2_y * (p0x - p2x)) / (-s2_x * s1_y + s1_x * s2_y);
-//
-//		if (s >= 0 && s <= 1 && t >= 0 && t <= 1) {
-//			// Collision detected
-//			i_x = p0x + (t * s1_x);
-//			i_y = p0y + (t * s1_y);
-//			return "POINT (" + i_x + " " + i_y + ")";
-//		} else {
-//			// No collision
-//			return null;
-//		}
-//	}
+	private Boolean testEquals(String firstMP, String secondMP) {
+		if (firstMP == null || secondMP == null) {
+			return null;
+		}
+		String[] split1 = firstMP.split("[ (),]+");
+		String[] split2 = secondMP.split("[ (),]+");
+		if (split1.length != split2.length) {
+			return false;
+		} else {
+			for (int i = 1; i < split1.length; i++) {
+				double value1 = Double.parseDouble(split1[i]);
+				double value2 = Double.parseDouble(split2[i]);
+				if (value1 != value2) {
+					return false;
+				}
+			}
+		}
+		return true;
+	}
 }

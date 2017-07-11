@@ -631,7 +631,6 @@ public class DBPolygon3DTest extends AbstractTest {
 			BasicSpatial3DTable spatial = new BasicSpatial3DTable();
 			spatial.myfirstgeom.setValue(polygon);
 			DBActionList insert = database.insert(spatial);
-			System.out.println("nz.co.gregs.dbvolution.datatypes.spatial3D.DBPolygon3DTest.testMaxZ(): " + insert.getSQL(database));
 
 			DBQuery query = database.getDBQuery(new BasicSpatial3DTable()).addCondition(spatial.column(spatial.myfirstgeom).maxZ().is(2));
 			List<BasicSpatial3DTable> allRows = query.getAllInstancesOf(spatial);
@@ -821,10 +820,8 @@ public class DBPolygon3DTest extends AbstractTest {
 			BasicSpatial3DTable spatial = new BasicSpatial3DTable();
 			spatial.myfirstgeom.setValue(fac.createPolygonZ(lineString.getCoordinateSequence()));
 			database.insert(spatial);
-			database.print(DBReport.getAllRows(database, new BasicSpatial3DReport()));
 
 			DBQuery query = database.getDBQuery(new BasicSpatial3DTable()).addCondition(spatial.column(spatial.myfirstgeom).exteriorRing().is(lineString));
-			System.out.println("" + query.getSQLForQuery());
 			List<BasicSpatial3DTable> allRows = query.getAllInstancesOf(spatial);
 
 			Assert.assertThat(allRows.size(), is(1));

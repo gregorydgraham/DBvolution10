@@ -156,8 +156,8 @@ public class LineSegment3DExpression implements LineSegment3DResult, EqualCompar
 	 * @param y2 the last Y of this value
 	 * @return a LineSegment3D expression
 	 */
-	public static LineSegment3DExpression value(Double x1, Double y1, Double x2, Double y2) {
-		return new LineSegment3DExpression(new Coordinate(x1, y1), new Coordinate(x2, y2));
+	public static LineSegment3DExpression value(Double x1, Double y1, Double z1, Double x2, Double y2, Double z2) {
+		return new LineSegment3DExpression(new Coordinate(x1, y1, z1), new Coordinate(x2, y2, z2));
 	}
 
 	/**

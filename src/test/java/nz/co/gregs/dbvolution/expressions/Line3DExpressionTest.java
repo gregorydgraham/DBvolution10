@@ -75,8 +75,8 @@ public class Line3DExpressionTest extends AbstractTest {
 
 		@DBColumn("line_col")
 		public DBLine3D line = new DBLine3D();
-//		@DBColumn()
-//		public DBMultiPoint3D lineIntersections = new DBMultiPoint3D(this.column(this.line).intersectionPoints(Line3DExpression.value(new Coordinate(3, 3),new Coordinate(2, 4),new Coordinate(1, 4))));
+		@DBColumn()
+		public DBMultiPoint3D lineIntersections = new DBMultiPoint3D(this.column(this.line).intersectionPoints(Line3DExpression.value(new Coordinate(3, 3, 1),new Coordinate(2, 4, 1),new Coordinate(1, 4, 1))));
 	}
 
 	@Test
@@ -381,14 +381,13 @@ public class Line3DExpressionTest extends AbstractTest {
 		Coordinate coordinate3 = new Coordinate(5, 3, 2);
 		final Line3DExpression nonCrossingLine = Line3DExpression.value(coordinate1, coordinate2, coordinate3);
 		
-		Coordinate coordinateA = new Coordinate(3, 3, 0);
-		Coordinate coordinateB = new Coordinate(2, 4, 0);
-		Coordinate coordinateC = new Coordinate(1, 4, 0);
+		Coordinate coordinateA = new Coordinate(3, 3, 1);
+		Coordinate coordinateB = new Coordinate(2, 4, 1);
+		Coordinate coordinateC = new Coordinate(1, 4, 1);
 		final Line3DExpression crossingLine = Line3DExpression.value(coordinateA, coordinateB, coordinateC);
 		dbQuery.setBlankQueryAllowed(true);
 		
-		dbQuery.addCondition(lineTestTable.column(lineTestTable.line).intersectionWith(crossingLine).is(Point3DExpression.value(2.5D, 3.5D, 1D)));
-		System.out.println(dbQuery.getSQLForQuery());
+		dbQuery.addCondition(lineTestTable.column(lineTestTable.line).intersectionWith(crossingLine).is(Point3DExpression.value(2.5D, 3.5D, 1.0D)));
 		List<LineTestTable> allRows = dbQuery.getAllInstancesOf(lineTestTable);
 		
 		Assert.assertThat(allRows.size(), is(2));
@@ -515,7 +514,7 @@ public class Line3DExpressionTest extends AbstractTest {
 		final Line3DExpression crossingLine = Line3DExpression.value(coordinateA, coordinateB, coordinateC);
 		dbQuery.setBlankQueryAllowed(true);
 
-		dbQuery.addCondition(lineTestTable.column(lineTestTable.line).intersectionPoints(crossingLine).is(MultiPoint3DExpression.value(new Coordinate(2.5D, 3.5D))));
+		dbQuery.addCondition(lineTestTable.column(lineTestTable.line).intersectionPoints(crossingLine).is(MultiPoint3DExpression.value(new Coordinate(2.5D, 3.5D, 1.0D))));
 		List<LineTestTable> allRows = dbQuery.getAllInstancesOf(lineTestTable);
 
 		Assert.assertThat(allRows.size(), is(2));

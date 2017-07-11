@@ -82,7 +82,7 @@ public class MultiPoint3DExpressionTest extends AbstractTest {
 
 	@Test
 	public void testValue() throws SQLException {
-		MultiPointZ mpoint = geometryFactory.createMultiPointZ(new Coordinate[]{new Coordinate(2.0, 3.0, 4.0), new Coordinate(3.0, 4.0, 5.0)});
+		MultiPointZ mpoint = geometryFactory.createMultiPointZ(new Coordinate[]{new Coordinate(2.0, 3.0, 0.0), new Coordinate(3.0, 4.0, 1.0)});
 		final MultiPoint3DTestTable pointTestTable = new MultiPoint3DTestTable();
 		DBQuery dbQuery = database.getDBQuery(pointTestTable);
 		dbQuery.addCondition(MultiPoint3DExpression.value(mpoint).is(pointTestTable.column(pointTestTable.multipoint)));
@@ -94,7 +94,7 @@ public class MultiPoint3DExpressionTest extends AbstractTest {
 
 	@Test
 	public void testValueWithPointArray() throws SQLException {
-		Coordinate[] coords = new Coordinate[]{new Coordinate(2.0, 3.0, 4.0), new Coordinate(3.0, 4.0, 5.0)};
+		Coordinate[] coords = new Coordinate[]{new Coordinate(2.0, 3.0, 0.0), new Coordinate(3.0, 4.0, 1.0)};
 		MultiPointZ mpoint = geometryFactory.createMultiPointZ(coords);
 		List<PointZ> pointList = new ArrayList<PointZ>();
 		for (Coordinate coord : coords) {
@@ -114,7 +114,7 @@ public class MultiPoint3DExpressionTest extends AbstractTest {
 
 	@Test
 	public void testValueWithMultiPoint3DResult() throws SQLException {
-		Coordinate[] coords = new Coordinate[]{new Coordinate(2.0, 3.0, 4.0), new Coordinate(3.0, 4.0, 5.0)};
+		Coordinate[] coords = new Coordinate[]{new Coordinate(2.0, 3.0, 0.0), new Coordinate(3.0, 4.0, 1.0)};
 		MultiPointZ mpoint = geometryFactory.createMultiPointZ(coords);
 		List<PointZ> pointList = new ArrayList<PointZ>();
 		for (Coordinate coord : coords) {
@@ -189,7 +189,7 @@ public class MultiPoint3DExpressionTest extends AbstractTest {
 
 	@Test
 	public void testStringResult() throws SQLException {
-		MultiPointZ line = geometryFactory.createMultiPointZ(new Coordinate[]{new Coordinate(2.0, 3.0, 4.0), new Coordinate(3.0, 4.0, 5.0)});
+		MultiPointZ line = geometryFactory.createMultiPointZ(new Coordinate[]{new Coordinate(2.0, 3.0, 0.0), new Coordinate(3.0, 4.0, 1.0)});
 		final MultiPoint3DTestTable pointTestTable = new MultiPoint3DTestTable();
 		DBQuery dbQuery = database.getDBQuery(pointTestTable);
 		dbQuery.addCondition(MultiPoint3DExpression.value(line).stringResult().is(pointTestTable.column(pointTestTable.multipoint).stringResult()));
@@ -200,7 +200,7 @@ public class MultiPoint3DExpressionTest extends AbstractTest {
 
 	@Test
 	public void testLine3DResult() throws SQLException {
-		LineStringZ line = geometryFactory.createLineStringZ(new Coordinate[]{new Coordinate(2.0, 3.0, 4.0), new Coordinate(3.0, 4.0, 5.0)});
+		LineStringZ line = geometryFactory.createLineStringZ(new Coordinate[]{new Coordinate(2.0, 3.0, 0.0), new Coordinate(3.0, 4.0, 1.0)});
 		final MultiPoint3DTestTable pointTestTable = new MultiPoint3DTestTable();
 		DBQuery dbQuery = database.getDBQuery(pointTestTable);
 		dbQuery.setBlankQueryAllowed(true);
@@ -213,7 +213,7 @@ public class MultiPoint3DExpressionTest extends AbstractTest {
 
 	@Test
 	public void testIs_MultiPoint() throws SQLException {
-		MultiPointZ mpoint = geometryFactory.createMultiPointZ(new Coordinate[]{new Coordinate(2.0, 3.0, 4.0), new Coordinate(3.0, 4.0, 5.0)});
+		MultiPointZ mpoint = geometryFactory.createMultiPointZ(new Coordinate[]{new Coordinate(2.0, 3.0, 0.0), new Coordinate(3.0, 4.0, 1.0)});
 		final MultiPoint3DTestTable pointTestTable = new MultiPoint3DTestTable();
 		DBQuery dbQuery = database.getDBQuery(pointTestTable);
 		dbQuery.addCondition(pointTestTable.column(pointTestTable.multipoint).is(mpoint));
@@ -224,7 +224,7 @@ public class MultiPoint3DExpressionTest extends AbstractTest {
 
 	@Test
 	public void testIs_MultiPoint3DResult() throws SQLException {
-		MultiPointZ mpoint = geometryFactory.createMultiPointZ(new Coordinate[]{new Coordinate(2.0, 3.0, 4.0), new Coordinate(3.0, 4.0, 5.0)});
+		MultiPointZ mpoint = geometryFactory.createMultiPointZ(new Coordinate[]{new Coordinate(2.0, 3.0, 0.0), new Coordinate(3.0, 4.0, 1.0)});
 		final MultiPoint3DTestTable multiPointRow = new MultiPoint3DTestTable();
 		DBQuery dbQuery = database.getDBQuery(multiPointRow);
 		dbQuery.addCondition(MultiPoint3DExpression.value(mpoint).is(multiPointRow.column(multiPointRow.multipoint)));
@@ -236,7 +236,7 @@ public class MultiPoint3DExpressionTest extends AbstractTest {
 
 	@Test
 	public void testIsNot_MultiPoint3DResult() throws SQLException {
-		MultiPointZ mpoint = geometryFactory.createMultiPointZ(new Coordinate[]{new Coordinate(2.0, 3.0, 4.0), new Coordinate(3.0, 4.0, 5.0)});
+		MultiPointZ mpoint = geometryFactory.createMultiPointZ(new Coordinate[]{new Coordinate(2.0, 3.0, 0.0), new Coordinate(3.0, 4.0, 1.0)});
 		final MultiPoint3DTestTable multiPointRow = new MultiPoint3DTestTable();
 		DBQuery dbQuery = database.getDBQuery(multiPointRow);
 		dbQuery.addCondition(MultiPoint3DExpression.value(mpoint).isNot(multiPointRow.column(multiPointRow.multipoint)));
@@ -248,7 +248,7 @@ public class MultiPoint3DExpressionTest extends AbstractTest {
 
 	@Test
 	public void testIsNot_MultiPoint3D() throws SQLException {
-		MultiPointZ mpoint = geometryFactory.createMultiPointZ(new Coordinate[]{new Coordinate(2.0, 3.0, 4.0), new Coordinate(3.0, 4.0, 5.0)});
+		MultiPointZ mpoint = geometryFactory.createMultiPointZ(new Coordinate[]{new Coordinate(2.0, 3.0, 0.0), new Coordinate(3.0, 4.0, 1.0)});
 		final MultiPoint3DTestTable multiPointRow = new MultiPoint3DTestTable();
 		DBQuery dbQuery = database.getDBQuery(multiPointRow);
 		dbQuery.addCondition(multiPointRow.column(multiPointRow.multipoint).isNot(mpoint));
@@ -271,7 +271,7 @@ public class MultiPoint3DExpressionTest extends AbstractTest {
 
 	@Test
 	public void testPointAtIndex_int() throws SQLException {
-		PointZ point = geometryFactory.createPointZ(new Coordinate(3, 4, 5));
+		PointZ point = geometryFactory.createPointZ(new Coordinate(3, 4, 1));
 		final MultiPoint3DTestTable multiPointRow = new MultiPoint3DTestTable();
 		DBQuery dbQuery = database.getDBQuery(multiPointRow);
 		dbQuery.addCondition(multiPointRow.column(multiPointRow.multipoint).getPointAtIndexZeroBased(1).is(point));
@@ -320,7 +320,7 @@ public class MultiPoint3DExpressionTest extends AbstractTest {
 	public void testSpatialDimensions() throws SQLException {
 		final MultiPoint3DTestTable multiPointRow = new MultiPoint3DTestTable();
 		DBQuery dbQuery = database.getDBQuery(multiPointRow);
-		dbQuery.addCondition(multiPointRow.column(multiPointRow.multipoint).spatialDimensions().is(2));
+		dbQuery.addCondition(multiPointRow.column(multiPointRow.multipoint).spatialDimensions().is(3));
 		List<MultiPoint3DTestTable> allRows = dbQuery.getAllInstancesOf(multiPointRow);
 		
 		Assert.assertThat(allRows.size(), is(3));

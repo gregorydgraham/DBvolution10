@@ -52,13 +52,25 @@ public enum LineSegment3DFunctions implements DBVFeature {
 	/**
 	 *
 	 */
-	EQUALS("Boolean", "String firstLine, String secondLine", "\n"
-			+ "			if (firstLine == null || secondLine == null) {\n"
-			+ "				return null;\n"
-			+ "			} else {\n"
-			+ "				return firstLine.equals(secondLine);\n"
-			+ "			}"),
-
+	EQUALS("Boolean", "String firstMP, String secondMP",
+			"		if (firstMP == null || secondMP == null) {\n"
+			+ "			return false;\n"
+			+ "		}\n"
+			+ "		String[] split1 = firstMP.split(\"[ (),]+\");\n"
+			+ "		String[] split2 = secondMP.split(\"[ (),]+\");\n"
+			+ "		if (split1.length != split2.length) {\n"
+			+ "			return false;\n"
+			+ "		} else {\n"
+			+ "			for (int i = 1; i < split1.length; i++) {\n"
+			+ "				double value1 = Double.parseDouble(split1[i]);\n"
+			+ "				double value2 = Double.parseDouble(split2[i]);\n"
+			+ "				if (value1 != value2) {\n"
+			+ "					return false;\n"
+			+ "				}\n"
+			+ "			}\n"
+			+ "		}\n"
+			+ "		return true;\n"
+	),
 	/**
 	 *
 	 */

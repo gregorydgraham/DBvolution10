@@ -112,8 +112,8 @@ public class Point3DExpressionTest extends AbstractTest {
 		final PointTestTable pointTestTable = new PointTestTable();
 		DBQuery dbQuery = database.getDBQuery(pointTestTable);
 		dbQuery.addCondition(Point3DExpression.value(2,3,4).is(pointTestTable.column(pointTestTable.point)));
-		System.out.println(dbQuery.getSQLForQuery());
 		List<PointTestTable> allRows = dbQuery.getAllInstancesOf(pointTestTable);
+
 		Assert.assertThat(allRows.size(), is(1));
 		Assert.assertThat(allRows.get(0).point_id.intValue(), is(1));
 		Assert.assertThat(allRows.get(0).point.pointZValue(), is(point));
@@ -125,8 +125,8 @@ public class Point3DExpressionTest extends AbstractTest {
 		final PointTestTable pointTestTable = new PointTestTable();
 		DBQuery dbQuery = database.getDBQuery(pointTestTable);
 		dbQuery.addCondition(Point3DExpression.value(2.0,3.0,4.0).is(pointTestTable.column(pointTestTable.point)));
-		System.out.println(dbQuery.getSQLForQuery());
 		List<PointTestTable> allRows = dbQuery.getAllInstancesOf(pointTestTable);
+
 		Assert.assertThat(allRows.size(), is(1));
 		Assert.assertThat(allRows.get(0).point_id.intValue(), is(1));
 		Assert.assertThat(allRows.get(0).point.pointZValue(), is(point));
