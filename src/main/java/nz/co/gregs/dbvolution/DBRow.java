@@ -16,7 +16,6 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 import nz.co.gregs.dbvolution.annotations.*;
 import nz.co.gregs.dbvolution.columns.ColumnProvider;
-import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.datatypes.*;
 import nz.co.gregs.dbvolution.exceptions.AccidentalCartesianJoinException;
 import nz.co.gregs.dbvolution.exceptions.IncorrectRowProviderInstanceSuppliedException;
@@ -130,17 +129,7 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 	public static <T extends DBRow> T getDBRow(Class<T> requiredDBRowClass) throws UnableToInstantiateDBRowSubclassException {
 		try {
 			return requiredDBRowClass.getConstructor().newInstance();
-		} catch (NoSuchMethodException ex) {
-			throw new UnableToInstantiateDBRowSubclassException(requiredDBRowClass, ex);
-		} catch (SecurityException ex) {
-			throw new UnableToInstantiateDBRowSubclassException(requiredDBRowClass, ex);
-		} catch (InstantiationException ex) {
-			throw new UnableToInstantiateDBRowSubclassException(requiredDBRowClass, ex);
-		} catch (IllegalAccessException ex) {
-			throw new UnableToInstantiateDBRowSubclassException(requiredDBRowClass, ex);
-		} catch (IllegalArgumentException ex) {
-			throw new UnableToInstantiateDBRowSubclassException(requiredDBRowClass, ex);
-		} catch (InvocationTargetException ex) {
+		} catch (NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
 			throw new UnableToInstantiateDBRowSubclassException(requiredDBRowClass, ex);
 		}
 	}
@@ -164,11 +153,6 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 			QueryableDatatype<?> newQDT = definition.getQueryableDatatype(newRow);
 			
 			new InternalQueryableDatatypeProxy(newQDT).setValue(sourceQDT);
-//			final RowDefinitionInstanceWrapper newInstanceWrapper = wrapper.getDefinition().getRowDefinitionClassWrapper().instanceWrapperFor(newRow);
-//			final PropertyWrapper newProperty = newInstanceWrapper.getPropertyByName(wrapper.javaName());
-//			new InternalQueryableDatatypeProxy(newProperty.getQueryableDatatype()).setValue(wrapper.rawJavaValue());
-
-//			new InternalQueryableDatatypeProxy(newQDT).setValue(sourceRow.getPrimaryKeys());
 		}
 		return newRow;
 	}
@@ -438,13 +422,6 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 	 *
 	 */
 	public List<String> getWhereClausesWithoutAliases(DBDatabase db) {
-//		try {
-//			return getWhereClauses(db, false);
-//		} catch (InstantiationException ex) {
-//			throw new RuntimeException(ex);
-//		} catch (IllegalAccessException ex) {
-//			throw new RuntimeException(ex);
-//		}
 		return getWhereClauses(db, false);
 	}
 
@@ -460,13 +437,6 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 	 *
 	 */
 	public List<String> getWhereClausesWithAliases(DBDatabase db) {
-//		try {
-//			return getWhereClauses(db, true);
-//		} catch (InstantiationException ex) {
-//			throw new RuntimeException(ex);
-//		} catch (IllegalAccessException ex) {
-//			throw new RuntimeException(ex);
-//		}
 		return getWhereClauses(db, true);
 	}
 
@@ -484,10 +454,8 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 					if (rawJavaValue == null) {
 						try {
 							rawJavaValue = prop.getRawJavaType().newInstance();
-						} catch (InstantiationException ex) {
+						} catch (InstantiationException | IllegalAccessException ex) {
 							// note: InstantiationException tends to be thrown without a message
-							throw new RuntimeException("Unable to instantiate instance of " + prop.toString(), ex);
-						} catch (IllegalAccessException ex) {
 							throw new RuntimeException("Unable to instantiate instance of " + prop.toString(), ex);
 						}
 						prop.setRawJavaValue(rawJavaValue);
@@ -536,7 +504,6 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 	 */
 	public final List<BooleanExpression> getWhereClauseExpressions(DBDatabase db, boolean useTableAlias) //throws InstantiationException, IllegalAccessException 
 	{
-//		DBDefinition defn = db.getDefinition();
 		List<BooleanExpression> whereClause = new ArrayList<>();
 		List<PropertyWrapper> props = getWrapper().getColumnPropertyWrappers();
 		for (PropertyWrapper prop : props) {
@@ -546,13 +513,10 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 				if (prop.isTypeAdapted()) {
 					Object rawJavaValue = prop.rawJavaValue();
 					if (rawJavaValue == null) {
-//						rawJavaValue = prop.getRawJavaType().newInstance();
 						try {
 							rawJavaValue = prop.getRawJavaType().newInstance();
-						} catch (InstantiationException ex) {
+						} catch (InstantiationException | IllegalAccessException ex) {
 							// note: InstantiationException tends to be thrown without a message
-							throw new RuntimeException("Unable to instantiate instance of " + prop.toString(), ex);
-						} catch (IllegalAccessException ex) {
 							throw new RuntimeException("Unable to instantiate instance of " + prop.toString(), ex);
 						}
 						prop.setRawJavaValue(rawJavaValue);
@@ -1149,20 +1113,14 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 
 		Set<Class<? extends DBRow>> subTypes = reflections.getSubTypesOf(DBRow.class);
 		for (Class<? extends DBRow> tableClass : subTypes) {
-			//DBRow newInstance;
 			try {
-				//newInstance = tableClass.newInstance();
-				//if (newInstance.getReferencedTables().contains(this.getClass())) {
-				//	relatedTables.add(tableClass);
 				if (!Modifier.isAbstract(tableClass.getModifiers())) {
 					DBRow newInstance = tableClass.newInstance();
 					if (newInstance.getReferencedTables().contains(this.getClass())) {
 						relatedTables.add(tableClass);
 					}
 				}
-			} catch (InstantiationException ex) {
-				throw new UnableToInstantiateDBRowSubclassException(tableClass, ex);
-			} catch (IllegalAccessException ex) {
+			} catch (InstantiationException | IllegalAccessException ex) {
 				throw new UnableToInstantiateDBRowSubclassException(tableClass, ex);
 			}
 		}
@@ -1190,21 +1148,15 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 
 		Set<Class<? extends DBRow>> subTypes = reflections.getSubTypesOf(DBRow.class);
 		for (Class<? extends DBRow> tableClass : subTypes) {
-			//DBRow newInstance;
 			if (tableClass.getSuperclass().equals(DBRow.class)) {
 				try {
-					//newInstance = tableClass.newInstance();
-					//if (newInstance.getReferencedTables().contains(this.getClass())) {
-					//	relatedTables.add(tableClass);
 					if (!Modifier.isAbstract(tableClass.getModifiers())) {
 						DBRow newInstance = tableClass.newInstance();
 						if (newInstance.getReferencedTables().contains(this.getClass())) {
 							relatedTables.add(tableClass);
 						}
 					}
-				} catch (InstantiationException ex) {
-					throw new UnableToInstantiateDBRowSubclassException(tableClass, ex);
-				} catch (IllegalAccessException ex) {
+				} catch (InstantiationException | IllegalAccessException ex) {
 					throw new UnableToInstantiateDBRowSubclassException(tableClass, ex);
 				}
 			}
@@ -1218,9 +1170,6 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 	 * @param goodTables	goodTables
 	 */
 	public void ignoreAllForeignKeysExceptFKsTo(DBRow... goodTables) {
-//        if (referencedTables.isEmpty()) {
-//            getReferencedTables();
-//        }
 		List<PropertyWrapper> props = getWrapper().getForeignKeyPropertyWrappers();
 		for (PropertyWrapper prop : props) {
 			boolean ignore = true;
@@ -1388,7 +1337,6 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 				PropertyWrapperDefinition targetPropertyDefinition = propertyWrapper.getDefinition().referencedPropertyDefinitionIdentity();
 				PropertyWrapper targetProperty = target.getWrapper().getPropertyByName(targetPropertyDefinition.javaName());
 				QueryableDatatype<?> targetPK = targetProperty.getQueryableDatatype().getQueryableDatatypeForExpressionValue();
-//				final QueryableDatatype<?> targetPK = target.getPrimaryKeys().getQueryableDatatypeForExpressionValue();
 
 				Object column = source.column(sourceFK);
 				try {
@@ -1399,15 +1347,7 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 							fksToR.add((DBExpression) fkExpression);
 						}
 					}
-				} catch (IllegalAccessException ex) {
-					throw new nz.co.gregs.dbvolution.exceptions.ForeignKeyCannotBeComparedToPrimaryKey(ex, source, propertyWrapper, target, targetProperty);
-				} catch (IllegalArgumentException ex) {
-					throw new nz.co.gregs.dbvolution.exceptions.ForeignKeyCannotBeComparedToPrimaryKey(ex, source, propertyWrapper, target, targetProperty);
-				} catch (NoSuchMethodException ex) {
-					throw new nz.co.gregs.dbvolution.exceptions.ForeignKeyCannotBeComparedToPrimaryKey(ex, source, propertyWrapper, target, targetProperty);
-				} catch (SecurityException ex) {
-					throw new nz.co.gregs.dbvolution.exceptions.ForeignKeyCannotBeComparedToPrimaryKey(ex, source, propertyWrapper, target, targetProperty);
-				} catch (InvocationTargetException ex) {
+				} catch (IllegalAccessException | IllegalArgumentException | NoSuchMethodException | SecurityException | InvocationTargetException ex) {
 					throw new nz.co.gregs.dbvolution.exceptions.ForeignKeyCannotBeComparedToPrimaryKey(ex, source, propertyWrapper, target, targetProperty);
 				}
 			}
@@ -1480,12 +1420,10 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 		final PropertyWrapperDefinition fkDefn = fk.getDefinition();				
 		QueryableDatatype<?> fkQDT = fkDefn.getQueryableDatatype(fkTable);				
 		
-//		PropertyWrapper propertyWrapper = fkTable.getPropertyWrapperOf(fkQDT);
 		PropertyWrapperDefinition targetPropertyDefinition = fkDefn.referencedPropertyDefinitionIdentity();
 		PropertyWrapper targetProperty = otherTable.getWrapper().getPropertyByName(targetPropertyDefinition.javaName());
 		QueryableDatatype<?> pkQDT = targetProperty.getQueryableDatatype();
 
-//		QueryableDatatype<?> pkQDT = otherTable.getPrimaryKeys();
 		if (fkQDT.getClass().isAssignableFrom(pkQDT.getClass())
 				|| pkQDT.getClass().isAssignableFrom(fkQDT.getClass())) {
 			if (DBBoolean.class.isAssignableFrom(fkQDT.getClass())) {
@@ -1585,16 +1523,13 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 		Reflections reflections = new Reflections(referencePackage);
 		Set<Class<? extends DBRow>> tables = reflections.getSubTypesOf(DBRow.class);
 		for (Class<? extends DBRow> tab : tables) {
-			//if (tab.getSuperclass().equals(DBRow.class) && tab.getPackage().equals(referencePackage)) {
 			if (!Modifier.isAbstract(tab.getModifiers())
 					&& tab.getSuperclass().equals(DBRow.class)
 					&& tab.getPackage().equals(referencePackage)) {
 				DBRow tabInstance;
 				try {
 					tabInstance = tab.newInstance();
-				} catch (InstantiationException ex) {
-					throw new UnableToInstantiateDBRowSubclassException(tab, ex);
-				} catch (IllegalAccessException ex) {
+				} catch (InstantiationException | IllegalAccessException ex) {
 					throw new UnableToInstantiateDBRowSubclassException(tab, ex);
 				}
 				resultList.add(tabInstance);
@@ -1618,7 +1553,6 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 		try {
 			List<PropertyWrapper> fields = this.getAutoFillingPropertyWrappers();
 			for (PropertyWrapper field : fields) {
-//				field.setAccessible(true);
 				if (field.isAutoFilling()) {
 					Class<?> requiredClass = field.getRawJavaType();
 					if (requiredClass.isArray()) {
@@ -1626,21 +1560,16 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 						arrayRequired = true;
 					} else if (Collection.class.isAssignableFrom(requiredClass)) {
 						listRequired = true;
-//						final AutoFillDuringQueryIfPossible autoFillAnnotation = field.getAnnotation(AutoFillDuringQueryIfPossible.class);
-//						requiredClass = autoFillAnnotation.requiredClass();
 						requiredClass = field.getAutoFillingClass();
 						if (requiredClass.isAssignableFrom(DBRow.class)) {
 							throw new nz.co.gregs.dbvolution.exceptions.UnacceptableClassForAutoFillAnnotation(field, requiredClass);
 						}
 					}
 					if (DBRow.class.isAssignableFrom(requiredClass)) {
-//						DBRow fieldInstance = (DBRow) requiredClass.newInstance();
 						DBRow fieldInstance;
 						try {
 							fieldInstance = (DBRow) requiredClass.newInstance();
-						} catch (InstantiationException ex) {
-							throw new UnableToInstantiateDBRowSubclassException((Class<? extends DBRow>) requiredClass, ex);
-						} catch (IllegalAccessException ex) {
+						} catch (InstantiationException | IllegalAccessException ex) {
 							throw new UnableToInstantiateDBRowSubclassException((Class<? extends DBRow>) requiredClass, ex);
 						}
 						List<DBRow> relatedInstancesFromQuery = this.getRelatedInstancesFromQuery(query, fieldInstance);
