@@ -978,5 +978,37 @@ public class SQLiteDefinition extends DBDefinition {
 	public String doRandomNumberTransform() {
 		return " ABS(RANDOM()/9223372036854775808)";
 	}
+	
+		@Override
+	public String doPoint3DEqualsTransform(String firstPoint, String secondPoint) {
+		return Point3DFunctions.EQUALS_FUNCTION + "(" + firstPoint + ", " + secondPoint + ")";
+	}
+
+	@Override
+	public String doPoint3DGetXTransform(String toSQLString) {
+		return Point3DFunctions.GETX_FUNCTION + "(" + toSQLString + ")";
+	}
+
+	@Override
+	public String doPoint3DGetYTransform(String toSQLString) {
+		return Point3DFunctions.GETY_FUNCTION + "(" + toSQLString + ")";
+	}
+
+	@Override
+	public String doPoint3DGetZTransform(String toSQLString) {
+		return Point3DFunctions.GETZ_FUNCTION + "(" + toSQLString + ")";
+	}
+
+	@Override
+	public String doPoint3DMeasurableDimensionsTransform(String toSQLString) {
+		return Point3DFunctions.GETDIMENSION_FUNCTION + "(" + toSQLString + ")";
+	}
+
+	@Override
+	public String doPoint3DGetBoundingBoxTransform(String toSQLString) {
+		return Point3DFunctions.GETBOUNDINGBOX_FUNCTION + "(" + toSQLString + ")";
+	}
+
+
 
 }

@@ -94,7 +94,7 @@ public class Point3DFunctions {
 			if (x == null || y == null || z == null) {
 				result((String) null);
 			} else {
-				result("POINT (" + x + " " + y +  " " + z + ")");
+				result("POINT (" + x + " " + y + " " + z + ")");
 			}
 		}
 	}
@@ -103,12 +103,18 @@ public class Point3DFunctions {
 
 		@Override
 		protected void xFunc() throws SQLException {
-			String firstPoint = value_text(0);
-			String secondPoint = value_text(1);
-			if (firstPoint == null || secondPoint == null) {
+			if (value_text(0) == null || value_text(1) == null) {
 				result((String) null);
 			} else {
-				result(firstPoint.equals(secondPoint) ? 1 : 0);
+				String[] split = value_text(0).split("[ (),]+");
+				String[] split2 = value_text(1).split("[ (),]+");
+				Double x1 = Double.valueOf(split[1]);
+				Double x2 = Double.valueOf(split2[1]);
+				Double y1 = Double.valueOf(split[2]);
+				Double y2 = Double.valueOf(split2[2]);
+				Double z1 = Double.valueOf(split[3]);
+				Double z2 = Double.valueOf(split2[3]);
+				result(x1.equals(x2) && y1.equals(y2) && z1.equals(z2) ? 1 : 0);
 			}
 		}
 	}
