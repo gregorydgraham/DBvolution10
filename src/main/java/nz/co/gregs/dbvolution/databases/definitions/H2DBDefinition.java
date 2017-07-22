@@ -930,4 +930,7 @@ public class H2DBDefinition extends DBDefinition {
 	@Override
 	public String doMultiPoint3DGetMaxXTransform(String first) {
 		return MultiPoint3DFunctions.MAXX+"("+first+", "+MultiPoint3DFunctions.getCurrentVersion()+")";
-	}}
+	}
+
+
+}
