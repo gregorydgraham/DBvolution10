@@ -106,6 +106,10 @@ public class MultiPoint3DFunctions {
 	 */
 	public final static String ASLINE3D = "DBV_MPOINT3D_ASLINE3D";
 
+	public static double getCurrentVersion() {
+		return 1.0;
+	}
+
 	private MultiPoint3DFunctions() {
 	}
 
@@ -115,6 +119,20 @@ public class MultiPoint3DFunctions {
 	 * @throws SQLException
 	 */
 	public static void addFunctions(Connection connection) throws SQLException {
+		Function.destroy(connection, CREATE_FROM_COORDS_FUNCTION);
+		Function.destroy(connection, EQUALS_FUNCTION);
+		Function.destroy(connection, GETMAXX_FUNCTION);
+		Function.destroy(connection, GETMAXY_FUNCTION);
+		Function.destroy(connection, GETMAXZ_FUNCTION);
+		Function.destroy(connection, GETMINX_FUNCTION);
+		Function.destroy(connection, GETMINY_FUNCTION);
+		Function.destroy(connection, GETMINZ_FUNCTION);
+		Function.destroy(connection, GETDIMENSION_FUNCTION);
+		Function.destroy(connection, GETBOUNDINGBOX_FUNCTION);
+		Function.destroy(connection, GETNUMBEROFPOINTS_FUNCTION);
+		Function.destroy(connection, GETPOINTATINDEX_FUNCTION);
+		Function.destroy(connection, GETBOUNDINGBOX_FUNCTION);
+		Function.destroy(connection, ASTEXT_FUNCTION);
 		Function.create(connection, CREATE_FROM_COORDS_FUNCTION, new CreateFromCoords());
 		Function.create(connection, EQUALS_FUNCTION, new Equals());
 		Function.create(connection, GETMAXX_FUNCTION, new GetMaxX());
@@ -171,13 +189,12 @@ public class MultiPoint3DFunctions {
 	}
 
 	private static class GetPointAtIndex extends PolygonFunction {
-//MULTIPOINT (2 3, 3 4)
 
 		@Override
 		protected void xFunc() throws SQLException {
 			String multipoint = value_text(0);
 			int index = value_int(1);
-			final int indexInMPoint = index * 3;
+			final int indexInMPoint = (index) * 3;
 			if (multipoint == null || indexInMPoint <= 0) {
 				result();
 			} else {
@@ -185,9 +202,9 @@ public class MultiPoint3DFunctions {
 				if (indexInMPoint > split.length) {
 					result();
 				} else {
-					String x = split[indexInMPoint - 1];
-					String y = split[indexInMPoint];
-					String z = split[indexInMPoint + 1];
+					String x = split[indexInMPoint - 2];
+					String y = split[indexInMPoint - 1];
+					String z = split[indexInMPoint];
 					result("POINT (" + x + " " + y + " " + z + ")");
 				}
 			}
@@ -198,12 +215,26 @@ public class MultiPoint3DFunctions {
 
 		@Override
 		protected void xFunc() throws SQLException {
-			String firstMPoint = value_text(0);
-			String secondMPoint = value_text(1);
-			if (firstMPoint == null || secondMPoint == null) {
+			int resultAsInt = 1;
+			String firstMP = value_text(0);
+			String secondMP = value_text(1);
+			if (firstMP == null || secondMP == null) {
 				result();
 			} else {
-				result(firstMPoint.equals(secondMPoint) ? 1 : 0);
+				String[] split1 = firstMP.split("[ (),]+");
+				String[] split2 = secondMP.split("[ (),]+");
+				if (split1.length != split2.length) {
+					resultAsInt = 0;
+				} else {
+					for (int i = 1; i < split1.length && resultAsInt == 1; i++) {
+						Double value1 = Double.parseDouble(split1[i]);
+						Double value2 = Double.parseDouble(split2[i]);
+						if (!value1.equals(value2)) {
+							resultAsInt = 0;
+						}
+					}
+				}
+				result(resultAsInt);
 			}
 		}
 	}
@@ -282,7 +313,7 @@ public class MultiPoint3DFunctions {
 			} else {
 				Double minX = null;
 				String[] split = multipoint.split("[ (),]+");
-				for (int i = 1; i < split.length; i += 2) {
+				for (int i = 1; i < split.length; i += 3) {
 					double x = Double.parseDouble(split[i]);
 //					double y = Double.parseDouble(split[i + 1]);
 					if (minX == null || minX > x) {
@@ -305,7 +336,7 @@ public class MultiPoint3DFunctions {
 			} else {
 				Double minY = null;
 				String[] split = multipoint.split("[ (),]+");
-				for (int i = 1; i < split.length; i += 2) {
+				for (int i = 1; i < split.length; i += 3) {
 //					double x = Double.parseDouble(split[i]);
 					double y = Double.parseDouble(split[i + 1]);
 					if (minY == null || minY > y) {

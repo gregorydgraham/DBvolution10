@@ -1009,6 +1009,60 @@ public class SQLiteDefinition extends DBDefinition {
 		return Point3DFunctions.GETBOUNDINGBOX_FUNCTION + "(" + toSQLString + ")";
 	}
 
+	@Override
+	public String doMultiPoint3DEqualsTransform(String first, String second) {
+		return MultiPoint3DFunctions.EQUALS_FUNCTION+"(("+first+"), ("+second+"), "+MultiPoint3DFunctions.getCurrentVersion()+")";
+	}
+
+	@Override
+	public String doMultiPoint3DGetPointAtIndexTransform(String first, String index) {
+		return MultiPoint3DFunctions.GETPOINTATINDEX_FUNCTION+"(("+first+"), ("+index+"), "+MultiPoint3DFunctions.getCurrentVersion()+")";
+	}
+
+	@Override
+	public String doMultiPoint3DGetNumberOfPointsTransform(String first) {
+		return MultiPoint3DFunctions.GETNUMBEROFPOINTS_FUNCTION+"("+first+", "+MultiPoint3DFunctions.getCurrentVersion()+")";
+	}
+
+	@Override
+	public String doMultiPoint3DMeasurableDimensionsTransform(String first) {
+		return MultiPoint3DFunctions.GETDIMENSION_FUNCTION+"("+first+", "+MultiPoint3DFunctions.getCurrentVersion()+")";
+	}
+
+	@Override
+	public String doMultiPoint3DGetBoundingBoxTransform(String first) {
+		return MultiPoint3DFunctions.GETBOUNDINGBOX_FUNCTION+"("+first+", "+MultiPoint3DFunctions.getCurrentVersion()+")";
+	}
+
+	@Override
+	public String doMultiPoint3DAsTextTransform(String first) {
+		return MultiPoint3DFunctions.ASTEXT_FUNCTION+"("+first+", "+MultiPoint3DFunctions.getCurrentVersion()+")";
+	}
+
+	@Override
+	public String doMultiPoint3DToLine3DTransform(String first) {
+		return MultiPoint3DFunctions.ASLINE3D+"("+first+", "+MultiPoint3DFunctions.getCurrentVersion()+")";
+	}
+
+	@Override
+	public String doMultiPoint3DGetMinYTransform(String first) {
+		return MultiPoint3DFunctions.GETMINY_FUNCTION+"("+first+", "+MultiPoint3DFunctions.getCurrentVersion()+")";
+	}
+
+	@Override
+	public String doMultiPoint3DGetMinXTransform(String first) {
+		return MultiPoint3DFunctions.GETMINX_FUNCTION+"("+first+", "+MultiPoint3DFunctions.getCurrentVersion()+")";
+	}
+
+	@Override
+	public String doMultiPoint3DGetMaxYTransform(String first) {
+		return MultiPoint3DFunctions.GETMAXY_FUNCTION+"("+first+", "+MultiPoint3DFunctions.getCurrentVersion()+")";
+	}
+
+	@Override
+	public String doMultiPoint3DGetMaxXTransform(String first) {
+		return MultiPoint3DFunctions.GETMAXX_FUNCTION+"("+first+", "+MultiPoint3DFunctions.getCurrentVersion()+")";
+	}
 
 
 }
