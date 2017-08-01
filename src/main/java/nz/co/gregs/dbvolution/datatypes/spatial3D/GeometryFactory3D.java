@@ -48,6 +48,18 @@ public class GeometryFactory3D extends GeometryFactory {
 		return createLineStringZ(coordinates != null ? getCoordinateSequenceFactory().create(coordinates) : null);
 	}
 
+	public LineSegmentZ createLineSegmentZ(LineString line) {
+		return createLineSegmentZ(line.getCoordinateSequence());
+	}
+
+	public LineSegmentZ createLineSegmentZ(CoordinateSequence coordinates) {
+		return new LineSegmentZ(coordinates, this);
+	}
+
+	public LineSegmentZ createLineSegmentZ(Coordinate[] coordinates) {
+		return createLineSegmentZ(coordinates != null ? getCoordinateSequenceFactory().create(coordinates) : null);
+	}
+
 	public LinearRing createLinearRingZ(CoordinateSequence coordinates) {
 		return new LinearRingZ(coordinates, this);
 	}

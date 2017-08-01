@@ -1064,5 +1064,70 @@ public class SQLiteDefinition extends DBDefinition {
 		return MultiPoint3DFunctions.GETMAXX_FUNCTION+"("+first+", "+MultiPoint3DFunctions.getCurrentVersion()+")";
 	}
 
+	@Override
+	public String doLineSegment3DIntersectsLineSegment3DTransform(String toSQLString, String toSQLString0) {
+		return LineSegment3DFunctions.INTERSECTS+"(("+toSQLString+"), ("+toSQLString0+"))";
+	}
+
+	@Override
+	public String doLineSegment3DGetMaxXTransform(String toSQLString) {
+		return LineSegment3DFunctions.GETMAXX_FUNCTION+"("+toSQLString+")";
+	}
+
+	@Override
+	public String doLineSegment3DGetMinXTransform(String toSQLString) {
+		return LineSegment3DFunctions.GETMINX_FUNCTION+"("+toSQLString+")";
+	}
+
+	@Override
+	public String doLineSegment3DGetMaxYTransform(String toSQLString) {
+		return LineSegment3DFunctions.GETMAXY_FUNCTION+"("+toSQLString+")";
+	}
+
+	@Override
+	public String doLineSegment3DGetMinYTransform(String toSQLString) {
+		return LineSegment3DFunctions.GETMINY_FUNCTION+"("+toSQLString+")";
+	}
+
+	@Override
+	public String doLineSegment3DGetMaxZTransform(String toSQLString) {
+		return LineSegment3DFunctions.GETMAXZ_FUNCTION+"("+toSQLString+")";
+	}
+
+	@Override
+	public String doLineSegment3DGetMinZTransform(String toSQLString) {
+		return LineSegment3DFunctions.GETMINZ_FUNCTION+"("+toSQLString+")";
+	}
+
+	@Override
+	public String doLineSegment3DGetBoundingBoxTransform(String toSQLString) {
+		return LineSegment3DFunctions.GETBOUNDINGBOX_FUNCTION+"("+toSQLString+")";
+	}
+
+	@Override
+	public String doLineSegment3DDimensionTransform(String toSQLString) {
+		return LineSegment3DFunctions.GETDIMENSION_FUNCTION+"("+toSQLString+")";
+	}
+
+	@Override
+	public String doLineSegment3DNotEqualsTransform(String toSQLString, String toSQLString0) {
+		return "!"+LineSegment3DFunctions.EQUALS_FUNCTION+"(("+toSQLString+"), ("+toSQLString0+"))";
+	}
+
+	@Override
+	public String doLineSegment3DEqualsTransform(String toSQLString, String toSQLString0) {
+		return LineSegment3DFunctions.EQUALS_FUNCTION+"(("+toSQLString+"), ("+toSQLString0+"))";
+	}
+
+	@Override
+	public String doLineSegment3DAsTextTransform(String toSQLString) {
+		return LineSegment3DFunctions.ASTEXT_FUNCTION+"("+toSQLString+")";
+	}
+	
+	@Override
+	public String doLineSegment3DIntersectionPointWithLineSegment3DTransform(String toSQLString, String toSQLString0) {
+		return LineSegment3DFunctions.INTERSECTIONWITH_LINESEGMENT3D+"(("+toSQLString+"), ("+toSQLString0+"))";
+	}
+
 
 }

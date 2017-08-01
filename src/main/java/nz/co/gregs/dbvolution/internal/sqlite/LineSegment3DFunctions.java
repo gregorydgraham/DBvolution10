@@ -25,6 +25,7 @@ import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import nz.co.gregs.dbvolution.datatypes.spatial3D.GeometryFactory3D;
+import nz.co.gregs.dbvolution.datatypes.spatial3D.LineSegmentZ;
 import nz.co.gregs.dbvolution.datatypes.spatial3D.LineStringZ;
 import nz.co.gregs.dbvolution.datatypes.spatial3D.PointZ;
 import nz.co.gregs.dbvolution.datatypes.spatial3D.PolygonZ;
@@ -95,22 +96,18 @@ public class LineSegment3DFunctions {
 	 *
 	 */
 //	public final static String SPATIAL_LINE_MIN_X_COORD_FUNCTION = "DBV_LINESEGMENT3D_MIN_X3D_COORD";
-
 	/**
 	 *
 	 */
 //	public final static String SPATIAL_LINE_MAX_Y_COORD_FUNCTION = "DBV_LINESEGMENT3D_MAX_Y3D_COORD";
-
 	/**
 	 *
 	 */
 //	public final static String SPATIAL_LINE_MIN_Y_COORD_FUNCTION = "DBV_LINESEGMENT3D_MIN_Y3D_COORD";
-
 	/**
 	 *
 	 */
 //	public final static String SPATIAL_LINE_MAX_X_COORD_FUNCTION = "DBV_LINESEGMENT3D_MAX_X3D_COORD";
-
 	/**
 	 *
 	 */
@@ -130,6 +127,19 @@ public class LineSegment3DFunctions {
 	 * @throws SQLException
 	 */
 	public static void addFunctions(Connection connection) throws SQLException {
+		Function.destroy(connection, CREATE_FROM_COORDS_FUNCTION);
+		Function.destroy(connection, EQUALS_FUNCTION);
+		Function.destroy(connection, GETMAXX_FUNCTION);
+		Function.destroy(connection, GETMAXY_FUNCTION);
+		Function.destroy(connection, GETMINX_FUNCTION);
+		Function.destroy(connection, GETMINY_FUNCTION);
+		Function.destroy(connection, GETMAXZ_FUNCTION);
+		Function.destroy(connection, GETMINZ_FUNCTION);
+		Function.destroy(connection, GETDIMENSION_FUNCTION);
+		Function.destroy(connection, GETBOUNDINGBOX_FUNCTION);
+		Function.destroy(connection, ASTEXT_FUNCTION);
+		Function.destroy(connection, INTERSECTS);
+		Function.destroy(connection, INTERSECTIONWITH_LINESEGMENT3D);
 		Function.create(connection, CREATE_FROM_COORDS_FUNCTION, new CreateFromCoords());
 		Function.create(connection, EQUALS_FUNCTION, new Equals());
 		Function.create(connection, GETMAXX_FUNCTION, new GetMaxX());
@@ -328,12 +338,12 @@ public class LineSegment3DFunctions {
 				} else if (secondLineStr == null) {
 					result();
 				} else {
-					LineString firstLine = getLineString(firstLineStr);
-					LineString secondLine = getLineString(secondLineStr);
+					LineString firstLine = getLineStringZ(firstLineStr);
+					LineString secondLine = getLineStringZ(secondLineStr);
 					if (firstLine == null || secondLine == null) {
 						result();
 					} else {
-						result(firstLine.intersects(secondLine)?1:0);
+						result(firstLine.intersects(secondLine) ? 1 : 0);
 					}
 				}
 			} catch (com.vividsolutions.jts.io.ParseException ex) {
@@ -355,15 +365,15 @@ public class LineSegment3DFunctions {
 				} else if (secondLineStr == null) {
 					result();
 				} else {
-					LineString firstLine = getLineString(firstLineStr);
-					LineString secondLine = getLineString(secondLineStr);
+					LineSegmentZ firstLine = getLineSegmentZ(firstLineStr);
+					LineSegmentZ secondLine = getLineSegmentZ(secondLineStr);
 					if (firstLine == null || secondLine == null) {
 						result();
 					} else {
 						final Geometry intersectionPoint = firstLine.intersection(secondLine);
-						if (intersectionPoint instanceof Point){
+						if (intersectionPoint instanceof PointZ) {
 							result(intersectionPoint.toText());
-						}else{
+						} else {
 							result();
 						}
 					}
@@ -421,7 +431,7 @@ public class LineSegment3DFunctions {
 						minZ = z;
 					}
 				}
-				String resultString = "POLYGON ((" + minX + " " + minY + " " + minZ + ", " + maxX + " " + minY  + " " + minZ+ ", " + maxX + " " + maxY + " " + minZ+ ", " + maxX + " " + maxY + " " + maxZ + ", " + minX + " " + maxY + " " + maxZ + ", " + minX + " " + minY + " " + maxZ + ", " + minX + " " + minY + " " + minZ + "))";
+				String resultString = "POLYGON ((" + minX + " " + minY + " " + minZ + ", " + maxX + " " + minY + " " + minZ + ", " + maxX + " " + maxY + " " + minZ + ", " + maxX + " " + maxY + " " + maxZ + ", " + minX + " " + maxY + " " + maxZ + ", " + minX + " " + minY + " " + maxZ + ", " + minX + " " + minY + " " + minZ + "))";
 				result(resultString);
 			}
 		}
@@ -438,7 +448,7 @@ public class LineSegment3DFunctions {
 
 	private static abstract class PolygonFunction extends Function {
 
-		PolygonZ getPolygon(String possiblePoly) throws com.vividsolutions.jts.io.ParseException {
+		PolygonZ getPolygonZ(String possiblePoly) throws com.vividsolutions.jts.io.ParseException {
 			WKTReader wktReader = new WKTReader();
 			Geometry firstGeom = wktReader.read(possiblePoly);
 			if (firstGeom instanceof Polygon) {
@@ -447,7 +457,7 @@ public class LineSegment3DFunctions {
 			return null;
 		}
 
-		LineStringZ getLineString(String possiblePoly) throws com.vividsolutions.jts.io.ParseException {
+		LineStringZ getLineStringZ(String possiblePoly) throws com.vividsolutions.jts.io.ParseException {
 			WKTReader wktReader = new WKTReader();
 			Geometry firstGeom = wktReader.read(possiblePoly);
 			if (firstGeom instanceof LineString) {
@@ -456,7 +466,16 @@ public class LineSegment3DFunctions {
 			return null;
 		}
 
-		PointZ getPoint(String possiblePoly) throws com.vividsolutions.jts.io.ParseException {
+		LineSegmentZ getLineSegmentZ(String possiblePoly) throws com.vividsolutions.jts.io.ParseException {
+			WKTReader wktReader = new WKTReader();
+			Geometry firstGeom = wktReader.read(possiblePoly);
+			if (firstGeom instanceof LineString && ((LineString) firstGeom).getNumPoints() == 2) {
+				return new GeometryFactory3D().createLineSegmentZ(firstGeom.getCoordinates());
+			}
+			return null;
+		}
+
+		PointZ getPointZ(String possiblePoly) throws com.vividsolutions.jts.io.ParseException {
 			WKTReader wktReader = new WKTReader();
 			Geometry firstGeom = wktReader.read(possiblePoly);
 			if (firstGeom instanceof Point) {
