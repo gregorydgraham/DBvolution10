@@ -1129,5 +1129,69 @@ public class SQLiteDefinition extends DBDefinition {
 		return LineSegment3DFunctions.INTERSECTIONWITH_LINESEGMENT3D+"(("+toSQLString+"), ("+toSQLString0+"))";
 	}
 
+	@Override
+	public String doLine3DAsTextTransform(String toSQLString) {
+		return Line3DFunctions.ASTEXT_FUNCTION + "(" + toSQLString + ")";
+	}
+
+	@Override
+	public String doLine3DEqualsTransform(String toSQLString, String toSQLString0) {
+		return Line3DFunctions.EQUALS_FUNCTION + "(" + toSQLString + ", " + toSQLString0 + ")";
+	}
+
+	@Override
+	public String doLine3DMeasurableDimensionsTransform(String toSQLString) {
+		return Line3DFunctions.GETDIMENSION_FUNCTION + "(" + toSQLString + ")";
+	}
+
+	@Override
+	public String doLine3DGetBoundingBoxTransform(String toSQLString) {
+		return Line3DFunctions.GETBOUNDINGBOX_FUNCTION + "(" + toSQLString + ")";
+	}
+
+	@Override
+	public String doLine3DGetMaxXTransform(String toSQLString) {
+		return Line3DFunctions.GETMAXX_FUNCTION + "(" + toSQLString + ")";
+	}
+
+	@Override
+	public String doLine3DGetMinXTransform(String toSQLString) {
+		return Line3DFunctions.GETMINX_FUNCTION + "(" + toSQLString + ")";
+	}
+
+	@Override
+	public String doLine3DGetMaxYTransform(String toSQLString) {
+		return Line3DFunctions.GETMAXY_FUNCTION + "(" + toSQLString + ")";
+	}
+
+	@Override
+	public String doLine3DGetMinYTransform(String toSQLString) {
+		return Line3DFunctions.GETMINY_FUNCTION + "(" + toSQLString + ")";
+	}
+
+	@Override
+	public String doLine3DGetMaxZTransform(String toSQLString) {
+		return Line3DFunctions.GETMAXZ_FUNCTION + "(" + toSQLString + ")";
+	}
+
+	@Override
+	public String doLine3DGetMinZTransform(String toSQLString) {
+		return Line3DFunctions.GETMINZ_FUNCTION + "(" + toSQLString + ")";
+	}
+
+	@Override
+	public String doLine3DIntersectsLine3DTransform(String toSQLString, String toSQLString0) {
+		return Line3DFunctions.INTERSECTS + "((" + toSQLString +"), ("+toSQLString0+ "))";
+	}
+
+	@Override
+	public String doLine3DIntersectionPointWithLine3DTransform(String toSQLString, String toSQLString0) {
+		return Line3DFunctions.INTERSECTIONWITH_LINE3D + "((" + toSQLString +"), ("+toSQLString0+ "))";
+	}
+
+	@Override
+	public String doLine3DAllIntersectionPointsWithLine3DTransform(String toSQLString, String toSQLString0) {
+		return Line3DFunctions.ALLINTERSECTIONSWITH_LINE3D + "((" + toSQLString +"), ("+toSQLString0+ "))";
+	}
 
 }
