@@ -519,7 +519,7 @@ public class DBPolygon3DTest extends AbstractTest {
 	}
 
 	@Test
-	public void testDimension() throws SQLException {
+	public void testMeasurableDimensions() throws SQLException {
 		if (database instanceof SupportsPolygonDatatype) {
 			GeometryFactory3D fac = addStandardDataSet();
 
@@ -543,6 +543,38 @@ public class DBPolygon3DTest extends AbstractTest {
 			Assert.assertThat(allRows.get(1).pkid.intValue(), anyOf(is(1), is(2)));
 
 			query = database.getDBQuery(new BasicSpatial3DTable()).addCondition(spatial.column(spatial.myfirstgeom).measurableDimensions().is(2));
+			allRows = query.getAllInstancesOf(spatial);
+
+			Assert.assertThat(allRows.size(), is(3));
+			Assert.assertThat(allRows.get(0).pkid.intValue(), is(1));
+		}
+	}
+
+	@Test
+	public void testSpatialDimension() throws SQLException {
+		if (database instanceof SupportsPolygonDatatype) {
+			GeometryFactory3D fac = addStandardDataSet();
+
+			PolygonZ polygon = fac.createPolygonZ(new Coordinate[]{new Coordinate(-1, -1, -1), new Coordinate(2, -1, -1), new Coordinate(2, 2, -1), new Coordinate(2, 2, 2), new Coordinate(-1, 2, 2), new Coordinate(-1, -1, 2), new Coordinate(-1, -1, -1)});
+			BasicSpatial3DTable spatial = new BasicSpatial3DTable();
+			spatial.myfirstgeom.setValue(polygon);
+			database.insert(spatial);
+
+			DBQuery query = database.getDBQuery(new BasicSpatial3DTable()).addCondition(spatial.column(spatial.myfirstgeom).spatialDimensions().is(3));
+			List<BasicSpatial3DTable> allRows = query.getAllInstancesOf(spatial);
+
+			Assert.assertThat(allRows.size(), is(3));
+			Assert.assertThat(allRows.get(0).pkid.intValue(), anyOf(is(1), is(2)));
+			Assert.assertThat(allRows.get(1).pkid.intValue(), anyOf(is(1), is(2)));
+
+			query = database.getDBQuery(new BasicSpatial3DTable()).addCondition(NumberExpression.value(3).is(spatial.column(spatial.myfirstgeom).spatialDimensions()));
+			allRows = query.getAllInstancesOf(spatial);
+
+			Assert.assertThat(allRows.size(), is(3));
+			Assert.assertThat(allRows.get(0).pkid.intValue(), anyOf(is(1), is(2)));
+			Assert.assertThat(allRows.get(1).pkid.intValue(), anyOf(is(1), is(2)));
+
+			query = database.getDBQuery(new BasicSpatial3DTable()).addCondition(spatial.column(spatial.myfirstgeom).spatialDimensions().is(3));
 			allRows = query.getAllInstancesOf(spatial);
 
 			Assert.assertThat(allRows.size(), is(3));
@@ -716,6 +748,7 @@ public class DBPolygon3DTest extends AbstractTest {
 
 			DBQuery query = database.getDBQuery(new BasicSpatial3DTable()).addCondition(spatial.column(spatial.myfirstgeom).boundingBox().is(polygon));
 			List<BasicSpatial3DTable> allRows = query.getAllInstancesOf(spatial);
+			database.print(allRows);
 
 			Assert.assertThat(allRows.size(), is(1));
 			Assert.assertThat(allRows.get(0).pkid.intValue(), is(3));
@@ -883,6 +916,9 @@ public class DBPolygon3DTest extends AbstractTest {
 
 		@DBColumn
 		DBPolygon3D myfirstgeom = new DBPolygon3D();
+		
+		@DBColumn
+		DBPolygon3D box = this.column(this.myfirstgeom).boundingBox().asExpressionColumn();
 	}
 
 	public static class BasicSpatial3DReport extends DBReport {

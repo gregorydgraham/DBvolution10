@@ -19,9 +19,11 @@ import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.geom.Polygon;
+import com.vividsolutions.jts.io.WKTReader;
 import nz.co.gregs.dbvolution.datatypes.spatial3D.PointZ;
 import nz.co.gregs.dbvolution.datatypes.spatial3D.PolygonZ;
-import com.vividsolutions.jts.io.WKTReader;
+import nz.co.gregs.dbvolution.datatypes.spatial3D.GeometryFactory3D;
+import nz.co.gregs.dbvolution.datatypes.spatial3D.LineStringZ;
 import java.sql.SQLException;
 import java.text.ParseException;
 import java.util.ArrayList;
@@ -29,8 +31,7 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import nz.co.gregs.dbvolution.databases.SQLiteDB;
-import nz.co.gregs.dbvolution.datatypes.spatial3D.GeometryFactory3D;
-import nz.co.gregs.dbvolution.datatypes.spatial3D.LineStringZ;
+import nz.co.gregs.dbvolution.datatypes.spatial3D.LinearRingZ;
 import org.sqlite.Function;
 
 /**
@@ -62,7 +63,22 @@ public class Polygon3DFunctions {
 	/**
 	 *
 	 */
-	public final static String DIMENSION = "DBV_POLYGON3D_DIMENSION";
+	public final static String SPATIAL_DIMENSIONS = "DBV_POLYGON3D_SPATIALDIMENSIONS";
+
+	/**
+	 *
+	 */
+	public final static String MEASURABLE_DIMENSIONS = "DBV_POLYGON3D_MEASURABLEDIMENSIONS";
+
+	/**
+	 *
+	 */
+	public final static String MIN_Z = "DBV_POLYGON3D_MIN_Z3D_COORD";
+
+	/**
+	 *
+	 */
+	public final static String MAX_Z = "DBV_POLYGON3D_MAX_Z3D_COORD";
 
 	/**
 	 *
@@ -139,7 +155,8 @@ public class Polygon3DFunctions {
 	 * @throws SQLException
 	 */
 	public static void addFunctions(java.sql.Connection connection) throws SQLException {
-		add(connection, DIMENSION, new SpatialDimension());
+		add(connection, SPATIAL_DIMENSIONS, new SpatialDimensions());
+		add(connection, MEASURABLE_DIMENSIONS, new MeasurableDimensions());
 		add(connection, EQUALS, new Equals());
 		add(connection, AREA, new Area());
 		add(connection, TOUCHES, new Touches());
@@ -155,6 +172,8 @@ public class Polygon3DFunctions {
 		add(connection, MIN_X, new MinX());
 		add(connection, MAX_Y, new MaxY());
 		add(connection, MIN_Y, new MinY());
+		add(connection, MAX_Z, new MaxZ());
+		add(connection, MIN_Z, new MinZ());
 		add(connection, BOUNDINGBOX, new BoundingBox());
 		add(connection, CONTAINS_POINT3D, new ContainsPoint3D());
 		add(connection, ASTEXT_FUNCTION, new AsText());
@@ -166,18 +185,24 @@ public class Polygon3DFunctions {
 	}
 
 	/**
-	 * Implements Polygon2D DIMENSION for SQLite
+	 * Implements Polygon2D MEASURABLE_DIMENSIONS for SQLite
 	 *
 	 */
-	private static class SpatialDimension extends Function {
+	private static class MeasurableDimensions extends Function {
+
+		@Override
+		protected void xFunc() throws SQLException {
+			result(2);
+		}
+	}
+
+	private static class SpatialDimensions extends Function {
 
 		@Override
 		protected void xFunc() throws SQLException {
 			result(3);
 		}
 	}
-
-	
 
 	/**
 	 * Implements Polygon2D AsText for SQLite
@@ -202,7 +227,7 @@ public class Polygon3DFunctions {
 		protected void xFunc() throws SQLException {
 			try {
 				PolygonZ polygon = getPolygonZ(value_text(0));
-	//			polygon.normalize();
+				//			polygon.normalize();
 				result(polygon.toText());
 			} catch (com.vividsolutions.jts.io.ParseException ex) {
 				Logger.getLogger(Polygon2DFunctions.class.getName()).log(Level.SEVERE, null, ex);
@@ -214,12 +239,11 @@ public class Polygon3DFunctions {
 	 * Implements Polygon2D CREATE for SQLite
 	 *
 	 */
-	private static class CreatePolygonFromPoint3Ds extends Function {
+	private static class CreatePolygonFromPoint3Ds extends Polygon3DFunction {
 
 		@Override
 		protected void xFunc() throws SQLException {
 			try {
-				WKTReader wktReader = new WKTReader();
 				GeometryFactory3D factory = new GeometryFactory3D();
 				List<Coordinate> coords = new ArrayList<Coordinate>();
 				String originalStr;
@@ -230,231 +254,219 @@ public class Polygon3DFunctions {
 						result((String) null);
 					} else {
 						PointZ point = null;
-						Geometry geometry;
-						geometry = wktReader.read(originalStr);
-						if (geometry instanceof Point) {
-							point = factory.createPointZ((Point) geometry);
-							coords.add(point.getCoordinate());
-						} else {
-							throw new ParseException(originalStr, 0);
-						}
+						point = getPointZ(originalStr);
+						coords.add(point.getCoordinate());
 					}
 				}
 				PolygonZ createPolygon = factory.createPolygonZ(coords.toArray(new Coordinate[]{}));
 				createPolygon.normalize();
 				result(createPolygon.toText());
-			} catch (ParseException ex) {
-				Logger.getLogger(SQLiteDB.class.getName()).log(Level.SEVERE, null, ex);
-				throw new RuntimeException("Failed To Parse SQLite PolygonZ", ex);
 			} catch (com.vividsolutions.jts.io.ParseException ex) {
 				Logger.getLogger(SQLiteDB.class.getName()).log(Level.SEVERE, null, ex);
-				throw new RuntimeException("Failed To Parse SQLite PolygonZ", ex);
+				throw new RuntimeException("Failed To Parse SQLite PointZ: " + ex.getMessage(), ex);
 			}
 		}
 	}
 
-	private static class MaxX extends Function {
+	private static class MaxX extends Polygon3DFunction {
 
 		@Override
 		protected void xFunc() throws SQLException {
 			try {
-				WKTReader wktReader = new WKTReader();
 				String originalStr;
 				originalStr = value_text(0);
 				if (originalStr == null) {
 					result((String) null);
 				} else {
-					Geometry geometry;
-					geometry = wktReader.read(originalStr);
-					if (geometry instanceof PolygonZ) {
-						PolygonZ polygon = (PolygonZ) geometry;
-						Double maxX = null;
-						Coordinate[] coordinates = polygon.getCoordinates();
-						for (Coordinate coordinate : coordinates) {
-							if (maxX == null || coordinate.x > maxX) {
-								maxX = coordinate.x;
-							}
+					PolygonZ polygon = getPolygonZ(originalStr);
+					Double maxX = null;
+					Coordinate[] coordinates = polygon.getCoordinates();
+					for (Coordinate coordinate : coordinates) {
+						if (maxX == null || coordinate.x > maxX) {
+							maxX = coordinate.x;
 						}
-						result(maxX);
-					} else {
-						throw new ParseException(originalStr, 0);
 					}
+					result(maxX);
 				}
-			} catch (ParseException ex) {
-				Logger.getLogger(SQLiteDB.class.getName()).log(Level.SEVERE, null, ex);
-				throw new RuntimeException("Failed To Parse SQLite PolygonZ", ex);
 			} catch (com.vividsolutions.jts.io.ParseException ex) {
-				Logger.getLogger(SQLiteDB.class.getName()).log(Level.SEVERE, null, ex);
-				throw new RuntimeException("Failed To Parse SQLite PolygonZ", ex);
+				Logger.getLogger(Line2DFunctions.class.getName()).log(Level.SEVERE, null, ex);
+				throw new RuntimeException("Failed To Parse SQLite PolygonZ: " + ex.getMessage(), ex);
 			}
 		}
 	}
 
-	private static class MinX extends Function {
+	private static class MinX extends Polygon3DFunction {
 
 		@Override
 		protected void xFunc() throws SQLException {
 			try {
-				WKTReader wktReader = new WKTReader();
 				String originalStr = value_text(0);
 				if (originalStr == null) {
 					result((String) null);
 				} else {
-					PolygonZ polygon;
-					Geometry geometry;
-					geometry = wktReader.read(originalStr);
-					if (geometry instanceof PolygonZ) {
-						polygon = (PolygonZ) geometry;
-						Double minX = null;
-						Coordinate[] coordinates = polygon.getCoordinates();
-						for (Coordinate coordinate : coordinates) {
-							if (minX == null || coordinate.x < minX) {
-								minX = coordinate.x;
-							}
+					PolygonZ polygon = getPolygonZ(originalStr);
+					Double minX = null;
+					Coordinate[] coordinates = polygon.getCoordinates();
+					for (Coordinate coordinate : coordinates) {
+						if (minX == null || coordinate.x < minX) {
+							minX = coordinate.x;
 						}
-						result(minX);
-					} else {
-						throw new ParseException(originalStr, 0);
 					}
+					result(minX);
 				}
-			} catch (ParseException ex) {
-				Logger.getLogger(SQLiteDB.class.getName()).log(Level.SEVERE, null, ex);
-				throw new RuntimeException("Failed To Parse SQLite PolygonZ", ex);
 			} catch (com.vividsolutions.jts.io.ParseException ex) {
 				Logger.getLogger(SQLiteDB.class.getName()).log(Level.SEVERE, null, ex);
-				throw new RuntimeException("Failed To Parse SQLite PolygonZ", ex);
+				throw new RuntimeException("Failed To Parse SQLite PolygonZ: " + ex.getMessage(), ex);
 			}
 		}
 	}
 
-	private static class MaxY extends Function {
+	private static class MaxY extends Polygon3DFunction {
 
 		@Override
 		protected void xFunc() throws SQLException {
 			try {
-//				SQLiteDefinition defn = new SQLiteDefinition();
-				WKTReader wktReader = new WKTReader();
-//				GeometryFactory3D factory = new GeometryFactory3D();
-//				List<Coordinate> coords = new ArrayList<Coordinate>();
 				String originalStr = value_text(0);
 				if (originalStr == null) {
 					result((String) null);
 				} else {
-					PolygonZ polygon;
-					Geometry geometry;
-					geometry = wktReader.read(originalStr);
-					if (geometry instanceof PolygonZ) {
-						polygon = (PolygonZ) geometry;
-						Double maxY = null;
-						Coordinate[] coordinates = polygon.getCoordinates();
-						for (Coordinate coordinate : coordinates) {
-							if (maxY == null || coordinate.y > maxY) {
-								maxY = coordinate.y;
-							}
+					PolygonZ polygon = getPolygonZ(originalStr);
+					Double maxY = null;
+					Coordinate[] coordinates = polygon.getCoordinates();
+					for (Coordinate coordinate : coordinates) {
+						if (maxY == null || coordinate.y > maxY) {
+							maxY = coordinate.y;
 						}
-						result(maxY);
-					} else {
-						throw new ParseException(originalStr, 0);
 					}
+					result(maxY);
 				}
-//				PolygonZ createPolygon = factory.createPolygon(coords.toArray(new Coordinate[]{}));
-//				result(createPolygon.toText());
-			} catch (ParseException ex) {
-				Logger.getLogger(SQLiteDB.class.getName()).log(Level.SEVERE, null, ex);
-				throw new RuntimeException("Failed To Parse SQLite PolygonZ", ex);
 			} catch (com.vividsolutions.jts.io.ParseException ex) {
 				Logger.getLogger(SQLiteDB.class.getName()).log(Level.SEVERE, null, ex);
-				throw new RuntimeException("Failed To Parse SQLite PolygonZ", ex);
+				throw new RuntimeException("Failed To Parse SQLite PolygonZ: " + ex.getMessage(), ex);
 			}
 		}
 	}
 
-	private static class MinY extends Function {
+	private static class MinY extends Polygon3DFunction {
 
 		@Override
 		protected void xFunc() throws SQLException {
 			try {
-				WKTReader wktReader = new WKTReader();
 				String originalStr = value_text(0);
 				if (originalStr == null) {
 					result((String) null);
 				} else {
-					PolygonZ polygon;
-					Geometry geometry;
-					geometry = wktReader.read(originalStr);
-					if (geometry instanceof PolygonZ) {
-						polygon = (PolygonZ) geometry;
-						Double minY = null;
-						Coordinate[] coordinates = polygon.getCoordinates();
-						for (Coordinate coordinate : coordinates) {
-							if (minY == null || coordinate.y < minY) {
-								minY = coordinate.y;
-							}
+					PolygonZ polygon = getPolygonZ(originalStr);
+					Double minY = null;
+					Coordinate[] coordinates = polygon.getCoordinates();
+					for (Coordinate coordinate : coordinates) {
+						if (minY == null || coordinate.y < minY) {
+							minY = coordinate.y;
 						}
-						result(minY);
-					} else {
-						throw new ParseException(originalStr, 0);
 					}
+					result(minY);
 				}
 			} catch (Exception ex) {
-				throw new RuntimeException("Failed To Parse PolygonZ", ex);
+				throw new RuntimeException("Failed To Parse PolygonZ: " + ex.getMessage(), ex);
 			}
 		}
 	}
 
-	private static class BoundingBox extends Function {
+	private static class MaxZ extends Polygon3DFunction {
 
 		@Override
 		protected void xFunc() throws SQLException {
 			try {
-				WKTReader wktReader = new WKTReader();
+				String originalStr;
+				originalStr = value_text(0);
+				if (originalStr == null) {
+					result((String) null);
+				} else {
+					PolygonZ polygon = getPolygonZ(originalStr);
+					Double max = null;
+					Coordinate[] coordinates = polygon.getCoordinates();
+					for (Coordinate coordinate : coordinates) {
+						if (max == null || coordinate.z > max) {
+							max = coordinate.z;
+						}
+					}
+					result(max);
+				}
+			} catch (com.vividsolutions.jts.io.ParseException ex) {
+				Logger.getLogger(SQLiteDB.class.getName()).log(Level.SEVERE, null, ex);
+				throw new RuntimeException("Failed To Parse SQLite PolygonZ: " + ex.getMessage(), ex);
+			}
+		}
+	}
+
+	private static class MinZ extends Polygon3DFunction {
+
+		@Override
+		protected void xFunc() throws SQLException {
+			try {
+				String originalStr = value_text(0);
+				if (originalStr == null) {
+					result((String) null);
+				} else {
+					PolygonZ polygon = getPolygonZ(originalStr);
+					Double min = null;
+					Coordinate[] coordinates = polygon.getCoordinates();
+					for (Coordinate coordinate : coordinates) {
+						if (min == null || coordinate.z < min) {
+							min = coordinate.z;
+						}
+					}
+					result(min);
+				}
+			} catch (com.vividsolutions.jts.io.ParseException ex) {
+				Logger.getLogger(SQLiteDB.class.getName()).log(Level.SEVERE, null, ex);
+				throw new RuntimeException("Failed To Parse SQLite PolygonZ: " + ex.getMessage(), ex);
+			}
+		}
+	}
+
+	private static class BoundingBox extends Polygon3DFunction {
+
+		@Override
+		protected void xFunc() throws SQLException {
+			try {
 				GeometryFactory3D factory = new GeometryFactory3D();
 				String originalStr = value_text(0);
 				if (originalStr == null) {
 					result((String) null);
 				} else {
-					PolygonZ polygon;
-					Geometry geometry;
-					geometry = wktReader.read(originalStr);
-					if (geometry instanceof PolygonZ) {
-						polygon = (PolygonZ) geometry;
-						Double minX = null;
-						Double minY = null;
-						Double maxX = null;
-						Double maxY = null;
-						Coordinate[] coordinates = polygon.getCoordinates();
-						for (Coordinate coordinate : coordinates) {
-							if (minX == null || coordinate.x < minX) {
-								minX = coordinate.x;
-							}
-							if (minY == null || coordinate.y < minY) {
-								minY = coordinate.y;
-							}
-							if (maxX == null || coordinate.x > maxX) {
-								maxX = coordinate.x;
-							}
-							if (maxY == null || coordinate.y > minY) {
-								maxY = coordinate.y;
-							}
+					PolygonZ polygon = getPolygonZ(originalStr);
+					Double minX = null;
+					Double minY = null;
+					Double maxX = null;
+					Double maxY = null;
+					Coordinate[] coordinates = polygon.getCoordinates();
+					for (Coordinate coordinate : coordinates) {
+						if (minX == null || coordinate.x < minX) {
+							minX = coordinate.x;
 						}
-						PolygonZ createPolygon = factory.createPolygonZ(new Coordinate[]{
-							new Coordinate(minX, minY),
-							new Coordinate(maxX, minY),
-							new Coordinate(maxX, maxY),
-							new Coordinate(minX, maxY),
-							new Coordinate(minX, minY),});
-						createPolygon.normalize();
-						result(createPolygon.toText());
-					} else {
-						throw new ParseException(originalStr, 0);
+						if (minY == null || coordinate.y < minY) {
+							minY = coordinate.y;
+						}
+						if (maxX == null || coordinate.x > maxX) {
+							maxX = coordinate.x;
+						}
+						if (maxY == null || coordinate.y > minY) {
+							maxY = coordinate.y;
+						}
 					}
+					PolygonZ createPolygon = factory.createPolygonZ(new Coordinate[]{
+						new Coordinate(minX, minY),
+						new Coordinate(maxX, minY),
+						new Coordinate(maxX, maxY),
+						new Coordinate(minX, maxY),
+						new Coordinate(minX, minY),});
+					createPolygon.normalize();
+					result(createPolygon.toText());
 				}
-			} catch (ParseException ex) {
-				Logger.getLogger(SQLiteDB.class.getName()).log(Level.SEVERE, null, ex);
-				throw new RuntimeException("Failed To Parse SQLite PolygonZ", ex);
 			} catch (com.vividsolutions.jts.io.ParseException ex) {
 				Logger.getLogger(SQLiteDB.class.getName()).log(Level.SEVERE, null, ex);
-				throw new RuntimeException("Failed To Parse SQLite PolygonZ", ex);
+				throw new RuntimeException("Failed To Parse SQLite PolygonZ: " + ex.getMessage(), ex);
 			}
 		}
 	}
@@ -475,7 +487,7 @@ public class Polygon3DFunctions {
 				}
 			} catch (com.vividsolutions.jts.io.ParseException ex) {
 				Logger.getLogger(SQLiteDB.class.getName()).log(Level.SEVERE, null, ex);
-				throw new RuntimeException("Failed To Parse SQLite PolygonZ", ex);
+				throw new RuntimeException("Failed To Parse SQLite PolygonZ: " + ex.getMessage(), ex);
 			}
 		}
 	}
@@ -493,7 +505,7 @@ public class Polygon3DFunctions {
 				}
 			} catch (com.vividsolutions.jts.io.ParseException ex) {
 				Logger.getLogger(SQLiteDB.class.getName()).log(Level.SEVERE, null, ex);
-				throw new RuntimeException("Failed To Parse SQLite PolygonZ", ex);
+				throw new RuntimeException("Failed To Parse SQLite PolygonZ: " + ex.getMessage(), ex);
 			}
 		}
 	}
@@ -503,15 +515,20 @@ public class Polygon3DFunctions {
 		@Override
 		protected void xFunc() throws SQLException {
 			try {
-				PolygonZ poly1 = getPolygonZ(value_text(0));
-				PolygonZ poly2 = getPolygonZ(value_text(1));
+				final String orig = value_text(0);
+				final String other = value_text(1);
+				if (orig == null || other == null) {
+					result();
+				}
+				PolygonZ poly1 = getPolygonZ(orig);
+				PolygonZ poly2 = getPolygonZ(other);
 				if (poly1 == null || poly2 == null) {
 					result();
 				} else {
 					result(poly1.touches(poly2) ? 1 : 0);
 				}
 			} catch (Exception ex) {
-				throw new RuntimeException("Failed To Parse PolygonZ", ex);
+				throw new RuntimeException("Failed To Parse PolygonZ: " + ex.getMessage(), ex);
 			}
 		}
 	}
@@ -525,10 +542,10 @@ public class Polygon3DFunctions {
 				if (poly1 == null) {
 					result();
 				} else {
-					final LineStringZ exteriorRing = poly1.getExteriorRing();
+					final LinearRingZ exteriorRing = poly1.getExteriorRingZ();
 					exteriorRing.normalize();
-					LineStringZ createLineString = (new GeometryFactory3D()).createLineStringZ(exteriorRing.getCoordinates());
-					Geometry reverse = createLineString.reverse();
+					LineStringZ line = (new GeometryFactory3D()).createLineStringZ(exteriorRing.getCoordinates());
+					Geometry reverse = line.reverse();
 					result(reverse.toText());
 				}
 			} catch (com.vividsolutions.jts.io.ParseException ex) {
@@ -578,15 +595,24 @@ public class Polygon3DFunctions {
 
 		@Override
 		protected void xFunc() throws SQLException {
+			final String orig = value_text(0);
 			try {
-				PolygonZ poly1 = getPolygonZ(value_text(0));
-				PolygonZ poly2 = getPolygonZ(value_text(1));
-				if (poly1 == null || poly2 == null) {
-					result();
-				} else {
-					result(poly1.within(poly2) ? 1 : 0);
+				PolygonZ poly1 = getPolygonZ(orig);
+				final String other = value_text(1);
+				try {
+					PolygonZ poly2 = getPolygonZ(other);
+					if (poly1 == null || poly2 == null) {
+						result();
+					} else {
+						result(poly1.within(poly2) ? 1 : 0);
+					}
+				} catch (com.vividsolutions.jts.io.ParseException ex) {
+					System.out.println("FAILED TO PARSE: " + other);
+					Logger.getLogger(SQLiteDB.class.getName()).log(Level.SEVERE, null, ex);
+					throw new RuntimeException("Failed To Parse SQLite PolygonZ", ex);
 				}
 			} catch (com.vividsolutions.jts.io.ParseException ex) {
+				System.out.println("FAILED TO PARSE: " + orig);
 				Logger.getLogger(SQLiteDB.class.getName()).log(Level.SEVERE, null, ex);
 				throw new RuntimeException("Failed To Parse SQLite PolygonZ", ex);
 			}
@@ -653,21 +679,39 @@ public class Polygon3DFunctions {
 	private static abstract class Polygon3DFunction extends Function {
 
 		PolygonZ getPolygonZ(String possiblePoly) throws com.vividsolutions.jts.io.ParseException {
-			WKTReader wktReader = new WKTReader();
-			Geometry firstGeom = wktReader.read(possiblePoly);
-			if (firstGeom instanceof Polygon) {
-				return new GeometryFactory3D().createPolygonZ((Polygon) firstGeom);
+			if (possiblePoly != null) {
+				try {
+					//System.out.print("POLYGON: " + possiblePoly);
+					WKTReader wktReader = new WKTReader();
+					Geometry firstGeom = wktReader.read(possiblePoly);
+					//System.out.println(" SUCCESS");
+					if (firstGeom instanceof Polygon) {
+						return new GeometryFactory3D().createPolygonZ((Polygon) firstGeom);
+					}
+					return null;
+				} catch (com.vividsolutions.jts.io.ParseException exp) {
+					System.out.println("FAILED!!! " + possiblePoly);
+					throw new RuntimeException("getPolygonZ FAILED TO PARSE: " + (possiblePoly == null ? "NULL" : possiblePoly));
+				}
+			} else {
+				return null;
 			}
-			return null;
 		}
-		
-		PointZ getPointZ(String possiblePoly) throws com.vividsolutions.jts.io.ParseException {
-			WKTReader wktReader = new WKTReader();
-			Geometry firstGeom = wktReader.read(possiblePoly);
-			if (firstGeom instanceof Point) {
-				return  new GeometryFactory3D().createPointZ((Point) firstGeom);
+
+		PointZ getPointZ(String possiblePoint) throws com.vividsolutions.jts.io.ParseException {
+			//System.out.println("POINT: " + possiblePoint);
+			try {
+				WKTReader wktReader = new WKTReader();
+				Geometry firstGeom = wktReader.read(possiblePoint);
+				if (firstGeom instanceof Point) {
+					return new GeometryFactory3D().createPointZ((Point) firstGeom);
+				}
+				return null;
+
+			} catch (com.vividsolutions.jts.io.ParseException exp) {
+				System.out.println("FAILED!!! " + possiblePoint);
+				throw new RuntimeException("getPointZ FAILED TO PARSE: " + (possiblePoint == null ? "NULL" : possiblePoint));
 			}
-			return null;
 		}
 	}
 }

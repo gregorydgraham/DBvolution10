@@ -107,6 +107,10 @@ public class DBLine3D extends QueryableDatatype<LineStringZ> implements Line3DRe
 		super(columnExpression);
 	}
 
+	public DBLine3D(LinearRingZ rightHandSide) {
+		super(new LineStringZ(rightHandSide.getCoordinateSequence(), new GeometryFactory3D()));
+	}
+
 	/**
 	 * Set the value of this DBLine3D to the value provided.
 	 *

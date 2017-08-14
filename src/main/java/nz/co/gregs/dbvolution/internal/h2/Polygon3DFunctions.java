@@ -386,7 +386,7 @@ public enum Polygon3DFunctions implements DBVFeature {
 			+ "					Geometry firstGeometry = wktReader.read(firstPolyStr);\n"
 			+ "					if ((firstGeometry instanceof Polygon)) {\n"
 			+ "						PolygonZ firstPoly = factory.createPolygonZ((Polygon) firstGeometry);\n"
-			+ "						final LineStringZ exteriorRing = firstPoly.getExteriorRing();\n"
+			+ "						final LinearRingZ exteriorRing = firstPoly.getExteriorRingZ();\n"
 			+ "						exteriorRing.normalize();\n"
 			+ "						LineStringZ createLineString = factory.createLineStringZ(exteriorRing.getCoordinateSequence());\n"
 			+ "						Geometry reverse = createLineString.reverse();\n"

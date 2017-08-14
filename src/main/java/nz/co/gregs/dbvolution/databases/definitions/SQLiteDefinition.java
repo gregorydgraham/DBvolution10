@@ -663,7 +663,12 @@ public class SQLiteDefinition extends DBDefinition {
 
 	@Override
 	public String doPolygon3DMeasurableDimensionsTransform(String toSQLString) {
-		return Polygon3DFunctions.DIMENSION + "(" + toSQLString + ")";
+		return Polygon3DFunctions.MEASURABLE_DIMENSIONS + "(" + toSQLString + ")";
+	}
+
+	@Override
+	public String doPolygon3DSpatialDimensionsTransform(String toSQLString) {
+		return Polygon3DFunctions.SPATIAL_DIMENSIONS + "(" + toSQLString + ")";
 	}
 
 	@Override
@@ -730,6 +735,15 @@ public class SQLiteDefinition extends DBDefinition {
 		return Polygon3DFunctions.ASTEXT_FUNCTION + "(" + polygonSQL + ")";
 	}
 
+	@Override
+	public String doPolygon3DGetMaxZTransform(String toSQLString) {
+		return Polygon3DFunctions.MAX_Z + "(" + toSQLString + ")";
+	}
+
+	@Override
+	public String doPolygon3DGetMinZTransform(String toSQLString) {
+		return Polygon3DFunctions.MIN_Z + "(" + toSQLString + ")";
+	}
 	@Override
 	public String doLine2DAsTextTransform(String lineSQL) {
 		return Line2DFunctions.ASTEXT_FUNCTION + "(" + lineSQL + ")";

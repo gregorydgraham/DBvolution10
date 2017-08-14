@@ -29,6 +29,7 @@ import nz.co.gregs.dbvolution.datatypes.spatial3D.DBLine3D;
 import nz.co.gregs.dbvolution.datatypes.spatial3D.DBMultiPoint3D;
 import nz.co.gregs.dbvolution.datatypes.spatial3D.GeometryFactory3D;
 import nz.co.gregs.dbvolution.datatypes.spatial3D.LineStringZ;
+import nz.co.gregs.dbvolution.datatypes.spatial3D.LinearRingZ;
 import nz.co.gregs.dbvolution.datatypes.spatial3D.PointZ;
 import nz.co.gregs.dbvolution.datatypes.spatial3D.PolygonZ;
 import nz.co.gregs.dbvolution.results.MultiPoint3DResult;
@@ -277,6 +278,26 @@ public class Line3DExpression implements Line3DResult, EqualComparable<Line3DRes
 	}
 
 	/**
+	 * Compare the value of the given LineString to this expression using the
+	 * equivalent of EQUALS.
+	 *
+	 * <p>
+	 * The boolean expression will be TRUE if the two expressions are functionally
+	 * equivalent.
+	 *
+	 * <p>
+	 * Due to to the imperfect interpretation of floating point numbers there may
+	 * some discrepancies between databases but DBV tries to be as accurate as the
+	 * database allows.
+	 *
+	 * @param rightHandSide the value this expression may equal.
+	 * @return a BooleanExpression that will be TRUE when the two expressions are functionally equivalent, otherwise FALSE.
+	 */
+	public BooleanExpression is(LinearRingZ rightHandSide) {
+		return is(new DBLine3D(rightHandSide));
+	}
+
+	/**
 	 * Compare this expression to the exterior ring of the given Polygon3D using the
 	 * equivalent of EQUALS.
 	 *
@@ -285,7 +306,7 @@ public class Line3DExpression implements Line3DResult, EqualComparable<Line3DRes
 	 * equivalent.
 	 *
 	 * <p>
-	 * Due to to the imperfect interpretation of floating point numbers there may
+	 * Due to the imperfect interpretation of floating point numbers there may
 	 * some discrepancies between databases but DBV tries to be as accurate as the
 	 * database allows.
 	 *
@@ -293,7 +314,7 @@ public class Line3DExpression implements Line3DResult, EqualComparable<Line3DRes
 	 * @return a BooleanExpression that will be TRUE when the two expressions are functionally equivalent, otherwise FALSE.
 	 */
 	public BooleanExpression is(PolygonZ rightHandSide) {
-		return is(rightHandSide.getExteriorRing());
+		return is(rightHandSide.getExteriorRingZ());
 	}
 
 	/**
@@ -348,6 +369,26 @@ public class Line3DExpression implements Line3DResult, EqualComparable<Line3DRes
 	}
 
 	/**
+	 * Compare the value of the given LineString to this expression using the
+	 * equivalent of NOT EQUALS.
+	 *
+	 * <p>
+	 * The boolean expression will be FALSE if the two expressions are functionally
+	 * equivalent.
+	 *
+	 * <p>
+	 * Due to to the imperfect interpretation of floating point numbers there may
+	 * some discrepancies between databases but DBV tries to be as accurate as the
+	 * database allows.
+	 *
+	 * @param rightHandSide the line that this expression might equal
+	 * @return a BooleanExpression that will be FALSE when the two expressions are functionally equivalent, otherwise TRUE.
+	 */
+	public BooleanExpression isNot(LinearRingZ rightHandSide) {
+		return isNot(new DBLine3D(rightHandSide));
+	}
+
+	/**
 	 * Compare this expression to the exterior ring of the given Polygon3D using the
 	 * equivalent of NOT EQUALS.
 	 *
@@ -364,7 +405,7 @@ public class Line3DExpression implements Line3DResult, EqualComparable<Line3DRes
 	 * @return a BooleanExpression that will be FALSE when the two expressions are functionally equivalent, otherwise TRUE.
 	 */
 	public BooleanExpression isNot(PolygonZ rightHandSide) {
-		return isNot(rightHandSide.getExteriorRing());
+		return isNot(rightHandSide.getExteriorRingZ());
 	}
 
 	/**

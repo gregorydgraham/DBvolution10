@@ -60,7 +60,7 @@ public class GeometryFactory3D extends GeometryFactory {
 		return createLineSegmentZ(coordinates != null ? getCoordinateSequenceFactory().create(coordinates) : null);
 	}
 
-	public LinearRing createLinearRingZ(CoordinateSequence coordinates) {
+	public LinearRingZ createLinearRingZ(CoordinateSequence coordinates) {
 		return new LinearRingZ(coordinates, this);
 	}
 

@@ -10,7 +10,7 @@ import com.vividsolutions.jts.geom.CoordinateSequence;
 import com.vividsolutions.jts.geom.CoordinateSequences;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
-import com.vividsolutions.jts.geom.LinearRing;
+import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.PrecisionModel;
 import com.vividsolutions.jts.io.WKTWriter;
 import java.util.ArrayList;
@@ -20,7 +20,7 @@ import java.util.List;
  *
  * @author gregorygraham
  */
-public class LineStringZ extends LinearRing {
+public class LineStringZ extends LineString {
 
 	private static final long serialVersionUID = 1L;
 	private final GeometryFactory factoryZ = new GeometryFactory3D();

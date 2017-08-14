@@ -5,8 +5,6 @@
  */
 package nz.co.gregs.dbvolution.datatypes.spatial3D;
 
-import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.CoordinateSequence;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.LinearRing;
@@ -44,9 +42,13 @@ public class PolygonZ extends Polygon {
 	}
 
 	@Override
-	public LineStringZ getExteriorRing() {
+	public LineString getExteriorRing() {
+		return super.getExteriorRing();
+	}
+	
+	public LinearRingZ getExteriorRingZ() {
 		final GeometryFactory3D fact = new GeometryFactory3D();
-		return fact.createLineStringZ(super.getExteriorRing());
+		return fact.createLinearRingZ(super.getExteriorRing().getCoordinateSequence());
 	}
 
 	@Override

@@ -425,7 +425,7 @@ public class Line3DFunctions {
 				}
 			} catch (com.vividsolutions.jts.io.ParseException ex) {
 				Logger.getLogger(Line2DFunctions.class.getName()).log(Level.SEVERE, null, ex);
-				throw new RuntimeException("Failed To Parse SQLite Polygon", ex);
+				throw new RuntimeException("Failed To Parse SQLite LineStringZ", ex);
 			}
 		}
 	}

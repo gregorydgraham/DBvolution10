@@ -8,13 +8,14 @@ package nz.co.gregs.dbvolution.datatypes.spatial3D;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.CoordinateSequence;
 import com.vividsolutions.jts.geom.GeometryFactory;
+import com.vividsolutions.jts.geom.LinearRing;
 import com.vividsolutions.jts.io.WKTWriter;
 
 /**
  *
  * @author gregorygraham
  */
-public class LinearRingZ extends LineStringZ {
+public class LinearRingZ extends LinearRing {
 
 	private static final long serialVersionUID = 1L;
 
