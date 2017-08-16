@@ -746,6 +746,9 @@ public class DBPolygon3DTest extends AbstractTest {
 			spatial.myfirstgeom.setValue(polygon);
 			database.insert(spatial);
 
+			DBQuery q = database.getDBQuery(new BasicSpatial3DTable());
+			database.print(q.setBlankQueryAllowed(true).getAllRows());
+			
 			DBQuery query = database.getDBQuery(new BasicSpatial3DTable()).addCondition(spatial.column(spatial.myfirstgeom).boundingBox().is(polygon));
 			List<BasicSpatial3DTable> allRows = query.getAllInstancesOf(spatial);
 			database.print(allRows);

@@ -680,10 +680,12 @@ public class Polygon3DExpression implements Polygon3DResult, EqualComparable<Pol
 					final Polygon3DExpression first = getFirst();
 					final NumberExpression maxX = first.maxX();
 					final NumberExpression maxY = first.maxY();
+					final NumberExpression maxZ = first.maxZ();
 					final NumberExpression minX = first.minX();
 					final NumberExpression minY = first.minY();
+					final NumberExpression minZ = first.minZ();
 					return Polygon3DExpression
-							.value(minX, minY, maxX, minY, maxX, maxY, minX, maxY, minX, minY)
+							.value(minX, minY, minZ, maxX, minY, minZ, maxX, maxY, minZ, maxX, maxY, maxZ, minX, maxY, maxZ, minX, minY, maxZ, minX, minY, minZ)
 							.toSQLString(db);
 				}
 			}

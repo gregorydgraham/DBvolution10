@@ -438,8 +438,10 @@ public class Polygon3DFunctions {
 					PolygonZ polygon = getPolygonZ(originalStr);
 					Double minX = null;
 					Double minY = null;
+					Double minZ = null;
 					Double maxX = null;
 					Double maxY = null;
+					Double maxZ = null;
 					Coordinate[] coordinates = polygon.getCoordinates();
 					for (Coordinate coordinate : coordinates) {
 						if (minX == null || coordinate.x < minX) {
@@ -448,19 +450,28 @@ public class Polygon3DFunctions {
 						if (minY == null || coordinate.y < minY) {
 							minY = coordinate.y;
 						}
+						if (minZ == null || coordinate.z < minZ) {
+							minZ = coordinate.z;
+						}
 						if (maxX == null || coordinate.x > maxX) {
 							maxX = coordinate.x;
 						}
 						if (maxY == null || coordinate.y > minY) {
 							maxY = coordinate.y;
 						}
+						if (maxZ == null || coordinate.z > minZ) {
+							maxZ = coordinate.z;
+						}
 					}
 					PolygonZ createPolygon = factory.createPolygonZ(new Coordinate[]{
-						new Coordinate(minX, minY),
-						new Coordinate(maxX, minY),
-						new Coordinate(maxX, maxY),
-						new Coordinate(minX, maxY),
-						new Coordinate(minX, minY),});
+						new Coordinate(minX, minY, minZ),
+						new Coordinate(maxX, minY, minZ),
+						new Coordinate(maxX, maxY, minZ),
+						new Coordinate(maxX, maxY, maxZ),
+						new Coordinate(minX, maxY, maxZ),
+						new Coordinate(minX, minY, maxZ),
+						new Coordinate(minX, minY, minZ)
+					});
 					createPolygon.normalize();
 					result(createPolygon.toText());
 				}
