@@ -16,6 +16,7 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 import nz.co.gregs.dbvolution.annotations.*;
 import nz.co.gregs.dbvolution.columns.ColumnProvider;
+import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.datatypes.*;
 import nz.co.gregs.dbvolution.exceptions.AccidentalCartesianJoinException;
 import nz.co.gregs.dbvolution.exceptions.IncorrectRowProviderInstanceSuppliedException;
@@ -129,7 +130,17 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 	public static <T extends DBRow> T getDBRow(Class<T> requiredDBRowClass) throws UnableToInstantiateDBRowSubclassException {
 		try {
 			return requiredDBRowClass.getConstructor().newInstance();
-		} catch (NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
+		} catch (NoSuchMethodException ex) {
+			throw new UnableToInstantiateDBRowSubclassException(requiredDBRowClass, ex);
+		} catch (SecurityException ex) {
+			throw new UnableToInstantiateDBRowSubclassException(requiredDBRowClass, ex);
+		} catch (InstantiationException ex) {
+			throw new UnableToInstantiateDBRowSubclassException(requiredDBRowClass, ex);
+		} catch (IllegalAccessException ex) {
+			throw new UnableToInstantiateDBRowSubclassException(requiredDBRowClass, ex);
+		} catch (IllegalArgumentException ex) {
+			throw new UnableToInstantiateDBRowSubclassException(requiredDBRowClass, ex);
+		} catch (InvocationTargetException ex) {
 			throw new UnableToInstantiateDBRowSubclassException(requiredDBRowClass, ex);
 		}
 	}
@@ -454,8 +465,10 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 					if (rawJavaValue == null) {
 						try {
 							rawJavaValue = prop.getRawJavaType().newInstance();
-						} catch (InstantiationException | IllegalAccessException ex) {
+						} catch (InstantiationException ex) {
 							// note: InstantiationException tends to be thrown without a message
+							throw new RuntimeException("Unable to instantiate instance of " + prop.toString(), ex);
+						} catch (IllegalAccessException ex) {
 							throw new RuntimeException("Unable to instantiate instance of " + prop.toString(), ex);
 						}
 						prop.setRawJavaValue(rawJavaValue);

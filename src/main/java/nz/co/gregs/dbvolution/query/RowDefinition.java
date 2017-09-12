@@ -28,11 +28,6 @@ import nz.co.gregs.dbvolution.datatypes.spatial2D.DBLine2D;
 import nz.co.gregs.dbvolution.datatypes.spatial2D.DBLineSegment2D;
 import nz.co.gregs.dbvolution.datatypes.spatial2D.DBMultiPoint2D;
 import nz.co.gregs.dbvolution.datatypes.spatial2D.DBPoint2D;
-import nz.co.gregs.dbvolution.datatypes.spatial3D.DBLine3D;
-import nz.co.gregs.dbvolution.datatypes.spatial3D.DBLineSegment3D;
-import nz.co.gregs.dbvolution.datatypes.spatial3D.DBMultiPoint3D;
-import nz.co.gregs.dbvolution.datatypes.spatial3D.DBPoint3D;
-import nz.co.gregs.dbvolution.datatypes.spatial3D.DBPolygon3D;
 import nz.co.gregs.dbvolution.exceptions.IncorrectRowProviderInstanceSuppliedException;
 import nz.co.gregs.dbvolution.expressions.*;
 import nz.co.gregs.dbvolution.internal.properties.*;
@@ -196,26 +191,6 @@ public class RowDefinition implements Serializable {
 	}
 
 	/**
-	 * Creates a new {@link Polygon3DColumn} instance to help create
-	 * {@link DBExpression expressions}
-	 *
-	 * <p>
-	 * This method is the easy way to create a reference to the database column
-	 * represented by the field for use in creating complex expressions within
-	 * your query.
-	 *
-	 * <p>
-	 * For use with the
-	 * {@link DBQuery#addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression) DBQuery addCondition method}
-	 *
-	 * @param fieldOfThisInstance	fieldOfThisInstance
-	 * @return A {@link Polygon3DColumn} representing the supplied field
-	 */
-	public Polygon3DColumn column(DBPolygon3D fieldOfThisInstance) {
-		return new Polygon3DColumn(this, fieldOfThisInstance);
-	}
-
-	/**
 	 * Creates a new {@link Point2DColumn} instance to help create
 	 * {@link DBExpression expressions}
 	 *
@@ -233,26 +208,6 @@ public class RowDefinition implements Serializable {
 	 */
 	public Point2DColumn column(DBPoint2D fieldOfThisInstance) {
 		return new Point2DColumn(this, fieldOfThisInstance);
-	}
-
-	/**
-	 * Creates a new {@link Point2DColumn} instance to help create
-	 * {@link DBExpression expressions}
-	 *
-	 * <p>
-	 * This method is the easy way to create a reference to the database column
-	 * represented by the field for use in creating complex expressions within
-	 * your query.
-	 *
-	 * <p>
-	 * For use with the
-	 * {@link DBQuery#addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression) DBQuery addCondition method}
-	 *
-	 * @param fieldOfThisInstance	fieldOfThisInstance
-	 * @return A {@link Point2DColumn} representing the supplied field
-	 */
-	public Point3DColumn column(DBPoint3D fieldOfThisInstance) {
-		return new Point3DColumn(this, fieldOfThisInstance);
 	}
 
 	/**
@@ -276,26 +231,6 @@ public class RowDefinition implements Serializable {
 	}
 
 	/**
-	 * Creates a new {@link Line3DColumn} instance to help create
-	 * {@link DBExpression expressions}
-	 *
-	 * <p>
-	 * This method is the easy way to create a reference to the database column
-	 * represented by the field for use in creating complex expressions within
-	 * your query.
-	 *
-	 * <p>
-	 * For use with the
-	 * {@link DBQuery#addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression) DBQuery addCondition method}
-	 *
-	 * @param fieldOfThisInstance	fieldOfThisInstance
-	 * @return A {@link Line3DColumn} representing the supplied field
-	 */
-	public Line3DColumn column(DBLine3D fieldOfThisInstance) {
-		return new Line3DColumn(this, fieldOfThisInstance);
-	}
-
-	/**
 	 * Creates a new {@link LineSegment2DColumn} instance to help create
 	 * {@link DBExpression expressions}
 	 *
@@ -316,26 +251,6 @@ public class RowDefinition implements Serializable {
 	}
 
 	/**
-	 * Creates a new {@link LineSegment3DColumn} instance to help create
-	 * {@link DBExpression expressions}
-	 *
-	 * <p>
-	 * This method is the easy way to create a reference to the database column
-	 * represented by the field for use in creating complex expressions within
-	 * your query.
-	 *
-	 * <p>
-	 * For use with the
-	 * {@link DBQuery#addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression) DBQuery addCondition method}
-	 *
-	 * @param fieldOfThisInstance	fieldOfThisInstance
-	 * @return A {@link LineSegment3DColumn} representing the supplied field
-	 */
-	public LineSegment3DColumn column(DBLineSegment3D fieldOfThisInstance) {
-		return new LineSegment3DColumn(this, fieldOfThisInstance);
-	}
-
-	/**
 	 * Creates a new {@link MultiPoint2DColumn} instance to help create
 	 * {@link DBExpression expressions}
 	 *
@@ -353,26 +268,6 @@ public class RowDefinition implements Serializable {
 	 */
 	public MultiPoint2DColumn column(DBMultiPoint2D fieldOfThisInstance) {
 		return new MultiPoint2DColumn(this, fieldOfThisInstance);
-	}
-
-	/**
-	 * Creates a new {@link MultiPoint3DColumn} instance to help create
-	 * {@link DBExpression expressions}
-	 *
-	 * <p>
-	 * This method is the easy way to create a reference to the database column
-	 * represented by the field for use in creating complex expressions within
-	 * your query.
-	 *
-	 * <p>
-	 * For use with the
-	 * {@link DBQuery#addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression) DBQuery addCondition method}
-	 *
-	 * @param fieldOfThisInstance	fieldOfThisInstance
-	 * @return A {@link MultiPoint3DColumn} representing the supplied field
-	 */
-	public MultiPoint3DColumn column(DBMultiPoint3D fieldOfThisInstance) {
-		return new MultiPoint3DColumn(this, fieldOfThisInstance);
 	}
 
 	/**
@@ -423,16 +318,6 @@ public class RowDefinition implements Serializable {
 			col = this.column((DBLineSegment2D) fieldOfThisInstance);
 		} else if (DBMultiPoint2D.class.isAssignableFrom(fieldOfThisInstance.getClass())) {
 			col = this.column((DBMultiPoint2D) fieldOfThisInstance);
-		} else if (DBPolygon3D.class.isAssignableFrom(fieldOfThisInstance.getClass())) {
-			col = this.column((DBPolygon3D) fieldOfThisInstance);
-		} else if (DBPoint3D.class.isAssignableFrom(fieldOfThisInstance.getClass())) {
-			col = this.column((DBPoint3D) fieldOfThisInstance);
-		} else if (DBLine3D.class.isAssignableFrom(fieldOfThisInstance.getClass())) {
-			col = this.column((DBLine3D) fieldOfThisInstance);
-		} else if (DBLineSegment3D.class.isAssignableFrom(fieldOfThisInstance.getClass())) {
-			col = this.column((DBLineSegment3D) fieldOfThisInstance);
-		} else if (DBMultiPoint3D.class.isAssignableFrom(fieldOfThisInstance.getClass())) {
-			col = this.column((DBMultiPoint3D) fieldOfThisInstance);
 		} else if (DBNumberStatistics.class.isAssignableFrom(fieldOfThisInstance.getClass())) {
 			col = this.column((DBNumber) fieldOfThisInstance);
 		}
@@ -462,8 +347,8 @@ public class RowDefinition implements Serializable {
 		ColumnProvider col = null;
 		if (QueryableDatatype.class.isAssignableFrom(fieldOfThisInstance.getClass())) {
 			col = this.column((QueryableDatatype) fieldOfThisInstance);
-//		} else if (Period.class.isAssignableFrom(fieldOfThisInstance.getClass())) {
-//			col = this.column((Period) fieldOfThisInstance);
+		} else if (Period.class.isAssignableFrom(fieldOfThisInstance.getClass())) {
+			col = this.column((Period) fieldOfThisInstance);
 		} else if (Date.class.isAssignableFrom(fieldOfThisInstance.getClass())) {
 			col = this.column((Date) fieldOfThisInstance);
 		} else if (Boolean.class.isAssignableFrom(fieldOfThisInstance.getClass())) {

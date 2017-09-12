@@ -644,20 +644,6 @@ public class PropertyWrapper {
 	 */	public boolean isSpatial2DType() {
 		return propertyDefinition.isSpatial2DType();
 	}
-
-	/**
-	 * Returns true if the property wrapped is a Spatial3D column.
-	 *
-	 * <p>
-	 * This generally means that the column is a polygon, line, point, or other 3D geometry.
-	 * 
-	 * <p>
-	 * Spatial columns are special in that some databases need indexes to support them properly.
-	 *
-	 * @return TRUE if the value of this column is a 3D geometry type, otherwise FALSE.
-	 */	public boolean isSpatial3DType() {
-		return propertyDefinition.isSpatial3DType();
-	}
 	/**
 	 * Returns true if the property wrapped is an auto-filling field.
 	 *

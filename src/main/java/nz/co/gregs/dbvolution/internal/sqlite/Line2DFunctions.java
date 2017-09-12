@@ -83,22 +83,22 @@ public class Line2DFunctions {
 	/**
 	 *
 	 */
-//	public final static String SPATIAL_LINE_MIN_X_COORD_FUNCTION = "DBV_LINE_MIN_X2D_COORD";
+	public final static String SPATIAL_LINE_MIN_X_COORD_FUNCTION = "DBV_LINE_MIN_X2D_COORD";
 
 	/**
 	 *
 	 */
-//	public final static String SPATIAL_LINE_MAX_Y_COORD_FUNCTION = "DBV_LINE_MAX_Y2D_COORD";
+	public final static String SPATIAL_LINE_MAX_Y_COORD_FUNCTION = "DBV_LINE_MAX_Y2D_COORD";
 
 	/**
 	 *
 	 */
-//	public final static String SPATIAL_LINE_MIN_Y_COORD_FUNCTION = "DBV_LINE_MIN_Y2D_COORD";
+	public final static String SPATIAL_LINE_MIN_Y_COORD_FUNCTION = "DBV_LINE_MIN_Y2D_COORD";
 
 	/**
 	 *
 	 */
-//	public final static String SPATIAL_LINE_MAX_X_COORD_FUNCTION = "DBV_LINE_MAX_X2D_COORD";
+	public final static String SPATIAL_LINE_MAX_X_COORD_FUNCTION = "DBV_LINE_MAX_X2D_COORD";
 
 	/**
 	 *

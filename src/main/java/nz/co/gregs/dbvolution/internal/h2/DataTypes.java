@@ -52,31 +52,7 @@ public enum DataTypes implements DBVFeature{
 	/**
 	 *
 	 */
-	MULTIPOINT2D("DBV_MULTIPOINT2D", "VARCHAR(2003)", MultiPoint2DFunctions.values()),
-	/**
-	 *
-	 */
-	POINT3D("DBV_POINT3D", "VARCHAR(2000)", Point3DFunctions.values()),
-
-	/**
-	 *
-	 */
-	LINE3D("DBV_LINE3D", "VARCHAR(2001)", Line3DFunctions.values()),
-
-	/**
-	 *
-	 */
-	LINESEGMENT3D("DBV_LINESEGMENT3D", "VARCHAR(2001)", LineSegment3DFunctions.values()),
-
-	/**
-	 *
-	 */
-	POLYGON3D("DBV_POLYGON3D", "VARCHAR(2002)", Polygon3DFunctions.values()), 
-
-	/**
-	 *
-	 */
-	MULTIPOINT3D("DBV_MULTIPOINT2D", "VARCHAR(2003)", MultiPoint3DFunctions.values());
+	MULTIPOINT2D("DBV_MULTIPOINT2D", "VARCHAR(2003)", MultiPoint2DFunctions.values());
 	private final String datatype;
 	private final String actualType;
 //	private final DBVFeature[] functions;

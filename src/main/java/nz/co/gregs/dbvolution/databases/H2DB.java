@@ -58,21 +58,6 @@ public class H2DB extends DBDatabase implements SupportsDateRepeatDatatypeFuncti
 		for (DBVFeature function : MultiPoint2DFunctions.values()) {
 			FEATURE_MAP.put(function.alias(), function);
 		}
-		for (DBVFeature function : Point3DFunctions.values()) {
-			FEATURE_MAP.put(function.alias(), function);
-		}
-		for (DBVFeature function : LineSegment3DFunctions.values()) {
-			FEATURE_MAP.put(function.alias(), function);
-		}
-		for (DBVFeature function : Line3DFunctions.values()) {
-			FEATURE_MAP.put(function.alias(), function);
-		}
-		for (DBVFeature function : Polygon3DFunctions.values()) {
-			FEATURE_MAP.put(function.alias(), function);
-		}
-		for (DBVFeature function : MultiPoint3DFunctions.values()) {
-			FEATURE_MAP.put(function.alias(), function);
-		}
 		for (DataTypes datatype : DataTypes.values()) {
 			FEATURE_MAP.put(datatype.alias(), datatype);
 		}
