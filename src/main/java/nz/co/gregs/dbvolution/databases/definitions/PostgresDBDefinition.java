@@ -45,8 +45,8 @@ public class PostgresDBDefinition extends DBDefinition {
 
 	private final DateFormat DATETIME_FORMAT = new SimpleDateFormat("yyyyMMdd HH:mm:ss.SSS Z");
 
-	private static final String[] reservedWordsArray = new String[]{"LIMIT", "END"};
-	private static final List<String> reservedWords = Arrays.asList(reservedWordsArray);
+	private static final String[] RESERVED_WORD_ARRAY = new String[]{"LIMIT", "END"};
+	private static final List<String> RESERVED_WORD_LIST = Arrays.asList(RESERVED_WORD_ARRAY);
 
 	@Override
 	public String getDropDatabase(String databaseName) throws UnsupportedOperationException {
@@ -65,7 +65,7 @@ public class PostgresDBDefinition extends DBDefinition {
 
 	@Override
 	protected String formatNameForDatabase(final String sqlObjectName) {
-		if (!(reservedWords.contains(sqlObjectName.toUpperCase()))) {
+		if (!(RESERVED_WORD_LIST.contains(sqlObjectName.toUpperCase()))) {
 			return super.formatNameForDatabase(sqlObjectName);
 		} else {
 			return formatNameForDatabase("p" + super.formatNameForDatabase(sqlObjectName));
@@ -171,7 +171,7 @@ public class PostgresDBDefinition extends DBDefinition {
 		return false;
 	}
 
-
+	@Override
 	public String doSubsecondTransform(String dateExpression) {
 		return "((EXTRACT(MILLISECOND FROM " + dateExpression + ")/1000.0000) - ("+doTruncTransform(doSecondTransform(dateExpression),"0")+"))";
 	}
@@ -494,7 +494,7 @@ public class PostgresDBDefinition extends DBDefinition {
 		String[] splits = geometryAsString.split("[^0-9.]+");
 		List<Coordinate> coords = new ArrayList<>();
 		Coordinate firstCoord = null;
-		for (int i = 1; i < splits.length; i++) {
+		for (int i = 1; i < splits.length; i+=2) {
 			String splitX = splits[i];
 			String splitY = splits[i + 1];
 			final Coordinate coordinate = new Coordinate(Double.parseDouble(splitX), Double.parseDouble(splitY));
@@ -502,7 +502,6 @@ public class PostgresDBDefinition extends DBDefinition {
 			if (firstCoord == null) {
 				firstCoord = coordinate;
 			}
-			i++;
 		}
 		if (coords.size() == 1) {
 			coords.add(firstCoord);
@@ -523,7 +522,7 @@ public class PostgresDBDefinition extends DBDefinition {
 			String[] splits = lineStringAsString.split("[(),]+");
 			Coordinate firstCoord = null;
 			List<Coordinate> coords = new ArrayList<>();
-			for (int i = 1; i < splits.length - 1; i++) {
+			for (int i = 1; i < splits.length - 1; i+=2) {
 				String splitX = splits[i];
 				String splitY = splits[i + 1];
 				final Coordinate coordinate = new Coordinate(Double.parseDouble(splitX), Double.parseDouble(splitY));
@@ -531,7 +530,6 @@ public class PostgresDBDefinition extends DBDefinition {
 				if (firstCoord == null) {
 					firstCoord = coordinate;
 				}
-				i++;
 			}
 			final GeometryFactory geometryFactory = new GeometryFactory();
 			lineString = geometryFactory.createLineString(coords.toArray(new Coordinate[]{}));
