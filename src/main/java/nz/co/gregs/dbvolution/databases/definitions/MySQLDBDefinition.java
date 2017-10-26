@@ -85,16 +85,17 @@ public class MySQLDBDefinition extends DBDefinition {
 
 	@Override
 	public Class<? extends QueryableDatatype<?>> getQueryableDatatypeClassForSQLDatatype(String typeName) {
-		if (typeName.equals("POLYGON")) {
-			return DBPolygon2D.class;
-		} else if (typeName.equals("LINESTRING")) {
-			return DBLine2D.class;
-		} else if (typeName.equals("POINT")) {
-			return DBPoint2D.class;
-		} else if (typeName.equals("MULTIPOINT")) {
-			return DBMultiPoint2D.class; // obviously this is not going to work in all cases 
-		} else {
-			return null;
+		switch (typeName) {
+			case "POLYGON":
+				return DBPolygon2D.class;
+			case "LINESTRING":
+				return DBLine2D.class;
+			case "POINT":
+				return DBPoint2D.class;
+			case "MULTIPOINT":
+				return DBMultiPoint2D.class; // obviously this is not going to work in all cases 
+			default:
+				return null;
 		}
 	}
 
