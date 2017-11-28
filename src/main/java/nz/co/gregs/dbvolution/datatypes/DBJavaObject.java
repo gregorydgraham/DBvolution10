@@ -98,11 +98,8 @@ public class DBJavaObject<O> extends DBLargeObject<O> {
 		} else {
 			final BufferedInputStream bufferedInputStream = new BufferedInputStream(inputStream);
 			try {
-				ObjectInputStream input = new ObjectInputStream(bufferedInputStream);
-				try {
+				try (ObjectInputStream input = new ObjectInputStream(bufferedInputStream)) {
 					returnValue = (O) input.readObject();
-				} finally {
-					input.close();
 				}
 			} catch (IOException ex) {
 				Logger.getLogger(DBJavaObject.class.getName()).log(Level.SEVERE, null, ex);
@@ -170,8 +167,7 @@ public class DBJavaObject<O> extends DBLargeObject<O> {
 			if (resultSet.wasNull()) {
 				this.setToNull();
 			} else {
-				BufferedReader input = new BufferedReader(inputReader);
-				try {
+				try (BufferedReader input = new BufferedReader(inputReader)) {
 					List<byte[]> byteArrays = new ArrayList<>();
 
 					int totalBytesRead = 0;
@@ -203,8 +199,6 @@ public class DBJavaObject<O> extends DBLargeObject<O> {
 					} catch (ClassNotFoundException ex) {
 						Logger.getLogger(DBJavaObject.class.getName()).log(Level.SEVERE, null, ex);
 					}
-				} finally {
-					input.close();
 				}
 			}
 		}
@@ -219,8 +213,7 @@ public class DBJavaObject<O> extends DBLargeObject<O> {
 			this.setToNull();
 		} else {
 			try {
-				BufferedReader input = new BufferedReader(clob.getCharacterStream());
-				try {
+				try (BufferedReader input = new BufferedReader(clob.getCharacterStream())) {
 					List<byte[]> byteArrays = new ArrayList<>();
 
 					int totalBytesRead = 0;
@@ -246,8 +239,6 @@ public class DBJavaObject<O> extends DBLargeObject<O> {
 					ObjectInputStream objectInput = new ObjectInputStream(new ByteArrayInputStream(bytes));
 //				this.setValue(objectInput.readObject());
 					returnValue = (O) objectInput.readObject();
-				} finally {
-					input.close();
 				}
 			} catch (IOException ex) {
 				Logger.getLogger(DBJavaObject.class.getName()).log(Level.SEVERE, null, ex);
