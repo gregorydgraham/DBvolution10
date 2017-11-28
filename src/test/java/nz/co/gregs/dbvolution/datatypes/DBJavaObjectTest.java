@@ -15,6 +15,7 @@
  */
 package nz.co.gregs.dbvolution.datatypes;
 
+import java.io.Serializable;
 import java.sql.SQLException;
 import java.util.List;
 import nz.co.gregs.dbvolution.DBRow;
@@ -60,8 +61,9 @@ public class DBJavaObjectTest extends AbstractTest {
 		row.colInt.setValue(3);
 		row.javaInteger.setValue(3);
 		row.javaString.setValue("Thisland");
+		row.someRandomClass.setValue(new SomeClass(3, "Thisland"));
 		DBActionList insert = database.insert(row);
-		
+
 		final DBTable<DBJavaObjectTable> tableQuery = database.getDBTable(new DBJavaObjectTable()).setBlankQueryAllowed(true);
 
 		List<DBJavaObjectTable> allRows = tableQuery.getAllRows();
@@ -72,8 +74,9 @@ public class DBJavaObjectTest extends AbstractTest {
 		Assert.assertThat(foundRow.javaInteger.stringValue(), is("3"));
 		Assert.assertThat(foundRow.javaString.getSize(), is(15));
 		Assert.assertThat(foundRow.javaString.getValue(), is("Thisland"));
-		Assert.assertThat(foundRow.javaString.stringValue(), is("Thisland"));
-		
+		Assert.assertThat(foundRow.someRandomClass.getValue().str, is("Thisland"));
+		Assert.assertThat(foundRow.someRandomClass.getValue().integer, is(3));
+
 		database.preventDroppingOfTables(false);
 		database.dropTableNoExceptions(foundRow);
 	}
@@ -94,6 +97,20 @@ public class DBJavaObjectTest extends AbstractTest {
 
 		@DBColumn
 		DBJavaObject<String> javaString = new DBJavaObject<String>();
+
+		@DBColumn
+		DBJavaObject<SomeClass> someRandomClass = new DBJavaObject<SomeClass>();
+	}
+
+	public static class SomeClass implements Serializable {
+
+		public String str;
+		public int integer;
+
+		public SomeClass(int integer, String str) {
+			this.str = str;
+			this.integer = integer;
+		}
 	}
 
 }
