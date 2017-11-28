@@ -848,7 +848,7 @@ public class SQLiteDefinition extends DBDefinition {
 		} else if (lob instanceof DBLargeText) {
 			return LargeObjectHandlerType.BASE64;
 		} else if (lob instanceof DBJavaObject) {
-			return LargeObjectHandlerType.JAVAOBJECT;
+			return LargeObjectHandlerType.BYTE;
 		} else {
 			return super.preferredLargeObjectWriter(lob);
 		}
@@ -861,7 +861,7 @@ public class SQLiteDefinition extends DBDefinition {
 		} else if (lob instanceof DBLargeText) {
 			return LargeObjectHandlerType.BASE64;
 		} else if (lob instanceof DBJavaObject) {
-			return LargeObjectHandlerType.JAVAOBJECT;
+			return LargeObjectHandlerType.BYTE;
 		} else {
 			return super.preferredLargeObjectReader(lob);
 		}
