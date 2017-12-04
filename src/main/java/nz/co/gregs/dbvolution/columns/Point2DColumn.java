@@ -26,16 +26,18 @@ import nz.co.gregs.dbvolution.query.RowDefinition;
 /**
  * Provides a portable representation of a column of Point2D values.
  *
- * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 * @author Gregory Graham
+ * <p style="color: #F90;">Support DBvolution at
+ * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+ *
+ * @author Gregory Graham
  */
 public class Point2DColumn extends Point2DExpression implements ColumnProvider {
 
 	private final AbstractColumn column;
 
 	/**
-	 * Creates a portable reference to the column represented by the field of
-	 * the row.
+	 * Creates a portable reference to the column represented by the field of the
+	 * row.
 	 *
 	 * @param row the table defining object the contains the field
 	 * @param field the field that defines the column.

@@ -78,8 +78,10 @@ import nz.co.gregs.dbvolution.query.RowDefinition;
  * examples. Conditions on the examples will be added directly to the internal
  * query if the DBRow class is included in the DBReport.
  *
- * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 * @author Gregory Graham
+ * <p style="color: #F90;">Support DBvolution at
+ * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+ *
+ * @author Gregory Graham
  */
 public class DBReport extends RowDefinition {
 
@@ -104,7 +106,8 @@ public class DBReport extends RowDefinition {
 	 * @param <A> DBReport type
 	 * @param database database
 	 * @param exampleReport exampleReport
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a list of DBReport instances representing the results of the report
 	 * query. 1 Database exceptions may be thrown
 	 * @throws java.sql.SQLException java.sql.SQLException
@@ -112,7 +115,7 @@ public class DBReport extends RowDefinition {
 	public static <A extends DBReport> List<A> getAllRows(DBDatabase database, A exampleReport) throws SQLException {
 		return getAllRows(database, exampleReport, new DBRow[]{});
 	}
-	
+
 	/**
 	 * Change the Default Setting of Disallowing Blank Queries
 	 *
@@ -137,9 +140,12 @@ public class DBReport extends RowDefinition {
 	}
 
 	/**
-	 * Reports whether or not this DBReport is allowed to return all rows without restriction.
+	 * Reports whether or not this DBReport is allowed to return all rows without
+	 * restriction.
 	 *
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
 	 * @return TRUE if blank queries are allowed, otherwise FALSE
 	 */
 	public boolean getBlankQueryAllowed() {
@@ -158,7 +164,8 @@ public class DBReport extends RowDefinition {
 	 * @param database database
 	 * @param exampleReport exampleReport
 	 * @param extraExamples
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a list of DBReport instances representing the results of the report
 	 * query. 1 Database exceptions may be thrown
 	 * @throws java.sql.SQLException java.sql.SQLException
@@ -223,7 +230,8 @@ public class DBReport extends RowDefinition {
 	 * @param database database
 	 * @param exampleReport exampleReport
 	 * @param rows rows
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a list of DBReport instances representing the results of the report
 	 * query. 1 Database exceptions may be thrown
 	 * @throws java.sql.SQLException java.sql.SQLException
@@ -239,12 +247,10 @@ public class DBReport extends RowDefinition {
 
 	/**
 	 * Gets all the report rows of the supplied DBReport limited by the supplied
-	 * example rows but reduce the result to only those that match the
-	 * conditions.
+	 * example rows but reduce the result to only those that match the conditions.
 	 *
 	 * <p>
-	 * All conditions should only reference the fields/column of the
-	 * DBReport.
+	 * All conditions should only reference the fields/column of the DBReport.
 	 *
 	 * <p>
 	 * All supplied rows should be from a DBRow subclass that is included in the
@@ -263,9 +269,10 @@ public class DBReport extends RowDefinition {
 	 * @param database database
 	 * @param exampleReport exampleReport
 	 * @param rows rows example rows that provide extra criteria
-	 * @param conditions extra conditions that will be supplied
-	 * to the WHERE or HAVING clause of the query
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @param conditions extra conditions that will be supplied to the WHERE or
+	 * HAVING clause of the query
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a list of DBReport instances representing the results of the report
 	 * query
 	 * @throws java.sql.SQLException Database exceptions may be thrown
@@ -307,7 +314,8 @@ public class DBReport extends RowDefinition {
 	 * @param database the database the SQL will be run against.
 	 * @param exampleReport the report required.
 	 * @param rows additional conditions to apply to the report.
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a String of the SQL that will be used by this DBQuery. 1 Database
 	 * exceptions may be thrown
 	 * @throws java.sql.SQLException java.sql.SQLException
@@ -328,7 +336,8 @@ public class DBReport extends RowDefinition {
 	 * @param database the database to format the query for.
 	 * @param exampleReport the report to retrieve.
 	 * @param rows additional conditions to be applied.
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a String of the SQL query that will be used to count the rows
 	 * returned by this report 1 Database exceptions may be thrown
 	 * @throws java.sql.SQLException java.sql.SQLException
@@ -352,7 +361,8 @@ public class DBReport extends RowDefinition {
 	 * @param database the database to format the query for.
 	 * @param exampleReport the report required.
 	 * @param rows additional conditions for the query.
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return the number of rows that have or will be retrieved. 1 Database
 	 * exceptions may be thrown
 	 * @throws java.sql.SQLException java.sql.SQLException
@@ -374,7 +384,8 @@ public class DBReport extends RowDefinition {
 	 * </pre>
 	 *
 	 * @param columns a list of columns to sort the query by.
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return this DBReport instance
 	 */
 	public DBReport setSortOrder(ColumnProvider... columns) {
@@ -398,7 +409,8 @@ public class DBReport extends RowDefinition {
 	 * </pre>
 	 *
 	 * @param columns a list of columns to sort the query by.
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return this DBReport instance
 	 */
 	public DBReport setSortOrder(QueryableDatatype<?>... columns) {
@@ -520,7 +532,9 @@ public class DBReport extends RowDefinition {
 	/**
 	 * Returns the list of sort columns
 	 *
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
 	 * @return the sortColumns
 	 */
 	protected ColumnProvider[] getSortColumns() {

@@ -17,8 +17,10 @@ package nz.co.gregs.dbvolution.exceptions;
 
 /**
  *
- * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 * @author Gregory Graham
+ * <p style="color: #F90;">Support DBvolution at
+ * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+ *
+ * @author Gregory Graham
  */
 public class UnableToInstantiateDBMigrationSubclassException extends RuntimeException {
 
@@ -32,7 +34,7 @@ public class UnableToInstantiateDBMigrationSubclassException extends RuntimeExce
 	 * Please ensure all DBReports have a public, argument-less, default
 	 * constructor.
 	 *
-	 * @param aMapping  aMapping
+	 * @param aMapping aMapping
 	 * @param ex ex
 	 */
 	public UnableToInstantiateDBMigrationSubclassException(Object aMapping, Exception ex) {

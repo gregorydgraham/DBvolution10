@@ -37,8 +37,10 @@ import nz.co.gregs.dbvolution.query.RowDefinition;
  * Generally you get a BooleanColumn using
  * {@link RowDefinition#column(java.lang.Boolean) RowDefinition.column(DBBoolean)}.
  *
- * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 * @author Gregory Graham
+ * <p style="color: #F90;">Support DBvolution at
+ * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+ *
+ * @author Gregory Graham
  * @see RowDefinition
  * @see AbstractColumn
  * @see BooleanExpression
@@ -75,7 +77,7 @@ public class BooleanColumn extends BooleanExpression implements ColumnProvider {
 	@Override
 	public BooleanColumn copy() {
 		return (BooleanColumn) super.copy();
-		}
+	}
 
 	@Override
 	public AbstractColumn getColumn() {
@@ -107,7 +109,8 @@ public class BooleanColumn extends BooleanExpression implements ColumnProvider {
 	 * EQUALS.
 	 *
 	 * @param boolColumn an instance to compare to
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a BooleanExpression
 	 */
 	public BooleanExpression is(DBBoolean boolColumn) {

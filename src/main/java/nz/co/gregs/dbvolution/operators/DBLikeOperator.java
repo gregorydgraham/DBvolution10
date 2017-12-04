@@ -24,8 +24,10 @@ import nz.co.gregs.dbvolution.expressions.StringExpression;
 /**
  * Implements LIKE for all types that support it.
  *
- * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 * @author Gregory Graham
+ * <p style="color: #F90;">Support DBvolution at
+ * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+ *
+ * @author Gregory Graham
  */
 public class DBLikeOperator extends DBOperator {
 
@@ -82,7 +84,9 @@ public class DBLikeOperator extends DBOperator {
 	}
 
 	/**
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
 	 * @return the likeableValue
 	 */
 	protected StringExpression getLikeableValue() {

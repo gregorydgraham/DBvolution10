@@ -29,8 +29,10 @@ import nz.co.gregs.dbvolution.expressions.DBExpression;
 
 /**
  *
- * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 * @author gregorygraham
+ * <p style="color: #F90;">Support DBvolution at
+ * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+ *
+ * @author gregorygraham
  */
 public class QueryDetails {
 
@@ -51,7 +53,9 @@ public class QueryDetails {
 	private final ArrayList<BooleanExpression> havingColumns = new ArrayList<>();
 
 	/**
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
 	 * @return the allQueryTables
 	 */
 	public List<DBRow> getAllQueryTables() {
@@ -59,7 +63,9 @@ public class QueryDetails {
 	}
 
 	/**
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
 	 * @return the requiredQueryTables
 	 */
 	public List<DBRow> getRequiredQueryTables() {
@@ -67,7 +73,9 @@ public class QueryDetails {
 	}
 
 	/**
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
 	 * @return the optionalQueryTables
 	 */
 	public List<DBRow> getOptionalQueryTables() {
@@ -75,7 +83,9 @@ public class QueryDetails {
 	}
 
 	/**
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
 	 * @return the assumedQueryTables
 	 */
 	public List<DBRow> getAssumedQueryTables() {
@@ -83,7 +93,9 @@ public class QueryDetails {
 	}
 
 	/**
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
 	 * @return the options
 	 */
 	public QueryOptions getOptions() {
@@ -91,7 +103,9 @@ public class QueryDetails {
 	}
 
 	/**
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
 	 * @return the extraExamples
 	 */
 	public List<DBRow> getExtraExamples() {
@@ -101,7 +115,9 @@ public class QueryDetails {
 	/**
 	 * Get all conditions involved in this query.
 	 *
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
 	 * @return all conditions in the query
 	 */
 	public List<BooleanExpression> getAllConditions() {
@@ -113,7 +129,9 @@ public class QueryDetails {
 	}
 
 	/**
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
 	 * @return the conditions
 	 */
 	public List<BooleanExpression> getConditions() {
@@ -121,7 +139,9 @@ public class QueryDetails {
 	}
 
 	/**
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
 	 * @return the expressionColumns
 	 */
 	public Map<Object, QueryableDatatype<?>> getExpressionColumns() {
@@ -129,7 +149,9 @@ public class QueryDetails {
 	}
 
 	/**
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
 	 * @return the dbReportGroupByColumns
 	 */
 	public Map<Object, DBExpression> getDBReportGroupByColumns() {
@@ -137,7 +159,9 @@ public class QueryDetails {
 	}
 
 	/**
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
 	 * @return the existingInstances
 	 */
 	public Map<Class<?>, Map<String, DBRow>> getExistingInstances() {
@@ -160,7 +184,9 @@ public class QueryDetails {
 	/**
 	 * Return the requirement for a GROUP BY clause.
 	 *
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
 	 * @return TRUE if the GROUP BY clause is required, otherwise FALSE.
 	 */
 	public boolean isGroupedQuery() {
@@ -179,7 +205,9 @@ public class QueryDetails {
 	/**
 	 * Get the SELECT clause used during the query.
 	 *
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
 	 * @return the SELECT clause defined earlier
 	 */
 	public String getSelectClause() {
@@ -187,7 +215,9 @@ public class QueryDetails {
 	}
 
 	/**
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
 	 * @return the havingColumns
 	 */
 	public BooleanExpression[] getHavingColumns() {
@@ -204,6 +234,5 @@ public class QueryDetails {
 	public void setDatabase(DBDatabase database) {
 		this.database = database;
 	}
-
 
 }

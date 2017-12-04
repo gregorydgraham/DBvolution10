@@ -31,8 +31,10 @@ import org.junit.*;
 
 /**
  *
- * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 * @author Gregory Graham
+ * <p style="color: #F90;">Support DBvolution at
+ * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+ *
+ * @author Gregory Graham
  */
 public class QueryGraphDepthFirstTest extends AbstractTest {
 
@@ -56,7 +58,7 @@ public class QueryGraphDepthFirstTest extends AbstractTest {
 	@SuppressWarnings("unchecked")
 	@Test
 	public void testToList() {
-		
+
 		List<DBRow> requiredTables = new ArrayList<DBRow>();
 		requiredTables.add(new TableA());
 		requiredTables.add(new TableB());

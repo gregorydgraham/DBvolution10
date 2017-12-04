@@ -25,8 +25,10 @@ import nz.co.gregs.dbvolution.databases.definitions.NuoDBDefinition;
 /**
  * DBDatabase tweaked to work best with NuoDB.
  *
- * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 * @author Gregory Graham
+ * <p style="color: #F90;">Support DBvolution at
+ * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+ *
+ * @author Gregory Graham
  */
 public class NuoDB extends DBDatabase {
 

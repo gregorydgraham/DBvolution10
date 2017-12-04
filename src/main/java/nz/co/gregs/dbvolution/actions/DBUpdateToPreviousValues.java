@@ -31,8 +31,10 @@ import nz.co.gregs.dbvolution.internal.properties.PropertyWrapper;
  * Used to provide revert actions for updates.
  * </p>
  *
- * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 * @author Gregory Graham
+ * <p style="color: #F90;">Support DBvolution at
+ * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+ *
+ * @author Gregory Graham
  */
 public class DBUpdateToPreviousValues extends DBUpdateSimpleTypes {
 
@@ -45,7 +47,8 @@ public class DBUpdateToPreviousValues extends DBUpdateSimpleTypes {
 	 *
 	 * @param db the target database
 	 * @param row the row to be updated
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return The SET clause of the UPDATE statement.
 	 */
 	@Override
@@ -81,7 +84,8 @@ public class DBUpdateToPreviousValues extends DBUpdateSimpleTypes {
 	 *
 	 * @param db the target database
 	 * @param row the row to be updated
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return The WHERE clause of the UPDATE statement.
 	 */
 	@Override
@@ -94,7 +98,7 @@ public class DBUpdateToPreviousValues extends DBUpdateSimpleTypes {
 			for (QueryableDatatype<?> pk : primaryKeys) {
 				PropertyWrapper wrapper = row.getPropertyWrapperOf(pk);
 				String pkValue = pk.toSQLString(db);
-				sqlString.append(separator).append(defn.formatColumnName(wrapper.columnName())).append(defn.getEqualsComparator()) .append(pkValue);
+				sqlString.append(separator).append(defn.formatColumnName(wrapper.columnName())).append(defn.getEqualsComparator()).append(pkValue);
 				separator = defn.beginAndLine();
 			}
 		} else {
@@ -103,7 +107,7 @@ public class DBUpdateToPreviousValues extends DBUpdateSimpleTypes {
 				if (qdt.isNull()) {
 					sqlString.append(separator).append(BooleanExpression.isNull(row.column(qdt)).toSQLString(db));
 				} else {
-					sqlString.append(separator).append(prop.columnName()).append(defn.getEqualsComparator()) .append(qdt.toSQLString(db));
+					sqlString.append(separator).append(prop.columnName()).append(defn.getEqualsComparator()).append(qdt.toSQLString(db));
 				}
 				separator = defn.beginAndLine();
 			}

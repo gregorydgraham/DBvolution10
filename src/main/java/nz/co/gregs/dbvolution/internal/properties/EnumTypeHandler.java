@@ -16,8 +16,10 @@ import nz.co.gregs.dbvolution.exceptions.InvalidDeclaredTypeException;
  * A generic parameter to the {@link DBEnum} field type is mandatory if the QDT
  * type is {@code DBEnum}.
  *
- * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 * @author Malcolm Lett
+ * <p style="color: #F90;">Support DBvolution at
+ * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+ *
+ * @author Malcolm Lett
  */
 class EnumTypeHandler {
 
@@ -59,7 +61,9 @@ class EnumTypeHandler {
 	/**
 	 * Gets the enum type, or null if not appropriate. Null if not a column.
 	 *
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
 	 * @return the enum type, which will also implement {@link DBEnumValue}
 	 */
 	public Class<? extends Enum<?>> getEnumType() {
@@ -70,7 +74,9 @@ class EnumTypeHandler {
 	 * Gets the type of the code supplied by enum values. This is derived from the
 	 * {@link DBEnumValue} implementation in the enum. Null if not a column.
 	 *
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
 	 * @return null if not appropriate, or not able to be inferred
 	 */
 	public Class<?> getEnumLiteralValueType() {
@@ -91,7 +97,9 @@ class EnumTypeHandler {
 	/**
 	 * Determines the type of literal code values for the given enum type.
 	 *
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
 	 * @return Ummm...
 	 */
 	private static Class<?> enumLiteralValueTypeOf(Class<? extends Enum<?>> enumType) {

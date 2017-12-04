@@ -21,8 +21,10 @@ import java.sql.Statement;
 
 /**
  *
- * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 * @author gregorygraham
+ * <p style="color: #F90;">Support DBvolution at
+ * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+ *
+ * @author gregorygraham
  */
 public enum Polygon2DFunctions {
 
@@ -33,7 +35,6 @@ public enum Polygon2DFunctions {
 			+ "BEGIN\n"
 			+ "RETURN wktOfPolygon2D;"
 			+ "END;"),
-
 	/**
 	 *
 	 */
@@ -107,7 +108,6 @@ public enum Polygon2DFunctions {
 			+ "\n"
 			+ "   RETURN result;\n"
 			+ "END;"),
-
 	/**
 	 *
 	 */
@@ -181,7 +181,6 @@ public enum Polygon2DFunctions {
 			+ "\n"
 			+ "   RETURN result;\n"
 			+ "END;"),
-
 	/**
 	 *
 	 */
@@ -255,7 +254,6 @@ public enum Polygon2DFunctions {
 			+ "\n"
 			+ "   RETURN result;\n"
 			+ "END;"),
-
 	/**
 	 *
 	 */
@@ -329,7 +327,6 @@ public enum Polygon2DFunctions {
 			+ "\n"
 			+ "   RETURN result;\n"
 			+ "END;"),
-
 	/**
 	 *
 	 */
@@ -374,7 +371,6 @@ public enum Polygon2DFunctions {
 			+ "      RETURN result;\n"
 			+ "   END IF;\n"
 			+ "END;"),
-
 	/**
 	 *
 	 */
@@ -389,7 +385,6 @@ public enum Polygon2DFunctions {
 			+ "         || ')';\n"
 			+ "   RETURN polyastext;"
 			+ "END;"),
-
 	/**
 	 *
 	 */
@@ -502,49 +497,40 @@ public enum Polygon2DFunctions {
 			+ "\n"
 			+ "   RETURN result;"
 			+ "END;"),
-
 	/**
 	 *
 	 */
 	DIMENSION("NUMBER", "firstPoly IN VARCHAR", "BEGIN RETURN 2; END;"),
-
 	/**
 	 *
 	 */
 	EQUALS("NUMBER", "firstPoly IN VARCHAR, secondPoly IN VARCHAR", "BEGIN \n"
 			+ "   RETURN CASE WHEN (firstpoly = secondPoly) THEN 1 ELSE 0 END;\n"
 			+ "   END;"),
-
 	/**
 	 *
 	 */
 	INTERSECTION("VARCHAR", "firstPoly IN VARCHAR, secondPoly IN VARCHAR", "BEGIN RETURN 2; END;"),
-
 	/**
 	 *
 	 */
 	INTERSECTS("BOOLEAN", "firstPoly IN VARCHAR, secondPoly IN VARCHAR", "BEGIN RETURN 2; END;"),
-
 	/**
 	 *
 	 */
 	CONTAINS("BOOLEAN", "firstPoly IN VARCHAR, secondPoly IN VARCHAR", "BEGIN RETURN 2; END;"),
-
 	/**
 	 *
 	 */
 	DISJOINT("BOOLEAN", "firstPoly IN VARCHAR, secondPoly IN VARCHAR", "BEGIN RETURN 2; END;"),
-
 	/**
 	 *
 	 */
 	OVERLAPS("BOOLEAN", "firstPoly IN VARCHAR, secondPoly IN VARCHAR", "BEGIN RETURN 2; END;"),
-
 	/**
 	 *
 	 */
 	TOUCHES("BOOLEAN", "firstPoly IN VARCHAR, secondPoly IN VARCHAR", "BEGIN RETURN 2; END;"),
-
 	/**
 	 *
 	 */

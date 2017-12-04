@@ -30,8 +30,10 @@ import nz.co.gregs.dbvolution.internal.h2.*;
 /**
  * Stores all the required functionality to use an H2 database.
  *
- * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 * @author Gregory Graham
+ * <p style="color: #F90;">Support DBvolution at
+ * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+ *
+ * @author Gregory Graham
  */
 public class H2DB extends DBDatabase implements SupportsDateRepeatDatatypeFunctions, SupportsPolygonDatatype {
 
@@ -158,7 +160,9 @@ public class H2DB extends DBDatabase implements SupportsDateRepeatDatatypeFuncti
 	/**
 	 * Clones the DBDatabase
 	 *
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
 	 * @return a clone of the database.
 	 * @throws java.lang.CloneNotSupportedException
 	 * java.lang.CloneNotSupportedException
@@ -198,7 +202,7 @@ public class H2DB extends DBDatabase implements SupportsDateRepeatDatatypeFuncti
 				String[] split = message.split("method \"");
 				split = split[1].split("\\(");
 				String functionName = split[0];
-				
+
 				DBVFeature functions = FEATURE_MAP.get(functionName);
 				if (functions != null) {
 					functions.add(getConnection().createStatement());

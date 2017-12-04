@@ -30,8 +30,10 @@ package nz.co.gregs.dbvolution.generation;
  * Extend the methods of this class to help DBvolution automatically recognize
  * the PKs within your schema.
  *
- * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 * @author Gregory Graham
+ * <p style="color: #F90;">Support DBvolution at
+ * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+ *
+ * @author Gregory Graham
  */
 public class PrimaryKeyRecognisor {
 
@@ -40,7 +42,8 @@ public class PrimaryKeyRecognisor {
 	 *
 	 * @param tableName tableName
 	 * @param columnName columnName
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return TRUE if the column is a PRimary Key, otherwise FALSE.
 	 */
 	public boolean isPrimaryKeyColumn(String tableName, String columnName) {

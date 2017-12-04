@@ -26,10 +26,13 @@ import nz.co.gregs.dbvolution.internal.sqlserver.*;
 /**
  * A DBDatabase object tweaked to work with Microsoft SQL Server.
  *
- * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 * @author Gregory Graham
+ * <p style="color: #F90;">Support DBvolution at
+ * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+ *
+ * @author Gregory Graham
  */
-public class JTDSSQLServerDB extends DBDatabase implements SupportsPolygonDatatype{
+public class JTDSSQLServerDB extends DBDatabase implements SupportsPolygonDatatype {
+
 	public static final long serialVersionUID = 1l;
 
 	/**
@@ -65,7 +68,7 @@ public class JTDSSQLServerDB extends DBDatabase implements SupportsPolygonDataty
 	 * @param username username
 	 * @param password password
 	 */
-	public JTDSSQLServerDB(String driverName, String jdbcURL, String username, String password)  {
+	public JTDSSQLServerDB(String driverName, String jdbcURL, String username, String password) {
 		super(new MSSQLServerDBDefinition(), driverName, jdbcURL, username, password);
 	}
 
@@ -80,7 +83,7 @@ public class JTDSSQLServerDB extends DBDatabase implements SupportsPolygonDataty
 	 * @param username username
 	 * @param password password
 	 */
-	public JTDSSQLServerDB(String jdbcURL, String username, String password)  {
+	public JTDSSQLServerDB(String jdbcURL, String username, String password) {
 		super(new MSSQLServerDBDefinition(), JTDSDRIVERNAME, jdbcURL, username, password);
 	}
 
@@ -89,9 +92,11 @@ public class JTDSSQLServerDB extends DBDatabase implements SupportsPolygonDataty
 	 * and Microsoft's driver.
 	 *
 	 * @param hostname the name of the server where the database resides
-	 * @param instanceName the name of the particular database instance to connect to  (can be null)
-	 * @param databaseName the name of the database within the instance (can be null)
-	 * @param portNumber the port number that the database is available on 
+	 * @param instanceName the name of the particular database instance to connect
+	 * to (can be null)
+	 * @param databaseName the name of the database within the instance (can be
+	 * null)
+	 * @param portNumber the port number that the database is available on
 	 * @param username the account to connect via
 	 * @param password the password to identify username.
 	 */
@@ -100,7 +105,7 @@ public class JTDSSQLServerDB extends DBDatabase implements SupportsPolygonDataty
 				new MSSQLServerDBDefinition(),
 				JTDSDRIVERNAME,
 				//jdbc:jtds:<server_type>://<server>[:<port>][/<database>][;<property>=<value>[;...]]
-				"jdbc:jtds:sqlserver://"+hostname+":"+portNumber+(databaseName == null ? "" : "/" + databaseName) +  (instanceName != null ? ";instance=" + instanceName : ""),
+				"jdbc:jtds:sqlserver://" + hostname + ":" + portNumber + (databaseName == null ? "" : "/" + databaseName) + (instanceName != null ? ";instance=" + instanceName : ""),
 				username,
 				password
 		);
@@ -112,8 +117,10 @@ public class JTDSSQLServerDB extends DBDatabase implements SupportsPolygonDataty
 	 *
 	 * @param driverName the JDBC driver class to use.
 	 * @param hostname the name of the server where the database resides.
-	 * @param instanceName the name of the particular database instance to connect to  (can be null).
-	 * @param databaseName the name of the database within the instance (can be null).
+	 * @param instanceName the name of the particular database instance to connect
+	 * to (can be null).
+	 * @param databaseName the name of the database within the instance (can be
+	 * null).
 	 * @param portNumber the port number that the database is available on .
 	 * @param username the account to connect via.
 	 * @param password the password to identify username.
@@ -122,7 +129,7 @@ public class JTDSSQLServerDB extends DBDatabase implements SupportsPolygonDataty
 		super(
 				new MSSQLServerDBDefinition(),
 				driverName,
-				"jdbc:jtds:sqlserver://"+hostname+":"+portNumber+(databaseName == null ? "" : "/" + databaseName) +  (instanceName != null ? ";instance=" + instanceName : ""),
+				"jdbc:jtds:sqlserver://" + hostname + ":" + portNumber + (databaseName == null ? "" : "/" + databaseName) + (instanceName != null ? ";instance=" + instanceName : ""),
 				username,
 				password
 		);

@@ -29,8 +29,10 @@ import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
  * For example, DBPermittedRangeExclusiveOperator(1,null) will produce an
  * operation such that every number larger than 1 will be returned.
  *
- * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 * @author Gregory Graham
+ * <p style="color: #F90;">Support DBvolution at
+ * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+ *
+ * @author Gregory Graham
  */
 public class DBPermittedRangeExclusiveOperator extends DBMetaOperator {
 
@@ -38,10 +40,10 @@ public class DBPermittedRangeExclusiveOperator extends DBMetaOperator {
 
 	/**
 	 * Implements a BETWEEN operator that excludes the end points of the range.
-	 * 
+	 *
 	 * <p>
 	 * Use a null value to create open or unbounded ranges.
-	 * 
+	 *
 	 * @param lowerBound the largest value smaller than the desired range
 	 * @param upperBound the smallest value larger than the desired range
 	 */

@@ -22,8 +22,10 @@ import nz.co.gregs.dbvolution.generation.ForeignKeyRecognisor;
 /**
  * An Example Class To Demonstrate Implementing A ForeignKeyRecognisor.
  *
- * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 * @author Gregory Graham
+ * <p style="color: #F90;">Support DBvolution at
+ * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+ *
+ * @author Gregory Graham
  */
 public class FKBasedFKRecognisor extends ForeignKeyRecognisor {
 
@@ -35,7 +37,8 @@ public class FKBasedFKRecognisor extends ForeignKeyRecognisor {
 	 *
 	 * @param tableName tableName
 	 * @param columnName columnName
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return TRUE if the column is a foreign key column, FALSE otherwise
 	 */
 	@Override
@@ -48,7 +51,8 @@ public class FKBasedFKRecognisor extends ForeignKeyRecognisor {
 	 *
 	 * @param tableName tableName
 	 * @param columnName columnName
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return The name of the referenced column
 	 */
 	@Override
@@ -69,7 +73,8 @@ public class FKBasedFKRecognisor extends ForeignKeyRecognisor {
 	 *
 	 * @param tableName tableName
 	 * @param columnName columnName
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return the name of the referenced table
 	 */
 	@Override

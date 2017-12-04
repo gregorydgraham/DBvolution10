@@ -24,8 +24,10 @@ package nz.co.gregs.dbvolution.databases.supports;
  * database versions or extensions to work correctly. Please check that your
  * setup is correct for using spatial types.
  *
- * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 * @author gregorygraham
+ * <p style="color: #F90;">Support DBvolution at
+ * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+ *
+ * @author gregorygraham
  */
 public interface SupportsPolygonDatatype {
 

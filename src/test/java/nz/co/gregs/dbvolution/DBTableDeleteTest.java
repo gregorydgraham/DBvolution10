@@ -27,8 +27,10 @@ import org.junit.Test;
 
 /**
  *
- * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 * @author Gregory Graham
+ * <p style="color: #F90;">Support DBvolution at
+ * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+ *
+ * @author Gregory Graham
  */
 public class DBTableDeleteTest extends AbstractTest {
 
@@ -58,7 +60,7 @@ public class DBTableDeleteTest extends AbstractTest {
 	public void testDeleteArrayOfRows() throws SQLException {
 		List<Marque> rowList = marquesTable.setBlankQueryAllowed(true).getAllRows();
 		int originalSize = rowList.size();
-		
+
 		ArrayList<Marque> deleteList = new ArrayList<Marque>();
 		for (Marque row : rowList) {
 			if (row.getIsUsedForTAFROs().toString().equals("False")) {
@@ -68,7 +70,7 @@ public class DBTableDeleteTest extends AbstractTest {
 		Marque[] deleteArray = deleteList.toArray(new Marque[]{});
 		marquesTable.delete(deleteArray);
 		final List<Marque> allRows = marquesTable.getAllRows();
-		
+
 		Assert.assertThat(originalSize - deleteList.size(), is(allRows.size()));
 
 	}
@@ -80,7 +82,7 @@ public class DBTableDeleteTest extends AbstractTest {
 		marq.name.permittedValues("PEUGEOT", "HUMMER");
 		marquesTable.delete(marq);
 		List<Marque> afterList = marquesTable.getAllRows();
-		
+
 		Assert.assertThat(beforeList.size(), is(afterList.size() + 2));
 
 	}
@@ -96,7 +98,7 @@ public class DBTableDeleteTest extends AbstractTest {
 		marq.name.permittedValues(arrayList);
 		marquesTable.delete(marq);
 		List<Marque> afterList = marquesTable.getAllRows();
-		
+
 		Assert.assertThat(beforeList.size(), is(afterList.size() + 2));
 
 	}
@@ -112,7 +114,7 @@ public class DBTableDeleteTest extends AbstractTest {
 		marq.name.permittedValues(hashSet);
 		marquesTable.delete(marq);
 		List<Marque> afterList = marquesTable.getAllRows();
-		
+
 		Assert.assertThat(beforeList.size(), is(afterList.size() + 2));
 
 	}

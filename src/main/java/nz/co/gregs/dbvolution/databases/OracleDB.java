@@ -33,17 +33,19 @@ import nz.co.gregs.dbvolution.internal.properties.PropertyWrapper;
  * <p>
  * You should probably use {@link Oracle11XEDB} or {@link Oracle12DB} instead.
  *
- * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 * @author Gregory Graham
+ * <p style="color: #F90;">Support DBvolution at
+ * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+ *
+ * @author Gregory Graham
  * @see Oracle11XEDB
  * @see Oracle12DB
  */
 public abstract class OracleDB extends DBDatabase implements SupportsPolygonDatatype {
 
 	public static final long serialVersionUID = 1l;
-	
-	/**
 
+	/**
+	 *
 	 * Provides a convenient constructor for DBDatabases that have configuration
 	 * details hardwired or are able to automatically retrieve the details.
 	 *
@@ -51,7 +53,7 @@ public abstract class OracleDB extends DBDatabase implements SupportsPolygonData
 	 * This constructor creates an empty DBDatabase with only the default
 	 * settings, in particular with no driver, URL, username, password, or
 	 * {@link DBDefinition}
-	 * 
+	 *
 	 * <p>
 	 * Most programmers should not call this constructor directly. Check the
 	 * subclasses in {@code nz.co.gregs.dbvolution.databases} for your particular
@@ -68,9 +70,10 @@ public abstract class OracleDB extends DBDatabase implements SupportsPolygonData
 	 * @see OracleAWS11DB
 	 * @see OracleAWSDB
 	 */
-	protected OracleDB(){
-		
+	protected OracleDB() {
+
 	}
+
 	/**
 	 * Creates a DBDatabase instance for the definition and data source.
 	 *
@@ -107,7 +110,9 @@ public abstract class OracleDB extends DBDatabase implements SupportsPolygonData
 	/**
 	 * Oracle does not differentiate between NULL and an empty string.
 	 *
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
 	 * @return FALSE.
 	 */
 	@Override
@@ -128,7 +133,7 @@ public abstract class OracleDB extends DBDatabase implements SupportsPolygonData
 		dropAnyTriggerBasedPrimaryKeyObject(dbStatement, tableRow);
 		removeSpatialMetadata(dbStatement, tableRow);
 	}
-	
+
 	protected <TR extends DBRow> void dropAnyTriggerBasedPrimaryKeyObject(DBStatement dbStatement, TR tableRow) throws SQLException {
 		List<PropertyWrapper> fields = tableRow.getColumnPropertyWrappers();
 		List<String> triggerBasedIdentitySQL = new ArrayList<>();
@@ -147,31 +152,33 @@ public abstract class OracleDB extends DBDatabase implements SupportsPolygonData
 			}
 		}
 //		try (DBStatement dbStatement = getDBStatement()) {
-			for (String sql : triggerBasedIdentitySQL) {
-				dbStatement.execute(sql);
-			}
+		for (String sql : triggerBasedIdentitySQL) {
+			dbStatement.execute(sql);
+		}
 //		}
 	}
-	
-	
+
 	@Override
 	public void addFeatureToFixException(Exception exp) throws Exception {
 		throw exp;
 	}
 
 	/**
-	 * Allows the database to remove any spatial metadata that might exist for a table during DROP TABLE.
+	 * Allows the database to remove any spatial metadata that might exist for a
+	 * table during DROP TABLE.
 	 *
-	 * @param <TR> the class of the object defining the table to have it's spatial meta-data removed.
-	 * @param tableRow the object defining the table to have it's spatial meta-data removed.
+	 * @param <TR> the class of the object defining the table to have it's spatial
+	 * meta-data removed.
+	 * @param tableRow the object defining the table to have it's spatial
+	 * meta-data removed.
 	 * @throws SQLException database exceptions may be thrown.
 	 */
 	protected <TR extends DBRow> void removeSpatialMetadata(DBStatement statement, TR tableRow) throws SQLException {
 		DBDefinition definition = getDefinition();
 		final String formattedTableName = definition.formatTableName(tableRow);
 //		try (DBStatement dbStatement3 = getDBStatement()) {
-			statement.execute("DELETE FROM USER_SDO_GEOM_METADATA WHERE TABLE_NAME = '" + formattedTableName.toUpperCase() + "'");
+		statement.execute("DELETE FROM USER_SDO_GEOM_METADATA WHERE TABLE_NAME = '" + formattedTableName.toUpperCase() + "'");
 //		}
 	}
-	
+
 }

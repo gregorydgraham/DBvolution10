@@ -24,8 +24,10 @@ import nz.co.gregs.dbvolution.databases.definitions.InformixDBDefinition;
 /**
  * A version of DBDatabase tweaked for Informix 7 and higher.
  *
- * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 * @author Gregory Graham
+ * <p style="color: #F90;">Support DBvolution at
+ * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+ *
+ * @author Gregory Graham
  */
 public class InformixDB extends DBDatabase {
 
@@ -33,9 +35,12 @@ public class InformixDB extends DBDatabase {
 	public static final long serialVersionUID = 1l;
 
 	/**
-	 * Create a database object for a Informix 7+ database using the supplied definition and datasource.
+	 * Create a database object for a Informix 7+ database using the supplied
+	 * definition and datasource.
 	 *
-	 * @param definition the DBDefiition that should be used with this database. Usually this will be a {@link InformixDBDefinition} but other definitions can be supplied.
+	 * @param definition the DBDefiition that should be used with this database.
+	 * Usually this will be a {@link InformixDBDefinition} but other definitions
+	 * can be supplied.
 	 * @param ds the data source that defines the connection to the database.
 	 */
 	protected InformixDB(DBDefinition definition, DataSource ds) {
@@ -45,9 +50,12 @@ public class InformixDB extends DBDatabase {
 	}
 
 	/**
-	 * Create a database object for a Informix 7+ database using the supplied definition and connection details.
+	 * Create a database object for a Informix 7+ database using the supplied
+	 * definition and connection details.
 	 *
-	 * @param definition the DBDefiition that should be used with this database. Usually this will be a {@link InformixDBDefinition} but other definitions can be supplied.
+	 * @param definition the DBDefiition that should be used with this database.
+	 * Usually this will be a {@link InformixDBDefinition} but other definitions
+	 * can be supplied.
 	 * @param driverName the name of the driver class to use with this database.
 	 * @param jdbcURL the JDBC URL to the database
 	 * @param username the username to use when connecting to the database
@@ -74,11 +82,13 @@ public class InformixDB extends DBDatabase {
 	 *
 	 * @param jdbcURL jdbcURL the JDBC URL to use to connect to the database
 	 * @param username username the username used for the connection
-	 * @param password password the password required to connect the user to the database
+	 * @param password password the password required to connect the user to the
+	 * database
 	 */
 	public InformixDB(String jdbcURL, String username, String password) {
 		this(new InformixDBDefinition(), INFORMIXDRIVERNAME, jdbcURL, username, password);
 	}
+
 	/**
 	 * Creates a DBDatabase configured for Informix for the given data source.
 	 *

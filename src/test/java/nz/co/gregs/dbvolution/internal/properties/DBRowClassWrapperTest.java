@@ -19,7 +19,6 @@ import org.junit.Test;
 public class DBRowClassWrapperTest {
 
 //	private static DBDatabase database;
-
 	@BeforeClass
 	public static void setup() throws SQLException {
 //		database = new H2MemoryDB("dbvolutionTest", "", "", false);
@@ -35,6 +34,7 @@ public class DBRowClassWrapperTest {
 	public void errorsWhenConstructingGivenTwoPrimaryKeyColumns() {
 		@DBTableName("table1")
 		class TestClass extends DBRow {
+
 			private static final long serialVersionUID = 1L;
 
 			@DBPrimaryKey

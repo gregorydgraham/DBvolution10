@@ -34,8 +34,10 @@ import static org.junit.Assert.*;
 
 /**
  *
- * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 * @author gregorygraham
+ * <p style="color: #F90;">Support DBvolution at
+ * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+ *
+ * @author gregorygraham
  */
 public class LargeObjectExpressionTest extends AbstractTest {
 
@@ -103,7 +105,7 @@ public class LargeObjectExpressionTest extends AbstractTest {
 		dbQuery = database.getDBQuery(new CompanyLogo()).setBlankQueryAllowed(true);
 		dbQuery.addCondition(imageBytesColumn.isNotNull());
 		allRows = dbQuery.getAllRows();
-		
+
 		Assert.assertThat(allRows.size(), is(1));
 		Assert.assertThat(allRows.get(0).get(companyLogo).logoID.intValue(), is(1));
 	}
@@ -133,7 +135,7 @@ public class LargeObjectExpressionTest extends AbstractTest {
 		dbQuery = database.getDBQuery(new CompanyLogo()).setBlankQueryAllowed(true);
 		dbQuery.addCondition(imageBytesColumn.isNull());
 		allRows = dbQuery.getAllRows();
-		
+
 		Assert.assertThat(allRows.size(), is(1));
 		Assert.assertThat(allRows.get(0).get(companyLogo).logoID.intValue(), is(2));
 	}

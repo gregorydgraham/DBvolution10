@@ -26,8 +26,10 @@ import org.apache.commons.collections15.Transformer;
 
 /**
  *
- * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 * @author gregory.graham
+ * <p style="color: #F90;">Support DBvolution at
+ * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+ *
+ * @author gregory.graham
  */
 public class QueryGraphEdgeStrokeTransformer implements Transformer<DBExpression, Stroke> {
 
@@ -44,7 +46,8 @@ public class QueryGraphEdgeStrokeTransformer implements Transformer<DBExpression
 	/**
 	 *
 	 * @param input
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return the Stroke used to draw an edge
 	 */
 	@Override

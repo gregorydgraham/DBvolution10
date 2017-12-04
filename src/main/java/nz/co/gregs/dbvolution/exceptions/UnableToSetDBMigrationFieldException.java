@@ -25,8 +25,10 @@ import java.lang.reflect.Field;
  * publicly accessible and non-null.
  *
  *
- * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 * @author Gregory Graham
+ * <p style="color: #F90;">Support DBvolution at
+ * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+ *
+ * @author Gregory Graham
  */
 public class UnableToSetDBMigrationFieldException extends DBRuntimeException {
 

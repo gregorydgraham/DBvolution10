@@ -20,8 +20,10 @@ import static org.junit.Assert.assertThat;
 
 /**
  *
- * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 * @author gregorygraham
+ * <p style="color: #F90;">Support DBvolution at
+ * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+ *
+ * @author gregorygraham
  */
 public class DBNumberStatisticsTest extends AbstractTest {
 
@@ -31,19 +33,19 @@ public class DBNumberStatisticsTest extends AbstractTest {
 
 	@Test
 	public void testBasic() throws SQLException {
-		
+
 		DBQuery dbQuery = database.getDBQuery(new StatsTest()).setBlankQueryAllowed(true);
 		List<DBQueryRow> allRows = dbQuery.getAllRows();
-		
+
 		assertThat(allRows.size(), is(1));
 		final StatsTest row = allRows.get(0).get(new StatsTest());
 		assertThat(row.stats.count().intValue(), is(22));
 		assertThat(row.stats.sum().intValue(), is(128625259));
 		assertThat(row.stats.max().intValue(), is(13224369));
 		assertThat(row.stats.min().intValue(), is(1));
-		assertThat(Math.rint(row.stats.standardDeviation().doubleValue()*10000), is(28906523576D));
+		assertThat(Math.rint(row.stats.standardDeviation().doubleValue() * 10000), is(28906523576D));
 		BigDecimal bd = new BigDecimal(row.stats.average().doubleValue());
-		bd = bd.round(new MathContext(7+5));
+		bd = bd.round(new MathContext(7 + 5));
 		double rounded = bd.doubleValue();
 		assertThat(rounded, isOneOf(5846602.68182));
 	}
@@ -100,11 +102,12 @@ public class DBNumberStatisticsTest extends AbstractTest {
 
 		private static final long serialVersionUID = 1L;
 
-		public StatsTest(){}
-		
+		public StatsTest() {
+		}
+
 		@DBColumn
 		public DBNumberStatistics stats = new DBNumberStatistics(this.column(uidMarque));
-		
+
 		{
 			this.setReturnFields(stats);
 		}

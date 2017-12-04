@@ -46,8 +46,10 @@ import static org.hamcrest.Matchers.*;
 
 /**
  *
- * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 * @author Gregory Graham
+ * <p style="color: #F90;">Support DBvolution at
+ * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+ *
+ * @author Gregory Graham
  */
 public class GeneratedMarqueTest extends AbstractTest {
 
@@ -138,7 +140,7 @@ public class GeneratedMarqueTest extends AbstractTest {
 //			testClasses.add("package nz.co.gregs.dbvolution.generation;\n\nimport nz.co.gregs.dbvolution.*;\nimport nz.co.gregs.dbvolution.datatypes.*;\nimport nz.co.gregs.dbvolution.datatypes.spatial2D.*;\nimport nz.co.gregs.dbvolution.annotations.*;\n\n@DBTableName(\"CREATE_TABLE_FOREIGN_KEY\") \npublic class CreateTableForeignKey extends DBRow {\n\n    public static final long serialVersionUID = 1L;\n\n    @DBColumn(\"NAME\")\n    public DBString name = new DBString();\n\n    @DBColumn(\"MARQUEFOREIGNKEY\")\n    @DBForeignKey(Marque.class)\n    public DBInteger marqueforeignkey = new DBInteger();\n\n    @DBColumn(\"CARCOFOREIGNKEY\")\n    @DBForeignKey(CarCompany.class)\n    public DBInteger carcoforeignkey = new DBInteger();\n\n}\n\n");
 			testClasses.add("package nz.co.gregs.dbvolution.generation;\n\nimport nz.co.gregs.dbvolution.*;\nimport nz.co.gregs.dbvolution.datatypes.*;\nimport nz.co.gregs.dbvolution.datatypes.spatial2D.*;\nimport nz.co.gregs.dbvolution.annotations.*;\n\n@DBTableName(\"CREATE_TABLE_FOREIGN_KEYY\") \npublic class CreateTableForeignKeyy extends DBRow {\n\n    public static final long serialVersionUID = 1L;\n\n    @DBColumn(\"NAME\")\n    public DBString name = new DBString();\n\n    @DBColumn(\"MARQUEFOREIGNKEY\")\n    @DBForeignKey(value = Marque.class, column = \"UID_MARQUE\")\n    public DBInteger marqueforeignkey = new DBInteger();\n\n    @DBColumn(\"CARCOFOREIGNKEY\")\n    @DBForeignKey(value = CarCompany.class, column = \"UID_CARCOMPANY\")\n    public DBInteger carcoforeignkey = new DBInteger();\n\n}\n\n");
 			final Options options = new DBTableClassGenerator.Options();
-			options.includeForeignKeyColumnName=true;
+			options.includeForeignKeyColumnName = true;
 			generateSchema = DBTableClassGenerator.generateClassesOfTables(database, "nz.co.gregs.dbvolution.generation", options);
 			for (DBTableClass dbcl : generateSchema) {
 				if (testClassNames.contains(dbcl.getClassName())) {
@@ -147,7 +149,7 @@ public class GeneratedMarqueTest extends AbstractTest {
 					for (String str : testClasses) {
 						final String testcaseLowercase = str.toLowerCase().replaceAll("[ \n\r\t]+", " ");
 						final String sourceLowercase = dbcl.getJavaSource().toLowerCase().replaceAll("[ \n\r\t]+", " ");
-						
+
 						if (testcaseLowercase.equals(sourceLowercase)) {
 							found = true;
 						}
@@ -212,12 +214,12 @@ public class GeneratedMarqueTest extends AbstractTest {
 						|| dbcl.getTableName().equals("LT_CARCO_LOGO")
 						|| dbcl.getTableName().equals("COMPANYLOGO")) {
 					final String javaSource = dbcl.getJavaSource();
-					
+
 					Class<?> compiledClass = cc.loadFromJava(dbcl.getFullyQualifiedName(), javaSource);
 					Object newInstance = compiledClass.newInstance();
 					DBRow row = (DBRow) newInstance;
 					List<DBRow> rows = database.getDBTable(row).setBlankQueryAllowed(true).getAllRows();
-					
+
 					switch (row.getTableName()) {
 						case "CAR_COMPANY":
 							Assert.assertThat(rows.size(), is(4));
@@ -258,7 +260,8 @@ public class GeneratedMarqueTest extends AbstractTest {
 				locations.add(file);
 			} else {
 				locations.add(new File(System.getProperty("user.dir")));
-			}	fileManager.setLocation(StandardLocation.CLASS_OUTPUT, locations);
+			}
+			fileManager.setLocation(StandardLocation.CLASS_OUTPUT, locations);
 			JavaCompiler.CompilationTask task = compiler.getTask(null, fileManager, diagnostics, null, null, compilationUnits);
 			succeeded = task.call();
 			for (Diagnostic<?> diagnostic : diagnostics.getDiagnostics()) {
@@ -304,22 +307,22 @@ public class GeneratedMarqueTest extends AbstractTest {
 		String expected = "T_31";
 		String result = DBTableClassGenerator.toClassCase(test);
 		Assert.assertEquals(result, expected);
-		
+
 		test = "T_3_1";
 		expected = "T_3_1";
 		result = DBTableClassGenerator.toClassCase(test);
 		Assert.assertEquals(result, expected);
-		
+
 		test = "car_company";
 		expected = "CarCompany";
 		result = DBTableClassGenerator.toClassCase(test);
 		Assert.assertEquals(result, expected);
-		
+
 		test = "CAR_COMPANY";
 		expected = "CarCompany";
 		result = DBTableClassGenerator.toClassCase(test);
 		Assert.assertEquals(result, expected);
-		
+
 		test = "CARCOMPANY";
 		expected = "Carcompany";
 		result = DBTableClassGenerator.toClassCase(test);

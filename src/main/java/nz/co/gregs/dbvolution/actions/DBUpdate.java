@@ -25,8 +25,10 @@ import nz.co.gregs.dbvolution.exceptions.AccidentalUpdateOfUndefinedRowException
 /**
  * Provides support for the abstract concept of updating rows.
  *
- * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 * @author Gregory Graham
+ * <p style="color: #F90;">Support DBvolution at
+ * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+ *
+ * @author Gregory Graham
  */
 public abstract class DBUpdate extends DBAction {
 
@@ -50,7 +52,8 @@ public abstract class DBUpdate extends DBAction {
 	 *
 	 * @param db the target database
 	 * @param row the row to be updated
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a DBActionList of updates that have been executed.
 	 * @throws SQLException database exceptions
 	 */
@@ -73,7 +76,8 @@ public abstract class DBUpdate extends DBAction {
 	 * Synonym for {@link #getUpdates(nz.co.gregs.dbvolution.DBRow...) }
 	 *
 	 * @param rows the rows to be updated
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a DBActionList of updates.
 	 * @throws SQLException database exceptions
 	 */
@@ -89,7 +93,8 @@ public abstract class DBUpdate extends DBAction {
 	 * {@link DBActionList#execute(nz.co.gregs.dbvolution.DBDatabase)}
 	 *
 	 * @param rows the rows to be updated
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a DBActionList of updates.
 	 * @throws SQLException database exceptions
 	 */
@@ -99,7 +104,7 @@ public abstract class DBUpdate extends DBAction {
 			if (row.getDefined()) {
 				if (row.hasChangedSimpleTypes()) {
 					final List<QueryableDatatype<?>> primaryKeys = row.getPrimaryKeys();
-					if (primaryKeys == null||primaryKeys.isEmpty()) {
+					if (primaryKeys == null || primaryKeys.isEmpty()) {
 						updates.add(new DBUpdateSimpleTypesUsingAllColumns(row));
 					} else {
 						updates.add(new DBUpdateSimpleTypes(row));

@@ -42,8 +42,10 @@ import nz.co.gregs.dbvolution.query.QueryOptions;
  * Provides the base definitions used by all variants of the Oracle database
  * DBDefinition.
  *
- * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 * @author Gregory Graham
+ * <p style="color: #F90;">Support DBvolution at
+ * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+ *
+ * @author Gregory Graham
  */
 public class OracleDBDefinition extends DBDefinition {
 
@@ -140,12 +142,12 @@ public class OracleDBDefinition extends DBDefinition {
 			final int firstRowOfNextPage = (options.getPageIndex() + 1) * options.getRowLimit() + 1;
 			final int firstRowOfPage = options.getPageIndex() * options.getRowLimit() + 1;
 			return "select *\n"
-				+ "  from ( select /*+ FIRST_ROWS(n) */\n"
-				+ "  a.*, ROWNUM rnum\n"
-				+ "      from ( " + sqlQuery + " ) a\n"
-				+ "      where ROWNUM <" + firstRowOfNextPage + "\n"
-				+ "      )\n"
-				+ "where rnum  >= " + firstRowOfPage + "";
+					+ "  from ( select /*+ FIRST_ROWS(n) */\n"
+					+ "  a.*, ROWNUM rnum\n"
+					+ "      from ( " + sqlQuery + " ) a\n"
+					+ "      where ROWNUM <" + firstRowOfNextPage + "\n"
+					+ "      )\n"
+					+ "where rnum  >= " + firstRowOfPage + "";
 		} else {
 			return super.doWrapQueryForPaging(sqlQuery, options);
 		}
@@ -168,12 +170,12 @@ public class OracleDBDefinition extends DBDefinition {
 
 	@Override
 	public String doStringIfNullTransform(String possiblyNullValue, String alternativeIfNull) {
-		return "NVL("+possiblyNullValue+", "+alternativeIfNull+")";
+		return "NVL(" + possiblyNullValue + ", " + alternativeIfNull + ")";
 	}
 
 	@Override
 	public String doNumberIfNullTransform(String possiblyNullValue, String alternativeIfNull) {
-		return "NVL("+possiblyNullValue+", "+alternativeIfNull+")";
+		return "NVL(" + possiblyNullValue + ", " + alternativeIfNull + ")";
 	}
 
 	@Override
@@ -189,11 +191,11 @@ public class OracleDBDefinition extends DBDefinition {
 	@Override
 	public String doSubstringTransform(String originalString, String start, String length) {
 		return " SUBSTR("
-			+ originalString
-			+ ", "
-			+ start
-			+ (length.trim().isEmpty() ? "" : ", " + length)
-			+ ") ";
+				+ originalString
+				+ ", "
+				+ start
+				+ (length.trim().isEmpty() ? "" : ", " + length)
+				+ ") ";
 	}
 
 	@Override
@@ -274,19 +276,19 @@ public class OracleDBDefinition extends DBDefinition {
 	@Override
 	public String doHourDifferenceTransform(String dateValue, String otherDateValue) {
 		return "(EXTRACT(HOUR FROM (CAST(" + otherDateValue + " AS TIMESTAMP) - CAST(" + dateValue + " AS TIMESTAMP)))"
-			+ "+(" + doDayDifferenceTransform(dateValue, otherDateValue) + "*24))";
+				+ "+(" + doDayDifferenceTransform(dateValue, otherDateValue) + "*24))";
 	}
 
 	@Override
 	public String doMinuteDifferenceTransform(String dateValue, String otherDateValue) {
 		return "(EXTRACT(MINUTE FROM (CAST(" + otherDateValue + " AS TIMESTAMP) - CAST(" + dateValue + " AS TIMESTAMP)))"
-			+ "+(" + doHourDifferenceTransform(dateValue, otherDateValue) + "*60))";
+				+ "+(" + doHourDifferenceTransform(dateValue, otherDateValue) + "*60))";
 	}
 
 	@Override
 	public String doSecondDifferenceTransform(String dateValue, String otherDateValue) {
 		return "(EXTRACT(SECOND FROM (CAST(" + otherDateValue + " AS TIMESTAMP) - CAST(" + dateValue + " AS TIMESTAMP)))"
-			+ "+(" + doMinuteDifferenceTransform(dateValue, otherDateValue) + "*60))";
+				+ "+(" + doMinuteDifferenceTransform(dateValue, otherDateValue) + "*60))";
 	}
 
 	@Override
@@ -298,8 +300,8 @@ public class OracleDBDefinition extends DBDefinition {
 	public String doInTransform(String column, List<String> values) {
 		StringBuilder builder = new StringBuilder();
 		builder.append("(")
-			.append(column)
-			.append(" IN ( ");
+				.append(column)
+				.append(" IN ( ");
 		String separator = "";
 		for (String val : values) {
 			if (val != null && !val.equals(getEmptyString())) {
@@ -337,10 +339,12 @@ public class OracleDBDefinition extends DBDefinition {
 	 * generation i.e. {@link DBTableClassGenerator}.
 	 *
 	 * <p>
-	 * By default this method returns null as system tables are not a problem
-	 * for most databases.
+	 * By default this method returns null as system tables are not a problem for
+	 * most databases.
 	 *
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
 	 * @return a regexp pattern
 	 */
 	@Override
@@ -368,7 +372,8 @@ public class OracleDBDefinition extends DBDefinition {
 	 * Transform a Java Boolean into the equivalent in an SQL snippet.
 	 *
 	 * @param boolValue	boolValue
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return an SQL snippet
 	 */
 	@Override
@@ -389,7 +394,9 @@ public class OracleDBDefinition extends DBDefinition {
 	 * <p>
 	 * The default method returns " TRUE ".
 	 *
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
 	 * @return " TRUE "
 	 */
 	@Override
@@ -403,7 +410,9 @@ public class OracleDBDefinition extends DBDefinition {
 	 * <p>
 	 * The default method returns " FALSE ".
 	 *
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
 	 * @return " FALSE "
 	 */
 	@Override
@@ -414,7 +423,9 @@ public class OracleDBDefinition extends DBDefinition {
 	/**
 	 * An SQL snippet that always evaluates to FALSE for this database.
 	 *
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
 	 * @return " 1=0 " or equivalent
 	 */
 	@Override
@@ -425,7 +436,9 @@ public class OracleDBDefinition extends DBDefinition {
 	/**
 	 * An SQL snippet that always evaluates to TRUE for this database.
 	 *
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
 	 * @return " 1=1 " or equivalent
 	 */
 	@Override
@@ -495,7 +508,9 @@ public class OracleDBDefinition extends DBDefinition {
 	 * This method DOES NOT use the SQLServer built-in function as it does not
 	 * produce a different result for different rows in a single query.</p>
 	 *
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
 	 * @return random number generating code
 	 */
 	@Override
@@ -505,34 +520,36 @@ public class OracleDBDefinition extends DBDefinition {
 
 	@Override
 	public String doLogBase10NumberTransform(String sql) {
-		return "log(10, ("+sql+"))";
-	}	
-	
+		return "log(10, (" + sql + "))";
+	}
+
 	@Override
 	public String doDayTransform(String dateExpression) {
-		return "(cast(to_char("+dateExpression+", 'DD') as number))";
+		return "(cast(to_char(" + dateExpression + ", 'DD') as number))";
 	}
+
 	@Override
 	public String doHourTransform(String dateExpression) {
-		return "(cast(to_char("+dateExpression+", 'HH24') as number))";
+		return "(cast(to_char(" + dateExpression + ", 'HH24') as number))";
 	}
 
 	@Override
 	public String doMonthTransform(String dateExpression) {
-		return "(cast(to_char("+dateExpression+", 'MM') as number))";
+		return "(cast(to_char(" + dateExpression + ", 'MM') as number))";
 	}
+
 	@Override
 	public String doYearTransform(String dateExpression) {
-		return "(cast(to_char("+dateExpression+", 'YYYY') as number))";
+		return "(cast(to_char(" + dateExpression + ", 'YYYY') as number))";
 	}
-	
+
 	@Override
 	public String doFindNumberInStringTransform(String toSQLString) {
-		return "(case when regexp_replace("+toSQLString+",'.*?([-]?[0-9]+(\\.[0-9]+)?).*$', '\\1') = "+toSQLString+" then null else regexp_replace("+toSQLString+",'.*?([-]?[0-9]+(\\.[0-9]+)?).*$', '\\1') end)";
+		return "(case when regexp_replace(" + toSQLString + ",'.*?([-]?[0-9]+(\\.[0-9]+)?).*$', '\\1') = " + toSQLString + " then null else regexp_replace(" + toSQLString + ",'.*?([-]?[0-9]+(\\.[0-9]+)?).*$', '\\1') end)";
 	}
-	
+
 	@Override
 	public String doFindIntegerInStringTransform(String toSQLString) {
-		return "(case when regexp_replace("+toSQLString+",'.*?([-]?[0-9]+).*$', '\\1') = "+toSQLString+" then null else regexp_replace("+toSQLString+",'.*?([-]?[0-9]+).*$', '\\1') end)";
+		return "(case when regexp_replace(" + toSQLString + ",'.*?([-]?[0-9]+).*$', '\\1') = " + toSQLString + " then null else regexp_replace(" + toSQLString + ",'.*?([-]?[0-9]+).*$', '\\1') end)";
 	}
 }

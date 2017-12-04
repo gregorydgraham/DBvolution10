@@ -31,7 +31,8 @@ class PropertyMatchers {
 	 *
 	 * @param c
 	 * @param matcher
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return an item
 	 */
 	public static <E> E firstItemOf(Collection<E> c, Matcher<? super E> matcher) {
@@ -48,7 +49,8 @@ class PropertyMatchers {
 	 *
 	 * @param c
 	 * @param matcher
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return the item or null if not found
 	 * @throws AssertionError if multiple items match
 	 */

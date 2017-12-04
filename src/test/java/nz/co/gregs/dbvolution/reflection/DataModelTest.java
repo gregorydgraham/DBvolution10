@@ -42,8 +42,10 @@ import org.junit.Test;
 
 /**
  *
- * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 * @author gregorygraham
+ * <p style="color: #F90;">Support DBvolution at
+ * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+ *
+ * @author gregorygraham
  */
 public class DataModelTest extends AbstractTest {
 
@@ -137,7 +139,7 @@ public class DataModelTest extends AbstractTest {
 		}
 		query.setBlankQueryAllowed(true);
 		List<DBQueryRow> allRows = query.getAllRows();
-		
+
 		Assert.assertThat(allRows.size(), is(22));
 
 	}
@@ -150,7 +152,7 @@ public class DataModelTest extends AbstractTest {
 				new ExampleEncodingInterpreter()
 		);
 		List<DBQueryRow> allRows = query.getAllRows();
-		
+
 		Assert.assertThat(allRows.size(), is(2));
 
 	}
@@ -270,11 +272,11 @@ public class DataModelTest extends AbstractTest {
 		Assert.assertThat(safeEncoded, Matchers.containsString("nz.co.gregs.dbvolution.example.Marque-uidMarque=1"));
 		Assert.assertThat(safeEncoded, Matchers.containsString("nz.co.gregs.dbvolution.example.Marque-isUsedForTAFROs=False&"));
 		Assert.assertThat(safeEncoded, Matchers.containsString("nz.co.gregs.dbvolution.example.Marque-statusClassID=1246974&"));
-		if (!(database instanceof OracleDB)){
+		if (!(database instanceof OracleDB)) {
 			// Oracle null/empty strings breaks this assertion
 			Assert.assertThat(safeEncoded, Matchers.containsString("nz.co.gregs.dbvolution.example.Marque-individualAllocationsAllowed=&"));
 			Assert.assertThat(safeEncoded, Matchers.containsString("nz.co.gregs.dbvolution.example.Marque-auto_created=&"));
-			Assert.assertThat(safeEncoded, Matchers.containsString( "nz.co.gregs.dbvolution.example.Marque-pricingCodePrefix=&"));
+			Assert.assertThat(safeEncoded, Matchers.containsString("nz.co.gregs.dbvolution.example.Marque-pricingCodePrefix=&"));
 		}
 		Assert.assertThat(safeEncoded, Matchers.containsString("nz.co.gregs.dbvolution.example.Marque-updateCount=0&"));
 		Assert.assertThat(safeEncoded, Matchers.containsString("nz.co.gregs.dbvolution.example.Marque-name=TOYOTA&"));

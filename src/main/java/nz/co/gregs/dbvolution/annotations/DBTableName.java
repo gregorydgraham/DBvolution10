@@ -27,8 +27,10 @@ import java.lang.annotation.Target;
  * <p>
  * DBTableName is generated automatically by DBTableClassGenerator.
  *
- * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 * @author Gregory Graham
+ * <p style="color: #F90;">Support DBvolution at
+ * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+ *
+ * @author Gregory Graham
  */
 @Target(ElementType.TYPE)
 @Inherited
@@ -38,15 +40,19 @@ public @interface DBTableName {
 	/**
 	 * The raw table name as stored in the database.
 	 *
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
 	 * @return the table name.
 	 */
-	String value();	
-	
+	String value();
+
 	/**
 	 * The raw schema name as stored in the database.
 	 *
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
 	 * @return the schema name.
 	 */
 	String schema() default "";

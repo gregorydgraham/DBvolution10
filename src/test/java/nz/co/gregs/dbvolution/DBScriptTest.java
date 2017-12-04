@@ -37,8 +37,10 @@ import org.junit.rules.ExpectedException;
 
 /**
  *
- * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 * @author Gregory Graham
+ * <p style="color: #F90;">Support DBvolution at
+ * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+ *
+ * @author Gregory Graham
  */
 public class DBScriptTest extends AbstractTest {
 
@@ -84,7 +86,7 @@ public class DBScriptTest extends AbstractTest {
 	@Test//(expected = IndexOutOfBoundsException.class)
 	public void testExceptionThrowing() throws Exception {
 		List<Marque> allMarques = database.getDBTable(new Marque()).setBlankQueryAllowed(true).getAllRows();
-		
+
 		thrown.expect(IndexOutOfBoundsException.class);
 		DBScript script = new ScriptThatThrowsAnException();
 		DBActionList result = script.test(database);
@@ -161,7 +163,7 @@ public class DBScriptTest extends AbstractTest {
 			final IndexOutOfBoundsException indexOutOfBoundsException = new IndexOutOfBoundsException("Correct Exception");
 			StackTraceElement[] stackTrace = indexOutOfBoundsException.getStackTrace();
 			indexOutOfBoundsException.setStackTrace(new StackTraceElement[]{stackTrace[0]});
-			
+
 			throw indexOutOfBoundsException;
 		}
 	}
@@ -274,7 +276,7 @@ public class DBScriptTest extends AbstractTest {
 		DBInteger uid = new DBInteger();
 
 		@DBColumn
-		 DBString name = new DBString();
+		DBString name = new DBString();
 
 		public ScriptTestTable(String name) {
 			super();

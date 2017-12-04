@@ -38,8 +38,10 @@ import org.apache.commons.logging.LogFactory;
  * one or more tables to another table.
  *
  *
- * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 * @author Gregory Graham
+ * <p style="color: #F90;">Support DBvolution at
+ * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+ *
+ * @author Gregory Graham
  * @param <R>
  */
 public class DBMigrationValidation<R extends DBRow> {
@@ -69,7 +71,8 @@ public class DBMigrationValidation<R extends DBRow> {
 	 * Perform the validation
 	 *
 	 * @param database
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return the results of the validation
 	 * @throws SQLException
 	 */
@@ -90,7 +93,6 @@ public class DBMigrationValidation<R extends DBRow> {
 
 		addDataCheckingColumnsToValidationQuery(dbQuery);
 
-		
 		final List<DBQueryRow> allRows = dbQuery.getAllRows();
 		Results results = new Results(mapper, allRows);
 
@@ -122,7 +124,7 @@ public class DBMigrationValidation<R extends DBRow> {
 	}
 
 	/**
-	 * Results produced by validating a migration. 
+	 * Results produced by validating a migration.
 	 *
 	 */
 	public static class Results extends ArrayList<Result> {
@@ -131,7 +133,7 @@ public class DBMigrationValidation<R extends DBRow> {
 		 * Serial Version ID
 		 */
 		protected final static long serialVersionUID = 1L;
-		
+
 		private Results() {
 			super();
 		}
@@ -151,8 +153,9 @@ public class DBMigrationValidation<R extends DBRow> {
 
 		/**
 		 * Indicates whether or not the row will be processed during the migration.
-		 * 
-		 * <p>Unprocessed rows will be validated, but not migrated.</p>
+		 *
+		 * <p>
+		 * Unprocessed rows will be validated, but not migrated.</p>
 		 */
 		public Boolean willBeProcessed = false;
 
@@ -178,19 +181,21 @@ public class DBMigrationValidation<R extends DBRow> {
 
 		/**
 		 * Return the validated row of the DBRow from these Results.
-		 * 
+		 *
 		 */
 		<A extends DBRow> A getRow(A exemplar) {
 			return row.get(exemplar);
 		}
-		
+
 		/**
 		 * All the details of the results
 		 *
-		 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 * @return the names of the mappings with the resulting status
+		 * <p style="color: #F90;">Support DBvolution at
+		 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+		 *
+		 * @return the names of the mappings with the resulting status
 		 */
-		public Map<String, String> getMap(){
+		public Map<String, String> getMap() {
 			return new HashMap<>(this.map);
 		}
 	}

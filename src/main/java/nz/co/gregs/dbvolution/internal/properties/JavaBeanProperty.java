@@ -60,7 +60,9 @@ public class JavaBeanProperty implements JavaProperty {
 	/**
 	 * String representation suitable for debugging and logging
 	 *
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
 	 * @return a very brief summary of the property.
 	 */
 	@Override
@@ -71,7 +73,9 @@ public class JavaBeanProperty implements JavaProperty {
 	/**
 	 * Hash-code based on the underlying java getter and setter methods.
 	 *
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
 	 * @return the hash-code of this property.
 	 */
 	@Override
@@ -87,7 +91,8 @@ public class JavaBeanProperty implements JavaProperty {
 	 * Tests for equality, based on the underlying java getter and setter methods.
 	 *
 	 * @param obj the other object to compare to.
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return TRUE if the two objects are the same, otherwise FALSE
 	 */
 	@Override
@@ -256,7 +261,8 @@ public class JavaBeanProperty implements JavaProperty {
 	 * @param <A> the annotation type
 	 * @param ann1 ann1
 	 * @param ann2 ann2
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return TRUE if the annotations are semantically identical, otherwise
 	 * FALSE.
 	 */
@@ -271,7 +277,8 @@ public class JavaBeanProperty implements JavaProperty {
 	 *
 	 * @param <A> the annotation type
 	 * @param annotation annotation
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a list of the values associated with the annotation.
 	 */
 	protected static <A extends Annotation> List<Object> getAnnotationValues(A annotation) {

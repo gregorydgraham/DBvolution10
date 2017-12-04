@@ -18,28 +18,30 @@ package nz.co.gregs.dbvolution.results;
 import nz.co.gregs.dbvolution.expressions.BooleanExpression;
 
 /**
- * Indicates that the class can be compared to several other instances of this class as
- * if the instances were equivalent.
+ * Indicates that the class can be compared to several other instances of this
+ * class as if the instances were equivalent.
  *
  * <p>
- * EqualsComparable expressions must have an equivalent to the IN
- * operation.
+ * EqualsComparable expressions must have an equivalent to the IN operation.
  *
- * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 * @author Gregory Graham
+ * <p style="color: #F90;">Support DBvolution at
+ * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+ *
+ * @author Gregory Graham
  * @param <A> the class that can be compared using the "IN" operator
  *
  */
-public interface InComparable<A> extends EqualComparable<A>{
+public interface InComparable<A> extends EqualComparable<A> {
 
 	/**
 	 * Creates a {@link BooleanExpression} that compares the 2 values using the IN
 	 * operation.
 	 *
-	 * @param otherInstances  the values which are to be considered
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @param otherInstances the values which are to be considered
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a BooleanExpression
 	 */
-	@SuppressWarnings ({"unchecked", "varargs"})
+	@SuppressWarnings({"unchecked", "varargs"})
 	public BooleanExpression isIn(A... otherInstances);
 }

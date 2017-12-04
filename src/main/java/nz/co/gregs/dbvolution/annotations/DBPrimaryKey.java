@@ -28,8 +28,10 @@ import java.lang.annotation.Target;
  * DBPrimaryKey is generated automatically by DBTableClassGenerator if the
  * primary key is specified within the database.
  *
- * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 * @author Gregory Graham
+ * <p style="color: #F90;">Support DBvolution at
+ * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+ *
+ * @author Gregory Graham
  * @see DBForeignKey
  * @see DBColumn
  * @see DBAutoIncrement

@@ -47,15 +47,19 @@ import nz.co.gregs.dbvolution.results.InComparable;
  * Generally you get a StringExpression from a value or column using {@link StringExpression#value(java.lang.String)
  * } or {@link DBRow#column(nz.co.gregs.dbvolution.datatypes.DBString) }.
  *
- * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 * @author Gregory Graham
+ * <p style="color: #F90;">Support DBvolution at
+ * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+ *
+ * @author Gregory Graham
  */
 public class StringExpression implements StringResult, RangeComparable<StringResult>, InComparable<StringResult>, ExpressionColumn<DBString> {
 
 	/**
 	 * Creates a StringExpression that will return a database NULL.
 	 *
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
 	 * @return a StringExpression that resolves to NULL within the database
 	 */
 	public static StringExpression nullExpression() {
@@ -174,7 +178,7 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 	@Override
 	public String toSQLString(DBDatabase db) {
 		StringResult stringInput = getStringInput();
-		if(stringInput==null){
+		if (stringInput == null) {
 			stringInput = StringExpression.value("<NULL>");
 		}
 		return stringInput.toSQLString(db);
@@ -213,7 +217,8 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 	 * </ul>
 	 *
 	 * @param string	string
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a DBExpression instance that is appropriate to the subclass and the
 	 * value supplied.
 	 */
@@ -240,7 +245,8 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 	 * </ul>
 	 *
 	 * @param string	string
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a DBExpression instance that is appropriate to the subclass and the
 	 * value supplied.
 	 */
@@ -253,7 +259,8 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 	 * the query.
 	 *
 	 * @param alternative	alternative
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a StringExpression that will substitute to the given value when the
 	 * StringExpression resolves to NULL.
 	 */
@@ -266,7 +273,8 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 	 * the query.
 	 *
 	 * @param alternative	alternative
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a StringExpression that will substitute to the given value when the
 	 * StringExpression resolves to NULL.
 	 */
@@ -283,7 +291,6 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 //			String getFunctionName(DBDatabase db) {
 //				return db.getDefinition().getIfNullFunctionName();
 //			}
-
 			@Override
 			public boolean getIncludesNull() {
 				return false;
@@ -305,7 +312,8 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 	 * exceptions.
 	 *
 	 * @param sqlPattern	sqlPattern
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a BooleanExpression of the SQL comparison.
 	 */
 	public BooleanExpression isLike(String sqlPattern) {
@@ -328,7 +336,8 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 	 * @param value the right side of the internal comparison
 	 * @param fallBackWhenEquals the comparison used when the two values are
 	 * equal.
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a BooleanExpression
 	 */
 	public BooleanExpression isLessThan(String value, BooleanExpression fallBackWhenEquals) {
@@ -352,7 +361,8 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 	 * @param value the right side of the internal comparison
 	 * @param fallBackWhenEquals the comparison used when the two values are
 	 * equal.
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a BooleanExpression
 	 */
 	public BooleanExpression isGreaterThan(String value, BooleanExpression fallBackWhenEquals) {
@@ -376,7 +386,8 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 	 * @param value the right side of the internal comparison
 	 * @param fallBackWhenEquals the comparison used when the two values are
 	 * equal.
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a BooleanExpression
 	 */
 	@Override
@@ -400,7 +411,8 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 	 * @param value the right side of the internal comparison
 	 * @param fallBackWhenEquals the comparison used when the two values are
 	 * equal.
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a BooleanExpression
 	 */
 	@Override
@@ -422,7 +434,8 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 	 * exceptions.
 	 *
 	 * @param sqlPattern	sqlPattern
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a BooleanExpression of the SQL comparison.
 	 */
 	public BooleanExpression isLike(StringResult sqlPattern) {
@@ -459,7 +472,8 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 	 * exceptions.
 	 *
 	 * @param sqlPattern	sqlPattern
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a BooleanExpression of the SQL comparison.
 	 */
 	public BooleanExpression isLikeIgnoreCase(String sqlPattern) {
@@ -482,7 +496,8 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 	 * exceptions.
 	 *
 	 * @param sqlPattern	sqlPattern
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a BooleanExpression of the SQL comparison.
 	 */
 	public BooleanExpression isLikeIgnoreCase(StringResult sqlPattern) {
@@ -499,7 +514,8 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 	 * lowercase first.
 	 *
 	 * @param equivalentString	equivalentString
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a BooleanExpression of the SQL comparison.
 	 */
 	public BooleanExpression isIgnoreCase(String equivalentString) {
@@ -516,7 +532,8 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 	 * lowercase first.
 	 *
 	 * @param numberResult	numberResult
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a BooleanExpression of the SQL comparison.
 	 */
 	public BooleanExpression isIgnoreCase(NumberResult numberResult) {
@@ -533,7 +550,8 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 	 * lowercase first.
 	 *
 	 * @param number	number
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a BooleanExpression of the SQL comparison.
 	 */
 	public BooleanExpression isIgnoreCase(Number number) {
@@ -550,7 +568,8 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 	 * lowercase first.
 	 *
 	 * @param equivalentString	equivalentString
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a BooleanExpression of the SQL comparison.
 	 */
 	public BooleanExpression isIgnoreCase(StringResult equivalentString) {
@@ -567,7 +586,8 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 	 * lowercase first.
 	 *
 	 * @param equivalentString	equivalentString
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a BooleanExpression of the SQL comparison.
 	 */
 	public BooleanExpression isIgnoreCase(StringExpression equivalentString) {
@@ -582,7 +602,8 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 	 * current StringExpression to the supplied value.
 	 *
 	 * @param equivalentString	equivalentString
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a BooleanExpression of the SQL comparison.
 	 */
 	public BooleanExpression is(String equivalentString) {
@@ -601,7 +622,8 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 	 * current StringExpression to the supplied value.
 	 *
 	 * @param numberResult	numberResult
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a BooleanExpression of the SQL comparison.
 	 */
 	public BooleanExpression is(NumberResult numberResult) {
@@ -616,7 +638,8 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 	 * current StringExpression to the supplied value.
 	 *
 	 * @param number	number
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a BooleanExpression of the SQL comparison.
 	 */
 	public BooleanExpression is(Number number) {
@@ -631,7 +654,8 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 	 * current StringExpression to the supplied value.
 	 *
 	 * @param equivalentString	equivalentString
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a BooleanExpression of the SQL comparison.
 	 */
 	public BooleanExpression is(StringExpression equivalentString) {
@@ -646,7 +670,8 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 	 * current StringExpression to the supplied value.
 	 *
 	 * @param equivalentString	equivalentString
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a BooleanExpression of the SQL comparison.
 	 */
 	@Override
@@ -687,7 +712,8 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 	 * current StringExpression to the supplied value.
 	 *
 	 * @param equivalentString	equivalentString
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a BooleanExpression of the SQL comparison.
 	 */
 	public BooleanExpression isNot(String equivalentString) {
@@ -702,7 +728,8 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 	 * current StringExpression to the supplied value.
 	 *
 	 * @param numberResult	numberResult
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a BooleanExpression of the SQL comparison.
 	 */
 	public BooleanExpression isNot(NumberResult numberResult) {
@@ -717,7 +744,8 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 	 * current StringExpression to the supplied value.
 	 *
 	 * @param number	number
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a BooleanExpression of the SQL comparison.
 	 */
 	public BooleanExpression isNot(Number number) {
@@ -732,7 +760,8 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 	 * current StringExpression to the supplied value.
 	 *
 	 * @param equivalentString	equivalentString
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a BooleanExpression of the SQL comparison.
 	 */
 	@Override
@@ -744,10 +773,11 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 			return new BooleanExpression(new DBBinaryBooleanArithmetic(this, equivalentString) {
 				@Override
 				public String toSQLString(DBDatabase db) {
-					return (new StringExpression(first)).ifDBNull("<DBV NULL PROTECTION>").toSQLString(db) 
-						+ this.getEquationOperator(db) 
-						+ (new StringExpression(second)).ifDBNull("<DBV NULL PROTECTION>").toSQLString(db);
+					return (new StringExpression(first)).ifDBNull("<DBV NULL PROTECTION>").toSQLString(db)
+							+ this.getEquationOperator(db)
+							+ (new StringExpression(second)).ifDBNull("<DBV NULL PROTECTION>").toSQLString(db);
 				}
+
 				@Override
 				protected String getEquationOperator(DBDatabase db) {
 					return " <> ";
@@ -781,7 +811,8 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 	 *
 	 * @param lowerBound lowerBound
 	 * @param upperBound upperBound
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a boolean expression representing the required comparison
 	 */
 	public BooleanExpression isBetween(StringResult lowerBound, StringResult upperBound) {
@@ -810,7 +841,8 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 	 *
 	 * @param lowerBound lowerBound
 	 * @param upperBound upperBound
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a boolean expression representing the required comparison
 	 */
 	public BooleanExpression isBetween(String lowerBound, StringResult upperBound) {
@@ -836,7 +868,8 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 	 *
 	 * @param lowerBound lowerBound
 	 * @param upperBound upperBound
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a boolean expression representing the required comparison
 	 */
 	public BooleanExpression isBetween(StringResult lowerBound, String upperBound) {
@@ -862,7 +895,8 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 	 *
 	 * @param lowerBound lowerBound
 	 * @param upperBound upperBound
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a boolean expression representing the required comparison
 	 */
 	public BooleanExpression isBetween(String lowerBound, String upperBound) {
@@ -888,7 +922,8 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 	 *
 	 * @param lowerBound lowerBound
 	 * @param upperBound upperBound
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a boolean expression representing the required comparison
 	 */
 	public BooleanExpression isBetweenInclusive(StringResult lowerBound, StringResult upperBound) {
@@ -917,7 +952,8 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 	 *
 	 * @param lowerBound lowerBound
 	 * @param upperBound upperBound
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a boolean expression representing the required comparison
 	 */
 	public BooleanExpression isBetweenInclusive(String lowerBound, StringResult upperBound) {
@@ -943,11 +979,12 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 	 *
 	 * @param lowerBound lowerBound
 	 * @param upperBound upperBound
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a boolean expression representing the required comparison
 	 */
 	public BooleanExpression isBetweenInclusive(StringResult lowerBound, String upperBound) {
-				return this.isBetweenInclusive(lowerBound, value(upperBound));
+		return this.isBetweenInclusive(lowerBound, value(upperBound));
 	}
 
 	/**
@@ -969,7 +1006,8 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 	 *
 	 * @param lowerBound lowerBound
 	 * @param upperBound upperBound
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a boolean expression representing the required comparison
 	 */
 	public BooleanExpression isBetweenInclusive(String lowerBound, String upperBound) {
@@ -997,7 +1035,8 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 	 *
 	 * @param lowerBound lowerBound
 	 * @param upperBound upperBound
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a boolean expression representing the required comparison
 	 */
 	public BooleanExpression isBetweenExclusive(StringResult lowerBound, StringResult upperBound) {
@@ -1028,7 +1067,8 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 	 *
 	 * @param lowerBound lowerBound
 	 * @param upperBound upperBound
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a boolean expression representing the required comparison
 	 */
 	public BooleanExpression isBetweenExclusive(String lowerBound, StringResult upperBound) {
@@ -1056,7 +1096,8 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 	 *
 	 * @param lowerBound lowerBound
 	 * @param upperBound upperBound
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a boolean expression representing the required comparison
 	 */
 	public BooleanExpression isBetweenExclusive(StringResult lowerBound, String upperBound) {
@@ -1084,11 +1125,12 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 	 *
 	 * @param lowerBound lowerBound
 	 * @param upperBound upperBound
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a boolean expression representing the required comparison
 	 */
 	public BooleanExpression isBetweenExclusive(String lowerBound, String upperBound) {
-				return this.isBetweenExclusive(value(lowerBound), value(upperBound));
+		return this.isBetweenExclusive(value(lowerBound), value(upperBound));
 	}
 
 	/**
@@ -1099,7 +1141,8 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 	 * current StringExpression to the supplied value.
 	 *
 	 * @param equivalentString	equivalentString
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a BooleanExpression of the SQL comparison.
 	 */
 	public BooleanExpression isLessThan(String equivalentString) {
@@ -1114,7 +1157,8 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 	 * current StringExpression to the supplied value.
 	 *
 	 * @param equivalentString	equivalentString
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a BooleanExpression of the SQL comparison.
 	 */
 	@Override
@@ -1144,7 +1188,8 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 	 * current StringExpression to the supplied value.
 	 *
 	 * @param equivalentString	equivalentString
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a BooleanExpression of the SQL comparison.
 	 */
 	public BooleanExpression isLessThanOrEqual(String equivalentString) {
@@ -1159,7 +1204,8 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 	 * current StringExpression to the supplied value.
 	 *
 	 * @param equivalentString	equivalentString
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a BooleanExpression of the SQL comparison.
 	 */
 	@Override
@@ -1189,7 +1235,8 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 	 * current StringExpression to the supplied value.
 	 *
 	 * @param equivalentString	equivalentString
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a BooleanExpression of the SQL comparison.
 	 */
 	public BooleanExpression isGreaterThan(String equivalentString) {
@@ -1204,7 +1251,8 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 	 * current StringExpression to the supplied value.
 	 *
 	 * @param equivalentString	equivalentString
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a BooleanExpression of the SQL comparison.
 	 */
 	@Override
@@ -1234,7 +1282,8 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 	 * current StringExpression to the supplied value.
 	 *
 	 * @param equivalentString	equivalentString
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a BooleanExpression of the SQL comparison.
 	 */
 	public BooleanExpression isGreaterThanOrEqual(String equivalentString) {
@@ -1249,7 +1298,8 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 	 * current StringExpression to the supplied value.
 	 *
 	 * @param equivalentString	equivalentString
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a BooleanExpression of the SQL comparison.
 	 */
 	@Override
@@ -1279,7 +1329,8 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 	 * the current StringExpression is included in the supplied values.
 	 *
 	 * @param possibleValues	possibleValues
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a BooleanExpression of the SQL comparison.
 	 */
 	public BooleanExpression isIn(String... possibleValues) {
@@ -1298,7 +1349,8 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 	 * the current StringExpression is included in the supplied values.
 	 *
 	 * @param possibleValues	possibleValues
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a BooleanExpression of the SQL comparison.
 	 */
 	public BooleanExpression isIn(Collection<String> possibleValues) {
@@ -1317,7 +1369,8 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 	 * the current StringExpression is included in the supplied values.
 	 *
 	 * @param possibleValues	possibleValues
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a BooleanExpression of the SQL comparison.
 	 */
 	@Override
@@ -1351,7 +1404,8 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 	 * StringExpression.
 	 *
 	 * @param string2	string2
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a StringExpression.
 	 */
 	public StringExpression append(StringResult string2) {
@@ -1373,7 +1427,8 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 	 * StringExpression.
 	 *
 	 * @param string2	string2
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a StringExpression.
 	 */
 	public StringExpression append(String string2) {
@@ -1385,7 +1440,8 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 	 * StringExpression.
 	 *
 	 * @param number1	number1
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a StringExpression.
 	 */
 	public StringExpression append(NumberResult number1) {
@@ -1397,7 +1453,8 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 	 * StringExpression.
 	 *
 	 * @param number1	number1
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a StringExpression.
 	 */
 	public StringExpression append(Number number1) {
@@ -1410,7 +1467,8 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 	 *
 	 * @param findString findString
 	 * @param replaceWith replaceWith
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a StringExpression.
 	 */
 	public StringExpression replace(String findString, String replaceWith) {
@@ -1423,7 +1481,8 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 	 *
 	 * @param findString findString
 	 * @param replaceWith replaceWith
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a StringExpression.
 	 */
 	public StringExpression replace(StringResult findString, String replaceWith) {
@@ -1436,7 +1495,8 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 	 *
 	 * @param findString findString
 	 * @param replaceWith replaceWith
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a StringExpression.
 	 */
 	public StringExpression replace(String findString, StringResult replaceWith) {
@@ -1449,7 +1509,8 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 	 *
 	 * @param findString findString
 	 * @param replaceWith replaceWith
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a StringExpression.
 	 */
 	public StringExpression replace(StringResult findString, StringResult replaceWith) {
@@ -1492,7 +1553,8 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 	 * before the value, not including the value itself.
 	 *
 	 * @param splitBeforeThis the value marks the end of the required string.
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a string expression
 	 */
 	public StringExpression substringBefore(String splitBeforeThis) {
@@ -1510,7 +1572,8 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 	 * before the value, not including the value itself.
 	 *
 	 * @param splitBeforeThis the value that marks the end of the required string
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a string expression
 	 */
 	public StringExpression substringBefore(StringResult splitBeforeThis) {
@@ -1544,7 +1607,8 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 	 *
 	 * @param splitAfterThis the value that marks the beginning of the required
 	 * string
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a string expression
 	 */
 	public StringExpression substringAfter(String splitAfterThis) {
@@ -1563,7 +1627,8 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 	 *
 	 * @param splitAfterThis the value that marks the beginning of the required
 	 * string
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a string expression
 	 */
 	public StringExpression substringAfter(StringResult splitAfterThis) {
@@ -1605,7 +1670,8 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 	 * @param splitAfterThis the value that marks the beginning of the required
 	 * string
 	 * @param butBeforeThis the value that marks the end of the required string
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a string expression
 	 */
 	public StringExpression substringBetween(String splitAfterThis, String butBeforeThis) {
@@ -1632,7 +1698,8 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 	 * @param splitAfterThis the value that marks the beginning of the required
 	 * string
 	 * @param butBeforeThis the value that marks the end of the required string
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a string expression
 	 */
 	public StringExpression substringBetween(StringResult splitAfterThis, StringResult butBeforeThis) {
@@ -1643,7 +1710,9 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 	 * Creates a query expression that trims all leading and trailing spaces from
 	 * the current StringExpression.
 	 *
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
 	 * @return a StringExpression.
 	 */
 	public StringExpression trim() {
@@ -1662,12 +1731,16 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 	}
 
 	/**
-	 * Tests that a string expression is shorter than or equal to the specified length.
-	 * 
-	 * <p>This method is useful to test strings  will fit within a specific field size</p>
+	 * Tests that a string expression is shorter than or equal to the specified
+	 * length.
+	 *
+	 * <p>
+	 * This method is useful to test strings will fit within a specific field
+	 * size</p>
 	 *
 	 * @param maxLength the longest possible number of characters
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a StringExpression.
 	 */
 	public BooleanExpression isShorterThanOrAsLongAs(int maxLength) {
@@ -1675,13 +1748,16 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 	}
 
 	/**
-	 * Finds and returns the first number in the string or NULL if no number is found.
-	 * 
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * Finds and returns the first number in the string or NULL if no number is
+	 * found.
+	 *
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
 	 * @return a NumberExpression.
 	 */
 	public StringExpression getFirstNumber() {
-			return new StringExpression(
+		return new StringExpression(
 				new DBUnaryStringFunction(this) {
 
 			@Override
@@ -1694,17 +1770,20 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 				return "";
 			}
 		});
-	
+
 	}
 
 	/**
-	 * Finds and returns the first integer in the string or NULL if no integer is found.
-	 * 
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * Finds and returns the first integer in the string or NULL if no integer is
+	 * found.
+	 *
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
 	 * @return a NumberExpression.
 	 */
 	public StringExpression getFirstInteger() {
-			return new StringExpression(
+		return new StringExpression(
 				new DBUnaryStringFunction(this) {
 
 			@Override
@@ -1717,14 +1796,16 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 				return "";
 			}
 		});
-	
+
 	}
 
 	/**
 	 * Creates a query expression that trims all leading spaces from the current
 	 * StringExpression.
 	 *
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
 	 * @return a StringExpression.
 	 */
 	public StringExpression leftTrim() {
@@ -1746,7 +1827,9 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 	 * Creates a query expression that trims all trailing spaces from the current
 	 * StringExpression.
 	 *
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
 	 * @return a StringExpression.
 	 */
 	public StringExpression rightTrim() {
@@ -1763,7 +1846,9 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 	 * Creates a query expression that changes all the letters in the current
 	 * StringExpression to lowercase.
 	 *
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
 	 * @return a StringExpression.
 	 */
 	public StringExpression lowercase() {
@@ -1780,7 +1865,9 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 	 * Creates a query expression that changes all the letters in the current
 	 * StringExpression to UPPERCASE.
 	 *
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
 	 * @return a StringExpression.
 	 */
 	public StringExpression uppercase() {
@@ -1801,7 +1888,8 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 	 * The first character is at position zero (0).
 	 *
 	 * @param startingIndex0Based	startingIndex0Based
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a StringExpression
 	 */
 	public StringExpression substring(Number startingIndex0Based) {
@@ -1816,7 +1904,8 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 	 * The first character is at position zero (0).
 	 *
 	 * @param startingIndex0Based	startingIndex0Based
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a StringExpression
 	 */
 	public StringExpression substring(NumberResult startingIndex0Based) {
@@ -1832,7 +1921,8 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 	 *
 	 * @param startingIndex0Based startingIndex0Based
 	 * @param endIndex0Based endIndex0Based
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a StringExpression
 	 */
 	public StringExpression substring(Number startingIndex0Based, Number endIndex0Based) {
@@ -1848,7 +1938,8 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 	 *
 	 * @param startingIndex0Based startingIndex0Based
 	 * @param endIndex0Based endIndex0Based
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a StringExpression
 	 */
 	public StringExpression substring(NumberResult startingIndex0Based, Number endIndex0Based) {
@@ -1864,7 +1955,8 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 	 *
 	 * @param startingIndex0Based startingIndex0Based
 	 * @param endIndex0Based endIndex0Based
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a StringExpression
 	 */
 	public StringExpression substring(Number startingIndex0Based, NumberResult endIndex0Based) {
@@ -1880,7 +1972,8 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 	 *
 	 * @param startingIndex0Based startingIndex0Based
 	 * @param endIndex0Based endIndex0Based
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a StringExpression
 	 */
 	public StringExpression substring(NumberResult startingIndex0Based, NumberResult endIndex0Based) {
@@ -1890,7 +1983,9 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 	/**
 	 * Create a expression that returns the length of the current expression.
 	 *
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
 	 * @return a NumberExpression of the expression's length.
 	 */
 	public NumberExpression length() {
@@ -1917,7 +2012,9 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 	 * This should be the current username under which the application is
 	 * accessing the database.
 	 *
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
 	 * @return a StringExpression
 	 */
 	public static StringExpression currentUser() {
@@ -1933,7 +2030,9 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 	/**
 	 * Get the StringResult used internally.
 	 *
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
 	 * @return the string1
 	 */
 	protected StringResult getStringInput() {
@@ -1948,7 +2047,8 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 	 * The index is 1-based, and returns 0 when the searchString is not found.</p>
 	 *
 	 * @param searchString	searchString
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return an expression that will find the location of the searchString.
 	 */
 	public NumberExpression locationOf(String searchString) {
@@ -1963,7 +2063,8 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 	 * The index is 1-based, and returns 0 when the searchString is not found.</p>
 	 *
 	 * @param searchString	searchString
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return an expression that will find the location of the searchString.
 	 */
 	public NumberExpression locationOf(StringResult searchString) {
@@ -1983,7 +2084,9 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 	 * Count is an aggregator function for use in DBReport or in a column
 	 * expression.
 	 *
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
 	 * @return a number expression.
 	 */
 	public NumberExpression count() {
@@ -2009,7 +2112,9 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 	 * Max is an aggregator function for use in DBReport or in a column
 	 * expression.
 	 *
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
 	 * @return a String expression.
 	 */
 	public StringExpression max() {
@@ -2034,7 +2139,9 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 	 * Min is an aggregator function for use in DBReport or in a column
 	 * expression.
 	 *
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
 	 * @return a String expression.
 	 */
 	public StringExpression min() {
@@ -2077,7 +2184,9 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 	 * <P>
 	 * The expression will be true if the value is not NULL, and false otherwise.
 	 *
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
 	 * @return a BooleanExpression
 	 */
 	public BooleanExpression isNotNull() {
@@ -2097,7 +2206,9 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 	 * between a NULL string and a empty string, and some do not. To protect your
 	 * queries against this fundamental variation use this method.
 	 *
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
 	 * @return a BooleanExpression
 	 */
 	public BooleanExpression isNotNullAndNotEmpty() {
@@ -2114,7 +2225,9 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 	 * <P>
 	 * The expression will be true if the value is NULL, and false otherwise.
 	 *
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
 	 * @return a BooleanExpression
 	 */
 	public BooleanExpression isNull() {
@@ -2134,7 +2247,9 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 	 * between a NULL string and a empty string, and some do not. To protect your
 	 * queries against this fundamental variation use this method.
 	 *
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
 	 * @return a BooleanExpression
 	 */
 	public BooleanExpression isNullOrEmpty() {
@@ -2152,7 +2267,9 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 	/**
 	 * Adds an explicit bracket at this point in the expression chain.
 	 *
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
 	 * @return a StringExpression that will have the current expression wrapped in
 	 * brackets.
 	 */
@@ -2175,7 +2292,8 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 	 * in the list of potential values, otherwise it will return false.
 	 *
 	 * @param potentialValues	potentialValues
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a BooleanExpression
 	 */
 	public BooleanExpression isInIgnoreCase(StringResult[] potentialValues) {
@@ -2205,7 +2323,9 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 	 * <p>
 	 * May return NULL and all sorts of crazy things.
 	 *
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
 	 * @return a number expression
 	 */
 	public NumberExpression numberResult() {
@@ -2657,24 +2777,30 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 		}
 
 		/**
-		 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 * @return the first
+		 * <p style="color: #F90;">Support DBvolution at
+		 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+		 *
+		 * @return the first
 		 */
 		protected DBExpression getFirst() {
 			return first;
 		}
 
 		/**
-		 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 * @return the second
+		 * <p style="color: #F90;">Support DBvolution at
+		 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+		 *
+		 * @return the second
 		 */
 		protected DBExpression getSecond() {
 			return second;
 		}
 
 		/**
-		 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 * @return the third
+		 * <p style="color: #F90;">Support DBvolution at
+		 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+		 *
+		 * @return the third
 		 */
 		protected DBExpression getThird() {
 			return third;
@@ -2720,7 +2846,6 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 //					+ this.getSeparator(db) + (getSecond() == null ? "" : getSecond().toSQLString(db))
 //					+ this.afterValue(db);
 //		}
-
 		@Override
 		public DBBinaryStringFunction copy() {
 			DBBinaryStringFunction newInstance;
@@ -2737,11 +2862,9 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 		}
 
 		//abstract String getFunctionName(DBDatabase db);
-
 //		protected String beforeValue(DBDatabase db) {
 //			return " " + getFunctionName(db) + "( ";
 //		}
-
 		protected String getSeparator(DBDatabase db) {
 			return ", ";
 		}
@@ -2768,16 +2891,20 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 		}
 
 		/**
-		 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 * @return the first
+		 * <p style="color: #F90;">Support DBvolution at
+		 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+		 *
+		 * @return the first
 		 */
 		protected StringExpression getFirst() {
 			return first;
 		}
 
 		/**
-		 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 * @return the second
+		 * <p style="color: #F90;">Support DBvolution at
+		 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+		 *
+		 * @return the second
 		 */
 		protected StringExpression getSecond() {
 			return second;

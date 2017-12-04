@@ -12,8 +12,10 @@ import nz.co.gregs.dbvolution.annotations.DBColumn;
  * plus it gives the ability to re-use the {@link JavaPropertyFilter} if we ever
  * extend the to process all fields/bean-properties.
  *
- * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 * @author Malcolm Lett
+ * <p style="color: #F90;">Support DBvolution at
+ * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+ *
+ * @author Malcolm Lett
  */
 interface JavaPropertyFilter {
 
@@ -35,7 +37,9 @@ interface JavaPropertyFilter {
 	/**
 	 * Indicates whether the specified field is accepted by the filter.
 	 *
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
 	 * @return TRUE if the field is acceptable, otherwise FALSE.
 	 */
 	public boolean acceptField(Field field);
@@ -45,7 +49,9 @@ interface JavaPropertyFilter {
 	 * filter.
 	 *
 	 *
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
 	 * @return TRUE if the field is acceptable, otherwise FALSE.
 	 */
 	public boolean acceptBeanProperty(Method getter, Method setter);

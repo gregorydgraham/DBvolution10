@@ -31,8 +31,10 @@ import java.lang.annotation.Target;
  * <p>
  * DBColumn is generated automatically by DBTableClassGenerator.</p>
  *
- * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 * @author Gregory Graham
+ * <p style="color: #F90;">Support DBvolution at
+ * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+ *
+ * @author Gregory Graham
  * @see DBForeignKey
  * @see DBPrimaryKey
  * @see DBAutoIncrement
@@ -44,7 +46,9 @@ public @interface DBColumn {
 	/**
 	 * The raw column name as stored in the database.
 	 *
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
 	 * @return the raw column name from the database
 	 */
 	String value() default "";

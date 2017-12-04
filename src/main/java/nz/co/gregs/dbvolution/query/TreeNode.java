@@ -28,8 +28,10 @@ import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
  * Use {@link #getData() } to retrieve the DBRow contain in the node, {@link #getParent()
  * } to move up the hierarchy, and {@link #getChildren() } to move down it.
  *
- * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 * @author Gregory Graham
+ * <p style="color: #F90;">Support DBvolution at
+ * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+ *
+ * @author Gregory Graham
  * @param <T> The DBRow class
  */
 public class TreeNode<T extends DBRow> {
@@ -49,7 +51,8 @@ public class TreeNode<T extends DBRow> {
 	}
 
 	/**
-	 * Create a new node the contains the specified DBRow as the data, and the specified TreeNode as the parent of the node.
+	 * Create a new node the contains the specified DBRow as the data, and the
+	 * specified TreeNode as the parent of the node.
 	 *
 	 * @param data
 	 * @param parent
@@ -60,9 +63,12 @@ public class TreeNode<T extends DBRow> {
 	}
 
 	/**
-	 * Returns a list of all known children of this node, that is all database rows returned by the recursive query that referenced this row.
+	 * Returns a list of all known children of this node, that is all database
+	 * rows returned by the recursive query that referenced this row.
 	 *
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
 	 * @return a list of TreeNodes
 	 */
 	public List<TreeNode<T>> getChildren() {
@@ -75,7 +81,7 @@ public class TreeNode<T extends DBRow> {
 
 	/**
 	 * Append the supplied DBRow to the list of children for this node.
-	 * 
+	 *
 	 * <p>
 	 * Also adds this node as the parent of the supplied node.
 	 *
@@ -93,11 +99,11 @@ public class TreeNode<T extends DBRow> {
 
 	/**
 	 * Append the supplied DBRow to the list of children for this node.
-	 * 
+	 *
 	 * <p>
 	 * Also adds this node as the parent of the supplied node.
 	 *
-	 * @param child 
+	 * @param child
 	 */
 	public void addChild(TreeNode<T> child) {
 		child.setParent(this);
@@ -114,7 +120,9 @@ public class TreeNode<T extends DBRow> {
 	/**
 	 * Retrieves the DBRow within this node.
 	 *
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
 	 * @return a DBRow
 	 */
 	public T getData() {
@@ -131,9 +139,12 @@ public class TreeNode<T extends DBRow> {
 	}
 
 	/**
-	 * Indicates whether or not this node is a root node, that is it has no known parent.
+	 * Indicates whether or not this node is a root node, that is it has no known
+	 * parent.
 	 *
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
 	 * @return TRUE if this node is the top of a hierarchy.
 	 */
 	public boolean isRoot() {
@@ -141,9 +152,12 @@ public class TreeNode<T extends DBRow> {
 	}
 
 	/**
-	 * Indicates whether or not this node is a leaf node, that is it has no known children.
+	 * Indicates whether or not this node is a leaf node, that is it has no known
+	 * children.
 	 *
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
 	 * @return TRUE if this node is the bottom of a hierarchy.
 	 */
 	public boolean isLeaf() {
@@ -152,7 +166,7 @@ public class TreeNode<T extends DBRow> {
 
 	/**
 	 * Remove the link to this node's parent, if any.
-	 * 
+	 *
 	 */
 	public void removeParent() {
 		this.parent = null;
@@ -161,7 +175,9 @@ public class TreeNode<T extends DBRow> {
 	/**
 	 * Retrieves the node that is the parent of this node.
 	 *
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
 	 * @return the TreeNode immediately above this node in the hierarchy
 	 */
 	public TreeNode<T> getParent() {
@@ -176,7 +192,7 @@ public class TreeNode<T extends DBRow> {
 	private String getKey() {
 		StringBuilder returnString = new StringBuilder("");
 		final List<QueryableDatatype<?>> pks = this.getData().getPrimaryKeys();
-		for(QueryableDatatype<?> pk : pks) {
+		for (QueryableDatatype<?> pk : pks) {
 			returnString.append("&&").append(pk.stringValue());
 		}
 		return returnString.toString();

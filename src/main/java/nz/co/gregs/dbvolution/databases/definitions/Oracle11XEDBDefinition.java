@@ -35,8 +35,10 @@ import nz.co.gregs.dbvolution.query.QueryOptions;
  * This DBDefinition is automatically included in {@link Oracle11XEDB}
  * instances, and you should not need to use it directly.
  *
- * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 * @author Gregory Graham
+ * <p style="color: #F90;">Support DBvolution at
+ * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+ *
+ * @author Gregory Graham
  */
 public class Oracle11XEDBDefinition extends OracleSpatialDBDefinition {
 
@@ -66,8 +68,8 @@ public class Oracle11XEDBDefinition extends OracleSpatialDBDefinition {
 		List<String> result = new ArrayList<>();
 		String sequenceName = getPrimaryKeySequenceName(table, column);
 		final String primaryKeyTriggerName = getPrimaryKeyTriggerName(table, column);
-		result.add("DROP TRIGGER " + primaryKeyTriggerName+"");
-		result.add("DROP SEQUENCE " + sequenceName+"");
+		result.add("DROP TRIGGER " + primaryKeyTriggerName + "");
+		result.add("DROP SEQUENCE " + sequenceName + "");
 		result.add("CREATE SEQUENCE " + sequenceName);
 		result.add("CREATE OR REPLACE TRIGGER " + DB.getUsername() + "." + primaryKeyTriggerName + " \n"
 				+ "    BEFORE INSERT ON " + DB.getUsername() + "." + table + " \n"
@@ -81,17 +83,17 @@ public class Oracle11XEDBDefinition extends OracleSpatialDBDefinition {
 				+ "    END;\n");
 
 		return result;
-	}	
-	
+	}
+
 	@Override
 	public List<String> dropTriggerBasedIdentitySQL(DBDatabase DB, String table, String column) {
 
 		List<String> result = new ArrayList<>();
-		result.add("DROP TRIGGER " + getPrimaryKeyTriggerName(table, column)+"");
-		result.add("DROP SEQUENCE " + getPrimaryKeySequenceName(table, column)+"");
+		result.add("DROP TRIGGER " + getPrimaryKeyTriggerName(table, column) + "");
+		result.add("DROP SEQUENCE " + getPrimaryKeySequenceName(table, column) + "");
 		return result;
 	}
-	
+
 	@Override
 	public String doPoint2DGetBoundingBoxTransform(String point2DSQL) {
 		throw new UnsupportedOperationException("Bounding Box is an unsupported operation in Oracle11 XE.");
@@ -130,12 +132,13 @@ public class Oracle11XEDBDefinition extends OracleSpatialDBDefinition {
 	public String doLineSegment2DGetMaxXTransform(final String lineSegment) {
 		return doGreatestOfTransformation(
 				new ArrayList<String>() {
-					static final long serialVersionUID = 1L;
-					{
-						add(doPoint2DGetXTransform(doLineSegment2DStartPointTransform(lineSegment)));
-						add(doPoint2DGetXTransform(doLineSegment2DEndPointTransform(lineSegment)));
-					}
-				}
+			static final long serialVersionUID = 1L;
+
+			{
+				add(doPoint2DGetXTransform(doLineSegment2DStartPointTransform(lineSegment)));
+				add(doPoint2DGetXTransform(doLineSegment2DEndPointTransform(lineSegment)));
+			}
+		}
 		);
 	}
 
@@ -143,12 +146,13 @@ public class Oracle11XEDBDefinition extends OracleSpatialDBDefinition {
 	public String doLineSegment2DGetMinXTransform(final String lineSegment) {
 		return doLeastOfTransformation(
 				new ArrayList<String>() {
-					static final long serialVersionUID = 1L;
-					{
-						add(doPoint2DGetXTransform(doLineSegment2DStartPointTransform(lineSegment)));
-						add(doPoint2DGetXTransform(doLineSegment2DEndPointTransform(lineSegment)));
-					}
-				}
+			static final long serialVersionUID = 1L;
+
+			{
+				add(doPoint2DGetXTransform(doLineSegment2DStartPointTransform(lineSegment)));
+				add(doPoint2DGetXTransform(doLineSegment2DEndPointTransform(lineSegment)));
+			}
+		}
 		);
 	}
 
@@ -156,12 +160,13 @@ public class Oracle11XEDBDefinition extends OracleSpatialDBDefinition {
 	public String doLineSegment2DGetMaxYTransform(final String lineSegment) {
 		return doGreatestOfTransformation(
 				new ArrayList<String>() {
-					static final long serialVersionUID = 1L;
-					{
-						add(doPoint2DGetYTransform(doLineSegment2DStartPointTransform(lineSegment)));
-						add(doPoint2DGetYTransform(doLineSegment2DEndPointTransform(lineSegment)));
-					}
-				}
+			static final long serialVersionUID = 1L;
+
+			{
+				add(doPoint2DGetYTransform(doLineSegment2DStartPointTransform(lineSegment)));
+				add(doPoint2DGetYTransform(doLineSegment2DEndPointTransform(lineSegment)));
+			}
+		}
 		);
 	}
 
@@ -169,23 +174,24 @@ public class Oracle11XEDBDefinition extends OracleSpatialDBDefinition {
 	public String doLineSegment2DGetMinYTransform(final String lineSegment) {
 		return doLeastOfTransformation(
 				new ArrayList<String>() {
-					static final long serialVersionUID = 1L;
-					{
-						add(doPoint2DGetYTransform(doLineSegment2DStartPointTransform(lineSegment)));
-						add(doPoint2DGetYTransform(doLineSegment2DEndPointTransform(lineSegment)));
-					}
-				}
+			static final long serialVersionUID = 1L;
+
+			{
+				add(doPoint2DGetYTransform(doLineSegment2DStartPointTransform(lineSegment)));
+				add(doPoint2DGetYTransform(doLineSegment2DEndPointTransform(lineSegment)));
+			}
+		}
 		);
 	}
 
 	@Override
 	public String doMultiPoint2DToLine2DTransform(String multiPoint2D) {
-		return MultiPoint2DFunctions.ASLINE2D+"("+multiPoint2D+")";
+		return MultiPoint2DFunctions.ASLINE2D + "(" + multiPoint2D + ")";
 	}
 
 	@Override
 	public String doMultiPoint2DAsTextTransform(String multiPoint2D) {
-		return nz.co.gregs.dbvolution.internal.oracle.xe.GeometryFunctions.ASTEXT+"("+multiPoint2D+")";
+		return nz.co.gregs.dbvolution.internal.oracle.xe.GeometryFunctions.ASTEXT + "(" + multiPoint2D + ")";
 	}
 
 	@Override
@@ -195,12 +201,12 @@ public class Oracle11XEDBDefinition extends OracleSpatialDBDefinition {
 
 	@Override
 	public String doMultiPoint2DGetNumberOfPointsTransform(String multiPoint2D) {
-		return MultiPoint2DFunctions.NUMPOINTS+"("+multiPoint2D+")";
+		return MultiPoint2DFunctions.NUMPOINTS + "(" + multiPoint2D + ")";
 	}
 
 	@Override
 	public String doMultiPoint2DGetPointAtIndexTransform(String first, String index) {
-		return MultiPoint2DFunctions.GETPOINTATINDEX+"("+first+", "+index+")";
+		return MultiPoint2DFunctions.GETPOINTATINDEX + "(" + first + ", " + index + ")";
 	}
 
 	@Override
@@ -221,12 +227,12 @@ public class Oracle11XEDBDefinition extends OracleSpatialDBDefinition {
 
 	@Override
 	public String doPolygon2DAsTextTransform(String polygonSQL) {
-		return nz.co.gregs.dbvolution.internal.oracle.xe.GeometryFunctions.ASTEXT+"("+polygonSQL+")";
+		return nz.co.gregs.dbvolution.internal.oracle.xe.GeometryFunctions.ASTEXT + "(" + polygonSQL + ")";
 	}
 
 	@Override
 	public String doLine2DAsTextTransform(String line2DSQL) {
-		return nz.co.gregs.dbvolution.internal.oracle.xe.GeometryFunctions.ASTEXT+"("+line2DSQL+")";
+		return nz.co.gregs.dbvolution.internal.oracle.xe.GeometryFunctions.ASTEXT + "(" + line2DSQL + ")";
 	}
 
 	@Override
@@ -249,7 +255,7 @@ public class Oracle11XEDBDefinition extends OracleSpatialDBDefinition {
 	public String doLine2DGetBoundingBoxTransform(String line2DSQL) {
 		throw new UnsupportedOperationException("Oracle SDO_MBR returns strange results for points and straight lines.");
 	}
-	
+
 	@Override
 	public String doPolygon2DGetBoundingBoxTransform(String toSQLString) {
 		throw new UnsupportedOperationException("Oracle SDO_MBR returns a diagonal line as the bounding box.");

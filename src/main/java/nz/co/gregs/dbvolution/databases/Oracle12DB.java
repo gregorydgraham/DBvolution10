@@ -23,8 +23,10 @@ import nz.co.gregs.dbvolution.databases.definitions.Oracle12DBDefinition;
 /**
  * Implements support for version 12 of the Oracle database.
  *
- * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 * @author Gregory Graham
+ * <p style="color: #F90;">Support DBvolution at
+ * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+ *
+ * @author Gregory Graham
  * @see OracleAWSDB
  * @see Oracle11XEDB
  * @see Oracle12DBDefinition
@@ -43,12 +45,13 @@ public class Oracle12DB extends OracleDB {
 	 *
 	 *
 	 */
-	protected Oracle12DB(){
+	protected Oracle12DB() {
 		super();
 	}
 //	public Oracle12DB(DBDefinition definition, String driverName, String jdbcURL, String username, String password) {
 //		super(definition, driverName, jdbcURL, username, password);
 //	}
+
 	/**
 	 * Creates a DBDatabase instance tweaked for Oracle 12 and above.
 	 *

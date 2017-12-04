@@ -30,11 +30,14 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 /**
- * Provides support for the abstract concept of migrating rows from one or more tables to another table.
+ * Provides support for the abstract concept of migrating rows from one or more
+ * tables to another table.
  *
  *
- * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 * @author Gregory Graham
+ * <p style="color: #F90;">Support DBvolution at
+ * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+ *
+ * @author Gregory Graham
  * @param <R> the resulting DBRow from this DBQueryInsertAction
  */
 public class DBMigrationAction<R extends DBRow> extends DBAction {
@@ -65,7 +68,8 @@ public class DBMigrationAction<R extends DBRow> extends DBAction {
 	 * Perform the migration
 	 *
 	 * @param database the database used by this action
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a DBActionList of the migration's effects
 	 * @throws SQLException SQL Exceptions may be thrown
 	 */
@@ -83,12 +87,12 @@ public class DBMigrationAction<R extends DBRow> extends DBAction {
 		processAllFieldsForMigration(db, (R) getRow());
 
 		ArrayList<String> strs = new ArrayList<>();
-			strs.add(defn.beginInsertLine()
-					+ defn.formatTableName(row)
-					+ defn.beginInsertColumnList()
-					+ allColumns
-					+ defn.endInsertColumnList()
-					+ sourceMigration.getSQLForQuery(db, extraExamples));
+		strs.add(defn.beginInsertLine()
+				+ defn.formatTableName(row)
+				+ defn.beginInsertColumnList()
+				+ allColumns
+				+ defn.endInsertColumnList()
+				+ sourceMigration.getSQLForQuery(db, extraExamples));
 		return strs;
 	}
 
@@ -98,15 +102,15 @@ public class DBMigrationAction<R extends DBRow> extends DBAction {
 
 		try (DBStatement statement = db.getDBStatement()) {
 			for (String sql : getSQLStatements(db)) {
+				try {
+					statement.execute(sql);
+				} catch (SQLException sqlex) {
 					try {
 						statement.execute(sql);
-					} catch (SQLException sqlex) {
-						try {
-							statement.execute(sql);
-						} catch (SQLException ex) {
-							throw new RuntimeException(sql, ex);
-						}
+					} catch (SQLException ex) {
+						throw new RuntimeException(sql, ex);
 					}
+				}
 			}
 		}
 		return actions;

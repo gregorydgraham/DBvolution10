@@ -31,8 +31,10 @@ import org.hamcrest.core.IsNull;
 
 /**
  *
- * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 * @author Gregory Graham
+ * <p style="color: #F90;">Support DBvolution at
+ * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+ *
+ * @author Gregory Graham
  */
 public class FindDistinctDBRowColumnValuesTest extends AbstractTest {
 
@@ -61,7 +63,7 @@ public class FindDistinctDBRowColumnValuesTest extends AbstractTest {
 
 		List<String> foundStrings = new ArrayList<String>();
 		for (DBDate dBDate : creationDates) {
-			if (dBDate != null&&dBDate.isNotNull()) {
+			if (dBDate != null && dBDate.isNotNull()) {
 				Assert.assertThat(dBDate.toString(),
 						anyOf(
 								startsWith("2013-03-23"),
@@ -79,7 +81,7 @@ public class FindDistinctDBRowColumnValuesTest extends AbstractTest {
 	public void testDBRowMethod() throws SQLException {
 		Marque marque = new Marque();
 		List<DBDate> distinctValuesForColumn = marque.getDistinctValuesOfColumn(database, marque.creationDate);
-		
+
 		Assert.assertThat(distinctValuesForColumn.size(), is(3));
 		DBDate[] toArray = distinctValuesForColumn.toArray(new DBDate[]{});
 		Assert.assertThat(toArray[0].isNull(), is(true));
@@ -87,7 +89,7 @@ public class FindDistinctDBRowColumnValuesTest extends AbstractTest {
 
 		List<String> foundStrings = new ArrayList<String>();
 		for (DBDate dBDate : distinctValuesForColumn) {
-			if (dBDate != null&&dBDate.isNotNull()) {
+			if (dBDate != null && dBDate.isNotNull()) {
 				Assert.assertThat(dBDate.toString(),
 						anyOf(
 								startsWith("2013-03-23"),
@@ -116,7 +118,7 @@ public class FindDistinctDBRowColumnValuesTest extends AbstractTest {
 
 		List<String> foundStrings = new ArrayList<>();
 		for (DBString val : distinctValuesForColumn) {
-			if (val != null&&val.isNotNull()) {
+			if (val != null && val.isNotNull()) {
 				Assert.assertThat(val.toString(),
 						anyOf(
 								is("Y"),
@@ -146,7 +148,7 @@ public class FindDistinctDBRowColumnValuesTest extends AbstractTest {
 
 		List<String> foundStrings = new ArrayList<String>();
 		for (DBString val : distinctValuesForColumn) {
-			if (val != null&&val.isNotNull()) {
+			if (val != null && val.isNotNull()) {
 				Assert.assertThat(val.toString(),
 						anyOf(
 								is("Y"),
@@ -180,9 +182,9 @@ public class FindDistinctDBRowColumnValuesTest extends AbstractTest {
 		marque.individualAllocationsAllowed.setSortOrderAscending();
 		List<DBQueryRow> distinctCombinationsOfColumnValues
 				= database
-				.getDBQuery(carCo, marque)
-				.setBlankQueryAllowed(true)
-				.getDistinctCombinationsOfColumnValues(marque.individualAllocationsAllowed, carCo.name);
+						.getDBQuery(carCo, marque)
+						.setBlankQueryAllowed(true)
+						.getDistinctCombinationsOfColumnValues(marque.individualAllocationsAllowed, carCo.name);
 
 		if (database.supportsDifferenceBetweenNullAndEmptyString()) {
 			Assert.assertThat(distinctCombinationsOfColumnValues.size(), is(3));

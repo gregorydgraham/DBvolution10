@@ -39,8 +39,10 @@ import nz.co.gregs.dbvolution.results.ExpressionHasStandardStringResult;
  * {@link PostgresDBOverSSL} instances, and you should not need to use it
  * directly.
  *
- * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 * @author Gregory Graham
+ * <p style="color: #F90;">Support DBvolution at
+ * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+ *
+ * @author Gregory Graham
  */
 public class PostgresDBDefinition extends DBDefinition {
 
@@ -131,7 +133,7 @@ public class PostgresDBDefinition extends DBDefinition {
 
 	@Override
 	public String doBooleanToIntegerTransform(String columnName) {
-		return "("+columnName + ")::integer";
+		return "(" + columnName + ")::integer";
 	}
 
 	@Override
@@ -144,9 +146,9 @@ public class PostgresDBDefinition extends DBDefinition {
 		StringBuilder boolStr = new StringBuilder();
 		for (boolean c : boolArray) {
 			if (c) {
-				boolStr .append("1");
+				boolStr.append("1");
 			} else {
-				boolStr .append( "0");
+				boolStr.append("0");
 			}
 		}
 		return "B'" + boolStr.toString() + "'";
@@ -174,7 +176,7 @@ public class PostgresDBDefinition extends DBDefinition {
 
 	@Override
 	public String doSubsecondTransform(String dateExpression) {
-		return "((EXTRACT(MILLISECOND FROM " + dateExpression + ")/1000.0000) - ("+doTruncTransform(doSecondTransform(dateExpression),"0")+"))";
+		return "((EXTRACT(MILLISECOND FROM " + dateExpression + ")/1000.0000) - (" + doTruncTransform(doSecondTransform(dateExpression), "0") + "))";
 	}
 
 //	@Override
@@ -476,7 +478,7 @@ public class PostgresDBDefinition extends DBDefinition {
 		Point point = null;
 		if (pointAsString.matches(" *\\( *[-0-9.]+, *[-0-9.]+ *\\) *")) {
 			String[] split = pointAsString.split("[^-0-9.]+");
-			
+
 			GeometryFactory geometryFactory = new GeometryFactory();
 			final double x = Double.parseDouble(split[1]);
 			final double y = Double.parseDouble(split[2]);
@@ -495,7 +497,7 @@ public class PostgresDBDefinition extends DBDefinition {
 		String[] splits = geometryAsString.split("[^0-9.]+");
 		List<Coordinate> coords = new ArrayList<>();
 		Coordinate firstCoord = null;
-		for (int i = 1; i < splits.length; i+=2) {
+		for (int i = 1; i < splits.length; i += 2) {
 			String splitX = splits[i];
 			String splitY = splits[i + 1];
 			final Coordinate coordinate = new Coordinate(Double.parseDouble(splitX), Double.parseDouble(splitY));
@@ -523,7 +525,7 @@ public class PostgresDBDefinition extends DBDefinition {
 			String[] splits = lineStringAsString.split("[(),]+");
 			Coordinate firstCoord = null;
 			List<Coordinate> coords = new ArrayList<>();
-			for (int i = 1; i < splits.length - 1; i+=2) {
+			for (int i = 1; i < splits.length - 1; i += 2) {
 				String splitX = splits[i];
 				String splitY = splits[i + 1];
 				final Coordinate coordinate = new Coordinate(Double.parseDouble(splitX), Double.parseDouble(splitY));
@@ -615,10 +617,10 @@ public class PostgresDBDefinition extends DBDefinition {
 
 		return "POLYGON '(" + str + ")'";
 	}
-	
+
 	@Override
 	public String transformCoordinateArrayToDatabasePolygon2DFormat(List<String> coordinateSQL) {
-		
+
 		StringBuilder str = new StringBuilder();
 		String separator = "";
 		for (String coordinate : coordinateSQL) {
@@ -628,7 +630,7 @@ public class PostgresDBDefinition extends DBDefinition {
 
 		return "POLYGON '(" + str + ")'";
 	}
-	
+
 	@Override
 	public String transformPoint2DArrayToDatabasePolygon2DFormat(List<String> pointSQL) {
 		//POINT (0.0, 0.0) => POLYGON((0.0, 0.0), ... )
@@ -811,7 +813,6 @@ public class PostgresDBDefinition extends DBDefinition {
 //	public String doDateAtTimeZoneTransform(String dateSQL, TimeZone timeZone) {
 //		return "((" + dateSQL + ") AT TIME ZONE '" + timeZone.toZoneId().getId() + "') ";
 //	}
-
 	@Override
 	public LargeObjectHandlerType preferredLargeObjectWriter(DBLargeObject<?> lob) {
 		if (lob instanceof DBLargeBinary) {
@@ -840,35 +841,37 @@ public class PostgresDBDefinition extends DBDefinition {
 
 	/**
 	 * Return the function name for the Logarithm Base10 function.
-	 * 
-	 * <p>By default this method returns <b>log10</b></p>
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
+	 * <p>
+	 * By default this method returns <b>log10</b></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
 	 * @return the name of the function to use when rounding numbers up
 	 */
 	@Override
 	public String getLogBase10FunctionName() {
 		return "log";
-	}		
-	
+	}
+
 	@Override
 	public String doLogBase10NumberTransform(String sql) {
-		return "log("+sql+")";
+		return "log(" + sql + ")";
 	}
 
 	@Override
 	public String doFindNumberInStringTransform(String toSQLString) {
-		return "(substring("+toSQLString+" from '([-]?[0-9]+(\\.[0-9]+)?)'))";
+		return "(substring(" + toSQLString + " from '([-]?[0-9]+(\\.[0-9]+)?)'))";
 	}
 
 	@Override
 	public String doFindIntegerInStringTransform(String toSQLString) {
-		return "(substring("+toSQLString+" from '([-]?[0-9]+)'))";
+		return "(substring(" + toSQLString + " from '([-]?[0-9]+)'))";
 	}
-	
+
 	@Override
 	public String doRandomNumberTransform() {
 		return " (RANDOM())";
 	}
-
 
 }

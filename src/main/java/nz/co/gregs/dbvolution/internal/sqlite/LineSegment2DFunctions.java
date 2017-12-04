@@ -28,8 +28,10 @@ import org.sqlite.Function;
 
 /**
  *
- * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 * @author gregory.graham
+ * <p style="color: #F90;">Support DBvolution at
+ * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+ *
+ * @author gregory.graham
  */
 public class LineSegment2DFunctions {
 
@@ -139,7 +141,7 @@ public class LineSegment2DFunctions {
 			if (numberOfArguments != 2) {
 				result();
 			} else {
-				StringBuilder resultStr = new StringBuilder( "LINESTRING (");
+				StringBuilder resultStr = new StringBuilder("LINESTRING (");
 				String sep = "";
 				for (int i = 0; i < numberOfArguments; i += 2) {
 					Double x = value_double(i);
@@ -152,7 +154,7 @@ public class LineSegment2DFunctions {
 						sep = ", ";
 					}
 				}
-				resultStr.append( ")");
+				resultStr.append(")");
 				result(resultStr.toString());
 			}
 		}
@@ -279,7 +281,7 @@ public class LineSegment2DFunctions {
 					if (firstLine == null || secondLine == null) {
 						result();
 					} else {
-						result(firstLine.intersects(secondLine)?1:0);
+						result(firstLine.intersects(secondLine) ? 1 : 0);
 					}
 				}
 			} catch (com.vividsolutions.jts.io.ParseException ex) {
@@ -307,10 +309,11 @@ public class LineSegment2DFunctions {
 						result();
 					} else {
 						final Geometry intersectionPoint = firstLine.intersection(secondLine);
-						if (intersectionPoint instanceof Point){
+						if (intersectionPoint instanceof Point) {
 							result(intersectionPoint.toText());
-						}else
-						result();
+						} else {
+							result();
+						}
 					}
 				}
 			} catch (com.vividsolutions.jts.io.ParseException ex) {

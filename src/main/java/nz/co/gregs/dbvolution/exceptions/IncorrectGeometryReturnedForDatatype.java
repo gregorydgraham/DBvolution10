@@ -21,8 +21,10 @@ import com.vividsolutions.jts.geom.Geometry;
  * Thrown when the database has returned a geometry that cannot be interpreted
  * as the geometry expected.
  *
- * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 * @author Gregory Graham
+ * <p style="color: #F90;">Support DBvolution at
+ * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+ *
+ * @author Gregory Graham
  */
 public class IncorrectGeometryReturnedForDatatype extends DBRuntimeException {
 
@@ -36,7 +38,7 @@ public class IncorrectGeometryReturnedForDatatype extends DBRuntimeException {
 	 * @param wasExpecting
 	 */
 	public IncorrectGeometryReturnedForDatatype(Geometry databaseReturned, Geometry wasExpecting) {
-		super("Geometry Type Returned By Database Clashes With Declared Geometry: Was expecting " + (wasExpecting==null?"NULL":wasExpecting.getGeometryType()) + " but the database has provided a " + (databaseReturned==null?"NULL":databaseReturned.getGeometryType()) + ".  Please check that the field is declared correctly and that the expression returns the correct type.");
+		super("Geometry Type Returned By Database Clashes With Declared Geometry: Was expecting " + (wasExpecting == null ? "NULL" : wasExpecting.getGeometryType()) + " but the database has provided a " + (databaseReturned == null ? "NULL" : databaseReturned.getGeometryType()) + ".  Please check that the field is declared correctly and that the expression returns the correct type.");
 	}
 
 }

@@ -30,8 +30,10 @@ import nz.co.gregs.dbvolution.expressions.DBExpression;
  * Add {@code implements StringResult} to your class and override the copy
  * method so that it returns your class type.
  *
- * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 * @author Gregory Graham
+ * <p style="color: #F90;">Support DBvolution at
+ * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+ *
+ * @author Gregory Graham
  * @see DBExpression
  */
 public interface StringResult extends DBExpression, ExpressionCanHaveNullValues {

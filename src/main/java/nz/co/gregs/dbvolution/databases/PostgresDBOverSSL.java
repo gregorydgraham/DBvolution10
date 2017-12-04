@@ -23,13 +23,16 @@ import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 /**
  * Extends the PostgreSQL database connection by adding SSL.
  *
- * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 * @author Gregory Graham
+ * <p style="color: #F90;">Support DBvolution at
+ * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+ *
+ * @author Gregory Graham
  */
 public class PostgresDBOverSSL extends PostgresDB {
+
 	public static final long serialVersionUID = 1l;
 
-/**
+	/**
 	 *
 	 * Provides a convenient constructor for DBDatabases that have configuration
 	 * details hardwired or are able to automatically retrieve the details.

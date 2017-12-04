@@ -30,8 +30,10 @@ import nz.co.gregs.dbvolution.expressions.DBExpression;
  * Add {@code implements BooleanResult} to your class and override the copy
  * method so that it returns your class type.
  *
- * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 * @author Gregory Graham
+ * <p style="color: #F90;">Support DBvolution at
+ * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+ *
+ * @author Gregory Graham
  * @see DBExpression
  */
 public interface BooleanResult extends DBExpression, ExpressionCanHaveNullValues, ExpressionHasStandardStringResult {
@@ -41,12 +43,19 @@ public interface BooleanResult extends DBExpression, ExpressionCanHaveNullValues
 
 	/**
 	 * Indicates whether the result is a boolean statement or boolean value.
-	 * 
-	 * <p>A boolean statement is a a comparison like 1=1 which results in a boolean value and is used in the where clause.  Conversely a boolean value is the database representation TRUE or FALSE.</p>
-	 * 
-	 * <p>The distinction is subtle but required to deal with databases which do not have a full-feature boolean datatype.</p>
-	 * 
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
+	 * <p>
+	 * A boolean statement is a a comparison like 1=1 which results in a boolean
+	 * value and is used in the where clause. Conversely a boolean value is the
+	 * database representation TRUE or FALSE.</p>
+	 *
+	 * <p>
+	 * The distinction is subtle but required to deal with databases which do not
+	 * have a full-feature boolean datatype.</p>
+	 *
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
 	 * @return TRUE if the BooleanResult is a boolean statement, FALSE otherwise.
 	 */
 	boolean isBooleanStatement();

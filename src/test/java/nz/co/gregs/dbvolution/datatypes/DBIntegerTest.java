@@ -52,7 +52,6 @@ public class DBIntegerTest extends AbstractTest {
 	}
 
 //	@Ignore("DBOperator and QueryableDatatype overload instead of override Object.equals()")
-
 	@Test(expected = UnexpectedNumberOfRowsException.class)
 	public void nonExistentValueAndGetOnlyThrowsUnexpectedNumberOfRows() throws SQLException, UnexpectedNumberOfRowsException {
 		DBInteger int1 = new DBInteger();

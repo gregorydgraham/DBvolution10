@@ -21,19 +21,21 @@ import nz.co.gregs.dbvolution.datatypes.DBNumber;
 
 /**
  *
- * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 * @author gregorygraham
+ * <p style="color: #F90;">Support DBvolution at
+ * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+ *
+ * @author gregorygraham
  */
 public enum Point2DFunctions {
 
 	/**
 	 *
 	 */
-	EQUALS("numeric("+DBNumber.getNumericPrecision()+","+DBNumber.getNumericScale()+")", "@poly1 GEOMETRY, @poly2 GEOMETRY", " DECLARE \n"
-			+ " @resultVal numeric("+DBNumber.getNumericPrecision()+","+DBNumber.getNumericScale()+"),\n"
+	EQUALS("numeric(" + DBNumber.getNumericPrecision() + "," + DBNumber.getNumericScale() + ")", "@poly1 GEOMETRY, @poly2 GEOMETRY", " DECLARE \n"
+			+ " @resultVal numeric(" + DBNumber.getNumericPrecision() + "," + DBNumber.getNumericScale() + "),\n"
 			+ " @num integer,\n"
 			+ " @i integer,\n"
-			+ " @currentcoord numeric("+DBNumber.getNumericPrecision()+","+DBNumber.getNumericScale()+"),\n"
+			+ " @currentcoord numeric(" + DBNumber.getNumericPrecision() + "," + DBNumber.getNumericScale() + "),\n"
 			+ " @pnt1 GEOMETRY,\n"
 			+ " @pnt2 GEOMETRY\n"
 			+ " if @poly1 is null or @poly2 is null begin \n"

@@ -21,9 +21,11 @@ import nz.co.gregs.dbvolution.databases.DBStatement;
 
 /**
  * A TimerTask for canceling queries.
- * 
- * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 * @author gregory.graham
+ *
+ * <p style="color: #F90;">Support DBvolution at
+ * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+ *
+ * @author gregory.graham
  */
 public class CancelTask extends TimerTask {
 
@@ -43,7 +45,7 @@ public class CancelTask extends TimerTask {
 		try {
 			query.cancel();
 		} catch (SQLException ex) {
-			if (!ex.getMessage().equals("'Statement' already closed.")&&!ex.getMessage().contains("The object is already closed")) {
+			if (!ex.getMessage().equals("'Statement' already closed.") && !ex.getMessage().contains("The object is already closed")) {
 				throw new RuntimeException("Exception Occurred During Query Timeout.", ex);
 			}
 		}

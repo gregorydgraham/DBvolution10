@@ -21,8 +21,10 @@ import nz.co.gregs.dbvolution.expressions.StringExpression;
 
 /**
  *
- * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 * @author gregorygraham
+ * <p style="color: #F90;">Support DBvolution at
+ * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+ *
+ * @author gregorygraham
  */
 public interface ExpressionHasStandardStringResult {
 
@@ -36,14 +38,17 @@ public interface ExpressionHasStandardStringResult {
 	 *
 	 * <p>
 	 * Please note that this is not the SQL version of the expression
-	 * {@link DBExpression#toSQLString(nz.co.gregs.dbvolution.DBDatabase)  (toSQLString() will provide that)}, nor
-	 * does this provide a String of the value.
+	 * {@link DBExpression#toSQLString(nz.co.gregs.dbvolution.DBDatabase)  (toSQLString() will provide that)},
+	 * nor does this provide a String of the value.
 	 *
 	 * <p>
 	 * To get the string value use the
-	 * {@link QueryableDatatype#stringValue() stringValue method} of the appropriate QDT.
+	 * {@link QueryableDatatype#stringValue() stringValue method} of the
+	 * appropriate QDT.
 	 *
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
 	 * @return a StringExpression of the expression.
 	 */
 	StringExpression stringResult();

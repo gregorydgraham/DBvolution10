@@ -20,8 +20,10 @@ import nz.co.gregs.dbvolution.datatypes.DBStringTrimmed;
  * &#64;DBTableName annotation allows the class to be renamed to fit better
  * within a Java library while preserving the actual database name.
  *
- * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 * @author Gregory Graham
+ * <p style="color: #F90;">Support DBvolution at
+ * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+ *
+ * @author Gregory Graham
  */
 @DBTableName("marque")
 public class Marque extends DBRow {
@@ -291,7 +293,9 @@ public class Marque extends DBRow {
 	}
 
 	/**
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
 	 * @return the numericCode
 	 */
 	public DBNumber getNumericCode() {
@@ -299,7 +303,9 @@ public class Marque extends DBRow {
 	}
 
 	/**
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
 	 * @return the uidMarque
 	 */
 	public DBInteger getUidMarque() {
@@ -307,7 +313,9 @@ public class Marque extends DBRow {
 	}
 
 	/**
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
 	 * @return the isUsedForTAFROs
 	 */
 	public DBString getIsUsedForTAFROs() {
@@ -315,7 +323,9 @@ public class Marque extends DBRow {
 	}
 
 	/**
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
 	 * @return the intIndividualAllocationsAllowed
 	 */
 	public DBString getIntIndividualAllocationsAllowed() {
@@ -323,7 +333,9 @@ public class Marque extends DBRow {
 	}
 
 	/**
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
 	 * @return the name
 	 */
 	public DBString getName() {
@@ -331,7 +343,9 @@ public class Marque extends DBRow {
 	}
 
 	/**
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
 	 * @return the creationDate
 	 */
 	public DBDate getCreationDate() {
@@ -339,7 +353,9 @@ public class Marque extends DBRow {
 	}
 
 	/**
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
 	 * @return the carCompany
 	 */
 	public DBInteger getCarCompany() {

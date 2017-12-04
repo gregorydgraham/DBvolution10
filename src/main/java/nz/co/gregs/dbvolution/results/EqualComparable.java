@@ -25,8 +25,10 @@ import nz.co.gregs.dbvolution.expressions.BooleanExpression;
  * EqualsComparable expressions must have an equivalent to the EQUALS (=)
  * operation.
  *
- * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 * @author Gregory Graham
+ * <p style="color: #F90;">Support DBvolution at
+ * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+ *
+ * @author Gregory Graham
  * @param <A> the class that can be compared using the "=" operator
  *
  */
@@ -37,7 +39,8 @@ public interface EqualComparable<A> {
 	 * EQUALS operation.
 	 *
 	 * @param anotherInstance an instance to compare to
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a BooleanExpression
 	 */
 	public BooleanExpression is(A anotherInstance);
@@ -47,7 +50,8 @@ public interface EqualComparable<A> {
 	 * NOT EQUALS operation.
 	 *
 	 * @param anotherInstance and instance to compare to
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a BooleanExpression
 	 */
 	public BooleanExpression isNot(A anotherInstance);

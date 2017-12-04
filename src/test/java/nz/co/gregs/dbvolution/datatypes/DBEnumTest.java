@@ -64,7 +64,7 @@ public class DBEnumTest extends AbstractTest {
 		rowExemplar.recordType.permittedValues(
 				IntEnum.MOVEMENT_REQUEST_RECORD,
 				IntEnum.SHIPPING_MANIFEST_RECORD);
-		
+
 		String sqlFragment = database.getDBQuery(rowExemplar).getSQLForQuery();
 		assertThat(sqlFragment.toLowerCase(), containsString("c_5 in ( 2, 1)"));
 	}
@@ -125,13 +125,13 @@ public class DBEnumTest extends AbstractTest {
 					new IntegerEnumWithDefinedValuesTable(4, IntEnum.MOVEMENT_REQUEST_RECORD));
 
 			integerTableExemplar.uid_202.permittedValues(
-					0,null);
+					0, null);
 			List<IntegerEnumWithDefinedValuesTable> rows = database.get(integerTableExemplar);
 
 			for (IntegerEnumWithDefinedValuesTable row : rows) {
-					assertThat(row.request.enumValue(), is(IntEnum.MOVEMENT_REQUEST_RECORD));
-					assertThat(row.manifest.enumValue(), is(IntEnum.SHIPPING_MANIFEST_RECORD));
-					assertThat(row.cancel.enumValue(), is(IntEnum.MOVEMENT_CANCELLATION_REQUEST));
+				assertThat(row.request.enumValue(), is(IntEnum.MOVEMENT_REQUEST_RECORD));
+				assertThat(row.manifest.enumValue(), is(IntEnum.SHIPPING_MANIFEST_RECORD));
+				assertThat(row.cancel.enumValue(), is(IntEnum.MOVEMENT_CANCELLATION_REQUEST));
 			}
 		} finally {
 			database.preventDroppingOfTables(false);
@@ -194,13 +194,12 @@ public class DBEnumTest extends AbstractTest {
 			integerTableExemplar.recordType.excludedRange(
 					null, IntEnum.MOVEMENT_REQUEST_RECORD);
 			rows = database.get(integerTableExemplar);
-			
+
 			assertThat(rows.size(), is(2));
 
 			for (IntegerEnumTable row : rows) {
 				assertThat(row.recordType.enumValue(), is(IntEnum.MOVEMENT_REQUEST_RECORD));
 			}
-
 
 			integerTableExemplar.recordType.permittedRangeInclusive(
 					null, IntEnum.SHIPPING_MANIFEST_RECORD);
@@ -246,7 +245,6 @@ public class DBEnumTest extends AbstractTest {
 			database.dropTableNoExceptions(integerTableExemplar);
 		}
 	}
-
 
 	@Test
 	public void stringEnumPermittedRange() throws SQLException {
@@ -315,7 +313,6 @@ public class DBEnumTest extends AbstractTest {
 			for (StringEnumTable row : rows) {
 				assertThat(row.recordType.enumValue(), is(StringEnumType.MOVEMENT_REQUEST_RECORD));
 			}
-
 
 			stringTableExemplar.recordType.permittedRangeInclusive(
 					null, StringEnumType.SHIPPING_MANIFEST_RECORD.literalValue);
@@ -436,7 +433,6 @@ public class DBEnumTest extends AbstractTest {
 				assertThat(row.recordType.enumValue(), is(IntEnum.MOVEMENT_REQUEST_RECORD));
 			}
 
-
 			integerTableExemplar.recordType.permittedRangeInclusive(
 					null, IntEnum.SHIPPING_MANIFEST_RECORD.code);
 			rows = database.get(integerTableExemplar);
@@ -544,7 +540,6 @@ public class DBEnumTest extends AbstractTest {
 				assertThat(row.recordType.enumValue(), is(IntEnum.MOVEMENT_REQUEST_RECORD));
 			}
 
-
 			integerTableExemplar.recordType.permittedRangeInclusive(
 					null, IntEnum.SHIPPING_MANIFEST_RECORD.getLong());
 			rows = database.get(integerTableExemplar);
@@ -590,7 +585,7 @@ public class DBEnumTest extends AbstractTest {
 
 			assertThat(rows.size(), is(1));
 			for (IntegerEnumTable row : rows) {
-				assertThat(row.recordType.longValue(), is(0L+IntEnum.SHIPPING_MANIFEST_RECORD.code));
+				assertThat(row.recordType.longValue(), is(0L + IntEnum.SHIPPING_MANIFEST_RECORD.code));
 			}
 
 		} finally {
@@ -664,7 +659,7 @@ public class DBEnumTest extends AbstractTest {
 				StringEnumType.MOVEMENT_CANCELLATION_REQUEST,
 				StringEnumType.MOVEMENT_REQUEST_RECORD);
 		List<StringEnumTable> rows = database.get(stringTableExemplar);
-		
+
 		Assert.assertThat(rows.size(), is(2));
 
 		stringTableExemplar.recordType.excludedValues(
@@ -672,7 +667,7 @@ public class DBEnumTest extends AbstractTest {
 				StringEnumType.MOVEMENT_CANCELLATION_REQUEST
 		);
 		rows = database.get(stringTableExemplar);
-		
+
 		Assert.assertThat(rows.size(), is(2));
 
 		stringTableExemplar.recordType.permittedRangeInclusive(
@@ -680,7 +675,7 @@ public class DBEnumTest extends AbstractTest {
 				null
 		);
 		rows = database.get(stringTableExemplar);
-		
+
 		Assert.assertThat(rows.size(), is(2));
 
 		stringTableExemplar.recordType.excludedRangeInclusive(
@@ -735,56 +730,55 @@ public class DBEnumTest extends AbstractTest {
 		}
 	}
 
-		/**
-		 * Valid values for {@link #recordType}.
-		 *
-		 * <p>
-		 * Nested class to make it obvious which table the enum is for
-		 */
-		public static enum IntEnum implements DBEnumValue<Long> {
+	/**
+	 * Valid values for {@link #recordType}.
+	 *
+	 * <p>
+	 * Nested class to make it obvious which table the enum is for
+	 */
+	public static enum IntEnum implements DBEnumValue<Long> {
 
-			SHIPPING_MANIFEST_RECORD(1, "Shipping Manifest Record"),
-			MOVEMENT_REQUEST_RECORD(2, "Movement Request Record"),
-			MOVEMENT_CANCELLATION_REQUEST(3, "Movement Cancellation Request");
+		SHIPPING_MANIFEST_RECORD(1, "Shipping Manifest Record"),
+		MOVEMENT_REQUEST_RECORD(2, "Movement Request Record"),
+		MOVEMENT_CANCELLATION_REQUEST(3, "Movement Cancellation Request");
 
-			private long code;
-			private String displayName;
+		private long code;
+		private String displayName;
 
-			private IntEnum(int code, String displayName) {
-				this.code = code;
-				this.displayName = displayName;
-			}
-
-			@Override
-			public Long getCode() {
-				return code;
-			}
-
-			public Long getLong() {
-				return code;
-			}
-
-			public String getDisplayName() {
-				return displayName;
-			}
-
-			public static IntEnum valueOfCode(DBInteger code) {
-				return valueOfCode(code == null ? null : code.getValue().longValue());
-			}
-
-			public static IntEnum valueOfCode(Long code) {
-				if (code == null) {
-					return null;
-				}
-				for (IntEnum recordType : values()) {
-					if (recordType.getCode().equals(code)) {
-						return recordType;
-					}
-				}
-				throw new IllegalArgumentException("Invalid " + IntEnum.class.getSimpleName() + " code: " + code);
-			}
+		private IntEnum(int code, String displayName) {
+			this.code = code;
+			this.displayName = displayName;
 		}
-	
+
+		@Override
+		public Long getCode() {
+			return code;
+		}
+
+		public Long getLong() {
+			return code;
+		}
+
+		public String getDisplayName() {
+			return displayName;
+		}
+
+		public static IntEnum valueOfCode(DBInteger code) {
+			return valueOfCode(code == null ? null : code.getValue().longValue());
+		}
+
+		public static IntEnum valueOfCode(Long code) {
+			if (code == null) {
+				return null;
+			}
+			for (IntEnum recordType : values()) {
+				if (recordType.getCode().equals(code)) {
+					return recordType;
+				}
+			}
+			throw new IllegalArgumentException("Invalid " + IntEnum.class.getSimpleName() + " code: " + code);
+		}
+	}
 
 	public static class IntegerEnumWithDefinedValuesTable extends DBRow {
 

@@ -29,12 +29,16 @@ import nz.co.gregs.dbvolution.internal.sqlserver.*;
  * <p>
  * Remember to include the MS SQL Server JDBC driver in your classpath.
  *
- * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 * @author Malcolm Lett
- * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 * @author Gregory Graham
+ * <p style="color: #F90;">Support DBvolution at
+ * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+ *
+ * @author Malcolm Lett
+ * <p style="color: #F90;">Support DBvolution at
+ * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+ * @author Gregory Graham
  */
-public class MSSQLServerDB extends DBDatabase implements SupportsPolygonDatatype{
+public class MSSQLServerDB extends DBDatabase implements SupportsPolygonDatatype {
+
 	public static final long serialVersionUID = 1l;
 
 	/**
@@ -70,7 +74,7 @@ public class MSSQLServerDB extends DBDatabase implements SupportsPolygonDatatype
 	 * @param username username
 	 * @param password password
 	 */
-	public MSSQLServerDB(String driverName, String jdbcURL, String username, String password)  {
+	public MSSQLServerDB(String driverName, String jdbcURL, String username, String password) {
 		super(new MSSQLServerDBDefinition(), driverName, jdbcURL, username, password);
 	}
 
@@ -85,7 +89,7 @@ public class MSSQLServerDB extends DBDatabase implements SupportsPolygonDatatype
 	 * @param username username
 	 * @param password password
 	 */
-	public MSSQLServerDB(String jdbcURL, String username, String password)  {
+	public MSSQLServerDB(String jdbcURL, String username, String password) {
 		super(new MSSQLServerDBDefinition(), SQLSERVERDRIVERNAME, jdbcURL, username, password);
 	}
 
@@ -94,9 +98,11 @@ public class MSSQLServerDB extends DBDatabase implements SupportsPolygonDatatype
 	 * and Microsoft's driver.
 	 *
 	 * @param hostname the name of the server where the database resides
-	 * @param instanceName the name of the particular database instance to connect to  (can be null)
-	 * @param databaseName the name of the database within the instance (can be null)
-	 * @param portNumber the port number that the database is available on 
+	 * @param instanceName the name of the particular database instance to connect
+	 * to (can be null)
+	 * @param databaseName the name of the database within the instance (can be
+	 * null)
+	 * @param portNumber the port number that the database is available on
 	 * @param username the account to connect via
 	 * @param password the password to identify username.
 	 */
@@ -116,8 +122,10 @@ public class MSSQLServerDB extends DBDatabase implements SupportsPolygonDatatype
 	 *
 	 * @param driverName the JDBC driver class to use.
 	 * @param hostname the name of the server where the database resides.
-	 * @param instanceName the name of the particular database instance to connect to  (can be null).
-	 * @param databaseName the name of the database within the instance (can be null).
+	 * @param instanceName the name of the particular database instance to connect
+	 * to (can be null).
+	 * @param databaseName the name of the database within the instance (can be
+	 * null).
 	 * @param portNumber the port number that the database is available on .
 	 * @param username the account to connect via.
 	 * @param password the password to identify username.

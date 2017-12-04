@@ -31,8 +31,10 @@ import nz.co.gregs.dbvolution.expressions.DateExpression;
  * time value. The instance will behave as a {@link DBDate} but time information
  * will be ignore/discarded.
  *
- * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 * @author Gregory Graham
+ * <p style="color: #F90;">Support DBvolution at
+ * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+ *
+ * @author Gregory Graham
  */
 public class DBDateOnly extends DBDate {
 

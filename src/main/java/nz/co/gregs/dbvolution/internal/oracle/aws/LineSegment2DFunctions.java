@@ -21,8 +21,10 @@ import java.sql.Statement;
 
 /**
  *
- * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 * @author gregory.graham
+ * <p style="color: #F90;">Support DBvolution at
+ * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+ *
+ * @author gregory.graham
  */
 public enum LineSegment2DFunctions {
 
@@ -99,7 +101,6 @@ public enum LineSegment2DFunctions {
 			+ "\n"
 			+ "   RETURN result;\n"
 			+ "END;"),
-
 	/**
 	 *
 	 */
@@ -173,7 +174,6 @@ public enum LineSegment2DFunctions {
 			+ "\n"
 			+ "   RETURN result;\n"
 			+ "END;"),
-
 	/**
 	 *
 	 */
@@ -247,7 +247,6 @@ public enum LineSegment2DFunctions {
 			+ "\n"
 			+ "   RETURN result;\n"
 			+ "END;"),
-
 	/**
 	 *
 	 */
@@ -321,7 +320,6 @@ public enum LineSegment2DFunctions {
 			+ "\n"
 			+ "   RETURN result;\n"
 			+ "END;"),
-
 	/**
 	 *
 	 */
@@ -366,7 +364,6 @@ public enum LineSegment2DFunctions {
 			+ "      RETURN result;\n"
 			+ "   END IF;\n"
 			+ "END;"),
-
 	/**
 	 *
 	 */
@@ -445,7 +442,6 @@ public enum LineSegment2DFunctions {
 			+ "      RETURN 0;\n"
 			+ "   END IF;\n"
 			+ "END;"),
-
 	/**
 	 *
 	 */
@@ -453,7 +449,6 @@ public enum LineSegment2DFunctions {
 			+ "BEGIN\n"
 			+ "   RETURN CASE WHEN (lineString1 = lineString2) THEN 1 ELSE 0 END;\n"
 			+ "END;"),
-
 	/**
 	 *
 	 */

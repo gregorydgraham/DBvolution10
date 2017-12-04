@@ -17,8 +17,10 @@ import nz.co.gregs.dbvolution.query.RowDefinition;
  * <p>
  * This class is <i>thread-safe</i>.
  *
- * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 * @author Malcolm Lett
+ * <p style="color: #F90;">Support DBvolution at
+ * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+ *
+ * @author Malcolm Lett
  */
 public class RowDefinitionWrapperFactory {
 
@@ -33,7 +35,8 @@ public class RowDefinitionWrapperFactory {
 	 * internal cache.
 	 *
 	 * @param clazz clazz
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return the class adaptor
 	 */
 	public RowDefinitionClassWrapper classWrapperFor(Class<? extends RowDefinition> clazz) {
@@ -53,7 +56,8 @@ public class RowDefinitionWrapperFactory {
 	 * the internal cache.
 	 *
 	 * @param object the DBRow instance to wrap
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return the object adaptor for the given object
 	 */
 	public RowDefinitionInstanceWrapper instanceWrapperFor(RowDefinition object) {

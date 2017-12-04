@@ -20,8 +20,10 @@ import java.sql.Statement;
 
 /**
  *
- * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 * @author gregory.graham
+ * <p style="color: #F90;">Support DBvolution at
+ * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+ *
+ * @author gregory.graham
  */
 public enum GeometryFunctions {
 
@@ -107,7 +109,6 @@ public enum GeometryFunctions {
 			+ "    return v_wkt||v_wktend;\n"
 			+ "-- return 'MULTIPOINT ((), (), ...)';\n"
 			+ "end;"),
-
 	/**
 	 *
 	 */

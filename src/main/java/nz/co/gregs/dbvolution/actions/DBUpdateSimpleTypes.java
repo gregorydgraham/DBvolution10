@@ -33,8 +33,10 @@ import nz.co.gregs.dbvolution.internal.properties.PropertyWrapper;
  * The best way to use this is by using {@link DBUpdate#getUpdates(nz.co.gregs.dbvolution.DBRow...)
  * } to automatically use this action.
  *
- * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 * @author Gregory Graham
+ * <p style="color: #F90;">Support DBvolution at
+ * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+ *
+ * @author Gregory Graham
  */
 public class DBUpdateSimpleTypes extends DBUpdate {
 
@@ -79,7 +81,8 @@ public class DBUpdateSimpleTypes extends DBUpdate {
 	 *
 	 * @param db the target database
 	 * @param row the row to be updated
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return The SET clause of the UPDATE statement.
 	 */
 	protected String getSetClause(DBDatabase db, DBRow row) {
@@ -117,7 +120,8 @@ public class DBUpdateSimpleTypes extends DBUpdate {
 	 *
 	 * @param db the target database
 	 * @param row the row to be updated
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return The WHERE clause of the UPDATE statement.
 	 */
 	protected String getWhereClause(DBDatabase db, DBRow row) {

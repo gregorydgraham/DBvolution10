@@ -36,8 +36,10 @@ import nz.co.gregs.dbvolution.results.Spatial2DResult;
  * A subclass of OracleDB that contains definitions of standard Spatial
  * functions shared by Oracle databases with Spatial functions.
  *
- * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 * @author gregorygraham
+ * <p style="color: #F90;">Support DBvolution at
+ * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+ *
+ * @author gregorygraham
  */
 public class OracleSpatialDBDefinition extends OracleDBDefinition {
 
@@ -86,8 +88,8 @@ public class OracleSpatialDBDefinition extends OracleDBDefinition {
 			{
 				//add("DROP INDEX " + formatNameForDatabase("DBV_" + formatTableName + "_" + formatColumnName + "_sp2didx")+"");
 				add("delete from USER_SDO_GEOM_METADATA "
-					+ "where table_name = '" + formatTableName.toUpperCase() + "' "
-					+ "and column_name = '" + formatColumnName.toUpperCase() + "'");
+						+ "where table_name = '" + formatTableName.toUpperCase() + "' "
+						+ "and column_name = '" + formatColumnName.toUpperCase() + "'");
 				add(
 						"INSERT INTO USER_SDO_GEOM_METADATA \n"
 						+ "  select \n"
@@ -99,9 +101,9 @@ public class OracleSpatialDBDefinition extends OracleDBDefinition {
 						+ "     ),\n"
 						+ "  NULL   -- SRID\n"
 						+ " from dual where not exists ("
-							+ "select * from USER_SDO_GEOM_METADATA  "
-							+ "where table_name = '" + formatTableName.toUpperCase() + "' "
-							+ "and column_name = '" + formatColumnName.toUpperCase() + "')");
+						+ "select * from USER_SDO_GEOM_METADATA  "
+						+ "where table_name = '" + formatTableName.toUpperCase() + "' "
+						+ "and column_name = '" + formatColumnName.toUpperCase() + "')");
 				add("CREATE INDEX " + formatNameForDatabase("DBV_" + formatTableName + "_" + formatColumnName + "_sp2didx") + " ON " + formatTableName + " (" + formatColumnName + ") INDEXTYPE IS MDSYS.SPATIAL_INDEX");
 			}
 		};
@@ -132,7 +134,6 @@ public class OracleSpatialDBDefinition extends OracleDBDefinition {
 ////		return "SDO_GEOMETRY(2003, NULL, SDO_POINT_TYPE(" + coordinate.x + ", " + coordinate.y + ",NULL), NULL, NULL)";
 //		return "SDO_UTIL.FROM_WKTGEOMETRY('" + point.toText() + "')";
 //	}
-
 	@Override
 	public String transformMultiPoint2DToDatabaseMultiPoint2DValue(MultiPoint point) {
 //		final Coordinate coordinate = point.getCoordinate();
@@ -191,9 +192,9 @@ public class OracleSpatialDBDefinition extends OracleDBDefinition {
 					.append(sep)
 					.append(pointish);
 			pairSep = ", ";
-			if (sep.equals(ordinateSep)){
-				sep=pairSep;
-			}else{
+			if (sep.equals(ordinateSep)) {
+				sep = pairSep;
+			} else {
 				sep = ordinateSep;
 			}
 		}

@@ -30,8 +30,10 @@ import nz.co.gregs.dbvolution.datatypes.spatial2D.DBLineSegment2D;
  * Represents expressions that produce a geometry consisting of 2 points and
  * representing a line from the first point to the second.
  *
- * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 * @author gregory.graham
+ * <p style="color: #F90;">Support DBvolution at
+ * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+ *
+ * @author gregory.graham
  */
 public class LineSegment2DExpression implements LineSegment2DResult, EqualComparable<LineSegment2DResult>, Spatial2DExpression, ExpressionColumn<DBLineSegment2D> {
 
@@ -130,7 +132,8 @@ public class LineSegment2DExpression implements LineSegment2DResult, EqualCompar
 	 *
 	 * @param point1 the starting point of this value
 	 * @param point2 the end point of this value
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a LineSegment2D expression
 	 */
 	public static LineSegment2DExpression value(Point point1, Point point2) {
@@ -142,7 +145,8 @@ public class LineSegment2DExpression implements LineSegment2DResult, EqualCompar
 	 *
 	 * @param coord1 the starting point of this value
 	 * @param coord2 the end point of this value
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a LineSegment2D expression
 	 */
 	public static LineSegment2DExpression value(Coordinate coord1, Coordinate coord2) {
@@ -157,7 +161,8 @@ public class LineSegment2DExpression implements LineSegment2DResult, EqualCompar
 	 * @param y1 the first Y of this value
 	 * @param x2 the last X of this value
 	 * @param y2 the last Y of this value
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a LineSegment2D expression
 	 */
 	public static LineSegment2DExpression value(Double x1, Double y1, Double x2, Double y2) {
@@ -168,7 +173,8 @@ public class LineSegment2DExpression implements LineSegment2DResult, EqualCompar
 	 * Create an expression for the line segment created from the 2 points.
 	 *
 	 * @param line the value of this line expression
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a LineSegment2D expression
 	 */
 	public static LineSegment2DExpression value(LineSegment line) {
@@ -179,7 +185,8 @@ public class LineSegment2DExpression implements LineSegment2DResult, EqualCompar
 	 * Create an expression for the line segment created from the 2 points.
 	 *
 	 * @param line the value of this line expression
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a LineSegment2D expression
 	 */
 	public static LineSegment2DExpression value(LineSegment2DResult line) {
@@ -255,7 +262,9 @@ public class LineSegment2DExpression implements LineSegment2DResult, EqualCompar
 	 * Convert this LineSegment2D to a String representation based on the Well
 	 * Known Text (WKT) format.
 	 *
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
 	 * @return a StringExpression representing this spatial value.
 	 */
 	public StringExpression stringResult() {
@@ -277,7 +286,8 @@ public class LineSegment2DExpression implements LineSegment2DResult, EqualCompar
 	 * EQUALS operation.
 	 *
 	 * @param rightHandSide the value to compare against
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a BooleanExpression
 	 */
 	public BooleanExpression is(LineSegment rightHandSide) {
@@ -304,7 +314,8 @@ public class LineSegment2DExpression implements LineSegment2DResult, EqualCompar
 	 * NOT EQUALS operation.
 	 *
 	 * @param rightHandSide the value to compare against
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a BooleanExpression returning TRUE if the two line segments are
 	 * different, otherwise FALSE.
 	 */
@@ -457,7 +468,8 @@ public class LineSegment2DExpression implements LineSegment2DResult, EqualCompar
 	 *
 	 * @param point1 the first point in the line segment to compare against
 	 * @param point2 the last point in the line segment to compare against
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a BooleanExpression that will be TRUE if the lines ever cross,
 	 * otherwise FALSE.
 	 */
@@ -475,7 +487,8 @@ public class LineSegment2DExpression implements LineSegment2DResult, EqualCompar
 	 *
 	 * @param coord1 the first point in the line segment to compare against
 	 * @param coord2 the last point in the line segment to compare against
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a BooleanExpression that will be TRUE if the lines ever cross,
 	 * otherwise FALSE.
 	 */
@@ -491,7 +504,8 @@ public class LineSegment2DExpression implements LineSegment2DResult, EqualCompar
 	 * find the intersection point.
 	 *
 	 * @param linesegment the value to compare against
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a BooleanExpression that will be TRUE if the lines ever cross,
 	 * otherwise FALSE.
 	 */
@@ -507,7 +521,8 @@ public class LineSegment2DExpression implements LineSegment2DResult, EqualCompar
 	 * } to find the intersection point.
 	 *
 	 * @param crossingLine the value to compare against
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a BooleanExpression that will be TRUE if the lines ever cross,
 	 * otherwise FALSE.
 	 */
@@ -527,7 +542,8 @@ public class LineSegment2DExpression implements LineSegment2DResult, EqualCompar
 	 *
 	 * @param point1 the first point of the line segment to compare against
 	 * @param point2 the last point of the line segment to compare against
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a Point2DExpression
 	 */
 	public Point2DExpression intersectionWith(Point point1, Point point2) {
@@ -542,7 +558,8 @@ public class LineSegment2DExpression implements LineSegment2DResult, EqualCompar
 	 * @param point1y the first Y of the line segment to compare against
 	 * @param point2x the last X of the line segment to compare against
 	 * @param point2y the last Y of the line segment to compare against
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a Point2DExpression
 	 */
 	public Point2DExpression intersectionWith(Double point1x, Double point1y, Double point2x, Double point2y) {
@@ -555,7 +572,8 @@ public class LineSegment2DExpression implements LineSegment2DResult, EqualCompar
 	 *
 	 * @param coord1 the first point of the line segment to compare against
 	 * @param coord2 the last point of the line segment to compare against
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a Point2DExpression
 	 */
 	public Point2DExpression intersectionWith(Coordinate coord1, Coordinate coord2) {
@@ -567,7 +585,8 @@ public class LineSegment2DExpression implements LineSegment2DResult, EqualCompar
 	 * segment and the line segment provided.
 	 *
 	 * @param lineString the line segment to compare against
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a Point2DExpression
 	 */
 	public Point2DExpression intersectionWith(LineSegment lineString) {
@@ -580,7 +599,8 @@ public class LineSegment2DExpression implements LineSegment2DResult, EqualCompar
 	 * provided.
 	 *
 	 * @param crossingLine the line segment to compare against
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a Point2DExpression
 	 */
 	public Point2DExpression intersectionWith(LineSegment2DResult crossingLine) {

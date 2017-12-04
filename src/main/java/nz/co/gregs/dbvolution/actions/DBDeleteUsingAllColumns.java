@@ -33,8 +33,10 @@ import nz.co.gregs.dbvolution.internal.properties.PropertyWrapper;
  * The best way to use this is by using {@link DBDelete#getDeletes(nz.co.gregs.dbvolution.DBDatabase, nz.co.gregs.dbvolution.DBRow...)
  * } to automatically use this action.
  *
- * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 * @author Gregory Graham
+ * <p style="color: #F90;">Support DBvolution at
+ * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+ *
+ * @author Gregory Graham
  */
 public class DBDeleteUsingAllColumns extends DBDelete {
 
@@ -87,7 +89,7 @@ public class DBDeleteUsingAllColumns extends DBDelete {
 				+ defn.getWhereClauseBeginningCondition());
 		for (PropertyWrapper prop : row.getColumnPropertyWrappers()) {
 			QueryableDatatype<?> qdt = prop.getQueryableDatatype();
-			sql .append(defn.beginWhereClauseLine()
+			sql.append(defn.beginWhereClauseLine()
 					+ prop.columnName()
 					+ defn.getEqualsComparator()
 					+ (qdt.hasChanged() ? qdt.getPreviousSQLValue(db) : qdt.toSQLString(db)));
@@ -123,7 +125,8 @@ public class DBDeleteUsingAllColumns extends DBDelete {
 	 * @param db the target database
 	 * @param row the row to be deleted
 	 * @throws SQLException Database actions can throw SQLException
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return the list of actions required to delete all the rows.
 	 */
 	@Override

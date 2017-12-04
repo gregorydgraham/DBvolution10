@@ -45,8 +45,8 @@ import nz.co.gregs.dbvolution.results.MultiPoint2DResult;
  *
  * <p>
  * Alternatives to a DBLine2D are single line segments {@link DBLineSegment2D},
- * infinite lines (#TODO), closed paths (#TODO), and closed
- * paths defining a solid {@link DBPolygon2D}.
+ * infinite lines (#TODO), closed paths (#TODO), and closed paths defining a
+ * solid {@link DBPolygon2D}.
  *
  * <p>
  * Common datatypes covered by this type include LINESTRING.
@@ -55,8 +55,10 @@ import nz.co.gregs.dbvolution.results.MultiPoint2DResult;
  * Spatial types are not automatically generated during schema extraction so you
  * may need to change some DBString fields.
  *
- * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 * @author gregorygraham
+ * <p style="color: #F90;">Support DBvolution at
+ * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+ *
+ * @author gregorygraham
  */
 public class DBLine2D extends QueryableDatatype<LineString> implements Line2DResult {
 
@@ -85,13 +87,15 @@ public class DBLine2D extends QueryableDatatype<LineString> implements Line2DRes
 	}
 
 	/**
-	 * Create a DBLine2D with the value set to the {@link MultiPoint2DResult multipoint value or expression} provided.
+	 * Create a DBLine2D with the value set to the
+	 * {@link MultiPoint2DResult multipoint value or expression} provided.
 	 *
 	 * <p>
 	 * This is a convenient way to assign a constant value in an expression or
 	 * DBRow subclass.
 	 *
-	 * @param multipoint either a {@link MultiPoint2DExpression} or a {@link DBMultiPoint2D}
+	 * @param multipoint either a {@link MultiPoint2DExpression} or a
+	 * {@link DBMultiPoint2D}
 	 */
 	public DBLine2D(MultiPoint2DResult multipoint) {
 		super(new MultiPoint2DExpression(multipoint).line2DResult());
@@ -176,7 +180,9 @@ public class DBLine2D extends QueryableDatatype<LineString> implements Line2DRes
 	 * Transform the value of the DBLine2D into a
 	 * {@link LineString JTS LineString}
 	 *
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
 	 * @return the value of this object if defined and not NULL, NULL otherwise.
 	 */
 	public LineString jtsLineStringValue() {
@@ -211,7 +217,7 @@ public class DBLine2D extends QueryableDatatype<LineString> implements Line2DRes
 				lineString = database.getDefinition().transformDatabaseLine2DValueToJTSLineString(string);
 			} catch (com.vividsolutions.jts.io.ParseException ex) {
 				Logger.getLogger(DBPoint2D.class.getName()).log(Level.SEVERE, null, ex);
-				throw new ParsingSpatialValueException(fullColumnName, string,ex);
+				throw new ParsingSpatialValueException(fullColumnName, string, ex);
 			}
 			return lineString;
 		}

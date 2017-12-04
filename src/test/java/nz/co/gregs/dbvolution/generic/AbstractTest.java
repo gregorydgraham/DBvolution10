@@ -38,8 +38,10 @@ import org.junit.runners.Parameterized.Parameters;
 
 /**
  *
- * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 * @author Gregory Graham
+ * <p style="color: #F90;">Support DBvolution at
+ * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+ *
+ * @author Gregory Graham
  */
 @RunWith(Parameterized.class)
 public abstract class AbstractTest {
@@ -116,7 +118,7 @@ public abstract class AbstractTest {
 //			final H2MemoryDB h2MemoryDB = new H2MemoryTestDB(instance, username, password);
 			databases.add(new Object[]{"H2MemoryDB", H2MemoryTestDB.getFromSettings("h2memory")});
 		}
-		if (databases.isEmpty()||System.getProperty("testH2BlankDB") != null) {
+		if (databases.isEmpty() || System.getProperty("testH2BlankDB") != null) {
 			databases.add(new Object[]{"H2BlankDB", H2MemoryTestDB.blankDB()});
 		}
 
@@ -262,41 +264,41 @@ public abstract class AbstractTest {
 
 		public static final long serialVersionUID = 1l;
 
-		public static H2DB getFromSettings(String prefix){
-			String url = System.getProperty(prefix+".url");
-			String host = System.getProperty(prefix+".host");
-			String port = System.getProperty(prefix+".port");
-			String instance = System.getProperty(prefix+".instance");
-			String database = System.getProperty(prefix+".database");
-			String username = System.getProperty(prefix+".username");
-			String password = System.getProperty(prefix+".password");
-			String schema = System.getProperty(prefix+".schema");
-			String file = System.getProperty(prefix+".file");
-			if(file!=null&& !file.equals("")){
+		public static H2DB getFromSettings(String prefix) {
+			String url = System.getProperty(prefix + ".url");
+			String host = System.getProperty(prefix + ".host");
+			String port = System.getProperty(prefix + ".port");
+			String instance = System.getProperty(prefix + ".instance");
+			String database = System.getProperty(prefix + ".database");
+			String username = System.getProperty(prefix + ".username");
+			String password = System.getProperty(prefix + ".password");
+			String schema = System.getProperty(prefix + ".schema");
+			String file = System.getProperty(prefix + ".file");
+			if (file != null && !file.equals("")) {
 				return H2TestDatabaseFromFilename(file, username, password);
-			}else {
+			} else {
 				return new H2TestDatabase(url, username, password);
 			}
 		}
-		
-		public static H2DB getFromSettingsUsingDataSource(String prefix){
-			String url = System.getProperty(prefix+".url");
-			String host = System.getProperty(prefix+".host");
-			String port = System.getProperty(prefix+".port");
-			String instance = System.getProperty(prefix+".instance");
-			String database = System.getProperty(prefix+".database");
-			String username = System.getProperty(prefix+".username");
-			String password = System.getProperty(prefix+".password");
-			String schema = System.getProperty(prefix+".schema");
-			String file = System.getProperty(prefix+".file");
-			
+
+		public static H2DB getFromSettingsUsingDataSource(String prefix) {
+			String url = System.getProperty(prefix + ".url");
+			String host = System.getProperty(prefix + ".host");
+			String port = System.getProperty(prefix + ".port");
+			String instance = System.getProperty(prefix + ".instance");
+			String database = System.getProperty(prefix + ".database");
+			String username = System.getProperty(prefix + ".username");
+			String password = System.getProperty(prefix + ".password");
+			String schema = System.getProperty(prefix + ".schema");
+			String file = System.getProperty(prefix + ".file");
+
 			JdbcDataSource h2DataSource = new JdbcDataSource();
 			h2DataSource.setUser(username);
 			h2DataSource.setPassword(password);
 			h2DataSource.setURL(url);
 			return H2TestDatabase.getDatabaseFromDataSource(h2DataSource);
 		}
-		
+
 		private static H2DB getDatabaseFromDataSource(JdbcDataSource h2DataSource) {
 			return new H2DB(h2DataSource);
 		}
@@ -314,18 +316,18 @@ public abstract class AbstractTest {
 
 		public static final long serialVersionUID = 1l;
 
-		public static JTDSSQLServerTestDB getFromSettings(String prefix){
-			String url = System.getProperty(""+prefix+".url");
-			String host = System.getProperty(""+prefix+".host");
-			String port = System.getProperty(""+prefix+".port");
-			String instance = System.getProperty(""+prefix+".instance");
-			String database = System.getProperty(""+prefix+".database");
-			String username = System.getProperty(""+prefix+".username");
-			String password = System.getProperty(""+prefix+".password");
-			String schema = System.getProperty(""+prefix+".schema");
+		public static JTDSSQLServerTestDB getFromSettings(String prefix) {
+			String url = System.getProperty("" + prefix + ".url");
+			String host = System.getProperty("" + prefix + ".host");
+			String port = System.getProperty("" + prefix + ".port");
+			String instance = System.getProperty("" + prefix + ".instance");
+			String database = System.getProperty("" + prefix + ".database");
+			String username = System.getProperty("" + prefix + ".username");
+			String password = System.getProperty("" + prefix + ".password");
+			String schema = System.getProperty("" + prefix + ".schema");
 			return new JTDSSQLServerTestDB(host, instance, database, port, username, password);
 		}
-		
+
 		public MySQL56TestDatabase(String url, String username, String password) {
 			super(url, username, password);
 //			super("jdbc:mysql://52.64.179.175:3306/dbv?createDatabaseIfNotExist=true", "dbv", "dbv");
@@ -335,22 +337,23 @@ public abstract class AbstractTest {
 	private static class MySQLTestDatabase extends MySQLDB {
 
 		public static final long serialVersionUID = 1l;
-		
-		public static MySQLTestDatabase getFromSettings(String prefix){
-			String url = System.getProperty(""+prefix+".url");
-			String host = System.getProperty(""+prefix+".host");
-			String port = System.getProperty(""+prefix+".port");
-			String instance = System.getProperty(""+prefix+".instance");
-			String database = System.getProperty(""+prefix+".database");
-			String username = System.getProperty(""+prefix+".username");
-			String password = System.getProperty(""+prefix+".password");
-			String schema = System.getProperty(""+prefix+".schema");
+
+		public static MySQLTestDatabase getFromSettings(String prefix) {
+			String url = System.getProperty("" + prefix + ".url");
+			String host = System.getProperty("" + prefix + ".host");
+			String port = System.getProperty("" + prefix + ".port");
+			String instance = System.getProperty("" + prefix + ".instance");
+			String database = System.getProperty("" + prefix + ".database");
+			String username = System.getProperty("" + prefix + ".username");
+			String password = System.getProperty("" + prefix + ".password");
+			String schema = System.getProperty("" + prefix + ".schema");
 			return new MySQLTestDatabase(host, port, database, username, password, schema);
 		}
 
 		public MySQLTestDatabase(String host, String port, String database, String username, String password, String schema) {
 			super(host, new Integer(port), database, username, password);
 		}
+
 		public MySQLTestDatabase(String url, String username, String password) {
 			super(url, username, password);
 		}
@@ -360,15 +363,15 @@ public abstract class AbstractTest {
 
 		public static final long serialVersionUID = 1l;
 
-		public static PostgresDB getFromSettings(String prefix){
-			String url = System.getProperty(""+prefix+".url");
-			String host = System.getProperty(""+prefix+".host");
-			String port = System.getProperty(""+prefix+".port");
-			String instance = System.getProperty(""+prefix+".instance");
-			String database = System.getProperty(""+prefix+".database");
-			String username = System.getProperty(""+prefix+".username");
-			String password = System.getProperty(""+prefix+".password");
-			String schema = System.getProperty(""+prefix+".schema");
+		public static PostgresDB getFromSettings(String prefix) {
+			String url = System.getProperty("" + prefix + ".url");
+			String host = System.getProperty("" + prefix + ".host");
+			String port = System.getProperty("" + prefix + ".port");
+			String instance = System.getProperty("" + prefix + ".instance");
+			String database = System.getProperty("" + prefix + ".database");
+			String username = System.getProperty("" + prefix + ".username");
+			String password = System.getProperty("" + prefix + ".password");
+			String schema = System.getProperty("" + prefix + ".schema");
 			return TestPostgreSQL.getTestDatabase(url, host, port, instance, username, password, schema);
 		}
 
@@ -382,12 +385,12 @@ public abstract class AbstractTest {
 		public static final long serialVersionUID = 1l;
 
 		public static SQLiteTestDB getFromSettings(String prefix) throws SQLException {
-			String url = System.getProperty(""+prefix+".url");
-			String username = System.getProperty(""+prefix+".username");
-			String password = System.getProperty(""+prefix+".password");
+			String url = System.getProperty("" + prefix + ".url");
+			String username = System.getProperty("" + prefix + ".username");
+			String password = System.getProperty("" + prefix + ".password");
 			return new SQLiteTestDB(url, username, password);
 		}
-		
+
 		public SQLiteTestDB(String url, String username, String password) throws SQLException {
 			super(url, username, password);
 		}
@@ -397,18 +400,18 @@ public abstract class AbstractTest {
 
 		public static final long serialVersionUID = 1l;
 
-		public static Oracle11XETestDB getFromSettings(String prefix){
-			String url = System.getProperty(""+prefix+".url");
-			String host = System.getProperty(""+prefix+".host");
-			String port = System.getProperty(""+prefix+".port");
-			String instance = System.getProperty(""+prefix+".instance");
-			String database = System.getProperty(""+prefix+".database");
-			String username = System.getProperty(""+prefix+".username");
-			String password = System.getProperty(""+prefix+".password");
-			String schema = System.getProperty(""+prefix+".schema");
+		public static Oracle11XETestDB getFromSettings(String prefix) {
+			String url = System.getProperty("" + prefix + ".url");
+			String host = System.getProperty("" + prefix + ".host");
+			String port = System.getProperty("" + prefix + ".port");
+			String instance = System.getProperty("" + prefix + ".instance");
+			String database = System.getProperty("" + prefix + ".database");
+			String username = System.getProperty("" + prefix + ".username");
+			String password = System.getProperty("" + prefix + ".password");
+			String schema = System.getProperty("" + prefix + ".schema");
 			return new Oracle11XETestDB(host, port, instance, username, password);
 		}
-		
+
 		public Oracle11XETestDB(String host, String port, String instance, String username, String password) {
 			super(host, Integer.parseInt(port), instance, username, password);
 		}
@@ -418,18 +421,18 @@ public abstract class AbstractTest {
 
 		public static final long serialVersionUID = 1l;
 
-		public static MSSQLServerTestDB getFromSettings(String prefix){
-			String url = System.getProperty(""+prefix+".url");
-			String host = System.getProperty(""+prefix+".host");
-			String port = System.getProperty(""+prefix+".port");
-			String instance = System.getProperty(""+prefix+".instance");
-			String database = System.getProperty(""+prefix+".database");
-			String username = System.getProperty(""+prefix+".username");
-			String password = System.getProperty(""+prefix+".password");
-			String schema = System.getProperty(""+prefix+".schema");
+		public static MSSQLServerTestDB getFromSettings(String prefix) {
+			String url = System.getProperty("" + prefix + ".url");
+			String host = System.getProperty("" + prefix + ".host");
+			String port = System.getProperty("" + prefix + ".port");
+			String instance = System.getProperty("" + prefix + ".instance");
+			String database = System.getProperty("" + prefix + ".database");
+			String username = System.getProperty("" + prefix + ".username");
+			String password = System.getProperty("" + prefix + ".password");
+			String schema = System.getProperty("" + prefix + ".schema");
 			return new MSSQLServerTestDB(host, instance, database, port, username, password);
 		}
-		
+
 		public MSSQLServerTestDB(String host, String instance, String database, String port, String username, String password) {
 			super(host, instance, database, Integer.parseInt(port), username, password);
 		}
@@ -439,18 +442,18 @@ public abstract class AbstractTest {
 
 		public static final long serialVersionUID = 1l;
 
-		public static JTDSSQLServerTestDB getFromSettings(String prefix){
-			String url = System.getProperty(""+prefix+".url");
-			String host = System.getProperty(""+prefix+".host");
-			String port = System.getProperty(""+prefix+".port");
-			String instance = System.getProperty(""+prefix+".instance");
-			String database = System.getProperty(""+prefix+".database");
-			String username = System.getProperty(""+prefix+".username");
-			String password = System.getProperty(""+prefix+".password");
-			String schema = System.getProperty(""+prefix+".schema");
+		public static JTDSSQLServerTestDB getFromSettings(String prefix) {
+			String url = System.getProperty("" + prefix + ".url");
+			String host = System.getProperty("" + prefix + ".host");
+			String port = System.getProperty("" + prefix + ".port");
+			String instance = System.getProperty("" + prefix + ".instance");
+			String database = System.getProperty("" + prefix + ".database");
+			String username = System.getProperty("" + prefix + ".username");
+			String password = System.getProperty("" + prefix + ".password");
+			String schema = System.getProperty("" + prefix + ".schema");
 			return new JTDSSQLServerTestDB(host, instance, database, port, username, password);
 		}
-		
+
 		public JTDSSQLServerTestDB(String host, String instance, String database, String port, String username, String password) {
 			super(host, instance, database, Integer.parseInt(port), username, password);
 		}
@@ -460,18 +463,18 @@ public abstract class AbstractTest {
 
 		public static final long serialVersionUID = 1l;
 
-		public static H2MemoryTestDB getFromSettings(String prefix){
-			String url = System.getProperty(""+prefix+".url");
-			String host = System.getProperty(""+prefix+".host");
-			String port = System.getProperty(""+prefix+".port");
-			String instance = System.getProperty(""+prefix+".instance");
-			String database = System.getProperty(""+prefix+".database");
-			String username = System.getProperty(""+prefix+".username");
-			String password = System.getProperty(""+prefix+".password");
-			String schema = System.getProperty(""+prefix+".schema");
+		public static H2MemoryTestDB getFromSettings(String prefix) {
+			String url = System.getProperty("" + prefix + ".url");
+			String host = System.getProperty("" + prefix + ".host");
+			String port = System.getProperty("" + prefix + ".port");
+			String instance = System.getProperty("" + prefix + ".instance");
+			String database = System.getProperty("" + prefix + ".database");
+			String username = System.getProperty("" + prefix + ".username");
+			String password = System.getProperty("" + prefix + ".password");
+			String schema = System.getProperty("" + prefix + ".schema");
 			return new H2MemoryTestDB(instance, username, password);
 		}
-		
+
 		public static H2MemoryTestDB blankDB() {
 			return new H2MemoryTestDB("Blank", "", "");
 		}

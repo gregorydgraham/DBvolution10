@@ -47,8 +47,10 @@ import nz.co.gregs.dbvolution.operators.DBPermittedValuesOperator;
  * Generally DBNumber is declared inside your DBRow sub-class as:
  * {@code @DBColumn public DBNumber myIntColumn = new DBNumber();}
  *
- * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 * @author Gregory Graham
+ * <p style="color: #F90;">Support DBvolution at
+ * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+ *
+ * @author Gregory Graham
  */
 public class DBNumber extends QueryableDatatype<Number> implements NumberResult {
 
@@ -120,10 +122,9 @@ public class DBNumber extends QueryableDatatype<Number> implements NumberResult 
 	 *
 	 * <p>
 	 * This is probably the method you want to use to set or change the value of
-	 * this DBNumber. When creating a new row or updating an existing row use
-	 * this method or
-	 * {@link #setValue(nz.co.gregs.dbvolution.datatypes.DBNumber)} to correctly
-	 * set the value.
+	 * this DBNumber. When creating a new row or updating an existing row use this
+	 * method or {@link #setValue(nz.co.gregs.dbvolution.datatypes.DBNumber)} to
+	 * correctly set the value.
 	 *
 	 * <p>
 	 * Remember:</p>
@@ -147,23 +148,25 @@ public class DBNumber extends QueryableDatatype<Number> implements NumberResult 
 
 	/**
 	 *
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
 	 * @return the default database type as a string, may be gazumped by the
 	 * DBDefinition
 	 */
 	@Override
 	public String getSQLDatatype() {
-		return "NUMERIC("+getNumericPrecision()+","+getNumericScale()+")";
+		return "NUMERIC(" + getNumericPrecision() + "," + getNumericScale() + ")";
 	}
 
 	public static int getNumericScale() {
-		return 16; 
+		return 16;
 		// Theoretically 16 decimals is the maximum accuracy of floating point numbers.
 		// given the max precision(28) of pre-2012 MS SQL Server, 16 decimals seems as accurate as is reasonable
 	}
 
 	public static int getNumericPrecision() {
-		return 28; 
+		return 28;
 		// 28 is the maximum precision for MS SQL Server pre-2012, other databases seem not to be limited
 		// 38 is the maximum for MSSQLServer 2012+
 	}
@@ -171,7 +174,8 @@ public class DBNumber extends QueryableDatatype<Number> implements NumberResult 
 	/**
 	 *
 	 * @param db	db
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return the underlying number formatted for a SQL statement
 	 */
 	@Override
@@ -190,7 +194,9 @@ public class DBNumber extends QueryableDatatype<Number> implements NumberResult 
 	 * The literal value is undefined (and {@code null}) if using an operator
 	 * other than {@code equals}.
 	 *
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
 	 * @return the literal value, if defined, which may be null
 	 */
 	@Override
@@ -199,10 +205,11 @@ public class DBNumber extends QueryableDatatype<Number> implements NumberResult 
 	}
 
 	/**
-	 * The current {@link #getValue()  literal value} of this DBNumber as a
-	 * Number
+	 * The current {@link #getValue()  literal value} of this DBNumber as a Number
 	 *
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
 	 * @return the number as the original number class
 	 */
 	public Number numberValue() {
@@ -216,10 +223,11 @@ public class DBNumber extends QueryableDatatype<Number> implements NumberResult 
 	}
 
 	/**
-	 * The current {@link #getValue()  literal value} of this DBNumber as a
-	 * Double
+	 * The current {@link #getValue()  literal value} of this DBNumber as a Double
 	 *
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
 	 * @return the number as a Double
 	 */
 	@SuppressWarnings("deprecation")
@@ -234,7 +242,9 @@ public class DBNumber extends QueryableDatatype<Number> implements NumberResult 
 	/**
 	 * The current {@link #getValue()  literal value} of this DBNumber as a Long
 	 *
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
 	 * @return the number as a Long
 	 */
 	@SuppressWarnings("deprecation")
@@ -250,7 +260,9 @@ public class DBNumber extends QueryableDatatype<Number> implements NumberResult 
 	 * The current {@link #getValue()  literal value} of this DBNumber as an
 	 * Integer
 	 *
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
 	 * @return the number as an Integer
 	 */
 	@SuppressWarnings("deprecation")
@@ -279,8 +291,7 @@ public class DBNumber extends QueryableDatatype<Number> implements NumberResult 
 
 	/**
 	 *
-	 * reduces the rows to only the object, Set, List, Array, or vararg of
-	 * objects
+	 * reduces the rows to only the object, Set, List, Array, or vararg of objects
 	 *
 	 * @param permitted	permitted
 	 */
@@ -290,8 +301,7 @@ public class DBNumber extends QueryableDatatype<Number> implements NumberResult 
 
 	/**
 	 *
-	 * reduces the rows to only the object, Set, List, Array, or vararg of
-	 * objects
+	 * reduces the rows to only the object, Set, List, Array, or vararg of objects
 	 *
 	 * @param permitted	permitted
 	 */
@@ -301,8 +311,7 @@ public class DBNumber extends QueryableDatatype<Number> implements NumberResult 
 
 	/**
 	 *
-	 * reduces the rows to only the object, Set, List, Array, or vararg of
-	 * objects
+	 * reduces the rows to only the object, Set, List, Array, or vararg of objects
 	 *
 	 * @param permitted	permitted
 	 */
@@ -349,8 +358,8 @@ public class DBNumber extends QueryableDatatype<Number> implements NumberResult 
 	/**
 	 * Performs searches based on a range.
 	 *
-	 * if both ends of the range are specified the lower-bound will be included
-	 * in the search and the upper-bound excluded. I.e permittedRange(1,3) will
+	 * if both ends of the range are specified the lower-bound will be included in
+	 * the search and the upper-bound excluded. I.e permittedRange(1,3) will
 	 * return 1 and 2.
 	 *
 	 * <p>
@@ -373,8 +382,8 @@ public class DBNumber extends QueryableDatatype<Number> implements NumberResult 
 	/**
 	 * Performs searches based on a range.
 	 *
-	 * if both ends of the range are specified the lower-bound will be included
-	 * in the search and the upper-bound excluded. I.e permittedRange(1,3) will
+	 * if both ends of the range are specified the lower-bound will be included in
+	 * the search and the upper-bound excluded. I.e permittedRange(1,3) will
 	 * return 1 and 2.
 	 *
 	 * <p>
@@ -493,9 +502,9 @@ public class DBNumber extends QueryableDatatype<Number> implements NumberResult 
 	/**
 	 * Performs searches based on a range.
 	 *
-	 * if both ends of the range are specified the lower-bound will be within
-	 * the range and the upper-bound outside. I.e excludedRange(1,3) will
-	 * exclude 1 and 2.
+	 * if both ends of the range are specified the lower-bound will be within the
+	 * range and the upper-bound outside. I.e excludedRange(1,3) will exclude 1
+	 * and 2.
 	 *
 	 * <p>
 	 * if the upper-bound is null the range will be open ended and inclusive.
@@ -519,8 +528,8 @@ public class DBNumber extends QueryableDatatype<Number> implements NumberResult 
 	 * Performs searches based on a range.
 	 *
 	 * if both ends of the range are specified the lower-bound will be within in
-	 * the range and the upper-bound outside. I.e excludedRange(1,3) will
-	 * exclude 1 and 2.
+	 * the range and the upper-bound outside. I.e excludedRange(1,3) will exclude
+	 * 1 and 2.
 	 *
 	 * <p>
 	 * if the upper-bound is null the range will be open ended and inclusive.
@@ -544,8 +553,8 @@ public class DBNumber extends QueryableDatatype<Number> implements NumberResult 
 	 * Performs searches based on a range.
 	 *
 	 * if both ends of the range are specified both the lower- and upper-bound
-	 * will be included in the range. I.e excludedRangeInclusive(1,3) will
-	 * exclude 1, 2, and 3.
+	 * will be included in the range. I.e excludedRangeInclusive(1,3) will exclude
+	 * 1, 2, and 3.
 	 *
 	 * <p>
 	 * if the upper-bound is null the range will be open ended and inclusive.
@@ -569,8 +578,8 @@ public class DBNumber extends QueryableDatatype<Number> implements NumberResult 
 	 * Performs searches based on a range.
 	 *
 	 * if both ends of the range are specified both the lower- and upper-bound
-	 * will be included in the range. I.e excludedRangeInclusive(1,3) will
-	 * exclude 1, 2, and 3.
+	 * will be included in the range. I.e excludedRangeInclusive(1,3) will exclude
+	 * 1, 2, and 3.
 	 *
 	 * <p>
 	 * if the upper-bound is null the range will be open ended and inclusive.
@@ -594,8 +603,8 @@ public class DBNumber extends QueryableDatatype<Number> implements NumberResult 
 	 * Performs searches based on a range.
 	 *
 	 * if both ends of the range are specified both the lower- and upper-bound
-	 * will be excluded in the range. I.e excludedRangeExclusive(1,3) will
-	 * exclude 2.
+	 * will be excluded in the range. I.e excludedRangeExclusive(1,3) will exclude
+	 * 2.
 	 *
 	 * <p>
 	 * if the upper-bound is null the range will be open ended and exclusive.
@@ -619,8 +628,8 @@ public class DBNumber extends QueryableDatatype<Number> implements NumberResult 
 	 * Performs searches based on a range.
 	 *
 	 * if both ends of the range are specified both the lower- and upper-bound
-	 * will be excluded in the range. I.e excludedRangeExclusive(1,3) will
-	 * exclude 2.
+	 * will be excluded in the range. I.e excludedRangeExclusive(1,3) will exclude
+	 * 2.
 	 *
 	 * <p>
 	 * if the upper-bound is null the range will be open ended and exclusive.

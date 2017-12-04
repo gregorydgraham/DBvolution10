@@ -24,8 +24,10 @@ import nz.co.gregs.dbvolution.expressions.BooleanExpression;
  * <p>
  * Methods appropriate to a range include Greater Than, Less Than, and Equals.
  *
- * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 * @author Gregory Graham
+ * <p style="color: #F90;">Support DBvolution at
+ * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+ *
+ * @author Gregory Graham
  * @param <A> the class that can be compared
  */
 public interface RangeComparable<A> extends EqualComparable<A> {
@@ -35,7 +37,8 @@ public interface RangeComparable<A> extends EqualComparable<A> {
 	 * LESSTHAN operation.
 	 *
 	 * @param anotherInstance the instance to compare to
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a BooleanExpression
 	 */
 	public BooleanExpression isLessThan(A anotherInstance);
@@ -45,7 +48,8 @@ public interface RangeComparable<A> extends EqualComparable<A> {
 	 * GREATERTHAN operation.
 	 *
 	 * @param anotherInstance the instance to compare to
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a BooleanExpression
 	 */
 	public BooleanExpression isGreaterThan(A anotherInstance);
@@ -55,7 +59,8 @@ public interface RangeComparable<A> extends EqualComparable<A> {
 	 * LESSTHAN operation.
 	 *
 	 * @param anotherInstance the instance to compare to
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a BooleanExpression
 	 */
 	public BooleanExpression isLessThanOrEqual(A anotherInstance);
@@ -65,7 +70,8 @@ public interface RangeComparable<A> extends EqualComparable<A> {
 	 * GREATERTHAN operation.
 	 *
 	 * @param anotherInstance the instance to compare to
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a BooleanExpression
 	 */
 	public BooleanExpression isGreaterThanOrEqual(A anotherInstance);
@@ -81,7 +87,8 @@ public interface RangeComparable<A> extends EqualComparable<A> {
 	 *
 	 * @param anotherInstance the instance to compare to
 	 * @param fallBackWhenEqual expression to use when the values are equal
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a BooleanExpression
 	 */
 	public BooleanExpression isLessThan(A anotherInstance, BooleanExpression fallBackWhenEqual);
@@ -92,7 +99,8 @@ public interface RangeComparable<A> extends EqualComparable<A> {
 	 *
 	 * @param anotherInstance the instance to compare to
 	 * @param fallBackWhenEqual expression to use when the values are equal
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a BooleanExpression
 	 */
 	public BooleanExpression isGreaterThan(A anotherInstance, BooleanExpression fallBackWhenEqual);

@@ -42,8 +42,10 @@ import org.junit.Test;
 
 /**
  *
- * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 * @author Gregory Graham
+ * <p style="color: #F90;">Support DBvolution at
+ * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+ *
+ * @author Gregory Graham
  */
 public class BooleanExpressionTest extends AbstractTest {
 
@@ -72,7 +74,7 @@ public class BooleanExpressionTest extends AbstractTest {
 
 		dbQuery.addCondition(
 				marque.column(marque.name).isLikeIgnoreCase("%o%")
-				.xor(marque.column(marque.name).isLikeIgnoreCase("%a%"))
+						.xor(marque.column(marque.name).isLikeIgnoreCase("%a%"))
 		);
 
 		List<DBQueryRow> allRows = dbQuery.getAllRows();
@@ -102,7 +104,7 @@ public class BooleanExpressionTest extends AbstractTest {
 		List<DBQueryRow> allRows = dbQuery.getAllRows();
 
 		Assert.assertThat(allRows.size(), is(22));
-		
+
 		dbQuery = database.getDBQuery(marque);
 
 		dbQuery.addCondition(BooleanExpression.nullExpression().isNotNull());
@@ -199,7 +201,7 @@ public class BooleanExpressionTest extends AbstractTest {
 
 		Assert.assertThat(allRows.size(), is(1));
 	}
-	
+
 	@Test
 	public void testStringIsIgnoreCase() throws SQLException {
 		Marque marque = new Marque();
@@ -570,6 +572,7 @@ public class BooleanExpressionTest extends AbstractTest {
 
 		Assert.assertThat(allRows.size(), is(22));
 	}
+
 	@Test
 	public void testSomeButNotAllOf() throws SQLException {
 		Marque marque = new Marque();
@@ -999,7 +1002,7 @@ public class BooleanExpressionTest extends AbstractTest {
 
 		dbQuery.addCondition(
 				marq.column(marq.name).isLessThan("FORD")
-				.or(marq.column(marq.updateCount).isGreaterThan(2))
+						.or(marq.column(marq.updateCount).isGreaterThan(2))
 		);
 
 		List<DBQueryRow> allRows = dbQuery.getAllRows();
@@ -1009,7 +1012,7 @@ public class BooleanExpressionTest extends AbstractTest {
 
 		dbQuery.addCondition(
 				marq.column(marq.name).isLessThan("FORD")
-				.or(marq.column(marq.creationDate).isLessThan(march23rd2013))
+						.or(marq.column(marq.creationDate).isLessThan(march23rd2013))
 		);
 
 		allRows = dbQuery.getAllRows();

@@ -31,8 +31,10 @@ import nz.co.gregs.dbvolution.query.QueryOptions;
 /**
  * The DBDefinition to use for JavaDB databases.
  *
- * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 * @author Gregory Graham
+ * <p style="color: #F90;">Support DBvolution at
+ * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+ *
+ * @author Gregory Graham
  */
 public class JavaDBDefinition extends DBDefinition {
 
@@ -161,7 +163,9 @@ public class JavaDBDefinition extends DBDefinition {
 	/**
 	 * JavaDB does not support the GREATESTOF operation natively.
 	 *
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
 	 * @return FALSE
 	 */
 	@Override
@@ -172,7 +176,9 @@ public class JavaDBDefinition extends DBDefinition {
 	/**
 	 * JavaDB does not support the LEASTOF operation natively.
 	 *
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
 	 * @return FALSE
 	 */
 	@Override

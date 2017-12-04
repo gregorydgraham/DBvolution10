@@ -23,8 +23,10 @@ import nz.co.gregs.dbvolution.datatypes.DBUnknownDatatype;
 
 /**
  *
- * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 * @author Gregory Graham
+ * <p style="color: #F90;">Support DBvolution at
+ * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+ *
+ * @author Gregory Graham
  */
 public class DBTableClass {
 
@@ -63,7 +65,9 @@ public class DBTableClass {
 	 * For a class named AClass in the package com.acme.database {@link #getFullyQualifiedName()
 	 * } will return "com.acme.database.AClass".
 	 *
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
 	 * @return a String of the fully qualified class name.
 	 */
 	public String getFullyQualifiedName() {
@@ -79,7 +83,8 @@ public class DBTableClass {
 	 * method is called to generate the required Java source.
 	 *
 	 * @param options
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a String of the source code of the new DBRow class.
 	 */
 	public String generateJavaSource(DBTableClassGenerator.Options options) {
@@ -136,7 +141,7 @@ public class DBTableClass {
 				javaSrc.append("    @").append(autoIncrementAnnotation).append(lineSeparator);
 			}
 			if (field.isForeignKey) {
-				if(options.includeForeignKeyColumnName){
+				if (options.includeForeignKeyColumnName) {
 					javaSrc.append("    @").append(foreignKeyAnnotation).append("(value = ").append(field.referencesClass).append(".class, column = \"").append(field.referencesField).append("\")");
 				} else {
 					javaSrc.append("    @").append(foreignKeyAnnotation).append("(").append(field.referencesClass).append(".class)");
@@ -159,7 +164,9 @@ public class DBTableClass {
 	}
 
 	/**
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
 	 * @return the packageName
 	 */
 	public String getPackageName() {
@@ -174,7 +181,9 @@ public class DBTableClass {
 	}
 
 	/**
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
 	 * @return the fields
 	 */
 	public List<DBTableField> getFields() {
@@ -182,7 +191,9 @@ public class DBTableClass {
 	}
 
 	/**
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
 	 * @return the javaSource
 	 */
 	public String getJavaSource() {
@@ -190,7 +201,9 @@ public class DBTableClass {
 	}
 
 	/**
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
 	 * @return the tableName
 	 */
 	public String getTableName() {
@@ -205,7 +218,9 @@ public class DBTableClass {
 	}
 
 	/**
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
 	 * @return the className
 	 */
 	public String getClassName() {

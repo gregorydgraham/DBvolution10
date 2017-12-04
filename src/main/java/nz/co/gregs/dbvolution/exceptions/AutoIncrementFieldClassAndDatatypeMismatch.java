@@ -19,8 +19,10 @@ import nz.co.gregs.dbvolution.internal.properties.PropertyWrapper;
 
 /**
  *
- * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 * @author Gregory Graham
+ * <p style="color: #F90;">Support DBvolution at
+ * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+ *
+ * @author Gregory Graham
  */
 public class AutoIncrementFieldClassAndDatatypeMismatch extends DBRuntimeException {
 

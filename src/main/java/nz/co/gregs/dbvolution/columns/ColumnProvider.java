@@ -19,15 +19,19 @@ package nz.co.gregs.dbvolution.columns;
  * Interface to indicate that this object can provide a column.
  *
  *
- * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 * @author Gregory Graham
+ * <p style="color: #F90;">Support DBvolution at
+ * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+ *
+ * @author Gregory Graham
  */
 public interface ColumnProvider {
 
 	/**
 	 * Returns the AbstractColumn from this ColumnProvider.
 	 *
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
 	 * @return the column that this provider supplies.
 	 */
 	public AbstractColumn getColumn();

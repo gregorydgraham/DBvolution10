@@ -23,17 +23,18 @@ import java.sql.Statement;
  * where each pair of numbers is a point and the entire string is less than 2000
  * characters
  *
- * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 * @author gregorygraham
+ * <p style="color: #F90;">Support DBvolution at
+ * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+ *
+ * @author gregorygraham
  */
 public enum MultiPoint2DFunctions implements DBVFeature {
 
 // MULTIPOINT ((1 2, 3 4, 5 6))
-
 	/**
 	 *
 	 */
-		CREATE("String", "Double... coords", "\n"
+	CREATE("String", "Double... coords", "\n"
 			+ "			Integer numberOfArguments = coords.length;\n"
 			+ "			if (numberOfArguments % 2 != 0) {\n"
 			+ "				return null;\n"
@@ -53,7 +54,6 @@ public enum MultiPoint2DFunctions implements DBVFeature {
 			+ "				resultStr += \")\";\n"
 			+ "				return resultStr;\n"
 			+ "			}"),
-
 	/**
 	 *
 	 */
@@ -63,7 +63,6 @@ public enum MultiPoint2DFunctions implements DBVFeature {
 			+ "			} else {\n"
 			+ "				return firstLine.equals(secondLine);\n"
 			+ "			}"),
-
 	/**
 	 *
 	 */
@@ -81,7 +80,6 @@ public enum MultiPoint2DFunctions implements DBVFeature {
 			+ "				}\n"
 			+ "				return maxX;\n"
 			+ "			}"),
-
 	/**
 	 *
 	 */
@@ -99,7 +97,6 @@ public enum MultiPoint2DFunctions implements DBVFeature {
 			+ "				}\n"
 			+ "				return maxY;\n"
 			+ "			}"),
-
 	/**
 	 *
 	 */
@@ -117,7 +114,6 @@ public enum MultiPoint2DFunctions implements DBVFeature {
 			+ "				}\n"
 			+ "				return maxX;\n"
 			+ "			}"),
-
 	/**
 	 *
 	 */
@@ -135,7 +131,6 @@ public enum MultiPoint2DFunctions implements DBVFeature {
 			+ "				}\n"
 			+ "				return maxY;\n"
 			+ "			}"),
-
 	/**
 	 *
 	 */
@@ -167,22 +162,18 @@ public enum MultiPoint2DFunctions implements DBVFeature {
 			+ "				String resultString = \"POLYGON ((\" + minX+\" \"+minY + \", \" + maxX+\" \"+minY + \", \" + maxX+\" \"+maxY + \", \" + minX+\" \"+maxY + \", \" + minX+\" \"+minY + \"))\";\n"
 			+ "				return resultString;\n"
 			+ "			}"),
-
 	/**
 	 *
 	 */
-	DIMENSION("Integer", "String firstLine", "return 0;"	),
-
+	DIMENSION("Integer", "String firstLine", "return 0;"),
 	/**
 	 *
 	 */
 	ASTEXT("String", "String firstLine", "return firstLine;"),
-
 	/**
 	 *
 	 */
 	ASLINE2D("String", "String multipoint", "return multipoint.replace(\"(\",\"\").replace(\")\",\"\").replace(\"MULTIPOINT \", \"LINESTRING (\")+\")\";"),
-
 	/**
 	 *
 	 */
@@ -195,17 +186,17 @@ public enum MultiPoint2DFunctions implements DBVFeature {
 			+ "				return (split.length - 1)/2;\n"
 			+ "			}"),
 	//'MULTIPOINT ((2 3), (3 4))' => 'POLYGON ((2 3, 3 4, 2 3))' 
-//	ASPOLYGON2D("String", "String multipoint", ""
-//			+ "if (multipoint.split(\",\").length<3){"
-//			+ "	return null;"
-//			+ "} else{"
-//			+ "	return multipoint.replace(\"), (\", \", \").replaceAll(\"\\\\(([-0-9.]+ [-0-9.]+)(.*)\\\\)\\\\)\", \"($1$2, $1))\").replace(\"MULTIPOINT\", \"POLYGON\");"
-//			+ "}"),
+	//	ASPOLYGON2D("String", "String multipoint", ""
+	//			+ "if (multipoint.split(\",\").length<3){"
+	//			+ "	return null;"
+	//			+ "} else{"
+	//			+ "	return multipoint.replace(\"), (\", \", \").replaceAll(\"\\\\(([-0-9.]+ [-0-9.]+)(.*)\\\\)\\\\)\", \"($1$2, $1))\").replace(\"MULTIPOINT\", \"POLYGON\");"
+	//			+ "}"),
 
 	/**
 	 *
 	 */
-		GETPOINTATINDEX_FUNCTION("String", "String multipoint, Integer index", "\n"
+	GETPOINTATINDEX_FUNCTION("String", "String multipoint, Integer index", "\n"
 			+ "			final int indexInMPoint = index * 2;\n"
 			+ "			if (multipoint == null||indexInMPoint<=0) {\n"
 			+ "				return null;\n"
@@ -220,7 +211,6 @@ public enum MultiPoint2DFunctions implements DBVFeature {
 			+ "				}\n"
 			+ "			}");
 
-
 //	private final String functionName;
 	private final String returnType;
 	private final String parameters;
@@ -233,13 +223,15 @@ public enum MultiPoint2DFunctions implements DBVFeature {
 		this.parameters = parameters;
 		this.code = code;
 	}
-	
+
 	/**
 	 *
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
 	 * @return the integer version number of the function to be used
 	 */
-	static public int getCurrentVersion(){
+	static public int getCurrentVersion() {
 		return 2;
 	}
 
@@ -247,7 +239,7 @@ public enum MultiPoint2DFunctions implements DBVFeature {
 	public String toString() {
 		return "DBV_MULTIPOINT2D_" + name();
 	}
-	
+
 	@Override
 	public String alias() {
 		return toString();
@@ -267,7 +259,7 @@ public enum MultiPoint2DFunctions implements DBVFeature {
 			;// Not an issue.
 		}
 		final String createFunctionStatement = "CREATE ALIAS IF NOT EXISTS " + this + " DETERMINISTIC AS $$ \n" + "@CODE " + returnType + " " + this + "(" + parameters + ", Integer version) throws org.h2.jdbc.JdbcSQLException {\n"
-				+ "if (version!="+getCurrentVersion()+"){\n"
+				+ "if (version!=" + getCurrentVersion() + "){\n"
 				+ "	throw new org.h2.jdbc.JdbcSQLException(\"Function " + this + " not found\", \"Function " + this + " not found\", \"Function " + this + " not found\", version, null, \"Function " + this + " not found\"); \n"
 				+ "}else{\n"
 				+ code

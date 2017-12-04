@@ -78,7 +78,7 @@ public class DBPolygon2DTest extends AbstractTest {
 
 			List<BasicSpatialTable> allRows = database.getDBTable(new BasicSpatialTable()).setBlankQueryAllowed(true).getAllRows();
 			Assert.assertThat(allRows.size(), is(1));
-			
+
 			final Polygon gotPolygon = allRows.get(0).myfirstgeom.getValue();
 			Assert.assertThat(gotPolygon.getGeometryType(), is("Polygon"));
 			Assert.assertThat(gotPolygon, is(createPolygonFromPoint));
@@ -88,7 +88,7 @@ public class DBPolygon2DTest extends AbstractTest {
 			spatial.myfirstgeom.setValue(createPolygonFromPoint(createPoint));
 			database.insert(spatial);
 			allRows = database.getDBTable(new BasicSpatialTable()).setBlankQueryAllowed(true).getAllRows();
-			
+
 			Assert.assertThat(allRows.size(), is(2));
 		}
 	}
@@ -123,7 +123,7 @@ public class DBPolygon2DTest extends AbstractTest {
 //			Polygon polygon = fac.createPolygon(coordArray);
 			DBQuery query = database.getDBQuery(new BasicSpatialTable()).addCondition(Polygon2DExpression.value(pointArray).intersects(spatial.column(spatial.myfirstgeom)));
 			List<BasicSpatialTable> allRows = query.getAllInstancesOf(spatial);
-			
+
 			Assert.assertThat(allRows.size(), is(1));
 			Assert.assertThat(allRows.get(0).pkid.intValue(), is(1));
 		}
@@ -159,7 +159,7 @@ public class DBPolygon2DTest extends AbstractTest {
 //			Polygon polygon = fac.createPolygon(coordArray);
 			DBQuery query = database.getDBQuery(new BasicSpatialTable()).addCondition(Polygon2DExpression.value(pointArray).intersects(spatial.column(spatial.myfirstgeom)));
 			List<BasicSpatialTable> allRows = query.getAllInstancesOf(spatial);
-			
+
 			Assert.assertThat(allRows.size(), is(1));
 			Assert.assertThat(allRows.get(0).pkid.intValue(), is(1));
 		}
@@ -196,7 +196,7 @@ public class DBPolygon2DTest extends AbstractTest {
 //			Polygon polygon = fac.createPolygon(coordArray);
 			DBQuery query = database.getDBQuery(new BasicSpatialTable()).addCondition(Polygon2DExpression.value(polygonResult).intersects(spatial.column(spatial.myfirstgeom)));
 			List<BasicSpatialTable> allRows = query.getAllInstancesOf(spatial);
-			
+
 			Assert.assertThat(allRows.size(), is(1));
 			Assert.assertThat(allRows.get(0).pkid.intValue(), is(1));
 		}
@@ -226,7 +226,7 @@ public class DBPolygon2DTest extends AbstractTest {
 //			Polygon polygon = fac.createPolygon(coordArray);
 			DBQuery query = database.getDBQuery(new BasicSpatialTable()).addCondition(Polygon2DExpression.value(coordArray).intersects(spatial.column(spatial.myfirstgeom)));
 			List<BasicSpatialTable> allRows = query.getAllInstancesOf(spatial);
-			
+
 			Assert.assertThat(allRows.size(), is(1));
 			Assert.assertThat(allRows.get(0).pkid.intValue(), is(1));
 		}
@@ -253,19 +253,19 @@ public class DBPolygon2DTest extends AbstractTest {
 			Polygon polygon = fac.createPolygon(new Coordinate[]{new Coordinate(0, 0), new Coordinate(11, 0), new Coordinate(11, 11), new Coordinate(0, 11), new Coordinate(0, 0)});
 			DBQuery query = database.getDBQuery(new BasicSpatialTable()).addCondition(Polygon2DExpression.value(polygon).intersects(spatial.column(spatial.myfirstgeom)));
 			List<BasicSpatialTable> allRows = query.getAllInstancesOf(spatial);
-			
+
 			Assert.assertThat(allRows.size(), is(1));
 			Assert.assertThat(allRows.get(0).pkid.intValue(), is(1));
 
 			polygon = fac.createPolygon(new Coordinate[]{new Coordinate(0, 0), new Coordinate(13, 0), new Coordinate(13, 13), new Coordinate(0, 13), new Coordinate(0, 0)});
 			query = database.getDBQuery(new BasicSpatialTable()).addCondition(Polygon2DExpression.value(polygon).intersects(spatial.column(spatial.myfirstgeom)));
 			allRows = query.getAllInstancesOf(spatial);
-			
+
 			Assert.assertThat(allRows.size(), is(2));
 
 			query = database.getDBQuery(new BasicSpatialTable()).addCondition(spatial.column(spatial.myfirstgeom).intersects(polygon));
 			allRows = query.getAllInstancesOf(spatial);
-			
+
 			Assert.assertThat(allRows.size(), is(2));
 		}
 	}
@@ -297,7 +297,7 @@ public class DBPolygon2DTest extends AbstractTest {
 							Polygon2DExpression.value(polygon).intersects(spatial.column(spatial.myfirstgeom))
 									.ifThenElse(thenPoly, elsePolygon).is(thenPoly));
 			List<BasicSpatialTable> allRows = query.getAllInstancesOf(spatial);
-			
+
 			Assert.assertThat(allRows.size(), is(1));
 			Assert.assertThat(allRows.get(0).pkid.intValue(), is(1));
 		}
@@ -325,19 +325,19 @@ public class DBPolygon2DTest extends AbstractTest {
 			final Polygon2DColumn column = spatial.column(spatial.myfirstgeom);
 			DBQuery query = database.getDBQuery(new BasicSpatialTable()).addCondition(Polygon2DExpression.value(polygon).contains(column));
 			List<BasicSpatialTable> allRows = query.getAllInstancesOf(spatial);
-			
+
 			Assert.assertThat(allRows.size(), is(1));
 			Assert.assertThat(allRows.get(0).pkid.intValue(), is(1));
 
 			polygon = fac.createPolygon(new Coordinate[]{new Coordinate(0, 0), new Coordinate(13, 0), new Coordinate(13, 13), new Coordinate(0, 13), new Coordinate(0, 0)});
 			query = database.getDBQuery(new BasicSpatialTable()).addCondition(Polygon2DExpression.value(polygon).contains(column));
 			allRows = query.getAllInstancesOf(spatial);
-			
+
 			Assert.assertThat(allRows.size(), is(2));
 
 			query = database.getDBQuery(new BasicSpatialTable()).addCondition(column.contains(polygon));
 			allRows = query.getAllInstancesOf(spatial);
-			
+
 			Assert.assertThat(allRows.size(), is(0));
 		}
 	}
@@ -813,7 +813,7 @@ public class DBPolygon2DTest extends AbstractTest {
 			List<BasicSpatialTable> allRows = query.getAllInstancesOf(spatial);
 
 			Assert.assertThat(allRows.size(), is(3));
-			
+
 			query = database.getDBQuery(new BasicSpatialTable()).addCondition(spatial.column(spatial.myfirstgeom).spatialDimensions().is(3));
 			allRows = query.getAllInstancesOf(spatial);
 
@@ -840,7 +840,7 @@ public class DBPolygon2DTest extends AbstractTest {
 
 			query = database.getDBQuery(new BasicSpatialTable())
 					.addCondition(spatial.column(spatial.myfirstgeom).exteriorRing().is(
-									fac.createLineString(new Coordinate[]{new Coordinate(5, 10), new Coordinate(6, 10), new Coordinate(6, 11), new Coordinate(5, 11), new Coordinate(5, 10)}))
+							fac.createLineString(new Coordinate[]{new Coordinate(5, 10), new Coordinate(6, 10), new Coordinate(6, 11), new Coordinate(5, 11), new Coordinate(5, 10)}))
 					);
 			allRows = query.getAllInstancesOf(spatial);
 

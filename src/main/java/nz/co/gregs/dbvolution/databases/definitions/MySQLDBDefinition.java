@@ -42,8 +42,10 @@ import nz.co.gregs.dbvolution.internal.properties.PropertyWrapper;
  * This DBDefinition is automatically included in {@link MySQLDB} instances, and
  * you should not need to use it directly.
  *
- * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 * @author Gregory Graham
+ * <p style="color: #F90;">Support DBvolution at
+ * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+ *
+ * @author Gregory Graham
  */
 public class MySQLDBDefinition extends DBDefinition {
 
@@ -115,8 +117,8 @@ public class MySQLDBDefinition extends DBDefinition {
 		} else {
 			return selectableName;
 		}
-	}	
-	
+	}
+
 	@Override
 	public String beginStringValue() {
 		return " '";
@@ -157,7 +159,9 @@ public class MySQLDBDefinition extends DBDefinition {
 	 * Provides the function of the function that provides the standard deviation
 	 * of a selection.
 	 *
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
 	 * @return "stddev"
 	 */
 	@Override
@@ -230,11 +234,11 @@ public class MySQLDBDefinition extends DBDefinition {
 	@Override
 	public String doDayOfWeekTransform(String dateSQL) {
 		return " DAYOFWEEK(" + dateSQL + ")";
-	}	
-	
+	}
+
 	@Override
 	public String doDateAtTimeZoneTransform(String dateSQL, TimeZone timeZone) throws UnsupportedOperationException {
-		return "CONVERT_TZ("+dateSQL+" , 'SYSTEM', '"+timeZone.getDisplayName(false, TimeZone.SHORT)+"')";
+		return "CONVERT_TZ(" + dateSQL + " , 'SYSTEM', '" + timeZone.getDisplayName(false, TimeZone.SHORT) + "')";
 	}
 
 	@Override
@@ -336,7 +340,7 @@ public class MySQLDBDefinition extends DBDefinition {
 
 	@Override
 	public String doPolygon2DAsTextTransform(String polygonSQL) {
-		return "ST_AsText("+polygonSQL+")";
+		return "ST_AsText(" + polygonSQL + ")";
 	}
 
 	@Override
@@ -669,14 +673,14 @@ public class MySQLDBDefinition extends DBDefinition {
 			return super.preferredLargeObjectReader(lob);
 		}
 	}
-	
+
 	@Override
 	public String doFindNumberInStringTransform(String toSQLString) {
-		return MigrationFunctions.FINDFIRSTNUMBER+"("+toSQLString+")";
+		return MigrationFunctions.FINDFIRSTNUMBER + "(" + toSQLString + ")";
 	}
-	
+
 	@Override
 	public String doFindIntegerInStringTransform(String toSQLString) {
-		return MigrationFunctions.FINDFIRSTINTEGER+"("+toSQLString+")";
+		return MigrationFunctions.FINDFIRSTINTEGER + "(" + toSQLString + ")";
 	}
 }

@@ -29,8 +29,10 @@ import nz.co.gregs.dbvolution.expressions.DBExpression;
  * Add {@code implements LargeObjectResult} to your class and override the copy
  * method so that it returns your class type.
  *
- * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 * @author greg
+ * <p style="color: #F90;">Support DBvolution at
+ * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+ *
+ * @author greg
  * @see DBExpression
  */
 public interface LargeObjectResult extends DBExpression, ExpressionCanHaveNullValues {

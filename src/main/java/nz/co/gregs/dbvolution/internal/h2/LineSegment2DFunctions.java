@@ -20,8 +20,10 @@ import java.sql.Statement;
 
 /**
  *
- * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 * @author gregorygraham
+ * <p style="color: #F90;">Support DBvolution at
+ * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+ *
+ * @author gregorygraham
  */
 public enum LineSegment2DFunctions implements DBVFeature {
 
@@ -48,7 +50,6 @@ public enum LineSegment2DFunctions implements DBVFeature {
 			+ "				resultStr += \")\";\n"
 			+ "				return resultStr;\n"
 			+ "			}"),
-
 	/**
 	 *
 	 */
@@ -58,7 +59,6 @@ public enum LineSegment2DFunctions implements DBVFeature {
 			+ "			} else {\n"
 			+ "				return firstLine.equals(secondLine);\n"
 			+ "			}"),
-
 	/**
 	 *
 	 */
@@ -76,7 +76,6 @@ public enum LineSegment2DFunctions implements DBVFeature {
 			+ "				}\n"
 			+ "				return maxX;\n"
 			+ "			}"),
-
 	/**
 	 *
 	 */
@@ -94,7 +93,6 @@ public enum LineSegment2DFunctions implements DBVFeature {
 			+ "				}\n"
 			+ "				return maxY;\n"
 			+ "			}"),
-
 	/**
 	 *
 	 */
@@ -112,7 +110,6 @@ public enum LineSegment2DFunctions implements DBVFeature {
 			+ "				}\n"
 			+ "				return maxX;\n"
 			+ "			}"),
-
 	/**
 	 *
 	 */
@@ -130,7 +127,6 @@ public enum LineSegment2DFunctions implements DBVFeature {
 			+ "				}\n"
 			+ "				return maxY;\n"
 			+ "			}"),
-
 	/**
 	 *
 	 */
@@ -162,17 +158,14 @@ public enum LineSegment2DFunctions implements DBVFeature {
 			+ "				String resultString = \"POLYGON ((\" + minX+\" \"+minY + \", \" + maxX+\" \"+minY + \", \" + maxX+\" \"+maxY + \", \" + minX+\" \"+maxY + \", \" + minX+\" \"+minY + \"))\";\n"
 			+ "				return resultString;\n"
 			+ "			}"),
-
 	/**
 	 *
 	 */
 	DIMENSION("Integer", "String firstLine", "return 1;"),
-
 	/**
 	 *
 	 */
 	ASTEXT("String", "String firstLine", "return firstLine;"),
-
 	/**
 	 *
 	 */
@@ -213,7 +206,6 @@ public enum LineSegment2DFunctions implements DBVFeature {
 			+ "			// No collision\n"
 			+ "			return false;\n"
 			+ "		} "),
-
 	/**
 	 *
 	 */

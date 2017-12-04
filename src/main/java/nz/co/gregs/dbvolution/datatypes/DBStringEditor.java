@@ -19,8 +19,10 @@ import java.beans.PropertyEditorSupport;
 
 /**
  *
- * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 * @author greg
+ * <p style="color: #F90;">Support DBvolution at
+ * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+ *
+ * @author greg
  */
 public class DBStringEditor extends PropertyEditorSupport {
 

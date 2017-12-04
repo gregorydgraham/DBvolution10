@@ -42,15 +42,14 @@ public class TestSQLInjectionPrevention extends AbstractTest {
 		DBActionList changes = database.insert(newMarque1);
 		List<Marque> allRows = marquesTable.setBlankQueryAllowed(true).getAllRows();
 		Assert.assertThat(allRows.size(), is(23));
-		
+
 		newMarque1 = new Marque();
 		newMarque1.uidMarque.permittedValues(newID);
 		List<Marque> allRows1 = database.getDBTable(newMarque1).getAllRows();
 		Assert.assertThat(allRows1.size(), is(1));
 		Assert.assertThat(allRows1.get(0).name.stringValue(), is(nastyString));
-		
-	}
 
+	}
 
 	@Test
 	public void testSQLInjectionPreventionDuringLIKE() throws SQLException {
@@ -62,7 +61,7 @@ public class TestSQLInjectionPrevention extends AbstractTest {
 		Assert.assertThat(allRows1.size(), is(0));
 
 		List<Marque> allRows = marquesTable.setBlankQueryAllowed(true).getAllRows();
-		Assert.assertThat(allRows.size(), is(22));		
+		Assert.assertThat(allRows.size(), is(22));
 	}
 
 }

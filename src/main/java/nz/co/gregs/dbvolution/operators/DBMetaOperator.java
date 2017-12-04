@@ -21,10 +21,13 @@ import nz.co.gregs.dbvolution.expressions.BooleanExpression;
 import nz.co.gregs.dbvolution.expressions.DBExpression;
 
 /**
- * Provides a framework on which to build operators that are combinations of operators.
+ * Provides a framework on which to build operators that are combinations of
+ * operators.
  *
- * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 * @author Gregory Graham
+ * <p style="color: #F90;">Support DBvolution at
+ * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+ *
+ * @author Gregory Graham
  */
 abstract class DBMetaOperator extends DBOperator {
 

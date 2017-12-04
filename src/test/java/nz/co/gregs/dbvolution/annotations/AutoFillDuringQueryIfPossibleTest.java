@@ -28,8 +28,10 @@ import static org.hamcrest.Matchers.*;
 
 /**
  *
- * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 * @author gregorygraham
+ * <p style="color: #F90;">Support DBvolution at
+ * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+ *
+ * @author gregorygraham
  */
 public class AutoFillDuringQueryIfPossibleTest extends AbstractTest {
 
@@ -66,7 +68,7 @@ public class AutoFillDuringQueryIfPossibleTest extends AbstractTest {
 				final Marque[] actuals = instance.marques;
 				Assert.assertThat(relateds, contains(actuals));
 			} else {
-				throw new Exception("Marque should have been found for "+instance.name);
+				throw new Exception("Marque should have been found for " + instance.name);
 			}
 		}
 	}
@@ -91,7 +93,7 @@ public class AutoFillDuringQueryIfPossibleTest extends AbstractTest {
 				}
 				Assert.assertThat(relatedNames, contains(actualNames.toArray(new String[]{})));
 			} else {
-				throw new Exception("Marque should have been found for "+instance.name);
+				throw new Exception("Marque should have been found for " + instance.name);
 			}
 		}
 	}

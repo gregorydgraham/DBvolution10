@@ -20,8 +20,10 @@ import nz.co.gregs.dbvolution.generation.PrimaryKeyRecognisor;
 /**
  * An Example Provide To Demonstrate Implementing A PrimaryKeyRecognisor.
  *
- * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 * @author gregorygraham
+ * <p style="color: #F90;">Support DBvolution at
+ * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+ *
+ * @author gregorygraham
  */
 public class UIDBasedPKRecognisor extends PrimaryKeyRecognisor {
 
@@ -30,7 +32,8 @@ public class UIDBasedPKRecognisor extends PrimaryKeyRecognisor {
 	 *
 	 * @param tableName tableName
 	 * @param columnName columnName
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return TRUE if the column looks like a primary key.
 	 */
 	@Override

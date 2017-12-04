@@ -33,8 +33,10 @@ import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
  * The best way to use this is by using {@link DBDelete#getDeletes(nz.co.gregs.dbvolution.DBDatabase, nz.co.gregs.dbvolution.DBRow...)
  * } to automatically use this action.
  *
- * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 * @author Gregory Graham
+ * <p style="color: #F90;">Support DBvolution at
+ * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+ *
+ * @author Gregory Graham
  */
 public class DBDeleteByPrimaryKey extends DBDelete {
 
@@ -98,10 +100,10 @@ public class DBDeleteByPrimaryKey extends DBDelete {
 				+ defn.formatTableName(row)
 				+ defn.beginWhereClause());
 		List<QueryableDatatype<?>> primaryKeys = row.getPrimaryKeys();
-		for(QueryableDatatype<?> pk:primaryKeys){
-				sql.append(defn.formatColumnName(row.getPropertyWrapperOf(pk).columnName())).append(defn.getEqualsComparator()).append(pk.toSQLString(db));
-						}
-				sql.append(defn.endDeleteLine());
+		for (QueryableDatatype<?> pk : primaryKeys) {
+			sql.append(defn.formatColumnName(row.getPropertyWrapperOf(pk).columnName())).append(defn.getEqualsComparator()).append(pk.toSQLString(db));
+		}
+		sql.append(defn.endDeleteLine());
 		strs.add(sql.toString());
 		return strs;
 	}
@@ -131,7 +133,8 @@ public class DBDeleteByPrimaryKey extends DBDelete {
 	 * @param db the target database
 	 * @param row the row to be deleted
 	 * @throws SQLException Database actions can throw SQLException
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return the list of actions required to delete all the rows.
 	 */
 	@Override

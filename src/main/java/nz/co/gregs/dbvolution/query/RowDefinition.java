@@ -37,8 +37,10 @@ import org.joda.time.Period;
  * Encapsulates the concept of a row that has fields/columns and is part of a
  * table/view on a database.
  *
- * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 * @author Gregory Graham
+ * <p style="color: #F90;">Support DBvolution at
+ * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+ *
+ * @author Gregory Graham
  */
 public class RowDefinition implements Serializable {
 
@@ -61,7 +63,8 @@ public class RowDefinition implements Serializable {
 	 * </pre>
 	 *
 	 * @param qdt	qdt
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return the PropertyWrapper associated with the Object suppled or NULL.
 	 */
 	public PropertyWrapper getPropertyWrapperOf(Object qdt) {
@@ -84,7 +87,9 @@ public class RowDefinition implements Serializable {
 	 * The {@link RowDefinitionInstanceWrapper } contains meta-data about this
 	 * instance of the RowDefinition class.
 	 *
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
 	 * @return a {@link RowDefinitionInstanceWrapper}
 	 */
 	protected RowDefinitionInstanceWrapper getWrapper() {
@@ -98,7 +103,9 @@ public class RowDefinition implements Serializable {
 	 * Returns the PropertyWrappers used internally to maintain the relationship
 	 * between fields and columns
 	 *
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
 	 * @return non-null list of property wrappers, empty if none
 	 */
 	public List<PropertyWrapper> getColumnPropertyWrappers() {
@@ -108,7 +115,9 @@ public class RowDefinition implements Serializable {
 	/**
 	 * Returns the PropertyWrappers of normal non-column properties.
 	 *
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
 	 * @return non-null list of property wrappers, empty if none
 	 */
 	public List<PropertyWrapper> getAutoFillingPropertyWrappers() {
@@ -129,7 +138,8 @@ public class RowDefinition implements Serializable {
 	 * {@link DBQuery#addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression) DBQuery addCondition method}
 	 *
 	 * @param fieldOfThisInstance	fieldOfThisInstance
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return A LargeObjectColumn representing the supplied field
 	 */
 	public LargeObjectColumn column(DBLargeObject<?> fieldOfThisInstance) {
@@ -150,7 +160,8 @@ public class RowDefinition implements Serializable {
 	 * {@link DBQuery#addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression) DBQuery addCondition method}
 	 *
 	 * @param fieldOfThisInstance	fieldOfThisInstance
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return A DateRepeatColumn representing the supplied field
 	 */
 	public DateRepeatColumn column(DBDateRepeat fieldOfThisInstance) {
@@ -171,7 +182,8 @@ public class RowDefinition implements Serializable {
 	 * {@link DBQuery#addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression) DBQuery addCondition method}
 	 *
 	 * @param fieldOfThisInstance	fieldOfThisInstance
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return A {@link BooleanArrayColumn} representing the supplied field
 	 */
 	public BooleanArrayColumn column(DBBooleanArray fieldOfThisInstance) {
@@ -192,7 +204,8 @@ public class RowDefinition implements Serializable {
 	 * {@link DBQuery#addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression) DBQuery addCondition method}
 	 *
 	 * @param fieldOfThisInstance	fieldOfThisInstance
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return A {@link Polygon2DColumn} representing the supplied field
 	 */
 	public Polygon2DColumn column(DBPolygon2D fieldOfThisInstance) {
@@ -213,7 +226,8 @@ public class RowDefinition implements Serializable {
 	 * {@link DBQuery#addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression) DBQuery addCondition method}
 	 *
 	 * @param fieldOfThisInstance	fieldOfThisInstance
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return A {@link Point2DColumn} representing the supplied field
 	 */
 	public Point2DColumn column(DBPoint2D fieldOfThisInstance) {
@@ -234,7 +248,8 @@ public class RowDefinition implements Serializable {
 	 * {@link DBQuery#addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression) DBQuery addCondition method}
 	 *
 	 * @param fieldOfThisInstance	fieldOfThisInstance
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return A {@link Line2DColumn} representing the supplied field
 	 */
 	public Line2DColumn column(DBLine2D fieldOfThisInstance) {
@@ -255,7 +270,8 @@ public class RowDefinition implements Serializable {
 	 * {@link DBQuery#addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression) DBQuery addCondition method}
 	 *
 	 * @param fieldOfThisInstance	fieldOfThisInstance
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return A {@link LineSegment2DColumn} representing the supplied field
 	 */
 	public LineSegment2DColumn column(DBLineSegment2D fieldOfThisInstance) {
@@ -276,7 +292,8 @@ public class RowDefinition implements Serializable {
 	 * {@link DBQuery#addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression) DBQuery addCondition method}
 	 *
 	 * @param fieldOfThisInstance	fieldOfThisInstance
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return A {@link MultiPoint2DColumn} representing the supplied field
 	 */
 	public MultiPoint2DColumn column(DBMultiPoint2D fieldOfThisInstance) {
@@ -297,7 +314,8 @@ public class RowDefinition implements Serializable {
 	 * {@link DBQuery#addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression) DBQuery addCondition method}
 	 *
 	 * @param fieldOfThisInstance	fieldOfThisInstance
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return A ColumnProvider representing the supplied field
 	 */
 	public ColumnProvider column(QueryableDatatype<?> fieldOfThisInstance) throws IncorrectRowProviderInstanceSuppliedException {
@@ -355,7 +373,8 @@ public class RowDefinition implements Serializable {
 	 * {@link DBQuery#addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression) DBQuery addCondition method}
 	 *
 	 * @param fieldOfThisInstance	fieldOfThisInstance
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return A ColumnProvider representing the supplied field
 	 */
 	public ColumnProvider column(Object fieldOfThisInstance) throws IncorrectRowProviderInstanceSuppliedException {
@@ -397,7 +416,8 @@ public class RowDefinition implements Serializable {
 	 * {@link DBQuery#addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression) DBQuery addCondition method}
 	 *
 	 * @param fieldOfThisInstance	fieldOfThisInstance
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return A DBExpression representing the supplied field
 	 */
 	public DBExpression getDBExpression(QueryableDatatype<?> fieldOfThisInstance) throws IncorrectRowProviderInstanceSuppliedException {
@@ -435,7 +455,8 @@ public class RowDefinition implements Serializable {
 	 * {@link DBQuery#addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression) DBQuery addCondition method}
 	 *
 	 * @param fieldOfThisInstance	fieldOfThisInstance
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return A LargeObjectColumn representing the supplied field
 	 */
 	public BooleanColumn column(DBBoolean fieldOfThisInstance) {
@@ -456,7 +477,8 @@ public class RowDefinition implements Serializable {
 	 * {@link DBQuery#addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression) DBQuery addCondition method}
 	 *
 	 * @param fieldOfThisInstance	fieldOfThisInstance
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return A Column representing the supplied field
 	 */
 	public BooleanColumn column(Boolean fieldOfThisInstance) {
@@ -477,7 +499,8 @@ public class RowDefinition implements Serializable {
 	 * {@link DBQuery#addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression) DBQuery addCondition method}
 	 *
 	 * @param fieldOfThisInstance	fieldOfThisInstance
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return A Column representing the supplied field
 	 */
 	public StringColumn column(DBStringEnum<?> fieldOfThisInstance) {
@@ -498,7 +521,8 @@ public class RowDefinition implements Serializable {
 	 * {@link DBQuery#addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression) DBQuery addCondition method}
 	 *
 	 * @param fieldOfThisInstance	fieldOfThisInstance
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return A Column representing the supplied field
 	 */
 	public StringColumn column(DBString fieldOfThisInstance) {
@@ -519,7 +543,8 @@ public class RowDefinition implements Serializable {
 	 * {@link DBQuery#addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression) DBQuery addCondition method}
 	 *
 	 * @param fieldOfThisInstance	fieldOfThisInstance
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return A Column representing the supplied field
 	 */
 	public StringColumn column(String fieldOfThisInstance) {
@@ -541,7 +566,8 @@ public class RowDefinition implements Serializable {
 	 *
 	 * @param fieldOfThisInstance fieldOfThisInstance
 	 * @param valueToUseIfDBNull valueToUseIfDBNull
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return A StringExpression representing the supplied field with a default
 	 * value for NULLs
 	 */
@@ -564,7 +590,8 @@ public class RowDefinition implements Serializable {
 	 *
 	 * @param fieldOfThisInstance fieldOfThisInstance
 	 * @param valueToUseIfDBNull valueToUseIfDBNull
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return A StringExpression representing the supplied field with a default
 	 * value for NULLs
 	 */
@@ -587,7 +614,8 @@ public class RowDefinition implements Serializable {
 	 *
 	 * @param fieldOfThisInstance fieldOfThisInstance
 	 * @param valueToUseIfDBNull valueToUseIfDBNull
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return A StringExpression representing the supplied field with a default
 	 * value for NULLs
 	 */
@@ -610,7 +638,8 @@ public class RowDefinition implements Serializable {
 	 *
 	 * @param fieldOfThisInstance fieldOfThisInstance
 	 * @param valueToUseIfDBNull valueToUseIfDBNull
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return A StringExpression representing the supplied field with a default
 	 * value for NULLs
 	 */
@@ -632,7 +661,8 @@ public class RowDefinition implements Serializable {
 	 * {@link DBQuery#addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression) DBQuery addCondition method}
 	 *
 	 * @param fieldOfThisInstance	fieldOfThisInstance
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return A Column representing the supplied field
 	 */
 	public NumberColumn column(DBNumber fieldOfThisInstance) {
@@ -653,7 +683,8 @@ public class RowDefinition implements Serializable {
 	 * {@link DBQuery#addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression) DBQuery addCondition method}
 	 *
 	 * @param fieldOfThisInstance	fieldOfThisInstance
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return A Column representing the supplied field
 	 */
 	public NumberColumn column(Number fieldOfThisInstance) {
@@ -675,7 +706,8 @@ public class RowDefinition implements Serializable {
 	 *
 	 * @param fieldOfThisInstance fieldOfThisInstance
 	 * @param valueToUseIfDBNull valueToUseIfDBNull
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return A NumberExpression representing the supplied field with a default
 	 * for DBNULL values
 	 */
@@ -698,7 +730,8 @@ public class RowDefinition implements Serializable {
 	 *
 	 * @param fieldOfThisInstance fieldOfThisInstance
 	 * @param valueToUseIfDBNull valueToUseIfDBNull
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return A NumberExpression representing the supplied field with a default
 	 * for DBNULL values
 	 */
@@ -721,7 +754,8 @@ public class RowDefinition implements Serializable {
 	 *
 	 * @param fieldOfThisInstance fieldOfThisInstance
 	 * @param valueToUseIfDBNull valueToUseIfDBNull
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return A NumberExpression representing the supplied field with a default
 	 * for DBNULL values
 	 */
@@ -743,7 +777,8 @@ public class RowDefinition implements Serializable {
 	 * {@link DBQuery#addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression) DBQuery addCondition method}
 	 *
 	 * @param fieldOfThisInstance	fieldOfThisInstance
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return A Column representing the supplied field
 	 */
 	public IntegerColumn column(DBInteger fieldOfThisInstance) {
@@ -764,7 +799,8 @@ public class RowDefinition implements Serializable {
 	 * {@link DBQuery#addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression) DBQuery addCondition method}
 	 *
 	 * @param fieldOfThisInstance	fieldOfThisInstance
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return A Column representing the supplied field
 	 */
 	public IntegerColumn column(DBIntegerEnum<?> fieldOfThisInstance) {
@@ -785,7 +821,8 @@ public class RowDefinition implements Serializable {
 	 * {@link DBQuery#addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression) DBQuery addCondition method}
 	 *
 	 * @param fieldOfThisInstance	fieldOfThisInstance
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return A Column representing the supplied field
 	 */
 	public IntegerColumn column(Long fieldOfThisInstance) {
@@ -806,7 +843,8 @@ public class RowDefinition implements Serializable {
 	 * {@link DBQuery#addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression) DBQuery addCondition method}
 	 *
 	 * @param fieldOfThisInstance	fieldOfThisInstance
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return A Column representing the supplied field
 	 */
 	public IntegerColumn column(Integer fieldOfThisInstance) {
@@ -828,7 +866,8 @@ public class RowDefinition implements Serializable {
 	 *
 	 * @param fieldOfThisInstance fieldOfThisInstance
 	 * @param valueToUseIfDBNull valueToUseIfDBNull
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return A NumberExpression representing the supplied field with a default
 	 * for DBNULL values
 	 */
@@ -851,7 +890,8 @@ public class RowDefinition implements Serializable {
 	 *
 	 * @param fieldOfThisInstance fieldOfThisInstance
 	 * @param valueToUseIfDBNull valueToUseIfDBNull
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return A NumberExpression representing the supplied field with a default
 	 * for DBNULL values
 	 */
@@ -874,7 +914,8 @@ public class RowDefinition implements Serializable {
 	 *
 	 * @param fieldOfThisInstance fieldOfThisInstance
 	 * @param valueToUseIfDBNull valueToUseIfDBNull
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return A NumberExpression representing the supplied field with a default
 	 * for DBNULL values
 	 */
@@ -897,7 +938,8 @@ public class RowDefinition implements Serializable {
 	 *
 	 * @param fieldOfThisInstance fieldOfThisInstance
 	 * @param valueToUseIfDBNull valueToUseIfDBNull
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return A NumberExpression representing the supplied field with a default
 	 * for DBNULL values
 	 */
@@ -920,7 +962,8 @@ public class RowDefinition implements Serializable {
 	 *
 	 * @param fieldOfThisInstance fieldOfThisInstance
 	 * @param valueToUseIfDBNull valueToUseIfDBNull
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return A NumberExpression representing the supplied field with a default
 	 * for DBNULL values
 	 */
@@ -943,7 +986,8 @@ public class RowDefinition implements Serializable {
 	 *
 	 * @param fieldOfThisInstance fieldOfThisInstance
 	 * @param valueToUseIfDBNull valueToUseIfDBNull
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return A NumberExpression representing the supplied field with a default
 	 * for DBNULL values
 	 */
@@ -966,7 +1010,8 @@ public class RowDefinition implements Serializable {
 	 *
 	 * @param fieldOfThisInstance fieldOfThisInstance
 	 * @param valueToUseIfDBNull valueToUseIfDBNull
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return A NumberExpression representing the supplied field with a default
 	 * for DBNULL values
 	 */
@@ -989,7 +1034,8 @@ public class RowDefinition implements Serializable {
 	 *
 	 * @param fieldOfThisInstance fieldOfThisInstance
 	 * @param valueToUseIfDBNull valueToUseIfDBNull
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return A NumberExpression representing the supplied field with a default
 	 * for DBNULL values
 	 */
@@ -1012,7 +1058,8 @@ public class RowDefinition implements Serializable {
 	 *
 	 * @param fieldOfThisInstance fieldOfThisInstance
 	 * @param valueToUseIfDBNull valueToUseIfDBNull
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return A NumberExpression representing the supplied field with a default
 	 * for DBNULL values
 	 */
@@ -1034,7 +1081,8 @@ public class RowDefinition implements Serializable {
 	 * {@link DBQuery#addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression) DBQuery addCondition method}
 	 *
 	 * @param fieldOfThisInstance	fieldOfThisInstance
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return A Column representing the supplied field
 	 */
 	public DateColumn column(DBDate fieldOfThisInstance) {
@@ -1055,7 +1103,8 @@ public class RowDefinition implements Serializable {
 	 * {@link DBQuery#addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression) DBQuery addCondition method}
 	 *
 	 * @param fieldOfThisInstance	fieldOfThisInstance
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return A Column representing the supplied field
 	 */
 	public DateColumn column(Date fieldOfThisInstance) {
@@ -1097,7 +1146,9 @@ public class RowDefinition implements Serializable {
 	 * DBRow. You should probably be using the fields and methods of the actual
 	 * DBRow class.
 	 *
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
 	 * @return a list of field names.
 	 *
 	 */
@@ -1123,7 +1174,8 @@ public class RowDefinition implements Serializable {
 	 * class.
 	 *
 	 * @param dateFormat	dateFormat
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a list of field names.
 	 *
 	 */
@@ -1155,7 +1207,9 @@ public class RowDefinition implements Serializable {
 	 * However it can be changed using {@link #setReturnColumns(java.util.List)
 	 * }.
 	 *
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
 	 * @return a list of the columns to be selected and returned in the query.
 	 */
 	protected List<PropertyWrapperDefinition> getReturnColumns() {
@@ -1179,7 +1233,9 @@ public class RowDefinition implements Serializable {
 	 * {@link PropertyWrapperDefinition PropertyWrapperDefinitions} for all the
 	 * columns within this RowDefinition.
 	 *
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
 	 * @return a list of the PropertyWrapperDefinition for columns.
 	 */
 	protected List<PropertyWrapperDefinition> getColumnPropertyWrapperDefinitions() {
@@ -1190,6 +1246,5 @@ public class RowDefinition implements Serializable {
 		}
 		return columns;
 	}
-
 
 }

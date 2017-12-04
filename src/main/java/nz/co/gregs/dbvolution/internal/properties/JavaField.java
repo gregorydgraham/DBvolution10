@@ -46,7 +46,9 @@ public class JavaField implements JavaProperty {
 	/**
 	 * Hash-code based on the underlying java field or bean-property.
 	 *
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
 	 * @return the hash code
 	 */
 	@Override
@@ -62,7 +64,8 @@ public class JavaField implements JavaProperty {
 	 * bean-property is the same.
 	 *
 	 * @param second	second
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return TRUE if second is equal to this instance, otherwise FALSE
 	 */
 	@Override

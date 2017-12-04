@@ -20,8 +20,10 @@ import java.sql.Statement;
 
 /**
  *
- * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 * @author gregorygraham
+ * <p style="color: #F90;">Support DBvolution at
+ * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+ *
+ * @author gregorygraham
  */
 public enum Line2DFunctions {
 
@@ -29,12 +31,10 @@ public enum Line2DFunctions {
 	 *
 	 */
 	GETPOINTATINDEX(GeometryFunctions.GETPOINTATINDEX),
-
 	/**
 	 *
 	 */
 	NUMPOINTS("NUMBER", "p_geometry     IN MDSYS.SDO_GEOMETRY", " begin return p_geometry.sdo_ordinates.count/2; end;"),
-
 	/**
 	 *
 	 */
@@ -48,7 +48,6 @@ public enum Line2DFunctions {
 			+ "      p_geometry.SDO_ORDINATES\n"
 			+ "    );\n"
 			+ "END;"),
-
 	/**
 	 *
 	 */
@@ -146,49 +145,48 @@ public enum Line2DFunctions {
 			+ "                                         ,v_px2, v_py2)\n"
 			+ "                                         )\n"
 			+ "             END;\n"
-			+ "END;")
-//	INTERSECTSLINE2D("NUMBER", "firstLine IN MDSYS.SDO_GEOMETRY, secondLine IN MDSYS.SDO_GEOMETRY", ""
-//			+ "   ln1           MDSYS.SDO_GEOMETRY;\n"
-//			+ "   ln2           MDSYS.SDO_GEOMETRY;\n"
-//			+ "   ln1_index     INTEGER := 1;\n"
-//			+ "   ln2_index     INTEGER := 1;\n"
-//			+ "BEGIN\n"
-//			+ "   --   DBMS_OUTPUT.PUT_LINE ('STARTING INTERSECTS... ');\n"
-//			+ "\n"
-//			+ "   IF (firstLine IS NULL OR secondLine IS NULL)\n"
-//			+ "   THEN\n"
-//			+ "      RETURN NULL;\n"
-//			+ "   END IF;\n"
-//			+ "   \n"
-//			+ "   ln1 := DBV_LN2D_GETLNSEGMENT2DATINDEX(firstLine, ln1_index);\n"
-//			+ "   \n"
-//			+ "   --'2 3, 3 4'\n"
-//			+ "   WHILE ln1 is not null\n"
-//			+ "   LOOP\n"
-//			+ "      ln2:= DBV_LN2D_GETLNSEGMENT2DATINDEX(secondLine, ln2_index);\n"
-//			+ "      WHILE ln2 is not null\n"
-//			+ "      LOOP\n"
-//			+ "  \n"
-//			+ "        --   DBMS_OUTPUT.PUT_LINE ('SECOND POINT: ' || pointAsText);\n"
-//			+ "  \n"
-//			+ "        IF ln2 is not null\n"
-//			+ "        THEN\n"
-//			+ "           if SDO_GEOM.RELATE(ln1, 'ANYINTERACT', ln2, 0.0000005) <> 'FALSE'\n"
-//			+ "           then\n"
-//			+ "             return 1;\n"
-//			+ "           end if;\n"
-//			+ "        END IF;\n"
-//			+ "        ln2_index := ln2_index+1;\n"
-//			+ "        ln2:= DBV_LN2D_GETLNSEGMENT2DATINDEX(secondLine, ln2_index);\n"
-//			+ "      END LOOP;\n"
-//			+ "\n"
-//			+ "      ln1_index := ln1_index+1;\n"
-//			+ "      ln1:= DBV_LN2D_GETLNSEGMENT2DATINDEX(firstLine, ln1_index);\n"
-//			+ "   END LOOP;\n"
-//			+ "\n"
-//			+ "   -- No Collision\n"
-//			+ "   RETURN 0;\n"
-//			+ "END;");
+			+ "END;") //	INTERSECTSLINE2D("NUMBER", "firstLine IN MDSYS.SDO_GEOMETRY, secondLine IN MDSYS.SDO_GEOMETRY", ""
+	//			+ "   ln1           MDSYS.SDO_GEOMETRY;\n"
+	//			+ "   ln2           MDSYS.SDO_GEOMETRY;\n"
+	//			+ "   ln1_index     INTEGER := 1;\n"
+	//			+ "   ln2_index     INTEGER := 1;\n"
+	//			+ "BEGIN\n"
+	//			+ "   --   DBMS_OUTPUT.PUT_LINE ('STARTING INTERSECTS... ');\n"
+	//			+ "\n"
+	//			+ "   IF (firstLine IS NULL OR secondLine IS NULL)\n"
+	//			+ "   THEN\n"
+	//			+ "      RETURN NULL;\n"
+	//			+ "   END IF;\n"
+	//			+ "   \n"
+	//			+ "   ln1 := DBV_LN2D_GETLNSEGMENT2DATINDEX(firstLine, ln1_index);\n"
+	//			+ "   \n"
+	//			+ "   --'2 3, 3 4'\n"
+	//			+ "   WHILE ln1 is not null\n"
+	//			+ "   LOOP\n"
+	//			+ "      ln2:= DBV_LN2D_GETLNSEGMENT2DATINDEX(secondLine, ln2_index);\n"
+	//			+ "      WHILE ln2 is not null\n"
+	//			+ "      LOOP\n"
+	//			+ "  \n"
+	//			+ "        --   DBMS_OUTPUT.PUT_LINE ('SECOND POINT: ' || pointAsText);\n"
+	//			+ "  \n"
+	//			+ "        IF ln2 is not null\n"
+	//			+ "        THEN\n"
+	//			+ "           if SDO_GEOM.RELATE(ln1, 'ANYINTERACT', ln2, 0.0000005) <> 'FALSE'\n"
+	//			+ "           then\n"
+	//			+ "             return 1;\n"
+	//			+ "           end if;\n"
+	//			+ "        END IF;\n"
+	//			+ "        ln2_index := ln2_index+1;\n"
+	//			+ "        ln2:= DBV_LN2D_GETLNSEGMENT2DATINDEX(secondLine, ln2_index);\n"
+	//			+ "      END LOOP;\n"
+	//			+ "\n"
+	//			+ "      ln1_index := ln1_index+1;\n"
+	//			+ "      ln1:= DBV_LN2D_GETLNSEGMENT2DATINDEX(firstLine, ln1_index);\n"
+	//			+ "   END LOOP;\n"
+	//			+ "\n"
+	//			+ "   -- No Collision\n"
+	//			+ "   RETURN 0;\n"
+	//			+ "END;");
 	;
 
 	private final String returnType;

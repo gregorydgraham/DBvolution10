@@ -39,8 +39,10 @@ import org.joda.time.format.PeriodFormat;
  * Generally DBDateRepeat is declared inside your DBRow sub-class as:
  * {@code @DBColumn public DBDateRepeat myColumn = new DBDateRepeat();}
  *
- * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 * @author Gregory Graham
+ * <p style="color: #F90;">Support DBvolution at
+ * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+ *
+ * @author Gregory Graham
  */
 public class DBDateRepeat extends QueryableDatatype<Period> implements DateRepeatResult {
 
@@ -95,7 +97,9 @@ public class DBDateRepeat extends QueryableDatatype<Period> implements DateRepea
 	 * <p>
 	 * Returns NULL otherwise.
 	 *
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
 	 * @return a Period
 	 */
 	public Period periodValue() {

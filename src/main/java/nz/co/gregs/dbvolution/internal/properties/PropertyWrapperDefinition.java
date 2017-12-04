@@ -37,8 +37,10 @@ import nz.co.gregs.dbvolution.results.Spatial2DResult;
  * DB properties can be seen to have the types and values in the table that
  * follows. This class provides a virtual view over the property whereby the
  * DBv-centric type and value are easily accessible via the
- * {@link #getQueryableDatatype(nz.co.gregs.dbvolution.query.RowDefinition)  value()} and
- * {@link #setQueryableDatatype(nz.co.gregs.dbvolution.query.RowDefinition, nz.co.gregs.dbvolution.datatypes.QueryableDatatype)  setValue()} methods.
+ * {@link #getQueryableDatatype(nz.co.gregs.dbvolution.query.RowDefinition)  value()}
+ * and
+ * {@link #setQueryableDatatype(nz.co.gregs.dbvolution.query.RowDefinition, nz.co.gregs.dbvolution.datatypes.QueryableDatatype)  setValue()}
+ * methods.
  * <ul>
  * <li> rawType/rawValue - the type and value actually stored on the declared
  * java property
@@ -70,7 +72,7 @@ public class PropertyWrapperDefinition {
 	private boolean checkedForColumnExpression = false;
 	private Integer columnIndex = null;
 	private DBExpression[] columnExpression = new DBExpression[]{}; // empty if not present on propertyf
-	public ArrayList<ColumnAspects> allColumnAspects=null;
+	public ArrayList<ColumnAspects> allColumnAspects = null;
 
 	PropertyWrapperDefinition(RowDefinitionClassWrapper classWrapper, JavaProperty javaProperty, boolean processIdentityOnly) {
 		this.classWrapper = classWrapper;
@@ -91,7 +93,9 @@ public class PropertyWrapperDefinition {
 	 * Gets a string representation of the wrapped property, suitable for
 	 * debugging and logging.
 	 *
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
 	 * @return a string representation of this object
 	 */
 	@Override
@@ -116,7 +120,9 @@ public class PropertyWrapperDefinition {
 	 * Generates a hash-code of this property wrapper definition, based entirely
 	 * on the java property it wraps.
 	 *
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
 	 * @return a hash-code.
 	 */
 	@Override
@@ -134,7 +140,8 @@ public class PropertyWrapperDefinition {
 	 * class-loader.
 	 *
 	 * @param obj the other object to compare to.
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return {@code true} if the two objects are equal, {@code false} otherwise.
 	 */
 	@Override
@@ -166,7 +173,9 @@ public class PropertyWrapperDefinition {
 	 * <p>
 	 * Use {@link #getColumnName()} to determine column name.
 	 *
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
 	 * @return a String of the Java field name for this property
 	 */
 	public String javaName() {
@@ -181,7 +190,9 @@ public class PropertyWrapperDefinition {
 	 * <p>
 	 * Use {@link #getColumnName()} to determine column name.
 	 *
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
 	 * @return a String of the short name of the declared class of this property
 	 */
 	public String shortQualifiedJavaName() {
@@ -197,7 +208,9 @@ public class PropertyWrapperDefinition {
 	 * <p>
 	 * Use {@link #getColumnName()} to determine column name.
 	 *
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
 	 * @return a String of the full name of the class of this property
 	 */
 	public String qualifiedJavaName() {
@@ -213,7 +226,9 @@ public class PropertyWrapperDefinition {
 	 * Use {@link #getRawJavaType()} in the rare case that you need to know the
 	 * underlying java property type.
 	 *
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
 	 * @return the Class of the internal QueryableDatatype used by this property
 	 */
 	@SuppressWarnings("unchecked")
@@ -226,7 +241,8 @@ public class PropertyWrapperDefinition {
 	 * {@code refType.isAssignableFrom(this.type())}.
 	 *
 	 * @param refType	refType
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return TRUE if the supplied type is assignable from the internal
 	 * QueryableDatatype, FALSE otherwise.
 	 */
@@ -238,7 +254,9 @@ public class PropertyWrapperDefinition {
 	 * Convenience method for testing the type. Equivalent to
 	 * {@code this.type().isAssignableFrom(DBLargeObject.class)}.
 	 *
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
 	 * @return TRUE if a DBLargeObject is assignable from the internal
 	 * QueryableDatatype, FALSE otherwise.
 	 */
@@ -250,7 +268,9 @@ public class PropertyWrapperDefinition {
 	 * Gets the annotated table name of the table this property belongs to.
 	 * Equivalent to {@code getRowDefinitionClassWrapper().tableName()}.
 	 *
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
 	 * @return a String of the table name containing this property.
 	 */
 	public String tableName() {
@@ -265,7 +285,9 @@ public class PropertyWrapperDefinition {
 	 * If the {@code DBColumn} annotation is missing, this method returns
 	 * {@code null}.
 	 *
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
 	 * @return the column name, if specified explicitly or implicitly
 	 */
 	public String getColumnName() {
@@ -275,7 +297,9 @@ public class PropertyWrapperDefinition {
 	/**
 	 * Indicates whether this property is a column.
 	 *
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
 	 * @return {@code true} if this property is a column
 	 */
 	public boolean isColumn() {
@@ -285,7 +309,9 @@ public class PropertyWrapperDefinition {
 	/**
 	 * Indicates whether this property is a primary key.
 	 *
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
 	 * @return {@code true} if this property is a primary key
 	 */
 	public boolean isPrimaryKey() {
@@ -295,7 +321,9 @@ public class PropertyWrapperDefinition {
 	/**
 	 * Indicates whether this property is a foreign key.
 	 *
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
 	 * @return {@code true} if this property is a foreign key
 	 */
 	public boolean isForeignKey() {
@@ -306,7 +334,9 @@ public class PropertyWrapperDefinition {
 	 * Gets the class referenced by this property, if this property is a foreign
 	 * key.
 	 *
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
 	 * @return the referenced class if this property is a foreign key; null if not
 	 * a foreign key
 	 */
@@ -318,7 +348,9 @@ public class PropertyWrapperDefinition {
 	 * Gets the table referenced by this property, if this property is a foreign
 	 * key.
 	 *
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
 	 * @return the referenced table name if this property is a foreign key; null
 	 * if not a foreign key
 	 */
@@ -333,7 +365,9 @@ public class PropertyWrapperDefinition {
 	 * primary key of the referenced table if the {@link DBForeignKey#column()}
 	 * attribute is unset.
 	 *
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
 	 * @return the referenced column name if this property is a foreign key; null
 	 * if not a foreign key
 	 */
@@ -354,7 +388,9 @@ public class PropertyWrapperDefinition {
 	 * table name). Attempts to get or set its value or get the type adaptor
 	 * instance will result in an internal exception.
 	 *
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
 	 * @return the referenced property if this property is a foreign key; null if
 	 * not a foreign key
 	 */
@@ -365,7 +401,9 @@ public class PropertyWrapperDefinition {
 	/**
 	 * Gets the enum type, or null if not appropriate
 	 *
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
 	 * @return the enum type, which may also implement {@link DBEnumValue}
 	 */
 	public Class<? extends Enum<?>> getEnumType() {
@@ -376,7 +414,9 @@ public class PropertyWrapperDefinition {
 	 * Gets the type of the code supplied by enum values. This is derived from the
 	 * {@link DBEnumValue} implementation in the enum.
 	 *
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
 	 * @return null if not known or not appropriate
 	 */
 	public Class<?> getEnumCodeType() {
@@ -388,7 +428,9 @@ public class PropertyWrapperDefinition {
 	 * properties which are missing a 'getter' can not be read, but may be able to
 	 * be set.
 	 *
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
 	 * @return TRUE if the property is readable, FALSE otherwise.
 	 */
 	public boolean isReadable() {
@@ -400,7 +442,9 @@ public class PropertyWrapperDefinition {
 	 * properties which are missing a 'setter' can not be written to, but may be
 	 * able to be read.
 	 *
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
 	 * @return TRUE if the property can be set, FALSE otherwise
 	 */
 	public boolean isWritable() {
@@ -412,7 +456,9 @@ public class PropertyWrapperDefinition {
 	 * type adaptor. (Note: at present there is no support for implicit type
 	 * adaptors)
 	 *
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
 	 * @return {@code true} if a type adaptor is being used
 	 */
 	public boolean isTypeAdapted() {
@@ -429,7 +475,8 @@ public class PropertyWrapperDefinition {
 	 * read.
 	 *
 	 * @param target object instance containing this property
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return the QueryableDatatype used internally.
 	 * @throws IllegalStateException if not readable (you should have called
 	 * isReadable() first)
@@ -468,15 +515,18 @@ public class PropertyWrapperDefinition {
 	 *
 	 * <p>
 	 * In most cases you will not need to call this method, as type conversion is
-	 * done transparently via the {@link #getQueryableDatatype(nz.co.gregs.dbvolution.query.RowDefinition) } and
-	 * {@link #setQueryableDatatype(nz.co.gregs.dbvolution.query.RowDefinition, nz.co.gregs.dbvolution.datatypes.QueryableDatatype) } methods.
+	 * done transparently via the {@link #getQueryableDatatype(nz.co.gregs.dbvolution.query.RowDefinition)
+	 * } and
+	 * {@link #setQueryableDatatype(nz.co.gregs.dbvolution.query.RowDefinition, nz.co.gregs.dbvolution.datatypes.QueryableDatatype) }
+	 * methods.
 	 *
 	 * <p>
 	 * Use {@link #isReadable()} beforehand to check whether the property can be
 	 * read.
 	 *
 	 * @param target object instance containing this property
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return value
 	 * @throws IllegalStateException if not readable (you should have called
 	 * isReadable() first)
@@ -492,8 +542,10 @@ public class PropertyWrapperDefinition {
 	 *
 	 * <p>
 	 * In most cases you will not need to call this method, as type conversion is
-	 * done transparently via the {@link #getQueryableDatatype(nz.co.gregs.dbvolution.query.RowDefinition) } and
-	 * {@link #setQueryableDatatype(nz.co.gregs.dbvolution.query.RowDefinition, nz.co.gregs.dbvolution.datatypes.QueryableDatatype) } methods.
+	 * done transparently via the {@link #getQueryableDatatype(nz.co.gregs.dbvolution.query.RowDefinition)
+	 * } and
+	 * {@link #setQueryableDatatype(nz.co.gregs.dbvolution.query.RowDefinition, nz.co.gregs.dbvolution.datatypes.QueryableDatatype) }
+	 * methods.
 	 *
 	 * <p>
 	 * Use {@link #isWritable()} beforehand to check whether the property can be
@@ -515,12 +567,15 @@ public class PropertyWrapperDefinition {
 	 *
 	 * <p>
 	 * In most cases you will not need to call this method, as type conversion is
-	 * done transparently via the {@link #getQueryableDatatype(nz.co.gregs.dbvolution.query.RowDefinition)  } and
-	 * {@link #setQueryableDatatype(nz.co.gregs.dbvolution.query.RowDefinition, nz.co.gregs.dbvolution.datatypes.QueryableDatatype) } methods. Use the
-	 * {@link #type()} method to get the DBv-centric property type, after type
-	 * conversion.
+	 * done transparently via the {@link #getQueryableDatatype(nz.co.gregs.dbvolution.query.RowDefinition)
+	 * } and
+	 * {@link #setQueryableDatatype(nz.co.gregs.dbvolution.query.RowDefinition, nz.co.gregs.dbvolution.datatypes.QueryableDatatype) }
+	 * methods. Use the {@link #type()} method to get the DBv-centric property
+	 * type, after type conversion.
 	 *
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
 	 * @return the declared class of the property
 	 */
 	public Class<?> getRawJavaType() {
@@ -531,7 +586,9 @@ public class PropertyWrapperDefinition {
 	 * Gets the wrapper for the RowDefinition (DBRow or DBReport) subclass
 	 * containing this property.
 	 *
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
 	 * @return the RowDefinitionClassWrapper representing the enclosing object of
 	 * this property
 	 */
@@ -540,7 +597,9 @@ public class PropertyWrapperDefinition {
 	}
 
 	/**
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
 	 * @return the columnExpression
 	 */
 	public DBExpression[] getColumnExpression() {
@@ -552,7 +611,7 @@ public class PropertyWrapperDefinition {
 	}
 
 	boolean hasColumnExpression() {
-		return getColumnExpression().length >0;
+		return getColumnExpression().length > 0;
 	}
 
 	public synchronized List<ColumnAspects> getColumnAspects(DBDatabase db, RowDefinition actualRow) {
@@ -616,7 +675,9 @@ public class PropertyWrapperDefinition {
 	}
 
 	/**
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
 	 * @return the columnIndex
 	 */
 	public Integer getColumnIndex() {
@@ -631,7 +692,7 @@ public class PropertyWrapperDefinition {
 		Class<? extends QueryableDatatype<?>> qdt = type();
 		return (Spatial2DResult.class.isAssignableFrom(qdt));
 	}
-	
+
 	boolean isAutoFilling() {
 		return this.javaProperty.isAnnotationPresent(AutoFillDuringQueryIfPossible.class);
 	}
@@ -651,6 +712,7 @@ public class PropertyWrapperDefinition {
 			this.columnAlias = columnAlias;
 			this.expression = expression;
 		}
+
 		public ColumnAspects(String selectableName, String columnAlias) {
 			this.selectableName = selectableName;
 			this.columnAlias = columnAlias;

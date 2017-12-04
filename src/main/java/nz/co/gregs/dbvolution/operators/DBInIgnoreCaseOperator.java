@@ -28,8 +28,10 @@ import nz.co.gregs.dbvolution.results.StringResult;
 /**
  * Implements a case-insensitive version of IN for Strings.
  *
- * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 * @author gregorygraham
+ * <p style="color: #F90;">Support DBvolution at
+ * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+ *
+ * @author gregorygraham
  */
 public class DBInIgnoreCaseOperator extends DBInOperator {
 

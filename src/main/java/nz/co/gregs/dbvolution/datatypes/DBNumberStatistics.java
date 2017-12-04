@@ -15,8 +15,10 @@ import nz.co.gregs.dbvolution.internal.properties.PropertyWrapperDefinition;
 
 /**
  *
- * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 * @author gregorygraham
+ * <p style="color: #F90;">Support DBvolution at
+ * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+ *
+ * @author gregorygraham
  */
 public class DBNumberStatistics extends DBNumber {
 
@@ -43,9 +45,12 @@ public class DBNumberStatistics extends DBNumber {
 	/**
 	 * The default constructor for DBNumberStatistics.
 	 *
-	 * <p>Creates an unset undefined DBNumber object.</p>
-	 * 
-	 * <p>Use {@link #DBNumberStatistics(nz.co.gregs.dbvolution.expressions.NumberExpression) } instead.</p>
+	 * <p>
+	 * Creates an unset undefined DBNumber object.</p>
+	 *
+	 * <p>
+	 * Use {@link #DBNumberStatistics(nz.co.gregs.dbvolution.expressions.NumberExpression)
+	 * } instead.</p>
 	 *
 	 */
 	public DBNumberStatistics() {
@@ -59,20 +64,20 @@ public class DBNumberStatistics extends DBNumber {
 	 * Used in {@link DBReport}, and some {@link DBRow}, sub-classes to derive
 	 * data from the database prior to retrieval.
 	 *
-	 * @param numberExpressionToGenerateStatsFrom 	numberExpression
+	 * @param numberExpressionToGenerateStatsFrom numberExpression
 	 */
 	public DBNumberStatistics(NumberExpression numberExpressionToGenerateStatsFrom) {
 		super();
 		averageExpression = numberExpressionToGenerateStatsFrom.sum().dividedBy(NumberExpression.countAll());
-		maxExpr=	numberExpressionToGenerateStatsFrom.max();
-		minExpr=	numberExpressionToGenerateStatsFrom.min();
-		sumExpr=	numberExpressionToGenerateStatsFrom.sum();
-		countExpr= NumberExpression.countAll();
+		maxExpr = numberExpressionToGenerateStatsFrom.max();
+		minExpr = numberExpressionToGenerateStatsFrom.min();
+		sumExpr = numberExpressionToGenerateStatsFrom.sum();
+		countExpr = NumberExpression.countAll();
 		stdDevExpression = numberExpressionToGenerateStatsFrom.stddev();
 
 		this.setColumnExpression(new NumberExpression[]{
 			averageExpression,
-				maxExpr,
+			maxExpr,
 			minExpr,
 			sumExpr,
 			countExpr,
@@ -85,7 +90,9 @@ public class DBNumberStatistics extends DBNumber {
 	/**
 	 * Count of the rows included in this set of statistics
 	 *
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
 	 * @return the size of the statistics collection
 	 */
 	public Number count() {
@@ -95,7 +102,9 @@ public class DBNumberStatistics extends DBNumber {
 	/**
 	 * Returns the sum of all the numbers in this group.
 	 *
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
 	 * @return the sum of all values in this grouping
 	 */
 	public Number sum() {
@@ -104,7 +113,9 @@ public class DBNumberStatistics extends DBNumber {
 
 	/**
 	 *
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
 	 * @return the minimum (smallest) value in this grouping
 	 */
 	public Number min() {
@@ -113,7 +124,9 @@ public class DBNumberStatistics extends DBNumber {
 
 	/**
 	 *
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
 	 * @return the maximum (largest) value in this grouping
 	 */
 	public Number max() {
@@ -123,8 +136,10 @@ public class DBNumberStatistics extends DBNumber {
 	/**
 	 * The middle term in the grouping.
 	 *
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 * @return the median value in this grouping 
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
+	 * @return the median value in this grouping
 	 */
 	public Number median() {
 		return this.medianNumber;
@@ -133,7 +148,9 @@ public class DBNumberStatistics extends DBNumber {
 	/**
 	 * The average value of the grouping.
 	 *
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
 	 * @return the average value of the grouping
 	 */
 	public Number average() {
@@ -142,7 +159,9 @@ public class DBNumberStatistics extends DBNumber {
 
 	/**
 	 *
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
 	 * @return the middle number between the median and the smallest value.
 	 */
 	public Number firstQuartile() {
@@ -151,7 +170,9 @@ public class DBNumberStatistics extends DBNumber {
 
 	/**
 	 *
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
 	 * @return the middle number between the median and the largest value.
 	 */
 	public Number thirdQuartile() {
@@ -161,8 +182,10 @@ public class DBNumberStatistics extends DBNumber {
 	/**
 	 * The middle term in the grouping.
 	 *
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 * @return the median value in this grouping 
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
+	 * @return the median value in this grouping
 	 */
 	public Number secondQuartile() {
 		return this.medianNumber;
@@ -212,7 +235,7 @@ public class DBNumberStatistics extends DBNumber {
 	}
 
 	protected Number getFromResultSet(DBDatabase database, ResultSet resultSet, String fullColumnName, int offset) throws SQLException {
-		int columnIndex = resultSet.findColumn(fullColumnName)+offset;
+		int columnIndex = resultSet.findColumn(fullColumnName) + offset;
 		try {
 			return resultSet.getBigDecimal(columnIndex);
 		} catch (SQLException ex) {
@@ -232,7 +255,7 @@ public class DBNumberStatistics extends DBNumber {
 	public DBNumber getQueryableDatatypeForExpressionValue() {
 		return new DBNumberStatistics();
 	}
-	
+
 	@Override
 	public void setFromResultSet(DBDatabase database, ResultSet resultSet, String resultSetColumnName) throws SQLException {
 		removeConstraints();
@@ -253,7 +276,7 @@ public class DBNumberStatistics extends DBNumber {
 				this.setToNull(database);
 			} else {
 				PropertyWrapperDefinition propertyWrapperDefinition = getPropertyWrapperDefinition();
-				if (propertyWrapperDefinition!=null && propertyWrapperDefinition.allColumnAspects != null) {
+				if (propertyWrapperDefinition != null && propertyWrapperDefinition.allColumnAspects != null) {
 					final String averageColumnAlias = propertyWrapperDefinition.allColumnAspects.get(0).columnAlias;
 					final String maxColumnAlias = propertyWrapperDefinition.allColumnAspects.get(1).columnAlias;
 					final String minColumnAlias = propertyWrapperDefinition.allColumnAspects.get(2).columnAlias;
@@ -266,14 +289,14 @@ public class DBNumberStatistics extends DBNumber {
 					minNumber = getFromResultSet(database, resultSet, minColumnAlias);
 					sumNumber = getFromResultSet(database, resultSet, sumColumnAlias);
 					countOfRows = getFromResultSet(database, resultSet, countColumnAlias);
-				}else{		
+				} else {
 					averageNumber = getFromResultSet(database, resultSet, resultSetColumnName, 0);
 					maxNumber = getFromResultSet(database, resultSet, resultSetColumnName, 1);
 					minNumber = getFromResultSet(database, resultSet, resultSetColumnName, 2);
 					sumNumber = getFromResultSet(database, resultSet, resultSetColumnName, 3);
-					countOfRows = getFromResultSet(database, resultSet, resultSetColumnName, 4);		
+					countOfRows = getFromResultSet(database, resultSet, resultSetColumnName, 4);
 					stdDev = getFromResultSet(database, resultSet, resultSetColumnName, 5);
-					}
+				}
 				this.setLiteralValue(dbValue);
 			}
 		}
@@ -281,16 +304,14 @@ public class DBNumberStatistics extends DBNumber {
 		setDefined(true);
 		propertyWrapperDefn = null;
 	}
-	
 
 	@Override
 	public String toString() {
-		return (averageNumber == null ? "" : "count="+countOfRows+"sum="+sumNumber+"ave="+averageNumber+"stdDev="+stdDev+":max="+maxNumber+":min="+minNumber);
+		return (averageNumber == null ? "" : "count=" + countOfRows + "sum=" + sumNumber + "ave=" + averageNumber + "stdDev=" + stdDev + ":max=" + maxNumber + ":min=" + minNumber);
 	}
 
 	public Number standardDeviation() {
 		return this.stdDev;
 	}
-	
 
 }

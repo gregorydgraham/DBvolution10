@@ -33,8 +33,10 @@ import org.sqlite.Function;
 
 /**
  *
- * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 * @author gregorygraham
+ * <p style="color: #F90;">Support DBvolution at
+ * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+ *
+ * @author gregorygraham
  */
 public class Polygon2DFunctions {
 
@@ -176,8 +178,6 @@ public class Polygon2DFunctions {
 		}
 	}
 
-	
-
 	/**
 	 * Implements Polygon2D AsText for SQLite
 	 *
@@ -201,7 +201,7 @@ public class Polygon2DFunctions {
 		protected void xFunc() throws SQLException {
 			try {
 				Polygon polygon = getPolygon(value_text(0));
-	//			polygon.normalize();
+				//			polygon.normalize();
 				result(polygon.toText());
 			} catch (com.vividsolutions.jts.io.ParseException ex) {
 				Logger.getLogger(Polygon2DFunctions.class.getName()).log(Level.SEVERE, null, ex);
@@ -664,7 +664,7 @@ public class Polygon2DFunctions {
 			}
 			return null;
 		}
-		
+
 		Point getPoint(String possiblePoly) throws com.vividsolutions.jts.io.ParseException {
 			WKTReader wktReader = new WKTReader();
 			Geometry firstGeom = wktReader.read(possiblePoly);

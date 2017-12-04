@@ -39,8 +39,10 @@ import nz.co.gregs.dbvolution.results.MultiPoint2DResult;
  *
  *
  *
- * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 * @author Gregory Graham
+ * <p style="color: #F90;">Support DBvolution at
+ * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+ *
+ * @author Gregory Graham
  */
 public class Line2DExpression implements Line2DResult, EqualComparable<Line2DResult>, Spatial2DExpression, ExpressionColumn<DBLine2D> {
 
@@ -122,7 +124,8 @@ public class Line2DExpression implements Line2DResult, EqualComparable<Line2DRes
 	 * Create a Line2DExpression representing the set of points as a line.
 	 *
 	 * @param points a series of points that constitute a line.
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a Line2DExpression
 	 */
 	public static Line2DExpression value(Point... points) {
@@ -132,8 +135,10 @@ public class Line2DExpression implements Line2DResult, EqualComparable<Line2DRes
 	/**
 	 * Create a Line2DExpression representing the set of coordinates as a line.
 	 *
-	 * @param coords a series of number to be interpreted as X and Y points of a line.
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @param coords a series of number to be interpreted as X and Y points of a
+	 * line.
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a Line2DExpression
 	 */
 	public static Line2DExpression value(Coordinate... coords) {
@@ -144,7 +149,8 @@ public class Line2DExpression implements Line2DResult, EqualComparable<Line2DRes
 	 * Create a Line2DExpression representing the line.
 	 *
 	 * @param line create a Line2DExpression from this line.
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a Line2DExpression
 	 */
 	public static Line2DExpression value(LineString line) {
@@ -155,7 +161,8 @@ public class Line2DExpression implements Line2DResult, EqualComparable<Line2DRes
 	 * Create a Line2DExpression representing the line.
 	 *
 	 * @param line create a Line2DExpression from this line.
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a Line2DExpression
 	 */
 	public static Line2DExpression value(Line2DResult line) {
@@ -167,15 +174,16 @@ public class Line2DExpression implements Line2DResult, EqualComparable<Line2DRes
 	 * or {@link DBMultiPoint2D} as a line.
 	 *
 	 * @param multipoint2DExpression a series of point that constitute a line
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a Line2DExpression
 	 */
 	public static Line2DExpression value(MultiPoint2DResult multipoint2DExpression) {
 		return MultiPoint2DExpression.value(multipoint2DExpression).line2DResult();
 	}
-	
+
 	@Override
-	public StringExpression toWKTFormat(){
+	public StringExpression toWKTFormat() {
 		return stringResult();
 	}
 
@@ -245,7 +253,9 @@ public class Line2DExpression implements Line2DResult, EqualComparable<Line2DRes
 	 * <p>
 	 * This should be the WKT (Well Known Text) version of the line.
 	 *
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
 	 * @return a StringExpression of the Line2D in WKT format.
 	 */
 	@Override
@@ -277,20 +287,22 @@ public class Line2DExpression implements Line2DResult, EqualComparable<Line2DRes
 	 * database allows.
 	 *
 	 * @param rightHandSide the value this expression may equal.
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 * @return a BooleanExpression that will be TRUE when the two expressions are functionally equivalent, otherwise FALSE.
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @return a BooleanExpression that will be TRUE when the two expressions are
+	 * functionally equivalent, otherwise FALSE.
 	 */
 	public BooleanExpression is(LineString rightHandSide) {
 		return is(new DBLine2D(rightHandSide));
 	}
 
 	/**
-	 * Compare this expression to the exterior ring of the given Polygon2D using the
-	 * equivalent of EQUALS.
+	 * Compare this expression to the exterior ring of the given Polygon2D using
+	 * the equivalent of EQUALS.
 	 *
 	 * <p>
-	 * The boolean expression will be TRUE if the exterior ring and the line  are functionally
-	 * equivalent.
+	 * The boolean expression will be TRUE if the exterior ring and the line are
+	 * functionally equivalent.
 	 *
 	 * <p>
 	 * Due to to the imperfect interpretation of floating point numbers there may
@@ -298,8 +310,10 @@ public class Line2DExpression implements Line2DResult, EqualComparable<Line2DRes
 	 * database allows.
 	 *
 	 * @param rightHandSide the polygon whose exterior ring may equal this line
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 * @return a BooleanExpression that will be TRUE when the two expressions are functionally equivalent, otherwise FALSE.
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @return a BooleanExpression that will be TRUE when the two expressions are
+	 * functionally equivalent, otherwise FALSE.
 	 */
 	public BooleanExpression is(Polygon rightHandSide) {
 		return is(rightHandSide.getExteriorRing());
@@ -319,8 +333,10 @@ public class Line2DExpression implements Line2DResult, EqualComparable<Line2DRes
 	 * database allows.
 	 *
 	 * @param rightHandSide the line that this expression might equal
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 * @return a BooleanExpression that will be TRUE when the two expressions are functionally equivalent, otherwise FALSE.
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @return a BooleanExpression that will be TRUE when the two expressions are
+	 * functionally equivalent, otherwise FALSE.
 	 */
 	@Override
 	public BooleanExpression is(Line2DResult rightHandSide) {
@@ -342,8 +358,8 @@ public class Line2DExpression implements Line2DResult, EqualComparable<Line2DRes
 	 * equivalent of NOT EQUALS.
 	 *
 	 * <p>
-	 * The boolean expression will be FALSE if the two expressions are functionally
-	 * equivalent.
+	 * The boolean expression will be FALSE if the two expressions are
+	 * functionally equivalent.
 	 *
 	 * <p>
 	 * Due to to the imperfect interpretation of floating point numbers there may
@@ -351,29 +367,34 @@ public class Line2DExpression implements Line2DResult, EqualComparable<Line2DRes
 	 * database allows.
 	 *
 	 * @param rightHandSide the line that this expression might equal
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 * @return a BooleanExpression that will be FALSE when the two expressions are functionally equivalent, otherwise TRUE.
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @return a BooleanExpression that will be FALSE when the two expressions are
+	 * functionally equivalent, otherwise TRUE.
 	 */
 	public BooleanExpression isNot(LineString rightHandSide) {
 		return isNot(new DBLine2D(rightHandSide));
 	}
 
 	/**
-	 * Compare this expression to the exterior ring of the given Polygon2D using the
-	 * equivalent of NOT EQUALS.
+	 * Compare this expression to the exterior ring of the given Polygon2D using
+	 * the equivalent of NOT EQUALS.
 	 *
 	 * <p>
-	 * The boolean expression will be FALSE if the exterior ring and the line  are functionally
-	 * equivalent.
+	 * The boolean expression will be FALSE if the exterior ring and the line are
+	 * functionally equivalent.
 	 *
 	 * <p>
 	 * Due to to the imperfect interpretation of floating point numbers there may
 	 * some discrepancies between databases but DBV tries to be as accurate as the
 	 * database allows.
 	 *
-	 * @param rightHandSide the polygon whose exterior ring might not equal this expression's value.
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 * @return a BooleanExpression that will be FALSE when the two expressions are functionally equivalent, otherwise TRUE.
+	 * @param rightHandSide the polygon whose exterior ring might not equal this
+	 * expression's value.
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @return a BooleanExpression that will be FALSE when the two expressions are
+	 * functionally equivalent, otherwise TRUE.
 	 */
 	public BooleanExpression isNot(Polygon rightHandSide) {
 		return isNot(rightHandSide.getExteriorRing());
@@ -384,8 +405,8 @@ public class Line2DExpression implements Line2DResult, EqualComparable<Line2DRes
 	 * equivalent of NOT EQUALS.
 	 *
 	 * <p>
-	 * The boolean expression will be FALSE if the two expressions are functionally
-	 * equivalent.
+	 * The boolean expression will be FALSE if the two expressions are
+	 * functionally equivalent.
 	 *
 	 * <p>
 	 * Due to to the imperfect interpretation of floating point numbers there may
@@ -393,8 +414,10 @@ public class Line2DExpression implements Line2DResult, EqualComparable<Line2DRes
 	 * database allows.
 	 *
 	 * @param rightHandSide the line to compare to this expression.
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 * @return a BooleanExpression that will be FALSE when the two expressions are functionally equivalent, otherwise TRUE.
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @return a BooleanExpression that will be FALSE when the two expressions are
+	 * functionally equivalent, otherwise TRUE.
 	 */
 	@Override
 	public BooleanExpression isNot(Line2DResult rightHandSide) {
@@ -500,7 +523,9 @@ public class Line2DExpression implements Line2DResult, EqualComparable<Line2DRes
 	/**
 	 * Return the maximum X value in the Line2D.
 	 *
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
 	 * @return the numeric value of the largest X coordinate for the Line2D.
 	 */
 	@Override
@@ -518,7 +543,9 @@ public class Line2DExpression implements Line2DResult, EqualComparable<Line2DRes
 	/**
 	 * Return the minimum X value in the Line2D.
 	 *
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
 	 * @return the numeric value of the smallest X coordinate for the Line2D.
 	 */
 	@Override
@@ -536,7 +563,9 @@ public class Line2DExpression implements Line2DResult, EqualComparable<Line2DRes
 	/**
 	 * Return the maximum Y value in the Line2D.
 	 *
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
 	 * @return the numeric value of the largest Y coordinate for the Line2D.
 	 */
 	@Override
@@ -554,7 +583,9 @@ public class Line2DExpression implements Line2DResult, EqualComparable<Line2DRes
 	/**
 	 * Return the minimum Y value in the Line2D.
 	 *
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
 	 * @return the numeric value of the smallest Y coordinate for the Line2D.
 	 */
 	@Override
@@ -577,11 +608,13 @@ public class Line2DExpression implements Line2DResult, EqualComparable<Line2DRes
 	 * method only reports TRUE or FALSE.
 	 *
 	 * <p>
-	 * Use {@link #intersectionPoints(nz.co.gregs.dbvolution.results.Line2DResult) } to find the intersection
-	 * points of these lines
+	 * Use {@link #intersectionPoints(nz.co.gregs.dbvolution.results.Line2DResult)
+	 * } to find the intersection points of these lines
 	 *
-	 * @param points points that constitute a line that might intersect this expression.
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @param points points that constitute a line that might intersect this
+	 * expression.
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a BooleanExpression that will be TRUE if the lines ever cross,
 	 * otherwise FALSE.
 	 */
@@ -598,11 +631,13 @@ public class Line2DExpression implements Line2DResult, EqualComparable<Line2DRes
 	 * method only reports TRUE or FALSE.
 	 *
 	 * <p>
-	 * Use {@link #intersectionPoints(nz.co.gregs.dbvolution.results.Line2DResult) } to find the intersection
-	 * points of these lines
+	 * Use {@link #intersectionPoints(nz.co.gregs.dbvolution.results.Line2DResult)
+	 * } to find the intersection points of these lines
 	 *
-	 * @param coords a series of X and Y values that constitute a line that might intersect this expression.
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @param coords a series of X and Y values that constitute a line that might
+	 * intersect this expression.
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a BooleanExpression that will be TRUE if the lines ever cross,
 	 * otherwise FALSE.
 	 */
@@ -618,11 +653,12 @@ public class Line2DExpression implements Line2DResult, EqualComparable<Line2DRes
 	 * method only reports TRUE or FALSE.
 	 *
 	 * <p>
-	 * Use {@link #intersectionPoints(nz.co.gregs.dbvolution.results.Line2DResult) } to find the intersection
-	 * points of these lines
+	 * Use {@link #intersectionPoints(nz.co.gregs.dbvolution.results.Line2DResult)
+	 * } to find the intersection points of these lines
 	 *
 	 * @param lineString a line that might intersect this expression.
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a BooleanExpression that will be TRUE if the lines ever cross,
 	 * otherwise FALSE.
 	 */
@@ -638,11 +674,12 @@ public class Line2DExpression implements Line2DResult, EqualComparable<Line2DRes
 	 * method only reports TRUE or FALSE.
 	 *
 	 * <p>
-	 * Use {@link #intersectionPoints(nz.co.gregs.dbvolution.results.Line2DResult) } to find the intersection
-	 * points of these lines
+	 * Use {@link #intersectionPoints(nz.co.gregs.dbvolution.results.Line2DResult)
+	 * } to find the intersection points of these lines
 	 *
 	 * @param crossingLine a line that might intersect this expression.
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a BooleanExpression that will be TRUE if the lines ever cross,
 	 * otherwise FALSE.
 	 */
@@ -657,11 +694,14 @@ public class Line2DExpression implements Line2DResult, EqualComparable<Line2DRes
 	}
 
 	/**
-	 * Find all the points of intersection between this expression and the specified Line2D expression.
+	 * Find all the points of intersection between this expression and the
+	 * specified Line2D expression.
 	 *
 	 * @param crossingLine a line that might intersect this expression.
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 * @return a MultiPoint2D expression containing all the intersection points of the 2 lines.
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @return a MultiPoint2D expression containing all the intersection points of
+	 * the 2 lines.
 	 */
 	public MultiPoint2DExpression intersectionPoints(Line2DResult crossingLine) {
 		return new MultiPoint2DExpression(new LineLineWithMultiPoint2DResult(this, new Line2DExpression(crossingLine)) {
@@ -682,11 +722,13 @@ public class Line2DExpression implements Line2DResult, EqualComparable<Line2DRes
 	 * method only reports the first point found.
 	 *
 	 * <p>
-	 * Use {@link #intersectionPoints(nz.co.gregs.dbvolution.results.Line2DResult) } to find the intersection
-	 * points of these lines
+	 * Use {@link #intersectionPoints(nz.co.gregs.dbvolution.results.Line2DResult)
+	 * } to find the intersection points of these lines
 	 *
-	 * @param crossingLine points that constitute a line that might intersect this expression.
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @param crossingLine points that constitute a line that might intersect this
+	 * expression.
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a BooleanExpression that will be TRUE if the lines ever cross,
 	 * otherwise FALSE.
 	 */
@@ -703,11 +745,13 @@ public class Line2DExpression implements Line2DResult, EqualComparable<Line2DRes
 	 * method only reports the first point found.
 	 *
 	 * <p>
-	 * Use {@link #intersectionPoints(nz.co.gregs.dbvolution.results.Line2DResult) } to find the intersection
-	 * points of these lines
+	 * Use {@link #intersectionPoints(nz.co.gregs.dbvolution.results.Line2DResult)
+	 * } to find the intersection points of these lines
 	 *
-	 * @param crossingLine a series of X and Y values that constitute a line that might intersect this expression.
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @param crossingLine a series of X and Y values that constitute a line that
+	 * might intersect this expression.
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a BooleanExpression that will be TRUE if the lines ever cross,
 	 * otherwise FALSE.
 	 */
@@ -723,11 +767,12 @@ public class Line2DExpression implements Line2DResult, EqualComparable<Line2DRes
 	 * method only reports the first point found.
 	 *
 	 * <p>
-	 * Use {@link #intersectionPoints(nz.co.gregs.dbvolution.results.Line2DResult) } to find the intersection
-	 * points of these lines
+	 * Use {@link #intersectionPoints(nz.co.gregs.dbvolution.results.Line2DResult)
+	 * } to find the intersection points of these lines
 	 *
 	 * @param crossingLine a line that might intersect this expression.
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a BooleanExpression that will be TRUE if the lines ever cross,
 	 * otherwise FALSE.
 	 */
@@ -744,11 +789,13 @@ public class Line2DExpression implements Line2DResult, EqualComparable<Line2DRes
 	 * method only reports the first point found.
 	 *
 	 * <p>
-	 * Use {@link #intersectionPoints(nz.co.gregs.dbvolution.results.Line2DResult) } to find the intersection
-	 * points of these lines
+	 * Use {@link #intersectionPoints(nz.co.gregs.dbvolution.results.Line2DResult)
+	 * } to find the intersection points of these lines
 	 *
-	 * @param crossingLine points that constitute a line that might intersect this expression.
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @param crossingLine points that constitute a line that might intersect this
+	 * expression.
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a BooleanExpression that will be TRUE if the lines ever cross,
 	 * otherwise FALSE.
 	 */
@@ -764,11 +811,12 @@ public class Line2DExpression implements Line2DResult, EqualComparable<Line2DRes
 	 * method only reports the first point found.
 	 *
 	 * <p>
-	 * Use {@link #intersectionPoints(nz.co.gregs.dbvolution.results.Line2DResult) } to find the intersection
-	 * points of these lines
+	 * Use {@link #intersectionPoints(nz.co.gregs.dbvolution.results.Line2DResult)
+	 * } to find the intersection points of these lines
 	 *
 	 * @param crossingLine a line that might intersect this expression.
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a BooleanExpression that will be TRUE if the lines ever cross,
 	 * otherwise FALSE.
 	 */
@@ -793,7 +841,9 @@ public class Line2DExpression implements Line2DResult, EqualComparable<Line2DRes
 	 * <p>
 	 * Line2D values with less than 3 points will return NULL values.
 	 *
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
 	 * @return a polygon2d expression
 	 */
 	/* TODO implement public Polygon2DExpression polygon2DResult() {*/

@@ -44,8 +44,10 @@ import nz.co.gregs.dbvolution.results.BooleanArrayResult;
  * sub-classing DBString/DBInteger, extending DBStringEnum/DBIntegerEnum, or
  * using a {@link DBTypeAdaptor}.
  *
- * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 * @author Gregory Graham
+ * <p style="color: #F90;">Support DBvolution at
+ * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+ *
+ * @author Gregory Graham
  */
 public class DBBooleanArray extends QueryableDatatype<Boolean[]> implements BooleanArrayResult {
 
@@ -92,7 +94,8 @@ public class DBBooleanArray extends QueryableDatatype<Boolean[]> implements Bool
 	 * Implements the standard Java equals method.
 	 *
 	 * @param other	other
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return TRUE if this object is the same as the other, otherwise FALSE.
 	 */
 	@Override
@@ -168,7 +171,9 @@ public class DBBooleanArray extends QueryableDatatype<Boolean[]> implements Bool
 	 * Returns the defined or set value of this DBBooleanArray as an actual
 	 * Boolean[].
 	 *
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
 	 * @return the value of this QDT as a Boolean[].
 	 */
 	public Boolean[] booleanArrayValue() {
@@ -207,7 +212,9 @@ public class DBBooleanArray extends QueryableDatatype<Boolean[]> implements Bool
 	/**
 	 * Indicates whether this DBBooleanArray needs support for returning NULLs.
 	 *
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
 	 * @return FALSE.
 	 */
 	@Override

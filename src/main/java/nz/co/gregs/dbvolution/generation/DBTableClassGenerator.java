@@ -43,8 +43,10 @@ import nz.co.gregs.dbvolution.datatypes.*;
  * create and modify. However with a complex existing database it can be easier
  * to use this class to generate the data model and then add the details.
  *
- * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 * @author Gregory Graham
+ * <p style="color: #F90;">Support DBvolution at
+ * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+ *
+ * @author Gregory Graham
  */
 public class DBTableClassGenerator {
 
@@ -217,7 +219,8 @@ public class DBTableClassGenerator {
 	 * @param database database
 	 * @param packageName packageName
 	 * @param options
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a List of DBTableClass instances representing the tables found on
 	 * the database 1 Database exceptions may be thrown
 	 * @throws java.sql.SQLException java.sql.SQLException
@@ -241,7 +244,8 @@ public class DBTableClassGenerator {
 	 * @param database database
 	 * @param packageName packageName
 	 * @param options
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a List of DBTableClass instances representing the views found on
 	 * the database 1 Database exceptions may be thrown
 	 * @throws java.sql.SQLException java.sql.SQLException
@@ -263,7 +267,9 @@ public class DBTableClassGenerator {
 	 * the version number supplied and the supplied {@link PrimaryKeyRecognisor}
 	 * and {@link ForeignKeyRecognisor} will be used.
 	 *
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
 	 * @return a List of DBTableClass instances representing the tables and views
 	 * found on the database 1 Database exceptions may be thrown
 	 */
@@ -278,13 +284,13 @@ public class DBTableClassGenerator {
 				//Method method = connection.getClass().getMethod("getSchema");
 				//schema = (String) method.invoke(connection);
 				schema = connection.getSchema();
-			}catch(java.sql.SQLFeatureNotSupportedException nope){
+			} catch (java.sql.SQLFeatureNotSupportedException nope) {
 				// SOMEONE DIDN'T WRITE THEIR DRIVER PROPERLY
-			}catch (java.lang.AbstractMethodError exp) {
+			} catch (java.lang.AbstractMethodError exp) {
 				// NOT USING Java 1.7+ apparently
-			}catch (IllegalArgumentException ex) {
+			} catch (IllegalArgumentException ex) {
 				// NOT USING Java 1.7+ apparently
-			}catch (SecurityException ex) {
+			} catch (SecurityException ex) {
 				// NOT USING Java 1.7+ apparently
 			}
 
@@ -407,14 +413,16 @@ public class DBTableClassGenerator {
 			dbt.generateJavaSource(options);
 		}
 	}
-	
+
 	/**
 	 *
 	 * Returns a string of the appropriate QueryableDatatype for the specified
 	 * SQLType
 	 *
 	 *
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
 	 * @return a string of the appropriate QueryableDatatype for the specified
 	 * SQLType
 	 */
@@ -454,7 +462,7 @@ public class DBTableClassGenerator {
 				break;
 			case Types.CHAR:
 			case Types.NCHAR:
-				if (trimCharColumns){
+				if (trimCharColumns) {
 					value = DBStringTrimmed.class;
 				} else {
 					value = DBString.class;
@@ -507,7 +515,8 @@ public class DBTableClassGenerator {
 	 * I.e. changes "_" into an uppercase letter.
 	 *
 	 * @param s	s
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return camel case version of the String
 	 */
 	public static String toClassCase(String s) {
@@ -532,7 +541,9 @@ public class DBTableClassGenerator {
 	 * I.e. changes "_" into an uppercase letter.
 	 *
 	 *
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
 	 * @return Camel Case version of S
 	 */
 	private static String toFieldCase(String s) {
@@ -550,7 +561,9 @@ public class DBTableClassGenerator {
 	 * Capitalizes the first letter of the string
 	 *
 	 *
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
 	 * @return Capitalizes the first letter of the string
 	 */
 	private static String toProperCase(String s) {
@@ -572,7 +585,7 @@ public class DBTableClassGenerator {
 
 	private DBTableClassGenerator() {
 	}
-	
+
 	/*
 	 * @param fkRecog fkRecog an object that can recognize foreign key columns by
 	 * the column name and derive the related table
@@ -581,23 +594,25 @@ public class DBTableClassGenerator {
 	 * the column name
 	 * @param trimCharColumns
 
-	*/
-	public static class Options{
-		
+	 */
+	public static class Options {
+
 		Long versionNumber = 1l;
 		PrimaryKeyRecognisor pkRecog = new PrimaryKeyRecognisor();
 		ForeignKeyRecognisor fkRecog = new ForeignKeyRecognisor();
 		Boolean trimCharColumns = false;
 		Boolean includeForeignKeyColumnName = false;
-		
-		public Options(){}
-		public Options(Long versionNumber, PrimaryKeyRecognisor pkRecog, ForeignKeyRecognisor fkRecog, Boolean trimCharColumns){
-			this.versionNumber=versionNumber;
+
+		public Options() {
+		}
+
+		public Options(Long versionNumber, PrimaryKeyRecognisor pkRecog, ForeignKeyRecognisor fkRecog, Boolean trimCharColumns) {
+			this.versionNumber = versionNumber;
 			this.pkRecog = pkRecog;
 			this.fkRecog = fkRecog;
 			this.trimCharColumns = trimCharColumns;
-			
+
 		}
-		
+
 	}
 }

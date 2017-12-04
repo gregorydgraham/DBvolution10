@@ -40,12 +40,14 @@ import nz.co.gregs.dbvolution.results.MultiPoint2DResult;
  * {@code ST_Point}, or {@code GEOMETRY} that represents a point.
  *
  * <p>
- Generally DBMultiPoint2D is declared inside your DBRow sub-class as:
- {@code @DBColumn public DBMultiPoint2D myPointColumn = new DBMultiPoint2D();}
+ * Generally DBMultiPoint2D is declared inside your DBRow sub-class as:
+ * {@code @DBColumn public DBMultiPoint2D myPointColumn = new DBMultiPoint2D();}
  *
  *
- * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 * @author Gregory Graham
+ * <p style="color: #F90;">Support DBvolution at
+ * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+ *
+ * @author Gregory Graham
  */
 public class DBMultiPoint2D extends QueryableDatatype<MultiPoint> implements MultiPoint2DResult {
 
@@ -60,10 +62,11 @@ public class DBMultiPoint2D extends QueryableDatatype<MultiPoint> implements Mul
 	}
 
 	/**
-	 * Create a DBPoint2D object to represent a Point column or
-	 * value using the value supplied.
+	 * Create a DBPoint2D object to represent a Point column or value using the
+	 * value supplied.
 	 *
-	 * @param points the collection of points that are the value of this DBMultiPoint2D
+	 * @param points the collection of points that are the value of this
+	 * DBMultiPoint2D
 	 */
 	public DBMultiPoint2D(MultiPoint points) {
 		super(points);
@@ -83,7 +86,8 @@ public class DBMultiPoint2D extends QueryableDatatype<MultiPoint> implements Mul
 	}
 
 	/**
-	 * Set the value of this DBPoint2D to the {@link Coordinate coordinates} specified.
+	 * Set the value of this DBPoint2D to the {@link Coordinate coordinates}
+	 * specified.
 	 *
 	 * <p>
 	 * Set values are used to add the value to the database. Without a set value
@@ -123,7 +127,7 @@ public class DBMultiPoint2D extends QueryableDatatype<MultiPoint> implements Mul
 				return null;
 			} else if (literalValue instanceof MultiPoint) {
 				return (MultiPoint) literalValue;
-			}else {
+			} else {
 				throw new DBRuntimeException("Unable to convert value to NULL or JTS MultiPoint: Please check that the value is NULL or an appropiate MULTIPOINT type value for this database");
 			}
 		}
@@ -135,7 +139,9 @@ public class DBMultiPoint2D extends QueryableDatatype<MultiPoint> implements Mul
 	 * <p>
 	 * NULL is valid result from this method.
 	 *
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
 	 * @return the set value of this object as a JTS Point object.
 	 */
 	public MultiPoint jtsMultiPointValue() {
@@ -195,7 +201,7 @@ public class DBMultiPoint2D extends QueryableDatatype<MultiPoint> implements Mul
 				point = database.getDefinition().transformDatabaseMultiPoint2DValueToJTSMultiPoint(string);
 			} catch (ParseException ex) {
 				Logger.getLogger(DBPoint2D.class.getName()).log(Level.SEVERE, null, ex);
-				throw new ParsingSpatialValueException(fullColumnName, string,ex);
+				throw new ParsingSpatialValueException(fullColumnName, string, ex);
 			}
 			return point;
 		}
@@ -235,7 +241,6 @@ public class DBMultiPoint2D extends QueryableDatatype<MultiPoint> implements Mul
 //	public StringExpression toWKTFormat(){
 //		return StringExpression.value(jtsMultiPointValue().toText());
 //	}
-
 	@Override
 	public StringExpression stringResult() {
 		return MultiPoint2DExpression.value(this).stringResult();
@@ -245,5 +250,5 @@ public class DBMultiPoint2D extends QueryableDatatype<MultiPoint> implements Mul
 	protected void setValueFromStandardStringEncoding(String encodedValue) {
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
-	
+
 }

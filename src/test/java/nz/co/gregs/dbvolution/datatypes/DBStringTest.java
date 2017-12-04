@@ -25,8 +25,10 @@ import static org.hamcrest.Matchers.is;
 
 /**
  *
- * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 * @author gregorygraham
+ * <p style="color: #F90;">Support DBvolution at
+ * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+ *
+ * @author gregorygraham
  */
 public class DBStringTest extends AbstractTest {
 
@@ -39,16 +41,16 @@ public class DBStringTest extends AbstractTest {
 		Marque marque = new Marque();
 		marque.name.permittedValuesIgnoreCase("TOYOTA");
 		List<Marque> got = database.get(marque);
-		
+
 		got.get(0).isUsedForTAFROs.setValue("Marahāo, Taupō, Años, Grégory");
 		database.update(got);
-		
+
 		marque = new Marque();
 		marque.isUsedForTAFROs.permittedValuesIgnoreCase("Marahāo, Taupō, Años, Grégory");
 		got = database.get(marque);
 		Assert.assertThat(got.size(), is(1));
 		Assert.assertThat(got.get(0).isUsedForTAFROs.stringValue(), is("Marahāo, Taupō, Años, Grégory"));
-		
+
 	}
 
 	@Test
@@ -58,12 +60,12 @@ public class DBStringTest extends AbstractTest {
 		List<Marque> got = database.get(marque);
 		got.get(0).isUsedForTAFROs.setValue("数据库应该很容易");
 		database.update(got);
-		
+
 		marque = new Marque();
 		marque.name.permittedValuesIgnoreCase("Toyota");
 		got = database.get(marque);
 		Assert.assertThat(got.get(0).isUsedForTAFROs.stringValue(), is("数据库应该很容易"));
-		
+
 	}
 
 }

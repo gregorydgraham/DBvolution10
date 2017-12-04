@@ -52,8 +52,10 @@ import nz.co.gregs.dbvolution.DBRow;
  * If Java supported annotations with Object fields, some of these issues may
  * have been avoided.
  *
- * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 * @author Gregory Graham
+ * <p style="color: #F90;">Support DBvolution at
+ * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+ *
+ * @author Gregory Graham
  */
 @Target({ElementType.FIELD, ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
@@ -72,7 +74,9 @@ public @interface AutoFillDuringQueryIfPossible {
 	 * <p>
 	 * Must be a DBRow subclass.
 	 *
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
 	 * @return the Class of DBRow to be filled.
 	 */
 	Class<? extends DBRow> requiredClass() default DBRow.class;

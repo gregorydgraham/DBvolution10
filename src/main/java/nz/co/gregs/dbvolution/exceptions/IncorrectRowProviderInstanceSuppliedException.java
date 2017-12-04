@@ -32,8 +32,10 @@ import nz.co.gregs.dbvolution.query.RowDefinition;
  * annotations. This would happen if you did "row.method(new Object())", or
  * "row.method(otherRow.field)".
  *
- * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 * @author Gregory Graham
+ * <p style="color: #F90;">Support DBvolution at
+ * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+ *
+ * @author Gregory Graham
  */
 public class IncorrectRowProviderInstanceSuppliedException extends RuntimeException {
 
@@ -63,7 +65,8 @@ public class IncorrectRowProviderInstanceSuppliedException extends RuntimeExcept
 	 * the object, but it isn't.
 	 *
 	 * @param qdt	qdt
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return an IncorrectRowProviderInstanceSuppliedException
 	 */
 	public static IncorrectRowProviderInstanceSuppliedException newMultiRowInstance(Object qdt) {

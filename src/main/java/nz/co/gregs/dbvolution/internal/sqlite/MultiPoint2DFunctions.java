@@ -27,8 +27,10 @@ import org.sqlite.Function;
 
 /**
  *
- * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 * @author gregory.graham
+ * <p style="color: #F90;">Support DBvolution at
+ * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+ *
+ * @author gregory.graham
  */
 public class MultiPoint2DFunctions {
 
@@ -134,7 +136,7 @@ public class MultiPoint2DFunctions {
 					resultStr.append(sep).append(x).append(" ").append(y);
 					sep = ", ";
 				}
-				resultStr.append( ")");
+				resultStr.append(")");
 				result(resultStr.toString());
 			}
 		}
@@ -381,7 +383,6 @@ public class MultiPoint2DFunctions {
 //			}
 //		}
 //	}
-
 	private static abstract class PolygonFunction extends Function {
 
 		Polygon getPolygon(String possiblePoly) throws com.vividsolutions.jts.io.ParseException {

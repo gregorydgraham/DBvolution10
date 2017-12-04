@@ -46,8 +46,10 @@ import nz.co.gregs.dbvolution.DBRow;
  * DBForeignKey is generated automatically by DBTableClassGenerator if the
  * foreign key is specified within the database.
  *
- * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 * @author Gregory Graham
+ * <p style="color: #F90;">Support DBvolution at
+ * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+ *
+ * @author Gregory Graham
  * @see DBPrimaryKey
  * @see DBColumn
  */
@@ -58,7 +60,9 @@ public @interface DBForeignKey {
 	/**
 	 * Identifies the foreign table by its {@code DBRow} implementation class.
 	 *
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
 	 * @return the DBRow subclass that this foreign key references.
 	 */
 	Class<? extends DBRow> value();
@@ -74,7 +78,9 @@ public @interface DBForeignKey {
 	 * Must be specified if the foreign class has no primary key, or if it has
 	 * multiple primary key columns (not supported yet).
 	 *
-	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
 	 * @return the name of the column this foreign key references.
 	 */
 	String column() default "";
