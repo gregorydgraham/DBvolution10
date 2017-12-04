@@ -1111,6 +1111,28 @@ public class RowDefinition implements Serializable {
 		return new DateColumn(this, fieldOfThisInstance);
 	}
 
+	/**
+	 * Creates a new DateRepeatColumn instance to help create
+	 * {@link DBExpression expressions}
+	 *
+	 * <p>
+	 * This method is the easy way to create a reference to the database column
+	 * represented by the field for use in creating complex expressions within
+	 * your query.
+	 *
+	 * <p>
+	 * For use with the
+	 * {@link DBQuery#addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression) DBQuery addCondition method}
+	 *
+	 * @param fieldOfThisInstance	fieldOfThisInstance
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @return A Column representing the supplied field
+	 */
+	public DateRepeatColumn column(Period fieldOfThisInstance) {
+		return new DateRepeatColumn(this, fieldOfThisInstance);
+	}
+
 	@Override
 	public String toString() {
 		StringBuilder string = new StringBuilder();
