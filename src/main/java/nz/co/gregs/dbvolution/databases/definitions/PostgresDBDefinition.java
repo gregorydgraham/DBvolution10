@@ -39,7 +39,8 @@ import nz.co.gregs.dbvolution.results.ExpressionHasStandardStringResult;
  * {@link PostgresDBOverSSL} instances, and you should not need to use it
  * directly.
  *
- * @author Gregory Graham
+ * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @author Gregory Graham
  */
 public class PostgresDBDefinition extends DBDefinition {
 
@@ -841,6 +842,7 @@ public class PostgresDBDefinition extends DBDefinition {
 	 * Return the function name for the Logarithm Base10 function.
 	 * 
 	 * <p>By default this method returns <b>log10</b></p>
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return the name of the function to use when rounding numbers up
 	 */
 	@Override

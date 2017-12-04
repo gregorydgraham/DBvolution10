@@ -33,7 +33,8 @@ import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
  * This DBDefinition is automatically included in {@link NuoDB} instances, and
  * you should not need to use it directly.
  *
- * @author Gregory Graham
+ * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @author Gregory Graham
  */
 public class NuoDBDefinition extends DBDefinition {
 
@@ -98,6 +99,7 @@ public class NuoDBDefinition extends DBDefinition {
 	 *
 	 * @param firstSQLExpression firstSQLExpression
 	 * @param secondSQLExpression secondSQLExpression
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return SQL
 	 */
 	@Override

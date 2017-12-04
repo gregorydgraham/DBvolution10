@@ -29,7 +29,8 @@ import nz.co.gregs.dbvolution.query.QueryOptions;
  * This DBDefinition is automatically included in {@link InformixDB} instances,
  * and you should not need to use it directly.
  *
- * @author Gregory Graham
+ * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @author Gregory Graham
  */
 public class InformixDBDefinition extends DBDefinition {
 
@@ -57,6 +58,7 @@ public class InformixDBDefinition extends DBDefinition {
 	 *
 	 * @param table table
 	 * @param columnName columnName
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a string of the table and column name for the select clause
 	 */
 	@Override
@@ -99,6 +101,7 @@ public class InformixDBDefinition extends DBDefinition {
 	 * <p>
 	 * Informix provides NVL only.
 	 *
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return "COALESCE"
 	 */
 	@Override

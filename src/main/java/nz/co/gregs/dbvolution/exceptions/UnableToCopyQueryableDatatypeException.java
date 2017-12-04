@@ -24,7 +24,8 @@ import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
  * A lot of reflection is used in DBV, please ensure that the fields are
  * publicly accessible and non-null.
  *
- * @author Gregory Graham
+ * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @author Gregory Graham
  */
 public class UnableToCopyQueryableDatatypeException extends DBRuntimeException {
 

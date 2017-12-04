@@ -25,7 +25,8 @@ import nz.co.gregs.dbvolution.exceptions.UnableToFindJDBCDriver;
 /**
  * Stores all the required functionality to use an H2 database in memory.
  *
- * @author Gregory Graham
+ * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @author Gregory Graham
  */
 public class H2MemoryDB extends H2DB {
 

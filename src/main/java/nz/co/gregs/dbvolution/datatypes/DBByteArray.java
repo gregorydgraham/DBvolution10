@@ -43,7 +43,8 @@ import org.apache.commons.codec.binary.Base64;
  * DBByteArray is the standard type of {@link DBLargeObject BLOB columns}.
  *
  * @deprecated DBByteArray does not correctly differentiate between CLOB and BLOB producing inconsistencies between databases.  Move to {@link DBLargeBinary} for binaries like images or {@link DBLargeText} for XML, HTML, or other large text values.
- * @author Gregory Graham
+ * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @author Gregory Graham
  */
 @Deprecated()
 public class DBByteArray extends DBLargeObject<byte[]> {
@@ -75,6 +76,7 @@ public class DBByteArray extends DBLargeObject<byte[]> {
 
 	/**
 	 *
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return the standard SQL datatype that corresponds to this QDT as a
 	 * String
 	 */
@@ -307,6 +309,7 @@ public class DBByteArray extends DBLargeObject<byte[]> {
 	 * Convenience method for {@link #setFromFileSystem(java.io.File) }.
 	 *
 	 * @param originalFile	originalFile
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return the byte[] of the contents of the file.
 	 * @throws java.io.FileNotFoundException java.io.FileNotFoundException
 	 * @throws java.io.IOException java.io.IOException
@@ -325,6 +328,7 @@ public class DBByteArray extends DBLargeObject<byte[]> {
 	 * Convenience method for {@link #setFromFileSystem(java.io.File) }.
 	 *
 	 * @param originalFile	originalFile
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return the byte[] of the contents of the file.
 	 * @throws java.io.FileNotFoundException java.io.FileNotFoundException
 	 * @throws java.io.IOException java.io.IOException
@@ -340,6 +344,7 @@ public class DBByteArray extends DBLargeObject<byte[]> {
 	 * Tries to set the DBDyteArray to the contents of the supplied file.
 	 *
 	 * @param originalFile	originalFile
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return the byte[] of the contents of the file.
 	 * @throws java.io.FileNotFoundException java.io.FileNotFoundException
 	 * @throws java.io.IOException java.io.IOException
@@ -450,6 +455,7 @@ public class DBByteArray extends DBLargeObject<byte[]> {
 	/**
 	 * Returns the internal InputStream.
 	 *
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return an InputStream to read the bytes.
 	 */
 	@Override
@@ -464,6 +470,7 @@ public class DBByteArray extends DBLargeObject<byte[]> {
 	 * Returns the byte[] used internally to store the value of this
 	 * DBByteArray.
 	 *
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return the byte[] value of this DBByteArray.
 	 */
 	public byte[] getBytes() {

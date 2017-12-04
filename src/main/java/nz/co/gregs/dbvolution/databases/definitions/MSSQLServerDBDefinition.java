@@ -39,7 +39,8 @@ import nz.co.gregs.dbvolution.query.QueryOptions;
  * This DBDefinition is automatically included in {@link MSSQLServerDB}
  * instances, and you should not need to use it directly.
  *
- * @author Gregory Graham
+ * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @author Gregory Graham
  */
 public class MSSQLServerDBDefinition extends DBDefinition {
 
@@ -197,6 +198,7 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 	 *
 	 * @param firstSQLExpression the first string value to compare
 	 * @param secondSQLExpression the second string value to compare
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return SQL
 	 */
 	@Override
@@ -227,6 +229,7 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 	/**
 	 * MSSQLserver only supports integer degrees, and that's not good enough.
 	 *
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return false
 	 */
 	@Override
@@ -244,6 +247,7 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 	 * value of the snippet.
 	 *
 	 * @param enclosedValue	enclosedValue
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return SQL snippet
 	 */
 	@Override
@@ -408,6 +412,7 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 	/**
 	 * MS SQLServer does not support the LEASTOF operation natively.
 	 *
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return FALSE
 	 */
 	@Override
@@ -418,6 +423,7 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 	/**
 	 * MS SQLServer does not support the GREATESTOF operation natively.
 	 *
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return FALSE
 	 */
 	@Override
@@ -429,6 +435,7 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 	 * MS SQLServer does not support the grouping by columns that do not access
 	 * table data.
 	 *
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return FALSE
 	 */
 	@Override
@@ -441,6 +448,7 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 	 * expression for this database.
 	 *
 	 * @param numberExpression	numberExpression
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a String of the SQL required to transform the number supplied
 	 * into a character or String type.
 	 */
@@ -694,6 +702,7 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 	 *
 	 * @param firstGeometry the first polygon2d value to compare
 	 * @param secondGeometry the second polygon2d value to compare
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return SQL that is TRUE if the first polygon contains the second.
 	 */
 	@Override
@@ -712,6 +721,7 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 	 *
 	 * @param firstGeometry the first polygon2d value to compare
 	 * @param secondGeometry the second polygon2d value to compare
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return SQL that is FALSE if the polygons intersect.
 	 */
 	@Override
@@ -728,6 +738,7 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 	 *
 	 * @param firstGeometry the first polygon2d value to compare
 	 * @param secondGeometry the second polygon2d value to compare
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return SQL that is TRUE if the first polygon is within the second.
 	 */
 	@Override
@@ -744,6 +755,7 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 	 * This will be "2"
 	 *
 	 * @param polygon2DSQL a polygon2d value
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return "2" unless something has gone horribly wrong.
 	 */
 	@Override
@@ -960,6 +972,7 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 	 * <p>
 	 * For MS SQLServer this method returns <b>ceiling</b></p>
 	 *
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return the name of the function to use when rounding numbers up
 	 */
 	@Override
@@ -973,6 +986,7 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 	 * <p>
 	 * For SQLServer this method returns <b>log</b></p>
 	 *
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return the name of the function to use when rounding numbers up
 	 */
 	@Override
@@ -986,6 +1000,7 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 	 * <p>
 	 * By default this method returns <b>log10</b></p>
 	 *
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return the name of the function to use when rounding numbers up
 	 */
 	@Override
@@ -1004,6 +1019,7 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 	 * This method DOES NOT use the SQLServer built-in function as it does not
 	 * produce a different result for different rows in a single query.</p>
 	 *
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return random number generating code
 	 */
 	@Override

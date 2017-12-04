@@ -31,7 +31,8 @@ import nz.co.gregs.dbvolution.internal.properties.PropertyWrapper;
  * Used to provide revert actions for updates.
  * </p>
  *
- * @author Gregory Graham
+ * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @author Gregory Graham
  */
 public class DBUpdateToPreviousValues extends DBUpdateSimpleTypes {
 
@@ -44,6 +45,7 @@ public class DBUpdateToPreviousValues extends DBUpdateSimpleTypes {
 	 *
 	 * @param db the target database
 	 * @param row the row to be updated
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return The SET clause of the UPDATE statement.
 	 */
 	@Override
@@ -79,6 +81,7 @@ public class DBUpdateToPreviousValues extends DBUpdateSimpleTypes {
 	 *
 	 * @param db the target database
 	 * @param row the row to be updated
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return The WHERE clause of the UPDATE statement.
 	 */
 	@Override

@@ -31,7 +31,8 @@ import nz.co.gregs.dbvolution.results.StringResult;
  * Implements a type agnostic comparison that finds items between the 2 values
  * but not the values themselves.
  *
- * @author Gregory Graham
+ * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @author Gregory Graham
  */
 public class DBBetweenExclusiveOperator extends DBOperator {
 

@@ -21,7 +21,8 @@ import nz.co.gregs.dbvolution.expressions.DBExpression;
  * Represents SQL results that are 2 dimensional paths: a series of connected
  * line segments with X and Y coordinates.
  *
- * @author Gregory Graham
+ * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @author Gregory Graham
  */
 public interface Line2DResult extends DBExpression, ExpressionCanHaveNullValues, Spatial2DResult {
 

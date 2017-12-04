@@ -38,7 +38,8 @@ import nz.co.gregs.dbvolution.datatypes.spatial2D.DBPolygon2D;
  * Use these methods to manipulate your Polygon2D columns and results for finer
  * control of the query results.
  *
- * @author gregorygraham
+ * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @author gregorygraham
  */
 public class Polygon2DExpression implements Polygon2DResult, EqualComparable<Polygon2DResult>, ExpressionColumn<DBPolygon2D>, Spatial2DExpression {
 
@@ -86,6 +87,7 @@ public class Polygon2DExpression implements Polygon2DResult, EqualComparable<Pol
 	 * } and similar methods.
 	 *
 	 * @param polygon the value of this expression
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a polygon2d expression
 	 */
 	public static Polygon2DExpression value(Polygon polygon) {
@@ -98,6 +100,7 @@ public class Polygon2DExpression implements Polygon2DResult, EqualComparable<Pol
 	 * } and similar methods.
 	 *
 	 * @param polygon the value of this expression
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a polygon2d expression
 	 */
 	public static Polygon2DExpression value(Polygon2DResult polygon) {
@@ -111,6 +114,7 @@ public class Polygon2DExpression implements Polygon2DResult, EqualComparable<Pol
 	 *
 	 * @param pointExpressions the points that define the polygon value of this
 	 * expression.
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a polygon2d expression
 	 */
 	public static Polygon2DExpression value(Point2DExpression... pointExpressions) {
@@ -124,6 +128,7 @@ public class Polygon2DExpression implements Polygon2DResult, EqualComparable<Pol
 	 *
 	 * @param coordinates  the individual numbers that are converted to
 	 * point that define the polygon value of this expression.
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a polygon2d expression
 	 */
 	public static Polygon2DExpression value(Number... coordinates) {
@@ -141,6 +146,7 @@ public class Polygon2DExpression implements Polygon2DResult, EqualComparable<Pol
 	 *
 	 * @param coordinateExpressions the individual numbers that are converted to
 	 * point that define the polygon value of this expression.
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a polygon2d expression
 	 */
 	public static Polygon2DExpression value(NumberExpression... coordinateExpressions) {
@@ -153,6 +159,7 @@ public class Polygon2DExpression implements Polygon2DResult, EqualComparable<Pol
 	 * } and similar methods.
 	 *
 	 * @param points the points that define the polygon value of this expression.
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a polygon2d expression
 	 */
 	public static Polygon2DExpression value(Point... points) {
@@ -216,6 +223,7 @@ public class Polygon2DExpression implements Polygon2DResult, EqualComparable<Pol
 	 * spatial coordinates.
 	 *
 	 * @param rightHandSide the polygon to compare against.
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a boolean expression that is true if the polygons interact in any
 	 * way.
 	 */
@@ -228,6 +236,7 @@ public class Polygon2DExpression implements Polygon2DResult, EqualComparable<Pol
 	 * spatial coordinates.
 	 *
 	 * @param rightHandSide the polygon to compare against
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a boolean expression that is true if the polygons interact in any
 	 * way.
 	 */
@@ -252,6 +261,7 @@ public class Polygon2DExpression implements Polygon2DResult, EqualComparable<Pol
 	 * <p>
 	 * MultiPoint2d values with less than 3 points will return NULL values.
 	 *
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a polygon2d expression
 	 */
 	/* TODO implement public Polygon2DExpression polygon2DResult() {*/
@@ -326,6 +336,7 @@ public class Polygon2DExpression implements Polygon2DResult, EqualComparable<Pol
 	 * EQUALS operation.
 	 *
 	 * @param rightHandSide the polygon to compare against
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a BooleanExpression
 	 */
 	public BooleanExpression is(Polygon rightHandSide) {
@@ -348,6 +359,7 @@ public class Polygon2DExpression implements Polygon2DResult, EqualComparable<Pol
 	 * this polygon value.
 	 *
 	 * @param rightHandSide the polygon to compare against
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a boolean expression
 	 */
 	public BooleanExpression contains(Point rightHandSide) {
@@ -359,6 +371,7 @@ public class Polygon2DExpression implements Polygon2DResult, EqualComparable<Pol
 	 * this polygon value.
 	 *
 	 * @param rightHandSide the point to compare against
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a boolean expression
 	 */
 	public BooleanExpression contains(Point2DResult rightHandSide) {
@@ -379,6 +392,7 @@ public class Polygon2DExpression implements Polygon2DResult, EqualComparable<Pol
 	 * A CONTAINS B implies B WITHIN A.
 	 *
 	 * @param rightHandSide the polygon to compare against
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a boolean expression
 	 */
 	public BooleanExpression contains(Polygon rightHandSide) {
@@ -399,6 +413,7 @@ public class Polygon2DExpression implements Polygon2DResult, EqualComparable<Pol
 	 * This operation is the inverse of within: A CONTAINS B implies B WITHIN A.
 	 *
 	 * @param rightHandSide the polygon to compare against
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a boolean expression
 	 */
 	public BooleanExpression contains(Polygon2DResult rightHandSide) {
@@ -416,6 +431,7 @@ public class Polygon2DExpression implements Polygon2DResult, EqualComparable<Pol
 	 * intersect in anyway.
 	 *
 	 * @param rightHandSide the polygon to compare against
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a boolean expression that is TRUE if the 2 polygons do NOT
 	 * intersect in anyway, otherwise FALSE.
 	 */
@@ -428,6 +444,7 @@ public class Polygon2DExpression implements Polygon2DResult, EqualComparable<Pol
 	 * intersect in anyway.
 	 *
 	 * @param rightHandSide the polygon to compare against
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a boolean expression that is TRUE if the 2 polygons do NOT
 	 * intersect in anyway, otherwise FALSE.
 	 */
@@ -454,6 +471,7 @@ public class Polygon2DExpression implements Polygon2DResult, EqualComparable<Pol
 	 * not equal to A or B.
 	 *
 	 * @param rightHandSide the polygon to compare against
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a boolean expression that is TRUE if the 2 polygons intersect but
 	 * are not contained, within, or equal.
 	 */
@@ -474,6 +492,7 @@ public class Polygon2DExpression implements Polygon2DResult, EqualComparable<Pol
 	 * not equal to A or B.
 	 *
 	 * @param rightHandSide the polygon to compare against
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a boolean expression that is TRUE if the 2 polygons intersect but
 	 * are not contained, within, or equal.
 	 */
@@ -495,6 +514,7 @@ public class Polygon2DExpression implements Polygon2DResult, EqualComparable<Pol
 	 * their interiors do not overlap.
 	 *
 	 * @param rightHandSide the polygon to compare against
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return BooleanExpression that returns TRUE if and only if the polygons
 	 * touch without overlapping
 	 */
@@ -510,6 +530,7 @@ public class Polygon2DExpression implements Polygon2DResult, EqualComparable<Pol
 	 * their interiors do not overlap.
 	 *
 	 * @param rightHandSide the polygon to compare against
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return BooleanExpression that returns TRUE if and only if the polygons
 	 * touch without overlapping
 	 */
@@ -537,6 +558,7 @@ public class Polygon2DExpression implements Polygon2DResult, EqualComparable<Pol
 	 * This operation is the inverse of contains: A CONTAINS B implies B WITHIN A.
 	 *
 	 * @param rightHandSide the polygon to compare against
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a boolean expression
 	 */
 	public BooleanExpression within(Polygon rightHandSide) {
@@ -557,6 +579,7 @@ public class Polygon2DExpression implements Polygon2DResult, EqualComparable<Pol
 	 * This operation is the inverse of contains: A CONTAINS B implies B WITHIN A.
 	 *
 	 * @param rightHandSide the polygon to compare against
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a boolean expression
 	 */
 	public BooleanExpression within(Polygon2DResult rightHandSide) {
@@ -628,6 +651,7 @@ public class Polygon2DExpression implements Polygon2DResult, EqualComparable<Pol
 	/**
 	 * Returns the area of the polygon expressed in units.
 	 *
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return the area covered by the polygon in units.
 	 */
 	public NumberExpression area() {
@@ -709,6 +733,7 @@ public class Polygon2DExpression implements Polygon2DResult, EqualComparable<Pol
 	 * The line is coincident with the edge of the polygon but it does not contain
 	 * any points within the polygon as it is only a line.
 	 *
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a Line2DExpression
 	 */
 	public Line2DExpression exteriorRing() {
@@ -728,6 +753,7 @@ public class Polygon2DExpression implements Polygon2DResult, EqualComparable<Pol
 	 * NOT EQUALS operation.
 	 *
 	 * @param geometry the polygon to compare against
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a BooleanExpression
 	 */
 	public BooleanExpression isNot(Polygon geometry) {

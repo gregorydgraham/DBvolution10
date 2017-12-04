@@ -15,7 +15,8 @@ import nz.co.gregs.dbvolution.internal.properties.PropertyWrapperDefinition;
 
 /**
  *
- * @author gregorygraham
+ * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @author gregorygraham
  */
 public class DBNumberStatistics extends DBNumber {
 
@@ -84,6 +85,7 @@ public class DBNumberStatistics extends DBNumber {
 	/**
 	 * Count of the rows included in this set of statistics
 	 *
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return the size of the statistics collection
 	 */
 	public Number count() {
@@ -93,6 +95,7 @@ public class DBNumberStatistics extends DBNumber {
 	/**
 	 * Returns the sum of all the numbers in this group.
 	 *
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return the sum of all values in this grouping
 	 */
 	public Number sum() {
@@ -101,6 +104,7 @@ public class DBNumberStatistics extends DBNumber {
 
 	/**
 	 *
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return the minimum (smallest) value in this grouping
 	 */
 	public Number min() {
@@ -109,6 +113,7 @@ public class DBNumberStatistics extends DBNumber {
 
 	/**
 	 *
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return the maximum (largest) value in this grouping
 	 */
 	public Number max() {
@@ -118,6 +123,7 @@ public class DBNumberStatistics extends DBNumber {
 	/**
 	 * The middle term in the grouping.
 	 *
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return the median value in this grouping 
 	 */
 	public Number median() {
@@ -127,6 +133,7 @@ public class DBNumberStatistics extends DBNumber {
 	/**
 	 * The average value of the grouping.
 	 *
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return the average value of the grouping
 	 */
 	public Number average() {
@@ -135,6 +142,7 @@ public class DBNumberStatistics extends DBNumber {
 
 	/**
 	 *
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return the middle number between the median and the smallest value.
 	 */
 	public Number firstQuartile() {
@@ -143,6 +151,7 @@ public class DBNumberStatistics extends DBNumber {
 
 	/**
 	 *
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return the middle number between the median and the largest value.
 	 */
 	public Number thirdQuartile() {
@@ -152,6 +161,7 @@ public class DBNumberStatistics extends DBNumber {
 	/**
 	 * The middle term in the grouping.
 	 *
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return the median value in this grouping 
 	 */
 	public Number secondQuartile() {

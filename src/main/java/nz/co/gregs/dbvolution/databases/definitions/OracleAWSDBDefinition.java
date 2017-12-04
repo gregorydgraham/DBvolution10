@@ -36,7 +36,8 @@ import nz.co.gregs.dbvolution.exceptions.IncorrectGeometryReturnedForDatatype;
  * {@link  Oracle12DBDefinition} to provide the full set of features required to
  * use an Oracle database.
  *
- * @author Gregory Graham
+ * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @author Gregory Graham
  */
 public class OracleAWSDBDefinition extends OracleDBDefinition {
 

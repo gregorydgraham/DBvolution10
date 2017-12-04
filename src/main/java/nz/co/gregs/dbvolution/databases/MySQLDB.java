@@ -26,7 +26,8 @@ import nz.co.gregs.dbvolution.internal.mysql.MigrationFunctions;
 /**
  * A DBDatabase tweaked for MySQL databases
  *
- * @author Gregory Graham
+ * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @author Gregory Graham
  */
 public class MySQLDB extends DBDatabase implements SupportsPolygonDatatype{
 

@@ -43,7 +43,8 @@ import nz.co.gregs.dbvolution.datatypes.*;
  * create and modify. However with a complex existing database it can be easier
  * to use this class to generate the data model and then add the details.
  *
- * @author Gregory Graham
+ * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @author Gregory Graham
  */
 public class DBTableClassGenerator {
 
@@ -216,6 +217,7 @@ public class DBTableClassGenerator {
 	 * @param database database
 	 * @param packageName packageName
 	 * @param options
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a List of DBTableClass instances representing the tables found on
 	 * the database 1 Database exceptions may be thrown
 	 * @throws java.sql.SQLException java.sql.SQLException
@@ -239,6 +241,7 @@ public class DBTableClassGenerator {
 	 * @param database database
 	 * @param packageName packageName
 	 * @param options
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a List of DBTableClass instances representing the views found on
 	 * the database 1 Database exceptions may be thrown
 	 * @throws java.sql.SQLException java.sql.SQLException
@@ -260,6 +263,7 @@ public class DBTableClassGenerator {
 	 * the version number supplied and the supplied {@link PrimaryKeyRecognisor}
 	 * and {@link ForeignKeyRecognisor} will be used.
 	 *
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a List of DBTableClass instances representing the tables and views
 	 * found on the database 1 Database exceptions may be thrown
 	 */
@@ -410,6 +414,7 @@ public class DBTableClassGenerator {
 	 * SQLType
 	 *
 	 *
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a string of the appropriate QueryableDatatype for the specified
 	 * SQLType
 	 */
@@ -502,6 +507,7 @@ public class DBTableClassGenerator {
 	 * I.e. changes "_" into an uppercase letter.
 	 *
 	 * @param s	s
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return camel case version of the String
 	 */
 	public static String toClassCase(String s) {
@@ -526,6 +532,7 @@ public class DBTableClassGenerator {
 	 * I.e. changes "_" into an uppercase letter.
 	 *
 	 *
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return Camel Case version of S
 	 */
 	private static String toFieldCase(String s) {
@@ -543,6 +550,7 @@ public class DBTableClassGenerator {
 	 * Capitalizes the first letter of the string
 	 *
 	 *
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return Capitalizes the first letter of the string
 	 */
 	private static String toProperCase(String s) {

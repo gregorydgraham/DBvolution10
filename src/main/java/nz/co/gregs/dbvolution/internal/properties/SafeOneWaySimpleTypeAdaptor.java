@@ -197,6 +197,7 @@ public class SafeOneWaySimpleTypeAdaptor {
 	/**
 	 * Gets the expected type of source values passed to {@link #convert(Object)}.
 	 *
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return null if not constrained
 	 */
 	public Class<?> getSourceType() {
@@ -207,6 +208,7 @@ public class SafeOneWaySimpleTypeAdaptor {
 	 * Gets the type that values are converted to, possibly including extra
 	 * up-casting or down-casting as needed when converting between number types.
 	 *
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return null if not constrained
 	 */
 	public Class<?> getTargetType() {
@@ -217,6 +219,7 @@ public class SafeOneWaySimpleTypeAdaptor {
 	 * Uses the type adaptor to convert in the configured direction.
 	 *
 	 * @param value value
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return the value supplied converted by the type adaptor
 	 * @throws ClassCastException on type conversion failure
 	 * @throws DBThrownByEndUserCodeException if the type adaptor throws an

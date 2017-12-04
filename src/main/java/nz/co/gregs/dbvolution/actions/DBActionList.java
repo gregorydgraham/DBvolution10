@@ -44,7 +44,8 @@ import nz.co.gregs.dbvolution.transactions.DBTransaction;
  * to accumulate actions that are executed as a batch with {@link DBActionList#execute(nz.co.gregs.dbvolution.DBDatabase)
  * }.
  *
- * @author Gregory Graham
+ * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @author Gregory Graham
  */
 public class DBActionList extends ArrayList<DBAction> {
 
@@ -65,6 +66,7 @@ public class DBActionList extends ArrayList<DBAction> {
 	 * Returns the SQL that would be executed on the database provided.
 	 *
 	 * @param db the target database.
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a List of SQL statements appropriate to the actions of this
 	 * DBActionList and the database.
 	 */
@@ -80,6 +82,7 @@ public class DBActionList extends ArrayList<DBAction> {
 	 * Executes every action in this DBActionList on the database provided.
 	 *
 	 * @param database the target database.
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a new DBActionList containing the DBActions after execution.
 	 * @throws SQLException Database actions may throw SQLException
 	 */
@@ -108,6 +111,7 @@ public class DBActionList extends ArrayList<DBAction> {
 	 * inserts and deletes, you should watch out for complex updates that may
 	 * change a different selection from the original.
 	 *
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return A DBactionList of DBActions required to revert the actions within
 	 * this DBActionList.
 	 */

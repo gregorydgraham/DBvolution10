@@ -27,7 +27,8 @@ import nz.co.gregs.dbvolution.datatypes.DBBoolean;
 /**
  * The Expression object for bit array columns.
  *
- * @author gregory.graham
+ * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @author gregory.graham
  */
 public class BooleanArrayExpression implements BooleanArrayResult, EqualComparable<BooleanArrayResult>, ExpressionColumn<DBBooleanArray> {
 
@@ -115,6 +116,7 @@ public class BooleanArrayExpression implements BooleanArrayResult, EqualComparab
 	/**
 	 * Return the BooleanArrayResult held internally in this class.
 	 *
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return The BooleanArrayResult used internally.
 	 */
 	protected BooleanArrayResult getInnerBooleanArrayResult() {
@@ -127,6 +129,7 @@ public class BooleanArrayExpression implements BooleanArrayResult, EqualComparab
 	 * operator.
 	 *
 	 * @param bools the value to compare this expression to
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a BooleanExpresson of the Bit comparison of the number and this
 	 * expression.
 	 */
@@ -145,6 +148,7 @@ public class BooleanArrayExpression implements BooleanArrayResult, EqualComparab
 	 * operator.
 	 *
 	 * @param i the value to compare this expression to
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a BooleanExpresson of the Bit comparison of the number and this
 	 * expression.
 	 */
@@ -165,6 +169,7 @@ public class BooleanArrayExpression implements BooleanArrayResult, EqualComparab
 	 * operator.
 	 *
 	 * @param i the value to compare this expression to
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a BooleanExpresson of the Bit comparison of the number and this
 	 * expression.
 	 */
@@ -179,6 +184,7 @@ public class BooleanArrayExpression implements BooleanArrayResult, EqualComparab
 	 * operator.
 	 *
 	 * @param i the value to compare this expression to
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a BooleanExpresson of the Bit comparison of the number and this
 	 * expression.
 	 */

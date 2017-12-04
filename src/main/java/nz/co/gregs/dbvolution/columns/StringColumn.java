@@ -38,7 +38,8 @@ import nz.co.gregs.dbvolution.query.RowDefinition;
  * Generally you get a StringColumn using
  * {@link RowDefinition#column(nz.co.gregs.dbvolution.datatypes.DBString)  RowDefinition.column(DBString)}.
  *
- * @author Gregory Graham
+ * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @author Gregory Graham
  * @see RowDefinition
  * @see AbstractColumn
  * @see StringExpression
@@ -130,6 +131,7 @@ public class StringColumn extends StringExpression implements ColumnProvider {
 	 * EQUALS.
 	 *
 	 * @param column the value to compare this column's value to.
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a BooleanExpression
 	 */
 	public BooleanExpression is(DBString column) {

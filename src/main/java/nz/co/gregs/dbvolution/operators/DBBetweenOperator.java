@@ -30,7 +30,8 @@ import nz.co.gregs.dbvolution.results.StringResult;
 /**
  * Uses the database's native BETWEEN operator and is thus not reliable.
  *
- * @author Gregory Graham
+ * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @author Gregory Graham
  */
 public class DBBetweenOperator extends DBOperator {
 

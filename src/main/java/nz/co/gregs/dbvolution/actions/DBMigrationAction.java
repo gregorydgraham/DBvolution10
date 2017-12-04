@@ -33,7 +33,8 @@ import org.apache.commons.logging.LogFactory;
  * Provides support for the abstract concept of migrating rows from one or more tables to another table.
  *
  *
- * @author Gregory Graham
+ * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @author Gregory Graham
  * @param <R> the resulting DBRow from this DBQueryInsertAction
  */
 public class DBMigrationAction<R extends DBRow> extends DBAction {
@@ -64,6 +65,7 @@ public class DBMigrationAction<R extends DBRow> extends DBAction {
 	 * Perform the migration
 	 *
 	 * @param database the database used by this action
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a DBActionList of the migration's effects
 	 * @throws SQLException SQL Exceptions may be thrown
 	 */

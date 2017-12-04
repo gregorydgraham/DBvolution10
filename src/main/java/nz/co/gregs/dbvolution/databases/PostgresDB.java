@@ -37,7 +37,8 @@ import org.apache.commons.logging.LogFactory;
 /**
  * A DBDatabase tweaked for PostgreSQL.
  *
- * @author Gregory Graham
+ * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @author Gregory Graham
  */
 public class PostgresDB extends DBDatabase implements SupportsPolygonDatatype {
 
@@ -173,6 +174,7 @@ public class PostgresDB extends DBDatabase implements SupportsPolygonDatatype {
 	 * @param nullValue the string that represents NULL in this file.
 	 * @param escapeCharacter the character that escapes special values
 	 * @param quoteCharacter the character the surrounds strings.
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return either (1) the row count for SQL Data Manipulation Language (DML)
 	 * statements or (2) 0 for SQL statements that return nothing 1 Database
 	 * exceptions may be thrown

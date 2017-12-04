@@ -30,7 +30,8 @@ import nz.co.gregs.dbvolution.expressions.DBExpression;
  * Add {@code implements BooleanResult} to your class and override the copy
  * method so that it returns your class type.
  *
- * @author Gregory Graham
+ * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @author Gregory Graham
  * @see DBExpression
  */
 public interface BooleanResult extends DBExpression, ExpressionCanHaveNullValues, ExpressionHasStandardStringResult {
@@ -45,6 +46,7 @@ public interface BooleanResult extends DBExpression, ExpressionCanHaveNullValues
 	 * 
 	 * <p>The distinction is subtle but required to deal with databases which do not have a full-feature boolean datatype.</p>
 	 * 
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return TRUE if the BooleanResult is a boolean statement, FALSE otherwise.
 	 */
 	boolean isBooleanStatement();

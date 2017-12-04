@@ -140,6 +140,7 @@ public class DBStringEnum<E extends Enum<E> & DBEnumValue<String>> extends DBEnu
 	 * Provided as a convenience function
 	 *
 	 *
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a String[] of the enums values.
 	 */
 	@SafeVarargs
@@ -168,6 +169,7 @@ public class DBStringEnum<E extends Enum<E> & DBEnumValue<String>> extends DBEnu
 	 * Convert the enum to its String literal value.
 	 *
 	 *
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return the literal value of the enum.
 	 */
 	private String convertToLiteralString(E enumValue) {

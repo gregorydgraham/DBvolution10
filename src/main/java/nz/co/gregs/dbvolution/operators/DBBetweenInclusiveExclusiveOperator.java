@@ -35,7 +35,8 @@ import nz.co.gregs.dbvolution.results.StringResult;
  * from 1PM until 3PM will not be running during the 3PM hour. As comparison an
  * event that runs from the 1st until the 3rd will run during the 3rd day.
  *
- * @author Gregory Graham
+ * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @author Gregory Graham
  */
 public class DBBetweenInclusiveExclusiveOperator extends DBOperator {
 

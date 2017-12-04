@@ -23,7 +23,8 @@ import nz.co.gregs.dbvolution.databases.definitions.Oracle12DBDefinition;
 /**
  * Implements support for version 12 of the Oracle database.
  *
- * @author Gregory Graham
+ * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @author Gregory Graham
  * @see OracleAWSDB
  * @see Oracle11XEDB
  * @see Oracle12DBDefinition

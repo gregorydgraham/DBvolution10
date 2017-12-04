@@ -44,7 +44,8 @@ import nz.co.gregs.dbvolution.results.MultiPoint2DResult;
  {@code @DBColumn public DBMultiPoint2D myPointColumn = new DBMultiPoint2D();}
  *
  *
- * @author Gregory Graham
+ * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @author Gregory Graham
  */
 public class DBMultiPoint2D extends QueryableDatatype<MultiPoint> implements MultiPoint2DResult {
 
@@ -134,6 +135,7 @@ public class DBMultiPoint2D extends QueryableDatatype<MultiPoint> implements Mul
 	 * <p>
 	 * NULL is valid result from this method.
 	 *
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return the set value of this object as a JTS Point object.
 	 */
 	public MultiPoint jtsMultiPointValue() {

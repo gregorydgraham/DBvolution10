@@ -20,7 +20,8 @@ import nz.co.gregs.dbvolution.expressions.StringExpression;
 /**
  * Implements the LIKE operator for Strings
  *
- * @author gregorygraham
+ * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @author gregorygraham
  */
 public class DBPermittedPatternOperator extends DBLikeOperator {
 

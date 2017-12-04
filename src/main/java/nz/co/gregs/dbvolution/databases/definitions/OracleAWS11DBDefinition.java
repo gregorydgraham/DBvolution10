@@ -29,7 +29,8 @@ import nz.co.gregs.dbvolution.query.QueryOptions;
  * This DBDefinition is automatically included in {@link OracleAWS11DB} instances,
  * and you should not need to use it directly.
  *
- * @author Gregory Graham
+ * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @author Gregory Graham
  */
 public class OracleAWS11DBDefinition extends OracleAWSDBDefinition {
 

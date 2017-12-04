@@ -19,7 +19,8 @@ import nz.co.gregs.dbvolution.expressions.NumberExpression;
 
 /**
  *
- * @author gregorygraham
+ * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @author gregorygraham
  */
 public interface PointResult {
 
@@ -29,6 +30,7 @@ public interface PointResult {
 	 * <p>
 	 * Provides access to the X value of this point allowing for transforms and tests.
 	 *
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a NumberExpression of the X coordinate.
 	 */
 	NumberExpression getX();
@@ -39,6 +41,7 @@ public interface PointResult {
 	 * <p>
 	 * Provides access to the Y value of this point allowing for transforms and tests.
 	 *
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a NumberExpression of the Y coordinate.
 	 */
 	NumberExpression getY();

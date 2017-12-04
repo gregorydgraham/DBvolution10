@@ -36,8 +36,10 @@ import nz.co.gregs.dbvolution.operators.DBPermittedValuesOperator;
  *
  * @param <E> type of enumeration class
  *
- * @author Gregory Graham
- * @author Malcolm Lett
+ * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @author Gregory Graham
+ * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @author Malcolm Lett
  */
 public class DBIntegerEnum<E extends Enum<E> & DBEnumValue<Long>> extends DBEnum<E, Long> implements NumberResult {
 
@@ -154,6 +156,7 @@ public class DBIntegerEnum<E extends Enum<E> & DBEnumValue<Long>> extends DBEnum
 	 * Provided as a convenience function
 	 *
 	 *
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a Long[] of the enums values.
 	 */
 	@SafeVarargs
@@ -170,6 +173,7 @@ public class DBIntegerEnum<E extends Enum<E> & DBEnumValue<Long>> extends DBEnum
 	 * Convert the enum to its Long literal value.
 	 *
 	 *
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return the literal value of the enum.
 	 */
 	private Long convertToLiteralLong(E enumValue) {
@@ -684,6 +688,7 @@ public class DBIntegerEnum<E extends Enum<E> & DBEnumValue<Long>> extends DBEnum
 	/**
 	 * Returns the set value of this DBInteger as a Number, if possible.
 	 *
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return the value as a Number.
 	 */
 	public Number numberValue() {
@@ -699,6 +704,7 @@ public class DBIntegerEnum<E extends Enum<E> & DBEnumValue<Long>> extends DBEnum
 	/**
 	 * Returns the set value of this DBInteger as a Long, if possible.
 	 *
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return the value as a Long.
 	 */
 	public Long longValue() {
@@ -712,6 +718,7 @@ public class DBIntegerEnum<E extends Enum<E> & DBEnumValue<Long>> extends DBEnum
 	/**
 	 * Returns the set value of this DBInteger as a Integer, if possible.
 	 *
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return the value as a Integer.
 	 */
 	public Integer intValue() {

@@ -5,7 +5,8 @@ package nz.co.gregs.dbvolution.exceptions;
  * example, this exception will be thrown when property accessor methods throw
  * exceptions.
  *
- * @author Malcolm Lett
+ * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @author Malcolm Lett
  */
 public class DBThrownByEndUserCodeException extends DBRuntimeException {
 

@@ -36,7 +36,8 @@ import org.apache.commons.logging.LogFactory;
  * collective nature. This implies that even though they are separate java
  * statements that they should be handled collectively by the database.
  *
- * @author Gregory Graham
+ * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @author Gregory Graham
  */
 public class DBTransactionStatement extends DBStatement {
 

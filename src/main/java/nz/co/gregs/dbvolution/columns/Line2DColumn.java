@@ -26,7 +26,8 @@ import nz.co.gregs.dbvolution.query.RowDefinition;
 /**
  * Provides a portable representation of a column of Line2D values.
  *
- * @author Gregory Graham
+ * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @author Gregory Graham
  */
 public class Line2DColumn extends Line2DExpression implements ColumnProvider {
 

@@ -20,7 +20,8 @@ import java.sql.Statement;
 
 /**
  *
- * @author gregorygraham
+ * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @author gregorygraham
  */
 public enum DataTypes implements DBVFeature{
 
@@ -97,6 +98,7 @@ public enum DataTypes implements DBVFeature{
 
 	/**
 	 *
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return the DBvolution data type of this abstracted datatype
 	 */
 	public String datatype() {
@@ -105,6 +107,7 @@ public enum DataTypes implements DBVFeature{
 
 	/**
 	 *
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return the DBvolution data type as a String
 	 */
 	@Override

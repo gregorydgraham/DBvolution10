@@ -22,7 +22,8 @@ import nz.co.gregs.dbvolution.DBRow;
 /**
  * Nodes (a.k.a. vertexes) of the {@link QueryGraph}
  *
- * @author Gregory Graham
+ * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @author Gregory Graham
  */
 public class QueryGraphNode {
 
@@ -62,6 +63,7 @@ public class QueryGraphNode {
 	 * Only includes DBRows/tables that have been connected to this node using {@link #connectTable(java.lang.Class)
 	 * }.
 	 *
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a set of all classes used in this query
 	 */
 	public Set<Class<? extends DBRow>> getConnectedTables() {
@@ -83,6 +85,7 @@ public class QueryGraphNode {
 	/**
 	 * Retrieves the table that this node contains.
 	 * 
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return the table
 	 */
 	public Class<? extends DBRow> getTable() {
@@ -115,6 +118,7 @@ public class QueryGraphNode {
 	/**
 	 * Specifies whether this node represents a required/inner table, or an optional/outer table.
 	 *
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return TRUE if the table is a required/inner table, otherwise FALSE.
 	 */
 	public boolean isRequiredNode() {

@@ -40,7 +40,8 @@ import nz.co.gregs.dbvolution.query.RowDefinition;
  * Generally you get an IntegerColumn using
  * {@link RowDefinition#column(nz.co.gregs.dbvolution.datatypes.DBInteger) RowDefinition.column(DBinteger)}.
  *
- * @author Gregory Graham
+ * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @author Gregory Graham
  * @see RowDefinition
  * @see AbstractColumn
  * @see NumberExpression
@@ -141,6 +142,7 @@ public class IntegerColumn extends NumberExpression implements ColumnProvider {
 	 * EQUALS.
 	 *
 	 * @param integerColumn the value we wish to find in this column.
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a BooleanExpression
 	 */
 	public BooleanExpression is(DBInteger integerColumn) {
@@ -152,6 +154,7 @@ public class IntegerColumn extends NumberExpression implements ColumnProvider {
 	 * EQUALS.
 	 *
 	 * @param numberColumn the value we wish to find in this column.
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a BooleanExpression
 	 */
 	public BooleanExpression is(DBNumber numberColumn) {

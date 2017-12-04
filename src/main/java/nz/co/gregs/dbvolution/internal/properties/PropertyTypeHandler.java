@@ -37,7 +37,8 @@ import nz.co.gregs.dbvolution.internal.properties.InterfaceInfo.UnsupportedType;
  * <p>
  * This class behaves correctly when no {@link DBAdaptType} property is present.
  *
- * @author Malcolm Lett
+ * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @author Malcolm Lett
  */
 // TODO: this class could also handle implicit type adaptors where the target object's properties
 // are simple types, and we need to automatically convert between DBv data types.
@@ -353,6 +354,7 @@ class PropertyTypeHandler {
 	 * Make sure to keep this in sync with {@link #literalTypeOf}.
 	 *
 	 *
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a QDT the should work
 	 */
 	// FIXME: change to require exact matches, rather than 'instance of'
@@ -384,6 +386,7 @@ class PropertyTypeHandler {
 	 * Make sure to keep this in sync with {@link #inferredQDTTypeForSimpleType}.
 	 *
 	 *
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a standard Java class equivalent to the QDT
 	 */
 	private static Class<?> literalTypeOf(Class<? extends QueryableDatatype<?>> qdtType) {
@@ -418,6 +421,7 @@ class PropertyTypeHandler {
 	 *
 	 *
 	 *
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return TRUE if the simple type can be replaced by a QDT
 	 */
 	private static boolean isSimpleTypeSupportedByQDT(Class<?> simpleType,
@@ -435,6 +439,7 @@ class PropertyTypeHandler {
 	 * Internal helper to support the way annotation attribute defaulting works.
 	 *
 	 *
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return A QDT Class
 	 */
 	private static Class<? extends QueryableDatatype<?>> explicitTypeOrNullOf(DBAdaptType annotation) {
@@ -470,6 +475,7 @@ class PropertyTypeHandler {
 	 * type adaptor. (Note: at present there is no support for implicit type
 	 * adaptors)
 	 *
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return TRUE if the property is type adapted
 	 */
 	public boolean isTypeAdapted() {
@@ -482,6 +488,7 @@ class PropertyTypeHandler {
 	 * {@link DBAdaptType} annotation is present.
 	 *
 	 * @param target object containing the property
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return the DBv-centric property value
 	 * @throws DBThrownByEndUserCodeException if any user code throws an exception
 	 * @throws IllegalStateException if the underlying java property is not
@@ -567,6 +574,7 @@ class PropertyTypeHandler {
 	 *
 	 *
 	 *
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a DBTypeAdaptor
 	 * @throws DBRuntimeException on unexpected internal errors, and
 	 * @throws InvalidDeclaredTypeException on errors with the end-user supplied

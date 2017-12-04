@@ -26,7 +26,8 @@ import nz.co.gregs.dbvolution.internal.properties.PropertyWrapper;
 /**
  * Used by {@link DBInsert} to insert BLOB columns.
  *
- * @author Gregory Graham
+ * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @author Gregory Graham
  */
 public class DBInsertLargeObjects extends DBUpdateLargeObjects {
 
@@ -43,6 +44,7 @@ public class DBInsertLargeObjects extends DBUpdateLargeObjects {
 	 * Finds all the DBLargeObject fields that this action will need to update.
 	 *
 	 * @param row the row to be inserted
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a list of the interesting DBLargeObjects.
 	 */
 	@Override

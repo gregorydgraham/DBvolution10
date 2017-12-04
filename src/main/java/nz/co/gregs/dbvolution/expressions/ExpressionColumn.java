@@ -10,7 +10,8 @@ import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 /**
  * Provides simple access to the expression column version of an expression
  *
- * @author gregorygraham
+ * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @author gregorygraham
  * @param <T> the type that should be used with this expression
  */
 public interface ExpressionColumn<T extends QueryableDatatype<?>> {
@@ -25,6 +26,7 @@ public interface ExpressionColumn<T extends QueryableDatatype<?>> {
 	 * person.column(person.fullname).substringBefore("
 	 * ").asExpressionColumn();</code>
 	 *
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a QDT version of the expression
 	 */
 	public T asExpressionColumn();

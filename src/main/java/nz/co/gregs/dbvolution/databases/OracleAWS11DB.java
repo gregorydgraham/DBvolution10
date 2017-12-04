@@ -30,7 +30,8 @@ import nz.co.gregs.dbvolution.databases.definitions.OracleAWSDBDefinition;
  * Implements support for version 11 and prior of the Oracle database as provide
  * by Amazon's AWS relational database service (RDS).
  *
- * @author Gregory Graham
+ * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @author Gregory Graham
  * @see OracleAWSDB
  * @see Oracle12DB
  * @see OracleAWSDBDefinition

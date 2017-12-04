@@ -46,7 +46,8 @@ import nz.co.gregs.dbvolution.operators.DBPermittedValuesOperator;
  * Generally DBDate is declared inside your DBRow sub-class as:
  * {@code @DBColumn public DBDate myBoolColumn = new DBDate();}
  *
- * @author Gregory Graham
+ * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @author Gregory Graham
  */
 public class DBDate extends QueryableDatatype<Date> implements DateResult {
 
@@ -135,6 +136,7 @@ public class DBDate extends QueryableDatatype<Date> implements DateResult {
 	/**
 	 * Returns the set value of this DBDate as a Java Date instance.
 	 *
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return the value as a Java Date.
 	 */
 	public Date dateValue() {
@@ -184,6 +186,7 @@ public class DBDate extends QueryableDatatype<Date> implements DateResult {
 	/**
 	 * Returns the string value of the DBDate.
 	 *
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a string version of the current value of this DBDate
 	 */
 	@Override
@@ -642,6 +645,7 @@ public class DBDate extends QueryableDatatype<Date> implements DateResult {
 	 * Used internally to decide whether the required query needs to include NULL
 	 * values.
 	 *
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return whether the query expression needs to test for NULL.
 	 */
 	@Override

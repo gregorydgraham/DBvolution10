@@ -28,7 +28,8 @@ import nz.co.gregs.dbvolution.results.Spatial2DResult;
  * {@link Oracle12DBDefinition}, switch to this definition if Oracle's builtin
  * spatial options are available to you.
  *
- * @author Gregory Graham
+ * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @author Gregory Graham
  */
 public class Oracle12SpatialDB extends Oracle12DBDefinition {
 

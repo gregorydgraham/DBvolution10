@@ -38,7 +38,8 @@ import org.apache.commons.logging.LogFactory;
  * one or more tables to another table.
  *
  *
- * @author Gregory Graham
+ * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @author Gregory Graham
  * @param <R>
  */
 public class DBValidation<R extends DBRow> {
@@ -68,6 +69,7 @@ public class DBValidation<R extends DBRow> {
 	 * Perform the validation
 	 *
 	 * @param database
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return the results of the validation
 	 * @throws SQLException
 	 */
@@ -184,7 +186,8 @@ public class DBValidation<R extends DBRow> {
 		/**
 		 * All the details of the results
 		 *
-		 * @return the names of the mappings with the resulting status
+		 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @return the names of the mappings with the resulting status
 		 */
 		public Map<String, String> getMap(){
 			return new HashMap<>(this.map);

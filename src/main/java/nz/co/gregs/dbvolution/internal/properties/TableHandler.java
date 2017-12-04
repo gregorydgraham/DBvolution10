@@ -14,7 +14,8 @@ import nz.co.gregs.dbvolution.query.RowDefinition;
  * This class behaves correctly when no {@link DBTableName} annotation is
  * present.
  *
- * @author Malcolm Lett
+ * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @author Malcolm Lett
  */
 class TableHandler {
 
@@ -56,6 +57,7 @@ class TableHandler {
 	 * Indicates whether this class maps to a database table. {@code true} always
 	 * with the present implementation.
 	 *
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return TRUE if the class represents a DB table, otherwise FALSE.
 	 */
 	public boolean isTable() {
@@ -71,6 +73,7 @@ class TableHandler {
 	 * If the {@link DBTableName} annotation is missing, this method returns
 	 * {@code null}.
 	 *
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return the table name, if specified explicitly or implicitly.
 	 */
 	public String getTableName() {
@@ -80,6 +83,7 @@ class TableHandler {
 	/**
 	 * Gets the {@link DBTableName} annotation on the class, if it exists.
 	 *
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return the annotation or null if it is not present
 	 */
 	public DBTableName getDBTableNameAnnotation() {

@@ -7,7 +7,8 @@ package nz.co.gregs.dbvolution.internal.query;
 
 /**
  *
- * @author gregorygraham
+ * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @author gregorygraham
  */
 public enum LargeObjectHandlerType {
 	STRING, BYTE, CLOB, BLOB, CHARSTREAM, BINARYSTREAM, BASE64, JAVAOBJECT

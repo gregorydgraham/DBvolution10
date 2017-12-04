@@ -29,7 +29,8 @@ import nz.co.gregs.dbvolution.datatypes.DBInteger;
  * within a Java library while preserving the actual database name.
  *
  *
- * @author Gregory Graham
+ * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @author Gregory Graham
  */
 @DBTableName("lt_carco_logo_with_prev")
 @SuppressWarnings("serial")

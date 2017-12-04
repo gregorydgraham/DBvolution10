@@ -17,7 +17,8 @@ package nz.co.gregs.dbvolution.exceptions;
 
 /**
  *
- * @author Gregory Graham
+ * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @author Gregory Graham
  */
 public class UnexpectedNumberOfRowsException extends Exception {
 
@@ -75,6 +76,7 @@ public class UnexpectedNumberOfRowsException extends Exception {
 	}
 
 	/**
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return the expectedRows
 	 */
 	public long getExpectedRows() {
@@ -82,6 +84,7 @@ public class UnexpectedNumberOfRowsException extends Exception {
 	}
 
 	/**
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return the actualRows
 	 */
 	public long getActualRows() {

@@ -46,7 +46,8 @@ import nz.co.gregs.dbvolution.results.InComparable;
  * Generally you get a NumberExpression from a column or value using {@link NumberExpression#NumberExpression(java.lang.Number)
  * } or {@link DBRow#column(nz.co.gregs.dbvolution.datatypes.DBInteger) }.
  *
- * @author Gregory Graham
+ * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @author Gregory Graham
  */
 public class NumberExpression implements NumberResult, RangeComparable<NumberResult>, InComparable<NumberResult>, ExpressionColumn<DBNumber> {
 
@@ -83,6 +84,7 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 	 * </ul>
 	 *
 	 * @param number a literal value to use in the expression
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a DBExpression instance that is appropriate to the subclass and the
 	 * value supplied.
 	 */
@@ -164,6 +166,7 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 	 * </ul>
 	 *
 	 * @param object a literal value to use in the expression
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a DBExpression instance that is appropriate to the subclass and the
 	 * value supplied.
 	 */
@@ -192,6 +195,7 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 	 * Not that this does not produce a String like {@link Object#toString() },
 	 * but a {@link StringExpression} for use on the database side.</p>
 	 *
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a StringExpression of the number expression.
 	 */
 	@Override
@@ -219,6 +223,7 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 	 * 
 	 * <p>This method is useful to test numbers will fit within a specific field size</p>
 	 *
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a the number of digits required to display or store this expression.
 	 */
 	public NumberExpression lengthOfIntegerPart() {
@@ -230,6 +235,7 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 	 * 
 	 * <p>This method is useful to test numbers will fit within a specific field size</p>
 	 *
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a the number of digits required to display or store this expression.
 	 */
 	public NumberExpression lengthOfDecimalPart() {
@@ -243,6 +249,7 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 	 *
 	 * @param maxIntegerLength
 	 * @param maxDecimals
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a StringExpression.
 	 */
 	public BooleanExpression isShorterThanOrAsLongAs(int maxIntegerLength, int maxDecimals) {
@@ -256,6 +263,7 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 	 * Converts the number expression to a string and appends the supplied String.
 	 *
 	 * @param string the string to append
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a StringExpression
 	 */
 	public StringExpression append(String string) {
@@ -267,6 +275,7 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 	 * StringResult.
 	 *
 	 * @param string the string to append
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a StringExpression
 	 */
 	public StringExpression append(StringResult string) {
@@ -277,6 +286,7 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 	 * Tests the NumberExpression against the supplied number.
 	 *
 	 * @param number the expression needs to evaluate to this number
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a BooleanExpression for use in {@link DBQuery#addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression)
 	 * }
 	 */
@@ -288,6 +298,7 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 	 * Tests the NumberExpression against the supplied numberExpression.
 	 *
 	 * @param numberExpression the expression needs to evaluate to this number
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a BooleanExpression for use in {@link DBQuery#addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression)
 	 * }
 	 */
@@ -314,6 +325,7 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 	/**
 	 * Tests the NumberExpression to see if the result is an even number.
 	 *
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a BooleanExpression for use in {@link DBQuery#addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression)
 	 * }
 	 */
@@ -324,6 +336,7 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 	/**
 	 * Tests the NumberExpression to see if the result is an odd number.
 	 *
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a BooleanExpression for use in {@link DBQuery#addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression)
 	 * }
 	 */
@@ -335,6 +348,7 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 	 * Tests the NumberExpression against the value NULL and returns true if the
 	 * Number Expression is not NULL.
 	 *
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a BooleanExpression for use in {@link DBQuery#addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression)
 	 * }
 	 */
@@ -346,6 +360,7 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 	 * Tests the NumberExpression against the value NULL and returns true if the
 	 * Number Expression is NULL.
 	 *
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a BooleanExpression for use in {@link DBQuery#addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression)
 	 * }
 	 */
@@ -358,6 +373,7 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 	 * Number Expression is not equal to the number.
 	 *
 	 * @param number the expression needs to NOT evaluate to this number
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a BooleanExpression for use in {@link DBQuery#addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression)
 	 * }
 	 */
@@ -370,6 +386,7 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 	 * true if the NumberExpression is not equal to the number.
 	 *
 	 * @param number the expression needs to NOT evaluate to this number
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a BooleanExpression for use in {@link DBQuery#addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression)
 	 * }
 	 */
@@ -397,6 +414,7 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 	 *
 	 * @param lowerBound the smallest value
 	 * @param upperBound the largest value
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a boolean expression representing the required comparison
 	 */
 	public BooleanExpression isBetween(NumberResult lowerBound, NumberResult upperBound) {
@@ -425,6 +443,7 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 	 *
 	 * @param lowerBound the smallest value
 	 * @param upperBound the largest value
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a boolean expression representing the required comparison
 	 */
 	public BooleanExpression isBetween(Number lowerBound, NumberResult upperBound) {
@@ -450,6 +469,7 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 	 *
 	 * @param lowerBound the smallest value
 	 * @param upperBound the largest value
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a boolean expression representing the required comparison
 	 */
 	public BooleanExpression isBetween(NumberResult lowerBound, Number upperBound) {
@@ -475,6 +495,7 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 	 *
 	 * @param lowerBound the smallest value
 	 * @param upperBound the largest value
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a boolean expression representing the required comparison
 	 */
 	public BooleanExpression isBetween(Number lowerBound, Number upperBound) {
@@ -500,6 +521,7 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 	 *
 	 * @param lowerBound the smallest value
 	 * @param upperBound the largest value
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a boolean expression representing the required comparison
 	 */
 	public BooleanExpression isBetweenInclusive(NumberResult lowerBound, NumberResult upperBound) {
@@ -528,6 +550,7 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 	 *
 	 * @param lowerBound the smallest value
 	 * @param upperBound the largest value
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a boolean expression representing the required comparison
 	 */
 	public BooleanExpression isBetweenInclusive(Number lowerBound, NumberResult upperBound) {
@@ -553,6 +576,7 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 	 *
 	 * @param lowerBound the smallest value
 	 * @param upperBound the largest value
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a boolean expression representing the required comparison
 	 */
 	public BooleanExpression isBetweenInclusive(NumberResult lowerBound, Number upperBound) {
@@ -578,6 +602,7 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 	 *
 	 * @param lowerBound the smallest value
 	 * @param upperBound the largest value
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a boolean expression representing the required comparison
 	 */
 	public BooleanExpression isBetweenInclusive(Number lowerBound, Number upperBound) {
@@ -605,6 +630,7 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 	 *
 	 * @param lowerBound the smallest value
 	 * @param upperBound the largest value
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a boolean expression representing the required comparison
 	 */
 	public BooleanExpression isBetweenExclusive(NumberResult lowerBound, NumberResult upperBound) {
@@ -635,6 +661,7 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 	 *
 	 * @param lowerBound the smallest value
 	 * @param upperBound the largest value
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a boolean expression representing the required comparison
 	 */
 	public BooleanExpression isBetweenExclusive(Number lowerBound, NumberResult upperBound) {
@@ -662,6 +689,7 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 	 *
 	 * @param lowerBound the smallest value
 	 * @param upperBound the largest value
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a boolean expression representing the required comparison
 	 */
 	public BooleanExpression isBetweenExclusive(NumberResult lowerBound, Number upperBound) {
@@ -689,6 +717,7 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 	 *
 	 * @param lowerBound the smallest value
 	 * @param upperBound the largest value
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a boolean expression representing the required comparison
 	 */
 	public BooleanExpression isBetweenExclusive(Number lowerBound, Number upperBound) {
@@ -700,6 +729,7 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 	 * is less than number.
 	 *
 	 * @param number need to be smaller than this
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a BooleanExpression for use in
 	 * {@link DBQuery#addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression)}
 	 */
@@ -712,6 +742,7 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 	 * TRUE if the value is less than the value supplied.
 	 *
 	 * @param numberExpression needs to be smaller than this
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a BooleanExpression for use in
 	 * {@link DBQuery#addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression)}
 	 */
@@ -735,6 +766,7 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 	 * is less than or equal to number.
 	 *
 	 * @param number needs to be smaller than this
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a BooleanExpression for use in
 	 * {@link DBQuery#addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression)}
 	 */
@@ -747,6 +779,7 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 	 * is less than or equal to numberExpression.
 	 *
 	 * @param numberExpression needs to be smaller than this
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a BooleanExpression for use in
 	 * {@link DBQuery#addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression)}
 	 */
@@ -770,6 +803,7 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 	 * is greater than number.
 	 *
 	 * @param number needs to be greater than this
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a BooleanExpression for use in
 	 * {@link DBQuery#addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression)}
 	 */
@@ -782,6 +816,7 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 	 * is greater than number.
 	 *
 	 * @param number needs to be greater than this
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a BooleanExpression for use in
 	 * {@link DBQuery#addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression)}
 	 */
@@ -805,6 +840,7 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 	 * is greater than or equal to number.
 	 *
 	 * @param number needs to be greater than this
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a BooleanExpression for use in
 	 * {@link DBQuery#addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression)}
 	 */
@@ -817,6 +853,7 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 	 * is greater than or equal to number.
 	 *
 	 * @param number needs to be greater than this
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a BooleanExpression for use in
 	 * {@link DBQuery#addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression)}
 	 */
@@ -851,6 +888,7 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 	 * @param value the right side of the internal comparison
 	 * @param fallBackWhenEquals the comparison used when the two values are
 	 * equal.
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a BooleanExpression
 	 */
 	public BooleanExpression isLessThan(Number value, BooleanExpression fallBackWhenEquals) {
@@ -873,6 +911,7 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 	 * @param value the right side of the internal comparison
 	 * @param fallBackWhenEquals the comparison used when the two values are
 	 * equal.
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a BooleanExpression
 	 */
 	public BooleanExpression isGreaterThan(Number value, BooleanExpression fallBackWhenEquals) {
@@ -895,6 +934,7 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 	 * @param value the right side of the internal comparison
 	 * @param fallBackWhenEquals the comparison used when the two values are
 	 * equal.
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a BooleanExpression
 	 */
 	@Override
@@ -918,6 +958,7 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 	 * @param value the right side of the internal comparison
 	 * @param fallBackWhenEquals the comparison used when the two values are
 	 * equal.
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a BooleanExpression
 	 */
 	@Override
@@ -930,6 +971,7 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 	 * returns true if the NumberExpression is represented in the list.
 	 *
 	 * @param possibleValues needs to be one of these
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a BooleanExpression for use in
 	 * {@link DBQuery#addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression)}
 	 */
@@ -950,6 +992,7 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 	 * returns true if the NumberExpression is represented in the list.
 	 *
 	 * @param possibleValues needs to be one of these
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a BooleanExpression for use in
 	 * {@link DBQuery#addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression)}
 	 */
@@ -966,6 +1009,7 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 	 * returns true if the NumberExpression is represented in the list.
 	 *
 	 * @param possibleValues needs to be one of these
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a BooleanExpression for use in
 	 * {@link DBQuery#addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression)}
 	 */
@@ -1003,6 +1047,7 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 	 * than aggregating a column.
 	 *
 	 * @param possibleValues needs to be the least of these
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return the least/smallest value from the list.
 	 */
 	public static NumberExpression leastOf(Number... possibleValues) {
@@ -1021,6 +1066,7 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 	 * than aggregating a column.
 	 *
 	 * @param possibleValues needs to be the least of these
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return the least/smallest value from the list.
 	 */
 	public static NumberExpression leastOf(Collection<? extends NumberResult> possibleValues) {
@@ -1039,6 +1085,7 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 	 * than aggregating a column.
 	 *
 	 * @param possibleValues needs to be the least of these
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return the least/smallest value from the list.
 	 */
 	public static NumberExpression leastOf(NumberResult... possibleValues) {
@@ -1070,6 +1117,7 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 	 * than aggregating a column.
 	 *
 	 * @param possibleValues needs to be the largest of these
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return the greatest/largest value from the list.
 	 */
 	public static NumberExpression greatestOf(Number... possibleValues) {
@@ -1088,6 +1136,7 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 	 * than aggregating a column.
 	 *
 	 * @param possibleValues needs to be the largest of these
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return the greatest/largest value from the list.
 	 */
 	public static NumberExpression greatestOf(Collection<? extends NumberResult> possibleValues) {
@@ -1102,6 +1151,7 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 	 * than aggregating a column.
 	 *
 	 * @param possibleValues needs to be the largest of these
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return the greatest/largest value from the list.
 	 */
 	public static NumberExpression greatestOf(NumberResult... possibleValues) {
@@ -1129,6 +1179,7 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 	 * the query.
 	 *
 	 * @param alternative used if the expression is NULL
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a NumberExpression that will substitute the given value when the
 	 * NumberExpression resolves to NULL.
 	 */
@@ -1141,6 +1192,7 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 	 * the query.
 	 *
 	 * @param alternative used if the expression is NULL
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a NumberExpression that will substitute the given value when the
 	 * NumberExpression resolves to NULL.
 	 */
@@ -1163,6 +1215,7 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 	/**
 	 * Adds an explicit bracket at this point in the expression chain.
 	 *
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a NumberExpression that will have the existing NumberExpression
 	 * wrapped in brackets..
 	 */
@@ -1180,6 +1233,7 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 	 * <p>
 	 * That is to say, if the number expression equals 2 then 2.exp() =&gt; e^2
 	 *
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a number expression representing the exponential function of the
 	 * current function.
 	 */
@@ -1209,6 +1263,7 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 	 * Computes the cosine of the expression assuming that the previous expression
 	 * is in RADIANS. Use {@link #radians() } to convert degrees into radians.
 	 *
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a NumberExpression representing the cosine of the current number
 	 * expression.
 	 */
@@ -1229,6 +1284,7 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 	 * expression is in RADIANS. Use {@link #radians() } to convert degrees into
 	 * radians.
 	 *
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a NumberExpression representing the hyperbolic cosine of the
 	 * current number expression.
 	 */
@@ -1260,6 +1316,7 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 	 * Computes the sine of the expression assuming that the previous expression
 	 * is in RADIANS. Use {@link #radians() } to convert degrees into radians.
 	 *
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a NumberExpression representing the sine of the current number
 	 * expression.
 	 */
@@ -1280,6 +1337,7 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 	 * expression is in RADIANS. Use {@link #radians() } to convert degrees into
 	 * radians.
 	 *
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a NumberExpression representing the hyperbolic sine of the current
 	 * number expression.
 	 */
@@ -1319,6 +1377,7 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 	 * expression is in RADIANS. Use {@link #radians() } to convert degrees into
 	 * radians.
 	 *
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a NumberExpression representing the tangent of the current number
 	 * expression.
 	 */
@@ -1339,6 +1398,7 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 	 * previous expression is in RADIANS. Use {@link #radians() } to convert
 	 * degrees into radians.
 	 *
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a NumberExpression representing the hyperbolic tangent of the
 	 * current number expression.
 	 */
@@ -1366,6 +1426,7 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 	/**
 	 * Provides access to the database's absolute value function.
 	 *
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a NumberExpression representing the absolute value of the current
 	 * number expression.
 	 */
@@ -1384,6 +1445,7 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 	 * <p>
 	 * Synonym for {@link #abs() }.
 	 *
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a NumberExpression representing the absolute value of the current
 	 * number expression.
 	 */
@@ -1394,6 +1456,7 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 	/**
 	 * Provides access to the database's inverse cosine function.
 	 *
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a NumberExpression representing the inverse cosine of the current
 	 * number expression.
 	 */
@@ -1409,6 +1472,7 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 	/**
 	 * Provides access to the database's inverse sine function.
 	 *
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a NumberExpression representing the inverse sine of the current
 	 * number expression.
 	 */
@@ -1434,6 +1498,7 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 	/**
 	 * Provides access to the database's inverse tangent function.
 	 *
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a NumberExpression representing the inverse tangent of the current
 	 * number expression.
 	 */
@@ -1465,6 +1530,7 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 	 * negative for clockwise angles (lower half-plane, y &lt; 0).
 	 *
 	 * @param number the ARCTAN2 of this is required
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a NumberExpression representing the cosine of the current number
 	 * expression.
 	 */
@@ -1480,6 +1546,7 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 	/**
 	 * Provides access to the database's cotangent function.
 	 *
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a NumberExpression representing the cotangent of the current number
 	 * expression.
 	 */
@@ -1508,6 +1575,7 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 	 * <p>
 	 * Converts radians to degrees.
 	 *
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a NumberExpression representing the inverse tangent of the current
 	 * number expression.
 	 */
@@ -1536,6 +1604,7 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 	 * <p>
 	 * Converts degrees to radians.
 	 *
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a NumberExpression representing the inverse tangent of the current
 	 * number expression.
 	 */
@@ -1560,6 +1629,7 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 	/**
 	 * returns the Natural Logarithm of the current NumberExpression.
 	 *
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a NimberExpression of the natural logarithm of the current
 	 * expression.
 	 */
@@ -1575,6 +1645,7 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 	/**
 	 * returns the Logarithm Base-10 of the current NumberExpression.
 	 *
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a NimberExpression of the logarithm base-10 of the current
 	 * expression.
 	 */
@@ -1599,6 +1670,7 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 	 * For a NumberExpression x then x.power(n) =&gt; x^n.
 	 *
 	 * @param n	n
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a NumberExpression
 	 */
 	public NumberExpression power(NumberExpression n) {
@@ -1614,6 +1686,7 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 	 * Provides access to a random floating-point value x in the range 0 &lt;= x
 	 * &lt; 1.0.
 	 *
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a NumberExpression that provides a random number when used in a
 	 * query.
 	 */
@@ -1636,6 +1709,7 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 	 * Returns the sign of the argument as -1, 0, or 1, depending on whether X is
 	 * negative, zero, or positive.
 	 *
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a NumberExpression
 	 */
 	public NumberExpression sign() {
@@ -1650,6 +1724,7 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 	/**
 	 * Returns the square root of a nonnegative number X.
 	 *
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a NumberExpression
 	 */
 	public NumberExpression squareRoot() {
@@ -1672,6 +1747,7 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 	 * (new DBNumber( 1.5)).ceil() == 2<br>
 	 * (new DBNumber(-1.5)).ceil() == -1
 	 *
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return the value of the equation rounded up to the nearest integer.
 	 */
 	public NumberExpression roundUp() {
@@ -1686,6 +1762,7 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 	/**
 	 * Implements support for ROUND()
 	 *
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return the equation rounded to the nearest integer.
 	 */
 	public NumberExpression round() {
@@ -1711,6 +1788,7 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 	 * get the 3 digits after the decimal point.
 	 *
 	 * @param decimalPlaces the number of significant places that are required.
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return the equation rounded to the nearest integer.
 	 */
 	public NumberExpression round(Integer decimalPlaces) {
@@ -1725,6 +1803,7 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 	 * get the 3 digits after the decimal point.
 	 *
 	 * @param decimalPlaces the number of significant places that are required.
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return the equation rounded to the nearest integer.
 	 */
 	public NumberExpression round(Long decimalPlaces) {
@@ -1739,6 +1818,7 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 	 * get the 3 digits after the decimal point.
 	 *
 	 * @param decimalPlaces the number of significant places that are required.
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return the equation rounded to the nearest integer.
 	 */
 	public NumberExpression round(NumberResult decimalPlaces) {
@@ -1753,6 +1833,7 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 	 * get the 3 digits after the decimal point.
 	 *
 	 * @param decimalPlaces the number of significant places that are required.
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return the equation rounded to the nearest integer.
 	 */
 	public NumberExpression round(NumberExpression decimalPlaces) {
@@ -1785,6 +1866,7 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 	 * note that this is not the same as {@code trunc()} as
 	 * {@code roundDown(-1.5) == -2} and {@code trunc(-1.5) == -1}
 	 *
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return the value of the equation rounded down to the nearest integer.
 	 */
 	public NumberExpression roundDown() {
@@ -1806,6 +1888,7 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 	 * note that this is not the same as roundDown() as
 	 * {@code roundDown(-1.5) == -2} and {@code trunc(-1.5) == -1}
 	 *
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return the value of the equation with the decimal part removed.
 	 */
 	public NumberExpression trunc() {
@@ -1836,6 +1919,7 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 	 * <p>
 	 * For example value(3.5).integerPart() = 3
 	 *
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a NumberExpression
 	 */
 	public NumberExpression integerPart() {
@@ -1849,6 +1933,7 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 	 * <p>
 	 * For example value(3.5).floor() = 3
 	 *
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a NumberExpression
 	 */
 	public NumberExpression floor() {
@@ -1862,6 +1947,7 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 	 * <p>
 	 * For example value(3.5).decimalPart() = 0.5
 	 *
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a NumberExpression
 	 */
 	public NumberExpression decimalPart() {
@@ -1875,6 +1961,7 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 	 * For a NumberExpression x: x.minus(y) =&gt; x - y.
 	 *
 	 * @param number	number
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a NumberExpression
 	 */
 	public NumberExpression minus(NumberExpression number) {
@@ -1888,6 +1975,7 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 	 * For a NumberExpression x: x.minus(y) =&gt; x - y.
 	 *
 	 * @param num	num
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a NumberExpression
 	 */
 	public NumberExpression minus(Number num) {
@@ -1903,6 +1991,7 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 	 * For a NumberExpression x: x.plus(y) =&gt; x + y.
 	 *
 	 * @param number	number
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a NumberExpression
 	 */
 	public NumberExpression plus(NumberResult number) {
@@ -1921,6 +2010,7 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 	 * For a NumberExpression x: x.plus(y) =&gt; x + y.
 	 *
 	 * @param num	num
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a NumberExpression
 	 */
 	public NumberExpression plus(Number num) {
@@ -1939,6 +2029,7 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 	 * For a NumberExpression x: x.times(y) =&gt; x * y.
 	 *
 	 * @param number	number
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a NumberExpression
 	 */
 	public NumberExpression times(NumberResult number) {
@@ -1957,6 +2048,7 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 	 * For a NumberExpression x: x.times(y) =&gt; x * y.
 	 *
 	 * @param num	num
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a NumberExpression
 	 */
 	public NumberExpression times(Number num) {
@@ -1975,6 +2067,7 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 	 * For a NumberExpression x: x.dividedBy(y) =&gt; x / y.
 	 *
 	 * @param number	number
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a NumberExpression
 	 */
 	public NumberExpression dividedBy(NumberResult number) {
@@ -2001,6 +2094,7 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 	 * For a NumberExpression x: x.dividedBy(y) =&gt; x / y.
 	 *
 	 * @param num	num
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a NumberExpression of a division operation.
 	 */
 	public NumberExpression dividedBy(Number num) {
@@ -2023,6 +2117,7 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 	 * all databases.
 	 *
 	 * @param number	number
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a NumberExpression of a Modulus operation.
 	 */
 	public NumberExpression mod(NumberResult number) {
@@ -2061,6 +2156,7 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 	 * all databases.
 	 *
 	 * @param num =&gt; MOD(this,num).
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a NumberExpression
 	 */
 	public NumberExpression mod(Number num) {
@@ -2081,6 +2177,7 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 	 *
 	 * @param stringsToChooseFrom a list of values that the should replace the
 	 * number.
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return SQL that selects the string from the list based on this expression.
 	 */
 	public StringExpression choose(String... stringsToChooseFrom) {
@@ -2105,6 +2202,7 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 	 *
 	 * @param stringsToChooseFrom a list of values that the should replace the
 	 * number.
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return SQL that selects the string from the list based on this expression.
 	 */
 	public StringExpression choose(StringResult... stringsToChooseFrom) {
@@ -2137,6 +2235,7 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 	 * <p>
 	 * For use with {@link DBReport}.
 	 *
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return A number expression representing the average of the grouped rows.
 	 */
 	public NumberExpression average() {
@@ -2156,6 +2255,7 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 	/**
 	 * Synonym for {@link NumberExpression#standardDeviation() }.
 	 *
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return A number expression representing the standard deviation of the
 	 * grouped rows.
 	 */
@@ -2166,6 +2266,7 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 	/**
 	 * Synonym for {@link NumberExpression#standardDeviation() }.
 	 *
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return A number expression representing the standard deviation of the
 	 * grouped rows.
 	 */
@@ -2205,6 +2306,7 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 	 * this aggregates the column or expression provided, rather than scanning a
 	 * list.
 	 *
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return the greatest/largest value from the column.
 	 */
 	public NumberExpression max() {
@@ -2219,6 +2321,7 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 	 * } but this aggregates the column or expression provided, rather than
 	 * scanning a list.
 	 *
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return the least/smallest value from the column.
 	 */
 	public NumberExpression min() {
@@ -2228,6 +2331,7 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 	/**
 	 * Returns the sum of all the values from the column.
 	 *
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return the sum of all the values from the column.
 	 */
 	public NumberExpression sum() {
@@ -2247,6 +2351,7 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 	/**
 	 * Aggregrator that counts all the rows of the query.
 	 *
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return the count of all the values from the column.
 	 */
 	public static NumberExpression countAll() {
@@ -2278,6 +2383,7 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 	 *
 	 * @param booleanResult an expression that will be TRUE when the row needs to
 	 * be counted.
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return The number of rows where the test is true.
 	 */
 	public static NumberExpression countIf(BooleanResult booleanResult) {
@@ -2304,6 +2410,7 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 	}
 
 	/**
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return the innerNumberResult
 	 */
 	public NumberResult getInnerNumberResult() {
@@ -2318,6 +2425,7 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 	/**
 	 * Multiples this expression by itself to return the value squared.
 	 *
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a NumberExpression
 	 */
 	public NumberExpression squared() {
@@ -2327,6 +2435,7 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 	/**
 	 * Multiples this expression by its square to return the value cubed.
 	 *
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a NumberExpression
 	 */
 	public NumberExpression cubed() {
@@ -2342,6 +2451,7 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 	 * Returns "+" for all zero or positive numbers and "-" for all negative
 	 * numbers.
 	 *
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a StringExpression that is either "+" or "-"
 	 */
 	public StringExpression signPlusMinus() {
@@ -2644,14 +2754,16 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 		}
 
 		/**
-		 * @return the first
+		 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @return the first
 		 */
 		protected NumberExpression getFirst() {
 			return first;
 		}
 
 		/**
-		 * @return the second
+		 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @return the second
 		 */
 		protected NumberExpression getSecond() {
 			return second;
@@ -2865,14 +2977,16 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 //			this.nullProtectionRequired = nullsAreIncluded;
 //		}
 		/**
-		 * @return the column
+		 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @return the column
 		 */
 		protected NumberExpression getColumn() {
 			return column;
 		}
 
 		/**
-		 * @return the values
+		 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @return the values
 		 */
 		protected List<NumberResult> getValues() {
 			return values;

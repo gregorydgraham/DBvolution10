@@ -164,6 +164,7 @@ public class TypeTestUtils {
 	 * Converts the given type into a concise representation.
 	 *
 	 * @param type
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a descriptive String
 	 */
 	public static String descriptionOf(Type type) {

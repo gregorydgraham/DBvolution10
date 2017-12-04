@@ -35,7 +35,8 @@ import java.lang.annotation.Target;
  * &#64;DBUnknownJavaSQLType is generated automatically by
  * DBTableClassGenerator.
  *
- * @author Gregory Graham
+ * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @author Gregory Graham
  *
  */
 @Target({ElementType.FIELD, ElementType.METHOD})
@@ -44,6 +45,7 @@ public @interface DBUnknownJavaSQLType {
 
 	/**
 	 *
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return the java.sql.Types constant that has not been recognized
 	 */
 	int value();

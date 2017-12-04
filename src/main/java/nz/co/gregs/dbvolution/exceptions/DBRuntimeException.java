@@ -11,7 +11,8 @@ package nz.co.gregs.dbvolution.exceptions;
  * DBRuntimeException should not be thrown directly, please sub-class it and add
  * information to the exception thrown to help developers improve their code.
  *
- * @author Malcolm Lett
+ * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @author Malcolm Lett
  */
 public class DBRuntimeException extends RuntimeException {
 

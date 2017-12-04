@@ -41,7 +41,8 @@ import org.joda.time.Period;
  * This DBDefinition is automatically included in {@link SQLiteDB} instances,
  * and you should not need to use it directly.
  *
- * @author Gregory Graham
+ * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @author Gregory Graham
  */
 public class SQLiteDefinition extends DBDefinition {
 
@@ -127,6 +128,7 @@ public class SQLiteDefinition extends DBDefinition {
 	 * method.
 	 *
 	 * @param lob the type of large object that is being processed
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return the default implementation returns FALSE
 	 */
 	@Override
@@ -139,6 +141,7 @@ public class SQLiteDefinition extends DBDefinition {
 	 * method.
 	 *
 	 * @param lob the type of large object that is being processed
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return the default implementation returns FALSE
 	 */
 	@Override
@@ -151,6 +154,7 @@ public class SQLiteDefinition extends DBDefinition {
 	 * method.
 	 *
 	 * @param lob the type of large object that is being processed
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return the default implementation returns FALSE
 	 */
 	@Override
@@ -170,6 +174,7 @@ public class SQLiteDefinition extends DBDefinition {
 	 * value.
 	 *
 	 * @param lob the DBLargeObject which we are querying about.
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return the default implementation returns FALSE.
 	 */
 	@Override
@@ -189,6 +194,7 @@ public class SQLiteDefinition extends DBDefinition {
 	 * value.
 	 *
 	 * @param lob the DBLargeObject which we are querying about.
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return the default implementation returns FALSE.
 	 */
 	@Override
@@ -320,6 +326,7 @@ public class SQLiteDefinition extends DBDefinition {
 	/**
 	 * Indicates whether the database supports the modulus function.
 	 *
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return the default implementation returns TRUE.
 	 */
 	@Override
@@ -871,6 +878,7 @@ public class SQLiteDefinition extends DBDefinition {
 	 * Return the function name for the Natural Logarithm function.
 	 * 
 	 * <p>For SQLite  this method returns <b>log</b></p>
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return the name of the function to use when rounding numbers up
 	 */
 	@Override

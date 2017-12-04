@@ -45,7 +45,8 @@ import nz.co.gregs.dbvolution.operators.DBPermittedValuesOperator;
  * Generally DBInteger is declared inside your DBRow sub-class as:
  * {@code @DBColumn public DBInteger myIntColumn = new DBInteger();}
  *
- * @author Gregory Graham
+ * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @author Gregory Graham
  */
 public class DBInteger extends QueryableDatatype<Long> implements NumberResult {
 
@@ -140,6 +141,7 @@ public class DBInteger extends QueryableDatatype<Long> implements NumberResult {
 	 * Returns a Long of the database value or NULL if the database value is
 	 * null
 	 *
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return the long value or null
 	 */
 	@Override
@@ -151,6 +153,7 @@ public class DBInteger extends QueryableDatatype<Long> implements NumberResult {
 	 * Returns an Integer of the database value or NULL if the database value is
 	 * null
 	 *
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return the integer value or null
 	 */
 	public Integer intValue() {
@@ -162,6 +165,7 @@ public class DBInteger extends QueryableDatatype<Long> implements NumberResult {
 	 * Returns a Long of the database value or NULL if the database value is
 	 * null
 	 *
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return the long value or null
 	 */
 	public Long longValue() {
@@ -686,6 +690,7 @@ public class DBInteger extends QueryableDatatype<Long> implements NumberResult {
 	/**
 	 *
 	 * @param db	db
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return the underlying number formatted for a SQL statement
 	 */
 	@Override

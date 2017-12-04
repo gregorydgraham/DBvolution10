@@ -24,7 +24,8 @@ import nz.co.gregs.dbvolution.databases.definitions.InformixDBDefinition;
 /**
  * A version of DBDatabase tweaked for Informix 7 and higher.
  *
- * @author Gregory Graham
+ * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @author Gregory Graham
  */
 public class InformixDB extends DBDatabase {
 

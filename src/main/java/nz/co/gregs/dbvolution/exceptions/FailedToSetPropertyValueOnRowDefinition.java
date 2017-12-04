@@ -19,7 +19,8 @@ package nz.co.gregs.dbvolution.exceptions;
  * Usually thrown when 'target' isn't of the same type as 'field' is declared
  * on.
  *
- * @author gregory.graham
+ * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @author gregory.graham
  */
 public class FailedToSetPropertyValueOnRowDefinition extends DBRuntimeException {
 

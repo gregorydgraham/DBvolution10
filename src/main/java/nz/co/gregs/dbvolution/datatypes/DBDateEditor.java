@@ -23,7 +23,8 @@ import java.util.Date;
 /**
  * Uses the default formatting provided in DBDate or the {@link SimpleDateFormat} format provided.
  *
- * @author Gregory Graham
+ * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @author Gregory Graham
  */
 public class DBDateEditor extends PropertyEditorSupport {
 

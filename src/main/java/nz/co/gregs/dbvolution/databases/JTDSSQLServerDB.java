@@ -26,7 +26,8 @@ import nz.co.gregs.dbvolution.internal.sqlserver.*;
 /**
  * A DBDatabase object tweaked to work with Microsoft SQL Server.
  *
- * @author Gregory Graham
+ * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @author Gregory Graham
  */
 public class JTDSSQLServerDB extends DBDatabase implements SupportsPolygonDatatype{
 	public static final long serialVersionUID = 1l;

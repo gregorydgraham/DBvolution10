@@ -17,7 +17,8 @@ package nz.co.gregs.dbvolution.results;
 
 /**
  *
- * @author Gregory Graham
+ * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @author Gregory Graham
  */
 public interface ExpressionCanHaveNullValues {
 
@@ -25,6 +26,7 @@ public interface ExpressionCanHaveNullValues {
 	 * Returns TRUE if this expression requires support for possible NULL database
 	 * values.
 	 *
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return TRUE if the expression should check for NULLs, FALSE otherwise.
 	 */
 	public boolean getIncludesNull();

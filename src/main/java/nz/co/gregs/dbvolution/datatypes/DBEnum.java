@@ -118,6 +118,7 @@ public abstract class DBEnum<E extends Enum<E> & DBEnumValue<T>, T> extends Quer
 	 * <p>
 	 * Converts in-line from the database's raw value to the enum type.
 	 *
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return the Enumeration instance that is appropriate to this instance
 	 * @throws IllegalArgumentException if the database's raw value does not
 	 * have a corresponding value in the enum
@@ -147,6 +148,7 @@ public abstract class DBEnum<E extends Enum<E> & DBEnumValue<T>, T> extends Quer
 	 *
 	 *
 	 *
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return {@code true} if both null or equivalent on value, {@code false}
 	 * if not equal
 	 * @throws IncompatibleClassChangeError if can't recognise the type
@@ -225,6 +227,7 @@ public abstract class DBEnum<E extends Enum<E> & DBEnumValue<T>, T> extends Quer
 	 * mapped to. Dependent on the property wrapper being injected, or the
 	 * enumType being set
 	 *
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return non-null enum type
 	 * @throws IllegalStateException if not configured correctly
 	 */
@@ -264,6 +267,7 @@ public abstract class DBEnum<E extends Enum<E> & DBEnumValue<T>, T> extends Quer
 	 * Provides the literal values for all the enumeration values provided.
 	 *
 	 * @param enumValues	enumValues
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a list of the literal database values for the enumeration values.
 	 */
 	@SuppressWarnings("unchecked")
@@ -298,6 +302,7 @@ public abstract class DBEnum<E extends Enum<E> & DBEnumValue<T>, T> extends Quer
 	 * Provides the value for the enumeration value provided.
 	 *
 	 * @param enumValue	enumValue
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return the literal database value for the enumeration value.
 	 */
 	protected final T convertToLiteral(E enumValue) {

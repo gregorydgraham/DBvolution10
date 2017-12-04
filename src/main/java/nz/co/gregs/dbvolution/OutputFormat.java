@@ -12,7 +12,8 @@ import nz.co.gregs.dbvolution.query.RowDefinition;
 
 /**
  *
- * @author gregorygraham
+ * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @author gregorygraham
  */
 public abstract class OutputFormat {
 

@@ -55,7 +55,8 @@ import nz.co.gregs.dbvolution.query.*;
  * Recursive queries and structures can also be used to access and store
  * Digraphs but digraphs are not yet supported.
  *
- * @author gregorygraham
+ * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @author gregorygraham
  * @param <T> the table/DBRow that will be returned from the query and is
  * referenced by the foreign key.
  */
@@ -77,6 +78,7 @@ public class DBRecursiveQuery<T extends DBRow> {
 	 * Use this method If you require a longer running query.
 	 *
 	 * @param timeoutInMilliseconds
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return this query.
 	 */
 	public DBRecursiveQuery<T> setTimeoutInMilliseconds(Integer timeoutInMilliseconds) {
@@ -94,6 +96,7 @@ public class DBRecursiveQuery<T extends DBRow> {
 	 * <p>
 	 * Use this method If you expect an extremely long query.
 	 *
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return this query.
 	 */
 	public DBRecursiveQuery<T> clearTimeout() {
@@ -180,6 +183,7 @@ public class DBRecursiveQuery<T extends DBRow> {
 	 *
 	 *
 	 *
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return A linked List
 	 *
 	 */
@@ -390,6 +394,7 @@ public class DBRecursiveQuery<T extends DBRow> {
 	 * query. This is used by {@link #getTrees() } to recreate the tree structure
 	 * stored in the database as a tree of {@link TreeNode TreeNodes}.
 	 *
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a list of all descendants of this query.
 	 * @throws SQLException
 	 */
@@ -412,6 +417,7 @@ public class DBRecursiveQuery<T extends DBRow> {
 	 * This is used by {@link #getPathsToRoot() } to recreate the paths stored in
 	 * the database as a list of {@link TreeNode TreeNodes}.
 	 *
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a list of all descendants of this query.
 	 * @throws SQLException
 	 */
@@ -462,6 +468,7 @@ public class DBRecursiveQuery<T extends DBRow> {
 	 * semantic information and help complex query creation. As such sub-classed
 	 * foreign keys are fully supported.
 	 *
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a list of the ancestors of the results from this query. 1 Database
 	 * exceptions may be thrown
 	 * @throws java.sql.SQLException java.sql.SQLException
@@ -532,6 +539,7 @@ public class DBRecursiveQuery<T extends DBRow> {
 	 * semantic information and help complex query creation. As such sub-classed
 	 * foreign keys are fully supported.
 	 *
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a list of trees of the descendants of the results from this query.
 	 * 1 Database exceptions may be thrown
 	 * @throws java.sql.SQLException java.sql.SQLException

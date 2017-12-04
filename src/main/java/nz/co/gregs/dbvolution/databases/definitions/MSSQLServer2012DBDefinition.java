@@ -22,7 +22,8 @@ import nz.co.gregs.dbvolution.query.QueryOptions;
  * Extends and updates the MS SQLServer database definition to use features made
  * available by the 2012 version of MS SQLServer.
  *
- * @author Gregory Graham
+ * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @author Gregory Graham
  */
 public class MSSQLServer2012DBDefinition extends MSSQLServerDBDefinition {
 

@@ -23,7 +23,8 @@ package nz.co.gregs.dbvolution.exceptions;
  * several JDBCDrivers already but Oracle and MS SQLserver, in particular, need
  * to be added to the path if you wish to work with those databases.
  *
- * @author Gregory Graham
+ * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @author Gregory Graham
  */
 public class UnableToFindJDBCDriver extends DBRuntimeException {
 

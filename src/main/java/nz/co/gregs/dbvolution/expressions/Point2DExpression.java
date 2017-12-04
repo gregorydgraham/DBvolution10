@@ -32,7 +32,8 @@ import nz.co.gregs.dbvolution.results.PointResult;
  * <p>
  * Use these methods to manipulate and transform point2d values and results.
  *
- * @author gregorygraham
+ * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @author gregorygraham
  */
 public class Point2DExpression implements PointResult, Point2DResult, EqualComparable<Point2DResult>, Spatial2DExpression, ExpressionColumn<DBPoint2D> {
 
@@ -74,6 +75,7 @@ public class Point2DExpression implements PointResult, Point2DResult, EqualCompa
 	 * Create a Point2DExpression that represents the point value provided.
 	 *
 	 * @param point the value of this expression.
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a Point2DExpression of the point.
 	 */
 	public static Point2DExpression value(Point point) {
@@ -84,6 +86,7 @@ public class Point2DExpression implements PointResult, Point2DResult, EqualCompa
 	 * Create a Point2DExpression that represents the point value provided.
 	 *
 	 * @param point the value of this expression.
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a Point2DExpression of the point.
 	 */
 	public static Point2DExpression value(Point2DResult point) {
@@ -95,6 +98,7 @@ public class Point2DExpression implements PointResult, Point2DResult, EqualCompa
 	 *
 	 * @param xValue the X value of this expression.
 	 * @param yValue the Y value of this expression.
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a Point2DExpression of the x and y values provided.
 	 */
 	public static Point2DExpression value(Integer xValue, Integer yValue) {
@@ -106,6 +110,7 @@ public class Point2DExpression implements PointResult, Point2DResult, EqualCompa
 	 *
 	 * @param xValue the X value of this expression.
 	 * @param yValue the Y value of this expression.
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a Point2DExpression of the x and y values provided.
 	 */
 	public static Point2DExpression value(Long xValue, Long yValue) {
@@ -117,6 +122,7 @@ public class Point2DExpression implements PointResult, Point2DResult, EqualCompa
 	 *
 	 * @param xValue the X value of this expression.
 	 * @param yValue the Y value of this expression.
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a Point2DExpression of the x and y values provided.
 	 */
 	public static Point2DExpression value(Double xValue, Double yValue) {
@@ -128,6 +134,7 @@ public class Point2DExpression implements PointResult, Point2DResult, EqualCompa
 	 *
 	 * @param xValue the X value of this expression.
 	 * @param yValue the Y value of this expression.
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a Point2DExpression of the x and y values provided.
 	 */
 	public static Point2DExpression value(NumberExpression xValue, NumberExpression yValue) {
@@ -226,6 +233,7 @@ public class Point2DExpression implements PointResult, Point2DResult, EqualCompa
 	 * EQUALS operation.
 	 *
 	 * @param rightHandSide the value to compare against.
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a BooleanExpression
 	 */
 	public BooleanExpression is(Point rightHandSide) {
@@ -257,6 +265,7 @@ public class Point2DExpression implements PointResult, Point2DResult, EqualCompa
 	 * NOT EQUALS operation.
 	 *
 	 * @param rightHandSide the value to compare against.
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a BooleanExpression
 	 */
 	public BooleanExpression isNot(Point rightHandSide) {
@@ -392,6 +401,7 @@ public class Point2DExpression implements PointResult, Point2DResult, EqualCompa
 	 * sqrt((x2-x1)^2+(y2-y1)^2).
 	 *
 	 * @param otherPoint the point from which to derive the distance.
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a number expression of the distance between the two points in
 	 * units.
 	 */

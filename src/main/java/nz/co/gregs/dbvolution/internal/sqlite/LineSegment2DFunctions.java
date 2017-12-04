@@ -28,7 +28,8 @@ import org.sqlite.Function;
 
 /**
  *
- * @author gregory.graham
+ * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @author gregory.graham
  */
 public class LineSegment2DFunctions {
 

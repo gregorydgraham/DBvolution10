@@ -73,7 +73,8 @@ import nz.co.gregs.dbvolution.internal.query.*;
  * DBQuery can even scan the Class path and find all related DBRow classes and
  * add them on request.
  *
- * @author Gregory Graham
+ * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @author Gregory Graham
  */
 public class DBQuery {
 
@@ -152,6 +153,7 @@ public class DBQuery {
 	 *
 	 * @param examples a list of DBRow objects that defines required tables and
 	 * criteria
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return this DBQuery instance
 	 */
 	public DBQuery add(DBRow... examples) {
@@ -177,6 +179,7 @@ public class DBQuery {
 	 *
 	 * @param examples a list of DBRow objects that defines required tables and
 	 * criteria
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return this DBQuery instance
 	 */
 	public DBQuery add(List<DBRow> examples) {
@@ -206,6 +209,7 @@ public class DBQuery {
 	 * @param examples a list of DBRow objects that defines optional tables and
 	 * criteria
 	 *
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return this DBQuery instance
 	 */
 	public DBQuery addOptional(DBRow... examples) {
@@ -228,6 +232,7 @@ public class DBQuery {
 	 * re-run.
 	 *
 	 * @param examples a list of DBRow instances to remove from the query
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return this DBQuery instance
 	 */
 	public DBQuery remove(DBRow... examples) {
@@ -263,6 +268,7 @@ public class DBQuery {
 	 * <p>
 	 * See also {@link DBQuery#getSQLForCount() getSQLForCount}
 	 *
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a String of the SQL that will be used by this DBQuery.
 	 */
 	public String getSQLForQuery() {
@@ -618,6 +624,7 @@ public class DBQuery {
 	 *
 	 * @param querySQL
 	 * @param options
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a fake full outer join query for databases that don't support
 	 * FULL OUTER joins
 	 */
@@ -683,6 +690,7 @@ public class DBQuery {
 	 * Use this method to check the SQL that will be executed during
 	 * {@link DBQuery#count() the count() method}
 	 *
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a String of the SQL query that will be used to count the rows
 	 * returned by this query
 	 */
@@ -718,6 +726,7 @@ public class DBQuery {
 	 * {@link DBQuery#addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression) addCondition}
 	 * are added.
 	 *
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return A List of DBQueryRows containing all the DBRow instances aligned
 	 * with their related instances. 1 Database exceptions may be thrown
 	 * @throws java.sql.SQLException java.sql.SQLException
@@ -782,6 +791,7 @@ public class DBQuery {
 	 *
 	 * @param statement dbStatement
 	 * @param sql sql
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return the ResultSet returned from the actual database. Database
 	 * exceptions may be thrown
 	 * @throws java.sql.SQLException java.sql.SQLException
@@ -860,6 +870,7 @@ public class DBQuery {
 	 *
 	 * @param newInstance newInstance
 	 * @param existingInstancesOfThisTableRow existingInstancesOfThisTableRow
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return the exisinting instance of the provided row, or the row itself if
 	 * none exists.
 	 */
@@ -886,6 +897,7 @@ public class DBQuery {
 	 *
 	 * @param existingInstancesOfThisTableRow existingInstancesOfThisTableRow
 	 * @param newInstance newInstance
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a list of existing rows.
 	 */
 	protected Map<String, DBRow> setExistingInstancesForTable(Map<String, DBRow> existingInstancesOfThisTableRow, DBRow newInstance) {
@@ -982,6 +994,7 @@ public class DBQuery {
 	 *
 	 * @param <R> a subclass of DBRow
 	 * @param exemplar an instance of R
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return the ONLY instance found using this query 1 Database exceptions
 	 * may be thrown
 	 * @throws java.sql.SQLException java.sql.SQLException
@@ -1020,6 +1033,7 @@ public class DBQuery {
 	 * @param exemplar The DBRow class that you would like returned.
 	 * @param expected The expected number of rows, an exception will be thrown
 	 * if this expectation is not met.
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a list of all the instances of the exemplar found by this query.
 	 *
 	 * Database exceptions may be thrown
@@ -1063,6 +1077,7 @@ public class DBQuery {
 	 *
 	 * @param <R> a class that extends DBRow
 	 * @param exemplar an instance of R that has been included in the query
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return A List of all the instances found of the exemplar.
 	 *
 	 * Database exceptions may be thrown
@@ -1208,6 +1223,7 @@ public class DBQuery {
 	 * Clears all the settings and collections within this instance and set it
 	 * back to a blank state
 	 *
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return this DBQuery instance.
 	 */
 	public DBQuery clear() {
@@ -1230,6 +1246,7 @@ public class DBQuery {
 	 * {@link #getAllRowsInternal(nz.co.gregs.dbvolution.query.QueryOptions)  getAllRows()}
 	 * been called.
 	 *
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return the number of rows that have or will be retrieved. Database
 	 * exceptions may be thrown
 	 * @throws java.sql.SQLException java.sql.SQLException
@@ -1268,6 +1285,7 @@ public class DBQuery {
 	 * the table is made: if your criteria selects all the row of the tables
 	 * this method will still return FALSE.
 	 *
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return TRUE if the DBQuery will retrieve all the rows of the tables,
 	 * FALSE otherwise
 	 */
@@ -1300,6 +1318,7 @@ public class DBQuery {
 	 *
 	 * @param maximumNumberOfRowsReturned the require limit to the number of
 	 * rows returned
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return this DBQuery instance
 	 * @see #clearRowLimit()
 	 */
@@ -1322,6 +1341,7 @@ public class DBQuery {
 	 * Also resets the retrieved results so that the database will be
 	 * re-queried.
 	 *
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return this DBQuery instance
 	 * @see #setRowLimit(int)
 	 */
@@ -1348,6 +1368,7 @@ public class DBQuery {
 	 * value, for example "NULL, 1, 2, 3, 4..." not "... 4, 5, 6, NULL".
 	 *
 	 * @param sortColumns a list of columns to sort the query by.
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return this DBQuery instance
 	 */
 	public DBQuery setSortOrder(ColumnProvider... sortColumns) {
@@ -1387,6 +1408,7 @@ public class DBQuery {
 	 * </pre>
 	 *
 	 * @param sortColumns a list of columns to sort the query by.
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return this DBQuery instance
 	 */
 	public DBQuery addToSortOrder(ColumnProvider... sortColumns) {
@@ -1423,6 +1445,7 @@ public class DBQuery {
 	 * </pre>
 	 *
 	 * @param sortColumns a list of columns to sort the query by.
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return this DBQuery instance
 	 */
 	public DBQuery addToSortOrder(DBExpression... sortColumns) {
@@ -1437,6 +1460,7 @@ public class DBQuery {
 	/**
 	 * Remove all sorting that has been set on this DBQuery
 	 *
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return this DBQuery instance
 	 */
 	public DBQuery clearSortOrder() {
@@ -1517,6 +1541,7 @@ public class DBQuery {
 	 *
 	 * @param allow - TRUE to allow blank queries, FALSE to return it to the
 	 * default setting.
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return this DBQuery instance
 	 */
 	public DBQuery setBlankQueryAllowed(boolean allow) {
@@ -1543,6 +1568,7 @@ public class DBQuery {
 	 *
 	 * @param allow - TRUE to allow cartesian joins, FALSE to return it to the
 	 * default setting.
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return this DBQuery instance
 	 */
 	public DBQuery setCartesianJoinsAllowed(boolean allow) {
@@ -1585,6 +1611,7 @@ public class DBQuery {
 	 * are added.
 	 *
 	 * @param expectedRows - the number of rows expected to be retrieved
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return A List of DBQueryRows containing all the DBRow instances aligned
 	 * with their related instances.
 	 *
@@ -1615,6 +1642,7 @@ public class DBQuery {
 	 * <p>
 	 * N.B. Optional (outer) tables are only supported with ANSI syntax.
 	 *
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return the useANSISyntax flag
 	 */
 	public boolean isUseANSISyntax() {
@@ -1640,6 +1668,7 @@ public class DBQuery {
 	 * supports OUTER thru the ANSI syntax.
 	 *
 	 * @param useANSISyntax the useANSISyntax flag to set
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return this DBQuery instance
 	 */
 	public DBQuery setUseANSISyntax(boolean useANSISyntax) {
@@ -1660,6 +1689,7 @@ public class DBQuery {
 	 * That is to say: where A is a DBRow in this query, returns a List of B
 	 * such that B =&gt; A
 	 *
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a list of classes that have a {@code @DBForeignKey} reference to
 	 * this class
 	 * @see #getReferencedTables()
@@ -1702,6 +1732,7 @@ public class DBQuery {
 	 * That is to say: where A is A DBRow in this class, returns a List of B
 	 * such that A =&gt; B
 	 *
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return A list of DBRow subclasses referenced with {@code @DBForeignKey}
 	 * @see #getRelatedTables()
 	 * @see DBRow#getReferencedTables()
@@ -1730,6 +1761,7 @@ public class DBQuery {
 	/**
 	 * Returns all the DBRow subclasses used in this query.
 	 *
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return A list of DBRow subclasses included in this query.
 	 * @see #getRelatedTables()
 	 * @see #getReferencedTables()
@@ -1753,6 +1785,7 @@ public class DBQuery {
 	 * That is to say: where A is a DBRow in this query, returns a List of B
 	 * such that B =&gt; A or A =&gt; B
 	 *
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a list of classes that have a {@code @DBForeignKey} reference to
 	 * or from this class
 	 * @see #getRelatedTables()
@@ -1783,6 +1816,7 @@ public class DBQuery {
 	 * N.B. for any realistic database, repeatedly calling this method will
 	 * quickly make the query impossibly large.
 	 *
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return this DBQuery instance
 	 * @throws UnableToInstantiateDBRowSubclassException
 	 */
@@ -1822,6 +1856,7 @@ public class DBQuery {
 	 * N.B. for any realistic database, repeatedly calling this method will
 	 * quickly make the query impossibly large.
 	 *
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return this DBQuery instance
 	 * @throws UnableToInstantiateDBRowSubclassException
 	 */
@@ -1861,6 +1896,7 @@ public class DBQuery {
 	 * N.B. for any realistic database, repeatedly calling this method will
 	 * quickly make the query impossibly large.
 	 *
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return this DBQuery instance
 	 * @throws UnableToInstantiateDBRowSubclassException
 	 */
@@ -1912,6 +1948,7 @@ public class DBQuery {
 	 * N.B. for any realistic database, repeatedly calling this method will
 	 * quickly make the query impossibly large.
 	 *
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return this DBQuery instance
 	 * @throws UnableToInstantiateDBRowSubclassException
 	 */
@@ -1960,6 +1997,7 @@ public class DBQuery {
 	 * This method adds all the connected tables as if they were only connected
 	 * to the core tables and had no other relationships.
 	 *
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return this DBQuery instance
 	 * @throws UnableToInstantiateDBRowSubclassException
 	 */
@@ -2013,6 +2051,7 @@ public class DBQuery {
 	 * status DBRow as a block.
 	 *
 	 * @param instance the DBRow instance you are interested in.
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return A list of DBQueryRow instances that relate to the exemplar 1
 	 * Database exceptions may be thrown
 	 * @throws java.sql.SQLException java.sql.SQLException
@@ -2046,6 +2085,7 @@ public class DBQuery {
 	 *
 	 * @param postQueryConditions all the post-query conditions that need to be
 	 * matched
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return A list of DBQueryRow instances that fulfill the post-query
 	 * conditions Database exceptions may be thrown
 	 * @throws java.sql.SQLException java.sql.SQLException
@@ -2077,6 +2117,7 @@ public class DBQuery {
 	 * Convenience method for {@link #getAllRowsForPage(java.lang.Integer) }.
 	 *
 	 * @param pageNumber	pageNumber
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a list of the DBQueryRows for the selected page. 1 Database
 	 * exceptions may be thrown
 	 * @throws java.sql.SQLException java.sql.SQLException
@@ -2097,6 +2138,7 @@ public class DBQuery {
 	 * This method is zero-based so the first page is getAllRowsForPage(0).
 	 *
 	 * @param pageNumber	pageNumber
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a list of the DBQueryRows for the selected page. 1 Database
 	 * exceptions may be thrown
 	 * @throws java.sql.SQLException java.sql.SQLException
@@ -2169,6 +2211,7 @@ public class DBQuery {
 	 *
 	 * @param condition a boolean expression that defines a require limit on the
 	 * results of the query
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return this DBQuery instance
 	 */
 	public DBQuery addCondition(BooleanExpression condition) {
@@ -2213,6 +2256,7 @@ public class DBQuery {
 	 *
 	 * @param conditions boolean expressions that define required limits on the
 	 * results of the query
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return this DBQuery instance
 	 */
 	public DBQuery addConditions(BooleanExpression... conditions) {
@@ -2253,6 +2297,7 @@ public class DBQuery {
 	 *
 	 * @param conditions boolean expressions that define required limits on the
 	 * results of the query
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return this DBQuery instance
 	 */
 	public DBQuery addConditions(Collection<BooleanExpression> conditions) {
@@ -2266,6 +2311,7 @@ public class DBQuery {
 	 * Remove all conditions from this query.
 	 *
 	 * @see #addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression)
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return this DBQuery object
 	 */
 	public DBQuery clearConditions() {
@@ -2285,6 +2331,7 @@ public class DBQuery {
 	 * <p>
 	 * The conditions will be connected by OR in the SQL.
 	 *
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return this DBQuery instance
 	 */
 	public DBQuery setToMatchAnyCondition() {
@@ -2304,6 +2351,7 @@ public class DBQuery {
 	 * <p>
 	 * The relationships will be connected by OR in the SQL.
 	 *
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return this DBQuery instance
 	 */
 	public DBQuery setToMatchAnyRelationship() {
@@ -2323,6 +2371,7 @@ public class DBQuery {
 	 * <p>
 	 * The relationships will be connected by AND in the SQL.
 	 *
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return this DBQuery instance
 	 */
 	public DBQuery setToMatchAllRelationships() {
@@ -2341,6 +2390,7 @@ public class DBQuery {
 	 * This means that all permitted*, excluded*, and comparisons are required
 	 * for any rows and the conditions will be connected by AND.
 	 *
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return this DBQuery instance
 	 */
 	public DBQuery setToMatchAllConditions() {
@@ -2368,6 +2418,7 @@ public class DBQuery {
 	 *
 	 * @param exampleWithOrWithoutCriteria an example DBRow that should be added
 	 * to the query as a required or optional table as appropriate.
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return this DBQuery instance
 	 */
 	public DBQuery addOptionalIfNonspecific(DBRow exampleWithOrWithoutCriteria) {
@@ -2398,6 +2449,7 @@ public class DBQuery {
 	 *
 	 * @param examplesWithOrWithoutCriteria Example DBRow objects that should be
 	 * added to the query as a optional or required table as appropriate.
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return this DBQuery instance
 	 */
 	public DBQuery addOptionalIfNonspecific(DBRow... examplesWithOrWithoutCriteria) {
@@ -2412,6 +2464,7 @@ public class DBQuery {
 	 *
 	 * @param identifyingObject identifyingObject
 	 * @param expressionToAdd expressionToAdd
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return this DBQuery instance
 	 */
 	public DBQuery addExpressionColumn(Object identifyingObject, QueryableDatatype<?> expressionToAdd) {
@@ -2425,6 +2478,7 @@ public class DBQuery {
 	 *
 	 * @param identifyingObject identifyingObject
 	 * @param expressionToAdd expressionToAdd
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return this DBQuery instance
 	 */
 	protected DBQuery addGroupByColumn(Object identifyingObject, DBExpression expressionToAdd) {
@@ -2464,6 +2518,7 @@ public class DBQuery {
 	 * {@link #add(nz.co.gregs.dbvolution.DBRow...) add and related methods}.
 	 *
 	 * @param extraExamples
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return this DBQuery with the extra examples added
 	 */
 	public DBQuery addExtraExamples(DBRow... extraExamples) {
@@ -2557,6 +2612,7 @@ public class DBQuery {
 	}
 
 	/**
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return the conditions
 	 */
 	protected List<BooleanExpression> getConditions() {
@@ -2576,6 +2632,7 @@ public class DBQuery {
 	 * find the distinct or unique values that are used.
 	 *
 	 * @param fieldsOfProvidedRows - the field/column that you need data for.
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a list of DBQQueryRows with distinct combinations of values used
 	 * in the columns. 1 Database exceptions may be thrown
 	 * @throws java.sql.SQLException java.sql.SQLException
@@ -2639,6 +2696,7 @@ public class DBQuery {
 	/**
 	 * Return a list of all tables, required or optional, used in this query.
 	 *
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return all DBRows used in this DBQuery
 	 */
 	public List<DBRow> getAllTables() {
@@ -2650,6 +2708,7 @@ public class DBQuery {
 	/**
 	 * Return a list of all the required tables used in this query.
 	 *
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return all DBRows required by this DBQuery
 	 */
 	public List<DBRow> getRequiredTables() {
@@ -2661,6 +2720,7 @@ public class DBQuery {
 	/**
 	 * Return a list of all the optional tables used in this query.
 	 *
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return all DBRows optionally returned by this DBQuery
 	 */
 	public List<DBRow> getOptionalTables() {
@@ -2677,6 +2737,7 @@ public class DBQuery {
 	 * This method allows you to retrieve the database used when you execute
 	 * this query.
 	 *
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return the database used during execution of this query.
 	 */
 	public DBDatabase getDatabase() {
@@ -2699,6 +2760,7 @@ public class DBQuery {
 	 * Also used by the {@link ExistsExpression}.
 	 *
 	 * @param tables	tables
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return this DBQuery object.
 	 */
 	public DBQuery addAssumedTables(List<DBRow> tables) {
@@ -2717,6 +2779,7 @@ public class DBQuery {
 	 * Also used by the {@link ExistsExpression}.
 	 *
 	 * @param tables	tables
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return this DBQuery object.
 	 */
 	public DBQuery addAssumedTables(DBRow... tables) {
@@ -2746,6 +2809,7 @@ public class DBQuery {
 	 * @param optionalQueryTables a list of DBRow objects that defines optional
 	 * tables and criteria
 	 *
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return this DBQuery instance
 	 */
 	public DBQuery addOptional(List<DBRow> optionalQueryTables) {
@@ -2771,6 +2835,7 @@ public class DBQuery {
 	 * </pre>
 	 *
 	 * @param foreignKeyToFollow the foreign key to ignore
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return This DBQuery object
 	 */
 	public DBQuery ignoreForeignKey(ColumnProvider foreignKeyToFollow) {
@@ -2796,6 +2861,7 @@ public class DBQuery {
 	 * Use this method If you require a longer running query.
 	 *
 	 * @param milliseconds
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return this query.
 	 */
 	public synchronized DBQuery setTimeoutInMilliseconds(int milliseconds) {
@@ -2813,6 +2879,7 @@ public class DBQuery {
 	 * <p>
 	 * Use this method if you expect an extremely long query.
 	 *
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return this DBQuery object
 	 */
 	public synchronized DBQuery clearTimeout() {
@@ -2871,7 +2938,8 @@ public class DBQuery {
 		/**
 		 * Returns all the current conditions that pertain to required tables.
 		 *
-		 * @return a list of SQL snippets representing required conditions.
+		 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @return a list of SQL snippets representing required conditions.
 		 */
 		protected List<String> getRequiredConditions() {
 			return requiredConditions;
@@ -2889,7 +2957,8 @@ public class DBQuery {
 		/**
 		 * Returns all the current conditions that pertain to options tables.
 		 *
-		 * @return a list of SQL snippets representing conditions on optional
+		 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @return a list of SQL snippets representing conditions on optional
 		 * tables.
 		 */
 		protected List<String> getOptionalConditions() {

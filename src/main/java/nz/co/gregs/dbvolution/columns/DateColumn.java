@@ -38,7 +38,8 @@ import nz.co.gregs.dbvolution.query.RowDefinition;
  * Generally you get a DateColumn using
  * {@link RowDefinition#column(nz.co.gregs.dbvolution.datatypes.DBDate) RowDefinition.column(DBDate)}.
  *
- * @author Gregory Graham
+ * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @author Gregory Graham
  * @see RowDefinition
  * @see AbstractColumn
  * @see DateExpression
@@ -119,6 +120,7 @@ public class DateColumn extends DateExpression implements ColumnProvider {
 	 * EQUALS.
 	 *
 	 * @param dateColumn an instance to compare to
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a BooleanExpression
 	 */
 	public BooleanExpression is(DBDate dateColumn) {

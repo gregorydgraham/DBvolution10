@@ -29,7 +29,8 @@ import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
  * For example, DBPermittedRangeExclusiveOperator(1,null) will produce an
  * operation such that every number larger than 1 will be returned.
  *
- * @author Gregory Graham
+ * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @author Gregory Graham
  */
 public class DBPermittedRangeExclusiveOperator extends DBMetaOperator {
 

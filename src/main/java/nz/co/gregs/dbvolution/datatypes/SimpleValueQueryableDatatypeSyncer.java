@@ -23,7 +23,8 @@ import java.util.logging.Logger;
 /**
  * Syncs between a simple-type external value and a QDT internal value.
  *
- * @author Malcolm Lett
+ * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @author Malcolm Lett
  */
 public class SimpleValueQueryableDatatypeSyncer extends QueryableDatatypeSyncer {
 
@@ -49,6 +50,7 @@ public class SimpleValueQueryableDatatypeSyncer extends QueryableDatatypeSyncer 
 	 * value.
 	 *
 	 * @param externalValue may be null
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return the updated internal QDT
 	 */
 	public QueryableDatatype<?> setInternalQDTFromExternalSimpleValue(Object externalValue) {
@@ -72,6 +74,7 @@ public class SimpleValueQueryableDatatypeSyncer extends QueryableDatatypeSyncer 
 	 * Warning: this directly returns the value from the type adaptor, without
 	 * casting to the specific type expected by the target java property.
 	 *
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return the internal value as a base Java object
 	 */
 	public Object getExternalSimpleValueFromInternalQDT() {

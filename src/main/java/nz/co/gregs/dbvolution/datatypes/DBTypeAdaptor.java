@@ -46,6 +46,7 @@ public interface DBTypeAdaptor<J, D> {
 	 * Null values must be handled correctly.</p>
 	 *
 	 * @param dbValue	dbValue
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return The database value transformed into the Java value
 	 */
 	public J fromDatabaseValue(D dbValue);
@@ -57,6 +58,7 @@ public interface DBTypeAdaptor<J, D> {
 	 * Null values must be handled correctly.</p>
 	 *
 	 * @param javaValue	javaValue
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return The Java value transformed into the database value
 	 */
 	public D toDatabaseValue(J javaValue);

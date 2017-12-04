@@ -25,7 +25,8 @@ import static org.simmetrics.builders.StringMetricBuilder.with;
  * This class behaves correctly when no {@link DBForeignKey} annotation is
  * present.
  *
- * @author Malcolm Lett
+ * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @author Malcolm Lett
  */
 // TODO if referenced property has differing case of column name,
 // need to throw exception during a deferred validation step once database case-ness is known.
@@ -134,6 +135,7 @@ class ForeignKeyHandler {
 	/**
 	 * Indicates whether this property references another class/table.
 	 *
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return TRUE/FALSE
 	 */
 	public boolean isForeignKey() {
@@ -146,6 +148,7 @@ class ForeignKeyHandler {
 	/**
 	 * Gets the class referenced by this foreign key.
 	 *
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return the referenced class if this property is a foreign key; null if not
 	 * a foreign key
 	 */
@@ -159,6 +162,7 @@ class ForeignKeyHandler {
 	/**
 	 * Gets the name of the referenced table.
 	 *
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return the referenced table name if this property is a foreign key; null
 	 * if not a foreign key
 	 */
@@ -175,6 +179,7 @@ class ForeignKeyHandler {
 	 * {@link DBForeignKey#column()} attribute, or it is implicitly the single
 	 * primary key of the referenced table.
 	 *
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return the referenced column name if this property is a foreign key; null
 	 * if not a foreign key
 	 */
@@ -198,6 +203,7 @@ class ForeignKeyHandler {
 	 * name). Attempts to get or set its value or get the type adaptor instance
 	 * will result in an internal exception.
 	 *
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return the referenced property if this property is a foreign key; null if
 	 * not a foreign key
 	 */
@@ -211,6 +217,7 @@ class ForeignKeyHandler {
 	/**
 	 * Gets the {@link DBColumn} annotation on the class, if it exists.
 	 *
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return the annotation or null if it is not present
 	 */
 	public DBForeignKey getDBForeignKeyAnnotation() {

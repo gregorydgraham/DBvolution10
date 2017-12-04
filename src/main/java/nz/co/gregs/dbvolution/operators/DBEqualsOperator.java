@@ -38,7 +38,8 @@ import nz.co.gregs.dbvolution.results.StringResult;
 /**
  * Implements the EQUALS operator.
  *
- * @author Gregory Graham
+ * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @author Gregory Graham
  */
 public class DBEqualsOperator extends DBOperator {
 

@@ -18,7 +18,8 @@ import nz.co.gregs.dbvolution.exceptions.DBRuntimeException;
 /**
  * Low-level internal utility for finding properties within classes.
  *
- * @author Malcolm Lett
+ * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @author Malcolm Lett
  */
 // Note: java.beans.Introspector
 class JavaPropertyFinder {
@@ -84,6 +85,7 @@ class JavaPropertyFinder {
 	 * effort to avoid using both.
 	 *
 	 * @param clazz the type to inspect
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return the non-null list of properties found on the given class
 	 */
 	List<JavaProperty> getPropertiesOf(Class<?> clazz) {
@@ -105,6 +107,7 @@ class JavaPropertyFinder {
 	/**
 	 * Gets the field-based properties.
 	 *
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a list of JavaProperty
 	 */
 	// TODO: this may not be able to handle inheritance of protected/default fields
@@ -156,6 +159,7 @@ class JavaPropertyFinder {
 	/**
 	 * Gets the bean-property-based properties.
 	 *
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a list of JavaProperty
 	 */
 	private List<JavaProperty> getBeanProperties(Class<?> clazz) {

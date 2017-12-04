@@ -28,7 +28,8 @@ import nz.co.gregs.dbvolution.query.RowDefinition;
  * <p>
  * Instances of this class are <i>thread-safe</i>.
  *
- * @author Malcolm Lett
+ * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @author Malcolm Lett
  */
 public class RowDefinitionInstanceWrapper {
 
@@ -95,6 +96,7 @@ public class RowDefinitionInstanceWrapper {
 	/**
 	 * Gets a string representation suitable for debugging.
 	 *
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a String representing this object sufficient for debugging purposes
 	 */
 	@Override
@@ -112,6 +114,7 @@ public class RowDefinitionInstanceWrapper {
 	 * instances of the same class.
 	 *
 	 * @param obj the other object to compare to.
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return {@code true} if the two objects are equal, {@code false} otherwise.
 	 */
 	@Override
@@ -147,6 +150,7 @@ public class RowDefinitionInstanceWrapper {
 	 * Calculates the hash-code based on the hash-code of the wrapped @{code
 	 * RowDefinition} instance and its class.
 	 *
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return the hash-code
 	 */
 	@Override
@@ -161,6 +165,7 @@ public class RowDefinitionInstanceWrapper {
 	/**
 	 * Gets the class-wrapper for the class of wrapped {@code RowDefinition}
 	 *
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return the class-wrapper
 	 */
 	public RowDefinitionClassWrapper getClassWrapper() {
@@ -171,6 +176,7 @@ public class RowDefinitionInstanceWrapper {
 	 * Gets the wrapped object type supported by this {@code ObjectAdaptor}. Note:
 	 * this should be the same as the wrapped object's actual type.
 	 *
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return the class of the wrapped instance
 	 */
 	public Class<? extends RowDefinition> adapteeRowDefinitionClass() {
@@ -181,6 +187,7 @@ public class RowDefinitionInstanceWrapper {
 	 * Gets the {@link RowDefinition} instance wrapped by this
 	 * {@code ObjectAdaptor}.
 	 *
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return the {@link RowDefinition} (usually a {@link DBRow} or
 	 * {@link DBReport}) for this instance.
 	 */
@@ -193,6 +200,7 @@ public class RowDefinitionInstanceWrapper {
 	 * <p>
 	 * Use {@link #tableName()} for the name of the table mapped to this class.
 	 *
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return the simple class name of the wrapped RowDefinition
 	 */
 	public String javaName() {
@@ -204,6 +212,7 @@ public class RowDefinitionInstanceWrapper {
 	 * <p>
 	 * Use {@link #tableName()} for the name of the table mapped to this class.
 	 *
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return the full class name of the wrapped RowDefinition
 	 */
 	public String qualifiedJavaName() {
@@ -218,6 +227,7 @@ public class RowDefinitionInstanceWrapper {
 	 * directly to a table or view, this method returns true. Other
 	 * RowDefinitions, probably {@link DBReport}, will return false.
 	 *
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return TRUE if this RowDefinition maps directly to a table or view, FALSE
 	 * otherwise
 	 */
@@ -234,6 +244,7 @@ public class RowDefinitionInstanceWrapper {
 	 * If the {@link DBTableName} annotation is missing, this method returns
 	 * {@code null}.
 	 *
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return the table name, if specified explicitly or implicitly.
 	 */
 	public String tableName() {
@@ -244,6 +255,7 @@ public class RowDefinitionInstanceWrapper {
 	 * Gets the property that is the primary key, if one is marked. Note:
 	 * multi-column primary key tables are not yet supported.
 	 *
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return the primary key property or null if no primary key
 	 */
 	public List<PropertyWrapper> primaryKeys() {
@@ -278,6 +290,7 @@ public class RowDefinitionInstanceWrapper {
 	 *
 	 * @param database database
 	 * @param columnName columnName
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return the Java property associated with the column name supplied. Null if
 	 * no such column is found.
 	 */
@@ -292,6 +305,7 @@ public class RowDefinitionInstanceWrapper {
 	 * Only provides access to properties annotated with {@code DBColumn}.
 	 *
 	 * @param propertyName propertyName
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return property of the wrapped {@link RowDefinition} associated with the
 	 * java field name supplied. Null if no such property is found.
 	 */
@@ -310,6 +324,7 @@ public class RowDefinitionInstanceWrapper {
 	 * definitions (ie: meta-information), this method is not efficient. Use
 	 * {@link #getColumnPropertyDefinitions()} instead in that case.
 	 *
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return the non-null list of properties, empty if none
 	 */
 	public List<PropertyWrapper> getColumnPropertyWrappers() {
@@ -326,6 +341,7 @@ public class RowDefinitionInstanceWrapper {
 	 * definitions (ie: meta-information), this method is not efficient. Use
 	 * {@link #getColumnPropertyDefinitions()} instead in that case.
 	 *
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return the non-null list of properties, empty if none
 	 */
 	public List<PropertyWrapper> getAutoFillingPropertyWrappers() {
@@ -335,6 +351,7 @@ public class RowDefinitionInstanceWrapper {
 	/**
 	 * Gets all foreign key properties.
 	 *
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return non-null list of PropertyWrappers, empty if no foreign key
 	 * properties
 	 */
@@ -345,6 +362,7 @@ public class RowDefinitionInstanceWrapper {
 	/**
 	 * Gets all foreign key properties as property definitions.
 	 *
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a non-null list of PropertyWrapperDefinitions, empty if no foreign
 	 * key properties
 	 */
@@ -357,6 +375,7 @@ public class RowDefinitionInstanceWrapper {
 	 * This method is intended for where you need to examine meta-information
 	 * about all properties in a class.
 	 *
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a list of PropertyWrapperDefinitions for the PropertyWrappers of
 	 * this RowDefinition
 	 */

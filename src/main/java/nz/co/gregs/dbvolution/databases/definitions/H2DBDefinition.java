@@ -38,7 +38,8 @@ import nz.co.gregs.dbvolution.internal.h2.*;
  * This DBDefinition is automatically included in {@link H2DB} instances, and
  * you should not need to use it directly.
  *
- * @author Gregory Graham
+ * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @author Gregory Graham
  */
 public class H2DBDefinition extends DBDefinition {
 
@@ -153,6 +154,7 @@ public class H2DBDefinition extends DBDefinition {
 	/**
 	 * Defines the function used to get the current timestamp from the database.
 	 *
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return the H@ implementation subtracts the time zone from the current
 	 * timestamp
 	 */

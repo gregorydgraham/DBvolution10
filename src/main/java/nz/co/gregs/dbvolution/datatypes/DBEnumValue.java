@@ -25,6 +25,7 @@ public interface DBEnumValue<V> {
 	 * Null database values are translated to null enum values. So this
 	 * interpretation is not symmetric.
 	 *
+	 * <p style="color: #F90;">Support DBvolution at <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return the non-null value in the appropriate type for the value in the
 	 * database.
 	 */
