@@ -1014,6 +1014,28 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 	 * Creates tables on the database based on the DBRows.
 	 *
 	 * <p>
+	 * Foreign key constraints are NOT created.
+	 *
+	 * <p>
+	 * Implemented to facilitate testing, this method creates actual tables on the
+	 * database using the default data types supplied by the fields of the DBRows.
+	 *
+	 * @param newTable the table to create
+	 * @throws AutoCommitActionDuringTransactionException thrown if this action is
+	 * used during a DBTransaction or DBScript
+	 */
+	public void createTableNoExceptions(DBRow newTable) throws AutoCommitActionDuringTransactionException {
+		try {
+			createTable(newTable, false);
+		} catch (SQLException ex) {
+			;
+		}
+	}
+
+	/**
+	 * Creates tables on the database based on the DBRows.
+	 *
+	 * <p>
 	 * Implemented to facilitate testing, this method creates actual tables on the
 	 * database using the default data types supplied by the fields of the DBRows.
 	 *
@@ -1025,6 +1047,25 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 	public void createTablesNoExceptions(boolean includeForeignKeyClauses, DBRow... newTables) {
 		for (DBRow tab : newTables) {
 			createTableNoExceptions(includeForeignKeyClauses, tab);
+		}
+	}
+
+	/**
+	 * Creates tables on the database based on the DBRows.
+	 *
+	 * <p>
+	 * Foreign key constraints are NOT created.
+	 * <p>
+	 * Implemented to facilitate testing, this method creates actual tables on the
+	 * database using the default data types supplied by the fields of the DBRows.
+	 *
+	 * @param newTables the tables to create
+	 * @throws AutoCommitActionDuringTransactionException thrown if this action is
+	 * used during a DBTransaction or DBScript
+	 */
+	public void createTablesNoExceptions(DBRow... newTables) {
+		for (DBRow tab : newTables) {
+			createTableNoExceptions(false, tab);
 		}
 	}
 
