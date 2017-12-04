@@ -17,9 +17,7 @@ package nz.co.gregs.dbvolution.datatypes;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.DBReport;
@@ -202,7 +200,7 @@ public class DBBoolean extends QueryableDatatype<Boolean> implements BooleanResu
 	 * @param excluded	excluded
 	 */
 	public void excludedValues(Boolean excluded) {
-		this.setOperator(new DBPermittedValuesOperator<Boolean>(excluded));
+		this.setOperator(new DBPermittedValuesOperator<>(excluded));
 		negateOperator();
 	}
 
@@ -214,7 +212,7 @@ public class DBBoolean extends QueryableDatatype<Boolean> implements BooleanResu
 	 * @param permitted	permitted
 	 */
 	public void permittedValues(BooleanExpression permitted) {
-		this.setOperator(new DBPermittedValuesOperator<BooleanExpression>(permitted));
+		this.setOperator(new DBPermittedValuesOperator<>(permitted));
 	}
 
 	/**
@@ -225,7 +223,7 @@ public class DBBoolean extends QueryableDatatype<Boolean> implements BooleanResu
 	 * @param excluded	excluded
 	 */
 	public void excludedValues(BooleanExpression excluded) {
-		this.setOperator(new DBPermittedValuesOperator<BooleanExpression>(excluded));
+		this.setOperator(new DBPermittedValuesOperator<>(excluded));
 		negateOperator();
 	}
 

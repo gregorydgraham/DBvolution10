@@ -88,7 +88,6 @@ public class DBMigrationValidation<R extends DBRow> {
 
 		addDataCheckingColumnsToValidationQuery(dbQuery);
 
-		String sqlForQuery = dbQuery.getSQLForQuery();
 		
 		final List<DBQueryRow> allRows = dbQuery.getAllRows();
 		Results results = new Results(mapper, allRows);

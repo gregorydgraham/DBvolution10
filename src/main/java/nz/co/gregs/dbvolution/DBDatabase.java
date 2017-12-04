@@ -358,7 +358,6 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 							retries++;
 							try {
 								getConnectionSynchronizeObject.wait(SLEEP_BETWEEN_CONNECTION_RETRIES_MILLIS);
-//								Thread.sleep(SLEEP_BETWEEN_CONNECTION_RETRIES_MILLIS);
 							} catch (InterruptedException ex) {
 								Logger.getLogger(DBDatabase.class.getName()).log(Level.SEVERE, null, ex);
 							}
@@ -374,7 +373,6 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 					throw new UnableToCreateDatabaseConnectionException(dataSource, noConnection);
 				}
 			}
-//			connectionOpened(connection);
 		}
 		synchronized (this) {
 			if (needToAddDatabaseSpecificFeatures) {
@@ -713,7 +711,7 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 					LOG.warn("Exception Occurred: Attempting ROLLBACK - " + ex.getMessage(), ex);
 					db.transactionConnection.rollback();
 					LOG.warn("Exception Occurred: ROLLBACK Succeeded!");
-				} catch (Exception excp) {
+				} catch (SQLException excp) {
 					LOG.warn("Exception Occurred During Rollback: " + ex.getMessage(), excp);
 				}
 				throw ex;

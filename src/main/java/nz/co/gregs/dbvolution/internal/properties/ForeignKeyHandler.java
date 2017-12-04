@@ -11,11 +11,8 @@ import nz.co.gregs.dbvolution.exceptions.DBRuntimeException;
 import nz.co.gregs.dbvolution.exceptions.ReferenceToUndefinedPrimaryKeyException;
 import nz.co.gregs.dbvolution.exceptions.UnableToInterpolateReferencedColumnInMultiColumnPrimaryKeyException;
 import org.simmetrics.StringMetric;
-import static org.simmetrics.builders.StringMetricBuilder.with;
-import org.simmetrics.metrics.CosineSimilarity;
 import org.simmetrics.metrics.DamerauLevenshtein;
 import org.simmetrics.simplifiers.Simplifiers;
-import org.simmetrics.tokenizers.Tokenizers;
 import static org.simmetrics.builders.StringMetricBuilder.with;
 
 /**
@@ -111,14 +108,14 @@ class ForeignKeyHandler {
 							.simplify(Simplifiers.toLowerCase())
 						.build();
 					Map<Float, PropertyWrapperDefinition> pkComps = new HashMap<>();
-					Map<PropertyWrapperDefinition, Float> pkMetrics = new HashMap<>();
+//					Map<PropertyWrapperDefinition, Float> pkMetrics = new HashMap<>();
 					Float maxComp = 0.0F;
 					
 					for (PropertyWrapperDefinition primaryKey : primaryKeys) {
 						final String pkName = primaryKey.getColumnName();
 					    float result = metric.compare(columnName, pkName);
 						pkComps.put(result, primaryKey);
-						pkMetrics.put(primaryKey,result);
+//						pkMetrics.put(primaryKey,result);
 						maxComp = maxComp>result?maxComp:result;
 					}
 					if (maxComp <= 0.15F) {

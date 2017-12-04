@@ -168,11 +168,11 @@ public class TreeNode<T extends DBRow> {
 	}
 
 	private String getKey() {
-		String returnString = "";
+		StringBuilder returnString = new StringBuilder("");
 		final List<QueryableDatatype<?>> pks = this.getData().getPrimaryKeys();
 		for(QueryableDatatype<?> pk : pks) {
-			returnString+="&&"+pk.stringValue();
+			returnString.append("&&").append(pk.stringValue());
 		}
-		return returnString;
+		return returnString.toString();
 	}
 }

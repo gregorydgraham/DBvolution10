@@ -60,7 +60,7 @@ public abstract class DBExtractor extends DBScript {
 	 */
 
 	private int maxBoundIncrease = 10000000;
-	private final int minBoundIncrease = 1;
+	private static final int MIN_BOUND_INCREASE = 1;
 	private int boundIncrease = 10;
 
 	private int maxBound = 200 * 1000000;
@@ -193,7 +193,6 @@ public abstract class DBExtractor extends DBScript {
 		Date finishTime = new Date();
 		double timePerRecord = (0.0 + finishTime.getTime() - startTime.getTime()) / getBoundIncrease();
 		System.out.println("PROCESSED: " + (getLowerBound()) + "-" + (getUpperBound() - getBoundIncrease()) + " (+" + getBoundIncrease() + ") at " + timePerRecord + "ms/record.");
-		rows = null;
 
 		return actions;
 	}
@@ -213,7 +212,7 @@ public abstract class DBExtractor extends DBScript {
 					Date startTime = new Date();
 					if (this.countOnly) {
 						rowCount = dbQuery.count();
-						rows = new ArrayList<DBQueryRow>();
+						rows = new ArrayList<>();
 					} else {
 						rows = dbQuery.getAllRows();
 						rowCount = 0L + rows.size();
@@ -309,10 +308,10 @@ public abstract class DBExtractor extends DBScript {
 	}
 
 	/**
-	 * @return the minBoundIncrease
+	 * @return the MIN_BOUND_INCREASE
 	 */
 	private int getMinBoundIncrease() {
-		return minBoundIncrease;
+		return MIN_BOUND_INCREASE;
 	}
 
 	/**

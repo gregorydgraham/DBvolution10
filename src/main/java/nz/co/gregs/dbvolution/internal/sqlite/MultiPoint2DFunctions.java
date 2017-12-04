@@ -125,16 +125,16 @@ public class MultiPoint2DFunctions {
 			if (numberOfArguments == 0) {
 				result();
 			} else {
-				String resultStr = "MULTIPOINT (";
+				StringBuilder resultStr = new StringBuilder("MULTIPOINT (");
 				String sep = "";
 				for (int i = 0; i < numberOfArguments; i += 2) {
 					Double x = value_double(i);
 					Double y = value_double(i + 1);
-					resultStr += sep + x + " " + y;
+					resultStr.append(sep).append(x).append(" ").append(y);
 					sep = ", ";
 				}
-				resultStr += ")";
-				result(resultStr);
+				resultStr.append( ")");
+				result(resultStr.toString());
 			}
 		}
 	}

@@ -474,7 +474,7 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 	 * @see #allOf(BooleanExpression...)
 	 */
 	public static BooleanExpression notAllOf(final BooleanExpression... booleanExpressions) {
-		List<BooleanExpression> notBools = new ArrayList<BooleanExpression>();
+		List<BooleanExpression> notBools = new ArrayList<>();
 		for (BooleanExpression booleanExpression : booleanExpressions) {
 			notBools.add(booleanExpression.not());
 		}
@@ -1553,7 +1553,7 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 
 		@Override
 		public Set<DBRow> getTablesInvolved() {
-			HashSet<DBRow> hashSet = new HashSet<DBRow>();
+			HashSet<DBRow> hashSet = new HashSet<>();
 			for (BooleanResult boo : bools) {
 				hashSet.addAll(boo.getTablesInvolved());
 			}
@@ -1770,7 +1770,7 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 
 		@Override
 		public Set<DBRow> getTablesInvolved() {
-			HashSet<DBRow> hashSet = new HashSet<DBRow>();
+			HashSet<DBRow> hashSet = new HashSet<>();
 			if (getFirst() != null) {
 				hashSet.addAll(getFirst().getTablesInvolved());
 			}
@@ -1812,12 +1812,13 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 		public boolean isPurelyFunctional() {
 			if (first == null && second == null) {
 				return true;
-			} else if (first == null) {
-				return second.isPurelyFunctional();
-			} else if (second == null) {
-				return second.isPurelyFunctional();
+//			} else if (first == null && second != null) {
+//				return second.isPurelyFunctional();
+//			} else if (first != null && second == null) {
+//				return first.isPurelyFunctional();
 			} else {
-				return first.isPurelyFunctional() && second.isPurelyFunctional();
+				return (first==null?true:first.isPurelyFunctional()) 
+						&& (second==null?true:second.isPurelyFunctional());
 			}
 		}
 	}

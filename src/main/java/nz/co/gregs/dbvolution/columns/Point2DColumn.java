@@ -15,6 +15,7 @@
  */
 package nz.co.gregs.dbvolution.columns;
 
+import java.util.Objects;
 import java.util.Set;
 import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.DBRow;
@@ -32,8 +33,8 @@ public class Point2DColumn extends Point2DExpression implements ColumnProvider {
 	private final AbstractColumn column;
 
 	/**
-	 * Creates a portable reference to the column represented by the field of the
-	 * row.
+	 * Creates a portable reference to the column represented by the field of
+	 * the row.
 	 *
 	 * @param row the table defining object the contains the field
 	 * @param field the field that defines the column.
@@ -71,4 +72,21 @@ public class Point2DColumn extends Point2DExpression implements ColumnProvider {
 	public boolean isAggregator() {
 		return column.isAggregator();
 	}
+
+	@Override
+	public boolean equals(Object other) {
+		if (other instanceof Line2DColumn) {
+			return column.equals(other); //To change body of generated methods, choose Tools | Templates.
+		} else {
+			return false;
+		}
+	}
+
+	@Override
+	public int hashCode() {
+		int hash = 5;
+		hash = 41 * hash + Objects.hashCode(this.column);
+		return hash;
+	}
+
 }

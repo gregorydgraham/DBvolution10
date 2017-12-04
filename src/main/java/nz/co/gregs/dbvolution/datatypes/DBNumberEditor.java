@@ -39,13 +39,15 @@ public class DBNumberEditor extends PropertyEditorSupport {
 	 */
 	@Override
 	public void setAsText(String text) {
-		DBNumber type;
-		if (text == null || text.isEmpty()) {
-			type = new DBNumber();
-		} else {
-			type = new DBNumber();
-			type.setValue(Double.parseDouble(text));
+		DBNumber num = new DBNumber();
+		num.setToNull();
+		if (text != null && !text.isEmpty()) {
+			if (format == null || format.isEmpty()) {
+				num.setValue(Double.parseDouble(text));
+			} else {
+				num.setValue(Double.parseDouble(String.format(format, text)));
+			}
 		}
-		setValue(type);
+		setValue(num);
 	}
 }

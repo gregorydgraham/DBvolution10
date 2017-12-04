@@ -138,7 +138,7 @@ public class LineSegment2DFunctions {
 			if (numberOfArguments != 2) {
 				result();
 			} else {
-				String resultStr = "LINESTRING (";
+				StringBuilder resultStr = new StringBuilder( "LINESTRING (");
 				String sep = "";
 				for (int i = 0; i < numberOfArguments; i += 2) {
 					Double x = value_double(i);
@@ -147,12 +147,12 @@ public class LineSegment2DFunctions {
 						result();
 						return;
 					} else {
-						resultStr += sep + x + " " + y;
+						resultStr.append(sep).append(x).append(" ").append(y);
 						sep = ", ";
 					}
 				}
-				resultStr += ")";
-				result(resultStr);
+				resultStr.append( ")");
+				result(resultStr.toString());
 			}
 		}
 	}
