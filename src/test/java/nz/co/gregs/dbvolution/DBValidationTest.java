@@ -93,7 +93,7 @@ public class DBValidationTest extends AbstractTest {
 		public DBString villain = new DBString();
 	}
 
-	public static class MigrateJamesAndAllVilliansToFight extends Fight {
+	public static class MigrateJamesAndAllVillainsToFight extends Fight {
 
 		private static final long serialVersionUID = 1L;
 
@@ -109,7 +109,7 @@ public class DBValidationTest extends AbstractTest {
 
 	@Test
 	public void testvalidating2TablesWithDBMigation() throws SQLException, UnexpectedNumberOfRowsException {
-		DBQueryInsert<MigrateJamesAndAllVilliansToFight> migration = database.getDBQueryInsert(new MigrateJamesAndAllVilliansToFight());
+		DBQueryInsert<MigrateJamesAndAllVillainsToFight> migration = database.getDBQueryInsert(new MigrateJamesAndAllVillainsToFight());
 		migration.setBlankQueryAllowed(Boolean.TRUE);
 		migration.setCartesianJoinAllowed(Boolean.TRUE);
 
