@@ -1,13 +1,15 @@
 
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
- 
+    <organization>
+        <name>Gregs</name>
+        <url>https://dbvolution.gregs.co.nz/</url>
+    </organization>
     <groupId>nz.co.gregs</groupId>
     <artifactId>dbvolution7</artifactId>
     <version>0.9.6-SNAPSHOT</version>
     <packaging>jar</packaging>
-    
-    <name>DBvolution 7</name>
+    <name>DBvolution7</name>
     <description>
         Advanced Library to Remove Object Relational Impedance. 
         DBvolution translates all database concepts into Object Oriented concepts, allowing you to spend all your time writing Java rather than fixing broken and awkward SQL.
@@ -20,9 +22,19 @@
     <url>http://dbvolution.gregs.co.nz</url>
     <licenses>
         <license>
-            <name>Non-commercial License</name>
-            <url>http://creativecommons.org/licenses/by-nc-sa/4.0/</url>
+            <name>Commercial License</name>
             <distribution>repo</distribution>
+            <comments>Contact DBvolution for the license that works for you
+            </comments>
+        </license>
+        <license>
+            <name>Non-Commercial License</name>
+            <!--url>https://creativecommons.org/licenses/by-nc-sa/4.0/</url-->
+            <url>https://gregs.co.nz/noncommercial_license.txt</url>
+            <distribution>repo</distribution>
+            <comments>
+                DBvolution is licenced using the reative Commons Attribution-NonCommercial-ShareAlike 4.0 International License for non-commercial uses
+            </comments>
         </license>
     </licenses>
     <scm>
@@ -45,6 +57,29 @@
             <organizationUrl>http://www.gregs.co.nz</organizationUrl>
         </developer>
     </developers>
+    <contributors>
+        <contributor>
+            <name>Gregory Graham</name>
+            <email>gregory@gregs.co.nz</email>
+            <organization>Greg's</organization>
+            <roles>
+                <role>architect</role>
+                <role>developer</role>
+                <role>software engineer</role>
+            </roles>
+            <timezone>+12</timezone>
+            <organizationUrl>http://www.gregs.co.nz</organizationUrl>            
+        </contributor>
+        <contributor>
+            <name>Malcolm Lett</name>
+            <roles>
+                <role>architect</role>
+                <role>developer</role>
+                <role>software engineer</role>
+            </roles>
+            <timezone>+12</timezone>
+        </contributor>
+    </contributors>
     
     <parent>
         <groupId>org.sonatype.oss</groupId>
