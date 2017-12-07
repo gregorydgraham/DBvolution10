@@ -39,6 +39,9 @@ import static org.junit.Assert.*;
 
 /**
  *
+ * <p style="color: #F90;">Support DBvolution at
+ * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+ *
  * @author gregorygraham
  */
 public class Line2DExpressionTest extends AbstractTest {
@@ -192,7 +195,7 @@ public class Line2DExpressionTest extends AbstractTest {
 		DBQuery dbQuery = database.getDBQuery(lineTestTable);
 		dbQuery.addCondition(Line2DExpression.value(line).is(lineTestTable.column(lineTestTable.line)));
 		List<LineTestTable> allRows = dbQuery.getAllInstancesOf(lineTestTable);
-		
+
 		Assert.assertThat(allRows.size(), is(1));
 		Assert.assertThat(allRows.get(0).line_id.intValue(), is(1));
 	}
@@ -204,7 +207,7 @@ public class Line2DExpressionTest extends AbstractTest {
 		dbQuery.setSortOrder(lineTestTable.column(lineTestTable.line_id));
 		dbQuery.addCondition(lineTestTable.column(lineTestTable.line).maxX().is(4));
 		List<LineTestTable> allRows = dbQuery.getAllInstancesOf(lineTestTable);
-		
+
 		Assert.assertThat(allRows.size(), is(2));
 		Assert.assertThat(allRows.get(0).line_id.intValue(), is(2));
 		Assert.assertThat(allRows.get(1).line_id.intValue(), is(3));
@@ -216,7 +219,7 @@ public class Line2DExpressionTest extends AbstractTest {
 		DBQuery dbQuery = database.getDBQuery(lineTestTable);
 		dbQuery.addCondition(lineTestTable.column(lineTestTable.line).minX().is(3));
 		List<LineTestTable> allRows = dbQuery.getAllInstancesOf(lineTestTable);
-		
+
 		Assert.assertThat(allRows.size(), is(1));
 		Assert.assertThat(allRows.get(0).line_id.intValue(), is(3));
 	}
@@ -227,7 +230,7 @@ public class Line2DExpressionTest extends AbstractTest {
 		DBQuery dbQuery = database.getDBQuery(lineTestTable);
 		dbQuery.addCondition(lineTestTable.column(lineTestTable.line).maxY().is(4));
 		List<LineTestTable> allRows = dbQuery.getAllInstancesOf(lineTestTable);
-		
+
 		Assert.assertThat(allRows.size(), is(1));
 		Assert.assertThat(allRows.get(0).line_id.intValue(), is(1));
 	}
@@ -238,7 +241,7 @@ public class Line2DExpressionTest extends AbstractTest {
 		DBQuery dbQuery = database.getDBQuery(lineTestTable);
 		dbQuery.addCondition(lineTestTable.column(lineTestTable.line).minY().is(3));
 		List<LineTestTable> allRows = dbQuery.getAllInstancesOf(lineTestTable);
-		
+
 		Assert.assertThat(allRows.size(), is(2));
 		Assert.assertThat(allRows.get(0).line_id.intValue(), is(1));
 		Assert.assertThat(allRows.get(1).line_id.intValue(), is(2));
@@ -291,7 +294,7 @@ public class Line2DExpressionTest extends AbstractTest {
 		Coordinate coordinate1 = new Coordinate(1, 2);
 		Coordinate coordinate2 = new Coordinate(1, 3);
 		final Line2DExpression nonCrossingLine = Line2DExpression.value(coordinate1, coordinate2);
-		
+
 		Coordinate coordinateA = new Coordinate(3, 3);
 		Coordinate coordinateB = new Coordinate(2, 4);
 		final Line2DExpression crossingLine = Line2DExpression.value(coordinateA, coordinateB);
@@ -312,7 +315,7 @@ public class Line2DExpressionTest extends AbstractTest {
 		Coordinate coordinate1 = new Coordinate(1, 2);
 		Coordinate coordinate2 = new Coordinate(1, 3);
 		final Coordinate[] nonCrossingLine = new Coordinate[]{coordinate1, coordinate2};
-		
+
 		Coordinate coordinateA = new Coordinate(3, 3);
 		Coordinate coordinateB = new Coordinate(2, 4);
 		final Coordinate[] crossingLine = new Coordinate[]{coordinateA, coordinateB};
@@ -333,7 +336,7 @@ public class Line2DExpressionTest extends AbstractTest {
 		Coordinate coordinate1 = new Coordinate(1, 2);
 		Coordinate coordinate2 = new Coordinate(1, 3);
 		final LineString nonCrossingLine = geometryFactory.createLineString(new Coordinate[]{coordinate1, coordinate2});
-		
+
 		Coordinate coordinateA = new Coordinate(3, 3);
 		Coordinate coordinateB = new Coordinate(2, 4);
 		final LineString crossingLine = geometryFactory.createLineString(new Coordinate[]{coordinateA, coordinateB});
@@ -354,7 +357,7 @@ public class Line2DExpressionTest extends AbstractTest {
 		Point coordinate1 = geometryFactory.createPoint(new Coordinate(1, 2));
 		Point coordinate2 = geometryFactory.createPoint(new Coordinate(1, 3));
 		final Point[] nonCrossingLine = new Point[]{coordinate1, coordinate2};
-		
+
 		Point coordinateA = geometryFactory.createPoint(new Coordinate(3, 3));
 		Point coordinateB = geometryFactory.createPoint(new Coordinate(2, 4));
 		final Point[] crossingLine = new Point[]{coordinateA, coordinateB};
@@ -376,19 +379,19 @@ public class Line2DExpressionTest extends AbstractTest {
 		Coordinate coordinate2 = new Coordinate(1, 3);
 		Coordinate coordinate3 = new Coordinate(5, 3);
 		final Line2DExpression nonCrossingLine = Line2DExpression.value(coordinate1, coordinate2, coordinate3);
-		
+
 		Coordinate coordinateA = new Coordinate(3, 3);
 		Coordinate coordinateB = new Coordinate(2, 4);
 		Coordinate coordinateC = new Coordinate(1, 4);
 		final Line2DExpression crossingLine = Line2DExpression.value(coordinateA, coordinateB, coordinateC);
 		dbQuery.setBlankQueryAllowed(true);
-		
+
 		dbQuery.addCondition(lineTestTable.column(lineTestTable.line).intersectionWith(crossingLine).is(Point2DExpression.value(2.5D, 3.5D)));
 		List<LineTestTable> allRows = dbQuery.getAllInstancesOf(lineTestTable);
-		
+
 		Assert.assertThat(allRows.size(), is(2));
 		dbQuery = database.getDBQuery(lineTestTable);
-		dbQuery.addCondition(lineTestTable.column(lineTestTable.line).intersectionWith(nonCrossingLine).is((Point)null));
+		dbQuery.addCondition(lineTestTable.column(lineTestTable.line).intersectionWith(nonCrossingLine).is((Point) null));
 		allRows = dbQuery.getAllInstancesOf(lineTestTable);
 		Assert.assertThat(allRows.size(), is(0));
 	}
@@ -401,7 +404,7 @@ public class Line2DExpressionTest extends AbstractTest {
 		Coordinate coordinate2 = new Coordinate(1, 3);
 		Coordinate coordinate3 = new Coordinate(5, 3);
 		final Coordinate[] nonCrossingLine = new Coordinate[]{coordinate1, coordinate2, coordinate3};
-		
+
 		Coordinate coordinateA = new Coordinate(3, 3);
 		Coordinate coordinateB = new Coordinate(2, 4);
 		Coordinate coordinateC = new Coordinate(1, 4);
@@ -413,7 +416,7 @@ public class Line2DExpressionTest extends AbstractTest {
 
 		Assert.assertThat(allRows.size(), is(2));
 		dbQuery = database.getDBQuery(lineTestTable);
-		dbQuery.addCondition(lineTestTable.column(lineTestTable.line).intersectionWith(nonCrossingLine).is((Point)null));
+		dbQuery.addCondition(lineTestTable.column(lineTestTable.line).intersectionWith(nonCrossingLine).is((Point) null));
 		allRows = dbQuery.getAllInstancesOf(lineTestTable);
 		Assert.assertThat(allRows.size(), is(0));
 	}
@@ -426,7 +429,7 @@ public class Line2DExpressionTest extends AbstractTest {
 		Coordinate coordinate2 = new Coordinate(1, 3);
 		Coordinate coordinate3 = new Coordinate(5, 3);
 		final Coordinate[] nonCrossingLine = new Coordinate[]{coordinate1, coordinate2, coordinate3};
-		
+
 		Coordinate coordinateA = new Coordinate(3, 3);
 		Coordinate coordinateB = new Coordinate(2, 4);
 		Coordinate coordinateC = new Coordinate(1, 4);
@@ -440,7 +443,7 @@ public class Line2DExpressionTest extends AbstractTest {
 
 		Assert.assertThat(allRows.size(), is(2));
 		dbQuery = database.getDBQuery(lineTestTable);
-		dbQuery.addCondition(lineTestTable.column(lineTestTable.line).intersectionWith(nonCrossingLine).is((Point)null));
+		dbQuery.addCondition(lineTestTable.column(lineTestTable.line).intersectionWith(nonCrossingLine).is((Point) null));
 		allRows = dbQuery.getAllInstancesOf(lineTestTable);
 		Assert.assertThat(allRows.size(), is(0));
 	}
@@ -453,7 +456,7 @@ public class Line2DExpressionTest extends AbstractTest {
 		Coordinate coordinate2 = new Coordinate(1, 3);
 		Coordinate coordinate3 = new Coordinate(5, 3);
 		final MultiPoint2DExpression nonCrossingLine = MultiPoint2DExpression.value(coordinate1, coordinate2, coordinate3);
-		
+
 		Coordinate coordinateA = new Coordinate(3, 3);
 		Coordinate coordinateB = new Coordinate(2, 4);
 		Coordinate coordinateC = new Coordinate(1, 4);
@@ -465,7 +468,7 @@ public class Line2DExpressionTest extends AbstractTest {
 
 		Assert.assertThat(allRows.size(), is(2));
 		dbQuery = database.getDBQuery(lineTestTable);
-		dbQuery.addCondition(lineTestTable.column(lineTestTable.line).intersectionWith(nonCrossingLine).is((Point)null));
+		dbQuery.addCondition(lineTestTable.column(lineTestTable.line).intersectionWith(nonCrossingLine).is((Point) null));
 		allRows = dbQuery.getAllInstancesOf(lineTestTable);
 		Assert.assertThat(allRows.size(), is(0));
 	}
@@ -478,7 +481,7 @@ public class Line2DExpressionTest extends AbstractTest {
 		Point coordinate2 = geometryFactory.createPoint(new Coordinate(1, 3));
 		Point coordinate3 = geometryFactory.createPoint(new Coordinate(5, 3));
 		final Point[] nonCrossingLine = new Point[]{coordinate1, coordinate2, coordinate3};
-		
+
 		Point coordinateA = geometryFactory.createPoint(new Coordinate(3, 3));
 		Point coordinateB = geometryFactory.createPoint(new Coordinate(2, 4));
 		Point coordinateC = geometryFactory.createPoint(new Coordinate(1, 4));
@@ -490,7 +493,7 @@ public class Line2DExpressionTest extends AbstractTest {
 
 		Assert.assertThat(allRows.size(), is(2));
 		dbQuery = database.getDBQuery(lineTestTable);
-		dbQuery.addCondition(lineTestTable.column(lineTestTable.line).intersectionWith(nonCrossingLine).is((Point)null));
+		dbQuery.addCondition(lineTestTable.column(lineTestTable.line).intersectionWith(nonCrossingLine).is((Point) null));
 		allRows = dbQuery.getAllInstancesOf(lineTestTable);
 		Assert.assertThat(allRows.size(), is(0));
 	}
@@ -503,7 +506,7 @@ public class Line2DExpressionTest extends AbstractTest {
 		Coordinate coordinate2 = new Coordinate(1, 3);
 		Coordinate coordinate3 = new Coordinate(5, 3);
 		final Line2DExpression nonCrossingLine = Line2DExpression.value(coordinate1, coordinate2, coordinate3);
-		
+
 		Coordinate coordinateA = new Coordinate(3, 3);
 		Coordinate coordinateB = new Coordinate(2, 4);
 		Coordinate coordinateC = new Coordinate(1, 4);
@@ -515,7 +518,7 @@ public class Line2DExpressionTest extends AbstractTest {
 
 		Assert.assertThat(allRows.size(), is(2));
 		dbQuery = database.getDBQuery(lineTestTable);
-		dbQuery.addCondition(lineTestTable.column(lineTestTable.line).intersectionPoints(nonCrossingLine).is((MultiPoint)null));
+		dbQuery.addCondition(lineTestTable.column(lineTestTable.line).intersectionPoints(nonCrossingLine).is((MultiPoint) null));
 		allRows = dbQuery.getAllInstancesOf(lineTestTable);
 		Assert.assertThat(allRows.size(), is(0));
 	}
@@ -529,7 +532,7 @@ public class Line2DExpressionTest extends AbstractTest {
 
 		@DBColumn
 		public DBPolygon2D boundingBox = new DBPolygon2D(this.column(this.line).boundingBox());
-		
+
 	}
 
 	@Test
@@ -538,7 +541,7 @@ public class Line2DExpressionTest extends AbstractTest {
 		DBQuery dbQuery = database.getDBQuery(pointTestTable).setBlankQueryAllowed(true);
 		dbQuery.addCondition(pointTestTable.column(pointTestTable.line).maxY().is(4));
 		List<BoundingBoxTest> allRows = dbQuery.getAllInstancesOf(pointTestTable);
-		
+
 		Assert.assertThat(allRows.size(), is(1));
 		Assert.assertThat(allRows.get(0).line_id.intValue(), is(1));
 		final String boundingText = allRows.get(0).boundingBox.jtsPolygonValue().toText();

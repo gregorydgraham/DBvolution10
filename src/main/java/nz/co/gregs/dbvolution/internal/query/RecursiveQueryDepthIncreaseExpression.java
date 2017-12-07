@@ -27,6 +27,9 @@ import nz.co.gregs.dbvolution.expressions.NumberExpression;
 /**
  * Creates a depth expression for the {@link DBRecursiveQuery} query.
  *
+ * <p style="color: #F90;">Support DBvolution at
+ * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+ *
  * @author Gregory Graham
  */
 public class RecursiveQueryDepthIncreaseExpression extends NumberExpression {

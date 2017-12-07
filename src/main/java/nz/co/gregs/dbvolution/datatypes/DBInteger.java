@@ -45,6 +45,9 @@ import nz.co.gregs.dbvolution.operators.DBPermittedValuesOperator;
  * Generally DBInteger is declared inside your DBRow sub-class as:
  * {@code @DBColumn public DBInteger myIntColumn = new DBInteger();}
  *
+ * <p style="color: #F90;">Support DBvolution at
+ * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+ *
  * @author Gregory Graham
  */
 public class DBInteger extends QueryableDatatype<Long> implements NumberResult {
@@ -137,8 +140,10 @@ public class DBInteger extends QueryableDatatype<Long> implements NumberResult {
 //		setDefined(true);
 //	}
 	/**
-	 * Returns a Long of the database value or NULL if the database value is
-	 * null
+	 * Returns a Long of the database value or NULL if the database value is null
+	 *
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 *
 	 * @return the long value or null
 	 */
@@ -151,6 +156,9 @@ public class DBInteger extends QueryableDatatype<Long> implements NumberResult {
 	 * Returns an Integer of the database value or NULL if the database value is
 	 * null
 	 *
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
 	 * @return the integer value or null
 	 */
 	public Integer intValue() {
@@ -159,8 +167,10 @@ public class DBInteger extends QueryableDatatype<Long> implements NumberResult {
 	}
 
 	/**
-	 * Returns a Long of the database value or NULL if the database value is
-	 * null
+	 * Returns a Long of the database value or NULL if the database value is null
+	 *
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 *
 	 * @return the long value or null
 	 */
@@ -170,8 +180,7 @@ public class DBInteger extends QueryableDatatype<Long> implements NumberResult {
 
 	/**
 	 *
-	 * reduces the rows to only the object, Set, List, Array, or vararg of
-	 * objects
+	 * reduces the rows to only the object, Set, List, Array, or vararg of objects
 	 *
 	 * @param permitted	permitted
 	 */
@@ -181,8 +190,7 @@ public class DBInteger extends QueryableDatatype<Long> implements NumberResult {
 
 	/**
 	 *
-	 * reduces the rows to only the object, Set, List, Array, or vararg of
-	 * objects
+	 * reduces the rows to only the object, Set, List, Array, or vararg of objects
 	 *
 	 * @param permitted	permitted
 	 */
@@ -192,8 +200,7 @@ public class DBInteger extends QueryableDatatype<Long> implements NumberResult {
 
 	/**
 	 *
-	 * reduces the rows to only the object, Set, List, Array, or vararg of
-	 * objects
+	 * reduces the rows to only the object, Set, List, Array, or vararg of objects
 	 *
 	 * @param permitted	permitted
 	 */
@@ -208,8 +215,7 @@ public class DBInteger extends QueryableDatatype<Long> implements NumberResult {
 
 	/**
 	 *
-	 * reduces the rows to only the object, Set, List, Array, or vararg of
-	 * objects
+	 * reduces the rows to only the object, Set, List, Array, or vararg of objects
 	 *
 	 * @param permitted	permitted
 	 */
@@ -224,8 +230,7 @@ public class DBInteger extends QueryableDatatype<Long> implements NumberResult {
 
 	/**
 	 *
-	 * reduces the rows to only the object, Set, List, Array, or vararg of
-	 * objects
+	 * reduces the rows to only the object, Set, List, Array, or vararg of objects
 	 *
 	 * @param permitted	permitted
 	 */
@@ -240,8 +245,7 @@ public class DBInteger extends QueryableDatatype<Long> implements NumberResult {
 
 	/**
 	 *
-	 * reduces the rows to only the object, Set, List, Array, or vararg of
-	 * objects
+	 * reduces the rows to only the object, Set, List, Array, or vararg of objects
 	 *
 	 * @param permitted	permitted
 	 */
@@ -251,8 +255,7 @@ public class DBInteger extends QueryableDatatype<Long> implements NumberResult {
 
 	/**
 	 *
-	 * reduces the rows to only the object, Set, List, Array, or vararg of
-	 * objects
+	 * reduces the rows to only the object, Set, List, Array, or vararg of objects
 	 *
 	 * @param permitted	permitted
 	 */
@@ -262,8 +265,7 @@ public class DBInteger extends QueryableDatatype<Long> implements NumberResult {
 
 	/**
 	 *
-	 * reduces the rows to only the object, Set, List, Array, or vararg of
-	 * objects
+	 * reduces the rows to only the object, Set, List, Array, or vararg of objects
 	 *
 	 * @param permitted	permitted
 	 */
@@ -334,8 +336,8 @@ public class DBInteger extends QueryableDatatype<Long> implements NumberResult {
 	/**
 	 * Performs searches based on a range.
 	 *
-	 * if both ends of the range are specified the lower-bound will be included
-	 * in the search and the upper-bound excluded. I.e permittedRange(1,3) will
+	 * if both ends of the range are specified the lower-bound will be included in
+	 * the search and the upper-bound excluded. I.e permittedRange(1,3) will
 	 * return 1 and 2.
 	 *
 	 * <p>
@@ -358,8 +360,8 @@ public class DBInteger extends QueryableDatatype<Long> implements NumberResult {
 	/**
 	 * Performs searches based on a range.
 	 *
-	 * if both ends of the range are specified the lower-bound will be included
-	 * in the search and the upper-bound excluded. I.e permittedRange(1,3) will
+	 * if both ends of the range are specified the lower-bound will be included in
+	 * the search and the upper-bound excluded. I.e permittedRange(1,3) will
 	 * return 1 and 2.
 	 *
 	 * <p>
@@ -478,9 +480,9 @@ public class DBInteger extends QueryableDatatype<Long> implements NumberResult {
 	/**
 	 * Performs searches based on a range.
 	 *
-	 * if both ends of the range are specified the lower-bound will be included
-	 * in the search and the upper-bound excluded. I.e excludedRange(1,3) will
-	 * return -1, 0, 3, 4...
+	 * if both ends of the range are specified the lower-bound will be included in
+	 * the search and the upper-bound excluded. I.e excludedRange(1,3) will return
+	 * -1, 0, 3, 4...
 	 *
 	 * <p>
 	 * if the upper-bound is null the range will be open ended and inclusive.
@@ -503,9 +505,9 @@ public class DBInteger extends QueryableDatatype<Long> implements NumberResult {
 	/**
 	 * Performs searches based on a range.
 	 *
-	 * if both ends of the range are specified the lower-bound will be included
-	 * in the search and the upper-bound excluded. I.e excludedRange(1,3) will
-	 * return -1, 0, 3, 4...
+	 * if both ends of the range are specified the lower-bound will be included in
+	 * the search and the upper-bound excluded. I.e excludedRange(1,3) will return
+	 * -1, 0, 3, 4...
 	 *
 	 * <p>
 	 * if the upper-bound is null the range will be open ended and inclusive.
@@ -529,8 +531,8 @@ public class DBInteger extends QueryableDatatype<Long> implements NumberResult {
 	 * Performs searches based on a range.
 	 *
 	 * if both ends of the range are specified both the lower- and upper-bound
-	 * will be included in the search. I.e excludedRangeInclusive(1,3) will
-	 * return ..., -1, 0, 4, 5, 6, etc.
+	 * will be included in the search. I.e excludedRangeInclusive(1,3) will return
+	 * ..., -1, 0, 4, 5, 6, etc.
 	 *
 	 * <p>
 	 * if the upper-bound is null the range will be open ended and inclusive.
@@ -554,8 +556,8 @@ public class DBInteger extends QueryableDatatype<Long> implements NumberResult {
 	 * Performs searches based on a range.
 	 *
 	 * if both ends of the range are specified both the lower- and upper-bound
-	 * will be included in the search. I.e excludedRangeInclusive(1,3) will
-	 * return ..., -1, 0, 4, 5, 6, etc.
+	 * will be included in the search. I.e excludedRangeInclusive(1,3) will return
+	 * ..., -1, 0, 4, 5, 6, etc.
 	 *
 	 * <p>
 	 * if the upper-bound is null the range will be open ended and inclusive.
@@ -579,8 +581,8 @@ public class DBInteger extends QueryableDatatype<Long> implements NumberResult {
 	 * Performs searches based on a range.
 	 *
 	 * if both ends of the range are specified both the lower- and upper-bound
-	 * will be excluded in the search. I.e excludedRangeExclusive(1,3) will
-	 * return ..., -2-1,0,1,3,4, etc but not 2.
+	 * will be excluded in the search. I.e excludedRangeExclusive(1,3) will return
+	 * ..., -2-1,0,1,3,4, etc but not 2.
 	 *
 	 * <p>
 	 * if the upper-bound is null the range will be open ended and exclusive.
@@ -604,8 +606,8 @@ public class DBInteger extends QueryableDatatype<Long> implements NumberResult {
 	 * Performs searches based on a range.
 	 *
 	 * if both ends of the range are specified both the lower- and upper-bound
-	 * will be excluded in the search. I.e excludedRangeExclusive(1,3) will
-	 * return ..., -2-1,0,1,3,4, etc but not 2.
+	 * will be excluded in the search. I.e excludedRangeExclusive(1,3) will return
+	 * ..., -2-1,0,1,3,4, etc but not 2.
 	 *
 	 * <p>
 	 * if the upper-bound is null the range will be open ended and exclusive.
@@ -686,6 +688,8 @@ public class DBInteger extends QueryableDatatype<Long> implements NumberResult {
 	/**
 	 *
 	 * @param db	db
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return the underlying number formatted for a SQL statement
 	 */
 	@Override

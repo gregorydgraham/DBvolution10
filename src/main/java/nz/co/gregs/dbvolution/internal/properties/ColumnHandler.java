@@ -14,6 +14,9 @@ import nz.co.gregs.dbvolution.annotations.DBPrimaryKey;
  * <p>
  * This class behaves correctly when no {@link DBColumn} annotation is present.
  *
+ * <p style="color: #F90;">Support DBvolution at
+ * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+ *
  * @author Malcolm Lett
  */
 class ColumnHandler {
@@ -41,6 +44,9 @@ class ColumnHandler {
 	/**
 	 * Indicates whether this property maps to a database column.
 	 *
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
 	 * @return {@code true} if a column
 	 */
 	public boolean isColumn() {
@@ -49,6 +55,9 @@ class ColumnHandler {
 
 	/**
 	 * Indicates whether this property is a primary key column.
+	 *
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 *
 	 * @return {@code true} if a column and marked as primary key
 	 */
@@ -67,6 +76,9 @@ class ColumnHandler {
 	 * If the {@link DBColumn} annotation is missing, this method returns
 	 * {@code null}.
 	 *
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
 	 * @return the column name, if {@code DBColumn} annotation is present, or
 	 * {@code null}.
 	 */
@@ -76,6 +88,9 @@ class ColumnHandler {
 
 	/**
 	 * Gets the {@link DBColumn} annotation on the class, if it exists.
+	 *
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 *
 	 * @return the annotation or null if it is not present
 	 */

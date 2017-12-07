@@ -27,6 +27,9 @@ import org.junit.Test;
 
 /**
  *
+ * <p style="color: #F90;">Support DBvolution at
+ * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+ *
  * @author Gregory Graham
  */
 public class DBUpdateTest extends AbstractTest {
@@ -55,7 +58,7 @@ public class DBUpdateTest extends AbstractTest {
 		database.getDBTable(example).insert(example);
 		List<LinkCarCompanyAndLogo> foundLinks = database.get(example);
 		Assert.assertThat(foundLinks.size(), is(1));
-		
+
 		final LinkCarCompanyAndLogo got = foundLinks.get(0);
 		got.fkCarCompany.setValue(2);
 		DBActionList updateActions = database.update(got);

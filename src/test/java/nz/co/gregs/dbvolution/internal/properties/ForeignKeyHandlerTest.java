@@ -398,7 +398,7 @@ public class ForeignKeyHandlerTest {
 		}
 		return property;
 	}
-	
+
 	@Test()
 	public void guessesForeignKeyReferenceOfMultiplePrimaryKeyTable() {
 		class TestAddress extends DBRow {
@@ -427,7 +427,7 @@ public class ForeignKeyHandlerTest {
 			@DBForeignKey(TestAddress.class)
 			@DBColumn
 			public DBInteger fkAddress2;
-			
+
 			@DBForeignKey(TestAddress.class)
 			@DBColumn
 			public DBInteger fromBlId;
@@ -435,7 +435,7 @@ public class ForeignKeyHandlerTest {
 
 		foreignKeyHandlerOf(TestCustomer.class, "fromBlId");
 	}
-	
+
 	@Test(expected = UnableToInterpolateReferencedColumnInMultiColumnPrimaryKeyException.class)
 	public void failsToGuessForeignKeyReferenceOfMultiplePrimaryKeyTable() {
 		class TestAddress extends DBRow {
@@ -464,7 +464,7 @@ public class ForeignKeyHandlerTest {
 			@DBForeignKey(TestAddress.class)
 			@DBColumn
 			public DBInteger fkAddress2;
-			
+
 			@DBForeignKey(TestAddress.class)
 			@DBColumn
 			public DBInteger from;
@@ -472,7 +472,7 @@ public class ForeignKeyHandlerTest {
 
 		foreignKeyHandlerOf(TestCustomer.class, "from");
 	}
-	
+
 	public void SuccessfullyGuessForeignKeyReferenceOfMultiplePrimaryKeyTable() {
 		class TestAddress extends DBRow {
 

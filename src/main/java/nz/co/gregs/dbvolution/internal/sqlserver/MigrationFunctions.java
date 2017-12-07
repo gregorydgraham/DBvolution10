@@ -20,6 +20,9 @@ import java.sql.Statement;
 
 /**
  *
+ * <p style="color: #F90;">Support DBvolution at
+ * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+ *
  * @author gregorygraham
  */
 public enum MigrationFunctions {
@@ -27,71 +30,71 @@ public enum MigrationFunctions {
 	/**
 	 *
 	 */
-	FINDFIRSTNUMBER("nvarchar(max)", "@string as NVARCHAR(max)", "declare @numberSign as nvarchar(1) = '';\n" +
-"declare @decimalPoint as nvarchar(1) = '';\n" +
-"declare @numberAndRight as nvarchar(max) = '';\n" +
-"declare @beforeTheDecimal as nvarchar(max) = '';\n" +
-"declare @afterTheDecimal as nvarchar(max) = '';\n" +
-"declare @startOfDigits int = patindex('%[0-9]%',@string);\n" +
-"declare @firstNonNumber as int = 0;\n" +
-"declare @return as nvarchar(max) = '';\n" +
-"\n" +
-"if (@startOfDigits<>0) \n" +
-"BEGIN\n" +
-"	if (@startOfDigits > 1 and substring(@string, @startOfDigits-1, 1) = '-')\n" +
-"	BEGIN\n" +
-"		set @numberSign = '-';\n" +
-"	END\n" +
-"	\n" +
-"	set @numberAndRight = substring(@string, @startOfDigits, len(@string));\n" +
-"	set @firstNonNumber = patindex('%[^0-9]%', @numberAndRight);\n" +
-"	set @beforeTheDecimal = left(@numberAndRight, @firstNonNumber-1);\n" +
-"	set @afterTheDecimal = substring(@numberAndRight, @firstNonNumber, len(@numberAndRight));\n" +
-"\n" +
-"	if (left(@afterTheDecimal, 1)='.' AND patindex('%[0-9]%', @afterTheDecimal)=2)\n" +
-"	BEGIN\n" +
-"		set @decimalPoint = '.';\n" +
-"		set @afterTheDecimal = substring(@afterTheDecimal, 2, len(@afterTheDecimal));\n" +
-"		set @firstNonNumber = patindex('%[^0-9]%', @afterTheDecimal)\n" +
-"		set @afterTheDecimal = substring(@afterTheDecimal, 1, case when @firstNonNumber > 0 then @firstNonNumber-1 else len(@afterTheDecimal) end);\n" +
-"	END\n" +
-"	ELSE\n" +
-"	BEGIN\n" +
-"		set @decimalPoint = '';\n" +
-"		set @afterTheDecimal = '';\n" +
-"	END\n" +
-"\n" +
-"END\n" +
-"	if (@beforeTheDecimal is not null and @beforeTheDecimal <> '')\n" +
-"		set @return = @numberSign+@beforeTheDecimal+@decimalPoint+@afterTheDecimal;\n" +
-"	else \n" +
-"		set @return = null;\n" +
-"	return @return;"),
-	FINDFIRSTINTEGER("nvarchar(max)", "@string as NVARCHAR(max)", "declare @numberSign as nvarchar(1) = '';\n" +
-"declare @decimalPoint as nvarchar(1) = '';\n" +
-"declare @numberAndRight as nvarchar(max) = '';\n" +
-"declare @beforeTheDecimal as nvarchar(max) = '';\n" +
-"declare @afterTheDecimal as nvarchar(max) = '';\n" +
-"declare @startOfDigits int = patindex('%[0-9]%',@string);\n" +
-"declare @firstNonNumber as int = 0;\n" +
-"declare @return as nvarchar(max) = '';\n" +
-"\n" +
-"if (@startOfDigits<>0) \n" +
-"BEGIN\n" +
-"	if (@startOfDigits > 1 and substring(@string, @startOfDigits-1, 1) = '-')\n" +
-"	BEGIN\n" +
-"		set @numberSign = '-';\n" +
-"	END\n" +
-"	\n" +
-"	set @numberAndRight = substring(@string, @startOfDigits, len(@string));\n" +
-"	set @firstNonNumber = patindex('%[^0-9]%', @numberAndRight);\n" +
-"	set @beforeTheDecimal = left(@numberAndRight, @firstNonNumber-1);\n" +
-"END\n" +
-"	if (@beforeTheDecimal is not null and @beforeTheDecimal <> '')\n" +
-"		set @return = @numberSign+@beforeTheDecimal;\n" +
-"	else \n" +
-"		set @return = null;\n" +
-"	return @return;");
+	FINDFIRSTNUMBER("nvarchar(max)", "@string as NVARCHAR(max)", "declare @numberSign as nvarchar(1) = '';\n"
+			+ "declare @decimalPoint as nvarchar(1) = '';\n"
+			+ "declare @numberAndRight as nvarchar(max) = '';\n"
+			+ "declare @beforeTheDecimal as nvarchar(max) = '';\n"
+			+ "declare @afterTheDecimal as nvarchar(max) = '';\n"
+			+ "declare @startOfDigits int = patindex('%[0-9]%',@string);\n"
+			+ "declare @firstNonNumber as int = 0;\n"
+			+ "declare @return as nvarchar(max) = '';\n"
+			+ "\n"
+			+ "if (@startOfDigits<>0) \n"
+			+ "BEGIN\n"
+			+ "	if (@startOfDigits > 1 and substring(@string, @startOfDigits-1, 1) = '-')\n"
+			+ "	BEGIN\n"
+			+ "		set @numberSign = '-';\n"
+			+ "	END\n"
+			+ "	\n"
+			+ "	set @numberAndRight = substring(@string, @startOfDigits, len(@string));\n"
+			+ "	set @firstNonNumber = patindex('%[^0-9]%', @numberAndRight);\n"
+			+ "	set @beforeTheDecimal = left(@numberAndRight, @firstNonNumber-1);\n"
+			+ "	set @afterTheDecimal = substring(@numberAndRight, @firstNonNumber, len(@numberAndRight));\n"
+			+ "\n"
+			+ "	if (left(@afterTheDecimal, 1)='.' AND patindex('%[0-9]%', @afterTheDecimal)=2)\n"
+			+ "	BEGIN\n"
+			+ "		set @decimalPoint = '.';\n"
+			+ "		set @afterTheDecimal = substring(@afterTheDecimal, 2, len(@afterTheDecimal));\n"
+			+ "		set @firstNonNumber = patindex('%[^0-9]%', @afterTheDecimal)\n"
+			+ "		set @afterTheDecimal = substring(@afterTheDecimal, 1, case when @firstNonNumber > 0 then @firstNonNumber-1 else len(@afterTheDecimal) end);\n"
+			+ "	END\n"
+			+ "	ELSE\n"
+			+ "	BEGIN\n"
+			+ "		set @decimalPoint = '';\n"
+			+ "		set @afterTheDecimal = '';\n"
+			+ "	END\n"
+			+ "\n"
+			+ "END\n"
+			+ "	if (@beforeTheDecimal is not null and @beforeTheDecimal <> '')\n"
+			+ "		set @return = @numberSign+@beforeTheDecimal+@decimalPoint+@afterTheDecimal;\n"
+			+ "	else \n"
+			+ "		set @return = null;\n"
+			+ "	return @return;"),
+	FINDFIRSTINTEGER("nvarchar(max)", "@string as NVARCHAR(max)", "declare @numberSign as nvarchar(1) = '';\n"
+			+ "declare @decimalPoint as nvarchar(1) = '';\n"
+			+ "declare @numberAndRight as nvarchar(max) = '';\n"
+			+ "declare @beforeTheDecimal as nvarchar(max) = '';\n"
+			+ "declare @afterTheDecimal as nvarchar(max) = '';\n"
+			+ "declare @startOfDigits int = patindex('%[0-9]%',@string);\n"
+			+ "declare @firstNonNumber as int = 0;\n"
+			+ "declare @return as nvarchar(max) = '';\n"
+			+ "\n"
+			+ "if (@startOfDigits<>0) \n"
+			+ "BEGIN\n"
+			+ "	if (@startOfDigits > 1 and substring(@string, @startOfDigits-1, 1) = '-')\n"
+			+ "	BEGIN\n"
+			+ "		set @numberSign = '-';\n"
+			+ "	END\n"
+			+ "	\n"
+			+ "	set @numberAndRight = substring(@string, @startOfDigits, len(@string));\n"
+			+ "	set @firstNonNumber = patindex('%[^0-9]%', @numberAndRight);\n"
+			+ "	set @beforeTheDecimal = left(@numberAndRight, @firstNonNumber-1);\n"
+			+ "END\n"
+			+ "	if (@beforeTheDecimal is not null and @beforeTheDecimal <> '')\n"
+			+ "		set @return = @numberSign+@beforeTheDecimal;\n"
+			+ "	else \n"
+			+ "		set @return = null;\n"
+			+ "	return @return;");
 
 	private final String returnType;
 	private final String parameters;

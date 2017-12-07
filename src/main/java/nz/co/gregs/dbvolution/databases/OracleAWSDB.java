@@ -33,6 +33,9 @@ import nz.co.gregs.dbvolution.databases.supports.SupportsPolygonDatatype;
  * <p>
  * You should probably use {@link OracleAWS11DB} or {@link Oracle12DB} instead.
  *
+ * <p style="color: #F90;">Support DBvolution at
+ * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+ *
  * @author Gregory Graham
  * @see OracleAWS11DB
  * @see Oracle12DB
@@ -40,8 +43,9 @@ import nz.co.gregs.dbvolution.databases.supports.SupportsPolygonDatatype;
 public abstract class OracleAWSDB extends OracleDB implements SupportsPolygonDatatype {
 
 	public static final long serialVersionUID = 1l;
-	/**
 
+	/**
+	 *
 	 * Provides a convenient constructor for DBDatabases that have configuration
 	 * details hardwired or are able to automatically retrieve the details.
 	 *
@@ -49,7 +53,7 @@ public abstract class OracleAWSDB extends OracleDB implements SupportsPolygonDat
 	 * This constructor creates an empty DBDatabase with only the default
 	 * settings, in particular with no driver, URL, username, password, or
 	 * {@link DBDefinition}
-	 * 
+	 *
 	 * <p>
 	 * Most programmers should not call this constructor directly. Check the
 	 * subclasses in {@code nz.co.gregs.dbvolution.databases} for your particular
@@ -63,7 +67,8 @@ public abstract class OracleAWSDB extends OracleDB implements SupportsPolygonDat
 	 * @see DBDefinition
 	 * @see OracleAWS11DB
 	 * @see OracleAWSDB
-	 */	protected OracleAWSDB() {
+	 */
+	protected OracleAWSDB() {
 	}
 
 	/**
@@ -101,6 +106,9 @@ public abstract class OracleAWSDB extends OracleDB implements SupportsPolygonDat
 
 	/**
 	 * Oracle does not differentiate between NULL and an empty string.
+	 *
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 *
 	 * @return FALSE.
 	 */

@@ -36,6 +36,9 @@ import static org.hamcrest.Matchers.*;
 
 /**
  *
+ * <p style="color: #F90;">Support DBvolution at
+ * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+ *
  * @author Gregory Graham
  */
 public class DBLargeTextTest extends AbstractTest {
@@ -68,7 +71,7 @@ public class DBLargeTextTest extends AbstractTest {
 		CompanyText logoExample = new CompanyText();
 		logoExample.carCompany.permittedValues(ford.uidCarCompany);
 		List<CompanyText> foundLogos = database.get(logoExample);
-		
+
 		Assert.assertThat(foundLogos.size(), is(1));
 		final CompanyText foundLogo = foundLogos.get(0);
 		Assert.assertThat(foundLogo.textID.intValue(), is(2));
@@ -128,7 +131,7 @@ public class DBLargeTextTest extends AbstractTest {
 		database.insert(blobTable);
 
 		blobTable = new CompanyTextForRetreivingBinaryObject();
-		
+
 		CompanyTextForRetreivingBinaryObject firstRow = database.getDBTable(blobTable).getRowsByPrimaryKey(primaryKey).get(0);
 		final String valueOf = firstRow.fileText.stringValue();//new String(firstRow.fileText.getBytes());
 		Assert.assertThat(valueOf, containsString("Maranhāo"));
@@ -151,7 +154,7 @@ public class DBLargeTextTest extends AbstractTest {
 		database.insert(clobTable);
 
 		CompanyTextForRetreivingString firstRow = database.getDBTable(new CompanyTextForRetreivingString()).getRowsByPrimaryKey(primaryKey).get(0);
-		
+
 		String stringValue = firstRow.filetext.stringValue();
 		Assert.assertThat(stringValue, is(SOURCEDATAASSTRING));
 	}
@@ -171,7 +174,7 @@ public class DBLargeTextTest extends AbstractTest {
 		database.insert(testRow);
 
 		TextObjectWithAutoIncrement firstRow = database.getDBTable(new TextObjectWithAutoIncrement()).setBlankQueryAllowed(true).getOnlyRow();
-		
+
 		String stringValue = firstRow.imageBytes.stringValue();
 		Assert.assertThat(stringValue, is(SOURCEDATAASSTRING));
 

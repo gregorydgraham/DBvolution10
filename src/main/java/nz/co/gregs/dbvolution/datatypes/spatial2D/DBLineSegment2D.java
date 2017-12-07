@@ -32,16 +32,16 @@ import nz.co.gregs.dbvolution.expressions.StringExpression;
 import nz.co.gregs.dbvolution.results.LineSegment2DResult;
 
 /**
- * Represents datatypes and columns that are composed of a 2 points
- * connected as a line.
+ * Represents datatypes and columns that are composed of a 2 points connected as
+ * a line.
  *
  * <p>
  * Use this type if the database column stores a series of 2-dimensional (that
  * is X and Y points) that are contiguous and open.
  *
  * <p>
- * Alternatives to a DBLineSegment2D are a series of points constituting a line {@link DBLine2D},
- * infinite lines (TODO), closed paths (TODO), and closed
+ * Alternatives to a DBLineSegment2D are a series of points constituting a line
+ * {@link DBLine2D}, infinite lines (TODO), closed paths (TODO), and closed
  * paths defining a solid {@link DBPolygon2D}.
  *
  * <p>
@@ -50,6 +50,9 @@ import nz.co.gregs.dbvolution.results.LineSegment2DResult;
  * <p>
  * Spatial types are not automatically generated during schema extraction so you
  * may need to change some DBString fields.
+ *
+ * <p style="color: #F90;">Support DBvolution at
+ * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
  *
  * @author gregorygraham
  */
@@ -73,7 +76,7 @@ public class DBLineSegment2D extends QueryableDatatype<LineSegment> implements L
 	 * This is a convenient way to assign a constant value in an expression or
 	 * DBRow subclass.
 	 *
-	 * @param lineSegment 
+	 * @param lineSegment
 	 */
 	public DBLineSegment2D(LineSegment lineSegment) {
 		super(lineSegment);
@@ -133,8 +136,8 @@ public class DBLineSegment2D extends QueryableDatatype<LineSegment> implements L
 	 * Use this method to define the value of a field/column before inserting the
 	 * DBRow subclass into the database.
 	 *
-	 * @param coord1 
-	 * @param coord2 
+	 * @param coord1
+	 * @param coord2
 	 */
 	public void setValue(Coordinate coord1, Coordinate coord2) {
 		LineSegment line = new LineSegment(coord1, coord2);
@@ -153,6 +156,9 @@ public class DBLineSegment2D extends QueryableDatatype<LineSegment> implements L
 	/**
 	 * Transform the value of the DBLine2D into a
 	 * {@link LineString JTS LineString}
+	 *
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 *
 	 * @return the value of this object if defined and not NULL, NULL otherwise.
 	 */
@@ -188,7 +194,7 @@ public class DBLineSegment2D extends QueryableDatatype<LineSegment> implements L
 				lineSegment = database.getDefinition().transformDatabaseLineSegment2DValueToJTSLineSegment(string);
 			} catch (com.vividsolutions.jts.io.ParseException ex) {
 				Logger.getLogger(DBLineSegment2D.class.getName()).log(Level.SEVERE, null, ex);
-				throw new ParsingSpatialValueException(fullColumnName, string,ex);
+				throw new ParsingSpatialValueException(fullColumnName, string, ex);
 			}
 			return lineSegment;
 		}
@@ -228,7 +234,6 @@ public class DBLineSegment2D extends QueryableDatatype<LineSegment> implements L
 //	public StringExpression toWKTFormat(){
 //		return StringExpression.value(jtsLineSegmentValue().toString());
 //	}
-
 	@Override
 	public StringExpression stringResult() {
 		return LineSegment2DExpression.value(this).stringResult();

@@ -20,6 +20,9 @@ import java.sql.Statement;
 
 /**
  *
+ * <p style="color: #F90;">Support DBvolution at
+ * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+ *
  * @author gregorygraham
  */
 public interface DBVFeature {
@@ -32,6 +35,9 @@ public interface DBVFeature {
 	public void add(Statement stmt) throws SQLException;
 
 	/**
+	 *
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 *
 	 * @return the name used during SQL statement for this feature
 	 */

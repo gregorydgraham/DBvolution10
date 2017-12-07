@@ -30,6 +30,9 @@ package nz.co.gregs.dbvolution.generation;
  * Extend the methods of this class to help DBvolution automatically recognize
  * the FKs within your schema.
  *
+ * <p style="color: #F90;">Support DBvolution at
+ * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+ *
  * @author Gregory Graham
  */
 public class ForeignKeyRecognisor {
@@ -39,6 +42,8 @@ public class ForeignKeyRecognisor {
 	 *
 	 * @param tableName tableName
 	 * @param columnName columnName
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return TRUE if the column is a foreign key reference, FALSE otherwise
 	 */
 	public boolean isForeignKeyColumn(String tableName, String columnName) {
@@ -50,6 +55,8 @@ public class ForeignKeyRecognisor {
 	 *
 	 * @param tableName tableName
 	 * @param columnName columnName
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return The database name of the referenced column derived from the
 	 * referencing table and column, or NULL
 	 */
@@ -62,6 +69,8 @@ public class ForeignKeyRecognisor {
 	 *
 	 * @param tableName tableName
 	 * @param columnName columnName
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return The database name of the referenced table based on the referencing
 	 * table and column or NULL.
 	 */

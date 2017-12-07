@@ -198,7 +198,7 @@ public class OuterJoinTest extends AbstractTest {
 								is(otherExpectedFullOuterQuery)
 						)
 				);
-			} else if(database.supportsUnionDistinct()){
+			} else if (database.supportsUnionDistinct()) {
 				Assert.assertThat(
 						testableSQLWithoutColumnAliases(sqlForQuery),
 						anyOf(
@@ -276,11 +276,11 @@ public class OuterJoinTest extends AbstractTest {
 		Assert.assertThat(testableSQL(sqlForQuery),
 				allOf(
 						anyOf(
-							containsString(testableSQL("( __78874071.name) >= 'ford'")),
-							containsString(testableSQL("( __78874071.name) >= N'ford'"))),
+								containsString(testableSQL("( __78874071.name) >= 'ford'")),
+								containsString(testableSQL("( __78874071.name) >= N'ford'"))),
 						anyOf(
-							containsString(testableSQL("( __78874071.name) <= 'toyota'")),
-							containsString(testableSQL("( __78874071.name) <= N'toyota'"))),
+								containsString(testableSQL("( __78874071.name) <= 'toyota'")),
+								containsString(testableSQL("( __78874071.name) <= N'toyota'"))),
 						anyOf(containsString(testableSQL("__1997432637.enabled = TRUE")),
 								containsString(testableSQL("__1997432637.enabled = 1")),
 								containsString(testableSQL("( CASE WHEN __1997432637.enabled IS NULL THEN -1 ELSE __1997432637.enabled END ) = ( CASE WHEN  1  IS NULL THEN -1 ELSE  1  END )")))
@@ -309,8 +309,8 @@ public class OuterJoinTest extends AbstractTest {
 
 			final String marqueCondition = testableSQL("1997432637.ENABLED = TRUE");
 			final String marqueConditionForDBsWithoutBooleans = testableSQL("1997432637.ENABLED = 1");
-			Assert.assertThat(testableQuery, 
-					anyOf(containsString(marqueCondition), 
+			Assert.assertThat(testableQuery,
+					anyOf(containsString(marqueCondition),
 							containsString(marqueConditionForDBsWithoutBooleans),
 							containsString(testableSQL("( CASE WHEN __1997432637.ENABLED IS NULL THEN -1 ELSE __1997432637.ENABLED END ) = ( CASE WHEN  1  IS NULL THEN -1 ELSE  1  END ))"))
 					)
@@ -346,29 +346,28 @@ public class OuterJoinTest extends AbstractTest {
 		Assert.assertThat(sqlForQuery.indexOf("YEAH"), is(sqlForQuery.lastIndexOf("YEAH")));
 
 	}
-	
+
 	@Test
-	public void testSimpleLeftOuterJoin() throws SQLException{
+	public void testSimpleLeftOuterJoin() throws SQLException {
 		//Create some examples
 		final CarCompany carCompany = new CarCompany();
 		carCompany.name.permittedRangeInclusive("Ford", "TOYOTA");
-		
+
 		final Marque marque = new Marque();
 		marque.enabled.permittedValues(true);
-		
+
 		//Create the query with the required table
 		DBQuery dbquery = database.getDBQuery(carCompany).setBlankQueryAllowed(true);
 
 		//Add the option table
 		dbquery.addOptional(marque);
-		
+
 		// get the data
 		List<DBQueryRow> allRows = dbquery.getAllRows();
-		
+
 		Assert.assertThat(allRows.size(), is(4));
-	}	
-	
-	
+	}
+
 	@Test
 	public void demonstrateAccessingEachRowWithOptionalTables() throws SQLException {
 		// We're going to list all of the encounters that earned 100 or more experience

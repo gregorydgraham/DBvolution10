@@ -28,6 +28,9 @@ import nz.co.gregs.dbvolution.annotations.DBTableName;
  * &#64;DBTableName annotation allows the class to be renamed to fit better
  * within a Java library while preserving the actual database name.
  *
+ * <p style="color: #F90;">Support DBvolution at
+ * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+ *
  * @author Gregory Graham
  */
 @DBTableName("lt_carco_logo")

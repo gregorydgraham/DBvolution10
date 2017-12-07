@@ -38,6 +38,9 @@ import nz.co.gregs.dbvolution.query.RowDefinition;
  * methods in BooleanArrayExpression to insert the column into the expression.
  *
  *
+ * <p style="color: #F90;">Support DBvolution at
+ * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+ *
  * @author Gregory Graham
  * @see RowDefinition
  * @see AbstractColumn
@@ -115,6 +118,8 @@ public class BooleanArrayColumn extends BooleanArrayExpression implements Column
 	 * Creates an expression that will compare this column to the other column.
 	 *
 	 * @param boolArrayColumn the column to compare to
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a BooleanExpression
 	 */
 	public BooleanExpression is(DBBooleanArray boolArrayColumn) {

@@ -31,6 +31,9 @@ import org.sqlite.Function;
 
 /**
  *
+ * <p style="color: #F90;">Support DBvolution at
+ * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+ *
  * @author gregorygraham
  */
 public class Line2DFunctions {
@@ -160,7 +163,7 @@ public class Line2DFunctions {
 						sep = ", ";
 					}
 				}
-				resultStr.append( ")");
+				resultStr.append(")");
 				result(resultStr.toString());
 			}
 		}
@@ -354,7 +357,7 @@ public class Line2DFunctions {
 							int numPoints = intersection.getNumPoints();
 							for (int i = 0; i < numPoints; i++) {
 								Geometry geometryN = intersection.getGeometryN(i);
-								if ((geometryN!=null)&&(geometryN instanceof Point)) {
+								if ((geometryN != null) && (geometryN instanceof Point)) {
 									pointList.add((Point) geometryN);
 								}
 							}

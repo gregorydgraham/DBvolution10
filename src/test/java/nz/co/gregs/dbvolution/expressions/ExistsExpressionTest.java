@@ -28,6 +28,9 @@ import org.junit.Test;
 
 /**
  *
+ * <p style="color: #F90;">Support DBvolution at
+ * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+ *
  * @author Gregory Graham
  */
 public class ExistsExpressionTest extends AbstractTest {
@@ -47,7 +50,7 @@ public class ExistsExpressionTest extends AbstractTest {
 		marquesQuery.addCondition(new ExistsExpression(marque, carCompany));
 
 		List<Marque> rowList = marquesQuery.getAllInstancesOf(marque);
-		
+
 		Assert.assertThat(rowList.size(), is(3));
 
 		marque = new Marque();
@@ -56,7 +59,7 @@ public class ExistsExpressionTest extends AbstractTest {
 
 		marquesQuery.getAllInstancesOf(marque);
 		rowList = marquesQuery.getAllInstancesOf(marque);
-		
+
 		Assert.assertThat(rowList.size(), is(19));
 	}
 
@@ -76,7 +79,7 @@ public class ExistsExpressionTest extends AbstractTest {
 		marquesQuery.addCondition(new ExistsExpression(marque, existsTables));
 
 		List<Marque> rowList = marquesQuery.getAllInstancesOf(marque);
-		
+
 		Assert.assertThat(rowList.size(), is(0));
 
 		CompanyLogo companyLogo = new CompanyLogo();
@@ -85,13 +88,13 @@ public class ExistsExpressionTest extends AbstractTest {
 		database.insert(companyLogo);
 
 		rowList = marquesQuery.getAllInstancesOf(marque);
-		
+
 		Assert.assertThat(rowList.size(), is(3));
 
 		marquesQuery = database.getDBQuery(marque);
 		marquesQuery.addCondition((new ExistsExpression(marque, existsTables)).not());
 		rowList = marquesQuery.getAllInstancesOf(marque);
-		
+
 		Assert.assertThat(rowList.size(), is(19));
 	}
 
@@ -112,7 +115,7 @@ public class ExistsExpressionTest extends AbstractTest {
 		marquesQuery.addCondition(new ExistsExpression(outerQuery, existsTables));
 
 		List<Marque> rowList = marquesQuery.getAllInstancesOf(marque);
-		
+
 		Assert.assertThat(rowList.size(), is(0));
 
 		CompanyLogo companyLogo = new CompanyLogo();
@@ -121,13 +124,13 @@ public class ExistsExpressionTest extends AbstractTest {
 		database.insert(companyLogo);
 
 		rowList = marquesQuery.getAllInstancesOf(marque);
-		
+
 		Assert.assertThat(rowList.size(), is(3));
 
 		marquesQuery = database.getDBQuery(marque);
 		marquesQuery.addCondition((new ExistsExpression(outerQuery, existsTables)).not());
 		rowList = marquesQuery.getAllInstancesOf(marque);
-		
+
 		Assert.assertThat(rowList.size(), is(19));
 	}
 }

@@ -36,7 +36,11 @@ import nz.co.gregs.dbvolution.operators.DBPermittedValuesOperator;
  *
  * @param <E> type of enumeration class
  *
+ * <p style="color: #F90;">Support DBvolution at
+ * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
  * @author Gregory Graham
+ * <p style="color: #F90;">Support DBvolution at
+ * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
  * @author Malcolm Lett
  */
 public class DBIntegerEnum<E extends Enum<E> & DBEnumValue<Long>> extends DBEnum<E, Long> implements NumberResult {
@@ -129,8 +133,7 @@ public class DBIntegerEnum<E extends Enum<E> & DBEnumValue<Long>> extends DBEnum
 
 	/**
 	 *
-	 * reduces the rows to only the object, Set, List, Array, or vararg of
-	 * objects
+	 * reduces the rows to only the object, Set, List, Array, or vararg of objects
 	 *
 	 * @param permitted	permitted
 	 */
@@ -154,6 +157,9 @@ public class DBIntegerEnum<E extends Enum<E> & DBEnumValue<Long>> extends DBEnum
 	 * Provided as a convenience function
 	 *
 	 *
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
 	 * @return a Long[] of the enums values.
 	 */
 	@SafeVarargs
@@ -169,6 +175,9 @@ public class DBIntegerEnum<E extends Enum<E> & DBEnumValue<Long>> extends DBEnum
 	/**
 	 * Convert the enum to its Long literal value.
 	 *
+	 *
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 *
 	 * @return the literal value of the enum.
 	 */
@@ -198,8 +207,8 @@ public class DBIntegerEnum<E extends Enum<E> & DBEnumValue<Long>> extends DBEnum
 	/**
 	 * Performs searches based on a range.
 	 *
-	 * if both ends of the range are specified the lower-bound will be included
-	 * in the search and the upper-bound excluded. I.e permittedRange(1,3) will
+	 * if both ends of the range are specified the lower-bound will be included in
+	 * the search and the upper-bound excluded. I.e permittedRange(1,3) will
 	 * return 1 and 2.
 	 *
 	 * <p>
@@ -270,8 +279,8 @@ public class DBIntegerEnum<E extends Enum<E> & DBEnumValue<Long>> extends DBEnum
 	/**
 	 * Performs searches based on a range.
 	 *
-	 * if both ends of the range are specified the lower-bound will be included
-	 * in the search and the upper-bound excluded. I.e excludedRange(1,3) will
+	 * if both ends of the range are specified the lower-bound will be included in
+	 * the search and the upper-bound excluded. I.e excludedRange(1,3) will
 	 * exclude 1 and 2.
 	 *
 	 * <p>
@@ -343,8 +352,7 @@ public class DBIntegerEnum<E extends Enum<E> & DBEnumValue<Long>> extends DBEnum
 	}
 
 	/**
-	 * Reduces the rows to only the object, Set, List, Array, or vararg of
-	 * objects
+	 * Reduces the rows to only the object, Set, List, Array, or vararg of objects
 	 *
 	 * @param permitted	permitted
 	 */
@@ -367,8 +375,8 @@ public class DBIntegerEnum<E extends Enum<E> & DBEnumValue<Long>> extends DBEnum
 	/**
 	 * Performs searches based on a range.
 	 *
-	 * if both ends of the range are specified the lower-bound will be included
-	 * in the search and the upper-bound excluded. I.e permittedRange(1,3) will
+	 * if both ends of the range are specified the lower-bound will be included in
+	 * the search and the upper-bound excluded. I.e permittedRange(1,3) will
 	 * return 1 and 2.
 	 *
 	 * <p>
@@ -439,8 +447,8 @@ public class DBIntegerEnum<E extends Enum<E> & DBEnumValue<Long>> extends DBEnum
 	/**
 	 * Performs searches based on a range.
 	 *
-	 * if both ends of the range are specified the lower-bound will be included
-	 * in the search and the upper-bound excluded. I.e excludedRange(1,3) will
+	 * if both ends of the range are specified the lower-bound will be included in
+	 * the search and the upper-bound excluded. I.e excludedRange(1,3) will
 	 * exclude 1 and 2.
 	 *
 	 * <p>
@@ -513,8 +521,7 @@ public class DBIntegerEnum<E extends Enum<E> & DBEnumValue<Long>> extends DBEnum
 
 	/**
 	 *
-	 * reduces the rows to only the object, Set, List, Array, or vararg of
-	 * objects
+	 * reduces the rows to only the object, Set, List, Array, or vararg of objects
 	 *
 	 * @param permitted	permitted
 	 */
@@ -537,8 +544,8 @@ public class DBIntegerEnum<E extends Enum<E> & DBEnumValue<Long>> extends DBEnum
 	/**
 	 * Performs searches based on a range.
 	 *
-	 * if both ends of the range are specified the lower-bound will be included
-	 * in the search and the upper-bound excluded. I.e permittedRange(1,3) will
+	 * if both ends of the range are specified the lower-bound will be included in
+	 * the search and the upper-bound excluded. I.e permittedRange(1,3) will
 	 * return 1 and 2.
 	 *
 	 * <p>
@@ -609,8 +616,8 @@ public class DBIntegerEnum<E extends Enum<E> & DBEnumValue<Long>> extends DBEnum
 	/**
 	 * Performs searches based on a range.
 	 *
-	 * if both ends of the range are specified the lower-bound will be included
-	 * in the search and the upper-bound excluded. I.e excludedRange(1,3) will
+	 * if both ends of the range are specified the lower-bound will be included in
+	 * the search and the upper-bound excluded. I.e excludedRange(1,3) will
 	 * exclude 1 and 2.
 	 *
 	 * <p>
@@ -684,6 +691,9 @@ public class DBIntegerEnum<E extends Enum<E> & DBEnumValue<Long>> extends DBEnum
 	/**
 	 * Returns the set value of this DBInteger as a Number, if possible.
 	 *
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
 	 * @return the value as a Number.
 	 */
 	public Number numberValue() {
@@ -699,6 +709,9 @@ public class DBIntegerEnum<E extends Enum<E> & DBEnumValue<Long>> extends DBEnum
 	/**
 	 * Returns the set value of this DBInteger as a Long, if possible.
 	 *
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
 	 * @return the value as a Long.
 	 */
 	public Long longValue() {
@@ -711,6 +724,9 @@ public class DBIntegerEnum<E extends Enum<E> & DBEnumValue<Long>> extends DBEnum
 
 	/**
 	 * Returns the set value of this DBInteger as a Integer, if possible.
+	 *
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 *
 	 * @return the value as a Integer.
 	 */

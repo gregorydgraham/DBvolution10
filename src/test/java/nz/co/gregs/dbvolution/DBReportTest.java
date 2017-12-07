@@ -36,7 +36,7 @@ public class DBReportTest extends AbstractTest {
 	@Test
 	public void createReportTest() throws SQLException {
 		SimpleReport reportExample = new SimpleReport();
-		
+
 		List<SimpleReport> simpleReportRows = DBReport.getAllRows(database, reportExample);
 		Assert.assertThat(simpleReportRows.size(), is(21));
 		for (SimpleReport simp : simpleReportRows) {
@@ -348,7 +348,7 @@ public class DBReportTest extends AbstractTest {
 			}
 		}
 	}
-	
+
 	public static class PrivateFieldsReport extends DBReport {
 
 		private static final long serialVersionUID = 1L;

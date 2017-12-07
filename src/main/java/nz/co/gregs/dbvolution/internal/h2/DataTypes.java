@@ -20,35 +20,33 @@ import java.sql.Statement;
 
 /**
  *
+ * <p style="color: #F90;">Support DBvolution at
+ * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+ *
  * @author gregorygraham
  */
-public enum DataTypes implements DBVFeature{
+public enum DataTypes implements DBVFeature {
 
 	/**
 	 *
 	 */
-	DATEREPEAT("DBV_DATEREPEAT", "VARCHAR(100)", DateRepeatFunctions.values()),	
-
+	DATEREPEAT("DBV_DATEREPEAT", "VARCHAR(100)", DateRepeatFunctions.values()),
 	/**
 	 *
 	 */
 	POINT2D("DBV_POINT2D", "VARCHAR(2000)", Point2DFunctions.values()),
-
 	/**
 	 *
 	 */
 	LINE2D("DBV_LINE2D", "VARCHAR(2001)", Line2DFunctions.values()),
-
 	/**
 	 *
 	 */
 	LINESEGMENT2D("DBV_LINESEGMENT2D", "VARCHAR(2001)", LineSegment2DFunctions.values()),
-
 	/**
 	 *
 	 */
-	POLYGON2D("DBV_POLYGON2D", "VARCHAR(2002)", Polygon2DFunctions.values()), 
-
+	POLYGON2D("DBV_POLYGON2D", "VARCHAR(2002)", Polygon2DFunctions.values()),
 	/**
 	 *
 	 */
@@ -86,16 +84,19 @@ public enum DataTypes implements DBVFeature{
 //			function.add(stmt);
 //		}
 	}
-	
+
 	/**
 	 *
 	 * @param stmt
 	 * @throws SQLException
 	 */
-	public static void addAll(Statement stmt) throws SQLException{
+	public static void addAll(Statement stmt) throws SQLException {
 	}
 
 	/**
+	 *
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 *
 	 * @return the DBvolution data type of this abstracted datatype
 	 */
@@ -104,6 +105,9 @@ public enum DataTypes implements DBVFeature{
 	}
 
 	/**
+	 *
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 *
 	 * @return the DBvolution data type as a String
 	 */

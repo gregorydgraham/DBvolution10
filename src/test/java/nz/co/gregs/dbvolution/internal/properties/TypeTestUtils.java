@@ -80,7 +80,7 @@ public class TypeTestUtils {
 		buf.append(")");
 
 		buf.append(": ");
-		
+
 		buf.append(method.getGenericReturnType() == null ? "void" : descriptionOf(method.getGenericReturnType(), context));
 
 		if (method.isSynthetic() || method.isBridge() || Modifier.isAbstract(method.getModifiers())) {
@@ -164,6 +164,8 @@ public class TypeTestUtils {
 	 * Converts the given type into a concise representation.
 	 *
 	 * @param type
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a descriptive String
 	 */
 	public static String descriptionOf(Type type) {

@@ -23,6 +23,9 @@ import nz.co.gregs.dbvolution.expressions.BooleanExpression;
 
 /**
  *
+ * <p style="color: #F90;">Support DBvolution at
+ * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+ *
  * @author Gregory Graham
  */
 abstract public class DBOperator implements Serializable {
@@ -107,15 +110,16 @@ abstract public class DBOperator implements Serializable {
 
 	/**
 	 * Makes this operator treat NULL values as if they match the operator.
-	 * 
+	 *
 	 * <p>
-	 * Basically this means an equals operation becomes an (equals or null) operation.
+	 * Basically this means an equals operation becomes an (equals or null)
+	 * operation.
 	 *
 	 */
 	public void includeNulls() {
 		includeNulls = true;
 	}
-	
+
 	@Override
 	public int hashCode() {
 		return super.hashCode();
@@ -140,6 +144,8 @@ abstract public class DBOperator implements Serializable {
 	 * Adds TypeAdaptor support to DBOperator.
 	 *
 	 * @param typeAdaptor
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return the type adapted operator
 	 */
 	abstract public DBOperator copyAndAdapt(DBSafeInternalQDTAdaptor typeAdaptor);
@@ -149,11 +155,16 @@ abstract public class DBOperator implements Serializable {
 	 *
 	 * @param db
 	 * @param column
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a boolean expression
 	 */
 	abstract public BooleanExpression generateWhereExpression(DBDatabase db, DBExpression column);
 
 	/**
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
 	 * @return the firstValue
 	 */
 	public DBExpression getFirstValue() {
@@ -168,6 +179,9 @@ abstract public class DBOperator implements Serializable {
 	}
 
 	/**
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
 	 * @return the secondValue
 	 */
 	public DBExpression getSecondValue() {
@@ -182,6 +196,9 @@ abstract public class DBOperator implements Serializable {
 	}
 
 	/**
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
 	 * @return the thirdValue
 	 */
 	public DBExpression getThirdValue() {

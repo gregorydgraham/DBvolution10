@@ -35,6 +35,9 @@ import nz.co.gregs.dbvolution.results.NumberResult;
  * Use these methods to manipulate your MultiPoint2D columns and results for
  * finer control of the query results.
  *
+ * <p style="color: #F90;">Support DBvolution at
+ * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+ *
  * @author gregorygraham
  */
 public class MultiPoint2DExpression implements MultiPoint2DResult, EqualComparable<MultiPoint2DResult>, Spatial2DExpression, ExpressionColumn<DBMultiPoint2D> {
@@ -93,6 +96,8 @@ public class MultiPoint2DExpression implements MultiPoint2DResult, EqualComparab
 	 * {@link Point JTS points}.
 	 *
 	 * @param points the points to include in this value
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a MultiPoint2DExpression.
 	 */
 	public static MultiPoint2DExpression value(Point... points) {
@@ -104,6 +109,8 @@ public class MultiPoint2DExpression implements MultiPoint2DResult, EqualComparab
 	 * {@link Coordinate JTS coordinates}.
 	 *
 	 * @param coords the points to include in this value
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a MultiPoint2DExpression.
 	 */
 	public static MultiPoint2DExpression value(Coordinate... coords) {
@@ -117,6 +124,8 @@ public class MultiPoint2DExpression implements MultiPoint2DResult, EqualComparab
 	 * {@link MultiPoint JTS multipoint}.
 	 *
 	 * @param points the points to include in this value
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a MultiPoint2DExpression representing the points
 	 */
 	public static MultiPoint2DExpression value(MultiPoint points) {
@@ -128,6 +137,8 @@ public class MultiPoint2DExpression implements MultiPoint2DResult, EqualComparab
 	 * {@link MultiPoint2DResult}.
 	 *
 	 * @param points the points to include in this value
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a MultiPoint2DExpression representing the points
 	 */
 	public static MultiPoint2DExpression value(MultiPoint2DResult points) {
@@ -203,6 +214,9 @@ public class MultiPoint2DExpression implements MultiPoint2DResult, EqualComparab
 	 * Transform the MultiPoint2D value into the Well Known Text (WKT) version of
 	 * the value.
 	 *
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
 	 * @return a StringExpression representing the value transformed into a WKT
 	 * string.
 	 */
@@ -226,6 +240,8 @@ public class MultiPoint2DExpression implements MultiPoint2DResult, EqualComparab
 	 * EQUALS operation.
 	 *
 	 * @param rightHandSide the value to compare against
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a BooleanExpression
 	 */
 	public BooleanExpression is(MultiPoint rightHandSide) {
@@ -251,7 +267,9 @@ public class MultiPoint2DExpression implements MultiPoint2DResult, EqualComparab
 	 * Creates a {@link BooleanExpression} that compares the 2 values using the
 	 * NOT EQUALS operation.
 	 *
-	 * @param rightHandSide  the {@link MultiPoint} to compare to
+	 * @param rightHandSide the {@link MultiPoint} to compare to
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a BooleanExpression
 	 */
 	public BooleanExpression isNot(MultiPoint rightHandSide) {
@@ -311,6 +329,9 @@ public class MultiPoint2DExpression implements MultiPoint2DResult, EqualComparab
 	 * Create a NumberExpression that represents the number of points stored in
 	 * the MultiPoint value.
 	 *
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
 	 * @return a number expression
 	 */
 	public NumberExpression numberOfPoints() {
@@ -338,6 +359,8 @@ public class MultiPoint2DExpression implements MultiPoint2DResult, EqualComparab
 	 * Indexes beyond the end of the multipoint2d will return NULL values.
 	 *
 	 * @param index a zero-based index within the multipoint2d
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a point2d expression
 	 */
 	public Point2DExpression getPointAtIndexZeroBased(int index) {
@@ -359,6 +382,8 @@ public class MultiPoint2DExpression implements MultiPoint2DResult, EqualComparab
 	 * Indexes beyond the end of the multipoint2d will return NULL values.
 	 *
 	 * @param index a zero-based index within the multipoint2d
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a point2d expression
 	 */
 	public Point2DExpression getPointAtIndexZeroBased(long index) {
@@ -380,6 +405,8 @@ public class MultiPoint2DExpression implements MultiPoint2DResult, EqualComparab
 	 * Indexes beyond the end of the multipoint2d will return NULL values.
 	 *
 	 * @param index a zero-based index within the multipoint2d
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a point2d expression
 	 */
 	public Point2DExpression getPointAtIndexZeroBased(NumberResult index) {
@@ -491,6 +518,9 @@ public class MultiPoint2DExpression implements MultiPoint2DResult, EqualComparab
 	 * <p>
 	 * MultiPoint2d values with less than 2 points will return NULL values.
 	 *
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
 	 * @return a line2d expression
 	 */
 	public Line2DExpression line2DResult() {
@@ -513,6 +543,9 @@ public class MultiPoint2DExpression implements MultiPoint2DResult, EqualComparab
 	 *
 	 * <p>
 	 * MultiPoint2d values with less than 3 points will return NULL values.
+	 *
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 *
 	 * @return a polygon2d expression
 	 */
@@ -879,7 +912,6 @@ public class MultiPoint2DExpression implements MultiPoint2DResult, EqualComparab
 //			return requiresNullProtection;
 //		}
 //	}
-
 //	private static abstract class NumberNumberFunctionWithMultiPoint2DResult extends MultiPoint2DExpression {
 //
 //		private NumberExpression first;

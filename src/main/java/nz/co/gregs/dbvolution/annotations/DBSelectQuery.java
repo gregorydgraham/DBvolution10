@@ -36,6 +36,9 @@ import java.lang.annotation.Target;
  * This class is provided to help with the 1% of queries that DBvolution is not
  * designed for, use it rarely and carefully.
  *
+ * <p style="color: #F90;">Support DBvolution at
+ * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+ *
  * @author Gregory Graham
  */
 @Target(ElementType.TYPE)
@@ -44,6 +47,9 @@ public @interface DBSelectQuery {
 
 	/**
 	 * The raw SELECT clause.
+	 *
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 *
 	 * @return the Select SQL.
 	 */

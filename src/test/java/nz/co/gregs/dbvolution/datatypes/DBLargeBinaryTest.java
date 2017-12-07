@@ -37,6 +37,9 @@ import static org.hamcrest.Matchers.*;
 
 /**
  *
+ * <p style="color: #F90;">Support DBvolution at
+ * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+ *
  * @author Gregory Graham
  */
 public class DBLargeBinaryTest extends AbstractTest {
@@ -69,7 +72,7 @@ public class DBLargeBinaryTest extends AbstractTest {
 		CompanyLogo logoExample = new CompanyLogo();
 		logoExample.carCompany.permittedValues(ford.uidCarCompany);
 		List<CompanyLogo> foundLogos = database.get(logoExample);
-		
+
 		Assert.assertThat(foundLogos.size(), is(1));
 		final CompanyLogo foundLogo = foundLogos.get(0);
 		Assert.assertThat(foundLogo.logoID.intValue(), is(2));
@@ -80,7 +83,7 @@ public class DBLargeBinaryTest extends AbstractTest {
 		Assert.assertThat(tempFile.length(), is(fordLogoFile.length()));
 		tempFile.delete();
 	}
-	
+
 	@Test
 	public void testHexValueOfStoredFile() throws FileNotFoundException, IOException, SQLException, UnexpectedNumberOfRowsException, ClassNotFoundException, InstantiationException {
 
@@ -99,9 +102,9 @@ public class DBLargeBinaryTest extends AbstractTest {
 		CompanyLogo logoExample = new CompanyLogo();
 		logoExample.carCompany.permittedValues(ford.uidCarCompany);
 		List<CompanyLogo> foundLogos = database.get(logoExample);
-		
+
 		final CompanyLogo foundLogo = foundLogos.get(0);
-		
+
 		Assert.assertThat(foundLogos.size(), is(1));
 		String hexValueFromDatabase = "0x" + Hex.encodeHexString(foundLogo.imageBytes.getBytes());
 		byte[] fil = new DBLargeBinary().setFromFileSystem("ford_logo.jpg");
@@ -135,7 +138,7 @@ public class DBLargeBinaryTest extends AbstractTest {
 
 		blobTable = new CompanyLogoForRetreivingBinaryObject();
 		CompanyLogoForRetreivingBinaryObject firstRow = database.getDBTable(blobTable).getRowsByPrimaryKey(primaryKey).get(0);
-		
+
 		firstRow.imageBytes.writeToFileSystem(newFile);
 		Assert.assertThat(newFile.length(), is(image.length()));
 	}

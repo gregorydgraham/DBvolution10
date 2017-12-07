@@ -36,6 +36,9 @@ import org.apache.commons.logging.LogFactory;
  * Allows synchronizations to be done between two QueryableDatatypes, based on a
  * Type Adaptor.
  *
+ * <p style="color: #F90;">Support DBvolution at
+ * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+ *
  * @author Malcolm Lett
  */
 public class QueryableDatatypeSyncer {
@@ -92,6 +95,9 @@ public class QueryableDatatypeSyncer {
 	 * supplies the QDT used internally, that is the QDT the represents the
 	 * database's view of the data.
 	 *
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
 	 * @return the internal QDT.
 	 */
 	public QueryableDatatype<?> getInternalQueryableDatatype() {
@@ -118,6 +124,8 @@ public class QueryableDatatypeSyncer {
 	 * QDT.
 	 *
 	 * @param externalQdt may be null
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return the updated internal QDT
 	 */
 	public QueryableDatatype<?> setInternalQDTFromExternalQDT(QueryableDatatype<?> externalQdt) {
@@ -135,6 +143,8 @@ public class QueryableDatatypeSyncer {
 	 * updated external QDT.
 	 *
 	 * @param externalQdt	externalQdt
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return the updated external QDT or null if the internal QDT is null
 	 */
 	public QueryableDatatype<?> setExternalFromInternalQDT(QueryableDatatype<?> externalQdt) {
@@ -177,6 +187,9 @@ public class QueryableDatatypeSyncer {
 	}
 
 	/**
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
 	 * @return the toExternalSimpleTypeAdaptor
 	 */
 	protected SafeOneWaySimpleTypeAdaptor getToExternalSimpleTypeAdaptor() {
@@ -184,6 +197,9 @@ public class QueryableDatatypeSyncer {
 	}
 
 	/**
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
 	 * @return the toInternalSimpleTypeAdaptor
 	 */
 	protected SafeOneWaySimpleTypeAdaptor getToInternalSimpleTypeAdaptor() {
@@ -206,7 +222,7 @@ public class QueryableDatatypeSyncer {
 				method.invoke(internalQDT, internalValue);
 			}
 		} catch (NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
-			throw new DBRuntimeException("Synchronisation Failed:"+ex.getMessage(), ex);
+			throw new DBRuntimeException("Synchronisation Failed:" + ex.getMessage(), ex);
 		}
 
 	}
@@ -254,6 +270,8 @@ public class QueryableDatatypeSyncer {
 		 * If {@code source} is null, returns {@code null}.
 		 *
 		 * @param source the QDT to convert to the target type, may be null
+		 * <p style="color: #F90;">Support DBvolution at
+		 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 		 * @return the newly created QDT of the target type, or null if
 		 * {@code source} was null
 		 */

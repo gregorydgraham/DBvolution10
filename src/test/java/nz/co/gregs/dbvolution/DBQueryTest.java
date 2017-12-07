@@ -36,6 +36,9 @@ import nz.co.gregs.dbvolution.example.CompanyText;
 
 /**
  *
+ * <p style="color: #F90;">Support DBvolution at
+ * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+ *
  * @author Gregory Graham
  */
 public class DBQueryTest extends AbstractTest {
@@ -71,7 +74,7 @@ public class DBQueryTest extends AbstractTest {
 			dbQuery.add(new Marque());
 
 			List<DBQueryRow> results = dbQuery.getAllRows();
-			
+
 			assertEquals(test[1], results.size());
 
 			for (DBQueryRow queryRow : results) {
@@ -102,7 +105,7 @@ public class DBQueryTest extends AbstractTest {
 		dbQuery.add(marque);
 
 		List<DBQueryRow> results = dbQuery.getAllRows();
-		
+
 		assertEquals(2, results.size());
 		boolean foundToyota = false;
 		boolean foundHyundai = false;
@@ -135,7 +138,7 @@ public class DBQueryTest extends AbstractTest {
 		DBQuery dbQuery = database.getDBQuery(carCompany, new Marque());
 
 		List<DBQueryRow> results = dbQuery.getAllRows();
-		
+
 		assertEquals(2, results.size());
 
 		for (DBQueryRow queryRow : results) {
@@ -158,7 +161,7 @@ public class DBQueryTest extends AbstractTest {
 		DBQuery dbQuery = database.getDBQuery(carCompany, new Marque());
 
 		List<DBQueryRow> results = dbQuery.getAllRows();
-		
+
 		assertEquals(2, results.size());
 
 		DBQueryRow[] rows = new DBQueryRow[2];

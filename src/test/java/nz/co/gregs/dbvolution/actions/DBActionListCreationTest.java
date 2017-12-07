@@ -216,7 +216,7 @@ public class DBActionListCreationTest extends AbstractTest {
 		foundToyota = database.get(example);
 		Assert.assertThat(foundToyota.size(), is(1));
 	}
-	
+
 	@Test
 	public void deleteUsingAllColumnsAndRevertTest() throws SQLException {
 		LinkCarCompanyAndLogo example = new LinkCarCompanyAndLogo();

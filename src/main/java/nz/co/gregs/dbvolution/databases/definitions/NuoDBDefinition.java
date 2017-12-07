@@ -33,6 +33,9 @@ import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
  * This DBDefinition is automatically included in {@link NuoDB} instances, and
  * you should not need to use it directly.
  *
+ * <p style="color: #F90;">Support DBvolution at
+ * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+ *
  * @author Gregory Graham
  */
 public class NuoDBDefinition extends DBDefinition {
@@ -85,8 +88,8 @@ public class NuoDBDefinition extends DBDefinition {
 	}
 
 	/**
-	 * NuoDB follows the standard, unlike anyone else, and pads the short
-	 * string with spaces before comparing.
+	 * NuoDB follows the standard, unlike anyone else, and pads the short string
+	 * with spaces before comparing.
 	 *
 	 * <p>
 	 * This effectively means strings are trimmed during comparisons whether you
@@ -98,6 +101,8 @@ public class NuoDBDefinition extends DBDefinition {
 	 *
 	 * @param firstSQLExpression firstSQLExpression
 	 * @param secondSQLExpression secondSQLExpression
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return SQL
 	 */
 	@Override
@@ -154,7 +159,7 @@ public class NuoDBDefinition extends DBDefinition {
 	public String doSecondDifferenceTransform(String dateValue, String otherDateValue) {
 		return "ROUND((CAST(" + otherDateValue + " AS TIMESTAMP) - CAST(" + dateValue + " AS TIMESTAMP))*24*60*60)";
 	}
-	
+
 	@Override
 	public String doDayOfWeekTransform(String dateSQL) {
 		return " DAYOFWEEK(" + dateSQL + ")";

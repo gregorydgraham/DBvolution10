@@ -21,6 +21,9 @@ import nz.co.gregs.dbvolution.datatypes.DBNumber;
 
 /**
  *
+ * <p style="color: #F90;">Support DBvolution at
+ * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+ *
  * @author gregorygraham
  */
 public enum Line2DFunctions {
@@ -28,11 +31,11 @@ public enum Line2DFunctions {
 	/**
 	 *
 	 */
-	MAXX("numeric("+DBNumber.getNumericPrecision()+","+DBNumber.getNumericScale()+")", "@poly GEOMETRY", " DECLARE \n"
-			+ " @resultVal numeric("+DBNumber.getNumericPrecision()+","+DBNumber.getNumericScale()+"),\n"
+	MAXX("numeric(" + DBNumber.getNumericPrecision() + "," + DBNumber.getNumericScale() + ")", "@poly GEOMETRY", " DECLARE \n"
+			+ " @resultVal numeric(" + DBNumber.getNumericPrecision() + "," + DBNumber.getNumericScale() + "),\n"
 			+ " @num integer,\n"
 			+ " @i integer,\n"
-			+ " @currentcoord numeric("+DBNumber.getNumericPrecision()+","+DBNumber.getNumericScale()+"),\n"
+			+ " @currentcoord numeric(" + DBNumber.getNumericPrecision() + "," + DBNumber.getNumericScale() + "),\n"
 			+ " @pnt GEOMETRY\n"
 			+ " if @poly is null begin \n"
 			+ "  return(null) \n"
@@ -55,15 +58,14 @@ public enum Line2DFunctions {
 			+ "  END\n"
 			+ " END\n"
 			+ " return(@resultVal)"),
-
 	/**
 	 *
 	 */
-	MAXY("numeric("+DBNumber.getNumericPrecision()+","+DBNumber.getNumericScale()+")", "@poly GEOMETRY", " DECLARE \n"
-			+ " @resultVal numeric("+DBNumber.getNumericPrecision()+","+DBNumber.getNumericScale()+"),\n"
+	MAXY("numeric(" + DBNumber.getNumericPrecision() + "," + DBNumber.getNumericScale() + ")", "@poly GEOMETRY", " DECLARE \n"
+			+ " @resultVal numeric(" + DBNumber.getNumericPrecision() + "," + DBNumber.getNumericScale() + "),\n"
 			+ " @num integer,\n"
 			+ " @i integer,\n"
-			+ " @currentcoord numeric("+DBNumber.getNumericPrecision()+","+DBNumber.getNumericScale()+"),\n"
+			+ " @currentcoord numeric(" + DBNumber.getNumericPrecision() + "," + DBNumber.getNumericScale() + "),\n"
 			+ " @pnt GEOMETRY\n"
 			+ " if @poly is null begin \n"
 			+ "  return(null) \n"
@@ -86,15 +88,14 @@ public enum Line2DFunctions {
 			+ "  END\n"
 			+ " END\n"
 			+ " return(@resultVal)"),
-
 	/**
 	 *
 	 */
-	MINX("numeric("+DBNumber.getNumericPrecision()+","+DBNumber.getNumericScale()+")", "@poly GEOMETRY", " DECLARE \n"
-			+ " @resultVal numeric("+DBNumber.getNumericPrecision()+","+DBNumber.getNumericScale()+"),\n"
+	MINX("numeric(" + DBNumber.getNumericPrecision() + "," + DBNumber.getNumericScale() + ")", "@poly GEOMETRY", " DECLARE \n"
+			+ " @resultVal numeric(" + DBNumber.getNumericPrecision() + "," + DBNumber.getNumericScale() + "),\n"
 			+ " @num integer,\n"
 			+ " @i integer,\n"
-			+ " @currentcoord numeric("+DBNumber.getNumericPrecision()+","+DBNumber.getNumericScale()+"),\n"
+			+ " @currentcoord numeric(" + DBNumber.getNumericPrecision() + "," + DBNumber.getNumericScale() + "),\n"
 			+ " @pnt GEOMETRY\n"
 			+ " if @poly is null begin \n"
 			+ "  return(null) \n"
@@ -117,15 +118,14 @@ public enum Line2DFunctions {
 			+ "  END\n"
 			+ " END\n"
 			+ " return(@resultVal)"),
-
 	/**
 	 *
 	 */
-	MINY("numeric("+DBNumber.getNumericPrecision()+","+DBNumber.getNumericScale()+")", "@poly GEOMETRY", " DECLARE \n"
-			+ " @resultVal numeric("+DBNumber.getNumericPrecision()+","+DBNumber.getNumericScale()+"),\n"
+	MINY("numeric(" + DBNumber.getNumericPrecision() + "," + DBNumber.getNumericScale() + ")", "@poly GEOMETRY", " DECLARE \n"
+			+ " @resultVal numeric(" + DBNumber.getNumericPrecision() + "," + DBNumber.getNumericScale() + "),\n"
 			+ " @num integer,\n"
 			+ " @i integer,\n"
-			+ " @currentcoord numeric("+DBNumber.getNumericPrecision()+","+DBNumber.getNumericScale()+"),\n"
+			+ " @currentcoord numeric(" + DBNumber.getNumericPrecision() + "," + DBNumber.getNumericScale() + "),\n"
 			+ " @pnt GEOMETRY\n"
 			+ " if @poly is null begin \n"
 			+ "  return(null) \n"

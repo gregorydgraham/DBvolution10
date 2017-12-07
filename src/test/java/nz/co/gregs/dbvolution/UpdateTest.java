@@ -40,7 +40,7 @@ public class UpdateTest extends AbstractTest {
 		final String testableQueryString = testableSQL("UPDATE MARQUE SET INTINDALLOCALLOWED = 'Y' WHERE (UID_MARQUE = 4);");
 		final String testableSQLServerQueryString = testableSQL("UPDATE MARQUE SET INTINDALLOCALLOWED = N'Y' WHERE (UID_MARQUE = 4);");
 		Assert.assertThat(testableSQL(sqlForUpdate),
-				isIn(new String[]{testableQueryString,testableSQLServerQueryString}));
+				isIn(new String[]{testableQueryString, testableSQLServerQueryString}));
 //        marquesTable.update(insertedRow);
 		insertedRow = marquesTable.getRowsByPrimaryKey(4).get(0);
 		Assert.assertThat(insertedRow.individualAllocationsAllowed.toString(), is("Y"));
@@ -60,9 +60,9 @@ public class UpdateTest extends AbstractTest {
 		final String updateSQLServerQueryStr = testableSQL("UPDATE MARQUE SET INTINDALLOCALLOWED = N'Y' WHERE (UID_MARQUE = 4893059);");
 		Assert.assertThat(testableSQL(sqlForUpdate),
 				isIn(new String[]{
-					updateQueryStr,
-					updateSQLServerQueryStr
-				}));
+			updateQueryStr,
+			updateSQLServerQueryStr
+		}));
 		marquesTable.update(peugeot);
 		Marque updatePeugeot = marquesTable.getRowsByExample(marque).get(0);
 		Assert.assertThat(updatePeugeot.individualAllocationsAllowed.toString(), is("Y"));

@@ -22,12 +22,15 @@ import nz.co.gregs.dbvolution.databases.OracleAWS11DB;
 import nz.co.gregs.dbvolution.query.QueryOptions;
 
 /**
- * Defines the features of the Amazon's RDS Oracle 11 database that differ from the standard
- * database.
+ * Defines the features of the Amazon's RDS Oracle 11 database that differ from
+ * the standard database.
  *
  * <p>
- * This DBDefinition is automatically included in {@link OracleAWS11DB} instances,
- * and you should not need to use it directly.
+ * This DBDefinition is automatically included in {@link OracleAWS11DB}
+ * instances, and you should not need to use it directly.
+ *
+ * <p style="color: #F90;">Support DBvolution at
+ * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
  *
  * @author Gregory Graham
  */
@@ -47,7 +50,6 @@ public class OracleAWS11DBDefinition extends OracleAWSDBDefinition {
 //	public boolean supportsPagingNatively(QueryOptions options) {
 //		return true;
 //	}
-
 	@Override
 	public String getColumnAutoIncrementSuffix() {
 		return "";

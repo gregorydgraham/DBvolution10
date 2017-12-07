@@ -368,7 +368,7 @@ public class PropertyTypeHandlerTest {
 		assertThat(qdt, is(instanceOf(DBInteger.class)));
 		assertThat(qdt.getValue(), is(instanceOf(Long.class)));
 	}
-	
+
 	@Test
 	public void getsQDTValueGivenValidFieldAndNoTypeAdaptor() {
 		class MyClass extends DBRow {

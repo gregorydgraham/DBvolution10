@@ -28,6 +28,9 @@ import org.joda.time.Period;
 
 /**
  *
+ * <p style="color: #F90;">Support DBvolution at
+ * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+ *
  * @author gregory.graham
  */
 public class DateRepeatExpression implements DateRepeatResult, RangeComparable<DateRepeatResult>, ExpressionColumn<DBDateRepeat> {
@@ -110,6 +113,8 @@ public class DateRepeatExpression implements DateRepeatResult, RangeComparable<D
 	 * Equivalent to {@code new DateRepeatExpression(period)}
 	 *
 	 * @param period the time period from which to create a DateRepeat value
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a DateRepeat expression representing the value supplied.
 	 */
 	public static DateRepeatExpression value(Period period) {
@@ -123,6 +128,8 @@ public class DateRepeatExpression implements DateRepeatResult, RangeComparable<D
 	 * Equivalent to {@code new DateRepeatExpression(period)}
 	 *
 	 * @param period the time period from which to create a DateRepeat value
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a DateRepeat expression representing the value supplied.
 	 */
 	public static DateRepeatExpression value(DateRepeatResult period) {
@@ -167,6 +174,9 @@ public class DateRepeatExpression implements DateRepeatResult, RangeComparable<D
 	/**
 	 * Returns TRUE if this expression evaluates to NULL, otherwise FALSE.
 	 *
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
 	 * @return a BooleanExpression
 	 */
 	public BooleanExpression isNull() {
@@ -175,6 +185,9 @@ public class DateRepeatExpression implements DateRepeatResult, RangeComparable<D
 
 	/**
 	 * Returns FALSE if this expression evaluates to NULL, otherwise TRUE.
+	 *
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 *
 	 * @return a BooleanExpression
 	 */
@@ -186,7 +199,10 @@ public class DateRepeatExpression implements DateRepeatResult, RangeComparable<D
 	 * Returns TRUE if this expression evaluates to a smaller or more negative
 	 * offset than the provided value, otherwise FALSE.
 	 *
-	 * @param period the time period that might be greater in duration than this expression
+	 * @param period the time period that might be greater in duration than this
+	 * expression
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a BooleanExpression
 	 */
 	public BooleanExpression isLessThan(Period period) {
@@ -196,6 +212,9 @@ public class DateRepeatExpression implements DateRepeatResult, RangeComparable<D
 	/**
 	 * Returns TRUE if this expression evaluates to a smaller or more negative
 	 * offset than the provided value, otherwise FALSE.
+	 *
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 *
 	 * @return a BooleanExpression
 	 */
@@ -214,7 +233,10 @@ public class DateRepeatExpression implements DateRepeatResult, RangeComparable<D
 	 * Returns TRUE if this expression evaluates to a greater or less negative
 	 * offset than the provided value, otherwise FALSE.
 	 *
-	 * @param period the time period that might be lesser in duration than this expression
+	 * @param period the time period that might be lesser in duration than this
+	 * expression
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a BooleanExpression
 	 */
 	public BooleanExpression isGreaterThan(Period period) {
@@ -224,6 +246,9 @@ public class DateRepeatExpression implements DateRepeatResult, RangeComparable<D
 	/**
 	 * Returns TRUE if this expression evaluates to a smaller or more negative
 	 * offset than the provided value, otherwise FALSE.
+	 *
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 *
 	 * @return a BooleanExpression
 	 */
@@ -242,7 +267,10 @@ public class DateRepeatExpression implements DateRepeatResult, RangeComparable<D
 	 * Returns TRUE if this expression evaluates to an equal or smaller offset
 	 * than the provided value, otherwise FALSE.
 	 *
-	 * @param period the time period that might be greater in duration than this expression
+	 * @param period the time period that might be greater in duration than this
+	 * expression
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a BooleanExpression
 	 */
 	public BooleanExpression isLessThanOrEqual(Period period) {
@@ -253,7 +281,10 @@ public class DateRepeatExpression implements DateRepeatResult, RangeComparable<D
 	 * Returns TRUE if this expression evaluates to an equal or smaller offset
 	 * than the provided value, otherwise FALSE.
 	 *
-	 * @param anotherInstance the time period that might be greater in duration than this expression
+	 * @param anotherInstance the time period that might be greater in duration
+	 * than this expression
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a BooleanExpression
 	 */
 	@Override
@@ -271,7 +302,10 @@ public class DateRepeatExpression implements DateRepeatResult, RangeComparable<D
 	 * Returns TRUE if this expression evaluates to an equal or greater offset
 	 * than the provided value, otherwise FALSE.
 	 *
-	 * @param period the time period that might be lesser in duration than this expression
+	 * @param period the time period that might be lesser in duration than this
+	 * expression
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a BooleanExpression
 	 */
 	public BooleanExpression isGreaterThanOrEqual(Period period) {
@@ -282,7 +316,10 @@ public class DateRepeatExpression implements DateRepeatResult, RangeComparable<D
 	 * Returns TRUE if this expression evaluates to an equal or greater offset
 	 * than the provided value, otherwise FALSE.
 	 *
-	 * @param anotherInstance the time period that might be lesser in duration than this expression
+	 * @param anotherInstance the time period that might be lesser in duration
+	 * than this expression
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a BooleanExpression
 	 */
 	@Override
@@ -299,12 +336,15 @@ public class DateRepeatExpression implements DateRepeatResult, RangeComparable<D
 
 	/**
 	 * Returns TRUE if this expression evaluates to an smaller offset than the
-	 * provided value, FALSE when it is greater than the provided value, and
-	 * the value of the fallBackWhenEqual parameter when the 2 values are the
-	 * same.
+	 * provided value, FALSE when it is greater than the provided value, and the
+	 * value of the fallBackWhenEqual parameter when the 2 values are the same.
 	 *
-	 * @param period the time period that might be greater in duration than this expression
-	 * @param fallBackWhenEqual the expression to be evaluated when the DateRepeat values are equal
+	 * @param period the time period that might be greater in duration than this
+	 * expression
+	 * @param fallBackWhenEqual the expression to be evaluated when the DateRepeat
+	 * values are equal
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a BooleanExpression
 	 */
 	public BooleanExpression isLessThan(Period period, BooleanExpression fallBackWhenEqual) {
@@ -317,8 +357,12 @@ public class DateRepeatExpression implements DateRepeatResult, RangeComparable<D
 	 * the value of the fallBackWhenEqual parameter when the 2 values are the
 	 * same.
 	 *
-	 * @param anotherInstance the time period that might be greater in duration than this expression
-	 * @param fallBackWhenEqual the expression to be evaluated when the values are equal
+	 * @param anotherInstance the time period that might be greater in duration
+	 * than this expression
+	 * @param fallBackWhenEqual the expression to be evaluated when the values are
+	 * equal
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a BooleanExpression
 	 */
 	@Override
@@ -332,8 +376,12 @@ public class DateRepeatExpression implements DateRepeatResult, RangeComparable<D
 	 * the value of the fallBackWhenEqual parameter when the 2 values are the
 	 * same.
 	 *
-	 * @param period the time period that might be lesser in duration than this expression.
-	 * @param fallBackWhenEqual the expression to be evaluated when the values are equal.
+	 * @param period the time period that might be lesser in duration than this
+	 * expression.
+	 * @param fallBackWhenEqual the expression to be evaluated when the values are
+	 * equal.
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a BooleanExpression
 	 */
 	public BooleanExpression isGreaterThan(Period period, BooleanExpression fallBackWhenEqual) {
@@ -346,8 +394,12 @@ public class DateRepeatExpression implements DateRepeatResult, RangeComparable<D
 	 * the value of the fallBackWhenEqual parameter when the 2 values are the
 	 * same.
 	 *
-	 * @param anotherInstance  the time period that might be lesser in duration than this expression.
-	 * @param fallBackWhenEqual the expression to be evaluated when the values are equal.
+	 * @param anotherInstance the time period that might be lesser in duration
+	 * than this expression.
+	 * @param fallBackWhenEqual the expression to be evaluated when the values are
+	 * equal.
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a BooleanExpression
 	 */
 	@Override
@@ -359,6 +411,8 @@ public class DateRepeatExpression implements DateRepeatResult, RangeComparable<D
 	 * Returns TRUE if this expression and the provided value are the same.
 	 *
 	 * @param period the required value of the DateRepeat
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a BooleanExpression
 	 */
 	public BooleanExpression is(Period period) {
@@ -369,6 +423,8 @@ public class DateRepeatExpression implements DateRepeatResult, RangeComparable<D
 	 * Returns TRUE if this expression and the provided value are the same.
 	 *
 	 * @param anotherInstance the value that is to be found.
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a BooleanExpression
 	 */
 	@Override
@@ -377,9 +433,9 @@ public class DateRepeatExpression implements DateRepeatResult, RangeComparable<D
 
 			@Override
 			protected String doExpressionTransform(DBDatabase db) {
-				try{
+				try {
 					return db.getDefinition().doDateRepeatEqualsTransform(getFirst().toSQLString(db), getSecond().toSQLString(db));
-				}catch (UnsupportedOperationException exp){
+				} catch (UnsupportedOperationException exp) {
 					final DateRepeatExpression left = this.getFirst();
 					final DateRepeatExpression right = this.getSecond();
 					return BooleanExpression.allOf(
@@ -388,7 +444,7 @@ public class DateRepeatExpression implements DateRepeatResult, RangeComparable<D
 							left.getDays().is(right.getDays()),
 							left.getHours().is(right.getHours()),
 							left.getMinutes().is(right.getMinutes()),
-							left.getSeconds().is(right.getSeconds())									
+							left.getSeconds().is(right.getSeconds())
 					).toSQLString(db);
 				}
 			}
@@ -398,7 +454,9 @@ public class DateRepeatExpression implements DateRepeatResult, RangeComparable<D
 	/**
 	 * Returns FALSE if this expression and the provided value are the same.
 	 *
-	 * @param anotherInstance  a value that the expression should not match.
+	 * @param anotherInstance a value that the expression should not match.
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a BooleanExpression
 	 */
 	public BooleanExpression isNot(Period anotherInstance) {
@@ -408,7 +466,9 @@ public class DateRepeatExpression implements DateRepeatResult, RangeComparable<D
 	/**
 	 * Returns FALSE if this expression and the provided value are the same.
 	 *
-	 * @param anotherInstance  a value that the expression should not match.
+	 * @param anotherInstance a value that the expression should not match.
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a BooleanExpression
 	 */
 	@Override
@@ -420,6 +480,9 @@ public class DateRepeatExpression implements DateRepeatResult, RangeComparable<D
 
 	/**
 	 * Returns the YEARS part of this DateRepeat value.
+	 *
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 *
 	 * @return a number expression
 	 */
@@ -444,6 +507,9 @@ public class DateRepeatExpression implements DateRepeatResult, RangeComparable<D
 	/**
 	 * Returns the MONTHS part of this DateRepeat value.
 	 *
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
 	 * @return a number expression
 	 */
 	public NumberExpression getMonths() {
@@ -466,6 +532,9 @@ public class DateRepeatExpression implements DateRepeatResult, RangeComparable<D
 
 	/**
 	 * Returns the DAYS part of this DateRepeat value.
+	 *
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 *
 	 * @return a number expression
 	 */
@@ -490,6 +559,9 @@ public class DateRepeatExpression implements DateRepeatResult, RangeComparable<D
 	/**
 	 * Returns the HOURS part of this DateRepeat value.
 	 *
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
 	 * @return a number expression
 	 */
 	public NumberExpression getHours() {
@@ -512,6 +584,9 @@ public class DateRepeatExpression implements DateRepeatResult, RangeComparable<D
 
 	/**
 	 * Returns the MINUTES part of this DateRepeat value.
+	 *
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 *
 	 * @return a number expression
 	 */
@@ -536,6 +611,9 @@ public class DateRepeatExpression implements DateRepeatResult, RangeComparable<D
 	/**
 	 * Returns the SECONDS part of this DateRepeat value.
 	 *
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
 	 * @return a number expression
 	 */
 	public NumberExpression getSeconds() {
@@ -558,6 +636,9 @@ public class DateRepeatExpression implements DateRepeatResult, RangeComparable<D
 
 	/**
 	 * Converts the interval expression into a string/character expression.
+	 *
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 *
 	 * @return a StringExpression of the interval expression.
 	 */

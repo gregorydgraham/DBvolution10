@@ -20,6 +20,9 @@ import java.sql.Statement;
 
 /**
  *
+ * <p style="color: #F90;">Support DBvolution at
+ * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+ *
  * @author gregorygraham
  */
 public enum DateRepeatFunctions implements DBVFeature {
@@ -41,7 +44,6 @@ public enum DateRepeatFunctions implements DBVFeature {
 			+ "		String dateRepeatString = \"P\" + years + \"Y\" + months + \"M\" + days + \"D\" + hours + \"h\" + minutes + \"n\" + seconds + \"s\";\n"
 			+ "		return dateRepeatString;"
 			+ ""),
-
 	/**
 	 *
 	 */
@@ -62,7 +64,6 @@ public enum DateRepeatFunctions implements DBVFeature {
 			+ "			}\n"
 			+ "		}\n"
 			+ "		return true;\n"),
-
 	/**
 	 *
 	 */
@@ -83,7 +84,6 @@ public enum DateRepeatFunctions implements DBVFeature {
 			+ "			}\n"
 			+ "		}\n"
 			+ "		return false;\n"),
-
 	/**
 	 *
 	 */
@@ -104,7 +104,6 @@ public enum DateRepeatFunctions implements DBVFeature {
 			+ "			}\n"
 			+ "		}\n"
 			+ "		return true;\n"),
-
 	/**
 	 *
 	 */
@@ -125,7 +124,6 @@ public enum DateRepeatFunctions implements DBVFeature {
 			+ "			}\n"
 			+ "		}\n"
 			+ "		return false;\n"),
-
 	/**
 	 *
 	 */
@@ -146,7 +144,6 @@ public enum DateRepeatFunctions implements DBVFeature {
 			+ "			}\n"
 			+ "		}\n"
 			+ "		return true;\n"),
-
 	/**
 	 *
 	 */
@@ -176,8 +173,7 @@ public enum DateRepeatFunctions implements DBVFeature {
 			+ "		cal.add(Calendar.SECOND, seconds);\n"
 			+ "		cal.add(Calendar.MILLISECOND, millis);\n"
 			+ "		return cal.getTime();"
-					+ ""),
-
+			+ ""),
 	/**
 	 *
 	 */
@@ -207,42 +203,36 @@ public enum DateRepeatFunctions implements DBVFeature {
 			+ "		cal.add(Calendar.MILLISECOND, -1 * seconds);\n"
 			+ "		return cal.getTime();"
 			+ ""),
-
 	/**
 	 *
 	 */
 	YEAR_PART("Integer", "String dateRepeatStr", "", "NumberFormatException",
 			"		if (dateRepeatStr==null||dateRepeatStr.length()==0){return null;}\n"
 			+ "		return Integer.parseInt(dateRepeatStr.replaceAll(\".*P([-0-9.]+)Y.*\", \"$1\"));\n"),
-
 	/**
 	 *
 	 */
 	MONTH_PART("Integer", "String dateRepeatStr", "", "NumberFormatException",
 			"		if (dateRepeatStr==null||dateRepeatStr.length()==0){return null;}\n"
 			+ "		return Integer.parseInt(dateRepeatStr.replaceAll(\".*Y([-0-9.]+)M.*\", \"$1\"));\n"),
-
 	/**
 	 *
 	 */
 	DAY_PART("Integer", "String dateRepeatStr", "", "NumberFormatException",
 			"		if (dateRepeatStr==null||dateRepeatStr.length()==0){return null;}\n"
 			+ "		return Integer.parseInt(dateRepeatStr.replaceAll(\".*M([-0-9.]+)D.*\", \"$1\"));\n"),
-
 	/**
 	 *
 	 */
 	HOUR_PART("Integer", "String dateRepeatStr", "", "NumberFormatException",
 			"		if (dateRepeatStr==null||dateRepeatStr.length()==0){return null;}\n"
 			+ "		return Integer.parseInt(dateRepeatStr.replaceAll(\".*D([-0-9.]+)h.*\", \"$1\"));\n"),
-
 	/**
 	 *
 	 */
 	MINUTE_PART("Integer", "String dateRepeatStr", "", "NumberFormatException",
 			"		if (dateRepeatStr==null||dateRepeatStr.length()==0){return null;}\n"
 			+ "		return Integer.parseInt(dateRepeatStr.replaceAll(\".*h([-0-9.]+)n.*\", \"$1\"));\n"),
-
 	/**
 	 *
 	 */
@@ -278,7 +268,7 @@ public enum DateRepeatFunctions implements DBVFeature {
 	public String toString() {
 		return "DBV_DATEREPEAT_" + name();
 	}
-	
+
 	@Override
 	public String alias() {
 		return toString();
@@ -298,5 +288,5 @@ public enum DateRepeatFunctions implements DBVFeature {
 		}
 		final String createFunctionStatement = "CREATE ALIAS IF NOT EXISTS " + this + " DETERMINISTIC AS $$ \n" + imports + "\n\n" + "@CODE " + returnType + " " + this + "(" + parameters + ") " + (exceptions.equals("") ? "" : "throws " + exceptions) + "{\n" + code + "} $$;";
 		stmt.execute(createFunctionStatement);
-	}	
+	}
 }

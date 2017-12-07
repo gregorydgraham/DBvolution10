@@ -20,6 +20,9 @@ import java.sql.Statement;
 
 /**
  *
+ * <p style="color: #F90;">Support DBvolution at
+ * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+ *
  * @author gregorygraham
  */
 public enum MultiPoint2DFunctions {
@@ -29,7 +32,7 @@ public enum MultiPoint2DFunctions {
 	/**
 	 *
 	 */
-		ASLINE2D(Language.plpgsql, "path", "path1 geometry", "DECLARE \n"
+	ASLINE2D(Language.plpgsql, "path", "path1 geometry", "DECLARE \n"
 			+ " tempText text;\n"
 			+ "BEGIN\n"
 			+ " tempText = regexp_replace(ST_ASTEXT(path1), $$MULTIPOINT$$, $$$$, $$g$$); \n"

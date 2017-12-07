@@ -18,7 +18,6 @@ import nz.co.gregs.dbvolution.exceptions.*;
 import nz.co.gregs.dbvolution.expressions.*;
 import nz.co.gregs.dbvolution.query.*;
 
-
 public class DBMigration<M extends DBRow> extends RowDefinition {
 
 	private final DBDatabase database;
@@ -42,6 +41,9 @@ public class DBMigration<M extends DBRow> extends RowDefinition {
 	 * If you require extra criteria to be add to the DBMigration, limiting the
 	 * results to a subset, use the
 	 * {@link #getAllRows(nz.co.gregs.dbvolution.DBRow...) other getAllRows method}.
+	 *
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 *
 	 * @return a list of DBReport instances representing the results of the report
 	 * query. Database exceptions may be thrown
@@ -154,6 +156,8 @@ public class DBMigration<M extends DBRow> extends RowDefinition {
 	 * supplied examples.
 	 *
 	 * @param extraExamples extra rows defining additional criteria
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a list of DBReport instances representing the results of the report
 	 * query. 1 Database exceptions may be thrown
 	 * @throws java.sql.SQLException java.sql.SQLException
@@ -200,8 +204,8 @@ public class DBMigration<M extends DBRow> extends RowDefinition {
 	}
 
 	/**
-	 * Gets all the report rows of the migration limited by the supplied
-	 * example rows.
+	 * Gets all the report rows of the migration limited by the supplied example
+	 * rows.
 	 *
 	 * <p>
 	 * All supplied rows should be from a DBRow subclass that is included in the
@@ -218,6 +222,8 @@ public class DBMigration<M extends DBRow> extends RowDefinition {
 	 *
 	 * @param database database
 	 * @param rows rows
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a list of DBReport instances representing the results of the report
 	 * query. 1 Database exceptions may be thrown
 	 * @throws java.sql.SQLException java.sql.SQLException
@@ -253,6 +259,8 @@ public class DBMigration<M extends DBRow> extends RowDefinition {
 	 * @param rows rows example rows that provide extra criteria
 	 * @param conditions the conditions that will be supplied to the WHERE or
 	 * HAVING clause of the query
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a list of DBReport instances representing the results of the report
 	 * query
 	 * @throws java.sql.SQLException Database exceptions may be thrown
@@ -293,6 +301,8 @@ public class DBMigration<M extends DBRow> extends RowDefinition {
 	 *
 	 * @param database the database the SQL will be run against.
 	 * @param rows additional conditions to apply to the report.
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a String of the SQL that will be used by this DBQuery. 1 Database
 	 * exceptions may be thrown
 	 */
@@ -321,6 +331,8 @@ public class DBMigration<M extends DBRow> extends RowDefinition {
 	 *
 	 * @param database the database the SQL will be run against.
 	 * @param rows additional conditions to apply to the report.
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a String of the SQL that will be used by this DBQuery. 1 Database
 	 * exceptions may be thrown
 	 */
@@ -344,6 +356,8 @@ public class DBMigration<M extends DBRow> extends RowDefinition {
 	 *
 	 * @param database the database to format the query for.
 	 * @param rows additional conditions to be applied.
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a String of the SQL query that will be used to count the rows
 	 * returned by this report 1 Database exceptions may be thrown
 	 * @throws java.sql.SQLException java.sql.SQLException
@@ -366,6 +380,8 @@ public class DBMigration<M extends DBRow> extends RowDefinition {
 	 *
 	 * @param database the database to format the query for.
 	 * @param rows additional conditions for the query.
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return the number of rows that have or will be retrieved. 1 Database
 	 * exceptions may be thrown
 	 * @throws java.sql.SQLException java.sql.SQLException
@@ -387,6 +403,8 @@ public class DBMigration<M extends DBRow> extends RowDefinition {
 	 * </pre>
 	 *
 	 * @param columns a list of columns to sort the query by.
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return this DBReport instance
 	 */
 	public DBMigration<M> setSortOrder(ColumnProvider... columns) {
@@ -410,6 +428,8 @@ public class DBMigration<M extends DBRow> extends RowDefinition {
 	 * </pre>
 	 *
 	 * @param columns a list of columns to sort the query by.
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return this DBReport instance
 	 */
 	public DBMigration<M> setSortOrder(QueryableDatatype<?>... columns) {
@@ -444,6 +464,9 @@ public class DBMigration<M extends DBRow> extends RowDefinition {
 	/**
 	 * Returns the list of sort columns
 	 *
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
 	 * @return the sortColumns
 	 */
 	protected ColumnProvider[] getSortColumns() {
@@ -476,6 +499,8 @@ public class DBMigration<M extends DBRow> extends RowDefinition {
 	 * error-checking and the {@link AccidentalCartesianJoinException}</p>
 	 *
 	 * @param setting True if you need a Cartesian join in this DBQueryInsert.
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return this DBQueryInsert object
 	 */
 	public DBMigration<M> setCartesianJoinAllowed(Boolean setting) {
@@ -501,6 +526,8 @@ public class DBMigration<M extends DBRow> extends RowDefinition {
 	 *
 	 * @param setting - TRUE to allow blank queries, FALSE to return it to the
 	 * default setting.
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return this DBQueryInsert instance
 	 */
 	public DBMigration<M> setBlankQueryAllowed(Boolean setting) {

@@ -28,13 +28,13 @@ class ColumnOrAutoFillPropertyFilter implements JavaPropertyFilter {
 
 	@Override
 	public boolean acceptField(Field field) {
-		return field.isAnnotationPresent(DBColumn.class)||field.isAnnotationPresent(AutoFillDuringQueryIfPossible.class);
+		return field.isAnnotationPresent(DBColumn.class) || field.isAnnotationPresent(AutoFillDuringQueryIfPossible.class);
 	}
 
 	@Override
 	public boolean acceptBeanProperty(Method getter, Method setter) {
-		return (getter != null && (getter.isAnnotationPresent(DBColumn.class)|| getter.isAnnotationPresent(AutoFillDuringQueryIfPossible.class))) 
-				|| (setter != null && (setter.isAnnotationPresent(DBColumn.class)||setter.isAnnotationPresent(AutoFillDuringQueryIfPossible.class)));
+		return (getter != null && (getter.isAnnotationPresent(DBColumn.class) || getter.isAnnotationPresent(AutoFillDuringQueryIfPossible.class)))
+				|| (setter != null && (setter.isAnnotationPresent(DBColumn.class) || setter.isAnnotationPresent(AutoFillDuringQueryIfPossible.class)));
 	}
 
 }

@@ -31,6 +31,9 @@ import nz.co.gregs.dbvolution.internal.oracle.xe.*;
 /**
  * Implements support for version 11 and prior of the Oracle database.
  *
+ * <p style="color: #F90;">Support DBvolution at
+ * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+ *
  * @author Gregory Graham
  * @see OracleDB
  * @see Oracle12DB
@@ -39,9 +42,10 @@ import nz.co.gregs.dbvolution.internal.oracle.xe.*;
  * @see Oracle12DBDefinition
  */
 public class Oracle11XEDB extends OracleDB {
+
 	public static final long serialVersionUID = 1l;
 
-/**
+	/**
 	 *
 	 * Provides a convenient constructor for DBDatabases that have configuration
 	 * details hardwired or are able to automatically retrieve the details.
@@ -66,7 +70,7 @@ public class Oracle11XEDB extends OracleDB {
 	public Oracle11XEDB() {
 		super();
 	}
-	
+
 	/**
 	 * Creates a DBDatabase instance tweaked for Oracle 11 and above.
 	 *
@@ -133,10 +137,10 @@ public class Oracle11XEDB extends OracleDB {
 //			final DBStatement dbStatement = getDBStatement();
 			final String formattedTableName = definition.formatTableName(tableRow);
 			final List<String> primaryKeyColumnNames = tableRow.getPrimaryKeyColumnNames();
-			for(String primaryKeyColumnName:primaryKeyColumnNames) {
+			for (String primaryKeyColumnName : primaryKeyColumnNames) {
 				final String formattedColumnName = definition.formatColumnName(primaryKeyColumnName);
 //				try {
-					dbStatement.execute("DROP SEQUENCE " + definition.getPrimaryKeySequenceName(formattedTableName, formattedColumnName));
+				dbStatement.execute("DROP SEQUENCE " + definition.getPrimaryKeySequenceName(formattedTableName, formattedColumnName));
 //				} finally {
 //					dbStatement.close();
 //				}
@@ -153,12 +157,12 @@ public class Oracle11XEDB extends OracleDB {
 	@Override
 	protected Connection getConnectionFromDriverManager() throws SQLException {
 		return super.getConnectionFromDriverManager(); //To change body of generated methods, choose Tools | Templates.
-	}	
-	
+	}
+
 	@Override
 	protected void addDatabaseSpecificFeatures(Statement statement) throws SQLException {
 		super.addDatabaseSpecificFeatures(statement);
-		
+
 		for (GeometryFunctions fn : GeometryFunctions.values()) {
 			fn.add(statement);
 		}
@@ -169,7 +173,5 @@ public class Oracle11XEDB extends OracleDB {
 			fn.add(statement);
 		}
 	}
-
-
 
 }

@@ -33,6 +33,9 @@ import nz.co.gregs.dbvolution.results.StringResult;
  * Creates an operator that compares a column to a list of values using the IN
  * operator or similar.
  *
+ * <p style="color: #F90;">Support DBvolution at
+ * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+ *
  * @author Gregory Graham
  */
 public class DBInOperator extends DBOperator {
@@ -147,6 +150,9 @@ public class DBInOperator extends DBOperator {
 	/**
 	 * List of supplied values.
 	 *
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
 	 * @return the listOfPossibleValues
 	 */
 	public List<DBExpression> getListOfPossibleValues() {
@@ -156,6 +162,9 @@ public class DBInOperator extends DBOperator {
 	/**
 	 * List of strings derived, if any, from the supplied values.
 	 *
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
 	 * @return the listOfPossibleStrings
 	 */
 	public List<StringResult> getListOfPossibleStrings() {
@@ -164,6 +173,9 @@ public class DBInOperator extends DBOperator {
 
 	/**
 	 * List of numbers derived, if any, from the supplied values.
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
 	 * @return the listOfPossibleNumbers
 	 */
 	public List<NumberResult> getListOfPossibleNumbers() {
@@ -172,7 +184,10 @@ public class DBInOperator extends DBOperator {
 
 	/**
 	 * List of dates derived, if any, from the supplied values.
-	 * 
+	 *
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
 	 * @return the listOfPossibleDates
 	 */
 	public List<DateResult> getListOfPossibleDates() {

@@ -42,7 +42,12 @@ import org.apache.commons.codec.binary.Base64;
  * <p>
  * DBByteArray is the standard type of {@link DBLargeObject BLOB columns}.
  *
- * @deprecated DBByteArray does not correctly differentiate between CLOB and BLOB producing inconsistencies between databases.  Move to {@link DBLargeBinary} for binaries like images or {@link DBLargeText} for XML, HTML, or other large text values.
+ * @deprecated DBByteArray does not correctly differentiate between CLOB and
+ * BLOB producing inconsistencies between databases. Move to
+ * {@link DBLargeBinary} for binaries like images or {@link DBLargeText} for
+ * XML, HTML, or other large text values.
+ * <p style="color: #F90;">Support DBvolution at
+ * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
  * @author Gregory Graham
  */
 @Deprecated()
@@ -60,8 +65,8 @@ public class DBByteArray extends DBLargeObject<byte[]> {
 	}
 
 	/**
-	 * Creates a column expression with a large object result from the
-	 * expression provided.
+	 * Creates a column expression with a large object result from the expression
+	 * provided.
 	 *
 	 * <p>
 	 * Used in {@link DBReport}, and some {@link DBRow}, sub-classes to derive
@@ -75,8 +80,10 @@ public class DBByteArray extends DBLargeObject<byte[]> {
 
 	/**
 	 *
-	 * @return the standard SQL datatype that corresponds to this QDT as a
-	 * String
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
+	 * @return the standard SQL datatype that corresponds to this QDT as a String
 	 */
 	@Override
 	public String getSQLDatatype() {
@@ -118,8 +125,7 @@ public class DBByteArray extends DBLargeObject<byte[]> {
 	 * <p>
 	 * Unlike {@link #setValue(java.io.InputStream) setting an InputStream}, the
 	 * file is read immediately and stored internally. If you would prefer to
-	 * delay the reading of the file, wrap the file in a
-	 * {@link FileInputStream}.
+	 * delay the reading of the file, wrap the file in a {@link FileInputStream}.
 	 *
 	 * @param fileToRead fileToRead
 	 * @throws java.io.IOException java.io.IOException
@@ -294,7 +300,7 @@ public class DBByteArray extends DBLargeObject<byte[]> {
 		}
 		return bytes;
 	}
-	
+
 	@Override
 	public String formatValueForSQLStatement(DBDatabase db) {
 		throw new UnsupportedOperationException("Binary datatypes like " + this.getClass().getSimpleName() + " do not have a simple SQL representation. Do not call getSQLValue(), use the getInputStream() method instead.");
@@ -307,6 +313,8 @@ public class DBByteArray extends DBLargeObject<byte[]> {
 	 * Convenience method for {@link #setFromFileSystem(java.io.File) }.
 	 *
 	 * @param originalFile	originalFile
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return the byte[] of the contents of the file.
 	 * @throws java.io.FileNotFoundException java.io.FileNotFoundException
 	 * @throws java.io.IOException java.io.IOException
@@ -325,6 +333,8 @@ public class DBByteArray extends DBLargeObject<byte[]> {
 	 * Convenience method for {@link #setFromFileSystem(java.io.File) }.
 	 *
 	 * @param originalFile	originalFile
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return the byte[] of the contents of the file.
 	 * @throws java.io.FileNotFoundException java.io.FileNotFoundException
 	 * @throws java.io.IOException java.io.IOException
@@ -340,6 +350,8 @@ public class DBByteArray extends DBLargeObject<byte[]> {
 	 * Tries to set the DBDyteArray to the contents of the supplied file.
 	 *
 	 * @param originalFile	originalFile
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return the byte[] of the contents of the file.
 	 * @throws java.io.FileNotFoundException java.io.FileNotFoundException
 	 * @throws java.io.IOException java.io.IOException
@@ -417,14 +429,14 @@ public class DBByteArray extends DBLargeObject<byte[]> {
 		if (getLiteralValue() != null && originalFile != null) {
 			if (!originalFile.exists()) {
 				boolean createNewFile = originalFile.createNewFile();
-				if (!createNewFile){
-					boolean deleteResult = originalFile.delete(); 
-					if (!deleteResult){
-						throw new IOException("Unable to delete file: "+originalFile.getPath()+" could not be deleted, check the permissions of the file, directory, drive, and current user.");
+				if (!createNewFile) {
+					boolean deleteResult = originalFile.delete();
+					if (!deleteResult) {
+						throw new IOException("Unable to delete file: " + originalFile.getPath() + " could not be deleted, check the permissions of the file, directory, drive, and current user.");
 					}
 					createNewFile = originalFile.createNewFile();
-					if (!createNewFile){
-						throw new IOException("Unable to create file: "+originalFile.getPath()+" could not be created, check the permissions of the file, directory, drive, and current user.");
+					if (!createNewFile) {
+						throw new IOException("Unable to create file: " + originalFile.getPath() + " could not be created, check the permissions of the file, directory, drive, and current user.");
 					}
 				}
 			}
@@ -450,6 +462,9 @@ public class DBByteArray extends DBLargeObject<byte[]> {
 	/**
 	 * Returns the internal InputStream.
 	 *
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
 	 * @return an InputStream to read the bytes.
 	 */
 	@Override
@@ -461,8 +476,10 @@ public class DBByteArray extends DBLargeObject<byte[]> {
 	}
 
 	/**
-	 * Returns the byte[] used internally to store the value of this
-	 * DBByteArray.
+	 * Returns the byte[] used internally to store the value of this DBByteArray.
+	 *
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 *
 	 * @return the byte[] value of this DBByteArray.
 	 */

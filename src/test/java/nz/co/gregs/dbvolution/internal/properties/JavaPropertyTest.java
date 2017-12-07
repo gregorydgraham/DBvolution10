@@ -158,7 +158,7 @@ public class JavaPropertyTest {
 	@SuppressWarnings("unchecked")
 	public void getsOnlyPropertiesGivenOtherStuff() {
 		List<JavaProperty> properties = privateFieldPublicBeanFinder.getPropertiesOf(ThreePropertiesAndOtherStuffClass.class);
-		
+
 		assertThat(properties,
 				anyOf(
 						containsInAnyOrder(

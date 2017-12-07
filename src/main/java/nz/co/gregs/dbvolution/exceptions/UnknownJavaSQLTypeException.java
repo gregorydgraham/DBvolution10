@@ -19,6 +19,9 @@ package nz.co.gregs.dbvolution.exceptions;
  * Sometimes a database has a datatype that DBvolution has not yet supported,
  * this is one of those times.
  *
+ * <p style="color: #F90;">Support DBvolution at
+ * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+ *
  * @author Gregory Graham
  */
 public class UnknownJavaSQLTypeException extends RuntimeException {
@@ -50,6 +53,9 @@ public class UnknownJavaSQLTypeException extends RuntimeException {
 	}
 
 	/**
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
 	 * @return the unknownJavaSQLType
 	 */
 	public int getUnknownJavaSQLType() {

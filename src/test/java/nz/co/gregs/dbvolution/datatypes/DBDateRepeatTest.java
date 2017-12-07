@@ -39,6 +39,9 @@ import org.joda.time.Period;
 
 /**
  *
+ * <p style="color: #F90;">Support DBvolution at
+ * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+ *
  * @author Gregory Graham
  */
 public class DBDateRepeatTest extends AbstractTest {
@@ -140,7 +143,7 @@ public class DBDateRepeatTest extends AbstractTest {
 		allRows = query.getAllRows();
 
 		Assert.assertThat(allRows.size(), is(18));
-		
+
 		query = database.getDBQuery(marq);
 		query.addCondition(marq.column(marq.creationDate).getDateRepeatFrom(april2nd2011).isNull());
 		allRows = query.getAllRows();
@@ -234,7 +237,7 @@ public class DBDateRepeatTest extends AbstractTest {
 		@DBColumn
 		DBNumber numberOfMinutes = new DBNumber(this.column(this.creationDate).getDateRepeatFrom(march23rd2013).getMinutes());
 	}
-	
+
 	public static class DateRepeatHours extends Marque {
 
 		private static final long serialVersionUID = 1L;
@@ -371,7 +374,7 @@ public class DBDateRepeatTest extends AbstractTest {
 		Assert.assertThat(resultDate.getMonth() + 1, is(4));
 		Assert.assertThat(resultDate.getDate(), is(2));
 	}
-	
+
 	public static class DateRepeatTable extends DBRow {
 
 		private static final long serialVersionUID = 1L;

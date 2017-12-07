@@ -27,6 +27,9 @@ import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 
 /**
  *
+ * <p style="color: #F90;">Support DBvolution at
+ * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+ *
  * @author gregorygraham
  */
 public interface EncodingInterpreter {
@@ -54,6 +57,8 @@ public interface EncodingInterpreter {
 	 * {@code new String[]{"myclass-myfield=myvalue","otherclass-fieldb=valueb"}}
 	 *
 	 * @param encodedTablesPropertiesAndValues the entire encoded string
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return the entire encoded string separated into individuals parameter
 	 * strings in an array.
 	 */
@@ -74,6 +79,8 @@ public interface EncodingInterpreter {
 	 *
 	 * @param parameter the entire encoded parameter including class, property,
 	 * and value
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return the preferably full, canonical name of the class.
 	 */
 	public String getDBRowClassName(String parameter);
@@ -93,6 +100,8 @@ public interface EncodingInterpreter {
 	 *
 	 * @param parameter the entire encoded parameter including class, property,
 	 * and value
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return the Java name of the relevant field or bean..
 	 */
 	public String getPropertyName(String parameter);
@@ -108,6 +117,8 @@ public interface EncodingInterpreter {
 	 *
 	 * @param parameter the entire encoded parameter including class, property,
 	 * and value
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return the value to set the classes property to.
 	 */
 	public String getPropertyValue(String parameter);
@@ -126,6 +137,8 @@ public interface EncodingInterpreter {
 	 * {@code "myclass-myfield=myvalue&amp;otherclass-fieldb=valueb"}.
 	 *
 	 * @param rows
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return an encoded string of the rows
 	 */
 	String encode(DBRow... rows);

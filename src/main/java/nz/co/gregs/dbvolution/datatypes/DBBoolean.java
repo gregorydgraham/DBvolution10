@@ -45,6 +45,9 @@ import nz.co.gregs.dbvolution.operators.DBPermittedValuesOperator;
  * sub-classing DBString/DBInteger, extending DBStringEnum/DBIntegerEnum, or
  * using a {@link DBTypeAdaptor}.
  *
+ * <p style="color: #F90;">Support DBvolution at
+ * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+ *
  * @author Gregory Graham
  */
 public class DBBoolean extends QueryableDatatype<Boolean> implements BooleanResult {
@@ -97,6 +100,8 @@ public class DBBoolean extends QueryableDatatype<Boolean> implements BooleanResu
 	 * Implements the standard Java equals method.
 	 *
 	 * @param other	other
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return TRUE if this object is the same as the other, otherwise FALSE.
 	 */
 	@Override
@@ -151,6 +156,9 @@ public class DBBoolean extends QueryableDatatype<Boolean> implements BooleanResu
 	 * <p>
 	 * May return NULL.
 	 *
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
 	 * @return the value of this QDT as a boolean.
 	 */
 	public Boolean booleanValue() {
@@ -183,8 +191,7 @@ public class DBBoolean extends QueryableDatatype<Boolean> implements BooleanResu
 
 	/**
 	 *
-	 * reduces the rows to only the object, Set, List, Array, or vararg of
-	 * objects
+	 * reduces the rows to only the object, Set, List, Array, or vararg of objects
 	 *
 	 * @param permitted	permitted
 	 */
@@ -206,8 +213,7 @@ public class DBBoolean extends QueryableDatatype<Boolean> implements BooleanResu
 
 	/**
 	 *
-	 * reduces the rows to only the object, Set, List, Array, or vararg of
-	 * objects
+	 * reduces the rows to only the object, Set, List, Array, or vararg of objects
 	 *
 	 * @param permitted	permitted
 	 */
@@ -229,6 +235,9 @@ public class DBBoolean extends QueryableDatatype<Boolean> implements BooleanResu
 
 	/**
 	 * Indicates whether this DBBoolean needs support for returning NULLs.
+	 *
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 *
 	 * @return FALSE.
 	 */

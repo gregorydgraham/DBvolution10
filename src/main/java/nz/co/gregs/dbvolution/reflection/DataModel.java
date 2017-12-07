@@ -49,6 +49,9 @@ import org.reflections.Reflections;
  * database connections, the schema of those databases, and methods to
  * manipulate the schema objects in a generic way.
  *
+ * <p style="color: #F90;">Support DBvolution at
+ * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+ *
  * @author gregory.graham
  */
 public class DataModel {
@@ -66,6 +69,9 @@ public class DataModel {
 	 * <p>
 	 * The intent of this method is to help provide access to classes that might
 	 * define database connections.
+	 *
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 *
 	 * @return a set of {@link DBDatabase} classes.
 	 */
@@ -86,6 +92,9 @@ public class DataModel {
 	 * Finds the constructors for
 	 * {@link #getUseableDBDatabaseClasses() all known databases}.
 	 *
+	 *
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 *
 	 * @return a set of all constructors for all the known databases.
 	 */
@@ -132,11 +141,14 @@ public class DataModel {
 	 * }<br>
 	 * <br>
 	 * </code>
-	 *	 
-* <p>
+	 *
+	 * <p>
 	 * This method aims to find the getTestDatabase and getLocalTestDatabase
 	 * methods. The method getTestDatabaseOnHost(String) is excluded as it
 	 * requires a parameter to be supplied.
+	 *
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 *
 	 * @return a list of methods defined in DBDatabase classes that return a
 	 * DBDatabase and require no parameters.
@@ -185,10 +197,13 @@ public class DataModel {
 	 * }<br>
 	 * <br>
 	 * </code>
-	 *	 
-* <p>
+	 *
+	 * <p>
 	 * This method aims to find the getTestDatabaseOnHost(String),
 	 * getTestDatabase(), getLocalTestDatabase() methods.
+	 *
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 *
 	 * @return a list of methods defined in DBDatabase classes that return a
 	 * DBDatabase.
@@ -251,6 +266,9 @@ public class DataModel {
 	 * <p>
 	 * This method aims to find the getLocalTestDatabase() method.
 	 *
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
 	 * @return a list of static methods with no parameters defined in DBDatabase
 	 * classes that return a DBDatabase.
 	 */
@@ -274,6 +292,9 @@ public class DataModel {
 	 * The intent of this method is to find easy to use constructors that MAY
 	 * directly create a usable DBDatabase object.
 	 *
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
 	 * @return a list of easy to invoke DBDatabase constructors
 	 */
 	public static Set<Constructor<DBDatabase>> getDBDatabaseConstructorsPublicWithoutParameters() {
@@ -290,6 +311,9 @@ public class DataModel {
 	/**
 	 * Using {@link #getDBDatabaseConstructorsPublicWithoutParameters() } creates
 	 * instances of the accessible DBDatabases.
+	 *
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 *
 	 * @return all the instances that can be created from the constructors found
 	 * by {@link #getDBDatabaseConstructorsPublicWithoutParameters() }.
@@ -318,6 +342,9 @@ public class DataModel {
 	/**
 	 * Find all DBRow subclasses on the current classpath.
 	 *
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
 	 * @return all the subclasses of DBRow in the current classpath.
 	 */
 	public static Set<Class<? extends DBRow>> getDBRowClasses() {
@@ -326,15 +353,20 @@ public class DataModel {
 	}
 
 	/**
-	 * Find all DBRow subclasses on the current classpath, minus the example classes found in DBvolution.
+	 * Find all DBRow subclasses on the current classpath, minus the example
+	 * classes found in DBvolution.
 	 *
-	 * @return all the subclasses of DBRow in the current classpath, except DBV's examples.
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
+	 * @return all the subclasses of DBRow in the current classpath, except DBV's
+	 * examples.
 	 */
 	public static Set<Class<? extends DBRow>> getDBRowClassesExcludingDBvolutionExamples() {
 		Set<Class<? extends DBRow>> dbRowClasses = getDBRowClasses();
 		HashSet<Class<? extends DBRow>> returnSet = new HashSet<Class<? extends DBRow>>();
 		for (Class<? extends DBRow> dbrowClass : dbRowClasses) {
-			if (!dbrowClass.getPackage().getName().startsWith("nz.co.gregs.dbvolution")){
+			if (!dbrowClass.getPackage().getName().startsWith("nz.co.gregs.dbvolution")) {
 				returnSet.add(dbrowClass);
 			}
 		}
@@ -342,9 +374,14 @@ public class DataModel {
 	}
 
 	/**
-	 * Using the classes found by {@link #getDBRowClasses() }, creates an instance of as many classes as possible.
+	 * Using the classes found by {@link #getDBRowClasses() }, creates an instance
+	 * of as many classes as possible.
 	 *
-	 * @return an instance of every DBRow class that can be found and created easily.
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
+	 * @return an instance of every DBRow class that can be found and created
+	 * easily.
 	 */
 	public static List<DBRow> getDBRowInstances() {
 		List<DBRow> dbrows = new ArrayList<DBRow>();
@@ -378,6 +415,8 @@ public class DataModel {
 	 * @param db
 	 * @param encodedTablesPropertiesAndValues
 	 * @param interpreter
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a DBQuery.
 	 * @throws ClassNotFoundException
 	 * @throws InstantiationException

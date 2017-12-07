@@ -27,9 +27,12 @@ import org.junit.Test;
 
 /**
  *
+ * <p style="color: #F90;">Support DBvolution at
+ * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+ *
  * @author gregory.graham
  */
-public class DBLineSegment2DTest extends AbstractTest{
+public class DBLineSegment2DTest extends AbstractTest {
 
 	public DBLineSegment2DTest(Object testIterationName, Object db) {
 		super(testIterationName, db);

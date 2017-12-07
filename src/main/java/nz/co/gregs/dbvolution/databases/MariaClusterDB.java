@@ -28,6 +28,9 @@ import nz.co.gregs.dbvolution.databases.definitions.MariaDBDefinition;
  * You should probably be using {@link MariaClusterDB#MariaClusterDB(java.util.List, java.util.List, java.lang.String, java.lang.String, java.lang.String)
  * }
  *
+ * <p style="color: #F90;">Support DBvolution at
+ * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+ *
  * @author Gregory Graham
  */
 public class MariaClusterDB extends DBDatabase {

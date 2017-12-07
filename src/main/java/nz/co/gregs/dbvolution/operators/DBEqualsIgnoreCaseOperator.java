@@ -29,6 +29,9 @@ import nz.co.gregs.dbvolution.results.StringResult;
 /**
  * Implements the EQUALS operator for DBStrings, but case-insensitive.
  *
+ * <p style="color: #F90;">Support DBvolution at
+ * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+ *
  * @author Gregory Graham
  */
 public class DBEqualsIgnoreCaseOperator extends DBEqualsOperator {

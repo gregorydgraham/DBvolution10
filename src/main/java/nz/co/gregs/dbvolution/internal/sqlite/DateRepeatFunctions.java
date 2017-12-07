@@ -28,6 +28,9 @@ import org.sqlite.Function;
 
 /**
  *
+ * <p style="color: #F90;">Support DBvolution at
+ * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+ *
  * @author gregorygraham
  */
 public class DateRepeatFunctions {
@@ -130,6 +133,8 @@ public class DateRepeatFunctions {
 	/**
 	 *
 	 * @param date
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return the date as an SQLite SQL statement
 	 * @throws ParseException
 	 */

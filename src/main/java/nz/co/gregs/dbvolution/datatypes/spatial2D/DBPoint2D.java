@@ -42,6 +42,9 @@ import nz.co.gregs.dbvolution.results.Point2DResult;
  * {@code @DBColumn public DBPoint2D myPointColumn = new DBPoint2D();}
  *
  *
+ * <p style="color: #F90;">Support DBvolution at
+ * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+ *
  * @author Gregory Graham
  */
 public class DBPoint2D extends QueryableDatatype<Point> implements Point2DResult {
@@ -83,6 +86,9 @@ public class DBPoint2D extends QueryableDatatype<Point> implements Point2DResult
 	 *
 	 * <p>
 	 * NULL is valid result from this method.
+	 *
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 *
 	 * @return the set value of this object as a JTS Point object.
 	 */
@@ -143,7 +149,7 @@ public class DBPoint2D extends QueryableDatatype<Point> implements Point2DResult
 				point = database.getDefinition().transformDatabasePoint2DValueToJTSPoint(string);
 			} catch (ParseException ex) {
 				Logger.getLogger(DBPoint2D.class.getName()).log(Level.SEVERE, null, ex);
-				throw new ParsingSpatialValueException(fullColumnName, string,ex);
+				throw new ParsingSpatialValueException(fullColumnName, string, ex);
 			}
 			return point;
 		}
@@ -183,7 +189,6 @@ public class DBPoint2D extends QueryableDatatype<Point> implements Point2DResult
 //	public StringExpression toWKTFormat(){
 //		return StringExpression.value(jtsPointValue().toText());
 //	}
-
 	@Override
 	public StringExpression stringResult() {
 		return Point2DExpression.value(this).stringResult();

@@ -30,6 +30,9 @@ import nz.co.gregs.dbvolution.expressions.DBExpression;
  * Add {@code implements NumberResult} to your class and override the copy
  * method so that it returns your class type.
  *
+ * <p style="color: #F90;">Support DBvolution at
+ * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+ *
  * @author greg
  * @see DBExpression
  */

@@ -20,6 +20,9 @@ import java.sql.Statement;
 
 /**
  *
+ * <p style="color: #F90;">Support DBvolution at
+ * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+ *
  * @author gregorygraham
  */
 public enum StringFunctions {
@@ -37,7 +40,6 @@ public enum StringFunctions {
 			+ "         RETURN '';\n"
 			+ "   END CASE;\n"
 			+ "END;"),
-
 	/**
 	 *
 	 */

@@ -23,6 +23,9 @@ import nz.co.gregs.dbvolution.databases.definitions.Informix11DBDefinition;
 /**
  * A version of DBDatabase tweaked for Informix 11 and higher.
  *
+ * <p style="color: #F90;">Support DBvolution at
+ * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+ *
  * @author Gregory Graham
  */
 public class Informix11DB extends InformixDB {
@@ -72,6 +75,6 @@ public class Informix11DB extends InformixDB {
 
 	@Override
 	public DBDatabase clone() throws CloneNotSupportedException {
-		return super.clone(); 
+		return super.clone();
 	}
 }

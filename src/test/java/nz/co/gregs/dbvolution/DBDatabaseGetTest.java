@@ -34,6 +34,9 @@ import org.junit.Test;
 
 /**
  *
+ * <p style="color: #F90;">Support DBvolution at
+ * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+ *
  * @author Gregory Graham
  */
 public class DBDatabaseGetTest extends AbstractTest {
@@ -204,7 +207,7 @@ public class DBDatabaseGetTest extends AbstractTest {
 		permittedMarques.add("HUMMER");
 		hummerQuery.getName().excludedValues(permittedMarques);
 		List<Marque> gotMarques = database.get(hummerQuery);
-		
+
 		Assert.assertThat(gotMarques.size(), is(allMarques.size() - 2));
 	}
 
@@ -237,30 +240,30 @@ public class DBDatabaseGetTest extends AbstractTest {
 		Assert.assertTrue("Wrong number of rows selected, should be all but one of them", gotMarques.size() == marqueRows.size() - 1);
 		oldQuery.getCreationDate().permittedRange(future, null);
 		gotMarques = database.get(oldQuery);
-		
+
 		Assert.assertTrue("Wrong number of rows selected, should be NONE of them", gotMarques.isEmpty());
 		oldQuery = new Marque();
 		oldQuery.getCreationDate().permittedRangeInclusive(null, future);
 		gotMarques = database.get(oldQuery);
-		
+
 		Assert.assertTrue("Wrong number of rows selected, should be all but one of them", gotMarques.size() == marqueRows.size() - 1);
 		oldQuery = new Marque();
 		oldQuery.getCreationDate().permittedRangeExclusive(null, future);
 		gotMarques = database.get(oldQuery);
-		
+
 		Assert.assertTrue("Wrong number of rows selected, should be all but one of them", gotMarques.size() == marqueRows.size() - 1);
 		oldQuery.getCreationDate().permittedRange(new Date(0L), null);
 		gotMarques = database.get(oldQuery);
-		
+
 		Assert.assertTrue("Wrong number of rows selected, should be all but one of them", gotMarques.size() == marqueRows.size() - 1);
 		oldQuery.getCreationDate().permittedRange(null, new Date(0L));
 		gotMarques = database.get(oldQuery);
-		
+
 		Assert.assertTrue("Wrong number of rows selected, should be NONE of them", gotMarques.isEmpty());
 		oldQuery = new Marque();
 		oldQuery.getCreationDate().permittedRangeInclusive(new Date(0L), null);
 		gotMarques = database.get(oldQuery);
-		
+
 		Assert.assertTrue("Wrong number of rows selected, should be all but one of them", gotMarques.size() == marqueRows.size() - 1);
 	}
 

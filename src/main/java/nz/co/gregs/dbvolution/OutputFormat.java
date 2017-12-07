@@ -12,6 +12,9 @@ import nz.co.gregs.dbvolution.query.RowDefinition;
 
 /**
  *
+ * <p style="color: #F90;">Support DBvolution at
+ * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+ *
  * @author gregorygraham
  */
 public abstract class OutputFormat {
@@ -35,7 +38,7 @@ public abstract class OutputFormat {
 	public String formatDBRows(String headerRowStyle, String headerCellStyle, String rowStyle, SimpleDateFormat dateFormat, RowDefinition... rows) {
 		StringBuilder result = new StringBuilder(formatHeader(rows[0], headerRowStyle, headerCellStyle));
 		for (RowDefinition row : rows) {
-			result.append( formatRow(row, rowStyle, dateFormat));
+			result.append(formatRow(row, rowStyle, dateFormat));
 		}
 		return result.toString();
 	}
@@ -43,7 +46,7 @@ public abstract class OutputFormat {
 	public String formatDBQueryRows(String headerRowStyle, String headerCellStyle, String rowStyle, SimpleDateFormat dateFormat, List<DBQueryRow> queryRows) {
 		StringBuilder result = new StringBuilder(formatHeader(queryRows.get(0), headerRowStyle, headerCellStyle));
 		for (DBQueryRow row : queryRows) {
-			result.append( formatRow(row, rowStyle, dateFormat));
+			result.append(formatRow(row, rowStyle, dateFormat));
 		}
 		return result.toString();
 	}
@@ -278,7 +281,7 @@ public abstract class OutputFormat {
 
 		@Override
 		protected String getHeaderEnd(String tableRowCSSClass) {
-			return "</tr>"+System.getProperty("line.separator");
+			return "</tr>" + System.getProperty("line.separator");
 		}
 
 		@Override
@@ -313,7 +316,7 @@ public abstract class OutputFormat {
 
 		@Override
 		protected String getRowEnd(String tableRowCSSClass) {
-			return "</tr>"+System.getProperty("line.separator");
+			return "</tr>" + System.getProperty("line.separator");
 		}
 	}
 

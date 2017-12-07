@@ -27,6 +27,9 @@ import nz.co.gregs.dbvolution.datatypes.DBLargeBinary;
  * LargeObjectExpression exposes database expressions for manipulating BLOBs,
  * CLOBs, and JavaObjects.
  *
+ * <p style="color: #F90;">Support DBvolution at
+ * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+ *
  * @author gregorygraham
  */
 public class LargeObjectExpression implements LargeObjectResult, ExpressionColumn<DBLargeBinary> {
@@ -86,6 +89,9 @@ public class LargeObjectExpression implements LargeObjectResult, ExpressionColum
 	/**
 	 * Tests the LargeObjectExpression to see if it is not NULL in the database.
 	 *
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
 	 * @return a BooleanExpression to use in {@link DBQuery#addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression)
 	 * }
 	 */
@@ -95,6 +101,9 @@ public class LargeObjectExpression implements LargeObjectResult, ExpressionColum
 
 	/**
 	 * Tests the LargeObjectExpression to see if it is NULL in the database.
+	 *
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 *
 	 * @return a BooleanExpression to use in {@link DBQuery#addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression)
 	 * }

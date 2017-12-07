@@ -22,6 +22,9 @@ import nz.co.gregs.dbvolution.internal.properties.PropertyWrapper;
  * Thrown when the developer has attempted to use a POJO rather than a DBRow in
  * the {@link AutoFillDuringQueryIfPossible} annotation.
  *
+ * <p style="color: #F90;">Support DBvolution at
+ * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+ *
  * @author gregorygraham
  */
 public class UnacceptableClassForAutoFillAnnotation extends DBRuntimeException {

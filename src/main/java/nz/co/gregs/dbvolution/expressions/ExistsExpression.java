@@ -63,6 +63,9 @@ import nz.co.gregs.dbvolution.query.QueryDetails;
  * Another alternative is to add CarSales as an optional table and ignore rows
  * with a non-null CarSales.
  *
+ * <p style="color: #F90;">Support DBvolution at
+ * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+ *
  * @author Gregory Graham
  */
 public class ExistsExpression extends BooleanExpression {
@@ -88,7 +91,7 @@ public class ExistsExpression extends BooleanExpression {
 		}
 		for (DBRow innerTable : innerTables) {
 			final DBRow newInner = DBRow.copyDBRow(innerTable);
-			newInner.setReturnFields((Object[])newInner.getPrimaryKeysAsArray());
+			newInner.setReturnFields((Object[]) newInner.getPrimaryKeysAsArray());
 			this.innerQuery.getRequiredQueryTables().add(newInner);
 		}
 	}
@@ -109,7 +112,7 @@ public class ExistsExpression extends BooleanExpression {
 		this.outerQuery.getAllQueryTables().add(newOuter);
 		for (DBRow innerTable : innerTables) {
 			final DBRow newInner = DBRow.copyDBRow(innerTable);
-			newInner.setReturnFields((Object[])newInner.getPrimaryKeysAsArray());
+			newInner.setReturnFields((Object[]) newInner.getPrimaryKeysAsArray());
 			this.innerQuery.getRequiredQueryTables().add(newInner);
 			this.innerQuery.getAllQueryTables().add(newInner);
 		}
@@ -131,13 +134,13 @@ public class ExistsExpression extends BooleanExpression {
 		}
 		for (DBRow innerTable : innerQuery.getRequiredTables()) {
 			final DBRow newInner = DBRow.copyDBRow(innerTable);
-			newInner.setReturnFields((Object[])newInner.getPrimaryKeysAsArray());
+			newInner.setReturnFields((Object[]) newInner.getPrimaryKeysAsArray());
 			this.innerQuery.getRequiredQueryTables().add(newInner);
 			this.innerQuery.getAllQueryTables().add(newInner);
 		}
 		for (DBRow innerTable : innerQuery.getOptionalTables()) {
 			final DBRow newInner = DBRow.copyDBRow(innerTable);
-			newInner.setReturnFields((Object[])newInner.getPrimaryKeysAsArray());
+			newInner.setReturnFields((Object[]) newInner.getPrimaryKeysAsArray());
 			this.innerQuery.getOptionalQueryTables().add(newInner);
 			this.innerQuery.getAllQueryTables().add(newInner);
 		}
@@ -156,7 +159,7 @@ public class ExistsExpression extends BooleanExpression {
 		this.outerQuery.getRequiredQueryTables().add(newOuter);
 		this.outerQuery.getAllQueryTables().add(newOuter);
 		final DBRow newInner = DBRow.copyDBRow(innerTable);
-		newInner.setReturnFields((Object[])newInner.getPrimaryKeysAsArray());
+		newInner.setReturnFields((Object[]) newInner.getPrimaryKeysAsArray());
 		this.innerQuery.getRequiredQueryTables().add(newInner);
 		this.innerQuery.getAllQueryTables().add(newInner);
 	}

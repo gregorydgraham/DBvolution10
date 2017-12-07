@@ -20,6 +20,9 @@ import java.sql.Statement;
 
 /**
  *
+ * <p style="color: #F90;">Support DBvolution at
+ * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+ *
  * @author gregorygraham
  */
 public enum MultiPoint2DFunctions {
@@ -28,12 +31,10 @@ public enum MultiPoint2DFunctions {
 	 *
 	 */
 	GETPOINTATINDEX(GeometryFunctions.GETPOINTATINDEX),
-
 	/**
 	 *
 	 */
 	NUMPOINTS("NUMBER", "p_geometry     IN MDSYS.SDO_GEOMETRY", " begin return p_geometry.sdo_ordinates.count/2; end;"),
-
 	/**
 	 *
 	 */
@@ -47,7 +48,6 @@ public enum MultiPoint2DFunctions {
 			+ "      p_geometry.SDO_ORDINATES\n"
 			+ "    );\n"
 			+ "END;"),
-
 	/**
 	 *
 	 */
@@ -61,7 +61,6 @@ public enum MultiPoint2DFunctions {
 			+ "      p_geometry.SDO_ORDINATES\n"
 			+ "    );\n"
 			+ "END;"),
-
 	/**
 	 *
 	 */

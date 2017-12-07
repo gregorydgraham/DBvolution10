@@ -45,6 +45,9 @@ import org.apache.commons.codec.binary.Base64;
  * DBLargeText is the standard type of
  * {@link DBLargeObject CLOB and Text columns}.
  *
+ * <p style="color: #F90;">Support DBvolution at
+ * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+ *
  * @author Gregory Graham
  */
 public class DBLargeText extends DBLargeObject<byte[]> {
@@ -75,6 +78,9 @@ public class DBLargeText extends DBLargeObject<byte[]> {
 	}
 
 	/**
+	 *
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 *
 	 * @return the standard SQL datatype that corresponds to this QDT as a String
 	 */
@@ -308,6 +314,8 @@ public class DBLargeText extends DBLargeObject<byte[]> {
 	 * Convenience method for {@link #setFromFileSystem(java.io.File) }.
 	 *
 	 * @param originalFile	originalFile
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return the byte[] of the contents of the file.
 	 * @throws java.io.FileNotFoundException java.io.FileNotFoundException
 	 * @throws java.io.IOException java.io.IOException
@@ -326,6 +334,8 @@ public class DBLargeText extends DBLargeObject<byte[]> {
 	 * Convenience method for {@link #setFromFileSystem(java.io.File) }.
 	 *
 	 * @param originalFile	originalFile
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return the byte[] of the contents of the file.
 	 * @throws java.io.FileNotFoundException java.io.FileNotFoundException
 	 * @throws java.io.IOException java.io.IOException
@@ -341,6 +351,8 @@ public class DBLargeText extends DBLargeObject<byte[]> {
 	 * Tries to set the DBDyteArray to the contents of the supplied file.
 	 *
 	 * @param originalFile	originalFile
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return the byte[] of the contents of the file.
 	 * @throws java.io.FileNotFoundException java.io.FileNotFoundException
 	 * @throws java.io.IOException java.io.IOException
@@ -415,7 +427,7 @@ public class DBLargeText extends DBLargeObject<byte[]> {
 				boolean createNewFile = originalFile.createNewFile();
 				if (!createNewFile) {
 					boolean delete = originalFile.delete();
-					if (!delete){
+					if (!delete) {
 						throw new IOException("Unable to delete file: " + originalFile.getPath() + " could not be deleted, check the permissions of the file, directory, drive, and current user.");
 					}
 					createNewFile = originalFile.createNewFile();
@@ -446,6 +458,9 @@ public class DBLargeText extends DBLargeObject<byte[]> {
 	/**
 	 * Returns the internal InputStream.
 	 *
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
 	 * @return an InputStream to read the bytes.
 	 */
 	@Override
@@ -458,6 +473,9 @@ public class DBLargeText extends DBLargeObject<byte[]> {
 
 	/**
 	 * Returns the byte[] used internally to store the value of this DBByteObject.
+	 *
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 *
 	 * @return the byte[] value of this DBByteObject.
 	 */
@@ -566,6 +584,5 @@ public class DBLargeText extends DBLargeObject<byte[]> {
 		byte[] gotBytes = resultSet.getBytes(fullColumnName);
 		return gotBytes;
 	}
-	
-	
+
 }

@@ -30,6 +30,9 @@ import nz.co.gregs.dbvolution.databases.definitions.OracleAWSDBDefinition;
  * Implements support for version 11 and prior of the Oracle database as provide
  * by Amazon's AWS relational database service (RDS).
  *
+ * <p style="color: #F90;">Support DBvolution at
+ * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+ *
  * @author Gregory Graham
  * @see OracleAWSDB
  * @see Oracle12DB
@@ -38,6 +41,7 @@ import nz.co.gregs.dbvolution.databases.definitions.OracleAWSDBDefinition;
  * @see Oracle12DBDefinition
  */
 public class OracleAWS11DB extends OracleAWSDB {
+
 	public static final long serialVersionUID = 1l;
 
 	/**
@@ -131,10 +135,10 @@ public class OracleAWS11DB extends OracleAWSDB {
 //			final DBStatement dbStatement = getDBStatement();
 			final String formattedTableName = definition.formatTableName(tableRow);
 			final List<String> primaryKeyColumnNames = tableRow.getPrimaryKeyColumnNames();
-			for(String primaryKeyColumnName:primaryKeyColumnNames) {
+			for (String primaryKeyColumnName : primaryKeyColumnNames) {
 				final String formattedColumnName = definition.formatColumnName(primaryKeyColumnName);
 //				try {
-					dbStatement.execute("DROP SEQUENCE " + definition.getPrimaryKeySequenceName(formattedTableName, formattedColumnName));
+				dbStatement.execute("DROP SEQUENCE " + definition.getPrimaryKeySequenceName(formattedTableName, formattedColumnName));
 //				} finally {
 //					dbStatement.close();
 //				}

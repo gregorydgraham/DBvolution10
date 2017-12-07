@@ -291,8 +291,7 @@ public class TypeAdaptorUsabilityTest {
 		}
 	}
 
-	public
-			void stringFieldAdaptedAsCustomQDT_whenAdaptingOnComplexPOJOTypes() {
+	public void stringFieldAdaptedAsCustomQDT_whenAdaptingOnComplexPOJOTypes() {
 		class MyDataType {
 
 			public MyDataType parse(String str) {

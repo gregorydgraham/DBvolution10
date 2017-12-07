@@ -38,6 +38,9 @@ import nz.co.gregs.dbvolution.internal.h2.*;
  * This DBDefinition is automatically included in {@link H2DB} instances, and
  * you should not need to use it directly.
  *
+ * <p style="color: #F90;">Support DBvolution at
+ * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+ *
  * @author Gregory Graham
  */
 public class H2DBDefinition extends DBDefinition {
@@ -53,22 +56,21 @@ public class H2DBDefinition extends DBDefinition {
 		}
 		return "PARSEDATETIME('" + strToDateFormat.format(date) + "','" + H2_DATE_FORMAT_STR + "')";
 	}
-	
+
 	@Override
-	public String getDatePartsFormattedForQuery(String years, String months, String days, String hours, String minutes, String seconds, String subsecond, String timeZoneSign, String timeZoneHourOffset, String timeZoneMinuteOffSet)
-	{
+	public String getDatePartsFormattedForQuery(String years, String months, String days, String hours, String minutes, String seconds, String subsecond, String timeZoneSign, String timeZoneHourOffset, String timeZoneMinuteOffSet) {
 		return "PARSEDATETIME("
-				+years
-				+"||'-'||"+months
-				+"||'-'||"+days
-				+"||' '||"+hours
-				+"||':'||"+minutes
-				+"||':'||"+seconds
-//				+"||'.'||"+subsecond
-				+"||' '||"+timeZoneSign
-				+"||"+timeZoneHourOffset
-				+"||"+timeZoneMinuteOffSet
-				+", '" + H2_DATE_FORMAT_STR + "')";
+				+ years
+				+ "||'-'||" + months
+				+ "||'-'||" + days
+				+ "||' '||" + hours
+				+ "||':'||" + minutes
+				+ "||':'||" + seconds
+				//				+"||'.'||"+subsecond
+				+ "||' '||" + timeZoneSign
+				+ "||" + timeZoneHourOffset
+				+ "||" + timeZoneMinuteOffSet
+				+ ", '" + H2_DATE_FORMAT_STR + "')";
 		//return "PARSEDATETIME('" + years + "','" + H2_DATE_FORMAT_STR + "')";
 	}
 
@@ -103,9 +105,9 @@ public class H2DBDefinition extends DBDefinition {
 
 	@Override
 	public String doStringLengthTransform(String enclosedValue) {
-		return " CAST(" + getStringLengthFunctionName() + "( " + enclosedValue + " ) as NUMERIC("+getNumericPrecision()+","+getNumericScale()+"))";
+		return " CAST(" + getStringLengthFunctionName() + "( " + enclosedValue + " ) as NUMERIC(" + getNumericPrecision() + "," + getNumericScale() + "))";
 	}
-	
+
 	@Override
 	public String doDateAtTimeZoneTransform(String dateSQL, TimeZone timeZone) throws UnsupportedOperationException {
 		throw new UnsupportedOperationException();
@@ -152,6 +154,9 @@ public class H2DBDefinition extends DBDefinition {
 
 	/**
 	 * Defines the function used to get the current timestamp from the database.
+	 *
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 *
 	 * @return the H@ implementation subtracts the time zone from the current
 	 * timestamp
@@ -310,17 +315,17 @@ public class H2DBDefinition extends DBDefinition {
 
 	@Override
 	public String doLine2DIntersectsLine2DTransform(String toSQLString, String toSQLString0) {
-		return Line2DFunctions.INTERSECTS_LINE2D + "((" + toSQLString +"), ("+toSQLString0+ "))";
+		return Line2DFunctions.INTERSECTS_LINE2D + "((" + toSQLString + "), (" + toSQLString0 + "))";
 	}
 
 	@Override
 	public String doLine2DIntersectionPointWithLine2DTransform(String toSQLString, String toSQLString0) {
-		return Line2DFunctions.INTERSECTIONWITH_LINE2D + "((" + toSQLString +"), ("+toSQLString0+ "))";
+		return Line2DFunctions.INTERSECTIONWITH_LINE2D + "((" + toSQLString + "), (" + toSQLString0 + "))";
 	}
 
 	@Override
 	public String doLine2DAllIntersectionPointsWithLine2DTransform(String toSQLString, String toSQLString0) {
-		return Line2DFunctions.ALLINTERSECTIONSWITH_LINE2D + "((" + toSQLString +"), ("+toSQLString0+ "))";
+		return Line2DFunctions.ALLINTERSECTIONSWITH_LINE2D + "((" + toSQLString + "), (" + toSQLString0 + "))";
 	}
 
 	@Override
@@ -363,7 +368,7 @@ public class H2DBDefinition extends DBDefinition {
 		String wktValue = geom.toText();
 		return Polygon2DFunctions.CREATE_FROM_WKTPOLYGON2D.alias() + "('" + wktValue + "')";
 	}
-	
+
 	@Override
 	public String doPolygon2DAsTextTransform(String polygonSQL) {
 		return polygonSQL;
@@ -453,117 +458,116 @@ public class H2DBDefinition extends DBDefinition {
 
 	@Override
 	public String doLineSegment2DIntersectsLineSegment2DTransform(String toSQLString, String toSQLString0) {
-		return LineSegment2DFunctions.INTERSECTS_LINESEGMENT2D+"(("+toSQLString+"), ("+toSQLString0+"))";
+		return LineSegment2DFunctions.INTERSECTS_LINESEGMENT2D + "((" + toSQLString + "), (" + toSQLString0 + "))";
 	}
 
 	@Override
 	public String doLineSegment2DGetMaxXTransform(String toSQLString) {
-		return LineSegment2DFunctions.MAXX+"("+toSQLString+")";
+		return LineSegment2DFunctions.MAXX + "(" + toSQLString + ")";
 	}
 
 	@Override
 	public String doLineSegment2DGetMinXTransform(String toSQLString) {
-		return LineSegment2DFunctions.MINX+"("+toSQLString+")";
+		return LineSegment2DFunctions.MINX + "(" + toSQLString + ")";
 	}
 
 	@Override
 	public String doLineSegment2DGetMaxYTransform(String toSQLString) {
-		return LineSegment2DFunctions.MAXY+"("+toSQLString+")";
+		return LineSegment2DFunctions.MAXY + "(" + toSQLString + ")";
 	}
 
 	@Override
 	public String doLineSegment2DGetMinYTransform(String toSQLString) {
-		return LineSegment2DFunctions.MINY+"("+toSQLString+")";
+		return LineSegment2DFunctions.MINY + "(" + toSQLString + ")";
 	}
 
 	@Override
 	public String doLineSegment2DGetBoundingBoxTransform(String toSQLString) {
-		return LineSegment2DFunctions.BOUNDINGBOX+"("+toSQLString+")";
+		return LineSegment2DFunctions.BOUNDINGBOX + "(" + toSQLString + ")";
 	}
 
 	@Override
 	public String doLineSegment2DDimensionTransform(String toSQLString) {
-		return LineSegment2DFunctions.DIMENSION+"("+toSQLString+")";
+		return LineSegment2DFunctions.DIMENSION + "(" + toSQLString + ")";
 	}
 
 	@Override
 	public String doLineSegment2DNotEqualsTransform(String toSQLString, String toSQLString0) {
-		return "!"+LineSegment2DFunctions.EQUALS+"(("+toSQLString+"), ("+toSQLString0+"))";
+		return "!" + LineSegment2DFunctions.EQUALS + "((" + toSQLString + "), (" + toSQLString0 + "))";
 	}
 
 	@Override
 	public String doLineSegment2DEqualsTransform(String toSQLString, String toSQLString0) {
-		return LineSegment2DFunctions.EQUALS+"(("+toSQLString+"), ("+toSQLString0+"))";
+		return LineSegment2DFunctions.EQUALS + "((" + toSQLString + "), (" + toSQLString0 + "))";
 	}
 
 	@Override
 	public String doLineSegment2DAsTextTransform(String toSQLString) {
-		return LineSegment2DFunctions.ASTEXT+"("+toSQLString+")";
+		return LineSegment2DFunctions.ASTEXT + "(" + toSQLString + ")";
 	}
-	
+
 	@Override
 	public String doLineSegment2DIntersectionPointWithLineSegment2DTransform(String toSQLString, String toSQLString0) {
-		return LineSegment2DFunctions.INTERSECTIONPOINT_LINESEGMENT2D+"(("+toSQLString+"), ("+toSQLString0+"))";
+		return LineSegment2DFunctions.INTERSECTIONPOINT_LINESEGMENT2D + "((" + toSQLString + "), (" + toSQLString0 + "))";
 	}
 
 	@Override
 	public String doMultiPoint2DEqualsTransform(String first, String second) {
-		return MultiPoint2DFunctions.EQUALS+"(("+first+"), ("+second+"), "+MultiPoint2DFunctions.getCurrentVersion()+")";
+		return MultiPoint2DFunctions.EQUALS + "((" + first + "), (" + second + "), " + MultiPoint2DFunctions.getCurrentVersion() + ")";
 	}
 
 	@Override
 	public String doMultiPoint2DGetPointAtIndexTransform(String first, String index) {
-		return MultiPoint2DFunctions.GETPOINTATINDEX_FUNCTION+"(("+first+"), ("+index+"), "+MultiPoint2DFunctions.getCurrentVersion()+")";
+		return MultiPoint2DFunctions.GETPOINTATINDEX_FUNCTION + "((" + first + "), (" + index + "), " + MultiPoint2DFunctions.getCurrentVersion() + ")";
 	}
 
 	@Override
 	public String doMultiPoint2DGetNumberOfPointsTransform(String first) {
-		return MultiPoint2DFunctions.GETNUMBEROFPOINTS_FUNCTION+"("+first+", "+MultiPoint2DFunctions.getCurrentVersion()+")";
+		return MultiPoint2DFunctions.GETNUMBEROFPOINTS_FUNCTION + "(" + first + ", " + MultiPoint2DFunctions.getCurrentVersion() + ")";
 	}
 
 	@Override
 	public String doMultiPoint2DMeasurableDimensionsTransform(String first) {
-		return MultiPoint2DFunctions.DIMENSION+"("+first+", "+MultiPoint2DFunctions.getCurrentVersion()+")";
+		return MultiPoint2DFunctions.DIMENSION + "(" + first + ", " + MultiPoint2DFunctions.getCurrentVersion() + ")";
 	}
 
 	@Override
 	public String doMultiPoint2DGetBoundingBoxTransform(String first) {
-		return MultiPoint2DFunctions.BOUNDINGBOX+"("+first+", "+MultiPoint2DFunctions.getCurrentVersion()+")";
+		return MultiPoint2DFunctions.BOUNDINGBOX + "(" + first + ", " + MultiPoint2DFunctions.getCurrentVersion() + ")";
 	}
 
 	@Override
 	public String doMultiPoint2DAsTextTransform(String first) {
-		return MultiPoint2DFunctions.ASTEXT+"("+first+", "+MultiPoint2DFunctions.getCurrentVersion()+")";
+		return MultiPoint2DFunctions.ASTEXT + "(" + first + ", " + MultiPoint2DFunctions.getCurrentVersion() + ")";
 	}
 
 	@Override
 	public String doMultiPoint2DToLine2DTransform(String first) {
-		return MultiPoint2DFunctions.ASLINE2D+"("+first+", "+MultiPoint2DFunctions.getCurrentVersion()+")";
+		return MultiPoint2DFunctions.ASLINE2D + "(" + first + ", " + MultiPoint2DFunctions.getCurrentVersion() + ")";
 	}
 
 //	@Override
 //	public String doMultiPoint2DToPolygon2DTransform(String first) {
 //		return MultiPoint2DFunctions.ASPOLYGON2D+"("+first+", "+MultiPoint2DFunctions.getCurrentVersion()+")";
 //	}
-
 	@Override
 	public String doMultiPoint2DGetMinYTransform(String first) {
-		return MultiPoint2DFunctions.MINY+"("+first+", "+MultiPoint2DFunctions.getCurrentVersion()+")";
+		return MultiPoint2DFunctions.MINY + "(" + first + ", " + MultiPoint2DFunctions.getCurrentVersion() + ")";
 	}
 
 	@Override
 	public String doMultiPoint2DGetMinXTransform(String first) {
-		return MultiPoint2DFunctions.MINX+"("+first+", "+MultiPoint2DFunctions.getCurrentVersion()+")";
+		return MultiPoint2DFunctions.MINX + "(" + first + ", " + MultiPoint2DFunctions.getCurrentVersion() + ")";
 	}
 
 	@Override
 	public String doMultiPoint2DGetMaxYTransform(String first) {
-		return MultiPoint2DFunctions.MAXY+"("+first+", "+MultiPoint2DFunctions.getCurrentVersion()+")";
+		return MultiPoint2DFunctions.MAXY + "(" + first + ", " + MultiPoint2DFunctions.getCurrentVersion() + ")";
 	}
 
 	@Override
 	public String doMultiPoint2DGetMaxXTransform(String first) {
-		return MultiPoint2DFunctions.MAXX+"("+first+", "+MultiPoint2DFunctions.getCurrentVersion()+")";
+		return MultiPoint2DFunctions.MAXX + "(" + first + ", " + MultiPoint2DFunctions.getCurrentVersion() + ")";
 	}
 
 	@Override

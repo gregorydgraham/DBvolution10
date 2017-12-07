@@ -56,6 +56,9 @@ import nz.co.gregs.dbvolution.datatypes.DBNumber;
  * <p>
  * DBAutoIncrement is generated automatically by DBTableClassGenerator.</p>
  *
+ * <p style="color: #F90;">Support DBvolution at
+ * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+ *
  * @author Gregory Graham
  * @see DBColumn
  * @see DBPrimaryKey

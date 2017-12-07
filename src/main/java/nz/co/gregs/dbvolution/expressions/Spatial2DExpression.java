@@ -20,6 +20,9 @@ import nz.co.gregs.dbvolution.results.Spatial2DResult;
 /**
  * Designates the expression as a Spatial2D expression.
  *
+ * <p style="color: #F90;">Support DBvolution at
+ * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+ *
  * @author gregorygraham
  */
 public interface Spatial2DExpression extends Spatial2DResult {
@@ -43,6 +46,9 @@ public interface Spatial2DExpression extends Spatial2DResult {
 	 * All Spatial2D values are still defined in 2D space and require an X and a Y
 	 * value.
 	 *
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
 	 * @return a NumberExpression
 	 */
 	NumberExpression measurableDimensions();
@@ -50,6 +56,9 @@ public interface Spatial2DExpression extends Spatial2DResult {
 	/**
 	 * Return a rectangular Polygon2D that fully encompasses all point(s) within
 	 * this value.
+	 *
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 *
 	 * @return a Polygon2D expression
 	 */
@@ -59,6 +68,9 @@ public interface Spatial2DExpression extends Spatial2DResult {
 	 * Return a expression that provides the largest X value within the spatial
 	 * value.
 	 *
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
 	 * @return a NumberExpression
 	 */
 	public NumberExpression maxX();
@@ -66,6 +78,9 @@ public interface Spatial2DExpression extends Spatial2DResult {
 	/**
 	 * Return a expression that provides the largest Y value within the spatial
 	 * value.
+	 *
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 *
 	 * @return a NumberExpression
 	 */
@@ -75,6 +90,9 @@ public interface Spatial2DExpression extends Spatial2DResult {
 	 * Return a expression that provides the smallest X value within the spatial
 	 * value.
 	 *
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
 	 * @return a NumberExpression
 	 */
 	public NumberExpression minX();
@@ -82,6 +100,9 @@ public interface Spatial2DExpression extends Spatial2DResult {
 	/**
 	 * Return a expression that provides the smallest Y value within the spatial
 	 * value.
+	 *
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 *
 	 * @return a NumberExpression
 	 */
@@ -100,6 +121,9 @@ public interface Spatial2DExpression extends Spatial2DResult {
 	 * geometries use X, Y, and Z. Presumably hyper-geometries have X, Y, Z, W,
 	 * etc dimensions.
 	 *
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
 	 * @return a number expression representing the number of spatial dimensions
 	 */
 	NumberExpression spatialDimensions();
@@ -115,6 +139,9 @@ public interface Spatial2DExpression extends Spatial2DResult {
 	 * <p>
 	 * Magnitude isn't actually a very good way to store this information but it
 	 * is used sometimes.
+	 *
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 *
 	 * @return TRUE if this spatial type supports magnitude values.
 	 */
@@ -136,12 +163,18 @@ public interface Spatial2DExpression extends Spatial2DResult {
 	 * This value will be null if the actual value is null OR if the spatial type
 	 * does not support magnitudes.
 	 *
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
 	 * @return a NumberExpression for the magnitude value of this spatial value.
 	 */
 	NumberExpression magnitude();
 
 	/**
 	 * Transform the value into the Well Known Text (WKT) format.
+	 *
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 *
 	 * @return an expression that converts the geometry into the WKT format.
 	 */

@@ -21,6 +21,9 @@ import java.sql.Statement;
 
 /**
  *
+ * <p style="color: #F90;">Support DBvolution at
+ * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+ *
  * @author gregory.graham
  */
 public enum MultiPoint2DFunctions {
@@ -100,7 +103,6 @@ public enum MultiPoint2DFunctions {
 			+ "\n"
 			+ "   RETURN result;\n"
 			+ "END;"),
-
 	/**
 	 *
 	 */
@@ -176,7 +178,6 @@ public enum MultiPoint2DFunctions {
 			+ "\n"
 			+ "   RETURN result;\n"
 			+ "END;"),
-
 	/**
 	 *
 	 */
@@ -252,7 +253,6 @@ public enum MultiPoint2DFunctions {
 			+ "\n"
 			+ "   RETURN result;\n"
 			+ "END;"),
-
 	/**
 	 *
 	 */
@@ -328,7 +328,6 @@ public enum MultiPoint2DFunctions {
 			+ "\n"
 			+ "   RETURN result;\n"
 			+ "END;"),
-
 	/**
 	 *
 	 */
@@ -373,7 +372,6 @@ public enum MultiPoint2DFunctions {
 			+ "      RETURN result;\n"
 			+ "   END IF;\n"
 			+ "END;"),
-
 	/**
 	 *
 	 */
@@ -381,7 +379,6 @@ public enum MultiPoint2DFunctions {
 			+ "BEGIN\n"
 			+ "   RETURN CASE WHEN (multiPoint1 = multiPoint2) THEN 1 ELSE 0 END;\n"
 			+ "END;"),
-
 	/**
 	 *
 	 */
@@ -432,7 +429,6 @@ public enum MultiPoint2DFunctions {
 			+ "\n"
 			+ "   RETURN result;\n"
 			+ "END;"),
-
 	/**
 	 *
 	 */
@@ -465,19 +461,16 @@ public enum MultiPoint2DFunctions {
 			+ "\n"
 			+ "   RETURN result;\n"
 			+ "END;"),
-
 	/**
 	 *
 	 */
 	DIMENSION("INTEGER", "mpoint IN VARCHAR", "BEGIN\n"
 			+ "RETURN 0;\n"
 			+ "END;"),
-
 	/**
 	 *
 	 */
 	ASTEXT("VARCHAR", "mpoint IN VARCHAR", "BEGIN RETURN mpoint; END;"),
-
 	/**
 	 *
 	 */

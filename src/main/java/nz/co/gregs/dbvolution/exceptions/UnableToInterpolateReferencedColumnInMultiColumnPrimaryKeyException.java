@@ -14,6 +14,9 @@ import nz.co.gregs.dbvolution.internal.properties.RowDefinitionClassWrapper;
 
 /**
  *
+ * <p style="color: #F90;">Support DBvolution at
+ * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+ *
  * @author gregorygraham
  */
 public class UnableToInterpolateReferencedColumnInMultiColumnPrimaryKeyException extends DBRuntimeException {
@@ -28,7 +31,7 @@ public class UnableToInterpolateReferencedColumnInMultiColumnPrimaryKeyException
 
 	public UnableToInterpolateReferencedColumnInMultiColumnPrimaryKeyException(DBRow aThis, List<QueryableDatatype<?>> primaryKeys) {
 		throw new UnsupportedOperationException(" Class " + aThis.getClass().getCanonicalName()
-				+ "has a " + primaryKeys.size() + "columns in it's primary key but an attempt has been made to reference the PK as a single column.  Switch to a multi-column method to set the PK columns"); 
+				+ "has a " + primaryKeys.size() + "columns in it's primary key but an attempt has been made to reference the PK as a single column.  Switch to a multi-column method to set the PK columns");
 	}
 
 }

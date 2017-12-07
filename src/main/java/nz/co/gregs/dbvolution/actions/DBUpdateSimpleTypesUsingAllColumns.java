@@ -32,6 +32,9 @@ import nz.co.gregs.dbvolution.internal.properties.PropertyWrapper;
  * The best way to use this is by using {@link DBUpdate#getUpdates(nz.co.gregs.dbvolution.DBRow...)
  * } to automatically use this action.
  *
+ * <p style="color: #F90;">Support DBvolution at
+ * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+ *
  * @author Gregory Graham
  */
 public class DBUpdateSimpleTypesUsingAllColumns extends DBUpdateSimpleTypes {
@@ -62,7 +65,7 @@ public class DBUpdateSimpleTypesUsingAllColumns extends DBUpdateSimpleTypes {
 			} else {
 				sql.append(defn.beginWhereClauseLine())
 						.append(prop.columnName())
-						.append(defn.getEqualsComparator()) 
+						.append(defn.getEqualsComparator())
 						.append(qdt.hasChanged() ? qdt.getPreviousSQLValue(db) : qdt.toSQLString(db));
 			}
 		}

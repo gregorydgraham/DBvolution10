@@ -45,8 +45,8 @@ public abstract class DBEnum<E extends Enum<E> & DBEnumValue<T>, T> extends Quer
 	 * Creates a DBEnum with the value provided.
 	 *
 	 * <p>
-	 * The resulting DBEnum will be set as having the value provided but will
-	 * not be defined in the database.
+	 * The resulting DBEnum will be set as having the value provided but will not
+	 * be defined in the database.
 	 *
 	 * @param literalValue	literalValue
 	 */
@@ -104,8 +104,8 @@ public abstract class DBEnum<E extends Enum<E> & DBEnumValue<T>, T> extends Quer
 
 	/**
 	 * Validates whether the given type is acceptable as a literal value. Enum
-	 * values with null literal values are tolerated and should not be rejected
-	 * by this method. See documentation for {@link DBEnumValue#getCode()}.
+	 * values with null literal values are tolerated and should not be rejected by
+	 * this method. See documentation for {@link DBEnumValue#getCode()}.
 	 *
 	 * @param enumValue non-null enum value, for which the literal value may be
 	 * null
@@ -118,9 +118,12 @@ public abstract class DBEnum<E extends Enum<E> & DBEnumValue<T>, T> extends Quer
 	 * <p>
 	 * Converts in-line from the database's raw value to the enum type.
 	 *
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
 	 * @return the Enumeration instance that is appropriate to this instance
-	 * @throws IllegalArgumentException if the database's raw value does not
-	 * have a corresponding value in the enum
+	 * @throws IllegalArgumentException if the database's raw value does not have
+	 * a corresponding value in the enum
 	 */
 	public E enumValue() {
 		// get actual literal value: a String or a Long
@@ -147,8 +150,11 @@ public abstract class DBEnum<E extends Enum<E> & DBEnumValue<T>, T> extends Quer
 	 *
 	 *
 	 *
-	 * @return {@code true} if both null or equivalent on value, {@code false}
-	 * if not equal
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
+	 * @return {@code true} if both null or equivalent on value, {@code false} if
+	 * not equal
 	 * @throws IncompatibleClassChangeError if can't recognise the type
 	 */
 	private static boolean areLiteralValuesEqual(Object o1, Object o2) {
@@ -208,8 +214,8 @@ public abstract class DBEnum<E extends Enum<E> & DBEnumValue<T>, T> extends Quer
 	}
 
 	/**
-	 * Checks whether its one of the recognised types that can be easily
-	 * converted between each other in {@link #areLiteralValuesEqual()}.
+	 * Checks whether its one of the recognised types that can be easily converted
+	 * between each other in {@link #areLiteralValuesEqual()}.
 	 */
 	private static boolean isRecognisedRealOrIntegerType(Number n) {
 		return (n instanceof Double)
@@ -224,6 +230,9 @@ public abstract class DBEnum<E extends Enum<E> & DBEnumValue<T>, T> extends Quer
 	 * Gets the declared type of enumeration that the literal value is to be
 	 * mapped to. Dependent on the property wrapper being injected, or the
 	 * enumType being set
+	 *
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 *
 	 * @return non-null enum type
 	 * @throws IllegalStateException if not configured correctly
@@ -264,6 +273,8 @@ public abstract class DBEnum<E extends Enum<E> & DBEnumValue<T>, T> extends Quer
 	 * Provides the literal values for all the enumeration values provided.
 	 *
 	 * @param enumValues	enumValues
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a list of the literal database values for the enumeration values.
 	 */
 	@SuppressWarnings("unchecked")
@@ -279,7 +290,7 @@ public abstract class DBEnum<E extends Enum<E> & DBEnumValue<T>, T> extends Quer
 				index++;
 				firstValue = enumValues[index];
 			}
-			if (enumType==null &&firstValue == null) {
+			if (enumType == null && firstValue == null) {
 				return (T[]) new Object[]{};
 			} else {
 				Class<?> baseType = convertToLiteral(firstValue).getClass();
@@ -298,6 +309,8 @@ public abstract class DBEnum<E extends Enum<E> & DBEnumValue<T>, T> extends Quer
 	 * Provides the value for the enumeration value provided.
 	 *
 	 * @param enumValue	enumValue
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return the literal database value for the enumeration value.
 	 */
 	protected final T convertToLiteral(E enumValue) {

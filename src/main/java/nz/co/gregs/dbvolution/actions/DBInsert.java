@@ -46,6 +46,9 @@ import org.apache.commons.logging.LogFactory;
  * {@link DBAutoIncrement autoincrementing} {@link DBPrimaryKey primary key}
  * field.
  *
+ * <p style="color: #F90;">Support DBvolution at
+ * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+ *
  * @author Gregory Graham
  */
 public class DBInsert extends DBAction {
@@ -87,6 +90,8 @@ public class DBInsert extends DBAction {
 	 * @param database the target database
 	 * @param row the row to be inserted
 	 * @throws SQLException Database actions can throw SQLException
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a DBActionList of the actions performed on the database.
 	 */
 	public static DBActionList save(DBDatabase database, DBRow row) throws SQLException {
@@ -309,6 +314,8 @@ public class DBInsert extends DBAction {
 	 *
 	 * @param rows the rows to be inserted
 	 * @throws SQLException Database actions can throw SQLException
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a DBActionList of inserts.
 	 */
 	public static DBActionList getInserts(DBRow... rows) throws SQLException {
@@ -321,6 +328,9 @@ public class DBInsert extends DBAction {
 
 	/**
 	 * Returns all generated values created during the insert actions.
+	 *
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 *
 	 * @return the generatedKeys
 	 */

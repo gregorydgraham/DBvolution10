@@ -36,6 +36,9 @@ import org.junit.Test;
 
 /**
  *
+ * <p style="color: #F90;">Support DBvolution at
+ * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+ *
  * @author Gregory Graham
  */
 public class DBDatabaseTest extends AbstractTest {
@@ -107,7 +110,7 @@ public class DBDatabaseTest extends AbstractTest {
 		// This will throw an error if the table doesn't exist
 		Assert.assertThat(database.getDBTable(createTableTestClass).setBlankQueryAllowed(true).getAllRows().size(), is(0));
 		database.createIndexesOnAllFields(createTableTestClass);
-		
+
 		try {
 			database.preventDroppingOfTables(false);
 			database.dropTableNoExceptions(new CreateTableWithForeignKeyTestClass());
@@ -178,7 +181,8 @@ public class DBDatabaseTest extends AbstractTest {
 		try {
 			database.preventDroppingOfTables(false);
 			database.dropTable(new DropTable2TestClass());
-		} catch (AccidentalDroppingOfTableException oops) {}
+		} catch (AccidentalDroppingOfTableException oops) {
+		}
 		database.createTable(new DropTable2TestClass());
 		database.dropTable(new DropTable2TestClass());
 	}
@@ -193,12 +197,12 @@ public class DBDatabaseTest extends AbstractTest {
 			//SETUP: DropTableTestClass table not created, probably already exists
 		}
 		//Prove that the table exists
-		Assert.assertThat(database.getDBTable(new DropTableTestClass()).setBlankQueryAllowed(true).getAllRows().size(),is(0));
+		Assert.assertThat(database.getDBTable(new DropTableTestClass()).setBlankQueryAllowed(true).getAllRows().size(), is(0));
 		database.preventDroppingOfTables(false);
 		database.dropTable(new DropTableTestClass());
-		try{
-			Assert.assertThat(database.getDBTable(new DropTableTestClass()).setBlankQueryAllowed(true).getAllRows().size(),is(0));
-		}catch(SQLException exp){
+		try {
+			Assert.assertThat(database.getDBTable(new DropTableTestClass()).setBlankQueryAllowed(true).getAllRows().size(), is(0));
+		} catch (SQLException exp) {
 			throw new DBRuntimeException();
 		}
 	}

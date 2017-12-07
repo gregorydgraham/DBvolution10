@@ -38,6 +38,9 @@ import java.util.Map;
  * Each instance is accessible thru the
  * {@link #get(nz.co.gregs.dbvolution.DBRow) get(DBRow) method}.
  *
+ * <p style="color: #F90;">Support DBvolution at
+ * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+ *
  * @author Gregory Graham
  *
  */
@@ -75,6 +78,8 @@ public class DBQueryRow extends HashMap<Class<?>, DBRow> {
 	 *
 	 * @param <E> DBRow type
 	 * @param exemplar exemplar
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return the instance of exemplar that is in the DBQueryRow instance
 	 */
 	@SuppressWarnings("unchecked")
@@ -84,6 +89,9 @@ public class DBQueryRow extends HashMap<Class<?>, DBRow> {
 
 	/**
 	 * Returns the all DBRow instances contained within this DBQueryRow.
+	 *
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 *
 	 * @return all DBRow instances that are in this DBQueryRow instance
 	 */
@@ -140,6 +148,9 @@ public class DBQueryRow extends HashMap<Class<?>, DBRow> {
 	 * DBQueryRow. You should probably be using {@link DBQueryRow#get(nz.co.gregs.dbvolution.DBRow)
 	 * } and using the fields and methods of the individual DBRow classes.
 	 *
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
 	 * @return a list of field names.
 	 */
 	public List<String> getFieldNames() {
@@ -166,6 +177,8 @@ public class DBQueryRow extends HashMap<Class<?>, DBRow> {
 	 * } and using the fields and methods of the individual DBRow classes.
 	 *
 	 * @param dateFormat format that date should be formatted to.
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a list of field names.
 	 *
 	 */
@@ -194,6 +207,8 @@ public class DBQueryRow extends HashMap<Class<?>, DBRow> {
 	 * and post-processing.
 	 *
 	 * @param separatorToUseBetweenValues	separatorToUseBetweenValues
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a list of all the fields in the DBQueryRow separated by the
 	 * supplied value
 	 */
@@ -216,6 +231,8 @@ public class DBQueryRow extends HashMap<Class<?>, DBRow> {
 	 * and post-processing.
 	 *
 	 * @param separatorToUseBetweenValues	separatorToUseBetweenValues
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a list of all the values in the DBQueryRow formatted for a TSV or
 	 * CSV file
 	 */
@@ -232,6 +249,8 @@ public class DBQueryRow extends HashMap<Class<?>, DBRow> {
 	 *
 	 * @param separatorToUseBetweenValues	separatorToUseBetweenValues
 	 * @param dateFormat format that dates should be formatted to.
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a list of all the values in the DBQueryRow formatted for a TSV or
 	 * CSV file
 	 */
@@ -253,6 +272,9 @@ public class DBQueryRow extends HashMap<Class<?>, DBRow> {
 	 * The line separator is not included in the results, to allow for portability
 	 * and post-processing.
 	 *
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
 	 * @return a list of all the fields in the DBQueryRow formatted for a CSV file
 	 */
 	public String toCSVHeader() {
@@ -265,6 +287,9 @@ public class DBQueryRow extends HashMap<Class<?>, DBRow> {
 	 * <p>
 	 * The line separator is not included in the results, to allow for portability
 	 * and post-processing.
+	 *
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 *
 	 * @return a list of all the values in the DBQueryRow formatted for a CSV file
 	 */
@@ -280,6 +305,8 @@ public class DBQueryRow extends HashMap<Class<?>, DBRow> {
 	 * and post-processing.
 	 *
 	 * @param dateFormat	dateFormat
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a list of all the values in the DBQueryRow formatted for a CSV file
 	 */
 	public String toCSVLine(SimpleDateFormat dateFormat) {
@@ -294,6 +321,9 @@ public class DBQueryRow extends HashMap<Class<?>, DBRow> {
 	 * The line separator is not included in the results, to allow for portability
 	 * and post-processing.
 	 *
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
 	 * @return a list of all the fields in the DBQueryRow formatted for a TSV file
 	 */
 	public String toTabbedHeader() {
@@ -306,6 +336,9 @@ public class DBQueryRow extends HashMap<Class<?>, DBRow> {
 	 * <p>
 	 * The line separator is not included in the results, to allow for portability
 	 * and post-processing.
+	 *
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 *
 	 * @return a list of all the values in the DBQueryRow formatted for a TSV file
 	 * @throws java.lang.IllegalAccessException java.lang.IllegalAccessException

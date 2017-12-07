@@ -23,6 +23,9 @@ import nz.co.gregs.dbvolution.expressions.DBExpression;
 /**
  * Creates an operation that does nothing.
  *
+ * <p style="color: #F90;">Support DBvolution at
+ * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+ *
  * @author gregorygraham
  */
 public class DBNonOperator extends DBOperator {

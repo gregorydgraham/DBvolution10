@@ -44,6 +44,9 @@ import org.apache.commons.logging.LogFactory;
  * Mostly this is a thin wrapper around DBDatabase, Connection, and Statement
  * objects
  *
+ * <p style="color: #F90;">Support DBvolution at
+ * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+ *
  * @author Gregory Graham
  */
 public class DBStatement implements Statement {
@@ -73,6 +76,8 @@ public class DBStatement implements Statement {
 	 * Executes the given SQL statement, which returns a single ResultSet object.
 	 *
 	 * @param string SQL
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a ResultSet
 	 * @throws SQLException database exceptions
 	 */
@@ -124,6 +129,8 @@ public class DBStatement implements Statement {
 	 * statement.
 	 *
 	 * @param string	string
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return either (1) the row count for SQL Data Manipulation Language (DML)
 	 * statements or (2) 0 for SQL statements that return nothing 1 Database
 	 * exceptions may be thrown
@@ -165,6 +172,9 @@ public class DBStatement implements Statement {
 	 * VARCHAR, NCHAR, NVARCHAR, LONGNVARCHAR and LONGVARCHAR columns. If the
 	 * limit is exceeded, the excess data is silently discarded.
 	 *
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
 	 * @return the current column size limit for columns storing character and
 	 * binary values; zero means there is no limit. 1 Database exceptions may be
 	 * thrown
@@ -198,6 +208,9 @@ public class DBStatement implements Statement {
 	 * Retrieves the maximum number of rows that a ResultSet object produced by
 	 * this Statement object can contain. If this limit is exceeded, the excess
 	 * rows are silently dropped.
+	 *
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 *
 	 * @return the current maximum number of rows for a <code>ResultSet</code>
 	 * object produced by this <code>Statement</code> object; zero means there is
@@ -246,6 +259,9 @@ public class DBStatement implements Statement {
 	/**
 	 * Retrieves the number of seconds the driver will wait for a Statement object
 	 * to execute. If the limit is exceeded, a SQLException is thrown.
+	 *
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 *
 	 * @return the current query timeout limit in seconds; zero means there is no
 	 * limit 1 Database exceptions may be thrown
@@ -304,9 +320,9 @@ public class DBStatement implements Statement {
 	 * @throws UnableToCreateDatabaseConnectionException may be thrown if there is
 	 * an issue with connecting.
 	 * @throws UnableToFindJDBCDriver may be thrown if the JDBCDriver is not on
-	 * the class path. DBvolution includes several JDBCDrivers already but
-	 * Oracle and MS SQLserver, in particular, need to be added to the path if you
-	 * wish to work with those databases.
+	 * the class path. DBvolution includes several JDBCDrivers already but Oracle
+	 * and MS SQLserver, in particular, need to be added to the path if you wish
+	 * to work with those databases.
 	 */
 	protected synchronized void replaceBrokenConnection() throws SQLException, UnableToCreateDatabaseConnectionException, UnableToFindJDBCDriver {
 		database.discardConnection(connection);
@@ -323,6 +339,9 @@ public class DBStatement implements Statement {
 	 * The warning chain is automatically cleared each time a statement is
 	 * (re)executed. This method may not be called on a closed Statement object;
 	 * doing so will cause an SQLException to be thrown.
+	 *
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 *
 	 * @return the first <code>SQLWarning</code> object or <code>null</code> if
 	 * there are no warnings 1 Database exceptions may be thrown
@@ -386,6 +405,8 @@ public class DBStatement implements Statement {
 	 * result(s).
 	 *
 	 * @param sql	string
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return <code>TRUE</code> if the first result is a <code>ResultSet</code>
 	 * object; <code>FALSE</code> if it is an update count or there are no results
 	 * 1 Database exceptions may be thrown
@@ -410,7 +431,7 @@ public class DBStatement implements Statement {
 		try {
 			database.addFeatureToFixException(exp);
 		} catch (Exception ex) {
-			throw new SQLException("Failed To Add Support For SQL: "+exp.getMessage()+" : Original Query: "+string, ex);
+			throw new SQLException("Failed To Add Support For SQL: " + exp.getMessage() + " : Original Query: " + string, ex);
 		}
 		try {
 			executeQuery = getInternalStatement().execute(string);
@@ -431,6 +452,9 @@ public class DBStatement implements Statement {
 	 * <p>
 	 * This method should be called only once per result.
 	 *
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
 	 * @return the current result as a <code>ResultSet</code> object or
 	 * <code>null</code> if the result is an update count or there are no more
 	 * results 1 Database exceptions may be thrown
@@ -446,6 +470,9 @@ public class DBStatement implements Statement {
 	 * ResultSet object or there are no more results, -1 is returned.
 	 * <p>
 	 * This method should be called only once per result.
+	 *
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 *
 	 * @return the current result as an update count; -1 if the current result is
 	 * a <code>ResultSet</code> object or there are no more results. 1 Database
@@ -468,6 +495,9 @@ public class DBStatement implements Statement {
 	 * // stmt is a Statement object ((stmt.getMoreResults() == false) &amp;&amp;
 	 * (stmt.getUpdateCount() == -1))
 	 * </code>
+	 *
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 *
 	 * @return true if the next result is a ResultSet object; false if it is an
 	 * update count or there are no more results 1 Database exceptions may be
@@ -502,6 +532,9 @@ public class DBStatement implements Statement {
 	 * <P>
 	 * If this Statement object has not set a fetch direction by calling the
 	 * method setFetchDirection, the return value is implementation-specific.
+	 *
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 *
 	 * @return the default fetch direction for result sets generated from this
 	 * Statement object 1 Database exceptions may be thrown
@@ -538,6 +571,9 @@ public class DBStatement implements Statement {
 	 * If this Statement object has not set a fetch size by calling the method
 	 * setFetchSize, the return value is implementation-specific.
 	 *
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
 	 * @return the default fetch size for result sets generated from this
 	 * Statement object
 	 *
@@ -553,6 +589,9 @@ public class DBStatement implements Statement {
 	 * Retrieves the result set concurrency for ResultSet objects generated by
 	 * this Statement object.
 	 *
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
 	 * @return either ResultSet.CONCUR_READ_ONLY or ResultSet.CONCUR_UPDATABLE 1
 	 * Database exceptions may be thrown
 	 * @throws java.sql.SQLException java.sql.SQLException
@@ -565,6 +604,9 @@ public class DBStatement implements Statement {
 	/**
 	 * Retrieves the result set type for ResultSet objects generated by this
 	 * Statement object.
+	 *
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 *
 	 * @return one of ResultSet.TYPE_FORWARD_ONLY,
 	 * ResultSet.TYPE_SCROLL_INSENSITIVE, or ResultSet.TYPE_SCROLL_SENSITIVE 1
@@ -637,6 +679,9 @@ public class DBStatement implements Statement {
 	 * continuing to process commands in a batch update after a
 	 * BatchUpdateException object has been thrown.
 	 *
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
 	 * @return an array of update counts containing one element for each command
 	 * in the batch. The elements of the array are ordered according to the order
 	 * in which commands were added to the batch. 1 Database exceptions may be
@@ -650,6 +695,9 @@ public class DBStatement implements Statement {
 
 	/**
 	 * Retrieves the Connection object that produced this Statement object.
+	 *
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 *
 	 * @return the connection that produced this statement 1 Database exceptions
 	 * may be thrown
@@ -673,6 +721,8 @@ public class DBStatement implements Statement {
 	 * </code>
 	 *
 	 * @param i	i
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return true if the next result is a ResultSet object; false if it is an
 	 * update count or there are no more results. 1 Database exceptions may be
 	 * thrown
@@ -689,6 +739,9 @@ public class DBStatement implements Statement {
 	 * <p>
 	 * If this Statement object did not generate any keys, an empty ResultSet
 	 * object is returned.
+	 *
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 *
 	 * @return a ResultSet object containing the auto-generated key(s) generated
 	 * by the execution of this Statement object 1 Database exceptions may be
@@ -711,6 +764,8 @@ public class DBStatement implements Statement {
 	 *
 	 * @param string string
 	 * @param i i
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return either (1) the row count for SQL Data Manipulation Language (DML)
 	 * statements or (2) 0 for SQL statements that return nothing 1 Database
 	 * exceptions may be thrown
@@ -734,6 +789,8 @@ public class DBStatement implements Statement {
 	 *
 	 * @param string string
 	 * @param ints ints
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return either (1) the row count for SQL Data Manipulation Language (DML)
 	 * statements or (2) 0 for SQL statements that return nothing 1 Database
 	 * exceptions may be thrown
@@ -757,6 +814,8 @@ public class DBStatement implements Statement {
 	 *
 	 * @param string string
 	 * @param strings strings
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return either the row count for INSERT, UPDATE, or DELETE statements, or 0
 	 * for SQL statements that return nothing 1 Database exceptions may be thrown
 	 * @throws java.sql.SQLException java.sql.SQLException
@@ -789,6 +848,8 @@ public class DBStatement implements Statement {
 	 *
 	 * @param string string
 	 * @param i i
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return true if the first result is a ResultSet object; false if it is an
 	 * update count or there are no results. 1 Database exceptions may be thrown
 	 * @throws java.sql.SQLException java.sql.SQLException
@@ -823,6 +884,8 @@ public class DBStatement implements Statement {
 	 *
 	 * @param string string
 	 * @param ints ints
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return true if the first result is a ResultSet object; false if it is an
 	 * update count or there are no results 1 Database exceptions may be thrown
 	 * @throws java.sql.SQLException java.sql.SQLException
@@ -857,6 +920,8 @@ public class DBStatement implements Statement {
 	 *
 	 * @param string string
 	 * @param strings strings
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return true if the next result is a ResultSet object; false if it is an
 	 * update count or there are no more results 1 Database exceptions may be
 	 * thrown
@@ -874,6 +939,9 @@ public class DBStatement implements Statement {
 	 * Retrieves the result set holdability for ResultSet objects generated by
 	 * this Statement object.
 	 *
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
 	 * @return either ResultSet.HOLD_CURSORS_OVER_COMMIT or
 	 * ResultSet.CLOSE_CURSORS_AT_COMMIT 1 Database exceptions may be thrown
 	 * @throws java.sql.SQLException java.sql.SQLException
@@ -887,6 +955,9 @@ public class DBStatement implements Statement {
 	 * Retrieves whether this Statement object has been closed. A Statement is
 	 * closed if the method close has been called on it, or if it is automatically
 	 * closed.
+	 *
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 *
 	 * @return true if this Statement object is closed; false if it is still open
 	 * 1 Database exceptions may be thrown
@@ -928,6 +999,9 @@ public class DBStatement implements Statement {
 	/**
 	 * Returns a value indicating whether the Statement is poolable or not.
 	 *
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
 	 * @return true if the Statement is poolable; false otherwise
 	 *
 	 * 1 Database exceptions may be thrown
@@ -952,6 +1026,8 @@ public class DBStatement implements Statement {
 	 *
 	 * @param iface A Class defining an interface that the result must implement.
 	 * @param <T> the required interface.
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return an object that implements the interface. May be a proxy for the
 	 * actual implementing object. 1 Database exceptions may be thrown
 	 * @throws java.sql.SQLException java.sql.SQLException
@@ -974,6 +1050,8 @@ public class DBStatement implements Statement {
 	 * with the same argument should succeed.
 	 *
 	 * @param iface a Class defining an interface.
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return true if this implements the interface or directly or indirectly
 	 * wraps an object that does.
 	 * @throws java.sql.SQLException if an error occurs while determining whether
@@ -991,6 +1069,9 @@ public class DBStatement implements Statement {
 
 	/**
 	 * Indicates that a batch has been added.
+	 *
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 *
 	 * @return TRUE if the batch has un-executed entries, otherwise FALSE.
 	 */
@@ -1013,6 +1094,9 @@ public class DBStatement implements Statement {
 	/**
 	 * Unsupported.
 	 *
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
 	 * @return unsupported 1 Database exceptions may be thrown
 	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
@@ -1022,6 +1106,9 @@ public class DBStatement implements Statement {
 	}
 
 	/**
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
 	 * @return the internalStatement
 	 */
 	protected Statement getInternalStatement() {

@@ -27,7 +27,7 @@ public class EnumTypeHandlerTest {
 	public void acceptsInvalidDeclarationGivenNonColumn() {
 		class TestClass extends DBRow {
 
-			public DBEnum<?,?> field;
+			public DBEnum<?, ?> field;
 		}
 
 		try {

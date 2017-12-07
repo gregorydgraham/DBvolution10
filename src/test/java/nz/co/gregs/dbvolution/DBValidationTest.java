@@ -19,10 +19,13 @@ import org.junit.Test;
 
 /**
  *
+ * <p style="color: #F90;">Support DBvolution at
+ * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+ *
  * @author gregorygraham
  */
-public class DBValidationTest extends AbstractTest{
-	
+public class DBValidationTest extends AbstractTest {
+
 	public DBValidationTest(Object testIterationName, Object db) {
 		super(testIterationName, db);
 	}
@@ -90,7 +93,7 @@ public class DBValidationTest extends AbstractTest{
 		public DBString villain = new DBString();
 	}
 
-	public static class MigrateJamesAndAllVilliansToFight extends Fight {
+	public static class MigrateJamesAndAllVillainsToFight extends Fight {
 
 		private static final long serialVersionUID = 1L;
 
@@ -106,16 +109,16 @@ public class DBValidationTest extends AbstractTest{
 
 	@Test
 	public void testvalidating2TablesWithDBMigation() throws SQLException, UnexpectedNumberOfRowsException {
-		DBQueryInsert<MigrateJamesAndAllVilliansToFight> migration = database.getDBQueryInsert(new MigrateJamesAndAllVilliansToFight());
+		DBQueryInsert<MigrateJamesAndAllVillainsToFight> migration = database.getDBQueryInsert(new MigrateJamesAndAllVillainsToFight());
 		migration.setBlankQueryAllowed(Boolean.TRUE);
 		migration.setCartesianJoinAllowed(Boolean.TRUE);
-		
+
 		if (database.supportsFullOuterJoin()) {
 			DBValidation.Results validateAllRows = migration.validateAllRows();
 			for (DBValidation.Result valid : validateAllRows) {
 				final Hero hero = valid.getRow(new Hero());
 				final Villain villain = valid.getRow(new Villain());
-				
+
 				if (valid.willBeProcessed) {
 					Assert.assertThat(hero.name.stringValue(), is("James Security"));
 				} else {
@@ -126,7 +129,7 @@ public class DBValidationTest extends AbstractTest{
 				for (Map.Entry<String, String> entry : map.entrySet()) {
 					String key = entry.getKey();
 					String value = entry.getValue();
-					
+
 					Assert.assertThat(value, isOneOf("success", "NO DATA"));
 					if (key.equals("villian")) {
 						if (value.equals("success")) {
@@ -140,5 +143,5 @@ public class DBValidationTest extends AbstractTest{
 			Assert.assertThat(validateAllRows.size(), is(9));
 		}
 	}
-	
+
 }

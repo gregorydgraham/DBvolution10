@@ -21,6 +21,9 @@ import nz.co.gregs.dbvolution.datatypes.DBNumber;
 
 /**
  *
+ * <p style="color: #F90;">Support DBvolution at
+ * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+ *
  * @author gregorygraham
  */
 public enum MultiPoint2DFunctions {
@@ -28,13 +31,13 @@ public enum MultiPoint2DFunctions {
 	/**
 	 *
 	 */
-	EQUALS("numeric("+DBNumber.getNumericPrecision()+","+DBNumber.getNumericScale()+")", "@poly1 GEOMETRY, @poly2 GEOMETRY", " DECLARE \n"
-			+ " @resultVal numeric("+DBNumber.getNumericPrecision()+","+DBNumber.getNumericScale()+"),\n"
+	EQUALS("numeric(" + DBNumber.getNumericPrecision() + "," + DBNumber.getNumericScale() + ")", "@poly1 GEOMETRY, @poly2 GEOMETRY", " DECLARE \n"
+			+ " @resultVal numeric(" + DBNumber.getNumericPrecision() + "," + DBNumber.getNumericScale() + "),\n"
 			+ " @num1 integer,\n"
 			+ " @num2 integer,\n"
 			+ " @i integer,\n"
-			+ " @currentcoord1 numeric("+DBNumber.getNumericPrecision()+","+DBNumber.getNumericScale()+"),\n"
-			+ " @currentcoord2 numeric("+DBNumber.getNumericPrecision()+","+DBNumber.getNumericScale()+"),\n"
+			+ " @currentcoord1 numeric(" + DBNumber.getNumericPrecision() + "," + DBNumber.getNumericScale() + "),\n"
+			+ " @currentcoord2 numeric(" + DBNumber.getNumericPrecision() + "," + DBNumber.getNumericScale() + "),\n"
 			+ " @pnt1 GEOMETRY,\n"
 			+ " @pnt2 GEOMETRY\n"
 			+ " if @poly1 is null or @poly2 is null begin \n"
@@ -69,15 +72,14 @@ public enum MultiPoint2DFunctions {
 			+ "  END\n"
 			+ " END\n"
 			+ " return(1)"),
-
 	/**
 	 *
 	 */
-	MAXX("numeric("+DBNumber.getNumericPrecision()+","+DBNumber.getNumericScale()+")", "@poly GEOMETRY", " DECLARE \n"
-			+ " @resultVal numeric("+DBNumber.getNumericPrecision()+","+DBNumber.getNumericScale()+"),\n"
+	MAXX("numeric(" + DBNumber.getNumericPrecision() + "," + DBNumber.getNumericScale() + ")", "@poly GEOMETRY", " DECLARE \n"
+			+ " @resultVal numeric(" + DBNumber.getNumericPrecision() + "," + DBNumber.getNumericScale() + "),\n"
 			+ " @num integer,\n"
 			+ " @i integer,\n"
-			+ " @currentcoord numeric("+DBNumber.getNumericPrecision()+","+DBNumber.getNumericScale()+"),\n"
+			+ " @currentcoord numeric(" + DBNumber.getNumericPrecision() + "," + DBNumber.getNumericScale() + "),\n"
 			+ " @pnt GEOMETRY\n"
 			+ " if @poly is null begin \n"
 			+ "  return(null) \n"
@@ -100,15 +102,14 @@ public enum MultiPoint2DFunctions {
 			+ "  END\n"
 			+ " END\n"
 			+ " return(@resultVal)"),
-
 	/**
 	 *
 	 */
-	MAXY("numeric("+DBNumber.getNumericPrecision()+","+DBNumber.getNumericScale()+")", "@poly GEOMETRY", " DECLARE \n"
-			+ " @resultVal numeric("+DBNumber.getNumericPrecision()+","+DBNumber.getNumericScale()+"),\n"
+	MAXY("numeric(" + DBNumber.getNumericPrecision() + "," + DBNumber.getNumericScale() + ")", "@poly GEOMETRY", " DECLARE \n"
+			+ " @resultVal numeric(" + DBNumber.getNumericPrecision() + "," + DBNumber.getNumericScale() + "),\n"
 			+ " @num integer,\n"
 			+ " @i integer,\n"
-			+ " @currentcoord numeric("+DBNumber.getNumericPrecision()+","+DBNumber.getNumericScale()+"),\n"
+			+ " @currentcoord numeric(" + DBNumber.getNumericPrecision() + "," + DBNumber.getNumericScale() + "),\n"
 			+ " @pnt GEOMETRY\n"
 			+ " if @poly is null begin \n"
 			+ "  return(null) \n"
@@ -131,15 +132,14 @@ public enum MultiPoint2DFunctions {
 			+ "  END\n"
 			+ " END\n"
 			+ " return(@resultVal)"),
-
 	/**
 	 *
 	 */
-	MINX("numeric("+DBNumber.getNumericPrecision()+","+DBNumber.getNumericScale()+")", "@poly GEOMETRY", " DECLARE \n"
-			+ " @resultVal numeric("+DBNumber.getNumericPrecision()+","+DBNumber.getNumericScale()+"),\n"
+	MINX("numeric(" + DBNumber.getNumericPrecision() + "," + DBNumber.getNumericScale() + ")", "@poly GEOMETRY", " DECLARE \n"
+			+ " @resultVal numeric(" + DBNumber.getNumericPrecision() + "," + DBNumber.getNumericScale() + "),\n"
 			+ " @num integer,\n"
 			+ " @i integer,\n"
-			+ " @currentcoord numeric("+DBNumber.getNumericPrecision()+","+DBNumber.getNumericScale()+"),\n"
+			+ " @currentcoord numeric(" + DBNumber.getNumericPrecision() + "," + DBNumber.getNumericScale() + "),\n"
 			+ " @pnt GEOMETRY\n"
 			+ " if @poly is null begin \n"
 			+ "  return(null) \n"
@@ -162,15 +162,14 @@ public enum MultiPoint2DFunctions {
 			+ "  END\n"
 			+ " END\n"
 			+ " return(@resultVal)"),
-
 	/**
 	 *
 	 */
-	MINY("numeric("+DBNumber.getNumericPrecision()+","+DBNumber.getNumericScale()+")", "@poly GEOMETRY", " DECLARE \n"
-			+ " @resultVal numeric("+DBNumber.getNumericPrecision()+","+DBNumber.getNumericScale()+"),\n"
+	MINY("numeric(" + DBNumber.getNumericPrecision() + "," + DBNumber.getNumericScale() + ")", "@poly GEOMETRY", " DECLARE \n"
+			+ " @resultVal numeric(" + DBNumber.getNumericPrecision() + "," + DBNumber.getNumericScale() + "),\n"
 			+ " @num integer,\n"
 			+ " @i integer,\n"
-			+ " @currentcoord numeric("+DBNumber.getNumericPrecision()+","+DBNumber.getNumericScale()+"),\n"
+			+ " @currentcoord numeric(" + DBNumber.getNumericPrecision() + "," + DBNumber.getNumericScale() + "),\n"
 			+ " @pnt GEOMETRY\n"
 			+ " if @poly is null begin \n"
 			+ "  return(null) \n"

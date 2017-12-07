@@ -39,6 +39,9 @@ import nz.co.gregs.dbvolution.query.QueryOptions;
  * This DBDefinition is automatically included in {@link MSSQLServerDB}
  * instances, and you should not need to use it directly.
  *
+ * <p style="color: #F90;">Support DBvolution at
+ * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+ *
  * @author Gregory Graham
  */
 public class MSSQLServerDBDefinition extends DBDefinition {
@@ -171,11 +174,11 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 	@Override
 	public String doSubstringTransform(String originalString, String start, String length) {
 		return " SUBSTRING("
-			+ originalString
-			+ ", "
-			+ start
-			+ (length.trim().isEmpty() ? "" : ", " + length)
-			+ ") ";
+				+ originalString
+				+ ", "
+				+ start
+				+ (length.trim().isEmpty() ? "" : ", " + length)
+				+ ") ";
 	}
 
 	@Override
@@ -192,11 +195,13 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 	 * like it or not.
 	 *
 	 * <p>
-	 * While this seems useful, in fact it prevents checking for incorrect
-	 * strings and breaks the industrial standard.
+	 * While this seems useful, in fact it prevents checking for incorrect strings
+	 * and breaks the industrial standard.
 	 *
 	 * @param firstSQLExpression the first string value to compare
 	 * @param secondSQLExpression the second string value to compare
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return SQL
 	 */
 	@Override
@@ -227,6 +232,9 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 	/**
 	 * MSSQLserver only supports integer degrees, and that's not good enough.
 	 *
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
 	 * @return false
 	 */
 	@Override
@@ -240,15 +248,17 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 	}
 
 	/**
-	 * Wraps the provided SQL snippet in a statement that the length of the
-	 * value of the snippet.
+	 * Wraps the provided SQL snippet in a statement that the length of the value
+	 * of the snippet.
 	 *
 	 * @param enclosedValue	enclosedValue
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return SQL snippet
 	 */
 	@Override
 	public String doStringLengthTransform(String enclosedValue) {
-		return " CAST(" + getStringLengthFunctionName() + "( " + enclosedValue + " ) as NUMERIC("+getNumericPrecision()+","+getNumericScale()+"))";
+		return " CAST(" + getStringLengthFunctionName() + "( " + enclosedValue + " ) as NUMERIC(" + getNumericPrecision() + "," + getNumericScale() + "))";
 	}
 
 	@Override
@@ -408,6 +418,9 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 	/**
 	 * MS SQLServer does not support the LEASTOF operation natively.
 	 *
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
 	 * @return FALSE
 	 */
 	@Override
@@ -417,6 +430,9 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 
 	/**
 	 * MS SQLServer does not support the GREATESTOF operation natively.
+	 *
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 *
 	 * @return FALSE
 	 */
@@ -429,6 +445,9 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 	 * MS SQLServer does not support the grouping by columns that do not access
 	 * table data.
 	 *
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
 	 * @return FALSE
 	 */
 	@Override
@@ -437,12 +456,14 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 	}
 
 	/**
-	 * Transforms a SQL snippet of a number expression into a character
-	 * expression for this database.
+	 * Transforms a SQL snippet of a number expression into a character expression
+	 * for this database.
 	 *
 	 * @param numberExpression	numberExpression
-	 * @return a String of the SQL required to transform the number supplied
-	 * into a character or String type.
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @return a String of the SQL required to transform the number supplied into
+	 * a character or String type.
 	 */
 	@Override
 	public String doNumberToStringTransform(String numberExpression) {
@@ -491,7 +512,7 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 
 	@Override
 	public String doStringToNumberTransform(String stringResultContainingANumber) {
-		return "(CAST(0.0 as numeric("+getNumericPrecision()+","+getNumericScale()+"))+(CAST (" + stringResultContainingANumber + " as float)))";
+		return "(CAST(0.0 as numeric(" + getNumericPrecision() + "," + getNumericScale() + "))+(CAST (" + stringResultContainingANumber + " as float)))";
 	}
 
 	@Override
@@ -694,6 +715,8 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 	 *
 	 * @param firstGeometry the first polygon2d value to compare
 	 * @param secondGeometry the second polygon2d value to compare
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return SQL that is TRUE if the first polygon contains the second.
 	 */
 	@Override
@@ -712,6 +735,8 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 	 *
 	 * @param firstGeometry the first polygon2d value to compare
 	 * @param secondGeometry the second polygon2d value to compare
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return SQL that is FALSE if the polygons intersect.
 	 */
 	@Override
@@ -728,6 +753,8 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 	 *
 	 * @param firstGeometry the first polygon2d value to compare
 	 * @param secondGeometry the second polygon2d value to compare
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return SQL that is TRUE if the first polygon is within the second.
 	 */
 	@Override
@@ -744,6 +771,8 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 	 * This will be "2"
 	 *
 	 * @param polygon2DSQL a polygon2d value
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return "2" unless something has gone horribly wrong.
 	 */
 	@Override
@@ -960,6 +989,9 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 	 * <p>
 	 * For MS SQLServer this method returns <b>ceiling</b></p>
 	 *
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
 	 * @return the name of the function to use when rounding numbers up
 	 */
 	@Override
@@ -973,6 +1005,9 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 	 * <p>
 	 * For SQLServer this method returns <b>log</b></p>
 	 *
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
 	 * @return the name of the function to use when rounding numbers up
 	 */
 	@Override
@@ -985,6 +1020,9 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 	 *
 	 * <p>
 	 * By default this method returns <b>log10</b></p>
+	 *
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 *
 	 * @return the name of the function to use when rounding numbers up
 	 */
@@ -1004,6 +1042,9 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 	 * This method DOES NOT use the SQLServer built-in function as it does not
 	 * produce a different result for different rows in a single query.</p>
 	 *
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
 	 * @return random number generating code
 	 */
 	@Override
@@ -1013,11 +1054,11 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 
 	@Override
 	public String doFindNumberInStringTransform(String toSQLString) {
-		return MigrationFunctions.FINDFIRSTNUMBER+"("+toSQLString+')';
+		return MigrationFunctions.FINDFIRSTNUMBER + "(" + toSQLString + ')';
 	}
 
 	@Override
 	public String doFindIntegerInStringTransform(String toSQLString) {
-		return MigrationFunctions.FINDFIRSTINTEGER+"("+toSQLString+')';
+		return MigrationFunctions.FINDFIRSTINTEGER + "(" + toSQLString + ')';
 	}
 }

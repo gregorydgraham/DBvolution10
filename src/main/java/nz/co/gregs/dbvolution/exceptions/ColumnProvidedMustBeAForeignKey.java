@@ -19,6 +19,9 @@ import nz.co.gregs.dbvolution.columns.ColumnProvider;
 
 /**
  *
+ * <p style="color: #F90;">Support DBvolution at
+ * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+ *
  * @author gregorygraham
  */
 public class ColumnProvidedMustBeAForeignKey extends DBRuntimeException {

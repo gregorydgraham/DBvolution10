@@ -45,6 +45,9 @@ import nz.co.gregs.dbvolution.operators.*;
  * If the string column encodes repeating information like a status code, use
  * {@link DBStringEnum} to encapsulate the values.
  *
+ * <p style="color: #F90;">Support DBvolution at
+ * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+ *
  * @author Gregory Graham
  */
 public class DBString extends QueryableDatatype<String> implements StringResult {
@@ -57,6 +60,8 @@ public class DBString extends QueryableDatatype<String> implements StringResult 
 	 * Strings.
 	 *
 	 * @param dbStrings	dbStrings
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return the defined values of all the DBStrings.
 	 */
 	public static List<String> toStringList(List<DBString> dbStrings) {
@@ -712,6 +717,9 @@ public class DBString extends QueryableDatatype<String> implements StringResult 
 	 * TRUE when the value is NULL. However most databases will have isEmptyString
 	 * false when the string is null, and isDBNull false when the string is empty.
 	 *
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
 	 * @return true if the database value represents an empty string, otherwise
 	 * FALSE.
 	 */
@@ -759,6 +767,9 @@ public class DBString extends QueryableDatatype<String> implements StringResult 
 
 	/**
 	 * Returns TRUE if the database value is the empty string or NULL
+	 *
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 *
 	 * @return TRUE if the database value is "" or NULL, otherwise FALSE.
 	 */

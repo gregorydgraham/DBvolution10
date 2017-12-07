@@ -50,6 +50,9 @@ import org.apache.commons.logging.LogFactory;
  * The best way to use this is by using {@link DBUpdate#getUpdates(nz.co.gregs.dbvolution.DBRow...)
  * } to automatically use this action.
  *
+ * <p style="color: #F90;">Support DBvolution at
+ * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+ *
  * @author Gregory Graham
  */
 public class DBUpdateLargeObjects extends DBUpdate {
@@ -81,7 +84,7 @@ public class DBUpdateLargeObjects extends DBUpdate {
 					setToNullUsingStringValue(defn, row, col, largeObject, db, statement);
 				} else {
 					LargeObjectHandlerType handler = defn.preferredLargeObjectWriter(largeObject);
-					switch (handler){
+					switch (handler) {
 						case BLOB:
 							setUsingBLOB(defn, row, col, largeObject, db, statement);
 							break;
@@ -129,7 +132,7 @@ public class DBUpdateLargeObjects extends DBUpdate {
 				+ defn.formatColumnName(col)
 				+ defn.getEqualsComparator()
 				//+ "'" + largeObject.stringValue() + "'"
-				+" ? "
+				+ " ? "
 				+ defn.beginWhereClause()
 				+ getPrimaryKeySQL(db, row)
 				+ defn.endSQLStatement();
@@ -331,6 +334,8 @@ public class DBUpdateLargeObjects extends DBUpdate {
 	 * Finds all the DBLargeObject fields that this action will need to update.
 	 *
 	 * @param row the row to be updated
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a list of the interesting DBLargeObjects.
 	 */
 	protected List<PropertyWrapper> getInterestingLargeObjects(DBRow row) {

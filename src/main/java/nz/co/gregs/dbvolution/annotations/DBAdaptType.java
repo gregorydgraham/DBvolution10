@@ -61,6 +61,9 @@ public @interface DBAdaptType {
 	 * The indicated class must be able to be instantiated. It cannot be an
 	 * interface or an abstract class and must have a default constructor.
 	 *
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
 	 * @return the adaptor used to mediate between the external java object
 	 * (possibly a QueryableDatatype) and the internalQueryableDatatype.
 	 */
@@ -68,6 +71,9 @@ public @interface DBAdaptType {
 
 	/**
 	 * The DBvolution type that the adaptor converts to.
+	 *
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 *
 	 * @return the QueryableDatatype class used internally for DB communication
 	 */

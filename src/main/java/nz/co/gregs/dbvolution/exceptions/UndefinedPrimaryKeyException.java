@@ -25,6 +25,9 @@ import nz.co.gregs.dbvolution.annotations.DBPrimaryKey;
  * Indicate the Primary Key of a table by adding the
  * {@link DBPrimaryKey &#64;DBPrimaryKey} annotation to the appropriate field.
  *
+ * <p style="color: #F90;">Support DBvolution at
+ * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+ *
  * @author Gregory Graham
  */
 @SuppressWarnings("serial")

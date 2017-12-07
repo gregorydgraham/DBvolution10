@@ -20,6 +20,9 @@ import java.sql.Statement;
 
 /**
  *
+ * <p style="color: #F90;">Support DBvolution at
+ * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+ *
  * @author gregorygraham
  */
 public enum StringFunctions {
@@ -28,7 +31,6 @@ public enum StringFunctions {
 	 *
 	 */
 	SUBSTRINGBEFORE(Language.sql, "text", "sourceText text, rightHandSide text", "select (CASE WHEN POSITION(rightHandSide IN (sourceText)::VARCHAR) > 0 THEN  SUBSTRING((sourceText)::VARCHAR FROM 0 + 1 FOR POSITION(rightHandSide IN (sourceText)::VARCHAR) - 1 - 0)  ELSE $$$$ END);"),
-
 	/**
 	 *
 	 */

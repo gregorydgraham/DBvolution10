@@ -41,6 +41,9 @@ import nz.co.gregs.dbvolution.results.Polygon2DResult;
  * {@code @DBColumn public DBPolygon2D myPolygonColumn = new DBPolygon2D();}
  *
  *
+ * <p style="color: #F90;">Support DBvolution at
+ * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+ *
  * @author Gregory Graham
  */
 public class DBPolygon2D extends QueryableDatatype<Polygon> implements TransformRequiredForSelectClause, Polygon2DResult {
@@ -128,6 +131,9 @@ public class DBPolygon2D extends QueryableDatatype<Polygon> implements Transform
 	 *
 	 * <p>
 	 * NULL is valid result from this method.
+	 *
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 *
 	 * @return the set value of this object as a JTS Polygon object.
 	 */

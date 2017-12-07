@@ -19,6 +19,9 @@ import nz.co.gregs.dbvolution.DBDatabase;
 
 /**
  *
+ * <p style="color: #F90;">Support DBvolution at
+ * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+ *
  * @author Gregory Graham
  * @param <V> The return type of the transaction
  *
@@ -30,6 +33,8 @@ public interface DBTransaction<V> {
 	 * succeeded, or FALSE if it did not.
 	 *
 	 * @param dbDatabase	dbDatabase
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return TRUE if the transaction completed without errors, FALSE otherwise.
 	 * @throws java.lang.Exception java.lang.Exception
 	 *

@@ -32,6 +32,9 @@ import nz.co.gregs.dbvolution.expressions.DBExpression;
  * <p>
  * Alternatively inform the developers and they will fix it.
  *
+ * <p style="color: #F90;">Support DBvolution at
+ * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+ *
  * @author Gregory Graham
  */
 public class ComparisonBetweenTwoDissimilarTypes extends DBRuntimeException {

@@ -26,9 +26,12 @@ import nz.co.gregs.dbvolution.internal.mysql.MigrationFunctions;
 /**
  * A DBDatabase tweaked for MySQL databases
  *
+ * <p style="color: #F90;">Support DBvolution at
+ * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+ *
  * @author Gregory Graham
  */
-public class MySQLDB extends DBDatabase implements SupportsPolygonDatatype{
+public class MySQLDB extends DBDatabase implements SupportsPolygonDatatype {
 
 	private final static String MYSQLDRIVERNAME = "com.mysql.jdbc.Driver";
 	public static final long serialVersionUID = 1l;
@@ -67,7 +70,7 @@ public class MySQLDB extends DBDatabase implements SupportsPolygonDatatype{
 	public MySQLDB(String server, long port, String databaseName, String username, String password) {
 		super(new MySQLDBDefinition(),
 				MYSQLDRIVERNAME,
-				"jdbc:mysql://" + server + ":" + port + "/" + databaseName+"?createDatabaseIfNotExist=true&useUnicode=yes&characterEncoding=utf8&characterSetResults=utf8&verifyServerCertificate=false&useSSL=true",
+				"jdbc:mysql://" + server + ":" + port + "/" + databaseName + "?createDatabaseIfNotExist=true&useUnicode=yes&characterEncoding=utf8&characterSetResults=utf8&verifyServerCertificate=false&useSSL=true",
 				username,
 				password);
 		this.setDatabaseName(databaseName);

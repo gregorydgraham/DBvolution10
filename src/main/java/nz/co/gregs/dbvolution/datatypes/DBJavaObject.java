@@ -31,6 +31,9 @@ import org.apache.commons.codec.binary.Base64;
  * Implements the abstractions required for handling Java Objects stored in the
  * database
  *
+ * <p style="color: #F90;">Support DBvolution at
+ * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+ *
  * @author Gregory Graham
  * @param <O> the specific type of the objects to be stored.
  */
@@ -273,6 +276,9 @@ public class DBJavaObject<O> extends DBLargeObject<O> {
 	/**
 	 * Returns the internal InputStream.
 	 *
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
 	 * @return an InputStream to read the bytes.
 	 */
 	@Override
@@ -290,6 +296,9 @@ public class DBJavaObject<O> extends DBLargeObject<O> {
 
 	/**
 	 * Returns the byte[] used internally to store the value of this DBJavaObject.
+	 *
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 *
 	 * @return the byte[] value of this DBJavaObject.
 	 * @throws java.io.IOException java.io.IOException

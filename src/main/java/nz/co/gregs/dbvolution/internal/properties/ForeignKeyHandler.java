@@ -25,6 +25,9 @@ import static org.simmetrics.builders.StringMetricBuilder.with;
  * This class behaves correctly when no {@link DBForeignKey} annotation is
  * present.
  *
+ * <p style="color: #F90;">Support DBvolution at
+ * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+ *
  * @author Malcolm Lett
  */
 // TODO if referenced property has differing case of column name,
@@ -106,21 +109,21 @@ class ForeignKeyHandler {
 					StringMetric metric = with(new DamerauLevenshtein())
 							.simplify(Simplifiers.replaceNonWord())
 							.simplify(Simplifiers.toLowerCase())
-						.build();
+							.build();
 					Map<Float, PropertyWrapperDefinition> pkComps = new HashMap<>();
 //					Map<PropertyWrapperDefinition, Float> pkMetrics = new HashMap<>();
 					Float maxComp = 0.0F;
-					
+
 					for (PropertyWrapperDefinition primaryKey : primaryKeys) {
 						final String pkName = primaryKey.getColumnName();
-					    float result = metric.compare(columnName, pkName);
+						float result = metric.compare(columnName, pkName);
 						pkComps.put(result, primaryKey);
 //						pkMetrics.put(primaryKey,result);
-						maxComp = maxComp>result?maxComp:result;
+						maxComp = maxComp > result ? maxComp : result;
 					}
 					if (maxComp <= 0.15F) {
 						throw new UnableToInterpolateReferencedColumnInMultiColumnPrimaryKeyException(adaptee, referencedClassWrapper, primaryKeys);
-					}else{
+					} else {
 						identifiedReferencedProperty = pkComps.get(maxComp);
 					}
 				} else {
@@ -134,6 +137,9 @@ class ForeignKeyHandler {
 	/**
 	 * Indicates whether this property references another class/table.
 	 *
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
 	 * @return TRUE/FALSE
 	 */
 	public boolean isForeignKey() {
@@ -145,6 +151,9 @@ class ForeignKeyHandler {
 
 	/**
 	 * Gets the class referenced by this foreign key.
+	 *
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 *
 	 * @return the referenced class if this property is a foreign key; null if not
 	 * a foreign key
@@ -158,6 +167,9 @@ class ForeignKeyHandler {
 
 	/**
 	 * Gets the name of the referenced table.
+	 *
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 *
 	 * @return the referenced table name if this property is a foreign key; null
 	 * if not a foreign key
@@ -174,6 +186,9 @@ class ForeignKeyHandler {
 	 * referenced column is either explicitly indicated by use of the
 	 * {@link DBForeignKey#column()} attribute, or it is implicitly the single
 	 * primary key of the referenced table.
+	 *
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 *
 	 * @return the referenced column name if this property is a foreign key; null
 	 * if not a foreign key
@@ -198,6 +213,9 @@ class ForeignKeyHandler {
 	 * name). Attempts to get or set its value or get the type adaptor instance
 	 * will result in an internal exception.
 	 *
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
 	 * @return the referenced property if this property is a foreign key; null if
 	 * not a foreign key
 	 */
@@ -210,6 +228,9 @@ class ForeignKeyHandler {
 
 	/**
 	 * Gets the {@link DBColumn} annotation on the class, if it exists.
+	 *
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 *
 	 * @return the annotation or null if it is not present
 	 */
