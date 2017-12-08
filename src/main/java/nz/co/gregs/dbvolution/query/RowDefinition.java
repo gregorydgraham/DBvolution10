@@ -31,6 +31,7 @@ import nz.co.gregs.dbvolution.datatypes.spatial2D.DBPoint2D;
 import nz.co.gregs.dbvolution.exceptions.IncorrectRowProviderInstanceSuppliedException;
 import nz.co.gregs.dbvolution.expressions.*;
 import nz.co.gregs.dbvolution.internal.properties.*;
+import nz.co.gregs.dbvolution.results.IntegerResult;
 import org.joda.time.Period;
 
 /**
@@ -871,7 +872,7 @@ public class RowDefinition implements Serializable {
 	 * @return A NumberExpression representing the supplied field with a default
 	 * for DBNULL values
 	 */
-	public NumberExpression column(Integer fieldOfThisInstance, Integer valueToUseIfDBNull) {
+	public IntegerExpression column(Integer fieldOfThisInstance, Integer valueToUseIfDBNull) {
 		return new IntegerColumn(this, fieldOfThisInstance).ifDBNull(valueToUseIfDBNull);
 	}
 
@@ -895,7 +896,7 @@ public class RowDefinition implements Serializable {
 	 * @return A NumberExpression representing the supplied field with a default
 	 * for DBNULL values
 	 */
-	public NumberExpression column(Integer fieldOfThisInstance, Long valueToUseIfDBNull) {
+	public IntegerExpression column(Integer fieldOfThisInstance, Long valueToUseIfDBNull) {
 		return new IntegerColumn(this, fieldOfThisInstance).ifDBNull(valueToUseIfDBNull);
 	}
 
@@ -919,7 +920,7 @@ public class RowDefinition implements Serializable {
 	 * @return A NumberExpression representing the supplied field with a default
 	 * for DBNULL values
 	 */
-	public NumberExpression column(Integer fieldOfThisInstance, NumberResult valueToUseIfDBNull) {
+	public IntegerExpression column(Integer fieldOfThisInstance, IntegerResult valueToUseIfDBNull) {
 		return new IntegerColumn(this, fieldOfThisInstance).ifDBNull(valueToUseIfDBNull);
 	}
 
@@ -943,7 +944,7 @@ public class RowDefinition implements Serializable {
 	 * @return A NumberExpression representing the supplied field with a default
 	 * for DBNULL values
 	 */
-	public NumberExpression column(DBInteger fieldOfThisInstance, Integer valueToUseIfDBNull) {
+	public IntegerExpression column(DBInteger fieldOfThisInstance, Integer valueToUseIfDBNull) {
 		return new IntegerColumn(this, fieldOfThisInstance).ifDBNull(valueToUseIfDBNull);
 	}
 
@@ -967,7 +968,7 @@ public class RowDefinition implements Serializable {
 	 * @return A NumberExpression representing the supplied field with a default
 	 * for DBNULL values
 	 */
-	public NumberExpression column(DBInteger fieldOfThisInstance, Long valueToUseIfDBNull) {
+	public IntegerExpression column(DBInteger fieldOfThisInstance, Long valueToUseIfDBNull) {
 		return new IntegerColumn(this, fieldOfThisInstance).ifDBNull(valueToUseIfDBNull);
 	}
 
@@ -991,7 +992,7 @@ public class RowDefinition implements Serializable {
 	 * @return A NumberExpression representing the supplied field with a default
 	 * for DBNULL values
 	 */
-	public NumberExpression column(DBInteger fieldOfThisInstance, NumberResult valueToUseIfDBNull) {
+	public IntegerExpression column(DBInteger fieldOfThisInstance, IntegerResult valueToUseIfDBNull) {
 		return new IntegerColumn(this, fieldOfThisInstance).ifDBNull(valueToUseIfDBNull);
 	}
 
@@ -1015,7 +1016,7 @@ public class RowDefinition implements Serializable {
 	 * @return A NumberExpression representing the supplied field with a default
 	 * for DBNULL values
 	 */
-	public NumberExpression column(Long fieldOfThisInstance, Integer valueToUseIfDBNull) {
+	public IntegerExpression column(Long fieldOfThisInstance, Integer valueToUseIfDBNull) {
 		return new IntegerColumn(this, fieldOfThisInstance).ifDBNull(valueToUseIfDBNull);
 	}
 
@@ -1039,7 +1040,7 @@ public class RowDefinition implements Serializable {
 	 * @return A NumberExpression representing the supplied field with a default
 	 * for DBNULL values
 	 */
-	public NumberExpression column(Long fieldOfThisInstance, Long valueToUseIfDBNull) {
+	public IntegerExpression column(Long fieldOfThisInstance, Long valueToUseIfDBNull) {
 		return new IntegerColumn(this, fieldOfThisInstance).ifDBNull(valueToUseIfDBNull);
 	}
 
@@ -1063,7 +1064,7 @@ public class RowDefinition implements Serializable {
 	 * @return A NumberExpression representing the supplied field with a default
 	 * for DBNULL values
 	 */
-	public NumberExpression column(Long fieldOfThisInstance, NumberResult valueToUseIfDBNull) {
+	public IntegerExpression column(Long fieldOfThisInstance, IntegerResult valueToUseIfDBNull) {
 		return new IntegerColumn(this, fieldOfThisInstance).ifDBNull(valueToUseIfDBNull);
 	}
 

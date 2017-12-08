@@ -20,10 +20,12 @@ import nz.co.gregs.dbvolution.datatypes.QueryableDatatypeSyncer;
 import nz.co.gregs.dbvolution.expressions.BooleanExpression;
 import nz.co.gregs.dbvolution.expressions.DBExpression;
 import nz.co.gregs.dbvolution.expressions.DateExpression;
+import nz.co.gregs.dbvolution.expressions.IntegerExpression;
 import nz.co.gregs.dbvolution.results.DateResult;
 import nz.co.gregs.dbvolution.expressions.NumberExpression;
 import nz.co.gregs.dbvolution.results.NumberResult;
 import nz.co.gregs.dbvolution.expressions.StringExpression;
+import nz.co.gregs.dbvolution.results.IntegerResult;
 import nz.co.gregs.dbvolution.results.StringResult;
 
 /**
@@ -80,12 +82,18 @@ public class DBBetweenInclusiveExclusiveOperator extends DBOperator {
 			if (getFirstValue() instanceof NumberResult) {
 				NumberResult numberResult = (NumberResult) getFirstValue();
 				firstStringExpr = new NumberExpression(numberResult).stringResult();
+			} else if (getFirstValue() instanceof IntegerResult) {
+				IntegerResult integerResult = (IntegerResult) getFirstValue();
+				firstStringExpr = new IntegerExpression(integerResult).stringResult();
 			} else if (getFirstValue() instanceof StringResult) {
 				firstStringExpr = (StringResult) getFirstValue();
 			}
 			if (getSecondValue() instanceof NumberResult) {
 				NumberResult numberResult = (NumberResult) getSecondValue();
 				secondStringExpr = new NumberExpression(numberResult).stringResult();
+			} else if (getSecondValue() instanceof IntegerResult) {
+				IntegerResult integerResult = (IntegerResult) getSecondValue();
+				secondStringExpr = new IntegerExpression(integerResult).stringResult();
 			} else if (getSecondValue() instanceof StringResult) {
 				secondStringExpr = (StringResult) getSecondValue();
 			}
@@ -97,6 +105,11 @@ public class DBBetweenInclusiveExclusiveOperator extends DBOperator {
 				&& (getSecondValue() instanceof NumberResult)) {
 			NumberExpression numberExpression = (NumberExpression) genericExpression;
 			betweenOp = numberExpression.isBetween((NumberResult) getFirstValue(), (NumberResult) getSecondValue());
+		} else if ((genericExpression instanceof IntegerExpression)
+				&& (getFirstValue() instanceof IntegerResult)
+				&& (getSecondValue() instanceof IntegerResult)) {
+			IntegerExpression numberExpression = (IntegerExpression) genericExpression;
+			betweenOp = numberExpression.isBetween((IntegerResult) getFirstValue(), (IntegerResult) getSecondValue());
 		} else if ((genericExpression instanceof DateExpression)
 				&& (getFirstValue() instanceof DateResult)
 				&& (getSecondValue() instanceof DateResult)) {

@@ -1584,7 +1584,7 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 				try {
 					return db.getDefinition().doSubstringBeforeTransform(getFirst().toSQLString(db), getSecond().toSQLString(db));
 				} catch (UnsupportedOperationException exp) {
-					return getFirst().locationOf(getSecond()).isGreaterThan(0).ifThenElse(getFirst().substring(0, getFirst().locationOf(getSecond()).minus(1)), value("")).toSQLString(db);
+					return getFirst().locationOf(getSecond()).isGreaterThan(0).ifThenElse(getFirst().substring(0, getFirst().locationOf(getSecond()).minus(1).numberResult()), value("")).toSQLString(db);
 				}
 			}
 
@@ -1639,7 +1639,7 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 				try {
 					return db.getDefinition().doSubstringAfterTransform(getFirst().toSQLString(db), getSecond().toSQLString(db));
 				} catch (UnsupportedOperationException exp) {
-					return getFirst().locationOf(getSecond()).isGreaterThan(0).ifThenElse(getFirst().substring(getFirst().locationOf(getSecond()), getFirst().length()), value("")).toSQLString(db);
+					return getFirst().locationOf(getSecond()).isGreaterThan(0).ifThenElse(getFirst().substring(getFirst().locationOf(getSecond()).numberResult(), getFirst().length()), value("")).toSQLString(db);
 				}
 			}
 
@@ -2051,7 +2051,7 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return an expression that will find the location of the searchString.
 	 */
-	public NumberExpression locationOf(String searchString) {
+	public IntegerExpression locationOf(String searchString) {
 		return locationOf(value(searchString));
 	}
 
@@ -2067,13 +2067,13 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return an expression that will find the location of the searchString.
 	 */
-	public NumberExpression locationOf(StringResult searchString) {
+	public IntegerExpression locationOf(StringResult searchString) {
 		return new NumberExpression(new BinaryComplicatedNumberFunction(this, searchString) {
 			@Override
 			public String toSQLString(DBDatabase db) {
 				return db.getDefinition().doPositionInStringTransform(this.first.toSQLString(db), this.second.toSQLString(db));
 			}
-		});
+		}).integerResult();
 	}
 
 	/**
@@ -2342,6 +2342,38 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 				return "TO_NUMBER";
 			}
 		});
+	}
+
+	/**
+	 * In so far as it is possible, transform the value of this expression into a
+	 * number.
+	 *
+	 * <p>
+	 * Uses the database's own facilities to parse the value of this expression
+	 * into a number.
+	 *
+	 * <p>
+	 * May return NULL and all sorts of crazy things.
+	 *
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
+	 * @return a number expression
+	 */
+	public IntegerExpression integerResult() {
+		return new NumberExpression(
+				new DBUnaryNumberFunction(this) {
+
+			@Override
+			public String toSQLString(DBDatabase db) {
+				return db.getDefinition().doStringToNumberTransform(this.only.toSQLString(db));
+			}
+
+			@Override
+			String getFunctionName(DBDatabase db) {
+				return "TO_NUMBER";
+			}
+		}).integerResult();
 	}
 
 	@Override

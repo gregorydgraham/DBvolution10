@@ -37,17 +37,12 @@ public class TypeAdaptorTest {
 	@Before
 	public void setup() throws SQLException {
 		this.db = new H2MemoryDB("dbvolutionTest", "", "", false);
-//		this.db.setPrintSQLBeforeExecuting(false);
 
 		db.preventDroppingOfTables(false);
 		db.dropTableNoExceptions(new CustomerWithDBInteger());
 		// create tables and add standard records
 		db.createTable(new CustomerWithDBInteger());
 
-//		System.out.println("Threads:");
-//		for(Thread thread: Thread.getAllStackTraces().keySet()) {
-//			System.out.println("  "+thread.getId()+": "+thread.getName());
-//		}
 		CustomerWithDBInteger c = new CustomerWithDBInteger();
 		c.uid.setValue(23);
 		c.year.setValue(2013);

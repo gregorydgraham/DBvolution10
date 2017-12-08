@@ -38,6 +38,7 @@ import nz.co.gregs.dbvolution.datatypes.DBInteger;
 import nz.co.gregs.dbvolution.datatypes.DBNumber;
 import nz.co.gregs.dbvolution.datatypes.DBString;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
+import nz.co.gregs.dbvolution.results.IntegerResult;
 
 /**
  * BooleanExpression implements standard functions that produce a Boolean or
@@ -619,7 +620,22 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 	 *
 	 * @return a 0 or 1 depending on the expression
 	 */
-	public NumberExpression convertToInteger() {
+	public IntegerExpression integerValue() {
+		return new IntegerValueFunction(this);
+	}
+
+	/**
+	 * Converts boolean values to the database number representation.
+	 *
+	 * <p>
+	 * TRUE values will become 1.0 and FALSE values will become 0.0.
+	 *
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
+	 * @return a 0 or 1 depending on the expression
+	 */
+	public NumberExpression numberValue() {
 		return new NumberExpression() {
 			BooleanExpression innerBool = new BooleanExpression(onlyBool);
 
@@ -640,11 +656,6 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 			@Override
 			public boolean getIncludesNull() {
 				return innerBool.getIncludesNull();
-			}
-
-			@Override
-			public DBNumber getQueryableDatatypeForExpressionValue() {
-				return new DBNumber();
 			}
 
 			@Override
@@ -903,6 +914,42 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 	 */
 	public NumberExpression ifThenElse(NumberResult thenExpr, NumberResult elseExpr) {
 		return new NumberExpression(new DBBooleanNumberNumberFunction(this, thenExpr, elseExpr) {
+
+			@Override
+			public boolean getIncludesNull() {
+				return false;
+			}
+
+			@Override
+			public String toSQLString(DBDatabase db) {
+				return db.getDefinition().doIfThenElseTransform(onlyBool.toSQLString(db), first.toSQLString(db), second.toSQLString(db));
+			}
+
+			@Override
+			String getFunctionName(DBDatabase db) {
+				return "";
+			}
+		});
+	}
+
+	/**
+	 * Allows you to specify different return values based on the value of this
+	 * boolean expression.
+	 *
+	 * <p>
+	 * The first expression is returned if this expression is TRUE, otherwise the
+	 * second is returned.
+	 *
+	 * @param thenExpr expression to use when this expression is TRUE
+	 * @param elseExpr expression to use when this expression is FALSE
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * 
+	 * @return an expression that will generate a SQL clause conceptually similar
+	 * to "if (this) then thenExpr else elseExpr".
+	 */
+	public IntegerExpression ifThenElse(IntegerResult thenExpr, IntegerResult elseExpr) {
+		return new IntegerExpression(new DBBooleanIntegerIntegerFunction(this, thenExpr, elseExpr) {
 
 			@Override
 			public boolean getIncludesNull() {
@@ -2057,6 +2104,73 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 		}
 	}
 
+	private static abstract class DBBooleanIntegerIntegerFunction extends IntegerExpression {
+
+		protected BooleanExpression onlyBool = null;
+		protected IntegerResult first = null;
+		protected IntegerResult second = null;
+//		private boolean includeNulls;
+
+		DBBooleanIntegerIntegerFunction() {
+		}
+
+		DBBooleanIntegerIntegerFunction(BooleanExpression only, IntegerResult first, IntegerResult second) {
+			this.onlyBool = (only == null ? BooleanExpression.nullExpression() : only);
+			this.first = (first == null ? IntegerExpression.nullExpression() : first);
+			this.second = (second == null ? IntegerExpression.nullExpression() : second);
+		}
+
+		abstract String getFunctionName(DBDatabase db);
+
+		protected String beforeValue(DBDatabase db) {
+			return "" + getFunctionName(db) + "( ";
+		}
+
+		protected String afterValue(DBDatabase db) {
+			return ") ";
+		}
+
+		@Override
+		public String toSQLString(DBDatabase db) {
+			return this.beforeValue(db) + (onlyBool == null ? "" : onlyBool.toSQLString(db)) + this.afterValue(db);
+		}
+
+		@Override
+		public DBBooleanIntegerIntegerFunction copy() {
+			DBBooleanIntegerIntegerFunction newInstance;
+			try {
+				newInstance = getClass().newInstance();
+			} catch (InstantiationException ex) {
+				throw new RuntimeException(ex);
+			} catch (IllegalAccessException ex) {
+				throw new RuntimeException(ex);
+			}
+			newInstance.onlyBool = (onlyBool == null ? null : onlyBool.copy());
+			newInstance.first = (first == null ? null : first.copy());
+			newInstance.second = (second == null ? null : second.copy());
+			return newInstance;
+		}
+
+		@Override
+		public boolean isAggregator() {
+			return onlyBool.isAggregator() || first.isAggregator() || second.isAggregator();
+		}
+
+		@Override
+		public Set<DBRow> getTablesInvolved() {
+			return onlyBool.getTablesInvolved();
+		}
+
+		@Override
+		public boolean isPurelyFunctional() {
+			if (onlyBool == null) {
+				return true;
+			} else {
+				return onlyBool.isPurelyFunctional() && first.isPurelyFunctional() && second.isPurelyFunctional();
+			}
+		}
+	}
+
 	private static abstract class DBBinaryDateDateFunction extends DateExpression {
 
 		protected BooleanExpression onlyBool = null;
@@ -2173,6 +2287,44 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 			} else {
 				return onlyBool.isPurelyFunctional() && first.isPurelyFunctional() && second.isPurelyFunctional();
 			}
+		}
+	}
+
+	private class IntegerValueFunction extends IntegerExpression {
+
+		private BooleanExpression innerBool = new BooleanExpression();
+
+		public IntegerValueFunction(BooleanExpression bool) {
+			innerBool= bool;
+		}
+
+		@Override
+		public String toSQLString(DBDatabase db) {
+			return db.getDefinition().doBooleanToIntegerTransform(this.innerBool.toSQLString(db));
+		}
+
+		@Override
+		public IntegerExpression copy() {
+			try {
+				return (IntegerExpression) this.clone();
+			} catch (CloneNotSupportedException ex) {
+				throw new RuntimeException(ex);
+			}
+		}
+
+		@Override
+		public boolean getIncludesNull() {
+			return innerBool.getIncludesNull();
+		}
+
+		@Override
+		public boolean isAggregator() {
+			return false;
+		}
+
+		@Override
+		public Set<DBRow> getTablesInvolved() {
+			return innerBool.getTablesInvolved();
 		}
 	}
 }

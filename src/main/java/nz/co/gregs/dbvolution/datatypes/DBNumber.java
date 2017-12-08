@@ -24,6 +24,7 @@ import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.DBReport;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
+import nz.co.gregs.dbvolution.expressions.IntegerExpression;
 import nz.co.gregs.dbvolution.expressions.NumberExpression;
 import nz.co.gregs.dbvolution.expressions.StringExpression;
 import nz.co.gregs.dbvolution.results.NumberResult;
@@ -96,6 +97,10 @@ public class DBNumber extends QueryableDatatype<Number> implements NumberResult 
 	 */
 	public DBNumber(Long aNumber) {
 		super(aNumber);
+	}
+
+	public DBNumber(IntegerExpression integerExpression) {
+		this(integerExpression.numberResult()); 
 	}
 
 	@Override

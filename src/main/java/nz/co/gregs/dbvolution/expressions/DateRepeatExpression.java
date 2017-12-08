@@ -658,6 +658,30 @@ public class DateRepeatExpression implements DateRepeatResult, RangeComparable<D
 		return new DBDateRepeat(this);
 	}
 
+	@Override
+	public BooleanExpression isBetween(DateRepeatResult anotherInstance, DateRepeatResult largerExpression) {
+		return BooleanExpression.allOf(
+				this.isGreaterThanOrEqual(anotherInstance),
+				this.isLessThan(anotherInstance)
+				);
+	}
+
+	@Override
+	public BooleanExpression isBetweenInclusive(DateRepeatResult anotherInstance, DateRepeatResult largerExpression) {
+		return BooleanExpression.allOf(
+				this.isGreaterThanOrEqual(anotherInstance),
+				this.isLessThanOrEqual(anotherInstance)
+				);
+	}
+
+	@Override
+	public BooleanExpression isBetweenExclusive(DateRepeatResult anotherInstance, DateRepeatResult largerExpression) {
+		return BooleanExpression.allOf(
+				this.isGreaterThan(anotherInstance),
+				this.isLessThan(anotherInstance)
+				);
+	}
+
 	private static abstract class DateRepeatDateRepeatWithBooleanResult extends BooleanExpression {
 
 		private DateRepeatExpression first;

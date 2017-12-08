@@ -20,10 +20,12 @@ import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.expressions.BooleanExpression;
 import nz.co.gregs.dbvolution.expressions.DBExpression;
 import nz.co.gregs.dbvolution.expressions.DateExpression;
+import nz.co.gregs.dbvolution.expressions.IntegerExpression;
 import nz.co.gregs.dbvolution.results.DateResult;
 import nz.co.gregs.dbvolution.expressions.NumberExpression;
 import nz.co.gregs.dbvolution.results.NumberResult;
 import nz.co.gregs.dbvolution.expressions.StringExpression;
+import nz.co.gregs.dbvolution.results.IntegerResult;
 import nz.co.gregs.dbvolution.results.StringResult;
 
 /**
@@ -73,6 +75,9 @@ public class DBLessThanOperator extends DBOperator {
 		} else if (genericExpression instanceof NumberExpression) {
 			NumberExpression numberExpression = (NumberExpression) genericExpression;
 			op = numberExpression.isLessThan((NumberResult) getFirstValue());
+		} else if (genericExpression instanceof IntegerExpression) {
+			IntegerExpression numberExpression = (IntegerExpression) genericExpression;
+			op = numberExpression.isLessThan((IntegerResult) getFirstValue());
 		} else if (genericExpression instanceof DateExpression) {
 			DateExpression dateExpression = (DateExpression) genericExpression;
 			op = dateExpression.isLessThan((DateResult) getFirstValue());

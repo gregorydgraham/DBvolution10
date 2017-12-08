@@ -49,7 +49,6 @@ import nz.co.gregs.dbvolution.exceptions.AutoIncrementFieldClassAndDatatypeMisma
 import nz.co.gregs.dbvolution.exceptions.IncorrectGeometryReturnedForDatatype;
 import nz.co.gregs.dbvolution.expressions.DBExpression;
 import nz.co.gregs.dbvolution.expressions.DateRepeatExpression;
-import nz.co.gregs.dbvolution.expressions.NumberExpression;
 import nz.co.gregs.dbvolution.expressions.StringExpression;
 import nz.co.gregs.dbvolution.generation.DBTableClassGenerator;
 import nz.co.gregs.dbvolution.generation.DBTableField;
@@ -2846,6 +2845,20 @@ public abstract class DBDefinition {
 	}
 
 	/**
+	 * Transforms a SQL snippet of a integer expression into a character expression
+	 * for this database.
+	 *
+	 * @param integerExpression	numberExpression
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @return a String of the SQL required to transform the number supplied into
+	 * a character or String type.
+	 */
+	public String doIntegerToStringTransform(String integerExpression) {
+		return doConcatTransform(getEmptyString(), integerExpression);
+	}
+
+	/**
 	 * Creates the CURRENTDATE function for this database.
 	 *
 	 * <p style="color: #F90;">Support DBvolution at
@@ -3028,6 +3041,19 @@ public abstract class DBDefinition {
 	 * @return SQL
 	 */
 	public String doNumberIfNullTransform(String possiblyNullValue, String alternativeIfNull) {
+		return doStringIfNullTransform(possiblyNullValue, alternativeIfNull);
+	}
+
+	/**
+	 * Produce SQL that will provide return the second value if the first is NULL.
+	 *
+	 * @param possiblyNullValue possiblyNullValue
+	 * @param alternativeIfNull alternativeIfNull
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @return SQL
+	 */
+	public String doIntegerIfNullTransform(String possiblyNullValue, String alternativeIfNull) {
 		return doStringIfNullTransform(possiblyNullValue, alternativeIfNull);
 	}
 
@@ -3526,6 +3552,22 @@ public abstract class DBDefinition {
 	 * @return the SQL required to compare the two numbers.
 	 */
 	public String doNumberEqualsTransform(String leftHandSide, String rightHandSide) {
+		return "" + leftHandSide + " = " + rightHandSide + "";
+	}
+
+	/**
+	 * Transform the to numbers to compare then with equals.
+	 *
+	 * <p>
+	 * The default implementation is {@code leftHandSide + " = " + rightHandSide}.
+	 *
+	 * @param leftHandSide the first value to compare
+	 * @param rightHandSide the second value to compare
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @return the SQL required to compare the two numbers.
+	 */
+	public String doIntegerEqualsTransform(String leftHandSide, String rightHandSide) {
 		return "" + leftHandSide + " = " + rightHandSide + "";
 	}
 
@@ -5640,6 +5682,9 @@ public abstract class DBDefinition {
 	public String doRandomNumberTransform() {
 		return " rand() ";
 	}
+	public String doRandomIntegerTransform() {
+		return " rand() ";
+	}
 
 	/**
 	 * Return the Natural Logarithm.
@@ -5656,11 +5701,34 @@ public abstract class DBDefinition {
 		return "log10(" + sql + ")";
 	}
 
+	/**
+	 * Return the Natural Logarithm.
+	 *
+	 * <p>
+	 * By default this method returns <b>log10(sql)</b></p>
+	 *
+	 * @param sql
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @return the name of the function to use when rounding numbers up
+	 */
+	public String doLogBase10IntegerTransform(String sql) {
+		return doNumberToIntegerTransform("log10(" + sql + ")");
+	}
+
+	public String doNumberToIntegerTransform(String sql) {
+		return doTruncTransform(sql,"0");
+	}
+
 	public String doFindNumberInStringTransform(String toSQLString) {
 		return "(case when regexp_replace(" + toSQLString + ",'.*?([-]?[0-9]+(\\.[0-9]+)?).*', '$1') = " + toSQLString + " then null else regexp_replace(" + toSQLString + ",'.*?([-]?[0-9]+(\\.[0-9]+)?).*', '$1') end)";
 	}
 
 	public String doFindIntegerInStringTransform(String toSQLString) {
 		return "(case when regexp_replace(" + toSQLString + ",'.*?([-]?[0-9]+).*', '$1') = " + toSQLString + " then null else regexp_replace(" + toSQLString + ",'.*?([-]?[0-9]+).*', '$1') end)";
+	}
+
+	public String doIntegerToNumberTransform(String toSQLString) {
+		return "("+toSQLString+")";
 	}
 }

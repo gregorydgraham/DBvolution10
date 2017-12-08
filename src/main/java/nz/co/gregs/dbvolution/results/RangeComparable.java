@@ -104,5 +104,8 @@ public interface RangeComparable<A> extends EqualComparable<A> {
 	 * @return a BooleanExpression
 	 */
 	public BooleanExpression isGreaterThan(A anotherInstance, BooleanExpression fallBackWhenEqual);
+	public BooleanExpression isBetween(A anotherInstance, A largerExpression);
+public BooleanExpression isBetweenInclusive(A anotherInstance, A largerExpression);
+public BooleanExpression isBetweenExclusive(A anotherInstance, A largerExpression);
 
 }

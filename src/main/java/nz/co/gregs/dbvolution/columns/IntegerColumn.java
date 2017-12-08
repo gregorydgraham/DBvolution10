@@ -22,6 +22,7 @@ import nz.co.gregs.dbvolution.datatypes.DBInteger;
 import nz.co.gregs.dbvolution.datatypes.DBIntegerEnum;
 import nz.co.gregs.dbvolution.datatypes.DBNumber;
 import nz.co.gregs.dbvolution.expressions.BooleanExpression;
+import nz.co.gregs.dbvolution.expressions.IntegerExpression;
 import nz.co.gregs.dbvolution.expressions.NumberExpression;
 import nz.co.gregs.dbvolution.query.RowDefinition;
 
@@ -48,7 +49,7 @@ import nz.co.gregs.dbvolution.query.RowDefinition;
  * @see AbstractColumn
  * @see NumberExpression
  */
-public class IntegerColumn extends NumberExpression implements ColumnProvider {
+public class IntegerColumn extends IntegerExpression implements ColumnProvider {
 
 	private AbstractColumn column;
 
@@ -150,18 +151,5 @@ public class IntegerColumn extends NumberExpression implements ColumnProvider {
 	 */
 	public BooleanExpression is(DBInteger integerColumn) {
 		return super.is(integerColumn);
-	}
-
-	/**
-	 * Create an expression to compare this column to the other column using
-	 * EQUALS.
-	 *
-	 * @param numberColumn the value we wish to find in this column.
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 * @return a BooleanExpression
-	 */
-	public BooleanExpression is(DBNumber numberColumn) {
-		return super.is(numberColumn);
 	}
 }

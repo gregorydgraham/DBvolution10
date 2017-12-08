@@ -22,6 +22,7 @@ import java.util.Collection;
 import java.util.List;
 import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
+import nz.co.gregs.dbvolution.expressions.IntegerExpression;
 import nz.co.gregs.dbvolution.expressions.NumberExpression;
 import nz.co.gregs.dbvolution.expressions.StringExpression;
 import nz.co.gregs.dbvolution.results.NumberResult;
@@ -29,6 +30,7 @@ import nz.co.gregs.dbvolution.operators.DBPermittedRangeExclusiveOperator;
 import nz.co.gregs.dbvolution.operators.DBPermittedRangeInclusiveOperator;
 import nz.co.gregs.dbvolution.operators.DBPermittedRangeOperator;
 import nz.co.gregs.dbvolution.operators.DBPermittedValuesOperator;
+import nz.co.gregs.dbvolution.results.IntegerResult;
 
 /**
  * Encapsulates database values that are Integers.
@@ -50,7 +52,7 @@ import nz.co.gregs.dbvolution.operators.DBPermittedValuesOperator;
  *
  * @author Gregory Graham
  */
-public class DBInteger extends QueryableDatatype<Long> implements NumberResult {
+public class DBInteger extends QueryableDatatype<Long> implements IntegerResult {
 
 	private static final long serialVersionUID = 1L;
 
@@ -95,8 +97,19 @@ public class DBInteger extends QueryableDatatype<Long> implements NumberResult {
 	 *
 	 * @param value	value
 	 */
-	public DBInteger(NumberExpression value) {
+	public DBInteger(IntegerExpression value) {
 		super(value);
+	}
+
+	/**
+	 * Create a DBInteger as a column expression.
+	 * 
+	 * <p>Only the integer part of the number will be represented.
+	 *
+	 * @param value	value
+	 */
+	public DBInteger(NumberExpression value) {
+		super(value.integerPart());
 	}
 
 	/**
@@ -194,8 +207,22 @@ public class DBInteger extends QueryableDatatype<Long> implements NumberResult {
 	 *
 	 * @param permitted	permitted
 	 */
+	public void permittedValues(IntegerResult... permitted) {
+		this.setOperator(new DBPermittedValuesOperator<IntegerResult>(permitted));
+	}
+
+	/**
+	 *
+	 * reduces the rows to only the object, Set, List, Array, or vararg of objects
+	 *
+	 * @param permitted	permitted
+	 */
 	public void permittedValues(NumberResult... permitted) {
-		this.setOperator(new DBPermittedValuesOperator<NumberResult>(permitted));
+		List<IntegerResult> list = new ArrayList<>();
+		for(NumberResult num: permitted){
+			list.add(new NumberExpression(num).integerResult());
+		}
+		this.setOperator(new DBPermittedValuesOperator<IntegerResult>(list.toArray(new IntegerResult[]{})));
 	}
 
 	/**
@@ -723,7 +750,7 @@ public class DBInteger extends QueryableDatatype<Long> implements NumberResult {
 
 	@Override
 	public StringExpression stringResult() {
-		return NumberExpression.value(this).stringResult();
+		return IntegerExpression.value(this).stringResult();
 	}
 
 	@Override

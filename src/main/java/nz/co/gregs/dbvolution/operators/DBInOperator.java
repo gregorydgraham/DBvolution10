@@ -23,10 +23,12 @@ import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.expressions.BooleanExpression;
 import nz.co.gregs.dbvolution.expressions.DBExpression;
 import nz.co.gregs.dbvolution.expressions.DateExpression;
+import nz.co.gregs.dbvolution.expressions.IntegerExpression;
 import nz.co.gregs.dbvolution.results.DateResult;
 import nz.co.gregs.dbvolution.expressions.NumberExpression;
 import nz.co.gregs.dbvolution.results.NumberResult;
 import nz.co.gregs.dbvolution.expressions.StringExpression;
+import nz.co.gregs.dbvolution.results.IntegerResult;
 import nz.co.gregs.dbvolution.results.StringResult;
 
 /**
@@ -44,6 +46,7 @@ public class DBInOperator extends DBOperator {
 	private final List<DBExpression> listOfPossibleValues = new ArrayList<DBExpression>();
 	private final List<StringResult> listOfPossibleStrings = new ArrayList<StringResult>();
 	private final List<NumberResult> listOfPossibleNumbers = new ArrayList<NumberResult>();
+	private final ArrayList<IntegerResult> listOfPossibleIntegers = new ArrayList<IntegerResult>();
 	private final List<DateResult> listOfPossibleDates = new ArrayList<DateResult>();
 
 	/**
@@ -63,6 +66,8 @@ public class DBInOperator extends DBOperator {
 				listOfPossibleStrings.add((StringResult) newExpr);
 			} else if ((newExpr instanceof NumberResult)) {
 				listOfPossibleNumbers.add((NumberResult) newExpr);
+			} else if ((newExpr instanceof IntegerResult)) {
+				listOfPossibleIntegers.add((IntegerResult) newExpr);
 			} else if ((newExpr instanceof DateResult)) {
 				listOfPossibleDates.add((DateResult) newExpr);
 			}
@@ -136,6 +141,13 @@ public class DBInOperator extends DBOperator {
 			}
 			NumberExpression numberExpression = (NumberExpression) genericExpression;
 			op = numberExpression.isIn(listNumbers.toArray(new NumberResult[]{}));
+		} else if (genericExpression instanceof IntegerExpression) {
+			ArrayList<IntegerResult> listIntegers = new ArrayList<IntegerResult>(getListOfPossibleIntegers());
+			if (this.includeNulls) {
+				listIntegers.add(null);
+			}
+			IntegerExpression numberExpression = (IntegerExpression) genericExpression;
+			op = numberExpression.isIn(listIntegers.toArray(new IntegerResult[]{}));
 		} else if (genericExpression instanceof DateExpression) {
 			ArrayList<DateResult> listDate = new ArrayList<DateResult>(getListOfPossibleDates());
 			if (this.includeNulls) {
@@ -180,6 +192,17 @@ public class DBInOperator extends DBOperator {
 	 */
 	public List<NumberResult> getListOfPossibleNumbers() {
 		return listOfPossibleNumbers;
+	}
+
+	/**
+	 * List of numbers derived, if any, from the supplied values.
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
+	 * @return the listOfPossibleNumbers
+	 */
+	public List<IntegerResult> getListOfPossibleIntegers() {
+		return listOfPossibleIntegers;
 	}
 
 	/**

@@ -44,7 +44,7 @@ public class NumberExpressionTest extends AbstractTest {
 
 		Marque marq = new Marque();
 		DBQuery dbQuery = database.getDBQuery(marq);
-		dbQuery.addCondition(marq.column(marq.uidMarque).mod(2).is(0));
+		dbQuery.addCondition(marq.column(marq.uidMarque).numberResult().mod(2).is(0));
 		List<DBQueryRow> allRows = dbQuery.getAllRows();
 
 		Assert.assertThat(allRows.size(), is(11));
@@ -59,7 +59,7 @@ public class NumberExpressionTest extends AbstractTest {
 
 		Marque marq = new Marque();
 		DBQuery dbQuery = database.getDBQuery(marq);
-		dbQuery.addCondition(marq.column(marq.uidMarque).mod(2).is(0));
+		dbQuery.addCondition(marq.column(marq.uidMarque).numberResult().mod(2).is(0));
 
 		List<DBQueryRow> allRows = dbQuery.getAllRows();
 
@@ -75,7 +75,7 @@ public class NumberExpressionTest extends AbstractTest {
 
 		Marque marq = new Marque();
 		DBQuery dbQuery = database.getDBQuery(marq);
-		dbQuery.addCondition(marq.column(marq.uidMarque).mod(2).is(0).ifThenElse(2, 1).is(2));
+		dbQuery.addCondition(marq.column(marq.uidMarque).numberResult().mod(2).is(0).ifThenElse(2, 1).is(2));
 		List<DBQueryRow> allRows = dbQuery.getAllRows();
 
 		Assert.assertThat(allRows.size(), is(11));
@@ -89,7 +89,7 @@ public class NumberExpressionTest extends AbstractTest {
 	public void testIsStringExpressionAggregator() throws SQLException {
 		Marque marq = new Marque();
 		DBQuery q = database.getDBQuery(marq);
-		q.addCondition(marq.column(marq.uidMarque).mod(2).is(0).ifThenElse(2, 1).min().is(2));
+		q.addCondition(marq.column(marq.uidMarque).numberResult().mod(2).is(0).ifThenElse(2, 1).min().is(2));
 		List<Marque> rowsByExample = q.getAllInstancesOf(marq);
 
 		Assert.assertEquals(11, rowsByExample.size());
@@ -99,8 +99,8 @@ public class NumberExpressionTest extends AbstractTest {
 	public void testIsStringExpressionAggregators() throws SQLException {
 		Marque marq = new Marque();
 		DBQuery q = database.getDBQuery(marq);
-		q.addCondition(marq.column(marq.uidMarque).mod(2).is(0).ifThenElse(2, 1).min().is(2));
-		q.addCondition(marq.column(marq.uidMarque).mod(2).is(0).ifThenElse(2, 1).max().is(2));
+		q.addCondition(marq.column(marq.uidMarque).numberResult().mod(2).is(0).ifThenElse(2, 1).min().is(2));
+		q.addCondition(marq.column(marq.uidMarque).numberResult().mod(2).is(0).ifThenElse(2, 1).max().is(2));
 		List<Marque> rowsByExample = q.getAllInstancesOf(marq);
 
 		Assert.assertEquals(11, rowsByExample.size());
@@ -111,7 +111,7 @@ public class NumberExpressionTest extends AbstractTest {
 
 		Marque marq = new Marque();
 		DBQuery dbQuery = database.getDBQuery(marq);
-		dbQuery.addCondition(marq.column(marq.uidMarque).mod(2).is(0).convertToInteger().is(1));
+		dbQuery.addCondition(marq.column(marq.uidMarque).numberResult().mod(2).is(0).integerValue().is(1));
 		List<DBQueryRow> allRows = dbQuery.getAllRows();
 
 		Assert.assertThat(allRows.size(), is(11));
@@ -126,7 +126,7 @@ public class NumberExpressionTest extends AbstractTest {
 		Marque marq = new Marque();
 		DBQuery dbQuery = database.getDBQuery(marq);
 		dbQuery.addCondition(
-				marq.column(marq.uidMarque)
+				marq.column(marq.uidMarque).numberResult()
 						.plus(2)
 						.minus(4)
 						.times(6)
@@ -153,7 +153,7 @@ public class NumberExpressionTest extends AbstractTest {
 		Marque marq = new Marque();
 		DBQuery dbQuery = database.getDBQuery(marq);
 		dbQuery.addCondition(
-				marq.column(marq.uidMarque)
+				marq.column(marq.uidMarque).numberResult()
 						.plus(2)
 						.minus(4)
 						.bracket()
@@ -169,7 +169,7 @@ public class NumberExpressionTest extends AbstractTest {
 
 		dbQuery = database.getDBQuery(marq);
 		dbQuery.addCondition(
-				marq.column(marq.uidMarque)
+				marq.column(marq.uidMarque).numberResult()
 						.plus(2)
 						.minus(4)
 						.bracket()
@@ -189,7 +189,7 @@ public class NumberExpressionTest extends AbstractTest {
 		Marque marq = new Marque();
 		DBQuery dbQuery = database.getDBQuery(marq);
 		dbQuery.addCondition(
-				marq.column(marq.uidMarque).plus(2).minus(4).bracket().times(6).bracket().dividedBy(3).is(-2));
+				marq.column(marq.uidMarque).numberResult().plus(2).minus(4).bracket().times(6).bracket().dividedBy(3).is(-2));
 		List<DBQueryRow> allRows = dbQuery.getAllRows();
 
 		Assert.assertThat(allRows.size(), is(1));
@@ -198,7 +198,7 @@ public class NumberExpressionTest extends AbstractTest {
 
 		dbQuery = database.getDBQuery(marq);
 		dbQuery.addCondition(
-				marq.column(marq.uidMarque)
+				marq.column(marq.uidMarque).numberResult()
 						.plus(2)
 						.minus(4)
 						.bracket()
@@ -218,7 +218,7 @@ public class NumberExpressionTest extends AbstractTest {
 		Marque marq = new Marque();
 		DBQuery dbQuery = database.getDBQuery(marq);
 		dbQuery.addCondition(
-				marq.column(marq.uidMarque).plus(2).minus(4).bracket().times(6).bracket().dividedBy(3).is(-2));
+				marq.column(marq.uidMarque).numberResult().plus(2).minus(4).bracket().times(6).bracket().dividedBy(3).is(-2));
 		List<DBQueryRow> allRows = dbQuery.getAllRows();
 
 		Assert.assertThat(allRows.size(), is(1));
@@ -229,7 +229,7 @@ public class NumberExpressionTest extends AbstractTest {
 
 		dbQuery = database.getDBQuery(marq);
 		dbQuery.addCondition(
-				marq.column(marq.uidMarque)
+				marq.column(marq.uidMarque).numberResult()
 						.cubed()
 						.is(8));
 		allRows = dbQuery.getAllRows();
@@ -244,7 +244,7 @@ public class NumberExpressionTest extends AbstractTest {
 		Marque marq = new Marque();
 		DBQuery dbQuery = database.getDBQuery(marq);
 		dbQuery.addCondition(
-				marq.column(marq.uidMarque).plus(2).minus(4).bracket().times(6).bracket().dividedBy(3).is(-2));
+				marq.column(marq.uidMarque).numberResult().plus(2).minus(4).bracket().times(6).bracket().dividedBy(3).is(-2));
 		List<DBQueryRow> allRows = dbQuery.getAllRows();
 
 		Assert.assertThat(allRows.size(), is(1));
@@ -253,7 +253,7 @@ public class NumberExpressionTest extends AbstractTest {
 
 		dbQuery = database.getDBQuery(marq);
 		dbQuery.addCondition(
-				marq.column(marq.uidMarque).dividedBy(335)
+				marq.column(marq.uidMarque).numberResult().dividedBy(335)
 						.round(5L)
 						.is(23074.69254));
 		allRows = dbQuery.getAllRows();
@@ -268,7 +268,7 @@ public class NumberExpressionTest extends AbstractTest {
 		Marque marq = new Marque();
 		DBQuery dbQuery = database.getDBQuery(marq);
 		dbQuery.addCondition(
-				marq.column(marq.uidMarque).plus(2).minus(4).bracket().times(6).bracket().dividedBy(3).is(-2));
+				marq.column(marq.uidMarque).numberResult().plus(2).minus(4).bracket().times(6).bracket().dividedBy(3).is(-2));
 		List<DBQueryRow> allRows = dbQuery.getAllRows();
 
 		Assert.assertThat(allRows.size(), is(1));
@@ -277,7 +277,7 @@ public class NumberExpressionTest extends AbstractTest {
 
 		dbQuery = database.getDBQuery(marq);
 		dbQuery.addCondition(
-				marq.column(marq.uidMarque).dividedBy(335)
+				marq.column(marq.uidMarque).numberResult().dividedBy(335)
 						.round(NumberExpression.value(5))
 						.is(23074.69254));
 		allRows = dbQuery.getAllRows();
@@ -292,7 +292,7 @@ public class NumberExpressionTest extends AbstractTest {
 		Marque marq = new Marque();
 		DBQuery dbQuery = database.getDBQuery(marq);
 		dbQuery.addCondition(
-				marq.column(marq.uidMarque).plus(2).minus(4).bracket().times(6).bracket().dividedBy(3).is(-2));
+				marq.column(marq.uidMarque).numberResult().plus(2).minus(4).bracket().times(6).bracket().dividedBy(3).is(-2));
 		List<DBQueryRow> allRows = dbQuery.getAllRows();
 
 		Assert.assertThat(allRows.size(), is(1));
@@ -301,7 +301,7 @@ public class NumberExpressionTest extends AbstractTest {
 
 		dbQuery = database.getDBQuery(marq);
 		dbQuery.addCondition(
-				marq.column(marq.uidMarque).dividedBy(335)
+				marq.column(marq.uidMarque).numberResult().dividedBy(335)
 						.round(new DBNumber(5))
 						.is(23074.69254));
 		allRows = dbQuery.getAllRows();
@@ -316,7 +316,7 @@ public class NumberExpressionTest extends AbstractTest {
 		Marque marq = new Marque();
 		DBQuery dbQuery = database.getDBQuery(marq);
 		dbQuery.addCondition(
-				marq.column(marq.uidMarque).plus(2).minus(4).bracket().times(6).bracket().dividedBy(3).is(-2));
+				marq.column(marq.uidMarque).numberResult().plus(2).minus(4).bracket().times(6).bracket().dividedBy(3).is(-2));
 		List<DBQueryRow> allRows = dbQuery.getAllRows();
 
 		Assert.assertThat(allRows.size(), is(1));
@@ -325,7 +325,7 @@ public class NumberExpressionTest extends AbstractTest {
 
 		dbQuery = database.getDBQuery(marq);
 		dbQuery.addCondition(
-				marq.column(marq.uidMarque).dividedBy(335)
+				marq.column(marq.uidMarque).numberResult().dividedBy(335)
 						.roundDown()
 						.is(23074));
 		allRows = dbQuery.getAllRows();
@@ -340,7 +340,7 @@ public class NumberExpressionTest extends AbstractTest {
 		Marque marq = new Marque();
 		DBQuery dbQuery = database.getDBQuery(marq);
 		dbQuery.addCondition(
-				marq.column(marq.uidMarque).plus(2).minus(4).bracket().times(6).bracket().dividedBy(3).is(-2));
+				marq.column(marq.uidMarque).numberResult().plus(2).minus(4).bracket().times(6).bracket().dividedBy(3).is(-2));
 		List<DBQueryRow> allRows = dbQuery.getAllRows();
 
 		Assert.assertThat(allRows.size(), is(1));
@@ -349,7 +349,7 @@ public class NumberExpressionTest extends AbstractTest {
 
 		dbQuery = database.getDBQuery(marq);
 		dbQuery.addCondition(
-				marq.column(marq.uidMarque).dividedBy(333)
+				marq.column(marq.uidMarque).numberResult().dividedBy(333)
 						.roundUp()
 						.is(23214));
 		allRows = dbQuery.getAllRows();
@@ -364,7 +364,7 @@ public class NumberExpressionTest extends AbstractTest {
 		Marque marq = new Marque();
 		DBQuery dbQuery = database.getDBQuery(marq);
 		dbQuery.addCondition(
-				marq.column(marq.uidMarque).plus(2).minus(4).bracket().times(6).bracket().dividedBy(3).is(-2));
+				marq.column(marq.uidMarque).numberResult().plus(2).minus(4).bracket().times(6).bracket().dividedBy(3).is(-2));
 		List<DBQueryRow> allRows = dbQuery.getAllRows();
 
 		Assert.assertThat(allRows.size(), is(1));
@@ -374,7 +374,7 @@ public class NumberExpressionTest extends AbstractTest {
 
 		dbQuery = database.getDBQuery(marq);
 		dbQuery.addCondition(
-				marq.column(marq.uidMarque).dividedBy(333)
+				marq.column(marq.uidMarque).numberResult().dividedBy(333)
 						.signPlusMinus()
 						.is("+"));
 		allRows = dbQuery.getAllRows();
@@ -385,7 +385,7 @@ public class NumberExpressionTest extends AbstractTest {
 
 		dbQuery = database.getDBQuery(marq);
 		dbQuery.addCondition(
-				marq.column(marq.uidMarque).dividedBy(-333)
+				marq.column(marq.uidMarque).numberResult().dividedBy(-333)
 						.signPlusMinus()
 						.is("-"));
 		allRows = dbQuery.getAllRows();
@@ -396,7 +396,7 @@ public class NumberExpressionTest extends AbstractTest {
 
 		dbQuery = database.getDBQuery(marq);
 		dbQuery.addCondition(
-				marq.column(marq.uidMarque).minus(7730022)
+				marq.column(marq.uidMarque).numberResult().minus(7730022)
 						.signPlusMinus()
 						.is("+"));
 		allRows = dbQuery.getAllRows();
@@ -411,7 +411,7 @@ public class NumberExpressionTest extends AbstractTest {
 		Marque marq = new Marque();
 		DBQuery dbQuery = database.getDBQuery(marq);
 		dbQuery.addCondition(
-				marq.column(marq.uidMarque).plus(2).minus(4).bracket().times(6).bracket().dividedBy(3).is(-2));
+				marq.column(marq.uidMarque).numberResult().plus(2).minus(4).bracket().times(6).bracket().dividedBy(3).is(-2));
 		List<DBQueryRow> allRows = dbQuery.getAllRows();
 
 		Assert.assertThat(allRows.size(), is(1));
@@ -421,7 +421,7 @@ public class NumberExpressionTest extends AbstractTest {
 
 		dbQuery = database.getDBQuery(marq);
 		dbQuery.addCondition(
-				marq.column(marq.uidMarque).dividedBy(333)
+				marq.column(marq.uidMarque).numberResult().dividedBy(333)
 						.sign()
 						.is(1));
 		allRows = dbQuery.getAllRows();
@@ -432,7 +432,7 @@ public class NumberExpressionTest extends AbstractTest {
 
 		dbQuery = database.getDBQuery(marq);
 		dbQuery.addCondition(
-				marq.column(marq.uidMarque).dividedBy(-333)
+				marq.column(marq.uidMarque).numberResult().dividedBy(-333)
 						.sign()
 						.is(-1));
 		allRows = dbQuery.getAllRows();
@@ -443,7 +443,7 @@ public class NumberExpressionTest extends AbstractTest {
 
 		dbQuery = database.getDBQuery(marq);
 		dbQuery.addCondition(
-				marq.column(marq.uidMarque).minus(7730022)
+				marq.column(marq.uidMarque).numberResult().minus(7730022)
 						.sign()
 						.is(0));
 		allRows = dbQuery.getAllRows();
@@ -458,11 +458,11 @@ public class NumberExpressionTest extends AbstractTest {
 		Marque marq = new Marque();
 		DBQuery dbQuery = database.getDBQuery(marq);
 		dbQuery.addCondition(
-				marq.column(marq.uidMarque)
+				marq.column(marq.uidMarque).numberResult()
 						.isBetween(-1, 1)
 		);
 		dbQuery.addCondition(
-				marq.column(marq.uidMarque)
+				marq.column(marq.uidMarque).numberResult()
 						.arccos()
 						.is(0)
 		);
@@ -478,11 +478,11 @@ public class NumberExpressionTest extends AbstractTest {
 		Marque marq = new Marque();
 		DBQuery dbQuery = database.getDBQuery(marq);
 		dbQuery.addCondition(
-				marq.column(marq.uidMarque)
+				marq.column(marq.uidMarque).numberResult()
 						.isBetween(-1, 10)
 		);
 		dbQuery.addCondition(
-				marq.column(marq.uidMarque)
+				marq.column(marq.uidMarque).numberResult()
 						.times(0.3)
 						.arcsin()
 						.isBetween(0.3, 0.31)
@@ -499,11 +499,11 @@ public class NumberExpressionTest extends AbstractTest {
 		Marque marq = new Marque();
 		DBQuery dbQuery = database.getDBQuery(marq);
 		dbQuery.addCondition(
-				marq.column(marq.uidMarque)
+				marq.column(marq.uidMarque).numberResult()
 						.isBetween(-1, 10)
 		);
 		dbQuery.addCondition(
-				marq.column(marq.uidMarque)
+				marq.column(marq.uidMarque).numberResult()
 						.arctan()
 						.isBetween(0.78, 0.79)
 		);
@@ -519,11 +519,11 @@ public class NumberExpressionTest extends AbstractTest {
 		Marque marq = new Marque();
 		DBQuery dbQuery = database.getDBQuery(marq);
 		dbQuery.addCondition(
-				marq.column(marq.uidMarque)
+				marq.column(marq.uidMarque).numberResult()
 						.isBetween(-1, 10)
 		);
 		dbQuery.addCondition(
-				marq.column(marq.uidMarque)
+				marq.column(marq.uidMarque).numberResult()
 						.arctan2(NumberExpression.value(2))
 						.isBetween(0.46, 0.47)
 		);
@@ -539,11 +539,11 @@ public class NumberExpressionTest extends AbstractTest {
 		Marque marq = new Marque();
 		DBQuery dbQuery = database.getDBQuery(marq);
 		dbQuery.addCondition(
-				marq.column(marq.uidMarque)
+				marq.column(marq.uidMarque).numberResult()
 						.isBetween(-1, 10)
 		);
 		dbQuery.addCondition(
-				marq.column(marq.uidMarque)
+				marq.column(marq.uidMarque).numberResult()
 						.cotangent()
 						.isBetween(0.64, 0.65)
 		);
@@ -559,11 +559,11 @@ public class NumberExpressionTest extends AbstractTest {
 		Marque marq = new Marque();
 		DBQuery dbQuery = database.getDBQuery(marq);
 		dbQuery.addCondition(
-				marq.column(marq.uidMarque)
+				marq.column(marq.uidMarque).numberResult()
 						.isBetween(-1, 10)
 		);
 		dbQuery.addCondition(
-				marq.column(marq.uidMarque)
+				marq.column(marq.uidMarque).numberResult()
 						.cosh()
 						.isBetween(1.54, 1.55)
 		);
@@ -579,11 +579,11 @@ public class NumberExpressionTest extends AbstractTest {
 		Marque marq = new Marque();
 		DBQuery dbQuery = database.getDBQuery(marq);
 		dbQuery.addCondition(
-				marq.column(marq.uidMarque)
+				marq.column(marq.uidMarque).numberResult()
 						.isBetween(-1, 10)
 		);
 		dbQuery.addCondition(
-				marq.column(marq.uidMarque)
+				marq.column(marq.uidMarque).numberResult()
 						.tanh()
 						.isLessThan(1)
 		);
@@ -599,8 +599,9 @@ public class NumberExpressionTest extends AbstractTest {
 		Marque marq = new Marque();
 		DBQuery dbQuery = database.getDBQuery(marq);
 		dbQuery.addCondition(
-				NumberExpression.greatestOf(marq.column(marq.uidMarque), NumberExpression.value(900000), NumberExpression.value(800000))
-						.is(marq.column(marq.uidMarque))
+				NumberExpression.greatestOf(marq.column(marq.uidMarque).numberResult(), 
+						NumberExpression.value(900000), NumberExpression.value(800000)
+				).is(marq.column(marq.uidMarque).numberResult())
 		);
 		List<DBQueryRow> allRows = dbQuery.getAllRows();
 
@@ -614,12 +615,12 @@ public class NumberExpressionTest extends AbstractTest {
 		Marque marq = new Marque();
 		DBQuery dbQuery = database.getDBQuery(marq);
 		ArrayList<NumberResult> vals = new ArrayList<NumberResult>();
-		vals.add(marq.column(marq.uidMarque));
+		vals.add(marq.column(marq.uidMarque).numberResult());
 		vals.add(NumberExpression.value(900000));
 		vals.add(NumberExpression.value(800000));
 		dbQuery.addCondition(
 				NumberExpression.greatestOf(vals)
-						.is(marq.column(marq.uidMarque))
+						.is(marq.column(marq.uidMarque).numberResult())
 		);
 		List<DBQueryRow> allRows = dbQuery.getAllRows();
 
@@ -634,7 +635,7 @@ public class NumberExpressionTest extends AbstractTest {
 		DBQuery dbQuery = database.getDBQuery(marq);
 		dbQuery.addCondition(
 				NumberExpression.greatestOf(800000, 900000, 4893059)
-						.is(marq.column(marq.uidMarque))
+						.is(marq.column(marq.uidMarque).numberResult())
 		);
 		List<DBQueryRow> allRows = dbQuery.getAllRows();
 
@@ -648,12 +649,12 @@ public class NumberExpressionTest extends AbstractTest {
 		Marque marq = new Marque();
 		DBQuery dbQuery = database.getDBQuery(marq);
 		ArrayList<NumberExpression> arrayList = new ArrayList<NumberExpression>();
-		arrayList.add(marq.column(marq.uidMarque));
+		arrayList.add(marq.column(marq.uidMarque).numberResult());
 		arrayList.add(NumberExpression.value(900000));
 		arrayList.add(NumberExpression.value(800000));
 		dbQuery.addCondition(
 				NumberExpression.leastOf(arrayList)
-						.is(marq.column(marq.uidMarque))
+						.is(marq.column(marq.uidMarque).numberResult())
 		);
 		List<DBQueryRow> allRows = dbQuery.getAllRows();
 
@@ -815,7 +816,7 @@ public class NumberExpressionTest extends AbstractTest {
 		Marque marq = new Marque();
 		DBQuery dbQuery = database.getDBQuery(marq);
 		dbQuery.addCondition(
-				marq.column(marq.uidMarque)
+				marq.column(marq.uidMarque).numberResult()
 						.append("$")
 						.isLike("%2$")
 		);
@@ -825,7 +826,7 @@ public class NumberExpressionTest extends AbstractTest {
 
 		dbQuery = database.getDBQuery(marq);
 		dbQuery.addCondition(
-				marq.column(marq.uidMarque)
+				marq.column(marq.uidMarque).numberResult()
 						.append(StringExpression.value("$"))
 						.isLike("%2$")
 		);
@@ -839,7 +840,7 @@ public class NumberExpressionTest extends AbstractTest {
 		Marque marq = new Marque();
 		DBQuery dbQuery = database.getDBQuery(marq);
 		dbQuery.addCondition(
-				marq.column(marq.uidMarque)
+				marq.column(marq.uidMarque).numberResult()
 						.isEven()
 		);
 		List<DBQueryRow> allRows = dbQuery.getAllRows();
@@ -852,7 +853,7 @@ public class NumberExpressionTest extends AbstractTest {
 		Marque marq = new Marque();
 		DBQuery dbQuery = database.getDBQuery(marq);
 		dbQuery.addCondition(
-				marq.column(marq.uidMarque)
+				marq.column(marq.uidMarque).numberResult()
 						.times(-2).abs().is(4)
 		);
 		List<DBQueryRow> allRows = dbQuery.getAllRows();
@@ -865,7 +866,7 @@ public class NumberExpressionTest extends AbstractTest {
 		Marque marq = new Marque();
 		DBQuery dbQuery = database.getDBQuery(marq);
 		dbQuery.addCondition(
-				marq.column(marq.uidMarque)
+				marq.column(marq.uidMarque).numberResult()
 						.times(-2).absoluteValue().is(4)
 		);
 		List<DBQueryRow> allRows = dbQuery.getAllRows();
@@ -878,7 +879,7 @@ public class NumberExpressionTest extends AbstractTest {
 		Marque marq = new Marque();
 		DBQuery dbQuery = database.getDBQuery(marq);
 		dbQuery.addCondition(
-				marq.column(marq.uidMarque)
+				marq.column(marq.uidMarque).numberResult()
 						.dividedBy(2).bracket().decimalPart().is(0.5)
 		);
 		List<DBQueryRow> allRows = dbQuery.getAllRows();
@@ -891,7 +892,7 @@ public class NumberExpressionTest extends AbstractTest {
 		Marque marq = new Marque();
 		DBQuery dbQuery = database.getDBQuery(marq);
 		dbQuery.addCondition(
-				marq.column(marq.uidMarque)
+				marq.column(marq.uidMarque).numberResult()
 						.dividedBy(2).integerPart().is(1)
 		);
 		List<DBQueryRow> allRows = dbQuery.getAllRows();
@@ -904,7 +905,7 @@ public class NumberExpressionTest extends AbstractTest {
 		Marque marq = new Marque();
 		DBQuery dbQuery = database.getDBQuery(marq);
 		dbQuery.addCondition(
-				marq.column(marq.uidMarque)
+				marq.column(marq.uidMarque).numberResult()
 						.isOdd()
 		);
 		List<DBQueryRow> allRows = dbQuery.getAllRows();
@@ -944,7 +945,7 @@ public class NumberExpressionTest extends AbstractTest {
 		DBQuery dbQuery = database.getDBQuery(marq);
 		dbQuery.addCondition(
 				NumberExpression.leastOf(1, 2, 3, 4, 5)
-						.is(marq.column(marq.uidMarque))
+						.is(marq.column(marq.uidMarque).numberResult())
 		);
 		List<DBQueryRow> allRows = dbQuery.getAllRows();
 
@@ -958,7 +959,7 @@ public class NumberExpressionTest extends AbstractTest {
 		Marque marq = new Marque();
 		DBQuery dbQuery = database.getDBQuery(marq);
 		dbQuery.addCondition(
-				marq.column(marq.uidMarque).minus(1).cos().is(1));
+				marq.column(marq.uidMarque).numberResult().minus(1).cos().is(1));
 		List<DBQueryRow> allRows = dbQuery.getAllRows();
 
 		Assert.assertThat(allRows.size(), is(1));
@@ -971,7 +972,7 @@ public class NumberExpressionTest extends AbstractTest {
 		Marque marq = new Marque();
 		DBQuery dbQuery = database.getDBQuery(marq);
 		dbQuery.addCondition(
-				marq.column(marq.uidMarque).sine().round(4).is(0.9093));
+				marq.column(marq.uidMarque).numberResult().sine().round(4).is(0.9093));
 
 		List<DBQueryRow> allRows = dbQuery.getAllRows();
 
@@ -985,7 +986,7 @@ public class NumberExpressionTest extends AbstractTest {
 		Marque marq = new Marque();
 		DBQuery dbQuery = database.getDBQuery(marq);
 		dbQuery.addCondition(
-				marq.column(marq.uidMarque).sinh().round(5).isBetween(3.62685, 3.62686));
+				marq.column(marq.uidMarque).numberResult().sinh().round(5).isBetween(3.62685, 3.62686));
 
 		List<DBQueryRow> allRows = dbQuery.getAllRows();
 
@@ -999,7 +1000,7 @@ public class NumberExpressionTest extends AbstractTest {
 		Marque marq = new Marque();
 		DBQuery dbQuery = database.getDBQuery(marq);
 		dbQuery.addCondition(
-				marq.column(marq.uidMarque).logN().round(6).is(0.693147));
+				marq.column(marq.uidMarque).numberResult().logN().round(6).is(0.693147));
 
 		List<DBQueryRow> allRows = dbQuery.getAllRows();
 
@@ -1013,7 +1014,7 @@ public class NumberExpressionTest extends AbstractTest {
 		Marque marq = new Marque();
 		DBQuery dbQuery = database.getDBQuery(marq);
 		dbQuery.addCondition(
-				marq.column(marq.uidMarque).logBase10().round(5).is(0.30103));
+				marq.column(marq.uidMarque).numberResult().logBase10().round(5).is(0.30103));
 
 		List<DBQueryRow> allRows = dbQuery.getAllRows();
 

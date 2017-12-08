@@ -32,6 +32,7 @@ import nz.co.gregs.dbvolution.expressions.*;
 import nz.co.gregs.dbvolution.internal.properties.*;
 import nz.co.gregs.dbvolution.internal.query.RecursiveQueryDepthIncreaseExpression;
 import nz.co.gregs.dbvolution.query.*;
+import nz.co.gregs.dbvolution.results.IntegerResult;
 
 /**
  * Provides the infrastructure required to create recursive queries. DBvolution
@@ -309,7 +310,7 @@ public class DBRecursiveQuery<T extends DBRow> {
 		}
 		newQuery.addExpressionColumn(
 				database.getDefinition().getRecursiveQueryDepthColumnName(),
-				NumberExpression.value(1).asExpressionColumn()
+				IntegerExpression.value(1).asExpressionColumn()
 		);
 
 		return newQuery;
@@ -367,11 +368,11 @@ public class DBRecursiveQuery<T extends DBRow> {
 				newQuery.addCondition(
 						((EqualComparable<NumberResult>) pkColumn)
 								.is(newFKColumn));
-			} else if ((qdt instanceof DBInteger) && (pkColumn instanceof EqualComparable) && (primaryKey instanceof NumberResult)) {
+			} else if ((qdt instanceof DBInteger) && (pkColumn instanceof EqualComparable) && (primaryKey instanceof IntegerResult)) {
 				DBInteger fkValue = (DBInteger) qdt;
 				IntegerColumn newFKColumn = referencedRow.column(fkValue);
 				newQuery.addCondition(
-						((EqualComparable<NumberResult>) pkColumn)
+						((EqualComparable<IntegerResult>) pkColumn)
 								.is(newFKColumn));
 			} else if ((qdt instanceof DBString) && (pkColumn instanceof EqualComparable) && (primaryKey instanceof StringResult)) {
 				DBString fkValue = (DBString) qdt;
@@ -695,6 +696,13 @@ public class DBRecursiveQuery<T extends DBRow> {
 			List<Number> longs = new ArrayList<>();
 			for (String value : values) {
 				longs.add(Double.parseDouble(value));
+			}
+			qdt.permittedValues(longs);
+		} else if (primaryKey instanceof DBInteger) {
+			DBInteger qdt = (DBInteger) primaryKey;
+			List<Long> longs = new ArrayList<>();
+			for (String value : values) {
+				longs.add(Long.parseLong(value));
 			}
 			qdt.permittedValues(longs);
 		} else if (primaryKey instanceof DBString) {

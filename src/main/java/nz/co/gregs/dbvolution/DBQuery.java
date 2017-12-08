@@ -122,6 +122,10 @@ public class DBQuery {
 		}
 	}
 
+	public void printQuerySQL() {
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	}
+
 	private static enum QueryType {
 
 		COUNT, SELECT, REVERSESELECT
@@ -280,6 +284,29 @@ public class DBQuery {
 	 */
 	public String getSQLForQuery() {
 		return getSQLForQuery(new QueryState(this, getDatabase()), QueryType.SELECT, this.details.getOptions());
+	}
+/**
+	 * Prints the actual SQL to be used by this query.
+	 *
+	 * <p>
+	 * Good for debugging and great for DBAs, this is how you find out what
+	 * DBvolution is really doing.
+	 *
+	 * <p>
+	 * Prints the SQL query for retrieving the objects but does not execute the
+	 * SQL. Use
+	 * {@link #getAllRowsInternal(nz.co.gregs.dbvolution.query.QueryOptions) the get*Rows methods}
+	 * to retrieve the rows.
+	 *
+	 * <p>
+	 * See also {@link DBQuery#getSQLForCount() getSQLForCount}
+	 *
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
+	 */
+	public void printSQLForQuery() {
+		 System.out.println(getSQLForQuery());
 	}
 
 	String getANSIJoinClause(DBDatabase database, QueryState queryState, DBRow newTable, List<DBRow> previousTables, QueryOptions options) {
@@ -710,6 +737,21 @@ public class DBQuery {
 		} else {
 			return getSQLForQuery(new QueryState(this, getDatabase()), QueryType.COUNT, details.getOptions());
 		}
+	}
+
+	/**
+	 * Prints the SQL query that will used to count the rows
+	 *
+	 * <p>
+	 * Use this method to check the SQL that will be executed during
+	 * {@link DBQuery#count() the count() method}
+	 *
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
+	 */
+	public void printSQLForCount() {
+		System.out.println(getSQLForCount());
 	}
 
 	/**

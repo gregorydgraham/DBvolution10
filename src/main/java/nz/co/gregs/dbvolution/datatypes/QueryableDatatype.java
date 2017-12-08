@@ -41,6 +41,7 @@ import nz.co.gregs.dbvolution.internal.properties.PropertyWrapperDefinition;
 import nz.co.gregs.dbvolution.operators.DBEqualsOperator;
 import nz.co.gregs.dbvolution.operators.DBIsNullOperator;
 import nz.co.gregs.dbvolution.operators.DBOperator;
+import nz.co.gregs.dbvolution.results.IntegerResult;
 
 /**
  *
@@ -206,6 +207,8 @@ public abstract class QueryableDatatype<T> extends Object implements Serializabl
 			qdt = (QueryableDatatype<S>) new DBLargeBinary();
 		} else if (o instanceof Boolean) {
 			qdt = (QueryableDatatype<S>) new DBBoolean();
+		} else if (o instanceof IntegerResult) {
+			qdt = (QueryableDatatype<S>) new DBInteger();
 		} else if (o instanceof NumberResult) {
 			qdt = (QueryableDatatype<S>) new DBNumber();
 		} else if (o instanceof StringResult) {

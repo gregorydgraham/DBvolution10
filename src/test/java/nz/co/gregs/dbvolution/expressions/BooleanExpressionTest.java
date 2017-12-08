@@ -926,7 +926,7 @@ public class BooleanExpressionTest extends AbstractTest {
 		dbQuery.addCondition(
 				BooleanExpression.seekLessThan(
 						marq.column(marq.name), StringExpression.value("BMW"),
-						marq.column(marq.uidMarque), NumberExpression.value(6664478),
+						marq.column(marq.uidMarque), IntegerExpression.value(6664478),
 						marq.column(marq.creationDate), DateExpression.value(april2nd2011)
 				)
 		);
@@ -939,7 +939,7 @@ public class BooleanExpressionTest extends AbstractTest {
 		dbQuery.addCondition(
 				BooleanExpression.seekLessThan(
 						marq.column(marq.name), StringExpression.value("BMW"),
-						marq.column(marq.uidMarque), NumberExpression.value(6664478),
+						marq.column(marq.uidMarque), IntegerExpression.value(6664478),
 						marq.column(marq.creationDate), DateExpression.value(april2nd2011)
 				)
 		);
@@ -956,7 +956,7 @@ public class BooleanExpressionTest extends AbstractTest {
 		dbQuery.addCondition(
 				BooleanExpression.seekGreaterThan(
 						marq.column(marq.name), StringExpression.value("BMW"),
-						marq.column(marq.uidMarque), NumberExpression.value(6664478),
+						marq.column(marq.uidMarque), IntegerExpression.value(6664478),
 						marq.column(marq.creationDate), DateExpression.value(march23rd2013)
 				)
 		);

@@ -127,19 +127,6 @@ public class NumberColumn extends NumberExpression implements ColumnProvider {
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a BooleanExpression
 	 */
-	public BooleanExpression is(DBInteger column) {
-		return super.is(column);
-	}
-
-	/**
-	 * Create an expression to compare this column to the other column using
-	 * EQUALS.
-	 *
-	 * @param column the value to compare against
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 * @return a BooleanExpression
-	 */
 	public BooleanExpression is(DBNumber column) {
 		return super.is(column);
 	}

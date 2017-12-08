@@ -21,10 +21,13 @@ import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.expressions.DBExpression;
 import nz.co.gregs.dbvolution.expressions.BooleanExpression;
 import nz.co.gregs.dbvolution.expressions.DateExpression;
+import nz.co.gregs.dbvolution.expressions.IntegerExpression;
 import nz.co.gregs.dbvolution.results.DateResult;
 import nz.co.gregs.dbvolution.expressions.NumberExpression;
 import nz.co.gregs.dbvolution.results.NumberResult;
 import nz.co.gregs.dbvolution.expressions.StringExpression;
+import nz.co.gregs.dbvolution.results.IntegerResult;
+import nz.co.gregs.dbvolution.results.RangeComparable;
 import nz.co.gregs.dbvolution.results.StringResult;
 
 /**
@@ -34,6 +37,8 @@ import nz.co.gregs.dbvolution.results.StringResult;
  * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
  *
  * @author Gregory Graham
+ * @param <A>
+ * @param <B>
  */
 public class DBBetweenOperator extends DBOperator {
 
@@ -99,12 +104,18 @@ public class DBBetweenOperator extends DBOperator {
 			if (getFirstValue() instanceof NumberResult) {
 				NumberResult numberResult = (NumberResult) getFirstValue();
 				firstStringExpr = new NumberExpression(numberResult).stringResult();
+			} else if (getFirstValue() instanceof IntegerResult) {
+				NumberResult numberResult = (NumberResult) getFirstValue();
+				firstStringExpr = new NumberExpression(numberResult).stringResult();
 			} else if (getFirstValue() instanceof StringResult) {
 				firstStringExpr = (StringResult) getFirstValue();
 			}
 			if (getSecondValue() instanceof NumberResult) {
 				NumberResult numberResult = (NumberResult) getSecondValue();
 				secondStringExpr = new NumberExpression(numberResult).stringResult();
+			} else if (getSecondValue() instanceof IntegerResult) {
+				IntegerResult numberResult = (IntegerResult) getSecondValue();
+				secondStringExpr = new IntegerExpression(numberResult).stringResult();
 			} else if (getSecondValue() instanceof StringResult) {
 				secondStringExpr = (StringResult) getSecondValue();
 			}
@@ -116,6 +127,11 @@ public class DBBetweenOperator extends DBOperator {
 				&& (getSecondValue() instanceof NumberResult)) {
 			NumberExpression numberExpression = (NumberExpression) genericExpression;
 			betweenOp = numberExpression.isBetween((NumberResult) getFirstValue(), (NumberResult) getSecondValue());
+		} else  if ((genericExpression instanceof IntegerExpression)
+				&& (getFirstValue() instanceof IntegerResult)
+				&& (getSecondValue() instanceof IntegerResult)) {
+			IntegerExpression numberExpression = (IntegerExpression) genericExpression;
+			betweenOp = numberExpression.isBetween((IntegerResult) getFirstValue(), (IntegerResult) getSecondValue());
 		} else if ((genericExpression instanceof DateExpression)
 				&& (getFirstValue() instanceof DateResult)
 				&& (getSecondValue() instanceof DateResult)) {

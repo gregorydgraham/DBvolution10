@@ -10,6 +10,7 @@ import java.sql.SQLException;
 import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.DBReport;
 import nz.co.gregs.dbvolution.DBRow;
+import nz.co.gregs.dbvolution.expressions.IntegerExpression;
 import nz.co.gregs.dbvolution.expressions.NumberExpression;
 import nz.co.gregs.dbvolution.internal.properties.PropertyWrapperDefinition;
 
@@ -85,6 +86,20 @@ public class DBNumberStatistics extends DBNumber {
 		});
 		this.originalExpression = numberExpressionToGenerateStatsFrom;
 
+	}	
+	
+	/**
+	 * Creates a column expression with a statistics result from the expression
+	 * provided.
+	 *
+	 * <p>
+	 * Used in {@link DBReport}, and some {@link DBRow}, sub-classes to derive
+	 * data from the database prior to retrieval.
+	 *
+	 * @param numberExpressionToGenerateStatsFrom numberExpression
+	 */
+	public DBNumberStatistics(IntegerExpression numberExpressionToGenerateStatsFrom) {
+		this(numberExpressionToGenerateStatsFrom.numberResult());
 	}
 
 	/**
