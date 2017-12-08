@@ -871,12 +871,6 @@
             <artifactId>reflections</artifactId>
             <version>0.9.11</version>
             <type>jar</type>
-            <!--<exclusions>
-                                            <exclusion>
-                                                                            <groupId>com.google.guava</groupId>
-                                                                            <artifactId>guava</artifactId>
-                                            </exclusion>
-            </exclusions>-->
         </dependency>
         <dependency>
             <groupId>commons-logging</groupId>
@@ -966,7 +960,7 @@
         <dependency>
             <groupId>com.microsoft.sqlserver</groupId>
             <artifactId>mssql-jdbc</artifactId>
-            <version>6.1.5.jre7-preview</version>
+            <version>6.2.2.jre7</version>
         </dependency>
     </dependencies>
     <distributionManagement>
