@@ -70,9 +70,10 @@ public class IntegerExpression implements IntegerResult, RangeComparable<Integer
 	 * little trickier.
 	 *
 	 * <p>
-	 * This method provides the easy route to a *Expression from a literal value.
-	 * Just call, for instance, {@code StringExpression.value("STARTING STRING")}
-	 * to get a StringExpression and start the expression chain.
+	 * This method provides the easy route to a *Expression from a literal
+	 * value. Just call, for instance,
+	 * {@code StringExpression.value("STARTING STRING")} to get a
+	 * StringExpression and start the expression chain.
 	 *
 	 * <ul>
 	 * <li>Only object classes that are appropriate need to be handle by the
@@ -83,8 +84,8 @@ public class IntegerExpression implements IntegerResult, RangeComparable<Integer
 	 * @param number a literal value to use in the expression
 	 * <p style="color: #F90;">Support DBvolution at
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 * @return a DBExpression instance that is appropriate to the subclass and the
-	 * value supplied.
+	 * @return a DBExpression instance that is appropriate to the subclass and
+	 * the value supplied.
 	 */
 	public static IntegerExpression value(IntegerResult number) {
 		return new IntegerExpression(number);
@@ -102,9 +103,10 @@ public class IntegerExpression implements IntegerResult, RangeComparable<Integer
 	 * little trickier.
 	 *
 	 * <p>
-	 * This method provides the easy route to a *Expression from a literal value.
-	 * Just call, for instance, {@code StringExpression.value("STARTING STRING")}
-	 * to get a StringExpression and start the expression chain.
+	 * This method provides the easy route to a *Expression from a literal
+	 * value. Just call, for instance,
+	 * {@code StringExpression.value("STARTING STRING")} to get a
+	 * StringExpression and start the expression chain.
 	 *
 	 * <ul>
 	 * <li>Only object classes that are appropriate need to be handle by the
@@ -115,8 +117,8 @@ public class IntegerExpression implements IntegerResult, RangeComparable<Integer
 	 * @param number a literal value to use in the expression
 	 * <p style="color: #F90;">Support DBvolution at
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 * @return a DBExpression instance that is appropriate to the subclass and the
-	 * value supplied.
+	 * @return a DBExpression instance that is appropriate to the subclass and
+	 * the value supplied.
 	 */
 	public static IntegerExpression value(NumberResult number) {
 		return new NumberExpression(number).trunc();
@@ -168,8 +170,8 @@ public class IntegerExpression implements IntegerResult, RangeComparable<Integer
 	 * Create a IntegerExpression based on an existing {@link IntegerResult}.
 	 *
 	 * <p>
-	 * {@link IntegerResult} is generally a IntegerExpression but it may also be a
-	 * {@link DBInteger}.
+	 * {@link IntegerResult} is generally a IntegerExpression but it may also be
+	 * a {@link DBInteger}.
 	 *
 	 * @param value a number expression or QDT
 	 */
@@ -202,9 +204,10 @@ public class IntegerExpression implements IntegerResult, RangeComparable<Integer
 	 * little trickier.
 	 *
 	 * <p>
-	 * This method provides the easy route to a *Expression from a literal value.
-	 * Just call, for instance, {@code StringExpression.value("STARTING STRING")}
-	 * to get a StringExpression and start the expression chain.
+	 * This method provides the easy route to a *Expression from a literal
+	 * value. Just call, for instance,
+	 * {@code StringExpression.value("STARTING STRING")} to get a
+	 * StringExpression and start the expression chain.
 	 *
 	 * <ul>
 	 * <li>Only object classes that are appropriate need to be handle by the
@@ -215,8 +218,8 @@ public class IntegerExpression implements IntegerResult, RangeComparable<Integer
 	 * @param object a literal value to use in the expression
 	 * <p style="color: #F90;">Support DBvolution at
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 * @return a DBExpression instance that is appropriate to the subclass and the
-	 * value supplied.
+	 * @return a DBExpression instance that is appropriate to the subclass and
+	 * the value supplied.
 	 */
 	public static IntegerExpression value(Long object) {
 		final IntegerExpression integerExpression = new IntegerExpression(object);
@@ -238,9 +241,10 @@ public class IntegerExpression implements IntegerResult, RangeComparable<Integer
 	 * little trickier.
 	 *
 	 * <p>
-	 * This method provides the easy route to a *Expression from a literal value.
-	 * Just call, for instance, {@code StringExpression.value("STARTING STRING")}
-	 * to get a StringExpression and start the expression chain.
+	 * This method provides the easy route to a *Expression from a literal
+	 * value. Just call, for instance,
+	 * {@code StringExpression.value("STARTING STRING")} to get a
+	 * StringExpression and start the expression chain.
 	 *
 	 * <ul>
 	 * <li>Only object classes that are appropriate need to be handle by the
@@ -251,8 +255,8 @@ public class IntegerExpression implements IntegerResult, RangeComparable<Integer
 	 * @param object a literal value to use in the expression
 	 * <p style="color: #F90;">Support DBvolution at
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 * @return a DBExpression instance that is appropriate to the subclass and the
-	 * value supplied.
+	 * @return a DBExpression instance that is appropriate to the subclass and
+	 * the value supplied.
 	 */
 	public static IntegerExpression value(Number object) {
 		if (object == null) {
@@ -306,7 +310,8 @@ public class IntegerExpression implements IntegerResult, RangeComparable<Integer
 	}
 
 	/**
-	 * Tests that a expression is shorter than or equal to the specified lengths.
+	 * Tests that a expression is shorter than or equal to the specified
+	 * lengths.
 	 *
 	 * <p>
 	 * This method is useful to test values will fit within a specific field
@@ -419,8 +424,8 @@ public class IntegerExpression implements IntegerResult, RangeComparable<Integer
 	}
 
 	/**
-	 * Tests the IntegerExpression against the value NULL and returns true if the
-	 * Integer Expression is not NULL.
+	 * Tests the IntegerExpression against the value NULL and returns true if
+	 * the Integer Expression is not NULL.
 	 *
 	 * <p style="color: #F90;">Support DBvolution at
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
@@ -433,8 +438,8 @@ public class IntegerExpression implements IntegerResult, RangeComparable<Integer
 	}
 
 	/**
-	 * Tests the IntegerExpression against the value NULL and returns true if the
-	 * Integer Expression is NULL.
+	 * Tests the IntegerExpression against the value NULL and returns true if
+	 * the Integer Expression is NULL.
 	 *
 	 * <p style="color: #F90;">Support DBvolution at
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
@@ -447,8 +452,8 @@ public class IntegerExpression implements IntegerResult, RangeComparable<Integer
 	}
 
 	/**
-	 * Tests the IntegerExpression against the supplied number and returns true if
-	 * the Integer Expression is not equal to the number.
+	 * Tests the IntegerExpression against the supplied number and returns true
+	 * if the Integer Expression is not equal to the number.
 	 *
 	 * @param number the expression needs to NOT evaluate to this number
 	 * <p style="color: #F90;">Support DBvolution at
@@ -478,8 +483,38 @@ public class IntegerExpression implements IntegerResult, RangeComparable<Integer
 	/**
 	 * Performs searches based on a range.
 	 *
-	 * if both ends of the range are specified the lower-bound will be included in
-	 * the search and the upper-bound excluded. I.e permittedRange(1,3) will
+	 * if both ends of the range are specified the lower-bound will be included
+	 * in the search and the upper-bound excluded. I.e permittedRange(1,3) will
+	 * return 1 and 2.
+	 *
+	 * <p>
+	 * if the upper-bound is null the range will be open ended and inclusive.
+	 * <br>
+	 * I.e permittedRange(1,null) will return 1,2,3,4,5, etc.
+	 *
+	 * <p>
+	 * if the lower-bound is null the range will be open ended and exclusive.
+	 * <br>
+	 * I.e permittedRange(null, 5) will return 4,3,2,1, etc.
+	 *
+	 * @param lowerBound the smallest value
+	 * @param upperBound the largest value
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @return a boolean expression representing the required comparison
+	 */
+	public BooleanExpression isBetween(NumberResult lowerBound, NumberResult upperBound) {
+		return BooleanExpression.allOf(
+				this.numberResult().isGreaterThan(lowerBound),
+				this.numberResult().isLessThanOrEqual(upperBound)
+		);
+	}
+
+	/**
+	 * Performs searches based on a range.
+	 *
+	 * if both ends of the range are specified the lower-bound will be included
+	 * in the search and the upper-bound excluded. I.e permittedRange(1,3) will
 	 * return 1 and 2.
 	 *
 	 * <p>
@@ -500,17 +535,14 @@ public class IntegerExpression implements IntegerResult, RangeComparable<Integer
 	 */
 	@Override
 	public BooleanExpression isBetween(IntegerResult lowerBound, IntegerResult upperBound) {
-		return BooleanExpression.allOf(
-				this.isGreaterThan(lowerBound),
-				this.isLessThanOrEqual(upperBound)
-		);
+		return isBetween(NumberExpression.value(lowerBound), NumberExpression.value(upperBound));
 	}
 
 	/**
 	 * Performs searches based on a range.
 	 *
-	 * if both ends of the range are specified the lower-bound will be included in
-	 * the search and the upper-bound excluded. I.e permittedRange(1,3) will
+	 * if both ends of the range are specified the lower-bound will be included
+	 * in the search and the upper-bound excluded. I.e permittedRange(1,3) will
 	 * return 1 and 2.
 	 *
 	 * <p>
@@ -529,15 +561,15 @@ public class IntegerExpression implements IntegerResult, RangeComparable<Integer
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a boolean expression representing the required comparison
 	 */
-	public BooleanExpression isBetween(Integer lowerBound, IntegerResult upperBound) {
-		return isBetween(value(lowerBound), upperBound);
+	public BooleanExpression isBetween(Number lowerBound, NumberResult upperBound) {
+		return isBetween(value(lowerBound), value(upperBound));
 	}
 
 	/**
 	 * Performs searches based on a range.
 	 *
-	 * if both ends of the range are specified the lower-bound will be included in
-	 * the search and the upper-bound excluded. I.e permittedRange(1,3) will
+	 * if both ends of the range are specified the lower-bound will be included
+	 * in the search and the upper-bound excluded. I.e permittedRange(1,3) will
 	 * return 1 and 2.
 	 *
 	 * <p>
@@ -556,15 +588,15 @@ public class IntegerExpression implements IntegerResult, RangeComparable<Integer
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a boolean expression representing the required comparison
 	 */
-	public BooleanExpression isBetween(IntegerResult lowerBound, Integer upperBound) {
+	public BooleanExpression isBetween(IntegerResult lowerBound, Number upperBound) {
 		return isBetween(lowerBound, value(upperBound));
 	}
 
 	/**
 	 * Performs searches based on a range.
 	 *
-	 * if both ends of the range are specified the lower-bound will be included in
-	 * the search and the upper-bound excluded. I.e permittedRange(1,3) will
+	 * if both ends of the range are specified the lower-bound will be included
+	 * in the search and the upper-bound excluded. I.e permittedRange(1,3) will
 	 * return 1 and 2.
 	 *
 	 * <p>
@@ -583,7 +615,7 @@ public class IntegerExpression implements IntegerResult, RangeComparable<Integer
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a boolean expression representing the required comparison
 	 */
-	public BooleanExpression isBetween(Integer lowerBound, Integer upperBound) {
+	public BooleanExpression isBetween(Number lowerBound, Number upperBound) {
 		return isBetween(value(lowerBound), value(upperBound));
 	}
 
@@ -1325,16 +1357,17 @@ public class IntegerExpression implements IntegerResult, RangeComparable<Integer
 	 * @return a number expression representing the exponential function of the
 	 * current function.
 	 */
-	public IntegerExpression exp() {
-		return new ExpFunction(this);
+	public NumberExpression exp() {
+		return this.numberResult().exp();
 	}
 
 	/**
 	 * Provides access to the database's cosine function.
 	 *
 	 * <p>
-	 * Computes the cosine of the expression assuming that the previous expression
-	 * is in RADIANS. Use {@link #radians() } to convert degrees into radians.
+	 * Computes the cosine of the expression assuming that the previous
+	 * expression is in RADIANS. Use {@link #radians() } to convert degrees into
+	 * radians.
 	 *
 	 * <p style="color: #F90;">Support DBvolution at
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
@@ -1342,17 +1375,17 @@ public class IntegerExpression implements IntegerResult, RangeComparable<Integer
 	 * @return a IntegerExpression representing the cosine of the current number
 	 * expression.
 	 */
-	public IntegerExpression cos() {
-		return new CosFunction(this);
+	public NumberExpression cos() {
+		return this.numberResult().cos();
 	}
 
 	/**
 	 * Provides access to the database's hyperbolic cosine function.
 	 *
 	 * <p>
-	 * Computes the hyperbolic cosine of the expression assuming that the previous
-	 * expression is in RADIANS. Use {@link #radians() } to convert degrees into
-	 * radians.
+	 * Computes the hyperbolic cosine of the expression assuming that the
+	 * previous expression is in RADIANS. Use {@link #radians() } to convert
+	 * degrees into radians.
 	 *
 	 * <p style="color: #F90;">Support DBvolution at
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
@@ -1360,8 +1393,8 @@ public class IntegerExpression implements IntegerResult, RangeComparable<Integer
 	 * @return a IntegerExpression representing the hyperbolic cosine of the
 	 * current number expression.
 	 */
-	public IntegerExpression cosh() {
-		return new CoshFunction(this);
+	public NumberExpression cosh() {
+		return this.numberResult().cosh();
 	}
 
 	/**
@@ -1377,8 +1410,8 @@ public class IntegerExpression implements IntegerResult, RangeComparable<Integer
 	 * @return a IntegerExpression representing the sine of the current number
 	 * expression.
 	 */
-	public IntegerExpression sine() {
-		return new SineFunction(this);
+	public NumberExpression sine() {
+		return this.numberResult().sine();
 	}
 
 	/**
@@ -1392,11 +1425,11 @@ public class IntegerExpression implements IntegerResult, RangeComparable<Integer
 	 * <p style="color: #F90;">Support DBvolution at
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 *
-	 * @return a IntegerExpression representing the hyperbolic sine of the current
-	 * number expression.
+	 * @return a IntegerExpression representing the hyperbolic sine of the
+	 * current number expression.
 	 */
-	public IntegerExpression sinh() {
-		return new SinhFunction(this);
+	public NumberExpression sinh() {
+		return this.numberResult().sinh();
 	}
 
 	public NumberExpression numberResult() {
@@ -1438,11 +1471,11 @@ public class IntegerExpression implements IntegerResult, RangeComparable<Integer
 	 * <p style="color: #F90;">Support DBvolution at
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 *
-	 * @return a IntegerExpression representing the tangent of the current number
-	 * expression.
+	 * @return a IntegerExpression representing the tangent of the current
+	 * number expression.
 	 */
-	public IntegerExpression tan() {
-		return new IntegerExpression(new TanFunction(this));
+	public NumberExpression tan() {
+		return this.numberResult().tan();
 	}
 
 	/**
@@ -1459,8 +1492,8 @@ public class IntegerExpression implements IntegerResult, RangeComparable<Integer
 	 * @return a IntegerExpression representing the hyperbolic tangent of the
 	 * current number expression.
 	 */
-	public IntegerExpression tanh() {
-		return new IntegerExpression(new TanhFunction(this));
+	public NumberExpression tanh() {
+		return this.numberResult().tanh();
 	}
 
 	/**
@@ -1469,8 +1502,8 @@ public class IntegerExpression implements IntegerResult, RangeComparable<Integer
 	 * <p style="color: #F90;">Support DBvolution at
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 *
-	 * @return a IntegerExpression representing the absolute value of the current
-	 * number expression.
+	 * @return a IntegerExpression representing the absolute value of the
+	 * current number expression.
 	 */
 	public IntegerExpression abs() {
 		return new IntegerExpression(new AbsoluteValueFunction(this));
@@ -1485,8 +1518,8 @@ public class IntegerExpression implements IntegerResult, RangeComparable<Integer
 	 * <p style="color: #F90;">Support DBvolution at
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 *
-	 * @return a IntegerExpression representing the absolute value of the current
-	 * number expression.
+	 * @return a IntegerExpression representing the absolute value of the
+	 * current number expression.
 	 */
 	public IntegerExpression absoluteValue() {
 		return abs();
@@ -1498,11 +1531,11 @@ public class IntegerExpression implements IntegerResult, RangeComparable<Integer
 	 * <p style="color: #F90;">Support DBvolution at
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 *
-	 * @return a IntegerExpression representing the inverse cosine of the current
-	 * number expression.
+	 * @return a IntegerExpression representing the inverse cosine of the
+	 * current number expression.
 	 */
-	public IntegerExpression arccos() {
-		return new IntegerExpression(new ArcCosineFunction(this));
+	public NumberExpression arccos() {
+		return new NumberExpression(new ArcCosineFunction(this));
 	}
 
 	/**
@@ -1514,8 +1547,8 @@ public class IntegerExpression implements IntegerResult, RangeComparable<Integer
 	 * @return a IntegerExpression representing the inverse sine of the current
 	 * number expression.
 	 */
-	public IntegerExpression arcsin() {
-		return new IntegerExpression(new ArcSineFunction(this));
+	public NumberExpression arcsin() {
+		return new NumberExpression(new ArcSineFunction(this));
 	}
 
 	/**
@@ -1524,11 +1557,11 @@ public class IntegerExpression implements IntegerResult, RangeComparable<Integer
 	 * <p style="color: #F90;">Support DBvolution at
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 *
-	 * @return a IntegerExpression representing the inverse tangent of the current
-	 * number expression.
+	 * @return a IntegerExpression representing the inverse tangent of the
+	 * current number expression.
 	 */
-	public IntegerExpression arctan() {
-		return new IntegerExpression(new ArcTangentFunction(this));
+	public NumberExpression arctan() {
+		return this.numberResult().arctan();
 	}
 
 	/**
@@ -1536,18 +1569,18 @@ public class IntegerExpression implements IntegerResult, RangeComparable<Integer
 	 * arguments.
 	 *
 	 * <p>
-	 * In a variety of computer languages, the function arctan2 is the arctangent
-	 * function with two arguments. The purpose of using two arguments instead of
-	 * one is to gather information on the signs of the inputs in order to return
-	 * the appropriate quadrant of the computed angle, which is not possible for
-	 * the single-argument arctangent function.
+	 * In a variety of computer languages, the function arctan2 is the
+	 * arctangent function with two arguments. The purpose of using two
+	 * arguments instead of one is to gather information on the signs of the
+	 * inputs in order to return the appropriate quadrant of the computed angle,
+	 * which is not possible for the single-argument arctangent function.
 	 *
 	 * <p>
-	 * For any real number (e.g., floating point) arguments x and y not both equal
-	 * to zero, arctan2(y, x) is the angle in radians between the positive x-axis
-	 * of a plane and the point given by the coordinates (x, y) on it. The angle
-	 * is positive for counter-clockwise angles (upper half-plane, y &gt; 0), and
-	 * negative for clockwise angles (lower half-plane, y &lt; 0).
+	 * For any real number (e.g., floating point) arguments x and y not both
+	 * equal to zero, arctan2(y, x) is the angle in radians between the positive
+	 * x-axis of a plane and the point given by the coordinates (x, y) on it.
+	 * The angle is positive for counter-clockwise angles (upper half-plane, y
+	 * &gt; 0), and negative for clockwise angles (lower half-plane, y &lt; 0).
 	 *
 	 * @param number the ARCTAN2 of this is required
 	 * <p style="color: #F90;">Support DBvolution at
@@ -1555,8 +1588,64 @@ public class IntegerExpression implements IntegerResult, RangeComparable<Integer
 	 * @return a IntegerExpression representing the cosine of the current number
 	 * expression.
 	 */
-	public IntegerExpression arctan2(IntegerExpression number) {
-		return new IntegerExpression(new ArcTan2Function(this, number));
+	public NumberExpression arctan2(IntegerExpression number) {
+		return arctan2(number.numberResult());
+	}
+
+	/**
+	 * Provides access to the database's inverse tangent function with 2
+	 * arguments.
+	 *
+	 * <p>
+	 * In a variety of computer languages, the function arctan2 is the
+	 * arctangent function with two arguments. The purpose of using two
+	 * arguments instead of one is to gather information on the signs of the
+	 * inputs in order to return the appropriate quadrant of the computed angle,
+	 * which is not possible for the single-argument arctangent function.
+	 *
+	 * <p>
+	 * For any real number (e.g., floating point) arguments x and y not both
+	 * equal to zero, arctan2(y, x) is the angle in radians between the positive
+	 * x-axis of a plane and the point given by the coordinates (x, y) on it.
+	 * The angle is positive for counter-clockwise angles (upper half-plane, y
+	 * &gt; 0), and negative for clockwise angles (lower half-plane, y &lt; 0).
+	 *
+	 * @param number the ARCTAN2 of this is required
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @return a IntegerExpression representing the cosine of the current number
+	 * expression.
+	 */
+	public NumberExpression arctan2(Number number) {
+		return arctan2(NumberExpression.value(number));
+	}
+
+	/**
+	 * Provides access to the database's inverse tangent function with 2
+	 * arguments.
+	 *
+	 * <p>
+	 * In a variety of computer languages, the function arctan2 is the
+	 * arctangent function with two arguments. The purpose of using two
+	 * arguments instead of one is to gather information on the signs of the
+	 * inputs in order to return the appropriate quadrant of the computed angle,
+	 * which is not possible for the single-argument arctangent function.
+	 *
+	 * <p>
+	 * For any real number (e.g., floating point) arguments x and y not both
+	 * equal to zero, arctan2(y, x) is the angle in radians between the positive
+	 * x-axis of a plane and the point given by the coordinates (x, y) on it.
+	 * The angle is positive for counter-clockwise angles (upper half-plane, y
+	 * &gt; 0), and negative for clockwise angles (lower half-plane, y &lt; 0).
+	 *
+	 * @param number the ARCTAN2 of this is required
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @return a IntegerExpression representing the cosine of the current number
+	 * expression.
+	 */
+	public NumberExpression arctan2(NumberExpression number) {
+		return NumberExpression.value(this).arctan2(number);
 	}
 
 	/**
@@ -1568,8 +1657,8 @@ public class IntegerExpression implements IntegerResult, RangeComparable<Integer
 	 * @return a IntegerExpression representing the cotangent of the current
 	 * number expression.
 	 */
-	public IntegerExpression cotangent() {
-		return new IntegerExpression(new CotangentFunction(this));
+	public NumberExpression cotangent() {
+		return this.numberResult().cotangent();
 	}
 
 	/**
@@ -1581,11 +1670,11 @@ public class IntegerExpression implements IntegerResult, RangeComparable<Integer
 	 * <p style="color: #F90;">Support DBvolution at
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 *
-	 * @return a IntegerExpression representing the inverse tangent of the current
-	 * number expression.
+	 * @return a IntegerExpression representing the inverse tangent of the
+	 * current number expression.
 	 */
-	public IntegerExpression degrees() {
-		return new IntegerExpression(new DegreesFunction(this));
+	public NumberExpression degrees() {
+		return this.numberResult().degrees();
 	}
 
 	/**
@@ -1597,11 +1686,11 @@ public class IntegerExpression implements IntegerResult, RangeComparable<Integer
 	 * <p style="color: #F90;">Support DBvolution at
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 *
-	 * @return a IntegerExpression representing the inverse tangent of the current
-	 * number expression.
+	 * @return a IntegerExpression representing the inverse tangent of the
+	 * current number expression.
 	 */
-	public IntegerExpression radians() {
-		return new IntegerExpression(new RadiansFunction(this));
+	public NumberExpression radians() {
+		return this.numberResult().radians();
 	}
 
 	/**
@@ -1613,8 +1702,8 @@ public class IntegerExpression implements IntegerResult, RangeComparable<Integer
 	 * @return a NimberExpression of the natural logarithm of the current
 	 * expression.
 	 */
-	public IntegerExpression logN() {
-		return new IntegerExpression(new NaturalLogarithmFunction(this));
+	public NumberExpression logN() {
+		return this.numberResult().logN();
 	}
 
 	/**
@@ -1626,8 +1715,8 @@ public class IntegerExpression implements IntegerResult, RangeComparable<Integer
 	 * @return a NimberExpression of the logarithm base-10 of the current
 	 * expression.
 	 */
-	public IntegerExpression logBase10() {
-		return new IntegerExpression(new LogBase10Function(this));
+	public NumberExpression logBase10() {
+		return this.numberResult().logBase10();
 	}
 
 	/**
@@ -1646,22 +1735,68 @@ public class IntegerExpression implements IntegerResult, RangeComparable<Integer
 	}
 
 	/**
-	 * Provides access to a random floating-point value x in the range 0 &lt;= x
-	 * &lt; 1.0.
+	 * Provides access to the power (or pow) function of the database.
 	 *
+	 * <p>
+	 * For a IntegerExpression x then x.power(n) =&gt; x^n.
+	 *
+	 * @param n	n
 	 * <p style="color: #F90;">Support DBvolution at
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 *
-	 * @return a IntegerExpression that provides a random number when used in a
-	 * query.
+	 * @return a IntegerExpression
 	 */
-	static public IntegerExpression random() {
-		return new IntegerExpression(new RandomFunction());
+	public IntegerExpression power(Integer n) {
+		return power(n.longValue());
 	}
 
 	/**
-	 * Returns the sign of the argument as -1, 0, or 1, depending on whether X is
-	 * negative, zero, or positive.
+	 * Provides access to the power (or pow) function of the database.
+	 *
+	 * <p>
+	 * For a IntegerExpression x then x.power(n) =&gt; x^n.
+	 *
+	 * @param n	n
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @return a IntegerExpression
+	 */
+	public IntegerExpression power(Long n) {
+		return power(value(n));
+	}
+
+	/**
+	 * Provides access to the power (or pow) function of the database.
+	 *
+	 * <p>
+	 * For a IntegerExpression x then x.power(n) =&gt; x^n.
+	 *
+	 * @param n	n
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @return a IntegerExpression
+	 */
+	public NumberExpression power(Number n) {
+		return this.numberResult().power(NumberExpression.value(n));
+	}
+
+	/**
+	 * Provides access to the power (or pow) function of the database.
+	 *
+	 * <p>
+	 * For a IntegerExpression x then x.power(n) =&gt; x^n.
+	 *
+	 * @param n	n
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @return a IntegerExpression
+	 */
+	public NumberExpression power(NumberResult n) {
+		return this.numberResult().power(n);
+	}
+
+	/**
+	 * Returns the sign of the argument as -1, 0, or 1, depending on whether X
+	 * is negative, zero, or positive.
 	 *
 	 * <p style="color: #F90;">Support DBvolution at
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
@@ -1680,48 +1815,16 @@ public class IntegerExpression implements IntegerResult, RangeComparable<Integer
 	 *
 	 * @return a IntegerExpression
 	 */
-	public IntegerExpression squareRoot() {
-		return new IntegerExpression(new SquareRootFunction(this));
-	}
-
-	/**
-	 * Implements support for CEIL().
-	 *
-	 * <p>
-	 * Returns the smallest integer that is larger than the expression
-	 *
-	 * <p>
-	 * Note:<br>
-	 * (new DBInteger( 1.5)).ceil() == 2<br>
-	 * (new DBInteger(-1.5)).ceil() == -1
-	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 *
-	 * @return the value of the equation rounded up to the nearest integer.
-	 */
-	public IntegerExpression roundUp() {
-		return new IntegerExpression(new RoundUpFunction(this));
-	}
-
-	/**
-	 * Implements support for ROUND()
-	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 *
-	 * @return the equation rounded to the nearest integer.
-	 */
-	public IntegerExpression round() {
-		return new IntegerExpression(new RoundFunction(this));
+	public NumberExpression squareRoot() {
+		return this.numberResult().squareRoot();
 	}
 
 	/**
 	 * Implements support for rounding to an arbitrary number of decimal places.
 	 *
 	 * <p>
-	 * For instance if you require numbers like 12.345 you should use .round(3) to
-	 * get the 3 digits after the decimal point.
+	 * For instance if you require numbers like 12.345 you should use .round(3)
+	 * to get the 3 digits after the decimal point.
 	 *
 	 * @param decimalPlaces the number of significant places that are required.
 	 * <p style="color: #F90;">Support DBvolution at
@@ -1736,8 +1839,8 @@ public class IntegerExpression implements IntegerResult, RangeComparable<Integer
 	 * Implements support for rounding to an arbitrary number of decimal places.
 	 *
 	 * <p>
-	 * For instance if you require numbers like 12.345 you should use .round(3) to
-	 * get the 3 digits after the decimal point.
+	 * For instance if you require numbers like 12.345 you should use .round(3)
+	 * to get the 3 digits after the decimal point.
 	 *
 	 * @param decimalPlaces the number of significant places that are required.
 	 * <p style="color: #F90;">Support DBvolution at
@@ -1752,8 +1855,8 @@ public class IntegerExpression implements IntegerResult, RangeComparable<Integer
 	 * Implements support for rounding to an arbitrary number of decimal places.
 	 *
 	 * <p>
-	 * For instance if you require numbers like 12.345 you should use .round(3) to
-	 * get the 3 digits after the decimal point.
+	 * For instance if you require numbers like 12.345 you should use .round(3)
+	 * to get the 3 digits after the decimal point.
 	 *
 	 * @param decimalPlaces the number of significant places that are required.
 	 * <p style="color: #F90;">Support DBvolution at
@@ -1762,76 +1865,6 @@ public class IntegerExpression implements IntegerResult, RangeComparable<Integer
 	 */
 	public IntegerExpression round(IntegerExpression decimalPlaces) {
 		return new IntegerExpression(new RoundToNumberOfDecimalPlacesFunction(this, IntegerExpression.value(decimalPlaces)));
-	}
-
-	/**
-	 * Implements support for FLOOR().
-	 *
-	 * <p>
-	 * Returns the largest integer that is smaller than the expression
-	 *
-	 * <p>
-	 * note that this is not the same as {@code trunc()} as
-	 * {@code roundDown(-1.5) == -2} and {@code trunc(-1.5) == -1}
-	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 *
-	 * @return the value of the equation rounded down to the nearest integer.
-	 */
-	public IntegerExpression roundDown() {
-		return new IntegerExpression(new RoundDownFunction(this));
-	}
-
-	/**
-	 * Implements support for TRUNC().
-	 *
-	 * <p>
-	 * Removes the decimal part of the expression, leaving an integer.
-	 *
-	 * <p>
-	 * note that this is not the same as roundDown() as
-	 * {@code roundDown(-1.5) == -2} and {@code trunc(-1.5) == -1}
-	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 *
-	 * @return the value of the equation with the decimal part removed.
-	 */
-	public IntegerExpression trunc() {
-		return new IntegerExpression(new TruncFunction(this));
-	}
-
-	/**
-	 * Removes the decimal part, if there is any, from this number and returns
-	 * only the integer part.
-	 *
-	 * <p>
-	 * For example value(3.5).integerPart() = 3
-	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 *
-	 * @return a IntegerExpression
-	 */
-	public IntegerExpression integerPart() {
-		return this.trunc();
-	}
-
-	/**
-	 * Removes the decimal part, if there is any, from this number and returns
-	 * only the integer part.
-	 *
-	 * <p>
-	 * For example value(3.5).floor() = 3
-	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 *
-	 * @return a IntegerExpression
-	 */
-	public IntegerExpression floor() {
-		return this.trunc();
 	}
 
 	/**
@@ -1855,15 +1888,60 @@ public class IntegerExpression implements IntegerResult, RangeComparable<Integer
 	 * <p>
 	 * For a IntegerExpression x: x.minus(y) =&gt; x - y.
 	 *
+	 * @param number	number
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @return a IntegerExpression
+	 */
+	public NumberExpression minus(NumberExpression number) {
+		return this.numberResult().minus(number);
+	}
+
+	/**
+	 * Provides access to the basic arithmetic operation minus.
+	 *
+	 * <p>
+	 * For a IntegerExpression x: x.minus(y) =&gt; x - y.
+	 *
 	 * @param num	num
 	 * <p style="color: #F90;">Support DBvolution at
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a IntegerExpression
 	 */
 	public IntegerExpression minus(Integer num) {
+		return minus(num.longValue());
+	}
+
+	/**
+	 * Provides access to the basic arithmetic operation minus.
+	 *
+	 * <p>
+	 * For a IntegerExpression x: x.minus(y) =&gt; x - y.
+	 *
+	 * @param num	num
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @return a IntegerExpression
+	 */
+	public IntegerExpression minus(Long num) {
 		final IntegerExpression minusThisExpression = new IntegerExpression(num);
 		final DBBinaryArithmetic minusExpression = new MinusBinaryArithmetic(this, minusThisExpression);
 		return new IntegerExpression(minusExpression);
+	}
+
+	/**
+	 * Provides access to the basic arithmetic operation minus.
+	 *
+	 * <p>
+	 * For a IntegerExpression x: x.minus(y) =&gt; x - y.
+	 *
+	 * @param num	num
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @return a IntegerExpression
+	 */
+	public NumberExpression minus(Number num) {
+		return this.minus(NumberExpression.value(num));
 	}
 
 	/**
@@ -1892,7 +1970,52 @@ public class IntegerExpression implements IntegerResult, RangeComparable<Integer
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a IntegerExpression
 	 */
-	public IntegerExpression plus(Number num) {
+	public NumberExpression plus(NumberResult num) {
+		return this.numberResult().plus(num);
+	}
+
+	/**
+	 * Provides access to the basic arithmetic operation plus.
+	 *
+	 * <p>
+	 * For a IntegerExpression x: x.plus(y) =&gt; x + y.
+	 *
+	 * @param num	num
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @return a IntegerExpression
+	 */
+	public NumberExpression plus(Number num) {
+		return this.numberResult().plus(num);
+	}
+
+	/**
+	 * Provides access to the basic arithmetic operation plus.
+	 *
+	 * <p>
+	 * For a IntegerExpression x: x.plus(y) =&gt; x + y.
+	 *
+	 * @param num	num
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @return a IntegerExpression
+	 */
+	public IntegerExpression plus(Long num) {
+		return plus(value(num));
+	}
+
+	/**
+	 * Provides access to the basic arithmetic operation plus.
+	 *
+	 * <p>
+	 * For a IntegerExpression x: x.plus(y) =&gt; x + y.
+	 *
+	 * @param num	num
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @return a IntegerExpression
+	 */
+	public IntegerExpression plus(Integer num) {
 		return plus(value(num.longValue()));
 	}
 
@@ -1922,8 +2045,53 @@ public class IntegerExpression implements IntegerResult, RangeComparable<Integer
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a IntegerExpression
 	 */
-	public IntegerExpression times(Number num) {
-		return times(value(num));
+	public NumberExpression times(Number num) {
+		return this.numberResult().times(num);
+	}
+
+	/**
+	 * Provides access to the basic arithmetic operation multiply/times.
+	 *
+	 * <p>
+	 * For a IntegerExpression x: x.times(y) =&gt; x * y.
+	 *
+	 * @param num	num
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @return a IntegerExpression
+	 */
+	public IntegerExpression times(Integer num) {
+		return this.times(value(num));
+	}
+
+	/**
+	 * Provides access to the basic arithmetic operation multiply/times.
+	 *
+	 * <p>
+	 * For a IntegerExpression x: x.times(y) =&gt; x * y.
+	 *
+	 * @param num	num
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @return a IntegerExpression
+	 */
+	public IntegerExpression times(Long num) {
+		return this.times(value(num));
+	}
+
+	/**
+	 * Provides access to the basic arithmetic operation multiply/times.
+	 *
+	 * <p>
+	 * For a IntegerExpression x: x.times(y) =&gt; x * y.
+	 *
+	 * @param num	num
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @return a IntegerExpression
+	 */
+	public NumberExpression times(NumberResult num) {
+		return this.numberResult().times(num);
 	}
 
 	/**
@@ -1937,9 +2105,8 @@ public class IntegerExpression implements IntegerResult, RangeComparable<Integer
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a IntegerExpression
 	 */
-	public IntegerExpression dividedBy(IntegerResult number) {
-		return new IntegerExpression(new DivideByFunction(this, value(number))
-		);
+	public NumberExpression dividedBy(IntegerResult number) {
+		return NumberExpression.value(this).dividedBy(number);
 	}
 
 	/**
@@ -1953,7 +2120,7 @@ public class IntegerExpression implements IntegerResult, RangeComparable<Integer
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a IntegerExpression of a division operation.
 	 */
-	public NumberExpression dividedBy(Integer num) {
+	public NumberExpression dividedBy(Number num) {
 		return this.numberResult().dividedBy(num);
 	}
 
@@ -1961,12 +2128,12 @@ public class IntegerExpression implements IntegerResult, RangeComparable<Integer
 	 * MOD returns the remainder from integer division.
 	 *
 	 * <p>
-	 * DBvolution implements mod as a function. The two arguments to the function
-	 * are evaluated before MOD is applied.
+	 * DBvolution implements mod as a function. The two arguments to the
+	 * function are evaluated before MOD is applied.
 	 *
 	 * <p>
-	 * This differs from some implementations where MOD is the "%" operator and is
-	 * considered analogous to "*" and "/". However databases vary in their
+	 * This differs from some implementations where MOD is the "%" operator and
+	 * is considered analogous to "*" and "/". However databases vary in their
 	 * implementation and Wikipedia, as of 11 Sept 2014, does not include "%" in
 	 * Arithmetic. So I have decided to err on the side of consistency between
 	 * databases and implement it so that mod() will return the same result for
@@ -1986,12 +2153,12 @@ public class IntegerExpression implements IntegerResult, RangeComparable<Integer
 	 * MOD returns the remainder from integer division.
 	 *
 	 * <p>
-	 * DBvolution implements mod as a function. The two arguments to the function
-	 * are evaluated before MOD is applied.
+	 * DBvolution implements mod as a function. The two arguments to the
+	 * function are evaluated before MOD is applied.
 	 *
 	 * <p>
-	 * This differs from some implementations where MOD is the "%" operator and is
-	 * considered analogous to "*" and "/". However databases vary in their
+	 * This differs from some implementations where MOD is the "%" operator and
+	 * is considered analogous to "*" and "/". However databases vary in their
 	 * implementation and Wikipedia, as of 11 Sept 2014, does not include "%" in
 	 * Arithmetic. So I have decided to err on the side of consistency between
 	 * databases and implement it so that mod() will return the same result for
@@ -2022,7 +2189,8 @@ public class IntegerExpression implements IntegerResult, RangeComparable<Integer
 	 * number.
 	 * <p style="color: #F90;">Support DBvolution at
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 * @return SQL that selects the string from the list based on this expression.
+	 * @return SQL that selects the string from the list based on this
+	 * expression.
 	 */
 	public StringExpression choose(String... stringsToChooseFrom) {
 		List<StringResult> strResult = new ArrayList<>();
@@ -2048,7 +2216,8 @@ public class IntegerExpression implements IntegerResult, RangeComparable<Integer
 	 * number.
 	 * <p style="color: #F90;">Support DBvolution at
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 * @return SQL that selects the string from the list based on this expression.
+	 * @return SQL that selects the string from the list based on this
+	 * expression.
 	 */
 	public StringExpression choose(StringResult... stringsToChooseFrom) {
 		StringExpression leastExpr
@@ -2070,8 +2239,8 @@ public class IntegerExpression implements IntegerResult, RangeComparable<Integer
 	 *
 	 * @return A number expression representing the average of the grouped rows.
 	 */
-	public IntegerExpression average() {
-		return new IntegerExpression(new AverageFunction(this));
+	public NumberExpression average() {
+		return this.numberResult().average();
 	}
 
 	/**
@@ -2083,7 +2252,7 @@ public class IntegerExpression implements IntegerResult, RangeComparable<Integer
 	 * @return A number expression representing the standard deviation of the
 	 * grouped rows.
 	 */
-	public IntegerExpression stddev() {
+	public NumberExpression stddev() {
 		return standardDeviation();
 	}
 
@@ -2096,8 +2265,8 @@ public class IntegerExpression implements IntegerResult, RangeComparable<Integer
 	 * @return A number expression representing the standard deviation of the
 	 * grouped rows.
 	 */
-	public IntegerExpression standardDeviation() {
-		return new IntegerExpression(new StandardDeviation(this));
+	public NumberExpression standardDeviation() {
+		return this.numberResult().standardDeviation();
 	}
 
 	/**
@@ -2162,8 +2331,8 @@ public class IntegerExpression implements IntegerResult, RangeComparable<Integer
 	/**
 	 * Aggregrator that counts this row if the booleanResult is true.
 	 *
-	 * @param booleanResult an expression that will be TRUE when the row needs to
-	 * be counted.
+	 * @param booleanResult an expression that will be TRUE when the row needs
+	 * to be counted.
 	 * <p style="color: #F90;">Support DBvolution at
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return The number of rows where the test is true.
@@ -2277,7 +2446,7 @@ public class IntegerExpression implements IntegerResult, RangeComparable<Integer
 	}
 
 	/**
-	 * Returns TRUE for  zero and FALSE for all other values.
+	 * Returns TRUE for zero and FALSE for all other values.
 	 *
 	 * <p style="color: #F90;">Support DBvolution at
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
@@ -2289,7 +2458,7 @@ public class IntegerExpression implements IntegerResult, RangeComparable<Integer
 	}
 
 	/**
-	 * Returns FALSE for  zero and FALSE for all other values.
+	 * Returns FALSE for zero and FALSE for all other values.
 	 *
 	 * <p style="color: #F90;">Support DBvolution at
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
@@ -2297,7 +2466,7 @@ public class IntegerExpression implements IntegerResult, RangeComparable<Integer
 	 * @return a StringExpression that is either "+" or "-"
 	 */
 	public BooleanExpression isNotZero() {
-		return this.isIn(0,null).not();
+		return this.isIn(0, null).not();
 	}
 
 	private static abstract class DBBinaryArithmetic extends IntegerExpression {
@@ -2340,7 +2509,7 @@ public class IntegerExpression implements IntegerResult, RangeComparable<Integer
 
 		@Override
 		public Set<DBRow> getTablesInvolved() {
-			HashSet<DBRow> hashSet = new HashSet<DBRow>();
+			HashSet<DBRow> hashSet = new HashSet<>();
 			if (first != null) {
 				hashSet.addAll(first.getTablesInvolved());
 			}
@@ -2418,7 +2587,7 @@ public class IntegerExpression implements IntegerResult, RangeComparable<Integer
 
 		@Override
 		public Set<DBRow> getTablesInvolved() {
-			return new HashSet<DBRow>();
+			return new HashSet<>();
 		}
 
 		@Override
@@ -2444,9 +2613,6 @@ public class IntegerExpression implements IntegerResult, RangeComparable<Integer
 			this.only = only;
 		}
 
-//		DBUnaryFunction(DBExpression only) {
-//			this.only = only;
-//		}
 		@Override
 		public DBInteger getQueryableDatatypeForExpressionValue() {
 			return new DBInteger();
@@ -2481,7 +2647,7 @@ public class IntegerExpression implements IntegerResult, RangeComparable<Integer
 
 		@Override
 		public Set<DBRow> getTablesInvolved() {
-			HashSet<DBRow> hashSet = new HashSet<DBRow>();
+			HashSet<DBRow> hashSet = new HashSet<>();
 			if (only != null) {
 				hashSet.addAll(only.getTablesInvolved());
 			}
@@ -2549,7 +2715,7 @@ public class IntegerExpression implements IntegerResult, RangeComparable<Integer
 
 		@Override
 		public Set<DBRow> getTablesInvolved() {
-			HashSet<DBRow> hashSet = new HashSet<DBRow>();
+			HashSet<DBRow> hashSet = new HashSet<>();
 			if (only != null) {
 				hashSet.addAll(only.getTablesInvolved());
 			}
@@ -2635,7 +2801,115 @@ public class IntegerExpression implements IntegerResult, RangeComparable<Integer
 
 		@Override
 		public Set<DBRow> getTablesInvolved() {
-			HashSet<DBRow> hashSet = new HashSet<DBRow>();
+			HashSet<DBRow> hashSet = new HashSet<>();
+			if (getFirst() != null) {
+				hashSet.addAll(getFirst().getTablesInvolved());
+			}
+			if (getSecond() != null) {
+				hashSet.addAll(getSecond().getTablesInvolved());
+			}
+			return hashSet;
+		}
+
+		@Override
+		public boolean isAggregator() {
+			return getFirst().isAggregator() || getSecond().isAggregator();
+		}
+
+		@Override
+		public boolean getIncludesNull() {
+			return false;
+		}
+
+		/**
+		 * <p style="color: #F90;">Support DBvolution at
+		 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+		 *
+		 * @return the first
+		 */
+		protected IntegerExpression getFirst() {
+			return first;
+		}
+
+		/**
+		 * <p style="color: #F90;">Support DBvolution at
+		 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+		 *
+		 * @return the second
+		 */
+		protected IntegerExpression getSecond() {
+			return second;
+		}
+
+		@Override
+		public boolean isPurelyFunctional() {
+			if (first == null && second == null) {
+				return true;
+			} else if (first == null) {
+				return second.isPurelyFunctional();
+			} else if (second == null) {
+				return first.isPurelyFunctional();
+			} else {
+				return first.isPurelyFunctional() && second.isPurelyFunctional();
+			}
+		}
+	}
+
+	private static abstract class IntegerIntegerFunctionNumberResult extends NumberExpression {
+
+		protected IntegerExpression first;
+		protected IntegerExpression second;
+
+		IntegerIntegerFunctionNumberResult(IntegerExpression first) {
+			this.first = first;
+			this.second = null;
+		}
+
+		IntegerIntegerFunctionNumberResult(IntegerExpression first, IntegerExpression second) {
+			this.first = first;
+			this.second = second;
+		}
+
+		IntegerIntegerFunctionNumberResult(IntegerExpression first, IntegerResult second) {
+			this.first = first;
+			this.second = IntegerExpression.value(second);
+		}
+
+		@Override
+		public String toSQLString(DBDatabase db) {
+			return this.beforeValue(db) + getFirst().toSQLString(db) + this.getSeparator(db) + (getSecond() == null ? "" : getSecond().toSQLString(db)) + this.afterValue(db);
+		}
+
+		@Override
+		public IntegerIntegerFunctionNumberResult copy() {
+			IntegerIntegerFunctionNumberResult newInstance;
+			try {
+				newInstance = getClass().newInstance();
+			} catch (InstantiationException | IllegalAccessException ex) {
+				throw new RuntimeException(ex);
+			}
+			newInstance.first = getFirst().copy();
+			newInstance.second = getSecond().copy();
+			return newInstance;
+		}
+
+		abstract String getFunctionName(DBDatabase db);
+
+		protected String beforeValue(DBDatabase db) {
+			return " " + getFunctionName(db) + "( ";
+		}
+
+		protected String getSeparator(DBDatabase db) {
+			return ", ";
+		}
+
+		protected String afterValue(DBDatabase db) {
+			return ") ";
+		}
+
+		@Override
+		public Set<DBRow> getTablesInvolved() {
+			HashSet<DBRow> hashSet = new HashSet<>();
 			if (getFirst() != null) {
 				hashSet.addAll(getFirst().getTablesInvolved());
 			}
@@ -2742,7 +3016,7 @@ public class IntegerExpression implements IntegerResult, RangeComparable<Integer
 
 		@Override
 		public Set<DBRow> getTablesInvolved() {
-			HashSet<DBRow> hashSet = new HashSet<DBRow>();
+			HashSet<DBRow> hashSet = new HashSet<>();
 			if (first != null) {
 				hashSet.addAll(first.getTablesInvolved());
 			}
@@ -2771,7 +3045,7 @@ public class IntegerExpression implements IntegerResult, RangeComparable<Integer
 	private static abstract class DBNnaryBooleanFunction extends BooleanExpression {
 
 		private IntegerExpression column;
-		private final List<IntegerResult> values = new ArrayList<IntegerResult>();
+		private final List<IntegerResult> values = new ArrayList<>();
 		boolean nullProtectionRequired = false;
 
 		DBNnaryBooleanFunction() {
@@ -2839,7 +3113,7 @@ public class IntegerExpression implements IntegerResult, RangeComparable<Integer
 
 		@Override
 		public Set<DBRow> getTablesInvolved() {
-			HashSet<DBRow> hashSet = new HashSet<DBRow>();
+			HashSet<DBRow> hashSet = new HashSet<>();
 			if (getColumn() != null) {
 				hashSet.addAll(getColumn().getTablesInvolved());
 			}
@@ -2874,10 +3148,6 @@ public class IntegerExpression implements IntegerResult, RangeComparable<Integer
 			return nullProtectionRequired;
 		}
 
-//		@Override
-//		public void setIncludesNull(boolean nullsAreIncluded) {
-//			this.nullProtectionRequired = nullsAreIncluded;
-//		}
 		/**
 		 * <p style="color: #F90;">Support DBvolution at
 		 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
@@ -2902,7 +3172,7 @@ public class IntegerExpression implements IntegerResult, RangeComparable<Integer
 	private static abstract class DBNnaryIntegerFunction extends IntegerExpression {
 
 		protected IntegerExpression column;
-		protected final List<IntegerResult> values = new ArrayList<IntegerResult>();
+		protected final List<IntegerResult> values = new ArrayList<>();
 		boolean nullProtectionRequired = false;
 
 		DBNnaryIntegerFunction() {
@@ -2968,7 +3238,7 @@ public class IntegerExpression implements IntegerResult, RangeComparable<Integer
 
 		@Override
 		public Set<DBRow> getTablesInvolved() {
-			HashSet<DBRow> hashSet = new HashSet<DBRow>();
+			HashSet<DBRow> hashSet = new HashSet<>();
 			if (column != null) {
 				hashSet.addAll(column.getTablesInvolved());
 			}
@@ -3014,7 +3284,7 @@ public class IntegerExpression implements IntegerResult, RangeComparable<Integer
 	private static abstract class DBIntegerAndNnaryStringFunction extends StringExpression {
 
 		protected IntegerResult numberExpression = null;
-		protected final List<StringResult> values = new ArrayList<StringResult>();
+		protected final List<StringResult> values = new ArrayList<>();
 		boolean nullProtectionRequired = false;
 
 		DBIntegerAndNnaryStringFunction() {
@@ -3057,7 +3327,7 @@ public class IntegerExpression implements IntegerResult, RangeComparable<Integer
 
 		@Override
 		public Set<DBRow> getTablesInvolved() {
-			HashSet<DBRow> hashSet = new HashSet<DBRow>();
+			HashSet<DBRow> hashSet = new HashSet<>();
 			if (numberExpression != null) {
 				hashSet.addAll(numberExpression.getTablesInvolved());
 			}
@@ -3143,7 +3413,7 @@ public class IntegerExpression implements IntegerResult, RangeComparable<Integer
 
 		@Override
 		public Set<DBRow> getTablesInvolved() {
-			HashSet<DBRow> hashSet = new HashSet<DBRow>();
+			HashSet<DBRow> hashSet = new HashSet<>();
 			if (only != null) {
 				hashSet.addAll(only.getTablesInvolved());
 			}
@@ -3221,23 +3491,6 @@ public class IntegerExpression implements IntegerResult, RangeComparable<Integer
 		@Override
 		String getFunctionName(DBDatabase db) {
 			return "";
-		}
-	}
-
-	private static class DivisionBinaryArithmetic extends DBBinaryArithmetic {
-
-		DivisionBinaryArithmetic(IntegerResult first, IntegerResult second) {
-			super(first, second);
-		}
-
-		@Override
-		protected String getEquationOperator(DBDatabase db) {
-			return " / ";
-		}
-
-		@Override
-		public String toSQLString(DBDatabase db) {
-			return first.toSQLString(db) + this.getEquationOperator(db) + "(" + second.toSQLString(db) + "+0.0)";
 		}
 	}
 
@@ -3432,74 +3685,6 @@ public class IntegerExpression implements IntegerResult, RangeComparable<Integer
 		}
 	}
 
-	private class ExpFunction extends DBUnaryFunction {
-
-		public ExpFunction(IntegerExpression only) {
-			super(only);
-		}
-
-		@Override
-		public String toSQLString(DBDatabase db) {
-			if (!db.getDefinition().supportsExpFunction()) {
-				return (new NumberExpression(Math.E)).power(this.only.numberResult().isGreaterThan(799.0).ifThenElse(null, this.only.numberResult())).integerPart().toSQLString(db);
-			} else {
-				return super.toSQLString(db); //To change body of generated methods, choose Tools | Templates.
-			}
-		}
-
-		@Override
-		String getFunctionName(DBDatabase db) {
-			return db.getDefinition().getExpFunctionName();
-		}
-	}
-
-	private static class CosFunction extends DBUnaryFunction {
-
-		public CosFunction(IntegerExpression only) {
-			super(only);
-		}
-
-		@Override
-		String getFunctionName(DBDatabase db) {
-			return "cos";
-		}
-	}
-
-	private class CoshFunction extends DBUnaryFunction {
-
-		public CoshFunction(IntegerExpression only) {
-			super(only);
-		}
-
-		@Override
-		public String toSQLString(DBDatabase db) {
-			if (db.getDefinition().supportsHyperbolicFunctionsNatively()) {
-				return super.toSQLString(db); //To change body of generated methods, choose Tools | Templates.
-			} else {
-				IntegerExpression first = this.only;
-				//(ex + e-x)/2
-				return first.exp().plus(first.times(-1).exp().bracket()).bracket().dividedBy(2).bracket().toSQLString(db);
-			}
-		}
-
-		@Override
-		String getFunctionName(DBDatabase db) {
-			return "cosh";
-		}
-	}
-
-	private static class SineFunction extends DBUnaryFunction {
-
-		public SineFunction(IntegerExpression only) {
-			super(only);
-		}
-
-		@Override
-		String getFunctionName(DBDatabase db) {
-			return "sin";
-		}
-	}
-
 	private class NumberResultFunction extends DBUnaryNumberFunction {
 
 		public NumberResultFunction(IntegerExpression only) {
@@ -3517,41 +3702,6 @@ public class IntegerExpression implements IntegerResult, RangeComparable<Integer
 		}
 	}
 
-	private static class TanFunction extends DBUnaryFunction {
-
-		public TanFunction(IntegerExpression only) {
-			super(only);
-		}
-
-		@Override
-		String getFunctionName(DBDatabase db) {
-			return "tan";
-		}
-	}
-
-	private class TanhFunction extends DBUnaryFunction {
-
-		public TanhFunction(IntegerExpression only) {
-			super(only);
-		}
-
-		@Override
-		public String toSQLString(DBDatabase db) {
-			if (db.getDefinition().supportsHyperbolicFunctionsNatively()) {
-				return super.toSQLString(db); //To change body of generated methods, choose Tools | Templates.
-			} else {
-				IntegerExpression first = this.only;
-				//(ex - e-x)/(ex + e-x)
-				return first.exp().minus(first.times(-1).exp()).bracket().dividedBy(first.exp().plus(first.times(-1).exp()).bracket()).bracket().toSQLString(db);
-			}
-		}
-
-		@Override
-		String getFunctionName(DBDatabase db) {
-			return "tanh";
-		}
-	}
-
 	private static class AbsoluteValueFunction extends DBUnaryFunction {
 
 		public AbsoluteValueFunction(IntegerExpression only) {
@@ -3564,7 +3714,7 @@ public class IntegerExpression implements IntegerResult, RangeComparable<Integer
 		}
 	}
 
-	private static class ArcCosineFunction extends DBUnaryFunction {
+	private static class ArcCosineFunction extends DBUnaryNumberFunction {
 
 		public ArcCosineFunction(IntegerExpression only) {
 			super(only);
@@ -3576,7 +3726,7 @@ public class IntegerExpression implements IntegerResult, RangeComparable<Integer
 		}
 	}
 
-	private class ArcSineFunction extends DBUnaryFunction {
+	private class ArcSineFunction extends DBUnaryNumberFunction {
 
 		public ArcSineFunction(IntegerExpression only) {
 			super(only);
@@ -3587,129 +3737,13 @@ public class IntegerExpression implements IntegerResult, RangeComparable<Integer
 			if (db.getDefinition().supportsArcSineFunction()) {
 				return super.toSQLString(db);
 			} else {
-				return only.dividedBy(value(1.0).minus(only.times(only).bracket()).bracket().squareRoot()).arctan().toSQLString(db);
+				return only.numberResult().dividedBy(value(1.0).minus(only.times(only).bracket()).bracket().squareRoot()).arctan().toSQLString(db);
 			}
 		}
 
 		@Override
 		String getFunctionName(DBDatabase db) {
 			return "asin";
-		}
-	}
-
-	private static class ArcTangentFunction extends DBUnaryFunction {
-
-		public ArcTangentFunction(IntegerExpression only) {
-			super(only);
-		}
-
-		@Override
-		String getFunctionName(DBDatabase db) {
-			return "atan";
-		}
-	}
-
-	private static class ArcTan2Function extends IntegerIntegerFunctionIntegerResult {
-
-		public ArcTan2Function(IntegerExpression first, IntegerExpression second) {
-			super(first, second);
-		}
-
-		@Override
-		String getFunctionName(DBDatabase db) {
-			return db.getDefinition().getArctan2FunctionName();
-		}
-	}
-
-	private class CotangentFunction extends DBUnaryFunction {
-
-		public CotangentFunction(IntegerExpression only) {
-			super(only);
-		}
-
-		@Override
-		public String toSQLString(DBDatabase db) {
-			if (db.getDefinition().supportsCotangentFunction()) {
-				return super.toSQLString(db);
-			} else {
-				return only.cos().dividedBy(only.sine()).bracket().toSQLString(db);
-			}
-		}
-
-		@Override
-		String getFunctionName(DBDatabase db) {
-			return "cot";
-		}
-	}
-
-	private class DegreesFunction extends DBUnaryFunction {
-
-		public DegreesFunction(IntegerExpression only) {
-			super(only);
-		}
-
-		@Override
-		public String toSQLString(DBDatabase db) {
-			if (db.getDefinition().supportsDegreesFunction()) {
-				return super.toSQLString(db);
-			} else {
-				return db.getDefinition().doDegreesTransform(this.only.toSQLString(db));
-			}
-		}
-
-		@Override
-		String getFunctionName(DBDatabase db) {
-			return "degrees";
-		}
-	}
-
-	private class RadiansFunction extends DBUnaryFunction {
-
-		public RadiansFunction(IntegerExpression only) {
-			super(only);
-		}
-
-		@Override
-		public String toSQLString(DBDatabase db) {
-			if (db.getDefinition().supportsRadiansFunction()) {
-				return super.toSQLString(db);
-			} else {
-				return db.getDefinition().doRadiansTransform(this.only.toSQLString(db));
-			}
-		}
-
-		@Override
-		String getFunctionName(DBDatabase db) {
-			return "radians";
-		}
-	}
-
-	private static class NaturalLogarithmFunction extends DBUnaryFunction {
-
-		public NaturalLogarithmFunction(IntegerExpression only) {
-			super(only);
-		}
-
-		@Override
-		String getFunctionName(DBDatabase db) {
-			return db.getDefinition().getNaturalLogFunctionName();
-		}
-	}
-
-	private class LogBase10Function extends DBUnaryFunction {
-
-		public LogBase10Function(IntegerExpression only) {
-			super(only);
-		}
-
-		@Override
-		public String toSQLString(DBDatabase db) {
-			return db.getDefinition().doLogBase10IntegerTransform(this.only.toSQLString(db));
-		}
-
-		@Override
-		String getFunctionName(DBDatabase db) {
-			return db.getDefinition().getLogBase10FunctionName();
 		}
 	}
 
@@ -3725,22 +3759,6 @@ public class IntegerExpression implements IntegerResult, RangeComparable<Integer
 		}
 	}
 
-	private static class RandomFunction extends DBNonaryFunction {
-
-		public RandomFunction() {
-		}
-
-		@Override
-		public String toSQLString(DBDatabase db) {
-			return db.getDefinition().doRandomIntegerTransform();
-		}
-
-		@Override
-		String getFunctionName(DBDatabase db) {
-			return "rand";
-		}
-	}
-
 	private static class SignFunction extends DBUnaryFunction {
 
 		public SignFunction(IntegerExpression only) {
@@ -3750,47 +3768,6 @@ public class IntegerExpression implements IntegerResult, RangeComparable<Integer
 		@Override
 		String getFunctionName(DBDatabase db) {
 			return "sign";
-		}
-	}
-
-	private static class SquareRootFunction extends DBUnaryFunction {
-
-		public SquareRootFunction(IntegerExpression only) {
-			super(only);
-		}
-
-		@Override
-		String getFunctionName(DBDatabase db) {
-			return "sqrt";
-		}
-	}
-
-	private static class RoundUpFunction extends DBUnaryFunction {
-
-		public RoundUpFunction(IntegerExpression only) {
-			super(only);
-		}
-
-		@Override
-		String getFunctionName(DBDatabase db) {
-			return db.getDefinition().getRoundUpFunctionName();
-		}
-	}
-
-	private class RoundFunction extends DBUnaryFunction {
-
-		public RoundFunction(IntegerExpression only) {
-			super(only);
-		}
-
-		@Override
-		public String toSQLString(DBDatabase db) {
-			return db.getDefinition().doRoundTransform(only.toSQLString(db));
-		}
-
-		@Override
-		String getFunctionName(DBDatabase db) {
-			return "round";
 		}
 	}
 
@@ -3805,48 +3782,14 @@ public class IntegerExpression implements IntegerResult, RangeComparable<Integer
 			try {
 				return db.getDefinition().doRoundWithDecimalPlacesTransform(getFirst().toSQLString(db), getSecond().toSQLString(db));
 			} catch (UnsupportedOperationException exp) {
-				IntegerExpression power = IntegerExpression.value(10).power(getSecond().round());
-				return getFirst().times(power).round().dividedBy(power).toSQLString(db);
+				IntegerExpression power = IntegerExpression.value(10).power(getSecond());
+				return getFirst().times(power).dividedBy(power).toSQLString(db);
 			}
 		}
 
 		@Override
 		String getFunctionName(DBDatabase db) {
 			return "round";
-		}
-	}
-
-	private static class RoundDownFunction extends DBUnaryFunction {
-
-		public RoundDownFunction(IntegerExpression only) {
-			super(only);
-		}
-
-		@Override
-		String getFunctionName(DBDatabase db) {
-			return "floor";
-		}
-	}
-
-	private class TruncFunction extends DBUnaryFunction {
-
-		public TruncFunction(IntegerExpression only) {
-			super(only);
-		}
-
-		@Override
-		public String toSQLString(DBDatabase db) {
-			return db.getDefinition().doTruncTransform(only.toSQLString(db), "0");
-		}
-
-		@Override
-		String getFunctionName(DBDatabase db) {
-			return db.getDefinition().getTruncFunctionName();
-		}
-
-		@Override
-		protected String afterValue(DBDatabase db) {
-			return ", 0) ";
 		}
 	}
 
@@ -3871,23 +3814,6 @@ public class IntegerExpression implements IntegerResult, RangeComparable<Integer
 		@Override
 		protected String getEquationOperator(DBDatabase db) {
 			return " * ";
-		}
-	}
-
-	private class DivideByFunction extends DBBinaryArithmetic {
-
-		public DivideByFunction(IntegerResult first, IntegerResult second) {
-			super(first, second);
-		}
-
-		@Override
-		protected String getEquationOperator(DBDatabase db) {
-			return " / ";
-		}
-
-		@Override
-		public String toSQLString(DBDatabase db) {
-			return "(0.0+" + first.toSQLString(db) + ")" + this.getEquationOperator(db) + second.toSQLString(db);
 		}
 	}
 
@@ -3925,52 +3851,6 @@ public class IntegerExpression implements IntegerResult, RangeComparable<Integer
 				strs.add(num.toSQLString(db));
 			}
 			return db.getDefinition().doChooseTransformation(IntegerExpression.value(numberExpression).plus(1).bracket().toSQLString(db), strs);
-		}
-	}
-
-	private static class AverageFunction extends DBUnaryFunction {
-
-		public AverageFunction(IntegerExpression only) {
-			super(only);
-		}
-
-		@Override
-		String getFunctionName(DBDatabase db) {
-			return db.getDefinition().getAverageFunctionName();
-		}
-
-		@Override
-		public boolean isAggregator() {
-			return true;
-		}
-	}
-
-	private class StandardDeviation extends DBUnaryFunction {
-
-		public StandardDeviation(IntegerExpression only) {
-			super(only);
-		}
-
-		@Override
-		public String toSQLString(DBDatabase db) {
-			if (db.getDefinition().supportsStandardDeviationFunction()) {
-				return super.toSQLString(db);
-			} else if (this.only != null) {
-				IntegerExpression numb = this.only;
-				return new IntegerExpression(numb).max().minus(new IntegerExpression(numb).min()).bracket().dividedBy(6).toSQLString(db);
-			} else {
-				return null;
-			}
-		}
-
-		@Override
-		String getFunctionName(DBDatabase db) {
-			return db.getDefinition().getStandardDeviationFunctionName();
-		}
-
-		@Override
-		public boolean isAggregator() {
-			return true;
 		}
 	}
 

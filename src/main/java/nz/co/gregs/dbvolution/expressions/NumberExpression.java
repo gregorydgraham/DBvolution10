@@ -2268,13 +2268,28 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a NumberExpression
 	 */
-	public NumberExpression power(NumberExpression n) {
+	public NumberExpression power(NumberResult n) {
 		return new NumberExpression(new NumberNumberFunctionNumberResult(this, n) {
 			@Override
 			String getFunctionName(DBDatabase db) {
 				return "power";
 			}
 		});
+	}
+
+	/**
+	 * Provides access to the power (or pow) function of the database.
+	 *
+	 * <p>
+	 * For a NumberExpression x then x.power(n) =&gt; x^n.
+	 *
+	 * @param n	n
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @return a NumberExpression
+	 */
+	public NumberExpression power(Number n) {
+		return power(value(n));
 	}
 
 	/**

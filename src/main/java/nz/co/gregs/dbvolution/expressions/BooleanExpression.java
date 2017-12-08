@@ -621,7 +621,7 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 	 * @return a 0 or 1 depending on the expression
 	 */
 	public IntegerExpression integerValue() {
-		return new IntegerValueFunction(this);
+		return IntegerExpression.value(new IntegerValueFunction(this));
 	}
 
 	/**

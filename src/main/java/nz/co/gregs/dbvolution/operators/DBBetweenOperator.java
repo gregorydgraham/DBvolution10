@@ -37,8 +37,6 @@ import nz.co.gregs.dbvolution.results.StringResult;
  * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
  *
  * @author Gregory Graham
- * @param <A>
- * @param <B>
  */
 public class DBBetweenOperator extends DBOperator {
 

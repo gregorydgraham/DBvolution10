@@ -5729,6 +5729,6 @@ public abstract class DBDefinition {
 	}
 
 	public String doIntegerToNumberTransform(String toSQLString) {
-		return "("+toSQLString+")";
+		return toSQLString;
 	}
 }
