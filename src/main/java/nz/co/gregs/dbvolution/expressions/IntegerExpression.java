@@ -2250,6 +2250,56 @@ public class IntegerExpression implements IntegerResult, RangeComparable<Integer
 		return this.isGreaterThanOrEqual(0).ifThenElse("+", "-");
 	}
 
+	/**
+	 * Returns TRUE for all zero or positive numbers and FALSE for all negative
+	 * numbers.
+	 *
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
+	 * @return BooleanExpression
+	 */
+	public BooleanExpression isPositive() {
+		return this.isGreaterThanOrEqual(0);
+	}
+
+	/**
+	 * Returns FALSE for all zero or positive numbers and TRUE for all negative
+	 * numbers.
+	 *
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
+	 * @return a BooleanExpression
+	 */
+	public BooleanExpression isNegative() {
+		return this.isGreaterThanOrEqual(0);
+	}
+
+	/**
+	 * Returns TRUE for  zero and FALSE for all other values.
+	 *
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
+	 * @return a StringExpression that is either "+" or "-"
+	 */
+	public BooleanExpression isZero() {
+		return this.is(0).isNotNull();
+	}
+
+	/**
+	 * Returns FALSE for  zero and FALSE for all other values.
+	 *
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
+	 * @return a StringExpression that is either "+" or "-"
+	 */
+	public BooleanExpression isNotZero() {
+		return this.isIn(0,null).not();
+	}
+
 	private static abstract class DBBinaryArithmetic extends IntegerExpression {
 
 		public IntegerResult first;

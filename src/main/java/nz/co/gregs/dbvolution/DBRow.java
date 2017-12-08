@@ -16,7 +16,6 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 import nz.co.gregs.dbvolution.annotations.*;
 import nz.co.gregs.dbvolution.columns.ColumnProvider;
-import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.datatypes.*;
 import nz.co.gregs.dbvolution.exceptions.AccidentalCartesianJoinException;
 import nz.co.gregs.dbvolution.exceptions.IncorrectRowProviderInstanceSuppliedException;
