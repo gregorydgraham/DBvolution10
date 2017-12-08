@@ -580,12 +580,20 @@
 		<profile>
 			<id>OracleXETest</id>
 			<dependencies>
-				<dependency>
+				<!--				<dependency>
 					<groupId>com.oracle</groupId>
-					<artifactId>ojdbc6</artifactId>
+					<artifactId>ojdbc4</artifactId>
 					<scope>test</scope>
 					<version>11.2.1.0.1.0</version>
+				</dependency>-->
+				<!-- https://mvnrepository.com/artifact/com.oracle/ojdbc14 -->
+				<dependency>
+					<groupId>com.oracle</groupId>
+					<artifactId>ojdbc14</artifactId>
+					<version>10.2.0.4.0</version>
 				</dependency>
+
+
 			</dependencies>
 			<build>
 				<plugins>
