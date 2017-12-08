@@ -350,7 +350,7 @@ public class IntegerExpression implements IntegerResult, RangeComparable<Integer
 	 * @return a StringExpression
 	 */
 	public StringExpression append(StringResult string) {
-		return this.stringResult().append(string);
+		return this.stringResult().bracket().append(string);
 	}
 
 	/**
