@@ -470,6 +470,21 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 		return "CONVERT(NVARCHAR(1000), " + numberExpression + ")";
 	}
 
+	/**
+	 * Transforms a SQL snippet of a integer expression into a character expression
+	 * for this database.
+	 *
+	 * @param numberExpression	numberExpression
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @return a String of the SQL required to transform the number supplied into
+	 * a character or String type.
+	 */
+	@Override
+	public String doIntegerToStringTransform(String numberExpression) {
+		return "CONVERT(NVARCHAR(1000), " + numberExpression + ")";
+	}
+
 	@Override
 	public String beginWithClause() {
 		return " WITH ";
