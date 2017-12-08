@@ -16,8 +16,6 @@
             <properties>
                 
                 <oraclexe.url></oraclexe.url>
-                <!--<oraclexe.host>150.242.43.218</oraclexe.host>-->
-                <!--<oraclexe.host>localhost</oraclexe.host>>-->
                 <oraclexe.host>localhost</oraclexe.host>
                 <oraclexe.port>1521</oraclexe.port>
                 <oraclexe.instance>XE</oraclexe.instance>
