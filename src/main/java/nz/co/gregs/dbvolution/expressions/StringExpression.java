@@ -2361,19 +2361,8 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 	 * @return a number expression
 	 */
 	public IntegerExpression integerResult() {
-		return new NumberExpression(
-				new DBUnaryNumberFunction(this) {
-
-			@Override
-			public String toSQLString(DBDatabase db) {
-				return db.getDefinition().doStringToNumberTransform(this.only.toSQLString(db));
-			}
-
-			@Override
-			String getFunctionName(DBDatabase db) {
-				return "TO_NUMBER";
-			}
-		}).integerResult();
+		return this.numberResult().isNotNull()
+				.ifThenElse(this.numberResult().integerResult(), IntegerExpression.nullExpression());
 	}
 
 	@Override

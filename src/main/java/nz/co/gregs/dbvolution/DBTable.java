@@ -442,9 +442,8 @@ public class DBTable<E extends DBRow> {
 	 *
 	 * @return a String of the SQL that will be used by {@link #getAllRows() }. 1
 	 * Database exceptions may be thrown
-	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
-	public String getSQLForQuery() throws SQLException {
+	public String getSQLForQuery() {
 		return query.getSQLForQuery();
 	}
 
@@ -985,4 +984,8 @@ public class DBTable<E extends DBRow> {
 //	public void mustIntersectWith(DBQuery dbQuery) {
 //		this.query.mustIntersectWith(dbQuery);
 //	}
+
+	public void printSQLForQuery() {
+		System.out.println(this.getSQLForQuery());
+	}
 }

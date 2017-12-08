@@ -755,7 +755,7 @@ public class StringExpressionTest extends AbstractTest {
 		final DBTable<FindFirstNumberTable> query = database.getDBTable(tab)
 				.setBlankQueryAllowed(true)
 				.setSortOrder(tab.column(tab.sample));
-
+		
 		List<FindFirstNumberTable> allRows = query
 				.getAllRows();
 
@@ -794,7 +794,7 @@ public class StringExpressionTest extends AbstractTest {
 		public DBString actualIntegerString = new DBString(this.column(sample).getFirstInteger());
 
 		@DBColumn
-		public DBInteger actualInteger = new DBInteger(this.column(sample).getFirstInteger().numberResult());
+		public DBInteger actualInteger = new DBInteger(this.column(sample).getFirstInteger().integerResult());
 
 		public FindFirstNumberTable() {
 			super();
