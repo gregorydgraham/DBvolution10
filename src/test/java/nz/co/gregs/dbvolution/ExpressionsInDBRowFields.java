@@ -140,7 +140,7 @@ public class ExpressionsInDBRowFields extends AbstractTest {
 						+ row.name.stringValue() + "-"
 						+ year));
 			} else {
-				if (database.supportsDifferenceBetweenNullAndEmptyString()) {
+				if (database.getDefinition().supportsDifferenceBetweenNullAndEmptyString()) {
 					Assert.assertThat(row.uidNameAndYear.stringValue(), isEmptyOrNullString());
 					String year = new SimpleDateFormat("yyyy").format(new Date());
 					Assert.assertThat(row.uidNameAndNVLYear.stringValue(), is(

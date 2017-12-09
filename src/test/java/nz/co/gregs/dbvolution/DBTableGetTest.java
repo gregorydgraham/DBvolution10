@@ -241,7 +241,7 @@ public class DBTableGetTest extends AbstractTest {
 		hummerQuery.individualAllocationsAllowed.permittedValues(null, "Y", "YES");
 		List<Marque> rowsByExample = marquesTable.getRowsByExample(hummerQuery);
 
-		if (database.supportsDifferenceBetweenNullAndEmptyString()) {
+		if (database.getDefinition().supportsDifferenceBetweenNullAndEmptyString()) {
 			Assert.assertThat(rowsByExample.size(), is(3));
 		} else {
 			Assert.assertThat(rowsByExample.size(), is(22));
@@ -250,7 +250,7 @@ public class DBTableGetTest extends AbstractTest {
 		hummerQuery.individualAllocationsAllowed.permittedValues(null, "YES");
 		rowsByExample = marquesTable.getRowsByExample(hummerQuery);
 
-		if (database.supportsDifferenceBetweenNullAndEmptyString()) {
+		if (database.getDefinition().supportsDifferenceBetweenNullAndEmptyString()) {
 			Assert.assertThat(rowsByExample.size(), is(2));
 		} else {
 			Assert.assertThat(rowsByExample.size(), is(21));

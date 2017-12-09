@@ -903,4 +903,8 @@ public class SQLiteDefinition extends DBDefinition {
 		return " ABS(RANDOM()/9223372036854775808)";
 	}
 
+	@Override
+	public Boolean supportsUnionDistinct() {
+		return false;
+	}
 }

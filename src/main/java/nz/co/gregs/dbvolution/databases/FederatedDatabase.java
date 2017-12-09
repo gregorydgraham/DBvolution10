@@ -140,21 +140,6 @@ public class FederatedDatabase extends DBDatabase {
 	}
 
 	@Override
-	public boolean supportsRecursiveQueriesNatively() {
-		return super.supportsRecursiveQueriesNatively();
-	}
-
-	@Override
-	public Boolean supportsUnionDistinct() {
-		return super.supportsUnionDistinct();
-	}
-
-	@Override
-	public Boolean supportsDifferenceBetweenNullAndEmptyString() {
-		return super.supportsDifferenceBetweenNullAndEmptyString();
-	}
-
-	@Override
 	public synchronized void discardConnection(Connection connection) {
 		for (Iterator<DBDatabase> iterator = readyDatabases.iterator(); iterator.hasNext();) {
 			DBDatabase next = iterator.next();

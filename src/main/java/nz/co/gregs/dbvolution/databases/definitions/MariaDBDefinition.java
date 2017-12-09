@@ -108,4 +108,8 @@ public class MariaDBDefinition extends DBDefinition {
 		return " DAYOFWEEK(" + dateSQL + ")";
 	}
 
+	@Override
+	public boolean supportsRecursiveQueriesNatively() {
+		return false;
+	}
 }

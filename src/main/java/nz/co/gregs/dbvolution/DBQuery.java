@@ -664,7 +664,7 @@ public class DBQuery {
 		String sqlForQuery;
 		String unionOperator;
 		DBDefinition defn = this.database.getDefinition();
-		if (database.supportsUnionDistinct()) {
+		if (database.getDefinition().supportsUnionDistinct()) {
 			unionOperator = defn.getUnionDistinctOperator();
 		} else {
 			unionOperator = defn.getUnionOperator();

@@ -2845,8 +2845,8 @@ public abstract class DBDefinition {
 	}
 
 	/**
-	 * Transforms a SQL snippet of a integer expression into a character expression
-	 * for this database.
+	 * Transforms a SQL snippet of a integer expression into a character
+	 * expression for this database.
 	 *
 	 * @param integerExpression	numberExpression
 	 * <p style="color: #F90;">Support DBvolution at
@@ -5682,6 +5682,7 @@ public abstract class DBDefinition {
 	public String doRandomNumberTransform() {
 		return " rand() ";
 	}
+
 	public String doRandomIntegerTransform() {
 		return " rand() ";
 	}
@@ -5717,7 +5718,7 @@ public abstract class DBDefinition {
 	}
 
 	public String doNumberToIntegerTransform(String sql) {
-		return doTruncTransform(sql,"0");
+		return doTruncTransform(sql, "0");
 	}
 
 	public String doFindNumberInStringTransform(String toSQLString) {
@@ -5756,5 +5757,52 @@ public abstract class DBDefinition {
 	 */
 	public boolean persistentConnectionRequired() {
 		return false;
+	}
+
+	/**
+	 * Oracle does not differentiate between NULL and an empty string.
+	 *
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
+	 * @return FALSE.
+	 */
+	public Boolean supportsDifferenceBetweenNullAndEmptyString() {
+		return true;
+	}
+
+	/**
+	 * Indicates that the database supports the UNION DISTINCT syntax
+	 *
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
+	 * @return TRUE if this database supports the UNION DISTINCT syntax, FALSE
+	 * otherwise.
+	 */
+	public Boolean supportsUnionDistinct() {
+		return true;
+	}
+
+	/**
+	 * Indicates that this database supplies sufficient tools to create native
+	 * recursive queries.
+	 *
+	 * <p>
+	 * Please note that this may not be actual support for standard "WITH
+	 * RECURSIVE".
+	 *
+	 * <p>
+	 * If the database does not support recursive queries natively then DBvolution
+	 * will emulate recursive queries. Native queries are faster and easier on the
+	 * network and application server, so emulation should be a last resort.
+	 *
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
+	 * @return TRUE by default, but some DBDatabases may return FALSE.
+	 */
+	public boolean supportsRecursiveQueriesNatively() {
+		return true;
 	}
 }

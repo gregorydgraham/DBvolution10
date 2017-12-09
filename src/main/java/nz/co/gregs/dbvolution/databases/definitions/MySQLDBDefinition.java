@@ -683,4 +683,9 @@ public class MySQLDBDefinition extends DBDefinition {
 	public String doFindIntegerInStringTransform(String toSQLString) {
 		return MigrationFunctions.FINDFIRSTINTEGER + "(" + toSQLString + ")";
 	}
+
+	@Override
+	public boolean supportsRecursiveQueriesNatively() {
+		return false;
+	}
 }

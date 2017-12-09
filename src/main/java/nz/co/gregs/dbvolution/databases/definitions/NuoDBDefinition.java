@@ -175,4 +175,8 @@ public class NuoDBDefinition extends DBDefinition {
 		return "((" + super.doNumberEqualsTransform(leftHandSide, rightHandSide) + ")=true)";
 	}
 
+	@Override
+	public boolean supportsRecursiveQueriesNatively() {
+		return false;
+	}
 }

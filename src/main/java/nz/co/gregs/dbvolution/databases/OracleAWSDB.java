@@ -103,19 +103,6 @@ public abstract class OracleAWSDB extends OracleDB implements SupportsPolygonDat
 		return super.clone();
 	}
 
-	/**
-	 * Oracle does not differentiate between NULL and an empty string.
-	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 *
-	 * @return FALSE.
-	 */
-	@Override
-	public Boolean supportsDifferenceBetweenNullAndEmptyString() {
-		return false;
-	}
-
 	@Override
 	protected void addDatabaseSpecificFeatures(Statement statement) throws SQLException {
 		super.addDatabaseSpecificFeatures(statement);

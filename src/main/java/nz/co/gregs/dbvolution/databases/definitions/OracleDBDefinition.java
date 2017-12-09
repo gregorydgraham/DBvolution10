@@ -552,4 +552,17 @@ public class OracleDBDefinition extends DBDefinition {
 	public String doFindIntegerInStringTransform(String toSQLString) {
 		return "(case when regexp_replace(" + toSQLString + ",'.*?([-]?[0-9]+).*$', '\\1') = " + toSQLString + " then null else regexp_replace(" + toSQLString + ",'.*?([-]?[0-9]+).*$', '\\1') end)";
 	}
+
+	/**
+	 * Oracle does not differentiate between NULL and an empty string.
+	 *
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
+	 * @return FALSE.
+	 */
+	@Override
+	public Boolean supportsDifferenceBetweenNullAndEmptyString() {
+		return false;
+	}
 }

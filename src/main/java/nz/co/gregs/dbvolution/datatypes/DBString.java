@@ -730,7 +730,7 @@ public class DBString extends QueryableDatatype<String> implements StringResult 
 	@Override
 	protected String getFromResultSet(DBDatabase database, ResultSet resultSet, String fullColumnName) throws SQLException {
 		String gotString = resultSet.getString(fullColumnName);
-		if (!database.supportsDifferenceBetweenNullAndEmptyString()) {
+		if (!database.getDefinition().supportsDifferenceBetweenNullAndEmptyString()) {
 			if (gotString != null && gotString.isEmpty()) {
 				return null;
 			}
@@ -759,7 +759,7 @@ public class DBString extends QueryableDatatype<String> implements StringResult 
 
 	@Override
 	protected DBOperator setToNull(DBDatabase database) {
-		if (!database.supportsDifferenceBetweenNullAndEmptyString()) {
+		if (!database.getDefinition().supportsDifferenceBetweenNullAndEmptyString()) {
 			this.isDBEmptyString = true;
 		}
 		return setToNull();

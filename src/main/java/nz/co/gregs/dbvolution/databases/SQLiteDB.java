@@ -121,9 +121,4 @@ public class SQLiteDB extends DBDatabase implements SupportsDateRepeatDatatypeFu
 		return super.clone(); //To change body of generated methods, choose Tools | Templates.
 	}
 
-	@Override
-	public Boolean supportsUnionDistinct() {
-		return false;
-	}
-
 }

@@ -198,7 +198,7 @@ public class DBRecursiveQuery<T extends DBRow> {
 	 */
 	private List<DBQueryRow> getRowsFromRecursiveQuery(RecursiveSQLDirection direction) throws SQLException {
 		List<DBQueryRow> returnList = new ArrayList<>();
-		if (originalQuery.getDatabase().supportsRecursiveQueriesNatively()) {
+		if (originalQuery.getDatabase().getDefinition().supportsRecursiveQueriesNatively()) {
 			returnList = performNativeRecursiveQuery(direction, returnList);
 		} else {
 			returnList = performRecursiveQueryEmulation(direction);

@@ -198,7 +198,7 @@ public class OuterJoinTest extends AbstractTest {
 								is(otherExpectedFullOuterQuery)
 						)
 				);
-			} else if (database.supportsUnionDistinct()) {
+			} else if (database.getDefinition().supportsUnionDistinct()) {
 				Assert.assertThat(
 						testableSQLWithoutColumnAliases(sqlForQuery),
 						anyOf(

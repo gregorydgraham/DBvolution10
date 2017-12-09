@@ -15,7 +15,6 @@
  */
 package nz.co.gregs.dbvolution.databases;
 
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import javax.sql.DataSource;
@@ -139,11 +138,6 @@ public class NuoDB extends DBDatabase {
 
 	@Override
 	public boolean supportsFullOuterJoinNatively() {
-		return false;
-	}
-
-	@Override
-	public boolean supportsRecursiveQueriesNatively() {
 		return false;
 	}
 

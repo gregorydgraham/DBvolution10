@@ -1903,53 +1903,6 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 	}
 
 	/**
-	 * Oracle does not differentiate between NULL and an empty string.
-	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 *
-	 * @return FALSE.
-	 */
-	public Boolean supportsDifferenceBetweenNullAndEmptyString() {
-		return true;
-	}
-
-	/**
-	 * Indicates that the database supports the UNION DISTINCT syntax
-	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 *
-	 * @return TRUE if this database supports the UNION DISTINCT syntax, FALSE
-	 * otherwise.
-	 */
-	public Boolean supportsUnionDistinct() {
-		return true;
-	}
-
-	/**
-	 * Indicates that this database supplies sufficient tools to create native
-	 * recursive queries.
-	 *
-	 * <p>
-	 * Please note that this may not be actual support for standard "WITH
-	 * RECURSIVE".
-	 *
-	 * <p>
-	 * If the database does not support recursive queries natively then DBvolution
-	 * will emulate recursive queries. Native queries are faster and easier on the
-	 * network and application server, so emulation should be a last resort.
-	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 *
-	 * @return TRUE by default, but some DBDatabases may return FALSE.
-	 */
-	public boolean supportsRecursiveQueriesNatively() {
-		return true;
-	}
-
-	/**
 	 * Used By Subclasses To Inject Datatypes, Functions, Etc Into the Database.
 	 *
 	 * @param statement the statement to use when adding features, DO NOT CLOSE

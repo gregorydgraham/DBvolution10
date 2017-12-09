@@ -86,11 +86,6 @@ public class MySQLDB extends DBDatabase implements SupportsPolygonDatatype {
 	}
 
 	@Override
-	public boolean supportsRecursiveQueriesNatively() {
-		return false;
-	}
-
-	@Override
 	protected void addDatabaseSpecificFeatures(Statement statement) throws SQLException {
 		for (MigrationFunctions fn : MigrationFunctions.values()) {
 			fn.add(statement);
