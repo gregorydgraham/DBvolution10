@@ -16,6 +16,9 @@
 package nz.co.gregs.dbvolution.databases;
 
 import java.sql.SQLException;
+import javax.sql.DataSource;
+import nz.co.gregs.dbvolution.databases.definitions.JavaDBDefinition;
+import nz.co.gregs.dbvolution.databases.definitions.JavaDBMemoryDBDefinition;
 import nz.co.gregs.dbvolution.exceptions.UnableToCreateDatabaseConnectionException;
 import nz.co.gregs.dbvolution.exceptions.UnableToFindJDBCDriver;
 
@@ -27,11 +30,39 @@ import nz.co.gregs.dbvolution.exceptions.UnableToFindJDBCDriver;
  *
  * @author gregory.graham
  */
-public class JavaDBMemoryDB extends JavaDB {
+public class JavaDBMemoryDB extends DBDatabase {
 
 	public static final long serialVersionUID = 1l;
+	private static final String DRIVER_NAME = "org.apache.derby.jdbc.ClientDriver";
 
-//	private Connection storedConnection;
+	/**
+	 * Default Constructor.
+	 *
+	 */
+	public JavaDBMemoryDB() {
+	}
+
+	/**
+	 * Creates a new JavaDB instance that will connect to the DataSource.
+	 *
+	 * @param dataSource	dataSource
+	 */
+	public JavaDBMemoryDB(DataSource dataSource) {
+		super(new JavaDBMemoryDBDefinition(), dataSource);
+	}
+
+	/**
+	 * Creates a new JavaDB instance that will connect to the JDBC URL using the
+	 * username and password supplied..
+	 *
+	 * @param jdbcURL jdbcURL
+	 * @param username username
+	 * @param password password
+	 */
+	public JavaDBMemoryDB(String jdbcURL, String username, String password) {
+		super(new JavaDBMemoryDBDefinition(), DRIVER_NAME, jdbcURL, username, password);
+	}
+
 	/**
 	 * Creates or connects to a JavaDB in-memory instance.
 	 *
@@ -43,7 +74,7 @@ public class JavaDBMemoryDB extends JavaDB {
 	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
 	public JavaDBMemoryDB(String host, int port, String database, String username, String password) throws SQLException, UnableToCreateDatabaseConnectionException, UnableToFindJDBCDriver {
-		super("jdbc:derby://" + host + ":" + port + "/memory:" + database + ";create=true", username, password);
+		super(new JavaDBMemoryDBDefinition(), DRIVER_NAME, "jdbc:derby://" + host + ":" + port + "/memory:" + database + ";create=true", username, password);
 	}
 
 	@Override
@@ -52,8 +83,7 @@ public class JavaDBMemoryDB extends JavaDB {
 	}
 
 	@Override
-	protected boolean persistentConnectionRequired() {
-		return true;
+	public boolean supportsFullOuterJoinNatively() {
+		return false;
 	}
-
 }

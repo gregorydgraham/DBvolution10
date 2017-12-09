@@ -31,7 +31,6 @@ import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.DBScript;
 import nz.co.gregs.dbvolution.DBTable;
 import nz.co.gregs.dbvolution.actions.DBActionList;
-import nz.co.gregs.dbvolution.databases.*;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.datatypes.DBLargeObject;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
@@ -413,7 +412,7 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 	protected Connection storedConnection;
 
 	private boolean connectionUsedForPersistentConnection(Connection connection) throws DBRuntimeException, SQLException {
-		if (persistentConnectionRequired()) {
+		if (getDefinition().persistentConnectionRequired()) {
 			if (storedConnection == null) {
 				this.storedConnection = connection;
 				this.storedConnection.createStatement();
@@ -1985,32 +1984,6 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 	 */
 	public void addFeatureToFixException(Exception exp) throws Exception {
 		throw exp;
-	}
-
-	/**
-	 * Indicates whether the database requires a persistent connection to operate
-	 * correctly.
-	 *
-	 * <p>
-	 * Some, usually in-memory, databases require a continuous connection to
-	 * maintain their data.
-	 *
-	 * <p>
-	 * DBvolution is usually clever with its connections and does not require a
-	 * persistent connection.
-	 *
-	 * <p>
-	 * However if a continuous connection is required to maintain the data,
-	 * override this method to return TRUE.
-	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 *
-	 * @return TRUE if the database requires a continuous connection to maintain
-	 * data, FALSE otherwise.
-	 */
-	protected boolean persistentConnectionRequired() {
-		return false;
 	}
 
 	public <K extends DBRow> DBQueryInsert<K> getDBQueryInsert(K mapper) {

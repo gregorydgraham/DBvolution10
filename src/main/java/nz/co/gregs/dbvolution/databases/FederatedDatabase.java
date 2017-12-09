@@ -127,11 +127,6 @@ public class FederatedDatabase extends DBDatabase {
 	}
 
 	@Override
-	protected boolean persistentConnectionRequired() {
-		return super.persistentConnectionRequired();
-	}
-
-	@Override
 	public void addFeatureToFixException(Exception exp) throws Exception {
 		for (Iterator<DBDatabase> iterator = readyDatabases.iterator(); iterator.hasNext();) {
 			DBDatabase next = iterator.next();
