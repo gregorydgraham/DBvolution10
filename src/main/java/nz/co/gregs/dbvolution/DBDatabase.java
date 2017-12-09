@@ -84,6 +84,7 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 	private static final transient Map<DBDatabase, List<Connection>> BUSY_CONNECTION = new HashMap<>();
 	private static final transient HashMap<DBDatabase, List<Connection>> FREE_CONNECTIONS = new HashMap<>();
 	private Boolean needToAddDatabaseSpecificFeatures = true;
+	private boolean explicitCommitActionRequired = false;
 
 	/**
 	 * Clones the DBDatabase.
@@ -734,12 +735,14 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 			db.transactionConnection.setAutoCommit(false);
 			try {
 				returnValues = dbTransaction.doTransaction(db);
-				if (commit) {
+				if (commit && !explicitCommitActionRequired) {
 					db.transactionConnection.commit();
 					LOG.info("Transaction Successful: Commit Performed");
 				} else {
 					try {
-						db.transactionConnection.rollback();
+						if (!explicitCommitActionRequired) {
+							db.transactionConnection.rollback();
+						}
 						LOG.info("Transaction Successful: ROLLBACK Performed");
 					} catch (SQLException rollbackFailed) {
 						LOG.warn("ROLLBACK FAILED: CONTINUING REGARDLESS");
@@ -749,7 +752,9 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 			} catch (Exception ex) {
 				try {
 					LOG.warn("Exception Occurred: Attempting ROLLBACK - " + ex.getMessage(), ex);
-					db.transactionConnection.rollback();
+					if (!explicitCommitActionRequired) {
+						db.transactionConnection.rollback();
+					}
 					LOG.warn("Exception Occurred: ROLLBACK Succeeded!");
 				} catch (SQLException excp) {
 					LOG.warn("Exception Occurred During Rollback: " + ex.getMessage(), excp);
@@ -1957,7 +1962,7 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 	}
 
 	/**
-	 * Used to add features in a just in time manner.
+	 * Used to add features in a just-in-time manner.
 	 *
 	 * <p>
 	 * During a statement the database may throw an exception because a feature
@@ -2026,5 +2031,17 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 	 */
 	public <K extends DBRow> DBMigration<K> getDBMigration(K mapper) {
 		return new DBMigration<K>(this, mapper);
+	}
+
+	public void doCommit() {
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	}
+
+	public void doRollback() {
+
+	}
+
+	public void setExplicitCommitAction(boolean b) {
+		explicitCommitActionRequired = b;
 	}
 }
