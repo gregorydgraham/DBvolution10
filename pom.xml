@@ -506,19 +506,13 @@
 				</plugins>
 			</build>
 			<dependencies>
-				<!-- https://mvnrepository.com/artifact/oracle/ojdbc6 -->
-				<dependency>
-					<groupId>oracle</groupId>
-					<artifactId>ojdbc14</artifactId>
-					<version>10.2.0.4.0</version>
-				</dependency>
-				<!--                    
+				<!-- https://mvnrepository.com/artifact/com.oracle/ojdbc6 -->
 				<dependency>
 					<groupId>com.oracle</groupId>
 					<artifactId>ojdbc6</artifactId>
+					<version>12.1.0.1-atlassian-hosted</version>
 					<scope>test</scope>
-					<version>11.2.1.0.1.0</version>
-				</dependency>-->
+				</dependency>
 			</dependencies>
 		</profile>
 		<profile>
@@ -547,11 +541,12 @@
 				</plugins>
 			</build>
 			<dependencies>
+				<!-- https://mvnrepository.com/artifact/com.oracle/ojdbc6 -->
 				<dependency>
 					<groupId>com.oracle</groupId>
 					<artifactId>ojdbc6</artifactId>
+					<version>12.1.0.1-atlassian-hosted</version>
 					<scope>test</scope>
-					<version>11.2.1.0.1.0</version>
 				</dependency>
 			</dependencies>
 		</profile>
@@ -580,25 +575,6 @@
 		<profile>
 			<id>OracleXETest</id>
 			<dependencies>
-				<!--				<dependency>
-					<groupId>com.oracle</groupId>
-					<artifactId>ojdbc4</artifactId>
-					<scope>test</scope>
-					<version>11.2.1.0.1.0</version>
-				</dependency>-->
-				<!-- https://mvnrepository.com/artifact/com.oracle/ojdbc14 -->
-				<!--				<dependency>
-					<groupId>com.oracle</groupId>
-					<artifactId>ojdbc14</artifactId>
-					<version>10.2.0.4.0</version>
-				</dependency>-->
-				<!-- https://mvnrepository.com/artifact/com.oracle/ojdbc5 -->
-				<!--				<dependency>
-					<groupId>com.oracle</groupId>
-					<artifactId>ojdbc5</artifactId>
-					<version>11.2.0.3</version>
-					<scope>test</scope>
-				</dependency>-->
 				<!-- https://mvnrepository.com/artifact/com.oracle/ojdbc6 -->
 				<dependency>
 					<groupId>com.oracle</groupId>
