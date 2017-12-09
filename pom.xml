@@ -587,13 +587,18 @@
 					<version>11.2.1.0.1.0</version>
 				</dependency>-->
 				<!-- https://mvnrepository.com/artifact/com.oracle/ojdbc14 -->
-				<dependency>
+				<!--				<dependency>
 					<groupId>com.oracle</groupId>
 					<artifactId>ojdbc14</artifactId>
 					<version>10.2.0.4.0</version>
+				</dependency>-->
+				<!-- https://mvnrepository.com/artifact/com.oracle/ojdbc5 -->
+				<dependency>
+					<groupId>com.oracle</groupId>
+					<artifactId>ojdbc5</artifactId>
+					<version>11.2.0.3</version>
+					<scope>test</scope>
 				</dependency>
-
-
 			</dependencies>
 			<build>
 				<plugins>
