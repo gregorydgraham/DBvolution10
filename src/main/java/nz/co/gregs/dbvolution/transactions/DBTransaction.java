@@ -15,7 +15,7 @@
  */
 package nz.co.gregs.dbvolution.transactions;
 
-import nz.co.gregs.dbvolution.DBDatabase;
+import nz.co.gregs.dbvolution.databases.DBDatabase;
 
 /**
  *

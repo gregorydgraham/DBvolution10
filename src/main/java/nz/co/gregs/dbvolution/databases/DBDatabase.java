@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package nz.co.gregs.dbvolution;
+package nz.co.gregs.dbvolution.databases;
 
 import java.io.PrintStream;
 import java.io.Serializable;
@@ -22,6 +22,14 @@ import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.sql.DataSource;
+import nz.co.gregs.dbvolution.DBMigration;
+import nz.co.gregs.dbvolution.DBQuery;
+import nz.co.gregs.dbvolution.DBQueryInsert;
+import nz.co.gregs.dbvolution.DBQueryRow;
+import nz.co.gregs.dbvolution.DBReport;
+import nz.co.gregs.dbvolution.DBRow;
+import nz.co.gregs.dbvolution.DBScript;
+import nz.co.gregs.dbvolution.DBTable;
 import nz.co.gregs.dbvolution.actions.DBActionList;
 import nz.co.gregs.dbvolution.databases.*;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
@@ -96,7 +104,7 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 	 * @throws CloneNotSupportedException not likely
 	 */
 	@Override
-	protected DBDatabase clone() throws CloneNotSupportedException {
+	public DBDatabase clone() throws CloneNotSupportedException {
 		Object clone = super.clone();
 		DBDatabase newInstance = (DBDatabase) clone;
 		return newInstance;
@@ -745,7 +753,7 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 						}
 						LOG.info("Transaction Successful: ROLLBACK Performed");
 					} catch (SQLException rollbackFailed) {
-						LOG.warn("ROLLBACK FAILED: CONTINUING REGARDLESS");
+						LOG.warn("ROLLBACK FAILED: CONTINUING REGARDLESS: "+rollbackFailed.getLocalizedMessage());
 						discardConnection(db.transactionConnection);
 					}
 				}
@@ -1678,7 +1686,7 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 	 * @return TRUE if the underlying database supports full outer joins natively,
 	 * FALSE otherwise.
 	 */
-	protected boolean supportsFullOuterJoinNatively() {
+	public boolean supportsFullOuterJoinNatively() {
 		return true;
 	}
 
@@ -1691,7 +1699,7 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 	 * @return Returns TRUE if this database supports RIGHT OUTER JOIN, otherwise
 	 * FALSE
 	 */
-	protected boolean supportsRightOuterJoinNatively() {
+	public boolean supportsRightOuterJoinNatively() {
 		return true;
 	}
 

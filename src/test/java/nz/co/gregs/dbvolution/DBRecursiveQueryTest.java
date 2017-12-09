@@ -15,6 +15,7 @@
  */
 package nz.co.gregs.dbvolution;
 
+import nz.co.gregs.dbvolution.databases.DBDatabase;
 import nz.co.gregs.dbvolution.exceptions.ColumnProvidedMustBeAForeignKey;
 import nz.co.gregs.dbvolution.exceptions.ForeignKeyDoesNotReferenceATableInTheQuery;
 import nz.co.gregs.dbvolution.exceptions.ForeignKeyIsNotRecursiveException;

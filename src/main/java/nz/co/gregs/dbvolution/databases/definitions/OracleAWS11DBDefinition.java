@@ -17,7 +17,7 @@ package nz.co.gregs.dbvolution.databases.definitions;
 
 import java.util.ArrayList;
 import java.util.List;
-import nz.co.gregs.dbvolution.DBDatabase;
+import nz.co.gregs.dbvolution.databases.DBDatabase;
 import nz.co.gregs.dbvolution.databases.OracleAWS11DB;
 import nz.co.gregs.dbvolution.query.QueryOptions;
 

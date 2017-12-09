@@ -22,7 +22,6 @@ import nz.co.gregs.dbvolution.internal.oracle.aws.Line2DFunctions;
 import java.sql.SQLException;
 import java.sql.Statement;
 import javax.sql.DataSource;
-import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.databases.supports.SupportsPolygonDatatype;

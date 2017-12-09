@@ -15,6 +15,7 @@
  */
 package nz.co.gregs.dbvolution;
 
+import nz.co.gregs.dbvolution.databases.DBDatabase;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;

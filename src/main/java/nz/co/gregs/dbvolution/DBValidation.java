@@ -15,6 +15,7 @@
  */
 package nz.co.gregs.dbvolution;
 
+import nz.co.gregs.dbvolution.databases.DBDatabase;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;

@@ -25,7 +25,7 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
-import nz.co.gregs.dbvolution.DBDatabase;
+import nz.co.gregs.dbvolution.databases.DBDatabase;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.actions.DBActionList;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;

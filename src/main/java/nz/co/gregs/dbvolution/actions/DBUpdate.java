@@ -17,7 +17,7 @@ package nz.co.gregs.dbvolution.actions;
 
 import java.sql.SQLException;
 import java.util.List;
-import nz.co.gregs.dbvolution.DBDatabase;
+import nz.co.gregs.dbvolution.databases.DBDatabase;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 import nz.co.gregs.dbvolution.exceptions.AccidentalUpdateOfUndefinedRowException;

@@ -15,6 +15,7 @@
  */
 package nz.co.gregs.dbvolution;
 
+import nz.co.gregs.dbvolution.databases.DBDatabase;
 import edu.uci.ics.jung.algorithms.layout.*;
 import edu.uci.ics.jung.graph.Graph;
 import edu.uci.ics.jung.visualization.*;
@@ -133,7 +134,7 @@ public class DBQuery {
 		blankResults();
 	}
 
-	static DBQuery getInstance(DBDatabase database, DBRow... examples) {
+	public static DBQuery getInstance(DBDatabase database, DBRow... examples) {
 		DBQuery dbQuery = new DBQuery(database);
 		for (DBRow example : examples) {
 			dbQuery.add(example);
@@ -1783,9 +1784,7 @@ public class DBQuery {
 					if (resultClasses.add(connectedTable)) {
 						result.add(connectedTable.newInstance());
 					}
-				} catch (IllegalAccessException ex) {
-					throw new UnableToInstantiateDBRowSubclassException(connectedTable, ex);
-				} catch (InstantiationException ex) {
+				} catch (IllegalAccessException | InstantiationException ex) {
 					throw new UnableToInstantiateDBRowSubclassException(connectedTable, ex);
 				}
 			}
@@ -1824,9 +1823,7 @@ public class DBQuery {
 			for (Class<? extends DBRow> connectedTable : allRelatedTables) {
 				try {
 					result.add(connectedTable.newInstance());
-				} catch (InstantiationException ex) {
-					throw new UnableToInstantiateDBRowSubclassException(connectedTable, ex);
-				} catch (IllegalAccessException ex) {
+				} catch (InstantiationException | IllegalAccessException ex) {
 					throw new UnableToInstantiateDBRowSubclassException(connectedTable, ex);
 				}
 			}

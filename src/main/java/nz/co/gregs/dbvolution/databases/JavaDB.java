@@ -16,7 +16,6 @@
 package nz.co.gregs.dbvolution.databases;
 
 import javax.sql.DataSource;
-import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.databases.definitions.JavaDBDefinition;
 
 /**
@@ -79,7 +78,7 @@ public class JavaDB extends DBDatabase {
 	}
 
 	@Override
-	protected boolean supportsFullOuterJoinNatively() {
+	public boolean supportsFullOuterJoinNatively() {
 		return false;
 	}
 

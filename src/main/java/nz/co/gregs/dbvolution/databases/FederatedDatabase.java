@@ -14,7 +14,6 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
-import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.DBMigration;
 import nz.co.gregs.dbvolution.DBQuery;
 import nz.co.gregs.dbvolution.DBQueryInsert;
@@ -218,12 +217,12 @@ public class FederatedDatabase extends DBDatabase {
 	}
 
 	@Override
-	protected boolean supportsRightOuterJoinNatively() {
+	public boolean supportsRightOuterJoinNatively() {
 		return super.supportsRightOuterJoinNatively();
 	}
 
 	@Override
-	protected boolean supportsFullOuterJoinNatively() {
+	public boolean supportsFullOuterJoinNatively() {
 		return super.supportsFullOuterJoinNatively();
 	}
 
@@ -586,7 +585,7 @@ public class FederatedDatabase extends DBDatabase {
 	}
 
 	@Override
-	protected DBDatabase clone() throws CloneNotSupportedException {
+	public DBDatabase clone() throws CloneNotSupportedException {
 		return super.clone();
 	}
 

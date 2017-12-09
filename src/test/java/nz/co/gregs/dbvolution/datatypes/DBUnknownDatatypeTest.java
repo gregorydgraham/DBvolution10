@@ -16,7 +16,7 @@
 package nz.co.gregs.dbvolution.datatypes;
 
 import java.util.Set;
-import nz.co.gregs.dbvolution.DBDatabase;
+import nz.co.gregs.dbvolution.databases.DBDatabase;
 import nz.co.gregs.dbvolution.DBRow;
 import org.junit.Test;
 import static org.junit.Assert.*;

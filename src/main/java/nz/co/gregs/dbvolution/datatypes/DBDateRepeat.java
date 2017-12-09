@@ -18,7 +18,7 @@ package nz.co.gregs.dbvolution.datatypes;
 import nz.co.gregs.dbvolution.results.DateRepeatResult;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import nz.co.gregs.dbvolution.DBDatabase;
+import nz.co.gregs.dbvolution.databases.DBDatabase;
 import nz.co.gregs.dbvolution.expressions.*;
 import org.joda.time.Period;
 import org.joda.time.format.PeriodFormat;

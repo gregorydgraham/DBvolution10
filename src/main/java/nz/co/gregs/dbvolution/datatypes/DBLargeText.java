@@ -15,6 +15,7 @@
  */
 package nz.co.gregs.dbvolution.datatypes;
 
+import nz.co.gregs.dbvolution.databases.DBDatabase;
 import java.io.*;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import java.sql.*;

@@ -3,7 +3,7 @@ package nz.co.gregs.dbvolution.internal.properties;
 import java.util.ArrayList;
 import java.util.List;
 
-import nz.co.gregs.dbvolution.DBDatabase;
+import nz.co.gregs.dbvolution.databases.DBDatabase;
 import nz.co.gregs.dbvolution.DBReport;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.annotations.DBTableName;

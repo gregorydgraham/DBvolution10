@@ -15,7 +15,7 @@
  */
 package nz.co.gregs.dbvolution.generic;
 
-import nz.co.gregs.dbvolution.DBDatabase;
+import nz.co.gregs.dbvolution.databases.DBDatabase;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
@@ -75,7 +75,14 @@ public abstract class AbstractTest {
 		String password = System.getProperty("dbv.password");
 		String schema = System.getProperty("dbv.schema");
 
-		if (System.getProperty("testSQLite") != null) {
+		if (System.getProperty("testFederatedDB") != null) {
+			databases.add(new Object[]{"FederateDB", 
+				new FederatedDatabase(
+						SQLiteTestDB.getFromSettings("sqlite"),
+						H2MemoryTestDB.getFromSettings("h2memory")
+				)});
+		}
+				if (System.getProperty("testSQLite") != null) {
 			databases.add(new Object[]{"SQLiteDB", SQLiteTestDB.getFromSettings("sqlite")});
 		}
 		if (System.getProperty("testMySQL") != null) {

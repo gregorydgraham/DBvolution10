@@ -19,7 +19,6 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import javax.sql.DataSource;
-import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.databases.definitions.NuoDBDefinition;
 
 /**
@@ -139,7 +138,7 @@ public class NuoDB extends DBDatabase {
 	}
 
 	@Override
-	protected boolean supportsFullOuterJoinNatively() {
+	public boolean supportsFullOuterJoinNatively() {
 		return false;
 	}
 

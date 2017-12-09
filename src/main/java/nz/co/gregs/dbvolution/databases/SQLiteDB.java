@@ -20,7 +20,6 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import javax.sql.DataSource;
 import org.sqlite.SQLiteConfig;
-import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.databases.definitions.SQLiteDefinition;
 import nz.co.gregs.dbvolution.databases.supports.SupportsDateRepeatDatatypeFunctions;
@@ -88,12 +87,12 @@ public class SQLiteDB extends DBDatabase implements SupportsDateRepeatDatatypeFu
 	}
 
 	@Override
-	protected boolean supportsFullOuterJoinNatively() {
+	public boolean supportsFullOuterJoinNatively() {
 		return false;
 	}
 
 	@Override
-	protected boolean supportsRightOuterJoinNatively() {
+	public boolean supportsRightOuterJoinNatively() {
 		return false;
 	}
 

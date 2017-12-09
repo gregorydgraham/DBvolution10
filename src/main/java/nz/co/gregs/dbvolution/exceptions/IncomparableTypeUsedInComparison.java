@@ -15,7 +15,7 @@
  */
 package nz.co.gregs.dbvolution.exceptions;
 
-import nz.co.gregs.dbvolution.DBDatabase;
+import nz.co.gregs.dbvolution.databases.DBDatabase;
 import nz.co.gregs.dbvolution.expressions.DBExpression;
 
 /**

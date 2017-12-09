@@ -5,6 +5,7 @@
  */
 package nz.co.gregs.dbvolution;
 
+import nz.co.gregs.dbvolution.databases.DBDatabase;
 import java.lang.reflect.Field;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -108,7 +109,7 @@ public class DBQueryInsert<M extends DBRow> extends RowDefinition {
 	private final M mapper;
 	private final List<DBRow> optionalTables = new ArrayList<>();
 
-	DBQueryInsert(DBDatabase db, M migrationMapper) {
+	public DBQueryInsert(DBDatabase db, M migrationMapper) {
 		this.database = db;
 		this.mapper = migrationMapper;
 	}

@@ -15,6 +15,7 @@
  */
 package nz.co.gregs.dbvolution.expressions;
 
+import nz.co.gregs.dbvolution.databases.DBDatabase;
 import com.vividsolutions.jts.geom.*;
 import java.sql.SQLException;
 import java.util.ArrayList;

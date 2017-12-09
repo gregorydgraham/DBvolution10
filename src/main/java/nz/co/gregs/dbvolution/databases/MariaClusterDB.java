@@ -18,7 +18,6 @@ package nz.co.gregs.dbvolution.databases;
 import java.sql.SQLException;
 import java.util.List;
 import javax.sql.DataSource;
-import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.databases.definitions.MariaDBDefinition;
 
 /**

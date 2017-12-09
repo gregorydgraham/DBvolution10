@@ -17,7 +17,7 @@ package nz.co.gregs.dbvolution.exceptions;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import nz.co.gregs.dbvolution.DBDatabase;
+import nz.co.gregs.dbvolution.databases.DBDatabase;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 import org.junit.Test;
 

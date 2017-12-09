@@ -16,7 +16,6 @@
 package nz.co.gregs.dbvolution.databases;
 
 import java.sql.SQLException;
-import nz.co.gregs.dbvolution.DBDatabase;
 import nz.co.gregs.dbvolution.DBScript;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
