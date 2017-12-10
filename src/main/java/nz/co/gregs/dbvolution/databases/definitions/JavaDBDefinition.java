@@ -298,4 +298,8 @@ public class JavaDBDefinition extends DBDefinition {
 		throw new UnsupportedOperationException("JavaDB does not support the DAYOFWEEK function");
 	}
 
+	@Override
+	public boolean supportsFullOuterJoinNatively() {
+		return false;
+	}
 }

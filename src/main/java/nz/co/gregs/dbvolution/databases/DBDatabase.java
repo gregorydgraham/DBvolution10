@@ -1641,68 +1641,6 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 	}
 
 	/**
-	 * Indicates whether this database supports full outer joins.
-	 *
-	 * <p>
-	 * Some databases don't yet support queries where all the tables are optional,
-	 * that is FULL OUTER joins.
-	 *
-	 * <p>
-	 * This method indicates whether or not this instance can perform full outer
-	 * joins.
-	 *
-	 * <p>
-	 * Please note: there are plans to implement full outer joins within DBV for
-	 * databases without native support, at which point this method will return
-	 * TRUE for all databases. Timing for this implementation is not yet
-	 * available.
-	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 *
-	 * @return TRUE if this DBDatabase supports full outer joins , FALSE
-	 * otherwise.
-	 */
-	public boolean supportsFullOuterJoin() {
-		return true;
-		//return supportsFullOuterJoinNatively()||supportsRightOuterJoinNatively();
-	}
-
-	/**
-	 * Indicates whether this database supports full outer joins natively.
-	 *
-	 * <p>
-	 * Some databases don't yet support queries where all the tables are optional,
-	 * that is FULL OUTER joins.
-	 *
-	 * <p>
-	 * This method indicates whether or not this instance can perform full outer
-	 * joins.
-	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 *
-	 * @return TRUE if the underlying database supports full outer joins natively,
-	 * FALSE otherwise.
-	 */
-	public boolean supportsFullOuterJoinNatively() {
-		return true;
-	}
-
-	/**
-	 * Indicates whether this database supports the RIGHT OUTER JOIN syntax.
-	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 *
-	 * @return Returns TRUE if this database supports RIGHT OUTER JOIN, otherwise
-	 * FALSE
-	 */
-	public boolean supportsRightOuterJoinNatively() {
-		return true;
-	}
-
-	/**
 	 * Get The Rows For The Supplied DBReport Constrained By The Examples.
 	 *
 	 * <p>

@@ -87,16 +87,6 @@ public class SQLiteDB extends DBDatabase implements SupportsDateRepeatDatatypeFu
 	}
 
 	@Override
-	public boolean supportsFullOuterJoinNatively() {
-		return false;
-	}
-
-	@Override
-	public boolean supportsRightOuterJoinNatively() {
-		return false;
-	}
-
-	@Override
 	protected Connection getConnectionFromDriverManager() throws SQLException {
 		SQLiteConfig config = new SQLiteConfig();
 		config.enableCaseSensitiveLike(true);

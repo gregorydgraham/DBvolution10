@@ -15,7 +15,6 @@
  */
 package nz.co.gregs.dbvolution.databases;
 
-import java.sql.SQLException;
 import java.util.List;
 import javax.sql.DataSource;
 import nz.co.gregs.dbvolution.databases.definitions.MariaDBDefinition;
@@ -115,11 +114,6 @@ public class MariaClusterDB extends DBDatabase {
 		setUsername(username);
 		setPassword(password);
 		setDatabaseName(databaseName);
-	}
-
-	@Override
-	public boolean supportsFullOuterJoinNatively() {
-		return false;
 	}
 
 	@Override

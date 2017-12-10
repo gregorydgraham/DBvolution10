@@ -907,4 +907,14 @@ public class SQLiteDefinition extends DBDefinition {
 	public Boolean supportsUnionDistinct() {
 		return false;
 	}
+
+	@Override
+	public boolean supportsFullOuterJoinNatively() {
+		return false;
+	}
+
+	@Override
+	public boolean supportsRightOuterJoinNatively() {
+		return false;
+	}
 }

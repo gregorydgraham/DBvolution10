@@ -591,4 +591,9 @@ public class H2DBDefinition extends DBDefinition {
 			return super.preferredLargeObjectReader(lob);
 		}
 	}
+
+	@Override
+	public boolean supportsFullOuterJoinNatively() {
+		return false;
+	}
 }

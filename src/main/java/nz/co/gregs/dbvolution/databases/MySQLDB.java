@@ -76,11 +76,6 @@ public class MySQLDB extends DBDatabase implements SupportsPolygonDatatype {
 	}
 
 	@Override
-	public boolean supportsFullOuterJoinNatively() {
-		return false;
-	}
-
-	@Override
 	public DBDatabase clone() throws CloneNotSupportedException {
 		return super.clone(); //To change body of generated methods, choose Tools | Templates.
 	}

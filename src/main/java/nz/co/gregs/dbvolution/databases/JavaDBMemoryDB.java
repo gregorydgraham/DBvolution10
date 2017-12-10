@@ -17,7 +17,6 @@ package nz.co.gregs.dbvolution.databases;
 
 import java.sql.SQLException;
 import javax.sql.DataSource;
-import nz.co.gregs.dbvolution.databases.definitions.JavaDBDefinition;
 import nz.co.gregs.dbvolution.databases.definitions.JavaDBMemoryDBDefinition;
 import nz.co.gregs.dbvolution.exceptions.UnableToCreateDatabaseConnectionException;
 import nz.co.gregs.dbvolution.exceptions.UnableToFindJDBCDriver;
@@ -80,10 +79,5 @@ public class JavaDBMemoryDB extends DBDatabase {
 	@Override
 	public JavaDBMemoryDB clone() throws CloneNotSupportedException {
 		return (JavaDBMemoryDB) super.clone(); //To change body of generated methods, choose Tools | Templates.
-	}
-
-	@Override
-	public boolean supportsFullOuterJoinNatively() {
-		return false;
 	}
 }

@@ -634,7 +634,7 @@ public class DBQuery {
 			}
 			if (options.creatingNativeQuery()
 					&& queryState.isFullOuterJoin()
-					&& !database.supportsFullOuterJoinNatively()) {
+					&& !database.getDefinition().supportsFullOuterJoinNatively()) {
 				sqlString = getSQLForFakeFullOuterJoin(sqlString, queryState, details, options, queryType);
 			}
 		}
@@ -670,7 +670,7 @@ public class DBQuery {
 			unionOperator = defn.getUnionOperator();
 		}
 
-		if (this.database.supportsRightOuterJoinNatively()) {
+		if (this.database.getDefinition().supportsRightOuterJoinNatively()) {
 			// Fake the outer join by revering the left outer joins to right outer joins
 
 			sqlForQuery = existingSQL.replaceAll("; *$", " ").replaceAll(defn.beginFullOuterJoin(), defn.beginLeftOuterJoin());
@@ -729,7 +729,7 @@ public class DBQuery {
 	 * returned by this query
 	 */
 	public String getSQLForCount() {
-		if (!database.supportsFullOuterJoinNatively()) {
+		if (!database.getDefinition().supportsFullOuterJoinNatively()) {
 			return "SELECT COUNT(*) FROM (" + getSQLForQuery(new QueryState(this, getDatabase()), QueryType.SELECT, details.getOptions()).replaceAll("; *$", "") + ") A" + database.getDefinition().endSQLStatement();
 		} else {
 			return getSQLForQuery(new QueryState(this, getDatabase()), QueryType.COUNT, details.getOptions());

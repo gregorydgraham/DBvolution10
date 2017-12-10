@@ -113,7 +113,7 @@ public class DBValidationTest extends AbstractTest {
 		migration.setBlankQueryAllowed(Boolean.TRUE);
 		migration.setCartesianJoinAllowed(Boolean.TRUE);
 
-		if (database.supportsFullOuterJoin()) {
+		if (database.getDefinition().supportsFullOuterJoin()) {
 			DBValidation.Results validateAllRows = migration.validateAllRows();
 			for (DBValidation.Result valid : validateAllRows) {
 				final Hero hero = valid.getRow(new Hero());

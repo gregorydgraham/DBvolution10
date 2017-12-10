@@ -1,0 +1,32 @@
+<#if licenseFirst??>
+${licenseFirst}
+</#if>
+${licensePrefix}Copyright ${date?date?string("yyyy")} ${project.organization!user}.
+${licensePrefix?replace(" +$", "", "r")}
+${licensePrefix}This work is licensed under the Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License. 
+${licensePrefix}To view a copy of this license, visit http://creativecommons.org/licenses/by-nc-sa/4.0/ 
+${licensePrefix}or send a letter to Creative Commons, PO Box 1866, Mountain View, CA 94042, USA.
+${licensePrefix}
+${licensePrefix}You are free to:
+${licensePrefix}    Share - copy and redistribute the material in any medium or format
+${licensePrefix}    Adapt - remix, transform, and build upon the material
+${licensePrefix}
+${licensePrefix}    The licensor cannot revoke these freedoms as long as you follow the license terms.               
+${licensePrefix}    Under the following terms:
+${licensePrefix}                
+${licensePrefix}        Attribution - 
+${licensePrefix}            You must give appropriate credit, provide a link to the license, and indicate if changes were made. 
+${licensePrefix}            You may do so in any reasonable manner, but not in any way that suggests the licensor endorses you or your use.
+${licensePrefix}        NonCommercial - 
+${licensePrefix}            You may not use the material for commercial purposes.
+${licensePrefix}        ShareAlike - 
+${licensePrefix}            If you remix, transform, or build upon the material, 
+${licensePrefix}            you must distribute your contributions under the same license as the original.
+${licensePrefix}        No additional restrictions - 
+${licensePrefix}            You may not apply legal terms or technological measures that legally restrict others from doing anything the 
+${licensePrefix}            license permits.
+${licensePrefix}
+${licensePrefix}Check the Creative Commons website for any details, legalese, and updates.
+<#if licenseLast??>
+${licenseLast}
+</#if>

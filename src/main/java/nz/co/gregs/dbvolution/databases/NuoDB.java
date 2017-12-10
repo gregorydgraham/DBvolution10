@@ -136,9 +136,4 @@ public class NuoDB extends DBDatabase {
 		setDatabaseName(databaseName);
 	}
 
-	@Override
-	public boolean supportsFullOuterJoinNatively() {
-		return false;
-	}
-
 }

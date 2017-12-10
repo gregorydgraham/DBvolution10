@@ -78,11 +78,6 @@ public class JavaDB extends DBDatabase {
 	}
 
 	@Override
-	public boolean supportsFullOuterJoinNatively() {
-		return false;
-	}
-
-	@Override
 	public JavaDB clone() throws CloneNotSupportedException {
 		return (JavaDB) super.clone(); //To change body of generated methods, choose Tools | Templates.
 	}

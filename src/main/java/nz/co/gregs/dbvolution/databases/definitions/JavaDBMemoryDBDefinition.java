@@ -9,15 +9,19 @@ package nz.co.gregs.dbvolution.databases.definitions;
  *
  * @author gregorygraham
  */
-public class JavaDBMemoryDBDefinition extends JavaDBDefinition{
+public class JavaDBMemoryDBDefinition extends JavaDBDefinition {
 
 	public JavaDBMemoryDBDefinition() {
 		super();
 	}
-	
 
 	@Override
 	public boolean persistentConnectionRequired() {
 		return true;
+	}
+
+	@Override
+	public boolean supportsFullOuterJoinNatively() {
+		return false;
 	}
 }

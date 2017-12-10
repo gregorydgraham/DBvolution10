@@ -179,4 +179,9 @@ public class NuoDBDefinition extends DBDefinition {
 	public boolean supportsRecursiveQueriesNatively() {
 		return false;
 	}
+
+	@Override
+	public boolean supportsFullOuterJoinNatively() {
+		return false;
+	}
 }

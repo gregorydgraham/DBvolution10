@@ -72,11 +72,6 @@ public class MariaDB extends DBDatabase {
 	}
 
 	@Override
-	public boolean supportsFullOuterJoinNatively() {
-		return false;
-	}
-
-	@Override
 	public DBDatabase clone() throws CloneNotSupportedException {
 		return super.clone(); //To change body of generated methods, choose Tools | Templates.
 	}

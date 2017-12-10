@@ -151,11 +151,6 @@ public class H2DB extends DBDatabase implements SupportsDateRepeatDatatypeFuncti
 		}
 	}
 
-	@Override
-	public boolean supportsFullOuterJoinNatively() {
-		return false;
-	}
-
 	/**
 	 * Clones the DBDatabase
 	 *
