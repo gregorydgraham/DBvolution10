@@ -4,6 +4,7 @@ import java.lang.reflect.Array;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import nz.co.gregs.dbvolution.databases.DBDatabase;
+import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.expressions.DBExpression;
 import nz.co.gregs.dbvolution.internal.properties.PropertyWrapperDefinition;
 
@@ -259,10 +260,10 @@ public abstract class DBEnum<E extends Enum<E> & DBEnumValue<T>, T> extends Quer
 	}
 
 	@Override
-	protected String formatValueForSQLStatement(DBDatabase db) {
+	protected String formatValueForSQLStatement(DBDefinition db) {
 		final Object databaseValue = super.getValue();
 		if (databaseValue == null) {
-			return db.getDefinition().getNull();
+			return db.getNull();
 		} else {
 			QueryableDatatype<?> qdt = QueryableDatatype.getQueryableDatatypeForObject(databaseValue);
 			return qdt.formatValueForSQLStatement(db);

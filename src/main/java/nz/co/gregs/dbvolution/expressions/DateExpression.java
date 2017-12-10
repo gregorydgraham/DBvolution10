@@ -26,7 +26,7 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import nz.co.gregs.dbvolution.databases.DBDatabase;
+import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.DBReport;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.databases.supports.SupportsDateRepeatDatatypeFunctions;
@@ -137,7 +137,7 @@ public class DateExpression implements DateResult, RangeComparable<DateResult>, 
 	}
 
 	@Override
-	public String toSQLString(DBDatabase db) {
+	public String toSQLString(DBDefinition db) {
 		return date1.toSQLString(db);
 	}
 
@@ -190,8 +190,8 @@ public class DateExpression implements DateResult, RangeComparable<DateResult>, 
 	static DateExpression nullExpression() {
 		return new DateExpression() {
 			@Override
-			public String toSQLString(DBDatabase db) {
-				return db.getDefinition().getNull();
+			public String toSQLString(DBDefinition db) {
+				return db.getNull();
 			}
 
 		};
@@ -216,8 +216,8 @@ public class DateExpression implements DateResult, RangeComparable<DateResult>, 
 				new FunctionWithDateResult() {
 
 			@Override
-			public String toSQLString(DBDatabase db) {
-				return db.getDefinition().doCurrentDateOnlyTransform();
+			public String toSQLString(DBDefinition db) {
+				return db.doCurrentDateOnlyTransform();
 			}
 		});
 	}
@@ -239,8 +239,8 @@ public class DateExpression implements DateResult, RangeComparable<DateResult>, 
 				new FunctionWithDateResult() {
 
 			@Override
-			public String toSQLString(DBDatabase db) {
-				return db.getDefinition().doCurrentDateTimeTransform();
+			public String toSQLString(DBDefinition db) {
+				return db.doCurrentDateTimeTransform();
 			}
 		});
 	}
@@ -263,8 +263,8 @@ public class DateExpression implements DateResult, RangeComparable<DateResult>, 
 				new FunctionWithDateResult() {
 
 			@Override
-			public String toSQLString(DBDatabase db) {
-				return db.getDefinition().doCurrentTimeTransform();
+			public String toSQLString(DBDefinition db) {
+				return db.doCurrentTimeTransform();
 			}
 		});
 	}
@@ -282,8 +282,8 @@ public class DateExpression implements DateResult, RangeComparable<DateResult>, 
 		return new NumberExpression(
 				new DateExpressionWithNumberResult(this) {
 			@Override
-			public String toSQLString(DBDatabase db) {
-				return db.getDefinition().doYearTransform(this.only.toSQLString(db));
+			public String toSQLString(DBDefinition db) {
+				return db.doYearTransform(this.only.toSQLString(db));
 			}
 		});
 	}
@@ -327,8 +327,8 @@ public class DateExpression implements DateResult, RangeComparable<DateResult>, 
 		return new NumberExpression(
 				new DateExpressionWithNumberResult(this) {
 			@Override
-			public String toSQLString(DBDatabase db) {
-				return db.getDefinition().doMonthTransform(this.only.toSQLString(db));
+			public String toSQLString(DBDefinition db) {
+				return db.doMonthTransform(this.only.toSQLString(db));
 			}
 		});
 	}
@@ -377,8 +377,8 @@ public class DateExpression implements DateResult, RangeComparable<DateResult>, 
 		return new NumberExpression(
 				new DateExpressionWithNumberResult(this) {
 			@Override
-			public String toSQLString(DBDatabase db) {
-				return db.getDefinition().doDayTransform(this.only.toSQLString(db));
+			public String toSQLString(DBDefinition db) {
+				return db.doDayTransform(this.only.toSQLString(db));
 			}
 		});
 	}
@@ -422,8 +422,8 @@ public class DateExpression implements DateResult, RangeComparable<DateResult>, 
 		return new NumberExpression(
 				new DateExpressionWithNumberResult(this) {
 			@Override
-			public String toSQLString(DBDatabase db) {
-				return db.getDefinition().doHourTransform(this.only.toSQLString(db));
+			public String toSQLString(DBDefinition db) {
+				return db.doHourTransform(this.only.toSQLString(db));
 			}
 		});
 	}
@@ -467,8 +467,8 @@ public class DateExpression implements DateResult, RangeComparable<DateResult>, 
 		return new NumberExpression(
 				new DateExpressionWithNumberResult(this) {
 			@Override
-			public String toSQLString(DBDatabase db) {
-				return db.getDefinition().doMinuteTransform(this.only.toSQLString(db));
+			public String toSQLString(DBDefinition db) {
+				return db.doMinuteTransform(this.only.toSQLString(db));
 			}
 		});
 	}
@@ -518,8 +518,8 @@ public class DateExpression implements DateResult, RangeComparable<DateResult>, 
 		return new NumberExpression(
 				new DateExpressionWithNumberResult(this) {
 			@Override
-			public String toSQLString(DBDatabase db) {
-				return db.getDefinition().doSecondTransform(this.only.toSQLString(db));
+			public String toSQLString(DBDefinition db) {
+				return db.doSecondTransform(this.only.toSQLString(db));
 			}
 		});
 	}
@@ -541,8 +541,8 @@ public class DateExpression implements DateResult, RangeComparable<DateResult>, 
 		return new NumberExpression(
 				new DateExpressionWithNumberResult(this) {
 			@Override
-			public String toSQLString(DBDatabase db) {
-				return db.getDefinition().doSubsecondTransform(this.only.toSQLString(db));
+			public String toSQLString(DBDefinition db) {
+				return db.doSubsecondTransform(this.only.toSQLString(db));
 			}
 		});
 	}
@@ -606,7 +606,7 @@ public class DateExpression implements DateResult, RangeComparable<DateResult>, 
 	public BooleanExpression is(DateResult dateExpression) {
 		BooleanExpression isExpr = new BooleanExpression(new DateDateExpressionWithBooleanResult(this, dateExpression) {
 			@Override
-			protected String getEquationOperator(DBDatabase db) {
+			protected String getEquationOperator(DBDefinition db) {
 				return " = ";
 			}
 		});
@@ -645,7 +645,7 @@ public class DateExpression implements DateResult, RangeComparable<DateResult>, 
 	public BooleanExpression isNot(DateResult dateExpression) {
 		BooleanExpression isExpr = new BooleanExpression(new DateDateExpressionWithBooleanResult(this, dateExpression) {
 			@Override
-			protected String getEquationOperator(DBDatabase db) {
+			protected String getEquationOperator(DBDefinition db) {
 				return " <> ";
 			}
 		});
@@ -1056,7 +1056,7 @@ public class DateExpression implements DateResult, RangeComparable<DateResult>, 
 	public BooleanExpression isLessThan(DateResult dateExpression) {
 		return new BooleanExpression(new DateExpression.DateDateExpressionWithBooleanResult(this, dateExpression) {
 			@Override
-			protected String getEquationOperator(DBDatabase db) {
+			protected String getEquationOperator(DBDefinition db) {
 				return " < ";
 			}
 
@@ -1093,9 +1093,9 @@ public class DateExpression implements DateResult, RangeComparable<DateResult>, 
 		return new DateRepeatExpression(new DateDateExpressionWithDateRepeatResult(this, dateExpression) {
 
 			@Override
-			public String toSQLString(DBDatabase db) {
+			public String toSQLString(DBDefinition db) {
 				if (db instanceof SupportsDateRepeatDatatypeFunctions) {
-					return db.getDefinition().doDateMinusToDateRepeatTransformation(getFirst().toSQLString(db), getSecond().toSQLString(db));
+					return db.doDateMinusToDateRepeatTransformation(getFirst().toSQLString(db), getSecond().toSQLString(db));
 				} else {
 					final DateExpression left = getFirst();
 					final DateExpression right = new DateExpression(getSecond());
@@ -1149,9 +1149,9 @@ public class DateExpression implements DateResult, RangeComparable<DateResult>, 
 	public DateExpression minus(DateRepeatResult intervalExpression) {
 		return new DateExpression(new DateDateRepeatArithmeticDateResult(this, intervalExpression) {
 			@Override
-			protected String doExpressionTransformation(DBDatabase db) {
+			protected String doExpressionTransformation(DBDefinition db) {
 				if (db instanceof SupportsDateRepeatDatatypeFunctions) {
-					return db.getDefinition().doDateMinusDateRepeatTransform(getFirst().toSQLString(db), getSecond().toSQLString(db));
+					return db.doDateMinusDateRepeatTransform(getFirst().toSQLString(db), getSecond().toSQLString(db));
 				} else {
 					final DateExpression left = getFirst();
 					final DateRepeatExpression right = new DateRepeatExpression(getSecond());
@@ -1202,9 +1202,9 @@ public class DateExpression implements DateResult, RangeComparable<DateResult>, 
 	public DateExpression plus(DateRepeatResult intervalExpression) {
 		return new DateExpression(new DateDateRepeatArithmeticDateResult(this, intervalExpression) {
 			@Override
-			protected String doExpressionTransformation(DBDatabase db) {
+			protected String doExpressionTransformation(DBDefinition db) {
 				if (db instanceof SupportsDateRepeatDatatypeFunctions) {
-					return db.getDefinition().doDatePlusDateRepeatTransform(getFirst().toSQLString(db), getSecond().toSQLString(db));
+					return db.doDatePlusDateRepeatTransform(getFirst().toSQLString(db), getSecond().toSQLString(db));
 				} else {
 					final DateExpression left = getFirst();
 					final DateRepeatExpression right = new DateRepeatExpression(getSecond());
@@ -1228,8 +1228,8 @@ public class DateExpression implements DateResult, RangeComparable<DateResult>, 
 		});
 //		return new DateExpression(new DateDateRepeatArithmeticDateResult(this, intervalExpression) {
 //			@Override
-//			protected String doExpressionTransformation(DBDatabase db) {
-//				return db.getDefinition().doDatePlusDateRepeatTransform(getFirst().toSQLString(db), getSecond().toSQLString(db));
+//			protected String doExpressionTransformation(DBDefinition db) {
+//				return db.doDatePlusDateRepeatTransform(getFirst().toSQLString(db), getSecond().toSQLString(db));
 //			}
 //
 //			@Override
@@ -1265,7 +1265,7 @@ public class DateExpression implements DateResult, RangeComparable<DateResult>, 
 	public BooleanExpression isLessThanOrEqual(DateResult dateExpression) {
 		return new BooleanExpression(new DateDateExpressionWithBooleanResult(this, dateExpression) {
 			@Override
-			protected String getEquationOperator(DBDatabase db) {
+			protected String getEquationOperator(DBDefinition db) {
 				return " <= ";
 			}
 
@@ -1302,7 +1302,7 @@ public class DateExpression implements DateResult, RangeComparable<DateResult>, 
 	public BooleanExpression isGreaterThan(DateResult dateExpression) {
 		return new BooleanExpression(new DateDateExpressionWithBooleanResult(this, dateExpression) {
 			@Override
-			protected String getEquationOperator(DBDatabase db) {
+			protected String getEquationOperator(DBDefinition db) {
 				return " > ";
 			}
 
@@ -1339,7 +1339,7 @@ public class DateExpression implements DateResult, RangeComparable<DateResult>, 
 	public BooleanExpression isGreaterThanOrEqual(DateResult dateExpression) {
 		return new BooleanExpression(new DateDateExpressionWithBooleanResult(this, dateExpression) {
 			@Override
-			protected String getEquationOperator(DBDatabase db) {
+			protected String getEquationOperator(DBDefinition db) {
 				return " >= ";
 			}
 
@@ -1508,12 +1508,12 @@ public class DateExpression implements DateResult, RangeComparable<DateResult>, 
 		BooleanExpression isInExpr = new BooleanExpression(new DateDateResultFunctionWithBooleanResult(this, possibleValues) {
 
 			@Override
-			public String toSQLString(DBDatabase db) {
+			public String toSQLString(DBDefinition db) {
 				List<String> sqlValues = new ArrayList<String>();
 				for (DateResult value : getValues()) {
 					sqlValues.add(value.toSQLString(db));
 				}
-				return db.getDefinition().doInTransform(getColumn().toSQLString(db), sqlValues);
+				return db.doInTransform(getColumn().toSQLString(db), sqlValues);
 			}
 		});
 		if (isInExpr.getIncludesNull()) {
@@ -1538,8 +1538,8 @@ public class DateExpression implements DateResult, RangeComparable<DateResult>, 
 		return new DateExpression(
 				new DateExpression.DateDateFunctionWithDateResult(this, new DateExpression(alternative)) {
 			@Override
-			protected String getFunctionName(DBDatabase db) {
-				return db.getDefinition().getIfNullFunctionName();
+			protected String getFunctionName(DBDefinition db) {
+				return db.getIfNullFunctionName();
 			}
 
 			@Override
@@ -1566,13 +1566,13 @@ public class DateExpression implements DateResult, RangeComparable<DateResult>, 
 				new DateExpression.DateDateFunctionWithDateResult(this, alternative) {
 
 			@Override
-			public String toSQLString(DBDatabase db) {
-				return db.getDefinition().doDateIfNullTransform(this.getFirst().toSQLString(db), getSecond().toSQLString(db));
+			public String toSQLString(DBDefinition db) {
+				return db.doDateIfNullTransform(this.getFirst().toSQLString(db), getSecond().toSQLString(db));
 			}
 
 			@Override
-			protected String getFunctionName(DBDatabase db) {
-				return db.getDefinition().getIfNullFunctionName();
+			protected String getFunctionName(DBDefinition db) {
+				return db.getIfNullFunctionName();
 			}
 
 			@Override
@@ -1593,8 +1593,8 @@ public class DateExpression implements DateResult, RangeComparable<DateResult>, 
 	public NumberExpression count() {
 		return new NumberExpression(new DateFunctionWithNumberResult(this) {
 			@Override
-			protected String getFunctionName(DBDatabase db) {
-				return db.getDefinition().getCountFunctionName();
+			protected String getFunctionName(DBDefinition db) {
+				return db.getCountFunctionName();
 			}
 
 			@Override
@@ -1619,8 +1619,8 @@ public class DateExpression implements DateResult, RangeComparable<DateResult>, 
 	public DateExpression max() {
 		return new DateExpression(new DateFunctionWithDateResult(this) {
 			@Override
-			protected String getFunctionName(DBDatabase db) {
-				return db.getDefinition().getMaxFunctionName();
+			protected String getFunctionName(DBDefinition db) {
+				return db.getMaxFunctionName();
 			}
 
 			@Override
@@ -1650,8 +1650,8 @@ public class DateExpression implements DateResult, RangeComparable<DateResult>, 
 	public DateExpression min() {
 		return new DateExpression(new DateFunctionWithDateResult(this) {
 			@Override
-			protected String getFunctionName(DBDatabase db) {
-				return db.getDefinition().getMinFunctionName();
+			protected String getFunctionName(DBDefinition db) {
+				return db.getMinFunctionName();
 			}
 
 			@Override
@@ -1722,8 +1722,8 @@ public class DateExpression implements DateResult, RangeComparable<DateResult>, 
 			}
 
 			@Override
-			public String toSQLString(DBDatabase db) {
-				return db.getDefinition().doAddSecondsTransform(first.toSQLString(db), second.toSQLString(db));
+			public String toSQLString(DBDefinition db) {
+				return db.doAddSecondsTransform(first.toSQLString(db), second.toSQLString(db));
 			}
 		});
 	}
@@ -1746,8 +1746,8 @@ public class DateExpression implements DateResult, RangeComparable<DateResult>, 
 //					}
 //
 //					@Override
-//					public String toSQLString(DBDatabase db) {
-//						return db.getDefinition().doAddMillisecondsTransform(first.toSQLString(db), second.toSQLString(db));
+//					public String toSQLString(DBDefinition db) {
+//						return db.doAddMillisecondsTransform(first.toSQLString(db), second.toSQLString(db));
 //					}
 //				});
 //	}
@@ -1787,8 +1787,8 @@ public class DateExpression implements DateResult, RangeComparable<DateResult>, 
 			}
 
 			@Override
-			public String toSQLString(DBDatabase db) {
-				return db.getDefinition().doAddMinutesTransform(first.toSQLString(db), second.toSQLString(db));
+			public String toSQLString(DBDefinition db) {
+				return db.doAddMinutesTransform(first.toSQLString(db), second.toSQLString(db));
 			}
 		});
 	}
@@ -1829,8 +1829,8 @@ public class DateExpression implements DateResult, RangeComparable<DateResult>, 
 			}
 
 			@Override
-			public String toSQLString(DBDatabase db) {
-				return db.getDefinition().doAddDaysTransform(first.toSQLString(db), second.toSQLString(db));
+			public String toSQLString(DBDefinition db) {
+				return db.doAddDaysTransform(first.toSQLString(db), second.toSQLString(db));
 			}
 		});
 	}
@@ -1871,8 +1871,8 @@ public class DateExpression implements DateResult, RangeComparable<DateResult>, 
 			}
 
 			@Override
-			public String toSQLString(DBDatabase db) {
-				return db.getDefinition().doAddHoursTransform(first.toSQLString(db), second.toSQLString(db));
+			public String toSQLString(DBDefinition db) {
+				return db.doAddHoursTransform(first.toSQLString(db), second.toSQLString(db));
 			}
 		});
 	}
@@ -1913,8 +1913,8 @@ public class DateExpression implements DateResult, RangeComparable<DateResult>, 
 			}
 
 			@Override
-			public String toSQLString(DBDatabase db) {
-				return db.getDefinition().doAddWeeksTransform(first.toSQLString(db), second.toSQLString(db));
+			public String toSQLString(DBDefinition db) {
+				return db.doAddWeeksTransform(first.toSQLString(db), second.toSQLString(db));
 			}
 		});
 	}
@@ -1955,8 +1955,8 @@ public class DateExpression implements DateResult, RangeComparable<DateResult>, 
 			}
 
 			@Override
-			public String toSQLString(DBDatabase db) {
-				return db.getDefinition().doAddMonthsTransform(first.toSQLString(db), second.toSQLString(db));
+			public String toSQLString(DBDefinition db) {
+				return db.doAddMonthsTransform(first.toSQLString(db), second.toSQLString(db));
 			}
 		});
 	}
@@ -1997,8 +1997,8 @@ public class DateExpression implements DateResult, RangeComparable<DateResult>, 
 			}
 
 			@Override
-			public String toSQLString(DBDatabase db) {
-				return db.getDefinition().doAddYearsTransform(first.toSQLString(db), second.toSQLString(db));
+			public String toSQLString(DBDefinition db) {
+				return db.doAddYearsTransform(first.toSQLString(db), second.toSQLString(db));
 			}
 		});
 	}
@@ -2041,8 +2041,8 @@ public class DateExpression implements DateResult, RangeComparable<DateResult>, 
 			}
 
 			@Override
-			public String toSQLString(DBDatabase db) {
-				return db.getDefinition().doDayDifferenceTransform(first.toSQLString(db), second.toSQLString(db));
+			public String toSQLString(DBDefinition db) {
+				return db.doDayDifferenceTransform(first.toSQLString(db), second.toSQLString(db));
 			}
 		});
 	}
@@ -2085,8 +2085,8 @@ public class DateExpression implements DateResult, RangeComparable<DateResult>, 
 			}
 
 			@Override
-			public String toSQLString(DBDatabase db) {
-				return db.getDefinition().doWeekDifferenceTransform(first.toSQLString(db), second.toSQLString(db));
+			public String toSQLString(DBDefinition db) {
+				return db.doWeekDifferenceTransform(first.toSQLString(db), second.toSQLString(db));
 			}
 		});
 	}
@@ -2129,8 +2129,8 @@ public class DateExpression implements DateResult, RangeComparable<DateResult>, 
 			}
 
 			@Override
-			public String toSQLString(DBDatabase db) {
-				return db.getDefinition().doMonthDifferenceTransform(first.toSQLString(db), second.toSQLString(db));
+			public String toSQLString(DBDefinition db) {
+				return db.doMonthDifferenceTransform(first.toSQLString(db), second.toSQLString(db));
 			}
 		});
 	}
@@ -2173,8 +2173,8 @@ public class DateExpression implements DateResult, RangeComparable<DateResult>, 
 			}
 
 			@Override
-			public String toSQLString(DBDatabase db) {
-				return db.getDefinition().doYearDifferenceTransform(first.toSQLString(db), second.toSQLString(db));
+			public String toSQLString(DBDefinition db) {
+				return db.doYearDifferenceTransform(first.toSQLString(db), second.toSQLString(db));
 			}
 		});
 	}
@@ -2217,8 +2217,8 @@ public class DateExpression implements DateResult, RangeComparable<DateResult>, 
 			}
 
 			@Override
-			public String toSQLString(DBDatabase db) {
-				return db.getDefinition().doHourDifferenceTransform(first.toSQLString(db), second.toSQLString(db));
+			public String toSQLString(DBDefinition db) {
+				return db.doHourDifferenceTransform(first.toSQLString(db), second.toSQLString(db));
 			}
 		});
 	}
@@ -2261,8 +2261,8 @@ public class DateExpression implements DateResult, RangeComparable<DateResult>, 
 			}
 
 			@Override
-			public String toSQLString(DBDatabase db) {
-				return db.getDefinition().doMinuteDifferenceTransform(first.toSQLString(db), second.toSQLString(db));
+			public String toSQLString(DBDefinition db) {
+				return db.doMinuteDifferenceTransform(first.toSQLString(db), second.toSQLString(db));
 			}
 		});
 	}
@@ -2305,8 +2305,8 @@ public class DateExpression implements DateResult, RangeComparable<DateResult>, 
 			}
 
 			@Override
-			public String toSQLString(DBDatabase db) {
-				return db.getDefinition().doSecondDifferenceTransform(first.toSQLString(db), second.toSQLString(db));
+			public String toSQLString(DBDefinition db) {
+				return db.doSecondDifferenceTransform(first.toSQLString(db), second.toSQLString(db));
 			}
 		});
 	}
@@ -2320,8 +2320,8 @@ public class DateExpression implements DateResult, RangeComparable<DateResult>, 
 //				new DBBinaryDateFunctionWithNumberResult(this, dateExpression) {
 //
 //					@Override
-//					public String toSQLString(DBDatabase db) {
-//						return db.getDefinition().doMillisecondDifferenceTransform(first.toSQLString(db), second.toSQLString(db));
+//					public String toSQLString(DBDefinition db) {
+//						return db.doMillisecondDifferenceTransform(first.toSQLString(db), second.toSQLString(db));
 //					}
 //				});
 //	}
@@ -2349,9 +2349,9 @@ public class DateExpression implements DateResult, RangeComparable<DateResult>, 
 		return new DateExpression(
 				new DateExpressionWithDateResult(this) {
 			@Override
-			public String toSQLString(DBDatabase db) {
+			public String toSQLString(DBDefinition db) {
 				try {
-					return db.getDefinition().doEndOfMonthTransform(this.getFirst().toSQLString(db));
+					return db.doEndOfMonthTransform(this.getFirst().toSQLString(db));
 				} catch (UnsupportedOperationException exp) {
 					return getFirst().addDays(getFirst().day().minus(1).bracket().times(-1)).addMonths(1).addDays(-1).toSQLString(db);
 				}
@@ -2376,8 +2376,8 @@ public class DateExpression implements DateResult, RangeComparable<DateResult>, 
 		return new NumberExpression(
 				new DateExpressionWithNumberResult(this) {
 			@Override
-			public String toSQLString(DBDatabase db) {
-				return db.getDefinition().doDayOfWeekTransform(this.only.toSQLString(db));
+			public String toSQLString(DBDefinition db) {
+				return db.doDayOfWeekTransform(this.only.toSQLString(db));
 			}
 		});
 	}
@@ -2504,17 +2504,17 @@ public class DateExpression implements DateResult, RangeComparable<DateResult>, 
 				= new DateExpression(new DateArrayFunctionWithDateResult(possibleValues) {
 
 					@Override
-					public String toSQLString(DBDatabase db) {
+					public String toSQLString(DBDefinition db) {
 						List<String> strs = new ArrayList<String>();
 						for (DateResult num : this.values) {
 							strs.add(num.toSQLString(db));
 						}
-						return db.getDefinition().doLeastOfTransformation(strs);
+						return db.doLeastOfTransformation(strs);
 					}
 
 					@Override
-					protected String getFunctionName(DBDatabase db) {
-						return db.getDefinition().getLeastOfFunctionName();
+					protected String getFunctionName(DBDefinition db) {
+						return db.getLeastOfFunctionName();
 					}
 
 					@Override
@@ -2582,17 +2582,17 @@ public class DateExpression implements DateResult, RangeComparable<DateResult>, 
 				= new DateExpression(new DateArrayFunctionWithDateResult(possibleValues) {
 
 					@Override
-					public String toSQLString(DBDatabase db) {
+					public String toSQLString(DBDefinition db) {
 						List<String> strs = new ArrayList<String>();
 						for (DateResult num : this.values) {
 							strs.add(num.toSQLString(db));
 						}
-						return db.getDefinition().doGreatestOfTransformation(strs);
+						return db.doGreatestOfTransformation(strs);
 					}
 
 					@Override
-					protected String getFunctionName(DBDatabase db) {
-						return db.getDefinition().getGreatestOfFunctionName();
+					protected String getFunctionName(DBDefinition db) {
+						return db.getGreatestOfFunctionName();
 					}
 				});
 		return leastExpr;
@@ -2608,7 +2608,7 @@ public class DateExpression implements DateResult, RangeComparable<DateResult>, 
 		FunctionWithDateResult() {
 		}
 
-		protected String getFunctionName(DBDatabase db) {
+		protected String getFunctionName(DBDefinition db) {
 			return "";
 		}
 
@@ -2617,16 +2617,16 @@ public class DateExpression implements DateResult, RangeComparable<DateResult>, 
 			return new DBDate();
 		}
 
-		protected String beforeValue(DBDatabase db) {
+		protected String beforeValue(DBDefinition db) {
 			return " " + getFunctionName(db) + "";
 		}
 
-		protected String afterValue(DBDatabase db) {
+		protected String afterValue(DBDefinition db) {
 			return " ";
 		}
 
 		@Override
-		public String toSQLString(DBDatabase db) {
+		public String toSQLString(DBDefinition db) {
 			return this.beforeValue(db) + this.afterValue(db);
 		}
 
@@ -2682,7 +2682,7 @@ public class DateExpression implements DateResult, RangeComparable<DateResult>, 
 		}
 
 		@Override
-		public abstract String toSQLString(DBDatabase db);
+		public abstract String toSQLString(DBDefinition db);
 
 		@Override
 		public DateExpression.DateExpressionWithNumberResult copy() {
@@ -2745,7 +2745,7 @@ public class DateExpression implements DateResult, RangeComparable<DateResult>, 
 		}
 
 		@Override
-		public abstract String toSQLString(DBDatabase db);
+		public abstract String toSQLString(DBDefinition db);
 
 		@Override
 		public DateExpressionWithDateResult copy() {
@@ -2820,7 +2820,7 @@ public class DateExpression implements DateResult, RangeComparable<DateResult>, 
 		}
 
 		@Override
-		public String toSQLString(DBDatabase db) {
+		public String toSQLString(DBDefinition db) {
 			return first.toSQLString(db) + this.getEquationOperator(db) + second.toSQLString(db);
 		}
 
@@ -2851,7 +2851,7 @@ public class DateExpression implements DateResult, RangeComparable<DateResult>, 
 			return hashSet;
 		}
 
-		protected abstract String getEquationOperator(DBDatabase db);
+		protected abstract String getEquationOperator(DBDefinition db);
 
 		@Override
 		public boolean isAggregator() {
@@ -2951,7 +2951,7 @@ public class DateExpression implements DateResult, RangeComparable<DateResult>, 
 		}
 
 		@Override
-		public String toSQLString(DBDatabase db) {
+		public String toSQLString(DBDefinition db) {
 			return this.doExpressionTransformation(db);
 		}
 
@@ -2982,7 +2982,7 @@ public class DateExpression implements DateResult, RangeComparable<DateResult>, 
 			return hashSet;
 		}
 
-		protected abstract String doExpressionTransformation(DBDatabase db);
+		protected abstract String doExpressionTransformation(DBDefinition db);
 
 		@Override
 		public boolean isAggregator() {
@@ -3037,20 +3037,20 @@ public class DateExpression implements DateResult, RangeComparable<DateResult>, 
 			}
 		}
 
-		protected String getFunctionName(DBDatabase db) {
+		protected String getFunctionName(DBDefinition db) {
 			return "";
 		}
 
-		protected String beforeValue(DBDatabase db) {
+		protected String beforeValue(DBDefinition db) {
 			return "( ";
 		}
 
-		protected String afterValue(DBDatabase db) {
+		protected String afterValue(DBDefinition db) {
 			return ") ";
 		}
 
 		@Override
-		public String toSQLString(DBDatabase db) {
+		public String toSQLString(DBDefinition db) {
 			StringBuilder builder = new StringBuilder();
 			builder
 					.append(this.getFunctionName(db))
@@ -3155,20 +3155,20 @@ public class DateExpression implements DateResult, RangeComparable<DateResult>, 
 			return new DBBoolean();
 		}
 
-		protected String getFunctionName(DBDatabase db) {
+		protected String getFunctionName(DBDefinition db) {
 			return "";
 		}
 
-		protected String beforeValue(DBDatabase db) {
+		protected String beforeValue(DBDefinition db) {
 			return "( ";
 		}
 
-		protected String afterValue(DBDatabase db) {
+		protected String afterValue(DBDefinition db) {
 			return ") ";
 		}
 
 		@Override
-		public String toSQLString(DBDatabase db) {
+		public String toSQLString(DBDefinition db) {
 			StringBuilder builder = new StringBuilder();
 			builder
 					.append(getColumn().toSQLString(db))
@@ -3269,7 +3269,7 @@ public class DateExpression implements DateResult, RangeComparable<DateResult>, 
 //			return new DBNumber();
 //		}
 		@Override
-		public String toSQLString(DBDatabase db) {
+		public String toSQLString(DBDefinition db) {
 			return this.beforeValue(db) + getFirst().toSQLString(db) + this.getSeparator(db) + (getSecond() == null ? "" : getSecond().toSQLString(db)) + this.afterValue(db);
 		}
 
@@ -3300,19 +3300,19 @@ public class DateExpression implements DateResult, RangeComparable<DateResult>, 
 			return hashSet;
 		}
 
-		protected String getFunctionName(DBDatabase db) {
+		protected String getFunctionName(DBDefinition db) {
 			return "";
 		}
 
-		protected String beforeValue(DBDatabase db) {
+		protected String beforeValue(DBDefinition db) {
 			return " " + getFunctionName(db) + "( ";
 		}
 
-		protected String getSeparator(DBDatabase db) {
+		protected String getSeparator(DBDefinition db) {
 			return ", ";
 		}
 
-		protected String afterValue(DBDatabase db) {
+		protected String afterValue(DBDefinition db) {
 			return ") ";
 		}
 
@@ -3372,20 +3372,20 @@ public class DateExpression implements DateResult, RangeComparable<DateResult>, 
 			return new DBNumber();
 		}
 
-		protected String getFunctionName(DBDatabase db) {
+		protected String getFunctionName(DBDefinition db) {
 			return "";
 		}
 
-		protected String beforeValue(DBDatabase db) {
+		protected String beforeValue(DBDefinition db) {
 			return "" + getFunctionName(db) + "( ";
 		}
 
-		protected String afterValue(DBDatabase db) {
+		protected String afterValue(DBDefinition db) {
 			return ") ";
 		}
 
 		@Override
-		public String toSQLString(DBDatabase db) {
+		public String toSQLString(DBDefinition db) {
 			return this.beforeValue(db) + (only == null ? "" : only.toSQLString(db)) + this.afterValue(db);
 		}
 
@@ -3440,20 +3440,20 @@ public class DateExpression implements DateResult, RangeComparable<DateResult>, 
 			this.only = only;
 		}
 
-		protected String getFunctionName(DBDatabase db) {
+		protected String getFunctionName(DBDefinition db) {
 			return "";
 		}
 
-		protected String beforeValue(DBDatabase db) {
+		protected String beforeValue(DBDefinition db) {
 			return "" + getFunctionName(db) + "( ";
 		}
 
-		protected String afterValue(DBDatabase db) {
+		protected String afterValue(DBDefinition db) {
 			return ") ";
 		}
 
 		@Override
-		public String toSQLString(DBDatabase db) {
+		public String toSQLString(DBDefinition db) {
 			return this.beforeValue(db) + (only == null ? "" : only.toSQLString(db)) + this.afterValue(db);
 		}
 
@@ -3507,7 +3507,7 @@ public class DateExpression implements DateResult, RangeComparable<DateResult>, 
 		}
 
 		@Override
-		abstract public String toSQLString(DBDatabase db); //{
+		abstract public String toSQLString(DBDefinition db); //{
 //			return this.beforeValue(db) + (only == null ? "" : only.toSQLString(db)) + this.afterValue(db);
 //		}
 
@@ -3568,7 +3568,7 @@ public class DateExpression implements DateResult, RangeComparable<DateResult>, 
 		}
 
 		@Override
-		abstract public String toSQLString(DBDatabase db);
+		abstract public String toSQLString(DBDefinition db);
 
 		@Override
 		public DateDateFunctionWithNumberResult copy() {

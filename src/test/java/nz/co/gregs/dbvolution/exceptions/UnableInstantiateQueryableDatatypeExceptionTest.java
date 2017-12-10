@@ -18,6 +18,7 @@ package nz.co.gregs.dbvolution.exceptions;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import nz.co.gregs.dbvolution.databases.DBDatabase;
+import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 import org.junit.Test;
 
@@ -50,12 +51,12 @@ public class UnableInstantiateQueryableDatatypeExceptionTest {
 		}
 
 		@Override
-		protected String formatValueForSQLStatement(DBDatabase db) {
+		protected String formatValueForSQLStatement(DBDefinition db) {
 			throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 		}
 
 		@Override
-		protected Object getFromResultSet(DBDatabase database, ResultSet resultSet, String fullColumnName) throws SQLException {
+		protected Object getFromResultSet(DBDefinition database, ResultSet resultSet, String fullColumnName) throws SQLException {
 			throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 		}
 

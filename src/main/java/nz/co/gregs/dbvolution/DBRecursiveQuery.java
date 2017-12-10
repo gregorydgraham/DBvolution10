@@ -198,7 +198,7 @@ public class DBRecursiveQuery<T extends DBRow> {
 	 */
 	private List<DBQueryRow> getRowsFromRecursiveQuery(RecursiveSQLDirection direction) throws SQLException {
 		List<DBQueryRow> returnList = new ArrayList<>();
-		if (originalQuery.getDatabase().getDefinition().supportsRecursiveQueriesNatively()) {
+		if (originalQuery.getDatabaseDefinition().supportsRecursiveQueriesNatively()) {
 			returnList = performNativeRecursiveQuery(direction, returnList);
 		} else {
 			returnList = performRecursiveQueryEmulation(direction);
@@ -244,7 +244,7 @@ public class DBRecursiveQuery<T extends DBRow> {
 			List<PropertyWrapper> propertyWrappers = adapteeRowDefinition.getColumnPropertyWrappers();
 			String separator = "";
 			for (PropertyWrapper propertyWrapper : propertyWrappers) {
-				for (PropertyWrapperDefinition.ColumnAspects entry : propertyWrapper.getColumnAspects(database)) {
+				for (PropertyWrapperDefinition.ColumnAspects entry : propertyWrapper.getColumnAspects(database.getDefinition())) {
 					String alias = entry.columnAlias;
 					final String columnName = defn.formatColumnName(propertyWrapper.columnName());
 					recursiveColumnNames += separator + columnName;
@@ -617,7 +617,7 @@ public class DBRecursiveQuery<T extends DBRow> {
 			final T tab = row.get(returnType);
 			List<QueryableDatatype<?>> qdts = tab.getPrimaryKeys();
 			for (QueryableDatatype<?> qdt : qdts) {
-				final PropertyWrapperDefinition propDefn = tab.getPropertyWrapperOf(qdt).getDefinition();
+				final PropertyWrapperDefinition propDefn = tab.getPropertyWrapperOf(qdt).getPropertyWrapperDefinition();
 				if (!pkValues.containsKey(propDefn.toString())) {
 					pkValues.put(propDefn.toString(), new ArrayList<String>());
 					pkDefs.put(propDefn.toString(), propDefn);

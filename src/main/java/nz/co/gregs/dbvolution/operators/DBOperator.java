@@ -17,6 +17,7 @@ package nz.co.gregs.dbvolution.operators;
 
 import java.io.Serializable;
 import nz.co.gregs.dbvolution.databases.DBDatabase;
+import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.expressions.DBExpression;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatypeSyncer.DBSafeInternalQDTAdaptor;
 import nz.co.gregs.dbvolution.expressions.BooleanExpression;
@@ -159,7 +160,7 @@ abstract public class DBOperator implements Serializable {
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a boolean expression
 	 */
-	abstract public BooleanExpression generateWhereExpression(DBDatabase db, DBExpression column);
+	abstract public BooleanExpression generateWhereExpression(DBDefinition db, DBExpression column);
 
 	/**
 	 * <p style="color: #F90;">Support DBvolution at

@@ -21,6 +21,7 @@ import java.util.HashSet;
 import java.util.Set;
 import nz.co.gregs.dbvolution.databases.DBDatabase;
 import nz.co.gregs.dbvolution.DBRow;
+import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 import nz.co.gregs.dbvolution.exceptions.DBRuntimeException;
 import nz.co.gregs.dbvolution.exceptions.IncorrectRowProviderInstanceSuppliedException;
@@ -75,7 +76,7 @@ public class AbstractColumn implements DBExpression {
 	}
 
 	@Override
-	public String toSQLString(DBDatabase db) {
+	public String toSQLString(DBDefinition db) {
 		RowDefinition rowDefn = this.getRowDefinition();
 		if ((field instanceof QueryableDatatype) && ((QueryableDatatype) field).hasColumnExpression()) {
 			final QueryableDatatype<?> qdtField = (QueryableDatatype) field;
@@ -88,12 +89,12 @@ public class AbstractColumn implements DBExpression {
 		} else {
 			String formattedColumnName = "";
 			if (useTableAlias) {
-				formattedColumnName = db.getDefinition().formatTableAliasAndColumnName(rowDefn, propertyWrapper.columnName());
+				formattedColumnName = db.formatTableAliasAndColumnName(rowDefn, propertyWrapper.columnName());
 			} else if (rowDefn instanceof DBRow) {
 				DBRow dbRow = (DBRow) rowDefn;
-				formattedColumnName = db.getDefinition().formatTableAndColumnName(dbRow, propertyWrapper.columnName());
+				formattedColumnName = db.formatTableAndColumnName(dbRow, propertyWrapper.columnName());
 			}
-			return propertyWrapper.getDefinition().getQueryableDatatype(this.dbrow).formatColumnForSQLStatement(db, formattedColumnName);
+			return propertyWrapper.getPropertyWrapperDefinition().getQueryableDatatype(this.dbrow).formatColumnForSQLStatement(db, formattedColumnName);
 		}
 	}
 
@@ -212,7 +213,7 @@ public class AbstractColumn implements DBExpression {
 	 * @return the QDT version of the field on the DBRow
 	 */
 	public QueryableDatatype<?> getAppropriateQDTFromRow(RowDefinition row) {
-		return this.getPropertyWrapper().getDefinition().getQueryableDatatype(row);
+		return this.getPropertyWrapper().getPropertyWrapperDefinition().getQueryableDatatype(row);
 	}
 
 	/**
@@ -230,7 +231,7 @@ public class AbstractColumn implements DBExpression {
 	 * @return the actual field on the DBRow object referenced by this column.
 	 */
 	public Object getAppropriateFieldFromRow(RowDefinition row) {
-		return this.getPropertyWrapper().getDefinition().rawJavaValue(row);
+		return this.getPropertyWrapper().getPropertyWrapperDefinition().rawJavaValue(row);
 	}
 
 	/**

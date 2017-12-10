@@ -21,6 +21,7 @@ import java.util.Set;
 import nz.co.gregs.dbvolution.databases.DBDatabase;
 import nz.co.gregs.dbvolution.DBQuery;
 import nz.co.gregs.dbvolution.DBRow;
+import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.datatypes.DBLargeBinary;
 
 /**
@@ -58,7 +59,7 @@ public class LargeObjectExpression implements LargeObjectResult, ExpressionColum
 	}
 
 	@Override
-	public String toSQLString(DBDatabase db) {
+	public String toSQLString(DBDefinition db) {
 		return blobResult.toSQLString(db);
 	}
 

@@ -9,6 +9,7 @@ import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.annotations.DBAdaptType;
 import nz.co.gregs.dbvolution.annotations.DBColumn;
 import nz.co.gregs.dbvolution.annotations.DBTableName;
+import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.datatypes.DBDate;
 import nz.co.gregs.dbvolution.datatypes.DBInteger;
 import nz.co.gregs.dbvolution.datatypes.DBString;
@@ -249,7 +250,7 @@ public class TypeAdaptorUsabilityTest {
 			}
 
 			@Override
-			protected String formatValueForSQLStatement(DBDatabase db) {
+			protected String formatValueForSQLStatement(DBDefinition db) {
 				return "unknown";
 			}
 
@@ -259,7 +260,7 @@ public class TypeAdaptorUsabilityTest {
 			}
 
 			@Override
-			protected Object getFromResultSet(DBDatabase database, ResultSet resultSet, String fullColumnName) throws SQLException {
+			protected Object getFromResultSet(DBDefinition database, ResultSet resultSet, String fullColumnName) throws SQLException {
 				return resultSet.getString(fullColumnName);
 			}
 
@@ -317,7 +318,7 @@ public class TypeAdaptorUsabilityTest {
 			}
 
 			@Override
-			protected String formatValueForSQLStatement(DBDatabase db) {
+			protected String formatValueForSQLStatement(DBDefinition db) {
 				return "unknown";
 			}
 
@@ -327,7 +328,7 @@ public class TypeAdaptorUsabilityTest {
 			}
 
 			@Override
-			protected Object getFromResultSet(DBDatabase database, ResultSet resultSet, String fullColumnName) throws SQLException {
+			protected Object getFromResultSet(DBDefinition database, ResultSet resultSet, String fullColumnName) throws SQLException {
 				return resultSet.getString(fullColumnName);
 			}
 

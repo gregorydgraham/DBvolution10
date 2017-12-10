@@ -100,7 +100,7 @@ public class DBUpdateSimpleTypes extends DBUpdate {
 							.append(defn.formatColumnName(columnName))
 							.append(defn.getEqualsComparator())
 							.append(qdt
-									.toSQLString(db));
+									.toSQLString(db.getDefinition()));
 					separator = defn.getSubsequentSetSubClauseSeparator();
 				}
 			}
@@ -126,12 +126,6 @@ public class DBUpdateSimpleTypes extends DBUpdate {
 	 */
 	protected String getWhereClause(DBDatabase db, DBRow row) {
 		return getPrimaryKeySQL(db, row);
-//		DBDefinition defn = db.getDefinition();
-//		QueryableDatatype<?> primaryKey = row.getPrimaryKeys();
-//		String pkOriginalValue = (primaryKey.hasChanged() ? primaryKey.getPreviousSQLValue(db) : primaryKey.toSQLString(db));
-//		return defn.formatColumnName(row.getPrimaryKeyColumnNames())
-//				+ defn.getEqualsComparator()
-//				+ pkOriginalValue;
 	}
 
 	@Override

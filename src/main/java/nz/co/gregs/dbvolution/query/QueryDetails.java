@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Map;
 import nz.co.gregs.dbvolution.databases.DBDatabase;
 import nz.co.gregs.dbvolution.DBRow;
+import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 import nz.co.gregs.dbvolution.expressions.BooleanExpression;
 import nz.co.gregs.dbvolution.expressions.DBExpression;
@@ -48,7 +49,7 @@ public class QueryDetails {
 	private final Map<Object, DBExpression> dbReportGroupByColumns = new LinkedHashMap<>();
 	private final Map<Class<?>, Map<String, DBRow>> existingInstances = new HashMap<>();
 	private boolean groupByRequiredByAggregator = false;
-	private DBDatabase database = null;
+	private DBDefinition databaseDefinition = null;
 	private String selectClause = null;
 	private final ArrayList<BooleanExpression> havingColumns = new ArrayList<>();
 
@@ -123,7 +124,7 @@ public class QueryDetails {
 	public List<BooleanExpression> getAllConditions() {
 		List<BooleanExpression> allConditions = new ArrayList<>();
 		for (DBRow entry : allQueryTables) {
-			allConditions.addAll(entry.getWhereClauseExpressions(database, true));
+			allConditions.addAll(entry.getWhereClauseExpressions(databaseDefinition, true));
 		}
 		return allConditions;
 	}
@@ -231,8 +232,8 @@ public class QueryDetails {
 		Collections.addAll(this.havingColumns, havingColumns);
 	}
 
-	public void setDatabase(DBDatabase database) {
-		this.database = database;
+	public void setDatabase(DBDefinition database) {
+		this.databaseDefinition = database;
 	}
 
 }

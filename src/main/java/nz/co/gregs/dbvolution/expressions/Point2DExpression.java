@@ -22,6 +22,7 @@ import java.util.HashSet;
 import java.util.Set;
 import nz.co.gregs.dbvolution.databases.DBDatabase;
 import nz.co.gregs.dbvolution.DBRow;
+import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.datatypes.spatial2D.DBPoint2D;
 import nz.co.gregs.dbvolution.results.PointResult;
 
@@ -149,8 +150,8 @@ public class Point2DExpression implements PointResult, Point2DResult, EqualCompa
 		return new Point2DExpression(new NumberNumberFunctionWithPoint2DResult(xValue, yValue) {
 
 			@Override
-			protected String doExpressionTransform(DBDatabase db) {
-				return db.getDefinition().transformCoordinatesIntoDatabasePoint2DFormat(getFirst().toSQLString(db), getSecond().toSQLString(db));
+			protected String doExpressionTransform(DBDefinition db) {
+				return db.transformCoordinatesIntoDatabasePoint2DFormat(getFirst().toSQLString(db), getSecond().toSQLString(db));
 			}
 
 		});
@@ -162,9 +163,9 @@ public class Point2DExpression implements PointResult, Point2DResult, EqualCompa
 	}
 
 	@Override
-	public String toSQLString(DBDatabase db) {
+	public String toSQLString(DBDefinition db) {
 		if (innerPoint == null) {
-			return db.getDefinition().getNull();
+			return db.getNull();
 		} else {
 			return innerPoint.toSQLString(db);
 		}
@@ -226,9 +227,9 @@ public class Point2DExpression implements PointResult, Point2DResult, EqualCompa
 		return new StringExpression(new PointFunctionWithStringResult(this) {
 
 			@Override
-			protected String doExpressionTransform(DBDatabase db) {
+			protected String doExpressionTransform(DBDefinition db) {
 				try {
-					return db.getDefinition().doPoint2DAsTextTransform(getFirst().toSQLString(db));
+					return db.doPoint2DAsTextTransform(getFirst().toSQLString(db));
 				} catch (UnsupportedOperationException unsupported) {
 					return getFirst().toSQLString(db);
 				}
@@ -254,9 +255,9 @@ public class Point2DExpression implements PointResult, Point2DResult, EqualCompa
 		return new BooleanExpression(new PointPointFunctionWithBooleanResult(this, new Point2DExpression(rightHandSide)) {
 
 			@Override
-			public String doExpressionTransform(DBDatabase db) {
+			public String doExpressionTransform(DBDefinition db) {
 				try {
-					return db.getDefinition().doPoint2DEqualsTransform(getFirst().toSQLString(db), getSecond().toSQLString(db));
+					return db.doPoint2DEqualsTransform(getFirst().toSQLString(db), getSecond().toSQLString(db));
 				} catch (UnsupportedOperationException unsupported) {
 					return BooleanExpression.allOf(
 							getFirst().stringResult().substringBetween("(", " ").numberResult()
@@ -288,9 +289,9 @@ public class Point2DExpression implements PointResult, Point2DResult, EqualCompa
 //		return new BooleanExpression(new PointPointFunctionWithBooleanResult(this, new Point2DExpression(rightHandSide)) {
 //
 //			@Override
-//			public String doExpressionTransform(DBDatabase db) {
+//			public String doExpressionTransform(DBDefinition db) {
 //				try {
-//					return db.getDefinition().doPoint2DEqualsTransform(getFirst().toSQLString(db), getSecond().toSQLString(db));
+//					return db.doPoint2DEqualsTransform(getFirst().toSQLString(db), getSecond().toSQLString(db));
 //				} catch (UnsupportedOperationException unsupported) {
 //					return BooleanExpression.notAllOf(
 //							getFirst().stringResult().substringBetween("(", " ").numberResult()
@@ -308,9 +309,9 @@ public class Point2DExpression implements PointResult, Point2DResult, EqualCompa
 		return new NumberExpression(new PointFunctionWithNumberResult(this) {
 
 			@Override
-			public String doExpressionTransform(DBDatabase db) {
+			public String doExpressionTransform(DBDefinition db) {
 				try {
-					return db.getDefinition().doPoint2DGetXTransform(getFirst().toSQLString(db));
+					return db.doPoint2DGetXTransform(getFirst().toSQLString(db));
 				} catch (UnsupportedOperationException unsupported) {
 					return getFirst().stringResult().substringBetween("(", " ").numberResult().toSQLString(db);
 				}
@@ -323,9 +324,9 @@ public class Point2DExpression implements PointResult, Point2DResult, EqualCompa
 		return new NumberExpression(new PointFunctionWithNumberResult(this) {
 
 			@Override
-			public String doExpressionTransform(DBDatabase db) {
+			public String doExpressionTransform(DBDefinition db) {
 				try {
-					return db.getDefinition().doPoint2DGetYTransform(getFirst().toSQLString(db));
+					return db.doPoint2DGetYTransform(getFirst().toSQLString(db));
 				} catch (UnsupportedOperationException unsupported) {
 					return getFirst().stringResult().substringAfter("(").substringBetween(" ", ")").numberResult().toSQLString(db);
 				}
@@ -338,9 +339,9 @@ public class Point2DExpression implements PointResult, Point2DResult, EqualCompa
 		return new NumberExpression(new PointFunctionWithNumberResult(this) {
 
 			@Override
-			public String doExpressionTransform(DBDatabase db) {
+			public String doExpressionTransform(DBDefinition db) {
 				try {
-					return db.getDefinition().doPoint2DMeasurableDimensionsTransform(getFirst().toSQLString(db));
+					return db.doPoint2DMeasurableDimensionsTransform(getFirst().toSQLString(db));
 				} catch (UnsupportedOperationException unsupported) {
 					return NumberExpression.value(0).toSQLString(db);
 				}
@@ -353,9 +354,9 @@ public class Point2DExpression implements PointResult, Point2DResult, EqualCompa
 		return new NumberExpression(new PointFunctionWithNumberResult(this) {
 
 			@Override
-			public String doExpressionTransform(DBDatabase db) {
+			public String doExpressionTransform(DBDefinition db) {
 				try {
-					return db.getDefinition().doPoint2DSpatialDimensionsTransform(getFirst().toSQLString(db));
+					return db.doPoint2DSpatialDimensionsTransform(getFirst().toSQLString(db));
 				} catch (UnsupportedOperationException unsupported) {
 					return NumberExpression.value(2).toSQLString(db);
 				}
@@ -368,9 +369,9 @@ public class Point2DExpression implements PointResult, Point2DResult, EqualCompa
 		return new BooleanExpression(new PointFunctionWithBooleanResult(this) {
 
 			@Override
-			public String doExpressionTransform(DBDatabase db) {
+			public String doExpressionTransform(DBDefinition db) {
 				try {
-					return db.getDefinition().doPoint2DHasMagnitudeTransform(getFirst().toSQLString(db));
+					return db.doPoint2DHasMagnitudeTransform(getFirst().toSQLString(db));
 				} catch (UnsupportedOperationException unsupported) {
 					return BooleanExpression.falseExpression().toSQLString(db);
 				}
@@ -389,9 +390,9 @@ public class Point2DExpression implements PointResult, Point2DResult, EqualCompa
 		return new NumberExpression(new PointFunctionWithNumberResult(this) {
 
 			@Override
-			public String doExpressionTransform(DBDatabase db) {
+			public String doExpressionTransform(DBDefinition db) {
 				try {
-					return db.getDefinition().doPoint2DGetMagnitudeTransform(getFirst().toSQLString(db));
+					return db.doPoint2DGetMagnitudeTransform(getFirst().toSQLString(db));
 				} catch (UnsupportedOperationException unsupported) {
 					return nullExpression().toSQLString(db);
 				}
@@ -420,9 +421,9 @@ public class Point2DExpression implements PointResult, Point2DResult, EqualCompa
 		return new NumberExpression(new PointPointFunctionWithNumberResult(this, otherPoint) {
 
 			@Override
-			public String doExpressionTransform(DBDatabase db) {
+			public String doExpressionTransform(DBDefinition db) {
 				try {
-					return db.getDefinition().doPoint2DDistanceBetweenTransform(getFirst().toSQLString(db), getSecond().toSQLString(db));
+					return db.doPoint2DDistanceBetweenTransform(getFirst().toSQLString(db), getSecond().toSQLString(db));
 				} catch (UnsupportedOperationException unsupported) {
 					return getSecond().getX().minus(getFirst().getX()).bracket().squared().plus(getSecond().getY().minus(getFirst().getY()).bracket().squared()).squareRoot().toSQLString(db);
 				}
@@ -435,9 +436,9 @@ public class Point2DExpression implements PointResult, Point2DResult, EqualCompa
 		return new Polygon2DExpression(new PointFunctionWithGeometry2DResult(this) {
 
 			@Override
-			public String doExpressionTransform(DBDatabase db) {
+			public String doExpressionTransform(DBDefinition db) {
 				try {
-					return db.getDefinition().doPoint2DGetBoundingBoxTransform(getFirst().toSQLString(db));
+					return db.doPoint2DGetBoundingBoxTransform(getFirst().toSQLString(db));
 				} catch (UnsupportedOperationException unsupported) {
 					final Point2DExpression first = getFirst();
 					final NumberExpression maxX = first.maxX();
@@ -504,7 +505,7 @@ public class Point2DExpression implements PointResult, Point2DResult, EqualCompa
 		}
 
 		@Override
-		public final String toSQLString(DBDatabase db) {
+		public final String toSQLString(DBDefinition db) {
 			if (this.getIncludesNull()) {
 				return BooleanExpression.isNull(first).toSQLString(db);
 			} else {
@@ -527,7 +528,7 @@ public class Point2DExpression implements PointResult, Point2DResult, EqualCompa
 			return newInstance;
 		}
 
-		protected abstract String doExpressionTransform(DBDatabase db);
+		protected abstract String doExpressionTransform(DBDefinition db);
 
 		@Override
 		public Set<DBRow> getTablesInvolved() {
@@ -566,7 +567,7 @@ public class Point2DExpression implements PointResult, Point2DResult, EqualCompa
 		}
 
 		@Override
-		public final String toSQLString(DBDatabase db) {
+		public final String toSQLString(DBDefinition db) {
 			if (this.getIncludesNull()) {
 				return BooleanExpression.isNull(first).toSQLString(db);
 			} else {
@@ -588,7 +589,7 @@ public class Point2DExpression implements PointResult, Point2DResult, EqualCompa
 			return newInstance;
 		}
 
-		protected abstract String doExpressionTransform(DBDatabase db);
+		protected abstract String doExpressionTransform(DBDefinition db);
 
 		@Override
 		public Set<DBRow> getTablesInvolved() {
@@ -633,7 +634,7 @@ public class Point2DExpression implements PointResult, Point2DResult, EqualCompa
 		}
 
 		@Override
-		public final String toSQLString(DBDatabase db) {
+		public final String toSQLString(DBDefinition db) {
 			if (this.getIncludesNull()) {
 				return BooleanExpression.isNull(first).toSQLString(db);
 			} else {
@@ -656,7 +657,7 @@ public class Point2DExpression implements PointResult, Point2DResult, EqualCompa
 			return newInstance;
 		}
 
-		protected abstract String doExpressionTransform(DBDatabase db);
+		protected abstract String doExpressionTransform(DBDefinition db);
 
 		@Override
 		public Set<DBRow> getTablesInvolved() {
@@ -704,7 +705,7 @@ public class Point2DExpression implements PointResult, Point2DResult, EqualCompa
 		}
 
 		@Override
-		public final String toSQLString(DBDatabase db) {
+		public final String toSQLString(DBDefinition db) {
 			if (this.getIncludesNull()) {
 				return BooleanExpression.isNull(first).toSQLString(db);
 			} else {
@@ -727,7 +728,7 @@ public class Point2DExpression implements PointResult, Point2DResult, EqualCompa
 			return newInstance;
 		}
 
-		protected abstract String doExpressionTransform(DBDatabase db);
+		protected abstract String doExpressionTransform(DBDefinition db);
 
 		@Override
 		public Set<DBRow> getTablesInvolved() {
@@ -774,7 +775,7 @@ public class Point2DExpression implements PointResult, Point2DResult, EqualCompa
 //			return second;
 //		}
 		@Override
-		public final String toSQLString(DBDatabase db) {
+		public final String toSQLString(DBDefinition db) {
 			if (this.getIncludesNull()) {
 				return BooleanExpression.isNull(first).toSQLString(db);
 			} else {
@@ -797,7 +798,7 @@ public class Point2DExpression implements PointResult, Point2DResult, EqualCompa
 			return newInstance;
 		}
 
-		protected abstract String doExpressionTransform(DBDatabase db);
+		protected abstract String doExpressionTransform(DBDefinition db);
 
 		@Override
 		public Set<DBRow> getTablesInvolved() {
@@ -844,7 +845,7 @@ public class Point2DExpression implements PointResult, Point2DResult, EqualCompa
 //			return second;
 //		}
 		@Override
-		public final String toSQLString(DBDatabase db) {
+		public final String toSQLString(DBDefinition db) {
 			if (this.getIncludesNull()) {
 				return BooleanExpression.isNull(first).toSQLString(db);
 			} else {
@@ -867,7 +868,7 @@ public class Point2DExpression implements PointResult, Point2DResult, EqualCompa
 			return newInstance;
 		}
 
-		protected abstract String doExpressionTransform(DBDatabase db);
+		protected abstract String doExpressionTransform(DBDefinition db);
 
 		@Override
 		public Set<DBRow> getTablesInvolved() {
@@ -914,7 +915,7 @@ public class Point2DExpression implements PointResult, Point2DResult, EqualCompa
 //			return second;
 //		}
 		@Override
-		public final String toSQLString(DBDatabase db) {
+		public final String toSQLString(DBDefinition db) {
 			if (this.getIncludesNull()) {
 				return BooleanExpression.isNull(first).toSQLString(db);
 			} else {
@@ -937,7 +938,7 @@ public class Point2DExpression implements PointResult, Point2DResult, EqualCompa
 			return newInstance;
 		}
 
-		protected abstract String doExpressionTransform(DBDatabase db);
+		protected abstract String doExpressionTransform(DBDefinition db);
 
 		@Override
 		public Set<DBRow> getTablesInvolved() {

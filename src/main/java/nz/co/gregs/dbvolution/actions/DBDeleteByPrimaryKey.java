@@ -22,7 +22,6 @@ import nz.co.gregs.dbvolution.databases.DBDatabase;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.databases.DBStatement;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
-import nz.co.gregs.dbvolution.datatypes.InternalQueryableDatatypeProxy;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 
 /**
@@ -43,8 +42,8 @@ public class DBDeleteByPrimaryKey extends DBDelete {
 	private final List<DBRow> savedRows = new ArrayList<>();
 
 	/**
-	 * Creates a DBDeleteByPrimaryKey action for the supplied example DBRow on the
-	 * supplied database.
+	 * Creates a DBDeleteByPrimaryKey action for the supplied example DBRow on
+	 * the supplied database.
 	 *
 	 * @param <R> the table affected
 	 * @param row the row to be deleted
@@ -101,7 +100,9 @@ public class DBDeleteByPrimaryKey extends DBDelete {
 				+ defn.beginWhereClause());
 		List<QueryableDatatype<?>> primaryKeys = row.getPrimaryKeys();
 		for (QueryableDatatype<?> pk : primaryKeys) {
-			sql.append(defn.formatColumnName(row.getPropertyWrapperOf(pk).columnName())).append(defn.getEqualsComparator()).append(pk.toSQLString(db));
+			sql.append(defn.formatColumnName(row.getPropertyWrapperOf(pk).columnName()))
+					.append(defn.getEqualsComparator())
+					.append(pk.toSQLString(defn));
 		}
 		sql.append(defn.endDeleteLine());
 		strs.add(sql.toString());
@@ -123,8 +124,8 @@ public class DBDeleteByPrimaryKey extends DBDelete {
 	}
 
 	/**
-	 * Returns the list of actions required to delete rows with the primary key of
-	 * the supplied example on the database supplied.
+	 * Returns the list of actions required to delete rows with the primary key
+	 * of the supplied example on the database supplied.
 	 *
 	 * <p>
 	 * While it is unlikely that more than one action is required to delete, all

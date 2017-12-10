@@ -40,7 +40,7 @@ public class QueryGraphEdgeLabelTransformer extends ToStringLabeller<DBExpressio
 
 	@Override
 	public String transform(DBExpression v) {
-		return v.toSQLString(query.getDatabase()).replaceAll("[^ ]*\\.", "");
+		return v.toSQLString(query.getDatabaseDefinition()).replaceAll("[^ ]*\\.", "");
 	}
 
 }

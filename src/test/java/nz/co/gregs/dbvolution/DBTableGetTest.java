@@ -64,7 +64,7 @@ public class DBTableGetTest extends AbstractTest {
 		DBRow row = marqueRows.get(0);
 		String primaryKey;
 		if (row != null) {
-			primaryKey = row.getPrimaryKeys().get(0).toSQLString(database);
+			primaryKey = row.getPrimaryKeys().get(0).toSQLString(database.getDefinition());
 			singleMarque.getRowsByPrimaryKey(Long.parseLong(primaryKey));
 		}
 		Assert.assertTrue("Incorrect number of marques retreived", singleMarque.getAllRows().size() == 1);
@@ -73,7 +73,7 @@ public class DBTableGetTest extends AbstractTest {
 	@Test(expected = AccidentalBlankQueryException.class)
 	public void newDBRowWillCauseBlankQuery() throws SQLException {
 		Marque marque = new Marque();
-		Assert.assertThat(marque.willCreateBlankQuery(database), is(true));
+		Assert.assertThat(marque.willCreateBlankQuery(database.getDefinition()), is(true));
 		database.get(marque);
 	}
 
@@ -81,7 +81,7 @@ public class DBTableGetTest extends AbstractTest {
 	public void newAlteredDBRowWillCauseBlankQuery() {
 		Marque marque = new Marque();
 		marque.name.permittedValues("HOLDEN");
-		Assert.assertThat(marque.willCreateBlankQuery(database), is(false));
+		Assert.assertThat(marque.willCreateBlankQuery(database.getDefinition()), is(false));
 	}
 
 	@Test
@@ -136,7 +136,7 @@ public class DBTableGetTest extends AbstractTest {
 		List<Marque> rowsByExample = marquesTable.getRowsByExample(literalQuery);
 
 		Assert.assertEquals(1, rowsByExample.size());
-		Assert.assertEquals("" + 4893059, rowsByExample.get(0).getPrimaryKeys().get(0).toSQLString(database));
+		Assert.assertEquals("" + 4893059, rowsByExample.get(0).getPrimaryKeys().get(0).toSQLString(database.getDefinition()));
 	}
 
 	@Test
@@ -155,7 +155,7 @@ public class DBTableGetTest extends AbstractTest {
 		List<Marque> rowsByExample = marquesTable.getRowsByExample(likeQuery);
 
 		Assert.assertEquals(1, rowsByExample.size());
-		Assert.assertEquals("" + 1, rowsByExample.get(0).getPrimaryKeys().get(0).toSQLString(database));
+		Assert.assertEquals("" + 1, rowsByExample.get(0).getPrimaryKeys().get(0).toSQLString(database.getDefinition()));
 	}
 
 	@Test
@@ -165,7 +165,7 @@ public class DBTableGetTest extends AbstractTest {
 		List<Marque> rowsByExample = marquesTable.getRowsByExample(likeQuery);
 
 		Assert.assertEquals(1, rowsByExample.size());
-		Assert.assertEquals("" + 1, rowsByExample.get(0).getPrimaryKeys().get(0).toSQLString(database));
+		Assert.assertEquals("" + 1, rowsByExample.get(0).getPrimaryKeys().get(0).toSQLString(database.getDefinition()));
 	}
 
 	@Test
@@ -213,8 +213,8 @@ public class DBTableGetTest extends AbstractTest {
 		List<Marque> rowsByExample = marquesTable.getRowsByExample(literalQuery);
 
 		Assert.assertEquals(2, rowsByExample.size());
-		Assert.assertEquals("" + 4893059, rowsByExample.get(0).getPrimaryKeys().get(0).toSQLString(database));
-		Assert.assertEquals("" + 4893090, rowsByExample.get(1).getPrimaryKeys().get(0).toSQLString(database));
+		Assert.assertEquals("" + 4893059, rowsByExample.get(0).getPrimaryKeys().get(0).toSQLString(database.getDefinition()));
+		Assert.assertEquals("" + 4893090, rowsByExample.get(1).getPrimaryKeys().get(0).toSQLString(database.getDefinition()));
 	}
 
 	@Test

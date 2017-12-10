@@ -17,7 +17,6 @@ package nz.co.gregs.dbvolution.expressions;
 
 import java.io.IOException;
 import java.sql.SQLException;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import nz.co.gregs.dbvolution.DBQuery;
@@ -50,7 +49,7 @@ public class LargeObjectExpressionTest extends AbstractTest {
 		CompanyLogo companyLogo = new CompanyLogo();
 		LargeObjectExpression instance = new LargeObjectExpression(companyLogo.column(companyLogo.imageBytes));
 		LargeObjectExpression result = instance.copy();
-		assertEquals(instance.toSQLString(database), result.toSQLString(database));
+		assertEquals(instance.toSQLString(database.getDefinition()), result.toSQLString(database.getDefinition()));
 	}
 
 	@Test

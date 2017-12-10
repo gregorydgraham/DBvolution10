@@ -27,6 +27,7 @@ import nz.co.gregs.dbvolution.databases.DBDatabase;
 import nz.co.gregs.dbvolution.DBReport;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.databases.SQLiteDB;
+import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.exceptions.DBRuntimeException;
 import nz.co.gregs.dbvolution.expressions.DateExpression;
 import nz.co.gregs.dbvolution.results.DateResult;
@@ -204,14 +205,14 @@ public class DBDate extends QueryableDatatype<Date> implements DateResult {
 	}
 
 	@Override
-	public String formatValueForSQLStatement(DBDatabase db) {
-		return db.getDefinition().getDateFormattedForQuery(dateValue());
+	public String formatValueForSQLStatement(DBDefinition db) {
+		return db.getDateFormattedForQuery(dateValue());
 	}
 
 	@Override
-	protected Date getFromResultSet(DBDatabase database, ResultSet resultSet, String fullColumnName) {
+	protected Date getFromResultSet(DBDefinition database, ResultSet resultSet, String fullColumnName) {
 		Date dbValue;
-		if (database.getDefinition().prefersDatesReadAsStrings()) {
+		if (database.prefersDatesReadAsStrings()) {
 			dbValue = setByGetString(database, resultSet, fullColumnName);
 		} else {
 			dbValue = setByGetDate(database, resultSet, fullColumnName);
@@ -219,7 +220,7 @@ public class DBDate extends QueryableDatatype<Date> implements DateResult {
 		return dbValue;
 	}
 
-	private Date setByGetString(DBDatabase database, ResultSet resultSet, String fullColumnName) {
+	private Date setByGetString(DBDefinition database, ResultSet resultSet, String fullColumnName) {
 		String string = null;
 		try {
 			string = resultSet.getString(fullColumnName);
@@ -230,14 +231,14 @@ public class DBDate extends QueryableDatatype<Date> implements DateResult {
 			return null;
 		} else {
 			try {
-				return new Date(database.getDefinition().parseDateFromGetString(string).getTime());
+				return new Date(database.parseDateFromGetString(string).getTime());
 			} catch (ParseException ex) {
 				throw new DBRuntimeException("Unable To Parse Date: " + string, ex);
 			}
 		}
 	}
 
-	private Date setByGetDate(DBDatabase database, ResultSet resultSet, String fullColumnName) {
+	private Date setByGetDate(DBDefinition database, ResultSet resultSet, String fullColumnName) {
 		Date dbValue = null;
 		try {
 			Date dateValue = resultSet.getDate(fullColumnName);

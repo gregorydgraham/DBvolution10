@@ -303,7 +303,7 @@ public class DBByteArray extends DBLargeObject<byte[]> {
 	}
 
 	@Override
-	public String formatValueForSQLStatement(DBDatabase db) {
+	public String formatValueForSQLStatement(DBDefinition db) {
 		throw new UnsupportedOperationException("Binary datatypes like " + this.getClass().getSimpleName() + " do not have a simple SQL representation. Do not call getSQLValue(), use the getInputStream() method instead.");
 	}
 
@@ -529,9 +529,8 @@ public class DBByteArray extends DBLargeObject<byte[]> {
 	}
 
 	@Override
-	protected byte[] getFromResultSet(DBDatabase database, ResultSet resultSet, String fullColumnName) throws SQLException {
+	protected byte[] getFromResultSet(DBDefinition defn, ResultSet resultSet, String fullColumnName) throws SQLException {
 		byte[] bytes = new byte[]{};
-		DBDefinition defn = database.getDefinition();
 		if (defn.prefersLargeObjectsReadAsBase64CharacterStream(this)) {
 			try {
 				bytes = getFromCharacterReader(resultSet, fullColumnName);
@@ -547,31 +546,6 @@ public class DBByteArray extends DBLargeObject<byte[]> {
 		} else {
 			bytes = getFromBinaryStream(resultSet, fullColumnName);
 		}
-//		try{
-//			bytes = getFromBinaryStream(resultSet, fullColumnName);
-//		} catch (Throwable exp1) {
-//			Logger.getLogger(DBByteArray.class.getName()).log(Level.WARNING, "Database rejected Binary Stream method", exp1);
-//			try {
-//				bytes = getFromBLOB(resultSet, fullColumnName);
-//			} catch (Throwable exp2) {
-//				Logger.getLogger(DBByteArray.class.getName()).log(Level.WARNING, "Database rejected BLOB method", exp2);
-//				try {
-//					bytes = getFromCLOB(resultSet, fullColumnName);
-//				} catch (Throwable exp3) {
-//					Logger.getLogger(DBByteArray.class.getName()).log(Level.WARNING, "Database rejected CLOB method", exp3);
-//					try {
-//						bytes = getFromGetBytes(resultSet, fullColumnName);
-//					} catch (Throwable exp4) {
-//						Logger.getLogger(DBByteArray.class.getName()).log(Level.WARNING, "Database rejected Bytes method", exp4);
-//						try {
-//							bytes = getFromCharacterReader(resultSet, fullColumnName);
-//						} catch (Throwable exp5) {
-//							Logger.getLogger(DBByteArray.class.getName()).log(Level.SEVERE, "Database rejected Character Reader method", exp5);
-//						}
-//					}
-//				}
-//			}
-//		}
 		return bytes;
 	}
 

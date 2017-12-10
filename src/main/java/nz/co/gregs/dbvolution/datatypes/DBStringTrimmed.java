@@ -8,6 +8,7 @@ package nz.co.gregs.dbvolution.datatypes;
 import nz.co.gregs.dbvolution.databases.DBDatabase;
 import nz.co.gregs.dbvolution.DBReport;
 import nz.co.gregs.dbvolution.DBRow;
+import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.expressions.StringExpression;
 
 /**
@@ -61,13 +62,13 @@ public class DBStringTrimmed extends DBString {
 	}
 
 	@Override
-	public String formatValueForSQLStatement(DBDatabase db) {
-		return db.getDefinition().doTrimFunction(super.formatValueForSQLStatement(db));
+	public String formatValueForSQLStatement(DBDefinition db) {
+		return db.doTrimFunction(super.formatValueForSQLStatement(db));
 	}
 
 	@Override
-	public String formatColumnForSQLStatement(DBDatabase db, String formattedColumnName) {
-		return db.getDefinition().doTrimFunction(formattedColumnName);
+	public String formatColumnForSQLStatement(DBDefinition db, String formattedColumnName) {
+		return db.doTrimFunction(formattedColumnName);
 	}
 
 }

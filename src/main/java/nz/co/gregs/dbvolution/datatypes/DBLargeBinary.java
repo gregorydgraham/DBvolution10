@@ -301,7 +301,7 @@ public class DBLargeBinary extends DBLargeObject<byte[]> {
 	}
 
 	@Override
-	public String formatValueForSQLStatement(DBDatabase db) {
+	public String formatValueForSQLStatement(DBDefinition db) {
 		throw new UnsupportedOperationException("Binary datatypes like " + this.getClass().getSimpleName() + " do not have a simple SQL representation. Do not call getSQLValue(), use the getInputStream() method instead.");
 	}
 
@@ -528,9 +528,8 @@ public class DBLargeBinary extends DBLargeObject<byte[]> {
 	}
 
 	@Override
-	protected byte[] getFromResultSet(DBDatabase database, ResultSet resultSet, String fullColumnName) throws SQLException {
+	protected byte[] getFromResultSet(DBDefinition defn, ResultSet resultSet, String fullColumnName) throws SQLException {
 		byte[] bytes = new byte[]{};
-		DBDefinition defn = database.getDefinition();
 		LargeObjectHandlerType handler = defn.preferredLargeObjectReader(this);
 		switch (handler) {
 			case BLOB:

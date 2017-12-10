@@ -57,7 +57,7 @@ public class DBInsert extends DBAction {
 
 	private transient StringBuilder allChangedColumns;
 	private transient StringBuilder allSetValues;
-	private final List<Long> generatedKeys = new ArrayList<Long>();
+	private final List<Long> generatedKeys = new ArrayList<>();
 	private final DBRow originalRow;
 	private StringBuilder allColumns;
 	private StringBuilder allValues;
@@ -201,7 +201,7 @@ public class DBInsert extends DBAction {
 								ResultSet rs = statement.executeQuery(retrieveSQL);
 								try {
 									for (PropertyWrapper primaryKeyWrapper : primaryKeyWrappers) {
-										PropertyWrapperDefinition definition = primaryKeyWrapper.getDefinition();
+										PropertyWrapperDefinition definition = primaryKeyWrapper.getPropertyWrapperDefinition();
 										QueryableDatatype<?> originalPK = definition.getQueryableDatatype(this.originalRow);
 										QueryableDatatype<?> rowPK = definition.getQueryableDatatype(row);
 
@@ -266,7 +266,7 @@ public class DBInsert extends DBAction {
 								.append(defn.formatColumnName(prop.columnName()));
 						allColumnSeparator = defn.getValuesClauseColumnSeparator();
 						// add the value
-						allValues.append(allValuesSeparator).append(qdt.toSQLString(database));
+						allValues.append(allValuesSeparator).append(qdt.toSQLString(database.getDefinition()));
 						allValuesSeparator = defn.getValuesClauseValueSeparator();
 					}
 					if (qdt.hasBeenSet()) {
@@ -278,7 +278,7 @@ public class DBInsert extends DBAction {
 								.append(defn.formatColumnName(prop.columnName()));
 						columnSeparator = defn.getValuesClauseColumnSeparator();
 						// add the value
-						allSetValues.append(valuesSeparator).append(qdt.toSQLString(database));
+						allSetValues.append(valuesSeparator).append(qdt.toSQLString(database.getDefinition()));
 						valuesSeparator = defn.getValuesClauseValueSeparator();
 					}
 				}
@@ -346,7 +346,7 @@ public class DBInsert extends DBAction {
 		String separator = "";
 		for (QueryableDatatype<?> pk : primaryKeys) {
 			PropertyWrapper wrapper = row.getPropertyWrapperOf(pk);
-			String pkValue = pk.toSQLString(db);
+			String pkValue = pk.toSQLString(db.getDefinition());
 			//String pkValue = (pk.hasChanged() ? pk.getPreviousSQLValue(db) : pk.toSQLString(db));
 			sqlString.append(separator)
 					.append(defn.formatColumnName(wrapper.columnName()))

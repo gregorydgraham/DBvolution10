@@ -5,6 +5,7 @@ import nz.co.gregs.dbvolution.databases.DBDatabase;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.annotations.AutoFillDuringQueryIfPossible;
 import nz.co.gregs.dbvolution.annotations.DBForeignKey;
+import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.datatypes.DBEnumValue;
 import nz.co.gregs.dbvolution.datatypes.DBLargeObject;
 import nz.co.gregs.dbvolution.datatypes.DBNumberStatistics;
@@ -594,7 +595,7 @@ public class PropertyWrapper {
 	 *
 	 * @return the propertyDefinition
 	 */
-	public PropertyWrapperDefinition getDefinition() {
+	public PropertyWrapperDefinition getPropertyWrapperDefinition() {
 		return propertyDefinition;
 	}
 
@@ -660,9 +661,9 @@ public class PropertyWrapper {
 	 * @return A map of all the selectable name and column aliases for this
 	 * property.
 	 */
-	public List<PropertyWrapperDefinition.ColumnAspects> getColumnAspects(DBDatabase db) {
+	public List<PropertyWrapperDefinition.ColumnAspects> getColumnAspects(DBDefinition db) {
 		final RowDefinition adapteeRowProvider = this.getRowDefinitionInstanceWrapper().adapteeRowDefinition();
-		return getDefinition().getColumnAspects(db, adapteeRowProvider);
+		return getPropertyWrapperDefinition().getColumnAspects(db, adapteeRowProvider);
 	}
 
 	/**
@@ -675,20 +676,20 @@ public class PropertyWrapper {
 	 */
 //	private String[] getSelectableName(DBDatabase db) {
 //		final RowDefinition adapteeRowProvider = this.getRowDefinitionInstanceWrapper().adapteeRowDefinition();
-//		return getDefinition().getSelectableName(db, adapteeRowProvider);
+//		return getPropertyWrapperDefinition().getSelectableName(db, adapteeRowProvider);
 //	}
 	/**
 	 * The alias to the column for use in the select clause and during value
 	 * retrieval
 	 *
-	 * @param db db
+	 * @param defn db
 	 * <p style="color: #F90;">Support DBvolution at
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return the column alias for this property.
 	 */
-	public String[] getColumnAlias(DBDatabase db) {
+	public String[] getColumnAlias(DBDefinition defn) {
 		final RowDefinition actualRow = this.getRowDefinitionInstanceWrapper().adapteeRowDefinition();
-		return propertyDefinition.getColumnAlias(db, actualRow);
+		return propertyDefinition.getColumnAlias(defn, actualRow);
 	}
 
 	/**

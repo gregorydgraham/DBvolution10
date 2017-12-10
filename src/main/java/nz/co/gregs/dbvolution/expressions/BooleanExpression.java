@@ -27,7 +27,6 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import nz.co.gregs.dbvolution.databases.DBDatabase;
 import nz.co.gregs.dbvolution.DBQuery;
 import nz.co.gregs.dbvolution.DBReport;
 import nz.co.gregs.dbvolution.DBRow;
@@ -82,8 +81,8 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 	static BooleanExpression nullExpression() {
 		return new BooleanExpression() {
 			@Override
-			public String toSQLString(DBDatabase db) {
-				return db.getDefinition().getNull();
+			public String toSQLString(DBDefinition db) {
+				return db.getNull();
 			}
 
 		};
@@ -126,8 +125,8 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 	 *
 	 * <p>
 	 * BooleanExpressions generally wrap other BooleanExpressions or similar
-	 * objects and add functionality to them. Use this constructor to wrap a known
-	 * value for use in a BooleanExpression.
+	 * objects and add functionality to them. Use this constructor to wrap a
+	 * known value for use in a BooleanExpression.
 	 *
 	 *
 	 */
@@ -139,7 +138,7 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 	}
 
 	@Override
-	public String toSQLString(DBDatabase db) {
+	public String toSQLString(DBDefinition db) {
 		return onlyBool.toSQLString(db);
 	}
 
@@ -160,9 +159,10 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 	 * little trickier.
 	 *
 	 * <p>
-	 * This method provides the easy route to a *Expression from a literal value.
-	 * Just call, for instance, {@code StringExpression.value("STARTING STRING")}
-	 * to get a StringExpression and start the expression chain.
+	 * This method provides the easy route to a *Expression from a literal
+	 * value. Just call, for instance,
+	 * {@code StringExpression.value("STARTING STRING")} to get a
+	 * StringExpression and start the expression chain.
 	 *
 	 * <ul>
 	 * <li>Only object classes that are appropriate need to be handle by the
@@ -173,8 +173,8 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 	 * @param bool the boolean value to be tested
 	 * <p style="color: #F90;">Support DBvolution at
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 * @return a DBExpression instance that is appropriate to the subclass and the
-	 * value supplied.
+	 * @return a DBExpression instance that is appropriate to the subclass and
+	 * the value supplied.
 	 */
 	public static BooleanExpression value(Boolean bool) {
 		return new BooleanExpression(bool);
@@ -192,9 +192,10 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 	 * little trickier.
 	 *
 	 * <p>
-	 * This method provides the easy route to a *Expression from a literal value.
-	 * Just call, for instance, {@code StringExpression.value("STARTING STRING")}
-	 * to get a StringExpression and start the expression chain.
+	 * This method provides the easy route to a *Expression from a literal
+	 * value. Just call, for instance,
+	 * {@code StringExpression.value("STARTING STRING")} to get a
+	 * StringExpression and start the expression chain.
 	 *
 	 * <ul>
 	 * <li>Only object classes that are appropriate need to be handle by the
@@ -205,8 +206,8 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 	 * @param bool the boolean value to be tested
 	 * <p style="color: #F90;">Support DBvolution at
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 * @return a DBExpression instance that is appropriate to the subclass and the
-	 * value supplied.
+	 * @return a DBExpression instance that is appropriate to the subclass and
+	 * the value supplied.
 	 */
 	public static BooleanExpression value(BooleanResult bool) {
 		return new BooleanExpression(bool);
@@ -219,8 +220,8 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 	 * @param bool the boolean value to be tested
 	 * <p style="color: #F90;">Support DBvolution at
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 * @return a BooleanExpression that compares the previous BooleanExpression to
-	 * the Boolean supplied.
+	 * @return a BooleanExpression that compares the previous BooleanExpression
+	 * to the Boolean supplied.
 	 */
 	public BooleanExpression is(Boolean bool) {
 		return is(new BooleanExpression(bool));
@@ -244,8 +245,8 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 	 * @param bool the boolean value to be tested
 	 * <p style="color: #F90;">Support DBvolution at
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 * @return a BooleanExpression that compares the previous BooleanExpression to
-	 * the Boolean supplied.
+	 * @return a BooleanExpression that compares the previous BooleanExpression
+	 * to the Boolean supplied.
 	 */
 	public BooleanExpression is(BooleanExpression bool) {
 		return is((BooleanResult) bool);
@@ -261,18 +262,17 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 	 * @param bool the boolean value to be tested
 	 * <p style="color: #F90;">Support DBvolution at
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 * @return a BooleanExpression that compares the previous BooleanExpression to
-	 * the Boolean supplied.
+	 * @return a BooleanExpression that compares the previous BooleanExpression
+	 * to the Boolean supplied.
 	 */
 	@Override
 	public BooleanExpression is(BooleanResult bool) {
 		return new BooleanExpression(new DBBinaryBooleanArithmetic(this, bool) {
 
 			@Override
-			public String toSQLString(DBDatabase db) {
-				DBDefinition defn = db.getDefinition();
+			public String toSQLString(DBDefinition defn) {
 				if (defn.supportsComparingBooleanResults()) {
-					return super.toSQLString(db);
+					return super.toSQLString(defn);
 				} else {
 					BooleanExpression first = this.getFirst();
 					BooleanExpression second = this.getSecond();
@@ -280,23 +280,23 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 					String secondSQL;
 					boolean firstIsStatement = first.isBooleanStatement();
 					if (firstIsStatement) {
-						firstSQL = defn.doBooleanStatementToBooleanComparisonValueTransform(first.toSQLString(db));
+						firstSQL = defn.doBooleanStatementToBooleanComparisonValueTransform(first.toSQLString(defn));
 					} else {
-						firstSQL = defn.doBooleanValueToBooleanComparisonValueTransform(first.toSQLString(db));
+						firstSQL = defn.doBooleanValueToBooleanComparisonValueTransform(first.toSQLString(defn));
 					}
 					boolean secondIsStatement = second.isBooleanStatement();
 					if (secondIsStatement) {
-						secondSQL = defn.doBooleanStatementToBooleanComparisonValueTransform(second.toSQLString(db));
+						secondSQL = defn.doBooleanStatementToBooleanComparisonValueTransform(second.toSQLString(defn));
 					} else {
-						secondSQL = defn.doBooleanValueToBooleanComparisonValueTransform(second.toSQLString(db));
+						secondSQL = defn.doBooleanValueToBooleanComparisonValueTransform(second.toSQLString(defn));
 					}
-					String returnString = "(" + firstSQL + ")" + getEquationOperator(db) + "(" + secondSQL + ")";
+					String returnString = "(" + firstSQL + ")" + getEquationOperator(defn) + "(" + secondSQL + ")";
 					return returnString;
 				}
 			}
 
 			@Override
-			protected String getEquationOperator(DBDatabase db) {
+			protected String getEquationOperator(DBDefinition db) {
 				return " = ";
 			}
 		});
@@ -312,8 +312,8 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 	 * @param bool the boolean value to be tested
 	 * <p style="color: #F90;">Support DBvolution at
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 * @return a BooleanExpression that compares the previous BooleanExpression to
-	 * the Boolean supplied.
+	 * @return a BooleanExpression that compares the previous BooleanExpression
+	 * to the Boolean supplied.
 	 */
 	@Override
 	public BooleanExpression isNot(BooleanResult bool) {
@@ -321,8 +321,8 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 		return new BooleanExpression(new DBBinaryBooleanArithmetic(this, bool) {
 
 			@Override
-			public String toSQLString(DBDatabase db) {
-				DBDefinition defn = db.getDefinition();
+			public String toSQLString(DBDefinition db) {
+				DBDefinition defn = db;
 				if (defn.supportsComparingBooleanResults()) {
 					return super.toSQLString(db);
 				} else {
@@ -346,37 +346,9 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 					return returnString;
 				}
 			}
-//			return new BooleanExpression(new DBBinaryBooleanArithmetic(this, bool) {
-//
-//			@Override
-//			public String toSQLString(DBDatabase db) {
-//				DBDefinition defn = db.getDefinition();
-//				if (defn.supportsComparingBooleanResults()) {
-//					return super.toSQLString(db);
-//				} else {
-//					BooleanExpression first = this.getFirst();
-//					BooleanExpression second = this.getSecond();
-//					String firstSQL;
-//					String secondSQL;
-//					boolean firstIsStatement = first.isBooleanStatement();
-//					if (firstIsStatement) {
-//						firstSQL = defn.doBooleanStatementToBooleanComparisonValueTransform(first.toSQLString(db));
-//					} else {
-//						firstSQL = defn.doBooleanValueToBooleanComparisonValueTransform(first.toSQLString(db));
-//					}
-//					boolean secondIsStatement = second.isBooleanStatement();
-//					if (secondIsStatement) {
-//						secondSQL = defn.doBooleanStatementToBooleanComparisonValueTransform(second.toSQLString(db));
-//					} else {
-//						secondSQL = defn.doBooleanValueToBooleanComparisonValueTransform(second.toSQLString(db));
-//					}
-//					String returnString = "(" + firstSQL + ")" + getEquationOperator(db) + "(" + secondSQL + ")";
-//					return returnString;
-//				}
-//			}
 
 			@Override
-			protected String getEquationOperator(DBDatabase db) {
+			protected String getEquationOperator(DBDefinition db) {
 				return " <> ";
 			}
 		});
@@ -392,8 +364,8 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 	 * @param bool the boolean value to be tested
 	 * <p style="color: #F90;">Support DBvolution at
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 * @return a BooleanExpression that compares the previous BooleanExpression to
-	 * the Boolean supplied.
+	 * @return a BooleanExpression that compares the previous BooleanExpression
+	 * to the Boolean supplied.
 	 */
 	public BooleanExpression isNot(Boolean bool) {
 		return isNot(new BooleanExpression(bool));
@@ -423,8 +395,8 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 		return new BooleanExpression(new DBBinaryBooleanArithmetic(this, bool) {
 
 			@Override
-			public String toSQLString(DBDatabase db) {
-				if (db.getDefinition().supportsXOROperator()) {
+			public String toSQLString(DBDefinition db) {
+				if (db.supportsXOROperator()) {
 					return super.toSQLString(db);
 				} else {
 					return BooleanExpression.anyOf(
@@ -438,7 +410,7 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 			}
 
 			@Override
-			protected String getEquationOperator(DBDatabase db) {
+			protected String getEquationOperator(DBDefinition db) {
 				return "^";
 			}
 		});
@@ -465,19 +437,19 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 	public static BooleanExpression allOf(final BooleanExpression... booleanExpressions) {
 		return new BooleanExpression(new DBNnaryBooleanArithmetic(booleanExpressions) {
 			@Override
-			protected String getEquationOperator(DBDatabase db) {
-				return db.getDefinition().beginAndLine();
+			protected String getEquationOperator(DBDefinition db) {
+				return db.beginAndLine();
 			}
 		});
 	}
 
 	/**
-	 * Collects the expressions together and requires that at least one of them to
-	 * be false.
+	 * Collects the expressions together and requires that at least one of them
+	 * to be false.
 	 *
 	 * <p>
-	 * Please note that this expression does not exclude the cases where all tests
-	 * fail. To exclude the ALL and NONE cases, use
+	 * Please note that this expression does not exclude the cases where all
+	 * tests fail. To exclude the ALL and NONE cases, use
 	 * {@link #someButNotAllOf(nz.co.gregs.dbvolution.expressions.BooleanExpression...) the SOME method}.
 	 *
 	 * <p>
@@ -505,8 +477,8 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 	}
 
 	/**
-	 * Collects the expressions together and requires that at least one of them to
-	 * be false and at least one to be false.
+	 * Collects the expressions together and requires that at least one of them
+	 * to be false and at least one to be false.
 	 *
 	 * <p>
 	 * This expression specifically excludes the cases where ALL and NONE of the
@@ -555,8 +527,8 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 	public static BooleanExpression anyOf(final BooleanExpression... booleanExpressions) {
 		return new BooleanExpression(new DBNnaryBooleanArithmetic(booleanExpressions) {
 			@Override
-			protected String getEquationOperator(DBDatabase db) {
-				return db.getDefinition().beginOrLine();
+			protected String getEquationOperator(DBDefinition db) {
+				return db.beginOrLine();
 			}
 		});
 	}
@@ -603,8 +575,8 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 	public BooleanExpression negate() {
 		return new BooleanExpression(new DBUnaryBinaryFunction(this) {
 			@Override
-			String getFunctionName(DBDatabase db) {
-				return db.getDefinition().getNegationFunctionName();
+			String getFunctionName(DBDefinition db) {
+				return db.getNegationFunctionName();
 			}
 		});
 	}
@@ -640,8 +612,8 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 			BooleanExpression innerBool = new BooleanExpression(onlyBool);
 
 			@Override
-			public String toSQLString(DBDatabase db) {
-				return db.getDefinition().doBooleanToIntegerTransform(this.innerBool.toSQLString(db));
+			public String toSQLString(DBDefinition db) {
+				return db.doBooleanToIntegerTransform(this.innerBool.toSQLString(db));
 			}
 
 			@Override
@@ -734,8 +706,8 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 		return new BooleanExpression(new DBUnaryBooleanArithmetic(possibleNullExpression) {
 
 			@Override
-			protected String getEquationOperator(DBDatabase db) {
-				return " IS NOT " + db.getDefinition().getNull();
+			protected String getEquationOperator(DBDefinition db) {
+				return " IS NOT " + db.getNull();
 			}
 
 			@Override
@@ -780,8 +752,8 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 	}
 
 	/**
-	 * Returns TRUE if the given {@link DBExpression} evaluates to NULL, otherwise
-	 * FALSE.
+	 * Returns TRUE if the given {@link DBExpression} evaluates to NULL,
+	 * otherwise FALSE.
 	 *
 	 * <p>
 	 * DBExpression subclasses include
@@ -799,8 +771,8 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 		return new BooleanExpression(new DBUnaryBooleanArithmetic(possibleNullExpression) {
 
 			@Override
-			protected String getEquationOperator(DBDatabase db) {
-				return " IS " + db.getDefinition().getNull();
+			protected String getEquationOperator(DBDefinition db) {
+				return " IS " + db.getNull();
 			}
 
 			@Override
@@ -828,15 +800,15 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 	 * boolean expression.
 	 *
 	 * <p>
-	 * The first expression is returned if this expression is TRUE, otherwise the
-	 * second is returned.
+	 * The first expression is returned if this expression is TRUE, otherwise
+	 * the second is returned.
 	 *
 	 * @param thenExpr expression to use when this expression is TRUE
 	 * @param elseExpr expression to use when this expression is FALSE
 	 * <p style="color: #F90;">Support DBvolution at
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 * @return an expression that will generate a SQL clause conceptually similar
-	 * to "if (this) then thenExpr else elseExpr".
+	 * @return an expression that will generate a SQL clause conceptually
+	 * similar to "if (this) then thenExpr else elseExpr".
 	 */
 	public StringExpression ifThenElse(String thenExpr, String elseExpr) {
 		return this.ifThenElse(new StringExpression(thenExpr), new StringExpression(elseExpr));
@@ -847,15 +819,15 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 	 * boolean expression.
 	 *
 	 * <p>
-	 * The first expression is returned if this expression is TRUE, otherwise the
-	 * second is returned.
+	 * The first expression is returned if this expression is TRUE, otherwise
+	 * the second is returned.
 	 *
 	 * @param thenExpr expression to use when this expression is TRUE
 	 * @param elseExpr expression to use when this expression is FALSE
 	 * <p style="color: #F90;">Support DBvolution at
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 * @return an expression that will generate a SQL clause conceptually similar
-	 * to "if (this) then thenExpr else elseExpr".
+	 * @return an expression that will generate a SQL clause conceptually
+	 * similar to "if (this) then thenExpr else elseExpr".
 	 */
 	public StringExpression ifThenElse(StringExpression thenExpr, StringExpression elseExpr) {
 		return new StringExpression(new DBBooleanStringStringFunction(this, thenExpr, elseExpr) {
@@ -866,12 +838,12 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 			}
 
 			@Override
-			public String toSQLString(DBDatabase db) {
-				return db.getDefinition().doIfThenElseTransform(onlyBool.toSQLString(db), first.toSQLString(db), second.toSQLString(db));
+			public String toSQLString(DBDefinition db) {
+				return db.doIfThenElseTransform(onlyBool.toSQLString(db), first.toSQLString(db), second.toSQLString(db));
 			}
 
 			@Override
-			String getFunctionName(DBDatabase db) {
+			String getFunctionName(DBDefinition db) {
 				return "";
 			}
 
@@ -883,15 +855,15 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 	 * boolean expression.
 	 *
 	 * <p>
-	 * The first expression is returned if this expression is TRUE, otherwise the
-	 * second is returned.
+	 * The first expression is returned if this expression is TRUE, otherwise
+	 * the second is returned.
 	 *
 	 * @param thenExpr expression to use when this expression is TRUE
 	 * @param elseExpr expression to use when this expression is FALSE
 	 * <p style="color: #F90;">Support DBvolution at
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 * @return an expression that will generate a SQL clause conceptually similar
-	 * to "if (this) then thenExpr else elseExpr".
+	 * @return an expression that will generate a SQL clause conceptually
+	 * similar to "if (this) then thenExpr else elseExpr".
 	 */
 	public NumberExpression ifThenElse(Number thenExpr, Number elseExpr) {
 		return this.ifThenElse(new NumberExpression(thenExpr), new NumberExpression(elseExpr));
@@ -902,15 +874,15 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 	 * boolean expression.
 	 *
 	 * <p>
-	 * The first expression is returned if this expression is TRUE, otherwise the
-	 * second is returned.
+	 * The first expression is returned if this expression is TRUE, otherwise
+	 * the second is returned.
 	 *
 	 * @param thenExpr expression to use when this expression is TRUE
 	 * @param elseExpr expression to use when this expression is FALSE
 	 * <p style="color: #F90;">Support DBvolution at
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 * @return an expression that will generate a SQL clause conceptually similar
-	 * to "if (this) then thenExpr else elseExpr".
+	 * @return an expression that will generate a SQL clause conceptually
+	 * similar to "if (this) then thenExpr else elseExpr".
 	 */
 	public NumberExpression ifThenElse(NumberResult thenExpr, NumberResult elseExpr) {
 		return new NumberExpression(new DBBooleanNumberNumberFunction(this, thenExpr, elseExpr) {
@@ -921,12 +893,12 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 			}
 
 			@Override
-			public String toSQLString(DBDatabase db) {
-				return db.getDefinition().doIfThenElseTransform(onlyBool.toSQLString(db), first.toSQLString(db), second.toSQLString(db));
+			public String toSQLString(DBDefinition db) {
+				return db.doIfThenElseTransform(onlyBool.toSQLString(db), first.toSQLString(db), second.toSQLString(db));
 			}
 
 			@Override
-			String getFunctionName(DBDatabase db) {
+			String getFunctionName(DBDefinition db) {
 				return "";
 			}
 		});
@@ -937,16 +909,16 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 	 * boolean expression.
 	 *
 	 * <p>
-	 * The first expression is returned if this expression is TRUE, otherwise the
-	 * second is returned.
+	 * The first expression is returned if this expression is TRUE, otherwise
+	 * the second is returned.
 	 *
 	 * @param thenExpr expression to use when this expression is TRUE
 	 * @param elseExpr expression to use when this expression is FALSE
 	 * <p style="color: #F90;">Support DBvolution at
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 * 
-	 * @return an expression that will generate a SQL clause conceptually similar
-	 * to "if (this) then thenExpr else elseExpr".
+	 *
+	 * @return an expression that will generate a SQL clause conceptually
+	 * similar to "if (this) then thenExpr else elseExpr".
 	 */
 	public IntegerExpression ifThenElse(IntegerResult thenExpr, IntegerResult elseExpr) {
 		return new IntegerExpression(new DBBooleanIntegerIntegerFunction(this, thenExpr, elseExpr) {
@@ -957,12 +929,12 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 			}
 
 			@Override
-			public String toSQLString(DBDatabase db) {
-				return db.getDefinition().doIfThenElseTransform(onlyBool.toSQLString(db), first.toSQLString(db), second.toSQLString(db));
+			public String toSQLString(DBDefinition db) {
+				return db.doIfThenElseTransform(onlyBool.toSQLString(db), first.toSQLString(db), second.toSQLString(db));
 			}
 
 			@Override
-			String getFunctionName(DBDatabase db) {
+			String getFunctionName(DBDefinition db) {
 				return "";
 			}
 		});
@@ -973,15 +945,15 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 	 * boolean expression.
 	 *
 	 * <p>
-	 * The first expression is returned if this expression is TRUE, otherwise the
-	 * second is returned.
+	 * The first expression is returned if this expression is TRUE, otherwise
+	 * the second is returned.
 	 *
 	 * @param thenExpr expression to use when this expression is TRUE
 	 * @param elseExpr expression to use when this expression is FALSE
 	 * <p style="color: #F90;">Support DBvolution at
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 * @return an expression that will generate a SQL clause conceptually similar
-	 * to "if (this) then thenExpr else elseExpr".
+	 * @return an expression that will generate a SQL clause conceptually
+	 * similar to "if (this) then thenExpr else elseExpr".
 	 */
 	public DateExpression ifThenElse(Date thenExpr, Date elseExpr) {
 		return this.ifThenElse(new DateExpression(thenExpr), new DateExpression(elseExpr));
@@ -992,15 +964,15 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 	 * boolean expression.
 	 *
 	 * <p>
-	 * The first expression is returned if this expression is TRUE, otherwise the
-	 * second is returned.
+	 * The first expression is returned if this expression is TRUE, otherwise
+	 * the second is returned.
 	 *
 	 * @param thenExpr expression to use when this expression is TRUE
 	 * @param elseExpr expression to use when this expression is FALSE
 	 * <p style="color: #F90;">Support DBvolution at
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 * @return an expression that will generate a SQL clause conceptually similar
-	 * to "if (this) then thenExpr else elseExpr".
+	 * @return an expression that will generate a SQL clause conceptually
+	 * similar to "if (this) then thenExpr else elseExpr".
 	 */
 	public DateExpression ifThenElse(DateExpression thenExpr, DateExpression elseExpr) {
 		return new DateExpression(new DBBinaryDateDateFunction(this, thenExpr, elseExpr) {
@@ -1011,12 +983,12 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 			}
 
 			@Override
-			public String toSQLString(DBDatabase db) {
-				return db.getDefinition().doIfThenElseTransform(onlyBool.toSQLString(db), first.toSQLString(db), second.toSQLString(db));
+			public String toSQLString(DBDefinition db) {
+				return db.doIfThenElseTransform(onlyBool.toSQLString(db), first.toSQLString(db), second.toSQLString(db));
 			}
 
 			@Override
-			String getFunctionName(DBDatabase db) {
+			String getFunctionName(DBDefinition db) {
 				return "";
 			}
 
@@ -1028,15 +1000,15 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 	 * boolean expression.
 	 *
 	 * <p>
-	 * The first expression is returned if this expression is TRUE, otherwise the
-	 * second is returned.
+	 * The first expression is returned if this expression is TRUE, otherwise
+	 * the second is returned.
 	 *
 	 * @param thenExpr expression to use when this expression is TRUE
 	 * @param elseExpr expression to use when this expression is FALSE
 	 * <p style="color: #F90;">Support DBvolution at
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 * @return an expression that will generate a SQL clause conceptually similar
-	 * to "if (this) then thenExpr else elseExpr".
+	 * @return an expression that will generate a SQL clause conceptually
+	 * similar to "if (this) then thenExpr else elseExpr".
 	 */
 	public Polygon2DExpression ifThenElse(Polygon thenExpr, Polygon elseExpr) {
 		return this.ifThenElse(new Polygon2DExpression(thenExpr), new Polygon2DExpression(elseExpr));
@@ -1047,15 +1019,15 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 	 * boolean expression.
 	 *
 	 * <p>
-	 * The first expression is returned if this expression is TRUE, otherwise the
-	 * second is returned.
+	 * The first expression is returned if this expression is TRUE, otherwise
+	 * the second is returned.
 	 *
 	 * @param thenExpr expression to use when this expression is TRUE
 	 * @param elseExpr expression to use when this expression is FALSE
 	 * <p style="color: #F90;">Support DBvolution at
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 * @return an expression that will generate a SQL clause conceptually similar
-	 * to "if (this) then thenExpr else elseExpr".
+	 * @return an expression that will generate a SQL clause conceptually
+	 * similar to "if (this) then thenExpr else elseExpr".
 	 */
 	public Polygon2DExpression ifThenElse(Polygon2DExpression thenExpr, Polygon2DExpression elseExpr) {
 		return new Polygon2DExpression(new DBBinaryGeometryGeometryFunction(this, thenExpr, elseExpr) {
@@ -1066,8 +1038,8 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 			}
 
 			@Override
-			public String toSQLString(DBDatabase db) {
-				return db.getDefinition().doIfThenElseTransform(onlyBool.toSQLString(db), first.toSQLString(db), second.toSQLString(db));
+			public String toSQLString(DBDefinition db) {
+				return db.doIfThenElseTransform(onlyBool.toSQLString(db), first.toSQLString(db), second.toSQLString(db));
 			}
 
 		});
@@ -1088,8 +1060,8 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 		return new NumberExpression(new DBBooleanAggregatorFunctionReturningNumber(this) {
 
 			@Override
-			String getFunctionName(DBDatabase db) {
-				return db.getDefinition().getCountFunctionName();
+			String getFunctionName(DBDefinition db) {
+				return db.getCountFunctionName();
 			}
 		});
 	}
@@ -1105,8 +1077,8 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 	public static BooleanExpression falseExpression() {
 		return new BooleanExpression() {
 			@Override
-			public String toSQLString(DBDatabase db) {
-				return db.getDefinition().getFalseOperation();
+			public String toSQLString(DBDefinition db) {
+				return db.getFalseOperation();
 			}
 
 			@Override
@@ -1127,8 +1099,8 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 	public static BooleanExpression trueExpression() {
 		return new BooleanExpression() {
 			@Override
-			public String toSQLString(DBDatabase db) {
-				return db.getDefinition().getTrueOperation();
+			public String toSQLString(DBDefinition db) {
+				return db.getTrueOperation();
 			}
 
 			@Override
@@ -1184,9 +1156,9 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 	 * Implements the little-known (and implemented) SQL Row Value syntax.
 	 *
 	 * <p>
-	 * in PostgreSQL you can do (colA, colB) &lt; (valA, valB). In other databases
-	 * you need to write: ((colA &lt; valA) OR (colA = valA AND colB &lt; valB)).
-	 * Similarly for &gt;.
+	 * in PostgreSQL you can do (colA, colB) &lt; (valA, valB). In other
+	 * databases you need to write: ((colA &lt; valA) OR (colA = valA AND colB
+	 * &lt; valB)). Similarly for &gt;.
 	 *
 	 * <p>
 	 * Essentially seek looks at both parameters and returns the rows that sort
@@ -1218,9 +1190,9 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 	 * Implements the little-known (and implemented) SQL Row Value syntax.
 	 *
 	 * <p>
-	 * in PostgreSQL you can do (colA, colB) &lt; (valA, valB). In other databases
-	 * you need to write: ((colA &lt; valA) OR (colA = valA AND colB &lt; valB)).
-	 * Similarly for &gt;.
+	 * in PostgreSQL you can do (colA, colB) &lt; (valA, valB). In other
+	 * databases you need to write: ((colA &lt; valA) OR (colA = valA AND colB
+	 * &lt; valB)). Similarly for &gt;.
 	 *
 	 * <p>
 	 * Essentially seek looks at both parameters and returns the rows that sort
@@ -1252,9 +1224,9 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 	 * Implements the little-known (and implemented) SQL Row Value syntax.
 	 *
 	 * <p>
-	 * in PostgreSQL you can do (colA, colB) &lt; (valA, valB). In other databases
-	 * you need to write: ((colA &lt; valA) OR (colA = valA AND colB &lt; valB)).
-	 * Similarly for &gt;.
+	 * in PostgreSQL you can do (colA, colB) &lt; (valA, valB). In other
+	 * databases you need to write: ((colA &lt; valA) OR (colA = valA AND colB
+	 * &lt; valB)). Similarly for &gt;.
 	 *
 	 * <p>
 	 * Essentially seek looks at both parameters and returns the rows that sort
@@ -1290,9 +1262,9 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 	 * Implements the little-known (and implemented) SQL Row Value syntax.
 	 *
 	 * <p>
-	 * in PostgreSQL you can do (colA, colB) &lt; (valA, valB). In other databases
-	 * you need to write: ((colA &lt; valA) OR (colA = valA AND colB &lt; valB)).
-	 * Similarly for &gt;.
+	 * in PostgreSQL you can do (colA, colB) &lt; (valA, valB). In other
+	 * databases you need to write: ((colA &lt; valA) OR (colA = valA AND colB
+	 * &lt; valB)). Similarly for &gt;.
 	 *
 	 * <p>
 	 * Essentially seek looks at both parameters and returns the rows that sort
@@ -1333,17 +1305,17 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 	 * Implements the little-known (and implemented) SQL Row Value syntax.
 	 *
 	 * <p>
-	 * in PostgreSQL you can do (colA, colB) &lt; (valA, valB). In other databases
-	 * you need to write: ((colA &lt; valA) OR (colA = valA AND colB &lt; valB)).
-	 * Similarly for &gt;.
+	 * in PostgreSQL you can do (colA, colB) &lt; (valA, valB). In other
+	 * databases you need to write: ((colA &lt; valA) OR (colA = valA AND colB
+	 * &lt; valB)). Similarly for &gt;.
 	 *
 	 * <p>
 	 * Essentially seek looks at both parameters and returns the rows that sort
 	 * below both.
 	 *
 	 * <p>
-	 * This version provides three levels of sorting. If you only need to seek on
-	 * one column/value use {@link #seekGreaterThan(nz.co.gregs.dbvolution.results.RangeComparable, nz.co.gregs.dbvolution.expressions.DBExpression, nz.co.gregs.dbvolution.expressions.BooleanExpression)
+	 * This version provides three levels of sorting. If you only need to seek
+	 * on one column/value use {@link #seekGreaterThan(nz.co.gregs.dbvolution.results.RangeComparable, nz.co.gregs.dbvolution.expressions.DBExpression, nz.co.gregs.dbvolution.expressions.BooleanExpression)
 	 * }
 	 *
 	 * <p>
@@ -1381,9 +1353,9 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 	 * Implements the little-known (and implemented) SQL Row Value syntax.
 	 *
 	 * <p>
-	 * in PostgreSQL you can do (colA, colB) &lt; (valA, valB). In other databases
-	 * you need to write: ((colA &lt; valA) OR (colA = valA AND colB &lt; valB)).
-	 * Similarly for &gt;.
+	 * in PostgreSQL you can do (colA, colB) &lt; (valA, valB). In other
+	 * databases you need to write: ((colA &lt; valA) OR (colA = valA AND colB
+	 * &lt; valB)). Similarly for &gt;.
 	 *
 	 * <p>
 	 * Essentially seek looks at both parameters and returns the rows that sort
@@ -1434,17 +1406,17 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 	 * Implements the little-known (and implemented) SQL Row Value syntax.
 	 *
 	 * <p>
-	 * in PostgreSQL you can do (colA, colB) &lt; (valA, valB). In other databases
-	 * you need to write: ((colA &lt; valA) OR (colA = valA AND colB &lt; valB)).
-	 * Similarly for &gt;.
+	 * in PostgreSQL you can do (colA, colB) &lt; (valA, valB). In other
+	 * databases you need to write: ((colA &lt; valA) OR (colA = valA AND colB
+	 * &lt; valB)). Similarly for &gt;.
 	 *
 	 * <p>
 	 * Essentially seek looks at both parameters and returns the rows that sort
 	 * below both.
 	 *
 	 * <p>
-	 * This version provides 3 levels of sorting. If you only need to seek on one
-	 * column/value use {@link #seekLessThan(nz.co.gregs.dbvolution.results.RangeComparable, nz.co.gregs.dbvolution.expressions.DBExpression, nz.co.gregs.dbvolution.expressions.BooleanExpression)
+	 * This version provides 3 levels of sorting. If you only need to seek on
+	 * one column/value use {@link #seekLessThan(nz.co.gregs.dbvolution.results.RangeComparable, nz.co.gregs.dbvolution.expressions.DBExpression, nz.co.gregs.dbvolution.expressions.BooleanExpression)
 	 * }
 	 *
 	 * <p>
@@ -1482,9 +1454,9 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 	 * Implements the little-known (and implemented) SQL Row Value syntax.
 	 *
 	 * <p>
-	 * in PostgreSQL you can do (colA, colB) &lt; (valA, valB). In other databases
-	 * you need to write: ((colA &lt; valA) OR (colA = valA AND colB &lt; valB)).
-	 * Similarly for &gt;.
+	 * in PostgreSQL you can do (colA, colB) &lt; (valA, valB). In other
+	 * databases you need to write: ((colA &lt; valA) OR (colA = valA AND colB
+	 * &lt; valB)). Similarly for &gt;.
 	 *
 	 * <p>
 	 * Essentially seek looks at both parameters and returns the rows that sort
@@ -1560,7 +1532,8 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 	}
 
 	/**
-	 * Indicates if this expression is a relationship between 2, or more, tables.
+	 * Indicates if this expression is a relationship between 2, or more,
+	 * tables.
 	 *
 	 * <p style="color: #F90;">Support DBvolution at
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
@@ -1606,7 +1579,7 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 		}
 
 		@Override
-		public String toSQLString(DBDatabase db) {
+		public String toSQLString(DBDefinition db) {
 			String op = this.getEquationOperator(db);
 			String returnStr = onlyBool.toSQLString(db) + " " + op;
 			return returnStr;
@@ -1636,7 +1609,7 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 			return onlyBool.isAggregator();
 		}
 
-		protected abstract String getEquationOperator(DBDatabase db);
+		protected abstract String getEquationOperator(DBDefinition db);
 
 		@Override
 		public boolean isPurelyFunctional() {
@@ -1663,7 +1636,7 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 		}
 
 		@Override
-		public String toSQLString(DBDatabase db) {
+		public String toSQLString(DBDefinition db) {
 			StringBuilder returnStr = new StringBuilder();
 			String separator = "";
 			String op = this.getEquationOperator(db);
@@ -1700,7 +1673,7 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 			return hashSet;
 		}
 
-		protected abstract String getEquationOperator(DBDatabase db);
+		protected abstract String getEquationOperator(DBDefinition db);
 
 		@Override
 		public boolean isAggregator() {
@@ -1742,19 +1715,19 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 			return new DBNumber();
 		}
 
-		abstract String getFunctionName(DBDatabase db);
+		abstract String getFunctionName(DBDefinition db);
 
-		protected String beforeValue(DBDatabase db) {
+		protected String beforeValue(DBDefinition db) {
 			return "" + getFunctionName(db) + "( ";
 		}
 
-		protected String afterValue(DBDatabase db) {
+		protected String afterValue(DBDefinition db) {
 			return ") ";
 		}
 
 		@Override
-		public String toSQLString(DBDatabase db) {
-			String valueToCount = db.getDefinition().transformToStorableType(onlyBool).toSQLString(db);
+		public String toSQLString(DBDefinition db) {
+			String valueToCount = db.transformToStorableType(onlyBool).toSQLString(db);
 			return this.beforeValue(db) + (onlyBool == null ? "" : valueToCount) + this.afterValue(db);
 		}
 
@@ -1809,18 +1782,18 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 //		public DBNumber getQueryableDatatypeForExpressionValue() {
 //			return new DBNumber();
 //		}
-		abstract String getFunctionName(DBDatabase db);
+		abstract String getFunctionName(DBDefinition db);
 
-		protected String beforeValue(DBDatabase db) {
+		protected String beforeValue(DBDefinition db) {
 			return "" + getFunctionName(db) + "( ";
 		}
 
-		protected String afterValue(DBDatabase db) {
+		protected String afterValue(DBDefinition db) {
 			return ") ";
 		}
 
 		@Override
-		public String toSQLString(DBDatabase db) {
+		public String toSQLString(DBDefinition db) {
 			return this.beforeValue(db) + (onlyBool == null ? "" : onlyBool.toSQLString(db)) + this.afterValue(db);
 		}
 
@@ -1878,15 +1851,13 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 		}
 
 		@Override
-		public String toSQLString(DBDatabase db) {
+		public String toSQLString(DBDefinition db) {
 			String sqlString = getFirst().toSQLString(db) + this.getEquationOperator(db) + getSecond().toSQLString(db);
 			if (getFirst().getIncludesNull()) {
-				final DBDefinition defn = db.getDefinition();
-				sqlString = getSecond().toSQLString(db) + " IS " + defn.getNull() + defn.beginOrLine() + sqlString;
+				sqlString = getSecond().toSQLString(db) + " IS " + db.getNull() + db.beginOrLine() + sqlString;
 			}
 			if (getSecond().getIncludesNull()) {
-				final DBDefinition defn = db.getDefinition();
-				sqlString = getFirst().toSQLString(db) + " IS " + defn.getNull() + defn.beginOrLine() + sqlString;
+				sqlString = getFirst().toSQLString(db) + " IS " + db.getNull() + db.beginOrLine() + sqlString;
 			}
 			return "(" + sqlString + ")";
 		}
@@ -1906,7 +1877,7 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 			return newInstance;
 		}
 
-		protected abstract String getEquationOperator(DBDatabase db);
+		protected abstract String getEquationOperator(DBDefinition db);
 
 		@Override
 		public Set<DBRow> getTablesInvolved() {
@@ -1985,18 +1956,18 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 			this.second = second;
 		}
 
-		abstract String getFunctionName(DBDatabase db);
+		abstract String getFunctionName(DBDefinition db);
 
-		protected String beforeValue(DBDatabase db) {
+		protected String beforeValue(DBDefinition db) {
 			return "" + getFunctionName(db) + "( ";
 		}
 
-		protected String afterValue(DBDatabase db) {
+		protected String afterValue(DBDefinition db) {
 			return ") ";
 		}
 
 		@Override
-		public String toSQLString(DBDatabase db) {
+		public String toSQLString(DBDefinition db) {
 			return this.beforeValue(db) + (onlyBool == null ? "" : onlyBool.toSQLString(db)) + this.afterValue(db);
 		}
 
@@ -2053,18 +2024,18 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 			this.second = (second == null ? NumberExpression.nullExpression() : second);
 		}
 
-		abstract String getFunctionName(DBDatabase db);
+		abstract String getFunctionName(DBDefinition db);
 
-		protected String beforeValue(DBDatabase db) {
+		protected String beforeValue(DBDefinition db) {
 			return "" + getFunctionName(db) + "( ";
 		}
 
-		protected String afterValue(DBDatabase db) {
+		protected String afterValue(DBDefinition db) {
 			return ") ";
 		}
 
 		@Override
-		public String toSQLString(DBDatabase db) {
+		public String toSQLString(DBDefinition db) {
 			return this.beforeValue(db) + (onlyBool == null ? "" : onlyBool.toSQLString(db)) + this.afterValue(db);
 		}
 
@@ -2120,18 +2091,18 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 			this.second = (second == null ? IntegerExpression.nullExpression() : second);
 		}
 
-		abstract String getFunctionName(DBDatabase db);
+		abstract String getFunctionName(DBDefinition db);
 
-		protected String beforeValue(DBDatabase db) {
+		protected String beforeValue(DBDefinition db) {
 			return "" + getFunctionName(db) + "( ";
 		}
 
-		protected String afterValue(DBDatabase db) {
+		protected String afterValue(DBDefinition db) {
 			return ") ";
 		}
 
 		@Override
-		public String toSQLString(DBDatabase db) {
+		public String toSQLString(DBDefinition db) {
 			return this.beforeValue(db) + (onlyBool == null ? "" : onlyBool.toSQLString(db)) + this.afterValue(db);
 		}
 
@@ -2187,18 +2158,18 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 			this.second = second;
 		}
 
-		abstract String getFunctionName(DBDatabase db);
+		abstract String getFunctionName(DBDefinition db);
 
-		protected String beforeValue(DBDatabase db) {
+		protected String beforeValue(DBDefinition db) {
 			return "" + getFunctionName(db) + "( ";
 		}
 
-		protected String afterValue(DBDatabase db) {
+		protected String afterValue(DBDefinition db) {
 			return ") ";
 		}
 
 		@Override
-		public String toSQLString(DBDatabase db) {
+		public String toSQLString(DBDefinition db) {
 			return this.beforeValue(db) + (onlyBool == null ? "" : onlyBool.toSQLString(db)) + this.afterValue(db);
 		}
 
@@ -2295,12 +2266,12 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 		private BooleanExpression innerBool = new BooleanExpression();
 
 		public IntegerValueFunction(BooleanExpression bool) {
-			innerBool= bool;
+			innerBool = bool;
 		}
 
 		@Override
-		public String toSQLString(DBDatabase db) {
-			return db.getDefinition().doBooleanToIntegerTransform(this.innerBool.toSQLString(db));
+		public String toSQLString(DBDefinition db) {
+			return db.doBooleanToIntegerTransform(this.innerBool.toSQLString(db));
 		}
 
 		@Override

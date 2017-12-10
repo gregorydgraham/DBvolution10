@@ -19,6 +19,7 @@ import nz.co.gregs.dbvolution.results.DateRepeatResult;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import nz.co.gregs.dbvolution.databases.DBDatabase;
+import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.expressions.*;
 import org.joda.time.Period;
 import org.joda.time.format.PeriodFormat;
@@ -121,23 +122,23 @@ public class DBDateRepeat extends QueryableDatatype<Period> implements DateRepea
 	}
 
 	@Override
-	protected String formatValueForSQLStatement(DBDatabase db) {
+	protected String formatValueForSQLStatement(DBDefinition db) {
 		Period interval = getLiteralValue();
 		if (interval == null) {
 			return "NULL";
 		} else {
-			String str = db.getDefinition().transformPeriodIntoDateRepeat(interval);
+			String str = db.transformPeriodIntoDateRepeat(interval);
 			return str;
 		}
 	}
 
 	@Override
-	protected Period getFromResultSet(DBDatabase database, ResultSet resultSet, String fullColumnName) throws SQLException {
+	protected Period getFromResultSet(DBDefinition database, ResultSet resultSet, String fullColumnName) throws SQLException {
 		String intervalStr = resultSet.getString(fullColumnName);
 		if (intervalStr == null || intervalStr.isEmpty()) {
 			return null;
 		} else {
-			return database.getDefinition().parseDateRepeatFromGetString(intervalStr);
+			return database.parseDateRepeatFromGetString(intervalStr);
 		}
 	}
 

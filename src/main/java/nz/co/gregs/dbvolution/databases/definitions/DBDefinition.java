@@ -67,7 +67,7 @@ import org.joda.time.Period;
  * @author Gregory Graham
  */
 public abstract class DBDefinition {
-
+	
 	public int getNumericPrecision() {
 		return DBNumber.getNumericPrecision();
 	}
@@ -5866,5 +5866,9 @@ public abstract class DBDefinition {
 	 */
 	public boolean supportsRightOuterJoinNatively() {
 		return true;
+	}
+
+	boolean supportsPaging(QueryOptions options) {
+		return supportsPagingNatively(options);
 	}
 }

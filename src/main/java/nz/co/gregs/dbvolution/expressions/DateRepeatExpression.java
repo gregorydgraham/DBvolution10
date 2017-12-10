@@ -19,7 +19,7 @@ import nz.co.gregs.dbvolution.results.RangeComparable;
 import nz.co.gregs.dbvolution.results.DateRepeatResult;
 import java.util.HashSet;
 import java.util.Set;
-import nz.co.gregs.dbvolution.databases.DBDatabase;
+import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.databases.supports.SupportsDateRepeatDatatypeFunctions;
 import nz.co.gregs.dbvolution.datatypes.DBBoolean;
@@ -147,7 +147,7 @@ public class DateRepeatExpression implements DateRepeatResult, RangeComparable<D
 	}
 
 	@Override
-	public String toSQLString(DBDatabase db) {
+	public String toSQLString(DBDefinition db) {
 		return innerDateRepeatResult.toSQLString(db);
 	}
 
@@ -223,8 +223,8 @@ public class DateRepeatExpression implements DateRepeatResult, RangeComparable<D
 		return new BooleanExpression(new DateRepeatDateRepeatWithBooleanResult(this, anotherInstance) {
 
 			@Override
-			protected String doExpressionTransform(DBDatabase db) {
-				return db.getDefinition().doDateRepeatLessThanTransform(getFirst().toSQLString(db), getSecond().toSQLString(db));
+			protected String doExpressionTransform(DBDefinition db) {
+				return db.doDateRepeatLessThanTransform(getFirst().toSQLString(db), getSecond().toSQLString(db));
 			}
 		});
 	}
@@ -257,8 +257,8 @@ public class DateRepeatExpression implements DateRepeatResult, RangeComparable<D
 		return new BooleanExpression(new DateRepeatDateRepeatWithBooleanResult(this, anotherInstance) {
 
 			@Override
-			protected String doExpressionTransform(DBDatabase db) {
-				return db.getDefinition().doDateRepeatGreaterThanTransform(getFirst().toSQLString(db), getSecond().toSQLString(db));
+			protected String doExpressionTransform(DBDefinition db) {
+				return db.doDateRepeatGreaterThanTransform(getFirst().toSQLString(db), getSecond().toSQLString(db));
 			}
 		});
 	}
@@ -292,8 +292,8 @@ public class DateRepeatExpression implements DateRepeatResult, RangeComparable<D
 		return new BooleanExpression(new DateRepeatDateRepeatWithBooleanResult(this, anotherInstance) {
 
 			@Override
-			protected String doExpressionTransform(DBDatabase db) {
-				return db.getDefinition().doDateRepeatLessThanEqualsTransform(getFirst().toSQLString(db), getSecond().toSQLString(db));
+			protected String doExpressionTransform(DBDefinition db) {
+				return db.doDateRepeatLessThanEqualsTransform(getFirst().toSQLString(db), getSecond().toSQLString(db));
 			}
 		});
 	}
@@ -327,8 +327,8 @@ public class DateRepeatExpression implements DateRepeatResult, RangeComparable<D
 		return new BooleanExpression(new DateRepeatDateRepeatWithBooleanResult(this, anotherInstance) {
 
 			@Override
-			protected String doExpressionTransform(DBDatabase db) {
-				return db.getDefinition().doDateRepeatGreaterThanEqualsTransform(getFirst().toSQLString(db), getSecond().toSQLString(db));
+			protected String doExpressionTransform(DBDefinition db) {
+				return db.doDateRepeatGreaterThanEqualsTransform(getFirst().toSQLString(db), getSecond().toSQLString(db));
 			}
 
 		});
@@ -432,9 +432,9 @@ public class DateRepeatExpression implements DateRepeatResult, RangeComparable<D
 		return new BooleanExpression(new DateRepeatDateRepeatWithBooleanResult(this, anotherInstance) {
 
 			@Override
-			protected String doExpressionTransform(DBDatabase db) {
+			protected String doExpressionTransform(DBDefinition db) {
 				try {
-					return db.getDefinition().doDateRepeatEqualsTransform(getFirst().toSQLString(db), getSecond().toSQLString(db));
+					return db.doDateRepeatEqualsTransform(getFirst().toSQLString(db), getSecond().toSQLString(db));
 				} catch (UnsupportedOperationException exp) {
 					final DateRepeatExpression left = this.getFirst();
 					final DateRepeatExpression right = this.getSecond();
@@ -490,9 +490,9 @@ public class DateRepeatExpression implements DateRepeatResult, RangeComparable<D
 		return new NumberExpression(new DateRepeatWithNumberResult(this) {
 
 			@Override
-			protected String doExpressionTransform(DBDatabase db) {
+			protected String doExpressionTransform(DBDefinition db) {
 				if (db instanceof SupportsDateRepeatDatatypeFunctions) {
-					return db.getDefinition().doDateRepeatGetYearsTransform(getFirst().toSQLString(db));
+					return db.doDateRepeatGetYearsTransform(getFirst().toSQLString(db));
 				} else {
 					return BooleanExpression.isNull(getFirst()).ifThenElse(
 							NumberExpression.nullExpression(),
@@ -516,9 +516,9 @@ public class DateRepeatExpression implements DateRepeatResult, RangeComparable<D
 		return new NumberExpression(new DateRepeatWithNumberResult(this) {
 
 			@Override
-			protected String doExpressionTransform(DBDatabase db) {
+			protected String doExpressionTransform(DBDefinition db) {
 				if (db instanceof SupportsDateRepeatDatatypeFunctions) {
-					return db.getDefinition().doDateRepeatGetMonthsTransform(getFirst().toSQLString(db));
+					return db.doDateRepeatGetMonthsTransform(getFirst().toSQLString(db));
 				} else {
 					return BooleanExpression.isNull(getFirst()).ifThenElse(
 							NumberExpression.nullExpression(),
@@ -542,9 +542,9 @@ public class DateRepeatExpression implements DateRepeatResult, RangeComparable<D
 		return new NumberExpression(new DateRepeatWithNumberResult(this) {
 
 			@Override
-			protected String doExpressionTransform(DBDatabase db) {
+			protected String doExpressionTransform(DBDefinition db) {
 				if (db instanceof SupportsDateRepeatDatatypeFunctions) {
-					return db.getDefinition().doDateRepeatGetDaysTransform(getFirst().toSQLString(db));
+					return db.doDateRepeatGetDaysTransform(getFirst().toSQLString(db));
 				} else {
 					return BooleanExpression.isNull(getFirst()).ifThenElse(
 							NumberExpression.nullExpression(),
@@ -568,9 +568,9 @@ public class DateRepeatExpression implements DateRepeatResult, RangeComparable<D
 		return new NumberExpression(new DateRepeatWithNumberResult(this) {
 
 			@Override
-			protected String doExpressionTransform(DBDatabase db) {
+			protected String doExpressionTransform(DBDefinition db) {
 				if (db instanceof SupportsDateRepeatDatatypeFunctions) {
-					return db.getDefinition().doDateRepeatGetHoursTransform(getFirst().toSQLString(db));
+					return db.doDateRepeatGetHoursTransform(getFirst().toSQLString(db));
 				} else {
 					return BooleanExpression.isNull(getFirst()).ifThenElse(
 							NumberExpression.nullExpression(),
@@ -594,9 +594,9 @@ public class DateRepeatExpression implements DateRepeatResult, RangeComparable<D
 		return new NumberExpression(new DateRepeatWithNumberResult(this) {
 
 			@Override
-			protected String doExpressionTransform(DBDatabase db) {
+			protected String doExpressionTransform(DBDefinition db) {
 				if (db instanceof SupportsDateRepeatDatatypeFunctions) {
-					return db.getDefinition().doDateRepeatGetMinutesTransform(getFirst().toSQLString(db));
+					return db.doDateRepeatGetMinutesTransform(getFirst().toSQLString(db));
 				} else {
 					return BooleanExpression.isNull(getFirst()).ifThenElse(
 							NumberExpression.nullExpression(),
@@ -620,9 +620,9 @@ public class DateRepeatExpression implements DateRepeatResult, RangeComparable<D
 		return new NumberExpression(new DateRepeatWithNumberResult(this) {
 
 			@Override
-			protected String doExpressionTransform(DBDatabase db) {
+			protected String doExpressionTransform(DBDefinition db) {
 				if (db instanceof SupportsDateRepeatDatatypeFunctions) {
-					return db.getDefinition().doDateRepeatGetSecondsTransform(getFirst().toSQLString(db));
+					return db.doDateRepeatGetSecondsTransform(getFirst().toSQLString(db));
 				} else {
 					return BooleanExpression.isNull(getFirst()).ifThenElse(
 							NumberExpression.nullExpression(),
@@ -647,8 +647,8 @@ public class DateRepeatExpression implements DateRepeatResult, RangeComparable<D
 		return new StringExpression(new DateRepeatWithStringResult(this) {
 
 			@Override
-			protected String doExpressionTransform(DBDatabase db) {
-				return db.getDefinition().doDateRepeatToStringTransform(getFirst().toSQLString(db));
+			protected String doExpressionTransform(DBDefinition db) {
+				return db.doDateRepeatToStringTransform(getFirst().toSQLString(db));
 			}
 		});
 	}
@@ -710,7 +710,7 @@ public class DateRepeatExpression implements DateRepeatResult, RangeComparable<D
 		}
 
 		@Override
-		public String toSQLString(DBDatabase db) {
+		public String toSQLString(DBDefinition db) {
 			if (this.getIncludesNull()) {
 				return BooleanExpression.isNull(first).toSQLString(db);
 			} else {
@@ -733,7 +733,7 @@ public class DateRepeatExpression implements DateRepeatResult, RangeComparable<D
 			return newInstance;
 		}
 
-		protected abstract String doExpressionTransform(DBDatabase db);
+		protected abstract String doExpressionTransform(DBDefinition db);
 
 		@Override
 		public Set<DBRow> getTablesInvolved() {
@@ -772,7 +772,7 @@ public class DateRepeatExpression implements DateRepeatResult, RangeComparable<D
 //			}
 		}
 
-		protected abstract String doExpressionTransform(DBDatabase db);
+		protected abstract String doExpressionTransform(DBDefinition db);
 
 		DateRepeatExpression getFirst() {
 			return first;
@@ -782,7 +782,7 @@ public class DateRepeatExpression implements DateRepeatResult, RangeComparable<D
 //			return second;
 //		}
 		@Override
-		public String toSQLString(DBDatabase db) {
+		public String toSQLString(DBDefinition db) {
 			if (this.getIncludesNull()) {
 				return BooleanExpression.isNull(first).toSQLString(db);
 			} else {
@@ -842,7 +842,7 @@ public class DateRepeatExpression implements DateRepeatResult, RangeComparable<D
 //			}
 		}
 
-		protected abstract String doExpressionTransform(DBDatabase db);
+		protected abstract String doExpressionTransform(DBDefinition db);
 
 		DateRepeatExpression getFirst() {
 			return first;
@@ -852,7 +852,7 @@ public class DateRepeatExpression implements DateRepeatResult, RangeComparable<D
 //			return second;
 //		}
 		@Override
-		public String toSQLString(DBDatabase db) {
+		public String toSQLString(DBDefinition db) {
 			if (this.getIncludesNull()) {
 				return BooleanExpression.isNull(first).toSQLString(db);
 			} else {

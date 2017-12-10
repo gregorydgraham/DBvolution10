@@ -614,15 +614,14 @@ public class PropertyWrapperDefinition {
 		return getColumnExpression().length > 0;
 	}
 
-	public synchronized List<ColumnAspects> getColumnAspects(DBDatabase db, RowDefinition actualRow) {
-		DBDefinition defn = db.getDefinition();
+	public synchronized List<ColumnAspects> getColumnAspects(DBDefinition defn, RowDefinition actualRow) {
 		allColumnAspects = new ArrayList<ColumnAspects>();
 		checkForColumnExpression(actualRow);
 		if (hasColumnExpression()) {
 			DBExpression[] columnExpression1 = getColumnExpression();
 			for (DBExpression dBExpression : columnExpression1) {
 				allColumnAspects.add(new ColumnAspects(
-						db.getDefinition().transformToStorableType(dBExpression).toSQLString(db),
+						defn.transformToStorableType(dBExpression).toSQLString(defn),
 						defn.formatForColumnAlias(String.valueOf(dBExpression.hashCode())),
 						dBExpression)
 				);
@@ -636,8 +635,7 @@ public class PropertyWrapperDefinition {
 		return allColumnAspects;
 	}
 
-	String[] getColumnAlias(DBDatabase db, RowDefinition actualRow) {
-		DBDefinition defn = db.getDefinition();
+	String[] getColumnAlias(DBDefinition defn, RowDefinition actualRow) {
 		checkForColumnExpression(actualRow);
 		if (hasColumnExpression()) {
 			ArrayList<String> strList = new ArrayList<String>();

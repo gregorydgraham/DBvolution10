@@ -10,6 +10,7 @@ import java.sql.SQLException;
 import nz.co.gregs.dbvolution.databases.DBDatabase;
 import nz.co.gregs.dbvolution.DBReport;
 import nz.co.gregs.dbvolution.DBRow;
+import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.expressions.IntegerExpression;
 import nz.co.gregs.dbvolution.expressions.NumberExpression;
 import nz.co.gregs.dbvolution.internal.properties.PropertyWrapperDefinition;
@@ -233,7 +234,7 @@ public class DBNumberStatistics extends DBNumber {
 	}
 
 	@Override
-	protected Number getFromResultSet(DBDatabase database, ResultSet resultSet, String fullColumnName) throws SQLException {
+	protected Number getFromResultSet(DBDefinition database, ResultSet resultSet, String fullColumnName) throws SQLException {
 		try {
 			return resultSet.getBigDecimal(fullColumnName);
 		} catch (SQLException ex) {
@@ -249,7 +250,7 @@ public class DBNumberStatistics extends DBNumber {
 		}
 	}
 
-	protected Number getFromResultSet(DBDatabase database, ResultSet resultSet, String fullColumnName, int offset) throws SQLException {
+	protected Number getFromResultSet(DBDefinition database, ResultSet resultSet, String fullColumnName, int offset) throws SQLException {
 		int columnIndex = resultSet.findColumn(fullColumnName) + offset;
 		try {
 			return resultSet.getBigDecimal(columnIndex);
@@ -272,7 +273,7 @@ public class DBNumberStatistics extends DBNumber {
 	}
 
 	@Override
-	public void setFromResultSet(DBDatabase database, ResultSet resultSet, String resultSetColumnName) throws SQLException {
+	public void setFromResultSet(DBDefinition database, ResultSet resultSet, String resultSetColumnName) throws SQLException {
 		removeConstraints();
 		if (resultSet == null || resultSetColumnName == null) {
 			this.setToNull();

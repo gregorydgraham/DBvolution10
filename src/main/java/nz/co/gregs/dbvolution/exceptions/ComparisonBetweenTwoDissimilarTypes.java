@@ -15,7 +15,7 @@
  */
 package nz.co.gregs.dbvolution.exceptions;
 
-import nz.co.gregs.dbvolution.databases.DBDatabase;
+import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.expressions.DBExpression;
 
 /**
@@ -59,7 +59,7 @@ public class ComparisonBetweenTwoDissimilarTypes extends DBRuntimeException {
 	 * @param genericExpression
 	 * @param firstValue
 	 */
-	public ComparisonBetweenTwoDissimilarTypes(DBDatabase db, DBExpression genericExpression, DBExpression firstValue) {
+	public ComparisonBetweenTwoDissimilarTypes(DBDefinition db, DBExpression genericExpression, DBExpression firstValue) {
 		super("Attempt To Compared Two Dissimilar Types: "
 				+ genericExpression.toSQLString(db)
 				+ " is a " + genericExpression.getClass().getSimpleName()

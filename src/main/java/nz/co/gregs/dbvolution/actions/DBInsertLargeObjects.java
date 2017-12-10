@@ -72,7 +72,7 @@ public class DBInsertLargeObjects extends DBUpdateLargeObjects {
 		String separator = "";
 		for (QueryableDatatype<?> pk : primaryKeys) {
 			PropertyWrapper wrapper = row.getPropertyWrapperOf(pk);
-			String pkValue = pk.toSQLString(db);
+			String pkValue = pk.toSQLString(db.getDefinition());
 			//String pkValue = (pk.hasChanged() ? pk.getPreviousSQLValue(db) : pk.toSQLString(db));
 			sqlString.append(separator)
 					.append(defn.formatColumnName(wrapper.columnName()))

@@ -110,7 +110,7 @@ public class DBBooleanArrayTest extends AbstractTest {
 		DBBooleanArray instance = new DBBooleanArray();
 		Boolean[] expResult = new Boolean[]{false, true, true};
 		instance.setValue(expResult);
-		String result = instance.formatValueForSQLStatement(database);
+		String result = instance.formatValueForSQLStatement(database.getDefinition());
 		Assert.assertThat(
 				result,
 				anyOf(

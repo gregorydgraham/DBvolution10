@@ -23,6 +23,7 @@ import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import nz.co.gregs.dbvolution.databases.DBDatabase;
+import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 import nz.co.gregs.dbvolution.expressions.Polygon2DExpression;
 import nz.co.gregs.dbvolution.expressions.StringExpression;
@@ -103,13 +104,13 @@ public class DBPolygon2D extends QueryableDatatype<Polygon> implements Transform
 	}
 
 	@Override
-	protected String formatValueForSQLStatement(DBDatabase db) {
+	protected String formatValueForSQLStatement(DBDefinition db) {
 		Polygon geom = getLiteralValue();
-		return db.getDefinition().transformPolygonIntoDatabasePolygon2DFormat(geom);
+		return db.transformPolygonIntoDatabasePolygon2DFormat(geom);
 	}
 
 	@Override
-	protected Polygon getFromResultSet(DBDatabase database, ResultSet resultSet, String fullColumnName) throws SQLException {
+	protected Polygon getFromResultSet(DBDefinition database, ResultSet resultSet, String fullColumnName) throws SQLException {
 
 		Polygon geometry = null;
 		String string = resultSet.getString(fullColumnName);
@@ -117,7 +118,7 @@ public class DBPolygon2D extends QueryableDatatype<Polygon> implements Transform
 			return null;
 		} else {
 			try {
-				geometry = database.getDefinition().transformDatabasePolygon2DToJTSPolygon(string);
+				geometry = database.transformDatabasePolygon2DToJTSPolygon(string);
 			} catch (ParseException ex) {
 				Logger.getLogger(DBPolygon2D.class.getName()).log(Level.SEVERE, null, ex);
 				throw new nz.co.gregs.dbvolution.exceptions.ParsingSpatialValueException(fullColumnName, string, ex);

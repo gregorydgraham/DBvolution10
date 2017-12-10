@@ -25,6 +25,7 @@ import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import nz.co.gregs.dbvolution.databases.DBDatabase;
+import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 import nz.co.gregs.dbvolution.exceptions.*;
 import nz.co.gregs.dbvolution.expressions.MultiPoint2DExpression;
@@ -179,18 +180,18 @@ public class DBMultiPoint2D extends QueryableDatatype<MultiPoint> implements Mul
 	}
 
 	@Override
-	protected String formatValueForSQLStatement(DBDatabase db) {
+	protected String formatValueForSQLStatement(DBDefinition db) {
 		MultiPoint points = getValue();
 		if (points == null) {
-			return db.getDefinition().getNull();
+			return db.getNull();
 		} else {
-			String str = db.getDefinition().transformMultiPoint2DToDatabaseMultiPoint2DValue(points);
+			String str = db.transformMultiPoint2DToDatabaseMultiPoint2DValue(points);
 			return str;
 		}
 	}
 
 	@Override
-	protected MultiPoint getFromResultSet(DBDatabase database, ResultSet resultSet, String fullColumnName) throws SQLException, IncorrectGeometryReturnedForDatatype {
+	protected MultiPoint getFromResultSet(DBDefinition database, ResultSet resultSet, String fullColumnName) throws SQLException, IncorrectGeometryReturnedForDatatype {
 
 		MultiPoint point = null;
 		String string = resultSet.getString(fullColumnName);
@@ -198,7 +199,7 @@ public class DBMultiPoint2D extends QueryableDatatype<MultiPoint> implements Mul
 			return null;
 		} else {
 			try {
-				point = database.getDefinition().transformDatabaseMultiPoint2DValueToJTSMultiPoint(string);
+				point = database.transformDatabaseMultiPoint2DValueToJTSMultiPoint(string);
 			} catch (ParseException ex) {
 				Logger.getLogger(DBPoint2D.class.getName()).log(Level.SEVERE, null, ex);
 				throw new ParsingSpatialValueException(fullColumnName, string, ex);

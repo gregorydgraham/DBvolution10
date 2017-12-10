@@ -26,7 +26,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import nz.co.gregs.dbvolution.databases.DBDatabase;
+import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.DBQuery;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.datatypes.spatial2D.DBPolygon2D;
@@ -189,9 +189,9 @@ public class Polygon2DExpression implements Polygon2DResult, EqualComparable<Pol
 	}
 
 	@Override
-	public String toSQLString(DBDatabase db) {
+	public String toSQLString(DBDefinition db) {
 		if (innerGeometry == null) {
-			return db.getDefinition().getNull();
+			return db.getNull();
 		} else {
 			return innerGeometry.toSQLString(db);
 		}
@@ -254,8 +254,8 @@ public class Polygon2DExpression implements Polygon2DResult, EqualComparable<Pol
 		return new BooleanExpression(new PolygonPolygonWithBooleanResult(this, new Polygon2DExpression(rightHandSide)) {
 
 			@Override
-			public String doExpressionTransform(DBDatabase db) {
-				return db.getDefinition().doPolygon2DIntersectsTransform(getFirst().toSQLString(db), getSecond().toSQLString(db));
+			public String doExpressionTransform(DBDefinition db) {
+				return db.doPolygon2DIntersectsTransform(getFirst().toSQLString(db), getSecond().toSQLString(db));
 			}
 		});
 	}
@@ -285,14 +285,14 @@ public class Polygon2DExpression implements Polygon2DResult, EqualComparable<Pol
 		return new Polygon2DExpression(new Point2dArrayFunctionWithPolygon2DResult(pointExpressions) {
 
 			@Override
-			protected String doExpressionTransform(DBDatabase db) {
+			protected String doExpressionTransform(DBDefinition db) {
 				Point2DExpression[] allPoints = getAllPoints();
 				List<String> pointSQL = new ArrayList<String>();
 				for (Point2DExpression pointExpr : allPoints) {
 					pointSQL.add(pointExpr.toSQLString(db));
 				}
 				try {
-					return db.getDefinition().transformPoint2DArrayToDatabasePolygon2DFormat(pointSQL);
+					return db.transformPoint2DArrayToDatabasePolygon2DFormat(pointSQL);
 				} catch (UnsupportedOperationException ex) {
 					StringExpression newPolygon = StringExpression.value("POLYGON ((");
 					String separator = "";
@@ -313,14 +313,14 @@ public class Polygon2DExpression implements Polygon2DResult, EqualComparable<Pol
 		return new Polygon2DExpression(new CoordinateArrayFunctionWithPolygon2DResult(coordExpressions) {
 
 			@Override
-			protected String doExpressionTransform(DBDatabase db) {
+			protected String doExpressionTransform(DBDefinition db) {
 				NumberExpression[] allCoords = getAllCoordinates();
 				List<String> pointSQL = new ArrayList<String>();
 				for (NumberExpression pointExpr : allCoords) {
 					pointSQL.add(pointExpr.toSQLString(db));
 				}
 				try {
-					return db.getDefinition().transformCoordinateArrayToDatabasePolygon2DFormat(pointSQL);
+					return db.transformCoordinateArrayToDatabasePolygon2DFormat(pointSQL);
 				} catch (UnsupportedOperationException ex) {
 					StringExpression newPolygon = StringExpression.value("POLYGON ((");
 					String separator = "";
@@ -361,8 +361,8 @@ public class Polygon2DExpression implements Polygon2DResult, EqualComparable<Pol
 		return new BooleanExpression(new PolygonPolygonWithBooleanResult(this, new Polygon2DExpression(rightHandSide)) {
 
 			@Override
-			public String doExpressionTransform(DBDatabase db) {
-				return db.getDefinition().doPolygon2DEqualsTransform(getFirst().toSQLString(db), getSecond().toSQLString(db));
+			public String doExpressionTransform(DBDefinition db) {
+				return db.doPolygon2DEqualsTransform(getFirst().toSQLString(db), getSecond().toSQLString(db));
 			}
 		});
 	}
@@ -393,8 +393,8 @@ public class Polygon2DExpression implements Polygon2DResult, EqualComparable<Pol
 		return new BooleanExpression(new PolygonPointWithBooleanResult(this, new Point2DExpression(rightHandSide)) {
 
 			@Override
-			public String doExpressionTransform(DBDatabase db) {
-				return db.getDefinition().doPolygon2DContainsPoint2DTransform(getFirst().toSQLString(db), getSecond().toSQLString(db));
+			public String doExpressionTransform(DBDefinition db) {
+				return db.doPolygon2DContainsPoint2DTransform(getFirst().toSQLString(db), getSecond().toSQLString(db));
 			}
 		});
 	}
@@ -437,8 +437,8 @@ public class Polygon2DExpression implements Polygon2DResult, EqualComparable<Pol
 		return new BooleanExpression(new PolygonPolygonWithBooleanResult(this, new Polygon2DExpression(rightHandSide)) {
 
 			@Override
-			public String doExpressionTransform(DBDatabase db) {
-				return db.getDefinition().doPolygon2DContainsPolygon2DTransform(getFirst().toSQLString(db), getSecond().toSQLString(db));
+			public String doExpressionTransform(DBDefinition db) {
+				return db.doPolygon2DContainsPolygon2DTransform(getFirst().toSQLString(db), getSecond().toSQLString(db));
 			}
 		});
 	}
@@ -471,8 +471,8 @@ public class Polygon2DExpression implements Polygon2DResult, EqualComparable<Pol
 		return new BooleanExpression(new PolygonPolygonWithBooleanResult(this, new Polygon2DExpression(rightHandSide)) {
 
 			@Override
-			public String doExpressionTransform(DBDatabase db) {
-				return db.getDefinition().doPolygon2DDoesNotIntersectTransform(getFirst().toSQLString(db), getSecond().toSQLString(db));
+			public String doExpressionTransform(DBDefinition db) {
+				return db.doPolygon2DDoesNotIntersectTransform(getFirst().toSQLString(db), getSecond().toSQLString(db));
 			}
 		});
 	}
@@ -521,8 +521,8 @@ public class Polygon2DExpression implements Polygon2DResult, EqualComparable<Pol
 		return new BooleanExpression(new PolygonPolygonWithBooleanResult(this, new Polygon2DExpression(rightHandSide)) {
 
 			@Override
-			public String doExpressionTransform(DBDatabase db) {
-				return db.getDefinition().doPolygon2DOverlapsTransform(getFirst().toSQLString(db), getSecond().toSQLString(db));
+			public String doExpressionTransform(DBDefinition db) {
+				return db.doPolygon2DOverlapsTransform(getFirst().toSQLString(db), getSecond().toSQLString(db));
 			}
 		});
 	}
@@ -561,8 +561,8 @@ public class Polygon2DExpression implements Polygon2DResult, EqualComparable<Pol
 		return new BooleanExpression(new PolygonPolygonWithBooleanResult(this, new Polygon2DExpression(rightHandSide)) {
 
 			@Override
-			public String doExpressionTransform(DBDatabase db) {
-				return db.getDefinition().doPolygon2DTouchesTransform(getFirst().toSQLString(db), getSecond().toSQLString(db));
+			public String doExpressionTransform(DBDefinition db) {
+				return db.doPolygon2DTouchesTransform(getFirst().toSQLString(db), getSecond().toSQLString(db));
 			}
 		});
 	}
@@ -611,8 +611,8 @@ public class Polygon2DExpression implements Polygon2DResult, EqualComparable<Pol
 		return new BooleanExpression(new PolygonPolygonWithBooleanResult(this, new Polygon2DExpression(rightHandSide)) {
 
 			@Override
-			public String doExpressionTransform(DBDatabase db) {
-				return db.getDefinition().doPolygon2DWithinTransform(getFirst().toSQLString(db), getSecond().toSQLString(db));
+			public String doExpressionTransform(DBDefinition db) {
+				return db.doPolygon2DWithinTransform(getFirst().toSQLString(db), getSecond().toSQLString(db));
 			}
 		});
 	}
@@ -622,8 +622,8 @@ public class Polygon2DExpression implements Polygon2DResult, EqualComparable<Pol
 		return new NumberExpression(new Polygon2DFunctionWithNumberResult(this) {
 
 			@Override
-			public String doExpressionTransform(DBDatabase db) {
-				return db.getDefinition().doPolygon2DMeasurableDimensionsTransform(getFirst().toSQLString(db));
+			public String doExpressionTransform(DBDefinition db) {
+				return db.doPolygon2DMeasurableDimensionsTransform(getFirst().toSQLString(db));
 			}
 		});
 	}
@@ -633,9 +633,9 @@ public class Polygon2DExpression implements Polygon2DResult, EqualComparable<Pol
 		return new NumberExpression(new Polygon2DFunctionWithNumberResult(this) {
 
 			@Override
-			public String doExpressionTransform(DBDatabase db) {
+			public String doExpressionTransform(DBDefinition db) {
 				try {
-					return db.getDefinition().doPolygon2DSpatialDimensionsTransform(getFirst().toSQLString(db));
+					return db.doPolygon2DSpatialDimensionsTransform(getFirst().toSQLString(db));
 				} catch (UnsupportedOperationException unsupported) {
 					return NumberExpression.value(2).toSQLString(db);
 				}
@@ -648,9 +648,9 @@ public class Polygon2DExpression implements Polygon2DResult, EqualComparable<Pol
 		return new BooleanExpression(new PolygonWithBooleanResult(this) {
 
 			@Override
-			public String doExpressionTransform(DBDatabase db) {
+			public String doExpressionTransform(DBDefinition db) {
 				try {
-					return db.getDefinition().doPolygon2DHasMagnitudeTransform(getFirst().toSQLString(db));
+					return db.doPolygon2DHasMagnitudeTransform(getFirst().toSQLString(db));
 				} catch (UnsupportedOperationException unsupported) {
 					return BooleanExpression.falseExpression().toSQLString(db);
 				}
@@ -663,9 +663,9 @@ public class Polygon2DExpression implements Polygon2DResult, EqualComparable<Pol
 		return new NumberExpression(new Polygon2DFunctionWithNumberResult(this) {
 
 			@Override
-			public String doExpressionTransform(DBDatabase db) {
+			public String doExpressionTransform(DBDefinition db) {
 				try {
-					return db.getDefinition().doPolygon2DGetMagnitudeTransform(getFirst().toSQLString(db));
+					return db.doPolygon2DGetMagnitudeTransform(getFirst().toSQLString(db));
 				} catch (UnsupportedOperationException unsupported) {
 					return nullExpression().toSQLString(db);
 				}
@@ -685,8 +685,8 @@ public class Polygon2DExpression implements Polygon2DResult, EqualComparable<Pol
 		return new NumberExpression(new Polygon2DFunctionWithNumberResult(this) {
 
 			@Override
-			public String doExpressionTransform(DBDatabase db) {
-				return db.getDefinition().doPolygon2DGetAreaTransform(getFirst().toSQLString(db));
+			public String doExpressionTransform(DBDefinition db) {
+				return db.doPolygon2DGetAreaTransform(getFirst().toSQLString(db));
 			}
 		});
 	}
@@ -695,8 +695,8 @@ public class Polygon2DExpression implements Polygon2DResult, EqualComparable<Pol
 //		return new NumberExpression(new Polygon2DFunctionWithNumberResult(this) {
 //
 //			@Override
-//			public String doExpressionTransform(DBDatabase db) {
-//				return db.getDefinition().doPolygon2DGetMaxXTransform(getFirst().toSQLString(db));
+//			public String doExpressionTransform(DBDefinition db) {
+//				return db.doPolygon2DGetMaxXTransform(getFirst().toSQLString(db));
 //			}
 //		});
 //	}
@@ -705,8 +705,8 @@ public class Polygon2DExpression implements Polygon2DResult, EqualComparable<Pol
 //		return new NumberExpression(new Polygon2DFunctionWithNumberResult(this) {
 //
 //			@Override
-//			public String doExpressionTransform(DBDatabase db) {
-//				return db.getDefinition().doPolygon2DGetMinXTransform(getFirst().toSQLString(db));
+//			public String doExpressionTransform(DBDefinition db) {
+//				return db.doPolygon2DGetMinXTransform(getFirst().toSQLString(db));
 //			}
 //		});
 //	}
@@ -715,8 +715,8 @@ public class Polygon2DExpression implements Polygon2DResult, EqualComparable<Pol
 //		return new NumberExpression(new Polygon2DFunctionWithNumberResult(this) {
 //
 //			@Override
-//			public String doExpressionTransform(DBDatabase db) {
-//				return db.getDefinition().doPolygon2DGetMaxYTransform(getFirst().toSQLString(db));
+//			public String doExpressionTransform(DBDefinition db) {
+//				return db.doPolygon2DGetMaxYTransform(getFirst().toSQLString(db));
 //			}
 //		});
 //	}
@@ -725,8 +725,8 @@ public class Polygon2DExpression implements Polygon2DResult, EqualComparable<Pol
 //		return new NumberExpression(new Polygon2DFunctionWithNumberResult(this) {
 //
 //			@Override
-//			public String doExpressionTransform(DBDatabase db) {
-//				return db.getDefinition().doPolygon2DGetMinYTransform(getFirst().toSQLString(db));
+//			public String doExpressionTransform(DBDefinition db) {
+//				return db.doPolygon2DGetMinYTransform(getFirst().toSQLString(db));
 //			}
 //		});
 //	}
@@ -735,9 +735,9 @@ public class Polygon2DExpression implements Polygon2DResult, EqualComparable<Pol
 		return new Polygon2DExpression(new Polygon2DFunctionWithPolygon2DResult(this) {
 
 			@Override
-			public String doExpressionTransform(DBDatabase db) {
+			public String doExpressionTransform(DBDefinition db) {
 				try {
-					return db.getDefinition().doPolygon2DGetBoundingBoxTransform(getFirst().toSQLString(db));
+					return db.doPolygon2DGetBoundingBoxTransform(getFirst().toSQLString(db));
 				} catch (UnsupportedOperationException unsupported) {
 					final Polygon2DExpression first = getFirst();
 					final NumberExpression maxX = first.maxX();
@@ -769,8 +769,8 @@ public class Polygon2DExpression implements Polygon2DResult, EqualComparable<Pol
 		Line2DExpression exteriorRingExpr = new Line2DExpression(new Polygon2DFunctionWithLine2DResult(this) {
 
 			@Override
-			public String doExpressionTransform(DBDatabase db) {
-				return db.getDefinition().doPolygon2DGetExteriorRingTransform(getFirst().toSQLString(db));
+			public String doExpressionTransform(DBDefinition db) {
+				return db.doPolygon2DGetExteriorRingTransform(getFirst().toSQLString(db));
 			}
 		});
 //		return this.measurableDimensions().is(2).ifThenElse(exteriorRingExpr, this);
@@ -800,8 +800,8 @@ public class Polygon2DExpression implements Polygon2DResult, EqualComparable<Pol
 		StringExpression stringResultExpr = new StringExpression(new Polygon2DFunctionWithStringResult(this) {
 
 			@Override
-			public String doExpressionTransform(DBDatabase db) {
-				return db.getDefinition().doPolygon2DAsTextTransform(getFirst().toSQLString(db));
+			public String doExpressionTransform(DBDefinition db) {
+				return db.doPolygon2DAsTextTransform(getFirst().toSQLString(db));
 			}
 		});
 //		return this.measurableDimensions().is(2).ifThenElse(exteriorRingExpr, this);
@@ -813,8 +813,8 @@ public class Polygon2DExpression implements Polygon2DResult, EqualComparable<Pol
 		NumberExpression expr = new NumberExpression(new Polygon2DFunctionWithNumberResult(this) {
 
 			@Override
-			public String doExpressionTransform(DBDatabase db) {
-				return db.getDefinition().doPolygon2DGetMaxXTransform(getFirst().toSQLString(db));
+			public String doExpressionTransform(DBDefinition db) {
+				return db.doPolygon2DGetMaxXTransform(getFirst().toSQLString(db));
 			}
 		});
 		return expr;
@@ -825,8 +825,8 @@ public class Polygon2DExpression implements Polygon2DResult, EqualComparable<Pol
 		NumberExpression expr = new NumberExpression(new Polygon2DFunctionWithNumberResult(this) {
 
 			@Override
-			public String doExpressionTransform(DBDatabase db) {
-				return db.getDefinition().doPolygon2DGetMaxYTransform(getFirst().toSQLString(db));
+			public String doExpressionTransform(DBDefinition db) {
+				return db.doPolygon2DGetMaxYTransform(getFirst().toSQLString(db));
 			}
 		});
 		return expr;
@@ -837,8 +837,8 @@ public class Polygon2DExpression implements Polygon2DResult, EqualComparable<Pol
 		NumberExpression expr = new NumberExpression(new Polygon2DFunctionWithNumberResult(this) {
 
 			@Override
-			public String doExpressionTransform(DBDatabase db) {
-				return db.getDefinition().doPolygon2DGetMinXTransform(getFirst().toSQLString(db));
+			public String doExpressionTransform(DBDefinition db) {
+				return db.doPolygon2DGetMinXTransform(getFirst().toSQLString(db));
 			}
 		});
 		return expr;
@@ -849,8 +849,8 @@ public class Polygon2DExpression implements Polygon2DResult, EqualComparable<Pol
 		NumberExpression expr = new NumberExpression(new Polygon2DFunctionWithNumberResult(this) {
 
 			@Override
-			public String doExpressionTransform(DBDatabase db) {
-				return db.getDefinition().doPolygon2DGetMinYTransform(getFirst().toSQLString(db));
+			public String doExpressionTransform(DBDefinition db) {
+				return db.doPolygon2DGetMinYTransform(getFirst().toSQLString(db));
 			}
 		});
 		return expr;
@@ -884,7 +884,7 @@ public class Polygon2DExpression implements Polygon2DResult, EqualComparable<Pol
 		}
 
 		@Override
-		public final String toSQLString(DBDatabase db) {
+		public final String toSQLString(DBDefinition db) {
 			if (this.getIncludesNull()) {
 				return BooleanExpression.isNull(first).toSQLString(db);
 			} else {
@@ -907,7 +907,7 @@ public class Polygon2DExpression implements Polygon2DResult, EqualComparable<Pol
 			return newInstance;
 		}
 
-		protected abstract String doExpressionTransform(DBDatabase db);
+		protected abstract String doExpressionTransform(DBDefinition db);
 
 		@Override
 		public Set<DBRow> getTablesInvolved() {
@@ -954,7 +954,7 @@ public class Polygon2DExpression implements Polygon2DResult, EqualComparable<Pol
 //			return second;
 //		}
 		@Override
-		public final String toSQLString(DBDatabase db) {
+		public final String toSQLString(DBDefinition db) {
 			if (this.getIncludesNull()) {
 				return BooleanExpression.isNull(first).toSQLString(db);
 			} else {
@@ -977,7 +977,7 @@ public class Polygon2DExpression implements Polygon2DResult, EqualComparable<Pol
 			return newInstance;
 		}
 
-		protected abstract String doExpressionTransform(DBDatabase db);
+		protected abstract String doExpressionTransform(DBDefinition db);
 
 		@Override
 		public Set<DBRow> getTablesInvolved() {
@@ -1025,7 +1025,7 @@ public class Polygon2DExpression implements Polygon2DResult, EqualComparable<Pol
 		}
 
 		@Override
-		public final String toSQLString(DBDatabase db) {
+		public final String toSQLString(DBDefinition db) {
 			if (this.getIncludesNull()) {
 				return BooleanExpression.isNull(first).toSQLString(db);
 			} else {
@@ -1048,7 +1048,7 @@ public class Polygon2DExpression implements Polygon2DResult, EqualComparable<Pol
 			return newInstance;
 		}
 
-		protected abstract String doExpressionTransform(DBDatabase db);
+		protected abstract String doExpressionTransform(DBDefinition db);
 
 		@Override
 		public Set<DBRow> getTablesInvolved() {
@@ -1095,7 +1095,7 @@ public class Polygon2DExpression implements Polygon2DResult, EqualComparable<Pol
 //			return second;
 //		}
 		@Override
-		public final String toSQLString(DBDatabase db) {
+		public final String toSQLString(DBDefinition db) {
 			if (this.getIncludesNull()) {
 				return BooleanExpression.isNull(first).toSQLString(db);
 			} else {
@@ -1118,7 +1118,7 @@ public class Polygon2DExpression implements Polygon2DResult, EqualComparable<Pol
 			return newInstance;
 		}
 
-		protected abstract String doExpressionTransform(DBDatabase db);
+		protected abstract String doExpressionTransform(DBDefinition db);
 
 		@Override
 		public Set<DBRow> getTablesInvolved() {
@@ -1165,7 +1165,7 @@ public class Polygon2DExpression implements Polygon2DResult, EqualComparable<Pol
 //			return second;
 //		}
 		@Override
-		public final String toSQLString(DBDatabase db) {
+		public final String toSQLString(DBDefinition db) {
 			if (this.getIncludesNull()) {
 				return BooleanExpression.isNull(first).toSQLString(db);
 			} else {
@@ -1188,7 +1188,7 @@ public class Polygon2DExpression implements Polygon2DResult, EqualComparable<Pol
 			return newInstance;
 		}
 
-		protected abstract String doExpressionTransform(DBDatabase db);
+		protected abstract String doExpressionTransform(DBDefinition db);
 
 		@Override
 		public Set<DBRow> getTablesInvolved() {
@@ -1235,7 +1235,7 @@ public class Polygon2DExpression implements Polygon2DResult, EqualComparable<Pol
 //			return second;
 //		}
 		@Override
-		public final String toSQLString(DBDatabase db) {
+		public final String toSQLString(DBDefinition db) {
 			if (this.getIncludesNull()) {
 				return BooleanExpression.isNull(first).toSQLString(db);
 			} else {
@@ -1258,7 +1258,7 @@ public class Polygon2DExpression implements Polygon2DResult, EqualComparable<Pol
 			return newInstance;
 		}
 
-		protected abstract String doExpressionTransform(DBDatabase db);
+		protected abstract String doExpressionTransform(DBDefinition db);
 
 		@Override
 		public Set<DBRow> getTablesInvolved() {
@@ -1305,7 +1305,7 @@ public class Polygon2DExpression implements Polygon2DResult, EqualComparable<Pol
 //			return second;
 //		}
 		@Override
-		public final String toSQLString(DBDatabase db) {
+		public final String toSQLString(DBDefinition db) {
 			if (this.getIncludesNull()) {
 				return BooleanExpression.isNull(first).toSQLString(db);
 			} else {
@@ -1328,7 +1328,7 @@ public class Polygon2DExpression implements Polygon2DResult, EqualComparable<Pol
 			return newInstance;
 		}
 
-		protected abstract String doExpressionTransform(DBDatabase db);
+		protected abstract String doExpressionTransform(DBDefinition db);
 
 		@Override
 		public Set<DBRow> getTablesInvolved() {
@@ -1372,7 +1372,7 @@ public class Polygon2DExpression implements Polygon2DResult, EqualComparable<Pol
 		}
 
 		@Override
-		public final String toSQLString(DBDatabase db) {
+		public final String toSQLString(DBDefinition db) {
 			BooleanExpression isNull = BooleanExpression.trueExpression();
 			if (this.getIncludesNull()) {
 				for (Point2DExpression allPoint : allPoints) {
@@ -1399,7 +1399,7 @@ public class Polygon2DExpression implements Polygon2DResult, EqualComparable<Pol
 			return newInstance;
 		}
 
-		protected abstract String doExpressionTransform(DBDatabase db);
+		protected abstract String doExpressionTransform(DBDefinition db);
 
 		@Override
 		public Set<DBRow> getTablesInvolved() {
@@ -1446,7 +1446,7 @@ public class Polygon2DExpression implements Polygon2DResult, EqualComparable<Pol
 		}
 
 		@Override
-		public final String toSQLString(DBDatabase db) {
+		public final String toSQLString(DBDefinition db) {
 			BooleanExpression isNull = BooleanExpression.trueExpression();
 			if (this.getIncludesNull()) {
 				for (NumberExpression allPoint : allCoords) {
@@ -1473,7 +1473,7 @@ public class Polygon2DExpression implements Polygon2DResult, EqualComparable<Pol
 			return newInstance;
 		}
 
-		protected abstract String doExpressionTransform(DBDatabase db);
+		protected abstract String doExpressionTransform(DBDefinition db);
 
 		@Override
 		public Set<DBRow> getTablesInvolved() {

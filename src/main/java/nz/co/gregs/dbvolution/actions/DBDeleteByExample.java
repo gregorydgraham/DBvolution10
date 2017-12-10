@@ -81,14 +81,14 @@ public class DBDeleteByExample extends DBDelete {
 
 	@Override
 	public List<String> getSQLStatements(DBDatabase db) {
-		DBRow row = getRow();
 		DBDefinition defn = db.getDefinition();
+		DBRow row = getRow();
 		StringBuilder whereClause = new StringBuilder();
-		for (String clause : row.getWhereClausesWithoutAliases(db)) {
+		for (String clause : row.getWhereClausesWithoutAliases(defn)) {
 			whereClause.append(defn.beginAndLine()).append(clause);
 		}
 
-		ArrayList<String> strs = new ArrayList<String>();
+		ArrayList<String> strs = new ArrayList<>();
 		strs.add(defn.beginDeleteLine()
 				+ defn.formatTableName(row)
 				+ defn.beginWhereClause()

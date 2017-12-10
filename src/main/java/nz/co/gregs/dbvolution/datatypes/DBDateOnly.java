@@ -21,6 +21,7 @@ import java.util.Date;
 import nz.co.gregs.dbvolution.databases.DBDatabase;
 import nz.co.gregs.dbvolution.DBReport;
 import nz.co.gregs.dbvolution.DBRow;
+import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.expressions.DateExpression;
 
 /**
@@ -118,8 +119,8 @@ public class DBDateOnly extends DBDate {
 	}
 
 	@Override
-	public String formatValueForSQLStatement(DBDatabase db) {
+	public String formatValueForSQLStatement(DBDefinition db) {
 		final Date dateValue = dateValue();
-		return db.getDefinition().getDateFormattedForQuery(dateValue);
+		return db.getDateFormattedForQuery(dateValue);
 	}
 }

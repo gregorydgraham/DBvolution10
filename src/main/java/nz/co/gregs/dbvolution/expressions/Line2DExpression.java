@@ -26,7 +26,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import nz.co.gregs.dbvolution.databases.DBDatabase;
+import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.datatypes.spatial2D.DBLine2D;
@@ -193,9 +193,9 @@ public class Line2DExpression implements Line2DResult, EqualComparable<Line2DRes
 	}
 
 	@Override
-	public String toSQLString(DBDatabase db) {
+	public String toSQLString(DBDefinition db) {
 		if (innerLineString == null) {
-			return db.getDefinition().getNull();
+			return db.getNull();
 		} else {
 			return innerLineString.toSQLString(db);
 		}
@@ -263,9 +263,9 @@ public class Line2DExpression implements Line2DResult, EqualComparable<Line2DRes
 		return new StringExpression(new Line2DExpression.LineFunctionWithStringResult(this) {
 
 			@Override
-			protected String doExpressionTransform(DBDatabase db) {
+			protected String doExpressionTransform(DBDefinition db) {
 				try {
-					return db.getDefinition().doLine2DAsTextTransform(getFirst().toSQLString(db));
+					return db.doLine2DAsTextTransform(getFirst().toSQLString(db));
 				} catch (UnsupportedOperationException unsupported) {
 					return getFirst().toSQLString(db);
 				}
@@ -343,9 +343,9 @@ public class Line2DExpression implements Line2DResult, EqualComparable<Line2DRes
 		return new BooleanExpression(new Line2DExpression.LineLineWithBooleanResult(this, new Line2DExpression(rightHandSide)) {
 
 			@Override
-			public String doExpressionTransform(DBDatabase db) {
+			public String doExpressionTransform(DBDefinition db) {
 				try {
-					return db.getDefinition().doLine2DEqualsTransform(getFirst().toSQLString(db), getSecond().toSQLString(db));
+					return db.doLine2DEqualsTransform(getFirst().toSQLString(db), getSecond().toSQLString(db));
 				} catch (UnsupportedOperationException unsupported) {
 					return getFirst().stringResult().is(getSecond().stringResult()).toSQLString(db);
 				}
@@ -424,12 +424,11 @@ public class Line2DExpression implements Line2DResult, EqualComparable<Line2DRes
 		return new BooleanExpression(new Line2DExpression.LineLineWithBooleanResult(this, new Line2DExpression(rightHandSide)) {
 
 			@Override
-			public String doExpressionTransform(DBDatabase db) {
+			public String doExpressionTransform(DBDefinition defn) {
 				try {
-					final DBDefinition defn = db.getDefinition();
-					return defn.doLine2DNotEqualsTransform(getFirst().toSQLString(db), getSecond().toSQLString(db));
+					return defn.doLine2DNotEqualsTransform(getFirst().toSQLString(defn), getSecond().toSQLString(defn));
 				} catch (UnsupportedOperationException unsupported) {
-					return getFirst().stringResult().is(getSecond().stringResult()).not().toSQLString(db);
+					return getFirst().stringResult().is(getSecond().stringResult()).not().toSQLString(defn);
 				}
 			}
 		});
@@ -440,9 +439,9 @@ public class Line2DExpression implements Line2DResult, EqualComparable<Line2DRes
 		return new NumberExpression(new LineFunctionWithNumberResult(this) {
 
 			@Override
-			public String doExpressionTransform(DBDatabase db) {
+			public String doExpressionTransform(DBDefinition db) {
 				try {
-					return db.getDefinition().doLine2DMeasurableDimensionsTransform(getFirst().toSQLString(db));
+					return db.doLine2DMeasurableDimensionsTransform(getFirst().toSQLString(db));
 				} catch (UnsupportedOperationException unsupported) {
 					return NumberExpression.value(1).toSQLString(db);
 				}
@@ -455,9 +454,9 @@ public class Line2DExpression implements Line2DResult, EqualComparable<Line2DRes
 		return new NumberExpression(new LineFunctionWithNumberResult(this) {
 
 			@Override
-			public String doExpressionTransform(DBDatabase db) {
+			public String doExpressionTransform(DBDefinition db) {
 				try {
-					return db.getDefinition().doLine2DSpatialDimensionsTransform(getFirst().toSQLString(db));
+					return db.doLine2DSpatialDimensionsTransform(getFirst().toSQLString(db));
 				} catch (UnsupportedOperationException unsupported) {
 					return NumberExpression.value(2).toSQLString(db);
 				}
@@ -470,9 +469,9 @@ public class Line2DExpression implements Line2DResult, EqualComparable<Line2DRes
 		return new BooleanExpression(new LineWithBooleanResult(this) {
 
 			@Override
-			public String doExpressionTransform(DBDatabase db) {
+			public String doExpressionTransform(DBDefinition db) {
 				try {
-					return db.getDefinition().doLine2DHasMagnitudeTransform(getFirst().toSQLString(db));
+					return db.doLine2DHasMagnitudeTransform(getFirst().toSQLString(db));
 				} catch (UnsupportedOperationException unsupported) {
 					return BooleanExpression.falseExpression().toSQLString(db);
 				}
@@ -485,9 +484,9 @@ public class Line2DExpression implements Line2DResult, EqualComparable<Line2DRes
 		return new NumberExpression(new LineFunctionWithNumberResult(this) {
 
 			@Override
-			public String doExpressionTransform(DBDatabase db) {
+			public String doExpressionTransform(DBDefinition db) {
 				try {
-					return db.getDefinition().doLine2DGetMagnitudeTransform(getFirst().toSQLString(db));
+					return db.doLine2DGetMagnitudeTransform(getFirst().toSQLString(db));
 				} catch (UnsupportedOperationException unsupported) {
 					return nullExpression().toSQLString(db);
 				}
@@ -500,9 +499,9 @@ public class Line2DExpression implements Line2DResult, EqualComparable<Line2DRes
 		return new Polygon2DExpression(new LineFunctionWithPolygon2DResult(this) {
 
 			@Override
-			public String doExpressionTransform(DBDatabase db) {
+			public String doExpressionTransform(DBDefinition db) {
 				try {
-					return db.getDefinition().doLine2DGetBoundingBoxTransform(getFirst().toSQLString(db));
+					return db.doLine2DGetBoundingBoxTransform(getFirst().toSQLString(db));
 				} catch (UnsupportedOperationException unsupported) {
 					final Line2DExpression first = getFirst();
 					final NumberExpression maxX = first.maxX();
@@ -534,8 +533,8 @@ public class Line2DExpression implements Line2DResult, EqualComparable<Line2DRes
 		return new NumberExpression(new LineFunctionWithNumberResult(this) {
 
 			@Override
-			public String doExpressionTransform(DBDatabase db) {
-				return db.getDefinition().doLine2DGetMaxXTransform(getFirst().toSQLString(db));
+			public String doExpressionTransform(DBDefinition db) {
+				return db.doLine2DGetMaxXTransform(getFirst().toSQLString(db));
 			}
 		});
 	}
@@ -554,8 +553,8 @@ public class Line2DExpression implements Line2DResult, EqualComparable<Line2DRes
 		return new NumberExpression(new LineFunctionWithNumberResult(this) {
 
 			@Override
-			public String doExpressionTransform(DBDatabase db) {
-				return db.getDefinition().doLine2DGetMinXTransform(getFirst().toSQLString(db));
+			public String doExpressionTransform(DBDefinition db) {
+				return db.doLine2DGetMinXTransform(getFirst().toSQLString(db));
 			}
 		});
 	}
@@ -574,8 +573,8 @@ public class Line2DExpression implements Line2DResult, EqualComparable<Line2DRes
 		return new NumberExpression(new LineFunctionWithNumberResult(this) {
 
 			@Override
-			public String doExpressionTransform(DBDatabase db) {
-				return db.getDefinition().doLine2DGetMaxYTransform(getFirst().toSQLString(db));
+			public String doExpressionTransform(DBDefinition db) {
+				return db.doLine2DGetMaxYTransform(getFirst().toSQLString(db));
 			}
 		});
 	}
@@ -594,8 +593,8 @@ public class Line2DExpression implements Line2DResult, EqualComparable<Line2DRes
 		return new NumberExpression(new LineFunctionWithNumberResult(this) {
 
 			@Override
-			public String doExpressionTransform(DBDatabase db) {
-				return db.getDefinition().doLine2DGetMinYTransform(getFirst().toSQLString(db));
+			public String doExpressionTransform(DBDefinition db) {
+				return db.doLine2DGetMinYTransform(getFirst().toSQLString(db));
 			}
 		});
 	}
@@ -687,8 +686,8 @@ public class Line2DExpression implements Line2DResult, EqualComparable<Line2DRes
 		return new BooleanExpression(new LineLineWithBooleanResult(this, new Line2DExpression(crossingLine)) {
 
 			@Override
-			protected String doExpressionTransform(DBDatabase db) {
-				return db.getDefinition().doLine2DIntersectsLine2DTransform(getFirst().toSQLString(db), getSecond().toSQLString(db));
+			protected String doExpressionTransform(DBDefinition db) {
+				return db.doLine2DIntersectsLine2DTransform(getFirst().toSQLString(db), getSecond().toSQLString(db));
 			}
 		});
 	}
@@ -707,8 +706,8 @@ public class Line2DExpression implements Line2DResult, EqualComparable<Line2DRes
 		return new MultiPoint2DExpression(new LineLineWithMultiPoint2DResult(this, new Line2DExpression(crossingLine)) {
 
 			@Override
-			protected String doExpressionTransform(DBDatabase db) {
-				return db.getDefinition().doLine2DAllIntersectionPointsWithLine2DTransform(getFirst().toSQLString(db), getSecond().toSQLString(db));
+			protected String doExpressionTransform(DBDefinition db) {
+				return db.doLine2DAllIntersectionPointsWithLine2DTransform(getFirst().toSQLString(db), getSecond().toSQLString(db));
 			}
 		});
 	}
@@ -824,8 +823,8 @@ public class Line2DExpression implements Line2DResult, EqualComparable<Line2DRes
 		return new Point2DExpression(new LineLineWithPoint2DResult(this, new Line2DExpression(crossingLine)) {
 
 			@Override
-			protected String doExpressionTransform(DBDatabase db) {
-				return db.getDefinition().doLine2DIntersectionPointWithLine2DTransform(getFirst().toSQLString(db), getSecond().toSQLString(db));
+			protected String doExpressionTransform(DBDefinition db) {
+				return db.doLine2DIntersectionPointWithLine2DTransform(getFirst().toSQLString(db), getSecond().toSQLString(db));
 			}
 		});
 	}
@@ -879,7 +878,7 @@ public class Line2DExpression implements Line2DResult, EqualComparable<Line2DRes
 		}
 
 		@Override
-		public final String toSQLString(DBDatabase db) {
+		public final String toSQLString(DBDefinition db) {
 			if (this.getIncludesNull()) {
 				return BooleanExpression.isNull(first).toSQLString(db);
 			} else {
@@ -902,7 +901,7 @@ public class Line2DExpression implements Line2DResult, EqualComparable<Line2DRes
 			return newInstance;
 		}
 
-		protected abstract String doExpressionTransform(DBDatabase db);
+		protected abstract String doExpressionTransform(DBDefinition db);
 
 		@Override
 		public Set<DBRow> getTablesInvolved() {
@@ -941,7 +940,7 @@ public class Line2DExpression implements Line2DResult, EqualComparable<Line2DRes
 		}
 
 		@Override
-		public final String toSQLString(DBDatabase db) {
+		public final String toSQLString(DBDefinition db) {
 			if (this.getIncludesNull()) {
 				return BooleanExpression.isNull(first).toSQLString(db);
 			} else {
@@ -963,7 +962,7 @@ public class Line2DExpression implements Line2DResult, EqualComparable<Line2DRes
 			return newInstance;
 		}
 
-		protected abstract String doExpressionTransform(DBDatabase db);
+		protected abstract String doExpressionTransform(DBDefinition db);
 
 		@Override
 		public Set<DBRow> getTablesInvolved() {
@@ -1008,7 +1007,7 @@ public class Line2DExpression implements Line2DResult, EqualComparable<Line2DRes
 		}
 
 		@Override
-		public final String toSQLString(DBDatabase db) {
+		public final String toSQLString(DBDefinition db) {
 			if (this.getIncludesNull()) {
 				return BooleanExpression.isNull(first).toSQLString(db);
 			} else {
@@ -1031,7 +1030,7 @@ public class Line2DExpression implements Line2DResult, EqualComparable<Line2DRes
 			return newInstance;
 		}
 
-		protected abstract String doExpressionTransform(DBDatabase db);
+		protected abstract String doExpressionTransform(DBDefinition db);
 
 		@Override
 		public Set<DBRow> getTablesInvolved() {
@@ -1079,7 +1078,7 @@ public class Line2DExpression implements Line2DResult, EqualComparable<Line2DRes
 		}
 
 		@Override
-		public final String toSQLString(DBDatabase db) {
+		public final String toSQLString(DBDefinition db) {
 			if (this.getIncludesNull()) {
 				return BooleanExpression.isNull(first).toSQLString(db);
 			} else {
@@ -1102,7 +1101,7 @@ public class Line2DExpression implements Line2DResult, EqualComparable<Line2DRes
 			return newInstance;
 		}
 
-		protected abstract String doExpressionTransform(DBDatabase db);
+		protected abstract String doExpressionTransform(DBDefinition db);
 
 		@Override
 		public Set<DBRow> getTablesInvolved() {
@@ -1149,7 +1148,7 @@ public class Line2DExpression implements Line2DResult, EqualComparable<Line2DRes
 //			return second;
 //		}
 		@Override
-		public final String toSQLString(DBDatabase db) {
+		public final String toSQLString(DBDefinition db) {
 			if (this.getIncludesNull()) {
 				return BooleanExpression.isNull(first).toSQLString(db);
 			} else {
@@ -1172,7 +1171,7 @@ public class Line2DExpression implements Line2DResult, EqualComparable<Line2DRes
 			return newInstance;
 		}
 
-		protected abstract String doExpressionTransform(DBDatabase db);
+		protected abstract String doExpressionTransform(DBDefinition db);
 
 		@Override
 		public Set<DBRow> getTablesInvolved() {
@@ -1214,7 +1213,7 @@ public class Line2DExpression implements Line2DResult, EqualComparable<Line2DRes
 		}
 
 		@Override
-		public final String toSQLString(DBDatabase db) {
+		public final String toSQLString(DBDefinition db) {
 			if (this.getIncludesNull()) {
 				return BooleanExpression.isNull(first).toSQLString(db);
 			} else {
@@ -1236,7 +1235,7 @@ public class Line2DExpression implements Line2DResult, EqualComparable<Line2DRes
 			return newInstance;
 		}
 
-		protected abstract String doExpressionTransform(DBDatabase db);
+		protected abstract String doExpressionTransform(DBDefinition db);
 
 		@Override
 		public Set<DBRow> getTablesInvolved() {
@@ -1280,7 +1279,7 @@ public class Line2DExpression implements Line2DResult, EqualComparable<Line2DRes
 //			return second;
 //		}
 		@Override
-		public final String toSQLString(DBDatabase db) {
+		public final String toSQLString(DBDefinition db) {
 			if (this.getIncludesNull()) {
 				return BooleanExpression.isNull(first).toSQLString(db);
 			} else {
@@ -1303,7 +1302,7 @@ public class Line2DExpression implements Line2DResult, EqualComparable<Line2DRes
 			return newInstance;
 		}
 
-		protected abstract String doExpressionTransform(DBDatabase db);
+		protected abstract String doExpressionTransform(DBDefinition db);
 
 		@Override
 		public Set<DBRow> getTablesInvolved() {

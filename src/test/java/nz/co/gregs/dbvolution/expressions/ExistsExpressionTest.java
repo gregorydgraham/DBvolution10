@@ -47,7 +47,7 @@ public class ExistsExpressionTest extends AbstractTest {
 
 		Marque marque = new Marque();
 		DBQuery marquesQuery = database.getDBQuery(marque);
-		marquesQuery.addCondition(new ExistsExpression(marque, carCompany));
+		marquesQuery.addCondition(new ExistsExpression(database, marque, carCompany));
 
 		List<Marque> rowList = marquesQuery.getAllInstancesOf(marque);
 
@@ -55,7 +55,7 @@ public class ExistsExpressionTest extends AbstractTest {
 
 		marque = new Marque();
 		marquesQuery = database.getDBQuery(marque);
-		marquesQuery.addCondition((new ExistsExpression(marque, carCompany)).not());
+		marquesQuery.addCondition((new ExistsExpression(database, marque, carCompany)).not());
 
 		marquesQuery.getAllInstancesOf(marque);
 		rowList = marquesQuery.getAllInstancesOf(marque);
@@ -76,7 +76,7 @@ public class ExistsExpressionTest extends AbstractTest {
 		Marque marque = new Marque();
 
 		DBQuery marquesQuery = database.getDBQuery(marque);
-		marquesQuery.addCondition(new ExistsExpression(marque, existsTables));
+		marquesQuery.addCondition(new ExistsExpression(database, marque, existsTables));
 
 		List<Marque> rowList = marquesQuery.getAllInstancesOf(marque);
 
@@ -92,7 +92,7 @@ public class ExistsExpressionTest extends AbstractTest {
 		Assert.assertThat(rowList.size(), is(3));
 
 		marquesQuery = database.getDBQuery(marque);
-		marquesQuery.addCondition((new ExistsExpression(marque, existsTables)).not());
+		marquesQuery.addCondition((new ExistsExpression(database, marque, existsTables)).not());
 		rowList = marquesQuery.getAllInstancesOf(marque);
 
 		Assert.assertThat(rowList.size(), is(19));
@@ -112,7 +112,7 @@ public class ExistsExpressionTest extends AbstractTest {
 		DBQuery outerQuery = database.getDBQuery(marque);
 
 		DBQuery marquesQuery = database.getDBQuery(marque);
-		marquesQuery.addCondition(new ExistsExpression(outerQuery, existsTables));
+		marquesQuery.addCondition(new ExistsExpression(database, outerQuery, existsTables));
 
 		List<Marque> rowList = marquesQuery.getAllInstancesOf(marque);
 
@@ -128,7 +128,7 @@ public class ExistsExpressionTest extends AbstractTest {
 		Assert.assertThat(rowList.size(), is(3));
 
 		marquesQuery = database.getDBQuery(marque);
-		marquesQuery.addCondition((new ExistsExpression(outerQuery, existsTables)).not());
+		marquesQuery.addCondition((new ExistsExpression(database, outerQuery, existsTables)).not());
 		rowList = marquesQuery.getAllInstancesOf(marque);
 
 		Assert.assertThat(rowList.size(), is(19));

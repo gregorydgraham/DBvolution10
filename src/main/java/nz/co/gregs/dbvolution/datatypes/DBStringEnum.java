@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.Set;
 import nz.co.gregs.dbvolution.databases.DBDatabase;
 import nz.co.gregs.dbvolution.DBRow;
+import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.expressions.StringExpression;
 import nz.co.gregs.dbvolution.operators.*;
 
@@ -789,34 +790,8 @@ public class DBStringEnum<E extends Enum<E> & DBEnumValue<String>> extends DBEnu
 		}
 	}
 
-//	@Override
-//	public void setFromResultSet(DBDatabase database, ResultSet resultSet, String resultSetColumnName) throws SQLException {
-//		removeConstraints();
-//		if (resultSet == null || resultSetColumnName == null) {
-//			this.setToNull();
-//		} else {
-//			String dbValue;
-//			try {
-//				dbValue = resultSet.getString(resultSetColumnName);
-//				if (resultSet.wasNull()) {
-//					dbValue = null;
-//				}
-//			} catch (SQLException ex) {
-//				// Probably means the column wasn't selected.
-//				dbValue = null;
-//			}
-//			if (dbValue == null) {
-//				this.setToNull();
-//			} else {
-//				this.setLiteralValue(dbValue);
-//			}
-//		}
-//		setUnchanged();
-//		setDefined(true);
-//		propertyWrapper = null;
-//	}
 	@Override
-	protected String getFromResultSet(DBDatabase database, ResultSet resultSet, String fullColumnName) throws SQLException {
+	protected String getFromResultSet(DBDefinition database, ResultSet resultSet, String fullColumnName) throws SQLException {
 		return resultSet.getString(fullColumnName);
 	}
 

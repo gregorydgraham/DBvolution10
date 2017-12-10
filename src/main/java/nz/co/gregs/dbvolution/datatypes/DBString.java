@@ -138,9 +138,7 @@ public class DBString extends QueryableDatatype<String> implements StringResult 
 	}
 
 	@Override
-	public String formatValueForSQLStatement(DBDatabase db) {
-		DBDefinition defn = db.getDefinition();
-
+	public String formatValueForSQLStatement(DBDefinition defn) {
 		if (getLiteralValue().isEmpty()) {
 			return defn.getEmptyString();
 		} else {
@@ -728,9 +726,9 @@ public class DBString extends QueryableDatatype<String> implements StringResult 
 	}
 
 	@Override
-	protected String getFromResultSet(DBDatabase database, ResultSet resultSet, String fullColumnName) throws SQLException {
+	protected String getFromResultSet(DBDefinition database, ResultSet resultSet, String fullColumnName) throws SQLException {
 		String gotString = resultSet.getString(fullColumnName);
-		if (!database.getDefinition().supportsDifferenceBetweenNullAndEmptyString()) {
+		if (!database.supportsDifferenceBetweenNullAndEmptyString()) {
 			if (gotString != null && gotString.isEmpty()) {
 				return null;
 			}
@@ -758,8 +756,8 @@ public class DBString extends QueryableDatatype<String> implements StringResult 
 	}
 
 	@Override
-	protected DBOperator setToNull(DBDatabase database) {
-		if (!database.getDefinition().supportsDifferenceBetweenNullAndEmptyString()) {
+	protected DBOperator setToNull(DBDefinition database) {
+		if (!database.supportsDifferenceBetweenNullAndEmptyString()) {
 			this.isDBEmptyString = true;
 		}
 		return setToNull();

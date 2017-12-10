@@ -44,7 +44,7 @@ public class DBEnumTest extends AbstractTest {
 		row.recordType.setValue(IntEnum.MOVEMENT_CANCELLATION_REQUEST); // nested class imported
 		row.recordType.setValue(IntEnum.MOVEMENT_CANCELLATION_REQUEST); // explicit reference to nested class
 
-		String sqlFragment = row.recordType.toSQLString(database);
+		String sqlFragment = row.recordType.toSQLString(database.getDefinition());
 		assertThat(sqlFragment, is("3"));
 	}
 
@@ -54,7 +54,7 @@ public class DBEnumTest extends AbstractTest {
 		row.recordType.setLiteralValue(
 				IntEnum.MOVEMENT_CANCELLATION_REQUEST.getCode());
 
-		String sqlFragment = row.recordType.toSQLString(database);
+		String sqlFragment = row.recordType.toSQLString(database.getDefinition());
 		assertThat(sqlFragment, is("3"));
 	}
 

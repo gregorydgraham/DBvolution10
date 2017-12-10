@@ -59,14 +59,14 @@ public class DBUpdateSimpleTypesUsingAllColumns extends DBUpdateSimpleTypes {
 			QueryableDatatype<?> qdt = prop.getQueryableDatatype();
 			if (qdt.isNull()) {
 				sql.append(defn.beginAndLine())
-						.append(BooleanExpression.isNull(row.column(qdt)).toSQLString(db));
+						.append(BooleanExpression.isNull(row.column(qdt)).toSQLString(defn));
 //				DBIsNullOperator isNullOp = new DBIsNullOperator();
 //				sql += isNullOp.generateWhereLine(db, prop.columnName());
 			} else {
 				sql.append(defn.beginWhereClauseLine())
 						.append(prop.columnName())
 						.append(defn.getEqualsComparator())
-						.append(qdt.hasChanged() ? qdt.getPreviousSQLValue(db) : qdt.toSQLString(db));
+						.append(qdt.hasChanged() ? qdt.getPreviousSQLValue(defn) : qdt.toSQLString(defn));
 			}
 		}
 		sql.append(defn.endDeleteLine());

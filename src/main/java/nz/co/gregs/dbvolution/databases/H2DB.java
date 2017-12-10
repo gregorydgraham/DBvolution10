@@ -34,7 +34,7 @@ import nz.co.gregs.dbvolution.internal.h2.*;
  *
  * @author Gregory Graham
  */
-public class H2DB extends DBDatabase implements SupportsDateRepeatDatatypeFunctions, SupportsPolygonDatatype {
+public class H2DB extends DBDatabase {
 
 	private static final long serialVersionUID = 1l;
 

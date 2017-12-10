@@ -19,6 +19,7 @@ import java.util.Set;
 import nz.co.gregs.dbvolution.databases.DBDatabase;
 import nz.co.gregs.dbvolution.DBReport;
 import nz.co.gregs.dbvolution.DBRow;
+import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 
 /**
@@ -80,7 +81,7 @@ public interface DBExpression {
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return the DBValue formatted as a SQL snippet
 	 */
-	public String toSQLString(DBDatabase db);
+	public String toSQLString(DBDefinition db);
 
 	/**
 	 * A Complete Copy Of This DBValue.

@@ -27,6 +27,7 @@ import java.util.Set;
 import nz.co.gregs.dbvolution.databases.DBDatabase;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.columns.StringColumn;
+import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.datatypes.*;
 import nz.co.gregs.dbvolution.results.InComparable;
 
@@ -65,8 +66,8 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 	public static StringExpression nullExpression() {
 		return new StringExpression() {
 			@Override
-			public String toSQLString(DBDatabase db) {
-				return db.getDefinition().getNull();
+			public String toSQLString(DBDefinition db) {
+				return db.getNull();
 			}
 
 		};
@@ -176,7 +177,7 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 	}
 
 	@Override
-	public String toSQLString(DBDatabase db) {
+	public String toSQLString(DBDefinition db) {
 		StringResult stringInput = getStringInput();
 		if (stringInput == null) {
 			stringInput = StringExpression.value("<NULL>");
@@ -283,13 +284,13 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 				new StringExpression.DBBinaryStringFunction(this, new StringExpression(alternative)) {
 
 			@Override
-			public String toSQLString(DBDatabase db) {
-				return db.getDefinition().doStringIfNullTransform(this.getFirst().toSQLString(db), getSecond().toSQLString(db));
+			public String toSQLString(DBDefinition db) {
+				return db.doStringIfNullTransform(this.getFirst().toSQLString(db), getSecond().toSQLString(db));
 			}
 
 //			@Override
-//			String getFunctionName(DBDatabase db) {
-//				return db.getDefinition().getIfNullFunctionName();
+//			String getFunctionName(DBDefinition db) {
+//				return db.getIfNullFunctionName();
 //			}
 			@Override
 			public boolean getIncludesNull() {
@@ -444,7 +445,7 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 		} else {
 			return new BooleanExpression(new DBBinaryBooleanArithmetic(this, sqlPattern) {
 				@Override
-				protected String getEquationOperator(DBDatabase db) {
+				protected String getEquationOperator(DBDefinition db) {
 					return " LIKE ";
 				}
 
@@ -682,12 +683,12 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 			final BooleanExpression is = new BooleanExpression(new DBBinaryBooleanArithmetic(this, equivalentString) {
 
 				@Override
-				public String toSQLString(DBDatabase db) {
-					return db.getDefinition().doStringEqualsTransform(super.first.toSQLString(db), super.second.toSQLString(db));
+				public String toSQLString(DBDefinition db) {
+					return db.doStringEqualsTransform(super.first.toSQLString(db), super.second.toSQLString(db));
 				}
 
 				@Override
-				protected String getEquationOperator(DBDatabase db) {
+				protected String getEquationOperator(DBDefinition db) {
 					return " = ";
 				}
 
@@ -772,14 +773,14 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 		} else {
 			return new BooleanExpression(new DBBinaryBooleanArithmetic(this, equivalentString) {
 				@Override
-				public String toSQLString(DBDatabase db) {
+				public String toSQLString(DBDefinition db) {
 					return (new StringExpression(first)).ifDBNull("<DBV NULL PROTECTION>").toSQLString(db)
 							+ this.getEquationOperator(db)
 							+ (new StringExpression(second)).ifDBNull("<DBV NULL PROTECTION>").toSQLString(db);
 				}
 
 				@Override
-				protected String getEquationOperator(DBDatabase db) {
+				protected String getEquationOperator(DBDefinition db) {
 					return " <> ";
 				}
 
@@ -1168,7 +1169,7 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 		} else {
 			return new BooleanExpression(new DBBinaryBooleanArithmetic(this, equivalentString) {
 				@Override
-				protected String getEquationOperator(DBDatabase db) {
+				protected String getEquationOperator(DBDefinition db) {
 					return " < ";
 				}
 
@@ -1215,7 +1216,7 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 		} else {
 			return new BooleanExpression(new DBBinaryBooleanArithmetic(this, equivalentString) {
 				@Override
-				protected String getEquationOperator(DBDatabase db) {
+				protected String getEquationOperator(DBDefinition db) {
 					return " <= ";
 				}
 
@@ -1262,7 +1263,7 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 		} else {
 			return new BooleanExpression(new DBBinaryBooleanArithmetic(this, equivalentString) {
 				@Override
-				protected String getEquationOperator(DBDatabase db) {
+				protected String getEquationOperator(DBDefinition db) {
 					return " > ";
 				}
 
@@ -1309,7 +1310,7 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 		} else {
 			return new BooleanExpression(new DBBinaryBooleanArithmetic(this, equivalentString) {
 				@Override
-				protected String getEquationOperator(DBDatabase db) {
+				protected String getEquationOperator(DBDefinition db) {
 					return " >= ";
 				}
 
@@ -1379,16 +1380,16 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 				= new BooleanExpression(new DBNnaryBooleanFunction(this, possibleValues) {
 
 					@Override
-					public String toSQLString(DBDatabase db) {
+					public String toSQLString(DBDefinition db) {
 						List<String> sqlValues = new ArrayList<>();
 						for (StringResult value : values) {
 							sqlValues.add(value.toSQLString(db));
 						}
-						return db.getDefinition().doInTransform(column.toSQLString(db), sqlValues);
+						return db.doInTransform(column.toSQLString(db), sqlValues);
 					}
 
 					@Override
-					protected String getFunctionName(DBDatabase db) {
+					protected String getFunctionName(DBDefinition db) {
 						return " IN ";
 					}
 				});
@@ -1411,12 +1412,12 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 	public StringExpression append(StringResult string2) {
 		return new StringExpression(new DBBinaryStringArithmetic(this, string2) {
 			@Override
-			public String toSQLString(DBDatabase db) {
-				return db.getDefinition().doConcatTransform(super.first.toSQLString(db), super.second.toSQLString(db));
+			public String toSQLString(DBDefinition db) {
+				return db.doConcatTransform(super.first.toSQLString(db), super.second.toSQLString(db));
 			}
 
 			@Override
-			protected String getEquationOperator(DBDatabase db) {
+			protected String getEquationOperator(DBDefinition db) {
 				return "";
 			}
 		});
@@ -1522,15 +1523,15 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 				new DBTrinaryStringFunction(this, findString, replaceValue) {
 
 			@Override
-			public String toSQLString(DBDatabase db) {
-				return db.getDefinition().doReplaceTransform(
+			public String toSQLString(DBDefinition db) {
+				return db.doReplaceTransform(
 						this.getFirst().toSQLString(db),
 						this.getSecond().toSQLString(db),
 						this.getThird().toSQLString(db));
 			}
 
 			@Override
-			String getFunctionName(DBDatabase db) {
+			String getFunctionName(DBDefinition db) {
 				return "REPLACE";
 			}
 
@@ -1580,16 +1581,16 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 		return new StringExpression(new DBBinaryStringFunction(this, new StringExpression(splitBeforeThis)) {
 
 			@Override
-			public String toSQLString(DBDatabase db) {
+			public String toSQLString(DBDefinition db) {
 				try {
-					return db.getDefinition().doSubstringBeforeTransform(getFirst().toSQLString(db), getSecond().toSQLString(db));
+					return db.doSubstringBeforeTransform(getFirst().toSQLString(db), getSecond().toSQLString(db));
 				} catch (UnsupportedOperationException exp) {
 					return getFirst().locationOf(getSecond()).isGreaterThan(0).ifThenElse(getFirst().substring(0, getFirst().locationOf(getSecond()).minus(1).numberResult()), value("")).toSQLString(db);
 				}
 			}
 
 //			@Override
-//			String getFunctionName(DBDatabase db) {
+//			String getFunctionName(DBDefinition db) {
 //				throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 //			}
 		});
@@ -1635,16 +1636,16 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 		return new StringExpression(new DBBinaryStringFunction(this, new StringExpression(splitAfterThis)) {
 
 			@Override
-			public String toSQLString(DBDatabase db) {
+			public String toSQLString(DBDefinition db) {
 				try {
-					return db.getDefinition().doSubstringAfterTransform(getFirst().toSQLString(db), getSecond().toSQLString(db));
+					return db.doSubstringAfterTransform(getFirst().toSQLString(db), getSecond().toSQLString(db));
 				} catch (UnsupportedOperationException exp) {
 					return getFirst().locationOf(getSecond()).isGreaterThan(0).ifThenElse(getFirst().substring(getFirst().locationOf(getSecond()).numberResult(), getFirst().length()), value("")).toSQLString(db);
 				}
 			}
 
 //			@Override
-//			String getFunctionName(DBDatabase db) {
+//			String getFunctionName(DBDefinition db) {
 //				throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 //			}
 		});
@@ -1719,12 +1720,12 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 		return new StringExpression(
 				new DBUnaryStringFunction(this) {
 			@Override
-			public String toSQLString(DBDatabase db) {
-				return db.getDefinition().doTrimFunction(this.only.toSQLString(db));
+			public String toSQLString(DBDefinition db) {
+				return db.doTrimFunction(this.only.toSQLString(db));
 			}
 
 			@Override
-			String getFunctionName(DBDatabase db) {
+			String getFunctionName(DBDefinition db) {
 				return "NOT USED BECAUSE SQLSERVER DOESN'T IMPLEMENT TRIM";
 			}
 		});
@@ -1761,12 +1762,12 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 				new DBUnaryStringFunction(this) {
 
 			@Override
-			public String toSQLString(DBDatabase db) {
-				return db.getDefinition().doFindNumberInStringTransform(this.only.toSQLString(db));
+			public String toSQLString(DBDefinition db) {
+				return db.doFindNumberInStringTransform(this.only.toSQLString(db));
 			}
 
 			@Override
-			String getFunctionName(DBDatabase db) {
+			String getFunctionName(DBDefinition db) {
 				return "";
 			}
 		});
@@ -1787,12 +1788,12 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 				new DBUnaryStringFunction(this) {
 
 			@Override
-			public String toSQLString(DBDatabase db) {
-				return db.getDefinition().doFindIntegerInStringTransform(this.only.toSQLString(db));
+			public String toSQLString(DBDefinition db) {
+				return db.doFindIntegerInStringTransform(this.only.toSQLString(db));
 			}
 
 			@Override
-			String getFunctionName(DBDatabase db) {
+			String getFunctionName(DBDefinition db) {
 				return "";
 			}
 		});
@@ -1812,12 +1813,12 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 		return new StringExpression(
 				new DBUnaryStringFunction(this) {
 			@Override
-			public String toSQLString(DBDatabase db) {
-				return db.getDefinition().doLeftTrimTransform(this.only.toSQLString(db));
+			public String toSQLString(DBDefinition db) {
+				return db.doLeftTrimTransform(this.only.toSQLString(db));
 			}
 
 			@Override
-			String getFunctionName(DBDatabase db) {
+			String getFunctionName(DBDefinition db) {
 				return "";
 			}
 		});
@@ -1836,8 +1837,8 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 		return new StringExpression(
 				new DBUnaryStringFunction(this) {
 			@Override
-			String getFunctionName(DBDatabase db) {
-				return db.getDefinition().getRightTrimFunctionName();
+			String getFunctionName(DBDefinition db) {
+				return db.getRightTrimFunctionName();
 			}
 		});
 	}
@@ -1855,8 +1856,8 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 		return new StringExpression(
 				new DBUnaryStringFunction(this) {
 			@Override
-			String getFunctionName(DBDatabase db) {
-				return db.getDefinition().getLowercaseFunctionName();
+			String getFunctionName(DBDefinition db) {
+				return db.getLowercaseFunctionName();
 			}
 		});
 	}
@@ -1874,8 +1875,8 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 		return new StringExpression(
 				new DBUnaryStringFunction(this) {
 			@Override
-			String getFunctionName(DBDatabase db) {
-				return db.getDefinition().getUppercaseFunctionName();
+			String getFunctionName(DBDefinition db) {
+				return db.getUppercaseFunctionName();
 			}
 		});
 	}
@@ -1993,13 +1994,13 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 				new DBUnaryNumberFunction(this) {
 
 			@Override
-			public String toSQLString(DBDatabase db) {
-				return db.getDefinition().doStringLengthTransform(only.toSQLString(db));
+			public String toSQLString(DBDefinition db) {
+				return db.doStringLengthTransform(only.toSQLString(db));
 			}
 
 			@Override
-			String getFunctionName(DBDatabase db) {
-				return db.getDefinition().getStringLengthFunctionName();
+			String getFunctionName(DBDefinition db) {
+				return db.getStringLengthFunctionName();
 			}
 		});
 	}
@@ -2021,8 +2022,8 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 		return new StringExpression(
 				new DBNonaryStringFunction() {
 			@Override
-			String getFunctionName(DBDatabase db) {
-				return db.getDefinition().getCurrentUserFunctionName();
+			String getFunctionName(DBDefinition db) {
+				return db.getCurrentUserFunctionName();
 			}
 		});
 	}
@@ -2070,8 +2071,8 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 	public IntegerExpression locationOf(StringResult searchString) {
 		return new NumberExpression(new BinaryComplicatedNumberFunction(this, searchString) {
 			@Override
-			public String toSQLString(DBDatabase db) {
-				return db.getDefinition().doPositionInStringTransform(this.first.toSQLString(db), this.second.toSQLString(db));
+			public String toSQLString(DBDefinition db) {
+				return db.doPositionInStringTransform(this.first.toSQLString(db), this.second.toSQLString(db));
 			}
 		}).integerResult();
 	}
@@ -2093,8 +2094,8 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 		return new NumberExpression(new DBUnaryNumberFunction(this) {
 
 			@Override
-			String getFunctionName(DBDatabase db) {
-				return db.getDefinition().getCountFunctionName();
+			String getFunctionName(DBDefinition db) {
+				return db.getCountFunctionName();
 			}
 
 			@Override
@@ -2120,8 +2121,8 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 	public StringExpression max() {
 		return new StringExpression(new DBUnaryStringFunction(this) {
 			@Override
-			String getFunctionName(DBDatabase db) {
-				return db.getDefinition().getMaxFunctionName();
+			String getFunctionName(DBDefinition db) {
+				return db.getMaxFunctionName();
 			}
 
 			@Override
@@ -2147,8 +2148,8 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 	public StringExpression min() {
 		return new StringExpression(new DBUnaryStringFunction(this) {
 			@Override
-			String getFunctionName(DBDatabase db) {
-				return db.getDefinition().getMinFunctionName();
+			String getFunctionName(DBDefinition db) {
+				return db.getMinFunctionName();
 			}
 
 			@Override
@@ -2276,7 +2277,7 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 	public StringExpression bracket() {
 		return new StringExpression(new DBUnaryStringFunction(this) {
 			@Override
-			String getFunctionName(DBDatabase db) {
+			String getFunctionName(DBDefinition db) {
 				return "";
 			}
 		});
@@ -2333,12 +2334,12 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 				new DBUnaryNumberFunction(this) {
 
 			@Override
-			public String toSQLString(DBDatabase db) {
-				return db.getDefinition().doStringToNumberTransform(this.only.toSQLString(db));
+			public String toSQLString(DBDefinition db) {
+				return db.doStringToNumberTransform(this.only.toSQLString(db));
 			}
 
 			@Override
-			String getFunctionName(DBDatabase db) {
+			String getFunctionName(DBDefinition db) {
 				return "TO_NUMBER";
 			}
 		});
@@ -2387,7 +2388,7 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 		}
 
 		@Override
-		public String toSQLString(DBDatabase db) {
+		public String toSQLString(DBDefinition db) {
 			return first.toSQLString(db) + this.getEquationOperator(db) + second.toSQLString(db);
 		}
 
@@ -2406,7 +2407,7 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 			return newInstance;
 		}
 
-		protected abstract String getEquationOperator(DBDatabase db);
+		protected abstract String getEquationOperator(DBDefinition db);
 
 		@Override
 		public Set<DBRow> getTablesInvolved() {
@@ -2449,18 +2450,18 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 			return new DBString();
 		}
 
-		abstract String getFunctionName(DBDatabase db);
+		abstract String getFunctionName(DBDefinition db);
 
-		protected String beforeValue(DBDatabase db) {
+		protected String beforeValue(DBDefinition db) {
 			return " " + getFunctionName(db) + "";
 		}
 
-		protected String afterValue(DBDatabase db) {
+		protected String afterValue(DBDefinition db) {
 			return " ";
 		}
 
 		@Override
-		public String toSQLString(DBDatabase db) {
+		public String toSQLString(DBDefinition db) {
 			return this.beforeValue(db) + this.afterValue(db);
 		}
 
@@ -2516,18 +2517,18 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 			return new DBString();
 		}
 
-		abstract String getFunctionName(DBDatabase db);
+		abstract String getFunctionName(DBDefinition db);
 
-		protected String beforeValue(DBDatabase db) {
+		protected String beforeValue(DBDefinition db) {
 			return "" + getFunctionName(db) + "( ";
 		}
 
-		protected String afterValue(DBDatabase db) {
+		protected String afterValue(DBDefinition db) {
 			return ") ";
 		}
 
 		@Override
-		public String toSQLString(DBDatabase db) {
+		public String toSQLString(DBDefinition db) {
 			return this.beforeValue(db) + (only == null ? "" : only.toSQLString(db)) + this.afterValue(db);
 		}
 
@@ -2592,18 +2593,18 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 //			return new DBString();
 //		}
 //
-//		abstract String getFunctionName(DBDatabase db);
+//		abstract String getFunctionName(DBDefinition db);
 //
-//		protected String beforeValue(DBDatabase db) {
+//		protected String beforeValue(DBDefinition db) {
 //			return " (";
 //		}
 //
-//		protected String afterValue(DBDatabase db) {
+//		protected String afterValue(DBDefinition db) {
 //			return ") ";
 //		}
 //
 //		@Override
-//		public String toSQLString(DBDatabase db) {
+//		public String toSQLString(DBDefinition db) {
 //			return this.beforeValue(db) + (only == null ? "" : only.toSQLString(db)) + getFunctionName(db) + this.afterValue(db);
 //		}
 //
@@ -2662,18 +2663,18 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 			return new DBNumber();
 		}
 
-		abstract String getFunctionName(DBDatabase db);
+		abstract String getFunctionName(DBDefinition db);
 
-		protected String beforeValue(DBDatabase db) {
+		protected String beforeValue(DBDefinition db) {
 			return "" + getFunctionName(db) + "( ";
 		}
 
-		protected String afterValue(DBDatabase db) {
+		protected String afterValue(DBDefinition db) {
 			return ") ";
 		}
 
 		@Override
-		public String toSQLString(DBDatabase db) {
+		public String toSQLString(DBDefinition db) {
 			return this.beforeValue(db) + (only == null ? "" : only.toSQLString(db)) + this.afterValue(db);
 		}
 
@@ -2740,7 +2741,7 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 		}
 
 		@Override
-		public String toSQLString(DBDatabase db) {
+		public String toSQLString(DBDefinition db) {
 			return this.beforeValue(db) + getFirst().toSQLString(db)
 					+ this.getSeparator(db) + (getSecond() == null ? "" : getSecond().toSQLString(db))
 					+ this.getSeparator(db) + (getThird() == null ? "" : getThird().toSQLString(db))
@@ -2763,17 +2764,17 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 			return newInstance;
 		}
 
-		abstract String getFunctionName(DBDatabase db);
+		abstract String getFunctionName(DBDefinition db);
 
-		protected String beforeValue(DBDatabase db) {
+		protected String beforeValue(DBDefinition db) {
 			return " " + getFunctionName(db) + "( ";
 		}
 
-		protected String getSeparator(DBDatabase db) {
+		protected String getSeparator(DBDefinition db) {
 			return ", ";
 		}
 
-		protected String afterValue(DBDatabase db) {
+		protected String afterValue(DBDefinition db) {
 			return ") ";
 		}
 
@@ -2862,7 +2863,7 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 		}
 
 //		@Override
-//		public String toSQLString(DBDatabase db) {
+//		public String toSQLString(DBDefinition db) {
 //			return this.beforeValue(db) + getFirst().toSQLString(db)
 //					+ this.getSeparator(db) + (getSecond() == null ? "" : getSecond().toSQLString(db))
 //					+ this.afterValue(db);
@@ -2882,15 +2883,15 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 			return newInstance;
 		}
 
-		//abstract String getFunctionName(DBDatabase db);
-//		protected String beforeValue(DBDatabase db) {
+		//abstract String getFunctionName(DBDefinition db);
+//		protected String beforeValue(DBDefinition db) {
 //			return " " + getFunctionName(db) + "( ";
 //		}
-		protected String getSeparator(DBDatabase db) {
+		protected String getSeparator(DBDefinition db) {
 			return ", ";
 		}
 
-		protected String afterValue(DBDatabase db) {
+		protected String afterValue(DBDefinition db) {
 			return ") ";
 		}
 
@@ -2965,7 +2966,7 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 		}
 
 		@Override
-		public abstract String toSQLString(DBDatabase db);
+		public abstract String toSQLString(DBDefinition db);
 
 		@Override
 		public StringExpression.BinaryComplicatedNumberFunction copy() {
@@ -3053,7 +3054,7 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 		}
 
 		@Override
-		public String toSQLString(DBDatabase db) {
+		public String toSQLString(DBDefinition db) {
 			if (getStringInput() == null) {
 				return "";
 			} else {
@@ -3061,8 +3062,8 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 			}
 		}
 
-		public String doSubstringTransform(DBDatabase db, StringResult enclosedValue, NumberResult startingPosition, NumberResult substringLength) {
-			return db.getDefinition().doSubstringTransform(
+		public String doSubstringTransform(DBDefinition db, StringResult enclosedValue, NumberResult startingPosition, NumberResult substringLength) {
+			return db.doSubstringTransform(
 					enclosedValue.toSQLString(db),
 					(startingPosition.toSQLString(db) + " + 1"),
 					(substringLength != null ? (substringLength.toSQLString(db) + " - " + startingPosition.toSQLString(db)) : "")
@@ -3103,7 +3104,7 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 		}
 
 		@Override
-		public String toSQLString(DBDatabase db) {
+		public String toSQLString(DBDefinition db) {
 			return first.toSQLString(db) + this.getEquationOperator(db) + second.toSQLString(db);
 		}
 
@@ -3122,7 +3123,7 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 			return newInstance;
 		}
 
-		protected abstract String getEquationOperator(DBDatabase db);
+		protected abstract String getEquationOperator(DBDefinition db);
 
 		@Override
 		public Set<DBRow> getTablesInvolved() {
@@ -3169,18 +3170,18 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 //		public DBString getQueryableDatatypeForExpressionValue() {
 //			return new DBString();
 //		}
-		abstract String getFunctionName(DBDatabase db);
+		abstract String getFunctionName(DBDefinition db);
 
-		protected String beforeValue(DBDatabase db) {
+		protected String beforeValue(DBDefinition db) {
 			return "( ";
 		}
 
-		protected String afterValue(DBDatabase db) {
+		protected String afterValue(DBDefinition db) {
 			return ") ";
 		}
 
 		@Override
-		public String toSQLString(DBDatabase db) {
+		public String toSQLString(DBDefinition db) {
 			StringBuilder builder = new StringBuilder();
 			builder
 					.append(column.toSQLString(db))

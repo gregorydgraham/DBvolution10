@@ -253,9 +253,8 @@ public class DBJavaObject<O> extends DBLargeObject<O> {
 	}
 
 	@Override
-	public String formatValueForSQLStatement(DBDatabase db
-	) {
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	public String formatValueForSQLStatement(DBDefinition db) {
+		throw new UnsupportedOperationException("Not supported yet.");
 	}
 
 	@Override
@@ -295,7 +294,8 @@ public class DBJavaObject<O> extends DBLargeObject<O> {
 	}
 
 	/**
-	 * Returns the byte[] used internally to store the value of this DBJavaObject.
+	 * Returns the byte[] used internally to store the value of this
+	 * DBJavaObject.
 	 *
 	 * <p style="color: #F90;">Support DBvolution at
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
@@ -331,9 +331,8 @@ public class DBJavaObject<O> extends DBLargeObject<O> {
 	}
 
 	@Override
-	protected O getFromResultSet(DBDatabase database, ResultSet resultSet, String fullColumnName) throws SQLException {
+	protected O getFromResultSet(DBDefinition defn, ResultSet resultSet, String fullColumnName) throws SQLException {
 		O obj = null;
-		DBDefinition defn = database.getDefinition();
 		LargeObjectHandlerType handler = defn.preferredLargeObjectReader(this);
 		switch (handler) {
 			case BLOB:

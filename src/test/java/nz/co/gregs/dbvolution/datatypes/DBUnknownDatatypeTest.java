@@ -16,8 +16,8 @@
 package nz.co.gregs.dbvolution.datatypes;
 
 import java.util.Set;
-import nz.co.gregs.dbvolution.databases.DBDatabase;
 import nz.co.gregs.dbvolution.DBRow;
+import nz.co.gregs.dbvolution.generic.AbstractTest;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
@@ -28,9 +28,10 @@ import static org.junit.Assert.*;
  *
  * @author gregorygraham
  */
-public class DBUnknownDatatypeTest {
+public class DBUnknownDatatypeTest extends AbstractTest {
 
-	public DBUnknownDatatypeTest() {
+	public DBUnknownDatatypeTest(Object testIterationName, Object db) {
+		super(testIterationName, db);
 	}
 
 	@Test(expected = UnsupportedOperationException.class)
@@ -42,10 +43,8 @@ public class DBUnknownDatatypeTest {
 
 	@Test(expected = UnsupportedOperationException.class)
 	public void testFormatValueForSQLStatement() {
-		DBDatabase db = null;
 		DBUnknownDatatype instance = new DBUnknownDatatype();
-		String expResult = "";
-		String result = instance.formatValueForSQLStatement(db);
+		String result = instance.formatValueForSQLStatement(database.getDefinition());
 	}
 
 	@Test

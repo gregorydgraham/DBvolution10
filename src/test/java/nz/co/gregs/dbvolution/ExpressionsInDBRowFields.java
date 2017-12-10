@@ -50,7 +50,7 @@ public class ExpressionsInDBRowFields extends AbstractTest {
 		final String sqlForQuery = query.getSQLForQuery();
 		Assert.assertThat(sqlForQuery, containsString(database.getDefinition().doCurrentDateOnlyTransform()));
 		Assert.assertThat(sqlForQuery, containsString(ExpressionRow.STRING_VALUE));
-		Assert.assertThat(sqlForQuery, containsString(NumberExpression.value(5).times(3).toSQLString(database)));
+		Assert.assertThat(sqlForQuery, containsString(NumberExpression.value(5).times(3).toSQLString(database.getDefinition())));
 		final List<DBQueryRow> allRows = query.getAllRows();
 
 		for (DBQueryRow row : allRows) {

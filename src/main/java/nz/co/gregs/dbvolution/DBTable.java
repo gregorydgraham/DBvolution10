@@ -966,7 +966,7 @@ public class DBTable<E extends DBRow> {
 		if (fieldProp == null) {
 			throw new IncorrectRowProviderInstanceSuppliedException();
 		}
-		final PropertyWrapperDefinition fieldDefn = fieldProp.getDefinition();
+		final PropertyWrapperDefinition fieldDefn = fieldProp.getPropertyWrapperDefinition();
 		QueryableDatatype<?> thisQDT = fieldDefn.getQueryableDatatype(exemplar);
 		exemplar.setReturnFields(thisQDT);
 		DBQuery distinctQuery = database.getDBQuery(exemplar);

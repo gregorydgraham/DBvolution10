@@ -714,14 +714,13 @@ public class DBInteger extends QueryableDatatype<Long> implements IntegerResult 
 
 	/**
 	 *
-	 * @param db	db
+	 * @param defn
 	 * <p style="color: #F90;">Support DBvolution at
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return the underlying number formatted for a SQL statement
 	 */
 	@Override
-	public String formatValueForSQLStatement(DBDatabase db) {
-		DBDefinition defn = db.getDefinition();
+	public String formatValueForSQLStatement(DBDefinition defn) {
 		if (isNull()) {
 			return defn.getNull();
 		}
@@ -734,7 +733,7 @@ public class DBInteger extends QueryableDatatype<Long> implements IntegerResult 
 	}
 
 	@Override
-	protected Long getFromResultSet(DBDatabase database, ResultSet resultSet, String fullColumnName) throws SQLException {
+	protected Long getFromResultSet(DBDefinition database, ResultSet resultSet, String fullColumnName) throws SQLException {
 		return resultSet.getLong(fullColumnName);
 	}
 

@@ -22,6 +22,8 @@ import java.util.Date;
 import java.util.TimeZone;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.databases.H2DB;
+import nz.co.gregs.dbvolution.databases.supports.SupportsDateRepeatDatatypeFunctions;
+import nz.co.gregs.dbvolution.databases.supports.SupportsPolygonDatatype;
 import nz.co.gregs.dbvolution.datatypes.DBDateRepeat;
 import nz.co.gregs.dbvolution.datatypes.DBJavaObject;
 import nz.co.gregs.dbvolution.datatypes.DBLargeObject;
@@ -43,7 +45,7 @@ import nz.co.gregs.dbvolution.internal.h2.*;
  *
  * @author Gregory Graham
  */
-public class H2DBDefinition extends DBDefinition {
+public class H2DBDefinition extends DBDefinition implements SupportsDateRepeatDatatypeFunctions, SupportsPolygonDatatype {
 
 	private static final String DATE_FORMAT_STR = "yyyy-M-d HH:mm:ss.SSS Z";
 	private static final String H2_DATE_FORMAT_STR = "yyyy-M-d HH:mm:ss.SSS Z";//2017-02-18 18:59:59.000 +10:00

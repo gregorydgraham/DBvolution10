@@ -477,18 +477,18 @@ public abstract class QueryableDatatype<T> extends Object implements Serializabl
 	 * <p style="color: #F90;">Support DBvolution at
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 *
+	 * @param defn
 	 * @return the literal value as it would appear in an SQL statement i.e.
 	 * {yada} =&gt; 'yada', {1} =&gt; 1 and {} =&gt; NULL
 	 */
 	@Override
-	public final String toSQLString(DBDatabase db) {
-		DBDefinition def = db.getDefinition();
+	public final String toSQLString(DBDefinition defn) {
 		if (this.isDBNull || getLiteralValue() == null) {
-			return def.getNull();
+			return defn.getNull();
 		} else if (getLiteralValue() instanceof DBExpression) {
-			return "(" + ((DBExpression) getLiteralValue()).toSQLString(db) + ")";
+			return "(" + ((DBExpression) getLiteralValue()).toSQLString(defn) + ")";
 		} else {
-			return formatValueForSQLStatement(db);
+			return formatValueForSQLStatement(defn);
 		}
 	}
 
@@ -516,7 +516,7 @@ public abstract class QueryableDatatype<T> extends Object implements Serializabl
 	 * @return the literal value translated to a String ready to insert into an
 	 * SQL statement
 	 */
-	protected abstract String formatValueForSQLStatement(DBDatabase db);
+	protected abstract String formatValueForSQLStatement(DBDefinition db);
 
 	/**
 	 * <p style="color: #F90;">Support DBvolution at
@@ -575,7 +575,7 @@ public abstract class QueryableDatatype<T> extends Object implements Serializabl
 	 * @param resultSetColumnName resultSetColumnName
 	 * @throws java.sql.SQLException Database exceptions may be thrown
 	 */
-	public void setFromResultSet(DBDatabase database, ResultSet resultSet, String resultSetColumnName) throws SQLException {
+	public void setFromResultSet(DBDefinition database, ResultSet resultSet, String resultSetColumnName) throws SQLException {
 		removeConstraints();
 		if (resultSet == null || resultSetColumnName == null) {
 			this.setToNull(database);
@@ -614,7 +614,7 @@ public abstract class QueryableDatatype<T> extends Object implements Serializabl
 	 * be thrown
 	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
-	abstract protected T getFromResultSet(DBDatabase database, ResultSet resultSet, String fullColumnName) throws SQLException;
+	abstract protected T getFromResultSet(DBDefinition database, ResultSet resultSet, String fullColumnName) throws SQLException;
 
 	private void moveCurrentValueToPreviousValue(T newLiteralValue) {
 		if ((this.isDBNull && newLiteralValue != null)
@@ -685,7 +685,7 @@ public abstract class QueryableDatatype<T> extends Object implements Serializabl
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return the previous value of this field as an SQL formatted String
 	 */
-	public String getPreviousSQLValue(DBDatabase db) {
+	public String getPreviousSQLValue(DBDefinition db) {
 		QueryableDatatype<T> prevQDT = getPreviousValue();
 		return (prevQDT == null) ? null : prevQDT.toSQLString(db);
 	}
@@ -932,7 +932,7 @@ public abstract class QueryableDatatype<T> extends Object implements Serializabl
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return the DBOperator that will be used with this QDT
 	 */
-	protected DBOperator setToNull(DBDatabase database) {
+	protected DBOperator setToNull(DBDefinition database) {
 		return setToNull();
 	}
 
@@ -1033,7 +1033,7 @@ public abstract class QueryableDatatype<T> extends Object implements Serializabl
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return the formatted column ready to be used in an SQL statement
 	 */
-	public String formatColumnForSQLStatement(DBDatabase db, String formattedColumnName) {
+	public String formatColumnForSQLStatement(DBDefinition db, String formattedColumnName) {
 		return formattedColumnName;
 	}
 }

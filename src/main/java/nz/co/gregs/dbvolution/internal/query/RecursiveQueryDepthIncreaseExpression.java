@@ -17,11 +17,10 @@ package nz.co.gregs.dbvolution.internal.query;
 
 import java.util.HashSet;
 import java.util.Set;
-import nz.co.gregs.dbvolution.databases.DBDatabase;
 import nz.co.gregs.dbvolution.DBRecursiveQuery;
 import nz.co.gregs.dbvolution.DBRow;
+import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.datatypes.DBNumber;
-import nz.co.gregs.dbvolution.expressions.DBExpression;
 import nz.co.gregs.dbvolution.expressions.NumberExpression;
 
 /**
@@ -47,8 +46,8 @@ public class RecursiveQueryDepthIncreaseExpression extends NumberExpression {
 	}
 
 	@Override
-	public String toSQLString(DBDatabase db) {
-		return db.getDefinition().getRecursiveQueryDepthColumnName() + "+1";
+	public String toSQLString(DBDefinition db) {
+		return db.getRecursiveQueryDepthColumnName() + "+1";
 	}
 
 	@Override

@@ -21,6 +21,7 @@ import java.util.HashSet;
 import java.util.Set;
 import nz.co.gregs.dbvolution.databases.DBDatabase;
 import nz.co.gregs.dbvolution.DBRow;
+import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 
 /**
  *
@@ -52,7 +53,7 @@ public class DBUnknownDatatype extends QueryableDatatype<Object> {
 	}
 
 	@Override
-	public String formatValueForSQLStatement(DBDatabase db) {
+	public String formatValueForSQLStatement(DBDefinition db) {
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
@@ -77,7 +78,7 @@ public class DBUnknownDatatype extends QueryableDatatype<Object> {
 	}
 
 	@Override
-	protected Object getFromResultSet(DBDatabase database, ResultSet resultSet, String fullColumnName) throws SQLException {
+	protected Object getFromResultSet(DBDefinition defn, ResultSet resultSet, String fullColumnName) throws SQLException {
 		return resultSet.getString(fullColumnName);
 	}
 

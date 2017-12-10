@@ -103,7 +103,7 @@ public class DBMigrationValidation<R extends DBRow> {
 	private void addDataCheckingColumnsToValidationQuery(DBQuery dbQuery) {
 		List<PropertyWrapper> properties = mapper.getColumnPropertyWrappers();
 		for (PropertyWrapper prop : properties) {
-			QueryableDatatype<?> qdt = prop.getDefinition().getQueryableDatatype(mapper);
+			QueryableDatatype<?> qdt = prop.getPropertyWrapperDefinition().getQueryableDatatype(mapper);
 			if (qdt instanceof DBString) {
 				StringColumn column = mapper.column((DBString) qdt);
 				dbQuery.addExpressionColumn(prop,

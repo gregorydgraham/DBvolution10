@@ -20,7 +20,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import nz.co.gregs.dbvolution.*;
-import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
+import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.query.QueryDetails;
 
 /**
@@ -73,17 +73,21 @@ public class ExistsExpression extends BooleanExpression {
 
 	QueryDetails outerQuery = new QueryDetails();
 	QueryDetails innerQuery = new QueryDetails();
+	private DBDatabase database;
 
 	/**
 	 * Creates an ExistsExpression that connects to the original query via the
 	 * examples in the first list supplied, and also uses the examples in the
 	 * second list.
 	 *
-	 * @param outerTables examples that will also be linked to the exterior query.
+	 * @param db
+	 * @param outerTables examples that will also be linked to the exterior
+	 * query.
 	 * @param innerTables all other examples, which will not be linked to the
 	 * exterior query.
 	 */
-	public ExistsExpression(List<DBRow> outerTables, List<DBRow> innerTables) {
+	public ExistsExpression(DBDatabase db, List<DBRow> outerTables, List<DBRow> innerTables) {
+		this.database = db;
 		for (DBRow outerTable : outerTables) {
 			final DBRow newOuter = DBRow.copyDBRow(outerTable);
 			newOuter.setReturnFieldsToNone();
@@ -106,7 +110,8 @@ public class ExistsExpression extends BooleanExpression {
 	 * @param innerTables all other examples, which will not be linked to the
 	 * exterior query.
 	 */
-	public ExistsExpression(DBRow outerTable, List<DBRow> innerTables) {
+	public ExistsExpression(DBDatabase db, DBRow outerTable, List<DBRow> innerTables) {
+		this.database = db;
 		final DBRow newOuter = DBRow.copyDBRow(outerTable);
 		newOuter.setReturnFieldsToNone();
 		this.outerQuery.getRequiredQueryTables().add(newOuter);
@@ -126,7 +131,8 @@ public class ExistsExpression extends BooleanExpression {
 	 * @param outerQuery a query that will also be linked to the exterior query.
 	 * @param innerQuery a query which will not be linked to the exterior query.
 	 */
-	public ExistsExpression(DBQuery outerQuery, DBQuery innerQuery) {
+	public ExistsExpression(DBDatabase db, DBQuery outerQuery, DBQuery innerQuery) {
+		this.database = db;
 		for (DBRow outerTable : outerQuery.getAllTables()) {
 			final DBRow newOuter = DBRow.copyDBRow(outerTable);
 			newOuter.setReturnFieldsToNone();
@@ -154,7 +160,8 @@ public class ExistsExpression extends BooleanExpression {
 	 * @param outerTable connects to the outer query.
 	 * @param innerTable also in the query but used only internally.
 	 */
-	public ExistsExpression(DBRow outerTable, DBRow innerTable) {
+	public ExistsExpression(DBDatabase db, DBRow outerTable, DBRow innerTable) {
+		this.database = db;
 		final DBRow newOuter = DBRow.copyDBRow(outerTable);
 		newOuter.setReturnFieldsToNone();
 		this.outerQuery.getRequiredQueryTables().add(newOuter);
@@ -166,9 +173,10 @@ public class ExistsExpression extends BooleanExpression {
 	}
 
 	@Override
-	public String toSQLString(DBDatabase db) {
+	public String toSQLString(DBDefinition defn) {
 		final List<DBRow> allQueryTables = outerQuery.getAllQueryTables();
-		DBQuery dbQuery = db
+		DBQuery dbQuery = 
+				database
 				.getDBQuery(innerQuery.getRequiredQueryTables())
 				.addOptional(innerQuery.getOptionalQueryTables())
 				.addAssumedTables(allQueryTables);

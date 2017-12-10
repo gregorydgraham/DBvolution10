@@ -27,6 +27,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.exceptions.IncorrectGeometryReturnedForDatatype;
 import nz.co.gregs.dbvolution.exceptions.ParsingSpatialValueException;
 import nz.co.gregs.dbvolution.expressions.Line2DExpression;
@@ -195,18 +196,18 @@ public class DBLine2D extends QueryableDatatype<LineString> implements Line2DRes
 	}
 
 	@Override
-	protected String formatValueForSQLStatement(DBDatabase db) {
+	protected String formatValueForSQLStatement(DBDefinition db) {
 		LineString lineString = getValue();
 		if (lineString == null) {
-			return db.getDefinition().getNull();
+			return db.getNull();
 		} else {
-			String str = db.getDefinition().transformLineStringIntoDatabaseLine2DFormat(lineString);
+			String str = db.transformLineStringIntoDatabaseLine2DFormat(lineString);
 			return str;
 		}
 	}
 
 	@Override
-	protected LineString getFromResultSet(DBDatabase database, ResultSet resultSet, String fullColumnName) throws SQLException, IncorrectGeometryReturnedForDatatype {
+	protected LineString getFromResultSet(DBDefinition database, ResultSet resultSet, String fullColumnName) throws SQLException, IncorrectGeometryReturnedForDatatype {
 
 		LineString lineString = null;
 		String string = resultSet.getString(fullColumnName);
@@ -214,7 +215,7 @@ public class DBLine2D extends QueryableDatatype<LineString> implements Line2DRes
 			return null;
 		} else {
 			try {
-				lineString = database.getDefinition().transformDatabaseLine2DValueToJTSLineString(string);
+				lineString = database.transformDatabaseLine2DValueToJTSLineString(string);
 			} catch (com.vividsolutions.jts.io.ParseException ex) {
 				Logger.getLogger(DBPoint2D.class.getName()).log(Level.SEVERE, null, ex);
 				throw new ParsingSpatialValueException(fullColumnName, string, ex);

@@ -25,6 +25,7 @@ import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 import com.vividsolutions.jts.geom.Point;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.exceptions.IncorrectGeometryReturnedForDatatype;
 import nz.co.gregs.dbvolution.exceptions.ParsingSpatialValueException;
 import nz.co.gregs.dbvolution.expressions.LineSegment2DExpression;
@@ -172,18 +173,18 @@ public class DBLineSegment2D extends QueryableDatatype<LineSegment> implements L
 	}
 
 	@Override
-	protected String formatValueForSQLStatement(DBDatabase db) {
+	protected String formatValueForSQLStatement(DBDefinition db) {
 		LineSegment lineString = getValue();
 		if (lineString == null) {
-			return db.getDefinition().getNull();
+			return db.getNull();
 		} else {
-			String str = db.getDefinition().transformLineSegmentIntoDatabaseLineSegment2DFormat(lineString);
+			String str = db.transformLineSegmentIntoDatabaseLineSegment2DFormat(lineString);
 			return str;
 		}
 	}
 
 	@Override
-	protected LineSegment getFromResultSet(DBDatabase database, ResultSet resultSet, String fullColumnName) throws SQLException, IncorrectGeometryReturnedForDatatype {
+	protected LineSegment getFromResultSet(DBDefinition database, ResultSet resultSet, String fullColumnName) throws SQLException, IncorrectGeometryReturnedForDatatype {
 
 		LineSegment lineSegment = null;
 		String string = resultSet.getString(fullColumnName);
@@ -191,7 +192,7 @@ public class DBLineSegment2D extends QueryableDatatype<LineSegment> implements L
 			return null;
 		} else {
 			try {
-				lineSegment = database.getDefinition().transformDatabaseLineSegment2DValueToJTSLineSegment(string);
+				lineSegment = database.transformDatabaseLineSegment2DValueToJTSLineSegment(string);
 			} catch (com.vividsolutions.jts.io.ParseException ex) {
 				Logger.getLogger(DBLineSegment2D.class.getName()).log(Level.SEVERE, null, ex);
 				throw new ParsingSpatialValueException(fullColumnName, string, ex);

@@ -17,8 +17,8 @@ package nz.co.gregs.dbvolution.actions;
 
 import java.sql.SQLException;
 import java.util.List;
-import nz.co.gregs.dbvolution.databases.DBDatabase;
 import nz.co.gregs.dbvolution.DBRow;
+import nz.co.gregs.dbvolution.databases.DBDatabase;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 import nz.co.gregs.dbvolution.internal.properties.PropertyWrapper;
@@ -74,8 +74,8 @@ public abstract class DBAction {
 	 * require to revert the change enacted by the action.
 	 *
 	 * <p>
-	 * Revert actions are tricky to implement correctly, so be sure to check that
-	 * the revert will produce the desired result.
+	 * Revert actions are tricky to implement correctly, so be sure to check
+	 * that the revert will produce the desired result.
 	 *
 	 * <p style="color: #F90;">Support DBvolution at
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
@@ -89,8 +89,8 @@ public abstract class DBAction {
 	 * Returns a DBActionList of the actions required to perform this DBAction.
 	 *
 	 * <p>
-	 * Actions are allowed to create sub-actions so all actions are returned as a
-	 * DBActionList.
+	 * Actions are allowed to create sub-actions so all actions are returned as
+	 * a DBActionList.
 	 *
 	 * <p style="color: #F90;">Support DBvolution at
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
@@ -127,8 +127,8 @@ public abstract class DBAction {
 	 * @param db the target database.
 	 * <p style="color: #F90;">Support DBvolution at
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 * @return The complete list of all actions performed to complete this action
-	 * on the database
+	 * @return The complete list of all actions performed to complete this
+	 * action on the database
 	 * @throws SQLException Database operations may throw SQLExceptions
 	 */
 	protected abstract DBActionList execute(DBDatabase db) throws SQLException;
@@ -146,31 +146,31 @@ public abstract class DBAction {
 	}
 
 	/**
-	 * Returns a string that can be used in the WHERE clause to identify the rows
-	 * affected by this DBAction.
+	 * Returns a string that can be used in the WHERE clause to identify the
+	 * rows affected by this DBAction.
 	 *
 	 * <p>
 	 * Used internally during UPDATE and INSERT.</p>
 	 *
 	 * @param row the row that will be used in the method
-	 * @param db the database to exact the DBAction on
+	 * @param db the database to execute the DBAction on
 	 * <p style="color: #F90;">Support DBvolution at
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a string representing the
 	 */
 	protected String getPrimaryKeySQL(DBDatabase db, DBRow row) {
+		final DBDefinition definition = db.getDefinition();
 		StringBuilder sqlString = new StringBuilder();
-		DBDefinition defn = db.getDefinition();
 		List<QueryableDatatype<?>> primaryKeys = row.getPrimaryKeys();
 		String separator = "(";
 		for (QueryableDatatype<?> pk : primaryKeys) {
 			PropertyWrapper wrapper = row.getPropertyWrapperOf(pk);
-			String pkValue = (pk.hasChanged() ? pk.getPreviousSQLValue(db) : pk.toSQLString(db));
-			sqlString.append(separator).append(defn.formatColumnName(wrapper.columnName())).append(defn.getEqualsComparator()).append(pkValue);
-			//				+ defn.formatColumnName(row.getPrimaryKeyColumnNames())
-			//				+ defn.getEqualsComparator()
-			//				+ row.getPrimaryKeys().toSQLString(db)
-			separator = defn.beginOrLine();
+			String pkValue = (pk.hasChanged() ? pk.getPreviousSQLValue(definition) : pk.toSQLString(definition));
+			sqlString.append(separator)
+					.append(definition.formatColumnName(wrapper.columnName()))
+					.append(definition.getEqualsComparator())
+					.append(pkValue);
+			separator = definition.beginOrLine();
 		}
 		return sqlString.append(")").toString();
 	}

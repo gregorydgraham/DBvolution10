@@ -15,7 +15,7 @@
  */
 package nz.co.gregs.dbvolution.expressions;
 
-import nz.co.gregs.dbvolution.databases.DBDatabase;
+import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.results.RangeComparable;
 import nz.co.gregs.dbvolution.results.StringResult;
 import nz.co.gregs.dbvolution.results.IntegerResult;
@@ -184,7 +184,7 @@ public class IntegerExpression implements IntegerResult, RangeComparable<Integer
 	}
 
 	@Override
-	public String toSQLString(DBDatabase db) {
+	public String toSQLString(DBDefinition db) {
 		return getInnerIntegerResult().toSQLString(db);
 	}
 
@@ -1444,8 +1444,8 @@ public class IntegerExpression implements IntegerResult, RangeComparable<Integer
 		}
 
 		@Override
-		public String toSQLString(DBDatabase db) {
-			if (db.getDefinition().supportsHyperbolicFunctionsNatively()) {
+		public String toSQLString(DBDefinition db) {
+			if (db.supportsHyperbolicFunctionsNatively()) {
 				return super.toSQLString(db); //To change body of generated methods, choose Tools | Templates.
 			} else {
 				IntegerExpression first = this.only;
@@ -1456,7 +1456,7 @@ public class IntegerExpression implements IntegerResult, RangeComparable<Integer
 		}
 
 		@Override
-		String getFunctionName(DBDatabase db) {
+		String getFunctionName(DBDefinition db) {
 			return "sinh";
 		}
 	};
@@ -2491,7 +2491,7 @@ public class IntegerExpression implements IntegerResult, RangeComparable<Integer
 		}
 
 		@Override
-		public String toSQLString(DBDatabase db) {
+		public String toSQLString(DBDefinition db) {
 			return first.toSQLString(db) + this.getEquationOperator(db) + second.toSQLString(db);
 		}
 
@@ -2520,7 +2520,7 @@ public class IntegerExpression implements IntegerResult, RangeComparable<Integer
 			return hashSet;
 		}
 
-		protected abstract String getEquationOperator(DBDatabase db);
+		protected abstract String getEquationOperator(DBDefinition db);
 
 		@Override
 		public boolean isAggregator() {
@@ -2551,18 +2551,18 @@ public class IntegerExpression implements IntegerResult, RangeComparable<Integer
 		DBNonaryFunction() {
 		}
 
-		abstract String getFunctionName(DBDatabase db);
+		abstract String getFunctionName(DBDefinition db);
 
-		protected String beforeValue(DBDatabase db) {
+		protected String beforeValue(DBDefinition db) {
 			return " " + getFunctionName(db) + "";
 		}
 
-		protected String afterValue(DBDatabase db) {
+		protected String afterValue(DBDefinition db) {
 			return " ";
 		}
 
 		@Override
-		public String toSQLString(DBDatabase db) {
+		public String toSQLString(DBDefinition db) {
 			return this.beforeValue(db) + this.afterValue(db);
 		}
 
@@ -2619,18 +2619,18 @@ public class IntegerExpression implements IntegerResult, RangeComparable<Integer
 			return new DBInteger();
 		}
 
-		abstract String getFunctionName(DBDatabase db);
+		abstract String getFunctionName(DBDefinition db);
 
-		protected String beforeValue(DBDatabase db) {
+		protected String beforeValue(DBDefinition db) {
 			return "" + getFunctionName(db) + "( ";
 		}
 
-		protected String afterValue(DBDatabase db) {
+		protected String afterValue(DBDefinition db) {
 			return ") ";
 		}
 
 		@Override
-		public String toSQLString(DBDatabase db) {
+		public String toSQLString(DBDefinition db) {
 			return this.beforeValue(db) + (only == null ? "" : only.toSQLString(db)) + this.afterValue(db);
 		}
 
@@ -2687,18 +2687,18 @@ public class IntegerExpression implements IntegerResult, RangeComparable<Integer
 			this.only = only;
 		}
 
-		abstract String getFunctionName(DBDatabase db);
+		abstract String getFunctionName(DBDefinition db);
 
-		protected String beforeValue(DBDatabase db) {
+		protected String beforeValue(DBDefinition db) {
 			return "" + getFunctionName(db) + "( ";
 		}
 
-		protected String afterValue(DBDatabase db) {
+		protected String afterValue(DBDefinition db) {
 			return ") ";
 		}
 
 		@Override
-		public String toSQLString(DBDatabase db) {
+		public String toSQLString(DBDefinition db) {
 			return this.beforeValue(db) + (only == null ? "" : only.toSQLString(db)) + this.afterValue(db);
 		}
 
@@ -2769,7 +2769,7 @@ public class IntegerExpression implements IntegerResult, RangeComparable<Integer
 		}
 
 		@Override
-		public String toSQLString(DBDatabase db) {
+		public String toSQLString(DBDefinition db) {
 			return this.beforeValue(db) + getFirst().toSQLString(db) + this.getSeparator(db) + (getSecond() == null ? "" : getSecond().toSQLString(db)) + this.afterValue(db);
 		}
 
@@ -2786,17 +2786,17 @@ public class IntegerExpression implements IntegerResult, RangeComparable<Integer
 			return newInstance;
 		}
 
-		abstract String getFunctionName(DBDatabase db);
+		abstract String getFunctionName(DBDefinition db);
 
-		protected String beforeValue(DBDatabase db) {
+		protected String beforeValue(DBDefinition db) {
 			return " " + getFunctionName(db) + "( ";
 		}
 
-		protected String getSeparator(DBDatabase db) {
+		protected String getSeparator(DBDefinition db) {
 			return ", ";
 		}
 
-		protected String afterValue(DBDatabase db) {
+		protected String afterValue(DBDefinition db) {
 			return ") ";
 		}
 
@@ -2877,7 +2877,7 @@ public class IntegerExpression implements IntegerResult, RangeComparable<Integer
 		}
 
 		@Override
-		public String toSQLString(DBDatabase db) {
+		public String toSQLString(DBDefinition db) {
 			return this.beforeValue(db) + getFirst().toSQLString(db) + this.getSeparator(db) + (getSecond() == null ? "" : getSecond().toSQLString(db)) + this.afterValue(db);
 		}
 
@@ -2894,17 +2894,17 @@ public class IntegerExpression implements IntegerResult, RangeComparable<Integer
 			return newInstance;
 		}
 
-		abstract String getFunctionName(DBDatabase db);
+		abstract String getFunctionName(DBDefinition db);
 
-		protected String beforeValue(DBDatabase db) {
+		protected String beforeValue(DBDefinition db) {
 			return " " + getFunctionName(db) + "( ";
 		}
 
-		protected String getSeparator(DBDatabase db) {
+		protected String getSeparator(DBDefinition db) {
 			return ", ";
 		}
 
-		protected String afterValue(DBDatabase db) {
+		protected String afterValue(DBDefinition db) {
 			return ") ";
 		}
 
@@ -2992,7 +2992,7 @@ public class IntegerExpression implements IntegerResult, RangeComparable<Integer
 		}
 
 		@Override
-		public String toSQLString(DBDatabase db) {
+		public String toSQLString(DBDefinition db) {
 			if (this.getIncludesNull()) {
 				return BooleanExpression.isNull(first).toSQLString(db);
 			} else {
@@ -3013,7 +3013,7 @@ public class IntegerExpression implements IntegerResult, RangeComparable<Integer
 			return newInstance;
 		}
 
-		protected abstract String getEquationOperator(DBDatabase db);
+		protected abstract String getEquationOperator(DBDefinition db);
 
 		@Override
 		public Set<DBRow> getTablesInvolved() {
@@ -3071,18 +3071,18 @@ public class IntegerExpression implements IntegerResult, RangeComparable<Integer
 			return new DBBoolean();
 		}
 
-		abstract String getFunctionName(DBDatabase db);
+		abstract String getFunctionName(DBDefinition db);
 
-		protected String beforeValue(DBDatabase db) {
+		protected String beforeValue(DBDefinition db) {
 			return "( ";
 		}
 
-		protected String afterValue(DBDatabase db) {
+		protected String afterValue(DBDefinition db) {
 			return ") ";
 		}
 
 		@Override
-		public String toSQLString(DBDatabase db) {
+		public String toSQLString(DBDefinition db) {
 			StringBuilder builder = new StringBuilder();
 			builder
 					.append(getColumn().toSQLString(db))
@@ -3197,18 +3197,18 @@ public class IntegerExpression implements IntegerResult, RangeComparable<Integer
 			return new DBInteger();
 		}
 
-		abstract String getFunctionName(DBDatabase db);
+		abstract String getFunctionName(DBDefinition db);
 
-		protected String beforeValue(DBDatabase db) {
+		protected String beforeValue(DBDefinition db) {
 			return "( ";
 		}
 
-		protected String afterValue(DBDatabase db) {
+		protected String afterValue(DBDefinition db) {
 			return ") ";
 		}
 
 		@Override
-		public String toSQLString(DBDatabase db) {
+		public String toSQLString(DBDefinition db) {
 			StringBuilder builder = new StringBuilder();
 			builder
 					.append(this.getFunctionName(db))
@@ -3311,7 +3311,7 @@ public class IntegerExpression implements IntegerResult, RangeComparable<Integer
 		}
 
 		@Override
-		abstract public String toSQLString(DBDatabase db);
+		abstract public String toSQLString(DBDefinition db);
 
 		@Override
 		public DBIntegerAndNnaryStringFunction copy() {
@@ -3385,18 +3385,18 @@ public class IntegerExpression implements IntegerResult, RangeComparable<Integer
 			return new DBString();
 		}
 
-		abstract String getFunctionName(DBDatabase db);
+		abstract String getFunctionName(DBDefinition db);
 
-		protected String beforeValue(DBDatabase db) {
+		protected String beforeValue(DBDefinition db) {
 			return "" + getFunctionName(db) + "( ";
 		}
 
-		protected String afterValue(DBDatabase db) {
+		protected String afterValue(DBDefinition db) {
 			return ") ";
 		}
 
 		@Override
-		public String toSQLString(DBDatabase db) {
+		public String toSQLString(DBDefinition db) {
 			return this.beforeValue(db) + (only == null ? "" : only.toSQLString(db)) + this.afterValue(db);
 		}
 
@@ -3444,8 +3444,8 @@ public class IntegerExpression implements IntegerResult, RangeComparable<Integer
 		}
 
 		@Override
-		String getFunctionName(DBDatabase db) {
-			return db.getDefinition().getMaxFunctionName();
+		String getFunctionName(DBDefinition db) {
+			return db.getMaxFunctionName();
 		}
 
 		@Override
@@ -3461,8 +3461,8 @@ public class IntegerExpression implements IntegerResult, RangeComparable<Integer
 		}
 
 		@Override
-		String getFunctionName(DBDatabase db) {
-			return db.getDefinition().getMinFunctionName();
+		String getFunctionName(DBDefinition db) {
+			return db.getMinFunctionName();
 		}
 
 		@Override
@@ -3478,7 +3478,7 @@ public class IntegerExpression implements IntegerResult, RangeComparable<Integer
 		}
 
 		@Override
-		protected String getEquationOperator(DBDatabase db) {
+		protected String getEquationOperator(DBDefinition db) {
 			return " - ";
 		}
 	}
@@ -3490,7 +3490,7 @@ public class IntegerExpression implements IntegerResult, RangeComparable<Integer
 		}
 
 		@Override
-		String getFunctionName(DBDatabase db) {
+		String getFunctionName(DBDefinition db) {
 			return "";
 		}
 	}
@@ -3502,12 +3502,12 @@ public class IntegerExpression implements IntegerResult, RangeComparable<Integer
 		}
 
 		@Override
-		public String toSQLString(DBDatabase db) {
-			return db.getDefinition().doIntegerToStringTransform(super.only.toSQLString(db));
+		public String toSQLString(DBDefinition db) {
+			return db.doIntegerToStringTransform(super.only.toSQLString(db));
 		}
 
 		@Override
-		String getFunctionName(DBDatabase db) {
+		String getFunctionName(DBDefinition db) {
 			throw new UnsupportedOperationException("Not supported yet.");
 		}
 
@@ -3524,16 +3524,16 @@ public class IntegerExpression implements IntegerResult, RangeComparable<Integer
 		}
 
 		@Override
-		public String toSQLString(DBDatabase db) {
+		public String toSQLString(DBDefinition db) {
 			if (super.getIncludesNull()) {
 				return BooleanExpression.isNull(getFirst()).toSQLString(db);
 			} else {
-				return db.getDefinition().doIntegerEqualsTransform(getFirst().toSQLString(db), getSecond().toSQLString(db));
+				return db.doIntegerEqualsTransform(getFirst().toSQLString(db), getSecond().toSQLString(db));
 			}
 		}
 
 		@Override
-		protected String getEquationOperator(DBDatabase db) {
+		protected String getEquationOperator(DBDefinition db) {
 			return " = ";
 		}
 	}
@@ -3545,7 +3545,7 @@ public class IntegerExpression implements IntegerResult, RangeComparable<Integer
 		}
 
 		@Override
-		protected String getEquationOperator(DBDatabase db) {
+		protected String getEquationOperator(DBDefinition db) {
 			return " < ";
 		}
 
@@ -3562,7 +3562,7 @@ public class IntegerExpression implements IntegerResult, RangeComparable<Integer
 		}
 
 		@Override
-		protected String getEquationOperator(DBDatabase db) {
+		protected String getEquationOperator(DBDefinition db) {
 			return " <= ";
 		}
 
@@ -3579,7 +3579,7 @@ public class IntegerExpression implements IntegerResult, RangeComparable<Integer
 		}
 
 		@Override
-		protected String getEquationOperator(DBDatabase db) {
+		protected String getEquationOperator(DBDefinition db) {
 			return " > ";
 		}
 
@@ -3596,7 +3596,7 @@ public class IntegerExpression implements IntegerResult, RangeComparable<Integer
 		}
 
 		@Override
-		protected String getEquationOperator(DBDatabase db) {
+		protected String getEquationOperator(DBDefinition db) {
 			return " >= ";
 		}
 
@@ -3613,16 +3613,16 @@ public class IntegerExpression implements IntegerResult, RangeComparable<Integer
 		}
 
 		@Override
-		public String toSQLString(DBDatabase db) {
+		public String toSQLString(DBDefinition db) {
 			List<String> sqlValues = new ArrayList<>();
 			for (IntegerResult value : this.getValues()) {
 				sqlValues.add(value.toSQLString(db));
 			}
-			return db.getDefinition().doInTransform(getColumn().toSQLString(db), sqlValues);
+			return db.doInTransform(getColumn().toSQLString(db), sqlValues);
 		}
 
 		@Override
-		protected String getFunctionName(DBDatabase db) {
+		protected String getFunctionName(DBDefinition db) {
 			return " IN ";
 		}
 	}
@@ -3634,17 +3634,17 @@ public class IntegerExpression implements IntegerResult, RangeComparable<Integer
 		}
 
 		@Override
-		public String toSQLString(DBDatabase db) {
+		public String toSQLString(DBDefinition db) {
 			List<String> strs = new ArrayList<>();
 			for (IntegerResult num : this.values) {
 				strs.add(num.toSQLString(db));
 			}
-			return db.getDefinition().doLeastOfTransformation(strs);
+			return db.doLeastOfTransformation(strs);
 		}
 
 		@Override
-		protected String getFunctionName(DBDatabase db) {
-			return db.getDefinition().getLeastOfFunctionName();
+		protected String getFunctionName(DBDefinition db) {
+			return db.getLeastOfFunctionName();
 		}
 	}
 
@@ -3655,17 +3655,17 @@ public class IntegerExpression implements IntegerResult, RangeComparable<Integer
 		}
 
 		@Override
-		public String toSQLString(DBDatabase db) {
+		public String toSQLString(DBDefinition db) {
 			List<String> strs = new ArrayList<>();
 			for (IntegerResult num : this.values) {
 				strs.add(num.toSQLString(db));
 			}
-			return db.getDefinition().doGreatestOfTransformation(strs);
+			return db.doGreatestOfTransformation(strs);
 		}
 
 		@Override
-		protected String getFunctionName(DBDatabase db) {
-			return db.getDefinition().getGreatestOfFunctionName();
+		protected String getFunctionName(DBDefinition db) {
+			return db.getGreatestOfFunctionName();
 		}
 	}
 
@@ -3676,13 +3676,13 @@ public class IntegerExpression implements IntegerResult, RangeComparable<Integer
 		}
 
 		@Override
-		public String toSQLString(DBDatabase db) {
-			return db.getDefinition().doIntegerIfNullTransform(this.getFirst().toSQLString(db), getSecond().toSQLString(db));
+		public String toSQLString(DBDefinition db) {
+			return db.doIntegerIfNullTransform(this.getFirst().toSQLString(db), getSecond().toSQLString(db));
 		}
 
 		@Override
-		String getFunctionName(DBDatabase db) {
-			return db.getDefinition().getIfNullFunctionName();
+		String getFunctionName(DBDefinition db) {
+			return db.getIfNullFunctionName();
 		}
 	}
 
@@ -3693,13 +3693,13 @@ public class IntegerExpression implements IntegerResult, RangeComparable<Integer
 		}
 
 		@Override
-		String getFunctionName(DBDatabase db) {
+		String getFunctionName(DBDefinition db) {
 			throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 		}
 
 		@Override
-		public String toSQLString(DBDatabase db) {
-			return db.getDefinition().doIntegerToNumberTransform(this.only.toSQLString(db));
+		public String toSQLString(DBDefinition db) {
+			return db.doIntegerToNumberTransform(this.only.toSQLString(db));
 		}
 	}
 
@@ -3710,7 +3710,7 @@ public class IntegerExpression implements IntegerResult, RangeComparable<Integer
 		}
 
 		@Override
-		String getFunctionName(DBDatabase db) {
+		String getFunctionName(DBDefinition db) {
 			return "abs";
 		}
 	}
@@ -3722,7 +3722,7 @@ public class IntegerExpression implements IntegerResult, RangeComparable<Integer
 		}
 
 		@Override
-		String getFunctionName(DBDatabase db) {
+		String getFunctionName(DBDefinition db) {
 			return "acos";
 		}
 	}
@@ -3734,8 +3734,8 @@ public class IntegerExpression implements IntegerResult, RangeComparable<Integer
 		}
 
 		@Override
-		public String toSQLString(DBDatabase db) {
-			if (db.getDefinition().supportsArcSineFunction()) {
+		public String toSQLString(DBDefinition db) {
+			if (db.supportsArcSineFunction()) {
 				return super.toSQLString(db);
 			} else {
 				return only.numberResult().dividedBy(value(1.0).minus(only.times(only).bracket()).bracket().squareRoot()).arctan().toSQLString(db);
@@ -3743,7 +3743,7 @@ public class IntegerExpression implements IntegerResult, RangeComparable<Integer
 		}
 
 		@Override
-		String getFunctionName(DBDatabase db) {
+		String getFunctionName(DBDefinition db) {
 			return "asin";
 		}
 	}
@@ -3755,7 +3755,7 @@ public class IntegerExpression implements IntegerResult, RangeComparable<Integer
 		}
 
 		@Override
-		String getFunctionName(DBDatabase db) {
+		String getFunctionName(DBDefinition db) {
 			return "power";
 		}
 	}
@@ -3767,7 +3767,7 @@ public class IntegerExpression implements IntegerResult, RangeComparable<Integer
 		}
 
 		@Override
-		String getFunctionName(DBDatabase db) {
+		String getFunctionName(DBDefinition db) {
 			return "sign";
 		}
 	}
@@ -3779,9 +3779,9 @@ public class IntegerExpression implements IntegerResult, RangeComparable<Integer
 		}
 
 		@Override
-		public String toSQLString(DBDatabase db) {
+		public String toSQLString(DBDefinition db) {
 			try {
-				return db.getDefinition().doRoundWithDecimalPlacesTransform(getFirst().toSQLString(db), getSecond().toSQLString(db));
+				return db.doRoundWithDecimalPlacesTransform(getFirst().toSQLString(db), getSecond().toSQLString(db));
 			} catch (UnsupportedOperationException exp) {
 				IntegerExpression power = IntegerExpression.value(10).power(getSecond());
 				return getFirst().times(power).dividedBy(power).toSQLString(db);
@@ -3789,7 +3789,7 @@ public class IntegerExpression implements IntegerResult, RangeComparable<Integer
 		}
 
 		@Override
-		String getFunctionName(DBDatabase db) {
+		String getFunctionName(DBDefinition db) {
 			return "round";
 		}
 	}
@@ -3801,7 +3801,7 @@ public class IntegerExpression implements IntegerResult, RangeComparable<Integer
 		}
 
 		@Override
-		protected String getEquationOperator(DBDatabase db) {
+		protected String getEquationOperator(DBDefinition db) {
 			return " + ";
 		}
 	}
@@ -3813,7 +3813,7 @@ public class IntegerExpression implements IntegerResult, RangeComparable<Integer
 		}
 
 		@Override
-		protected String getEquationOperator(DBDatabase db) {
+		protected String getEquationOperator(DBDefinition db) {
 			return " * ";
 		}
 	}
@@ -3825,16 +3825,16 @@ public class IntegerExpression implements IntegerResult, RangeComparable<Integer
 		}
 
 		@Override
-		public String toSQLString(DBDatabase db) {
-			if (db.getDefinition().supportsModulusFunction()) {
-				return db.getDefinition().doModulusTransform(getFirst().toSQLString(db), getSecond().toSQLString(db));
+		public String toSQLString(DBDefinition db) {
+			if (db.supportsModulusFunction()) {
+				return db.doModulusTransform(getFirst().toSQLString(db), getSecond().toSQLString(db));
 			} else {
 				return "((" + getFirst().toSQLString(db) + ") % (" + getSecond().toSQLString(db) + "))";
 			}
 		}
 
 		@Override
-		String getFunctionName(DBDatabase db) {
+		String getFunctionName(DBDefinition db) {
 			return "MOD";
 		}
 	}
@@ -3846,12 +3846,12 @@ public class IntegerExpression implements IntegerResult, RangeComparable<Integer
 		}
 
 		@Override
-		public String toSQLString(DBDatabase db) {
+		public String toSQLString(DBDefinition db) {
 			List<String> strs = new ArrayList<>();
 			for (StringResult num : this.values) {
 				strs.add(num.toSQLString(db));
 			}
-			return db.getDefinition().doChooseTransformation(IntegerExpression.value(numberExpression).plus(1).bracket().toSQLString(db), strs);
+			return db.doChooseTransformation(IntegerExpression.value(numberExpression).plus(1).bracket().toSQLString(db), strs);
 		}
 	}
 
@@ -3862,8 +3862,8 @@ public class IntegerExpression implements IntegerResult, RangeComparable<Integer
 		}
 
 		@Override
-		String getFunctionName(DBDatabase db) {
-			return db.getDefinition().getSumFunctionName();
+		String getFunctionName(DBDefinition db) {
+			return db.getSumFunctionName();
 		}
 
 		@Override
@@ -3878,8 +3878,8 @@ public class IntegerExpression implements IntegerResult, RangeComparable<Integer
 		}
 
 		@Override
-		String getFunctionName(DBDatabase db) {
-			return db.getDefinition().getCountFunctionName();
+		String getFunctionName(DBDefinition db) {
+			return db.getCountFunctionName();
 		}
 
 		@Override
@@ -3888,7 +3888,7 @@ public class IntegerExpression implements IntegerResult, RangeComparable<Integer
 		}
 
 		@Override
-		protected String afterValue(DBDatabase db) {
+		protected String afterValue(DBDefinition db) {
 			return "(*)";
 		}
 
@@ -3904,8 +3904,8 @@ public class IntegerExpression implements IntegerResult, RangeComparable<Integer
 		}
 
 		@Override
-		public String toSQLString(DBDatabase db) {
-			return db.getDefinition().getNull();
+		public String toSQLString(DBDefinition db) {
+			return db.getNull();
 		}
 	}
 }

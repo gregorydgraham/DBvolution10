@@ -24,6 +24,8 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.databases.SQLiteDB;
+import nz.co.gregs.dbvolution.databases.supports.SupportsDateRepeatDatatypeFunctions;
+import nz.co.gregs.dbvolution.databases.supports.SupportsPolygonDatatype;
 import nz.co.gregs.dbvolution.datatypes.*;
 import nz.co.gregs.dbvolution.datatypes.spatial2D.*;
 import nz.co.gregs.dbvolution.exceptions.IncorrectGeometryReturnedForDatatype;
@@ -46,7 +48,7 @@ import org.joda.time.Period;
  *
  * @author Gregory Graham
  */
-public class SQLiteDefinition extends DBDefinition {
+public class SQLiteDefinition extends DBDefinition implements SupportsDateRepeatDatatypeFunctions, SupportsPolygonDatatype {
 
 	/**
 	 * The date format used internally within DBvolution's SQLite implementation.

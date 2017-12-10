@@ -34,7 +34,7 @@ import nz.co.gregs.dbvolution.internal.sqlite.*;
  *
  * @author Gregory Graham
  */
-public class SQLiteDB extends DBDatabase implements SupportsDateRepeatDatatypeFunctions, SupportsPolygonDatatype {
+public class SQLiteDB extends DBDatabase {
 
 	private static final String SQLITE_DRIVER_NAME = "org.sqlite.JDBC";
 	public static final long serialVersionUID = 1l;

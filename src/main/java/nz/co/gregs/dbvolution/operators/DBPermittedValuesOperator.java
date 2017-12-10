@@ -46,7 +46,7 @@ public class DBPermittedValuesOperator<T> extends DBMetaOperator {
 	 * @param permitted a list of strings that are permitted values.
 	 */
 	public DBPermittedValuesOperator(Collection<T> permitted) {
-		ArrayList<DBExpression> expressions = new ArrayList<DBExpression>();
+		ArrayList<DBExpression> expressions = new ArrayList<>();
 		int objectCount = 0;
 		if (permitted == null) {
 			operator = new DBIsNullOperator();
@@ -93,7 +93,7 @@ public class DBPermittedValuesOperator<T> extends DBMetaOperator {
 	 */
 	@SuppressWarnings("unchecked")
 	public DBPermittedValuesOperator(T... permitted) {
-		ArrayList<DBExpression> expressions = new ArrayList<DBExpression>();
+		ArrayList<DBExpression> expressions = new ArrayList<>();
 		int objectCount = 0;
 		if (permitted == null) {
 			operator = new DBIsNullOperator();

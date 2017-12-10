@@ -133,19 +133,10 @@ public class DBBoolean extends QueryableDatatype<Boolean> implements BooleanResu
 	}
 
 	@Override
-	public String formatValueForSQLStatement(DBDatabase db) {
-		DBDefinition defn = db.getDefinition();
+	public String formatValueForSQLStatement(DBDefinition defn) {
 		if (getLiteralValue() instanceof Boolean) {
 			Boolean boolValue = getLiteralValue();
-//			if (boolValue==null){
-//				return defn.getNull();
-//			} else if (boolValue) {
-//				return defn.getTrueOperation();
-//			} else {
-//				return defn.getFalseOperation();
-//			}
 			return defn.doBooleanValueTransform(boolValue);
-//			return defn.beginNumberValue() + (boolValue ? 1 : 0) + defn.endNumberValue();
 		}
 		return defn.getNull();
 	}
@@ -247,7 +238,7 @@ public class DBBoolean extends QueryableDatatype<Boolean> implements BooleanResu
 	}
 
 	@Override
-	protected Boolean getFromResultSet(DBDatabase database, ResultSet resultSet, String fullColumnName) throws SQLException {
+	protected Boolean getFromResultSet(DBDefinition database, ResultSet resultSet, String fullColumnName) throws SQLException {
 		Boolean dbValue = resultSet.getBoolean(fullColumnName);
 		if (resultSet.wasNull()) {
 			dbValue = null;

@@ -62,7 +62,7 @@ public class DBUpdateToPreviousValues extends DBUpdateSimpleTypes {
 			if (field.isColumn()) {
 				final QueryableDatatype<?> qdt = field.getQueryableDatatype();
 				if (qdt.hasChanged()) {
-					String previousSQLValue = qdt.getPreviousSQLValue(db);
+					String previousSQLValue = qdt.getPreviousSQLValue(defn);
 					if (previousSQLValue == null) {
 						previousSQLValue = defn.getNull();
 					}
@@ -97,7 +97,7 @@ public class DBUpdateToPreviousValues extends DBUpdateSimpleTypes {
 		if (primaryKeys.size() > 0) {
 			for (QueryableDatatype<?> pk : primaryKeys) {
 				PropertyWrapper wrapper = row.getPropertyWrapperOf(pk);
-				String pkValue = pk.toSQLString(db);
+				String pkValue = pk.toSQLString(defn);
 				sqlString.append(separator).append(defn.formatColumnName(wrapper.columnName())).append(defn.getEqualsComparator()).append(pkValue);
 				separator = defn.beginAndLine();
 			}
@@ -105,9 +105,9 @@ public class DBUpdateToPreviousValues extends DBUpdateSimpleTypes {
 			for (PropertyWrapper prop : row.getColumnPropertyWrappers()) {
 				QueryableDatatype<?> qdt = prop.getQueryableDatatype();
 				if (qdt.isNull()) {
-					sqlString.append(separator).append(BooleanExpression.isNull(row.column(qdt)).toSQLString(db));
+					sqlString.append(separator).append(BooleanExpression.isNull(row.column(qdt)).toSQLString(defn));
 				} else {
-					sqlString.append(separator).append(prop.columnName()).append(defn.getEqualsComparator()).append(qdt.toSQLString(db));
+					sqlString.append(separator).append(prop.columnName()).append(defn.getEqualsComparator()).append(qdt.toSQLString(defn));
 				}
 				separator = defn.beginAndLine();
 			}

@@ -19,7 +19,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatypeSyncer.DBSafeInternalQDTAdaptor;
-import nz.co.gregs.dbvolution.databases.DBDatabase;
+import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.expressions.BooleanExpression;
 import nz.co.gregs.dbvolution.expressions.DBExpression;
 import nz.co.gregs.dbvolution.expressions.DateExpression;
@@ -43,11 +43,11 @@ import nz.co.gregs.dbvolution.results.StringResult;
 public class DBInOperator extends DBOperator {
 
 	private static final long serialVersionUID = 1L;
-	private final List<DBExpression> listOfPossibleValues = new ArrayList<DBExpression>();
-	private final List<StringResult> listOfPossibleStrings = new ArrayList<StringResult>();
-	private final List<NumberResult> listOfPossibleNumbers = new ArrayList<NumberResult>();
-	private final ArrayList<IntegerResult> listOfPossibleIntegers = new ArrayList<IntegerResult>();
-	private final List<DateResult> listOfPossibleDates = new ArrayList<DateResult>();
+	private final List<DBExpression> listOfPossibleValues = new ArrayList<>();
+	private final List<StringResult> listOfPossibleStrings = new ArrayList<>();
+	private final List<NumberResult> listOfPossibleNumbers = new ArrayList<>();
+	private final ArrayList<IntegerResult> listOfPossibleIntegers = new ArrayList<>();
+	private final List<DateResult> listOfPossibleDates = new ArrayList<>();
 
 	/**
 	 * Creates an operator that compares a column to a list of values using the IN
@@ -113,7 +113,7 @@ public class DBInOperator extends DBOperator {
 
 	@Override
 	public DBInOperator copyAndAdapt(DBSafeInternalQDTAdaptor typeAdaptor) {
-		ArrayList<DBExpression> list = new ArrayList<DBExpression>();
+		ArrayList<DBExpression> list = new ArrayList<>();
 		for (DBExpression item : getListOfPossibleValues()) {
 			list.add(typeAdaptor.convert(item));
 		}
@@ -124,32 +124,32 @@ public class DBInOperator extends DBOperator {
 	}
 
 	@Override
-	public BooleanExpression generateWhereExpression(DBDatabase db, DBExpression column) {
+	public BooleanExpression generateWhereExpression(DBDefinition db, DBExpression column) {
 		DBExpression genericExpression = column;
 		BooleanExpression op = BooleanExpression.trueExpression();
 		if (genericExpression instanceof StringExpression) {
-			ArrayList<StringResult> listString = new ArrayList<StringResult>(getListOfPossibleStrings());
+			ArrayList<StringResult> listString = new ArrayList<>(getListOfPossibleStrings());
 			if (this.includeNulls) {
 				listString.add(null);
 			}
 			StringExpression stringExpression = (StringExpression) genericExpression;
 			op = stringExpression.bracket().isIn(listString.toArray(new StringResult[]{}));
 		} else if (genericExpression instanceof NumberExpression) {
-			ArrayList<NumberResult> listNumbers = new ArrayList<NumberResult>(getListOfPossibleNumbers());
+			ArrayList<NumberResult> listNumbers = new ArrayList<>(getListOfPossibleNumbers());
 			if (this.includeNulls) {
 				listNumbers.add(null);
 			}
 			NumberExpression numberExpression = (NumberExpression) genericExpression;
 			op = numberExpression.isIn(listNumbers.toArray(new NumberResult[]{}));
 		} else if (genericExpression instanceof IntegerExpression) {
-			ArrayList<IntegerResult> listIntegers = new ArrayList<IntegerResult>(getListOfPossibleIntegers());
+			ArrayList<IntegerResult> listIntegers = new ArrayList<>(getListOfPossibleIntegers());
 			if (this.includeNulls) {
 				listIntegers.add(null);
 			}
 			IntegerExpression numberExpression = (IntegerExpression) genericExpression;
 			op = numberExpression.isIn(listIntegers.toArray(new IntegerResult[]{}));
 		} else if (genericExpression instanceof DateExpression) {
-			ArrayList<DateResult> listDate = new ArrayList<DateResult>(getListOfPossibleDates());
+			ArrayList<DateResult> listDate = new ArrayList<>(getListOfPossibleDates());
 			if (this.includeNulls) {
 				listDate.add(null);
 			}

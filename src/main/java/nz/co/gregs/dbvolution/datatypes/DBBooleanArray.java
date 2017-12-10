@@ -113,9 +113,9 @@ public class DBBooleanArray extends QueryableDatatype<Boolean[]> implements Bool
 	}
 
 	@Override
-	protected Boolean[] getFromResultSet(DBDatabase database, ResultSet resultSet, String fullColumnName) throws SQLException {
+	protected Boolean[] getFromResultSet(DBDefinition database, ResultSet resultSet, String fullColumnName) throws SQLException {
 		Boolean[] result = new Boolean[]{};
-		if (database.getDefinition().supportsArraysNatively()) {
+		if (database.supportsArraysNatively()) {
 			Array sqlArray = resultSet.getArray(fullColumnName);
 			if (!resultSet.wasNull()) {
 				Object array = sqlArray.getArray();
@@ -127,7 +127,7 @@ public class DBBooleanArray extends QueryableDatatype<Boolean[]> implements Bool
 							if (objArray[i] instanceof Boolean) {
 								result[i] = (Boolean) objArray[i];
 							} else {
-								Boolean bool = database.getDefinition().doBooleanArrayElementTransform(objArray[i]);
+								Boolean bool = database.doBooleanArrayElementTransform(objArray[i]);
 								result[i] = bool;
 							}
 						}
@@ -138,7 +138,7 @@ public class DBBooleanArray extends QueryableDatatype<Boolean[]> implements Bool
 			}
 		} else {
 			String string = resultSet.getString(fullColumnName);
-			result = database.getDefinition().doBooleanArrayResultInterpretation(string);
+			result = database.doBooleanArrayResultInterpretation(string);
 		}
 		return result;
 	}
@@ -158,8 +158,7 @@ public class DBBooleanArray extends QueryableDatatype<Boolean[]> implements Bool
 	}
 
 	@Override
-	public String formatValueForSQLStatement(DBDatabase db) {
-		DBDefinition defn = db.getDefinition();
+	public String formatValueForSQLStatement(DBDefinition defn) {
 		if (getLiteralValue() != null) {
 			Boolean[] booleanArray = getLiteralValue();
 			return defn.doBooleanArrayTransform(booleanArray);

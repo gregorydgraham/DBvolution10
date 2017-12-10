@@ -184,8 +184,7 @@ public class DBNumber extends QueryableDatatype<Number> implements NumberResult 
 	 * @return the underlying number formatted for a SQL statement
 	 */
 	@Override
-	public String formatValueForSQLStatement(DBDatabase db) {
-		DBDefinition defn = db.getDefinition();
+	public String formatValueForSQLStatement(DBDefinition defn) {
 		if (isNull()) {
 			return defn.getNull();
 		}
@@ -660,7 +659,7 @@ public class DBNumber extends QueryableDatatype<Number> implements NumberResult 
 	}
 
 	@Override
-	protected Number getFromResultSet(DBDatabase database, ResultSet resultSet, String fullColumnName) throws SQLException {
+	protected Number getFromResultSet(DBDefinition defn, ResultSet resultSet, String fullColumnName) throws SQLException {
 		try {
 			return resultSet.getBigDecimal(fullColumnName);
 		} catch (SQLException ex) {

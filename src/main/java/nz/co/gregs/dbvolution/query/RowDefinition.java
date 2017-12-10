@@ -1265,7 +1265,7 @@ public class RowDefinition implements Serializable {
 		List<PropertyWrapperDefinition> columns = new ArrayList<PropertyWrapperDefinition>();
 		List<PropertyWrapper> propertyWrappers = this.getColumnPropertyWrappers();
 		for (PropertyWrapper propertyWrapper : propertyWrappers) {
-			columns.add(propertyWrapper.getDefinition());
+			columns.add(propertyWrapper.getPropertyWrapperDefinition());
 		}
 		return columns;
 	}

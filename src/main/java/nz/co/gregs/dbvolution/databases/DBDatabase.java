@@ -1018,7 +1018,7 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 		try {
 			createTable(newTable, includeForeignKeyClauses);
 		} catch (SQLException ex) {
-			;
+			LOG.info(ex.getLocalizedMessage());
 		}
 	}
 
@@ -1040,7 +1040,7 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 		try {
 			createTable(newTable, false);
 		} catch (SQLException ex) {
-			;
+			LOG.info(ex.getLocalizedMessage());
 		}
 	}
 
@@ -1494,7 +1494,7 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 	 * otherwise
 	 */
 	public boolean willCreateBlankQuery(DBRow row) {
-		return row.willCreateBlankQuery(this);
+		return row.willCreateBlankQuery(this.getDefinition());
 	}
 
 	/**
@@ -1711,10 +1711,6 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 		return DBReport.getRows(this, report, examples);
 	}
 
-	boolean supportsPaging(QueryOptions options) {
-		return definition.supportsPagingNatively(options);
-	}
-
 	/**
 	 * Provided to allow DBDatabase sub-classes to tweak their connections before
 	 * use.
@@ -1878,7 +1874,7 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 	}
 
 	public <K extends DBRow> DBQueryInsert<K> getDBQueryInsert(K mapper) {
-		return new DBQueryInsert<K>(this, mapper);
+		return new DBQueryInsert<>(this, mapper);
 	}
 
 	/**
@@ -1902,7 +1898,7 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 	 * @return a DBQueryInsert for the mapper class
 	 */
 	public <K extends DBRow> DBMigration<K> getDBMigration(K mapper) {
-		return new DBMigration<K>(this, mapper);
+		return new DBMigration<>(this, mapper);
 	}
 
 	public void doCommit() {

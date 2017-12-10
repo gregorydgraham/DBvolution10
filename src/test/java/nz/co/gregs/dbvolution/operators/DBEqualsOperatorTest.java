@@ -43,21 +43,21 @@ public class DBEqualsOperatorTest extends AbstractTest {
 	public void testGenerateWhereExpressionThrowsDissimilarComparisonExceptionDateAndString() {
 		DBExpression column = new StringExpression("a string");
 		DBEqualsOperator instance = new DBEqualsOperator(new DateExpression(april2nd2011));
-		BooleanExpression result = instance.generateWhereExpression(database, column);
+		BooleanExpression result = instance.generateWhereExpression(database.getDefinition(), column);
 	}
 
 	@Test(expected = ComparisonBetweenTwoDissimilarTypes.class)
 	public void testGenerateWhereExpressionThrowsDissimilarComparisonExceptionStringAndDate() {
 		DBExpression column = new DateExpression(april2nd2011);
 		DBEqualsOperator instance = new DBEqualsOperator(new StringExpression("a string"));
-		BooleanExpression result = instance.generateWhereExpression(database, column);
+		BooleanExpression result = instance.generateWhereExpression(database.getDefinition(), column);
 	}
 
 	@Test(expected = IncomparableTypeUsedInComparison.class)
 	public void testGenerateWhereExpressionThrowsDissimilarComparisonExceptionNotEqualsComparable() {
 		DBExpression column = new LargeObjectExpression(new DBLargeBinary());
 		DBEqualsOperator instance = new DBEqualsOperator(new StringExpression("a string"));
-		BooleanExpression result = instance.generateWhereExpression(database, column);
+		BooleanExpression result = instance.generateWhereExpression(database.getDefinition(), column);
 	}
 
 }

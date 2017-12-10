@@ -24,6 +24,7 @@ import java.util.HashSet;
 import java.util.Set;
 import nz.co.gregs.dbvolution.databases.DBDatabase;
 import nz.co.gregs.dbvolution.DBRow;
+import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.datatypes.spatial2D.DBMultiPoint2D;
 import nz.co.gregs.dbvolution.results.MultiPoint2DResult;
 import nz.co.gregs.dbvolution.results.NumberResult;
@@ -151,9 +152,9 @@ public class MultiPoint2DExpression implements MultiPoint2DResult, EqualComparab
 	}
 
 	@Override
-	public String toSQLString(DBDatabase db) {
+	public String toSQLString(DBDefinition db) {
 		if (innerPoint == null) {
-			return db.getDefinition().getNull();
+			return db.getNull();
 		} else {
 			return innerPoint.toSQLString(db);
 		}
@@ -225,9 +226,9 @@ public class MultiPoint2DExpression implements MultiPoint2DResult, EqualComparab
 		return new StringExpression(new MultiPointFunctionWithStringResult(this) {
 
 			@Override
-			protected String doExpressionTransform(DBDatabase db) {
+			protected String doExpressionTransform(DBDefinition db) {
 				try {
-					return db.getDefinition().doMultiPoint2DAsTextTransform(getFirst().toSQLString(db));
+					return db.doMultiPoint2DAsTextTransform(getFirst().toSQLString(db));
 				} catch (UnsupportedOperationException unsupported) {
 					return getFirst().toSQLString(db);
 				}
@@ -253,9 +254,9 @@ public class MultiPoint2DExpression implements MultiPoint2DResult, EqualComparab
 		return new BooleanExpression(new MultiPoint2DMultiPoint2DFunctionWithBooleanResult(this, new MultiPoint2DExpression(rightHandSide)) {
 
 			@Override
-			public String doExpressionTransform(DBDatabase db) {
+			public String doExpressionTransform(DBDefinition db) {
 				try {
-					return db.getDefinition().doMultiPoint2DEqualsTransform(getFirst().toSQLString(db), getSecond().toSQLString(db));
+					return db.doMultiPoint2DEqualsTransform(getFirst().toSQLString(db), getSecond().toSQLString(db));
 				} catch (UnsupportedOperationException unsupported) {
 					return getFirst().stringResult().is(getSecond().stringResult()).toSQLString(db);
 				}
@@ -286,8 +287,8 @@ public class MultiPoint2DExpression implements MultiPoint2DResult, EqualComparab
 		return new NumberExpression(new MultiPointFunctionWithNumberResult(this) {
 
 			@Override
-			public String doExpressionTransform(DBDatabase db) {
-				return db.getDefinition().doMultiPoint2DGetMaxXTransform(getFirst().toSQLString(db));
+			public String doExpressionTransform(DBDefinition db) {
+				return db.doMultiPoint2DGetMaxXTransform(getFirst().toSQLString(db));
 			}
 		});
 	}
@@ -297,8 +298,8 @@ public class MultiPoint2DExpression implements MultiPoint2DResult, EqualComparab
 		return new NumberExpression(new MultiPointFunctionWithNumberResult(this) {
 
 			@Override
-			public String doExpressionTransform(DBDatabase db) {
-				return db.getDefinition().doMultiPoint2DGetMaxYTransform(getFirst().toSQLString(db));
+			public String doExpressionTransform(DBDefinition db) {
+				return db.doMultiPoint2DGetMaxYTransform(getFirst().toSQLString(db));
 			}
 		});
 	}
@@ -308,8 +309,8 @@ public class MultiPoint2DExpression implements MultiPoint2DResult, EqualComparab
 		return new NumberExpression(new MultiPointFunctionWithNumberResult(this) {
 
 			@Override
-			public String doExpressionTransform(DBDatabase db) {
-				return db.getDefinition().doMultiPoint2DGetMinXTransform(getFirst().toSQLString(db));
+			public String doExpressionTransform(DBDefinition db) {
+				return db.doMultiPoint2DGetMinXTransform(getFirst().toSQLString(db));
 			}
 		});
 	}
@@ -319,8 +320,8 @@ public class MultiPoint2DExpression implements MultiPoint2DResult, EqualComparab
 		return new NumberExpression(new MultiPointFunctionWithNumberResult(this) {
 
 			@Override
-			public String doExpressionTransform(DBDatabase db) {
-				return db.getDefinition().doMultiPoint2DGetMinYTransform(getFirst().toSQLString(db));
+			public String doExpressionTransform(DBDefinition db) {
+				return db.doMultiPoint2DGetMinYTransform(getFirst().toSQLString(db));
 			}
 		});
 	}
@@ -338,8 +339,8 @@ public class MultiPoint2DExpression implements MultiPoint2DResult, EqualComparab
 		return new NumberExpression(new MultiPointFunctionWithNumberResult(this) {
 
 			@Override
-			public String doExpressionTransform(DBDatabase db) {
-				return db.getDefinition().doMultiPoint2DGetNumberOfPointsTransform(getFirst().toSQLString(db));
+			public String doExpressionTransform(DBDefinition db) {
+				return db.doMultiPoint2DGetNumberOfPointsTransform(getFirst().toSQLString(db));
 			}
 		});
 	}
@@ -413,8 +414,8 @@ public class MultiPoint2DExpression implements MultiPoint2DResult, EqualComparab
 		return new Point2DExpression(new MultiPointNumberFunctionWithPoint2DResult(this, new NumberExpression(index)) {
 
 			@Override
-			public String doExpressionTransform(DBDatabase db) {
-				return db.getDefinition().doMultiPoint2DGetPointAtIndexTransform(
+			public String doExpressionTransform(DBDefinition db) {
+				return db.doMultiPoint2DGetPointAtIndexTransform(
 						getFirst().toSQLString(db),
 						getSecond().plus(1).toSQLString(db)
 				);
@@ -427,9 +428,9 @@ public class MultiPoint2DExpression implements MultiPoint2DResult, EqualComparab
 		return new NumberExpression(new MultiPointFunctionWithNumberResult(this) {
 
 			@Override
-			public String doExpressionTransform(DBDatabase db) {
+			public String doExpressionTransform(DBDefinition db) {
 				try {
-					return db.getDefinition().doMultiPoint2DMeasurableDimensionsTransform(getFirst().toSQLString(db));
+					return db.doMultiPoint2DMeasurableDimensionsTransform(getFirst().toSQLString(db));
 				} catch (UnsupportedOperationException unsupported) {
 					return NumberExpression.value(0).toSQLString(db);
 				}
@@ -442,9 +443,9 @@ public class MultiPoint2DExpression implements MultiPoint2DResult, EqualComparab
 		return new NumberExpression(new MultiPointFunctionWithNumberResult(this) {
 
 			@Override
-			public String doExpressionTransform(DBDatabase db) {
+			public String doExpressionTransform(DBDefinition db) {
 				try {
-					return db.getDefinition().doMultiPoint2DSpatialDimensionsTransform(getFirst().toSQLString(db));
+					return db.doMultiPoint2DSpatialDimensionsTransform(getFirst().toSQLString(db));
 				} catch (UnsupportedOperationException unsupported) {
 					return NumberExpression.value(2).toSQLString(db);
 				}
@@ -457,9 +458,9 @@ public class MultiPoint2DExpression implements MultiPoint2DResult, EqualComparab
 		return new BooleanExpression(new SingleArgumentBooleanFunction<DBExpression>(this) {
 
 			@Override
-			public String doExpressionTransform(DBDatabase db) {
+			public String doExpressionTransform(DBDefinition db) {
 				try {
-					return db.getDefinition().doMultiPoint2DHasMagnitudeTransform(getFirst().toSQLString(db));
+					return db.doMultiPoint2DHasMagnitudeTransform(getFirst().toSQLString(db));
 				} catch (UnsupportedOperationException unsupported) {
 					return BooleanExpression.falseExpression().toSQLString(db);
 				}
@@ -472,9 +473,9 @@ public class MultiPoint2DExpression implements MultiPoint2DResult, EqualComparab
 		return new NumberExpression(new MultiPointFunctionWithNumberResult(this) {
 
 			@Override
-			public String doExpressionTransform(DBDatabase db) {
+			public String doExpressionTransform(DBDefinition db) {
 				try {
-					return db.getDefinition().doMultiPoint2DGetMagnitudeTransform(getFirst().toSQLString(db));
+					return db.doMultiPoint2DGetMagnitudeTransform(getFirst().toSQLString(db));
 				} catch (UnsupportedOperationException unsupported) {
 					return nullExpression().toSQLString(db);
 				}
@@ -487,9 +488,9 @@ public class MultiPoint2DExpression implements MultiPoint2DResult, EqualComparab
 		return new Polygon2DExpression(new MultiPoint2DFunctionWithGeometry2DResult(this) {
 
 			@Override
-			public String doExpressionTransform(DBDatabase db) {
+			public String doExpressionTransform(DBDefinition db) {
 				try {
-					return db.getDefinition().doMultiPoint2DGetBoundingBoxTransform(getFirst().toSQLString(db));
+					return db.doMultiPoint2DGetBoundingBoxTransform(getFirst().toSQLString(db));
 				} catch (UnsupportedOperationException exp) {
 					final MultiPoint2DExpression first = getFirst();
 					final NumberExpression maxX = first.maxX();
@@ -527,8 +528,8 @@ public class MultiPoint2DExpression implements MultiPoint2DResult, EqualComparab
 		return new Line2DExpression(new SingleArgumentLine2DFunction<MultiPoint2DExpression>(this) {
 
 			@Override
-			protected String doExpressionTransform(DBDatabase db) {
-				return db.getDefinition().doMultiPoint2DToLine2DTransform(getFirst().toSQLString(db));
+			protected String doExpressionTransform(DBDefinition db) {
+				return db.doMultiPoint2DToLine2DTransform(getFirst().toSQLString(db));
 			}
 		});
 	}
@@ -581,7 +582,7 @@ public class MultiPoint2DExpression implements MultiPoint2DResult, EqualComparab
 //			return second;
 //		}
 		@Override
-		public final String toSQLString(DBDatabase db) {
+		public final String toSQLString(DBDefinition db) {
 			if (this.getIncludesNull()) {
 				return BooleanExpression.isNull(first).toSQLString(db);
 			} else {
@@ -605,7 +606,7 @@ public class MultiPoint2DExpression implements MultiPoint2DResult, EqualComparab
 			return newInstance;
 		}
 
-		protected abstract String doExpressionTransform(DBDatabase db);
+		protected abstract String doExpressionTransform(DBDefinition db);
 
 		@Override
 		public Set<DBRow> getTablesInvolved() {
@@ -652,7 +653,7 @@ public class MultiPoint2DExpression implements MultiPoint2DResult, EqualComparab
 //			return second;
 //		}
 		@Override
-		public final String toSQLString(DBDatabase db) {
+		public final String toSQLString(DBDefinition db) {
 			if (this.getIncludesNull()) {
 				return BooleanExpression.isNull(first).toSQLString(db);
 			} else {
@@ -676,7 +677,7 @@ public class MultiPoint2DExpression implements MultiPoint2DResult, EqualComparab
 			return newInstance;
 		}
 
-		protected abstract String doExpressionTransform(DBDatabase db);
+		protected abstract String doExpressionTransform(DBDefinition db);
 
 		@Override
 		public Set<DBRow> getTablesInvolved() {
@@ -723,7 +724,7 @@ public class MultiPoint2DExpression implements MultiPoint2DResult, EqualComparab
 ////			return second;
 ////		}
 //		@Override
-//		public final String toSQLString(DBDatabase db) {
+//		public final String toSQLString(DBDefinition db) {
 //			if (this.getIncludesNull()) {
 //				return BooleanExpression.isNull(first).toSQLString(db);
 //			} else {
@@ -747,7 +748,7 @@ public class MultiPoint2DExpression implements MultiPoint2DResult, EqualComparab
 //			return newInstance;
 //		}
 //
-//		protected abstract String doExpressionTransform(DBDatabase db);
+//		protected abstract String doExpressionTransform(DBDefinition db);
 //
 //		@Override
 //		public Set<DBRow> getTablesInvolved() {
@@ -794,7 +795,7 @@ public class MultiPoint2DExpression implements MultiPoint2DResult, EqualComparab
 		}
 
 		@Override
-		public final String toSQLString(DBDatabase db) {
+		public final String toSQLString(DBDefinition db) {
 			if (this.getIncludesNull()) {
 				return BooleanExpression.isNull(first).toSQLString(db);
 			} else {
@@ -817,7 +818,7 @@ public class MultiPoint2DExpression implements MultiPoint2DResult, EqualComparab
 			return newInstance;
 		}
 
-		protected abstract String doExpressionTransform(DBDatabase db);
+		protected abstract String doExpressionTransform(DBDefinition db);
 
 		@Override
 		public Set<DBRow> getTablesInvolved() {
@@ -865,7 +866,7 @@ public class MultiPoint2DExpression implements MultiPoint2DResult, EqualComparab
 //		}
 //
 //		@Override
-//		public final String toSQLString(DBDatabase db) {
+//		public final String toSQLString(DBDefinition db) {
 //			if (this.getIncludesNull()) {
 //				return BooleanExpression.isNull(first).toSQLString(db);
 //			} else {
@@ -888,7 +889,7 @@ public class MultiPoint2DExpression implements MultiPoint2DResult, EqualComparab
 //			return newInstance;
 //		}
 //
-//		protected abstract String doExpressionTransform(DBDatabase db);
+//		protected abstract String doExpressionTransform(DBDefinition db);
 //
 //		@Override
 //		public Set<DBRow> getTablesInvolved() {
@@ -935,7 +936,7 @@ public class MultiPoint2DExpression implements MultiPoint2DResult, EqualComparab
 //		}
 //
 //		@Override
-//		public final String toSQLString(DBDatabase db) {
+//		public final String toSQLString(DBDefinition db) {
 //			if (this.getIncludesNull()) {
 //				return BooleanExpression.isNull(first).toSQLString(db);
 //			} else {
@@ -958,7 +959,7 @@ public class MultiPoint2DExpression implements MultiPoint2DResult, EqualComparab
 //			return newInstance;
 //		}
 //
-//		protected abstract String doExpressionTransform(DBDatabase db);
+//		protected abstract String doExpressionTransform(DBDefinition db);
 //
 //		@Override
 //		public Set<DBRow> getTablesInvolved() {
@@ -1006,7 +1007,7 @@ public class MultiPoint2DExpression implements MultiPoint2DResult, EqualComparab
 		}
 
 		@Override
-		public final String toSQLString(DBDatabase db) {
+		public final String toSQLString(DBDefinition db) {
 			if (this.getIncludesNull()) {
 				return BooleanExpression.isNull(first).toSQLString(db);
 			} else {
@@ -1029,7 +1030,7 @@ public class MultiPoint2DExpression implements MultiPoint2DResult, EqualComparab
 			return newInstance;
 		}
 
-		protected abstract String doExpressionTransform(DBDatabase db);
+		protected abstract String doExpressionTransform(DBDefinition db);
 
 		@Override
 		public Set<DBRow> getTablesInvolved() {
@@ -1076,7 +1077,7 @@ public class MultiPoint2DExpression implements MultiPoint2DResult, EqualComparab
 //			return second;
 //		}
 		@Override
-		public final String toSQLString(DBDatabase db) {
+		public final String toSQLString(DBDefinition db) {
 			if (this.getIncludesNull()) {
 				return BooleanExpression.isNull(first).toSQLString(db);
 			} else {
@@ -1099,7 +1100,7 @@ public class MultiPoint2DExpression implements MultiPoint2DResult, EqualComparab
 			return newInstance;
 		}
 
-		protected abstract String doExpressionTransform(DBDatabase db);
+		protected abstract String doExpressionTransform(DBDefinition db);
 
 		@Override
 		public Set<DBRow> getTablesInvolved() {
@@ -1146,7 +1147,7 @@ public class MultiPoint2DExpression implements MultiPoint2DResult, EqualComparab
 //			return second;
 //		}
 		@Override
-		public final String toSQLString(DBDatabase db) {
+		public final String toSQLString(DBDefinition db) {
 			if (this.getIncludesNull()) {
 				return BooleanExpression.isNull(first).toSQLString(db);
 			} else {
@@ -1169,7 +1170,7 @@ public class MultiPoint2DExpression implements MultiPoint2DResult, EqualComparab
 			return newInstance;
 		}
 
-		protected abstract String doExpressionTransform(DBDatabase db);
+		protected abstract String doExpressionTransform(DBDefinition db);
 
 		@Override
 		public Set<DBRow> getTablesInvolved() {
@@ -1216,7 +1217,7 @@ public class MultiPoint2DExpression implements MultiPoint2DResult, EqualComparab
 //			return second;
 //		}
 		@Override
-		public final String toSQLString(DBDatabase db) {
+		public final String toSQLString(DBDefinition db) {
 			if (this.getIncludesNull()) {
 				return BooleanExpression.isNull(first).toSQLString(db);
 			} else {
@@ -1239,7 +1240,7 @@ public class MultiPoint2DExpression implements MultiPoint2DResult, EqualComparab
 			return newInstance;
 		}
 
-		protected abstract String doExpressionTransform(DBDatabase db);
+		protected abstract String doExpressionTransform(DBDefinition db);
 
 		@Override
 		public Set<DBRow> getTablesInvolved() {

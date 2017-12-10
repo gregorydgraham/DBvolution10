@@ -17,6 +17,7 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 import nz.co.gregs.dbvolution.annotations.*;
 import nz.co.gregs.dbvolution.columns.ColumnProvider;
+import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.datatypes.*;
 import nz.co.gregs.dbvolution.exceptions.AccidentalCartesianJoinException;
 import nz.co.gregs.dbvolution.exceptions.IncorrectRowProviderInstanceSuppliedException;
@@ -166,7 +167,7 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 		R newRow = (R) getDBRow(sourceRow.getClass());
 		final List<PropertyWrapper> wrappers = sourceRow.getPrimaryKeyPropertyWrappers();
 		for (PropertyWrapper wrapper : wrappers) {
-			PropertyWrapperDefinition definition = wrapper.getDefinition();
+			PropertyWrapperDefinition definition = wrapper.getPropertyWrapperDefinition();
 			QueryableDatatype<?> sourceQDT = definition.getQueryableDatatype(sourceRow);
 			QueryableDatatype<?> newQDT = definition.getQueryableDatatype(newRow);
 
@@ -212,9 +213,9 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 				Object originalValue = field.rawJavaValue();
 				if (originalValue instanceof QueryableDatatype) {
 					QueryableDatatype<?> originalQDT = (QueryableDatatype) originalValue;
-					field.getDefinition().setRawJavaValue(newRow, originalQDT.copy());
+					field.getPropertyWrapperDefinition().setRawJavaValue(newRow, originalQDT.copy());
 				} else {
-					field.getDefinition().setRawJavaValue(newRow, originalValue);
+					field.getPropertyWrapperDefinition().setRawJavaValue(newRow, originalValue);
 				}
 			} catch (IllegalArgumentException ex) {
 				throw new RuntimeException(ex);
@@ -314,7 +315,7 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 		} else {
 			List<Integer> names = new ArrayList<>();
 			for (PropertyWrapper pk : primaryKeyPropertyWrappers) {
-				names.add(pk.getDefinition().getColumnIndex());
+				names.add(pk.getPropertyWrapperDefinition().getColumnIndex());
 			}
 			return names;
 		}
@@ -467,7 +468,7 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 	 * @return the WHERE clause that will be used with the current parameters
 	 *
 	 */
-	public List<String> getWhereClausesWithoutAliases(DBDatabase db) {
+	public List<String> getWhereClausesWithoutAliases(DBDefinition db) {
 		return getWhereClauses(db, false);
 	}
 
@@ -484,11 +485,11 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 	 * @return the WHERE clause that will be used with the current parameters
 	 *
 	 */
-	public List<String> getWhereClausesWithAliases(DBDatabase db) {
+	public List<String> getWhereClausesWithAliases(DBDefinition db) {
 		return getWhereClauses(db, true);
 	}
 
-	private List<String> getWhereClauses(DBDatabase db, boolean useTableAlias) //throws InstantiationException, IllegalAccessException 
+	private List<String> getWhereClauses(DBDefinition db, boolean useTableAlias) //throws InstantiationException, IllegalAccessException 
 	{
 		List<String> whereClause = new ArrayList<>();
 		List<PropertyWrapper> props = getWrapper().getColumnPropertyWrappers();
@@ -524,7 +525,7 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 		return whereClause;
 	}
 
-	private String getQDTWhereClause(DBDatabase db, ColumnProvider column, QueryableDatatype<?> qdt) {
+	private String getQDTWhereClause(DBDefinition db, ColumnProvider column, QueryableDatatype<?> qdt) {
 		StringBuilder whereClause = new StringBuilder();
 		DBOperator op = qdt.getOperator();
 		if (op != null) {
@@ -535,7 +536,7 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 					String sep = "";
 					for (DBExpression dBExpression : columnExpression) {
 						whereClause.append(sep).append(op.generateWhereExpression(db, dBExpression).toSQLString(db));
-						sep = db.getDefinition().beginAndLine();
+						sep = db.beginAndLine();
 					}
 				} else {
 					whereClause = new StringBuilder(op.generateWhereExpression(db, requiredExpression).toSQLString(db));
@@ -554,7 +555,7 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a list of the DBExpressions that are defined for this exemplar.
 	 */
-	public final List<BooleanExpression> getWhereClauseExpressions(DBDatabase db, boolean useTableAlias) //throws InstantiationException, IllegalAccessException 
+	public final List<BooleanExpression> getWhereClauseExpressions(DBDefinition db, boolean useTableAlias) //throws InstantiationException, IllegalAccessException 
 	{
 		List<BooleanExpression> whereClause = new ArrayList<>();
 		List<PropertyWrapper> props = getWrapper().getColumnPropertyWrappers();
@@ -587,7 +588,7 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 		return whereClause;
 	}
 
-	private BooleanExpression getQDTWhereClauseExpression(DBDatabase db, ColumnProvider column, QueryableDatatype<?> qdt) {
+	private BooleanExpression getQDTWhereClauseExpression(DBDefinition db, ColumnProvider column, QueryableDatatype<?> qdt) {
 		BooleanExpression whereClause = null;
 		DBOperator op = qdt.getOperator();
 		if (op != null) {
@@ -625,7 +626,7 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 	 * create a blank query returning the whole table.
 	 *
 	 */
-	public boolean willCreateBlankQuery(DBDatabase db) {
+	public boolean willCreateBlankQuery(DBDefinition db) {
 		List<String> whereClause = getWhereClausesWithoutAliases(db);
 		return whereClause == null || whereClause.isEmpty();
 	}
@@ -709,7 +710,7 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 				for (PropertyWrapper prop : props) {
 					if (prop.isColumn()) {
 						if (prop.isForeignKey()) {
-							if (!ignoredForeignKeys.contains(prop.getDefinition())) {
+							if (!ignoredForeignKeys.contains(prop.getPropertyWrapperDefinition())) {
 								fkFields.add(prop);
 							}
 						}
@@ -742,7 +743,7 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 		if (fkProp == null) {
 			throw new IncorrectRowProviderInstanceSuppliedException(this, qdt);
 		}
-		getIgnoredForeignKeys().add(fkProp.getDefinition());
+		getIgnoredForeignKeys().add(fkProp.getPropertyWrapperDefinition());
 		fkFields.clear();
 	}
 
@@ -811,7 +812,7 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 	 */
 	public void ignoreForeignKey(ColumnProvider column) {
 		PropertyWrapper fkProp = column.getColumn().getPropertyWrapper();
-		getIgnoredForeignKeys().add(fkProp.getDefinition());
+		getIgnoredForeignKeys().add(fkProp.getPropertyWrapperDefinition());
 		fkFields.clear();
 	}
 
@@ -840,7 +841,7 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 	public void ignoreAllForeignKeys() {
 		List<PropertyWrapper> props = this.getForeignKeyPropertyWrappers();
 		for (PropertyWrapper prop : props) {
-			getIgnoredForeignKeys().add(prop.getDefinition());
+			getIgnoredForeignKeys().add(prop.getPropertyWrapperDefinition());
 		}
 		fkFields.clear();
 	}
@@ -860,7 +861,7 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 			PropertyWrapper importantProp = getPropertyWrapperOf(object);
 			if (importantProp != null) {
 				if (importantProp.isColumn() && importantProp.isForeignKey()) {
-					importantFKs.add(importantProp.getDefinition());
+					importantFKs.add(importantProp.getPropertyWrapperDefinition());
 				}
 			} else {
 				throw new IncorrectRowProviderInstanceSuppliedException(this, object);
@@ -868,7 +869,7 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 		}
 		List<PropertyWrapper> props = this.getForeignKeyPropertyWrappers();
 		for (PropertyWrapper prop : props) {
-			final PropertyWrapperDefinition propDefn = prop.getDefinition();
+			final PropertyWrapperDefinition propDefn = prop.getPropertyWrapperDefinition();
 			if (!importantFKs.contains(propDefn)) {
 				getIgnoredForeignKeys().add(propDefn);
 			}
@@ -940,7 +941,7 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 			if (propWrapper == null) {
 				throw new IncorrectRowProviderInstanceSuppliedException(this, property);
 			}
-			getReturnColumns().add(propWrapper.getDefinition());
+			getReturnColumns().add(propWrapper.getPropertyWrapperDefinition());
 		}
 	}
 
@@ -972,7 +973,7 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 			if (propWrapper == null) {
 				throw new IncorrectRowProviderInstanceSuppliedException(this, property);
 			}
-			getReturnColumns().add(propWrapper.getDefinition());
+			getReturnColumns().add(propWrapper.getPropertyWrapperDefinition());
 		}
 	}
 
@@ -1371,7 +1372,7 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 			ArrayList<PropertyWrapper> selected = new ArrayList<>();
 			for (PropertyWrapperDefinition proDef : getReturnColumns()) {
 				for (PropertyWrapper pro : getColumnPropertyWrappers()) {
-					if (pro.getDefinition().equals(proDef)) {
+					if (pro.getPropertyWrapperDefinition().equals(proDef)) {
 						selected.add(pro);
 					}
 				}
@@ -1438,7 +1439,7 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 			if (propertyWrapper.isForeignKeyTo(target)) {
 				RowDefinition source = propertyWrapper.getRowDefinitionInstanceWrapper().adapteeRowDefinition();
 				final QueryableDatatype<?> sourceFK = propertyWrapper.getQueryableDatatype();
-				PropertyWrapperDefinition targetPropertyDefinition = propertyWrapper.getDefinition().referencedPropertyDefinitionIdentity();
+				PropertyWrapperDefinition targetPropertyDefinition = propertyWrapper.getPropertyWrapperDefinition().referencedPropertyDefinitionIdentity();
 				PropertyWrapper targetProperty = target.getWrapper().getPropertyByName(targetPropertyDefinition.javaName());
 				QueryableDatatype<?> targetPK = targetProperty.getQueryableDatatype().getQueryableDatatypeForExpressionValue();
 
@@ -1524,7 +1525,7 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 
 	private static BooleanExpression getRelationshipExpressionFor(DBRow fkTable, PropertyWrapper fk, DBRow otherTable) {
 		BooleanExpression expr = BooleanExpression.falseExpression();
-		final PropertyWrapperDefinition fkDefn = fk.getDefinition();
+		final PropertyWrapperDefinition fkDefn = fk.getPropertyWrapperDefinition();
 		QueryableDatatype<?> fkQDT = fkDefn.getQueryableDatatype(fkTable);
 
 		PropertyWrapperDefinition targetPropertyDefinition = fkDefn.referencedPropertyDefinitionIdentity();
@@ -1573,7 +1574,7 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 	public <A> List<A> getDistinctValuesOfColumn(DBDatabase database, A fieldOfThisInstance) throws SQLException {
 		List<A> results = new ArrayList<>();
 		final PropertyWrapper fieldProp = this.getPropertyWrapperOf(fieldOfThisInstance);
-		QueryableDatatype<?> thisQDT = fieldProp.getDefinition().getQueryableDatatype(this);
+		QueryableDatatype<?> thisQDT = fieldProp.getPropertyWrapperDefinition().getQueryableDatatype(this);
 		this.setReturnFields(fieldOfThisInstance);
 		final ColumnProvider columnProvider = this.column(thisQDT);
 		DBExpression expr = columnProvider.getColumn().asExpression();
@@ -1583,7 +1584,7 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 		List<DBQueryRow> allRows = dbQuery.getAllRows();
 		for (DBQueryRow row : allRows) {
 			DBRow get = row.get(this);
-			results.add(get == null ? null : (A) fieldProp.getDefinition().rawJavaValue(get));
+			results.add(get == null ? null : (A) fieldProp.getPropertyWrapperDefinition().rawJavaValue(get));
 		}
 		return results;
 	}
