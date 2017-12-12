@@ -236,4 +236,8 @@ public class QueryDetails {
 		this.databaseDefinition = database;
 	}
 
+	public void setQueryType(QueryType queryType) {
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	}
+
 }

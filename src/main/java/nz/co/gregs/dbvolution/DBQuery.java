@@ -134,11 +134,6 @@ public class DBQuery {
 		return null;
 	}
 
-	private static enum QueryType {
-
-		COUNT, SELECT, REVERSESELECT
-	};
-
 	private DBQuery(DBDatabase database) {
 		this.database = database;
 		this.details.setDatabase(database.getDefinition());
@@ -3046,7 +3041,7 @@ public class DBQuery {
 
 		QueryState(DBQuery query) {
 			this.remainingExpressions = new ArrayList<>(query.getConditions());
-		}
+}
 
 		private Iterable<BooleanExpression> getRemainingExpressions() {
 			return new ArrayList<>(remainingExpressions);

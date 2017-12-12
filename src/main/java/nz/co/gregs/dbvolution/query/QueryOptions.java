@@ -15,11 +15,10 @@
  */
 package nz.co.gregs.dbvolution.query;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import nz.co.gregs.dbvolution.columns.ColumnProvider;
-import nz.co.gregs.dbvolution.expressions.BooleanExpression;
 
 /**
  *
@@ -39,6 +38,7 @@ public class QueryOptions {
 	private boolean useANSISyntax = true;
 	private boolean matchAnyRelationship = false;
 	private boolean queryIsNativeQuery = true;
+	private QueryType queryType;
 
 	/**
 	 * Indicates whether this query will use AND rather than OR to add the
@@ -176,8 +176,8 @@ public class QueryOptions {
 	 * Defines which page of results the query is to retrieve.
 	 *
 	 * <p>
-	 * {@link #getRowLimit() } defines the size of a page, and this method return
-	 * which page is to be retrieved.
+	 * {@link #getRowLimit() } defines the size of a page, and this method
+	 * return which page is to be retrieved.
 	 *
 	 * <p>
 	 * Be default the page index is zero.
@@ -250,11 +250,17 @@ public class QueryOptions {
 	 * @return very similar QueryOptions
 	 */
 	public QueryOptions copy() {
-		return this.clone();
+		try {
+			return this.clone();
+		} catch (CloneNotSupportedException ex) {
+			Logger.getLogger(QueryOptions.class.getName()).log(Level.SEVERE, null, ex);
+		}
+		return new QueryOptions();
 	}
 
 	@Override
-	protected QueryOptions clone() {
+	protected QueryOptions clone() throws CloneNotSupportedException {
+		super.clone();
 		QueryOptions opts = new QueryOptions();
 		opts.matchAll = this.matchAll;
 		opts.rowLimit = this.rowLimit;
@@ -288,6 +294,14 @@ public class QueryOptions {
 	 */
 	public void setCreatingNativeQuery(boolean creatingNativeQuery) {
 		queryIsNativeQuery = creatingNativeQuery;
+	}
+
+	public QueryType getQueryType() {
+		return queryType;
+	}
+
+	public void setQueryType(QueryType queryType) {
+		queryType = queryType;
 	}
 
 }
