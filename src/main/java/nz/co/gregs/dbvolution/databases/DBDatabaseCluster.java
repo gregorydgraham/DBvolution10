@@ -40,8 +40,8 @@ import nz.co.gregs.dbvolution.DBQueryRow;
 import nz.co.gregs.dbvolution.DBReport;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.DBScript;
-import nz.co.gregs.dbvolution.actions.DBAction;
 import nz.co.gregs.dbvolution.actions.DBActionList;
+import nz.co.gregs.dbvolution.actions.DBExecutable;
 import nz.co.gregs.dbvolution.databases.definitions.ClusterDatabaseDefinition;
 import nz.co.gregs.dbvolution.exceptions.AccidentalDroppingOfTableException;
 import nz.co.gregs.dbvolution.exceptions.AutoCommitActionDuringTransactionException;
@@ -472,24 +472,21 @@ public class DBDatabaseCluster extends DBDatabase {
 	}
 
 	private void commitAll() {
-		for (Iterator<DBDatabase> iterator1 = readyDatabases.iterator(); iterator1.hasNext();) {
-			DBDatabase db = iterator1.next();
+		for (DBDatabase db : readyDatabases) {
 			db.doCommit();
 		}
 	}
 
 	private void rollbackAll(Exception exc) {
-		for (Iterator<DBDatabase> iterator1 = readyDatabases.iterator(); iterator1.hasNext();) {
-			DBDatabase db = iterator1.next();
+		for (DBDatabase db : readyDatabases) {
 			db.doRollback();
 		}
 	}
 
 	@Override
-	public DBActionList executeDBAction(DBAction action) throws SQLException {
+	public DBActionList executeDBAction(DBExecutable action) throws SQLException {
 		DBActionList actionsPerformed = new DBActionList();
-		for (Iterator<DBDatabase> iterator = allDatabases.iterator(); iterator.hasNext();) {
-			DBDatabase next = iterator.next();
+		for (DBDatabase next : allDatabases) {
 			actionsPerformed = action.execute(next);
 		}
 		return actionsPerformed;
