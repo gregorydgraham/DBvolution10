@@ -464,7 +464,7 @@
 			</build>
 		</profile>
 		<profile>
-			<id>FederatedDBTest</id>
+			<id>ClusteredDBTest</id>
 			<build>
 				<plugins>
 					<plugin>
@@ -473,7 +473,7 @@
 						<version>2.18.1</version>
 						<configuration>
 							<systemPropertyVariables>
-								<testFederatedDB>true</testFederatedDB>
+                                <testClusteredDB>true</testClusteredDB>
 							</systemPropertyVariables>
 						</configuration>
 					</plugin>

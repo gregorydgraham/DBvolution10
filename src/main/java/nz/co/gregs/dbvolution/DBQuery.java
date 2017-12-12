@@ -125,7 +125,7 @@ public class DBQuery {
 		}
 	}
 
-	DBDatabase getDatabase(){
+	DBDatabase getDatabase() {
 		try {
 			return database.clone();
 		} catch (CloneNotSupportedException ex) {

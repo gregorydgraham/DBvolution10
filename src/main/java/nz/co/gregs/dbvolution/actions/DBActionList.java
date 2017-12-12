@@ -93,7 +93,7 @@ public class DBActionList extends ArrayList<DBAction> {
 	public synchronized DBActionList execute(DBDatabase database) throws SQLException {
 		DBActionList executed = new DBActionList();
 		for (DBAction action : this) {
-			executed.addAll(action.execute(database));
+			executed.addAll(database.executeDBAction(action));
 		}
 		return executed;
 	}

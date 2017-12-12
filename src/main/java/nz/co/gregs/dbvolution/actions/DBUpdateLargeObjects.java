@@ -69,7 +69,7 @@ public class DBUpdateLargeObjects extends DBUpdate {
 	}
 
 	@Override
-	protected DBActionList execute(DBDatabase db) throws SQLException {
+	public DBActionList execute(DBDatabase db) throws SQLException {
 		DBRow row = getRow();
 		DBActionList actions;
 		DBDefinition defn = db.getDefinition();

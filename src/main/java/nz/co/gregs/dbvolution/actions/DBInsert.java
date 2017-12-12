@@ -96,7 +96,8 @@ public class DBInsert extends DBAction {
 	 */
 	public static DBActionList save(DBDatabase database, DBRow row) throws SQLException {
 		DBInsert dbInsert = new DBInsert(row);
-		final DBActionList executedActions = dbInsert.execute(database);
+		final DBActionList executedActions = database.executeDBAction(dbInsert);
+//		final DBActionList executedActions = dbInsert.execute(database);
 		final List<QueryableDatatype<?>> primaryKeys = row.getPrimaryKeys();
 		boolean pksHaveBeenSet = true;
 		for (QueryableDatatype<?> pk : primaryKeys) {
@@ -137,7 +138,7 @@ public class DBInsert extends DBAction {
 	}
 
 	@Override
-	protected DBActionList execute(DBDatabase db) throws SQLException {
+	public DBActionList execute(DBDatabase db) throws SQLException {
 		final DBDefinition defn = db.getDefinition();
 		DBRow row = getRow();
 		DBActionList actions = new DBActionList(new DBInsert(row));
@@ -237,7 +238,7 @@ public class DBInsert extends DBAction {
 			statement.close();
 		}
 		DBInsertLargeObjects blobSave = new DBInsertLargeObjects(this.originalRow);
-		actions.addAll(blobSave.execute(db));
+		actions.addAll(db.executeDBAction(blobSave));
 		row.setDefined();
 		return actions;
 	}

@@ -64,7 +64,7 @@ public abstract class AbstractTest {
 	@Parameters(name = "{0}")
 	public static List<Object[]> data() throws IOException, SQLException, ClassNotFoundException {
 
-		List<Object[]> databases = new ArrayList<Object[]>();
+		List<Object[]> databases = new ArrayList<>();
 
 		String url = System.getProperty("dbv.url");
 		String host = System.getProperty("dbv.host");
@@ -75,11 +75,10 @@ public abstract class AbstractTest {
 		String password = System.getProperty("dbv.password");
 		String schema = System.getProperty("dbv.schema");
 
-		if (System.getProperty("testFederatedDB") != null) {
-			databases.add(new Object[]{"FederateDB", 
-				new FederatedDatabase(
-						SQLiteTestDB.getFromSettings("sqlite"),
-						H2MemoryTestDB.getFromSettings("h2memory")
+		if (System.getProperty("testClusteredDB") != null) {
+			databases.add(new Object[]{"ClusteredDB", 
+				new DBDatabaseCluster(
+						SQLiteTestDB.getFromSettings("sqlite")
 				)});
 		}
 				if (System.getProperty("testSQLite") != null) {

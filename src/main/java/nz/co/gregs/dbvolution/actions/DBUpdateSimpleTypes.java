@@ -45,7 +45,7 @@ public class DBUpdateSimpleTypes extends DBUpdate {
 	}
 
 	@Override
-	protected DBActionList execute(DBDatabase db) throws SQLException {
+	public DBActionList execute(DBDatabase db) throws SQLException {
 		DBRow row = getRow();
 		DBActionList actions = new DBActionList(new DBUpdateSimpleTypes(row));
 		DBStatement statement = db.getDBStatement();

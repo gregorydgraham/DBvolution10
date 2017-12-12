@@ -75,7 +75,7 @@ public class DBMigrationAction<R extends DBRow> extends DBAction {
 	 */
 	public DBActionList migrate(DBDatabase database) throws SQLException {
 		DBMigrationAction<R> migrate = new DBMigrationAction<>(sourceMigration, getRow());
-		final DBActionList executedActions = migrate.execute(database);
+		final DBActionList executedActions = database.executeDBAction(migrate);
 		return executedActions;
 	}
 
@@ -97,7 +97,7 @@ public class DBMigrationAction<R extends DBRow> extends DBAction {
 	}
 
 	@Override
-	protected DBActionList execute(DBDatabase db) throws SQLException {
+	public DBActionList execute(DBDatabase db) throws SQLException {
 		DBActionList actions = new DBActionList(new DBMigrationAction<>(sourceMigration, getRow(), extraExamples));
 
 		try (DBStatement statement = db.getDBStatement()) {

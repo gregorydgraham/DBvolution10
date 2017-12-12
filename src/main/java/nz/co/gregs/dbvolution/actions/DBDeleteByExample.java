@@ -60,7 +60,7 @@ public class DBDeleteByExample extends DBDelete {
 	}
 
 	@Override
-	protected DBActionList execute(DBDatabase db) throws SQLException {
+	public DBActionList execute(DBDatabase db) throws SQLException {
 		DBRow row = getRow();
 		final DBDeleteByExample deleteAction = new DBDeleteByExample(row);
 		DBActionList actions = new DBActionList(deleteAction);

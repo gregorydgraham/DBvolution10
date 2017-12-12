@@ -30,14 +30,15 @@ import nz.co.gregs.dbvolution.DBReport;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.DBScript;
 import nz.co.gregs.dbvolution.DBTable;
+import nz.co.gregs.dbvolution.actions.DBAction;
 import nz.co.gregs.dbvolution.actions.DBActionList;
+import nz.co.gregs.dbvolution.actions.DBInsert;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.datatypes.DBLargeObject;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 import nz.co.gregs.dbvolution.exceptions.*;
 import nz.co.gregs.dbvolution.transactions.*;
 import nz.co.gregs.dbvolution.internal.properties.PropertyWrapper;
-import nz.co.gregs.dbvolution.query.QueryOptions;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -293,7 +294,7 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 		return statement;
 	}
 
-	private DBStatement getLowLevelStatement() throws UnableToCreateDatabaseConnectionException, UnableToFindJDBCDriver, SQLException {
+	protected DBStatement getLowLevelStatement() throws UnableToCreateDatabaseConnectionException, UnableToFindJDBCDriver, SQLException {
 		Connection connection = getConnection();
 		try {
 			while (connection.isClosed()) {
@@ -1474,7 +1475,7 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 	 *
 	 * @param defn the DBDefinition to be used by this DBDatabase instance.
 	 */
-	protected void setDefinition(DBDefinition defn) {
+	protected final void setDefinition(DBDefinition defn) {
 		if (definition == null) {
 			definition = defn;
 		}
@@ -1911,5 +1912,9 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 
 	public void setExplicitCommitAction(boolean b) {
 		explicitCommitActionRequired = b;
+	}
+
+	public DBActionList executeDBAction(DBAction action) throws SQLException {
+		return action.execute(this);
 	}
 }

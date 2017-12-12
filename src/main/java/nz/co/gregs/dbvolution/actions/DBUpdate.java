@@ -60,7 +60,7 @@ public abstract class DBUpdate extends DBAction {
 	public static DBActionList update(DBDatabase db, DBRow row) throws SQLException {
 		DBActionList updates = getUpdates(row);
 		for (DBAction act : updates) {
-			act.execute(db);
+			db.executeDBAction(act);
 		}
 		return updates;
 	}

@@ -131,7 +131,7 @@ public abstract class DBAction {
 	 * action on the database
 	 * @throws SQLException Database operations may throw SQLExceptions
 	 */
-	protected abstract DBActionList execute(DBDatabase db) throws SQLException;
+	public abstract DBActionList execute(DBDatabase db) throws SQLException;
 
 	/**
 	 * Returns a copy of the row supplied during creation.
