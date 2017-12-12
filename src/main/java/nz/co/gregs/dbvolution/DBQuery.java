@@ -27,9 +27,8 @@ import java.awt.Dimension;
 import java.io.PrintStream;
 import java.sql.*;
 import java.util.*;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.JFrame;
+import nz.co.gregs.dbvolution.actions.DBActionList;
 
 import nz.co.gregs.dbvolution.annotations.DBForeignKey;
 import nz.co.gregs.dbvolution.databases.DBStatement;
@@ -126,12 +125,7 @@ public class DBQuery {
 	}
 
 	DBDatabase getDatabase() {
-		try {
-			return database.clone();
-		} catch (CloneNotSupportedException ex) {
-			Logger.getLogger(DBQuery.class.getName()).log(Level.SEVERE, null, ex);
-		}
-		return null;
+			return database;
 	}
 
 	private DBQuery(DBDatabase database) {
@@ -431,6 +425,12 @@ public class DBQuery {
 			separator = defn.beginConditionClauseLine(options);
 		}
 		return sqlToReturn.toString();
+	}
+	
+	DBActionList execute(DBDatabase db) throws SQLException{
+		DBActionList actions = new DBActionList();
+		getAllRowsInternal(this.details.getOptions());
+		return actions;
 	}
 
 	private String getSQLForQuery(QueryState queryState, QueryType queryType, QueryOptions options) {
