@@ -919,4 +919,9 @@ public class SQLiteDefinition extends DBDefinition implements SupportsDateRepeat
 	public boolean supportsRightOuterJoinNatively() {
 		return false;
 	}
+
+	@Override
+	public boolean supportsAlterTableAddConstraint() {
+		return false;
+	}
 }

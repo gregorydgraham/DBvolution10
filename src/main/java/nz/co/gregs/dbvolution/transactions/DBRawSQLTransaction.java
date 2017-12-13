@@ -54,6 +54,7 @@ public class DBRawSQLTransaction implements DBTransaction<Boolean> {
 	public Boolean doTransaction(DBDatabase dbDatabase) throws Exception {
 		DBStatement dbStatement = dbDatabase.getDBStatement();
 		try {
+			dbDatabase.printSQLIfRequested(sql);
 			dbStatement.addBatch(sql);
 			int[] executeBatchResults = dbStatement.executeBatch();
 			for (int result : executeBatchResults) {

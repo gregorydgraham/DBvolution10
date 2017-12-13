@@ -21,7 +21,6 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import nz.co.gregs.dbvolution.databases.DBDatabase;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
@@ -42,7 +41,7 @@ public class QueryDetails {
 	private final List<DBRow> optionalQueryTables = new ArrayList<>();
 	private final List<DBRow> assumedQueryTables = new ArrayList<>();
 //	private final List<DBQuery> intersectingQueries;
-	private final QueryOptions options = new QueryOptions();
+	private QueryOptions options = new QueryOptions();
 	private final List<DBRow> extraExamples = new ArrayList<>();
 	private final List<BooleanExpression> conditions = new ArrayList<>();
 	private final Map<Object, QueryableDatatype<?>> expressionColumns = new LinkedHashMap<>();
@@ -238,6 +237,10 @@ public class QueryDetails {
 
 	public void setQueryType(QueryType queryType) {
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	}
+
+	public void setOptions(QueryOptions tempOptions) {
+		this.options = tempOptions;
 	}
 
 }

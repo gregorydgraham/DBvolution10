@@ -5871,4 +5871,8 @@ public abstract class DBDefinition {
 	boolean supportsPaging(QueryOptions options) {
 		return supportsPagingNatively(options);
 	}
+
+	public boolean supportsAlterTableAddConstraint() {
+		return true;
+	}
 }

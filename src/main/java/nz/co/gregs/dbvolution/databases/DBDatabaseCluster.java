@@ -43,6 +43,7 @@ import nz.co.gregs.dbvolution.DBScript;
 import nz.co.gregs.dbvolution.actions.DBActionList;
 import nz.co.gregs.dbvolution.actions.DBExecutable;
 import nz.co.gregs.dbvolution.databases.definitions.ClusterDatabaseDefinition;
+import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.exceptions.AccidentalDroppingOfTableException;
 import nz.co.gregs.dbvolution.exceptions.AutoCommitActionDuringTransactionException;
 import nz.co.gregs.dbvolution.exceptions.UnableToCreateDatabaseConnectionException;
@@ -73,26 +74,25 @@ public class DBDatabaseCluster extends DBDatabase {
 	}
 
 	/**
-	 * Appends the specified element to the end of this list (optional
-	 * operation).
+	 * Appends the specified element to the end of this list (optional operation).
 	 *
 	 * <p>
 	 * Lists that support this operation may place limitations on what elements
 	 * may be added to this list. In particular, some lists will refuse to add
-	 * null elements, and others will impose restrictions on the type of
-	 * elements that may be added. List classes should clearly specify in their
+	 * null elements, and others will impose restrictions on the type of elements
+	 * that may be added. List classes should clearly specify in their
 	 * documentation any restrictions on what elements may be added.
 	 *
 	 * @param database element to be appended to this list
 	 * @return <tt>true</tt> (as specified by {@link Collection#add})
-	 * @throws UnsupportedOperationException if the <tt>add</tt> operation is
-	 * not supported by this list
+	 * @throws UnsupportedOperationException if the <tt>add</tt> operation is not
+	 * supported by this list
 	 * @throws ClassCastException if the class of the specified element prevents
 	 * it from being added to this list
-	 * @throws NullPointerException if the specified element is null and this
-	 * list does not permit null elements
-	 * @throws IllegalArgumentException if some property of this element
-	 * prevents it from being added to this list
+	 * @throws NullPointerException if the specified element is null and this list
+	 * does not permit null elements
+	 * @throws IllegalArgumentException if some property of this element prevents
+	 * it from being added to this list
 	 */
 	public boolean addDatabase(DBDatabase database) {
 		addedDatabases.add(database);
@@ -105,23 +105,22 @@ public class DBDatabaseCluster extends DBDatabase {
 	}
 
 	/**
-	 * Removes the first occurrence of the specified element from this list, if
-	 * it is present (optional operation). If this list does not contain the
-	 * element, it is unchanged. More formally, removes the element with the
-	 * lowest index
+	 * Removes the first occurrence of the specified element from this list, if it
+	 * is present (optional operation). If this list does not contain the element,
+	 * it is unchanged. More formally, removes the element with the lowest index
 	 * <tt>i</tt> such that
 	 * <tt>(o==null&nbsp;?&nbsp;get(i)==null&nbsp;:&nbsp;o.equals(get(i)))</tt>
 	 * (if such an element exists). Returns <tt>true</tt> if this list contained
-	 * the specified element (or equivalently, if this list changed as a result
-	 * of the call).
+	 * the specified element (or equivalently, if this list changed as a result of
+	 * the call).
 	 *
 	 * @param database DBDatabase to be removed from this list, if present
 	 * @return <tt>true</tt> if this list contained the specified element
 	 * @throws ClassCastException if the type of the specified element is
 	 * incompatible with this list
 	 * (<a href="Collection.html#optional-restrictions">optional</a>)
-	 * @throws NullPointerException if the specified element is null and this
-	 * list does not permit null elements
+	 * @throws NullPointerException if the specified element is null and this list
+	 * does not permit null elements
 	 * (<a href="Collection.html#optional-restrictions">optional</a>)
 	 * @throws UnsupportedOperationException if the <tt>remove</tt> operation is
 	 * not supported by this list
@@ -270,8 +269,7 @@ public class DBDatabaseCluster extends DBDatabase {
 
 	@Override
 	public void createForeignKeyConstraints(DBRow newTableRow) throws SQLException {
-		for (Iterator<DBDatabase> iterator = readyDatabases.iterator(); iterator.hasNext();) {
-			DBDatabase next = iterator.next();
+		for (DBDatabase next : readyDatabases) {
 			next.createForeignKeyConstraints(newTableRow);
 		}
 	}
@@ -357,32 +355,85 @@ public class DBDatabaseCluster extends DBDatabase {
 		return getReadyDatabase().doReadOnlyTransaction(dbTransaction);
 	}
 
-	@Override
-	public <V> V doTransaction(DBTransaction<V> dbTransaction) throws SQLException, Exception {
-		V result = null;
-		try {
-			for (Iterator<DBDatabase> iterator = readyDatabases.iterator(); iterator.hasNext();) {
-				DBDatabase next = iterator.next();
-				result = next.doTransaction(dbTransaction);
-			}
-			commitAll();
-		} catch (Exception exc) {
-			rollbackAll(exc);
-		}
-		return result;
-	}
+//	@Override
+//	public <V> V doTransaction(DBTransaction<V> dbTransaction) throws SQLException, Exception {
+//		V result = null;
+//		try {
+//			for (Iterator<DBDatabase> iterator = readyDatabases.iterator(); iterator.hasNext();) {
+//				DBDatabase next = iterator.next();
+//				result = next.doTransaction(dbTransaction);
+//			}
+//			commitAll();
+//		} catch (Exception exc) {
+//			rollbackAll(exc);
+//		}
+//		return result;
+//	}
 
 	@Override
 	public <V> V doTransaction(DBTransaction<V> dbTransaction, Boolean commit) throws SQLException, Exception {
 		V result = null;
+		boolean rollbackAll = false;
+		List<DBDatabase> transactionDatabases = new ArrayList<>();
 		try {
-			for (Iterator<DBDatabase> iterator = readyDatabases.iterator(); iterator.hasNext();) {
-				DBDatabase next = iterator.next();
-				result = next.doTransaction(dbTransaction, commit);
+			for (DBDatabase database : readyDatabases) {
+//				result = next.doTransaction(dbTransaction, commit);
+				DBDatabase db;
+				synchronized (database) {
+					db = database.clone();
+				}
+				transactionDatabases.add(db);
+				V returnValues = null;
+				db.transactionStatement = db.getDBTransactionStatement();
+				try {
+					db.isInATransaction = true;
+					db.transactionConnection = db.transactionStatement.getConnection();
+					db.transactionConnection.setAutoCommit(false);
+					try {
+						returnValues = dbTransaction.doTransaction(db);
+						if (!commit) {
+							try {
+								db.transactionConnection.rollback();
+								LOG.info("Transaction Successful: ROLLBACK Performed");
+							} catch (SQLException rollbackFailed) {
+								LOG.warn("ROLLBACK FAILED: CONTINUING REGARDLESS: " + rollbackFailed.getLocalizedMessage());
+								discardConnection(db.transactionConnection);
+							}
+						}
+					} catch (Exception ex) {
+						try {
+							LOG.warn("Exception Occurred: Attempting ROLLBACK - " + ex.getMessage(), ex);
+							if (!explicitCommitActionRequired) {
+								db.transactionConnection.rollback();
+								LOG.warn("Exception Occurred: ROLLBACK Succeeded!");
+							}
+						} catch (SQLException excp) {
+							LOG.warn("Exception Occurred During Rollback: " + ex.getMessage(), excp);
+						}
+						throw ex;
+					}
+				} finally {
+				}
+				result = returnValues;
+
 			}
-			commitAll();
 		} catch (Exception exc) {
-			rollbackAll(exc);
+			rollbackAll = true;
+		} finally {
+			for (DBDatabase db : transactionDatabases) {
+				if (commit) {
+					if (rollbackAll) {
+						db.transactionConnection.rollback();
+					} else {
+						db.transactionConnection.commit();
+					}
+				}
+				db.isInATransaction = false;
+				db.transactionStatement.transactionFinished();
+				db.discardConnection(db.transactionConnection);
+				db.transactionConnection = null;
+				db.transactionStatement = null;
+			}
 		}
 		return result;
 	}
@@ -455,7 +506,7 @@ public class DBDatabaseCluster extends DBDatabase {
 	}
 
 	private void synchroniseAddedDatabases() {
-		DBDatabase[] addedDBs = new DBDatabase[]{};
+		DBDatabase[] addedDBs;
 		synchronized (addedDatabases) {
 			addedDBs = addedDatabases.toArray(new DBDatabase[]{});
 		}
@@ -471,13 +522,13 @@ public class DBDatabaseCluster extends DBDatabase {
 		}
 	}
 
-	private void commitAll() {
+	private void commitAll() throws SQLException {
 		for (DBDatabase db : readyDatabases) {
 			db.doCommit();
 		}
 	}
 
-	private void rollbackAll(Exception exc) {
+	private void rollbackAll(Exception exc) throws SQLException {
 		for (DBDatabase db : readyDatabases) {
 			db.doRollback();
 		}
@@ -486,7 +537,7 @@ public class DBDatabaseCluster extends DBDatabase {
 	@Override
 	public DBActionList executeDBAction(DBExecutable action) throws SQLException {
 		DBActionList actionsPerformed = new DBActionList();
-		for (DBDatabase next : allDatabases) {
+		for (DBDatabase next : readyDatabases) {
 			actionsPerformed = action.execute(next);
 		}
 		return actionsPerformed;
@@ -494,10 +545,25 @@ public class DBDatabaseCluster extends DBDatabase {
 
 	synchronized ArrayList<DBStatement> getDBStatements() throws SQLException {
 		ArrayList<DBStatement> arrayList = new ArrayList<>();
-		for(DBDatabase db:readyDatabases){
+		for (DBDatabase db : readyDatabases) {
 			arrayList.add(db.getDBStatement());
 		}
 		return arrayList;
 	}
 
+	@Override
+	public DBDefinition getDefinition() {
+		return getReadyDatabase().getDefinition();
+	}
+
+	public DBDatabase getPrimaryDatabase() {
+		return readyDatabases.get(0);
+	}
+
+	@Override
+	public void setPrintSQLBeforeExecuting(boolean b) {
+		for (DBDatabase db : allDatabases) {
+			db.setPrintSQLBeforeExecuting(b);
+		}
+	}
 }

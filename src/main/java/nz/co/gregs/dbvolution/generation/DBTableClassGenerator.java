@@ -32,6 +32,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import nz.co.gregs.dbvolution.databases.DBDatabase;
+import nz.co.gregs.dbvolution.databases.DBDatabaseCluster;
 import nz.co.gregs.dbvolution.databases.DBStatement;
 import nz.co.gregs.dbvolution.datatypes.*;
 
@@ -273,9 +274,13 @@ public class DBTableClassGenerator {
 	 * @return a List of DBTableClass instances representing the tables and views
 	 * found on the database 1 Database exceptions may be thrown
 	 */
-	private static List<DBTableClass> generateClassesOfObjectTypes(DBDatabase database, String packageName, Options options, String... dbObjectTypes) throws SQLException {
+	private static List<DBTableClass> generateClassesOfObjectTypes(DBDatabase db, String packageName, Options options, String... dbObjectTypes) throws SQLException {
 		List<DBTableClass> dbTableClasses = new ArrayList<>();
 
+		DBDatabase database = db;
+		if (db instanceof DBDatabaseCluster) {
+			database =((DBDatabaseCluster)db).getPrimaryDatabase();
+		}
 		try (DBStatement dbStatement = database.getDBStatement()) {
 			Connection connection = dbStatement.getConnection();
 			String catalog = connection.getCatalog();

@@ -69,7 +69,7 @@ import org.apache.commons.logging.LogFactory;
 public abstract class DBDatabase implements Serializable, Cloneable {
 
 	private static final long serialVersionUID = 1l;
-	private static final Log LOG = LogFactory.getLog(DBDatabase.class);
+	static final Log LOG = LogFactory.getLog(DBDatabase.class);
 
 	private String driverName = "";
 	private String jdbcURL = "";
@@ -77,8 +77,8 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 	private String password = null;
 	private DataSource dataSource = null;
 	private boolean printSQLBeforeExecuting = false;
-	private boolean isInATransaction = false;
-	private DBTransactionStatement transactionStatement;
+	boolean isInATransaction = false;
+	DBTransactionStatement transactionStatement;
 	private DBDefinition definition = null;
 	private String databaseName;
 	private boolean batchIfPossible = true;
@@ -87,11 +87,11 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 //	private int connectionsActive = 0;
 	private final Object getStatementSynchronizeObject = new Object();
 	private final Object getConnectionSynchronizeObject = new Object();
-	private Connection transactionConnection;
+	Connection transactionConnection;
 	private static final transient Map<DBDatabase, List<Connection>> BUSY_CONNECTION = new HashMap<>();
 	private static final transient HashMap<DBDatabase, List<Connection>> FREE_CONNECTIONS = new HashMap<>();
 	private Boolean needToAddDatabaseSpecificFeatures = true;
-	private boolean explicitCommitActionRequired = false;
+	boolean explicitCommitActionRequired = false;
 
 	/**
 	 * Clones the DBDatabase.
@@ -252,7 +252,7 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 		this.username = username;
 	}
 
-	private DBTransactionStatement getDBTransactionStatement() throws SQLException {
+	DBTransactionStatement getDBTransactionStatement() throws SQLException {
 		final DBStatement dbStatement = getDBStatement();
 		if (dbStatement instanceof DBTransactionStatement) {
 			return (DBTransactionStatement) dbStatement;
@@ -749,10 +749,10 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 					try {
 						if (!explicitCommitActionRequired) {
 							db.transactionConnection.rollback();
+							LOG.info("Transaction Successful: ROLLBACK Performed");
 						}
-						LOG.info("Transaction Successful: ROLLBACK Performed");
 					} catch (SQLException rollbackFailed) {
-						LOG.warn("ROLLBACK FAILED: CONTINUING REGARDLESS: "+rollbackFailed.getLocalizedMessage());
+						LOG.warn("ROLLBACK FAILED: CONTINUING REGARDLESS: " + rollbackFailed.getLocalizedMessage());
 						discardConnection(db.transactionConnection);
 					}
 				}
@@ -761,8 +761,8 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 					LOG.warn("Exception Occurred: Attempting ROLLBACK - " + ex.getMessage(), ex);
 					if (!explicitCommitActionRequired) {
 						db.transactionConnection.rollback();
+						LOG.warn("Exception Occurred: ROLLBACK Succeeded!");
 					}
-					LOG.warn("Exception Occurred: ROLLBACK Succeeded!");
 				} catch (SQLException excp) {
 					LOG.warn("Exception Occurred During Rollback: " + ex.getMessage(), excp);
 				}
@@ -1261,30 +1261,34 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 	 * method.
 	 *
 	 * <p>
-	 * All databases support adding FK constraints, and they provide useful
-	 * checks. However they are the last possible check, represent an inadequate
+	 * All databases support FK constraints, and they provide useful checks.
+	 * However they are the last possible check, represent an inadequate
 	 * protection, and can cause considerable difficulties at surprising times. I
 	 * recommend against them.
+	 *
+	 * <p>
+	 * Note: SQLite does not support adding Foreign Keys to existing tables.
 	 *
 	 * @param newTableRow the table that needs foreign key constraints
 	 * @throws SQLException the database has had an issue.
 	 */
 	public void createForeignKeyConstraints(DBRow newTableRow) throws SQLException {
-
-		List<PropertyWrapper> fields = newTableRow.getColumnPropertyWrappers();
-		List<String> fkClauses = new ArrayList<>();
-		for (PropertyWrapper field : fields) {
-			if (field.isColumn() && !field.getQueryableDatatype().hasColumnExpression()) {
-				final String alterTableAddForeignKeyStatement = definition.getAlterTableAddForeignKeyStatement(newTableRow, field);
-				if (!alterTableAddForeignKeyStatement.isEmpty()) {
-					fkClauses.add(alterTableAddForeignKeyStatement);
+		if (this.definition.supportsAlterTableAddConstraint()) {
+			List<PropertyWrapper> fields = newTableRow.getColumnPropertyWrappers();
+			List<String> fkClauses = new ArrayList<>();
+			for (PropertyWrapper field : fields) {
+				if (field.isColumn() && !field.getQueryableDatatype().hasColumnExpression()) {
+					final String alterTableAddForeignKeyStatement = definition.getAlterTableAddForeignKeyStatement(newTableRow, field);
+					if (!alterTableAddForeignKeyStatement.isEmpty()) {
+						fkClauses.add(alterTableAddForeignKeyStatement);
+					}
 				}
 			}
-		}
-		if (fkClauses.size() > 0) {
-			try (DBStatement statement = getDBStatement()) {
-				for (String fkClause : fkClauses) {
-					statement.execute(fkClause);
+			if (fkClauses.size() > 0) {
+				try (DBStatement statement = getDBStatement()) {
+					for (String fkClause : fkClauses) {
+						statement.execute(fkClause);
+					}
 				}
 			}
 		}
@@ -1903,11 +1907,11 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 
 	public void doCommit() {
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-	}
+		}
 
 	public void doRollback() {
 
-	}
+		}
 
 	public void setExplicitCommitAction(boolean b) {
 		explicitCommitActionRequired = b;
