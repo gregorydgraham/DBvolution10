@@ -1,15 +1,12 @@
 language: java
 dist: trusty
 sudo: required
+addons:
+    postgresql: "9.6"
 script: "mvn -B -s .travis-settings.xml -P DBs-OpenSource test "
 services:
   - mysql
   - postgresql
-addons:
-  postgresql: "9.6"
-
-# Allow the sudo command
-sudo: true
 
 jdk:
   - openjdk7
@@ -22,5 +19,4 @@ before_install:
   - psql -c 'create database dbvtest;' -U postgres
   - psql --version
 before_script:
-  # ... I install the good version (PgSQL 9.6 Postgis 2.3)
-    - sudo apt-get install postgresql-9.6-postgis-2.3 postgis -y -q
+  
