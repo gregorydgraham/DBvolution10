@@ -3,6 +3,9 @@ dist: trusty
 sudo: required
 addons:
     postgresql: "9.6"
+    apt:
+      packages:
+      - postgresql-9.6-postgis-2.3
 script: "mvn -B -s .travis-settings.xml -P DBs-OpenSource test "
 services:
   - mysql
