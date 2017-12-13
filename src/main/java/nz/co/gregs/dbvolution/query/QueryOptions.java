@@ -19,6 +19,7 @@ import java.util.Arrays;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import nz.co.gregs.dbvolution.columns.ColumnProvider;
+import nz.co.gregs.dbvolution.databases.DBDatabase;
 
 /**
  *
@@ -301,7 +302,17 @@ public class QueryOptions {
 	}
 
 	public void setQueryType(QueryType queryType) {
-		queryType = queryType;
+		this.queryType = queryType;
+	}
+	
+	private DBDatabase queryDatabase;
+
+	public void setQueryDatabase(DBDatabase db) {
+		queryDatabase = db;
+	}
+
+	public DBDatabase getQueryDatabase() {
+		return queryDatabase;
 	}
 
 }

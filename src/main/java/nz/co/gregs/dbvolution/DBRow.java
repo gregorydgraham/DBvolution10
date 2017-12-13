@@ -1314,7 +1314,8 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 	 */
 	public <R extends DBRow> List<R> getRelatedInstancesFromQuery(DBQuery query, R example) throws SQLException {
 		List<R> instances = new ArrayList<>();
-		for (DBQueryRow qrow : query.getAllRows()) {
+		final List<DBQueryRow> allRows = query.getAllRows();
+		for (DBQueryRow qrow : allRows) {
 			DBRow versionOfThis = qrow.get(this);
 			R versionOfThat = qrow.get(example);
 			if (versionOfThis.equals(this) && versionOfThat != null) {

@@ -32,6 +32,7 @@ import nz.co.gregs.dbvolution.DBScript;
 import nz.co.gregs.dbvolution.DBTable;
 import nz.co.gregs.dbvolution.actions.DBActionList;
 import nz.co.gregs.dbvolution.actions.DBExecutable;
+import nz.co.gregs.dbvolution.actions.DBQueryable;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.datatypes.DBLargeObject;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
@@ -1919,5 +1920,9 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 
 	public DBActionList executeDBAction(DBExecutable action) throws SQLException {
 		return action.execute(this);
+	}
+
+	public DBActionList executeDBQuery(DBQueryable query) throws SQLException {
+		return query.query(this);
 	}
 }

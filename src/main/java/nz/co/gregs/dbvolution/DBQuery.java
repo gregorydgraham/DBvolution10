@@ -27,9 +27,12 @@ import java.awt.Dimension;
 import java.io.PrintStream;
 import java.sql.*;
 import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JFrame;
 import nz.co.gregs.dbvolution.actions.DBActionList;
 import nz.co.gregs.dbvolution.actions.DBExecutable;
+import nz.co.gregs.dbvolution.actions.DBQueryable;
 
 import nz.co.gregs.dbvolution.annotations.DBForeignKey;
 import nz.co.gregs.dbvolution.databases.DBStatement;
@@ -82,7 +85,7 @@ import nz.co.gregs.dbvolution.internal.query.*;
  *
  * @author Gregory Graham
  */
-public class DBQuery implements DBExecutable {
+public class DBQuery implements DBQueryable {
 
 	/**
 	 * The default timeout value used to prevent accidental long running queries
@@ -797,7 +800,7 @@ public class DBQuery implements DBExecutable {
 	public List<DBQueryRow> getAllRows() throws SQLException, SQLTimeoutException, AccidentalBlankQueryException, AccidentalCartesianJoinException {
 		final QueryOptions options = details.getOptions();
 		if (this.needsResults(options)) {
-			getReadyDatabase().executeDBAction(this);
+			database.executeDBQuery(this);
 //			getAllRowsInternal(options);
 		}
 		if (options.getRowLimit() > 0 && results.size() > options.getRowLimit()) {
@@ -810,8 +813,9 @@ public class DBQuery implements DBExecutable {
 	}
 
 	@Override
-	public DBActionList execute(DBDatabase db) throws SQLException {
+	public DBActionList query(DBDatabase db) throws SQLException {
 		DBActionList actions = new DBActionList();
+		details.getOptions().setQueryDatabase(db);
 		fillResultSetInternal(db, details, this.details.getOptions());
 		return actions;
 	}
@@ -1131,13 +1135,14 @@ public class DBQuery implements DBExecutable {
 	}
 
 	private boolean needsResults(QueryOptions options) {
-//		final QueryOptions options = details.getOptions();
+		final DBDatabase queryDatabase = options.getQueryDatabase();
 		return results == null
 				|| results.isEmpty()
 				|| resultSQL == null
 				|| !resultsPageIndex.equals(options.getPageIndex())
 				|| !resultsRowLimit.equals(options.getRowLimit())
-				|| !resultSQL.equals(getSQLForQuery(database, new QueryState(this), QueryType.SELECT, options));
+				|| queryDatabase == null
+				|| !resultSQL.equals(getSQLForQuery(queryDatabase, new QueryState(this), QueryType.SELECT, options));
 	}
 
 	/**
@@ -1164,7 +1169,7 @@ public class DBQuery implements DBExecutable {
 		List<R> arrayList = new ArrayList<>();
 		final QueryOptions options = details.getOptions();
 		if (this.needsResults(options)) {
-			database.executeDBAction(this);
+			database.executeDBQuery(this);
 //			getAllRowsInternal(options);
 		}
 		if (!results.isEmpty()) {
@@ -1202,7 +1207,7 @@ public class DBQuery implements DBExecutable {
 	public void print(PrintStream ps) throws SQLException {
 		final QueryOptions options = details.getOptions();
 		if (needsResults(options)) {
-			database.executeDBAction(this);
+			database.executeDBQuery(this);
 //			this.getAllRowsInternal(options);
 		}
 
@@ -1242,7 +1247,7 @@ public class DBQuery implements DBExecutable {
 	public void printAllDataColumns(PrintStream printStream) throws SQLException {
 		final QueryOptions options = details.getOptions();
 		if (needsResults(options)) {
-			database.executeDBAction(this);
+			database.executeDBQuery(this);
 //			this.getAllRowsInternal(options);
 		}
 
@@ -1275,7 +1280,7 @@ public class DBQuery implements DBExecutable {
 	public void printAllPrimaryKeys(PrintStream ps) throws SQLException {
 		final QueryOptions options = details.getOptions();
 		if (needsResults(options)) {
-			database.executeDBAction(this);
+			database.executeDBQuery(this);
 //			this.getAllRowsInternal(options);
 		}
 
@@ -2198,7 +2203,7 @@ public class DBQuery implements DBExecutable {
 	public List<DBQueryRow> getAllRowsContaining(DBRow instance) throws SQLException {
 		final QueryOptions options = details.getOptions();
 		if (this.needsResults(options)) {
-			database.executeDBAction(this);
+			database.executeDBQuery(this);
 //			getAllRowsInternal(options);
 		}
 		List<DBQueryRow> returnList = new ArrayList<>();
@@ -2238,7 +2243,7 @@ public class DBQuery implements DBExecutable {
 		final QueryOptions options = details.getOptions();
 		details.setHavingColumns(postQueryConditions);
 		if (this.needsResults(options)) {
-			database.executeDBAction(this);
+			database.executeDBQuery(this);
 //			getAllRowsInternal(options);
 		}
 		return results;
@@ -2295,7 +2300,7 @@ public class DBQuery implements DBExecutable {
 		if (defn.supportsPagingNatively(options)) {
 			options.setPageIndex(pageNumber);
 			if (this.needsResults(options)) {
-				database.executeDBAction(this);
+				database.executeDBQuery(this);
 //				getAllRowsInternal(options);
 			}
 			return results;
@@ -2305,14 +2310,14 @@ public class DBQuery implements DBExecutable {
 				tempOptions.setRowLimit((pageNumber + 1) * options.getRowLimit());
 				if (this.needsResults(tempOptions) || tempOptions.getRowLimit() > results.size()) {
 					details.setOptions(tempOptions);
-					database.executeDBAction(this);
+					database.executeDBQuery(this);
 //					getAllRowsInternal(tempOptions);
 				}
 			} else {
 				if (this.needsResults(options)) {
 					int rowLimit = options.getRowLimit();
 					options.setRowLimit(-1);
-					database.executeDBAction(this);
+					database.executeDBQuery(this);
 //					getAllRowsInternal(options);
 					options.setRowLimit(rowLimit);
 				}

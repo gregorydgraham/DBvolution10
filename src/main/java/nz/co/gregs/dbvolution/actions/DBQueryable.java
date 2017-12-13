@@ -35,10 +35,10 @@ import nz.co.gregs.dbvolution.databases.DBDatabase;
  *
  * @author greg
  */
-public interface DBExecutable {
+public interface DBQueryable {
 
 	/**
-	 * Performs the DB execute and returns a list of all actions performed in the
+	 * Performs the DB query and returns a list of all actions performed in the
 	 * process.
 	 *
 	 * <p>
@@ -53,6 +53,6 @@ public interface DBExecutable {
 	 * on the database
 	 * @throws SQLException Database operations may throw SQLExceptions
 	 */
-	DBActionList execute(DBDatabase db) throws SQLException;
+	public DBActionList query(DBDatabase db) throws SQLException;
 
 }

@@ -42,6 +42,7 @@ import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.DBScript;
 import nz.co.gregs.dbvolution.actions.DBActionList;
 import nz.co.gregs.dbvolution.actions.DBExecutable;
+import nz.co.gregs.dbvolution.actions.DBQueryable;
 import nz.co.gregs.dbvolution.databases.definitions.ClusterDatabaseDefinition;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.exceptions.AccidentalDroppingOfTableException;
@@ -540,6 +541,12 @@ public class DBDatabaseCluster extends DBDatabase {
 		for (DBDatabase next : readyDatabases) {
 			actionsPerformed = action.execute(next);
 		}
+		return actionsPerformed;
+	}
+
+	@Override
+	public DBActionList executeDBQuery(DBQueryable action) throws SQLException {
+		DBActionList actionsPerformed = action.query(this.getReadyDatabase());
 		return actionsPerformed;
 	}
 

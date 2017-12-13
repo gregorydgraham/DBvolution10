@@ -22,6 +22,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import nz.co.gregs.dbvolution.DBRow;
+import nz.co.gregs.dbvolution.databases.DBDatabase;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 import nz.co.gregs.dbvolution.expressions.BooleanExpression;
@@ -51,6 +52,7 @@ public class QueryDetails {
 	private DBDefinition databaseDefinition = null;
 	private String selectClause = null;
 	private final ArrayList<BooleanExpression> havingColumns = new ArrayList<>();
+	
 
 	/**
 	 * <p style="color: #F90;">Support DBvolution at
