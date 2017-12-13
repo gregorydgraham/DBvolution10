@@ -44,11 +44,8 @@ public class RawSQLTransactionTest extends AbstractTest {
 
 	@Test
 	public void testRawSQLTransactionCommit() throws Exception {
-		database.setPrintSQLBeforeExecuting(true);
-		database.print(database.getDBTable(new Marque()).setBlankQueryAllowed(true).getAllRows());
 		DBRawSQLTransaction sqlTrans = new DBRawSQLTransaction("update marque set name = 'Peugeot' where name = 'PEUGEOT'");
 		Boolean doneTrans = database.doTransaction(sqlTrans, Boolean.TRUE);
-		database.print(database.getDBTable(new Marque()).setBlankQueryAllowed(true).getAllRows());
 		Assert.assertThat(doneTrans, is(true));
 		Marque mrq = new Marque();
 		mrq.name.permittedValues("Peugeot");
