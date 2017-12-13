@@ -20,7 +20,7 @@ install:
 build_script:
   - mvn clean compile --batch-mode -DskipTest
 test_script:
-  - mvn test -P MSSQLServerTest,DBs-OpenSource,ClusteredDBTest --batch-mode -s appveyor-settings.xml
+  - mvn test -P MSSQLServerTest,DBs-OpenSource --batch-mode -s appveyor-settings.xml
 cache:
   - C:\Users\appveyor\.m2
   
