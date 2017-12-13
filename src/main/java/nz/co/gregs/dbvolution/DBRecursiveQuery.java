@@ -207,7 +207,9 @@ public class DBRecursiveQuery<T extends DBRow> {
 	}
 
 	private List<DBQueryRow> performNativeRecursiveQuery(RecursiveSQLDirection direction, List<DBQueryRow> returnList) throws SQLException, UnableToInstantiateDBRowSubclassException {
-		DBStatement dbStatement = originalQuery.getDatabase().getDBStatement();
+		final DBDatabase database = originalQuery.getReadyDatabase();
+		final DBDefinition defn = database.getDefinition();
+		DBStatement dbStatement = database.getDBStatement();
 		try {
 			String descendingQuery = getRecursiveSQL(this.keyToFollow, direction);
 			originalQuery.setTimeoutInMilliseconds(this.timeoutInMilliseconds);
@@ -216,9 +218,15 @@ public class DBRecursiveQuery<T extends DBRow> {
 				while (resultSet.next()) {
 					DBQueryRow queryRow = new DBQueryRow(originalQuery);
 
-					originalQuery.setExpressionColumns(resultSet, queryRow);
+					originalQuery.setExpressionColumns(defn, resultSet, queryRow);
 
-					originalQuery.setQueryRowFromResultSet(resultSet, queryRow, originalQuery.getQueryDetails().getDBReportGroupByColumns().size() > 0);
+					originalQuery.setQueryRowFromResultSet(
+							defn,
+							resultSet, 
+							originalQuery.getQueryDetails(),
+							queryRow, 
+							originalQuery.getQueryDetails().getDBReportGroupByColumns().size() > 0
+					);
 					returnList.add(queryRow);
 				}
 			} finally {
@@ -233,7 +241,7 @@ public class DBRecursiveQuery<T extends DBRow> {
 	private String getRecursiveSQL(ColumnProvider foreignKeyToFollow, RecursiveSQLDirection direction) {
 		final Class<? extends DBRow> referencedClass = foreignKeyToFollow.getColumn().getPropertyWrapper().referencedClass();
 		try {
-			final DBDatabase database = originalQuery.getDatabase();
+			final DBDatabase database = originalQuery.getReadyDatabase();
 			DBDefinition defn = database.getDefinition();
 			final DBRow newInstance = referencedClass.newInstance();
 			final String recursiveTableAlias = database.getDefinition().getTableAlias(newInstance);
@@ -279,7 +287,7 @@ public class DBRecursiveQuery<T extends DBRow> {
 	}
 
 	private DBQuery getPrimingSubQueryForRecursiveQuery(ColumnProvider foreignKeyToFollow) {
-		final DBDatabase database = originalQuery.getDatabase();
+		final DBDatabase database = originalQuery.getReadyDatabase();
 		DBQuery newQuery = database.getDBQuery();
 		final RowDefinitionInstanceWrapper rowDefinitionInstanceWrapper = foreignKeyToFollow.getColumn().getPropertyWrapper().getRowDefinitionInstanceWrapper();
 		final Class<?> originatingClass = rowDefinitionInstanceWrapper.adapteeRowDefinitionClass();
@@ -319,7 +327,7 @@ public class DBRecursiveQuery<T extends DBRow> {
 
 	private DBQuery getRecursiveSubQuery(String recursiveTableAlias, ColumnProvider foreignKeyToFollow, RecursiveSQLDirection direction) {
 		Class<? extends DBRow> referencedClass;
-		final DBDatabase database = originalQuery.getDatabase();
+		final DBDatabase database = originalQuery.getReadyDatabase();
 		DBQuery newQuery = database.getDBQuery();
 
 		final AbstractColumn fkColumn = foreignKeyToFollow.getColumn();
@@ -636,7 +644,7 @@ public class DBRecursiveQuery<T extends DBRow> {
 			setQDTPermittedValues(def.getQueryableDatatype(instanceOfRow), value);
 		}
 
-		final DBQuery dbQuery = this.originalQuery.getDatabase().getDBQuery(instanceOfRow);
+		final DBQuery dbQuery = this.originalQuery.getReadyDatabase().getDBQuery(instanceOfRow);
 		dbQuery.setTimeoutInMilliseconds((int) (timeout - (new java.util.Date().getTime() - start)));
 		List<DBQueryRow> allRows = dbQuery.getAllRows();
 
@@ -675,7 +683,7 @@ public class DBRecursiveQuery<T extends DBRow> {
 					qdt = this.keyToFollow.getColumn().getAppropriateQDTFromRow(instanceOfRow);
 				}
 				setQDTPermittedValues(qdt, recurseValues);
-				final DBQuery dbQuery1 = this.originalQuery.getDatabase().getDBQuery(instanceOfRow);
+				final DBQuery dbQuery1 = this.originalQuery.getReadyDatabase().getDBQuery(instanceOfRow);
 				dbQuery1.setTimeoutInMilliseconds((int) (timeout - (new java.util.Date().getTime() - start)));
 				allRows = dbQuery1.getAllRows();
 			}

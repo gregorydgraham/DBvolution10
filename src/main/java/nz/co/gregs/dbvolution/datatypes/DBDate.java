@@ -210,12 +210,12 @@ public class DBDate extends QueryableDatatype<Date> implements DateResult {
 	}
 
 	@Override
-	protected Date getFromResultSet(DBDefinition database, ResultSet resultSet, String fullColumnName) {
+	protected Date getFromResultSet(DBDefinition defn, ResultSet resultSet, String fullColumnName) {
 		Date dbValue;
-		if (database.prefersDatesReadAsStrings()) {
-			dbValue = setByGetString(database, resultSet, fullColumnName);
+		if (defn.prefersDatesReadAsStrings()) {
+			dbValue = setByGetString(defn, resultSet, fullColumnName);
 		} else {
-			dbValue = setByGetDate(database, resultSet, fullColumnName);
+			dbValue = setByGetDate(defn, resultSet, fullColumnName);
 		}
 		return dbValue;
 	}
@@ -238,7 +238,7 @@ public class DBDate extends QueryableDatatype<Date> implements DateResult {
 		}
 	}
 
-	private Date setByGetDate(DBDefinition database, ResultSet resultSet, String fullColumnName) {
+	private Date setByGetDate(DBDefinition defn, ResultSet resultSet, String fullColumnName) {
 		Date dbValue = null;
 		try {
 			Date dateValue = resultSet.getDate(fullColumnName);

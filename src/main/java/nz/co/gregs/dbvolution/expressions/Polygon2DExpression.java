@@ -47,7 +47,7 @@ public class Polygon2DExpression implements Polygon2DResult, EqualComparable<Pol
 
 	private Polygon2DResult innerGeometry;
 	private boolean nullProtectionRequired;
-
+	
 	/**
 	 * Default constructor
 	 *

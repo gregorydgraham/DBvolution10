@@ -38,6 +38,7 @@ import nz.co.gregs.dbvolution.expressions.*;
 import nz.co.gregs.dbvolution.datatypes.*;
 import nz.co.gregs.dbvolution.exceptions.*;
 import nz.co.gregs.dbvolution.columns.ColumnProvider;
+import nz.co.gregs.dbvolution.databases.DBDatabaseCluster;
 import nz.co.gregs.dbvolution.query.*;
 import nz.co.gregs.dbvolution.internal.querygraph.*;
 import nz.co.gregs.dbvolution.internal.properties.*;
@@ -108,15 +109,16 @@ public class DBQuery implements DBExecutable {
 
 	private String getHavingClause(DBDatabase database, QueryOptions options) {
 		BooleanExpression[] havingColumns = details.getHavingColumns();
-		String havingClauseStart = database.getDefinition().getHavingClauseStart();
+		final DBDefinition defn = database.getDefinition();
+		String havingClauseStart = defn.getHavingClauseStart();
 		if (havingColumns.length == 1) {
-			return havingClauseStart + havingColumns[0].toSQLString(database.getDefinition());
+			return havingClauseStart + havingColumns[0].toSQLString(defn);
 		} else if (havingColumns.length > 1) {
 			String sep = "";
-			final String beginAndLine = database.getDefinition().beginAndLine();
+			final String beginAndLine = defn.beginAndLine();
 			StringBuilder returnStr = new StringBuilder(havingClauseStart);
 			for (BooleanExpression havingColumn : havingColumns) {
-				returnStr.append(sep).append(havingColumn.toSQLString(database.getDefinition()));
+				returnStr.append(sep).append(havingColumn.toSQLString(defn));
 				sep = beginAndLine;
 			}
 			return returnStr.toString();
@@ -125,8 +127,12 @@ public class DBQuery implements DBExecutable {
 		}
 	}
 
-	DBDatabase getDatabase() {
-		return database;
+	DBDatabase getReadyDatabase() {
+		if (database instanceof DBDatabaseCluster) {
+			return ((DBDatabaseCluster) database).getReadyDatabase();
+		} else {
+			return database;
+		}
 	}
 
 	private DBQuery(DBDatabase database) {
@@ -281,7 +287,7 @@ public class DBQuery implements DBExecutable {
 	 * @return a String of the SQL that will be used by this DBQuery.
 	 */
 	public String getSQLForQuery() {
-		return getSQLForQuery(database, new QueryState(this), QueryType.SELECT, this.details.getOptions());
+		return getSQLForQuery(getReadyDatabase(), new QueryState(this), QueryType.SELECT, this.details.getOptions());
 	}
 
 	/**
@@ -337,7 +343,7 @@ public class DBQuery implements DBExecutable {
 		}
 
 		// Add new table's conditions
-		List<String> newTableConditions = newTable.getWhereClausesWithAliases(database.getDefinition());
+		List<String> newTableConditions = newTable.getWhereClausesWithAliases(defn);
 		if (requiredQueryTables.contains(newTable)) {
 			queryState.addRequiredConditions(newTableConditions);
 		} else {
@@ -348,7 +354,7 @@ public class DBQuery implements DBExecutable {
 		if (previousTables.size() == 1) {
 			final DBRow firstTable = previousTables.get(0);
 			if (!details.getRequiredQueryTables().contains(firstTable)) {
-				List<String> firstTableConditions = firstTable.getWhereClausesWithAliases(database.getDefinition());
+				List<String> firstTableConditions = firstTable.getWhereClausesWithAliases(defn);
 				conditionClauses.addAll(firstTableConditions);
 			}
 		}
@@ -363,12 +369,12 @@ public class DBQuery implements DBExecutable {
 				if (tablesInvolved.size() <= previousTables.size()) {
 					if (previousTables.containsAll(tablesInvolved)) {
 						if (expr.isRelationship()) {
-							joinClauses.add(expr.toSQLString(getDatabaseDefinition()));
+							joinClauses.add(expr.toSQLString(defn));
 						} else {
 							if (requiredQueryTables.containsAll(tablesInvolved)) {
-								queryState.addRequiredCondition(expr.toSQLString(database.getDefinition()));
+								queryState.addRequiredCondition(expr.toSQLString(defn));
 							} else {
-								conditionClauses.add(expr.toSQLString(database.getDefinition()));
+								conditionClauses.add(expr.toSQLString(defn));
 							}
 						}
 						queryState.consumeExpression(expr);
@@ -429,12 +435,10 @@ public class DBQuery implements DBExecutable {
 
 	private String getSQLForQuery(DBDatabase database, QueryState queryState, QueryType queryType, QueryOptions options) {
 		String sqlString = "";
-//		final QueryOptions options = details.getOptions();
 
 		if (details.getAllQueryTables().size() > 0) {
 
 			initialiseQueryGraph();
-//			queryState.setGraph(this.queryGraph);
 
 			DBDefinition defn = database.getDefinition();
 			StringBuilder selectClause = new StringBuilder().append(defn.beginSelectStatement());
@@ -471,7 +475,7 @@ public class DBQuery implements DBExecutable {
 				List<PropertyWrapper> tabProps = tabRow.getSelectedProperties();
 				for (PropertyWrapper propWrapper : tabProps) {
 					final QueryableDatatype<?> qdt = propWrapper.getQueryableDatatype();
-					final List<PropertyWrapperDefinition.ColumnAspects> columnAspectsList = propWrapper.getColumnAspects(getDatabaseDefinition());
+					final List<PropertyWrapperDefinition.ColumnAspects> columnAspectsList = propWrapper.getColumnAspects(defn);
 					for (PropertyWrapperDefinition.ColumnAspects columnAspects : columnAspectsList) {
 						String selectableName = columnAspects.selectableName;
 						String columnAlias = columnAspects.columnAlias;
@@ -508,12 +512,12 @@ public class DBQuery implements DBExecutable {
 					fromClause.append(fromClauseTableSeparator).append(tableName);
 					queryState.addedInnerJoinToQuery();
 				} else {
-					fromClause.append(getANSIJoinClause(getDatabaseDefinition(), queryState, tabRow, joinedTables, options));
+					fromClause.append(getANSIJoinClause(defn, queryState, tabRow, joinedTables, options));
 				}
 				joinedTables.add(tabRow);
 
 				if (!options.isUseANSISyntax()) {
-					List<String> tabRowCriteria = tabRow.getWhereClausesWithAliases(getDatabaseDefinition());
+					List<String> tabRowCriteria = tabRow.getWhereClausesWithAliases(defn);
 					if (tabRowCriteria != null && !tabRowCriteria.isEmpty()) {
 						for (String clause : tabRowCriteria) {
 							whereClause.append(lineSep).append(defn.beginConditionClauseLine(options)).append(clause);
@@ -533,7 +537,7 @@ public class DBQuery implements DBExecutable {
 			}
 
 			for (DBRow extra : details.getExtraExamples()) {
-				List<String> extraCriteria = extra.getWhereClausesWithAliases(getDatabaseDefinition());
+				List<String> extraCriteria = extra.getWhereClausesWithAliases(defn);
 				if (extraCriteria != null && !extraCriteria.isEmpty()) {
 					for (String clause : extraCriteria) {
 						whereClause.append(lineSep).append(defn.beginConditionClauseLine(options)).append(clause);
@@ -542,7 +546,7 @@ public class DBQuery implements DBExecutable {
 			}
 
 			for (BooleanExpression expression : queryState.getRemainingExpressions()) {
-				whereClause.append(lineSep).append(defn.beginConditionClauseLine(options)).append("(").append(expression.toSQLString(getDatabaseDefinition())).append(")");
+				whereClause.append(lineSep).append(defn.beginConditionClauseLine(options)).append("(").append(expression.toSQLString(defn)).append(")");
 				queryState.consumeExpression(expression);
 			}
 
@@ -604,7 +608,7 @@ public class DBQuery implements DBExecutable {
 						groupByClauseFinal = groupByClause.toString() + lineSep;
 					}
 				}
-				String orderByClauseFinal = getOrderByClause(indexesOfSelectedColumns, indexesOfSelectedExpressions);
+				String orderByClauseFinal = getOrderByClause(defn, indexesOfSelectedColumns, indexesOfSelectedExpressions);
 				if (!orderByClauseFinal.trim().isEmpty()) {
 					orderByClauseFinal += lineSep;
 				}
@@ -635,7 +639,7 @@ public class DBQuery implements DBExecutable {
 			}
 			if (options.creatingNativeQuery()
 					&& queryState.isFullOuterJoin()
-					&& !database.getDefinition().supportsFullOuterJoinNatively()) {
+					&& !defn.supportsFullOuterJoinNatively()) {
 				sqlString = getSQLForFakeFullOuterJoin(database, sqlString, queryState, details, options, queryType);
 			}
 		}
@@ -665,13 +669,13 @@ public class DBQuery implements DBExecutable {
 		String sqlForQuery;
 		String unionOperator;
 		DBDefinition defn = database.getDefinition();
-		if (database.getDefinition().supportsUnionDistinct()) {
+		if (defn.supportsUnionDistinct()) {
 			unionOperator = defn.getUnionDistinctOperator();
 		} else {
 			unionOperator = defn.getUnionOperator();
 		}
 
-		if (this.database.getDefinition().supportsRightOuterJoinNatively()) {
+		if (defn.supportsRightOuterJoinNatively()) {
 			// Fake the outer join by revering the left outer joins to right outer joins
 
 			sqlForQuery = existingSQL.replaceAll("; *$", " ").replaceAll(defn.beginFullOuterJoin(), defn.beginLeftOuterJoin());
@@ -679,7 +683,7 @@ public class DBQuery implements DBExecutable {
 		} else {
 			// Watch out for the infinite loop
 			options.setCreatingNativeQuery(false);
-			String reversedQuery = this.getSQLForQuery(database, queryState, QueryType.REVERSESELECT, options);
+			String reversedQuery = getSQLForQuery(database, queryState, QueryType.REVERSESELECT, options);
 			options.setCreatingNativeQuery(true);
 
 			sqlForQuery = existingSQL.replaceAll("; *$", " ").replaceAll(defn.beginFullOuterJoin(), defn.beginLeftOuterJoin());
@@ -730,6 +734,7 @@ public class DBQuery implements DBExecutable {
 	 * returned by this query
 	 */
 	public String getSQLForCount() {
+		DBDatabase database = getReadyDatabase();
 		if (!database.getDefinition().supportsFullOuterJoinNatively()) {
 			return "SELECT COUNT(*) FROM (" + getSQLForQuery(database, new QueryState(this), QueryType.SELECT, details.getOptions()).replaceAll("; *$", "") + ") A" + database.getDefinition().endSQLStatement();
 		} else {
@@ -792,7 +797,7 @@ public class DBQuery implements DBExecutable {
 	public List<DBQueryRow> getAllRows() throws SQLException, SQLTimeoutException, AccidentalBlankQueryException, AccidentalCartesianJoinException {
 		final QueryOptions options = details.getOptions();
 		if (this.needsResults(options)) {
-			database.executeDBAction(this);
+			getReadyDatabase().executeDBAction(this);
 //			getAllRowsInternal(options);
 		}
 		if (options.getRowLimit() > 0 && results.size() > options.getRowLimit()) {
@@ -807,20 +812,22 @@ public class DBQuery implements DBExecutable {
 	@Override
 	public DBActionList execute(DBDatabase db) throws SQLException {
 		DBActionList actions = new DBActionList();
-		fillResultSetInternal(db, this.details.getOptions());
+		fillResultSetInternal(db, details, this.details.getOptions());
 		return actions;
 	}
 
-	private void fillResultSetInternal(DBDatabase db, QueryOptions options) throws SQLException, SQLTimeoutException, AccidentalBlankQueryException, AccidentalCartesianJoinException {
-		prepareForQuery(database, options);
+	private void fillResultSetInternal(DBDatabase db, QueryDetails details, QueryOptions options) throws SQLException, SQLTimeoutException, AccidentalBlankQueryException, AccidentalCartesianJoinException {
+		prepareForQuery(db, options);
+
+		final DBDefinition defn = db.getDefinition();
 
 //		final QueryOptions options = details.getOptions();
 		if (!options.isBlankQueryAllowed() && willCreateBlankQuery(db) && rawSQLClause.isEmpty()) {
 			throw new AccidentalBlankQueryException();
 		}
 
-		if (!options.isCartesianJoinAllowed() 
-				&& (details.getRequiredQueryTables().size() + details.getOptionalQueryTables().size()) > 1 
+		if (!options.isCartesianJoinAllowed()
+				&& (details.getRequiredQueryTables().size() + details.getOptionalQueryTables().size()) > 1
 				&& queryGraph.willCreateCartesianJoin()) {
 			throw new AccidentalCartesianJoinException(resultSQL);
 		}
@@ -832,9 +839,9 @@ public class DBQuery implements DBExecutable {
 			while (resultSet.next()) {
 				queryRow = new DBQueryRow(this);
 
-				setExpressionColumns(resultSet, queryRow);
+				setExpressionColumns(defn, resultSet, queryRow);
 
-				setQueryRowFromResultSet(resultSet, queryRow, details.isGroupedQuery());
+				setQueryRowFromResultSet(defn, resultSet, details, queryRow, details.isGroupedQuery());
 				results.add(queryRow);
 			}
 		}
@@ -877,16 +884,18 @@ public class DBQuery implements DBExecutable {
 	 *
 	 * Database exceptions may be thrown
 	 *
+	 * @param defn
 	 * @param resultSet	resultSet
+	 * @param details
 	 * @param queryRow	queryRow
 	 * @param isGroupedQuery	isGroupedQuery
 	 * @throws java.sql.SQLException the database threw an exception
 	 */
-	protected void setQueryRowFromResultSet(ResultSet resultSet, DBQueryRow queryRow, boolean isGroupedQuery) throws SQLException, UnableToInstantiateDBRowSubclassException {
+	protected void setQueryRowFromResultSet(DBDefinition defn, ResultSet resultSet, QueryDetails details, DBQueryRow queryRow, boolean isGroupedQuery) throws SQLException, UnableToInstantiateDBRowSubclassException {
 		for (DBRow tableRow : details.getAllQueryTables()) {
 			DBRow newInstance = DBRow.getDBRow(tableRow.getClass());
 
-			setFieldsFromColumns(tableRow, newInstance, resultSet);
+			setFieldsFromColumns(defn, tableRow, newInstance, resultSet);
 			newInstance.setReturnFieldsBasedOn(tableRow);
 
 			newInstance.setDefined(); // Actually came from the database so it is a defined row.
@@ -912,7 +921,7 @@ public class DBQuery implements DBExecutable {
 				if (isGroupedQuery || primaryKeys.isEmpty() || !pksHaveBeenSet) {
 					queryRow.put(newInstanceClass, newInstance);
 				} else {
-					DBRow existingInstance = getOrSetExistingInstanceForRow(newInstance, existingInstancesOfThisTableRow);
+					DBRow existingInstance = getOrSetExistingInstanceForRow(defn, newInstance, existingInstancesOfThisTableRow);
 					queryRow.put(existingInstance.getClass(), existingInstance);
 				}
 			}
@@ -938,17 +947,17 @@ public class DBQuery implements DBExecutable {
 	 * @return the exisinting instance of the provided row, or the row itself if
 	 * none exists.
 	 */
-	protected DBRow getOrSetExistingInstanceForRow(DBRow newInstance, Map<String, DBRow> existingInstancesOfThisTableRow) {
+	protected DBRow getOrSetExistingInstanceForRow(DBDefinition defn, DBRow newInstance, Map<String, DBRow> existingInstancesOfThisTableRow) {
 		DBRow existingInstance = newInstance;
 		final List<PropertyWrapper> primaryKeys = newInstance.getPrimaryKeyPropertyWrappers();
 		for (PropertyWrapper primaryKey : primaryKeys) {
 			if (primaryKey != null) {
 				final QueryableDatatype<?> qdt = primaryKey.getQueryableDatatype();
 				if (qdt != null) {
-					existingInstance = existingInstancesOfThisTableRow.get(qdt.toSQLString(this.getDatabaseDefinition()));
+					existingInstance = existingInstancesOfThisTableRow.get(qdt.toSQLString(defn));
 					if (existingInstance == null) {
 						existingInstance = newInstance;
-						existingInstancesOfThisTableRow.put(qdt.toSQLString(this.getDatabaseDefinition()), existingInstance);
+						existingInstancesOfThisTableRow.put(qdt.toSQLString(defn), existingInstance);
 					}
 				}
 			}
@@ -984,12 +993,13 @@ public class DBQuery implements DBExecutable {
 	 *
 	 * Database exceptions may be thrown
 	 *
+	 * @param defn
 	 * @param oldInstance oldInstance
 	 * @param newInstance newInstance
 	 * @param resultSet resultSet
 	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
-	protected void setFieldsFromColumns(DBRow oldInstance, DBRow newInstance, ResultSet resultSet) throws SQLException {
+	protected void setFieldsFromColumns(DBDefinition defn, DBRow oldInstance, DBRow newInstance, ResultSet resultSet) throws SQLException {
 		List<PropertyWrapper> selectedProperties = oldInstance.getSelectedProperties();
 		List<PropertyWrapper> newProperties = newInstance.getColumnPropertyWrappers();
 		for (PropertyWrapper newProp : newProperties) {
@@ -997,10 +1007,10 @@ public class DBQuery implements DBExecutable {
 			for (PropertyWrapper propertyWrapper : selectedProperties) {
 				if (propertyWrapper.getPropertyWrapperDefinition().equals(newProp.getPropertyWrapperDefinition())) {
 
-					String resultSetColumnName = newProp.getColumnAlias(getDatabaseDefinition())[0];
+					String resultSetColumnName = newProp.getColumnAlias(defn)[0];
 					//for (String resultSetColumnName : resultSetColumnNames) {
 
-					qdt.setFromResultSet(getDatabaseDefinition(), resultSet, resultSetColumnName);
+					qdt.setFromResultSet(defn, resultSet, resultSetColumnName);
 
 					if (newInstance.isEmptyRow() && !qdt.isNull()) {
 						newInstance.setEmptyRow(false);
@@ -1023,13 +1033,13 @@ public class DBQuery implements DBExecutable {
 	 * @param queryRow queryRow
 	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
-	protected void setExpressionColumns(ResultSet resultSet, DBQueryRow queryRow) throws SQLException {
+	protected void setExpressionColumns(DBDefinition defn, ResultSet resultSet, DBQueryRow queryRow) throws SQLException {
 		for (Map.Entry<Object, QueryableDatatype<?>> entry : details.getExpressionColumns().entrySet()) {
 			final Object key = entry.getKey();
 			final QueryableDatatype<?> value = entry.getValue();
-			String expressionAlias = getDatabaseDefinition().formatExpressionAlias(key);
+			String expressionAlias = defn.formatExpressionAlias(key);
 			QueryableDatatype<?> expressionQDT = value.getQueryableDatatypeForExpressionValue();
-			expressionQDT.setFromResultSet(getDatabaseDefinition(), resultSet, expressionAlias);
+			expressionQDT.setFromResultSet(defn, resultSet, expressionAlias);
 			queryRow.addExpressionColumnValue(key, expressionQDT);
 		}
 	}
@@ -1276,7 +1286,7 @@ public class DBQuery implements DBExecutable {
 					final List<QueryableDatatype<?>> primaryKeys = rowPart.getPrimaryKeys();
 					for (QueryableDatatype<?> primaryKey : primaryKeys) {
 						if (primaryKey != null) {
-							String rowPartStr = primaryKey.toSQLString(this.getDatabaseDefinition());
+							String rowPartStr = primaryKey.toSQLString(getReadyDatabase().getDefinition());
 							ps.print(" " + rowPart.getPrimaryKeyColumnNames() + ": " + rowPartStr);
 						}
 					}
@@ -1331,7 +1341,7 @@ public class DBQuery implements DBExecutable {
 		} else {
 			Long result = 0L;
 
-			try (DBStatement dbStatement = database.getDBStatement()) {
+			try (DBStatement dbStatement = getReadyDatabase().getDBStatement()) {
 				final String sqlForCount = this.getSQLForCount();
 				try (ResultSet resultSet = dbStatement.executeQuery(sqlForCount)) {
 					while (resultSet.next()) {
@@ -1366,7 +1376,7 @@ public class DBQuery implements DBExecutable {
 	 * otherwise
 	 */
 	public boolean willCreateBlankQuery() {
-		return willCreateBlankQuery(this.database);
+		return willCreateBlankQuery(getReadyDatabase());
 	}
 
 	/**
@@ -1578,8 +1588,7 @@ public class DBQuery implements DBExecutable {
 		return this;
 	}
 
-	private String getOrderByClause(Map<PropertyWrapperDefinition, Integer> indexesOfSelectedProperties, Map<DBExpression, Integer> IndexesOfSelectedExpressions) {
-		DBDefinition defn = getDatabaseDefinition();
+	private String getOrderByClause(DBDefinition defn, Map<PropertyWrapperDefinition, Integer> indexesOfSelectedProperties, Map<DBExpression, Integer> IndexesOfSelectedExpressions) {
 		final boolean prefersIndexBasedOrderByClause = defn.prefersIndexBasedOrderByClause();
 		if (sortOrderColumns != null && sortOrderColumns.length > 0) {
 			StringBuilder orderByClause = new StringBuilder(defn.beginOrderByClause());
@@ -2280,8 +2289,10 @@ public class DBQuery implements DBExecutable {
 	 */
 	public List<DBQueryRow> getAllRowsForPage(Integer pageNumber) throws SQLException {
 		final QueryOptions options = details.getOptions();
+		DBDatabase database = getReadyDatabase();
+		final DBDefinition defn = database.getDefinition();
 
-		if (database.getDefinition().supportsPagingNatively(options)) {
+		if (defn.supportsPagingNatively(options)) {
 			options.setPageIndex(pageNumber);
 			if (this.needsResults(options)) {
 				database.executeDBAction(this);
@@ -2289,7 +2300,7 @@ public class DBQuery implements DBExecutable {
 			}
 			return results;
 		} else {
-			if (database.getDefinition().supportsRowLimitsNatively(options)) {
+			if (defn.supportsRowLimitsNatively(options)) {
 				QueryOptions tempOptions = options.copy();
 				tempOptions.setRowLimit((pageNumber + 1) * options.getRowLimit());
 				if (this.needsResults(tempOptions) || tempOptions.getRowLimit() > results.size()) {
@@ -2573,7 +2584,7 @@ public class DBQuery implements DBExecutable {
 	 * @return this DBQuery instance
 	 */
 	public DBQuery addOptionalIfNonspecific(DBRow exampleWithOrWithoutCriteria) {
-		if (exampleWithOrWithoutCriteria.willCreateBlankQuery(getDatabaseDefinition())) {
+		if (exampleWithOrWithoutCriteria.willCreateBlankQuery(getReadyDatabase().getDefinition())) {
 			addOptional(exampleWithOrWithoutCriteria);
 		} else {
 			add(exampleWithOrWithoutCriteria);

@@ -570,19 +570,19 @@ public abstract class QueryableDatatype<T> extends Object implements Serializabl
 	 * very important as are the calls to {@link #setUnchanged() } and {@link #setDefined(boolean)
 	 * }
 	 *
-	 * @param database database
+	 * @param defn database
 	 * @param resultSet resultSet
 	 * @param resultSetColumnName resultSetColumnName
 	 * @throws java.sql.SQLException Database exceptions may be thrown
 	 */
-	public void setFromResultSet(DBDefinition database, ResultSet resultSet, String resultSetColumnName) throws SQLException {
+	public void setFromResultSet(DBDefinition defn, ResultSet resultSet, String resultSetColumnName) throws SQLException {
 		removeConstraints();
 		if (resultSet == null || resultSetColumnName == null) {
-			this.setToNull(database);
+			this.setToNull(defn);
 		} else {
 			T dbValue;
 			try {
-				dbValue = getFromResultSet(database, resultSet, resultSetColumnName);
+				dbValue = getFromResultSet(defn, resultSet, resultSetColumnName);
 				if (resultSet.wasNull()) {
 					dbValue = null;
 				}
@@ -591,7 +591,7 @@ public abstract class QueryableDatatype<T> extends Object implements Serializabl
 				dbValue = null;
 			}
 			if (dbValue == null) {
-				this.setToNull(database);
+				this.setToNull(defn);
 			} else {
 				this.setLiteralValue(dbValue);
 			}

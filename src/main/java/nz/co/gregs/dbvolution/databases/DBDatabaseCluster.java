@@ -134,7 +134,7 @@ public class DBDatabaseCluster extends DBDatabase {
 	 *
 	 * @return a ready database
 	 */
-	private DBDatabase getReadyDatabase() {
+	public DBDatabase getReadyDatabase() {
 		Random rand = new Random();
 		DBDatabase randomElement = readyDatabases.get(rand.nextInt(readyDatabases.size()));
 		return randomElement;
