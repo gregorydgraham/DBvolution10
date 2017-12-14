@@ -21,8 +21,8 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import nz.co.gregs.dbvolution.DBQueryRow;
 import nz.co.gregs.dbvolution.DBRow;
-import nz.co.gregs.dbvolution.databases.DBDatabase;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 import nz.co.gregs.dbvolution.expressions.BooleanExpression;
@@ -52,6 +52,12 @@ public class QueryDetails {
 	private DBDefinition databaseDefinition = null;
 	private String selectClause = null;
 	private final ArrayList<BooleanExpression> havingColumns = new ArrayList<>();
+	private String rawSQLClause = "";
+	private List<DBQueryRow> results;
+	private String resultSQL;
+	private Integer resultsPageIndex = 0;
+	private Integer resultsRowLimit = -1;
+	private Long queryCount = null;
 	
 
 	/**
@@ -245,4 +251,87 @@ public class QueryDetails {
 		this.options = tempOptions;
 	}
 
+	/**
+	 * @return the rawSQLClause
+	 */
+	public String getRawSQLClause() {
+		return rawSQLClause;
+	}
+
+	/**
+	 * @param rawSQLClause the rawSQLClause to set
+	 */
+	public void setRawSQLClause(String rawSQLClause) {
+		this.rawSQLClause = rawSQLClause;
+	}
+
+	/**
+	 * @return the results
+	 */
+	public List<DBQueryRow> getResults() {
+		return results;
+	}
+
+	/**
+	 * @param results the results to set
+	 */
+	public void setResults(List<DBQueryRow> results) {
+		this.results = results;
+	}
+
+	/**
+	 * @return the resultSQL
+	 */
+	public String getResultSQL() {
+		return resultSQL;
+	}
+
+	/**
+	 * @param resultSQL the resultSQL to set
+	 */
+	public void setResultSQL(String resultSQL) {
+		this.resultSQL = resultSQL;
+	}
+
+	/**
+	 * @return the resultsPageIndex
+	 */
+	public Integer getResultsPageIndex() {
+		return resultsPageIndex;
+	}
+
+	/**
+	 * @param resultsPageIndex the resultsPageIndex to set
+	 */
+	public void setResultsPageIndex(Integer resultsPageIndex) {
+		this.resultsPageIndex = resultsPageIndex;
+	}
+
+	/**
+	 * @return the resultsRowLimit
+	 */
+	public Integer getResultsRowLimit() {
+		return resultsRowLimit;
+	}
+
+	/**
+	 * @param resultsRowLimit the resultsRowLimit to set
+	 */
+	public void setResultsRowLimit(Integer resultsRowLimit) {
+		this.resultsRowLimit = resultsRowLimit;
+	}
+
+	public void clearResults() {
+		setResults(new ArrayList<DBQueryRow>());
+		setResultsRowLimit(options.getRowLimit());
+		setResultsPageIndex(options.getPageIndex());
+		setResultSQL(null);
+	}
+
+	public void setCount(Long result) {
+		queryCount = result;
+	}
+	public Long getCount() {
+		return queryCount;
+	}
 }

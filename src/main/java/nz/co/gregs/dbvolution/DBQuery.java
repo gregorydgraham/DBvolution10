@@ -93,12 +93,7 @@ public class DBQuery implements DBQueryable {
 	private static final int DEFAULT_TIMEOUT_MILLISECONDS = 10000;
 	private final DBDatabase database;
 	private final QueryDetails details = new QueryDetails();
-	private String resultSQL;
 	private QueryGraph queryGraph;
-	private List<DBQueryRow> results;
-	private String rawSQLClause = "";
-	private Integer resultsRowLimit = -1;
-	private Integer resultsPageIndex = 0;
 	private JFrame queryGraphFrame = null;
 	private ColumnProvider[] sortOrderColumns;
 	private List<PropertyWrapper> sortOrder = null;
@@ -588,7 +583,7 @@ public class DBQuery implements DBQueryable {
 			boolean useColumnIndexGroupBy = defn.prefersIndexBasedGroupByClause();
 
 			// tidy up the raw SQL provided
-			String rawSQLClauseFinal = (rawSQLClause.isEmpty() ? "" : rawSQLClause + lineSep);
+			String rawSQLClauseFinal = (details.getRawSQLClause().isEmpty() ? "" : details.getRawSQLClause() + lineSep);
 
 			// Strip the unnecessary where clause if possible
 			if (whereClause.toString().equals(initialWhereClause) && rawSQLClauseFinal.isEmpty()) {
@@ -736,10 +731,17 @@ public class DBQuery implements DBQueryable {
 	 * @return a String of the SQL query that will be used to count the rows
 	 * returned by this query
 	 */
-	public String getSQLForCount() {
-		DBDatabase database = getReadyDatabase();
+	protected String getSQLForCount() {
+		return getSQLForCount(database, details);
+	}
+
+	private String getSQLForCount(DBDatabase database, QueryDetails details) {
 		if (!database.getDefinition().supportsFullOuterJoinNatively()) {
-			return "SELECT COUNT(*) FROM (" + getSQLForQuery(database, new QueryState(this), QueryType.SELECT, details.getOptions()).replaceAll("; *$", "") + ") A" + database.getDefinition().endSQLStatement();
+			return "SELECT COUNT(*) FROM ("
+					+ getSQLForQuery(database, new QueryState(this), QueryType.SELECT, details.getOptions())
+							.replaceAll("; *$", "")
+					+ ") A"
+					+ database.getDefinition().endSQLStatement();
 		} else {
 			return getSQLForQuery(database, new QueryState(this), QueryType.COUNT, details.getOptions());
 		}
@@ -803,12 +805,12 @@ public class DBQuery implements DBQueryable {
 			database.executeDBQuery(this);
 //			getAllRowsInternal(options);
 		}
-		if (options.getRowLimit() > 0 && results.size() > options.getRowLimit()) {
+		if (options.getRowLimit() > 0 && details.getResults().size() > options.getRowLimit()) {
 			final int firstItemOfPage = options.getPageIndex() * options.getRowLimit();
 			final int firstItemOfNextPage = (options.getPageIndex() + 1) * options.getRowLimit();
-			return results.subList(firstItemOfPage, firstItemOfNextPage);
+			return details.getResults().subList(firstItemOfPage, firstItemOfNextPage);
 		} else {
-			return results;
+			return details.getResults();
 		}
 	}
 
@@ -816,8 +818,25 @@ public class DBQuery implements DBQueryable {
 	public DBActionList query(DBDatabase db) throws SQLException {
 		DBActionList actions = new DBActionList();
 		details.getOptions().setQueryDatabase(db);
-		fillResultSetInternal(db, details, this.details.getOptions());
+		if (details.getOptions().getQueryType().equals(QueryType.COUNT)) {
+			getResultSetCount(db, details);
+		} else {
+			fillResultSetInternal(db, details, this.details.getOptions());
+		}
 		return actions;
+	}
+
+	private void getResultSetCount(DBDatabase db, QueryDetails details) throws SQLException {
+		long result = 0L;
+		try (DBStatement dbStatement = db.getDBStatement()) {
+			final String sqlForCount = this.getSQLForCount();
+			try (ResultSet resultSet = dbStatement.executeQuery(sqlForCount)) {
+				while (resultSet.next()) {
+					 result = resultSet.getLong(1);
+				}
+			}
+		}
+		details.setCount(result);
 	}
 
 	private void fillResultSetInternal(DBDatabase db, QueryDetails details, QueryOptions options) throws SQLException, SQLTimeoutException, AccidentalBlankQueryException, AccidentalCartesianJoinException {
@@ -826,30 +845,30 @@ public class DBQuery implements DBQueryable {
 		final DBDefinition defn = db.getDefinition();
 
 //		final QueryOptions options = details.getOptions();
-		if (!options.isBlankQueryAllowed() && willCreateBlankQuery(db, details) && rawSQLClause.isEmpty()) {
+		if (!options.isBlankQueryAllowed() && willCreateBlankQuery(db, details) && details.getRawSQLClause().isEmpty()) {
 			throw new AccidentalBlankQueryException();
 		}
 
 		if (!options.isCartesianJoinAllowed()
 				&& (details.getRequiredQueryTables().size() + details.getOptionalQueryTables().size()) > 1
 				&& queryGraph.willCreateCartesianJoin()) {
-			throw new AccidentalCartesianJoinException(resultSQL);
+			throw new AccidentalCartesianJoinException(details.getResultSQL());
 		}
 
 		DBQueryRow queryRow;
 
 		try (DBStatement dbStatement = db.getDBStatement();
-				ResultSet resultSet = getResultSetForSQL(dbStatement, resultSQL)) {
+				ResultSet resultSet = getResultSetForSQL(dbStatement, details.getResultSQL())) {
 			while (resultSet.next()) {
 				queryRow = new DBQueryRow(this);
 
 				setExpressionColumns(defn, resultSet, queryRow);
 
 				setQueryRowFromResultSet(defn, resultSet, details, queryRow, details.isGroupedQuery());
-				results.add(queryRow);
+				details.getResults().add(queryRow);
 			}
 		}
-		for (DBQueryRow result : results) {
+		for (DBQueryRow result : details.getResults()) {
 			List<DBRow> rows = result.getAll();
 			for (DBRow row : rows) {
 				if (row != null) {
@@ -1049,11 +1068,8 @@ public class DBQuery implements DBQueryable {
 	}
 
 	private void prepareForQuery(DBDatabase database, QueryOptions options) throws SQLException {
-		results = new ArrayList<>();
-//		final QueryOptions options = details.getOptions();
-		resultsRowLimit = options.getRowLimit();
-		resultsPageIndex = options.getPageIndex();
-		resultSQL = this.getSQLForQuery(database, new QueryState(this), QueryType.SELECT, options);
+		details.clearResults();
+		details.setResultSQL(this.getSQLForQuery(database, new QueryState(this), QueryType.SELECT, options));
 	}
 
 	/**
@@ -1136,13 +1152,13 @@ public class DBQuery implements DBQueryable {
 
 	private boolean needsResults(QueryOptions options) {
 		final DBDatabase queryDatabase = options.getQueryDatabase();
-		return results == null
-				|| results.isEmpty()
-				|| resultSQL == null
-				|| !resultsPageIndex.equals(options.getPageIndex())
-				|| !resultsRowLimit.equals(options.getRowLimit())
+		return details.getResults() == null
+				|| details.getResults().isEmpty()
+				|| details.getResultSQL() == null
+				|| !details.getResultsPageIndex().equals(options.getPageIndex())
+				|| !details.getResultsRowLimit().equals(options.getRowLimit())
 				|| queryDatabase == null
-				|| !resultSQL.equals(getSQLForQuery(queryDatabase, new QueryState(this), QueryType.SELECT, options));
+				|| !details.getResultSQL().equals(getSQLForQuery(queryDatabase, new QueryState(this), QueryType.SELECT, options));
 	}
 
 	/**
@@ -1172,8 +1188,8 @@ public class DBQuery implements DBQueryable {
 			database.executeDBQuery(this);
 //			getAllRowsInternal(options);
 		}
-		if (!results.isEmpty()) {
-			for (DBQueryRow row : results) {
+		if (!details.getResults().isEmpty()) {
+			for (DBQueryRow row : details.getResults()) {
 				final R found = row.get(exemplar);
 				if (found != null) { // in case there are no items of the exemplar
 					if (!arrayList.contains(found)) {
@@ -1211,7 +1227,7 @@ public class DBQuery implements DBQueryable {
 //			this.getAllRowsInternal(options);
 		}
 
-		for (DBQueryRow row : this.results) {
+		for (DBQueryRow row : details.getResults()) {
 			String tableSeparator = "";
 			for (DBRow tab : details.getAllQueryTables()) {
 				ps.print(tableSeparator);
@@ -1251,7 +1267,7 @@ public class DBQuery implements DBQueryable {
 //			this.getAllRowsInternal(options);
 		}
 
-		for (DBQueryRow row : this.results) {
+		for (DBQueryRow row : details.getResults()) {
 			for (DBRow tab : this.details.getAllQueryTables()) {
 				DBRow rowPart = row.get(tab);
 				if (rowPart != null) {
@@ -1284,7 +1300,7 @@ public class DBQuery implements DBQueryable {
 //			this.getAllRowsInternal(options);
 		}
 
-		for (DBQueryRow row : this.results) {
+		for (DBQueryRow row : details.getResults()) {
 			for (DBRow tab : this.details.getAllQueryTables()) {
 				DBRow rowPart = row.get(tab);
 				if (rowPart != null) {
@@ -1341,20 +1357,14 @@ public class DBQuery implements DBQueryable {
 	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
 	public Long count() throws SQLException {
-		if (results != null) {
-			return (long) results.size();
-		} else {
+		if (needsResults(details.getOptions())) {
 			Long result = 0L;
-
-			try (DBStatement dbStatement = getReadyDatabase().getDBStatement()) {
-				final String sqlForCount = this.getSQLForCount();
-				try (ResultSet resultSet = dbStatement.executeQuery(sqlForCount)) {
-					while (resultSet.next()) {
-						result = resultSet.getLong(1);
-					}
-				}
-			}
-			return result;
+			
+			this.details.getOptions().setQueryType(QueryType.COUNT);
+			database.executeDBQuery(this);
+			return details.getCount();
+		} else {
+			return (long) details.getResults().size();
 		}
 	}
 
@@ -1381,7 +1391,7 @@ public class DBQuery implements DBQueryable {
 	 * otherwise
 	 */
 	public boolean willCreateBlankQuery() {
-		return willCreateBlankQuery(getReadyDatabase(), this.details);
+		return willCreateBlankQuery(this.database, this.details);
 	}
 
 	/**
@@ -2209,7 +2219,7 @@ public class DBQuery implements DBQueryable {
 //			getAllRowsInternal(options);
 		}
 		List<DBQueryRow> returnList = new ArrayList<>();
-		for (DBQueryRow row : results) {
+		for (DBQueryRow row : details.getResults()) {
 			if (row.get(instance) == instance) {
 				returnList.add(row);
 			}
@@ -2248,7 +2258,7 @@ public class DBQuery implements DBQueryable {
 			database.executeDBQuery(this);
 //			getAllRowsInternal(options);
 		}
-		return results;
+		return details.getResults();
 	}
 
 	/**
@@ -2305,12 +2315,12 @@ public class DBQuery implements DBQueryable {
 				database.executeDBQuery(this);
 //				getAllRowsInternal(options);
 			}
-			return results;
+			return details.getResults();
 		} else {
 			if (defn.supportsRowLimitsNatively(options)) {
 				QueryOptions tempOptions = options.copy();
 				tempOptions.setRowLimit((pageNumber + 1) * options.getRowLimit());
-				if (this.needsResults(tempOptions) || tempOptions.getRowLimit() > results.size()) {
+				if (this.needsResults(tempOptions) || tempOptions.getRowLimit() > details.getResults().size()) {
 					details.setOptions(tempOptions);
 					database.executeDBQuery(this);
 //					getAllRowsInternal(tempOptions);
@@ -2328,11 +2338,11 @@ public class DBQuery implements DBQueryable {
 			int startIndex = rowLimit * pageNumber;
 			startIndex = (startIndex < 0 ? 0 : startIndex);
 			int stopIndex = rowLimit * (pageNumber + 1);
-			stopIndex = (stopIndex >= results.size() ? results.size() : stopIndex);
+			stopIndex = (stopIndex >= details.getResults().size() ? details.getResults().size() : stopIndex);
 			if (stopIndex - startIndex < 1) {
 				return new ArrayList<>();
 			} else {
-				return results.subList(startIndex, stopIndex);
+				return details.getResults().subList(startIndex, stopIndex);
 			}
 		}
 	}
@@ -2668,9 +2678,9 @@ public class DBQuery implements DBQueryable {
 
 	void setRawSQL(String rawQuery) {
 		if (rawQuery == null) {
-			this.rawSQLClause = "";
+			details.setRawSQLClause("");
 		} else {
-			this.rawSQLClause = " " + rawQuery + " ";
+			details.setRawSQLClause(" " + rawQuery + " ");
 		}
 	}
 
@@ -2701,8 +2711,8 @@ public class DBQuery implements DBQueryable {
 	}
 
 	private void blankResults() {
-		results = null;
-		resultSQL = null;
+		details.setResults(null);
+		details.setResultSQL(null);
 		queryGraph = null;
 	}
 

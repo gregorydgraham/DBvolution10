@@ -39,7 +39,7 @@ public class QueryOptions {
 	private boolean useANSISyntax = true;
 	private boolean matchAnyRelationship = false;
 	private boolean queryIsNativeQuery = true;
-	private QueryType queryType;
+	private QueryType queryType = QueryType.SELECT;
 
 	/**
 	 * Indicates whether this query will use AND rather than OR to add the

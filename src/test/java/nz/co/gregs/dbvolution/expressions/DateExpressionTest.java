@@ -1245,7 +1245,12 @@ public class DateExpressionTest extends AbstractTest {
 
 		Marque secondDateMarques = new Marque();
 		secondDateMarques.creationDate.permittedValues(secondDate);
-		int numberOfSecondDateRows = database.getDBTable(secondDateMarques).setBlankQueryAllowed(true).count().intValue();
+		int numberOfSecondDateRows = 
+				database
+				.getDBTable(secondDateMarques)
+				.setBlankQueryAllowed(true)
+				.count()
+				.intValue();
 		Assert.assertThat(got.size(), is(numberOfSecondDateRows));
 	}
 
