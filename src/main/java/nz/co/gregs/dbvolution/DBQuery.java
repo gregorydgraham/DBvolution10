@@ -826,7 +826,7 @@ public class DBQuery implements DBQueryable {
 		final DBDefinition defn = db.getDefinition();
 
 //		final QueryOptions options = details.getOptions();
-		if (!options.isBlankQueryAllowed() && willCreateBlankQuery(db) && rawSQLClause.isEmpty()) {
+		if (!options.isBlankQueryAllowed() && willCreateBlankQuery(db, details) && rawSQLClause.isEmpty()) {
 			throw new AccidentalBlankQueryException();
 		}
 
@@ -1381,7 +1381,7 @@ public class DBQuery implements DBQueryable {
 	 * otherwise
 	 */
 	public boolean willCreateBlankQuery() {
-		return willCreateBlankQuery(getReadyDatabase());
+		return willCreateBlankQuery(getReadyDatabase(), this.details);
 	}
 
 	/**
@@ -1403,10 +1403,12 @@ public class DBQuery implements DBQueryable {
 	 * <p style="color: #F90;">Support DBvolution at
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 *
+	 * @param db
+	 * @param details
 	 * @return TRUE if the DBQuery will retrieve all the rows of the tables, FALSE
 	 * otherwise
 	 */
-	protected boolean willCreateBlankQuery(DBDatabase db) {
+	protected boolean willCreateBlankQuery(DBDatabase db, QueryDetails details) {
 		boolean willCreateBlankQuery = true;
 		for (DBRow table : details.getAllQueryTables()) {
 			willCreateBlankQuery = willCreateBlankQuery && table.willCreateBlankQuery(db.getDefinition());
