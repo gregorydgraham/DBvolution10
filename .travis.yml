@@ -13,7 +13,7 @@ services:
 
 jdk:
   - openjdk7
-  - oraclejdk8
+#  - oraclejdk8
 notifications:
   email: false
 before_install:
