@@ -598,7 +598,7 @@ public class QueryDetails implements DBQueryable {
 						+ rawSQLClauseFinal + lineSep
 						+ defn.endSQLStatement();
 			}
-			if (options.creatingNativeQuery()
+			if (options.isCreatingNativeQuery()
 					&& queryState.isFullOuterJoin()
 					&& !defn.supportsFullOuterJoinNatively()) {
 				sqlString = getSQLForFakeFullOuterJoin(database, sqlString, queryState, this, options, queryType);
@@ -996,7 +996,7 @@ public class QueryDetails implements DBQueryable {
 			setCurrentPage(getResults());
 		} else {
 			if (defn.supportsRowLimitsNatively(opts)) {
-				QueryOptions tempOptions = opts.copy();
+				QueryOptions tempOptions = new QueryOptions(opts);
 				tempOptions.setRowLimit((pageNumber + 1) * opts.getRowLimit());
 				if (details.needsResults(tempOptions) || tempOptions.getRowLimit() > getResults().size()) {
 					setOptions(tempOptions);
@@ -1333,5 +1333,9 @@ public class QueryDetails implements DBQueryable {
 		conditions.clear();
 		extraExamples.clear();
 		blankResults();	
+	}
+
+	public void setTimeoutInMilliseconds(Integer milliseconds) {
+		this.timeoutInMilliseconds = milliseconds;
 	}
 }

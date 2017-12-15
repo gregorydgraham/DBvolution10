@@ -15,7 +15,6 @@
  */
 package nz.co.gregs.dbvolution.internal.query;
 
-import nz.co.gregs.dbvolution.internal.query.QueryType;
 import java.util.Arrays;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -29,7 +28,7 @@ import nz.co.gregs.dbvolution.databases.DBDatabase;
  *
  * @author greg
  */
-public class QueryOptions {
+public final class QueryOptions {
 
 	private boolean matchAll = true;
 	private int rowLimit = -1;
@@ -41,7 +40,25 @@ public class QueryOptions {
 	private boolean matchAnyRelationship = false;
 	private boolean queryIsNativeQuery = true;
 	private QueryType queryType = QueryType.SELECT;
-	private int pageNumber;
+
+	public QueryOptions() {
+		super();
+	}
+
+	public QueryOptions(QueryOptions opts) {
+		super();
+		setBlankQueryAllowed(opts.isBlankQueryAllowed());
+		setCartesianJoinAllowed(opts.isCartesianJoinAllowed());
+		setCreatingNativeQuery(opts.isCreatingNativeQuery());
+		setMatchAllConditions(opts.isMatchAllConditions());
+		setMatchAllRelationships(opts.matchAnyRelationship);
+		setPageIndex(opts.getPageIndex());
+		setQueryDatabase(opts.getQueryDatabase());
+		setQueryType(opts.getQueryType());
+		setRowLimit(opts.getRowLimit());
+		setSortColumns(opts.getSortColumns());
+		setUseANSISyntax(opts.isUseANSISyntax());
+	}
 
 	/**
 	 * Indicates whether this query will use AND rather than OR to add the
@@ -244,38 +261,37 @@ public class QueryOptions {
 		return !matchAnyRelationship;
 	}
 
-	/**
-	 * Clones this QueryOptions
-	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 *
-	 * @return very similar QueryOptions
-	 */
-	public QueryOptions copy() {
-		try {
-			return this.clone();
-		} catch (CloneNotSupportedException ex) {
-			Logger.getLogger(QueryOptions.class.getName()).log(Level.SEVERE, null, ex);
-		}
-		return new QueryOptions();
-	}
-
-	@Override
-	protected QueryOptions clone() throws CloneNotSupportedException {
-		super.clone();
-		QueryOptions opts = new QueryOptions();
-		opts.matchAll = this.matchAll;
-		opts.rowLimit = this.rowLimit;
-		opts.sortColumns = Arrays.asList(this.sortColumns).toArray(sortColumns);
-		opts.pageIndex = this.pageIndex;
-		opts.blankQueryAllowed = this.blankQueryAllowed;
-		opts.cartesianJoinAllowed = this.cartesianJoinAllowed;
-		opts.useANSISyntax = this.useANSISyntax;
-		opts.matchAnyRelationship = this.matchAnyRelationship;
-		return opts;
-	}
-
+//	/**
+//	 * Clones this QueryOptions
+//	 *
+//	 * <p style="color: #F90;">Support DBvolution at
+//	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+//	 *
+//	 * @return very similar QueryOptions
+//	 */
+//	public QueryOptions copy() {
+//		try {
+//			return this.clone();
+//		} catch (CloneNotSupportedException ex) {
+//			Logger.getLogger(QueryOptions.class.getName()).log(Level.SEVERE, null, ex);
+//		}
+//		return new QueryOptions();
+//	}
+//
+//	@Override
+//	protected QueryOptions clone() throws CloneNotSupportedException {
+//		super.clone();
+//		QueryOptions opts = new QueryOptions();
+//		opts.matchAll = this.matchAll;
+//		opts.rowLimit = this.rowLimit;
+//		opts.sortColumns = Arrays.asList(this.sortColumns).toArray(sortColumns);
+//		opts.pageIndex = this.pageIndex;
+//		opts.blankQueryAllowed = this.blankQueryAllowed;
+//		opts.cartesianJoinAllowed = this.cartesianJoinAllowed;
+//		opts.useANSISyntax = this.useANSISyntax;
+//		opts.matchAnyRelationship = this.matchAnyRelationship;
+//		return opts;
+//	}
 	/**
 	 * Used while simulating OUTER JOIN to indicate that the simulation is
 	 * occurring.
@@ -285,7 +301,7 @@ public class QueryOptions {
 	 *
 	 * @return TRUE if the query is native, FALSE otherwise
 	 */
-	public boolean creatingNativeQuery() {
+	public boolean isCreatingNativeQuery() {
 		return queryIsNativeQuery;
 	}
 
@@ -306,7 +322,7 @@ public class QueryOptions {
 	public void setQueryType(QueryType queryType) {
 		this.queryType = queryType;
 	}
-	
+
 	private DBDatabase queryDatabase;
 
 	public void setQueryDatabase(DBDatabase db) {
@@ -315,5 +331,13 @@ public class QueryOptions {
 
 	public DBDatabase getQueryDatabase() {
 		return queryDatabase;
+	}
+
+	private void setMatchAllConditions(boolean matchAllConditions) {
+		this.matchAll = matchAllConditions;
+	}
+
+	private void setMatchAllRelationships(boolean matchAnyRelationship) {
+		this.matchAnyRelationship = matchAnyRelationship;
 	}
 }

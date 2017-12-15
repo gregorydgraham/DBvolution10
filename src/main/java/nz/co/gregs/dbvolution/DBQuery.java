@@ -83,41 +83,17 @@ public class DBQuery {
 	/**
 	 * The default timeout value used to prevent accidental long running queries
 	 */
-	private static final int DEFAULT_TIMEOUT_MILLISECONDS = 10000;
 	private final DBDatabase database;
 	private final QueryDetails details = new QueryDetails();
 	private QueryGraph queryGraph;
 	private JFrame queryGraphFrame = null;
-//	private ColumnProvider[] sortOrderColumns;
-	private List<PropertyWrapper> sortOrder = null;
-	private Integer timeoutInMilliseconds = DEFAULT_TIMEOUT_MILLISECONDS;
 	private QueryTimeout timeout;
-	private final Map<Class<? extends DBRow>, DBRow> emptyRows = new HashMap<>();
 
 	public QueryDetails getQueryDetails() {
 		return details;
 	}
 
-	private String getHavingClause(DBDatabase database, QueryOptions options) {
-		BooleanExpression[] havingColumns = details.getHavingColumns();
-		final DBDefinition defn = database.getDefinition();
-		String havingClauseStart = defn.getHavingClauseStart();
-		if (havingColumns.length == 1) {
-			return havingClauseStart + havingColumns[0].toSQLString(defn);
-		} else if (havingColumns.length > 1) {
-			String sep = "";
-			final String beginAndLine = defn.beginAndLine();
-			StringBuilder returnStr = new StringBuilder(havingClauseStart);
-			for (BooleanExpression havingColumn : havingColumns) {
-				returnStr.append(sep).append(havingColumn.toSQLString(defn));
-				sep = beginAndLine;
-			}
-			return returnStr.toString();
-		} else {
-			return "";
-		}
-	}
-
+	@Deprecated
 	DBDatabase getReadyDatabase() {
 		if (database instanceof DBDatabaseCluster) {
 			return ((DBDatabaseCluster) database).getReadyDatabase();
@@ -2208,8 +2184,8 @@ public class DBQuery {
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return this query.
 	 */
-	public synchronized DBQuery setTimeoutInMilliseconds(int milliseconds) {
-		this.timeoutInMilliseconds = milliseconds;
+	public synchronized DBQuery setTimeoutInMilliseconds(Integer milliseconds) {
+		details.setTimeoutInMilliseconds(milliseconds);
 		return this;
 	}
 
@@ -2229,7 +2205,7 @@ public class DBQuery {
 	 * @return this DBQuery object
 	 */
 	public synchronized DBQuery clearTimeout() {
-		this.timeoutInMilliseconds = null;
+		details.setTimeoutInMilliseconds(null);
 		if (this.timeout != null) {
 			this.timeout.cancel();
 		}
