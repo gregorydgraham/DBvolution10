@@ -618,7 +618,7 @@ public class QueryDetails implements DBQueryable {
 		}
 	}
 
-	String getANSIJoinClause(DBDefinition defn, QueryState queryState, DBRow newTable, List<DBRow> previousTables, QueryOptions options) {
+	public String getANSIJoinClause(DBDefinition defn, QueryState queryState, DBRow newTable, List<DBRow> previousTables, QueryOptions options) {
 		List<String> joinClauses = new ArrayList<>();
 		List<String> conditionClauses = new ArrayList<>();
 		String lineSep = System.getProperty("line.separator");
@@ -931,14 +931,14 @@ public class QueryDetails implements DBQueryable {
 		setResultSQL(this.getSQLForQuery(database, new QueryState(this), QueryType.SELECT, options));
 	}
 
-	private boolean needsResults(QueryOptions options) {
+	public boolean needsResults(QueryOptions options) {
 		final DBDatabase queryDatabase = options.getQueryDatabase();
 		return getResults() == null
-				|| getResults().isEmpty()
+				|| queryDatabase == null
 				|| getResultSQL() == null
+				|| getResults().isEmpty()
 				|| !getResultsPageIndex().equals(options.getPageIndex())
 				|| !getResultsRowLimit().equals(options.getRowLimit())
-				|| queryDatabase == null
 				|| !getResultSQL().equals(getSQLForQuery(queryDatabase, new QueryState(this), QueryType.SELECT, options));
 	}
 
@@ -1163,7 +1163,7 @@ public class QueryDetails implements DBQueryable {
 	 * @throws java.sql.SQLException java.sql.SQLException
 	 * @throws java.sql.SQLTimeoutException
 	 */
-	protected synchronized ResultSet getResultSetForSQL(DBStatement statement, String sql) throws SQLException, SQLTimeoutException {
+	public synchronized ResultSet getResultSetForSQL(DBStatement statement, String sql) throws SQLException, SQLTimeoutException {
 		if (this.timeoutInMilliseconds != null) {
 			this.timeout = QueryTimeout.scheduleTimeout(statement, this.timeoutInMilliseconds);
 		}
@@ -1185,7 +1185,7 @@ public class QueryDetails implements DBQueryable {
 		}
 	}
 
-	private void setQueryRowFromResultSet(DBDefinition defn, ResultSet resultSet, QueryDetails details, DBQueryRow queryRow, boolean isGroupedQuery) throws SQLException {
+	public void setQueryRowFromResultSet(DBDefinition defn, ResultSet resultSet, QueryDetails details, DBQueryRow queryRow, boolean isGroupedQuery) throws SQLException {
 		for (DBRow tableRow : details.getAllQueryTables()) {
 			DBRow newInstance = DBRow.getDBRow(tableRow.getClass());
 
@@ -1324,5 +1324,14 @@ public class QueryDetails implements DBQueryable {
 
 	public List<DBQueryRow> getCurrentPage() {
 		return currentPage;
+	}
+
+	public void clear() {
+		requiredQueryTables.clear();
+		optionalQueryTables.clear();
+		allQueryTables.clear();
+		conditions.clear();
+		extraExamples.clear();
+		blankResults();	
 	}
 }

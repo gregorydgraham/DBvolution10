@@ -211,19 +211,18 @@ public class DBRecursiveQuery<T extends DBRow> {
 		try {
 			String descendingQuery = getRecursiveSQL(this.keyToFollow, direction);
 			originalQuery.setTimeoutInMilliseconds(this.timeoutInMilliseconds);
-			ResultSet resultSet = originalQuery.getResultSetForSQL(dbStatement, descendingQuery);
+			final QueryDetails queryDetails = originalQuery.getQueryDetails();
+			ResultSet resultSet = queryDetails.getResultSetForSQL(dbStatement, descendingQuery);
 			try {
 				while (resultSet.next()) {
-					DBQueryRow queryRow = new DBQueryRow(originalQuery.getQueryDetails());
+					DBQueryRow queryRow = new DBQueryRow(queryDetails);
 
 					originalQuery.setExpressionColumns(defn, resultSet, queryRow);
 
-					originalQuery.setQueryRowFromResultSet(
-							defn,
-							resultSet, 
-							originalQuery.getQueryDetails(),
+					queryDetails.setQueryRowFromResultSet(defn,
+							resultSet, queryDetails,
 							queryRow, 
-							originalQuery.getQueryDetails().getDBReportGroupByColumns().size() > 0
+							queryDetails.getDBReportGroupByColumns().size() > 0
 					);
 					returnList.add(queryRow);
 				}
