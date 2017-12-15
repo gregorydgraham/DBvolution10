@@ -13,8 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package nz.co.gregs.dbvolution.query;
+package nz.co.gregs.dbvolution.internal.query;
 
+import nz.co.gregs.dbvolution.internal.query.QueryType;
 import java.util.Arrays;
 import java.util.logging.Level;
 import java.util.logging.Logger;

@@ -25,7 +25,7 @@ import nz.co.gregs.dbvolution.databases.DBDatabase;
 import nz.co.gregs.dbvolution.databases.Oracle11XEDB;
 import nz.co.gregs.dbvolution.internal.oracle.xe.GeometryFunctions;
 import nz.co.gregs.dbvolution.internal.oracle.xe.MultiPoint2DFunctions;
-import nz.co.gregs.dbvolution.query.QueryOptions;
+import nz.co.gregs.dbvolution.internal.query.QueryOptions;
 
 /**
  * Defines the features of the Oracle 11 database that differ from the standard

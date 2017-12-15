@@ -26,7 +26,7 @@
  * 
  * Check the Creative Commons website for any details, legalese, and updates.
  */
-package nz.co.gregs.dbvolution.query;
+package nz.co.gregs.dbvolution.internal.query;
 
 /**
  *

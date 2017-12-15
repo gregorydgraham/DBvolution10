@@ -19,7 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 import nz.co.gregs.dbvolution.databases.DBDatabase;
 import nz.co.gregs.dbvolution.databases.OracleAWS11DB;
-import nz.co.gregs.dbvolution.query.QueryOptions;
+import nz.co.gregs.dbvolution.internal.query.QueryOptions;
 
 /**
  * Defines the features of the Amazon's RDS Oracle 11 database that differ from

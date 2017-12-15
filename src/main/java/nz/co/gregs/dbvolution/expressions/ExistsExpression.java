@@ -21,7 +21,7 @@ import java.util.List;
 import java.util.Set;
 import nz.co.gregs.dbvolution.*;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
-import nz.co.gregs.dbvolution.query.QueryDetails;
+import nz.co.gregs.dbvolution.internal.query.QueryDetails;
 
 /**
  * Creates an expression that implements the EXISTS operation.

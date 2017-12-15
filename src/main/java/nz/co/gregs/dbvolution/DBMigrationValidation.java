@@ -29,8 +29,8 @@ import nz.co.gregs.dbvolution.exceptions.UnableToInstantiateDBRowSubclassExcepti
 import nz.co.gregs.dbvolution.expressions.BooleanExpression;
 import nz.co.gregs.dbvolution.expressions.StringExpression;
 import nz.co.gregs.dbvolution.internal.properties.PropertyWrapper;
-import nz.co.gregs.dbvolution.query.QueryDetails;
-import nz.co.gregs.dbvolution.query.QueryOptions;
+import nz.co.gregs.dbvolution.internal.query.QueryDetails;
+import nz.co.gregs.dbvolution.internal.query.QueryOptions;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 

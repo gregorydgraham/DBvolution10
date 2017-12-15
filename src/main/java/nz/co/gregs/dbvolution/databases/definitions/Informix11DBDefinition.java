@@ -15,7 +15,7 @@
  */
 package nz.co.gregs.dbvolution.databases.definitions;
 
-import nz.co.gregs.dbvolution.query.QueryOptions;
+import nz.co.gregs.dbvolution.internal.query.QueryOptions;
 
 /**
  *
