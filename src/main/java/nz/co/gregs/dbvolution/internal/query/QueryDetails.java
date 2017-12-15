@@ -1032,7 +1032,7 @@ public class QueryDetails implements DBQueryable {
 
 //		final QueryOptions options = details.getOptions();
 		if (!options.isBlankQueryAllowed() && willCreateBlankQuery(db) && details.getRawSQLClause().isEmpty()) {
-			throw new AccidentalBlankQueryException();
+			throw new AccidentalBlankQueryException(options.isBlankQueryAllowed(), willCreateBlankQuery(db), details.getRawSQLClause().isEmpty());
 		}
 
 		if (!options.isCartesianJoinAllowed()

@@ -34,4 +34,8 @@ public class AccidentalBlankQueryException extends RuntimeException {
 		super("Accidental Blank Query Aborted: ensure you have added all the required tables, defined all the criteria, and are using the correct allowBlankQueries() setting.");
 	}
 
+	public AccidentalBlankQueryException(boolean blankQueryAllowed, boolean willCreateBlankQuery, boolean hasNoRawSQL) {
+		super("Accidental Blank Query Aborted: ensure you have added all the required tables, defined all the criteria, and are using the correct allowBlankQueries() setting: BlankQueryAllowed?"+blankQueryAllowed+" willCreateBlankQuery?"+willCreateBlankQuery+" hasNoRawSQL?"+hasNoRawSQL);
+	}
+
 }
