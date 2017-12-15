@@ -15,6 +15,7 @@
  */
 package nz.co.gregs.dbvolution;
 
+import nz.co.gregs.dbvolution.internal.query.QueryState;
 import nz.co.gregs.dbvolution.internal.query.QueryDetails;
 import nz.co.gregs.dbvolution.internal.query.QueryOptions;
 import nz.co.gregs.dbvolution.internal.query.QueryType;
@@ -30,11 +31,8 @@ import java.awt.Dimension;
 import java.io.PrintStream;
 import java.sql.*;
 import java.util.*;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.JFrame;
 import nz.co.gregs.dbvolution.actions.DBActionList;
-import nz.co.gregs.dbvolution.actions.DBExecutable;
 import nz.co.gregs.dbvolution.actions.DBQueryable;
 
 import nz.co.gregs.dbvolution.annotations.DBForeignKey;
@@ -288,7 +286,7 @@ public class DBQuery implements DBQueryable {
 	 * @return a String of the SQL that will be used by this DBQuery.
 	 */
 	public String getSQLForQuery() {
-		return getSQLForQuery(getReadyDatabase(), new QueryState(this), QueryType.SELECT, this.details.getOptions());
+		return getSQLForQuery(getReadyDatabase(), new QueryState(this, details), QueryType.SELECT, this.details.getOptions());
 	}
 
 	/**
@@ -340,7 +338,7 @@ public class DBQuery implements DBQueryable {
 
 		//Store the expressions from the new table in the QueryState
 		for (DBRow otherTable : preExistingTables) {
-			queryState.remainingExpressions.addAll(newTable.getRelationshipsAsBooleanExpressions(otherTable));
+			queryState.addAllToRemainingExpressions(newTable.getRelationshipsAsBooleanExpressions(otherTable));
 		}
 
 		// Add new table's conditions
@@ -741,12 +739,12 @@ public class DBQuery implements DBQueryable {
 	private String getSQLForCount(DBDatabase database, QueryDetails details) {
 		if (!database.getDefinition().supportsFullOuterJoinNatively()) {
 			return "SELECT COUNT(*) FROM ("
-					+ getSQLForQuery(database, new QueryState(this), QueryType.SELECT, details.getOptions())
+					+ getSQLForQuery(database, new QueryState(this, details), QueryType.SELECT, details.getOptions())
 							.replaceAll("; *$", "")
 					+ ") A"
 					+ database.getDefinition().endSQLStatement();
 		} else {
-			return getSQLForQuery(database, new QueryState(this), QueryType.COUNT, details.getOptions());
+			return getSQLForQuery(database, new QueryState(this, details), QueryType.COUNT, details.getOptions());
 		}
 	}
 
@@ -1072,7 +1070,7 @@ public class DBQuery implements DBQueryable {
 
 	private void prepareForQuery(DBDatabase database, QueryOptions options) throws SQLException {
 		details.clearResults();
-		details.setResultSQL(this.getSQLForQuery(database, new QueryState(this), QueryType.SELECT, options));
+		details.setResultSQL(this.getSQLForQuery(database, new QueryState(this, details), QueryType.SELECT, options));
 	}
 
 	/**
@@ -1161,7 +1159,7 @@ public class DBQuery implements DBQueryable {
 				|| !details.getResultsPageIndex().equals(options.getPageIndex())
 				|| !details.getResultsRowLimit().equals(options.getRowLimit())
 				|| queryDatabase == null
-				|| !details.getResultSQL().equals(getSQLForQuery(queryDatabase, new QueryState(this), QueryType.SELECT, options));
+				|| !details.getResultSQL().equals(getSQLForQuery(queryDatabase, new QueryState(this, details), QueryType.SELECT, options));
 	}
 
 	/**
@@ -2803,7 +2801,7 @@ public class DBQuery implements DBQueryable {
 	 *
 	 * @return the conditions
 	 */
-	protected List<BooleanExpression> getConditions() {
+	private List<BooleanExpression> getConditions() {
 		return details.getConditions();
 	}
 
@@ -3090,103 +3088,5 @@ public class DBQuery implements DBQueryable {
 		return this;
 	}
 
-	/**
-	 * Helper class to store the progress of turning the DBQuery into an actual
-	 * piece of SQL.
-	 *
-	 */
-	protected static class QueryState {
-
-//		private QueryGraph graph;
-		private final List<BooleanExpression> remainingExpressions;
-		private final List<BooleanExpression> consumedExpressions = new ArrayList<>();
-		private final List<String> requiredConditions = new ArrayList<>();
-		private final List<String> optionalConditions = new ArrayList<>();
-		private boolean queryIsFullOuterJoin = true;
-		private boolean queryIsLeftOuterJoin = true;
-//		private final boolean queryIsNativeQuery = true;
-
-		QueryState(DBQuery query) {
-			this.remainingExpressions = new ArrayList<>(query.getConditions());
-		}
-
-		private Iterable<BooleanExpression> getRemainingExpressions() {
-			return new ArrayList<>(remainingExpressions);
-		}
-
-		private void consumeExpression(BooleanExpression expr) {
-			remainingExpressions.remove(expr);
-			consumedExpressions.add(expr);
-		}
-
-//		private void setGraph(QueryGraph queryGraph) {
-//			this.graph = queryGraph;
-//		}
-		/**
-		 * Adds a condition that pertains to a required table.
-		 *
-		 * @param conditionClause	conditionClause
-		 */
-		protected void addRequiredCondition(String conditionClause) {
-			requiredConditions.add(conditionClause);
-		}
-
-		private void addRequiredConditions(List<String> conditionClauses) {
-			requiredConditions.addAll(conditionClauses);
-		}
-
-		/**
-		 * Returns all the current conditions that pertain to required tables.
-		 *
-		 * <p style="color: #F90;">Support DBvolution at
-		 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-		 *
-		 * @return a list of SQL snippets representing required conditions.
-		 */
-		protected List<String> getRequiredConditions() {
-			return requiredConditions;
-		}
-
-		/**
-		 * Add conditions that pertain to optional tables.
-		 *
-		 * @param conditionClauses	conditionClauses
-		 */
-		protected void addOptionalConditions(List<String> conditionClauses) {
-			optionalConditions.addAll(conditionClauses);
-		}
-
-		/**
-		 * Returns all the current conditions that pertain to options tables.
-		 *
-		 * <p style="color: #F90;">Support DBvolution at
-		 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-		 *
-		 * @return a list of SQL snippets representing conditions on optional
-		 * tables.
-		 */
-		protected List<String> getOptionalConditions() {
-			return optionalConditions;
-		}
-
-		void addedFullOuterJoinToQuery() {
-			queryIsFullOuterJoin = queryIsFullOuterJoin && true;
-			queryIsLeftOuterJoin = false;
-		}
-
-		void addedLeftOuterJoinToQuery() {
-			queryIsLeftOuterJoin = queryIsLeftOuterJoin && true;
-			queryIsFullOuterJoin = false;
-		}
-
-		void addedInnerJoinToQuery() {
-			queryIsLeftOuterJoin = false;
-			queryIsFullOuterJoin = false;
-		}
-
-		boolean isFullOuterJoin() {
-			return queryIsFullOuterJoin;
-		}
-	}
 
 }

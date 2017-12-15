@@ -15,6 +15,7 @@
  */
 package nz.co.gregs.dbvolution;
 
+import nz.co.gregs.dbvolution.internal.query.RecursiveSQLDirection;
 import nz.co.gregs.dbvolution.internal.query.QueryDetails;
 import nz.co.gregs.dbvolution.databases.DBDatabase;
 import nz.co.gregs.dbvolution.results.StringResult;
@@ -112,10 +113,6 @@ public class DBRecursiveQuery<T extends DBRow> {
 		return this;
 	}
 
-	private static enum RecursiveSQLDirection {
-
-		TOWARDS_ROOT, TOWARDS_LEAVES
-	};
 
 	/**
 	 * Create a DBRecursiveQuery based on the query and foreign key supplied.
