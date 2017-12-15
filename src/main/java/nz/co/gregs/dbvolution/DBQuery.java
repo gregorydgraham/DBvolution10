@@ -32,8 +32,6 @@ import java.io.PrintStream;
 import java.sql.*;
 import java.util.*;
 import javax.swing.JFrame;
-import nz.co.gregs.dbvolution.actions.DBActionList;
-import nz.co.gregs.dbvolution.actions.DBQueryable;
 
 import nz.co.gregs.dbvolution.annotations.DBForeignKey;
 import nz.co.gregs.dbvolution.databases.DBStatement;
@@ -86,7 +84,7 @@ import nz.co.gregs.dbvolution.internal.query.*;
  *
  * @author Gregory Graham
  */
-public class DBQuery implements DBQueryable {
+public class DBQuery {
 
 	/**
 	 * The default timeout value used to prevent accidental long running queries
@@ -96,13 +94,13 @@ public class DBQuery implements DBQueryable {
 	private final QueryDetails details = new QueryDetails();
 	private QueryGraph queryGraph;
 	private JFrame queryGraphFrame = null;
-	private ColumnProvider[] sortOrderColumns;
+//	private ColumnProvider[] sortOrderColumns;
 	private List<PropertyWrapper> sortOrder = null;
 	private Integer timeoutInMilliseconds = DEFAULT_TIMEOUT_MILLISECONDS;
 	private QueryTimeout timeout;
 	private final Map<Class<? extends DBRow>, DBRow> emptyRows = new HashMap<>();
 
-	QueryDetails getQueryDetails() {
+	public QueryDetails getQueryDetails() {
 		return details;
 	}
 
@@ -209,12 +207,13 @@ public class DBQuery implements DBQueryable {
 	 * This method adds an optional (OUTER) table to the query.
 	 *
 	 * <p>
-	 * The query will return an instance of this DBRow for each row found, though
-	 * it may be a null instance as there was no matching row in the database.
+	 * The query will return an instance of this DBRow for each row found,
+	 * though it may be a null instance as there was no matching row in the
+	 * database.
 	 *
 	 * <p>
-	 * Criteria (permitted and excluded values) specified in the supplied instance
-	 * will be added to the query.
+	 * Criteria (permitted and excluded values) specified in the supplied
+	 * instance will be added to the query.
 	 *
 	 * @param examples a list of DBRow objects that defines optional tables and
 	 * criteria
@@ -272,8 +271,8 @@ public class DBQuery implements DBQueryable {
 	 * DBvolution is really doing.
 	 *
 	 * <p>
-	 * Generates the SQL query for retrieving the objects but does not execute the
-	 * SQL. Use
+	 * Generates the SQL query for retrieving the objects but does not execute
+	 * the SQL. Use
 	 * {@link #getAllRowsInternal(nz.co.gregs.dbvolution.query.QueryOptions) the get*Rows methods}
 	 * to retrieve the rows.
 	 *
@@ -286,7 +285,7 @@ public class DBQuery implements DBQueryable {
 	 * @return a String of the SQL that will be used by this DBQuery.
 	 */
 	public String getSQLForQuery() {
-		return getSQLForQuery(getReadyDatabase(), new QueryState(this, details), QueryType.SELECT, this.details.getOptions());
+		return details.getSQLForQuery(database, new QueryState(details), QueryType.SELECT, this.details.getOptions());
 	}
 
 	/**
@@ -654,15 +653,15 @@ public class DBQuery implements DBQueryable {
 	 * in the query.
 	 *
 	 * <p>
-	 * The standard implementation replaces the query with a LEFT OUTER join query
-	 * UNIONed with a RIGHT OUTER join query.
+	 * The standard implementation replaces the query with a LEFT OUTER join
+	 * query UNIONed with a RIGHT OUTER join query.
 	 *
 	 * @param querySQL
 	 * @param options
 	 * <p style="color: #F90;">Support DBvolution at
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 * @return a fake full outer join query for databases that don't support FULL
-	 * OUTER joins
+	 * @return a fake full outer join query for databases that don't support
+	 * FULL OUTER joins
 	 */
 	private String getSQLForFakeFullOuterJoin(DBDatabase database, String existingSQL, QueryState queryState, QueryDetails details, QueryOptions options, QueryType queryType) {
 		String sqlForQuery;
@@ -733,20 +732,20 @@ public class DBQuery implements DBQueryable {
 	 * returned by this query
 	 */
 	protected String getSQLForCount() {
-		return getSQLForCount(database, details);
+		return details.getSQLForCount(database, details);
 	}
 
-	private String getSQLForCount(DBDatabase database, QueryDetails details) {
-		if (!database.getDefinition().supportsFullOuterJoinNatively()) {
-			return "SELECT COUNT(*) FROM ("
-					+ getSQLForQuery(database, new QueryState(this, details), QueryType.SELECT, details.getOptions())
-							.replaceAll("; *$", "")
-					+ ") A"
-					+ database.getDefinition().endSQLStatement();
-		} else {
-			return getSQLForQuery(database, new QueryState(this, details), QueryType.COUNT, details.getOptions());
-		}
-	}
+//	private String getSQLForCount(DBDatabase database, QueryDetails details) {
+//		if (!database.getDefinition().supportsFullOuterJoinNatively()) {
+//			return "SELECT COUNT(*) FROM ("
+//					+ getSQLForQuery(database, new QueryState(details), QueryType.SELECT, details.getOptions())
+//							.replaceAll("; *$", "")
+//					+ ") A"
+//					+ database.getDefinition().endSQLStatement();
+//		} else {
+//			return getSQLForQuery(database, new QueryState(details), QueryType.COUNT, details.getOptions());
+//		}
+//	}
 
 	/**
 	 * Prints the SQL query that will used to count the rows
@@ -772,15 +771,15 @@ public class DBQuery implements DBQueryable {
 	 * outer join tables. All criteria specified on the DBRows will be applied.
 	 * <p>
 	 * Uses the defined
-	 * {@link nz.co.gregs.dbvolution.annotations.DBForeignKey foreign keys} on the
-	 * DBRow to connect the tables. Foreign keys that have been
+	 * {@link nz.co.gregs.dbvolution.annotations.DBForeignKey foreign keys} on
+	 * the DBRow to connect the tables. Foreign keys that have been
 	 * {@link nz.co.gregs.dbvolution.DBRow#ignoreForeignKey(java.lang.Object) ignored}
 	 * are not used.
 	 * <p>
 	 * Criteria such as
 	 * {@link DBNumber#permittedValues(java.lang.Number...)  permitted values}
-	 * defined on the fields of the DBRow examples are added as part of the WHERE
-	 * clause.
+	 * defined on the fields of the DBRow examples are added as part of the
+	 * WHERE clause.
 	 *
 	 * <p>
 	 * Similarly conditions added to the DBQuery using
@@ -803,7 +802,7 @@ public class DBQuery implements DBQueryable {
 	public List<DBQueryRow> getAllRows() throws SQLException, SQLTimeoutException, AccidentalBlankQueryException, AccidentalCartesianJoinException {
 		final QueryOptions options = details.getOptions();
 		if (this.needsResults(options)) {
-			database.executeDBQuery(this);
+			database.executeDBQuery(details);
 //			getAllRowsInternal(options);
 		}
 		if (options.getRowLimit() > 0 && details.getResults().size() > options.getRowLimit()) {
@@ -815,70 +814,55 @@ public class DBQuery implements DBQueryable {
 		}
 	}
 
-	@Override
-	public DBActionList query(DBDatabase db) throws SQLException {
-		DBActionList actions = new DBActionList();
-		details.getOptions().setQueryDatabase(db);
-		if (details.getOptions().getQueryType().equals(QueryType.COUNT)) {
-			getResultSetCount(db, details);
-		} else {
-			fillResultSetInternal(db, details, this.details.getOptions());
-		}
-		return actions;
-	}
-
-	private void getResultSetCount(DBDatabase db, QueryDetails details) throws SQLException {
-		long result = 0L;
-		try (DBStatement dbStatement = db.getDBStatement()) {
-			final String sqlForCount = this.getSQLForCount();
-			try (ResultSet resultSet = dbStatement.executeQuery(sqlForCount)) {
-				while (resultSet.next()) {
-					 result = resultSet.getLong(1);
-				}
-			}
-		}
-		details.setCount(result);
-	}
-
-	private void fillResultSetInternal(DBDatabase db, QueryDetails details, QueryOptions options) throws SQLException, SQLTimeoutException, AccidentalBlankQueryException, AccidentalCartesianJoinException {
-		prepareForQuery(db, options);
-
-		final DBDefinition defn = db.getDefinition();
-
-//		final QueryOptions options = details.getOptions();
-		if (!options.isBlankQueryAllowed() && willCreateBlankQuery(db, details) && details.getRawSQLClause().isEmpty()) {
-			throw new AccidentalBlankQueryException();
-		}
-
-		if (!options.isCartesianJoinAllowed()
-				&& (details.getRequiredQueryTables().size() + details.getOptionalQueryTables().size()) > 1
-				&& queryGraph.willCreateCartesianJoin()) {
-			throw new AccidentalCartesianJoinException(details.getResultSQL());
-		}
-
-		DBQueryRow queryRow;
-
-		try (DBStatement dbStatement = db.getDBStatement();
-				ResultSet resultSet = getResultSetForSQL(dbStatement, details.getResultSQL())) {
-			while (resultSet.next()) {
-				queryRow = new DBQueryRow(this);
-
-				setExpressionColumns(defn, resultSet, queryRow);
-
-				setQueryRowFromResultSet(defn, resultSet, details, queryRow, details.isGroupedQuery());
-				details.getResults().add(queryRow);
-			}
-		}
-		for (DBQueryRow result : details.getResults()) {
-			List<DBRow> rows = result.getAll();
-			for (DBRow row : rows) {
-				if (row != null) {
-					row.setAutoFilledFields(this);
-				}
-			}
-		}
-	}
-
+//	@Override
+//	public DBActionList query(DBDatabase db) throws SQLException {
+//		DBActionList actions = new DBActionList();
+//		details.getOptions().setQueryDatabase(db);
+//		if (details.getOptions().getQueryType().equals(QueryType.COUNT)) {
+//			details.getResultSetCount(db, details);
+//		} else {
+//			details.fillResultSetInternal(db, this.details.getOptions());
+//		}
+//		return actions;
+//	}
+//	private void fillResultSetInternal(DBDatabase db, QueryDetails details, QueryOptions options) throws SQLException, SQLTimeoutException, AccidentalBlankQueryException, AccidentalCartesianJoinException {
+//		prepareForQuery(db, options);
+//
+//		final DBDefinition defn = db.getDefinition();
+//
+////		final QueryOptions options = details.getOptions();
+//		if (!options.isBlankQueryAllowed() && details.willCreateBlankQuery(db, details) && details.getRawSQLClause().isEmpty()) {
+//			throw new AccidentalBlankQueryException();
+//		}
+//
+//		if (!options.isCartesianJoinAllowed()
+//				&& (details.getRequiredQueryTables().size() + details.getOptionalQueryTables().size()) > 1
+//				&& queryGraph.willCreateCartesianJoin()) {
+//			throw new AccidentalCartesianJoinException(details.getResultSQL());
+//		}
+//
+//		DBQueryRow queryRow;
+//
+//		try (DBStatement dbStatement = db.getDBStatement();
+//				ResultSet resultSet = getResultSetForSQL(dbStatement, details.getResultSQL())) {
+//			while (resultSet.next()) {
+//				queryRow = new DBQueryRow(this);
+//
+//				setExpressionColumns(defn, resultSet, queryRow);
+//
+//				setQueryRowFromResultSet(defn, resultSet, details, queryRow, details.isGroupedQuery());
+//				details.getResults().add(queryRow);
+//			}
+//		}
+//		for (DBQueryRow result : details.getResults()) {
+//			List<DBRow> rows = result.getAll();
+//			for (DBRow row : rows) {
+//				if (row != null) {
+//					row.setAutoFilledFields(this);
+//				}
+//			}
+//		}
+//	}
 	/**
 	 * Executes the query using the statement provided and returns the ResultSet
 	 *
@@ -1049,7 +1033,8 @@ public class DBQuery implements DBQueryable {
 	}
 
 	/**
-	 * Sets all the expression columns using data from the current ResultSet row.
+	 * Sets all the expression columns using data from the current ResultSet
+	 * row.
 	 *
 	 * Database exceptions may be thrown
 	 *
@@ -1068,10 +1053,10 @@ public class DBQuery implements DBQueryable {
 		}
 	}
 
-	private void prepareForQuery(DBDatabase database, QueryOptions options) throws SQLException {
-		details.clearResults();
-		details.setResultSQL(this.getSQLForQuery(database, new QueryState(this, details), QueryType.SELECT, options));
-	}
+//	private void prepareForQuery(DBDatabase database, QueryOptions options) throws SQLException {
+//		details.clearResults();
+//		details.setResultSQL(this.getSQLForQuery(database, new QueryState(details), QueryType.SELECT, options));
+//	}
 
 	/**
 	 * Returns all the known instances of the exemplar.
@@ -1084,15 +1069,15 @@ public class DBQuery implements DBQueryable {
 	 * Expects there to be exactly one(1) object of the exemplar type.
 	 *
 	 * <p>
-	 * An UnexpectedNumberOfRowsException is thrown if there is zero or more than
-	 * one row.
+	 * An UnexpectedNumberOfRowsException is thrown if there is zero or more
+	 * than one row.
 	 *
 	 * @param <R> a subclass of DBRow
 	 * @param exemplar an instance of R
 	 * <p style="color: #F90;">Support DBvolution at
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 * @return the ONLY instance found using this query 1 Database exceptions may
-	 * be thrown
+	 * @return the ONLY instance found using this query 1 Database exceptions
+	 * may be thrown
 	 * @throws java.sql.SQLException java.sql.SQLException
 	 * @throws nz.co.gregs.dbvolution.exceptions.UnexpectedNumberOfRowsException
 	 * nz.co.gregs.dbvolution.exceptions.UnexpectedNumberOfRowsException
@@ -1108,9 +1093,9 @@ public class DBQuery implements DBQueryable {
 	 *
 	 * <p>
 	 * A simple means of ensuring that your query has retrieved the correct
-	 * results. For instance if you are looking up 2 vehicles in the database and
-	 * 3 are returned, this method will throw an exception stopping the DBScript
-	 * or DBTransaction automatically.
+	 * results. For instance if you are looking up 2 vehicles in the database
+	 * and 3 are returned, this method will throw an exception stopping the
+	 * DBScript or DBTransaction automatically.
 	 *
 	 * <p>
 	 * Similar to
@@ -1127,8 +1112,8 @@ public class DBQuery implements DBQueryable {
 	 *
 	 * @param <R> a class that extends DBRow
 	 * @param exemplar The DBRow class that you would like returned.
-	 * @param expected The expected number of rows, an exception will be thrown if
-	 * this expectation is not met.
+	 * @param expected The expected number of rows, an exception will be thrown
+	 * if this expectation is not met.
 	 * <p style="color: #F90;">Support DBvolution at
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a list of all the instances of the exemplar found by this query.
@@ -1159,7 +1144,7 @@ public class DBQuery implements DBQueryable {
 				|| !details.getResultsPageIndex().equals(options.getPageIndex())
 				|| !details.getResultsRowLimit().equals(options.getRowLimit())
 				|| queryDatabase == null
-				|| !details.getResultSQL().equals(getSQLForQuery(queryDatabase, new QueryState(this, details), QueryType.SELECT, options));
+				|| !details.getResultSQL().equals(getSQLForQuery(queryDatabase, new QueryState(details), QueryType.SELECT, options));
 	}
 
 	/**
@@ -1186,7 +1171,7 @@ public class DBQuery implements DBQueryable {
 		List<R> arrayList = new ArrayList<>();
 		final QueryOptions options = details.getOptions();
 		if (this.needsResults(options)) {
-			database.executeDBQuery(this);
+			database.executeDBQuery(details);
 //			getAllRowsInternal(options);
 		}
 		if (!details.getResults().isEmpty()) {
@@ -1224,7 +1209,7 @@ public class DBQuery implements DBQueryable {
 	public void print(PrintStream ps) throws SQLException {
 		final QueryOptions options = details.getOptions();
 		if (needsResults(options)) {
-			database.executeDBQuery(this);
+			database.executeDBQuery(details);
 //			this.getAllRowsInternal(options);
 		}
 
@@ -1247,12 +1232,12 @@ public class DBQuery implements DBQueryable {
 	 * Fast way to print the results.
 	 *
 	 * <p>
-	 * Retrieves the rows if required and then prints all of the rows but only the
-	 * fields that have non-null values.
+	 * Retrieves the rows if required and then prints all of the rows but only
+	 * the fields that have non-null values.
 	 *
 	 * <p>
-	 * Helps to trim a wide printout of columns down to only the data specified in
-	 * the rows.
+	 * Helps to trim a wide printout of columns down to only the data specified
+	 * in the rows.
 	 *
 	 * <p>
 	 * Example: myQuery.printAllDataColumns(System.err);
@@ -1264,7 +1249,7 @@ public class DBQuery implements DBQueryable {
 	public void printAllDataColumns(PrintStream printStream) throws SQLException {
 		final QueryOptions options = details.getOptions();
 		if (needsResults(options)) {
-			database.executeDBQuery(this);
+			database.executeDBQuery(details);
 //			this.getAllRowsInternal(options);
 		}
 
@@ -1285,7 +1270,8 @@ public class DBQuery implements DBQueryable {
 	 * Fast way to print the results.
 	 *
 	 * <p>
-	 * Retrieves and prints all the rows but only prints the primary key columns.
+	 * Retrieves and prints all the rows but only prints the primary key
+	 * columns.
 	 *
 	 * <p>
 	 * Example: myQuery.printAllPrimaryKeys(System.err);
@@ -1297,7 +1283,7 @@ public class DBQuery implements DBQueryable {
 	public void printAllPrimaryKeys(PrintStream ps) throws SQLException {
 		final QueryOptions options = details.getOptions();
 		if (needsResults(options)) {
-			database.executeDBQuery(this);
+			database.executeDBQuery(details);
 //			this.getAllRowsInternal(options);
 		}
 
@@ -1359,10 +1345,9 @@ public class DBQuery implements DBQueryable {
 	 */
 	public Long count() throws SQLException {
 		if (needsResults(details.getOptions())) {
-			Long result = 0L;
-			
+
 			this.details.getOptions().setQueryType(QueryType.COUNT);
-			database.executeDBQuery(this);
+			database.executeDBQuery(details);
 			return details.getCount();
 		} else {
 			return (long) details.getResults().size();
@@ -1377,19 +1362,19 @@ public class DBQuery implements DBQueryable {
 	 * least one constraint has been placed on the query.
 	 *
 	 * <p>
-	 * This helps avoid the common mistake of accidentally retrieving all the rows
-	 * of the tables by forgetting to add criteria.
+	 * This helps avoid the common mistake of accidentally retrieving all the
+	 * rows of the tables by forgetting to add criteria.
 	 *
 	 * <p>
 	 * No attempt to compare the length of the query results with the length of
-	 * the table is made: if your criteria selects all the row of the tables this
-	 * method will still return FALSE.
+	 * the table is made: if your criteria selects all the row of the tables
+	 * this method will still return FALSE.
 	 *
 	 * <p style="color: #F90;">Support DBvolution at
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 *
-	 * @return TRUE if the DBQuery will retrieve all the rows of the tables, FALSE
-	 * otherwise
+	 * @return TRUE if the DBQuery will retrieve all the rows of the tables,
+	 * FALSE otherwise
 	 */
 	public boolean willCreateBlankQuery() {
 		return willCreateBlankQuery(this.database, this.details);
@@ -1403,21 +1388,21 @@ public class DBQuery implements DBQueryable {
 	 * least one constraint has been placed on the query.
 	 *
 	 * <p>
-	 * This helps avoid the common mistake of accidentally retrieving all the rows
-	 * of the tables by forgetting to add criteria.
+	 * This helps avoid the common mistake of accidentally retrieving all the
+	 * rows of the tables by forgetting to add criteria.
 	 *
 	 * <p>
 	 * No attempt to compare the length of the query results with the length of
-	 * the table is made: if your criteria selects all the row of the tables this
-	 * method will still return FALSE.
+	 * the table is made: if your criteria selects all the row of the tables
+	 * this method will still return FALSE.
 	 *
 	 * <p style="color: #F90;">Support DBvolution at
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 *
 	 * @param db
 	 * @param details
-	 * @return TRUE if the DBQuery will retrieve all the rows of the tables, FALSE
-	 * otherwise
+	 * @return TRUE if the DBQuery will retrieve all the rows of the tables,
+	 * FALSE otherwise
 	 */
 	protected boolean willCreateBlankQuery(DBDatabase db, QueryDetails details) {
 		boolean willCreateBlankQuery = true;
@@ -1446,8 +1431,8 @@ public class DBQuery implements DBQueryable {
 	 * Only positive limits are permitted: negative numbers will be converted to
 	 * zero(0). To remove the row limit use {@link #clearRowLimit() }.
 	 *
-	 * @param maximumNumberOfRowsReturned the require limit to the number of rows
-	 * returned
+	 * @param maximumNumberOfRowsReturned the require limit to the number of
+	 * rows returned
 	 * <p style="color: #F90;">Support DBvolution at
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return this DBQuery instance
@@ -1469,7 +1454,8 @@ public class DBQuery implements DBQueryable {
 	 * Clear the row limit on this DBQuery and return it to retrieving all rows.
 	 *
 	 * <p>
-	 * Also resets the retrieved results so that the database will be re-queried.
+	 * Also resets the retrieved results so that the database will be
+	 * re-queried.
 	 *
 	 * <p style="color: #F90;">Support DBvolution at
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
@@ -1496,8 +1482,8 @@ public class DBQuery implements DBQueryable {
 	 * </pre>
 	 *
 	 * <p>
-	 * Where possible DBvolution sorts NULL values as the least significant value,
-	 * for example "NULL, 1, 2, 3, 4..." not "... 4, 5, 6, NULL".
+	 * Where possible DBvolution sorts NULL values as the least significant
+	 * value, for example "NULL, 1, 2, 3, 4..." not "... 4, 5, 6, NULL".
 	 *
 	 * @param sortColumns a list of columns to sort the query by.
 	 * <p style="color: #F90;">Support DBvolution at
@@ -1506,18 +1492,7 @@ public class DBQuery implements DBQueryable {
 	 */
 	public DBQuery setSortOrder(ColumnProvider... sortColumns) {
 		blankResults();
-
-		sortOrderColumns = Arrays.copyOf(sortColumns, sortColumns.length);
-
-		sortOrder = new ArrayList<>();
-		PropertyWrapper prop;
-		for (ColumnProvider col : sortColumns) {
-			prop = col.getColumn().getPropertyWrapper();
-			if (prop != null) {
-				sortOrder.add(prop);
-			}
-		}
-
+		details.setSortOrder(sortColumns);
 		return this;
 	}
 
@@ -1525,8 +1500,8 @@ public class DBQuery implements DBQueryable {
 	 * Adds the properties (field and/or method) to the end of the sort order.
 	 *
 	 * <p>
-	 * For example the following code snippet will add the name column at the end
-	 * of the sort order after district:
+	 * For example the following code snippet will add the name column at the
+	 * end of the sort order after district:
 	 * <pre>
 	 * Customer customer = ...;
 	 * query.setSortOrder(customer.column(customer.district));
@@ -1546,16 +1521,7 @@ public class DBQuery implements DBQueryable {
 	 * @return this DBQuery instance
 	 */
 	public DBQuery addToSortOrder(ColumnProvider... sortColumns) {
-		if (sortColumns != null) {
-			blankResults();
-			List<ColumnProvider> sortOrderColumnsList = new LinkedList<>();
-			if (sortOrderColumns != null) {
-				sortOrderColumnsList.addAll(Arrays.asList(sortOrderColumns));
-			}
-			sortOrderColumnsList.addAll(Arrays.asList(sortColumns));
-
-			return setSortOrder(sortOrderColumnsList.toArray(new ColumnProvider[]{}));
-		}
+		details.addToSortOrder(sortColumns);
 		return this;
 	}
 
@@ -1563,8 +1529,8 @@ public class DBQuery implements DBQueryable {
 	 * Adds the properties (field and/or method) to the end of the sort order.
 	 *
 	 * <p>
-	 * For example the following code snippet will add the name column at the end
-	 * of the sort order after district:
+	 * For example the following code snippet will add the name column at the
+	 * end of the sort order after district:
 	 * <pre>
 	 * Customer customer = ...;
 	 * query.setSortOrder(customer.column(customer.district));
@@ -1601,13 +1567,13 @@ public class DBQuery implements DBQueryable {
 	 * @return this DBQuery instance
 	 */
 	public DBQuery clearSortOrder() {
-		sortOrder = null;
-		sortOrderColumns = null;
+		details.clearSortOrder();
 		return this;
 	}
 
 	private String getOrderByClause(DBDefinition defn, Map<PropertyWrapperDefinition, Integer> indexesOfSelectedProperties, Map<DBExpression, Integer> IndexesOfSelectedExpressions) {
 		final boolean prefersIndexBasedOrderByClause = defn.prefersIndexBasedOrderByClause();
+		ColumnProvider[] sortOrderColumns = details.getSortOrderColumns();
 		if (sortOrderColumns != null && sortOrderColumns.length > 0) {
 			StringBuilder orderByClause = new StringBuilder(defn.beginOrderByClause());
 			String sortSeparator = defn.getStartingOrderByClauseSeparator();
@@ -1691,8 +1657,8 @@ public class DBQuery implements DBQueryable {
 	 * Change the Default Setting of Disallowing Accidental Cartesian Joins
 	 *
 	 * <p>
-	 * A common mistake is to create a query without connecting all the tables in
-	 * the query and accident retrieve a huge number of rows.
+	 * A common mistake is to create a query without connecting all the tables
+	 * in the query and accident retrieve a huge number of rows.
 	 *
 	 * <p>
 	 * DBvolution detects this situation and, by default, throws a
@@ -1722,8 +1688,8 @@ public class DBQuery implements DBQueryable {
 	 * <p>
 	 * Like
 	 * {@link #getAllRowsInternal(nz.co.gregs.dbvolution.query.QueryOptions)  getAllRows()}
-	 * this method retrieves all the rows for this DBQuery. However it checks the
-	 * number of rows retrieved and throws a
+	 * this method retrieves all the rows for this DBQuery. However it checks
+	 * the number of rows retrieved and throws a
 	 * {@link UnexpectedNumberOfRowsException} if the number of rows retrieved
 	 * differs from the expected number.
 	 *
@@ -1732,16 +1698,16 @@ public class DBQuery implements DBQueryable {
 	 * outer join tables.
 	 * <p>
 	 * Uses the defined
-	 * {@link nz.co.gregs.dbvolution.annotations.DBForeignKey foreign keys} on the
-	 * DBRow and multi-table conditions to connect the tables. Foreign keys that
-	 * have been
+	 * {@link nz.co.gregs.dbvolution.annotations.DBForeignKey foreign keys} on
+	 * the DBRow and multi-table conditions to connect the tables. Foreign keys
+	 * that have been
 	 * {@link nz.co.gregs.dbvolution.DBRow#ignoreForeignKey(java.lang.Object) ignored}
 	 * are not used.
 	 * <p>
 	 * Criteria such as
 	 * {@link DBNumber#permittedValues(java.lang.Number...)  permitted values}
-	 * defined on the fields of the DBRow examples are added as part of the WHERE
-	 * clause.
+	 * defined on the fields of the DBRow examples are added as part of the
+	 * WHERE clause.
 	 *
 	 * <p>
 	 * Similarly conditions added to the DBQuery using
@@ -1800,9 +1766,9 @@ public class DBQuery implements DBQueryable {
 	 * You should probably use ANSI syntax.
 	 *
 	 * <p>
-	 * ANSI syntax has the foreign key and added relationships defined in the FROM
-	 * clause with the JOIN operator. Pre-ANSI syntax treated the foreign keys and
-	 * other relationships as part of the WHERE clause.
+	 * ANSI syntax has the foreign key and added relationships defined in the
+	 * FROM clause with the JOIN operator. Pre-ANSI syntax treated the foreign
+	 * keys and other relationships as part of the WHERE clause.
 	 *
 	 * <p>
 	 * ANSI syntax supports OUTER joins with a standard syntax, and DBvolution
@@ -1828,8 +1794,8 @@ public class DBQuery implements DBQueryable {
 	 * referenced by the external DBRow subclass.
 	 *
 	 * <p>
-	 * That is to say: where A is a DBRow in this query, returns a List of B such
-	 * that B =&gt; A
+	 * That is to say: where A is a DBRow in this query, returns a List of B
+	 * such that B =&gt; A
 	 *
 	 * <p style="color: #F90;">Support DBvolution at
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
@@ -1862,17 +1828,17 @@ public class DBQuery implements DBQueryable {
 	}
 
 	/**
-	 * Returns all the DBRow subclasses referenced by the DBrows within this query
-	 * with foreign keys
+	 * Returns all the DBRow subclasses referenced by the DBrows within this
+	 * query with foreign keys
 	 *
 	 * <p>
-	 * Similar to {@link #getAllConnectedTables() } but where this class directly
-	 * references the external DBRow subclass with an {@code @DBForeignKey}
-	 * annotation.
+	 * Similar to {@link #getAllConnectedTables() } but where this class
+	 * directly references the external DBRow subclass with an
+	 * {@code @DBForeignKey} annotation.
 	 *
 	 * <p>
-	 * That is to say: where A is A DBRow in this class, returns a List of B such
-	 * that A =&gt; B
+	 * That is to say: where A is A DBRow in this class, returns a List of B
+	 * such that A =&gt; B
 	 *
 	 * <p style="color: #F90;">Support DBvolution at
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
@@ -1926,14 +1892,14 @@ public class DBQuery implements DBQueryable {
 	 * classes within this query.
 	 *
 	 * <p>
-	 * That is to say: where A is a DBRow in this query, returns a List of B such
-	 * that B =&gt; A or A =&gt; B
+	 * That is to say: where A is a DBRow in this query, returns a List of B
+	 * such that B =&gt; A or A =&gt; B
 	 *
 	 * <p style="color: #F90;">Support DBvolution at
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 *
-	 * @return a list of classes that have a {@code @DBForeignKey} reference to or
-	 * from this class
+	 * @return a list of classes that have a {@code @DBForeignKey} reference to
+	 * or from this class
 	 * @see #getRelatedTables()
 	 * @see #getReferencedTables()
 	 * @see DBRow#getAllConnectedTables()
@@ -2032,8 +1998,8 @@ public class DBQuery implements DBQueryable {
 	}
 
 	/**
-	 * Search the classpath and add, as optional, any DBRow classes that reference
-	 * the DBRows within this DBQuery
+	 * Search the classpath and add, as optional, any DBRow classes that
+	 * reference the DBRows within this DBQuery
 	 *
 	 * <p>
 	 * This method automatically enlarges the query by finding all associated
@@ -2086,8 +2052,8 @@ public class DBQuery implements DBQueryable {
 	}
 
 	/**
-	 * Search the classpath and add, as optional, any DBRow classes that reference
-	 * the DBRows within this DBQuery
+	 * Search the classpath and add, as optional, any DBRow classes that
+	 * reference the DBRows within this DBQuery
 	 *
 	 * <p>
 	 * This method automatically enlarges the query by finding all associated
@@ -2144,12 +2110,12 @@ public class DBQuery implements DBQueryable {
 	 *
 	 * <p>
 	 * Adding connected tables means adding their connections as well. However
-	 * sometimes you just want the tables added without connecting them to all the
-	 * other tables correctly.
+	 * sometimes you just want the tables added without connecting them to all
+	 * the other tables correctly.
 	 *
 	 * <p>
-	 * This method adds all the connected tables as if they were only connected to
-	 * the core tables and had no other relationships.
+	 * This method adds all the connected tables as if they were only connected
+	 * to the core tables and had no other relationships.
 	 *
 	 * <p style="color: #F90;">Support DBvolution at
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
@@ -2203,8 +2169,8 @@ public class DBQuery implements DBQueryable {
 	 *
 	 * <p>
 	 * Slicing the results like this allows you to get a list of, for instance,
-	 * status table DBRows and then process the DBQueryRows that have each status
-	 * DBRow as a block.
+	 * status table DBRows and then process the DBQueryRows that have each
+	 * status DBRow as a block.
 	 *
 	 * @param instance the DBRow instance you are interested in.
 	 * <p style="color: #F90;">Support DBvolution at
@@ -2216,7 +2182,7 @@ public class DBQuery implements DBQueryable {
 	public List<DBQueryRow> getAllRowsContaining(DBRow instance) throws SQLException {
 		final QueryOptions options = details.getOptions();
 		if (this.needsResults(options)) {
-			database.executeDBQuery(this);
+			database.executeDBQuery(details);
 //			getAllRowsInternal(options);
 		}
 		List<DBQueryRow> returnList = new ArrayList<>();
@@ -2226,40 +2192,6 @@ public class DBQuery implements DBQueryable {
 			}
 		}
 		return returnList;
-	}
-
-	/**
-	 * Limits the query results by adding post query conditions, generally using a
-	 * HAVING clause.
-	 *
-	 * <p>
-	 * This method returns the subset of this DBQuery's results that match the
-	 * post query conditions
-	 *
-	 * <p>
-	 * The easiest way to get a list of duplicated identifiers, make a query that
-	 * returns the identifier and a count of the rows, and then add a post
-	 * condition that requires the count to be greater than 1.
-	 *
-	 * @param postQueryConditions all the post-query conditions that need to be
-	 * matched
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 * @return A list of DBQueryRow instances that fulfill the post-query
-	 * conditions Database exceptions may be thrown
-	 * @throws java.sql.SQLException java.sql.SQLException
-	 * @deprecated Use {@link #addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression)
-	 * } to add all conditions to the query instead.
-	 */
-	@Deprecated
-	public List<DBQueryRow> getAllRowsHaving(BooleanExpression... postQueryConditions) throws SQLException {
-		final QueryOptions options = details.getOptions();
-		details.setHavingColumns(postQueryConditions);
-		if (this.needsResults(options)) {
-			database.executeDBQuery(this);
-//			getAllRowsInternal(options);
-		}
-		return details.getResults();
 	}
 
 	/**
@@ -2307,45 +2239,12 @@ public class DBQuery implements DBQueryable {
 	 */
 	public List<DBQueryRow> getAllRowsForPage(Integer pageNumber) throws SQLException {
 		final QueryOptions options = details.getOptions();
-		DBDatabase database = getReadyDatabase();
-		final DBDefinition defn = database.getDefinition();
-
-		if (defn.supportsPagingNatively(options)) {
-			options.setPageIndex(pageNumber);
-			if (this.needsResults(options)) {
-				database.executeDBQuery(this);
-//				getAllRowsInternal(options);
-			}
-			return details.getResults();
-		} else {
-			if (defn.supportsRowLimitsNatively(options)) {
-				QueryOptions tempOptions = options.copy();
-				tempOptions.setRowLimit((pageNumber + 1) * options.getRowLimit());
-				if (this.needsResults(tempOptions) || tempOptions.getRowLimit() > details.getResults().size()) {
-					details.setOptions(tempOptions);
-					database.executeDBQuery(this);
-//					getAllRowsInternal(tempOptions);
-				}
-			} else {
-				if (this.needsResults(options)) {
-					int rowLimit = options.getRowLimit();
-					options.setRowLimit(-1);
-					database.executeDBQuery(this);
-//					getAllRowsInternal(options);
-					options.setRowLimit(rowLimit);
-				}
-			}
-			int rowLimit = options.getRowLimit();
-			int startIndex = rowLimit * pageNumber;
-			startIndex = (startIndex < 0 ? 0 : startIndex);
-			int stopIndex = rowLimit * (pageNumber + 1);
-			stopIndex = (stopIndex >= details.getResults().size() ? details.getResults().size() : stopIndex);
-			if (stopIndex - startIndex < 1) {
-				return new ArrayList<>();
-			} else {
-				return details.getResults().subList(startIndex, stopIndex);
-			}
+		details.setQueryType(QueryType.ROWSFORPAGE);
+		details.setResultsPageIndex(pageNumber);
+		if (this.needsResults(options)) {
+			database.executeDBQuery(details);
 		}
+		return details.getCurrentPage();
 	}
 
 	/**
@@ -2356,9 +2255,9 @@ public class DBQuery implements DBQueryable {
 	 * the Query
 	 *
 	 * <p>
-	 * The easiest way to get a BooleanExpression is the DBRow.column() method and
-	 * then apply the functions you require until you get a BooleanExpression
-	 * back.
+	 * The easiest way to get a BooleanExpression is the DBRow.column() method
+	 * and then apply the functions you require until you get a
+	 * BooleanExpression back.
 	 *
 	 * <p>
 	 * StringExpression, NumberExpression, DateExpression, and BooleanExpression
@@ -2402,9 +2301,9 @@ public class DBQuery implements DBQueryable {
 	 * the Query
 	 *
 	 * <p>
-	 * The easiest way to get a BooleanExpression is the DBRow.column() method and
-	 * then apply the functions you require until you get a BooleanExpression
-	 * back.
+	 * The easiest way to get a BooleanExpression is the DBRow.column() method
+	 * and then apply the functions you require until you get a
+	 * BooleanExpression back.
 	 *
 	 * <p>
 	 * StringExpression, NumberExpression, DateExpression, and BooleanExpression
@@ -2444,9 +2343,9 @@ public class DBQuery implements DBQueryable {
 	 * the Query
 	 *
 	 * <p>
-	 * The easiest way to get a BooleanExpression is the DBRow.column() method and
-	 * then apply the functions you require until you get a BooleanExpression
-	 * back.
+	 * The easiest way to get a BooleanExpression is the DBRow.column() method
+	 * and then apply the functions you require until you get a
+	 * BooleanExpression back.
 	 *
 	 * <p>
 	 * StringExpression, NumberExpression, DateExpression, and BooleanExpression
@@ -2496,8 +2395,9 @@ public class DBQuery implements DBQueryable {
 	 * Set the query to return rows that match any conditions
 	 *
 	 * <p>
-	 * This means that all permitted*, excluded*, and comparisons are optional for
-	 * any rows and rows will be returned if they match any of the conditions.
+	 * This means that all permitted*, excluded*, and comparisons are optional
+	 * for any rows and rows will be returned if they match any of the
+	 * conditions.
 	 *
 	 * <p>
 	 * The conditions will be connected by OR in the SQL.
@@ -2517,8 +2417,8 @@ public class DBQuery implements DBQueryable {
 	 * Set the query to return rows that match any relationship.
 	 *
 	 * <p>
-	 * This means that all foreign keys and ad hoc relationships are optional for
-	 * all tables and rows will be returned if they match one of the
+	 * This means that all foreign keys and ad hoc relationships are optional
+	 * for all tables and rows will be returned if they match one of the
 	 * relationships.
 	 *
 	 * <p>
@@ -2539,8 +2439,8 @@ public class DBQuery implements DBQueryable {
 	 * Set the query to return rows that match all relationships.
 	 *
 	 * <p>
-	 * This means that all foreign keys and ad hoc relationships are required for
-	 * all tables and rows will be returned if they match all of the
+	 * This means that all foreign keys and ad hoc relationships are required
+	 * for all tables and rows will be returned if they match all of the
 	 * relationships.
 	 *
 	 * <p>
@@ -2564,8 +2464,8 @@ public class DBQuery implements DBQueryable {
 	 * This is the default state
 	 *
 	 * <p>
-	 * This means that all permitted*, excluded*, and comparisons are required for
-	 * any rows and the conditions will be connected by AND.
+	 * This means that all permitted*, excluded*, and comparisons are required
+	 * for any rows and the conditions will be connected by AND.
 	 *
 	 * <p style="color: #F90;">Support DBvolution at
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
@@ -2583,8 +2483,8 @@ public class DBQuery implements DBQueryable {
 	 * as an optional table otherwise.
 	 *
 	 * <p>
-	 * Any DBRow example passed to this method that has criteria specified on it,
-	 * however vague, will become a required table on the query.
+	 * Any DBRow example passed to this method that has criteria specified on
+	 * it, however vague, will become a required table on the query.
 	 *
 	 * <p>
 	 * Any DBRow example that has no criteria, i.e. where {@link DBRow#willCreateBlankQuery(nz.co.gregs.dbvolution.DBDatabase)
@@ -2615,8 +2515,8 @@ public class DBQuery implements DBQueryable {
 	 * or as an optional tables otherwise.
 	 *
 	 * <p>
-	 * Any DBRow example passed to this method that has criteria specified on it,
-	 * however vague, will become a required table on the query.
+	 * Any DBRow example passed to this method that has criteria specified on
+	 * it, however vague, will become a required table on the query.
 	 *
 	 * <p>
 	 * Any DBRow example that has no criteria, i.e. where {@link DBRow#willCreateBlankQuery(nz.co.gregs.dbvolution.DBDatabase)
@@ -2726,11 +2626,11 @@ public class DBQuery implements DBQueryable {
 	 *
 	 * <p>
 	 * Internally DBvolution uses a graph to design the query that will be used.
-	 * This graph is helpful for visualizing the underlying query, more so than an
-	 * SQL query dump. So this method will display the query graph of this query
-	 * at this time. The graph cannot be altered through the window but it can be
-	 * moved to help show the parts of the graph. You can manipulate the query
-	 * graph by
+	 * This graph is helpful for visualizing the underlying query, more so than
+	 * an SQL query dump. So this method will display the query graph of this
+	 * query at this time. The graph cannot be altered through the window but it
+	 * can be moved to help show the parts of the graph. You can manipulate the
+	 * query graph by
 	 * {@link DBQuery#add(nz.co.gregs.dbvolution.DBRow[])  adding tables}, {@link DBQuery#addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression) using expressions that connect tables},
 	 * or
 	 * {@link DBRow#ignoreForeignKey(java.lang.Object) ignoring inappropriate foreign keys}.
@@ -2781,8 +2681,8 @@ public class DBQuery implements DBQueryable {
 	 * Hides and disposes of the QueryGraph window.
 	 *
 	 * <p>
-	 * After calling {@link #displayQueryGraph() }, you should call this method to
-	 * close the window automatically.
+	 * After calling {@link #displayQueryGraph() }, you should call this method
+	 * to close the window automatically.
 	 *
 	 * <p>
 	 * If the window has closed already, this method has no effect.
@@ -2814,14 +2714,14 @@ public class DBQuery implements DBQueryable {
 	 *
 	 * <p>
 	 * Some tables use repeated values instead of foreign keys or do not use all
-	 * of the possible values of a foreign key. This method makes it easy to find
-	 * the distinct or unique values that are used.
+	 * of the possible values of a foreign key. This method makes it easy to
+	 * find the distinct or unique values that are used.
 	 *
 	 * @param fieldsOfProvidedRows - the field/column that you need data for.
 	 * <p style="color: #F90;">Support DBvolution at
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 * @return a list of DBQQueryRows with distinct combinations of values used in
-	 * the columns. 1 Database exceptions may be thrown
+	 * @return a list of DBQQueryRows with distinct combinations of values used
+	 * in the columns. 1 Database exceptions may be thrown
 	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
 	@SuppressWarnings({"unchecked", "empty-statement"})
@@ -2927,8 +2827,8 @@ public class DBQuery implements DBQueryable {
 	 * database they work on.
 	 *
 	 * <p>
-	 * This method allows you to retrieve the database used when you execute this
-	 * query.
+	 * This method allows you to retrieve the database used when you execute
+	 * this query.
 	 *
 	 * <p style="color: #F90;">Support DBvolution at
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
@@ -2940,8 +2840,8 @@ public class DBQuery implements DBQueryable {
 	}
 
 	/**
-	 * Add tables that will be used in the query but are already part of an outer
-	 * query and need not be explicitly added to the SQL.
+	 * Add tables that will be used in the query but are already part of an
+	 * outer query and need not be explicitly added to the SQL.
 	 *
 	 * <p>
 	 * Used during recursive queries. If you are not manually constructing a
@@ -2960,8 +2860,8 @@ public class DBQuery implements DBQueryable {
 	}
 
 	/**
-	 * Add tables that will be used in the query but are already part of an outer
-	 * query and need not be explicitly added to the SQL.
+	 * Add tables that will be used in the query but are already part of an
+	 * outer query and need not be explicitly added to the SQL.
 	 *
 	 * <p>
 	 * Used during recursive queries. If you are not manually constructing a
@@ -2996,8 +2896,8 @@ public class DBQuery implements DBQueryable {
 	 * database.
 	 *
 	 * <p>
-	 * Criteria (permitted and excluded values) specified in the supplied instance
-	 * will be added to the query.
+	 * Criteria (permitted and excluded values) specified in the supplied
+	 * instance will be added to the query.
 	 *
 	 * @param optionalQueryTables a list of DBRow objects that defines optional
 	 * tables and criteria
@@ -3019,8 +2919,8 @@ public class DBQuery implements DBQueryable {
 	 * Similar to {@link DBRow#ignoreForeignKey(java.lang.Object) } but uses a
 	 * ColumnProvider which is portable between instances of DBRow.
 	 * <p>
-	 * For example the following code snippet will ignore the foreign key provided
-	 * by a different instance of Customer:
+	 * For example the following code snippet will ignore the foreign key
+	 * provided by a different instance of Customer:
 	 * <pre>
 	 * Customer customer = new Customer();
 	 * IntegerColumn addressColumn = customer.column(customer.fkAddress);
@@ -3049,8 +2949,8 @@ public class DBQuery implements DBQueryable {
 	 * Changes the default timeout for this query.
 	 *
 	 * <p>
-	 * DBvolution defaults to a timeout of 10000milliseconds (10 seconds) to avoid
-	 * eternal queries.
+	 * DBvolution defaults to a timeout of 10000milliseconds (10 seconds) to
+	 * avoid eternal queries.
 	 *
 	 * <p>
 	 * Use this method If you require a longer running query.
@@ -3069,8 +2969,8 @@ public class DBQuery implements DBQueryable {
 	 * Completely removes the timeout from this query.
 	 *
 	 * <p>
-	 * DBvolution defaults to a timeout of 10000milliseconds (10 seconds) to avoid
-	 * eternal queries.
+	 * DBvolution defaults to a timeout of 10000milliseconds (10 seconds) to
+	 * avoid eternal queries.
 	 *
 	 * <p>
 	 * Use this method if you expect an extremely long query.
@@ -3087,6 +2987,5 @@ public class DBQuery implements DBQueryable {
 		}
 		return this;
 	}
-
 
 }

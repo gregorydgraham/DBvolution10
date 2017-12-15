@@ -41,6 +41,7 @@ public class QueryOptions {
 	private boolean matchAnyRelationship = false;
 	private boolean queryIsNativeQuery = true;
 	private QueryType queryType = QueryType.SELECT;
+	private int pageNumber;
 
 	/**
 	 * Indicates whether this query will use AND rather than OR to add the
@@ -315,5 +316,4 @@ public class QueryOptions {
 	public DBDatabase getQueryDatabase() {
 		return queryDatabase;
 	}
-
 }

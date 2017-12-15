@@ -46,7 +46,7 @@ public class AutoFillDuringQueryIfPossibleTest extends AbstractTest {
 		List<FilledMarque> instances = query.getAllInstancesOf(new FilledMarque());
 
 		for (FilledMarque instance : instances) {
-			final CarCompany relatedCarCo = instance.getRelatedInstancesFromQuery(query, new CarCompany()).get(0);
+			final CarCompany relatedCarCo = query.getQueryDetails().getRelatedInstancesFromQuery(instance, new CarCompany()).get(0);
 			final CarCompany actualCarCo = instance.actualCarCo;
 			if (actualCarCo == null) {
 				Assert.assertThat(relatedCarCo, nullValue());
@@ -64,7 +64,7 @@ public class AutoFillDuringQueryIfPossibleTest extends AbstractTest {
 
 		for (FilledCarCoWithArray instance : instances) {
 			if (instance.marques != null) {
-				final List<Marque> relateds = instance.getRelatedInstancesFromQuery(query, new Marque());
+				final List<Marque> relateds = query.getQueryDetails().getRelatedInstancesFromQuery(instance, new Marque());
 				final Marque[] actuals = instance.marques;
 				Assert.assertThat(relateds, contains(actuals));
 			} else {
@@ -81,7 +81,7 @@ public class AutoFillDuringQueryIfPossibleTest extends AbstractTest {
 		List<FilledCarCoWithList> instances = query.getAllInstancesOf(testExample);
 		for (FilledCarCoWithList instance : instances) {
 			if (instance.marques != null) {
-				final List<Marque> relateds = instance.getRelatedInstancesFromQuery(query, new Marque());
+				final List<Marque> relateds = query.getQueryDetails().getRelatedInstancesFromQuery(instance, new Marque());
 				List<String> relatedNames = new ArrayList<String>();
 				List<String> actualNames = new ArrayList<String>();
 				for (Marque related : relateds) {

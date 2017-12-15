@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
+import nz.co.gregs.dbvolution.actions.DBQueryable;
 import nz.co.gregs.dbvolution.annotations.*;
 import nz.co.gregs.dbvolution.columns.ColumnProvider;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
@@ -702,7 +703,7 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 	 *
 	 * @return a list of all foreign keys, MINUS the ignored foreign keys
 	 */
-	protected List<PropertyWrapper> getForeignKeyPropertyWrappers() {
+	public List<PropertyWrapper> getForeignKeyPropertyWrappers() {
 		synchronized (fkFields) {
 			if (fkFields.isEmpty()) {
 				List<PropertyWrapper> props = getWrapper().getForeignKeyPropertyWrappers();
@@ -1312,7 +1313,7 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 	 * instance in the {@code query} 1 Database exceptions may be thrown
 	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
-	public <R extends DBRow> List<R> getRelatedInstancesFromQuery(DBQuery query, R example) throws SQLException {
+	public <R extends DBRow> List<R> getRelatedInstancesFromQuery(DBQueryable query, R example) throws SQLException {
 		List<R> instances = new ArrayList<>();
 		final List<DBQueryRow> allRows = query.getAllRows();
 		for (DBQueryRow qrow : allRows) {
@@ -1351,7 +1352,7 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 	 * @return TRUE if the row has no non-null values or is undefined, FALSE
 	 * otherwise
 	 */
-	protected Boolean isEmptyRow() {
+	public Boolean isEmptyRow() {
 		return emptyRow;
 	}
 
@@ -1362,11 +1363,11 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 	 *
 	 * @param isThisRowEmpty	isThisRowEmpty
 	 */
-	protected void setEmptyRow(Boolean isThisRowEmpty) {
+	public void setEmptyRow(Boolean isThisRowEmpty) {
 		this.emptyRow = isThisRowEmpty;
 	}
 
-	List<PropertyWrapper> getSelectedProperties() {
+	public List<PropertyWrapper> getSelectedProperties() {
 		if (getReturnColumns() == null) {
 			return getColumnPropertyWrappers();
 		} else {
@@ -1614,7 +1615,7 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 		return false;
 	}
 
-	void setReturnFieldsBasedOn(DBRow tableRow) {
+	public void setReturnFieldsBasedOn(DBRow tableRow) {
 		this.setReturnColumns(tableRow.getReturnColumns());
 	}
 
@@ -1663,7 +1664,7 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 	}
 
 	@SuppressWarnings("unchecked")
-	void setAutoFilledFields(DBQuery query) throws SQLException {
+	void setAutoFilledFields(DBQueryable query) throws SQLException {
 		boolean arrayRequired = false;
 		boolean listRequired = false;
 		try {

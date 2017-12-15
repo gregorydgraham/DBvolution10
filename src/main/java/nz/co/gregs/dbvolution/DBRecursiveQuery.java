@@ -214,7 +214,7 @@ public class DBRecursiveQuery<T extends DBRow> {
 			ResultSet resultSet = originalQuery.getResultSetForSQL(dbStatement, descendingQuery);
 			try {
 				while (resultSet.next()) {
-					DBQueryRow queryRow = new DBQueryRow(originalQuery);
+					DBQueryRow queryRow = new DBQueryRow(originalQuery.getQueryDetails());
 
 					originalQuery.setExpressionColumns(defn, resultSet, queryRow);
 

@@ -29,7 +29,12 @@
 package nz.co.gregs.dbvolution.actions;
 
 import java.sql.SQLException;
+import java.sql.SQLTimeoutException;
+import java.util.List;
+import nz.co.gregs.dbvolution.DBQueryRow;
 import nz.co.gregs.dbvolution.databases.DBDatabase;
+import nz.co.gregs.dbvolution.exceptions.AccidentalBlankQueryException;
+import nz.co.gregs.dbvolution.exceptions.AccidentalCartesianJoinException;
 
 /**
  *
@@ -54,5 +59,7 @@ public interface DBQueryable {
 	 * @throws SQLException Database operations may throw SQLExceptions
 	 */
 	public DBActionList query(DBDatabase db) throws SQLException;
+
+	public List<DBQueryRow> getAllRows() throws SQLException, SQLTimeoutException, AccidentalBlankQueryException, AccidentalCartesianJoinException ;
 
 }

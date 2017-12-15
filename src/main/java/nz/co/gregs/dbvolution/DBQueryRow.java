@@ -24,6 +24,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import nz.co.gregs.dbvolution.internal.query.QueryDetails;
 
 /**
  * Contains all the instances of DBRow that are associated with one line of a
@@ -48,9 +49,9 @@ public class DBQueryRow extends HashMap<Class<?>, DBRow> {
 
 	private static final long serialVersionUID = 1;
 	private final Map<Object, QueryableDatatype<?>> expressionColumnValues = new LinkedHashMap<>();
-	private transient final DBQuery baseQuery;
+	private transient final QueryDetails baseQuery;
 
-	DBQueryRow(DBQuery queryThatThisRowWasGeneratedFor) {
+	public DBQueryRow(QueryDetails queryThatThisRowWasGeneratedFor) {
 		super();
 		baseQuery = queryThatThisRowWasGeneratedFor;
 	}
@@ -125,7 +126,7 @@ public class DBQueryRow extends HashMap<Class<?>, DBRow> {
 		}
 	}
 
-	void addExpressionColumnValue(Object key, QueryableDatatype<?> expressionQDT) {
+	public void addExpressionColumnValue(Object key, QueryableDatatype<?> expressionQDT) {
 		expressionColumnValues.put(key, expressionQDT);
 	}
 

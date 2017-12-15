@@ -34,5 +34,5 @@ package nz.co.gregs.dbvolution.internal.query;
  */
 public enum QueryType {
 
-	COUNT, SELECT, REVERSESELECT
+	COUNT, SELECT, REVERSESELECT, ROWSFORPAGE, GENERATESQLFORSELECT, GENERATESQLFORCOUNT
 };

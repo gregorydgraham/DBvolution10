@@ -30,7 +30,6 @@ package nz.co.gregs.dbvolution.internal.query;
 
 import java.util.ArrayList;
 import java.util.List;
-import nz.co.gregs.dbvolution.DBQuery;
 import nz.co.gregs.dbvolution.expressions.BooleanExpression;
 
 /**
@@ -49,7 +48,7 @@ public class QueryState {
 	private boolean queryIsLeftOuterJoin = true;
 	//		private final boolean queryIsNativeQuery = true;
 
-	public QueryState(DBQuery query, QueryDetails details) {
+	public QueryState(QueryDetails details) {
 		this.remainingExpressions = new ArrayList<>(details.getConditions());
 	}
 
