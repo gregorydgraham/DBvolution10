@@ -135,7 +135,7 @@ public class DBActionListCreationTest extends AbstractTest {
 		database.preventDroppingOfTables(false);
 		database.dropTableNoExceptions(tvr);
 		database.createTable(tvr);
-
+		
 		DBActionList insertTVRActions = database.insert(tvr);
 		Assert.assertThat(tvr.carcoId.intValue(), is(1));
 

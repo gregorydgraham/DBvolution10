@@ -110,6 +110,18 @@ public class DBInsert extends DBAction {
 		return executedActions;
 	}
 
+	/**
+	 * Returns a copy of the row supplied during creation.
+	 *
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
+	 * @return the row
+	 */
+	protected DBRow getRow() {
+		return DBRow.copyDBRow(originalRow);
+	}
+
 	@Override
 	public ArrayList<String> getSQLStatements(DBDatabase db) {
 		DBRow row = getRow();

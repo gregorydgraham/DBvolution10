@@ -49,7 +49,7 @@ import nz.co.gregs.dbvolution.internal.properties.PropertyWrapper;
  */
 public abstract class DBAction implements DBExecutable {
 
-	private final DBRow row;
+	final DBRow row;
 
 	/**
 	 * Standard action constructor.
