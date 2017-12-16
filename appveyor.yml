@@ -23,7 +23,7 @@ test_script:
   - mvn -q test -P MSSQLServerTest,DBs-OpenSource --batch-mode -s appveyor-settings.xml
 cache:
   - C:\Users\appveyor\.m2
-on_failure:
-  - ps: |
-      7z a -r surefire-reports.zip '**\target\surefire-reports\*'
-      Push-AppveyorArtifact surefire-reports.zip -DeploymentName "Surefire Reports"
+#on_failure:
+#  - ps: |
+#      7z a -r surefire-reports.zip '**\target\surefire-reports\*'
+#      Push-AppveyorArtifact surefire-reports.zip -DeploymentName "Surefire Reports"
