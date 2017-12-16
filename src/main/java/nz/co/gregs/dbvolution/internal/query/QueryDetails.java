@@ -30,6 +30,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import nz.co.gregs.dbvolution.DBQuery;
 import nz.co.gregs.dbvolution.DBQueryRow;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.actions.DBActionList;
@@ -90,6 +91,7 @@ public class QueryDetails implements DBQueryable {
 	private ColumnProvider[] sortOrderColumns;
 	private ArrayList<Object> sortOrder;
 	private List<DBQueryRow> currentPage;
+	private DBQuery primingQuery;
 
 	/**
 	 * <p style="color: #F90;">Support DBvolution at
@@ -627,9 +629,9 @@ public class QueryDetails implements DBQueryable {
 		preExistingTables.addAll(previousTables);
 		preExistingTables.addAll(getAssumedQueryTables());
 
-		List<DBRow> requiredQueryTables = getRequiredQueryTables();
+		List<DBRow> requiredTables = getRequiredQueryTables();
 
-		if (requiredQueryTables.isEmpty() && getOptionalQueryTables().size() == getAllQueryTables().size()) {
+		if (requiredTables.isEmpty() && getOptionalQueryTables().size() == getAllQueryTables().size()) {
 			isFullOuterJoin = true;
 			queryState.addedFullOuterJoinToQuery();
 		} else if (getOptionalQueryTables().contains(newTable)) {
@@ -646,7 +648,7 @@ public class QueryDetails implements DBQueryable {
 
 		// Add new table's conditions
 		List<String> newTableConditions = newTable.getWhereClausesWithAliases(defn);
-		if (requiredQueryTables.contains(newTable)) {
+		if (requiredTables.contains(newTable)) {
 			queryState.addRequiredConditions(newTableConditions);
 		} else {
 			conditionClauses.addAll(newTableConditions);
@@ -673,7 +675,7 @@ public class QueryDetails implements DBQueryable {
 						if (expr.isRelationship()) {
 							joinClauses.add(expr.toSQLString(defn));
 						} else {
-							if (requiredQueryTables.containsAll(tablesInvolved)) {
+							if (requiredTables.containsAll(tablesInvolved)) {
 								queryState.addRequiredCondition(expr.toSQLString(defn));
 							} else {
 								conditionClauses.add(expr.toSQLString(defn));
@@ -816,16 +818,16 @@ public class QueryDetails implements DBQueryable {
 	}
 
 	private String getHavingClause(DBDatabase database, QueryOptions options) {
-		BooleanExpression[] havingColumns = getHavingColumns();
+		BooleanExpression[] having = getHavingColumns();
 		final DBDefinition defn = database.getDefinition();
 		String havingClauseStart = defn.getHavingClauseStart();
-		if (havingColumns.length == 1) {
-			return havingClauseStart + havingColumns[0].toSQLString(defn);
-		} else if (havingColumns.length > 1) {
+		if (having.length == 1) {
+			return havingClauseStart + having[0].toSQLString(defn);
+		} else if (having.length > 1) {
 			String sep = "";
 			final String beginAndLine = defn.beginAndLine();
 			StringBuilder returnStr = new StringBuilder(havingClauseStart);
-			for (BooleanExpression havingColumn : havingColumns) {
+			for (BooleanExpression havingColumn : having) {
 				returnStr.append(sep).append(havingColumn.toSQLString(defn));
 				sep = beginAndLine;
 			}
@@ -844,15 +846,15 @@ public class QueryDetails implements DBQueryable {
 	 * in the query.
 	 *
 	 * <p>
-	 * The standard implementation replaces the query with a LEFT OUTER join
-	 * query UNIONed with a RIGHT OUTER join query.
+	 * The standard implementation replaces the query with a LEFT OUTER join query
+	 * UNIONed with a RIGHT OUTER join query.
 	 *
 	 * @param querySQL
 	 * @param options
 	 * <p style="color: #F90;">Support DBvolution at
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 * @return a fake full outer join query for databases that don't support
-	 * FULL OUTER joins
+	 * @return a fake full outer join query for databases that don't support FULL
+	 * OUTER joins
 	 */
 	private String getSQLForFakeFullOuterJoin(DBDatabase database, String existingSQL, QueryState queryState, QueryDetails details, QueryOptions options, QueryType queryType) {
 		String sqlForQuery;
@@ -1003,13 +1005,13 @@ public class QueryDetails implements DBQueryable {
 			} else {
 				if (details.needsResults(opts)) {
 					int rowLimit = opts.getRowLimit();
-				QueryOptions tempOptions = new QueryOptions(opts);
+					QueryOptions tempOptions = new QueryOptions(opts);
 					tempOptions.setRowLimit(-1);
 					tempOptions.setQueryType(QueryType.SELECT);
 					details.setOptions(tempOptions);
-					
+
 					database.executeDBQuery(details);
-					
+
 					details.setOptions(opts);
 				}
 			}
@@ -1115,11 +1117,11 @@ public class QueryDetails implements DBQueryable {
 	}
 
 	/**
-	 * Finds all instances of {@code example} that share a {@link DBQueryRow}
-	 * with this instance.
+	 * Finds all instances of {@code example} that share a {@link DBQueryRow} with
+	 * this instance.
 	 *
 	 * @param <R> DBRow
-	 * @param query query
+	 * @param row
 	 * @param example example
 	 * <p style="color: #F90;">Support DBvolution at
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
@@ -1294,6 +1296,7 @@ public class QueryDetails implements DBQueryable {
 	 * If the row is new then this method stores it, and returns it as the
 	 * existing instance.
 	 *
+	 * @param defn
 	 * @param newInstance newInstance
 	 * @param existingInstancesOfThisTableRow existingInstancesOfThisTableRow
 	 * <p style="color: #F90;">Support DBvolution at
@@ -1333,7 +1336,7 @@ public class QueryDetails implements DBQueryable {
 		allQueryTables.clear();
 		conditions.clear();
 		extraExamples.clear();
-		blankResults();	
+		blankResults();
 	}
 
 	public void setTimeoutInMilliseconds(Integer milliseconds) {

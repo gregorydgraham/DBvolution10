@@ -16,8 +16,6 @@
 package nz.co.gregs.dbvolution.internal.query;
 
 import java.util.Arrays;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import nz.co.gregs.dbvolution.columns.ColumnProvider;
 import nz.co.gregs.dbvolution.databases.DBDatabase;
 
@@ -28,7 +26,7 @@ import nz.co.gregs.dbvolution.databases.DBDatabase;
  *
  * @author greg
  */
-public final class QueryOptions {
+public class QueryOptions {
 
 	private boolean matchAll = true;
 	private int rowLimit = -1;
@@ -120,7 +118,7 @@ public final class QueryOptions {
 	/**
 	 * @param rowLimit the rowLimit to set
 	 */
-	public void setRowLimit(int rowLimit) {
+	public final void setRowLimit(int rowLimit) {
 		this.rowLimit = rowLimit;
 	}
 
@@ -137,7 +135,7 @@ public final class QueryOptions {
 	/**
 	 * @param sortColumns the sortColumns to set
 	 */
-	public void setSortColumns(ColumnProvider[] sortColumns) {
+	public final void setSortColumns(ColumnProvider[] sortColumns) {
 		this.sortColumns = Arrays.copyOf(sortColumns, sortColumns.length);
 	}
 
@@ -154,7 +152,7 @@ public final class QueryOptions {
 	/**
 	 * @param blankQueryAllowed the blankQueryAllowed to set
 	 */
-	public void setBlankQueryAllowed(boolean blankQueryAllowed) {
+	public final void setBlankQueryAllowed(boolean blankQueryAllowed) {
 		this.blankQueryAllowed = blankQueryAllowed;
 	}
 
@@ -171,7 +169,7 @@ public final class QueryOptions {
 	/**
 	 * @param useANSISyntax the useANSISyntax to set
 	 */
-	public void setUseANSISyntax(boolean useANSISyntax) {
+	public final void setUseANSISyntax(boolean useANSISyntax) {
 		this.useANSISyntax = useANSISyntax;
 	}
 
@@ -188,7 +186,7 @@ public final class QueryOptions {
 	/**
 	 * @param cartesianJoinAllowed the cartesianJoinAllowed to set
 	 */
-	public void setCartesianJoinAllowed(boolean cartesianJoinAllowed) {
+	public final void setCartesianJoinAllowed(boolean cartesianJoinAllowed) {
 		this.cartesianJoinAllowed = cartesianJoinAllowed;
 	}
 
@@ -219,7 +217,7 @@ public final class QueryOptions {
 	/**
 	 * @param pageIndex the pageIndex to set
 	 */
-	public void setPageIndex(int pageIndex) {
+	public final void setPageIndex(int pageIndex) {
 		this.pageIndex = pageIndex;
 	}
 
@@ -311,7 +309,7 @@ public final class QueryOptions {
 	 *
 	 * @param creatingNativeQuery
 	 */
-	public void setCreatingNativeQuery(boolean creatingNativeQuery) {
+	public final void setCreatingNativeQuery(boolean creatingNativeQuery) {
 		queryIsNativeQuery = creatingNativeQuery;
 	}
 
@@ -319,13 +317,13 @@ public final class QueryOptions {
 		return queryType;
 	}
 
-	public void setQueryType(QueryType queryType) {
+	public final void setQueryType(QueryType queryType) {
 		this.queryType = queryType;
 	}
 
 	private DBDatabase queryDatabase;
 
-	public void setQueryDatabase(DBDatabase db) {
+	public final void setQueryDatabase(DBDatabase db) {
 		queryDatabase = db;
 	}
 
