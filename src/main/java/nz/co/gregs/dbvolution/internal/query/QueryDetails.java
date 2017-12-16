@@ -991,25 +991,27 @@ public class QueryDetails implements DBQueryable {
 			opts.setPageIndex(pageNumber);
 			if (details.needsResults(opts)) {
 				fillResultSetInternal(database, details, options);
-//				getAllRowsInternal(options);
 			}
 			setCurrentPage(getResults());
 		} else {
 			if (defn.supportsRowLimitsNatively(opts)) {
 				QueryOptions tempOptions = new QueryOptions(opts);
+				tempOptions.setQueryType(QueryType.SELECT);
 				tempOptions.setRowLimit((pageNumber + 1) * opts.getRowLimit());
 				if (details.needsResults(tempOptions) || tempOptions.getRowLimit() > getResults().size()) {
 					setOptions(tempOptions);
 					database.executeDBQuery(details);
-//					getAllRowsInternal(tempOptions);
 				}
 			} else {
 				if (details.needsResults(opts)) {
 					int rowLimit = opts.getRowLimit();
 					opts.setRowLimit(-1);
+					opts.setQueryType(QueryType.SELECT);
+					
 					database.executeDBQuery(details);
-//					getAllRowsInternal(options);
+					
 					opts.setRowLimit(rowLimit);
+					opts.setQueryType(QueryType.ROWSFORPAGE);
 				}
 			}
 			int rowLimit = opts.getRowLimit();
