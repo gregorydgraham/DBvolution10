@@ -942,14 +942,13 @@ public class QueryDetails implements DBQueryable {
 
 	@Override
 	public List<DBQueryRow> getAllRows() throws SQLException, SQLTimeoutException, AccidentalBlankQueryException, AccidentalCartesianJoinException {
-		final QueryOptions options = getOptions();
-		if (this.needsResults(options)) {
+		final QueryOptions opts = getOptions();
+		if (this.needsResults(opts)) {
 			getOptions().getQueryDatabase().executeDBQuery(this);
-//			getAllRowsInternal(options);
 		}
-		if (options.getRowLimit() > 0 && getResults().size() > options.getRowLimit()) {
-			final int firstItemOfPage = options.getPageIndex() * options.getRowLimit();
-			final int firstItemOfNextPage = (options.getPageIndex() + 1) * options.getRowLimit();
+		if (opts.getRowLimit() > 0 && getResults().size() > opts.getRowLimit()) {
+			final int firstItemOfPage = opts.getPageIndex() * opts.getRowLimit();
+			final int firstItemOfNextPage = (opts.getPageIndex() + 1) * opts.getRowLimit();
 			return getResults().subList(firstItemOfPage, firstItemOfNextPage);
 		} else {
 			return getResults();

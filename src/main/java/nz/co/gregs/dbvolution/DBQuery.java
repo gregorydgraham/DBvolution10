@@ -364,7 +364,6 @@ public class DBQuery {
 		final QueryOptions options = details.getOptions();
 		if (this.needsResults(options)) {
 			database.executeDBQuery(details);
-//			getAllRowsInternal(options);
 		}
 		if (options.getRowLimit() > 0 && details.getResults().size() > options.getRowLimit()) {
 			final int firstItemOfPage = options.getPageIndex() * options.getRowLimit();
@@ -381,6 +380,7 @@ public class DBQuery {
 	 *
 	 * Database exceptions may be thrown
 	 *
+	 * @param defn
 	 * @param resultSet resultSet
 	 * @param queryRow queryRow
 	 * @throws java.sql.SQLException java.sql.SQLException
@@ -1171,9 +1171,7 @@ public class DBQuery {
 			for (Class<? extends DBRow> connectedTable : allConnectedTables) {
 				try {
 					tablesToAdd.add(connectedTable.newInstance());
-				} catch (InstantiationException ex) {
-					throw new UnableToInstantiateDBRowSubclassException(connectedTable, ex);
-				} catch (IllegalAccessException ex) {
+				} catch (InstantiationException | IllegalAccessException ex) {
 					throw new UnableToInstantiateDBRowSubclassException(connectedTable, ex);
 				}
 			}
@@ -1211,9 +1209,7 @@ public class DBQuery {
 			for (Class<? extends DBRow> connectedTable : allConnectedTables) {
 				try {
 					tablesToAdd.add(connectedTable.newInstance());
-				} catch (InstantiationException ex) {
-					throw new UnableToInstantiateDBRowSubclassException(connectedTable, ex);
-				} catch (IllegalAccessException ex) {
+				} catch (InstantiationException | IllegalAccessException ex) {
 					throw new UnableToInstantiateDBRowSubclassException(connectedTable, ex);
 				}
 			}
@@ -1258,9 +1254,7 @@ public class DBQuery {
 				DBRow newInstance;
 				try {
 					newInstance = relatedTable.newInstance();
-				} catch (InstantiationException ex) {
-					throw new UnableToInstantiateDBRowSubclassException(relatedTable, ex);
-				} catch (IllegalAccessException ex) {
+				} catch (InstantiationException | IllegalAccessException ex) {
 					throw new UnableToInstantiateDBRowSubclassException(relatedTable, ex);
 				}
 				@SuppressWarnings("unchecked")
@@ -1312,9 +1306,7 @@ public class DBQuery {
 				DBRow newInstance;
 				try {
 					newInstance = relatedTable.newInstance();
-				} catch (InstantiationException ex) {
-					throw new UnableToInstantiateDBRowSubclassException(relatedTable, ex);
-				} catch (IllegalAccessException ex) {
+				} catch (InstantiationException | IllegalAccessException ex) {
 					throw new UnableToInstantiateDBRowSubclassException(relatedTable, ex);
 				}
 				@SuppressWarnings("unchecked")
@@ -1366,9 +1358,7 @@ public class DBQuery {
 				DBRow newInstance;
 				try {
 					newInstance = relatedTable.newInstance();
-				} catch (InstantiationException ex) {
-					throw new UnableToInstantiateDBRowSubclassException(relatedTable, ex);
-				} catch (IllegalAccessException ex) {
+				} catch (InstantiationException | IllegalAccessException ex) {
 					throw new UnableToInstantiateDBRowSubclassException(relatedTable, ex);
 				}
 				@SuppressWarnings("unchecked")
