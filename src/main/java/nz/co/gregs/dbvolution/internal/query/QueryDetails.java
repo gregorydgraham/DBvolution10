@@ -19,8 +19,6 @@ import java.lang.reflect.Array;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.SQLTimeoutException;
-import nz.co.gregs.dbvolution.internal.query.QueryOptions;
-import nz.co.gregs.dbvolution.internal.query.QueryType;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -80,7 +78,7 @@ public class QueryDetails implements DBQueryable {
 	private final Map<Class<?>, Map<String, DBRow>> existingInstances = new HashMap<>();
 	private boolean groupByRequiredByAggregator = false;
 	private DBDefinition databaseDefinition = null;
-	private String selectClause = null;
+	private String selectSQLClause = null;
 	private final ArrayList<BooleanExpression> havingColumns = new ArrayList<>();
 	private String rawSQLClause = "";
 	private List<DBQueryRow> results;
@@ -239,8 +237,8 @@ public class QueryDetails implements DBQueryable {
 	 *
 	 * @param selectClause
 	 */
-	public void setSelectClause(String selectClause) {
-		this.selectClause = selectClause;
+	public void setSelectSQLClause(String selectClause) {
+		this.selectSQLClause = selectClause;
 	}
 
 	/**
@@ -251,8 +249,8 @@ public class QueryDetails implements DBQueryable {
 	 *
 	 * @return the SELECT clause defined earlier
 	 */
-	public String getSelectClause() {
-		return selectClause;
+	public String getSelectSQLClause() {
+		return selectSQLClause;
 	}
 
 	/**
@@ -555,11 +553,11 @@ public class QueryDetails implements DBQueryable {
 
 			if (queryType == QueryType.SELECT
 					|| queryType == QueryType.REVERSESELECT) {
-				if (getSelectClause() == null) {
-					setSelectClause(selectClause.toString());
+				if (getSelectSQLClause() == null) {
+					setSelectSQLClause(selectClause.toString());
 				}
 				if (queryType == QueryType.REVERSESELECT) {
-					selectClause = new StringBuilder(getSelectClause());
+					selectClause = new StringBuilder(getSelectSQLClause());
 				}
 				String groupByClauseFinal = "";
 				if (isGroupedQuery() && groupByIsRequired) {
@@ -590,7 +588,7 @@ public class QueryDetails implements DBQueryable {
 								.toString(),
 						options);
 			} else if (queryType == QueryType.COUNT) {
-				setSelectClause(defn.countStarClause());
+				setSelectSQLClause(defn.countStarClause());
 				sqlString = defn.beginSelectStatement()
 						+ defn.countStarClause() + lineSep
 						+ fromClause + lineSep
@@ -999,19 +997,21 @@ public class QueryDetails implements DBQueryable {
 				tempOptions.setQueryType(QueryType.SELECT);
 				tempOptions.setRowLimit((pageNumber + 1) * opts.getRowLimit());
 				if (details.needsResults(tempOptions) || tempOptions.getRowLimit() > getResults().size()) {
-					setOptions(tempOptions);
+					details.setOptions(tempOptions);
 					database.executeDBQuery(details);
+					details.setOptions(opts);
 				}
 			} else {
 				if (details.needsResults(opts)) {
 					int rowLimit = opts.getRowLimit();
-					opts.setRowLimit(-1);
-					opts.setQueryType(QueryType.SELECT);
+				QueryOptions tempOptions = new QueryOptions(opts);
+					tempOptions.setRowLimit(-1);
+					tempOptions.setQueryType(QueryType.SELECT);
+					details.setOptions(tempOptions);
 					
 					database.executeDBQuery(details);
 					
-					opts.setRowLimit(rowLimit);
-					opts.setQueryType(QueryType.ROWSFORPAGE);
+					details.setOptions(opts);
 				}
 			}
 			int rowLimit = opts.getRowLimit();
