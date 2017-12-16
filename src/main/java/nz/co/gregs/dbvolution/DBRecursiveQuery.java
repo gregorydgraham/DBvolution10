@@ -196,20 +196,21 @@ public class DBRecursiveQuery<T extends DBRow> {
 	 */
 	private List<DBQueryRow> getRowsFromRecursiveQuery(RecursiveSQLDirection direction) throws SQLException {
 		List<DBQueryRow> returnList = new ArrayList<>();
+		final DBDatabase database = originalQuery.getReadyDatabase();
 		if (originalQuery.getDatabaseDefinition().supportsRecursiveQueriesNatively()) {
-			returnList = performNativeRecursiveQuery(direction, returnList);
+			returnList = performNativeRecursiveQuery(database, direction, returnList);
 		} else {
-			returnList = performRecursiveQueryEmulation(direction);
+			returnList = performRecursiveQueryEmulation(database, direction);
 		}
 		return returnList;
 	}
 
-	private List<DBQueryRow> performNativeRecursiveQuery(RecursiveSQLDirection direction, List<DBQueryRow> returnList) throws SQLException, UnableToInstantiateDBRowSubclassException {
-		final DBDatabase database = originalQuery.getReadyDatabase();
+	private List<DBQueryRow> performNativeRecursiveQuery(DBDatabase database, RecursiveSQLDirection direction, List<DBQueryRow> returnList) throws SQLException, UnableToInstantiateDBRowSubclassException {
+//		final DBDatabase database = originalQuery.getReadyDatabase();
 		final DBDefinition defn = database.getDefinition();
 		DBStatement dbStatement = database.getDBStatement();
 		try {
-			String descendingQuery = getRecursiveSQL(this.keyToFollow, direction);
+			String descendingQuery = getRecursiveSQL(database, this.keyToFollow, direction);
 			originalQuery.setTimeoutInMilliseconds(this.timeoutInMilliseconds);
 			final QueryDetails queryDetails = originalQuery.getQueryDetails();
 			ResultSet resultSet = queryDetails.getResultSetForSQL(dbStatement, descendingQuery);
@@ -235,10 +236,10 @@ public class DBRecursiveQuery<T extends DBRow> {
 		return returnList;
 	}
 
-	private String getRecursiveSQL(ColumnProvider foreignKeyToFollow, RecursiveSQLDirection direction) {
+	private String getRecursiveSQL(DBDatabase database, ColumnProvider foreignKeyToFollow, RecursiveSQLDirection direction) {
 		final Class<? extends DBRow> referencedClass = foreignKeyToFollow.getColumn().getPropertyWrapper().referencedClass();
 		try {
-			final DBDatabase database = originalQuery.getReadyDatabase();
+			//final DBDatabase database = originalQuery.getReadyDatabase();
 			DBDefinition defn = database.getDefinition();
 			final DBRow newInstance = referencedClass.newInstance();
 			final String recursiveTableAlias = database.getDefinition().getTableAlias(newInstance);
@@ -259,8 +260,8 @@ public class DBRecursiveQuery<T extends DBRow> {
 			}
 			recursiveColumnNames += separator + defn.getRecursiveQueryDepthColumnName();
 
-			final DBQuery primingSubQueryForRecursiveQuery = this.getPrimingSubQueryForRecursiveQuery(foreignKeyToFollow);
-			final DBQuery recursiveSubQuery = this.getRecursiveSubQuery(recursiveTableAlias, foreignKeyToFollow, direction);
+			final DBQuery primingSubQueryForRecursiveQuery = this.getPrimingSubQueryForRecursiveQuery(database, foreignKeyToFollow);
+			final DBQuery recursiveSubQuery = this.getRecursiveSubQuery(database, recursiveTableAlias, foreignKeyToFollow, direction);
 
 			String recursiveQuery
 					= defn.beginWithClause() + defn.formatWithClauseTableDefinition(recursiveTableAlias, recursiveColumnNames)
@@ -283,8 +284,8 @@ public class DBRecursiveQuery<T extends DBRow> {
 		return sql.replaceAll("[ \\t\\r\\n]*;[ \\t\\r\\n]*$", System.getProperty("line.separator"));
 	}
 
-	private DBQuery getPrimingSubQueryForRecursiveQuery(ColumnProvider foreignKeyToFollow) {
-		final DBDatabase database = originalQuery.getReadyDatabase();
+	private DBQuery getPrimingSubQueryForRecursiveQuery(DBDatabase database, ColumnProvider foreignKeyToFollow) {
+//		final DBDatabase database = originalQuery.getReadyDatabase();
 		DBQuery newQuery = database.getDBQuery();
 		final RowDefinitionInstanceWrapper rowDefinitionInstanceWrapper = foreignKeyToFollow.getColumn().getPropertyWrapper().getRowDefinitionInstanceWrapper();
 		final Class<?> originatingClass = rowDefinitionInstanceWrapper.adapteeRowDefinitionClass();
@@ -322,9 +323,9 @@ public class DBRecursiveQuery<T extends DBRow> {
 		return newQuery;
 	}
 
-	private DBQuery getRecursiveSubQuery(String recursiveTableAlias, ColumnProvider foreignKeyToFollow, RecursiveSQLDirection direction) {
+	private DBQuery getRecursiveSubQuery(DBDatabase database, String recursiveTableAlias, ColumnProvider foreignKeyToFollow, RecursiveSQLDirection direction) {
 		Class<? extends DBRow> referencedClass;
-		final DBDatabase database = originalQuery.getReadyDatabase();
+//		final DBDatabase database = originalQuery.getReadyDatabase();
 		DBQuery newQuery = database.getDBQuery();
 
 		final AbstractColumn fkColumn = foreignKeyToFollow.getColumn();
@@ -606,7 +607,7 @@ public class DBRecursiveQuery<T extends DBRow> {
 		return trees;
 	}
 
-	private List<DBQueryRow> performRecursiveQueryEmulation(RecursiveSQLDirection direction) throws SQLException {
+	private List<DBQueryRow> performRecursiveQueryEmulation(DBDatabase database, RecursiveSQLDirection direction) throws SQLException {
 
 		final T returnType = getReturnType();
 		List<DBQueryRow> returnList = new ArrayList<>();
@@ -641,7 +642,7 @@ public class DBRecursiveQuery<T extends DBRow> {
 			setQDTPermittedValues(def.getQueryableDatatype(instanceOfRow), value);
 		}
 
-		final DBQuery dbQuery = this.originalQuery.getReadyDatabase().getDBQuery(instanceOfRow);
+		final DBQuery dbQuery = database.getDBQuery(instanceOfRow);
 		dbQuery.setTimeoutInMilliseconds((int) (timeout - (new java.util.Date().getTime() - start)));
 		List<DBQueryRow> allRows = dbQuery.getAllRows();
 
@@ -680,7 +681,7 @@ public class DBRecursiveQuery<T extends DBRow> {
 					qdt = this.keyToFollow.getColumn().getAppropriateQDTFromRow(instanceOfRow);
 				}
 				setQDTPermittedValues(qdt, recurseValues);
-				final DBQuery dbQuery1 = this.originalQuery.getReadyDatabase().getDBQuery(instanceOfRow);
+				final DBQuery dbQuery1 = database.getDBQuery(instanceOfRow);
 				dbQuery1.setTimeoutInMilliseconds((int) (timeout - (new java.util.Date().getTime() - start)));
 				allRows = dbQuery1.getAllRows();
 			}
