@@ -169,9 +169,8 @@ public class RecursiveQueryDetails<T extends DBRow> extends QueryDetails {
 	 */
 	private List<DBQueryRow> getRowsFromRecursiveQuery(DBDatabase database, RecursiveQueryDetails<T> details) throws SQLException {
 		List<DBQueryRow> returnList = new ArrayList<>();
-		final DBQuery originalQuery = details.getOriginalQuery();
 		final RecursiveSQLDirection direction = details.getDirection();
-		if (originalQuery.getDatabaseDefinition().supportsRecursiveQueriesNatively()) {
+		if (database.getDefinition().supportsRecursiveQueriesNatively()) {
 			returnList = performNativeRecursiveQuery(database, details, direction, returnList);
 		} else {
 			returnList = performRecursiveQueryEmulation(database, details, direction);
@@ -260,7 +259,6 @@ public class RecursiveQueryDetails<T extends DBRow> extends QueryDetails {
 	}
 
 	private DBQuery getPrimingSubQueryForRecursiveQuery(DBDatabase database, RecursiveQueryDetails<T> recursiveDetails, ColumnProvider foreignKeyToFollow) {
-//		final DBDatabase database = originalQuery.getReadyDatabase();
 		DBQuery newQuery = database.getDBQuery();
 		final RowDefinitionInstanceWrapper rowDefinitionInstanceWrapper = foreignKeyToFollow.getColumn().getPropertyWrapper().getRowDefinitionInstanceWrapper();
 		final Class<?> originatingClass = rowDefinitionInstanceWrapper.adapteeRowDefinitionClass();
@@ -300,7 +298,6 @@ public class RecursiveQueryDetails<T extends DBRow> extends QueryDetails {
 
 	private DBQuery getRecursiveSubQuery(DBDatabase database, RecursiveQueryDetails<T> recursiveDetails, String recursiveTableAlias, ColumnProvider foreignKeyToFollow, RecursiveSQLDirection direction) {
 		Class<? extends DBRow> referencedClass;
-//		final DBDatabase database = originalQuery.getReadyDatabase();
 		DBQuery newQuery = database.getDBQuery();
 
 		final AbstractColumn fkColumn = foreignKeyToFollow.getColumn();
