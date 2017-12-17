@@ -51,8 +51,8 @@ public abstract class AbstractTest {
 	CarCompany myCarCompanyRow = new CarCompany();
 	public DBTable<Marque> marquesTable;
 	DBTable<CarCompany> carCompanies;
-	public List<Marque> marqueRows = new ArrayList<Marque>();
-	public List<CarCompany> carTableRows = new ArrayList<CarCompany>();
+	public List<Marque> marqueRows = new ArrayList<>();
+	public List<CarCompany> carTableRows = new ArrayList<>();
 	public static final FlexibleDateFormat TEDHI_FORMAT = FlexibleDateFormat.getPatternInstance("dd/M/yyyy h:m:s", Locale.UK);
 	public static final SimpleDateFormat DATETIME_FORMAT = new SimpleDateFormat("dd/MMM/yyyy HH:mm:ss", Locale.UK);
 	public static final FlexibleDateRangeFormat TEDHI_RANGE_FORMAT = FlexibleDateRangeFormat.getPatternInstance("M yyyy", Locale.UK);
@@ -79,9 +79,9 @@ public abstract class AbstractTest {
 			databases.add(new Object[]{"ClusteredDB", 
 				new DBDatabaseCluster(
 						H2MemoryTestDB.getFromSettings("h2memory"),
-						SQLiteTestDB.getFromSettings("sqlite")
-//						TestPostgreSQL.getFromSettings("postgres")
-//						MySQLTestDatabase.getFromSettings("mysql")
+						SQLiteTestDB.getFromSettings("sqlite"),
+						TestPostgreSQL.getFromSettings("postgres"),
+						MySQLTestDatabase.getFromSettings("mysql")
 				)});
 		}
 				if (System.getProperty("testSQLite") != null) {
