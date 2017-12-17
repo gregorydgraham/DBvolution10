@@ -647,7 +647,7 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 		return getWrapper().tableName();
 	}
 
-	void setRecursiveTableAlias(String alias) {
+	public void setRecursiveTableAlias(String alias) {
 		recursiveTableAlias = alias;
 	}
 

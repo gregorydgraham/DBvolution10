@@ -93,8 +93,12 @@ public class DBQuery {
 		return details;
 	}
 
-	@Deprecated
-	DBDatabase getReadyDatabase() {
+	/**
+	 * Use of this method is not recommended as it subverts database clustering.
+	 * 
+	 * @return 
+	 */
+	private DBDatabase getReadyDatabase() {
 		if (database instanceof DBDatabaseCluster) {
 			return ((DBDatabaseCluster) database).getReadyDatabase();
 		} else {
@@ -385,7 +389,7 @@ public class DBQuery {
 	 * @param queryRow queryRow
 	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
-	protected void setExpressionColumns(DBDefinition defn, ResultSet resultSet, DBQueryRow queryRow) throws SQLException {
+	public void setExpressionColumns(DBDefinition defn, ResultSet resultSet, DBQueryRow queryRow) throws SQLException {
 		for (Map.Entry<Object, QueryableDatatype<?>> entry : details.getExpressionColumns().entrySet()) {
 			final Object key = entry.getKey();
 			final QueryableDatatype<?> value = entry.getValue();
@@ -2034,6 +2038,23 @@ public class DBQuery {
 		ArrayList<DBRow> arrayList = new ArrayList<>();
 		arrayList.addAll(details.getOptionalQueryTables());
 		return arrayList;
+	}
+
+	/**
+	 * DBQuery and DBtable are 2 of the few classes that rely on knowing the
+	 * database they work on.
+	 *
+	 * <p>
+	 * This method allows you to retrieve the database used when you execute
+	 * this query.
+	 *
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
+	 * @return the database used during execution of this query.
+	 */
+	public DBDatabase getDatabase() {
+		return database;
 	}
 
 	/**

@@ -974,7 +974,7 @@ public class QueryDetails implements DBQueryable {
 			case GENERATESQLFORCOUNT:
 				this.setResultSQL(getSQLForCount(db, this));
 				break;
-			default:
+			case SELECT:
 				fillResultSetInternal(db, this, getOptions());
 		}
 		return actions;
@@ -983,7 +983,6 @@ public class QueryDetails implements DBQueryable {
 	public void getAllRowsForPage(DBDatabase database, QueryDetails details) throws SQLException {
 		final QueryOptions opts = getOptions();
 		int pageNumber = getResultsPageIndex();
-//		DBDatabase database = getReadyDatabase();
 		final DBDefinition defn = database.getDefinition();
 
 		if (defn.supportsPagingNatively(opts)) {
@@ -1004,7 +1003,6 @@ public class QueryDetails implements DBQueryable {
 				}
 			} else {
 				if (details.needsResults(opts)) {
-					int rowLimit = opts.getRowLimit();
 					QueryOptions tempOptions = new QueryOptions(opts);
 					tempOptions.setRowLimit(-1);
 					tempOptions.setQueryType(QueryType.SELECT);
@@ -1028,12 +1026,11 @@ public class QueryDetails implements DBQueryable {
 		}
 	}
 
-	public void fillResultSetInternal(DBDatabase db, QueryDetails details, QueryOptions options) throws SQLException {
+	protected void fillResultSetInternal(DBDatabase db, QueryDetails details, QueryOptions options) throws SQLException {
 		prepareForQuery(db, options);
 
 		final DBDefinition defn = db.getDefinition();
 
-//		final QueryOptions options = details.getOptions();
 		if (!options.isBlankQueryAllowed() && willCreateBlankQuery(db) && details.getRawSQLClause().isEmpty()) {
 			throw new AccidentalBlankQueryException(options.isBlankQueryAllowed(), willCreateBlankQuery(db), details.getRawSQLClause().isEmpty());
 		}
@@ -1044,10 +1041,15 @@ public class QueryDetails implements DBQueryable {
 			throw new AccidentalCartesianJoinException(details.getResultSQL());
 		}
 
-		DBQueryRow queryRow;
+		fillResultSetFromSQL(db, details, defn, details.getResultSQL());
 
+	}
+
+	protected void fillResultSetFromSQL(DBDatabase db, QueryDetails details, final DBDefinition defn, String sqlString) throws SQLException {
+		DBQueryRow queryRow;
+		
 		try (DBStatement dbStatement = db.getDBStatement();
-				ResultSet resultSet = getResultSetForSQL(dbStatement, details.getResultSQL())) {
+				ResultSet resultSet = getResultSetForSQL(dbStatement, sqlString)) {
 			while (resultSet.next()) {
 				queryRow = new DBQueryRow(this);
 
@@ -1065,7 +1067,6 @@ public class QueryDetails implements DBQueryable {
 				}
 			}
 		}
-
 	}
 
 	@SuppressWarnings("unchecked")
@@ -1166,9 +1167,9 @@ public class QueryDetails implements DBQueryable {
 	 * @throws java.sql.SQLException java.sql.SQLException
 	 * @throws java.sql.SQLTimeoutException
 	 */
-	public synchronized ResultSet getResultSetForSQL(DBStatement statement, String sql) throws SQLException, SQLTimeoutException {
-		if (this.timeoutInMilliseconds != null) {
-			this.timeout = QueryTimeout.scheduleTimeout(statement, this.timeoutInMilliseconds);
+	protected synchronized ResultSet getResultSetForSQL(DBStatement statement, String sql) throws SQLException, SQLTimeoutException {
+		if (this.getTimeoutInMilliseconds() != null) {
+			this.timeout = QueryTimeout.scheduleTimeout(statement, this.getTimeoutInMilliseconds());
 		}
 		final ResultSet queryResults = statement.executeQuery(sql);
 		if (this.timeout != null) {
@@ -1341,5 +1342,12 @@ public class QueryDetails implements DBQueryable {
 
 	public void setTimeoutInMilliseconds(Integer milliseconds) {
 		this.timeoutInMilliseconds = milliseconds;
+	}
+
+	/**
+	 * @return the timeoutInMilliseconds
+	 */
+	public Integer getTimeoutInMilliseconds() {
+		return timeoutInMilliseconds;
 	}
 }
