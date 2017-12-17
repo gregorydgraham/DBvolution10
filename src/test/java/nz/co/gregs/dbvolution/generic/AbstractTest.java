@@ -80,8 +80,8 @@ public abstract class AbstractTest {
 				new DBDatabaseCluster(
 						H2MemoryTestDB.getFromSettings("h2memory")
 						,SQLiteTestDB.getFromSettings("sqlite")
-//						,TestPostgreSQL.getFromSettings("postgres")
-//						,MySQLTestDatabase.getFromSettings("mysql")
+						,TestPostgreSQL.getFromSettings("postgres")
+						,MySQLTestDatabase.getFromSettings("mysql")
 				)});
 		}
 				if (System.getProperty("testSQLite") != null) {
