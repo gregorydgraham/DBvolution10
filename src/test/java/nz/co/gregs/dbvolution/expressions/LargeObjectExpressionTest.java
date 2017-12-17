@@ -23,6 +23,8 @@ import nz.co.gregs.dbvolution.DBQuery;
 import nz.co.gregs.dbvolution.DBQueryRow;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.columns.LargeObjectColumn;
+import nz.co.gregs.dbvolution.databases.DBDatabaseCluster;
+import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.datatypes.DBLargeBinary;
 import nz.co.gregs.dbvolution.example.CompanyLogo;
 import nz.co.gregs.dbvolution.generic.AbstractTest;
@@ -49,7 +51,8 @@ public class LargeObjectExpressionTest extends AbstractTest {
 		CompanyLogo companyLogo = new CompanyLogo();
 		LargeObjectExpression instance = new LargeObjectExpression(companyLogo.column(companyLogo.imageBytes));
 		LargeObjectExpression result = instance.copy();
-		assertEquals(instance.toSQLString(database.getDefinition()), result.toSQLString(database.getDefinition()));
+		final DBDefinition definition = database.getDefinition();
+		assertEquals(instance.toSQLString(definition), result.toSQLString(definition));
 	}
 
 	@Test

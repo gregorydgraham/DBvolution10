@@ -16,6 +16,8 @@
 package nz.co.gregs.dbvolution;
 
 import java.util.Date;
+import java.util.GregorianCalendar;
+import nz.co.gregs.dbvolution.databases.DBDatabaseCluster;
 import nz.co.gregs.dbvolution.datatypes.DBDate;
 import nz.co.gregs.dbvolution.datatypes.DBNumber;
 import nz.co.gregs.dbvolution.datatypes.DBString;
@@ -44,13 +46,22 @@ public class ExpressionColumnTests extends AbstractTest {
 		final Date dateKey = new Date();
 		query.addExpressionColumn(dateKey, DateExpression.currentDateOnly().asExpressionColumn());
 
-		final String sqlForQuery = query.getSQLForQuery();
-		Assert.assertThat(sqlForQuery, containsString(database.getDefinition().doCurrentDateOnlyTransform().trim()));
-
+		if (!(database instanceof DBDatabaseCluster)) {
+			final String sqlForQuery = query.getSQLForQuery();
+			Assert.assertThat(sqlForQuery, containsString(database.getDefinition().doCurrentDateOnlyTransform().trim()));
+		}
 		for (DBQueryRow row : query.getAllRows()) {
 			QueryableDatatype<?> expressionColumnValue = row.getExpressionColumnValue(dateKey);
 			if (expressionColumnValue instanceof DBDate) {
+				GregorianCalendar cal = new GregorianCalendar();
+				cal.add(GregorianCalendar.MINUTE,+1);
+				Date later = cal.getTime();
+				cal.add(GregorianCalendar.MINUTE,-1);
+				cal.add(GregorianCalendar.HOUR,-24);
+				Date yesterday = cal.getTime();
 				DBDate currentDate = (DBDate) expressionColumnValue;
+				Assert.assertThat(currentDate.getValue(), lessThan(later));
+				Assert.assertThat(currentDate.getValue(), greaterThan(yesterday));
 			} else {
 				throw new RuntimeException("CurrentDate Expression Failed To Create DBDate Instance");
 			}
