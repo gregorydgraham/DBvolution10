@@ -924,4 +924,9 @@ public class SQLiteDefinition extends DBDefinition implements SupportsDateRepeat
 	public boolean supportsAlterTableAddConstraint() {
 		return false;
 	}
+
+	@Override
+	public boolean supportsTableCheckingViaMetaData() {
+		return false;
+	}
 }

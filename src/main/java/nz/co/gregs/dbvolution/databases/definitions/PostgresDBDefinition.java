@@ -874,4 +874,9 @@ public class PostgresDBDefinition extends DBDefinition {
 		return " (RANDOM())";
 	}
 
+	@Override
+	public boolean supportsTableCheckingViaMetaData() {
+		return false;
+	}
+
 }

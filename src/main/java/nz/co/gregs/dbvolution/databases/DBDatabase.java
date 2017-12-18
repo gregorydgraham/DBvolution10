@@ -1908,11 +1908,11 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 
 	public void doCommit() {
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-		}
+	}
 
 	public void doRollback() {
 
-		}
+	}
 
 	public void setExplicitCommitAction(boolean b) {
 		explicitCommitActionRequired = b;
@@ -1922,7 +1922,29 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 		return action.execute(this);
 	}
 
-	public DBActionList executeDBQuery(DBQueryable query) throws SQLException {
+	public DBQueryable executeDBQuery(DBQueryable query) throws SQLException {
 		return query.query(this);
+	}
+
+	public boolean tableExists(DBRow table) throws SQLException {
+		boolean tableExists = false;
+
+		if (getDefinition().supportsTableCheckingViaMetaData()) {
+			Connection conn = getConnection(); // get a DB connection from somewhere
+			ResultSet rset = conn.getMetaData().getTables(null, null, table.getTableName(), null);
+			if (rset.next()) {
+				tableExists = true;
+			}
+		}else{
+			DBQuery testQuery = getDBQuery(table).setBlankQueryAllowed(true).setRowLimit(1);
+			try{
+				testQuery.getAllRows();
+				tableExists=true;
+			}catch(SQLException|RuntimeException sqlex){
+				// Theoretically this should only need to catch an SQLException 
+				// but SQLite, H2, and Postgres all throw RuntimeException
+			}
+		}
+		return tableExists;
 	}
 }

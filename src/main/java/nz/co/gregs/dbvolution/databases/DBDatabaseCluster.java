@@ -33,9 +33,13 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Iterator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Queue;
 import java.util.Random;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.SynchronousQueue;
 import nz.co.gregs.dbvolution.DBQueryRow;
 import nz.co.gregs.dbvolution.DBReport;
 import nz.co.gregs.dbvolution.DBRow;
@@ -64,6 +68,7 @@ public class DBDatabaseCluster extends DBDatabase {
 	private final List<DBDatabase> addedDatabases = new ArrayList<>();
 	private final List<DBDatabase> readyDatabases = new ArrayList<>();
 	private final DBStatementCluster clusterStatement;
+	private final Map<DBDatabase, Queue<DBExecutable>> queuedActions = new HashMap<>(0);
 
 	public DBDatabaseCluster(DBDatabase... databases) throws SQLException {
 		super();
@@ -71,7 +76,7 @@ public class DBDatabaseCluster extends DBDatabase {
 		clusterStatement = new DBStatementCluster(this);
 		this.addedDatabases.addAll(Arrays.asList(databases));
 		this.allDatabases.addAll(Arrays.asList(databases));
-		synchroniseAddedDatabases();
+		synchronizeStartupDatabases();
 	}
 
 	/**
@@ -95,9 +100,9 @@ public class DBDatabaseCluster extends DBDatabase {
 	 * @throws IllegalArgumentException if some property of this element prevents
 	 * it from being added to this list
 	 */
-	public boolean addDatabase(DBDatabase database) {
+	public boolean addDatabase(DBDatabase database) throws SQLException {
 		addedDatabases.add(database);
-		synchroniseAddedDatabases();
+		synchronizeAddedDatabases();
 		return allDatabases.add(database);
 	}
 
@@ -115,7 +120,7 @@ public class DBDatabaseCluster extends DBDatabase {
 	 * the specified element (or equivalently, if this list changed as a result of
 	 * the call).
 	 *
-	 * @param database DBDatabase to be removed from this list, if present
+	 * @param databases DBDatabases to be removed from this list, if present
 	 * @return <tt>true</tt> if this list contained the specified element
 	 * @throws ClassCastException if the type of the specified element is
 	 * incompatible with this list
@@ -126,8 +131,37 @@ public class DBDatabaseCluster extends DBDatabase {
 	 * @throws UnsupportedOperationException if the <tt>remove</tt> operation is
 	 * not supported by this list
 	 */
-	public boolean removeDatabases(DBDatabase database) {
-		return allDatabases.remove(database);
+	public boolean removeDatabases(List<DBDatabase> databases) {
+		return removeDatabases(databases.toArray(new DBDatabase[]{}));
+	}
+
+	/**
+	 * Removes the first occurrence of the specified element from this list, if it
+	 * is present (optional operation). If this list does not contain the element,
+	 * it is unchanged. More formally, removes the element with the lowest index
+	 * <tt>i</tt> such that
+	 * <tt>(o==null&nbsp;?&nbsp;get(i)==null&nbsp;:&nbsp;o.equals(get(i)))</tt>
+	 * (if such an element exists). Returns <tt>true</tt> if this list contained
+	 * the specified element (or equivalently, if this list changed as a result of
+	 * the call).
+	 *
+	 * @param databases DBDatabases to be removed from this list, if present
+	 * @return <tt>true</tt> if this list contained the specified element
+	 * @throws ClassCastException if the type of the specified element is
+	 * incompatible with this list
+	 * (<a href="Collection.html#optional-restrictions">optional</a>)
+	 * @throws NullPointerException if the specified element is null and this list
+	 * does not permit null elements
+	 * (<a href="Collection.html#optional-restrictions">optional</a>)
+	 * @throws UnsupportedOperationException if the <tt>remove</tt> operation is
+	 * not supported by this list
+	 */
+	public boolean removeDatabases(DBDatabase... databases) {
+		for (DBDatabase database : databases) {
+			queuedActions.remove(database);
+			allDatabases.remove(database);
+		}
+		return true;
 	}
 
 	/**
@@ -183,24 +217,21 @@ public class DBDatabaseCluster extends DBDatabase {
 
 	@Override
 	public void preventDroppingOfDatabases(boolean justLeaveThisAtTrue) {
-		for (Iterator<DBDatabase> iterator = readyDatabases.iterator(); iterator.hasNext();) {
-			DBDatabase next = iterator.next();
+		for (DBDatabase next : readyDatabases) {
 			next.preventDroppingOfDatabases(justLeaveThisAtTrue);
 		}
 	}
 
 	@Override
 	public void preventDroppingOfTables(boolean droppingTablesIsAMistake) {
-		for (Iterator<DBDatabase> iterator = readyDatabases.iterator(); iterator.hasNext();) {
-			DBDatabase next = iterator.next();
+		for (DBDatabase next : readyDatabases) {
 			next.preventDroppingOfTables(droppingTablesIsAMistake);
 		}
 	}
 
 	@Override
 	public void setBatchSQLStatementsWhenPossible(boolean batchSQLStatementsWhenPossible) {
-		for (Iterator<DBDatabase> iterator = readyDatabases.iterator(); iterator.hasNext();) {
-			DBDatabase next = iterator.next();
+		for (DBDatabase next : readyDatabases) {
 			next.setBatchSQLStatementsWhenPossible(batchSQLStatementsWhenPossible);
 		}
 	}
@@ -208,8 +239,7 @@ public class DBDatabaseCluster extends DBDatabase {
 	@Override
 	public boolean batchSQLStatementsWhenPossible() {
 		boolean result = true;
-		for (Iterator<DBDatabase> iterator = readyDatabases.iterator(); iterator.hasNext();) {
-			DBDatabase next = iterator.next();
+		for (DBDatabase next : readyDatabases) {
 			result &= next.batchSQLStatementsWhenPossible();
 		}
 		return result;
@@ -217,16 +247,14 @@ public class DBDatabaseCluster extends DBDatabase {
 
 	@Override
 	public void dropDatabase(String databaseName, boolean doIt) throws Exception, UnsupportedOperationException, AutoCommitActionDuringTransactionException {
-		for (Iterator<DBDatabase> iterator = readyDatabases.iterator(); iterator.hasNext();) {
-			DBDatabase next = iterator.next();
+		for (DBDatabase next : readyDatabases) {
 			next.dropDatabase(databaseName, doIt);
 		}
 	}
 
 	@Override
 	public void dropDatabase(boolean doIt) throws Exception, UnsupportedOperationException, AutoCommitActionDuringTransactionException {
-		for (Iterator<DBDatabase> iterator = readyDatabases.iterator(); iterator.hasNext();) {
-			DBDatabase next = iterator.next();
+		for (DBDatabase next : readyDatabases) {
 			next.dropDatabase(doIt);
 		}
 	}
@@ -238,32 +266,28 @@ public class DBDatabaseCluster extends DBDatabase {
 
 	@Override
 	public <TR extends DBRow> void dropTableNoExceptions(TR tableRow) throws AccidentalDroppingOfTableException, AutoCommitActionDuringTransactionException {
-		for (Iterator<DBDatabase> iterator = readyDatabases.iterator(); iterator.hasNext();) {
-			DBDatabase next = iterator.next();
+		for (DBDatabase next : readyDatabases) {
 			next.dropTableNoExceptions(tableRow);
 		}
 	}
 
 	@Override
 	public void dropTable(DBRow tableRow) throws SQLException, AutoCommitActionDuringTransactionException, AccidentalDroppingOfTableException {
-		for (Iterator<DBDatabase> iterator = readyDatabases.iterator(); iterator.hasNext();) {
-			DBDatabase next = iterator.next();
+		for (DBDatabase next : readyDatabases) {
 			next.dropTable(tableRow);
 		}
 	}
 
 	@Override
 	public void createIndexesOnAllFields(DBRow newTableRow) throws SQLException {
-		for (Iterator<DBDatabase> iterator = readyDatabases.iterator(); iterator.hasNext();) {
-			DBDatabase next = iterator.next();
+		for (DBDatabase next : readyDatabases) {
 			next.createIndexesOnAllFields(newTableRow);
 		}
 	}
 
 	@Override
 	public void removeForeignKeyConstraints(DBRow newTableRow) throws SQLException {
-		for (Iterator<DBDatabase> iterator = readyDatabases.iterator(); iterator.hasNext();) {
-			DBDatabase next = iterator.next();
+		for (DBDatabase next : readyDatabases) {
 			next.removeForeignKeyConstraints(newTableRow);
 		}
 	}
@@ -277,56 +301,49 @@ public class DBDatabaseCluster extends DBDatabase {
 
 	@Override
 	public void createTableWithForeignKeys(DBRow newTableRow) throws SQLException, AutoCommitActionDuringTransactionException {
-		for (Iterator<DBDatabase> iterator = readyDatabases.iterator(); iterator.hasNext();) {
-			DBDatabase next = iterator.next();
+		for (DBDatabase next : readyDatabases) {
 			next.createTableWithForeignKeys(newTableRow);
 		}
 	}
 
 	@Override
 	public void createTable(DBRow newTableRow) throws SQLException, AutoCommitActionDuringTransactionException {
-		for (Iterator<DBDatabase> iterator = readyDatabases.iterator(); iterator.hasNext();) {
-			DBDatabase next = iterator.next();
+		for (DBDatabase next : readyDatabases) {
 			next.createTable(newTableRow);
 		}
 	}
 
 	@Override
 	public void createTablesWithForeignKeysNoExceptions(DBRow... newTables) {
-		for (Iterator<DBDatabase> iterator = readyDatabases.iterator(); iterator.hasNext();) {
-			DBDatabase next = iterator.next();
+		for (DBDatabase next : readyDatabases) {
 			next.createTablesWithForeignKeysNoExceptions(newTables);
 		}
 	}
 
 	@Override
 	public void createTablesNoExceptions(DBRow... newTables) {
-		for (Iterator<DBDatabase> iterator = readyDatabases.iterator(); iterator.hasNext();) {
-			DBDatabase next = iterator.next();
+		for (DBDatabase next : readyDatabases) {
 			next.createTablesNoExceptions(newTables);
 		}
 	}
 
 	@Override
 	public void createTablesNoExceptions(boolean includeForeignKeyClauses, DBRow... newTables) {
-		for (Iterator<DBDatabase> iterator = readyDatabases.iterator(); iterator.hasNext();) {
-			DBDatabase next = iterator.next();
+		for (DBDatabase next : readyDatabases) {
 			next.createTablesNoExceptions(includeForeignKeyClauses, newTables);
 		}
 	}
 
 	@Override
 	public void createTableNoExceptions(DBRow newTable) throws AutoCommitActionDuringTransactionException {
-		for (Iterator<DBDatabase> iterator = readyDatabases.iterator(); iterator.hasNext();) {
-			DBDatabase next = iterator.next();
+		for (DBDatabase next : readyDatabases) {
 			next.createTableNoExceptions(newTable);
 		}
 	}
 
 	@Override
 	public void createTableNoExceptions(boolean includeForeignKeyClauses, DBRow newTable) throws AutoCommitActionDuringTransactionException {
-		for (Iterator<DBDatabase> iterator = readyDatabases.iterator(); iterator.hasNext();) {
-			DBDatabase next = iterator.next();
+		for (DBDatabase next : readyDatabases) {
 			next.createTableNoExceptions(includeForeignKeyClauses, newTable);
 		}
 	}
@@ -340,8 +357,7 @@ public class DBDatabaseCluster extends DBDatabase {
 	public DBActionList implement(DBScript script) throws Exception {
 		DBActionList actions = new DBActionList();
 		try {
-			for (Iterator<DBDatabase> iterator = readyDatabases.iterator(); iterator.hasNext();) {
-				DBDatabase next = iterator.next();
+			for (DBDatabase next : readyDatabases) {
 				actions = next.implement(script);
 			}
 			commitAll();
@@ -356,21 +372,6 @@ public class DBDatabaseCluster extends DBDatabase {
 		return getReadyDatabase().doReadOnlyTransaction(dbTransaction);
 	}
 
-//	@Override
-//	public <V> V doTransaction(DBTransaction<V> dbTransaction) throws SQLException, Exception {
-//		V result = null;
-//		try {
-//			for (Iterator<DBDatabase> iterator = readyDatabases.iterator(); iterator.hasNext();) {
-//				DBDatabase next = iterator.next();
-//				result = next.doTransaction(dbTransaction);
-//			}
-//			commitAll();
-//		} catch (Exception exc) {
-//			rollbackAll(exc);
-//		}
-//		return result;
-//	}
-
 	@Override
 	public <V> V doTransaction(DBTransaction<V> dbTransaction, Boolean commit) throws SQLException, Exception {
 		V result = null;
@@ -378,7 +379,6 @@ public class DBDatabaseCluster extends DBDatabase {
 		List<DBDatabase> transactionDatabases = new ArrayList<>();
 		try {
 			for (DBDatabase database : readyDatabases) {
-//				result = next.doTransaction(dbTransaction, commit);
 				DBDatabase db;
 				synchronized (database) {
 					db = database.clone();
@@ -506,14 +506,19 @@ public class DBDatabaseCluster extends DBDatabase {
 		return super.clone();
 	}
 
-	private void synchroniseAddedDatabases() {
+	private void synchronizeStartupDatabases() throws SQLException {
 		DBDatabase[] addedDBs;
 		synchronized (addedDatabases) {
 			addedDBs = addedDatabases.toArray(new DBDatabase[]{});
 		}
 		for (DBDatabase db : addedDBs) {
 			addedDatabases.remove(db);
+			queuedActions.put(db, new LinkedBlockingQueue<DBExecutable>());
 			//Do The Synchronising...
+
+			if (!readyDatabases.isEmpty()) {
+				synchronizeStartupDatabase(db);
+			}
 
 			db.setExplicitCommitAction(true);
 			//Mark the database as ready
@@ -537,16 +542,18 @@ public class DBDatabaseCluster extends DBDatabase {
 
 	@Override
 	public DBActionList executeDBAction(DBExecutable action) throws SQLException {
+		addActionToQueue(action);
 		DBActionList actionsPerformed = new DBActionList();
 		for (DBDatabase next : readyDatabases) {
 			actionsPerformed = action.execute(next);
+			removeActionFromQueue(next, action);
 		}
 		return actionsPerformed;
 	}
 
 	@Override
-	public DBActionList executeDBQuery(DBQueryable action) throws SQLException {
-		DBActionList actionsPerformed = action.query(this.getReadyDatabase());
+	public DBQueryable executeDBQuery(DBQueryable action) throws SQLException {
+		DBQueryable actionsPerformed = action.query(this.getReadyDatabase());
 		return actionsPerformed;
 	}
 
@@ -573,4 +580,44 @@ public class DBDatabaseCluster extends DBDatabase {
 			db.setPrintSQLBeforeExecuting(b);
 		}
 	}
+
+	private synchronized void addActionToQueue(DBExecutable action) {
+		for (DBDatabase db : allDatabases) {
+			queuedActions.get(db).add(action);
+		}
+	}
+
+	private synchronized void removeActionFromQueue(DBDatabase database, DBExecutable action) {
+		queuedActions.get(database).remove();
+	}
+
+	private void synchronizeStartupDatabase(DBDatabase db) throws SQLException {
+
+		// need to check all tables and rows here
+		DBDatabase primary = getPrimaryDatabase();
+
+		synchronizeActions(db);
+	}
+
+	private void synchronizeActions(DBDatabase db) throws SQLException {
+		Queue<DBExecutable> queue = queuedActions.get(db);
+		while (!queue.isEmpty()) {
+			DBExecutable action = queue.remove();
+			db.executeDBAction(action);
+		}
+	}
+
+	private void synchronizeAddedDatabases() {
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	}
+
+	@Override
+	public boolean tableExists(DBRow table) throws SQLException {
+		boolean tableExists = true;
+		for (DBDatabase readyDatabase : readyDatabases) {
+			tableExists &= readyDatabase.tableExists(table);
+		}
+		return tableExists;
+	}
+
 }

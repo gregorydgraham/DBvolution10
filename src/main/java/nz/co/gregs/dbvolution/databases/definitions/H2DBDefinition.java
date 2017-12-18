@@ -598,4 +598,9 @@ public class H2DBDefinition extends DBDefinition implements SupportsDateRepeatDa
 	public boolean supportsFullOuterJoinNatively() {
 		return false;
 	}
+
+	@Override
+	public boolean supportsTableCheckingViaMetaData() {
+		return false;
+	}
 }
