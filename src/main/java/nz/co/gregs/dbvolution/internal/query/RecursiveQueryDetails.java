@@ -38,6 +38,7 @@ import nz.co.gregs.dbvolution.DBQuery;
 import nz.co.gregs.dbvolution.DBQueryRow;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.actions.DBActionList;
+import nz.co.gregs.dbvolution.actions.DBQueryable;
 import nz.co.gregs.dbvolution.columns.AbstractColumn;
 import nz.co.gregs.dbvolution.columns.ColumnProvider;
 import nz.co.gregs.dbvolution.columns.DateColumn;
@@ -135,9 +136,9 @@ public class RecursiveQueryDetails<T extends DBRow> extends QueryDetails {
 	}
 
 	@Override
-	public DBActionList query(DBDatabase db) throws SQLException {
+	public DBQueryable query(DBDatabase db) throws SQLException {
 		getRowsFromRecursiveQuery(db, this);
-		return new DBActionList();
+		return this;
 	}
 
 	/**
