@@ -91,7 +91,6 @@ public class QueryDetails implements DBQueryable {
 	private ColumnProvider[] sortOrderColumns;
 	private ArrayList<Object> sortOrder;
 	private List<DBQueryRow> currentPage;
-	private DBQuery primingQuery;
 
 	/**
 	 * <p style="color: #F90;">Support DBvolution at
@@ -958,8 +957,7 @@ public class QueryDetails implements DBQueryable {
 	}
 
 	@Override
-	public DBActionList query(DBDatabase db) throws SQLException {
-		DBActionList actions = new DBActionList();
+	public DBQueryable query(DBDatabase db) throws SQLException {
 		getOptions().setQueryDatabase(db);
 		switch (getOptions().getQueryType()) {
 			case COUNT:
@@ -977,7 +975,7 @@ public class QueryDetails implements DBQueryable {
 			case SELECT:
 				fillResultSetInternal(db, this, getOptions());
 		}
-		return actions;
+		return this;
 	}
 
 	public void getAllRowsForPage(DBDatabase database, QueryDetails details) throws SQLException {
