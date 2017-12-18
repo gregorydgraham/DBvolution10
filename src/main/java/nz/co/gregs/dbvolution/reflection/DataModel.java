@@ -20,6 +20,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -347,9 +348,29 @@ public class DataModel {
 	 *
 	 * @return all the subclasses of DBRow in the current classpath.
 	 */
-	public static Set<Class<? extends DBRow>> getDBRowClasses() {
+	public static Set<Class<? extends DBRow>> getDBRowSubclasses() {
 		Reflections reflections = new Reflections("");
 		return reflections.getSubTypesOf(DBRow.class);
+	}
+
+	/**
+	 * Find all DBRow subclasses on the current classpath.
+	 *
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
+	 * @return all the subclasses of DBRow in the current classpath.
+	 */
+	public static Set<Class<? extends DBRow>> getDBRowDirectSubclasses() {
+		Reflections reflections = new Reflections("");
+		Set<Class<? extends DBRow>> subTypesOf = reflections.getSubTypesOf(DBRow.class);
+		Set<Class<? extends DBRow>> result = new HashSet<Class<? extends DBRow>>();
+		for (Class<? extends DBRow> clzz: subTypesOf){
+			if (clzz.getGenericSuperclass().equals(DBRow.class)){
+				result.add(clzz);
+			}
+		}
+		return result;
 	}
 
 	/**
@@ -363,7 +384,7 @@ public class DataModel {
 	 * examples.
 	 */
 	public static Set<Class<? extends DBRow>> getDBRowClassesExcludingDBvolutionExamples() {
-		Set<Class<? extends DBRow>> dbRowClasses = getDBRowClasses();
+		Set<Class<? extends DBRow>> dbRowClasses = getDBRowSubclasses();
 		HashSet<Class<? extends DBRow>> returnSet = new HashSet<Class<? extends DBRow>>();
 		for (Class<? extends DBRow> dbrowClass : dbRowClasses) {
 			if (!dbrowClass.getPackage().getName().startsWith("nz.co.gregs.dbvolution")) {
@@ -374,7 +395,7 @@ public class DataModel {
 	}
 
 	/**
-	 * Using the classes found by {@link #getDBRowClasses() }, creates an instance
+	 * Using the classes found by {@link #getDBRowSubclasses() }, creates an instance
 	 * of as many classes as possible.
 	 *
 	 * <p style="color: #F90;">Support DBvolution at
@@ -384,15 +405,27 @@ public class DataModel {
 	 * easily.
 	 */
 	public static List<DBRow> getDBRowInstances() {
+		return getDBRowInstances(getDBRowSubclasses());
+	}
+
+	/**
+	 * Using the classes supplied creates an instance of as many classes as
+	 * possible.
+	 *
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
+	 * @param dbRowClasses
+	 * @return an instance of every DBRow class that can be found and created
+	 * easily.
+	 */
+	public static List<DBRow> getDBRowInstances(Collection<Class<? extends DBRow>> dbRowClasses) {
 		List<DBRow> dbrows = new ArrayList<DBRow>();
-		Set<Class<? extends DBRow>> dbRowClasses = getDBRowClasses();
 		for (Class<? extends DBRow> dbRowClass : dbRowClasses) {
 			try {
 				DBRow newInstance = dbRowClass.newInstance();
 				dbrows.add(newInstance);
-			} catch (InstantiationException ex) {
-				Logger.getLogger(DataModel.class.getName()).log(Level.INFO, null, ex);
-			} catch (IllegalAccessException ex) {
+			} catch (InstantiationException | IllegalAccessException ex) {
 				Logger.getLogger(DataModel.class.getName()).log(Level.INFO, null, ex);
 			}
 		}
