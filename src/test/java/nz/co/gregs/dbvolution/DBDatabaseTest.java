@@ -224,7 +224,7 @@ public class DBDatabaseTest extends AbstractTest {
 		try {
 			Assert.assertThat(database.getDBTable(new DropTableTestClass()).setBlankQueryAllowed(true).getAllRows().size(), is(0));
 		} catch (SQLException exp) {
-			throw new DBRuntimeException();
+			throw new DBRuntimeException(exp);
 		}
 	}
 
