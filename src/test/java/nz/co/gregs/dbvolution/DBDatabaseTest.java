@@ -164,9 +164,9 @@ public class DBDatabaseTest extends AbstractTest {
 		final CreateTableWithForeignKeyTestClass2 createTableTestClass = new CreateTableWithForeignKeyTestClass2();
 		database.createTable(createTableTestClass);
 		Assert.assertThat(database.getDBTable(createTableTestClass).setBlankQueryAllowed(true).getAllRows().size(), is(0));
-//		if (!(database instanceof SQLiteDB)) {
+
 		database.createForeignKeyConstraints(createTableTestClass);
-//		}
+
 		database.createIndexesOnAllFields(createTableTestClass);
 
 		try {
