@@ -66,21 +66,16 @@ public class DataModelTest extends AbstractTest {
 	}
 
 	@Test
-	public void testGetDBDatabaseConstructorsPublicWithoutParameters() {
+	public void testGetDBDatabaseConstructorsPublicWithoutParameters() throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
 		Set<Constructor<DBDatabase>> result = DataModel.getDBDatabaseConstructorsPublicWithoutParameters();
 		for (Constructor<DBDatabase> constr : result) {
 			try {
 				constr.setAccessible(true);
 				DBDatabase newInstance = constr.newInstance();
 				Assert.assertThat(newInstance, instanceOf(DBDatabase.class));
-			} catch (InstantiationException ex) {
+			} catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
 				Logger.getLogger(DataModelTest.class.getName()).log(Level.SEVERE, null, ex);
-			} catch (IllegalAccessException ex) {
-				Logger.getLogger(DataModelTest.class.getName()).log(Level.SEVERE, null, ex);
-			} catch (IllegalArgumentException ex) {
-				Logger.getLogger(DataModelTest.class.getName()).log(Level.SEVERE, null, ex);
-			} catch (InvocationTargetException ex) {
-				Logger.getLogger(DataModelTest.class.getName()).log(Level.SEVERE, null, ex);
+				throw ex;
 			}
 		}
 		Assert.assertThat(result.size(), is(1));
@@ -88,8 +83,14 @@ public class DataModelTest extends AbstractTest {
 
 	@Test
 	public void testGetDBRowClasses() {
-		Set<Class<? extends DBRow>> result = DataModel.getDBRowClasses();
+		Set<Class<? extends DBRow>> result = DataModel.getDBRowSubclasses();
 		Assert.assertThat(result.size(), is(230));
+	}
+
+	@Test
+	public void testGetDBRowDirectSubclasses() {
+		Set<Class<? extends DBRow>> result = DataModel.getDBRowDirectSubclasses();
+		Assert.assertThat(result.size(), is(182));
 	}
 
 	@Test
@@ -99,11 +100,7 @@ public class DataModelTest extends AbstractTest {
 			creator.setAccessible(true);
 			try {
 				DBDatabase db = (DBDatabase) creator.invoke(null);
-			} catch (IllegalAccessException ex) {
-				Assert.fail("Unable to invoke " + creator.getDeclaringClass().getCanonicalName() + "." + creator.getName() + "()");
-			} catch (IllegalArgumentException ex) {
-				Assert.fail("Unable to invoke " + creator.getDeclaringClass().getCanonicalName() + "." + creator.getName() + "()");
-			} catch (InvocationTargetException ex) {
+			} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
 				Assert.fail("Unable to invoke " + creator.getDeclaringClass().getCanonicalName() + "." + creator.getName() + "()");
 			}
 		}
