@@ -43,14 +43,13 @@ public class ExpressionColumnTests extends AbstractTest {
 		marque.name.permittedValuesIgnoreCase("TOYOTA");
 		DBQuery query = database.getDBQuery(marque, carCompany);
 
+		final Date dateKey = new Date();
+		query.addExpressionColumn(dateKey, DateExpression.currentDateOnly().asExpressionColumn());
+
 		if (!(database instanceof DBDatabaseCluster)) {
 			final String sqlForQuery = query.getSQLForQuery();
 			Assert.assertThat(sqlForQuery, containsString(database.getDefinition().doCurrentDateOnlyTransform().trim()));
 		}
-
-		final Date dateKey = new Date();
-		query.addExpressionColumn(dateKey, DateExpression.currentDateOnly().asExpressionColumn());
-
 		if (!(database instanceof DBDatabaseCluster)) {
 			final String sqlForQuery = query.getSQLForQuery();
 			Assert.assertThat(sqlForQuery, containsString(database.getDefinition().doCurrentDateOnlyTransform().trim()));
