@@ -989,11 +989,13 @@ public class DBTable<E extends DBRow> {
 		System.out.println(this.getSQLForQuery());
 	}
 
-	public void setQueryTimeout(int i) {
+	public DBTable<E> setQueryTimeout(int i) {
 		query.setTimeoutInMilliseconds(i);
+		return this;
 	}
 	
-	public void clearTimeout(){
+	public DBTable<E> clearTimeout(){
 		query.clearTimeout();
+		return this;
 	}
 }
