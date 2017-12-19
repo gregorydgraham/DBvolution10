@@ -646,6 +646,9 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 	public String getTableName() {
 		return getWrapper().tableName();
 	}
+	public String getSelectQuery() {
+		return getWrapper().selectQuery();
+	}
 
 	public void setRecursiveTableAlias(String alias) {
 		recursiveTableAlias = alias;

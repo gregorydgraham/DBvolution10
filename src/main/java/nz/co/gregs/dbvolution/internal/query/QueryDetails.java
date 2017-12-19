@@ -30,10 +30,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import nz.co.gregs.dbvolution.DBQuery;
 import nz.co.gregs.dbvolution.DBQueryRow;
 import nz.co.gregs.dbvolution.DBRow;
-import nz.co.gregs.dbvolution.actions.DBActionList;
 import nz.co.gregs.dbvolution.actions.DBQueryable;
 import nz.co.gregs.dbvolution.columns.ColumnProvider;
 import nz.co.gregs.dbvolution.databases.DBDatabase;
@@ -430,7 +428,7 @@ public class QueryDetails implements DBQueryable {
 			String tableName;
 
 			for (DBRow tabRow : sortedQueryTables) {
-				tableName = tabRow.getTableName();
+					tableName = tabRow.getTableName();
 
 				List<PropertyWrapper> tabProps = tabRow.getSelectedProperties();
 				for (PropertyWrapper propWrapper : tabProps) {
@@ -1045,7 +1043,7 @@ public class QueryDetails implements DBQueryable {
 
 	protected void fillResultSetFromSQL(DBDatabase db, QueryDetails details, final DBDefinition defn, String sqlString) throws SQLException {
 		DBQueryRow queryRow;
-		
+
 		try (DBStatement dbStatement = db.getDBStatement();
 				ResultSet resultSet = getResultSetForSQL(dbStatement, sqlString)) {
 			while (resultSet.next()) {

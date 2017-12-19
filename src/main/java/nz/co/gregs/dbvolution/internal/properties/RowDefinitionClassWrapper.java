@@ -409,6 +409,17 @@ public class RowDefinitionClassWrapper {
 	}
 
 	/**
+	 * 
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
+	 * @return the table name, if specified explicitly or implicitly.
+	 */
+	public String selectQuery() {
+		return tableHandler.getSelectQuery();
+	}
+
+	/**
 	 * Gets the property that is the primary key, if one is marked. Note:
 	 * multi-column primary key tables are not yet supported.
 	 *

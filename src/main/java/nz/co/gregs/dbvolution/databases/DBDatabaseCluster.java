@@ -38,6 +38,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Queue;
 import java.util.Random;
+import java.util.Set;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.SynchronousQueue;
 import nz.co.gregs.dbvolution.DBQueryRow;
@@ -54,6 +55,7 @@ import nz.co.gregs.dbvolution.exceptions.AutoCommitActionDuringTransactionExcept
 import nz.co.gregs.dbvolution.exceptions.UnableToCreateDatabaseConnectionException;
 import nz.co.gregs.dbvolution.exceptions.UnableToFindJDBCDriver;
 import nz.co.gregs.dbvolution.exceptions.UnexpectedNumberOfRowsException;
+import nz.co.gregs.dbvolution.reflection.DataModel;
 import nz.co.gregs.dbvolution.transactions.DBTransaction;
 
 /**
@@ -76,7 +78,7 @@ public class DBDatabaseCluster extends DBDatabase {
 		clusterStatement = new DBStatementCluster(this);
 		this.addedDatabases.addAll(Arrays.asList(databases));
 		this.allDatabases.addAll(Arrays.asList(databases));
-		synchronizeStartupDatabases();
+		synchronizeSecondaryDatabases();
 	}
 
 	/**
@@ -506,7 +508,7 @@ public class DBDatabaseCluster extends DBDatabase {
 		return super.clone();
 	}
 
-	private void synchronizeStartupDatabases() throws SQLException {
+	private void synchronizeSecondaryDatabases() throws SQLException {
 		DBDatabase[] addedDBs;
 		synchronized (addedDatabases) {
 			addedDBs = addedDatabases.toArray(new DBDatabase[]{});
@@ -517,7 +519,7 @@ public class DBDatabaseCluster extends DBDatabase {
 			//Do The Synchronising...
 
 			if (!readyDatabases.isEmpty()) {
-				synchronizeStartupDatabase(db);
+				synchronizeSecondaryDatabase(db);
 			}
 
 			db.setExplicitCommitAction(true);
@@ -591,12 +593,42 @@ public class DBDatabaseCluster extends DBDatabase {
 		queuedActions.get(database).remove();
 	}
 
-	private void synchronizeStartupDatabase(DBDatabase db) throws SQLException {
+	private void synchronizeSecondaryDatabase(DBDatabase secondary) throws SQLException {
 
 		// need to check all tables and rows here
-		DBDatabase primary = getPrimaryDatabase();
+//		DBDatabase primary = getPrimaryDatabase();
+//		Set<Class<? extends DBRow>> tables = DataModel.getDBRowDirectSubclasses();
+//		for (Class<? extends DBRow> tab : tables) {
+//			DBRow table = DBRow.getDBRow(tab);
+//			if (true) {
+//				if (primary.tableExists(table)) {
+//					if (!secondary.tableExists(table)) {
+//						secondary.createTableNoExceptions(table);
+//					}
+//					final DBTable<DBRow> primaryTable = primary.getDBTable(table);
+//					final DBTable<DBRow> secondaryTable = secondary.getDBTable(table);
+//					primaryTable.setQueryTimeout(10000);
+//					final Long primaryTableCount = primaryTable.count();
+//					System.out.println(tab.getCanonicalName());
+//					System.out.println(table.getTableName());
+//					secondary.setPrintSQLBeforeExecuting(true);
+//					final Long secondaryTableCount = secondaryTable.count();
+//					secondary.setPrintSQLBeforeExecuting(false);
+//					if (primaryTableCount > 0) {
+//						if (secondaryTableCount == 0) {
+////						List<DBRow> allRows = primaryTable.setBlankQueryAllowed(true).getAllRows();
+////						dbTable.insert(allRows);
+//						} else if (!secondaryTableCount.equals(primaryTableCount)) {
+////						db.delete(dbTable.setBlankQueryAllowed(true).getAllRows());
+////						List<DBRow> allRows = primaryTable.setBlankQueryAllowed(true).getAllRows();
+////						db.insert(allRows);
+//						}
+//					}
+//				}
+//			}
+//		}
 
-		synchronizeActions(db);
+		synchronizeActions(secondary);
 	}
 
 	private void synchronizeActions(DBDatabase db) throws SQLException {

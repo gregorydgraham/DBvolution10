@@ -365,9 +365,14 @@ public class DataModel {
 		Reflections reflections = new Reflections("");
 		Set<Class<? extends DBRow>> subTypesOf = reflections.getSubTypesOf(DBRow.class);
 		Set<Class<? extends DBRow>> result = new HashSet<Class<? extends DBRow>>();
-		for (Class<? extends DBRow> clzz: subTypesOf){
-			if (clzz.getGenericSuperclass().equals(DBRow.class)){
-				result.add(clzz);
+		for (Class<? extends DBRow> clzz : subTypesOf) {
+			try {
+				clzz.getConstructor();// checking that there an appropriate constructor
+				if (clzz.getGenericSuperclass().equals(DBRow.class)) {
+					result.add(clzz);
+				}
+			} catch (NoSuchMethodException | SecurityException ex) {
+				;// no constructor
 			}
 		}
 		return result;
@@ -395,8 +400,8 @@ public class DataModel {
 	}
 
 	/**
-	 * Using the classes found by {@link #getDBRowSubclasses() }, creates an instance
-	 * of as many classes as possible.
+	 * Using the classes found by {@link #getDBRowSubclasses() }, creates an
+	 * instance of as many classes as possible.
 	 *
 	 * <p style="color: #F90;">Support DBvolution at
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>

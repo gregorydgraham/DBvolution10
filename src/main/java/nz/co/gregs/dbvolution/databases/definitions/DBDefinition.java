@@ -3106,9 +3106,12 @@ public abstract class DBDefinition {
 	 */
 	public String getFromClause(DBRow table) {
 		String recursiveTableAlias = table.getRecursiveTableAlias();
+		final String selectQuery = table.getSelectQuery();
 		if (recursiveTableAlias != null) {
 			return recursiveTableAlias;
-		} else {
+		} else if(selectQuery!=null){
+			return "("+selectQuery+")"+ beginTableAlias() + getTableAlias(table) + endTableAlias();
+		}else{
 			return formatTableName(table) + beginTableAlias() + getTableAlias(table) + endTableAlias();
 		}
 	}

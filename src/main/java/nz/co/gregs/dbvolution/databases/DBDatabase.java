@@ -1166,90 +1166,90 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 
 	private void createTable(DBRow newTableRow, boolean includeForeignKeyClauses) throws SQLException, AutoCommitActionDuringTransactionException {
 		preventDDLDuringTransaction("DBDatabase.createTable()");
-		StringBuilder sqlScript = new StringBuilder();
-		List<PropertyWrapper> pkFields = new ArrayList<>();
-		List<PropertyWrapper> spatial2DFields = new ArrayList<>();
-		String lineSeparator = System.getProperty("line.separator");
-		// table name
+			StringBuilder sqlScript = new StringBuilder();
+			List<PropertyWrapper> pkFields = new ArrayList<>();
+			List<PropertyWrapper> spatial2DFields = new ArrayList<>();
+			String lineSeparator = System.getProperty("line.separator");
+			// table name
 
-		sqlScript.append(definition.getCreateTableStart()).append(definition.formatTableName(newTableRow)).append(definition.getCreateTableColumnsStart()).append(lineSeparator);
+			sqlScript.append(definition.getCreateTableStart()).append(definition.formatTableName(newTableRow)).append(definition.getCreateTableColumnsStart()).append(lineSeparator);
 
-		// columns
-		String sep = "";
-		String nextSep = definition.getCreateTableColumnsSeparator();
-		List<PropertyWrapper> fields = newTableRow.getColumnPropertyWrappers();
-		List<String> fkClauses = new ArrayList<>();
-		for (PropertyWrapper field : fields) {
-			if (field.isColumn() && !field.getQueryableDatatype().hasColumnExpression()) {
-				String colName = field.columnName();
-				sqlScript
-						.append(sep)
-						.append(definition.formatColumnName(colName))
-						.append(definition.getCreateTableColumnsNameAndTypeSeparator())
-						.append(definition.getSQLTypeAndModifiersOfDBDatatype(field));
-				sep = nextSep + lineSeparator;
+			// columns
+			String sep = "";
+			String nextSep = definition.getCreateTableColumnsSeparator();
+			List<PropertyWrapper> fields = newTableRow.getColumnPropertyWrappers();
+			List<String> fkClauses = new ArrayList<>();
+			for (PropertyWrapper field : fields) {
+				if (field.isColumn() && !field.getQueryableDatatype().hasColumnExpression()) {
+					String colName = field.columnName();
+					sqlScript
+							.append(sep)
+							.append(definition.formatColumnName(colName))
+							.append(definition.getCreateTableColumnsNameAndTypeSeparator())
+							.append(definition.getSQLTypeAndModifiersOfDBDatatype(field));
+					sep = nextSep + lineSeparator;
 
-				if (field.isPrimaryKey()) {
-					pkFields.add(field);
-				}
-				if (field.isSpatial2DType()) {
-					spatial2DFields.add(field);
-				}
-				String fkClause = definition.getForeignKeyClauseForCreateTable(field);
-				if (!fkClause.isEmpty()) {
-					fkClauses.add(fkClause);
-				}
-			}
-		}
-
-		if (includeForeignKeyClauses) {
-			for (String fkClause : fkClauses) {
-				sqlScript.append(sep).append(fkClause);
-				sep = nextSep + lineSeparator;
-			}
-		}
-
-		// primary keys
-		if (definition.prefersTrailingPrimaryKeyDefinition()) {
-			String pkStart = lineSeparator + definition.getCreateTablePrimaryKeyClauseStart();
-			String pkMiddle = definition.getCreateTablePrimaryKeyClauseMiddle();
-			String pkEnd = definition.getCreateTablePrimaryKeyClauseEnd() + lineSeparator;
-			String pkSep = pkStart;
-			for (PropertyWrapper field : pkFields) {
-				sqlScript.append(pkSep).append(definition.formatColumnName(field.columnName()));
-				pkSep = pkMiddle;
-			}
-			if (!pkSep.equalsIgnoreCase(pkStart)) {
-				sqlScript.append(pkEnd);
-			}
-		}
-
-		//finish
-		sqlScript.append(definition.getCreateTableColumnsEnd()).append(lineSeparator).append(definition.endSQLStatement());
-		String sqlString = sqlScript.toString();
-		try (DBStatement dbStatement = getDBStatement()) {
-			dbStatement.execute(sqlString);
-
-			//Oracle style trigger based auto-increment keys
-			if (definition.prefersTriggerBasedIdentities() && pkFields.size() == 1) {
-				List<String> triggerBasedIdentitySQL = definition.getTriggerBasedIdentitySQL(this, definition.formatTableName(newTableRow), definition.formatColumnName(pkFields.get(0).columnName()));
-				for (String sql : triggerBasedIdentitySQL) {
-					try {
-						dbStatement.execute(sql);
-					} catch (SQLException sqlex) {
+					if (field.isPrimaryKey()) {
+						pkFields.add(field);
+					}
+					if (field.isSpatial2DType()) {
+						spatial2DFields.add(field);
+					}
+					String fkClause = definition.getForeignKeyClauseForCreateTable(field);
+					if (!fkClause.isEmpty()) {
+						fkClauses.add(fkClause);
 					}
 				}
 			}
 
-			if (definition.requiresSpatial2DIndexes() && spatial2DFields.size() > 0) {
-				List<String> triggerBasedIdentitySQL = definition.getSpatial2DIndexSQL(this, definition.formatTableName(newTableRow), definition.formatColumnName(spatial2DFields.get(0).columnName()));
-				for (String sql : triggerBasedIdentitySQL) {
-					dbStatement.execute(sql);
+			if (includeForeignKeyClauses) {
+				for (String fkClause : fkClauses) {
+					sqlScript.append(sep).append(fkClause);
+					sep = nextSep + lineSeparator;
 				}
 			}
 
+			// primary keys
+			if (definition.prefersTrailingPrimaryKeyDefinition()) {
+				String pkStart = lineSeparator + definition.getCreateTablePrimaryKeyClauseStart();
+				String pkMiddle = definition.getCreateTablePrimaryKeyClauseMiddle();
+				String pkEnd = definition.getCreateTablePrimaryKeyClauseEnd() + lineSeparator;
+				String pkSep = pkStart;
+				for (PropertyWrapper field : pkFields) {
+					sqlScript.append(pkSep).append(definition.formatColumnName(field.columnName()));
+					pkSep = pkMiddle;
+				}
+				if (!pkSep.equalsIgnoreCase(pkStart)) {
+					sqlScript.append(pkEnd);
+				}
+			}
+
+			//finish
+			sqlScript.append(definition.getCreateTableColumnsEnd()).append(lineSeparator).append(definition.endSQLStatement());
+			String sqlString = sqlScript.toString();
+			try (DBStatement dbStatement = getDBStatement()) {
+				dbStatement.execute(sqlString);
+
+				//Oracle style trigger based auto-increment keys
+				if (definition.prefersTriggerBasedIdentities() && pkFields.size() == 1) {
+					List<String> triggerBasedIdentitySQL = definition.getTriggerBasedIdentitySQL(this, definition.formatTableName(newTableRow), definition.formatColumnName(pkFields.get(0).columnName()));
+					for (String sql : triggerBasedIdentitySQL) {
+						try {
+							dbStatement.execute(sql);
+						} catch (SQLException sqlex) {
+						}
+					}
+				}
+
+				if (definition.requiresSpatial2DIndexes() && spatial2DFields.size() > 0) {
+					List<String> triggerBasedIdentitySQL = definition.getSpatial2DIndexSQL(this, definition.formatTableName(newTableRow), definition.formatColumnName(spatial2DFields.get(0).columnName()));
+					for (String sql : triggerBasedIdentitySQL) {
+						dbStatement.execute(sql);
+					}
+				}
+
+			}
 		}
-	}
 
 	/**
 	 * Adds actual foreign key constraints to the database table represented by
@@ -1929,22 +1929,26 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 	public boolean tableExists(DBRow table) throws SQLException {
 		boolean tableExists = false;
 
-		if (getDefinition().supportsTableCheckingViaMetaData()) {
+		if (false && getDefinition().supportsTableCheckingViaMetaData()) {
 			Connection conn = getConnection(); // get a DB connection from somewhere
 			ResultSet rset = conn.getMetaData().getTables(null, null, table.getTableName(), null);
 			if (rset.next()) {
 				tableExists = true;
 			}
-		}else{
+		} else {
 			DBQuery testQuery = getDBQuery(table).setBlankQueryAllowed(true).setRowLimit(1);
-			try{
+			try {
 				testQuery.getAllRows();
-				tableExists=true;
-			}catch(SQLException|RuntimeException sqlex){
+				tableExists = true;
+			} catch (SQLException | RuntimeException sqlex) {
 				// Theoretically this should only need to catch an SQLException 
 				// but SQLite, H2, and Postgres all throw RuntimeException
 			}
 		}
 		return tableExists;
+	}
+
+	boolean tableExists(Class<? extends DBRow> tab) throws SQLException {
+		return tableExists(DBRow.getDBRow(tab));
 	}
 }

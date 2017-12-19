@@ -272,6 +272,10 @@ public class RowDefinitionInstanceWrapper {
 		return classWrapper.tableName();
 	}
 
+	public String selectQuery() {
+		return classWrapper.selectQuery();
+	}
+
 	/**
 	 * Gets the property that is the primary key, if one is marked. Note:
 	 * multi-column primary key tables are not yet supported.
