@@ -80,19 +80,17 @@ public abstract class AbstractTest {
 				new DBDatabaseCluster(
 						H2MemoryTestDB.getFromSettings("h2memory")
 						,SQLiteTestDB.getFromSettings("sqlite")
-//						TestPostgreSQL.getFromSettings("postgres")
-//						,MySQLTestDatabase.getFromSettings("mysql")
+						,PostgreSQLTestDatabase.getFromSettings("postgres")
+						,MySQLTestDatabase.getFromSettings("mysql")
 				)});
 		}
 				if (System.getProperty("testSQLite") != null) {
 			databases.add(new Object[]{"SQLiteDB", SQLiteTestDB.getFromSettings("sqlite")});
 		}
 		if (System.getProperty("testMySQL") != null) {
-//			databases.add(new Object[]{"MySQLDB", new MySQLTestDatabase(host, port, instance, username, password, schema)});
 			databases.add(new Object[]{"MySQLDB", MySQLTestDatabase.getFromSettings("mysql")});
 		}
 		if (System.getProperty("testMySQL56") != null) {
-//			databases.add(new Object[]{"MySQLDB-5.6", new MySQL56TestDatabase(url, username, password)});
 			databases.add(new Object[]{"MySQLDB-5.6", MySQL56TestDatabase.getFromSettings("mysql56")});
 		}
 		if (System.getProperty("testH2DB") != null) {
@@ -105,26 +103,21 @@ public abstract class AbstractTest {
 			databases.add(new Object[]{"H2DataSourceDB", H2TestDatabase.getFromSettingsUsingDataSource("h2datasource")});
 		}
 		if (System.getProperty("testPostgresSQL") != null) {
-			databases.add(new Object[]{"PostgresSQL", TestPostgreSQL.getFromSettings("postgres")});
-//			databases.add(new Object[]{"PostgresSQL", TestPostgreSQL.getTestDatabase(url, host, port, instance, username, password, schema)});
+			databases.add(new Object[]{"PostgresSQL", PostgreSQLTestDatabase.getFromSettings("postgres")});
 		}
 		if (System.getProperty("testNuo") != null) {
 			databases.add(new Object[]{"NuoDB", new NuoDB("localhost", 48004L, "dbv", "dbv", "dbv", "dbv")});
 		}
 		if (System.getProperty("testOracleXE") != null) {
-//			databases.add(new Object[]{"Oracle11DB", new Oracle11XETestDB(host, port, instance, username, password)});
 			databases.add(new Object[]{"Oracle11DB", Oracle11XETestDB.getFromSettings("oraclexe")});
 		}
 		if (System.getProperty("testMSSQLServer") != null) {
-			//databases.add(new Object[]{"MSSQLServer", new MSSQLServerTestDB(host, instance, database, port, username, password)});
 			databases.add(new Object[]{"MSSQLServer", MSSQLServerTestDB.getFromSettings("sqlserver")});
 		}
 		if (System.getProperty("testJTDSSQLServer") != null) {
 			databases.add(new Object[]{"JTDSSQLServer", new JTDSSQLServerTestDB(host, instance, database, port, username, password)});
 		}
 		if (System.getProperty("testH2MemoryDB") != null) {
-			// Do basic testing
-//			final H2MemoryDB h2MemoryDB = new H2MemoryTestDB(instance, username, password);
 			databases.add(new Object[]{"H2MemoryDB", H2MemoryTestDB.getFromSettings("h2memory")});
 		}
 		if (databases.isEmpty() || System.getProperty("testH2BlankDB") != null) {
@@ -339,7 +332,6 @@ public abstract class AbstractTest {
 
 		public MySQL56TestDatabase(String url, String username, String password) {
 			super(url, username, password);
-//			super("jdbc:mysql://52.64.179.175:3306/dbv?createDatabaseIfNotExist=true", "dbv", "dbv");
 		}
 	}
 
@@ -368,7 +360,7 @@ public abstract class AbstractTest {
 		}
 	}
 
-	private static class TestPostgreSQL extends PostgresDB {
+	private static class PostgreSQLTestDatabase extends PostgresDB {
 
 		public static final long serialVersionUID = 1l;
 
@@ -381,7 +373,7 @@ public abstract class AbstractTest {
 			String username = System.getProperty("" + prefix + ".username");
 			String password = System.getProperty("" + prefix + ".password");
 			String schema = System.getProperty("" + prefix + ".schema");
-			return TestPostgreSQL.getTestDatabase(url, host, port, instance, username, password, schema);
+			return PostgreSQLTestDatabase.getTestDatabase(url, host, port, instance, username, password, schema);
 		}
 
 		protected static PostgresDB getTestDatabase(String url, String host, String port, String database, String username, String password, String schema) {
