@@ -15,6 +15,7 @@
  */
 package nz.co.gregs.dbvolution.databases;
 
+import com.mysql.jdbc.exceptions.jdbc4.MySQLNonTransientConnectionException;
 import java.io.PrintStream;
 import java.io.Serializable;
 import java.sql.*;
@@ -201,12 +202,12 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 	 * @param ds - a DataSource for the required database.
 	 * @see DBDefinition
 	 * @see OracleDB
-	 * @see MySQLDB
 	 * @see MSSQLServerDB
+	 * @see MySQLDB
+	 * @see PostgresDB
 	 * @see H2DB
 	 * @see H2MemoryDB
 	 * @see InformixDB
-	 * @see PostgresDB
 	 * @see MariaDB
 	 * @see MariaClusterDB
 	 * @see NuoDB
@@ -407,7 +408,7 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 		return connection;
 	}
 	private final int SLEEP_BETWEEN_CONNECTION_RETRIES_MILLIS;
-	private final int MAX_CONNECTION_RETRIES;
+	private int MAX_CONNECTION_RETRIES = 6;
 
 	/**
 	 * Used to hold the database open if required by the database.
