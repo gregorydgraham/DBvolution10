@@ -588,13 +588,9 @@ public class DBDatabaseCluster extends DBDatabase {
 	}
 
 	private synchronized void removeActionFromQueue(DBDatabase database, DBExecutable action) {
-		try {
-			final Queue<DBExecutable> db = queuedActions.get(database);
-			if (db != null) {
-				db.remove();
-			}
-		} catch (RuntimeException exc) {
-			LOG.info("DBDatabaseCluster", exc);
+		final Queue<DBExecutable> db = queuedActions.get(database);
+		if (db != null) {
+			db.remove(action);
 		}
 	}
 
