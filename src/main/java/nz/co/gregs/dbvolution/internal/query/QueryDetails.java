@@ -33,6 +33,8 @@ import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import nz.co.gregs.dbvolution.DBQueryRow;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.actions.DBQueryable;
@@ -1171,18 +1173,7 @@ public class QueryDetails implements DBQueryable {
 	protected synchronized ResultSet getResultSetForSQL(final DBStatement statement, String sql) throws SQLException, SQLTimeoutException {
 		final Integer timeoutTime = this.getTimeoutInMilliseconds();
 		if (timeoutTime != null && timeoutTime > 0) {
-			final Runnable canceller = new Runnable() {
-				final DBStatement stat = statement;
-
-				public void run() {
-					try {
-						stat.cancel();
-					} catch (Exception ex) {
-						throw new DBRuntimeException("Failed to Cancel Query", ex);
-
-					}
-				}
-			};
+			final Runnable canceller = new QueryCanceller(statement);
 			final ScheduledFuture<?> cancelHandle
 					= timerService.schedule(canceller, timeoutTime, TimeUnit.MILLISECONDS);
 
@@ -1370,4 +1361,5 @@ public class QueryDetails implements DBQueryable {
 	public Integer getTimeoutInMilliseconds() {
 		return timeoutInMilliseconds;
 	}
+
 }
