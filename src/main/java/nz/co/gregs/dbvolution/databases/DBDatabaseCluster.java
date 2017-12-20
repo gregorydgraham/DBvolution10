@@ -45,6 +45,7 @@ import nz.co.gregs.dbvolution.DBQueryRow;
 import nz.co.gregs.dbvolution.DBReport;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.DBScript;
+import nz.co.gregs.dbvolution.DBTable;
 import nz.co.gregs.dbvolution.actions.DBActionList;
 import nz.co.gregs.dbvolution.actions.DBExecutable;
 import nz.co.gregs.dbvolution.actions.DBQueryable;
@@ -71,6 +72,7 @@ public class DBDatabaseCluster extends DBDatabase {
 	private final List<DBDatabase> readyDatabases = new ArrayList<>();
 	private final DBStatementCluster clusterStatement;
 	private final Map<DBDatabase, Queue<DBExecutable>> queuedActions = new HashMap<>(0);
+	private Set<DBRow> requiredTables;
 
 	public DBDatabaseCluster(DBDatabase... databases) throws SQLException {
 		super();
@@ -104,8 +106,9 @@ public class DBDatabaseCluster extends DBDatabase {
 	 */
 	public boolean addDatabase(DBDatabase database) throws SQLException {
 		addedDatabases.add(database);
+		boolean add = allDatabases.add(database);
 		synchronizeAddedDatabases();
-		return allDatabases.add(database);
+		return add;
 	}
 
 	public synchronized DBDatabase[] getDatabases() {
@@ -515,18 +518,9 @@ public class DBDatabaseCluster extends DBDatabase {
 		}
 		for (DBDatabase db : addedDBs) {
 			addedDatabases.remove(db);
-			queuedActions.put(db, new LinkedBlockingQueue<DBExecutable>());
+
 			//Do The Synchronising...
-
-			if (!readyDatabases.isEmpty()) {
-				synchronizeSecondaryDatabase(db);
-			}
-
-			db.setExplicitCommitAction(true);
-			//Mark the database as ready
-			synchronized (readyDatabases) {
-				readyDatabases.add(db);
-			}
+			synchronizeSecondaryDatabase(db);
 		}
 	}
 
@@ -547,15 +541,15 @@ public class DBDatabaseCluster extends DBDatabase {
 		addActionToQueue(action);
 		DBActionList actionsPerformed = new DBActionList();
 		for (DBDatabase next : readyDatabases) {
-			actionsPerformed = action.execute(next);
+			actionsPerformed = next.executeDBAction(action);
 			removeActionFromQueue(next, action);
 		}
 		return actionsPerformed;
 	}
 
 	@Override
-	public DBQueryable executeDBQuery(DBQueryable action) throws SQLException {
-		DBQueryable actionsPerformed = action.query(this.getReadyDatabase());
+	public DBQueryable executeDBQuery(DBQueryable query) throws SQLException {
+		DBQueryable actionsPerformed = this.getReadyDatabase().executeDBQuery(query);
 		return actionsPerformed;
 	}
 
@@ -573,7 +567,11 @@ public class DBDatabaseCluster extends DBDatabase {
 	}
 
 	public DBDatabase getPrimaryDatabase() {
-		return readyDatabases.get(0);
+		if (readyDatabases.size() > 0) {
+			return readyDatabases.get(0);
+		} else {
+			return allDatabases.get(0);
+		}
 	}
 
 	@Override
@@ -590,41 +588,54 @@ public class DBDatabaseCluster extends DBDatabase {
 	}
 
 	private synchronized void removeActionFromQueue(DBDatabase database, DBExecutable action) {
-		queuedActions.get(database).remove();
+		try {
+			final Queue<DBExecutable> db = queuedActions.get(database);
+			if (db != null) {
+				db.remove();
+			}
+		} catch (Exception exc) {
+			LOG.info("DBDatabaseCluster", exc);
+		}
 	}
 
 	private void synchronizeSecondaryDatabase(DBDatabase secondary) throws SQLException {
 
-// need to check all tables and rows here
+		// Get some sort of lock
 		DBDatabase primary = getPrimaryDatabase();
-		Set<DBRow> tables = DataModel.getRequiredTables();
-		for (DBRow table : tables) {
-			if (true) {
-				if (primary.tableExists(table)) {
-//					final DBTable<DBRow> primaryTable = primary.getDBTable(table);
-//					final DBTable<DBRow> secondaryTable = secondary.getDBTable(table);
-//					primaryTable.setQueryTimeout(10000);
-//					final Long primaryTableCount = primaryTable.count();
-//					System.out.println(tab.getCanonicalName());
-//					System.out.println(table.getTableName());
-//					secondary.setPrintSQLBeforeExecuting(true);
-//					final Long secondaryTableCount = secondaryTable.count();
-//					secondary.setPrintSQLBeforeExecuting(false);
-//					if (primaryTableCount > 0) {
-//						if (secondaryTableCount == 0) {
-////						List<DBRow> allRows = primaryTable.setBlankQueryAllowed(true).getAllRows();
-////						dbTable.insert(allRows);
-//						} else if (!secondaryTableCount.equals(primaryTableCount)) {
-////						db.delete(dbTable.setBlankQueryAllowed(true).getAllRows());
-////						List<DBRow> allRows = primaryTable.setBlankQueryAllowed(true).getAllRows();
-////						db.insert(allRows);
-//						}
-//					}
+		synchronized (this) {
+			// Create a action queue for the new database
+			queuedActions.put(secondary, new LinkedBlockingQueue<DBExecutable>());
+			// Check that we're not synchronising the reference database
+			if (!primary.equals(secondary)) {
+				if (requiredTables == null) {
+					requiredTables = DataModel.getRequiredTables();
+				}
+				for (DBRow table : requiredTables) {
+					if (true) {
+						if (primary.tableExists(table)) {
+							final DBTable<DBRow> primaryTable = primary.getDBTable(table);
+							final DBTable<DBRow> secondaryTable = secondary.getDBTable(table);
+							final Long primaryTableCount = primaryTable.count();
+							final Long secondaryTableCount = secondaryTable.count();
+							if (primaryTableCount > 0) {
+								final DBTable<DBRow> primaryData = primaryTable.setBlankQueryAllowed(true);
+								if (secondaryTableCount == 0) {
+									List<DBRow> allRows = primaryData.getAllRows();
+									secondaryTable.insert(allRows);
+								} else if (!secondaryTableCount.equals(primaryTableCount)) {
+									secondary.delete(secondaryTable.setBlankQueryAllowed(true).getAllRows());
+									List<DBRow> allRows = primaryData.getAllRows();
+									secondary.insert(allRows);
+								}
+							}
+						}
+					}
 				}
 			}
 		}
-
 		synchronizeActions(secondary);
+		secondary.setExplicitCommitAction(true);
+		readyDatabases.add(secondary);
 	}
 
 	private synchronized void synchronizeActions(DBDatabase db) throws SQLException {
@@ -635,8 +646,10 @@ public class DBDatabaseCluster extends DBDatabase {
 		}
 	}
 
-	private synchronized void synchronizeAddedDatabases() {
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	private synchronized void synchronizeAddedDatabases() throws SQLException {
+		for (DBDatabase addedDatabase : addedDatabases) {
+			synchronizeSecondaryDatabase(addedDatabase);
+		}
 	}
 
 	@Override
