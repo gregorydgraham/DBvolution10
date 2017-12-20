@@ -15,6 +15,8 @@
  */
 package nz.co.gregs.dbvolution.databases;
 
+import java.sql.SQLException;
+import java.sql.Statement;
 import javax.sql.DataSource;
 import nz.co.gregs.dbvolution.databases.definitions.JavaDBDefinition;
 
@@ -80,5 +82,10 @@ public class JavaDB extends DBDatabase {
 	@Override
 	public JavaDB clone() throws CloneNotSupportedException {
 		return (JavaDB) super.clone(); //To change body of generated methods, choose Tools | Templates.
+	}
+
+	@Override
+	protected void addDatabaseSpecificFeatures(Statement statement) throws SQLException {
+		;
 	}
 }

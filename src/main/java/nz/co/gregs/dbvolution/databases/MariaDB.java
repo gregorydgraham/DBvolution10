@@ -15,6 +15,8 @@
  */
 package nz.co.gregs.dbvolution.databases;
 
+import java.sql.SQLException;
+import java.sql.Statement;
 import javax.sql.DataSource;
 import nz.co.gregs.dbvolution.databases.definitions.MariaDBDefinition;
 
@@ -74,6 +76,11 @@ public class MariaDB extends DBDatabase {
 	@Override
 	public DBDatabase clone() throws CloneNotSupportedException {
 		return super.clone(); //To change body of generated methods, choose Tools | Templates.
+	}
+
+	@Override
+	protected void addDatabaseSpecificFeatures(Statement statement) throws SQLException {
+		;
 	}
 
 }

@@ -1858,10 +1858,7 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 	 * @see MySQLDB
 	 */
 	@SuppressWarnings("empty-statement")
-	protected void addDatabaseSpecificFeatures(Statement statement) throws SQLException {
-		// by default there are no extras to be added to the database
-		;
-	}
+	abstract protected void addDatabaseSpecificFeatures(Statement statement) throws SQLException;
 
 	/**
 	 * Used to add features in a just-in-time manner.

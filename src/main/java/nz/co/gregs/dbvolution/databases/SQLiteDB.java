@@ -18,12 +18,11 @@ package nz.co.gregs.dbvolution.databases;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.sql.Statement;
 import javax.sql.DataSource;
 import org.sqlite.SQLiteConfig;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.databases.definitions.SQLiteDefinition;
-import nz.co.gregs.dbvolution.databases.supports.SupportsDateRepeatDatatypeFunctions;
-import nz.co.gregs.dbvolution.databases.supports.SupportsPolygonDatatype;
 import nz.co.gregs.dbvolution.internal.sqlite.*;
 
 /**
@@ -109,6 +108,11 @@ public class SQLiteDB extends DBDatabase {
 	@Override
 	public DBDatabase clone() throws CloneNotSupportedException {
 		return super.clone(); //To change body of generated methods, choose Tools | Templates.
+	}
+
+	@Override
+	protected void addDatabaseSpecificFeatures(Statement statement) throws SQLException {
+		;
 	}
 
 }

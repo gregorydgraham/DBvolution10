@@ -15,6 +15,8 @@
  */
 package nz.co.gregs.dbvolution.databases;
 
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 import javax.sql.DataSource;
@@ -134,6 +136,11 @@ public class NuoDB extends DBDatabase {
 		setUsername(username);
 		setPassword(password);
 		setDatabaseName(databaseName);
+	}
+
+	@Override
+	protected void addDatabaseSpecificFeatures(Statement statement) throws SQLException {
+		;
 	}
 
 }

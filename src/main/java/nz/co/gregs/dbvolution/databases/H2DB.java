@@ -22,8 +22,6 @@ import java.sql.Statement;
 import java.util.*;
 import javax.sql.DataSource;
 import nz.co.gregs.dbvolution.databases.definitions.H2DBDefinition;
-import nz.co.gregs.dbvolution.databases.supports.SupportsDateRepeatDatatypeFunctions;
-import nz.co.gregs.dbvolution.databases.supports.SupportsPolygonDatatype;
 import nz.co.gregs.dbvolution.internal.h2.*;
 
 /**
