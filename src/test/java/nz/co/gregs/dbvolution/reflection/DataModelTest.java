@@ -62,7 +62,7 @@ public class DataModelTest extends AbstractTest {
 	@Test
 	public void testGetDBDatabaseConstructors() {
 		Set<Constructor<DBDatabase>> result = DataModel.getDBDatabaseConstructors();
-		Assert.assertThat(result.size(), is(11));
+		Assert.assertThat(result.size(), is(12));
 	}
 
 	@Test
@@ -104,7 +104,7 @@ public class DataModelTest extends AbstractTest {
 				Assert.fail("Unable to invoke " + creator.getDeclaringClass().getCanonicalName() + "." + creator.getName() + "()");
 			}
 		}
-		Assert.assertThat(dbDatabaseCreationMethods.size(), is(1));
+		Assert.assertThat(dbDatabaseCreationMethods.size(), is(2));
 	}
 
 	@Test

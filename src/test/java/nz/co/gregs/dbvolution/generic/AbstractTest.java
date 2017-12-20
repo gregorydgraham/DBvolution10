@@ -15,6 +15,7 @@
  */
 package nz.co.gregs.dbvolution.generic;
 
+import java.io.File;
 import nz.co.gregs.dbvolution.databases.DBDatabase;
 import java.io.IOException;
 import java.sql.SQLException;
@@ -76,16 +77,16 @@ public abstract class AbstractTest {
 		String schema = System.getProperty("dbv.schema");
 
 		if (System.getProperty("testClusteredDB") != null) {
-			databases.add(new Object[]{"ClusteredDB", 
+			databases.add(new Object[]{"ClusteredDB",
 				new DBDatabaseCluster(
-						H2MemoryTestDB.getFromSettings("h2memory")
-						,SQLiteTestDB.getFromSettings("sqlite")
-						,PostgreSQLTestDatabase.getFromSettings("postgres")
-						,MySQLTestDatabase.getFromSettings("mysql")
+				H2MemoryTestDB.getFromSettings("h2memory"),
+				 SQLiteTestDB.getFromSettings(),
+				 PostgreSQLTestDatabase.getFromSettings("postgres"),
+				 MySQLTestDatabase.getFromSettings("mysql")
 				)});
 		}
-				if (System.getProperty("testSQLite") != null) {
-			databases.add(new Object[]{"SQLiteDB", SQLiteTestDB.getFromSettings("sqlite")});
+		if (System.getProperty("testSQLite") != null) {
+			databases.add(new Object[]{"SQLiteDB", SQLiteTestDB.getFromSettings()});
 		}
 		if (System.getProperty("testMySQL") != null) {
 			databases.add(new Object[]{"MySQLDB", MySQLTestDatabase.getFromSettings("mysql")});
@@ -385,15 +386,24 @@ public abstract class AbstractTest {
 
 		public static final long serialVersionUID = 1l;
 
-		public static SQLiteTestDB getFromSettings(String prefix) throws SQLException {
-			String url = System.getProperty("" + prefix + ".url");
-			String username = System.getProperty("" + prefix + ".username");
-			String password = System.getProperty("" + prefix + ".password");
+		public static SQLiteTestDB getFromSettings() throws IOException {
+			return getFromSettings("sqlite");
+		}
+
+		public static SQLiteTestDB getFromSettings(String prefix) throws IOException {
+			String url = System.getProperty(prefix + ".url");
+//			String filename = System.getProperty(prefix + ".filename");
+			String username = System.getProperty(prefix + ".username");
+			String password = System.getProperty(prefix + ".password");
 			return new SQLiteTestDB(url, username, password);
 		}
 
-		public SQLiteTestDB(String url, String username, String password) throws SQLException {
-			super(url, username, password);
+		public SQLiteTestDB(String jdbcurl, String username, String password) throws IOException {
+			super(jdbcurl, username, password);
+		}
+
+		private SQLiteTestDB(File file, String username, String password) throws IOException {
+			super(file, username, password);
 		}
 	}
 

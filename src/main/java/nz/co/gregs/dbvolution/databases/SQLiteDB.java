@@ -15,6 +15,8 @@
  */
 package nz.co.gregs.dbvolution.databases;
 
+import java.io.File;
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -83,6 +85,40 @@ public class SQLiteDB extends DBDatabase {
 	 */
 	public SQLiteDB(String jdbcURL, String username, String password) {
 		super(new SQLiteDefinition(), SQLITE_DRIVER_NAME, jdbcURL, username, password);
+	}
+
+	/**
+	 * Creates a DBDatabase tweaked for a SQLite database using the parameters
+	 * provided.
+	 *
+	 * @param databaseFile
+	 * @param username username
+	 * @param password password
+	 * @throws java.io.IOException
+	 */
+	public SQLiteDB(File databaseFile, String username, String password) throws IOException {
+		super(new SQLiteDefinition(), 
+				SQLITE_DRIVER_NAME, 
+				"jdbc:sqlite:"+databaseFile.getCanonicalFile(), 
+				username, 
+				password);
+	}
+
+	/**
+	 * Creates a DBDatabase tweaked for a SQLite database using the parameters
+	 * provided.
+	 *
+	 * @param databaseFile
+	 * @param username username
+	 * @param password password
+	 * @throws java.io.IOException
+	 */
+	public SQLiteDB(String filename, String username, String password, boolean dummy) throws IOException {
+		super(new SQLiteDefinition(), 
+				SQLITE_DRIVER_NAME, 
+				"jdbc:sqlite:"+filename,
+				username, 
+				password);
 	}
 
 	@Override
