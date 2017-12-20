@@ -593,7 +593,7 @@ public class DBDatabaseCluster extends DBDatabase {
 			if (db != null) {
 				db.remove();
 			}
-		} catch (Exception exc) {
+		} catch (RuntimeException exc) {
 			LOG.info("DBDatabaseCluster", exc);
 		}
 	}
