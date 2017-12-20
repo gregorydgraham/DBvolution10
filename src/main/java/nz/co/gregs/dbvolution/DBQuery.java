@@ -366,6 +366,7 @@ public class DBQuery {
 	public List<DBQueryRow> getAllRows() throws SQLException, SQLTimeoutException, AccidentalBlankQueryException, AccidentalCartesianJoinException {
 		final QueryOptions options = details.getOptions();
 		if (this.needsResults(options)) {
+			details.setQueryType(QueryType.SELECT);
 			database.executeDBQuery(details);
 		}
 		if (options.getRowLimit() > 0 && details.getResults().size() > options.getRowLimit()) {
@@ -505,6 +506,7 @@ public class DBQuery {
 		List<R> arrayList = new ArrayList<>();
 		final QueryOptions options = details.getOptions();
 		if (details.needsResults(options)) {
+			details.setQueryType(QueryType.SELECT);
 			database.executeDBQuery(details);
 		}
 		if (!details.getResults().isEmpty()) {
@@ -542,6 +544,7 @@ public class DBQuery {
 	public void print(PrintStream ps) throws SQLException {
 		final QueryOptions options = details.getOptions();
 		if (needsResults(options)) {
+			details.setQueryType(QueryType.SELECT);
 			database.executeDBQuery(details);
 		}
 
@@ -581,6 +584,7 @@ public class DBQuery {
 	public void printAllDataColumns(PrintStream printStream) throws SQLException {
 		final QueryOptions options = details.getOptions();
 		if (needsResults(options)) {
+			details.setQueryType(QueryType.SELECT);
 			database.executeDBQuery(details);
 		}
 
@@ -613,6 +617,7 @@ public class DBQuery {
 	public void printAllPrimaryKeys(PrintStream ps) throws SQLException {
 		final QueryOptions options = details.getOptions();
 		if (needsResults(options)) {
+			details.setQueryType(QueryType.SELECT);
 			database.executeDBQuery(details);
 		}
 
@@ -669,7 +674,7 @@ public class DBQuery {
 	 */
 	public Long count() throws SQLException {
 		if (needsResults(details.getOptions())) {
-			this.details.getOptions().setQueryType(QueryType.COUNT);
+			this.details.setQueryType(QueryType.COUNT);
 			database.executeDBQuery(details);
 			return details.getCount();
 		} else {
@@ -1400,6 +1405,7 @@ public class DBQuery {
 	public List<DBQueryRow> getAllRowsContaining(DBRow instance) throws SQLException {
 		final QueryOptions options = details.getOptions();
 		if (this.needsResults(options)) {
+			details.setQueryType(QueryType.SELECT);
 			database.executeDBQuery(details);
 		}
 		List<DBQueryRow> returnList = new ArrayList<>();
