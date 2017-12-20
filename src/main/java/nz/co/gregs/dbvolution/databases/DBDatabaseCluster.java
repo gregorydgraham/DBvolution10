@@ -595,13 +595,13 @@ public class DBDatabaseCluster extends DBDatabase {
 
 	private void synchronizeSecondaryDatabase(DBDatabase secondary) throws SQLException {
 
-		// need to check all tables and rows here
-//		DBDatabase primary = getPrimaryDatabase();
-//		Set<Class<? extends DBRow>> tables = DataModel.getDBRowDirectSubclasses();
-//		for (Class<? extends DBRow> tab : tables) {
-//			DBRow table = DBRow.getDBRow(tab);
-//			if (true) {
-//				if (primary.tableExists(table)) {
+// need to check all tables and rows here
+		DBDatabase primary = getPrimaryDatabase();
+		Set<Class<? extends DBRow>> tables = DataModel.getDBRowDirectSubclasses();
+		for (Class<? extends DBRow> tab : tables) {
+			DBRow table = DBRow.getDBRow(tab);
+			if (true) {
+				if (primary.tableExists(table)) {
 //					if (!secondary.tableExists(table)) {
 //						secondary.createTableNoExceptions(table);
 //					}
@@ -624,14 +624,14 @@ public class DBDatabaseCluster extends DBDatabase {
 ////						db.insert(allRows);
 //						}
 //					}
-//				}
-//			}
-//		}
+				}
+			}
+		}
 
 		synchronizeActions(secondary);
 	}
 
-	private void synchronizeActions(DBDatabase db) throws SQLException {
+	private synchronized void synchronizeActions(DBDatabase db) throws SQLException {
 		Queue<DBExecutable> queue = queuedActions.get(db);
 		while (!queue.isEmpty()) {
 			DBExecutable action = queue.remove();
@@ -639,12 +639,12 @@ public class DBDatabaseCluster extends DBDatabase {
 		}
 	}
 
-	private void synchronizeAddedDatabases() {
+	private synchronized void synchronizeAddedDatabases() {
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
 	@Override
-	public boolean tableExists(DBRow table) throws SQLException {
+	public synchronized boolean tableExists(DBRow table) throws SQLException {
 		boolean tableExists = true;
 		for (DBDatabase readyDatabase : readyDatabases) {
 			tableExists &= readyDatabase.tableExists(table);
