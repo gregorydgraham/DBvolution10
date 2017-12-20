@@ -30,6 +30,9 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 import nz.co.gregs.dbvolution.DBQueryRow;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.actions.DBQueryable;
@@ -40,6 +43,7 @@ import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 import nz.co.gregs.dbvolution.exceptions.AccidentalBlankQueryException;
 import nz.co.gregs.dbvolution.exceptions.AccidentalCartesianJoinException;
+import nz.co.gregs.dbvolution.exceptions.DBRuntimeException;
 import nz.co.gregs.dbvolution.exceptions.UnableToInstantiateDBRowSubclassException;
 import nz.co.gregs.dbvolution.exceptions.UnacceptableClassForAutoFillAnnotation;
 import nz.co.gregs.dbvolution.expressions.BooleanExpression;
@@ -60,7 +64,8 @@ public class QueryDetails implements DBQueryable {
 
 	private static final int DEFAULT_TIMEOUT_MILLISECONDS = 10000;
 	private Integer timeoutInMilliseconds = DEFAULT_TIMEOUT_MILLISECONDS;
-	private QueryTimeout timeout;
+	private ScheduledFuture<?> timeout;
+	ScheduledThreadPoolExecutor timerService = new ScheduledThreadPoolExecutor(1);
 
 	private final Map<Class<? extends DBRow>, DBRow> emptyRows = new HashMap<>();
 
@@ -428,7 +433,7 @@ public class QueryDetails implements DBQueryable {
 			String tableName;
 
 			for (DBRow tabRow : sortedQueryTables) {
-					tableName = tabRow.getTableName();
+				tableName = tabRow.getTableName();
 
 				List<PropertyWrapper> tabProps = tabRow.getSelectedProperties();
 				for (PropertyWrapper propWrapper : tabProps) {
@@ -1163,13 +1168,32 @@ public class QueryDetails implements DBQueryable {
 	 * @throws java.sql.SQLException java.sql.SQLException
 	 * @throws java.sql.SQLTimeoutException
 	 */
-	protected synchronized ResultSet getResultSetForSQL(DBStatement statement, String sql) throws SQLException, SQLTimeoutException {
-		if (this.getTimeoutInMilliseconds() != null) {
-			this.timeout = QueryTimeout.scheduleTimeout(statement, this.getTimeoutInMilliseconds());
+	protected synchronized ResultSet getResultSetForSQL(final DBStatement statement, String sql) throws SQLException, SQLTimeoutException {
+		final Integer timeoutTime = this.getTimeoutInMilliseconds();
+		if (timeoutTime != null && timeoutTime > 0) {
+			final Runnable canceller = new Runnable() {
+				final DBStatement stat = statement;
+
+				public void run() {
+					try {
+						stat.cancel();
+					} catch (Exception ex) {
+						throw new DBRuntimeException("Failed to Cancel Query", ex);
+
+					}
+				}
+			};
+			final ScheduledFuture<?> cancelHandle
+					= timerService.schedule(canceller, timeoutTime, TimeUnit.MILLISECONDS);
+
+			this.timeout = cancelHandle;
 		}
+
 		final ResultSet queryResults = statement.executeQuery(sql);
+
 		if (this.timeout != null) {
-			this.timeout.cancel();
+			this.timeout.cancel(true);
+			this.timeout = null;
 		}
 		return queryResults;
 	}
