@@ -273,7 +273,7 @@ public class QueryDetails implements DBQueryable {
 		Collections.addAll(this.havingColumns, havingColumns);
 	}
 
-	public void setDatabase(DBDefinition database) {
+	public void setDefinition(DBDefinition database) {
 		this.databaseDefinition = database;
 	}
 

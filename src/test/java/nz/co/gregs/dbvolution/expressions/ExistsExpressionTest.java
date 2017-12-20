@@ -16,10 +16,8 @@
 package nz.co.gregs.dbvolution.expressions;
 
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.List;
 import nz.co.gregs.dbvolution.DBQuery;
-import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.example.*;
 import nz.co.gregs.dbvolution.generic.AbstractTest;
 import static org.hamcrest.Matchers.*;
@@ -39,64 +37,64 @@ public class ExistsExpressionTest extends AbstractTest {
 		super(testIterationName, db);
 	}
 
-	@Test
-	public void testDBExistsOperator() throws SQLException {
-
-		CarCompany carCompany = new CarCompany();
-		carCompany.uidCarCompany.permittedValues(3);
-
-		Marque marque = new Marque();
-		DBQuery marquesQuery = database.getDBQuery(marque);
-		marquesQuery.addCondition(new ExistsExpression(database, marque, carCompany));
-
-		List<Marque> rowList = marquesQuery.getAllInstancesOf(marque);
-
-		Assert.assertThat(rowList.size(), is(3));
-
-		marque = new Marque();
-		marquesQuery = database.getDBQuery(marque);
-		marquesQuery.addCondition((new ExistsExpression(database, marque, carCompany)).not());
-
-		marquesQuery.getAllInstancesOf(marque);
-		rowList = marquesQuery.getAllInstancesOf(marque);
-
-		Assert.assertThat(rowList.size(), is(19));
-	}
-
-	@Test
-	public void testDBExistsOnMultipleTablesOperator() throws SQLException {
-
-		CarCompany carCompany = new CarCompany();
-		carCompany.uidCarCompany.permittedValues(3);
-		ArrayList<DBRow> existsTables = new ArrayList<DBRow>();
-		existsTables.add(carCompany);
-		existsTables.add(new CompanyLogo());
-//		DBExistsOperator carCompanyExists = new DBExistsOperator(carCompany, new CompanyLogo());
-
-		Marque marque = new Marque();
-
-		DBQuery marquesQuery = database.getDBQuery(marque);
-		marquesQuery.addCondition(new ExistsExpression(database, marque, existsTables));
-
-		List<Marque> rowList = marquesQuery.getAllInstancesOf(marque);
-
-		Assert.assertThat(rowList.size(), is(0));
-
-		CompanyLogo companyLogo = new CompanyLogo();
-		companyLogo.carCompany.setValue(3);
-		companyLogo.logoID.setValue(4);
-		database.insert(companyLogo);
-
-		rowList = marquesQuery.getAllInstancesOf(marque);
-
-		Assert.assertThat(rowList.size(), is(3));
-
-		marquesQuery = database.getDBQuery(marque);
-		marquesQuery.addCondition((new ExistsExpression(database, marque, existsTables)).not());
-		rowList = marquesQuery.getAllInstancesOf(marque);
-
-		Assert.assertThat(rowList.size(), is(19));
-	}
+//	@Test
+//	public void testDBExistsOperator() throws SQLException {
+//
+//		CarCompany carCompany = new CarCompany();
+//		carCompany.uidCarCompany.permittedValues(3);
+//
+//		Marque marque = new Marque();
+//		DBQuery marquesQuery = database.getDBQuery(marque);
+//		marquesQuery.addCondition(new ExistsExpression(marque, carCompany));
+//
+//		List<Marque> rowList = marquesQuery.getAllInstancesOf(marque);
+//
+//		Assert.assertThat(rowList.size(), is(3));
+//
+//		marque = new Marque();
+//		marquesQuery = database.getDBQuery(marque);
+//		marquesQuery.addCondition((new ExistsExpression(marque, carCompany)).not());
+//
+//		marquesQuery.getAllInstancesOf(marque);
+//		rowList = marquesQuery.getAllInstancesOf(marque);
+//
+//		Assert.assertThat(rowList.size(), is(19));
+//	}
+//
+//	@Test
+//	public void testDBExistsOnMultipleTablesOperator() throws SQLException {
+//
+//		CarCompany carCompany = new CarCompany();
+//		carCompany.uidCarCompany.permittedValues(3);
+//		ArrayList<DBRow> existsTables = new ArrayList<DBRow>();
+//		existsTables.add(carCompany);
+//		existsTables.add(new CompanyLogo());
+////		DBExistsOperator carCompanyExists = new DBExistsOperator(carCompany, new CompanyLogo());
+//
+//		Marque marque = new Marque();
+//
+//		DBQuery marquesQuery = database.getDBQuery(marque);
+//		marquesQuery.addCondition(new ExistsExpression(marque, existsTables));
+//
+//		List<Marque> rowList = marquesQuery.getAllInstancesOf(marque);
+//
+//		Assert.assertThat(rowList.size(), is(0));
+//
+//		CompanyLogo companyLogo = new CompanyLogo();
+//		companyLogo.carCompany.setValue(3);
+//		companyLogo.logoID.setValue(4);
+//		database.insert(companyLogo);
+//
+//		rowList = marquesQuery.getAllInstancesOf(marque);
+//
+//		Assert.assertThat(rowList.size(), is(3));
+//
+//		marquesQuery = database.getDBQuery(marque);
+//		marquesQuery.addCondition((new ExistsExpression(marque, existsTables)).not());
+//		rowList = marquesQuery.getAllInstancesOf(marque);
+//
+//		Assert.assertThat(rowList.size(), is(19));
+//	}
 
 	@Test
 	public void testDBExistsOnMultipleTablesUsingDBQueries() throws SQLException {
@@ -112,7 +110,7 @@ public class ExistsExpressionTest extends AbstractTest {
 		DBQuery outerQuery = database.getDBQuery(marque);
 
 		DBQuery marquesQuery = database.getDBQuery(marque);
-		marquesQuery.addCondition(new ExistsExpression(database, outerQuery, existsTables));
+		marquesQuery.addCondition(new ExistsExpression(outerQuery, existsTables));
 
 		List<Marque> rowList = marquesQuery.getAllInstancesOf(marque);
 
@@ -128,7 +126,7 @@ public class ExistsExpressionTest extends AbstractTest {
 		Assert.assertThat(rowList.size(), is(3));
 
 		marquesQuery = database.getDBQuery(marque);
-		marquesQuery.addCondition((new ExistsExpression(database, outerQuery, existsTables)).not());
+		marquesQuery.addCondition((new ExistsExpression(outerQuery, existsTables)).not());
 		rowList = marquesQuery.getAllInstancesOf(marque);
 
 		Assert.assertThat(rowList.size(), is(19));

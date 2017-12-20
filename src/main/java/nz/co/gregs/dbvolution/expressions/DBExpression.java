@@ -72,16 +72,16 @@ public interface DBExpression {
 	 *
 	 * <p>
 	 * If you are extending DBvolution and adding a new function this is the place
-	 * to format the information for use in SQL. A DBDatabase instance is provided
-	 * to supply context and the DBDefinition object so your SQL can used on
+	 * to format the information for use in SQL. A DBDefinition instance is provided
+	 * to supply context and so your SQL can used on
 	 * multiple database engines.
 	 *
-	 * @param db the target database
+	 * @param defn the target database
 	 * <p style="color: #F90;">Support DBvolution at
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return the DBValue formatted as a SQL snippet
 	 */
-	public String toSQLString(DBDefinition db);
+	public String toSQLString(DBDefinition defn);
 
 	/**
 	 * A Complete Copy Of This DBValue.
