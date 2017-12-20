@@ -15,7 +15,6 @@
  */
 package nz.co.gregs.dbvolution.databases;
 
-import com.mysql.jdbc.exceptions.jdbc4.MySQLNonTransientConnectionException;
 import java.io.PrintStream;
 import java.io.Serializable;
 import java.sql.*;
@@ -1931,10 +1930,12 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 		boolean tableExists = false;
 
 		if (getDefinition().supportsTableCheckingViaMetaData()) {
-			Connection conn = getConnection(); // get a DB connection from somewhere
-			ResultSet rset = conn.getMetaData().getTables(null, null, table.getTableName(), null);
-			if (rset.next()) {
-				tableExists = true;
+			try (DBStatement dbStatement = getDBStatement()) {
+				Connection conn =dbStatement.getConnection();
+				ResultSet rset = conn.getMetaData().getTables(null, null, table.getTableName(), null);
+				if (rset.next()) {
+					tableExists = true;
+				}
 			}
 		} else {
 			String testQuery = getDBTable(table)
