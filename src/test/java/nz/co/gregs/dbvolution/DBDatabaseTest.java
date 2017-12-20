@@ -20,6 +20,7 @@ import nz.co.gregs.dbvolution.annotations.DBAutoIncrement;
 import nz.co.gregs.dbvolution.annotations.DBColumn;
 import nz.co.gregs.dbvolution.annotations.DBForeignKey;
 import nz.co.gregs.dbvolution.annotations.DBPrimaryKey;
+import nz.co.gregs.dbvolution.annotations.DBRequiredTable;
 import nz.co.gregs.dbvolution.datatypes.DBInteger;
 import nz.co.gregs.dbvolution.datatypes.DBString;
 import nz.co.gregs.dbvolution.exceptions.AccidentalDroppingOfDatabaseException;
@@ -235,6 +236,10 @@ public class DBDatabaseTest extends AbstractTest {
 		database.dropDatabase(false);
 	}
 
+	public void testRequiredTableAutomaticallyCreated() throws SQLException, Exception {
+		Assert.assertTrue(database.tableExists(new RequiredTableShouldBeCreatedAutomatically()));
+	}
+
 	public static class CreateTableTestClass extends DBRow {
 
 		public static final long serialVersionUID = 1L;
@@ -294,6 +299,15 @@ public class DBDatabaseTest extends AbstractTest {
 	}
 
 	public static class DropTable2TestClass extends DBRow {
+
+		public static final long serialVersionUID = 1L;
+
+		@DBColumn
+		DBString name = new DBString();
+	}
+
+	@DBRequiredTable()
+	public static class RequiredTableShouldBeCreatedAutomatically extends DBRow {
 
 		public static final long serialVersionUID = 1L;
 

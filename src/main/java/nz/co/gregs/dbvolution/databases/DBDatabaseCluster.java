@@ -597,14 +597,10 @@ public class DBDatabaseCluster extends DBDatabase {
 
 // need to check all tables and rows here
 		DBDatabase primary = getPrimaryDatabase();
-		Set<Class<? extends DBRow>> tables = DataModel.getDBRowDirectSubclasses();
-		for (Class<? extends DBRow> tab : tables) {
-			DBRow table = DBRow.getDBRow(tab);
+		Set<DBRow> tables = DataModel.getRequiredTables();
+		for (DBRow table : tables) {
 			if (true) {
 				if (primary.tableExists(table)) {
-//					if (!secondary.tableExists(table)) {
-//						secondary.createTableNoExceptions(table);
-//					}
 //					final DBTable<DBRow> primaryTable = primary.getDBTable(table);
 //					final DBTable<DBRow> secondaryTable = secondary.getDBTable(table);
 //					primaryTable.setQueryTimeout(10000);

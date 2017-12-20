@@ -39,6 +39,7 @@ import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 import nz.co.gregs.dbvolution.exceptions.*;
 import nz.co.gregs.dbvolution.transactions.*;
 import nz.co.gregs.dbvolution.internal.properties.PropertyWrapper;
+import nz.co.gregs.dbvolution.reflection.DataModel;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -215,6 +216,7 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 		MAX_CONNECTION_RETRIES = 6;
 		this.definition = definition;
 		this.dataSource = ds;
+		createRequiredTables();
 	}
 
 	/**
@@ -251,6 +253,7 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 		this.jdbcURL = jdbcURL;
 		this.password = password;
 		this.username = username;
+		createRequiredTables();
 	}
 
 	DBTransactionStatement getDBTransactionStatement() throws SQLException {
@@ -1956,5 +1959,20 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 
 	boolean tableExists(Class<? extends DBRow> tab) throws SQLException {
 		return tableExists(DBRow.getDBRow(tab));
+	}
+
+	private void createRequiredTables() {
+		Set<DBRow> tables = DataModel.getRequiredTables();
+		for (DBRow table : tables) {
+			if (true) {
+				try {
+					if (!tableExists(table)) {
+						createTable(table);
+					}
+				} catch (SQLException ex) {
+					Logger.getLogger(DBDatabase.class.getName()).log(Level.SEVERE, null, ex);
+				}
+			}
+		}
 	}
 }

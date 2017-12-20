@@ -379,6 +379,26 @@ public class DataModel {
 	}
 
 	/**
+	 * Find all DBRow subclasses on the current classpath.
+	 *
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
+	 * @return all the subclasses of DBRow in the current classpath.
+	 */
+	public static Set< DBRow> getRequiredTables() {
+		Set< DBRow> result = new HashSet<>(0);
+		Set<Class<? extends DBRow>> dbRowDirectSubclasses = getDBRowDirectSubclasses();
+		for (Class<? extends DBRow> clzz : dbRowDirectSubclasses) {
+			DBRow dbRow = DBRow.getDBRow(clzz);
+			if (dbRow.isRequiredTable()) {
+				result.add(dbRow);
+			}
+		}
+		return result;
+	}
+
+	/**
 	 * Find all DBRow subclasses on the current classpath, minus the example
 	 * classes found in DBvolution.
 	 *

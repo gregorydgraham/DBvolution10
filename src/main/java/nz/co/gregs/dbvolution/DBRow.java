@@ -1727,6 +1727,10 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 		return getWrapper().schemaName();
 	}
 
+	public boolean isRequiredTable() {
+		return getWrapper().isRequiredTable();
+	}
+
 	/**
 	 * Default sorting for DBRow in the various collections in DBRow and DBQuery.
 	 *

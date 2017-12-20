@@ -573,4 +573,8 @@ public class RowDefinitionClassWrapper {
 	String schemaName() {
 		return tableHandler.getSchemaName();
 	}
+
+	boolean isRequiredTable() {
+		return tableHandler.isRequiredTable();
+	}
 }

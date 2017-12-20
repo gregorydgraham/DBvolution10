@@ -425,4 +425,8 @@ public class RowDefinitionInstanceWrapper {
 	public String schemaName() {
 		return classWrapper.schemaName();
 	}
+
+	public boolean isRequiredTable() {
+		return classWrapper.isRequiredTable();
+	}
 }
