@@ -87,7 +87,6 @@ public class DBQuery {
 	private final QueryDetails details = new QueryDetails();
 	private QueryGraph queryGraph;
 	private JFrame queryGraphFrame = null;
-	private QueryTimeout timeout;
 
 	public QueryDetails getQueryDetails() {
 		return details;
@@ -2217,9 +2216,6 @@ public class DBQuery {
 	 */
 	public synchronized DBQuery clearTimeout() {
 		details.setTimeoutInMilliseconds(null);
-		if (this.timeout != null) {
-			this.timeout.cancel();
-		}
 		return this;
 	}
 
