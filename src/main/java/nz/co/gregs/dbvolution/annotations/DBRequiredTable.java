@@ -34,11 +34,16 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
+ * DBRequiredTable instructs the database to create this table if necessary.
+ *
+ * <p>
+ * Particularly useful in database clusters or during installation of standalone
+ * applications.</p>
  *
  * @author gregorygraham
  */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface DBRequiredTable {
-	
+
 }

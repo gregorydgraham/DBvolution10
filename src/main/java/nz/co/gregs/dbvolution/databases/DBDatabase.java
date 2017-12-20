@@ -1943,15 +1943,12 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 					.setQueryTimeout(10000)
 					.setBlankQueryAllowed(true)
 					.setRowLimit(1).getSQLForQuery();
-			final DBStatement dbStatement = getDBStatement();
-			try {
+			try (DBStatement dbStatement = getDBStatement()) {
 				ResultSet results = dbStatement.executeQuery(testQuery);
 				tableExists = true;
 			} catch (Exception ex) {
 				// Theoretically this should only need to catch an SQLException 
 				// but databases throw allsorts of weird exceptions
-			} finally {
-				dbStatement.close();
 			}
 		}
 		return tableExists;
@@ -1964,14 +1961,12 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 	private void createRequiredTables() {
 		Set<DBRow> tables = DataModel.getRequiredTables();
 		for (DBRow table : tables) {
-			if (true) {
-				try {
-					if (!tableExists(table)) {
-						createTable(table);
-					}
-				} catch (SQLException ex) {
-					Logger.getLogger(DBDatabase.class.getName()).log(Level.SEVERE, null, ex);
+			try {
+				if (!tableExists(table)) {
+					createTable(table);
 				}
+			} catch (SQLException ex) {
+				Logger.getLogger(DBDatabase.class.getName()).log(Level.SEVERE, null, ex);
 			}
 		}
 	}
