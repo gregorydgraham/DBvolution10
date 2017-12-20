@@ -1,13 +1,11 @@
 package nz.co.gregs.dbvolution.internal.properties;
 
 import java.util.List;
-import nz.co.gregs.dbvolution.databases.DBDatabase;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.annotations.AutoFillDuringQueryIfPossible;
 import nz.co.gregs.dbvolution.annotations.DBForeignKey;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.datatypes.DBEnumValue;
-import nz.co.gregs.dbvolution.datatypes.DBLargeObject;
 import nz.co.gregs.dbvolution.datatypes.DBNumberStatistics;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 import nz.co.gregs.dbvolution.exceptions.DBThrownByEndUserCodeException;
@@ -247,7 +245,7 @@ public class PropertyWrapper {
 	 */
 	@SuppressWarnings("unchecked")
 	public Class<? extends QueryableDatatype<?>> type() {
-		return (Class<? extends QueryableDatatype<?>>) propertyDefinition.type();
+		return propertyDefinition.type();
 	}
 
 	/**
