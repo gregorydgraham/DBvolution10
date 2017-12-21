@@ -30,8 +30,9 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import nz.co.gregs.dbvolution.DBQueryRow;
 import nz.co.gregs.dbvolution.DBRow;
@@ -64,7 +65,7 @@ public class QueryDetails implements DBQueryable {
 	private static final int DEFAULT_TIMEOUT_MILLISECONDS = 10000;
 	private Integer timeoutInMilliseconds = DEFAULT_TIMEOUT_MILLISECONDS;
 	private ScheduledFuture<?> timeout;
-	ScheduledThreadPoolExecutor timerService = new ScheduledThreadPoolExecutor(1);
+	static ScheduledExecutorService timerService = Executors.newSingleThreadScheduledExecutor();
 
 	private final Map<Class<? extends DBRow>, DBRow> emptyRows = new HashMap<>();
 
