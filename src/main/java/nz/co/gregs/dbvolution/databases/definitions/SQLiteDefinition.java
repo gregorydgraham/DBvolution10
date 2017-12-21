@@ -88,6 +88,16 @@ public class SQLiteDefinition extends DBDefinition implements SupportsDateRepeat
 	}
 
 	@Override
+	protected boolean hasSpecialAutoIncrementType() {
+		return true;
+	}
+
+	@Override
+	protected String getSpecialAutoIncrementType() {
+		return " INTEGER PRIMARY KEY AUTOINCREMENT ";
+	}
+
+	@Override
 	protected String getDatabaseDataTypeOfQueryableDatatype(QueryableDatatype<?> qdt) {
 		if (qdt instanceof DBLargeText) {
 			return " NTEXT ";
@@ -112,7 +122,8 @@ public class SQLiteDefinition extends DBDefinition implements SupportsDateRepeat
 
 	@Override
 	public void sanityCheckDBTableField(DBTableField dbTableField) {
-		if (dbTableField.isPrimaryKey && dbTableField.columnType.equals(DBInteger.class)) {
+		if (dbTableField.isPrimaryKey && 
+				(dbTableField.columnType.equals(DBInteger.class)||dbTableField.columnType.equals(DBNumber.class))) {
 			dbTableField.isAutoIncrement = true;
 		}
 	}
