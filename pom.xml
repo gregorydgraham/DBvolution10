@@ -499,6 +499,7 @@
 								<testH2BlankDB>true</testH2BlankDB>
 								<testMySQL>true</testMySQL>
 								<testPostgresSQL>true</testPostgresSQL>
+								<testClusteredDB>true</testClusteredDB>
 							</systemPropertyVariables>
 						</configuration>
 					</plugin>
