@@ -47,7 +47,7 @@ import nz.co.gregs.dbvolution.internal.properties.PropertyWrapper;
  *
  * @author Gregory Graham
  */
-public abstract class DBAction implements DBExecutable {
+public abstract class DBAction {
 
 	final DBRow row;
 
@@ -158,4 +158,21 @@ public abstract class DBAction implements DBExecutable {
 	 */
 	public abstract List<String> getSQLStatements(DBDatabase db);
 
+	/**
+	 * Performs the DB execute and returns a list of all actions performed in the
+	 * process.
+	 *
+	 * <p>
+	 * The supplied row will be changed by the action in an appropriate way,
+	 * however the Action will contain an unchanged and unchangeable copy of the
+	 * row for internal use.
+	 *
+	 * @param db the target database.
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @return The complete list of all actions performed to complete this action
+	 * on the database
+	 * @throws SQLException Database operations may throw SQLExceptions
+	 */
+	public abstract DBActionList execute(DBDatabase db) throws SQLException;
 }

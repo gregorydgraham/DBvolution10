@@ -40,14 +40,13 @@ import java.util.Queue;
 import java.util.Random;
 import java.util.Set;
 import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.SynchronousQueue;
 import nz.co.gregs.dbvolution.DBQueryRow;
 import nz.co.gregs.dbvolution.DBReport;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.DBScript;
 import nz.co.gregs.dbvolution.DBTable;
+import nz.co.gregs.dbvolution.actions.DBAction;
 import nz.co.gregs.dbvolution.actions.DBActionList;
-import nz.co.gregs.dbvolution.actions.DBExecutable;
 import nz.co.gregs.dbvolution.actions.DBQueryable;
 import nz.co.gregs.dbvolution.databases.definitions.ClusterDatabaseDefinition;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
@@ -71,7 +70,7 @@ public class DBDatabaseCluster extends DBDatabase {
 	private final List<DBDatabase> addedDatabases = new ArrayList<>();
 	private final List<DBDatabase> readyDatabases = new ArrayList<>();
 	private final DBStatementCluster clusterStatement;
-	private final Map<DBDatabase, Queue<DBExecutable>> queuedActions = new HashMap<>(0);
+	private final Map<DBDatabase, Queue<DBAction>> queuedActions = new HashMap<>(0);
 	private Set<DBRow> requiredTables;
 
 	public DBDatabaseCluster(DBDatabase... databases) throws SQLException {
@@ -95,6 +94,7 @@ public class DBDatabaseCluster extends DBDatabase {
 	 *
 	 * @param database element to be appended to this list
 	 * @return <tt>true</tt> (as specified by {@link Collection#add})
+	 * @throws java.sql.SQLException
 	 * @throws UnsupportedOperationException if the <tt>add</tt> operation is not
 	 * supported by this list
 	 * @throws ClassCastException if the class of the specified element prevents
@@ -537,7 +537,7 @@ public class DBDatabaseCluster extends DBDatabase {
 	}
 
 	@Override
-	public DBActionList executeDBAction(DBExecutable action) throws SQLException {
+	public DBActionList executeDBAction(DBAction action) throws SQLException {
 		addActionToQueue(action);
 		DBActionList actionsPerformed = new DBActionList();
 		for (DBDatabase next : readyDatabases) {
@@ -581,14 +581,14 @@ public class DBDatabaseCluster extends DBDatabase {
 		}
 	}
 
-	private synchronized void addActionToQueue(DBExecutable action) {
+	private synchronized void addActionToQueue(DBAction action) {
 		for (DBDatabase db : allDatabases) {
 			queuedActions.get(db).add(action);
 		}
 	}
 
-	private synchronized void removeActionFromQueue(DBDatabase database, DBExecutable action) {
-		final Queue<DBExecutable> db = queuedActions.get(database);
+	private synchronized void removeActionFromQueue(DBDatabase database, DBAction action) {
+		final Queue<DBAction> db = queuedActions.get(database);
 		if (db != null) {
 			db.remove(action);
 		}
@@ -600,7 +600,7 @@ public class DBDatabaseCluster extends DBDatabase {
 		DBDatabase primary = getPrimaryDatabase();
 		synchronized (this) {
 			// Create a action queue for the new database
-			queuedActions.put(secondary, new LinkedBlockingQueue<DBExecutable>());
+			queuedActions.put(secondary, new LinkedBlockingQueue<DBAction>());
 			// Check that we're not synchronising the reference database
 			if (!primary.equals(secondary)) {
 				if (requiredTables == null) {
@@ -635,9 +635,9 @@ public class DBDatabaseCluster extends DBDatabase {
 	}
 
 	private synchronized void synchronizeActions(DBDatabase db) throws SQLException {
-		Queue<DBExecutable> queue = queuedActions.get(db);
+		Queue<DBAction> queue = queuedActions.get(db);
 		while (!queue.isEmpty()) {
-			DBExecutable action = queue.remove();
+			DBAction action = queue.remove();
 			db.executeDBAction(action);
 		}
 	}

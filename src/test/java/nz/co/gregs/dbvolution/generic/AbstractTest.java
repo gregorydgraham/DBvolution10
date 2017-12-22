@@ -80,9 +80,16 @@ public abstract class AbstractTest {
 			databases.add(new Object[]{"ClusteredDB",
 				new DBDatabaseCluster(
 				H2MemoryTestDB.getFromSettings("h2memory"),
-				 SQLiteTestDB.getFromSettings(),
-				 PostgreSQLTestDatabase.getFromSettings("postgres"),
-				 MySQLTestDatabase.getFromSettings("mysql")
+				SQLiteTestDB.getFromSettings(),
+				PostgreSQLTestDatabase.getFromSettings("postgres"),
+				MySQLTestDatabase.getFromSettings("mysql")
+				)});
+		}
+		if (System.getProperty("testSmallCluster") != null) {
+			databases.add(new Object[]{"ClusteredDB",
+				new DBDatabaseCluster(
+				H2MemoryTestDB.getFromSettings("h2memory"),
+				SQLiteTestDB.getFromSettings()
 				)});
 		}
 		if (System.getProperty("testSQLite") != null) {
