@@ -45,23 +45,21 @@ public class DBUpdateSimpleTypesUsingAllColumns extends DBUpdateSimpleTypes {
 
 	@Override
 	public List<String> getSQLStatements(DBDatabase db) {
-		DBRow row = getRow();
+		DBRow table = getRow();
 		DBDefinition defn = db.getDefinition();
 
 		StringBuilder sql = new StringBuilder()
 				.append(defn.beginUpdateLine())
-				.append(defn.formatTableName(row))
+				.append(defn.formatTableName(table))
 				.append(defn.beginSetClause())
-				.append(getSetClause(db, row))
+				.append(getSetClause(db, table))
 				.append(defn.beginWhereClause())
 				.append(defn.getWhereClauseBeginningCondition());
-		for (PropertyWrapper prop : row.getColumnPropertyWrappers()) {
+		for (PropertyWrapper prop : table.getColumnPropertyWrappers()) {
 			QueryableDatatype<?> qdt = prop.getQueryableDatatype();
 			if (qdt.isNull()) {
 				sql.append(defn.beginAndLine())
-						.append(BooleanExpression.isNull(row.column(qdt)).toSQLString(defn));
-//				DBIsNullOperator isNullOp = new DBIsNullOperator();
-//				sql += isNullOp.generateWhereLine(db, prop.columnName());
+						.append(BooleanExpression.isNull(table.column(qdt)).toSQLString(defn));
 			} else {
 				sql.append(defn.beginWhereClauseLine())
 						.append(prop.columnName())

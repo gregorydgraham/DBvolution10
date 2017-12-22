@@ -46,31 +46,28 @@ public class DBUpdateSimpleTypes extends DBUpdate {
 
 	@Override
 	public DBActionList execute(DBDatabase db) throws SQLException {
-		DBRow row = getRow();
-		DBActionList actions = new DBActionList(new DBUpdateSimpleTypes(row));
-		DBStatement statement = db.getDBStatement();
-		try {
+		DBRow table = getRow();
+		DBActionList actions = new DBActionList(new DBUpdateSimpleTypes(table));
+		try (DBStatement statement = db.getDBStatement()) {
 			for (String sql : getSQLStatements(db)) {
 				statement.execute(sql);
 			}
-		} finally {
-			statement.close();
 		}
 		return actions;
 	}
 
 	@Override
 	public List<String> getSQLStatements(DBDatabase db) {
-		DBRow row = getRow();
+		DBRow table = getRow();
 		List<String> sqls = new ArrayList<>();
 		DBDefinition defn = db.getDefinition();
 
 		String sql = defn.beginUpdateLine()
-				+ defn.formatTableName(row)
+				+ defn.formatTableName(table)
 				+ defn.beginSetClause()
-				+ getSetClause(db, row)
+				+ getSetClause(db, table)
 				+ defn.beginWhereClause()
-				+ getWhereClause(db, row)
+				+ getWhereClause(db, table)
 				+ defn.endDeleteLine();
 		sqls.add(sql);
 		return sqls;

@@ -55,12 +55,12 @@ public class DBInsert extends DBAction {
 
 	private static final Log LOG = LogFactory.getLog(DBInsert.class);
 
-	private transient StringBuilder allChangedColumns;
-	private transient StringBuilder allSetValues;
+//	private transient StringBuilder allChangedColumns;
+//	private transient StringBuilder allSetValues;
 	private final List<Long> generatedKeys = new ArrayList<>();
 	private final DBRow originalRow;
-	private StringBuilder allColumns;
-	private StringBuilder allValues;
+//	private transient StringBuilder allColumns;
+//	private transient StringBuilder allValues;
 
 	/**
 	 * Creates a DBInsert action for the row.
@@ -129,26 +129,27 @@ public class DBInsert extends DBAction {
 
 	@Override
 	public ArrayList<String> getSQLStatements(DBDatabase db) {
-		DBRow row = getRow();
+		DBRow table = getRow();
 		DBDefinition defn = db.getDefinition();
-		processAllFieldsForInsert(db, row);
+		InsertFields fields = processAllFieldsForInsert(db, table);
 
 		ArrayList<String> strs = new ArrayList<>();
+		final StringBuilder allChangedColumns = fields.getAllChangedColumns();
 		if (allChangedColumns.length() != 0) {
 			strs.add(defn.beginInsertLine()
-					+ defn.formatTableName(row)
+					+ defn.formatTableName(table)
 					+ defn.beginInsertColumnList()
 					+ allChangedColumns
 					+ defn.endInsertColumnList()
-					+ allSetValues
+					+ fields.getAllSetValues()
 					+ defn.endInsertLine());
 		} else {
 			strs.add(defn.beginInsertLine()
-					+ defn.formatTableName(row)
+					+ defn.formatTableName(table)
 					+ defn.beginInsertColumnList()
-					+ allColumns
+					+ fields.getAllColumns()
 					+ defn.endInsertColumnList()
-					+ allValues
+					+ fields.getAllValues()
 					+ defn.endInsertLine());
 		}
 		return strs;
@@ -157,21 +158,20 @@ public class DBInsert extends DBAction {
 	@Override
 	public DBActionList execute(DBDatabase db) throws SQLException {
 		final DBDefinition defn = db.getDefinition();
-		DBRow row = getRow();
-		DBActionList actions = new DBActionList(new DBInsert(row));
+		DBRow table = getRow();
+		DBActionList actions = new DBActionList(new DBInsert(table));
 
-		DBStatement statement = db.getDBStatement();
-		try {
+		try (DBStatement statement = db.getDBStatement()) {
 			for (String sql : getSQLStatements(db)) {
 				if (defn.supportsGeneratedKeys()) {
 					try {
-						final List<QueryableDatatype<?>> primaryKeys = row.getPrimaryKeys();
-						if (primaryKeys == null || primaryKeys.size() == 0) {
+						final List<QueryableDatatype<?>> primaryKeys = table.getPrimaryKeys();
+						if (primaryKeys == null || primaryKeys.isEmpty()) {
 							statement.execute(sql);
 						} else if (primaryKeys.size() == 1) {
 							QueryableDatatype<?> primaryKey = primaryKeys.get(0);
-							String primaryKeyColumnName = row.getPrimaryKeyColumnNames().get(0);
-							Integer pkIndex = row.getPrimaryKeyIndexes().get(0);
+							String primaryKeyColumnName = table.getPrimaryKeyColumnNames().get(0);
+							Integer pkIndex = table.getPrimaryKeyIndexes().get(0);
 							if (pkIndex == null || primaryKeyColumnName == null) {
 								statement.execute(sql);
 							} else {
@@ -182,22 +182,19 @@ public class DBInsert extends DBAction {
 									pkIndex = 1;
 								}
 								if (primaryKey.hasBeenSet() == false) {
-									ResultSet generatedKeysResultSet = statement.getGeneratedKeys();
-									try {
+									try (ResultSet generatedKeysResultSet = statement.getGeneratedKeys()) {
 										while (generatedKeysResultSet.next()) {
 											final long pkValue = generatedKeysResultSet.getLong(pkIndex);
 											if (pkValue > 0) {
 												this.getGeneratedPrimaryKeys().add(pkValue);
 												QueryableDatatype<?> pkQDT = this.originalRow.getPrimaryKeys().get(0);
 												new InternalQueryableDatatypeProxy(pkQDT).setValue(pkValue);
-												pkQDT = row.getPrimaryKeys().get(0);
+												pkQDT = table.getPrimaryKeys().get(0);
 												new InternalQueryableDatatypeProxy(pkQDT).setValue(pkValue);
 											}
 										}
 									} catch (SQLException ex) {
 										throw new RuntimeException(ex);
-									} finally {
-										generatedKeysResultSet.close();
 									}
 								}
 							}
@@ -212,16 +209,15 @@ public class DBInsert extends DBAction {
 				} else {
 					try {
 						statement.execute(sql);
-						final List<PropertyWrapper> primaryKeyWrappers = row.getPrimaryKeyPropertyWrappers();
+						final List<PropertyWrapper> primaryKeyWrappers = table.getPrimaryKeyPropertyWrappers();
 						if (primaryKeyWrappers.size() > 0) {
 							if (defn.supportsRetrievingLastInsertedRowViaSQL()) {
 								String retrieveSQL = defn.getRetrieveLastInsertedRowSQL();
-								ResultSet rs = statement.executeQuery(retrieveSQL);
-								try {
+								try (ResultSet rs = statement.executeQuery(retrieveSQL)) {
 									for (PropertyWrapper primaryKeyWrapper : primaryKeyWrappers) {
 										PropertyWrapperDefinition definition = primaryKeyWrapper.getPropertyWrapperDefinition();
 										QueryableDatatype<?> originalPK = definition.getQueryableDatatype(this.originalRow);
-										QueryableDatatype<?> rowPK = definition.getQueryableDatatype(row);
+										QueryableDatatype<?> rowPK = definition.getQueryableDatatype(table);
 
 										if (originalPK.hasBeenSet() == false) {
 											if ((originalPK instanceof DBInteger) && (rowPK instanceof DBInteger)) {
@@ -241,8 +237,6 @@ public class DBInsert extends DBAction {
 											}
 										}
 									}
-								} finally {
-									rs.close();
 								}
 							}
 						}
@@ -251,20 +245,19 @@ public class DBInsert extends DBAction {
 					}
 				}
 			}
-		} finally {
-			statement.close();
 		}
 		DBInsertLargeObjects blobSave = new DBInsertLargeObjects(this.originalRow);
 		actions.addAll(db.executeDBAction(blobSave));
-		row.setDefined();
+		table.setDefined();
 		return actions;
 	}
 
-	private void processAllFieldsForInsert(DBDatabase database, DBRow row) {
-		allColumns = new StringBuilder();
-		allValues = new StringBuilder();
-		allChangedColumns = new StringBuilder();
-		allSetValues = new StringBuilder();
+	private InsertFields processAllFieldsForInsert(DBDatabase database, DBRow row) {
+		InsertFields fields = new InsertFields();
+		StringBuilder allColumns = fields.getAllColumns();
+		StringBuilder allValues = fields.getAllValues();
+		StringBuilder allChangedColumns = fields.getAllChangedColumns();
+		StringBuilder allSetValues = fields.getAllSetValues();
 		DBDefinition defn = database.getDefinition();
 		List<PropertyWrapper> props = row.getColumnPropertyWrappers();
 		String allColumnSeparator = "";
@@ -304,16 +297,17 @@ public class DBInsert extends DBAction {
 		}
 		allValues.append(defn.endValueClause());
 		allSetValues.append(defn.endValueClause());
+		return fields;
 	}
 
 	@Override
 	protected DBActionList getRevertDBActionList() {
 		DBActionList reverts = new DBActionList();
-		DBRow row = DBRow.copyDBRow(originalRow);
+		DBRow table = DBRow.copyDBRow(originalRow);
 		if (this.getRow().getPrimaryKeys() == null) {
-			reverts.add(new DBDeleteUsingAllColumns(row));
+			reverts.add(new DBDeleteUsingAllColumns(table));
 		} else {
-			reverts.add(new DBDeleteByPrimaryKey(row));
+			reverts.add(new DBDeleteByPrimaryKey(table));
 		}
 		return reverts;
 	}
@@ -373,5 +367,32 @@ public class DBInsert extends DBAction {
 			separator = defn.beginAndLine();
 		}
 		return sqlString.toString();
+	}
+
+	private static class InsertFields {
+
+		private final StringBuilder allColumns = new StringBuilder();
+		private final StringBuilder allValues = new StringBuilder();
+		private final StringBuilder allChangedColumns = new StringBuilder();
+		private final StringBuilder allSetValues = new StringBuilder();
+
+		public InsertFields() {
+		}
+
+		private StringBuilder getAllColumns() {
+			return this.allColumns;
+		}
+
+		private StringBuilder getAllValues() {
+			return this.allValues;
+		}
+
+		private StringBuilder getAllChangedColumns() {
+			return this.allChangedColumns;
+		}
+
+		private StringBuilder getAllSetValues() {
+			return this.allSetValues;
+		}
 	}
 }

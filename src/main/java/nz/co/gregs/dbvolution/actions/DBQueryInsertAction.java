@@ -44,12 +44,12 @@ public class DBQueryInsertAction<R extends DBRow> extends DBAction {
 
 	private static final Log LOG = LogFactory.getLog(DBQueryInsertAction.class);
 
-	private transient StringBuilder allChangedColumns;
-	private transient StringBuilder allSetValues;
+//	private transient StringBuilder allChangedColumns;
+//	private transient StringBuilder allSetValues;
 	private final DBQueryInsert<R> sourceMigration;
 	private final DBRow[] extraExamples;
-	private StringBuilder allColumns;
-	private StringBuilder allValues;
+//	private StringBuilder allColumns;
+//	private StringBuilder allValues;
 
 	/**
 	 * Creates a DBMigrate action for the row.
@@ -82,13 +82,13 @@ public class DBQueryInsertAction<R extends DBRow> extends DBAction {
 	@Override
 	@SuppressWarnings("unchecked")
 	public ArrayList<String> getSQLStatements(DBDatabase db) {
-		DBRow row = getRow();
+		DBRow table = getRow();
 		DBDefinition defn = db.getDefinition();
-		processAllFieldsForMigration(db, (R) getRow());
+		String allColumns = processAllFieldsForMigration(db, (R) getRow());
 
 		ArrayList<String> strs = new ArrayList<>();
 		strs.add(defn.beginInsertLine()
-				+ defn.formatTableName(row)
+				+ defn.formatTableName(table)
 				+ defn.beginInsertColumnList()
 				+ allColumns
 				+ defn.endInsertColumnList()
@@ -116,11 +116,11 @@ public class DBQueryInsertAction<R extends DBRow> extends DBAction {
 		return actions;
 	}
 
-	private void processAllFieldsForMigration(DBDatabase database, R row) {
-		allColumns = new StringBuilder();
-		allValues = new StringBuilder();
-		allChangedColumns = new StringBuilder();
-		allSetValues = new StringBuilder();
+	private String  processAllFieldsForMigration(DBDatabase database, R row) {
+		StringBuilder allColumns = new StringBuilder();
+		StringBuilder allValues = new StringBuilder();
+		StringBuilder allChangedColumns = new StringBuilder();
+		StringBuilder allSetValues = new StringBuilder();
 		DBDefinition defn = database.getDefinition();
 		List<PropertyWrapper> props = row.getColumnPropertyWrappers();
 		String allColumnSeparator = "";
@@ -160,6 +160,7 @@ public class DBQueryInsertAction<R extends DBRow> extends DBAction {
 		}
 		allValues.append(defn.endValueClause());
 		allSetValues.append(defn.endValueClause());
+		return allColumns.toString();
 	}
 
 	@Override

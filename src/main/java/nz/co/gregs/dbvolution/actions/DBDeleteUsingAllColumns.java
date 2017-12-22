@@ -63,10 +63,10 @@ public class DBDeleteUsingAllColumns extends DBDelete {
 
 	@Override
 	public DBActionList execute(DBDatabase db) throws SQLException {
-		DBRow row = getRow();
-		final DBDeleteUsingAllColumns dbDeleteUsingAllColumns = new DBDeleteUsingAllColumns(row);
+		DBRow table = getRow();
+		final DBDeleteUsingAllColumns dbDeleteUsingAllColumns = new DBDeleteUsingAllColumns(table);
 		DBActionList actions = new DBActionList(dbDeleteUsingAllColumns);
-		List<DBRow> rowsToBeDeleted = db.get(row);
+		List<DBRow> rowsToBeDeleted = db.get(table);
 		for (DBRow deletingRow : rowsToBeDeleted) {
 			dbDeleteUsingAllColumns.savedRows.add(DBRow.copyDBRow(deletingRow));
 		}
@@ -80,14 +80,14 @@ public class DBDeleteUsingAllColumns extends DBDelete {
 
 	@Override
 	public ArrayList<String> getSQLStatements(DBDatabase db) {
-		DBRow row = getRow();
+		DBRow table = getRow();
 		DBDefinition defn = db.getDefinition();
 
 		StringBuilder sql = new StringBuilder(defn.beginDeleteLine()
-				+ defn.formatTableName(row)
+				+ defn.formatTableName(table)
 				+ defn.beginWhereClause()
 				+ defn.getWhereClauseBeginningCondition());
-		for (PropertyWrapper prop : row.getColumnPropertyWrappers()) {
+		for (PropertyWrapper prop : table.getColumnPropertyWrappers()) {
 			QueryableDatatype<?> qdt = prop.getQueryableDatatype();
 			sql.append(defn.beginWhereClauseLine())
 					.append(prop.columnName())

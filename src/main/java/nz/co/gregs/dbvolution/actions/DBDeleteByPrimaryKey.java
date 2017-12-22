@@ -55,10 +55,6 @@ public class DBDeleteByPrimaryKey extends DBDelete {
 	private <R extends DBRow> DBDeleteByPrimaryKey(DBDatabase db, R row) throws SQLException {
 		super(row);
 		DBRow example = DBRow.getPrimaryKeyExample(row);
-//		DBRow example = DBRow.getDBRow(row.getClass());
-//		final QueryableDatatype<?> pkQDT = example.getPrimaryKeys();
-//		InternalQueryableDatatypeProxy pkQDTProxy = new InternalQueryableDatatypeProxy(pkQDT);
-//		pkQDTProxy.setValue(row.getPrimaryKeys());
 		List<DBRow> gotRows = db.get(example);
 		for (DBRow gotRow : gotRows) {
 			savedRows.add(gotRow);
@@ -67,24 +63,18 @@ public class DBDeleteByPrimaryKey extends DBDelete {
 
 	@Override
 	public DBActionList execute(DBDatabase db) throws SQLException {
-		DBRow row = getRow();
-		final DBDeleteByPrimaryKey newDeleteAction = new DBDeleteByPrimaryKey(row);
+		DBRow table = getRow();
+		final DBDeleteByPrimaryKey newDeleteAction = new DBDeleteByPrimaryKey(table);
 		DBActionList actions = new DBActionList(newDeleteAction);
-		DBRow example = DBRow.getPrimaryKeyExample(row);
-//		DBRow example = DBRow.getDBRow(row.getClass());
-//		final QueryableDatatype<?> pkQDT = example.getPrimaryKeys();
-//		new InternalQueryableDatatypeProxy(pkQDT).setValue(row.getPrimaryKeys());
+		DBRow example = DBRow.getPrimaryKeyExample(table);
 		List<DBRow> rowsToBeDeleted = db.get(example);
 		for (DBRow deletingRow : rowsToBeDeleted) {
 			newDeleteAction.savedRows.add(DBRow.copyDBRow(deletingRow));
 		}
-		DBStatement statement = db.getDBStatement();
-		try {
+		try (DBStatement statement = db.getDBStatement()) {
 			for (String str : getSQLStatements(db)) {
 				statement.execute(str);
 			}
-		} finally {
-			statement.close();
 		}
 		return actions;
 	}
@@ -92,15 +82,15 @@ public class DBDeleteByPrimaryKey extends DBDelete {
 	@Override
 	public ArrayList<String> getSQLStatements(DBDatabase db) {
 		DBDefinition defn = db.getDefinition();
-		DBRow row = getRow();
+		DBRow table = getRow();
 
 		ArrayList<String> strs = new ArrayList<>();
 		StringBuilder sql = new StringBuilder(defn.beginDeleteLine()
-				+ defn.formatTableName(row)
+				+ defn.formatTableName(table)
 				+ defn.beginWhereClause());
-		List<QueryableDatatype<?>> primaryKeys = row.getPrimaryKeys();
+		List<QueryableDatatype<?>> primaryKeys = table.getPrimaryKeys();
 		for (QueryableDatatype<?> pk : primaryKeys) {
-			sql.append(defn.formatColumnName(row.getPropertyWrapperOf(pk).columnName()))
+			sql.append(defn.formatColumnName(table.getPropertyWrapperOf(pk).columnName()))
 					.append(defn.getEqualsComparator())
 					.append(pk.toSQLString(defn));
 		}

@@ -38,7 +38,7 @@ import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
  */
 public class DBDeleteByExample extends DBDelete {
 
-	private List<DBRow> savedRows = new ArrayList<DBRow>();
+	private final List<DBRow> savedRows = new ArrayList<DBRow>();
 
 	/**
 	 * Creates a DBDeleteByExample action for the supplied example DBRow on the
@@ -61,20 +61,17 @@ public class DBDeleteByExample extends DBDelete {
 
 	@Override
 	public DBActionList execute(DBDatabase db) throws SQLException {
-		DBRow row = getRow();
-		final DBDeleteByExample deleteAction = new DBDeleteByExample(row);
+		DBRow table = getRow();
+		final DBDeleteByExample deleteAction = new DBDeleteByExample(table);
 		DBActionList actions = new DBActionList(deleteAction);
-		List<DBRow> rowsToBeDeleted = db.get(row);
+		List<DBRow> rowsToBeDeleted = db.get(table);
 		for (DBRow deletingRow : rowsToBeDeleted) {
 			deleteAction.savedRows.add(DBRow.copyDBRow(deletingRow));
 		}
-		DBStatement statement = db.getDBStatement();
-		try {
+		try (DBStatement statement = db.getDBStatement()) {
 			for (String str : getSQLStatements(db)) {
 				statement.execute(str);
 			}
-		} finally {
-			statement.close();
 		}
 		return actions;
 	}
@@ -82,15 +79,15 @@ public class DBDeleteByExample extends DBDelete {
 	@Override
 	public List<String> getSQLStatements(DBDatabase db) {
 		DBDefinition defn = db.getDefinition();
-		DBRow row = getRow();
+		DBRow table = getRow();
 		StringBuilder whereClause = new StringBuilder();
-		for (String clause : row.getWhereClausesWithoutAliases(defn)) {
+		for (String clause : table.getWhereClausesWithoutAliases(defn)) {
 			whereClause.append(defn.beginAndLine()).append(clause);
 		}
 
 		ArrayList<String> strs = new ArrayList<>();
 		strs.add(defn.beginDeleteLine()
-				+ defn.formatTableName(row)
+				+ defn.formatTableName(table)
 				+ defn.beginWhereClause()
 				+ defn.getWhereClauseBeginningCondition()
 				+ whereClause

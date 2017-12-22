@@ -70,56 +70,53 @@ public class DBUpdateLargeObjects extends DBUpdate {
 
 	@Override
 	public DBActionList execute(DBDatabase db) throws SQLException {
-		DBRow row = getRow();
+		DBRow table = getRow();
 		DBActionList actions;
 		DBDefinition defn = db.getDefinition();
-		DBStatement statement = db.getDBStatement();
-		try {
+		try (DBStatement statement = db.getDBStatement()) {
 			actions = new DBActionList();
-			for (PropertyWrapper prop : getInterestingLargeObjects(row)) {
+			for (PropertyWrapper prop : getInterestingLargeObjects(table)) {
 				final String col = prop.columnName();
 				final DBLargeObject<?> largeObject = (DBLargeObject<?>) prop.getQueryableDatatype();
 
 				if (largeObject.isNull()) {
-					setToNullUsingStringValue(defn, row, col, largeObject, db, statement);
+					setToNullUsingStringValue(defn, table, col, largeObject, db, statement);
 				} else {
 					LargeObjectHandlerType handler = defn.preferredLargeObjectWriter(largeObject);
 					switch (handler) {
 						case BLOB:
-							setUsingBLOB(defn, row, col, largeObject, db, statement);
+							setUsingBLOB(defn, table, col, largeObject, db, statement);
 							break;
 						case BASE64:
-							setUsingBase64String(defn, row, col, largeObject, db, statement);
+							setUsingBase64String(defn, table, col, largeObject, db, statement);
 							break;
 						case BINARYSTREAM:
-							setUsingBinaryStream(defn, row, col, largeObject, db, statement);
+							setUsingBinaryStream(defn, table, col, largeObject, db, statement);
 							break;
 						case CHARSTREAM:
-							setUsingCharacterStream(defn, row, col, largeObject, db, statement);
+							setUsingCharacterStream(defn, table, col, largeObject, db, statement);
 							break;
 						case CLOB:
-							setUsingCLOB(defn, row, col, largeObject, db, statement);
+							setUsingCLOB(defn, table, col, largeObject, db, statement);
 							break;
 						case STRING:
-							setUsingStringValue(defn, row, col, largeObject, db, statement);
+							setUsingStringValue(defn, table, col, largeObject, db, statement);
 							break;
 						case JAVAOBJECT:
-							setUsingJavaObject(defn, row, col, largeObject, db, statement);
+							setUsingJavaObject(defn, table, col, largeObject, db, statement);
 							break;
 						case BYTE:
-							setUsingByteArray(defn, row, col, largeObject, db, statement);
+							setUsingByteArray(defn, table, col, largeObject, db, statement);
 							break;
 					}
 				}
-				DBUpdateLargeObjects update = new DBUpdateLargeObjects(row);
+				DBUpdateLargeObjects update = new DBUpdateLargeObjects(table);
 				actions.add(update);
 				largeObject.setUnchanged();
 			}
 		} catch (SQLException | IOException ex) {
 			Logger.getLogger(DBUpdateLargeObjects.class.getName()).log(Level.SEVERE, null, ex);
 			throw new DBRuntimeException("Can't Set LargeObject: IOError", ex);
-		} finally {
-			statement.close();
 		}
 		return actions;
 	}
@@ -131,18 +128,14 @@ public class DBUpdateLargeObjects extends DBUpdate {
 				+ defn.beginSetClause()
 				+ defn.formatColumnName(col)
 				+ defn.getEqualsComparator()
-				//+ "'" + largeObject.stringValue() + "'"
 				+ " ? "
 				+ defn.beginWhereClause()
 				+ getPrimaryKeySQL(db, row)
 				+ defn.endSQLStatement();
 		LOG.debug(sqlString);
-		PreparedStatement prep = statement.getConnection().prepareStatement(sqlString);
-		try {
+		try (PreparedStatement prep = statement.getConnection().prepareStatement(sqlString)) {
 			prep.setString(1, largeObject.stringValue());
 			prep.execute();
-		} finally {
-			prep.close();
 		}
 
 		statement.execute(sqlString);
@@ -174,8 +167,7 @@ public class DBUpdateLargeObjects extends DBUpdate {
 				+ defn.endSQLStatement();
 		db.printSQLIfRequested(sqlString);
 		LOG.debug(sqlString);
-		PreparedStatement prep = statement.getConnection().prepareStatement(sqlString);
-		try {
+		try (PreparedStatement prep = statement.getConnection().prepareStatement(sqlString)) {
 			try {
 				prep.setBinaryStream(1, largeObject.getInputStream());
 			} catch (SQLException exp) {
@@ -186,8 +178,6 @@ public class DBUpdateLargeObjects extends DBUpdate {
 				}
 			}
 			prep.execute();
-		} finally {
-			prep.close();
 		}
 	}
 
@@ -202,12 +192,9 @@ public class DBUpdateLargeObjects extends DBUpdate {
 				+ getPrimaryKeySQL(db, row)
 				+ defn.endSQLStatement();
 		LOG.debug(sqlString);
-		PreparedStatement prep = statement.getConnection().prepareStatement(sqlString);
-		try {
+		try (PreparedStatement prep = statement.getConnection().prepareStatement(sqlString)) {
 			prep.setBlob(1, largeObject.getInputStream(), largeObject.getSize());
 			prep.execute();
-		} finally {
-			prep.close();
 		}
 	}
 
@@ -222,12 +209,9 @@ public class DBUpdateLargeObjects extends DBUpdate {
 				+ getPrimaryKeySQL(db, row)
 				+ defn.endSQLStatement();
 		LOG.debug(sqlString);
-		PreparedStatement prep = statement.getConnection().prepareStatement(sqlString);
-		try {
+		try (PreparedStatement prep = statement.getConnection().prepareStatement(sqlString)) {
 			prep.setClob(1, new InputStreamReader(largeObject.getInputStream(), Charset.forName("UTF-8")), largeObject.getSize());
 			prep.execute();
-		} finally {
-			prep.close();
 		}
 	}
 
@@ -242,12 +226,10 @@ public class DBUpdateLargeObjects extends DBUpdate {
 				+ getPrimaryKeySQL(db, row)
 				+ defn.endSQLStatement();
 		LOG.debug(sqlString);
-		PreparedStatement prep = statement.getConnection().prepareStatement(sqlString);
-		try {
+		try (PreparedStatement prep = statement.getConnection().prepareStatement(sqlString)) {
 			InputStream inputStream = largeObject.getInputStream();
 
-			InputStream input = new BufferedInputStream(inputStream);
-			try {
+			try (InputStream input = new BufferedInputStream(inputStream)) {
 				List<byte[]> byteArrays = new ArrayList<>();
 
 				int totalBytesRead = 0;
@@ -269,11 +251,7 @@ public class DBUpdateLargeObjects extends DBUpdate {
 				String b64encoded = Base64.encodeBase64String(bytes);
 				prep.setString(1, b64encoded);
 				prep.execute();
-			} finally {
-				input.close();
 			}
-		} finally {
-			prep.close();
 		}
 	}
 
@@ -289,12 +267,10 @@ public class DBUpdateLargeObjects extends DBUpdate {
 				+ defn.endSQLStatement();
 		db.printSQLIfRequested(sqlString);
 		LOG.debug(sqlString);
-		PreparedStatement prep = statement.getConnection().prepareStatement(sqlString);
-		try {
+		try (PreparedStatement prep = statement.getConnection().prepareStatement(sqlString)) {
 			InputStream inputStream = largeObject.getInputStream();
 
-			InputStreamReader input = new InputStreamReader(inputStream, "UTF-8");
-			try {
+			try (InputStreamReader input = new InputStreamReader(inputStream, "UTF-8")) {
 				List<char[]> byteArrays = new ArrayList<>();
 
 				int totalBytesRead = 0;
@@ -315,11 +291,7 @@ public class DBUpdateLargeObjects extends DBUpdate {
 				}
 				prep.setCharacterStream(1, new BufferedReader(new CharArrayReader(bytes)), bytes.length);
 				prep.execute();
-			} finally {
-				input.close();
 			}
-		} finally {
-			prep.close();
 		}
 	}
 
@@ -395,12 +367,10 @@ public class DBUpdateLargeObjects extends DBUpdate {
 				+ getPrimaryKeySQL(db, row)
 				+ defn.endSQLStatement();
 		LOG.debug(sqlString);
-		PreparedStatement prep = statement.getConnection().prepareStatement(sqlString);
-		try {
+		try (PreparedStatement prep = statement.getConnection().prepareStatement(sqlString)) {
 			InputStream inputStream = largeObject.getInputStream();
 
-			InputStream input = new BufferedInputStream(inputStream);
-			try {
+			try (InputStream input = new BufferedInputStream(inputStream)) {
 				List<byte[]> byteArrays = new ArrayList<>();
 
 				int totalBytesRead = 0;
@@ -421,11 +391,7 @@ public class DBUpdateLargeObjects extends DBUpdate {
 				}
 				prep.setBytes(1, bytes);
 				prep.execute();
-			} finally {
-				input.close();
 			}
-		} finally {
-			prep.close();
 		}
 	}
 }
