@@ -225,6 +225,7 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 		return newRow;
 	}
 	private String recursiveTableAlias = null;
+	private transient final Object locker = new Object();
 
 	/**
 	 * Returns the QueryableDatatype instance of the Primary Key of This DBRow
@@ -240,7 +241,6 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 	 */
 	public List<QueryableDatatype<?>> getPrimaryKeys() {
 		List<PropertyWrapper> primaryKeyPropertyWrappers = getPrimaryKeyPropertyWrappers();
-
 		if (primaryKeyPropertyWrappers == null) {
 			return null;
 		} else {
@@ -453,7 +453,7 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 	 * @return the PropertyWrapper for the primary key.
 	 */
 	public List<PropertyWrapper> getPrimaryKeyPropertyWrappers() {
-		return getWrapper().primaryKeys();
+		return getWrapper().getPrimaryKeysPropertyWrappers();
 	}
 
 	/**
@@ -504,10 +504,8 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 					if (rawJavaValue == null) {
 						try {
 							rawJavaValue = prop.getRawJavaType().newInstance();
-						} catch (InstantiationException ex) {
+						} catch (InstantiationException | IllegalAccessException ex) {
 							// note: InstantiationException tends to be thrown without a message
-							throw new RuntimeException("Unable to instantiate instance of " + prop.toString(), ex);
-						} catch (IllegalAccessException ex) {
 							throw new RuntimeException("Unable to instantiate instance of " + prop.toString(), ex);
 						}
 						prop.setRawJavaValue(rawJavaValue);
@@ -646,6 +644,7 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 	public String getTableName() {
 		return getWrapper().tableName();
 	}
+
 	public String getSelectQuery() {
 		return getWrapper().selectQuery();
 	}

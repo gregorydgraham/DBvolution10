@@ -570,6 +570,30 @@ public class RowDefinitionClassWrapper {
 		return list;
 	}
 
+
+	/**
+	 * Gets all primary key properties.
+	 *
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
+	 * @return a list of ProperyWrapperDefinitions for all the foreign keys
+	 * defined in the wrapped object
+	 */
+	public List<PropertyWrapperDefinition> getPrimaryKeyPropertyDefinitions() {
+		if (identityOnly) {
+			throw new AssertionError("Attempt to access non-identity information of identity-only DBRow class wrapper");
+		}
+
+		List<PropertyWrapperDefinition> list = new ArrayList<PropertyWrapperDefinition>();
+		for (PropertyWrapperDefinition property : columnProperties) {
+			if (property.isColumn() && property.isPrimaryKey()) {
+				list.add(property);
+			}
+		}
+		return list;
+	}
+
 	String schemaName() {
 		return tableHandler.getSchemaName();
 	}
