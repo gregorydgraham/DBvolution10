@@ -47,8 +47,8 @@ public class RowDefinition implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
-	private static final RowDefinitionWrapperFactory wrapperFactory = new RowDefinitionWrapperFactory();
-	private transient RowDefinitionInstanceWrapper wrapper = null;
+	private static final RowDefinitionWrapperFactory WRAPPER_FACTORY = new RowDefinitionWrapperFactory();
+	private final transient RowDefinitionInstanceWrapper wrapper = WRAPPER_FACTORY.instanceWrapperFor(this);
 	private transient List<PropertyWrapperDefinition> returnColumns = null;
 
 	/**
@@ -94,9 +94,9 @@ public class RowDefinition implements Serializable {
 	 * @return a {@link RowDefinitionInstanceWrapper}
 	 */
 	protected RowDefinitionInstanceWrapper getWrapper() {
-		if (wrapper == null) {
-			wrapper = wrapperFactory.instanceWrapperFor(this);
-		}
+//		if (wrapper == null) {
+//			wrapper = wrapperFactory.instanceWrapperFor(this);
+//		}
 		return wrapper;
 	}
 
