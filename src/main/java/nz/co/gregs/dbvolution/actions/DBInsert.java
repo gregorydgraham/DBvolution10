@@ -55,12 +55,8 @@ public class DBInsert extends DBAction {
 
 	private static final Log LOG = LogFactory.getLog(DBInsert.class);
 
-//	private transient StringBuilder allChangedColumns;
-//	private transient StringBuilder allSetValues;
 	private final List<Long> generatedKeys = new ArrayList<>();
 	private final DBRow originalRow;
-//	private transient StringBuilder allColumns;
-//	private transient StringBuilder allValues;
 
 	/**
 	 * Creates a DBInsert action for the row.
@@ -101,7 +97,6 @@ public class DBInsert extends DBAction {
 	public static DBActionList save(DBDatabase database, DBRow row) throws SQLException {
 		DBInsert dbInsert = new DBInsert(row);
 		final DBActionList executedActions = database.executeDBAction(dbInsert);
-//		final DBActionList executedActions = dbInsert.execute(database);
 		final List<QueryableDatatype<?>> primaryKeys = row.getPrimaryKeys();
 		boolean pksHaveBeenSet = true;
 		for (QueryableDatatype<?> pk : primaryKeys) {
@@ -158,8 +153,9 @@ public class DBInsert extends DBAction {
 	@Override
 	public DBActionList execute(DBDatabase db) throws SQLException {
 		final DBDefinition defn = db.getDefinition();
-		DBRow table = getRow();
-		DBActionList actions = new DBActionList(new DBInsert(table));
+		DBRow table = originalRow;
+		final DBInsert newInsert = new DBInsert(table);
+		DBActionList actions = new DBActionList(newInsert);
 
 		try (DBStatement statement = db.getDBStatement()) {
 			for (String sql : getSQLStatements(db)) {
@@ -187,10 +183,7 @@ public class DBInsert extends DBAction {
 											final long pkValue = generatedKeysResultSet.getLong(pkIndex);
 											if (pkValue > 0) {
 												this.getGeneratedPrimaryKeys().add(pkValue);
-												QueryableDatatype<?> pkQDT = this.originalRow.getPrimaryKeys().get(0);
-												new InternalQueryableDatatypeProxy(pkQDT).setValue(pkValue);
-												pkQDT = table.getPrimaryKeys().get(0);
-												new InternalQueryableDatatypeProxy(pkQDT).setValue(pkValue);
+												setPrimaryKeyOfStoredRows(pkValue, table, newInsert);
 											}
 										}
 									} catch (SQLException ex) {
@@ -252,6 +245,19 @@ public class DBInsert extends DBAction {
 		return actions;
 	}
 
+	private synchronized void setPrimaryKeyOfStoredRows(final long pkValue, DBRow table, final DBInsert newInsert) {
+		QueryableDatatype<?> pkQDT = this.originalRow.getPrimaryKeys().get(0);
+		new InternalQueryableDatatypeProxy(pkQDT).setValue(pkValue);
+		pkQDT = this.row.getPrimaryKeys().get(0);
+		new InternalQueryableDatatypeProxy(pkQDT).setValue(pkValue);
+		pkQDT = table.getPrimaryKeys().get(0);
+		new InternalQueryableDatatypeProxy(pkQDT).setValue(pkValue);
+		pkQDT = newInsert.row.getPrimaryKeys().get(0);
+		new InternalQueryableDatatypeProxy(pkQDT).setValue(pkValue);
+		pkQDT = newInsert.originalRow.getPrimaryKeys().get(0);
+		new InternalQueryableDatatypeProxy(pkQDT).setValue(pkValue);
+	}
+
 	private InsertFields processAllFieldsForInsert(DBDatabase database, DBRow row) {
 		InsertFields fields = new InsertFields();
 		StringBuilder allColumns = fields.getAllColumns();
@@ -303,8 +309,8 @@ public class DBInsert extends DBAction {
 	@Override
 	protected DBActionList getRevertDBActionList() {
 		DBActionList reverts = new DBActionList();
-		DBRow table = DBRow.copyDBRow(originalRow);
-		if (this.getRow().getPrimaryKeys() == null) {
+		DBRow table = this.getRow();
+		if (table.getPrimaryKeys() == null) {
 			reverts.add(new DBDeleteUsingAllColumns(table));
 		} else {
 			reverts.add(new DBDeleteByPrimaryKey(table));
