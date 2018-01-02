@@ -75,10 +75,10 @@ public class DBDatabaseCluster extends DBDatabase {
 	private final List<DBDatabase> allDatabases = new ArrayList<>();
 	private final List<DBDatabase> addedDatabases = new ArrayList<>();
 	private final List<DBDatabase> readyDatabases = new ArrayList<>();
-	private final DBStatementCluster clusterStatement;
-	private final Map<DBDatabase, Queue<DBAction>> queuedActions = new HashMap<>(0);
-	private Set<DBRow> requiredTables;
-	private final ExecutorService threadPool = Executors.newCachedThreadPool();
+	private transient final Set<DBRow> requiredTables = DataModel.getRequiredTables();
+	private transient final DBStatementCluster clusterStatement;
+	private transient final Map<DBDatabase, Queue<DBAction>> queuedActions = new HashMap<>(0);
+	private transient final ExecutorService threadPool = Executors.newCachedThreadPool();
 
 	public DBDatabaseCluster(DBDatabase... databases) throws SQLException {
 		super();
@@ -619,9 +619,6 @@ public class DBDatabaseCluster extends DBDatabase {
 			queuedActions.put(secondary, new LinkedBlockingQueue<DBAction>());
 			// Check that we're not synchronising the reference database
 			if (!primary.equals(secondary)) {
-				if (requiredTables == null) {
-					requiredTables = DataModel.getRequiredTables();
-				}
 				for (DBRow table : requiredTables) {
 					if (true) {
 						if (primary.tableExists(table)) {

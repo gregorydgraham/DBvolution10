@@ -112,7 +112,7 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 	}
 
 	@Override
-	public int hashCode() {
+	public synchronized int hashCode() {
 		int hash = 7;
 		hash = 29 * hash + (this.driverName != null ? this.driverName.hashCode() : 0);
 		hash = 29 * hash + (this.jdbcURL != null ? this.jdbcURL.hashCode() : 0);
@@ -123,7 +123,7 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 	}
 
 	@Override
-	public boolean equals(Object obj) {
+	public synchronized boolean equals(Object obj) {
 		if (obj == null) {
 			return false;
 		}
@@ -330,20 +330,20 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 	 * and MS SQLserver, in particular, need to be added to the path if you wish
 	 * to work with those databases.
 	 */
-	public Connection getConnection() throws UnableToCreateDatabaseConnectionException, UnableToFindJDBCDriver, SQLException {
+	public synchronized Connection getConnection() throws UnableToCreateDatabaseConnectionException, UnableToFindJDBCDriver, SQLException {
 		if (isInATransaction && !this.transactionConnection.isClosed()) {
 			return this.transactionConnection;
 		}
 		Connection conn = null;
 		while (conn == null) {
 			if (supportsPooledConnections()) {
-				synchronized (FREE_CONNECTIONS) {
+				//synchronized (FREE_CONNECTIONS) {
 					if (FREE_CONNECTIONS.isEmpty() || getConnectionList(FREE_CONNECTIONS).isEmpty()) {
 						conn = getRawConnection();
 					} else {
 						conn = getConnectionList(FREE_CONNECTIONS).get(0);
 					}
-				}
+				//}
 			} else {
 				conn = getRawConnection();
 			}
@@ -732,11 +732,11 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 	 * @see
 	 * DBDatabase#doReadOnlyTransaction(nz.co.gregs.dbvolution.transactions.DBTransaction)
 	 */
-	public <V> V doTransaction(DBTransaction<V> dbTransaction, Boolean commit) throws SQLException, Exception {
+	public synchronized <V> V doTransaction(DBTransaction<V> dbTransaction, Boolean commit) throws SQLException, Exception {
 		DBDatabase db;
-		synchronized (this) {
+//		synchronized (this) {
 			db = this.clone();
-		}
+//		}
 		V returnValues = null;
 		db.transactionStatement = db.getDBTransactionStatement();
 		try {
@@ -867,7 +867,7 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 	 *
 	 * @return the driverName
 	 */
-	public String getDriverName() {
+	public synchronized String getDriverName() {
 		return driverName;
 	}
 
@@ -876,7 +876,7 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 	 *
 	 * @param driver the name of the JDBC Drive class for this DBDatabase.
 	 */
-	protected void setDriverName(String driver) {
+	protected synchronized void setDriverName(String driver) {
 		driverName = driver;
 	}
 
@@ -888,7 +888,7 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 	 *
 	 * @return the jdbcURL
 	 */
-	public String getJdbcURL() {
+	public synchronized String getJdbcURL() {
 		return jdbcURL;
 	}
 
@@ -900,7 +900,7 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 	 *
 	 * @return the username
 	 */
-	public String getUsername() {
+	public synchronized String getUsername() {
 		return username;
 	}
 
@@ -912,7 +912,7 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 	 *
 	 * @return the password
 	 */
-	public String getPassword() {
+	public synchronized String getPassword() {
 		return password;
 	}
 
@@ -974,7 +974,7 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 	 *
 	 * @param b TRUE to print SQL before execution, FALSE otherwise.
 	 */
-	public void setPrintSQLBeforeExecuting(boolean b) {
+	public synchronized void setPrintSQLBeforeExecuting(boolean b) {
 		printSQLBeforeExecuting = b;
 	}
 
@@ -1000,7 +1000,7 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 		printSQLIfRequested(sqlString, System.out);
 	}
 
-	void printSQLIfRequested(String sqlString, PrintStream out) {
+	synchronized void printSQLIfRequested(String sqlString, PrintStream out) {
 		if (printSQLBeforeExecuting) {
 			out.println(sqlString);
 		}
@@ -1167,7 +1167,7 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 		createTable(newTableRow, true);
 	}
 
-	private void createTable(DBRow newTableRow, boolean includeForeignKeyClauses) throws SQLException, AutoCommitActionDuringTransactionException {
+	private synchronized void createTable(DBRow newTableRow, boolean includeForeignKeyClauses) throws SQLException, AutoCommitActionDuringTransactionException {
 		preventDDLDuringTransaction("DBDatabase.createTable()");
 		StringBuilder sqlScript = new StringBuilder();
 		List<PropertyWrapper> pkFields = new ArrayList<>();
@@ -1276,7 +1276,7 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 	 * @param newTableRow the table that needs foreign key constraints
 	 * @throws SQLException the database has had an issue.
 	 */
-	public void createForeignKeyConstraints(DBRow newTableRow) throws SQLException {
+	public synchronized void createForeignKeyConstraints(DBRow newTableRow) throws SQLException {
 		if (this.definition.supportsAlterTableAddConstraint()) {
 			List<PropertyWrapper> fields = newTableRow.getColumnPropertyWrappers();
 			List<String> fkClauses = new ArrayList<>();
@@ -1320,7 +1320,7 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 	 * removed
 	 * @throws SQLException database exceptions
 	 */
-	public void removeForeignKeyConstraints(DBRow newTableRow) throws SQLException {
+	public synchronized void removeForeignKeyConstraints(DBRow newTableRow) throws SQLException {
 
 		List<PropertyWrapper> fields = newTableRow.getColumnPropertyWrappers();
 		List<String> fkClauses = new ArrayList<>();
@@ -1360,7 +1360,7 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 	 * @param newTableRow the data model's version of the table that needs indexes
 	 * @throws SQLException database exceptions
 	 */
-	public void createIndexesOnAllFields(DBRow newTableRow) throws SQLException {
+	public synchronized void createIndexesOnAllFields(DBRow newTableRow) throws SQLException {
 
 		List<PropertyWrapper> fields = newTableRow.getColumnPropertyWrappers();
 		List<String> indexClauses = new ArrayList<>();
@@ -1401,7 +1401,7 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 	 * @param tableRow tableRow
 	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
-	public void dropTable(DBRow tableRow) throws SQLException, AutoCommitActionDuringTransactionException, AccidentalDroppingOfTableException {
+	public synchronized void dropTable(DBRow tableRow) throws SQLException, AutoCommitActionDuringTransactionException, AccidentalDroppingOfTableException {
 		preventDDLDuringTransaction("DBDatabase.dropTable()");
 		if (preventAccidentalDroppingOfTables) {
 			throw new AccidentalDroppingOfTableException();
@@ -1465,7 +1465,7 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 	 *
 	 * @return the DBDefinition used by this DBDatabase instance
 	 */
-	public DBDefinition getDefinition() {
+	public synchronized DBDefinition getDefinition() {
 		return definition;
 	}
 
@@ -1482,7 +1482,7 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 	 *
 	 * @param defn the DBDefinition to be used by this DBDatabase instance.
 	 */
-	protected final void setDefinition(DBDefinition defn) {
+	protected synchronized final void setDefinition(DBDefinition defn) {
 		if (definition == null) {
 			definition = defn;
 		}
@@ -1514,7 +1514,7 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 	 * @param doIt don't do it.
 	 * @throws java.lang.Exception java.lang.Exception
 	 */
-	public void dropDatabase(boolean doIt) throws Exception, UnsupportedOperationException, AutoCommitActionDuringTransactionException {
+	public synchronized void dropDatabase(boolean doIt) throws Exception, UnsupportedOperationException, AutoCommitActionDuringTransactionException {
 		preventDDLDuringTransaction("DBDatabase.dropDatabase()");
 		if (preventAccidentalDroppingOfTables) {
 			throw new AccidentalDroppingOfTableException();
@@ -1545,7 +1545,7 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 	 * @param doIt don't do it.
 	 * @throws java.lang.Exception java.lang.Exception
 	 */
-	public void dropDatabase(String databaseName, boolean doIt) throws Exception, UnsupportedOperationException, AutoCommitActionDuringTransactionException {
+	public synchronized void dropDatabase(String databaseName, boolean doIt) throws Exception, UnsupportedOperationException, AutoCommitActionDuringTransactionException {
 		preventDDLDuringTransaction("DBDatabase.dropDatabase()");
 		if (preventAccidentalDroppingOfTables) {
 			throw new AccidentalDroppingOfTableException();
@@ -1573,7 +1573,7 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 	 *
 	 * @return the database name
 	 */
-	public String getDatabaseName() {
+	public synchronized String getDatabaseName() {
 		return databaseName;
 	}
 
@@ -1582,7 +1582,7 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 	 *
 	 * @param databaseName	databaseName
 	 */
-	protected void setDatabaseName(String databaseName) {
+	protected synchronized void setDatabaseName(String databaseName) {
 		this.databaseName = databaseName;
 	}
 
@@ -1604,7 +1604,7 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 	 * @return TRUE if this instance will try to batch SQL statements, FALSE
 	 * otherwise
 	 */
-	public boolean batchSQLStatementsWhenPossible() {
+	public synchronized boolean batchSQLStatementsWhenPossible() {
 		return batchIfPossible;
 	}
 
@@ -1622,11 +1622,11 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 	 * @param batchSQLStatementsWhenPossible TRUE if this instance will try to
 	 * batch SQL statements, FALSE otherwise
 	 */
-	public void setBatchSQLStatementsWhenPossible(boolean batchSQLStatementsWhenPossible) {
+	public synchronized void setBatchSQLStatementsWhenPossible(boolean batchSQLStatementsWhenPossible) {
 		batchIfPossible = batchSQLStatementsWhenPossible;
 	}
 
-	private void preventDDLDuringTransaction(String message) throws AutoCommitActionDuringTransactionException {
+	private synchronized void preventDDLDuringTransaction(String message) throws AutoCommitActionDuringTransactionException {
 		if (isInATransaction) {
 			throw new AutoCommitActionDuringTransactionException(message);
 		}
@@ -1636,7 +1636,7 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 	 *
 	 * @param droppingTablesIsAMistake just leave it at TRUE.
 	 */
-	public void preventDroppingOfTables(boolean droppingTablesIsAMistake) {
+	public synchronized void preventDroppingOfTables(boolean droppingTablesIsAMistake) {
 		this.preventAccidentalDroppingOfTables = droppingTablesIsAMistake;
 	}
 
@@ -1644,7 +1644,7 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 	 *
 	 * @param justLeaveThisAtTrue	justLeaveThisAtTrue
 	 */
-	public void preventDroppingOfDatabases(boolean justLeaveThisAtTrue) {
+	public synchronized void preventDroppingOfDatabases(boolean justLeaveThisAtTrue) {
 		this.preventAccidentalDroppingDatabase = justLeaveThisAtTrue;
 	}
 
@@ -1914,7 +1914,7 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 
 	}
 
-	public void setExplicitCommitAction(boolean b) {
+	public synchronized void setExplicitCommitAction(boolean b) {
 		explicitCommitActionRequired = b;
 	}
 
