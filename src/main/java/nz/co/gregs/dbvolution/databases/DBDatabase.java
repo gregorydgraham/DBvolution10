@@ -1926,6 +1926,10 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 		return query.query(this);
 	}
 
+	public String getSQLForDBQuery(DBQueryable query) {
+		return query.toSQLString(this);
+	}
+
 	public boolean tableExists(DBRow table) throws SQLException {
 		boolean tableExists = false;
 

@@ -29,6 +29,7 @@ import java.io.PrintStream;
 import java.sql.*;
 import java.util.*;
 import javax.swing.JFrame;
+import nz.co.gregs.dbvolution.actions.DBQueryable;
 
 import nz.co.gregs.dbvolution.annotations.DBForeignKey;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
@@ -298,8 +299,9 @@ public class DBQuery {
 	 * @return a String of the SQL query that will be used to count the rows
 	 * returned by this query
 	 */
-	protected String getSQLForCount() {
-		return details.getSQLForCount(database, details);
+	protected synchronized String getSQLForCount() {
+		details.setQueryType(QueryType.COUNT);
+		return database.getSQLForDBQuery(details);
 	}
 
 	/**

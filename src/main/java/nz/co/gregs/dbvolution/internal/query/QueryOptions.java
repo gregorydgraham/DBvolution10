@@ -317,7 +317,7 @@ public class QueryOptions {
 		return queryType;
 	}
 
-	public final void setQueryType(QueryType queryType) {
+	public synchronized final void setQueryType(QueryType queryType) {
 		this.queryType = queryType;
 	}
 

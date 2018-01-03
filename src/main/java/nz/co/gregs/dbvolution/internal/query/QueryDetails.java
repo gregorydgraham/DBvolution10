@@ -64,8 +64,8 @@ public class QueryDetails implements DBQueryable {
 
 	private static final int DEFAULT_TIMEOUT_MILLISECONDS = 10000;
 	private Integer timeoutInMilliseconds = DEFAULT_TIMEOUT_MILLISECONDS;
-	private ScheduledFuture<?> timeout;
-	static ScheduledExecutorService timerService = Executors.newSingleThreadScheduledExecutor();
+//	private ScheduledFuture<?> timeout;
+	static final transient ScheduledExecutorService TIMER_SERVICE = Executors.newSingleThreadScheduledExecutor();
 
 	private final Map<Class<? extends DBRow>, DBRow> emptyRows = new HashMap<>();
 
@@ -141,7 +141,7 @@ public class QueryDetails implements DBQueryable {
 	 *
 	 * @return the options
 	 */
-	public QueryOptions getOptions() {
+	public synchronized QueryOptions getOptions() {
 		return options;
 	}
 
@@ -163,7 +163,7 @@ public class QueryDetails implements DBQueryable {
 	 *
 	 * @return all conditions in the query
 	 */
-	public List<BooleanExpression> getAllConditions() {
+	public synchronized List<BooleanExpression> getAllConditions() {
 		List<BooleanExpression> allConditions = new ArrayList<>();
 		for (DBRow entry : allQueryTables) {
 			allConditions.addAll(entry.getWhereClauseExpressions(databaseDefinition, true));
@@ -216,11 +216,11 @@ public class QueryDetails implements DBQueryable {
 	 *
 	 * @param b
 	 */
-	public void setGroupByRequiredByAggregator(boolean b) {
+	public synchronized void setGroupByRequiredByAggregator(boolean b) {
 		this.groupByRequiredByAggregator = true;
 	}
 
-	private boolean getGroupByRequiredByAggregator() {
+	private synchronized boolean getGroupByRequiredByAggregator() {
 		return this.groupByRequiredByAggregator;
 	}
 
@@ -241,7 +241,7 @@ public class QueryDetails implements DBQueryable {
 	 *
 	 * @param selectClause
 	 */
-	public void setSelectSQLClause(String selectClause) {
+	public synchronized void setSelectSQLClause(String selectClause) {
 		this.selectSQLClause = selectClause;
 	}
 
@@ -253,7 +253,7 @@ public class QueryDetails implements DBQueryable {
 	 *
 	 * @return the SELECT clause defined earlier
 	 */
-	public String getSelectSQLClause() {
+	public synchronized String getSelectSQLClause() {
 		return selectSQLClause;
 	}
 
@@ -263,18 +263,18 @@ public class QueryDetails implements DBQueryable {
 	 *
 	 * @return the havingColumns
 	 */
-	public BooleanExpression[] getHavingColumns() {
+	public synchronized BooleanExpression[] getHavingColumns() {
 		return havingColumns.toArray(new BooleanExpression[]{});
 	}
 
 	/**
 	 * @param havingColumns the havingColumns to set
 	 */
-	public void setHavingColumns(BooleanExpression... havingColumns) {
+	public synchronized void setHavingColumns(BooleanExpression... havingColumns) {
 		Collections.addAll(this.havingColumns, havingColumns);
 	}
 
-	public void setDefinition(DBDefinition database) {
+	public synchronized void setDefinition(DBDefinition database) {
 		this.databaseDefinition = database;
 	}
 
@@ -282,96 +282,92 @@ public class QueryDetails implements DBQueryable {
 		this.options.setQueryType(queryType);
 	}
 
-	public void setOptions(QueryOptions tempOptions) {
+	public synchronized void setOptions(QueryOptions tempOptions) {
 		this.options = tempOptions;
 	}
 
 	/**
 	 * @return the rawSQLClause
 	 */
-	public String getRawSQLClause() {
+	public synchronized String getRawSQLClause() {
 		return rawSQLClause;
 	}
 
 	/**
 	 * @param rawSQLClause the rawSQLClause to set
 	 */
-	public void setRawSQLClause(String rawSQLClause) {
+	public synchronized void setRawSQLClause(String rawSQLClause) {
 		this.rawSQLClause = rawSQLClause;
 	}
 
 	/**
 	 * @return the results
 	 */
-	public List<DBQueryRow> getResults() {
+	public synchronized List<DBQueryRow> getResults() {
 		return results;
 	}
 
 	/**
 	 * @param results the results to set
 	 */
-	public void setResults(List<DBQueryRow> results) {
+	public synchronized void setResults(List<DBQueryRow> results) {
 		this.results = results;
 	}
 
 	/**
 	 * @return the resultSQL
 	 */
-	public String getResultSQL() {
+	public synchronized String getResultSQL() {
 		return resultSQL;
 	}
 
 	/**
 	 * @param resultSQL the resultSQL to set
 	 */
-	public void setResultSQL(String resultSQL) {
+	public synchronized void setResultSQL(String resultSQL) {
 		this.resultSQL = resultSQL;
 	}
 
 	/**
 	 * @return the resultsPageIndex
 	 */
-	public Integer getResultsPageIndex() {
+	public synchronized Integer getResultsPageIndex() {
 		return resultsPageIndex;
 	}
 
 	/**
 	 * @param resultsPageIndex the resultsPageIndex to set
 	 */
-	public void setResultsPageIndex(Integer resultsPageIndex) {
+	public synchronized void setResultsPageIndex(Integer resultsPageIndex) {
 		this.resultsPageIndex = resultsPageIndex;
 	}
 
 	/**
 	 * @return the resultsRowLimit
 	 */
-	public Integer getResultsRowLimit() {
+	public synchronized Integer getResultsRowLimit() {
 		return resultsRowLimit;
 	}
 
 	/**
 	 * @param resultsRowLimit the resultsRowLimit to set
 	 */
-	public void setResultsRowLimit(Integer resultsRowLimit) {
+	public synchronized void setResultsRowLimit(Integer resultsRowLimit) {
 		this.resultsRowLimit = resultsRowLimit;
 	}
 
-	public void clearResults() {
+	public synchronized void clearResults() {
 		setResults(new ArrayList<DBQueryRow>());
 		setResultsRowLimit(options.getRowLimit());
 		setResultsPageIndex(options.getPageIndex());
 		setResultSQL(null);
 	}
 
-	public void setCount(Long result) {
-		queryCount = result;
-	}
-
-	public Long getCount() {
+	public synchronized Long getCount() {
 		return queryCount;
 	}
 
-	public void getResultSetCount(DBDatabase db, QueryDetails details) throws SQLException {
+	private synchronized void getResultSetCount(DBDatabase db, QueryDetails details) throws SQLException {
 		long result = 0L;
 		try (DBStatement dbStatement = db.getDBStatement()) {
 			final String sqlForCount = details.getSQLForCount(db, details);
@@ -381,10 +377,10 @@ public class QueryDetails implements DBQueryable {
 				}
 			}
 		}
-		setCount(result);
+		queryCount = result;
 	}
 
-	public String getSQLForCount(DBDatabase database, QueryDetails details) {
+	private synchronized String getSQLForCount(DBDatabase database, QueryDetails details) {
 		if (!database.getDefinition().supportsFullOuterJoinNatively()) {
 			return "SELECT COUNT(*) FROM ("
 					+ getSQLForQuery(database, new QueryState(details), QueryType.SELECT, details.getOptions())
@@ -396,7 +392,7 @@ public class QueryDetails implements DBQueryable {
 		}
 	}
 
-	public String getSQLForQuery(DBDatabase database, QueryState queryState, QueryType queryType, QueryOptions options) {
+	public synchronized String getSQLForQuery(DBDatabase database, QueryState queryState, QueryType queryType, QueryOptions options) {
 		String sqlString = "";
 
 		if (getAllQueryTables().size() > 0) {
@@ -609,7 +605,7 @@ public class QueryDetails implements DBQueryable {
 		return sqlString;
 	}
 
-	private void initialiseQueryGraph() {
+	private synchronized void initialiseQueryGraph() {
 		if (queryGraph == null) {
 			queryGraph = new QueryGraph(getRequiredQueryTables(), getConditions());
 			queryGraph.addOptionalAndConnectToRelevant(getOptionalQueryTables(), getConditions());
@@ -620,7 +616,7 @@ public class QueryDetails implements DBQueryable {
 		}
 	}
 
-	public String getANSIJoinClause(DBDefinition defn, QueryState queryState, DBRow newTable, List<DBRow> previousTables, QueryOptions options) {
+	public synchronized String getANSIJoinClause(DBDefinition defn, QueryState queryState, DBRow newTable, List<DBRow> previousTables, QueryOptions options) {
 		List<String> joinClauses = new ArrayList<>();
 		List<String> conditionClauses = new ArrayList<>();
 		String lineSep = System.getProperty("line.separator");
@@ -729,7 +725,7 @@ public class QueryDetails implements DBQueryable {
 		return sqlToReturn.toString();
 	}
 
-	private void getNonANSIJoin(DBRow tabRow, StringBuilder whereClause, DBDefinition defn, List<DBRow> otherTables, String lineSep, QueryOptions options) {
+	private synchronized void getNonANSIJoin(DBRow tabRow, StringBuilder whereClause, DBDefinition defn, List<DBRow> otherTables, String lineSep, QueryOptions options) {
 
 		for (DBRow otherTab : otherTables) {
 			List<PropertyWrapper> otherTableFks = otherTab.getForeignKeyPropertyWrappers();
@@ -756,7 +752,7 @@ public class QueryDetails implements DBQueryable {
 		}
 	}
 
-	private String mergeConditionsIntoSQLClause(List<String> conditionClauses, DBDefinition defn, QueryOptions options) {
+	private synchronized String mergeConditionsIntoSQLClause(List<String> conditionClauses, DBDefinition defn, QueryOptions options) {
 		String separator = "";
 		StringBuilder sqlToReturn = new StringBuilder();
 		for (String cond : conditionClauses) {
@@ -766,7 +762,7 @@ public class QueryDetails implements DBQueryable {
 		return sqlToReturn.toString();
 	}
 
-	private String getOrderByClause(DBDefinition defn, Map<PropertyWrapperDefinition, Integer> indexesOfSelectedProperties, Map<DBExpression, Integer> IndexesOfSelectedExpressions) {
+	private synchronized String getOrderByClause(DBDefinition defn, Map<PropertyWrapperDefinition, Integer> indexesOfSelectedProperties, Map<DBExpression, Integer> IndexesOfSelectedExpressions) {
 		final boolean prefersIndexBasedOrderByClause = defn.prefersIndexBasedOrderByClause();
 		if (sortOrderColumns != null && sortOrderColumns.length > 0) {
 			StringBuilder orderByClause = new StringBuilder(defn.beginOrderByClause());
@@ -819,7 +815,7 @@ public class QueryDetails implements DBQueryable {
 		return "";
 	}
 
-	private String getHavingClause(DBDatabase database, QueryOptions options) {
+	private synchronized String getHavingClause(DBDatabase database, QueryOptions options) {
 		BooleanExpression[] having = getHavingColumns();
 		final DBDefinition defn = database.getDefinition();
 		String havingClauseStart = defn.getHavingClauseStart();
@@ -858,7 +854,7 @@ public class QueryDetails implements DBQueryable {
 	 * @return a fake full outer join query for databases that don't support FULL
 	 * OUTER joins
 	 */
-	private String getSQLForFakeFullOuterJoin(DBDatabase database, String existingSQL, QueryState queryState, QueryDetails details, QueryOptions options, QueryType queryType) {
+	private synchronized String getSQLForFakeFullOuterJoin(DBDatabase database, String existingSQL, QueryState queryState, QueryDetails details, QueryOptions options, QueryType queryType) {
 		String sqlForQuery;
 		String unionOperator;
 		DBDefinition defn = database.getDefinition();
@@ -886,7 +882,7 @@ public class QueryDetails implements DBQueryable {
 		return sqlForQuery;
 	}
 
-	public void setSortOrder(ColumnProvider[] sortColumns) {
+	public synchronized void setSortOrder(ColumnProvider[] sortColumns) {
 		blankResults();
 		sortOrderColumns = Arrays.copyOf(sortColumns, sortColumns.length);
 
@@ -900,13 +896,13 @@ public class QueryDetails implements DBQueryable {
 		}
 	}
 
-	public void blankResults() {
+	public synchronized void blankResults() {
 		setResults(null);
 		setResultSQL(null);
 		queryGraph = null;
 	}
 
-	public void addToSortOrder(ColumnProvider[] sortColumns) {
+	public synchronized void addToSortOrder(ColumnProvider[] sortColumns) {
 		if (sortColumns != null) {
 			blankResults();
 			List<ColumnProvider> sortOrderColumnsList = new LinkedList<>();
@@ -919,21 +915,21 @@ public class QueryDetails implements DBQueryable {
 		}
 	}
 
-	public void clearSortOrder() {
+	public synchronized void clearSortOrder() {
 		sortOrder = null;
 		sortOrderColumns = null;
 	}
 
-	public ColumnProvider[] getSortOrderColumns() {
+	public synchronized ColumnProvider[] getSortOrderColumns() {
 		return sortOrderColumns;
 	}
 
-	private void prepareForQuery(DBDatabase database, QueryOptions options) throws SQLException {
+	private synchronized void prepareForQuery(DBDatabase database, QueryOptions options) throws SQLException {
 		clearResults();
 		setResultSQL(this.getSQLForQuery(database, new QueryState(this), QueryType.SELECT, options));
 	}
 
-	public boolean needsResults(QueryOptions options) {
+	public synchronized boolean needsResults(QueryOptions options) {
 		final DBDatabase queryDatabase = options.getQueryDatabase();
 		return getResults() == null
 				|| queryDatabase == null
@@ -945,7 +941,7 @@ public class QueryDetails implements DBQueryable {
 	}
 
 	@Override
-	public List<DBQueryRow> getAllRows() throws SQLException, SQLTimeoutException, AccidentalBlankQueryException, AccidentalCartesianJoinException {
+	public synchronized List<DBQueryRow> getAllRows() throws SQLException, SQLTimeoutException, AccidentalBlankQueryException, AccidentalCartesianJoinException {
 		final QueryOptions opts = getOptions();
 		if (this.needsResults(opts)) {
 			getOptions().getQueryDatabase().executeDBQuery(this);
@@ -960,7 +956,7 @@ public class QueryDetails implements DBQueryable {
 	}
 
 	@Override
-	public DBQueryable query(DBDatabase db) throws SQLException {
+	public synchronized DBQueryable query(DBDatabase db) throws SQLException {
 		getOptions().setQueryDatabase(db);
 		switch (getOptions().getQueryType()) {
 			case COUNT:
@@ -981,7 +977,7 @@ public class QueryDetails implements DBQueryable {
 		return this;
 	}
 
-	public void getAllRowsForPage(DBDatabase database, QueryDetails details) throws SQLException {
+	public synchronized void getAllRowsForPage(DBDatabase database, QueryDetails details) throws SQLException {
 		final QueryOptions opts = getOptions();
 		int pageNumber = getResultsPageIndex();
 		final DBDefinition defn = database.getDefinition();
@@ -1027,7 +1023,7 @@ public class QueryDetails implements DBQueryable {
 		}
 	}
 
-	protected void fillResultSetInternal(DBDatabase db, QueryDetails details, QueryOptions options) throws SQLException {
+	protected synchronized void fillResultSetInternal(DBDatabase db, QueryDetails details, QueryOptions options) throws SQLException {
 		prepareForQuery(db, options);
 
 		final DBDefinition defn = db.getDefinition();
@@ -1046,7 +1042,7 @@ public class QueryDetails implements DBQueryable {
 
 	}
 
-	protected void fillResultSetFromSQL(DBDatabase db, QueryDetails details, final DBDefinition defn, String sqlString) throws SQLException {
+	protected synchronized void fillResultSetFromSQL(DBDatabase db, QueryDetails details, final DBDefinition defn, String sqlString) throws SQLException {
 		DBQueryRow queryRow;
 
 		try (DBStatement dbStatement = db.getDBStatement();
@@ -1071,7 +1067,7 @@ public class QueryDetails implements DBQueryable {
 	}
 
 	@SuppressWarnings("unchecked")
-	void setAutoFilledFields(DBRow row) throws SQLException {
+	synchronized void setAutoFilledFields(DBRow row) throws SQLException {
 		boolean arrayRequired = false;
 		boolean listRequired = false;
 		try {
@@ -1144,7 +1140,7 @@ public class QueryDetails implements DBQueryable {
 		return instances;
 	}
 
-	public boolean willCreateBlankQuery(DBDatabase db) {
+	public synchronized boolean willCreateBlankQuery(DBDatabase db) {
 		boolean willCreateBlankQuery = true;
 		for (DBRow table : getAllQueryTables()) {
 			willCreateBlankQuery = willCreateBlankQuery && table.willCreateBlankQuery(db.getDefinition());
@@ -1170,19 +1166,16 @@ public class QueryDetails implements DBQueryable {
 	 */
 	protected synchronized ResultSet getResultSetForSQL(final DBStatement statement, String sql) throws SQLException, SQLTimeoutException {
 		final Integer timeoutTime = this.getTimeoutInMilliseconds();
+		ScheduledFuture<?> cancelHandle = null;
 		if (timeoutTime != null && timeoutTime > 0) {
 			final Runnable canceller = new QueryCanceller(statement);
-			final ScheduledFuture<?> cancelHandle
-					= timerService.schedule(canceller, timeoutTime, TimeUnit.MILLISECONDS);
-
-			this.timeout = cancelHandle;
+			cancelHandle = TIMER_SERVICE.schedule(canceller, timeoutTime, TimeUnit.MILLISECONDS);
 		}
 
 		final ResultSet queryResults = statement.executeQuery(sql);
 
-		if (this.timeout != null) {
-			this.timeout.cancel(true);
-			this.timeout = null;
+		if (cancelHandle != null) {
+			cancelHandle.cancel(true);
 		}
 		return queryResults;
 	}
@@ -1198,7 +1191,7 @@ public class QueryDetails implements DBQueryable {
 		}
 	}
 
-	public void setQueryRowFromResultSet(DBDefinition defn, ResultSet resultSet, QueryDetails details, DBQueryRow queryRow, boolean isGroupedQuery) throws SQLException {
+	public synchronized void setQueryRowFromResultSet(DBDefinition defn, ResultSet resultSet, QueryDetails details, DBQueryRow queryRow, boolean isGroupedQuery) throws SQLException {
 		for (DBRow tableRow : details.getAllQueryTables()) {
 			DBRow newInstance = DBRow.getDBRow(tableRow.getClass());
 
@@ -1332,15 +1325,15 @@ public class QueryDetails implements DBQueryable {
 		return existingInstance;
 	}
 
-	protected void setCurrentPage(List<DBQueryRow> results) {
+	protected synchronized void setCurrentPage(List<DBQueryRow> results) {
 		currentPage = results;
 	}
 
-	public List<DBQueryRow> getCurrentPage() {
+	public synchronized List<DBQueryRow> getCurrentPage() {
 		return currentPage;
 	}
 
-	public void clear() {
+	public synchronized void clear() {
 		requiredQueryTables.clear();
 		optionalQueryTables.clear();
 		allQueryTables.clear();
@@ -1349,15 +1342,26 @@ public class QueryDetails implements DBQueryable {
 		blankResults();
 	}
 
-	public void setTimeoutInMilliseconds(Integer milliseconds) {
+	public synchronized void setTimeoutInMilliseconds(Integer milliseconds) {
 		this.timeoutInMilliseconds = milliseconds;
 	}
 
 	/**
 	 * @return the timeoutInMilliseconds
 	 */
-	public Integer getTimeoutInMilliseconds() {
+	public synchronized Integer getTimeoutInMilliseconds() {
 		return timeoutInMilliseconds;
+	}
+
+	@Override
+	public synchronized String toSQLString(DBDatabase db) {
+		getOptions().setQueryDatabase(db);
+		switch (getOptions().getQueryType()) {
+			case COUNT:
+				return getSQLForCount(db, this);
+			default:
+				return getSQLForQuery(db, new QueryState(this), QueryType.SELECT, getOptions());
+		}
 	}
 
 }

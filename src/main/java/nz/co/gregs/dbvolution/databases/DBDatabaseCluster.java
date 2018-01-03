@@ -569,6 +569,11 @@ public class DBDatabaseCluster extends DBDatabase {
 		return actionsPerformed;
 	}
 
+	@Override
+	public String getSQLForDBQuery(DBQueryable query) {
+		return this.getReadyDatabase().getSQLForDBQuery(query);
+	}
+
 	synchronized ArrayList<DBStatement> getDBStatements() throws SQLException {
 		ArrayList<DBStatement> arrayList = new ArrayList<>();
 		for (DBDatabase db : readyDatabases) {

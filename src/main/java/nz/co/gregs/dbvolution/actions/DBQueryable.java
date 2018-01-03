@@ -62,4 +62,6 @@ public interface DBQueryable {
 
 	public List<DBQueryRow> getAllRows() throws SQLException, SQLTimeoutException, AccidentalBlankQueryException, AccidentalCartesianJoinException ;
 
+	public String toSQLString(DBDatabase db);
+
 }
