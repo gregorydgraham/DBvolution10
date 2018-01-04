@@ -333,6 +333,15 @@
 						<mysql.password>${mysql.password}</mysql.password>
 						<mysql.schema>${mysql.schema}</mysql.schema>
                         
+						<mysql-clustered.url>${mysql-clustered.url}</mysql-clustered.url>
+						<mysql-clustered.host>${mysql-clustered.host}</mysql-clustered.host>
+						<mysql-clustered.port>${mysql-clustered.port}</mysql-clustered.port>
+						<mysql-clustered.instance>${mysql-clustered.instance}</mysql-clustered.instance>
+						<mysql-clustered.database>${mysql-clustered.database}</mysql-clustered.database>
+						<mysql-clustered.username>${mysql-clustered.username}</mysql-clustered.username>
+						<mysql-clustered.password>${mysql-clustered.password}</mysql-clustered.password>
+						<mysql-clustered.schema>${mysql-clustered.schema}</mysql-clustered.schema>
+                        
 						<mysql56.url>${mysql56.url}</mysql56.url>
 						<mysql56.host>${mysql56.host}</mysql56.host>
 						<mysql56.port>${mysql56.port}</mysql56.port>

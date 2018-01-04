@@ -1734,7 +1734,11 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
 	protected Connection getConnectionFromDriverManager() throws SQLException {
+		try {
 		return DriverManager.getConnection(getJdbcURL(), getUsername(), getPassword());
+		} catch (SQLException e) {
+			throw new DBRuntimeException("Connection Failed to URL "+getJdbcURL(), e);
+		}
 	}
 
 	/**
