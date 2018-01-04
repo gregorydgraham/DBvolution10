@@ -67,22 +67,13 @@ public abstract class AbstractTest {
 
 		List<Object[]> databases = new ArrayList<>();
 
-		String url = System.getProperty("dbv.url");
-		String host = System.getProperty("dbv.host");
-		String port = System.getProperty("dbv.port");
-		String instance = System.getProperty("dbv.instance");
-		String database = System.getProperty("dbv.database");
-		String username = System.getProperty("dbv.username");
-		String password = System.getProperty("dbv.password");
-		String schema = System.getProperty("dbv.schema");
-
 		if (System.getProperty("testClusteredDB") != null) {
 			databases.add(new Object[]{"ClusteredDB",
 				new DBDatabaseCluster(
 				H2MemoryTestDB.getFromSettings("h2memory"),
 				SQLiteTestDB.getFromSettings(),
 				PostgreSQLTestDatabase.getFromSettings("postgres"),
-				MySQLTestDatabase.getFromSettings("mysql")
+				MySQLTestDatabase.getFromSettings("mysql-clustered")
 				)});
 		}
 		if (System.getProperty("testSmallCluster") != null) {
@@ -91,6 +82,18 @@ public abstract class AbstractTest {
 				SQLiteTestDB.getFromSettings(),
 				H2MemoryTestDB.getFromSettings("h2memory")
 				)});
+		}
+		if (System.getProperty("MySQL+Cluster") != null) {
+			databases.add(new Object[]{"ClusteredDB",
+				new DBDatabaseCluster(
+				H2MemoryTestDB.getFromSettings("h2memory"),
+				SQLiteTestDB.getFromSettings(),
+				PostgreSQLTestDatabase.getFromSettings("postgres"),
+				MySQLTestDatabase.getFromSettings("mysql")
+				)});
+			databases.add(new Object[]{"MySQL",
+				MySQLTestDatabase.getFromSettings("mysql")
+				});
 		}
 		if (System.getProperty("testSQLite") != null) {
 			databases.add(new Object[]{"SQLiteDB", SQLiteTestDB.getFromSettings()});
@@ -123,7 +126,7 @@ public abstract class AbstractTest {
 			databases.add(new Object[]{"MSSQLServer", MSSQLServerTestDB.getFromSettings("sqlserver")});
 		}
 		if (System.getProperty("testJTDSSQLServer") != null) {
-			databases.add(new Object[]{"JTDSSQLServer", new JTDSSQLServerTestDB(host, instance, database, port, username, password)});
+			databases.add(new Object[]{"JTDSSQLServer", JTDSSQLServerTestDB.getFromSettings("jtds")});
 		}
 		if (System.getProperty("testH2MemoryDB") != null) {
 			databases.add(new Object[]{"H2MemoryDB", H2MemoryTestDB.getFromSettings("h2memory")});
