@@ -15,6 +15,7 @@
  */
 package nz.co.gregs.dbvolution.operators;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatypeSyncer;
 import nz.co.gregs.dbvolution.expressions.BooleanExpression;
@@ -48,6 +49,9 @@ public class DBBetweenInclusiveOperator extends DBOperator {
 	 * @param lowValue
 	 * @param highValue
 	 */
+	@SuppressFBWarnings(
+			value = "NP_LOAD_OF_KNOWN_NULL_VALUE",
+			justification = "Null is a valid value in databases")
 	public DBBetweenInclusiveOperator(DBExpression lowValue, DBExpression highValue) {
 		super(lowValue == null ? lowValue : lowValue.copy(),
 				highValue == null ? highValue : highValue.copy());
@@ -95,7 +99,7 @@ public class DBBetweenInclusiveOperator extends DBOperator {
 				&& (getSecondValue() instanceof NumberResult)) {
 			NumberExpression numberExpression = (NumberExpression) genericExpression;
 			betweenOp = numberExpression.isBetweenInclusive((NumberResult) getFirstValue(), (NumberResult) getSecondValue());
-		} else  if ((genericExpression instanceof IntegerExpression)
+		} else if ((genericExpression instanceof IntegerExpression)
 				&& (getFirstValue() instanceof IntegerResult)
 				&& (getSecondValue() instanceof IntegerResult)) {
 			IntegerExpression numberExpression = (IntegerExpression) genericExpression;
