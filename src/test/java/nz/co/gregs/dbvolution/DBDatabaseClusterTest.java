@@ -28,7 +28,6 @@
  */
 package nz.co.gregs.dbvolution;
 
-import java.sql.Array;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
@@ -59,50 +58,51 @@ public class DBDatabaseClusterTest extends AbstractTest {
 
 	@Test
 	public void testAutomaticDataCreation() throws SQLException {
+		H2MemoryDB soloDB = new H2MemoryDB("DBDatabaseClusterTest", "who", "what", true);
+		final DBDatabaseClusterTestTable testTable = new DBDatabaseClusterTestTable();
+		Assert.assertTrue(soloDB.tableExists(testTable));
+
 		DBDatabaseCluster cluster = new DBDatabaseCluster(database);
+		Assert.assertTrue(cluster.tableExists(testTable));
+		
 		cluster.delete(cluster
-				.getDBTable(new DBDatabaseClusterTestTable())
+				.getDBTable(testTable)
 				.setBlankQueryAllowed(true)
 				.getAllRows());
 
-		H2MemoryDB soloDB = new H2MemoryDB("DBDatabaseClusterTest", "who", "what", true);
-		soloDB.tableExists(new DBDatabaseClusterTestTable());
-
-		List<DBDatabaseClusterTestTable> data = new ArrayList<>();
 		Date firstDate = new Date();
 		Date secondDate = new Date();
-		data = createData(firstDate, secondDate);
+		List<DBDatabaseClusterTestTable> data = createData(firstDate, secondDate);
 
 		cluster.insert(data);
 
-		Assert.assertThat(cluster.getDBTable(new DBDatabaseClusterTestTable()).count(), is(22l));
-		Assert.assertThat(soloDB.getDBTable(new DBDatabaseClusterTestTable()).count(), is(0l));
+		Assert.assertThat(cluster.getDBTable(testTable).count(), is(22l));
+		Assert.assertThat(soloDB.getDBTable(testTable).count(), is(0l));
 
 		cluster.addDatabase(soloDB);
 
-		Assert.assertThat(cluster.getDBTable(new DBDatabaseClusterTestTable()).count(), is(22l));
-		Assert.assertThat(soloDB.getDBTable(new DBDatabaseClusterTestTable()).count(), is(22l));
+		Assert.assertThat(cluster.getDBTable(testTable).count(), is(22l));
+		Assert.assertThat(soloDB.getDBTable(testTable).count(), is(22l));
 
 		H2MemoryDB soloDB2 = new H2MemoryDB("DBDatabaseClusterTest2", "who", "what", true);
-		Assert.assertThat(soloDB2.getDBTable(new DBDatabaseClusterTestTable()).count(), is(0l));
+		Assert.assertThat(soloDB2.getDBTable(testTable).count(), is(0l));
 
 		cluster.addDatabase(soloDB2);
 		
-		Assert.assertThat(soloDB2.getDBTable(new DBDatabaseClusterTestTable()).count(), is(22l));
+		Assert.assertThat(soloDB2.getDBTable(testTable).count(), is(22l));
 
-		cluster.delete(
-				cluster.getDBTable(new DBDatabaseClusterTestTable())
+		cluster.delete(cluster.getDBTable(testTable)
 						.setBlankQueryAllowed(true)
 						.getAllRows()
 		);
 
-		Assert.assertThat(cluster.getDBTable(new DBDatabaseClusterTestTable()).count(), is(0l));
-		Assert.assertThat(cluster.getDBTable(new DBDatabaseClusterTestTable()).count(), is(0l));
-		Assert.assertThat(cluster.getDBTable(new DBDatabaseClusterTestTable()).count(), is(0l));
-		Assert.assertThat(cluster.getDBTable(new DBDatabaseClusterTestTable()).count(), is(0l));
+		Assert.assertThat(cluster.getDBTable(testTable).count(), is(0l));
+		Assert.assertThat(cluster.getDBTable(testTable).count(), is(0l));
+		Assert.assertThat(cluster.getDBTable(testTable).count(), is(0l));
+		Assert.assertThat(cluster.getDBTable(testTable).count(), is(0l));
 		
-		Assert.assertThat(soloDB.getDBTable(new DBDatabaseClusterTestTable()).count(), is(0l));
-		Assert.assertThat(soloDB2.getDBTable(new DBDatabaseClusterTestTable()).count(), is(0l));
+		Assert.assertThat(soloDB.getDBTable(testTable).count(), is(0l));
+		Assert.assertThat(soloDB2.getDBTable(testTable).count(), is(0l));
 	}
 
 	private List<DBDatabaseClusterTestTable> createData(Date firstDate, Date secondDate) {
