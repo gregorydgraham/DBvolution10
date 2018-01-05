@@ -21,3 +21,4 @@
 /jdbc:h2:./directTest.h2db.trace.db
 /fileTest.h2db.mv.db
 /fileTest.h2db.trace.db
+/dbvolutionTest.sqlite-cluster.sqlite
