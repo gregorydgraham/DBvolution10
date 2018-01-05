@@ -15,6 +15,7 @@
  */
 package nz.co.gregs.dbvolution.internal.postgres;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import java.sql.SQLException;
 import java.sql.Statement;
 import org.apache.commons.logging.Log;
@@ -242,6 +243,8 @@ public enum Line2DFunctions {
 	 * @param stmt
 	 * @throws SQLException
 	 */
+	@SuppressFBWarnings(value = "SQL_NONCONSTANT_STRING_PASSED_TO_EXECUTE",
+			justification = "The strings are actually constant but made dynamically")
 	public void add(Statement stmt) throws SQLException {
 		Log LOG = LogFactory.getLog(Line2DFunctions.class);
 		try {
