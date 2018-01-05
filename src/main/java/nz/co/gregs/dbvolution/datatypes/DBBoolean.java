@@ -15,6 +15,7 @@
  */
 package nz.co.gregs.dbvolution.datatypes;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Arrays;
@@ -152,6 +153,10 @@ public class DBBoolean extends QueryableDatatype<Boolean> implements BooleanResu
 	 *
 	 * @return the value of this QDT as a boolean.
 	 */
+	@SuppressFBWarnings(
+			value = "NP_BOOLEAN_RETURN_NULL", 
+			justification = "Null is a valid value in databases"
+	)
 	public Boolean booleanValue() {
 		if (this.getLiteralValue() instanceof Boolean) {
 			return this.getLiteralValue();
