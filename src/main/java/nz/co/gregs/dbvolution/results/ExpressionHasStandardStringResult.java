@@ -38,7 +38,7 @@ public interface ExpressionHasStandardStringResult {
 	 *
 	 * <p>
 	 * Please note that this is not the SQL version of the expression
-	 * {@link DBExpression#toSQLString(nz.co.gregs.dbvolution.databases.DBDatabase)  (toSQLString() will provide that)},
+	 * {@link DBExpression#toSQLString(nz.co.gregs.dbvolution.databases.definitions.DBDefinition)  (toSQLString() will provide that)},
 	 * nor does this provide a String of the value.
 	 *
 	 * <p>

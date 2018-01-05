@@ -241,61 +241,6 @@ class PropertyTypeHandler {
 			}
 		}
 
-//        // validation: type adaptor's external type must be compatible with simple-type java property
-//        if (typeAdaptorExternalType != null && !QueryableDatatype.class.isAssignableFrom(javaProperty.type())) {
-//            if (!typeAdaptorExternalType.isAssignableFrom(javaProperty.type())) {
-//                throw new DBPebkacException(
-//                        "Type adaptor " + annotation.value().getSimpleName() + " is not compatible "
-//                        + " with " + javaProperty.type().getName() + ", on " + javaProperty);
-//            }
-//        }
-//        // validation: type adaptor's external type must be compatible with actual QDT java property
-//        if (typeAdaptorExternalType != null && QueryableDatatype.class.isAssignableFrom(javaProperty.type())) {
-//            // TODO
-//        }
-//        // validation: type adaptor's internal type must be supported simple type if no explicit type
-//        if (typeAdaptorInternalType != null && explicitTypeOrNullOf(annotation) == null) {
-//            if (!isSupportedSimpleType(typeAdaptorInternalType)) {
-//                throw new DBPebkacException(
-//                        "Type adaptor " + annotation.value().getName() + " internal type "
-//                        + typeAdaptorInternalType.getSimpleName() + " is not supported, on "
-//                        + javaProperty);
-//            }
-//        }
-//        // validation: type adaptor's internal type must be supported simple type, even if explicit type provided
-//        if (typeAdaptorInternalType != null && explicitTypeOrNullOf(annotation) != null) {
-//            boolean supported = false;
-//            for (Class<?> simpleType: SUPPORTED_SIMPLE_TYPES) {
-//                if (simpleType.isAssignableFrom(typeAdaptorInternalType)) {
-//                    supported = true;
-//                }
-//            }
-//            if (!supported) {
-//                throw new DBPebkacException(
-//                        "Type adaptor " + annotation.value().getName() + " internal type "
-//                        + typeAdaptorInternalType.getSimpleName() + " is not supported, on "
-//                        + javaProperty);
-//            }
-//        }
-//        // validation: explicit type must be given if type adaptor's internal type isn't one where
-//        //             implied internal type is supported
-//        if (typeAdaptorInternalType != null && explicitTypeOrNullOf(annotation) == null) {
-//            if (inferredQDTTypeForSimpleType(typeAdaptorInternalType) == null) {
-//                throw new DBPebkacException(
-//                        "Must specify internal type when adapting to type " + typeAdaptorInternalType.getName()
-//                        + ", on " + javaProperty);
-//            }
-//        }
-//        // validation: type adaptor's internal type be compatible with explicit type if specified
-//        if (typeAdaptorInternalType != null && explicitTypeOrNullOf(annotation) != null) {
-//        	Class<? extends QueryableDatatype> inferredQDTType = inferredQDTTypeForSimpleType(typeAdaptorInternalType);
-//        	Class<? extends QueryableDatatype> explicitQDTType = explicitTypeOrNullOf(annotation);
-//        	if (inferredQDTType != null && !inferredQDTType.equals(explicitQDTType)) {
-//        		throw new DBPebkacException(
-//        				"Type adaptor can only be mapped to type "+inferredQDTType.getSimpleName()
-//        				+ ", on "+javaProperty);
-//        	}
-//        }
 		// populate everything
 		this.genericPropertyType = javaProperty.type();
 		if (dbAdaptTypeAnnotation == null) {

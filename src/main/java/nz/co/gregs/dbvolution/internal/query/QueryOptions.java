@@ -313,7 +313,7 @@ public class QueryOptions {
 		queryIsNativeQuery = creatingNativeQuery;
 	}
 
-	public QueryType getQueryType() {
+	public synchronized QueryType getQueryType() {
 		return queryType;
 	}
 

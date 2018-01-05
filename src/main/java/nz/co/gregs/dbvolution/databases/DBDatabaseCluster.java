@@ -104,17 +104,24 @@ public class DBDatabaseCluster extends DBDatabase {
 	private final List<DBDatabase> allDatabases = Collections.synchronizedList(new ArrayList<DBDatabase>(0));
 	private final List<DBDatabase> addedDatabases = Collections.synchronizedList(new ArrayList<DBDatabase>(0));
 	private final List<DBDatabase> readyDatabases = Collections.synchronizedList(new ArrayList<DBDatabase>(0));
-	private transient final Set<DBRow> requiredTables = Collections.synchronizedSet(DataModel.getRequiredTables());
+	private transient final Set<DBRow> requiredTables;
 	private transient final DBStatementCluster clusterStatement;
-	private transient final Map<DBDatabase, Queue<DBAction>> queuedActions = Collections.synchronizedMap(new HashMap<DBDatabase, Queue<DBAction>>(0));
-	private transient final ExecutorService threadPool = Executors.newCachedThreadPool();
+	private transient final Map<DBDatabase, Queue<DBAction>> queuedActions;
+	private transient final ExecutorService threadPool;
+	
+	public DBDatabaseCluster() throws SQLException{
+		super();
+		clusterStatement = new DBStatementCluster(this);
+		requiredTables = Collections.synchronizedSet(DataModel.getRequiredTables());
+		queuedActions = Collections.synchronizedMap(new HashMap<DBDatabase, Queue<DBAction>>(0));
+		 threadPool = Executors.newCachedThreadPool();
+	}
 
 	public DBDatabaseCluster(DBDatabase... databases) throws SQLException {
-		super();
+		this();
 		setDefinition(new ClusterDatabaseDefinition());
-		clusterStatement = new DBStatementCluster(this);
-		this.addedDatabases.addAll(Arrays.asList(databases));
-		this.allDatabases.addAll(Arrays.asList(databases));
+		addedDatabases.addAll(Arrays.asList(databases));
+		allDatabases.addAll(Arrays.asList(databases));
 		synchronizeSecondaryDatabases();
 	}
 

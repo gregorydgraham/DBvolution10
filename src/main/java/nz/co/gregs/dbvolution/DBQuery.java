@@ -1710,7 +1710,7 @@ public class DBQuery {
 	 * it, however vague, will become a required table on the query.
 	 *
 	 * <p>
-	 * Any DBRow example that has no criteria, i.e. where {@link DBRow#willCreateBlankQuery(nz.co.gregs.dbvolution.databases.DBDatabase)
+	 * Any DBRow example that has no criteria, i.e. where {@link DBRow#willCreateBlankQuery(nz.co.gregs.dbvolution.databases.definitions.DBDefinition) 
 	 * } is TRUE, will be added as an optional table.
 	 *
 	 * <p>
@@ -1742,7 +1742,7 @@ public class DBQuery {
 	 * it, however vague, will become a required table on the query.
 	 *
 	 * <p>
-	 * Any DBRow example that has no criteria, i.e. where {@link DBRow#willCreateBlankQuery(nz.co.gregs.dbvolution.databases.DBDatabase)
+	 * Any DBRow example that has no criteria, i.e. where {@link DBRow#willCreateBlankQuery(nz.co.gregs.dbvolution.databases.definitions.DBDefinition) 
 	 * } is TRUE, will be added as an optional table.
 	 *
 	 * <p>

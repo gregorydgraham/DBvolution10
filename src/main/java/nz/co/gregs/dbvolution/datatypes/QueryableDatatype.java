@@ -1023,7 +1023,7 @@ public abstract class QueryableDatatype<T> extends Object implements Serializabl
 	 *
 	 * <p>
 	 * See
-	 * {@link DBStringTrimmed#formatColumnForSQLStatement(nz.co.gregs.dbvolution.databases.DBDatabase, java.lang.String) the implementation in DBStringTrimmed}
+	 * {@link DBStringTrimmed#formatColumnForSQLStatement(nz.co.gregs.dbvolution.databases.definitions.DBDefinition, java.lang.String) the implementation in DBStringTrimmed}
 	 * for an example.</p>
 	 *
 	 * @param db	db

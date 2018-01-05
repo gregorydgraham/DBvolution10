@@ -2261,7 +2261,7 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 		}
 	}
 
-	private class IntegerValueFunction extends IntegerExpression {
+	private static class IntegerValueFunction extends IntegerExpression {
 
 		private BooleanExpression innerBool = new BooleanExpression();
 

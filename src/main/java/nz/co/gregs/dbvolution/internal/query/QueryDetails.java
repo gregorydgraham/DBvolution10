@@ -920,10 +920,6 @@ public class QueryDetails implements DBQueryable {
 		sortOrderColumns = null;
 	}
 
-	public synchronized ColumnProvider[] getSortOrderColumns() {
-		return sortOrderColumns;
-	}
-
 	private synchronized void prepareForQuery(DBDatabase database, QueryOptions options) throws SQLException {
 		clearResults();
 		setResultSQL(this.getSQLForQuery(database, new QueryState(this), QueryType.SELECT, options));
@@ -958,7 +954,8 @@ public class QueryDetails implements DBQueryable {
 	@Override
 	public synchronized DBQueryable query(DBDatabase db) throws SQLException {
 		getOptions().setQueryDatabase(db);
-		switch (getOptions().getQueryType()) {
+		final QueryType queryType = getOptions().getQueryType();
+		switch (queryType) {
 			case COUNT:
 				getResultSetCount(db, this);
 				break;
@@ -973,6 +970,9 @@ public class QueryDetails implements DBQueryable {
 				break;
 			case SELECT:
 				fillResultSetInternal(db, this, getOptions());
+				break;
+			default:
+				throw new UnsupportedOperationException("Query Type Not Supported: "+queryType);
 		}
 		return this;
 	}

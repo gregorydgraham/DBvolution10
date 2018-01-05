@@ -131,16 +131,16 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 			return false;
 		}
 		final DBDatabase other = (DBDatabase) obj;
-		if ((this.driverName == null) ? (other.driverName != null) : !this.driverName.equals(other.driverName)) {
+		if ((this.getDriverName() == null) ? (other.getDriverName() != null) : !this.getDriverName().equals(other.getDriverName())) {
 			return false;
 		}
-		if ((this.jdbcURL == null) ? (other.jdbcURL != null) : !this.jdbcURL.equals(other.jdbcURL)) {
+		if ((this.getJdbcURL() == null) ? (other.getJdbcURL() != null) : !this.getJdbcURL().equals(other.getJdbcURL())) {
 			return false;
 		}
-		if ((this.username == null) ? (other.username != null) : !this.username.equals(other.username)) {
+		if ((this.getUsername() == null) ? (other.getUsername() != null) : !this.getUsername().equals(other.getUsername())) {
 			return false;
 		}
-		if ((this.password == null) ? (other.password != null) : !this.password.equals(other.password)) {
+		if ((this.getPassword() == null) ? (other.getPassword() != null) : !this.getPassword().equals(other.getPassword())) {
 			return false;
 		}
 		return !(this.dataSource != other.dataSource && (this.dataSource == null || !this.dataSource.equals(other.dataSource)));
@@ -1492,7 +1492,7 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 	 * Returns whether or not the example has any specified criteria.
 	 *
 	 * See
-	 * {@link DBRow#willCreateBlankQuery(nz.co.gregs.dbvolution.databases.DBDatabase) willCreateBlankQuery}
+	 * {@link DBRow#willCreateBlankQuery(nz.co.gregs.dbvolution.databases.definitions.DBDefinition) willCreateBlankQuery}
 	 * on DBRow.
 	 *
 	 * @param row row
@@ -1744,21 +1744,21 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 	/**
 	 * @param jdbcURL the jdbcURL to set
 	 */
-	protected void setJdbcURL(String jdbcURL) {
+	protected synchronized void setJdbcURL(String jdbcURL) {
 		this.jdbcURL = jdbcURL;
 	}
 
 	/**
 	 * @param username the username to set
 	 */
-	protected void setUsername(String username) {
+	protected synchronized void setUsername(String username) {
 		this.username = username;
 	}
 
 	/**
 	 * @param password the password to set
 	 */
-	protected void setPassword(String password) {
+	protected synchronized void setPassword(String password) {
 		this.password = password;
 	}
 
@@ -1952,6 +1952,7 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 					.setRowLimit(1).getSQLForQuery();
 			try (DBStatement dbStatement = getDBStatement()) {
 				ResultSet results = dbStatement.executeQuery(testQuery);
+				results.close();
 				tableExists = true;
 			} catch (Exception ex) {
 				// Theoretically this should only need to catch an SQLException 
