@@ -15,6 +15,7 @@
  */
 package nz.co.gregs.dbvolution.databases;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import java.io.File;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -182,13 +183,12 @@ public class PostgresDB extends DBDatabase implements SupportsPolygonDatatype {
 	 * exceptions may be thrown
 	 * @throws SQLException database exceptions may be thrown.
 	 */
+	@SuppressFBWarnings(value = "SQL_NONCONSTANT_STRING_PASSED_TO_EXECUTE",
+			justification = "Escaping over values takes place within this method to protect data integrity")
 	public int loadFromCSVFile(DBRow table, File file, String delimiter, String nullValue, String escapeCharacter, String quoteCharacter) throws SQLException {
 		int returnValue = 0;
-		final DBStatement dbStatement = this.getDBStatement();
-		try {
-			returnValue = dbStatement.executeUpdate("COPY " + table.getTableName() + " FROM '" + file.getAbsolutePath() + "' WITH (DELIMITER '" + delimiter + "', NULL '" + nullValue + "', ESCAPE '" + escapeCharacter + "', FORMAT csv, QUOTE '" + quoteCharacter + "');");
-		} finally {
-			dbStatement.close();
+		try (DBStatement dbStatement = this.getDBStatement()) {
+			returnValue = dbStatement.executeUpdate("COPY " + table.getTableName().replaceAll("\\\"", "") + " FROM '" + file.getAbsolutePath().replaceAll("\\\"", "") + "' WITH (DELIMITER '" + delimiter.replaceAll("\\\"", "") + "', NULL '" + nullValue.replaceAll("\\\"", "") + "', ESCAPE '" + escapeCharacter.replaceAll("\\\"", "") + "', FORMAT csv, QUOTE '" + quoteCharacter.replaceAll("\\\"", "") + "');");
 		}
 		return returnValue;
 	}
@@ -203,13 +203,12 @@ public class PostgresDB extends DBDatabase implements SupportsPolygonDatatype {
 	 * @param databaseName the name of the new database
 	 * @throws SQLException database exceptions may be thrown
 	 */
+	@SuppressFBWarnings(value = "SQL_NONCONSTANT_STRING_PASSED_TO_EXECUTE",
+			justification = "Escaping over values takes place within this method to protect data integrity")
 	public void createDatabase(String databaseName) throws SQLException {
-		String sqlString = "CREATE DATABASE " + databaseName + ";";
-		final DBStatement dbStatement = getDBStatement();
-		try {
+		String sqlString = "CREATE DATABASE " + databaseName.replaceAll("\\\"", "")  + ";";
+		try (DBStatement dbStatement = getDBStatement()) {
 			dbStatement.execute(sqlString);
-		} finally {
-			dbStatement.close();
 		}
 	}
 
@@ -224,13 +223,12 @@ public class PostgresDB extends DBDatabase implements SupportsPolygonDatatype {
 	 * @param password the password the user will use.
 	 * @throws SQLException database exceptions may be throwns.
 	 */
+	@SuppressFBWarnings(value = "SQL_NONCONSTANT_STRING_PASSED_TO_EXECUTE",
+			justification = "Escaping over values takes place within this method to protect data integrity")
 	public void createUser(String username, String password) throws SQLException {
 		String sqlString = "CREATE USER \"" + username.replaceAll("\\\"", "") + "\" WITH PASSWORD '" + password.replaceAll("'", "") + "';";
-		final DBStatement dbStatement = getDBStatement();
-		try {
+		try (DBStatement dbStatement = getDBStatement()) {
 			dbStatement.execute(sqlString);
-		} finally {
-			dbStatement.close();
 		}
 	}
 
@@ -263,9 +261,11 @@ public class PostgresDB extends DBDatabase implements SupportsPolygonDatatype {
 		}
 	}
 
+	@SuppressFBWarnings(value = "SQL_NONCONSTANT_STRING_PASSED_TO_EXECUTE",
+			justification = "Escaping over values takes place within this method to protect data integrity")
 	private void setTimeZone(Statement stmnt) throws SQLException {
 		String tzName = TimeZone.getDefault().getID();
-		final String setTheTimezone = "set time zone '" + tzName + "';";
+		final String setTheTimezone = "set time zone '" + tzName.replaceAll("\\\"", "") + "';";
 		stmnt.execute(setTheTimezone);
 	}
 

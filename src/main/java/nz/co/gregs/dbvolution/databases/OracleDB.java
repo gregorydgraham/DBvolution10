@@ -15,6 +15,7 @@
  */
 package nz.co.gregs.dbvolution.databases;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import nz.co.gregs.dbvolution.internal.oracle.StringFunctions;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -155,16 +156,17 @@ public abstract class OracleDB extends DBDatabase implements SupportsPolygonData
 	 *
 	 * @param <TR> the class of the object defining the table to have it's spatial
 	 * meta-data removed.
+	 * @param statement
 	 * @param tableRow the object defining the table to have it's spatial
 	 * meta-data removed.
 	 * @throws SQLException database exceptions may be thrown.
 	 */
+	@SuppressFBWarnings(value="SQL_NONCONSTANT_STRING_PASSED_TO_EXECUTE",
+			justification = "Compiled DBRows are safe, for a reasonable value of safe")
 	protected <TR extends DBRow> void removeSpatialMetadata(DBStatement statement, TR tableRow) throws SQLException {
 		DBDefinition definition = getDefinition();
 		final String formattedTableName = definition.formatTableName(tableRow);
-//		try (DBStatement dbStatement3 = getDBStatement()) {
 		statement.execute("DELETE FROM USER_SDO_GEOM_METADATA WHERE TABLE_NAME = '" + formattedTableName.toUpperCase() + "'");
-//		}
 	}
 
 }

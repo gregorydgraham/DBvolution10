@@ -15,6 +15,7 @@
  */
 package nz.co.gregs.dbvolution.databases;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import java.io.PrintStream;
 import java.io.Serializable;
 import java.sql.*;
@@ -338,11 +339,11 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 		while (conn == null) {
 			if (supportsPooledConnections()) {
 				//synchronized (FREE_CONNECTIONS) {
-					if (FREE_CONNECTIONS.isEmpty() || getConnectionList(FREE_CONNECTIONS).isEmpty()) {
-						conn = getRawConnection();
-					} else {
-						conn = getConnectionList(FREE_CONNECTIONS).get(0);
-					}
+				if (FREE_CONNECTIONS.isEmpty() || getConnectionList(FREE_CONNECTIONS).isEmpty()) {
+					conn = getRawConnection();
+				} else {
+					conn = getConnectionList(FREE_CONNECTIONS).get(0);
+				}
 				//}
 			} else {
 				conn = getRawConnection();
@@ -363,6 +364,9 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 		return conn;
 	}
 
+	@edu.umd.cs.findbugs.annotations.SuppressFBWarnings(
+			value ={ "OBL_UNSATISFIED_OBLIGATION_EXCEPTION_EDGE", "ODR_OPEN_DATABASE_RESOURCE"},
+			justification = "Raw connections are pooled and closed  in discardConnection()")
 	private Connection getRawConnection() throws UnableToFindJDBCDriver, UnableToCreateDatabaseConnectionException, SQLException {
 		Connection connection = null;
 		int retries = 0;
@@ -415,6 +419,9 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 	 */
 	protected Connection storedConnection;
 
+	@edu.umd.cs.findbugs.annotations.SuppressFBWarnings(
+			value = "OBL_UNSATISFIED_OBLIGATION",
+			justification = "Breaking the obligation is required to keep some databases, mostly memory DBs, from disappearing")
 	private boolean connectionUsedForPersistentConnection(Connection connection) throws DBRuntimeException, SQLException {
 		if (getDefinition().persistentConnectionRequired()) {
 			if (storedConnection == null) {
@@ -735,7 +742,7 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 	public synchronized <V> V doTransaction(DBTransaction<V> dbTransaction, Boolean commit) throws SQLException, Exception {
 		DBDatabase db;
 //		synchronized (this) {
-			db = this.clone();
+		db = this.clone();
 //		}
 		V returnValues = null;
 		db.transactionStatement = db.getDBTransactionStatement();
@@ -1735,9 +1742,9 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 	 */
 	protected Connection getConnectionFromDriverManager() throws SQLException {
 		try {
-		return DriverManager.getConnection(getJdbcURL(), getUsername(), getPassword());
+			return DriverManager.getConnection(getJdbcURL(), getUsername(), getPassword());
 		} catch (SQLException e) {
-			throw new DBRuntimeException("Connection Failed to URL "+getJdbcURL(), e);
+			throw new DBRuntimeException("Connection Failed to URL " + getJdbcURL(), e);
 		}
 	}
 
@@ -1934,12 +1941,15 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 		return query.toSQLString(this);
 	}
 
+	@SuppressFBWarnings(
+			value="REC_CATCH_EXCEPTION", 
+			justification = "Database vendors throw all sorts of silly exceptions")
 	public boolean tableExists(DBRow table) throws SQLException {
 		boolean tableExists = false;
 
 		if (getDefinition().supportsTableCheckingViaMetaData()) {
 			try (DBStatement dbStatement = getDBStatement()) {
-				Connection conn =dbStatement.getConnection();
+				Connection conn = dbStatement.getConnection();
 				ResultSet rset = conn.getMetaData().getTables(null, null, table.getTableName(), null);
 				if (rset.next()) {
 					tableExists = true;
