@@ -16,27 +16,13 @@
 package nz.co.gregs.dbvolution;
 
 import nz.co.gregs.dbvolution.internal.query.RecursiveSQLDirection;
-import nz.co.gregs.dbvolution.internal.query.QueryDetails;
-import nz.co.gregs.dbvolution.databases.DBDatabase;
-import nz.co.gregs.dbvolution.results.StringResult;
-import nz.co.gregs.dbvolution.results.EqualComparable;
-import nz.co.gregs.dbvolution.results.DateResult;
-import nz.co.gregs.dbvolution.results.NumberResult;
 import nz.co.gregs.dbvolution.exceptions.*;
 import java.sql.*;
 import java.util.*;
 import nz.co.gregs.dbvolution.columns.*;
-import nz.co.gregs.dbvolution.databases.DBStatement;
-import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.datatypes.*;
-import nz.co.gregs.dbvolution.exceptions.IncorrectRowProviderInstanceSuppliedException;
-import nz.co.gregs.dbvolution.exceptions.UnableToInstantiateDBRowSubclassException;
-import nz.co.gregs.dbvolution.expressions.*;
-import nz.co.gregs.dbvolution.internal.properties.*;
-import nz.co.gregs.dbvolution.internal.query.RecursiveQueryDepthIncreaseExpression;
 import nz.co.gregs.dbvolution.internal.query.RecursiveQueryDetails;
 import nz.co.gregs.dbvolution.query.*;
-import nz.co.gregs.dbvolution.results.IntegerResult;
 
 /**
  * Provides the infrastructure required to create recursive queries. DBvolution
@@ -69,10 +55,6 @@ import nz.co.gregs.dbvolution.results.IntegerResult;
  */
 public class DBRecursiveQuery<T extends DBRow> {
 
-//	private final DBQuery originalQuery;
-//	private final ColumnProvider keyToFollow;
-//	private T typeToReturn = null;
-//	private Integer timeoutInMilliseconds = 10000;
 	private final RecursiveQueryDetails<T> queryDetails = new RecursiveQueryDetails<>();
 
 	/**
@@ -90,7 +72,7 @@ public class DBRecursiveQuery<T extends DBRow> {
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return this query.
 	 */
-	public DBRecursiveQuery<T> setTimeoutInMilliseconds(Integer timeoutInMilliseconds) {
+	public synchronized DBRecursiveQuery<T> setTimeoutInMilliseconds(Integer timeoutInMilliseconds) {
 		this.queryDetails.setTimeoutInMilliseconds(timeoutInMilliseconds);
 		return this;
 	}
@@ -110,7 +92,7 @@ public class DBRecursiveQuery<T extends DBRow> {
 	 *
 	 * @return this query.
 	 */
-	public DBRecursiveQuery<T> clearTimeout() {
+	public synchronized DBRecursiveQuery<T> clearTimeout() {
 		this.queryDetails.setTimeoutInMilliseconds(null);
 		return this;
 	}
@@ -184,7 +166,7 @@ public class DBRecursiveQuery<T extends DBRow> {
 	 * @return a list of all descendants of this query.
 	 * @throws SQLException
 	 */
-	public List<T> getDescendants() throws SQLException {
+	public synchronized List<T> getDescendants() throws SQLException {
 		List<T> resultsList = new ArrayList<>();
 		queryDetails.setRecursiveQueryDirection(RecursiveSQLDirection.TOWARDS_LEAVES);
 		List<DBQueryRow> descendants = this.getRowsFromRecursiveQuery(queryDetails);
@@ -210,7 +192,7 @@ public class DBRecursiveQuery<T extends DBRow> {
 	 * @return a list of all descendants of this query.
 	 * @throws SQLException
 	 */
-	public List<T> getAncestors() throws SQLException {
+	public synchronized List<T> getAncestors() throws SQLException {
 		List<T> resultsList = new ArrayList<>();
 		this.queryDetails.setRecursiveQueryDirection(RecursiveSQLDirection.TOWARDS_ROOT);
 		List<DBQueryRow> ancestors = this.getRowsFromRecursiveQuery(queryDetails);
@@ -221,7 +203,7 @@ public class DBRecursiveQuery<T extends DBRow> {
 	}
 
 	@SuppressWarnings("unchecked")
-	private T getReturnType(RecursiveQueryDetails<T> details) {
+	private synchronized T getReturnType(RecursiveQueryDetails<T> details) {
 		T typeToReturn = details.getTypeToReturn();
 		ColumnProvider keyToFollow = details.getKeyToFollow();
 		if (typeToReturn == null) {
@@ -267,7 +249,7 @@ public class DBRecursiveQuery<T extends DBRow> {
 	 * exceptions may be thrown
 	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
-	public List<TreeNode<T>> getPathsToRoot() throws SQLException {
+	public synchronized List<TreeNode<T>> getPathsToRoot() throws SQLException {
 		List<T> ancestors = getAncestors();
 		List<TreeNode<T>> paths = new ArrayList<>();
 		Map<String, TreeNode<T>> parentMap = new HashMap<>();
@@ -340,7 +322,7 @@ public class DBRecursiveQuery<T extends DBRow> {
 	 * 1 Database exceptions may be thrown
 	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
-	public List<TreeNode<T>> getTrees() throws SQLException {
+	public synchronized List<TreeNode<T>> getTrees() throws SQLException {
 		List<T> descendants = getDescendants();
 		List<TreeNode<T>> trees = new ArrayList<>();
 		Map<String, TreeNode<T>> parentMap = new HashMap<>();
@@ -380,7 +362,7 @@ public class DBRecursiveQuery<T extends DBRow> {
 		return trees;
 	}
 
-	private List<DBQueryRow> getRowsFromRecursiveQuery(RecursiveQueryDetails<T> queryDetails) throws SQLException {
+	private synchronized List<DBQueryRow> getRowsFromRecursiveQuery(RecursiveQueryDetails<T> queryDetails) throws SQLException {
 		if(queryDetails.needsResults(queryDetails.getOptions())){
 			queryDetails.getOriginalQuery().getDatabase().executeDBQuery(queryDetails);
 		}
