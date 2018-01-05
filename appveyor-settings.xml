@@ -81,16 +81,7 @@
                 <mysql.username>root</mysql.username>
                 <mysql.password>Password12!</mysql.password>
                 <mysql.schema></mysql.schema>
-                
-                <mysql-clustered.url>jdbc:mysql://localhost:3306/dbvtest?createDatabaseIfNotExist=true</mysql-clustered.url>
-                <mysql-clustered.host>localhost</mysql-clustered.host>
-                <mysql-clustered.port>3306</mysql-clustered.port>
-                <mysql-clustered.database>dbvtest</mysql-clustered.database>
-                <mysql-clustered.instance></mysql-clustered.instance>
-                <mysql-clustered.username>root</mysql-clustered.username>
-                <mysql-clustered.password>Password12!</mysql-clustered.password>
-                <mysql-clustered.schema>clustered</mysql-clustered.schema>
-				
+                	
                 <postgres.url></postgres.url>
                 <postgres.host>localhost</postgres.host>
                 <postgres.port>5432</postgres.port>
