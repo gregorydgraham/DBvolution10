@@ -15,6 +15,7 @@
  */
 package nz.co.gregs.dbvolution.internal.h2;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import java.sql.SQLException;
 import java.sql.Statement;
 
@@ -30,7 +31,6 @@ import java.sql.Statement;
  */
 public enum MultiPoint2DFunctions implements DBVFeature {
 
-// MULTIPOINT ((1 2, 3 4, 5 6))
 	/**
 	 *
 	 */
@@ -185,13 +185,6 @@ public enum MultiPoint2DFunctions implements DBVFeature {
 			+ "				String[] split = multipoint.trim().split(\"[ (),]+\");\n"
 			+ "				return (split.length - 1)/2;\n"
 			+ "			}"),
-	//'MULTIPOINT ((2 3), (3 4))' => 'POLYGON ((2 3, 3 4, 2 3))' 
-	//	ASPOLYGON2D("String", "String multipoint", ""
-	//			+ "if (multipoint.split(\",\").length<3){"
-	//			+ "	return null;"
-	//			+ "} else{"
-	//			+ "	return multipoint.replace(\"), (\", \", \").replaceAll(\"\\\\(([-0-9.]+ [-0-9.]+)(.*)\\\\)\\\\)\", \"($1$2, $1))\").replace(\"MULTIPOINT\", \"POLYGON\");"
-	//			+ "}"),
 
 	/**
 	 *
@@ -211,14 +204,11 @@ public enum MultiPoint2DFunctions implements DBVFeature {
 			+ "				}\n"
 			+ "			}");
 
-//	private final String functionName;
 	private final String returnType;
 	private final String parameters;
 	private final String code;
-//	public static int CURRENTVERSION=2;
 
 	MultiPoint2DFunctions(String returnType, String parameters, String code) {
-//		this.functionName = functionName;
 		this.returnType = returnType;
 		this.parameters = parameters;
 		this.code = code;
@@ -250,6 +240,8 @@ public enum MultiPoint2DFunctions implements DBVFeature {
 	 * @param stmt
 	 * @throws SQLException
 	 */
+	@SuppressFBWarnings(value = "SQL_NONCONSTANT_STRING_PASSED_TO_EXECUTE",
+			justification = "The strings are actually constant but made dynamically")
 	@Override
 	public void add(Statement stmt) throws SQLException {
 		try {
@@ -267,43 +259,4 @@ public enum MultiPoint2DFunctions implements DBVFeature {
 				+ "} $$;";
 		stmt.execute(createFunctionStatement);
 	}
-
-//	private String intersection(String firstLine, String secondLine) {
-//		if (firstLine == null || secondLine == null) {
-//			return null;
-//		}
-//		String[] split = firstLine.split("[ (),]+");
-//		double p0x = Double.parseDouble(split[1]);
-//		double p0y = Double.parseDouble(split[2]);
-//		double p1x = Double.parseDouble(split[3]);
-//		double p1y = Double.parseDouble(split[4]);
-//
-//		split = secondLine.split("[ (),]+");
-//		double p2x = Double.parseDouble(split[1]);
-//		double p2y = Double.parseDouble(split[2]);
-//		double p3x = Double.parseDouble(split[3]);
-//		double p3y = Double.parseDouble(split[4]);
-//
-//		double s1_x, s1_y, s2_x, s2_y;
-//		double i_x, i_y;
-//		s1_x = p1x - p0x;
-//		s1_y = p1y - p0y;
-//		s2_x = p3x - p2x;
-//		s2_y = p3y - p2y;
-//
-//		double s, t;
-//
-//		s = (-s1_y * (p0x - p2x) + s1_x * (p0y - p2y)) / (-s2_x * s1_y + s1_x * s2_y);
-//		t = (s2_x * (p0y - p2y) - s2_y * (p0x - p2x)) / (-s2_x * s1_y + s1_x * s2_y);
-//
-//		if (s >= 0 && s <= 1 && t >= 0 && t <= 1) {
-//			// Collision detected
-//			i_x = p0x + (t * s1_x);
-//			i_y = p0y + (t * s1_y);
-//			return "POINT (" + i_x + " " + i_y + ")";
-//		} else {
-//			// No collision
-//			return null;
-//		}
-//	}
 }
