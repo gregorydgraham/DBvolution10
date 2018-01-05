@@ -108,9 +108,10 @@ public class SQLiteDB extends DBDatabase {
 	 * Creates a DBDatabase tweaked for a SQLite database using the parameters
 	 * provided.
 	 *
-	 * @param databaseFile
+	 * @param filename
 	 * @param username username
 	 * @param password password
+	 * @param dummy just use TRUE
 	 * @throws java.io.IOException
 	 */
 	public SQLiteDB(String filename, String username, String password, boolean dummy) throws IOException {
