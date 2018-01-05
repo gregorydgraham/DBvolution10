@@ -1582,7 +1582,7 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 	 *
 	 * @param databaseName	databaseName
 	 */
-	protected synchronized void setDatabaseName(String databaseName) {
+	final protected synchronized void setDatabaseName(String databaseName) {
 		this.databaseName = databaseName;
 	}
 
