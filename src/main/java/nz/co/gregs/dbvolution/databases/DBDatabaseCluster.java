@@ -33,6 +33,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -72,12 +73,12 @@ public class DBDatabaseCluster extends DBDatabase {
 
 	private static final long serialVersionUID = 1l;
 
-	private final List<DBDatabase> allDatabases = new ArrayList<>();
-	private final List<DBDatabase> addedDatabases = new ArrayList<>();
-	private final List<DBDatabase> readyDatabases = new ArrayList<>();
-	private transient final Set<DBRow> requiredTables = DataModel.getRequiredTables();
+	private final List<DBDatabase> allDatabases = Collections.synchronizedList(new ArrayList<DBDatabase>(0));
+	private final List<DBDatabase> addedDatabases = Collections.synchronizedList(new ArrayList<DBDatabase>(0));
+	private final List<DBDatabase> readyDatabases = Collections.synchronizedList(new ArrayList<DBDatabase>(0));
+	private transient final Set<DBRow> requiredTables = Collections.synchronizedSet(DataModel.getRequiredTables());
 	private transient final DBStatementCluster clusterStatement;
-	private transient final Map<DBDatabase, Queue<DBAction>> queuedActions = new HashMap<>(0);
+	private transient final Map<DBDatabase, Queue<DBAction>> queuedActions = Collections.synchronizedMap(new HashMap<DBDatabase, Queue<DBAction>>(0));
 	private transient final ExecutorService threadPool = Executors.newCachedThreadPool();
 
 	public DBDatabaseCluster(DBDatabase... databases) throws SQLException {
@@ -393,7 +394,7 @@ public class DBDatabaseCluster extends DBDatabase {
 			for (DBDatabase database : readyDatabases) {
 				DBDatabase db;
 //				synchronized (database) {
-					db = database.clone();
+				db = database.clone();
 //				}
 				transactionDatabases.add(db);
 				V returnValues = null;
@@ -550,7 +551,6 @@ public class DBDatabaseCluster extends DBDatabase {
 		DBActionList actionsPerformed;
 		for (DBDatabase next : readyDatabases) {
 			tasks.add(new ActionTask(next, action));
-//			actionsPerformed = next.executeDBAction(action);
 			removeActionFromQueue(next, action);
 		}
 		try {
@@ -565,7 +565,8 @@ public class DBDatabaseCluster extends DBDatabase {
 
 	@Override
 	public DBQueryable executeDBQuery(DBQueryable query) throws SQLException {
-		DBQueryable actionsPerformed = this.getReadyDatabase().executeDBQuery(query);
+		final DBDatabase readyDatabase = getReadyDatabase();
+		DBQueryable actionsPerformed = readyDatabase.executeDBQuery(query);
 		return actionsPerformed;
 	}
 
@@ -669,27 +670,28 @@ public class DBDatabaseCluster extends DBDatabase {
 	@Override
 	public synchronized boolean tableExists(DBRow table) throws SQLException {
 		boolean tableExists = true;
-		for (DBDatabase readyDatabase : readyDatabases) {
-			tableExists &= readyDatabase.tableExists(table);
+		for (DBDatabase readyDatabase : readyDatabases) {			
+			final boolean tableExists1 = readyDatabase.tableExists(table);
+			tableExists &= tableExists1;
 		}
 		return tableExists;
 	}
 
-	private static class ActionTask implements Callable<DBActionList>{
+	private static class ActionTask implements Callable<DBActionList> {
 
 		private final DBDatabase database;
 		private final DBAction action;
 		private final DBActionList actionList = new DBActionList();
 
 		public ActionTask(DBDatabase db, DBAction action) {
-			this.database=db;
-			this.action=action;
+			this.database = db;
+			this.action = action;
 		}
 
 		@Override
 		public synchronized DBActionList call() throws Exception {
 			actionList.clear();
-			actionList.addAll(database.executeDBAction(action)); 
+			actionList.addAll(database.executeDBAction(action));
 			return actionList;
 		}
 
