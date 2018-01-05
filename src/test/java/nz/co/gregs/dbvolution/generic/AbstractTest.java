@@ -70,10 +70,10 @@ public abstract class AbstractTest {
 		if (System.getProperty("testClusteredDB") != null) {
 			databases.add(new Object[]{"ClusteredDB",
 				new DBDatabaseCluster(
-				H2MemoryTestDB.getFromSettings("h2memory"),
-				SQLiteTestDB.getFromSettings(),
-				PostgreSQLTestDatabase.getFromSettings("postgres"),
-				MySQLTestDatabase.getFromSettings("mysql-clustered")
+				H2MemoryTestDB.getClusterDBFromSettings("h2memory"),
+				SQLiteTestDB.getClusterDBFromSettings("sqlite"),
+				PostgreSQLTestDatabase.getClusterDBFromSettings("postgres"),
+				MySQLTestDatabase.getClusterDBFromSettings("mysql")
 				)});
 		}
 		if (System.getProperty("testSmallCluster") != null) {
@@ -293,6 +293,22 @@ public abstract class AbstractTest {
 				return new H2TestDatabase(url, username, password);
 			}
 		}
+		public static H2DB getClusterDBFromSettings(String prefix) {
+			String url = System.getProperty(prefix + ".url");
+			String host = System.getProperty(prefix + ".host");
+			String port = System.getProperty(prefix + ".port");
+			String instance = System.getProperty(prefix + ".instance");
+			String database = System.getProperty(prefix + ".database");
+			String username = System.getProperty(prefix + ".username");
+			String password = System.getProperty(prefix + ".password");
+			String schema = System.getProperty(prefix + ".schema");
+			String file = System.getProperty(prefix + ".file");
+			if (file != null && !file.equals("")) {
+				return H2TestDatabaseFromFilename(file+"-cluster.h2db", username, password);
+			} else {
+				return new H2TestDatabase(url, username, password);
+			}
+		}
 
 		public static H2DB getFromSettingsUsingDataSource(String prefix) {
 			String url = System.getProperty(prefix + ".url");
@@ -361,6 +377,18 @@ public abstract class AbstractTest {
 			String schema = System.getProperty("" + prefix + ".schema");
 			return new MySQLTestDatabase(host, port, database, username, password, schema);
 		}
+		
+		public static MySQLTestDatabase getClusterDBFromSettings(String prefix) {
+			String url = System.getProperty("" + prefix + ".url");
+			String host = System.getProperty("" + prefix + ".host");
+			String port = System.getProperty("" + prefix + ".port");
+			String instance = System.getProperty("" + prefix + ".instance");
+			String database = System.getProperty("" + prefix + ".database");
+			String username = System.getProperty("" + prefix + ".username");
+			String password = System.getProperty("" + prefix + ".password");
+			String schema = System.getProperty("" + prefix + ".schema")+"cluster";
+			return new MySQLTestDatabase(host, port, database, username, password, schema);
+		}
 
 		public MySQLTestDatabase(String host, String port, String database, String username, String password, String schema) {
 			super(host, new Integer(port), database, username, password);
@@ -387,6 +415,18 @@ public abstract class AbstractTest {
 			return PostgreSQLTestDatabase.getTestDatabase(url, host, port, instance, username, password, schema);
 		}
 
+		public static PostgresDB getClusterDBFromSettings(String prefix) {
+			String url = System.getProperty("" + prefix + ".url");
+			String host = System.getProperty("" + prefix + ".host");
+			String port = System.getProperty("" + prefix + ".port");
+			String instance = System.getProperty("" + prefix + ".instance");
+			String database = System.getProperty("" + prefix + ".database");
+			String username = System.getProperty("" + prefix + ".username");
+			String password = System.getProperty("" + prefix + ".password");
+			String schema = System.getProperty("" + prefix + ".schema")+"-cluster";
+			return PostgreSQLTestDatabase.getTestDatabase(url, host, port, instance, username, password, schema);
+		}
+
 		protected static PostgresDB getTestDatabase(String url, String host, String port, String database, String username, String password, String schema) {
 			return new PostgresDB(host, new Integer(port), database, username, password);
 		}
@@ -406,6 +446,14 @@ public abstract class AbstractTest {
 			String username = System.getProperty(prefix + ".username");
 			String password = System.getProperty(prefix + ".password");
 			return new SQLiteTestDB(url, username, password);
+		}
+
+		public static SQLiteTestDB getClusterDBFromSettings(String prefix) throws IOException {
+//			String url = System.getProperty(prefix + ".url");
+			String filename = System.getProperty(prefix + ".filename")+"-cluster.sqlite";
+			String username = System.getProperty(prefix + ".username");
+			String password = System.getProperty(prefix + ".password");
+			return new SQLiteTestDB(new File(filename), username, password);
 		}
 
 		public SQLiteTestDB(String jdbcurl, String username, String password) throws IOException {
@@ -494,6 +542,23 @@ public abstract class AbstractTest {
 			String password = System.getProperty("" + prefix + ".password");
 			String schema = System.getProperty("" + prefix + ".schema");
 			return new H2MemoryTestDB(instance, username, password);
+		}
+
+		public static H2MemoryTestDB getClusterDBFromSettings(String prefix) {
+			String url = System.getProperty(prefix + ".url");
+			String host = System.getProperty(prefix + ".host");
+			String port = System.getProperty(prefix + ".port");
+			String instance = System.getProperty(prefix + ".instance");
+			String database = System.getProperty(prefix + ".database");
+			String username = System.getProperty(prefix + ".username");
+			String password = System.getProperty(prefix + ".password");
+			String schema = System.getProperty(prefix + ".schema");
+			String file = System.getProperty(prefix + ".file");
+			if (file != null && !file.equals("")) {
+				return new H2MemoryTestDB(file+"-cluster.h2db", username, password);
+			} else {
+				return new H2MemoryTestDB("cluster.h2db", username, password);
+			}
 		}
 
 		public static H2MemoryTestDB blankDB() {
