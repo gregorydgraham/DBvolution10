@@ -15,6 +15,7 @@
  */
 package nz.co.gregs.dbvolution.operators;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatypeSyncer.DBSafeInternalQDTAdaptor;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.expressions.BooleanExpression;
@@ -47,6 +48,9 @@ public class DBLikeOperator extends DBOperator {
 	 *
 	 * @param likeableValue
 	 */
+	@SuppressFBWarnings(
+			value = "NP_LOAD_OF_KNOWN_NULL_VALUE",
+			justification = "Null is a valid value in databases")
 	public DBLikeOperator(StringExpression likeableValue) {
 		super(likeableValue == null ? likeableValue : likeableValue.copy());
 	}
