@@ -158,7 +158,7 @@ public class DBValidation<R extends DBRow> {
 		 * <p>
 		 * Unprocessed rows will be validated, but not migrated.</p>
 		 */
-		public Boolean willBeProcessed = false;
+		private Boolean willBeProcessed = false;
 
 		private DBQueryRow row = null;
 		private final Map<String, String> map = new HashMap<>();
@@ -198,6 +198,20 @@ public class DBValidation<R extends DBRow> {
 		 */
 		public Map<String, String> getMap() {
 			return new HashMap<>(this.map);
+		}
+
+		/**
+		 * @return the willBeProcessed
+		 */
+		public Boolean getWillBeProcessed() {
+			return willBeProcessed;
+		}
+
+		/**
+		 * @param willBeProcessed the willBeProcessed to set
+		 */
+		public void setWillBeProcessed(Boolean willBeProcessed) {
+			this.willBeProcessed = willBeProcessed;
 		}
 	}
 }

@@ -105,8 +105,8 @@ public class DBDatabaseCluster extends DBDatabase {
 	private final List<DBDatabase> addedDatabases = Collections.synchronizedList(new ArrayList<DBDatabase>(0));
 	private final List<DBDatabase> readyDatabases = Collections.synchronizedList(new ArrayList<DBDatabase>(0));
 	private final Set<DBRow> requiredTables;
-	private final DBStatementCluster clusterStatement;
-	private final Map<DBDatabase, Queue<DBAction>> queuedActions;
+	private transient final DBStatementCluster clusterStatement;
+	private transient final Map<DBDatabase, Queue<DBAction>> queuedActions;
 	private transient final ExecutorService threadPool;
 	
 	public DBDatabaseCluster() throws SQLException{

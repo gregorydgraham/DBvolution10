@@ -15,6 +15,7 @@
  */
 package nz.co.gregs.dbvolution.databases;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import java.sql.SQLException;
 import nz.co.gregs.dbvolution.DBScript;
 import org.apache.commons.logging.Log;
@@ -72,6 +73,9 @@ public class DBTransactionStatement extends DBStatement {
 	 *
 	 * @throws java.sql.SQLException	SQLException
 	 */
+	@SuppressFBWarnings(
+			value = "OBL_UNSATISFIED_OBLIGATION_EXCEPTION_EDGE", 
+			justification = "We try twice, is there a better way to do this?")
 	@Override
 	public void close() throws SQLException {
 		try {
@@ -98,6 +102,9 @@ public class DBTransactionStatement extends DBStatement {
 		}
 	}
 
+	@SuppressFBWarnings(
+			value = "OBL_UNSATISFIED_OBLIGATION_EXCEPTION_EDGE", 
+			justification = "We try twice, is there a better way to do this?")
 	@Override
 	public synchronized void cancel() throws SQLException {
 		try {

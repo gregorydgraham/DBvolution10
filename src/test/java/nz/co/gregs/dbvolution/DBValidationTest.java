@@ -119,7 +119,7 @@ public class DBValidationTest extends AbstractTest {
 				final Hero hero = valid.getRow(new Hero());
 				final Villain villain = valid.getRow(new Villain());
 
-				if (valid.willBeProcessed) {
+				if (valid.getWillBeProcessed()) {
 					Assert.assertThat(hero.name.stringValue(), is("James Security"));
 				} else {
 					Assert.assertThat(hero.name.stringValue(), not("James Security"));

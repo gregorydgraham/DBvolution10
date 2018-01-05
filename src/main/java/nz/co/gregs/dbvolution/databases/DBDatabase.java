@@ -420,7 +420,7 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 	protected Connection storedConnection;
 
 	@edu.umd.cs.findbugs.annotations.SuppressFBWarnings(
-			value = "OBL_UNSATISFIED_OBLIGATION",
+			value = {"OBL_UNSATISFIED_OBLIGATION", "ODR_OPEN_DATABASE_RESOURCE"},
 			justification = "Breaking the obligation is required to keep some databases, mostly memory DBs, from disappearing")
 	private boolean connectionUsedForPersistentConnection(Connection connection) throws DBRuntimeException, SQLException {
 		if (getDefinition().persistentConnectionRequired()) {

@@ -15,6 +15,7 @@
  */
 package nz.co.gregs.dbvolution;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import nz.co.gregs.dbvolution.databases.DBDatabase;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -63,7 +64,6 @@ public abstract class DBExtractor extends DBScript {
 	 * To change this template file, choose Tools | Templates
 	 * and open the template in the editor.
 	 */
-
 	private int maxBoundIncrease = 10000000;
 	private static final int MIN_BOUND_INCREASE = 1;
 	private int boundIncrease = 10;
@@ -138,10 +138,10 @@ public abstract class DBExtractor extends DBScript {
 	 *
 	 * <p>
 	 * Works in conjuction with the
-	 * {@link #getQuery(nz.co.gregs.dbvolution.databases.DBDatabase, int, int)} and
-	 * {@link #processRows(java.util.List)} method to provide a dynamic extraction
-	 * process that achieves fast results on unreliable or under-resourced
-	 * databases.
+	 * {@link #getQuery(nz.co.gregs.dbvolution.databases.DBDatabase, int, int)}
+	 * and {@link #processRows(java.util.List)} method to provide a dynamic
+	 * extraction process that achieves fast results on unreliable or
+	 * under-resourced databases.
 	 *
 	 * <p style="color: #F90;">Support DBvolution at
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
@@ -162,7 +162,7 @@ public abstract class DBExtractor extends DBScript {
 			System.out.println("EXTRACTED: " + getLowerBound() + "-" + getUpperBound() + " (+" + getBoundIncrease() + ") in " + elapsedTimeInMilliseconds + "ms at " + timePerRecord + "ms/record.");
 			double estimatedRequiredTime = timePerRecord * (maxBound - startLowerBound);
 			cal.setTime(startTime);
-			int secondsValue = (new Double(estimatedRequiredTime / 1000)).intValue();
+			int secondsValue = (new Double(estimatedRequiredTime / 1000.0D)).intValue();
 			cal.add(Calendar.SECOND, secondsValue);
 			double timeInHours = (Math.round((estimatedRequiredTime / (1000 * 60 * 60)) * 100) + 0.0) / 100.0;
 			double timeInMinutes = (Math.round((estimatedRequiredTime / (1000 * 60)) * 100) + 0.0) / 100.0;
@@ -210,6 +210,9 @@ public abstract class DBExtractor extends DBScript {
 		return actions;
 	}
 
+	@SuppressFBWarnings(
+			value = "REC_CATCH_EXCEPTION", 
+			justification = "Database vendors throw many interesting exceptions")
 	private List<DBQueryRow> getRows(DBDatabase db) throws AccidentalCartesianJoinException, AccidentalBlankQueryException {
 		List<DBQueryRow> rows = null;
 		this.rowCount = 0L;
