@@ -15,6 +15,7 @@
  */
 package nz.co.gregs.dbvolution.internal.postgres;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import java.sql.SQLException;
 import java.sql.Statement;
 
@@ -60,6 +61,8 @@ public enum StringFunctions {
 	 * @param stmt
 	 * @throws SQLException
 	 */
+	@SuppressFBWarnings(value = "SQL_NONCONSTANT_STRING_PASSED_TO_EXECUTE",
+			justification = "The strings are actually constant but made dynamically")
 	public void add(Statement stmt) throws SQLException {
 		try {
 			final String drop = "DROP FUNCTION " + this + "(" + parameters + ");";
