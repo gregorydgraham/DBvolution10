@@ -41,7 +41,7 @@ import nz.co.gregs.dbvolution.DBRow;
  * } value must be set to a DBRow-derived class.</li>
  * <li>The field will only be filled if there are instances of the designated
  * type in the query, and there are
- * {@link DBRow#getRelatedInstancesFromQuery(nz.co.gregs.dbvolution.DBQuery, nz.co.gregs.dbvolution.DBRow) instances related to the current object}.</li>
+ * {@link DBRow#getRelatedInstancesFromQuery(nz.co.gregs.dbvolution.actions.DBQueryable, nz.co.gregs.dbvolution.DBRow) instances related to the current object}.</li>
  * <li>Filling is only performed based on the class of the field/requiredClass
  * and not associated with any foreign key or other relationship. Use a unique
  * subclass of the original DBRow subclass to avoid confusion where there are

@@ -70,7 +70,7 @@ public abstract class DBUpdate extends DBAction {
 	 *
 	 * <p>
 	 * The actions created can be applied on a particular database using
-	 * {@link DBActionList#execute(nz.co.gregs.dbvolution.DBDatabase)}
+	 * {@link DBActionList#execute(nz.co.gregs.dbvolution.databases.DBDatabase)}
 	 *
 	 * <p>
 	 * Synonym for {@link #getUpdates(nz.co.gregs.dbvolution.DBRow...) }
@@ -90,7 +90,7 @@ public abstract class DBUpdate extends DBAction {
 	 *
 	 * <p>
 	 * The actions created can be applied on a particular database using
-	 * {@link DBActionList#execute(nz.co.gregs.dbvolution.DBDatabase)}
+	 * {@link DBActionList#execute(nz.co.gregs.dbvolution.databases.DBDatabase)}
 	 *
 	 * @param rows the rows to be updated
 	 * <p style="color: #F90;">Support DBvolution at

@@ -2010,7 +2010,7 @@ public abstract class DBDefinition {
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return the default implementation returns an empty list.
 	 * @see
-	 * Oracle11XEDBDefinition#getTriggerBasedIdentitySQL(nz.co.gregs.dbvolution.DBDatabase,
+	 * Oracle11XEDBDefinition#getTriggerBasedIdentitySQL(nz.co.gregs.dbvolution.databases.DBDatabase,
 	 * java.lang.String, java.lang.String)
 	 */
 	public List<String> getTriggerBasedIdentitySQL(DBDatabase db, String table, String column) {

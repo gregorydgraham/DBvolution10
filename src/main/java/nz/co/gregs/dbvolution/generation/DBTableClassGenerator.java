@@ -178,7 +178,7 @@ public class DBTableClassGenerator {
 	 * No database interaction nor package name checking is performed.
 	 *
 	 * <p>
-	 * You probably want to use {@link #generateClasses(nz.co.gregs.dbvolution.DBDatabase, java.lang.String, java.lang.String)
+	 * You probably want to use {@link #generateClasses(nz.co.gregs.dbvolution.databases.DBDatabase, java.lang.String, java.lang.String)
 	 * }
 	 *
 	 *

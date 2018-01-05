@@ -41,7 +41,7 @@ import nz.co.gregs.dbvolution.transactions.DBTransaction;
  *
  * <p>
  * DBActionList are designed to provide a revert script for actions performed or
- * to accumulate actions that are executed as a batch with {@link DBActionList#execute(nz.co.gregs.dbvolution.DBDatabase)
+ * to accumulate actions that are executed as a batch with {@link DBActionList#execute(nz.co.gregs.dbvolution.databases.DBDatabase)
  * }.
  *
  * <p style="color: #F90;">Support DBvolution at

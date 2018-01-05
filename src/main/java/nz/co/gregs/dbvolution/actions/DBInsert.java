@@ -328,7 +328,7 @@ public class DBInsert extends DBAction {
 	 *
 	 * <p>
 	 * The actions created can be applied on a particular database using
-	 * {@link DBActionList#execute(nz.co.gregs.dbvolution.DBDatabase)}
+	 * {@link DBActionList#execute(nz.co.gregs.dbvolution.databases.DBDatabase)}
 	 *
 	 * @param rows the rows to be inserted
 	 * @throws SQLException Database actions can throw SQLException

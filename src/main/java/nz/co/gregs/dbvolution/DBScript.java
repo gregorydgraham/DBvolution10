@@ -28,12 +28,12 @@ import nz.co.gregs.dbvolution.actions.DBActionList;
  *
  * <p>
  * Use {@link DBDatabase#test(nz.co.gregs.dbvolution.DBScript) } or
- * {@link DBScript#test(nz.co.gregs.dbvolution.DBDatabase)} to run the script
+ * {@link DBScript#test(nz.co.gregs.dbvolution.databases.DBDatabase)} to run the script
  * within a Read Only Transaction.
  *
  * <p>
  * Use {@link DBDatabase#implement(nz.co.gregs.dbvolution.DBScript)} or 
- * {@link DBScript#implement(nz.co.gregs.dbvolution.DBDatabase) } to run the
+ * {@link DBScript#implement(nz.co.gregs.dbvolution.databases.DBDatabase) } to run the
  * script within a Committed Transaction.
  *
  * <p style="color: #F90;">Support DBvolution at
@@ -65,7 +65,7 @@ public abstract class DBScript {
 	 * Run the script in a committed transaction.
 	 *
 	 * <P>
-	 * Implement() wraps the {@link #script(nz.co.gregs.dbvolution.DBDatabase) }
+	 * Implement() wraps the {@link #script(nz.co.gregs.dbvolution.databases.DBDatabase) }
 	 * method in a transaction and commits it.
 	 *
 	 * <P>
@@ -91,7 +91,7 @@ public abstract class DBScript {
 	/**
 	 * Run the script in a read-only transaction.
 	 *
-	 * Test() wraps the {@link #script(nz.co.gregs.dbvolution.DBDatabase) }
+	 * Test() wraps the {@link #script(nz.co.gregs.dbvolution.databases.DBDatabase) }
 	 * method in a transaction but rolls it back.
 	 *
 	 * <p>

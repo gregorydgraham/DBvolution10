@@ -294,12 +294,12 @@ public class DBMigration<M extends DBRow> extends RowDefinition {
 	 * <p>
 	 * Generates the SQL query for retrieving the objects but does not execute the
 	 * SQL. Use
-	 * {@link #getAllRows(nz.co.gregs.dbvolution.DBDatabase, nz.co.gregs.dbvolution.DBRow...) the getAllRows method}
+	 * {@link #getAllRows(nz.co.gregs.dbvolution.databases.DBDatabase, nz.co.gregs.dbvolution.DBRow...) the getAllRows method}
 	 * to retrieve the rows.
 	 *
 	 * <p>
 	 * See also
-	 * {@link #getSQLForCount(nz.co.gregs.dbvolution.DBDatabase, nz.co.gregs.dbvolution.DBRow...) }
+	 * {@link #getSQLForCount(nz.co.gregs.dbvolution.databases.DBDatabase, nz.co.gregs.dbvolution.DBRow...) }
 	 *
 	 * @param database the database the SQL will be run against.
 	 * @param rows additional conditions to apply to the report.
@@ -324,12 +324,12 @@ public class DBMigration<M extends DBRow> extends RowDefinition {
 	 * <p>
 	 * Generates the SQL query for retrieving the objects but does not execute the
 	 * SQL. Use
-	 * {@link #getAllRows(nz.co.gregs.dbvolution.DBDatabase, nz.co.gregs.dbvolution.DBRow...) the getAllRows method}
+	 * {@link #getAllRows(nz.co.gregs.dbvolution.databases.DBDatabase, nz.co.gregs.dbvolution.DBRow...) the getAllRows method}
 	 * to retrieve the rows.
 	 *
 	 * <p>
 	 * See also
-	 * {@link #getSQLForCount(nz.co.gregs.dbvolution.DBDatabase, nz.co.gregs.dbvolution.DBRow...) }
+	 * {@link #getSQLForCount(nz.co.gregs.dbvolution.databases.DBDatabase, nz.co.gregs.dbvolution.DBRow...) }
 	 *
 	 * @param database the database the SQL will be run against.
 	 * @param rows additional conditions to apply to the report.
@@ -354,7 +354,7 @@ public class DBMigration<M extends DBRow> extends RowDefinition {
 	 *
 	 * <p>
 	 * Use this method to check the SQL that will be executed during
-	 * {@link DBReport#count(nz.co.gregs.dbvolution.DBDatabase, nz.co.gregs.dbvolution.DBReport, nz.co.gregs.dbvolution.DBRow...)  the count method}
+	 * {@link DBReport#count(nz.co.gregs.dbvolution.databases.DBDatabase, nz.co.gregs.dbvolution.DBReport, nz.co.gregs.dbvolution.DBRow...)  the count method}
 	 *
 	 * @param database the database to format the query for.
 	 * @param rows additional conditions to be applied.
@@ -374,10 +374,10 @@ public class DBMigration<M extends DBRow> extends RowDefinition {
 	 *
 	 * <p>
 	 * Creates a
-	 * {@link #getSQLForCount(nz.co.gregs.dbvolution.DBDatabase, nz.co.gregs.dbvolution.DBRow...)  count query}
+	 * {@link #getSQLForCount(nz.co.gregs.dbvolution.databases.DBDatabase, nz.co.gregs.dbvolution.DBRow...)  count query}
 	 * for the report and conditions and retrieves the number of rows that would
 	 * have been returned had
-	 * {@link #getAllRows(nz.co.gregs.dbvolution.DBDatabase, nz.co.gregs.dbvolution.DBRow...) getAllRows method}
+	 * {@link #getAllRows(nz.co.gregs.dbvolution.databases.DBDatabase, nz.co.gregs.dbvolution.DBRow...) getAllRows method}
 	 * been called.
 	 *
 	 * @param database the database to format the query for.

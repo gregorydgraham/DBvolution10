@@ -23,15 +23,15 @@
  * <p>
  * Using your {@link nz.co.gregs.dbvolution.DBRow DBRow subclasses} you can
  * create simple queries using
- * {@link nz.co.gregs.dbvolution.DBDatabase#getDBTable(nz.co.gregs.dbvolution.DBRow) DBTable}
+ * {@link nz.co.gregs.dbvolution.databases.DBDatabase#getDBTable(nz.co.gregs.dbvolution.DBRow) DBTable}
  * or complex ones using
- * {@link nz.co.gregs.dbvolution.DBDatabase#getDBQuery(nz.co.gregs.dbvolution.DBRow...) DBQuery}.
+ * {@link nz.co.gregs.dbvolution.databases.DBDatabase#getDBQuery(nz.co.gregs.dbvolution.DBRow...) DBQuery}.
  * <p>
  * You can create transactions easily using
  * {@link  nz.co.gregs.dbvolution.DBScript} testing the transaction with
- * {@link nz.co.gregs.dbvolution.DBScript#test(nz.co.gregs.dbvolution.DBDatabase) test}
+ * {@link nz.co.gregs.dbvolution.DBScript#test(nz.co.gregs.dbvolution.databases.DBDatabase) test}
  * or committing the changes with
- * {@link nz.co.gregs.dbvolution.DBScript#implement(nz.co.gregs.dbvolution.DBDatabase) implement}.
+ * {@link nz.co.gregs.dbvolution.DBScript#implement(nz.co.gregs.dbvolution.databases.DBDatabase) implement}.
  * <p>
  * DBvolution automatically protects you from common SQL mistakes like Cartesian
  * Joins or Blank Queries, makes outer joins trivial, helps you collect semantic

@@ -178,9 +178,7 @@ public class DBNumber extends QueryableDatatype<Number> implements NumberResult 
 
 	/**
 	 *
-	 * @param db	db
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @param defn the DBDefinition to used in formatting the value
 	 * @return the underlying number formatted for a SQL statement
 	 */
 	@Override

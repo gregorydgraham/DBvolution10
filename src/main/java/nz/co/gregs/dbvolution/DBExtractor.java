@@ -33,7 +33,7 @@ import nz.co.gregs.dbvolution.exceptions.AccidentalCartesianJoinException;
  *
  * <p>
  * To use Extractor, create a subclass implementing the
- * {@link #getQuery(nz.co.gregs.dbvolution.DBDatabase, int, int)} and
+ * {@link #getQuery(nz.co.gregs.dbvolution.databases.DBDatabase, int, int)} and
  * {@link #processRows(java.util.List)} methods and call {@link #extract() }.
  * <p>
  * The extractor uses primary key ranges to reduce the size of the query to
@@ -138,7 +138,7 @@ public abstract class DBExtractor extends DBScript {
 	 *
 	 * <p>
 	 * Works in conjuction with the
-	 * {@link #getQuery(nz.co.gregs.dbvolution.DBDatabase, int, int)} and
+	 * {@link #getQuery(nz.co.gregs.dbvolution.databases.DBDatabase, int, int)} and
 	 * {@link #processRows(java.util.List)} method to provide a dynamic extraction
 	 * process that achieves fast results on unreliable or under-resourced
 	 * databases.

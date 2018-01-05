@@ -102,7 +102,7 @@ public class DBReport extends RowDefinition {
 	 * <p>
 	 * If you require extra criteria to be add to the DBReport, limiting the
 	 * results to a subset, use the
-	 * {@link DBReport#getAllRows(nz.co.gregs.dbvolution.DBDatabase, nz.co.gregs.dbvolution.DBReport, nz.co.gregs.dbvolution.DBRow...) getRows method}.
+	 * {@link DBReport#getAllRows(nz.co.gregs.dbvolution.databases.DBDatabase, nz.co.gregs.dbvolution.DBReport, nz.co.gregs.dbvolution.DBRow...) getRows method}.
 	 *
 	 * @param <A> DBReport type
 	 * @param database database
@@ -304,12 +304,12 @@ public class DBReport extends RowDefinition {
 	 * <p>
 	 * Generates the SQL query for retrieving the objects but does not execute the
 	 * SQL. Use
-	 * {@link #getAllRows(nz.co.gregs.dbvolution.DBDatabase, nz.co.gregs.dbvolution.DBReport)  the getAllRows method}
+	 * {@link #getAllRows(nz.co.gregs.dbvolution.databases.DBDatabase, nz.co.gregs.dbvolution.DBReport)  the getAllRows method}
 	 * to retrieve the rows.
 	 *
 	 * <p>
 	 * See also
-	 * {@link #getSQLForCount(nz.co.gregs.dbvolution.DBDatabase, nz.co.gregs.dbvolution.DBReport, nz.co.gregs.dbvolution.DBRow...)}
+	 * {@link #getSQLForCount(nz.co.gregs.dbvolution.databases.DBDatabase, nz.co.gregs.dbvolution.DBReport, nz.co.gregs.dbvolution.DBRow...)}
 	 *
 	 * @param <A> the class of the supplied report.
 	 * @param database the database the SQL will be run against.
@@ -332,7 +332,7 @@ public class DBReport extends RowDefinition {
 	 *
 	 * <p>
 	 * Use this method to check the SQL that will be executed during
-	 * {@link DBReport#count(nz.co.gregs.dbvolution.DBDatabase, nz.co.gregs.dbvolution.DBReport, nz.co.gregs.dbvolution.DBRow...)  the count method}
+	 * {@link DBReport#count(nz.co.gregs.dbvolution.databases.DBDatabase, nz.co.gregs.dbvolution.DBReport, nz.co.gregs.dbvolution.DBRow...)  the count method}
 	 *
 	 * @param database the database to format the query for.
 	 * @param exampleReport the report to retrieve.
@@ -353,10 +353,10 @@ public class DBReport extends RowDefinition {
 	 *
 	 * <p>
 	 * Creates a
-	 * {@link #getSQLForCount(nz.co.gregs.dbvolution.DBDatabase, nz.co.gregs.dbvolution.DBReport, nz.co.gregs.dbvolution.DBRow...)  count query}
+	 * {@link #getSQLForCount(nz.co.gregs.dbvolution.databases.DBDatabase, nz.co.gregs.dbvolution.DBReport, nz.co.gregs.dbvolution.DBRow...)  count query}
 	 * for the report and conditions and retrieves the number of rows that would
 	 * have been returned had
-	 * {@link #getAllRows(nz.co.gregs.dbvolution.DBDatabase, nz.co.gregs.dbvolution.DBReport)  getAllRows method}
+	 * {@link #getAllRows(nz.co.gregs.dbvolution.databases.DBDatabase, nz.co.gregs.dbvolution.DBReport)  getAllRows method}
 	 * been called.
 	 *
 	 * @param database the database to format the query for.

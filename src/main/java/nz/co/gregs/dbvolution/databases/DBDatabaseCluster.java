@@ -66,6 +66,34 @@ import nz.co.gregs.dbvolution.reflection.DataModel;
 import nz.co.gregs.dbvolution.transactions.DBTransaction;
 
 /**
+ * Creates a database cluster programmatically.
+ *
+ * <p>
+ * Clustering provides several benefits: automatic replication, reduced server
+ * load on individual servers, improved server failure tolerance, and, with a
+ * little programming, dynamic server replacement.</p>
+ *
+ * <p>
+ * Please note that this class is not required to use database clusters provided
+ * by database vendors. Use the normal DBDatabase subclass for those
+ * vendors.</p>
+ *
+ * <p>
+ * DBDatabaseCluster collects together several databases and ensures that all
+ * actions are performed on all databases. This ensures that all databases stay
+ * in synch and allows queries to be distributed to any database and produce the
+ * same results. Different databases can be any supported database, for instance
+ * the DBvolutionDemo application uses H2 and SQLite.</p>
+ *
+ * <p>
+ * Upon creation, known tables and data are synchronized, the first database in
+ * the cluster being used as the template. Added databases are synchronized
+ * before being used</p>
+ *
+ * <p>
+ * Automatically generated keys are still supported with a slight change: the
+ * key will be generated in the first database and used as a literal value in
+ * all other databases.
  *
  * @author gregorygraham
  */
@@ -101,7 +129,7 @@ public class DBDatabaseCluster extends DBDatabase {
 	 * documentation any restrictions on what elements may be added.
 	 *
 	 * @param database element to be appended to this list
-	 * @return <tt>true</tt> (as specified by {@link Collection#add})
+	 * @return <tt>true</tt> if the database has been added to the cluster.
 	 * @throws java.sql.SQLException
 	 * @throws UnsupportedOperationException if the <tt>add</tt> operation is not
 	 * supported by this list
@@ -670,7 +698,7 @@ public class DBDatabaseCluster extends DBDatabase {
 	@Override
 	public synchronized boolean tableExists(DBRow table) throws SQLException {
 		boolean tableExists = true;
-		for (DBDatabase readyDatabase : readyDatabases) {			
+		for (DBDatabase readyDatabase : readyDatabases) {
 			final boolean tableExists1 = readyDatabase.tableExists(table);
 			tableExists &= tableExists1;
 		}

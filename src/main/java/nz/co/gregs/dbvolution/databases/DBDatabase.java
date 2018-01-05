@@ -1492,7 +1492,7 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 	 * Returns whether or not the example has any specified criteria.
 	 *
 	 * See
-	 * {@link DBRow#willCreateBlankQuery(nz.co.gregs.dbvolution.DBDatabase) willCreateBlankQuery}
+	 * {@link DBRow#willCreateBlankQuery(nz.co.gregs.dbvolution.databases.DBDatabase) willCreateBlankQuery}
 	 * on DBRow.
 	 *
 	 * @param row row
@@ -1653,7 +1653,7 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 	 *
 	 * <p>
 	 * Calls the
-	 * {@link DBReport#getRows(nz.co.gregs.dbvolution.DBDatabase, nz.co.gregs.dbvolution.DBReport, nz.co.gregs.dbvolution.DBRow...) DBReport getRows method}.
+	 * {@link DBReport#getRows(nz.co.gregs.dbvolution.databases.DBDatabase, nz.co.gregs.dbvolution.DBReport, nz.co.gregs.dbvolution.DBRow...) DBReport getRows method}.
 	 *
 	 * Retrieves a list of report rows from the database using the constraints
 	 * supplied by the report and the examples supplied.
@@ -1679,7 +1679,7 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 	 *
 	 * <p>
 	 * Calls the
-	 * {@link DBReport#getAllRows(nz.co.gregs.dbvolution.DBDatabase, nz.co.gregs.dbvolution.DBReport, nz.co.gregs.dbvolution.DBRow...) DBReport getRows method}.
+	 * {@link DBReport#getAllRows(nz.co.gregs.dbvolution.databases.DBDatabase, nz.co.gregs.dbvolution.DBReport, nz.co.gregs.dbvolution.DBRow...) DBReport getRows method}.
 	 *
 	 * Retrieves a list of report rows from the database using the constraints
 	 * supplied by the report and the examples supplied.
@@ -1701,7 +1701,7 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 	 *
 	 * <p>
 	 * Calls the
-	 * {@link DBReport#getRows(nz.co.gregs.dbvolution.DBDatabase, nz.co.gregs.dbvolution.DBReport, nz.co.gregs.dbvolution.DBRow...) DBReport getRows method}.
+	 * {@link DBReport#getRows(nz.co.gregs.dbvolution.databases.DBDatabase, nz.co.gregs.dbvolution.DBReport, nz.co.gregs.dbvolution.DBRow...) DBReport getRows method}.
 	 *
 	 * Retrieves a list of report rows from the database using the constraints
 	 * supplied by the report and the examples supplied.

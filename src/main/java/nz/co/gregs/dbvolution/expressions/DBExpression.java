@@ -32,7 +32,7 @@ import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
  *
  * <p>
  * The actual snippet is produced by the
- * {@link #toSQLString(nz.co.gregs.dbvolution.DBDatabase) toSQString method}.
+ * {@link #toSQLString(nz.co.gregs.dbvolution.databases.DBDatabase) toSQString method}.
  *
  * <p>
  * The {@link #copy() copy() method} allows DBvolution to maintain immutability.

@@ -96,7 +96,7 @@ public class DBQuery {
 	/**
 	 * Use of this method is not recommended as it subverts database clustering.
 	 * 
-	 * @return 
+	 * @return a ready database from the cluster, or this DBQuery's database if not using a cluster.
 	 */
 	private DBDatabase getReadyDatabase() {
 		if (database instanceof DBDatabaseCluster) {
@@ -247,7 +247,7 @@ public class DBQuery {
 	 * <p>
 	 * Generates the SQL query for retrieving the objects but does not execute
 	 * the SQL. Use
-	 * {@link #getAllRowsInternal(nz.co.gregs.dbvolution.query.QueryOptions) the get*Rows methods}
+	 * {@link #getAllRows() the get*Rows methods}
 	 * to retrieve the rows.
 	 *
 	 * <p>
@@ -272,7 +272,7 @@ public class DBQuery {
 	 * <p>
 	 * Prints the SQL query for retrieving the objects but does not execute the
 	 * SQL. Use
-	 * {@link #getAllRowsInternal(nz.co.gregs.dbvolution.query.QueryOptions) the get*Rows methods}
+	 * {@link #getAllRows() the get*Rows methods}
 	 * to retrieve the rows.
 	 *
 	 * <p>
@@ -314,7 +314,7 @@ public class DBQuery {
 	 * <p>
 	 * Prints the SQL query for counting the objects but does not execute the
 	 * SQL. Use
-	 * {@link #getAllRowsInternal(nz.co.gregs.dbvolution.query.QueryOptions) the get*Rows methods}
+	 * {@link #getAllRows() the get*Rows methods}
 	 * to retrieve the rows.
 	 *
 	 * <p>
@@ -664,7 +664,7 @@ public class DBQuery {
 	 * Either: counts the results already retrieved, or creates a
 	 * {@link #getSQLForCount() count query} for this instance and retrieves the
 	 * number of rows that would have been returned had
-	 * {@link #getAllRowsInternal(nz.co.gregs.dbvolution.query.QueryOptions)  getAllRows()}
+	 * {@link #getAllRows()  getAllRows()}
 	 * been called.
 	 *
 	 * <p style="color: #F90;">Support DBvolution at
@@ -927,7 +927,7 @@ public class DBQuery {
 	 *
 	 * <p>
 	 * Like
-	 * {@link #getAllRowsInternal(nz.co.gregs.dbvolution.query.QueryOptions)  getAllRows()}
+	 * {@link #getAllRows()  getAllRows()}
 	 * this method retrieves all the rows for this DBQuery. However it checks
 	 * the number of rows retrieved and throws a
 	 * {@link UnexpectedNumberOfRowsException} if the number of rows retrieved
@@ -964,9 +964,7 @@ public class DBQuery {
 	 * Database exceptions may be thrown.
 	 *
 	 * @throws nz.co.gregs.dbvolution.exceptions.UnexpectedNumberOfRowsException
-	 * nz.co.gregs.dbvolution.exceptions.UnexpectedNumberOfRowsException
-	 * @throws java.sql.SQLException java.sql.SQLException
-	 * @see #getAllRowsInternal(nz.co.gregs.dbvolution.query.QueryOptions)
+	 * @throws java.sql.SQLException
 	 */
 	public List<DBQueryRow> getAllRows(long expectedRows) throws UnexpectedNumberOfRowsException, SQLException {
 		List<DBQueryRow> allRows = getAllRows();
@@ -1712,7 +1710,7 @@ public class DBQuery {
 	 * it, however vague, will become a required table on the query.
 	 *
 	 * <p>
-	 * Any DBRow example that has no criteria, i.e. where {@link DBRow#willCreateBlankQuery(nz.co.gregs.dbvolution.DBDatabase)
+	 * Any DBRow example that has no criteria, i.e. where {@link DBRow#willCreateBlankQuery(nz.co.gregs.dbvolution.databases.DBDatabase)
 	 * } is TRUE, will be added as an optional table.
 	 *
 	 * <p>
@@ -1744,7 +1742,7 @@ public class DBQuery {
 	 * it, however vague, will become a required table on the query.
 	 *
 	 * <p>
-	 * Any DBRow example that has no criteria, i.e. where {@link DBRow#willCreateBlankQuery(nz.co.gregs.dbvolution.DBDatabase)
+	 * Any DBRow example that has no criteria, i.e. where {@link DBRow#willCreateBlankQuery(nz.co.gregs.dbvolution.databases.DBDatabase)
 	 * } is TRUE, will be added as an optional table.
 	 *
 	 * <p>

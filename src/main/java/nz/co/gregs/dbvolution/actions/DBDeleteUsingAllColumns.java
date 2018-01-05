@@ -30,7 +30,7 @@ import nz.co.gregs.dbvolution.internal.properties.PropertyWrapper;
  * row without a primary key.
  *
  * <p>
- * The best way to use this is by using {@link DBDelete#getDeletes(nz.co.gregs.dbvolution.DBDatabase, nz.co.gregs.dbvolution.DBRow...)
+ * The best way to use this is by using {@link DBDelete#getDeletes(nz.co.gregs.dbvolution.databases.DBDatabase, nz.co.gregs.dbvolution.DBRow...)
  * } to automatically use this action.
  *
  * <p style="color: #F90;">Support DBvolution at

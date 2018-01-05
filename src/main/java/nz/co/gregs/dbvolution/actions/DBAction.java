@@ -38,7 +38,7 @@ import nz.co.gregs.dbvolution.internal.properties.PropertyWrapper;
  *
  * <p>
  * However DBAction and it's subclasses provide more features for scripting
- * particularly {@link DBDelete#getDeletes(nz.co.gregs.dbvolution.DBDatabase, nz.co.gregs.dbvolution.DBRow...)  }, {@link DBUpdate#getUpdates(nz.co.gregs.dbvolution.DBRow...)
+ * particularly {@link DBDelete#getDeletes(nz.co.gregs.dbvolution.databases.DBDatabase, nz.co.gregs.dbvolution.DBRow...)  }, {@link DBUpdate#getUpdates(nz.co.gregs.dbvolution.DBRow...)
  * }, and {@link DBInsert#getInserts(nz.co.gregs.dbvolution.DBRow...) },
  * allowing a series of changes to be created then executed in a single batch.
  *

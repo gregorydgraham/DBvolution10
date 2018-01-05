@@ -28,29 +28,15 @@
  */
 package nz.co.gregs.dbvolution.databases.definitions;
 
-import java.text.SimpleDateFormat;
 import java.util.Date;
 
 
 public class ClusterDatabaseDefinition extends DBDefinition {
 
-	private static final String DATE_FORMAT_STR = "yyyy-M-d HH:mm:ss.SSS Z";
-	private static final String H2_DATE_FORMAT_STR = "yyyy-M-d HH:mm:ss.SSS Z";//2017-02-18 18:59:59.000 +10:00
-	private final SimpleDateFormat strToDateFormat = new SimpleDateFormat(DATE_FORMAT_STR);
-
-	/**
-	 * Unnecessary but implemented using the H2 implementation to allow for testing.
-	 * 
-	 * @param date
-	 * @return 
-	 */
+	
 	@Override
 	public String getDateFormattedForQuery(Date date) {
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-//		if (date == null) {
-//			return getNull();
-//		}
-//		return "PARSEDATETIME('" + strToDateFormat.format(date) + "','" + H2_DATE_FORMAT_STR + "')";
 	}
 
 	@Override

@@ -13,7 +13,7 @@
  * to create updates that will work on any database.
  * </p><p>
  * Use the
- * {@link nz.co.gregs.dbvolution.actions.DBDelete#getDeletes(nz.co.gregs.dbvolution.DBDatabase, nz.co.gregs.dbvolution.DBRow...) DBDelete getDeletes method}
+ * {@link nz.co.gregs.dbvolution.actions.DBDelete#getDeletes(nz.co.gregs.dbvolution.databases.DBDatabase, nz.co.gregs.dbvolution.DBRow...) DBDelete getDeletes method}
  * to create inserts that will work on any database AND give enough information
  * to recreate the deleted rows.
  * </p><p>
