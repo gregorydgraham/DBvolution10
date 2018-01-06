@@ -24,7 +24,6 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import nz.co.gregs.dbvolution.databases.DBDatabase;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.columns.StringColumn;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
@@ -73,14 +72,16 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 		};
 	}
 
-	private StringResult string1 = null;
-	private boolean nullProtectionRequired;
+	private final StringResult string1;
+	private final boolean nullProtectionRequired;
 
 	/**
 	 * Default Constructor
 	 *
 	 */
 	protected StringExpression() {
+		string1=null;
+		nullProtectionRequired = true;
 	}
 
 	/**
@@ -94,9 +95,7 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 	 */
 	public StringExpression(StringResult stringVariable) {
 		string1 = stringVariable;
-		if (stringVariable == null || stringVariable.getIncludesNull()) {
-			nullProtectionRequired = true;
-		}
+		nullProtectionRequired = stringVariable == null || stringVariable.getIncludesNull();
 	}
 
 	/**
@@ -109,9 +108,7 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 	 */
 	public StringExpression(String stringVariable) {
 		string1 = new DBString(stringVariable);
-		if (stringVariable == null || stringVariable.isEmpty()) {
-			nullProtectionRequired = true;
-		}
+		nullProtectionRequired = stringVariable == null || stringVariable.isEmpty();
 	}
 
 	/**
@@ -125,9 +122,7 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 			nullProtectionRequired = true;
 		} else {
 			string1 = stringVariable.copy();
-			if (stringVariable.getIncludesNull()) {
-				nullProtectionRequired = true;
-			}
+			nullProtectionRequired = stringVariable.getIncludesNull();
 		}
 	}
 
@@ -150,9 +145,7 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 			nullProtectionRequired = true;
 		} else {
 			string1 = numberVariable.stringResult();
-			if (string1.getIncludesNull()) {
-				nullProtectionRequired = true;
-			}
+			nullProtectionRequired = string1.getIncludesNull();
 		}
 	}
 
@@ -171,9 +164,7 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 	 */
 	public StringExpression(Number numberVariable) {
 		string1 = NumberExpression.value(numberVariable).stringResult();
-		if (numberVariable == null || string1.getIncludesNull()) {
-			nullProtectionRequired = true;
-		}
+		nullProtectionRequired = numberVariable == null || string1.getIncludesNull();
 	}
 
 	@Override
@@ -816,6 +807,7 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a boolean expression representing the required comparison
 	 */
+	@Override
 	public BooleanExpression isBetween(StringResult lowerBound, StringResult upperBound) {
 		return BooleanExpression.allOf(
 				this.isGreaterThan(lowerBound),
@@ -927,6 +919,7 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a boolean expression representing the required comparison
 	 */
+	@Override
 	public BooleanExpression isBetweenInclusive(StringResult lowerBound, StringResult upperBound) {
 		return BooleanExpression.allOf(
 				this.isGreaterThanOrEqual(lowerBound),
@@ -1040,6 +1033,7 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a boolean expression representing the required comparison
 	 */
+	@Override
 	public BooleanExpression isBetweenExclusive(StringResult lowerBound, StringResult upperBound) {
 		return BooleanExpression.allOf(
 				this.isGreaterThan(lowerBound),
@@ -2397,9 +2391,7 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 			DBBinaryStringArithmetic newInstance;
 			try {
 				newInstance = getClass().newInstance();
-			} catch (InstantiationException ex) {
-				throw new RuntimeException(ex);
-			} catch (IllegalAccessException ex) {
+			} catch (InstantiationException | IllegalAccessException ex) {
 				throw new RuntimeException(ex);
 			}
 			newInstance.first = first.copy();
@@ -2470,9 +2462,7 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 			DBNonaryStringFunction newInstance;
 			try {
 				newInstance = getClass().newInstance();
-			} catch (InstantiationException ex) {
-				throw new RuntimeException(ex);
-			} catch (IllegalAccessException ex) {
+			} catch (InstantiationException | IllegalAccessException ex) {
 				throw new RuntimeException(ex);
 			}
 			return newInstance;
@@ -2537,9 +2527,7 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 			DBUnaryStringFunction newInstance;
 			try {
 				newInstance = getClass().newInstance();
-			} catch (InstantiationException ex) {
-				throw new RuntimeException(ex);
-			} catch (IllegalAccessException ex) {
+			} catch (InstantiationException | IllegalAccessException ex) {
 				throw new RuntimeException(ex);
 			}
 			newInstance.only = only.copy();
@@ -2683,9 +2671,7 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 			DBUnaryNumberFunction newInstance;
 			try {
 				newInstance = getClass().newInstance();
-			} catch (InstantiationException ex) {
-				throw new RuntimeException(ex);
-			} catch (IllegalAccessException ex) {
+			} catch (InstantiationException | IllegalAccessException ex) {
 				throw new RuntimeException(ex);
 			}
 			newInstance.only = (only == null ? null : only.copy());
@@ -2753,9 +2739,7 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 			DBTrinaryStringFunction newInstance;
 			try {
 				newInstance = getClass().newInstance();
-			} catch (InstantiationException ex) {
-				throw new RuntimeException(ex);
-			} catch (IllegalAccessException ex) {
+			} catch (InstantiationException | IllegalAccessException ex) {
 				throw new RuntimeException(ex);
 			}
 			newInstance.first = getFirst() == null ? null : getFirst().copy();
@@ -2873,9 +2857,7 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 			DBBinaryStringFunction newInstance;
 			try {
 				newInstance = getClass().newInstance();
-			} catch (InstantiationException ex) {
-				throw new RuntimeException(ex);
-			} catch (IllegalAccessException ex) {
+			} catch (InstantiationException | IllegalAccessException ex) {
 				throw new RuntimeException(ex);
 			}
 			newInstance.first = getFirst() == null ? null : getFirst().copy();
@@ -2973,9 +2955,7 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 			StringExpression.BinaryComplicatedNumberFunction newInstance;
 			try {
 				newInstance = getClass().newInstance();
-			} catch (InstantiationException ex) {
-				throw new RuntimeException(ex);
-			} catch (IllegalAccessException ex) {
+			} catch (InstantiationException | IllegalAccessException ex) {
 				throw new RuntimeException(ex);
 			}
 			newInstance.first = first.copy();
@@ -3113,9 +3093,7 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 			DBBinaryBooleanArithmetic newInstance;
 			try {
 				newInstance = getClass().newInstance();
-			} catch (InstantiationException ex) {
-				throw new RuntimeException(ex);
-			} catch (IllegalAccessException ex) {
+			} catch (InstantiationException | IllegalAccessException ex) {
 				throw new RuntimeException(ex);
 			}
 			newInstance.first = first.copy();
@@ -3203,9 +3181,7 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 			DBNnaryBooleanFunction newInstance;
 			try {
 				newInstance = getClass().newInstance();
-			} catch (InstantiationException ex) {
-				throw new RuntimeException(ex);
-			} catch (IllegalAccessException ex) {
+			} catch (InstantiationException | IllegalAccessException ex) {
 				throw new RuntimeException(ex);
 			}
 			newInstance.column = this.column.copy();

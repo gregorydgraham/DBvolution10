@@ -71,8 +71,8 @@ import nz.co.gregs.dbvolution.internal.query.QueryDetails;
  */
 public class ExistsExpression extends BooleanExpression {
 
-	QueryDetails outerQuery = new QueryDetails();
-	QueryDetails innerQuery = new QueryDetails();
+	private final QueryDetails outerQuery = new QueryDetails();
+	private final QueryDetails innerQuery = new QueryDetails();
 	private final DBDatabase database;
 
 	/**
