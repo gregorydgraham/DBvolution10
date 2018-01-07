@@ -17,9 +17,11 @@ package nz.co.gregs.dbvolution.exceptions;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import nz.co.gregs.dbvolution.columns.ColumnProvider;
 import nz.co.gregs.dbvolution.databases.DBDatabase;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
+import nz.co.gregs.dbvolution.query.RowDefinition;
 import org.junit.Test;
 
 /**
@@ -67,6 +69,11 @@ public class UnableInstantiateQueryableDatatypeExceptionTest {
 
 		@Override
 		protected void setValueFromStandardStringEncoding(String encodedValue) {
+			throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+		}
+
+		@Override
+		public ColumnProvider getColumn(RowDefinition row) throws nz.co.gregs.dbvolution.exceptions.IncorrectRowProviderInstanceSuppliedException {
 			throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 		}
 	}

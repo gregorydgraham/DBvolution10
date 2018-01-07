@@ -28,7 +28,9 @@ import java.util.Set;
 import nz.co.gregs.dbvolution.databases.DBDatabase;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.actions.DBActionList;
+import nz.co.gregs.dbvolution.columns.ColumnProvider;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
+import nz.co.gregs.dbvolution.exceptions.IncorrectRowProviderInstanceSuppliedException;
 import nz.co.gregs.dbvolution.exceptions.UnableInstantiateQueryableDatatypeException;
 import nz.co.gregs.dbvolution.exceptions.UnableToCopyQueryableDatatypeException;
 import nz.co.gregs.dbvolution.results.BooleanResult;
@@ -41,6 +43,7 @@ import nz.co.gregs.dbvolution.internal.properties.PropertyWrapperDefinition;
 import nz.co.gregs.dbvolution.operators.DBEqualsOperator;
 import nz.co.gregs.dbvolution.operators.DBIsNullOperator;
 import nz.co.gregs.dbvolution.operators.DBOperator;
+import nz.co.gregs.dbvolution.query.RowDefinition;
 import nz.co.gregs.dbvolution.results.IntegerResult;
 
 /**
@@ -1036,4 +1039,23 @@ public abstract class QueryableDatatype<T> extends Object implements Serializabl
 	public String formatColumnForSQLStatement(DBDefinition db, String formattedColumnName) {
 		return formattedColumnName;
 	}
+
+	/**
+	 * Creates a Column Provider suitable to this QDT.
+	 *
+	 * <p>
+	 * Creates a ColumnProvider object of the correct type for this
+	 * QueryableDatatype, using this object and the provided row.</p>
+	 *
+	 * <p>
+	 * Used internally to maintain the relationship between QDTs and their
+	 * ColumnProvider equivalents.</p>
+	 *
+	 * @param row
+	 * @return a column object appropriate to this datatype based on the object
+	 * and the row
+	 * @throws IncorrectRowProviderInstanceSuppliedException if this object is not
+	 * a field in the row.
+	 */
+	public abstract ColumnProvider getColumn(RowDefinition row) throws IncorrectRowProviderInstanceSuppliedException;
 }

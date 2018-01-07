@@ -16,11 +16,13 @@
 package nz.co.gregs.dbvolution.columns;
 
 import java.util.Set;
-import nz.co.gregs.dbvolution.databases.DBDatabase;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
+import nz.co.gregs.dbvolution.datatypes.DBEnum;
+import nz.co.gregs.dbvolution.datatypes.DBEnumValue;
 import nz.co.gregs.dbvolution.datatypes.DBString;
 import nz.co.gregs.dbvolution.datatypes.DBStringEnum;
+import nz.co.gregs.dbvolution.datatypes.DBUnknownDatatype;
 import nz.co.gregs.dbvolution.expressions.*;
 import nz.co.gregs.dbvolution.query.RowDefinition;
 
@@ -81,7 +83,11 @@ public class StringColumn extends StringExpression implements ColumnProvider {
 	 * @param row the row containing the field
 	 * @param field the field defining the column
 	 */
-	public StringColumn(RowDefinition row, DBStringEnum<?> field) {
+//	public StringColumn(RowDefinition row, DBStringEnum<?> field) {
+//		this.column = new AbstractColumn(row, field);
+//	}
+
+	public <E extends Enum<E> & DBEnumValue<String>> StringColumn(RowDefinition row, DBEnum<E, String> field) {
 		this.column = new AbstractColumn(row, field);
 	}
 

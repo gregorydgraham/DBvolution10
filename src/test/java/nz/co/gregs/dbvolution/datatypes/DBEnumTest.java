@@ -15,6 +15,7 @@
  */
 package nz.co.gregs.dbvolution.datatypes;
 
+import java.sql.ResultSet;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.*;
 
@@ -25,10 +26,15 @@ import java.util.List;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.annotations.DBColumn;
 import nz.co.gregs.dbvolution.annotations.DBPrimaryKey;
+import nz.co.gregs.dbvolution.columns.*;
+import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.generic.AbstractTest;
 import nz.co.gregs.dbvolution.datatypes.DBEnumTest.StringEnumTable.StringEnumType;
+import nz.co.gregs.dbvolution.exceptions.IncorrectRowProviderInstanceSuppliedException;
 import nz.co.gregs.dbvolution.expressions.NumberExpression;
 import nz.co.gregs.dbvolution.expressions.StringExpression;
+import nz.co.gregs.dbvolution.operators.DBPermittedValuesOperator;
+import nz.co.gregs.dbvolution.query.RowDefinition;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -863,6 +869,154 @@ public class DBEnumTest extends AbstractTest {
 				}
 				throw new IllegalArgumentException("Invalid " + StringEnumType.class.getSimpleName() + " code: " + code);
 			}
+		}
+	}
+
+	public static class DBGenericEnumImpl<E extends Enum<E> & DBEnumValue<String>> extends DBEnum<E, String> {
+
+		public static final long serialVersionUID = 1l;
+
+		public DBGenericEnumImpl() {
+		}
+
+		public DBGenericEnumImpl(StringExpression stringExpression) {
+			super(stringExpression);
+		}
+
+		@Override
+		protected void validateLiteralValue(E enumValue) {
+			String localValue = enumValue.getCode();
+			if (localValue != null) {
+				if (!(localValue instanceof String)) {
+					String enumMethodRef = enumValue.getClass().getName() + "." + enumValue.name() + ".getLiteralValue()";
+					String literalValueTypeRef = localValue.getClass().getName();
+					throw new IncompatibleClassChangeError("Enum literal type is not valid: "
+							+ enumMethodRef + " returned a " + literalValueTypeRef + ", which is not valid for a " + this.getClass().getSimpleName());
+				}
+			}
+		}
+
+		@Override
+		protected void setValueFromStandardStringEncoding(String encodedValue) {
+			setValue(encodedValue);
+		}
+
+		@Override
+		public String getSQLDatatype() {
+			return new DBString().getSQLDatatype();
+		}
+
+		@Override
+		protected String getFromResultSet(DBDefinition database, ResultSet resultSet, String fullColumnName) throws SQLException {
+			return resultSet.getString(fullColumnName);
+		}
+
+		@Override
+		public ColumnProvider getColumn(RowDefinition row) throws IncorrectRowProviderInstanceSuppliedException {
+			return new StringColumn(row, this);
+		}
+	}
+
+	public static class GenericEnumTable extends DBRow {
+
+		private static final long serialVersionUID = 1L;
+
+		@DBColumn("uid_203")
+		@DBPrimaryKey
+		public DBInteger uid_202 = new DBInteger();
+
+		@DBColumn("c_5")
+		public DBGenericEnumImpl<GenericEnumType> recordType = new DBGenericEnumImpl<>();
+
+		@DBColumn
+		public DBGenericEnumImpl<GenericEnumType> movereq = new DBGenericEnumImpl<>(StringExpression.value(GenericEnumType.MOVEMENT_REQUEST_RECORD.literalValue));
+
+		public GenericEnumTable() {
+		}
+
+		public GenericEnumTable(Integer uid, GenericEnumType recType) {
+			this.uid_202.setValue(uid);
+			this.recordType.setValue(recType);
+		}
+	}
+
+	/**
+	 * Valid values for {@link #recordType}
+	 */
+	public static enum GenericEnumType implements DBEnumValue<String> {
+
+		SHIPPING_MANIFEST_RECORD("MANRECORD", "Shipping Manifest Record"),
+		MOVEMENT_REQUEST_RECORD("MOVEREQ", "Movement Request Record"),
+		MOVEMENT_CANCELLATION_REQUEST("CANCREQ", "Movement Cancellation Request");
+		private final String literalValue;
+		private final String displayName;
+
+		private GenericEnumType(String code, String displayName) {
+			this.literalValue = code;
+			this.displayName = displayName;
+		}
+
+		@Override
+		public String getCode() {
+			return literalValue;
+		}
+
+		public String getDisplayName() {
+			return displayName;
+		}
+
+		public static GenericEnumType valueOfCode(DBString code) {
+			return valueOfCode(code == null ? null : code.stringValue());
+		}
+
+		public static GenericEnumType valueOfCode(String code) {
+			if (code == null) {
+				return null;
+			}
+			for (GenericEnumType recordType : values()) {
+				if (recordType.getCode().equals(code)) {
+					return recordType;
+				}
+			}
+			throw new IllegalArgumentException("Invalid " + StringEnumType.class.getSimpleName() + " code: " + code);
+		}
+	}
+
+	@Test
+	public void processGenericRecord() throws SQLException {
+		final GenericEnumTable genericTableExemplar = new GenericEnumTable();
+		database.preventDroppingOfTables(false);
+		database.dropTableNoExceptions(genericTableExemplar);
+		database.createTable(genericTableExemplar);
+		try {
+			database.insert(
+					new GenericEnumTable(1, GenericEnumType.MOVEMENT_REQUEST_RECORD),
+					new GenericEnumTable(2, GenericEnumType.SHIPPING_MANIFEST_RECORD),
+					new GenericEnumTable(4, GenericEnumType.MOVEMENT_REQUEST_RECORD));
+
+			genericTableExemplar.recordType.permittedValues(
+					GenericEnumType.MOVEMENT_CANCELLATION_REQUEST,
+					GenericEnumType.MOVEMENT_REQUEST_RECORD,
+					GenericEnumType.SHIPPING_MANIFEST_RECORD);
+			List<GenericEnumTable> rows = database.get(genericTableExemplar);
+
+			Assert.assertThat(rows.size(), is(3));
+			Assert.assertThat(rows.get(0).movereq.enumValue(), is(GenericEnumType.MOVEMENT_REQUEST_RECORD));
+			for (GenericEnumTable row : rows) {
+				if (row.uid_202.getValue() == 1) {
+					assertThat(row.recordType.enumValue(), is(GenericEnumType.MOVEMENT_REQUEST_RECORD));
+				} else if (row.uid_202.getValue().intValue() == 2) {
+					assertThat(row.recordType.enumValue(), is(GenericEnumType.SHIPPING_MANIFEST_RECORD));
+				} else if (row.uid_202.getValue().intValue() == 4) {
+					assertThat(row.recordType.enumValue(), is(GenericEnumType.MOVEMENT_REQUEST_RECORD));
+				} else {
+					throw new RuntimeException("Unknown Row Found");
+				}
+			}
+		} finally {
+			database.preventDroppingOfTables(false);
+			database.dropTableNoExceptions(genericTableExemplar);
+
 		}
 	}
 }

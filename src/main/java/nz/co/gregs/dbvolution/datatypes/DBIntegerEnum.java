@@ -19,10 +19,11 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashSet;
 import java.util.Set;
-import nz.co.gregs.dbvolution.databases.DBDatabase;
 import nz.co.gregs.dbvolution.DBReport;
 import nz.co.gregs.dbvolution.DBRow;
+import nz.co.gregs.dbvolution.columns.IntegerColumn;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
+import nz.co.gregs.dbvolution.exceptions.IncorrectRowProviderInstanceSuppliedException;
 import nz.co.gregs.dbvolution.expressions.NumberExpression;
 import nz.co.gregs.dbvolution.expressions.StringExpression;
 import nz.co.gregs.dbvolution.results.NumberResult;
@@ -30,6 +31,7 @@ import nz.co.gregs.dbvolution.operators.DBPermittedRangeExclusiveOperator;
 import nz.co.gregs.dbvolution.operators.DBPermittedRangeInclusiveOperator;
 import nz.co.gregs.dbvolution.operators.DBPermittedRangeOperator;
 import nz.co.gregs.dbvolution.operators.DBPermittedValuesOperator;
+import nz.co.gregs.dbvolution.query.RowDefinition;
 
 /**
  * Like {@link DBInteger} except that the database value can be easily
@@ -132,16 +134,16 @@ public class DBIntegerEnum<E extends Enum<E> & DBEnumValue<Long>> extends DBEnum
 		return new HashSet<DBRow>();
 	}
 
-	/**
-	 *
-	 * reduces the rows to only the object, Set, List, Array, or vararg of objects
-	 *
-	 * @param permitted	permitted
-	 */
-	@SafeVarargs
-	public final void permittedValues(E... permitted) {
-		this.setOperator(new DBPermittedValuesOperator<Long>(convertToLiteral(permitted)));
-	}
+//	/**
+//	 *
+//	 * reduces the rows to only the object, Set, List, Array, or vararg of objects
+//	 *
+//	 * @param permitted	permitted
+//	 */
+//	@SafeVarargs
+//	public final void permittedValues(E... permitted) {
+//		this.setOperator(new DBPermittedValuesOperator<Long>(convertToLiteral(permitted)));
+//	}
 
 	@SafeVarargs
 	@SuppressWarnings("unchecked")
@@ -161,10 +163,11 @@ public class DBIntegerEnum<E extends Enum<E> & DBEnumValue<Long>> extends DBEnum
 	 * <p style="color: #F90;">Support DBvolution at
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 *
+	 * @param enumValues
 	 * @return a Long[] of the enums values.
 	 */
 	@SafeVarargs
-	private final Long[] convertToLiteralLong(E... enumValues) {
+	protected final Long[] convertToLiteralLong(E... enumValues) {
 		Long[] result = new Long[enumValues.length];
 		for (int i = 0; i < enumValues.length; i++) {
 			E enumValue = enumValues[i];
@@ -192,18 +195,18 @@ public class DBIntegerEnum<E extends Enum<E> & DBEnumValue<Long>> extends DBEnum
 		}
 	}
 
-	/**
-	 *
-	 * excludes the object, Set, List, Array, or vararg of objects
-	 *
-	 *
-	 * @param excluded	excluded
-	 */
-	@SafeVarargs
-	public final void excludedValues(E... excluded) {
-		this.setOperator(new DBPermittedValuesOperator<Long>(convertToLiteral(excluded)));
-		negateOperator();
-	}
+//	/**
+//	 *
+//	 * excludes the object, Set, List, Array, or vararg of objects
+//	 *
+//	 *
+//	 * @param excluded	excluded
+//	 */
+//	@SafeVarargs
+//	public final void excludedValues(E... excluded) {
+//		this.setOperator(new DBPermittedValuesOperator<Long>(convertToLiteral(excluded)));
+//		negateOperator();
+//	}
 
 	/**
 	 * Performs searches based on a range.
@@ -352,26 +355,26 @@ public class DBIntegerEnum<E extends Enum<E> & DBEnumValue<Long>> extends DBEnum
 		negateOperator();
 	}
 
-	/**
-	 * Reduces the rows to only the object, Set, List, Array, or vararg of objects
-	 *
-	 * @param permitted	permitted
-	 */
-	public void permittedValues(Long... permitted) {
-		this.setOperator(new DBPermittedValuesOperator<Long>(permitted));
-	}
-
-	/**
-	 *
-	 * excludes the object, Set, List, Array, or vararg of objects
-	 *
-	 *
-	 * @param excluded	excluded
-	 */
-	public void excludedValues(Long... excluded) {
-		this.setOperator(new DBPermittedValuesOperator<Long>(excluded));
-		negateOperator();
-	}
+//	/**
+//	 * Reduces the rows to only the object, Set, List, Array, or vararg of objects
+//	 *
+//	 * @param permitted	permitted
+//	 */
+//	public void permittedValues(Long... permitted) {
+//		this.setOperator(new DBPermittedValuesOperator<Long>(permitted));
+//	}
+//
+//	/**
+//	 *
+//	 * excludes the object, Set, List, Array, or vararg of objects
+//	 *
+//	 *
+//	 * @param excluded	excluded
+//	 */
+//	public void excludedValues(Long... excluded) {
+//		this.setOperator(new DBPermittedValuesOperator<Long>(excluded));
+//		negateOperator();
+//	}
 
 	/**
 	 * Performs searches based on a range.
@@ -784,4 +787,9 @@ public class DBIntegerEnum<E extends Enum<E> & DBEnumValue<Long>> extends DBEnum
 			}
 		}
 	}
+	@Override
+	public IntegerColumn getColumn(RowDefinition row) throws IncorrectRowProviderInstanceSuppliedException{
+		return new IntegerColumn(row, this);
+	}
+
 }

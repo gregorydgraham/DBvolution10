@@ -18,9 +18,11 @@ package nz.co.gregs.dbvolution.datatypes;
 import nz.co.gregs.dbvolution.results.DateRepeatResult;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import nz.co.gregs.dbvolution.databases.DBDatabase;
+import nz.co.gregs.dbvolution.columns.DateRepeatColumn;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
+import nz.co.gregs.dbvolution.exceptions.IncorrectRowProviderInstanceSuppliedException;
 import nz.co.gregs.dbvolution.expressions.*;
+import nz.co.gregs.dbvolution.query.RowDefinition;
 import org.joda.time.Period;
 import org.joda.time.format.PeriodFormat;
 
@@ -176,4 +178,10 @@ public class DBDateRepeat extends QueryableDatatype<Period> implements DateRepea
 	protected void setValueFromStandardStringEncoding(String encodedValue) {
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
+
+	@Override
+	public DateRepeatColumn getColumn(RowDefinition row) throws IncorrectRowProviderInstanceSuppliedException {
+		return new DateRepeatColumn(row, this);
+	}
+
 }

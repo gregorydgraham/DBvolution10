@@ -22,13 +22,15 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import nz.co.gregs.dbvolution.databases.DBDatabase;
 import nz.co.gregs.dbvolution.DBReport;
 import nz.co.gregs.dbvolution.DBRow;
+import nz.co.gregs.dbvolution.columns.StringColumn;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
+import nz.co.gregs.dbvolution.exceptions.IncorrectRowProviderInstanceSuppliedException;
 import nz.co.gregs.dbvolution.expressions.StringExpression;
 import nz.co.gregs.dbvolution.results.StringResult;
 import nz.co.gregs.dbvolution.operators.*;
+import nz.co.gregs.dbvolution.query.RowDefinition;
 
 /**
  * Encapsulates database values that are strings of characters.
@@ -778,5 +780,10 @@ public class DBString extends QueryableDatatype<String> implements StringResult 
 	@Override
 	protected void setValueFromStandardStringEncoding(String encodedValue) {
 		setValue(encodedValue);
+	}
+
+	@Override
+	public StringColumn getColumn(RowDefinition row) throws IncorrectRowProviderInstanceSuppliedException {
+		return new StringColumn(row, this);
 	}
 }

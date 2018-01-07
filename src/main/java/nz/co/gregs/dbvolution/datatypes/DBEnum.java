@@ -1,12 +1,10 @@
 package nz.co.gregs.dbvolution.datatypes;
 
 import java.lang.reflect.Array;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
-import nz.co.gregs.dbvolution.databases.DBDatabase;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.expressions.DBExpression;
 import nz.co.gregs.dbvolution.internal.properties.PropertyWrapperDefinition;
+import nz.co.gregs.dbvolution.operators.DBPermittedValuesOperator;
 
 /**
  * Base class for enumeration-aware queryable datatypes. Enumeration-aware
@@ -108,11 +106,15 @@ public abstract class DBEnum<E extends Enum<E> & DBEnumValue<T>, T> extends Quer
 	 * values with null literal values are tolerated and should not be rejected by
 	 * this method. See documentation for {@link DBEnumValue#getCode()}.
 	 *
+	 * <p>
+	 * Throw an IncompatibleClassChangeError to indicate that the literal value
+	 * failed validation</p>
+	 *
 	 * @param enumValue non-null enum value, for which the literal value may be
 	 * null
 	 * @throws IncompatibleClassChangeError on incompatible types
 	 */
-	protected abstract void validateLiteralValue(E enumValue);
+	protected abstract void validateLiteralValue(E enumValue) throws IncompatibleClassChangeError;
 
 	/**
 	 * Gets the enumeration value.
@@ -322,5 +324,66 @@ public abstract class DBEnum<E extends Enum<E> & DBEnumValue<T>, T> extends Quer
 			T newLiteralValue = enumValue.getCode();
 			return newLiteralValue;
 		}
+	}
+
+	@Override
+	public boolean isAggregator() {
+		return false;
+	}
+
+	/**
+	 *
+	 * reduces the rows to only the object, Set, List, Array, or vararg of objects
+	 *
+	 * @param permitted	permitted
+	 */
+	@SafeVarargs
+	public final void permittedValues(T... permitted) {
+		this.setOperator(new DBPermittedValuesOperator<T>(permitted));
+	}
+
+	/**
+	 *
+	 * reduces the rows to only the object, Set, List, Array, or vararg of objects
+	 *
+	 * @param permitted	permitted
+	 */
+	@SafeVarargs
+	public final void permittedValues(E... permitted) {
+		this.setOperator(new DBPermittedValuesOperator<T>(convertToLiteral(permitted)));
+	}
+
+	/**
+	 * Reduces the rows returned from a query by excluding those matching the
+	 * provided objects.
+	 *
+	 * <p>
+	 * The case, upper or lower, will be ignored.
+	 *
+	 * <p>
+	 * Defining case for Unicode characters is complicated and may not work as
+	 * expected.
+	 *
+	 * @param excluded	excluded
+	 */
+	@SafeVarargs
+	public final void excludedValues(T... excluded) {
+		this.setOperator(new DBPermittedValuesOperator<T>(excluded));
+		negateOperator();
+	}
+
+	/**
+	 * Reduces the rows returned from a query by excluding those matching the
+	 * provided objects.
+	 *
+	 * <p>
+	 * For Strings, the case, upper or lower, will be ignored.</p>
+	 *
+	 * @param excluded	excluded
+	 */
+	@SafeVarargs
+	public final void excludedValues(E... excluded) {
+		this.setOperator(new DBPermittedValuesOperator<T>(convertToLiteral(excluded)));
+		negateOperator();
 	}
 }

@@ -23,7 +23,9 @@ import java.util.Set;
 import nz.co.gregs.dbvolution.databases.DBDatabase;
 import nz.co.gregs.dbvolution.DBReport;
 import nz.co.gregs.dbvolution.DBRow;
+import nz.co.gregs.dbvolution.columns.NumberColumn;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
+import nz.co.gregs.dbvolution.exceptions.IncorrectRowProviderInstanceSuppliedException;
 import nz.co.gregs.dbvolution.expressions.IntegerExpression;
 import nz.co.gregs.dbvolution.expressions.NumberExpression;
 import nz.co.gregs.dbvolution.expressions.StringExpression;
@@ -32,6 +34,7 @@ import nz.co.gregs.dbvolution.operators.DBPermittedRangeExclusiveOperator;
 import nz.co.gregs.dbvolution.operators.DBPermittedRangeInclusiveOperator;
 import nz.co.gregs.dbvolution.operators.DBPermittedRangeOperator;
 import nz.co.gregs.dbvolution.operators.DBPermittedValuesOperator;
+import nz.co.gregs.dbvolution.query.RowDefinition;
 
 /**
  * Encapsulates database values that are Numbers.
@@ -677,5 +680,10 @@ public class DBNumber extends QueryableDatatype<Number> implements NumberResult 
 	@Override
 	protected void setValueFromStandardStringEncoding(String encodedValue) {
 		setValue(Double.parseDouble(encodedValue));
+	}
+
+	@Override
+	public NumberColumn getColumn(RowDefinition row) throws IncorrectRowProviderInstanceSuppliedException {
+		return new NumberColumn(row, this);
 	}
 }

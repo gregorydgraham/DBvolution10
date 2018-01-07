@@ -16,9 +16,10 @@
 package nz.co.gregs.dbvolution.columns;
 
 import java.util.Set;
-import nz.co.gregs.dbvolution.databases.DBDatabase;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
+import nz.co.gregs.dbvolution.datatypes.DBEnum;
+import nz.co.gregs.dbvolution.datatypes.DBEnumValue;
 import nz.co.gregs.dbvolution.datatypes.DBInteger;
 import nz.co.gregs.dbvolution.datatypes.DBIntegerEnum;
 import nz.co.gregs.dbvolution.expressions.BooleanExpression;
@@ -89,12 +90,17 @@ public class IntegerColumn extends IntegerExpression implements ColumnProvider {
 	/**
 	 * Create a IntegerColumn for the supplied field of the supplied row
 	 *
+	 * @param <E>
 	 * @param row the row containing the field
 	 * @param field the field defining the column
-	 */
-	public IntegerColumn(RowDefinition row, DBIntegerEnum<?> field) {
+	 */	
+	public <E extends Enum<E> & DBEnumValue<Long>> IntegerColumn(RowDefinition row, DBEnum<E, Long> field) {
 		this.column = new AbstractColumn(row, field);
 	}
+
+//	public IntegerColumn(RowDefinition row, DBIntegerEnum<?> field) {
+//		this.column = new AbstractColumn(row, field);
+//	}
 
 	@Override
 	public String toSQLString(DBDefinition db) {

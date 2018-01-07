@@ -124,7 +124,7 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 	private transient final List<PropertyWrapper> blobColumns = new ArrayList<>();
 	private transient final SortedSet<Class<? extends DBRow>> referencedTables = new TreeSet<>(new DBRow.ClassNameComparator());
 	private Boolean emptyRow = true;
-
+	
 	/**
 	 * Creates a new blank DBRow of the supplied subclass.
 	 *
@@ -137,17 +137,7 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 	public static <T extends DBRow> T getDBRow(Class<T> requiredDBRowClass) throws UnableToInstantiateDBRowSubclassException {
 		try {
 			return requiredDBRowClass.getConstructor().newInstance();
-		} catch (NoSuchMethodException ex) {
-			throw new UnableToInstantiateDBRowSubclassException(requiredDBRowClass, ex);
-		} catch (SecurityException ex) {
-			throw new UnableToInstantiateDBRowSubclassException(requiredDBRowClass, ex);
-		} catch (InstantiationException ex) {
-			throw new UnableToInstantiateDBRowSubclassException(requiredDBRowClass, ex);
-		} catch (IllegalAccessException ex) {
-			throw new UnableToInstantiateDBRowSubclassException(requiredDBRowClass, ex);
-		} catch (IllegalArgumentException ex) {
-			throw new UnableToInstantiateDBRowSubclassException(requiredDBRowClass, ex);
-		} catch (InvocationTargetException ex) {
+		} catch (NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
 			throw new UnableToInstantiateDBRowSubclassException(requiredDBRowClass, ex);
 		}
 	}

@@ -21,11 +21,13 @@ import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
-import nz.co.gregs.dbvolution.databases.DBDatabase;
 import nz.co.gregs.dbvolution.DBReport;
 import nz.co.gregs.dbvolution.DBRow;
+import nz.co.gregs.dbvolution.columns.BooleanArrayColumn;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
+import nz.co.gregs.dbvolution.exceptions.IncorrectRowProviderInstanceSuppliedException;
 import nz.co.gregs.dbvolution.expressions.BooleanArrayExpression;
+import nz.co.gregs.dbvolution.query.RowDefinition;
 import nz.co.gregs.dbvolution.results.BooleanArrayResult;
 
 /**
@@ -231,4 +233,8 @@ public class DBBooleanArray extends QueryableDatatype<Boolean[]> implements Bool
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
+	@Override
+	public BooleanArrayColumn getColumn(RowDefinition row) throws IncorrectRowProviderInstanceSuppliedException {
+		return new BooleanArrayColumn(row, this);
+	}
 }

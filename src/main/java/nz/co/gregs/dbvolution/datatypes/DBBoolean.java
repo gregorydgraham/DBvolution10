@@ -23,12 +23,16 @@ import java.util.List;
 import nz.co.gregs.dbvolution.databases.DBDatabase;
 import nz.co.gregs.dbvolution.DBReport;
 import nz.co.gregs.dbvolution.DBRow;
+import nz.co.gregs.dbvolution.columns.BooleanColumn;
+import nz.co.gregs.dbvolution.columns.ColumnProvider;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
+import nz.co.gregs.dbvolution.exceptions.IncorrectRowProviderInstanceSuppliedException;
 import nz.co.gregs.dbvolution.expressions.BooleanExpression;
 import nz.co.gregs.dbvolution.expressions.StringExpression;
 import nz.co.gregs.dbvolution.results.BooleanResult;
 import nz.co.gregs.dbvolution.operators.DBBooleanPermittedValuesOperator;
 import nz.co.gregs.dbvolution.operators.DBPermittedValuesOperator;
+import nz.co.gregs.dbvolution.query.RowDefinition;
 
 /**
  * Encapsulates database values that are Booleans.
@@ -154,7 +158,7 @@ public class DBBoolean extends QueryableDatatype<Boolean> implements BooleanResu
 	 * @return the value of this QDT as a boolean.
 	 */
 	@SuppressFBWarnings(
-			value = "NP_BOOLEAN_RETURN_NULL", 
+			value = "NP_BOOLEAN_RETURN_NULL",
 			justification = "Null is a valid value in databases"
 	)
 	public Boolean booleanValue() {
@@ -278,6 +282,11 @@ public class DBBoolean extends QueryableDatatype<Boolean> implements BooleanResu
 			setValue(false);
 		}
 
+	}
+
+	@Override
+	public BooleanColumn getColumn(RowDefinition row) throws IncorrectRowProviderInstanceSuppliedException{
+		return new BooleanColumn(row, this);
 	}
 
 }

@@ -19,11 +19,13 @@ import java.io.*;
 import java.sql.*;
 import java.util.*;
 import java.util.logging.*;
-import nz.co.gregs.dbvolution.databases.DBDatabase;
 import nz.co.gregs.dbvolution.DBRow;
+import nz.co.gregs.dbvolution.columns.LargeObjectColumn;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.internal.query.LargeObjectHandlerType;
 import nz.co.gregs.dbvolution.exceptions.DBRuntimeException;
+import nz.co.gregs.dbvolution.exceptions.IncorrectRowProviderInstanceSuppliedException;
+import nz.co.gregs.dbvolution.query.RowDefinition;
 import org.apache.commons.codec.binary.Base64;
 
 /**
@@ -104,9 +106,7 @@ public class DBJavaObject<O> extends DBLargeObject<O> {
 				try (ObjectInputStream input = new ObjectInputStream(bufferedInputStream)) {
 					returnValue = (O) input.readObject();
 				}
-			} catch (IOException ex) {
-				Logger.getLogger(DBJavaObject.class.getName()).log(Level.SEVERE, null, ex);
-			} catch (ClassNotFoundException ex) {
+			} catch (IOException | ClassNotFoundException ex) {
 				Logger.getLogger(DBJavaObject.class.getName()).log(Level.SEVERE, null, ex);
 			}
 		}
@@ -132,9 +132,7 @@ public class DBJavaObject<O> extends DBLargeObject<O> {
 					try (ObjectInputStream input = new ObjectInputStream(bufferedInputStream)) {
 						returnValue = (O) input.readObject();
 					}
-				} catch (IOException ex) {
-					Logger.getLogger(DBJavaObject.class.getName()).log(Level.SEVERE, null, ex);
-				} catch (ClassNotFoundException ex) {
+				} catch (IOException | ClassNotFoundException ex) {
 					Logger.getLogger(DBJavaObject.class.getName()).log(Level.SEVERE, null, ex);
 				}
 			}
@@ -149,9 +147,7 @@ public class DBJavaObject<O> extends DBLargeObject<O> {
 			try (ObjectInputStream input = new ObjectInputStream(new ByteArrayInputStream(bytes))) {
 				return (O) input.readObject();
 			}
-		} catch (IOException ex) {
-			Logger.getLogger(DBJavaObject.class.getName()).log(Level.SEVERE, null, ex);
-		} catch (ClassNotFoundException ex) {
+		} catch (IOException | ClassNotFoundException ex) {
 			Logger.getLogger(DBJavaObject.class.getName()).log(Level.SEVERE, null, ex);
 		}
 		return null;
@@ -243,9 +239,7 @@ public class DBJavaObject<O> extends DBLargeObject<O> {
 //				this.setValue(objectInput.readObject());
 					returnValue = (O) objectInput.readObject();
 				}
-			} catch (IOException ex) {
-				Logger.getLogger(DBJavaObject.class.getName()).log(Level.SEVERE, null, ex);
-			} catch (ClassNotFoundException ex) {
+			} catch (IOException | ClassNotFoundException ex) {
 				Logger.getLogger(DBJavaObject.class.getName()).log(Level.SEVERE, null, ex);
 			}
 		}
@@ -294,8 +288,7 @@ public class DBJavaObject<O> extends DBLargeObject<O> {
 	}
 
 	/**
-	 * Returns the byte[] used internally to store the value of this
-	 * DBJavaObject.
+	 * Returns the byte[] used internally to store the value of this DBJavaObject.
 	 *
 	 * <p style="color: #F90;">Support DBvolution at
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
@@ -438,4 +431,10 @@ public class DBJavaObject<O> extends DBLargeObject<O> {
 	private O getFromBase64(ResultSet resultSet, String fullColumnName) {
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
+
+	@Override
+	public LargeObjectColumn getColumn(RowDefinition row) throws IncorrectRowProviderInstanceSuppliedException {
+		return new LargeObjectColumn(row, this);
+	}
+
 }

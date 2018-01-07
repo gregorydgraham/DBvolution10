@@ -69,6 +69,7 @@ import org.joda.time.Period;
 public abstract class DBDefinition {
 	
 	public int getNumericPrecision() {
+		
 		return DBNumber.getNumericPrecision();
 	}
 

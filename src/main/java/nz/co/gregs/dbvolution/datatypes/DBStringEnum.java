@@ -22,11 +22,13 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import nz.co.gregs.dbvolution.databases.DBDatabase;
 import nz.co.gregs.dbvolution.DBRow;
+import nz.co.gregs.dbvolution.columns.StringColumn;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
+import nz.co.gregs.dbvolution.exceptions.IncorrectRowProviderInstanceSuppliedException;
 import nz.co.gregs.dbvolution.expressions.StringExpression;
 import nz.co.gregs.dbvolution.operators.*;
+import nz.co.gregs.dbvolution.query.RowDefinition;
 
 /**
  * Like {@link DBString} except that the database value can be easily
@@ -187,15 +189,15 @@ public class DBStringEnum<E extends Enum<E> & DBEnumValue<String>> extends DBEnu
 		}
 	}
 
-	/**
-	 * Reduces the rows returned from a query to only those matching the provided
-	 * objects.
-	 *
-	 * @param permitted	permitted
-	 */
-	public void permittedValues(String... permitted) {
-		this.setOperator(new DBPermittedValuesOperator<String>(permitted));
-	}
+//	/**
+//	 * Reduces the rows returned from a query to only those matching the provided
+//	 * objects.
+//	 *
+//	 * @param permitted	permitted
+//	 */
+//	public void permittedValues(String... permitted) {
+//		this.setOperator(new DBPermittedValuesOperator<String>(permitted));
+//	}
 
 	/**
 	 * Reduces the rows returned from a query to only those matching the provided
@@ -320,23 +322,23 @@ public class DBStringEnum<E extends Enum<E> & DBEnumValue<String>> extends DBEnu
 		negateOperator();
 	}
 
-	/**
-	 * Reduces the rows returned from a query by excluding those matching the
-	 * provided objects.
-	 *
-	 * <p>
-	 * The case, upper or lower, will be ignored.
-	 *
-	 * <p>
-	 * Defining case for Unicode characters is complicated and may not work as
-	 * expected.
-	 *
-	 * @param excluded	excluded
-	 */
-	public void excludedValues(String... excluded) {
-		this.setOperator(new DBPermittedValuesOperator<String>(excluded));
-		negateOperator();
-	}
+//	/**
+//	 * Reduces the rows returned from a query by excluding those matching the
+//	 * provided objects.
+//	 *
+//	 * <p>
+//	 * The case, upper or lower, will be ignored.
+//	 *
+//	 * <p>
+//	 * Defining case for Unicode characters is complicated and may not work as
+//	 * expected.
+//	 *
+//	 * @param excluded	excluded
+//	 */
+//	public void excludedValues(String... excluded) {
+//		this.setOperator(new DBPermittedValuesOperator<String>(excluded));
+//		negateOperator();
+//	}
 
 	/**
 	 * Performs searches based on a range.
@@ -563,16 +565,16 @@ public class DBStringEnum<E extends Enum<E> & DBEnumValue<String>> extends DBEnu
 		this.negateOperator();
 	}
 
-	/**
-	 *
-	 * reduces the rows to only the object, Set, List, Array, or vararg of objects
-	 *
-	 * @param permitted	permitted
-	 */
-	@SafeVarargs
-	public final void permittedValues(E... permitted) {
-		this.setOperator(new DBPermittedValuesOperator<String>(convertToLiteral(permitted)));
-	}
+//	/**
+//	 *
+//	 * reduces the rows to only the object, Set, List, Array, or vararg of objects
+//	 *
+//	 * @param permitted	permitted
+//	 */
+//	@SafeVarargs
+//	public final void permittedValues(E... permitted) {
+//		this.setOperator(new DBPermittedValuesOperator<String>(convertToLiteral(permitted)));
+//	}
 
 	@Override
 	@SafeVarargs
@@ -615,18 +617,18 @@ public class DBStringEnum<E extends Enum<E> & DBEnumValue<String>> extends DBEnu
 		negateOperator();
 	}
 
-	/**
-	 *
-	 * excludes the object, Set, List, Array, or vararg of objects
-	 *
-	 *
-	 * @param excluded	excluded
-	 */
-	@SafeVarargs
-	public final void excludedValues(E... excluded) {
-		this.setOperator(new DBPermittedValuesOperator<String>(convertToLiteralString(excluded)));
-		negateOperator();
-	}
+//	/**
+//	 *
+//	 * excludes the object, Set, List, Array, or vararg of objects
+//	 *
+//	 *
+//	 * @param excluded	excluded
+//	 */
+//	@SafeVarargs
+//	public final void excludedValues(E... excluded) {
+//		this.setOperator(new DBPermittedValuesOperator<String>(convertToLiteralString(excluded)));
+//		negateOperator();
+//	}
 
 	/**
 	 * Performs searches based on a range.
@@ -798,5 +800,10 @@ public class DBStringEnum<E extends Enum<E> & DBEnumValue<String>> extends DBEnu
 	@Override
 	protected void setValueFromStandardStringEncoding(String encodedValue) {
 		setValue(encodedValue);
+	}
+
+	@Override
+	public StringColumn getColumn(RowDefinition row) throws IncorrectRowProviderInstanceSuppliedException {
+		return new StringColumn(row, this);
 	}
 }

@@ -37,7 +37,7 @@ import nz.co.gregs.dbvolution.query.RowDefinition;
  *
  * @author Gregory Graham
  */
-public class IncorrectRowProviderInstanceSuppliedException extends RuntimeException {
+public class IncorrectRowProviderInstanceSuppliedException extends DBRuntimeException {
 
 	private static final long serialVersionUID = 1L;
 
