@@ -95,13 +95,15 @@ public class DateExpression implements DateResult, RangeComparable<DateResult>, 
 	 */
 	static final public Number SATURDAY = 7;
 
-	private DateResult date1;
-	private boolean needsNullProtection = false;
+	private final DateResult date1;
+	private final boolean needsNullProtection;
 
 	/**
 	 * Default Constructor
 	 */
 	protected DateExpression() {
+		date1 = null;
+		needsNullProtection = false;
 	}
 
 	/**
@@ -115,9 +117,7 @@ public class DateExpression implements DateResult, RangeComparable<DateResult>, 
 	 */
 	public DateExpression(DateResult dateVariable) {
 		date1 = dateVariable;
-		if (date1 == null || date1.getIncludesNull()) {
-			needsNullProtection = true;
-		}
+		needsNullProtection = date1 == null || date1.getIncludesNull();
 	}
 
 	/**
@@ -131,9 +131,7 @@ public class DateExpression implements DateResult, RangeComparable<DateResult>, 
 	 */
 	public DateExpression(Date date) {
 		date1 = new DBDate(date);
-		if (date == null || date1.getIncludesNull()) {
-			needsNullProtection = true;
-		}
+		needsNullProtection = date == null || date1.getIncludesNull();
 	}
 
 	@Override
@@ -703,6 +701,7 @@ public class DateExpression implements DateResult, RangeComparable<DateResult>, 
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a boolean expression representing the required comparison
 	 */
+	@Override
 	public BooleanExpression isBetween(DateResult lowerBound, DateResult upperBound) {
 		return BooleanExpression.allOf(
 				this.isGreaterThan(lowerBound),
@@ -823,6 +822,7 @@ public class DateExpression implements DateResult, RangeComparable<DateResult>, 
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a boolean expression representing the required comparison
 	 */
+	@Override
 	public BooleanExpression isBetweenInclusive(DateResult lowerBound, DateResult upperBound) {
 		return BooleanExpression.allOf(
 				this.isGreaterThanOrEqual(lowerBound),
@@ -936,6 +936,7 @@ public class DateExpression implements DateResult, RangeComparable<DateResult>, 
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a boolean expression representing the required comparison
 	 */
+	@Override
 	public BooleanExpression isBetweenExclusive(DateResult lowerBound, DateResult upperBound) {
 		return BooleanExpression.allOf(
 				this.isGreaterThan(lowerBound),
@@ -2635,9 +2636,7 @@ public class DateExpression implements DateResult, RangeComparable<DateResult>, 
 			DateExpression.FunctionWithDateResult newInstance;
 			try {
 				newInstance = getClass().newInstance();
-			} catch (InstantiationException ex) {
-				throw new RuntimeException(ex);
-			} catch (IllegalAccessException ex) {
+			} catch (InstantiationException | IllegalAccessException ex) {
 				throw new RuntimeException(ex);
 			}
 			return newInstance;
@@ -2689,9 +2688,7 @@ public class DateExpression implements DateResult, RangeComparable<DateResult>, 
 			DateExpression.DateExpressionWithNumberResult newInstance;
 			try {
 				newInstance = getClass().newInstance();
-			} catch (InstantiationException ex) {
-				throw new RuntimeException(ex);
-			} catch (IllegalAccessException ex) {
+			} catch (InstantiationException | IllegalAccessException ex) {
 				throw new RuntimeException(ex);
 			}
 			newInstance.only = only.copy();
@@ -2752,9 +2749,7 @@ public class DateExpression implements DateResult, RangeComparable<DateResult>, 
 			DateExpressionWithDateResult newInstance;
 			try {
 				newInstance = getClass().newInstance();
-			} catch (InstantiationException ex) {
-				throw new RuntimeException(ex);
-			} catch (IllegalAccessException ex) {
+			} catch (InstantiationException | IllegalAccessException ex) {
 				throw new RuntimeException(ex);
 			}
 			newInstance.only = getFirst().copy();
@@ -2829,9 +2824,7 @@ public class DateExpression implements DateResult, RangeComparable<DateResult>, 
 			DateDateExpressionWithBooleanResult newInstance;
 			try {
 				newInstance = getClass().newInstance();
-			} catch (InstantiationException ex) {
-				throw new RuntimeException(ex);
-			} catch (IllegalAccessException ex) {
+			} catch (InstantiationException | IllegalAccessException ex) {
 				throw new RuntimeException(ex);
 			}
 			newInstance.first = first.copy();
@@ -2883,9 +2876,7 @@ public class DateExpression implements DateResult, RangeComparable<DateResult>, 
 			DateDateExpressionWithDateRepeatResult newInstance;
 			try {
 				newInstance = getClass().newInstance();
-			} catch (InstantiationException ex) {
-				throw new RuntimeException(ex);
-			} catch (IllegalAccessException ex) {
+			} catch (InstantiationException | IllegalAccessException ex) {
 				throw new RuntimeException(ex);
 			}
 			newInstance.first = getFirst().copy();
@@ -2960,9 +2951,7 @@ public class DateExpression implements DateResult, RangeComparable<DateResult>, 
 			DateDateRepeatArithmeticDateResult newInstance;
 			try {
 				newInstance = getClass().newInstance();
-			} catch (InstantiationException ex) {
-				throw new RuntimeException(ex);
-			} catch (IllegalAccessException ex) {
+			} catch (InstantiationException | IllegalAccessException ex) {
 				throw new RuntimeException(ex);
 			}
 			newInstance.first = getFirst().copy();
@@ -3071,9 +3060,7 @@ public class DateExpression implements DateResult, RangeComparable<DateResult>, 
 			DateArrayFunctionWithDateResult newInstance;
 			try {
 				newInstance = getClass().newInstance();
-			} catch (InstantiationException ex) {
-				throw new RuntimeException(ex);
-			} catch (IllegalAccessException ex) {
+			} catch (InstantiationException | IllegalAccessException ex) {
 				throw new RuntimeException(ex);
 			}
 			newInstance.column = this.column.copy();
@@ -3190,9 +3177,7 @@ public class DateExpression implements DateResult, RangeComparable<DateResult>, 
 			DateDateResultFunctionWithBooleanResult newInstance;
 			try {
 				newInstance = getClass().newInstance();
-			} catch (InstantiationException ex) {
-				throw new RuntimeException(ex);
-			} catch (IllegalAccessException ex) {
+			} catch (InstantiationException | IllegalAccessException ex) {
 				throw new RuntimeException(ex);
 			}
 			newInstance.column = this.getColumn().copy();
@@ -3278,9 +3263,7 @@ public class DateExpression implements DateResult, RangeComparable<DateResult>, 
 			DateDateFunctionWithDateResult newInstance;
 			try {
 				newInstance = getClass().newInstance();
-			} catch (InstantiationException ex) {
-				throw new RuntimeException(ex);
-			} catch (IllegalAccessException ex) {
+			} catch (InstantiationException | IllegalAccessException ex) {
 				throw new RuntimeException(ex);
 			}
 			newInstance.first = getFirst().copy();
@@ -3394,9 +3377,7 @@ public class DateExpression implements DateResult, RangeComparable<DateResult>, 
 			DateFunctionWithNumberResult newInstance;
 			try {
 				newInstance = getClass().newInstance();
-			} catch (InstantiationException ex) {
-				throw new RuntimeException(ex);
-			} catch (IllegalAccessException ex) {
+			} catch (InstantiationException | IllegalAccessException ex) {
 				throw new RuntimeException(ex);
 			}
 			newInstance.only = (only == null ? null : only.copy());
@@ -3462,9 +3443,7 @@ public class DateExpression implements DateResult, RangeComparable<DateResult>, 
 			DateFunctionWithDateResult newInstance;
 			try {
 				newInstance = getClass().newInstance();
-			} catch (InstantiationException ex) {
-				throw new RuntimeException(ex);
-			} catch (IllegalAccessException ex) {
+			} catch (InstantiationException | IllegalAccessException ex) {
 				throw new RuntimeException(ex);
 			}
 			newInstance.only = only.copy();
@@ -3507,18 +3486,14 @@ public class DateExpression implements DateResult, RangeComparable<DateResult>, 
 		}
 
 		@Override
-		abstract public String toSQLString(DBDefinition db); //{
-//			return this.beforeValue(db) + (only == null ? "" : only.toSQLString(db)) + this.afterValue(db);
-//		}
+		abstract public String toSQLString(DBDefinition db); 
 
 		@Override
 		public DateNumberExpressionWithDateResult copy() {
 			DateNumberExpressionWithDateResult newInstance;
 			try {
 				newInstance = getClass().newInstance();
-			} catch (InstantiationException ex) {
-				throw new RuntimeException(ex);
-			} catch (IllegalAccessException ex) {
+			} catch (InstantiationException | IllegalAccessException ex) {
 				throw new RuntimeException(ex);
 			}
 			newInstance.first = first.copy();
@@ -3575,9 +3550,7 @@ public class DateExpression implements DateResult, RangeComparable<DateResult>, 
 			DateDateFunctionWithNumberResult newInstance;
 			try {
 				newInstance = getClass().newInstance();
-			} catch (InstantiationException ex) {
-				throw new RuntimeException(ex);
-			} catch (IllegalAccessException ex) {
+			} catch (InstantiationException | IllegalAccessException ex) {
 				throw new RuntimeException(ex);
 			}
 			newInstance.first = first.copy();

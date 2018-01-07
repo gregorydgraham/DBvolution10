@@ -35,8 +35,8 @@ import org.joda.time.Period;
  */
 public class DateRepeatExpression implements DateRepeatResult, RangeComparable<DateRepeatResult>, ExpressionColumn<DBDateRepeat> {
 
-	DateRepeatResult innerDateRepeatResult = null;
-	private boolean nullProtectionRequired = false;
+	private final DateRepeatResult innerDateRepeatResult;
+	private final boolean nullProtectionRequired;
 
 	/**
 	 * DateRepeat values are often stored as Strings of the format
@@ -79,6 +79,8 @@ public class DateRepeatExpression implements DateRepeatResult, RangeComparable<D
 	 *
 	 */
 	protected DateRepeatExpression() {
+		innerDateRepeatResult = null;
+		nullProtectionRequired = false;
 	}
 
 	/**
@@ -88,9 +90,7 @@ public class DateRepeatExpression implements DateRepeatResult, RangeComparable<D
 	 */
 	public DateRepeatExpression(Period interval) {
 		innerDateRepeatResult = new DBDateRepeat(interval);
-		if (interval == null || innerDateRepeatResult.getIncludesNull()) {
-			nullProtectionRequired = true;
-		}
+		nullProtectionRequired = interval == null || innerDateRepeatResult.getIncludesNull();
 	}
 
 	/**
@@ -101,9 +101,7 @@ public class DateRepeatExpression implements DateRepeatResult, RangeComparable<D
 	 */
 	public DateRepeatExpression(DateRepeatResult interval) {
 		innerDateRepeatResult = interval;
-		if (interval == null || innerDateRepeatResult.getIncludesNull()) {
-			nullProtectionRequired = true;
-		}
+		nullProtectionRequired = interval == null || innerDateRepeatResult.getIncludesNull();
 	}
 
 	/**
@@ -663,7 +661,7 @@ public class DateRepeatExpression implements DateRepeatResult, RangeComparable<D
 		return BooleanExpression.allOf(
 				this.isGreaterThanOrEqual(anotherInstance),
 				this.isLessThan(anotherInstance)
-				);
+		);
 	}
 
 	@Override
@@ -671,7 +669,7 @@ public class DateRepeatExpression implements DateRepeatResult, RangeComparable<D
 		return BooleanExpression.allOf(
 				this.isGreaterThanOrEqual(anotherInstance),
 				this.isLessThanOrEqual(anotherInstance)
-				);
+		);
 	}
 
 	@Override
@@ -679,7 +677,7 @@ public class DateRepeatExpression implements DateRepeatResult, RangeComparable<D
 		return BooleanExpression.allOf(
 				this.isGreaterThan(anotherInstance),
 				this.isLessThan(anotherInstance)
-				);
+		);
 	}
 
 	private static abstract class DateRepeatDateRepeatWithBooleanResult extends BooleanExpression {

@@ -355,27 +355,6 @@ public class DBIntegerEnum<E extends Enum<E> & DBEnumValue<Long>> extends DBEnum
 		negateOperator();
 	}
 
-//	/**
-//	 * Reduces the rows to only the object, Set, List, Array, or vararg of objects
-//	 *
-//	 * @param permitted	permitted
-//	 */
-//	public void permittedValues(Long... permitted) {
-//		this.setOperator(new DBPermittedValuesOperator<Long>(permitted));
-//	}
-//
-//	/**
-//	 *
-//	 * excludes the object, Set, List, Array, or vararg of objects
-//	 *
-//	 *
-//	 * @param excluded	excluded
-//	 */
-//	public void excludedValues(Long... excluded) {
-//		this.setOperator(new DBPermittedValuesOperator<Long>(excluded));
-//		negateOperator();
-//	}
-
 	/**
 	 * Performs searches based on a range.
 	 *

@@ -55,6 +55,9 @@ import nz.co.gregs.dbvolution.results.NumberResult;
  */
 public class IntegerExpression implements IntegerResult, RangeComparable<IntegerResult>, InComparable<IntegerResult>, ExpressionColumn<DBInteger> {
 
+	private final IntegerResult innerIntegerResult;
+	private final boolean nullProtectionRequired;
+
 	static IntegerExpression nullExpression() {
 		return new NullExpression();
 	}
@@ -125,14 +128,13 @@ public class IntegerExpression implements IntegerResult, RangeComparable<Integer
 		return new NumberExpression(number).trunc();
 	}
 
-	private IntegerResult innerIntegerResult;
-	private boolean nullProtectionRequired;
-
 	/**
 	 * Default Constructor
 	 *
 	 */
 	protected IntegerExpression() {
+		innerIntegerResult=null;
+		nullProtectionRequired = false;
 	}
 
 	/**
@@ -146,9 +148,7 @@ public class IntegerExpression implements IntegerResult, RangeComparable<Integer
 	 */
 	public IntegerExpression(Integer value) {
 		innerIntegerResult = new DBInteger(value);
-		if (value == null || innerIntegerResult.getIncludesNull()) {
-			nullProtectionRequired = true;
-		}
+		nullProtectionRequired = value == null || innerIntegerResult.getIncludesNull();
 	}
 
 	/**
@@ -162,9 +162,7 @@ public class IntegerExpression implements IntegerResult, RangeComparable<Integer
 	 */
 	public IntegerExpression(Long value) {
 		innerIntegerResult = new DBInteger(value);
-		if (value == null || innerIntegerResult.getIncludesNull()) {
-			nullProtectionRequired = true;
-		}
+		nullProtectionRequired = value == null || innerIntegerResult.getIncludesNull();
 	}
 
 	/**
@@ -178,9 +176,7 @@ public class IntegerExpression implements IntegerResult, RangeComparable<Integer
 	 */
 	public IntegerExpression(IntegerResult value) {
 		innerIntegerResult = value;
-		if (value == null || innerIntegerResult.getIncludesNull()) {
-			nullProtectionRequired = true;
-		}
+		nullProtectionRequired = value == null || innerIntegerResult.getIncludesNull();
 	}
 
 	@Override
@@ -224,9 +220,6 @@ public class IntegerExpression implements IntegerResult, RangeComparable<Integer
 	 */
 	public static IntegerExpression value(Long object) {
 		final IntegerExpression integerExpression = new IntegerExpression(object);
-		if (object == null) {
-			integerExpression.nullProtectionRequired = true;
-		}
 		return integerExpression;
 	}
 

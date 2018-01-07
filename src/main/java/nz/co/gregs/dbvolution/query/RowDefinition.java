@@ -94,9 +94,6 @@ public class RowDefinition implements Serializable {
 	 * @return a {@link RowDefinitionInstanceWrapper}
 	 */
 	protected RowDefinitionInstanceWrapper getWrapper() {
-//		if (wrapper == null) {
-//			wrapper = wrapperFactory.instanceWrapperFor(this);
-//		}
 		return wrapper;
 	}
 
@@ -322,39 +319,6 @@ public class RowDefinition implements Serializable {
 	public ColumnProvider column(QueryableDatatype<?> fieldOfThisInstance) throws IncorrectRowProviderInstanceSuppliedException {
 		ColumnProvider col = null;
 		col = fieldOfThisInstance.getColumn(this);
-//		if (DBBoolean.class.isAssignableFrom(fieldOfThisInstance.getClass())) {
-//			col = this.column((DBBoolean) fieldOfThisInstance);
-//		} else if (DBDate.class.isAssignableFrom(fieldOfThisInstance.getClass())) {
-//			col = this.column((DBDate) fieldOfThisInstance);
-//		} else if (DBLargeObject.class.isAssignableFrom(fieldOfThisInstance.getClass())) {
-//			col = this.column((DBLargeObject) fieldOfThisInstance);
-//		} else if (DBInteger.class.isAssignableFrom(fieldOfThisInstance.getClass())) {
-//			col = this.column((DBInteger) fieldOfThisInstance);
-//		} else if (DBIntegerEnum.class.isAssignableFrom(fieldOfThisInstance.getClass())) {
-//			col = this.column((DBIntegerEnum) fieldOfThisInstance);
-//		} else if (DBNumber.class.isAssignableFrom(fieldOfThisInstance.getClass())) {
-//			col = this.column((DBNumber) fieldOfThisInstance);
-//		} else if (DBStringEnum.class.isAssignableFrom(fieldOfThisInstance.getClass())) {
-//			col = this.column((DBStringEnum) fieldOfThisInstance);
-//		} else if (DBString.class.isAssignableFrom(fieldOfThisInstance.getClass())) {
-//			col = this.column((DBString) fieldOfThisInstance);
-//		} else if (DBDateRepeat.class.isAssignableFrom(fieldOfThisInstance.getClass())) {
-//			col = this.column((DBDateRepeat) fieldOfThisInstance);
-//		} else if (DBBooleanArray.class.isAssignableFrom(fieldOfThisInstance.getClass())) {
-//			col = this.column((DBBooleanArray) fieldOfThisInstance);
-//		} else if (DBPolygon2D.class.isAssignableFrom(fieldOfThisInstance.getClass())) {
-//			col = this.column((DBPolygon2D) fieldOfThisInstance);
-//		} else if (DBPoint2D.class.isAssignableFrom(fieldOfThisInstance.getClass())) {
-//			col = this.column((DBPoint2D) fieldOfThisInstance);
-//		} else if (DBLine2D.class.isAssignableFrom(fieldOfThisInstance.getClass())) {
-//			col = this.column((DBLine2D) fieldOfThisInstance);
-//		} else if (DBLineSegment2D.class.isAssignableFrom(fieldOfThisInstance.getClass())) {
-//			col = this.column((DBLineSegment2D) fieldOfThisInstance);
-//		} else if (DBMultiPoint2D.class.isAssignableFrom(fieldOfThisInstance.getClass())) {
-//			col = this.column((DBMultiPoint2D) fieldOfThisInstance);
-//		} else if (DBNumberStatistics.class.isAssignableFrom(fieldOfThisInstance.getClass())) {
-//			col = this.column((DBNumber) fieldOfThisInstance);
-//		}
 		if (col == null) {
 			throw new IncorrectRowProviderInstanceSuppliedException(this, fieldOfThisInstance);
 		}

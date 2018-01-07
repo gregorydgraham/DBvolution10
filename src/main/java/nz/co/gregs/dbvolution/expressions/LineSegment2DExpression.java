@@ -37,14 +37,16 @@ import nz.co.gregs.dbvolution.datatypes.spatial2D.DBLineSegment2D;
  */
 public class LineSegment2DExpression implements LineSegment2DResult, EqualComparable<LineSegment2DResult>, Spatial2DExpression, ExpressionColumn<DBLineSegment2D> {
 
-	private LineSegment2DResult innerLineString;
-	private boolean nullProtectionRequired;
+	private final LineSegment2DResult innerLineString;
+	private final boolean nullProtectionRequired;
 
 	/**
 	 * Default constructor.
 	 *
 	 */
 	protected LineSegment2DExpression() {
+		innerLineString = null;
+		nullProtectionRequired = false;
 	}
 
 	/**
@@ -53,14 +55,8 @@ public class LineSegment2DExpression implements LineSegment2DResult, EqualCompar
 	 * @param value
 	 */
 	public LineSegment2DExpression(LineSegment2DResult value) {
-		initInnerLine(value, value, value);
-	}
-
-	private void initInnerLine(Object original1, Object original2, LineSegment2DResult value) {
 		innerLineString = value;
-		if (original1 == null || original2 == null || innerLineString.getIncludesNull()) {
-			nullProtectionRequired = true;
-		}
+		nullProtectionRequired = value == null || innerLineString.getIncludesNull();
 	}
 
 	/**
@@ -70,7 +66,7 @@ public class LineSegment2DExpression implements LineSegment2DResult, EqualCompar
 	 */
 	public LineSegment2DExpression(LineSegment line) {
 		innerLineString = new DBLineSegment2D(line);
-		initInnerLine(line, line, innerLineString);
+		nullProtectionRequired = line == null || innerLineString.getIncludesNull();
 	}
 
 	/**
@@ -85,11 +81,11 @@ public class LineSegment2DExpression implements LineSegment2DResult, EqualCompar
 		LineSegment line = null;
 		if (point1x != null && point1y != null && point2x != null && point2y != null) {
 			line = new LineSegment(point1x, point1y, point2x, point2y);
-			innerLineString = new DBLineSegment2D(line);
+			nullProtectionRequired = false;
 		} else {
-			innerLineString = new DBLineSegment2D(line);
 			nullProtectionRequired = true;
 		}
+		innerLineString = new DBLineSegment2D(line);
 	}
 
 	/**
@@ -107,7 +103,7 @@ public class LineSegment2DExpression implements LineSegment2DResult, EqualCompar
 		} else {
 			innerLineString = new DBLineSegment2D(line);
 		}
-		initInnerLine(point1, point2, innerLineString);
+		nullProtectionRequired = point1 == null || point2 == null || innerLineString.getIncludesNull();
 	}
 
 	/**
@@ -124,7 +120,7 @@ public class LineSegment2DExpression implements LineSegment2DResult, EqualCompar
 		} else {
 			innerLineString = new DBLineSegment2D(line);
 		}
-		initInnerLine(coord1, coord2, innerLineString);
+		nullProtectionRequired = coord1 == null || coord2 == null || innerLineString.getIncludesNull();
 	}
 
 	/**
@@ -267,6 +263,7 @@ public class LineSegment2DExpression implements LineSegment2DResult, EqualCompar
 	 *
 	 * @return a StringExpression representing this spatial value.
 	 */
+	@Override
 	public StringExpression stringResult() {
 		return new StringExpression(new LineSegmentWithStringResult(this) {
 
@@ -414,6 +411,7 @@ public class LineSegment2DExpression implements LineSegment2DResult, EqualCompar
 		});
 	}
 
+	@Override
 	public NumberExpression maxX() {
 
 		return new NumberExpression(new LineSegmentWithNumberResult(this) {
@@ -425,6 +423,7 @@ public class LineSegment2DExpression implements LineSegment2DResult, EqualCompar
 		});
 	}
 
+	@Override
 	public NumberExpression minX() {
 
 		return new NumberExpression(new LineSegmentWithNumberResult(this) {
@@ -436,6 +435,7 @@ public class LineSegment2DExpression implements LineSegment2DResult, EqualCompar
 		});
 	}
 
+	@Override
 	public NumberExpression maxY() {
 
 		return new NumberExpression(new LineSegmentWithNumberResult(this) {
@@ -447,6 +447,7 @@ public class LineSegment2DExpression implements LineSegment2DResult, EqualCompar
 		});
 	}
 
+	@Override
 	public NumberExpression minY() {
 
 		return new NumberExpression(new LineSegmentWithNumberResult(this) {
@@ -654,9 +655,7 @@ public class LineSegment2DExpression implements LineSegment2DResult, EqualCompar
 			LineSegmentLineSegmentWithBooleanResult newInstance;
 			try {
 				newInstance = getClass().newInstance();
-			} catch (InstantiationException ex) {
-				throw new RuntimeException(ex);
-			} catch (IllegalAccessException ex) {
+			} catch (InstantiationException | IllegalAccessException ex) {
 				throw new RuntimeException(ex);
 			}
 			newInstance.first = first.copy();
@@ -725,9 +724,7 @@ public class LineSegment2DExpression implements LineSegment2DResult, EqualCompar
 			LineSegmentLineSegmentWithPointResult newInstance;
 			try {
 				newInstance = getClass().newInstance();
-			} catch (InstantiationException ex) {
-				throw new RuntimeException(ex);
-			} catch (IllegalAccessException ex) {
+			} catch (InstantiationException | IllegalAccessException ex) {
 				throw new RuntimeException(ex);
 			}
 			newInstance.first = first.copy();
@@ -763,12 +760,10 @@ public class LineSegment2DExpression implements LineSegment2DResult, EqualCompar
 	private static abstract class LineSegmentWithNumberResult extends NumberExpression {
 
 		private LineSegment2DExpression first;
-//		private Point2DExpression second;
 		private boolean requiresNullProtection;
 
 		LineSegmentWithNumberResult(LineSegment2DExpression first) {
 			this.first = first;
-//			this.second = second;
 			if (this.first == null) {// || this.second.getIncludesNull()) {
 				this.requiresNullProtection = true;
 			}
@@ -778,9 +773,6 @@ public class LineSegment2DExpression implements LineSegment2DResult, EqualCompar
 			return first;
 		}
 
-//		Point2DExpression getSecond() {
-//			return second;
-//		}
 		@Override
 		public final String toSQLString(DBDefinition db) {
 			if (this.getIncludesNull()) {
@@ -795,13 +787,10 @@ public class LineSegment2DExpression implements LineSegment2DResult, EqualCompar
 			LineSegmentWithNumberResult newInstance;
 			try {
 				newInstance = getClass().newInstance();
-			} catch (InstantiationException ex) {
-				throw new RuntimeException(ex);
-			} catch (IllegalAccessException ex) {
+			} catch (InstantiationException | IllegalAccessException ex) {
 				throw new RuntimeException(ex);
 			}
 			newInstance.first = first.copy();
-//			newInstance.second = second.copy();
 			return newInstance;
 		}
 
@@ -813,9 +802,6 @@ public class LineSegment2DExpression implements LineSegment2DResult, EqualCompar
 			if (first != null) {
 				hashSet.addAll(first.getTablesInvolved());
 			}
-//			if (second != null) {
-//				hashSet.addAll(second.getTablesInvolved());
-//			}
 			return hashSet;
 		}
 
@@ -833,13 +819,11 @@ public class LineSegment2DExpression implements LineSegment2DResult, EqualCompar
 	private static abstract class LineSegmentWithBooleanResult extends BooleanExpression {
 
 		private LineSegment2DExpression first;
-//		private Point2DExpression second;
 		private boolean requiresNullProtection;
 
 		LineSegmentWithBooleanResult(LineSegment2DExpression first) {
 			this.first = first;
-//			this.second = second;
-			if (this.first == null) {// || this.second.getIncludesNull()) {
+			if (this.first == null) {
 				this.requiresNullProtection = true;
 			}
 		}
@@ -848,9 +832,6 @@ public class LineSegment2DExpression implements LineSegment2DResult, EqualCompar
 			return first;
 		}
 
-//		Point2DExpression getSecond() {
-//			return second;
-//		}
 		@Override
 		public final String toSQLString(DBDefinition db) {
 			if (this.getIncludesNull()) {
@@ -865,13 +846,10 @@ public class LineSegment2DExpression implements LineSegment2DResult, EqualCompar
 			LineSegmentWithBooleanResult newInstance;
 			try {
 				newInstance = getClass().newInstance();
-			} catch (InstantiationException ex) {
-				throw new RuntimeException(ex);
-			} catch (IllegalAccessException ex) {
+			} catch (InstantiationException | IllegalAccessException ex) {
 				throw new RuntimeException(ex);
 			}
 			newInstance.first = first.copy();
-//			newInstance.second = second.copy();
 			return newInstance;
 		}
 
@@ -883,15 +861,12 @@ public class LineSegment2DExpression implements LineSegment2DResult, EqualCompar
 			if (first != null) {
 				hashSet.addAll(first.getTablesInvolved());
 			}
-//			if (second != null) {
-//				hashSet.addAll(second.getTablesInvolved());
-//			}
 			return hashSet;
 		}
 
 		@Override
 		public boolean isAggregator() {
-			return first.isAggregator();//|| second.isAggregator();
+			return first.isAggregator();
 		}
 
 		@Override
@@ -907,7 +882,7 @@ public class LineSegment2DExpression implements LineSegment2DResult, EqualCompar
 
 		LineSegmentWithStringResult(LineSegment2DExpression first) {
 			this.first = first;
-			if (this.first == null) {// || this.second.getIncludesNull()) {
+			if (this.first == null) {
 				this.requiresNullProtection = true;
 			}
 		}
@@ -930,9 +905,7 @@ public class LineSegment2DExpression implements LineSegment2DResult, EqualCompar
 			LineSegmentWithStringResult newInstance;
 			try {
 				newInstance = getClass().newInstance();
-			} catch (InstantiationException ex) {
-				throw new RuntimeException(ex);
-			} catch (IllegalAccessException ex) {
+			} catch (InstantiationException | IllegalAccessException ex) {
 				throw new RuntimeException(ex);
 			}
 			newInstance.first = first.copy();
@@ -964,13 +937,11 @@ public class LineSegment2DExpression implements LineSegment2DResult, EqualCompar
 	private static abstract class LineSegmentWithGeometry2DResult extends Polygon2DExpression {
 
 		private LineSegment2DExpression first;
-//		private Point2DExpression second;
 		private boolean requiresNullProtection;
 
 		LineSegmentWithGeometry2DResult(LineSegment2DExpression first) {
 			this.first = first;
-//			this.second = second;
-			if (this.first == null) {// || this.second.getIncludesNull()) {
+			if (this.first == null) {
 				this.requiresNullProtection = true;
 			}
 		}
@@ -979,9 +950,6 @@ public class LineSegment2DExpression implements LineSegment2DResult, EqualCompar
 			return first;
 		}
 
-//		Point2DExpression getSecond() {
-//			return second;
-//		}
 		@Override
 		public final String toSQLString(DBDefinition db) {
 			if (this.getIncludesNull()) {
@@ -996,13 +964,10 @@ public class LineSegment2DExpression implements LineSegment2DResult, EqualCompar
 			LineSegmentWithGeometry2DResult newInstance;
 			try {
 				newInstance = getClass().newInstance();
-			} catch (InstantiationException ex) {
-				throw new RuntimeException(ex);
-			} catch (IllegalAccessException ex) {
+			} catch (InstantiationException | IllegalAccessException ex) {
 				throw new RuntimeException(ex);
 			}
 			newInstance.first = first.copy();
-//			newInstance.second = second.copy();
 			return newInstance;
 		}
 
@@ -1014,15 +979,12 @@ public class LineSegment2DExpression implements LineSegment2DResult, EqualCompar
 			if (first != null) {
 				hashSet.addAll(first.getTablesInvolved());
 			}
-//			if (second != null) {
-//				hashSet.addAll(second.getTablesInvolved());
-//			}
 			return hashSet;
 		}
 
 		@Override
 		public boolean isAggregator() {
-			return first.isAggregator();//|| second.isAggregator();
+			return first.isAggregator();
 		}
 
 		@Override

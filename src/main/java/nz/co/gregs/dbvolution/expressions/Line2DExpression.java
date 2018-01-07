@@ -26,7 +26,6 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.datatypes.spatial2D.DBLine2D;
@@ -46,7 +45,7 @@ import nz.co.gregs.dbvolution.results.MultiPoint2DResult;
  */
 public class Line2DExpression implements Line2DResult, EqualComparable<Line2DResult>, Spatial2DExpression, ExpressionColumn<DBLine2D> {
 
-	private Line2DResult innerLineString;
+	private final Line2DResult innerLineString;
 	private boolean nullProtectionRequired;
 
 	/**
@@ -54,6 +53,8 @@ public class Line2DExpression implements Line2DResult, EqualComparable<Line2DRes
 	 *
 	 */
 	protected Line2DExpression() {
+		innerLineString = null;
+		nullProtectionRequired = false;
 	}
 
 	/**
@@ -66,7 +67,12 @@ public class Line2DExpression implements Line2DResult, EqualComparable<Line2DRes
 	 * @param value
 	 */
 	public Line2DExpression(Line2DResult value) {
-		initInnerLine(value, value);
+		innerLineString = value;
+		if (value == null || innerLineString.getIncludesNull()) {
+			nullProtectionRequired = true;
+		} else {
+			nullProtectionRequired = false;
+		}
 	}
 
 	/**
@@ -75,21 +81,24 @@ public class Line2DExpression implements Line2DResult, EqualComparable<Line2DRes
 	 * @param original the original object
 	 * @param value the value derived from the original object
 	 */
-	protected final void initInnerLine(Object original, Line2DResult value) {
-		innerLineString = value;
-		if (original == null || innerLineString.getIncludesNull()) {
-			nullProtectionRequired = true;
-		}
-	}
-
+//	protected final void initInnerLine(Object original, Line2DResult value) {
+//		innerLineString = value;
+//		if (original == null || innerLineString.getIncludesNull()) {
+//			nullProtectionRequired = true;
+//		}else{nullProtectionRequired=false;}
+//	}
 	/**
 	 * Create a Line2DExpression representing the line supplied.
 	 *
 	 * @param line
 	 */
 	public Line2DExpression(LineString line) {
-//		innerLineString = new DBLine2D(line);
-		initInnerLine(line, new DBLine2D(line));
+		innerLineString = new DBLine2D(line);
+		if (line == null || innerLineString.getIncludesNull()) {
+			nullProtectionRequired = true;
+		} else {
+			nullProtectionRequired = false;
+		}
 	}
 
 	/**
@@ -104,8 +113,12 @@ public class Line2DExpression implements Line2DResult, EqualComparable<Line2DRes
 			coords.add(point.getCoordinate());
 		}
 		LineString line = geometryFactory.createLineString(coords.toArray(new Coordinate[]{}));
-//		innerLineString = new DBLine2D(line);
-		initInnerLine(points, new DBLine2D(line));
+		innerLineString = new DBLine2D(line);
+		if (points == null || innerLineString.getIncludesNull()) {
+			nullProtectionRequired = true;
+		} else {
+			nullProtectionRequired = false;
+		}
 	}
 
 	/**
@@ -116,8 +129,12 @@ public class Line2DExpression implements Line2DResult, EqualComparable<Line2DRes
 	public Line2DExpression(Coordinate... coords) {
 		GeometryFactory geometryFactory = new GeometryFactory();
 		LineString line = geometryFactory.createLineString(coords);
-//		innerLineString = new DBLine2D(line);
-		initInnerLine(coords, new DBLine2D(line));
+		innerLineString = new DBLine2D(line);
+		if (coords == null || innerLineString.getIncludesNull()) {
+			nullProtectionRequired = true;
+		} else {
+			nullProtectionRequired = false;
+		}
 	}
 
 	/**

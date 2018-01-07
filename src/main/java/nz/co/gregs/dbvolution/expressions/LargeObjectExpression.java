@@ -18,7 +18,6 @@ package nz.co.gregs.dbvolution.expressions;
 import nz.co.gregs.dbvolution.results.LargeObjectResult;
 import java.util.HashSet;
 import java.util.Set;
-import nz.co.gregs.dbvolution.databases.DBDatabase;
 import nz.co.gregs.dbvolution.DBQuery;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
@@ -36,13 +35,14 @@ import nz.co.gregs.dbvolution.datatypes.DBLargeBinary;
 public class LargeObjectExpression implements LargeObjectResult, ExpressionColumn<DBLargeBinary> {
 
 	private final LargeObjectResult blobResult;
-	private boolean nullProtectionRequired = false;
+	private final boolean nullProtectionRequired;
 
 	/**
 	 * Default Constructor.
 	 */
 	protected LargeObjectExpression() {
 		blobResult = new DBLargeBinary();
+		nullProtectionRequired = false;
 	}
 
 	/**
@@ -55,6 +55,8 @@ public class LargeObjectExpression implements LargeObjectResult, ExpressionColum
 		blobResult = originalBlob;
 		if (originalBlob == null || originalBlob.getIncludesNull()) {
 			nullProtectionRequired = true;
+		} else {
+			nullProtectionRequired = false;
 		}
 	}
 
