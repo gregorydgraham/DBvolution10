@@ -15,9 +15,9 @@
  */
 package nz.co.gregs.dbvolution.columns;
 
+import com.vividsolutions.jts.geom.LineSegment;
 import java.util.Objects;
 import java.util.Set;
-import nz.co.gregs.dbvolution.databases.DBDatabase;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.datatypes.spatial2D.DBLineSegment2D;
@@ -44,6 +44,10 @@ public class LineSegment2DColumn extends LineSegment2DExpression implements Colu
 	 * @param field the field that represents a column.
 	 */
 	public LineSegment2DColumn(RowDefinition row, DBLineSegment2D field) {
+		this.column = new AbstractColumn(row, field);
+	}
+
+	public LineSegment2DColumn(RowDefinition row, LineSegment field) {
 		this.column = new AbstractColumn(row, field);
 	}
 

@@ -77,7 +77,7 @@ import nz.co.gregs.dbvolution.results.IntegerResult;
  * @author Gregory Graham
  */
 public class BooleanExpression implements BooleanResult, EqualComparable<BooleanResult>, ExpressionColumn<DBBoolean> {
-
+	
 	static BooleanExpression nullExpression() {
 		return new BooleanExpression() {
 			@Override

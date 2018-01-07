@@ -15,6 +15,11 @@
  */
 package nz.co.gregs.dbvolution.query;
 
+import com.vividsolutions.jts.geom.LineSegment;
+import com.vividsolutions.jts.geom.LineString;
+import com.vividsolutions.jts.geom.MultiPoint;
+import com.vividsolutions.jts.geom.Point;
+import com.vividsolutions.jts.geom.Polygon;
 import nz.co.gregs.dbvolution.results.StringResult;
 import nz.co.gregs.dbvolution.results.NumberResult;
 import nz.co.gregs.dbvolution.datatypes.spatial2D.DBPolygon2D;
@@ -211,6 +216,28 @@ public class RowDefinition implements Serializable {
 	}
 
 	/**
+	 * Creates a new {@link Polygon2DColumn} instance to help create
+	 * {@link DBExpression expressions}
+	 *
+	 * <p>
+	 * This method is the easy way to create a reference to the database column
+	 * represented by the field for use in creating complex expressions within
+	 * your query.
+	 *
+	 * <p>
+	 * For use with the
+	 * {@link DBQuery#addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression) DBQuery addCondition method}
+	 *
+	 * @param fieldOfThisInstance	fieldOfThisInstance
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @return A {@link Polygon2DColumn} representing the supplied field
+	 */
+	public Polygon2DColumn column(Polygon fieldOfThisInstance) {
+		return new Polygon2DColumn(this, fieldOfThisInstance);
+	}
+
+	/**
 	 * Creates a new {@link Point2DColumn} instance to help create
 	 * {@link DBExpression expressions}
 	 *
@@ -229,6 +256,28 @@ public class RowDefinition implements Serializable {
 	 * @return A {@link Point2DColumn} representing the supplied field
 	 */
 	public Point2DColumn column(DBPoint2D fieldOfThisInstance) {
+		return new Point2DColumn(this, fieldOfThisInstance);
+	}
+
+	/**
+	 * Creates a new {@link Point2DColumn} instance to help create
+	 * {@link DBExpression expressions}
+	 *
+	 * <p>
+	 * This method is the easy way to create a reference to the database column
+	 * represented by the field for use in creating complex expressions within
+	 * your query.
+	 *
+	 * <p>
+	 * For use with the
+	 * {@link DBQuery#addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression) DBQuery addCondition method}
+	 *
+	 * @param fieldOfThisInstance	fieldOfThisInstance
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @return A {@link Point2DColumn} representing the supplied field
+	 */
+	public Point2DColumn column(Point fieldOfThisInstance) {
 		return new Point2DColumn(this, fieldOfThisInstance);
 	}
 
@@ -255,6 +304,28 @@ public class RowDefinition implements Serializable {
 	}
 
 	/**
+	 * Creates a new {@link Line2DColumn} instance to help create
+	 * {@link DBExpression expressions}
+	 *
+	 * <p>
+	 * This method is the easy way to create a reference to the database column
+	 * represented by the field for use in creating complex expressions within
+	 * your query.
+	 *
+	 * <p>
+	 * For use with the
+	 * {@link DBQuery#addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression) DBQuery addCondition method}
+	 *
+	 * @param fieldOfThisInstance	fieldOfThisInstance
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @return A {@link Line2DColumn} representing the supplied field
+	 */
+	public Line2DColumn column(LineString fieldOfThisInstance) {
+		return new Line2DColumn(this, fieldOfThisInstance);
+	}
+
+	/**
 	 * Creates a new {@link LineSegment2DColumn} instance to help create
 	 * {@link DBExpression expressions}
 	 *
@@ -273,6 +344,27 @@ public class RowDefinition implements Serializable {
 	 * @return A {@link LineSegment2DColumn} representing the supplied field
 	 */
 	public LineSegment2DColumn column(DBLineSegment2D fieldOfThisInstance) {
+		return new LineSegment2DColumn(this, fieldOfThisInstance);
+	}
+	/**
+	 * Creates a new {@link LineSegment2DColumn} instance to help create
+	 * {@link DBExpression expressions}
+	 *
+	 * <p>
+	 * This method is the easy way to create a reference to the database column
+	 * represented by the field for use in creating complex expressions within
+	 * your query.
+	 *
+	 * <p>
+	 * For use with the
+	 * {@link DBQuery#addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression) DBQuery addCondition method}
+	 *
+	 * @param fieldOfThisInstance	fieldOfThisInstance
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @return A {@link LineSegment2DColumn} representing the supplied field
+	 */
+	public LineSegment2DColumn column(LineSegment fieldOfThisInstance) {
 		return new LineSegment2DColumn(this, fieldOfThisInstance);
 	}
 
@@ -297,6 +389,28 @@ public class RowDefinition implements Serializable {
 	public MultiPoint2DColumn column(DBMultiPoint2D fieldOfThisInstance) {
 		return new MultiPoint2DColumn(this, fieldOfThisInstance);
 	}
+	
+	/**
+	 * Creates a new {@link MultiPoint2DColumn} instance to help create
+	 * {@link DBExpression expressions}
+	 *
+	 * <p>
+	 * This method is the easy way to create a reference to the database column
+	 * represented by the field for use in creating complex expressions within
+	 * your query.
+	 *
+	 * <p>
+	 * For use with the
+	 * {@link DBQuery#addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression) DBQuery addCondition method}
+	 *
+	 * @param fieldOfThisInstance	fieldOfThisInstance
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @return A {@link MultiPoint2DColumn} representing the supplied field
+	 */
+	public MultiPoint2DColumn column(MultiPoint fieldOfThisInstance) {
+		return new MultiPoint2DColumn(this, fieldOfThisInstance);
+	}
 
 	/**
 	 * Creates a new ColumnProvider instance to help create
@@ -317,8 +431,7 @@ public class RowDefinition implements Serializable {
 	 * @return A ColumnProvider representing the supplied field
 	 */
 	public ColumnProvider column(QueryableDatatype<?> fieldOfThisInstance) throws IncorrectRowProviderInstanceSuppliedException {
-		ColumnProvider col = null;
-		col = fieldOfThisInstance.getColumn(this);
+		ColumnProvider col = fieldOfThisInstance.getColumn(this);
 		if (col == null) {
 			throw new IncorrectRowProviderInstanceSuppliedException(this, fieldOfThisInstance);
 		}
@@ -359,47 +472,14 @@ public class RowDefinition implements Serializable {
 			col = this.column((Number) fieldOfThisInstance);
 		} else if (String.class.isAssignableFrom(fieldOfThisInstance.getClass())) {
 			col = this.column((String) fieldOfThisInstance);
+		} else if (LineString.class.isAssignableFrom(fieldOfThisInstance.getClass())) {
+			col = this.column((LineString) fieldOfThisInstance);
+		} else if (LineSegment.class.isAssignableFrom(fieldOfThisInstance.getClass())) {
+			col = this.column((LineSegment) fieldOfThisInstance);
+		} else if (MultiPoint.class.isAssignableFrom(fieldOfThisInstance.getClass())) {
+			col = this.column((MultiPoint) fieldOfThisInstance);
 		} else {
 			throw new UnsupportedOperationException("Object class not supported: " + fieldOfThisInstance.getClass().getName());
-		}
-		if (col == null) {
-			throw new IncorrectRowProviderInstanceSuppliedException(this, fieldOfThisInstance);
-		}
-		return col;
-	}
-
-	/**
-	 * Creates a new DBExpression instance to help create
-	 * {@link DBExpression expressions}
-	 *
-	 * <p>
-	 * This method is the easy way to create a reference to the database column
-	 * represented by the field for use in creating complex expressions within
-	 * your query.
-	 *
-	 * <p>
-	 * For use with the
-	 * {@link DBQuery#addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression) DBQuery addCondition method}
-	 *
-	 * @param fieldOfThisInstance	fieldOfThisInstance
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 * @return A DBExpression representing the supplied field
-	 */
-	public DBExpression getDBExpression(QueryableDatatype<?> fieldOfThisInstance) throws IncorrectRowProviderInstanceSuppliedException {
-		DBExpression col = null;
-		if (DBBoolean.class.isAssignableFrom(fieldOfThisInstance.getClass())) {
-			col = this.column((DBBoolean) fieldOfThisInstance);
-		} else if (DBDate.class.isAssignableFrom(fieldOfThisInstance.getClass())) {
-			col = this.column((DBDate) fieldOfThisInstance);
-		} else if (DBLargeObject.class.isAssignableFrom(fieldOfThisInstance.getClass())) {
-			col = this.column((DBLargeObject) fieldOfThisInstance);
-		} else if (DBInteger.class.isAssignableFrom(fieldOfThisInstance.getClass())) {
-			col = this.column((DBInteger) fieldOfThisInstance);
-		} else if (DBNumber.class.isAssignableFrom(fieldOfThisInstance.getClass())) {
-			col = this.column((DBNumber) fieldOfThisInstance);
-		} else if (DBString.class.isAssignableFrom(fieldOfThisInstance.getClass())) {
-			col = this.column((DBString) fieldOfThisInstance);
 		}
 		if (col == null) {
 			throw new IncorrectRowProviderInstanceSuppliedException(this, fieldOfThisInstance);

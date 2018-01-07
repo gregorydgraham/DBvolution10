@@ -80,7 +80,7 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 	 *
 	 */
 	protected StringExpression() {
-		string1=null;
+		string1 = null;
 		nullProtectionRequired = true;
 	}
 
@@ -1757,6 +1757,7 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 
 			@Override
 			public String toSQLString(DBDefinition db) {
+				System.out.println(db.getClass().getSimpleName());
 				return db.doFindNumberInStringTransform(this.only.toSQLString(db));
 			}
 
@@ -1783,6 +1784,7 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 
 			@Override
 			public String toSQLString(DBDefinition db) {
+				System.out.println(db.getClass().getSimpleName());
 				return db.doFindIntegerInStringTransform(this.only.toSQLString(db));
 			}
 

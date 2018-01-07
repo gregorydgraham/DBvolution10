@@ -15,6 +15,7 @@
  */
 package nz.co.gregs.dbvolution.columns;
 
+import com.vividsolutions.jts.geom.MultiPoint;
 import java.util.Objects;
 import java.util.Set;
 import nz.co.gregs.dbvolution.databases.DBDatabase;
@@ -44,6 +45,10 @@ public class MultiPoint2DColumn extends MultiPoint2DExpression implements Column
 	 * @param field the field that defines the column.
 	 */
 	public MultiPoint2DColumn(RowDefinition row, DBMultiPoint2D field) {
+		this.column = new AbstractColumn(row, field);
+	}
+
+	public MultiPoint2DColumn(RowDefinition row, MultiPoint field) {
 		this.column = new AbstractColumn(row, field);
 	}
 

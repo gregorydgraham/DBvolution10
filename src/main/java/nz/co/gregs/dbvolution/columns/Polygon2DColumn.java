@@ -15,8 +15,8 @@
  */
 package nz.co.gregs.dbvolution.columns;
 
+import com.vividsolutions.jts.geom.Polygon;
 import java.util.Set;
-import nz.co.gregs.dbvolution.databases.DBDatabase;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.datatypes.spatial2D.DBPolygon2D;
@@ -43,6 +43,10 @@ public class Polygon2DColumn extends Polygon2DExpression implements ColumnProvid
 	 * @param field the field that defines the column
 	 */
 	public Polygon2DColumn(RowDefinition row, DBPolygon2D field) {
+		this.column = new AbstractColumn(row, field);
+	}
+
+	public Polygon2DColumn(RowDefinition row, Polygon field) {
 		this.column = new AbstractColumn(row, field);
 	}
 

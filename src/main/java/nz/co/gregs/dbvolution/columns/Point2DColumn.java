@@ -15,9 +15,9 @@
  */
 package nz.co.gregs.dbvolution.columns;
 
+import com.vividsolutions.jts.geom.Point;
 import java.util.Objects;
 import java.util.Set;
-import nz.co.gregs.dbvolution.databases.DBDatabase;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.datatypes.spatial2D.DBPoint2D;
@@ -46,6 +46,11 @@ public class Point2DColumn extends Point2DExpression implements ColumnProvider {
 	public Point2DColumn(RowDefinition row, DBPoint2D field) {
 		this.column = new AbstractColumn(row, field);
 	}
+
+	public Point2DColumn(RowDefinition row, Point field) {
+		this.column = new AbstractColumn(row, field);
+	}
+
 
 	@Override
 	public AbstractColumn getColumn() {
