@@ -20,7 +20,6 @@ import nz.co.gregs.dbvolution.results.Point2DResult;
 import com.vividsolutions.jts.geom.Point;
 import java.util.HashSet;
 import java.util.Set;
-import nz.co.gregs.dbvolution.databases.DBDatabase;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.datatypes.spatial2D.DBPoint2D;
@@ -40,14 +39,16 @@ import nz.co.gregs.dbvolution.results.PointResult;
  */
 public class Point2DExpression implements PointResult, Point2DResult, EqualComparable<Point2DResult>, Spatial2DExpression, ExpressionColumn<DBPoint2D> {
 
-	private Point2DResult innerPoint;
-	private boolean nullProtectionRequired;
+	private final Point2DResult innerPoint;
+	private final boolean nullProtectionRequired;
 
 	/**
 	 * Default constructor
 	 *
 	 */
 	protected Point2DExpression() {
+		innerPoint=null;
+		nullProtectionRequired=false;
 	}
 
 	/**
@@ -57,9 +58,7 @@ public class Point2DExpression implements PointResult, Point2DResult, EqualCompa
 	 */
 	public Point2DExpression(Point2DResult value) {
 		innerPoint = value;
-		if (value == null || innerPoint.getIncludesNull()) {
-			nullProtectionRequired = true;
-		}
+		nullProtectionRequired = value == null || innerPoint.getIncludesNull();
 	}
 
 	/**
@@ -69,9 +68,7 @@ public class Point2DExpression implements PointResult, Point2DResult, EqualCompa
 	 */
 	public Point2DExpression(Point point) {
 		innerPoint = new DBPoint2D(point);
-		if (point == null || innerPoint.getIncludesNull()) {
-			nullProtectionRequired = true;
-		}
+		nullProtectionRequired = point == null || innerPoint.getIncludesNull();
 	}
 
 	/**
@@ -518,9 +515,7 @@ public class Point2DExpression implements PointResult, Point2DResult, EqualCompa
 			PointPointFunctionWithBooleanResult newInstance;
 			try {
 				newInstance = getClass().newInstance();
-			} catch (InstantiationException ex) {
-				throw new RuntimeException(ex);
-			} catch (IllegalAccessException ex) {
+			} catch (InstantiationException | IllegalAccessException ex) {
 				throw new RuntimeException(ex);
 			}
 			newInstance.first = first.copy();
@@ -580,9 +575,7 @@ public class Point2DExpression implements PointResult, Point2DResult, EqualCompa
 			PointFunctionWithBooleanResult newInstance;
 			try {
 				newInstance = getClass().newInstance();
-			} catch (InstantiationException ex) {
-				throw new RuntimeException(ex);
-			} catch (IllegalAccessException ex) {
+			} catch (InstantiationException | IllegalAccessException ex) {
 				throw new RuntimeException(ex);
 			}
 			newInstance.first = first.copy();
@@ -647,9 +640,7 @@ public class Point2DExpression implements PointResult, Point2DResult, EqualCompa
 			PointPointFunctionWithNumberResult newInstance;
 			try {
 				newInstance = getClass().newInstance();
-			} catch (InstantiationException ex) {
-				throw new RuntimeException(ex);
-			} catch (IllegalAccessException ex) {
+			} catch (InstantiationException | IllegalAccessException ex) {
 				throw new RuntimeException(ex);
 			}
 			newInstance.first = first.copy();
@@ -718,9 +709,7 @@ public class Point2DExpression implements PointResult, Point2DResult, EqualCompa
 			NumberNumberFunctionWithPoint2DResult newInstance;
 			try {
 				newInstance = getClass().newInstance();
-			} catch (InstantiationException ex) {
-				throw new RuntimeException(ex);
-			} catch (IllegalAccessException ex) {
+			} catch (InstantiationException | IllegalAccessException ex) {
 				throw new RuntimeException(ex);
 			}
 			newInstance.first = first.copy();
@@ -756,13 +745,11 @@ public class Point2DExpression implements PointResult, Point2DResult, EqualCompa
 	private static abstract class PointFunctionWithNumberResult extends NumberExpression {
 
 		private Point2DExpression first;
-//		private Point2DExpression second;
 		private boolean requiresNullProtection;
 
 		PointFunctionWithNumberResult(Point2DExpression first) {
 			this.first = first;
-//			this.second = second;
-			if (this.first == null) {// || this.second.getIncludesNull()) {
+			if (this.first == null) {
 				this.requiresNullProtection = true;
 			}
 		}
@@ -771,9 +758,6 @@ public class Point2DExpression implements PointResult, Point2DResult, EqualCompa
 			return first;
 		}
 
-//		Point2DExpression getSecond() {
-//			return second;
-//		}
 		@Override
 		public final String toSQLString(DBDefinition db) {
 			if (this.getIncludesNull()) {
@@ -788,13 +772,10 @@ public class Point2DExpression implements PointResult, Point2DResult, EqualCompa
 			PointFunctionWithNumberResult newInstance;
 			try {
 				newInstance = getClass().newInstance();
-			} catch (InstantiationException ex) {
-				throw new RuntimeException(ex);
-			} catch (IllegalAccessException ex) {
+			} catch (InstantiationException | IllegalAccessException ex) {
 				throw new RuntimeException(ex);
 			}
 			newInstance.first = first.copy();
-//			newInstance.second = second.copy();
 			return newInstance;
 		}
 
@@ -806,15 +787,12 @@ public class Point2DExpression implements PointResult, Point2DResult, EqualCompa
 			if (first != null) {
 				hashSet.addAll(first.getTablesInvolved());
 			}
-//			if (second != null) {
-//				hashSet.addAll(second.getTablesInvolved());
-//			}
 			return hashSet;
 		}
 
 		@Override
 		public boolean isAggregator() {
-			return first.isAggregator();//|| second.isAggregator();
+			return first.isAggregator();
 		}
 
 		@Override
@@ -826,13 +804,11 @@ public class Point2DExpression implements PointResult, Point2DResult, EqualCompa
 	private static abstract class PointFunctionWithStringResult extends StringExpression {
 
 		private Point2DExpression first;
-//		private Point2DExpression second;
 		private boolean requiresNullProtection;
 
 		PointFunctionWithStringResult(Point2DExpression first) {
 			this.first = first;
-//			this.second = second;
-			if (this.first == null) {// || this.second.getIncludesNull()) {
+			if (this.first == null) {
 				this.requiresNullProtection = true;
 			}
 		}
@@ -841,9 +817,6 @@ public class Point2DExpression implements PointResult, Point2DResult, EqualCompa
 			return first;
 		}
 
-//		Point2DExpression getSecond() {
-//			return second;
-//		}
 		@Override
 		public final String toSQLString(DBDefinition db) {
 			if (this.getIncludesNull()) {
@@ -858,13 +831,10 @@ public class Point2DExpression implements PointResult, Point2DResult, EqualCompa
 			PointFunctionWithStringResult newInstance;
 			try {
 				newInstance = getClass().newInstance();
-			} catch (InstantiationException ex) {
-				throw new RuntimeException(ex);
-			} catch (IllegalAccessException ex) {
+			} catch (InstantiationException | IllegalAccessException ex) {
 				throw new RuntimeException(ex);
 			}
 			newInstance.first = first.copy();
-//			newInstance.second = second.copy();
 			return newInstance;
 		}
 
@@ -876,15 +846,12 @@ public class Point2DExpression implements PointResult, Point2DResult, EqualCompa
 			if (first != null) {
 				hashSet.addAll(first.getTablesInvolved());
 			}
-//			if (second != null) {
-//				hashSet.addAll(second.getTablesInvolved());
-//			}
 			return hashSet;
 		}
 
 		@Override
 		public boolean isAggregator() {
-			return first.isAggregator();//|| second.isAggregator();
+			return first.isAggregator();
 		}
 
 		@Override
@@ -896,13 +863,11 @@ public class Point2DExpression implements PointResult, Point2DResult, EqualCompa
 	private static abstract class PointFunctionWithGeometry2DResult extends Polygon2DExpression {
 
 		private Point2DExpression first;
-//		private Point2DExpression second;
 		private boolean requiresNullProtection;
 
 		PointFunctionWithGeometry2DResult(Point2DExpression first) {
 			this.first = first;
-//			this.second = second;
-			if (this.first == null) {// || this.second.getIncludesNull()) {
+			if (this.first == null) {
 				this.requiresNullProtection = true;
 			}
 		}
@@ -911,9 +876,6 @@ public class Point2DExpression implements PointResult, Point2DResult, EqualCompa
 			return first;
 		}
 
-//		Point2DExpression getSecond() {
-//			return second;
-//		}
 		@Override
 		public final String toSQLString(DBDefinition db) {
 			if (this.getIncludesNull()) {
@@ -928,13 +890,10 @@ public class Point2DExpression implements PointResult, Point2DResult, EqualCompa
 			PointFunctionWithGeometry2DResult newInstance;
 			try {
 				newInstance = getClass().newInstance();
-			} catch (InstantiationException ex) {
-				throw new RuntimeException(ex);
-			} catch (IllegalAccessException ex) {
+			} catch (InstantiationException | IllegalAccessException ex) {
 				throw new RuntimeException(ex);
 			}
 			newInstance.first = first.copy();
-//			newInstance.second = second.copy();
 			return newInstance;
 		}
 

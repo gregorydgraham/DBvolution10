@@ -61,7 +61,6 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 			public String toSQLString(DBDefinition db) {
 				return db.getNull();
 			}
-
 		};
 	}
 
@@ -129,14 +128,16 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 		return IntegerExpression.value(number).numberResult();
 	}
 
-	private NumberResult innerNumberResult;
-	private boolean nullProtectionRequired;
+	private final NumberResult innerNumberResult;
+	private final boolean nullProtectionRequired;
 
 	/**
 	 * Default Constructor
 	 *
 	 */
 	protected NumberExpression() {
+		innerNumberResult = null;
+		nullProtectionRequired = false;
 	}
 
 	/**
@@ -149,9 +150,7 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 	 */
 	public NumberExpression(Number value) {
 		innerNumberResult = new DBNumber(value);
-		if (value == null || innerNumberResult.getIncludesNull()) {
-			nullProtectionRequired = true;
-		}
+		nullProtectionRequired = value == null || innerNumberResult.getIncludesNull();
 	}
 
 	/**
@@ -165,9 +164,7 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 	 */
 	public NumberExpression(NumberResult value) {
 		innerNumberResult = value;
-		if (value == null || innerNumberResult.getIncludesNull()) {
-			nullProtectionRequired = true;
-		}
+		nullProtectionRequired = value == null || innerNumberResult.getIncludesNull();
 	}
 
 	@Override
@@ -210,9 +207,6 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 	 */
 	public static NumberExpression value(Number object) {
 		final NumberExpression numberExpression = new NumberExpression(object);
-		if (object == null) {
-			numberExpression.nullProtectionRequired = true;
-		}
 		return numberExpression;
 	}
 
@@ -515,6 +509,7 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a boolean expression representing the required comparison
 	 */
+	@Override
 	public BooleanExpression isBetween(NumberResult lowerBound, NumberResult upperBound) {
 		return BooleanExpression.allOf(
 				this.isGreaterThan(lowerBound),
@@ -902,6 +897,7 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a boolean expression representing the required comparison
 	 */
+	@Override
 	public BooleanExpression isBetweenExclusive(NumberResult lowerBound, NumberResult upperBound) {
 		return BooleanExpression.allOf(
 				this.isGreaterThan(lowerBound),
@@ -3262,9 +3258,7 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 			DBBinaryArithmetic newInstance;
 			try {
 				newInstance = getClass().newInstance();
-			} catch (IllegalAccessException ex) {
-				throw new RuntimeException(ex);
-			} catch (InstantiationException ex) {
+			} catch (IllegalAccessException | InstantiationException ex) {
 				throw new RuntimeException(ex);
 			}
 			newInstance.first = first.copy();
@@ -3335,18 +3329,12 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 			DBNonaryFunction newInstance;
 			try {
 				newInstance = getClass().newInstance();
-			} catch (InstantiationException ex) {
-				throw new RuntimeException(ex);
-			} catch (IllegalAccessException ex) {
+			} catch (InstantiationException | IllegalAccessException ex) {
 				throw new RuntimeException(ex);
 			}
 			return newInstance;
 		}
 
-//		@Override
-//		public QueryableDatatype getQueryableDatatypeForExpressionValue() {
-//			return new DBNumber();
-//		}
 		@Override
 		public boolean isAggregator() {
 			return false;
@@ -3408,9 +3396,7 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 			DBUnaryFunction newInstance;
 			try {
 				newInstance = getClass().newInstance();
-			} catch (InstantiationException ex) {
-				throw new RuntimeException(ex);
-			} catch (IllegalAccessException ex) {
+			} catch (InstantiationException | IllegalAccessException ex) {
 				throw new RuntimeException(ex);
 			}
 			newInstance.only = only.copy();
@@ -3486,9 +3472,7 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 			DBUnaryIntegerFunction newInstance;
 			try {
 				newInstance = getClass().newInstance();
-			} catch (InstantiationException ex) {
-				throw new RuntimeException(ex);
-			} catch (IllegalAccessException ex) {
+			} catch (InstantiationException | IllegalAccessException ex) {
 				throw new RuntimeException(ex);
 			}
 			newInstance.only = only.copy();
@@ -3559,9 +3543,7 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 			NumberNumberFunctionNumberResult newInstance;
 			try {
 				newInstance = getClass().newInstance();
-			} catch (InstantiationException ex) {
-				throw new RuntimeException(ex);
-			} catch (IllegalAccessException ex) {
+			} catch (InstantiationException | IllegalAccessException ex) {
 				throw new RuntimeException(ex);
 			}
 			newInstance.first = getFirst().copy();
@@ -3680,9 +3662,7 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 			DBBinaryBooleanArithmetic newInstance;
 			try {
 				newInstance = getClass().newInstance();
-			} catch (InstantiationException ex) {
-				throw new RuntimeException(ex);
-			} catch (IllegalAccessException ex) {
+			} catch (InstantiationException | IllegalAccessException ex) {
 				throw new RuntimeException(ex);
 			}
 			newInstance.first = first.copy();
@@ -3781,9 +3761,7 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 			DBNnaryBooleanFunction newInstance;
 			try {
 				newInstance = getClass().newInstance();
-			} catch (InstantiationException ex) {
-				throw new RuntimeException(ex);
-			} catch (IllegalAccessException ex) {
+			} catch (InstantiationException | IllegalAccessException ex) {
 				throw new RuntimeException(ex);
 			}
 			newInstance.column = this.getColumn().copy();
@@ -3912,9 +3890,7 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 			DBNnaryNumberFunction newInstance;
 			try {
 				newInstance = getClass().newInstance();
-			} catch (InstantiationException ex) {
-				throw new RuntimeException(ex);
-			} catch (IllegalAccessException ex) {
+			} catch (InstantiationException | IllegalAccessException ex) {
 				throw new RuntimeException(ex);
 			}
 			newInstance.column = this.column.copy();
@@ -3994,41 +3970,16 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 		public DBString getQueryableDatatypeForExpressionValue() {
 			return new DBString();
 		}
-
-//		abstract String getFunctionName(DBDefinition db);
-//		protected String beforeValue(DBDefinition db) {
-//			return "( ";
-//		}
-//
-//		protected String afterValue(DBDefinition db) {
-//			return ") ";
-//		}
+		
 		@Override
 		abstract public String toSQLString(DBDefinition db);
-//		{
-//			StringBuilder builder = new StringBuilder();
-//			builder
-//					.append(this.getFunctionName(db))
-//					.append(this.beforeValue(db));
-//			String separator = "";
-//			for (StringResult val : values) {
-//				if (val != null) {
-//					builder.append(separator).append(val.toSQLString(db));
-//				}
-//				separator = ", ";
-//			}
-//			builder.append(this.afterValue(db));
-//			return builder.toString();
-//		}
 
 		@Override
 		public DBNumberAndNnaryStringFunction copy() {
 			DBNumberAndNnaryStringFunction newInstance;
 			try {
 				newInstance = getClass().newInstance();
-			} catch (InstantiationException ex) {
-				throw new RuntimeException(ex);
-			} catch (IllegalAccessException ex) {
+			} catch (InstantiationException | IllegalAccessException ex) {
 				throw new RuntimeException(ex);
 			}
 			newInstance.numberExpression = this.numberExpression.copy();
@@ -4115,9 +4066,7 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 			DBUnaryStringFunction newInstance;
 			try {
 				newInstance = getClass().newInstance();
-			} catch (InstantiationException ex) {
-				throw new RuntimeException(ex);
-			} catch (IllegalAccessException ex) {
+			} catch (InstantiationException | IllegalAccessException ex) {
 				throw new RuntimeException(ex);
 			}
 			newInstance.only = only.copy();
@@ -4224,7 +4173,7 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 		}
 	}
 
-	class IsInFunction extends DBNnaryBooleanFunction {
+	private class IsInFunction extends DBNnaryBooleanFunction {
 
 		public IsInFunction(NumberExpression leftHandSide, NumberResult[] rightHandSide) {
 			super(leftHandSide, rightHandSide);
@@ -4245,7 +4194,7 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 		}
 	}
 
-	class StringResultFunction extends DBUnaryStringFunction {
+	private class StringResultFunction extends DBUnaryStringFunction {
 
 		public StringResultFunction(NumberExpression only) {
 			super(only);
@@ -4267,7 +4216,7 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 		}
 	}
 
-	class IsFunction extends DBBinaryBooleanArithmetic {
+	private class IsFunction extends DBBinaryBooleanArithmetic {
 
 		public IsFunction(NumberExpression first, NumberResult second) {
 			super(first, second);
@@ -4288,7 +4237,7 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 		}
 	}
 
-	static class IsLessThanOrEqualFunction extends DBBinaryBooleanArithmetic {
+	private static class IsLessThanOrEqualFunction extends DBBinaryBooleanArithmetic {
 
 		public IsLessThanOrEqualFunction(NumberExpression first, NumberResult second) {
 			super(first, second);
@@ -4305,7 +4254,7 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 		}
 	}
 
-	static class IsGreaterThanFunction extends DBBinaryBooleanArithmetic {
+	private static class IsGreaterThanFunction extends DBBinaryBooleanArithmetic {
 
 		public IsGreaterThanFunction(NumberExpression first, NumberResult second) {
 			super(first, second);
@@ -4322,7 +4271,7 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 		}
 	}
 
-	static class IsGreaterThanOrEqualFunction extends DBBinaryBooleanArithmetic {
+	private static class IsGreaterThanOrEqualFunction extends DBBinaryBooleanArithmetic {
 
 		public IsGreaterThanOrEqualFunction(NumberExpression first, NumberResult second) {
 			super(first, second);
@@ -4339,7 +4288,7 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 		}
 	}
 
-	static class LeastOfFunction extends DBNnaryNumberFunction {
+	private static class LeastOfFunction extends DBNnaryNumberFunction {
 
 		public LeastOfFunction(NumberResult[] rightHandSide) {
 			super(rightHandSide);

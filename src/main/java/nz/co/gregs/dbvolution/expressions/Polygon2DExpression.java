@@ -15,7 +15,6 @@
  */
 package nz.co.gregs.dbvolution.expressions;
 
-//import com.vividsolutions.jts.geom.Geometry;
 import nz.co.gregs.dbvolution.results.EqualComparable;
 import nz.co.gregs.dbvolution.results.Point2DResult;
 import nz.co.gregs.dbvolution.results.Polygon2DResult;
@@ -45,14 +44,16 @@ import nz.co.gregs.dbvolution.datatypes.spatial2D.DBPolygon2D;
  */
 public class Polygon2DExpression implements Polygon2DResult, EqualComparable<Polygon2DResult>, ExpressionColumn<DBPolygon2D>, Spatial2DExpression {
 
-	private Polygon2DResult innerGeometry;
-	private boolean nullProtectionRequired;
-	
+	private final Polygon2DResult innerGeometry;
+	private final boolean nullProtectionRequired;
+
 	/**
 	 * Default constructor
 	 *
 	 */
 	protected Polygon2DExpression() {
+		innerGeometry = null;
+		nullProtectionRequired = false;
 	}
 
 	/**
@@ -64,9 +65,7 @@ public class Polygon2DExpression implements Polygon2DResult, EqualComparable<Pol
 	 */
 	public Polygon2DExpression(Polygon2DResult value) {
 		innerGeometry = value;
-		if (value == null || innerGeometry.getIncludesNull()) {
-			nullProtectionRequired = true;
-		}
+		nullProtectionRequired = value == null || innerGeometry.getIncludesNull();
 	}
 
 	/**
@@ -78,9 +77,7 @@ public class Polygon2DExpression implements Polygon2DResult, EqualComparable<Pol
 	 */
 	public Polygon2DExpression(Polygon geometry) {
 		innerGeometry = new DBPolygon2D(geometry);
-		if (geometry == null || innerGeometry.getIncludesNull()) {
-			nullProtectionRequired = true;
-		}
+		nullProtectionRequired = geometry == null || innerGeometry.getIncludesNull();
 	}
 
 	/**
@@ -327,12 +324,18 @@ public class Polygon2DExpression implements Polygon2DResult, EqualComparable<Pol
 
 					for (NumberExpression coord : allCoords) {
 						newPolygon = newPolygon.append(separator).append(coord);
-						if (separator.equals("")) {
-							separator = " ";
-						} else if (separator.equals(" ")) {
-							separator = ", ";
-						} else if (separator.equals(", ")) {
-							separator = " ";
+						switch (separator) {
+							case "":
+								separator = " ";
+								break;
+							case " ":
+								separator = ", ";
+								break;
+							case ", ":
+								separator = " ";
+								break;
+							default:
+								break;
 						}
 					}
 					final StringExpression firstPoint = allCoords[0].append(" ").append(allCoords[1]);
@@ -897,9 +900,7 @@ public class Polygon2DExpression implements Polygon2DResult, EqualComparable<Pol
 			PolygonPolygonWithBooleanResult newInstance;
 			try {
 				newInstance = getClass().newInstance();
-			} catch (InstantiationException ex) {
-				throw new RuntimeException(ex);
-			} catch (IllegalAccessException ex) {
+			} catch (InstantiationException | IllegalAccessException ex) {
 				throw new RuntimeException(ex);
 			}
 			newInstance.first = first.copy();
@@ -950,9 +951,6 @@ public class Polygon2DExpression implements Polygon2DResult, EqualComparable<Pol
 			return first;
 		}
 
-//		Polygon2DResult getSecond() {
-//			return second;
-//		}
 		@Override
 		public final String toSQLString(DBDefinition db) {
 			if (this.getIncludesNull()) {
@@ -967,13 +965,10 @@ public class Polygon2DExpression implements Polygon2DResult, EqualComparable<Pol
 			PolygonWithBooleanResult newInstance;
 			try {
 				newInstance = getClass().newInstance();
-			} catch (InstantiationException ex) {
-				throw new RuntimeException(ex);
-			} catch (IllegalAccessException ex) {
+			} catch (InstantiationException | IllegalAccessException ex) {
 				throw new RuntimeException(ex);
 			}
 			newInstance.first = first.copy();
-//			newInstance.second = second.copy();
 			return newInstance;
 		}
 
@@ -985,9 +980,6 @@ public class Polygon2DExpression implements Polygon2DResult, EqualComparable<Pol
 			if (first != null) {
 				hashSet.addAll(first.getTablesInvolved());
 			}
-//			if (second != null) {
-//				hashSet.addAll(second.getTablesInvolved());
-//			}
 			return hashSet;
 		}
 
@@ -1038,9 +1030,7 @@ public class Polygon2DExpression implements Polygon2DResult, EqualComparable<Pol
 			PolygonPointWithBooleanResult newInstance;
 			try {
 				newInstance = getClass().newInstance();
-			} catch (InstantiationException ex) {
-				throw new RuntimeException(ex);
-			} catch (IllegalAccessException ex) {
+			} catch (InstantiationException | IllegalAccessException ex) {
 				throw new RuntimeException(ex);
 			}
 			newInstance.first = first.copy();
@@ -1076,24 +1066,16 @@ public class Polygon2DExpression implements Polygon2DResult, EqualComparable<Pol
 	private static abstract class Polygon2DFunctionWithNumberResult extends NumberExpression {
 
 		private Polygon2DExpression first;
-//		private Polygon2DExpression second;
 		private boolean requiresNullProtection;
 
 		Polygon2DFunctionWithNumberResult(Polygon2DExpression first) {
 			this.first = first;
-//			this.second = second;
-//			if (this.second == null || this.second.getIncludesNull()) {
-//				this.requiresNullProtection = true;
-//			}
 		}
 
 		Polygon2DExpression getFirst() {
 			return first;
 		}
 
-//		Polygon2DResult getSecond() {
-//			return second;
-//		}
 		@Override
 		public final String toSQLString(DBDefinition db) {
 			if (this.getIncludesNull()) {
@@ -1108,13 +1090,10 @@ public class Polygon2DExpression implements Polygon2DResult, EqualComparable<Pol
 			Polygon2DFunctionWithNumberResult newInstance;
 			try {
 				newInstance = getClass().newInstance();
-			} catch (InstantiationException ex) {
-				throw new RuntimeException(ex);
-			} catch (IllegalAccessException ex) {
+			} catch (InstantiationException | IllegalAccessException ex) {
 				throw new RuntimeException(ex);
 			}
 			newInstance.first = first.copy();
-//			newInstance.second = second.copy();
 			return newInstance;
 		}
 
@@ -1126,15 +1105,12 @@ public class Polygon2DExpression implements Polygon2DResult, EqualComparable<Pol
 			if (first != null) {
 				hashSet.addAll(first.getTablesInvolved());
 			}
-//			if (second != null) {
-//				hashSet.addAll(second.getTablesInvolved());
-//			}
 			return hashSet;
 		}
 
 		@Override
 		public boolean isAggregator() {
-			return first.isAggregator();//|| second.isAggregator();
+			return first.isAggregator();
 		}
 
 		@Override
@@ -1146,24 +1122,16 @@ public class Polygon2DExpression implements Polygon2DResult, EqualComparable<Pol
 	private static abstract class Polygon2DFunctionWithPolygon2DResult extends Polygon2DExpression {
 
 		private Polygon2DExpression first;
-//		private Polygon2DExpression second;
 		private boolean requiresNullProtection;
 
 		Polygon2DFunctionWithPolygon2DResult(Polygon2DExpression first) {
 			this.first = first;
-//			this.second = second;
-//			if (this.second == null || this.second.getIncludesNull()) {
-//				this.requiresNullProtection = true;
-//			}
 		}
 
 		Polygon2DExpression getFirst() {
 			return first;
 		}
 
-//		Polygon2DResult getSecond() {
-//			return second;
-//		}
 		@Override
 		public final String toSQLString(DBDefinition db) {
 			if (this.getIncludesNull()) {
@@ -1178,13 +1146,10 @@ public class Polygon2DExpression implements Polygon2DResult, EqualComparable<Pol
 			Polygon2DFunctionWithPolygon2DResult newInstance;
 			try {
 				newInstance = getClass().newInstance();
-			} catch (InstantiationException ex) {
-				throw new RuntimeException(ex);
-			} catch (IllegalAccessException ex) {
+			} catch (InstantiationException | IllegalAccessException ex) {
 				throw new RuntimeException(ex);
 			}
 			newInstance.first = first.copy();
-//			newInstance.second = second.copy();
 			return newInstance;
 		}
 
@@ -1196,15 +1161,12 @@ public class Polygon2DExpression implements Polygon2DResult, EqualComparable<Pol
 			if (first != null) {
 				hashSet.addAll(first.getTablesInvolved());
 			}
-//			if (second != null) {
-//				hashSet.addAll(second.getTablesInvolved());
-//			}
 			return hashSet;
 		}
 
 		@Override
 		public boolean isAggregator() {
-			return first.isAggregator();//|| second.isAggregator();
+			return first.isAggregator();
 		}
 
 		@Override
@@ -1216,24 +1178,16 @@ public class Polygon2DExpression implements Polygon2DResult, EqualComparable<Pol
 	private static abstract class Polygon2DFunctionWithLine2DResult extends Line2DExpression {
 
 		private Polygon2DExpression first;
-//		private Polygon2DExpression second;
 		private boolean requiresNullProtection;
 
 		Polygon2DFunctionWithLine2DResult(Polygon2DExpression first) {
 			this.first = first;
-//			this.second = second;
-//			if (this.second == null || this.second.getIncludesNull()) {
-//				this.requiresNullProtection = true;
-//			}
 		}
 
 		Polygon2DExpression getFirst() {
 			return first;
 		}
 
-//		Polygon2DResult getSecond() {
-//			return second;
-//		}
 		@Override
 		public final String toSQLString(DBDefinition db) {
 			if (this.getIncludesNull()) {
@@ -1248,13 +1202,10 @@ public class Polygon2DExpression implements Polygon2DResult, EqualComparable<Pol
 			Polygon2DFunctionWithLine2DResult newInstance;
 			try {
 				newInstance = getClass().newInstance();
-			} catch (InstantiationException ex) {
-				throw new RuntimeException(ex);
-			} catch (IllegalAccessException ex) {
+			} catch (InstantiationException | IllegalAccessException ex) {
 				throw new RuntimeException(ex);
 			}
 			newInstance.first = first.copy();
-//			newInstance.second = second.copy();
 			return newInstance;
 		}
 
@@ -1266,15 +1217,12 @@ public class Polygon2DExpression implements Polygon2DResult, EqualComparable<Pol
 			if (first != null) {
 				hashSet.addAll(first.getTablesInvolved());
 			}
-//			if (second != null) {
-//				hashSet.addAll(second.getTablesInvolved());
-//			}
 			return hashSet;
 		}
 
 		@Override
 		public boolean isAggregator() {
-			return first.isAggregator();//|| second.isAggregator();
+			return first.isAggregator();
 		}
 
 		@Override
@@ -1286,24 +1234,16 @@ public class Polygon2DExpression implements Polygon2DResult, EqualComparable<Pol
 	private static abstract class Polygon2DFunctionWithStringResult extends StringExpression {
 
 		private Polygon2DExpression first;
-//		private Polygon2DExpression second;
 		private boolean requiresNullProtection;
 
 		Polygon2DFunctionWithStringResult(Polygon2DExpression first) {
 			this.first = first;
-//			this.second = second;
-//			if (this.second == null || this.second.getIncludesNull()) {
-//				this.requiresNullProtection = true;
-//			}
 		}
 
 		Polygon2DExpression getFirst() {
 			return first;
 		}
 
-//		Polygon2DResult getSecond() {
-//			return second;
-//		}
 		@Override
 		public final String toSQLString(DBDefinition db) {
 			if (this.getIncludesNull()) {
@@ -1318,13 +1258,10 @@ public class Polygon2DExpression implements Polygon2DResult, EqualComparable<Pol
 			Polygon2DFunctionWithStringResult newInstance;
 			try {
 				newInstance = getClass().newInstance();
-			} catch (InstantiationException ex) {
-				throw new RuntimeException(ex);
-			} catch (IllegalAccessException ex) {
+			} catch (InstantiationException | IllegalAccessException ex) {
 				throw new RuntimeException(ex);
 			}
 			newInstance.first = first.copy();
-//			newInstance.second = second.copy();
 			return newInstance;
 		}
 
@@ -1336,15 +1273,12 @@ public class Polygon2DExpression implements Polygon2DResult, EqualComparable<Pol
 			if (first != null) {
 				hashSet.addAll(first.getTablesInvolved());
 			}
-//			if (second != null) {
-//				hashSet.addAll(second.getTablesInvolved());
-//			}
 			return hashSet;
 		}
 
 		@Override
 		public boolean isAggregator() {
-			return first.isAggregator();//|| second.isAggregator();
+			return first.isAggregator();
 		}
 
 		@Override
@@ -1389,13 +1323,10 @@ public class Polygon2DExpression implements Polygon2DResult, EqualComparable<Pol
 			Point2dArrayFunctionWithPolygon2DResult newInstance;
 			try {
 				newInstance = getClass().newInstance();
-			} catch (InstantiationException ex) {
-				throw new RuntimeException(ex);
-			} catch (IllegalAccessException ex) {
+			} catch (InstantiationException | IllegalAccessException ex) {
 				throw new RuntimeException(ex);
 			}
 			newInstance.allPoints = Arrays.copyOf(allPoints, allPoints.length);
-//			newInstance.second = second.copy();
 			return newInstance;
 		}
 
@@ -1418,7 +1349,7 @@ public class Polygon2DExpression implements Polygon2DResult, EqualComparable<Pol
 			for (Point2DExpression allPoint : allPoints) {
 				aggregator |= allPoint.isAggregator();
 			}
-			return aggregator;//|| second.isAggregator();
+			return aggregator;
 		}
 
 		@Override
@@ -1463,13 +1394,10 @@ public class Polygon2DExpression implements Polygon2DResult, EqualComparable<Pol
 			CoordinateArrayFunctionWithPolygon2DResult newInstance;
 			try {
 				newInstance = getClass().newInstance();
-			} catch (InstantiationException ex) {
-				throw new RuntimeException(ex);
-			} catch (IllegalAccessException ex) {
+			} catch (InstantiationException | IllegalAccessException ex) {
 				throw new RuntimeException(ex);
 			}
 			newInstance.allCoords = Arrays.copyOf(allCoords, allCoords.length);
-//			newInstance.second = second.copy();
 			return newInstance;
 		}
 
@@ -1492,7 +1420,7 @@ public class Polygon2DExpression implements Polygon2DResult, EqualComparable<Pol
 			for (NumberExpression allPoint : allCoords) {
 				aggregator |= allPoint.isAggregator();
 			}
-			return aggregator;//|| second.isAggregator();
+			return aggregator;
 		}
 
 		@Override
@@ -1500,5 +1428,4 @@ public class Polygon2DExpression implements Polygon2DResult, EqualComparable<Pol
 			return requiresNullProtection;
 		}
 	}
-
 }
