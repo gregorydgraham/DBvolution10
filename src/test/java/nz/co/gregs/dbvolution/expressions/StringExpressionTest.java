@@ -758,6 +758,10 @@ public class StringExpressionTest extends AbstractTest {
 		
 		List<FindFirstNumberTable> allRows = query
 				.getAllRows();
+		
+		if (allRows.size()==13){
+			database.print(allRows);
+		}
 
 		Assert.assertThat(allRows.size(), is(14));
 		for (FindFirstNumberTable fab : allRows) {

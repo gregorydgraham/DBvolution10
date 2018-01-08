@@ -1784,7 +1784,6 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 
 			@Override
 			public String toSQLString(DBDefinition db) {
-				System.out.println(db.getClass().getSimpleName());
 				return db.doFindIntegerInStringTransform(this.only.toSQLString(db));
 			}
 
