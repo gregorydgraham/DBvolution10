@@ -43,7 +43,11 @@ public class MultiPoint2DExpressionTest extends AbstractTest {
 	final GeometryFactory geometryFactory = new GeometryFactory();
 
 	public MultiPoint2DExpressionTest(Object testIterationName, DBDatabase db) throws SQLException {
-		super(testIterationName, db);
+		super(testIterationName, db);}
+	
+	@Override
+	public void setup(DBDatabase db) throws Exception {
+		super.setup(database);
 		MultiPoint2DTestTable lineTestTable = new MultiPoint2DTestTable();
 
 		db.preventDroppingOfTables(false);
