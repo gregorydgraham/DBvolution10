@@ -720,8 +720,11 @@ public class StringExpressionTest extends AbstractTest {
 				.setBlankQueryAllowed(true)
 				.setSortOrder(tab.column(tab.sample));
 
-		List<FindFirstNumberTable> allRows = query
-				.getAllRows();
+		List<FindFirstNumberTable> allRows = query.getAllRows();
+
+		if (allRows.size() != 14) {
+			database.print(allRows);
+		}
 
 		Assert.assertThat(allRows.size(), is(14));
 		for (FindFirstNumberTable fab : allRows) {
@@ -732,39 +735,38 @@ public class StringExpressionTest extends AbstractTest {
 
 	@Test
 	public void testFindFirstInteger() throws SQLException {
-		FindFirstNumberTable tab = new FindFirstNumberTable();
+		FindFirstIntegerTable tab = new FindFirstIntegerTable();
 		database.preventDroppingOfTables(false);
 		database.dropTableNoExceptions(tab);
 		database.createTable(tab);
-		database.insert(new FindFirstNumberTable[]{
-			new FindFirstNumberTable("aaa -09.90 yabber", "-09", -9),
-			new FindFirstNumberTable("aab 09.90 y", "09", 9),
-			new FindFirstNumberTable("aac 900.90 y", "900", 900),
-			new FindFirstNumberTable("aad 900.90.90 y", "900", 900),
-			new FindFirstNumberTable("aad 900.90 -0.90 y", "900", 900),
-			new FindFirstNumberTable("aad -900.90.90 0.90 y", "-900", -900),
-			new FindFirstNumberTable("aad 900. -0.90 y", "900", 900),
-			new FindFirstNumberTable("aad 900.", "900", 900),
-			new FindFirstNumberTable("aad - 900 0.90 y", "900", 900),
-			new FindFirstNumberTable("900.90.90 y", "900", 900),
-			new FindFirstNumberTable("c 9.90 c", "9", 9),
-			new FindFirstNumberTable("d 9 d", "9", 9),
-			new FindFirstNumberTable("e -9 e", "-9", -9),
-			new FindFirstNumberTable("f A e", null, null)
+		database.insert(new FindFirstIntegerTable[]{
+			new FindFirstIntegerTable("aaa -09.90 yabber", "-09", -9),
+			new FindFirstIntegerTable("aab 09.90 y", "09", 9),
+			new FindFirstIntegerTable("aac 900.90 y", "900", 900),
+			new FindFirstIntegerTable("aad 900.90.90 y", "900", 900),
+			new FindFirstIntegerTable("aad 900.90 -0.90 y", "900", 900),
+			new FindFirstIntegerTable("aad -900.90.90 0.90 y", "-900", -900),
+			new FindFirstIntegerTable("aad 900. -0.90 y", "900", 900),
+			new FindFirstIntegerTable("aad 900.", "900", 900),
+			new FindFirstIntegerTable("aad - 900 0.90 y", "900", 900),
+			new FindFirstIntegerTable("900.90.90 y", "900", 900),
+			new FindFirstIntegerTable("c 9.90 c", "9", 9),
+			new FindFirstIntegerTable("d 9 d", "9", 9),
+			new FindFirstIntegerTable("e -9 e", "-9", -9),
+			new FindFirstIntegerTable("f A e", null, null)
 		});
-		final DBTable<FindFirstNumberTable> query = database.getDBTable(tab)
+		final DBTable<FindFirstIntegerTable> query = database.getDBTable(tab)
 				.setBlankQueryAllowed(true)
 				.setSortOrder(tab.column(tab.sample));
-		
-		List<FindFirstNumberTable> allRows = query
-				.getAllRows();
-		
-		if (allRows.size()==13){
+
+		List<FindFirstIntegerTable> allRows = query.getAllRows();
+
+		if (allRows.size() != 14) {
 			database.print(allRows);
 		}
 
 		Assert.assertThat(allRows.size(), is(14));
-		for (FindFirstNumberTable fab : allRows) {
+		for (FindFirstIntegerTable fab : allRows) {
 			Assert.assertThat(fab.actualIntegerString.getValue(), is(fab.expectString.getValue()));
 			Assert.assertThat(fab.actualInteger.longValue(), is(fab.expectNumber.longValue()));
 		}
@@ -805,6 +807,47 @@ public class StringExpressionTest extends AbstractTest {
 		}
 
 		public FindFirstNumberTable(String sample, String expect, Number expectNumber) {
+			this.sample.setValue(sample);
+			this.expectString.setValue(expect);
+			this.expectNumber.setValue(expectNumber);
+		}
+	}
+
+	public static class FindFirstIntegerTable extends DBRow {
+
+		private static final long serialVersionUID = 1L;
+
+		@DBAutoIncrement
+		@DBPrimaryKey
+		@DBColumn
+		public DBInteger pkid = new DBInteger();
+
+		@DBColumn
+		public DBString sample = new DBString();
+
+		@DBColumn
+		public DBString expectString = new DBString();
+
+		@DBColumn
+		public DBString actualString = new DBString(this.column(sample).getFirstNumber());
+
+		@DBColumn
+		public DBNumber expectNumber = new DBNumber();
+
+		@DBColumn
+		public DBNumber actualNumber = new DBNumber(this.column(sample).getFirstNumber().numberResult());
+
+		@DBColumn
+		public DBString actualIntegerString = new DBString(this.column(sample).getFirstInteger());
+
+		@DBColumn
+		public DBInteger actualInteger = new DBInteger(this.column(sample).getFirstInteger().integerResult());
+
+		public FindFirstIntegerTable() {
+			super();
+		}
+
+		public FindFirstIntegerTable(String sample, String expect, Number expectNumber) {
 			this.sample.setValue(sample);
 			this.expectString.setValue(expect);
 			this.expectNumber.setValue(expectNumber);
