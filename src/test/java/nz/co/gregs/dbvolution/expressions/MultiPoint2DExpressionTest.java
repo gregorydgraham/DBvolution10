@@ -47,7 +47,6 @@ public class MultiPoint2DExpressionTest extends AbstractTest {
 	
 	@Override
 	public void setup(DBDatabase db) throws Exception {
-		super.setup(database);
 		MultiPoint2DTestTable lineTestTable = new MultiPoint2DTestTable();
 
 		db.preventDroppingOfTables(false);
@@ -62,11 +61,11 @@ public class MultiPoint2DExpressionTest extends AbstractTest {
 
 		lineTestTable = new MultiPoint2DTestTable();
 		lineTestTable.multipoint.setValue(geometryFactory.createMultiPoint(new Coordinate[]{coordinate1, coordinate2, coordinate3}));
-		db.insert(lineTestTable);
+//		db.insert(lineTestTable);
 
-		lineTestTable = new MultiPoint2DTestTable();
-		lineTestTable.multipoint.setValue(geometryFactory.createPoint(coordinate2), geometryFactory.createPoint(coordinate3));
-		db.insert(lineTestTable);
+		MultiPoint2DTestTable lineTestTable2 = new MultiPoint2DTestTable();
+		lineTestTable2.multipoint.setValue(geometryFactory.createPoint(coordinate2), geometryFactory.createPoint(coordinate3));
+		db.insert(lineTestTable, lineTestTable2);
 	}
 
 	public static class MultiPoint2DTestTable extends DBRow {
@@ -211,9 +210,9 @@ public class MultiPoint2DExpressionTest extends AbstractTest {
 		final MultiPoint2DTestTable pointTestTable = new MultiPoint2DTestTable();
 		DBQuery dbQuery = database.getDBQuery(pointTestTable);
 		dbQuery.setBlankQueryAllowed(true);
-		List<MultiPoint2DTestTable> allRows = dbQuery.getAllInstancesOf(pointTestTable);
+
 		dbQuery.addCondition(Line2DExpression.value(line).stringResult().is(pointTestTable.column(pointTestTable.multipoint).line2DResult().stringResult()));
-		allRows = dbQuery.getAllInstancesOf(pointTestTable);
+		List<MultiPoint2DTestTable> allRows = dbQuery.getAllInstancesOf(pointTestTable);
 		Assert.assertThat(allRows.size(), is(1));
 		Assert.assertThat(allRows.get(0).line_id.intValue(), is(1));
 	}
