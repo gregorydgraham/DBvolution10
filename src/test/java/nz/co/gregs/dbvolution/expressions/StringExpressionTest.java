@@ -788,19 +788,19 @@ public class StringExpressionTest extends AbstractTest {
 		public DBString expectString = new DBString();
 
 		@DBColumn
-		public DBString actualString = new DBString(this.column(sample).getFirstNumber());
+		public DBString actualString = new DBString(this.column(sample).getFirstNumberAsSubstring());
 
 		@DBColumn
 		public DBNumber expectNumber = new DBNumber();
 
 		@DBColumn
-		public DBNumber actualNumber = new DBNumber(this.column(sample).getFirstNumber().numberResult());
+		public DBNumber actualNumber = new DBNumber(this.column(sample).getFirstNumber());
 
 		@DBColumn
-		public DBString actualIntegerString = new DBString(this.column(sample).getFirstInteger());
+		public DBString actualIntegerString = new DBString(this.column(sample).getFirstIntegerAsSubstring());
 
 		@DBColumn
-		public DBInteger actualInteger = new DBInteger(this.column(sample).getFirstInteger().integerResult());
+		public DBInteger actualInteger = new DBInteger(this.column(sample).getFirstInteger());
 
 		public FindFirstNumberTable() {
 			super();
@@ -829,19 +829,19 @@ public class StringExpressionTest extends AbstractTest {
 		public DBString expectString = new DBString();
 
 		@DBColumn
-		public DBString actualString = new DBString(this.column(sample).getFirstNumber());
+		public DBString actualString = new DBString(this.column(sample).getFirstNumberAsSubstring());
 
 		@DBColumn
 		public DBNumber expectNumber = new DBNumber();
 
 		@DBColumn
-		public DBNumber actualNumber = new DBNumber(this.column(sample).getFirstNumber().numberResult());
+		public DBNumber actualNumber = new DBNumber(this.column(sample).getFirstNumber());
 
 		@DBColumn
-		public DBString actualIntegerString = new DBString(this.column(sample).getFirstInteger());
+		public DBString actualIntegerString = new DBString(this.column(sample).getFirstIntegerAsSubstring());
 
 		@DBColumn
-		public DBInteger actualInteger = new DBInteger(this.column(sample).getFirstInteger().integerResult());
+		public DBInteger actualInteger = new DBInteger(this.column(sample).getFirstInteger());
 
 		public FindFirstIntegerTable() {
 			super();

@@ -1855,6 +1855,10 @@ public class NumberExpression implements NumberResult, RangeComparable<NumberRes
 		return new SinhFunction(this);
 	}
 
+	NumberExpression[] numberResult() {
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	}
+
 	public static class SinhFunction extends DBUnaryFunction {
 
 		public SinhFunction(NumberExpression only) {

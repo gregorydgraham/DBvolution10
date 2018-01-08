@@ -1749,15 +1749,14 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 	 * <p style="color: #F90;">Support DBvolution at
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 *
-	 * @return a NumberExpression.
+	 * @return a StringExpression.
 	 */
-	public StringExpression getFirstNumber() {
-		return new StringExpression(
+	public StringExpression getFirstNumberAsSubstring() {
+		StringExpression exp = new StringExpression(
 				new DBUnaryStringFunction(this) {
 
 			@Override
 			public String toSQLString(DBDefinition db) {
-				System.out.println(db.getClass().getSimpleName());
 				return db.doFindNumberInStringTransform(this.only.toSQLString(db));
 			}
 
@@ -1766,7 +1765,47 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 				return "";
 			}
 		});
+		return exp;
+	}
 
+	/**
+	 * Finds and returns the first integer in the string or NULL if no integer is
+	 * found.
+	 *
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
+	 * @return a StringExpression.
+	 */
+	public StringExpression getFirstIntegerAsSubstring() {
+		final StringExpression exp = new StringExpression(
+				new DBUnaryStringFunction(this) {
+					
+					@Override
+					public String toSQLString(DBDefinition db) {
+						return db.doFindIntegerInStringTransform(this.only.toSQLString(db));
+					}
+					
+					@Override
+					String getFunctionName(DBDefinition db) {
+						return "";
+					}
+				});
+		return exp;
+
+	}
+
+	/**
+	 * Finds and returns the first number in the string or NULL if no number is
+	 * found.
+	 *
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
+	 * @return a NumberExpression.
+	 */
+	public NumberExpression getFirstNumber() {
+		return getFirstNumberAsSubstring().numberResult();
 	}
 
 	/**
@@ -1778,20 +1817,8 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 	 *
 	 * @return a NumberExpression.
 	 */
-	public StringExpression getFirstInteger() {
-		return new StringExpression(
-				new DBUnaryStringFunction(this) {
-
-			@Override
-			public String toSQLString(DBDefinition db) {
-				return db.doFindIntegerInStringTransform(this.only.toSQLString(db));
-			}
-
-			@Override
-			String getFunctionName(DBDefinition db) {
-				return "";
-			}
-		});
+	public IntegerExpression getFirstInteger() {
+		return getFirstIntegerAsSubstring().integerResult();
 
 	}
 
