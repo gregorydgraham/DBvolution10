@@ -1,6 +1,7 @@
 language: java
 dist: trusty
 sudo: required
+group: deprecated-2017Q4
 addons:
     postgresql: "9.6"
     apt:
