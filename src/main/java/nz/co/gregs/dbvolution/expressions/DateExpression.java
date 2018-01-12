@@ -32,6 +32,7 @@ import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.databases.supports.SupportsDateRepeatDatatypeFunctions;
 import nz.co.gregs.dbvolution.datatypes.*;
 import nz.co.gregs.dbvolution.results.InComparable;
+import nz.co.gregs.dbvolution.results.RangeResult;
 import org.joda.time.Period;
 
 /**
@@ -64,7 +65,7 @@ import org.joda.time.Period;
  *
  * @author Gregory Graham
  */
-public class DateExpression implements DateResult, RangeComparable<DateResult>, InComparable<DateResult>, ExpressionColumn<DBDate> {
+public class DateExpression extends RangeComparableExpression<Date, DateResult, DBDate>implements DateResult {
 
 	/**
 	 * The integer used to represent the index for Sunday

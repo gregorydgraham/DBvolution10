@@ -29,6 +29,7 @@ import nz.co.gregs.dbvolution.columns.StringColumn;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.datatypes.*;
 import nz.co.gregs.dbvolution.results.InComparable;
+import nz.co.gregs.dbvolution.results.RangeResult;
 
 /**
  * StringExpression implements standard functions that produce a character or
@@ -52,7 +53,7 @@ import nz.co.gregs.dbvolution.results.InComparable;
  *
  * @author Gregory Graham
  */
-public class StringExpression implements StringResult, RangeComparable<StringResult>, InComparable<StringResult>, ExpressionColumn<DBString> {
+public class StringExpression extends RangeComparableExpression<String, StringResult, DBString>implements StringResult {
 
 	/**
 	 * Creates a StringExpression that will return a database NULL.
@@ -279,10 +280,6 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 				return db.doStringIfNullTransform(this.getFirst().toSQLString(db), getSecond().toSQLString(db));
 			}
 
-//			@Override
-//			String getFunctionName(DBDefinition db) {
-//				return db.getIfNullFunctionName();
-//			}
 			@Override
 			public boolean getIncludesNull() {
 				return false;
