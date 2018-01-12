@@ -12,6 +12,7 @@ import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.expressions.IntegerExpression;
 import nz.co.gregs.dbvolution.expressions.NumberExpression;
+import nz.co.gregs.dbvolution.expressions.SimpleNumericExpression;
 import nz.co.gregs.dbvolution.internal.properties.PropertyWrapperDefinition;
 
 /**
@@ -39,7 +40,7 @@ public class DBNumberStatistics extends DBNumber {
 	private transient NumberExpression maxExpr;
 	private transient NumberExpression minExpr;
 	private transient NumberExpression sumExpr;
-	private transient NumberExpression countExpr;
+	private transient IntegerExpression countExpr;
 	private transient NumberExpression stdDevExpression;
 	private Number sumNumber;
 
@@ -73,10 +74,10 @@ public class DBNumberStatistics extends DBNumber {
 		maxExpr = numberExpressionToGenerateStatsFrom.max();
 		minExpr = numberExpressionToGenerateStatsFrom.min();
 		sumExpr = numberExpressionToGenerateStatsFrom.sum();
-		countExpr = NumberExpression.countAll();
+		countExpr = IntegerExpression.countAll();
 		stdDevExpression = numberExpressionToGenerateStatsFrom.stddev();
 
-		this.setColumnExpression(new NumberExpression[]{
+		this.setColumnExpression(new SimpleNumericExpression<?,?,?>[]{
 			averageExpression,
 			maxExpr,
 			minExpr,
@@ -86,8 +87,8 @@ public class DBNumberStatistics extends DBNumber {
 		});
 		this.originalExpression = numberExpressionToGenerateStatsFrom;
 
-	}	
-	
+	}
+
 	/**
 	 * Creates a column expression with a statistics result from the expression
 	 * provided.

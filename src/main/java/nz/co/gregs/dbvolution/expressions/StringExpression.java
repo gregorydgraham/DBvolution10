@@ -53,7 +53,7 @@ import nz.co.gregs.dbvolution.results.RangeResult;
  *
  * @author Gregory Graham
  */
-public class StringExpression extends RangeComparableExpression<String, StringResult, DBString>implements StringResult {
+public class StringExpression extends CountableExpression<String, StringResult, DBString>implements StringResult {
 
 	/**
 	 * Creates a StringExpression that will return a database NULL.

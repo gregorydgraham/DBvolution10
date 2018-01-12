@@ -879,6 +879,44 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 	 * @return an expression that will generate a SQL clause conceptually similar
 	 * to "if (this) then thenExpr else elseExpr".
 	 */
+	public IntegerExpression ifThenElse(Long thenExpr, Long elseExpr) {
+		return this.ifThenElse(new IntegerExpression(thenExpr), new IntegerExpression(elseExpr));
+	}
+
+	/**
+	 * Allows you to specify different return values based on the value of this
+	 * boolean expression.
+	 *
+	 * <p>
+	 * The first expression is returned if this expression is TRUE, otherwise the
+	 * second is returned.
+	 *
+	 * @param thenExpr expression to use when this expression is TRUE
+	 * @param elseExpr expression to use when this expression is FALSE
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @return an expression that will generate a SQL clause conceptually similar
+	 * to "if (this) then thenExpr else elseExpr".
+	 */
+	public IntegerExpression ifThenElse(Integer thenExpr, Integer elseExpr) {
+		return this.ifThenElse(new IntegerExpression(thenExpr), new IntegerExpression(elseExpr));
+	}
+
+	/**
+	 * Allows you to specify different return values based on the value of this
+	 * boolean expression.
+	 *
+	 * <p>
+	 * The first expression is returned if this expression is TRUE, otherwise the
+	 * second is returned.
+	 *
+	 * @param thenExpr expression to use when this expression is TRUE
+	 * @param elseExpr expression to use when this expression is FALSE
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @return an expression that will generate a SQL clause conceptually similar
+	 * to "if (this) then thenExpr else elseExpr".
+	 */
 	public NumberExpression ifThenElse(NumberResult thenExpr, NumberResult elseExpr) {
 		return new NumberExpression(new DBBooleanNumberNumberFunction(this, thenExpr, elseExpr) {
 
@@ -1584,9 +1622,7 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 			DBUnaryBooleanArithmetic newInstance;
 			try {
 				newInstance = getClass().newInstance();
-			} catch (InstantiationException ex) {
-				throw new RuntimeException(ex);
-			} catch (IllegalAccessException ex) {
+			} catch (InstantiationException | IllegalAccessException ex) {
 				throw new RuntimeException(ex);
 			}
 			newInstance.onlyBool = onlyBool.copy();
@@ -1646,9 +1682,7 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 			DBNnaryBooleanArithmetic newInstance;
 			try {
 				newInstance = getClass().newInstance();
-			} catch (InstantiationException ex) {
-				throw new RuntimeException(ex);
-			} catch (IllegalAccessException ex) {
+			} catch (InstantiationException | IllegalAccessException ex) {
 				throw new RuntimeException(ex);
 			}
 			newInstance.bools = new BooleanResult[bools.length];
@@ -1730,9 +1764,7 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 			DBBooleanAggregatorFunctionReturningNumber newInstance;
 			try {
 				newInstance = getClass().newInstance();
-			} catch (InstantiationException ex) {
-				throw new RuntimeException(ex);
-			} catch (IllegalAccessException ex) {
+			} catch (InstantiationException | IllegalAccessException ex) {
 				throw new RuntimeException(ex);
 			}
 			newInstance.onlyBool = (onlyBool == null ? null : onlyBool.copy());
@@ -1796,9 +1828,7 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 			DBUnaryBinaryFunction newInstance;
 			try {
 				newInstance = getClass().newInstance();
-			} catch (InstantiationException ex) {
-				throw new RuntimeException(ex);
-			} catch (IllegalAccessException ex) {
+			} catch (InstantiationException | IllegalAccessException ex) {
 				throw new RuntimeException(ex);
 			}
 			newInstance.onlyBool = (onlyBool == null ? null : onlyBool.copy());
@@ -1861,9 +1891,7 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 			DBBinaryBooleanArithmetic newInstance;
 			try {
 				newInstance = getClass().newInstance();
-			} catch (InstantiationException ex) {
-				throw new RuntimeException(ex);
-			} catch (IllegalAccessException ex) {
+			} catch (InstantiationException | IllegalAccessException ex) {
 				throw new RuntimeException(ex);
 			}
 			newInstance.first = getFirst().copy();
@@ -1971,9 +1999,7 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 			DBBooleanStringStringFunction newInstance;
 			try {
 				newInstance = this.getClass().newInstance();
-			} catch (InstantiationException ex) {
-				throw new RuntimeException(ex);
-			} catch (IllegalAccessException ex) {
+			} catch (InstantiationException | IllegalAccessException ex) {
 				throw new RuntimeException(ex);
 			}
 			newInstance.onlyBool = (onlyBool == null ? null : onlyBool.copy());
@@ -2038,9 +2064,7 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 			DBBooleanNumberNumberFunction newInstance;
 			try {
 				newInstance = getClass().newInstance();
-			} catch (InstantiationException ex) {
-				throw new RuntimeException(ex);
-			} catch (IllegalAccessException ex) {
+			} catch (InstantiationException | IllegalAccessException ex) {
 				throw new RuntimeException(ex);
 			}
 			newInstance.onlyBool = (onlyBool == null ? null : onlyBool.copy());
@@ -2105,9 +2129,7 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 			DBBooleanIntegerIntegerFunction newInstance;
 			try {
 				newInstance = getClass().newInstance();
-			} catch (InstantiationException ex) {
-				throw new RuntimeException(ex);
-			} catch (IllegalAccessException ex) {
+			} catch (InstantiationException | IllegalAccessException ex) {
 				throw new RuntimeException(ex);
 			}
 			newInstance.onlyBool = (onlyBool == null ? null : onlyBool.copy());
@@ -2172,9 +2194,7 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 			DBBinaryDateDateFunction newInstance;
 			try {
 				newInstance = getClass().newInstance();
-			} catch (InstantiationException ex) {
-				throw new RuntimeException(ex);
-			} catch (IllegalAccessException ex) {
+			} catch (InstantiationException | IllegalAccessException ex) {
 				throw new RuntimeException(ex);
 			}
 			newInstance.onlyBool = (onlyBool == null ? null : onlyBool.copy());
@@ -2224,9 +2244,7 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 			DBBinaryGeometryGeometryFunction newInstance;
 			try {
 				newInstance = getClass().newInstance();
-			} catch (InstantiationException ex) {
-				throw new RuntimeException(ex);
-			} catch (IllegalAccessException ex) {
+			} catch (InstantiationException | IllegalAccessException ex) {
 				throw new RuntimeException(ex);
 			}
 			newInstance.onlyBool = (onlyBool == null ? null : onlyBool.copy());

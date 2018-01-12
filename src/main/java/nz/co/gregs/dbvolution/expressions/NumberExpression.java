@@ -16,10 +16,8 @@
 package nz.co.gregs.dbvolution.expressions;
 
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
-import nz.co.gregs.dbvolution.results.RangeComparable;
 import nz.co.gregs.dbvolution.results.StringResult;
 import nz.co.gregs.dbvolution.results.NumberResult;
-import nz.co.gregs.dbvolution.results.BooleanResult;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -28,7 +26,6 @@ import java.util.List;
 import java.util.Set;
 import nz.co.gregs.dbvolution.*;
 import nz.co.gregs.dbvolution.datatypes.*;
-import nz.co.gregs.dbvolution.results.InComparable;
 import nz.co.gregs.dbvolution.results.IntegerResult;
 
 /**
@@ -53,8 +50,7 @@ import nz.co.gregs.dbvolution.results.IntegerResult;
  *
  * @author Gregory Graham
  */
-public class NumberExpression extends RangeComparableExpression<Number, NumberResult, DBNumber> implements NumberResult{
-//public class NumberExpression implements NumberResult, RangeComparable<NumberResult>, InComparable<NumberResult>, ExpressionColumn<DBNumber> {
+public class NumberExpression extends SimpleNumericExpression<Number, NumberResult, DBNumber> implements NumberResult{
 
 	static NumberExpression nullExpression() {
 		return new NumberExpression() {
@@ -3110,51 +3106,6 @@ public class NumberExpression extends RangeComparableExpression<Number, NumberRe
 				return true;
 			}
 		});
-	}
-
-	/**
-	 * Aggregrator that counts all the rows of the query.
-	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 *
-	 * @return the count of all the values from the column.
-	 */
-	public static NumberExpression countAll() {
-		return new NumberExpression(new DBNonaryFunction() {
-			@Override
-			String getFunctionName(DBDefinition db) {
-				return db.getCountFunctionName();
-			}
-
-			@Override
-			public NumberResult getInnerNumberResult() {
-				return this;
-			}
-
-			@Override
-			protected String afterValue(DBDefinition db) {
-				return "(*)";
-			}
-
-			@Override
-			public boolean isAggregator() {
-				return true;
-			}
-		});
-	}
-
-	/**
-	 * Aggregrator that counts this row if the booleanResult is true.
-	 *
-	 * @param booleanResult an expression that will be TRUE when the row needs to
-	 * be counted.
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 * @return The number of rows where the test is true.
-	 */
-	public static NumberExpression countIf(BooleanResult booleanResult) {
-		return new NumberExpression(new BooleanExpression(booleanResult).ifThenElse(1, 0)).sum();
 	}
 
 	@Override

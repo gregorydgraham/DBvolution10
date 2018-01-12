@@ -16,10 +16,8 @@
 package nz.co.gregs.dbvolution.expressions;
 
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
-import nz.co.gregs.dbvolution.results.RangeComparable;
 import nz.co.gregs.dbvolution.results.StringResult;
 import nz.co.gregs.dbvolution.results.IntegerResult;
-import nz.co.gregs.dbvolution.results.BooleanResult;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -28,7 +26,6 @@ import java.util.List;
 import java.util.Set;
 import nz.co.gregs.dbvolution.*;
 import nz.co.gregs.dbvolution.datatypes.*;
-import nz.co.gregs.dbvolution.results.InComparable;
 import nz.co.gregs.dbvolution.results.NumberResult;
 
 /**
@@ -53,7 +50,7 @@ import nz.co.gregs.dbvolution.results.NumberResult;
  *
  * @author Gregory Graham
  */
-public class IntegerExpression implements IntegerResult, RangeComparable<IntegerResult>, InComparable<IntegerResult>, ExpressionColumn<DBInteger> {
+public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResult, DBInteger> implements IntegerResult {
 
 	private final IntegerResult innerIntegerResult;
 	private final boolean nullProtectionRequired;
@@ -74,10 +71,9 @@ public class IntegerExpression implements IntegerResult, RangeComparable<Integer
 	 * little trickier.
 	 *
 	 * <p>
-	 * This method provides the easy route to a *Expression from a literal
-	 * value. Just call, for instance,
-	 * {@code StringExpression.value("STARTING STRING")} to get a
-	 * StringExpression and start the expression chain.
+	 * This method provides the easy route to a *Expression from a literal value.
+	 * Just call, for instance, {@code StringExpression.value("STARTING STRING")}
+	 * to get a StringExpression and start the expression chain.
 	 *
 	 * <ul>
 	 * <li>Only object classes that are appropriate need to be handle by the
@@ -88,8 +84,8 @@ public class IntegerExpression implements IntegerResult, RangeComparable<Integer
 	 * @param number a literal value to use in the expression
 	 * <p style="color: #F90;">Support DBvolution at
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 * @return a DBExpression instance that is appropriate to the subclass and
-	 * the value supplied.
+	 * @return a DBExpression instance that is appropriate to the subclass and the
+	 * value supplied.
 	 */
 	public static IntegerExpression value(IntegerResult number) {
 		return new IntegerExpression(number);
@@ -107,10 +103,9 @@ public class IntegerExpression implements IntegerResult, RangeComparable<Integer
 	 * little trickier.
 	 *
 	 * <p>
-	 * This method provides the easy route to a *Expression from a literal
-	 * value. Just call, for instance,
-	 * {@code StringExpression.value("STARTING STRING")} to get a
-	 * StringExpression and start the expression chain.
+	 * This method provides the easy route to a *Expression from a literal value.
+	 * Just call, for instance, {@code StringExpression.value("STARTING STRING")}
+	 * to get a StringExpression and start the expression chain.
 	 *
 	 * <ul>
 	 * <li>Only object classes that are appropriate need to be handle by the
@@ -121,8 +116,8 @@ public class IntegerExpression implements IntegerResult, RangeComparable<Integer
 	 * @param number a literal value to use in the expression
 	 * <p style="color: #F90;">Support DBvolution at
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 * @return a DBExpression instance that is appropriate to the subclass and
-	 * the value supplied.
+	 * @return a DBExpression instance that is appropriate to the subclass and the
+	 * value supplied.
 	 */
 	public static IntegerExpression value(NumberResult number) {
 		return new NumberExpression(number).trunc();
@@ -133,7 +128,7 @@ public class IntegerExpression implements IntegerResult, RangeComparable<Integer
 	 *
 	 */
 	protected IntegerExpression() {
-		innerIntegerResult=null;
+		innerIntegerResult = null;
 		nullProtectionRequired = false;
 	}
 
@@ -169,8 +164,8 @@ public class IntegerExpression implements IntegerResult, RangeComparable<Integer
 	 * Create a IntegerExpression based on an existing {@link IntegerResult}.
 	 *
 	 * <p>
-	 * {@link IntegerResult} is generally a IntegerExpression but it may also be
-	 * a {@link DBInteger}.
+	 * {@link IntegerResult} is generally a IntegerExpression but it may also be a
+	 * {@link DBInteger}.
 	 *
 	 * @param value a number expression or QDT
 	 */
@@ -201,10 +196,9 @@ public class IntegerExpression implements IntegerResult, RangeComparable<Integer
 	 * little trickier.
 	 *
 	 * <p>
-	 * This method provides the easy route to a *Expression from a literal
-	 * value. Just call, for instance,
-	 * {@code StringExpression.value("STARTING STRING")} to get a
-	 * StringExpression and start the expression chain.
+	 * This method provides the easy route to a *Expression from a literal value.
+	 * Just call, for instance, {@code StringExpression.value("STARTING STRING")}
+	 * to get a StringExpression and start the expression chain.
 	 *
 	 * <ul>
 	 * <li>Only object classes that are appropriate need to be handle by the
@@ -215,8 +209,8 @@ public class IntegerExpression implements IntegerResult, RangeComparable<Integer
 	 * @param object a literal value to use in the expression
 	 * <p style="color: #F90;">Support DBvolution at
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 * @return a DBExpression instance that is appropriate to the subclass and
-	 * the value supplied.
+	 * @return a DBExpression instance that is appropriate to the subclass and the
+	 * value supplied.
 	 */
 	public static IntegerExpression value(Long object) {
 		final IntegerExpression integerExpression = new IntegerExpression(object);
@@ -235,10 +229,9 @@ public class IntegerExpression implements IntegerResult, RangeComparable<Integer
 	 * little trickier.
 	 *
 	 * <p>
-	 * This method provides the easy route to a *Expression from a literal
-	 * value. Just call, for instance,
-	 * {@code StringExpression.value("STARTING STRING")} to get a
-	 * StringExpression and start the expression chain.
+	 * This method provides the easy route to a *Expression from a literal value.
+	 * Just call, for instance, {@code StringExpression.value("STARTING STRING")}
+	 * to get a StringExpression and start the expression chain.
 	 *
 	 * <ul>
 	 * <li>Only object classes that are appropriate need to be handle by the
@@ -249,8 +242,8 @@ public class IntegerExpression implements IntegerResult, RangeComparable<Integer
 	 * @param object a literal value to use in the expression
 	 * <p style="color: #F90;">Support DBvolution at
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 * @return a DBExpression instance that is appropriate to the subclass and
-	 * the value supplied.
+	 * @return a DBExpression instance that is appropriate to the subclass and the
+	 * value supplied.
 	 */
 	public static IntegerExpression value(Number object) {
 		if (object == null) {
@@ -304,8 +297,7 @@ public class IntegerExpression implements IntegerResult, RangeComparable<Integer
 	}
 
 	/**
-	 * Tests that a expression is shorter than or equal to the specified
-	 * lengths.
+	 * Tests that a expression is shorter than or equal to the specified lengths.
 	 *
 	 * <p>
 	 * This method is useful to test values will fit within a specific field
@@ -418,8 +410,8 @@ public class IntegerExpression implements IntegerResult, RangeComparable<Integer
 	}
 
 	/**
-	 * Tests the IntegerExpression against the value NULL and returns true if
-	 * the Integer Expression is not NULL.
+	 * Tests the IntegerExpression against the value NULL and returns true if the
+	 * Integer Expression is not NULL.
 	 *
 	 * <p style="color: #F90;">Support DBvolution at
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
@@ -432,8 +424,8 @@ public class IntegerExpression implements IntegerResult, RangeComparable<Integer
 	}
 
 	/**
-	 * Tests the IntegerExpression against the value NULL and returns true if
-	 * the Integer Expression is NULL.
+	 * Tests the IntegerExpression against the value NULL and returns true if the
+	 * Integer Expression is NULL.
 	 *
 	 * <p style="color: #F90;">Support DBvolution at
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
@@ -446,8 +438,8 @@ public class IntegerExpression implements IntegerResult, RangeComparable<Integer
 	}
 
 	/**
-	 * Tests the IntegerExpression against the supplied number and returns true
-	 * if the Integer Expression is not equal to the number.
+	 * Tests the IntegerExpression against the supplied number and returns true if
+	 * the Integer Expression is not equal to the number.
 	 *
 	 * @param number the expression needs to NOT evaluate to this number
 	 * <p style="color: #F90;">Support DBvolution at
@@ -477,38 +469,8 @@ public class IntegerExpression implements IntegerResult, RangeComparable<Integer
 	/**
 	 * Performs searches based on a range.
 	 *
-	 * if both ends of the range are specified the lower-bound will be included
-	 * in the search and the upper-bound excluded. I.e permittedRange(1,3) will
-	 * return 1 and 2.
-	 *
-	 * <p>
-	 * if the upper-bound is null the range will be open ended and inclusive.
-	 * <br>
-	 * I.e permittedRange(1,null) will return 1,2,3,4,5, etc.
-	 *
-	 * <p>
-	 * if the lower-bound is null the range will be open ended and exclusive.
-	 * <br>
-	 * I.e permittedRange(null, 5) will return 4,3,2,1, etc.
-	 *
-	 * @param lowerBound the smallest value
-	 * @param upperBound the largest value
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 * @return a boolean expression representing the required comparison
-	 */
-	public BooleanExpression isBetween(NumberResult lowerBound, NumberResult upperBound) {
-		return BooleanExpression.allOf(
-				this.numberResult().isGreaterThan(lowerBound),
-				this.numberResult().isLessThanOrEqual(upperBound)
-		);
-	}
-
-	/**
-	 * Performs searches based on a range.
-	 *
-	 * if both ends of the range are specified the lower-bound will be included
-	 * in the search and the upper-bound excluded. I.e permittedRange(1,3) will
+	 * if both ends of the range are specified the lower-bound will be included in
+	 * the search and the upper-bound excluded. I.e permittedRange(1,3) will
 	 * return 1 and 2.
 	 *
 	 * <p>
@@ -529,14 +491,44 @@ public class IntegerExpression implements IntegerResult, RangeComparable<Integer
 	 */
 	@Override
 	public BooleanExpression isBetween(IntegerResult lowerBound, IntegerResult upperBound) {
-		return isBetween(NumberExpression.value(lowerBound), NumberExpression.value(upperBound));
+		return BooleanExpression.allOf(
+				this.numberResult().isGreaterThan(lowerBound),
+				this.numberResult().isLessThanOrEqual(upperBound)
+		);
 	}
 
 	/**
 	 * Performs searches based on a range.
 	 *
-	 * if both ends of the range are specified the lower-bound will be included
-	 * in the search and the upper-bound excluded. I.e permittedRange(1,3) will
+	 * if both ends of the range are specified the lower-bound will be included in
+	 * the search and the upper-bound excluded. I.e permittedRange(1,3) will
+	 * return 1 and 2.
+	 *
+	 * <p>
+	 * if the upper-bound is null the range will be open ended and inclusive.
+	 * <br>
+	 * I.e permittedRange(1,null) will return 1,2,3,4,5, etc.
+	 *
+	 * <p>
+	 * if the lower-bound is null the range will be open ended and exclusive.
+	 * <br>
+	 * I.e permittedRange(null, 5) will return 4,3,2,1, etc.
+	 *
+	 * @param lowerbound the smallest value
+	 * @param upperbound the largest value
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @return a boolean expression representing the required comparison
+	 */
+	public BooleanExpression isBetween(int lowerbound, int upperbound) {
+		return isBetween(value(lowerbound), value(upperbound));
+	}
+
+	/**
+	 * Performs searches based on a range.
+	 *
+	 * if both ends of the range are specified the lower-bound will be included in
+	 * the search and the upper-bound excluded. I.e permittedRange(1,3) will
 	 * return 1 and 2.
 	 *
 	 * <p>
@@ -555,15 +547,42 @@ public class IntegerExpression implements IntegerResult, RangeComparable<Integer
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a boolean expression representing the required comparison
 	 */
-	public BooleanExpression isBetween(Number lowerBound, NumberResult upperBound) {
+	public BooleanExpression isBetween(IntegerResult lowerBound, NumberResult upperBound) {
+		return isBetween(IntegerExpression.value(lowerBound), IntegerExpression.value(upperBound));
+	}
+
+	/**
+	 * Performs searches based on a range.
+	 *
+	 * if both ends of the range are specified the lower-bound will be included in
+	 * the search and the upper-bound excluded. I.e permittedRange(1,3) will
+	 * return 1 and 2.
+	 *
+	 * <p>
+	 * if the upper-bound is null the range will be open ended and inclusive.
+	 * <br>
+	 * I.e permittedRange(1,null) will return 1,2,3,4,5, etc.
+	 *
+	 * <p>
+	 * if the lower-bound is null the range will be open ended and exclusive.
+	 * <br>
+	 * I.e permittedRange(null, 5) will return 4,3,2,1, etc.
+	 *
+	 * @param lowerBound the smallest value
+	 * @param upperBound the largest value
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @return a boolean expression representing the required comparison
+	 */
+	public BooleanExpression isBetween(Long lowerBound, IntegerResult upperBound) {
 		return isBetween(value(lowerBound), value(upperBound));
 	}
 
 	/**
 	 * Performs searches based on a range.
 	 *
-	 * if both ends of the range are specified the lower-bound will be included
-	 * in the search and the upper-bound excluded. I.e permittedRange(1,3) will
+	 * if both ends of the range are specified the lower-bound will be included in
+	 * the search and the upper-bound excluded. I.e permittedRange(1,3) will
 	 * return 1 and 2.
 	 *
 	 * <p>
@@ -582,15 +601,15 @@ public class IntegerExpression implements IntegerResult, RangeComparable<Integer
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a boolean expression representing the required comparison
 	 */
-	public BooleanExpression isBetween(IntegerResult lowerBound, Number upperBound) {
+	public BooleanExpression isBetween(IntegerResult lowerBound, Long upperBound) {
 		return isBetween(lowerBound, value(upperBound));
 	}
 
 	/**
 	 * Performs searches based on a range.
 	 *
-	 * if both ends of the range are specified the lower-bound will be included
-	 * in the search and the upper-bound excluded. I.e permittedRange(1,3) will
+	 * if both ends of the range are specified the lower-bound will be included in
+	 * the search and the upper-bound excluded. I.e permittedRange(1,3) will
 	 * return 1 and 2.
 	 *
 	 * <p>
@@ -609,8 +628,89 @@ public class IntegerExpression implements IntegerResult, RangeComparable<Integer
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a boolean expression representing the required comparison
 	 */
-	public BooleanExpression isBetween(Number lowerBound, Number upperBound) {
+	public BooleanExpression isBetween(Long lowerBound, Long upperBound) {
 		return isBetween(value(lowerBound), value(upperBound));
+	}
+
+	/**
+	 * Performs searches based on a range.
+	 *
+	 * if both ends of the range are specified both the lower- and upper-bound
+	 * will be included in the search. I.e permittedRangeInclusive(1,3) will
+	 * return 1, 2, and 3.
+	 *
+	 * <p>
+	 * if the upper-bound is null the range will be open ended and inclusive.
+	 * <br>
+	 * I.e permittedRangeInclusive(1,null) will return 1,2,3,4,5, etc.
+	 *
+	 * <p>
+	 * if the lower-bound is null the range will be open ended and inclusive.
+	 * <br>
+	 * I.e permittedRangeInclusive(null, 5) will return 5,4,3,2,1, etc.
+	 *
+	 * @param lowerBound the smallest value
+	 * @param upperBound the largest value
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @return a boolean expression representing the required comparison
+	 */
+	public BooleanExpression isBetweenInclusive(Long lowerBound, IntegerResult upperBound) {
+		return isBetweenInclusive(value(lowerBound), upperBound);
+	}
+
+	/**
+	 * Performs searches based on a range.
+	 *
+	 * if both ends of the range are specified both the lower- and upper-bound
+	 * will be included in the search. I.e permittedRangeInclusive(1,3) will
+	 * return 1, 2, and 3.
+	 *
+	 * <p>
+	 * if the upper-bound is null the range will be open ended and inclusive.
+	 * <br>
+	 * I.e permittedRangeInclusive(1,null) will return 1,2,3,4,5, etc.
+	 *
+	 * <p>
+	 * if the lower-bound is null the range will be open ended and inclusive.
+	 * <br>
+	 * I.e permittedRangeInclusive(null, 5) will return 5,4,3,2,1, etc.
+	 *
+	 * @param lowerBound the smallest value
+	 * @param upperBound the largest value
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @return a boolean expression representing the required comparison
+	 */
+	public BooleanExpression isBetweenInclusive(IntegerResult lowerBound, Long upperBound) {
+		return isBetweenInclusive(lowerBound, value(upperBound));
+	}
+
+	/**
+	 * Performs searches based on a range.
+	 *
+	 * if both ends of the range are specified both the lower- and upper-bound
+	 * will be included in the search. I.e permittedRangeInclusive(1,3) will
+	 * return 1, 2, and 3.
+	 *
+	 * <p>
+	 * if the upper-bound is null the range will be open ended and inclusive.
+	 * <br>
+	 * I.e permittedRangeInclusive(1,null) will return 1,2,3,4,5, etc.
+	 *
+	 * <p>
+	 * if the lower-bound is null the range will be open ended and inclusive.
+	 * <br>
+	 * I.e permittedRangeInclusive(null, 5) will return 5,4,3,2,1, etc.
+	 *
+	 * @param lowerBound the smallest value
+	 * @param upperBound the largest value
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @return a boolean expression representing the required comparison
+	 */
+	public BooleanExpression isBetweenInclusive(Long lowerBound, Long upperBound) {
+		return isBetweenInclusive(value(lowerBound), value(upperBound));
 	}
 
 	/**
@@ -642,87 +742,6 @@ public class IntegerExpression implements IntegerResult, RangeComparable<Integer
 				this.isGreaterThanOrEqual(lowerBound),
 				this.isLessThanOrEqual(upperBound)
 		);
-	}
-
-	/**
-	 * Performs searches based on a range.
-	 *
-	 * if both ends of the range are specified both the lower- and upper-bound
-	 * will be included in the search. I.e permittedRangeInclusive(1,3) will
-	 * return 1, 2, and 3.
-	 *
-	 * <p>
-	 * if the upper-bound is null the range will be open ended and inclusive.
-	 * <br>
-	 * I.e permittedRangeInclusive(1,null) will return 1,2,3,4,5, etc.
-	 *
-	 * <p>
-	 * if the lower-bound is null the range will be open ended and inclusive.
-	 * <br>
-	 * I.e permittedRangeInclusive(null, 5) will return 5,4,3,2,1, etc.
-	 *
-	 * @param lowerBound the smallest value
-	 * @param upperBound the largest value
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 * @return a boolean expression representing the required comparison
-	 */
-	public BooleanExpression isBetweenInclusive(Integer lowerBound, IntegerResult upperBound) {
-		return isBetweenInclusive(value(lowerBound), upperBound);
-	}
-
-	/**
-	 * Performs searches based on a range.
-	 *
-	 * if both ends of the range are specified both the lower- and upper-bound
-	 * will be included in the search. I.e permittedRangeInclusive(1,3) will
-	 * return 1, 2, and 3.
-	 *
-	 * <p>
-	 * if the upper-bound is null the range will be open ended and inclusive.
-	 * <br>
-	 * I.e permittedRangeInclusive(1,null) will return 1,2,3,4,5, etc.
-	 *
-	 * <p>
-	 * if the lower-bound is null the range will be open ended and inclusive.
-	 * <br>
-	 * I.e permittedRangeInclusive(null, 5) will return 5,4,3,2,1, etc.
-	 *
-	 * @param lowerBound the smallest value
-	 * @param upperBound the largest value
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 * @return a boolean expression representing the required comparison
-	 */
-	public BooleanExpression isBetweenInclusive(IntegerResult lowerBound, Integer upperBound) {
-		return isBetweenInclusive(lowerBound, value(upperBound));
-	}
-
-	/**
-	 * Performs searches based on a range.
-	 *
-	 * if both ends of the range are specified both the lower- and upper-bound
-	 * will be included in the search. I.e permittedRangeInclusive(1,3) will
-	 * return 1, 2, and 3.
-	 *
-	 * <p>
-	 * if the upper-bound is null the range will be open ended and inclusive.
-	 * <br>
-	 * I.e permittedRangeInclusive(1,null) will return 1,2,3,4,5, etc.
-	 *
-	 * <p>
-	 * if the lower-bound is null the range will be open ended and inclusive.
-	 * <br>
-	 * I.e permittedRangeInclusive(null, 5) will return 5,4,3,2,1, etc.
-	 *
-	 * @param lowerBound the smallest value
-	 * @param upperBound the largest value
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 * @return a boolean expression representing the required comparison
-	 */
-	public BooleanExpression isBetweenInclusive(Integer lowerBound, Integer upperBound) {
-		return isBetweenInclusive(value(lowerBound), value(upperBound));
 	}
 
 	/**
@@ -783,39 +802,7 @@ public class IntegerExpression implements IntegerResult, RangeComparable<Integer
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a boolean expression representing the required comparison
 	 */
-	public BooleanExpression isBetweenExclusive(NumberResult lowerBound, NumberResult upperBound) {
-		return BooleanExpression.allOf(
-				this.isGreaterThan(value(lowerBound)),
-				this.isLessThan(value(upperBound))
-		);
-	}
-
-	/**
-	 * Performs searches based on a range.
-	 *
-	 * if both ends of the range are specified both the lower- and upper-bound
-	 * will be excluded in the search. I.e permittedRangeExclusive(1,3) will
-	 * return 2.
-	 *
-	 * <p>
-	 * if the upper-bound is null the range will be open ended upwards and
-	 * exclusive.
-	 * <br>
-	 * I.e permittedRangeExclusive(1,null) will return 2,3,4,5, etc.
-	 *
-	 * <p>
-	 * if the lower-bound is null the range will be open ended downwards and
-	 * exclusive.
-	 * <br>
-	 * I.e permittedRangeExclusive(null, 5) will return 4,3,2,1, etc.
-	 *
-	 * @param lowerBound the smallest value
-	 * @param upperBound the largest value
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 * @return a boolean expression representing the required comparison
-	 */
-	public BooleanExpression isBetweenExclusive(Integer lowerBound, IntegerResult upperBound) {
+	public BooleanExpression isBetweenExclusive(Long lowerBound, IntegerResult upperBound) {
 		return isBetweenExclusive(value(lowerBound), upperBound);
 	}
 
@@ -844,7 +831,7 @@ public class IntegerExpression implements IntegerResult, RangeComparable<Integer
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a boolean expression representing the required comparison
 	 */
-	public BooleanExpression isBetweenExclusive(IntegerResult lowerBound, Integer upperBound) {
+	public BooleanExpression isBetweenExclusive(IntegerResult lowerBound, Long upperBound) {
 		return isBetweenExclusive(lowerBound, value(upperBound));
 	}
 
@@ -873,7 +860,7 @@ public class IntegerExpression implements IntegerResult, RangeComparable<Integer
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a boolean expression representing the required comparison
 	 */
-	public BooleanExpression isBetweenExclusive(Integer lowerBound, Integer upperBound) {
+	public BooleanExpression isBetweenExclusive(Long lowerBound, Long upperBound) {
 		return isBetweenExclusive(value(lowerBound), value(upperBound));
 	}
 
@@ -945,6 +932,20 @@ public class IntegerExpression implements IntegerResult, RangeComparable<Integer
 	 * @return a BooleanExpression for use in
 	 * {@link DBQuery#addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression)}
 	 */
+	public BooleanExpression isGreaterThan(Long number) {
+		return isGreaterThan(value(number));
+	}
+
+	/**
+	 * Tests the IntegerExpression against the number and returns TRUE if the
+	 * value is greater than number.
+	 *
+	 * @param number needs to be greater than this
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @return a BooleanExpression for use in
+	 * {@link DBQuery#addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression)}
+	 */
 	public BooleanExpression isGreaterThan(Integer number) {
 		return isGreaterThan(value(number));
 	}
@@ -962,6 +963,20 @@ public class IntegerExpression implements IntegerResult, RangeComparable<Integer
 	@Override
 	public BooleanExpression isGreaterThan(IntegerResult number) {
 		return new IsGreaterThanFunction(this, number);
+	}
+
+	/**
+	 * Tests the IntegerExpression against the number and returns TRUE if the
+	 * value is greater than or equal to number.
+	 *
+	 * @param number needs to be greater than this
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @return a BooleanExpression for use in
+	 * {@link DBQuery#addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression)}
+	 */
+	public BooleanExpression isGreaterThanOrEqual(Long number) {
+		return isGreaterThanOrEqual(value(number));
 	}
 
 	/**
@@ -1015,6 +1030,30 @@ public class IntegerExpression implements IntegerResult, RangeComparable<Integer
 	 */
 	public BooleanExpression isLessThan(Integer value, BooleanExpression fallBackWhenEquals) {
 		return this.isLessThan(IntegerExpression.value(value), fallBackWhenEquals);
+	}
+
+	/**
+	 * Like LESSTHAN_OR_EQUAL but only includes the EQUAL values if the fallback
+	 * matches.
+	 *
+	 * <p>
+	 * Often used to implement efficient paging by using LESSTHAN across 2
+	 * columns. For example:
+	 * {@code table.column(table.name).isLessThan(5, table.column(table.pkid).isLessThan(1100));}
+	 *
+	 * <p>
+	 * If you are using this for pagination, remember to sort by the columns as
+	 * well
+	 *
+	 * @param value the right side of the internal comparison
+	 * @param fallBackWhenEquals the comparison used when the two values are
+	 * equal.
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @return a BooleanExpression
+	 */
+	public BooleanExpression isGreaterThan(Long value, BooleanExpression fallBackWhenEquals) {
+		return this.isGreaterThan(IntegerExpression.value(value), fallBackWhenEquals);
 	}
 
 	/**
@@ -1359,9 +1398,8 @@ public class IntegerExpression implements IntegerResult, RangeComparable<Integer
 	 * Provides access to the database's cosine function.
 	 *
 	 * <p>
-	 * Computes the cosine of the expression assuming that the previous
-	 * expression is in RADIANS. Use {@link #radians() } to convert degrees into
-	 * radians.
+	 * Computes the cosine of the expression assuming that the previous expression
+	 * is in RADIANS. Use {@link #radians() } to convert degrees into radians.
 	 *
 	 * <p style="color: #F90;">Support DBvolution at
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
@@ -1377,9 +1415,9 @@ public class IntegerExpression implements IntegerResult, RangeComparable<Integer
 	 * Provides access to the database's hyperbolic cosine function.
 	 *
 	 * <p>
-	 * Computes the hyperbolic cosine of the expression assuming that the
-	 * previous expression is in RADIANS. Use {@link #radians() } to convert
-	 * degrees into radians.
+	 * Computes the hyperbolic cosine of the expression assuming that the previous
+	 * expression is in RADIANS. Use {@link #radians() } to convert degrees into
+	 * radians.
 	 *
 	 * <p style="color: #F90;">Support DBvolution at
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
@@ -1419,8 +1457,8 @@ public class IntegerExpression implements IntegerResult, RangeComparable<Integer
 	 * <p style="color: #F90;">Support DBvolution at
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 *
-	 * @return a IntegerExpression representing the hyperbolic sine of the
-	 * current number expression.
+	 * @return a IntegerExpression representing the hyperbolic sine of the current
+	 * number expression.
 	 */
 	public NumberExpression sinh() {
 		return this.numberResult().sinh();
@@ -1465,8 +1503,8 @@ public class IntegerExpression implements IntegerResult, RangeComparable<Integer
 	 * <p style="color: #F90;">Support DBvolution at
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 *
-	 * @return a IntegerExpression representing the tangent of the current
-	 * number expression.
+	 * @return a IntegerExpression representing the tangent of the current number
+	 * expression.
 	 */
 	public NumberExpression tan() {
 		return this.numberResult().tan();
@@ -1496,8 +1534,8 @@ public class IntegerExpression implements IntegerResult, RangeComparable<Integer
 	 * <p style="color: #F90;">Support DBvolution at
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 *
-	 * @return a IntegerExpression representing the absolute value of the
-	 * current number expression.
+	 * @return a IntegerExpression representing the absolute value of the current
+	 * number expression.
 	 */
 	public IntegerExpression abs() {
 		return new IntegerExpression(new AbsoluteValueFunction(this));
@@ -1512,8 +1550,8 @@ public class IntegerExpression implements IntegerResult, RangeComparable<Integer
 	 * <p style="color: #F90;">Support DBvolution at
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 *
-	 * @return a IntegerExpression representing the absolute value of the
-	 * current number expression.
+	 * @return a IntegerExpression representing the absolute value of the current
+	 * number expression.
 	 */
 	public IntegerExpression absoluteValue() {
 		return abs();
@@ -1525,8 +1563,8 @@ public class IntegerExpression implements IntegerResult, RangeComparable<Integer
 	 * <p style="color: #F90;">Support DBvolution at
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 *
-	 * @return a IntegerExpression representing the inverse cosine of the
-	 * current number expression.
+	 * @return a IntegerExpression representing the inverse cosine of the current
+	 * number expression.
 	 */
 	public NumberExpression arccos() {
 		return new NumberExpression(new ArcCosineFunction(this));
@@ -1551,8 +1589,8 @@ public class IntegerExpression implements IntegerResult, RangeComparable<Integer
 	 * <p style="color: #F90;">Support DBvolution at
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 *
-	 * @return a IntegerExpression representing the inverse tangent of the
-	 * current number expression.
+	 * @return a IntegerExpression representing the inverse tangent of the current
+	 * number expression.
 	 */
 	public NumberExpression arctan() {
 		return this.numberResult().arctan();
@@ -1563,18 +1601,18 @@ public class IntegerExpression implements IntegerResult, RangeComparable<Integer
 	 * arguments.
 	 *
 	 * <p>
-	 * In a variety of computer languages, the function arctan2 is the
-	 * arctangent function with two arguments. The purpose of using two
-	 * arguments instead of one is to gather information on the signs of the
-	 * inputs in order to return the appropriate quadrant of the computed angle,
-	 * which is not possible for the single-argument arctangent function.
+	 * In a variety of computer languages, the function arctan2 is the arctangent
+	 * function with two arguments. The purpose of using two arguments instead of
+	 * one is to gather information on the signs of the inputs in order to return
+	 * the appropriate quadrant of the computed angle, which is not possible for
+	 * the single-argument arctangent function.
 	 *
 	 * <p>
-	 * For any real number (e.g., floating point) arguments x and y not both
-	 * equal to zero, arctan2(y, x) is the angle in radians between the positive
-	 * x-axis of a plane and the point given by the coordinates (x, y) on it.
-	 * The angle is positive for counter-clockwise angles (upper half-plane, y
-	 * &gt; 0), and negative for clockwise angles (lower half-plane, y &lt; 0).
+	 * For any real number (e.g., floating point) arguments x and y not both equal
+	 * to zero, arctan2(y, x) is the angle in radians between the positive x-axis
+	 * of a plane and the point given by the coordinates (x, y) on it. The angle
+	 * is positive for counter-clockwise angles (upper half-plane, y &gt; 0), and
+	 * negative for clockwise angles (lower half-plane, y &lt; 0).
 	 *
 	 * @param number the ARCTAN2 of this is required
 	 * <p style="color: #F90;">Support DBvolution at
@@ -1591,18 +1629,18 @@ public class IntegerExpression implements IntegerResult, RangeComparable<Integer
 	 * arguments.
 	 *
 	 * <p>
-	 * In a variety of computer languages, the function arctan2 is the
-	 * arctangent function with two arguments. The purpose of using two
-	 * arguments instead of one is to gather information on the signs of the
-	 * inputs in order to return the appropriate quadrant of the computed angle,
-	 * which is not possible for the single-argument arctangent function.
+	 * In a variety of computer languages, the function arctan2 is the arctangent
+	 * function with two arguments. The purpose of using two arguments instead of
+	 * one is to gather information on the signs of the inputs in order to return
+	 * the appropriate quadrant of the computed angle, which is not possible for
+	 * the single-argument arctangent function.
 	 *
 	 * <p>
-	 * For any real number (e.g., floating point) arguments x and y not both
-	 * equal to zero, arctan2(y, x) is the angle in radians between the positive
-	 * x-axis of a plane and the point given by the coordinates (x, y) on it.
-	 * The angle is positive for counter-clockwise angles (upper half-plane, y
-	 * &gt; 0), and negative for clockwise angles (lower half-plane, y &lt; 0).
+	 * For any real number (e.g., floating point) arguments x and y not both equal
+	 * to zero, arctan2(y, x) is the angle in radians between the positive x-axis
+	 * of a plane and the point given by the coordinates (x, y) on it. The angle
+	 * is positive for counter-clockwise angles (upper half-plane, y &gt; 0), and
+	 * negative for clockwise angles (lower half-plane, y &lt; 0).
 	 *
 	 * @param number the ARCTAN2 of this is required
 	 * <p style="color: #F90;">Support DBvolution at
@@ -1619,18 +1657,18 @@ public class IntegerExpression implements IntegerResult, RangeComparable<Integer
 	 * arguments.
 	 *
 	 * <p>
-	 * In a variety of computer languages, the function arctan2 is the
-	 * arctangent function with two arguments. The purpose of using two
-	 * arguments instead of one is to gather information on the signs of the
-	 * inputs in order to return the appropriate quadrant of the computed angle,
-	 * which is not possible for the single-argument arctangent function.
+	 * In a variety of computer languages, the function arctan2 is the arctangent
+	 * function with two arguments. The purpose of using two arguments instead of
+	 * one is to gather information on the signs of the inputs in order to return
+	 * the appropriate quadrant of the computed angle, which is not possible for
+	 * the single-argument arctangent function.
 	 *
 	 * <p>
-	 * For any real number (e.g., floating point) arguments x and y not both
-	 * equal to zero, arctan2(y, x) is the angle in radians between the positive
-	 * x-axis of a plane and the point given by the coordinates (x, y) on it.
-	 * The angle is positive for counter-clockwise angles (upper half-plane, y
-	 * &gt; 0), and negative for clockwise angles (lower half-plane, y &lt; 0).
+	 * For any real number (e.g., floating point) arguments x and y not both equal
+	 * to zero, arctan2(y, x) is the angle in radians between the positive x-axis
+	 * of a plane and the point given by the coordinates (x, y) on it. The angle
+	 * is positive for counter-clockwise angles (upper half-plane, y &gt; 0), and
+	 * negative for clockwise angles (lower half-plane, y &lt; 0).
 	 *
 	 * @param number the ARCTAN2 of this is required
 	 * <p style="color: #F90;">Support DBvolution at
@@ -1664,8 +1702,8 @@ public class IntegerExpression implements IntegerResult, RangeComparable<Integer
 	 * <p style="color: #F90;">Support DBvolution at
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 *
-	 * @return a IntegerExpression representing the inverse tangent of the
-	 * current number expression.
+	 * @return a IntegerExpression representing the inverse tangent of the current
+	 * number expression.
 	 */
 	public NumberExpression degrees() {
 		return this.numberResult().degrees();
@@ -1680,8 +1718,8 @@ public class IntegerExpression implements IntegerResult, RangeComparable<Integer
 	 * <p style="color: #F90;">Support DBvolution at
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 *
-	 * @return a IntegerExpression representing the inverse tangent of the
-	 * current number expression.
+	 * @return a IntegerExpression representing the inverse tangent of the current
+	 * number expression.
 	 */
 	public NumberExpression radians() {
 		return this.numberResult().radians();
@@ -1789,8 +1827,8 @@ public class IntegerExpression implements IntegerResult, RangeComparable<Integer
 	}
 
 	/**
-	 * Returns the sign of the argument as -1, 0, or 1, depending on whether X
-	 * is negative, zero, or positive.
+	 * Returns the sign of the argument as -1, 0, or 1, depending on whether X is
+	 * negative, zero, or positive.
 	 *
 	 * <p style="color: #F90;">Support DBvolution at
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
@@ -1817,8 +1855,8 @@ public class IntegerExpression implements IntegerResult, RangeComparable<Integer
 	 * Implements support for rounding to an arbitrary number of decimal places.
 	 *
 	 * <p>
-	 * For instance if you require numbers like 12.345 you should use .round(3)
-	 * to get the 3 digits after the decimal point.
+	 * For instance if you require numbers like 12.345 you should use .round(3) to
+	 * get the 3 digits after the decimal point.
 	 *
 	 * @param decimalPlaces the number of significant places that are required.
 	 * <p style="color: #F90;">Support DBvolution at
@@ -1833,8 +1871,8 @@ public class IntegerExpression implements IntegerResult, RangeComparable<Integer
 	 * Implements support for rounding to an arbitrary number of decimal places.
 	 *
 	 * <p>
-	 * For instance if you require numbers like 12.345 you should use .round(3)
-	 * to get the 3 digits after the decimal point.
+	 * For instance if you require numbers like 12.345 you should use .round(3) to
+	 * get the 3 digits after the decimal point.
 	 *
 	 * @param decimalPlaces the number of significant places that are required.
 	 * <p style="color: #F90;">Support DBvolution at
@@ -1849,8 +1887,8 @@ public class IntegerExpression implements IntegerResult, RangeComparable<Integer
 	 * Implements support for rounding to an arbitrary number of decimal places.
 	 *
 	 * <p>
-	 * For instance if you require numbers like 12.345 you should use .round(3)
-	 * to get the 3 digits after the decimal point.
+	 * For instance if you require numbers like 12.345 you should use .round(3) to
+	 * get the 3 digits after the decimal point.
 	 *
 	 * @param decimalPlaces the number of significant places that are required.
 	 * <p style="color: #F90;">Support DBvolution at
@@ -2122,12 +2160,12 @@ public class IntegerExpression implements IntegerResult, RangeComparable<Integer
 	 * MOD returns the remainder from integer division.
 	 *
 	 * <p>
-	 * DBvolution implements mod as a function. The two arguments to the
-	 * function are evaluated before MOD is applied.
+	 * DBvolution implements mod as a function. The two arguments to the function
+	 * are evaluated before MOD is applied.
 	 *
 	 * <p>
-	 * This differs from some implementations where MOD is the "%" operator and
-	 * is considered analogous to "*" and "/". However databases vary in their
+	 * This differs from some implementations where MOD is the "%" operator and is
+	 * considered analogous to "*" and "/". However databases vary in their
 	 * implementation and Wikipedia, as of 11 Sept 2014, does not include "%" in
 	 * Arithmetic. So I have decided to err on the side of consistency between
 	 * databases and implement it so that mod() will return the same result for
@@ -2147,12 +2185,12 @@ public class IntegerExpression implements IntegerResult, RangeComparable<Integer
 	 * MOD returns the remainder from integer division.
 	 *
 	 * <p>
-	 * DBvolution implements mod as a function. The two arguments to the
-	 * function are evaluated before MOD is applied.
+	 * DBvolution implements mod as a function. The two arguments to the function
+	 * are evaluated before MOD is applied.
 	 *
 	 * <p>
-	 * This differs from some implementations where MOD is the "%" operator and
-	 * is considered analogous to "*" and "/". However databases vary in their
+	 * This differs from some implementations where MOD is the "%" operator and is
+	 * considered analogous to "*" and "/". However databases vary in their
 	 * implementation and Wikipedia, as of 11 Sept 2014, does not include "%" in
 	 * Arithmetic. So I have decided to err on the side of consistency between
 	 * databases and implement it so that mod() will return the same result for
@@ -2183,8 +2221,7 @@ public class IntegerExpression implements IntegerResult, RangeComparable<Integer
 	 * number.
 	 * <p style="color: #F90;">Support DBvolution at
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 * @return SQL that selects the string from the list based on this
-	 * expression.
+	 * @return SQL that selects the string from the list based on this expression.
 	 */
 	public StringExpression choose(String... stringsToChooseFrom) {
 		List<StringResult> strResult = new ArrayList<>();
@@ -2210,8 +2247,7 @@ public class IntegerExpression implements IntegerResult, RangeComparable<Integer
 	 * number.
 	 * <p style="color: #F90;">Support DBvolution at
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 * @return SQL that selects the string from the list based on this
-	 * expression.
+	 * @return SQL that selects the string from the list based on this expression.
 	 */
 	public StringExpression choose(StringResult... stringsToChooseFrom) {
 		StringExpression leastExpr
@@ -2308,33 +2344,6 @@ public class IntegerExpression implements IntegerResult, RangeComparable<Integer
 	 */
 	public IntegerExpression sum() {
 		return new IntegerExpression(new SumFunction(this));
-	}
-
-	/**
-	 * Aggregrator that counts all the rows of the query.
-	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 *
-	 * @return the count of all the values from the column.
-	 */
-	public static IntegerExpression countAll() {
-		return new IntegerExpression(new CountAllFunction());
-	}
-
-	/**
-	 * Aggregrator that counts this row if the booleanResult is true.
-	 *
-	 * @param booleanResult an expression that will be TRUE when the row needs
-	 * to be counted.
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 * @return The number of rows where the test is true.
-	 */
-	public static IntegerExpression countIf(BooleanResult booleanResult) {
-		return new BooleanExpression(booleanResult)
-				.ifThenElse(value(1), value(0))
-				.sum();
 	}
 
 	@Override

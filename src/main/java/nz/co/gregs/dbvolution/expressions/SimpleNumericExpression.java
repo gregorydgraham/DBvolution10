@@ -28,20 +28,20 @@
  */
 package nz.co.gregs.dbvolution.expressions;
 
-import nz.co.gregs.dbvolution.results.RangeResult;
-import nz.co.gregs.dbvolution.results.InComparable;
-import nz.co.gregs.dbvolution.results.RangeComparable;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
+import nz.co.gregs.dbvolution.results.RangeResult;
 
 /**
  *
+ * Used to group NumberExpression and IntegerExpression.
+ *
+ * Simple in this sense means that imaginary numbers are probably not handled.
+ *
  * @author gregorygraham
- * @param <B> a base type like Number, String, or Date
- * 
- * @param <R> some DBExpression type like NumberResult
- * @param <D> some QDT that works with R
- * 
+ * @param <B> a base numeric type, that is Number or Integer or similar
+ * @param <R> a RangeResult&lt;B&gt;
+ * @param <D> a QueryableDatatype&lt;B&gt;
  */
-public abstract class RangeComparableExpression<B extends Object, R extends RangeResult<B>, D extends QueryableDatatype<B>> implements RangeResult<B>, RangeComparable<R>, InComparable<R>, ExpressionColumn<D> {
+public abstract class SimpleNumericExpression<B, R extends RangeResult<B>, D extends QueryableDatatype<B>> extends CountableExpression<B, R, D> {
 
 }

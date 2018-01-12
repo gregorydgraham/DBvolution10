@@ -15,7 +15,6 @@
  */
 package nz.co.gregs.dbvolution.expressions;
 
-import nz.co.gregs.dbvolution.results.RangeComparable;
 import nz.co.gregs.dbvolution.results.DateRepeatResult;
 import java.util.HashSet;
 import java.util.Set;
@@ -24,6 +23,7 @@ import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.databases.supports.SupportsDateRepeatDatatypeFunctions;
 import nz.co.gregs.dbvolution.datatypes.DBBoolean;
 import nz.co.gregs.dbvolution.datatypes.DBDateRepeat;
+import nz.co.gregs.dbvolution.results.StringResult;
 import org.joda.time.Period;
 
 /**
@@ -33,7 +33,7 @@ import org.joda.time.Period;
  *
  * @author gregory.graham
  */
-public class DateRepeatExpression implements DateRepeatResult, RangeComparable<DateRepeatResult>, ExpressionColumn<DBDateRepeat> {
+public class DateRepeatExpression extends CountableExpression<Period, DateRepeatResult, DBDateRepeat> implements DateRepeatResult {
 
 	private final DateRepeatResult innerDateRepeatResult;
 	private final boolean nullProtectionRequired;
@@ -214,6 +214,7 @@ public class DateRepeatExpression implements DateRepeatResult, RangeComparable<D
 	 * <p style="color: #F90;">Support DBvolution at
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 *
+	 * @param anotherInstance
 	 * @return a BooleanExpression
 	 */
 	@Override
@@ -248,6 +249,7 @@ public class DateRepeatExpression implements DateRepeatResult, RangeComparable<D
 	 * <p style="color: #F90;">Support DBvolution at
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 *
+	 * @param anotherInstance
 	 * @return a BooleanExpression
 	 */
 	@Override
@@ -680,6 +682,17 @@ public class DateRepeatExpression implements DateRepeatResult, RangeComparable<D
 		);
 	}
 
+	@Override
+	public BooleanExpression isIn(DateRepeatResult... otherInstances) {
+		StringResult[] strs = new StringResult[otherInstances.length];
+		int i = 0;
+		for (DateRepeatResult otherInstance : otherInstances) {
+			strs[i] = otherInstance.stringResult();
+			i++;
+		}
+		return this.stringResult().isIn(strs);
+	}
+
 	private static abstract class DateRepeatDateRepeatWithBooleanResult extends BooleanExpression {
 
 		private DateRepeatExpression first;
@@ -721,9 +734,7 @@ public class DateRepeatExpression implements DateRepeatResult, RangeComparable<D
 			DateRepeatDateRepeatWithBooleanResult newInstance;
 			try {
 				newInstance = getClass().newInstance();
-			} catch (InstantiationException ex) {
-				throw new RuntimeException(ex);
-			} catch (IllegalAccessException ex) {
+			} catch (InstantiationException | IllegalAccessException ex) {
 				throw new RuntimeException(ex);
 			}
 			newInstance.first = first.copy();
@@ -759,15 +770,10 @@ public class DateRepeatExpression implements DateRepeatResult, RangeComparable<D
 	private static abstract class DateRepeatWithNumberResult extends NumberExpression {
 
 		private DateRepeatExpression first;
-//		private DateRepeatResult second;
 		private boolean requiresNullProtection;
 
 		DateRepeatWithNumberResult(DateRepeatExpression first) {
 			this.first = first;
-//			this.second = second;
-//			if (this.second == null || this.second.getIncludesNull()) {
-//				this.requiresNullProtection = true;
-//			}
 		}
 
 		protected abstract String doExpressionTransform(DBDefinition db);
@@ -776,9 +782,6 @@ public class DateRepeatExpression implements DateRepeatResult, RangeComparable<D
 			return first;
 		}
 
-//		DateRepeatResult getSecond() {
-//			return second;
-//		}
 		@Override
 		public String toSQLString(DBDefinition db) {
 			if (this.getIncludesNull()) {
@@ -793,13 +796,10 @@ public class DateRepeatExpression implements DateRepeatResult, RangeComparable<D
 			DateRepeatWithNumberResult newInstance;
 			try {
 				newInstance = getClass().newInstance();
-			} catch (InstantiationException ex) {
-				throw new RuntimeException(ex);
-			} catch (IllegalAccessException ex) {
+			} catch (InstantiationException | IllegalAccessException ex) {
 				throw new RuntimeException(ex);
 			}
 			newInstance.first = first.copy();
-//			newInstance.second = second.copy();
 			return newInstance;
 		}
 
@@ -809,15 +809,12 @@ public class DateRepeatExpression implements DateRepeatResult, RangeComparable<D
 			if (first != null) {
 				hashSet.addAll(first.getTablesInvolved());
 			}
-//			if (second != null) {
-//				hashSet.addAll(second.getTablesInvolved());
-//			}
 			return hashSet;
 		}
 
 		@Override
 		public boolean isAggregator() {
-			return first.isAggregator();//|| second.isAggregator();
+			return first.isAggregator();
 		}
 
 		@Override
@@ -829,15 +826,10 @@ public class DateRepeatExpression implements DateRepeatResult, RangeComparable<D
 	private static abstract class DateRepeatWithStringResult extends StringExpression {
 
 		private DateRepeatExpression first;
-//		private DateRepeatResult second;
 		private boolean requiresNullProtection;
 
 		DateRepeatWithStringResult(DateRepeatExpression first) {
 			this.first = first;
-//			this.second = second;
-//			if (this.second == null || this.second.getIncludesNull()) {
-//				this.requiresNullProtection = true;
-//			}
 		}
 
 		protected abstract String doExpressionTransform(DBDefinition db);
@@ -846,9 +838,6 @@ public class DateRepeatExpression implements DateRepeatResult, RangeComparable<D
 			return first;
 		}
 
-//		DateRepeatResult getSecond() {
-//			return second;
-//		}
 		@Override
 		public String toSQLString(DBDefinition db) {
 			if (this.getIncludesNull()) {
@@ -863,13 +852,10 @@ public class DateRepeatExpression implements DateRepeatResult, RangeComparable<D
 			DateRepeatWithStringResult newInstance;
 			try {
 				newInstance = getClass().newInstance();
-			} catch (InstantiationException ex) {
-				throw new RuntimeException(ex);
-			} catch (IllegalAccessException ex) {
+			} catch (InstantiationException | IllegalAccessException ex) {
 				throw new RuntimeException(ex);
 			}
 			newInstance.first = first.copy();
-//			newInstance.second = second.copy();
 			return newInstance;
 		}
 
@@ -879,15 +865,12 @@ public class DateRepeatExpression implements DateRepeatResult, RangeComparable<D
 			if (first != null) {
 				hashSet.addAll(first.getTablesInvolved());
 			}
-//			if (second != null) {
-//				hashSet.addAll(second.getTablesInvolved());
-//			}
 			return hashSet;
 		}
 
 		@Override
 		public boolean isAggregator() {
-			return first.isAggregator();//|| second.isAggregator();
+			return first.isAggregator();
 		}
 
 		@Override

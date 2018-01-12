@@ -314,10 +314,10 @@ public class DBReportTest extends AbstractTest {
 
 		private static final long serialVersionUID = 1L;
 
-		private Marque marque = new Marque();
-		private CarCompany carCompany = new CarCompany();
+		private final Marque marque = new Marque();
+		private final CarCompany carCompany = new CarCompany();
 		public DBString carCompanyName = carCompany.column(carCompany.name).uppercase().asExpressionColumn();
-		public DBNumber countAll = NumberExpression.countAll().asExpressionColumn();
+		public DBInteger countAll = NumberExpression.countAll().asExpressionColumn();
 
 		{
 			carCompany.uidCarCompany.excludedValues((Integer) null);
@@ -356,7 +356,7 @@ public class DBReportTest extends AbstractTest {
 		private final Marque marque = new Marque();
 		private final CarCompany carCompany = new CarCompany();
 		private final DBString carCompanyName = carCompany.column(carCompany.name).uppercase().asExpressionColumn();
-		private final DBNumber countAll = NumberExpression.countAll().asExpressionColumn();
+		private final DBInteger countAll = NumberExpression.countAll().asExpressionColumn();
 
 		{
 			carCompany.uidCarCompany.excludedValues((Integer) null);

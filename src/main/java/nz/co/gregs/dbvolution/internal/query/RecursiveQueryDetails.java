@@ -322,9 +322,7 @@ public class RecursiveQueryDetails<T extends DBRow> extends QueryDetails {
 					new RecursiveQueryDepthIncreaseExpression().asExpressionColumn()
 			);
 
-		} catch (InstantiationException ex) {
-			throw new UnableToInstantiateDBRowSubclassException(referencedClass, ex);
-		} catch (IllegalAccessException ex) {
+		} catch (InstantiationException | IllegalAccessException ex) {
 			throw new UnableToInstantiateDBRowSubclassException(referencedClass, ex);
 		}
 

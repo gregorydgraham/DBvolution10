@@ -65,7 +65,7 @@ import org.joda.time.Period;
  *
  * @author Gregory Graham
  */
-public class DateExpression extends RangeComparableExpression<Date, DateResult, DBDate>implements DateResult {
+public class DateExpression extends CountableExpression<Date, DateResult, DBDate>implements DateResult {
 
 	/**
 	 * The integer used to represent the index for Sunday

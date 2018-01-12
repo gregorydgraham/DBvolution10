@@ -32,7 +32,7 @@ import nz.co.gregs.dbvolution.expressions.BooleanExpression;
  * @param <A> the class that can be compared using the "=" operator
  *
  */
-public interface EqualComparable<A> {
+public interface EqualComparable<A> extends ExpressionCanHaveNullValues{
 
 	/**
 	 * Creates a {@link BooleanExpression} that compares the 2 values using the
