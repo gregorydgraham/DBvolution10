@@ -15,6 +15,7 @@
  */
 package nz.co.gregs.dbvolution.results;
 
+import java.util.Date;
 import nz.co.gregs.dbvolution.expressions.DBExpression;
 
 /**
@@ -36,7 +37,7 @@ import nz.co.gregs.dbvolution.expressions.DBExpression;
  * @author greg
  * @see DBExpression
  */
-public interface DateResult extends DBExpression, ExpressionCanHaveNullValues {
+public interface DateResult extends RangeResult<Date> {
 
 	@Override
 	public DateResult copy();

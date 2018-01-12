@@ -2604,6 +2604,34 @@ public class DateExpression implements DateResult, RangeComparable<DateResult>, 
 		return new DBDate(this);
 	}
 
+	/**
+	 * Returns the date as an ISO 8601 formatted string NOT including time zone.
+	 * 
+	 * <p> ISO 8601 form at is YYYY-MM-DDTHH:mm:ss.sss</p>
+	 * 
+	 * <p>May not be zero padded but the format is still unambiguous.</p>
+	 * @return 
+	 */
+	@Override
+	public StringExpression stringResult() {
+		StringExpression isoFormatDateTime = new StringExpression("")
+				.append(this.year())
+				.append("-")
+				.append(this.month())
+				.append("-")
+				.append(this.day())
+				.append("T")
+				.append(this.hour())
+				.append(":")
+				.append(this.minute())
+				.append(":")
+				.append(this.second())
+				.append(".")
+				.append(this.subsecond())
+				;
+		return isoFormatDateTime;
+	}
+
 	private static abstract class FunctionWithDateResult extends DateExpression {
 
 		FunctionWithDateResult() {

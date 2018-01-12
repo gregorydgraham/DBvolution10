@@ -2393,6 +2393,11 @@ public class StringExpression implements StringResult, RangeComparable<StringRes
 		return new DBString(this);
 	}
 
+	@Override
+	public StringExpression stringResult() {
+		return this;
+	}
+
 	private static abstract class DBBinaryStringArithmetic extends StringExpression {
 
 		private StringResult first;

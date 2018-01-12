@@ -53,7 +53,8 @@ import nz.co.gregs.dbvolution.results.IntegerResult;
  *
  * @author Gregory Graham
  */
-public class NumberExpression implements NumberResult, RangeComparable<NumberResult>, InComparable<NumberResult>, ExpressionColumn<DBNumber> {
+public class NumberExpression extends RangeComparableExpression<Number, NumberResult, DBNumber> implements NumberResult{
+//public class NumberExpression implements NumberResult, RangeComparable<NumberResult>, InComparable<NumberResult>, ExpressionColumn<DBNumber> {
 
 	static NumberExpression nullExpression() {
 		return new NumberExpression() {

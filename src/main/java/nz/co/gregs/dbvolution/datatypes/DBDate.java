@@ -31,6 +31,7 @@ import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.exceptions.DBRuntimeException;
 import nz.co.gregs.dbvolution.exceptions.IncorrectRowProviderInstanceSuppliedException;
 import nz.co.gregs.dbvolution.expressions.DateExpression;
+import nz.co.gregs.dbvolution.expressions.StringExpression;
 import nz.co.gregs.dbvolution.results.DateResult;
 import nz.co.gregs.dbvolution.operators.DBPermittedRangeExclusiveOperator;
 import nz.co.gregs.dbvolution.operators.DBPermittedRangeInclusiveOperator;
@@ -672,5 +673,10 @@ public class DBDate extends QueryableDatatype<Date> implements DateResult {
 	@Override
 	public DateColumn getColumn(RowDefinition row) throws IncorrectRowProviderInstanceSuppliedException {
 		return new DateColumn(row, this);
+	}
+
+	@Override
+	public StringExpression stringResult() {
+		return new DateExpression(this).stringResult();
 	}
 }
