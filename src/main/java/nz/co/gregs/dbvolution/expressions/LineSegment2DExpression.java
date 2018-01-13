@@ -50,7 +50,7 @@ public class LineSegment2DExpression implements LineSegment2DResult, EqualCompar
 	}
 
 	/**
-	 * Create a LineSegment2D expression encapsulating the value supplied.
+	 * Create a LineSegment2D value encapsulating the value supplied.
 	 *
 	 * @param value
 	 */
@@ -60,7 +60,7 @@ public class LineSegment2DExpression implements LineSegment2DResult, EqualCompar
 	}
 
 	/**
-	 * Create a LineSegment2D expression encapsulating the value supplied.
+	 * Create a LineSegment2D value encapsulating the value supplied.
 	 *
 	 * @param line
 	 */
@@ -70,7 +70,7 @@ public class LineSegment2DExpression implements LineSegment2DResult, EqualCompar
 	}
 
 	/**
-	 * Create a LineSegment2D expression encapsulating the values supplied.
+	 * Create a LineSegment2D value encapsulating the values supplied.
 	 *
 	 * @param point1x
 	 * @param point1y
@@ -89,7 +89,7 @@ public class LineSegment2DExpression implements LineSegment2DResult, EqualCompar
 	}
 
 	/**
-	 * Create a LineSegment2D expression encapsulating the value supplied.
+	 * Create a LineSegment2D value encapsulating the value supplied.
 	 *
 	 * @param point1
 	 * @param point2
@@ -107,7 +107,7 @@ public class LineSegment2DExpression implements LineSegment2DResult, EqualCompar
 	}
 
 	/**
-	 * Create a LineSegment2D expression encapsulating the value supplied.
+	 * Create a LineSegment2D value encapsulating the value supplied.
 	 *
 	 * @param coord1
 	 * @param coord2
@@ -124,34 +124,34 @@ public class LineSegment2DExpression implements LineSegment2DResult, EqualCompar
 	}
 
 	/**
-	 * Create an expression for the line segment created from the 2 points.
+	 * Create an value for the line segment created from the 2 points.
 	 *
 	 * @param point1 the starting point of this value
 	 * @param point2 the end point of this value
 	 * <p style="color: #F90;">Support DBvolution at
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 * @return a LineSegment2D expression
+	 * @return a LineSegment2D value
 	 */
 	public static LineSegment2DExpression value(Point point1, Point point2) {
 		return new LineSegment2DExpression(point1, point2);
 	}
 
 	/**
-	 * Create an expression for the line segment created from the 2 coordinates.
+	 * Create an value for the line segment created from the 2 coordinates.
 	 *
 	 * @param coord1 the starting point of this value
 	 * @param coord2 the end point of this value
 	 * <p style="color: #F90;">Support DBvolution at
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 * @return a LineSegment2D expression
+	 * @return a LineSegment2D value
 	 */
 	public static LineSegment2DExpression value(Coordinate coord1, Coordinate coord2) {
 		return new LineSegment2DExpression(coord1, coord2);
 	}
 
 	/**
-	 * Create an expression for the line segment created by combining the 4
-	 * numbers into 2 points.
+	 * Create an value for the line segment created by combining the 4
+ numbers into 2 points.
 	 *
 	 * @param x1 the first X of this value
 	 * @param y1 the first Y of this value
@@ -159,31 +159,31 @@ public class LineSegment2DExpression implements LineSegment2DResult, EqualCompar
 	 * @param y2 the last Y of this value
 	 * <p style="color: #F90;">Support DBvolution at
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 * @return a LineSegment2D expression
+	 * @return a LineSegment2D value
 	 */
 	public static LineSegment2DExpression value(Double x1, Double y1, Double x2, Double y2) {
 		return new LineSegment2DExpression(new Coordinate(x1, y1), new Coordinate(x2, y2));
 	}
 
 	/**
-	 * Create an expression for the line segment created from the 2 points.
+	 * Create an value for the line segment created from the 2 points.
 	 *
-	 * @param line the value of this line expression
-	 * <p style="color: #F90;">Support DBvolution at
+	 * @param line the value of this line value
+ <p style="color: #F90;">Support DBvolution at
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 * @return a LineSegment2D expression
+	 * @return a LineSegment2D value
 	 */
 	public static LineSegment2DExpression value(LineSegment line) {
 		return new LineSegment2DExpression(line);
 	}
 
 	/**
-	 * Create an expression for the line segment created from the 2 points.
+	 * Create an value for the line segment created from the 2 points.
 	 *
-	 * @param line the value of this line expression
-	 * <p style="color: #F90;">Support DBvolution at
+	 * @param line the value of this line value
+ <p style="color: #F90;">Support DBvolution at
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 * @return a LineSegment2D expression
+	 * @return a LineSegment2D value
 	 */
 	public static LineSegment2DExpression value(LineSegment2DResult line) {
 		return new LineSegment2DExpression(line);
@@ -538,8 +538,8 @@ public class LineSegment2DExpression implements LineSegment2DResult, EqualCompar
 	}
 
 	/**
-	 * Returns an expression providing the point of intersection between this line
-	 * segment and the line segment formed from the two points provided.
+	 * Returns an value providing the point of intersection between this line
+ segment and the line segment formed from the two points provided.
 	 *
 	 * @param point1 the first point of the line segment to compare against
 	 * @param point2 the last point of the line segment to compare against
@@ -552,8 +552,8 @@ public class LineSegment2DExpression implements LineSegment2DResult, EqualCompar
 	}
 
 	/**
-	 * Returns an expression providing the point of intersection between this line
-	 * segment and the line segment formed from the four ordinates provided.
+	 * Returns an value providing the point of intersection between this line
+ segment and the line segment formed from the four ordinates provided.
 	 *
 	 * @param point1x the first X of the line segment to compare against
 	 * @param point1y the first Y of the line segment to compare against
@@ -568,8 +568,8 @@ public class LineSegment2DExpression implements LineSegment2DResult, EqualCompar
 	}
 
 	/**
-	 * Returns an expression providing the point of intersection between this line
-	 * segment and the line segment formed from the two coordinates provided.
+	 * Returns an value providing the point of intersection between this line
+ segment and the line segment formed from the two coordinates provided.
 	 *
 	 * @param coord1 the first point of the line segment to compare against
 	 * @param coord2 the last point of the line segment to compare against
@@ -582,8 +582,8 @@ public class LineSegment2DExpression implements LineSegment2DResult, EqualCompar
 	}
 
 	/**
-	 * Returns an expression providing the point of intersection between this line
-	 * segment and the line segment provided.
+	 * Returns an value providing the point of intersection between this line
+ segment and the line segment provided.
 	 *
 	 * @param lineString the line segment to compare against
 	 * <p style="color: #F90;">Support DBvolution at
@@ -595,8 +595,8 @@ public class LineSegment2DExpression implements LineSegment2DResult, EqualCompar
 	}
 
 	/**
-	 * Returns an expression providing the point of intersection between this line
-	 * segment and the {@link LineSegment2DResult}/{@link LineSegment2DExpression}
+	 * Returns an value providing the point of intersection between this line
+ segment and the {@link LineSegment2DResult}/{@link LineSegment2DExpression}
 	 * provided.
 	 *
 	 * @param crossingLine the line segment to compare against

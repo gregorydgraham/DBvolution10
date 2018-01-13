@@ -15,7 +15,6 @@
  */
 package nz.co.gregs.dbvolution.expressions;
 
-import nz.co.gregs.dbvolution.results.RangeComparable;
 import nz.co.gregs.dbvolution.results.DateRepeatResult;
 import nz.co.gregs.dbvolution.results.DateResult;
 import nz.co.gregs.dbvolution.results.NumberResult;
@@ -31,8 +30,7 @@ import nz.co.gregs.dbvolution.DBReport;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.databases.supports.SupportsDateRepeatDatatypeFunctions;
 import nz.co.gregs.dbvolution.datatypes.*;
-import nz.co.gregs.dbvolution.results.InComparable;
-import nz.co.gregs.dbvolution.results.RangeResult;
+import nz.co.gregs.dbvolution.results.IntegerResult;
 import org.joda.time.Period;
 
 /**
@@ -65,7 +63,7 @@ import org.joda.time.Period;
  *
  * @author Gregory Graham
  */
-public class DateExpression extends CountableExpression<Date, DateResult, DBDate>implements DateResult {
+public class DateExpression extends RangeExpression<Date, DateResult, DBDate> implements DateResult {
 
 	/**
 	 * The integer used to represent the index for Sunday
@@ -186,7 +184,8 @@ public class DateExpression extends CountableExpression<Date, DateResult, DBDate
 		return new DateExpression(date);
 	}
 
-	static DateExpression nullExpression() {
+	@Override
+	public DateExpression nullExpression() {
 		return new DateExpression() {
 			@Override
 			public String toSQLString(DBDefinition db) {
@@ -303,6 +302,32 @@ public class DateExpression extends CountableExpression<Date, DateResult, DBDate
 	/**
 	 * Creates an SQL expression that tests the year part of this date expression.
 	 *
+	 * @param yearRequired the year to used in the expression
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @return a BooleanExpression that is TRUE if the year is the same as the
+	 * example supplied.
+	 */
+	public BooleanExpression yearIs(Long yearRequired) {
+		return this.year().is(yearRequired);
+	}
+
+	/**
+	 * Creates an SQL expression that tests the year part of this date expression.
+	 *
+	 * @param yearRequired the year to used in the expression
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @return a BooleanExpression that is TRUE if the year is the same as the
+	 * example supplied.
+	 */
+	public BooleanExpression yearIs(Integer yearRequired) {
+		return this.year().is(yearRequired);
+	}
+
+	/**
+	 * Creates an SQL expression that tests the year part of this date expression.
+	 *
 	 * @param yearRequired the year to be used in the expression
 	 * <p style="color: #F90;">Support DBvolution at
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
@@ -310,6 +335,19 @@ public class DateExpression extends CountableExpression<Date, DateResult, DBDate
 	 * example supplied.
 	 */
 	public BooleanExpression yearIs(NumberResult yearRequired) {
+		return this.year().is(yearRequired);
+	}
+
+	/**
+	 * Creates an SQL expression that tests the year part of this date expression.
+	 *
+	 * @param yearRequired the year to be used in the expression
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @return a BooleanExpression that is TRUE if the year is the same as the
+	 * example supplied.
+	 */
+	public BooleanExpression yearIs(IntegerResult yearRequired) {
 		return this.year().is(yearRequired);
 	}
 
@@ -356,7 +394,49 @@ public class DateExpression extends CountableExpression<Date, DateResult, DBDate
 	 * @return a BooleanExpression that is TRUE if the month is the same as the
 	 * example supplied.
 	 */
+	public BooleanExpression monthIs(Long monthRequired) {
+		return this.month().is(monthRequired);
+	}
+
+	/**
+	 * Creates an SQL expression that tests the month part of this date
+	 * expression.
+	 *
+	 * @param monthRequired the month to be used in the expression
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @return a BooleanExpression that is TRUE if the month is the same as the
+	 * example supplied.
+	 */
+	public BooleanExpression monthIs(Integer monthRequired) {
+		return this.month().is(monthRequired);
+	}
+
+	/**
+	 * Creates an SQL expression that tests the month part of this date
+	 * expression.
+	 *
+	 * @param monthRequired the month to be used in the expression
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @return a BooleanExpression that is TRUE if the month is the same as the
+	 * example supplied.
+	 */
 	public BooleanExpression monthIs(NumberResult monthRequired) {
+		return this.month().is(monthRequired);
+	}
+
+	/**
+	 * Creates an SQL expression that tests the month part of this date
+	 * expression.
+	 *
+	 * @param monthRequired the month to be used in the expression
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @return a BooleanExpression that is TRUE if the month is the same as the
+	 * example supplied.
+	 */
+	public BooleanExpression monthIs(IntegerResult monthRequired) {
 		return this.month().is(monthRequired);
 	}
 
@@ -404,7 +484,46 @@ public class DateExpression extends CountableExpression<Date, DateResult, DBDate
 	 * @return a BooleanExpression that is TRUE if the day is the same as the
 	 * example supplied.
 	 */
+	public BooleanExpression dayIs(Long dayRequired) {
+		return this.day().is(dayRequired);
+	}
+
+	/**
+	 * Creates an SQL expression that tests the day part of this date expression.
+	 *
+	 * @param dayRequired the day to be used in the expression
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @return a BooleanExpression that is TRUE if the day is the same as the
+	 * example supplied.
+	 */
+	public BooleanExpression dayIs(Integer dayRequired) {
+		return this.day().is(dayRequired);
+	}
+
+	/**
+	 * Creates an SQL expression that tests the day part of this date expression.
+	 *
+	 * @param dayRequired the day to be used in the expression
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @return a BooleanExpression that is TRUE if the day is the same as the
+	 * example supplied.
+	 */
 	public BooleanExpression dayIs(NumberResult dayRequired) {
+		return this.day().is(dayRequired);
+	}
+
+	/**
+	 * Creates an SQL expression that tests the day part of this date expression.
+	 *
+	 * @param dayRequired the day to be used in the expression
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @return a BooleanExpression that is TRUE if the day is the same as the
+	 * example supplied.
+	 */
+	public BooleanExpression dayIs(IntegerResult dayRequired) {
 		return this.day().is(dayRequired);
 	}
 
@@ -437,6 +556,45 @@ public class DateExpression extends CountableExpression<Date, DateResult, DBDate
 	 * example supplied.
 	 */
 	public BooleanExpression hourIs(Number hourRequired) {
+		return this.hour().is(hourRequired);
+	}
+
+	/**
+	 * Creates an SQL expression that tests the hour part of this date expression.
+	 *
+	 * @param hourRequired the hour to be used in the expression
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @return a BooleanExpression that is TRUE if the hour is the same as the
+	 * example supplied.
+	 */
+	public BooleanExpression hourIs(Long hourRequired) {
+		return this.hour().is(hourRequired);
+	}
+
+	/**
+	 * Creates an SQL expression that tests the hour part of this date expression.
+	 *
+	 * @param hourRequired the hour to be used in the expression
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @return a BooleanExpression that is TRUE if the hour is the same as the
+	 * example supplied.
+	 */
+	public BooleanExpression hourIs(Integer hourRequired) {
+		return this.hour().is(hourRequired);
+	}
+
+	/**
+	 * Creates an SQL expression that tests the hour part of this date expression.
+	 *
+	 * @param hourRequired the hour to be compared to.
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @return a BooleanExpression that is TRUE if the hour is the same as the
+	 * example supplied.
+	 */
+	public BooleanExpression hourIs(IntegerResult hourRequired) {
 		return this.hour().is(hourRequired);
 	}
 
@@ -496,7 +654,49 @@ public class DateExpression extends CountableExpression<Date, DateResult, DBDate
 	 * @return a BooleanExpression that is TRUE if the minute is the same as the
 	 * example supplied.
 	 */
+	public BooleanExpression minuteIs(Long minuteRequired) {
+		return this.minute().is(minuteRequired);
+	}
+
+	/**
+	 * Creates an SQL expression that tests the minute part of this date
+	 * expression.
+	 *
+	 * @param minuteRequired the minute to be compared to
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @return a BooleanExpression that is TRUE if the minute is the same as the
+	 * example supplied.
+	 */
+	public BooleanExpression minuteIs(Integer minuteRequired) {
+		return this.minute().is(minuteRequired);
+	}
+
+	/**
+	 * Creates an SQL expression that tests the minute part of this date
+	 * expression.
+	 *
+	 * @param minuteRequired the minute to be compared to
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @return a BooleanExpression that is TRUE if the minute is the same as the
+	 * example supplied.
+	 */
 	public BooleanExpression minuteIs(NumberResult minuteRequired) {
+		return this.minute().is(minuteRequired);
+	}
+
+	/**
+	 * Creates an SQL expression that tests the minute part of this date
+	 * expression.
+	 *
+	 * @param minuteRequired the minute to be compared to
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @return a BooleanExpression that is TRUE if the minute is the same as the
+	 * example supplied.
+	 */
+	public BooleanExpression minuteIs(IntegerResult minuteRequired) {
 		return this.minute().is(minuteRequired);
 	}
 
@@ -564,6 +764,34 @@ public class DateExpression extends CountableExpression<Date, DateResult, DBDate
 	 * Creates an SQL expression that tests the second part of this date
 	 * expression.
 	 *
+	 * @param minuteRequired the minute required
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @return a BooleanExpression that is TRUE if the second is the same as the
+	 * example supplied.
+	 */
+	public BooleanExpression secondIs(Long minuteRequired) {
+		return this.second().is(minuteRequired);
+	}
+
+	/**
+	 * Creates an SQL expression that tests the second part of this date
+	 * expression.
+	 *
+	 * @param minuteRequired the minute required
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @return a BooleanExpression that is TRUE if the second is the same as the
+	 * example supplied.
+	 */
+	public BooleanExpression secondIs(Integer minuteRequired) {
+		return this.second().is(minuteRequired);
+	}
+
+	/**
+	 * Creates an SQL expression that tests the second part of this date
+	 * expression.
+	 *
 	 * @param minuteRequired the minute that the expression must match
 	 * <p style="color: #F90;">Support DBvolution at
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
@@ -571,6 +799,20 @@ public class DateExpression extends CountableExpression<Date, DateResult, DBDate
 	 * example supplied.
 	 */
 	public BooleanExpression secondIs(NumberResult minuteRequired) {
+		return this.second().is(minuteRequired);
+	}
+
+	/**
+	 * Creates an SQL expression that tests the second part of this date
+	 * expression.
+	 *
+	 * @param minuteRequired the minute that the expression must match
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @return a BooleanExpression that is TRUE if the second is the same as the
+	 * example supplied.
+	 */
+	public BooleanExpression secondIs(IntegerResult minuteRequired) {
 		return this.second().is(minuteRequired);
 	}
 
@@ -587,6 +829,7 @@ public class DateExpression extends CountableExpression<Date, DateResult, DBDate
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a BooleanExpression comparing the date and this DateExpression.
 	 */
+//	@Override
 	public BooleanExpression is(Date date) {
 		return is(value(date));
 	}
@@ -626,6 +869,7 @@ public class DateExpression extends CountableExpression<Date, DateResult, DBDate
 	 * @return a BooleanExpression comparing the DateResult and this
 	 * DateExpression.
 	 */
+//	@Override
 	public BooleanExpression isNot(Date date) {
 		return this.isNot(value(date));
 	}
@@ -733,6 +977,7 @@ public class DateExpression extends CountableExpression<Date, DateResult, DBDate
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a boolean expression representing the required comparison
 	 */
+	@Override
 	public BooleanExpression isBetween(Date lowerBound, DateResult upperBound) {
 		return BooleanExpression.allOf(
 				this.isGreaterThan(lowerBound),
@@ -763,6 +1008,7 @@ public class DateExpression extends CountableExpression<Date, DateResult, DBDate
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a boolean expression representing the required comparison
 	 */
+	@Override
 	public BooleanExpression isBetween(DateResult lowerBound, Date upperBound) {
 		return BooleanExpression.allOf(
 				this.isGreaterThan(lowerBound),
@@ -793,6 +1039,7 @@ public class DateExpression extends CountableExpression<Date, DateResult, DBDate
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a boolean expression representing the required comparison
 	 */
+//	@Override
 	public BooleanExpression isBetween(Date lowerBound, Date upperBound) {
 		return BooleanExpression.allOf(
 				this.isGreaterThan(lowerBound),
@@ -854,6 +1101,7 @@ public class DateExpression extends CountableExpression<Date, DateResult, DBDate
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a boolean expression representing the required comparison
 	 */
+	@Override
 	public BooleanExpression isBetweenInclusive(Date lowerBound, DateResult upperBound) {
 		return isBetweenInclusive(value(lowerBound), upperBound);
 	}
@@ -881,6 +1129,7 @@ public class DateExpression extends CountableExpression<Date, DateResult, DBDate
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a boolean expression representing the required comparison
 	 */
+	@Override
 	public BooleanExpression isBetweenInclusive(DateResult lowerBound, Date upperBound) {
 		return isBetweenInclusive(lowerBound, value(upperBound));
 	}
@@ -908,6 +1157,7 @@ public class DateExpression extends CountableExpression<Date, DateResult, DBDate
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a boolean expression representing the required comparison
 	 */
+//	@Override
 	public BooleanExpression isBetweenInclusive(Date lowerBound, Date upperBound) {
 		return isBetweenInclusive(value(lowerBound), value(upperBound));
 	}
@@ -970,6 +1220,7 @@ public class DateExpression extends CountableExpression<Date, DateResult, DBDate
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a boolean expression representing the required comparison
 	 */
+	@Override
 	public BooleanExpression isBetweenExclusive(Date lowerBound, DateResult upperBound) {
 		return isBetweenExclusive(value(lowerBound), upperBound);
 	}
@@ -999,6 +1250,7 @@ public class DateExpression extends CountableExpression<Date, DateResult, DBDate
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a boolean expression representing the required comparison
 	 */
+	@Override
 	public BooleanExpression isBetweenExclusive(DateResult lowerBound, Date upperBound) {
 		return isBetween(lowerBound, value(upperBound));
 	}
@@ -1028,6 +1280,7 @@ public class DateExpression extends CountableExpression<Date, DateResult, DBDate
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a boolean expression representing the required comparison
 	 */
+//	@Override
 	public BooleanExpression isBetweenExclusive(Date lowerBound, Date upperBound) {
 		return isBetween(value(lowerBound), value(upperBound));
 	}
@@ -1041,6 +1294,7 @@ public class DateExpression extends CountableExpression<Date, DateResult, DBDate
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a boolean expression representing the required comparison
 	 */
+//	@Override
 	public BooleanExpression isLessThan(Date date) {
 		return isLessThan(value(date));
 	}
@@ -1103,7 +1357,7 @@ public class DateExpression extends CountableExpression<Date, DateResult, DBDate
 					final DateExpression right = new DateExpression(getSecond());
 					return BooleanExpression.anyOf(left.isNull(), right.isNull())
 							.ifThenElse(
-									StringExpression.nullExpression(),
+									nullString(),
 									StringExpression.value(INTERVAL_PREFIX)
 											.append(left.year().minus(right.year()).bracket()).append(YEAR_SUFFIX)
 											.append(left.month().minus(right.month()).bracket()).append(MONTH_SUFFIX)
@@ -1159,7 +1413,7 @@ public class DateExpression extends CountableExpression<Date, DateResult, DBDate
 					final DateRepeatExpression right = new DateRepeatExpression(getSecond());
 					return BooleanExpression.anyOf(left.isNull(), right.isNull())
 							.ifThenElse(
-									DateExpression.nullExpression(),
+									nullDate(),
 									left.addYears(right.getYears().times(-1))
 											.addMonths(right.getMonths().times(-1))
 											.addDays(right.getDays().times(-1))
@@ -1212,7 +1466,7 @@ public class DateExpression extends CountableExpression<Date, DateResult, DBDate
 					final DateRepeatExpression right = new DateRepeatExpression(getSecond());
 					return BooleanExpression.anyOf(left.isNull(), right.isNull())
 							.ifThenElse(
-									DateExpression.nullExpression(),
+									nullDate(),
 									left.addYears(right.getYears())
 											.addMonths(right.getMonths())
 											.addDays(right.getDays())
@@ -1228,17 +1482,6 @@ public class DateExpression extends CountableExpression<Date, DateResult, DBDate
 				return false;
 			}
 		});
-//		return new DateExpression(new DateDateRepeatArithmeticDateResult(this, intervalExpression) {
-//			@Override
-//			protected String doExpressionTransformation(DBDefinition db) {
-//				return db.doDatePlusDateRepeatTransform(getFirst().toSQLString(db), getSecond().toSQLString(db));
-//			}
-//
-//			@Override
-//			public boolean getIncludesNull() {
-//				return false;
-//			}
-//		});
 	}
 
 	/**
@@ -1250,6 +1493,7 @@ public class DateExpression extends CountableExpression<Date, DateResult, DBDate
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a boolean expression representing the required comparison
 	 */
+//	@Override
 	public BooleanExpression isLessThanOrEqual(Date date) {
 		return isLessThanOrEqual(value(date));
 	}
@@ -1287,6 +1531,7 @@ public class DateExpression extends CountableExpression<Date, DateResult, DBDate
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return an expression that will evaluate to a greater than operation
 	 */
+//	@Override
 	public BooleanExpression isGreaterThan(Date date) {
 		return isGreaterThan(value(date));
 	}
@@ -1324,6 +1569,7 @@ public class DateExpression extends CountableExpression<Date, DateResult, DBDate
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a boolean expression representing the required comparison
 	 */
+//	@Override
 	public BooleanExpression isGreaterThanOrEqual(Date date) {
 		return isGreaterThanOrEqual(value(date));
 	}
@@ -1372,6 +1618,7 @@ public class DateExpression extends CountableExpression<Date, DateResult, DBDate
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a BooleanExpression
 	 */
+//	@Override
 	public BooleanExpression isLessThan(Date value, BooleanExpression fallBackWhenEquals) {
 		return this.isLessThan(value(value), fallBackWhenEquals);
 	}
@@ -1396,6 +1643,7 @@ public class DateExpression extends CountableExpression<Date, DateResult, DBDate
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a BooleanExpression
 	 */
+//	@Override
 	public BooleanExpression isGreaterThan(Date value, BooleanExpression fallBackWhenEquals) {
 		return this.isGreaterThan(value(value), fallBackWhenEquals);
 	}
@@ -1463,6 +1711,7 @@ public class DateExpression extends CountableExpression<Date, DateResult, DBDate
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a boolean expression representing the required comparison
 	 */
+	@Override
 	public BooleanExpression isIn(Date... possibleValues) {
 		List<DateExpression> possVals = new ArrayList<DateExpression>();
 		for (Date num : possibleValues) {
@@ -1700,7 +1949,7 @@ public class DateExpression extends CountableExpression<Date, DateResult, DBDate
 	 * @return a DateExpression
 	 */
 	public DateExpression addSeconds(int secondsToAdd) {
-		return this.addSeconds(new NumberExpression(secondsToAdd));
+		return this.addSeconds(value(secondsToAdd));
 	}
 
 	/**
@@ -1717,6 +1966,33 @@ public class DateExpression extends CountableExpression<Date, DateResult, DBDate
 	public DateExpression addSeconds(NumberExpression secondsToAdd) {
 		return new DateExpression(
 				new DateNumberExpressionWithDateResult(this, secondsToAdd) {
+
+			@Override
+			public boolean getIncludesNull() {
+				return false;
+			}
+
+			@Override
+			public String toSQLString(DBDefinition db) {
+				return db.doAddSecondsTransform(first.toSQLString(db), second.toSQLString(db));
+			}
+		});
+	}
+
+	/**
+	 * Date Arithmetic: add the supplied number of seconds to the date expression.
+	 *
+	 * <p>
+	 * Negative seconds are supported.
+	 *
+	 * @param secondsToAdd seconds to offset by
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @return a DateExpression
+	 */
+	public DateExpression addSeconds(IntegerExpression secondsToAdd) {
+		return new DateExpression(
+				new DateIntegerExpressionWithDateResult(this, secondsToAdd) {
 
 			@Override
 			public boolean getIncludesNull() {
@@ -1765,7 +2041,7 @@ public class DateExpression extends CountableExpression<Date, DateResult, DBDate
 	 * @return a DateExpression
 	 */
 	public DateExpression addMinutes(int minutesToAdd) {
-		return this.addMinutes(new NumberExpression(minutesToAdd));
+		return this.addMinutes(value(minutesToAdd));
 	}
 
 	/**
@@ -1779,9 +2055,9 @@ public class DateExpression extends CountableExpression<Date, DateResult, DBDate
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a DateExpression
 	 */
-	public DateExpression addMinutes(NumberExpression minutesToAdd) {
+	public DateExpression addMinutes(IntegerExpression minutesToAdd) {
 		return new DateExpression(
-				new DateNumberExpressionWithDateResult(this, minutesToAdd) {
+				new DateIntegerExpressionWithDateResult(this, minutesToAdd) {
 
 			@Override
 			public boolean getIncludesNull() {
@@ -1806,8 +2082,65 @@ public class DateExpression extends CountableExpression<Date, DateResult, DBDate
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a DateExpression
 	 */
-	public DateExpression addDays(int daysToAdd) {
-		return this.addDays(new NumberExpression(daysToAdd));
+	public DateExpression addDays(Integer daysToAdd) {
+		return this.addDays(value(daysToAdd));
+	}
+
+	/**
+	 * Date Arithmetic: add the supplied number of days to the date expression.
+	 *
+	 * <p>
+	 * Negative values are supported.
+	 *
+	 * @param daysToAdd days to offset by
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @return a DateExpression
+	 */
+	public DateExpression addDays(Long daysToAdd) {
+		return this.addDays(value(daysToAdd));
+	}
+
+	/**
+	 * Date Arithmetic: add the supplied number of days to the date expression.
+	 *
+	 * <p>
+	 * Negative values are supported.
+	 *
+	 * @param daysToAdd days to offset by
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @return a DateExpression
+	 */
+	public DateExpression addDays(Number daysToAdd) {
+		return this.addDays(value(daysToAdd));
+	}
+
+	/**
+	 * Date Arithmetic: add the supplied number of days to the date expression.
+	 *
+	 * <p>
+	 * Negative values are supported.
+	 *
+	 * @param daysToAdd days to offset by
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @return a DateExpression
+	 */
+	public DateExpression addDays(IntegerExpression daysToAdd) {
+		return new DateExpression(
+				new DateIntegerExpressionWithDateResult(this, daysToAdd) {
+
+			@Override
+			public boolean getIncludesNull() {
+				return false;
+			}
+
+			@Override
+			public String toSQLString(DBDefinition db) {
+				return db.doAddDaysTransform(first.toSQLString(db), second.toSQLString(db));
+			}
+		});
 	}
 
 	/**
@@ -1849,7 +2182,7 @@ public class DateExpression extends CountableExpression<Date, DateResult, DBDate
 	 * @return a DateExpression
 	 */
 	public DateExpression addHours(int hoursToAdd) {
-		return this.addHours(new NumberExpression(hoursToAdd));
+		return this.addHours(value(hoursToAdd));
 	}
 
 	/**
@@ -1863,9 +2196,9 @@ public class DateExpression extends CountableExpression<Date, DateResult, DBDate
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a DateExpression
 	 */
-	public DateExpression addHours(NumberExpression hoursToAdd) {
+	public DateExpression addHours(IntegerExpression hoursToAdd) {
 		return new DateExpression(
-				new DateNumberExpressionWithDateResult(this, hoursToAdd) {
+				new DateIntegerExpressionWithDateResult(this, hoursToAdd) {
 
 			@Override
 			public boolean getIncludesNull() {
@@ -1891,7 +2224,7 @@ public class DateExpression extends CountableExpression<Date, DateResult, DBDate
 	 * @return a DateExpression
 	 */
 	public DateExpression addWeeks(int weeksToAdd) {
-		return this.addWeeks(new NumberExpression(weeksToAdd));
+		return this.addWeeks(value(weeksToAdd));
 	}
 
 	/**
@@ -1905,9 +2238,9 @@ public class DateExpression extends CountableExpression<Date, DateResult, DBDate
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a DateExpression
 	 */
-	public DateExpression addWeeks(NumberExpression weeksToAdd) {
+	public DateExpression addWeeks(IntegerExpression weeksToAdd) {
 		return new DateExpression(
-				new DateNumberExpressionWithDateResult(this, weeksToAdd) {
+				new DateIntegerExpressionWithDateResult(this, weeksToAdd) {
 
 			@Override
 			public boolean getIncludesNull() {
@@ -1932,8 +2265,65 @@ public class DateExpression extends CountableExpression<Date, DateResult, DBDate
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a DateExpression
 	 */
-	public DateExpression addMonths(int monthsToAdd) {
-		return this.addMonths(new NumberExpression(monthsToAdd));
+	public DateExpression addMonths(Number monthsToAdd) {
+		return this.addMonths(value(monthsToAdd));
+	}
+
+	/**
+	 * Date Arithmetic: add the supplied number of months to the date expression.
+	 *
+	 * <p>
+	 * Negative values are supported.
+	 *
+	 * @param monthsToAdd months to offset by
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @return a DateExpression
+	 */
+	public DateExpression addMonths(Integer monthsToAdd) {
+		return this.addMonths(value(monthsToAdd));
+	}
+
+	/**
+	 * Date Arithmetic: add the supplied number of months to the date expression.
+	 *
+	 * <p>
+	 * Negative values are supported.
+	 *
+	 * @param monthsToAdd months to offset by
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @return a DateExpression
+	 */
+	public DateExpression addMonths(Long monthsToAdd) {
+		return this.addMonths(value(monthsToAdd));
+	}
+
+	/**
+	 * Date Arithmetic: add the supplied number of months to the date expression.
+	 *
+	 * <p>
+	 * Negative values are supported.
+	 *
+	 * @param monthsToAdd months to offset by
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @return a DateExpression
+	 */
+	public DateExpression addMonths(IntegerExpression monthsToAdd) {
+		return new DateExpression(
+				new DateIntegerExpressionWithDateResult(this, monthsToAdd) {
+
+			@Override
+			public boolean getIncludesNull() {
+				return false;
+			}
+
+			@Override
+			public String toSQLString(DBDefinition db) {
+				return db.doAddMonthsTransform(first.toSQLString(db), second.toSQLString(db));
+			}
+		});
 	}
 
 	/**
@@ -1975,7 +2365,7 @@ public class DateExpression extends CountableExpression<Date, DateResult, DBDate
 	 * @return a DateExpression
 	 */
 	public DateExpression addYears(int yearsToAdd) {
-		return this.addYears(new NumberExpression(yearsToAdd));
+		return this.addYears(value(yearsToAdd));
 	}
 
 	/**
@@ -1989,9 +2379,9 @@ public class DateExpression extends CountableExpression<Date, DateResult, DBDate
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a DateExpression
 	 */
-	public DateExpression addYears(NumberExpression yearsToAdd) {
+	public DateExpression addYears(IntegerExpression yearsToAdd) {
 		return new DateExpression(
-				new DateNumberExpressionWithDateResult(this, yearsToAdd) {
+				new DateIntegerExpressionWithDateResult(this, yearsToAdd) {
 
 			@Override
 			public boolean getIncludesNull() {
@@ -2313,20 +2703,6 @@ public class DateExpression extends CountableExpression<Date, DateResult, DBDate
 		});
 	}
 
-//	public NumberExpression millisecondsFrom(Date date) {
-//		return millisecondsFrom(value(date));
-//	}
-//
-//	public NumberExpression millisecondsFrom(DateResult dateExpression) {
-//		return new NumberExpression(
-//				new DBBinaryDateFunctionWithNumberResult(this, dateExpression) {
-//
-//					@Override
-//					public String toSQLString(DBDefinition db) {
-//						return db.doMillisecondDifferenceTransform(first.toSQLString(db), second.toSQLString(db));
-//					}
-//				});
-//	}
 	/**
 	 * Derive the first day of the month for this date expression
 	 *
@@ -2336,7 +2712,7 @@ public class DateExpression extends CountableExpression<Date, DateResult, DBDate
 	 * @return a Date expression
 	 */
 	public DateExpression firstOfMonth() {
-		return this.addDays(this.day().minus(1).bracket().times(-1));
+		return this.addDays(this.day().minus(1).bracket().times(-1).integerResult());
 	}
 
 	/**
@@ -2355,7 +2731,9 @@ public class DateExpression extends CountableExpression<Date, DateResult, DBDate
 				try {
 					return db.doEndOfMonthTransform(this.getFirst().toSQLString(db));
 				} catch (UnsupportedOperationException exp) {
-					return getFirst().addDays(getFirst().day().minus(1).bracket().times(-1)).addMonths(1).addDays(-1).toSQLString(db);
+					return getFirst()
+							.addDays(getFirst().day().minus(1).bracket().times(-1).integerResult())
+							.addMonths(1).addDays(-1).toSQLString(db);
 				}
 			}
 		}
@@ -2607,11 +2985,14 @@ public class DateExpression extends CountableExpression<Date, DateResult, DBDate
 
 	/**
 	 * Returns the date as an ISO 8601 formatted string NOT including time zone.
-	 * 
-	 * <p> ISO 8601 form at is YYYY-MM-DDTHH:mm:ss.sss</p>
-	 * 
-	 * <p>May not be zero padded but the format is still unambiguous.</p>
-	 * @return 
+	 *
+	 * <p>
+	 * ISO 8601 form at is YYYY-MM-DDTHH:mm:ss.sss</p>
+	 *
+	 * <p>
+	 * May not be zero padded but the format is still unambiguous.</p>
+	 *
+	 * @return
 	 */
 	@Override
 	public StringExpression stringResult() {
@@ -2628,9 +3009,28 @@ public class DateExpression extends CountableExpression<Date, DateResult, DBDate
 				.append(":")
 				.append(this.second())
 				.append(".")
-				.append(this.subsecond())
-				;
+				.append(this.subsecond());
 		return isoFormatDateTime;
+	}
+
+	@Override
+	public DateResult getInnerResult() {
+		return date1;
+	}
+
+	@Override
+	public DateExpression expression(Date value) {
+		return new DateExpression(value);
+	}
+
+	@Override
+	public DateExpression expression(DateResult value) {
+		return new DateExpression(value);
+	}
+
+	@Override
+	public DateResult expression(DBDate value) {
+		return new DateExpression(value);
 	}
 
 	private static abstract class FunctionWithDateResult extends DateExpression {
@@ -3499,6 +3899,63 @@ public class DateExpression extends CountableExpression<Date, DateResult, DBDate
 		}
 	}
 
+	private static abstract class DateIntegerExpressionWithDateResult extends DateExpression {
+
+		protected DateExpression first;
+		protected IntegerExpression second;
+
+		DateIntegerExpressionWithDateResult() {
+			this.first = null;
+			this.second = null;
+		}
+
+		DateIntegerExpressionWithDateResult(DateExpression dateExp, IntegerExpression numbExp) {
+			this.first = dateExp;
+			this.second = numbExp;
+		}
+
+		@Override
+		abstract public String toSQLString(DBDefinition db);
+
+		@Override
+		public DateIntegerExpressionWithDateResult copy() {
+			DateIntegerExpressionWithDateResult newInstance;
+			try {
+				newInstance = getClass().newInstance();
+			} catch (InstantiationException | IllegalAccessException ex) {
+				throw new RuntimeException(ex);
+			}
+			newInstance.first = first.copy();
+			newInstance.second = second.copy();
+			return newInstance;
+		}
+
+		@Override
+		public boolean isAggregator() {
+			return first.isAggregator() || second.isAggregator();
+		}
+
+		@Override
+		public Set<DBRow> getTablesInvolved() {
+			final Set<DBRow> tablesInvolved = first.getTablesInvolved();
+			tablesInvolved.addAll(second.getTablesInvolved());
+			return tablesInvolved;
+		}
+
+		@Override
+		public boolean isPurelyFunctional() {
+			if (first == null && second == null) {
+				return true;
+			} else if (first == null) {
+				return second.isPurelyFunctional();
+			} else if (second == null) {
+				return first.isPurelyFunctional();
+			} else {
+				return first.isPurelyFunctional() && second.isPurelyFunctional();
+			}
+		}
+	}
+
 	private static abstract class DateNumberExpressionWithDateResult extends DateExpression {
 
 		protected DateExpression first;
@@ -3515,7 +3972,7 @@ public class DateExpression extends CountableExpression<Date, DateResult, DBDate
 		}
 
 		@Override
-		abstract public String toSQLString(DBDefinition db); 
+		abstract public String toSQLString(DBDefinition db);
 
 		@Override
 		public DateNumberExpressionWithDateResult copy() {

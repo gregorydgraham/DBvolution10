@@ -151,11 +151,11 @@ public class DBMultiPoint2D extends QueryableDatatype<MultiPoint> implements Mul
 	}
 
 	/**
-	 * Create a DBPoint2D with the column expression specified.
+	 * Create a DBPoint2D with the column value specified.
 	 *
 	 * <p>
-	 * When retrieving this object from the database the expression will be
-	 * evaluated to provide the value.
+ When retrieving this object from the database the value will be
+ evaluated to provide the value.
 	 *
 	 * @param columnExpression
 	 */
@@ -219,33 +219,9 @@ public class DBMultiPoint2D extends QueryableDatatype<MultiPoint> implements Mul
 		return false;
 	}
 
-//	@Override
-//	public NumberExpression measurableDimensions() {
-//		return NumberExpression.value(0);
-//	}
-//
-//	@Override
-//	public NumberExpression spatialDimensions() {
-//		return NumberExpression.value(2);
-//	}
-//
-//	@Override
-//	public BooleanExpression hasMagnitude() {
-//		return BooleanExpression.falseExpression();
-//	}
-//
-//	@Override
-//	public NumberExpression magnitude() {
-//		return NumberExpression.value((Number)null);
-//	}
-//
-//	@Override
-//	public StringExpression toWKTFormat(){
-//		return StringExpression.value(jtsMultiPointValue().toText());
-//	}
 	@Override
 	public StringExpression stringResult() {
-		return MultiPoint2DExpression.value(this).stringResult();
+		return new MultiPoint2DExpression(this).stringResult();
 	}
 
 	@Override

@@ -278,7 +278,7 @@ public class IntegerExpressionTest extends AbstractTest {
 		dbQuery = database.getDBQuery(marq);
 		dbQuery.addCondition(
 				marq.column(marq.uidMarque).dividedBy(335)
-						.round(NumberExpression.value(5))
+						.round(NumberExpression.value(5.0))
 						.is(23074.69254));
 		allRows = dbQuery.getAllRows();
 

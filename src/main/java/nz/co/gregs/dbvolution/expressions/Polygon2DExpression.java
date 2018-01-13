@@ -85,10 +85,10 @@ public class Polygon2DExpression implements Polygon2DResult, EqualComparable<Pol
 	 * }, and when creating column expressions using {@link DBPolygon2D#DBPolygon2D(nz.co.gregs.dbvolution.expressions.Polygon2DExpression)
 	 * } and similar methods.
 	 *
-	 * @param polygon the value of this expression
-	 * <p style="color: #F90;">Support DBvolution at
+	 * @param polygon the value of this value
+ <p style="color: #F90;">Support DBvolution at
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 * @return a polygon2d expression
+	 * @return a polygon2d value
 	 */
 	public static Polygon2DExpression value(Polygon polygon) {
 		return new Polygon2DExpression(polygon);
@@ -99,10 +99,10 @@ public class Polygon2DExpression implements Polygon2DResult, EqualComparable<Pol
 	 * }, and when creating column expressions using {@link DBPolygon2D#DBPolygon2D(nz.co.gregs.dbvolution.expressions.Polygon2DExpression)
 	 * } and similar methods.
 	 *
-	 * @param polygon the value of this expression
-	 * <p style="color: #F90;">Support DBvolution at
+	 * @param polygon the value of this value
+ <p style="color: #F90;">Support DBvolution at
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 * @return a polygon2d expression
+	 * @return a polygon2d value
 	 */
 	public static Polygon2DExpression value(Polygon2DResult polygon) {
 		return new Polygon2DExpression(polygon);
@@ -114,10 +114,10 @@ public class Polygon2DExpression implements Polygon2DResult, EqualComparable<Pol
 	 * } and similar methods.
 	 *
 	 * @param pointExpressions the points that define the polygon value of this
-	 * expression.
-	 * <p style="color: #F90;">Support DBvolution at
+ value.
+ <p style="color: #F90;">Support DBvolution at
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 * @return a polygon2d expression
+	 * @return a polygon2d value
 	 */
 	public static Polygon2DExpression value(Point2DExpression... pointExpressions) {
 		return Polygon2DExpression.polygon2DFromPoint2DExpressionArray(pointExpressions);
@@ -129,10 +129,10 @@ public class Polygon2DExpression implements Polygon2DResult, EqualComparable<Pol
 	 * } and similar methods.
 	 *
 	 * @param coordinates the individual numbers that are converted to point that
-	 * define the polygon value of this expression.
-	 * <p style="color: #F90;">Support DBvolution at
+ define the polygon value of this value.
+ <p style="color: #F90;">Support DBvolution at
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 * @return a polygon2d expression
+	 * @return a polygon2d value
 	 */
 	public static Polygon2DExpression value(Number... coordinates) {
 		ArrayList<NumberExpression> exprs = new ArrayList<NumberExpression>();
@@ -148,10 +148,10 @@ public class Polygon2DExpression implements Polygon2DResult, EqualComparable<Pol
 	 * } and similar methods.
 	 *
 	 * @param coordinateExpressions the individual numbers that are converted to
-	 * point that define the polygon value of this expression.
-	 * <p style="color: #F90;">Support DBvolution at
+ point that define the polygon value of this value.
+ <p style="color: #F90;">Support DBvolution at
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 * @return a polygon2d expression
+	 * @return a polygon2d value
 	 */
 	public static Polygon2DExpression value(NumberExpression... coordinateExpressions) {
 		return Polygon2DExpression.polygon2DFromCoordinateArray(coordinateExpressions);
@@ -162,10 +162,10 @@ public class Polygon2DExpression implements Polygon2DResult, EqualComparable<Pol
 	 * }, and when creating column expressions using {@link DBPolygon2D#DBPolygon2D(nz.co.gregs.dbvolution.expressions.Polygon2DExpression)
 	 * } and similar methods.
 	 *
-	 * @param points the points that define the polygon value of this expression.
-	 * <p style="color: #F90;">Support DBvolution at
+	 * @param points the points that define the polygon value of this value.
+ <p style="color: #F90;">Support DBvolution at
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 * @return a polygon2d expression
+	 * @return a polygon2d value
 	 */
 	public static Polygon2DExpression value(Point... points) {
 		List<Point2DExpression> exprs = new ArrayList<Point2DExpression>();
@@ -224,28 +224,28 @@ public class Polygon2DExpression implements Polygon2DResult, EqualComparable<Pol
 	}
 
 	/**
-	 * Create a boolean expression that returns TRUE if the two polygons share any
-	 * spatial coordinates.
+	 * Create a boolean value that returns TRUE if the two polygons share any
+ spatial coordinates.
 	 *
 	 * @param rightHandSide the polygon to compare against.
 	 * <p style="color: #F90;">Support DBvolution at
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 * @return a boolean expression that is true if the polygons interact in any
-	 * way.
+	 * @return a boolean value that is true if the polygons interact in any
+ way.
 	 */
 	public BooleanExpression intersects(Polygon rightHandSide) {
 		return intersects(new DBPolygon2D(rightHandSide));
 	}
 
 	/**
-	 * Create a boolean expression that returns TRUE if the two polygons share any
-	 * spatial coordinates.
+	 * Create a boolean value that returns TRUE if the two polygons share any
+ spatial coordinates.
 	 *
 	 * @param rightHandSide the polygon to compare against
 	 * <p style="color: #F90;">Support DBvolution at
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 * @return a boolean expression that is true if the polygons interact in any
-	 * way.
+	 * @return a boolean value that is true if the polygons interact in any
+ way.
 	 */
 	public BooleanExpression intersects(Polygon2DResult rightHandSide) {
 		return new BooleanExpression(new PolygonPolygonWithBooleanResult(this, new Polygon2DExpression(rightHandSide)) {
@@ -258,8 +258,8 @@ public class Polygon2DExpression implements Polygon2DResult, EqualComparable<Pol
 	}
 
 	/**
-	 * Provides a expression that represents the multipoint2d value as a polygon2d
-	 * value.
+	 * Provides a value that represents the multipoint2d value as a polygon2d
+ value.
 	 *
 	 * <P>
 	 * Points are added to the polygon in index order. If necessary the polygon is
@@ -271,7 +271,7 @@ public class Polygon2DExpression implements Polygon2DResult, EqualComparable<Pol
 	 * <p style="color: #F90;">Support DBvolution at
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 *
-	 * @return a polygon2d expression
+	 * @return a polygon2d value
 	 */
 	/* TODO implement public Polygon2DExpression polygon2DResult() {*/
 	public Polygon2DExpression polygon2DResult() {
@@ -371,26 +371,26 @@ public class Polygon2DExpression implements Polygon2DResult, EqualComparable<Pol
 	}
 
 	/**
-	 * Returns an expression that will evaluate to true if the point is inside
-	 * this polygon value.
+	 * Returns an value that will evaluate to true if the point is inside
+ this polygon value.
 	 *
 	 * @param rightHandSide the polygon to compare against
 	 * <p style="color: #F90;">Support DBvolution at
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 * @return a boolean expression
+	 * @return a boolean value
 	 */
 	public BooleanExpression contains(Point rightHandSide) {
 		return contains(Point2DExpression.value(rightHandSide));
 	}
 
 	/**
-	 * Returns an expression that will evaluate to true if the point is inside
-	 * this polygon value.
+	 * Returns an value that will evaluate to true if the point is inside
+ this polygon value.
 	 *
 	 * @param rightHandSide the point to compare against
 	 * <p style="color: #F90;">Support DBvolution at
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 * @return a boolean expression
+	 * @return a boolean value
 	 */
 	public BooleanExpression contains(Point2DResult rightHandSide) {
 		return new BooleanExpression(new PolygonPointWithBooleanResult(this, new Point2DExpression(rightHandSide)) {
@@ -403,8 +403,8 @@ public class Polygon2DExpression implements Polygon2DResult, EqualComparable<Pol
 	}
 
 	/**
-	 * Returns an expression that will evaluate to true if the polygon is
-	 * completely inside this polygon value.
+	 * Returns an value that will evaluate to true if the polygon is
+ completely inside this polygon value.
 	 *
 	 * <p>
 	 * A CONTAINS B implies B WITHIN A.
@@ -412,15 +412,15 @@ public class Polygon2DExpression implements Polygon2DResult, EqualComparable<Pol
 	 * @param rightHandSide the polygon to compare against
 	 * <p style="color: #F90;">Support DBvolution at
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 * @return a boolean expression
+	 * @return a boolean value
 	 */
 	public BooleanExpression contains(Polygon rightHandSide) {
 		return contains(new DBPolygon2D(rightHandSide));
 	}
 
 	/**
-	 * Returns an expression that will evaluate to true if the polygon is
-	 * completely inside this polygon value.
+	 * Returns an value that will evaluate to true if the polygon is
+ completely inside this polygon value.
 	 *
 	 * <p>
 	 * A CONTAINS B when A's exterior is outside the exterior of B and the spatial
@@ -434,7 +434,7 @@ public class Polygon2DExpression implements Polygon2DResult, EqualComparable<Pol
 	 * @param rightHandSide the polygon to compare against
 	 * <p style="color: #F90;">Support DBvolution at
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 * @return a boolean expression
+	 * @return a boolean value
 	 */
 	public BooleanExpression contains(Polygon2DResult rightHandSide) {
 		return new BooleanExpression(new PolygonPolygonWithBooleanResult(this, new Polygon2DExpression(rightHandSide)) {
@@ -447,28 +447,28 @@ public class Polygon2DExpression implements Polygon2DResult, EqualComparable<Pol
 	}
 
 	/**
-	 * Creates an SQL expression that is TRUE when the two polygon2d values do NOT
-	 * intersect in anyway.
+	 * Creates an SQL value that is TRUE when the two polygon2d values do NOT
+ intersect in anyway.
 	 *
 	 * @param rightHandSide the polygon to compare against
 	 * <p style="color: #F90;">Support DBvolution at
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 * @return a boolean expression that is TRUE if the 2 polygons do NOT
-	 * intersect in anyway, otherwise FALSE.
+	 * @return a boolean value that is TRUE if the 2 polygons do NOT
+ intersect in anyway, otherwise FALSE.
 	 */
 	public BooleanExpression doesNotIntersect(Polygon rightHandSide) {
 		return doesNotIntersect(new DBPolygon2D(rightHandSide));
 	}
 
 	/**
-	 * Creates an SQL expression that is TRUE when the two polygon2d values do NOT
-	 * intersect in anyway.
+	 * Creates an SQL value that is TRUE when the two polygon2d values do NOT
+ intersect in anyway.
 	 *
 	 * @param rightHandSide the polygon to compare against
 	 * <p style="color: #F90;">Support DBvolution at
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 * @return a boolean expression that is TRUE if the 2 polygons do NOT
-	 * intersect in anyway, otherwise FALSE.
+	 * @return a boolean value that is TRUE if the 2 polygons do NOT
+ intersect in anyway, otherwise FALSE.
 	 */
 	public BooleanExpression doesNotIntersect(Polygon2DResult rightHandSide) {
 		return new BooleanExpression(new PolygonPolygonWithBooleanResult(this, new Polygon2DExpression(rightHandSide)) {
@@ -481,8 +481,8 @@ public class Polygon2DExpression implements Polygon2DResult, EqualComparable<Pol
 	}
 
 	/**
-	 * Creates an SQL expression that is TRUE when the two polygon2d values
-	 * intersect but neither contains or is within the other.
+	 * Creates an SQL value that is TRUE when the two polygon2d values
+ intersect but neither contains or is within the other.
 	 *
 	 * <p>
 	 * Overlapping polygons have some shared points but they also have unshared
@@ -495,16 +495,16 @@ public class Polygon2DExpression implements Polygon2DResult, EqualComparable<Pol
 	 * @param rightHandSide the polygon to compare against
 	 * <p style="color: #F90;">Support DBvolution at
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 * @return a boolean expression that is TRUE if the 2 polygons intersect but
-	 * are not contained, within, or equal.
+	 * @return a boolean value that is TRUE if the 2 polygons intersect but
+ are not contained, within, or equal.
 	 */
 	public BooleanExpression overlaps(Polygon rightHandSide) {
 		return overlaps(new DBPolygon2D(rightHandSide));
 	}
 
 	/**
-	 * Creates an SQL expression that is TRUE when the two polygon2d values
-	 * intersect but neither contains or is within the other.
+	 * Creates an SQL value that is TRUE when the two polygon2d values
+ intersect but neither contains or is within the other.
 	 *
 	 * <p>
 	 * Overlapping polygons have some shared points but they also have unshared
@@ -517,8 +517,8 @@ public class Polygon2DExpression implements Polygon2DResult, EqualComparable<Pol
 	 * @param rightHandSide the polygon to compare against
 	 * <p style="color: #F90;">Support DBvolution at
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 * @return a boolean expression that is TRUE if the 2 polygons intersect but
-	 * are not contained, within, or equal.
+	 * @return a boolean value that is TRUE if the 2 polygons intersect but
+ are not contained, within, or equal.
 	 */
 	public BooleanExpression overlaps(Polygon2DResult rightHandSide) {
 		return new BooleanExpression(new PolygonPolygonWithBooleanResult(this, new Polygon2DExpression(rightHandSide)) {
@@ -571,8 +571,8 @@ public class Polygon2DExpression implements Polygon2DResult, EqualComparable<Pol
 	}
 
 	/**
-	 * Returns an expression that will evaluate to true if the polygon is
-	 * completely envelopes this polygon value.
+	 * Returns an value that will evaluate to true if the polygon is
+ completely envelopes this polygon value.
 	 *
 	 * <p>
 	 * A WITHIN B when A's exterior is inside the exterior of B and the spatial
@@ -586,15 +586,15 @@ public class Polygon2DExpression implements Polygon2DResult, EqualComparable<Pol
 	 * @param rightHandSide the polygon to compare against
 	 * <p style="color: #F90;">Support DBvolution at
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 * @return a boolean expression
+	 * @return a boolean value
 	 */
 	public BooleanExpression within(Polygon rightHandSide) {
 		return within(new DBPolygon2D(rightHandSide));
 	}
 
 	/**
-	 * Returns an expression that will evaluate to true if the polygon is
-	 * completely envelopes this polygon value.
+	 * Returns an value that will evaluate to true if the polygon is
+ completely envelopes this polygon value.
 	 *
 	 * <p>
 	 * A WITHIN B when A's exterior is inside the exterior of B and the spatial
@@ -608,7 +608,7 @@ public class Polygon2DExpression implements Polygon2DResult, EqualComparable<Pol
 	 * @param rightHandSide the polygon to compare against
 	 * <p style="color: #F90;">Support DBvolution at
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 * @return a boolean expression
+	 * @return a boolean value
 	 */
 	public BooleanExpression within(Polygon2DResult rightHandSide) {
 		return new BooleanExpression(new PolygonPolygonWithBooleanResult(this, new Polygon2DExpression(rightHandSide)) {

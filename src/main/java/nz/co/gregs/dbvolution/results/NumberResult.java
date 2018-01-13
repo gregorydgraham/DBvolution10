@@ -36,7 +36,7 @@ import nz.co.gregs.dbvolution.expressions.DBExpression;
  * @author greg
  * @see DBExpression
  */
-public interface NumberResult extends RangeResult<Number> {
+public interface NumberResult extends SimpleNumericResult<Number> {
 
 	@Override
 	public NumberResult copy();

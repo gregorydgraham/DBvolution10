@@ -15,7 +15,6 @@
  */
 package nz.co.gregs.dbvolution.results;
 
-import nz.co.gregs.dbvolution.expressions.DBExpression;
 import org.joda.time.Period;
 
 /**

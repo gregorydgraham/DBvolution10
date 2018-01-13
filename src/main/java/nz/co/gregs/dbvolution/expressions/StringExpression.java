@@ -16,7 +16,6 @@
 package nz.co.gregs.dbvolution.expressions;
 
 import nz.co.gregs.dbvolution.results.StringResult;
-import nz.co.gregs.dbvolution.results.RangeComparable;
 import nz.co.gregs.dbvolution.results.NumberResult;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -28,8 +27,7 @@ import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.columns.StringColumn;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.datatypes.*;
-import nz.co.gregs.dbvolution.results.InComparable;
-import nz.co.gregs.dbvolution.results.RangeResult;
+import nz.co.gregs.dbvolution.results.IntegerResult;
 
 /**
  * StringExpression implements standard functions that produce a character or
@@ -53,7 +51,7 @@ import nz.co.gregs.dbvolution.results.RangeResult;
  *
  * @author Gregory Graham
  */
-public class StringExpression extends CountableExpression<String, StringResult, DBString>implements StringResult {
+public class StringExpression extends RangeExpression<String, StringResult, DBString>implements StringResult {
 
 	/**
 	 * Creates a StringExpression that will return a database NULL.
@@ -63,7 +61,8 @@ public class StringExpression extends CountableExpression<String, StringResult, 
 	 *
 	 * @return a StringExpression that resolves to NULL within the database
 	 */
-	public static StringExpression nullExpression() {
+	@Override
+	public StringExpression nullExpression() {
 		return new StringExpression() {
 			@Override
 			public String toSQLString(DBDefinition db) {
@@ -215,7 +214,8 @@ public class StringExpression extends CountableExpression<String, StringResult, 
 	 * @return a DBExpression instance that is appropriate to the subclass and the
 	 * value supplied.
 	 */
-	public static StringExpression value(String string) {
+	@Override
+	public StringExpression expression(String string) {
 		return new StringExpression(string);
 	}
 
@@ -243,7 +243,8 @@ public class StringExpression extends CountableExpression<String, StringResult, 
 	 * @return a DBExpression instance that is appropriate to the subclass and the
 	 * value supplied.
 	 */
-	public static StringExpression value(StringResult string) {
+	@Override
+	public StringExpression expression(StringResult string) {
 		return new StringExpression(string);
 	}
 
@@ -329,9 +330,9 @@ public class StringExpression extends CountableExpression<String, StringResult, 
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a BooleanExpression
 	 */
+//	@Override
 	public BooleanExpression isLessThan(String value, BooleanExpression fallBackWhenEquals) {
 		return this.isLessThan(StringExpression.value(value), fallBackWhenEquals);
-//		return this.isLessThan(value).or(this.is(value).and(fallBackWhenEquals));
 	}
 
 	/**
@@ -354,9 +355,9 @@ public class StringExpression extends CountableExpression<String, StringResult, 
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a BooleanExpression
 	 */
+//	@Override
 	public BooleanExpression isGreaterThan(String value, BooleanExpression fallBackWhenEquals) {
 		return this.isGreaterThan(StringExpression.value(value), fallBackWhenEquals);
-//		return this.isGreaterThan(value).or(this.is(value).and(fallBackWhenEquals));
 	}
 
 	/**
@@ -595,6 +596,7 @@ public class StringExpression extends CountableExpression<String, StringResult, 
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a BooleanExpression of the SQL comparison.
 	 */
+//	@Override
 	public BooleanExpression is(String equivalentString) {
 		if (equivalentString == null) {
 			return this.isNull();
@@ -705,6 +707,7 @@ public class StringExpression extends CountableExpression<String, StringResult, 
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a BooleanExpression of the SQL comparison.
 	 */
+//	@Override
 	public BooleanExpression isNot(String equivalentString) {
 		return this.isNot(value(equivalentString));
 	}
@@ -722,6 +725,22 @@ public class StringExpression extends CountableExpression<String, StringResult, 
 	 * @return a BooleanExpression of the SQL comparison.
 	 */
 	public BooleanExpression isNot(NumberResult numberResult) {
+		return this.isNot(numberResult.stringResult());
+	}
+
+	/**
+	 * Creates a query comparison using the NOT EQUALS operator.
+	 *
+	 * <p>
+	 * Use this comparison to generate a BooleanExpression that compares the
+	 * current StringExpression to the supplied value.
+	 *
+	 * @param numberResult	numberResult
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @return a BooleanExpression of the SQL comparison.
+	 */
+	public BooleanExpression isNot(IntegerResult numberResult) {
 		return this.isNot(numberResult.stringResult());
 	}
 
@@ -835,6 +854,7 @@ public class StringExpression extends CountableExpression<String, StringResult, 
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a boolean expression representing the required comparison
 	 */
+	@Override
 	public BooleanExpression isBetween(String lowerBound, StringResult upperBound) {
 		return this.isBetween(value(lowerBound), upperBound);
 	}
@@ -862,6 +882,7 @@ public class StringExpression extends CountableExpression<String, StringResult, 
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a boolean expression representing the required comparison
 	 */
+	@Override
 	public BooleanExpression isBetween(StringResult lowerBound, String upperBound) {
 		return this.isBetween(lowerBound, value(upperBound));
 	}
@@ -889,6 +910,7 @@ public class StringExpression extends CountableExpression<String, StringResult, 
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a boolean expression representing the required comparison
 	 */
+//	@Override
 	public BooleanExpression isBetween(String lowerBound, String upperBound) {
 		return this.isBetween(value(lowerBound), value(upperBound));
 	}
@@ -947,6 +969,7 @@ public class StringExpression extends CountableExpression<String, StringResult, 
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a boolean expression representing the required comparison
 	 */
+	@Override
 	public BooleanExpression isBetweenInclusive(String lowerBound, StringResult upperBound) {
 		return this.isBetweenInclusive(value(lowerBound), upperBound);
 	}
@@ -974,6 +997,7 @@ public class StringExpression extends CountableExpression<String, StringResult, 
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a boolean expression representing the required comparison
 	 */
+	@Override
 	public BooleanExpression isBetweenInclusive(StringResult lowerBound, String upperBound) {
 		return this.isBetweenInclusive(lowerBound, value(upperBound));
 	}
@@ -1001,6 +1025,7 @@ public class StringExpression extends CountableExpression<String, StringResult, 
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a boolean expression representing the required comparison
 	 */
+//	@Override
 	public BooleanExpression isBetweenInclusive(String lowerBound, String upperBound) {
 		return this.isBetweenInclusive(value(lowerBound), value(upperBound));
 	}
@@ -1063,6 +1088,7 @@ public class StringExpression extends CountableExpression<String, StringResult, 
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a boolean expression representing the required comparison
 	 */
+	@Override
 	public BooleanExpression isBetweenExclusive(String lowerBound, StringResult upperBound) {
 		return this.isBetweenExclusive(value(lowerBound), upperBound);
 	}
@@ -1092,6 +1118,7 @@ public class StringExpression extends CountableExpression<String, StringResult, 
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a boolean expression representing the required comparison
 	 */
+	@Override
 	public BooleanExpression isBetweenExclusive(StringResult lowerBound, String upperBound) {
 		return this.isBetweenExclusive(lowerBound, value(upperBound));
 	}
@@ -1121,6 +1148,7 @@ public class StringExpression extends CountableExpression<String, StringResult, 
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a boolean expression representing the required comparison
 	 */
+//	@Override
 	public BooleanExpression isBetweenExclusive(String lowerBound, String upperBound) {
 		return this.isBetweenExclusive(value(lowerBound), value(upperBound));
 	}
@@ -1137,6 +1165,7 @@ public class StringExpression extends CountableExpression<String, StringResult, 
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a BooleanExpression of the SQL comparison.
 	 */
+//	@Override
 	public BooleanExpression isLessThan(String equivalentString) {
 		return isLessThan(value(equivalentString));
 	}
@@ -1184,6 +1213,7 @@ public class StringExpression extends CountableExpression<String, StringResult, 
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a BooleanExpression of the SQL comparison.
 	 */
+//	@Override
 	public BooleanExpression isLessThanOrEqual(String equivalentString) {
 		return isLessThanOrEqual(value(equivalentString));
 	}
@@ -1231,6 +1261,7 @@ public class StringExpression extends CountableExpression<String, StringResult, 
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a BooleanExpression of the SQL comparison.
 	 */
+//	@Override
 	public BooleanExpression isGreaterThan(String equivalentString) {
 		return isGreaterThan(value(equivalentString));
 	}
@@ -1278,6 +1309,7 @@ public class StringExpression extends CountableExpression<String, StringResult, 
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a BooleanExpression of the SQL comparison.
 	 */
+//	@Override
 	public BooleanExpression isGreaterThanOrEqual(String equivalentString) {
 		return isGreaterThanOrEqual(value(equivalentString));
 	}
@@ -1325,6 +1357,7 @@ public class StringExpression extends CountableExpression<String, StringResult, 
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a BooleanExpression of the SQL comparison.
 	 */
+	@Override
 	public BooleanExpression isIn(String... possibleValues) {
 		List<StringExpression> possVals = new ArrayList<>();
 		for (String str : possibleValues) {
@@ -1576,7 +1609,7 @@ public class StringExpression extends CountableExpression<String, StringResult, 
 				try {
 					return db.doSubstringBeforeTransform(getFirst().toSQLString(db), getSecond().toSQLString(db));
 				} catch (UnsupportedOperationException exp) {
-					return getFirst().locationOf(getSecond()).isGreaterThan(0).ifThenElse(getFirst().substring(0, getFirst().locationOf(getSecond()).minus(1).numberResult()), value("")).toSQLString(db);
+					return getFirst().locationOf(getSecond()).isGreaterThan(0).ifThenElse(getFirst().substring(0, getFirst().locationOf(getSecond()).minus(1).integerResult()), value("")).toSQLString(db);
 				}
 			}
 
@@ -1631,7 +1664,7 @@ public class StringExpression extends CountableExpression<String, StringResult, 
 				try {
 					return db.doSubstringAfterTransform(getFirst().toSQLString(db), getSecond().toSQLString(db));
 				} catch (UnsupportedOperationException exp) {
-					return getFirst().locationOf(getSecond()).isGreaterThan(0).ifThenElse(getFirst().substring(getFirst().locationOf(getSecond()).numberResult(), getFirst().length()), value("")).toSQLString(db);
+					return getFirst().locationOf(getSecond()).isGreaterThan(0).ifThenElse(getFirst().substring(getFirst().locationOf(getSecond()).integerResult(), getFirst().length()), value("")).toSQLString(db);
 				}
 			}
 
@@ -1912,7 +1945,7 @@ public class StringExpression extends CountableExpression<String, StringResult, 
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a StringExpression
 	 */
-	public StringExpression substring(Number startingIndex0Based) {
+	public StringExpression substring(Integer startingIndex0Based) {
 		return substring(NumberExpression.value(startingIndex0Based));
 	}
 
@@ -1928,7 +1961,23 @@ public class StringExpression extends CountableExpression<String, StringResult, 
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a StringExpression
 	 */
-	public StringExpression substring(NumberResult startingIndex0Based) {
+	public StringExpression substring(Long startingIndex0Based) {
+		return substring(NumberExpression.value(startingIndex0Based));
+	}
+
+	/**
+	 * Create a substring of the current StringExpression starting from the
+	 * position supplied and continuing until the end of the string.
+	 *
+	 * <p>
+	 * The first character is at position zero (0).
+	 *
+	 * @param startingIndex0Based	startingIndex0Based
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @return a StringExpression
+	 */
+	public StringExpression substring(IntegerResult startingIndex0Based) {
 		return new Substring(this, startingIndex0Based);
 	}
 
@@ -1945,7 +1994,7 @@ public class StringExpression extends CountableExpression<String, StringResult, 
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a StringExpression
 	 */
-	public StringExpression substring(Number startingIndex0Based, Number endIndex0Based) {
+	public StringExpression substring(Integer startingIndex0Based, Integer endIndex0Based) {
 		return new Substring(this, startingIndex0Based, endIndex0Based);
 	}
 
@@ -1962,8 +2011,8 @@ public class StringExpression extends CountableExpression<String, StringResult, 
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a StringExpression
 	 */
-	public StringExpression substring(NumberResult startingIndex0Based, Number endIndex0Based) {
-		return new Substring(this, startingIndex0Based, new NumberExpression(endIndex0Based));
+	public StringExpression substring(Long startingIndex0Based, Long endIndex0Based) {
+		return new Substring(this, startingIndex0Based, endIndex0Based);
 	}
 
 	/**
@@ -1979,8 +2028,8 @@ public class StringExpression extends CountableExpression<String, StringResult, 
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a StringExpression
 	 */
-	public StringExpression substring(Number startingIndex0Based, NumberResult endIndex0Based) {
-		return new Substring(this, new NumberExpression(startingIndex0Based), endIndex0Based);
+	public StringExpression substring(IntegerResult startingIndex0Based, Integer endIndex0Based) {
+		return new Substring(this, startingIndex0Based, value(endIndex0Based));
 	}
 
 	/**
@@ -1996,7 +2045,58 @@ public class StringExpression extends CountableExpression<String, StringResult, 
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a StringExpression
 	 */
-	public StringExpression substring(NumberResult startingIndex0Based, NumberResult endIndex0Based) {
+	public StringExpression substring(IntegerResult startingIndex0Based, Long endIndex0Based) {
+		return new Substring(this, startingIndex0Based, value(endIndex0Based));
+	}
+
+	/**
+	 * Create a substring of the current StringExpression starting from the
+	 * position supplied and continuing until the end position supplied..
+	 *
+	 * <p>
+	 * The first character is at position zero (0).
+	 *
+	 * @param startingIndex0Based startingIndex0Based
+	 * @param endIndex0Based endIndex0Based
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @return a StringExpression
+	 */
+	public StringExpression substring(Integer startingIndex0Based, IntegerResult endIndex0Based) {
+		return new Substring(this, value(startingIndex0Based), endIndex0Based);
+	}
+
+	/**
+	 * Create a substring of the current StringExpression starting from the
+	 * position supplied and continuing until the end position supplied..
+	 *
+	 * <p>
+	 * The first character is at position zero (0).
+	 *
+	 * @param startingIndex0Based startingIndex0Based
+	 * @param endIndex0Based endIndex0Based
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @return a StringExpression
+	 */
+	public StringExpression substring(Long startingIndex0Based, IntegerResult endIndex0Based) {
+		return new Substring(this, value(startingIndex0Based), endIndex0Based);
+	}
+
+	/**
+	 * Create a substring of the current StringExpression starting from the
+	 * position supplied and continuing until the end position supplied..
+	 *
+	 * <p>
+	 * The first character is at position zero (0).
+	 *
+	 * @param startingIndex0Based startingIndex0Based
+	 * @param endIndex0Based endIndex0Based
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @return a StringExpression
+	 */
+	public StringExpression substring(IntegerResult startingIndex0Based, IntegerResult endIndex0Based) {
 		return new Substring(this, startingIndex0Based, endIndex0Based);
 	}
 
@@ -2008,9 +2108,9 @@ public class StringExpression extends CountableExpression<String, StringResult, 
 	 *
 	 * @return a NumberExpression of the expression's length.
 	 */
-	public NumberExpression length() {
-		return new NumberExpression(
-				new DBUnaryNumberFunction(this) {
+	public IntegerExpression length() {
+		return new IntegerExpression(
+				new DBUnaryIntegerFunction(this) {
 
 			@Override
 			public String toSQLString(DBDefinition db) {
@@ -2382,7 +2482,7 @@ public class StringExpression extends CountableExpression<String, StringResult, 
 	 */
 	public IntegerExpression integerResult() {
 		return this.numberResult().isNotNull()
-				.ifThenElse(this.numberResult().integerResult(), IntegerExpression.nullExpression());
+				.ifThenElse(this.numberResult().integerResult(), nullInteger());
 	}
 
 	@Override
@@ -2393,6 +2493,16 @@ public class StringExpression extends CountableExpression<String, StringResult, 
 	@Override
 	public StringExpression stringResult() {
 		return this;
+	}
+
+	@Override
+	public StringResult getInnerResult() {
+		return string1;
+	}
+
+	@Override
+	public StringResult expression(DBString value) {
+		return new StringExpression(value);
 	}
 
 	private static abstract class DBBinaryStringArithmetic extends StringExpression {
@@ -2728,6 +2838,65 @@ public class StringExpression extends CountableExpression<String, StringResult, 
 		}
 	}
 
+	private static abstract class DBUnaryIntegerFunction extends IntegerExpression {
+
+		protected StringExpression only;
+
+		DBUnaryIntegerFunction() {
+			this.only = null;
+		}
+
+		DBUnaryIntegerFunction(StringExpression only) {
+			this.only = only;
+		}
+
+		abstract String getFunctionName(DBDefinition db);
+
+		protected String beforeValue(DBDefinition db) {
+			return "" + getFunctionName(db) + "( ";
+		}
+
+		protected String afterValue(DBDefinition db) {
+			return ") ";
+		}
+
+		@Override
+		public String toSQLString(DBDefinition db) {
+			return this.beforeValue(db) + (only == null ? "" : only.toSQLString(db)) + this.afterValue(db);
+		}
+
+		@Override
+		public DBUnaryIntegerFunction copy() {
+			DBUnaryIntegerFunction newInstance;
+			try {
+				newInstance = getClass().newInstance();
+			} catch (InstantiationException | IllegalAccessException ex) {
+				throw new RuntimeException(ex);
+			}
+			newInstance.only = (only == null ? null : only.copy());
+			return newInstance;
+		}
+
+		@Override
+		public Set<DBRow> getTablesInvolved() {
+			HashSet<DBRow> hashSet = new HashSet<>();
+			if (only != null) {
+				hashSet.addAll(only.getTablesInvolved());
+			}
+			return hashSet;
+		}
+
+		@Override
+		public boolean isAggregator() {
+			return only.isAggregator();
+		}
+
+		@Override
+		public boolean getIncludesNull() {
+			return false;
+		}
+	}
+
 	private static abstract class DBTrinaryStringFunction extends StringExpression {
 
 		private DBExpression first;
@@ -3029,30 +3198,41 @@ public class StringExpression extends CountableExpression<String, StringResult, 
 		}
 	}
 
-	private class Substring extends StringExpression implements StringResult {
+	private class Substring extends StringExpression {
 
-		private NumberResult startingPosition;
-		private NumberResult length;
+		private IntegerResult startingPosition;
+		private IntegerResult length;
 
-		Substring(StringResult stringInput, Number startingIndex0Based) {
+		Substring(StringResult stringInput, Long startingIndex0Based) {
 			super(stringInput);
-			this.startingPosition = new DBNumber(startingIndex0Based);
+			this.startingPosition = value(startingIndex0Based);
+			this.length = new StringExpression(stringInput).length();
+		}
+		Substring(StringResult stringInput, Integer startingIndex0Based) {
+			super(stringInput);
+			this.startingPosition = value(startingIndex0Based);
 			this.length = new StringExpression(stringInput).length();
 		}
 
-		Substring(StringResult stringInput, NumberResult startingIndex0Based) {
+		Substring(StringResult stringInput, IntegerResult startingIndex0Based) {
 			super(stringInput);
 			this.startingPosition = startingIndex0Based.copy();
-			this.length = new StringExpression(stringInput).length();
+			this.length =value(stringInput).length();
 		}
 
-		Substring(StringResult stringInput, Number startingIndex0Based, Number endIndex0Based) {
+		Substring(StringResult stringInput, Long startingIndex0Based, Long endIndex0Based) {
 			super(stringInput);
-			this.startingPosition = new DBNumber(startingIndex0Based);
-			this.length = new DBNumber(endIndex0Based);
+			this.startingPosition = value(startingIndex0Based);
+			this.length = value(endIndex0Based);
 		}
 
-		Substring(StringResult stringInput, NumberResult startingIndex0Based, NumberResult endIndex0Based) {
+		Substring(StringResult stringInput, Integer startingIndex0Based, Integer endIndex0Based) {
+			super(stringInput);
+			this.startingPosition = value(startingIndex0Based);
+			this.length = value(endIndex0Based);
+		}
+
+		Substring(StringResult stringInput, IntegerResult startingIndex0Based, IntegerResult endIndex0Based) {
 			super(stringInput);
 			this.startingPosition = startingIndex0Based.copy();
 			this.length = endIndex0Based.copy();
@@ -3072,7 +3252,7 @@ public class StringExpression extends CountableExpression<String, StringResult, 
 			}
 		}
 
-		public String doSubstringTransform(DBDefinition db, StringResult enclosedValue, NumberResult startingPosition, NumberResult substringLength) {
+		public String doSubstringTransform(DBDefinition db, StringResult enclosedValue, IntegerResult startingPosition, IntegerResult substringLength) {
 			return db.doSubstringTransform(
 					enclosedValue.toSQLString(db),
 					(startingPosition.toSQLString(db) + " + 1"),

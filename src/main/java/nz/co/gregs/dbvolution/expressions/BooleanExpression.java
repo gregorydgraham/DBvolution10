@@ -15,29 +15,35 @@
  */
 package nz.co.gregs.dbvolution.expressions;
 
-import nz.co.gregs.dbvolution.results.RangeComparable;
 import nz.co.gregs.dbvolution.results.StringResult;
 import nz.co.gregs.dbvolution.results.EqualComparable;
 import nz.co.gregs.dbvolution.results.DateResult;
 import nz.co.gregs.dbvolution.results.NumberResult;
 import nz.co.gregs.dbvolution.results.BooleanResult;
 import com.vividsolutions.jts.geom.Polygon;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import nz.co.gregs.dbvolution.DBQuery;
+import nz.co.gregs.dbvolution.DBQueryRow;
 import nz.co.gregs.dbvolution.DBReport;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.columns.ColumnProvider;
+import nz.co.gregs.dbvolution.databases.H2MemoryDB;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.datatypes.DBBoolean;
 import nz.co.gregs.dbvolution.datatypes.DBInteger;
 import nz.co.gregs.dbvolution.datatypes.DBNumber;
 import nz.co.gregs.dbvolution.datatypes.DBString;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
+import nz.co.gregs.dbvolution.example.Marque;
+import nz.co.gregs.dbvolution.exceptions.AccidentalBlankQueryException;
+import nz.co.gregs.dbvolution.exceptions.AccidentalCartesianJoinException;
 import nz.co.gregs.dbvolution.results.IntegerResult;
+import nz.co.gregs.dbvolution.results.RangeResult;
 
 /**
  * BooleanExpression implements standard functions that produce a Boolean or
@@ -77,7 +83,7 @@ import nz.co.gregs.dbvolution.results.IntegerResult;
  * @author Gregory Graham
  */
 public class BooleanExpression implements BooleanResult, EqualComparable<BooleanResult>, ExpressionColumn<DBBoolean> {
-	
+
 	static BooleanExpression nullExpression() {
 		return new BooleanExpression() {
 			@Override
@@ -128,8 +134,9 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 	 * value for use in a BooleanExpression.
 	 *
 	 *
+	 * @param bool
 	 */
-	private BooleanExpression(Boolean bool) {
+	public BooleanExpression(Boolean bool) {
 		onlyBool = new DBBoolean(bool);
 		includeNulls = bool == null;
 	}
@@ -1201,7 +1208,8 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 	 * If you are using this for pagination, remember to sort by the columns as
 	 * well
 	 *
-	 * @param <A> a value that can be compared to Z, probably StringResult,
+	 * @param <B> a base class like String, Number, or Date
+	 * @param <R> a value that can be compared to Z, probably StringResult,
 	 * NumberResult, or DateResult
 	 * @param <Z> an expression or column that implements RangeComparable,
 	 * probably StringExpression, NumberExpression, DateExpression or a column
@@ -1214,8 +1222,12 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a BooleanExpression
 	 */
-	public static <A extends DBExpression, Z extends RangeComparable<? super A>>
-			BooleanExpression seekLessThan(Z columnA, A valueA, BooleanExpression whenEqualsFallbackComparison) {
+	@SuppressWarnings("unchecked")
+	public static <B, R extends RangeResult<B>, Z extends RangeExpression & RangeResult>
+			BooleanExpression seekLessThan(
+					Z columnA,
+					R valueA,
+					BooleanExpression whenEqualsFallbackComparison) {
 		return columnA.isLessThan(valueA).or(columnA.is(valueA).and(whenEqualsFallbackComparison));
 	}
 
@@ -1235,9 +1247,10 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 	 * If you are using this for pagination, remember to sort by the columns as
 	 * well
 	 *
-	 * @param <A> a value that can be compared to Z, probably StringResult,
+	 * @param <B> a base class like String, Number, or Date
+	 * @param <R> a value that can be compared to Z, probably StringResult,
 	 * NumberResult, or DateResult
-	 * @param <Z> an expression or column that implements RangeComparable,
+	 * @param <Z> an expression or column that extends RangeExpression,
 	 * probably StringExpression, NumberExpression, DateExpression or a column
 	 * type of the same.
 	 * @param columnA the left side of the internal comparison
@@ -1248,8 +1261,9 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a BooleanExpression
 	 */
-	public static <A extends DBExpression, Z extends RangeComparable<? super A>>
-			BooleanExpression seekGreaterThan(Z columnA, A valueA, BooleanExpression whenEqualsFallbackComparison) {
+	@SuppressWarnings("unchecked")
+	public static <B, R extends RangeResult<B>, Z extends RangeExpression & RangeResult>
+			BooleanExpression seekGreaterThan(Z columnA, R valueA, BooleanExpression whenEqualsFallbackComparison) {
 		return columnA.isGreaterThan(valueA).or(columnA.is(valueA).and(whenEqualsFallbackComparison));
 	}
 
@@ -1269,9 +1283,13 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 	 * If you are using this for pagination, remember to sort by the columns as
 	 * well
 	 *
-	 * @param <RangeComparableY> a value that can be compared to Z, probably
+	 * @param <B>
+	 * @param <R>
+	 * @param <Y> a value that can be compared to Z, probably
 	 * StringResult, NumberResult, or DateResult
-	 * @param <RangeComparableZ> an expression or column that implements
+	 * @param <C>
+	 * @param <S>
+	 * @param <Z> an expression or column that implements
 	 * RangeComparable, probably StringExpression, NumberExpression,
 	 * DateExpression or a column type of the same.
 	 * @param columnA the left side of the internal comparison
@@ -1283,9 +1301,11 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a BooleanExpression
 	 */
-	public static <RangeComparableZ extends RangeComparable<? super RangeComparableZ>, RangeComparableY extends RangeComparable<? super RangeComparableY>>
+	@SuppressWarnings("unchecked")
+	public static <B, R extends RangeResult<B>, Z extends RangeExpression & RangeResult,
+					C, S extends RangeResult<C>, Y extends RangeExpression & RangeResult>
 			BooleanExpression
-			seekLessThan(RangeComparableZ columnA, RangeComparableZ valueA, RangeComparableY columnB, RangeComparableY valueB) {
+			seekLessThan(Z columnA, R valueA, Y columnB, S valueB) {
 		return BooleanExpression.anyOf(
 				columnA.isLessThan(valueA),
 				BooleanExpression.allOf(columnA.is(valueA), columnB.isLessThanOrEqual(valueB)));
@@ -1312,12 +1332,16 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 	 * If you are using this for pagination, remember to sort by the columns as
 	 * well
 	 *
-	 * @param <RangeComparableZ> an expression or column that implements
+	 * @param <B>
+	 * @param <R>
+	 * @param <Z> an expression or column that implements
 	 * RangeComparable, probably StringExpression, NumberExpression,
 	 * DateExpression or a column type of the same.
+	 * @param <C>
+	 * @param <S>
 	 * @param columnA the left side of the internal comparison
 	 * @param valueA the right side of the internal comparison
-	 * @param <RangeComparableY> an expression or column that implements
+	 * @param <Y> an expression or column that implements
 	 * RangeComparable, probably StringExpression, NumberExpression,
 	 * DateExpression or a column type of the same.
 	 * @param columnB the left side of the internal comparison
@@ -1326,9 +1350,12 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a BooleanExpression
 	 */
-	public static <RangeComparableZ extends RangeComparable<? super RangeComparableZ>, RangeComparableY extends RangeComparable<? super RangeComparableY>>
+	@SuppressWarnings("unchecked")
+	public static <B, R extends RangeResult<B>, Z extends RangeExpression & RangeResult,
+					C, S extends RangeResult<C>, Y extends RangeExpression & RangeResult>
+					//<RangeComparableZ extends RangeComparable<? super RangeComparableZ>, RangeComparableY extends RangeComparable<? super RangeComparableY>>
 			BooleanExpression
-			seekGreaterThan(RangeComparableZ columnA, RangeComparableZ valueA, RangeComparableY columnB, RangeComparableY valueB) {
+			seekGreaterThan(Z columnA, R valueA, Y columnB, S valueB) {
 		return BooleanExpression.anyOf(
 				columnA.isGreaterThan(valueA),
 				BooleanExpression.allOf(columnA.is(valueA), columnB.isGreaterThanOrEqual(valueB)));
@@ -1355,17 +1382,23 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 	 * If you are using this for pagination, remember to sort by the columns as
 	 * well
 	 *
-	 * @param <RangeComparableZ> an expression or column that implements
+	 * @param <B>
+	 * @param <R>
+	 * @param <Z> an expression or column that implements
 	 * RangeComparable, probably StringExpression, NumberExpression,
 	 * DateExpression or a column type of the same.
+	 * @param <C>
+	 * @param <S>
+	 * @param <D>
+	 * @param <T>
 	 * @param columnA the left side of the internal comparison
 	 * @param valueA the right side of the internal comparison
-	 * @param <RangeComparableY> an expression or column that implements
+	 * @param <Y> an expression or column that implements
 	 * RangeComparable, probably StringExpression, NumberExpression,
 	 * DateExpression or a column type of the same.
 	 * @param columnB the left side of the internal comparison
 	 * @param valueB the right side of the internal comparison
-	 * @param <RangeComparableX> an expression or column that implements
+	 * @param <X> an expression or column that implements
 	 * RangeComparable, probably StringExpression, NumberExpression,
 	 * DateExpression or a column type of the same.
 	 * @param columnC the left side of the internal comparison
@@ -1374,9 +1407,12 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a BooleanExpression
 	 */
-	public static <RangeComparableZ extends RangeComparable<? super RangeComparableZ>, RangeComparableY extends RangeComparable<? super RangeComparableY>, RangeComparableX extends RangeComparable<? super RangeComparableX>>
+	@SuppressWarnings("unchecked")
+	public static <B, R extends RangeResult<B>, Z extends RangeExpression & RangeResult,
+					C, S extends RangeResult<C>, Y extends RangeExpression & RangeResult,
+					D, T extends RangeResult<D>, X extends RangeExpression & RangeResult>
 			BooleanExpression
-			seekLessThan(RangeComparableZ columnA, RangeComparableZ valueA, RangeComparableY columnB, RangeComparableY valueB, RangeComparableX columnC, RangeComparableX valueC) {
+			seekLessThan(Z columnA, R valueA, Y columnB, S valueB, X columnC, T valueC) {
 		return BooleanExpression.anyOf(
 				columnA.isLessThan(valueA),
 				BooleanExpression.allOf(columnA.is(valueA), BooleanExpression.seekLessThan(columnB, valueB, columnC, valueC)));
@@ -1403,22 +1439,30 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 	 * If you are using this for pagination, remember to sort by the columns as
 	 * well
 	 *
-	 * @param <RangeComparableZ> an expression or column that implements
+	 * @param <B>
+	 * @param <R>
+	 * @param <Z> an expression or column that implements
 	 * RangeComparable, probably StringExpression, NumberExpression,
 	 * DateExpression or a column type of the same.
+	 * @param <C>
+	 * @param <S>
+	 * @param <D>
+	 * @param <T>
+	 * @param <E>
+	 * @param <U>
 	 * @param columnA the left side of the internal comparison
 	 * @param valueA the right side of the internal comparison
-	 * @param <RangeComparableY> an expression or column that implements
+	 * @param <Y> an expression or column that implements
 	 * RangeComparable, probably StringExpression, NumberExpression,
 	 * DateExpression or a column type of the same.
 	 * @param columnB the left side of the internal comparison
 	 * @param valueB the right side of the internal comparison
-	 * @param <RangeComparableX> an expression or column that implements
+	 * @param <X> an expression or column that implements
 	 * RangeComparable, probably StringExpression, NumberExpression,
 	 * DateExpression or a column type of the same.
 	 * @param columnC the left side of the internal comparison
 	 * @param valueC the right side of the internal comparison
-	 * @param <RangeComparableW> an expression or column that implements
+	 * @param <W> an expression or column that implements
 	 * RangeComparable, probably StringExpression, NumberExpression,
 	 * DateExpression or a column type of the same.
 	 * @param columnD the left side of the internal comparison
@@ -1427,9 +1471,13 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a BooleanExpression
 	 */
-	public static <RangeComparableZ extends RangeComparable<? super RangeComparableZ>, RangeComparableY extends RangeComparable<? super RangeComparableY>, RangeComparableX extends RangeComparable<? super RangeComparableX>, RangeComparableW extends RangeComparable<? super RangeComparableW>>
+	@SuppressWarnings("unchecked")
+	public static <B, R extends RangeResult<B>, Z extends RangeExpression & RangeResult,
+					C, S extends RangeResult<C>, Y extends RangeExpression & RangeResult,
+					D, T extends RangeResult<D>, X extends RangeExpression & RangeResult,
+					E, U extends RangeResult<E>, W extends RangeExpression & RangeResult>
 			BooleanExpression
-			seekLessThan(RangeComparableZ columnA, RangeComparableZ valueA, RangeComparableY columnB, RangeComparableY valueB, RangeComparableX columnC, RangeComparableX valueC, RangeComparableW columnD, RangeComparableW valueD) {
+			seekLessThan(Z columnA, R valueA, Y columnB, S valueB, X columnC, T valueC, W columnD, U valueD) {
 		return BooleanExpression.anyOf(
 				columnA.isLessThan(valueA),
 				BooleanExpression.allOf(columnA.is(valueA), BooleanExpression.seekLessThan(columnB, valueB, columnC, valueC, columnD, valueD)));
@@ -1456,17 +1504,23 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 	 * If you are using this for pagination, remember to sort by the columns as
 	 * well
 	 *
-	 * @param <RangeComparableZ> an expression or column that implements
+	 * @param <B>
+	 * @param <R>
+	 * @param <Z> an expression or column that implements
 	 * RangeComparable, probably StringExpression, NumberExpression,
 	 * DateExpression or a column type of the same.
+	 * @param <C>
+	 * @param <S>
+	 * @param <D>
+	 * @param <T>
 	 * @param columnA the left side of the internal comparison
 	 * @param valueA the right side of the internal comparison
-	 * @param <RangeComparableY> an expression or column that implements
+	 * @param <Y> an expression or column that implements
 	 * RangeComparable, probably StringExpression, NumberExpression,
 	 * DateExpression or a column type of the same.
 	 * @param columnB the left side of the internal comparison
 	 * @param valueB the right side of the internal comparison
-	 * @param <RangeComparableX> an expression or column that implements
+	 * @param <X> an expression or column that implements
 	 * RangeComparable, probably StringExpression, NumberExpression,
 	 * DateExpression or a column type of the same.
 	 * @param columnC the left side of the internal comparison
@@ -1475,9 +1529,12 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a BooleanExpression
 	 */
-	public static <RangeComparableZ extends RangeComparable<? super RangeComparableZ>, RangeComparableY extends RangeComparable<? super RangeComparableY>, RangeComparableX extends RangeComparable<? super RangeComparableX>>
+	@SuppressWarnings("unchecked")
+	public static <B, R extends RangeResult<B>, Z extends RangeExpression & RangeResult,
+					C, S extends RangeResult<C>, Y extends RangeExpression & RangeResult,
+					D, T extends RangeResult<D>, X extends RangeExpression & RangeResult>
 			BooleanExpression
-			seekGreaterThan(RangeComparableZ columnA, RangeComparableZ valueA, RangeComparableY columnB, RangeComparableY valueB, RangeComparableX columnC, RangeComparableX valueC) {
+			seekGreaterThan(Z columnA, R valueA, Y columnB, S valueB, X columnC, T valueC) {
 		return BooleanExpression.anyOf(
 				columnA.isGreaterThan(valueA),
 				BooleanExpression.allOf(columnA.is(valueA), BooleanExpression.seekGreaterThan(columnB, valueB, columnC, valueC)));
@@ -1504,22 +1561,30 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 	 * If you are using this for pagination, remember to sort by the columns as
 	 * well
 	 *
-	 * @param <RangeComparableZ> an expression or column that implements
+	 * @param <B>
+	 * @param <R>
+	 * @param <Z> an expression or column that implements
 	 * RangeComparable, probably StringExpression, NumberExpression,
 	 * DateExpression or a column type of the same.
+	 * @param <C>
+	 * @param <S>
+	 * @param <D>
+	 * @param <T>
+	 * @param <E>
+	 * @param <U>
 	 * @param columnA the left side of the internal comparison
 	 * @param valueA the right side of the internal comparison
-	 * @param <RangeComparableY> an expression or column that implements
+	 * @param <Y> an expression or column that implements
 	 * RangeComparable, probably StringExpression, NumberExpression,
 	 * DateExpression or a column type of the same.
 	 * @param columnB the left side of the internal comparison
 	 * @param valueB the right side of the internal comparison
-	 * @param <RangeComparableX> an expression or column that implements
+	 * @param <X> an expression or column that implements
 	 * RangeComparable, probably StringExpression, NumberExpression,
 	 * DateExpression or a column type of the same.
 	 * @param columnC the left side of the internal comparison
 	 * @param valueC the right side of the internal comparison
-	 * @param <RangeComparableW> an expression or column that implements
+	 * @param <W> an expression or column that implements
 	 * RangeComparable, probably StringExpression, NumberExpression,
 	 * DateExpression or a column type of the same.
 	 * @param columnD the left side of the internal comparison
@@ -1528,9 +1593,13 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a BooleanExpression
 	 */
-	public static <RangeComparableZ extends RangeComparable<? super RangeComparableZ>, RangeComparableY extends RangeComparable<? super RangeComparableY>, RangeComparableX extends RangeComparable<? super RangeComparableX>, RangeComparableW extends RangeComparable<? super RangeComparableW>>
+	@SuppressWarnings("unchecked")
+	public static <B, R extends RangeResult<B>, Z extends RangeExpression & RangeResult,
+					C, S extends RangeResult<C>, Y extends RangeExpression & RangeResult,
+					D, T extends RangeResult<D>, X extends RangeExpression & RangeResult,
+					E, U extends RangeResult<E>, W extends RangeExpression & RangeResult>
 			BooleanExpression
-			seekGreaterThan(RangeComparableZ columnA, RangeComparableZ valueA, RangeComparableY columnB, RangeComparableY valueB, RangeComparableX columnC, RangeComparableX valueC, RangeComparableW columnD, RangeComparableW valueD) {
+			seekGreaterThan(Z columnA, R valueA, Y columnB, S valueB, X columnC, T valueC, W columnD, U valueD) {
 		return BooleanExpression.anyOf(
 				columnA.isGreaterThan(valueA),
 				BooleanExpression.allOf(columnA.is(valueA), BooleanExpression.seekGreaterThan(columnB, valueB, columnC, valueC, columnD, valueD)));
@@ -2040,8 +2109,8 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 
 		DBBooleanNumberNumberFunction(BooleanExpression only, NumberResult first, NumberResult second) {
 			this.onlyBool = (only == null ? BooleanExpression.nullExpression() : only);
-			this.first = (first == null ? NumberExpression.nullExpression() : first);
-			this.second = (second == null ? NumberExpression.nullExpression() : second);
+			this.first = (first == null ? nullNumber() : first);
+			this.second = (second == null ? nullNumber() : second);
 		}
 
 		abstract String getFunctionName(DBDefinition db);
@@ -2105,8 +2174,8 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 
 		DBBooleanIntegerIntegerFunction(BooleanExpression only, IntegerResult first, IntegerResult second) {
 			this.onlyBool = (only == null ? BooleanExpression.nullExpression() : only);
-			this.first = (first == null ? IntegerExpression.nullExpression() : first);
-			this.second = (second == null ? IntegerExpression.nullExpression() : second);
+			this.first = (first == null ? nullInteger() : first);
+			this.second = (second == null ? nullInteger() : second);
 		}
 
 		abstract String getFunctionName(DBDefinition db);

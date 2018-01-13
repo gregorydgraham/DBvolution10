@@ -26,24 +26,15 @@
  * 
  * Check the Creative Commons website for any details, legalese, and updates.
  */
-package nz.co.gregs.dbvolution.expressions;
+package nz.co.gregs.dbvolution.results;
 
-import nz.co.gregs.dbvolution.results.SimpleNumericResult;
-import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
+import nz.co.gregs.dbvolution.expressions.DBExpression;
 
 /**
  *
- * Used to group NumberExpression and IntegerExpression.
- *
- * Simple in this sense means that imaginary numbers are probably not handled.
- *
  * @author gregorygraham
- * @param <B> a base numeric type, that is Number or Integer or similar
- * @param <R> a RangeResult&lt;B&gt;
- * @param <D> a QueryableDatatype&lt;B&gt;
+ * @param <B> a base type like Integer or String
  */
-public abstract class SimpleNumericExpression<B, R extends SimpleNumericResult<B>, D extends QueryableDatatype<B>> extends RangeExpression<B, R, D> implements SimpleNumericResult<B>{
-
-	public abstract NumberExpression numberResult();
-	public abstract IntegerExpression integerResult();
+public interface CountableResult<B> extends DBExpression, ExpressionCanHaveNullValues, ExpressionHasStandardStringResult {
+	
 }

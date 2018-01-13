@@ -268,7 +268,7 @@ public class DateExpressionTest extends AbstractTest {
 
 		Marque marq = new Marque();
 		DBQuery query = database.getDBQuery(marq);
-		query.addConditions(marq.column(marq.creationDate).isBetween(DateExpression.currentDate(), DateExpression.nullExpression()));
+		query.addConditions(marq.column(marq.creationDate).isBetween(DateExpression.currentDate(), DateExpression.nullDate()));
 
 		List<DBQueryRow> got = query.getAllRows();
 
@@ -471,7 +471,7 @@ public class DateExpressionTest extends AbstractTest {
 
 		query = database.getDBQuery(marq);
 		query.addCondition(
-				marq.column(marq.creationDate).yearIs(NumberExpression.value(2014)));
+				marq.column(marq.creationDate).yearIs(NumberExpression.value(2014).numberResult()));
 		got = query.getAllInstancesOf(marq);
 
 		Assert.assertThat(got.size(), is(0));
@@ -503,7 +503,7 @@ public class DateExpressionTest extends AbstractTest {
 
 		query = database.getDBQuery(marq);
 		query.addCondition(
-				marq.column(marq.creationDate).monthIs(NumberExpression.value(3)));
+				marq.column(marq.creationDate).monthIs(NumberExpression.value(3).numberResult()));
 		got = query.getAllInstancesOf(marq);
 
 		Assert.assertThat(got.size(), is(18));
@@ -810,6 +810,11 @@ public class DateExpressionTest extends AbstractTest {
 				marq.column(marq.creationDate).dayIs(NumberExpression.value(2)));
 		got = query.getAllInstancesOf(marq);
 
+		query = database.getDBQuery(marq);
+		query.addCondition(
+				marq.column(marq.creationDate).dayIs(NumberExpression.value(2).numberResult()));
+		got = query.getAllInstancesOf(marq);
+
 		Assert.assertThat(got.size(), is(3));
 	}
 
@@ -844,6 +849,13 @@ public class DateExpressionTest extends AbstractTest {
 		query = database.getDBQuery(marq);
 		query.addCondition(
 				marq.column(marq.creationDate).hourIs(1));
+		got = query.getAllInstancesOf(marq);
+
+		Assert.assertThat(got.size(), is(3));
+
+		query = database.getDBQuery(marq);
+		query.addCondition(
+				marq.column(marq.creationDate).hourIs(NumberExpression.value(1).numberResult()));
 		got = query.getAllInstancesOf(marq);
 
 		Assert.assertThat(got.size(), is(3));
@@ -887,6 +899,13 @@ public class DateExpressionTest extends AbstractTest {
 		query = database.getDBQuery(marq);
 		query.addCondition(
 				marq.column(marq.creationDate).minuteIs(2));
+		got = query.getAllInstancesOf(marq);
+
+		Assert.assertThat(got.size(), is(3));
+
+		query = database.getDBQuery(marq);
+		query.addCondition(
+				marq.column(marq.creationDate).minuteIs(NumberExpression.value(2).numberResult()));
 		got = query.getAllInstancesOf(marq);
 
 		Assert.assertThat(got.size(), is(3));

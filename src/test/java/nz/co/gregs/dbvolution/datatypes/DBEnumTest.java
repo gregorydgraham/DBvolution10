@@ -31,6 +31,7 @@ import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.generic.AbstractTest;
 import nz.co.gregs.dbvolution.datatypes.DBEnumTest.StringEnumTable.StringEnumType;
 import nz.co.gregs.dbvolution.exceptions.IncorrectRowProviderInstanceSuppliedException;
+import nz.co.gregs.dbvolution.expressions.IntegerExpression;
 import nz.co.gregs.dbvolution.expressions.NumberExpression;
 import nz.co.gregs.dbvolution.expressions.StringExpression;
 import nz.co.gregs.dbvolution.operators.DBPermittedValuesOperator;
@@ -725,7 +726,7 @@ public class DBEnumTest extends AbstractTest {
 		public DBIntegerEnum<IntEnum> recordType = new DBIntegerEnum<>();
 
 		@DBColumn("ordinal3")
-		public DBIntegerEnum<IntEnum> justOrdinal3 = new DBIntegerEnum<>(NumberExpression.value(2));
+		public DBIntegerEnum<IntEnum> justOrdinal3 = new DBIntegerEnum<IntEnum>(IntegerExpression.value(2));
 
 		public IntegerEnumTable() {
 		}

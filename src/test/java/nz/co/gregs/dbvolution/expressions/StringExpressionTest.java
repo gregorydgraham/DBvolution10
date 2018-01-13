@@ -149,7 +149,7 @@ public class StringExpressionTest extends AbstractTest {
 	@Test
 	public void testIsNotStringExpressionNull() throws SQLException {
 		Marque likeQuery = new Marque();
-		final StringExpression nullExpr = StringExpression.nullExpression();
+		final StringExpression nullExpr = StringExpression.nullString();
 		likeQuery.individualAllocationsAllowed.excludedValues(nullExpr);
 
 		List<Marque> rowsByExample = marquesTable.getRowsByExample(likeQuery);

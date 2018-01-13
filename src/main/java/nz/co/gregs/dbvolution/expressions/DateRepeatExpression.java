@@ -33,7 +33,7 @@ import org.joda.time.Period;
  *
  * @author gregory.graham
  */
-public class DateRepeatExpression extends CountableExpression<Period, DateRepeatResult, DBDateRepeat> implements DateRepeatResult {
+public class DateRepeatExpression extends RangeExpression<Period, DateRepeatResult, DBDateRepeat> implements DateRepeatResult {
 
 	private final DateRepeatResult innerDateRepeatResult;
 	private final boolean nullProtectionRequired;
@@ -203,6 +203,7 @@ public class DateRepeatExpression extends CountableExpression<Period, DateRepeat
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a BooleanExpression
 	 */
+//	@Override
 	public BooleanExpression isLessThan(Period period) {
 		return this.isLessThan(value(period));
 	}
@@ -238,6 +239,7 @@ public class DateRepeatExpression extends CountableExpression<Period, DateRepeat
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a BooleanExpression
 	 */
+//	@Override
 	public BooleanExpression isGreaterThan(Period period) {
 		return this.isGreaterThan(value(period));
 	}
@@ -273,6 +275,7 @@ public class DateRepeatExpression extends CountableExpression<Period, DateRepeat
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a BooleanExpression
 	 */
+//	@Override
 	public BooleanExpression isLessThanOrEqual(Period period) {
 		return this.isLessThanOrEqual(value(period));
 	}
@@ -308,6 +311,7 @@ public class DateRepeatExpression extends CountableExpression<Period, DateRepeat
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a BooleanExpression
 	 */
+//	@Override
 	public BooleanExpression isGreaterThanOrEqual(Period period) {
 		return this.isGreaterThanOrEqual(value(period));
 	}
@@ -347,6 +351,7 @@ public class DateRepeatExpression extends CountableExpression<Period, DateRepeat
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a BooleanExpression
 	 */
+//	@Override
 	public BooleanExpression isLessThan(Period period, BooleanExpression fallBackWhenEqual) {
 		return this.isLessThan(value(period), fallBackWhenEqual);
 	}
@@ -384,6 +389,7 @@ public class DateRepeatExpression extends CountableExpression<Period, DateRepeat
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a BooleanExpression
 	 */
+//	@Override
 	public BooleanExpression isGreaterThan(Period period, BooleanExpression fallBackWhenEqual) {
 		return this.isGreaterThan(value(period), fallBackWhenEqual);
 	}
@@ -415,6 +421,7 @@ public class DateRepeatExpression extends CountableExpression<Period, DateRepeat
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a BooleanExpression
 	 */
+//	@Override
 	public BooleanExpression is(Period period) {
 		return this.is(value(period));
 	}
@@ -459,6 +466,7 @@ public class DateRepeatExpression extends CountableExpression<Period, DateRepeat
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a BooleanExpression
 	 */
+//	@Override
 	public BooleanExpression isNot(Period anotherInstance) {
 		return isNot(value(anotherInstance));
 	}
@@ -486,8 +494,8 @@ public class DateRepeatExpression extends CountableExpression<Period, DateRepeat
 	 *
 	 * @return a number expression
 	 */
-	public NumberExpression getYears() {
-		return new NumberExpression(new DateRepeatWithNumberResult(this) {
+	public IntegerExpression getYears() {
+		return new IntegerExpression(new DateRepeatWithIntegerResult(this) {
 
 			@Override
 			protected String doExpressionTransform(DBDefinition db) {
@@ -495,7 +503,7 @@ public class DateRepeatExpression extends CountableExpression<Period, DateRepeat
 					return db.doDateRepeatGetYearsTransform(getFirst().toSQLString(db));
 				} else {
 					return BooleanExpression.isNull(getFirst()).ifThenElse(
-							NumberExpression.nullExpression(),
+							nullNumber(),
 							getFirst().stringResult().substringBefore(YEAR_SUFFIX).substringAfter(INTERVAL_PREFIX).numberResult()
 					).toSQLString(db);
 				}
@@ -512,8 +520,8 @@ public class DateRepeatExpression extends CountableExpression<Period, DateRepeat
 	 *
 	 * @return a number expression
 	 */
-	public NumberExpression getMonths() {
-		return new NumberExpression(new DateRepeatWithNumberResult(this) {
+	public IntegerExpression getMonths() {
+		return new IntegerExpression(new DateRepeatWithIntegerResult(this) {
 
 			@Override
 			protected String doExpressionTransform(DBDefinition db) {
@@ -521,7 +529,7 @@ public class DateRepeatExpression extends CountableExpression<Period, DateRepeat
 					return db.doDateRepeatGetMonthsTransform(getFirst().toSQLString(db));
 				} else {
 					return BooleanExpression.isNull(getFirst()).ifThenElse(
-							NumberExpression.nullExpression(),
+							nullNumber(),
 							getFirst().stringResult().substringBefore(MONTH_SUFFIX).substringAfter(YEAR_SUFFIX).numberResult()
 					).toSQLString(db);
 				}
@@ -538,8 +546,8 @@ public class DateRepeatExpression extends CountableExpression<Period, DateRepeat
 	 *
 	 * @return a number expression
 	 */
-	public NumberExpression getDays() {
-		return new NumberExpression(new DateRepeatWithNumberResult(this) {
+	public IntegerExpression getDays() {
+		return new IntegerExpression(new DateRepeatWithIntegerResult(this) {
 
 			@Override
 			protected String doExpressionTransform(DBDefinition db) {
@@ -547,7 +555,7 @@ public class DateRepeatExpression extends CountableExpression<Period, DateRepeat
 					return db.doDateRepeatGetDaysTransform(getFirst().toSQLString(db));
 				} else {
 					return BooleanExpression.isNull(getFirst()).ifThenElse(
-							NumberExpression.nullExpression(),
+							nullNumber(),
 							getFirst().stringResult().substringBefore(DAY_SUFFIX).substringAfter(MONTH_SUFFIX).numberResult()
 					).toSQLString(db);
 				}
@@ -564,8 +572,8 @@ public class DateRepeatExpression extends CountableExpression<Period, DateRepeat
 	 *
 	 * @return a number expression
 	 */
-	public NumberExpression getHours() {
-		return new NumberExpression(new DateRepeatWithNumberResult(this) {
+	public IntegerExpression getHours() {
+		return new IntegerExpression(new DateRepeatWithIntegerResult(this) {
 
 			@Override
 			protected String doExpressionTransform(DBDefinition db) {
@@ -573,7 +581,7 @@ public class DateRepeatExpression extends CountableExpression<Period, DateRepeat
 					return db.doDateRepeatGetHoursTransform(getFirst().toSQLString(db));
 				} else {
 					return BooleanExpression.isNull(getFirst()).ifThenElse(
-							NumberExpression.nullExpression(),
+							nullNumber(),
 							getFirst().stringResult().substringBefore(HOUR_SUFFIX).substringAfter(DAY_SUFFIX).numberResult()
 					).toSQLString(db);
 				}
@@ -590,8 +598,8 @@ public class DateRepeatExpression extends CountableExpression<Period, DateRepeat
 	 *
 	 * @return a number expression
 	 */
-	public NumberExpression getMinutes() {
-		return new NumberExpression(new DateRepeatWithNumberResult(this) {
+	public IntegerExpression getMinutes() {
+		return new IntegerExpression(new DateRepeatWithIntegerResult(this) {
 
 			@Override
 			protected String doExpressionTransform(DBDefinition db) {
@@ -599,7 +607,7 @@ public class DateRepeatExpression extends CountableExpression<Period, DateRepeat
 					return db.doDateRepeatGetMinutesTransform(getFirst().toSQLString(db));
 				} else {
 					return BooleanExpression.isNull(getFirst()).ifThenElse(
-							NumberExpression.nullExpression(),
+							nullNumber(),
 							getFirst().stringResult().substringBefore(MINUTE_SUFFIX).substringAfter(HOUR_SUFFIX).numberResult()
 					).toSQLString(db);
 				}
@@ -625,7 +633,7 @@ public class DateRepeatExpression extends CountableExpression<Period, DateRepeat
 					return db.doDateRepeatGetSecondsTransform(getFirst().toSQLString(db));
 				} else {
 					return BooleanExpression.isNull(getFirst()).ifThenElse(
-							NumberExpression.nullExpression(),
+							nullNumber(),
 							getFirst().stringResult().substringBefore(SECOND_SUFFIX).substringAfter(MINUTE_SUFFIX).numberResult()
 					).toSQLString(db);
 				}
@@ -691,6 +699,35 @@ public class DateRepeatExpression extends CountableExpression<Period, DateRepeat
 			i++;
 		}
 		return this.stringResult().isIn(strs);
+	}
+
+	public DateRepeatExpression nullExpression() {
+		return new DateRepeatExpression() {
+			@Override
+			public String toSQLString(DBDefinition db) {
+				return db.getNull();
+			}
+		};
+	}
+
+	@Override
+	public DateRepeatResult expression(Period value) {
+		return new DateRepeatExpression(value);
+	}
+
+	@Override
+	public DateRepeatResult expression(DateRepeatResult value) {
+		return new DateRepeatExpression(value);
+	}
+
+	@Override
+	public DateRepeatResult expression(DBDateRepeat value) {
+		return value;
+	}
+
+	@Override
+	public DateRepeatResult getInnerResult() {
+		return innerDateRepeatResult;
 	}
 
 	private static abstract class DateRepeatDateRepeatWithBooleanResult extends BooleanExpression {
@@ -794,6 +831,63 @@ public class DateRepeatExpression extends CountableExpression<Period, DateRepeat
 		@Override
 		public DateRepeatWithNumberResult copy() {
 			DateRepeatWithNumberResult newInstance;
+			try {
+				newInstance = getClass().newInstance();
+			} catch (InstantiationException | IllegalAccessException ex) {
+				throw new RuntimeException(ex);
+			}
+			newInstance.first = first.copy();
+			return newInstance;
+		}
+
+		@Override
+		public Set<DBRow> getTablesInvolved() {
+			HashSet<DBRow> hashSet = new HashSet<DBRow>();
+			if (first != null) {
+				hashSet.addAll(first.getTablesInvolved());
+			}
+			return hashSet;
+		}
+
+		@Override
+		public boolean isAggregator() {
+			return first.isAggregator();
+		}
+
+		@Override
+		public boolean getIncludesNull() {
+			return requiresNullProtection;
+		}
+	}
+
+
+	private static abstract class DateRepeatWithIntegerResult extends IntegerExpression {
+
+		private DateRepeatExpression first;
+		private boolean requiresNullProtection;
+
+		DateRepeatWithIntegerResult(DateRepeatExpression first) {
+			this.first = first;
+		}
+
+		protected abstract String doExpressionTransform(DBDefinition db);
+
+		DateRepeatExpression getFirst() {
+			return first;
+		}
+
+		@Override
+		public String toSQLString(DBDefinition db) {
+			if (this.getIncludesNull()) {
+				return BooleanExpression.isNull(first).toSQLString(db);
+			} else {
+				return doExpressionTransform(db);
+			}
+		}
+
+		@Override
+		public DateRepeatWithIntegerResult copy() {
+			DateRepeatWithIntegerResult newInstance;
 			try {
 				newInstance = getClass().newInstance();
 			} catch (InstantiationException | IllegalAccessException ex) {

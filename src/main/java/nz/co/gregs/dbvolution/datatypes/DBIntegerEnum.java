@@ -24,14 +24,17 @@ import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.columns.IntegerColumn;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.exceptions.IncorrectRowProviderInstanceSuppliedException;
+import nz.co.gregs.dbvolution.expressions.IntegerExpression;
 import nz.co.gregs.dbvolution.expressions.NumberExpression;
 import nz.co.gregs.dbvolution.expressions.StringExpression;
-import nz.co.gregs.dbvolution.results.NumberResult;
 import nz.co.gregs.dbvolution.operators.DBPermittedRangeExclusiveOperator;
 import nz.co.gregs.dbvolution.operators.DBPermittedRangeInclusiveOperator;
 import nz.co.gregs.dbvolution.operators.DBPermittedRangeOperator;
 import nz.co.gregs.dbvolution.operators.DBPermittedValuesOperator;
 import nz.co.gregs.dbvolution.query.RowDefinition;
+import nz.co.gregs.dbvolution.results.CountableResult;
+import nz.co.gregs.dbvolution.results.IntegerResult;
+import nz.co.gregs.dbvolution.results.NumberResult;
 
 /**
  * Like {@link DBInteger} except that the database value can be easily
@@ -46,7 +49,7 @@ import nz.co.gregs.dbvolution.query.RowDefinition;
  * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
  * @author Malcolm Lett
  */
-public class DBIntegerEnum<E extends Enum<E> & DBEnumValue<Long>> extends DBEnum<E, Long> implements NumberResult {
+public class DBIntegerEnum<E extends Enum<E> & DBEnumValue<Long>> extends DBEnum<E, Long> implements IntegerResult {
 
 	private static final long serialVersionUID = 1L;
 
@@ -88,7 +91,7 @@ public class DBIntegerEnum<E extends Enum<E> & DBEnumValue<Long>> extends DBEnum
 	 *
 	 * @param numberExpression	numberExpression
 	 */
-	public DBIntegerEnum(NumberExpression numberExpression) {
+	public DBIntegerEnum(IntegerExpression numberExpression) {
 		super(numberExpression);
 	}
 
@@ -133,17 +136,6 @@ public class DBIntegerEnum<E extends Enum<E> & DBEnumValue<Long>> extends DBEnum
 	public Set<DBRow> getTablesInvolved() {
 		return new HashSet<DBRow>();
 	}
-
-//	/**
-//	 *
-//	 * reduces the rows to only the object, Set, List, Array, or vararg of objects
-//	 *
-//	 * @param permitted	permitted
-//	 */
-//	@SafeVarargs
-//	public final void permittedValues(E... permitted) {
-//		this.setOperator(new DBPermittedValuesOperator<Long>(convertToLiteral(permitted)));
-//	}
 
 	@SafeVarargs
 	@SuppressWarnings("unchecked")

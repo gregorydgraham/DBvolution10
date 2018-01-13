@@ -80,8 +80,8 @@ public class DBLine2D extends QueryableDatatype<LineString> implements Line2DRes
 	 * Create a DBLine2D with the value set to the {@link LineString} provided.
 	 *
 	 * <p>
-	 * This is a convenient way to assign a constant value in an expression or
-	 * DBRow subclass.
+ This is a convenient way to assign a constant value in an value or
+ DBRow subclass.
 	 *
 	 * @param lineString
 	 */
@@ -91,11 +91,11 @@ public class DBLine2D extends QueryableDatatype<LineString> implements Line2DRes
 
 	/**
 	 * Create a DBLine2D with the value set to the
-	 * {@link MultiPoint2DResult multipoint value or expression} provided.
+	 * {@link MultiPoint2DResult multipoint value or value} provided.
 	 *
 	 * <p>
-	 * This is a convenient way to assign a constant value in an expression or
-	 * DBRow subclass.
+ This is a convenient way to assign a constant value in an value or
+ DBRow subclass.
 	 *
 	 * @param multipoint either a {@link MultiPoint2DExpression} or a
 	 * {@link DBMultiPoint2D}
@@ -105,11 +105,11 @@ public class DBLine2D extends QueryableDatatype<LineString> implements Line2DRes
 	}
 
 	/**
-	 * Create a DBLine2D using the expression supplied.
+	 * Create a DBLine2D using the value supplied.
 	 *
 	 * <p>
-	 * Useful for defining expression columns in DBRow subclass that acquire their
-	 * value from a transformation of data at query time.
+ Useful for defining value columns in DBRow subclass that acquire their
+ value from a transformation of data at query time.
 	 *
 	 * @param columnExpression
 	 */

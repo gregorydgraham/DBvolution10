@@ -46,7 +46,7 @@ import nz.co.gregs.dbvolution.results.MultiPoint2DResult;
 public class Line2DExpression implements Line2DResult, EqualComparable<Line2DResult>, Spatial2DExpression, ExpressionColumn<DBLine2D> {
 
 	private final Line2DResult innerLineString;
-	private boolean nullProtectionRequired;
+	private final boolean nullProtectionRequired;
 
 	/**
 	 * Default constructor, probably shouldn't be used.
@@ -58,7 +58,7 @@ public class Line2DExpression implements Line2DResult, EqualComparable<Line2DRes
 	}
 
 	/**
-	 * Create a new Line2DExpression containing the specified value or expression.
+	 * Create a new Line2DExpression containing the specified value or value.
 	 *
 	 * <p>
 	 * {@link Line2DResult} classes include {@link DBLine2D} and
@@ -68,11 +68,7 @@ public class Line2DExpression implements Line2DResult, EqualComparable<Line2DRes
 	 */
 	public Line2DExpression(Line2DResult value) {
 		innerLineString = value;
-		if (value == null || innerLineString.getIncludesNull()) {
-			nullProtectionRequired = true;
-		} else {
-			nullProtectionRequired = false;
-		}
+		nullProtectionRequired = value == null || innerLineString.getIncludesNull();
 	}
 
 	/**
@@ -94,11 +90,7 @@ public class Line2DExpression implements Line2DResult, EqualComparable<Line2DRes
 	 */
 	public Line2DExpression(LineString line) {
 		innerLineString = new DBLine2D(line);
-		if (line == null || innerLineString.getIncludesNull()) {
-			nullProtectionRequired = true;
-		} else {
-			nullProtectionRequired = false;
-		}
+		nullProtectionRequired = line == null || innerLineString.getIncludesNull();
 	}
 
 	/**
@@ -114,11 +106,7 @@ public class Line2DExpression implements Line2DResult, EqualComparable<Line2DRes
 		}
 		LineString line = geometryFactory.createLineString(coords.toArray(new Coordinate[]{}));
 		innerLineString = new DBLine2D(line);
-		if (points == null || innerLineString.getIncludesNull()) {
-			nullProtectionRequired = true;
-		} else {
-			nullProtectionRequired = false;
-		}
+		nullProtectionRequired = points == null || innerLineString.getIncludesNull();
 	}
 
 	/**
@@ -130,11 +118,7 @@ public class Line2DExpression implements Line2DResult, EqualComparable<Line2DRes
 		GeometryFactory geometryFactory = new GeometryFactory();
 		LineString line = geometryFactory.createLineString(coords);
 		innerLineString = new DBLine2D(line);
-		if (coords == null || innerLineString.getIncludesNull()) {
-			nullProtectionRequired = true;
-		} else {
-			nullProtectionRequired = false;
-		}
+		nullProtectionRequired = coords == null || innerLineString.getIncludesNull();
 	}
 
 	/**
@@ -265,7 +249,7 @@ public class Line2DExpression implements Line2DResult, EqualComparable<Line2DRes
 	}
 
 	/**
-	 * Convert the Line2D value into a String expression.
+	 * Convert the Line2D value into a String value.
 	 *
 	 * <p>
 	 * This should be the WKT (Well Known Text) version of the line.
@@ -291,20 +275,20 @@ public class Line2DExpression implements Line2DResult, EqualComparable<Line2DRes
 	}
 
 	/**
-	 * Compare the value of the given LineString to this expression using the
-	 * equivalent of EQUALS.
+	 * Compare the value of the given LineString to this value using the
+ equivalent of EQUALS.
 	 *
 	 * <p>
-	 * The boolean expression will be TRUE if the two expressions are functionally
-	 * equivalent.
-	 *
-	 * <p>
+ The boolean value will be TRUE if the two expressions are functionally
+ equivalent.
+
+ <p>
 	 * Due to to the imperfect interpretation of floating point numbers there may
 	 * some discrepancies between databases but DBV tries to be as accurate as the
 	 * database allows.
 	 *
-	 * @param rightHandSide the value this expression may equal.
-	 * <p style="color: #F90;">Support DBvolution at
+	 * @param rightHandSide the value this value may equal.
+ <p style="color: #F90;">Support DBvolution at
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a BooleanExpression that will be TRUE when the two expressions are
 	 * functionally equivalent, otherwise FALSE.
@@ -314,14 +298,14 @@ public class Line2DExpression implements Line2DResult, EqualComparable<Line2DRes
 	}
 
 	/**
-	 * Compare this expression to the exterior ring of the given Polygon2D using
-	 * the equivalent of EQUALS.
+	 * Compare this value to the exterior ring of the given Polygon2D using
+ the equivalent of EQUALS.
 	 *
 	 * <p>
-	 * The boolean expression will be TRUE if the exterior ring and the line are
-	 * functionally equivalent.
-	 *
-	 * <p>
+ The boolean value will be TRUE if the exterior ring and the line are
+ functionally equivalent.
+
+ <p>
 	 * Due to to the imperfect interpretation of floating point numbers there may
 	 * some discrepancies between databases but DBV tries to be as accurate as the
 	 * database allows.
@@ -337,20 +321,20 @@ public class Line2DExpression implements Line2DResult, EqualComparable<Line2DRes
 	}
 
 	/**
-	 * Compare the value of the given Line2D to this expression using the
-	 * equivalent of EQUALS.
+	 * Compare the value of the given Line2D to this value using the
+ equivalent of EQUALS.
 	 *
 	 * <p>
-	 * The boolean expression will be TRUE if the two expressions are functionally
-	 * equivalent.
-	 *
-	 * <p>
+ The boolean value will be TRUE if the two expressions are functionally
+ equivalent.
+
+ <p>
 	 * Due to to the imperfect interpretation of floating point numbers there may
 	 * some discrepancies between databases but DBV tries to be as accurate as the
 	 * database allows.
 	 *
-	 * @param rightHandSide the line that this expression might equal
-	 * <p style="color: #F90;">Support DBvolution at
+	 * @param rightHandSide the line that this value might equal
+ <p style="color: #F90;">Support DBvolution at
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a BooleanExpression that will be TRUE when the two expressions are
 	 * functionally equivalent, otherwise FALSE.
@@ -371,20 +355,20 @@ public class Line2DExpression implements Line2DResult, EqualComparable<Line2DRes
 	}
 
 	/**
-	 * Compare the value of the given LineString to this expression using the
-	 * equivalent of NOT EQUALS.
+	 * Compare the value of the given LineString to this value using the
+ equivalent of NOT EQUALS.
 	 *
 	 * <p>
-	 * The boolean expression will be FALSE if the two expressions are
-	 * functionally equivalent.
-	 *
-	 * <p>
+ The boolean value will be FALSE if the two expressions are
+ functionally equivalent.
+
+ <p>
 	 * Due to to the imperfect interpretation of floating point numbers there may
 	 * some discrepancies between databases but DBV tries to be as accurate as the
 	 * database allows.
 	 *
-	 * @param rightHandSide the line that this expression might equal
-	 * <p style="color: #F90;">Support DBvolution at
+	 * @param rightHandSide the line that this value might equal
+ <p style="color: #F90;">Support DBvolution at
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a BooleanExpression that will be FALSE when the two expressions are
 	 * functionally equivalent, otherwise TRUE.
@@ -394,21 +378,21 @@ public class Line2DExpression implements Line2DResult, EqualComparable<Line2DRes
 	}
 
 	/**
-	 * Compare this expression to the exterior ring of the given Polygon2D using
-	 * the equivalent of NOT EQUALS.
+	 * Compare this value to the exterior ring of the given Polygon2D using
+ the equivalent of NOT EQUALS.
 	 *
 	 * <p>
-	 * The boolean expression will be FALSE if the exterior ring and the line are
-	 * functionally equivalent.
-	 *
-	 * <p>
+ The boolean value will be FALSE if the exterior ring and the line are
+ functionally equivalent.
+
+ <p>
 	 * Due to to the imperfect interpretation of floating point numbers there may
 	 * some discrepancies between databases but DBV tries to be as accurate as the
 	 * database allows.
 	 *
 	 * @param rightHandSide the polygon whose exterior ring might not equal this
-	 * expression's value.
-	 * <p style="color: #F90;">Support DBvolution at
+ value's value.
+ <p style="color: #F90;">Support DBvolution at
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a BooleanExpression that will be FALSE when the two expressions are
 	 * functionally equivalent, otherwise TRUE.
@@ -418,20 +402,20 @@ public class Line2DExpression implements Line2DResult, EqualComparable<Line2DRes
 	}
 
 	/**
-	 * Compare the value of the given Line2D to this expression using the
-	 * equivalent of NOT EQUALS.
+	 * Compare the value of the given Line2D to this value using the
+ equivalent of NOT EQUALS.
 	 *
 	 * <p>
-	 * The boolean expression will be FALSE if the two expressions are
-	 * functionally equivalent.
-	 *
-	 * <p>
+ The boolean value will be FALSE if the two expressions are
+ functionally equivalent.
+
+ <p>
 	 * Due to to the imperfect interpretation of floating point numbers there may
 	 * some discrepancies between databases but DBV tries to be as accurate as the
 	 * database allows.
 	 *
-	 * @param rightHandSide the line to compare to this expression.
-	 * <p style="color: #F90;">Support DBvolution at
+	 * @param rightHandSide the line to compare to this value.
+ <p style="color: #F90;">Support DBvolution at
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a BooleanExpression that will be FALSE when the two expressions are
 	 * functionally equivalent, otherwise TRUE.
@@ -525,12 +509,13 @@ public class Line2DExpression implements Line2DResult, EqualComparable<Line2DRes
 					final NumberExpression maxY = first.maxY();
 					final NumberExpression minX = first.minX();
 					final NumberExpression minY = first.minY();
-					return Polygon2DExpression.value(
-							Point2DExpression.value(minX, minY),
+					final Point2DExpression point2DExpression = new Point2DExpression();
+					return Polygon2DExpression.value(Point2DExpression.value(minX, minY),
 							Point2DExpression.value(maxX, minY),
 							Point2DExpression.value(maxX, maxY),
 							Point2DExpression.value(minX, maxY),
-							Point2DExpression.value(minX, minY)).toSQLString(db);
+							Point2DExpression.value(minX, minY))
+							.toSQLString(db);
 				}
 			}
 		});
@@ -628,8 +613,8 @@ public class Line2DExpression implements Line2DResult, EqualComparable<Line2DRes
 	 * } to find the intersection points of these lines
 	 *
 	 * @param points points that constitute a line that might intersect this
-	 * expression.
-	 * <p style="color: #F90;">Support DBvolution at
+ value.
+ <p style="color: #F90;">Support DBvolution at
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a BooleanExpression that will be TRUE if the lines ever cross,
 	 * otherwise FALSE.
@@ -651,8 +636,8 @@ public class Line2DExpression implements Line2DResult, EqualComparable<Line2DRes
 	 * } to find the intersection points of these lines
 	 *
 	 * @param coords a series of X and Y values that constitute a line that might
-	 * intersect this expression.
-	 * <p style="color: #F90;">Support DBvolution at
+ intersect this value.
+ <p style="color: #F90;">Support DBvolution at
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a BooleanExpression that will be TRUE if the lines ever cross,
 	 * otherwise FALSE.
@@ -672,8 +657,8 @@ public class Line2DExpression implements Line2DResult, EqualComparable<Line2DRes
 	 * Use {@link #intersectionPoints(nz.co.gregs.dbvolution.results.Line2DResult)
 	 * } to find the intersection points of these lines
 	 *
-	 * @param lineString a line that might intersect this expression.
-	 * <p style="color: #F90;">Support DBvolution at
+	 * @param lineString a line that might intersect this value.
+ <p style="color: #F90;">Support DBvolution at
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a BooleanExpression that will be TRUE if the lines ever cross,
 	 * otherwise FALSE.
@@ -693,8 +678,8 @@ public class Line2DExpression implements Line2DResult, EqualComparable<Line2DRes
 	 * Use {@link #intersectionPoints(nz.co.gregs.dbvolution.results.Line2DResult)
 	 * } to find the intersection points of these lines
 	 *
-	 * @param crossingLine a line that might intersect this expression.
-	 * <p style="color: #F90;">Support DBvolution at
+	 * @param crossingLine a line that might intersect this value.
+ <p style="color: #F90;">Support DBvolution at
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a BooleanExpression that will be TRUE if the lines ever cross,
 	 * otherwise FALSE.
@@ -710,14 +695,14 @@ public class Line2DExpression implements Line2DResult, EqualComparable<Line2DRes
 	}
 
 	/**
-	 * Find all the points of intersection between this expression and the
-	 * specified Line2D expression.
+	 * Find all the points of intersection between this value and the
+ specified Line2D value.
 	 *
-	 * @param crossingLine a line that might intersect this expression.
-	 * <p style="color: #F90;">Support DBvolution at
+	 * @param crossingLine a line that might intersect this value.
+ <p style="color: #F90;">Support DBvolution at
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 * @return a MultiPoint2D expression containing all the intersection points of
-	 * the 2 lines.
+	 * @return a MultiPoint2D value containing all the intersection points of
+ the 2 lines.
 	 */
 	public MultiPoint2DExpression intersectionPoints(Line2DResult crossingLine) {
 		return new MultiPoint2DExpression(new LineLineWithMultiPoint2DResult(this, new Line2DExpression(crossingLine)) {
@@ -742,8 +727,8 @@ public class Line2DExpression implements Line2DResult, EqualComparable<Line2DRes
 	 * } to find the intersection points of these lines
 	 *
 	 * @param crossingLine points that constitute a line that might intersect this
-	 * expression.
-	 * <p style="color: #F90;">Support DBvolution at
+ value.
+ <p style="color: #F90;">Support DBvolution at
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a BooleanExpression that will be TRUE if the lines ever cross,
 	 * otherwise FALSE.
@@ -765,8 +750,8 @@ public class Line2DExpression implements Line2DResult, EqualComparable<Line2DRes
 	 * } to find the intersection points of these lines
 	 *
 	 * @param crossingLine a series of X and Y values that constitute a line that
-	 * might intersect this expression.
-	 * <p style="color: #F90;">Support DBvolution at
+ might intersect this value.
+ <p style="color: #F90;">Support DBvolution at
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a BooleanExpression that will be TRUE if the lines ever cross,
 	 * otherwise FALSE.
@@ -786,8 +771,8 @@ public class Line2DExpression implements Line2DResult, EqualComparable<Line2DRes
 	 * Use {@link #intersectionPoints(nz.co.gregs.dbvolution.results.Line2DResult)
 	 * } to find the intersection points of these lines
 	 *
-	 * @param crossingLine a line that might intersect this expression.
-	 * <p style="color: #F90;">Support DBvolution at
+	 * @param crossingLine a line that might intersect this value.
+ <p style="color: #F90;">Support DBvolution at
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a BooleanExpression that will be TRUE if the lines ever cross,
 	 * otherwise FALSE.
@@ -809,8 +794,8 @@ public class Line2DExpression implements Line2DResult, EqualComparable<Line2DRes
 	 * } to find the intersection points of these lines
 	 *
 	 * @param crossingLine points that constitute a line that might intersect this
-	 * expression.
-	 * <p style="color: #F90;">Support DBvolution at
+ value.
+ <p style="color: #F90;">Support DBvolution at
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a BooleanExpression that will be TRUE if the lines ever cross,
 	 * otherwise FALSE.
@@ -830,8 +815,8 @@ public class Line2DExpression implements Line2DResult, EqualComparable<Line2DRes
 	 * Use {@link #intersectionPoints(nz.co.gregs.dbvolution.results.Line2DResult)
 	 * } to find the intersection points of these lines
 	 *
-	 * @param crossingLine a line that might intersect this expression.
-	 * <p style="color: #F90;">Support DBvolution at
+	 * @param crossingLine a line that might intersect this value.
+ <p style="color: #F90;">Support DBvolution at
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a BooleanExpression that will be TRUE if the lines ever cross,
 	 * otherwise FALSE.
@@ -847,8 +832,8 @@ public class Line2DExpression implements Line2DResult, EqualComparable<Line2DRes
 	}
 
 	/**
-	 * Provides a expression that represents the line2d value as a polygon2d
-	 * value.
+	 * Provides a value that represents the line2d value as a polygon2d
+ value.
 	 *
 	 * <P>
 	 * Points are added to the polygon in index order. If necessary the polygon is
@@ -860,7 +845,7 @@ public class Line2DExpression implements Line2DResult, EqualComparable<Line2DRes
 	 * <p style="color: #F90;">Support DBvolution at
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 *
-	 * @return a polygon2d expression
+	 * @return a polygon2d value
 	 */
 	/* TODO implement public Polygon2DExpression polygon2DResult() {*/
 	public Polygon2DExpression polygon2DResult() {
@@ -908,9 +893,7 @@ public class Line2DExpression implements Line2DResult, EqualComparable<Line2DRes
 			LineLineWithBooleanResult newInstance;
 			try {
 				newInstance = getClass().newInstance();
-			} catch (InstantiationException ex) {
-				throw new RuntimeException(ex);
-			} catch (IllegalAccessException ex) {
+			} catch (InstantiationException | IllegalAccessException ex) {
 				throw new RuntimeException(ex);
 			}
 			newInstance.first = first.copy();
@@ -970,9 +953,7 @@ public class Line2DExpression implements Line2DResult, EqualComparable<Line2DRes
 			LineWithBooleanResult newInstance;
 			try {
 				newInstance = getClass().newInstance();
-			} catch (InstantiationException ex) {
-				throw new RuntimeException(ex);
-			} catch (IllegalAccessException ex) {
+			} catch (InstantiationException | IllegalAccessException ex) {
 				throw new RuntimeException(ex);
 			}
 			newInstance.first = first.copy();
@@ -1037,9 +1018,7 @@ public class Line2DExpression implements Line2DResult, EqualComparable<Line2DRes
 			LineLineWithPoint2DResult newInstance;
 			try {
 				newInstance = getClass().newInstance();
-			} catch (InstantiationException ex) {
-				throw new RuntimeException(ex);
-			} catch (IllegalAccessException ex) {
+			} catch (InstantiationException | IllegalAccessException ex) {
 				throw new RuntimeException(ex);
 			}
 			newInstance.first = first.copy();
@@ -1108,9 +1087,7 @@ public class Line2DExpression implements Line2DResult, EqualComparable<Line2DRes
 			LineLineWithMultiPoint2DResult newInstance;
 			try {
 				newInstance = getClass().newInstance();
-			} catch (InstantiationException ex) {
-				throw new RuntimeException(ex);
-			} catch (IllegalAccessException ex) {
+			} catch (InstantiationException | IllegalAccessException ex) {
 				throw new RuntimeException(ex);
 			}
 			newInstance.first = first.copy();
@@ -1178,9 +1155,7 @@ public class Line2DExpression implements Line2DResult, EqualComparable<Line2DRes
 			LineFunctionWithNumberResult newInstance;
 			try {
 				newInstance = getClass().newInstance();
-			} catch (InstantiationException ex) {
-				throw new RuntimeException(ex);
-			} catch (IllegalAccessException ex) {
+			} catch (InstantiationException | IllegalAccessException ex) {
 				throw new RuntimeException(ex);
 			}
 			newInstance.first = first.copy();
@@ -1243,9 +1218,7 @@ public class Line2DExpression implements Line2DResult, EqualComparable<Line2DRes
 			LineFunctionWithStringResult newInstance;
 			try {
 				newInstance = getClass().newInstance();
-			} catch (InstantiationException ex) {
-				throw new RuntimeException(ex);
-			} catch (IllegalAccessException ex) {
+			} catch (InstantiationException | IllegalAccessException ex) {
 				throw new RuntimeException(ex);
 			}
 			newInstance.first = first.copy();
@@ -1309,9 +1282,7 @@ public class Line2DExpression implements Line2DResult, EqualComparable<Line2DRes
 			LineFunctionWithPolygon2DResult newInstance;
 			try {
 				newInstance = getClass().newInstance();
-			} catch (InstantiationException ex) {
-				throw new RuntimeException(ex);
-			} catch (IllegalAccessException ex) {
+			} catch (InstantiationException | IllegalAccessException ex) {
 				throw new RuntimeException(ex);
 			}
 			newInstance.first = first.copy();

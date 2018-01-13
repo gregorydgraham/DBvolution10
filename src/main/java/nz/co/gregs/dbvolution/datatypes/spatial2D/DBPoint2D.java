@@ -100,11 +100,11 @@ public class DBPoint2D extends QueryableDatatype<Point> implements Point2DResult
 	}
 
 	/**
-	 * Create a DBPoint2D with the column expression specified.
+	 * Create a DBPoint2D with the column value specified.
 	 *
 	 * <p>
-	 * When retrieving this object from the database the expression will be
-	 * evaluated to provide the value.
+ When retrieving this object from the database the value will be
+ evaluated to provide the value.
 	 *
 	 * @param columnExpression
 	 */

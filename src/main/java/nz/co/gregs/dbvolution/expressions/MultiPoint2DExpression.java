@@ -26,7 +26,6 @@ import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.datatypes.spatial2D.DBMultiPoint2D;
 import nz.co.gregs.dbvolution.results.MultiPoint2DResult;
-import nz.co.gregs.dbvolution.results.NumberResult;
 
 /**
  * Creates and transforms MultiPoint2D values within your database queries.
@@ -328,7 +327,7 @@ public class MultiPoint2DExpression implements MultiPoint2DResult, EqualComparab
 	 * <p style="color: #F90;">Support DBvolution at
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 *
-	 * @return a number expression
+	 * @return a number value
 	 */
 	public NumberExpression numberOfPoints() {
 		return new NumberExpression(new MultiPointFunctionWithNumberResult(this) {
@@ -341,7 +340,7 @@ public class MultiPoint2DExpression implements MultiPoint2DResult, EqualComparab
 	}
 
 	/**
-	 * Create a point2d expression that represents the point at the given index.
+	 * Create a point2d value that represents the point at the given index.
 	 *
 	 * <p>
 	 * This method provides array-like access to the points in the multipoint2d
@@ -357,14 +356,14 @@ public class MultiPoint2DExpression implements MultiPoint2DResult, EqualComparab
 	 * @param index a zero-based index within the multipoint2d
 	 * <p style="color: #F90;">Support DBvolution at
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 * @return a point2d expression
+	 * @return a point2d value
 	 */
-	public Point2DExpression getPointAtIndexZeroBased(int index) {
+	public Point2DExpression getPointAtIndexZeroBased(Number index) {
 		return getPointAtIndexZeroBased(NumberExpression.value(index));
 	}
 
 	/**
-	 * Create a point2d expression that represents the point at the given index.
+	 * Create a point2d value that represents the point at the given index.
 	 *
 	 * <p>
 	 * This method provides array-like access to the points in the multipoint2d
@@ -380,14 +379,14 @@ public class MultiPoint2DExpression implements MultiPoint2DResult, EqualComparab
 	 * @param index a zero-based index within the multipoint2d
 	 * <p style="color: #F90;">Support DBvolution at
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 * @return a point2d expression
+	 * @return a point2d value
 	 */
 	public Point2DExpression getPointAtIndexZeroBased(long index) {
-		return getPointAtIndexZeroBased(NumberExpression.value(index));
+		return getPointAtIndexZeroBased(NumberExpression.value(index).numberResult());
 	}
 
 	/**
-	 * Create a point2d expression that represents the point at the given index.
+	 * Create a point2d value that represents the point at the given index.
 	 *
 	 * <p>
 	 * This method provides array-like access to the points in the multipoint2d
@@ -403,10 +402,10 @@ public class MultiPoint2DExpression implements MultiPoint2DResult, EqualComparab
 	 * @param index a zero-based index within the multipoint2d
 	 * <p style="color: #F90;">Support DBvolution at
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 * @return a point2d expression
+	 * @return a point2d value
 	 */
-	public Point2DExpression getPointAtIndexZeroBased(NumberResult index) {
-		return new Point2DExpression(new MultiPointNumberFunctionWithPoint2DResult(this, new NumberExpression(index)) {
+	public Point2DExpression getPointAtIndexZeroBased(NumberExpression index) {
+		return new Point2DExpression(new MultiPointNumberFunctionWithPoint2DResult(this, index) {
 
 			@Override
 			public String doExpressionTransform(DBDefinition db) {
@@ -492,8 +491,7 @@ public class MultiPoint2DExpression implements MultiPoint2DResult, EqualComparab
 					final NumberExpression maxY = first.maxY();
 					final NumberExpression minX = first.minX();
 					final NumberExpression minY = first.minY();
-					return Polygon2DExpression.value(
-							Point2DExpression.value(minX, minY),
+					return Polygon2DExpression.value(Point2DExpression.value(minX, minY),
 							Point2DExpression.value(maxX, minY),
 							Point2DExpression.value(maxX, maxY),
 							Point2DExpression.value(minX, maxY),
@@ -505,8 +503,8 @@ public class MultiPoint2DExpression implements MultiPoint2DResult, EqualComparab
 	}
 
 	/**
-	 * Provides a expression that represents the multipoint2d value as a line2d
-	 * value.
+	 * Provides a value that represents the multipoint2d value as a line2d
+ value.
 	 *
 	 * <P>
 	 * Points are added to the line in index order.
@@ -517,7 +515,7 @@ public class MultiPoint2DExpression implements MultiPoint2DResult, EqualComparab
 	 * <p style="color: #F90;">Support DBvolution at
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 *
-	 * @return a line2d expression
+	 * @return a line2d value
 	 */
 	public Line2DExpression line2DResult() {
 		return new Line2DExpression(new SingleArgumentLine2DFunction<MultiPoint2DExpression>(this) {
@@ -530,8 +528,8 @@ public class MultiPoint2DExpression implements MultiPoint2DResult, EqualComparab
 	}
 
 	/**
-	 * Provides a expression that represents the multipoint2d value as a polygon2d
-	 * value.
+	 * Provides a value that represents the multipoint2d value as a polygon2d
+ value.
 	 *
 	 * <P>
 	 * Points are added to the polygon in index order. If necessary the polygon is
@@ -543,7 +541,7 @@ public class MultiPoint2DExpression implements MultiPoint2DResult, EqualComparab
 	 * <p style="color: #F90;">Support DBvolution at
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 *
-	 * @return a polygon2d expression
+	 * @return a polygon2d value
 	 */
 	/* TODO implement public Polygon2DExpression polygon2DResult() {*/
 	public Polygon2DExpression polygon2DResult() {

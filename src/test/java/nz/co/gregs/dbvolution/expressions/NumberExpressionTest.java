@@ -616,8 +616,8 @@ public class NumberExpressionTest extends AbstractTest {
 		DBQuery dbQuery = database.getDBQuery(marq);
 		ArrayList<NumberResult> vals = new ArrayList<NumberResult>();
 		vals.add(marq.column(marq.uidMarque).numberResult());
-		vals.add(NumberExpression.value(900000));
-		vals.add(NumberExpression.value(800000));
+		vals.add(NumberExpression.value(900000.0));
+		vals.add(NumberExpression.value(800000.0));
 		dbQuery.addCondition(
 				NumberExpression.greatestOf(vals)
 						.is(marq.column(marq.uidMarque).numberResult())
@@ -650,8 +650,8 @@ public class NumberExpressionTest extends AbstractTest {
 		DBQuery dbQuery = database.getDBQuery(marq);
 		ArrayList<NumberExpression> arrayList = new ArrayList<NumberExpression>();
 		arrayList.add(marq.column(marq.uidMarque).numberResult());
-		arrayList.add(NumberExpression.value(900000));
-		arrayList.add(NumberExpression.value(800000));
+		arrayList.add(NumberExpression.value(900000.0));
+		arrayList.add(NumberExpression.value(800000.0));
 		dbQuery.addCondition(
 				NumberExpression.leastOf(arrayList)
 						.is(marq.column(marq.uidMarque).numberResult())

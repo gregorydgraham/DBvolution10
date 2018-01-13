@@ -28,8 +28,6 @@
  */
 package nz.co.gregs.dbvolution.results;
 
-import nz.co.gregs.dbvolution.expressions.DBExpression;
-
 /**
  * A range result has a simple linear distribution.
  *
@@ -49,6 +47,6 @@ import nz.co.gregs.dbvolution.expressions.DBExpression;
  * @param <T> a base type that has a commonly understood linear distribution
  * like Number, String, or Date
  */
-public interface RangeResult<T> extends DBExpression, ExpressionCanHaveNullValues, ExpressionHasStandardStringResult {
+public interface RangeResult<T> extends CountableResult<T>{
 
 }
