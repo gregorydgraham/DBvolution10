@@ -152,38 +152,6 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 		}
 	}
 
-	/**
-	 * Create An Appropriate Expression Object For This Object
-	 *
-	 * <p>
-	 * The expression framework requires a *Expression to work with. The easiest
-	 * way to get that is the {@code DBRow.column()} method.
-	 *
-	 * <p>
-	 * However if you wish your expression to start with a literal value it is a
-	 * little trickier.
-	 *
-	 * <p>
-	 * This method provides the easy route to a *Expression from a literal value.
-	 * Just call, for instance, {@code StringExpression.value("STARTING STRING")}
-	 * to get a StringExpression and start the expression chain.
-	 *
-	 * <ul>
-	 * <li>Only object classes that are appropriate need to be handle by the
-	 * DBExpression subclass.<li>
-	 * <li>The implementation should be {@code static}</li>
-	 * </ul>
-	 *
-	 * @param date a literal date to be used in the expression
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 * @return a DBExpression instance that is appropriate to the subclass and the
-	 * value supplied.
-	 */
-	public static DateExpression value(Date date) {
-		return new DateExpression(date);
-	}
-
 	@Override
 	public DateExpression nullExpression() {
 		return new DateExpression() {
@@ -829,7 +797,7 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a BooleanExpression comparing the date and this DateExpression.
 	 */
-//	@Override
+	@Override
 	public BooleanExpression is(Date date) {
 		return is(value(date));
 	}
@@ -869,7 +837,7 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 	 * @return a BooleanExpression comparing the DateResult and this
 	 * DateExpression.
 	 */
-//	@Override
+	@Override
 	public BooleanExpression isNot(Date date) {
 		return this.isNot(value(date));
 	}
@@ -1039,7 +1007,7 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a boolean expression representing the required comparison
 	 */
-//	@Override
+	@Override
 	public BooleanExpression isBetween(Date lowerBound, Date upperBound) {
 		return BooleanExpression.allOf(
 				this.isGreaterThan(lowerBound),
@@ -1157,7 +1125,7 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a boolean expression representing the required comparison
 	 */
-//	@Override
+	@Override
 	public BooleanExpression isBetweenInclusive(Date lowerBound, Date upperBound) {
 		return isBetweenInclusive(value(lowerBound), value(upperBound));
 	}
@@ -1280,7 +1248,7 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a boolean expression representing the required comparison
 	 */
-//	@Override
+	@Override
 	public BooleanExpression isBetweenExclusive(Date lowerBound, Date upperBound) {
 		return isBetween(value(lowerBound), value(upperBound));
 	}
@@ -1294,7 +1262,7 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a boolean expression representing the required comparison
 	 */
-//	@Override
+	@Override
 	public BooleanExpression isLessThan(Date date) {
 		return isLessThan(value(date));
 	}
@@ -1493,7 +1461,7 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a boolean expression representing the required comparison
 	 */
-//	@Override
+	@Override
 	public BooleanExpression isLessThanOrEqual(Date date) {
 		return isLessThanOrEqual(value(date));
 	}
@@ -1531,7 +1499,7 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return an expression that will evaluate to a greater than operation
 	 */
-//	@Override
+	@Override
 	public BooleanExpression isGreaterThan(Date date) {
 		return isGreaterThan(value(date));
 	}
@@ -1569,7 +1537,7 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a boolean expression representing the required comparison
 	 */
-//	@Override
+	@Override
 	public BooleanExpression isGreaterThanOrEqual(Date date) {
 		return isGreaterThanOrEqual(value(date));
 	}
@@ -1618,7 +1586,7 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a BooleanExpression
 	 */
-//	@Override
+	@Override
 	public BooleanExpression isLessThan(Date value, BooleanExpression fallBackWhenEquals) {
 		return this.isLessThan(value(value), fallBackWhenEquals);
 	}
@@ -1643,7 +1611,7 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a BooleanExpression
 	 */
-//	@Override
+	@Override
 	public BooleanExpression isGreaterThan(Date value, BooleanExpression fallBackWhenEquals) {
 		return this.isGreaterThan(value(value), fallBackWhenEquals);
 	}

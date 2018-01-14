@@ -104,36 +104,6 @@ public class DateRepeatExpression extends RangeExpression<Period, DateRepeatResu
 		nullProtectionRequired = interval == null || innerDateRepeatResult.getIncludesNull();
 	}
 
-	/**
-	 * Creates a new DateRepeatExression that represents the value supplied.
-	 *
-	 * <p>
-	 * Equivalent to {@code new DateRepeatExpression(period)}
-	 *
-	 * @param period the time period from which to create a DateRepeat value
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 * @return a DateRepeat expression representing the value supplied.
-	 */
-	public static DateRepeatExpression value(Period period) {
-		return new DateRepeatExpression(period);
-	}
-
-	/**
-	 * Creates a new DateRepeatExpression that represents the value supplied.
-	 *
-	 * <p>
-	 * Equivalent to {@code new DateRepeatExpression(period)}
-	 *
-	 * @param period the time period from which to create a DateRepeat value
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 * @return a DateRepeat expression representing the value supplied.
-	 */
-	public static DateRepeatExpression value(DateRepeatResult period) {
-		return new DateRepeatExpression(period);
-	}
-
 	@Override
 	public DateRepeatExpression copy() {
 		return new DateRepeatExpression(innerDateRepeatResult);
@@ -203,7 +173,7 @@ public class DateRepeatExpression extends RangeExpression<Period, DateRepeatResu
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a BooleanExpression
 	 */
-//	@Override
+	@Override
 	public BooleanExpression isLessThan(Period period) {
 		return this.isLessThan(value(period));
 	}
@@ -239,7 +209,7 @@ public class DateRepeatExpression extends RangeExpression<Period, DateRepeatResu
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a BooleanExpression
 	 */
-//	@Override
+	@Override
 	public BooleanExpression isGreaterThan(Period period) {
 		return this.isGreaterThan(value(period));
 	}
@@ -275,7 +245,7 @@ public class DateRepeatExpression extends RangeExpression<Period, DateRepeatResu
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a BooleanExpression
 	 */
-//	@Override
+	@Override
 	public BooleanExpression isLessThanOrEqual(Period period) {
 		return this.isLessThanOrEqual(value(period));
 	}
@@ -311,7 +281,7 @@ public class DateRepeatExpression extends RangeExpression<Period, DateRepeatResu
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a BooleanExpression
 	 */
-//	@Override
+	@Override
 	public BooleanExpression isGreaterThanOrEqual(Period period) {
 		return this.isGreaterThanOrEqual(value(period));
 	}
@@ -351,7 +321,7 @@ public class DateRepeatExpression extends RangeExpression<Period, DateRepeatResu
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a BooleanExpression
 	 */
-//	@Override
+	@Override
 	public BooleanExpression isLessThan(Period period, BooleanExpression fallBackWhenEqual) {
 		return this.isLessThan(value(period), fallBackWhenEqual);
 	}
@@ -389,7 +359,7 @@ public class DateRepeatExpression extends RangeExpression<Period, DateRepeatResu
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a BooleanExpression
 	 */
-//	@Override
+	@Override
 	public BooleanExpression isGreaterThan(Period period, BooleanExpression fallBackWhenEqual) {
 		return this.isGreaterThan(value(period), fallBackWhenEqual);
 	}
@@ -421,7 +391,7 @@ public class DateRepeatExpression extends RangeExpression<Period, DateRepeatResu
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a BooleanExpression
 	 */
-//	@Override
+	@Override
 	public BooleanExpression is(Period period) {
 		return this.is(value(period));
 	}
@@ -466,7 +436,7 @@ public class DateRepeatExpression extends RangeExpression<Period, DateRepeatResu
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a BooleanExpression
 	 */
-//	@Override
+	@Override
 	public BooleanExpression isNot(Period anotherInstance) {
 		return isNot(value(anotherInstance));
 	}
@@ -701,6 +671,7 @@ public class DateRepeatExpression extends RangeExpression<Period, DateRepeatResu
 		return this.stringResult().isIn(strs);
 	}
 
+	@Override
 	public DateRepeatExpression nullExpression() {
 		return new DateRepeatExpression() {
 			@Override
