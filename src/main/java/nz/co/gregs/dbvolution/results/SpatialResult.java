@@ -13,9 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package nz.co.gregs.dbvolution.expressions;
+package nz.co.gregs.dbvolution.results;
 
-import nz.co.gregs.dbvolution.results.*;
+import nz.co.gregs.dbvolution.expressions.DBExpression;
 
 /**
  *
@@ -23,7 +23,8 @@ import nz.co.gregs.dbvolution.results.*;
  * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
  *
  * @author gregorygraham
+ * @param <B>
  */
-public interface SpatialResult extends ExpressionCanHaveNullValues, ExpressionHasStandardStringResult {
+public interface SpatialResult<B> extends DBExpression, EqualResult<B>, ExpressionCanHaveNullValues, ExpressionHasStandardStringResult {
 
 }

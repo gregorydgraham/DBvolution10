@@ -15,7 +15,6 @@
  */
 package nz.co.gregs.dbvolution.expressions;
 
-import nz.co.gregs.dbvolution.results.EqualComparable;
 import nz.co.gregs.dbvolution.results.LineSegment2DResult;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.LineSegment;
@@ -35,7 +34,7 @@ import nz.co.gregs.dbvolution.datatypes.spatial2D.DBLineSegment2D;
  *
  * @author gregory.graham
  */
-public class LineSegment2DExpression implements LineSegment2DResult, EqualComparable<LineSegment, LineSegment2DResult>, Spatial2DExpression, ExpressionColumn<DBLineSegment2D> {
+public class LineSegment2DExpression extends Spatial2DExpression<LineSegment, LineSegment2DResult, DBLineSegment2D> implements LineSegment2DResult{
 
 	private final LineSegment2DResult innerLineString;
 	private final boolean nullProtectionRequired;
@@ -253,6 +252,33 @@ public class LineSegment2DExpression implements LineSegment2DResult, EqualCompar
 	public StringExpression toWKTFormat() {
 		return stringResult();
 	}
+	
+	@Override
+	public LineSegment2DExpression nullExpression() {
+
+		return new LineSegment2DExpression() {
+
+			@Override
+			public String toSQLString(DBDefinition db) {
+				return db.getNull();
+			}
+		};
+	}
+
+	@Override
+	public LineSegment2DExpression expression(LineSegment value) {
+		return new LineSegment2DExpression(value);
+	}
+
+	@Override
+	public LineSegment2DExpression expression(LineSegment2DResult value) {
+		return new LineSegment2DExpression(value);
+	}
+
+	@Override
+	public LineSegment2DExpression expression(DBLineSegment2D value) {
+		return new LineSegment2DExpression(value);
+	}
 
 	/**
 	 * Convert this LineSegment2D to a String representation based on the Well
@@ -287,6 +313,7 @@ public class LineSegment2DExpression implements LineSegment2DResult, EqualCompar
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a BooleanExpression
 	 */
+	@Override
 	public BooleanExpression is(LineSegment rightHandSide) {
 		return is(new DBLineSegment2D(rightHandSide));
 	}
@@ -316,6 +343,7 @@ public class LineSegment2DExpression implements LineSegment2DResult, EqualCompar
 	 * @return a BooleanExpression returning TRUE if the two line segments are
 	 * different, otherwise FALSE.
 	 */
+	@Override
 	public BooleanExpression isNot(LineSegment rightHandSide) {
 		return isNot(new DBLineSegment2D(rightHandSide));
 	}

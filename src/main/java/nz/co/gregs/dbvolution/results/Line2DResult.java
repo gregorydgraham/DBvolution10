@@ -15,7 +15,7 @@
  */
 package nz.co.gregs.dbvolution.results;
 
-import nz.co.gregs.dbvolution.expressions.DBExpression;
+import com.vividsolutions.jts.geom.LineString;
 
 /**
  * Represents SQL results that are 2 dimensional paths: a series of connected
@@ -26,6 +26,6 @@ import nz.co.gregs.dbvolution.expressions.DBExpression;
  *
  * @author Gregory Graham
  */
-public interface Line2DResult extends DBExpression, ExpressionCanHaveNullValues, Spatial2DResult {
+public interface Line2DResult extends Spatial2DResult<LineString> {
 
 }

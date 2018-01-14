@@ -15,7 +15,6 @@
  */
 package nz.co.gregs.dbvolution.expressions;
 
-import nz.co.gregs.dbvolution.results.EqualComparable;
 import nz.co.gregs.dbvolution.results.Line2DResult;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.GeometryFactory;
@@ -43,7 +42,7 @@ import nz.co.gregs.dbvolution.results.MultiPoint2DResult;
  *
  * @author Gregory Graham
  */
-public class Line2DExpression implements Line2DResult, EqualComparable<LineString, Line2DResult>, Spatial2DExpression, ExpressionColumn<DBLine2D> {
+public class Line2DExpression extends Spatial2DExpression<LineString, Line2DResult, DBLine2D> implements Line2DResult{
 
 	private final Line2DResult innerLineString;
 	private final boolean nullProtectionRequired;
@@ -70,19 +69,7 @@ public class Line2DExpression implements Line2DResult, EqualComparable<LineStrin
 		innerLineString = value;
 		nullProtectionRequired = value == null || innerLineString.getIncludesNull();
 	}
-
-	/**
-	 * Perform standard set up and checks when creating the expression.
-	 *
-	 * @param original the original object
-	 * @param value the value derived from the original object
-	 */
-//	protected final void initInnerLine(Object original, Line2DResult value) {
-//		innerLineString = value;
-//		if (original == null || innerLineString.getIncludesNull()) {
-//			nullProtectionRequired = true;
-//		}else{nullProtectionRequired=false;}
-//	}
+	
 	/**
 	 * Create a Line2DExpression representing the line supplied.
 	 *
@@ -181,6 +168,33 @@ public class Line2DExpression implements Line2DResult, EqualComparable<LineStrin
 	 */
 	public static Line2DExpression value(MultiPoint2DResult multipoint2DExpression) {
 		return MultiPoint2DExpression.value(multipoint2DExpression).line2DResult();
+	}
+	
+	@Override
+	public Line2DExpression nullExpression() {
+
+		return new Line2DExpression() {
+
+			@Override
+			public String toSQLString(DBDefinition db) {
+				return db.getNull();
+			}
+		};
+	}
+
+	@Override
+	public Line2DExpression expression(LineString value) {
+		return new Line2DExpression(value);
+	}
+
+	@Override
+	public Line2DExpression expression(Line2DResult value) {
+		return new Line2DExpression(value);
+	}
+
+	@Override
+	public Line2DExpression expression(DBLine2D value) {
+		return new Line2DExpression(value);
 	}
 
 	@Override
@@ -293,6 +307,7 @@ public class Line2DExpression implements Line2DResult, EqualComparable<LineStrin
 	 * @return a BooleanExpression that will be TRUE when the two expressions are
 	 * functionally equivalent, otherwise FALSE.
 	 */
+	@Override
 	public BooleanExpression is(LineString rightHandSide) {
 		return is(new DBLine2D(rightHandSide));
 	}
@@ -373,6 +388,7 @@ public class Line2DExpression implements Line2DResult, EqualComparable<LineStrin
 	 * @return a BooleanExpression that will be FALSE when the two expressions are
 	 * functionally equivalent, otherwise TRUE.
 	 */
+	@Override
 	public BooleanExpression isNot(LineString rightHandSide) {
 		return isNot(new DBLine2D(rightHandSide));
 	}

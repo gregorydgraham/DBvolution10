@@ -34,7 +34,7 @@ import nz.co.gregs.dbvolution.expressions.DBExpression;
  * @param <A> the class that can be compared using the "=" operator
  *
  */
-public interface EqualComparable<B, A extends DBExpression> extends DBExpression, ExpressionCanHaveNullValues{
+public interface EqualComparable<B, A extends DBExpression> extends AnyComparable<B, A>{
 
 	/**
 	 * Creates a {@link BooleanExpression} that compares the 2 values using the
@@ -57,4 +57,26 @@ public interface EqualComparable<B, A extends DBExpression> extends DBExpression
 	 * @return a BooleanExpression
 	 */
 	public BooleanExpression isNot(A anotherInstance);
+
+	/**
+	 * Creates a {@link BooleanExpression} that compares the 2 values using the
+	 * EQUALS operation.
+	 *
+	 * @param anotherInstance an instance to compare to
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @return a BooleanExpression
+	 */
+	public BooleanExpression is(B anotherInstance);
+
+	/**
+	 * Creates a {@link BooleanExpression} that compares the 2 values using the
+	 * NOT EQUALS operation.
+	 *
+	 * @param anotherInstance and instance to compare to
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @return a BooleanExpression
+	 */
+	public BooleanExpression isNot(B anotherInstance);
 }

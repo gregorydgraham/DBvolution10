@@ -15,7 +15,7 @@
  */
 package nz.co.gregs.dbvolution.results;
 
-import nz.co.gregs.dbvolution.expressions.DBExpression;
+import com.vividsolutions.jts.geom.Polygon;
 
 /**
  *
@@ -24,6 +24,6 @@ import nz.co.gregs.dbvolution.expressions.DBExpression;
  *
  * @author gregorygraham
  */
-public interface Polygon2DResult extends DBExpression, ExpressionCanHaveNullValues, Spatial2DResult {
+public interface Polygon2DResult extends Spatial2DResult<Polygon> {
 
 }

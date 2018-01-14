@@ -26,14 +26,39 @@
  * 
  * Check the Creative Commons website for any details, legalese, and updates.
  */
-package nz.co.gregs.dbvolution.results;
+package nz.co.gregs.dbvolution.expressions;
+
+import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
+import nz.co.gregs.dbvolution.results.EqualComparable;
+import nz.co.gregs.dbvolution.results.EqualResult;
 
 /**
- * A EqualResult has an equal and a not equal function.
  *
  * @author gregorygraham
- * @param <B> a base type like Integer or String
+ * @param <B>
+ * @param <R>
+ * @param <D>
  */
-public interface EqualResult<B> extends AnyResult<B> {
+public abstract class EqualExpression<B, R extends EqualResult<B>, D extends QueryableDatatype<B>> extends AnyExpression<B,R,D> implements EqualResult<B>, EqualComparable<B, R>{
 	
+	/**
+	 * Returns a value of the required type that will evaluate to NULL.
+	 *
+	 * @return
+	 */
+	abstract public R nullExpression();
+
+	abstract public R expression(B value);
+
+	abstract public R expression(R value);
+
+	abstract public R expression(D value);
+
+	public BooleanExpression is(D value) {
+		return this.is(this.expression(value));
+	}
+
+	public BooleanExpression isNot(D value) {
+		return this.isNot(this.expression(value));
+	}
 }

@@ -385,6 +385,7 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 	 * @return a BooleanExpression for use in {@link DBQuery#addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression)
 	 * }
 	 */
+	@Override
 	public BooleanExpression is(Long number) {
 		if (number == null) {
 			return isNull();
@@ -1612,6 +1613,11 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 
 	BooleanExpression isBetweenInclusive(Number lowerbound, Number upperbound) {
 		return this.isBetweenInclusive(value(lowerbound), value(upperbound));
+	}
+
+	@Override
+	public BooleanExpression isNot(Long integerValue) {
+		return this.isNot(expression(integerValue));
 	}
 
 	public static class SinhFunction extends DBUnaryFunction {

@@ -15,7 +15,6 @@
  */
 package nz.co.gregs.dbvolution.expressions;
 
-import nz.co.gregs.dbvolution.results.EqualComparable;
 import nz.co.gregs.dbvolution.results.Point2DResult;
 import com.vividsolutions.jts.geom.Point;
 import java.util.HashSet;
@@ -23,7 +22,6 @@ import java.util.Set;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.datatypes.spatial2D.DBPoint2D;
-import nz.co.gregs.dbvolution.results.PointResult;
 
 /**
  * Represents SQL expressions that are a 2 dimensional points, that is a
@@ -37,7 +35,7 @@ import nz.co.gregs.dbvolution.results.PointResult;
  *
  * @author gregorygraham
  */
-public class Point2DExpression implements PointResult, Point2DResult, EqualComparable<Point, Point2DResult>, Spatial2DExpression, ExpressionColumn<DBPoint2D> {
+public class Point2DExpression extends Spatial2DExpression<Point, Point2DResult, DBPoint2D> implements Point2DResult {
 
 	private final Point2DResult innerPoint;
 	private final boolean nullProtectionRequired;
@@ -47,8 +45,8 @@ public class Point2DExpression implements PointResult, Point2DResult, EqualCompa
 	 *
 	 */
 	protected Point2DExpression() {
-		innerPoint=null;
-		nullProtectionRequired=false;
+		innerPoint = null;
+		nullProtectionRequired = false;
 	}
 
 	/**
@@ -75,7 +73,7 @@ public class Point2DExpression implements PointResult, Point2DResult, EqualCompa
 	 * Create a Point2DExpression that represents the point value provided.
 	 *
 	 * @param point the value of this value.
- <p style="color: #F90;">Support DBvolution at
+	 * <p style="color: #F90;">Support DBvolution at
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a Point2DExpression of the point.
 	 */
@@ -87,7 +85,7 @@ public class Point2DExpression implements PointResult, Point2DResult, EqualCompa
 	 * Create a Point2DExpression that represents the point value provided.
 	 *
 	 * @param point the value of this value.
- <p style="color: #F90;">Support DBvolution at
+	 * <p style="color: #F90;">Support DBvolution at
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a Point2DExpression of the point.
 	 */
@@ -100,7 +98,7 @@ public class Point2DExpression implements PointResult, Point2DResult, EqualCompa
 	 *
 	 * @param xValue the X value of this value.
 	 * @param yValue the Y value of this value.
- <p style="color: #F90;">Support DBvolution at
+	 * <p style="color: #F90;">Support DBvolution at
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a Point2DExpression of the x and y values provided.
 	 */
@@ -113,7 +111,7 @@ public class Point2DExpression implements PointResult, Point2DResult, EqualCompa
 	 *
 	 * @param xValue the X value of this value.
 	 * @param yValue the Y value of this value.
- <p style="color: #F90;">Support DBvolution at
+	 * <p style="color: #F90;">Support DBvolution at
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a Point2DExpression of the x and y values provided.
 	 */
@@ -126,7 +124,7 @@ public class Point2DExpression implements PointResult, Point2DResult, EqualCompa
 	 *
 	 * @param xValue the X value of this value.
 	 * @param yValue the Y value of this value.
- <p style="color: #F90;">Support DBvolution at
+	 * <p style="color: #F90;">Support DBvolution at
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a Point2DExpression of the x and y values provided.
 	 */
@@ -139,7 +137,7 @@ public class Point2DExpression implements PointResult, Point2DResult, EqualCompa
 	 *
 	 * @param xValue the X value of this value.
 	 * @param yValue the Y value of this value.
- <p style="color: #F90;">Support DBvolution at
+	 * <p style="color: #F90;">Support DBvolution at
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a Point2DExpression of the x and y values provided.
 	 */
@@ -159,12 +157,39 @@ public class Point2DExpression implements PointResult, Point2DResult, EqualCompa
 	 *
 	 * @param xValue the X value of this value.
 	 * @param yValue the Y value of this value.
- <p style="color: #F90;">Support DBvolution at
+	 * <p style="color: #F90;">Support DBvolution at
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a Point2DExpression of the x and y values provided.
 	 */
 	public static Point2DExpression value(IntegerExpression xValue, IntegerExpression yValue) {
 		return value(xValue.numberResult(), yValue.numberResult());
+	}
+
+	@Override
+	public Point2DExpression nullExpression() {
+
+		return new Point2DExpression() {
+
+			@Override
+			public String toSQLString(DBDefinition db) {
+				return db.getNull();
+			}
+		};
+	}
+
+	@Override
+	public Point2DExpression expression(Point value) {
+		return new Point2DExpression(value);
+	}
+
+	@Override
+	public Point2DExpression expression(Point2DResult value) {
+		return new Point2DExpression(value);
+	}
+
+	@Override
+	public Point2DExpression expression(DBPoint2D value) {
+		return new Point2DExpression(value);
 	}
 
 	@Override
@@ -256,6 +281,7 @@ public class Point2DExpression implements PointResult, Point2DResult, EqualCompa
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a BooleanExpression
 	 */
+	@Override
 	public BooleanExpression is(Point rightHandSide) {
 		return is(new DBPoint2D(rightHandSide));
 	}
@@ -289,6 +315,7 @@ public class Point2DExpression implements PointResult, Point2DResult, EqualCompa
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a BooleanExpression
 	 */
+	@Override
 	public BooleanExpression isNot(Point rightHandSide) {
 		return isNot(new DBPoint2D(rightHandSide));
 	}
@@ -296,25 +323,20 @@ public class Point2DExpression implements PointResult, Point2DResult, EqualCompa
 	@Override
 	public BooleanExpression isNot(Point2DResult rightHandSide) {
 		return this.is(rightHandSide).not();
-//		return new BooleanExpression(new PointPointFunctionWithBooleanResult(this, new Point2DExpression(rightHandSide)) {
-//
-//			@Override
-//			public String doExpressionTransform(DBDefinition db) {
-//				try {
-//					return db.doPoint2DEqualsTransform(getFirst().toSQLString(db), getSecond().toSQLString(db));
-//				} catch (UnsupportedOperationException unsupported) {
-//					return BooleanExpression.notAllOf(
-//							getFirst().stringResult().substringBetween("(", " ").numberResult()
-//							.is(getSecond().stringResult().substringBetween("(", " ").numberResult()),
-//							getFirst().stringResult().substringAfter("(").substringBetween(" ", ")").numberResult()
-//							.is(getSecond().stringResult().substringAfter("(").substringBetween(" ", ")").numberResult())
-//					).toSQLString(db);
-//				}
-//			}
-//		});
 	}
 
-	@Override
+	/**
+	 * Retrieves the X value of this point expression.
+	 *
+	 * <p>
+	 * Provides access to the X value of this point allowing for transforms and
+	 * tests.
+	 *
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
+	 * @return a NumberExpression of the X coordinate.
+	 */
 	public NumberExpression getX() {
 		return new NumberExpression(new PointFunctionWithNumberResult(this) {
 
@@ -329,7 +351,18 @@ public class Point2DExpression implements PointResult, Point2DResult, EqualCompa
 		});
 	}
 
-	@Override
+	/**
+	 * Retrieves the Y value of this point expression.
+	 *
+	 * <p>
+	 * Provides access to the Y value of this point allowing for transforms and
+	 * tests.
+	 *
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
+	 * @return a NumberExpression of the Y coordinate.
+	 */
 	public NumberExpression getY() {
 		return new NumberExpression(new PointFunctionWithNumberResult(this) {
 
@@ -414,18 +447,17 @@ public class Point2DExpression implements PointResult, Point2DResult, EqualCompa
 	 * Calculate the distance between this point and the other point.
 	 *
 	 * <p>
- Creates an SQL value that will report the distance (in units) between
- these two points.
-
- <p>
+	 * Creates an SQL value that will report the distance (in units) between these
+	 * two points.
+	 *
+	 * <p>
 	 * Essentially this utilizes a database specific method to calculate
 	 * sqrt((x2-x1)^2+(y2-y1)^2).
 	 *
 	 * @param otherPoint the point from which to derive the distance.
 	 * <p style="color: #F90;">Support DBvolution at
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 * @return a number value of the distance between the two points in
- units.
+	 * @return a number value of the distance between the two points in units.
 	 */
 	public NumberExpression distanceTo(Point2DExpression otherPoint) {
 		return new NumberExpression(new PointPointFunctionWithNumberResult(this, otherPoint) {

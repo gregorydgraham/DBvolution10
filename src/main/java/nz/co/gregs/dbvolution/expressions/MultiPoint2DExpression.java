@@ -18,7 +18,6 @@ package nz.co.gregs.dbvolution.expressions;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.MultiPoint;
-import nz.co.gregs.dbvolution.results.EqualComparable;
 import com.vividsolutions.jts.geom.Point;
 import java.util.HashSet;
 import java.util.Set;
@@ -39,7 +38,7 @@ import nz.co.gregs.dbvolution.results.MultiPoint2DResult;
  *
  * @author gregorygraham
  */
-public class MultiPoint2DExpression implements MultiPoint2DResult, EqualComparable<MultiPoint, MultiPoint2DResult>, Spatial2DExpression, ExpressionColumn<DBMultiPoint2D> {
+public class MultiPoint2DExpression extends Spatial2DExpression<MultiPoint, MultiPoint2DResult, DBMultiPoint2D> implements MultiPoint2DResult {
 
 	private final MultiPoint2DResult innerPoint;
 	private final boolean nullProtectionRequired;
@@ -158,6 +157,33 @@ public class MultiPoint2DExpression implements MultiPoint2DResult, EqualComparab
 	public MultiPoint2DExpression copy() {
 		return new MultiPoint2DExpression(innerPoint);
 	}
+	
+	@Override
+	public MultiPoint2DExpression nullExpression() {
+
+		return new MultiPoint2DExpression() {
+
+			@Override
+			public String toSQLString(DBDefinition db) {
+				return db.getNull();
+			}
+		};
+	}
+
+	@Override
+	public MultiPoint2DExpression expression(MultiPoint value) {
+		return new MultiPoint2DExpression(value);
+	}
+
+	@Override
+	public MultiPoint2DExpression expression(MultiPoint2DResult value) {
+		return new MultiPoint2DExpression(value);
+	}
+
+	@Override
+	public MultiPoint2DExpression expression(DBMultiPoint2D value) {
+		return new MultiPoint2DExpression(value);
+	}
 
 	@Override
 	public boolean equals(Object other) {
@@ -239,6 +265,7 @@ public class MultiPoint2DExpression implements MultiPoint2DResult, EqualComparab
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a BooleanExpression
 	 */
+	@Override
 	public BooleanExpression is(MultiPoint rightHandSide) {
 		return is(new DBMultiPoint2D(rightHandSide));
 	}
@@ -267,6 +294,7 @@ public class MultiPoint2DExpression implements MultiPoint2DResult, EqualComparab
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a BooleanExpression
 	 */
+	@Override
 	public BooleanExpression isNot(MultiPoint rightHandSide) {
 		return this.is(rightHandSide).not();
 	}
@@ -503,8 +531,7 @@ public class MultiPoint2DExpression implements MultiPoint2DResult, EqualComparab
 	}
 
 	/**
-	 * Provides a value that represents the multipoint2d value as a line2d
- value.
+	 * Provides a value that represents the multipoint2d value as a line2d value.
 	 *
 	 * <P>
 	 * Points are added to the line in index order.
@@ -518,7 +545,7 @@ public class MultiPoint2DExpression implements MultiPoint2DResult, EqualComparab
 	 * @return a line2d value
 	 */
 	public Line2DExpression line2DResult() {
-		return new Line2DExpression(new SingleArgumentLine2DFunction<MultiPoint2DExpression>(this) {
+		return new Line2DExpression(new MultiPoint2DFunctionLine2DResult(this) {
 
 			@Override
 			protected String doExpressionTransform(DBDefinition db) {
@@ -529,7 +556,7 @@ public class MultiPoint2DExpression implements MultiPoint2DResult, EqualComparab
 
 	/**
 	 * Provides a value that represents the multipoint2d value as a polygon2d
- value.
+	 * value.
 	 *
 	 * <P>
 	 * Points are added to the polygon in index order. If necessary the polygon is
@@ -553,16 +580,16 @@ public class MultiPoint2DExpression implements MultiPoint2DResult, EqualComparab
 		return new DBMultiPoint2D(this);
 	}
 
-	private static abstract class SingleArgumentLine2DFunction<A extends DBExpression> extends Line2DExpression {
+	private static abstract class MultiPoint2DFunctionLine2DResult extends Line2DExpression {
 
-		private A first;
+		private MultiPoint2DExpression first;
 		private boolean requiresNullProtection;
 
-		SingleArgumentLine2DFunction(A first) {
+		MultiPoint2DFunctionLine2DResult(MultiPoint2DExpression first) {
 			this.first = first;
 		}
 
-		A getFirst() {
+		MultiPoint2DExpression getFirst() {
 			return first;
 		}
 
@@ -577,14 +604,14 @@ public class MultiPoint2DExpression implements MultiPoint2DResult, EqualComparab
 
 		@Override
 		@SuppressWarnings("unchecked")
-		public SingleArgumentLine2DFunction<A> copy() {
-			SingleArgumentLine2DFunction<A> newInstance;
+		public MultiPoint2DFunctionLine2DResult copy() {
+			MultiPoint2DFunctionLine2DResult newInstance;
 			try {
 				newInstance = getClass().newInstance();
 			} catch (InstantiationException | IllegalAccessException ex) {
 				throw new RuntimeException(ex);
 			}
-			newInstance.first = (A) first.copy();
+			newInstance.first = first.copy();
 			return newInstance;
 		}
 

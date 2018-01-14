@@ -28,12 +28,14 @@
  */
 package nz.co.gregs.dbvolution.results;
 
+import nz.co.gregs.dbvolution.expressions.DBExpression;
+
 /**
- * A EqualResult has an equal and a not equal function.
- *
+ * Top of the Result heirarchy.
+ * 
  * @author gregorygraham
- * @param <B> a base type like Integer or String
+ * @param <T>
  */
-public interface EqualResult<B> extends AnyResult<B> {
+public interface AnyResult<T> extends DBExpression, ExpressionCanHaveNullValues, ExpressionHasStandardStringResult {
 	
 }

@@ -57,29 +57,31 @@ import nz.co.gregs.dbvolution.results.EqualResult;
  * </p>
  *
  * @author gregorygraham
- * @param <B> a base type similar to Integer or String that is ultimately what you want to work with.
- * @param <R> the *Result type that will allow you to make expressions for working with the base type.
+ * @param <B> a base type similar to Integer or String that is ultimately what
+ * you want to work with.
+ * @param <R> the *Result type that will allow you to make expressions for
+ * working with the base type.
  * @param <D> the QDT that will store and retrieve the base from the database.
  */
-public abstract class DiscreteValueExpression<B, R extends EqualResult<B>, D extends QueryableDatatype<B>> implements EqualResult<B>, ExpressionColumn<D>, EqualComparable<B, R> {
+public abstract class InExpression<B, R extends EqualResult<B>, D extends QueryableDatatype<B>> extends EqualExpression<B, R, D> {
 
 	private final R innerResult;
 	private final boolean nullProtectionRequired;
-	
+
 	/**
 	 * Does nothing
 	 *
 	 */
-	public DiscreteValueExpression() {
+	public InExpression() {
 		innerResult = null;
 		nullProtectionRequired = false;
 	}
-	
+
 	/**
 	 *
 	 * @param only
 	 */
-	public DiscreteValueExpression(R only) {
+	public InExpression(R only) {
 		innerResult = only;
 		nullProtectionRequired = innerResult.getIncludesNull();
 	}
@@ -114,9 +116,9 @@ public abstract class DiscreteValueExpression<B, R extends EqualResult<B>, D ext
 	/**
 	 * Aggregrator that counts this row if the booleanResult is true.
 	 *
-	 * @param booleanResult an value that will be TRUE when the row needs to
- be counted.
- <p style="color: #F90;">Support DBvolution at
+	 * @param booleanResult an value that will be TRUE when the row needs to be
+	 * counted.
+	 * <p style="color: #F90;">Support DBvolution at
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return The number of rows where the test is true.
 	 */
@@ -129,7 +131,9 @@ public abstract class DiscreteValueExpression<B, R extends EqualResult<B>, D ext
 	}
 
 	@Override
-	public boolean getIncludesNull(){return nullProtectionRequired;}
+	public boolean getIncludesNull() {
+		return nullProtectionRequired;
+	}
 
 	private static abstract class DBNonaryFunction extends IntegerExpression {
 
@@ -470,6 +474,7 @@ public abstract class DiscreteValueExpression<B, R extends EqualResult<B>, D ext
 	public static DateRepeatExpression value(Period period) {
 		return new DateRepeatExpression(period);
 	}
+
 	/**
 	 * Create An Appropriate Expression Object For This Object
 	 *
@@ -686,47 +691,22 @@ public abstract class DiscreteValueExpression<B, R extends EqualResult<B>, D ext
 		return new DateRepeatExpression().nullExpression();
 	}
 
-	/**
-	 * Returns a value of the required type that will evaluate to NULL.
-	 *
-	 * @return
-	 */
-	abstract public R nullExpression();
-
-	abstract public R expression(B value);
-
-	abstract public R expression(R value);
-
-	abstract public R expression(D value);
-
-//	abstract public BooleanExpression is(R value);
-//	abstract public BooleanExpression isNot(R value);
 	abstract public BooleanExpression isIn(R... value);
-
-
-//	public BooleanExpression is(B value){return this.is(this.expression(value));}
-
-	public BooleanExpression is(D value){return this.is(this.expression(value));}
-
-//	public BooleanExpression isNot(B value){return this.isNot(this.expression(value));}
-
-	public BooleanExpression isNot(D value){return this.isNot(this.expression(value));}
-
 	@SuppressWarnings("unchecked")
-	public BooleanExpression isIn(B... possibleValues){
+	public BooleanExpression isIn(B... possibleValues) {
 		List<R> exps = new ArrayList<>(0);
 		for (B possibleValue : possibleValues) {
 			exps.add(this.expression(possibleValue));
 		}
-		return this.isIn((R[])exps.toArray());
+		return this.isIn((R[]) exps.toArray());
 	}
 
 	@SuppressWarnings("unchecked")
-	public BooleanExpression isIn(D... possibleValues){
+	public BooleanExpression isIn(D... possibleValues) {
 		List<R> exps = new ArrayList<>(0);
 		for (D possibleValue : possibleValues) {
 			exps.add(this.expression(possibleValue));
 		}
-		return this.isIn((R[])exps.toArray());
+		return this.isIn((R[]) exps.toArray());
 	}
 }

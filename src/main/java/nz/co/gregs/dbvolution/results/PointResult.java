@@ -24,6 +24,7 @@ import nz.co.gregs.dbvolution.expressions.NumberExpression;
  *
  * @author gregorygraham
  */
+@Deprecated// use Point2DResult or similar instead
 public interface PointResult {
 
 	/**

@@ -220,16 +220,9 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 	 * @return a BooleanExpression that compares the previous BooleanExpression to
 	 * the Boolean supplied.
 	 */
+	@Override
 	public BooleanExpression is(Boolean bool) {
 		return is(new BooleanExpression(bool));
-//		return this.is(BooleanExpression.value(bool));
-//		if (bool == null) {
-//			return this.isNull();
-//		} else if (bool) {
-//			return this;
-//		} else {
-//			return this.not();
-//		}
 	}
 
 	/**
@@ -364,16 +357,9 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 	 * @return a BooleanExpression that compares the previous BooleanExpression to
 	 * the Boolean supplied.
 	 */
+	@Override
 	public BooleanExpression isNot(Boolean bool) {
 		return isNot(new BooleanExpression(bool));
-//		return this.isNot(BooleanExpression.value(bool));
-//		if (bool == null) {
-//			return this.isNotNull();
-//		} else if (bool) {
-//			return this.not();
-//		} else {
-//			return this;
-//		}
 	}
 
 	/**

@@ -26,14 +26,18 @@
  * 
  * Check the Creative Commons website for any details, legalese, and updates.
  */
-package nz.co.gregs.dbvolution.results;
+package nz.co.gregs.dbvolution.expressions;
+
+import nz.co.gregs.dbvolution.results.AnyResult;
+import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 
 /**
- * A EqualResult has an equal and a not equal function.
  *
  * @author gregorygraham
- * @param <B> a base type like Integer or String
+ * @param <B>
+ * @param <R>
+ * @param <D>
  */
-public interface EqualResult<B> extends AnyResult<B> {
+public abstract class AnyExpression<B extends Object , R extends AnyResult<B>, D extends QueryableDatatype<B>> implements ExpressionColumn<D>, AnyResult<B>{
 	
 }

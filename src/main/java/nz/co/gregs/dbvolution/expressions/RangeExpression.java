@@ -40,28 +40,28 @@ import nz.co.gregs.dbvolution.results.RangeComparable;
  * @param <D> some QDT that works with type B
  *
  */
-public abstract class RangeExpression<B, R extends RangeResult<B>, D extends QueryableDatatype<B>> extends DiscreteValueExpression<B, R, D> implements RangeComparable<B, R> {
+public abstract class RangeExpression<B, R extends RangeResult<B>, D extends QueryableDatatype<B>> extends InExpression<B, R, D> implements RangeComparable<B, R> {
 
-	@Override
-	public abstract R getInnerResult() ;
-
-	@Override
-	abstract public R expression(B value);
-
-	@Override
-	abstract public R expression(R value);
-
-	@Override
-	abstract public R expression(D value);
-
-	@Override
-	abstract public BooleanExpression is(R value);
-	
-	@Override
-	abstract public BooleanExpression isNot(R value);
-
-	@Override
-	abstract public BooleanExpression isIn(R... value);
+//	@Override
+//	public abstract R getInnerResult() ;
+//
+//	@Override
+//	abstract public R expression(B value);
+//
+//	@Override
+//	abstract public R expression(R value);
+//
+//	@Override
+//	abstract public R expression(D value);
+//
+//	@Override
+//	abstract public BooleanExpression is(R value);
+//	
+//	@Override
+//	abstract public BooleanExpression isNot(R value);
+//
+//	@Override
+//	abstract public BooleanExpression isIn(R... value);
 
 //	abstract public BooleanExpression isLessThan(R value);
 //
