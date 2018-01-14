@@ -47,6 +47,6 @@ package nz.co.gregs.dbvolution.results;
  * @param <T> a base type that has a commonly understood linear distribution
  * like Number, String, or Date
  */
-public interface RangeResult<T> extends CountableResult<T>{
+public interface RangeResult<T> extends InResult<T>{
 
 }

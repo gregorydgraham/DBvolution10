@@ -29,10 +29,11 @@ import nz.co.gregs.dbvolution.expressions.DBExpression;
  * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
  *
  * @author Gregory Graham
+ * @param <B> a base type like String or Long
  * @param <A> the class that can be compared using the "IN" operator
  *
  */
-public interface InComparable<B, A extends DBExpression> extends EqualComparable<B, A> {
+public interface InComparable<B, A extends DBExpression> extends InResult<B>, EqualComparable<B, A> {
 
 	/**
 	 * Creates a {@link BooleanExpression} that compares the 2 values using the IN

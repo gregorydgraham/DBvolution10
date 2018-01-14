@@ -28,14 +28,13 @@
  */
 package nz.co.gregs.dbvolution.results;
 
-import nz.co.gregs.dbvolution.expressions.DBExpression;
-
 /**
- * A CountableResult has an equal and a not equal function.
+ * An In result can be compared using the In function.
  *
  * @author gregorygraham
- * @param <B> a base type like Integer or String
+ * @param <T> a base type that has a commonly understood linear distribution
+ * like Number, String, or Date
  */
-public interface CountableResult<B> extends DBExpression, ExpressionCanHaveNullValues, ExpressionHasStandardStringResult {
-	
+public interface InResult<T> extends CountableResult<T>{
+
 }
