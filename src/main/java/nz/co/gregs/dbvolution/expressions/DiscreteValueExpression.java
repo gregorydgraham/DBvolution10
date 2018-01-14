@@ -37,7 +37,6 @@ import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 import nz.co.gregs.dbvolution.results.BooleanResult;
-import nz.co.gregs.dbvolution.results.CountableResult;
 import nz.co.gregs.dbvolution.results.DateRepeatResult;
 import nz.co.gregs.dbvolution.results.DateResult;
 import nz.co.gregs.dbvolution.results.EqualComparable;
@@ -45,6 +44,7 @@ import nz.co.gregs.dbvolution.results.IntegerResult;
 import nz.co.gregs.dbvolution.results.NumberResult;
 import nz.co.gregs.dbvolution.results.StringResult;
 import org.joda.time.Period;
+import nz.co.gregs.dbvolution.results.EqualResult;
 
 /**
  * A value class that covers most datatypes.
@@ -61,7 +61,7 @@ import org.joda.time.Period;
  * @param <R> the *Result type that will allow you to make expressions for working with the base type.
  * @param <D> the QDT that will store and retrieve the base from the database.
  */
-public abstract class DiscreteValueExpression<B, R extends CountableResult<B>, D extends QueryableDatatype<B>> implements CountableResult<B>, ExpressionColumn<D>, EqualComparable<B, R> {
+public abstract class DiscreteValueExpression<B, R extends EqualResult<B>, D extends QueryableDatatype<B>> implements EqualResult<B>, ExpressionColumn<D>, EqualComparable<B, R> {
 
 	private final R innerResult;
 	private final boolean nullProtectionRequired;

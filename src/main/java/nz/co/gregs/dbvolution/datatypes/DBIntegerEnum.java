@@ -32,9 +32,9 @@ import nz.co.gregs.dbvolution.operators.DBPermittedRangeInclusiveOperator;
 import nz.co.gregs.dbvolution.operators.DBPermittedRangeOperator;
 import nz.co.gregs.dbvolution.operators.DBPermittedValuesOperator;
 import nz.co.gregs.dbvolution.query.RowDefinition;
-import nz.co.gregs.dbvolution.results.CountableResult;
 import nz.co.gregs.dbvolution.results.IntegerResult;
 import nz.co.gregs.dbvolution.results.NumberResult;
+import nz.co.gregs.dbvolution.results.EqualResult;
 
 /**
  * Like {@link DBInteger} except that the database value can be easily

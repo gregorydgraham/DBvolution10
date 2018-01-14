@@ -31,11 +31,11 @@ package nz.co.gregs.dbvolution.results;
 import nz.co.gregs.dbvolution.expressions.DBExpression;
 
 /**
- * A CountableResult has an equal and a not equal function.
+ * A EqualResult has an equal and a not equal function.
  *
  * @author gregorygraham
  * @param <B> a base type like Integer or String
  */
-public interface CountableResult<B> extends DBExpression, ExpressionCanHaveNullValues, ExpressionHasStandardStringResult {
+public interface EqualResult<B> extends DBExpression, ExpressionCanHaveNullValues, ExpressionHasStandardStringResult {
 	
 }
