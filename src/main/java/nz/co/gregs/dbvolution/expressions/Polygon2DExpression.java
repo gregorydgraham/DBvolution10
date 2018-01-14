@@ -42,7 +42,7 @@ import nz.co.gregs.dbvolution.datatypes.spatial2D.DBPolygon2D;
  *
  * @author gregorygraham
  */
-public class Polygon2DExpression implements Polygon2DResult, EqualComparable<Polygon2DResult>, ExpressionColumn<DBPolygon2D>, Spatial2DExpression {
+public class Polygon2DExpression implements Polygon2DResult, EqualComparable<Polygon, Polygon2DResult>, ExpressionColumn<DBPolygon2D>, Spatial2DExpression {
 
 	private final Polygon2DResult innerGeometry;
 	private final boolean nullProtectionRequired;

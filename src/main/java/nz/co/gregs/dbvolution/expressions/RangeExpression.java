@@ -40,7 +40,7 @@ import nz.co.gregs.dbvolution.results.RangeComparable;
  * @param <D> some QDT that works with type B
  *
  */
-public abstract class RangeExpression<B, R extends RangeResult<B>, D extends QueryableDatatype<B>> extends DiscreteValueExpression<B, R, D> implements RangeResult<B>, RangeComparable<R> {
+public abstract class RangeExpression<B, R extends RangeResult<B>, D extends QueryableDatatype<B>> extends DiscreteValueExpression<B, R, D> implements RangeComparable<B, R> {
 
 	@Override
 	public abstract R getInnerResult() ;
@@ -82,58 +82,66 @@ public abstract class RangeExpression<B, R extends RangeResult<B>, D extends Que
 //	public abstract BooleanExpression isBetweenExclusive(R lowerBound, R upperBound);
 
 	/* Default implementations*/
-//	public BooleanExpression isLessThan(B value) {
-//		return isLessThan(this.expression(value));
-//	}
+	@Override
+	public BooleanExpression isLessThan(B value) {
+		return isLessThan(this.expression(value));
+	}
 
 	public BooleanExpression isLessThan(D value) {
 		return isLessThan(this.expression(value));
 	}
 
-//	public BooleanExpression isGreaterThan(B value) {
-//		return isGreaterThan(this.expression(value));
-//	}
+	@Override
+	public BooleanExpression isGreaterThan(B value) {
+		return isGreaterThan(this.expression(value));
+	}
 
 	public BooleanExpression isGreaterThan(D value) {
 		return isGreaterThan(this.expression(value));
 	}
 
-//	public BooleanExpression isLessThanOrEqual(B value) {
-//		return isLessThanOrEqual(this.expression(value));
-//	}
+	@Override
+	public BooleanExpression isLessThanOrEqual(B value) {
+		return isLessThanOrEqual(this.expression(value));
+	}
 
 	public BooleanExpression isLessThanOrEqual(D value) {
 		return isLessThanOrEqual(this.expression(value));
 	}
 
-//	public BooleanExpression isGreaterThanOrEqual(B value) {
-//		return isGreaterThanOrEqual(this.expression(value));
-//	}
+	@Override
+	public BooleanExpression isGreaterThanOrEqual(B value) {
+		return isGreaterThanOrEqual(this.expression(value));
+	}
 
 	public BooleanExpression isGreaterThanOrEqual(D value) {
 		return isGreaterThanOrEqual(this.expression(value));
 	}
 
-//	public BooleanExpression isLessThan(B value, BooleanExpression fallBackWhenEquals) {
-//		return isLessThan(this.expression(value), fallBackWhenEquals);
-//	}
+	@Override
+	public BooleanExpression isLessThan(B value, BooleanExpression fallBackWhenEquals) {
+		return isLessThan(this.expression(value), fallBackWhenEquals);
+	}
 
 	public BooleanExpression isLessThan(D value, BooleanExpression fallBackWhenEquals) {
 		return isLessThan(this.expression(value), fallBackWhenEquals);
 	}
 
-//	public BooleanExpression isGreaterThan(B value, BooleanExpression fallBackWhenEquals) {
-//		return isGreaterThan(this.expression(value), fallBackWhenEquals);
-//	}
+	@Override
+	public BooleanExpression isGreaterThan(B value, BooleanExpression fallBackWhenEquals) {
+		return isGreaterThan(this.expression(value), fallBackWhenEquals);
+	}
 
 	public BooleanExpression isGreaterThan(D value, BooleanExpression fallBackWhenEquals) {
 		return isGreaterThan(this.expression(value), fallBackWhenEquals);
 	}
 
+	@Override
 	public BooleanExpression isBetween(R lowerBound, B upperBound) {
 		return this.isBetween(this.expression(lowerBound), this.expression(upperBound));
 	}
 
+	@Override
 	public BooleanExpression isBetween(B lowerBound, R upperBound) {
 		return this.isBetween(this.expression(lowerBound), this.expression(upperBound));
 	}
@@ -146,9 +154,10 @@ public abstract class RangeExpression<B, R extends RangeResult<B>, D extends Que
 		return this.isBetween(this.expression(lowerBound), this.expression(upperBound));
 	}
 
-//	public BooleanExpression isBetween(B lowerBound, B upperBound) {
-//		return this.isBetween(this.expression(lowerBound), this.expression(upperBound));
-//	}
+	@Override
+	public BooleanExpression isBetween(B lowerBound, B upperBound) {
+		return this.isBetween(this.expression(lowerBound), this.expression(upperBound));
+	}
 
 	public BooleanExpression isBetween(D lowerBound, D upperBound) {
 		return this.isBetween(this.expression(lowerBound), this.expression(upperBound));
@@ -162,10 +171,12 @@ public abstract class RangeExpression<B, R extends RangeResult<B>, D extends Que
 		return this.isBetween(this.expression(lowerBound), this.expression(upperBound));
 	}
 
+	@Override
 	public BooleanExpression isBetweenInclusive(R lowerBound, B upperBound) {
 		return this.isBetweenInclusive(this.expression(lowerBound), this.expression(upperBound));
 	}
 
+	@Override
 	public BooleanExpression isBetweenInclusive(B lowerBound, R upperBound) {
 		return this.isBetweenInclusive(this.expression(lowerBound), this.expression(upperBound));
 	}
@@ -178,9 +189,10 @@ public abstract class RangeExpression<B, R extends RangeResult<B>, D extends Que
 		return this.isBetweenInclusive(this.expression(lowerBound), this.expression(upperBound));
 	}
 
-//	public BooleanExpression isBetweenInclusive(B lowerBound, B upperBound) {
-//		return this.isBetweenInclusive(this.expression(lowerBound), this.expression(upperBound));
-//	}
+	@Override
+	public BooleanExpression isBetweenInclusive(B lowerBound, B upperBound) {
+		return this.isBetweenInclusive(this.expression(lowerBound), this.expression(upperBound));
+	}
 
 	public BooleanExpression isBetweenInclusive(D lowerBound, D upperBound) {
 		return this.isBetweenInclusive(this.expression(lowerBound), this.expression(upperBound));
@@ -194,10 +206,12 @@ public abstract class RangeExpression<B, R extends RangeResult<B>, D extends Que
 		return this.isBetweenInclusive(this.expression(lowerBound), this.expression(upperBound));
 	}
 
+	@Override
 	public BooleanExpression isBetweenExclusive(R lowerBound, B upperBound) {
 		return this.isBetweenExclusive(this.expression(lowerBound), this.expression(upperBound));
 	}
 
+	@Override
 	public BooleanExpression isBetweenExclusive(B lowerBound, R upperBound) {
 		return this.isBetweenExclusive(this.expression(lowerBound), this.expression(upperBound));
 	}
@@ -210,9 +224,10 @@ public abstract class RangeExpression<B, R extends RangeResult<B>, D extends Que
 		return this.isBetweenExclusive(this.expression(lowerBound), this.expression(upperBound));
 	}
 
-//	public BooleanExpression isBetweenExclusive(B lowerBound, B upperBound) {
-//		return this.isBetweenExclusive(this.expression(lowerBound), this.expression(upperBound));
-//	}
+	@Override
+	public BooleanExpression isBetweenExclusive(B lowerBound, B upperBound) {
+		return this.isBetweenExclusive(this.expression(lowerBound), this.expression(upperBound));
+	}
 
 	public BooleanExpression isBetweenExclusive(D lowerBound, D upperBound) {
 		return this.isBetweenExclusive(this.expression(lowerBound), this.expression(upperBound));

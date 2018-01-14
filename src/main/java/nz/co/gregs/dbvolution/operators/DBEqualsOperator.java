@@ -86,7 +86,7 @@ public class DBEqualsOperator extends DBOperator {
 		BooleanExpression op = BooleanExpression.trueExpression();
 		if (genericExpression instanceof EqualComparable) {
 			try {
-				EqualComparable<Object> columnEqual = (EqualComparable<Object>) genericExpression;
+				EqualComparable<Object, DBExpression> columnEqual = (EqualComparable<Object, DBExpression>) genericExpression;
 				if (invertOperator) {
 					op = columnEqual.isNot(getFirstValue());
 				} else {

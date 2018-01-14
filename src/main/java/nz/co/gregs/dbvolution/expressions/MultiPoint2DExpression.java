@@ -39,7 +39,7 @@ import nz.co.gregs.dbvolution.results.MultiPoint2DResult;
  *
  * @author gregorygraham
  */
-public class MultiPoint2DExpression implements MultiPoint2DResult, EqualComparable<MultiPoint2DResult>, Spatial2DExpression, ExpressionColumn<DBMultiPoint2D> {
+public class MultiPoint2DExpression implements MultiPoint2DResult, EqualComparable<MultiPoint, MultiPoint2DResult>, Spatial2DExpression, ExpressionColumn<DBMultiPoint2D> {
 
 	private final MultiPoint2DResult innerPoint;
 	private final boolean nullProtectionRequired;

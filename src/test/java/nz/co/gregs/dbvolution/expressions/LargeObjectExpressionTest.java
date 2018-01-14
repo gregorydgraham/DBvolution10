@@ -23,7 +23,6 @@ import nz.co.gregs.dbvolution.DBQuery;
 import nz.co.gregs.dbvolution.DBQueryRow;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.columns.LargeObjectColumn;
-import nz.co.gregs.dbvolution.databases.DBDatabaseCluster;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.datatypes.DBLargeBinary;
 import nz.co.gregs.dbvolution.example.CompanyLogo;

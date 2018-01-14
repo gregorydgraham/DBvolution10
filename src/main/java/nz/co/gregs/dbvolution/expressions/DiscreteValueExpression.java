@@ -61,7 +61,7 @@ import org.joda.time.Period;
  * @param <R> the *Result type that will allow you to make expressions for working with the base type.
  * @param <D> the QDT that will store and retrieve the base from the database.
  */
-public abstract class DiscreteValueExpression<B, R extends CountableResult<B>, D extends QueryableDatatype<B>> implements CountableResult<B>, ExpressionColumn<D>, EqualComparable<R> {
+public abstract class DiscreteValueExpression<B, R extends CountableResult<B>, D extends QueryableDatatype<B>> implements CountableResult<B>, ExpressionColumn<D>, EqualComparable<B, R> {
 
 	private final R innerResult;
 	private final boolean nullProtectionRequired;

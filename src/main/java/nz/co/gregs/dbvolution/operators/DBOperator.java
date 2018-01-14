@@ -16,7 +16,6 @@
 package nz.co.gregs.dbvolution.operators;
 
 import java.io.Serializable;
-import nz.co.gregs.dbvolution.databases.DBDatabase;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.expressions.DBExpression;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatypeSyncer.DBSafeInternalQDTAdaptor;
@@ -38,7 +37,6 @@ abstract public class DBOperator implements Serializable {
 	private DBExpression firstValue;
 	private DBExpression secondValue;
 	private DBExpression thirdValue;
-	private BooleanExpression expression;
 
 	/**
 	 * Create a DBOperator with all NULL values.

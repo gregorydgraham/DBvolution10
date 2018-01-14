@@ -31,13 +31,13 @@ package nz.co.gregs.dbvolution.internal.query;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import nz.co.gregs.dbvolution.DBQuery;
 import nz.co.gregs.dbvolution.DBQueryRow;
 import nz.co.gregs.dbvolution.DBRow;
-import nz.co.gregs.dbvolution.actions.DBActionList;
 import nz.co.gregs.dbvolution.actions.DBQueryable;
 import nz.co.gregs.dbvolution.columns.AbstractColumn;
 import nz.co.gregs.dbvolution.columns.ColumnProvider;
@@ -339,25 +339,25 @@ public class RecursiveQueryDetails<T extends DBRow> extends QueryDetails {
 				DBNumber fkValue = (DBNumber) qdt;
 				NumberColumn newFKColumn = referencedRow.column(fkValue);
 				newQuery.addCondition(
-						((EqualComparable<NumberResult>) pkColumn)
+						((EqualComparable<Number, NumberResult>) pkColumn)
 								.is(newFKColumn));
 			} else if ((qdt instanceof DBInteger) && (pkColumn instanceof EqualComparable) && (primaryKey instanceof IntegerResult)) {
 				DBInteger fkValue = (DBInteger) qdt;
 				IntegerColumn newFKColumn = referencedRow.column(fkValue);
 				newQuery.addCondition(
-						((EqualComparable<IntegerResult>) pkColumn)
+						((EqualComparable<Long, IntegerResult>) pkColumn)
 								.is(newFKColumn));
 			} else if ((qdt instanceof DBString) && (pkColumn instanceof EqualComparable) && (primaryKey instanceof StringResult)) {
 				DBString fkValue = (DBString) qdt;
 				StringColumn newFKColumn = referencedRow.column(fkValue);
 				newQuery.addCondition(
-						((EqualComparable<StringResult>) pkColumn)
+						((EqualComparable<String, StringResult>) pkColumn)
 								.is(newFKColumn));
 			} else if ((qdt instanceof DBDate) && (pkColumn instanceof EqualComparable) && (primaryKey instanceof DateResult)) {
 				DBDate fkValue = (DBDate) qdt;
 				DateColumn newFKColumn = referencedRow.column(fkValue);
 				newQuery.addCondition(
-						((EqualComparable<DateResult>) pkColumn)
+						((EqualComparable<Date, DateResult>) pkColumn)
 								.is(newFKColumn));
 			} else {
 				throw new nz.co.gregs.dbvolution.exceptions.UnableToCreateAscendingExpressionForRecursiveQuery(recursiveDetails.getKeyToFollow(), originatingRow);

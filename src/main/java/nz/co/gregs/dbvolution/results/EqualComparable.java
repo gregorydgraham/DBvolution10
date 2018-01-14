@@ -16,6 +16,7 @@
 package nz.co.gregs.dbvolution.results;
 
 import nz.co.gregs.dbvolution.expressions.BooleanExpression;
+import nz.co.gregs.dbvolution.expressions.DBExpression;
 
 /**
  * Indicates that the class can be compared to other instances of this class as
@@ -29,10 +30,11 @@ import nz.co.gregs.dbvolution.expressions.BooleanExpression;
  * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
  *
  * @author Gregory Graham
+ * @param <B>
  * @param <A> the class that can be compared using the "=" operator
  *
  */
-public interface EqualComparable<A> extends ExpressionCanHaveNullValues{
+public interface EqualComparable<B, A extends DBExpression> extends DBExpression, ExpressionCanHaveNullValues{
 
 	/**
 	 * Creates a {@link BooleanExpression} that compares the 2 values using the

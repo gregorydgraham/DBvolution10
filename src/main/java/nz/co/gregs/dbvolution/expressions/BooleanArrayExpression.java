@@ -32,7 +32,7 @@ import nz.co.gregs.dbvolution.datatypes.DBBoolean;
  *
  * @author gregory.graham
  */
-public class BooleanArrayExpression implements BooleanArrayResult, EqualComparable<BooleanArrayResult>, ExpressionColumn<DBBooleanArray> {
+public class BooleanArrayExpression implements BooleanArrayResult, EqualComparable<Boolean[], BooleanArrayResult>, ExpressionColumn<DBBooleanArray> {
 
 	public static BooleanArrayExpression value(Boolean[] i) {
 		return new BooleanArrayExpression(i);

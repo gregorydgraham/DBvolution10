@@ -16,6 +16,7 @@
 package nz.co.gregs.dbvolution.results;
 
 import nz.co.gregs.dbvolution.expressions.BooleanExpression;
+import nz.co.gregs.dbvolution.expressions.DBExpression;
 
 /**
  * Indicates that the class can be compared to several other instances of this
@@ -31,7 +32,7 @@ import nz.co.gregs.dbvolution.expressions.BooleanExpression;
  * @param <A> the class that can be compared using the "IN" operator
  *
  */
-public interface InComparable<A> extends EqualComparable<A> {
+public interface InComparable<B, A extends DBExpression> extends EqualComparable<B, A> {
 
 	/**
 	 * Creates a {@link BooleanExpression} that compares the 2 values using the IN

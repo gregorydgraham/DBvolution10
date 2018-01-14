@@ -35,7 +35,7 @@ import nz.co.gregs.dbvolution.datatypes.spatial2D.DBLineSegment2D;
  *
  * @author gregory.graham
  */
-public class LineSegment2DExpression implements LineSegment2DResult, EqualComparable<LineSegment2DResult>, Spatial2DExpression, ExpressionColumn<DBLineSegment2D> {
+public class LineSegment2DExpression implements LineSegment2DResult, EqualComparable<LineSegment, LineSegment2DResult>, Spatial2DExpression, ExpressionColumn<DBLineSegment2D> {
 
 	private final LineSegment2DResult innerLineString;
 	private final boolean nullProtectionRequired;

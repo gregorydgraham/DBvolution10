@@ -16,6 +16,7 @@
 package nz.co.gregs.dbvolution.results;
 
 import nz.co.gregs.dbvolution.expressions.BooleanExpression;
+import nz.co.gregs.dbvolution.expressions.DBExpression;
 
 /**
  * Indicates that the class can be compared to other instances of this class as
@@ -28,9 +29,10 @@ import nz.co.gregs.dbvolution.expressions.BooleanExpression;
  * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
  *
  * @author Gregory Graham
+ * @param <B> base class
  * @param <A> the class that can be compared
  */
-public interface RangeComparable<A> extends EqualComparable<A> {
+public interface RangeComparable<B, A extends DBExpression> extends RangeResult<B>, InComparable<B, A> {
 
 	/**
 	 * Creates a {@link BooleanExpression} that compares the 2 instances using the
@@ -42,6 +44,17 @@ public interface RangeComparable<A> extends EqualComparable<A> {
 	 * @return a BooleanExpression
 	 */
 	public BooleanExpression isLessThan(A anotherInstance);
+
+	/**
+	 * Creates a {@link BooleanExpression} that compares the 2 instances using the
+	 * LESSTHAN operation.
+	 *
+	 * @param anotherInstance the instance to compare to
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @return a BooleanExpression
+	 */
+	public BooleanExpression isLessThan(B anotherInstance);
 
 	/**
 	 * Creates a {@link BooleanExpression} that compares the 2 instances using the
@@ -104,8 +117,91 @@ public interface RangeComparable<A> extends EqualComparable<A> {
 	 * @return a BooleanExpression
 	 */
 	public BooleanExpression isGreaterThan(A anotherInstance, BooleanExpression fallBackWhenEqual);
+
 	public BooleanExpression isBetween(A anotherInstance, A largerExpression);
-public BooleanExpression isBetweenInclusive(A anotherInstance, A largerExpression);
-public BooleanExpression isBetweenExclusive(A anotherInstance, A largerExpression);
+
+	public BooleanExpression isBetweenInclusive(A anotherInstance, A largerExpression);
+
+	public BooleanExpression isBetweenExclusive(A anotherInstance, A largerExpression);
+
+	/**
+	 * Creates a {@link BooleanExpression} that compares the 2 instances using the
+	 * GREATERTHAN operation.
+	 *
+	 * @param anotherInstance the instance to compare to
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @return a BooleanExpression
+	 */
+	public BooleanExpression isGreaterThan(B anotherInstance);
+
+	/**
+	 * Creates a {@link BooleanExpression} that compares the 2 instances using the
+	 * LESSTHAN operation.
+	 *
+	 * @param anotherInstance the instance to compare to
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @return a BooleanExpression
+	 */
+	public BooleanExpression isLessThanOrEqual(B anotherInstance);
+
+	/**
+	 * Creates a {@link BooleanExpression} that compares the 2 instances using the
+	 * GREATERTHAN operation.
+	 *
+	 * @param anotherInstance the instance to compare to
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @return a BooleanExpression
+	 */
+	public BooleanExpression isGreaterThanOrEqual(B anotherInstance);
+
+	/**
+	 * Creates a {@link BooleanExpression} that compares the 2 instances using the
+	 * LESSTHAN operation.
+	 *
+	 * <p>
+	 * However when the 2 values are equal the results of the fallback expression
+	 * is returned instead. This helps apply the LESSTHAN operator across multiple
+	 * columns.
+	 *
+	 * @param anotherInstance the instance to compare to
+	 * @param fallBackWhenEqual expression to use when the values are equal
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @return a BooleanExpression
+	 */
+	public BooleanExpression isLessThan(B anotherInstance, BooleanExpression fallBackWhenEqual);
+
+	/**
+	 * Creates a {@link BooleanExpression} that compares the 2 instances using the
+	 * GREATERTHAN operation.
+	 *
+	 * @param anotherInstance the instance to compare to
+	 * @param fallBackWhenEqual expression to use when the values are equal
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @return a BooleanExpression
+	 */
+	public BooleanExpression isGreaterThan(B anotherInstance, BooleanExpression fallBackWhenEqual);
+
+	public BooleanExpression isBetween(B anotherInstance, B largerExpression);
+
+	public BooleanExpression isBetweenInclusive(B anotherInstance, B largerExpression);
+
+	public BooleanExpression isBetweenExclusive(B anotherInstance, B largerExpression);
+
+	public BooleanExpression isBetween(B anotherInstance, A largerExpression);
+
+	public BooleanExpression isBetweenInclusive(B anotherInstance, A largerExpression);
+
+	public BooleanExpression isBetweenExclusive(B anotherInstance, A largerExpression);
+
+	public BooleanExpression isBetween(A anotherInstance, B largerExpression);
+
+	public BooleanExpression isBetweenInclusive(A anotherInstance, B largerExpression);
+
+	public BooleanExpression isBetweenExclusive(A anotherInstance, B largerExpression);
 
 }

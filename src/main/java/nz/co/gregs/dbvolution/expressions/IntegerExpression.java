@@ -667,7 +667,7 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a boolean expression representing the required comparison
 	 */
-//	@Override
+	@Override
 	public BooleanExpression isBetween(Long lowerBound, Long upperBound) {
 		return isBetween(value(lowerBound), value(upperBound));
 	}
@@ -751,7 +751,7 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a boolean expression representing the required comparison
 	 */
-//	@Override
+	@Override
 	public BooleanExpression isBetweenInclusive(Long lowerBound, Long upperBound) {
 		return isBetweenInclusive(value(lowerBound), value(upperBound));
 	}
@@ -935,7 +935,7 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a boolean expression representing the required comparison
 	 */
-//	@Override
+	@Override
 	public BooleanExpression isBetweenExclusive(Long lowerBound, Long upperBound) {
 		return isBetweenExclusive(value(lowerBound), value(upperBound));
 	}
@@ -1050,7 +1050,7 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 	 * @return a BooleanExpression for use in
 	 * {@link DBQuery#addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression)}
 	 */
-//	@Override
+	@Override
 	public BooleanExpression isGreaterThan(Long number) {
 		return isGreaterThan(value(number));
 	}
@@ -1094,7 +1094,7 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 	 * @return a BooleanExpression for use in
 	 * {@link DBQuery#addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression)}
 	 */
-//	@Override
+	@Override
 	public BooleanExpression isGreaterThanOrEqual(Long number) {
 		return isGreaterThanOrEqual(value(number));
 	}
@@ -1172,7 +1172,7 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a BooleanExpression
 	 */
-//	@Override
+	@Override
 	public BooleanExpression isGreaterThan(Long value, BooleanExpression fallBackWhenEquals) {
 		return this.isGreaterThan(IntegerExpression.value(value), fallBackWhenEquals);
 	}
