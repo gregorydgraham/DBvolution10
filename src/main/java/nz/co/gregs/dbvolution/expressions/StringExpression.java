@@ -330,7 +330,7 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a BooleanExpression
 	 */
-//	@Override
+	@Override
 	public BooleanExpression isLessThan(String value, BooleanExpression fallBackWhenEquals) {
 		return this.isLessThan(StringExpression.value(value), fallBackWhenEquals);
 	}
@@ -355,7 +355,7 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a BooleanExpression
 	 */
-//	@Override
+	@Override
 	public BooleanExpression isGreaterThan(String value, BooleanExpression fallBackWhenEquals) {
 		return this.isGreaterThan(StringExpression.value(value), fallBackWhenEquals);
 	}
@@ -596,7 +596,7 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a BooleanExpression of the SQL comparison.
 	 */
-//	@Override
+	@Override
 	public BooleanExpression is(String equivalentString) {
 		if (equivalentString == null) {
 			return this.isNull();
@@ -707,7 +707,7 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a BooleanExpression of the SQL comparison.
 	 */
-//	@Override
+	@Override
 	public BooleanExpression isNot(String equivalentString) {
 		return this.isNot(value(equivalentString));
 	}
@@ -910,7 +910,7 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a boolean expression representing the required comparison
 	 */
-//	@Override
+	@Override
 	public BooleanExpression isBetween(String lowerBound, String upperBound) {
 		return this.isBetween(value(lowerBound), value(upperBound));
 	}
@@ -1025,7 +1025,7 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a boolean expression representing the required comparison
 	 */
-//	@Override
+	@Override
 	public BooleanExpression isBetweenInclusive(String lowerBound, String upperBound) {
 		return this.isBetweenInclusive(value(lowerBound), value(upperBound));
 	}
@@ -1148,7 +1148,7 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a boolean expression representing the required comparison
 	 */
-//	@Override
+	@Override
 	public BooleanExpression isBetweenExclusive(String lowerBound, String upperBound) {
 		return this.isBetweenExclusive(value(lowerBound), value(upperBound));
 	}
@@ -1165,7 +1165,7 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a BooleanExpression of the SQL comparison.
 	 */
-//	@Override
+	@Override
 	public BooleanExpression isLessThan(String equivalentString) {
 		return isLessThan(value(equivalentString));
 	}
@@ -1213,7 +1213,7 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a BooleanExpression of the SQL comparison.
 	 */
-//	@Override
+	@Override
 	public BooleanExpression isLessThanOrEqual(String equivalentString) {
 		return isLessThanOrEqual(value(equivalentString));
 	}
@@ -1261,7 +1261,7 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a BooleanExpression of the SQL comparison.
 	 */
-//	@Override
+	@Override
 	public BooleanExpression isGreaterThan(String equivalentString) {
 		return isGreaterThan(value(equivalentString));
 	}
@@ -1309,7 +1309,7 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a BooleanExpression of the SQL comparison.
 	 */
-//	@Override
+	@Override
 	public BooleanExpression isGreaterThanOrEqual(String equivalentString) {
 		return isGreaterThanOrEqual(value(equivalentString));
 	}
@@ -2194,34 +2194,6 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 				return db.doPositionInStringTransform(this.first.toSQLString(db), this.second.toSQLString(db));
 			}
 		}).integerResult();
-	}
-
-	/**
-	 * Creates an expression that will count all the non-null values of the column
-	 * supplied.
-	 *
-	 * <p>
-	 * Count is an aggregator function for use in DBReport or in a column
-	 * expression.
-	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 *
-	 * @return a number expression.
-	 */
-	public NumberExpression count() {
-		return new NumberExpression(new DBUnaryNumberFunction(this) {
-
-			@Override
-			String getFunctionName(DBDefinition db) {
-				return db.getCountFunctionName();
-			}
-
-			@Override
-			public boolean isAggregator() {
-				return true;
-			}
-		});
 	}
 
 	/**
