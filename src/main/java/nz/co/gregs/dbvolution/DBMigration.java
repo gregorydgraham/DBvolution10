@@ -13,7 +13,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import nz.co.gregs.dbvolution.actions.DBMigrationAction;
-import nz.co.gregs.dbvolution.actions.DBQueryInsertAction;
 import nz.co.gregs.dbvolution.columns.ColumnProvider;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 import nz.co.gregs.dbvolution.exceptions.*;
@@ -88,9 +87,7 @@ public class DBMigration<M extends DBRow> extends RowDefinition {
 						}
 					}
 				}
-			} catch (IllegalArgumentException ex) {
-				throw new UnableToAccessDBMigrationFieldException(this, field, ex);
-			} catch (IllegalAccessException ex) {
+			} catch (IllegalArgumentException | IllegalAccessException ex) {
 				throw new UnableToAccessDBMigrationFieldException(this, field, ex);
 			}
 		}
@@ -140,9 +137,7 @@ public class DBMigration<M extends DBRow> extends RowDefinition {
 				}
 			}
 			return newTarget;
-		} catch (InstantiationException ex) {
-			throw new UnableToInstantiateDBMigrationSubclassException(this, ex);
-		} catch (IllegalAccessException ex) {
+		} catch (InstantiationException | IllegalAccessException ex) {
 			throw new UnableToInstantiateDBMigrationSubclassException(this, ex);
 		}
 	}
@@ -196,9 +191,7 @@ public class DBMigration<M extends DBRow> extends RowDefinition {
 						str.append(field.getName()).append(": ").append(qdt.toString()).append(" ");
 					}
 				}
-			} catch (IllegalArgumentException ex) {
-				throw new UnableToAccessDBMigrationFieldException(this, field, ex);
-			} catch (IllegalAccessException ex) {
+			} catch (IllegalArgumentException | IllegalAccessException ex) {
 				throw new UnableToAccessDBMigrationFieldException(this, field, ex);
 			}
 		}
