@@ -94,6 +94,10 @@ public class MultiPoint2DExpression extends Spatial2DExpression<MultiPoint, Mult
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a MultiPoint2DExpression.
 	 */
+	public MultiPoint2DExpression expression(Point... points) {
+		return new MultiPoint2DExpression(points);
+	}
+
 	public static MultiPoint2DExpression value(Point... points) {
 		return new MultiPoint2DExpression(points);
 	}
@@ -107,6 +111,10 @@ public class MultiPoint2DExpression extends Spatial2DExpression<MultiPoint, Mult
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a MultiPoint2DExpression.
 	 */
+	public MultiPoint2DExpression expression(Coordinate... coords) {
+		return value(coords);
+	}
+
 	public static MultiPoint2DExpression value(Coordinate... coords) {
 		GeometryFactory geometryFactory = new GeometryFactory();
 		MultiPoint multiPoint = geometryFactory.createMultiPoint(coords);
@@ -122,8 +130,9 @@ public class MultiPoint2DExpression extends Spatial2DExpression<MultiPoint, Mult
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a MultiPoint2DExpression representing the points
 	 */
-	public static MultiPoint2DExpression value(MultiPoint points) {
-		return new MultiPoint2DExpression(points);
+	@Override
+	public MultiPoint2DExpression expression(MultiPoint points) {
+		return value(points);
 	}
 
 	/**
@@ -135,6 +144,11 @@ public class MultiPoint2DExpression extends Spatial2DExpression<MultiPoint, Mult
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a MultiPoint2DExpression representing the points
 	 */
+	@Override
+	public MultiPoint2DExpression expression(MultiPoint2DResult points) {
+		return value(points);
+	}
+
 	public static MultiPoint2DExpression value(MultiPoint2DResult points) {
 		return new MultiPoint2DExpression(points);
 	}
@@ -168,16 +182,6 @@ public class MultiPoint2DExpression extends Spatial2DExpression<MultiPoint, Mult
 				return db.getNull();
 			}
 		};
-	}
-
-	@Override
-	public MultiPoint2DExpression expression(MultiPoint value) {
-		return new MultiPoint2DExpression(value);
-	}
-
-	@Override
-	public MultiPoint2DExpression expression(MultiPoint2DResult value) {
-		return new MultiPoint2DExpression(value);
 	}
 
 	@Override
