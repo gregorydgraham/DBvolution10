@@ -28,6 +28,11 @@
  */
 package nz.co.gregs.dbvolution.expressions;
 
+import com.vividsolutions.jts.geom.LineSegment;
+import com.vividsolutions.jts.geom.LineString;
+import com.vividsolutions.jts.geom.MultiPoint;
+import com.vividsolutions.jts.geom.Point;
+import com.vividsolutions.jts.geom.Polygon;
 import java.util.Date;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.results.AnyResult;
@@ -581,6 +586,26 @@ public abstract class AnyExpression<B extends Object, R extends AnyResult<B>, D 
 		return new DateRepeatExpression(period);
 	}
 
+	public final static Point2DExpression value(Point point) {
+		return new Point2DExpression(point);
+	}
+
+	public final static MultiPoint2DExpression value(MultiPoint mpoint) {
+		return new MultiPoint2DExpression(mpoint);
+	}
+
+	public final static Line2DExpression value(LineString line) {
+		return new Line2DExpression(line);
+	}
+
+	public final static LineSegment2DExpression value(LineSegment linesegment) {
+		return new LineSegment2DExpression(linesegment);
+	}
+
+	public final static Polygon2DExpression value(Polygon polygon) {
+		return new Polygon2DExpression(polygon);
+	}
+
 	public final static BooleanExpression nullBoolean() {
 		return BooleanExpression.nullExpression();
 	}
@@ -603,5 +628,25 @@ public abstract class AnyExpression<B extends Object, R extends AnyResult<B>, D 
 
 	public final static DateRepeatExpression nullDateRepeat() {
 		return new DateRepeatExpression().nullExpression();
+	}
+
+	public final static Point2DExpression nullPoint2D() {
+		return new Point2DExpression().nullExpression();
+	}
+
+	public final static MultiPoint2DExpression nullMultiPoint2D() {
+		return new MultiPoint2DExpression().nullExpression();
+	}
+
+	public final static Line2DExpression nullLine2D() {
+		return new Line2DExpression().nullExpression();
+	}
+
+	public final static LineSegment2DExpression nullLineSegment2D() {
+		return new LineSegment2DExpression().nullExpression();
+	}
+
+	public final static Polygon2DExpression nullPolygon2D() {
+		return new Polygon2DExpression().nullExpression();
 	}
 }
