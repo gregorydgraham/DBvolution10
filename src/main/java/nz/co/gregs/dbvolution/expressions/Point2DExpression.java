@@ -77,7 +77,7 @@ public class Point2DExpression extends Spatial2DExpression<Point, Point2DResult,
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a Point2DExpression of the point.
 	 */
-	public static Point2DExpression value(Point point) {
+	public Point2DExpression expression(Point point) {
 		return new Point2DExpression(point);
 	}
 
@@ -102,6 +102,9 @@ public class Point2DExpression extends Spatial2DExpression<Point, Point2DResult,
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a Point2DExpression of the x and y values provided.
 	 */
+	public Point2DExpression expression(Integer xValue, Integer yValue) {
+		return value(NumberExpression.value(xValue), NumberExpression.value(yValue));
+	}
 	public static Point2DExpression value(Integer xValue, Integer yValue) {
 		return value(NumberExpression.value(xValue), NumberExpression.value(yValue));
 	}
@@ -115,6 +118,9 @@ public class Point2DExpression extends Spatial2DExpression<Point, Point2DResult,
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a Point2DExpression of the x and y values provided.
 	 */
+	public Point2DExpression expression(Long xValue, Long yValue) {
+		return value(NumberExpression.value(xValue), NumberExpression.value(yValue));
+	}
 	public static Point2DExpression value(Long xValue, Long yValue) {
 		return value(NumberExpression.value(xValue), NumberExpression.value(yValue));
 	}
@@ -128,6 +134,9 @@ public class Point2DExpression extends Spatial2DExpression<Point, Point2DResult,
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a Point2DExpression of the x and y values provided.
 	 */
+	public Point2DExpression expression(Double xValue, Double yValue) {
+		return value(NumberExpression.value(xValue), NumberExpression.value(yValue));
+	}
 	public static Point2DExpression value(Double xValue, Double yValue) {
 		return value(NumberExpression.value(xValue), NumberExpression.value(yValue));
 	}
@@ -141,6 +150,9 @@ public class Point2DExpression extends Spatial2DExpression<Point, Point2DResult,
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a Point2DExpression of the x and y values provided.
 	 */
+	public Point2DExpression expression(NumberExpression xValue, NumberExpression yValue) {
+		return value(xValue,yValue);
+	}
 	public static Point2DExpression value(NumberExpression xValue, NumberExpression yValue) {
 		return new Point2DExpression(new NumberNumberFunctionWithPoint2DResult(xValue, yValue) {
 
@@ -161,6 +173,9 @@ public class Point2DExpression extends Spatial2DExpression<Point, Point2DResult,
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a Point2DExpression of the x and y values provided.
 	 */
+	public Point2DExpression expression(IntegerExpression xValue, IntegerExpression yValue) {
+		return value(xValue.numberResult(), yValue.numberResult());
+	}
 	public static Point2DExpression value(IntegerExpression xValue, IntegerExpression yValue) {
 		return value(xValue.numberResult(), yValue.numberResult());
 	}
@@ -175,11 +190,6 @@ public class Point2DExpression extends Spatial2DExpression<Point, Point2DResult,
 				return db.getNull();
 			}
 		};
-	}
-
-	@Override
-	public Point2DExpression expression(Point value) {
-		return new Point2DExpression(value);
 	}
 
 	@Override
