@@ -131,6 +131,10 @@ public class LineSegment2DExpression extends Spatial2DExpression<LineSegment, Li
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a LineSegment2D value
 	 */
+	public LineSegment2DExpression expression(Point point1, Point point2) {
+		return new LineSegment2DExpression(point1, point2);
+	}
+
 	public static LineSegment2DExpression value(Point point1, Point point2) {
 		return new LineSegment2DExpression(point1, point2);
 	}
@@ -144,6 +148,10 @@ public class LineSegment2DExpression extends Spatial2DExpression<LineSegment, Li
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a LineSegment2D value
 	 */
+	public LineSegment2DExpression expression(Coordinate coord1, Coordinate coord2) {
+		return new LineSegment2DExpression(coord1, coord2);
+	}
+
 	public static LineSegment2DExpression value(Coordinate coord1, Coordinate coord2) {
 		return new LineSegment2DExpression(coord1, coord2);
 	}
@@ -160,6 +168,9 @@ public class LineSegment2DExpression extends Spatial2DExpression<LineSegment, Li
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a LineSegment2D value
 	 */
+	public LineSegment2DExpression expression(Double x1, Double y1, Double x2, Double y2) {
+		return new LineSegment2DExpression(new Coordinate(x1, y1), new Coordinate(x2, y2));
+	}
 	public static LineSegment2DExpression value(Double x1, Double y1, Double x2, Double y2) {
 		return new LineSegment2DExpression(new Coordinate(x1, y1), new Coordinate(x2, y2));
 	}
@@ -172,7 +183,8 @@ public class LineSegment2DExpression extends Spatial2DExpression<LineSegment, Li
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a LineSegment2D value
 	 */
-	public static LineSegment2DExpression value(LineSegment line) {
+	@Override
+	public LineSegment2DExpression expression(LineSegment line) {
 		return new LineSegment2DExpression(line);
 	}
 
@@ -184,7 +196,8 @@ public class LineSegment2DExpression extends Spatial2DExpression<LineSegment, Li
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a LineSegment2D value
 	 */
-	public static LineSegment2DExpression value(LineSegment2DResult line) {
+	@Override
+	public LineSegment2DExpression expression(LineSegment2DResult line) {
 		return new LineSegment2DExpression(line);
 	}
 
@@ -266,17 +279,11 @@ public class LineSegment2DExpression extends Spatial2DExpression<LineSegment, Li
 	}
 
 	@Override
-	public LineSegment2DExpression expression(LineSegment value) {
-		return new LineSegment2DExpression(value);
-	}
-
-	@Override
-	public LineSegment2DExpression expression(LineSegment2DResult value) {
-		return new LineSegment2DExpression(value);
-	}
-
-	@Override
 	public LineSegment2DExpression expression(DBLineSegment2D value) {
+		return value(value);
+	}
+
+	public static LineSegment2DExpression value(DBLineSegment2D value) {
 		return new LineSegment2DExpression(value);
 	}
 
