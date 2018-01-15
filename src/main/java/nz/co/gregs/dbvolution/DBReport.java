@@ -201,9 +201,7 @@ public class DBReport extends RowDefinition {
 						str.append(field.getName()).append(": ").append(qdt.toString()).append(" ");
 					}
 				}
-			} catch (IllegalArgumentException ex) {
-				throw new UnableToAccessDBReportFieldException(this, field, ex);
-			} catch (IllegalAccessException ex) {
+			} catch (IllegalArgumentException | IllegalAccessException ex) {
 				throw new UnableToAccessDBReportFieldException(this, field, ex);
 			}
 		}
@@ -467,16 +465,13 @@ public class DBReport extends RowDefinition {
 						query.addExpressionColumn(value, qdtValue);
 						final DBExpression[] columnExpressions = qdtValue.getColumnExpression();
 						for (DBExpression columnExpression : columnExpressions) {
-//							query.addExpressionColumn(columnExpression, columnExpression);
 							if (!columnExpression.isAggregator()) {
 								query.addGroupByColumn(value, columnExpression);
 							}
 						}
 					}
 				}
-			} catch (IllegalArgumentException ex) {
-				throw new UnableToAccessDBReportFieldException(exampleReport, field, ex);
-			} catch (IllegalAccessException ex) {
+			} catch (IllegalArgumentException | IllegalAccessException ex) {
 				throw new UnableToAccessDBReportFieldException(exampleReport, field, ex);
 			}
 		}
@@ -502,18 +497,6 @@ public class DBReport extends RowDefinition {
 						if ((exampleFieldValue instanceof QueryableDatatype) && qdt.hasColumnExpression()) {
 							final QueryableDatatype<?> expressionColumnValue = row.getExpressionColumnValue(qdt);
 							field.set(newReport, expressionColumnValue);
-//							if (qdt.getColumnExpression().length > 1) {
-//								DBExpression[] expressions = qdt.getColumnExpression();
-//								for (DBExpression expression : expressions) {
-//									final QueryableDatatype<?> expressionColumnValue = row.getExpressionColumnValue(expression);
-//									field.set(newReport, expressionColumnValue);
-//								}
-//							} else {
-//								DBExpression[] expressions = qdt.getColumnExpression();
-//								for (DBExpression expression : expressions) {
-//									field.set(newReport, row.getExpressionColumnValue(expression));
-//								}
-//							}
 						}
 					}
 				} catch (IllegalArgumentException ex) {
@@ -523,9 +506,7 @@ public class DBReport extends RowDefinition {
 				}
 			}
 			return newReport;
-		} catch (InstantiationException ex) {
-			throw new UnableToInstantiateDBReportSubclassException(exampleReport, ex);
-		} catch (IllegalAccessException ex) {
+		} catch (InstantiationException | IllegalAccessException ex) {
 			throw new UnableToInstantiateDBReportSubclassException(exampleReport, ex);
 		}
 	}

@@ -1802,28 +1802,6 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 	}
 
 	/**
-	 * Aggregates the dates found in a query as a count of items.
-	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 *
-	 * @return a number expression.
-	 */
-	public NumberExpression count() {
-		return new NumberExpression(new DateFunctionWithNumberResult(this) {
-			@Override
-			protected String getFunctionName(DBDefinition db) {
-				return db.getCountFunctionName();
-			}
-
-			@Override
-			public boolean isAggregator() {
-				return true;
-			}
-		});
-	}
-
-	/**
 	 * Aggregates the dates found in a query to find the maximum date in the
 	 * selection.
 	 *

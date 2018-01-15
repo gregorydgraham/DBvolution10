@@ -29,6 +29,7 @@
 package nz.co.gregs.dbvolution.expressions;
 
 import java.util.Date;
+import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.results.AnyResult;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 import nz.co.gregs.dbvolution.results.BooleanResult;
@@ -56,7 +57,15 @@ public abstract class AnyExpression<B extends Object, R extends AnyResult<B>, D 
 	 *
 	 * @return
 	 */
-	abstract public R nullExpression();
+	public AnyExpression<?,?,?> nullExpression() {
+		return new DateExpression() {
+			@Override
+			public String toSQLString(DBDefinition db) {
+				return db.getNull();
+			}
+
+		};
+	}
 
 	abstract public R expression(B value);
 

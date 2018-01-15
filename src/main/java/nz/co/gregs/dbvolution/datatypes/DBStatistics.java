@@ -27,8 +27,8 @@ public class DBStatistics extends DBString {
 
 	private static final long serialVersionUID = 1;
 
-	private final EqualExpression originalExpression;
-	private final DBString numberProxy = new DBString();;
+	private final EqualExpression<?,?,?> originalExpression;
+	private final DBString numberProxy = new DBString();
 	private Number countOfRows;
 //	private Number rankingHighIsFirst;  // Should be an expression column on an ordinary table
 //	private Number rankingLowIsFirst; // Should be an expression column on an ordinary table
@@ -72,7 +72,7 @@ public class DBStatistics extends DBString {
 	public DBStatistics(EqualExpression<?,?,?> expressionToGenerateStatsFrom) {
 		super(expressionToGenerateStatsFrom.stringResult());
 		this.originalExpression = expressionToGenerateStatsFrom;
-		countExpr = IntegerExpression.count(originalExpression);
+		countExpr = originalExpression.count();
 
 		this.setColumnExpression(new AnyExpression<?, ?, ?>[]{
 			countExpr

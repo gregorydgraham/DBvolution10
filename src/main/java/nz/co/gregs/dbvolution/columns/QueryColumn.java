@@ -16,11 +16,16 @@
 package nz.co.gregs.dbvolution.columns;
 
 import java.util.Set;
+import nz.co.gregs.dbvolution.DBQuery;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.datatypes.DBBoolean;
+import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
+import nz.co.gregs.dbvolution.expressions.AnyExpression;
 import nz.co.gregs.dbvolution.expressions.BooleanExpression;
+import nz.co.gregs.dbvolution.expressions.StringExpression;
 import nz.co.gregs.dbvolution.query.RowDefinition;
+import nz.co.gregs.dbvolution.results.AnyResult;
 
 /**
  * Represents a database column storing a boolean value.
@@ -41,32 +46,30 @@ import nz.co.gregs.dbvolution.query.RowDefinition;
  * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
  *
  * @author Gregory Graham
+ * @param <B>
+ * @param <R>
+ * @param <D>
  * @see RowDefinition
  * @see AbstractColumn
  * @see BooleanExpression
  */
-public class BooleanColumn extends BooleanExpression implements ColumnProvider {
+public class QueryColumn<B, R extends AnyResult<B>, D extends QueryableDatatype<B>> extends AnyExpression<B, R,D> implements ColumnProvider {
 
-	private final AbstractColumn column;
-
-	/**
-	 * Create a BooleanColumn for the supplied field of the supplied row
-	 *
-	 * @param row the row that the field belongs to
-	 * @param field the field that represents the column
-	 */
-	public BooleanColumn(RowDefinition row, Boolean field) {
-		this.column = new AbstractColumn(row, field);
-	}
+	private final AbstractQueryColumn column;
+	private final DBQuery query;
+	private final D field;
+	private boolean returnValue = true;
 
 	/**
-	 * Create a BooleanColumn for the supplied field of the supplied row
+	 * Create a QueryColumn for the supplied field of the supplied query
 	 *
-	 * @param row the row that the field belongs to
+	 * @param query the query that the field belongs to
 	 * @param field the field that represents the column
 	 */
-	public BooleanColumn(RowDefinition row, DBBoolean field) {
-		this.column = new AbstractColumn(row, field);
+	public QueryColumn(DBQuery query, D field) {
+		this.column = new AbstractQueryColumn(query, field);
+		this.query = query;
+		this.field = field;
 	}
 
 	@Override
@@ -75,12 +78,13 @@ public class BooleanColumn extends BooleanExpression implements ColumnProvider {
 	}
 
 	@Override
-	public BooleanColumn copy() {
-		return (BooleanColumn) super.copy();
+	@SuppressWarnings("unchecked")
+	public QueryColumn<B,R,D> copy() {
+		return new QueryColumn(query, field);
 	}
 
 	@Override
-	public AbstractColumn getColumn() {
+	public AbstractQueryColumn getColumn() {
 		return column;
 	}
 
@@ -104,21 +108,39 @@ public class BooleanColumn extends BooleanExpression implements ColumnProvider {
 		return column.isAggregator();
 	}
 
-	/**
-	 * Create an expression to compare this column to the other column using
-	 * EQUALS.
-	 *
-	 * @param boolColumn an instance to compare to
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 * @return a BooleanExpression
-	 */
-	public BooleanExpression is(DBBoolean boolColumn) {
-		return super.is(boolColumn);
+	@Override
+	public R expression(B value) {
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
 	@Override
-	public boolean isBooleanStatement() {
-		return false;
+	public R expression(R value) {
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	}
+
+	@Override
+	public R expression(D value) {
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	}
+
+	@Override
+	@SuppressWarnings("unchecked")
+	public D asExpressionColumn() {
+		return (D) field.copy();
+	}
+
+	@Override
+	@SuppressWarnings("unchecked")
+	public D getQueryableDatatypeForExpressionValue() {
+		return field;
+	}
+
+	@Override
+	public StringExpression stringResult() {
+		throw new RuntimeException("QueryColumn.stringResult: NOT IMPLEMENTED");
+	}
+
+	public void setReturnField(boolean b) {
+		this.returnValue = b;
 	}
 }

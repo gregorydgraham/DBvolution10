@@ -1,17 +1,30 @@
 /*
- * Copyright 2013 Gregory Graham.
+ * Copyright 2018 gregorygraham.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * This work is licensed under the Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License. 
+ * To view a copy of this license, visit http://creativecommons.org/licenses/by-nc-sa/4.0/ 
+ * or send a letter to Creative Commons, PO Box 1866, Mountain View, CA 94042, USA.
+ * 
+ * You are free to:
+ *     Share - copy and redistribute the material in any medium or format
+ *     Adapt - remix, transform, and build upon the material
+ * 
+ *     The licensor cannot revoke these freedoms as long as you follow the license terms.               
+ *     Under the following terms:
+ *                 
+ *         Attribution - 
+ *             You must give appropriate credit, provide a link to the license, and indicate if changes were made. 
+ *             You may do so in any reasonable manner, but not in any way that suggests the licensor endorses you or your use.
+ *         NonCommercial - 
+ *             You may not use the material for commercial purposes.
+ *         ShareAlike - 
+ *             If you remix, transform, or build upon the material, 
+ *             you must distribute your contributions under the same license as the original.
+ *         No additional restrictions - 
+ *             You may not apply legal terms or technological measures that legally restrict others from doing anything the 
+ *             license permits.
+ * 
+ * Check the Creative Commons website for any details, legalese, and updates.
  */
 package nz.co.gregs.dbvolution.columns;
 
@@ -19,7 +32,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.HashSet;
 import java.util.Set;
-import nz.co.gregs.dbvolution.databases.DBDatabase;
+import nz.co.gregs.dbvolution.DBQuery;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
@@ -29,28 +42,11 @@ import nz.co.gregs.dbvolution.expressions.DBExpression;
 import nz.co.gregs.dbvolution.internal.properties.PropertyWrapper;
 import nz.co.gregs.dbvolution.query.RowDefinition;
 
-/**
- * Represents the connection between a table and a column in a portable way.
- *
- * <p>
- * Used by
- * {@link RowDefinition#column(java.lang.Boolean) RowDefinition.getColumn(*)} to
- * produce an expression object that references a database table and column.
- *
- * <p>
- * Also allows PropertyWrapper to be passed around without confusing the public
- * interface.
- *
- * <p style="color: #F90;">Support DBvolution at
- * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
- *
- * @author greg
- */
-public class AbstractColumn implements DBExpression {
 
-	private final PropertyWrapper propertyWrapper;
-	private final RowDefinition dbrow;
-	private final Object field;
+public class AbstractQueryColumn extends AbstractColumn {
+
+	private final DBQuery query;
+	private final QueryableDatatype<?> field;
 	private boolean useTableAlias = true;
 
 	/**
@@ -61,64 +57,38 @@ public class AbstractColumn implements DBExpression {
 	 * RowDefinition so that the original association can be rebuilt where the
 	 * expression is converted into SQL.
 	 *
-	 * @param row the row which contains the field
+	 * @param query
 	 * @param field the field of the row that represents the database column
 	 * @throws IncorrectRowProviderInstanceSuppliedException Please note the the
 	 * field must be a field of the row
 	 */
-	public AbstractColumn(RowDefinition row, Object field) throws IncorrectRowProviderInstanceSuppliedException {
-		this.dbrow = row;
+	public AbstractQueryColumn(DBQuery query, QueryableDatatype<?> field) throws IncorrectRowProviderInstanceSuppliedException {
+		super(null, field);
+		this.query = query;
 		this.field = field;
-		if (row != null) {
-			this.propertyWrapper = row.getPropertyWrapperOf(field);
-			if (propertyWrapper == null) {
-				throw IncorrectRowProviderInstanceSuppliedException.newMultiRowInstance(field);
-			}
-		} else {
-			propertyWrapper = null;
-		}
 	}
 
 	@Override
 	public String toSQLString(DBDefinition db) {
-		RowDefinition rowDefn = this.getRowDefinition();
-		if ((field instanceof QueryableDatatype) && ((QueryableDatatype) field).hasColumnExpression()) {
-			final QueryableDatatype<?> qdtField = (QueryableDatatype) field;
-			DBExpression[] columnExpressions = qdtField.getColumnExpression();
+		DBQuery qry = this.getQuery();
+		if (field.hasColumnExpression()) {
+			DBExpression[] columnExpressions = field.getColumnExpression();
 			StringBuilder toSQLString = new StringBuilder();
 			for (DBExpression columnExpression : columnExpressions) {
 				toSQLString.append(columnExpression.toSQLString(db));
 			}
 			return toSQLString.toString();
-		} else {
-			String formattedColumnName = "";
-			if (useTableAlias) {
-				formattedColumnName = db.formatTableAliasAndColumnName(rowDefn, propertyWrapper.columnName());
-			} else if (rowDefn instanceof DBRow) {
-				DBRow dbRow = (DBRow) rowDefn;
-				formattedColumnName = db.formatTableAndColumnName(dbRow, propertyWrapper.columnName());
-			}
-			return propertyWrapper.getPropertyWrapperDefinition().getQueryableDatatype(this.dbrow).formatColumnForSQLStatement(db, formattedColumnName);
 		}
+		throw new RuntimeException("AbstractQueryColumn does not have a column expression");
 	}
 
 	@Override
 	public AbstractColumn copy() {
 		try {
-			Constructor<? extends AbstractColumn> constructor = this.getClass().getConstructor(RowDefinition.class, Object.class);
-			AbstractColumn newInstance = constructor.newInstance(getRowDefinition(), getField());
+			Constructor<? extends AbstractQueryColumn> constructor = this.getClass().getConstructor(DBQuery.class, QueryableDatatype.class);
+			AbstractQueryColumn newInstance = constructor.newInstance(getQuery(), getField());
 			return newInstance;
-		} catch (NoSuchMethodException ex) {
-			throw new DBRuntimeException("Unable To Copy " + this.getClass().getSimpleName() + ": please ensure it has a public " + this.getClass().getSimpleName() + "(DBRow, Object) constructor.", ex);
-		} catch (SecurityException ex) {
-			throw new DBRuntimeException("Unable To Copy " + this.getClass().getSimpleName() + ": please ensure it has a public " + this.getClass().getSimpleName() + "(DBRow, Object) constructor.", ex);
-		} catch (InstantiationException ex) {
-			throw new DBRuntimeException("Unable To Copy " + this.getClass().getSimpleName() + ": please ensure it has a public " + this.getClass().getSimpleName() + "(DBRow, Object) constructor.", ex);
-		} catch (IllegalAccessException ex) {
-			throw new DBRuntimeException("Unable To Copy " + this.getClass().getSimpleName() + ": please ensure it has a public " + this.getClass().getSimpleName() + "(DBRow, Object) constructor.", ex);
-		} catch (IllegalArgumentException ex) {
-			throw new DBRuntimeException("Unable To Copy " + this.getClass().getSimpleName() + ": please ensure it has a public " + this.getClass().getSimpleName() + "(DBRow, Object) constructor.", ex);
-		} catch (InvocationTargetException ex) {
+		} catch (NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
 			throw new DBRuntimeException("Unable To Copy " + this.getClass().getSimpleName() + ": please ensure it has a public " + this.getClass().getSimpleName() + "(DBRow, Object) constructor.", ex);
 		}
 	}
@@ -129,8 +99,9 @@ public class AbstractColumn implements DBExpression {
 	 *
 	 * @return the propertyWrapperOfQDT
 	 */
+	@Override
 	public PropertyWrapper getPropertyWrapper() {
-		return propertyWrapper;
+		throw new RuntimeException("AbstractQqueryColumn has no PropertyWrapper to return");
 	}
 
 	/**
@@ -146,6 +117,7 @@ public class AbstractColumn implements DBExpression {
 	 * @return this instance as a StringValue, NumberValue, DateValue, or
 	 * LargeObjectValue as appropriate
 	 */
+	@Override
 	public DBExpression asExpression() {
 		return this;
 	}
@@ -158,9 +130,8 @@ public class AbstractColumn implements DBExpression {
 	@Override
 	public boolean isAggregator() {
 		boolean aggregator = false;
-		if ((field instanceof QueryableDatatype) && ((QueryableDatatype) field).hasColumnExpression()) {
-			final QueryableDatatype<?> qdtField = (QueryableDatatype) field;
-			DBExpression[] columnExpressions = qdtField.getColumnExpression();
+		if (field.hasColumnExpression()) {
+			DBExpression[] columnExpressions = field.getColumnExpression();
 			for (DBExpression columnExpression : columnExpressions) {
 				aggregator = aggregator || columnExpression.isAggregator();
 			}
@@ -175,10 +146,8 @@ public class AbstractColumn implements DBExpression {
 
 	@Override
 	public Set<DBRow> getTablesInvolved() {
-		HashSet<DBRow> hashSet = new HashSet<>();
-		if (DBRow.class.isAssignableFrom(getRowDefinition().getClass())) {
-			hashSet.add((DBRow) getRowDefinition());
-		}
+		final HashSet<DBRow> hashSet = new HashSet<>();
+		hashSet.addAll(query.getAllTables());
 		return hashSet;
 	}
 
@@ -188,8 +157,8 @@ public class AbstractColumn implements DBExpression {
 	 *
 	 * @return the dbrow
 	 */
-	protected RowDefinition getRowDefinition() {
-		return dbrow;
+	protected DBQuery getQuery() {
+		return query;
 	}
 
 	/**
@@ -198,7 +167,8 @@ public class AbstractColumn implements DBExpression {
 	 *
 	 * @return the field
 	 */
-	protected Object getField() {
+	@Override
+	protected QueryableDatatype<?> getField() {
 		return field;
 	}
 
@@ -216,8 +186,9 @@ public class AbstractColumn implements DBExpression {
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return the QDT version of the field on the DBRow
 	 */
+	@Override
 	public QueryableDatatype<?> getAppropriateQDTFromRow(RowDefinition row) {
-		return this.getPropertyWrapper().getPropertyWrapperDefinition().getQueryableDatatype(row);
+		throw new RuntimeException("AbstractQueryColumn.getAppropriateQDTFromRow: does not have connect to a DBRow");
 	}
 
 	/**
@@ -234,8 +205,9 @@ public class AbstractColumn implements DBExpression {
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return the actual field on the DBRow object referenced by this column.
 	 */
+	@Override
 	public Object getAppropriateFieldFromRow(RowDefinition row) {
-		return this.getPropertyWrapper().getPropertyWrapperDefinition().rawJavaValue(row);
+		throw new RuntimeException("AbstractQueryColumn.getAppropriateFieldFromRow: does not have connect to a DBRow");
 	}
 
 	/**
@@ -244,6 +216,7 @@ public class AbstractColumn implements DBExpression {
 	 *
 	 * @return the useTableAlias
 	 */
+	@Override
 	protected boolean isUseTableAlias() {
 		return useTableAlias;
 	}
@@ -251,6 +224,7 @@ public class AbstractColumn implements DBExpression {
 	/**
 	 * @param useTableAlias the useTableAlias to set
 	 */
+	@Override
 	protected void setUseTableAlias(boolean useTableAlias) {
 		this.useTableAlias = useTableAlias;
 	}
@@ -264,11 +238,9 @@ public class AbstractColumn implements DBExpression {
 	 * @return an appropriate DBRow
 	 */
 	@SuppressWarnings("unchecked")
+	@Override
 	public DBRow getInstanceOfRow() {
-		final Class<? extends DBRow> originatingClass;
-		originatingClass = (Class<? extends DBRow>) this.getPropertyWrapper().getRowDefinitionInstanceWrapper().adapteeRowDefinitionClass();
-		final DBRow originatingRow = DBRow.getDBRow(originatingClass);
-		return originatingRow;
+		throw new RuntimeException("AbstractQueryColumn.getInstanceOfRow: does not have connect to a DBRow");
 	}
 
 	/**
@@ -280,7 +252,8 @@ public class AbstractColumn implements DBExpression {
 	 *
 	 * @return an appropriate DBRow class
 	 */
+	@Override
 	public Class<? extends DBRow> getClassReferencedByForeignKey() {
-		return this.getPropertyWrapper().referencedClass();
+		throw new RuntimeException("AbstractQueryColumn.getClassReferencedByForeignKey: does not have connect to a DBRow");
 	}
 }

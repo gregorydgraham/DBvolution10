@@ -81,17 +81,21 @@ public abstract class EqualExpression<B, R extends EqualResult<B>, D extends Que
 		});
 	}
 
-	/**
-	 * Aggregrator that counts all the rows of the query.
+/**
+	 * Creates an expression that will count all the values of the column
+	 * supplied.
+	 *
+	 * <p>
+	 * Count is an aggregator function for use in DBReport or in a column
+	 * expression.
 	 *
 	 * <p style="color: #F90;">Support DBvolution at
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 *
-	 * @param exp
-	 * @return the count of all the values from the column.
+	 * @return a number expression.
 	 */
-	public static IntegerExpression count(EqualExpression exp) {
-		return new IntegerExpression(new DBUnaryFunction(exp) {
+	public IntegerExpression count() {
+		return new IntegerExpression(new DBUnaryFunction(this) {
 			@Override
 			String getFunctionName(DBDefinition db) {
 				return db.getCountFunctionName();
@@ -177,9 +181,9 @@ public abstract class EqualExpression<B, R extends EqualResult<B>, D extends Que
 
 	private static abstract class DBUnaryFunction extends IntegerExpression {
 
-		protected final EqualResult only;
+		protected final EqualResult<?> only;
 
-		DBUnaryFunction(EqualResult only) {
+		DBUnaryFunction(EqualResult<?> only) {
 			this.only = only;
 		}
 

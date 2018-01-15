@@ -17,6 +17,7 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 import nz.co.gregs.dbvolution.actions.DBQueryable;
 import nz.co.gregs.dbvolution.annotations.*;
+import nz.co.gregs.dbvolution.columns.AbstractColumn;
 import nz.co.gregs.dbvolution.columns.ColumnProvider;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.datatypes.*;
@@ -936,6 +937,33 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 			}
 			getReturnColumns().add(propWrapper.getPropertyWrapperDefinition());
 		}
+	}
+
+	/**
+	 * Limits the returned columns by the specified properties (fields and/or
+	 * methods) given the properties object references.
+	 *
+	 * <p>
+	 * For example the following code snippet will include only the uid and name
+	 * columns based on the uid and name fields:
+	 * <pre>
+	 * Customer customer = ...;
+	 * customer.setReturnFields(customer.uid, customer.name);
+	 * </pre>
+	 *
+	 * <p>
+	 * Requires the field to be from this instance to work.
+	 *
+	 * @param columns a list of fields/methods from this object
+	 */
+	public final void setReturnFields(ColumnProvider... columns) throws IncorrectRowProviderInstanceSuppliedException {
+		setReturnFieldsToNone();
+		for (ColumnProvider provider : columns) {
+			final AbstractColumn column = provider.getColumn();
+			Object appropriateFieldFromRow = column.getAppropriateFieldFromRow(this);
+			this.setReturnFields(appropriateFieldFromRow);
+		}
+		
 	}
 
 	/**

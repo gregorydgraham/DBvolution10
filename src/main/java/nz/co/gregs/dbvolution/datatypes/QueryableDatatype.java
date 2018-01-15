@@ -765,11 +765,26 @@ public abstract class QueryableDatatype<T> extends Object implements Serializabl
 
 	@Override
 	public boolean equals(Object otherObject) {
-		if (otherObject instanceof QueryableDatatype) {
+		if (super.equals(otherObject)) {
+			return true;
+		} else if (otherObject instanceof QueryableDatatype) {
 			QueryableDatatype<?> other = (QueryableDatatype<?>) otherObject;
 			if (this.operator == null && other.operator == null) {
-				return this.getLiteralValue().equals(other.getLiteralValue());
-//			return true;
+				if (this.columnExpression.length > 1 && this.columnExpression.length == other.columnExpression.length) {
+					for (int i = 0; i < columnExpression.length; i++) {
+						if (!this.columnExpression[i].equals(other.columnExpression[i])) {
+							return false;
+						}
+					}
+					// all the column expressions match so it must be good
+					return true;
+				} else {
+					if (this.columnExpression.length == 0) {
+						return this.getLiteralValue().equals(other.getLiteralValue());
+					} else {
+						return false;
+					}
+				}
 			} else if (this.operator != null && other.operator == null) {
 				return false;
 			} else if (this.operator == null && other.operator != null) {

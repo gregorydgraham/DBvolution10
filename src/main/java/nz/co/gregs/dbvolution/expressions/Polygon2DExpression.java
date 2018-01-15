@@ -864,7 +864,7 @@ public class Polygon2DExpression extends Spatial2DExpression<Polygon, Polygon2DR
 	}
 
 	@Override
-	public Polygon2DResult nullExpression() {
+	public Polygon2DExpression nullExpression() {
 
 		return new Polygon2DExpression() {
 

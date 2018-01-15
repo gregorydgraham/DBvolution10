@@ -38,9 +38,11 @@ import nz.co.gregs.dbvolution.DBQueryRow;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.actions.DBQueryable;
 import nz.co.gregs.dbvolution.columns.ColumnProvider;
+import nz.co.gregs.dbvolution.columns.QueryColumn;
 import nz.co.gregs.dbvolution.databases.DBDatabase;
 import nz.co.gregs.dbvolution.databases.DBStatement;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
+import nz.co.gregs.dbvolution.databases.definitions.H2DBDefinition;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 import nz.co.gregs.dbvolution.exceptions.AccidentalBlankQueryException;
 import nz.co.gregs.dbvolution.exceptions.AccidentalCartesianJoinException;
@@ -92,7 +94,7 @@ public class QueryDetails implements DBQueryable {
 	private Long queryCount = null;
 	private QueryGraph queryGraph;
 	private ColumnProvider[] sortOrderColumns;
-	private ArrayList<Object> sortOrder;
+	private ArrayList<PropertyWrapper> sortOrder;
 	private List<DBQueryRow> currentPage;
 
 	/**
@@ -768,42 +770,48 @@ public class QueryDetails implements DBQueryable {
 			StringBuilder orderByClause = new StringBuilder(defn.beginOrderByClause());
 			String sortSeparator = defn.getStartingOrderByClauseSeparator();
 			for (ColumnProvider column : sortOrderColumns) {
-				PropertyWrapper prop = column.getColumn().getPropertyWrapper();
-				QueryableDatatype<?> qdt = prop.getQueryableDatatype();
-				PropertyWrapperDefinition propDefn = prop.getPropertyWrapperDefinition();
-				if (prefersIndexBasedOrderByClause) {
-					Integer columnIndex = indexesOfSelectedProperties.get(propDefn);
-					if (columnIndex == null) {
-						columnIndex = IndexesOfSelectedExpressions.get(qdt);
-					}
-					if (columnIndex == null) {
-						final DBExpression[] columnExpressions = qdt.getColumnExpression();
-						for (DBExpression columnExpression : columnExpressions) {
-							columnIndex = IndexesOfSelectedExpressions.get(columnExpression);
-						}
-					}
-					orderByClause.append(sortSeparator).append(columnIndex).append(defn.getOrderByDirectionClause(qdt.getSortOrder()));
-					sortSeparator = defn.getSubsequentOrderByClauseSeparator();
+				if (column instanceof QueryColumn) {
+					QueryColumn qc = (QueryColumn) column;
+					final QueryableDatatype qdt = qc.getQueryableDatatypeForExpressionValue();
+					orderByClause.append(sortSeparator).append(qc.toSQLString(defn)).append(defn.getOrderByDirectionClause(qdt.getSortOrder()));
 				} else {
-					if (qdt.hasColumnExpression()) {
-						final DBExpression[] columnExpressions = qdt.getColumnExpression();
-						for (DBExpression columnExpression : columnExpressions) {
-							final String dbColumnName = defn.transformToStorableType(columnExpression).toSQLString(defn);
-							if (dbColumnName != null) {
-								orderByClause.append(sortSeparator).append(dbColumnName).append(defn.getOrderByDirectionClause(qdt.getSortOrder()));
-								sortSeparator = defn.getSubsequentOrderByClauseSeparator();
+					PropertyWrapper prop = column.getColumn().getPropertyWrapper();
+					QueryableDatatype<?> qdt = prop.getQueryableDatatype();
+					PropertyWrapperDefinition propDefn = prop.getPropertyWrapperDefinition();
+					if (prefersIndexBasedOrderByClause) {
+						Integer columnIndex = indexesOfSelectedProperties.get(propDefn);
+						if (columnIndex == null) {
+							columnIndex = IndexesOfSelectedExpressions.get(qdt);
+						}
+						if (columnIndex == null) {
+							final DBExpression[] columnExpressions = qdt.getColumnExpression();
+							for (DBExpression columnExpression : columnExpressions) {
+								columnIndex = IndexesOfSelectedExpressions.get(columnExpression);
 							}
 						}
+						orderByClause.append(sortSeparator).append(columnIndex).append(defn.getOrderByDirectionClause(qdt.getSortOrder()));
+						sortSeparator = defn.getSubsequentOrderByClauseSeparator();
 					} else {
-						final RowDefinition possibleDBRow = prop.getRowDefinitionInstanceWrapper().adapteeRowDefinition();
+						if (qdt.hasColumnExpression()) {
+							final DBExpression[] columnExpressions = qdt.getColumnExpression();
+							for (DBExpression columnExpression : columnExpressions) {
+								final String dbColumnName = defn.transformToStorableType(columnExpression).toSQLString(defn);
+								if (dbColumnName != null) {
+									orderByClause.append(sortSeparator).append(dbColumnName).append(defn.getOrderByDirectionClause(qdt.getSortOrder()));
+									sortSeparator = defn.getSubsequentOrderByClauseSeparator();
+								}
+							}
+						} else {
+							final RowDefinition possibleDBRow = prop.getRowDefinitionInstanceWrapper().adapteeRowDefinition();
 
-						if (possibleDBRow != null && DBRow.class.isAssignableFrom(possibleDBRow.getClass())) {
-							final DBRow adapteeDBRow = (DBRow) possibleDBRow;
-							final String dbColumnName = defn.formatTableAliasAndColumnName(adapteeDBRow, prop.columnName());
-							if (dbColumnName
-									!= null) {
-								orderByClause.append(sortSeparator).append(dbColumnName).append(defn.getOrderByDirectionClause(qdt.getSortOrder()));
-								sortSeparator = defn.getSubsequentOrderByClauseSeparator();
+							if (possibleDBRow != null && DBRow.class.isAssignableFrom(possibleDBRow.getClass())) {
+								final DBRow adapteeDBRow = (DBRow) possibleDBRow;
+								final String dbColumnName = defn.formatTableAliasAndColumnName(adapteeDBRow, prop.columnName());
+								if (dbColumnName
+										!= null) {
+									orderByClause.append(sortSeparator).append(dbColumnName).append(defn.getOrderByDirectionClause(qdt.getSortOrder()));
+									sortSeparator = defn.getSubsequentOrderByClauseSeparator();
+								}
 							}
 						}
 					}
@@ -889,9 +897,13 @@ public class QueryDetails implements DBQueryable {
 		sortOrder = new ArrayList<>();
 		PropertyWrapper prop;
 		for (ColumnProvider col : sortColumns) {
-			prop = col.getColumn().getPropertyWrapper();
-			if (prop != null) {
-				sortOrder.add(prop);
+			if (col instanceof QueryColumn) {
+				System.out.println(""+((QueryColumn) col).toSQLString(new H2DBDefinition()));
+			} else {
+				prop = col.getColumn().getPropertyWrapper();
+				if (prop != null) {
+					sortOrder.add(prop);
+				}
 			}
 		}
 	}
@@ -972,7 +984,7 @@ public class QueryDetails implements DBQueryable {
 				fillResultSetInternal(db, this, getOptions());
 				break;
 			default:
-				throw new UnsupportedOperationException("Query Type Not Supported: "+queryType);
+				throw new UnsupportedOperationException("Query Type Not Supported: " + queryType);
 		}
 		return this;
 	}
