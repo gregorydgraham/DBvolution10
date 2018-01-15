@@ -116,6 +116,10 @@ public class Line2DExpression extends Spatial2DExpression<LineString, Line2DResu
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a Line2DExpression
 	 */
+	public Line2DExpression expression(Point... points) {
+		return new Line2DExpression(points);
+	}
+
 	public static Line2DExpression value(Point... points) {
 		return new Line2DExpression(points);
 	}
@@ -129,6 +133,10 @@ public class Line2DExpression extends Spatial2DExpression<LineString, Line2DResu
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a Line2DExpression
 	 */
+	public Line2DExpression expression(Coordinate... coords) {
+		return new Line2DExpression(coords);
+	}
+
 	public static Line2DExpression value(Coordinate... coords) {
 		return new Line2DExpression(coords);
 	}
@@ -141,7 +149,8 @@ public class Line2DExpression extends Spatial2DExpression<LineString, Line2DResu
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a Line2DExpression
 	 */
-	public static Line2DExpression value(LineString line) {
+	@Override
+	public Line2DExpression expression(LineString line) {
 		return new Line2DExpression(line);
 	}
 
@@ -153,6 +162,11 @@ public class Line2DExpression extends Spatial2DExpression<LineString, Line2DResu
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a Line2DExpression
 	 */
+	@Override
+	public Line2DExpression expression(Line2DResult line) {
+		return new Line2DExpression(line);
+	}
+	
 	public static Line2DExpression value(Line2DResult line) {
 		return new Line2DExpression(line);
 	}
@@ -166,6 +180,10 @@ public class Line2DExpression extends Spatial2DExpression<LineString, Line2DResu
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a Line2DExpression
 	 */
+	public Line2DExpression expression(MultiPoint2DResult multipoint2DExpression) {
+		return value(multipoint2DExpression);
+	}
+	
 	public static Line2DExpression value(MultiPoint2DResult multipoint2DExpression) {
 		return MultiPoint2DExpression.value(multipoint2DExpression).line2DResult();
 	}
@@ -180,16 +198,6 @@ public class Line2DExpression extends Spatial2DExpression<LineString, Line2DResu
 				return db.getNull();
 			}
 		};
-	}
-
-	@Override
-	public Line2DExpression expression(LineString value) {
-		return new Line2DExpression(value);
-	}
-
-	@Override
-	public Line2DExpression expression(Line2DResult value) {
-		return new Line2DExpression(value);
 	}
 
 	@Override
@@ -636,7 +644,7 @@ public class Line2DExpression extends Spatial2DExpression<LineString, Line2DResu
 	 * otherwise FALSE.
 	 */
 	public BooleanExpression intersects(Point... points) {
-		return this.intersects(value(points));
+		return this.intersects(expression(points));
 	}
 
 	/**
@@ -659,7 +667,7 @@ public class Line2DExpression extends Spatial2DExpression<LineString, Line2DResu
 	 * otherwise FALSE.
 	 */
 	public BooleanExpression intersects(Coordinate... coords) {
-		return this.intersects(value(coords));
+		return this.intersects(expression(coords));
 	}
 
 	/**
@@ -750,7 +758,7 @@ public class Line2DExpression extends Spatial2DExpression<LineString, Line2DResu
 	 * otherwise FALSE.
 	 */
 	public Point2DExpression intersectionWith(Point... crossingLine) {
-		return intersectionWith(value(crossingLine));
+		return intersectionWith(expression(crossingLine));
 	}
 
 	/**
@@ -773,7 +781,7 @@ public class Line2DExpression extends Spatial2DExpression<LineString, Line2DResu
 	 * otherwise FALSE.
 	 */
 	public Point2DExpression intersectionWith(Coordinate... crossingLine) {
-		return intersectionWith(value(crossingLine));
+		return intersectionWith(expression(crossingLine));
 	}
 
 	/**
@@ -817,7 +825,7 @@ public class Line2DExpression extends Spatial2DExpression<LineString, Line2DResu
 	 * otherwise FALSE.
 	 */
 	public Point2DExpression intersectionWith(MultiPoint2DExpression crossingLine) {
-		return intersectionWith(value(crossingLine));
+		return intersectionWith(expression(crossingLine));
 	}
 
 	/**
