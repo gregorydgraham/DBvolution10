@@ -89,7 +89,8 @@ public class Polygon2DExpression extends Spatial2DExpression<Polygon, Polygon2DR
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a polygon2d value
 	 */
-	public static Polygon2DExpression value(Polygon polygon) {
+	@Override
+	public Polygon2DExpression expression(Polygon polygon) {
 		return new Polygon2DExpression(polygon);
 	}
 
@@ -103,6 +104,11 @@ public class Polygon2DExpression extends Spatial2DExpression<Polygon, Polygon2DR
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a polygon2d value
 	 */
+	@Override
+	public Polygon2DExpression expression(Polygon2DResult polygon) {
+		return value(polygon);
+	}
+
 	public static Polygon2DExpression value(Polygon2DResult polygon) {
 		return new Polygon2DExpression(polygon);
 	}
@@ -118,6 +124,10 @@ public class Polygon2DExpression extends Spatial2DExpression<Polygon, Polygon2DR
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a polygon2d value
 	 */
+	public Polygon2DExpression expression(Point2DExpression... pointExpressions) {
+		return Polygon2DExpression.polygon2DFromPoint2DExpressionArray(pointExpressions);
+	}
+
 	public static Polygon2DExpression value(Point2DExpression... pointExpressions) {
 		return Polygon2DExpression.polygon2DFromPoint2DExpressionArray(pointExpressions);
 	}
@@ -133,6 +143,10 @@ public class Polygon2DExpression extends Spatial2DExpression<Polygon, Polygon2DR
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a polygon2d value
 	 */
+	public Polygon2DExpression expression(Number... coordinates) {
+		return value(coordinates);
+	}
+
 	public static Polygon2DExpression value(Number... coordinates) {
 		ArrayList<NumberExpression> exprs = new ArrayList<NumberExpression>();
 		for (Number coord : coordinates) {
@@ -152,6 +166,10 @@ public class Polygon2DExpression extends Spatial2DExpression<Polygon, Polygon2DR
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a polygon2d value
 	 */
+	public Polygon2DExpression expression(NumberExpression... coordinateExpressions) {
+		return value(coordinateExpressions);
+	}
+
 	public static Polygon2DExpression value(NumberExpression... coordinateExpressions) {
 		return Polygon2DExpression.polygon2DFromCoordinateArray(coordinateExpressions);
 	}
@@ -166,6 +184,10 @@ public class Polygon2DExpression extends Spatial2DExpression<Polygon, Polygon2DR
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a polygon2d value
 	 */
+	public Polygon2DExpression expression(Point... points) {
+		return value(points);
+	}
+
 	public static Polygon2DExpression value(Point... points) {
 		List<Point2DExpression> exprs = new ArrayList<Point2DExpression>();
 		for (Point point : points) {
@@ -875,19 +897,13 @@ public class Polygon2DExpression extends Spatial2DExpression<Polygon, Polygon2DR
 		};
 	}
 
-	@Override
-	public Polygon2DResult expression(Polygon value) {
-		return new Polygon2DExpression(value);
-	}
-
-	@Override
-	public Polygon2DResult expression(Polygon2DResult value) {
+	public static Polygon2DResult value(DBPolygon2D value) {
 		return new Polygon2DExpression(value);
 	}
 
 	@Override
 	public Polygon2DResult expression(DBPolygon2D value) {
-		return new Polygon2DExpression(value);
+		return value(value);
 	}
 
 	private static abstract class PolygonPolygonWithBooleanResult extends BooleanExpression {
