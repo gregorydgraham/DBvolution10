@@ -27,7 +27,7 @@ class TableHandler {
 	private final String tableName;
 	private final DBTableName tableNameAnnotation; // null if not present on class
 	private final DBSelectQuery selectQueryAnnotation; // null if not present on class
-	private Object requiredTableAnnotation;
+	private final Object requiredTableAnnotation;
 
 	public TableHandler(Class<?> adaptee) {
 		this.tableNameAnnotation = adaptee.getAnnotation(DBTableName.class);
