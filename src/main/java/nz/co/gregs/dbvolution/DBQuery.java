@@ -30,7 +30,6 @@ import java.io.PrintStream;
 import java.sql.*;
 import java.util.*;
 import javax.swing.JFrame;
-import nz.co.gregs.dbvolution.actions.DBQueryable;
 
 import nz.co.gregs.dbvolution.annotations.DBForeignKey;
 import nz.co.gregs.dbvolution.columns.AbstractColumn;
@@ -2238,7 +2237,7 @@ public class DBQuery {
 		List<DBRow> allQueryTables = this.details.getAllQueryTables();
 		for (ColumnProvider provider : columns) {
 			if (provider instanceof QueryColumn) {
-				QueryColumn qc = (QueryColumn)provider;
+				QueryColumn<?,?,?> qc = (QueryColumn)provider;
 				qc.setReturnField(true);
 			} else {
 				final AbstractColumn column = provider.getColumn();

@@ -464,6 +464,17 @@ public class QueryDetails implements DBQueryable {
 
 							indexesOfSelectedColumns.put(propWrapper.getPropertyWrapperDefinition(), columnIndex);
 						}
+						if (expression != null && expression.isComplexExpression()) {
+							final boolean hasTablesAlready = !joinedTables.isEmpty();
+							String joiner = options.isUseANSISyntax()&&hasTablesAlready?" join ":"";
+							joiner = !options.isUseANSISyntax()&&hasTablesAlready?fromClauseTableSeparator:joiner;
+							fromClause
+									.append(joiner)
+									.append(fromClauseTableSeparator)
+									.append(expression.createSQLForFromClause(database))
+									.append(", ");
+							fromClauseTableSeparator = ", " + lineSep;
+						}
 
 						columnIndex++;
 					}
@@ -529,7 +540,7 @@ public class QueryDetails implements DBQueryable {
 						groupByColSep = defn.getSubsequentGroupBySubClauseSeparator() + lineSep;
 
 					}
-					if(expression.isComplexExpression()){
+					if (expression.isComplexExpression()) {
 						fromClause
 								.append(fromClauseTableSeparator)
 								.append(expression.createSQLForFromClause(database));
@@ -776,8 +787,8 @@ public class QueryDetails implements DBQueryable {
 			String sortSeparator = defn.getStartingOrderByClauseSeparator();
 			for (ColumnProvider column : sortOrderColumns) {
 				if (column instanceof QueryColumn) {
-					QueryColumn qc = (QueryColumn) column;
-					final QueryableDatatype qdt = qc.getQueryableDatatypeForExpressionValue();
+					QueryColumn<?,?,?> qc = (QueryColumn) column;
+					final QueryableDatatype<?> qdt = qc.getQueryableDatatypeForExpressionValue();
 					orderByClause.append(sortSeparator).append(qc.toSQLString(defn)).append(defn.getOrderByDirectionClause(qdt.getSortOrder()));
 				} else {
 					PropertyWrapper prop = column.getColumn().getPropertyWrapper();

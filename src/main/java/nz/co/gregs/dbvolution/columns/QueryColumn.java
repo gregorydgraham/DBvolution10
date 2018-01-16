@@ -79,7 +79,7 @@ public class QueryColumn<B, R extends AnyResult<B>, D extends QueryableDatatype<
 	@Override
 	@SuppressWarnings("unchecked")
 	public QueryColumn<B,R,D> copy() {
-		return new QueryColumn(query, field);
+		return new QueryColumn<B,R,D>(query, field);
 	}
 
 	@Override

@@ -28,7 +28,9 @@
  */
 package nz.co.gregs.dbvolution.expressions;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import nz.co.gregs.dbvolution.DBQuery;
 import nz.co.gregs.dbvolution.DBRow;
@@ -123,7 +125,7 @@ public abstract class EqualExpression<B, R extends EqualResult<B>, D extends Que
 			@Override
 			public String toSQLString(DBDefinition db) {
 				final String toSQLString = super.toSQLString(db);
-				System.out.println(toSQLString);
+//				System.out.println(toSQLString);
 				return toSQLString; 
 			}
 			
@@ -160,6 +162,11 @@ public abstract class EqualExpression<B, R extends EqualResult<B>, D extends Que
 	public IntegerExpression modeSimple() {
 		IntegerExpression modeExpr = new IntegerExpression(
 				new DBUnaryFunction(this) {
+
+		@Override
+		public String toSQLString(DBDefinition defn) {
+			return defn.formatExpressionAlias(this);
+		}
 			@Override
 			String getFunctionName(DBDefinition db) {
 				return "";
@@ -189,12 +196,16 @@ public abstract class EqualExpression<B, R extends EqualResult<B>, D extends Que
 				count.setSortOrderDescending();
 
 				Set<DBRow> tablesInvolved = this.getTablesInvolved();
+				List<DBRow> tablesToUse = new ArrayList<>(0);
+				for (DBRow dBRow : tablesInvolved) {
+					tablesToUse.add(DBRow.copyDBRow(dBRow));
+				}
 
-				DBQuery query = database.getDBQuery(tablesInvolved);
+				DBQuery query = database.getDBQuery(tablesToUse);
 
 				query.setBlankQueryAllowed(true)
 						.setReturnFieldsToNone()
-						.addExpressionColumn("mode", expr.asExpressionColumn())
+						.addExpressionColumn(this, expr.asExpressionColumn())
 						.addExpressionColumn("mode count", count)
 						.setSortOrder(query.column(count))
 						.setRowLimit(1);
