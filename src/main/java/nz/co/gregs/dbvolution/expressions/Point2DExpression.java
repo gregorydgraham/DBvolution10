@@ -77,6 +77,7 @@ public class Point2DExpression extends Spatial2DExpression<Point, Point2DResult,
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a Point2DExpression of the point.
 	 */
+	@Override
 	public Point2DExpression expression(Point point) {
 		return new Point2DExpression(point);
 	}
@@ -532,6 +533,11 @@ public class Point2DExpression extends Spatial2DExpression<Point, Point2DResult,
 	@Override
 	public DBPoint2D asExpressionColumn() {
 		return new DBPoint2D(this);
+	}
+
+	@Override
+	public Point2DResult getInnerResult() {
+		return innerPoint;
 	}
 
 	private static abstract class PointPointFunctionWithBooleanResult extends BooleanExpression {

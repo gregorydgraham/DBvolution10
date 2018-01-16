@@ -364,7 +364,7 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 	}
 
 	@edu.umd.cs.findbugs.annotations.SuppressFBWarnings(
-			value ={ "OBL_UNSATISFIED_OBLIGATION_EXCEPTION_EDGE", "ODR_OPEN_DATABASE_RESOURCE"},
+			value = {"OBL_UNSATISFIED_OBLIGATION_EXCEPTION_EDGE", "ODR_OPEN_DATABASE_RESOURCE"},
 			justification = "Raw connections are pooled and closed  in discardConnection()")
 	private Connection getRawConnection() throws UnableToFindJDBCDriver, UnableToCreateDatabaseConnectionException, SQLException {
 		Connection connection = null;
@@ -970,9 +970,10 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a DBQuery with the examples as required tables
 	 */
-	public DBQuery getDBQuery(List<DBRow> examples) {
+	public DBQuery getDBQuery(Collection<DBRow> examples) {
 		DBRow[] toArray = examples.toArray(new DBRow[]{});
-		return DBQuery.getInstance(this, toArray);
+		//	return DBQuery.getInstance(this, toArray);
+		return getDBQuery(toArray);
 	}
 
 	/**
@@ -1941,7 +1942,7 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 	}
 
 	@SuppressFBWarnings(
-			value="REC_CATCH_EXCEPTION", 
+			value = "REC_CATCH_EXCEPTION",
 			justification = "Database vendors throw all sorts of silly exceptions")
 	public boolean tableExists(DBRow table) throws SQLException {
 		boolean tableExists = false;

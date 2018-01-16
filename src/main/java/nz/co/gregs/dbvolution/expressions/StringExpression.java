@@ -80,6 +80,7 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 	 *
 	 */
 	protected StringExpression() {
+		super();
 		string1 = null;
 		nullProtectionRequired = true;
 	}
@@ -94,6 +95,7 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 	 * @param stringVariable	stringVariable
 	 */
 	public StringExpression(StringResult stringVariable) {
+		super(stringVariable);
 		string1 = stringVariable;
 		nullProtectionRequired = stringVariable == null || stringVariable.getIncludesNull();
 	}

@@ -283,7 +283,7 @@ public class LineSegment2DExpression extends Spatial2DExpression<LineSegment, Li
 		return value(value);
 	}
 
-	public static LineSegment2DExpression value(DBLineSegment2D value) {
+	public static LineSegment2DExpression value(LineSegment2DResult value) {
 		return new LineSegment2DExpression(value);
 	}
 
@@ -652,6 +652,11 @@ public class LineSegment2DExpression extends Spatial2DExpression<LineSegment, Li
 	@Override
 	public DBLineSegment2D asExpressionColumn() {
 		return new DBLineSegment2D(this);
+	}
+
+	@Override
+	public LineSegment2DResult getInnerResult() {
+		return innerLineString;
 	}
 
 	private static abstract class LineSegmentLineSegmentWithBooleanResult extends BooleanExpression {

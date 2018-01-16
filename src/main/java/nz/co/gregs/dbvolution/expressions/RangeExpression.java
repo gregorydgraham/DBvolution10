@@ -30,6 +30,7 @@ package nz.co.gregs.dbvolution.expressions;
 
 import nz.co.gregs.dbvolution.results.RangeResult;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
+import nz.co.gregs.dbvolution.results.AnyResult;
 import nz.co.gregs.dbvolution.results.RangeComparable;
 
 /**
@@ -42,44 +43,24 @@ import nz.co.gregs.dbvolution.results.RangeComparable;
  */
 public abstract class RangeExpression<B, R extends RangeResult<B>, D extends QueryableDatatype<B>> extends InExpression<B, R, D> implements RangeComparable<B, R> {
 
-//	@Override
-//	public abstract R getInnerResult() ;
-//
-//	@Override
-//	abstract public R expression(B value);
-//
-//	@Override
-//	abstract public R expression(R value);
-//
-//	@Override
-//	abstract public R expression(D value);
-//
-//	@Override
-//	abstract public BooleanExpression is(R value);
-//	
-//	@Override
-//	abstract public BooleanExpression isNot(R value);
-//
-//	@Override
-//	abstract public BooleanExpression isIn(R... value);
+	/**
+	 *
+	 * @param only
+	 */
+	protected RangeExpression(R only) {
+		super(only);
+	}
 
-//	abstract public BooleanExpression isLessThan(R value);
-//
-//	public abstract BooleanExpression isGreaterThan(R value);
-//
-//	public abstract BooleanExpression isLessThanOrEqual(R value);
-//
-//	public abstract BooleanExpression isGreaterThanOrEqual(R value);
-//
-//	public abstract BooleanExpression isLessThan(R value, BooleanExpression fallBackWhenEquals);
-//
-//	public abstract BooleanExpression isGreaterThan(R value, BooleanExpression fallBackWhenEquals);
-//
-//	public abstract BooleanExpression isBetween(R lowerBound, R upperBound);
-//
-//	public abstract BooleanExpression isBetweenInclusive(R lowerBound, R upperBound);
-//
-//	public abstract BooleanExpression isBetweenExclusive(R lowerBound, R upperBound);
+	protected RangeExpression() {
+		super();
+	}
+	/**
+	 *
+	 * @param only
+	 */
+	protected RangeExpression(AnyResult<?> only) {
+		super(only);
+	}
 
 	/* Default implementations*/
 	@Override

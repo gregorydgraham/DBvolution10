@@ -27,7 +27,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import nz.co.gregs.dbvolution.DBQuery;
-import nz.co.gregs.dbvolution.DBReport;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.columns.ColumnProvider;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
@@ -77,17 +76,7 @@ import nz.co.gregs.dbvolution.results.RangeResult;
  *
  * @author Gregory Graham
  */
-public class BooleanExpression implements BooleanResult, EqualComparable<Boolean, BooleanResult>, ExpressionColumn<DBBoolean> {
-
-	static BooleanExpression nullExpression() {
-		return new BooleanExpression() {
-			@Override
-			public String toSQLString(DBDefinition db) {
-				return db.getNull();
-			}
-
-		};
-	}
+public class BooleanExpression extends EqualExpression<Boolean, BooleanResult, DBBoolean>implements BooleanResult {
 
 	private final BooleanResult onlyBool;
 	private final boolean includeNulls;
@@ -101,6 +90,7 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 	 *
 	 */
 	protected BooleanExpression() {
+		super();
 		onlyBool = new DBBoolean();
 		includeNulls = false;
 	}
@@ -116,6 +106,7 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 	 * @param booleanResult	booleanResult
 	 */
 	public BooleanExpression(BooleanResult booleanResult) {
+		super(booleanResult);
 		onlyBool = booleanResult;
 		this.includeNulls = booleanResult.getIncludesNull();
 	}
@@ -132,6 +123,7 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 	 * @param bool
 	 */
 	public BooleanExpression(Boolean bool) {
+		super(new DBBoolean(bool));
 		onlyBool = new DBBoolean(bool);
 		includeNulls = bool == null;
 	}
@@ -145,37 +137,21 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 	public BooleanExpression copy() {
 		return new BooleanExpression(this.onlyBool);
 	}
-
+	
 	/**
-	 * Create An Appropriate BooleanExpression Object For This Object
+	 * Returns a value of the required type that will evaluate to NULL.
 	 *
-	 * <p>
-	 * The expression framework requires a *Expression to work with. The easiest
-	 * way to get that is the {@code DBRow.column()} method.
-	 *
-	 * <p>
-	 * However if you wish your expression to start with a literal value it is a
-	 * little trickier.
-	 *
-	 * <p>
-	 * This method provides the easy route to a *Expression from a literal value.
-	 * Just call, for instance, {@code StringExpression.value("STARTING STRING")}
-	 * to get a StringExpression and start the expression chain.
-	 *
-	 * <ul>
-	 * <li>Only object classes that are appropriate need to be handle by the
-	 * DBExpression subclass.<li>
-	 * <li>The implementation should be {@code static}</li>
-	 * </ul>
-	 *
-	 * @param bool the boolean value to be tested
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 * @return a DBExpression instance that is appropriate to the subclass and the
-	 * value supplied.
+	 * @return
 	 */
-	public static BooleanExpression value(Boolean bool) {
-		return new BooleanExpression(bool);
+	@Override
+	public BooleanExpression nullExpression() {
+		return new BooleanExpression() {
+			@Override
+			public String toSQLString(DBDefinition db) {
+				return db.getNull();
+			}
+
+		};
 	}
 
 	/**
@@ -206,7 +182,45 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 	 * @return a DBExpression instance that is appropriate to the subclass and the
 	 * value supplied.
 	 */
-	public static BooleanExpression value(BooleanResult bool) {
+	@Override
+	public BooleanExpression expression(Boolean bool) {
+		return value(bool);
+	}
+	@Override
+	public BooleanExpression expression(DBBoolean bool) {
+		return value(bool);
+	}
+
+	/**
+	 * Create An Appropriate BooleanExpression Object For This Object
+	 *
+	 * <p>
+	 * The expression framework requires a *Expression to work with. The easiest
+	 * way to get that is the {@code DBRow.column()} method.
+	 *
+	 * <p>
+	 * However if you wish your expression to start with a literal value it is a
+	 * little trickier.
+	 *
+	 * <p>
+	 * This method provides the easy route to a *Expression from a literal value.
+	 * Just call, for instance, {@code StringExpression.value("STARTING STRING")}
+	 * to get a StringExpression and start the expression chain.
+	 *
+	 * <ul>
+	 * <li>Only object classes that are appropriate need to be handle by the
+	 * DBExpression subclass.<li>
+	 * <li>The implementation should be {@code static}</li>
+	 * </ul>
+	 *
+	 * @param bool the boolean value to be tested
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @return a DBExpression instance that is appropriate to the subclass and the
+	 * value supplied.
+	 */
+	@Override
+	public BooleanExpression expression(BooleanResult bool) {
 		return new BooleanExpression(bool);
 	}
 
@@ -1067,27 +1081,6 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 	}
 
 	/**
-	 * Creates an Aggregate function that counts the rows returned by the query.
-	 *
-	 * <p>
-	 * For use within a {@link DBReport}
-	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 *
-	 * @return a NumberExpression to add to a DBReport field.
-	 */
-	public NumberExpression count() {
-		return new NumberExpression(new DBBooleanAggregatorFunctionReturningNumber(this) {
-
-			@Override
-			String getFunctionName(DBDefinition db) {
-				return db.getCountFunctionName();
-			}
-		});
-	}
-
-	/**
 	 * Creates an expression that will always return FALSE.
 	 *
 	 * <p style="color: #F90;">Support DBvolution at
@@ -1587,6 +1580,11 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 		return onlyBool1.isBooleanStatement();
 	}
 
+	@Override
+	public BooleanResult getInnerResult() {
+		return onlyBool;
+	}
+
 	private static abstract class DBUnaryBooleanArithmetic extends BooleanExpression {
 
 		private DBExpression onlyBool;
@@ -2029,7 +2027,7 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 		}
 
 		DBBooleanNumberNumberFunction(BooleanExpression only, NumberResult first, NumberResult second) {
-			this.onlyBool = (only == null ? BooleanExpression.nullExpression() : only);
+			this.onlyBool = (only == null ? nullBoolean(): only);
 			this.first = (first == null ? nullNumber() : first);
 			this.second = (second == null ? nullNumber() : second);
 		}
@@ -2094,7 +2092,7 @@ public class BooleanExpression implements BooleanResult, EqualComparable<Boolean
 		}
 
 		DBBooleanIntegerIntegerFunction(BooleanExpression only, IntegerResult first, IntegerResult second) {
-			this.onlyBool = (only == null ? BooleanExpression.nullExpression() : only);
+			this.onlyBool = (only == null ? nullBoolean(): only);
 			this.first = (first == null ? nullInteger() : first);
 			this.second = (second == null ? nullInteger() : second);
 		}

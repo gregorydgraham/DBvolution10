@@ -34,6 +34,10 @@ import com.vividsolutions.jts.geom.MultiPoint;
 import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.geom.Polygon;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
+import nz.co.gregs.dbvolution.DBRow;
+import nz.co.gregs.dbvolution.databases.DBDatabase;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.results.AnyResult;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
@@ -54,16 +58,16 @@ import org.joda.time.Period;
  */
 public abstract class AnyExpression<B extends Object, R extends AnyResult<B>, D extends QueryableDatatype<B>> implements ExpressionColumn<D>, AnyResult<B> {
 
-	private final R innerResult;
+	private final AnyResult<?> innerResult;
 	private final boolean nullProtectionRequired;
-	
+
 	/**
 	 * Returns a value of the required type that will evaluate to NULL.
 	 *
 	 * @return
 	 */
-	public AnyExpression<?,?,?> nullExpression() {
-		return new DateExpression() {
+	public AnyExpression<?, ?, ?> nullExpression() {
+		return new StringExpression() {
 			@Override
 			public String toSQLString(DBDefinition db) {
 				return db.getNull();
@@ -77,6 +81,48 @@ public abstract class AnyExpression<B extends Object, R extends AnyResult<B>, D 
 	abstract public R expression(R value);
 
 	abstract public R expression(D value);
+
+	@Override
+	public String createSQLForFromClause(DBDatabase database) {
+		return getInnerResult().createSQLForFromClause(database);
+	}
+
+	@Override
+	public Set<DBRow> getTablesInvolved() {
+		final AnyResult<?> inner = getInnerResult();
+		if (inner == null) {
+			return new HashSet<>(0);
+		} else {
+			return inner.getTablesInvolved();
+		}
+	}
+
+	/**
+	 * A complex expression requires more than just a function call in the select
+	 * clause.
+	 *
+	 * @return FALSE, unless you need a subtable to work out your expressions's
+	 * value
+	 */
+	@Override
+	public boolean isComplexExpression() {
+		AnyResult<?> inner = getInnerResult();
+		if (inner == null) {
+			return false;
+		} else {
+			return inner.isComplexExpression();
+		}
+	}
+
+	@Override
+	public boolean isPurelyFunctional() {
+		if (getInnerResult() == null) {
+			return true;
+		} else {
+			return getInnerResult().isPurelyFunctional();
+		}
+	}
+
 
 	/**
 	 * Does nothing
@@ -92,12 +138,22 @@ public abstract class AnyExpression<B extends Object, R extends AnyResult<B>, D 
 	 *
 	 * @param only
 	 */
-	public AnyExpression(R only) {
+//	public AnyExpression(R only) {
+//		innerResult = only;
+//		nullProtectionRequired = innerResult.getIncludesNull();
+//	}
+
+
+	/**
+	 *
+	 * @param only
+	 */
+	public AnyExpression(AnyResult<?> only) {
 		innerResult = only;
 		nullProtectionRequired = innerResult.getIncludesNull();
 	}
 
-	public R getInnerResult() {
+	public AnyResult<?> getInnerResult() {
 		return innerResult;
 	}
 
@@ -607,7 +663,7 @@ public abstract class AnyExpression<B extends Object, R extends AnyResult<B>, D 
 	}
 
 	public final static BooleanExpression nullBoolean() {
-		return BooleanExpression.nullExpression();
+		return new BooleanExpression().nullExpression();
 	}
 
 	public final static IntegerExpression nullInteger() {

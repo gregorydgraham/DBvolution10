@@ -36,7 +36,7 @@ import nz.co.gregs.dbvolution.expressions.DBExpression;
  * @author Gregory Graham
  * @see DBExpression
  */
-public interface BooleanResult extends DBExpression, ExpressionCanHaveNullValues, ExpressionHasStandardStringResult {
+public interface BooleanResult extends EqualResult<Boolean> {
 
 	@Override
 	public BooleanResult copy();

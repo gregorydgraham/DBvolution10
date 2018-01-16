@@ -16,6 +16,7 @@
 package nz.co.gregs.dbvolution.expressions;
 
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
+import nz.co.gregs.dbvolution.results.AnyResult;
 import nz.co.gregs.dbvolution.results.Spatial2DComparable;
 import nz.co.gregs.dbvolution.results.Spatial2DResult;
 
@@ -31,5 +32,25 @@ import nz.co.gregs.dbvolution.results.Spatial2DResult;
  * @param <D>
  */
 public abstract class Spatial2DExpression< B, R extends Spatial2DResult<B>, D extends QueryableDatatype<B>> extends EqualExpression<B, R, D> implements Spatial2DComparable<B, R> {
+
+	/**
+	 *
+	 * @param only
+	 */
+	protected Spatial2DExpression(R only) {
+		super(only);
+	}	
+	protected Spatial2DExpression() {
+		super();
+	}
+	/**
+	 *
+	 * @param only
+	 */
+	protected Spatial2DExpression(AnyResult<?> only) {
+		super(only);
+	}
+	
+
 
 }

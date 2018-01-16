@@ -168,6 +168,7 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 	 *
 	 */
 	protected NumberExpression() {
+		super();
 		innerNumberResult = null;
 		nullProtectionRequired = false;
 	}
@@ -181,6 +182,7 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 	 * @param value a literal value to use in the expression
 	 */
 	public NumberExpression(Number value) {
+		super(new DBNumber(value));
 		innerNumberResult = new DBNumber(value);
 		nullProtectionRequired = value == null || innerNumberResult.getIncludesNull();
 	}
@@ -195,6 +197,7 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 	 * @param value a number expression or QDT
 	 */
 	public NumberExpression(NumberResult value) {
+		super(value);
 		innerNumberResult = value;
 		nullProtectionRequired = value == null || innerNumberResult.getIncludesNull();
 	}
@@ -391,7 +394,7 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 	 * @return a BooleanExpression for use in {@link DBQuery#addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression)
 	 * }
 	 */
-//	 @Override
+	 @Override
 	public BooleanExpression is(Number number) {
 		return is(value(number));
 	}
@@ -487,7 +490,7 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 	 * @return a BooleanExpression for use in {@link DBQuery#addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression)
 	 * }
 	 */
-//	 @Override
+	 @Override
 	public BooleanExpression isNot(Number number) {
 		return is(value(number)).not();
 	}

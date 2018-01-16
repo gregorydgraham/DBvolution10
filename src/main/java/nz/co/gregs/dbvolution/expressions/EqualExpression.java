@@ -30,12 +30,17 @@ package nz.co.gregs.dbvolution.expressions;
 
 import java.util.HashSet;
 import java.util.Set;
+import nz.co.gregs.dbvolution.DBQuery;
 import nz.co.gregs.dbvolution.DBRow;
+import nz.co.gregs.dbvolution.databases.DBDatabase;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
+import nz.co.gregs.dbvolution.datatypes.DBInteger;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
+import nz.co.gregs.dbvolution.results.AnyResult;
 import nz.co.gregs.dbvolution.results.BooleanResult;
 import nz.co.gregs.dbvolution.results.EqualComparable;
 import nz.co.gregs.dbvolution.results.EqualResult;
+import nz.co.gregs.dbvolution.results.IntegerResult;
 
 /**
  *
@@ -44,15 +49,34 @@ import nz.co.gregs.dbvolution.results.EqualResult;
  * @param <R>
  * @param <D>
  */
-public abstract class EqualExpression<B, R extends EqualResult<B>, D extends QueryableDatatype<B>> extends AnyExpression<B,R,D> implements EqualResult<B>, EqualComparable<B, R>{
-	
+public abstract class EqualExpression<B, R extends EqualResult<B>, D extends QueryableDatatype<B>> extends AnyExpression<B, R, D> implements EqualResult<B>, EqualComparable<B, R> {
+
+	/**
+	 *
+	 * @param only
+	 */
+	protected EqualExpression(R only) {
+		super(only);
+	}
+	/**
+	 *
+	 * @param only
+	 */
+	protected EqualExpression(AnyResult<?> only) {
+		super(only);
+	}
+
+	protected EqualExpression() {
+		super();
+	}
+
 	public BooleanExpression is(D value) {
 		return this.is(this.expression(value));
 	}
 
 	public BooleanExpression isNot(D value) {
 		return this.isNot(this.expression(value));
-	}	
+	}
 
 	/**
 	 * Aggregrator that counts all the rows of the query.
@@ -81,7 +105,7 @@ public abstract class EqualExpression<B, R extends EqualResult<B>, D extends Que
 		});
 	}
 
-/**
+	/**
 	 * Creates an expression that will count all the values of the column
 	 * supplied.
 	 *
@@ -103,7 +127,7 @@ public abstract class EqualExpression<B, R extends EqualResult<B>, D extends Que
 
 			@Override
 			protected String afterValue(DBDefinition db) {
-				return "("+only.toSQLString(db)+")";
+				return "(" + only.toSQLString(db) + ")";
 			}
 
 			@Override
@@ -111,6 +135,73 @@ public abstract class EqualExpression<B, R extends EqualResult<B>, D extends Que
 				return true;
 			}
 		});
+	}
+
+	/**
+	 * Creates an expression that will count all the values of the column
+	 * supplied.
+	 *
+	 * <p>
+	 * Count is an aggregator function for use in DBReport or in a column
+	 * expression.
+	 *
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
+	 * @return a number expression.
+	 */
+	public IntegerExpression modeSimple() {
+		IntegerExpression modeExpr = new IntegerExpression(
+				new DBUnaryFunction(this) {
+			@Override
+			String getFunctionName(DBDefinition db) {
+				return "";
+			}
+
+			@Override
+			protected String afterValue(DBDefinition db) {
+				return "";
+			}
+
+			@Override
+			public boolean isAggregator() {
+				return true;
+			}
+
+			@Override
+			public boolean isComplexExpression() {
+				return true;
+			}
+
+			@Override
+			public String createSQLForFromClause(DBDatabase database) {
+				final IntegerExpression expr = new IntegerExpression(getInnerResult());
+
+				DBInteger count = expr.count().asExpressionColumn();
+
+				count.setSortOrderDescending();
+
+				Set<DBRow> tablesInvolved = this.getTablesInvolved();
+
+				DBQuery query = database.getDBQuery(tablesInvolved);
+
+				query.setBlankQueryAllowed(true)
+						.setReturnFieldsToNone()
+						.addExpressionColumn("mode", expr.asExpressionColumn())
+						.addExpressionColumn("mode count", count)
+						.setSortOrder(query.column(count))
+						.setRowLimit(1);
+				String tableAliasForObject = getInternalTableName(database);
+
+				return "(" + query.getSQLForQuery().replaceAll("; *$", "") + ") " + tableAliasForObject;
+			}
+
+			public String getInternalTableName(DBDatabase database) {
+				return database.getDefinition().getTableAliasForObject(this);
+			}
+		});
+
+		return modeExpr;
 	}
 
 	/**
@@ -178,12 +269,12 @@ public abstract class EqualExpression<B, R extends EqualResult<B>, D extends Que
 		}
 	}
 
-
 	private static abstract class DBUnaryFunction extends IntegerExpression {
 
 		protected final EqualResult<?> only;
 
 		DBUnaryFunction(EqualResult<?> only) {
+			super(only);
 			this.only = only;
 		}
 
@@ -216,11 +307,6 @@ public abstract class EqualExpression<B, R extends EqualResult<B>, D extends Que
 		@Override
 		public boolean isAggregator() {
 			return false;
-		}
-
-		@Override
-		public Set<DBRow> getTablesInvolved() {
-			return new HashSet<DBRow>();
 		}
 
 		@Override

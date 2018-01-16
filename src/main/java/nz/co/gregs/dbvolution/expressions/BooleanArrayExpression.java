@@ -20,6 +20,7 @@ import nz.co.gregs.dbvolution.results.BooleanArrayResult;
 import java.util.HashSet;
 import java.util.Set;
 import nz.co.gregs.dbvolution.DBRow;
+import nz.co.gregs.dbvolution.databases.DBDatabase;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.datatypes.DBBooleanArray;
 import nz.co.gregs.dbvolution.datatypes.DBBoolean;
@@ -295,5 +296,14 @@ public class BooleanArrayExpression implements BooleanArrayResult, EqualComparab
 			}
 		}
 	}
+	
+	@Override
+	public String createSQLForFromClause(DBDatabase database) {
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	}
 
+	@Override
+	public boolean isComplexExpression() {
+		return false;
+	}
 }

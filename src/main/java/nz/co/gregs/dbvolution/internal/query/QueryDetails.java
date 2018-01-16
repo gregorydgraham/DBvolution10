@@ -42,7 +42,6 @@ import nz.co.gregs.dbvolution.columns.QueryColumn;
 import nz.co.gregs.dbvolution.databases.DBDatabase;
 import nz.co.gregs.dbvolution.databases.DBStatement;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
-import nz.co.gregs.dbvolution.databases.definitions.H2DBDefinition;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 import nz.co.gregs.dbvolution.exceptions.AccidentalBlankQueryException;
 import nz.co.gregs.dbvolution.exceptions.AccidentalCartesianJoinException;
@@ -416,7 +415,7 @@ public class QueryDetails implements DBQueryable {
 			StringBuilder groupByClause = new StringBuilder().append(defn.beginGroupByClause());
 			String havingClause;
 			String lineSep = System.getProperty("line.separator");
-//			DBRow startQueryFromTable = requiredQueryTables.isEmpty() ? allQueryTables.get(0) : requiredQueryTables.get(0);
+
 			List<DBRow> sortedQueryTables = options.isCartesianJoinAllowed()
 					? queryGraph.toListIncludingCartesianReversable(queryType == QueryType.REVERSESELECT)
 					: queryGraph.toListReversable(queryType == QueryType.REVERSESELECT);
@@ -529,6 +528,12 @@ public class QueryDetails implements DBQueryable {
 						groupByClause.append(groupByColSep).append(defn.transformToStorableType(expression).toSQLString(defn));
 						groupByColSep = defn.getSubsequentGroupBySubClauseSeparator() + lineSep;
 
+					}
+					if(expression.isComplexExpression()){
+						fromClause
+								.append(fromClauseTableSeparator)
+								.append(expression.createSQLForFromClause(database));
+						fromClauseTableSeparator = ", " + lineSep;
 					}
 					indexesOfSelectedExpressions.put(expression, columnIndex);
 					columnIndex++;
@@ -898,7 +903,7 @@ public class QueryDetails implements DBQueryable {
 		PropertyWrapper prop;
 		for (ColumnProvider col : sortColumns) {
 			if (col instanceof QueryColumn) {
-				System.out.println(""+((QueryColumn) col).toSQLString(new H2DBDefinition()));
+//				System.out.println(""+((QueryColumn) col).toSQLString(new H2DBDefinition()));
 			} else {
 				prop = col.getColumn().getPropertyWrapper();
 				if (prop != null) {

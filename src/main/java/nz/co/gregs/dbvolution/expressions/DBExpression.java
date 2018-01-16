@@ -18,6 +18,7 @@ package nz.co.gregs.dbvolution.expressions;
 import java.util.Set;
 import nz.co.gregs.dbvolution.DBReport;
 import nz.co.gregs.dbvolution.DBRow;
+import nz.co.gregs.dbvolution.databases.DBDatabase;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 
@@ -71,9 +72,9 @@ public interface DBExpression {
 	 *
 	 * <p>
 	 * If you are extending DBvolution and adding a new function this is the place
-	 * to format the information for use in SQL. A DBDefinition instance is provided
-	 * to supply context and so your SQL can used on
-	 * multiple database engines.
+	 * to format the information for use in SQL. A DBDefinition instance is
+	 * provided to supply context and so your SQL can used on multiple database
+	 * engines.
 	 *
 	 * @param defn the target database
 	 * <p style="color: #F90;">Support DBvolution at
@@ -162,4 +163,7 @@ public interface DBExpression {
 	 */
 	public boolean isPurelyFunctional();
 
+	public String createSQLForFromClause(DBDatabase database);
+
+	public boolean isComplexExpression();
 }

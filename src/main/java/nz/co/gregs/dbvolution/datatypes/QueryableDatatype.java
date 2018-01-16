@@ -28,6 +28,7 @@ import java.util.Set;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.actions.DBActionList;
 import nz.co.gregs.dbvolution.columns.ColumnProvider;
+import nz.co.gregs.dbvolution.databases.DBDatabase;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.exceptions.IncorrectRowProviderInstanceSuppliedException;
 import nz.co.gregs.dbvolution.exceptions.UnableInstantiateQueryableDatatypeException;
@@ -1062,4 +1063,23 @@ public abstract class QueryableDatatype<T> extends Object implements Serializabl
 	 * a field in the row.
 	 */
 	public abstract ColumnProvider getColumn(RowDefinition row) throws IncorrectRowProviderInstanceSuppliedException;
+
+
+	@Override
+	public final String createSQLForFromClause(DBDatabase database) {
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	}
+
+	@Override
+	public final boolean isComplexExpression() {
+		if (hasColumnExpression()){
+			DBExpression[] exprs = getColumnExpression();
+			for (DBExpression expr : exprs) {
+				if(expr.isComplexExpression()){
+					return true;
+				}
+			}
+		}
+		return false;
+	}
 }

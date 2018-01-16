@@ -584,6 +584,11 @@ public class MultiPoint2DExpression extends Spatial2DExpression<MultiPoint, Mult
 		return new DBMultiPoint2D(this);
 	}
 
+	@Override
+	public MultiPoint2DResult getInnerResult() {
+		return innerPoint;
+	}
+
 	private static abstract class MultiPoint2DFunctionLine2DResult extends Line2DExpression {
 
 		private MultiPoint2DExpression first;

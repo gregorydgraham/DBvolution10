@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.Set;
 import nz.co.gregs.dbvolution.*;
 import nz.co.gregs.dbvolution.datatypes.*;
+import nz.co.gregs.dbvolution.results.AnyResult;
 import nz.co.gregs.dbvolution.results.NumberResult;
 
 /**
@@ -52,8 +53,8 @@ import nz.co.gregs.dbvolution.results.NumberResult;
  */
 public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResult, DBInteger> implements IntegerResult {
 
-	private final IntegerResult innerIntegerResult;
-	private final boolean nullProtectionRequired;
+//	private final IntegerResult innerIntegerResult;
+//	private final boolean nullProtectionRequired;
 
 	@Override
 	public final IntegerExpression nullExpression() {
@@ -130,8 +131,9 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 	 *
 	 */
 	protected IntegerExpression() {
-		innerIntegerResult = null;
-		nullProtectionRequired = false;
+		super();
+//		innerIntegerResult = null;
+//		nullProtectionRequired = false;
 	}
 
 	/**
@@ -144,8 +146,9 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 	 * @param value a literal value to use in the expression
 	 */
 	public IntegerExpression(Integer value) {
-		innerIntegerResult = new DBInteger(value);
-		nullProtectionRequired = value == null || innerIntegerResult.getIncludesNull();
+		super(new DBInteger(value));
+//		innerIntegerResult = new DBInteger(value);
+//		nullProtectionRequired = value == null || innerIntegerResult.getIncludesNull();
 	}
 
 	/**
@@ -158,8 +161,9 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 	 * @param value a literal value to use in the expression
 	 */
 	public IntegerExpression(Long value) {
-		innerIntegerResult = new DBInteger(value);
-		nullProtectionRequired = value == null || innerIntegerResult.getIncludesNull();
+		super(new DBInteger(value));
+//		innerIntegerResult = new DBInteger(value);
+//		nullProtectionRequired = value == null || innerIntegerResult.getIncludesNull();
 	}
 
 	/**
@@ -172,18 +176,26 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 	 * @param value a number expression or QDT
 	 */
 	public IntegerExpression(IntegerResult value) {
-		innerIntegerResult = value;
-		nullProtectionRequired = value == null || innerIntegerResult.getIncludesNull();
+		super(value);
+//		innerIntegerResult = value;
+//		nullProtectionRequired = value == null || innerIntegerResult.getIncludesNull();
+	}
+	/**
+	 *
+	 * @param only
+	 */
+	protected IntegerExpression(AnyResult<?> only) {
+		super(only);
 	}
 
 	@Override
 	public String toSQLString(DBDefinition db) {
-		return getInnerIntegerResult().toSQLString(db);
+		return getInnerResult().toSQLString(db);
 	}
 
 	@Override
 	public IntegerExpression copy() {
-		return new IntegerExpression(getInnerIntegerResult());
+		return new IntegerExpression(getInnerResult());
 	}
 
 	/**
@@ -256,14 +268,14 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 		}
 	}
 
-	@Override
-	public boolean isPurelyFunctional() {
-		if (innerIntegerResult == null) {
-			return true;
-		} else {
-			return innerIntegerResult.isPurelyFunctional();
-		}
-	}
+//	@Override
+//	public boolean isPurelyFunctional() {
+//		if (innerIntegerResult == null) {
+//			return true;
+//		} else {
+//			return innerIntegerResult.isPurelyFunctional();
+//		}
+//	}
 
 	/**
 	 * Converts the integer expression into a string/character expression within
@@ -1592,10 +1604,10 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 		return new NumberExpression(new NumberResultFunction(this));
 	}
 
-	@Override
-	public IntegerResult getInnerResult() {
-		return innerIntegerResult;
-	}
+//	@Override
+//	public IntegerResult getInnerResult() {
+//		return super.getInnerResult();
+//	}
 
 	@Override
 	public IntegerResult expression(DBInteger value) {
@@ -2505,31 +2517,8 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 
 	@Override
 	public boolean isAggregator() {
-		return getInnerIntegerResult() == null ? false : getInnerIntegerResult().isAggregator();
-	}
-
-	@Override
-	public Set<DBRow> getTablesInvolved() {
-		HashSet<DBRow> hashSet = new HashSet<>();
-		if (getInnerIntegerResult() != null) {
-			hashSet.addAll(getInnerIntegerResult().getTablesInvolved());
-		}
-		return hashSet;
-	}
-
-	/**
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 *
-	 * @return the innerIntegerResult
-	 */
-	public IntegerResult getInnerIntegerResult() {
-		return innerIntegerResult;
-	}
-
-	@Override
-	public boolean getIncludesNull() {
-		return nullProtectionRequired;
+		final AnyResult<?> innerResult = getInnerResult();
+		return getInnerResult()== null ? false : innerResult.isAggregator();
 	}
 
 	/**
@@ -4034,11 +4023,6 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 		@Override
 		String getFunctionName(DBDefinition db) {
 			return db.getCountFunctionName();
-		}
-
-		@Override
-		public IntegerResult getInnerIntegerResult() {
-			return this;
 		}
 
 		@Override

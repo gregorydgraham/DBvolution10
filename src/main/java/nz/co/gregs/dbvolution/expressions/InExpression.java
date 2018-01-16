@@ -31,7 +31,7 @@ package nz.co.gregs.dbvolution.expressions;
 import java.util.ArrayList;
 import java.util.List;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
-import nz.co.gregs.dbvolution.results.EqualResult;
+import nz.co.gregs.dbvolution.results.AnyResult;
 import nz.co.gregs.dbvolution.results.InResult;
 
 /**
@@ -53,8 +53,27 @@ import nz.co.gregs.dbvolution.results.InResult;
  */
 public abstract class InExpression<B, R extends InResult<B>, D extends QueryableDatatype<B>> extends EqualExpression<B, R, D> {
 
+	/**
+	 *
+	 * @param only
+	 */
+	protected InExpression(R only) {
+		super(only);
+	}
+
+	protected InExpression() {
+		super();
+	}
+	/**
+	 *
+	 * @param only
+	 */
+	protected InExpression(AnyResult<?> only) {
+		super(only);
+	}
+
 	abstract public BooleanExpression isIn(R... value);
-	
+
 	@SuppressWarnings("unchecked")
 	public BooleanExpression isIn(B... possibleValues) {
 		List<R> exps = new ArrayList<>(0);

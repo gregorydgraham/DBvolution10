@@ -906,6 +906,11 @@ public class Polygon2DExpression extends Spatial2DExpression<Polygon, Polygon2DR
 		return value(value);
 	}
 
+	@Override
+	public Polygon2DResult getInnerResult() {
+		return innerGeometry;
+	}
+
 	private static abstract class PolygonPolygonWithBooleanResult extends BooleanExpression {
 
 		private Polygon2DExpression first;

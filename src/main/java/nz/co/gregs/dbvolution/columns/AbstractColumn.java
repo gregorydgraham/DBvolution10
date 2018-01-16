@@ -283,4 +283,14 @@ public class AbstractColumn implements DBExpression {
 	public Class<? extends DBRow> getClassReferencedByForeignKey() {
 		return this.getPropertyWrapper().referencedClass();
 	}
+
+	@Override
+	public String createSQLForFromClause(DBDatabase database) {
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	}
+
+	@Override
+	public boolean isComplexExpression() {
+		return false;
+	}
 }

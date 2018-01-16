@@ -881,6 +881,11 @@ public class Line2DExpression extends Spatial2DExpression<LineString, Line2DResu
 		return new DBLine2D(this);
 	}
 
+	@Override
+	public Line2DResult getInnerResult() {
+		return innerLineString;
+	}
+
 	private static abstract class LineLineWithBooleanResult extends BooleanExpression {
 
 		private Line2DExpression first;

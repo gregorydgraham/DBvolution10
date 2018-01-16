@@ -99,7 +99,7 @@ public class BooleanExpressionTest extends AbstractTest {
 		Marque marque = new Marque();
 		DBQuery dbQuery = database.getDBQuery(marque);
 
-		dbQuery.addCondition(BooleanExpression.nullExpression().isNull());
+		dbQuery.addCondition(BooleanExpression.nullBoolean().isNull());
 
 		List<DBQueryRow> allRows = dbQuery.getAllRows();
 
@@ -107,7 +107,7 @@ public class BooleanExpressionTest extends AbstractTest {
 
 		dbQuery = database.getDBQuery(marque);
 
-		dbQuery.addCondition(BooleanExpression.nullExpression().isNotNull());
+		dbQuery.addCondition(BooleanExpression.nullBoolean().isNotNull());
 
 		allRows = dbQuery.getAllRows();
 

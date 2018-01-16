@@ -20,6 +20,7 @@ import java.util.HashSet;
 import java.util.Set;
 import nz.co.gregs.dbvolution.DBQuery;
 import nz.co.gregs.dbvolution.DBRow;
+import nz.co.gregs.dbvolution.databases.DBDatabase;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.datatypes.DBLargeBinary;
 
@@ -132,6 +133,16 @@ public class LargeObjectExpression implements LargeObjectResult, ExpressionColum
 	@Override
 	public DBLargeBinary asExpressionColumn() {
 		return new DBLargeBinary(this);
+	}
+
+	@Override
+	public String createSQLForFromClause(DBDatabase database) {
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	}
+
+	@Override
+	public boolean isComplexExpression() {
+		return false;
 	}
 
 }

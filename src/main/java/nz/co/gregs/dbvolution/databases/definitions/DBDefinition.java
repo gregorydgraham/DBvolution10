@@ -323,6 +323,18 @@ public abstract class DBDefinition {
 	}
 
 	/**
+	 * Get a name for the object that can be used safely in queries.
+	 *
+	 * @param anObject 	an Object that you would like a safe name for
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @return the column alias formatted for this database.
+	 */
+	public String getTableAliasForObject(final Object anObject) {
+		return formatNameForDatabase("DB" + anObject.hashCode()).replaceAll("-", "_");
+	}
+
+	/**
 	 * Apply standard object name transformations required by the database.
 	 *
 	 * <p>

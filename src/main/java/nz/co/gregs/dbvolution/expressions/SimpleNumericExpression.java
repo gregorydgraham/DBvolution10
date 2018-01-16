@@ -30,6 +30,7 @@ package nz.co.gregs.dbvolution.expressions;
 
 import nz.co.gregs.dbvolution.results.SimpleNumericResult;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
+import nz.co.gregs.dbvolution.results.AnyResult;
 
 /**
  *
@@ -46,4 +47,23 @@ public abstract class SimpleNumericExpression<B, R extends SimpleNumericResult<B
 
 	public abstract NumberExpression numberResult();
 	public abstract IntegerExpression integerResult();
+	
+	/**
+	 *
+	 * @param only
+	 */
+	protected SimpleNumericExpression(R only) {
+		super(only);
+	}
+
+	protected SimpleNumericExpression() {
+		super();
+	}
+	/**
+	 *
+	 * @param only
+	 */
+	protected SimpleNumericExpression(AnyResult<?> only) {
+		super(only);
+	}
 }
