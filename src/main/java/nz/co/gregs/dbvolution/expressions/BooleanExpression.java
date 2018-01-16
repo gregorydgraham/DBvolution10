@@ -16,7 +16,6 @@
 package nz.co.gregs.dbvolution.expressions;
 
 import nz.co.gregs.dbvolution.results.StringResult;
-import nz.co.gregs.dbvolution.results.EqualComparable;
 import nz.co.gregs.dbvolution.results.DateResult;
 import nz.co.gregs.dbvolution.results.NumberResult;
 import nz.co.gregs.dbvolution.results.BooleanResult;

@@ -140,7 +140,7 @@ public class DBStatisticsTest extends AbstractTest {
 		Assert.assertThat(mode.stringValue(), is("2"));
 	}
 	
-//	@Test
+	@Test
 	public void testModeSimpleExpressionInTable() throws SQLException {
 		final StatsOfUpdateCountTest stat = new StatsOfUpdateCountTest();
 		
