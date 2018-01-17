@@ -23,6 +23,7 @@ import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.databases.supports.SupportsDateRepeatDatatypeFunctions;
 import nz.co.gregs.dbvolution.datatypes.DBBoolean;
 import nz.co.gregs.dbvolution.datatypes.DBDateRepeat;
+import nz.co.gregs.dbvolution.results.AnyResult;
 import nz.co.gregs.dbvolution.results.StringResult;
 import org.joda.time.Period;
 
@@ -34,9 +35,6 @@ import org.joda.time.Period;
  * @author gregory.graham
  */
 public class DateRepeatExpression extends RangeExpression<Period, DateRepeatResult, DBDateRepeat> implements DateRepeatResult {
-
-	private final DateRepeatResult innerDateRepeatResult;
-	private final boolean nullProtectionRequired;
 
 	/**
 	 * DateRepeat values are often stored as Strings of the format
@@ -79,8 +77,7 @@ public class DateRepeatExpression extends RangeExpression<Period, DateRepeatResu
 	 *
 	 */
 	protected DateRepeatExpression() {
-		innerDateRepeatResult = null;
-		nullProtectionRequired = false;
+		super();
 	}
 
 	/**
@@ -89,8 +86,7 @@ public class DateRepeatExpression extends RangeExpression<Period, DateRepeatResu
 	 * @param interval
 	 */
 	public DateRepeatExpression(Period interval) {
-		innerDateRepeatResult = new DBDateRepeat(interval);
-		nullProtectionRequired = interval == null || innerDateRepeatResult.getIncludesNull();
+		super(new DBDateRepeat(interval));
 	}
 
 	/**
@@ -100,13 +96,22 @@ public class DateRepeatExpression extends RangeExpression<Period, DateRepeatResu
 	 * @param interval the time period from which to create a DateRepeat value
 	 */
 	public DateRepeatExpression(DateRepeatResult interval) {
-		innerDateRepeatResult = interval;
-		nullProtectionRequired = interval == null || innerDateRepeatResult.getIncludesNull();
+		super(interval);
+	}
+
+	/**
+	 * Creates a new DateRepeatExression that represents the DateRepeat value
+	 * supplied.
+	 *
+	 * @param interval the time period from which to create a DateRepeat value
+	 */
+	protected DateRepeatExpression(AnyResult interval) {
+		super(interval);
 	}
 
 	@Override
 	public DateRepeatExpression copy() {
-		return new DateRepeatExpression(innerDateRepeatResult);
+		return new DateRepeatExpression(getInnerResult());
 	}
 
 	@Override
@@ -114,29 +119,25 @@ public class DateRepeatExpression extends RangeExpression<Period, DateRepeatResu
 		return new DBDateRepeat();
 	}
 
+	/**
+	 * Creates an expression that will return the most common value of the column
+	 * supplied.
+	 *
+	 * <p>
+	 * MODE: The number which appears most often in a set of numbers. For example:
+	 * in {6, 3, 9, 6, 6, 5, 9, 3} the Mode is 6.</p>
+	 * 
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
+	 * @return a number expression.
+	 */
 	@Override
-	public String toSQLString(DBDefinition db) {
-		return innerDateRepeatResult.toSQLString(db);
-	}
+	public DateExpression modeSimple() {
+		DateExpression modeExpr = new DateExpression(
+				new ModeSimpleExpression(this));
 
-	@Override
-	public boolean isAggregator() {
-		return innerDateRepeatResult.isAggregator();
-	}
-
-	@Override
-	public Set<DBRow> getTablesInvolved() {
-		return innerDateRepeatResult.getTablesInvolved();
-	}
-
-	@Override
-	public boolean isPurelyFunctional() {
-		return innerDateRepeatResult == null ? true : innerDateRepeatResult.isPurelyFunctional();
-	}
-
-	@Override
-	public boolean getIncludesNull() {
-		return nullProtectionRequired || innerDateRepeatResult.getIncludesNull();
+		return modeExpr;
 	}
 
 	/**
@@ -694,11 +695,6 @@ public class DateRepeatExpression extends RangeExpression<Period, DateRepeatResu
 	@Override
 	public DateRepeatResult expression(DBDateRepeat value) {
 		return value;
-	}
-
-	@Override
-	public DateRepeatResult getInnerResult() {
-		return innerDateRepeatResult;
 	}
 
 	private static abstract class DateRepeatDateRepeatWithBooleanResult extends BooleanExpression {
