@@ -203,7 +203,7 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 	 *
 	 * @param value a number expression or QDT
 	 */
-	protected NumberExpression(AnyResult value) {
+	protected NumberExpression(AnyResult<?> value) {
 		super(value);
 	}
 
