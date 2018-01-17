@@ -358,8 +358,8 @@ public class MultiPoint2DExpression extends Spatial2DExpression<MultiPoint, Mult
 	 * @return a number expression.
 	 */
 	@Override
-	public Line2DExpression modeSimple() {
-		Line2DExpression modeExpr = new Line2DExpression(
+	public MultiPoint2DExpression modeSimple() {
+		MultiPoint2DExpression modeExpr = new MultiPoint2DExpression(
 				new ModeSimpleExpression(this));
 
 		return modeExpr;
