@@ -2771,21 +2771,16 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 
 	static abstract class DBUnaryFunction extends IntegerExpression {
 
-//		protected IntegerExpression only;
-
 		DBUnaryFunction() {
 			super();
-//			this.only = null;
 		}
 
 		DBUnaryFunction(IntegerExpression only) {
 			super(only);
-//			this.only = only;
 		}
 
-		DBUnaryFunction(AnyExpression only) {
+		DBUnaryFunction(AnyExpression<?,?,?> only) {
 			super(only);
-//			this.only = only;
 		}
 
 		@Override
