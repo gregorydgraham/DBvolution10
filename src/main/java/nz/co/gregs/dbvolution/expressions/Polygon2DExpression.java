@@ -28,6 +28,7 @@ import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.DBQuery;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.datatypes.spatial2D.DBPolygon2D;
+import nz.co.gregs.dbvolution.results.AnyResult;
 
 /**
  * Creates and transforms Polygon2D values within your database queries.
@@ -43,16 +44,15 @@ import nz.co.gregs.dbvolution.datatypes.spatial2D.DBPolygon2D;
  */
 public class Polygon2DExpression extends Spatial2DExpression<Polygon, Polygon2DResult, DBPolygon2D> implements Polygon2DResult {
 
-	private final Polygon2DResult innerGeometry;
-	private final boolean nullProtectionRequired;
+	private final boolean moreNullProtectionRequired;
 
 	/**
 	 * Default constructor
 	 *
 	 */
 	protected Polygon2DExpression() {
-		innerGeometry = null;
-		nullProtectionRequired = false;
+		super();
+		moreNullProtectionRequired = false;
 	}
 
 	/**
@@ -63,8 +63,8 @@ public class Polygon2DExpression extends Spatial2DExpression<Polygon, Polygon2DR
 	 * @param value
 	 */
 	public Polygon2DExpression(Polygon2DResult value) {
-		innerGeometry = value;
-		nullProtectionRequired = value == null || innerGeometry.getIncludesNull();
+		super(value);
+		moreNullProtectionRequired = value==null;
 	}
 
 	/**
@@ -75,8 +75,13 @@ public class Polygon2DExpression extends Spatial2DExpression<Polygon, Polygon2DR
 	 * @param geometry
 	 */
 	public Polygon2DExpression(Polygon geometry) {
-		innerGeometry = new DBPolygon2D(geometry);
-		nullProtectionRequired = geometry == null || innerGeometry.getIncludesNull();
+		super(new DBPolygon2D(geometry));
+		moreNullProtectionRequired = geometry==null;
+	}
+
+	private Polygon2DExpression(AnyResult<?> innerResult) {
+		super(innerResult);
+		moreNullProtectionRequired=innerResult==null;
 	}
 
 	/**
@@ -207,41 +212,19 @@ public class Polygon2DExpression extends Spatial2DExpression<Polygon, Polygon2DR
 	}
 
 	@Override
-	public String toSQLString(DBDefinition db) {
-		if (innerGeometry == null) {
-			return db.getNull();
-		} else {
-			return innerGeometry.toSQLString(db);
-		}
+	protected boolean isNullSafetyTerminator() {
+		return moreNullProtectionRequired
+				||super.isNullSafetyTerminator(); 
 	}
 
 	@Override
 	public Polygon2DExpression copy() {
-		return new Polygon2DExpression(innerGeometry);
-	}
-
-	@Override
-	public boolean isAggregator() {
-		return innerGeometry == null ? false : innerGeometry.isAggregator();
-	}
-
-	@Override
-	public Set<DBRow> getTablesInvolved() {
-		HashSet<DBRow> hashSet = new HashSet<DBRow>();
-		if (innerGeometry != null) {
-			hashSet.addAll(innerGeometry.getTablesInvolved());
-		}
-		return hashSet;
-	}
-
-	@Override
-	public boolean isPurelyFunctional() {
-		return innerGeometry == null ? true : innerGeometry.isPurelyFunctional();
+		return isNullSafetyTerminator()?nullPolygon2D(): new Polygon2DExpression(getInnerResult());
 	}
 
 	@Override
 	public boolean getIncludesNull() {
-		return nullProtectionRequired;
+		return moreNullProtectionRequired||super.getIncludesNull();
 	}
 
 	/**
@@ -714,45 +697,6 @@ public class Polygon2DExpression extends Spatial2DExpression<Polygon, Polygon2DR
 		});
 	}
 
-//	public NumberExpression wibbleX() {
-//		return new NumberExpression(new Polygon2DFunctionWithNumberResult(this) {
-//
-//			@Override
-//			public String doExpressionTransform(DBDefinition db) {
-//				return db.doPolygon2DGetMaxXTransform(getFirst().toSQLString(db));
-//			}
-//		});
-//	}
-//
-//	public NumberExpression bibbleX() {
-//		return new NumberExpression(new Polygon2DFunctionWithNumberResult(this) {
-//
-//			@Override
-//			public String doExpressionTransform(DBDefinition db) {
-//				return db.doPolygon2DGetMinXTransform(getFirst().toSQLString(db));
-//			}
-//		});
-//	}
-//
-//	public NumberExpression wibbleY() {
-//		return new NumberExpression(new Polygon2DFunctionWithNumberResult(this) {
-//
-//			@Override
-//			public String doExpressionTransform(DBDefinition db) {
-//				return db.doPolygon2DGetMaxYTransform(getFirst().toSQLString(db));
-//			}
-//		});
-//	}
-//
-//	public NumberExpression bibbleY() {
-//		return new NumberExpression(new Polygon2DFunctionWithNumberResult(this) {
-//
-//			@Override
-//			public String doExpressionTransform(DBDefinition db) {
-//				return db.doPolygon2DGetMinYTransform(getFirst().toSQLString(db));
-//			}
-//		});
-//	}
 	@Override
 	public Polygon2DExpression boundingBox() {
 		return new Polygon2DExpression(new Polygon2DFunctionWithPolygon2DResult(this) {
@@ -796,7 +740,6 @@ public class Polygon2DExpression extends Spatial2DExpression<Polygon, Polygon2DR
 				return db.doPolygon2DGetExteriorRingTransform(getFirst().toSQLString(db));
 			}
 		});
-//		return this.measurableDimensions().is(2).ifThenElse(exteriorRingExpr, this);
 		return exteriorRingExpr;
 	}
 
@@ -828,7 +771,6 @@ public class Polygon2DExpression extends Spatial2DExpression<Polygon, Polygon2DR
 				return db.doPolygon2DAsTextTransform(getFirst().toSQLString(db));
 			}
 		});
-//		return this.measurableDimensions().is(2).ifThenElse(exteriorRingExpr, this);
 		return stringResultExpr;
 	}
 
@@ -879,6 +821,27 @@ public class Polygon2DExpression extends Spatial2DExpression<Polygon, Polygon2DR
 		});
 		return expr;
 	}
+	
+	/**
+	 * Creates an expression that will return the most common value of the column
+	 * supplied.
+	 *
+	 * <p>
+	 * MODE: The number which appears most often in a set of numbers. For example:
+	 * in {6, 3, 9, 6, 6, 5, 9, 3} the Mode is 6.</p>
+	 * 
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
+	 * @return a number expression.
+	 */
+	@Override
+	public Point2DExpression modeSimple() {
+		Point2DExpression modeExpr = new Point2DExpression(
+				new ModeSimpleExpression(this));
+
+		return modeExpr;
+	}
 
 	@Override
 	public DBPolygon2D asExpressionColumn() {
@@ -904,11 +867,6 @@ public class Polygon2DExpression extends Spatial2DExpression<Polygon, Polygon2DR
 	@Override
 	public Polygon2DResult expression(DBPolygon2D value) {
 		return value(value);
-	}
-
-	@Override
-	public Polygon2DResult getInnerResult() {
-		return innerGeometry;
 	}
 
 	private static abstract class PolygonPolygonWithBooleanResult extends BooleanExpression {
@@ -983,15 +941,10 @@ public class Polygon2DExpression extends Spatial2DExpression<Polygon, Polygon2DR
 	private static abstract class PolygonWithBooleanResult extends BooleanExpression {
 
 		private Polygon2DExpression first;
-//		private Polygon2DExpression second;
 		private boolean requiresNullProtection;
 
 		PolygonWithBooleanResult(Polygon2DExpression first) {
 			this.first = first;
-//			this.second = second;
-//			if (this.second == null || this.second.getIncludesNull()) {
-//				this.requiresNullProtection = true;
-//			}
 		}
 
 		Polygon2DExpression getFirst() {
