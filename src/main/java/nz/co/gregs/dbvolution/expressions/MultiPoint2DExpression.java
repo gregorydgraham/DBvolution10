@@ -24,6 +24,7 @@ import java.util.Set;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.datatypes.spatial2D.DBMultiPoint2D;
+import nz.co.gregs.dbvolution.results.AnyResult;
 import nz.co.gregs.dbvolution.results.MultiPoint2DResult;
 
 /**
@@ -40,16 +41,15 @@ import nz.co.gregs.dbvolution.results.MultiPoint2DResult;
  */
 public class MultiPoint2DExpression extends Spatial2DExpression<MultiPoint, MultiPoint2DResult, DBMultiPoint2D> implements MultiPoint2DResult {
 
-	private final MultiPoint2DResult innerPoint;
-	private final boolean nullProtectionRequired;
+	private final boolean moreNullProtectionRequired;
 
 	/**
 	 * Default constructor
 	 *
 	 */
 	protected MultiPoint2DExpression() {
-		innerPoint = null;
-		nullProtectionRequired = false;
+		super();
+		moreNullProtectionRequired = false;
 	}
 
 	/**
@@ -59,8 +59,8 @@ public class MultiPoint2DExpression extends Spatial2DExpression<MultiPoint, Mult
 	 * @param value
 	 */
 	public MultiPoint2DExpression(MultiPoint2DResult value) {
-		innerPoint = value;
-		nullProtectionRequired = value == null || innerPoint.getIncludesNull();
+		super(value);
+		moreNullProtectionRequired = value == null;
 	}
 
 	/**
@@ -70,8 +70,16 @@ public class MultiPoint2DExpression extends Spatial2DExpression<MultiPoint, Mult
 	 * @param points
 	 */
 	public MultiPoint2DExpression(Point... points) {
-		innerPoint = new DBMultiPoint2D(points);
-		nullProtectionRequired = points == null || points.length == 0 || innerPoint.getIncludesNull();
+		super(new DBMultiPoint2D(points));
+		boolean nulls = false;
+		for (Point point : points) {
+			nulls = point == null ? true : nulls;
+		}
+		moreNullProtectionRequired = 
+				points==null
+				||points.length==0
+				||nulls
+				|| new DBMultiPoint2D(points).getIncludesNull();
 	}
 
 	/**
@@ -81,8 +89,13 @@ public class MultiPoint2DExpression extends Spatial2DExpression<MultiPoint, Mult
 	 * @param points
 	 */
 	public MultiPoint2DExpression(MultiPoint points) {
-		innerPoint = new DBMultiPoint2D(points);
-		nullProtectionRequired = points == null || innerPoint.getIncludesNull();
+		super(new DBMultiPoint2D(points));
+		moreNullProtectionRequired = points==null;
+	}
+
+	private MultiPoint2DExpression(AnyResult<?> innerResult) {
+		super(innerResult);
+		moreNullProtectionRequired = innerResult==null;
 	}
 
 	/**
@@ -159,17 +172,8 @@ public class MultiPoint2DExpression extends Spatial2DExpression<MultiPoint, Mult
 	}
 
 	@Override
-	public String toSQLString(DBDefinition db) {
-		if (innerPoint == null) {
-			return db.getNull();
-		} else {
-			return innerPoint.toSQLString(db);
-		}
-	}
-
-	@Override
 	public MultiPoint2DExpression copy() {
-		return new MultiPoint2DExpression(innerPoint);
+		return isNullSafetyTerminator()?nullMultiPoint2D():new MultiPoint2DExpression(getInnerResult());
 	}
 	
 	@Override
@@ -193,7 +197,8 @@ public class MultiPoint2DExpression extends Spatial2DExpression<MultiPoint, Mult
 	public boolean equals(Object other) {
 		if (other instanceof MultiPoint2DExpression) {
 			MultiPoint2DExpression otherExpr = (MultiPoint2DExpression) other;
-			return this.innerPoint == otherExpr.innerPoint;
+			return this.getInnerResult() == otherExpr.getInnerResult()
+					&&this.getIncludesNull()== otherExpr.getIncludesNull();
 		}
 		return false;
 	}
@@ -201,33 +206,20 @@ public class MultiPoint2DExpression extends Spatial2DExpression<MultiPoint, Mult
 	@Override
 	public int hashCode() {
 		int hash = 7;
-		hash = 97 * hash + (this.innerPoint != null ? this.innerPoint.hashCode() : 0);
-		hash = 97 * hash + (this.nullProtectionRequired ? 1 : 0);
+		hash = 97 * hash + (this.getInnerResult() != null ? this.getInnerResult().hashCode() : 0);
+		hash = 97 * hash + (this.getIncludesNull() ? 1 : 0);
 		return hash;
 	}
 
 	@Override
-	public boolean isAggregator() {
-		return innerPoint == null ? false : innerPoint.isAggregator();
+	protected boolean isNullSafetyTerminator() {
+		return moreNullProtectionRequired==false
+				||super.isNullSafetyTerminator();
 	}
-
-	@Override
-	public Set<DBRow> getTablesInvolved() {
-		HashSet<DBRow> hashSet = new HashSet<DBRow>();
-		if (innerPoint != null) {
-			hashSet.addAll(innerPoint.getTablesInvolved());
-		}
-		return hashSet;
-	}
-
-	@Override
-	public boolean isPurelyFunctional() {
-		return innerPoint == null ? true : innerPoint.isPurelyFunctional();
-	}
-
+	
 	@Override
 	public boolean getIncludesNull() {
-		return nullProtectionRequired;
+		return moreNullProtectionRequired||super.getIncludesNull();
 	}
 
 	@Override
@@ -584,11 +576,6 @@ public class MultiPoint2DExpression extends Spatial2DExpression<MultiPoint, Mult
 		return new DBMultiPoint2D(this);
 	}
 
-	@Override
-	public MultiPoint2DResult getInnerResult() {
-		return innerPoint;
-	}
-
 	private static abstract class MultiPoint2DFunctionLine2DResult extends Line2DExpression {
 
 		private MultiPoint2DExpression first;
@@ -637,7 +624,7 @@ public class MultiPoint2DExpression extends Spatial2DExpression<MultiPoint, Mult
 
 		@Override
 		public boolean isAggregator() {
-			return first.isAggregator();// || second.isAggregator();
+			return first.isAggregator();
 		}
 
 		@Override
@@ -694,7 +681,7 @@ public class MultiPoint2DExpression extends Spatial2DExpression<MultiPoint, Mult
 
 		@Override
 		public boolean isAggregator() {
-			return first.isAggregator();// || second.isAggregator();
+			return first.isAggregator();
 		}
 
 		@Override
@@ -781,7 +768,7 @@ public class MultiPoint2DExpression extends Spatial2DExpression<MultiPoint, Mult
 		MultiPointNumberFunctionWithPoint2DResult(MultiPoint2DExpression first, NumberExpression second) {
 			this.first = first;
 			this.second = second;
-			if (this.first == null) {// || this.second.getIncludesNull()) {
+			if (this.first == null) {
 				this.requiresNullProtection = true;
 			}
 		}

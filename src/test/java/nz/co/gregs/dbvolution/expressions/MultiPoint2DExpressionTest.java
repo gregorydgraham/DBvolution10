@@ -61,7 +61,6 @@ public class MultiPoint2DExpressionTest extends AbstractTest {
 
 		lineTestTable = new MultiPoint2DTestTable();
 		lineTestTable.multipoint.setValue(geometryFactory.createMultiPoint(new Coordinate[]{coordinate1, coordinate2, coordinate3}));
-//		db.insert(lineTestTable);
 
 		MultiPoint2DTestTable lineTestTable2 = new MultiPoint2DTestTable();
 		lineTestTable2.multipoint.setValue(geometryFactory.createPoint(coordinate2), geometryFactory.createPoint(coordinate3));
@@ -82,9 +81,6 @@ public class MultiPoint2DExpressionTest extends AbstractTest {
 
 		@DBColumn
 		public DBString asText = new DBString(this.column(this.multipoint).stringResult());
-//		
-//		@DBColumn
-//		public DBString asPolygon = new DBString(this.column(this.multipoint).polygon2DResult().stringResult());
 	}
 
 	@Test
@@ -145,13 +141,6 @@ public class MultiPoint2DExpressionTest extends AbstractTest {
 	}
 
 	@Test
-	public void testCopy() {
-		Line2DExpression instance = new Line2DExpression();
-		Line2DExpression result = instance.copy();
-		assertEquals(instance, result);
-	}
-
-	@Test
 	public void testIsAggregator() {
 		Line2DExpression instance = new Line2DExpression();
 		boolean expResult = false;
@@ -185,11 +174,11 @@ public class MultiPoint2DExpressionTest extends AbstractTest {
 
 	@Test
 	public void testGetIncludesNull() {
-		Line2DExpression instance = new Line2DExpression((LineString) null);
+		MultiPoint2DExpression instance = new MultiPoint2DExpression((MultiPoint) null);
 		Assert.assertThat(instance.getIncludesNull(), is(true));
 
 		final MultiPoint2DTestTable pointTestTable = new MultiPoint2DTestTable();
-		instance = new Line2DExpression(pointTestTable.column(pointTestTable.multipoint).line2DResult());
+		instance = new MultiPoint2DExpression(pointTestTable.column(pointTestTable.multipoint));
 		Assert.assertThat(instance.getIncludesNull(), is(false));
 	}
 

@@ -90,6 +90,29 @@ public class DBLine2D extends QueryableDatatype<LineString> implements Line2DRes
 	}
 
 	/**
+	 * Create a DBLine2D with the value set to the {@link LineString} provided.
+	 *
+	 * <p>
+ This is a convenient way to assign a constant value in an value or
+ DBRow subclass.
+	 *
+	 * @param lineString
+	 */
+	public DBLine2D(Point... lineString) {
+		super(lineStringFromPoints(lineString));
+	}
+	
+	private static LineString lineStringFromPoints(Point... points){
+		GeometryFactory geometryFactory = new GeometryFactory();
+		List<Coordinate> coords = new ArrayList<Coordinate>();
+		for (Point point : points) {
+			coords.add(point.getCoordinate());
+		}
+		LineString line = geometryFactory.createLineString(coords.toArray(new Coordinate[]{}));
+		return line;
+	}
+
+	/**
 	 * Create a DBLine2D with the value set to the
 	 * {@link MultiPoint2DResult multipoint value or value} provided.
 	 *
@@ -115,6 +138,16 @@ public class DBLine2D extends QueryableDatatype<LineString> implements Line2DRes
 	 */
 	public DBLine2D(nz.co.gregs.dbvolution.expressions.Line2DExpression columnExpression) {
 		super(columnExpression);
+	}
+
+	public DBLine2D(Coordinate... coords) {
+		super(linestringFromCoords(coords));
+	}
+	
+	private static LineString linestringFromCoords(Coordinate... coords){
+		GeometryFactory geometryFactory = new GeometryFactory();
+		LineString line = geometryFactory.createLineString(coords);
+		return line;
 	}
 
 	/**

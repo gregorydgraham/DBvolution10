@@ -217,7 +217,7 @@ public class LineSegment2DExpression extends Spatial2DExpression<LineSegment, Li
 
 	@Override
 	public LineSegment2DExpression copy() {
-		return new LineSegment2DExpression(innerLineString);
+		return isNullSafetyTerminator()?nullLineSegment2D():new LineSegment2DExpression(innerLineString);
 	}
 
 	@Override

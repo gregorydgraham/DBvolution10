@@ -15,6 +15,8 @@
  */
 package nz.co.gregs.dbvolution.datatypes.spatial2D;
 
+import com.vividsolutions.jts.geom.Coordinate;
+import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.io.ParseException;
 import java.sql.ResultSet;
@@ -60,6 +62,10 @@ public class DBPoint2D extends QueryableDatatype<Point> implements Point2DResult
 	 *
 	 */
 	public DBPoint2D() {
+	}
+
+	public DBPoint2D(Double xValue, Double yValue) {
+		this(new GeometryFactory().createPoint(new Coordinate(xValue, yValue)));
 	}
 
 	/**
@@ -168,30 +174,6 @@ public class DBPoint2D extends QueryableDatatype<Point> implements Point2DResult
 		return false;
 	}
 
-//	@Override
-//	public NumberExpression measurableDimensions() {
-//		return NumberExpression.value(0);
-//	}
-//
-//	@Override
-//	public NumberExpression spatialDimensions() {
-//		return NumberExpression.value(2);
-//	}
-//
-//	@Override
-//	public BooleanExpression hasMagnitude() {
-//		return BooleanExpression.falseExpression();
-//	}
-//
-//	@Override
-//	public NumberExpression magnitude() {
-//		return NumberExpression.value((Number)null);
-//	}
-//
-//	@Override
-//	public StringExpression toWKTFormat(){
-//		return StringExpression.value(jtsPointValue().toText());
-//	}
 	@Override
 	public StringExpression stringResult() {
 		return Point2DExpression.value(this).stringResult();

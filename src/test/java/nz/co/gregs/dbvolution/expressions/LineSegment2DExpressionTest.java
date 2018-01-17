@@ -83,9 +83,6 @@ public class LineSegment2DExpressionTest extends AbstractTest {
 
 		@DBColumn("line_col")
 		public DBLineSegment2D line = new DBLineSegment2D();
-
-//		@DBColumn
-//		public DBPoint2D getXis2 = new DBPoint2D(this.column(this.line).intersectionWith(3d,3d,2d,4d));
 	}
 
 	@Test
@@ -189,9 +186,10 @@ public class LineSegment2DExpressionTest extends AbstractTest {
 
 	@Test
 	public void testCopy() {
-		Line2DExpression instance = new Line2DExpression();
-		Line2DExpression result = instance.copy();
-		assertEquals(instance, result);
+		LineSegment2DExpression instance = new LineSegment2DExpression();
+		LineSegment2DExpression result = instance.copy();
+		assertEquals(instance.getInnerResult(), result.getInnerResult());
+		assertEquals(instance.getIncludesNull(), result.getIncludesNull());
 	}
 
 	@Test
@@ -295,7 +293,6 @@ public class LineSegment2DExpressionTest extends AbstractTest {
 
 	@Test
 	public void testGetMaxX() throws SQLException {
-//		LineString line = geometryFactory.createLineString(new Coordinate[]{new Coordinate(2.0, 3.0), new Coordinate(3.0, 4.0)});
 		final LineSegmentTestTable lineTestTable = new LineSegmentTestTable();
 		DBQuery dbQuery = database.getDBQuery(lineTestTable);
 		dbQuery.setSortOrder(lineTestTable.column(lineTestTable.line_id));
@@ -309,7 +306,6 @@ public class LineSegment2DExpressionTest extends AbstractTest {
 
 	@Test
 	public void testGetMinX() throws SQLException {
-//		LineString line = geometryFactory.createLineString(new Coordinate[]{new Coordinate(2.0, 3.0), new Coordinate(3.0, 4.0)});
 		final LineSegmentTestTable lineTestTable = new LineSegmentTestTable();
 		DBQuery dbQuery = database.getDBQuery(lineTestTable);
 		dbQuery.addCondition(lineTestTable.column(lineTestTable.line).minX().is(3));
@@ -321,7 +317,6 @@ public class LineSegment2DExpressionTest extends AbstractTest {
 
 	@Test
 	public void testGetMaxY() throws SQLException {
-//		LineString line = geometryFactory.createLineString(new Coordinate[]{new Coordinate(2.0, 3.0), new Coordinate(3.0, 4.0)});
 		final LineSegmentTestTable lineTestTable = new LineSegmentTestTable();
 		DBQuery dbQuery = database.getDBQuery(lineTestTable);
 		dbQuery.addCondition(lineTestTable.column(lineTestTable.line).maxY().is(4));
@@ -333,7 +328,6 @@ public class LineSegment2DExpressionTest extends AbstractTest {
 
 	@Test
 	public void testGetMinY() throws SQLException {
-//		LineString line = geometryFactory.createLineString(new Coordinate[]{new Coordinate(2.0, 3.0), new Coordinate(3.0, 4.0)});
 		final LineSegmentTestTable lineTestTable = new LineSegmentTestTable();
 		DBQuery dbQuery = database.getDBQuery(lineTestTable);
 		dbQuery.addCondition(lineTestTable.column(lineTestTable.line).minY().is(3));
@@ -430,7 +424,6 @@ public class LineSegment2DExpressionTest extends AbstractTest {
 
 		Point coordinateA = geometryFactory.createPoint(new Coordinate(3, 3));
 		Point coordinateB = geometryFactory.createPoint(new Coordinate(2, 4));
-//		final LineSegment2DExpression crossingLine = LineSegment2DExpression.value(coordinateA, coordinateB);
 
 		dbQuery.addCondition(lineTestTable.column(lineTestTable.line).intersects(coordinateA, coordinateB));
 		List<LineSegmentTestTable> allRows = dbQuery.getAllInstancesOf(lineTestTable);
@@ -474,7 +467,6 @@ public class LineSegment2DExpressionTest extends AbstractTest {
 
 		Coordinate coordinateA = new Coordinate(3, 3);
 		Coordinate coordinateB = new Coordinate(2, 4);
-//		final LineSegment2DExpression crossingLine = LineSegment2DExpression.value(coordinateA, coordinateB);
 		dbQuery.setBlankQueryAllowed(true);
 
 		dbQuery.addCondition(lineTestTable.column(lineTestTable.line).intersectionWith(coordinateA, coordinateB).is(Point2DExpression.value(2.5D, 3.5D)));
@@ -540,7 +532,6 @@ public class LineSegment2DExpressionTest extends AbstractTest {
 
 		Point coordinateA = geometryFactory.createPoint(new Coordinate(3, 3));
 		Point coordinateB = geometryFactory.createPoint(new Coordinate(2, 4));
-//		final LineSegment crossingLine = new LineSegment(coordinateA, coordinateB);
 		dbQuery.setBlankQueryAllowed(true);
 
 		dbQuery.addCondition(lineTestTable.column(lineTestTable.line).intersectionWith(coordinateA, coordinateB).is(Point2DExpression.value(2.5D, 3.5D)));

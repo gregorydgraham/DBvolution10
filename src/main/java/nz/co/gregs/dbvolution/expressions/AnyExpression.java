@@ -140,7 +140,7 @@ public abstract class AnyExpression<B extends Object, R extends AnyResult<B>, D 
 	 */
 	public AnyExpression() {
 		innerResult = null;
-		// This creates a terminator expression for null-safety chains
+		/* This creates a terminator expression for null-safety chains */
 		nullProtectionRequired = false;
 	}
 
@@ -151,6 +151,10 @@ public abstract class AnyExpression<B extends Object, R extends AnyResult<B>, D 
 	public AnyExpression(AnyResult<?> only) {
 		innerResult = only;
 		nullProtectionRequired = only == null ? true : innerResult.getIncludesNull();
+	}
+
+	protected boolean isNullSafetyTerminator() {
+		return getInnerResult() == null && (getIncludesNull() == false);
 	}
 
 	public AnyResult<?> getInnerResult() {

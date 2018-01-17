@@ -98,6 +98,19 @@ public class DBLineSegment2D extends QueryableDatatype<LineSegment> implements L
 		super(columnExpression);
 	}
 
+	public DBLineSegment2D(Double point1x, Double point1y, Double point2x, Double point2y) {
+		super(new LineSegment(point1x, point1y, point2x, point2y));
+		
+	}
+
+	public DBLineSegment2D(Point point1, Point point2) {
+		this(new LineSegment(point1.getCoordinate(), point2.getCoordinate()));
+	}
+
+	public DBLineSegment2D(Coordinate coord1, Coordinate coord2) {
+		this(new LineSegment(coord1, coord2));
+	}
+
 	/**
 	 * Set the value of this DBLine2D to the value provided.
 	 *

@@ -22,6 +22,7 @@ import java.util.Set;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.datatypes.spatial2D.DBPoint2D;
+import nz.co.gregs.dbvolution.results.AnyResult;
 
 /**
  * Represents SQL expressions that are a 2 dimensional points, that is a
@@ -37,16 +38,21 @@ import nz.co.gregs.dbvolution.datatypes.spatial2D.DBPoint2D;
  */
 public class Point2DExpression extends Spatial2DExpression<Point, Point2DResult, DBPoint2D> implements Point2DResult {
 
-	private final Point2DResult innerPoint;
-	private final boolean nullProtectionRequired;
-
 	/**
 	 * Default constructor
 	 *
 	 */
 	protected Point2DExpression() {
-		innerPoint = null;
-		nullProtectionRequired = false;
+		super();
+	}
+
+	/**
+	 * Create a Point2DExpression that represents the point value provided.
+	 *
+	 * @param value
+	 */
+	protected Point2DExpression(AnyResult<?> value) {
+		super(value);
 	}
 
 	/**
@@ -55,8 +61,7 @@ public class Point2DExpression extends Spatial2DExpression<Point, Point2DResult,
 	 * @param value
 	 */
 	public Point2DExpression(Point2DResult value) {
-		innerPoint = value;
-		nullProtectionRequired = value == null || innerPoint.getIncludesNull();
+		super(value);
 	}
 
 	/**
@@ -65,8 +70,11 @@ public class Point2DExpression extends Spatial2DExpression<Point, Point2DResult,
 	 * @param point
 	 */
 	public Point2DExpression(Point point) {
-		innerPoint = new DBPoint2D(point);
-		nullProtectionRequired = point == null || innerPoint.getIncludesNull();
+		super(point==null?null:new DBPoint2D(point));
+	}
+
+	private Point2DExpression(Double xValue, Double yValue) {
+		super(new DBPoint2D(xValue, yValue));
 	}
 
 	/**
@@ -139,7 +147,7 @@ public class Point2DExpression extends Spatial2DExpression<Point, Point2DResult,
 		return value(NumberExpression.value(xValue), NumberExpression.value(yValue));
 	}
 	public static Point2DExpression value(Double xValue, Double yValue) {
-		return value(NumberExpression.value(xValue), NumberExpression.value(yValue));
+		return new Point2DExpression(xValue, yValue);
 	}
 
 	/**
@@ -209,24 +217,15 @@ public class Point2DExpression extends Spatial2DExpression<Point, Point2DResult,
 	}
 
 	@Override
-	public String toSQLString(DBDefinition db) {
-		if (innerPoint == null) {
-			return db.getNull();
-		} else {
-			return innerPoint.toSQLString(db);
-		}
-	}
-
-	@Override
 	public Point2DExpression copy() {
-		return new Point2DExpression(innerPoint);
+		return this.isNullSafetyTerminator()?nullPoint2D():new Point2DExpression(getInnerResult());
 	}
 
 	@Override
 	public boolean equals(Object other) {
 		if (other instanceof Point2DExpression) {
 			Point2DExpression otherExpr = (Point2DExpression) other;
-			return this.innerPoint == otherExpr.innerPoint;
+			return this.getInnerResult() == otherExpr.getInnerResult();
 		}
 		return false;
 	}
@@ -234,33 +233,9 @@ public class Point2DExpression extends Spatial2DExpression<Point, Point2DResult,
 	@Override
 	public int hashCode() {
 		int hash = 7;
-		hash = 97 * hash + (this.innerPoint != null ? this.innerPoint.hashCode() : 0);
-		hash = 97 * hash + (this.nullProtectionRequired ? 1 : 0);
+		hash = 97 * hash + (this.getInnerResult() != null ? this.getInnerResult().hashCode() : 0);
+		hash = 97 * hash + (this.getIncludesNull() ? 1 : 0);
 		return hash;
-	}
-
-	@Override
-	public boolean isAggregator() {
-		return innerPoint == null ? false : innerPoint.isAggregator();
-	}
-
-	@Override
-	public Set<DBRow> getTablesInvolved() {
-		HashSet<DBRow> hashSet = new HashSet<DBRow>();
-		if (innerPoint != null) {
-			hashSet.addAll(innerPoint.getTablesInvolved());
-		}
-		return hashSet;
-	}
-
-	@Override
-	public boolean isPurelyFunctional() {
-		return innerPoint == null ? true : innerPoint.isPurelyFunctional();
-	}
-
-	@Override
-	public boolean getIncludesNull() {
-		return nullProtectionRequired;
 	}
 
 	@Override
@@ -533,11 +508,6 @@ public class Point2DExpression extends Spatial2DExpression<Point, Point2DResult,
 	@Override
 	public DBPoint2D asExpressionColumn() {
 		return new DBPoint2D(this);
-	}
-
-	@Override
-	public Point2DResult getInnerResult() {
-		return innerPoint;
 	}
 
 	private static abstract class PointPointFunctionWithBooleanResult extends BooleanExpression {
@@ -966,9 +936,6 @@ public class Point2DExpression extends Spatial2DExpression<Point, Point2DResult,
 			if (first != null) {
 				hashSet.addAll(first.getTablesInvolved());
 			}
-//			if (second != null) {
-//				hashSet.addAll(second.getTablesInvolved());
-//			}
 			return hashSet;
 		}
 

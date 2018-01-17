@@ -82,8 +82,6 @@ public class Line2DExpressionTest extends AbstractTest {
 
 		@DBColumn("line_col")
 		public DBLine2D line = new DBLine2D();
-//		@DBColumn()
-//		public DBMultiPoint2D lineIntersections = new DBMultiPoint2D(this.column(this.line).intersectionPoints(Line2DExpression.value(new Coordinate(3, 3),new Coordinate(2, 4),new Coordinate(1, 4))));
 	}
 
 	@Test
@@ -121,7 +119,8 @@ public class Line2DExpressionTest extends AbstractTest {
 	public void testCopy() {
 		Line2DExpression instance = new Line2DExpression();
 		Line2DExpression result = instance.copy();
-		assertEquals(instance, result);
+		assertEquals(instance.getInnerResult(), result.getInnerResult());
+		assertEquals(instance.getIncludesNull(), result.getIncludesNull());
 	}
 
 	@Test
@@ -435,7 +434,6 @@ public class Line2DExpressionTest extends AbstractTest {
 		Coordinate coordinateC = new Coordinate(1, 4);
 		Coordinate[] coords = new Coordinate[]{coordinateA, coordinateB, coordinateC};
 		LineString crossingLine = geometryFactory.createLineString(coords);
-//		final Line2DExpression crossingLine = Line2DExpression.value(coordinateA, coordinateB, coordinateC);
 		dbQuery.setBlankQueryAllowed(true);
 
 		dbQuery.addCondition(lineTestTable.column(lineTestTable.line).intersectionWith(crossingLine).is(Point2DExpression.value(2.5D, 3.5D)));

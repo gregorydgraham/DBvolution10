@@ -17,18 +17,16 @@ package nz.co.gregs.dbvolution.expressions;
 
 import nz.co.gregs.dbvolution.results.Line2DResult;
 import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.geom.Polygon;
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.datatypes.spatial2D.DBLine2D;
 import nz.co.gregs.dbvolution.datatypes.spatial2D.DBMultiPoint2D;
+import nz.co.gregs.dbvolution.results.AnyResult;
 import nz.co.gregs.dbvolution.results.MultiPoint2DResult;
 
 /**
@@ -44,16 +42,15 @@ import nz.co.gregs.dbvolution.results.MultiPoint2DResult;
  */
 public class Line2DExpression extends Spatial2DExpression<LineString, Line2DResult, DBLine2D> implements Line2DResult{
 
-	private final Line2DResult innerLineString;
-	private final boolean nullProtectionRequired;
+	private final boolean moreNullProtectionRequired;
 
 	/**
 	 * Default constructor, probably shouldn't be used.
 	 *
 	 */
 	protected Line2DExpression() {
-		innerLineString = null;
-		nullProtectionRequired = false;
+		super();
+		moreNullProtectionRequired = false;
 	}
 
 	/**
@@ -66,8 +63,22 @@ public class Line2DExpression extends Spatial2DExpression<LineString, Line2DResu
 	 * @param value
 	 */
 	public Line2DExpression(Line2DResult value) {
-		innerLineString = value;
-		nullProtectionRequired = value == null || innerLineString.getIncludesNull();
+		super(value);
+		moreNullProtectionRequired = value == null;
+	}
+
+	/**
+	 * Create a new Line2DExpression containing the specified value or value.
+	 *
+	 * <p>
+	 * {@link Line2DResult} classes include {@link DBLine2D} and
+	 * {@link Line2DExpression}.
+	 *
+	 * @param value
+	 */
+	protected Line2DExpression(AnyResult<?> value) {
+		super(value);
+		moreNullProtectionRequired = value == null;
 	}
 	
 	/**
@@ -76,8 +87,8 @@ public class Line2DExpression extends Spatial2DExpression<LineString, Line2DResu
 	 * @param line
 	 */
 	public Line2DExpression(LineString line) {
-		innerLineString = new DBLine2D(line);
-		nullProtectionRequired = line == null || innerLineString.getIncludesNull();
+		super(new DBLine2D(line));
+		moreNullProtectionRequired = line == null;
 	}
 
 	/**
@@ -86,14 +97,16 @@ public class Line2DExpression extends Spatial2DExpression<LineString, Line2DResu
 	 * @param points
 	 */
 	public Line2DExpression(Point... points) {
-		GeometryFactory geometryFactory = new GeometryFactory();
-		List<Coordinate> coords = new ArrayList<Coordinate>();
+		super(new DBLine2D(points));
+		boolean nulls = false;
 		for (Point point : points) {
-			coords.add(point.getCoordinate());
+			nulls = point == null ? true : nulls;
 		}
-		LineString line = geometryFactory.createLineString(coords.toArray(new Coordinate[]{}));
-		innerLineString = new DBLine2D(line);
-		nullProtectionRequired = points == null || innerLineString.getIncludesNull();
+		moreNullProtectionRequired = 
+				points==null
+				||points.length==0
+				||nulls
+				|| new DBLine2D(points).getIncludesNull();
 	}
 
 	/**
@@ -102,10 +115,44 @@ public class Line2DExpression extends Spatial2DExpression<LineString, Line2DResu
 	 * @param coords
 	 */
 	public Line2DExpression(Coordinate... coords) {
-		GeometryFactory geometryFactory = new GeometryFactory();
-		LineString line = geometryFactory.createLineString(coords);
-		innerLineString = new DBLine2D(line);
-		nullProtectionRequired = coords == null || innerLineString.getIncludesNull();
+		super(new DBLine2D(coords));
+		boolean nulls = false;
+		for (Coordinate point : coords) {
+			nulls = point == null ? true : nulls;
+		}
+		moreNullProtectionRequired = 
+				coords==null
+				||coords.length==0
+				||nulls
+				|| new DBLine2D(coords).getIncludesNull();
+	}
+
+	@Override
+	public boolean getIncludesNull() {
+		return 
+				moreNullProtectionRequired||
+				super.getIncludesNull();
+	}
+	
+	/**
+	 * Creates an expression that will return the most common value of the column
+	 * supplied.
+	 *
+	 * <p>
+	 * MODE: The number which appears most often in a set of numbers. For example:
+	 * in {6, 3, 9, 6, 6, 5, 9, 3} the Mode is 6.</p>
+	 * 
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
+	 * @return a number expression.
+	 */
+	@Override
+	public Line2DExpression modeSimple() {
+		Line2DExpression modeExpr = new Line2DExpression(
+				new ModeSimpleExpression(this));
+
+		return modeExpr;
 	}
 
 	/**
@@ -216,58 +263,16 @@ public class Line2DExpression extends Spatial2DExpression<LineString, Line2DResu
 	}
 
 	@Override
-	public String toSQLString(DBDefinition db) {
-		if (innerLineString == null) {
-			return db.getNull();
-		} else {
-			return innerLineString.toSQLString(db);
-		}
+	protected boolean isNullSafetyTerminator() {
+		return super.isNullSafetyTerminator()
+				&&moreNullProtectionRequired==false;
 	}
 
 	@Override
 	public Line2DExpression copy() {
-		return new Line2DExpression(innerLineString);
-	}
-
-	@Override
-	public boolean equals(Object other) {
-		if (other instanceof Line2DExpression) {
-			Line2DExpression otherExpr = (Line2DExpression) other;
-			return this.innerLineString == otherExpr.innerLineString;
-		}
-		return false;
-	}
-
-	@Override
-	public int hashCode() {
-		int hash = 5;
-		hash = 37 * hash + (this.innerLineString != null ? this.innerLineString.hashCode() : 0);
-		hash = 37 * hash + (this.nullProtectionRequired ? 1 : 0);
-		return hash;
-	}
-
-	@Override
-	public boolean isAggregator() {
-		return innerLineString == null ? false : innerLineString.isAggregator();
-	}
-
-	@Override
-	public Set<DBRow> getTablesInvolved() {
-		HashSet<DBRow> hashSet = new HashSet<DBRow>();
-		if (innerLineString != null) {
-			hashSet.addAll(innerLineString.getTablesInvolved());
-		}
-		return hashSet;
-	}
-
-	@Override
-	public boolean isPurelyFunctional() {
-		return innerLineString == null ? true : innerLineString.isPurelyFunctional();
-	}
-
-	@Override
-	public boolean getIncludesNull() {
-		return nullProtectionRequired;
+		return isNullSafetyTerminator()
+				? nullLine2D() 
+				: new Line2DExpression(getInnerResult());
 	}
 
 	/**
@@ -881,11 +886,6 @@ public class Line2DExpression extends Spatial2DExpression<LineString, Line2DResu
 		return new DBLine2D(this);
 	}
 
-	@Override
-	public Line2DResult getInnerResult() {
-		return innerLineString;
-	}
-
 	private static abstract class LineLineWithBooleanResult extends BooleanExpression {
 
 		private Line2DExpression first;
@@ -1152,13 +1152,11 @@ public class Line2DExpression extends Spatial2DExpression<LineString, Line2DResu
 	private static abstract class LineFunctionWithNumberResult extends NumberExpression {
 
 		private Line2DExpression first;
-//		private Point2DExpression second;
 		private boolean requiresNullProtection;
 
 		LineFunctionWithNumberResult(Line2DExpression first) {
 			this.first = first;
-//			this.second = second;
-			if (this.first == null) {// || this.second.getIncludesNull()) {
+			if (this.first == null) {
 				this.requiresNullProtection = true;
 			}
 		}
@@ -1167,9 +1165,6 @@ public class Line2DExpression extends Spatial2DExpression<LineString, Line2DResu
 			return first;
 		}
 
-//		Point2DExpression getSecond() {
-//			return second;
-//		}
 		@Override
 		public final String toSQLString(DBDefinition db) {
 			if (this.getIncludesNull()) {
@@ -1188,7 +1183,6 @@ public class Line2DExpression extends Spatial2DExpression<LineString, Line2DResu
 				throw new RuntimeException(ex);
 			}
 			newInstance.first = first.copy();
-//			newInstance.second = second.copy();
 			return newInstance;
 		}
 
@@ -1200,15 +1194,12 @@ public class Line2DExpression extends Spatial2DExpression<LineString, Line2DResu
 			if (first != null) {
 				hashSet.addAll(first.getTablesInvolved());
 			}
-//			if (second != null) {
-//				hashSet.addAll(second.getTablesInvolved());
-//			}
 			return hashSet;
 		}
 
 		@Override
 		public boolean isAggregator() {
-			return first.isAggregator();//|| second.isAggregator();
+			return first.isAggregator();
 		}
 
 		@Override
@@ -1224,7 +1215,7 @@ public class Line2DExpression extends Spatial2DExpression<LineString, Line2DResu
 
 		LineFunctionWithStringResult(Line2DExpression first) {
 			this.first = first;
-			if (this.first == null) {// || this.second.getIncludesNull()) {
+			if (this.first == null) {
 				this.requiresNullProtection = true;
 			}
 		}
@@ -1279,13 +1270,11 @@ public class Line2DExpression extends Spatial2DExpression<LineString, Line2DResu
 	private static abstract class LineFunctionWithPolygon2DResult extends Polygon2DExpression {
 
 		private Line2DExpression first;
-//		private Point2DExpression second;
 		private boolean requiresNullProtection;
 
 		LineFunctionWithPolygon2DResult(Line2DExpression first) {
 			this.first = first;
-//			this.second = second;
-			if (this.first == null) {// || this.second.getIncludesNull()) {
+			if (this.first == null) {
 				this.requiresNullProtection = true;
 			}
 		}
@@ -1294,9 +1283,6 @@ public class Line2DExpression extends Spatial2DExpression<LineString, Line2DResu
 			return first;
 		}
 
-//		Point2DExpression getSecond() {
-//			return second;
-//		}
 		@Override
 		public final String toSQLString(DBDefinition db) {
 			if (this.getIncludesNull()) {
@@ -1315,7 +1301,6 @@ public class Line2DExpression extends Spatial2DExpression<LineString, Line2DResu
 				throw new RuntimeException(ex);
 			}
 			newInstance.first = first.copy();
-//			newInstance.second = second.copy();
 			return newInstance;
 		}
 
@@ -1327,9 +1312,6 @@ public class Line2DExpression extends Spatial2DExpression<LineString, Line2DResu
 			if (first != null) {
 				hashSet.addAll(first.getTablesInvolved());
 			}
-//			if (second != null) {
-//				hashSet.addAll(second.getTablesInvolved());
-//			}
 			return hashSet;
 		}
 
