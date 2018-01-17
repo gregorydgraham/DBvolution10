@@ -124,7 +124,7 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 	 *
 	 * @param variable a date expression or QueryableDatatype
 	 */
-	protected DateExpression(AnyResult variable) {
+	protected DateExpression(AnyResult<?> variable) {
 		super(variable);
 	}
 
