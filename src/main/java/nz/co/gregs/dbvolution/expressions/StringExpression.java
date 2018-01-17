@@ -3230,9 +3230,9 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 			}
 		}
 
-		public String doSubstringTransform(DBDefinition db, AnyResult enclosedValue, IntegerResult startingPosition, IntegerResult substringLength) {
+		public String doSubstringTransform(DBDefinition db, AnyResult<?> enclosedValue, IntegerResult startingPosition, IntegerResult substringLength) {
 			return db.doSubstringTransform(
-					enclosedValue.toSQLString(db),
+					enclosedValue.stringResult().toSQLString(db),
 					(startingPosition.toSQLString(db) + " + 1"),
 					(substringLength != null ? (substringLength.toSQLString(db) + " - " + startingPosition.toSQLString(db)) : "")
 			);
