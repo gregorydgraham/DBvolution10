@@ -105,7 +105,7 @@ public class DateRepeatExpression extends RangeExpression<Period, DateRepeatResu
 	 *
 	 * @param interval the time period from which to create a DateRepeat value
 	 */
-	protected DateRepeatExpression(AnyResult interval) {
+	protected DateRepeatExpression(AnyResult<?> interval) {
 		super(interval);
 	}
 
