@@ -73,7 +73,7 @@ public class Point2DExpression extends Spatial2DExpression<Point, Point2DResult,
 		super(point==null?null:new DBPoint2D(point));
 	}
 
-	private Point2DExpression(Double xValue, Double yValue) {
+	private Point2DExpression(double xValue, double yValue) {
 		super(new DBPoint2D(xValue, yValue));
 	}
 
@@ -503,6 +503,27 @@ public class Point2DExpression extends Spatial2DExpression<Point, Point2DResult,
 	@Override
 	public NumberExpression minY() {
 		return this.getY();
+	}
+	
+	/**
+	 * Creates an expression that will return the most common value of the column
+	 * supplied.
+	 *
+	 * <p>
+	 * MODE: The number which appears most often in a set of numbers. For example:
+	 * in {6, 3, 9, 6, 6, 5, 9, 3} the Mode is 6.</p>
+	 * 
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
+	 * @return a number expression.
+	 */
+	@Override
+	public Point2DExpression modeSimple() {
+		Point2DExpression modeExpr = new Point2DExpression(
+				new ModeSimpleExpression(this));
+
+		return modeExpr;
 	}
 
 	@Override
