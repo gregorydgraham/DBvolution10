@@ -343,6 +343,27 @@ public class MultiPoint2DExpression extends Spatial2DExpression<MultiPoint, Mult
 			}
 		});
 	}
+	
+	/**
+	 * Creates an expression that will return the most common value of the column
+	 * supplied.
+	 *
+	 * <p>
+	 * MODE: The number which appears most often in a set of numbers. For example:
+	 * in {6, 3, 9, 6, 6, 5, 9, 3} the Mode is 6.</p>
+	 * 
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
+	 * @return a number expression.
+	 */
+	@Override
+	public Line2DExpression modeSimple() {
+		Line2DExpression modeExpr = new Line2DExpression(
+				new ModeSimpleExpression(this));
+
+		return modeExpr;
+	}
 
 	/**
 	 * Create a NumberExpression that represents the number of points stored in
