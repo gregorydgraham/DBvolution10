@@ -44,13 +44,14 @@ import nz.co.gregs.dbvolution.results.StringResult;
  */
 public class DBUntypedValue extends QueryableDatatype<Object> implements StringResult{
 
-	
+	private final long serialVersionUID = 1l;
 
 	/**
 	 * Sets the value of this DBString to the value provided.
 	 *
-	 * @param obj	str
+	 * @param obj
 	 */
+	@Override
 	public void setValue(Object obj) {
 		super.setLiteralValue(obj.toString());
 	}

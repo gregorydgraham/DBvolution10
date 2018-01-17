@@ -287,8 +287,8 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 	 * @return a number expression.
 	 */
 	@Override
-	public IntegerExpression modeSimple() {
-		IntegerExpression modeExpr = new IntegerExpression(
+	public NumberExpression modeSimple() {
+		NumberExpression modeExpr = new NumberExpression(
 				new ModeSimpleExpression(this));
 
 		return modeExpr;

@@ -19,7 +19,6 @@ import nz.co.gregs.dbvolution.results.StringResult;
 import nz.co.gregs.dbvolution.results.NumberResult;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -54,6 +53,7 @@ import nz.co.gregs.dbvolution.results.IntegerResult;
  */
 public class StringExpression extends RangeExpression<String, StringResult, DBString> implements StringResult {
 
+	// needed because of Oracle's difficulty with empty/null strings
 	private final boolean stringNullProtectionRequired;
 
 	/**
@@ -81,15 +81,12 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 		};
 	}
 
-//	private final StringResult string1;
-//	private final boolean nullProtectionRequired;
 	/**
 	 * Default Constructor
 	 *
 	 */
 	protected StringExpression() {
 		super();
-//		string1 = null;
 		stringNullProtectionRequired = false;
 	}
 
@@ -104,7 +101,6 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 	 */
 	public StringExpression(StringResult stringVariable) {
 		super(stringVariable);
-//		string1 = stringVariable;
 		stringNullProtectionRequired = stringVariable == null || stringVariable.getIncludesNull();
 	}
 
@@ -119,7 +115,6 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 	 */
 	protected StringExpression(AnyResult<?> stringVariable) {
 		super(stringVariable);
-//		string1 = stringVariable;
 		stringNullProtectionRequired = stringVariable == null || stringVariable.getIncludesNull();
 	}
 
@@ -133,7 +128,6 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 	 */
 	public StringExpression(String stringVariable) {
 		super(new DBString(stringVariable));
-//		string1 = new DBString(stringVariable);
 		stringNullProtectionRequired = stringVariable == null || stringVariable.isEmpty();
 	}
 
@@ -212,6 +206,27 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 	@Override
 	public boolean getIncludesNull() {
 		return stringNullProtectionRequired||super.getIncludesNull(); 
+	}
+
+	/**
+	 * Creates an expression that will return the most common value of the column
+	 * supplied.
+	 *
+	 * <p>
+	 * MODE: The number which appears most often in a set of numbers. For example:
+	 * in {6, 3, 9, 6, 6, 5, 9, 3} the Mode is 6.</p>
+	 * 
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
+	 * @return a number expression.
+	 */
+	@Override
+	public StringExpression modeSimple() {
+		StringExpression modeExpr = new StringExpression(
+				new ModeSimpleExpression(this));
+
+		return modeExpr;
 	}
 
 	/**

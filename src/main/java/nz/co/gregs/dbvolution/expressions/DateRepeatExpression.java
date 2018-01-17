@@ -133,8 +133,8 @@ public class DateRepeatExpression extends RangeExpression<Period, DateRepeatResu
 	 * @return a number expression.
 	 */
 	@Override
-	public DateExpression modeSimple() {
-		DateExpression modeExpr = new DateExpression(
+	public DateRepeatExpression modeSimple() {
+		DateRepeatExpression modeExpr = new DateRepeatExpression(
 				new ModeSimpleExpression(this));
 
 		return modeExpr;
