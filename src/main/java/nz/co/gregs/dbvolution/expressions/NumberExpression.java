@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.Set;
 import nz.co.gregs.dbvolution.*;
 import nz.co.gregs.dbvolution.datatypes.*;
+import nz.co.gregs.dbvolution.results.AnyResult;
 import nz.co.gregs.dbvolution.results.IntegerResult;
 
 /**
@@ -160,17 +161,12 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 		return IntegerExpression.value(number).numberResult();
 	}
 
-	private final NumberResult innerNumberResult;
-	private final boolean nullProtectionRequired;
-
 	/**
 	 * Default Constructor
 	 *
 	 */
 	protected NumberExpression() {
 		super();
-		innerNumberResult = null;
-		nullProtectionRequired = false;
 	}
 
 	/**
@@ -183,8 +179,6 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 	 */
 	public NumberExpression(Number value) {
 		super(new DBNumber(value));
-		innerNumberResult = new DBNumber(value);
-		nullProtectionRequired = value == null || innerNumberResult.getIncludesNull();
 	}
 
 	/**
@@ -198,18 +192,24 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 	 */
 	public NumberExpression(NumberResult value) {
 		super(value);
-		innerNumberResult = value;
-		nullProtectionRequired = value == null || innerNumberResult.getIncludesNull();
 	}
 
-	@Override
-	public String toSQLString(DBDefinition db) {
-		return getInnerNumberResult().toSQLString(db);
+	/**
+	 * Create a NumberExpression based on an existing {@link NumberResult}.
+	 *
+	 * <p>
+	 * {@link NumberResult} is generally a NumberExpression but it may also be a
+	 * {@link DBNumber} or {@link DBInteger}.
+	 *
+	 * @param value a number expression or QDT
+	 */
+	protected NumberExpression(AnyResult value) {
+		super(value);
 	}
 
 	@Override
 	public NumberExpression copy() {
-		return new NumberExpression(getInnerNumberResult());
+		return new NumberExpression(getInnerResult());
 	}
 
 	/**
@@ -246,14 +246,14 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 		return numberExpression;
 	}
 
-	@Override
-	public boolean isPurelyFunctional() {
-		if (innerNumberResult == null) {
-			return true;
-		} else {
-			return innerNumberResult.isPurelyFunctional();
-		}
-	}
+//	@Override
+//	public boolean isPurelyFunctional() {
+//		if (innerNumberResult == null) {
+//			return true;
+//		} else {
+//			return innerNumberResult.isPurelyFunctional();
+//		}
+//	}
 
 	/**
 	 * Converts the number expression into a string/character expression within
@@ -271,6 +271,27 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 	@Override
 	public StringExpression stringResult() {
 		return new StringExpression(new StringResultFunction(this));
+	}
+
+	/**
+	 * Creates an expression that will return the most common value of the column
+	 * supplied.
+	 *
+	 * <p>
+	 * MODE: The number which appears most often in a set of numbers. For example:
+	 * in {6, 3, 9, 6, 6, 5, 9, 3} the Mode is 6.</p>
+	 * 
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
+	 * @return a number expression.
+	 */
+	@Override
+	public IntegerExpression modeSimple() {
+		IntegerExpression modeExpr = new IntegerExpression(
+				new ModeSimpleExpression(this));
+
+		return modeExpr;
 	}
 
 	/**
@@ -1914,11 +1935,6 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 		return this;
 	}
 
-	@Override
-	public NumberResult getInnerResult() {
-		return innerNumberResult;
-	}
-
 	public static class SinhFunction extends DBUnaryFunction {
 
 		public SinhFunction(NumberExpression only) {
@@ -3191,35 +3207,6 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 	@Override
 	public DBNumber getQueryableDatatypeForExpressionValue() {
 		return new DBNumber();
-	}
-
-	@Override
-	public boolean isAggregator() {
-		return getInnerNumberResult() == null ? false : getInnerNumberResult().isAggregator();
-	}
-
-	@Override
-	public Set<DBRow> getTablesInvolved() {
-		HashSet<DBRow> hashSet = new HashSet<>();
-		if (getInnerNumberResult() != null) {
-			hashSet.addAll(getInnerNumberResult().getTablesInvolved());
-		}
-		return hashSet;
-	}
-
-	/**
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 *
-	 * @return the innerNumberResult
-	 */
-	public NumberResult getInnerNumberResult() {
-		return getInnerResult();
-	}
-
-	@Override
-	public boolean getIncludesNull() {
-		return nullProtectionRequired;
 	}
 
 	/**
