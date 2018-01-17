@@ -30,6 +30,7 @@ import nz.co.gregs.dbvolution.DBReport;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.databases.supports.SupportsDateRepeatDatatypeFunctions;
 import nz.co.gregs.dbvolution.datatypes.*;
+import nz.co.gregs.dbvolution.results.AnyResult;
 import nz.co.gregs.dbvolution.results.IntegerResult;
 import org.joda.time.Period;
 
@@ -94,15 +95,11 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 	 */
 	static final public Number SATURDAY = 7;
 
-	private final DateResult date1;
-	private final boolean needsNullProtection;
-
 	/**
 	 * Default Constructor
 	 */
 	protected DateExpression() {
-		date1 = null;
-		needsNullProtection = false;
+		super();
 	}
 
 	/**
@@ -115,8 +112,20 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 	 * @param dateVariable a date expression or QueryableDatatype
 	 */
 	public DateExpression(DateResult dateVariable) {
-		date1 = dateVariable;
-		needsNullProtection = date1 == null || date1.getIncludesNull();
+		super(dateVariable);
+	}
+
+	/**
+	 * Create a DateExpression based on an existing {@link DateResult}.
+	 *
+	 * <p>
+	 * {@link DateResult} is generally a DateExpression but it may also be a
+	 * {@link DBDate} or {@link DBDateOnly}.
+	 *
+	 * @param variable a date expression or QueryableDatatype
+	 */
+	protected DateExpression(AnyResult variable) {
+		super(variable);
 	}
 
 	/**
@@ -129,27 +138,17 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 	 * @param date the date to be used in this expression
 	 */
 	public DateExpression(Date date) {
-		date1 = new DBDate(date);
-		needsNullProtection = date == null || date1.getIncludesNull();
+		super(new DBDate(date));
 	}
 
 	@Override
 	public String toSQLString(DBDefinition db) {
-		return date1.toSQLString(db);
+		return getInnerResult().toSQLString(db);
 	}
 
 	@Override
 	public DateExpression copy() {
-		return new DateExpression(this.date1);
-	}
-
-	@Override
-	public boolean isPurelyFunctional() {
-		if (date1 == null) {
-			return true;
-		} else {
-			return date1.isPurelyFunctional();
-		}
+		return new DateExpression(this.getInnerResult());
 	}
 
 	@Override
@@ -865,6 +864,27 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 		} else {
 			return isExpr;
 		}
+	}
+
+	/**
+	 * Creates an expression that will return the most common value of the column
+	 * supplied.
+	 *
+	 * <p>
+	 * MODE: The number which appears most often in a set of numbers. For example:
+	 * in {6, 3, 9, 6, 6, 5, 9, 3} the Mode is 6.</p>
+	 * 
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
+	 * @return a number expression.
+	 */
+	@Override
+	public DateExpression modeSimple() {
+		DateExpression modeExpr = new DateExpression(
+				new ModeSimpleExpression(this));
+
+		return modeExpr;
 	}
 
 	/**
@@ -1866,21 +1886,6 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 	@Override
 	public DBDate getQueryableDatatypeForExpressionValue() {
 		return new DBDate();
-	}
-
-	@Override
-	public boolean isAggregator() {
-		return date1 == null ? false : date1.isAggregator();
-	}
-
-	@Override
-	public Set<DBRow> getTablesInvolved() {
-		return date1 == null ? new HashSet<DBRow>() : date1.getTablesInvolved();
-	}
-
-	@Override
-	public boolean getIncludesNull() {
-		return needsNullProtection;
 	}
 
 	/**
@@ -2957,11 +2962,6 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 				.append(".")
 				.append(this.subsecond());
 		return isoFormatDateTime;
-	}
-
-	@Override
-	public DateResult getInnerResult() {
-		return date1;
 	}
 
 	@Override
