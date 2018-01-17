@@ -24,6 +24,7 @@ import java.util.Set;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.datatypes.spatial2D.DBLineSegment2D;
+import nz.co.gregs.dbvolution.results.AnyResult;
 
 /**
  * Represents expressions that produce a geometry consisting of 2 points and
@@ -34,18 +35,17 @@ import nz.co.gregs.dbvolution.datatypes.spatial2D.DBLineSegment2D;
  *
  * @author gregory.graham
  */
-public class LineSegment2DExpression extends Spatial2DExpression<LineSegment, LineSegment2DResult, DBLineSegment2D> implements LineSegment2DResult{
+public class LineSegment2DExpression extends Spatial2DExpression<LineSegment, LineSegment2DResult, DBLineSegment2D> implements LineSegment2DResult {
 
-	private final LineSegment2DResult innerLineString;
-	private final boolean nullProtectionRequired;
+	private final boolean moreNullProtectionRequired;
 
 	/**
 	 * Default constructor.
 	 *
 	 */
 	protected LineSegment2DExpression() {
-		innerLineString = null;
-		nullProtectionRequired = false;
+		super();
+		moreNullProtectionRequired = false;
 	}
 
 	/**
@@ -54,8 +54,8 @@ public class LineSegment2DExpression extends Spatial2DExpression<LineSegment, Li
 	 * @param value
 	 */
 	public LineSegment2DExpression(LineSegment2DResult value) {
-		innerLineString = value;
-		nullProtectionRequired = value == null || innerLineString.getIncludesNull();
+		super(value);
+		moreNullProtectionRequired = value == null;
 	}
 
 	/**
@@ -64,8 +64,8 @@ public class LineSegment2DExpression extends Spatial2DExpression<LineSegment, Li
 	 * @param line
 	 */
 	public LineSegment2DExpression(LineSegment line) {
-		innerLineString = new DBLineSegment2D(line);
-		nullProtectionRequired = line == null || innerLineString.getIncludesNull();
+		super(new DBLineSegment2D(line));
+		moreNullProtectionRequired = line == null;
 	}
 
 	/**
@@ -76,15 +76,9 @@ public class LineSegment2DExpression extends Spatial2DExpression<LineSegment, Li
 	 * @param point2x
 	 * @param point2y
 	 */
-	public LineSegment2DExpression(Double point1x, Double point1y, Double point2x, Double point2y) {
-		LineSegment line = null;
-		if (point1x != null && point1y != null && point2x != null && point2y != null) {
-			line = new LineSegment(point1x, point1y, point2x, point2y);
-			nullProtectionRequired = false;
-		} else {
-			nullProtectionRequired = true;
-		}
-		innerLineString = new DBLineSegment2D(line);
+	public LineSegment2DExpression(double point1x, double point1y, double point2x, double point2y) {
+		super(new DBLineSegment2D(point1x, point1y, point2x, point2y));
+		moreNullProtectionRequired = false;
 	}
 
 	/**
@@ -95,14 +89,8 @@ public class LineSegment2DExpression extends Spatial2DExpression<LineSegment, Li
 	 *
 	 */
 	public LineSegment2DExpression(Point point1, Point point2) {
-		LineSegment line = null;
-		if (point1 != null && point2 != null) {
-			line = new LineSegment(point1.getCoordinate(), point2.getCoordinate());
-			innerLineString = new DBLineSegment2D(line);
-		} else {
-			innerLineString = new DBLineSegment2D(line);
-		}
-		nullProtectionRequired = point1 == null || point2 == null || innerLineString.getIncludesNull();
+		super(new DBLineSegment2D(point1, point2));
+		moreNullProtectionRequired = point1 == null || point2 == null;
 	}
 
 	/**
@@ -112,14 +100,12 @@ public class LineSegment2DExpression extends Spatial2DExpression<LineSegment, Li
 	 * @param coord2
 	 */
 	public LineSegment2DExpression(Coordinate coord1, Coordinate coord2) {
-		LineSegment line = null;
-		if (coord1 != null && coord2 != null) {
-			line = new LineSegment(coord1, coord2);
-			innerLineString = new DBLineSegment2D(line);
-		} else {
-			innerLineString = new DBLineSegment2D(line);
-		}
-		nullProtectionRequired = coord1 == null || coord2 == null || innerLineString.getIncludesNull();
+		super(new DBLineSegment2D(coord1, coord2));
+		moreNullProtectionRequired = coord1 == null || coord2 == null;
+	}
+
+	protected LineSegment2DExpression(AnyResult<?> innerResult) {
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
 	/**
@@ -157,8 +143,8 @@ public class LineSegment2DExpression extends Spatial2DExpression<LineSegment, Li
 	}
 
 	/**
-	 * Create an value for the line segment created by combining the 4
- numbers into 2 points.
+	 * Create an value for the line segment created by combining the 4 numbers
+	 * into 2 points.
 	 *
 	 * @param x1 the first X of this value
 	 * @param y1 the first Y of this value
@@ -171,6 +157,7 @@ public class LineSegment2DExpression extends Spatial2DExpression<LineSegment, Li
 	public LineSegment2DExpression expression(Double x1, Double y1, Double x2, Double y2) {
 		return new LineSegment2DExpression(new Coordinate(x1, y1), new Coordinate(x2, y2));
 	}
+
 	public static LineSegment2DExpression value(Double x1, Double y1, Double x2, Double y2) {
 		return new LineSegment2DExpression(new Coordinate(x1, y1), new Coordinate(x2, y2));
 	}
@@ -179,7 +166,7 @@ public class LineSegment2DExpression extends Spatial2DExpression<LineSegment, Li
 	 * Create an value for the line segment created from the 2 points.
 	 *
 	 * @param line the value of this line value
- <p style="color: #F90;">Support DBvolution at
+	 * <p style="color: #F90;">Support DBvolution at
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a LineSegment2D value
 	 */
@@ -192,7 +179,7 @@ public class LineSegment2DExpression extends Spatial2DExpression<LineSegment, Li
 	 * Create an value for the line segment created from the 2 points.
 	 *
 	 * @param line the value of this line value
- <p style="color: #F90;">Support DBvolution at
+	 * <p style="color: #F90;">Support DBvolution at
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a LineSegment2D value
 	 */
@@ -207,24 +194,16 @@ public class LineSegment2DExpression extends Spatial2DExpression<LineSegment, Li
 	}
 
 	@Override
-	public String toSQLString(DBDefinition db) {
-		if (innerLineString == null) {
-			return db.getNull();
-		} else {
-			return innerLineString.toSQLString(db);
-		}
-	}
-
-	@Override
 	public LineSegment2DExpression copy() {
-		return isNullSafetyTerminator()?nullLineSegment2D():new LineSegment2DExpression(innerLineString);
+		return isNullSafetyTerminator() ? nullLineSegment2D() : new LineSegment2DExpression(getInnerResult());
 	}
 
 	@Override
 	public boolean equals(Object other) {
 		if (other instanceof LineSegment2DExpression) {
 			LineSegment2DExpression otherExpr = (LineSegment2DExpression) other;
-			return this.innerLineString == otherExpr.innerLineString;
+			return this.getInnerResult() == otherExpr.getInnerResult()
+					&& this.getIncludesNull() == otherExpr.getIncludesNull();
 		}
 		return false;
 	}
@@ -232,40 +211,26 @@ public class LineSegment2DExpression extends Spatial2DExpression<LineSegment, Li
 	@Override
 	public int hashCode() {
 		int hash = 5;
-		hash = 37 * hash + (this.innerLineString != null ? this.innerLineString.hashCode() : 0);
-		hash = 37 * hash + (this.nullProtectionRequired ? 1 : 0);
+		hash = 37 * hash + (this.getInnerResult() != null ? this.getInnerResult().hashCode() : 0);
+		hash = 37 * hash + (this.getIncludesNull() ? 1 : 0);
 		return hash;
 	}
 
 	@Override
-	public boolean isAggregator() {
-		return innerLineString == null ? false : innerLineString.isAggregator();
-	}
-
-	@Override
-	public Set<DBRow> getTablesInvolved() {
-		HashSet<DBRow> hashSet = new HashSet<DBRow>();
-		if (innerLineString != null) {
-			hashSet.addAll(innerLineString.getTablesInvolved());
-		}
-		return hashSet;
-	}
-
-	@Override
-	public boolean isPurelyFunctional() {
-		return innerLineString == null ? true : innerLineString.isPurelyFunctional();
+	protected boolean isNullSafetyTerminator() {
+		return moreNullProtectionRequired == false && super.isNullSafetyTerminator();
 	}
 
 	@Override
 	public boolean getIncludesNull() {
-		return nullProtectionRequired;
+		return moreNullProtectionRequired || super.getIncludesNull();
 	}
 
 	@Override
 	public StringExpression toWKTFormat() {
 		return stringResult();
 	}
-	
+
 	@Override
 	public LineSegment2DExpression nullExpression() {
 
@@ -493,6 +458,27 @@ public class LineSegment2DExpression extends Spatial2DExpression<LineSegment, Li
 			}
 		});
 	}
+	
+	/**
+	 * Creates an expression that will return the most common value of the column
+	 * supplied.
+	 *
+	 * <p>
+	 * MODE: The number which appears most often in a set of numbers. For example:
+	 * in {6, 3, 9, 6, 6, 5, 9, 3} the Mode is 6.</p>
+	 * 
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
+	 * @return a number expression.
+	 */
+	@Override
+	public LineSegment2DExpression modeSimple() {
+		LineSegment2DExpression modeExpr = new LineSegment2DExpression(
+				new ModeSimpleExpression(this));
+
+		return modeExpr;
+	}
 
 	/**
 	 * Tests whether this line segment and the line segment represented by the
@@ -574,7 +560,7 @@ public class LineSegment2DExpression extends Spatial2DExpression<LineSegment, Li
 
 	/**
 	 * Returns an value providing the point of intersection between this line
- segment and the line segment formed from the two points provided.
+	 * segment and the line segment formed from the two points provided.
 	 *
 	 * @param point1 the first point of the line segment to compare against
 	 * @param point2 the last point of the line segment to compare against
@@ -588,7 +574,7 @@ public class LineSegment2DExpression extends Spatial2DExpression<LineSegment, Li
 
 	/**
 	 * Returns an value providing the point of intersection between this line
- segment and the line segment formed from the four ordinates provided.
+	 * segment and the line segment formed from the four ordinates provided.
 	 *
 	 * @param point1x the first X of the line segment to compare against
 	 * @param point1y the first Y of the line segment to compare against
@@ -604,7 +590,7 @@ public class LineSegment2DExpression extends Spatial2DExpression<LineSegment, Li
 
 	/**
 	 * Returns an value providing the point of intersection between this line
- segment and the line segment formed from the two coordinates provided.
+	 * segment and the line segment formed from the two coordinates provided.
 	 *
 	 * @param coord1 the first point of the line segment to compare against
 	 * @param coord2 the last point of the line segment to compare against
@@ -618,7 +604,7 @@ public class LineSegment2DExpression extends Spatial2DExpression<LineSegment, Li
 
 	/**
 	 * Returns an value providing the point of intersection between this line
- segment and the line segment provided.
+	 * segment and the line segment provided.
 	 *
 	 * @param lineString the line segment to compare against
 	 * <p style="color: #F90;">Support DBvolution at
@@ -631,7 +617,7 @@ public class LineSegment2DExpression extends Spatial2DExpression<LineSegment, Li
 
 	/**
 	 * Returns an value providing the point of intersection between this line
- segment and the {@link LineSegment2DResult}/{@link LineSegment2DExpression}
+	 * segment and the {@link LineSegment2DResult}/{@link LineSegment2DExpression}
 	 * provided.
 	 *
 	 * @param crossingLine the line segment to compare against
@@ -653,12 +639,7 @@ public class LineSegment2DExpression extends Spatial2DExpression<LineSegment, Li
 	public DBLineSegment2D asExpressionColumn() {
 		return new DBLineSegment2D(this);
 	}
-
-	@Override
-	public LineSegment2DResult getInnerResult() {
-		return innerLineString;
-	}
-
+	
 	private static abstract class LineSegmentLineSegmentWithBooleanResult extends BooleanExpression {
 
 		private LineSegment2DExpression first;
@@ -804,7 +785,7 @@ public class LineSegment2DExpression extends Spatial2DExpression<LineSegment, Li
 
 		LineSegmentWithNumberResult(LineSegment2DExpression first) {
 			this.first = first;
-			if (this.first == null) {// || this.second.getIncludesNull()) {
+			if (this.first == null) {
 				this.requiresNullProtection = true;
 			}
 		}
