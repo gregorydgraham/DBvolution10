@@ -3210,7 +3210,7 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 			this.length = endIndex0Based.copy();
 		}
 
-		private Substring(AnyResult stringInput, IntegerResult startingIndex0Based, IntegerResult endIndex0Based) {
+		private Substring(AnyResult<?> stringInput, IntegerResult startingIndex0Based, IntegerResult endIndex0Based) {
 			super(stringInput.stringResult());
 			this.startingPosition = startingIndex0Based.copy();
 			this.length = endIndex0Based.copy();
