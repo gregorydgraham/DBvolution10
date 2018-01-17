@@ -1634,16 +1634,19 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 
 	public static class SinhFunction extends DBUnaryFunction {
 
+		private final IntegerExpression limitedTo700;
+
 		public SinhFunction(IntegerExpression only) {
-			this.only = only.isGreaterThan(700).ifThenElse(nullExpression(), only);
+			super(only);
+			limitedTo700 = only.isGreaterThan(700).ifThenElse(nullExpression(), only);
 		}
 
 		@Override
 		public String toSQLString(DBDefinition db) {
 			if (db.supportsHyperbolicFunctionsNatively()) {
-				return super.toSQLString(db); //To change body of generated methods, choose Tools | Templates.
+			return this.beforeValue(db) + (limitedTo700 == null ? "" : limitedTo700.toSQLString(db)) + this.afterValue(db);
 			} else {
-				IntegerExpression first = this.only;
+				IntegerExpression first = this.limitedTo700;
 				//(e^x - e^-x)/2
 				return first.exp().minus(first.times(-1).exp().bracket()).bracket().dividedBy(2).bracket()
 						.toSQLString(db);
@@ -2370,6 +2373,27 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 	}
 
 	/**
+	 * Creates an expression that will return the most common value of the column
+	 * supplied.
+	 *
+	 * <p>
+	 * MODE: The number which appears most often in a set of numbers. For example:
+	 * in {6, 3, 9, 6, 6, 5, 9, 3} the Mode is 6.</p>
+	 * 
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
+	 * @return a number expression.
+	 */
+	@Override
+	public IntegerExpression modeSimple() {
+		IntegerExpression modeExpr = new IntegerExpression(
+				new ModeSimpleExpression(this));
+
+		return modeExpr;
+	}
+
+	/**
 	 * Based on the value of this expression, select a string from the list
 	 * provided.
 	 *
@@ -2745,16 +2769,23 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 		}
 	}
 
-	private static abstract class DBUnaryFunction extends IntegerExpression {
+	static abstract class DBUnaryFunction extends IntegerExpression {
 
-		protected IntegerExpression only;
+//		protected IntegerExpression only;
 
 		DBUnaryFunction() {
-			this.only = null;
+			super();
+//			this.only = null;
 		}
 
 		DBUnaryFunction(IntegerExpression only) {
-			this.only = only;
+			super(only);
+//			this.only = only;
+		}
+
+		DBUnaryFunction(AnyExpression only) {
+			super(only);
+//			this.only = only;
 		}
 
 		@Override
@@ -2774,47 +2805,8 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 
 		@Override
 		public String toSQLString(DBDefinition db) {
+			final AnyResult<?> only = getInnerResult();
 			return this.beforeValue(db) + (only == null ? "" : only.toSQLString(db)) + this.afterValue(db);
-		}
-
-		@Override
-		public DBUnaryFunction copy() {
-			DBUnaryFunction newInstance;
-			try {
-				newInstance = getClass().newInstance();
-			} catch (InstantiationException | IllegalAccessException ex) {
-				throw new RuntimeException(ex);
-			}
-			newInstance.only = only.copy();
-			return newInstance;
-		}
-
-		@Override
-		public Set<DBRow> getTablesInvolved() {
-			HashSet<DBRow> hashSet = new HashSet<>();
-			if (only != null) {
-				hashSet.addAll(only.getTablesInvolved());
-			}
-			return hashSet;
-		}
-
-		@Override
-		public boolean isAggregator() {
-			return only.isAggregator();
-		}
-
-		@Override
-		public boolean getIncludesNull() {
-			return false;
-		}
-
-		@Override
-		public boolean isPurelyFunctional() {
-			if (only == null) {
-				return true;
-			} else {
-				return only.isPurelyFunctional();
-			}
 		}
 	}
 

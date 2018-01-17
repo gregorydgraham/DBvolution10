@@ -101,7 +101,7 @@ public class BooleanExpressionTest extends AbstractTest {
 		DBQuery dbQuery = database.getDBQuery(marque);
 
 		dbQuery.addCondition(BooleanExpression.nullBoolean().isNull());
-
+		
 		List<DBQueryRow> allRows = dbQuery.getAllRows();
 
 		Assert.assertThat(allRows.size(), is(22));
@@ -360,7 +360,7 @@ public class BooleanExpressionTest extends AbstractTest {
 
 		dbQuery = database.getDBQuery(carCo);
 		dbQuery.addCondition(carCo.column(carCo.name).isIn(strs));
-
+		System.out.println(dbQuery.getSQLForQuery());
 		allRows = dbQuery.getAllRows();
 
 		Assert.assertThat(allRows.size(), is(3));

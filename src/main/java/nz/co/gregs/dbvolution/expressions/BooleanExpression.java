@@ -34,6 +34,7 @@ import nz.co.gregs.dbvolution.datatypes.DBInteger;
 import nz.co.gregs.dbvolution.datatypes.DBNumber;
 import nz.co.gregs.dbvolution.datatypes.DBString;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
+import nz.co.gregs.dbvolution.results.AnyResult;
 import nz.co.gregs.dbvolution.results.IntegerResult;
 import nz.co.gregs.dbvolution.results.RangeComparable;
 import nz.co.gregs.dbvolution.results.RangeResult;
@@ -77,8 +78,8 @@ import nz.co.gregs.dbvolution.results.RangeResult;
  */
 public class BooleanExpression extends EqualExpression<Boolean, BooleanResult, DBBoolean>implements BooleanResult {
 
-	private final BooleanResult onlyBool;
-	private final boolean includeNulls;
+//	private final BooleanResult onlyBool;
+//	private final boolean includeNulls;
 
 	/**
 	 * Default Constructor for creating new BooleanExpressions.
@@ -90,8 +91,8 @@ public class BooleanExpression extends EqualExpression<Boolean, BooleanResult, D
 	 */
 	protected BooleanExpression() {
 		super();
-		onlyBool = new DBBoolean();
-		includeNulls = false;
+//		onlyBool = new DBBoolean();
+//		includeNulls = false;
 	}
 
 	/**
@@ -106,8 +107,14 @@ public class BooleanExpression extends EqualExpression<Boolean, BooleanResult, D
 	 */
 	public BooleanExpression(BooleanResult booleanResult) {
 		super(booleanResult);
-		onlyBool = booleanResult;
-		this.includeNulls = booleanResult.getIncludesNull();
+//		onlyBool = booleanResult;
+//		this.includeNulls = booleanResult.getIncludesNull();
+	}
+
+	public BooleanExpression(AnyResult<?> booleanResult) {
+		super(booleanResult);
+//		onlyBool = booleanResult;
+//		this.includeNulls = booleanResult.getIncludesNull();
 	}
 
 	/**
@@ -123,18 +130,18 @@ public class BooleanExpression extends EqualExpression<Boolean, BooleanResult, D
 	 */
 	public BooleanExpression(Boolean bool) {
 		super(new DBBoolean(bool));
-		onlyBool = new DBBoolean(bool);
-		includeNulls = bool == null;
+//		onlyBool = new DBBoolean(bool);
+//		includeNulls = bool == null;
 	}
 
-	@Override
-	public String toSQLString(DBDefinition db) {
-		return onlyBool.toSQLString(db);
-	}
+//	@Override
+//	public String toSQLString(DBDefinition db) {
+//		return getInnerResult().toSQLString(db);
+//	}
 
 	@Override
 	public BooleanExpression copy() {
-		return new BooleanExpression(this.onlyBool);
+		return new BooleanExpression(this.getInnerResult());
 	}
 	
 	/**
@@ -151,6 +158,27 @@ public class BooleanExpression extends EqualExpression<Boolean, BooleanResult, D
 			}
 
 		};
+	}
+
+	/**
+	 * Creates an expression that will return the most common value of the column
+	 * supplied.
+	 *
+	 * <p>
+	 * MODE: The number which appears most often in a set of numbers. For example:
+	 * in {6, 3, 9, 6, 6, 5, 9, 3} the Mode is 6.</p>
+	 * 
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
+	 * @return a number expression.
+	 */
+	@Override
+	public BooleanExpression modeSimple() {
+		BooleanExpression modeExpr = new BooleanExpression(
+				new ModeSimpleExpression(this));
+
+		return modeExpr;
 	}
 
 	/**
@@ -235,7 +263,8 @@ public class BooleanExpression extends EqualExpression<Boolean, BooleanResult, D
 	 */
 	@Override
 	public BooleanExpression is(Boolean bool) {
-		return is(new BooleanExpression(bool));
+		
+		return bool==null?isNull(): is(new BooleanExpression(bool));
 	}
 
 	/**
@@ -252,7 +281,7 @@ public class BooleanExpression extends EqualExpression<Boolean, BooleanResult, D
 	 * the Boolean supplied.
 	 */
 	public BooleanExpression is(BooleanExpression bool) {
-		return is((BooleanResult) bool);
+		return bool.getIncludesNull()?isNull(): is((BooleanResult) bool);
 	}
 
 	/**
@@ -605,7 +634,7 @@ public class BooleanExpression extends EqualExpression<Boolean, BooleanResult, D
 	 */
 	public NumberExpression numberValue() {
 		return new NumberExpression() {
-			BooleanExpression innerBool = new BooleanExpression(onlyBool);
+			BooleanExpression innerBool = new BooleanExpression(getInnerResult());
 
 			@Override
 			public String toSQLString(DBDefinition db) {
@@ -1523,29 +1552,6 @@ public class BooleanExpression extends EqualExpression<Boolean, BooleanResult, D
 		return new DBBoolean();
 	}
 
-	@Override
-	public boolean isAggregator() {
-		if (onlyBool != null) {
-			return onlyBool.isAggregator();
-		} else {
-			return false;
-		}
-	}
-
-	@Override
-	public boolean isPurelyFunctional() {
-		if (onlyBool == null) {
-			return true;
-		} else {
-			return onlyBool.isPurelyFunctional();
-		}
-	}
-
-	@Override
-	public Set<DBRow> getTablesInvolved() {
-		return onlyBool == null ? new HashSet<DBRow>() : onlyBool.getTablesInvolved();
-	}
-
 	/**
 	 * Indicates if this expression is a relationship between 2, or more, tables.
 	 *
@@ -1556,11 +1562,6 @@ public class BooleanExpression extends EqualExpression<Boolean, BooleanResult, D
 	 */
 	public boolean isRelationship() {
 		return this.getTablesInvolved().size() > 1;
-	}
-
-	@Override
-	public boolean getIncludesNull() {
-		return includeNulls || onlyBool.getIncludesNull();
 	}
 
 	@Override
@@ -1575,13 +1576,12 @@ public class BooleanExpression extends EqualExpression<Boolean, BooleanResult, D
 
 	@Override
 	public boolean isBooleanStatement() {
-		BooleanResult onlyBool1 = this.onlyBool;
-		return onlyBool1.isBooleanStatement();
-	}
-
-	@Override
-	public BooleanResult getInnerResult() {
-		return onlyBool;
+		AnyResult<?> onlyBool1 = this.getInnerResult();
+		if (onlyBool1 instanceof BooleanResult) {
+			return ((BooleanResult) onlyBool1).isBooleanStatement();
+		} else {
+			return false;
+		}
 	}
 
 	private static abstract class DBUnaryBooleanArithmetic extends BooleanExpression {
@@ -1821,25 +1821,6 @@ public class BooleanExpression extends EqualExpression<Boolean, BooleanResult, D
 			newInstance.onlyBool = (onlyBool == null ? null : onlyBool.copy());
 			return newInstance;
 		}
-
-		@Override
-		public boolean isAggregator() {
-			return onlyBool.isAggregator();
-		}
-
-		@Override
-		public Set<DBRow> getTablesInvolved() {
-			return onlyBool.getTablesInvolved();
-		}
-
-		@Override
-		public boolean isPurelyFunctional() {
-			if (onlyBool == null) {
-				return true;
-			} else {
-				return onlyBool.isPurelyFunctional();
-			}
-		}
 	}
 
 	private static abstract class DBBinaryBooleanArithmetic extends BooleanExpression {
@@ -1855,12 +1836,7 @@ public class BooleanExpression extends EqualExpression<Boolean, BooleanResult, D
 		DBBinaryBooleanArithmetic(BooleanExpression first, BooleanResult second) {
 			this(first, new BooleanExpression(second));
 		}
-
-		@Override
-		public DBBoolean getQueryableDatatypeForExpressionValue() {
-			return new DBBoolean();
-		}
-
+		
 		@Override
 		public String toSQLString(DBDefinition db) {
 			String sqlString = getFirst().toSQLString(db) + this.getEquationOperator(db) + getSecond().toSQLString(db);
@@ -1910,10 +1886,6 @@ public class BooleanExpression extends EqualExpression<Boolean, BooleanResult, D
 			return false;
 		}
 
-//		@Override
-//		public void setIncludesNull(boolean nullsAreIncluded) {
-//			;
-//		}
 		/**
 		 * <p style="color: #F90;">Support DBvolution at
 		 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
@@ -1938,10 +1910,6 @@ public class BooleanExpression extends EqualExpression<Boolean, BooleanResult, D
 		public boolean isPurelyFunctional() {
 			if (first == null && second == null) {
 				return true;
-//			} else if (first == null && second != null) {
-//				return second.isPurelyFunctional();
-//			} else if (first != null && second == null) {
-//				return first.isPurelyFunctional();
 			} else {
 				return (first == null ? true : first.isPurelyFunctional())
 						&& (second == null ? true : second.isPurelyFunctional());
@@ -1954,7 +1922,6 @@ public class BooleanExpression extends EqualExpression<Boolean, BooleanResult, D
 		protected BooleanExpression onlyBool = null;
 		protected StringResult first = null;
 		protected StringResult second = null;
-//		private boolean includeNulls;
 
 		DBBooleanStringStringFunction() {
 		}
@@ -2020,7 +1987,6 @@ public class BooleanExpression extends EqualExpression<Boolean, BooleanResult, D
 		protected BooleanExpression onlyBool = null;
 		protected NumberResult first = null;
 		protected NumberResult second = null;
-//		private boolean includeNulls;
 
 		DBBooleanNumberNumberFunction() {
 		}
@@ -2085,7 +2051,6 @@ public class BooleanExpression extends EqualExpression<Boolean, BooleanResult, D
 		protected BooleanExpression onlyBool = null;
 		protected IntegerResult first = null;
 		protected IntegerResult second = null;
-//		private boolean includeNulls;
 
 		DBBooleanIntegerIntegerFunction() {
 		}
@@ -2150,7 +2115,6 @@ public class BooleanExpression extends EqualExpression<Boolean, BooleanResult, D
 		protected BooleanExpression onlyBool = null;
 		protected DateResult first = null;
 		protected DateResult second = null;
-//		private boolean includeNulls;
 
 		DBBinaryDateDateFunction() {
 		}
@@ -2215,7 +2179,6 @@ public class BooleanExpression extends EqualExpression<Boolean, BooleanResult, D
 		protected BooleanExpression onlyBool = null;
 		protected Polygon2DExpression first = null;
 		protected Polygon2DExpression second = null;
-//		private boolean includeNulls;
 
 		DBBinaryGeometryGeometryFunction() {
 		}

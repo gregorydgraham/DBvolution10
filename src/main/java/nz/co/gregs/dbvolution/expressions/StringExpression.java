@@ -27,6 +27,7 @@ import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.columns.StringColumn;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.datatypes.*;
+import nz.co.gregs.dbvolution.results.AnyResult;
 import nz.co.gregs.dbvolution.results.IntegerResult;
 
 /**
@@ -51,7 +52,9 @@ import nz.co.gregs.dbvolution.results.IntegerResult;
  *
  * @author Gregory Graham
  */
-public class StringExpression extends RangeExpression<String, StringResult, DBString>implements StringResult {
+public class StringExpression extends RangeExpression<String, StringResult, DBString> implements StringResult {
+
+	private final boolean stringNullProtectionRequired;
 
 	/**
 	 * Creates a StringExpression that will return a database NULL.
@@ -69,20 +72,25 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 				return db.getNull();
 			}
 
+			@Override
+			public boolean getIncludesNull() {
+				return true;
+			}
+			
+
 		};
 	}
 
-	private final StringResult string1;
-	private final boolean nullProtectionRequired;
-
+//	private final StringResult string1;
+//	private final boolean nullProtectionRequired;
 	/**
 	 * Default Constructor
 	 *
 	 */
 	protected StringExpression() {
 		super();
-		string1 = null;
-		nullProtectionRequired = true;
+//		string1 = null;
+		stringNullProtectionRequired = false;
 	}
 
 	/**
@@ -96,8 +104,23 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 	 */
 	public StringExpression(StringResult stringVariable) {
 		super(stringVariable);
-		string1 = stringVariable;
-		nullProtectionRequired = stringVariable == null || stringVariable.getIncludesNull();
+//		string1 = stringVariable;
+		stringNullProtectionRequired = stringVariable == null || stringVariable.getIncludesNull();
+	}
+
+	/**
+	 * Creates a StringExpression from an arbitrary StringResult object.
+	 *
+	 * <p>
+	 * {@link StringResult} objects are generally StringExpressions but they can
+	 * be {@link DBString}, {@link StringColumn}, or other types.
+	 *
+	 * @param stringVariable	stringVariable
+	 */
+	protected StringExpression(AnyResult<?> stringVariable) {
+		super(stringVariable);
+//		string1 = stringVariable;
+		stringNullProtectionRequired = stringVariable == null || stringVariable.getIncludesNull();
 	}
 
 	/**
@@ -109,8 +132,9 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 	 * @param stringVariable	stringVariable
 	 */
 	public StringExpression(String stringVariable) {
-		string1 = new DBString(stringVariable);
-		nullProtectionRequired = stringVariable == null || stringVariable.isEmpty();
+		super(new DBString(stringVariable));
+//		string1 = new DBString(stringVariable);
+		stringNullProtectionRequired = stringVariable == null || stringVariable.isEmpty();
 	}
 
 	/**
@@ -119,12 +143,11 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 	 * @param stringVariable	stringVariable
 	 */
 	public StringExpression(DBString stringVariable) {
+		super(stringVariable);
 		if (stringVariable == null) {
-			string1 = null;
-			nullProtectionRequired = true;
+			stringNullProtectionRequired = true;
 		} else {
-			string1 = stringVariable.copy();
-			nullProtectionRequired = stringVariable.getIncludesNull();
+			stringNullProtectionRequired = stringVariable.getIncludesNull();
 		}
 	}
 
@@ -142,12 +165,11 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 	 * @param numberVariable	numberVariable
 	 */
 	public StringExpression(NumberResult numberVariable) {
+		super(numberVariable);
 		if (numberVariable == null) {
-			string1 = null;
-			nullProtectionRequired = true;
+			stringNullProtectionRequired = true;
 		} else {
-			string1 = numberVariable.stringResult();
-			nullProtectionRequired = string1.getIncludesNull();
+			stringNullProtectionRequired = numberVariable.getIncludesNull();
 		}
 	}
 
@@ -165,13 +187,17 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 	 * @param numberVariable	numberVariable
 	 */
 	public StringExpression(Number numberVariable) {
-		string1 = NumberExpression.value(numberVariable).stringResult();
-		nullProtectionRequired = numberVariable == null || string1.getIncludesNull();
+		super(new DBNumber(numberVariable));
+		if (numberVariable == null) {
+			stringNullProtectionRequired = true;
+		} else {
+			stringNullProtectionRequired = new DBNumber(numberVariable).getIncludesNull();
+		}
 	}
 
 	@Override
 	public String toSQLString(DBDefinition db) {
-		StringResult stringInput = getStringInput();
+		AnyResult<?> stringInput = getInnerResult();
 		if (stringInput == null) {
 			stringInput = StringExpression.value("<NULL>");
 		}
@@ -184,12 +210,8 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 	}
 
 	@Override
-	public boolean isPurelyFunctional() {
-		if (string1 == null) {
-			return true;
-		} else {
-			return string1.isPurelyFunctional();
-		}
+	public boolean getIncludesNull() {
+		return stringNullProtectionRequired||super.getIncludesNull(); 
 	}
 
 	/**
@@ -1361,11 +1383,7 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 	 */
 	@Override
 	public BooleanExpression isIn(String... possibleValues) {
-		List<StringExpression> possVals = new ArrayList<>();
-		for (String str : possibleValues) {
-			possVals.add(StringExpression.value(str));
-		}
-		return isIn(possVals.toArray(new StringExpression[]{}));
+		return isIn(expressions(possibleValues));
 	}
 
 	/**
@@ -1381,11 +1399,7 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 	 * @return a BooleanExpression of the SQL comparison.
 	 */
 	public BooleanExpression isIn(Collection<String> possibleValues) {
-		List<StringExpression> possVals = new ArrayList<>();
-		for (String str : possibleValues) {
-			possVals.add(StringExpression.value(str));
-		}
-		return isIn(possVals.toArray(new StringExpression[]{}));
+		return isIn(expressions(possibleValues));
 	}
 
 	/**
@@ -1409,7 +1423,9 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 					public String toSQLString(DBDefinition db) {
 						List<String> sqlValues = new ArrayList<>();
 						for (StringResult value : values) {
-							sqlValues.add(value.toSQLString(db));
+							if (!value.getIncludesNull()){
+								sqlValues.add(value.toSQLString(db));
+							}
 						}
 						return db.doInTransform(column.toSQLString(db), sqlValues);
 					}
@@ -1812,17 +1828,17 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 	public StringExpression getFirstIntegerAsSubstring() {
 		final StringExpression exp = new StringExpression(
 				new DBUnaryStringFunction(this) {
-					
-					@Override
-					public String toSQLString(DBDefinition db) {
-						return db.doFindIntegerInStringTransform(this.only.toSQLString(db));
-					}
-					
-					@Override
-					String getFunctionName(DBDefinition db) {
-						return "";
-					}
-				});
+
+			@Override
+			public String toSQLString(DBDefinition db) {
+				return db.doFindIntegerInStringTransform(this.only.toSQLString(db));
+			}
+
+			@Override
+			String getFunctionName(DBDefinition db) {
+				return "";
+			}
+		});
 		return exp;
 
 	}
@@ -2149,18 +2165,18 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 		});
 	}
 
-	/**
-	 * Get the StringResult used internally.
-	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 *
-	 * @return the string1
-	 */
-	protected StringResult getStringInput() {
-		return string1;
-	}
-
+//	/**
+//	 * Get the StringResult used internally.
+//	 *
+//	 * <p style="color: #F90;">Support DBvolution at
+//	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+//	 *
+//	 * @return the string1
+//	 */
+//	protected StringResult getStringInput() {
+//		AnyResult<?> innerResult = getInnerResult();
+//		return (innerResult instanceof StringResult)? (StringResult) innerResult:null;
+//	}
 	/**
 	 * Returns the 1-based index of the first occurrence of searchString within
 	 * the StringExpression.
@@ -2257,20 +2273,6 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 		return new DBString();
 	}
 
-	@Override
-	public Set<DBRow> getTablesInvolved() {
-		HashSet<DBRow> hashSet = new HashSet<>();
-		if (string1 != null) {
-			hashSet.addAll(string1.getTablesInvolved());
-		}
-		return hashSet;
-	}
-
-	@Override
-	public boolean isAggregator() {
-		return string1 == null ? false : string1.isAggregator();
-	}
-
 	/**
 	 * Creates a BooleanExpression that tests to ensure the database value is not
 	 * a database NULL value.
@@ -2353,11 +2355,6 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 		);
 	}
 
-	@Override
-	public boolean getIncludesNull() {
-		return nullProtectionRequired;
-	}
-
 	/**
 	 * Adds an explicit bracket at this point in the expression chain.
 	 *
@@ -2390,7 +2387,67 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a BooleanExpression
 	 */
-	public BooleanExpression isInIgnoreCase(StringResult[] potentialValues) {
+	public BooleanExpression isInIgnoreCase(String... potentialValues) {
+		return this.isInIgnoreCase(expressions(potentialValues));
+	}
+
+	public StringResult[] expressions(String... potentialValues){
+		List<StringResult> possVals = new ArrayList<>(0);
+		for (String str : potentialValues) {
+			if (str == null) {
+				possVals.add(nullString());
+			} else {
+				possVals.add(StringExpression.value(str));
+			}
+		}
+		return possVals.toArray(new StringResult[]{});
+	}
+
+	public StringResult[] expressions(Collection<String> potentialValues){
+		List<StringResult> possVals = new ArrayList<>(0);
+		for (String str : potentialValues) {
+			if (str == null) {
+				possVals.add(nullString());
+			} else {
+				possVals.add(StringExpression.value(str));
+			}
+		}
+		return possVals.toArray(new StringResult[]{});
+	}
+
+	/**
+	 * Provides direct access to the IN operator.
+	 *
+	 * <p>
+	 * isInIgnoreCase creates a BooleanExpression that compares the current
+	 * expression to the list of values using the IN operator. The resulting
+	 * expression will return true if the current expression's value is included
+	 * in the list of potential values, otherwise it will return false.
+	 *
+	 * @param potentialValues	potentialValues
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @return a BooleanExpression
+	 */
+	public BooleanExpression isInIgnoreCase(Collection<String> potentialValues) {
+		return this.isInIgnoreCase(expressions(potentialValues));
+	}
+
+	/**
+	 * Provides direct access to the IN operator.
+	 *
+	 * <p>
+	 * isInIgnoreCase creates a BooleanExpression that compares the current
+	 * expression to the list of values using the IN operator. The resulting
+	 * expression will return true if the current expression's value is included
+	 * in the list of potential values, otherwise it will return false.
+	 *
+	 * @param potentialValues	potentialValues
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @return a BooleanExpression
+	 */
+	public BooleanExpression isInIgnoreCase(StringResult... potentialValues) {
 		List<StringResult> lowerStrings = new ArrayList<>();
 		for (StringResult toArray1 : potentialValues) {
 			StringExpression lowercase = new StringExpression(toArray1).lowercase();
@@ -2467,11 +2524,6 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 	@Override
 	public StringExpression stringResult() {
 		return this;
-	}
-
-	@Override
-	public StringResult getInnerResult() {
-		return string1;
 	}
 
 	@Override
@@ -2678,76 +2730,6 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 
 	}
 
-//	private static abstract class DBUnaryBooleanArithmetic implements BooleanResult {
-//
-//		protected StringExpression only;
-//
-//		DBUnaryBooleanArithmetic() {
-//			this.only = null;
-//		}
-//
-//		DBUnaryBooleanArithmetic(StringExpression only) {
-//			this.only = only;
-//		}
-//
-//		@Override
-//		public DBString getQueryableDatatypeForExpressionValue() {
-//			return new DBString();
-//		}
-//
-//		abstract String getFunctionName(DBDefinition db);
-//
-//		protected String beforeValue(DBDefinition db) {
-//			return " (";
-//		}
-//
-//		protected String afterValue(DBDefinition db) {
-//			return ") ";
-//		}
-//
-//		@Override
-//		public String toSQLString(DBDefinition db) {
-//			return this.beforeValue(db) + (only == null ? "" : only.toSQLString(db)) + getFunctionName(db) + this.afterValue(db);
-//		}
-//
-//		@Override
-//		public DBUnaryBooleanArithmetic copy() {
-//			DBUnaryBooleanArithmetic newInstance;
-//			try {
-//				newInstance = getClass().newInstance();
-//			} catch (InstantiationException ex) {
-//				throw new RuntimeException(ex);
-//			} catch (IllegalAccessException ex) {
-//				throw new RuntimeException(ex);
-//			}
-//			newInstance.only = only.copy();
-//			return newInstance;
-//		}
-//
-//		@Override
-//		public Set<DBRow> getTablesInvolved() {
-//			HashSet<DBRow> hashSet = new HashSet<DBRow>();
-//			if (only != null) {
-//				hashSet.addAll(only.getTablesInvolved());
-//			}
-//			return hashSet;
-//		}
-//
-//		@Override
-//		public boolean isAggregator() {
-//			return only.isAggregator();
-//		}
-//
-//		@Override
-//		public boolean getIncludesNull() {
-//			return false;
-//		}
-//
-//		@Override
-//		public void setIncludesNull(boolean nullsAreIncluded) {
-//			throw new UnsupportedOperationException("NULL support would be meaningless for this function"); //To change body of generated methods, choose Tools | Templates.
-//		}
-//	}
 	private static abstract class DBUnaryNumberFunction extends NumberExpression {
 
 		protected StringExpression only;
@@ -3182,6 +3164,7 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 			this.startingPosition = value(startingIndex0Based);
 			this.length = new StringExpression(stringInput).length();
 		}
+
 		Substring(StringResult stringInput, Integer startingIndex0Based) {
 			super(stringInput);
 			this.startingPosition = value(startingIndex0Based);
@@ -3191,7 +3174,7 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 		Substring(StringResult stringInput, IntegerResult startingIndex0Based) {
 			super(stringInput);
 			this.startingPosition = startingIndex0Based.copy();
-			this.length =value(stringInput).length();
+			this.length = value(stringInput).length();
 		}
 
 		Substring(StringResult stringInput, Long startingIndex0Based, Long endIndex0Based) {
@@ -3212,21 +3195,27 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 			this.length = endIndex0Based.copy();
 		}
 
+		private Substring(AnyResult stringInput, IntegerResult startingIndex0Based, IntegerResult endIndex0Based) {
+			super(stringInput.stringResult());
+			this.startingPosition = startingIndex0Based.copy();
+			this.length = endIndex0Based.copy();
+		}
+
 		@Override
 		public Substring copy() {
-			return new Substring(getStringInput(), startingPosition, length);
+			return new Substring(getInnerResult(), startingPosition, length);
 		}
 
 		@Override
 		public String toSQLString(DBDefinition db) {
-			if (getStringInput() == null) {
+			if (getInnerResult() == null) {
 				return "";
 			} else {
-				return doSubstringTransform(db, getStringInput(), startingPosition, length);
+				return doSubstringTransform(db, getInnerResult(), startingPosition, length);
 			}
 		}
 
-		public String doSubstringTransform(DBDefinition db, StringResult enclosedValue, IntegerResult startingPosition, IntegerResult substringLength) {
+		public String doSubstringTransform(DBDefinition db, AnyResult enclosedValue, IntegerResult startingPosition, IntegerResult substringLength) {
 			return db.doSubstringTransform(
 					enclosedValue.toSQLString(db),
 					(startingPosition.toSQLString(db) + " + 1"),
@@ -3246,6 +3235,7 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 
 		@Override
 		public boolean isPurelyFunctional() {
+			final AnyResult<?> string1 = getInnerResult();
 			if (startingPosition == null && length == null && string1 == null) {
 				return true;
 			} else {
@@ -3307,31 +3297,30 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 
 	private static abstract class DBNnaryBooleanFunction extends BooleanExpression {
 
-		protected StringExpression column;
-		protected List<StringResult> values = new ArrayList<>();
-		private boolean includesNulls = false;
+		protected final StringExpression column;
+		protected final List<StringResult> values = new ArrayList<>();
+		private final boolean includesNulls;
 
 		DBNnaryBooleanFunction() {
-			this.values = null;
+			column = null;
+			includesNulls = false;
 		}
 
 		DBNnaryBooleanFunction(StringExpression leftHandSide, StringResult[] rightHandSide) {
 			this.column = leftHandSide;
+			boolean nulls = false;
 			for (StringResult stringResult : rightHandSide) {
 				if (stringResult == null) {
-					this.includesNulls = true;
+					nulls = true;
 				} else if (stringResult.getIncludesNull()) {
-					this.includesNulls = true;
+					nulls = true;
 				} else {
 					values.add(stringResult);
 				}
 			}
+			includesNulls = nulls;
 		}
 
-//		@Override
-//		public DBString getQueryableDatatypeForExpressionValue() {
-//			return new DBString();
-//		}
 		abstract String getFunctionName(DBDefinition db);
 
 		protected String beforeValue(DBDefinition db) {
@@ -3361,19 +3350,6 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 		}
 
 		@Override
-		public DBNnaryBooleanFunction copy() {
-			DBNnaryBooleanFunction newInstance;
-			try {
-				newInstance = getClass().newInstance();
-			} catch (InstantiationException | IllegalAccessException ex) {
-				throw new RuntimeException(ex);
-			}
-			newInstance.column = this.column.copy();
-			Collections.copy(this.values, newInstance.values);
-			return newInstance;
-		}
-
-		@Override
 		public Set<DBRow> getTablesInvolved() {
 			HashSet<DBRow> hashSet = new HashSet<>();
 			if (column != null) {
@@ -3400,10 +3376,5 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 		public boolean getIncludesNull() {
 			return includesNulls;
 		}
-
-//		@Override
-//		public void setIncludesNull(boolean nullsAreIncluded) {
-//			includesNulls = nullsAreIncluded;
-//		}
 	}
 }

@@ -28,6 +28,8 @@
  */
 package nz.co.gregs.dbvolution.expressions;
 
+import nz.co.gregs.dbvolution.results.UntypedResult;
+import nz.co.gregs.dbvolution.datatypes.DBUntypedValue;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -42,7 +44,6 @@ import nz.co.gregs.dbvolution.results.AnyResult;
 import nz.co.gregs.dbvolution.results.BooleanResult;
 import nz.co.gregs.dbvolution.results.EqualComparable;
 import nz.co.gregs.dbvolution.results.EqualResult;
-import nz.co.gregs.dbvolution.results.IntegerResult;
 
 /**
  *
@@ -60,6 +61,7 @@ public abstract class EqualExpression<B, R extends EqualResult<B>, D extends Que
 	protected EqualExpression(R only) {
 		super(only);
 	}
+	
 	/**
 	 *
 	 * @param only
@@ -121,22 +123,11 @@ public abstract class EqualExpression<B, R extends EqualResult<B>, D extends Que
 	 * @return a number expression.
 	 */
 	public IntegerExpression count() {
-		return new IntegerExpression(new DBUnaryFunction(this) {
-			@Override
-			public String toSQLString(DBDefinition db) {
-				final String toSQLString = super.toSQLString(db);
-//				System.out.println(toSQLString);
-				return toSQLString; 
-			}
+		return new IntegerExpression(new IntegerExpression.DBUnaryFunction(this) {
 			
 			@Override
 			String getFunctionName(DBDefinition db) {
 				return db.getCountFunctionName();
-			}
-
-			@Override
-			protected String afterValue(DBDefinition db) {
-				return "(" + only.toSQLString(db) + ")";
 			}
 
 			@Override
@@ -147,77 +138,21 @@ public abstract class EqualExpression<B, R extends EqualResult<B>, D extends Que
 	}
 
 	/**
-	 * Creates an expression that will count all the values of the column
+	 * Creates an expression that will return the most common value of the column
 	 * supplied.
 	 *
 	 * <p>
-	 * Count is an aggregator function for use in DBReport or in a column
-	 * expression.
-	 *
+	 * MODE: The number which appears most often in a set of numbers. For example:
+	 * in {6, 3, 9, 6, 6, 5, 9, 3} the Mode is 6.</p>
+	 * 
 	 * <p style="color: #F90;">Support DBvolution at
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 *
 	 * @return a number expression.
 	 */
-	public IntegerExpression modeSimple() {
-		IntegerExpression modeExpr = new IntegerExpression(
-				new DBUnaryFunction(this) {
-
-		@Override
-		public String toSQLString(DBDefinition defn) {
-			return defn.formatExpressionAlias(this);
-		}
-			@Override
-			String getFunctionName(DBDefinition db) {
-				return "";
-			}
-
-			@Override
-			protected String afterValue(DBDefinition db) {
-				return "";
-			}
-
-			@Override
-			public boolean isAggregator() {
-				return true;
-			}
-
-			@Override
-			public boolean isComplexExpression() {
-				return true;
-			}
-
-			@Override
-			public String createSQLForFromClause(DBDatabase database) {
-				final IntegerExpression expr = new IntegerExpression(getInnerResult());
-
-				DBInteger count = expr.count().asExpressionColumn();
-
-				count.setSortOrderDescending();
-
-				Set<DBRow> tablesInvolved = this.getTablesInvolved();
-				List<DBRow> tablesToUse = new ArrayList<>(0);
-				for (DBRow dBRow : tablesInvolved) {
-					tablesToUse.add(DBRow.copyDBRow(dBRow));
-				}
-
-				DBQuery query = database.getDBQuery(tablesToUse);
-
-				query.setBlankQueryAllowed(true)
-						.setReturnFieldsToNone()
-						.addExpressionColumn(this, expr.asExpressionColumn())
-						.addExpressionColumn("mode count", count)
-						.setSortOrder(query.column(count))
-						.setRowLimit(1);
-				String tableAliasForObject = getInternalTableName(database);
-
-				return "(" + query.getSQLForQuery().replaceAll("; *$", "") + ") " + tableAliasForObject;
-			}
-
-			public String getInternalTableName(DBDatabase database) {
-				return database.getDefinition().getTableAliasForObject(this);
-			}
-		});
+	public AnyExpression<?,?,?> modeSimple() {
+		ModeSimpleExpression modeExpr = 
+				new ModeSimpleExpression(this);
 
 		return modeExpr;
 	}
@@ -287,7 +222,7 @@ public abstract class EqualExpression<B, R extends EqualResult<B>, D extends Que
 		}
 	}
 
-	private static abstract class DBUnaryFunction extends IntegerExpression {
+	private static abstract class DBUnaryFunction extends UntypedExpression implements UntypedResult{
 
 		protected final EqualResult<?> only;
 
@@ -335,6 +270,99 @@ public abstract class EqualExpression<B, R extends EqualResult<B>, D extends Que
 		@Override
 		public boolean isPurelyFunctional() {
 			return true;
+		}
+	}
+
+	class ModeSimpleExpression extends DBUnaryFunction {
+
+		public ModeSimpleExpression(EqualResult<?> only) {
+			super(only);
+		}
+
+		@Override
+		public String toSQLString(DBDefinition defn) {
+			return defn.formatExpressionAlias(this);
+		}
+
+		@Override
+		String getFunctionName(DBDefinition db) {
+			return "";
+		}
+
+		@Override
+		protected String afterValue(DBDefinition db) {
+			return "";
+		}
+
+		@Override
+		public boolean isAggregator() {
+			return true;
+		}
+
+		@Override
+		public boolean isComplexExpression() {
+			return true;
+		}
+
+		@Override
+		public String createSQLForFromClause(DBDatabase database) {
+			final IntegerExpression expr = new IntegerExpression(getInnerResult());
+
+			DBInteger count = expr.count().asExpressionColumn();
+
+			count.setSortOrderDescending();
+
+			Set<DBRow> tablesInvolved = this.getTablesInvolved();
+			List<DBRow> tablesToUse = new ArrayList<>(0);
+			for (DBRow dBRow : tablesInvolved) {
+				tablesToUse.add(DBRow.copyDBRow(dBRow));
+			}
+
+			DBQuery query = database.getDBQuery(tablesToUse);
+
+			query.setBlankQueryAllowed(true)
+					.setReturnFieldsToNone()
+					.addExpressionColumn(this, expr.asExpressionColumn())
+					.addExpressionColumn("mode count", count)
+					.setSortOrder(query.column(count))
+					.setRowLimit(1);
+			String tableAliasForObject = getInternalTableName(database);
+
+			return "(" + query.getSQLForQuery().replaceAll("; *$", "") + ") " + tableAliasForObject;
+		}
+
+		public String getInternalTableName(DBDatabase database) {
+			return database.getDefinition().getTableAliasForObject(this);
+		}
+
+		@Override
+		public UntypedResult expression(Object value) {
+			throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+		}
+
+		@Override
+		public UntypedResult expression(UntypedResult value) {
+			throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+		}
+
+		@Override
+		public UntypedResult expression(DBUntypedValue value) {
+			throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+		}
+
+		@Override
+		public DBUntypedValue asExpressionColumn() {
+			throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+		}
+
+		@Override
+		public QueryableDatatype<?> getQueryableDatatypeForExpressionValue() {
+			throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+		}
+
+		@Override
+		public StringExpression stringResult() {
+			throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 		}
 	}
 }

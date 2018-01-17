@@ -97,6 +97,17 @@ public abstract class AnyExpression<B extends Object, R extends AnyResult<B>, D 
 		}
 	}
 
+	@Override
+	public boolean isAggregator() {
+		final AnyResult<?> inner = getInnerResult();
+		return inner == null ? false : inner.isAggregator();
+	}
+
+	@Override
+	public String toSQLString(DBDefinition db) {
+		return (getInnerResult() == null) ? db.getNull() : getInnerResult().toSQLString(db);
+	}
+
 	/**
 	 * A complex expression requires more than just a function call in the select
 	 * clause.
@@ -123,7 +134,6 @@ public abstract class AnyExpression<B extends Object, R extends AnyResult<B>, D 
 		}
 	}
 
-
 	/**
 	 * Does nothing
 	 *
@@ -138,19 +148,9 @@ public abstract class AnyExpression<B extends Object, R extends AnyResult<B>, D 
 	 *
 	 * @param only
 	 */
-//	public AnyExpression(R only) {
-//		innerResult = only;
-//		nullProtectionRequired = innerResult.getIncludesNull();
-//	}
-
-
-	/**
-	 *
-	 * @param only
-	 */
 	public AnyExpression(AnyResult<?> only) {
 		innerResult = only;
-		nullProtectionRequired = innerResult.getIncludesNull();
+		nullProtectionRequired = only == null ? true : innerResult.getIncludesNull();
 	}
 
 	public AnyResult<?> getInnerResult() {
@@ -159,7 +159,8 @@ public abstract class AnyExpression<B extends Object, R extends AnyResult<B>, D 
 
 	@Override
 	public boolean getIncludesNull() {
-		return nullProtectionRequired;
+		AnyResult<?> inner = getInnerResult();
+		return nullProtectionRequired||(inner==null?false:inner.getIncludesNull());
 	}
 
 	/**

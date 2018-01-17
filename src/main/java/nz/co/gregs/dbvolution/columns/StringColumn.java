@@ -78,13 +78,10 @@ public class StringColumn extends StringExpression implements ColumnProvider {
 	/**
 	 * Create a StringColumn for the supplied field of the supplied row
 	 *
+	 * @param <E>
 	 * @param row the row containing the field
 	 * @param field the field defining the column
 	 */
-//	public StringColumn(RowDefinition row, DBStringEnum<?> field) {
-//		this.column = new AbstractColumn(row, field);
-//	}
-
 	public <E extends Enum<E> & DBEnumValue<String>> StringColumn(RowDefinition row, DBEnum<E, String> field) {
 		this.column = new AbstractColumn(row, field);
 	}
@@ -101,9 +98,7 @@ public class StringColumn extends StringExpression implements ColumnProvider {
 			newInstance = this.getClass().newInstance();
 			newInstance.column = column;
 			return newInstance;
-		} catch (InstantiationException ex) {
-			throw new RuntimeException(ex);
-		} catch (IllegalAccessException ex) {
+		} catch (InstantiationException | IllegalAccessException ex) {
 			throw new RuntimeException(ex);
 		}
 	}
@@ -142,6 +137,7 @@ public class StringColumn extends StringExpression implements ColumnProvider {
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a BooleanExpression
 	 */
+	@Override
 	public BooleanExpression is(DBString column) {
 		return super.is(column);
 	}
