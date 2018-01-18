@@ -123,9 +123,12 @@ public abstract class EqualExpression<B, R extends EqualResult<B>, D extends Que
 	 * @return a number expression.
 	 */
 	public IntegerExpression count() {
-		return new IntegerExpression(new IntegerExpression.DBUnaryFunction(this) {
-			
+		return new IntegerExpression(new IntegerExpression(this) {
 			@Override
+			public String toSQLString(DBDefinition db) {
+				return db.getCountFunctionName()+"("+getInnerResult().toSQLString(db)+")";
+			}
+			
 			String getFunctionName(DBDefinition db) {
 				return db.getCountFunctionName();
 			}

@@ -53,9 +53,6 @@ import nz.co.gregs.dbvolution.results.NumberResult;
  */
 public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResult, DBInteger> implements IntegerResult {
 
-//	private final IntegerResult innerIntegerResult;
-//	private final boolean nullProtectionRequired;
-
 	@Override
 	public final IntegerExpression nullExpression() {
 		return new NullExpression();
@@ -132,8 +129,6 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 	 */
 	protected IntegerExpression() {
 		super();
-//		innerIntegerResult = null;
-//		nullProtectionRequired = false;
 	}
 
 	/**
@@ -147,8 +142,6 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 	 */
 	public IntegerExpression(Integer value) {
 		super(new DBInteger(value));
-//		innerIntegerResult = new DBInteger(value);
-//		nullProtectionRequired = value == null || innerIntegerResult.getIncludesNull();
 	}
 
 	/**
@@ -162,8 +155,6 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 	 */
 	public IntegerExpression(Long value) {
 		super(new DBInteger(value));
-//		innerIntegerResult = new DBInteger(value);
-//		nullProtectionRequired = value == null || innerIntegerResult.getIncludesNull();
 	}
 
 	/**
@@ -177,8 +168,6 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 	 */
 	public IntegerExpression(IntegerResult value) {
 		super(value);
-//		innerIntegerResult = value;
-//		nullProtectionRequired = value == null || innerIntegerResult.getIncludesNull();
 	}
 	/**
 	 *
@@ -267,15 +256,6 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 			return value(object.longValue());
 		}
 	}
-
-//	@Override
-//	public boolean isPurelyFunctional() {
-//		if (innerIntegerResult == null) {
-//			return true;
-//		} else {
-//			return innerIntegerResult.isPurelyFunctional();
-//		}
-//	}
 
 	/**
 	 * Converts the integer expression into a string/character expression within
@@ -1604,11 +1584,6 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 		return new NumberExpression(new NumberResultFunction(this));
 	}
 
-//	@Override
-//	public IntegerResult getInnerResult() {
-//		return super.getInnerResult();
-//	}
-
 	@Override
 	public IntegerResult expression(DBInteger value) {
 		return new IntegerExpression(value);
@@ -2744,10 +2719,6 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 			return newInstance;
 		}
 
-//		@Override
-//		public QueryableDatatype getQueryableDatatypeForExpressionValue() {
-//			return new DBInteger();
-//		}
 		@Override
 		public boolean isAggregator() {
 			return false;
@@ -2769,7 +2740,7 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 		}
 	}
 
-	static abstract class DBUnaryFunction extends IntegerExpression {
+	private static abstract class DBUnaryFunction extends IntegerExpression {
 
 		DBUnaryFunction() {
 			super();

@@ -361,7 +361,7 @@ public class BooleanExpressionTest extends AbstractTest {
 
 		dbQuery = database.getDBQuery(carCo);
 		dbQuery.addCondition(carCo.column(carCo.name).isIn(strs));
-		if(database instanceof MSSQLServerDB){System.out.println(dbQuery.getSQLForQuery());}
+		
 		allRows = dbQuery.getAllRows();
 
 		Assert.assertThat(allRows.size(), is(3));
@@ -843,7 +843,6 @@ public class BooleanExpressionTest extends AbstractTest {
 	public void testCount() throws SQLException, ParseException {
 		MarqueReportWithBooleanExpressionCount marque = new MarqueReportWithBooleanExpressionCount();
 		String sqlForQuery = DBReport.getSQLForQuery(database, marque, new DBRow[]{});
-		if(database instanceof MSSQLServerDB){System.out.println(sqlForQuery);}
 		
 		List<MarqueReportWithBooleanExpressionCount> allRows = database.getAllRows(marque);
 

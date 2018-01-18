@@ -34,7 +34,7 @@ public class DBStatisticsTest extends AbstractTest {
 		super(testIterationName, db);
 	}
 
-//	@Test
+	@Test
 	public void testBasic() throws SQLException {
 
 		DBQuery dbQuery = database.getDBQuery(new StatsTest()).setBlankQueryAllowed(true);
@@ -45,7 +45,7 @@ public class DBStatisticsTest extends AbstractTest {
 		assertThat(row.stats.count().intValue(), is(22));
 	}
 
-//	@Test
+	@Test
 	public void testModeSimpleQuery() throws SQLException {
 		final Marque marque = new Marque();
 		final IntegerColumn updateCountColumn = marque.column(marque.updateCount);
@@ -78,7 +78,7 @@ public class DBStatisticsTest extends AbstractTest {
 		Assert.assertThat(counted.stringValue(), is("9"));
 	}
 	
-//	@Test
+	@Test
 	public void testModeSimpleQueryWithCondition() throws SQLException {
 		final Marque marque = new Marque();
 		marque.updateCount.excludedValues(2);
@@ -113,7 +113,7 @@ public class DBStatisticsTest extends AbstractTest {
 		Assert.assertThat(counted.stringValue(), is("4"));
 	}
 	
-//	@Test
+	@Test
 	public void testModeSimpleExpression() throws SQLException {
 		final Marque marque = new Marque();
 		
@@ -146,9 +146,7 @@ public class DBStatisticsTest extends AbstractTest {
 		
 		DBQuery query = database
 				.getDBQuery(stat).setBlankQueryAllowed(true);
-		
-		System.out.println(query.getSQLForQuery());
-		
+				
 		List<DBQueryRow> allRows = query.getAllRows();
 		
 		// Check there is only 1 row

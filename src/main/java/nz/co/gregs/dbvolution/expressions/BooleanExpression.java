@@ -78,9 +78,6 @@ import nz.co.gregs.dbvolution.results.RangeResult;
  */
 public class BooleanExpression extends EqualExpression<Boolean, BooleanResult, DBBoolean>implements BooleanResult {
 
-//	private final BooleanResult onlyBool;
-//	private final boolean includeNulls;
-
 	/**
 	 * Default Constructor for creating new BooleanExpressions.
 	 *
@@ -91,8 +88,6 @@ public class BooleanExpression extends EqualExpression<Boolean, BooleanResult, D
 	 */
 	protected BooleanExpression() {
 		super();
-//		onlyBool = new DBBoolean();
-//		includeNulls = false;
 	}
 
 	/**
@@ -107,14 +102,10 @@ public class BooleanExpression extends EqualExpression<Boolean, BooleanResult, D
 	 */
 	public BooleanExpression(BooleanResult booleanResult) {
 		super(booleanResult);
-//		onlyBool = booleanResult;
-//		this.includeNulls = booleanResult.getIncludesNull();
 	}
 
 	public BooleanExpression(AnyResult<?> booleanResult) {
 		super(booleanResult);
-//		onlyBool = booleanResult;
-//		this.includeNulls = booleanResult.getIncludesNull();
 	}
 
 	/**
@@ -130,14 +121,7 @@ public class BooleanExpression extends EqualExpression<Boolean, BooleanResult, D
 	 */
 	public BooleanExpression(Boolean bool) {
 		super(new DBBoolean(bool));
-//		onlyBool = new DBBoolean(bool);
-//		includeNulls = bool == null;
 	}
-
-//	@Override
-//	public String toSQLString(DBDefinition db) {
-//		return getInnerResult().toSQLString(db);
-//	}
 
 	@Override
 	public BooleanExpression copy() {
@@ -308,21 +292,9 @@ public class BooleanExpression extends EqualExpression<Boolean, BooleanResult, D
 				} else {
 					BooleanExpression first = this.getFirst();
 					BooleanExpression second = this.getSecond();
-					String firstSQL;
-					String secondSQL;
-					boolean firstIsStatement = first.isBooleanStatement();
-					if (firstIsStatement) {
-						firstSQL = defn.doBooleanStatementToBooleanComparisonValueTransform(first.toSQLString(defn));
-					} else {
-						firstSQL = defn.doBooleanValueToBooleanComparisonValueTransform(first.toSQLString(defn));
-					}
-					boolean secondIsStatement = second.isBooleanStatement();
-					if (secondIsStatement) {
-						secondSQL = defn.doBooleanStatementToBooleanComparisonValueTransform(second.toSQLString(defn));
-					} else {
-						secondSQL = defn.doBooleanValueToBooleanComparisonValueTransform(second.toSQLString(defn));
-					}
-					String returnString = "(" + firstSQL + ")" + getEquationOperator(defn) + "(" + secondSQL + ")";
+					String returnString = "(" + first.getComparableBooleanSQL(defn) + ")" 
+							+ getEquationOperator(defn) 
+							+ "(" + second.getComparableBooleanSQL(defn) + ")";
 					return returnString;
 				}
 			}
@@ -360,21 +332,9 @@ public class BooleanExpression extends EqualExpression<Boolean, BooleanResult, D
 				} else {
 					BooleanExpression first = this.getFirst();
 					BooleanExpression second = this.getSecond();
-					String firstSQL;
-					String secondSQL;
-					boolean firstIsStatement = first.isBooleanStatement();
-					if (firstIsStatement) {
-						firstSQL = defn.doBooleanStatementToBooleanComparisonValueTransform(first.toSQLString(db));
-					} else {
-						firstSQL = defn.doBooleanValueToBooleanComparisonValueTransform(first.toSQLString(db));
-					}
-					boolean secondIsStatement = second.isBooleanStatement();
-					if (secondIsStatement) {
-						secondSQL = defn.doBooleanStatementToBooleanComparisonValueTransform(second.toSQLString(db));
-					} else {
-						secondSQL = defn.doBooleanValueToBooleanComparisonValueTransform(second.toSQLString(db));
-					}
-					String returnString = "(" + firstSQL + ")" + getEquationOperator(db) + "(" + secondSQL + ")";
+					String returnString = "(" + first.getComparableBooleanSQL(db) + ")" 
+							+ getEquationOperator(db) 
+							+ "(" + second.getComparableBooleanSQL(db) + ")";
 					return returnString;
 				}
 			}
@@ -385,6 +345,57 @@ public class BooleanExpression extends EqualExpression<Boolean, BooleanResult, D
 			}
 		});
 	}
+
+	/**
+	 * Creates an expression that will count all the values of the column
+	 * supplied.
+	 *
+	 * <p>
+	 * Count is an aggregator function for use in DBReport or in a column
+	 * expression.
+	 *
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
+	 * @return a number expression.
+	 */
+	@Override
+	public IntegerExpression count() {
+		return new IntegerExpression(new BooleanExpression(this) {
+
+			@Override
+			public String toSQLString(DBDefinition db) {
+				DBDefinition defn = db;
+				final String bool;
+				if (defn.supportsComparingBooleanResults()) {
+					bool = super.toSQLString(db);
+				} else {
+					BooleanExpression first = (BooleanExpression) this.getInnerResult();
+					bool = first.getComparableBooleanSQL(db);
+
+				}
+				String returnString = db.getCountFunctionName() + "(" + bool + ")";
+				return returnString;
+			}
+
+			@Override
+			public boolean isAggregator() {
+				return true;
+			}
+		});
+	}
+	
+	protected String getComparableBooleanSQL(DBDefinition db) {
+		String firstSQL;
+		boolean firstIsStatement = this.isBooleanStatement();
+		if (firstIsStatement) {
+			firstSQL = db.doBooleanStatementToBooleanComparisonValueTransform(this.toSQLString(db));
+		} else {
+			firstSQL = db.doBooleanValueToBooleanComparisonValueTransform(this.toSQLString(db));
+		}
+		return "(" + firstSQL + ")";
+	}
+
 
 	/**
 	 * Compare this BooleanExpression and the given {@link BooleanResult} using
@@ -1641,7 +1652,6 @@ public class BooleanExpression extends EqualExpression<Boolean, BooleanResult, D
 	private static abstract class DBNnaryBooleanArithmetic extends BooleanExpression {
 
 		private BooleanResult[] bools;
-//		private boolean includeNulls;
 
 		DBNnaryBooleanArithmetic(BooleanResult... bools) {
 			this.bools = bools;
@@ -1781,7 +1791,6 @@ public class BooleanExpression extends EqualExpression<Boolean, BooleanResult, D
 	private static abstract class DBUnaryBinaryFunction extends BooleanExpression {
 
 		protected BooleanExpression onlyBool;
-//		private boolean includeNulls;
 
 		DBUnaryBinaryFunction() {
 			this.onlyBool = null;
@@ -1791,10 +1800,6 @@ public class BooleanExpression extends EqualExpression<Boolean, BooleanResult, D
 			this.onlyBool = only;
 		}
 
-//		@Override
-//		public DBNumber getQueryableDatatypeForExpressionValue() {
-//			return new DBNumber();
-//		}
 		abstract String getFunctionName(DBDefinition db);
 
 		protected String beforeValue(DBDefinition db) {
