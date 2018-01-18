@@ -39,7 +39,6 @@ public class ExistsExpressionTest extends AbstractTest {
 
 	@Test
 	public void testDBExistsOnMultipleTablesUsingDBQueries() throws SQLException {
-		database.setPrintSQLBeforeExecuting(true);
 		
 		CarCompany carCompany = new CarCompany();
 		carCompany.uidCarCompany.permittedValues(3);
@@ -47,7 +46,6 @@ public class ExistsExpressionTest extends AbstractTest {
 				= database.getDBQuery()
 						.add(carCompany)
 						.add(new CompanyLogo());
-//		DBExistsOperator carCompanyExists = new DBExistsOperator(carCompany, new CompanyLogo());
 
 		Marque marque = new Marque();
 		DBQuery outerQuery = database.getDBQuery(marque);
