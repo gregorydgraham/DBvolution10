@@ -609,10 +609,10 @@ public class BooleanExpression extends EqualExpression<Boolean, BooleanResult, D
 	 * expression.
 	 */
 	public BooleanExpression negate() {
-		return new BooleanExpression(new DBUnaryBinaryFunction(this) {
+		return new BooleanExpression(new BooleanExpression(this) {
 			@Override
-			String getFunctionName(DBDefinition db) {
-				return db.getNegationFunctionName();
+			public String toSQLString(DBDefinition db) {
+				return db.getNegationFunctionName()+"("+getInnerResult().toSQLString(db)+")";
 			}
 		});
 	}
@@ -1720,111 +1720,6 @@ public class BooleanExpression extends EqualExpression<Boolean, BooleanResult, D
 				}
 				return result;
 			}
-		}
-	}
-
-	private static abstract class DBBooleanAggregatorFunctionReturningNumber extends NumberExpression {
-
-		protected BooleanExpression onlyBool = null;
-
-		DBBooleanAggregatorFunctionReturningNumber() {
-			this.onlyBool = null;
-		}
-
-		DBBooleanAggregatorFunctionReturningNumber(BooleanExpression only) {
-			this.onlyBool = only;
-		}
-
-		@Override
-		public DBNumber getQueryableDatatypeForExpressionValue() {
-			return new DBNumber();
-		}
-
-		abstract String getFunctionName(DBDefinition db);
-
-		protected String beforeValue(DBDefinition db) {
-			return "" + getFunctionName(db) + "( ";
-		}
-
-		protected String afterValue(DBDefinition db) {
-			return ") ";
-		}
-
-		@Override
-		public String toSQLString(DBDefinition db) {
-			String valueToCount = db.transformToStorableType(onlyBool).toSQLString(db);
-			return this.beforeValue(db) + (onlyBool == null ? "" : valueToCount) + this.afterValue(db);
-		}
-
-		@Override
-		public DBBooleanAggregatorFunctionReturningNumber copy() {
-			DBBooleanAggregatorFunctionReturningNumber newInstance;
-			try {
-				newInstance = getClass().newInstance();
-			} catch (InstantiationException | IllegalAccessException ex) {
-				throw new RuntimeException(ex);
-			}
-			newInstance.onlyBool = (onlyBool == null ? null : onlyBool.copy());
-			return newInstance;
-		}
-
-		@Override
-		public boolean isAggregator() {
-			return true;
-		}
-
-		@Override
-		public Set<DBRow> getTablesInvolved() {
-			return onlyBool.getTablesInvolved();
-		}
-
-		@Override
-		public boolean isPurelyFunctional() {
-			if (onlyBool == null) {
-				return true;
-			} else {
-				return onlyBool.isPurelyFunctional();
-			}
-		}
-	}
-
-	private static abstract class DBUnaryBinaryFunction extends BooleanExpression {
-
-		protected BooleanExpression onlyBool;
-
-		DBUnaryBinaryFunction() {
-			this.onlyBool = null;
-		}
-
-		DBUnaryBinaryFunction(BooleanExpression only) {
-			this.onlyBool = only;
-		}
-
-		abstract String getFunctionName(DBDefinition db);
-
-		protected String beforeValue(DBDefinition db) {
-			return "" + getFunctionName(db) + "( ";
-		}
-
-		protected String afterValue(DBDefinition db) {
-			return ") ";
-		}
-
-		@Override
-		public String toSQLString(DBDefinition db) {
-			return this.beforeValue(db) + (onlyBool == null ? "" : onlyBool.toSQLString(db)) + this.afterValue(db);
-		}
-
-		@Override
-		public DBUnaryBinaryFunction copy() {
-			DBUnaryBinaryFunction newInstance;
-			try {
-				newInstance = getClass().newInstance();
-			} catch (InstantiationException | IllegalAccessException ex) {
-				throw new RuntimeException(ex);
-			}
-			newInstance.onlyBool = (onlyBool == null ? null : onlyBool.copy());
-			return newInstance;
 		}
 	}
 
