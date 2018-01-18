@@ -2270,4 +2270,29 @@ public class DBQuery {
 		throw new IncorrectRowProviderInstanceSuppliedException("the object provided could not be found in the table or expressions used in this query, please supply a QDT used by the tables or adde to the query as an expression column.");
 	}
 
+	
+
+	/**
+	 * Sets the query to retrieve that DBQueryRows for the page supplied.
+	 *
+	 * <p>
+	 * DBvolution supports paging through this method. Use {@link #setRowLimit(int)
+	 * } to set the page size and then call this method with the desired page
+	 * number.
+	 *
+	 * <p>
+	 * This method is zero-based so the first page is getAllRowsForPage(0).
+	 *
+	 * @param pageNumberZeroBased 	pageNumber
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @return a list of the DBQueryRows for the selected page. 1 Database
+	 * exceptions may be thrown
+	 */
+	public DBQuery setPageRequired(int pageNumberZeroBased) {
+		details.setQueryType(QueryType.ROWSFORPAGE);
+		details.getOptions().setPageIndex(pageNumberZeroBased);
+		return this;
+	}
+
 }
