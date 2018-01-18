@@ -148,7 +148,7 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 
 	@Override
 	public DateExpression copy() {
-		return new DateExpression(this.getInnerResult());
+		return isNullSafetyTerminator()?nullDate():new DateExpression(this.getInnerResult());
 	}
 
 	@Override

@@ -125,7 +125,7 @@ public class BooleanExpression extends EqualExpression<Boolean, BooleanResult, D
 
 	@Override
 	public BooleanExpression copy() {
-		return new BooleanExpression(this.getInnerResult());
+		return isNullSafetyTerminator()?nullBoolean():new BooleanExpression(this.getInnerResult());
 	}
 	
 	/**
@@ -292,9 +292,9 @@ public class BooleanExpression extends EqualExpression<Boolean, BooleanResult, D
 				} else {
 					BooleanExpression first = this.getFirst();
 					BooleanExpression second = this.getSecond();
-					String returnString = "(" + first.getComparableBooleanSQL(defn) + ")" 
+					String returnString = first.getComparableBooleanSQL(defn)
 							+ getEquationOperator(defn) 
-							+ "(" + second.getComparableBooleanSQL(defn) + ")";
+							+ second.getComparableBooleanSQL(defn);
 					return returnString;
 				}
 			}

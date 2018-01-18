@@ -140,7 +140,7 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 	 *
 	 * @param value a literal value to use in the expression
 	 */
-	public IntegerExpression(Integer value) {
+	public IntegerExpression(int value) {
 		super(new DBInteger(value));
 	}
 
@@ -153,7 +153,7 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 	 *
 	 * @param value a literal value to use in the expression
 	 */
-	public IntegerExpression(Long value) {
+	public IntegerExpression(long value) {
 		super(new DBInteger(value));
 	}
 
@@ -184,7 +184,7 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 
 	@Override
 	public IntegerExpression copy() {
-		return new IntegerExpression(getInnerResult());
+		return isNullSafetyTerminator()?nullInteger():new IntegerExpression(getInnerResult());
 	}
 
 	/**

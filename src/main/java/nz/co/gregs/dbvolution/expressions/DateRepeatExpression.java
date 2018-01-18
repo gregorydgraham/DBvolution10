@@ -111,7 +111,7 @@ public class DateRepeatExpression extends RangeExpression<Period, DateRepeatResu
 
 	@Override
 	public DateRepeatExpression copy() {
-		return new DateRepeatExpression(getInnerResult());
+		return isNullSafetyTerminator()?nullDateRepeat():new DateRepeatExpression(getInnerResult());
 	}
 
 	@Override

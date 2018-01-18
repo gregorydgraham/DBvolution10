@@ -180,7 +180,7 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 	 * @param numberVariable	numberVariable
 	 */
 	public StringExpression(Number numberVariable) {
-		super(new DBNumber(numberVariable));
+		super(value(numberVariable).stringResult());
 		if (numberVariable == null) {
 			stringNullProtectionRequired = true;
 		} else {
@@ -188,11 +188,49 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 		}
 	}
 
+	/**
+	 * Creates a StringExpression from an arbitrary Number object.
+	 *
+	 * <p>
+	 * Essentially the same as {@code NumberExpression.value(numberVariable).stringResult()
+	 * }.
+	 *
+	 * <p>
+	 * Refer to {@link NumberExpression#NumberExpression(java.lang.Number) } and {@link NumberExpression#stringResult()
+	 * } for more information.
+	 *
+	 * @param numberVariable	numberVariable
+	 */
+	public StringExpression(long numberVariable) {
+		super(value(numberVariable).stringResult());
+		stringNullProtectionRequired = false;
+	}
+
+	/**
+	 * Creates a StringExpression from an arbitrary Number object.
+	 *
+	 * <p>
+	 * Essentially the same as {@code NumberExpression.value(numberVariable).stringResult()
+	 * }.
+	 *
+	 * <p>
+	 * Refer to {@link NumberExpression#NumberExpression(java.lang.Number) } and {@link NumberExpression#stringResult()
+	 * } for more information.
+	 *
+	 * @param numberVariable	numberVariable
+	 */
+	public StringExpression(int numberVariable) {
+		super(value(numberVariable).stringResult());
+		stringNullProtectionRequired = false;
+	}
+
 	@Override
 	public String toSQLString(DBDefinition db) {
 		AnyResult<?> stringInput = getInnerResult();
 		if (stringInput == null) {
 			stringInput = StringExpression.value("<NULL>");
+		}else if (!(stringInput instanceof StringResult)){
+			stringInput = stringInput.stringResult();
 		}
 		return stringInput.toSQLString(db);
 	}
@@ -2165,7 +2203,7 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 			}
 		});
 	}
-	
+
 	/**
 	 * Returns the 1-based index of the first occurrence of searchString within
 	 * the StringExpression.

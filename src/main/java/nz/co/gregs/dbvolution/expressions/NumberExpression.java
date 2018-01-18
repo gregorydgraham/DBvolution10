@@ -209,7 +209,7 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 
 	@Override
 	public NumberExpression copy() {
-		return new NumberExpression(getInnerResult());
+		return isNullSafetyTerminator()?nullNumber():new NumberExpression(getInnerResult());
 	}
 
 	/**
