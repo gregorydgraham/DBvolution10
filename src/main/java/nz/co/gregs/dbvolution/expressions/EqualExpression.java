@@ -61,7 +61,7 @@ public abstract class EqualExpression<B, R extends EqualResult<B>, D extends Que
 	protected EqualExpression(R only) {
 		super(only);
 	}
-	
+
 	/**
 	 *
 	 * @param only
@@ -126,9 +126,9 @@ public abstract class EqualExpression<B, R extends EqualResult<B>, D extends Que
 		return new IntegerExpression(new IntegerExpression(this) {
 			@Override
 			public String toSQLString(DBDefinition db) {
-				return db.getCountFunctionName()+"("+getInnerResult().toSQLString(db)+")";
+				return db.getCountFunctionName() + "(" + getInnerResult().toSQLString(db) + ")";
 			}
-			
+
 			String getFunctionName(DBDefinition db) {
 				return db.getCountFunctionName();
 			}
@@ -147,16 +147,46 @@ public abstract class EqualExpression<B, R extends EqualResult<B>, D extends Que
 	 * <p>
 	 * MODE: The number which appears most often in a set of numbers. For example:
 	 * in {6, 3, 9, 6, 6, 5, 9, 3} the Mode is 6.</p>
-	 * 
+	 *
 	 * <p style="color: #F90;">Support DBvolution at
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 *
 	 * @return a number expression.
 	 */
-	public AnyExpression<?,?,?> modeSimple() {
-		ModeSimpleExpression modeExpr = 
-				new ModeSimpleExpression(this);
+	public AnyExpression<?, ?, ?> modeSimple() {
+		ModeSimpleExpression modeExpr
+				= new ModeSimpleExpression(this);
 
+		return modeExpr;
+	}
+
+	/**
+	 * Creates an expression that will return the most common value of the column
+	 * supplied.
+	 *
+	 * <p>
+	 * MODE: The number which appears most often in a set of numbers. For example:
+	 * in {6, 3, 9, 6, 6, 5, 9, 3} the Mode is 6.</p>
+	 *
+	 * <p>
+	 * This version of Mode implements a stricter definition that will return null
+	 * if the mode is undefined. The mode can be undefined if there are 2 or more
+	 * values with the highest frequency value. </p>
+	 *
+	 * <p>
+	 * For example in the list {0,0,0,0,1,1,2,2,2,2,3,4} both 0 and 2 occur four
+	 * times and no other value occurs more frequently so the mode is undefined.
+	 * {@link #modeSimple() The modeSimple()} method would return either 0 or 2
+	 * randomly for the same set.</p>
+	 *
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
+	 * @return the mode or null if undefined.
+	 */
+	public IntegerExpression modeStrict() {
+		IntegerExpression modeExpr
+				= new IntegerExpression(new ModeStrictExpression(this));
 		return modeExpr;
 	}
 
@@ -225,7 +255,7 @@ public abstract class EqualExpression<B, R extends EqualResult<B>, D extends Que
 		}
 	}
 
-	private static abstract class DBUnaryFunction extends UntypedExpression implements UntypedResult{
+	private static abstract class DBUnaryFunction extends UntypedExpression implements UntypedResult {
 
 		protected final EqualResult<?> only;
 
@@ -276,7 +306,7 @@ public abstract class EqualExpression<B, R extends EqualResult<B>, D extends Que
 		}
 	}
 
-	class ModeSimpleExpression extends DBUnaryFunction {
+	protected static class ModeSimpleExpression extends DBUnaryFunction {
 
 		public ModeSimpleExpression(EqualResult<?> only) {
 			super(only);
@@ -332,6 +362,114 @@ public abstract class EqualExpression<B, R extends EqualResult<B>, D extends Que
 			String tableAliasForObject = getInternalTableName(database);
 
 			return "(" + query.getSQLForQuery().replaceAll("; *$", "") + ") " + tableAliasForObject;
+		}
+
+		public String getInternalTableName(DBDatabase database) {
+			return database.getDefinition().getTableAliasForObject(this);
+		}
+
+		@Override
+		public UntypedResult expression(Object value) {
+			throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+		}
+
+		@Override
+		public UntypedResult expression(UntypedResult value) {
+			throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+		}
+
+		@Override
+		public UntypedResult expression(DBUntypedValue value) {
+			throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+		}
+
+		@Override
+		public DBUntypedValue asExpressionColumn() {
+			throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+		}
+
+		@Override
+		public QueryableDatatype<?> getQueryableDatatypeForExpressionValue() {
+			throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+		}
+
+		@Override
+		public StringExpression stringResult() {
+			throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+		}
+	}
+
+	protected static class ModeStrictExpression extends DBUnaryFunction {
+
+		public ModeStrictExpression(EqualResult<?> only) {
+			super(only);
+		}
+
+		@Override
+		public String toSQLString(DBDefinition defn) {
+
+			return "case when a1.counter = a2.counter then null else a1.mode end " + defn.formatExpressionAlias(this);
+		}
+
+		@Override
+		String getFunctionName(DBDefinition db) {
+			return "";
+		}
+
+		@Override
+		protected String afterValue(DBDefinition db) {
+			return "";
+		}
+
+		@Override
+		public boolean isAggregator() {
+			return true;
+		}
+
+		@Override
+		public boolean isComplexExpression() {
+			return true;
+		}
+
+		@Override
+		public String createSQLForFromClause(DBDatabase database) {
+			final IntegerExpression expr = new IntegerExpression(getInnerResult());
+
+			DBInteger count = expr.count().asExpressionColumn();
+
+			count.setSortOrderDescending();
+
+			Set<DBRow> tablesInvolved = this.getTablesInvolved();
+			List<DBRow> tablesToUse = new ArrayList<>(0);
+			for (DBRow dBRow : tablesInvolved) {
+				tablesToUse.add(DBRow.copyDBRow(dBRow));
+			}
+
+			DBQuery query1 = database.getDBQuery(tablesToUse);
+
+			query1.setBlankQueryAllowed(true)
+					.setReturnFieldsToNone()
+					.addExpressionColumn(this, expr.asExpressionColumn())
+					.addExpressionColumn("mode count", count)
+					.setSortOrder(query1.column(count))
+					.setRowLimit(1);
+
+			DBQuery query2 = database.getDBQuery(tablesToUse);
+
+			query2.setBlankQueryAllowed(true)
+					.setReturnFieldsToNone()
+					.addExpressionColumn(this, expr.asExpressionColumn())
+					.addExpressionColumn("mode count", count)
+					.setSortOrder(query2.column(count))
+					.setRowLimit(1)
+					.setPageRequired(1);
+
+			String table1 = getInternalTableName(database) + 1;
+			String table2 = getInternalTableName(database) + 2;
+
+			return "(" + query1.getSQLForQuery().replaceAll("; *$", "") + ") " + table1
+					+ " join "
+					+ "(" + query2.getSQLForQuery().replaceAll("; *$", "") + ") " + table2;
 		}
 
 		public String getInternalTableName(DBDatabase database) {
