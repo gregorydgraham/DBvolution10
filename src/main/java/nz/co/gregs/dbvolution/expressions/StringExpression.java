@@ -200,9 +200,15 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 
 	@Override
 	public StringExpression copy() {
-		return new StringExpression(this);
+		return isNullSafetyTerminator()?nullString():new StringExpression(getInnerResult());
 	}
 
+	@Override
+	protected boolean isNullSafetyTerminator() {
+		return stringNullProtectionRequired==false
+				&&super.isNullSafetyTerminator();
+	}
+	
 	@Override
 	public boolean getIncludesNull() {
 		return stringNullProtectionRequired||super.getIncludesNull(); 
