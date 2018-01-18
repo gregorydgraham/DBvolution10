@@ -28,6 +28,7 @@ import nz.co.gregs.dbvolution.DBReport;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.annotations.DBColumn;
 import nz.co.gregs.dbvolution.columns.ColumnProvider;
+import nz.co.gregs.dbvolution.databases.MSSQLServerDB;
 import nz.co.gregs.dbvolution.datatypes.DBBoolean;
 import nz.co.gregs.dbvolution.datatypes.DBDate;
 import nz.co.gregs.dbvolution.datatypes.DBNumber;
@@ -360,7 +361,7 @@ public class BooleanExpressionTest extends AbstractTest {
 
 		dbQuery = database.getDBQuery(carCo);
 		dbQuery.addCondition(carCo.column(carCo.name).isIn(strs));
-		System.out.println(dbQuery.getSQLForQuery());
+		if(database instanceof MSSQLServerDB){System.out.println(dbQuery.getSQLForQuery());}
 		allRows = dbQuery.getAllRows();
 
 		Assert.assertThat(allRows.size(), is(3));
@@ -842,7 +843,7 @@ public class BooleanExpressionTest extends AbstractTest {
 	public void testCount() throws SQLException, ParseException {
 		MarqueReportWithBooleanExpressionCount marque = new MarqueReportWithBooleanExpressionCount();
 		String sqlForQuery = DBReport.getSQLForQuery(database, marque, new DBRow[]{});
-		System.out.println(sqlForQuery);
+		if(database instanceof MSSQLServerDB){System.out.println(sqlForQuery);}
 		
 		List<MarqueReportWithBooleanExpressionCount> allRows = database.getAllRows(marque);
 
