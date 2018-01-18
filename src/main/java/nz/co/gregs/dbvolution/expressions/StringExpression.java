@@ -76,7 +76,6 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 			public boolean getIncludesNull() {
 				return true;
 			}
-			
 
 		};
 	}
@@ -200,18 +199,18 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 
 	@Override
 	public StringExpression copy() {
-		return isNullSafetyTerminator()?nullString():new StringExpression(getInnerResult());
+		return isNullSafetyTerminator() ? nullString() : new StringExpression(getInnerResult());
 	}
 
 	@Override
 	protected boolean isNullSafetyTerminator() {
-		return stringNullProtectionRequired==false
-				&&super.isNullSafetyTerminator();
+		return stringNullProtectionRequired == false
+				&& super.isNullSafetyTerminator();
 	}
-	
+
 	@Override
 	public boolean getIncludesNull() {
-		return stringNullProtectionRequired||super.getIncludesNull(); 
+		return stringNullProtectionRequired || super.getIncludesNull();
 	}
 
 	/**
@@ -221,7 +220,7 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 	 * <p>
 	 * MODE: The number which appears most often in a set of numbers. For example:
 	 * in {6, 3, 9, 6, 6, 5, 9, 3} the Mode is 6.</p>
-	 * 
+	 *
 	 * <p style="color: #F90;">Support DBvolution at
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 *
@@ -1444,7 +1443,7 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 					public String toSQLString(DBDefinition db) {
 						List<String> sqlValues = new ArrayList<>();
 						for (StringResult value : values) {
-							if (!value.getIncludesNull()){
+							if (!value.getIncludesNull()) {
 								sqlValues.add(value.toSQLString(db));
 							}
 						}
@@ -1781,15 +1780,11 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 	 */
 	public StringExpression trim() {
 		return new StringExpression(
-				new DBUnaryStringFunction(this) {
-			@Override
-			public String toSQLString(DBDefinition db) {
-				return db.doTrimFunction(this.only.toSQLString(db));
-			}
+				new StringExpression(this) {
 
 			@Override
-			String getFunctionName(DBDefinition db) {
-				return "NOT USED BECAUSE SQLSERVER DOESN'T IMPLEMENT TRIM";
+			public String toSQLString(DBDefinition db) {
+				return db.doTrimFunction(this.getInnerResult().toSQLString(db));
 			}
 		});
 	}
@@ -1822,16 +1817,11 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 	 */
 	public StringExpression getFirstNumberAsSubstring() {
 		StringExpression exp = new StringExpression(
-				new DBUnaryStringFunction(this) {
+				new StringExpression(this) {
 
 			@Override
 			public String toSQLString(DBDefinition db) {
-				return db.doFindNumberInStringTransform(this.only.toSQLString(db));
-			}
-
-			@Override
-			String getFunctionName(DBDefinition db) {
-				return "";
+				return db.doFindNumberInStringTransform(this.getInnerResult().toSQLString(db));
 			}
 		});
 		return exp;
@@ -1848,16 +1838,11 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 	 */
 	public StringExpression getFirstIntegerAsSubstring() {
 		final StringExpression exp = new StringExpression(
-				new DBUnaryStringFunction(this) {
+				new StringExpression(this) {
 
 			@Override
 			public String toSQLString(DBDefinition db) {
-				return db.doFindIntegerInStringTransform(this.only.toSQLString(db));
-			}
-
-			@Override
-			String getFunctionName(DBDefinition db) {
-				return "";
+				return db.doFindIntegerInStringTransform(this.getInnerResult().toSQLString(db));
 			}
 		});
 		return exp;
@@ -1902,15 +1887,10 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 	 */
 	public StringExpression leftTrim() {
 		return new StringExpression(
-				new DBUnaryStringFunction(this) {
+				new StringExpression(this) {
 			@Override
 			public String toSQLString(DBDefinition db) {
-				return db.doLeftTrimTransform(this.only.toSQLString(db));
-			}
-
-			@Override
-			String getFunctionName(DBDefinition db) {
-				return "";
+				return db.doLeftTrimTransform(this.getInnerResult().toSQLString(db));
 			}
 		});
 	}
@@ -1926,10 +1906,10 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 	 */
 	public StringExpression rightTrim() {
 		return new StringExpression(
-				new DBUnaryStringFunction(this) {
+				new StringExpression(this) {
 			@Override
-			String getFunctionName(DBDefinition db) {
-				return db.getRightTrimFunctionName();
+			public String toSQLString(DBDefinition defn) {
+				return defn.getRightTrimFunctionName() + "(" + getInnerResult().toSQLString(defn) + ")";
 			}
 		});
 	}
@@ -1945,10 +1925,10 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 	 */
 	public StringExpression lowercase() {
 		return new StringExpression(
-				new DBUnaryStringFunction(this) {
+				new StringExpression(this) {
 			@Override
-			String getFunctionName(DBDefinition db) {
-				return db.getLowercaseFunctionName();
+			public String toSQLString(DBDefinition defn) {
+				return defn.getLowercaseFunctionName() + "(" + getInnerResult().toSQLString(defn) + ")";
 			}
 		});
 	}
@@ -1964,10 +1944,10 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 	 */
 	public StringExpression uppercase() {
 		return new StringExpression(
-				new DBUnaryStringFunction(this) {
+				new StringExpression(this) {
 			@Override
-			String getFunctionName(DBDefinition db) {
-				return db.getUppercaseFunctionName();
+			public String toSQLString(DBDefinition defn) {
+				return defn.getUppercaseFunctionName() + "(" + getInnerResult().toSQLString(defn) + ")";
 			}
 		});
 	}
@@ -2185,19 +2165,7 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 			}
 		});
 	}
-
-//	/**
-//	 * Get the StringResult used internally.
-//	 *
-//	 * <p style="color: #F90;">Support DBvolution at
-//	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-//	 *
-//	 * @return the string1
-//	 */
-//	protected StringResult getStringInput() {
-//		AnyResult<?> innerResult = getInnerResult();
-//		return (innerResult instanceof StringResult)? (StringResult) innerResult:null;
-//	}
+	
 	/**
 	 * Returns the 1-based index of the first occurrence of searchString within
 	 * the StringExpression.
@@ -2249,10 +2217,11 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 	 * @return a String expression.
 	 */
 	public StringExpression max() {
-		return new StringExpression(new DBUnaryStringFunction(this) {
+		return new StringExpression(
+				new StringExpression(this) {
 			@Override
-			String getFunctionName(DBDefinition db) {
-				return db.getMaxFunctionName();
+			public String toSQLString(DBDefinition defn) {
+				return defn.getMaxFunctionName() + "(" + getInnerResult().toSQLString(defn) + ")";
 			}
 
 			@Override
@@ -2276,10 +2245,10 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 	 * @return a String expression.
 	 */
 	public StringExpression min() {
-		return new StringExpression(new DBUnaryStringFunction(this) {
+		return new StringExpression(new StringExpression(this) {
 			@Override
-			String getFunctionName(DBDefinition db) {
-				return db.getMinFunctionName();
+			public String toSQLString(DBDefinition defn) {
+				return defn.getMinFunctionName() + "(" + getInnerResult().toSQLString(defn) + ")";
 			}
 
 			@Override
@@ -2386,10 +2355,10 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 	 * brackets.
 	 */
 	public StringExpression bracket() {
-		return new StringExpression(new DBUnaryStringFunction(this) {
+		return new StringExpression(new StringExpression(this) {
 			@Override
-			String getFunctionName(DBDefinition db) {
-				return "";
+			public String toSQLString(DBDefinition defn) {
+				return "(" + getInnerResult().toSQLString(defn) + ")";
 			}
 		});
 	}
@@ -2412,7 +2381,7 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 		return this.isInIgnoreCase(expressions(potentialValues));
 	}
 
-	public StringResult[] expressions(String... potentialValues){
+	public StringResult[] expressions(String... potentialValues) {
 		List<StringResult> possVals = new ArrayList<>(0);
 		for (String str : potentialValues) {
 			if (str == null) {
@@ -2424,7 +2393,7 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 		return possVals.toArray(new StringResult[]{});
 	}
 
-	public StringResult[] expressions(Collection<String> potentialValues){
+	public StringResult[] expressions(Collection<String> potentialValues) {
 		List<StringResult> possVals = new ArrayList<>(0);
 		for (String str : potentialValues) {
 			if (str == null) {
@@ -2675,80 +2644,6 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 		public boolean isPurelyFunctional() {
 			return true;
 		}
-	}
-
-	private static abstract class DBUnaryStringFunction extends StringExpression {
-
-		protected StringExpression only;
-
-		DBUnaryStringFunction() {
-			this.only = null;
-		}
-
-		DBUnaryStringFunction(StringExpression only) {
-			this.only = only;
-		}
-
-		@Override
-		public DBString getQueryableDatatypeForExpressionValue() {
-			return new DBString();
-		}
-
-		abstract String getFunctionName(DBDefinition db);
-
-		protected String beforeValue(DBDefinition db) {
-			return "" + getFunctionName(db) + "( ";
-		}
-
-		protected String afterValue(DBDefinition db) {
-			return ") ";
-		}
-
-		@Override
-		public String toSQLString(DBDefinition db) {
-			return this.beforeValue(db) + (only == null ? "" : only.toSQLString(db)) + this.afterValue(db);
-		}
-
-		@Override
-		public DBUnaryStringFunction copy() {
-			DBUnaryStringFunction newInstance;
-			try {
-				newInstance = getClass().newInstance();
-			} catch (InstantiationException | IllegalAccessException ex) {
-				throw new RuntimeException(ex);
-			}
-			newInstance.only = only.copy();
-			return newInstance;
-		}
-
-		@Override
-		public Set<DBRow> getTablesInvolved() {
-			HashSet<DBRow> hashSet = new HashSet<>();
-			if (only != null) {
-				hashSet.addAll(only.getTablesInvolved());
-			}
-			return hashSet;
-		}
-
-		@Override
-		public boolean isAggregator() {
-			return only.isAggregator();
-		}
-
-		@Override
-		public boolean getIncludesNull() {
-			return false;
-		}
-
-		@Override
-		public boolean isPurelyFunctional() {
-			if (only == null) {
-				return true;
-			} else {
-				return only.isPurelyFunctional();
-			}
-		}
-
 	}
 
 	private static abstract class DBUnaryNumberFunction extends NumberExpression {
