@@ -1175,7 +1175,7 @@ public class NumberExpressionTest extends AbstractTest {
 	@Test
 	public void testLocationOfAsDBRowField() throws SQLException {
 		ExtendedCarCompany carCo = new ExtendedCarCompany();
-//		carCo.uidCarCompany.permittedValues(carCo.column(carCo.name).locationOf("ord"));
+
 		DBQuery dbQuery = database.getDBQuery(carCo);
 		dbQuery.setBlankQueryAllowed(true);
 		List<DBQueryRow> allRows = dbQuery.getAllRows();
@@ -1229,6 +1229,37 @@ public class NumberExpressionTest extends AbstractTest {
 		DBString chooseOnID = new DBString(this.column(this.uidCarCompany).numberResult().choose("too low", "ok", "high", "too high"));
 
 		public CarCompanyWithChoose() {
+			super();
+		}
+	}
+
+	@Test
+	public void testChooseWithDefault() throws SQLException {
+		CarCompanyWithChooseWithDefault carCo = new CarCompanyWithChooseWithDefault();
+		DBQuery dbQuery = database.getDBQuery(carCo);
+		dbQuery.setBlankQueryAllowed(true);
+
+		for (CarCompanyWithChooseWithDefault carCompany : dbQuery.getAllInstancesOf(carCo)) {
+			if (carCompany.uidCarCompany.intValue() <= 0) {
+				Assert.assertThat(carCompany.chooseOnID.getValue(), is("too low"));
+			} else if (carCompany.uidCarCompany.intValue() == 1) {
+				Assert.assertThat(carCompany.chooseOnID.getValue(), is("ok"));
+			} else if (carCompany.uidCarCompany.intValue() == 2) {
+				Assert.assertThat(carCompany.chooseOnID.getValue(), is("high"));
+			} else {
+				Assert.assertThat(carCompany.chooseOnID.getValue(), is("too high"));
+			}
+		}
+	}
+
+	public static class CarCompanyWithChooseWithDefault extends CarCompany {
+
+		public static final long serialVersionUID = 1L;
+
+		@DBColumn
+		DBString chooseOnID = new DBString(this.column(this.uidCarCompany).numberResult().chooseWithDefault("too low", "ok", "high", "too high"));
+
+		public CarCompanyWithChooseWithDefault() {
 			super();
 		}
 	}
