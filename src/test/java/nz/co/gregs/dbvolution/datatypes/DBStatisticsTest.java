@@ -293,6 +293,33 @@ public class DBStatisticsTest extends AbstractTest {
 		counted = onlyRow.getExpressionColumnValue("mode count");
 		Assert.assertThat(counted.stringValue(), is("3"));
 	}
+	
+	@Test
+	public void testModeStrictExpression() throws SQLException {
+		final Marque marque = new Marque();
+		
+		final IntegerColumn updateCountColumn = marque.column(marque.updateCount);
+
+		DBInteger count = updateCountColumn.count().asExpressionColumn();
+		count.setSortOrderDescending();
+		DBQuery query = database
+				.getDBQuery(marque)
+				.setBlankQueryAllowed(true)
+				.setReturnFieldsToNone()
+				.addExpressionColumn("mode", updateCountColumn.modeStrict().asExpressionColumn());
+		
+		System.out.println(query.getSQLForQuery());
+		List<DBQueryRow> allRows = query.getAllRows();
+		
+		// Check there is only 1 row
+		Assert.assertThat(allRows.size(), is(22));
+		
+		final DBQueryRow onlyRow = allRows.get(0);
+		
+		// Check that the mode is 2
+		QueryableDatatype<?> mode = onlyRow.getExpressionColumnValue("mode");
+		Assert.assertThat(mode.stringValue(), is("2"));
+	}
 
 	public static class StatsTest extends Marque {
 

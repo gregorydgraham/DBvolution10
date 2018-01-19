@@ -401,14 +401,47 @@ public abstract class EqualExpression<B, R extends EqualResult<B>, D extends Que
 
 	protected static class ModeStrictExpression extends DBUnaryFunction {
 
+		private String tableAlias=null;
+		private String firstTableCounterName=null;
+		private String secondTableCounterName=null;
+		private String firstTableModeName=null;
+		private String secondTableModeName=null;
+		private String firstTableName=null;
+		private String secondTableName=null;
+		private final IntegerExpression expr1;
+		private final IntegerExpression expr2;
+		private final DBInteger mode1;
+		private final DBInteger mode2;
+		private final DBInteger count1;
+		private final DBInteger count2;
+		
+		private static final Object COUNTER1KEY = new Object();
+		private static final Object MODE1KEY = new Object();
+		private static final Object COUNTER2KEY = new Object();
+		private static final Object MODE2KEY = new Object();
+
+
 		public ModeStrictExpression(EqualResult<?> only) {
 			super(only);
+			expr1 = new IntegerExpression(getInnerResult());
+			expr2 = new IntegerExpression(getInnerResult());
+
+			mode1 = expr1.asExpressionColumn();
+			mode2 = expr2.asExpressionColumn();
+
+			count1 = expr1.count().asExpressionColumn();
+			count1.setSortOrderDescending();
+
+			count2 = expr2.count().asExpressionColumn();
+			count2.setSortOrderDescending();
 		}
 
 		@Override
 		public String toSQLString(DBDefinition defn) {
 
-			return "case when a1.counter = a2.counter then null else a1.mode end " + defn.formatExpressionAlias(this);
+			return "case when " + getFirstTableName(defn) + "." + getFirstTableCounterName(defn)
+					+ " = " + getSecondTableName(defn) + "." + getSecondTableCounterName(defn)
+					+ " then null else " + getFirstTableName(defn) + "." + getFirstTableModeName(defn) + " end ";
 		}
 
 		@Override
@@ -433,14 +466,12 @@ public abstract class EqualExpression<B, R extends EqualResult<B>, D extends Que
 
 		@Override
 		public String createSQLForFromClause(DBDatabase database) {
-			final IntegerExpression expr = new IntegerExpression(getInnerResult());
 
-			DBInteger count = expr.count().asExpressionColumn();
-
-			count.setSortOrderDescending();
+			final DBDefinition defn = database.getDefinition();
 
 			Set<DBRow> tablesInvolved = this.getTablesInvolved();
 			List<DBRow> tablesToUse = new ArrayList<>(0);
+
 			for (DBRow dBRow : tablesInvolved) {
 				tablesToUse.add(DBRow.copyDBRow(dBRow));
 			}
@@ -449,31 +480,26 @@ public abstract class EqualExpression<B, R extends EqualResult<B>, D extends Que
 
 			query1.setBlankQueryAllowed(true)
 					.setReturnFieldsToNone()
-					.addExpressionColumn(this, expr.asExpressionColumn())
-					.addExpressionColumn("mode count", count)
-					.setSortOrder(query1.column(count))
+					.addExpressionColumn(MODE1KEY, mode1)
+					.addExpressionColumn(COUNTER1KEY, count1)
+					.setSortOrder(query1.column(count1))
 					.setRowLimit(1);
 
 			DBQuery query2 = database.getDBQuery(tablesToUse);
 
 			query2.setBlankQueryAllowed(true)
 					.setReturnFieldsToNone()
-					.addExpressionColumn(this, expr.asExpressionColumn())
-					.addExpressionColumn("mode count", count)
-					.setSortOrder(query2.column(count))
+					.addExpressionColumn(MODE2KEY, mode2)
+					.addExpressionColumn(COUNTER2KEY, count2)
+					.setSortOrder(query2.column(count2))
 					.setRowLimit(1)
 					.setPageRequired(1);
 
-			String table1 = getInternalTableName(database) + 1;
-			String table2 = getInternalTableName(database) + 2;
-
-			return "(" + query1.getSQLForQuery().replaceAll("; *$", "") + ") " + table1
+			return "(" + query1.getSQLForQuery().replaceAll("; *$", "") + ") " + getFirstTableName(defn)
+					+ System.getProperty("line.separator")
 					+ " join "
-					+ "(" + query2.getSQLForQuery().replaceAll("; *$", "") + ") " + table2;
-		}
-
-		public String getInternalTableName(DBDatabase database) {
-			return database.getDefinition().getTableAliasForObject(this);
+					+ System.getProperty("line.separator")
+					+ "(" + query2.getSQLForQuery().replaceAll("; *$", "") + ") " + getSecondTableName(defn);
 		}
 
 		@Override
@@ -504,6 +530,55 @@ public abstract class EqualExpression<B, R extends EqualResult<B>, D extends Que
 		@Override
 		public StringExpression stringResult() {
 			throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+		}
+
+		public synchronized String getInternalTableName(DBDefinition database) {
+			if (tableAlias == null) {
+				tableAlias = database.getTableAliasForObject(this);
+			}
+			return tableAlias;
+		}
+
+		private synchronized String getFirstTableName(DBDefinition database) {
+			if (firstTableName == null) {
+				firstTableName = getInternalTableName(database) + 1;
+			}
+			return firstTableName;
+		}
+
+		private synchronized String getSecondTableName(DBDefinition database) {
+			if (secondTableName == null) {
+				secondTableName = getInternalTableName(database) + 2;
+			}
+			return secondTableName;
+		}
+
+		private synchronized String getFirstTableCounterName(DBDefinition defn) {
+			if (firstTableCounterName == null) {
+				firstTableCounterName = defn.formatExpressionAlias(COUNTER1KEY);
+			}
+			return firstTableCounterName;
+		}
+
+		private synchronized String getFirstTableModeName(DBDefinition defn) {
+			if (firstTableModeName == null) {
+				firstTableModeName = defn.formatExpressionAlias(MODE1KEY);
+			}
+			return firstTableModeName;
+		}
+
+		private synchronized String getSecondTableModeName(DBDefinition defn) {
+			if (secondTableModeName == null) {
+				secondTableModeName = defn.formatExpressionAlias(MODE2KEY);
+			}
+			return secondTableModeName;
+		}
+
+		private synchronized String getSecondTableCounterName(DBDefinition defn) {
+			if (secondTableCounterName == null) {
+				secondTableCounterName = defn.formatExpressionAlias(COUNTER2KEY);
+			}
+			return secondTableCounterName;
 		}
 	}
 }
