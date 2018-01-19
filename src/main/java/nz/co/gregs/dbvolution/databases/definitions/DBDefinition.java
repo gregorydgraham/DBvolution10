@@ -67,7 +67,7 @@ import org.joda.time.Period;
  * @author Gregory Graham
  */
 public abstract class DBDefinition {
-	
+
 	public int getNumericPrecision() {
 		return DBNumber.getNumericPrecision();
 	}
@@ -325,7 +325,7 @@ public abstract class DBDefinition {
 	/**
 	 * Get a name for the object that can be used safely in queries.
 	 *
-	 * @param anObject 	an Object that you would like a safe name for
+	 * @param anObject an Object that you would like a safe name for
 	 * <p style="color: #F90;">Support DBvolution at
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return the column alias formatted for this database.
@@ -3121,9 +3121,9 @@ public abstract class DBDefinition {
 		final String selectQuery = table.getSelectQuery();
 		if (recursiveTableAlias != null) {
 			return recursiveTableAlias;
-		} else if(selectQuery!=null){
-			return "("+selectQuery+")"+ beginTableAlias() + getTableAlias(table) + endTableAlias();
-		}else{
+		} else if (selectQuery != null) {
+			return "(" + selectQuery + ")" + beginTableAlias() + getTableAlias(table) + endTableAlias();
+		} else {
 			return formatTableName(table) + beginTableAlias() + getTableAlias(table) + endTableAlias();
 		}
 	}
@@ -3384,11 +3384,11 @@ public abstract class DBDefinition {
 			return strs.get(0);
 		}
 		String op = " <= ";
-		for (int index = 0; index < strs.size(); index++) {
-			String str = strs.get(index);
-			if (index == strs.size() - 1) {
-				sql.append(" else ").append(str).append(" end)");
+		for (int index = 0; index < strs.size() + 1; index++) {
+			if (index == strs.size()) {
+				sql.append(" else ").append(getNull()).append(" end)");
 			} else {
+				String str = strs.get(index);
 				sql.append(" when ")
 						.append(numberToChooseWith)
 						.append(op).append(index + 1)
