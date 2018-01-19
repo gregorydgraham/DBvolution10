@@ -133,7 +133,7 @@ public class StringExpressionTest extends AbstractTest {
 		Marque likeQuery = new Marque();
 		final NumberExpression num = new NumberExpression(5);
 		likeQuery.name.excludedPattern(new StringExpression(num).uppercase());
-		System.out.println(""+database.getDBQuery(likeQuery).getSQLForQuery());
+
 		List<Marque> rowsByExample = marquesTable.getRowsByExample(likeQuery);
 
 		Assert.assertEquals(22, rowsByExample.size());
