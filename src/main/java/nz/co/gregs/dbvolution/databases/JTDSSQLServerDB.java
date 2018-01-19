@@ -29,7 +29,10 @@ import nz.co.gregs.dbvolution.internal.sqlserver.*;
  * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
  *
  * @author Gregory Graham
+ * @deprecated Microsoft have released their JDBC drive to Maven, please switch
+ * to MSSQLServerDB or MSSQLServerDB
  */
+@Deprecated()
 public class JTDSSQLServerDB extends DBDatabase implements SupportsPolygonDatatype {
 
 	public static final long serialVersionUID = 1l;
@@ -53,6 +56,8 @@ public class JTDSSQLServerDB extends DBDatabase implements SupportsPolygonDataty
 	 * Creates a {@link DBDatabase } instance for the MS SQL Server data source.
 	 *
 	 * @param ds	a DataSource to an MS SQLServer database
+	 * @deprecated Microsoft have released their JDBC drive to Maven, please
+	 * switch to MSSQLServerDB or MSSQLServerDB
 	 */
 	public JTDSSQLServerDB(DataSource ds) {
 		super(new MSSQLServerDBDefinition(), ds);
@@ -66,6 +71,8 @@ public class JTDSSQLServerDB extends DBDatabase implements SupportsPolygonDataty
 	 * @param jdbcURL jdbcURL
 	 * @param username username
 	 * @param password password
+	 * @deprecated Microsoft have released their JDBC drive to Maven, please
+	 * switch to MSSQLServerDB or MSSQLServerDB
 	 */
 	public JTDSSQLServerDB(String driverName, String jdbcURL, String username, String password) {
 		super(new MSSQLServerDBDefinition(), driverName, jdbcURL, username, password);
@@ -81,6 +88,8 @@ public class JTDSSQLServerDB extends DBDatabase implements SupportsPolygonDataty
 	 * @param jdbcURL jdbcURL
 	 * @param username username
 	 * @param password password
+	 * @deprecated Microsoft have released their JDBC drive to Maven, please
+	 * switch to MSSQLServerDB or MSSQLServerDB
 	 */
 	public JTDSSQLServerDB(String jdbcURL, String username, String password) {
 		super(new MSSQLServerDBDefinition(), JTDSDRIVERNAME, jdbcURL, username, password);
@@ -98,6 +107,8 @@ public class JTDSSQLServerDB extends DBDatabase implements SupportsPolygonDataty
 	 * @param portNumber the port number that the database is available on
 	 * @param username the account to connect via
 	 * @param password the password to identify username.
+	 * @deprecated Microsoft have released their JDBC drive to Maven, please
+	 * switch to MSSQLServerDB or MSSQLServerDB
 	 */
 	public JTDSSQLServerDB(String hostname, String instanceName, String databaseName, int portNumber, String username, String password) {
 		super(
@@ -123,6 +134,8 @@ public class JTDSSQLServerDB extends DBDatabase implements SupportsPolygonDataty
 	 * @param portNumber the port number that the database is available on .
 	 * @param username the account to connect via.
 	 * @param password the password to identify username.
+	 * @deprecated Microsoft have released their JDBC drive to Maven, please
+	 * switch to MSSQLServerDB or MSSQLServerDB
 	 */
 	public JTDSSQLServerDB(String driverName, String hostname, String instanceName, String databaseName, int portNumber, String username, String password) {
 		super(
