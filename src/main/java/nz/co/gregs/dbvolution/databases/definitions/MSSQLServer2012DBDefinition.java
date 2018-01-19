@@ -60,7 +60,7 @@ public class MSSQLServer2012DBDefinition extends MSSQLServerDBDefinition {
 
 	@Override
 	public String doIfThenElseTransform(String booleanTest, String thenResult, String elseResult) {
-		return " IFF( (" + booleanTest + "), (" + thenResult + "), (" + elseResult + "))";
+		return " IIF( (" + booleanTest + "), (" + thenResult + "), (" + elseResult + "))";
 	}
 
 	@Override
