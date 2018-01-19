@@ -40,12 +40,17 @@ public class MSSQLServer2012DBDefinition extends MSSQLServerDBDefinition {
 
 	@Override
 	public String getLimitRowsSubClauseAfterWhereClause(QueryOptions options) {
-		String returnString = "";
+		StringBuilder returnString = new StringBuilder();
 //		if (options.getSortColumns().length == 0) {
 //			returnString = " order by 1";
 //		}
-		returnString += " OFFSET " + (options.getPageIndex() *options.getRowLimit())+ " ROWS FETCH NEXT " + options.getRowLimit() + " ROWS ONLY ";
-		return returnString;
+		if (options.getPageIndex() > 0) {
+			returnString.append(" OFFSET ").append(options.getPageIndex() * options.getRowLimit()).append(" ROWS");
+		}
+		if (options.getRowLimit() > 0) {
+			returnString.append(" FETCH NEXT ").append(options.getRowLimit()).append(" ROWS ONLY ");
+		}
+		return returnString.toString();
 	}
 
 	@Override
