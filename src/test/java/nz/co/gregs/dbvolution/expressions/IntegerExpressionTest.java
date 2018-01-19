@@ -21,6 +21,7 @@ import java.util.List;
 import nz.co.gregs.dbvolution.DBQuery;
 import nz.co.gregs.dbvolution.DBQueryRow;
 import nz.co.gregs.dbvolution.annotations.DBColumn;
+import nz.co.gregs.dbvolution.databases.MSSQLServerDB;
 import nz.co.gregs.dbvolution.datatypes.DBInteger;
 import nz.co.gregs.dbvolution.datatypes.DBNumber;
 import nz.co.gregs.dbvolution.datatypes.DBString;
@@ -32,6 +33,7 @@ import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Test;
 import static org.hamcrest.Matchers.*;
+import org.hamcrest.generator.qdox.parser.impl.Parser;
 
 public class IntegerExpressionTest extends AbstractTest {
 
@@ -1173,6 +1175,7 @@ public class IntegerExpressionTest extends AbstractTest {
 		CarCompanyWithChoose carCo = new CarCompanyWithChoose();
 		DBQuery dbQuery = database.getDBQuery(carCo);
 		dbQuery.setBlankQueryAllowed(true);
+		if(database instanceof MSSQLServerDB){System.out.println(dbQuery.getSQLForQuery());}
 
 		for (CarCompanyWithChoose carCompany : dbQuery.getAllInstancesOf(carCo)) {
 			if (carCompany.uidCarCompany.intValue() <= 0) {
