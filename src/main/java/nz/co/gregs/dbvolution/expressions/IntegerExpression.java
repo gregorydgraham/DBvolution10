@@ -2455,6 +2455,61 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 	}
 
 	/**
+	 * Based on the value of this expression, select a string from the list
+	 * provided.
+	 *
+	 * <p>
+	 * Based on the MS SQLServer CHOOSE function, this method will select the
+	 * string as though the list was a 0-based array of strings and this
+	 * expression were the index.
+	 *
+	 * Value 0 returns the first string, value 1 returns the second, etc. </p>
+	 * 
+	 * <p>
+	 * If the index is too large the last value is returned.</p>
+	 *
+	 * @param stringsToChooseFrom a list of values that the should replace the
+	 * number.
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @return SQL that selects the string from the list based on this expression.
+	 */
+	public StringExpression chooseWithDefault(String... stringsToChooseFrom) {
+		List<StringResult> strResult = new ArrayList<>();
+		for (String str : stringsToChooseFrom) {
+			strResult.add(new StringExpression(str));
+		}
+		return chooseWithDefault(strResult.toArray(new StringResult[]{}));
+	}
+
+	/**
+	 * Based on the value of this expression, select a string from the list
+	 * provided.
+	 *
+	 * <p>
+	 * Based on the MS SQLServer CHOOSE function, this method will select the
+	 * string as though the list was a 0-based array of strings and this
+	 * expression were the index.
+	 *
+	 * Value 0 returns the first string, value 1 returns the second, etc.</p>
+	 *
+	 * <p>
+	 * If the index is too large the last value is returned.</p>
+	 *
+	 * @param stringsToChooseFrom a list of values that the should replace the
+	 * number.
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @return SQL that selects the string from the list based on this expression.
+	 */
+	public StringExpression chooseWithDefault(StringResult... stringsToChooseFrom) {
+		StringExpression expr
+				= this.choose(stringsToChooseFrom)
+						.ifDBNull(stringsToChooseFrom[stringsToChooseFrom.length-1]);
+		return expr;
+	}
+
+	/**
 	 * Provides access to the database's AVERAGE aggregator.
 	 *
 	 * <p>
