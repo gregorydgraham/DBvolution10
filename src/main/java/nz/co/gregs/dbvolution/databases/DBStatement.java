@@ -21,6 +21,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.SQLWarning;
 import java.sql.Statement;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.exceptions.UnableToCreateDatabaseConnectionException;
 import nz.co.gregs.dbvolution.exceptions.UnableToFindJDBCDriver;
@@ -296,13 +298,16 @@ public class DBStatement implements Statement {
 	 *
 	 * 1 Database exceptions may be thrown
 	 *
-	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
 	@Override
-	public synchronized void cancel() throws SQLException {
-		getInternalStatement().cancel();
-		if (database.getDefinition().willCloseConnectionOnStatementCancel()) {
-			replaceBrokenConnection();
+	public synchronized void cancel() throws SQLException{
+		try {
+			getInternalStatement().cancel();
+			if (database.getDefinition().willCloseConnectionOnStatementCancel()) {
+				replaceBrokenConnection();
+			}
+		} catch (Exception ex) {
+			//;Logger.getLogger(DBStatement.class.getName()).log(Level.INFO, "Cancel Threw An Exception", ex);
 		}
 	}
 
