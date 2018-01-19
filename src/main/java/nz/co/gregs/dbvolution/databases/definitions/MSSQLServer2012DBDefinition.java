@@ -44,7 +44,7 @@ public class MSSQLServer2012DBDefinition extends MSSQLServerDBDefinition {
 //		if (options.getSortColumns().length == 0) {
 //			returnString = " order by 1";
 //		}
-		returnString += " OFFSET " + options.getPageIndex() + " ROWS FETCH NEXT " + options.getRowLimit() + " ROWS ONLY ";
+		returnString += " OFFSET " + (options.getPageIndex() *options.getRowLimit())+ " ROWS FETCH NEXT " + options.getRowLimit() + " ROWS ONLY ";
 		return returnString;
 	}
 
