@@ -345,7 +345,7 @@ public abstract class AbstractTest {
 
 		public static final long serialVersionUID = 1l;
 
-		public static JTDSSQLServerTestDB getFromSettings(String prefix) {
+		public static MySQL56TestDatabase getFromSettings(String prefix) {
 			String url = System.getProperty("" + prefix + ".url");
 			String host = System.getProperty("" + prefix + ".host");
 			String port = System.getProperty("" + prefix + ".port");
@@ -354,7 +354,7 @@ public abstract class AbstractTest {
 			String username = System.getProperty("" + prefix + ".username");
 			String password = System.getProperty("" + prefix + ".password");
 			String schema = System.getProperty("" + prefix + ".schema");
-			return new JTDSSQLServerTestDB(host, instance, database, port, username, password);
+			return new MySQL56TestDatabase(url, username, password);
 		}
 
 		public MySQL56TestDatabase(String url, String username, String password) {
