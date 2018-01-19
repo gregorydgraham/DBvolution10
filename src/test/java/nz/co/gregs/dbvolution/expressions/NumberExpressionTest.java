@@ -1226,7 +1226,7 @@ public class NumberExpressionTest extends AbstractTest {
 		public static final long serialVersionUID = 1L;
 
 		@DBColumn
-		DBString chooseOnID = new DBString(this.column(this.uidCarCompany).choose("too low", "ok", "high", "too high"));
+		DBString chooseOnID = new DBString(this.column(this.uidCarCompany).numberResult().choose("too low", "ok", "high", "too high"));
 
 		public CarCompanyWithChoose() {
 			super();
