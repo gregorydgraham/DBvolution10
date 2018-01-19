@@ -486,7 +486,7 @@ public abstract class AbstractTest {
 		}
 	}
 
-	private static class MSSQLServerTestDB extends MSSQLServerDB {
+	private static class MSSQLServerTestDB extends MSSQLServer2012DB {
 
 		public static final long serialVersionUID = 1l;
 

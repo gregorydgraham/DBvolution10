@@ -61,7 +61,11 @@ public class MSSQLServerDB extends DBDatabase implements SupportsPolygonDatatype
 	 * @param ds	a DataSource to an MS SQLServer database
 	 */
 	public MSSQLServerDB(DataSource ds) {
-		super(new MSSQLServerDBDefinition(), ds);
+		this(new MSSQLServerDBDefinition(), ds);
+	}
+
+	protected MSSQLServerDB(MSSQLServerDBDefinition defn, DataSource ds) {
+		super(defn, ds);
 	}
 
 	/**
@@ -74,7 +78,11 @@ public class MSSQLServerDB extends DBDatabase implements SupportsPolygonDatatype
 	 * @param password password
 	 */
 	public MSSQLServerDB(String driverName, String jdbcURL, String username, String password) {
-		super(new MSSQLServerDBDefinition(), driverName, jdbcURL, username, password);
+		this(new MSSQLServerDBDefinition(), driverName, jdbcURL, username, password);
+	}
+
+	public MSSQLServerDB(MSSQLServerDBDefinition defn, String driverName, String jdbcURL, String username, String password) {
+		super(defn, driverName, jdbcURL, username, password);
 	}
 
 	/**
@@ -89,7 +97,11 @@ public class MSSQLServerDB extends DBDatabase implements SupportsPolygonDatatype
 	 * @param password password
 	 */
 	public MSSQLServerDB(String jdbcURL, String username, String password) {
-		super(new MSSQLServerDBDefinition(), SQLSERVERDRIVERNAME, jdbcURL, username, password);
+		this(new MSSQLServerDBDefinition(), SQLSERVERDRIVERNAME, jdbcURL, username, password);
+	}
+
+	protected MSSQLServerDB(MSSQLServerDBDefinition defn, String jdbcURL, String username, String password) {
+		super(defn, SQLSERVERDRIVERNAME, jdbcURL, username, password);
 	}
 
 	/**
@@ -106,8 +118,16 @@ public class MSSQLServerDB extends DBDatabase implements SupportsPolygonDatatype
 	 * @param password the password to identify username.
 	 */
 	public MSSQLServerDB(String hostname, String instanceName, String databaseName, int portNumber, String username, String password) {
-		super(
+		this(
 				new MSSQLServerDBDefinition(),
+				hostname, instanceName, databaseName, portNumber,
+				username, password
+		);
+	}
+
+	public MSSQLServerDB(MSSQLServerDBDefinition defn, String hostname, String instanceName, String databaseName, int portNumber, String username, String password) {
+		super(
+				defn,
 				SQLSERVERDRIVERNAME,
 				"jdbc:sqlserver://" + hostname + (instanceName != null ? "\\" + instanceName : "") + ":" + portNumber + ";" + (databaseName == null ? "" : "databaseName=" + databaseName + ";"),
 				username,
@@ -130,8 +150,17 @@ public class MSSQLServerDB extends DBDatabase implements SupportsPolygonDatatype
 	 * @param password the password to identify username.
 	 */
 	public MSSQLServerDB(String driverName, String hostname, String instanceName, String databaseName, int portNumber, String username, String password) {
-		super(
+		this(
 				new MSSQLServerDBDefinition(),
+				driverName,
+				hostname, instanceName,databaseName, portNumber,
+				username, password
+		);
+	}
+
+	protected MSSQLServerDB(MSSQLServerDBDefinition defn, String driverName, String hostname, String instanceName, String databaseName, int portNumber, String username, String password) {
+		super(
+				defn,
 				driverName,
 				"jdbc:sqlserver://" + hostname + (instanceName != null ? "\\" + instanceName : "") + ":" + portNumber + ";" + (databaseName == null ? "" : "databaseName=" + databaseName + ";"),
 				username,
@@ -141,7 +170,7 @@ public class MSSQLServerDB extends DBDatabase implements SupportsPolygonDatatype
 
 	@Override
 	public DBDatabase clone() throws CloneNotSupportedException {
-		return super.clone(); //To change body of generated methods, choose Tools | Templates.
+		return super.clone(); 
 	}
 
 	@Override
