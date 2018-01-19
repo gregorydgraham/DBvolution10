@@ -33,7 +33,6 @@ import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Test;
 import static org.hamcrest.Matchers.*;
-import org.hamcrest.generator.qdox.parser.impl.Parser;
 
 public class IntegerExpressionTest extends AbstractTest {
 
