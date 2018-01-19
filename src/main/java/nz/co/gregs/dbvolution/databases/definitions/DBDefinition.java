@@ -3363,7 +3363,10 @@ public abstract class DBDefinition {
 	 */
 	public String doChooseTransformation(String numberToChooseWith, List<String> strs) {
 		if (supportsChooseNatively()) {
-			StringBuilder sql = new StringBuilder(getChooseFunctionName() + "(" + numberToChooseWith);
+			StringBuilder sql = new StringBuilder()
+					.append(getChooseFunctionName())
+					.append("(")
+					.append(numberToChooseWith);
 			String comma = ", ";
 			for (String str : strs) {
 				sql.append(comma).append(str);
