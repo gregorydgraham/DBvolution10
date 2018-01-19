@@ -35,19 +35,19 @@ import nz.co.gregs.dbvolution.databases.definitions.MSSQLServer2012DBDefinition;
 public class MSSQLServer2012DB extends MSSQLServerDB {
 
 	public MSSQLServer2012DB(DataSource ds) {
-		super(ds);
+		super(new MSSQLServer2012DBDefinition(), ds);
 	}
 
 	public MSSQLServer2012DB(String driverName, String jdbcURL, String username, String password) {
-		super(driverName, jdbcURL, username, password);
+		super(new MSSQLServer2012DBDefinition(), driverName, jdbcURL, username, password);
 	}
 
 	public MSSQLServer2012DB(String jdbcURL, String username, String password) {
-		super(jdbcURL, username, password);
+		super(new MSSQLServer2012DBDefinition(), jdbcURL, username, password);
 	}
 
 	public MSSQLServer2012DB(String hostname, String instanceName, String databaseName, int portNumber, String username, String password) {
-		super(hostname, instanceName, databaseName, portNumber, username, password);
+		super(new MSSQLServer2012DBDefinition(), hostname, instanceName, databaseName, portNumber, username, password);
 	}
 
 	public MSSQLServer2012DB(String driverName, String hostname, String instanceName, String databaseName, int portNumber, String username, String password) {
