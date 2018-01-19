@@ -1183,8 +1183,10 @@ public class IntegerExpressionTest extends AbstractTest {
 				Assert.assertThat(carCompany.chooseOnID.getValue(), is("ok"));
 			} else if (carCompany.uidCarCompany.intValue() == 2) {
 				Assert.assertThat(carCompany.chooseOnID.getValue(), is("high"));
-			} else {
+			} else if (carCompany.uidCarCompany.intValue() == 3) {
 				Assert.assertThat(carCompany.chooseOnID.getValue(), is("too high"));
+			} else {
+				Assert.assertThat(carCompany.chooseOnID.getValue(), isEmptyOrNullString());
 			}
 		}
 	}

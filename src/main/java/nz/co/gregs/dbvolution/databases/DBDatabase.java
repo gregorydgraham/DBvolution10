@@ -1173,12 +1173,9 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 	public void createTableWithForeignKeys(DBRow newTableRow) throws SQLException, AutoCommitActionDuringTransactionException {
 		createTable(newTableRow, true);
 	}
-
-	private synchronized void createTable(DBRow newTableRow, boolean includeForeignKeyClauses) throws SQLException, AutoCommitActionDuringTransactionException {
-		preventDDLDuringTransaction("DBDatabase.createTable()");
+	
+	public final synchronized String getSQLForCreateTable(DBRow newTableRow, boolean includeForeignKeyClauses, List<PropertyWrapper> pkFields,List<PropertyWrapper> spatial2DFields){
 		StringBuilder sqlScript = new StringBuilder();
-		List<PropertyWrapper> pkFields = new ArrayList<>();
-		List<PropertyWrapper> spatial2DFields = new ArrayList<>();
 		String lineSeparator = System.getProperty("line.separator");
 		// table name
 
@@ -1236,7 +1233,17 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 
 		//finish
 		sqlScript.append(definition.getCreateTableColumnsEnd()).append(lineSeparator).append(definition.endSQLStatement());
-		String sqlString = sqlScript.toString();
+		return sqlScript.toString();
+	}
+
+	private synchronized void createTable(DBRow newTableRow, boolean includeForeignKeyClauses) throws SQLException, AutoCommitActionDuringTransactionException {
+		
+		preventDDLDuringTransaction("DBDatabase.createTable()");
+		
+		List<PropertyWrapper> pkFields = new ArrayList<>();
+		List<PropertyWrapper> spatial2DFields = new ArrayList<>();
+		
+		String sqlString = getSQLForCreateTable(newTableRow, includeForeignKeyClauses, pkFields, spatial2DFields);
 		try (DBStatement dbStatement = getDBStatement()) {
 			dbStatement.execute(sqlString);
 

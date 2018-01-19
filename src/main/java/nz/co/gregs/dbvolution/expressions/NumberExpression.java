@@ -51,10 +51,10 @@ import nz.co.gregs.dbvolution.results.IntegerResult;
  *
  * @author Gregory Graham
  */
-public class NumberExpression extends SimpleNumericExpression<Number, NumberResult, DBNumber> implements NumberResult{
+public class NumberExpression extends SimpleNumericExpression<Number, NumberResult, DBNumber> implements NumberResult {
 
-	 @Override
-	 public NumberExpression nullExpression() {
+	@Override
+	public NumberExpression nullExpression() {
 		return new NumberExpression() {
 			@Override
 			public String toSQLString(DBDefinition db) {
@@ -91,7 +91,7 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 	 * @return a DBExpression instance that is appropriate to the subclass and the
 	 * value supplied.
 	 */
-	 @Override
+	@Override
 	public NumberExpression expression(NumberResult number) {
 		return new NumberExpression(number);
 	}
@@ -124,7 +124,7 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 	 * @return a DBExpression instance that is appropriate to the subclass and the
 	 * value supplied.
 	 */
-	 @Override
+	@Override
 	public NumberExpression expression(DBNumber number) {
 		return new NumberExpression(number);
 	}
@@ -209,7 +209,7 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 
 	@Override
 	public NumberExpression copy() {
-		return isNullSafetyTerminator()?nullNumber():new NumberExpression(getInnerResult());
+		return isNullSafetyTerminator() ? nullNumber() : new NumberExpression(getInnerResult());
 	}
 
 	/**
@@ -240,7 +240,7 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 	 * @return a DBExpression instance that is appropriate to the subclass and the
 	 * value supplied.
 	 */
-	 @Override
+	@Override
 	public NumberExpression expression(Number object) {
 		final NumberExpression numberExpression = new NumberExpression(object);
 		return numberExpression;
@@ -254,7 +254,6 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 //			return innerNumberResult.isPurelyFunctional();
 //		}
 //	}
-
 	/**
 	 * Converts the number expression into a string/character expression within
 	 * the query.
@@ -280,7 +279,7 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 	 * <p>
 	 * MODE: The number which appears most often in a set of numbers. For example:
 	 * in {6, 3, 9, 6, 6, 5, 9, 3} the Mode is 6.</p>
-	 * 
+	 *
 	 * <p style="color: #F90;">Support DBvolution at
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 *
@@ -415,7 +414,7 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 	 * @return a BooleanExpression for use in {@link DBQuery#addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression)
 	 * }
 	 */
-	 @Override
+	@Override
 	public BooleanExpression is(Number number) {
 		return is(value(number));
 	}
@@ -511,7 +510,7 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 	 * @return a BooleanExpression for use in {@link DBQuery#addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression)
 	 * }
 	 */
-	 @Override
+	@Override
 	public BooleanExpression isNot(Number number) {
 		return is(value(number)).not();
 	}
@@ -626,7 +625,7 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a boolean expression representing the required comparison
 	 */
-	 @Override
+	@Override
 	public BooleanExpression isBetween(Number lowerBound, NumberResult upperBound) {
 		return isBetween(value(lowerBound), upperBound);
 	}
@@ -681,7 +680,7 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a boolean expression representing the required comparison
 	 */
-	 @Override
+	@Override
 	public BooleanExpression isBetween(NumberResult lowerBound, Number upperBound) {
 		return isBetween(lowerBound, value(upperBound));
 	}
@@ -736,7 +735,7 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a boolean expression representing the required comparison
 	 */
-	 @Override
+	@Override
 	public BooleanExpression isBetween(Number lowerBound, Number upperBound) {
 		return isBetween(value(lowerBound), value(upperBound));
 	}
@@ -822,7 +821,7 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a boolean expression representing the required comparison
 	 */
-	 @Override
+	@Override
 	public BooleanExpression isBetweenInclusive(Number lowerBound, NumberResult upperBound) {
 		return isBetweenInclusive(value(lowerBound), upperBound);
 	}
@@ -877,7 +876,7 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a boolean expression representing the required comparison
 	 */
-	 @Override
+	@Override
 	public BooleanExpression isBetweenInclusive(NumberResult lowerBound, Number upperBound) {
 		return isBetweenInclusive(lowerBound, value(upperBound));
 	}
@@ -932,7 +931,7 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a boolean expression representing the required comparison
 	 */
-	 @Override
+	@Override
 	public BooleanExpression isBetweenInclusive(Number lowerBound, Number upperBound) {
 		return isBetweenInclusive(value(lowerBound), value(upperBound));
 	}
@@ -1024,7 +1023,7 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a boolean expression representing the required comparison
 	 */
-	 @Override
+	@Override
 	public BooleanExpression isBetweenExclusive(Number lowerBound, NumberResult upperBound) {
 		return isBetweenExclusive(value(lowerBound), upperBound);
 	}
@@ -1083,7 +1082,7 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a boolean expression representing the required comparison
 	 */
-	 @Override
+	@Override
 	public BooleanExpression isBetweenExclusive(NumberResult lowerBound, Number upperBound) {
 		return isBetweenExclusive(lowerBound, value(upperBound));
 	}
@@ -1142,7 +1141,7 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a boolean expression representing the required comparison
 	 */
-	 @Override
+	@Override
 	public BooleanExpression isBetweenExclusive(Number lowerBound, Number upperBound) {
 		return isBetweenExclusive(value(lowerBound), value(upperBound));
 	}
@@ -1157,7 +1156,7 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 	 * @return a BooleanExpression for use in
 	 * {@link DBQuery#addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression)}
 	 */
-	 @Override
+	@Override
 	public BooleanExpression isLessThan(Number number) {
 		return isLessThan(value(number));
 	}
@@ -1211,7 +1210,7 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 	 * @return a BooleanExpression for use in
 	 * {@link DBQuery#addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression)}
 	 */
-	 @Override
+	@Override
 	public BooleanExpression isLessThanOrEqual(Number number) {
 		return isLessThanOrEqual(value(number));
 	}
@@ -1255,7 +1254,7 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 	 * @return a BooleanExpression for use in
 	 * {@link DBQuery#addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression)}
 	 */
-	 @Override
+	@Override
 	public BooleanExpression isGreaterThan(Number number) {
 		return isGreaterThan(value(number));
 	}
@@ -1299,7 +1298,7 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 	 * @return a BooleanExpression for use in
 	 * {@link DBQuery#addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression)}
 	 */
-	 @Override
+	@Override
 	public BooleanExpression isGreaterThanOrEqual(Number number) {
 		return isGreaterThanOrEqual(value(number));
 	}
@@ -1353,7 +1352,7 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a BooleanExpression
 	 */
-	 @Override
+	@Override
 	public BooleanExpression isLessThan(Number value, BooleanExpression fallBackWhenEquals) {
 		return this.isLessThan(NumberExpression.value(value), fallBackWhenEquals);
 	}
@@ -1402,7 +1401,7 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a BooleanExpression
 	 */
-	 @Override
+	@Override
 	public BooleanExpression isGreaterThan(Number value, BooleanExpression fallBackWhenEquals) {
 		return this.isGreaterThan(NumberExpression.value(value), fallBackWhenEquals);
 	}
@@ -1491,7 +1490,7 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 	 * @return a BooleanExpression for use in
 	 * {@link DBQuery#addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression)}
 	 */
-	 @Override
+	@Override
 	public BooleanExpression isIn(Number... possibleValues) {
 		List<NumberExpression> possVals = new ArrayList<>();
 		for (Number num : possibleValues) {
@@ -1676,7 +1675,7 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 	 */
 	public static NumberExpression greatestOf(SimpleNumericExpression... possibleValues) {
 		List<NumberExpression> possVals = new ArrayList<>();
-		for (SimpleNumericExpression<?,?,?> num : possibleValues) {
+		for (SimpleNumericExpression<?, ?, ?> num : possibleValues) {
 			possVals.add(num.numberResult());
 		}
 		return greatestOf(possVals);
@@ -1930,7 +1929,7 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 		return new SinhFunction(this);
 	}
 
-	 @Override
+	@Override
 	public NumberExpression numberResult() {
 		return this;
 	}
@@ -2629,7 +2628,6 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 //			protected String afterValue(DBDefinition db) {
 //				return ", 0) ";
 //			}
-
 		});
 	}
 
@@ -2661,7 +2659,7 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 	 *
 	 * @return a NumberExpression
 	 */
-	 @Override
+	@Override
 	public IntegerExpression integerResult() {
 		return new IntegerExpression(new DBUnaryIntegerFunction(this) {
 
@@ -3014,8 +3012,10 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 	 * string as though the list was a 0-based array of strings and this
 	 * expression were the index.
 	 *
-	 * Value 0 returns the first string, value 1 returns the second, etc. If the
-	 * index is too large the last string is returned.
+	 * Value 0 returns the first string, value 1 returns the second, etc. </p>
+	 * 
+	 * <p>
+	 * If the index is too large NULL is returned.</p>
 	 *
 	 * @param stringsToChooseFrom a list of values that the should replace the
 	 * number.
@@ -3040,8 +3040,10 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 	 * string as though the list was a 0-based array of strings and this
 	 * expression were the index.
 	 *
-	 * Value 0 returns the first string, value 1 returns the second, etc. If the
-	 * index is too large the last string is returned.
+	 * Value 0 returns the first string, value 1 returns the second, etc.</p>
+	 *
+	 * <p>
+	 * If the index is too large NULL is returned.</p>
 	 *
 	 * @param stringsToChooseFrom a list of values that the should replace the
 	 * number.
@@ -3990,7 +3992,7 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 		public DBString getQueryableDatatypeForExpressionValue() {
 			return new DBString();
 		}
-		
+
 		@Override
 		abstract public String toSQLString(DBDefinition db);
 

@@ -59,6 +59,7 @@ public class JTDSSQLServerDB extends DBDatabase implements SupportsPolygonDataty
 	 * @deprecated Microsoft have released their JDBC drive to Maven, please
 	 * switch to MSSQLServerDB or MSSQLServer2012DB
 	 */
+	@Deprecated
 	public JTDSSQLServerDB(DataSource ds) {
 		super(new MSSQLServerDBDefinition(), ds);
 	}
@@ -74,6 +75,7 @@ public class JTDSSQLServerDB extends DBDatabase implements SupportsPolygonDataty
 	 * @deprecated Microsoft have released their JDBC drive to Maven, please
 	 * switch to MSSQLServerDB or MSSQLServer2012DB
 	 */
+	@Deprecated
 	public JTDSSQLServerDB(String driverName, String jdbcURL, String username, String password) {
 		super(new MSSQLServerDBDefinition(), driverName, jdbcURL, username, password);
 	}
@@ -91,6 +93,7 @@ public class JTDSSQLServerDB extends DBDatabase implements SupportsPolygonDataty
 	 * @deprecated Microsoft have released their JDBC drive to Maven, please
 	 * switch to MSSQLServerDB or MSSQLServer2012DB
 	 */
+	@Deprecated
 	public JTDSSQLServerDB(String jdbcURL, String username, String password) {
 		super(new MSSQLServerDBDefinition(), JTDSDRIVERNAME, jdbcURL, username, password);
 	}
@@ -110,6 +113,7 @@ public class JTDSSQLServerDB extends DBDatabase implements SupportsPolygonDataty
 	 * @deprecated Microsoft have released their JDBC drive to Maven, please
 	 * switch to MSSQLServerDB or MSSQLServer2012DB
 	 */
+	@Deprecated
 	public JTDSSQLServerDB(String hostname, String instanceName, String databaseName, int portNumber, String username, String password) {
 		super(
 				new MSSQLServerDBDefinition(),
@@ -137,6 +141,7 @@ public class JTDSSQLServerDB extends DBDatabase implements SupportsPolygonDataty
 	 * @deprecated Microsoft have released their JDBC drive to Maven, please
 	 * switch to MSSQLServerDB or MSSQLServer2012DB
 	 */
+	@Deprecated
 	public JTDSSQLServerDB(String driverName, String hostname, String instanceName, String databaseName, int portNumber, String username, String password) {
 		super(
 				new MSSQLServerDBDefinition(),

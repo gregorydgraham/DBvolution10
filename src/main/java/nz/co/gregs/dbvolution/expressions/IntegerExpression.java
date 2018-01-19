@@ -2411,8 +2411,10 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 	 * string as though the list was a 0-based array of strings and this
 	 * expression were the index.
 	 *
-	 * Value 0 returns the first string, value 1 returns the second, etc. If the
-	 * index is too large the last string is returned.
+	 * Value 0 returns the first string, value 1 returns the second, etc.</p>
+	 * 
+	 * <p>
+	 * If the index is too large NULL is returned.</p>
 	 *
 	 * @param stringsToChooseFrom a list of values that the should replace the
 	 * number.
@@ -2438,7 +2440,7 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 	 * expression were the index.
 	 *
 	 * Value 0 returns the first string, value 1 returns the second, etc. If the
-	 * index is too large the last string is returned.
+	 * index is too large NULL is returned.
 	 *
 	 * @param stringsToChooseFrom a list of values that the should replace the
 	 * number.
