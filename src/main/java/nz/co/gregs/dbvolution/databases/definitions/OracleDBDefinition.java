@@ -33,6 +33,7 @@ import nz.co.gregs.dbvolution.generation.DBTableClassGenerator;
 import nz.co.gregs.dbvolution.internal.oracle.StringFunctions;
 import nz.co.gregs.dbvolution.internal.query.LargeObjectHandlerType;
 import nz.co.gregs.dbvolution.internal.query.QueryOptions;
+import nz.co.gregs.dbvolution.internal.query.QueryState;
 
 /**
  * Defines the features of the Oracle database that differ from the standard
@@ -130,7 +131,7 @@ public class OracleDBDefinition extends DBDefinition {
 	}
 
 	@Override
-	public String getLimitRowsSubClauseAfterWhereClause(QueryOptions options) {
+	public String getLimitRowsSubClauseAfterWhereClause(QueryState state, QueryOptions options) {
 		return "";
 	}
 

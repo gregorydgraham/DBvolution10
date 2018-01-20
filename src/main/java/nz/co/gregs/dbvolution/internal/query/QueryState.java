@@ -48,6 +48,7 @@ public class QueryState {
 	private boolean queryIsLeftOuterJoin = true;
 	//		private final boolean queryIsNativeQuery = true;
 	boolean mayRequireOnClause = false;
+	private boolean hasBeenOrdered = false;
 
 	public QueryState(QueryDetails details) {
 		this.remainingExpressions = new ArrayList<>(details.getConditions());
@@ -133,6 +134,14 @@ public class QueryState {
 
 	public void addAllToRemainingExpressions(List<BooleanExpression> relationshipsAsBooleanExpressions) {
 		remainingExpressions.addAll(relationshipsAsBooleanExpressions);
+	}
+
+	public synchronized boolean hasBeenOrdered() {
+		return hasBeenOrdered;
+	}
+
+	public synchronized void setHasBeenOrdered(boolean b) {
+		hasBeenOrdered = b;
 	}
 
 }

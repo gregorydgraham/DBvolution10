@@ -20,6 +20,7 @@ import java.util.Date;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.databases.InformixDB;
 import nz.co.gregs.dbvolution.internal.query.QueryOptions;
+import nz.co.gregs.dbvolution.internal.query.QueryState;
 
 /**
  * Defines the features of the Informix database that differ from the standard
@@ -94,7 +95,7 @@ public class InformixDBDefinition extends DBDefinition {
 	}
 
 	@Override
-	public String getLimitRowsSubClauseAfterWhereClause(QueryOptions options) {
+	public String getLimitRowsSubClauseAfterWhereClause(QueryState state, QueryOptions options) {
 		return "";
 	}
 

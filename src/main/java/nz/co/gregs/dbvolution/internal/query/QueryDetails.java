@@ -596,6 +596,7 @@ public class QueryDetails implements DBQueryable {
 				String orderByClauseFinal = getOrderByClause(defn, indexesOfSelectedColumns, indexesOfSelectedExpressions);
 				if (!orderByClauseFinal.trim().isEmpty()) {
 					orderByClauseFinal += lineSep;
+					queryState.setHasBeenOrdered(true);
 				}
 				havingClause = getHavingClause(database, options);
 				if (!havingClause.trim().isEmpty()) {
@@ -609,7 +610,7 @@ public class QueryDetails implements DBQueryable {
 								.append(groupByClauseFinal)
 								.append(havingClause)
 								.append(orderByClauseFinal)
-								.append(options.getRowLimit() > 0 ? defn.getLimitRowsSubClauseAfterWhereClause(options) : "")
+								.append(options.getRowLimit() > 0 ? defn.getLimitRowsSubClauseAfterWhereClause(queryState, options) : "")
 								.append(defn.endSQLStatement())
 								.toString(),
 						options);

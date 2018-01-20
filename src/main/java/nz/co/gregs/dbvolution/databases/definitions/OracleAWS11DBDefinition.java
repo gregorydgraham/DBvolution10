@@ -20,6 +20,7 @@ import java.util.List;
 import nz.co.gregs.dbvolution.databases.DBDatabase;
 import nz.co.gregs.dbvolution.databases.OracleAWS11DB;
 import nz.co.gregs.dbvolution.internal.query.QueryOptions;
+import nz.co.gregs.dbvolution.internal.query.QueryState;
 
 /**
  * Defines the features of the Amazon's RDS Oracle 11 database that differ from
@@ -42,7 +43,7 @@ public class OracleAWS11DBDefinition extends OracleAWSDBDefinition {
 	}
 
 	@Override
-	public String getLimitRowsSubClauseAfterWhereClause(QueryOptions options) {
+	public String getLimitRowsSubClauseAfterWhereClause(QueryState state, QueryOptions options) {
 		return "";
 	}
 

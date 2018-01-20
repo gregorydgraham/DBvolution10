@@ -26,6 +26,7 @@ import nz.co.gregs.dbvolution.databases.Oracle11XEDB;
 import nz.co.gregs.dbvolution.internal.oracle.xe.GeometryFunctions;
 import nz.co.gregs.dbvolution.internal.oracle.xe.MultiPoint2DFunctions;
 import nz.co.gregs.dbvolution.internal.query.QueryOptions;
+import nz.co.gregs.dbvolution.internal.query.QueryState;
 
 /**
  * Defines the features of the Oracle 11 database that differ from the standard
@@ -48,7 +49,7 @@ public class Oracle11XEDBDefinition extends OracleSpatialDBDefinition {
 	}
 
 	@Override
-	public String getLimitRowsSubClauseAfterWhereClause(QueryOptions options) {
+	public String getLimitRowsSubClauseAfterWhereClause(QueryState state, QueryOptions options) {
 		return "";
 	}
 
