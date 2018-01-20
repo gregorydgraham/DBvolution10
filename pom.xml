@@ -361,6 +361,7 @@
 						<postgres.url>${postgres.url}</postgres.url>
 						<postgres.host>${postgres.host}</postgres.host>
 						<postgres.port>${postgres.port}</postgres.port>
+						<postgres.database>${postgres.database}</postgres.database>
 						<postgres.instance>${postgres.instance}</postgres.instance>
 						<postgres.username>${postgres.username}</postgres.username>
 						<postgres.password>${postgres.password}</postgres.password>
