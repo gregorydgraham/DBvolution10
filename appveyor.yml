@@ -21,13 +21,6 @@ services:
   - mssql2016
 
 build_script:
-  # postgres
-  - createdb dbvtest
-  - createdb dbvtest-cluster
-  # mysql
-  - mysql -e "create database dbvtest;" --user=root
-  - mysql -e "create database dbvtest-cluster;" --user=root
-  
 install:
   - ps: |
       Add-Type -AssemblyName System.IO.Compression.FileSystem
@@ -42,6 +35,13 @@ install:
   - cmd: SET MAVEN_OPTS=-XX:MaxPermSize=2g -Xmx4g
   - cmd: SET JAVA_OPTS=-XX:MaxPermSize=2g -Xmx4g
 build_script:
+  # postgres
+  - createdb dbvtest
+  - createdb dbvtest-cluster
+  # mysql
+  - mysql -e "create database dbvtest;" --user=root
+  - mysql -e "create database dbvtest-cluster;" --user=root
+  
   - mvn -q clean compile --batch-mode -DskipTest
 test_script:
   - mvn -q test -P MSSQLServerTest,DBs-OpenSource,ClusteredDBTest --batch-mode -s appveyor-settings.xml
