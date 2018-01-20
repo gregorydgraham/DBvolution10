@@ -41,7 +41,7 @@ install:
 build_script:
   # postgres
   - createdb dbvtest
-  - createdb dbvtest-cluster
+  - createdb dbvtest_cluster
   # mysql
   - mysql -e "create database dbvtest;" --user=root
   - mysql -e "create database dbvtest_cluster;" --user=root

@@ -20,7 +20,7 @@ before_install:
   - mysql -e 'CREATE DATABASE IF NOT EXISTS dbvtest;'
   - mysql -e 'CREATE DATABASE IF NOT EXISTS dbvtest_cluster;'
   - mysql -V
-  - psql -c 'create database dbvtest-cluster;' -U postgres
+  - psql -c 'create database dbvtest_cluster;' -U postgres
   - psql --version
 before_script:
   

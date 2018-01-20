@@ -420,7 +420,7 @@ public abstract class AbstractTest {
 			String host = System.getProperty("" + prefix + ".host");
 			String port = System.getProperty("" + prefix + ".port");
 			String instance = System.getProperty("" + prefix + ".instance");
-			String database = System.getProperty("" + prefix + ".database")+"-cluster";
+			String database = System.getProperty("" + prefix + ".database")+"_cluster";
 			String username = System.getProperty("" + prefix + ".username");
 			String password = System.getProperty("" + prefix + ".password");
 			String schema = System.getProperty("" + prefix + ".schema");
