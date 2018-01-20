@@ -44,7 +44,7 @@ build_script:
   - createdb dbvtest-cluster
   # mysql
   - mysql -e "create database dbvtest;" --user=root
-  - mysql -e "create database 'dbvtest-cluster';" --user=root
+  - mysql -e "create database \"dbvtest-cluster\";" --user=root
   
   - mvn -q clean compile --batch-mode -DskipTest
 test_script:
