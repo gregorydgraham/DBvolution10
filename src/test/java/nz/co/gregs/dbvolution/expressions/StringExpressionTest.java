@@ -706,11 +706,11 @@ public class StringExpressionTest extends AbstractTest {
 			new FindFirstNumberTable("aab 09.90 y", "09.90", 9.9),
 			new FindFirstNumberTable("aac 900.90 y", "900.90", 900.9),
 			new FindFirstNumberTable("aad 900.90.90 y", "900.90", 900.9),
-			new FindFirstNumberTable("aad 900.90 -0.90 y", "900.90", 900.9),
-			new FindFirstNumberTable("aad -900.90.90 0.90 y", "-900.90", -900.9),
-			new FindFirstNumberTable("aad 900. -0.90 y", "900", 900),
-			new FindFirstNumberTable("aad 900.", "900", 900),
-			new FindFirstNumberTable("aad - 900 0.90 y", "900", 900),
+			new FindFirstNumberTable("aae 900.90 -0.90 y", "900.90", 900.9),
+			new FindFirstNumberTable("aaf -900.90.90 0.90 y", "-900.90", -900.9),
+			new FindFirstNumberTable("aag 900. -0.90 y", "900", 900),
+			new FindFirstNumberTable("aah 900.", "900", 900),
+			new FindFirstNumberTable("aai - 900 0.90 y", "900", 900),
 			new FindFirstNumberTable("900.90.90 y", "900.90", 900.9),
 			new FindFirstNumberTable("c 9.90 c", "9.90", 9.9),
 			new FindFirstNumberTable("d 9 d", "9", 9),
@@ -724,6 +724,7 @@ public class StringExpressionTest extends AbstractTest {
 		List<FindFirstNumberTable> allRows = query.getAllRows();
 
 		if (allRows.size() != 14) {
+			System.out.println(query.getSQLForQuery());
 			database.print(allRows);
 		}
 
@@ -745,11 +746,11 @@ public class StringExpressionTest extends AbstractTest {
 			new FindFirstIntegerTable("aab 09.90 y", "09", 9),
 			new FindFirstIntegerTable("aac 900.90 y", "900", 900),
 			new FindFirstIntegerTable("aad 900.90.90 y", "900", 900),
-			new FindFirstIntegerTable("aad 900.90 -0.90 y", "900", 900),
-			new FindFirstIntegerTable("aad -900.90.90 0.90 y", "-900", -900),
-			new FindFirstIntegerTable("aad 900. -0.90 y", "900", 900),
-			new FindFirstIntegerTable("aad 900.", "900", 900),
-			new FindFirstIntegerTable("aad - 900 0.90 y", "900", 900),
+			new FindFirstIntegerTable("aae 900.90 -0.90 y", "900", 900),
+			new FindFirstIntegerTable("aaf -900.90.90 0.90 y", "-900", -900),
+			new FindFirstIntegerTable("aag 900. -0.90 y", "900", 900),
+			new FindFirstIntegerTable("aah 900.", "900", 900),
+			new FindFirstIntegerTable("aai - 900 0.90 y", "900", 900),
 			new FindFirstIntegerTable("900.90.90 y", "900", 900),
 			new FindFirstIntegerTable("c 9.90 c", "9", 9),
 			new FindFirstIntegerTable("d 9 d", "9", 9),
@@ -759,10 +760,11 @@ public class StringExpressionTest extends AbstractTest {
 		final DBTable<FindFirstIntegerTable> query = database.getDBTable(tab)
 				.setBlankQueryAllowed(true)
 				.setSortOrder(tab.column(tab.sample));
-
+		
 		List<FindFirstIntegerTable> allRows = query.getAllRows();
 
 		if (allRows.size() != 14) {
+			System.out.println(query.getSQLForQuery());
 			database.print(allRows);
 		}
 
