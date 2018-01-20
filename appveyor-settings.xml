@@ -85,7 +85,7 @@
                 <postgres.url></postgres.url>
                 <postgres.host>localhost</postgres.host>
                 <postgres.port>5432</postgres.port>
-                <postgres.database></postgres.database>
+                <postgres.database>dbvtest</postgres.database>
                 <postgres.instance></postgres.instance>
                 <postgres.username>postgres</postgres.username>
                 <postgres.password>Password12!</postgres.password>

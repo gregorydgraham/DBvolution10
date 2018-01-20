@@ -1,9 +1,33 @@
+environment:
+  # postgres
+  POSTGRES_PORT: tcp://localhost:5432
+  POSTGRES_ENV_POSTGRES_USER: postgres
+  POSTGRES_ENV_POSTGRES_PASSWORD: Password12!
+  PGUSER: postgres
+  PGPASSWORD: Password12!
+  # mysql
+  MYSQL_PORT: tcp://localhost:3306
+  MYSQL_ENV_MYSQL_USER: root
+  MYSQL_ENV_MYSQL_PASSWORD: Password12!
+  MYSQL_PWD: Password12!
+
 version: '{build}'
+
 os: Windows Server 2012
+
 services:
   - postgresql95
   - mysql
   - mssql2016
+
+build_script:
+  # postgres
+  - createdb dbvtest
+  - createdb dbvtest-cluster
+  # mysql
+  - mysql -e "create database dbvtest;" --user=root
+  - mysql -e "create database dbvtest-cluster;" --user=root
+  
 install:
   - ps: |
       Add-Type -AssemblyName System.IO.Compression.FileSystem
