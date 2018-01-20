@@ -5901,4 +5901,8 @@ public abstract class DBDefinition {
 	public boolean supportsTableCheckingViaMetaData() {
 		return true;
 	}
+
+	public boolean requiresOnClauseForAllJoins() {
+		return false;
+	}
 }

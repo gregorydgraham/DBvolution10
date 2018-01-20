@@ -339,6 +339,7 @@ public abstract class EqualExpression<B, R extends EqualResult<B>, D extends Que
 
 		@Override
 		public String createSQLForFromClause(DBDatabase database) {
+			DBDefinition defn = database.getDefinition();
 			final IntegerExpression expr = new IntegerExpression(getInnerResult());
 
 			DBInteger count = expr.count().asExpressionColumn();
@@ -361,7 +362,16 @@ public abstract class EqualExpression<B, R extends EqualResult<B>, D extends Que
 					.setRowLimit(1);
 			String tableAliasForObject = getInternalTableName(database);
 
-			return "(" + query.getSQLForQuery().replaceAll("; *$", "") + ") " + tableAliasForObject;
+			String sql = "(" + query.getSQLForQuery().replaceAll("; *$", "") + ") " + tableAliasForObject;
+//			if (query.getQueryDetails().getOptions().isUseANSISyntax() && defn.requiresOnClauseForAllJoins()) {
+//				sql = sql.replaceAll(tableAliasForObject,
+//						tableAliasForObject
+//						+ defn.beginOnClause()
+//						+ (BooleanExpression.trueExpression().toSQLString(defn))
+//						+ defn.endOnClause()
+//				);
+//			}
+			return sql;
 		}
 
 		public String getInternalTableName(DBDatabase database) {
@@ -401,25 +411,24 @@ public abstract class EqualExpression<B, R extends EqualResult<B>, D extends Que
 
 	protected static class ModeStrictExpression extends DBUnaryFunction {
 
-		private String tableAlias=null;
-		private String firstTableCounterName=null;
-		private String secondTableCounterName=null;
-		private String firstTableModeName=null;
-		private String secondTableModeName=null;
-		private String firstTableName=null;
-		private String secondTableName=null;
+		private String tableAlias = null;
+		private String firstTableCounterName = null;
+		private String secondTableCounterName = null;
+		private String firstTableModeName = null;
+		private String secondTableModeName = null;
+		private String firstTableName = null;
+		private String secondTableName = null;
 		private final IntegerExpression expr1;
 		private final IntegerExpression expr2;
 		private final DBInteger mode1;
 		private final DBInteger mode2;
 		private final DBInteger count1;
 		private final DBInteger count2;
-		
+
 		private static final Object COUNTER1KEY = new Object();
 		private static final Object MODE1KEY = new Object();
 		private static final Object COUNTER2KEY = new Object();
 		private static final Object MODE2KEY = new Object();
-
 
 		public ModeStrictExpression(EqualResult<?> only) {
 			super(only);
@@ -494,12 +503,27 @@ public abstract class EqualExpression<B, R extends EqualResult<B>, D extends Que
 					.setSortOrder(query2.column(count2))
 					.setRowLimit(1)
 					.setPageRequired(1);
+			final boolean useANSISyntax = query1.getQueryDetails().getOptions().isUseANSISyntax();
 
-			return "(" + query1.getSQLForQuery().replaceAll("; *$", "") + ") " + getFirstTableName(defn)
+			String sql = "(" + query1.getSQLForQuery().replaceAll("; *$", "") + ") " + getFirstTableName(defn)
 					+ System.getProperty("line.separator")
-					+ " join "
+					+ (useANSISyntax ? " join " : ", ")
 					+ System.getProperty("line.separator")
 					+ "(" + query2.getSQLForQuery().replaceAll("; *$", "") + ") " + getSecondTableName(defn);
+
+			if (useANSISyntax && defn.requiresOnClauseForAllJoins()) {
+				sql = sql.replaceAll(getFirstTableName(defn),
+						getFirstTableName(defn)
+						+ defn.beginOnClause()
+						+ (BooleanExpression.trueExpression().toSQLString(defn))
+						+ defn.endOnClause());
+//				sql = sql.replaceAll(getSecondTableName(defn),
+//						getSecondTableName(defn)
+//						+ defn.beginOnClause()
+//						+ (BooleanExpression.trueExpression().toSQLString(defn))
+//						+ defn.endOnClause());
+			}
+			return sql;
 		}
 
 		@Override

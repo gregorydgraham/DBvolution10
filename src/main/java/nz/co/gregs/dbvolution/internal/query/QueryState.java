@@ -47,6 +47,7 @@ public class QueryState {
 	private boolean queryIsFullOuterJoin = true;
 	private boolean queryIsLeftOuterJoin = true;
 	//		private final boolean queryIsNativeQuery = true;
+	boolean mayRequireOnClause = false;
 
 	public QueryState(QueryDetails details) {
 		this.remainingExpressions = new ArrayList<>(details.getConditions());

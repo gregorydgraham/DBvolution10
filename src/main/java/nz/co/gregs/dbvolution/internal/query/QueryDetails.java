@@ -466,14 +466,15 @@ public class QueryDetails implements DBQueryable {
 						}
 						if (expression != null && expression.isComplexExpression()) {
 							final boolean hasTablesAlready = !joinedTables.isEmpty();
-							String joiner = options.isUseANSISyntax()&&hasTablesAlready?" join ":"";
-							joiner = !options.isUseANSISyntax()&&hasTablesAlready?fromClauseTableSeparator:joiner;
+							String joiner = hasTablesAlready?options.isUseANSISyntax()?" join ":fromClauseTableSeparator:"";
+//							joiner = hasTablesAlready&& !options.isUseANSISyntax()?:joiner;
 							fromClause
 									.append(joiner)
 									.append(fromClauseTableSeparator)
 									.append(expression.createSQLForFromClause(database))
-									.append(", ");
+									.append(options.isUseANSISyntax()?" join ":", ");
 							fromClauseTableSeparator = ", " + lineSep;
+							queryState.mayRequireOnClause = true;
 						}
 
 						columnIndex++;
@@ -542,9 +543,16 @@ public class QueryDetails implements DBQueryable {
 					}
 					if (expression.isComplexExpression()) {
 						fromClause
-								.append(fromClauseTableSeparator)
+								.append(options.isUseANSISyntax()?" join ":fromClauseTableSeparator)
 								.append(expression.createSQLForFromClause(database));
-						fromClauseTableSeparator = ", " + lineSep;
+						if(options.isUseANSISyntax()&&defn.requiresOnClauseForAllJoins()){
+							fromClause
+									.append(defn.beginOnClause())
+									.append(BooleanExpression.trueExpression().toSQLString(defn))
+									.append(defn.endOnClause());
+						}
+						fromClauseTableSeparator = (options.isUseANSISyntax()?" join ":", ") + lineSep;
+						queryState.mayRequireOnClause = true;
 					}
 					indexesOfSelectedExpressions.put(expression, columnIndex);
 					columnIndex++;
@@ -678,9 +686,9 @@ public class QueryDetails implements DBQueryable {
 				conditionClauses.addAll(firstTableConditions);
 			}
 		}
-
+		
 		// Add all the expressions we can
-		if (previousTables.size() > 0) {
+		if (previousTables.size() > 0||conditionClauses.size()>0) {
 			for (BooleanExpression expr : queryState.getRemainingExpressions()) {
 				Set<DBRow> tablesInvolved = new HashSet<>(expr.getTablesInvolved());
 				if (tablesInvolved.contains(newTable)) {
@@ -706,6 +714,13 @@ public class QueryDetails implements DBQueryable {
 		StringBuilder sqlToReturn = new StringBuilder();
 		if (previousTables.isEmpty()) {
 			sqlToReturn.append(" ").append(defn.getFromClause(newTable));
+			// Handle the edge case where a complex query has added a table before the first and we need an ON clause.
+			if (queryState.mayRequireOnClause && defn.requiresOnClauseForAllJoins()) {
+				sqlToReturn
+						.append(defn.beginOnClause())
+						.append(BooleanExpression.trueExpression().toSQLString(defn))
+						.append(defn.endOnClause());
+			}
 		} else {
 			if (isFullOuterJoin) {
 				sqlToReturn.append(lineSep).append(defn.beginFullOuterJoin());

@@ -879,4 +879,8 @@ public class PostgresDBDefinition extends DBDefinition {
 		return false;
 	}
 
+	public boolean requiresOnClauseForAllJoins() {
+		return true;
+	}
+
 }
