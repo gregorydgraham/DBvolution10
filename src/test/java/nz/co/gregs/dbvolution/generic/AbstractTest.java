@@ -424,7 +424,7 @@ public abstract class AbstractTest {
 			String username = System.getProperty("" + prefix + ".username");
 			String password = System.getProperty("" + prefix + ".password");
 			String schema = System.getProperty("" + prefix + ".schema");
-			return PostgreSQLTestDatabase.getTestDatabase(url, host, port, instance, username, password, schema);
+			return PostgreSQLTestDatabase.getTestDatabase(url, host, port, database, username, password, schema);
 		}
 
 		protected static PostgresDB getTestDatabase(String url, String host, String port, String database, String username, String password, String schema) {
