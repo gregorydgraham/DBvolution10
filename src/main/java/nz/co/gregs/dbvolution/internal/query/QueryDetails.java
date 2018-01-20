@@ -593,7 +593,7 @@ public class QueryDetails implements DBQueryable {
 						groupByClauseFinal = groupByClause.toString() + lineSep;
 					}
 				}
-				String orderByClauseFinal = getOrderByClause(defn, indexesOfSelectedColumns, indexesOfSelectedExpressions);
+				String orderByClauseFinal = getOrderByClause(queryState, defn, indexesOfSelectedColumns, indexesOfSelectedExpressions);
 				if (!orderByClauseFinal.trim().isEmpty()) {
 					orderByClauseFinal += lineSep;
 					queryState.setHasBeenOrdered(true);
@@ -796,9 +796,10 @@ public class QueryDetails implements DBQueryable {
 		return sqlToReturn.toString();
 	}
 
-	private synchronized String getOrderByClause(DBDefinition defn, Map<PropertyWrapperDefinition, Integer> indexesOfSelectedProperties, Map<DBExpression, Integer> IndexesOfSelectedExpressions) {
+	private synchronized String getOrderByClause(QueryState state, DBDefinition defn, Map<PropertyWrapperDefinition, Integer> indexesOfSelectedProperties, Map<DBExpression, Integer> IndexesOfSelectedExpressions) {
 		final boolean prefersIndexBasedOrderByClause = defn.prefersIndexBasedOrderByClause();
 		if (sortOrderColumns != null && sortOrderColumns.length > 0) {
+			state.setHasBeenOrdered(true);
 			StringBuilder orderByClause = new StringBuilder(defn.beginOrderByClause());
 			String sortSeparator = defn.getStartingOrderByClauseSeparator();
 			for (ColumnProvider column : sortOrderColumns) {
