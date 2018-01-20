@@ -20,7 +20,6 @@ services:
   - mysql
   - mssql2016
 
-build_script:
 install:
   - ps: |
       Add-Type -AssemblyName System.IO.Compression.FileSystem
