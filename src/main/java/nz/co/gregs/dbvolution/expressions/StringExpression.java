@@ -229,7 +229,7 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 		AnyResult<?> stringInput = getInnerResult();
 		if (stringInput == null) {
 			stringInput = StringExpression.value("<NULL>");
-		}else if (!(stringInput instanceof StringResult)){
+		} else if (!(stringInput instanceof StringResult)) {
 			stringInput = stringInput.stringResult();
 		}
 		return stringInput.toSQLString(db);
@@ -879,7 +879,6 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 				}
 			});
 		}
-//		return is(equivalentString).not();
 	}
 
 	/**
@@ -1688,11 +1687,6 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 					return getFirst().locationOf(getSecond()).isGreaterThan(0).ifThenElse(getFirst().substring(0, getFirst().locationOf(getSecond()).minus(1).integerResult()), value("")).toSQLString(db);
 				}
 			}
-
-//			@Override
-//			String getFunctionName(DBDefinition db) {
-//				throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-//			}
 		});
 	}
 
@@ -1743,11 +1737,6 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 					return getFirst().locationOf(getSecond()).isGreaterThan(0).ifThenElse(getFirst().substring(getFirst().locationOf(getSecond()).integerResult(), getFirst().length()), value("")).toSQLString(db);
 				}
 			}
-
-//			@Override
-//			String getFunctionName(DBDefinition db) {
-//				throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-//			}
 		});
 	}
 
@@ -2167,16 +2156,11 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 	 */
 	public IntegerExpression length() {
 		return new IntegerExpression(
-				new DBUnaryIntegerFunction(this) {
+				new IntegerExpression(this) {
 
 			@Override
 			public String toSQLString(DBDefinition db) {
-				return db.doStringLengthTransform(only.toSQLString(db));
-			}
-
-			@Override
-			String getFunctionName(DBDefinition db) {
-				return db.getStringLengthFunctionName();
+				return db.doStringLengthTransform(getInnerResult().toSQLString(db));
 			}
 		});
 	}
@@ -2196,10 +2180,21 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 	 */
 	public static StringExpression currentUser() {
 		return new StringExpression(
-				new DBNonaryStringFunction() {
+				new StringExpression() {
+
 			@Override
-			String getFunctionName(DBDefinition db) {
+			public String toSQLString(DBDefinition db) {
 				return db.getCurrentUserFunctionName();
+			}
+
+			@Override
+			public boolean getIncludesNull() {
+				return false;
+			}
+
+			@Override
+			public boolean isPurelyFunctional() {
+				return true;
 			}
 		});
 	}
@@ -2509,16 +2504,11 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 	 */
 	public NumberExpression numberResult() {
 		return new NumberExpression(
-				new DBUnaryNumberFunction(this) {
+				new NumberExpression(this) {
 
 			@Override
 			public String toSQLString(DBDefinition db) {
-				return db.doStringToNumberTransform(this.only.toSQLString(db));
-			}
-
-			@Override
-			String getFunctionName(DBDefinition db) {
-				return "TO_NUMBER";
+				return db.doStringToNumberTransform(getInnerResult().toSQLString(db));
 			}
 		});
 	}
@@ -2563,7 +2553,6 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 
 		private StringResult first;
 		private StringResult second;
-//		private boolean includeNulls;
 
 		DBBinaryStringArithmetic(StringResult first, StringResult second) {
 			this.first = first;
@@ -2623,187 +2612,6 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 			} else {
 				return first.isPurelyFunctional() && second.isPurelyFunctional();
 			}
-		}
-	}
-
-	private static abstract class DBNonaryStringFunction extends StringExpression {
-
-		DBNonaryStringFunction() {
-		}
-
-		@Override
-		public DBString getQueryableDatatypeForExpressionValue() {
-			return new DBString();
-		}
-
-		abstract String getFunctionName(DBDefinition db);
-
-		protected String beforeValue(DBDefinition db) {
-			return " " + getFunctionName(db) + "";
-		}
-
-		protected String afterValue(DBDefinition db) {
-			return " ";
-		}
-
-		@Override
-		public String toSQLString(DBDefinition db) {
-			return this.beforeValue(db) + this.afterValue(db);
-		}
-
-		@Override
-		public DBNonaryStringFunction copy() {
-			DBNonaryStringFunction newInstance;
-			try {
-				newInstance = getClass().newInstance();
-			} catch (InstantiationException | IllegalAccessException ex) {
-				throw new RuntimeException(ex);
-			}
-			return newInstance;
-		}
-
-		@Override
-		public Set<DBRow> getTablesInvolved() {
-			HashSet<DBRow> hashSet = new HashSet<>();
-			return hashSet;
-		}
-
-		@Override
-		public boolean isAggregator() {
-			return false;
-		}
-
-		@Override
-		public boolean getIncludesNull() {
-			return false;
-		}
-
-		@Override
-		public boolean isPurelyFunctional() {
-			return true;
-		}
-	}
-
-	private static abstract class DBUnaryNumberFunction extends NumberExpression {
-
-		protected StringExpression only;
-
-		DBUnaryNumberFunction() {
-			this.only = null;
-		}
-
-		DBUnaryNumberFunction(StringExpression only) {
-			this.only = only;
-		}
-
-		@Override
-		public DBNumber getQueryableDatatypeForExpressionValue() {
-			return new DBNumber();
-		}
-
-		abstract String getFunctionName(DBDefinition db);
-
-		protected String beforeValue(DBDefinition db) {
-			return "" + getFunctionName(db) + "( ";
-		}
-
-		protected String afterValue(DBDefinition db) {
-			return ") ";
-		}
-
-		@Override
-		public String toSQLString(DBDefinition db) {
-			return this.beforeValue(db) + (only == null ? "" : only.toSQLString(db)) + this.afterValue(db);
-		}
-
-		@Override
-		public DBUnaryNumberFunction copy() {
-			DBUnaryNumberFunction newInstance;
-			try {
-				newInstance = getClass().newInstance();
-			} catch (InstantiationException | IllegalAccessException ex) {
-				throw new RuntimeException(ex);
-			}
-			newInstance.only = (only == null ? null : only.copy());
-			return newInstance;
-		}
-
-		@Override
-		public Set<DBRow> getTablesInvolved() {
-			HashSet<DBRow> hashSet = new HashSet<>();
-			if (only != null) {
-				hashSet.addAll(only.getTablesInvolved());
-			}
-			return hashSet;
-		}
-
-		@Override
-		public boolean isAggregator() {
-			return only.isAggregator();
-		}
-
-		@Override
-		public boolean getIncludesNull() {
-			return false;
-		}
-	}
-
-	private static abstract class DBUnaryIntegerFunction extends IntegerExpression {
-
-		protected StringExpression only;
-
-		DBUnaryIntegerFunction() {
-			this.only = null;
-		}
-
-		DBUnaryIntegerFunction(StringExpression only) {
-			this.only = only;
-		}
-
-		abstract String getFunctionName(DBDefinition db);
-
-		protected String beforeValue(DBDefinition db) {
-			return "" + getFunctionName(db) + "( ";
-		}
-
-		protected String afterValue(DBDefinition db) {
-			return ") ";
-		}
-
-		@Override
-		public String toSQLString(DBDefinition db) {
-			return this.beforeValue(db) + (only == null ? "" : only.toSQLString(db)) + this.afterValue(db);
-		}
-
-		@Override
-		public DBUnaryIntegerFunction copy() {
-			DBUnaryIntegerFunction newInstance;
-			try {
-				newInstance = getClass().newInstance();
-			} catch (InstantiationException | IllegalAccessException ex) {
-				throw new RuntimeException(ex);
-			}
-			newInstance.only = (only == null ? null : only.copy());
-			return newInstance;
-		}
-
-		@Override
-		public Set<DBRow> getTablesInvolved() {
-			HashSet<DBRow> hashSet = new HashSet<>();
-			if (only != null) {
-				hashSet.addAll(only.getTablesInvolved());
-			}
-			return hashSet;
-		}
-
-		@Override
-		public boolean isAggregator() {
-			return only.isAggregator();
-		}
-
-		@Override
-		public boolean getIncludesNull() {
-			return false;
 		}
 	}
 
@@ -2955,12 +2763,6 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 			return new DBString();
 		}
 
-//		@Override
-//		public String toSQLString(DBDefinition db) {
-//			return this.beforeValue(db) + getFirst().toSQLString(db)
-//					+ this.getSeparator(db) + (getSecond() == null ? "" : getSecond().toSQLString(db))
-//					+ this.afterValue(db);
-//		}
 		@Override
 		public DBBinaryStringFunction copy() {
 			DBBinaryStringFunction newInstance;
@@ -2972,18 +2774,6 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 			newInstance.first = getFirst() == null ? null : getFirst().copy();
 			newInstance.second = getSecond() == null ? null : getSecond().copy();
 			return newInstance;
-		}
-
-		//abstract String getFunctionName(DBDefinition db);
-//		protected String beforeValue(DBDefinition db) {
-//			return " " + getFunctionName(db) + "( ";
-//		}
-		protected String getSeparator(DBDefinition db) {
-			return ", ";
-		}
-
-		protected String afterValue(DBDefinition db) {
-			return ") ";
 		}
 
 		@Override
