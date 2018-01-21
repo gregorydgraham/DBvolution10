@@ -600,8 +600,7 @@ public class DateExpressionTest extends AbstractTest {
 		final Date march1st2013 = (new GregorianCalendar(2013, 2, 1)).getTime();
 		final Date march2nd2013 = (new GregorianCalendar(2013, 2, 2)).getTime();
 		final Date april1st2011 = (new GregorianCalendar(2011, 3, 1)).getTime();
-		final Date april2nd2011 = (new GregorianCalendar(2011, 3, 2)).getTime();
-		final Date nullDate = null;
+
 		Marque marq = new Marque();
 		DBQuery query = database.getDBQuery(marq);
 		query.addCondition(
@@ -704,8 +703,7 @@ public class DateExpressionTest extends AbstractTest {
 		final Date march1st2013 = (new GregorianCalendar(2013, 2, 1)).getTime();
 		final Date march2nd2013 = (new GregorianCalendar(2013, 2, 2)).getTime();
 		final Date april1st2011 = (new GregorianCalendar(2011, 3, 1)).getTime();
-		final Date april2nd2011 = (new GregorianCalendar(2011, 3, 2)).getTime();
-		final Date nullDate = null;
+
 		Marque marq = new Marque();
 		DBQuery query = database.getDBQuery(marq);
 		query.addCondition(
@@ -809,7 +807,9 @@ public class DateExpressionTest extends AbstractTest {
 		query.addCondition(
 				marq.column(marq.creationDate).dayIs(NumberExpression.value(2)));
 		got = query.getAllInstancesOf(marq);
-
+		
+		Assert.assertThat(got.size(), is(3));
+		
 		query = database.getDBQuery(marq);
 		query.addCondition(
 				marq.column(marq.creationDate).dayIs(NumberExpression.value(2).numberResult()));
@@ -979,6 +979,8 @@ public class DateExpressionTest extends AbstractTest {
 		dbQuery = database.getDBQuery(marque);
 		dbQuery.setBlankQueryAllowed(true);
 		allRows = dbQuery.getAllRows();
+		
+		Assert.assertThat(allRows.size(), is(23));
 
 		dbQuery.addCondition(
 				marque.column(marque.creationDate).isIn((Date) null, DATETIME_FORMAT.parse(firstDateStr))
@@ -1008,6 +1010,8 @@ public class DateExpressionTest extends AbstractTest {
 		dbQuery = database.getDBQuery(marque);
 		dbQuery.setBlankQueryAllowed(true);
 		allRows = dbQuery.getAllRows();
+		
+		Assert.assertThat(allRows.size(), is(23));
 
 		dbQuery.addCondition(
 				marque.column(marque.creationDate).isIn(april2nd2011, march23rd2013)
@@ -1037,6 +1041,8 @@ public class DateExpressionTest extends AbstractTest {
 		dbQuery = database.getDBQuery(marque);
 		dbQuery.setBlankQueryAllowed(true);
 		allRows = dbQuery.getAllRows();
+		
+		Assert.assertThat(allRows.size(), is(23));
 
 		List<DateExpression> dates = new ArrayList<DateExpression>();
 		dates.add(DateExpression.value(march23rd2013));
@@ -1070,6 +1076,8 @@ public class DateExpressionTest extends AbstractTest {
 		dbQuery = database.getDBQuery(marque);
 		dbQuery.setBlankQueryAllowed(true);
 		allRows = dbQuery.getAllRows();
+		
+		Assert.assertThat(allRows.size(), is(23));
 
 		dbQuery.addCondition(
 				marque.column(marque.creationDate).is((Date) null)
@@ -1099,6 +1107,8 @@ public class DateExpressionTest extends AbstractTest {
 		dbQuery = database.getDBQuery(marque);
 		dbQuery.setBlankQueryAllowed(true);
 		allRows = dbQuery.getAllRows();
+		
+		Assert.assertThat(allRows.size(), is(23));
 
 		dbQuery.addCondition(
 				marque.column(marque.creationDate).isNull()
