@@ -62,9 +62,9 @@ public abstract class AnyExpression<B extends Object, R extends AnyResult<B>, D 
 	private final boolean nullProtectionRequired;
 
 	/**
-	 * Returns a value of the required type that will evaluate to NULL.
+	 * Returns an expression that will evaluate to NULL in SQL.
 	 *
-	 * @return
+	 * @return an untyped expression that returns NULL
 	 */
 	public AnyExpression<?, ?, ?> nullExpression() {
 		return new StringExpression() {

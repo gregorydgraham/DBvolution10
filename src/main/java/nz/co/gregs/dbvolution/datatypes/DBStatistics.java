@@ -45,13 +45,13 @@ public class DBStatistics extends DBString {
 	private transient NumberExpression thirdQuartileExpression;
 
 	/**
-	 * The default constructor for DBNumberStatistics.
+	 * The default constructor for DBStatistics.
 	 *
 	 * <p>
 	 * Creates an unset undefined DBNumber object.</p>
 	 *
 	 * <p>
-	 * Use {@link #DBNumberStatistics(nz.co.gregs.dbvolution.expressions.NumberExpression)
+	 * Use {@link #DBStatistics(nz.co.gregs.dbvolution.expressions.NumberExpression)
 	 * } instead.</p>
 	 *
 	 */

@@ -131,7 +131,7 @@ public class BooleanExpression extends EqualExpression<Boolean, BooleanResult, D
 	/**
 	 * Returns a value of the required type that will evaluate to NULL.
 	 *
-	 * @return
+	 * @return a NULL for use in boolean statements.
 	 */
 	@Override
 	public BooleanExpression nullExpression() {
@@ -1327,7 +1327,7 @@ public class BooleanExpression extends EqualExpression<Boolean, BooleanResult, D
 	 *
 	 * <p>
 	 * This version provides a second level of sorting. If you only need to seek
-	 * on one column/value use {@link #seekGreaterThan(nz.co.gregs.dbvolution.results.RangeComparable, nz.co.gregs.dbvolution.expressions.DBExpression, nz.co.gregs.dbvolution.expressions.BooleanExpression)
+	 * on one column/value use {@link #seekGreaterThan(nz.co.gregs.dbvolution.results.RangeComparable, nz.co.gregs.dbvolution.results.RangeResult, nz.co.gregs.dbvolution.expressions.BooleanExpression)
 	 * }
 	 *
 	 * <p>
@@ -1370,7 +1370,7 @@ public class BooleanExpression extends EqualExpression<Boolean, BooleanResult, D
 	 *
 	 * <p>
 	 * This version provides three levels of sorting. If you only need to seek on
-	 * one column/value use {@link #seekGreaterThan(nz.co.gregs.dbvolution.results.RangeComparable, nz.co.gregs.dbvolution.expressions.DBExpression, nz.co.gregs.dbvolution.expressions.BooleanExpression)
+	 * one column/value use {@link #seekLessThan(nz.co.gregs.dbvolution.results.RangeComparable, nz.co.gregs.dbvolution.results.RangeResult, nz.co.gregs.dbvolution.expressions.BooleanExpression) 
 	 * }
 	 *
 	 * <p>
@@ -1418,7 +1418,7 @@ public class BooleanExpression extends EqualExpression<Boolean, BooleanResult, D
 	 *
 	 * <p>
 	 * This version provides four levels of sorting. If you only need to seek on
-	 * one column/value use {@link #seekLessThan(nz.co.gregs.dbvolution.results.RangeComparable, nz.co.gregs.dbvolution.expressions.DBExpression, nz.co.gregs.dbvolution.expressions.BooleanExpression)
+	 * one column/value use {@link #seekLessThan(nz.co.gregs.dbvolution.results.RangeComparable, nz.co.gregs.dbvolution.results.RangeResult, nz.co.gregs.dbvolution.expressions.BooleanExpression) 
 	 * }
 	 *
 	 * <p>
@@ -1471,7 +1471,7 @@ public class BooleanExpression extends EqualExpression<Boolean, BooleanResult, D
 	 *
 	 * <p>
 	 * This version provides 3 levels of sorting. If you only need to seek on one
-	 * column/value use {@link #seekLessThan(nz.co.gregs.dbvolution.results.RangeComparable, nz.co.gregs.dbvolution.expressions.DBExpression, nz.co.gregs.dbvolution.expressions.BooleanExpression)
+	 * column/value use {@link #seekLessThan(nz.co.gregs.dbvolution.results.RangeComparable, nz.co.gregs.dbvolution.results.RangeResult, nz.co.gregs.dbvolution.expressions.BooleanExpression) 
 	 * }
 	 *
 	 * <p>
@@ -1519,7 +1519,7 @@ public class BooleanExpression extends EqualExpression<Boolean, BooleanResult, D
 	 *
 	 * <p>
 	 * This version provides four levels of sorting. If you only need to seek on
-	 * one column/value use {@link #seekLessThan(nz.co.gregs.dbvolution.results.RangeComparable, nz.co.gregs.dbvolution.expressions.DBExpression, nz.co.gregs.dbvolution.expressions.BooleanExpression)
+	 * one column/value use {@link #seekGreaterThan(nz.co.gregs.dbvolution.results.RangeComparable, nz.co.gregs.dbvolution.results.RangeResult, nz.co.gregs.dbvolution.expressions.BooleanExpression) 
 	 * }
 	 *
 	 * <p>

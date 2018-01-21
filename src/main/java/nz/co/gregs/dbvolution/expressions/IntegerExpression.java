@@ -44,7 +44,7 @@ import nz.co.gregs.dbvolution.results.NumberResult;
  * expression or value, and perform arithmetic.
  *
  * <p>
- * Generally you get a IntegerExpression from a column or value using {@link IntegerExpression#IntegerExpression(java.lang.Integer)
+ * Generally you get a IntegerExpression from a column or value using {@link IntegerExpression#IntegerExpression(int) 
  * } or {@link DBRow#column(nz.co.gregs.dbvolution.datatypes.DBInteger) }.
  *
  * <p style="color: #F90;">Support DBvolution at
