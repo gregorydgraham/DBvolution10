@@ -43,7 +43,7 @@ import org.apache.commons.logging.LogFactory;
  */
 public class DBTransactionStatement extends DBStatement {
 
-	private static final Log log = LogFactory.getLog(DBTransactionStatement.class);
+	private static final Log LOG = LogFactory.getLog(DBTransactionStatement.class);
 
 	/**
 	 * Creates a DBTransactionStatement for the given DBDatabase and DBStatement.
@@ -84,7 +84,7 @@ public class DBTransactionStatement extends DBStatement {
 			try {
 				getInternalStatement().close();
 			} catch (SQLException ex1) {
-				log.info("Exception while closing transaction, continuing regardless.", ex);
+				LOG.info("Exception while closing transaction, continuing regardless.");
 			}
 		}
 		if (database.getDefinition().willCloseConnectionOnStatementCancel()) {
@@ -113,7 +113,7 @@ public class DBTransactionStatement extends DBStatement {
 			try {
 				getInternalStatement().cancel();
 			} catch (SQLException ex1) {
-				log.info("Exception while closing transaction, continuing regardless.", ex);
+				LOG.info("Exception while closing transaction, continuing regardless.");
 			}
 		}
 		if (database.getDefinition().willCloseConnectionOnStatementCancel()) {
@@ -143,7 +143,6 @@ public class DBTransactionStatement extends DBStatement {
 	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
 	public void transactionFinished() throws SQLException {
-//		getInternalStatement().close();
 		super.close();
 	}
 }
