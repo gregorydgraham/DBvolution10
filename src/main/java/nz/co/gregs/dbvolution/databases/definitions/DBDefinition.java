@@ -1150,6 +1150,7 @@ public abstract class DBDefinition {
 	 * If the database does not limit rows after the where clause this method
 	 * should return ""
 	 *
+	 * @param state
 	 * @param options	options
 	 * <p style="color: #F90;">Support DBvolution at
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>

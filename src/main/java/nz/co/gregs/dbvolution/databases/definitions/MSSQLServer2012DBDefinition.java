@@ -42,7 +42,7 @@ public class MSSQLServer2012DBDefinition extends MSSQLServerDBDefinition {
 	@Override
 	public String getLimitRowsSubClauseAfterWhereClause(QueryState state, QueryOptions options) {
 		StringBuilder returnString = new StringBuilder();
-		if (state.hasBeenOrdered()) {
+		if (state.hasBeenOrdered()==false) {
 			returnString.append(" order by 1 ");
 		}
 		if (options.getRowLimit() > 0) {
