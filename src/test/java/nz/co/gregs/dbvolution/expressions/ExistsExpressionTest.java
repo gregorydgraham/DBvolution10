@@ -18,6 +18,7 @@ package nz.co.gregs.dbvolution.expressions;
 import java.sql.SQLException;
 import java.util.List;
 import nz.co.gregs.dbvolution.DBQuery;
+import nz.co.gregs.dbvolution.databases.DBDatabaseCluster;
 import nz.co.gregs.dbvolution.example.*;
 import nz.co.gregs.dbvolution.generic.AbstractTest;
 import static org.hamcrest.Matchers.*;
@@ -68,6 +69,10 @@ public class ExistsExpressionTest extends AbstractTest {
 
 		marquesQuery = database.getDBQuery(marque);
 		marquesQuery.addCondition((new ExistsExpression(outerQuery, existsTables)).not());
+		if(database instanceof DBDatabaseCluster){
+			System.out.println("nz.co.gregs.dbvolution.expressions.ExistsExpressionTest.testDBExistsOnMultipleTablesUsingDBQueries()");
+			System.out.println(marquesQuery.getSQLForQuery());
+		}
 		rowList = marquesQuery.getAllInstancesOf(marque);
 
 		Assert.assertThat(rowList.size(), is(19));
