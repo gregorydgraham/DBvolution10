@@ -43,7 +43,7 @@ public class MSSQLServer2012DBDefinition extends MSSQLServerDBDefinition {
 	public String getLimitRowsSubClauseAfterWhereClause(QueryState state, QueryOptions options) {
 		StringBuilder returnString = new StringBuilder();
 		if (state.hasBeenOrdered()==false) {
-			returnString.append(" order by 1 ");
+			returnString.append(" ORDER BY 1 ");
 		}
 		if (options.getRowLimit() > 0) {
 			returnString.append(" OFFSET ").append(options.getPageIndex() * options.getRowLimit()).append(" ROWS");
@@ -72,4 +72,7 @@ public class MSSQLServer2012DBDefinition extends MSSQLServerDBDefinition {
 		return 38;
 	}
 
+	public boolean requiresOnClauseForAllJoins() {
+		return true;
+	}
 }
