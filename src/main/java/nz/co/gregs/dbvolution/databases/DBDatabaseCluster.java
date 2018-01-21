@@ -428,9 +428,7 @@ public class DBDatabaseCluster extends DBDatabase {
 		try {
 			for (DBDatabase database : readyDatabases) {
 				DBDatabase db;
-//				synchronized (database) {
 				db = database.clone();
-//				}
 				transactionDatabases.add(db);
 				V returnValues = null;
 				db.transactionStatement = db.getDBTransactionStatement();
@@ -451,13 +449,13 @@ public class DBDatabaseCluster extends DBDatabase {
 						}
 					} catch (Exception ex) {
 						try {
-							LOG.warn("Exception Occurred: Attempting ROLLBACK - " + ex.getMessage(), ex);
+							LOG.warn("Exception Occurred: Attempting ROLLBACK - " + ex.getMessage());
 							if (!explicitCommitActionRequired) {
 								db.transactionConnection.rollback();
 								LOG.warn("Exception Occurred: ROLLBACK Succeeded!");
 							}
 						} catch (SQLException excp) {
-							LOG.warn("Exception Occurred During Rollback: " + ex.getMessage(), excp);
+							LOG.warn("Exception Occurred During Rollback: " + ex.getMessage());
 						}
 						throw ex;
 					}
