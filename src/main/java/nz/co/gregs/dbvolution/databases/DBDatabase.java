@@ -740,15 +740,12 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 	 */
 	public synchronized <V> V doTransaction(DBTransaction<V> dbTransaction, Boolean commit) throws SQLException, Exception {
 		DBDatabase db;
-//		synchronized (this) {
 		db = this.clone();
-//		}
 		V returnValues = null;
 		db.transactionStatement = db.getDBTransactionStatement();
 		try {
 			db.isInATransaction = true;
 			db.transactionConnection = db.transactionStatement.getConnection();
-//			boolean wasAutoCommit = db.transactionConnection.getAutoCommit();
 			db.transactionConnection.setAutoCommit(false);
 			try {
 				returnValues = dbTransaction.doTransaction(db);
@@ -768,13 +765,13 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 				}
 			} catch (Exception ex) {
 				try {
-					LOG.warn("Exception Occurred: Attempting ROLLBACK - " + ex.getMessage(), ex);
+					LOG.warn("Exception Occurred: Attempting ROLLBACK - " + ex.getLocalizedMessage());
 					if (!explicitCommitActionRequired) {
 						db.transactionConnection.rollback();
 						LOG.warn("Exception Occurred: ROLLBACK Succeeded!");
 					}
 				} catch (SQLException excp) {
-					LOG.warn("Exception Occurred During Rollback: " + ex.getMessage(), excp);
+					LOG.warn("Exception Occurred During Rollback: " + ex.getLocalizedMessage());
 				}
 				throw ex;
 			}
