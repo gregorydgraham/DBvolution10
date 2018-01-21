@@ -1142,6 +1142,20 @@ public class IntegerExpressionTest extends AbstractTest {
 	}
 
 	@Test
+	public void testPower() throws SQLException {
+		CarCompany carCo = new CarCompany();
+		DBQuery dbQuery = database.getDBQuery(carCo);
+		dbQuery.addCondition(carCo.column(carCo.uidCarCompany).power(3).is(8));
+		List<DBQueryRow> allRows = dbQuery.getAllRows();
+
+		Assert.assertThat(allRows.size(), is(1));
+		for (CarCompany carCompany : dbQuery.getAllInstancesOf(carCo)) {
+			Assert.assertThat(carCompany.uidCarCompany.getValue().intValue(),
+					is(2));
+		}
+	}
+
+	@Test
 	public void testLocationOfAsDBRowField() throws SQLException {
 		ExtendedCarCompany carCo = new ExtendedCarCompany();
 
