@@ -517,11 +517,6 @@ public abstract class EqualExpression<B, R extends EqualResult<B>, D extends Que
 						+ defn.beginOnClause()
 						+ (BooleanExpression.trueExpression().toSQLString(defn))
 						+ defn.endOnClause());
-//				sql = sql.replaceAll(getSecondTableName(defn),
-//						getSecondTableName(defn)
-//						+ defn.beginOnClause()
-//						+ (BooleanExpression.trueExpression().toSQLString(defn))
-//						+ defn.endOnClause());
 			}
 			return sql;
 		}
