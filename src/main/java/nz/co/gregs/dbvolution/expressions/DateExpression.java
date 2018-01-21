@@ -184,6 +184,11 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 			public String toSQLString(DBDefinition db) {
 				return db.doCurrentDateOnlyTransform();
 			}
+
+			@Override
+			public DBDate getQueryableDatatypeForExpressionValue() {
+				return new DBDateOnly();
+			}
 		});
 	}
 
@@ -248,7 +253,7 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 				new DateExpressionWithNumberResult(this) {
 			@Override
 			public String toSQLString(DBDefinition db) {
-				return db.doYearTransform(this.only.toSQLString(db));
+				return db.doYearTransform(this.getInnerResult().toSQLString(db));
 			}
 		});
 	}
@@ -332,7 +337,7 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 				new DateExpressionWithNumberResult(this) {
 			@Override
 			public String toSQLString(DBDefinition db) {
-				return db.doMonthTransform(this.only.toSQLString(db));
+				return db.doMonthTransform(this.getInnerResult().toSQLString(db));
 			}
 		});
 	}
@@ -424,7 +429,7 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 				new DateExpressionWithNumberResult(this) {
 			@Override
 			public String toSQLString(DBDefinition db) {
-				return db.doDayTransform(this.only.toSQLString(db));
+				return db.doDayTransform(this.getInnerResult().toSQLString(db));
 			}
 		});
 	}
@@ -508,7 +513,7 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 				new DateExpressionWithNumberResult(this) {
 			@Override
 			public String toSQLString(DBDefinition db) {
-				return db.doHourTransform(this.only.toSQLString(db));
+				return db.doHourTransform(this.getInnerResult().toSQLString(db));
 			}
 		});
 	}
@@ -592,7 +597,7 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 				new DateExpressionWithNumberResult(this) {
 			@Override
 			public String toSQLString(DBDefinition db) {
-				return db.doMinuteTransform(this.only.toSQLString(db));
+				return db.doMinuteTransform(this.getInnerResult().toSQLString(db));
 			}
 		});
 	}
@@ -685,7 +690,7 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 				new DateExpressionWithNumberResult(this) {
 			@Override
 			public String toSQLString(DBDefinition db) {
-				return db.doSecondTransform(this.only.toSQLString(db));
+				return db.doSecondTransform(this.getInnerResult().toSQLString(db));
 			}
 		});
 	}
@@ -708,7 +713,7 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 				new DateExpressionWithNumberResult(this) {
 			@Override
 			public String toSQLString(DBDefinition db) {
-				return db.doSubsecondTransform(this.only.toSQLString(db));
+				return db.doSubsecondTransform(this.getInnerResult().toSQLString(db));
 			}
 		});
 	}
@@ -1774,18 +1779,19 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 	 * @return a boolean expression representing the required comparison
 	 */
 	public DateExpression ifDBNull(Date alternative) {
-		return new DateExpression(
-				new DateExpression.DateDateFunctionWithDateResult(this, new DateExpression(alternative)) {
-			@Override
-			protected String getFunctionName(DBDefinition db) {
-				return db.getIfNullFunctionName();
-			}
-
-			@Override
-			public boolean getIncludesNull() {
-				return false;
-			}
-		});
+		return ifDBNull(value(alternative));
+//		return new DateExpression(
+//				new DateExpression.DateDateFunctionWithDateResult(this, new DateExpression(alternative)) {
+//			@Override
+//			protected String getFunctionName(DBDefinition db) {
+//				return db.getIfNullFunctionName();
+//			}
+//
+//			@Override
+//			public boolean getIncludesNull() {
+//				return false;
+//			}
+//		});
 	}
 
 	/**
@@ -1807,11 +1813,6 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 			@Override
 			public String toSQLString(DBDefinition db) {
 				return db.doDateIfNullTransform(this.getFirst().toSQLString(db), getSecond().toSQLString(db));
-			}
-
-			@Override
-			protected String getFunctionName(DBDefinition db) {
-				return db.getIfNullFunctionName();
 			}
 
 			@Override
@@ -1957,29 +1958,6 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 		});
 	}
 
-//	public DateExpression addMilliseconds(int millisecondsToAdd) {
-//		return addMilliseconds(NumberExpression.value(millisecondsToAdd));
-//	}
-//
-//	public DateExpression addMilliseconds(long millisecondsToAdd) {
-//		return addMilliseconds(NumberExpression.value(millisecondsToAdd));
-//	}
-//
-//	public DateExpression addMilliseconds(NumberExpression millisecondsToAdd) {
-//		return new DateExpression(
-//				new DBBinaryDateNumberFunctionWithDateResult(this, millisecondsToAdd) {
-//
-//					@Override
-//					public boolean getIncludesNull() {
-//						return false;
-//					}
-//
-//					@Override
-//					public String toSQLString(DBDefinition db) {
-//						return db.doAddMillisecondsTransform(first.toSQLString(db), second.toSQLString(db));
-//					}
-//				});
-//	}
 	/**
 	 * Date Arithmetic: add the supplied number of minutes to the date expression.
 	 *
@@ -2676,20 +2654,20 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 	 */
 	public DateExpression endOfMonth() {
 		return new DateExpression(
-				new DateExpressionWithDateResult(this) {
+				new DateExpression(this) {
 			@Override
 			public String toSQLString(DBDefinition db) {
 				try {
-					return db.doEndOfMonthTransform(this.getFirst().toSQLString(db));
+					return db.doEndOfMonthTransform(this.getInnerResult().toSQLString(db));
 				} catch (UnsupportedOperationException exp) {
-					return getFirst()
-							.addDays(getFirst().day().minus(1).bracket().times(-1).integerResult())
+					DateExpression only = (DateExpression)getInnerResult();
+					return only
+							.addDays(only.day().minus(1).bracket().times(-1).integerResult())
 							.addMonths(1).addDays(-1).toSQLString(db);
 				}
 			}
 		}
 		);
-//		return this.addDays(this.day().minus(1).bracket().times(-1)).addMonths(1).addDays(-1);
 	}
 
 	/**
@@ -2708,7 +2686,7 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 				new DateExpressionWithNumberResult(this) {
 			@Override
 			public String toSQLString(DBDefinition db) {
-				return db.doDayOfWeekTransform(this.only.toSQLString(db));
+				return db.doDayOfWeekTransform(this.getInnerResult().toSQLString(db));
 			}
 		});
 	}
@@ -2909,7 +2887,7 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 	 * @return the largest value from the list.
 	 */
 	public static DateExpression greatestOf(DateResult... possibleValues) {
-		DateExpression leastExpr
+		DateExpression greatestOf
 				= new DateExpression(new DateArrayFunctionWithDateResult(possibleValues) {
 
 					@Override
@@ -2926,7 +2904,7 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 						return db.getGreatestOfFunctionName();
 					}
 				});
-		return leastExpr;
+		return greatestOf;
 	}
 
 	@Override
@@ -3061,11 +3039,6 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 			return "";
 		}
 
-		@Override
-		public DBDate getQueryableDatatypeForExpressionValue() {
-			return new DBDate();
-		}
-
 		protected String beforeValue(DBDefinition db) {
 			return " " + getFunctionName(db) + "";
 		}
@@ -3113,14 +3086,12 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 
 	private static abstract class DateExpressionWithNumberResult extends NumberExpression {
 
-		protected DateExpression only;
-
 		DateExpressionWithNumberResult() {
-			this.only = null;
+			super();
 		}
 
 		DateExpressionWithNumberResult(DateExpression only) {
-			this.only = only;
+			super(only);
 		}
 
 		@Override
@@ -3130,117 +3101,6 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 
 		@Override
 		public abstract String toSQLString(DBDefinition db);
-
-		@Override
-		public DateExpression.DateExpressionWithNumberResult copy() {
-			DateExpression.DateExpressionWithNumberResult newInstance;
-			try {
-				newInstance = getClass().newInstance();
-			} catch (InstantiationException | IllegalAccessException ex) {
-				throw new RuntimeException(ex);
-			}
-			newInstance.only = only.copy();
-			return newInstance;
-		}
-
-		@Override
-		public Set<DBRow> getTablesInvolved() {
-			HashSet<DBRow> hashSet = new HashSet<DBRow>();
-			if (only != null) {
-				hashSet.addAll(only.getTablesInvolved());
-			}
-			return hashSet;
-		}
-
-		@Override
-		public boolean isAggregator() {
-			return only.isAggregator();
-		}
-
-		@Override
-		public boolean getIncludesNull() {
-			return false;
-		}
-
-		@Override
-		public boolean isPurelyFunctional() {
-			if (only == null) {
-				return true;
-			} else {
-				return only.isPurelyFunctional();
-			}
-		}
-	}
-
-	private static abstract class DateExpressionWithDateResult extends DateExpression {
-
-		private DateExpression only;
-
-		DateExpressionWithDateResult() {
-			this.only = null;
-		}
-
-		DateExpressionWithDateResult(DateExpression only) {
-			this.only = only;
-		}
-
-		@Override
-		public DBDate getQueryableDatatypeForExpressionValue() {
-			return new DBDate();
-		}
-
-		@Override
-		public abstract String toSQLString(DBDefinition db);
-
-		@Override
-		public DateExpressionWithDateResult copy() {
-			DateExpressionWithDateResult newInstance;
-			try {
-				newInstance = getClass().newInstance();
-			} catch (InstantiationException | IllegalAccessException ex) {
-				throw new RuntimeException(ex);
-			}
-			newInstance.only = getFirst().copy();
-			return newInstance;
-		}
-
-		@Override
-		public Set<DBRow> getTablesInvolved() {
-			HashSet<DBRow> hashSet = new HashSet<DBRow>();
-			if (getFirst() != null) {
-				hashSet.addAll(getFirst().getTablesInvolved());
-			}
-			return hashSet;
-		}
-
-		@Override
-		public boolean isAggregator() {
-			return getFirst().isAggregator();
-		}
-
-		@Override
-		public boolean getIncludesNull() {
-			return false;
-		}
-
-		@Override
-		public boolean isPurelyFunctional() {
-			if (getFirst() == null) {
-				return true;
-			} else {
-				return getFirst().isPurelyFunctional();
-			}
-		}
-
-		/**
-		 * <p style="color: #F90;">Support DBvolution at
-		 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-		 *
-		 * @return the only
-		 */
-		public DateExpression getFirst() {
-			return only;
-		}
 	}
 
 	private static abstract class DateDateExpressionWithBooleanResult extends BooleanExpression {
@@ -3697,14 +3557,8 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 			this.second = second;
 		}
 
-//		@Override
-//		public DBNumber getQueryableDatatypeForExpressionValue() {
-//			return new DBNumber();
-//		}
 		@Override
-		public String toSQLString(DBDefinition db) {
-			return this.beforeValue(db) + getFirst().toSQLString(db) + this.getSeparator(db) + (getSecond() == null ? "" : getSecond().toSQLString(db)) + this.afterValue(db);
-		}
+		public abstract String toSQLString(DBDefinition db);
 
 		@Override
 		public DateDateFunctionWithDateResult copy() {
@@ -3729,22 +3583,6 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 				hashSet.addAll(getSecond().getTablesInvolved());
 			}
 			return hashSet;
-		}
-
-		protected String getFunctionName(DBDefinition db) {
-			return "";
-		}
-
-		protected String beforeValue(DBDefinition db) {
-			return " " + getFunctionName(db) + "( ";
-		}
-
-		protected String getSeparator(DBDefinition db) {
-			return ", ";
-		}
-
-		protected String afterValue(DBDefinition db) {
-			return ") ";
 		}
 
 		@Override
@@ -3786,87 +3624,14 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 		}
 	}
 
-	private static abstract class DateFunctionWithNumberResult extends NumberExpression {
-
-		protected DateExpression only;
-
-		DateFunctionWithNumberResult() {
-			this.only = null;
-		}
-
-		DateFunctionWithNumberResult(DateExpression only) {
-			this.only = only;
-		}
-
-		@Override
-		public DBNumber getQueryableDatatypeForExpressionValue() {
-			return new DBNumber();
-		}
-
-		protected String getFunctionName(DBDefinition db) {
-			return "";
-		}
-
-		protected String beforeValue(DBDefinition db) {
-			return "" + getFunctionName(db) + "( ";
-		}
-
-		protected String afterValue(DBDefinition db) {
-			return ") ";
-		}
-
-		@Override
-		public String toSQLString(DBDefinition db) {
-			return this.beforeValue(db) + (only == null ? "" : only.toSQLString(db)) + this.afterValue(db);
-		}
-
-		@Override
-		public DateFunctionWithNumberResult copy() {
-			DateFunctionWithNumberResult newInstance;
-			try {
-				newInstance = getClass().newInstance();
-			} catch (InstantiationException | IllegalAccessException ex) {
-				throw new RuntimeException(ex);
-			}
-			newInstance.only = (only == null ? null : only.copy());
-			return newInstance;
-		}
-
-		@Override
-		public boolean isAggregator() {
-			return only.isAggregator();
-		}
-
-		@Override
-		public Set<DBRow> getTablesInvolved() {
-			return only.getTablesInvolved();
-		}
-
-		@Override
-		public boolean getIncludesNull() {
-			return false;
-		}
-
-		@Override
-		public boolean isPurelyFunctional() {
-			if (only == null) {
-				return true;
-			} else {
-				return only.isPurelyFunctional();
-			}
-		}
-	}
-
 	private static abstract class DateFunctionWithDateResult extends DateExpression {
 
-		protected DateExpression only;
-
 		DateFunctionWithDateResult() {
-			this.only = null;
+			super();
 		}
 
 		DateFunctionWithDateResult(DateExpression only) {
-			this.only = only;
+			super(only);
 		}
 
 		protected String getFunctionName(DBDefinition db) {
@@ -3883,38 +3648,7 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 
 		@Override
 		public String toSQLString(DBDefinition db) {
-			return this.beforeValue(db) + (only == null ? "" : only.toSQLString(db)) + this.afterValue(db);
-		}
-
-		@Override
-		public DateFunctionWithDateResult copy() {
-			DateFunctionWithDateResult newInstance;
-			try {
-				newInstance = getClass().newInstance();
-			} catch (InstantiationException | IllegalAccessException ex) {
-				throw new RuntimeException(ex);
-			}
-			newInstance.only = only.copy();
-			return newInstance;
-		}
-
-		@Override
-		public boolean isAggregator() {
-			return only.isAggregator();
-		}
-
-		@Override
-		public Set<DBRow> getTablesInvolved() {
-			return only.getTablesInvolved();
-		}
-
-		@Override
-		public boolean isPurelyFunctional() {
-			if (only == null) {
-				return true;
-			} else {
-				return only.isPurelyFunctional();
-			}
+			return this.beforeValue(db) + (getInnerResult() == null ? "" : getInnerResult().toSQLString(db)) + this.afterValue(db);
 		}
 	}
 
