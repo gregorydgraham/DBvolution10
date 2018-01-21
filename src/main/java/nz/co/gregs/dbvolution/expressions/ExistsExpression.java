@@ -76,52 +76,6 @@ public class ExistsExpression extends BooleanExpression {
 	private final DBDatabase database;
 
 	/**
-	 * Creates an ExistsExpression that connects to the original query via the
-	 * examples in the first list supplied, and also uses the examples in the
-	 * second list.
-	 *
-	 * @param db
-	 * @param outerTables examples that will also be linked to the exterior query.
-	 * @param innerTables all other examples, which will not be linked to the
-	 * exterior query.
-	 */
-//	public ExistsExpression(DBDatabase db, List<DBRow> outerTables, List<DBRow> innerTables) {
-//		this.database = db;
-//		for (DBRow outerTable : outerTables) {
-//			final DBRow newOuter = DBRow.copyDBRow(outerTable);
-//			newOuter.setReturnFieldsToNone();
-//			this.outerQuery.getRequiredQueryTables().add(newOuter);
-//			this.outerQuery.getAllQueryTables().add(newOuter);
-//		}
-//		for (DBRow innerTable : innerTables) {
-//			final DBRow newInner = DBRow.copyDBRow(innerTable);
-//			newInner.setReturnFields((Object[]) newInner.getPrimaryKeysAsArray());
-//			this.innerQuery.getRequiredQueryTables().add(newInner);
-//		}
-//	}
-	/**
-	 * Create an ExistsExpression that connects to the original query via the
-	 * first DBRow example supplied, and uses the examples in the list.
-	 *
-	 * @param outerTable an example that will also be linked to the exterior
-	 * query.
-	 * @param innerTables all other examples, which will not be linked to the
-	 * exterior query.
-	 */
-//	public ExistsExpression(DBDatabase db, DBRow outerTable, List<DBRow> innerTables) {
-//		this.database = db;
-//		final DBRow newOuter = DBRow.copyDBRow(outerTable);
-//		newOuter.setReturnFieldsToNone();
-//		this.outerQuery.getRequiredQueryTables().add(newOuter);
-//		this.outerQuery.getAllQueryTables().add(newOuter);
-//		for (DBRow innerTable : innerTables) {
-//			final DBRow newInner = DBRow.copyDBRow(innerTable);
-//			newInner.setReturnFields((Object[]) newInner.getPrimaryKeysAsArray());
-//			this.innerQuery.getRequiredQueryTables().add(newInner);
-//			this.innerQuery.getAllQueryTables().add(newInner);
-//		}
-//	}
-	/**
 	 * Create an ExistsExpression that connects to the original query via the
 	 * tables of the first query supplied, and uses the examples in the second.
 	 *
@@ -150,24 +104,6 @@ public class ExistsExpression extends BooleanExpression {
 		}
 	}
 
-	/**
-	 * Create a ExistsExpression that connects to the exterior query using the
-	 * first DBRow but also queries with the second.
-	 *
-	 * @param outerTable connects to the outer query.
-	 * @param innerTable also in the query but used only internally.
-	 */
-//	public ExistsExpression(DBDatabase db, DBRow outerTable, DBRow innerTable) {
-//		this.database = db;
-//		final DBRow newOuter = DBRow.copyDBRow(outerTable);
-//		newOuter.setReturnFieldsToNone();
-//		this.outerQuery.getRequiredQueryTables().add(newOuter);
-//		this.outerQuery.getAllQueryTables().add(newOuter);
-//		final DBRow newInner = DBRow.copyDBRow(innerTable);
-//		newInner.setReturnFields((Object[]) newInner.getPrimaryKeysAsArray());
-//		this.innerQuery.getRequiredQueryTables().add(newInner);
-//		this.innerQuery.getAllQueryTables().add(newInner);
-//	}
 	/**
 	 * Produces the snippet provided by this class.
 	 *
@@ -220,5 +156,4 @@ public class ExistsExpression extends BooleanExpression {
 		hashSet.addAll(outerQuery.getAllQueryTables());
 		return hashSet;
 	}
-
 }
