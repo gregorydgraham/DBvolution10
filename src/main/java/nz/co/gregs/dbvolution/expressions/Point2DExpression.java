@@ -73,7 +73,7 @@ public class Point2DExpression extends Spatial2DExpression<Point, Point2DResult,
 		super(point==null?null:new DBPoint2D(point));
 	}
 
-	private Point2DExpression(double xValue, double yValue) {
+	public Point2DExpression(double xValue, double yValue) {
 		super(new DBPoint2D(xValue, yValue));
 	}
 
