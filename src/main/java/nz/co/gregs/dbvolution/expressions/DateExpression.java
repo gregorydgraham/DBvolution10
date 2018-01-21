@@ -2943,10 +2943,25 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 	 * <p>
 	 * May not be zero padded but the format is still unambiguous.</p>
 	 *
-	 * @return
+	 * @return a ISO formatted version of this date
 	 */
 	@Override
 	public StringExpression stringResult() {
+		return this.stringResultISOFormat();
+	}
+	
+	/**
+	 * Returns the date as an ISO 8601 formatted string NOT including time zone.
+	 *
+	 * <p>
+	 * ISO 8601 form at is YYYY-MM-DDTHH:mm:ss.sss</p>
+	 *
+	 * <p>
+	 * May not be zero padded but the format is still unambiguous.</p>
+	 *
+	 * @return a ISO formatted version of this date
+	 */
+	public StringExpression stringResultISOFormat() {
 		StringExpression isoFormatDateTime = new StringExpression("")
 				.append(this.year())
 				.append("-")
@@ -2962,6 +2977,64 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 				.append(".")
 				.append(this.subsecond());
 		return isoFormatDateTime;
+	}
+
+	/**
+	 * Returns the date as a USA formatted string NOT including time zone.
+	 *
+	 * <p>
+	 *USA format is MM-DD-YYYY HH:mm:ss.sss</p>
+	 *
+	 * <p>
+	 * May not be zero padded but the format is still unambiguous.</p>
+	 *
+	 * @return a USA formatted version of this date
+	 */
+	public StringExpression stringResultUSAFormat() {
+		StringExpression usaFormatDateTime = new StringExpression("")
+				.append(this.month())
+				.append("-")
+				.append(this.day())
+				.append("-")
+				.append(this.year())
+				.append(" ")
+				.append(this.hour())
+				.append(":")
+				.append(this.minute())
+				.append(":")
+				.append(this.second())
+				.append(".")
+				.append(this.subsecond());
+		return usaFormatDateTime;
+	}
+
+	/**
+	 * Returns the date as formatted string NOT including time zone.
+	 *
+	 * <p>
+	 * Common format is DD-MM-YYYY HH:mm:ss.sss</p>
+	 *
+	 * <p>
+	 * May not be zero padded but the format is still unambiguous.</p>
+	 *
+	 * @return a formatted version of this date using the format commonly used around the world
+	 */
+	public StringExpression stringResultCommonFormat() {
+		StringExpression commonFormatDateTime = new StringExpression("")
+				.append(this.day())
+				.append("-")
+				.append(this.month())
+				.append("-")
+				.append(this.year())
+				.append(" ")
+				.append(this.hour())
+				.append(":")
+				.append(this.minute())
+				.append(":")
+				.append(this.second())
+				.append(".")
+				.append(this.subsecond());
+		return commonFormatDateTime;
 	}
 
 	@Override
