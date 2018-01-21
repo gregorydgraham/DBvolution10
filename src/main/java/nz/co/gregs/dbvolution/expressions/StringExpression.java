@@ -1896,7 +1896,7 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 	 * <p style="color: #F90;">Support DBvolution at
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 *
-	 * @return a NumberExpression.
+	 * @return an IntegerExpression.
 	 */
 	public IntegerExpression getFirstInteger() {
 		return getFirstIntegerAsSubstring().integerResult();
@@ -2489,6 +2489,10 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 	/**
 	 * In so far as it is possible, transform the value of this expression into a
 	 * number.
+	 *
+	 * <p>
+	 * You should probably use {@link #getFirstNumber() } or {@link #getFirstNumber()
+	 * } instead as they are more reliable.</p>
 	 *
 	 * <p>
 	 * Uses the database's own facilities to parse the value of this expression
