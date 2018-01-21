@@ -44,7 +44,7 @@ import nz.co.gregs.dbvolution.results.AnyResult;
  */
 public class Polygon2DExpression extends Spatial2DExpression<Polygon, Polygon2DResult, DBPolygon2D> implements Polygon2DResult {
 
-	static Polygon2DExpression unitSquare() {
+	public static Polygon2DExpression unitSquare() {
 		return value(
 				new Point2DExpression(0,0),
 				new Point2DExpression(1,0),
