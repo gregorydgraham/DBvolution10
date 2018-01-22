@@ -43,7 +43,7 @@ import nz.co.gregs.dbvolution.internal.properties.PropertyWrapper;
 public abstract class OracleDB extends DBDatabase implements SupportsPolygonDatatype {
 
 	public static final long serialVersionUID = 1l;
-
+	public static final int DEFAULT_PORT = 1521;
 	/**
 	 *
 	 * Provides a convenient constructor for DBDatabases that have configuration
