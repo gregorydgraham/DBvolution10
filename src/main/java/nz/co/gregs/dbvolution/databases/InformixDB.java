@@ -33,6 +33,7 @@ public class InformixDB extends DBDatabase {
 
 	private final static String INFORMIXDRIVERNAME = "com.informix.jdbc.IfxDriver";
 	public static final long serialVersionUID = 1l;
+	public static final int DEFAULT_PORT = 1526;
 
 	/**
 	 * Create a database object for a Informix 7+ database using the supplied
