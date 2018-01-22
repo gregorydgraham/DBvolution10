@@ -33,7 +33,8 @@ import nz.co.gregs.dbvolution.internal.mysql.MigrationFunctions;
 public class MySQLDB extends DBDatabase implements SupportsPolygonDatatype {
 
 	private final static String MYSQLDRIVERNAME = "com.mysql.jdbc.Driver";
-	public static final long serialVersionUID = 1l;
+	private static final long serialVersionUID = 1l;
+	public static final int DEFAULT_PORT = 3306;
 
 	/**
 	 * Creates a {@link DBDatabase } instance for the data source.
