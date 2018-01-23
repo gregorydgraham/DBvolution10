@@ -69,10 +69,7 @@ public class ExistsExpressionTest extends AbstractTest {
 
 		marquesQuery = database.getDBQuery(marque);
 		marquesQuery.addCondition((new ExistsExpression(outerQuery, existsTables)).not());
-		if(database instanceof DBDatabaseCluster){
-			System.out.println("nz.co.gregs.dbvolution.expressions.ExistsExpressionTest.testDBExistsOnMultipleTablesUsingDBQueries()");
-			System.out.println(marquesQuery.getSQLForQuery());
-		}
+
 		rowList = marquesQuery.getAllInstancesOf(marque);
 
 		Assert.assertThat(rowList.size(), is(19));
