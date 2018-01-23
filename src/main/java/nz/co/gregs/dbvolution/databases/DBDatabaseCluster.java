@@ -62,6 +62,7 @@ import nz.co.gregs.dbvolution.exceptions.DBRuntimeException;
 import nz.co.gregs.dbvolution.exceptions.UnableToCreateDatabaseConnectionException;
 import nz.co.gregs.dbvolution.exceptions.UnableToFindJDBCDriver;
 import nz.co.gregs.dbvolution.exceptions.UnexpectedNumberOfRowsException;
+import nz.co.gregs.dbvolution.internal.query.DatabaseThread;
 import nz.co.gregs.dbvolution.reflection.DataModel;
 import nz.co.gregs.dbvolution.transactions.DBTransaction;
 
@@ -583,7 +584,8 @@ public class DBDatabaseCluster extends DBDatabase {
 		List<ActionTask> tasks = new ArrayList<ActionTask>();
 		DBActionList actionsPerformed;
 		for (DBDatabase next : readyDatabases) {
-			tasks.add(new ActionTask(next, action));
+			final ActionTask task = new ActionTask(next, action);
+			tasks.add(task);
 			removeActionFromQueue(next, action);
 		}
 		try {
@@ -597,7 +599,7 @@ public class DBDatabaseCluster extends DBDatabase {
 	}
 	
 	@Override
-	public DBQueryable executeDBQuery(DBQueryable query) throws SQLException {
+	public synchronized DBQueryable executeDBQuery(DBQueryable query) throws SQLException {
 		final DBDatabase readyDatabase = getReadyDatabase();
 		DBQueryable actionsPerformed = readyDatabase.executeDBQuery(query);
 		return actionsPerformed;
