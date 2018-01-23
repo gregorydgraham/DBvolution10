@@ -766,6 +766,11 @@ public class StringExpressionTest extends AbstractTest {
 		if (allRows.size() != 14) {
 			System.out.println(query.getSQLForQuery());
 			database.print(allRows);
+			System.out.println("---------");
+			database.print(database.getDBTable(tab)
+					.setBlankQueryAllowed(true)
+					.setSortOrder(tab.column(tab.sample))
+					.getAllRows());
 		}
 
 		Assert.assertThat(allRows.size(), is(14));
