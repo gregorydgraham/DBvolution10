@@ -751,24 +751,24 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 				returnValues = dbTransaction.doTransaction(db);
 				if (commit && !explicitCommitActionRequired) {
 					db.transactionConnection.commit();
-					LOG.info("Transaction Successful: Commit Performed");
+//					LOG.info("Transaction Successful: Commit Performed");
 				} else {
 					try {
 						if (!explicitCommitActionRequired) {
 							db.transactionConnection.rollback();
-							LOG.info("Transaction Successful: ROLLBACK Performed");
+//							LOG.info("Transaction Successful: ROLLBACK Performed");
 						}
 					} catch (SQLException rollbackFailed) {
-						LOG.warn("ROLLBACK FAILED: CONTINUING REGARDLESS: " + rollbackFailed.getLocalizedMessage());
+//						LOG.warn("ROLLBACK FAILED: CONTINUING REGARDLESS: " + rollbackFailed.getLocalizedMessage());
 						discardConnection(db.transactionConnection);
 					}
 				}
 			} catch (Exception ex) {
 				try {
-					LOG.warn("Exception Occurred: Attempting ROLLBACK - " + ex.getLocalizedMessage());
+//					LOG.warn("Exception Occurred: Attempting ROLLBACK - " + ex.getLocalizedMessage());
 					if (!explicitCommitActionRequired) {
 						db.transactionConnection.rollback();
-						LOG.warn("Exception Occurred: ROLLBACK Succeeded!");
+//						LOG.warn("Exception Occurred: ROLLBACK Succeeded!");
 					}
 				} catch (SQLException excp) {
 					LOG.warn("Exception Occurred During Rollback: " + ex.getLocalizedMessage());
