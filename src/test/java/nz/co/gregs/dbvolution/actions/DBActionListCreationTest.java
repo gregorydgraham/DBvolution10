@@ -351,6 +351,12 @@ public class DBActionListCreationTest extends AbstractTest {
 		logo.imageBytes.setFromFileSystem("toyota_share_logo.jpg");
 		dataChanges.addAll(database.insert(logo));
 
+		Assert.assertThat(dataChanges.get(0), instanceOf(DBInsert.class));
+		Assert.assertThat(dataChanges.get(1), instanceOf(DBUpdateSimpleTypes.class));
+		Assert.assertThat(dataChanges.get(2), instanceOf(DBDeleteByPrimaryKey.class));
+		Assert.assertThat(dataChanges.get(3), instanceOf(DBInsert.class));
+		Assert.assertThat(dataChanges.get(4), instanceOf(DBUpdateLargeObjects.class));
+
 		final DBActionList revertActionList = dataChanges.getRevertActionList();
 
 		Assert.assertThat(revertActionList.get(0), instanceOf(DBDelete.class));
