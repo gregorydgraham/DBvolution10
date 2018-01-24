@@ -91,7 +91,7 @@ public class Line2DColumn extends Line2DExpression implements ColumnProvider {
 	@Override
 	public boolean equals(Object other) {
 		if (other instanceof Line2DColumn) {
-			return column.equals(other); //To change body of generated methods, choose Tools | Templates.
+			return column.equals(other);
 		} else {
 			return false;
 		}

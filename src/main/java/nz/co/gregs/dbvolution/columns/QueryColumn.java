@@ -57,7 +57,6 @@ public class QueryColumn<B, R extends AnyResult<B>, D extends QueryableDatatype<
 	private final AbstractQueryColumn column;
 	private final DBQuery query;
 	private final D field;
-	private boolean returnValue = true;
 
 	/**
 	 * Create a QueryColumn for the supplied field of the supplied query
@@ -137,9 +136,5 @@ public class QueryColumn<B, R extends AnyResult<B>, D extends QueryableDatatype<
 	@Override
 	public StringExpression stringResult() {
 		throw new RuntimeException("QueryColumn.stringResult: NOT IMPLEMENTED");
-	}
-
-	public void setReturnField(boolean b) {
-		this.returnValue = b;
 	}
 }

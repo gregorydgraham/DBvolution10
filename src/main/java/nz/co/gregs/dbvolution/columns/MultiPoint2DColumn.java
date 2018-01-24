@@ -84,7 +84,7 @@ public class MultiPoint2DColumn extends MultiPoint2DExpression implements Column
 
 	@Override
 	public boolean equals(Object other) {
-		if (other instanceof Line2DColumn) {
+		if (other instanceof MultiPoint2DColumn) {
 			return column.equals(other); //To change body of generated methods, choose Tools | Templates.
 		} else {
 			return false;

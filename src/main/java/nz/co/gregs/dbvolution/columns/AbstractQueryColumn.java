@@ -70,7 +70,6 @@ public class AbstractQueryColumn extends AbstractColumn {
 
 	@Override
 	public String toSQLString(DBDefinition db) {
-		DBQuery qry = this.getQuery();
 		if (field.hasColumnExpression()) {
 			DBExpression[] columnExpressions = field.getColumnExpression();
 			StringBuilder toSQLString = new StringBuilder();

@@ -2237,8 +2237,8 @@ public class DBQuery {
 		List<DBRow> allQueryTables = this.details.getAllQueryTables();
 		for (ColumnProvider provider : columns) {
 			if (provider instanceof QueryColumn) {
-				QueryColumn<?,?,?> qc = (QueryColumn)provider;
-				qc.setReturnField(true);
+//				QueryColumn<?,?,?> qc = (QueryColumn)provider;
+//				qc.setReturnField(true);
 			} else {
 				final AbstractColumn column = provider.getColumn();
 				DBRow table = column.getInstanceOfRow();

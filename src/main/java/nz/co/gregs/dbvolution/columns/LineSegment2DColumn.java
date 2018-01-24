@@ -83,7 +83,7 @@ public class LineSegment2DColumn extends LineSegment2DExpression implements Colu
 
 	@Override
 	public boolean equals(Object other) {
-		if (other instanceof Line2DColumn) {
+		if (other instanceof LineSegment2DColumn) {
 			return column.equals(other); //To change body of generated methods, choose Tools | Templates.
 		} else {
 			return false;

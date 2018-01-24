@@ -129,10 +129,6 @@ public abstract class EqualExpression<B, R extends EqualResult<B>, D extends Que
 				return db.getCountFunctionName() + "(" + getInnerResult().toSQLString(db) + ")";
 			}
 
-			String getFunctionName(DBDefinition db) {
-				return db.getCountFunctionName();
-			}
-
 			@Override
 			public boolean isAggregator() {
 				return true;
