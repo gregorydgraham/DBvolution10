@@ -76,7 +76,6 @@ public class DBScriptTest extends AbstractTest {
 	@Test
 	public void testImplementOfDBDatabase() throws Exception {
 		List<Marque> allMarques = database.getDBTable(new Marque()).setBlankQueryAllowed(true).getAllRows();
-		database.print(allMarques);
 		DBScript script = new ScriptThatAdds2Marques();
 		DBActionList result = database.implement(script);
 		List<Marque> allMarques2 = database.getDBTable(new Marque()).setBlankQueryAllowed(true).getAllRows();
