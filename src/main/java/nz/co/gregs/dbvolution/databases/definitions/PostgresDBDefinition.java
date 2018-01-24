@@ -879,8 +879,18 @@ public class PostgresDBDefinition extends DBDefinition {
 		return false;
 	}
 
+	@Override
 	public boolean requiresOnClauseForAllJoins() {
 		return true;
 	}
 
+	@Override
+	public boolean requiresSequenceUpdateAfterManualInsert() {
+		return true;
+	}
+
+	@Override
+	public String getSequenceUpdateSQL(String tableName, String columnName, long primaryKeyGenerated) {
+		return "ALTER SEQUENCE "+tableName+"_"+columnName+"_seq RESTART WITH "+(primaryKeyGenerated+1)+";";
+	}
 }

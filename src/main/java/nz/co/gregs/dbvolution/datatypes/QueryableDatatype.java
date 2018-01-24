@@ -380,7 +380,7 @@ public abstract class QueryableDatatype<T> extends Object implements Serializabl
 	 *
 	 * @param newLiteralValue the literalValue to set
 	 */
-	protected void setLiteralValue(T newLiteralValue) {
+	protected synchronized void setLiteralValue(T newLiteralValue) {
 		QueryableDatatype.this.moveCurrentValueToPreviousValue(newLiteralValue);
 		if (newLiteralValue == null) {
 			setToNull();
@@ -900,14 +900,14 @@ public abstract class QueryableDatatype<T> extends Object implements Serializabl
 	 *
 	 * @return the setValueHasBeenCalled
 	 */
-	public boolean hasBeenSet() {
+	public synchronized boolean hasBeenSet() {
 		return setValueHasBeenCalled;
 	}
 
 	/**
 	 * @param hasBeenSet the setValueHasBeenCalled to set
 	 */
-	private void setHasBeenSet(boolean hasBeenSet) {
+	private synchronized void setHasBeenSet(boolean hasBeenSet) {
 		this.setValueHasBeenCalled = hasBeenSet;
 	}
 

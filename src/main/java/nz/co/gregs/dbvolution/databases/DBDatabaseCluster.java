@@ -441,18 +441,14 @@ public class DBDatabaseCluster extends DBDatabase {
 						if (!commit) {
 							try {
 								db.transactionConnection.rollback();
-								LOG.info("Transaction Successful: ROLLBACK Performed");
 							} catch (SQLException rollbackFailed) {
-								LOG.warn("ROLLBACK FAILED: CONTINUING REGARDLESS: " + rollbackFailed.getLocalizedMessage());
 								discardConnection(db.transactionConnection);
 							}
 						}
 					} catch (Exception ex) {
 						try {
-							LOG.warn("Exception Occurred: Attempting ROLLBACK - " + ex.getMessage());
 							if (!explicitCommitActionRequired) {
 								db.transactionConnection.rollback();
-								LOG.warn("Exception Occurred: ROLLBACK Succeeded!");
 							}
 						} catch (SQLException excp) {
 							LOG.warn("Exception Occurred During Rollback: " + ex.getMessage());
@@ -581,19 +577,29 @@ public class DBDatabaseCluster extends DBDatabase {
 	public synchronized DBActionList executeDBAction(DBAction action) throws SQLException {
 		addActionToQueue(action);
 		List<ActionTask> tasks = new ArrayList<ActionTask>();
-		DBActionList actionsPerformed;
-		for (DBDatabase next : readyDatabases) {
-			final ActionTask task = new ActionTask(next, action);
-			tasks.add(task);
-			removeActionFromQueue(next, action);
-		}
+		DBActionList actionsPerformed = new DBActionList();
 		try {
+			DBDatabase readyDatabase = getReadyDatabase();
+			if (action.requiresRunOnIndividualDatabaseBeforeCluster()){
+			// Because of autoincrement PKs we need to execute on one database first
+			actionsPerformed = new ActionTask(readyDatabase, action).call();
+			removeActionFromQueue(readyDatabase, action);}
+			// Now execute on all the other databases
+			for (DBDatabase next : readyDatabases) {
+				if (action.runOnDatabaseDuringCluster(readyDatabase, next)) {
+					final ActionTask task = new ActionTask(next, action);
+					tasks.add(task);
+					removeActionFromQueue(next, action);
+				}
+			}
 			threadPool.invokeAll(tasks);
 		} catch (InterruptedException ex) {
 			Logger.getLogger(DBDatabaseCluster.class.getName()).log(Level.SEVERE, null, ex);
 			throw new DBRuntimeException("Unable To Run Actions", ex);
 		}
-		actionsPerformed = tasks.get(0).getActionList();
+		if(actionsPerformed.isEmpty()){
+			actionsPerformed = tasks.get(0).getActionList();
+		}
 		return actionsPerformed;
 	}
 	
@@ -730,7 +736,7 @@ public class DBDatabaseCluster extends DBDatabase {
 		}
 		
 		@Override
-		public synchronized DBActionList call() throws Exception {
+		public synchronized DBActionList call() throws SQLException {
 			actionList.clear();
 			actionList.addAll(database.executeDBAction(action));
 			return actionList;

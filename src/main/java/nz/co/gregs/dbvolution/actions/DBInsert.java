@@ -57,6 +57,8 @@ public class DBInsert extends DBAction {
 
 	private final List<Long> generatedKeys = new ArrayList<>();
 	private final DBRow originalRow;
+	private boolean primaryKeyWasGenerated =false;
+	private Long primaryKeyGenerated= null;
 
 	/**
 	 * Creates a DBInsert action for the row.
@@ -163,40 +165,54 @@ public class DBInsert extends DBAction {
 					try {
 						final List<QueryableDatatype<?>> primaryKeys = table.getPrimaryKeys();
 						if (primaryKeys == null || primaryKeys.isEmpty()) {
+							// There are no primary keys so execute and move on.
 							statement.execute(sql);
 						} else if (primaryKeys.size() == 1) {
 							QueryableDatatype<?> primaryKey = primaryKeys.get(0);
-							String primaryKeyColumnName = table.getPrimaryKeyColumnNames().get(0);
-							Integer pkIndex = table.getPrimaryKeyIndexes().get(0);
-							if (pkIndex == null || primaryKeyColumnName == null) {
+							if (primaryKey.hasBeenSet()){
+								// The primary key has already been sorted for us so execute and move on.
 								statement.execute(sql);
-							} else {
-								if (primaryKeyColumnName.isEmpty()) {
-									statement.execute(sql, Statement.RETURN_GENERATED_KEYS);
+							}else{
+								String primaryKeyColumnName = table.getPrimaryKeyColumnNames().get(0);
+								Integer pkIndex = table.getPrimaryKeyIndexes().get(0);
+								if (pkIndex == null || primaryKeyColumnName == null) {
+									// We can't find the PK so just execute and move on.
+									statement.execute(sql);
 								} else {
-									statement.execute(sql, new String[]{db.getDefinition().formatPrimaryKeyForRetrievingGeneratedKeys(primaryKeyColumnName)});
-									pkIndex = 1;
-								}
-								if (primaryKey.hasBeenSet() == false) {
-									try (ResultSet generatedKeysResultSet = statement.getGeneratedKeys()) {
-										while (generatedKeysResultSet.next()) {
-											final long pkValue = generatedKeysResultSet.getLong(pkIndex);
-											if (pkValue > 0) {
-												this.getGeneratedPrimaryKeys().add(pkValue);
-												setPrimaryKeyOfStoredRows(pkValue, table, newInsert);
+									// There is a PK, it's not set, and we can find it, so we need to get it's value...
+									if (primaryKeyColumnName.isEmpty()) {
+										// Not sure of the column name, so ask for the keys and cross fingers.
+										statement.execute(sql, Statement.RETURN_GENERATED_KEYS);
+									} else {
+										// execute and ask for the column specifically, also cross fingers.
+										statement.execute(sql, new String[]{db.getDefinition().formatPrimaryKeyForRetrievingGeneratedKeys(primaryKeyColumnName)});
+										pkIndex = 1;
+									}
+									if (primaryKey.hasBeenSet() == false) {
+										try (ResultSet generatedKeysResultSet = statement.getGeneratedKeys()) {
+											while (generatedKeysResultSet.next()) {
+												final Long pkValue = generatedKeysResultSet.getLong(pkIndex);
+												if (pkValue > 0) {
+													setPrimaryKeyGenerated(pkValue);
+													this.getGeneratedPrimaryKeys().add(pkValue);
+													setPrimaryKeyOfStoredRows(pkValue, table, newInsert);
+												}
 											}
+										} catch (SQLException ex) {
+											throw new RuntimeException(ex);
 										}
-									} catch (SQLException ex) {
-										throw new RuntimeException(ex);
 									}
 								}
 							}
+						} else {
+							throw new UnsupportedOperationException("Multiple primary keys on a row are not yet supported:" + sql);
 						}
+						updateSequenceIfNecessary(defn, db, sql, table, statement);
 					} catch (SQLException sqlex) {
 						try {
 							statement.execute(sql);
 						} catch (SQLException ex) {
-							throw new RuntimeException(sql, ex);
+							throw new RuntimeException(sql+(System.getProperty("line.separator")+sqlex.getLocalizedMessage()), sqlex);
 						}
 					}
 				} else {
@@ -214,14 +230,18 @@ public class DBInsert extends DBAction {
 
 										if (originalPK.hasBeenSet() == false) {
 											if ((originalPK instanceof DBInteger) && (rowPK instanceof DBInteger)) {
+												final long generatedPK = rs.getLong(1);
+												setPrimaryKeyGenerated(generatedPK);
 												DBInteger inPK = (DBInteger) originalPK;
 												DBInteger inRowPK = (DBInteger) rowPK;
-												inPK.setValue(rs.getLong(1));
-												inRowPK.setValue(rs.getLong(1));
+												inPK.setValue(generatedPK);
+												inRowPK.setValue(generatedPK);
 											} else if ((originalPK instanceof DBNumber) && (rowPK instanceof DBInteger)) {
+												final long generatedPK = rs.getLong(1);
+												setPrimaryKeyGenerated(generatedPK);
 												DBNumber inPK = (DBNumber) originalPK;
 												inPK.setValue(rs.getBigDecimal(1));
-												((DBInteger) rowPK).setValue(rs.getLong(1));
+												((DBInteger) rowPK).setValue(generatedPK);
 											} else if ((originalPK instanceof DBString) && (rowPK instanceof DBString)) {
 												DBString inPK = (DBString) originalPK;
 												inPK.setValue(rs.getString(1));
@@ -233,6 +253,7 @@ public class DBInsert extends DBAction {
 								}
 							}
 						}
+						updateSequenceIfNecessary(defn, db, sql, table, statement);
 					} catch (SQLException ex) {
 						throw new RuntimeException(ex);
 					}
@@ -243,6 +264,13 @@ public class DBInsert extends DBAction {
 		actions.addAll(db.executeDBAction(blobSave));
 		table.setDefined();
 		return actions;
+	}
+
+	private void updateSequenceIfNecessary(final DBDefinition defn, DBDatabase db, String sql, DBRow table, final DBStatement statement) throws SQLException {
+		if (primaryKeyWasGenerated && defn.requiresSequenceUpdateAfterManualInsert()) {
+			final String sequenceUpdateSQL = defn.getSequenceUpdateSQL(table.getTableName(), table.getPrimaryKeyColumnNames().get(0), primaryKeyGenerated);
+			statement.execute(sequenceUpdateSQL);
+		}
 	}
 
 	private synchronized void setPrimaryKeyOfStoredRows(final long pkValue, DBRow table, final DBInsert newInsert) {
@@ -365,7 +393,7 @@ public class DBInsert extends DBAction {
 		for (QueryableDatatype<?> pk : primaryKeys) {
 			PropertyWrapper wrapper = row.getPropertyWrapperOf(pk);
 			String pkValue = pk.toSQLString(db.getDefinition());
-			//String pkValue = (pk.hasChanged() ? pk.getPreviousSQLValue(db) : pk.toSQLString(db));
+
 			sqlString.append(separator)
 					.append(defn.formatColumnName(wrapper.columnName()))
 					.append(defn.getEqualsComparator())
@@ -373,6 +401,23 @@ public class DBInsert extends DBAction {
 			separator = defn.beginAndLine();
 		}
 		return sqlString.toString();
+	}
+
+	private void setPrimaryKeyGenerated(long pkValue) {
+		this.primaryKeyWasGenerated = true;
+		if (this.primaryKeyGenerated == null){
+			primaryKeyGenerated = pkValue;
+		}
+	}
+	
+	@Override
+	public boolean requiresRunOnIndividualDatabaseBeforeCluster() {
+		return true;
+	}
+
+	@Override
+	public boolean runOnDatabaseDuringCluster(DBDatabase initialDatabase, DBDatabase next) {
+		return initialDatabase!=next;
 	}
 
 	private static class InsertFields {

@@ -175,4 +175,12 @@ public abstract class DBAction {
 	 * @throws SQLException Database operations may throw SQLExceptions
 	 */
 	public abstract DBActionList execute(DBDatabase db) throws SQLException;
+
+	public boolean requiresRunOnIndividualDatabaseBeforeCluster() {
+		return false;
+	}
+
+	public boolean runOnDatabaseDuringCluster(DBDatabase initialDatabase, DBDatabase next) {
+		return true;
+	}
 }

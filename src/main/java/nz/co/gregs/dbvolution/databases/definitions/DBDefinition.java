@@ -5907,4 +5907,12 @@ public abstract class DBDefinition {
 	public boolean requiresOnClauseForAllJoins() {
 		return false;
 	}
+
+	public boolean requiresSequenceUpdateAfterManualInsert() {
+		return false;
+	}
+
+	public String getSequenceUpdateSQL(String tableName, String columnName, long primaryKeyGenerated) {
+		return "UPDATE SEQUENCE FOR TABLE "+tableName+" ON COLUMN "+columnName+" TO "+(primaryKeyGenerated+1);
+	}
 }
