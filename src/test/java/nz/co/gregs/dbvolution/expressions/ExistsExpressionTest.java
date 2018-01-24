@@ -18,7 +18,6 @@ package nz.co.gregs.dbvolution.expressions;
 import java.sql.SQLException;
 import java.util.List;
 import nz.co.gregs.dbvolution.DBQuery;
-import nz.co.gregs.dbvolution.databases.DBDatabaseCluster;
 import nz.co.gregs.dbvolution.example.*;
 import nz.co.gregs.dbvolution.generic.AbstractTest;
 import static org.hamcrest.Matchers.*;
@@ -48,11 +47,19 @@ public class ExistsExpressionTest extends AbstractTest {
 						.add(carCompany)
 						.add(new CompanyLogo());
 
+		if (!database.tableExists(carCompany)){
+			System.out.println(existsTables.getSQLForQuery());
+		}
+		
 		Marque marque = new Marque();
 		DBQuery outerQuery = database.getDBQuery(marque);
 
 		DBQuery marquesQuery = database.getDBQuery(marque);
 		marquesQuery.addCondition(new ExistsExpression(outerQuery, existsTables));
+
+		if (!database.tableExists(carCompany)){
+			System.out.println(marquesQuery.getSQLForQuery());
+		}		
 
 		List<Marque> rowList = marquesQuery.getAllInstancesOf(marque);
 

@@ -69,6 +69,23 @@ public class DBScriptTest extends AbstractTest {
 	}
 
 	/**
+	 * Test of implement method, of class DBScript.
+	 *
+	 * @throws java.lang.Exception
+	 */
+	@Test
+	public void testImplementOfDBDatabase() throws Exception {
+		List<Marque> allMarques = database.getDBTable(new Marque()).setBlankQueryAllowed(true).getAllRows();
+		database.print(allMarques);
+		DBScript script = new ScriptThatAdds2Marques();
+		DBActionList result = database.implement(script);
+		List<Marque> allMarques2 = database.getDBTable(new Marque()).setBlankQueryAllowed(true).getAllRows();
+		Assert.assertThat(
+				allMarques2.size(),
+				is(allMarques.size() + 2));
+	}
+
+	/**
 	 * Test of test method, of class DBScript.
 	 *
 	 * @throws java.lang.Exception
@@ -78,6 +95,22 @@ public class DBScriptTest extends AbstractTest {
 		List<Marque> allMarques = database.getDBTable(new Marque()).setBlankQueryAllowed(true).getAllRows();
 		DBScript script = new ScriptThatAdds2Marques();
 		DBActionList result = script.test(database);
+		List<Marque> allMarques2 = database.getDBTable(new Marque()).setBlankQueryAllowed(true).getAllRows();
+		Assert.assertThat(
+				allMarques2.size(),
+				is(allMarques.size()));
+	}
+
+	/**
+	 * Test of test method, of class DBScript.
+	 *
+	 * @throws java.lang.Exception
+	 */
+	@Test
+	public void testTestOfDBDatabase() throws Exception {
+		List<Marque> allMarques = database.getDBTable(new Marque()).setBlankQueryAllowed(true).getAllRows();
+		DBScript script = new ScriptThatAdds2Marques();
+		DBActionList result = database.test(script);
 		List<Marque> allMarques2 = database.getDBTable(new Marque()).setBlankQueryAllowed(true).getAllRows();
 		Assert.assertThat(
 				allMarques2.size(),

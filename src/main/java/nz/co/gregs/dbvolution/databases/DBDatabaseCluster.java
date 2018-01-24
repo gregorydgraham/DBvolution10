@@ -402,20 +402,6 @@ public class DBDatabaseCluster extends DBDatabase {
 	}
 	
 	@Override
-	public synchronized DBActionList implement(DBScript script) throws Exception {
-		DBActionList actions = new DBActionList();
-		try {
-			for (DBDatabase next : readyDatabases) {
-				actions = next.implement(script);
-			}
-			commitAll();
-		} catch (Exception exc) {
-			rollbackAll(exc);
-		}
-		return actions;
-	}
-	
-	@Override
 	public <V> V doReadOnlyTransaction(DBTransaction<V> dbTransaction) throws SQLException, Exception {
 		return getReadyDatabase().doReadOnlyTransaction(dbTransaction);
 	}
@@ -574,7 +560,7 @@ public class DBDatabaseCluster extends DBDatabase {
 	}
 	
 	@Override
-	public synchronized DBActionList executeDBAction(DBAction action) throws SQLException {
+	public synchronized DBActionList executeDBAction(DBAction action) {
 		addActionToQueue(action);
 		List<ActionTask> tasks = new ArrayList<ActionTask>();
 		DBActionList actionsPerformed = new DBActionList();
@@ -582,12 +568,12 @@ public class DBDatabaseCluster extends DBDatabase {
 			DBDatabase readyDatabase = getReadyDatabase();
 			if (action.requiresRunOnIndividualDatabaseBeforeCluster()){
 			// Because of autoincrement PKs we need to execute on one database first
-			actionsPerformed = new ActionTask(readyDatabase, action).call();
+			actionsPerformed = new ActionTask(this, readyDatabase, action).call();
 			removeActionFromQueue(readyDatabase, action);}
 			// Now execute on all the other databases
 			for (DBDatabase next : readyDatabases) {
 				if (action.runOnDatabaseDuringCluster(readyDatabase, next)) {
-					final ActionTask task = new ActionTask(next, action);
+					final ActionTask task = new ActionTask(this, next, action);
 					tasks.add(task);
 					removeActionFromQueue(next, action);
 				}
@@ -729,16 +715,26 @@ public class DBDatabaseCluster extends DBDatabase {
 		private final DBDatabase database;
 		private final DBAction action;
 		private final DBActionList actionList = new DBActionList();
+		private final DBDatabaseCluster cluster;
 		
-		public ActionTask(DBDatabase db, DBAction action) {
+		public ActionTask(DBDatabaseCluster cluster, DBDatabase db, DBAction action) {
+			this.cluster = cluster;
 			this.database = db;
 			this.action = action;
 		}
 		
 		@Override
-		public synchronized DBActionList call() throws SQLException {
+		public synchronized DBActionList call() {
+			try {
 			actionList.clear();
 			actionList.addAll(database.executeDBAction(action));
+			return actionList;				
+			} catch (Exception e) {
+				cluster.removeDatabases(database);
+				System.out.println("REMOVING DATABASE:"+database.toString());
+				System.out.println(""+e.getLocalizedMessage());
+				e.printStackTrace();
+			}
 			return actionList;
 		}
 		
