@@ -329,8 +329,11 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 	}
 
 	/**
+	 * indicates the DBRow is not defined in the database.
 	 *
-	 * indicates the DBRow is not defined in the database
+	 * <p>
+	 * Used internally, probably not the method you want.
+	 * </p>
 	 *
 	 */
 	public void setUndefined() {
@@ -338,8 +341,11 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 	}
 
 	/**
-	 *
-	 * indicates the DBRow is defined in the database
+	 * indicates the DBRow is defined in the database.
+	 * 
+	 * <p>
+	 * Used internally, probably not the method you want.
+	 * </p>
 	 *
 	 */
 	public void setDefined() {

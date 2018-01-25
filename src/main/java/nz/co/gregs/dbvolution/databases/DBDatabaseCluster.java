@@ -28,6 +28,7 @@
  */
 package nz.co.gregs.dbvolution.databases;
 
+import nz.co.gregs.dbvolution.exceptions.UnableToRemoveLastDatabaseFromClusterException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -206,13 +207,39 @@ public class DBDatabaseCluster extends DBDatabase {
 	 */
 	public synchronized boolean removeDatabases(DBDatabase... databases) {
 		for (DBDatabase database : databases) {
-			if (readyDatabases.size() == 1 && readyDatabases.get(0).equals(database)) {
-				// Unable to remove the only remaining database
-			} else {
-				queuedActions.remove(database);
-				allDatabases.remove(database);
-				readyDatabases.remove(database);
-			}
+			removeDatabase(database);
+		}
+		return true;
+	}
+
+	/**
+	 * Removes the first occurrence of the specified element from this list, if it
+	 * is present (optional operation). If this list does not contain the element,
+	 * it is unchanged. More formally, removes the element with the lowest index
+	 * <tt>i</tt> such that
+	 * <tt>(o==null&nbsp;?&nbsp;get(i)==null&nbsp;:&nbsp;o.equals(get(i)))</tt>
+	 * (if such an element exists). Returns <tt>true</tt> if this list contained
+	 * the specified element (or equivalently, if this list changed as a result of
+	 * the call).
+	 *
+	 * @param database DBDatabase to be removed from this list, if present
+	 * @return <tt>true</tt> if this list contained the specified element
+	 * @throws ClassCastException if the type of the specified element is
+	 * incompatible with this list
+	 * (<a href="Collection.html#optional-restrictions">optional</a>)
+	 * @throws NullPointerException if the specified element is null and this list
+	 * does not permit null elements
+	 * (<a href="Collection.html#optional-restrictions">optional</a>)
+	 * @throws UnsupportedOperationException if the <tt>remove</tt> operation is
+	 * not supported by this list
+	 */
+	public synchronized boolean removeDatabase(DBDatabase database) {
+		if (readyDatabases.size() == 1 && readyDatabases.get(0).equals(database)) {
+			// Unable to remove the only remaining database
+		} else {
+			queuedActions.remove(database);
+			allDatabases.remove(database);
+			readyDatabases.remove(database);
 		}
 		return true;
 	}
@@ -251,21 +278,6 @@ public class DBDatabaseCluster extends DBDatabase {
 	@Override
 	public Connection getConnectionFromDriverManager() throws SQLException {
 		throw new UnsupportedOperationException("DBDatabase.getConnectionFromDriverManager() should not be called");
-	}
-
-	@Override
-	public <A extends DBReport> List<A> getRows(A report, DBRow... examples) throws SQLException {
-		return getReadyDatabase().getRows(report, examples);
-	}
-
-	@Override
-	public <A extends DBReport> List<A> getAllRows(A report, DBRow... examples) throws SQLException {
-		return getReadyDatabase().getAllRows(report, examples);
-	}
-
-	@Override
-	public <A extends DBReport> List<A> get(A report, DBRow... examples) throws SQLException {
-		return getReadyDatabase().get(report, examples);
 	}
 
 	@Override
@@ -449,7 +461,6 @@ public class DBDatabaseCluster extends DBDatabase {
 				} finally {
 				}
 				result = returnValues;
-
 			}
 		} catch (Exception exc) {
 			rollbackAll = true;
@@ -473,38 +484,193 @@ public class DBDatabaseCluster extends DBDatabase {
 	}
 
 	@Override
+	public <A extends DBReport> List<A> getRows(A report, DBRow... examples) throws SQLException {
+		DBDatabase readyDatabase;
+		boolean finished = false;
+		do {
+				readyDatabase = getReadyDatabase();
+			try {
+				return readyDatabase.getRows(report, examples);
+			} catch (Exception e) {
+				try {
+					handleExceptionDuringQuery(e, readyDatabase);
+				} catch (UnableToRemoveLastDatabaseFromClusterException un) {
+					throw e;
+				}
+			}
+		} while (!finished);
+		return new ArrayList<>(0);
+	}
+
+	@Override
+	public <A extends DBReport> List<A> getAllRows(A report, DBRow... examples) throws SQLException {
+		DBDatabase readyDatabase;
+		boolean finished = false;
+		do {
+				readyDatabase = getReadyDatabase();
+			try {
+				return readyDatabase.getAllRows(report, examples);
+			} catch (Exception e) {
+				try {
+					handleExceptionDuringQuery(e, readyDatabase);
+				} catch (UnableToRemoveLastDatabaseFromClusterException un) {
+					throw e;
+				}
+			}
+		} while (!finished);
+		return new ArrayList<>(0);
+	}
+
+	@Override
+	public <A extends DBReport> List<A> get(A report, DBRow... examples) throws SQLException {
+		DBDatabase readyDatabase;
+		boolean finished = false;
+		do {
+				readyDatabase = getReadyDatabase();
+			try {
+				return readyDatabase.get(report, examples);
+			} catch (Exception e) {
+				try {
+					handleExceptionDuringQuery(e, readyDatabase);
+				} catch (UnableToRemoveLastDatabaseFromClusterException un) {
+					throw e;
+				}
+			}
+		} while (!finished);
+		return new ArrayList<>(0);
+	}
+
+	@Override
 	public List<DBQueryRow> get(Long expectedNumberOfRows, DBRow... rows) throws SQLException, UnexpectedNumberOfRowsException {
-		return getReadyDatabase().get(expectedNumberOfRows, rows);
+		DBDatabase readyDatabase;
+		boolean finished = false;
+		do {
+				readyDatabase = getReadyDatabase();
+			try {
+				return readyDatabase.get(expectedNumberOfRows, rows);
+			} catch (Exception e) {
+				try {
+					handleExceptionDuringQuery(e, readyDatabase);
+				} catch (UnableToRemoveLastDatabaseFromClusterException un) {
+					throw e;
+				}
+			}
+		} while (!finished);
+		return new ArrayList<>(0);
 	}
 
 	@Override
 	public List<DBQueryRow> getByExamples(DBRow... rows) throws SQLException {
-		return getReadyDatabase().getByExamples(rows);
+		DBDatabase readyDatabase;
+		boolean finished = false;
+		do {
+				readyDatabase = getReadyDatabase();
+			try {
+				return readyDatabase.getByExamples(rows);
+			} catch (Exception e) {
+				try {
+					handleExceptionDuringQuery(e, readyDatabase);
+				} catch (UnableToRemoveLastDatabaseFromClusterException un) {
+					throw e;
+				}
+			}
+		} while (!finished);
+		return new ArrayList<>(0);
 	}
 
 	@Override
 	public List<DBQueryRow> get(DBRow... rows) throws SQLException {
-		return getReadyDatabase().get(rows);
+		DBDatabase readyDatabase;
+		boolean finished = false;
+		do {
+				readyDatabase = getReadyDatabase();
+			try {
+				return readyDatabase.get(rows);
+			} catch (Exception e) {
+				try {
+					handleExceptionDuringQuery(e, readyDatabase);
+				} catch (UnableToRemoveLastDatabaseFromClusterException un) {
+					throw e;
+				}
+			}
+		} while (!finished);
+		return new ArrayList<>(0);
 	}
 
 	@Override
 	public <R extends DBRow> List<R> getByExample(Long expectedNumberOfRows, R exampleRow) throws SQLException, UnexpectedNumberOfRowsException {
-		return getReadyDatabase().getByExample(expectedNumberOfRows, exampleRow);
+		DBDatabase readyDatabase;
+		boolean finished = false;
+		do {
+				readyDatabase = getReadyDatabase();
+			try {
+				return readyDatabase.getByExample(expectedNumberOfRows, exampleRow);
+			} catch (Exception e) {
+				try {
+					handleExceptionDuringQuery(e, readyDatabase);
+				} catch (UnableToRemoveLastDatabaseFromClusterException un) {
+					throw e;
+				}
+			}
+		} while (!finished);
+		return new ArrayList<R>(0);
 	}
 
 	@Override
 	public <R extends DBRow> List<R> get(Long expectedNumberOfRows, R exampleRow) throws SQLException, UnexpectedNumberOfRowsException {
-		return getReadyDatabase().get(expectedNumberOfRows, exampleRow);
+		DBDatabase readyDatabase;
+		boolean finished = false;
+		do {
+				readyDatabase = getReadyDatabase();
+			try {
+				return readyDatabase.get(expectedNumberOfRows, exampleRow);
+			} catch (Exception e) {
+				try {
+					handleExceptionDuringQuery(e, readyDatabase);
+				} catch (UnableToRemoveLastDatabaseFromClusterException un) {
+					throw e;
+				}
+			}
+		} while (!finished);
+		return new ArrayList<R>(0);
 	}
 
 	@Override
 	public <R extends DBRow> List<R> getByExample(R exampleRow) throws SQLException {
-		return getReadyDatabase().getByExample(exampleRow);
+		DBDatabase readyDatabase;
+		boolean finished = false;
+		do {
+				readyDatabase = getReadyDatabase();
+			try {
+				return readyDatabase.getByExample(exampleRow);
+			} catch (Exception e) {
+				try {
+					handleExceptionDuringQuery(e, readyDatabase);
+				} catch (UnableToRemoveLastDatabaseFromClusterException un) {
+					throw e;
+				}
+			}
+		} while (!finished);
+		return new ArrayList<R>(0);
 	}
 
 	@Override
 	public <R extends DBRow> List<R> get(R exampleRow) throws SQLException {
-		return getReadyDatabase().get(exampleRow);
+		DBDatabase readyDatabase;
+		boolean finished = false;
+		do {
+				readyDatabase = getReadyDatabase();
+			try {
+				return readyDatabase.get(exampleRow);
+			} catch (Exception e) {
+				try {
+					handleExceptionDuringQuery(e, readyDatabase);
+				} catch (UnableToRemoveLastDatabaseFromClusterException un) {
+					throw e;
+				}
+			}
+		} while (!finished);
+		return new ArrayList<R>(0);
 	}
 
 	@Override
@@ -516,23 +682,6 @@ public class DBDatabaseCluster extends DBDatabase {
 	protected DBStatement getLowLevelStatement() throws UnableToCreateDatabaseConnectionException, UnableToFindJDBCDriver, SQLException {
 		return clusterStatement;
 	}
-
-//	@Override
-//	public synchronized boolean equals(Object obj) {
-//		if (obj instanceof DBDatabaseCluster) {
-//			DBDatabaseCluster otherDB = (DBDatabaseCluster) obj;
-//			return allDatabases.equals(otherDB.allDatabases)
-//					&& addedDatabases.equals(otherDB.addedDatabases)
-//					&& readyDatabases.equals(otherDB.readyDatabases);
-//		} else {
-//			return false;
-//		}
-//	}
-//
-//	@Override
-//	public int hashCode() {
-//		return super.hashCode();
-//	}
 
 	@Override
 	public DBDatabase clone() throws CloneNotSupportedException {
@@ -551,31 +700,45 @@ public class DBDatabaseCluster extends DBDatabase {
 			synchronizeSecondaryDatabase(db);
 		}
 	}
-
-	private synchronized void commitAll() throws SQLException {
-		for (DBDatabase db : readyDatabases) {
-			db.doCommit();
-		}
-	}
-
-	private synchronized void rollbackAll(Exception exc) throws SQLException {
-		for (DBDatabase db : readyDatabases) {
-			db.doRollback();
-		}
-	}
+//
+//	private synchronized void commitAll() throws SQLException {
+//		for (DBDatabase db : readyDatabases) {
+//			db.doCommit();
+//		}
+//	}
+//
+//	private synchronized void rollbackAll(Exception exc) throws SQLException {
+//		for (DBDatabase db : readyDatabases) {
+//			db.doRollback();
+//		}
+//	}
 
 	@Override
-	public synchronized DBActionList executeDBAction(DBAction action) {
+	public DBActionList executeDBAction(DBAction action) {
 		addActionToQueue(action);
 		List<ActionTask> tasks = new ArrayList<ActionTask>();
 		DBActionList actionsPerformed = new DBActionList();
 		try {
 			DBDatabase readyDatabase = getReadyDatabase();
-			if (action.requiresRunOnIndividualDatabaseBeforeCluster()) {
-				// Because of autoincrement PKs we need to execute on one database first
-				actionsPerformed = new ActionTask(this, readyDatabase, action).call();
-				removeActionFromQueue(readyDatabase, action);
-			}
+			boolean finished = false;
+			do {
+				try {
+					if (action.requiresRunOnIndividualDatabaseBeforeCluster()) {
+						// Because of autoincrement PKs we need to execute on one database first
+						actionsPerformed = new ActionTask(this, readyDatabase, action).call();
+						removeActionFromQueue(readyDatabase, action);
+						finished = true;
+					} else {
+						finished = true;
+					}
+				} catch (Exception e) {
+					try {
+						handleExceptionDuringAction(e, readyDatabase);
+					} catch (UnableToRemoveLastDatabaseFromClusterException lastDB) {
+						throw e;
+					}
+				}
+			} while (!finished && size() > 1);
 			// Now execute on all the other databases
 			for (DBDatabase next : readyDatabases) {
 				if (action.runOnDatabaseDuringCluster(readyDatabase, next)) {
@@ -596,7 +759,7 @@ public class DBDatabaseCluster extends DBDatabase {
 	}
 
 	@Override
-	public synchronized DBQueryable executeDBQuery(DBQueryable query) throws SQLException {
+	public DBQueryable executeDBQuery(DBQueryable query) throws SQLException, UnableToRemoveLastDatabaseFromClusterException {
 		DBQueryable actionsPerformed = query;
 		boolean finished = false;
 		while (!finished) {
@@ -605,14 +768,30 @@ public class DBDatabaseCluster extends DBDatabase {
 				actionsPerformed = readyDatabase.executeDBQuery(query);
 				finished = true;
 			} catch (Exception e) {
-				if (size() == 1) {
+				try {
+					handleExceptionDuringQuery(e, readyDatabase);
+				} catch (UnableToRemoveLastDatabaseFromClusterException lastDB) {
 					throw e;
-				} else {
-					removeDatabases(readyDatabase);
 				}
 			}
 		}
 		return actionsPerformed;
+	}
+
+	private void handleExceptionDuringQuery(Exception e, final DBDatabase readyDatabase) throws UnableToRemoveLastDatabaseFromClusterException {
+		if (size() == 1) {
+			throw new UnableToRemoveLastDatabaseFromClusterException(e);
+		} else {
+			removeDatabases(readyDatabase);
+		}
+	}
+
+	private void handleExceptionDuringAction(Exception e, final DBDatabase readyDatabase) throws UnableToRemoveLastDatabaseFromClusterException {
+		if (size() == 1) {
+			throw new UnableToRemoveLastDatabaseFromClusterException(e);
+		} else {
+			removeDatabases(readyDatabase);
+		}
 	}
 
 	@Override
@@ -752,8 +931,8 @@ public class DBDatabaseCluster extends DBDatabase {
 
 		private final DBDatabase database;
 		private final DBAction action;
-		private final DBActionList actionList = new DBActionList();
 		private final DBDatabaseCluster cluster;
+		private DBActionList actionList = new DBActionList();
 
 		public ActionTask(DBDatabaseCluster cluster, DBDatabase db, DBAction action) {
 			this.cluster = cluster;
@@ -762,24 +941,27 @@ public class DBDatabaseCluster extends DBDatabase {
 		}
 
 		@Override
-		public synchronized DBActionList call() {
+		public DBActionList call() {
 			try {
-				actionList.clear();
-				actionList.addAll(database.executeDBAction(action));
-				return actionList;
+				DBActionList actions = database.executeDBAction(action);
+				setActionList(actions);
+				return getActionList();
 			} catch (Exception e) {
 				cluster.removeDatabases(database);
 				System.out.println("REMOVING DATABASE:" + database.toString());
 				System.out.println("" + e.getLocalizedMessage());
-				e.printStackTrace();
 			}
-			return actionList;
+			return getActionList();
 		}
 
 		public synchronized DBActionList getActionList() {
 			final DBActionList newList = new DBActionList();
 			newList.addAll(actionList);
 			return newList;
+		}
+
+		private synchronized void setActionList(DBActionList actions) {
+			this.actionList = actions;
 		}
 	}
 }

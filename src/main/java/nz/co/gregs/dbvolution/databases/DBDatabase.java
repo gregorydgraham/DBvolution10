@@ -1934,11 +1934,11 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 		explicitCommitActionRequired = b;
 	}
 
-	public synchronized DBActionList executeDBAction(DBAction action) throws SQLException {
+	public DBActionList executeDBAction(DBAction action) throws SQLException {
 		return action.execute(this);
 	}
 
-	public synchronized DBQueryable executeDBQuery(DBQueryable query) throws SQLException {
+	public DBQueryable executeDBQuery(DBQueryable query) throws SQLException {
 		return query.query(this);
 	}
 

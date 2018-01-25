@@ -32,7 +32,9 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import nz.co.gregs.dbvolution.annotations.DBAutoIncrement;
 import nz.co.gregs.dbvolution.annotations.DBColumn;
+import nz.co.gregs.dbvolution.annotations.DBPrimaryKey;
 import nz.co.gregs.dbvolution.annotations.DBRequiredTable;
 import nz.co.gregs.dbvolution.databases.DBDatabaseCluster;
 import nz.co.gregs.dbvolution.databases.H2MemoryDB;
@@ -107,9 +109,9 @@ public class DBDatabaseClusterTest extends AbstractTest {
 	}
 
 	@Test
-	public void testDatabaseRemovedAfterError() throws SQLException {
+	public void testDatabaseRemovedAfterErrorInQuery() throws SQLException {
 		DBDatabaseCluster cluster = new DBDatabaseCluster(database);
-		H2MemoryDB soloDB2 = new H2MemoryDB("DBDatabaseClusterTest2", "who", "what", true);
+		H2MemoryDB soloDB2 = new H2MemoryDB("DBDatabaseClusterTest3", "who", "what", true);
 		cluster.addDatabase(soloDB2);
 		
 		DBQuery query = cluster.getDBQuery(new Marque());
@@ -117,7 +119,66 @@ public class DBDatabaseClusterTest extends AbstractTest {
 		try{
 			List<DBQueryRow> allRows = query.getAllRows();
 		}catch(Exception e){
-			e.printStackTrace();
+//			System.out.println(""+e.getClass().getSimpleName());
+//			e.printStackTrace();
+			// nothing to do here
+		}
+		Assert.assertThat(cluster.size(), is(1));
+
+	}
+
+	@Test
+	public void testDatabaseRemovedAfterErrorInDelete() throws SQLException {
+		DBDatabaseCluster cluster = new DBDatabaseCluster(database);
+		H2MemoryDB soloDB2 = new H2MemoryDB("DBDatabaseClusterTest4", "who", "what", true);
+		cluster.addDatabase(soloDB2);
+		final TableThatDoesntExistOnTheCluster tab = new TableThatDoesntExistOnTheCluster();
+		tab.pkid.permittedValues(1);
+		try{
+			cluster.delete(tab);
+		}catch(Exception e){
+//			System.out.println(""+e.getClass().getSimpleName());
+//			e.printStackTrace();
+			// nothing to do here
+		}
+		Assert.assertThat(cluster.size(), is(1));
+
+	}
+
+	@Test
+	public void testDatabaseRemovedAfterErrorInInsert() throws SQLException {
+		DBDatabaseCluster cluster = new DBDatabaseCluster(database);
+		H2MemoryDB soloDB2 = new H2MemoryDB("DBDatabaseClusterTest4", "who", "what", true);
+		cluster.addDatabase(soloDB2);
+		Assert.assertThat(cluster.size(), is(2));
+		final TableThatDoesntExistOnTheCluster tab = new TableThatDoesntExistOnTheCluster();
+		tab.pkid.setValue(1);
+		try{
+			cluster.insert(tab);
+		}catch(Exception e){
+//			System.out.println(""+e.getClass().getSimpleName());
+//			e.printStackTrace();
+			// nothing to do here
+		}
+		Assert.assertThat(cluster.size(), is(1));
+
+	}
+
+	@Test
+	public void testDatabaseRemovedAfterErrorInUpdate() throws SQLException {
+		DBDatabaseCluster cluster = new DBDatabaseCluster(database);
+		H2MemoryDB soloDB2 = new H2MemoryDB("DBDatabaseClusterTest4", "who", "what", true);
+		cluster.addDatabase(soloDB2);
+		Assert.assertThat(cluster.size(), is(2));
+		final TableThatDoesntExistOnTheCluster tab = new TableThatDoesntExistOnTheCluster();
+		tab.pkid.setValue(1);
+		tab.setDefined();//naughty, but needed otherwise the update won't be generated
+		tab.pkid.setValue(2);
+		try{
+			cluster.update(tab);
+		}catch(Exception e){
+//			System.out.println(""+e.getClass().getSimpleName());
+//			e.printStackTrace();
 			// nothing to do here
 		}
 		Assert.assertThat(cluster.size(), is(1));
@@ -201,6 +262,14 @@ public class DBDatabaseClusterTest extends AbstractTest {
 			this.carCompany.setValue(carCompany);
 			this.enabled.setValue(enabled);
 		}
+	}
+	
+	public static class TableThatDoesntExistOnTheCluster extends DBRow{
+		
+		@DBColumn
+		@DBPrimaryKey
+		@DBAutoIncrement
+		public DBInteger pkid = new DBInteger();
 	}
 
 }
