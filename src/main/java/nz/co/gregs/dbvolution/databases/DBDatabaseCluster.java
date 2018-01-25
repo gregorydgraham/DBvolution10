@@ -98,9 +98,9 @@ import nz.co.gregs.dbvolution.transactions.DBTransaction;
  * @author gregorygraham
  */
 public class DBDatabaseCluster extends DBDatabase {
-	
+
 	private static final long serialVersionUID = 1l;
-	
+
 	private final List<DBDatabase> allDatabases = Collections.synchronizedList(new ArrayList<DBDatabase>(0));
 	private final List<DBDatabase> addedDatabases = Collections.synchronizedList(new ArrayList<DBDatabase>(0));
 	private final List<DBDatabase> readyDatabases = Collections.synchronizedList(new ArrayList<DBDatabase>(0));
@@ -108,7 +108,7 @@ public class DBDatabaseCluster extends DBDatabase {
 	private transient final DBStatementCluster clusterStatement;
 	private final Map<DBDatabase, Queue<DBAction>> queuedActions;
 	private transient final ExecutorService threadPool;
-	
+
 	public DBDatabaseCluster() throws SQLException {
 		super();
 		clusterStatement = new DBStatementCluster(this);
@@ -116,7 +116,7 @@ public class DBDatabaseCluster extends DBDatabase {
 		queuedActions = Collections.synchronizedMap(new HashMap<DBDatabase, Queue<DBAction>>(0));
 		threadPool = Executors.newCachedThreadPool();
 	}
-	
+
 	public DBDatabaseCluster(DBDatabase... databases) throws SQLException {
 		this();
 		setDefinition(new ClusterDatabaseDefinition());
@@ -153,7 +153,7 @@ public class DBDatabaseCluster extends DBDatabase {
 		synchronizeAddedDatabases();
 		return add;
 	}
-	
+
 	public synchronized DBDatabase[] getDatabases() {
 		return readyDatabases.toArray(new DBDatabase[]{});
 	}
@@ -206,8 +206,13 @@ public class DBDatabaseCluster extends DBDatabase {
 	 */
 	public synchronized boolean removeDatabases(DBDatabase... databases) {
 		for (DBDatabase database : databases) {
-			queuedActions.remove(database);
-			allDatabases.remove(database);
+			if (readyDatabases.size() == 1 && readyDatabases.get(0).equals(database)) {
+				// Unable to remove the only remaining database
+			} else {
+				queuedActions.remove(database);
+				allDatabases.remove(database);
+				readyDatabases.remove(database);
+			}
 		}
 		return true;
 	}
@@ -222,68 +227,68 @@ public class DBDatabaseCluster extends DBDatabase {
 		DBDatabase randomElement = readyDatabases.get(rand.nextInt(readyDatabases.size()));
 		return randomElement;
 	}
-	
+
 	@Override
 	public void addFeatureToFixException(Exception exp) throws Exception {
 		throw new UnsupportedOperationException("DBDatabase.addFeatureToFixException(Exception) should not be called");
 	}
-	
+
 	@Override
 	protected void addDatabaseSpecificFeatures(Statement statement) throws SQLException {
 		throw new UnsupportedOperationException("DBDatabase.addDatabaseSpecificFeatures(Statement) should not be called");
 	}
-	
+
 	@Override
 	public synchronized void discardConnection(Connection connection) {
 		throw new UnsupportedOperationException("DBDatabase.discardConnection() should not be called");
 	}
-	
+
 	@Override
 	public synchronized void unusedConnection(Connection connection) throws SQLException {
 		throw new UnsupportedOperationException("DBDatabase.unusedConnection() should not be called");
 	}
-	
+
 	@Override
 	public Connection getConnectionFromDriverManager() throws SQLException {
 		throw new UnsupportedOperationException("DBDatabase.getConnectionFromDriverManager() should not be called");
 	}
-	
+
 	@Override
 	public <A extends DBReport> List<A> getRows(A report, DBRow... examples) throws SQLException {
 		return getReadyDatabase().getRows(report, examples);
 	}
-	
+
 	@Override
 	public <A extends DBReport> List<A> getAllRows(A report, DBRow... examples) throws SQLException {
 		return getReadyDatabase().getAllRows(report, examples);
 	}
-	
+
 	@Override
 	public <A extends DBReport> List<A> get(A report, DBRow... examples) throws SQLException {
 		return getReadyDatabase().get(report, examples);
 	}
-	
+
 	@Override
 	public synchronized void preventDroppingOfDatabases(boolean justLeaveThisAtTrue) {
 		for (DBDatabase next : readyDatabases) {
 			next.preventDroppingOfDatabases(justLeaveThisAtTrue);
 		}
 	}
-	
+
 	@Override
 	public synchronized void preventDroppingOfTables(boolean droppingTablesIsAMistake) {
 		for (DBDatabase next : readyDatabases) {
 			next.preventDroppingOfTables(droppingTablesIsAMistake);
 		}
 	}
-	
+
 	@Override
 	public synchronized void setBatchSQLStatementsWhenPossible(boolean batchSQLStatementsWhenPossible) {
 		for (DBDatabase next : readyDatabases) {
 			next.setBatchSQLStatementsWhenPossible(batchSQLStatementsWhenPossible);
 		}
 	}
-	
+
 	@Override
 	public synchronized boolean batchSQLStatementsWhenPossible() {
 		boolean result = true;
@@ -292,120 +297,120 @@ public class DBDatabaseCluster extends DBDatabase {
 		}
 		return result;
 	}
-	
+
 	@Override
 	public synchronized void dropDatabase(String databaseName, boolean doIt) throws Exception, UnsupportedOperationException, AutoCommitActionDuringTransactionException {
 		for (DBDatabase next : readyDatabases) {
 			next.dropDatabase(databaseName, doIt);
 		}
 	}
-	
+
 	@Override
 	public synchronized void dropDatabase(boolean doIt) throws Exception, UnsupportedOperationException, AutoCommitActionDuringTransactionException {
 		for (DBDatabase next : readyDatabases) {
 			next.dropDatabase(doIt);
 		}
 	}
-	
+
 	@Override
 	public boolean willCreateBlankQuery(DBRow row) {
 		return getReadyDatabase().willCreateBlankQuery(row);
 	}
-	
+
 	@Override
 	public synchronized <TR extends DBRow> void dropTableNoExceptions(TR tableRow) throws AccidentalDroppingOfTableException, AutoCommitActionDuringTransactionException {
 		for (DBDatabase next : readyDatabases) {
 			next.dropTableNoExceptions(tableRow);
 		}
 	}
-	
+
 	@Override
 	public synchronized void dropTable(DBRow tableRow) throws SQLException, AutoCommitActionDuringTransactionException, AccidentalDroppingOfTableException {
 		for (DBDatabase next : readyDatabases) {
 			next.dropTable(tableRow);
 		}
 	}
-	
+
 	@Override
 	public synchronized void createIndexesOnAllFields(DBRow newTableRow) throws SQLException {
 		for (DBDatabase next : readyDatabases) {
 			next.createIndexesOnAllFields(newTableRow);
 		}
 	}
-	
+
 	@Override
 	public synchronized void removeForeignKeyConstraints(DBRow newTableRow) throws SQLException {
 		for (DBDatabase next : readyDatabases) {
 			next.removeForeignKeyConstraints(newTableRow);
 		}
 	}
-	
+
 	@Override
 	public synchronized void createForeignKeyConstraints(DBRow newTableRow) throws SQLException {
 		for (DBDatabase next : readyDatabases) {
 			next.createForeignKeyConstraints(newTableRow);
 		}
 	}
-	
+
 	@Override
 	public synchronized void createTableWithForeignKeys(DBRow newTableRow) throws SQLException, AutoCommitActionDuringTransactionException {
 		for (DBDatabase next : readyDatabases) {
 			next.createTableWithForeignKeys(newTableRow);
 		}
 	}
-	
+
 	@Override
 	public synchronized void createTable(DBRow newTableRow) throws SQLException, AutoCommitActionDuringTransactionException {
 		for (DBDatabase next : readyDatabases) {
 			next.createTable(newTableRow);
 		}
 	}
-	
+
 	@Override
 	public synchronized void createTablesWithForeignKeysNoExceptions(DBRow... newTables) {
 		for (DBDatabase next : readyDatabases) {
 			next.createTablesWithForeignKeysNoExceptions(newTables);
 		}
 	}
-	
+
 	@Override
 	public synchronized void createTablesNoExceptions(DBRow... newTables) {
 		for (DBDatabase next : readyDatabases) {
 			next.createTablesNoExceptions(newTables);
 		}
 	}
-	
+
 	@Override
 	public synchronized void createTablesNoExceptions(boolean includeForeignKeyClauses, DBRow... newTables) {
 		for (DBDatabase next : readyDatabases) {
 			next.createTablesNoExceptions(includeForeignKeyClauses, newTables);
 		}
 	}
-	
+
 	@Override
 	public synchronized void createTableNoExceptions(DBRow newTable) throws AutoCommitActionDuringTransactionException {
 		for (DBDatabase next : readyDatabases) {
 			next.createTableNoExceptions(newTable);
 		}
 	}
-	
+
 	@Override
 	public synchronized void createTableNoExceptions(boolean includeForeignKeyClauses, DBRow newTable) throws AutoCommitActionDuringTransactionException {
 		for (DBDatabase next : readyDatabases) {
 			next.createTableNoExceptions(includeForeignKeyClauses, newTable);
 		}
 	}
-	
+
 	@Override
 	public DBActionList test(DBScript script) throws Exception {
 		return getReadyDatabase().test(script);
 	}
-	
+
 	@Override
 	public <V> V doReadOnlyTransaction(DBTransaction<V> dbTransaction) throws SQLException, Exception {
 		return getReadyDatabase().doReadOnlyTransaction(dbTransaction);
 	}
-	
+
 	@Override
 	public synchronized <V> V doTransaction(DBTransaction<V> dbTransaction, Boolean commit) throws SQLException, Exception {
 		V result = null;
@@ -444,7 +449,7 @@ public class DBDatabaseCluster extends DBDatabase {
 				} finally {
 				}
 				result = returnValues;
-				
+
 			}
 		} catch (Exception exc) {
 			rollbackAll = true;
@@ -466,74 +471,74 @@ public class DBDatabaseCluster extends DBDatabase {
 		}
 		return result;
 	}
-	
+
 	@Override
 	public List<DBQueryRow> get(Long expectedNumberOfRows, DBRow... rows) throws SQLException, UnexpectedNumberOfRowsException {
 		return getReadyDatabase().get(expectedNumberOfRows, rows);
 	}
-	
+
 	@Override
 	public List<DBQueryRow> getByExamples(DBRow... rows) throws SQLException {
 		return getReadyDatabase().getByExamples(rows);
 	}
-	
+
 	@Override
 	public List<DBQueryRow> get(DBRow... rows) throws SQLException {
 		return getReadyDatabase().get(rows);
 	}
-	
+
 	@Override
 	public <R extends DBRow> List<R> getByExample(Long expectedNumberOfRows, R exampleRow) throws SQLException, UnexpectedNumberOfRowsException {
 		return getReadyDatabase().getByExample(expectedNumberOfRows, exampleRow);
 	}
-	
+
 	@Override
 	public <R extends DBRow> List<R> get(Long expectedNumberOfRows, R exampleRow) throws SQLException, UnexpectedNumberOfRowsException {
 		return getReadyDatabase().get(expectedNumberOfRows, exampleRow);
 	}
-	
+
 	@Override
 	public <R extends DBRow> List<R> getByExample(R exampleRow) throws SQLException {
 		return getReadyDatabase().getByExample(exampleRow);
 	}
-	
+
 	@Override
 	public <R extends DBRow> List<R> get(R exampleRow) throws SQLException {
 		return getReadyDatabase().get(exampleRow);
 	}
-	
+
 	@Override
 	public Connection getConnection() throws UnableToCreateDatabaseConnectionException, UnableToFindJDBCDriver, SQLException {
 		throw new UnsupportedOperationException("DBDatabase.getConnection should not be used.");
 	}
-	
+
 	@Override
 	protected DBStatement getLowLevelStatement() throws UnableToCreateDatabaseConnectionException, UnableToFindJDBCDriver, SQLException {
 		return clusterStatement;
 	}
-	
-	@Override
-	public synchronized boolean equals(Object obj) {
-		if (obj instanceof DBDatabaseCluster) {
-			DBDatabaseCluster otherDB = (DBDatabaseCluster) obj;
-			return allDatabases.equals(otherDB.allDatabases)
-					&& addedDatabases.equals(otherDB.addedDatabases)
-					&& readyDatabases.equals(otherDB.readyDatabases);
-		} else {
-			return false;
-		}
-	}
-	
-	@Override
-	public int hashCode() {
-		return super.hashCode();
-	}
-	
+
+//	@Override
+//	public synchronized boolean equals(Object obj) {
+//		if (obj instanceof DBDatabaseCluster) {
+//			DBDatabaseCluster otherDB = (DBDatabaseCluster) obj;
+//			return allDatabases.equals(otherDB.allDatabases)
+//					&& addedDatabases.equals(otherDB.addedDatabases)
+//					&& readyDatabases.equals(otherDB.readyDatabases);
+//		} else {
+//			return false;
+//		}
+//	}
+//
+//	@Override
+//	public int hashCode() {
+//		return super.hashCode();
+//	}
+
 	@Override
 	public DBDatabase clone() throws CloneNotSupportedException {
 		return super.clone();
 	}
-	
+
 	private void synchronizeSecondaryDatabases() throws SQLException {
 		DBDatabase[] addedDBs;
 		synchronized (addedDatabases) {
@@ -546,19 +551,19 @@ public class DBDatabaseCluster extends DBDatabase {
 			synchronizeSecondaryDatabase(db);
 		}
 	}
-	
+
 	private synchronized void commitAll() throws SQLException {
 		for (DBDatabase db : readyDatabases) {
 			db.doCommit();
 		}
 	}
-	
+
 	private synchronized void rollbackAll(Exception exc) throws SQLException {
 		for (DBDatabase db : readyDatabases) {
 			db.doRollback();
 		}
 	}
-	
+
 	@Override
 	public synchronized DBActionList executeDBAction(DBAction action) {
 		addActionToQueue(action);
@@ -566,10 +571,11 @@ public class DBDatabaseCluster extends DBDatabase {
 		DBActionList actionsPerformed = new DBActionList();
 		try {
 			DBDatabase readyDatabase = getReadyDatabase();
-			if (action.requiresRunOnIndividualDatabaseBeforeCluster()){
-			// Because of autoincrement PKs we need to execute on one database first
-			actionsPerformed = new ActionTask(this, readyDatabase, action).call();
-			removeActionFromQueue(readyDatabase, action);}
+			if (action.requiresRunOnIndividualDatabaseBeforeCluster()) {
+				// Because of autoincrement PKs we need to execute on one database first
+				actionsPerformed = new ActionTask(this, readyDatabase, action).call();
+				removeActionFromQueue(readyDatabase, action);
+			}
 			// Now execute on all the other databases
 			for (DBDatabase next : readyDatabases) {
 				if (action.runOnDatabaseDuringCluster(readyDatabase, next)) {
@@ -583,24 +589,37 @@ public class DBDatabaseCluster extends DBDatabase {
 			Logger.getLogger(DBDatabaseCluster.class.getName()).log(Level.SEVERE, null, ex);
 			throw new DBRuntimeException("Unable To Run Actions", ex);
 		}
-		if(actionsPerformed.isEmpty()){
+		if (actionsPerformed.isEmpty()) {
 			actionsPerformed = tasks.get(0).getActionList();
 		}
 		return actionsPerformed;
 	}
-	
+
 	@Override
 	public synchronized DBQueryable executeDBQuery(DBQueryable query) throws SQLException {
-		final DBDatabase readyDatabase = getReadyDatabase();
-		DBQueryable actionsPerformed = readyDatabase.executeDBQuery(query);
+		DBQueryable actionsPerformed = query;
+		boolean finished = false;
+		while (!finished) {
+			final DBDatabase readyDatabase = getReadyDatabase();
+			try {
+				actionsPerformed = readyDatabase.executeDBQuery(query);
+				finished = true;
+			} catch (Exception e) {
+				if (size() == 1) {
+					throw e;
+				} else {
+					removeDatabases(readyDatabase);
+				}
+			}
+		}
 		return actionsPerformed;
 	}
-	
+
 	@Override
 	public String getSQLForDBQuery(DBQueryable query) {
 		return this.getReadyDatabase().getSQLForDBQuery(query);
 	}
-	
+
 	synchronized ArrayList<DBStatement> getDBStatements() throws SQLException {
 		ArrayList<DBStatement> arrayList = new ArrayList<>();
 		for (DBDatabase db : readyDatabases) {
@@ -608,12 +627,12 @@ public class DBDatabaseCluster extends DBDatabase {
 		}
 		return arrayList;
 	}
-	
+
 	@Override
 	public DBDefinition getDefinition() {
 		return getReadyDatabase().getDefinition();
 	}
-	
+
 	public synchronized DBDatabase getPrimaryDatabase() {
 		if (readyDatabases.size() > 0) {
 			return readyDatabases.get(0);
@@ -621,27 +640,27 @@ public class DBDatabaseCluster extends DBDatabase {
 			return allDatabases.get(0);
 		}
 	}
-	
+
 	@Override
 	public synchronized void setPrintSQLBeforeExecuting(boolean b) {
 		for (DBDatabase db : allDatabases) {
 			db.setPrintSQLBeforeExecuting(b);
 		}
 	}
-	
+
 	private synchronized void addActionToQueue(DBAction action) {
 		for (DBDatabase db : allDatabases) {
 			queuedActions.get(db).add(action);
 		}
 	}
-	
+
 	private synchronized void removeActionFromQueue(DBDatabase database, DBAction action) {
 		final Queue<DBAction> db = queuedActions.get(database);
 		if (db != null) {
 			db.remove(action);
 		}
 	}
-	
+
 	private synchronized void synchronizeSecondaryDatabase(DBDatabase secondary) throws SQLException {
 
 		// Get some sort of lock
@@ -685,7 +704,7 @@ public class DBDatabaseCluster extends DBDatabase {
 		secondary.setExplicitCommitAction(true);
 		readyDatabases.add(secondary);
 	}
-	
+
 	private synchronized void synchronizeActions(DBDatabase db) throws SQLException {
 		Queue<DBAction> queue = queuedActions.get(db);
 		while (!queue.isEmpty()) {
@@ -693,13 +712,13 @@ public class DBDatabaseCluster extends DBDatabase {
 			db.executeDBAction(action);
 		}
 	}
-	
+
 	private synchronized void synchronizeAddedDatabases() throws SQLException {
 		for (DBDatabase addedDatabase : addedDatabases) {
 			synchronizeSecondaryDatabase(addedDatabase);
 		}
 	}
-	
+
 	@Override
 	public synchronized boolean tableExists(DBRow table) throws SQLException {
 		boolean tableExists = true;
@@ -709,40 +728,58 @@ public class DBDatabaseCluster extends DBDatabase {
 		}
 		return tableExists;
 	}
-	
+
+	/**
+	 * Returns the number of ready databases.
+	 *
+	 * <p>
+	 * The size of the cluster is dynamic as databases are added, removed, and
+	 * synchronized but this method returns the size of the cluster in terms of
+	 * active databases at this point in time.</p>
+	 *
+	 * <ul>
+	 * <li>DBDatabaseClusters within this cluster count as 1 database each.</li>
+	 * <li>Unsynchronized databases are not counted by this method.</li>
+	 * </ul>.
+	 *
+	 * @return the number of ready database.
+	 */
+	public synchronized int size() {
+		return readyDatabases.size();
+	}
+
 	private static class ActionTask implements Callable<DBActionList> {
-		
+
 		private final DBDatabase database;
 		private final DBAction action;
 		private final DBActionList actionList = new DBActionList();
 		private final DBDatabaseCluster cluster;
-		
+
 		public ActionTask(DBDatabaseCluster cluster, DBDatabase db, DBAction action) {
 			this.cluster = cluster;
 			this.database = db;
 			this.action = action;
 		}
-		
+
 		@Override
 		public synchronized DBActionList call() {
 			try {
-			actionList.clear();
-			actionList.addAll(database.executeDBAction(action));
-			return actionList;				
+				actionList.clear();
+				actionList.addAll(database.executeDBAction(action));
+				return actionList;
 			} catch (Exception e) {
 				cluster.removeDatabases(database);
-				System.out.println("REMOVING DATABASE:"+database.toString());
-				System.out.println(""+e.getLocalizedMessage());
+				System.out.println("REMOVING DATABASE:" + database.toString());
+				System.out.println("" + e.getLocalizedMessage());
 				e.printStackTrace();
 			}
 			return actionList;
 		}
-		
+
 		public synchronized DBActionList getActionList() {
 			final DBActionList newList = new DBActionList();
 			newList.addAll(actionList);
 			return newList;
 		}
 	}
-	
 }

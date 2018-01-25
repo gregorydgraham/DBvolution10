@@ -41,6 +41,7 @@ import nz.co.gregs.dbvolution.datatypes.DBDate;
 import nz.co.gregs.dbvolution.datatypes.DBInteger;
 import nz.co.gregs.dbvolution.datatypes.DBNumber;
 import nz.co.gregs.dbvolution.datatypes.DBString;
+import nz.co.gregs.dbvolution.example.Marque;
 import nz.co.gregs.dbvolution.generic.AbstractTest;
 import static org.hamcrest.Matchers.*;
 import org.junit.Assert;
@@ -64,7 +65,7 @@ public class DBDatabaseClusterTest extends AbstractTest {
 
 		DBDatabaseCluster cluster = new DBDatabaseCluster(database);
 		Assert.assertTrue(cluster.tableExists(testTable));
-		
+
 		cluster.delete(cluster
 				.getDBTable(testTable)
 				.setBlankQueryAllowed(true)
@@ -88,21 +89,39 @@ public class DBDatabaseClusterTest extends AbstractTest {
 		Assert.assertThat(soloDB2.getDBTable(testTable).count(), is(0l));
 
 		cluster.addDatabase(soloDB2);
-		
+
 		Assert.assertThat(soloDB2.getDBTable(testTable).count(), is(22l));
 
 		cluster.delete(cluster.getDBTable(testTable)
-						.setBlankQueryAllowed(true)
-						.getAllRows()
+				.setBlankQueryAllowed(true)
+				.getAllRows()
 		);
 
 		Assert.assertThat(cluster.getDBTable(testTable).count(), is(0l));
 		Assert.assertThat(cluster.getDBTable(testTable).count(), is(0l));
 		Assert.assertThat(cluster.getDBTable(testTable).count(), is(0l));
 		Assert.assertThat(cluster.getDBTable(testTable).count(), is(0l));
-		
+
 		Assert.assertThat(soloDB.getDBTable(testTable).count(), is(0l));
 		Assert.assertThat(soloDB2.getDBTable(testTable).count(), is(0l));
+	}
+
+	@Test
+	public void testDatabaseRemovedAfterError() throws SQLException {
+		DBDatabaseCluster cluster = new DBDatabaseCluster(database);
+		H2MemoryDB soloDB2 = new H2MemoryDB("DBDatabaseClusterTest2", "who", "what", true);
+		cluster.addDatabase(soloDB2);
+		
+		DBQuery query = cluster.getDBQuery(new Marque());
+		query.setRawSQL("blart = norn");
+		try{
+			List<DBQueryRow> allRows = query.getAllRows();
+		}catch(Exception e){
+			e.printStackTrace();
+			// nothing to do here
+		}
+		Assert.assertThat(cluster.size(), is(1));
+
 	}
 
 	private List<DBDatabaseClusterTestTable> createData(Date firstDate, Date secondDate) {
