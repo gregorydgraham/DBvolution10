@@ -44,6 +44,10 @@ import nz.co.gregs.dbvolution.datatypes.DBInteger;
 import nz.co.gregs.dbvolution.datatypes.DBNumber;
 import nz.co.gregs.dbvolution.datatypes.DBString;
 import nz.co.gregs.dbvolution.example.Marque;
+import nz.co.gregs.dbvolution.exceptions.AccidentalBlankQueryException;
+import nz.co.gregs.dbvolution.exceptions.AccidentalCartesianJoinException;
+import nz.co.gregs.dbvolution.exceptions.AccidentalDroppingOfTableException;
+import nz.co.gregs.dbvolution.exceptions.AutoCommitActionDuringTransactionException;
 import nz.co.gregs.dbvolution.generic.AbstractTest;
 import static org.hamcrest.Matchers.*;
 import org.junit.Assert;
@@ -118,10 +122,7 @@ public class DBDatabaseClusterTest extends AbstractTest {
 		query.setRawSQL("blart = norn");
 		try{
 			List<DBQueryRow> allRows = query.getAllRows();
-		}catch(Exception e){
-//			System.out.println(""+e.getClass().getSimpleName());
-//			e.printStackTrace();
-			// nothing to do here
+		}catch(SQLException | AccidentalBlankQueryException | AccidentalCartesianJoinException e){
 		}
 		Assert.assertThat(cluster.size(), is(1));
 
@@ -136,10 +137,7 @@ public class DBDatabaseClusterTest extends AbstractTest {
 		tab.pkid.permittedValues(1);
 		try{
 			cluster.delete(tab);
-		}catch(Exception e){
-//			System.out.println(""+e.getClass().getSimpleName());
-//			e.printStackTrace();
-			// nothing to do here
+		}catch(SQLException e){
 		}
 		Assert.assertThat(cluster.size(), is(1));
 
@@ -155,10 +153,7 @@ public class DBDatabaseClusterTest extends AbstractTest {
 		tab.pkid.setValue(1);
 		try{
 			cluster.insert(tab);
-		}catch(Exception e){
-//			System.out.println(""+e.getClass().getSimpleName());
-//			e.printStackTrace();
-			// nothing to do here
+		}catch(SQLException e){
 		}
 		Assert.assertThat(cluster.size(), is(1));
 
@@ -176,13 +171,36 @@ public class DBDatabaseClusterTest extends AbstractTest {
 		tab.pkid.setValue(2);
 		try{
 			cluster.update(tab);
-		}catch(Exception e){
-//			System.out.println(""+e.getClass().getSimpleName());
-//			e.printStackTrace();
-			// nothing to do here
+		}catch(SQLException e){
 		}
 		Assert.assertThat(cluster.size(), is(1));
+	}
 
+	@Test
+	public void testDatabaseRemovedAfterErrorInDropTable() throws SQLException {
+		DBDatabaseCluster cluster = new DBDatabaseCluster(database);
+		H2MemoryDB soloDB2 = new H2MemoryDB("DBDatabaseClusterTest5", "who", "what", true);
+		cluster.addDatabase(soloDB2);
+		Assert.assertThat(cluster.size(), is(2));
+		try{
+			cluster.dropTable(new TableThatDoesntExistOnTheCluster());
+		}catch(SQLException | AccidentalDroppingOfTableException | AutoCommitActionDuringTransactionException e){
+		}
+		Assert.assertThat(cluster.size(), is(1));
+	}
+
+
+	@Test
+	public void testDatabaseRemovedAfterErrorInCreateTable() throws SQLException {
+		DBDatabaseCluster cluster = new DBDatabaseCluster(database);
+		H2MemoryDB soloDB2 = new H2MemoryDB("DBDatabaseClusterTest6", "who", "what", true);
+		cluster.addDatabase(soloDB2);
+		Assert.assertThat(cluster.size(), is(2));
+		try{
+			cluster.createTable(new TableThatDoesExistOnTheCluster());
+		}catch(SQLException | AutoCommitActionDuringTransactionException e){
+		}
+		Assert.assertThat(cluster.size(), is(1));
 	}
 
 	private List<DBDatabaseClusterTestTable> createData(Date firstDate, Date secondDate) {
@@ -265,6 +283,15 @@ public class DBDatabaseClusterTest extends AbstractTest {
 	}
 	
 	public static class TableThatDoesntExistOnTheCluster extends DBRow{
+		
+		@DBColumn
+		@DBPrimaryKey
+		@DBAutoIncrement
+		public DBInteger pkid = new DBInteger();
+	}
+	
+	@DBRequiredTable
+	public static class TableThatDoesExistOnTheCluster extends DBRow{
 		
 		@DBColumn
 		@DBPrimaryKey

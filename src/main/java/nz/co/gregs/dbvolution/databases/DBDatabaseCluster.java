@@ -156,7 +156,19 @@ public class DBDatabaseCluster extends DBDatabase {
 	}
 
 	public synchronized DBDatabase[] getDatabases() {
-		return readyDatabases.toArray(new DBDatabase[]{});
+		return allDatabases.toArray(new DBDatabase[]{});
+	}
+
+	public synchronized DatabaseStatus getDatabaseStatus(DBDatabase db) {
+		if (readyDatabases.contains(db)) {
+			return DatabaseStatus.READY;
+		} else if (addedDatabases.contains(db)) {
+			return DatabaseStatus.ADDED;
+		} else if (allDatabases.contains(db)) {
+			return DatabaseStatus.SYNCHRONISED;
+		} else {
+			return DatabaseStatus.UNKNOWN;
+		}
 	}
 
 	/**
@@ -180,7 +192,7 @@ public class DBDatabaseCluster extends DBDatabase {
 	 * @throws UnsupportedOperationException if the <tt>remove</tt> operation is
 	 * not supported by this list
 	 */
-	public synchronized boolean removeDatabases(List<DBDatabase> databases) {
+	public synchronized boolean removeDatabases(List<DBDatabase> databases) throws UnableToRemoveLastDatabaseFromClusterException{
 		return removeDatabases(databases.toArray(new DBDatabase[]{}));
 	}
 
@@ -205,7 +217,7 @@ public class DBDatabaseCluster extends DBDatabase {
 	 * @throws UnsupportedOperationException if the <tt>remove</tt> operation is
 	 * not supported by this list
 	 */
-	public synchronized boolean removeDatabases(DBDatabase... databases) {
+	public synchronized boolean removeDatabases(DBDatabase... databases) throws UnableToRemoveLastDatabaseFromClusterException{
 		for (DBDatabase database : databases) {
 			removeDatabase(database);
 		}
@@ -233,9 +245,10 @@ public class DBDatabaseCluster extends DBDatabase {
 	 * @throws UnsupportedOperationException if the <tt>remove</tt> operation is
 	 * not supported by this list
 	 */
-	public synchronized boolean removeDatabase(DBDatabase database) {
+	public synchronized boolean removeDatabase(DBDatabase database) throws UnableToRemoveLastDatabaseFromClusterException {
 		if (readyDatabases.size() == 1 && readyDatabases.get(0).equals(database)) {
 			// Unable to remove the only remaining database
+			throw new UnableToRemoveLastDatabaseFromClusterException();
 		} else {
 			queuedActions.remove(database);
 			allDatabases.remove(database);
@@ -251,7 +264,8 @@ public class DBDatabaseCluster extends DBDatabase {
 	 */
 	public synchronized DBDatabase getReadyDatabase() {
 		Random rand = new Random();
-		DBDatabase randomElement = readyDatabases.get(rand.nextInt(readyDatabases.size()));
+		DBDatabase[] dbs = getReadyDatabases();
+		DBDatabase randomElement = dbs[rand.nextInt(dbs.length)];
 		return randomElement;
 	}
 
@@ -282,21 +296,24 @@ public class DBDatabaseCluster extends DBDatabase {
 
 	@Override
 	public synchronized void preventDroppingOfDatabases(boolean justLeaveThisAtTrue) {
-		for (DBDatabase next : readyDatabases) {
+		DBDatabase[] dbs = getReadyDatabases();
+		for (DBDatabase next : dbs) {
 			next.preventDroppingOfDatabases(justLeaveThisAtTrue);
 		}
 	}
 
 	@Override
 	public synchronized void preventDroppingOfTables(boolean droppingTablesIsAMistake) {
-		for (DBDatabase next : readyDatabases) {
+		DBDatabase[] dbs = getReadyDatabases();
+		for (DBDatabase next : dbs) {
 			next.preventDroppingOfTables(droppingTablesIsAMistake);
 		}
 	}
 
 	@Override
 	public synchronized void setBatchSQLStatementsWhenPossible(boolean batchSQLStatementsWhenPossible) {
-		for (DBDatabase next : readyDatabases) {
+		DBDatabase[] dbs = getReadyDatabases();
+		for (DBDatabase next : dbs) {
 			next.setBatchSQLStatementsWhenPossible(batchSQLStatementsWhenPossible);
 		}
 	}
@@ -304,7 +321,8 @@ public class DBDatabaseCluster extends DBDatabase {
 	@Override
 	public synchronized boolean batchSQLStatementsWhenPossible() {
 		boolean result = true;
-		for (DBDatabase next : readyDatabases) {
+		DBDatabase[] dbs = getReadyDatabases();
+		for (DBDatabase next : dbs) {
 			result &= next.batchSQLStatementsWhenPossible();
 		}
 		return result;
@@ -312,16 +330,42 @@ public class DBDatabaseCluster extends DBDatabase {
 
 	@Override
 	public synchronized void dropDatabase(String databaseName, boolean doIt) throws Exception, UnsupportedOperationException, AutoCommitActionDuringTransactionException {
-		for (DBDatabase next : readyDatabases) {
-			next.dropDatabase(databaseName, doIt);
-		}
+		boolean finished = false;
+		do {
+			DBDatabase[] dbs = getReadyDatabases();
+			for (DBDatabase next : dbs) {
+				try {
+					next.dropDatabase(databaseName, doIt);
+					finished = true;
+				} catch (Exception e) {
+//					try {
+						handleExceptionDuringQuery(e, next);
+//					} catch (UnableToRemoveLastDatabaseFromClusterException un) {
+//						throw e;
+//					}
+				}
+			}
+		} while (!finished);
 	}
 
 	@Override
 	public synchronized void dropDatabase(boolean doIt) throws Exception, UnsupportedOperationException, AutoCommitActionDuringTransactionException {
-		for (DBDatabase next : readyDatabases) {
-			next.dropDatabase(doIt);
-		}
+		boolean finished = false;
+		do {
+			DBDatabase[] dbs = getReadyDatabases();
+			for (DBDatabase next : dbs) {
+				try {
+					next.dropDatabase(doIt);
+					finished = true;
+				} catch (Exception e) {
+//					try {
+						handleExceptionDuringQuery(e, next);
+//					} catch (UnableToRemoveLastDatabaseFromClusterException un) {
+//						throw e;
+//					}
+				}
+			}
+		} while (!finished);
 	}
 
 	@Override
@@ -331,85 +375,251 @@ public class DBDatabaseCluster extends DBDatabase {
 
 	@Override
 	public synchronized <TR extends DBRow> void dropTableNoExceptions(TR tableRow) throws AccidentalDroppingOfTableException, AutoCommitActionDuringTransactionException {
-		for (DBDatabase next : readyDatabases) {
-			next.dropTableNoExceptions(tableRow);
-		}
-	}
+		try{boolean finished = false;
+		do {
+			DBDatabase[] dbs = getReadyDatabases();
+			for (DBDatabase next : dbs) {
+				try {
+					next.dropTableNoExceptions(tableRow);
+					finished = true;
+				} catch (Exception e) {
+//					try {
+						handleExceptionDuringQuery(e, next);
+//					} catch (UnableToRemoveLastDatabaseFromClusterException un) {
+//						throw e;
+//					}
+				}
+			}
+		} while (!finished);
+	}catch(SQLException e){}}
 
 	@Override
 	public synchronized void dropTable(DBRow tableRow) throws SQLException, AutoCommitActionDuringTransactionException, AccidentalDroppingOfTableException {
-		for (DBDatabase next : readyDatabases) {
-			next.dropTable(tableRow);
-		}
+		boolean finished = false;
+		do {
+			DBDatabase[] dbs = getReadyDatabases();
+			for (DBDatabase next : dbs) {
+				try {
+					next.dropTable(tableRow);
+					finished = true;
+				} catch (Exception e) {
+//					try {
+						handleExceptionDuringQuery(e, next);
+//					} catch (UnableToRemoveLastDatabaseFromClusterException un) {
+//						throw e;
+//					}
+				}
+			}
+		} while (!finished);
 	}
 
 	@Override
 	public synchronized void createIndexesOnAllFields(DBRow newTableRow) throws SQLException {
-		for (DBDatabase next : readyDatabases) {
-			next.createIndexesOnAllFields(newTableRow);
-		}
+		boolean finished = false;
+		do {
+			DBDatabase[] dbs = getReadyDatabases();
+			for (DBDatabase next : dbs) {
+				try {
+					next.createIndexesOnAllFields(newTableRow);
+					finished = true;
+				} catch (Exception e) {
+//					try {
+						handleExceptionDuringQuery(e, next);
+//					} catch (UnableToRemoveLastDatabaseFromClusterException un) {
+//						throw e;
+//					}
+				}
+			}
+		} while (!finished);
 	}
 
 	@Override
 	public synchronized void removeForeignKeyConstraints(DBRow newTableRow) throws SQLException {
-		for (DBDatabase next : readyDatabases) {
-			next.removeForeignKeyConstraints(newTableRow);
-		}
+		boolean finished = false;
+		do {
+			DBDatabase[] dbs = getReadyDatabases();
+			for (DBDatabase next : dbs) {
+				try {
+					next.removeForeignKeyConstraints(newTableRow);
+					finished = true;
+				} catch (Exception e) {
+//					try {
+						handleExceptionDuringQuery(e, next);
+//					} catch (UnableToRemoveLastDatabaseFromClusterException un) {
+//						throw e;
+//					}
+				}
+			}
+		} while (!finished);
 	}
 
 	@Override
 	public synchronized void createForeignKeyConstraints(DBRow newTableRow) throws SQLException {
-		for (DBDatabase next : readyDatabases) {
-			next.createForeignKeyConstraints(newTableRow);
-		}
+		boolean finished = false;
+		do {
+			DBDatabase[] dbs = getReadyDatabases();
+			for (DBDatabase next : dbs) {
+				try {
+					next.createForeignKeyConstraints(newTableRow);
+					finished = true;
+				} catch (Exception e) {
+//					try {
+						handleExceptionDuringQuery(e, next);
+//					} catch (UnableToRemoveLastDatabaseFromClusterException un) {
+//						throw e;
+//					}
+				}
+			}
+		} while (!finished);
 	}
 
 	@Override
 	public synchronized void createTableWithForeignKeys(DBRow newTableRow) throws SQLException, AutoCommitActionDuringTransactionException {
-		for (DBDatabase next : readyDatabases) {
-			next.createTableWithForeignKeys(newTableRow);
-		}
+		boolean finished = false;
+		do {
+			DBDatabase[] dbs = getReadyDatabases();
+			for (DBDatabase next : dbs) {
+				try {
+					next.createTableWithForeignKeys(newTableRow);
+					finished = true;
+				} catch (Exception e) {
+//					try {
+						handleExceptionDuringQuery(e, next);
+//					} catch (UnableToRemoveLastDatabaseFromClusterException un) {
+//						throw e;
+//					}
+				}
+			}
+		} while (!finished);
 	}
 
 	@Override
 	public synchronized void createTable(DBRow newTableRow) throws SQLException, AutoCommitActionDuringTransactionException {
-		for (DBDatabase next : readyDatabases) {
-			next.createTable(newTableRow);
-		}
+		boolean finished = false;
+		do {
+			DBDatabase[] dbs = getReadyDatabases();
+			for (DBDatabase next : dbs) {
+				try {
+					next.createTable(newTableRow);
+					finished = true;
+				} catch (Exception e) {
+//					try {
+						handleExceptionDuringQuery(e, next);
+//					} catch (UnableToRemoveLastDatabaseFromClusterException un) {
+//						throw e;
+//					}
+				}
+			}
+		} while (!finished);
 	}
 
 	@Override
-	public synchronized void createTablesWithForeignKeysNoExceptions(DBRow... newTables) {
-		for (DBDatabase next : readyDatabases) {
-			next.createTablesWithForeignKeysNoExceptions(newTables);
-		}
+	public synchronized void createTablesWithForeignKeysNoExceptions(DBRow... newTables) {try{
+		boolean finished = false;
+		do {
+			DBDatabase[] dbs = getReadyDatabases();
+			for (DBDatabase next : dbs) {
+				try {
+					next.createTablesWithForeignKeysNoExceptions(newTables);
+					finished = true;
+				} catch (Exception e) {
+//					try {
+						handleExceptionDuringQuery(e, next);
+//					} catch (UnableToRemoveLastDatabaseFromClusterException un) {
+//						throw e;
+//					}
+				}
+			}
+		} while (!finished);}catch(SQLException e){}
 	}
 
 	@Override
-	public synchronized void createTablesNoExceptions(DBRow... newTables) {
-		for (DBDatabase next : readyDatabases) {
-			next.createTablesNoExceptions(newTables);
-		}
-	}
+	public synchronized void createTablesNoExceptions(DBRow... newTables)  {
+		try{
+		boolean finished = false;
+		do {
+			DBDatabase[] dbs = getReadyDatabases();
+			for (DBDatabase next : dbs) {
+				try {
+					next.createTablesNoExceptions(newTables);
+					finished = true;
+				} catch (Exception e) {
+//					try {
+						handleExceptionDuringQuery(e, next);
+//					} catch (UnableToRemoveLastDatabaseFromClusterException un) {
+//						throw e;
+//					}
+				}
+			}
+		} while (!finished);
+	}catch(SQLException e){}}
 
 	@Override
 	public synchronized void createTablesNoExceptions(boolean includeForeignKeyClauses, DBRow... newTables) {
-		for (DBDatabase next : readyDatabases) {
-			next.createTablesNoExceptions(includeForeignKeyClauses, newTables);
+		try {
+			boolean finished = false;
+			do {
+				DBDatabase[] dbs = getReadyDatabases();
+				for (DBDatabase next : dbs) {
+					try {
+						next.createTablesNoExceptions(includeForeignKeyClauses, newTables);
+						finished = true;
+					} catch (Exception e) {
+//					try {
+						handleExceptionDuringQuery(e, next);
+//					} catch (UnableToRemoveLastDatabaseFromClusterException un) {
+//						throw e;
+//					}
+					}
+				}
+			} while (!finished);
+		} catch (SQLException e) {
 		}
 	}
 
 	@Override
 	public synchronized void createTableNoExceptions(DBRow newTable) throws AutoCommitActionDuringTransactionException {
-		for (DBDatabase next : readyDatabases) {
-			next.createTableNoExceptions(newTable);
+		try {
+			boolean finished = false;
+			do {
+				DBDatabase[] dbs = getReadyDatabases();
+				for (DBDatabase next : dbs) {
+					try {
+						next.createTableNoExceptions(newTable);
+						finished = true;
+					} catch (Exception e) {
+//					try {
+						handleExceptionDuringQuery(e, next);
+//					} catch (UnableToRemoveLastDatabaseFromClusterException un) {
+//						throw e;
+//					}
+					}
+				}
+			} while (!finished);
+		} catch (SQLException e) {
 		}
 	}
 
 	@Override
 	public synchronized void createTableNoExceptions(boolean includeForeignKeyClauses, DBRow newTable) throws AutoCommitActionDuringTransactionException {
-		for (DBDatabase next : readyDatabases) {
-			next.createTableNoExceptions(includeForeignKeyClauses, newTable);
+		try {
+			boolean finished = false;
+			do {
+				DBDatabase[] dbs = getReadyDatabases();
+				for (DBDatabase next : dbs) {
+					try {
+						next.createTableNoExceptions(includeForeignKeyClauses, newTable);
+						finished = true;
+					} catch (Exception e) {
+//					try {
+						handleExceptionDuringQuery(e, next);
+//					} catch (UnableToRemoveLastDatabaseFromClusterException un) {
+//						throw e;
+//					}
+					}
+				}
+			} while (!finished);
+		} catch (SQLException e) {
 		}
 	}
 
@@ -488,15 +698,15 @@ public class DBDatabaseCluster extends DBDatabase {
 		DBDatabase readyDatabase;
 		boolean finished = false;
 		do {
-				readyDatabase = getReadyDatabase();
+			readyDatabase = getReadyDatabase();
 			try {
 				return readyDatabase.getRows(report, examples);
 			} catch (Exception e) {
-				try {
-					handleExceptionDuringQuery(e, readyDatabase);
-				} catch (UnableToRemoveLastDatabaseFromClusterException un) {
-					throw e;
-				}
+//				try {
+				handleExceptionDuringQuery(e, readyDatabase);
+//				} catch (UnableToRemoveLastDatabaseFromClusterException un) {
+//					throw e;
+//				}
 			}
 		} while (!finished);
 		return new ArrayList<>(0);
@@ -507,15 +717,15 @@ public class DBDatabaseCluster extends DBDatabase {
 		DBDatabase readyDatabase;
 		boolean finished = false;
 		do {
-				readyDatabase = getReadyDatabase();
+			readyDatabase = getReadyDatabase();
 			try {
 				return readyDatabase.getAllRows(report, examples);
 			} catch (Exception e) {
-				try {
-					handleExceptionDuringQuery(e, readyDatabase);
-				} catch (UnableToRemoveLastDatabaseFromClusterException un) {
-					throw e;
-				}
+//				try {
+				handleExceptionDuringQuery(e, readyDatabase);
+//				} catch (UnableToRemoveLastDatabaseFromClusterException un) {
+//					throw e;
+//				}
 			}
 		} while (!finished);
 		return new ArrayList<>(0);
@@ -526,15 +736,15 @@ public class DBDatabaseCluster extends DBDatabase {
 		DBDatabase readyDatabase;
 		boolean finished = false;
 		do {
-				readyDatabase = getReadyDatabase();
+			readyDatabase = getReadyDatabase();
 			try {
 				return readyDatabase.get(report, examples);
 			} catch (Exception e) {
-				try {
-					handleExceptionDuringQuery(e, readyDatabase);
-				} catch (UnableToRemoveLastDatabaseFromClusterException un) {
-					throw e;
-				}
+//				try {
+				handleExceptionDuringQuery(e, readyDatabase);
+//				} catch (UnableToRemoveLastDatabaseFromClusterException un) {
+//					throw e;
+//				}
 			}
 		} while (!finished);
 		return new ArrayList<>(0);
@@ -545,15 +755,15 @@ public class DBDatabaseCluster extends DBDatabase {
 		DBDatabase readyDatabase;
 		boolean finished = false;
 		do {
-				readyDatabase = getReadyDatabase();
+			readyDatabase = getReadyDatabase();
 			try {
 				return readyDatabase.get(expectedNumberOfRows, rows);
 			} catch (Exception e) {
-				try {
-					handleExceptionDuringQuery(e, readyDatabase);
-				} catch (UnableToRemoveLastDatabaseFromClusterException un) {
-					throw e;
-				}
+//				try {
+				handleExceptionDuringQuery(e, readyDatabase);
+//				} catch (UnableToRemoveLastDatabaseFromClusterException un) {
+//					throw e;
+//				}
 			}
 		} while (!finished);
 		return new ArrayList<>(0);
@@ -564,15 +774,15 @@ public class DBDatabaseCluster extends DBDatabase {
 		DBDatabase readyDatabase;
 		boolean finished = false;
 		do {
-				readyDatabase = getReadyDatabase();
+			readyDatabase = getReadyDatabase();
 			try {
 				return readyDatabase.getByExamples(rows);
 			} catch (Exception e) {
-				try {
-					handleExceptionDuringQuery(e, readyDatabase);
-				} catch (UnableToRemoveLastDatabaseFromClusterException un) {
-					throw e;
-				}
+//				try {
+				handleExceptionDuringQuery(e, readyDatabase);
+//				} catch (UnableToRemoveLastDatabaseFromClusterException un) {
+//					throw e;
+//				}
 			}
 		} while (!finished);
 		return new ArrayList<>(0);
@@ -583,15 +793,15 @@ public class DBDatabaseCluster extends DBDatabase {
 		DBDatabase readyDatabase;
 		boolean finished = false;
 		do {
-				readyDatabase = getReadyDatabase();
+			readyDatabase = getReadyDatabase();
 			try {
 				return readyDatabase.get(rows);
 			} catch (Exception e) {
-				try {
-					handleExceptionDuringQuery(e, readyDatabase);
-				} catch (UnableToRemoveLastDatabaseFromClusterException un) {
-					throw e;
-				}
+//				try {
+				handleExceptionDuringQuery(e, readyDatabase);
+//				} catch (UnableToRemoveLastDatabaseFromClusterException un) {
+//					throw e;
+//				}
 			}
 		} while (!finished);
 		return new ArrayList<>(0);
@@ -602,15 +812,15 @@ public class DBDatabaseCluster extends DBDatabase {
 		DBDatabase readyDatabase;
 		boolean finished = false;
 		do {
-				readyDatabase = getReadyDatabase();
+			readyDatabase = getReadyDatabase();
 			try {
 				return readyDatabase.getByExample(expectedNumberOfRows, exampleRow);
 			} catch (Exception e) {
-				try {
-					handleExceptionDuringQuery(e, readyDatabase);
-				} catch (UnableToRemoveLastDatabaseFromClusterException un) {
-					throw e;
-				}
+//				try {
+				handleExceptionDuringQuery(e, readyDatabase);
+//				} catch (UnableToRemoveLastDatabaseFromClusterException un) {
+//					throw e;
+//				}
 			}
 		} while (!finished);
 		return new ArrayList<R>(0);
@@ -621,15 +831,15 @@ public class DBDatabaseCluster extends DBDatabase {
 		DBDatabase readyDatabase;
 		boolean finished = false;
 		do {
-				readyDatabase = getReadyDatabase();
+			readyDatabase = getReadyDatabase();
 			try {
 				return readyDatabase.get(expectedNumberOfRows, exampleRow);
 			} catch (Exception e) {
-				try {
-					handleExceptionDuringQuery(e, readyDatabase);
-				} catch (UnableToRemoveLastDatabaseFromClusterException un) {
-					throw e;
-				}
+//				try {
+				handleExceptionDuringQuery(e, readyDatabase);
+//				} catch (UnableToRemoveLastDatabaseFromClusterException un) {
+//					throw e;
+//				}
 			}
 		} while (!finished);
 		return new ArrayList<R>(0);
@@ -640,15 +850,15 @@ public class DBDatabaseCluster extends DBDatabase {
 		DBDatabase readyDatabase;
 		boolean finished = false;
 		do {
-				readyDatabase = getReadyDatabase();
+			readyDatabase = getReadyDatabase();
 			try {
 				return readyDatabase.getByExample(exampleRow);
 			} catch (Exception e) {
-				try {
-					handleExceptionDuringQuery(e, readyDatabase);
-				} catch (UnableToRemoveLastDatabaseFromClusterException un) {
-					throw e;
-				}
+//				try {
+				handleExceptionDuringQuery(e, readyDatabase);
+//				} catch (UnableToRemoveLastDatabaseFromClusterException un) {
+//					throw e;
+//				}
 			}
 		} while (!finished);
 		return new ArrayList<R>(0);
@@ -659,15 +869,15 @@ public class DBDatabaseCluster extends DBDatabase {
 		DBDatabase readyDatabase;
 		boolean finished = false;
 		do {
-				readyDatabase = getReadyDatabase();
+			readyDatabase = getReadyDatabase();
 			try {
 				return readyDatabase.get(exampleRow);
 			} catch (Exception e) {
-				try {
-					handleExceptionDuringQuery(e, readyDatabase);
-				} catch (UnableToRemoveLastDatabaseFromClusterException un) {
-					throw e;
-				}
+//				try {
+				handleExceptionDuringQuery(e, readyDatabase);
+//				} catch (UnableToRemoveLastDatabaseFromClusterException un) {
+//					throw e;
+//				}
 			}
 		} while (!finished);
 		return new ArrayList<R>(0);
@@ -700,21 +910,9 @@ public class DBDatabaseCluster extends DBDatabase {
 			synchronizeSecondaryDatabase(db);
 		}
 	}
-//
-//	private synchronized void commitAll() throws SQLException {
-//		for (DBDatabase db : readyDatabases) {
-//			db.doCommit();
-//		}
-//	}
-//
-//	private synchronized void rollbackAll(Exception exc) throws SQLException {
-//		for (DBDatabase db : readyDatabases) {
-//			db.doRollback();
-//		}
-//	}
 
 	@Override
-	public DBActionList executeDBAction(DBAction action) {
+	public DBActionList executeDBAction(DBAction action) throws SQLException {
 		addActionToQueue(action);
 		List<ActionTask> tasks = new ArrayList<ActionTask>();
 		DBActionList actionsPerformed = new DBActionList();
@@ -732,11 +930,11 @@ public class DBDatabaseCluster extends DBDatabase {
 						finished = true;
 					}
 				} catch (Exception e) {
-					try {
-						handleExceptionDuringAction(e, readyDatabase);
-					} catch (UnableToRemoveLastDatabaseFromClusterException lastDB) {
-						throw e;
-					}
+//					try {
+					handleExceptionDuringAction(e, readyDatabase);
+//					} catch (UnableToRemoveLastDatabaseFromClusterException lastDB) {
+//						throw e;
+//					}
 				}
 			} while (!finished && size() > 1);
 			// Now execute on all the other databases
@@ -771,24 +969,24 @@ public class DBDatabaseCluster extends DBDatabase {
 				try {
 					handleExceptionDuringQuery(e, readyDatabase);
 				} catch (UnableToRemoveLastDatabaseFromClusterException lastDB) {
-					throw e;
+					throw new SQLException(e);
 				}
 			}
 		}
 		return actionsPerformed;
 	}
 
-	private void handleExceptionDuringQuery(Exception e, final DBDatabase readyDatabase) throws UnableToRemoveLastDatabaseFromClusterException {
+	private void handleExceptionDuringQuery(Exception e, final DBDatabase readyDatabase) throws SQLException {
 		if (size() == 1) {
-			throw new UnableToRemoveLastDatabaseFromClusterException(e);
+			throw new SQLException(e);
 		} else {
 			removeDatabases(readyDatabase);
 		}
 	}
 
-	private void handleExceptionDuringAction(Exception e, final DBDatabase readyDatabase) throws UnableToRemoveLastDatabaseFromClusterException {
+	private void handleExceptionDuringAction(Exception e, final DBDatabase readyDatabase) throws SQLException {
 		if (size() == 1) {
-			throw new UnableToRemoveLastDatabaseFromClusterException(e);
+			throw new SQLException(e);
 		} else {
 			removeDatabases(readyDatabase);
 		}
@@ -924,7 +1122,11 @@ public class DBDatabaseCluster extends DBDatabase {
 	 * @return the number of ready database.
 	 */
 	public synchronized int size() {
-		return readyDatabases.size();
+		return getReadyDatabases().length;
+	}
+
+	private synchronized DBDatabase[] getReadyDatabases() {
+		return readyDatabases.toArray(new DBDatabase[]{});
 	}
 
 	private static class ActionTask implements Callable<DBActionList> {
@@ -963,5 +1165,16 @@ public class DBDatabaseCluster extends DBDatabase {
 		private synchronized void setActionList(DBActionList actions) {
 			this.actionList = actions;
 		}
+	}
+
+	public static enum DatabaseStatus {
+
+		READY,
+		ADDED,
+		SYNCHRONISED,
+		STOPPED,
+		DEAD,
+		REJECTED,
+		UNKNOWN
 	}
 }

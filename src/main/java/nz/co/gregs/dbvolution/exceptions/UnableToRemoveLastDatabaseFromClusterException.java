@@ -34,8 +34,14 @@ package nz.co.gregs.dbvolution.exceptions;
  */
 public class UnableToRemoveLastDatabaseFromClusterException extends DBRuntimeException {
 
+	private static final long serialVersionUID = 1L;
+
 	public UnableToRemoveLastDatabaseFromClusterException(Exception e) {
 		super(e);
+	}
+
+	public UnableToRemoveLastDatabaseFromClusterException() {
+		throw new UnsupportedOperationException("Not supported yet.");
 	}
 	
 }

@@ -95,6 +95,17 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 	private Boolean needToAddDatabaseSpecificFeatures = true;
 	boolean explicitCommitActionRequired = false;
 
+	@Override
+	public String toString() {
+		if (jdbcURL != null && !jdbcURL.isEmpty()) {
+			return this.getClass().getSimpleName() + "{" + jdbcURL+":"+username+"}";
+		} else if (dataSource != null) {
+			return this.getClass().getSimpleName() + ": " + dataSource.toString();
+		} else {
+			return super.toString();
+		}
+	}
+
 	/**
 	 * Clones the DBDatabase.
 	 *
@@ -1170,8 +1181,8 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 	public void createTableWithForeignKeys(DBRow newTableRow) throws SQLException, AutoCommitActionDuringTransactionException {
 		createTable(newTableRow, true);
 	}
-	
-	public final synchronized String getSQLForCreateTable(DBRow newTableRow, boolean includeForeignKeyClauses, List<PropertyWrapper> pkFields,List<PropertyWrapper> spatial2DFields){
+
+	public final synchronized String getSQLForCreateTable(DBRow newTableRow, boolean includeForeignKeyClauses, List<PropertyWrapper> pkFields, List<PropertyWrapper> spatial2DFields) {
 		StringBuilder sqlScript = new StringBuilder();
 		String lineSeparator = System.getProperty("line.separator");
 		// table name
@@ -1234,12 +1245,12 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 	}
 
 	private synchronized void createTable(DBRow newTableRow, boolean includeForeignKeyClauses) throws SQLException, AutoCommitActionDuringTransactionException {
-		
+
 		preventDDLDuringTransaction("DBDatabase.createTable()");
-		
+
 		List<PropertyWrapper> pkFields = new ArrayList<>();
 		List<PropertyWrapper> spatial2DFields = new ArrayList<>();
-		
+
 		String sqlString = getSQLForCreateTable(newTableRow, includeForeignKeyClauses, pkFields, spatial2DFields);
 		try (DBStatement dbStatement = getDBStatement()) {
 			dbStatement.execute(sqlString);
@@ -1251,8 +1262,8 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 					try {
 						dbStatement.execute(sql);
 					} catch (SQLException sqlex) {
-						System.out.println(sqlex.getLocalizedMessage()+": "+sql);
-						sqlex.printStackTrace();
+//						System.out.println(sqlex.getLocalizedMessage()+": "+sql);
+//						sqlex.printStackTrace();
 					}
 				}
 			}
