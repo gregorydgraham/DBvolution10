@@ -15,6 +15,7 @@
  */
 package nz.co.gregs.dbvolution.transactions;
 
+import java.sql.SQLException;
 import java.sql.Statement;
 import nz.co.gregs.dbvolution.databases.DBDatabase;
 import nz.co.gregs.dbvolution.databases.DBStatement;
@@ -47,13 +48,11 @@ public class DBRawSQLTransaction implements DBTransaction<Boolean> {
 	 * <p style="color: #F90;">Support DBvolution at
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return TRUE if the transaction succeeded, FALSE otherwise.
-	 * @throws java.lang.Exception java.lang.Exception
 	 *
 	 */
 	@Override
-	public Boolean doTransaction(DBDatabase dbDatabase) throws Exception {
-		DBStatement dbStatement = dbDatabase.getDBStatement();
-		try {
+	public Boolean doTransaction(DBDatabase dbDatabase) throws SQLException {
+		try (DBStatement dbStatement = dbDatabase.getDBStatement()) {
 			dbDatabase.printSQLIfRequested(sql);
 			dbStatement.addBatch(sql);
 			int[] executeBatchResults = dbStatement.executeBatch();
@@ -62,8 +61,6 @@ public class DBRawSQLTransaction implements DBTransaction<Boolean> {
 					return Boolean.FALSE;
 				}
 			}
-		} finally {
-			dbStatement.close();
 		}
 		return Boolean.TRUE;
 	}

@@ -212,7 +212,7 @@ public class DBInsert extends DBAction {
 						try {
 							statement.execute(sql);
 						} catch (SQLException ex) {
-							throw new RuntimeException(sql+(System.getProperty("line.separator")+sqlex.getLocalizedMessage()), sqlex);
+							throw new SQLException(sql+(System.getProperty("line.separator")+sqlex.getLocalizedMessage()), sqlex);
 						}
 					}
 				} else {
@@ -255,7 +255,7 @@ public class DBInsert extends DBAction {
 						}
 						updateSequenceIfNecessary(defn, db, sql, table, statement);
 					} catch (SQLException ex) {
-						throw new RuntimeException(ex);
+						throw ex;
 					}
 				}
 			}

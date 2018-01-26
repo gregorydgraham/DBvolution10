@@ -19,6 +19,7 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import nz.co.gregs.dbvolution.databases.DBDatabase;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -195,9 +196,10 @@ public abstract class DBExtractor extends DBScript {
 	 *
 	 * @return an action list
 	 * @throws java.io.FileNotFoundException
+	 * @throws java.sql.SQLException
 	 */
 	@Override
-	public final DBActionList script(DBDatabase db) throws FileNotFoundException, IOException, Exception {
+	public final DBActionList script(DBDatabase db) throws FileNotFoundException, IOException, SQLException, Exception {
 		DBActionList actions = new DBActionList();
 
 		List<DBQueryRow> rows = getRows(db);
@@ -238,7 +240,7 @@ public abstract class DBExtractor extends DBScript {
 					timePerRecord = timeTaken / getBoundIncrease();
 					System.out.println("RETRIEVED: " + getLowerBound() + "-" + getUpperBound() + " (+" + getBoundIncrease() + ") after " + timeTaken + " at " + timePerRecord + "ms/record.");
 				}
-			} catch (Exception ex) {
+			} catch (SQLException | AccidentalBlankQueryException | AccidentalCartesianJoinException ex) {
 				if (getBoundIncrease() == getMinBoundIncrease()) {
 					// We can't get this row so acknowledge the error
 					System.out.println("Unable to access records: " + getLowerBound() + " - " + getUpperBound());

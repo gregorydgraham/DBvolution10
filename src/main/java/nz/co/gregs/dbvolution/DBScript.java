@@ -56,7 +56,7 @@ public abstract class DBScript {
 	 * <p style="color: #F90;">Support DBvolution at
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return DBActionList
-	 * @throws java.lang.Exception java.lang.Exception
+	 * @throws java.lang.Exception
 	 *
 	 */
 	public abstract DBActionList script(DBDatabase db) throws Exception;

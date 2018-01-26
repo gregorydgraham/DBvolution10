@@ -15,6 +15,7 @@
  */
 package nz.co.gregs.dbvolution.actions;
 
+import nz.co.gregs.dbvolution.exceptions.FailedToExecuteDBQueryInsertException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -108,7 +109,7 @@ public class DBQueryInsertAction<R extends DBRow> extends DBAction {
 					try {
 						statement.execute(sql);
 					} catch (SQLException ex) {
-						throw new RuntimeException(sql, ex);
+						throw new FailedToExecuteDBQueryInsertException(sql, sqlex);
 					}
 				}
 			}

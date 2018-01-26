@@ -21,8 +21,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.SQLWarning;
 import java.sql.Statement;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.exceptions.UnableToCreateDatabaseConnectionException;
 import nz.co.gregs.dbvolution.exceptions.UnableToFindJDBCDriver;
@@ -93,8 +91,10 @@ public class DBStatement implements Statement {
 		} catch (SQLException exp) {
 			try {
 				executeQuery = addFeatureAndAttemptQueryAgain(exp, string);
+			} catch (SQLException ex) {
+				throw ex;
 			} catch (Exception ex) {
-				throw new RuntimeException(ex);
+				throw new SQLException(ex);
 			}
 		}
 		return executeQuery;
@@ -159,7 +159,7 @@ public class DBStatement implements Statement {
 		try {
 			database.unusedConnection(getConnection());
 			getInternalStatement().close();
-		} catch (Exception e) {
+		} catch (SQLException e) {
 			// Someone please tell me how you are supposed to cope 
 			// with an exception during the close method????????
 			LOG.warn("Exception occurred during close(): " + e.getMessage(), e);
@@ -306,7 +306,7 @@ public class DBStatement implements Statement {
 			if (database.getDefinition().willCloseConnectionOnStatementCancel()) {
 				replaceBrokenConnection();
 			}
-		} catch (Exception ex) {
+		} catch (SQLException | UnableToCreateDatabaseConnectionException | UnableToFindJDBCDriver ex) {
 			//;Logger.getLogger(DBStatement.class.getName()).log(Level.INFO, "Cancel Threw An Exception", ex);
 		}
 	}
@@ -424,7 +424,7 @@ public class DBStatement implements Statement {
 		final boolean execute;
 		try {
 			execute = getInternalStatement().execute(sql);
-		} catch (Exception exp) {
+		} catch (SQLException exp) {
 			return addFeatureAndAttemptExecuteAgain(exp, sql);
 		}
 		return execute;
@@ -440,7 +440,7 @@ public class DBStatement implements Statement {
 		try {
 			executeQuery = getInternalStatement().execute(string);
 			return executeQuery;
-		} catch (Exception exp2) {
+		} catch (SQLException exp2) {
 			if (!exp.getMessage().equals(exp2.getMessage())) {
 				executeQuery = addFeatureAndAttemptExecuteAgain(exp2, string);
 				return executeQuery;

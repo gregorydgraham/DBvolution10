@@ -15,6 +15,8 @@
  */
 package nz.co.gregs.dbvolution.exceptions;
 
+import java.sql.SQLException;
+
 /**
  *
  * <p style="color: #F90;">Support DBvolution at
@@ -22,7 +24,7 @@ package nz.co.gregs.dbvolution.exceptions;
  *
  * @author Gregory Graham
  */
-public class AccidentalDroppingOfDatabaseException extends DBRuntimeException {
+public class AccidentalDroppingOfDatabaseException extends SQLException {
 
 	private static final long serialVersionUID = 1L;
 

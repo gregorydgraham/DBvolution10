@@ -108,7 +108,7 @@ public class DBMigrationAction<R extends DBRow> extends DBAction {
 					try {
 						statement.execute(sql);
 					} catch (SQLException ex) {
-						throw new RuntimeException(sql, ex);
+						throw new SQLException(ex.getLocalizedMessage()+":"+sql, ex);
 					}
 				}
 			}

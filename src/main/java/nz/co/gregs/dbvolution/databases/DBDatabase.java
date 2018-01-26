@@ -15,6 +15,7 @@
  */
 package nz.co.gregs.dbvolution.databases;
 
+import nz.co.gregs.dbvolution.exceptions.UnableToDropDatabaseException;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import java.io.PrintStream;
 import java.io.Serializable;
@@ -742,14 +743,14 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return the object returned by the transaction
 	 * @throws SQLException database exceptions
-	 * @throws Exception any exception thrown by the transactions code
+	 * @throws java.lang.CloneNotSupportedException
 	 * @see DBTransaction
 	 * @see
 	 * DBDatabase#doTransaction(nz.co.gregs.dbvolution.transactions.DBTransaction)
 	 * @see
 	 * DBDatabase#doReadOnlyTransaction(nz.co.gregs.dbvolution.transactions.DBTransaction)
 	 */
-	public synchronized <V> V doTransaction(DBTransaction<V> dbTransaction, Boolean commit) throws SQLException, Exception {
+	public synchronized <V> V doTransaction(DBTransaction<V> dbTransaction, Boolean commit) throws SQLException, CloneNotSupportedException, Exception {
 		DBDatabase db;
 		db = this.clone();
 		V returnValues = null;
@@ -762,24 +763,19 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 				returnValues = dbTransaction.doTransaction(db);
 				if (commit && !explicitCommitActionRequired) {
 					db.transactionConnection.commit();
-//					LOG.info("Transaction Successful: Commit Performed");
 				} else {
 					try {
 						if (!explicitCommitActionRequired) {
 							db.transactionConnection.rollback();
-//							LOG.info("Transaction Successful: ROLLBACK Performed");
 						}
 					} catch (SQLException rollbackFailed) {
-//						LOG.warn("ROLLBACK FAILED: CONTINUING REGARDLESS: " + rollbackFailed.getLocalizedMessage());
 						discardConnection(db.transactionConnection);
 					}
 				}
-			} catch (Exception ex) {
+			} catch (SQLException ex) {
 				try {
-//					LOG.warn("Exception Occurred: Attempting ROLLBACK - " + ex.getLocalizedMessage());
 					if (!explicitCommitActionRequired) {
 						db.transactionConnection.rollback();
-//						LOG.warn("Exception Occurred: ROLLBACK Succeeded!");
 					}
 				} catch (SQLException excp) {
 					LOG.warn("Exception Occurred During Rollback: " + ex.getLocalizedMessage());
@@ -812,10 +808,10 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return the object returned by the transaction
 	 * @throws SQLException database exceptions
-	 * @throws Exception any other exception thrown by the transaction
+	 * @throws java.lang.CloneNotSupportedException
 	 * @see DBTransaction
 	 */
-	public <V> V doTransaction(DBTransaction<V> dbTransaction) throws SQLException, Exception {
+	public <V> V doTransaction(DBTransaction<V> dbTransaction) throws SQLException, CloneNotSupportedException, Exception {
 		return doTransaction(dbTransaction, true);
 	}
 
@@ -1535,9 +1531,11 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 	 * Do NOT Use This.
 	 *
 	 * @param doIt don't do it.
-	 * @throws java.lang.Exception java.lang.Exception
+	 * @throws nz.co.gregs.dbvolution.exceptions.AccidentalDroppingOfDatabaseException
+	 * @throws java.lang.CloneNotSupportedException
+	 * @throws nz.co.gregs.dbvolution.exceptions.UnableToDropDatabaseException
 	 */
-	public synchronized void dropDatabase(boolean doIt) throws Exception, UnsupportedOperationException, AutoCommitActionDuringTransactionException {
+	public synchronized void dropDatabase(boolean doIt) throws AccidentalDroppingOfDatabaseException, UnsupportedOperationException, AutoCommitActionDuringTransactionException, CloneNotSupportedException, UnableToDropDatabaseException, SQLException {
 		preventDDLDuringTransaction("DBDatabase.dropDatabase()");
 		if (preventAccidentalDroppingOfTables) {
 			throw new AccidentalDroppingOfTableException();
@@ -1551,7 +1549,11 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 		printSQLIfRequested(dropStr);
 		LOG.info(dropStr);
 		if (doIt) {
-			this.doTransaction(new DBRawSQLTransaction(dropStr));
+			try {
+				this.doTransaction(new DBRawSQLTransaction(dropStr));
+			} catch (Exception ex) {
+				throw new UnableToDropDatabaseException(ex);
+			}
 		}
 		preventAccidentalDroppingOfTables = true;
 		preventAccidentalDroppingDatabase = true;

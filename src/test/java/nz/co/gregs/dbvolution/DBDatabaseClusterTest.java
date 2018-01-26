@@ -183,6 +183,7 @@ public class DBDatabaseClusterTest extends AbstractTest {
 		cluster.addDatabase(soloDB2);
 		Assert.assertThat(cluster.size(), is(2));
 		try{
+			cluster.preventDroppingOfTables(false);
 			cluster.dropTable(new TableThatDoesntExistOnTheCluster());
 		}catch(SQLException | AccidentalDroppingOfTableException | AutoCommitActionDuringTransactionException e){
 		}
