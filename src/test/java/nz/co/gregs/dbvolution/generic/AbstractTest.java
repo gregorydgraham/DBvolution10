@@ -125,9 +125,6 @@ public abstract class AbstractTest {
 		if (System.getProperty("testMSSQLServer") != null) {
 			databases.add(new Object[]{"MSSQLServer", MSSQLServerTestDB.getFromSettings("sqlserver")});
 		}
-		if (System.getProperty("testJTDSSQLServer") != null) {
-			databases.add(new Object[]{"JTDSSQLServer", JTDSSQLServerTestDB.getFromSettings("jtds")});
-		}
 		if (System.getProperty("testH2MemoryDB") != null) {
 			databases.add(new Object[]{"H2MemoryDB", H2MemoryTestDB.getFromSettings("h2memory")});
 		}
@@ -160,8 +157,6 @@ public abstract class AbstractTest {
 				return trimStr.replaceAll("\\(\\(([^)]*)\\)=true\\)", "$1");
 			} else if (database instanceof MSSQLServerDB) {
 				return trimStr.replaceAll("[\\[\\]]", "");
-			} else if (database instanceof JTDSSQLServerDB) {
-				return trimStr.replaceAll("[\\[\\]]", "");
 			} else {
 				return trimStr;
 			}
@@ -187,11 +182,6 @@ public abstract class AbstractTest {
 						.replaceAll(" as ", " ");
 			} else if ((database instanceof NuoDB)) {
 				return trimStr.replaceAll("\\(\\(([^)]*)\\)=true\\)", "$1");
-			} else if ((database instanceof MSSQLServerDB) || database instanceof JTDSSQLServerDB) {
-				return trimStr
-						.replaceAll("\\[", "")
-						.replaceAll("]", "")
-						.replaceAll(" *;", "");
 			} else {
 				return trimStr;
 			}
@@ -503,27 +493,6 @@ public abstract class AbstractTest {
 		}
 
 		public MSSQLServerTestDB(String host, String instance, String database, String port, String username, String password) {
-			super(host, instance, database, Integer.parseInt(port), username, password);
-		}
-	}
-
-	private static class JTDSSQLServerTestDB extends JTDSSQLServerDB {
-
-		public static final long serialVersionUID = 1l;
-
-		public static JTDSSQLServerTestDB getFromSettings(String prefix) {
-			String url = System.getProperty("" + prefix + ".url");
-			String host = System.getProperty("" + prefix + ".host");
-			String port = System.getProperty("" + prefix + ".port");
-			String instance = System.getProperty("" + prefix + ".instance");
-			String database = System.getProperty("" + prefix + ".database");
-			String username = System.getProperty("" + prefix + ".username");
-			String password = System.getProperty("" + prefix + ".password");
-			String schema = System.getProperty("" + prefix + ".schema");
-			return new JTDSSQLServerTestDB(host, instance, database, port, username, password);
-		}
-
-		public JTDSSQLServerTestDB(String host, String instance, String database, String port, String username, String password) {
 			super(host, instance, database, Integer.parseInt(port), username, password);
 		}
 	}
