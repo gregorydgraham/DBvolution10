@@ -28,6 +28,7 @@ import nz.co.gregs.dbvolution.*;
 import nz.co.gregs.dbvolution.datatypes.*;
 import nz.co.gregs.dbvolution.results.AnyResult;
 import nz.co.gregs.dbvolution.results.NumberResult;
+import nz.co.gregs.dbvolution.results.SimpleNumericResult;
 
 /**
  * IntegerExpression implements standard functions that produce a integer
@@ -545,6 +546,66 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 	 * <br>
 	 * I.e permittedRange(null, 5) will return 4,3,2,1, etc.
 	 *
+	 * @param lowerBound the smallest value
+	 * @param upperBound the largest value
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @return a boolean expression representing the required comparison
+	 */
+	public BooleanExpression isBetween(IntegerResult lowerBound, Number upperBound) {
+		return BooleanExpression.allOf(
+				this.integerResult().isGreaterThan(lowerBound),
+				this.integerResult().isLessThanOrEqual(upperBound)
+		);
+	}
+
+	/**
+	 * Performs searches based on a range.
+	 *
+	 * if both ends of the range are specified the lower-bound will be included in
+	 * the search and the upper-bound excluded. I.e permittedRange(1,3) will
+	 * return 1 and 2.
+	 *
+	 * <p>
+	 * if the upper-bound is null the range will be open ended and inclusive.
+	 * <br>
+	 * I.e permittedRange(1,null) will return 1,2,3,4,5, etc.
+	 *
+	 * <p>
+	 * if the lower-bound is null the range will be open ended and exclusive.
+	 * <br>
+	 * I.e permittedRange(null, 5) will return 4,3,2,1, etc.
+	 *
+	 * @param lowerBound the smallest value
+	 * @param upperBound the largest value
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @return a boolean expression representing the required comparison
+	 */
+	public BooleanExpression isBetween(Number lowerBound, IntegerResult upperBound) {
+		return BooleanExpression.allOf(
+				this.integerResult().isGreaterThan(lowerBound),
+				this.integerResult().isLessThanOrEqual(upperBound)
+		);
+	}
+
+	/**
+	 * Performs searches based on a range.
+	 *
+	 * if both ends of the range are specified the lower-bound will be included in
+	 * the search and the upper-bound excluded. I.e permittedRange(1,3) will
+	 * return 1 and 2.
+	 *
+	 * <p>
+	 * if the upper-bound is null the range will be open ended and inclusive.
+	 * <br>
+	 * I.e permittedRange(1,null) will return 1,2,3,4,5, etc.
+	 *
+	 * <p>
+	 * if the lower-bound is null the range will be open ended and exclusive.
+	 * <br>
+	 * I.e permittedRange(null, 5) will return 4,3,2,1, etc.
+	 *
 	 * @param lowerbound the smallest value
 	 * @param upperbound the largest value
 	 * <p style="color: #F90;">Support DBvolution at
@@ -717,6 +778,33 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a boolean expression representing the required comparison
 	 */
+	public BooleanExpression isBetweenInclusive(Integer lowerBound, IntegerResult upperBound) {
+		return isBetweenInclusive(value(lowerBound), upperBound);
+	}
+
+	/**
+	 * Performs searches based on a range.
+	 *
+	 * if both ends of the range are specified both the lower- and upper-bound
+	 * will be included in the search. I.e permittedRangeInclusive(1,3) will
+	 * return 1, 2, and 3.
+	 *
+	 * <p>
+	 * if the upper-bound is null the range will be open ended and inclusive.
+	 * <br>
+	 * I.e permittedRangeInclusive(1,null) will return 1,2,3,4,5, etc.
+	 *
+	 * <p>
+	 * if the lower-bound is null the range will be open ended and inclusive.
+	 * <br>
+	 * I.e permittedRangeInclusive(null, 5) will return 5,4,3,2,1, etc.
+	 *
+	 * @param lowerBound the smallest value
+	 * @param upperBound the largest value
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @return a boolean expression representing the required comparison
+	 */
 	@Override
 	public BooleanExpression isBetweenInclusive(IntegerResult lowerBound, Long upperBound) {
 		return isBetweenInclusive(lowerBound, value(upperBound));
@@ -745,8 +833,62 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a boolean expression representing the required comparison
 	 */
+	public BooleanExpression isBetweenInclusive(IntegerResult lowerBound, Integer upperBound) {
+		return isBetweenInclusive(lowerBound, value(upperBound));
+	}
+
+	/**
+	 * Performs searches based on a range.
+	 *
+	 * if both ends of the range are specified both the lower- and upper-bound
+	 * will be included in the search. I.e permittedRangeInclusive(1,3) will
+	 * return 1, 2, and 3.
+	 *
+	 * <p>
+	 * if the upper-bound is null the range will be open ended and inclusive.
+	 * <br>
+	 * I.e permittedRangeInclusive(1,null) will return 1,2,3,4,5, etc.
+	 *
+	 * <p>
+	 * if the lower-bound is null the range will be open ended and inclusive.
+	 * <br>
+	 * I.e permittedRangeInclusive(null, 5) will return 5,4,3,2,1, etc.
+	 *
+	 * @param lowerBound the smallest value
+	 * @param upperBound the largest value
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @return a boolean expression representing the required comparison
+	 */
 	@Override
 	public BooleanExpression isBetweenInclusive(Long lowerBound, Long upperBound) {
+		return isBetweenInclusive(value(lowerBound), value(upperBound));
+	}
+
+	/**
+	 * Performs searches based on a range.
+	 *
+	 * if both ends of the range are specified both the lower- and upper-bound
+	 * will be included in the search. I.e permittedRangeInclusive(1,3) will
+	 * return 1, 2, and 3.
+	 *
+	 * <p>
+	 * if the upper-bound is null the range will be open ended and inclusive.
+	 * <br>
+	 * I.e permittedRangeInclusive(1,null) will return 1,2,3,4,5, etc.
+	 *
+	 * <p>
+	 * if the lower-bound is null the range will be open ended and inclusive.
+	 * <br>
+	 * I.e permittedRangeInclusive(null, 5) will return 5,4,3,2,1, etc.
+	 *
+	 * @param lowerBound the smallest value
+	 * @param upperBound the largest value
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @return a boolean expression representing the required comparison
+	 */
+	public BooleanExpression isBetweenInclusive(Integer lowerBound, Integer upperBound) {
 		return isBetweenInclusive(value(lowerBound), value(upperBound));
 	}
 
@@ -899,8 +1041,99 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a boolean expression representing the required comparison
 	 */
+	public BooleanExpression isBetweenExclusive(Number lowerBound, SimpleNumericResult<?> upperBound) {
+		return numberResult().isBetweenExclusive(
+				value(lowerBound), 
+				new IntegerExpression(upperBound).numberResult());
+	}
+
+	/**
+	 * Performs searches based on a range.
+	 *
+	 * if both ends of the range are specified both the lower- and upper-bound
+	 * will be excluded in the search. I.e permittedRangeExclusive(1,3) will
+	 * return 2.
+	 *
+	 * <p>
+	 * if the upper-bound is null the range will be open ended upwards and
+	 * exclusive.
+	 * <br>
+	 * I.e permittedRangeExclusive(1,null) will return 2,3,4,5, etc.
+	 *
+	 * <p>
+	 * if the lower-bound is null the range will be open ended downwards and
+	 * exclusive.
+	 * <br>
+	 * I.e permittedRangeExclusive(null, 5) will return 4,3,2,1, etc.
+	 *
+	 * @param lowerBound the smallest value
+	 * @param upperBound the largest value
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @return a boolean expression representing the required comparison
+	 */
+	public BooleanExpression isBetweenExclusive(NumberResult lowerBound, Number upperBound) {
+		return numberResult().isBetweenExclusive(
+				NumberExpression.value(lowerBound), 
+				NumberExpression.value(upperBound));
+	}
+
+	/**
+	 * Performs searches based on a range.
+	 *
+	 * if both ends of the range are specified both the lower- and upper-bound
+	 * will be excluded in the search. I.e permittedRangeExclusive(1,3) will
+	 * return 2.
+	 *
+	 * <p>
+	 * if the upper-bound is null the range will be open ended upwards and
+	 * exclusive.
+	 * <br>
+	 * I.e permittedRangeExclusive(1,null) will return 2,3,4,5, etc.
+	 *
+	 * <p>
+	 * if the lower-bound is null the range will be open ended downwards and
+	 * exclusive.
+	 * <br>
+	 * I.e permittedRangeExclusive(null, 5) will return 4,3,2,1, etc.
+	 *
+	 * @param lowerBound the smallest value
+	 * @param upperBound the largest value
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @return a boolean expression representing the required comparison
+	 */
 	@Override
 	public BooleanExpression isBetweenExclusive(IntegerResult lowerBound, Long upperBound) {
+		return isBetweenExclusive(lowerBound, value(upperBound));
+	}
+
+	/**
+	 * Performs searches based on a range.
+	 *
+	 * if both ends of the range are specified both the lower- and upper-bound
+	 * will be excluded in the search. I.e permittedRangeExclusive(1,3) will
+	 * return 2.
+	 *
+	 * <p>
+	 * if the upper-bound is null the range will be open ended upwards and
+	 * exclusive.
+	 * <br>
+	 * I.e permittedRangeExclusive(1,null) will return 2,3,4,5, etc.
+	 *
+	 * <p>
+	 * if the lower-bound is null the range will be open ended downwards and
+	 * exclusive.
+	 * <br>
+	 * I.e permittedRangeExclusive(null, 5) will return 4,3,2,1, etc.
+	 *
+	 * @param lowerBound the smallest value
+	 * @param upperBound the largest value
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @return a boolean expression representing the required comparison
+	 */
+	public BooleanExpression isBetweenExclusive(IntegerResult lowerBound, Integer upperBound) {
 		return isBetweenExclusive(lowerBound, value(upperBound));
 	}
 
@@ -932,6 +1165,64 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 	@Override
 	public BooleanExpression isBetweenExclusive(Long lowerBound, Long upperBound) {
 		return isBetweenExclusive(value(lowerBound), value(upperBound));
+	}
+
+	/**
+	 * Performs searches based on a range.
+	 *
+	 * if both ends of the range are specified both the lower- and upper-bound
+	 * will be excluded in the search. I.e permittedRangeExclusive(1,3) will
+	 * return 2.
+	 *
+	 * <p>
+	 * if the upper-bound is null the range will be open ended upwards and
+	 * exclusive.
+	 * <br>
+	 * I.e permittedRangeExclusive(1,null) will return 2,3,4,5, etc.
+	 *
+	 * <p>
+	 * if the lower-bound is null the range will be open ended downwards and
+	 * exclusive.
+	 * <br>
+	 * I.e permittedRangeExclusive(null, 5) will return 4,3,2,1, etc.
+	 *
+	 * @param lowerBound the smallest value
+	 * @param upperBound the largest value
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @return a boolean expression representing the required comparison
+	 */
+	public BooleanExpression isBetweenExclusive(Number lowerBound, Number upperBound) {
+		return numberResult().isBetweenExclusive(value(lowerBound), value(upperBound));
+	}
+
+	/**
+	 * Performs searches based on a range.
+	 *
+	 * if both ends of the range are specified both the lower- and upper-bound
+	 * will be excluded in the search. I.e permittedRangeExclusive(1,3) will
+	 * return 2.
+	 *
+	 * <p>
+	 * if the upper-bound is null the range will be open ended upwards and
+	 * exclusive.
+	 * <br>
+	 * I.e permittedRangeExclusive(1,null) will return 2,3,4,5, etc.
+	 *
+	 * <p>
+	 * if the lower-bound is null the range will be open ended downwards and
+	 * exclusive.
+	 * <br>
+	 * I.e permittedRangeExclusive(null, 5) will return 4,3,2,1, etc.
+	 *
+	 * @param lowerBound the smallest value
+	 * @param upperBound the largest value
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @return a boolean expression representing the required comparison
+	 */
+	public BooleanExpression isBetweenExclusive(Number lowerBound, NumberResult upperBound) {
+		return numberResult().isBetweenExclusive(value(lowerBound), value(upperBound));
 	}
 
 	/**
@@ -1059,8 +1350,8 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 	 * @return a BooleanExpression for use in
 	 * {@link DBQuery#addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression)}
 	 */
-	public BooleanExpression isGreaterThan(Integer number) {
-		return isGreaterThan(value(number));
+	public BooleanExpression isGreaterThan(Number number) {
+		return numberResult().isGreaterThan(value(number));
 	}
 
 	/**
@@ -1360,6 +1651,46 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return the least/smallest value from the list.
 	 */
+	public static IntegerExpression leastOf(Long... possibleValues) {
+		List<IntegerExpression> possVals = new ArrayList<>();
+		for (Long num : possibleValues) {
+			possVals.add(value(num));
+		}
+		return leastOf(possVals.toArray(new IntegerExpression[]{}));
+	}
+
+	/**
+	 * Returns the least/smallest value from the list.
+	 *
+	 * <p>
+	 * Similar to {@link #min() } but this operates on the list provided, rather
+	 * than aggregating a column.
+	 *
+	 * @param possibleValues needs to be the least of these
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @return the least/smallest value from the list.
+	 */
+	public static IntegerExpression leastOf(Number... possibleValues) {
+		List<IntegerExpression> possVals = new ArrayList<>();
+		for (Number num : possibleValues) {
+			possVals.add(value(num).integerResult());
+		}
+		return leastOf(possVals.toArray(new IntegerExpression[]{}));
+	}
+
+	/**
+	 * Returns the least/smallest value from the list.
+	 *
+	 * <p>
+	 * Similar to {@link #min() } but this operates on the list provided, rather
+	 * than aggregating a column.
+	 *
+	 * @param possibleValues needs to be the least of these
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @return the least/smallest value from the list.
+	 */
 	public static IntegerExpression leastOf(Collection<? extends IntegerResult> possibleValues) {
 		List<IntegerExpression> possVals = new ArrayList<>();
 		for (IntegerResult num : possibleValues) {
@@ -1400,6 +1731,26 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 		List<IntegerExpression> possVals = new ArrayList<>();
 		for (Integer num : possibleValues) {
 			possVals.add(value(num));
+		}
+		return greatestOf(possVals);
+	}
+
+	/**
+	 * Returns the greatest/largest value from the list.
+	 *
+	 * <p>
+	 * Similar to {@link #max() } but this operates on the list provided, rather
+	 * than aggregating a column.
+	 *
+	 * @param possibleValues needs to be the largest of these
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @return the greatest/largest value from the list.
+	 */
+	public static IntegerExpression greatestOf(Number... possibleValues) {
+		List<IntegerExpression> possVals = new ArrayList<>();
+		for (Number num : possibleValues) {
+			possVals.add(value(num).integerResult());
 		}
 		return greatestOf(possVals);
 	}
@@ -1593,10 +1944,6 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 	@Override
 	public IntegerExpression integerResult() {
 		return this;
-	}
-
-	BooleanExpression isBetweenInclusive(Integer lowerbound, Integer upperbound) {
-		return this.isBetweenInclusive(value(lowerbound), value(upperbound));
 	}
 
 	BooleanExpression isBetweenInclusive(Number lowerbound, Number upperbound) {

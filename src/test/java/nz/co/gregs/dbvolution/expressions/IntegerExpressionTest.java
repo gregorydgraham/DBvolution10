@@ -21,7 +21,6 @@ import java.util.List;
 import nz.co.gregs.dbvolution.DBQuery;
 import nz.co.gregs.dbvolution.DBQueryRow;
 import nz.co.gregs.dbvolution.annotations.DBColumn;
-import nz.co.gregs.dbvolution.databases.MSSQLServerDB;
 import nz.co.gregs.dbvolution.datatypes.DBInteger;
 import nz.co.gregs.dbvolution.datatypes.DBNumber;
 import nz.co.gregs.dbvolution.datatypes.DBString;
@@ -38,6 +37,50 @@ public class IntegerExpressionTest extends AbstractTest {
 
 	public IntegerExpressionTest(Object testIterationName, Object db) {
 		super(testIterationName, db);
+	}
+
+	@Test
+	public void testIs() throws SQLException {
+		Marque marq = new Marque();
+		DBQuery dbQuery = database.getDBQuery(marq);
+		dbQuery.addCondition(
+				marq.column(marq.uidMarque).is(4893059)
+		);
+		List<DBQueryRow> allRows = dbQuery.getAllRows();
+
+		Assert.assertThat(allRows.size(), is(1));
+		Marque marque = allRows.get(0).get(marq);
+		Assert.assertThat(marque.uidMarque.getValue().intValue(), is(4893059));
+		
+		dbQuery = database.getDBQuery(marq);
+		dbQuery.addCondition(
+				marq.column(marq.uidMarque).is(4893059l)
+		);
+		allRows = dbQuery.getAllRows();
+
+		Assert.assertThat(allRows.size(), is(1));
+		marque = allRows.get(0).get(marq);
+		Assert.assertThat(marque.uidMarque.getValue().intValue(), is(4893059));
+		
+		dbQuery = database.getDBQuery(marq);
+		dbQuery.addCondition(
+				marq.column(marq.uidMarque).is(IntegerExpression.value(4893059l))
+		);
+		allRows = dbQuery.getAllRows();
+
+		Assert.assertThat(allRows.size(), is(1));
+		marque = allRows.get(0).get(marq);
+		Assert.assertThat(marque.uidMarque.getValue().intValue(), is(4893059));
+		
+		dbQuery = database.getDBQuery(marq);
+		dbQuery.addCondition(
+				marq.column(marq.uidMarque).is(IntegerExpression.value(4893059))
+		);
+		allRows = dbQuery.getAllRows();
+
+		Assert.assertThat(allRows.size(), is(1));
+		marque = allRows.get(0).get(marq);
+		Assert.assertThat(marque.uidMarque.getValue().intValue(), is(4893059));
 	}
 
 	@Test
@@ -600,13 +643,61 @@ public class IntegerExpressionTest extends AbstractTest {
 		Marque marq = new Marque();
 		DBQuery dbQuery = database.getDBQuery(marq);
 		dbQuery.addCondition(
-				NumberExpression.greatestOf(marq.column(marq.uidMarque), 
+				IntegerExpression.greatestOf(marq.column(marq.uidMarque), 
 						IntegerExpression.value(900000), IntegerExpression.value(800000)
 				).is(marq.column(marq.uidMarque))
 		);
 		List<DBQueryRow> allRows = dbQuery.getAllRows();
 
 		Assert.assertThat(allRows.size(), is(20));
+		Marque marque = allRows.get(0).get(marq);
+		Assert.assertThat(marque.uidMarque.getValue().intValue(), is(4893059));
+	}
+
+	@Test
+	public void testGreatestOfForIntegers() throws SQLException {
+		Marque marq = new Marque();
+		DBQuery dbQuery = database.getDBQuery(marq);
+		dbQuery.addCondition(
+				IntegerExpression
+						.greatestOf(900000, 800000, 4893059)
+						.is(marq.column(marq.uidMarque))
+		);
+		List<DBQueryRow> allRows = dbQuery.getAllRows();
+
+		Assert.assertThat(allRows.size(), is(1));
+		Marque marque = allRows.get(0).get(marq);
+		Assert.assertThat(marque.uidMarque.getValue().intValue(), is(4893059));
+	}
+
+	@Test
+	public void testGreatestOfForLongs() throws SQLException {
+		Marque marq = new Marque();
+		DBQuery dbQuery = database.getDBQuery(marq);
+		dbQuery.addCondition(
+				IntegerExpression
+						.greatestOf(900000l, 800000l, 4893059l)
+						.is(marq.column(marq.uidMarque))
+		);
+		List<DBQueryRow> allRows = dbQuery.getAllRows();
+
+		Assert.assertThat(allRows.size(), is(1));
+		Marque marque = allRows.get(0).get(marq);
+		Assert.assertThat(marque.uidMarque.getValue().intValue(), is(4893059));
+	}
+
+	@Test
+	public void testGreatestOfForNumbers() throws SQLException {
+		Marque marq = new Marque();
+		DBQuery dbQuery = database.getDBQuery(marq);
+		dbQuery.addCondition(
+				IntegerExpression
+						.greatestOf(900000, 800000.5, 4893059)
+						.is(marq.column(marq.uidMarque))
+		);
+		List<DBQueryRow> allRows = dbQuery.getAllRows();
+
+		Assert.assertThat(allRows.size(), is(1));
 		Marque marque = allRows.get(0).get(marq);
 		Assert.assertThat(marque.uidMarque.getValue().intValue(), is(4893059));
 	}
@@ -665,11 +756,70 @@ public class IntegerExpressionTest extends AbstractTest {
 	}
 
 	@Test
+	public void testLeastOfForNumbers() throws SQLException {
+		Marque marq = new Marque();
+		DBQuery dbQuery = database.getDBQuery(marq);
+		dbQuery.addCondition(
+				IntegerExpression.leastOf(9000000l, 8000000, 4893059l, 7000000.5)
+						.is(marq.column(marq.uidMarque))
+		);
+		List<DBQueryRow> allRows = dbQuery.getAllRows();
+
+		Assert.assertThat(allRows.size(), is(1));
+		Marque marque = allRows.get(0).get(marq);
+		Assert.assertThat(marque.uidMarque.getValue().intValue(), is(4893059));
+	}
+
+	@Test
+	public void testLeastOfForLongs() throws SQLException {
+		Marque marq = new Marque();
+		DBQuery dbQuery = database.getDBQuery(marq);
+		dbQuery.addCondition(
+				IntegerExpression.leastOf(9000000l, 8000000l, 4893059)
+						.is(marq.column(marq.uidMarque))
+		);
+		List<DBQueryRow> allRows = dbQuery.getAllRows();
+
+		Assert.assertThat(allRows.size(), is(1));
+		Marque marque = allRows.get(0).get(marq);
+		Assert.assertThat(marque.uidMarque.getValue().intValue(), is(4893059));
+	}
+
+	@Test
+	public void testLeastOfForIntegers() throws SQLException {
+		Marque marq = new Marque();
+		DBQuery dbQuery = database.getDBQuery(marq);
+		dbQuery.addCondition(
+				IntegerExpression.leastOf(9000000, 8000000, 4893059)
+						.is(marq.column(marq.uidMarque))
+		);
+		List<DBQueryRow> allRows = dbQuery.getAllRows();
+
+		Assert.assertThat(allRows.size(), is(1));
+		Marque marque = allRows.get(0).get(marq);
+		Assert.assertThat(marque.uidMarque.getValue().intValue(), is(4893059));
+	}
+
+	@Test
+	public void testInForLongs() throws SQLException {
+		Marque marq = new Marque();
+		DBQuery dbQuery = database.getDBQuery(marq);
+		dbQuery.addCondition(
+				marq.column(marq.uidMarque).isIn(-1l, -2l, -3l, -4l, -5l, 4893059l)
+		);
+		List<DBQueryRow> allRows = dbQuery.getAllRows();
+
+		Assert.assertThat(allRows.size(), is(1));
+		Marque marque = allRows.get(0).get(marq);
+		Assert.assertThat(marque.uidMarque.getValue().longValue(), is(4893059l));
+	}
+
+	@Test
 	public void testIn() throws SQLException {
 		Marque marq = new Marque();
 		DBQuery dbQuery = database.getDBQuery(marq);
 		dbQuery.addCondition(
-				marq.column(marq.statusClassID).isIn(1, 2, 3, 4, 5)
+				marq.column(marq.uidMarque).isIn(-1, -2, -3, -4, -5)
 		);
 		List<DBQueryRow> allRows = dbQuery.getAllRows();
 
@@ -677,13 +827,13 @@ public class IntegerExpressionTest extends AbstractTest {
 
 		dbQuery = database.getDBQuery(marq);
 		dbQuery.addCondition(
-				marq.column(marq.statusClassID).isIn(1, 2, 3, 4, 5, 1246974)
+				marq.column(marq.uidMarque).isIn(-1, -2, -3, -4, -5, 4893059)
 		);
 		allRows = dbQuery.getAllRows();
 
-		Assert.assertThat(allRows.size(), is(21));
+		Assert.assertThat(allRows.size(), is(1));
 		Marque marque = allRows.get(0).get(marq);
-		Assert.assertThat(marque.statusClassID.getValue().intValue(), is(1246974));
+		Assert.assertThat(marque.uidMarque.getValue().intValue(), is(4893059));
 	}
 
 	@Test
@@ -691,7 +841,7 @@ public class IntegerExpressionTest extends AbstractTest {
 		Marque marq = new Marque();
 		DBQuery dbQuery = database.getDBQuery(marq);
 		dbQuery.addCondition(
-				marq.column(marq.statusClassID).isBetween(1, 5)
+				marq.column(marq.uidMarque).isBetween(-5, -1)
 		);
 		List<DBQueryRow> allRows = dbQuery.getAllRows();
 
@@ -699,33 +849,33 @@ public class IntegerExpressionTest extends AbstractTest {
 
 		dbQuery = database.getDBQuery(marq);
 		dbQuery.addCondition(
-				marq.column(marq.statusClassID).isBetween(1246972, 1246974)
+				marq.column(marq.uidMarque).isBetween(4893050, 4893060)
 		);
 		allRows = dbQuery.getAllRows();
 
-		Assert.assertThat(allRows.size(), is(21));
+		Assert.assertThat(allRows.size(), is(1));
 		Marque marque = allRows.get(0).get(marq);
-		Assert.assertThat(marque.statusClassID.getValue().intValue(), is(1246974));
+		Assert.assertThat(marque.uidMarque.getValue().intValue(), is(4893059));
 
 		dbQuery = database.getDBQuery(marq);
 		dbQuery.addCondition(
-				marq.column(marq.statusClassID).isBetween(NumberExpression.value(1246972), 1246974)
+				marq.column(marq.uidMarque).isBetween(IntegerExpression.value(4893050), 4893060)
 		);
 		allRows = dbQuery.getAllRows();
 
-		Assert.assertThat(allRows.size(), is(21));
+		Assert.assertThat(allRows.size(), is(1));
 		marque = allRows.get(0).get(marq);
-		Assert.assertThat(marque.statusClassID.getValue().intValue(), is(1246974));
+		Assert.assertThat(marque.uidMarque.getValue().intValue(), is(4893059));
 
 		dbQuery = database.getDBQuery(marq);
 		dbQuery.addCondition(
-				marq.column(marq.statusClassID).isBetween(1246972, NumberExpression.value(1246974))
+				marq.column(marq.uidMarque).isBetween(4893050, IntegerExpression.value(4893060))
 		);
 		allRows = dbQuery.getAllRows();
 
-		Assert.assertThat(allRows.size(), is(21));
+		Assert.assertThat(allRows.size(), is(1));
 		marque = allRows.get(0).get(marq);
-		Assert.assertThat(marque.statusClassID.getValue().intValue(), is(1246974));
+		Assert.assertThat(marque.uidMarque.getValue().intValue(), is(4893059));
 	}
 
 	@Test
@@ -733,7 +883,7 @@ public class IntegerExpressionTest extends AbstractTest {
 		Marque marq = new Marque();
 		DBQuery dbQuery = database.getDBQuery(marq);
 		dbQuery.addCondition(
-				marq.column(marq.statusClassID).isBetweenExclusive(1246972, 1246974)
+				marq.column(marq.uidMarque).isBetweenExclusive(4893050, 4893059)
 		);
 		List<DBQueryRow> allRows = dbQuery.getAllRows();
 
@@ -741,33 +891,33 @@ public class IntegerExpressionTest extends AbstractTest {
 
 		dbQuery = database.getDBQuery(marq);
 		dbQuery.addCondition(
-				marq.column(marq.statusClassID).isBetweenExclusive(1246972, 1246975)
+				marq.column(marq.uidMarque).isBetweenExclusive(4893050, 4893060)
 		);
 		allRows = dbQuery.getAllRows();
 
-		Assert.assertThat(allRows.size(), is(21));
+		Assert.assertThat(allRows.size(), is(1));
 		Marque marque = allRows.get(0).get(marq);
-		Assert.assertThat(marque.statusClassID.getValue().intValue(), is(1246974));
+		Assert.assertThat(marque.uidMarque.getValue().intValue(), is(4893059));
 
 		dbQuery = database.getDBQuery(marq);
 		dbQuery.addCondition(
-				marq.column(marq.statusClassID).isBetweenExclusive(NumberExpression.value(1246972), 1246975)
+				marq.column(marq.uidMarque).isBetweenExclusive(NumberExpression.value(4893050), 4893060)
 		);
 		allRows = dbQuery.getAllRows();
 
-		Assert.assertThat(allRows.size(), is(21));
+		Assert.assertThat(allRows.size(), is(1));
 		marque = allRows.get(0).get(marq);
-		Assert.assertThat(marque.statusClassID.getValue().intValue(), is(1246974));
+		Assert.assertThat(marque.uidMarque.getValue().intValue(), is(4893059));
 
 		dbQuery = database.getDBQuery(marq);
 		dbQuery.addCondition(
-				marq.column(marq.statusClassID).isBetweenExclusive(1246972, NumberExpression.value(1246975))
+				marq.column(marq.uidMarque).isBetweenExclusive(4893050, NumberExpression.value(4893060))
 		);
 		allRows = dbQuery.getAllRows();
 
-		Assert.assertThat(allRows.size(), is(21));
+		Assert.assertThat(allRows.size(), is(1));
 		marque = allRows.get(0).get(marq);
-		Assert.assertThat(marque.statusClassID.getValue().intValue(), is(1246974));
+		Assert.assertThat(marque.uidMarque.getValue().intValue(), is(4893059));
 	}
 
 	@Test
@@ -775,41 +925,41 @@ public class IntegerExpressionTest extends AbstractTest {
 		Marque marq = new Marque();
 		DBQuery dbQuery = database.getDBQuery(marq);
 		dbQuery.addCondition(
-				marq.column(marq.statusClassID).isBetweenInclusive(1246972, 1246974)
+				marq.column(marq.uidMarque).isBetweenInclusive(4893059, 4893090)
 		);
 		List<DBQueryRow> allRows = dbQuery.getAllRows();
 
-		Assert.assertThat(allRows.size(), is(22));
+		Assert.assertThat(allRows.size(), is(2));
 
 		dbQuery = database.getDBQuery(marq);
 		dbQuery.addCondition(
-				marq.column(marq.statusClassID).isBetweenInclusive(1246973, 1246975)
+				marq.column(marq.uidMarque).isBetweenInclusive(4893059, 4893089)
 		);
 		allRows = dbQuery.getAllRows();
 
-		Assert.assertThat(allRows.size(), is(21));
+		Assert.assertThat(allRows.size(), is(1));
 		Marque marque = allRows.get(0).get(marq);
-		Assert.assertThat(marque.statusClassID.getValue().intValue(), is(1246974));
+		Assert.assertThat(marque.uidMarque.getValue().intValue(), is(4893059));
 
 		dbQuery = database.getDBQuery(marq);
 		dbQuery.addCondition(
-				marq.column(marq.statusClassID).isBetweenInclusive(NumberExpression.value(1246973), 1246975)
+				marq.column(marq.uidMarque).isBetweenInclusive(IntegerExpression.value(4893059), 4893089)
 		);
 		allRows = dbQuery.getAllRows();
 
-		Assert.assertThat(allRows.size(), is(21));
+		Assert.assertThat(allRows.size(), is(1));
 		marque = allRows.get(0).get(marq);
-		Assert.assertThat(marque.statusClassID.getValue().intValue(), is(1246974));
+		Assert.assertThat(marque.uidMarque.getValue().intValue(), is(4893059));
 
 		dbQuery = database.getDBQuery(marq);
 		dbQuery.addCondition(
-				marq.column(marq.statusClassID).isBetweenInclusive(1246973, NumberExpression.value(1246975))
+				marq.column(marq.uidMarque).isBetweenInclusive(4893059, NumberExpression.value(4893089))
 		);
 		allRows = dbQuery.getAllRows();
 
-		Assert.assertThat(allRows.size(), is(21));
+		Assert.assertThat(allRows.size(), is(1));
 		marque = allRows.get(0).get(marq);
-		Assert.assertThat(marque.statusClassID.getValue().intValue(), is(1246974));
+		Assert.assertThat(marque.uidMarque.getValue().intValue(), is(4893059));
 	}
 
 	@Test
