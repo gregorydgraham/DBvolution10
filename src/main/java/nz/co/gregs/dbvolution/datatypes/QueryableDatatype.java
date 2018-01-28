@@ -843,9 +843,7 @@ public abstract class QueryableDatatype<T> extends Object implements Serializabl
 	public QueryableDatatype<T> getQueryableDatatypeForExpressionValue() {
 		try {
 			return this.getClass().newInstance();
-		} catch (InstantiationException e) {
-			return this;
-		} catch (IllegalAccessException ex) {
+		} catch (InstantiationException | IllegalAccessException e) {
 			return this;
 		}
 	}
@@ -917,7 +915,7 @@ public abstract class QueryableDatatype<T> extends Object implements Serializabl
 	 *
 	 * @return the literalValue
 	 */
-	protected T getLiteralValue() {
+	protected synchronized T getLiteralValue() {
 		return literalValue;
 	}
 
