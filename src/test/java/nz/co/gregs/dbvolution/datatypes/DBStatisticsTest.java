@@ -63,7 +63,7 @@ public class DBStatisticsTest extends AbstractTest {
 				.setRowLimit(1)
 				;
 		
-		if(database instanceof  MSSQLServerDB)System.out.println(query.getSQLForQuery());
+//		if(database instanceof  MSSQLServerDB)System.out.println(query.getSQLForQuery());
 
 		List<DBQueryRow> allRows = query.getAllRows();
 		
@@ -100,7 +100,7 @@ public class DBStatisticsTest extends AbstractTest {
 				.setRowLimit(1)
 				;
 		
-		if(database instanceof  MSSQLServerDB)System.out.println(query.getSQLForQuery());
+//		if(database instanceof  MSSQLServerDB)System.out.println(query.getSQLForQuery());
 
 		List<DBQueryRow> allRows = query.getAllRows();
 		
@@ -132,7 +132,7 @@ public class DBStatisticsTest extends AbstractTest {
 				.setReturnFieldsToNone()
 				.addExpressionColumn("mode", updateCountColumn.modeSimple().asExpressionColumn());
 		
-		if(database instanceof  MSSQLServerDB)System.out.println(query.getSQLForQuery());
+//		if(database instanceof  MSSQLServerDB)System.out.println(query.getSQLForQuery());
 
 		List<DBQueryRow> allRows = query.getAllRows();
 		
@@ -153,7 +153,7 @@ public class DBStatisticsTest extends AbstractTest {
 		DBQuery query = database
 				.getDBQuery(stat).setBlankQueryAllowed(true);
 		
-		if(database instanceof  MSSQLServerDB)System.out.println(query.getSQLForQuery());
+//		if(database instanceof  MSSQLServerDB)System.out.println(query.getSQLForQuery());
 				
 		List<DBQueryRow> allRows = query.getAllRows();
 		
@@ -201,10 +201,9 @@ public class DBStatisticsTest extends AbstractTest {
 				.setRowLimit(1)
 				.setPageRequired(1)
 				;
-//		System.out.println(query1.getSQLForQuery());
-//		System.out.println(query2.getSQLForQuery());		
-		if(database instanceof  MSSQLServerDB)System.out.println(query1.getSQLForQuery());
-		if(database instanceof  MSSQLServerDB)System.out.println(query2.getSQLForQuery());
+
+//		if(database instanceof  MSSQLServerDB)System.out.println(query1.getSQLForQuery());
+//		if(database instanceof  MSSQLServerDB)System.out.println(query2.getSQLForQuery());
 
 		
 		List<DBQueryRow> allRows1 = query1.getAllRows();
@@ -273,10 +272,9 @@ public class DBStatisticsTest extends AbstractTest {
 				.setRowLimit(1)
 				.setPageRequired(1)
 				;
-		if(database instanceof  MSSQLServerDB)System.out.println(query1.getSQLForQuery());
-		if(database instanceof  MSSQLServerDB)System.out.println(query2.getSQLForQuery());
-//		System.out.println(query1.getSQLForQuery());
-//		System.out.println(query2.getSQLForQuery());
+
+//		if(database instanceof  MSSQLServerDB)System.out.println(query1.getSQLForQuery());
+//		if(database instanceof  MSSQLServerDB)System.out.println(query2.getSQLForQuery());
 		
 		List<DBQueryRow> allRows1 = query1.getAllRows();
 		List<DBQueryRow> allRows2 = query2.getAllRows();
@@ -320,9 +318,9 @@ public class DBStatisticsTest extends AbstractTest {
 				.setReturnFieldsToNone()
 				.addExpressionColumn("mode", updateCountColumn.modeStrict().asExpressionColumn());
 		
-		if(database instanceof MSSQLServerDB) {
-			System.out.println(query.getSQLForQuery());
-		}
+//		if(database instanceof MSSQLServerDB) {
+//			System.out.println(query.getSQLForQuery());
+//		}
 		List<DBQueryRow> allRows = query.getAllRows();
 		
 		// Check there is only 1 row
