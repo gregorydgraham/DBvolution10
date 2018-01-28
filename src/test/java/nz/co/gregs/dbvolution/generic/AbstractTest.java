@@ -182,6 +182,11 @@ public abstract class AbstractTest {
 						.replaceAll(" as ", " ");
 			} else if ((database instanceof NuoDB)) {
 				return trimStr.replaceAll("\\(\\(([^)]*)\\)=true\\)", "$1");
+			} else if ((database instanceof MSSQLServerDB)) {
+				return trimStr
+						.replaceAll("\\[", "")
+						.replaceAll("]", "")
+						.replaceAll(" *;", "");
 			} else {
 				return trimStr;
 			}
