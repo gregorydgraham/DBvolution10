@@ -599,7 +599,7 @@ public class NumberExpressionTest extends AbstractTest {
 		Marque marq = new Marque();
 		DBQuery dbQuery = database.getDBQuery(marq);
 		dbQuery.addCondition(
-				NumberExpression.greatestOf(marq.column(marq.uidMarque).numberResult(), 
+				NumberExpression.greatestOf(marq.column(marq.uidMarque).numberResult(),
 						NumberExpression.value(900000), NumberExpression.value(800000)
 				).is(marq.column(marq.uidMarque).numberResult())
 		);
@@ -664,6 +664,18 @@ public class NumberExpressionTest extends AbstractTest {
 	}
 
 	@Test
+	public void testNumberOfDigits() throws SQLException {
+		Marque marq = new Marque();
+		DBQuery dbQuery = database.getDBQuery(marq);
+		dbQuery.addCondition(
+				marq.column(marq.uidMarque).numberResult().numberOfDigits().is(1)
+		);
+		List<DBQueryRow> allRows = dbQuery.getAllRows();
+
+		Assert.assertThat(allRows.size(), is(2));
+	}
+
+	@Test
 	public void testIn() throws SQLException {
 		Marque marq = new Marque();
 		DBQuery dbQuery = database.getDBQuery(marq);
@@ -683,6 +695,63 @@ public class NumberExpressionTest extends AbstractTest {
 		Assert.assertThat(allRows.size(), is(21));
 		Marque marque = allRows.get(0).get(marq);
 		Assert.assertThat(marque.statusClassID.getValue().intValue(), is(1246974));
+	}
+
+	@Test
+	public void testInWithIntegers() throws SQLException {
+		Marque marq = new Marque();
+		DBQuery dbQuery = database.getDBQuery(marq);
+		dbQuery.addCondition(
+				marq.column(marq.statusClassID).isIn(
+						AnyExpression.value(1),
+						IntegerExpression.value(2),
+						AnyExpression.value(3),
+						AnyExpression.value(4),
+						AnyExpression.value(5)
+				)
+		);
+		List<DBQueryRow> allRows = dbQuery.getAllRows();
+
+		Assert.assertThat(allRows.size(), is(0));
+
+		dbQuery = database.getDBQuery(marq);
+		dbQuery.addCondition(
+				marq.column(marq.statusClassID).isIn(
+						new ArrayList<Integer>(){{this.add(1);this.add(2);this.add(3);this.add(4);this.add(5);}}
+				)
+		);
+		allRows = dbQuery.getAllRows();
+
+		Assert.assertThat(allRows.size(), is(0));
+
+		dbQuery = database.getDBQuery(marq);
+		dbQuery.addCondition(
+				marq.column(marq.statusClassID).isIn(
+						AnyExpression.value(1),
+						IntegerExpression.value(2),
+						AnyExpression.value(3),
+						AnyExpression.value(4),
+						AnyExpression.value(5),
+						AnyExpression.value(1246974)
+				)
+		);
+		allRows = dbQuery.getAllRows();
+
+		Assert.assertThat(allRows.size(), is(21));
+		Marque marque = allRows.get(0).get(marq);
+		Assert.assertThat(marque.statusClassID.getValue().intValue(), is(1246974));
+		
+		dbQuery = database.getDBQuery(marq);
+		dbQuery.addCondition(
+				marq.column(marq.statusClassID).isIn(
+						new ArrayList<Integer>(){{this.add(1);this.add(2);this.add(3);this.add(4);this.add(5);this.add(1246974);}}
+				)
+		);
+		allRows = dbQuery.getAllRows();
+
+		Assert.assertThat(allRows.size(), is(21));
+		marque = allRows.get(0).get(marq);
+		Assert.assertThat(marque.statusClassID.getValue().intValue(), is(1246974));	
 	}
 
 	@Test
