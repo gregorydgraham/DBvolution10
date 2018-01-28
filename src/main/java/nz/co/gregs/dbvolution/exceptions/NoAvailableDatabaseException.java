@@ -28,17 +28,11 @@
  */
 package nz.co.gregs.dbvolution.exceptions;
 
-import java.sql.SQLException;
-
 /**
  *
  * @author gregorygraham
  */
-public class FailedToExecuteDBQueryInsertException extends SQLException {
-	
-	private static final long serialVersionUID = 1l;
+public class NoAvailableDatabaseException extends RuntimeException {
 
-	public FailedToExecuteDBQueryInsertException(String sql, SQLException sqlex) {
-	}
-	
+	private static final long serialVersionUID = 1l;
 }

@@ -56,13 +56,13 @@ public class DataModelTest extends AbstractTest {
 	@Test
 	public void testGetDatabases() {
 		Set<Class<? extends DBDatabase>> result = DataModel.getUseableDBDatabaseClasses();
-		Assert.assertThat(result.size(), is(8));
+		Assert.assertThat(result.size(), is(9));
 	}
 
 	@Test
 	public void testGetDBDatabaseConstructors() {
 		Set<Constructor<DBDatabase>> result = DataModel.getDBDatabaseConstructors();
-		Assert.assertThat(result.size(), is(11));
+		Assert.assertThat(result.size(), is(12));
 	}
 
 	@Test

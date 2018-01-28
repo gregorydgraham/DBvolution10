@@ -99,7 +99,7 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 	@Override
 	public String toString() {
 		if (jdbcURL != null && !jdbcURL.isEmpty()) {
-			return this.getClass().getSimpleName() + "{" + jdbcURL+":"+username+"}";
+			return this.getClass().getSimpleName() + "{" + (databaseName == null ? "UNNAMED" : databaseName + "=") + jdbcURL + ":" + username + "}";
 		} else if (dataSource != null) {
 			return this.getClass().getSimpleName() + ": " + dataSource.toString();
 		} else {
@@ -1531,7 +1531,8 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 	 * Do NOT Use This.
 	 *
 	 * @param doIt don't do it.
-	 * @throws nz.co.gregs.dbvolution.exceptions.AccidentalDroppingOfDatabaseException
+	 * @throws
+	 * nz.co.gregs.dbvolution.exceptions.AccidentalDroppingOfDatabaseException
 	 * @throws java.lang.CloneNotSupportedException
 	 * @throws nz.co.gregs.dbvolution.exceptions.UnableToDropDatabaseException
 	 */

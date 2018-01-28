@@ -82,7 +82,7 @@ public class QueryDetails implements DBQueryable {
 	private final Map<Object, DBExpression> dbReportGroupByColumns = new LinkedHashMap<>();
 	private final Map<Class<?>, Map<String, DBRow>> existingInstances = new HashMap<>();
 	private boolean groupByRequiredByAggregator = false;
-	private DBDefinition databaseDefinition = null;
+//	private DBDefinition databaseDefinition = null;
 	private String selectSQLClause = null;
 	private final ArrayList<BooleanExpression> havingColumns = new ArrayList<>();
 	private String rawSQLClause = "";
@@ -162,12 +162,13 @@ public class QueryDetails implements DBQueryable {
 	 * <p style="color: #F90;">Support DBvolution at
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 *
+	 * @param database
 	 * @return all conditions in the query
 	 */
-	public synchronized List<BooleanExpression> getAllConditions() {
+	public synchronized List<BooleanExpression> getAllConditions(DBDatabase database) {
 		List<BooleanExpression> allConditions = new ArrayList<>();
 		for (DBRow entry : allQueryTables) {
-			allConditions.addAll(entry.getWhereClauseExpressions(databaseDefinition, true));
+			allConditions.addAll(entry.getWhereClauseExpressions(database.getDefinition(), true));
 		}
 		return allConditions;
 	}
@@ -275,10 +276,9 @@ public class QueryDetails implements DBQueryable {
 		Collections.addAll(this.havingColumns, havingColumns);
 	}
 
-	public synchronized void setDefinition(DBDefinition database) {
-		this.databaseDefinition = database;
-	}
-
+//	public synchronized void setDefinition(DBDefinition database) {
+//		this.databaseDefinition = database;
+//	}
 	public void setQueryType(QueryType queryType) {
 		this.options.setQueryType(queryType);
 	}
@@ -466,13 +466,13 @@ public class QueryDetails implements DBQueryable {
 						}
 						if (expression != null && expression.isComplexExpression()) {
 							final boolean hasTablesAlready = !joinedTables.isEmpty();
-							String joiner = hasTablesAlready?options.isUseANSISyntax()?" join ":fromClauseTableSeparator:"";
+							String joiner = hasTablesAlready ? options.isUseANSISyntax() ? " join " : fromClauseTableSeparator : "";
 //							joiner = hasTablesAlready&& !options.isUseANSISyntax()?:joiner;
 							fromClause
 									.append(joiner)
 									.append(fromClauseTableSeparator)
 									.append(expression.createSQLForFromClause(database))
-									.append(options.isUseANSISyntax()?" join ":", ");
+									.append(options.isUseANSISyntax() ? " join " : ", ");
 							fromClauseTableSeparator = ", " + lineSep;
 							queryState.mayRequireOnClause = true;
 						}
@@ -543,15 +543,15 @@ public class QueryDetails implements DBQueryable {
 					}
 					if (expression.isComplexExpression()) {
 						fromClause
-								.append(options.isUseANSISyntax()?" join ":fromClauseTableSeparator)
+								.append(options.isUseANSISyntax() ? " join " : fromClauseTableSeparator)
 								.append(expression.createSQLForFromClause(database));
-						if(options.isUseANSISyntax()&&defn.requiresOnClauseForAllJoins()){
+						if (options.isUseANSISyntax() && defn.requiresOnClauseForAllJoins()) {
 							fromClause
 									.append(defn.beginOnClause())
 									.append(BooleanExpression.trueExpression().toSQLString(defn))
 									.append(defn.endOnClause());
 						}
-						fromClauseTableSeparator = (options.isUseANSISyntax()?" join ":", ") + lineSep;
+						fromClauseTableSeparator = (options.isUseANSISyntax() ? " join " : ", ") + lineSep;
 						queryState.mayRequireOnClause = true;
 					}
 					indexesOfSelectedExpressions.put(expression, columnIndex);
@@ -687,9 +687,9 @@ public class QueryDetails implements DBQueryable {
 				conditionClauses.addAll(firstTableConditions);
 			}
 		}
-		
+
 		// Add all the expressions we can
-		if (previousTables.size() > 0||conditionClauses.size()>0) {
+		if (previousTables.size() > 0 || conditionClauses.size() > 0) {
 			for (BooleanExpression expr : queryState.getRemainingExpressions()) {
 				Set<DBRow> tablesInvolved = new HashSet<>(expr.getTablesInvolved());
 				if (tablesInvolved.contains(newTable)) {
@@ -804,7 +804,7 @@ public class QueryDetails implements DBQueryable {
 			String sortSeparator = defn.getStartingOrderByClauseSeparator();
 			for (ColumnProvider column : sortOrderColumns) {
 				if (column instanceof QueryColumn) {
-					QueryColumn<?,?,?> qc = (QueryColumn) column;
+					QueryColumn<?, ?, ?> qc = (QueryColumn) column;
 					final QueryableDatatype<?> qdt = qc.getQueryableDatatypeForExpressionValue();
 					orderByClause.append(sortSeparator).append(qc.toSQLString(defn)).append(defn.getOrderByDirectionClause(qdt.getSortOrder()));
 				} else {

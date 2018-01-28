@@ -81,7 +81,7 @@ public class DBValidation<R extends DBRow> {
 
 		QueryDetails details = sourceMigration.getQueryDetails();
 		QueryOptions options = details.getOptions();
-		List<BooleanExpression> conditions = details.getAllConditions();
+		List<BooleanExpression> conditions = details.getAllConditions(database);
 		List<DBRow> allQueryTables = details.getAllQueryTables();
 
 		DBQuery dbQuery = database.getDBQuery()

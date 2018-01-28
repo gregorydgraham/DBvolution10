@@ -50,6 +50,8 @@ import org.reflections.Reflections;
  */
 public class DataModel {
 
+	private static Set<DBRow> storedRequiredTables;
+
 	private DataModel() {
 	}
 
@@ -320,13 +322,7 @@ public class DataModel {
 			try {
 				DBDatabase newInstance = constr.newInstance();
 				databaseInstances.add(newInstance);
-			} catch (InstantiationException ex) {
-				Logger.getLogger(DataModel.class.getName()).log(Level.SEVERE, null, ex);
-			} catch (IllegalAccessException ex) {
-				Logger.getLogger(DataModel.class.getName()).log(Level.SEVERE, null, ex);
-			} catch (IllegalArgumentException ex) {
-				Logger.getLogger(DataModel.class.getName()).log(Level.SEVERE, null, ex);
-			} catch (InvocationTargetException ex) {
+			} catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
 				Logger.getLogger(DataModel.class.getName()).log(Level.SEVERE, null, ex);
 			}
 		}
@@ -379,16 +375,19 @@ public class DataModel {
 	 *
 	 * @return all the subclasses of DBRow in the current classpath.
 	 */
-	public static Set< DBRow> getRequiredTables() {
-		Set< DBRow> result = new HashSet<>(0);
-		Set<Class<? extends DBRow>> dbRowDirectSubclasses = getDBRowDirectSubclasses();
-		for (Class<? extends DBRow> clzz : dbRowDirectSubclasses) {
-			DBRow dbRow = DBRow.getDBRow(clzz);
-			if (dbRow.isRequiredTable()) {
-				result.add(dbRow);
+	public synchronized static Set< DBRow> getRequiredTables() {
+		if (storedRequiredTables == null || storedRequiredTables.isEmpty()) {
+			Set< DBRow> result = new HashSet<>(0);
+			Set<Class<? extends DBRow>> dbRowDirectSubclasses = getDBRowDirectSubclasses();
+			for (Class<? extends DBRow> clzz : dbRowDirectSubclasses) {
+				DBRow dbRow = DBRow.getDBRow(clzz);
+				if (dbRow.isRequiredTable()) {
+					result.add(dbRow);
+				}
 			}
+			storedRequiredTables = result;
 		}
-		return result;
+		return storedRequiredTables;
 	}
 
 	/**

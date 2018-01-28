@@ -110,7 +110,7 @@ public class DBQuery {
 
 	private DBQuery(DBDatabase database) {
 		this.database = database;
-		this.details.setDefinition(database.getDefinition());
+//		this.details.setDefinition(database.getDefinition());
 		blankResults();
 	}
 

@@ -279,7 +279,7 @@ public class DBTableClassGenerator {
 
 		DBDatabase database = db;
 		if (db instanceof DBDatabaseCluster) {
-			database =((DBDatabaseCluster)db).getPrimaryDatabase();
+			database =((DBDatabaseCluster)db).getReadyDatabase();
 		}
 		try (DBStatement dbStatement = database.getDBStatement()) {
 			Connection connection = dbStatement.getConnection();
