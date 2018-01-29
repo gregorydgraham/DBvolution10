@@ -49,17 +49,6 @@ public class DBStatementCluster extends DBStatement {
 	@Override
 	public boolean getBatchHasEntries() {
 		throw new UnsupportedOperationException("DBStatementCluster.getBatchHasEntries is not yet implemented.");
-//		boolean batchHasEntries = true;
-//		ArrayList<DBStatement> dbStatements;
-//		try {
-//			dbStatements = databaseCluster.getDBStatements();
-//		} catch (SQLException ex) {
-//			Logger.getLogger(DBStatementCluster.class.getName()).log(Level.SEVERE, null, ex);
-//		}
-//		for (DBStatement next : dbStatements) {
-//			batchHasEntries &= next.getBatchHasEntries();
-//		}
-//		return batchHasEntries;
 	}
 
 	@Override
