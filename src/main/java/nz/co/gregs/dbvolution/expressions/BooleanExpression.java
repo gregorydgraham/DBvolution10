@@ -76,7 +76,7 @@ import nz.co.gregs.dbvolution.results.RangeResult;
  *
  * @author Gregory Graham
  */
-public class BooleanExpression extends EqualExpression<Boolean, BooleanResult, DBBoolean>implements BooleanResult {
+public class BooleanExpression extends EqualExpression<Boolean, BooleanResult, DBBoolean> implements BooleanResult {
 
 	/**
 	 * Default Constructor for creating new BooleanExpressions.
@@ -125,9 +125,9 @@ public class BooleanExpression extends EqualExpression<Boolean, BooleanResult, D
 
 	@Override
 	public BooleanExpression copy() {
-		return isNullSafetyTerminator()?nullBoolean():new BooleanExpression(this.getInnerResult());
+		return isNullSafetyTerminator() ? nullBoolean() : new BooleanExpression(this.getInnerResult());
 	}
-	
+
 	/**
 	 * Returns a value of the required type that will evaluate to NULL.
 	 *
@@ -151,7 +151,7 @@ public class BooleanExpression extends EqualExpression<Boolean, BooleanResult, D
 	 * <p>
 	 * MODE: The number which appears most often in a set of numbers. For example:
 	 * in {6, 3, 9, 6, 6, 5, 9, 3} the Mode is 6.</p>
-	 * 
+	 *
 	 * <p style="color: #F90;">Support DBvolution at
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 *
@@ -197,6 +197,7 @@ public class BooleanExpression extends EqualExpression<Boolean, BooleanResult, D
 	public BooleanExpression expression(Boolean bool) {
 		return value(bool);
 	}
+
 	@Override
 	public BooleanExpression expression(DBBoolean bool) {
 		return value(bool);
@@ -247,8 +248,8 @@ public class BooleanExpression extends EqualExpression<Boolean, BooleanResult, D
 	 */
 	@Override
 	public BooleanExpression is(Boolean bool) {
-		
-		return bool==null?isNull(): is(new BooleanExpression(bool));
+
+		return bool == null ? isNull() : is(new BooleanExpression(bool));
 	}
 
 	/**
@@ -265,7 +266,7 @@ public class BooleanExpression extends EqualExpression<Boolean, BooleanResult, D
 	 * the Boolean supplied.
 	 */
 	public BooleanExpression is(BooleanExpression bool) {
-		return bool.getIncludesNull()?isNull(): is((BooleanResult) bool);
+		return bool.getIncludesNull() ? isNull() : is((BooleanResult) bool);
 	}
 
 	/**
@@ -293,7 +294,7 @@ public class BooleanExpression extends EqualExpression<Boolean, BooleanResult, D
 					BooleanExpression first = this.getFirst();
 					BooleanExpression second = this.getSecond();
 					String returnString = first.getComparableBooleanSQL(defn)
-							+ getEquationOperator(defn) 
+							+ getEquationOperator(defn)
 							+ second.getComparableBooleanSQL(defn);
 					return returnString;
 				}
@@ -332,8 +333,8 @@ public class BooleanExpression extends EqualExpression<Boolean, BooleanResult, D
 				} else {
 					BooleanExpression first = this.getFirst();
 					BooleanExpression second = this.getSecond();
-					String returnString = "(" + first.getComparableBooleanSQL(db) + ")" 
-							+ getEquationOperator(db) 
+					String returnString = "(" + first.getComparableBooleanSQL(db) + ")"
+							+ getEquationOperator(db)
 							+ "(" + second.getComparableBooleanSQL(db) + ")";
 					return returnString;
 				}
@@ -382,9 +383,14 @@ public class BooleanExpression extends EqualExpression<Boolean, BooleanResult, D
 			public boolean isAggregator() {
 				return true;
 			}
+
+			@Override
+			public boolean isBooleanStatement() {
+				return true;
+			}
 		});
 	}
-	
+
 	protected String getComparableBooleanSQL(DBDefinition db) {
 		String firstSQL;
 		boolean firstIsStatement = this.isBooleanStatement();
@@ -395,7 +401,6 @@ public class BooleanExpression extends EqualExpression<Boolean, BooleanResult, D
 		}
 		return "(" + firstSQL + ")";
 	}
-
 
 	/**
 	 * Compare this BooleanExpression and the given {@link BooleanResult} using
@@ -612,7 +617,7 @@ public class BooleanExpression extends EqualExpression<Boolean, BooleanResult, D
 		return new BooleanExpression(new BooleanExpression(this) {
 			@Override
 			public String toSQLString(DBDefinition db) {
-				return db.getNegationFunctionName()+"("+getInnerResult().toSQLString(db)+")";
+				return db.getNegationFunctionName() + "(" + getInnerResult().toSQLString(db) + ")";
 			}
 		});
 	}
@@ -1235,7 +1240,7 @@ public class BooleanExpression extends EqualExpression<Boolean, BooleanResult, D
 	@SuppressWarnings("unchecked")
 	public static <B, R extends RangeResult<B>>
 			BooleanExpression seekLessThan(
-					RangeComparable<B,R> columnA,
+					RangeComparable<B, R> columnA,
 					R valueA,
 					BooleanExpression whenEqualsFallbackComparison) {
 		return columnA.isLessThan(valueA).or(columnA.is(valueA).and(whenEqualsFallbackComparison));
@@ -1270,7 +1275,7 @@ public class BooleanExpression extends EqualExpression<Boolean, BooleanResult, D
 	 */
 	@SuppressWarnings("unchecked")
 	public static <B, R extends RangeResult<B>>
-			BooleanExpression seekGreaterThan(RangeComparable<B,R> columnA, R valueA, BooleanExpression whenEqualsFallbackComparison) {
+			BooleanExpression seekGreaterThan(RangeComparable<B, R> columnA, R valueA, BooleanExpression whenEqualsFallbackComparison) {
 		return columnA.isGreaterThan(valueA).or(columnA.is(valueA).and(whenEqualsFallbackComparison));
 	}
 
@@ -1304,10 +1309,9 @@ public class BooleanExpression extends EqualExpression<Boolean, BooleanResult, D
 	 * @return a BooleanExpression
 	 */
 	@SuppressWarnings("unchecked")
-	public static <B, R extends RangeResult<B>,
-					C, S extends RangeResult<C>>
+	public static <B, R extends RangeResult<B>, C, S extends RangeResult<C>>
 			BooleanExpression
-			seekLessThan(RangeComparable<B,R> columnA, R valueA, RangeComparable<C,S> columnB, S valueB) {
+			seekLessThan(RangeComparable<B, R> columnA, R valueA, RangeComparable<C, S> columnB, S valueB) {
 		return BooleanExpression.anyOf(
 				columnA.isLessThan(valueA),
 				BooleanExpression.allOf(columnA.is(valueA), columnB.isLessThanOrEqual(valueB)));
@@ -1347,10 +1351,9 @@ public class BooleanExpression extends EqualExpression<Boolean, BooleanResult, D
 	 * @return a BooleanExpression
 	 */
 	@SuppressWarnings("unchecked")
-	public static <B, R extends RangeResult<B>,
-					C, S extends RangeResult<C>>
+	public static <B, R extends RangeResult<B>, C, S extends RangeResult<C>>
 			BooleanExpression
-			seekGreaterThan(RangeComparable<B,R> columnA, R valueA, RangeComparable<C,S> columnB, S valueB) {
+			seekGreaterThan(RangeComparable<B, R> columnA, R valueA, RangeComparable<C, S> columnB, S valueB) {
 		return BooleanExpression.anyOf(
 				columnA.isGreaterThan(valueA),
 				BooleanExpression.allOf(columnA.is(valueA), columnB.isGreaterThanOrEqual(valueB)));
@@ -1370,7 +1373,7 @@ public class BooleanExpression extends EqualExpression<Boolean, BooleanResult, D
 	 *
 	 * <p>
 	 * This version provides three levels of sorting. If you only need to seek on
-	 * one column/value use {@link #seekLessThan(nz.co.gregs.dbvolution.results.RangeComparable, nz.co.gregs.dbvolution.results.RangeResult, nz.co.gregs.dbvolution.expressions.BooleanExpression) 
+	 * one column/value use {@link #seekLessThan(nz.co.gregs.dbvolution.results.RangeComparable, nz.co.gregs.dbvolution.results.RangeResult, nz.co.gregs.dbvolution.expressions.BooleanExpression)
 	 * }
 	 *
 	 * <p>
@@ -1394,11 +1397,9 @@ public class BooleanExpression extends EqualExpression<Boolean, BooleanResult, D
 	 * @return a BooleanExpression
 	 */
 	@SuppressWarnings("unchecked")
-	public static <B, R extends RangeResult<B>,
-					C, S extends RangeResult<C>, 
-					D, T extends RangeResult<D>>
+	public static <B, R extends RangeResult<B>, C, S extends RangeResult<C>, D, T extends RangeResult<D>>
 			BooleanExpression
-			seekLessThan(RangeComparable<B,R> columnA, R valueA, RangeComparable<C,S> columnB, S valueB, RangeComparable<D,T> columnC, T valueC) {
+			seekLessThan(RangeComparable<B, R> columnA, R valueA, RangeComparable<C, S> columnB, S valueB, RangeComparable<D, T> columnC, T valueC) {
 		return BooleanExpression.anyOf(
 				columnA.isLessThan(valueA),
 				BooleanExpression.allOf(columnA.is(valueA), BooleanExpression.seekLessThan(columnB, valueB, columnC, valueC)));
@@ -1418,7 +1419,7 @@ public class BooleanExpression extends EqualExpression<Boolean, BooleanResult, D
 	 *
 	 * <p>
 	 * This version provides four levels of sorting. If you only need to seek on
-	 * one column/value use {@link #seekLessThan(nz.co.gregs.dbvolution.results.RangeComparable, nz.co.gregs.dbvolution.results.RangeResult, nz.co.gregs.dbvolution.expressions.BooleanExpression) 
+	 * one column/value use {@link #seekLessThan(nz.co.gregs.dbvolution.results.RangeComparable, nz.co.gregs.dbvolution.results.RangeResult, nz.co.gregs.dbvolution.expressions.BooleanExpression)
 	 * }
 	 *
 	 * <p>
@@ -1446,12 +1447,9 @@ public class BooleanExpression extends EqualExpression<Boolean, BooleanResult, D
 	 * @return a BooleanExpression
 	 */
 	@SuppressWarnings("unchecked")
-	public static <B, R extends RangeResult<B>,
-					C, S extends RangeResult<C>,
-					D, T extends RangeResult<D>,
-					E, U extends RangeResult<E>>
+	public static <B, R extends RangeResult<B>, C, S extends RangeResult<C>, D, T extends RangeResult<D>, E, U extends RangeResult<E>>
 			BooleanExpression
-			seekLessThan(RangeComparable<B,R> columnA, R valueA, RangeComparable<C,S> columnB, S valueB, RangeComparable<D,T> columnC, T valueC, RangeComparable<E,U> columnD, U valueD) {
+			seekLessThan(RangeComparable<B, R> columnA, R valueA, RangeComparable<C, S> columnB, S valueB, RangeComparable<D, T> columnC, T valueC, RangeComparable<E, U> columnD, U valueD) {
 		return BooleanExpression.anyOf(
 				columnA.isLessThan(valueA),
 				BooleanExpression.allOf(columnA.is(valueA), BooleanExpression.seekLessThan(columnB, valueB, columnC, valueC, columnD, valueD)));
@@ -1471,7 +1469,7 @@ public class BooleanExpression extends EqualExpression<Boolean, BooleanResult, D
 	 *
 	 * <p>
 	 * This version provides 3 levels of sorting. If you only need to seek on one
-	 * column/value use {@link #seekLessThan(nz.co.gregs.dbvolution.results.RangeComparable, nz.co.gregs.dbvolution.results.RangeResult, nz.co.gregs.dbvolution.expressions.BooleanExpression) 
+	 * column/value use {@link #seekLessThan(nz.co.gregs.dbvolution.results.RangeComparable, nz.co.gregs.dbvolution.results.RangeResult, nz.co.gregs.dbvolution.expressions.BooleanExpression)
 	 * }
 	 *
 	 * <p>
@@ -1495,11 +1493,9 @@ public class BooleanExpression extends EqualExpression<Boolean, BooleanResult, D
 	 * @return a BooleanExpression
 	 */
 	@SuppressWarnings("unchecked")
-	public static <B, R extends RangeResult<B>,
-					C, S extends RangeResult<C>,
-					D, T extends RangeResult<D>>
+	public static <B, R extends RangeResult<B>, C, S extends RangeResult<C>, D, T extends RangeResult<D>>
 			BooleanExpression
-			seekGreaterThan(RangeComparable<B,R> columnA, R valueA, RangeComparable<C,S> columnB, S valueB, RangeComparable<D,T> columnC, T valueC) {
+			seekGreaterThan(RangeComparable<B, R> columnA, R valueA, RangeComparable<C, S> columnB, S valueB, RangeComparable<D, T> columnC, T valueC) {
 		return BooleanExpression.anyOf(
 				columnA.isGreaterThan(valueA),
 				BooleanExpression.allOf(columnA.is(valueA), BooleanExpression.seekGreaterThan(columnB, valueB, columnC, valueC)));
@@ -1519,7 +1515,7 @@ public class BooleanExpression extends EqualExpression<Boolean, BooleanResult, D
 	 *
 	 * <p>
 	 * This version provides four levels of sorting. If you only need to seek on
-	 * one column/value use {@link #seekGreaterThan(nz.co.gregs.dbvolution.results.RangeComparable, nz.co.gregs.dbvolution.results.RangeResult, nz.co.gregs.dbvolution.expressions.BooleanExpression) 
+	 * one column/value use {@link #seekGreaterThan(nz.co.gregs.dbvolution.results.RangeComparable, nz.co.gregs.dbvolution.results.RangeResult, nz.co.gregs.dbvolution.expressions.BooleanExpression)
 	 * }
 	 *
 	 * <p>
@@ -1547,12 +1543,9 @@ public class BooleanExpression extends EqualExpression<Boolean, BooleanResult, D
 	 * @return a BooleanExpression
 	 */
 	@SuppressWarnings("unchecked")
-	public static <B, R extends RangeResult<B>,
-					C, S extends RangeResult<C>,
-					D, T extends RangeResult<D>,
-					E, U extends RangeResult<E>>
+	public static <B, R extends RangeResult<B>, C, S extends RangeResult<C>, D, T extends RangeResult<D>, E, U extends RangeResult<E>>
 			BooleanExpression
-			seekGreaterThan(RangeComparable<B,R> columnA, R valueA, RangeComparable<C,S> columnB, S valueB, RangeComparable<D,T> columnC, T valueC, RangeComparable<E,U> columnD, U valueD) {
+			seekGreaterThan(RangeComparable<B, R> columnA, R valueA, RangeComparable<C, S> columnB, S valueB, RangeComparable<D, T> columnC, T valueC, RangeComparable<E, U> columnD, U valueD) {
 		return BooleanExpression.anyOf(
 				columnA.isGreaterThan(valueA),
 				BooleanExpression.allOf(columnA.is(valueA), BooleanExpression.seekGreaterThan(columnB, valueB, columnC, valueC, columnD, valueD)));
@@ -1736,7 +1729,7 @@ public class BooleanExpression extends EqualExpression<Boolean, BooleanResult, D
 		DBBinaryBooleanArithmetic(BooleanExpression first, BooleanResult second) {
 			this(first, new BooleanExpression(second));
 		}
-		
+
 		@Override
 		public String toSQLString(DBDefinition db) {
 			String sqlString = getFirst().toSQLString(db) + this.getEquationOperator(db) + getSecond().toSQLString(db);
@@ -1892,7 +1885,7 @@ public class BooleanExpression extends EqualExpression<Boolean, BooleanResult, D
 		}
 
 		DBBooleanNumberNumberFunction(BooleanExpression only, NumberResult first, NumberResult second) {
-			this.onlyBool = (only == null ? nullBoolean(): only);
+			this.onlyBool = (only == null ? nullBoolean() : only);
 			this.first = (first == null ? nullNumber() : first);
 			this.second = (second == null ? nullNumber() : second);
 		}
@@ -1956,7 +1949,7 @@ public class BooleanExpression extends EqualExpression<Boolean, BooleanResult, D
 		}
 
 		DBBooleanIntegerIntegerFunction(BooleanExpression only, IntegerResult first, IntegerResult second) {
-			this.onlyBool = (only == null ? nullBoolean(): only);
+			this.onlyBool = (only == null ? nullBoolean() : only);
 			this.first = (first == null ? nullInteger() : first);
 			this.second = (second == null ? nullInteger() : second);
 		}
