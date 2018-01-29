@@ -1584,7 +1584,7 @@ public class BooleanExpression extends EqualExpression<Boolean, BooleanResult, D
 		if (onlyBool1 instanceof BooleanResult) {
 			return ((BooleanResult) onlyBool1).isBooleanStatement();
 		} else {
-			return false;
+			return true;
 		}
 	}
 
