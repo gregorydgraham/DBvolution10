@@ -1178,7 +1178,11 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 		createTable(newTableRow, true);
 	}
 
-	public final synchronized String getSQLForCreateTable(DBRow newTableRow, boolean includeForeignKeyClauses, List<PropertyWrapper> pkFields, List<PropertyWrapper> spatial2DFields) {
+	public final synchronized String getSQLForCreateTable(DBRow newTableRow, boolean includeForeignKeyClauses) {
+		return getSQLForCreateTable(newTableRow, includeForeignKeyClauses, new ArrayList<PropertyWrapper>(), new ArrayList<PropertyWrapper>());
+	}
+
+	private final synchronized String getSQLForCreateTable(DBRow newTableRow, boolean includeForeignKeyClauses, List<PropertyWrapper> pkFields, List<PropertyWrapper> spatial2DFields) {
 		StringBuilder sqlScript = new StringBuilder();
 		String lineSeparator = System.getProperty("line.separator");
 		// table name
