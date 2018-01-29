@@ -76,7 +76,7 @@ public abstract class InExpression<B, R extends InResult<B>, D extends Queryable
 
 	@SuppressWarnings("unchecked")
 	public BooleanExpression isIn(B... possibleValues) {
-		List<R> exps = new ArrayList<>(0);
+		List<R> exps = new ArrayList<R>(0);
 		for (B possibleValue : possibleValues) {
 			exps.add(this.expression(possibleValue));
 		}
@@ -85,7 +85,7 @@ public abstract class InExpression<B, R extends InResult<B>, D extends Queryable
 
 	@SuppressWarnings("unchecked")
 	public BooleanExpression isIn(D... possibleValues) {
-		List<R> exps = new ArrayList<>(0);
+		List<R> exps = new ArrayList<R>(0);
 		for (D possibleValue : possibleValues) {
 			exps.add(this.expression(possibleValue));
 		}
