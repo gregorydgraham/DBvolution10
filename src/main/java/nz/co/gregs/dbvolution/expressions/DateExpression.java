@@ -148,7 +148,7 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 
 	@Override
 	public DateExpression copy() {
-		return isNullSafetyTerminator()?nullDate():new DateExpression(this.getInnerResult());
+		return isNullSafetyTerminator() ? nullDate() : new DateExpression(this.getInnerResult());
 	}
 
 	@Override
@@ -878,7 +878,7 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 	 * <p>
 	 * MODE: The number which appears most often in a set of numbers. For example:
 	 * in {6, 3, 9, 6, 6, 5, 9, 3} the Mode is 6.</p>
-	 * 
+	 *
 	 * <p style="color: #F90;">Support DBvolution at
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 *
@@ -972,10 +972,7 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 	 */
 	@Override
 	public BooleanExpression isBetween(Date lowerBound, DateResult upperBound) {
-		return BooleanExpression.allOf(
-				this.isGreaterThan(lowerBound),
-				this.isLessThanOrEqual(upperBound)
-		);
+		return super.isBetween(lowerBound, upperBound);
 	}
 
 	/**
@@ -1003,10 +1000,7 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 	 */
 	@Override
 	public BooleanExpression isBetween(DateResult lowerBound, Date upperBound) {
-		return BooleanExpression.allOf(
-				this.isGreaterThan(lowerBound),
-				this.isLessThanOrEqual(upperBound)
-		);
+		return super.isBetween(lowerBound, upperBound);
 	}
 
 	/**
@@ -1034,10 +1028,7 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 	 */
 	@Override
 	public BooleanExpression isBetween(Date lowerBound, Date upperBound) {
-		return BooleanExpression.allOf(
-				this.isGreaterThan(lowerBound),
-				this.isLessThanOrEqual(upperBound)
-		);
+		return super.isBetween(lowerBound, upperBound);
 	}
 
 	/**
@@ -1096,7 +1087,7 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 	 */
 	@Override
 	public BooleanExpression isBetweenInclusive(Date lowerBound, DateResult upperBound) {
-		return isBetweenInclusive(value(lowerBound), upperBound);
+		return super.isBetweenInclusive(lowerBound, upperBound);
 	}
 
 	/**
@@ -1124,7 +1115,7 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 	 */
 	@Override
 	public BooleanExpression isBetweenInclusive(DateResult lowerBound, Date upperBound) {
-		return isBetweenInclusive(lowerBound, value(upperBound));
+		return super.isBetweenInclusive(lowerBound, upperBound);
 	}
 
 	/**
@@ -1152,7 +1143,7 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 	 */
 	@Override
 	public BooleanExpression isBetweenInclusive(Date lowerBound, Date upperBound) {
-		return isBetweenInclusive(value(lowerBound), value(upperBound));
+		return super.isBetweenInclusive(lowerBound, upperBound);
 	}
 
 	/**
@@ -1215,7 +1206,7 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 	 */
 	@Override
 	public BooleanExpression isBetweenExclusive(Date lowerBound, DateResult upperBound) {
-		return isBetweenExclusive(value(lowerBound), upperBound);
+		return super.isBetweenExclusive(lowerBound, upperBound);
 	}
 
 	/**
@@ -1245,7 +1236,7 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 	 */
 	@Override
 	public BooleanExpression isBetweenExclusive(DateResult lowerBound, Date upperBound) {
-		return isBetween(lowerBound, value(upperBound));
+		return super.isBetweenExclusive(lowerBound, upperBound);
 	}
 
 	/**
@@ -1275,7 +1266,7 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 	 */
 	@Override
 	public BooleanExpression isBetweenExclusive(Date lowerBound, Date upperBound) {
-		return isBetween(value(lowerBound), value(upperBound));
+		return super.isBetweenExclusive(lowerBound, upperBound);
 	}
 
 	/**
@@ -1289,7 +1280,7 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 	 */
 	@Override
 	public BooleanExpression isLessThan(Date date) {
-		return isLessThan(value(date));
+		return super.isLessThan(date);
 	}
 
 	/**
@@ -1488,7 +1479,7 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 	 */
 	@Override
 	public BooleanExpression isLessThanOrEqual(Date date) {
-		return isLessThanOrEqual(value(date));
+		return super.isLessThanOrEqual(date);
 	}
 
 	/**
@@ -1526,7 +1517,7 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 	 */
 	@Override
 	public BooleanExpression isGreaterThan(Date date) {
-		return isGreaterThan(value(date));
+		return super.isGreaterThan(date);
 	}
 
 	/**
@@ -1564,7 +1555,7 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 	 */
 	@Override
 	public BooleanExpression isGreaterThanOrEqual(Date date) {
-		return isGreaterThanOrEqual(value(date));
+		return super.isGreaterThanOrEqual(date);
 	}
 
 	/**
@@ -1613,7 +1604,7 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 	 */
 	@Override
 	public BooleanExpression isLessThan(Date value, BooleanExpression fallBackWhenEquals) {
-		return this.isLessThan(value(value), fallBackWhenEquals);
+		return super.isLessThan(value, fallBackWhenEquals);
 	}
 
 	/**
@@ -1638,7 +1629,7 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 	 */
 	@Override
 	public BooleanExpression isGreaterThan(Date value, BooleanExpression fallBackWhenEquals) {
-		return this.isGreaterThan(value(value), fallBackWhenEquals);
+		return super.isGreaterThan(value, fallBackWhenEquals);
 	}
 
 	/**
@@ -2660,7 +2651,7 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 				try {
 					return db.doEndOfMonthTransform(this.getInnerResult().toSQLString(db));
 				} catch (UnsupportedOperationException exp) {
-					DateExpression only = (DateExpression)getInnerResult();
+					DateExpression only = (DateExpression) getInnerResult();
 					return only
 							.addDays(only.day().minus(1).bracket().times(-1).integerResult())
 							.addMonths(1).addDays(-1).toSQLString(db);
@@ -2927,7 +2918,7 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 	public StringExpression stringResult() {
 		return this.stringResultISOFormat();
 	}
-	
+
 	/**
 	 * Returns the date as an ISO 8601 formatted string NOT including time zone.
 	 *
@@ -2961,7 +2952,7 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 	 * Returns the date as a USA formatted string NOT including time zone.
 	 *
 	 * <p>
-	 *USA format is MM-DD-YYYY HH:mm:ss.sss</p>
+	 * USA format is MM-DD-YYYY HH:mm:ss.sss</p>
 	 *
 	 * <p>
 	 * May not be zero padded but the format is still unambiguous.</p>
@@ -2995,7 +2986,8 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 	 * <p>
 	 * May not be zero padded but the format is still unambiguous.</p>
 	 *
-	 * @return a formatted version of this date using the format commonly used around the world
+	 * @return a formatted version of this date using the format commonly used
+	 * around the world
 	 */
 	public StringExpression stringResultCommonFormat() {
 		StringExpression commonFormatDateTime = new StringExpression("")
