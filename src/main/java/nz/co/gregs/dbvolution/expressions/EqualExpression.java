@@ -82,6 +82,14 @@ public abstract class EqualExpression<B, R extends EqualResult<B>, D extends Que
 		return this.isNot(this.expression(value));
 	}
 
+	public BooleanExpression isNull() {
+		return BooleanExpression.isNull(this);
+	}
+
+	public BooleanExpression isNotNull() {		
+		return BooleanExpression.isNotNull(this);
+	}
+
 	/**
 	 * Aggregrator that counts all the rows of the query.
 	 *
