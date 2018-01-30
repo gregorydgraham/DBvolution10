@@ -97,5 +97,13 @@ public class MultiPoint2DColumn extends MultiPoint2DExpression implements Column
 		hash = 59 * hash + Objects.hashCode(this.column);
 		return hash;
 	}
+	
+	@Override
+	public synchronized MultiPoint2DColumn copy() {
+		final AbstractColumn col = getColumn();
+		final DBRow row = col.getInstanceOfRow();
+		MultiPoint2DColumn newInstance = new MultiPoint2DColumn(row, (DBMultiPoint2D) col.getAppropriateQDTFromRow(row));
+		return newInstance;
+	}
 
 }

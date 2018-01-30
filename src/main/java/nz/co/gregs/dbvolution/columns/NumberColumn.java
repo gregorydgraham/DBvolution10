@@ -16,10 +16,8 @@
 package nz.co.gregs.dbvolution.columns;
 
 import java.util.Set;
-import nz.co.gregs.dbvolution.databases.DBDatabase;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
-import nz.co.gregs.dbvolution.datatypes.DBInteger;
 import nz.co.gregs.dbvolution.datatypes.DBNumber;
 import nz.co.gregs.dbvolution.expressions.BooleanExpression;
 import nz.co.gregs.dbvolution.expressions.NumberExpression;
@@ -86,9 +84,7 @@ public class NumberColumn extends NumberExpression implements ColumnProvider {
 			NumberColumn newInstance = this.getClass().newInstance();
 			newInstance.column = this.column;
 			return newInstance;
-		} catch (InstantiationException ex) {
-			throw new RuntimeException(ex);
-		} catch (IllegalAccessException ex) {
+		} catch (InstantiationException | IllegalAccessException ex) {
 			throw new RuntimeException(ex);
 		}
 
@@ -128,6 +124,7 @@ public class NumberColumn extends NumberExpression implements ColumnProvider {
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a BooleanExpression
 	 */
+	@Override
 	public BooleanExpression is(DBNumber column) {
 		return super.is(column);
 	}

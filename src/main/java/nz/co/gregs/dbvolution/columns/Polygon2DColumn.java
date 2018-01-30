@@ -33,7 +33,7 @@ import nz.co.gregs.dbvolution.query.RowDefinition;
  */
 public class Polygon2DColumn extends Polygon2DExpression implements ColumnProvider {
 
-	private final AbstractColumn column;
+	private AbstractColumn column;
 
 	/**
 	 * Creates a portable reference to the column represented by the field of the
@@ -79,4 +79,13 @@ public class Polygon2DColumn extends Polygon2DExpression implements ColumnProvid
 	public boolean isAggregator() {
 		return column.isAggregator();
 	}
+
+	@Override
+	public synchronized Polygon2DColumn copy() {
+		final AbstractColumn col = getColumn();
+		final DBRow row = col.getInstanceOfRow();
+		Polygon2DColumn newInstance = new Polygon2DColumn(row, (DBPolygon2D) col.getAppropriateQDTFromRow(row));
+		return newInstance;
+	}
+
 }

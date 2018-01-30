@@ -96,5 +96,13 @@ public class LineSegment2DColumn extends LineSegment2DExpression implements Colu
 		hash = 83 * hash + Objects.hashCode(this.column);
 		return hash;
 	}
+	
+	@Override
+	public synchronized LineSegment2DColumn copy() {
+		final AbstractColumn col = getColumn();
+		final DBRow row = col.getInstanceOfRow();
+		LineSegment2DColumn newInstance = new LineSegment2DColumn(row, (DBLineSegment2D) col.getAppropriateQDTFromRow(row));
+		return newInstance;
+	}
 
 }

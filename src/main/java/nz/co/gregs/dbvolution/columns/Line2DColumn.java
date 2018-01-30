@@ -18,10 +18,10 @@ package nz.co.gregs.dbvolution.columns;
 import com.vividsolutions.jts.geom.LineString;
 import java.util.Objects;
 import java.util.Set;
-import nz.co.gregs.dbvolution.databases.DBDatabase;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.datatypes.spatial2D.DBLine2D;
+import nz.co.gregs.dbvolution.datatypes.spatial2D.DBPolygon2D;
 import nz.co.gregs.dbvolution.expressions.Line2DExpression;
 import nz.co.gregs.dbvolution.query.RowDefinition;
 
@@ -102,5 +102,13 @@ public class Line2DColumn extends Line2DExpression implements ColumnProvider {
 		int hash = 7;
 		hash = 89 * hash + Objects.hashCode(this.column);
 		return hash;
+	}
+	
+	@Override
+	public synchronized Line2DColumn copy() {
+		final AbstractColumn col = getColumn();
+		final DBRow row = col.getInstanceOfRow();
+		Line2DColumn newInstance = new Line2DColumn(row, (DBLine2D) col.getAppropriateQDTFromRow(row));
+		return newInstance;
 	}
 }

@@ -108,17 +108,7 @@ public class AbstractColumn implements DBExpression {
 			Constructor<? extends AbstractColumn> constructor = this.getClass().getConstructor(RowDefinition.class, Object.class);
 			AbstractColumn newInstance = constructor.newInstance(getRowDefinition(), getField());
 			return newInstance;
-		} catch (NoSuchMethodException ex) {
-			throw new DBRuntimeException("Unable To Copy " + this.getClass().getSimpleName() + ": please ensure it has a public " + this.getClass().getSimpleName() + "(DBRow, Object) constructor.", ex);
-		} catch (SecurityException ex) {
-			throw new DBRuntimeException("Unable To Copy " + this.getClass().getSimpleName() + ": please ensure it has a public " + this.getClass().getSimpleName() + "(DBRow, Object) constructor.", ex);
-		} catch (InstantiationException ex) {
-			throw new DBRuntimeException("Unable To Copy " + this.getClass().getSimpleName() + ": please ensure it has a public " + this.getClass().getSimpleName() + "(DBRow, Object) constructor.", ex);
-		} catch (IllegalAccessException ex) {
-			throw new DBRuntimeException("Unable To Copy " + this.getClass().getSimpleName() + ": please ensure it has a public " + this.getClass().getSimpleName() + "(DBRow, Object) constructor.", ex);
-		} catch (IllegalArgumentException ex) {
-			throw new DBRuntimeException("Unable To Copy " + this.getClass().getSimpleName() + ": please ensure it has a public " + this.getClass().getSimpleName() + "(DBRow, Object) constructor.", ex);
-		} catch (InvocationTargetException ex) {
+		} catch (NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
 			throw new DBRuntimeException("Unable To Copy " + this.getClass().getSimpleName() + ": please ensure it has a public " + this.getClass().getSimpleName() + "(DBRow, Object) constructor.", ex);
 		}
 	}

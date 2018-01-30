@@ -97,5 +97,13 @@ public class Point2DColumn extends Point2DExpression implements ColumnProvider {
 		hash = 41 * hash + Objects.hashCode(this.column);
 		return hash;
 	}
+	
+	@Override
+	public synchronized Point2DColumn copy() {
+		final AbstractColumn col = getColumn();
+		final DBRow row = col.getInstanceOfRow();
+		Point2DColumn newInstance = new Point2DColumn(row, (DBPoint2D) col.getAppropriateQDTFromRow(row));
+		return newInstance;
+	}
 
 }
