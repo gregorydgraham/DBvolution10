@@ -97,6 +97,9 @@ public class DBDatabaseClusterTest extends AbstractTest {
 		Assert.assertThat(soloDB.getDBTable(testTable).count(), is(22l));
 
 		H2MemoryDB slowSynchingDB = new H2MemoryDB("SlowSynchingDB", "who", "what", true){
+			
+			private static final long serialVersionUID = 1l;
+			
 			@Override
 			public boolean tableExists(DBRow table) throws SQLException {
 				try {
