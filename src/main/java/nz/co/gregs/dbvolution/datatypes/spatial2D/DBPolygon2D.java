@@ -26,7 +26,7 @@ import nz.co.gregs.dbvolution.columns.Polygon2DColumn;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 import nz.co.gregs.dbvolution.exceptions.IncorrectRowProviderInstanceSuppliedException;
-import nz.co.gregs.dbvolution.expressions.Polygon2DExpression;
+import nz.co.gregs.dbvolution.expressions.spatial2D.Polygon2DExpression;
 import nz.co.gregs.dbvolution.expressions.StringExpression;
 import nz.co.gregs.dbvolution.query.RowDefinition;
 import nz.co.gregs.dbvolution.results.Polygon2DResult;
@@ -83,7 +83,7 @@ public class DBPolygon2D extends QueryableDatatype<Polygon> implements Transform
 	 *
 	 * @param columnExpression
 	 */
-	public DBPolygon2D(nz.co.gregs.dbvolution.expressions.Polygon2DExpression columnExpression) {
+	public DBPolygon2D(nz.co.gregs.dbvolution.expressions.spatial2D.Polygon2DExpression columnExpression) {
 		super(columnExpression);
 	}
 

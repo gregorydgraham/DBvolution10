@@ -22,7 +22,7 @@ import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.datatypes.spatial2D.DBLine2D;
 import nz.co.gregs.dbvolution.datatypes.spatial2D.DBPolygon2D;
-import nz.co.gregs.dbvolution.expressions.Line2DExpression;
+import nz.co.gregs.dbvolution.expressions.spatial2D.Line2DExpression;
 import nz.co.gregs.dbvolution.query.RowDefinition;
 
 /**

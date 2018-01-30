@@ -29,7 +29,7 @@ import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 import nz.co.gregs.dbvolution.exceptions.IncorrectGeometryReturnedForDatatype;
 import nz.co.gregs.dbvolution.exceptions.IncorrectRowProviderInstanceSuppliedException;
 import nz.co.gregs.dbvolution.exceptions.ParsingSpatialValueException;
-import nz.co.gregs.dbvolution.expressions.Point2DExpression;
+import nz.co.gregs.dbvolution.expressions.spatial2D.Point2DExpression;
 import nz.co.gregs.dbvolution.expressions.StringExpression;
 import nz.co.gregs.dbvolution.query.RowDefinition;
 import nz.co.gregs.dbvolution.results.Point2DResult;
@@ -114,7 +114,7 @@ public class DBPoint2D extends QueryableDatatype<Point> implements Point2DResult
 	 *
 	 * @param columnExpression
 	 */
-	public DBPoint2D(nz.co.gregs.dbvolution.expressions.Point2DExpression columnExpression) {
+	public DBPoint2D(nz.co.gregs.dbvolution.expressions.spatial2D.Point2DExpression columnExpression) {
 		super(columnExpression);
 	}
 

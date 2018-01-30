@@ -27,7 +27,7 @@ import nz.co.gregs.dbvolution.expressions.DBExpression;
 import nz.co.gregs.dbvolution.expressions.DateExpression;
 import nz.co.gregs.dbvolution.results.DateResult;
 import nz.co.gregs.dbvolution.results.EqualComparable;
-import nz.co.gregs.dbvolution.expressions.Polygon2DExpression;
+import nz.co.gregs.dbvolution.expressions.spatial2D.Polygon2DExpression;
 import nz.co.gregs.dbvolution.results.Polygon2DResult;
 import nz.co.gregs.dbvolution.expressions.DateRepeatExpression;
 import nz.co.gregs.dbvolution.expressions.IntegerExpression;

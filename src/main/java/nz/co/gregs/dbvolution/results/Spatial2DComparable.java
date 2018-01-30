@@ -18,7 +18,7 @@ package nz.co.gregs.dbvolution.results;
 import nz.co.gregs.dbvolution.expressions.BooleanExpression;
 import nz.co.gregs.dbvolution.expressions.DBExpression;
 import nz.co.gregs.dbvolution.expressions.NumberExpression;
-import nz.co.gregs.dbvolution.expressions.Polygon2DExpression;
+import nz.co.gregs.dbvolution.expressions.spatial2D.Polygon2DExpression;
 import nz.co.gregs.dbvolution.expressions.StringExpression;
 
 /**

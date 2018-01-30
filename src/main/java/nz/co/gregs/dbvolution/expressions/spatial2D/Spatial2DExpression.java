@@ -13,9 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package nz.co.gregs.dbvolution.expressions;
+package nz.co.gregs.dbvolution.expressions.spatial2D;
 
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
+import nz.co.gregs.dbvolution.expressions.EqualExpression;
 import nz.co.gregs.dbvolution.results.AnyResult;
 import nz.co.gregs.dbvolution.results.Spatial2DComparable;
 import nz.co.gregs.dbvolution.results.Spatial2DResult;

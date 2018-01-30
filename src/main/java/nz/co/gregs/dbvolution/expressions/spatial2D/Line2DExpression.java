@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package nz.co.gregs.dbvolution.expressions;
+package nz.co.gregs.dbvolution.expressions.spatial2D;
 
 import nz.co.gregs.dbvolution.results.Line2DResult;
 import com.vividsolutions.jts.geom.Coordinate;
@@ -26,6 +26,9 @@ import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.datatypes.spatial2D.DBLine2D;
 import nz.co.gregs.dbvolution.datatypes.spatial2D.DBMultiPoint2D;
+import nz.co.gregs.dbvolution.expressions.BooleanExpression;
+import nz.co.gregs.dbvolution.expressions.NumberExpression;
+import nz.co.gregs.dbvolution.expressions.StringExpression;
 import nz.co.gregs.dbvolution.results.AnyResult;
 import nz.co.gregs.dbvolution.results.MultiPoint2DResult;
 
@@ -40,7 +43,7 @@ import nz.co.gregs.dbvolution.results.MultiPoint2DResult;
  *
  * @author Gregory Graham
  */
-public class Line2DExpression extends Spatial2DExpression<LineString, Line2DResult, DBLine2D> implements Line2DResult{
+public class Line2DExpression extends Spatial2DExpression<LineString, Line2DResult, DBLine2D> implements Line2DResult {
 
 	private final boolean moreNullProtectionRequired;
 
@@ -80,7 +83,7 @@ public class Line2DExpression extends Spatial2DExpression<LineString, Line2DResu
 		super(value);
 		moreNullProtectionRequired = value == null;
 	}
-	
+
 	/**
 	 * Create a Line2DExpression representing the line supplied.
 	 *
@@ -102,10 +105,10 @@ public class Line2DExpression extends Spatial2DExpression<LineString, Line2DResu
 		for (Point point : points) {
 			nulls = point == null ? true : nulls;
 		}
-		moreNullProtectionRequired = 
-				points==null
-				||points.length==0
-				||nulls
+		moreNullProtectionRequired
+				= points == null
+				|| points.length == 0
+				|| nulls
 				|| new DBLine2D(points).getIncludesNull();
 	}
 
@@ -120,20 +123,19 @@ public class Line2DExpression extends Spatial2DExpression<LineString, Line2DResu
 		for (Coordinate point : coords) {
 			nulls = point == null ? true : nulls;
 		}
-		moreNullProtectionRequired = 
-				coords==null
-				||coords.length==0
-				||nulls
+		moreNullProtectionRequired
+				= coords == null
+				|| coords.length == 0
+				|| nulls
 				|| new DBLine2D(coords).getIncludesNull();
 	}
 
 	@Override
 	public boolean getIncludesNull() {
-		return 
-				moreNullProtectionRequired||
-				super.getIncludesNull();
+		return moreNullProtectionRequired
+				|| super.getIncludesNull();
 	}
-	
+
 	/**
 	 * Creates an expression that will return the most common value of the column
 	 * supplied.
@@ -141,7 +143,7 @@ public class Line2DExpression extends Spatial2DExpression<LineString, Line2DResu
 	 * <p>
 	 * MODE: The number which appears most often in a set of numbers. For example:
 	 * in {6, 3, 9, 6, 6, 5, 9, 3} the Mode is 6.</p>
-	 * 
+	 *
 	 * <p style="color: #F90;">Support DBvolution at
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 *
@@ -213,7 +215,7 @@ public class Line2DExpression extends Spatial2DExpression<LineString, Line2DResu
 	public Line2DExpression expression(Line2DResult line) {
 		return new Line2DExpression(line);
 	}
-	
+
 	public static Line2DExpression value(Line2DResult line) {
 		return new Line2DExpression(line);
 	}
@@ -230,11 +232,11 @@ public class Line2DExpression extends Spatial2DExpression<LineString, Line2DResu
 	public Line2DExpression expression(MultiPoint2DResult multipoint2DExpression) {
 		return value(multipoint2DExpression);
 	}
-	
+
 	public static Line2DExpression value(MultiPoint2DResult multipoint2DExpression) {
 		return MultiPoint2DExpression.value(multipoint2DExpression).line2DResult();
 	}
-	
+
 	@Override
 	public Line2DExpression nullExpression() {
 
@@ -265,14 +267,16 @@ public class Line2DExpression extends Spatial2DExpression<LineString, Line2DResu
 	@Override
 	protected boolean isNullSafetyTerminator() {
 		return super.isNullSafetyTerminator()
-				&&moreNullProtectionRequired==false;
+				&& moreNullProtectionRequired == false;
 	}
 
 	@Override
 	public Line2DExpression copy() {
 		return isNullSafetyTerminator()
-				? nullLine2D() 
-				: new Line2DExpression(getInnerResult());
+				? new Line2DExpression()
+				: getInnerResult() == null
+						? nullLine2D()
+						: new Line2DExpression(getInnerResult());
 	}
 
 	/**
@@ -303,19 +307,19 @@ public class Line2DExpression extends Spatial2DExpression<LineString, Line2DResu
 
 	/**
 	 * Compare the value of the given LineString to this value using the
- equivalent of EQUALS.
+	 * equivalent of EQUALS.
 	 *
 	 * <p>
- The boolean value will be TRUE if the two expressions are functionally
- equivalent.
-
- <p>
+	 * The boolean value will be TRUE if the two expressions are functionally
+	 * equivalent.
+	 *
+	 * <p>
 	 * Due to to the imperfect interpretation of floating point numbers there may
 	 * some discrepancies between databases but DBV tries to be as accurate as the
 	 * database allows.
 	 *
 	 * @param rightHandSide the value this value may equal.
- <p style="color: #F90;">Support DBvolution at
+	 * <p style="color: #F90;">Support DBvolution at
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a BooleanExpression that will be TRUE when the two expressions are
 	 * functionally equivalent, otherwise FALSE.
@@ -326,14 +330,14 @@ public class Line2DExpression extends Spatial2DExpression<LineString, Line2DResu
 	}
 
 	/**
-	 * Compare this value to the exterior ring of the given Polygon2D using
- the equivalent of EQUALS.
+	 * Compare this value to the exterior ring of the given Polygon2D using the
+	 * equivalent of EQUALS.
 	 *
 	 * <p>
- The boolean value will be TRUE if the exterior ring and the line are
- functionally equivalent.
-
- <p>
+	 * The boolean value will be TRUE if the exterior ring and the line are
+	 * functionally equivalent.
+	 *
+	 * <p>
 	 * Due to to the imperfect interpretation of floating point numbers there may
 	 * some discrepancies between databases but DBV tries to be as accurate as the
 	 * database allows.
@@ -349,20 +353,20 @@ public class Line2DExpression extends Spatial2DExpression<LineString, Line2DResu
 	}
 
 	/**
-	 * Compare the value of the given Line2D to this value using the
- equivalent of EQUALS.
+	 * Compare the value of the given Line2D to this value using the equivalent of
+	 * EQUALS.
 	 *
 	 * <p>
- The boolean value will be TRUE if the two expressions are functionally
- equivalent.
-
- <p>
+	 * The boolean value will be TRUE if the two expressions are functionally
+	 * equivalent.
+	 *
+	 * <p>
 	 * Due to to the imperfect interpretation of floating point numbers there may
 	 * some discrepancies between databases but DBV tries to be as accurate as the
 	 * database allows.
 	 *
 	 * @param rightHandSide the line that this value might equal
- <p style="color: #F90;">Support DBvolution at
+	 * <p style="color: #F90;">Support DBvolution at
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a BooleanExpression that will be TRUE when the two expressions are
 	 * functionally equivalent, otherwise FALSE.
@@ -384,19 +388,19 @@ public class Line2DExpression extends Spatial2DExpression<LineString, Line2DResu
 
 	/**
 	 * Compare the value of the given LineString to this value using the
- equivalent of NOT EQUALS.
+	 * equivalent of NOT EQUALS.
 	 *
 	 * <p>
- The boolean value will be FALSE if the two expressions are
- functionally equivalent.
-
- <p>
+	 * The boolean value will be FALSE if the two expressions are functionally
+	 * equivalent.
+	 *
+	 * <p>
 	 * Due to to the imperfect interpretation of floating point numbers there may
 	 * some discrepancies between databases but DBV tries to be as accurate as the
 	 * database allows.
 	 *
 	 * @param rightHandSide the line that this value might equal
- <p style="color: #F90;">Support DBvolution at
+	 * <p style="color: #F90;">Support DBvolution at
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a BooleanExpression that will be FALSE when the two expressions are
 	 * functionally equivalent, otherwise TRUE.
@@ -407,21 +411,21 @@ public class Line2DExpression extends Spatial2DExpression<LineString, Line2DResu
 	}
 
 	/**
-	 * Compare this value to the exterior ring of the given Polygon2D using
- the equivalent of NOT EQUALS.
+	 * Compare this value to the exterior ring of the given Polygon2D using the
+	 * equivalent of NOT EQUALS.
 	 *
 	 * <p>
- The boolean value will be FALSE if the exterior ring and the line are
- functionally equivalent.
-
- <p>
+	 * The boolean value will be FALSE if the exterior ring and the line are
+	 * functionally equivalent.
+	 *
+	 * <p>
 	 * Due to to the imperfect interpretation of floating point numbers there may
 	 * some discrepancies between databases but DBV tries to be as accurate as the
 	 * database allows.
 	 *
 	 * @param rightHandSide the polygon whose exterior ring might not equal this
- value's value.
- <p style="color: #F90;">Support DBvolution at
+	 * value's value.
+	 * <p style="color: #F90;">Support DBvolution at
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a BooleanExpression that will be FALSE when the two expressions are
 	 * functionally equivalent, otherwise TRUE.
@@ -431,20 +435,20 @@ public class Line2DExpression extends Spatial2DExpression<LineString, Line2DResu
 	}
 
 	/**
-	 * Compare the value of the given Line2D to this value using the
- equivalent of NOT EQUALS.
+	 * Compare the value of the given Line2D to this value using the equivalent of
+	 * NOT EQUALS.
 	 *
 	 * <p>
- The boolean value will be FALSE if the two expressions are
- functionally equivalent.
-
- <p>
+	 * The boolean value will be FALSE if the two expressions are functionally
+	 * equivalent.
+	 *
+	 * <p>
 	 * Due to to the imperfect interpretation of floating point numbers there may
 	 * some discrepancies between databases but DBV tries to be as accurate as the
 	 * database allows.
 	 *
 	 * @param rightHandSide the line to compare to this value.
- <p style="color: #F90;">Support DBvolution at
+	 * <p style="color: #F90;">Support DBvolution at
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a BooleanExpression that will be FALSE when the two expressions are
 	 * functionally equivalent, otherwise TRUE.
@@ -642,8 +646,8 @@ public class Line2DExpression extends Spatial2DExpression<LineString, Line2DResu
 	 * } to find the intersection points of these lines
 	 *
 	 * @param points points that constitute a line that might intersect this
- value.
- <p style="color: #F90;">Support DBvolution at
+	 * value.
+	 * <p style="color: #F90;">Support DBvolution at
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a BooleanExpression that will be TRUE if the lines ever cross,
 	 * otherwise FALSE.
@@ -665,8 +669,8 @@ public class Line2DExpression extends Spatial2DExpression<LineString, Line2DResu
 	 * } to find the intersection points of these lines
 	 *
 	 * @param coords a series of X and Y values that constitute a line that might
- intersect this value.
- <p style="color: #F90;">Support DBvolution at
+	 * intersect this value.
+	 * <p style="color: #F90;">Support DBvolution at
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a BooleanExpression that will be TRUE if the lines ever cross,
 	 * otherwise FALSE.
@@ -687,7 +691,7 @@ public class Line2DExpression extends Spatial2DExpression<LineString, Line2DResu
 	 * } to find the intersection points of these lines
 	 *
 	 * @param lineString a line that might intersect this value.
- <p style="color: #F90;">Support DBvolution at
+	 * <p style="color: #F90;">Support DBvolution at
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a BooleanExpression that will be TRUE if the lines ever cross,
 	 * otherwise FALSE.
@@ -708,7 +712,7 @@ public class Line2DExpression extends Spatial2DExpression<LineString, Line2DResu
 	 * } to find the intersection points of these lines
 	 *
 	 * @param crossingLine a line that might intersect this value.
- <p style="color: #F90;">Support DBvolution at
+	 * <p style="color: #F90;">Support DBvolution at
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a BooleanExpression that will be TRUE if the lines ever cross,
 	 * otherwise FALSE.
@@ -724,14 +728,14 @@ public class Line2DExpression extends Spatial2DExpression<LineString, Line2DResu
 	}
 
 	/**
-	 * Find all the points of intersection between this value and the
- specified Line2D value.
+	 * Find all the points of intersection between this value and the specified
+	 * Line2D value.
 	 *
 	 * @param crossingLine a line that might intersect this value.
- <p style="color: #F90;">Support DBvolution at
+	 * <p style="color: #F90;">Support DBvolution at
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 * @return a MultiPoint2D value containing all the intersection points of
- the 2 lines.
+	 * @return a MultiPoint2D value containing all the intersection points of the
+	 * 2 lines.
 	 */
 	public MultiPoint2DExpression intersectionPoints(Line2DResult crossingLine) {
 		return new MultiPoint2DExpression(new LineLineWithMultiPoint2DResult(this, new Line2DExpression(crossingLine)) {
@@ -756,8 +760,8 @@ public class Line2DExpression extends Spatial2DExpression<LineString, Line2DResu
 	 * } to find the intersection points of these lines
 	 *
 	 * @param crossingLine points that constitute a line that might intersect this
- value.
- <p style="color: #F90;">Support DBvolution at
+	 * value.
+	 * <p style="color: #F90;">Support DBvolution at
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a BooleanExpression that will be TRUE if the lines ever cross,
 	 * otherwise FALSE.
@@ -779,8 +783,8 @@ public class Line2DExpression extends Spatial2DExpression<LineString, Line2DResu
 	 * } to find the intersection points of these lines
 	 *
 	 * @param crossingLine a series of X and Y values that constitute a line that
- might intersect this value.
- <p style="color: #F90;">Support DBvolution at
+	 * might intersect this value.
+	 * <p style="color: #F90;">Support DBvolution at
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a BooleanExpression that will be TRUE if the lines ever cross,
 	 * otherwise FALSE.
@@ -801,7 +805,7 @@ public class Line2DExpression extends Spatial2DExpression<LineString, Line2DResu
 	 * } to find the intersection points of these lines
 	 *
 	 * @param crossingLine a line that might intersect this value.
- <p style="color: #F90;">Support DBvolution at
+	 * <p style="color: #F90;">Support DBvolution at
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a BooleanExpression that will be TRUE if the lines ever cross,
 	 * otherwise FALSE.
@@ -823,8 +827,8 @@ public class Line2DExpression extends Spatial2DExpression<LineString, Line2DResu
 	 * } to find the intersection points of these lines
 	 *
 	 * @param crossingLine points that constitute a line that might intersect this
- value.
- <p style="color: #F90;">Support DBvolution at
+	 * value.
+	 * <p style="color: #F90;">Support DBvolution at
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a BooleanExpression that will be TRUE if the lines ever cross,
 	 * otherwise FALSE.
@@ -845,7 +849,7 @@ public class Line2DExpression extends Spatial2DExpression<LineString, Line2DResu
 	 * } to find the intersection points of these lines
 	 *
 	 * @param crossingLine a line that might intersect this value.
- <p style="color: #F90;">Support DBvolution at
+	 * <p style="color: #F90;">Support DBvolution at
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a BooleanExpression that will be TRUE if the lines ever cross,
 	 * otherwise FALSE.
@@ -861,8 +865,7 @@ public class Line2DExpression extends Spatial2DExpression<LineString, Line2DResu
 	}
 
 	/**
-	 * Provides a value that represents the line2d value as a polygon2d
- value.
+	 * Provides a value that represents the line2d value as a polygon2d value.
 	 *
 	 * <P>
 	 * Points are added to the polygon in index order. If necessary the polygon is

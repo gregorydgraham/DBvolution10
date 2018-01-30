@@ -15,6 +15,7 @@
  */
 package nz.co.gregs.dbvolution.expressions;
 
+import nz.co.gregs.dbvolution.expressions.spatial2D.Polygon2DExpression;
 import nz.co.gregs.dbvolution.results.StringResult;
 import nz.co.gregs.dbvolution.results.DateResult;
 import nz.co.gregs.dbvolution.results.NumberResult;

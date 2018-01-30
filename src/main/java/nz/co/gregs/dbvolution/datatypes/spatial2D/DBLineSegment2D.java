@@ -29,7 +29,7 @@ import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.exceptions.IncorrectGeometryReturnedForDatatype;
 import nz.co.gregs.dbvolution.exceptions.IncorrectRowProviderInstanceSuppliedException;
 import nz.co.gregs.dbvolution.exceptions.ParsingSpatialValueException;
-import nz.co.gregs.dbvolution.expressions.LineSegment2DExpression;
+import nz.co.gregs.dbvolution.expressions.spatial2D.LineSegment2DExpression;
 import nz.co.gregs.dbvolution.expressions.StringExpression;
 import nz.co.gregs.dbvolution.query.RowDefinition;
 import nz.co.gregs.dbvolution.results.LineSegment2DResult;
@@ -94,7 +94,7 @@ public class DBLineSegment2D extends QueryableDatatype<LineSegment> implements L
 	 *
 	 * @param columnExpression
 	 */
-	public DBLineSegment2D(nz.co.gregs.dbvolution.expressions.LineSegment2DExpression columnExpression) {
+	public DBLineSegment2D(nz.co.gregs.dbvolution.expressions.spatial2D.LineSegment2DExpression columnExpression) {
 		super(columnExpression);
 	}
 

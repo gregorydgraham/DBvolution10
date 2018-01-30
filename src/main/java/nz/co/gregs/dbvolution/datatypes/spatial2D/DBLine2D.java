@@ -31,8 +31,8 @@ import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.exceptions.IncorrectGeometryReturnedForDatatype;
 import nz.co.gregs.dbvolution.exceptions.IncorrectRowProviderInstanceSuppliedException;
 import nz.co.gregs.dbvolution.exceptions.ParsingSpatialValueException;
-import nz.co.gregs.dbvolution.expressions.Line2DExpression;
-import nz.co.gregs.dbvolution.expressions.MultiPoint2DExpression;
+import nz.co.gregs.dbvolution.expressions.spatial2D.Line2DExpression;
+import nz.co.gregs.dbvolution.expressions.spatial2D.MultiPoint2DExpression;
 import nz.co.gregs.dbvolution.expressions.StringExpression;
 import nz.co.gregs.dbvolution.query.RowDefinition;
 import nz.co.gregs.dbvolution.results.Line2DResult;
@@ -136,7 +136,7 @@ public class DBLine2D extends QueryableDatatype<LineString> implements Line2DRes
 	 *
 	 * @param columnExpression
 	 */
-	public DBLine2D(nz.co.gregs.dbvolution.expressions.Line2DExpression columnExpression) {
+	public DBLine2D(nz.co.gregs.dbvolution.expressions.spatial2D.Line2DExpression columnExpression) {
 		super(columnExpression);
 	}
 

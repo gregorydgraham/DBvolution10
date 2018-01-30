@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package nz.co.gregs.dbvolution.expressions;
+package nz.co.gregs.dbvolution.expressions.spatial2D;
 
 import nz.co.gregs.dbvolution.results.LineSegment2DResult;
 import com.vividsolutions.jts.geom.Coordinate;
@@ -24,6 +24,9 @@ import java.util.Set;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.datatypes.spatial2D.DBLineSegment2D;
+import nz.co.gregs.dbvolution.expressions.BooleanExpression;
+import nz.co.gregs.dbvolution.expressions.NumberExpression;
+import nz.co.gregs.dbvolution.expressions.StringExpression;
 import nz.co.gregs.dbvolution.results.AnyResult;
 
 /**

@@ -28,7 +28,7 @@ import nz.co.gregs.dbvolution.columns.MultiPoint2DColumn;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 import nz.co.gregs.dbvolution.exceptions.*;
-import nz.co.gregs.dbvolution.expressions.MultiPoint2DExpression;
+import nz.co.gregs.dbvolution.expressions.spatial2D.MultiPoint2DExpression;
 import nz.co.gregs.dbvolution.expressions.StringExpression;
 import nz.co.gregs.dbvolution.query.RowDefinition;
 import nz.co.gregs.dbvolution.results.MultiPoint2DResult;

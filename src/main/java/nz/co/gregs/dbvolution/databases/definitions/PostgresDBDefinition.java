@@ -24,9 +24,9 @@ import nz.co.gregs.dbvolution.databases.PostgresDBOverSSL;
 import nz.co.gregs.dbvolution.datatypes.*;
 import nz.co.gregs.dbvolution.datatypes.spatial2D.*;
 import nz.co.gregs.dbvolution.expressions.DBExpression;
-import nz.co.gregs.dbvolution.expressions.Line2DExpression;
-import nz.co.gregs.dbvolution.expressions.MultiPoint2DExpression;
-import nz.co.gregs.dbvolution.expressions.Polygon2DExpression;
+import nz.co.gregs.dbvolution.expressions.spatial2D.Line2DExpression;
+import nz.co.gregs.dbvolution.expressions.spatial2D.MultiPoint2DExpression;
+import nz.co.gregs.dbvolution.expressions.spatial2D.Polygon2DExpression;
 import nz.co.gregs.dbvolution.internal.postgres.*;
 import nz.co.gregs.dbvolution.results.ExpressionHasStandardStringResult;
 

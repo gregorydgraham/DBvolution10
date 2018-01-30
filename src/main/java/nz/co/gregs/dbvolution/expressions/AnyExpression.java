@@ -28,6 +28,11 @@
  */
 package nz.co.gregs.dbvolution.expressions;
 
+import nz.co.gregs.dbvolution.expressions.spatial2D.LineSegment2DExpression;
+import nz.co.gregs.dbvolution.expressions.spatial2D.Line2DExpression;
+import nz.co.gregs.dbvolution.expressions.spatial2D.Polygon2DExpression;
+import nz.co.gregs.dbvolution.expressions.spatial2D.MultiPoint2DExpression;
+import nz.co.gregs.dbvolution.expressions.spatial2D.Point2DExpression;
 import com.vividsolutions.jts.geom.LineSegment;
 import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.MultiPoint;
@@ -45,7 +50,10 @@ import nz.co.gregs.dbvolution.results.BooleanResult;
 import nz.co.gregs.dbvolution.results.DateRepeatResult;
 import nz.co.gregs.dbvolution.results.DateResult;
 import nz.co.gregs.dbvolution.results.IntegerResult;
+import nz.co.gregs.dbvolution.results.LineSegment2DResult;
 import nz.co.gregs.dbvolution.results.NumberResult;
+import nz.co.gregs.dbvolution.results.Point2DResult;
+import nz.co.gregs.dbvolution.results.Polygon2DResult;
 import nz.co.gregs.dbvolution.results.StringResult;
 import org.joda.time.Period;
 
@@ -692,7 +700,7 @@ public abstract class AnyExpression<B extends Object, R extends AnyResult<B>, D 
 	}
 
 	public final static Point2DExpression nullPoint2D() {
-		return new Point2DExpression().nullExpression();
+		return new Point2DExpression((Point2DResult)null).nullExpression();
 	}
 
 	public final static MultiPoint2DExpression nullMultiPoint2D() {
@@ -700,14 +708,14 @@ public abstract class AnyExpression<B extends Object, R extends AnyResult<B>, D 
 	}
 
 	public final static Line2DExpression nullLine2D() {
-		return new Line2DExpression().nullExpression();
+		return new Line2DExpression((Point)null).nullExpression();
 	}
 
 	public final static LineSegment2DExpression nullLineSegment2D() {
-		return new LineSegment2DExpression().nullExpression();
+		return new LineSegment2DExpression((LineSegment2DResult)null).nullExpression();
 	}
 
 	public final static Polygon2DExpression nullPolygon2D() {
-		return new Polygon2DExpression().nullExpression();
+		return new Polygon2DExpression((Polygon2DResult)null).nullExpression();
 	}
 }

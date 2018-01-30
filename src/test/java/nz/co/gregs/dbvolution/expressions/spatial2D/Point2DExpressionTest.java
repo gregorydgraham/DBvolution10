@@ -13,8 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package nz.co.gregs.dbvolution.expressions;
+package nz.co.gregs.dbvolution.expressions.spatial2D;
 
+import nz.co.gregs.dbvolution.expressions.spatial2D.Point2DExpression;
 import nz.co.gregs.dbvolution.databases.DBDatabase;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.GeometryFactory;
