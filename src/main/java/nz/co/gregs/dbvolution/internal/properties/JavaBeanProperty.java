@@ -37,8 +37,8 @@ public class JavaBeanProperty implements JavaProperty, Serializable {
 	private final String name;
 	private final Class<?> type;
 	private Type genericType;
-	private final Method getter;
-	private final Method setter;
+	private transient final Method getter;
+	private transient final Method setter;
 
 	/**
 	 * Create a new JavaBeanProperty from the supplied descriptor.

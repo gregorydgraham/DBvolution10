@@ -239,8 +239,7 @@ public class Point2DExpression extends Spatial2DExpression<Point, Point2DResult,
 	public boolean equals(Object other) {
 		if (other instanceof Point2DExpression) {
 			Point2DExpression otherExpr = (Point2DExpression) other;
-			final H2DBDefinition defn = new H2DBDefinition();
-			return this.toSQLString(defn).equals(otherExpr.toSQLString(defn));
+			return this.getInnerResult() == otherExpr.getInnerResult();
 		}
 		return false;
 	}

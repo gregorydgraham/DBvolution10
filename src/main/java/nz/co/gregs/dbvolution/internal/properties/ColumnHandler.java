@@ -25,9 +25,9 @@ class ColumnHandler  implements Serializable{
 	private static final long serialVersionUID = 1l;
 
 	private final String columnName;
-	private final DBColumn columnAnnotation; // null if not present on property
-	private final DBPrimaryKey primaryKeyAnnotation; // null if not present on property
-	private final DBAutoIncrement autoIncrementAnnotation; // null if not present on property
+	private transient final DBColumn columnAnnotation; // null if not present on property
+	private transient final DBPrimaryKey primaryKeyAnnotation; // null if not present on property
+	private transient final DBAutoIncrement autoIncrementAnnotation; // null if not present on property
 
 	ColumnHandler(JavaProperty adaptee) {
 		this.columnAnnotation = adaptee.getAnnotation(DBColumn.class);

@@ -1,5 +1,6 @@
 package nz.co.gregs.dbvolution.internal.properties;
 
+import java.io.Serializable;
 import java.lang.reflect.Method;
 
 import org.apache.commons.logging.Log;
@@ -16,7 +17,9 @@ import nz.co.gregs.dbvolution.internal.properties.InterfaceInfo.UnsupportedType;
  * types.
  */
 // TODO exceptions need to reference the field the type adaptor is on
-public class SafeOneWaySimpleTypeAdaptor {
+public class SafeOneWaySimpleTypeAdaptor implements Serializable{
+	
+	private static final long serialVersionUID = 1l;
 
 	private static final Log log = LogFactory.getLog(SafeOneWaySimpleTypeAdaptor.class);
 
@@ -36,8 +39,8 @@ public class SafeOneWaySimpleTypeAdaptor {
 		TO_EXTERNAL
 	}
 
-	private static final Method toExternalMethod;
-	private static final Method toInternalMethod;
+	private static final Method TO_EXTERNAL_METHOD;
+	private static final Method TO_INTERNAL_METHOD;
 
 	private static final SimpleCast[] SIMPLE_CASTS = {
 		new NumberToShortCast(),
@@ -50,14 +53,14 @@ public class SafeOneWaySimpleTypeAdaptor {
 	private Direction direction;
 
 	private Class<?> sourceType;
-	private SimpleCast sourceCast = null;
-	private DBTypeAdaptor<Object, Object> typeAdaptor;
-	private SimpleCast targetCast = null;
+	private transient SimpleCast sourceCast = null;
+	private transient DBTypeAdaptor<Object, Object> typeAdaptor;
+	private transient SimpleCast targetCast = null;
 	private Class<?> targetType;
 
 	static {
 		try {
-			toExternalMethod = DBTypeAdaptor.class.getMethod("fromDatabaseValue", Object.class);
+			TO_EXTERNAL_METHOD = DBTypeAdaptor.class.getMethod("fromDatabaseValue", Object.class);
 		} catch (NoSuchMethodException e) {
 			throw new RuntimeException(DBTypeAdaptor.class.getSimpleName() + " does not have a 'fromDatabaseValue' method", e);
 		} catch (SecurityException e) {
@@ -65,7 +68,7 @@ public class SafeOneWaySimpleTypeAdaptor {
 		}
 
 		try {
-			toInternalMethod = DBTypeAdaptor.class.getMethod("toDatabaseValue", Object.class);
+			TO_INTERNAL_METHOD = DBTypeAdaptor.class.getMethod("toDatabaseValue", Object.class);
 		} catch (NoSuchMethodException e) {
 			throw new RuntimeException(DBTypeAdaptor.class.getSimpleName() + " does not have a 'toDatabaseValue' method", e);
 		} catch (SecurityException e) {
@@ -312,9 +315,9 @@ public class SafeOneWaySimpleTypeAdaptor {
 
 	private String methodName() {
 		if (direction == Direction.TO_EXTERNAL) {
-			return typeAdaptor.getClass().getSimpleName() + "." + toExternalMethod.getName() + "()";
+			return typeAdaptor.getClass().getSimpleName() + "." + TO_EXTERNAL_METHOD.getName() + "()";
 		} else {
-			return typeAdaptor.getClass().getSimpleName() + "." + toInternalMethod.getName() + "()";
+			return typeAdaptor.getClass().getSimpleName() + "." + TO_INTERNAL_METHOD.getName() + "()";
 		}
 	}
 

@@ -40,7 +40,7 @@ class ForeignKeyHandler implements Serializable{
 	private final boolean identityOnly;
 	private final Class<? extends DBRow> referencedClass;
 	private final PropertyWrapperDefinition identityOnlyReferencedProperty; // stores identity info only
-	private final DBForeignKey foreignKeyAnnotation; // null if not present on property
+	private transient final DBForeignKey foreignKeyAnnotation; // null if not present on property
 	private final ColumnHandler originalColumn;
 
 	ForeignKeyHandler(JavaProperty adaptee, boolean processIdentityOnly) {

@@ -15,14 +15,13 @@
  */
 package nz.co.gregs.dbvolution.datatypes;
 
+import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.AbstractMap.SimpleEntry;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import nz.co.gregs.dbvolution.expressions.DBExpression;
 
 import nz.co.gregs.dbvolution.exceptions.DBRuntimeException;
@@ -41,7 +40,7 @@ import org.apache.commons.logging.LogFactory;
  *
  * @author Malcolm Lett
  */
-public class QueryableDatatypeSyncer {
+public class QueryableDatatypeSyncer implements Serializable{
 
 	private static final Log log = LogFactory.getLog(QueryableDatatypeSyncer.class);
 

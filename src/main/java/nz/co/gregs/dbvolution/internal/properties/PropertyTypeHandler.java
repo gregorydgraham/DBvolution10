@@ -52,11 +52,11 @@ class PropertyTypeHandler implements Serializable{
 	private final JavaProperty javaProperty;
 	private final Class<?> genericPropertyType;
 	private final Class<? extends QueryableDatatype<?>> dbvPropertyType;
-	private final DBTypeAdaptor<Object, Object> typeAdaptor;
+	private transient final DBTypeAdaptor<Object, Object> typeAdaptor;
 	private final QueryableDatatypeSyncer internalQdtSyncer;
 	private final boolean identityOnly;
-	private final DBAdaptType dbAdaptTypeAnnotation;
-	private final DBColumn dbColumnAnnotation;
+	private transient final DBAdaptType dbAdaptTypeAnnotation;
+	private transient final DBColumn dbColumnAnnotation;
 
 	/**
 	 *

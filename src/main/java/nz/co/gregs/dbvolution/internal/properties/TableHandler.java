@@ -28,9 +28,9 @@ class TableHandler implements Serializable{
 
 	private final boolean isTable;
 	private final String tableName;
-	private final DBTableName tableNameAnnotation; // null if not present on class
-	private final DBSelectQuery selectQueryAnnotation; // null if not present on class
-	private final Object requiredTableAnnotation;
+	private transient final DBTableName tableNameAnnotation; // null if not present on class
+	private transient final DBSelectQuery selectQueryAnnotation; // null if not present on class
+	private transient final Object requiredTableAnnotation;
 
 	public TableHandler(Class<?> adaptee) {
 		this.tableNameAnnotation = adaptee.getAnnotation(DBTableName.class);

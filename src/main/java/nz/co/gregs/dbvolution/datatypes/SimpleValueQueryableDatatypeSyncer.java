@@ -25,6 +25,8 @@ package nz.co.gregs.dbvolution.datatypes;
  */
 public class SimpleValueQueryableDatatypeSyncer extends QueryableDatatypeSyncer {
 
+	private static final long serialVersionUID = 1l;
+
 	/**
 	 *
 	 * @param propertyName used in error messages
