@@ -1,5 +1,6 @@
 package nz.co.gregs.dbvolution.internal.properties;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -33,7 +34,9 @@ import nz.co.gregs.dbvolution.query.RowDefinition;
  *
  * @author Malcolm Lett
  */
-public class RowDefinitionInstanceWrapper {
+public class RowDefinitionInstanceWrapper implements Serializable{
+
+	private static final long serialVersionUID = 1l;
 
 	private final RowDefinitionClassWrapper classWrapper;
 	private final RowDefinition rowDefinition;

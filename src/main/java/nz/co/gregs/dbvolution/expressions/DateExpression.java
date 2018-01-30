@@ -66,6 +66,8 @@ import org.joda.time.Period;
  */
 public class DateExpression extends RangeExpression<Date, DateResult, DBDate> implements DateResult {
 
+	private final static long serialVersionUID = 1l;
+
 	/**
 	 * The integer used to represent the index for Sunday
 	 */
@@ -154,6 +156,8 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 	@Override
 	public DateExpression nullExpression() {
 		return new DateExpression() {
+			private final static long serialVersionUID = 1l;
+
 			@Override
 			public String toSQLString(DBDefinition db) {
 				return db.getNull();
@@ -179,6 +183,7 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 	public static DateExpression currentDateOnly() {
 		return new DateExpression(
 				new FunctionWithDateResult() {
+			private final static long serialVersionUID = 1l;
 
 			@Override
 			public String toSQLString(DBDefinition db) {
@@ -207,6 +212,7 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 	public static DateExpression currentDate() {
 		return new DateExpression(
 				new FunctionWithDateResult() {
+			private final static long serialVersionUID = 1l;
 
 			@Override
 			public String toSQLString(DBDefinition db) {
@@ -231,6 +237,7 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 	public static DateExpression currentTime() {
 		return new DateExpression(
 				new FunctionWithDateResult() {
+			private final static long serialVersionUID = 1l;
 
 			@Override
 			public String toSQLString(DBDefinition db) {
@@ -251,6 +258,8 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 	public NumberExpression year() {
 		return new NumberExpression(
 				new DateExpressionWithNumberResult(this) {
+			private final static long serialVersionUID = 1l;
+
 			@Override
 			public String toSQLString(DBDefinition db) {
 				return db.doYearTransform(this.getInnerResult().toSQLString(db));
@@ -335,6 +344,8 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 	public NumberExpression month() {
 		return new NumberExpression(
 				new DateExpressionWithNumberResult(this) {
+			private final static long serialVersionUID = 1l;
+
 			@Override
 			public String toSQLString(DBDefinition db) {
 				return db.doMonthTransform(this.getInnerResult().toSQLString(db));
@@ -427,6 +438,8 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 	public NumberExpression day() {
 		return new NumberExpression(
 				new DateExpressionWithNumberResult(this) {
+			private final static long serialVersionUID = 1l;
+
 			@Override
 			public String toSQLString(DBDefinition db) {
 				return db.doDayTransform(this.getInnerResult().toSQLString(db));
@@ -511,6 +524,8 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 	public NumberExpression hour() {
 		return new NumberExpression(
 				new DateExpressionWithNumberResult(this) {
+			private final static long serialVersionUID = 1l;
+
 			@Override
 			public String toSQLString(DBDefinition db) {
 				return db.doHourTransform(this.getInnerResult().toSQLString(db));
@@ -595,6 +610,8 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 	public NumberExpression minute() {
 		return new NumberExpression(
 				new DateExpressionWithNumberResult(this) {
+			private final static long serialVersionUID = 1l;
+
 			@Override
 			public String toSQLString(DBDefinition db) {
 				return db.doMinuteTransform(this.getInnerResult().toSQLString(db));
@@ -688,6 +705,8 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 	public NumberExpression second() {
 		return new NumberExpression(
 				new DateExpressionWithNumberResult(this) {
+			private final static long serialVersionUID = 1l;
+
 			@Override
 			public String toSQLString(DBDefinition db) {
 				return db.doSecondTransform(this.getInnerResult().toSQLString(db));
@@ -711,6 +730,8 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 	public NumberExpression subsecond() {
 		return new NumberExpression(
 				new DateExpressionWithNumberResult(this) {
+			private final static long serialVersionUID = 1l;
+
 			@Override
 			public String toSQLString(DBDefinition db) {
 				return db.doSubsecondTransform(this.getInnerResult().toSQLString(db));
@@ -819,6 +840,8 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 	@Override
 	public BooleanExpression is(DateResult dateExpression) {
 		BooleanExpression isExpr = new BooleanExpression(new DateDateExpressionWithBooleanResult(this, dateExpression) {
+			private final static long serialVersionUID = 1l;
+
 			@Override
 			protected String getEquationOperator(DBDefinition db) {
 				return " = ";
@@ -859,6 +882,8 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 	@Override
 	public BooleanExpression isNot(DateResult dateExpression) {
 		BooleanExpression isExpr = new BooleanExpression(new DateDateExpressionWithBooleanResult(this, dateExpression) {
+			private final static long serialVersionUID = 1l;
+
 			@Override
 			protected String getEquationOperator(DBDefinition db) {
 				return " <> ";
@@ -1295,6 +1320,8 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 	@Override
 	public BooleanExpression isLessThan(DateResult dateExpression) {
 		return new BooleanExpression(new DateExpression.DateDateExpressionWithBooleanResult(this, dateExpression) {
+			private final static long serialVersionUID = 1l;
+
 			@Override
 			protected String getEquationOperator(DBDefinition db) {
 				return " < ";
@@ -1331,6 +1358,7 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 	 */
 	public DateRepeatExpression getDateRepeatFrom(DateResult dateExpression) {
 		return new DateRepeatExpression(new DateDateExpressionWithDateRepeatResult(this, dateExpression) {
+			private final static long serialVersionUID = 1l;
 
 			@Override
 			public String toSQLString(DBDefinition db) {
@@ -1388,6 +1416,8 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 	 */
 	public DateExpression minus(DateRepeatResult intervalExpression) {
 		return new DateExpression(new DateDateRepeatArithmeticDateResult(this, intervalExpression) {
+			private final static long serialVersionUID = 1l;
+
 			@Override
 			protected String doExpressionTransformation(DBDefinition db) {
 				if (db instanceof SupportsDateRepeatDatatypeFunctions) {
@@ -1441,6 +1471,8 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 	 */
 	public DateExpression plus(DateRepeatResult intervalExpression) {
 		return new DateExpression(new DateDateRepeatArithmeticDateResult(this, intervalExpression) {
+			private final static long serialVersionUID = 1l;
+
 			@Override
 			protected String doExpressionTransformation(DBDefinition db) {
 				if (db instanceof SupportsDateRepeatDatatypeFunctions) {
@@ -1494,6 +1526,8 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 	@Override
 	public BooleanExpression isLessThanOrEqual(DateResult dateExpression) {
 		return new BooleanExpression(new DateDateExpressionWithBooleanResult(this, dateExpression) {
+			private final static long serialVersionUID = 1l;
+
 			@Override
 			protected String getEquationOperator(DBDefinition db) {
 				return " <= ";
@@ -1532,6 +1566,8 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 	@Override
 	public BooleanExpression isGreaterThan(DateResult dateExpression) {
 		return new BooleanExpression(new DateDateExpressionWithBooleanResult(this, dateExpression) {
+			private final static long serialVersionUID = 1l;
+
 			@Override
 			protected String getEquationOperator(DBDefinition db) {
 				return " > ";
@@ -1570,6 +1606,8 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 	@Override
 	public BooleanExpression isGreaterThanOrEqual(DateResult dateExpression) {
 		return new BooleanExpression(new DateDateExpressionWithBooleanResult(this, dateExpression) {
+			private final static long serialVersionUID = 1l;
+
 			@Override
 			protected String getEquationOperator(DBDefinition db) {
 				return " >= ";
@@ -1741,6 +1779,7 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 	@Override
 	public BooleanExpression isIn(DateResult... possibleValues) {
 		BooleanExpression isInExpr = new BooleanExpression(new DateDateResultFunctionWithBooleanResult(this, possibleValues) {
+			private final static long serialVersionUID = 1l;
 
 			@Override
 			public String toSQLString(DBDefinition db) {
@@ -1800,6 +1839,7 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 	public DateExpression ifDBNull(DateResult alternative) {
 		return new DateExpression(
 				new DateExpression.DateDateFunctionWithDateResult(this, alternative) {
+			private final static long serialVersionUID = 1l;
 
 			@Override
 			public String toSQLString(DBDefinition db) {
@@ -1827,6 +1867,8 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 	 */
 	public DateExpression max() {
 		return new DateExpression(new DateFunctionWithDateResult(this) {
+			private final static long serialVersionUID = 1l;
+
 			@Override
 			protected String getFunctionName(DBDefinition db) {
 				return db.getMaxFunctionName();
@@ -1858,6 +1900,8 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 	 */
 	public DateExpression min() {
 		return new DateExpression(new DateFunctionWithDateResult(this) {
+			private final static long serialVersionUID = 1l;
+
 			@Override
 			protected String getFunctionName(DBDefinition db) {
 				return db.getMinFunctionName();
@@ -1909,6 +1953,7 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 	public DateExpression addSeconds(NumberExpression secondsToAdd) {
 		return new DateExpression(
 				new DateNumberExpressionWithDateResult(this, secondsToAdd) {
+			private final static long serialVersionUID = 1l;
 
 			@Override
 			public boolean getIncludesNull() {
@@ -1936,6 +1981,7 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 	public DateExpression addSeconds(IntegerExpression secondsToAdd) {
 		return new DateExpression(
 				new DateIntegerExpressionWithDateResult(this, secondsToAdd) {
+			private final static long serialVersionUID = 1l;
 
 			@Override
 			public boolean getIncludesNull() {
@@ -1978,6 +2024,7 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 	public DateExpression addMinutes(IntegerExpression minutesToAdd) {
 		return new DateExpression(
 				new DateIntegerExpressionWithDateResult(this, minutesToAdd) {
+			private final static long serialVersionUID = 1l;
 
 			@Override
 			public boolean getIncludesNull() {
@@ -2050,6 +2097,7 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 	public DateExpression addDays(IntegerExpression daysToAdd) {
 		return new DateExpression(
 				new DateIntegerExpressionWithDateResult(this, daysToAdd) {
+			private final static long serialVersionUID = 1l;
 
 			@Override
 			public boolean getIncludesNull() {
@@ -2077,6 +2125,7 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 	public DateExpression addDays(NumberExpression daysToAdd) {
 		return new DateExpression(
 				new DateNumberExpressionWithDateResult(this, daysToAdd) {
+			private final static long serialVersionUID = 1l;
 
 			@Override
 			public boolean getIncludesNull() {
@@ -2119,6 +2168,7 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 	public DateExpression addHours(IntegerExpression hoursToAdd) {
 		return new DateExpression(
 				new DateIntegerExpressionWithDateResult(this, hoursToAdd) {
+			private final static long serialVersionUID = 1l;
 
 			@Override
 			public boolean getIncludesNull() {
@@ -2161,6 +2211,7 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 	public DateExpression addWeeks(IntegerExpression weeksToAdd) {
 		return new DateExpression(
 				new DateIntegerExpressionWithDateResult(this, weeksToAdd) {
+			private final static long serialVersionUID = 1l;
 
 			@Override
 			public boolean getIncludesNull() {
@@ -2233,6 +2284,7 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 	public DateExpression addMonths(IntegerExpression monthsToAdd) {
 		return new DateExpression(
 				new DateIntegerExpressionWithDateResult(this, monthsToAdd) {
+			private final static long serialVersionUID = 1l;
 
 			@Override
 			public boolean getIncludesNull() {
@@ -2260,6 +2312,7 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 	public DateExpression addMonths(NumberExpression monthsToAdd) {
 		return new DateExpression(
 				new DateNumberExpressionWithDateResult(this, monthsToAdd) {
+			private final static long serialVersionUID = 1l;
 
 			@Override
 			public boolean getIncludesNull() {
@@ -2302,6 +2355,7 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 	public DateExpression addYears(IntegerExpression yearsToAdd) {
 		return new DateExpression(
 				new DateIntegerExpressionWithDateResult(this, yearsToAdd) {
+			private final static long serialVersionUID = 1l;
 
 			@Override
 			public boolean getIncludesNull() {
@@ -2346,6 +2400,7 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 	public NumberExpression daysFrom(DateResult dateToCompareTo) {
 		return new NumberExpression(
 				new DateDateFunctionWithNumberResult(this, dateToCompareTo) {
+			private final static long serialVersionUID = 1l;
 
 			@Override
 			public boolean getIncludesNull() {
@@ -2390,6 +2445,7 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 	public NumberExpression weeksFrom(DateExpression dateToCompareTo) {
 		return new NumberExpression(
 				new DateDateFunctionWithNumberResult(this, dateToCompareTo) {
+			private final static long serialVersionUID = 1l;
 
 			@Override
 			public boolean getIncludesNull() {
@@ -2434,6 +2490,7 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 	public NumberExpression monthsFrom(DateResult dateToCompareTo) {
 		return new NumberExpression(
 				new DateDateFunctionWithNumberResult(this, dateToCompareTo) {
+			private final static long serialVersionUID = 1l;
 
 			@Override
 			public boolean getIncludesNull() {
@@ -2478,6 +2535,7 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 	public NumberExpression yearsFrom(DateResult dateToCompareTo) {
 		return new NumberExpression(
 				new DateDateFunctionWithNumberResult(this, dateToCompareTo) {
+			private final static long serialVersionUID = 1l;
 
 			@Override
 			public boolean getIncludesNull() {
@@ -2522,6 +2580,7 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 	public NumberExpression hoursFrom(DateResult dateToCompareTo) {
 		return new NumberExpression(
 				new DateDateFunctionWithNumberResult(this, dateToCompareTo) {
+			private final static long serialVersionUID = 1l;
 
 			@Override
 			public boolean getIncludesNull() {
@@ -2566,6 +2625,7 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 	public NumberExpression minutesFrom(DateResult dateToCompareTo) {
 		return new NumberExpression(
 				new DateDateFunctionWithNumberResult(this, dateToCompareTo) {
+			private final static long serialVersionUID = 1l;
 
 			@Override
 			public boolean getIncludesNull() {
@@ -2610,6 +2670,7 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 	public NumberExpression secondsFrom(DateResult dateToCompareTo) {
 		return new NumberExpression(
 				new DateDateFunctionWithNumberResult(this, dateToCompareTo) {
+			private final static long serialVersionUID = 1l;
 
 			@Override
 			public boolean getIncludesNull() {
@@ -2646,6 +2707,8 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 	public DateExpression endOfMonth() {
 		return new DateExpression(
 				new DateExpression(this) {
+			private final static long serialVersionUID = 1l;
+
 			@Override
 			public String toSQLString(DBDefinition db) {
 				try {
@@ -2675,6 +2738,8 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 	public NumberExpression dayOfWeek() {
 		return new NumberExpression(
 				new DateExpressionWithNumberResult(this) {
+			private final static long serialVersionUID = 1l;
+
 			@Override
 			public String toSQLString(DBDefinition db) {
 				return db.doDayOfWeekTransform(this.getInnerResult().toSQLString(db));
@@ -2802,6 +2867,7 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 	public static DateExpression leastOf(DateResult... possibleValues) {
 		DateExpression leastExpr
 				= new DateExpression(new DateArrayFunctionWithDateResult(possibleValues) {
+					private final static long serialVersionUID = 1l;
 
 					@Override
 					public String toSQLString(DBDefinition db) {
@@ -2880,6 +2946,7 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 	public static DateExpression greatestOf(DateResult... possibleValues) {
 		DateExpression greatestOf
 				= new DateExpression(new DateArrayFunctionWithDateResult(possibleValues) {
+					private final static long serialVersionUID = 1l;
 
 					@Override
 					public String toSQLString(DBDefinition db) {

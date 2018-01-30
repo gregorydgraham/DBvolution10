@@ -42,6 +42,8 @@ import org.apache.commons.logging.LogFactory;
  */
 public class DBMigrationAction<R extends DBRow> extends DBAction {
 
+	private static final long serialVersionUID = 1l;
+	
 	private static final Log LOG = LogFactory.getLog(DBQueryInsertAction.class);
 
 //	private transient StringBuilder allChangedColumns;

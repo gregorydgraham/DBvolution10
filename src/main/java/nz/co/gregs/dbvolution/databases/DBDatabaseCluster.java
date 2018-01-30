@@ -39,6 +39,7 @@ import java.util.Queue;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.RejectedExecutionException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import nz.co.gregs.dbvolution.DBQueryRow;
@@ -144,7 +145,8 @@ public class DBDatabaseCluster extends DBDatabase {
 	 * The database will be synchronized and then made available for use.</p>
 	 *
 	 * <p>
-	 * This is the blocking version of {@link #addedDatabases}</p>
+	 * This is the blocking version of {@link #addDatabase(nz.co.gregs.dbvolution.databases.DBDatabase)
+	 * }</p>
 	 *
 	 * @param database element to be appended to this list
 	 * @return <tt>true</tt> if the database has been added to the cluster.
@@ -971,47 +973,47 @@ public class DBDatabaseCluster extends DBDatabase {
 	private void synchronizeSecondaryDatabase(DBDatabase secondary) throws SQLException, NoAvailableDatabaseException {
 
 		DBDatabase template = null;
-			try {
-				template = getTemplateDatabase();
-			} catch (NoAvailableDatabaseException except) {
-				// must be the first database
-			}
-			if (template != null) {
-				// Check that we're not synchronising the reference database
-				if (!template.equals(secondary)) {
-					final DBRow[] requiredTables = details.getRequiredTables();
-					for (DBRow table : requiredTables) {
-						if (true) {
-							if (template.tableExists(table)) {
-								// Make sure it exists in the new database
-								if (secondary.tableExists(table) == false) {
-									secondary.createTable(table);
-								}
-								// Check that the table has data
-								final DBTable<DBRow> primaryTable = template.getDBTable(table);
-								final DBTable<DBRow> secondaryTable = secondary.getDBTable(table);
-								final Long primaryTableCount = primaryTable.count();
-								final Long secondaryTableCount = secondaryTable.count();
-								if (primaryTableCount > 0) {
-									final DBTable<DBRow> primaryData = primaryTable.setBlankQueryAllowed(true);
-									// Check that the new database has data
-									if (secondaryTableCount == 0) {
-										List<DBRow> allRows = primaryData.getAllRows();
-										secondaryTable.insert(allRows);
-									} else if (!secondaryTableCount.equals(primaryTableCount)) {
-										// Something is different in the data so correct it
-										secondary.delete(secondaryTable.setBlankQueryAllowed(true).getAllRows());
-										List<DBRow> allRows = primaryData.getAllRows();
-										secondary.insert(allRows);
-									}
+		try {
+			template = getTemplateDatabase();
+		} catch (NoAvailableDatabaseException except) {
+			// must be the first database
+		}
+		if (template != null) {
+			// Check that we're not synchronising the reference database
+			if (!template.equals(secondary)) {
+				final DBRow[] requiredTables = details.getRequiredTables();
+				for (DBRow table : requiredTables) {
+					if (true) {
+						if (template.tableExists(table)) {
+							// Make sure it exists in the new database
+							if (secondary.tableExists(table) == false) {
+								secondary.createTable(table);
+							}
+							// Check that the table has data
+							final DBTable<DBRow> primaryTable = template.getDBTable(table);
+							final DBTable<DBRow> secondaryTable = secondary.getDBTable(table);
+							final Long primaryTableCount = primaryTable.count();
+							final Long secondaryTableCount = secondaryTable.count();
+							if (primaryTableCount > 0) {
+								final DBTable<DBRow> primaryData = primaryTable.setBlankQueryAllowed(true);
+								// Check that the new database has data
+								if (secondaryTableCount == 0) {
+									List<DBRow> allRows = primaryData.getAllRows();
+									secondaryTable.insert(allRows);
+								} else if (!secondaryTableCount.equals(primaryTableCount)) {
+									// Something is different in the data so correct it
+									secondary.delete(secondaryTable.setBlankQueryAllowed(true).getAllRows());
+									List<DBRow> allRows = primaryData.getAllRows();
+									secondary.insert(allRows);
 								}
 							}
 						}
 					}
 				}
 			}
-			releaseTemplateDatabase(template);
-			synchronizeActions(secondary);
+		}
+		releaseTemplateDatabase(template);
+		synchronizeActions(secondary);
 //		}
 	}
 
@@ -1034,19 +1036,23 @@ public class DBDatabaseCluster extends DBDatabase {
 		for (DBDatabase addedDatabase : dbs) {
 			SynchroniseTask task = new SynchroniseTask(this, addedDatabase) {
 				@Override
-				public Void call() throws Exception {
+				public Void synchronise(DBDatabaseCluster cluster, DBDatabase database) throws SQLException {
 					cluster.synchronizeSecondaryDatabase(database);
 					return null;
 				}
 			};
 			if (block) {
 				try {
-					task.call();
-				} catch (Exception ex) {
+					task.synchronise(this, addedDatabase);
+				} catch (SQLException ex) {
 					Logger.getLogger(DBDatabaseCluster.class.getName()).log(Level.SEVERE, null, ex);
 				}
 			} else {
-				threadPool.submit(task);
+				try {
+					threadPool.submit(task);
+				} catch (RejectedExecutionException ex) {
+					task.synchronise(this, addedDatabase);
+				}
 			}
 		}
 	}
@@ -1128,13 +1134,34 @@ public class DBDatabaseCluster extends DBDatabase {
 
 	private static abstract class SynchroniseTask implements Callable<Void> {
 
-		protected final DBDatabaseCluster cluster;
-		protected final DBDatabase database;
+		private final DBDatabaseCluster cluster;
+		private final DBDatabase database;
 
 		public SynchroniseTask(DBDatabaseCluster cluster, DBDatabase db) {
 			this.cluster = cluster;
 			this.database = db;
 		}
+
+		@Override
+		public Void call() throws Exception {
+			return synchronise(getCluster(), getDatabase());
+		}
+
+		/**
+		 * @return the cluster
+		 */
+		public DBDatabaseCluster getCluster() {
+			return cluster;
+		}
+
+		/**
+		 * @return the database
+		 */
+		public DBDatabase getDatabase() {
+			return database;
+		}
+
+		public abstract Void synchronise(DBDatabaseCluster cluster, DBDatabase database) throws SQLException;
 	}
 
 	public static enum Status {

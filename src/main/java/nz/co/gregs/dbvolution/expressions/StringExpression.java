@@ -53,6 +53,8 @@ import nz.co.gregs.dbvolution.results.IntegerResult;
  */
 public class StringExpression extends RangeExpression<String, StringResult, DBString> implements StringResult {
 
+	private final static long serialVersionUID = 1l;
+
 	// needed because of Oracle's difficulty with empty/null strings
 	private final boolean stringNullProtectionRequired;
 
@@ -67,6 +69,8 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 	@Override
 	public StringExpression nullExpression() {
 		return new StringExpression() {
+			private final static long serialVersionUID = 1l;
+
 			@Override
 			public String toSQLString(DBDefinition db) {
 				return db.getNull();
@@ -358,6 +362,8 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 		return new StringExpression(
 				new StringExpression.DBBinaryStringFunction(this, new StringExpression(alternative)) {
 
+			private final static long serialVersionUID = 1l;
+
 			@Override
 			public String toSQLString(DBDefinition db) {
 				return db.doStringIfNullTransform(this.getFirst().toSQLString(db), getSecond().toSQLString(db));
@@ -515,6 +521,8 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 			return new BooleanExpression(this.isNull());
 		} else {
 			return new BooleanExpression(new DBBinaryBooleanArithmetic(this, sqlPattern) {
+				private final static long serialVersionUID = 1l;
+
 				@Override
 				protected String getEquationOperator(DBDefinition db) {
 					return " LIKE ";
@@ -753,6 +761,7 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 			return new BooleanExpression(this.isNull());
 		} else {
 			final BooleanExpression is = new BooleanExpression(new DBBinaryBooleanArithmetic(this, equivalentString) {
+				private final static long serialVersionUID = 1l;
 
 				@Override
 				public String toSQLString(DBDefinition db) {
@@ -861,6 +870,8 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 			return this.isNotNull();
 		} else {
 			return new BooleanExpression(new DBBinaryBooleanArithmetic(this, equivalentString) {
+				private final static long serialVersionUID = 1l;
+
 				@Override
 				public String toSQLString(DBDefinition db) {
 					return (new StringExpression(first)).ifDBNull("<DBV NULL PROTECTION>").toSQLString(db)
@@ -1269,6 +1280,8 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 			return new BooleanExpression(this.isNull());
 		} else {
 			return new BooleanExpression(new DBBinaryBooleanArithmetic(this, equivalentString) {
+				private final static long serialVersionUID = 1l;
+
 				@Override
 				protected String getEquationOperator(DBDefinition db) {
 					return " < ";
@@ -1317,6 +1330,8 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 			return new BooleanExpression(this.isNull());
 		} else {
 			return new BooleanExpression(new DBBinaryBooleanArithmetic(this, equivalentString) {
+				private final static long serialVersionUID = 1l;
+
 				@Override
 				protected String getEquationOperator(DBDefinition db) {
 					return " <= ";
@@ -1365,6 +1380,8 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 			return new BooleanExpression(this.isNotNull());
 		} else {
 			return new BooleanExpression(new DBBinaryBooleanArithmetic(this, equivalentString) {
+				private final static long serialVersionUID = 1l;
+
 				@Override
 				protected String getEquationOperator(DBDefinition db) {
 					return " > ";
@@ -1413,6 +1430,8 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 			return this.is(equivalentString).not();
 		} else {
 			return new BooleanExpression(new DBBinaryBooleanArithmetic(this, equivalentString) {
+				private final static long serialVersionUID = 1l;
+
 				@Override
 				protected String getEquationOperator(DBDefinition db) {
 					return " >= ";
@@ -1475,6 +1494,7 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 	public BooleanExpression isIn(StringResult... possibleValues) {
 		final BooleanExpression isInExpression
 				= new BooleanExpression(new DBNnaryBooleanFunction(this, possibleValues) {
+					private final static long serialVersionUID = 1l;
 
 					@Override
 					public String toSQLString(DBDefinition db) {
@@ -1510,6 +1530,8 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 	 */
 	public StringExpression append(StringResult string2) {
 		return new StringExpression(new DBBinaryStringArithmetic(this, string2) {
+			private final static long serialVersionUID = 1l;
+
 			@Override
 			public String toSQLString(DBDefinition db) {
 				return db.doConcatTransform(super.first.toSQLString(db), super.second.toSQLString(db));
@@ -1620,6 +1642,7 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 		}
 		return new StringExpression(
 				new DBTrinaryStringFunction(this, findString, replaceValue) {
+			private final static long serialVersionUID = 1l;
 
 			@Override
 			public String toSQLString(DBDefinition db) {
@@ -1678,6 +1701,7 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 	 */
 	public StringExpression substringBefore(StringResult splitBeforeThis) {
 		return new StringExpression(new DBBinaryStringFunction(this, new StringExpression(splitBeforeThis)) {
+			private final static long serialVersionUID = 1l;
 
 			@Override
 			public String toSQLString(DBDefinition db) {
@@ -1728,6 +1752,7 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 	 */
 	public StringExpression substringAfter(StringResult splitAfterThis) {
 		return new StringExpression(new DBBinaryStringFunction(this, new StringExpression(splitAfterThis)) {
+			private final static long serialVersionUID = 1l;
 
 			@Override
 			public String toSQLString(DBDefinition db) {
@@ -1808,6 +1833,7 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 	public StringExpression trim() {
 		return new StringExpression(
 				new StringExpression(this) {
+			private final static long serialVersionUID = 1l;
 
 			@Override
 			public String toSQLString(DBDefinition db) {
@@ -1845,6 +1871,7 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 	public StringExpression getFirstNumberAsSubstring() {
 		StringExpression exp = new StringExpression(
 				new StringExpression(this) {
+			private final static long serialVersionUID = 1l;
 
 			@Override
 			public String toSQLString(DBDefinition db) {
@@ -1866,6 +1893,7 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 	public StringExpression getFirstIntegerAsSubstring() {
 		final StringExpression exp = new StringExpression(
 				new StringExpression(this) {
+			private final static long serialVersionUID = 1l;
 
 			@Override
 			public String toSQLString(DBDefinition db) {
@@ -1915,6 +1943,8 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 	public StringExpression leftTrim() {
 		return new StringExpression(
 				new StringExpression(this) {
+			private final static long serialVersionUID = 1l;
+
 			@Override
 			public String toSQLString(DBDefinition db) {
 				return db.doLeftTrimTransform(this.getInnerResult().toSQLString(db));
@@ -1934,6 +1964,8 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 	public StringExpression rightTrim() {
 		return new StringExpression(
 				new StringExpression(this) {
+			private final static long serialVersionUID = 1l;
+
 			@Override
 			public String toSQLString(DBDefinition defn) {
 				return defn.getRightTrimFunctionName() + "(" + getInnerResult().toSQLString(defn) + ")";
@@ -1953,6 +1985,8 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 	public StringExpression lowercase() {
 		return new StringExpression(
 				new StringExpression(this) {
+			private final static long serialVersionUID = 1l;
+
 			@Override
 			public String toSQLString(DBDefinition defn) {
 				return defn.getLowercaseFunctionName() + "(" + getInnerResult().toSQLString(defn) + ")";
@@ -1972,6 +2006,8 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 	public StringExpression uppercase() {
 		return new StringExpression(
 				new StringExpression(this) {
+			private final static long serialVersionUID = 1l;
+
 			@Override
 			public String toSQLString(DBDefinition defn) {
 				return defn.getUppercaseFunctionName() + "(" + getInnerResult().toSQLString(defn) + ")";
@@ -2157,6 +2193,7 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 	public IntegerExpression length() {
 		return new IntegerExpression(
 				new IntegerExpression(this) {
+			private final static long serialVersionUID = 1l;
 
 			@Override
 			public String toSQLString(DBDefinition db) {
@@ -2181,6 +2218,7 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 	public static StringExpression currentUser() {
 		return new StringExpression(
 				new StringExpression() {
+			private final static long serialVersionUID = 1l;
 
 			@Override
 			public String toSQLString(DBDefinition db) {
@@ -2229,6 +2267,8 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 	 */
 	public IntegerExpression locationOf(StringResult searchString) {
 		return new NumberExpression(new BinaryComplicatedNumberFunction(this, searchString) {
+			private final static long serialVersionUID = 1l;
+
 			@Override
 			public String toSQLString(DBDefinition db) {
 				return db.doPositionInStringTransform(this.first.toSQLString(db), this.second.toSQLString(db));
@@ -2252,6 +2292,8 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 	public StringExpression max() {
 		return new StringExpression(
 				new StringExpression(this) {
+			private final static long serialVersionUID = 1l;
+
 			@Override
 			public String toSQLString(DBDefinition defn) {
 				return defn.getMaxFunctionName() + "(" + getInnerResult().toSQLString(defn) + ")";
@@ -2279,6 +2321,8 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 	 */
 	public StringExpression min() {
 		return new StringExpression(new StringExpression(this) {
+			private final static long serialVersionUID = 1l;
+
 			@Override
 			public String toSQLString(DBDefinition defn) {
 				return defn.getMinFunctionName() + "(" + getInnerResult().toSQLString(defn) + ")";
@@ -2389,6 +2433,8 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 	 */
 	public StringExpression bracket() {
 		return new StringExpression(new StringExpression(this) {
+			private final static long serialVersionUID = 1l;
+
 			@Override
 			public String toSQLString(DBDefinition defn) {
 				return "(" + getInnerResult().toSQLString(defn) + ")";
@@ -2509,6 +2555,7 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 	public NumberExpression numberResult() {
 		return new NumberExpression(
 				new NumberExpression(this) {
+			private final static long serialVersionUID = 1l;
 
 			@Override
 			public String toSQLString(DBDefinition db) {
@@ -2902,7 +2949,9 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 		}
 	}
 
-	private class Substring extends StringExpression {
+	private static class Substring extends StringExpression {
+
+		private final static long serialVersionUID = 1l;
 
 		private IntegerResult startingPosition;
 		private IntegerResult length;

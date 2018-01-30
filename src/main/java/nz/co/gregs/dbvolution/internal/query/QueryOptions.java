@@ -15,6 +15,7 @@
  */
 package nz.co.gregs.dbvolution.internal.query;
 
+import java.io.Serializable;
 import java.util.Arrays;
 import nz.co.gregs.dbvolution.columns.ColumnProvider;
 import nz.co.gregs.dbvolution.databases.DBDatabase;
@@ -26,7 +27,9 @@ import nz.co.gregs.dbvolution.databases.DBDatabase;
  *
  * @author greg
  */
-public class QueryOptions {
+public class QueryOptions  implements Serializable{
+	
+	private static final long serialVersionUID = 1l;
 
 	private boolean matchAll = true;
 	private int rowLimit = -1;

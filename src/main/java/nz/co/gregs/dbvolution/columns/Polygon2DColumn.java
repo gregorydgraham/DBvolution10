@@ -33,6 +33,8 @@ import nz.co.gregs.dbvolution.query.RowDefinition;
  */
 public class Polygon2DColumn extends Polygon2DExpression implements ColumnProvider {
 
+	private final static long serialVersionUID = 1l;
+
 	private AbstractColumn column;
 
 	/**

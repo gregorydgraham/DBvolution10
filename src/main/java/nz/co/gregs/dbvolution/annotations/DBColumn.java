@@ -41,7 +41,7 @@ import java.lang.annotation.Target;
  */
 @Target({ElementType.FIELD, ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
-public @interface DBColumn {
+public @interface DBColumn{
 
 	/**
 	 * The raw column name as stored in the database.

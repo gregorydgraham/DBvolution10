@@ -229,7 +229,7 @@ public class DBQueryInsert<M extends DBRow> extends RowDefinition {
 
 	private static final long serialVersionUID = 1L;
 
-	private transient ColumnProvider[] sortColumns = new ColumnProvider[]{};
+	private ColumnProvider[] sortColumns = new ColumnProvider[]{};
 	Boolean cartesian = false;
 	Boolean blank = false;
 

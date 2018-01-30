@@ -21,6 +21,7 @@ import java.util.HashSet;
 import java.util.Set;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
+import nz.co.gregs.dbvolution.databases.definitions.H2DBDefinition;
 import nz.co.gregs.dbvolution.datatypes.spatial2D.DBPoint2D;
 import nz.co.gregs.dbvolution.expressions.BooleanExpression;
 import nz.co.gregs.dbvolution.expressions.IntegerExpression;
@@ -41,6 +42,8 @@ import nz.co.gregs.dbvolution.results.AnyResult;
  * @author gregorygraham
  */
 public class Point2DExpression extends Spatial2DExpression<Point, Point2DResult, DBPoint2D> implements Point2DResult {
+
+	private final static long serialVersionUID = 1l;
 
 	/**
 	 * Default constructor
@@ -74,7 +77,7 @@ public class Point2DExpression extends Spatial2DExpression<Point, Point2DResult,
 	 * @param point
 	 */
 	public Point2DExpression(Point point) {
-		super(point==null?null:new DBPoint2D(point));
+		super(point == null ? null : new DBPoint2D(point));
 	}
 
 	public Point2DExpression(double xValue, double yValue) {
@@ -118,6 +121,7 @@ public class Point2DExpression extends Spatial2DExpression<Point, Point2DResult,
 	public Point2DExpression expression(Integer xValue, Integer yValue) {
 		return value(NumberExpression.value(xValue), NumberExpression.value(yValue));
 	}
+
 	public static Point2DExpression value(Integer xValue, Integer yValue) {
 		return value(NumberExpression.value(xValue), NumberExpression.value(yValue));
 	}
@@ -134,6 +138,7 @@ public class Point2DExpression extends Spatial2DExpression<Point, Point2DResult,
 	public Point2DExpression expression(Long xValue, Long yValue) {
 		return value(NumberExpression.value(xValue), NumberExpression.value(yValue));
 	}
+
 	public static Point2DExpression value(Long xValue, Long yValue) {
 		return value(NumberExpression.value(xValue), NumberExpression.value(yValue));
 	}
@@ -150,6 +155,7 @@ public class Point2DExpression extends Spatial2DExpression<Point, Point2DResult,
 	public Point2DExpression expression(Double xValue, Double yValue) {
 		return value(NumberExpression.value(xValue), NumberExpression.value(yValue));
 	}
+
 	public static Point2DExpression value(Double xValue, Double yValue) {
 		return new Point2DExpression(xValue, yValue);
 	}
@@ -164,10 +170,12 @@ public class Point2DExpression extends Spatial2DExpression<Point, Point2DResult,
 	 * @return a Point2DExpression of the x and y values provided.
 	 */
 	public Point2DExpression expression(NumberExpression xValue, NumberExpression yValue) {
-		return value(xValue,yValue);
+		return value(xValue, yValue);
 	}
+
 	public static Point2DExpression value(NumberExpression xValue, NumberExpression yValue) {
 		return new Point2DExpression(new NumberNumberFunctionWithPoint2DResult(xValue, yValue) {
+			private final static long serialVersionUID = 1l;
 
 			@Override
 			protected String doExpressionTransform(DBDefinition db) {
@@ -189,6 +197,7 @@ public class Point2DExpression extends Spatial2DExpression<Point, Point2DResult,
 	public Point2DExpression expression(IntegerExpression xValue, IntegerExpression yValue) {
 		return value(xValue.numberResult(), yValue.numberResult());
 	}
+
 	public static Point2DExpression value(IntegerExpression xValue, IntegerExpression yValue) {
 		return value(xValue.numberResult(), yValue.numberResult());
 	}
@@ -197,6 +206,7 @@ public class Point2DExpression extends Spatial2DExpression<Point, Point2DResult,
 	public Point2DExpression nullExpression() {
 
 		return new Point2DExpression() {
+			private final static long serialVersionUID = 1l;
 
 			@Override
 			public String toSQLString(DBDefinition db) {
@@ -222,14 +232,15 @@ public class Point2DExpression extends Spatial2DExpression<Point, Point2DResult,
 
 	@Override
 	public Point2DExpression copy() {
-		return this.isNullSafetyTerminator()?nullPoint2D():new Point2DExpression(getInnerResult());
+		return this.isNullSafetyTerminator() ? nullPoint2D() : new Point2DExpression(getInnerResult());
 	}
 
 	@Override
 	public boolean equals(Object other) {
 		if (other instanceof Point2DExpression) {
 			Point2DExpression otherExpr = (Point2DExpression) other;
-			return this.getInnerResult() == otherExpr.getInnerResult();
+			final H2DBDefinition defn = new H2DBDefinition();
+			return this.toSQLString(defn).equals(otherExpr.toSQLString(defn));
 		}
 		return false;
 	}
@@ -250,6 +261,7 @@ public class Point2DExpression extends Spatial2DExpression<Point, Point2DResult,
 	@Override
 	public StringExpression stringResult() {
 		return new StringExpression(new PointFunctionWithStringResult(this) {
+			private final static long serialVersionUID = 1l;
 
 			@Override
 			protected String doExpressionTransform(DBDefinition db) {
@@ -279,6 +291,7 @@ public class Point2DExpression extends Spatial2DExpression<Point, Point2DResult,
 	@Override
 	public BooleanExpression is(Point2DResult rightHandSide) {
 		return new BooleanExpression(new PointPointFunctionWithBooleanResult(this, new Point2DExpression(rightHandSide)) {
+			private final static long serialVersionUID = 1l;
 
 			@Override
 			public String doExpressionTransform(DBDefinition db) {
@@ -329,6 +342,7 @@ public class Point2DExpression extends Spatial2DExpression<Point, Point2DResult,
 	 */
 	public NumberExpression getX() {
 		return new NumberExpression(new PointFunctionWithNumberResult(this) {
+			private final static long serialVersionUID = 1l;
 
 			@Override
 			public String doExpressionTransform(DBDefinition db) {
@@ -355,6 +369,7 @@ public class Point2DExpression extends Spatial2DExpression<Point, Point2DResult,
 	 */
 	public NumberExpression getY() {
 		return new NumberExpression(new PointFunctionWithNumberResult(this) {
+			private final static long serialVersionUID = 1l;
 
 			@Override
 			public String doExpressionTransform(DBDefinition db) {
@@ -370,6 +385,7 @@ public class Point2DExpression extends Spatial2DExpression<Point, Point2DResult,
 	@Override
 	public NumberExpression measurableDimensions() {
 		return new NumberExpression(new PointFunctionWithNumberResult(this) {
+			private final static long serialVersionUID = 1l;
 
 			@Override
 			public String doExpressionTransform(DBDefinition db) {
@@ -385,6 +401,7 @@ public class Point2DExpression extends Spatial2DExpression<Point, Point2DResult,
 	@Override
 	public NumberExpression spatialDimensions() {
 		return new NumberExpression(new PointFunctionWithNumberResult(this) {
+			private final static long serialVersionUID = 1l;
 
 			@Override
 			public String doExpressionTransform(DBDefinition db) {
@@ -400,6 +417,7 @@ public class Point2DExpression extends Spatial2DExpression<Point, Point2DResult,
 	@Override
 	public BooleanExpression hasMagnitude() {
 		return new BooleanExpression(new PointFunctionWithBooleanResult(this) {
+			private final static long serialVersionUID = 1l;
 
 			@Override
 			public String doExpressionTransform(DBDefinition db) {
@@ -421,6 +439,7 @@ public class Point2DExpression extends Spatial2DExpression<Point, Point2DResult,
 	@Override
 	public NumberExpression magnitude() {
 		return new NumberExpression(new PointFunctionWithNumberResult(this) {
+			private final static long serialVersionUID = 1l;
 
 			@Override
 			public String doExpressionTransform(DBDefinition db) {
@@ -451,6 +470,7 @@ public class Point2DExpression extends Spatial2DExpression<Point, Point2DResult,
 	 */
 	public NumberExpression distanceTo(Point2DExpression otherPoint) {
 		return new NumberExpression(new PointPointFunctionWithNumberResult(this, otherPoint) {
+			private final static long serialVersionUID = 1l;
 
 			@Override
 			public String doExpressionTransform(DBDefinition db) {
@@ -466,6 +486,7 @@ public class Point2DExpression extends Spatial2DExpression<Point, Point2DResult,
 	@Override
 	public Polygon2DExpression boundingBox() {
 		return new Polygon2DExpression(new PointFunctionWithGeometry2DResult(this) {
+			private final static long serialVersionUID = 1l;
 
 			@Override
 			public String doExpressionTransform(DBDefinition db) {
@@ -508,7 +529,7 @@ public class Point2DExpression extends Spatial2DExpression<Point, Point2DResult,
 	public NumberExpression minY() {
 		return this.getY();
 	}
-	
+
 	/**
 	 * Creates an expression that will return the most common value of the column
 	 * supplied.
@@ -516,7 +537,7 @@ public class Point2DExpression extends Spatial2DExpression<Point, Point2DResult,
 	 * <p>
 	 * MODE: The number which appears most often in a set of numbers. For example:
 	 * in {6, 3, 9, 6, 6, 5, 9, 3} the Mode is 6.</p>
-	 * 
+	 *
 	 * <p style="color: #F90;">Support DBvolution at
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 *

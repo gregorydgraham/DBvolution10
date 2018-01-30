@@ -1,5 +1,6 @@
 package nz.co.gregs.dbvolution.internal.properties;
 
+import java.io.Serializable;
 import java.util.List;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.annotations.AutoFillDuringQueryIfPossible;
@@ -52,7 +53,9 @@ import nz.co.gregs.dbvolution.query.RowDefinition;
  * This class is not serializable. References to it within serializable classes
  * should be marked as {@code transient}.
  */
-public class PropertyWrapper {
+public class PropertyWrapper implements Serializable{
+
+	private static final long serialVersionUID = 1l;
 
 	private final RowDefinitionInstanceWrapper dbRowInstanceWrapper;
 	private final PropertyWrapperDefinition propertyDefinition;

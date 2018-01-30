@@ -86,7 +86,7 @@ public abstract class EqualExpression<B, R extends EqualResult<B>, D extends Que
 		return BooleanExpression.isNull(this);
 	}
 
-	public BooleanExpression isNotNull() {		
+	public BooleanExpression isNotNull() {
 		return BooleanExpression.isNotNull(this);
 	}
 
@@ -100,6 +100,8 @@ public abstract class EqualExpression<B, R extends EqualResult<B>, D extends Que
 	 */
 	public static IntegerExpression countAll() {
 		return new IntegerExpression(new DBNonaryFunction() {
+			private final static long serialVersionUID = 1l;
+
 			@Override
 			String getFunctionName(DBDefinition db) {
 				return db.getCountFunctionName();
@@ -132,6 +134,8 @@ public abstract class EqualExpression<B, R extends EqualResult<B>, D extends Que
 	 */
 	public IntegerExpression count() {
 		return new IntegerExpression(new IntegerExpression(this) {
+			private final static long serialVersionUID = 1l;
+
 			@Override
 			public String toSQLString(DBDefinition db) {
 				return db.getCountFunctionName() + "(" + getInnerResult().toSQLString(db) + ")";
@@ -312,6 +316,8 @@ public abstract class EqualExpression<B, R extends EqualResult<B>, D extends Que
 
 	protected static class ModeSimpleExpression extends DBUnaryFunction {
 
+		private final static long serialVersionUID = 1l;
+
 		public ModeSimpleExpression(EqualResult<?> only) {
 			super(only);
 		}
@@ -343,7 +349,7 @@ public abstract class EqualExpression<B, R extends EqualResult<B>, D extends Que
 
 		@Override
 		public String createSQLForFromClause(DBDatabase database) {
-			DBDefinition defn = database.getDefinition();
+
 			final IntegerExpression expr = new IntegerExpression(getInnerResult());
 
 			DBInteger count = expr.count().asExpressionColumn();
@@ -414,6 +420,8 @@ public abstract class EqualExpression<B, R extends EqualResult<B>, D extends Que
 	}
 
 	protected static class ModeStrictExpression extends DBUnaryFunction {
+
+		private final static long serialVersionUID = 1l;
 
 		private String tableAlias = null;
 		private String firstTableCounterName = null;

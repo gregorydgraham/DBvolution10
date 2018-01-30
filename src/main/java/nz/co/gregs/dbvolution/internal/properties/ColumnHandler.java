@@ -1,5 +1,6 @@
 package nz.co.gregs.dbvolution.internal.properties;
 
+import java.io.Serializable;
 import nz.co.gregs.dbvolution.annotations.DBAutoIncrement;
 import nz.co.gregs.dbvolution.annotations.DBColumn;
 import nz.co.gregs.dbvolution.annotations.DBPrimaryKey;
@@ -19,7 +20,9 @@ import nz.co.gregs.dbvolution.annotations.DBPrimaryKey;
  *
  * @author Malcolm Lett
  */
-class ColumnHandler {
+class ColumnHandler  implements Serializable{
+
+	private static final long serialVersionUID = 1l;
 
 	private final String columnName;
 	private final DBColumn columnAnnotation; // null if not present on property

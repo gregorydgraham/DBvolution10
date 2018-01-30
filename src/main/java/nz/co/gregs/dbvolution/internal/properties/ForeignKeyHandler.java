@@ -1,5 +1,6 @@
 package nz.co.gregs.dbvolution.internal.properties;
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -32,7 +33,9 @@ import static org.simmetrics.builders.StringMetricBuilder.with;
  */
 // TODO if referenced property has differing case of column name,
 // need to throw exception during a deferred validation step once database case-ness is known.
-class ForeignKeyHandler {
+class ForeignKeyHandler implements Serializable{
+
+	private static final long serialVersionUID = 1l;
 
 	private final boolean identityOnly;
 	private final Class<? extends DBRow> referencedClass;

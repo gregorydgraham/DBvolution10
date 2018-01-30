@@ -49,6 +49,8 @@ import nz.co.gregs.dbvolution.query.RowDefinition;
  */
 public class DateColumn extends DateExpression implements ColumnProvider {
 
+	private static final long serialVersionUID = 1l;
+
 	private AbstractColumn column;
 
 	private DateColumn() {

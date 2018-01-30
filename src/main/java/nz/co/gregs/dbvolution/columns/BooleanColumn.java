@@ -47,6 +47,8 @@ import nz.co.gregs.dbvolution.query.RowDefinition;
  */
 public class BooleanColumn extends BooleanExpression implements ColumnProvider {
 
+	private final static long serialVersionUID = 1l;
+
 	private final AbstractColumn column;
 
 	/**

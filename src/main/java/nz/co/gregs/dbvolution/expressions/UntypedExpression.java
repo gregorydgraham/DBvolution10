@@ -34,8 +34,9 @@ import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 import nz.co.gregs.dbvolution.results.AnyResult;
 
+public class UntypedExpression extends AnyExpression<Object, UntypedResult, DBUntypedValue> implements UntypedResult {
 
-public class UntypedExpression extends AnyExpression<Object, UntypedResult, DBUntypedValue> implements UntypedResult{
+	private final static long serialVersionUID = 1l;
 
 	public UntypedExpression() {
 	}

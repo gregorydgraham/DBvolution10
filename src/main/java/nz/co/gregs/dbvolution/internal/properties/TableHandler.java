@@ -1,5 +1,6 @@
 package nz.co.gregs.dbvolution.internal.properties;
 
+import java.io.Serializable;
 import nz.co.gregs.dbvolution.annotations.DBRequiredTable;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.annotations.DBSelectQuery;
@@ -21,7 +22,9 @@ import nz.co.gregs.dbvolution.query.RowDefinition;
  *
  * @author Malcolm Lett
  */
-class TableHandler {
+class TableHandler implements Serializable{
+
+	private static final long serialVersionUID = 1l;
 
 	private final boolean isTable;
 	private final String tableName;

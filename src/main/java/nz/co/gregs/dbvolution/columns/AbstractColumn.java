@@ -15,6 +15,7 @@
  */
 package nz.co.gregs.dbvolution.columns;
 
+import java.io.Serializable;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.HashSet;
@@ -46,9 +47,11 @@ import nz.co.gregs.dbvolution.query.RowDefinition;
  *
  * @author greg
  */
-public class AbstractColumn implements DBExpression {
+public class AbstractColumn implements DBExpression, Serializable {
+	
+	private static final long serialVersionUID = 1l;
 
-	private final PropertyWrapper propertyWrapper;
+	private final transient PropertyWrapper propertyWrapper;
 	private final RowDefinition dbrow;
 	private final Object field;
 	private boolean useTableAlias = true;

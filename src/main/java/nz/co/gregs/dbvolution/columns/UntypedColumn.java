@@ -39,6 +39,8 @@ import nz.co.gregs.dbvolution.query.RowDefinition;
  */
 public class UntypedColumn extends UntypedExpression implements ColumnProvider {
 
+	private static final long serialVersionUID = 1l;
+
 	private AbstractColumn column;
 
 	private UntypedColumn() {

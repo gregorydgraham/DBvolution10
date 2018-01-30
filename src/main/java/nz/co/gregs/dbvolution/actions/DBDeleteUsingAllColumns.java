@@ -40,6 +40,8 @@ import nz.co.gregs.dbvolution.internal.properties.PropertyWrapper;
  */
 public class DBDeleteUsingAllColumns extends DBDelete {
 
+	private static final long serialVersionUID = 1l;
+	
 	private final List<DBRow> savedRows = new ArrayList<>();
 
 	/**

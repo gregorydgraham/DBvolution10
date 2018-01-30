@@ -39,6 +39,8 @@ import nz.co.gregs.dbvolution.internal.properties.PropertyWrapper;
  */
 public class DBUpdateSimpleTypesUsingAllColumns extends DBUpdateSimpleTypes {
 
+	private static final long serialVersionUID = 1l;
+	
 	DBUpdateSimpleTypesUsingAllColumns(DBRow row) {
 		super(row);
 	}

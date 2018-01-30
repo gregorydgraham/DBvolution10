@@ -83,7 +83,7 @@ public class DBPolygon2D extends QueryableDatatype<Polygon> implements Transform
 	 *
 	 * @param columnExpression
 	 */
-	public DBPolygon2D(nz.co.gregs.dbvolution.expressions.spatial2D.Polygon2DExpression columnExpression) {
+	public DBPolygon2D(Polygon2DResult columnExpression) {
 		super(columnExpression);
 	}
 

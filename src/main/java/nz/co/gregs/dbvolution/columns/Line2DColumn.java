@@ -35,6 +35,8 @@ import nz.co.gregs.dbvolution.query.RowDefinition;
  */
 public class Line2DColumn extends Line2DExpression implements ColumnProvider {
 
+	private final static long serialVersionUID = 1l;
+
 	private final AbstractColumn column;
 
 	/**
@@ -47,6 +49,7 @@ public class Line2DColumn extends Line2DExpression implements ColumnProvider {
 	public Line2DColumn(RowDefinition row, DBLine2D field) {
 		this.column = new AbstractColumn(row, field);
 	}
+
 	/**
 	 * Creates a portable reference to the column represented by the field of the
 	 * row.
@@ -91,7 +94,7 @@ public class Line2DColumn extends Line2DExpression implements ColumnProvider {
 	@Override
 	public boolean equals(Object other) {
 		if (other instanceof Line2DColumn) {
-			return column.equals(other);
+			return column.equals(((Line2DColumn) other).column);
 		} else {
 			return false;
 		}
@@ -103,7 +106,7 @@ public class Line2DColumn extends Line2DExpression implements ColumnProvider {
 		hash = 89 * hash + Objects.hashCode(this.column);
 		return hash;
 	}
-	
+
 	@Override
 	public synchronized Line2DColumn copy() {
 		final AbstractColumn col = getColumn();

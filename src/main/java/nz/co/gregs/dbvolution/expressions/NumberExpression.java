@@ -53,9 +53,13 @@ import nz.co.gregs.dbvolution.results.IntegerResult;
  */
 public class NumberExpression extends SimpleNumericExpression<Number, NumberResult, DBNumber> implements NumberResult {
 
+	private final static long serialVersionUID = 1l;
+
 	@Override
 	public NumberExpression nullExpression() {
 		return new NumberExpression() {
+			private final static long serialVersionUID = 1l;
+
 			@Override
 			public String toSQLString(DBDefinition db) {
 				return db.getNull();
@@ -1188,6 +1192,8 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 	@Override
 	public BooleanExpression isLessThan(NumberResult numberExpression) {
 		return new BooleanExpression(new DBBinaryBooleanArithmetic(this, numberExpression) {
+			private final static long serialVersionUID = 1l;
+
 			@Override
 			protected String getEquationOperator(DBDefinition db) {
 				return " < ";
@@ -1712,6 +1718,8 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 	public static NumberExpression greatestOf(NumberResult... possibleValues) {
 		NumberExpression greatestExpr
 				= new NumberExpression(new DBNnaryNumberFunction(possibleValues) {
+					private final static long serialVersionUID = 1l;
+
 					@Override
 					public String toSQLString(DBDefinition db) {
 						List<String> strs = new ArrayList<>();
@@ -1770,6 +1778,7 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 	public NumberExpression ifDBNull(NumberResult alternative) {
 		return new NumberExpression(
 				new NumberNumberFunctionNumberResult(this, alternative) {
+			private final static long serialVersionUID = 1l;
 
 			@Override
 			public String toSQLString(DBDefinition db) {
@@ -1814,6 +1823,7 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 	 */
 	public NumberExpression exp() {
 		return new NumberExpression(new DBUnaryFunction(this) {
+			private final static long serialVersionUID = 1l;
 
 			@Override
 			public String toSQLString(DBDefinition db) {
@@ -1846,6 +1856,8 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 	 */
 	public NumberExpression cos() {
 		return new NumberExpression(new DBUnaryFunction(this) {
+			private final static long serialVersionUID = 1l;
+
 			@Override
 			String getFunctionName(DBDefinition db) {
 				return "cos";
@@ -1869,6 +1881,7 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 	 */
 	public NumberExpression cosh() {
 		return new NumberExpression(new DBUnaryFunction(this) {
+			private final static long serialVersionUID = 1l;
 
 			@Override
 			public String toSQLString(DBDefinition db) {
@@ -1903,6 +1916,8 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 	 */
 	public NumberExpression sine() {
 		return new NumberExpression(new DBUnaryFunction(this) {
+			private final static long serialVersionUID = 1l;
+
 			@Override
 			String getFunctionName(DBDefinition db) {
 				return "sin";
@@ -1935,6 +1950,8 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 	}
 
 	public static class SinhFunction extends DBUnaryFunction {
+
+		private final static long serialVersionUID = 1l;
 
 		public SinhFunction(NumberExpression only) {
 			this.only = only.isGreaterThan(700).ifThenElse(nullNumber(), only);
@@ -1974,6 +1991,8 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 	 */
 	public NumberExpression tan() {
 		return new NumberExpression(new DBUnaryFunction(this) {
+			private final static long serialVersionUID = 1l;
+
 			@Override
 			String getFunctionName(DBDefinition db) {
 				return "tan";
@@ -1997,6 +2016,7 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 	 */
 	public NumberExpression tanh() {
 		return new NumberExpression(new DBUnaryFunction(this) {
+			private final static long serialVersionUID = 1l;
 
 			@Override
 			public String toSQLString(DBDefinition db) {
@@ -2027,6 +2047,8 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 	 */
 	public NumberExpression abs() {
 		return new NumberExpression(new DBUnaryFunction(this) {
+			private final static long serialVersionUID = 1l;
+
 			@Override
 			String getFunctionName(DBDefinition db) {
 				return "abs";
@@ -2061,6 +2083,8 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 	 */
 	public NumberExpression arccos() {
 		return new NumberExpression(new DBUnaryFunction(this) {
+			private final static long serialVersionUID = 1l;
+
 			@Override
 			String getFunctionName(DBDefinition db) {
 				return "acos";
@@ -2079,6 +2103,7 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 	 */
 	public NumberExpression arcsin() {
 		return new NumberExpression(new DBUnaryFunction(this) {
+			private final static long serialVersionUID = 1l;
 
 			@Override
 			public String toSQLString(DBDefinition db) {
@@ -2107,6 +2132,8 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 	 */
 	public NumberExpression arctan() {
 		return new NumberExpression(new DBUnaryFunction(this) {
+			private final static long serialVersionUID = 1l;
+
 			@Override
 			String getFunctionName(DBDefinition db) {
 				return "atan";
@@ -2140,6 +2167,8 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 	 */
 	public NumberExpression arctan2(NumberExpression number) {
 		return new NumberExpression(new NumberNumberFunctionNumberResult(this, number) {
+			private final static long serialVersionUID = 1l;
+
 			@Override
 			String getFunctionName(DBDefinition db) {
 				return db.getArctan2FunctionName();
@@ -2214,6 +2243,7 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 	 */
 	public NumberExpression cotangent() {
 		return new NumberExpression(new DBUnaryFunction(this) {
+			private final static long serialVersionUID = 1l;
 
 			@Override
 			public String toSQLString(DBDefinition db) {
@@ -2245,6 +2275,7 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 	 */
 	public NumberExpression degrees() {
 		return new NumberExpression(new DBUnaryFunction(this) {
+			private final static long serialVersionUID = 1l;
 
 			@Override
 			public String toSQLString(DBDefinition db) {
@@ -2276,6 +2307,8 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 	 */
 	public NumberExpression radians() {
 		return new NumberExpression(new DBUnaryFunction(this) {
+			private final static long serialVersionUID = 1l;
+
 			@Override
 			public String toSQLString(DBDefinition db) {
 				if (db.supportsRadiansFunction()) {
@@ -2303,6 +2336,8 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 	 */
 	public NumberExpression logN() {
 		return new NumberExpression(new DBUnaryFunction(this) {
+			private final static long serialVersionUID = 1l;
+
 			@Override
 			String getFunctionName(DBDefinition db) {
 				return db.getNaturalLogFunctionName();
@@ -2321,6 +2356,8 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 	 */
 	public NumberExpression logBase10() {
 		return new NumberExpression(new DBUnaryFunction(this) {
+			private final static long serialVersionUID = 1l;
+
 			@Override
 			public String toSQLString(DBDefinition db) {
 				return db.doLogBase10NumberTransform(this.only.toSQLString(db));
@@ -2346,6 +2383,8 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 	 */
 	public NumberExpression power(NumberResult n) {
 		return new NumberExpression(new NumberNumberFunctionNumberResult(this, n) {
+			private final static long serialVersionUID = 1l;
+
 			@Override
 			String getFunctionName(DBDefinition db) {
 				return "power";
@@ -2380,6 +2419,8 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 	 */
 	static public NumberExpression random() {
 		return new NumberExpression(new DBNonaryFunction() {
+			private final static long serialVersionUID = 1l;
+
 			@Override
 			public String toSQLString(DBDefinition db) {
 				return db.doRandomNumberTransform();
@@ -2404,6 +2445,8 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 	 */
 	public NumberExpression sign() {
 		return new NumberExpression(new DBUnaryFunction(this) {
+			private final static long serialVersionUID = 1l;
+
 			@Override
 			String getFunctionName(DBDefinition db) {
 				return "sign";
@@ -2421,6 +2464,8 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 	 */
 	public NumberExpression squareRoot() {
 		return new NumberExpression(new DBUnaryFunction(this) {
+			private final static long serialVersionUID = 1l;
+
 			@Override
 			String getFunctionName(DBDefinition db) {
 				return "sqrt";
@@ -2446,6 +2491,8 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 	 */
 	public NumberExpression roundUp() {
 		return new NumberExpression(new DBUnaryFunction(this) {
+			private final static long serialVersionUID = 1l;
+
 			@Override
 			String getFunctionName(DBDefinition db) {
 				return db.getRoundUpFunctionName();
@@ -2463,6 +2510,7 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 	 */
 	public NumberExpression round() {
 		return new NumberExpression(new DBUnaryFunction(this) {
+			private final static long serialVersionUID = 1l;
 
 			@Override
 			public String toSQLString(DBDefinition db) {
@@ -2554,6 +2602,7 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 	 */
 	public NumberExpression round(NumberExpression decimalPlaces) {
 		return new NumberExpression(new NumberNumberFunctionNumberResult(this, NumberExpression.value(decimalPlaces)) {
+			private final static long serialVersionUID = 1l;
 
 			@Override
 			public String toSQLString(DBDefinition db) {
@@ -2589,6 +2638,8 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 	 */
 	public NumberExpression roundDown() {
 		return new NumberExpression(new DBUnaryFunction(this) {
+			private final static long serialVersionUID = 1l;
+
 			@Override
 			String getFunctionName(DBDefinition db) {
 				return "floor";
@@ -2613,6 +2664,7 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 	 */
 	public IntegerExpression trunc() {
 		return new IntegerExpression(new DBUnaryIntegerFunction(this) {
+			private final static long serialVersionUID = 1l;
 
 			@Override
 			public String toSQLString(DBDefinition db) {
@@ -2662,6 +2714,7 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 	@Override
 	public IntegerExpression integerResult() {
 		return new IntegerExpression(new DBUnaryIntegerFunction(this) {
+			private final static long serialVersionUID = 1l;
 
 			@Override
 			public String toSQLString(DBDefinition db) {
@@ -2771,6 +2824,8 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 	 */
 	public NumberExpression plus(NumberResult number) {
 		return new NumberExpression(new DBBinaryArithmetic(this, new NumberExpression(number)) {
+			private final static long serialVersionUID = 1l;
+
 			@Override
 			protected String getEquationOperator(DBDefinition db) {
 				return " + ";
@@ -2821,6 +2876,8 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 	 */
 	public NumberExpression times(NumberResult number) {
 		return new NumberExpression(new DBBinaryArithmetic(this, new NumberExpression(number)) {
+			private final static long serialVersionUID = 1l;
+
 			@Override
 			protected String getEquationOperator(DBDefinition db) {
 				return " * ";
@@ -2872,6 +2929,8 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 	public NumberExpression dividedBy(NumberResult number) {
 		return new NumberExpression(new DBBinaryArithmetic(this,
 				new NumberExpression(number)) {
+			private final static long serialVersionUID = 1l;
+
 			@Override
 			protected String getEquationOperator(DBDefinition db) {
 				return " / ";
@@ -2938,6 +2997,7 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 	 */
 	public NumberExpression mod(NumberResult number) {
 		return new NumberExpression(new NumberNumberFunctionNumberResult(this, NumberExpression.value(number)) {
+			private final static long serialVersionUID = 1l;
 
 			@Override
 			public String toSQLString(DBDefinition db) {
@@ -3013,7 +3073,7 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 	 * expression were the index.
 	 *
 	 * Value 0 returns the first string, value 1 returns the second, etc. </p>
-	 * 
+	 *
 	 * <p>
 	 * If the index is too large NULL is returned.</p>
 	 *
@@ -3054,6 +3114,7 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 	public StringExpression choose(StringResult... stringsToChooseFrom) {
 		StringExpression leastExpr
 				= new StringExpression(new DBNumberAndNnaryStringFunction(this, stringsToChooseFrom) {
+					private final static long serialVersionUID = 1l;
 
 					@Override
 					public String toSQLString(DBDefinition db) {
@@ -3082,7 +3143,7 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 	 * expression were the index.
 	 *
 	 * Value 0 returns the first string, value 1 returns the second, etc. </p>
-	 * 
+	 *
 	 * <p>
 	 * If the index is too large the last value is returned.</p>
 	 *
@@ -3123,7 +3184,7 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 	public StringExpression chooseWithDefault(StringResult... stringsToChooseFrom) {
 		StringExpression expr
 				= this.choose(stringsToChooseFrom)
-						.ifDBNull(stringsToChooseFrom[stringsToChooseFrom.length-1]);
+						.ifDBNull(stringsToChooseFrom[stringsToChooseFrom.length - 1]);
 		return expr;
 	}
 
@@ -3143,6 +3204,8 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 	 */
 	public NumberExpression average() {
 		return new NumberExpression(new DBUnaryFunction(this) {
+			private final static long serialVersionUID = 1l;
+
 			@Override
 			String getFunctionName(DBDefinition db) {
 				return db.getAverageFunctionName();
@@ -3179,6 +3242,7 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 	 */
 	public NumberExpression standardDeviation() {
 		return new NumberExpression(new DBUnaryFunction(this) {
+			private final static long serialVersionUID = 1l;
 
 			@Override
 			public String toSQLString(DBDefinition db) {
@@ -3249,6 +3313,8 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 	 */
 	public NumberExpression sum() {
 		return new NumberExpression(new DBUnaryFunction(this) {
+			private final static long serialVersionUID = 1l;
+
 			@Override
 			String getFunctionName(DBDefinition db) {
 				return db.getSumFunctionName();
@@ -4177,6 +4243,8 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 
 	private static class MaxUnaryFunction extends DBUnaryFunction {
 
+		private final static long serialVersionUID = 1l;
+
 		MaxUnaryFunction(NumberExpression only) {
 			super(only);
 		}
@@ -4193,6 +4261,8 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 	}
 
 	private static class MinUnaryFunction extends DBUnaryFunction {
+
+		private final static long serialVersionUID = 1l;
 
 		MinUnaryFunction(NumberExpression only) {
 			super(only);
@@ -4211,6 +4281,8 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 
 	private static class MinusBinaryArithmetic extends DBBinaryArithmetic {
 
+		private final static long serialVersionUID = 1l;
+
 		MinusBinaryArithmetic(NumberResult first, NumberResult second) {
 			super(first, second);
 		}
@@ -4223,6 +4295,8 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 
 	private static class BracketUnaryFunction extends DBUnaryFunction {
 
+		private final static long serialVersionUID = 1l;
+
 		BracketUnaryFunction(NumberExpression only) {
 			super(only);
 		}
@@ -4234,6 +4308,8 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 	}
 
 	private static class DivisionBinaryArithmetic extends DBBinaryArithmetic {
+
+		private final static long serialVersionUID = 1l;
 
 		DivisionBinaryArithmetic(NumberResult first, NumberResult second) {
 			super(first, second);
@@ -4251,6 +4327,8 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 	}
 
 	private class IsInFunction extends DBNnaryBooleanFunction {
+
+		private final static long serialVersionUID = 1l;
 
 		public IsInFunction(NumberExpression leftHandSide, NumberResult[] rightHandSide) {
 			super(leftHandSide, rightHandSide);
@@ -4272,6 +4350,8 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 	}
 
 	private class StringResultFunction extends DBUnaryStringFunction {
+
+		private final static long serialVersionUID = 1l;
 
 		public StringResultFunction(NumberExpression only) {
 			super(only);
@@ -4295,6 +4375,8 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 
 	private class IsFunction extends DBBinaryBooleanArithmetic {
 
+		private final static long serialVersionUID = 1l;
+
 		public IsFunction(NumberExpression first, NumberResult second) {
 			super(first, second);
 		}
@@ -4316,6 +4398,8 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 
 	private static class IsLessThanOrEqualFunction extends DBBinaryBooleanArithmetic {
 
+		private final static long serialVersionUID = 1l;
+
 		public IsLessThanOrEqualFunction(NumberExpression first, NumberResult second) {
 			super(first, second);
 		}
@@ -4332,6 +4416,8 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 	}
 
 	private static class IsGreaterThanFunction extends DBBinaryBooleanArithmetic {
+
+		private final static long serialVersionUID = 1l;
 
 		public IsGreaterThanFunction(NumberExpression first, NumberResult second) {
 			super(first, second);
@@ -4350,6 +4436,8 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 
 	private static class IsGreaterThanOrEqualFunction extends DBBinaryBooleanArithmetic {
 
+		private final static long serialVersionUID = 1l;
+
 		public IsGreaterThanOrEqualFunction(NumberExpression first, NumberResult second) {
 			super(first, second);
 		}
@@ -4366,6 +4454,8 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 	}
 
 	private static class LeastOfFunction extends DBNnaryNumberFunction {
+
+		private final static long serialVersionUID = 1l;
 
 		public LeastOfFunction(NumberResult[] rightHandSide) {
 			super(rightHandSide);

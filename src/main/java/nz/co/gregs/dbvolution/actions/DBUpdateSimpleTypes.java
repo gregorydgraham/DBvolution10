@@ -40,6 +40,8 @@ import nz.co.gregs.dbvolution.internal.properties.PropertyWrapper;
  */
 public class DBUpdateSimpleTypes extends DBUpdate {
 
+	private static final long serialVersionUID = 1l;
+	
 	DBUpdateSimpleTypes(DBRow row) {
 		super(row);
 	}

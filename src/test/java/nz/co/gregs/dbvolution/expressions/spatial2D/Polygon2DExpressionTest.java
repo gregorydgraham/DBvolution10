@@ -28,7 +28,6 @@
  */
 package nz.co.gregs.dbvolution.expressions.spatial2D;
 
-import nz.co.gregs.dbvolution.expressions.spatial2D.Polygon2DExpression;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import java.sql.SQLException;
@@ -117,6 +116,34 @@ public class Polygon2DExpressionTest extends AbstractTest {
 		Assert.assertThat(allRows.size(), is(1));
 		Assert.assertThat(allRows.get(0).poly_id.intValue(), is(1));
 
+		dbQuery = database.getDBQuery(testTable);
+		dbQuery.addCondition(testTable.column(testTable.poly).is(
+				Polygon2DExpression.value(
+						geometryFactory.createPolygon(
+								new Coordinate[]{
+									new Coordinate(0, 0),
+									new Coordinate(1, 1),
+									new Coordinate(1, 0),
+									new Coordinate(0, 0)}
+						))));
+		allRows = dbQuery.getAllInstancesOf(testTable);
+		Assert.assertThat(allRows.size(), is(1));
+		Assert.assertThat(allRows.get(0).poly_id.intValue(), is(1));
+
+		dbQuery = database.getDBQuery(testTable);
+		dbQuery.addCondition(testTable.column(testTable.poly).is(
+				new Polygon2DExpression().expression(
+						geometryFactory.createPolygon(
+								new Coordinate[]{
+									new Coordinate(0, 0),
+									new Coordinate(1, 1),
+									new Coordinate(1, 0),
+									new Coordinate(0, 0)}
+						))));
+		allRows = dbQuery.getAllInstancesOf(testTable);
+		Assert.assertThat(allRows.size(), is(1));
+		Assert.assertThat(allRows.get(0).poly_id.intValue(), is(1));
+
 	}
 
 	@Test
@@ -155,6 +182,114 @@ public class Polygon2DExpressionTest extends AbstractTest {
 		dbQuery.addCondition(testTable.column(testTable.poly).hasMagnitude().is(Boolean.FALSE));
 		allRows = dbQuery.getAllInstancesOf(testTable);
 		Assert.assertThat(allRows.size(), is(5));
+	}
+
+	@Test
+	public void testIntersection() throws SQLException {
+		final PolygonTestTable testTable = new PolygonTestTable();
+		DBQuery dbQuery = database.getDBQuery(testTable);
+		dbQuery.addCondition(
+				testTable.column(testTable.poly)
+						.intersects(
+								geometryFactory
+										.createPolygon(
+												new Coordinate[]{
+													new Coordinate(0, 0),
+													new Coordinate(0, 1),
+													new Coordinate(1, 0),
+													new Coordinate(0, 0)}
+										)));
+//		dbQuery.printSQLForQuery();
+		List<PolygonTestTable> allRows = dbQuery.getAllInstancesOf(testTable);
+
+//		database.print(allRows);
+		Assert.assertThat(allRows.size(), is(2));
+		for (PolygonTestTable row : allRows) {
+			Assert.assertThat(row.poly_id.intValue(), isOneOf(1, 3));
+		}
+	}
+
+	@Test
+	public void testContains() throws SQLException {
+		final PolygonTestTable testTable = new PolygonTestTable();
+
+		DBQuery dbQuery = database.getDBQuery(testTable);
+		dbQuery.addCondition(
+				Polygon2DExpression.value(-1, -1, -1, 2, 2, 2, 2, -1, -1, -1)
+						.contains(
+								testTable.column(testTable.poly)
+						));
+//		dbQuery.printSQLForQuery();
+		List<PolygonTestTable> allRows = dbQuery.getAllInstancesOf(testTable);
+
+//		database.print(allRows);
+		Assert.assertThat(allRows.size(), is(2));
+		for (PolygonTestTable row : allRows) {
+			Assert.assertThat(row.poly_id.intValue(), isOneOf(1, 3));
+		}
+	}
+
+	@Test
+	public void testTouches() throws SQLException {
+		final PolygonTestTable testTable = new PolygonTestTable();
+		DBQuery dbQuery = database.getDBQuery(testTable);
+		dbQuery.addCondition(
+				testTable.column(testTable.poly)
+						.touches(
+								geometryFactory
+										.createPolygon(
+												new Coordinate[]{
+													new Coordinate(0, 0),
+													new Coordinate(1, 0),
+													new Coordinate(-1, -2),
+													new Coordinate(-1, -3),
+													new Coordinate(0, 0)}
+										)));
+//		dbQuery.printSQLForQuery();
+		List<PolygonTestTable> allRows = dbQuery.getAllInstancesOf(testTable);
+
+//		database.print(allRows);
+		Assert.assertThat(allRows.size(), is(2));
+		for (PolygonTestTable row : allRows) {
+			Assert.assertThat(row.poly_id.intValue(), isOneOf(1, 3));
+		}
+		dbQuery = database.getDBQuery(testTable);
+		dbQuery.addCondition(
+				testTable.column(testTable.poly)
+						.touches(
+								Polygon2DExpression
+										.value(0, 0, 1, 0, -1, -2, -1, -3, 0, 0)
+						));
+//		dbQuery.printSQLForQuery();
+		allRows = dbQuery.getAllInstancesOf(testTable);
+
+//		database.print(allRows);
+		Assert.assertThat(allRows.size(), is(2));
+		for (PolygonTestTable row : allRows) {
+			Assert.assertThat(row.poly_id.intValue(), isOneOf(1, 3));
+		}
+	}
+
+	@Test
+	public void testOverlaps() throws SQLException {
+
+		final PolygonTestTable testTable = new PolygonTestTable();
+
+		DBQuery dbQuery = database.getDBQuery(testTable);
+		dbQuery.addCondition(
+				testTable.column(testTable.poly)
+						.overlaps(
+								Polygon2DExpression
+										.value(0, 0, 0, 1, 1, 0, 0, 0)
+						)
+		);
+		List<PolygonTestTable> allRows = dbQuery.getAllInstancesOf(testTable);
+
+//		database.print(allRows);
+		Assert.assertThat(allRows.size(), is(1));
+		for (PolygonTestTable row : allRows) {
+			Assert.assertThat(row.poly_id.intValue(), isOneOf(1));
+		}
 	}
 
 	public static class PolygonTestTable extends DBRow {

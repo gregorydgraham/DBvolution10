@@ -141,6 +141,8 @@ public class BooleanArrayExpression implements BooleanArrayResult, EqualComparab
 	 */
 	public BooleanExpression is(Boolean[] bools) {
 		return new BooleanExpression(new DBBinaryBooleanArithmetic(this, new BooleanArrayExpression(bools)) {
+			private final static long serialVersionUID = 1l;
+
 			@Override
 			protected String getEquationOperator(DBDefinition db) {
 				return " = ";
@@ -162,6 +164,8 @@ public class BooleanArrayExpression implements BooleanArrayResult, EqualComparab
 	@Override
 	public BooleanExpression is(BooleanArrayResult i) {
 		return new BooleanExpression(new DBBinaryBooleanArithmetic(this, i) {
+			private final static long serialVersionUID = 1l;
+
 			@Override
 			protected String getEquationOperator(DBDefinition db) {
 				return " = ";
@@ -198,6 +202,8 @@ public class BooleanArrayExpression implements BooleanArrayResult, EqualComparab
 	@Override
 	public BooleanExpression isNot(BooleanArrayResult i) {
 		return new BooleanExpression(new DBBinaryBooleanArithmetic(this, i) {
+			private final static long serialVersionUID = 1l;
+
 			@Override
 			protected String getEquationOperator(DBDefinition db) {
 				return " <> ";
@@ -296,7 +302,7 @@ public class BooleanArrayExpression implements BooleanArrayResult, EqualComparab
 			}
 		}
 	}
-	
+
 	@Override
 	public String createSQLForFromClause(DBDatabase database) {
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.

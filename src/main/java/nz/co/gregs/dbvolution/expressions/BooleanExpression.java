@@ -79,6 +79,8 @@ import nz.co.gregs.dbvolution.results.RangeResult;
  */
 public class BooleanExpression extends EqualExpression<Boolean, BooleanResult, DBBoolean> implements BooleanResult {
 
+	private final static long serialVersionUID = 1l;
+
 	/**
 	 * Default Constructor for creating new BooleanExpressions.
 	 *
@@ -137,6 +139,8 @@ public class BooleanExpression extends EqualExpression<Boolean, BooleanResult, D
 	@Override
 	public BooleanExpression nullExpression() {
 		return new BooleanExpression() {
+			private final static long serialVersionUID = 1l;
+
 			@Override
 			public String toSQLString(DBDefinition db) {
 				return db.getNull();
@@ -286,6 +290,7 @@ public class BooleanExpression extends EqualExpression<Boolean, BooleanResult, D
 	@Override
 	public BooleanExpression is(BooleanResult bool) {
 		return new BooleanExpression(new DBBinaryBooleanArithmetic(this, bool) {
+			private final static long serialVersionUID = 1l;
 
 			@Override
 			public String toSQLString(DBDefinition defn) {
@@ -325,6 +330,7 @@ public class BooleanExpression extends EqualExpression<Boolean, BooleanResult, D
 	public BooleanExpression isNot(BooleanResult bool) {
 
 		return new BooleanExpression(new DBBinaryBooleanArithmetic(this, bool) {
+			private final static long serialVersionUID = 1l;
 
 			@Override
 			public String toSQLString(DBDefinition db) {
@@ -364,6 +370,8 @@ public class BooleanExpression extends EqualExpression<Boolean, BooleanResult, D
 	@Override
 	public IntegerExpression count() {
 		return new IntegerExpression(new BooleanExpression(this) {
+
+			private final static long serialVersionUID = 1l;
 
 			@Override
 			public String toSQLString(DBDefinition db) {
@@ -436,6 +444,8 @@ public class BooleanExpression extends EqualExpression<Boolean, BooleanResult, D
 	public BooleanExpression xor(BooleanResult bool) {
 		return new BooleanExpression(new DBBinaryBooleanArithmetic(this, bool) {
 
+			private final static long serialVersionUID = 1l;
+
 			@Override
 			public String toSQLString(DBDefinition db) {
 				if (db.supportsXOROperator()) {
@@ -478,6 +488,8 @@ public class BooleanExpression extends EqualExpression<Boolean, BooleanResult, D
 	 */
 	public static BooleanExpression allOf(final BooleanExpression... booleanExpressions) {
 		return new BooleanExpression(new DBNnaryBooleanArithmetic(booleanExpressions) {
+			private final static long serialVersionUID = 1l;
+
 			@Override
 			protected String getEquationOperator(DBDefinition db) {
 				return db.beginAndLine();
@@ -568,6 +580,8 @@ public class BooleanExpression extends EqualExpression<Boolean, BooleanResult, D
 	 */
 	public static BooleanExpression anyOf(final BooleanExpression... booleanExpressions) {
 		return new BooleanExpression(new DBNnaryBooleanArithmetic(booleanExpressions) {
+			private final static long serialVersionUID = 1l;
+
 			@Override
 			protected String getEquationOperator(DBDefinition db) {
 				return db.beginOrLine();
@@ -616,6 +630,8 @@ public class BooleanExpression extends EqualExpression<Boolean, BooleanResult, D
 	 */
 	public BooleanExpression negate() {
 		return new BooleanExpression(new BooleanExpression(this) {
+			private final static long serialVersionUID = 1l;
+
 			@Override
 			public String toSQLString(DBDefinition db) {
 				return db.getNegationFunctionName() + "(" + getInnerResult().toSQLString(db) + ")";
@@ -651,6 +667,8 @@ public class BooleanExpression extends EqualExpression<Boolean, BooleanResult, D
 	 */
 	public NumberExpression numberValue() {
 		return new NumberExpression() {
+			private final static long serialVersionUID = 1l;
+
 			BooleanExpression innerBool = new BooleanExpression(getInnerResult());
 
 			@Override
@@ -746,6 +764,7 @@ public class BooleanExpression extends EqualExpression<Boolean, BooleanResult, D
 	 */
 	public static BooleanExpression isNotNull(DBExpression possibleNullExpression) {
 		return new BooleanExpression(new DBUnaryBooleanArithmetic(possibleNullExpression) {
+			private final static long serialVersionUID = 1l;
 
 			@Override
 			protected String getEquationOperator(DBDefinition db) {
@@ -812,6 +831,8 @@ public class BooleanExpression extends EqualExpression<Boolean, BooleanResult, D
 	public static BooleanExpression isNull(DBExpression possibleNullExpression) {
 		return new BooleanExpression(new DBUnaryBooleanArithmetic(possibleNullExpression) {
 
+			private final static long serialVersionUID = 1l;
+
 			@Override
 			protected String getEquationOperator(DBDefinition db) {
 				return " IS " + db.getNull();
@@ -873,6 +894,8 @@ public class BooleanExpression extends EqualExpression<Boolean, BooleanResult, D
 	 */
 	public StringExpression ifThenElse(StringExpression thenExpr, StringExpression elseExpr) {
 		return new StringExpression(new DBBooleanStringStringFunction(this, thenExpr, elseExpr) {
+
+			private final static long serialVersionUID = 1l;
 
 			@Override
 			public boolean getIncludesNull() {
@@ -967,6 +990,8 @@ public class BooleanExpression extends EqualExpression<Boolean, BooleanResult, D
 	public NumberExpression ifThenElse(NumberResult thenExpr, NumberResult elseExpr) {
 		return new NumberExpression(new DBBooleanNumberNumberFunction(this, thenExpr, elseExpr) {
 
+			private final static long serialVersionUID = 1l;
+
 			@Override
 			public boolean getIncludesNull() {
 				return false;
@@ -1002,6 +1027,8 @@ public class BooleanExpression extends EqualExpression<Boolean, BooleanResult, D
 	 */
 	public IntegerExpression ifThenElse(IntegerResult thenExpr, IntegerResult elseExpr) {
 		return new IntegerExpression(new DBBooleanIntegerIntegerFunction(this, thenExpr, elseExpr) {
+
+			private final static long serialVersionUID = 1l;
 
 			@Override
 			public boolean getIncludesNull() {
@@ -1056,6 +1083,7 @@ public class BooleanExpression extends EqualExpression<Boolean, BooleanResult, D
 	 */
 	public DateExpression ifThenElse(DateExpression thenExpr, DateExpression elseExpr) {
 		return new DateExpression(new DBBinaryDateDateFunction(this, thenExpr, elseExpr) {
+			private final static long serialVersionUID = 1l;
 
 			@Override
 			public boolean getIncludesNull() {
@@ -1111,6 +1139,7 @@ public class BooleanExpression extends EqualExpression<Boolean, BooleanResult, D
 	 */
 	public Polygon2DExpression ifThenElse(Polygon2DExpression thenExpr, Polygon2DExpression elseExpr) {
 		return new Polygon2DExpression(new DBBinaryGeometryGeometryFunction(this, thenExpr, elseExpr) {
+			private final static long serialVersionUID = 1l;
 
 			@Override
 			public boolean getIncludesNull() {
@@ -1135,6 +1164,8 @@ public class BooleanExpression extends EqualExpression<Boolean, BooleanResult, D
 	 */
 	public static BooleanExpression falseExpression() {
 		return new BooleanExpression() {
+			private final static long serialVersionUID = 1l;
+
 			@Override
 			public String toSQLString(DBDefinition db) {
 				return db.getFalseOperation();
@@ -1157,6 +1188,8 @@ public class BooleanExpression extends EqualExpression<Boolean, BooleanResult, D
 	 */
 	public static BooleanExpression trueExpression() {
 		return new BooleanExpression() {
+			private final static long serialVersionUID = 1l;
+
 			@Override
 			public String toSQLString(DBDefinition db) {
 				return db.getTrueOperation();
@@ -2118,6 +2151,8 @@ public class BooleanExpression extends EqualExpression<Boolean, BooleanResult, D
 	}
 
 	private static class IntegerValueFunction extends IntegerExpression {
+
+		private final static long serialVersionUID = 1l;
 
 		private BooleanExpression innerBool = new BooleanExpression();
 

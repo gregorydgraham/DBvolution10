@@ -78,7 +78,8 @@ public abstract class InExpression<B, R extends InResult<B>, D extends Queryable
 	public BooleanExpression isIn(B... possibleValues) {
 		List<R> exps = new ArrayList<R>(0);
 		for (B possibleValue : possibleValues) {
-			exps.add(this.expression(possibleValue));
+			final R expression = this.expression(possibleValue);
+			exps.add(expression);
 		}
 		return this.isIn((R[]) exps.toArray());
 	}
@@ -87,7 +88,8 @@ public abstract class InExpression<B, R extends InResult<B>, D extends Queryable
 	public BooleanExpression isIn(D... possibleValues) {
 		List<R> exps = new ArrayList<R>(0);
 		for (D possibleValue : possibleValues) {
-			exps.add(this.expression(possibleValue));
+			final R expression = this.expression(possibleValue);
+			exps.add(expression);
 		}
 		return this.isIn((R[]) exps.toArray());
 	}

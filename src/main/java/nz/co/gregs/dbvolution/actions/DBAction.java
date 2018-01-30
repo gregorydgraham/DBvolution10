@@ -15,6 +15,7 @@
  */
 package nz.co.gregs.dbvolution.actions;
 
+import java.io.Serializable;
 import java.sql.SQLException;
 import java.util.List;
 import nz.co.gregs.dbvolution.DBRow;
@@ -47,7 +48,7 @@ import nz.co.gregs.dbvolution.internal.properties.PropertyWrapper;
  *
  * @author Gregory Graham
  */
-public abstract class DBAction {
+public abstract class DBAction implements Serializable{
 
 	final DBRow row;
 

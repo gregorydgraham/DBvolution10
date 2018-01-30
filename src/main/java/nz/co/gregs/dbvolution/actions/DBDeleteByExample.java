@@ -38,6 +38,8 @@ import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
  */
 public class DBDeleteByExample extends DBDelete {
 
+	private static final long serialVersionUID = 1l;
+	
 	private final List<DBRow> savedRows = new ArrayList<DBRow>();
 
 	/**

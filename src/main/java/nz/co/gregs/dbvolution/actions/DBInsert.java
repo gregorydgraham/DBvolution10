@@ -53,6 +53,8 @@ import org.apache.commons.logging.LogFactory;
  */
 public class DBInsert extends DBAction {
 
+	private static final long serialVersionUID = 1l;
+	
 	private static final Log LOG = LogFactory.getLog(DBInsert.class);
 
 	private final List<Long> generatedKeys = new ArrayList<>();

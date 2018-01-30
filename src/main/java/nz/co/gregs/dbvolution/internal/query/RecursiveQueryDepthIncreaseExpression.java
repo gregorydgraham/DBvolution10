@@ -33,6 +33,8 @@ import nz.co.gregs.dbvolution.expressions.NumberExpression;
  */
 public class RecursiveQueryDepthIncreaseExpression extends NumberExpression {
 
+	private static final long serialVersionUID = 1l;
+
 	/**
 	 * Creates a depth expression for the {@link DBRecursiveQuery} query.
 	 *

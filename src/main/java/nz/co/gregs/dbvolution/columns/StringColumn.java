@@ -49,6 +49,8 @@ import nz.co.gregs.dbvolution.query.RowDefinition;
  */
 public class StringColumn extends StringExpression implements ColumnProvider {
 
+	private final static long serialVersionUID = 1l;
+
 	private AbstractColumn column;
 
 	private StringColumn() {

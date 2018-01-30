@@ -26,7 +26,7 @@ public class DBNumberStatistics extends DBNumber {
 
 	private static final long serialVersionUID = 1;
 
-	private transient NumberExpression originalExpression;
+	private NumberExpression originalExpression;
 	private final DBNumber numberProxy = new DBNumber();
 	private Number minNumber;
 	private Number maxNumber;
@@ -36,12 +36,12 @@ public class DBNumberStatistics extends DBNumber {
 	private Number firstQuartileNumber;
 	private Number thirdQuartileNumber;
 	private Number countOfRows;
-	private transient NumberExpression averageExpression;
-	private transient NumberExpression maxExpr;
-	private transient NumberExpression minExpr;
-	private transient NumberExpression sumExpr;
-	private transient IntegerExpression countExpr;
-	private transient NumberExpression stdDevExpression;
+	private NumberExpression averageExpression;
+	private NumberExpression maxExpr;
+	private NumberExpression minExpr;
+	private NumberExpression sumExpr;
+	private IntegerExpression countExpr;
+	private NumberExpression stdDevExpression;
 	private Number sumNumber;
 
 	/**

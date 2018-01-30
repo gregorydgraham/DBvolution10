@@ -44,6 +44,8 @@ import nz.co.gregs.dbvolution.query.RowDefinition;
 
 
 public class AbstractQueryColumn extends AbstractColumn {
+	
+	private static final long serialVersionUID = 1l;
 
 	private final DBQuery query;
 	private final QueryableDatatype<?> field;

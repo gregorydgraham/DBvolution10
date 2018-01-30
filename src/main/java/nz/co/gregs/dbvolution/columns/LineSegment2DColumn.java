@@ -34,6 +34,8 @@ import nz.co.gregs.dbvolution.query.RowDefinition;
  */
 public class LineSegment2DColumn extends LineSegment2DExpression implements ColumnProvider {
 
+	private final static long serialVersionUID = 1l;
+
 	private final AbstractColumn column;
 
 	/**
@@ -84,7 +86,7 @@ public class LineSegment2DColumn extends LineSegment2DExpression implements Colu
 	@Override
 	public boolean equals(Object other) {
 		if (other instanceof LineSegment2DColumn) {
-			return column.equals(other); //To change body of generated methods, choose Tools | Templates.
+			return column.equals(((LineSegment2DColumn) other).column);
 		} else {
 			return false;
 		}
@@ -96,7 +98,7 @@ public class LineSegment2DColumn extends LineSegment2DExpression implements Colu
 		hash = 83 * hash + Objects.hashCode(this.column);
 		return hash;
 	}
-	
+
 	@Override
 	public synchronized LineSegment2DColumn copy() {
 		final AbstractColumn col = getColumn();

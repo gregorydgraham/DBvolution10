@@ -52,6 +52,8 @@ import nz.co.gregs.dbvolution.query.RowDefinition;
  */
 public class IntegerColumn extends IntegerExpression implements ColumnProvider {
 
+	private final static long serialVersionUID = 1l;
+
 	private AbstractColumn column;
 
 	private IntegerColumn() {
@@ -93,7 +95,7 @@ public class IntegerColumn extends IntegerExpression implements ColumnProvider {
 	 * @param <E>
 	 * @param row the row containing the field
 	 * @param field the field defining the column
-	 */	
+	 */
 	public <E extends Enum<E> & DBEnumValue<Long>> IntegerColumn(RowDefinition row, DBEnum<E, Long> field) {
 		this.column = new AbstractColumn(row, field);
 	}
@@ -101,7 +103,6 @@ public class IntegerColumn extends IntegerExpression implements ColumnProvider {
 //	public IntegerColumn(RowDefinition row, DBIntegerEnum<?> field) {
 //		this.column = new AbstractColumn(row, field);
 //	}
-
 	@Override
 	public String toSQLString(DBDefinition db) {
 		return column.toSQLString(db);

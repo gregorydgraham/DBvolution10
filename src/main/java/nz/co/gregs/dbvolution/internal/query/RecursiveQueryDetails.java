@@ -69,6 +69,8 @@ import nz.co.gregs.dbvolution.results.NumberResult;
 import nz.co.gregs.dbvolution.results.StringResult;
 
 public class RecursiveQueryDetails<T extends DBRow> extends QueryDetails {
+	
+	private static final long serialVersionUID = 1l;
 
 	private DBQuery originalQuery;
 	private ColumnProvider keyToFollow;

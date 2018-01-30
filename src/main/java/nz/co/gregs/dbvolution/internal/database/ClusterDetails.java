@@ -28,6 +28,7 @@
  */
 package nz.co.gregs.dbvolution.internal.database;
 
+import java.io.Serializable;
 import nz.co.gregs.dbvolution.exceptions.NoAvailableDatabaseException;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -52,7 +53,9 @@ import nz.co.gregs.dbvolution.reflection.DataModel;
  *
  * @author gregorygraham
  */
-public class ClusterDetails {
+public class ClusterDetails implements Serializable {
+
+	private final static long serialVersionUID = 1l;
 
 	private final List<DBDatabase> allDatabases = Collections.synchronizedList(new ArrayList<DBDatabase>(0));
 	private final List<DBDatabase> unsynchronizedDatabases = Collections.synchronizedList(new ArrayList<DBDatabase>(0));
@@ -61,7 +64,7 @@ public class ClusterDetails {
 	private final List<DBDatabase> quarantinedDatabases = Collections.synchronizedList(new ArrayList<DBDatabase>(0));
 
 	private final Set<DBRow> requiredTables = Collections.synchronizedSet(DataModel.getRequiredTables());
-	private final Map<DBDatabase, Queue<DBAction>> queuedActions = Collections.synchronizedMap(new HashMap<DBDatabase, Queue<DBAction>>(0));
+	private final transient Map<DBDatabase, Queue<DBAction>> queuedActions = Collections.synchronizedMap(new HashMap<DBDatabase, Queue<DBAction>>(0));
 
 	public ClusterDetails() throws SQLException {
 	}
@@ -149,11 +152,11 @@ public class ClusterDetails {
 	}
 
 	public synchronized DBDatabase[] getReadyDatabases() {
-			return readyDatabases.toArray(new DBDatabase[]{});
+		return readyDatabases.toArray(new DBDatabase[]{});
 	}
 
 	public synchronized void pauseDatabase(DBDatabase template) {
-		boolean removed = readyDatabases.remove(template);
+		readyDatabases.remove(template);
 		pausedDatabases.add(template);
 	}
 

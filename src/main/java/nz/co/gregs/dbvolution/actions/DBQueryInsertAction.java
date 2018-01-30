@@ -43,14 +43,12 @@ import org.apache.commons.logging.LogFactory;
  */
 public class DBQueryInsertAction<R extends DBRow> extends DBAction {
 
+	private static final long serialVersionUID = 1l;
+	
 	private static final Log LOG = LogFactory.getLog(DBQueryInsertAction.class);
 
-//	private transient StringBuilder allChangedColumns;
-//	private transient StringBuilder allSetValues;
 	private final DBQueryInsert<R> sourceMigration;
 	private final DBRow[] extraExamples;
-//	private StringBuilder allColumns;
-//	private StringBuilder allValues;
 
 	/**
 	 * Creates a DBMigrate action for the row.

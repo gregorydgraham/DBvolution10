@@ -34,6 +34,8 @@ import nz.co.gregs.dbvolution.query.RowDefinition;
  */
 public class Point2DColumn extends Point2DExpression implements ColumnProvider {
 
+	private final static long serialVersionUID = 1l;
+
 	private final AbstractColumn column;
 
 	/**
@@ -50,7 +52,6 @@ public class Point2DColumn extends Point2DExpression implements ColumnProvider {
 	public Point2DColumn(RowDefinition row, Point field) {
 		this.column = new AbstractColumn(row, field);
 	}
-
 
 	@Override
 	public AbstractColumn getColumn() {
@@ -85,7 +86,7 @@ public class Point2DColumn extends Point2DExpression implements ColumnProvider {
 	@Override
 	public boolean equals(Object other) {
 		if (other instanceof Point2DColumn) {
-			return column.equals(other); //To change body of generated methods, choose Tools | Templates.
+			return column.equals(((Point2DColumn) other).column);
 		} else {
 			return false;
 		}
@@ -97,7 +98,7 @@ public class Point2DColumn extends Point2DExpression implements ColumnProvider {
 		hash = 41 * hash + Objects.hashCode(this.column);
 		return hash;
 	}
-	
+
 	@Override
 	public synchronized Point2DColumn copy() {
 		final AbstractColumn col = getColumn();

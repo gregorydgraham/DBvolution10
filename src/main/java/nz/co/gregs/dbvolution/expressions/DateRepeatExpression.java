@@ -36,6 +36,8 @@ import org.joda.time.Period;
  */
 public class DateRepeatExpression extends RangeExpression<Period, DateRepeatResult, DBDateRepeat> implements DateRepeatResult {
 
+	private final static long serialVersionUID = 1l;
+
 	/**
 	 * DateRepeat values are often stored as Strings of the format
 	 * P2015Y12M30D23h59n59.0s
@@ -111,7 +113,7 @@ public class DateRepeatExpression extends RangeExpression<Period, DateRepeatResu
 
 	@Override
 	public DateRepeatExpression copy() {
-		return isNullSafetyTerminator()?nullDateRepeat():new DateRepeatExpression(getInnerResult());
+		return isNullSafetyTerminator() ? nullDateRepeat() : new DateRepeatExpression(getInnerResult());
 	}
 
 	@Override
@@ -126,7 +128,7 @@ public class DateRepeatExpression extends RangeExpression<Period, DateRepeatResu
 	 * <p>
 	 * MODE: The number which appears most often in a set of numbers. For example:
 	 * in {6, 3, 9, 6, 6, 5, 9, 3} the Mode is 6.</p>
-	 * 
+	 *
 	 * <p style="color: #F90;">Support DBvolution at
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 *
@@ -192,6 +194,7 @@ public class DateRepeatExpression extends RangeExpression<Period, DateRepeatResu
 	@Override
 	public BooleanExpression isLessThan(DateRepeatResult anotherInstance) {
 		return new BooleanExpression(new DateRepeatDateRepeatWithBooleanResult(this, anotherInstance) {
+			private final static long serialVersionUID = 1l;
 
 			@Override
 			protected String doExpressionTransform(DBDefinition db) {
@@ -228,6 +231,7 @@ public class DateRepeatExpression extends RangeExpression<Period, DateRepeatResu
 	@Override
 	public BooleanExpression isGreaterThan(DateRepeatResult anotherInstance) {
 		return new BooleanExpression(new DateRepeatDateRepeatWithBooleanResult(this, anotherInstance) {
+			private final static long serialVersionUID = 1l;
 
 			@Override
 			protected String doExpressionTransform(DBDefinition db) {
@@ -264,6 +268,7 @@ public class DateRepeatExpression extends RangeExpression<Period, DateRepeatResu
 	@Override
 	public BooleanExpression isLessThanOrEqual(DateRepeatResult anotherInstance) {
 		return new BooleanExpression(new DateRepeatDateRepeatWithBooleanResult(this, anotherInstance) {
+			private final static long serialVersionUID = 1l;
 
 			@Override
 			protected String doExpressionTransform(DBDefinition db) {
@@ -300,6 +305,7 @@ public class DateRepeatExpression extends RangeExpression<Period, DateRepeatResu
 	@Override
 	public BooleanExpression isGreaterThanOrEqual(DateRepeatResult anotherInstance) {
 		return new BooleanExpression(new DateRepeatDateRepeatWithBooleanResult(this, anotherInstance) {
+			private final static long serialVersionUID = 1l;
 
 			@Override
 			protected String doExpressionTransform(DBDefinition db) {
@@ -408,6 +414,7 @@ public class DateRepeatExpression extends RangeExpression<Period, DateRepeatResu
 	@Override
 	public BooleanExpression is(DateRepeatResult anotherInstance) {
 		return new BooleanExpression(new DateRepeatDateRepeatWithBooleanResult(this, anotherInstance) {
+			private final static long serialVersionUID = 1l;
 
 			@Override
 			protected String doExpressionTransform(DBDefinition db) {
@@ -467,6 +474,7 @@ public class DateRepeatExpression extends RangeExpression<Period, DateRepeatResu
 	 */
 	public IntegerExpression getYears() {
 		return new IntegerExpression(new DateRepeatWithIntegerResult(this) {
+			private final static long serialVersionUID = 1l;
 
 			@Override
 			protected String doExpressionTransform(DBDefinition db) {
@@ -493,6 +501,7 @@ public class DateRepeatExpression extends RangeExpression<Period, DateRepeatResu
 	 */
 	public IntegerExpression getMonths() {
 		return new IntegerExpression(new DateRepeatWithIntegerResult(this) {
+			private final static long serialVersionUID = 1l;
 
 			@Override
 			protected String doExpressionTransform(DBDefinition db) {
@@ -519,6 +528,7 @@ public class DateRepeatExpression extends RangeExpression<Period, DateRepeatResu
 	 */
 	public IntegerExpression getDays() {
 		return new IntegerExpression(new DateRepeatWithIntegerResult(this) {
+			private final static long serialVersionUID = 1l;
 
 			@Override
 			protected String doExpressionTransform(DBDefinition db) {
@@ -545,6 +555,7 @@ public class DateRepeatExpression extends RangeExpression<Period, DateRepeatResu
 	 */
 	public IntegerExpression getHours() {
 		return new IntegerExpression(new DateRepeatWithIntegerResult(this) {
+			private final static long serialVersionUID = 1l;
 
 			@Override
 			protected String doExpressionTransform(DBDefinition db) {
@@ -571,6 +582,7 @@ public class DateRepeatExpression extends RangeExpression<Period, DateRepeatResu
 	 */
 	public IntegerExpression getMinutes() {
 		return new IntegerExpression(new DateRepeatWithIntegerResult(this) {
+			private final static long serialVersionUID = 1l;
 
 			@Override
 			protected String doExpressionTransform(DBDefinition db) {
@@ -597,6 +609,7 @@ public class DateRepeatExpression extends RangeExpression<Period, DateRepeatResu
 	 */
 	public NumberExpression getSeconds() {
 		return new NumberExpression(new DateRepeatWithNumberResult(this) {
+			private final static long serialVersionUID = 1l;
 
 			@Override
 			protected String doExpressionTransform(DBDefinition db) {
@@ -624,6 +637,7 @@ public class DateRepeatExpression extends RangeExpression<Period, DateRepeatResu
 	@Override
 	public StringExpression stringResult() {
 		return new StringExpression(new DateRepeatWithStringResult(this) {
+			private final static long serialVersionUID = 1l;
 
 			@Override
 			protected String doExpressionTransform(DBDefinition db) {
@@ -675,6 +689,8 @@ public class DateRepeatExpression extends RangeExpression<Period, DateRepeatResu
 	@Override
 	public DateRepeatExpression nullExpression() {
 		return new DateRepeatExpression() {
+			private final static long serialVersionUID = 1l;
+
 			@Override
 			public String toSQLString(DBDefinition db) {
 				return db.getNull();
@@ -826,7 +842,6 @@ public class DateRepeatExpression extends RangeExpression<Period, DateRepeatResu
 			return requiresNullProtection;
 		}
 	}
-
 
 	private static abstract class DateRepeatWithIntegerResult extends IntegerExpression {
 

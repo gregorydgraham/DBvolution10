@@ -88,7 +88,7 @@ public class DBReport extends RowDefinition {
 
 	private static final long serialVersionUID = 1L;
 
-	private transient ColumnProvider[] sortColumns = new ColumnProvider[]{};
+	private ColumnProvider[] sortColumns = new ColumnProvider[]{};
 	private boolean blankQueryAllowed = false;
 
 	/**

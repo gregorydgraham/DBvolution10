@@ -44,7 +44,7 @@ import nz.co.gregs.dbvolution.results.SimpleNumericResult;
  * expression or value, and perform arithmetic.
  *
  * <p>
- * Generally you get a IntegerExpression from a column or value using {@link IntegerExpression#IntegerExpression(int) 
+ * Generally you get a IntegerExpression from a column or value using {@link IntegerExpression#IntegerExpression(int)
  * } or {@link DBRow#column(nz.co.gregs.dbvolution.datatypes.DBInteger) }.
  *
  * <p style="color: #F90;">Support DBvolution at
@@ -53,6 +53,8 @@ import nz.co.gregs.dbvolution.results.SimpleNumericResult;
  * @author Gregory Graham
  */
 public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResult, DBInteger> implements IntegerResult {
+
+	private final static long serialVersionUID = 1l;
 
 	@Override
 	public final IntegerExpression nullExpression() {
@@ -1043,7 +1045,7 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 	 */
 	public BooleanExpression isBetweenExclusive(Number lowerBound, SimpleNumericResult<?> upperBound) {
 		return numberResult().isBetweenExclusive(
-				value(lowerBound), 
+				value(lowerBound),
 				new IntegerExpression(upperBound).numberResult());
 	}
 
@@ -1074,7 +1076,7 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 	 */
 	public BooleanExpression isBetweenExclusive(NumberResult lowerBound, Number upperBound) {
 		return numberResult().isBetweenExclusive(
-				NumberExpression.value(lowerBound), 
+				NumberExpression.value(lowerBound),
 				NumberExpression.value(upperBound));
 	}
 
@@ -1957,6 +1959,8 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 
 	public static class SinhFunction extends DBUnaryFunction {
 
+		private final static long serialVersionUID = 1l;
+
 		private final IntegerExpression limitedTo700;
 
 		public SinhFunction(IntegerExpression only) {
@@ -2758,7 +2762,7 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 	 * expression were the index.
 	 *
 	 * Value 0 returns the first string, value 1 returns the second, etc.</p>
-	 * 
+	 *
 	 * <p>
 	 * If the index is too large NULL is returned.</p>
 	 *
@@ -2810,7 +2814,7 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 	 * expression were the index.
 	 *
 	 * Value 0 returns the first string, value 1 returns the second, etc. </p>
-	 * 
+	 *
 	 * <p>
 	 * If the index is too large the last value is returned.</p>
 	 *
@@ -2851,7 +2855,7 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 	public StringExpression chooseWithDefault(StringResult... stringsToChooseFrom) {
 		StringExpression expr
 				= this.choose(stringsToChooseFrom)
-						.ifDBNull(stringsToChooseFrom[stringsToChooseFrom.length-1]);
+						.ifDBNull(stringsToChooseFrom[stringsToChooseFrom.length - 1]);
 		return expr;
 	}
 
@@ -3181,7 +3185,7 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 			final AnyResult<?> only = getInnerResult();
 			return this.beforeValue(db) + (only == null ? "" : only.toSQLString(db)) + this.afterValue(db);
 		}
-		
+
 		@Override
 		public boolean isPurelyFunctional() {
 			final AnyResult<?> only = getInnerResult();
@@ -3786,6 +3790,8 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 
 	private static class MaxUnaryFunction extends DBUnaryFunction {
 
+		private final static long serialVersionUID = 1l;
+
 		MaxUnaryFunction(IntegerExpression only) {
 			super(only);
 		}
@@ -3802,6 +3808,8 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 	}
 
 	private static class MinUnaryFunction extends DBUnaryFunction {
+
+		private final static long serialVersionUID = 1l;
 
 		MinUnaryFunction(IntegerExpression only) {
 			super(only);
@@ -3820,6 +3828,8 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 
 	private static class MinusBinaryArithmetic extends DBBinaryArithmetic {
 
+		private final static long serialVersionUID = 1l;
+
 		MinusBinaryArithmetic(IntegerResult first, IntegerResult second) {
 			super(first, second);
 		}
@@ -3832,6 +3842,8 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 
 	private static class BracketUnaryFunction extends DBUnaryFunction {
 
+		private final static long serialVersionUID = 1l;
+
 		BracketUnaryFunction(IntegerExpression only) {
 			super(only);
 		}
@@ -3843,6 +3855,8 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 	}
 
 	private class StringResultFunction extends DBUnaryStringFunction {
+
+		private final static long serialVersionUID = 1l;
 
 		public StringResultFunction(IntegerExpression only) {
 			super(only);
@@ -3866,6 +3880,8 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 
 	private class IsFunction extends DBBinaryBooleanArithmetic {
 
+		private final static long serialVersionUID = 1l;
+
 		public IsFunction(IntegerExpression first, IntegerResult second) {
 			super(first, second);
 		}
@@ -3887,6 +3903,8 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 
 	private static class IsLessThanFunction extends DBBinaryBooleanArithmetic {
 
+		private final static long serialVersionUID = 1l;
+
 		public IsLessThanFunction(IntegerExpression first, IntegerResult second) {
 			super(first, second);
 		}
@@ -3903,6 +3921,8 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 	}
 
 	private static class IsLessThanOrEqualFunction extends DBBinaryBooleanArithmetic {
+
+		private final static long serialVersionUID = 1l;
 
 		public IsLessThanOrEqualFunction(IntegerExpression first, IntegerResult second) {
 			super(first, second);
@@ -3921,6 +3941,8 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 
 	private static class IsGreaterThanFunction extends DBBinaryBooleanArithmetic {
 
+		private final static long serialVersionUID = 1l;
+
 		public IsGreaterThanFunction(IntegerExpression first, IntegerResult second) {
 			super(first, second);
 		}
@@ -3938,6 +3960,8 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 
 	private static class IsGreaterThanOrEqualFunction extends DBBinaryBooleanArithmetic {
 
+		private final static long serialVersionUID = 1l;
+
 		public IsGreaterThanOrEqualFunction(IntegerExpression first, IntegerResult second) {
 			super(first, second);
 		}
@@ -3954,6 +3978,8 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 	}
 
 	private class IsInFunction extends DBNnaryBooleanFunction {
+
+		private final static long serialVersionUID = 1l;
 
 		public IsInFunction(IntegerExpression leftHandSide, IntegerResult[] rightHandSide) {
 			super(leftHandSide, rightHandSide);
@@ -3976,6 +4002,8 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 
 	private static class LeastOfFunction extends DBNnaryIntegerFunction {
 
+		private final static long serialVersionUID = 1l;
+
 		public LeastOfFunction(IntegerResult[] rightHandSide) {
 			super(rightHandSide);
 		}
@@ -3996,6 +4024,8 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 	}
 
 	private static class GreatestOfFunction extends DBNnaryIntegerFunction {
+
+		private final static long serialVersionUID = 1l;
 
 		public GreatestOfFunction(IntegerResult[] rightHandSide) {
 			super(rightHandSide);
@@ -4018,6 +4048,8 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 
 	private class IfDBNullFunction extends IntegerIntegerFunctionIntegerResult {
 
+		private final static long serialVersionUID = 1l;
+
 		public IfDBNullFunction(IntegerExpression first, IntegerResult second) {
 			super(first, second);
 		}
@@ -4034,6 +4066,8 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 	}
 
 	private class NumberResultFunction extends DBUnaryNumberFunction {
+
+		private final static long serialVersionUID = 1l;
 
 		public NumberResultFunction(IntegerExpression only) {
 			super(only);
@@ -4052,6 +4086,8 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 
 	private static class AbsoluteValueFunction extends DBUnaryFunction {
 
+		private final static long serialVersionUID = 1l;
+
 		public AbsoluteValueFunction(IntegerExpression only) {
 			super(only);
 		}
@@ -4063,6 +4099,8 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 	}
 
 	private static class ArcCosineFunction extends DBUnaryNumberFunction {
+
+		private final static long serialVersionUID = 1l;
 
 		public ArcCosineFunction(IntegerExpression only) {
 			super(only);
@@ -4076,6 +4114,8 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 
 	private class ArcSineFunction extends DBUnaryNumberFunction {
 
+		private final static long serialVersionUID = 1l;
+
 		public ArcSineFunction(IntegerExpression only) {
 			super(only);
 		}
@@ -4085,7 +4125,7 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 			if (db.supportsArcSineFunction()) {
 				return super.toSQLString(db);
 			} else {
-				IntegerExpression only = (IntegerExpression)getInnerResult();
+				IntegerExpression only = (IntegerExpression) getInnerResult();
 				return only.numberResult().dividedBy(value(1.0).minus(only.times(only).bracket()).bracket().squareRoot()).arctan().toSQLString(db);
 			}
 		}
@@ -4097,6 +4137,8 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 	}
 
 	private static class PowerFunction extends IntegerIntegerFunctionIntegerResult {
+
+		private final static long serialVersionUID = 1l;
 
 		public PowerFunction(IntegerExpression first, IntegerExpression second) {
 			super(first, second);
@@ -4110,6 +4152,8 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 
 	private static class SignFunction extends DBUnaryFunction {
 
+		private final static long serialVersionUID = 1l;
+
 		public SignFunction(IntegerExpression only) {
 			super(only);
 		}
@@ -4121,6 +4165,8 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 	}
 
 	private class RoundToNumberOfDecimalPlacesFunction extends IntegerIntegerFunctionIntegerResult {
+
+		private final static long serialVersionUID = 1l;
 
 		public RoundToNumberOfDecimalPlacesFunction(IntegerExpression first, IntegerExpression second) {
 			super(first, second);
@@ -4144,6 +4190,8 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 
 	private static class PlusFunction extends DBBinaryArithmetic {
 
+		private final static long serialVersionUID = 1l;
+
 		public PlusFunction(IntegerResult first, IntegerResult second) {
 			super(first, second);
 		}
@@ -4156,6 +4204,8 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 
 	private static class TimesFunction extends DBBinaryArithmetic {
 
+		private final static long serialVersionUID = 1l;
+
 		public TimesFunction(IntegerResult first, IntegerResult second) {
 			super(first, second);
 		}
@@ -4167,6 +4217,8 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 	}
 
 	private class ModulusFunction extends IntegerIntegerFunctionIntegerResult {
+
+		private final static long serialVersionUID = 1l;
 
 		public ModulusFunction(IntegerExpression first, IntegerExpression second) {
 			super(first, second);
@@ -4189,6 +4241,8 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 
 	private class ChooseFunction extends DBIntegerAndNnaryStringFunction {
 
+		private final static long serialVersionUID = 1l;
+
 		public ChooseFunction(IntegerResult numberResult, StringResult[] rightHandSide) {
 			super(numberResult, rightHandSide);
 		}
@@ -4204,6 +4258,8 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 	}
 
 	private static class SumFunction extends DBUnaryFunction {
+
+		private final static long serialVersionUID = 1l;
 
 		public SumFunction(IntegerExpression only) {
 			super(only);
@@ -4221,6 +4277,8 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 	}
 
 	private static class NullExpression extends IntegerExpression {
+
+		private final static long serialVersionUID = 1l;
 
 		public NullExpression() {
 		}

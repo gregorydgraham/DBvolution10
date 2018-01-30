@@ -45,6 +45,8 @@ import nz.co.gregs.dbvolution.results.MultiPoint2DResult;
  */
 public class Line2DExpression extends Spatial2DExpression<LineString, Line2DResult, DBLine2D> implements Line2DResult {
 
+	private final static long serialVersionUID = 1l;
+
 	private final boolean moreNullProtectionRequired;
 
 	/**
@@ -102,9 +104,9 @@ public class Line2DExpression extends Spatial2DExpression<LineString, Line2DResu
 	public Line2DExpression(Point... points) {
 		super(new DBLine2D(points));
 		boolean nulls = false;
-		for (Point point : points) {
-			nulls = point == null ? true : nulls;
-		}
+//		for (Point point : points) {
+//			nulls = point == null ? true : nulls;
+//		}
 		moreNullProtectionRequired
 				= points == null
 				|| points.length == 0
@@ -120,9 +122,9 @@ public class Line2DExpression extends Spatial2DExpression<LineString, Line2DResu
 	public Line2DExpression(Coordinate... coords) {
 		super(new DBLine2D(coords));
 		boolean nulls = false;
-		for (Coordinate point : coords) {
-			nulls = point == null ? true : nulls;
-		}
+//		for (Coordinate point : coords) {
+//			nulls = point == null ? true : nulls;
+//		}
 		moreNullProtectionRequired
 				= coords == null
 				|| coords.length == 0
@@ -241,6 +243,7 @@ public class Line2DExpression extends Spatial2DExpression<LineString, Line2DResu
 	public Line2DExpression nullExpression() {
 
 		return new Line2DExpression() {
+			private final static long serialVersionUID = 1l;
 
 			@Override
 			public String toSQLString(DBDefinition db) {
@@ -293,6 +296,7 @@ public class Line2DExpression extends Spatial2DExpression<LineString, Line2DResu
 	@Override
 	public StringExpression stringResult() {
 		return new StringExpression(new Line2DExpression.LineFunctionWithStringResult(this) {
+			private final static long serialVersionUID = 1l;
 
 			@Override
 			protected String doExpressionTransform(DBDefinition db) {
@@ -374,6 +378,7 @@ public class Line2DExpression extends Spatial2DExpression<LineString, Line2DResu
 	@Override
 	public BooleanExpression is(Line2DResult rightHandSide) {
 		return new BooleanExpression(new Line2DExpression.LineLineWithBooleanResult(this, new Line2DExpression(rightHandSide)) {
+			private final static long serialVersionUID = 1l;
 
 			@Override
 			public String doExpressionTransform(DBDefinition db) {
@@ -456,6 +461,7 @@ public class Line2DExpression extends Spatial2DExpression<LineString, Line2DResu
 	@Override
 	public BooleanExpression isNot(Line2DResult rightHandSide) {
 		return new BooleanExpression(new Line2DExpression.LineLineWithBooleanResult(this, new Line2DExpression(rightHandSide)) {
+			private final static long serialVersionUID = 1l;
 
 			@Override
 			public String doExpressionTransform(DBDefinition defn) {
@@ -471,6 +477,7 @@ public class Line2DExpression extends Spatial2DExpression<LineString, Line2DResu
 	@Override
 	public NumberExpression measurableDimensions() {
 		return new NumberExpression(new LineFunctionWithNumberResult(this) {
+			private final static long serialVersionUID = 1l;
 
 			@Override
 			public String doExpressionTransform(DBDefinition db) {
@@ -486,6 +493,7 @@ public class Line2DExpression extends Spatial2DExpression<LineString, Line2DResu
 	@Override
 	public NumberExpression spatialDimensions() {
 		return new NumberExpression(new LineFunctionWithNumberResult(this) {
+			private final static long serialVersionUID = 1l;
 
 			@Override
 			public String doExpressionTransform(DBDefinition db) {
@@ -501,6 +509,7 @@ public class Line2DExpression extends Spatial2DExpression<LineString, Line2DResu
 	@Override
 	public BooleanExpression hasMagnitude() {
 		return new BooleanExpression(new LineWithBooleanResult(this) {
+			private final static long serialVersionUID = 1l;
 
 			@Override
 			public String doExpressionTransform(DBDefinition db) {
@@ -516,6 +525,7 @@ public class Line2DExpression extends Spatial2DExpression<LineString, Line2DResu
 	@Override
 	public NumberExpression magnitude() {
 		return new NumberExpression(new LineFunctionWithNumberResult(this) {
+			private final static long serialVersionUID = 1l;
 
 			@Override
 			public String doExpressionTransform(DBDefinition db) {
@@ -531,6 +541,7 @@ public class Line2DExpression extends Spatial2DExpression<LineString, Line2DResu
 	@Override
 	public Polygon2DExpression boundingBox() {
 		return new Polygon2DExpression(new LineFunctionWithPolygon2DResult(this) {
+			private final static long serialVersionUID = 1l;
 
 			@Override
 			public String doExpressionTransform(DBDefinition db) {
@@ -542,7 +553,7 @@ public class Line2DExpression extends Spatial2DExpression<LineString, Line2DResu
 					final NumberExpression maxY = first.maxY();
 					final NumberExpression minX = first.minX();
 					final NumberExpression minY = first.minY();
-					final Point2DExpression point2DExpression = new Point2DExpression();
+
 					return Polygon2DExpression.value(Point2DExpression.value(minX, minY),
 							Point2DExpression.value(maxX, minY),
 							Point2DExpression.value(maxX, maxY),
@@ -566,6 +577,7 @@ public class Line2DExpression extends Spatial2DExpression<LineString, Line2DResu
 	public NumberExpression maxX() {
 
 		return new NumberExpression(new LineFunctionWithNumberResult(this) {
+			private final static long serialVersionUID = 1l;
 
 			@Override
 			public String doExpressionTransform(DBDefinition db) {
@@ -586,6 +598,7 @@ public class Line2DExpression extends Spatial2DExpression<LineString, Line2DResu
 	public NumberExpression minX() {
 
 		return new NumberExpression(new LineFunctionWithNumberResult(this) {
+			private final static long serialVersionUID = 1l;
 
 			@Override
 			public String doExpressionTransform(DBDefinition db) {
@@ -606,6 +619,7 @@ public class Line2DExpression extends Spatial2DExpression<LineString, Line2DResu
 	public NumberExpression maxY() {
 
 		return new NumberExpression(new LineFunctionWithNumberResult(this) {
+			private final static long serialVersionUID = 1l;
 
 			@Override
 			public String doExpressionTransform(DBDefinition db) {
@@ -626,6 +640,7 @@ public class Line2DExpression extends Spatial2DExpression<LineString, Line2DResu
 	public NumberExpression minY() {
 
 		return new NumberExpression(new LineFunctionWithNumberResult(this) {
+			private final static long serialVersionUID = 1l;
 
 			@Override
 			public String doExpressionTransform(DBDefinition db) {
@@ -719,6 +734,7 @@ public class Line2DExpression extends Spatial2DExpression<LineString, Line2DResu
 	 */
 	public BooleanExpression intersects(Line2DResult crossingLine) {
 		return new BooleanExpression(new LineLineWithBooleanResult(this, new Line2DExpression(crossingLine)) {
+			private final static long serialVersionUID = 1l;
 
 			@Override
 			protected String doExpressionTransform(DBDefinition db) {
@@ -739,6 +755,7 @@ public class Line2DExpression extends Spatial2DExpression<LineString, Line2DResu
 	 */
 	public MultiPoint2DExpression intersectionPoints(Line2DResult crossingLine) {
 		return new MultiPoint2DExpression(new LineLineWithMultiPoint2DResult(this, new Line2DExpression(crossingLine)) {
+			private final static long serialVersionUID = 1l;
 
 			@Override
 			protected String doExpressionTransform(DBDefinition db) {
@@ -856,6 +873,7 @@ public class Line2DExpression extends Spatial2DExpression<LineString, Line2DResu
 	 */
 	public Point2DExpression intersectionWith(Line2DResult crossingLine) {
 		return new Point2DExpression(new LineLineWithPoint2DResult(this, new Line2DExpression(crossingLine)) {
+			private final static long serialVersionUID = 1l;
 
 			@Override
 			protected String doExpressionTransform(DBDefinition db) {

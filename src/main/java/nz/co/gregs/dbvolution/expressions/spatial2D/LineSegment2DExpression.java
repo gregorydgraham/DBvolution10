@@ -23,6 +23,7 @@ import java.util.HashSet;
 import java.util.Set;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.DBRow;
+import nz.co.gregs.dbvolution.databases.definitions.H2DBDefinition;
 import nz.co.gregs.dbvolution.datatypes.spatial2D.DBLineSegment2D;
 import nz.co.gregs.dbvolution.expressions.BooleanExpression;
 import nz.co.gregs.dbvolution.expressions.NumberExpression;
@@ -39,6 +40,8 @@ import nz.co.gregs.dbvolution.results.AnyResult;
  * @author gregory.graham
  */
 public class LineSegment2DExpression extends Spatial2DExpression<LineSegment, LineSegment2DResult, DBLineSegment2D> implements LineSegment2DResult {
+
+	private static final long serialVersionUID = 1l;
 
 	private final boolean moreNullProtectionRequired;
 
@@ -205,12 +208,11 @@ public class LineSegment2DExpression extends Spatial2DExpression<LineSegment, Li
 	public boolean equals(Object other) {
 		if (other instanceof LineSegment2DExpression) {
 			LineSegment2DExpression otherExpr = (LineSegment2DExpression) other;
-			return this.getInnerResult() == otherExpr.getInnerResult()
-					&& this.getIncludesNull() == otherExpr.getIncludesNull();
+			final H2DBDefinition defn = new H2DBDefinition();
+			return this.toSQLString(defn).equals(otherExpr.toSQLString(defn));
 		}
 		return false;
 	}
-
 	@Override
 	public int hashCode() {
 		int hash = 5;
@@ -238,6 +240,7 @@ public class LineSegment2DExpression extends Spatial2DExpression<LineSegment, Li
 	public LineSegment2DExpression nullExpression() {
 
 		return new LineSegment2DExpression() {
+			private final static long serialVersionUID = 1l;
 
 			@Override
 			public String toSQLString(DBDefinition db) {
@@ -267,6 +270,7 @@ public class LineSegment2DExpression extends Spatial2DExpression<LineSegment, Li
 	@Override
 	public StringExpression stringResult() {
 		return new StringExpression(new LineSegmentWithStringResult(this) {
+			private final static long serialVersionUID = 1l;
 
 			@Override
 			protected String doExpressionTransform(DBDefinition db) {
@@ -296,6 +300,7 @@ public class LineSegment2DExpression extends Spatial2DExpression<LineSegment, Li
 	@Override
 	public BooleanExpression is(LineSegment2DResult rightHandSide) {
 		return new BooleanExpression(new LineSegmentLineSegmentWithBooleanResult(this, new LineSegment2DExpression(rightHandSide)) {
+			private final static long serialVersionUID = 1l;
 
 			@Override
 			public String doExpressionTransform(DBDefinition db) {
@@ -331,6 +336,7 @@ public class LineSegment2DExpression extends Spatial2DExpression<LineSegment, Li
 	@Override
 	public NumberExpression measurableDimensions() {
 		return new NumberExpression(new LineSegmentWithNumberResult(this) {
+			private final static long serialVersionUID = 1l;
 
 			@Override
 			public String doExpressionTransform(DBDefinition db) {
@@ -346,6 +352,7 @@ public class LineSegment2DExpression extends Spatial2DExpression<LineSegment, Li
 	@Override
 	public NumberExpression spatialDimensions() {
 		return new NumberExpression(new LineSegmentWithNumberResult(this) {
+			private final static long serialVersionUID = 1l;
 
 			@Override
 			public String doExpressionTransform(DBDefinition db) {
@@ -361,6 +368,7 @@ public class LineSegment2DExpression extends Spatial2DExpression<LineSegment, Li
 	@Override
 	public BooleanExpression hasMagnitude() {
 		return new BooleanExpression(new LineSegmentWithBooleanResult(this) {
+			private final static long serialVersionUID = 1l;
 
 			@Override
 			public String doExpressionTransform(DBDefinition db) {
@@ -376,6 +384,7 @@ public class LineSegment2DExpression extends Spatial2DExpression<LineSegment, Li
 	@Override
 	public NumberExpression magnitude() {
 		return new NumberExpression(new LineSegmentWithNumberResult(this) {
+			private final static long serialVersionUID = 1l;
 
 			@Override
 			public String doExpressionTransform(DBDefinition db) {
@@ -391,6 +400,7 @@ public class LineSegment2DExpression extends Spatial2DExpression<LineSegment, Li
 	@Override
 	public Polygon2DExpression boundingBox() {
 		return new Polygon2DExpression(new LineSegmentWithGeometry2DResult(this) {
+			private final static long serialVersionUID = 1l;
 
 			@Override
 			public String doExpressionTransform(DBDefinition db) {
@@ -418,6 +428,7 @@ public class LineSegment2DExpression extends Spatial2DExpression<LineSegment, Li
 	public NumberExpression maxX() {
 
 		return new NumberExpression(new LineSegmentWithNumberResult(this) {
+			private final static long serialVersionUID = 1l;
 
 			@Override
 			public String doExpressionTransform(DBDefinition db) {
@@ -430,6 +441,7 @@ public class LineSegment2DExpression extends Spatial2DExpression<LineSegment, Li
 	public NumberExpression minX() {
 
 		return new NumberExpression(new LineSegmentWithNumberResult(this) {
+			private final static long serialVersionUID = 1l;
 
 			@Override
 			public String doExpressionTransform(DBDefinition db) {
@@ -442,6 +454,7 @@ public class LineSegment2DExpression extends Spatial2DExpression<LineSegment, Li
 	public NumberExpression maxY() {
 
 		return new NumberExpression(new LineSegmentWithNumberResult(this) {
+			private final static long serialVersionUID = 1l;
 
 			@Override
 			public String doExpressionTransform(DBDefinition db) {
@@ -454,6 +467,7 @@ public class LineSegment2DExpression extends Spatial2DExpression<LineSegment, Li
 	public NumberExpression minY() {
 
 		return new NumberExpression(new LineSegmentWithNumberResult(this) {
+			private final static long serialVersionUID = 1l;
 
 			@Override
 			public String doExpressionTransform(DBDefinition db) {
@@ -461,7 +475,7 @@ public class LineSegment2DExpression extends Spatial2DExpression<LineSegment, Li
 			}
 		});
 	}
-	
+
 	/**
 	 * Creates an expression that will return the most common value of the column
 	 * supplied.
@@ -469,7 +483,7 @@ public class LineSegment2DExpression extends Spatial2DExpression<LineSegment, Li
 	 * <p>
 	 * MODE: The number which appears most often in a set of numbers. For example:
 	 * in {6, 3, 9, 6, 6, 5, 9, 3} the Mode is 6.</p>
-	 * 
+	 *
 	 * <p style="color: #F90;">Support DBvolution at
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 *
@@ -553,6 +567,7 @@ public class LineSegment2DExpression extends Spatial2DExpression<LineSegment, Li
 	 */
 	public BooleanExpression intersects(LineSegment2DResult crossingLine) {
 		return new BooleanExpression(new LineSegmentLineSegmentWithBooleanResult(this, new LineSegment2DExpression(crossingLine)) {
+			private final static long serialVersionUID = 1l;
 
 			@Override
 			protected String doExpressionTransform(DBDefinition db) {
@@ -630,6 +645,7 @@ public class LineSegment2DExpression extends Spatial2DExpression<LineSegment, Li
 	 */
 	public Point2DExpression intersectionWith(LineSegment2DResult crossingLine) {
 		return new Point2DExpression(new LineSegmentLineSegmentWithPointResult(this, new LineSegment2DExpression(crossingLine)) {
+			private final static long serialVersionUID = 1l;
 
 			@Override
 			protected String doExpressionTransform(DBDefinition db) {
@@ -642,7 +658,7 @@ public class LineSegment2DExpression extends Spatial2DExpression<LineSegment, Li
 	public DBLineSegment2D asExpressionColumn() {
 		return new DBLineSegment2D(this);
 	}
-	
+
 	private static abstract class LineSegmentLineSegmentWithBooleanResult extends BooleanExpression {
 
 		private LineSegment2DExpression first;

@@ -27,6 +27,7 @@ import edu.uci.ics.jung.visualization.renderers.DefaultEdgeLabelRenderer;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.io.PrintStream;
+import java.io.Serializable;
 import java.sql.*;
 import java.util.*;
 import javax.swing.JFrame;
@@ -80,15 +81,17 @@ import nz.co.gregs.dbvolution.internal.properties.*;
  *
  * @author Gregory Graham
  */
-public class DBQuery {
+public class DBQuery implements Serializable{
+
+	private static final long serialVersionUID = 1l;
 
 	/**
 	 * The default timeout value used to prevent accidental long running queries
 	 */
 	private final DBDatabase database;
 	private final QueryDetails details = new QueryDetails();
-	private QueryGraph queryGraph;
-	private JFrame queryGraphFrame = null;
+	private transient QueryGraph queryGraph;
+	private transient JFrame queryGraphFrame = null;
 
 	public QueryDetails getQueryDetails() {
 		return details;

@@ -16,6 +16,7 @@
 package nz.co.gregs.dbvolution.internal.properties;
 
 import java.beans.PropertyDescriptor;
+import java.io.Serializable;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -29,7 +30,9 @@ import nz.co.gregs.dbvolution.exceptions.ReferenceToUndefinedPrimaryKeyException
 /**
  * Implementation over bean properties.
  */
-public class JavaBeanProperty implements JavaProperty {
+public class JavaBeanProperty implements JavaProperty, Serializable {
+
+	private static final long serialVersionUID = 1l;
 
 	private final String name;
 	private final Class<?> type;

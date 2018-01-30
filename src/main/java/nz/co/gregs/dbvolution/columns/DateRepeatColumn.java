@@ -35,6 +35,8 @@ import org.joda.time.Period;
  */
 public class DateRepeatColumn extends DateRepeatExpression implements ColumnProvider {
 
+	private final static long serialVersionUID = 1l;
+
 	private AbstractColumn column;
 
 	private DateRepeatColumn() {

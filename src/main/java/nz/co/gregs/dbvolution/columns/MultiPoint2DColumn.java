@@ -35,6 +35,8 @@ import nz.co.gregs.dbvolution.query.RowDefinition;
  */
 public class MultiPoint2DColumn extends MultiPoint2DExpression implements ColumnProvider {
 
+	private final static long serialVersionUID = 1l;
+
 	private final AbstractColumn column;
 
 	/**
@@ -85,7 +87,7 @@ public class MultiPoint2DColumn extends MultiPoint2DExpression implements Column
 	@Override
 	public boolean equals(Object other) {
 		if (other instanceof MultiPoint2DColumn) {
-			return column.equals(other); //To change body of generated methods, choose Tools | Templates.
+			return column.equals(((MultiPoint2DColumn) other).column);
 		} else {
 			return false;
 		}
@@ -97,7 +99,7 @@ public class MultiPoint2DColumn extends MultiPoint2DExpression implements Column
 		hash = 59 * hash + Objects.hashCode(this.column);
 		return hash;
 	}
-	
+
 	@Override
 	public synchronized MultiPoint2DColumn copy() {
 		final AbstractColumn col = getColumn();

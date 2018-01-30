@@ -57,6 +57,8 @@ import org.apache.commons.logging.LogFactory;
  */
 public class DBUpdateLargeObjects extends DBUpdate {
 
+	private static final long serialVersionUID = 1l;
+	
 	private static final Log LOG = LogFactory.getLog(DBUpdateLargeObjects.class);
 
 	/**

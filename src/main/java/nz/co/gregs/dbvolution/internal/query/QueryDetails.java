@@ -15,6 +15,7 @@
  */
 package nz.co.gregs.dbvolution.internal.query;
 
+import java.io.Serializable;
 import java.lang.reflect.Array;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -61,11 +62,12 @@ import nz.co.gregs.dbvolution.query.RowDefinition;
  *
  * @author gregorygraham
  */
-public class QueryDetails implements DBQueryable {
+public class QueryDetails implements DBQueryable, Serializable {
+
+	private static final long serialVersionUID = 1l;
 
 	private static final int DEFAULT_TIMEOUT_MILLISECONDS = 10000;
 	private Integer timeoutInMilliseconds = DEFAULT_TIMEOUT_MILLISECONDS;
-//	private ScheduledFuture<?> timeout;
 	static final transient ScheduledExecutorService TIMER_SERVICE = Executors.newSingleThreadScheduledExecutor();
 
 	private final Map<Class<? extends DBRow>, DBRow> emptyRows = new HashMap<>();
@@ -74,7 +76,7 @@ public class QueryDetails implements DBQueryable {
 	private final List<DBRow> requiredQueryTables = new ArrayList<>();
 	private final List<DBRow> optionalQueryTables = new ArrayList<>();
 	private final List<DBRow> assumedQueryTables = new ArrayList<>();
-//	private final List<DBQuery> intersectingQueries;
+
 	private QueryOptions options = new QueryOptions();
 	private final List<DBRow> extraExamples = new ArrayList<>();
 	private final List<BooleanExpression> conditions = new ArrayList<>();
@@ -91,7 +93,7 @@ public class QueryDetails implements DBQueryable {
 	private Integer resultsPageIndex = 0;
 	private Integer resultsRowLimit = -1;
 	private Long queryCount = null;
-	private QueryGraph queryGraph;
+	private transient QueryGraph queryGraph;
 	private ColumnProvider[] sortOrderColumns;
 	private ArrayList<PropertyWrapper> sortOrder;
 	private List<DBQueryRow> currentPage;

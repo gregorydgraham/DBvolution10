@@ -57,7 +57,7 @@ import nz.co.gregs.dbvolution.results.IntegerResult;
 public abstract class QueryableDatatype<T> extends Object implements Serializable, DBExpression {
 
 	private static final long serialVersionUID = 1L;
-	T literalValue = null;
+	private T literalValue = null;
 	private boolean isDBNull = false;
 	private DBOperator operator = null;
 	private boolean undefined = true;
@@ -241,23 +241,25 @@ public abstract class QueryableDatatype<T> extends Object implements Serializabl
 	 */
 	@Override
 	@SuppressWarnings("unchecked")
-	public QueryableDatatype<T> copy() {
+	public synchronized QueryableDatatype<T> copy() {
 		QueryableDatatype<T> newQDT = this;
 		try {
-			newQDT = this.getClass().newInstance();
+			synchronized (newQDT) {
+				newQDT = this.getClass().newInstance();
 
-			newQDT.literalValue = this.getLiteralValue();
-			newQDT.isDBNull = this.isDBNull;
-			newQDT.operator = this.operator;
-			newQDT.undefined = this.undefined;
-			newQDT.changed = this.changed;
-			newQDT.setValueHasBeenCalled = this.setValueHasBeenCalled;
-			if (this.previousValueAsQDT != null) {
-				newQDT.previousValueAsQDT = this.previousValueAsQDT.copy();
-			}
+				newQDT.literalValue = this.getLiteralValue();
+				newQDT.isDBNull = this.isDBNull;
+				newQDT.operator = this.operator;
+				newQDT.undefined = this.undefined;
+				newQDT.changed = this.changed;
+				newQDT.setValueHasBeenCalled = this.setValueHasBeenCalled;
+				if (this.previousValueAsQDT != null) {
+					newQDT.previousValueAsQDT = this.previousValueAsQDT.copy();
+				}
 //			newQDT.isPrimaryKey = this.isPrimaryKey;
-			newQDT.sort = this.sort;
-			newQDT.setColumnExpression(this.getColumnExpression());
+				newQDT.sort = this.sort;
+				newQDT.setColumnExpression(this.getColumnExpression());
+			}
 		} catch (InstantiationException ex) {
 			throw new UnableInstantiateQueryableDatatypeException(this, ex);
 		} catch (IllegalAccessException ex) {
@@ -417,7 +419,7 @@ public abstract class QueryableDatatype<T> extends Object implements Serializabl
 	 *
 	 * @return the DBOperator that will be used with this QDT
 	 */
-	protected DBOperator setToNull() {
+	protected synchronized DBOperator setToNull() {
 		this.literalValue = null;
 		this.isDBNull = true;
 		this.setOperator(new DBIsNullOperator());
@@ -609,7 +611,7 @@ public abstract class QueryableDatatype<T> extends Object implements Serializabl
 	 */
 	abstract protected T getFromResultSet(DBDefinition database, ResultSet resultSet, String fullColumnName) throws SQLException;
 
-	private void moveCurrentValueToPreviousValue(T newLiteralValue) {
+	private synchronized void moveCurrentValueToPreviousValue(T newLiteralValue) {
 		if ((this.isDBNull && newLiteralValue != null)
 				|| (getLiteralValue() != null && (newLiteralValue == null || !newLiteralValue.equals(literalValue)))) {
 			changed = true;
@@ -1062,7 +1064,6 @@ public abstract class QueryableDatatype<T> extends Object implements Serializabl
 	 */
 	public abstract ColumnProvider getColumn(RowDefinition row) throws IncorrectRowProviderInstanceSuppliedException;
 
-
 	@Override
 	public final String createSQLForFromClause(DBDatabase database) {
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
@@ -1070,10 +1071,10 @@ public abstract class QueryableDatatype<T> extends Object implements Serializabl
 
 	@Override
 	public final boolean isComplexExpression() {
-		if (hasColumnExpression()){
+		if (hasColumnExpression()) {
 			DBExpression[] exprs = getColumnExpression();
 			for (DBExpression expr : exprs) {
-				if(expr.isComplexExpression()){
+				if (expr.isComplexExpression()) {
 					return true;
 				}
 			}

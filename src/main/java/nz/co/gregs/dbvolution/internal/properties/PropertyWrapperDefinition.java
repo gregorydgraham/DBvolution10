@@ -1,5 +1,6 @@
 package nz.co.gregs.dbvolution.internal.properties;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -59,7 +60,9 @@ import nz.co.gregs.dbvolution.results.Spatial2DResult;
  * This class is not serializable. References to it within serializable classes
  * should be marked as {@code transient}.
  */
-public class PropertyWrapperDefinition {
+public class PropertyWrapperDefinition  implements Serializable{
+
+	private static final long serialVersionUID = 1l;
 
 	private final RowDefinitionClassWrapper classWrapper;
 	private final JavaProperty javaProperty;
@@ -698,7 +701,9 @@ public class PropertyWrapperDefinition {
 		return this.javaProperty.getAnnotation(AutoFillDuringQueryIfPossible.class).requiredClass();
 	}
 
-	public static class ColumnAspects {
+	public static class ColumnAspects implements Serializable{
+
+	private static final long serialVersionUID = 1l;
 
 		public final String selectableName;
 		public final String columnAlias;

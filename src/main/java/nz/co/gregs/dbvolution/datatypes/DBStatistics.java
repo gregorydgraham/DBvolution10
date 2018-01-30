@@ -27,7 +27,7 @@ public class DBStatistics extends DBString {
 
 	private static final long serialVersionUID = 1;
 
-	private final EqualExpression<?,?,?> originalExpression;
+	private final EqualExpression<?, ?, ?> originalExpression;
 	private final DBString numberProxy = new DBString();
 	private Number countOfRows;
 //	private Number rankingHighIsFirst;  // Should be an expression column on an ordinary table
@@ -37,12 +37,12 @@ public class DBStatistics extends DBString {
 	private Number median;
 	private Number firstQuartileValue;
 	private Number thirdQuartileValue;
-	private transient IntegerExpression countExpr;
-	private transient NumberExpression modeSimpleExpression;
-	private transient NumberExpression modeStrictExpression;
-	private transient NumberExpression medianExpression;
-	private transient NumberExpression firstQuartileExpression;
-	private transient NumberExpression thirdQuartileExpression;
+	private IntegerExpression countExpr;
+	private NumberExpression modeSimpleExpression;
+	private NumberExpression modeStrictExpression;
+	private NumberExpression medianExpression;
+	private NumberExpression firstQuartileExpression;
+	private NumberExpression thirdQuartileExpression;
 
 	/**
 	 * The default constructor for DBStatistics.
@@ -51,7 +51,7 @@ public class DBStatistics extends DBString {
 	 * Creates an unset undefined DBNumber object.</p>
 	 *
 	 * <p>
-	 * Use {@link #DBStatistics(nz.co.gregs.dbvolution.expressions.NumberExpression)
+	 * Use {@link #DBStatistics(nz.co.gregs.dbvolution.expressions.EqualExpression)
 	 * } instead.</p>
 	 *
 	 */
@@ -69,7 +69,7 @@ public class DBStatistics extends DBString {
 	 *
 	 * @param expressionToGenerateStatsFrom numberExpression
 	 */
-	public DBStatistics(EqualExpression<?,?,?> expressionToGenerateStatsFrom) {
+	public DBStatistics(EqualExpression<?, ?, ?> expressionToGenerateStatsFrom) {
 		super(expressionToGenerateStatsFrom.stringResult());
 		this.originalExpression = expressionToGenerateStatsFrom;
 		countExpr = originalExpression.count();
@@ -115,7 +115,8 @@ public class DBStatistics extends DBString {
 	}
 
 	/**
-	 * The median value, that is the value that occurs halfway through the distribution.
+	 * The median value, that is the value that occurs halfway through the
+	 * distribution.
 	 *
 	 * <p style="color: #F90;">Support DBvolution at
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
@@ -140,7 +141,7 @@ public class DBStatistics extends DBString {
 
 	/**
 	 * Returns the value that occurs 3/4 of the way through the distribution.
-	 * 
+	 *
 	 * <p style="color: #F90;">Support DBvolution at
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 *
@@ -236,7 +237,7 @@ public class DBStatistics extends DBString {
 
 	@Override
 	public String toString() {
-		return ("count=" + countOfRows );
+		return ("count=" + countOfRows);
 	}
 
 }

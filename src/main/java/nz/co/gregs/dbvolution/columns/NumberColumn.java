@@ -48,6 +48,8 @@ import nz.co.gregs.dbvolution.query.RowDefinition;
  */
 public class NumberColumn extends NumberExpression implements ColumnProvider {
 
+	private final static long serialVersionUID = 1l;
+
 	private AbstractColumn column;
 
 	private NumberColumn() {

@@ -1,5 +1,6 @@
 package nz.co.gregs.dbvolution.internal.properties;
 
+import java.io.Serializable;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
@@ -44,9 +45,10 @@ import nz.co.gregs.dbvolution.internal.properties.InterfaceInfo.UnsupportedType;
  */
 // TODO: this class could also handle implicit type adaptors where the target object's properties
 // are simple types, and we need to automatically convert between DBv data types.
-class PropertyTypeHandler {
+class PropertyTypeHandler implements Serializable{
 
-//    private static Log logger = LogFactory.getLog(PropertyTypeHandler.class);
+	private static final long serialVersionUID = 1l;
+
 	private final JavaProperty javaProperty;
 	private final Class<?> genericPropertyType;
 	private final Class<? extends QueryableDatatype<?>> dbvPropertyType;
@@ -55,17 +57,6 @@ class PropertyTypeHandler {
 	private final boolean identityOnly;
 	private final DBAdaptType dbAdaptTypeAnnotation;
 	private final DBColumn dbColumnAnnotation;
-//    private static Class<?>[] SUPPORTED_SIMPLE_TYPES = {
-//        String.class,
-//        boolean.class, int.class, long.class, float.class, double.class,
-//        Boolean.class, Integer.class, Long.class, Float.class, Double.class,
-//        Date.class
-//    };
-//    private static Class<?>[][][] SUPPORTED_MAPPINGS = {
-//    	map(implicit(String.class),                 to(DBString.class));
-//    	map(implicit(boolean.class, Boolean.class), to(DBBoolean.class));
-//    	map(null,                                   to(DBJavaObject.class), explicit(instanceoOf(Serializable.class)));
-//    };
 
 	/**
 	 *

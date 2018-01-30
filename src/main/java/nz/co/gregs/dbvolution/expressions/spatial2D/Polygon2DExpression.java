@@ -47,6 +47,8 @@ import nz.co.gregs.dbvolution.results.AnyResult;
  */
 public class Polygon2DExpression extends Spatial2DExpression<Polygon, Polygon2DResult, DBPolygon2D> implements Polygon2DResult {
 
+	private final static long serialVersionUID = 1l;
+
 	public static Polygon2DExpression unitSquare() {
 		return value(
 				new Point2DExpression(0, 0),
@@ -263,6 +265,7 @@ public class Polygon2DExpression extends Spatial2DExpression<Polygon, Polygon2DR
 	 */
 	public BooleanExpression intersects(Polygon2DResult rightHandSide) {
 		return new BooleanExpression(new PolygonPolygonWithBooleanResult(this, new Polygon2DExpression(rightHandSide)) {
+			private final static long serialVersionUID = 1l;
 
 			@Override
 			public String doExpressionTransform(DBDefinition db) {
@@ -293,6 +296,7 @@ public class Polygon2DExpression extends Spatial2DExpression<Polygon, Polygon2DR
 
 	private static Polygon2DExpression polygon2DFromPoint2DExpressionArray(Point2DExpression... pointExpressions) {
 		return new Polygon2DExpression(new Point2dArrayFunctionWithPolygon2DResult(pointExpressions) {
+			private final static long serialVersionUID = 1l;
 
 			@Override
 			protected String doExpressionTransform(DBDefinition db) {
@@ -321,6 +325,7 @@ public class Polygon2DExpression extends Spatial2DExpression<Polygon, Polygon2DR
 
 	private static Polygon2DExpression polygon2DFromCoordinateArray(NumberExpression... coordExpressions) {
 		return new Polygon2DExpression(new CoordinateArrayFunctionWithPolygon2DResult(coordExpressions) {
+			private final static long serialVersionUID = 1l;
 
 			@Override
 			protected String doExpressionTransform(DBDefinition db) {
@@ -376,6 +381,7 @@ public class Polygon2DExpression extends Spatial2DExpression<Polygon, Polygon2DR
 	@Override
 	public BooleanExpression is(Polygon2DResult rightHandSide) {
 		return new BooleanExpression(new PolygonPolygonWithBooleanResult(this, new Polygon2DExpression(rightHandSide)) {
+			private final static long serialVersionUID = 1l;
 
 			@Override
 			public String doExpressionTransform(DBDefinition db) {
@@ -408,6 +414,7 @@ public class Polygon2DExpression extends Spatial2DExpression<Polygon, Polygon2DR
 	 */
 	public BooleanExpression contains(Point2DResult rightHandSide) {
 		return new BooleanExpression(new PolygonPointWithBooleanResult(this, new Point2DExpression(rightHandSide)) {
+			private final static long serialVersionUID = 1l;
 
 			@Override
 			public String doExpressionTransform(DBDefinition db) {
@@ -452,6 +459,7 @@ public class Polygon2DExpression extends Spatial2DExpression<Polygon, Polygon2DR
 	 */
 	public BooleanExpression contains(Polygon2DResult rightHandSide) {
 		return new BooleanExpression(new PolygonPolygonWithBooleanResult(this, new Polygon2DExpression(rightHandSide)) {
+			private final static long serialVersionUID = 1l;
 
 			@Override
 			public String doExpressionTransform(DBDefinition db) {
@@ -486,6 +494,7 @@ public class Polygon2DExpression extends Spatial2DExpression<Polygon, Polygon2DR
 	 */
 	public BooleanExpression doesNotIntersect(Polygon2DResult rightHandSide) {
 		return new BooleanExpression(new PolygonPolygonWithBooleanResult(this, new Polygon2DExpression(rightHandSide)) {
+			private final static long serialVersionUID = 1l;
 
 			@Override
 			public String doExpressionTransform(DBDefinition db) {
@@ -536,6 +545,7 @@ public class Polygon2DExpression extends Spatial2DExpression<Polygon, Polygon2DR
 	 */
 	public BooleanExpression overlaps(Polygon2DResult rightHandSide) {
 		return new BooleanExpression(new PolygonPolygonWithBooleanResult(this, new Polygon2DExpression(rightHandSide)) {
+			private final static long serialVersionUID = 1l;
 
 			@Override
 			public String doExpressionTransform(DBDefinition db) {
@@ -576,6 +586,7 @@ public class Polygon2DExpression extends Spatial2DExpression<Polygon, Polygon2DR
 	 */
 	public BooleanExpression touches(Polygon2DResult rightHandSide) {
 		return new BooleanExpression(new PolygonPolygonWithBooleanResult(this, new Polygon2DExpression(rightHandSide)) {
+			private final static long serialVersionUID = 1l;
 
 			@Override
 			public String doExpressionTransform(DBDefinition db) {
@@ -626,6 +637,7 @@ public class Polygon2DExpression extends Spatial2DExpression<Polygon, Polygon2DR
 	 */
 	public BooleanExpression within(Polygon2DResult rightHandSide) {
 		return new BooleanExpression(new PolygonPolygonWithBooleanResult(this, new Polygon2DExpression(rightHandSide)) {
+			private final static long serialVersionUID = 1l;
 
 			@Override
 			public String doExpressionTransform(DBDefinition db) {
@@ -637,6 +649,7 @@ public class Polygon2DExpression extends Spatial2DExpression<Polygon, Polygon2DR
 	@Override
 	public NumberExpression measurableDimensions() {
 		return new NumberExpression(new Polygon2DFunctionWithNumberResult(this) {
+			private final static long serialVersionUID = 1l;
 
 			@Override
 			public String doExpressionTransform(DBDefinition db) {
@@ -648,6 +661,7 @@ public class Polygon2DExpression extends Spatial2DExpression<Polygon, Polygon2DR
 	@Override
 	public NumberExpression spatialDimensions() {
 		return new NumberExpression(new Polygon2DFunctionWithNumberResult(this) {
+			private final static long serialVersionUID = 1l;
 
 			@Override
 			public String doExpressionTransform(DBDefinition db) {
@@ -663,6 +677,7 @@ public class Polygon2DExpression extends Spatial2DExpression<Polygon, Polygon2DR
 	@Override
 	public BooleanExpression hasMagnitude() {
 		return new BooleanExpression(new PolygonWithBooleanResult(this) {
+			private final static long serialVersionUID = 1l;
 
 			@Override
 			public String doExpressionTransform(DBDefinition db) {
@@ -678,6 +693,7 @@ public class Polygon2DExpression extends Spatial2DExpression<Polygon, Polygon2DR
 	@Override
 	public NumberExpression magnitude() {
 		return new NumberExpression(new Polygon2DFunctionWithNumberResult(this) {
+			private final static long serialVersionUID = 1l;
 
 			@Override
 			public String doExpressionTransform(DBDefinition db) {
@@ -700,6 +716,7 @@ public class Polygon2DExpression extends Spatial2DExpression<Polygon, Polygon2DR
 	 */
 	public NumberExpression area() {
 		return new NumberExpression(new Polygon2DFunctionWithNumberResult(this) {
+			private final static long serialVersionUID = 1l;
 
 			@Override
 			public String doExpressionTransform(DBDefinition db) {
@@ -711,6 +728,7 @@ public class Polygon2DExpression extends Spatial2DExpression<Polygon, Polygon2DR
 	@Override
 	public Polygon2DExpression boundingBox() {
 		return new Polygon2DExpression(new Polygon2DFunctionWithPolygon2DResult(this) {
+			private final static long serialVersionUID = 1l;
 
 			@Override
 			public String doExpressionTransform(DBDefinition db) {
@@ -745,6 +763,7 @@ public class Polygon2DExpression extends Spatial2DExpression<Polygon, Polygon2DR
 	 */
 	public Line2DExpression exteriorRing() {
 		Line2DExpression exteriorRingExpr = new Line2DExpression(new Polygon2DFunctionWithLine2DResult(this) {
+			private final static long serialVersionUID = 1l;
 
 			@Override
 			public String doExpressionTransform(DBDefinition db) {
@@ -776,6 +795,7 @@ public class Polygon2DExpression extends Spatial2DExpression<Polygon, Polygon2DR
 	@Override
 	public StringExpression stringResult() {
 		StringExpression stringResultExpr = new StringExpression(new Polygon2DFunctionWithStringResult(this) {
+			private final static long serialVersionUID = 1l;
 
 			@Override
 			public String doExpressionTransform(DBDefinition db) {
@@ -788,6 +808,7 @@ public class Polygon2DExpression extends Spatial2DExpression<Polygon, Polygon2DR
 	@Override
 	public NumberExpression maxX() {
 		NumberExpression expr = new NumberExpression(new Polygon2DFunctionWithNumberResult(this) {
+			private final static long serialVersionUID = 1l;
 
 			@Override
 			public String doExpressionTransform(DBDefinition db) {
@@ -800,6 +821,7 @@ public class Polygon2DExpression extends Spatial2DExpression<Polygon, Polygon2DR
 	@Override
 	public NumberExpression maxY() {
 		NumberExpression expr = new NumberExpression(new Polygon2DFunctionWithNumberResult(this) {
+			private final static long serialVersionUID = 1l;
 
 			@Override
 			public String doExpressionTransform(DBDefinition db) {
@@ -812,6 +834,7 @@ public class Polygon2DExpression extends Spatial2DExpression<Polygon, Polygon2DR
 	@Override
 	public NumberExpression minX() {
 		NumberExpression expr = new NumberExpression(new Polygon2DFunctionWithNumberResult(this) {
+			private final static long serialVersionUID = 1l;
 
 			@Override
 			public String doExpressionTransform(DBDefinition db) {
@@ -824,6 +847,7 @@ public class Polygon2DExpression extends Spatial2DExpression<Polygon, Polygon2DR
 	@Override
 	public NumberExpression minY() {
 		NumberExpression expr = new NumberExpression(new Polygon2DFunctionWithNumberResult(this) {
+			private final static long serialVersionUID = 1l;
 
 			@Override
 			public String doExpressionTransform(DBDefinition db) {
@@ -863,6 +887,7 @@ public class Polygon2DExpression extends Spatial2DExpression<Polygon, Polygon2DR
 	public Polygon2DExpression nullExpression() {
 
 		return new Polygon2DExpression() {
+			private final static long serialVersionUID = 1l;
 
 			@Override
 			public String toSQLString(DBDefinition db) {

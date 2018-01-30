@@ -33,6 +33,8 @@ import nz.co.gregs.dbvolution.internal.properties.PropertyWrapper;
  */
 public class DBInsertLargeObjects extends DBUpdateLargeObjects {
 
+	private static final long serialVersionUID = 1l;
+	
 	/**
 	 * Creates a DBInsertLargeObjects action for the row.
 	 *

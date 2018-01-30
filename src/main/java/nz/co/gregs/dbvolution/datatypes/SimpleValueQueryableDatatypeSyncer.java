@@ -15,11 +15,6 @@
  */
 package nz.co.gregs.dbvolution.datatypes;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 /**
  * Syncs between a simple-type external value and a QDT internal value.
  *
@@ -61,9 +56,9 @@ public class SimpleValueQueryableDatatypeSyncer extends QueryableDatatypeSyncer 
 		QueryableDatatype<?> internalQDT = getInternalQueryableDatatype();
 		if (internalValue == null) {
 			// TODO complete this
+			internalQDT.setLiteralValue(null);
 			internalQDT.setDefined(false);
 			internalQDT.setOperator(null);
-			internalQDT.literalValue = null;
 			internalQDT.setChanged(false);
 			internalQDT.setPreviousValue(null);
 		} else {

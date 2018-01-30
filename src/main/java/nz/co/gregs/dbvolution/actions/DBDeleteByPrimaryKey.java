@@ -39,6 +39,8 @@ import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
  */
 public class DBDeleteByPrimaryKey extends DBDelete {
 
+	private static final long serialVersionUID = 1l;
+	
 	private final List<DBRow> savedRows = new ArrayList<>();
 
 	/**

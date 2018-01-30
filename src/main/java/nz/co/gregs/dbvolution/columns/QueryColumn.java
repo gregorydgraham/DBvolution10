@@ -54,6 +54,8 @@ import nz.co.gregs.dbvolution.results.AnyResult;
  */
 public class QueryColumn<B, R extends AnyResult<B>, D extends QueryableDatatype<B>> extends AnyExpression<B, R,D> implements ColumnProvider {
 
+	private static final long serialVersionUID = 1l;
+
 	private final AbstractQueryColumn column;
 	private final DBQuery query;
 	private final D field;

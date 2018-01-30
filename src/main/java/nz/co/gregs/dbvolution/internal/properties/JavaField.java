@@ -15,6 +15,7 @@
  */
 package nz.co.gregs.dbvolution.internal.properties;
 
+import java.io.Serializable;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.Type;
@@ -24,9 +25,11 @@ import nz.co.gregs.dbvolution.exceptions.FailedToSetPropertyValueOnRowDefinition
 /**
  * Implementation over java fields.
  */
-public class JavaField implements JavaProperty {
+public class JavaField implements JavaProperty, Serializable {
 
-	private final Field field;
+	private static final long serialVersionUID = 1l;
+
+	private transient final Field field;
 
 	/**
 	 * Create a JavaField for the supplied field.

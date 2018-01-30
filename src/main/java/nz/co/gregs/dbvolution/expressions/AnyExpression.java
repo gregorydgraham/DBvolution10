@@ -38,6 +38,7 @@ import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.MultiPoint;
 import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.geom.Polygon;
+import java.io.Serializable;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
@@ -64,7 +65,9 @@ import org.joda.time.Period;
  * @param <R>
  * @param <D>
  */
-public abstract class AnyExpression<B extends Object, R extends AnyResult<B>, D extends QueryableDatatype<B>> implements ExpressionColumn<D>, AnyResult<B> {
+public abstract class AnyExpression<B extends Object, R extends AnyResult<B>, D extends QueryableDatatype<B>> implements ExpressionColumn<D>, AnyResult<B>, Serializable {
+
+	private final static long serialVersionUID = 1l;
 
 	private final AnyResult<?> innerResult;
 	private final boolean nullProtectionRequired;
@@ -76,6 +79,8 @@ public abstract class AnyExpression<B extends Object, R extends AnyResult<B>, D 
 	 */
 	public AnyExpression<?, ?, ?> nullExpression() {
 		return new StringExpression() {
+			private final static long serialVersionUID = 1l;
+
 			@Override
 			public String toSQLString(DBDefinition db) {
 				return db.getNull();
@@ -172,7 +177,7 @@ public abstract class AnyExpression<B extends Object, R extends AnyResult<B>, D 
 	@Override
 	public boolean getIncludesNull() {
 		AnyResult<?> inner = getInnerResult();
-		return nullProtectionRequired||(inner==null?false:inner.getIncludesNull());
+		return nullProtectionRequired || (inner == null ? false : inner.getIncludesNull());
 	}
 
 	/**
@@ -700,7 +705,7 @@ public abstract class AnyExpression<B extends Object, R extends AnyResult<B>, D 
 	}
 
 	public final static Point2DExpression nullPoint2D() {
-		return new Point2DExpression((Point2DResult)null).nullExpression();
+		return new Point2DExpression((Point2DResult) null).nullExpression();
 	}
 
 	public final static MultiPoint2DExpression nullMultiPoint2D() {
@@ -708,14 +713,14 @@ public abstract class AnyExpression<B extends Object, R extends AnyResult<B>, D 
 	}
 
 	public final static Line2DExpression nullLine2D() {
-		return new Line2DExpression((Point)null).nullExpression();
+		return new Line2DExpression((Point) null).nullExpression();
 	}
 
 	public final static LineSegment2DExpression nullLineSegment2D() {
-		return new LineSegment2DExpression((LineSegment2DResult)null).nullExpression();
+		return new LineSegment2DExpression((LineSegment2DResult) null).nullExpression();
 	}
 
 	public final static Polygon2DExpression nullPolygon2D() {
-		return new Polygon2DExpression((Polygon2DResult)null).nullExpression();
+		return new Polygon2DExpression((Polygon2DResult) null).nullExpression();
 	}
 }

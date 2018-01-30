@@ -53,7 +53,7 @@ public class RowDefinition implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	private static final RowDefinitionWrapperFactory WRAPPER_FACTORY = new RowDefinitionWrapperFactory();
-	private final transient RowDefinitionInstanceWrapper wrapper = WRAPPER_FACTORY.instanceWrapperFor(this);
+	private final RowDefinitionInstanceWrapper wrapper = WRAPPER_FACTORY.instanceWrapperFor(this);
 	private transient List<PropertyWrapperDefinition> returnColumns = null;
 
 	/**

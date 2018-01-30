@@ -23,6 +23,7 @@ import java.util.HashSet;
 import java.util.Set;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
+import nz.co.gregs.dbvolution.databases.definitions.H2DBDefinition;
 import nz.co.gregs.dbvolution.datatypes.spatial2D.DBMultiPoint2D;
 import nz.co.gregs.dbvolution.expressions.BooleanExpression;
 import nz.co.gregs.dbvolution.expressions.DBExpression;
@@ -44,6 +45,8 @@ import nz.co.gregs.dbvolution.results.MultiPoint2DResult;
  * @author gregorygraham
  */
 public class MultiPoint2DExpression extends Spatial2DExpression<MultiPoint, MultiPoint2DResult, DBMultiPoint2D> implements MultiPoint2DResult {
+
+	private final static long serialVersionUID = 1l;
 
 	private final boolean moreNullProtectionRequired;
 
@@ -76,13 +79,13 @@ public class MultiPoint2DExpression extends Spatial2DExpression<MultiPoint, Mult
 	public MultiPoint2DExpression(Point... points) {
 		super(new DBMultiPoint2D(points));
 		boolean nulls = false;
-		for (Point point : points) {
-			nulls = point == null ? true : nulls;
-		}
-		moreNullProtectionRequired = 
-				points==null
-				||points.length==0
-				||nulls
+//		for (Point point : points) {
+//			nulls = point == null ? true : nulls;
+//		}
+		moreNullProtectionRequired
+				= points == null
+				|| points.length == 0
+				|| nulls
 				|| new DBMultiPoint2D(points).getIncludesNull();
 	}
 
@@ -94,12 +97,12 @@ public class MultiPoint2DExpression extends Spatial2DExpression<MultiPoint, Mult
 	 */
 	public MultiPoint2DExpression(MultiPoint points) {
 		super(new DBMultiPoint2D(points));
-		moreNullProtectionRequired = points==null;
+		moreNullProtectionRequired = points == null;
 	}
 
 	private MultiPoint2DExpression(AnyResult<?> innerResult) {
 		super(innerResult);
-		moreNullProtectionRequired = innerResult==null;
+		moreNullProtectionRequired = innerResult == null;
 	}
 
 	/**
@@ -177,13 +180,14 @@ public class MultiPoint2DExpression extends Spatial2DExpression<MultiPoint, Mult
 
 	@Override
 	public MultiPoint2DExpression copy() {
-		return isNullSafetyTerminator()?nullMultiPoint2D():new MultiPoint2DExpression(getInnerResult());
+		return isNullSafetyTerminator() ? nullMultiPoint2D() : new MultiPoint2DExpression(getInnerResult());
 	}
-	
+
 	@Override
 	public MultiPoint2DExpression nullExpression() {
 
 		return new MultiPoint2DExpression() {
+			private final static long serialVersionUID = 1l;
 
 			@Override
 			public String toSQLString(DBDefinition db) {
@@ -201,8 +205,8 @@ public class MultiPoint2DExpression extends Spatial2DExpression<MultiPoint, Mult
 	public boolean equals(Object other) {
 		if (other instanceof MultiPoint2DExpression) {
 			MultiPoint2DExpression otherExpr = (MultiPoint2DExpression) other;
-			return this.getInnerResult() == otherExpr.getInnerResult()
-					&&this.getIncludesNull()== otherExpr.getIncludesNull();
+			final H2DBDefinition defn = new H2DBDefinition();
+			return this.toSQLString(defn).equals(otherExpr.toSQLString(defn));
 		}
 		return false;
 	}
@@ -217,13 +221,13 @@ public class MultiPoint2DExpression extends Spatial2DExpression<MultiPoint, Mult
 
 	@Override
 	protected boolean isNullSafetyTerminator() {
-		return moreNullProtectionRequired==false
-				||super.isNullSafetyTerminator();
+		return moreNullProtectionRequired == false
+				|| super.isNullSafetyTerminator();
 	}
-	
+
 	@Override
 	public boolean getIncludesNull() {
-		return moreNullProtectionRequired||super.getIncludesNull();
+		return moreNullProtectionRequired || super.getIncludesNull();
 	}
 
 	@Override
@@ -244,6 +248,7 @@ public class MultiPoint2DExpression extends Spatial2DExpression<MultiPoint, Mult
 	@Override
 	public StringExpression stringResult() {
 		return new StringExpression(new MultiPointFunctionWithStringResult(this) {
+			private final static long serialVersionUID = 1l;
 
 			@Override
 			protected String doExpressionTransform(DBDefinition db) {
@@ -273,6 +278,7 @@ public class MultiPoint2DExpression extends Spatial2DExpression<MultiPoint, Mult
 	@Override
 	public BooleanExpression is(MultiPoint2DResult rightHandSide) {
 		return new BooleanExpression(new MultiPoint2DMultiPoint2DFunctionWithBooleanResult(this, new MultiPoint2DExpression(rightHandSide)) {
+			private final static long serialVersionUID = 1l;
 
 			@Override
 			public String doExpressionTransform(DBDefinition db) {
@@ -307,6 +313,7 @@ public class MultiPoint2DExpression extends Spatial2DExpression<MultiPoint, Mult
 	@Override
 	public NumberExpression maxX() {
 		return new NumberExpression(new MultiPointFunctionWithNumberResult(this) {
+			private final static long serialVersionUID = 1l;
 
 			@Override
 			public String doExpressionTransform(DBDefinition db) {
@@ -318,6 +325,7 @@ public class MultiPoint2DExpression extends Spatial2DExpression<MultiPoint, Mult
 	@Override
 	public NumberExpression maxY() {
 		return new NumberExpression(new MultiPointFunctionWithNumberResult(this) {
+			private final static long serialVersionUID = 1l;
 
 			@Override
 			public String doExpressionTransform(DBDefinition db) {
@@ -329,6 +337,7 @@ public class MultiPoint2DExpression extends Spatial2DExpression<MultiPoint, Mult
 	@Override
 	public NumberExpression minX() {
 		return new NumberExpression(new MultiPointFunctionWithNumberResult(this) {
+			private final static long serialVersionUID = 1l;
 
 			@Override
 			public String doExpressionTransform(DBDefinition db) {
@@ -340,6 +349,7 @@ public class MultiPoint2DExpression extends Spatial2DExpression<MultiPoint, Mult
 	@Override
 	public NumberExpression minY() {
 		return new NumberExpression(new MultiPointFunctionWithNumberResult(this) {
+			private final static long serialVersionUID = 1l;
 
 			@Override
 			public String doExpressionTransform(DBDefinition db) {
@@ -347,7 +357,7 @@ public class MultiPoint2DExpression extends Spatial2DExpression<MultiPoint, Mult
 			}
 		});
 	}
-	
+
 	/**
 	 * Creates an expression that will return the most common value of the column
 	 * supplied.
@@ -355,7 +365,7 @@ public class MultiPoint2DExpression extends Spatial2DExpression<MultiPoint, Mult
 	 * <p>
 	 * MODE: The number which appears most often in a set of numbers. For example:
 	 * in {6, 3, 9, 6, 6, 5, 9, 3} the Mode is 6.</p>
-	 * 
+	 *
 	 * <p style="color: #F90;">Support DBvolution at
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 *
@@ -380,6 +390,7 @@ public class MultiPoint2DExpression extends Spatial2DExpression<MultiPoint, Mult
 	 */
 	public NumberExpression numberOfPoints() {
 		return new NumberExpression(new MultiPointFunctionWithNumberResult(this) {
+			private final static long serialVersionUID = 1l;
 
 			@Override
 			public String doExpressionTransform(DBDefinition db) {
@@ -455,6 +466,7 @@ public class MultiPoint2DExpression extends Spatial2DExpression<MultiPoint, Mult
 	 */
 	public Point2DExpression getPointAtIndexZeroBased(NumberExpression index) {
 		return new Point2DExpression(new MultiPointNumberFunctionWithPoint2DResult(this, index) {
+			private final static long serialVersionUID = 1l;
 
 			@Override
 			public String doExpressionTransform(DBDefinition db) {
@@ -469,6 +481,7 @@ public class MultiPoint2DExpression extends Spatial2DExpression<MultiPoint, Mult
 	@Override
 	public NumberExpression measurableDimensions() {
 		return new NumberExpression(new MultiPointFunctionWithNumberResult(this) {
+			private final static long serialVersionUID = 1l;
 
 			@Override
 			public String doExpressionTransform(DBDefinition db) {
@@ -484,6 +497,7 @@ public class MultiPoint2DExpression extends Spatial2DExpression<MultiPoint, Mult
 	@Override
 	public NumberExpression spatialDimensions() {
 		return new NumberExpression(new MultiPointFunctionWithNumberResult(this) {
+			private final static long serialVersionUID = 1l;
 
 			@Override
 			public String doExpressionTransform(DBDefinition db) {
@@ -499,6 +513,7 @@ public class MultiPoint2DExpression extends Spatial2DExpression<MultiPoint, Mult
 	@Override
 	public BooleanExpression hasMagnitude() {
 		return new BooleanExpression(new SingleArgumentBooleanFunction<DBExpression>(this) {
+			private final static long serialVersionUID = 1l;
 
 			@Override
 			public String doExpressionTransform(DBDefinition db) {
@@ -514,6 +529,7 @@ public class MultiPoint2DExpression extends Spatial2DExpression<MultiPoint, Mult
 	@Override
 	public NumberExpression magnitude() {
 		return new NumberExpression(new MultiPointFunctionWithNumberResult(this) {
+			private final static long serialVersionUID = 1l;
 
 			@Override
 			public String doExpressionTransform(DBDefinition db) {
@@ -529,6 +545,7 @@ public class MultiPoint2DExpression extends Spatial2DExpression<MultiPoint, Mult
 	@Override
 	public Polygon2DExpression boundingBox() {
 		return new Polygon2DExpression(new MultiPoint2DFunctionWithGeometry2DResult(this) {
+			private final static long serialVersionUID = 1l;
 
 			@Override
 			public String doExpressionTransform(DBDefinition db) {
@@ -567,6 +584,7 @@ public class MultiPoint2DExpression extends Spatial2DExpression<MultiPoint, Mult
 	 */
 	public Line2DExpression line2DResult() {
 		return new Line2DExpression(new MultiPoint2DFunctionLine2DResult(this) {
+			private final static long serialVersionUID = 1l;
 
 			@Override
 			protected String doExpressionTransform(DBDefinition db) {
