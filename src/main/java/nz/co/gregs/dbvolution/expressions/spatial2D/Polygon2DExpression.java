@@ -49,11 +49,11 @@ public class Polygon2DExpression extends Spatial2DExpression<Polygon, Polygon2DR
 
 	public static Polygon2DExpression unitSquare() {
 		return value(
-				new Point2DExpression(0,0),
-				new Point2DExpression(1,0),
-				new Point2DExpression(1,1),
-				new Point2DExpression(0,1)
-				);
+				new Point2DExpression(0, 0),
+				new Point2DExpression(1, 0),
+				new Point2DExpression(1, 1),
+				new Point2DExpression(0, 1)
+		);
 	}
 
 	private final boolean moreNullProtectionRequired;
@@ -69,36 +69,36 @@ public class Polygon2DExpression extends Spatial2DExpression<Polygon, Polygon2DR
 
 	/**
 	 * Create a Polygon2DExpression that represents the value for use in {@link DBQuery#addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression)
-	 * }, and when creating column expressions using {@link DBPolygon2D#DBPolygon2D(nz.co.gregs.dbvolution.expressions.Polygon2DExpression)
+	 * }, and when creating column expressions using {@link DBPolygon2D#DBPolygon2D(nz.co.gregs.dbvolution.results.Polygon2DResult)
 	 * } and similar methods.
 	 *
 	 * @param value
 	 */
 	public Polygon2DExpression(Polygon2DResult value) {
 		super(value);
-		moreNullProtectionRequired = value==null;
+		moreNullProtectionRequired = value == null;
 	}
 
 	/**
 	 * Create a Polygon2DExpression that represents the value for use in {@link DBQuery#addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression)
-	 * }, and when creating column expressions using {@link DBPolygon2D#DBPolygon2D(nz.co.gregs.dbvolution.expressions.Polygon2DExpression)
+	 * }, and when creating column expressions using {@link DBPolygon2D#DBPolygon2D(nz.co.gregs.dbvolution.results.Polygon2DResult)
 	 * } and similar methods.
 	 *
 	 * @param geometry
 	 */
 	public Polygon2DExpression(Polygon geometry) {
 		super(new DBPolygon2D(geometry));
-		moreNullProtectionRequired = geometry==null;
+		moreNullProtectionRequired = geometry == null;
 	}
 
 	private Polygon2DExpression(AnyResult<?> innerResult) {
 		super(innerResult);
-		moreNullProtectionRequired=innerResult==null;
+		moreNullProtectionRequired = innerResult == null;
 	}
 
 	/**
 	 * Create a Polygon2DExpression that represents the value for use in {@link DBQuery#addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression)
-	 * }, and when creating column expressions using {@link DBPolygon2D#DBPolygon2D(nz.co.gregs.dbvolution.expressions.Polygon2DExpression)
+	 * }, and when creating column expressions using {@link DBPolygon2D#DBPolygon2D(nz.co.gregs.dbvolution.results.Polygon2DResult)
 	 * } and similar methods.
 	 *
 	 * @param polygon the value of this value
@@ -113,7 +113,7 @@ public class Polygon2DExpression extends Spatial2DExpression<Polygon, Polygon2DR
 
 	/**
 	 * Create a Polygon2DExpression that represents the value for use in {@link DBQuery#addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression)
-	 * }, and when creating column expressions using {@link DBPolygon2D#DBPolygon2D(nz.co.gregs.dbvolution.expressions.Polygon2DExpression)
+	 * }, and when creating column expressions using {@link DBPolygon2D#DBPolygon2D(nz.co.gregs.dbvolution.results.Polygon2DResult)
 	 * } and similar methods.
 	 *
 	 * @param polygon the value of this value
@@ -132,7 +132,7 @@ public class Polygon2DExpression extends Spatial2DExpression<Polygon, Polygon2DR
 
 	/**
 	 * Create a Polygon2DExpression that represents the value for use in {@link DBQuery#addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression)
-	 * }, and when creating column expressions using {@link DBPolygon2D#DBPolygon2D(nz.co.gregs.dbvolution.expressions.Polygon2DExpression)
+	 * }, and when creating column expressions using {@link DBPolygon2D#DBPolygon2D(nz.co.gregs.dbvolution.results.Polygon2DResult)
 	 * } and similar methods.
 	 *
 	 * @param pointExpressions the points that define the polygon value of this
@@ -151,7 +151,7 @@ public class Polygon2DExpression extends Spatial2DExpression<Polygon, Polygon2DR
 
 	/**
 	 * Create a Polygon2DExpression that represents the value for use in {@link DBQuery#addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression)
-	 * }, and when creating column expressions using {@link DBPolygon2D#DBPolygon2D(nz.co.gregs.dbvolution.expressions.Polygon2DExpression)
+	 * }, and when creating column expressions using {@link DBPolygon2D#DBPolygon2D(nz.co.gregs.dbvolution.results.Polygon2DResult)
 	 * } and similar methods.
 	 *
 	 * @param coordinates the individual numbers that are converted to point that
@@ -174,7 +174,7 @@ public class Polygon2DExpression extends Spatial2DExpression<Polygon, Polygon2DR
 
 	/**
 	 * Create a Polygon2DExpression that represents the value for use in {@link DBQuery#addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression)
-	 * }, and when creating column expressions using {@link DBPolygon2D#DBPolygon2D(nz.co.gregs.dbvolution.expressions.Polygon2DExpression)
+	 * }, and when creating column expressions using {@link DBPolygon2D#DBPolygon2D(nz.co.gregs.dbvolution.results.Polygon2DResult)
 	 * } and similar methods.
 	 *
 	 * @param coordinateExpressions the individual numbers that are converted to
@@ -193,7 +193,7 @@ public class Polygon2DExpression extends Spatial2DExpression<Polygon, Polygon2DR
 
 	/**
 	 * Create a Polygon2DExpression that represents the value for use in {@link DBQuery#addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression)
-	 * }, and when creating column expressions using {@link DBPolygon2D#DBPolygon2D(nz.co.gregs.dbvolution.expressions.Polygon2DExpression)
+	 * }, and when creating column expressions using {@link DBPolygon2D#DBPolygon2D(nz.co.gregs.dbvolution.results.Polygon2DResult)
 	 * } and similar methods.
 	 *
 	 * @param points the points that define the polygon value of this value.
@@ -226,17 +226,17 @@ public class Polygon2DExpression extends Spatial2DExpression<Polygon, Polygon2DR
 	@Override
 	protected boolean isNullSafetyTerminator() {
 		return moreNullProtectionRequired
-				||super.isNullSafetyTerminator(); 
+				|| super.isNullSafetyTerminator();
 	}
 
 	@Override
 	public Polygon2DExpression copy() {
-		return isNullSafetyTerminator()?nullPolygon2D(): new Polygon2DExpression(getInnerResult());
+		return isNullSafetyTerminator() ? nullPolygon2D() : new Polygon2DExpression(getInnerResult());
 	}
 
 	@Override
 	public boolean getIncludesNull() {
-		return moreNullProtectionRequired||super.getIncludesNull();
+		return moreNullProtectionRequired || super.getIncludesNull();
 	}
 
 	/**
@@ -272,8 +272,7 @@ public class Polygon2DExpression extends Spatial2DExpression<Polygon, Polygon2DR
 	}
 
 	/**
-	 * Provides a value that represents the multipoint2d value as a polygon2d
-	 * value.
+	 * Provides a value that represents value as a polygon2d value.
 	 *
 	 * <P>
 	 * Points are added to the polygon in index order. If necessary the polygon is
@@ -289,7 +288,7 @@ public class Polygon2DExpression extends Spatial2DExpression<Polygon, Polygon2DR
 	 */
 	/* TODO implement public Polygon2DExpression polygon2DResult() {*/
 	public Polygon2DExpression polygon2DResult() {
-		throw new UnsupportedOperationException("NOT DONE YET, SORRY.");
+		return this;
 	}
 
 	private static Polygon2DExpression polygon2DFromPoint2DExpressionArray(Point2DExpression... pointExpressions) {
@@ -833,7 +832,7 @@ public class Polygon2DExpression extends Spatial2DExpression<Polygon, Polygon2DR
 		});
 		return expr;
 	}
-	
+
 	/**
 	 * Creates an expression that will return the most common value of the column
 	 * supplied.
@@ -841,7 +840,7 @@ public class Polygon2DExpression extends Spatial2DExpression<Polygon, Polygon2DR
 	 * <p>
 	 * MODE: The number which appears most often in a set of numbers. For example:
 	 * in {6, 3, 9, 6, 6, 5, 9, 3} the Mode is 6.</p>
-	 * 
+	 *
 	 * <p style="color: #F90;">Support DBvolution at
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 *
