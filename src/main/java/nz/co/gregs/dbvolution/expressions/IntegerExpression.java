@@ -27,6 +27,7 @@ import java.util.Set;
 import nz.co.gregs.dbvolution.*;
 import nz.co.gregs.dbvolution.datatypes.*;
 import nz.co.gregs.dbvolution.results.AnyResult;
+import nz.co.gregs.dbvolution.results.EqualResult;
 import nz.co.gregs.dbvolution.results.NumberResult;
 import nz.co.gregs.dbvolution.results.SimpleNumericResult;
 
@@ -453,6 +454,7 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 	 * @return a BooleanExpression for use in {@link DBQuery#addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression)
 	 * }
 	 */
+	@Override
 	public BooleanExpression isNotNull() {
 		return BooleanExpression.isNotNull(this);
 	}
@@ -467,6 +469,7 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 	 * @return a BooleanExpression for use in {@link DBQuery#addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression)
 	 * }
 	 */
+	@Override
 	public BooleanExpression isNull() {
 		return BooleanExpression.isNull(this);
 	}
@@ -2712,11 +2715,11 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 	 *
 	 * @return a number expression.
 	 */
-	@Override
 	public IntegerExpression modeSimple() {
-		IntegerExpression modeExpr = new IntegerExpression(
-				new ModeSimpleExpression(this));
-
+		IntegerExpression modeExpr
+				= new IntegerExpression(
+						new ModeSimpleExpression<>(this)
+				);
 		return modeExpr;
 	}
 
@@ -2744,11 +2747,10 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 	 *
 	 * @return the mode or null if undefined.
 	 */
-	@Override
 	public IntegerExpression modeStrict() {
-		IntegerExpression modeExpr = new IntegerExpression(
-				new ModeStrictExpression(this));
-
+		IntegerExpression modeExpr
+				= new IntegerExpression(
+						new ModeStrictExpression<>(this));
 		return modeExpr;
 	}
 

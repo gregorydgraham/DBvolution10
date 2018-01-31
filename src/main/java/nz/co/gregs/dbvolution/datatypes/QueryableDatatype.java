@@ -347,7 +347,7 @@ public abstract class QueryableDatatype<T> extends Object implements Serializabl
 	 *
 	 * @return the literal value, if defined, which may be null
 	 */
-	public Object getValue() {
+	public T getValue() {
 		if (undefined || isNull()) {
 			return null;
 		} else {

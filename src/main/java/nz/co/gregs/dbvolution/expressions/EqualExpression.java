@@ -28,8 +28,6 @@
  */
 package nz.co.gregs.dbvolution.expressions;
 
-import nz.co.gregs.dbvolution.results.UntypedResult;
-import nz.co.gregs.dbvolution.datatypes.DBUntypedValue;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -159,14 +157,10 @@ public abstract class EqualExpression<B, R extends EqualResult<B>, D extends Que
 	 * <p style="color: #F90;">Support DBvolution at
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 *
+	 * @param <X>
 	 * @return a number expression.
 	 */
-	public AnyExpression<?, ?, ?> modeSimple() {
-		ModeSimpleExpression modeExpr
-				= new ModeSimpleExpression(this);
-
-		return modeExpr;
-	}
+//	public abstract DBExpression modeSimple();
 
 	/**
 	 * Creates an expression that will return the most common value of the column
@@ -190,13 +184,10 @@ public abstract class EqualExpression<B, R extends EqualResult<B>, D extends Que
 	 * <p style="color: #F90;">Support DBvolution at
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 *
+	 * @param <X> The same class as the calling object
 	 * @return the mode or null if undefined.
 	 */
-	public IntegerExpression modeStrict() {
-		IntegerExpression modeExpr
-				= new IntegerExpression(new ModeStrictExpression(this));
-		return modeExpr;
-	}
+//	public abstract <X extends EqualExpression> X modeStrict();
 
 	/**
 	 * Aggregrator that counts this row if the booleanResult is true.
@@ -263,11 +254,11 @@ public abstract class EqualExpression<B, R extends EqualResult<B>, D extends Que
 		}
 	}
 
-	private static abstract class DBUnaryFunction extends UntypedExpression implements UntypedResult {
+	private static abstract class DBUnaryFunction<B, R extends EqualResult<B>, D extends QueryableDatatype<B>, X extends EqualExpression<B, R, D>> extends EqualExpression<B,R,D> implements EqualResult<B> {
 
-		protected final EqualResult<?> only;
+		protected final X only;
 
-		DBUnaryFunction(EqualResult<?> only) {
+		DBUnaryFunction(X only) {
 			super(only);
 			this.only = only;
 		}
@@ -312,13 +303,63 @@ public abstract class EqualExpression<B, R extends EqualResult<B>, D extends Que
 		public boolean isPurelyFunctional() {
 			return true;
 		}
+
+		@Override
+		public R expression(B value) {
+			return only.expression(value);
+		}
+
+		@Override
+		public R expression(R value) {
+			return only.expression(value);
+		}
+
+		@Override
+		public R expression(D value) {
+			return only.expression(value);
+		}
+
+		@Override
+		public D asExpressionColumn() {
+			return only.asExpressionColumn();
+		}
+
+		@Override
+		public QueryableDatatype<?> getQueryableDatatypeForExpressionValue() {
+			return only.getQueryableDatatypeForExpressionValue();
+		}
+
+		@Override
+		public StringExpression stringResult() {
+			return only.stringResult();
+		}
+
+		@Override
+		public BooleanExpression is(R anotherInstance) {
+			return only.is(anotherInstance);
+		}
+
+		@Override
+		public BooleanExpression isNot(R anotherInstance) {
+			return only.isNot(anotherInstance);
+		}
+
+		@Override
+		public BooleanExpression is(B anotherInstance) {
+			return only.is(anotherInstance);
+		}
+
+		@Override
+		public BooleanExpression isNot(B anotherInstance) {
+			return only.isNot(anotherInstance);
+		}
 	}
 
-	protected static class ModeSimpleExpression extends DBUnaryFunction {
+	public static class ModeSimpleExpression<B, R extends EqualResult<B>, D extends QueryableDatatype<B>, X extends EqualExpression<B, R, D>> extends DBUnaryFunction<B, R, D, X> {
 
 		private final static long serialVersionUID = 1l;
 
-		public ModeSimpleExpression(EqualResult<?> only) {
+		public ModeSimpleExpression(X only) {
 			super(only);
 		}
 
@@ -373,53 +414,15 @@ public abstract class EqualExpression<B, R extends EqualResult<B>, D extends Que
 			String tableAliasForObject = getInternalTableName(database);
 
 			String sql = "(" + query.getSQLForQuery().replaceAll("; *$", "") + ") " + tableAliasForObject;
-//			if (query.getQueryDetails().getOptions().isUseANSISyntax() && defn.requiresOnClauseForAllJoins()) {
-//				sql = sql.replaceAll(tableAliasForObject,
-//						tableAliasForObject
-//						+ defn.beginOnClause()
-//						+ (BooleanExpression.trueExpression().toSQLString(defn))
-//						+ defn.endOnClause()
-//				);
-//			}
 			return sql;
 		}
 
 		public String getInternalTableName(DBDatabase database) {
 			return database.getDefinition().getTableAliasForObject(this);
 		}
-
-		@Override
-		public UntypedResult expression(Object value) {
-			throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-		}
-
-		@Override
-		public UntypedResult expression(UntypedResult value) {
-			throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-		}
-
-		@Override
-		public UntypedResult expression(DBUntypedValue value) {
-			throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-		}
-
-		@Override
-		public DBUntypedValue asExpressionColumn() {
-			throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-		}
-
-		@Override
-		public QueryableDatatype<?> getQueryableDatatypeForExpressionValue() {
-			throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-		}
-
-		@Override
-		public StringExpression stringResult() {
-			throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-		}
 	}
 
-	protected static class ModeStrictExpression extends DBUnaryFunction {
+	protected static class ModeStrictExpression<B, R extends EqualResult<B>, D extends QueryableDatatype<B>, X extends EqualExpression<B, R, D>> extends DBUnaryFunction<B, R, D, X> {
 
 		private final static long serialVersionUID = 1l;
 
@@ -442,7 +445,7 @@ public abstract class EqualExpression<B, R extends EqualResult<B>, D extends Que
 		private static final Object COUNTER2KEY = new Object();
 		private static final Object MODE2KEY = new Object();
 
-		public ModeStrictExpression(EqualResult<?> only) {
+		public ModeStrictExpression(X only) {
 			super(only);
 			expr1 = new IntegerExpression(getInnerResult());
 			expr2 = new IntegerExpression(getInnerResult());
@@ -531,36 +534,6 @@ public abstract class EqualExpression<B, R extends EqualResult<B>, D extends Que
 						+ defn.endOnClause());
 			}
 			return sql;
-		}
-
-		@Override
-		public UntypedResult expression(Object value) {
-			throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-		}
-
-		@Override
-		public UntypedResult expression(UntypedResult value) {
-			throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-		}
-
-		@Override
-		public UntypedResult expression(DBUntypedValue value) {
-			throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-		}
-
-		@Override
-		public DBUntypedValue asExpressionColumn() {
-			throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-		}
-
-		@Override
-		public QueryableDatatype<?> getQueryableDatatypeForExpressionValue() {
-			throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-		}
-
-		@Override
-		public StringExpression stringResult() {
-			throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 		}
 
 		public synchronized String getInternalTableName(DBDefinition database) {

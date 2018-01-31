@@ -13,8 +13,8 @@ import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.expressions.AnyExpression;
 import nz.co.gregs.dbvolution.expressions.EqualExpression;
 import nz.co.gregs.dbvolution.expressions.IntegerExpression;
-import nz.co.gregs.dbvolution.expressions.NumberExpression;
 import nz.co.gregs.dbvolution.internal.properties.PropertyWrapperDefinition;
+import nz.co.gregs.dbvolution.results.EqualResult;
 
 /**
  *
@@ -22,27 +22,31 @@ import nz.co.gregs.dbvolution.internal.properties.PropertyWrapperDefinition;
  * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
  *
  * @author gregorygraham
+ * @param <B>
+ * @param <R>
+ * @param <D>
+ * @param <X>
  */
-public class DBStatistics extends DBString {
+public  class  DBStatistics<B,R extends EqualResult<B>,D extends QueryableDatatype<B>, X extends EqualExpression<B,R,D>> extends DBString {
 
 	private static final long serialVersionUID = 1;
 
-	private final EqualExpression<?, ?, ?> originalExpression;
+	private final X originalExpression;
 	private final DBString numberProxy = new DBString();
 	private Number countOfRows;
 //	private Number rankingHighIsFirst;  // Should be an expression column on an ordinary table
 //	private Number rankingLowIsFirst; // Should be an expression column on an ordinary table
-	private Number modeSimple;
-	private Number modeStrict;
-	private Number median;
-	private Number firstQuartileValue;
-	private Number thirdQuartileValue;
+	private B modeSimple;
+	private B modeStrict;
+	private B median;
+	private B firstQuartileValue;
+	private B thirdQuartileValue;
 	private IntegerExpression countExpr;
-	private NumberExpression modeSimpleExpression;
-	private NumberExpression modeStrictExpression;
-	private NumberExpression medianExpression;
-	private NumberExpression firstQuartileExpression;
-	private NumberExpression thirdQuartileExpression;
+	private EqualExpression.ModeSimpleExpression<B,R,D,X> modeSimpleExpression;
+	private X modeStrictExpression;
+	private X medianExpression;
+	private X firstQuartileExpression;
+	private X thirdQuartileExpression;
 
 	/**
 	 * The default constructor for DBStatistics.
@@ -67,15 +71,19 @@ public class DBStatistics extends DBString {
 	 * Used in {@link DBReport}, and some {@link DBRow}, sub-classes to derive
 	 * data from the database prior to retrieval.
 	 *
-	 * @param expressionToGenerateStatsFrom numberExpression
+	 * @param expressionToGenerateStatsFrom the expression or column to be used for statistics
 	 */
-	public DBStatistics(EqualExpression<?, ?, ?> expressionToGenerateStatsFrom) {
+	public  
+		DBStatistics(X expressionToGenerateStatsFrom) {
 		super(expressionToGenerateStatsFrom.stringResult());
 		this.originalExpression = expressionToGenerateStatsFrom;
 		countExpr = originalExpression.count();
+		modeSimpleExpression = new EqualExpression.ModeSimpleExpression<B,R,D,X>(originalExpression);
+//		modeStrictExpression = originalExpression.modeStrict();
 
 		this.setColumnExpression(new AnyExpression<?, ?, ?>[]{
-			countExpr
+			countExpr,
+			modeSimpleExpression
 		});
 
 	}
@@ -99,7 +107,7 @@ public class DBStatistics extends DBString {
 	 *
 	 * @return the minimum (smallest) value in this grouping
 	 */
-	public Number modeSimple() {
+	public B modeSimple() {
 		return this.modeSimple;
 	}
 
@@ -110,7 +118,7 @@ public class DBStatistics extends DBString {
 	 *
 	 * @return the maximum (largest) value in this grouping
 	 */
-	public Number modeStrict() {
+	public B modeStrict() {
 		return this.modeStrict;
 	}
 
@@ -123,7 +131,7 @@ public class DBStatistics extends DBString {
 	 *
 	 * @return the ranking
 	 */
-	public Number median() {
+	public B median() {
 		return this.median;
 	}
 
@@ -135,7 +143,7 @@ public class DBStatistics extends DBString {
 	 *
 	 * @return the middle number between the median and the smallest value.
 	 */
-	public Number firstQuartile() {
+	public B firstQuartile() {
 		return this.firstQuartileValue;
 	}
 
@@ -147,7 +155,7 @@ public class DBStatistics extends DBString {
 	 *
 	 * @return the middle number between the median and the largest value.
 	 */
-	public Number thirdQuartile() {
+	public B thirdQuartile() {
 		return this.thirdQuartileValue;
 	}
 
@@ -162,6 +170,7 @@ public class DBStatistics extends DBString {
 	}
 
 	@Override
+	@SuppressWarnings("unchecked")
 	public DBStatistics copy() {
 		DBStatistics copy = (DBStatistics) super.copy();
 		copy.countOfRows = this.countOfRows;
@@ -217,15 +226,15 @@ public class DBStatistics extends DBString {
 				PropertyWrapperDefinition propertyWrapperDefinition = getPropertyWrapperDefinition();
 				if (propertyWrapperDefinition != null && propertyWrapperDefinition.allColumnAspects != null) {
 					final String countColumnAlias = propertyWrapperDefinition.allColumnAspects.get(0).columnAlias;
-//					final String modeSimpleAlias = propertyWrapperDefinition.allColumnAspects.get(1).columnAlias;
+					final String modeSimpleAlias = propertyWrapperDefinition.allColumnAspects.get(1).columnAlias;
 //					final String modeStrictAlias = propertyWrapperDefinition.allColumnAspects.get(2).columnAlias;
 					countOfRows = new DBInteger().getFromResultSet(database, resultSet, countColumnAlias);
-//					modeStrict = getFromResultSet(database, resultSet, maxColumnAlias);
-//					modeSimple = getFromResultSet(database, resultSet, minColumnAlias);
+					modeSimple = modeSimpleExpression.asExpressionColumn().getFromResultSet(database, resultSet, modeSimpleAlias);
+//					modeStrict = modeStrictExpression.asExpressionColumn().getFromResultSet(database, resultSet, modeStrictAlias);
 				} else {
 					countOfRows = getFromResultSet(database, resultSet, resultSetColumnName, 0);
+//					modeSimple = modeSimpleExpression.asExpressionColumn().getFromResultSet(database, resultSet, resultSetColumnName, 1);
 //					modeStrict = getFromResultSet(database, resultSet, resultSetColumnName, 1);
-//					modeSimple = getFromResultSet(database, resultSet, resultSetColumnName, 2);
 				}
 				this.setLiteralValue(dbValue);
 			}

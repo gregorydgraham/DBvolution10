@@ -371,13 +371,46 @@ public class MultiPoint2DExpression extends Spatial2DExpression<MultiPoint, Mult
 	 *
 	 * @return a number expression.
 	 */
-	@Override
 	public MultiPoint2DExpression modeSimple() {
+		@SuppressWarnings("unchecked")
 		MultiPoint2DExpression modeExpr = new MultiPoint2DExpression(
 				new ModeSimpleExpression(this));
 
 		return modeExpr;
 	}
+
+	/**
+	 * Creates an expression that will return the most common value of the column
+	 * supplied.
+	 *
+	 * <p>
+	 * MODE: The number which appears most often in a set of numbers. For example:
+	 * in {6, 3, 9, 6, 6, 5, 9, 3} the Mode is 6.</p>
+	 *
+	 * <p>
+	 * This version of Mode implements a stricter definition that will return null
+	 * if the mode is undefined. The mode can be undefined if there are 2 or more
+	 * values with the highest frequency value. </p>
+	 *
+	 * <p>
+	 * For example in the list {0,0,0,0,1,1,2,2,2,2,3,4} both 0 and 2 occur four
+	 * times and no other value occurs more frequently so the mode is undefined.
+	 * {@link #modeSimple() The modeSimple()} method would return either 0 or 2
+	 * randomly for the same set.</p>
+	 *
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
+	 * @return the mode or null if undefined.
+	 */
+	public MultiPoint2DExpression modeStrict() {
+		@SuppressWarnings("unchecked")
+		MultiPoint2DExpression modeExpr = new MultiPoint2DExpression(
+				new ModeStrictExpression(this));
+
+		return modeExpr;
+	}
+
 
 	/**
 	 * Create a NumberExpression that represents the number of points stored in

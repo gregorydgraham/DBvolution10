@@ -25,7 +25,6 @@ import nz.co.gregs.dbvolution.columns.IntegerColumn;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.exceptions.IncorrectRowProviderInstanceSuppliedException;
 import nz.co.gregs.dbvolution.expressions.IntegerExpression;
-import nz.co.gregs.dbvolution.expressions.NumberExpression;
 import nz.co.gregs.dbvolution.expressions.StringExpression;
 import nz.co.gregs.dbvolution.operators.DBPermittedRangeExclusiveOperator;
 import nz.co.gregs.dbvolution.operators.DBPermittedRangeInclusiveOperator;
@@ -33,8 +32,6 @@ import nz.co.gregs.dbvolution.operators.DBPermittedRangeOperator;
 import nz.co.gregs.dbvolution.operators.DBPermittedValuesOperator;
 import nz.co.gregs.dbvolution.query.RowDefinition;
 import nz.co.gregs.dbvolution.results.IntegerResult;
-import nz.co.gregs.dbvolution.results.NumberResult;
-import nz.co.gregs.dbvolution.results.EqualResult;
 
 /**
  * Like {@link DBInteger} except that the database value can be easily
@@ -671,7 +668,7 @@ public class DBIntegerEnum<E extends Enum<E> & DBEnumValue<Long>> extends DBEnum
 	 *
 	 * @return the value as a Number.
 	 */
-	public Number numberValue() {
+	public Long numberValue() {
 		if (getLiteralValue() == null) {
 			return null;
 		} else if (getLiteralValue() instanceof Number) {
@@ -714,7 +711,7 @@ public class DBIntegerEnum<E extends Enum<E> & DBEnumValue<Long>> extends DBEnum
 	}
 
 	@Override
-	public Number getValue() {
+	public Long getValue() {
 		return numberValue();
 	}
 

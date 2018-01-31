@@ -21,13 +21,15 @@ import java.util.HashSet;
 import java.util.Set;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
-import nz.co.gregs.dbvolution.databases.definitions.H2DBDefinition;
+import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 import nz.co.gregs.dbvolution.datatypes.spatial2D.DBPoint2D;
 import nz.co.gregs.dbvolution.expressions.BooleanExpression;
+import nz.co.gregs.dbvolution.expressions.EqualExpression;
 import nz.co.gregs.dbvolution.expressions.IntegerExpression;
 import nz.co.gregs.dbvolution.expressions.NumberExpression;
 import nz.co.gregs.dbvolution.expressions.StringExpression;
 import nz.co.gregs.dbvolution.results.AnyResult;
+import nz.co.gregs.dbvolution.results.EqualResult;
 
 /**
  * Represents SQL expressions that are a 2 dimensional points, that is a
@@ -542,13 +544,43 @@ public class Point2DExpression extends Spatial2DExpression<Point, Point2DResult,
 	 *
 	 * @return a number expression.
 	 */
-	@Override
+	@SuppressWarnings("unchecked")
 	public Point2DExpression modeSimple() {
 		Point2DExpression modeExpr = new Point2DExpression(
-				new ModeSimpleExpression(this));
+				new ModeSimpleExpression<>(this));
+		return modeExpr;	
+		}
 
+	/**
+	 * Creates an expression that will return the most common value of the column
+	 * supplied.
+	 *
+	 * <p>
+	 * MODE: The number which appears most often in a set of numbers. For example:
+	 * in {6, 3, 9, 6, 6, 5, 9, 3} the Mode is 6.</p>
+	 *
+	 * <p>
+	 * This version of Mode implements a stricter definition that will return null
+	 * if the mode is undefined. The mode can be undefined if there are 2 or more
+	 * values with the highest frequency value. </p>
+	 *
+	 * <p>
+	 * For example in the list {0,0,0,0,1,1,2,2,2,2,3,4} both 0 and 2 occur four
+	 * times and no other value occurs more frequently so the mode is undefined.
+	 * {@link #modeSimple() The modeSimple()} method would return either 0 or 2
+	 * randomly for the same set.</p>
+	 *
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
+	 * @return the mode or null if undefined.
+	 */
+	public Point2DExpression modeStrict() {
+				Point2DExpression modeExpr = new Point2DExpression(
+						new ModeStrictExpression<>(this));
 		return modeExpr;
 	}
+
 
 	@Override
 	public DBPoint2D asExpressionColumn() {

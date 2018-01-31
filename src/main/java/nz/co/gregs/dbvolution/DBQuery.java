@@ -2298,4 +2298,11 @@ public class DBQuery implements Serializable{
 		return this;
 	}
 
+	public void printAllRows() throws SQLException {
+		List<DBQueryRow> allRows = getAllRows();
+		for (DBQueryRow row : allRows) {
+			System.out.println(row);
+		}
+	}
+
 }

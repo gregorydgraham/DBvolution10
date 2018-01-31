@@ -489,13 +489,46 @@ public class LineSegment2DExpression extends Spatial2DExpression<LineSegment, Li
 	 *
 	 * @return a number expression.
 	 */
-	@Override
 	public LineSegment2DExpression modeSimple() {
+		@SuppressWarnings("unchecked")
 		LineSegment2DExpression modeExpr = new LineSegment2DExpression(
 				new ModeSimpleExpression(this));
 
 		return modeExpr;
 	}
+
+	/**
+	 * Creates an expression that will return the most common value of the column
+	 * supplied.
+	 *
+	 * <p>
+	 * MODE: The number which appears most often in a set of numbers. For example:
+	 * in {6, 3, 9, 6, 6, 5, 9, 3} the Mode is 6.</p>
+	 *
+	 * <p>
+	 * This version of Mode implements a stricter definition that will return null
+	 * if the mode is undefined. The mode can be undefined if there are 2 or more
+	 * values with the highest frequency value. </p>
+	 *
+	 * <p>
+	 * For example in the list {0,0,0,0,1,1,2,2,2,2,3,4} both 0 and 2 occur four
+	 * times and no other value occurs more frequently so the mode is undefined.
+	 * {@link #modeSimple() The modeSimple()} method would return either 0 or 2
+	 * randomly for the same set.</p>
+	 *
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
+	 * @return the mode or null if undefined.
+	 */
+	public LineSegment2DExpression modeStrict() {
+		@SuppressWarnings("unchecked")
+		LineSegment2DExpression modeExpr = new LineSegment2DExpression(
+				new ModeStrictExpression(this));
+
+		return modeExpr;
+	}
+
 
 	/**
 	 * Tests whether this line segment and the line segment represented by the

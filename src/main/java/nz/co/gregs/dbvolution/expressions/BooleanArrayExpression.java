@@ -139,6 +139,7 @@ public class BooleanArrayExpression implements BooleanArrayResult, EqualComparab
 	 * @return a BooleanExpresson of the Bit comparison of the number and this
 	 * expression.
 	 */
+	@Override
 	public BooleanExpression is(Boolean[] bools) {
 		return new BooleanExpression(new DBBinaryBooleanArithmetic(this, new BooleanArrayExpression(bools)) {
 			private final static long serialVersionUID = 1l;
@@ -184,6 +185,7 @@ public class BooleanArrayExpression implements BooleanArrayResult, EqualComparab
 	 * @return a BooleanExpresson of the Bit comparison of the number and this
 	 * expression.
 	 */
+	@Override
 	public BooleanExpression isNot(Boolean[] i) {
 		return this.isNot(BooleanArrayExpression.value(i));
 	}

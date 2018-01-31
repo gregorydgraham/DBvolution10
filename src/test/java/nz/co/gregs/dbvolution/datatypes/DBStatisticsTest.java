@@ -13,10 +13,13 @@ import nz.co.gregs.dbvolution.DBQueryRow;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.annotations.DBColumn;
 import nz.co.gregs.dbvolution.columns.IntegerColumn;
-import nz.co.gregs.dbvolution.databases.MSSQLServerDB;
 import nz.co.gregs.dbvolution.example.CarCompany;
 import nz.co.gregs.dbvolution.example.Marque;
+import nz.co.gregs.dbvolution.expressions.IntegerExpression;
+import nz.co.gregs.dbvolution.expressions.StringExpression;
 import nz.co.gregs.dbvolution.generic.AbstractTest;
+import nz.co.gregs.dbvolution.results.IntegerResult;
+import nz.co.gregs.dbvolution.results.StringResult;
 import org.junit.Test;
 import static org.hamcrest.Matchers.*;
 import org.junit.Assert;
@@ -38,12 +41,12 @@ public class DBStatisticsTest extends AbstractTest {
 	@Test
 	public void testBasic() throws SQLException {
 
-		DBQuery dbQuery = database.getDBQuery(new StatsTest()).setBlankQueryAllowed(true);
+		DBQuery dbQuery = database.getDBQuery(new StatsIntegerTest()).setBlankQueryAllowed(true);
 		List<DBQueryRow> allRows = dbQuery.getAllRows();
 
 		assertThat(allRows.size(), is(1));
-		final StatsTest row = allRows.get(0).get(new StatsTest());
-		assertThat(row.stats.count().intValue(), is(22));
+		final StatsIntegerTest row = allRows.get(0).get(new StatsIntegerTest());
+		assertThat(row.carCoStats.count().intValue(), is(22));
 	}
 
 	@Test
@@ -57,30 +60,28 @@ public class DBStatisticsTest extends AbstractTest {
 				.getDBQuery(marque, new CarCompany());
 		query.setBlankQueryAllowed(true)
 				.setReturnFieldsToNone()
-				.addExpressionColumn("mode", updateCountColumn.asExpressionColumn()) 
-				.addExpressionColumn("mode count", count) 
+				.addExpressionColumn("mode", updateCountColumn.asExpressionColumn())
+				.addExpressionColumn("mode count", count)
 				.setSortOrder(query.column(count))
-				.setRowLimit(1)
-				;
-		
-//		if(database instanceof  MSSQLServerDB)System.out.println(query.getSQLForQuery());
+				.setRowLimit(1);
 
+//		if(database instanceof  MSSQLServerDB)System.out.println(query.getSQLForQuery());
 		List<DBQueryRow> allRows = query.getAllRows();
-		
+
 		// Check there is only 1 row
 		Assert.assertThat(allRows.size(), is(1));
-		
+
 		final DBQueryRow onlyRow = allRows.get(0);
-		
+
 		// Check that the mode is 2
 		QueryableDatatype<?> mode = onlyRow.getExpressionColumnValue("mode");
 		Assert.assertThat(mode.stringValue(), is("2"));
-		
+
 		// Check that the mode was found 9 times
 		QueryableDatatype<?> counted = onlyRow.getExpressionColumnValue("mode count");
 		Assert.assertThat(counted.stringValue(), is("9"));
 	}
-	
+
 	@Test
 	public void testModeSimpleQueryWithCondition() throws SQLException {
 		final Marque marque = new Marque();
@@ -94,34 +95,32 @@ public class DBStatisticsTest extends AbstractTest {
 				.getDBQuery(tablesInvolved);
 		query.setBlankQueryAllowed(true)
 				.setReturnFieldsToNone()
-				.addExpressionColumn("mode", updateCountColumn.asExpressionColumn()) 
-				.addExpressionColumn("mode count", count) 
+				.addExpressionColumn("mode", updateCountColumn.asExpressionColumn())
+				.addExpressionColumn("mode count", count)
 				.setSortOrder(query.column(count))
-				.setRowLimit(1)
-				;
-		
-//		if(database instanceof  MSSQLServerDB)System.out.println(query.getSQLForQuery());
+				.setRowLimit(1);
 
+//		if(database instanceof  MSSQLServerDB)System.out.println(query.getSQLForQuery());
 		List<DBQueryRow> allRows = query.getAllRows();
-		
+
 		// Check there is only 1 row
 		Assert.assertThat(allRows.size(), is(1));
-		
+
 		final DBQueryRow onlyRow = allRows.get(0);
-		
+
 		// Check that the mode is 2
 		QueryableDatatype<?> mode = onlyRow.getExpressionColumnValue("mode");
 		Assert.assertThat(mode.stringValue(), is("0"));
-		
+
 		// Check that the mode was found 9 times
 		QueryableDatatype<?> counted = onlyRow.getExpressionColumnValue("mode count");
 		Assert.assertThat(counted.stringValue(), is("4"));
 	}
-	
+
 	@Test
 	public void testModeSimpleExpression() throws SQLException {
 		final Marque marque = new Marque();
-		
+
 		final IntegerColumn updateCountColumn = marque.column(marque.updateCount);
 
 		DBInteger count = updateCountColumn.count().asExpressionColumn();
@@ -131,183 +130,239 @@ public class DBStatisticsTest extends AbstractTest {
 				.setBlankQueryAllowed(true)
 				.setReturnFieldsToNone()
 				.addExpressionColumn("mode", updateCountColumn.modeSimple().asExpressionColumn());
-		
-//		if(database instanceof  MSSQLServerDB)System.out.println(query.getSQLForQuery());
 
+//		if(database instanceof  MSSQLServerDB)System.out.println(query.getSQLForQuery());
 		List<DBQueryRow> allRows = query.getAllRows();
-		
+
 		// Check there is only 1 row
 		Assert.assertThat(allRows.size(), is(22));
-		
+
 		final DBQueryRow onlyRow = allRows.get(0);
-		
+
 		// Check that the mode is 2
 		QueryableDatatype<?> mode = onlyRow.getExpressionColumnValue("mode");
 		Assert.assertThat(mode.stringValue(), is("2"));
 	}
-	
+
 	@Test
 	public void testModeSimpleExpressionInTable() throws SQLException {
 		final StatsOfUpdateCountTest stat = new StatsOfUpdateCountTest();
-		
+
 		DBQuery query = database
 				.getDBQuery(stat).setBlankQueryAllowed(true);
-		
+
 //		if(database instanceof  MSSQLServerDB)System.out.println(query.getSQLForQuery());
-				
 		List<DBQueryRow> allRows = query.getAllRows();
-		
+
 		// Check there is only 1 row
 		Assert.assertThat(allRows.size(), is(22));
-		
+
 		final StatsOfUpdateCountTest onlyRow = allRows.get(0).get(stat);
-		
+
 		// Check that the mode is 2
 		Integer mode = onlyRow.mode.intValue();
 		Assert.assertThat(mode, is(2));
 	}
 
 	@Test
+	public void testModeSimpleExpressionInDBStatistics() throws SQLException {
+		final StatsIntegerTest stat = new StatsIntegerTest();
+
+		DBQuery query = database
+				.getDBQuery(stat).setBlankQueryAllowed(true);
+
+		query.printAllRows();
+
+		List<DBQueryRow> allRows = query.getAllRows();
+
+		// Check there is only 1 row
+		Assert.assertThat(allRows.size(), is(1));
+
+		final StatsIntegerTest onlyRow = allRows.get(0).get(stat);
+
+		// Check that the mode is 2
+		Integer mode = onlyRow.carCoStats.modeSimple().intValue();
+		Assert.assertThat(mode, is(4));
+	}
+
+	@Test
+	public void testModeSimpleStringExpressionInDBStatistics() throws SQLException {
+		final StatsStringTest stat = new StatsStringTest();
+
+		DBQuery query = database
+				.getDBQuery(stat).setBlankQueryAllowed(true);
+
+		query.printSQLForQuery();
+		query.printAllRows();
+
+		List<DBQueryRow> allRows = query.getAllRows();
+
+		// Check there is only 1 row
+		Assert.assertThat(allRows.size(), is(1));
+
+		final StatsStringTest onlyRow = allRows.get(0).get(stat);
+
+		// Check that the mode is 2
+		String mode = onlyRow.carNameStats.modeSimple();
+		Assert.assertThat(mode, is("O"));
+	}
+
+	@Test
+	public void testModeStrictExpressionInDBStatistics() throws SQLException {
+		final StatsIntegerTest stat = new StatsIntegerTest();
+
+		DBQuery query = database
+				.getDBQuery(stat).setBlankQueryAllowed(true);
+		query.printSQLForQuery();
+//		if(database instanceof  MSSQLServerDB)System.out.println(query.getSQLForQuery());
+
+		List<DBQueryRow> allRows = query.getAllRows();
+
+		// Check there is only 1 row
+		Assert.assertThat(allRows.size(), is(1));
+
+		final StatsIntegerTest onlyRow = allRows.get(0).get(stat);
+
+		// Check that the mode is 4 for car company
+//		Integer mode = onlyRow.carNameStats.modeStrict().intValue();
+//		Assert.assertThat(mode, is(4));
+		// Check that the mode is null for car company
+//		mode = onlyRow.uidMarqueStats.modeStrict().intValue();
+//		Assert.assertThat(mode, is((Integer)null));
+	}
+
+	@Test
 	public void testModeStrictQuery() throws SQLException {
-		
+
 		final Marque marque = new Marque();
 		final IntegerColumn updateCountColumn = marque.column(marque.updateCount);
 
 		DBInteger count = updateCountColumn.count().asExpressionColumn();
 		count.setSortOrderDescending();
-		
+
 		DBQuery query1 = database
 				.getDBQuery(marque, new CarCompany());
 		query1.setBlankQueryAllowed(true)
 				.setReturnFieldsToNone()
-				.addExpressionColumn("mode", updateCountColumn.asExpressionColumn()) 
-				.addExpressionColumn("mode count", count) 
+				.addExpressionColumn("mode", updateCountColumn.asExpressionColumn())
+				.addExpressionColumn("mode count", count)
 				.setSortOrder(query1.column(count))
-				.setRowLimit(1)
-				;
-		
+				.setRowLimit(1);
+
 		final Marque marque2 = new Marque();
 		final IntegerColumn updateCountColumn2 = marque2.column(marque2.updateCount);
 		DBInteger count2 = updateCountColumn2.count().asExpressionColumn();
-		count2.setSortOrderDescending();		
-		
+		count2.setSortOrderDescending();
+
 		DBQuery query2 = database
 				.getDBQuery(marque2, new CarCompany());
 		query2.setBlankQueryAllowed(true)
 				.setReturnFieldsToNone()
-				.addExpressionColumn("mode", updateCountColumn2.asExpressionColumn()) 
-				.addExpressionColumn("mode count", count2) 
+				.addExpressionColumn("mode", updateCountColumn2.asExpressionColumn())
+				.addExpressionColumn("mode count", count2)
 				.setSortOrder(query2.column(count2))
 				.setRowLimit(1)
-				.setPageRequired(1)
-				;
+				.setPageRequired(1);
 
 //		if(database instanceof  MSSQLServerDB)System.out.println(query1.getSQLForQuery());
 //		if(database instanceof  MSSQLServerDB)System.out.println(query2.getSQLForQuery());
-
-		
 		List<DBQueryRow> allRows1 = query1.getAllRows();
 		List<DBQueryRow> allRows2 = query2.getAllRows();
-		
+
 		// Check there is only 1 row
 		Assert.assertThat(allRows1.size(), is(1));
 		Assert.assertThat(allRows2.size(), is(1));
-		
+
 		DBQueryRow onlyRow = allRows1.get(0);
-		
+
 		// Check that the mode is 2
 		QueryableDatatype<?> mode = onlyRow.getExpressionColumnValue("mode");
 		Assert.assertThat(mode.stringValue(), is("2"));
-		
+
 		// Check that the mode was found 9 times
 		QueryableDatatype<?> counted = onlyRow.getExpressionColumnValue("mode count");
 		Assert.assertThat(counted.stringValue(), is("9"));
-		
+
 		onlyRow = allRows2.get(0);
-		
+
 		// Check that the second mode is 0
 		mode = onlyRow.getExpressionColumnValue("mode");
 		Assert.assertThat(mode.stringValue(), is("0"));
-		
+
 		// Check that the mode was found 9 times
 		counted = onlyRow.getExpressionColumnValue("mode count");
 		Assert.assertThat(counted.stringValue(), is("4"));
 	}
 
-
-
 	@Test
 	public void testModeStrictQueryWithCondition() throws SQLException {
-		
+
 		final Marque marque = new Marque();
-		marque.updateCount.permittedValues(1,3);
+		marque.updateCount.permittedValues(1, 3);
 		final IntegerColumn updateCountColumn = marque.column(marque.updateCount);
 
 		DBInteger count = updateCountColumn.count().asExpressionColumn();
 		count.setSortOrderDescending();
-		
+
 		DBQuery query1 = database
 				.getDBQuery(marque, new CarCompany());
 		query1.setBlankQueryAllowed(true)
 				.setReturnFieldsToNone()
-				.addExpressionColumn("mode", updateCountColumn.asExpressionColumn()) 
-				.addExpressionColumn("mode count", count) 
+				.addExpressionColumn("mode", updateCountColumn.asExpressionColumn())
+				.addExpressionColumn("mode count", count)
 				.setSortOrder(query1.column(count))
-				.setRowLimit(1)
-				;
-		
+				.setRowLimit(1);
+
 		final Marque marque2 = new Marque();
-		marque2.updateCount.permittedValues(1,3);
+		marque2.updateCount.permittedValues(1, 3);
 		final IntegerColumn updateCountColumn2 = marque2.column(marque2.updateCount);
 		DBInteger count2 = updateCountColumn2.count().asExpressionColumn();
-		count2.setSortOrderDescending();		
-		
+		count2.setSortOrderDescending();
+
 		DBQuery query2 = database
 				.getDBQuery(marque2, new CarCompany());
 		query2.setBlankQueryAllowed(true)
 				.setReturnFieldsToNone()
-				.addExpressionColumn("mode", updateCountColumn2.asExpressionColumn()) 
-				.addExpressionColumn("mode count", count2) 
+				.addExpressionColumn("mode", updateCountColumn2.asExpressionColumn())
+				.addExpressionColumn("mode count", count2)
 				.setSortOrder(query2.column(count2))
 				.setRowLimit(1)
-				.setPageRequired(1)
-				;
+				.setPageRequired(1);
 
 //		if(database instanceof  MSSQLServerDB)System.out.println(query1.getSQLForQuery());
 //		if(database instanceof  MSSQLServerDB)System.out.println(query2.getSQLForQuery());
-		
 		List<DBQueryRow> allRows1 = query1.getAllRows();
 		List<DBQueryRow> allRows2 = query2.getAllRows();
-		
+
 		// Check there is only 1 row
 		Assert.assertThat(allRows1.size(), is(1));
 		Assert.assertThat(allRows2.size(), is(1));
-		
+
 		DBQueryRow onlyRow = allRows1.get(0);
-		
+
 		// Check that the mode is 2
 		QueryableDatatype<?> mode = onlyRow.getExpressionColumnValue("mode");
-		Assert.assertThat(mode.stringValue(), isOneOf("1","3"));
-		
+		Assert.assertThat(mode.stringValue(), isOneOf("1", "3"));
+
 		// Check that the mode was found 9 times
 		QueryableDatatype<?> counted = onlyRow.getExpressionColumnValue("mode count");
 		Assert.assertThat(counted.stringValue(), is("3"));
-		
+
 		onlyRow = allRows2.get(0);
-		
+
 		// Check that the second mode is 0
 		mode = onlyRow.getExpressionColumnValue("mode");
-		Assert.assertThat(mode.stringValue(), isOneOf("1","3"));
-		
+		Assert.assertThat(mode.stringValue(), isOneOf("1", "3"));
+
 		// Check that the mode was found 9 times
 		counted = onlyRow.getExpressionColumnValue("mode count");
 		Assert.assertThat(counted.stringValue(), is("3"));
 	}
-	
+
 	@Test
 	public void testModeStrictExpression() throws SQLException {
 		final Marque marque = new Marque();
-		
+
 		final IntegerColumn updateCountColumn = marque.column(marque.updateCount);
 
 		DBInteger count = updateCountColumn.count().asExpressionColumn();
@@ -317,34 +372,60 @@ public class DBStatisticsTest extends AbstractTest {
 				.setBlankQueryAllowed(true)
 				.setReturnFieldsToNone()
 				.addExpressionColumn("mode", updateCountColumn.modeStrict().asExpressionColumn());
-		
+
 //		if(database instanceof MSSQLServerDB) {
 //			System.out.println(query.getSQLForQuery());
 //		}
 		List<DBQueryRow> allRows = query.getAllRows();
-		
+
 		// Check there is only 1 row
 		Assert.assertThat(allRows.size(), is(22));
-		
+
 		final DBQueryRow onlyRow = allRows.get(0);
-		
+
 		// Check that the mode is 2
 		QueryableDatatype<?> mode = onlyRow.getExpressionColumnValue("mode");
 		Assert.assertThat(mode.stringValue(), is("2"));
 	}
 
-	public static class StatsTest extends Marque {
+	public static class StatsIntegerTest extends Marque {
 
 		private static final long serialVersionUID = 1L;
 
-		public StatsTest() {
+		public StatsIntegerTest() {
 		}
 
 		@DBColumn
-		public DBStatistics stats = new DBStatistics(this.column(this.carCompany));
+		public DBStatistics<Long, IntegerResult, DBInteger, IntegerExpression> carCoStats
+				= new DBStatistics<Long, IntegerResult, DBInteger, IntegerExpression>(this.column(this.carCompany));
+//		@DBColumn
+//		public DBStatistics<Long, IntegerResult, DBInteger, IntegerExpression> uidMarqueStats
+//				= new DBStatistics<Long, IntegerResult, DBInteger, IntegerExpression>(this.column(this.uidMarque));
 
 		{
-			this.setReturnFields(stats);
+			this.setReturnFields(
+					carCoStats
+			//					, uidMarqueStats
+			);
+		}
+	}
+
+	public static class StatsStringTest extends Marque {
+
+		private static final long serialVersionUID = 1L;
+
+		public StatsStringTest() {
+		}
+
+		@DBColumn
+		public DBStatistics<String, StringResult, DBString, StringExpression> carNameStats
+				= new DBStatistics<String, StringResult, DBString, StringExpression>(
+						this.column(this.name).substring(1, 2));
+
+		{
+			this.setReturnFields(
+					carNameStats
+			);
 		}
 	}
 

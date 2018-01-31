@@ -31,6 +31,7 @@ import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.databases.supports.SupportsDateRepeatDatatypeFunctions;
 import nz.co.gregs.dbvolution.datatypes.*;
 import nz.co.gregs.dbvolution.results.AnyResult;
+import nz.co.gregs.dbvolution.results.EqualResult;
 import nz.co.gregs.dbvolution.results.IntegerResult;
 import org.joda.time.Period;
 
@@ -897,27 +898,6 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 	}
 
 	/**
-	 * Creates an expression that will return the most common value of the column
-	 * supplied.
-	 *
-	 * <p>
-	 * MODE: The number which appears most often in a set of numbers. For example:
-	 * in {6, 3, 9, 6, 6, 5, 9, 3} the Mode is 6.</p>
-	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 *
-	 * @return a number expression.
-	 */
-	@Override
-	public DateExpression modeSimple() {
-		DateExpression modeExpr = new DateExpression(
-				new ModeSimpleExpression(this));
-
-		return modeExpr;
-	}
-
-	/**
 	 * Returns FALSE if this expression evaluates to NULL, otherwise TRUE.
 	 *
 	 * <p style="color: #F90;">Support DBvolution at
@@ -925,6 +905,7 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 	 *
 	 * @return a BooleanExpression
 	 */
+	@Override
 	public BooleanExpression isNotNull() {
 		return BooleanExpression.isNotNull(this);
 	}
@@ -937,6 +918,7 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 	 *
 	 * @return a BooleanExpression
 	 */
+	@Override
 	public BooleanExpression isNull() {
 		return BooleanExpression.isNull(this);
 	}
