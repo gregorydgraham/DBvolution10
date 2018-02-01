@@ -42,7 +42,9 @@ import org.apache.commons.logging.LogFactory;
  */
 public class QueryableDatatypeSyncer implements Serializable{
 
-	private static final Log log = LogFactory.getLog(QueryableDatatypeSyncer.class);
+	private static final long serialVersionUID = 1l;
+
+	private static final Log LOG = LogFactory.getLog(QueryableDatatypeSyncer.class);
 
 	private final String propertyName;
 //	private final DBTypeAdaptor<Object, Object> typeAdaptor;
@@ -292,10 +294,10 @@ public class QueryableDatatypeSyncer implements Serializable{
 					QueryableDatatype<?> targetQdt = newTargetQDT();
 					setTargetQDTFromSourceQDT(targetQdt, sourceQDT);
 
-					log.debug(simpleTypeAdaptor + " converting " + qdtToString(sourceQDT) + " ==> " + qdtToString(targetQdt));
+					LOG.debug(simpleTypeAdaptor + " converting " + qdtToString(sourceQDT) + " ==> " + qdtToString(targetQdt));
 					return targetQdt;
 				} catch (RuntimeException e) {
-					log.debug(simpleTypeAdaptor + " converting " + qdtToString(sourceQDT) + " ==> " + e.getClass().getSimpleName());
+					LOG.debug(simpleTypeAdaptor + " converting " + qdtToString(sourceQDT) + " ==> " + e.getClass().getSimpleName());
 					throw e;
 				}
 			}

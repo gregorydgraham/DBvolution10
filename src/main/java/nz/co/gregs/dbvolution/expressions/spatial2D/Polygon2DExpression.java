@@ -873,7 +873,7 @@ public class Polygon2DExpression extends Spatial2DExpression<Polygon, Polygon2DR
 	public Point2DExpression modeSimple() {
 		@SuppressWarnings("unchecked")
 		Point2DExpression modeExpr = new Point2DExpression(
-				new ModeSimpleExpression(this));
+				new ModeSimpleExpression<>(this));
 
 		return modeExpr;
 	}
@@ -905,7 +905,7 @@ public class Polygon2DExpression extends Spatial2DExpression<Polygon, Polygon2DR
 	public Polygon2DExpression modeStrict() {
 		@SuppressWarnings("unchecked")
 		Polygon2DExpression modeExpr = new Polygon2DExpression(
-				new ModeStrictExpression(this));
+				new ModeStrictExpression<>(this));
 
 		return modeExpr;
 	}

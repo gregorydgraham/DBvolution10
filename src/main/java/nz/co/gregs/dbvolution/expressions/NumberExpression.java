@@ -292,7 +292,7 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 	 */
 	public NumberExpression modeSimple() {
 		NumberExpression modeExpr = new NumberExpression(
-				new ModeSimpleExpression(this));
+				new ModeSimpleExpression<>(this));
 
 		return modeExpr;
 	}
@@ -325,7 +325,7 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 		@SuppressWarnings("unchecked")
 		NumberExpression modeExpr
 				= new NumberExpression(
-						new ModeStrictExpression(this));
+						new ModeStrictExpression<>(this));
 		return modeExpr;
 	}
 

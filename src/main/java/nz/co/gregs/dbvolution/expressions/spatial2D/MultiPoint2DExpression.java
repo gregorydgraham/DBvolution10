@@ -374,7 +374,7 @@ public class MultiPoint2DExpression extends Spatial2DExpression<MultiPoint, Mult
 	public MultiPoint2DExpression modeSimple() {
 		@SuppressWarnings("unchecked")
 		MultiPoint2DExpression modeExpr = new MultiPoint2DExpression(
-				new ModeSimpleExpression(this));
+				new ModeSimpleExpression<>(this));
 
 		return modeExpr;
 	}
@@ -406,7 +406,7 @@ public class MultiPoint2DExpression extends Spatial2DExpression<MultiPoint, Mult
 	public MultiPoint2DExpression modeStrict() {
 		@SuppressWarnings("unchecked")
 		MultiPoint2DExpression modeExpr = new MultiPoint2DExpression(
-				new ModeStrictExpression(this));
+				new ModeStrictExpression<>(this));
 
 		return modeExpr;
 	}

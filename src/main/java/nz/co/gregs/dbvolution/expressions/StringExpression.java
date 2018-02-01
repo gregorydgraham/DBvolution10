@@ -271,7 +271,7 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 	 */
 	public StringExpression modeSimple() {
 		StringExpression modeExpr = new StringExpression(
-				new ModeSimpleExpression(this));
+				new ModeSimpleExpression<>(this));
 		return modeExpr;
 	}
 
@@ -301,7 +301,7 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 	 */
 	public StringExpression modeStrict() {
 		StringExpression modeExpr = new StringExpression(
-				new ModeStrictExpression(this));
+				new ModeStrictExpression<>(this));
 
 		return modeExpr;
 	}

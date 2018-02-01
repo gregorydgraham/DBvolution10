@@ -279,8 +279,9 @@ public abstract class EqualExpression<B, R extends EqualResult<B>, D extends Que
 		}
 
 		@Override
-		public DBUnaryFunction copy() {
-			DBUnaryFunction newInstance;
+		@SuppressWarnings("unchecked")
+		public DBUnaryFunction<B,R,D,X> copy() {
+			DBUnaryFunction<B,R,D,X> newInstance;
 			try {
 				newInstance = getClass().newInstance();
 			} catch (InstantiationException | IllegalAccessException ex) {
@@ -422,7 +423,7 @@ public abstract class EqualExpression<B, R extends EqualResult<B>, D extends Que
 		}
 	}
 
-	protected static class ModeStrictExpression<B, R extends EqualResult<B>, D extends QueryableDatatype<B>, X extends EqualExpression<B, R, D>> extends DBUnaryFunction<B, R, D, X> {
+	public static class ModeStrictExpression<B, R extends EqualResult<B>, D extends QueryableDatatype<B>, X extends EqualExpression<B, R, D>> extends DBUnaryFunction<B, R, D, X> {
 
 		private final static long serialVersionUID = 1l;
 
@@ -433,8 +434,6 @@ public abstract class EqualExpression<B, R extends EqualResult<B>, D extends Que
 		private String secondTableModeName = null;
 		private String firstTableName = null;
 		private String secondTableName = null;
-		private final IntegerExpression expr1;
-		private final IntegerExpression expr2;
 		private final DBInteger mode1;
 		private final DBInteger mode2;
 		private final DBInteger count1;
@@ -447,15 +446,14 @@ public abstract class EqualExpression<B, R extends EqualResult<B>, D extends Que
 
 		public ModeStrictExpression(X only) {
 			super(only);
-			expr1 = new IntegerExpression(getInnerResult());
-			expr2 = new IntegerExpression(getInnerResult());
+			IntegerExpression expr1 = new IntegerExpression(getInnerResult());
+			IntegerExpression expr2 = new IntegerExpression(getInnerResult());
 
 			mode1 = expr1.asExpressionColumn();
-			mode2 = expr2.asExpressionColumn();
-
 			count1 = expr1.count().asExpressionColumn();
 			count1.setSortOrderDescending();
 
+			mode2 = expr2.asExpressionColumn();
 			count2 = expr2.count().asExpressionColumn();
 			count2.setSortOrderDescending();
 		}

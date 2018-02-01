@@ -139,7 +139,7 @@ public class DateRepeatExpression extends RangeExpression<Period, DateRepeatResu
 	public DateRepeatExpression modeSimple() {
 		@SuppressWarnings("unchecked")
 		DateRepeatExpression modeExpr = new DateRepeatExpression(
-				new ModeSimpleExpression(this));
+				new ModeSimpleExpression<>(this));
 		return modeExpr;
 	}
 
@@ -170,7 +170,7 @@ public class DateRepeatExpression extends RangeExpression<Period, DateRepeatResu
 	public DateRepeatExpression modeStrict() {
 		@SuppressWarnings("unchecked")
 		DateRepeatExpression modeExpr = new DateRepeatExpression(
-				new ModeStrictExpression(this));
+				new ModeStrictExpression<>(this));
 		return modeExpr;
 	}
 

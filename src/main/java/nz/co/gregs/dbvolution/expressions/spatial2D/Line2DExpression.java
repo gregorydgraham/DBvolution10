@@ -154,7 +154,7 @@ public class Line2DExpression extends Spatial2DExpression<LineString, Line2DResu
 	public Line2DExpression modeSimple() {
 		@SuppressWarnings("unchecked")
 		Line2DExpression modeExpr = new Line2DExpression(
-				new ModeSimpleExpression(this));
+				new ModeSimpleExpression<>(this));
 
 		return modeExpr;
 	}
@@ -186,7 +186,7 @@ public class Line2DExpression extends Spatial2DExpression<LineString, Line2DResu
 	public Line2DExpression modeStrict() {
 		@SuppressWarnings("unchecked")
 		Line2DExpression modeExpr = new Line2DExpression(
-				new ModeStrictExpression(this));
+				new ModeStrictExpression<>(this));
 
 		return modeExpr;
 	}

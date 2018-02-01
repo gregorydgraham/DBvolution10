@@ -492,7 +492,7 @@ public class LineSegment2DExpression extends Spatial2DExpression<LineSegment, Li
 	public LineSegment2DExpression modeSimple() {
 		@SuppressWarnings("unchecked")
 		LineSegment2DExpression modeExpr = new LineSegment2DExpression(
-				new ModeSimpleExpression(this));
+				new ModeSimpleExpression<>(this));
 
 		return modeExpr;
 	}
@@ -524,7 +524,7 @@ public class LineSegment2DExpression extends Spatial2DExpression<LineSegment, Li
 	public LineSegment2DExpression modeStrict() {
 		@SuppressWarnings("unchecked")
 		LineSegment2DExpression modeExpr = new LineSegment2DExpression(
-				new ModeStrictExpression(this));
+				new ModeStrictExpression<>(this));
 
 		return modeExpr;
 	}

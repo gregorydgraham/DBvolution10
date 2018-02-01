@@ -2267,7 +2267,7 @@ public class DBQuery implements Serializable{
 		Map<Object, QueryableDatatype<?>> expressionColumns = details.getExpressionColumns();
 		for (QueryableDatatype<?> entry : expressionColumns.values()) {
 			if (entry.equals(qdt)){
-				return new QueryColumn(this, entry);
+				return new QueryColumn<>(this, entry);
 			}
 		}
 		throw new IncorrectRowProviderInstanceSuppliedException("the object provided could not be found in the table or expressions used in this query, please supply a QDT used by the tables or adde to the query as an expression column.");
