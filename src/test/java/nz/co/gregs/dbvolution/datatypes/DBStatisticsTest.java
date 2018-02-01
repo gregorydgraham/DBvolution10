@@ -154,7 +154,6 @@ public class DBStatisticsTest extends AbstractTest {
 //		if(database instanceof  MSSQLServerDB)System.out.println(query.getSQLForQuery());
 		List<DBQueryRow> allRows = query.getAllRows();
 
-		// Check there is only 1 row
 		Assert.assertThat(allRows.size(), is(22));
 
 		final StatsOfUpdateCountTest onlyRow = allRows.get(0).get(stat);
@@ -224,11 +223,26 @@ public class DBStatisticsTest extends AbstractTest {
 		final StatsIntegerTest onlyRow = allRows.get(0).get(stat);
 
 		// Check that the mode is 4 for car company
-//		Integer mode = onlyRow.carNameStats.modeStrict().intValue();
-//		Assert.assertThat(mode, is(4));
-		// Check that the mode is null for car company
-//		mode = onlyRow.uidMarqueStats.modeStrict().intValue();
-//		Assert.assertThat(mode, is((Integer)null));
+		Long mode = onlyRow.carCoStats.modeStrict();
+		Assert.assertThat(mode, is(4l));
+	}
+
+	@Test
+	public void testModeStrictExpressionInDBStatisticsWithIndeterminateResult() throws SQLException {
+		StatsStringTest stat = new StatsStringTest();
+		DBQuery query = database
+				.getDBQuery(stat).setBlankQueryAllowed(true);
+		query.printSQLForQuery();
+		List<DBQueryRow> allRows = query.getAllRows();
+
+		// Check there is only 1 row
+		Assert.assertThat(allRows.size(), is(1));
+
+		final StatsStringTest onlyRow = allRows.get(0).get(stat);
+
+		// Check that the mode is 4 for car company
+		String mode = onlyRow.carNameStats.modeStrict();
+		Assert.assertThat(mode, is("O"));
 	}
 
 	@Test
@@ -398,15 +412,9 @@ public class DBStatisticsTest extends AbstractTest {
 		@DBColumn
 		public DBStatistics<Long, IntegerResult, DBInteger, IntegerExpression> carCoStats
 				= new DBStatistics<Long, IntegerResult, DBInteger, IntegerExpression>(this.column(this.carCompany));
-//		@DBColumn
-//		public DBStatistics<Long, IntegerResult, DBInteger, IntegerExpression> uidMarqueStats
-//				= new DBStatistics<Long, IntegerResult, DBInteger, IntegerExpression>(this.column(this.uidMarque));
 
 		{
-			this.setReturnFields(
-					carCoStats
-			//					, uidMarqueStats
-			);
+			this.setReturnFields(carCoStats);
 		}
 	}
 

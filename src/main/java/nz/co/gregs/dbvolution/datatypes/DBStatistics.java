@@ -27,7 +27,7 @@ import nz.co.gregs.dbvolution.results.EqualResult;
  * @param <D>
  * @param <X>
  */
-public  class  DBStatistics<B,R extends EqualResult<B>,D extends QueryableDatatype<B>, X extends EqualExpression<B,R,D>> extends DBString {
+public class DBStatistics<B, R extends EqualResult<B>, D extends QueryableDatatype<B>, X extends EqualExpression<B, R, D>> extends DBString {
 
 	private static final long serialVersionUID = 1;
 
@@ -42,8 +42,8 @@ public  class  DBStatistics<B,R extends EqualResult<B>,D extends QueryableDataty
 	private B firstQuartileValue;
 	private B thirdQuartileValue;
 	private IntegerExpression countExpr;
-	private EqualExpression.ModeSimpleExpression<B,R,D,X> modeSimpleExpression;
-	private X modeStrictExpression;
+	private EqualExpression.ModeSimpleExpression<B, R, D, X> modeSimpleExpression;
+	private EqualExpression.ModeStrictExpression<B, R, D, X> modeStrictExpression;
 	private X medianExpression;
 	private X firstQuartileExpression;
 	private X thirdQuartileExpression;
@@ -71,19 +71,20 @@ public  class  DBStatistics<B,R extends EqualResult<B>,D extends QueryableDataty
 	 * Used in {@link DBReport}, and some {@link DBRow}, sub-classes to derive
 	 * data from the database prior to retrieval.
 	 *
-	 * @param expressionToGenerateStatsFrom the expression or column to be used for statistics
+	 * @param expressionToGenerateStatsFrom the expression or column to be used
+	 * for statistics
 	 */
-	public  
-		DBStatistics(X expressionToGenerateStatsFrom) {
+	public DBStatistics(X expressionToGenerateStatsFrom) {
 		super(expressionToGenerateStatsFrom.stringResult());
 		this.originalExpression = expressionToGenerateStatsFrom;
 		countExpr = originalExpression.count();
-		modeSimpleExpression = new EqualExpression.ModeSimpleExpression<B,R,D,X>(originalExpression);
-//		modeStrictExpression = originalExpression.modeStrict();
+		modeSimpleExpression = new EqualExpression.ModeSimpleExpression<B, R, D, X>(originalExpression);
+		modeStrictExpression = new EqualExpression.ModeStrictExpression<B, R, D, X>(originalExpression);
 
 		this.setColumnExpression(new AnyExpression<?, ?, ?>[]{
 			countExpr,
-			modeSimpleExpression
+			modeSimpleExpression,
+			modeStrictExpression
 		});
 
 	}
@@ -171,8 +172,8 @@ public  class  DBStatistics<B,R extends EqualResult<B>,D extends QueryableDataty
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public DBStatistics copy() {
-		DBStatistics copy = (DBStatistics) super.copy();
+	public DBStatistics<B,R,D,X> copy() {
+		DBStatistics<B,R,D,X> copy = (DBStatistics<B,R,D,X>) super.copy();
 		copy.countOfRows = this.countOfRows;
 		copy.firstQuartileValue = this.firstQuartileValue;
 		copy.modeStrict = this.modeStrict;
@@ -200,8 +201,8 @@ public  class  DBStatistics<B,R extends EqualResult<B>,D extends QueryableDataty
 	}
 
 	@Override
-	public DBStatistics getQueryableDatatypeForExpressionValue() {
-		return new DBStatistics();
+	public DBStatistics<B,R,D,X> getQueryableDatatypeForExpressionValue() {
+		return new DBStatistics<>();
 	}
 
 	@Override
@@ -227,10 +228,10 @@ public  class  DBStatistics<B,R extends EqualResult<B>,D extends QueryableDataty
 				if (propertyWrapperDefinition != null && propertyWrapperDefinition.allColumnAspects != null) {
 					final String countColumnAlias = propertyWrapperDefinition.allColumnAspects.get(0).columnAlias;
 					final String modeSimpleAlias = propertyWrapperDefinition.allColumnAspects.get(1).columnAlias;
-//					final String modeStrictAlias = propertyWrapperDefinition.allColumnAspects.get(2).columnAlias;
+					final String modeStrictAlias = propertyWrapperDefinition.allColumnAspects.get(2).columnAlias;
 					countOfRows = new DBInteger().getFromResultSet(database, resultSet, countColumnAlias);
 					modeSimple = modeSimpleExpression.asExpressionColumn().getFromResultSet(database, resultSet, modeSimpleAlias);
-//					modeStrict = modeStrictExpression.asExpressionColumn().getFromResultSet(database, resultSet, modeStrictAlias);
+					modeStrict = modeStrictExpression.asExpressionColumn().getFromResultSet(database, resultSet, modeStrictAlias);
 				} else {
 					countOfRows = getFromResultSet(database, resultSet, resultSetColumnName, 0);
 //					modeSimple = modeSimpleExpression.asExpressionColumn().getFromResultSet(database, resultSet, resultSetColumnName, 1);

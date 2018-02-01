@@ -412,6 +412,7 @@ public class QueryDetails implements DBQueryable, Serializable {
 			HashMap<DBExpression, Integer> indexesOfSelectedExpressions = new HashMap<>();
 			StringBuilder fromClause = new StringBuilder().append(defn.beginFromClause());
 			List<DBRow> joinedTables = new ArrayList<>();
+			List<DBExpression> joinedComplexExpressions = new ArrayList<>();
 			final String initialWhereClause = new StringBuilder().append(defn.beginWhereClause()).append(defn.getWhereClauseBeginningCondition(options)).toString();
 			StringBuilder whereClause = new StringBuilder(initialWhereClause);
 			StringBuilder groupByClause = new StringBuilder().append(defn.beginGroupByClause());
@@ -467,14 +468,13 @@ public class QueryDetails implements DBQueryable, Serializable {
 							indexesOfSelectedColumns.put(propWrapper.getPropertyWrapperDefinition(), columnIndex);
 						}
 						if (expression != null && expression.isComplexExpression()) {
-							final boolean hasTablesAlready = !joinedTables.isEmpty();
+							final boolean hasTablesAlready = !joinedTables.isEmpty() && !joinedComplexExpressions.isEmpty();
+							joinedComplexExpressions.add(expression);
 							String joiner = hasTablesAlready ? options.isUseANSISyntax() ? " join " : fromClauseTableSeparator : "";
-//							joiner = hasTablesAlready&& !options.isUseANSISyntax()?:joiner;
 							fromClause
 									.append(joiner)
 									.append(fromClauseTableSeparator)
-									.append(expression.createSQLForFromClause(database))
-									.append(options.isUseANSISyntax() ? " join " : ", ");
+									.append(expression.createSQLForFromClause(database));
 							fromClauseTableSeparator = ", " + lineSep;
 							queryState.mayRequireOnClause = true;
 						}
@@ -486,7 +486,7 @@ public class QueryDetails implements DBQueryable, Serializable {
 					fromClause.append(fromClauseTableSeparator).append(tableName);
 					queryState.addedInnerJoinToQuery();
 				} else {
-					fromClause.append(getANSIJoinClause(defn, queryState, tabRow, joinedTables, options));
+					fromClause.append(getANSIJoinClause(defn, queryState, tabRow, joinedTables, joinedComplexExpressions, options));
 				}
 				joinedTables.add(tabRow);
 
@@ -645,7 +645,7 @@ public class QueryDetails implements DBQueryable, Serializable {
 		}
 	}
 
-	public synchronized String getANSIJoinClause(DBDefinition defn, QueryState queryState, DBRow newTable, List<DBRow> previousTables, QueryOptions options) {
+	public synchronized String getANSIJoinClause(DBDefinition defn, QueryState queryState, DBRow newTable, List<DBRow> previousTables, List<DBExpression> previousComplexExpressions, QueryOptions options) {
 		List<String> joinClauses = new ArrayList<>();
 		List<String> conditionClauses = new ArrayList<>();
 		String lineSep = System.getProperty("line.separator");
@@ -715,7 +715,7 @@ public class QueryDetails implements DBQueryable, Serializable {
 		}
 
 		StringBuilder sqlToReturn = new StringBuilder();
-		if (previousTables.isEmpty()) {
+		if (previousTables.isEmpty() && previousComplexExpressions.isEmpty()) {
 			sqlToReturn.append(" ").append(defn.getFromClause(newTable));
 			// Handle the edge case where a complex query has added a table before the first and we need an ON clause.
 			if (queryState.mayRequireOnClause && defn.requiresOnClauseForAllJoins()) {
