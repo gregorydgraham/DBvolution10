@@ -228,7 +228,7 @@ public class DBStatisticsTest extends AbstractTest {
 	}
 
 	@Test
-	public void testModeStrictExpressionInDBStatisticsWithIndeterminateResult() throws SQLException {
+	public void testModeStrictExpressionInDBStatisticsWithStringResult() throws SQLException {
 		StatsStringTest stat = new StatsStringTest();
 		DBQuery query = database
 				.getDBQuery(stat).setBlankQueryAllowed(true);
