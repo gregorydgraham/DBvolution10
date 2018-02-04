@@ -58,7 +58,8 @@ import org.reflections.Reflections;
  * are much more weakly typed. DBvolution uses
  * {@link QueryableDatatype QueryableDatatypes (QDTs)} to bridge the gap between
  * Java and Relational. The most common QDTs are:
- * {@link DBString}, {@link DBInteger}, {@link DBDate}, and {@link DBByteArray}.
+ * {@link DBString}, {@link DBInteger}, {@link DBNumber}, {@link DBDate}, and
+ * {@link DBLargeBinary}.
  *
  * <p>
  * Relational databases deliberately eschew hierarchies and has very weak links
@@ -125,7 +126,7 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 	private transient final List<PropertyWrapper> blobColumns = new ArrayList<>();
 	private transient final SortedSet<Class<? extends DBRow>> referencedTables = new TreeSet<>(new DBRow.ClassNameComparator());
 	private Boolean emptyRow = true;
-	
+
 	/**
 	 * Creates a new blank DBRow of the supplied subclass.
 	 *
@@ -342,7 +343,7 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 
 	/**
 	 * indicates the DBRow is defined in the database.
-	 * 
+	 *
 	 * <p>
 	 * Used internally, probably not the method you want.
 	 * </p>
@@ -969,7 +970,7 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 			Object appropriateFieldFromRow = column.getAppropriateFieldFromRow(this);
 			this.setReturnFields(appropriateFieldFromRow);
 		}
-		
+
 	}
 
 	/**
@@ -1306,8 +1307,8 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 	}
 
 	/**
-	 * Returns all fields that represent BLOB columns such DBLargeObject,
-	 * DBByteArray, or DBJavaObject.
+	 * Returns all fields that represent BLOB columns such DBLargeObject or
+	 * DBJavaObject.
 	 *
 	 * <p style="color: #F90;">Support DBvolution at
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>

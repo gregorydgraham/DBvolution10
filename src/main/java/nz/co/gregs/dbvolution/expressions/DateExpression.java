@@ -31,7 +31,6 @@ import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.databases.supports.SupportsDateRepeatDatatypeFunctions;
 import nz.co.gregs.dbvolution.datatypes.*;
 import nz.co.gregs.dbvolution.results.AnyResult;
-import nz.co.gregs.dbvolution.results.EqualResult;
 import nz.co.gregs.dbvolution.results.IntegerResult;
 import org.joda.time.Period;
 

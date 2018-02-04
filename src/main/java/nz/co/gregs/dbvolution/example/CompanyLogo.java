@@ -81,14 +81,14 @@ public class CompanyLogo extends DBRow {
 	public DBInteger carCompany = new DBInteger();
 
 	/**
-	 * A DBByteArray field representing the "image_file" column in the database.
+	 * A DBLargeBinary field representing the "image_file" column in the database.
 	 *
 	 * <p>
 	 * &#64;DBColumn both indicates that the field is part of the database table
 	 * and protects the actual database column name from any refactoring.
 	 *
 	 * <p>
-	 * DBByteArray indicates that the field is BLOB or BITS field that naturally
+	 * DBLargeBinary indicates that the field is BLOB or BITS field that naturally
 	 * provides a byte[] value in Java. It has an instance as that just makes
 	 * everyone's life easier.
 	 *

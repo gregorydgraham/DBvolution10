@@ -27,6 +27,7 @@ import nz.co.gregs.dbvolution.columns.BooleanArrayColumn;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.exceptions.IncorrectRowProviderInstanceSuppliedException;
 import nz.co.gregs.dbvolution.expressions.BooleanArrayExpression;
+import nz.co.gregs.dbvolution.expressions.StringExpression;
 import nz.co.gregs.dbvolution.query.RowDefinition;
 import nz.co.gregs.dbvolution.results.BooleanArrayResult;
 
@@ -236,5 +237,10 @@ public class DBBooleanArray extends QueryableDatatype<Boolean[]> implements Bool
 	@Override
 	public BooleanArrayColumn getColumn(RowDefinition row) throws IncorrectRowProviderInstanceSuppliedException {
 		return new BooleanArrayColumn(row, this);
+	}
+
+	@Override
+	public StringExpression stringResult() {
+		return new BooleanArrayExpression(this).stringResult();
 	}
 }

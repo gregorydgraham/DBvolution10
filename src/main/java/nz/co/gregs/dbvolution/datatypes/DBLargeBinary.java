@@ -79,6 +79,11 @@ public class DBLargeBinary extends DBLargeObject<byte[]> {
 		super(aThis);
 	}
 
+	public DBLargeBinary(byte[] value) {
+		super();
+		setByteArray(value);
+	}
+
 	/**
 	 *
 	 * <p style="color: #F90;">Support DBvolution at
@@ -98,6 +103,10 @@ public class DBLargeBinary extends DBLargeObject<byte[]> {
 	 */
 	@Override
 	public void setValue(byte[] byteArray) {
+		setByteArray(byteArray);
+	}
+
+	private void setByteArray(byte[] byteArray) {
 		super.setLiteralValue(byteArray);
 		if (byteArray == null) {
 			byteStream = new BufferedInputStream(new ByteArrayInputStream(new byte[]{}));
@@ -592,5 +601,4 @@ public class DBLargeBinary extends DBLargeObject<byte[]> {
 	public LargeObjectColumn getColumn(RowDefinition row) throws IncorrectRowProviderInstanceSuppliedException {
 		return new LargeObjectColumn(row, this);
 	}
-
 }

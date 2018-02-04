@@ -88,7 +88,7 @@ public class CompanyText extends DBRow {
 	 * and protects the actual database column name from any refactoring.
 	 *
 	 * <p>
-	 * DBByteArray indicates that the field is CLOB or TEXT field that naturally
+	 * DBLargeText indicates that the field is CLOB or TEXT field that naturally
 	 * provides a byte[] value in Java. It has an instance as that just makes
 	 * everyone's life easier.
 	 *

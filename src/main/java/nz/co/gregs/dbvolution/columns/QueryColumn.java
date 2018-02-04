@@ -22,7 +22,6 @@ import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 import nz.co.gregs.dbvolution.expressions.AnyExpression;
 import nz.co.gregs.dbvolution.expressions.BooleanExpression;
-import nz.co.gregs.dbvolution.expressions.StringExpression;
 import nz.co.gregs.dbvolution.query.RowDefinition;
 import nz.co.gregs.dbvolution.results.AnyResult;
 
@@ -133,10 +132,5 @@ public class QueryColumn<B, R extends AnyResult<B>, D extends QueryableDatatype<
 	@SuppressWarnings("unchecked")
 	public D getQueryableDatatypeForExpressionValue() {
 		return field;
-	}
-
-	@Override
-	public StringExpression stringResult() {
-		throw new RuntimeException("QueryColumn.stringResult: NOT IMPLEMENTED");
 	}
 }

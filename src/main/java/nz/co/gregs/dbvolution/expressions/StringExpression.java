@@ -27,7 +27,7 @@ import nz.co.gregs.dbvolution.columns.StringColumn;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.datatypes.*;
 import nz.co.gregs.dbvolution.results.AnyResult;
-import nz.co.gregs.dbvolution.results.EqualResult;
+import nz.co.gregs.dbvolution.results.ExpressionHasStandardStringResult;
 import nz.co.gregs.dbvolution.results.IntegerResult;
 
 /**
@@ -184,6 +184,28 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 	 *
 	 * @param numberVariable	numberVariable
 	 */
+	public StringExpression(IntegerResult numberVariable) {
+		super(numberVariable);
+		if (numberVariable == null) {
+			stringNullProtectionRequired = true;
+		} else {
+			stringNullProtectionRequired = numberVariable.getIncludesNull();
+		}
+	}
+
+	/**
+	 * Creates a StringExpression from an arbitrary Number object.
+	 *
+	 * <p>
+	 * Essentially the same as {@code NumberExpression.value(numberVariable).stringResult()
+	 * }.
+	 *
+	 * <p>
+	 * Refer to {@link NumberExpression#NumberExpression(java.lang.Number) } and {@link NumberExpression#stringResult()
+	 * } for more information.
+	 *
+	 * @param numberVariable	numberVariable
+	 */
 	public StringExpression(Number numberVariable) {
 		super(value(numberVariable).stringResult());
 		if (numberVariable == null) {
@@ -234,8 +256,10 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 		AnyResult<?> stringInput = getInnerResult();
 		if (stringInput == null) {
 			stringInput = StringExpression.value("<NULL>");
-		} else if (!(stringInput instanceof StringResult)) {
-			stringInput = stringInput.stringResult();
+		} else if (
+				!(stringInput instanceof StringResult) 
+				&& (stringInput instanceof ExpressionHasStandardStringResult)) {
+			stringInput = ((ExpressionHasStandardStringResult) stringInput).stringResult();
 		}
 		return stringInput.toSQLString(db);
 	}
@@ -3024,7 +3048,7 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 			this.length = endIndex0Based.copy();
 		}
 
-		private Substring(AnyResult<?> stringInput, IntegerResult startingIndex0Based, IntegerResult endIndex0Based) {
+		private Substring(ExpressionHasStandardStringResult stringInput, IntegerResult startingIndex0Based, IntegerResult endIndex0Based) {
 			super(stringInput.stringResult());
 			this.startingPosition = startingIndex0Based.copy();
 			this.length = endIndex0Based.copy();
@@ -3032,7 +3056,7 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 
 		@Override
 		public Substring copy() {
-			return new Substring(getInnerResult(), startingPosition, length);
+			return new Substring((ExpressionHasStandardStringResult) getInnerResult(), startingPosition, length);
 		}
 
 		@Override
@@ -3040,11 +3064,11 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 			if (getInnerResult() == null) {
 				return "";
 			} else {
-				return doSubstringTransform(db, getInnerResult(), startingPosition, length);
+				return doSubstringTransform(db, (ExpressionHasStandardStringResult) getInnerResult(), startingPosition, length);
 			}
 		}
 
-		public String doSubstringTransform(DBDefinition db, AnyResult<?> enclosedValue, IntegerResult startingPosition, IntegerResult substringLength) {
+		public String doSubstringTransform(DBDefinition db, ExpressionHasStandardStringResult enclosedValue, IntegerResult startingPosition, IntegerResult substringLength) {
 			return db.doSubstringTransform(
 					enclosedValue.stringResult().toSQLString(db),
 					(startingPosition.toSQLString(db) + " + 1"),

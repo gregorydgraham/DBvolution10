@@ -30,7 +30,9 @@ package nz.co.gregs.dbvolution.internal.query;
 
 import java.util.ArrayList;
 import java.util.List;
+import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.expressions.BooleanExpression;
+import nz.co.gregs.dbvolution.expressions.DBExpression;
 
 /**
  * Helper class to store the progress of turning the DBQuery into an actual
@@ -46,9 +48,9 @@ public class QueryState {
 	private final List<String> optionalConditions = new ArrayList<>();
 	private boolean queryIsFullOuterJoin = true;
 	private boolean queryIsLeftOuterJoin = true;
-	//		private final boolean queryIsNativeQuery = true;
-	boolean mayRequireOnClause = false;
 	private boolean hasBeenOrdered = false;
+	private final List<DBRow> joinedTables = new ArrayList<>();
+	private final List<DBExpression> joinedComplexExpressions = new ArrayList<>();
 
 	public QueryState(QueryDetails details) {
 		this.remainingExpressions = new ArrayList<>(details.getConditions());
@@ -63,9 +65,6 @@ public class QueryState {
 		consumedExpressions.add(expr);
 	}
 
-	//		private void setGraph(QueryGraph queryGraph) {
-	//			this.graph = queryGraph;
-	//		}
 	/**
 	 * Adds a condition that pertains to a required table.
 	 *
@@ -106,8 +105,7 @@ public class QueryState {
 	 * <p style="color: #F90;">Support DBvolution at
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 *
-	 * @return a list of SQL snippets representing conditions on optional
-	 * tables.
+	 * @return a list of SQL snippets representing conditions on optional tables.
 	 */
 	public List<String> getOptionalConditions() {
 		return optionalConditions;
@@ -142,6 +140,31 @@ public class QueryState {
 
 	public synchronized void setHasBeenOrdered(boolean b) {
 		hasBeenOrdered = b;
+	}
+
+	boolean hasNotHadATableAddedYet() {
+		return joinedTables.isEmpty() && joinedComplexExpressions.isEmpty();
+	}
+
+	public List<DBRow> getJoinedTables() {
+		return joinedTables;
+	}
+
+	public void addJoinedTable(DBRow tabRow) {
+		joinedTables.add(tabRow);
+	}
+
+	void addJoinedExpression(DBExpression expression) {
+		joinedComplexExpressions.add(expression);
+	}
+
+	boolean hasHadATableAdded() {
+		return !getJoinedTables().isEmpty()
+				|| !getJoinedComplexExpressions().isEmpty();
+	}
+
+	List<DBExpression> getJoinedComplexExpressions() {
+		return joinedComplexExpressions;
 	}
 
 }

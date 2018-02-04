@@ -3621,9 +3621,6 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 			this.only = only;
 		}
 
-//		DBUnaryFunction(DBExpression only) {
-//			this.only = only;
-//		}
 		@Override
 		public DBInteger getQueryableDatatypeForExpressionValue() {
 			return new DBInteger();
@@ -3983,10 +3980,6 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 			return nullProtectionRequired;
 		}
 
-//		@Override
-//		public void setIncludesNull(boolean nullsAreIncluded) {
-//			this.nullProtectionRequired = nullsAreIncluded;
-//		}
 		/**
 		 * <p style="color: #F90;">Support DBvolution at
 		 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>

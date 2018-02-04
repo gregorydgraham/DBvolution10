@@ -147,49 +147,6 @@ public abstract class EqualExpression<B, R extends EqualResult<B>, D extends Que
 	}
 
 	/**
-	 * Creates an expression that will return the most common value of the column
-	 * supplied.
-	 *
-	 * <p>
-	 * MODE: The number which appears most often in a set of numbers. For example:
-	 * in {6, 3, 9, 6, 6, 5, 9, 3} the Mode is 6.</p>
-	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 *
-	 * @param <X>
-	 * @return a number expression.
-	 */
-//	public abstract DBExpression modeSimple();
-
-	/**
-	 * Creates an expression that will return the most common value of the column
-	 * supplied.
-	 *
-	 * <p>
-	 * MODE: The number which appears most often in a set of numbers. For example:
-	 * in {6, 3, 9, 6, 6, 5, 9, 3} the Mode is 6.</p>
-	 *
-	 * <p>
-	 * This version of Mode implements a stricter definition that will return null
-	 * if the mode is undefined. The mode can be undefined if there are 2 or more
-	 * values with the highest frequency value. </p>
-	 *
-	 * <p>
-	 * For example in the list {0,0,0,0,1,1,2,2,2,2,3,4} both 0 and 2 occur four
-	 * times and no other value occurs more frequently so the mode is undefined.
-	 * {@link #modeSimple() The modeSimple()} method would return either 0 or 2
-	 * randomly for the same set.</p>
-	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 *
-	 * @param <X> The same class as the calling object
-	 * @return the mode or null if undefined.
-	 */
-//	public abstract <X extends EqualExpression> X modeStrict();
-
-	/**
 	 * Aggregrator that counts this row if the booleanResult is true.
 	 *
 	 * @param booleanResult an value that will be TRUE when the row needs to be
@@ -254,7 +211,7 @@ public abstract class EqualExpression<B, R extends EqualResult<B>, D extends Que
 		}
 	}
 
-	private static abstract class DBUnaryFunction<B, R extends EqualResult<B>, D extends QueryableDatatype<B>, X extends EqualExpression<B, R, D>> extends EqualExpression<B,R,D> implements EqualResult<B> {
+	private static abstract class DBUnaryFunction<B, R extends EqualResult<B>, D extends QueryableDatatype<B>, X extends EqualExpression<B, R, D>> extends EqualExpression<B, R, D> implements EqualResult<B> {
 
 		protected final X only;
 
@@ -280,8 +237,8 @@ public abstract class EqualExpression<B, R extends EqualResult<B>, D extends Que
 
 		@Override
 		@SuppressWarnings("unchecked")
-		public DBUnaryFunction<B,R,D,X> copy() {
-			DBUnaryFunction<B,R,D,X> newInstance;
+		public DBUnaryFunction<B, R, D, X> copy() {
+			DBUnaryFunction<B, R, D, X> newInstance;
 			try {
 				newInstance = getClass().newInstance();
 			} catch (InstantiationException | IllegalAccessException ex) {
@@ -421,6 +378,20 @@ public abstract class EqualExpression<B, R extends EqualResult<B>, D extends Que
 		public String getInternalTableName(DBDatabase database) {
 			return database.getDefinition().getTableAliasForObject(this);
 		}
+
+		private synchronized String getFirstTableModeName(DBDefinition defn) {
+			return defn.formatExpressionAlias(this);
+		}		
+		
+		@Override
+		public String createSQLForGroupByClause(DBDatabase database) {
+			DBDefinition defn = database.getDefinition();
+			return ""
+					+getInternalTableName(database)+"."+getFirstTableModeName(defn)
+					;
+		}
+
+
 	}
 
 	public static class ModeStrictExpression<B, R extends EqualResult<B>, D extends QueryableDatatype<B>, X extends EqualExpression<B, R, D>> extends DBUnaryFunction<B, R, D, X> {
@@ -434,6 +405,8 @@ public abstract class EqualExpression<B, R extends EqualResult<B>, D extends Que
 		private String secondTableModeName = null;
 		private String firstTableName = null;
 		private String secondTableName = null;
+		private final IntegerExpression expr1;
+		private final IntegerExpression expr2;
 		private final DBInteger mode1;
 		private final DBInteger mode2;
 		private final DBInteger count1;
@@ -446,8 +419,8 @@ public abstract class EqualExpression<B, R extends EqualResult<B>, D extends Que
 
 		public ModeStrictExpression(X only) {
 			super(only);
-			IntegerExpression expr1 = new IntegerExpression(getInnerResult());
-			IntegerExpression expr2 = new IntegerExpression(getInnerResult());
+			expr1 = new IntegerExpression(getInnerResult());
+			expr2 = new IntegerExpression(getInnerResult());
 
 			mode1 = expr1.asExpressionColumn();
 			count1 = expr1.count().asExpressionColumn();
@@ -517,11 +490,12 @@ public abstract class EqualExpression<B, R extends EqualResult<B>, D extends Que
 					.setRowLimit(1)
 					.setPageRequired(1);
 			final boolean useANSISyntax = query1.getQueryDetails().getOptions().isUseANSISyntax();
+			final String linefeed = System.getProperty("line.separator");
 
 			String sql = "(" + query1.getSQLForQuery().replaceAll("; *$", "") + ") " + getFirstTableName(defn)
-					+ System.getProperty("line.separator")
+					+ linefeed
 					+ (useANSISyntax ? " join " : ", ")
-					+ System.getProperty("line.separator")
+					+ linefeed
 					+ "(" + query2.getSQLForQuery().replaceAll("; *$", "") + ") " + getSecondTableName(defn);
 
 			if (useANSISyntax && defn.requiresOnClauseForAllJoins()) {
@@ -532,6 +506,16 @@ public abstract class EqualExpression<B, R extends EqualResult<B>, D extends Que
 						+ defn.endOnClause());
 			}
 			return sql;
+		}
+
+		@Override
+		public String createSQLForGroupByClause(DBDatabase database) {
+			DBDefinition defn = database.getDefinition();
+			return ""
+					+getFirstTableName(defn)+"."+getFirstTableModeName(defn)+", "
+					+getFirstTableName(defn)+"."+getFirstTableCounterName(defn)+", "
+					+getSecondTableName(defn)+"."+getSecondTableCounterName(defn)
+					;
 		}
 
 		public synchronized String getInternalTableName(DBDefinition database) {

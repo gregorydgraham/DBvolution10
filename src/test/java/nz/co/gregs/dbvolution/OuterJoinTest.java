@@ -58,11 +58,10 @@ public class OuterJoinTest extends AbstractTest {
 		CompanyLogo logo = new CompanyLogo();
 
 		DBQuery dbQuery = database.getDBQuery(mrq);
-		List<DBRow> tables = new ArrayList<>();
-		final List<DBExpression> joinedComplexExpressions = new ArrayList<DBExpression>();
+		final QueryState queryState = new QueryState(dbQuery.getQueryDetails());
 		StringBuilder ansiJoinClause = new StringBuilder();
 		final DBDefinition defn = database.getDefinition();
-		ansiJoinClause.append(dbQuery.getQueryDetails().getANSIJoinClause(defn, new QueryState(dbQuery.getQueryDetails()), carCo, tables, joinedComplexExpressions, new QueryOptions()));
+		ansiJoinClause.append(dbQuery.getQueryDetails().getANSIJoinClause(defn, queryState, carCo, new QueryOptions()));
 
 		String expectedCarCoJoin = "car_company as __78874071";
 		String expectedCarCoJoinOracle = "car_company __78874071";
@@ -72,8 +71,8 @@ public class OuterJoinTest extends AbstractTest {
 						is(testableSQL(expectedCarCoJoinOracle))
 				));
 
-		tables.add(carCo);
-		ansiJoinClause.append(dbQuery.getQueryDetails().getANSIJoinClause(defn, new QueryState(dbQuery.getQueryDetails()), mrq, tables, joinedComplexExpressions, new QueryOptions()));
+		queryState.addJoinedTable(carCo);
+		ansiJoinClause.append(dbQuery.getQueryDetails().getANSIJoinClause(defn, queryState, mrq, new QueryOptions()));
 
 		String expectedMarqueJoin1 = "car_company as __78874071 inner join marque as __1997432637 on( __78874071.uid_carcompany = __1997432637.fk_carcompany )";
 		String expectedMarqueJoin2 = "car_company as __78874071 inner join marque as __1997432637 on( __1997432637.fk_carcompany = __78874071.uid_carcompany )";
@@ -84,8 +83,8 @@ public class OuterJoinTest extends AbstractTest {
 						is(testableSQL(expectedMarqueJoin2))
 				));
 
-		tables.add(mrq);
-		ansiJoinClause.append(dbQuery.getQueryDetails().getANSIJoinClause(defn, new QueryState(dbQuery.getQueryDetails()), link, tables, joinedComplexExpressions, new QueryOptions()));
+		queryState.addJoinedTable(mrq);
+		ansiJoinClause.append(dbQuery.getQueryDetails().getANSIJoinClause(defn, queryState, link, new QueryOptions()));
 
 		String expectedLinkJoin = "car_company as __78874071 inner join marque as __1997432637 on( __78874071.uid_carcompany = __1997432637.fk_carcompany ) inner join lt_carco_logo as _1617907935 on( __78874071.uid_carcompany = _1617907935.fk_car_company )";
 		Assert.assertThat(
@@ -95,8 +94,8 @@ public class OuterJoinTest extends AbstractTest {
 						is(testableSQL("car_company as __78874071 inner join marque as __1997432637 on( __1997432637.fk_carcompany = __78874071.uid_carcompany ) inner join lt_carco_logo as _1617907935 on( _1617907935.fk_car_company = __78874071.uid_carcompany )"))
 				));
 
-		tables.add(link);
-		ansiJoinClause.append(dbQuery.getQueryDetails().getANSIJoinClause(defn, new QueryState(dbQuery.getQueryDetails()), logo, tables, joinedComplexExpressions, new QueryOptions()));
+		queryState.addJoinedTable(link);
+		ansiJoinClause.append(dbQuery.getQueryDetails().getANSIJoinClause(defn, queryState, logo, new QueryOptions()));
 
 		String expectedLogoJoin = "car_company as __78874071 inner join marque as __1997432637 on( __78874071.uid_carcompany = __1997432637.fk_carcompany ) inner join lt_carco_logo as _1617907935 on( __78874071.uid_carcompany = _1617907935.fk_car_company ) inner join companylogo as _1159239592 on( __78874071.uid_carcompany = _1159239592.car_company_fk and _1617907935.fk_company_logo = _1159239592.logo_id )";
 		Assert.assertThat(

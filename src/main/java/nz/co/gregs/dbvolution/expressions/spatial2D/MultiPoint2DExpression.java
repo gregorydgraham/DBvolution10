@@ -411,7 +411,6 @@ public class MultiPoint2DExpression extends Spatial2DExpression<MultiPoint, Mult
 		return modeExpr;
 	}
 
-
 	/**
 	 * Create a NumberExpression that represents the number of points stored in
 	 * the MultiPoint value.

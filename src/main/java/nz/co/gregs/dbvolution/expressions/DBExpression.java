@@ -15,6 +15,7 @@
  */
 package nz.co.gregs.dbvolution.expressions;
 
+import java.util.List;
 import java.util.Set;
 import nz.co.gregs.dbvolution.DBReport;
 import nz.co.gregs.dbvolution.DBRow;
@@ -163,7 +164,9 @@ public interface DBExpression {
 	 */
 	public boolean isPurelyFunctional();
 
+	public boolean isComplexExpression();
+
 	public String createSQLForFromClause(DBDatabase database);
 
-	public boolean isComplexExpression();
+	public String createSQLForGroupByClause(DBDatabase database);
 }

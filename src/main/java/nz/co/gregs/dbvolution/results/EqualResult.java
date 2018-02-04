@@ -34,6 +34,6 @@ package nz.co.gregs.dbvolution.results;
  * @author gregorygraham
  * @param <B> a base type like Integer or String
  */
-public interface EqualResult<B> extends AnyResult<B> {
+public interface EqualResult<B> extends AnyResult<B>, ExpressionHasStandardStringResult {
 	
 }

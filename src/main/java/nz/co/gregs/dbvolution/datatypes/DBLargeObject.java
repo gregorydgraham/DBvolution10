@@ -27,7 +27,7 @@ import nz.co.gregs.dbvolution.results.LargeObjectResult;
  * {@code TEXT}, {@code JavaObject}, or similar datatype.
  *
  * <p>
- * Mostly you should use {@link  DBByteArray} though there should be other more
+ * Mostly you should use {@link  DBLargeBinary} or {@link DBLargeText} though there should be other more
  * specific classes eventually. There is also {@link DBJavaObject} for storing
  * Java objects directly in the database.
  *
@@ -92,5 +92,4 @@ public abstract class DBLargeObject<T> extends QueryableDatatype<T> implements L
 	public DBLargeObject<T> copy() {
 		return (DBLargeObject<T>) super.copy();
 	}
-
 }

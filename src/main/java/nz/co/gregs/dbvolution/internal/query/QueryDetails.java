@@ -411,8 +411,6 @@ public class QueryDetails implements DBQueryable, Serializable {
 			HashMap<PropertyWrapperDefinition, Integer> indexesOfSelectedColumns = new HashMap<>();
 			HashMap<DBExpression, Integer> indexesOfSelectedExpressions = new HashMap<>();
 			StringBuilder fromClause = new StringBuilder().append(defn.beginFromClause());
-			List<DBRow> joinedTables = new ArrayList<>();
-			List<DBExpression> joinedComplexExpressions = new ArrayList<>();
 			final String initialWhereClause = new StringBuilder().append(defn.beginWhereClause()).append(defn.getWhereClauseBeginningCondition(options)).toString();
 			StringBuilder whereClause = new StringBuilder(initialWhereClause);
 			StringBuilder groupByClause = new StringBuilder().append(defn.beginGroupByClause());
@@ -468,15 +466,27 @@ public class QueryDetails implements DBQueryable, Serializable {
 							indexesOfSelectedColumns.put(propWrapper.getPropertyWrapperDefinition(), columnIndex);
 						}
 						if (expression != null && expression.isComplexExpression()) {
-							final boolean hasTablesAlready = !joinedTables.isEmpty() && !joinedComplexExpressions.isEmpty();
-							joinedComplexExpressions.add(expression);
-							String joiner = hasTablesAlready ? options.isUseANSISyntax() ? " join " : fromClauseTableSeparator : "";
+							final boolean needsJoiner = queryState.hasHadATableAdded();
+							String joiner = needsJoiner ? options.isUseANSISyntax() ? " join " : fromClauseTableSeparator : "";
 							fromClause
 									.append(joiner)
-									.append(fromClauseTableSeparator)
 									.append(expression.createSQLForFromClause(database));
 							fromClauseTableSeparator = ", " + lineSep;
-							queryState.mayRequireOnClause = true;
+							if (options.isUseANSISyntax()
+									&& defn.requiresOnClauseForAllJoins()
+									&& queryState.hasHadATableAdded()) {
+								fromClause
+										.append(defn.beginOnClause())
+										.append(BooleanExpression.trueExpression().toSQLString(defn))
+										.append(defn.endOnClause());
+							}
+							final String groupBySQL = expression.createSQLForGroupByClause(database);
+							if (groupBySQL != null && !groupBySQL.isEmpty() && !groupBySQL.trim().isEmpty()) {
+								groupByClause.append(groupByColSep).append(groupBySQL);
+								groupByColSep = defn.getSubsequentGroupBySubClauseSeparator() + lineSep;
+								groupByIsRequired = true;
+							}
+							queryState.addJoinedExpression(expression);
 						}
 
 						columnIndex++;
@@ -486,9 +496,9 @@ public class QueryDetails implements DBQueryable, Serializable {
 					fromClause.append(fromClauseTableSeparator).append(tableName);
 					queryState.addedInnerJoinToQuery();
 				} else {
-					fromClause.append(getANSIJoinClause(defn, queryState, tabRow, joinedTables, joinedComplexExpressions, options));
+					fromClause.append(getANSIJoinClause(defn, queryState, tabRow, options));
 				}
-				joinedTables.add(tabRow);
+				queryState.addJoinedTable(tabRow);
 
 				if (!options.isUseANSISyntax()) {
 					List<String> tabRowCriteria = tabRow.getWhereClausesWithAliases(defn);
@@ -497,7 +507,7 @@ public class QueryDetails implements DBQueryable, Serializable {
 							whereClause.append(lineSep).append(defn.beginConditionClauseLine(options)).append(clause);
 						}
 					}
-					getNonANSIJoin(tabRow, whereClause, defn, joinedTables, lineSep, options);
+					getNonANSIJoin(tabRow, whereClause, defn, queryState.getJoinedTables(), lineSep, options);
 					queryState.addedInnerJoinToQuery();
 				}
 
@@ -547,14 +557,22 @@ public class QueryDetails implements DBQueryable, Serializable {
 						fromClause
 								.append(options.isUseANSISyntax() ? " join " : fromClauseTableSeparator)
 								.append(expression.createSQLForFromClause(database));
-						if (options.isUseANSISyntax() && defn.requiresOnClauseForAllJoins()) {
+						if (options.isUseANSISyntax()
+								&& defn.requiresOnClauseForAllJoins()
+								&& queryState.hasHadATableAdded()) {
 							fromClause
 									.append(defn.beginOnClause())
 									.append(BooleanExpression.trueExpression().toSQLString(defn))
 									.append(defn.endOnClause());
 						}
 						fromClauseTableSeparator = (options.isUseANSISyntax() ? " join " : ", ") + lineSep;
-						queryState.mayRequireOnClause = true;
+						final String groupBySQL = expression.createSQLForGroupByClause(database);
+						if (groupBySQL != null && !groupBySQL.isEmpty() && !groupBySQL.trim().isEmpty()) {
+							groupByClause.append(groupByColSep).append(groupBySQL);
+							groupByColSep = defn.getSubsequentGroupBySubClauseSeparator() + lineSep;
+							groupByIsRequired = true;
+						}
+						queryState.addJoinedExpression(expression);
 					}
 					indexesOfSelectedExpressions.put(expression, columnIndex);
 					columnIndex++;
@@ -645,13 +663,14 @@ public class QueryDetails implements DBQueryable, Serializable {
 		}
 	}
 
-	public synchronized String getANSIJoinClause(DBDefinition defn, QueryState queryState, DBRow newTable, List<DBRow> previousTables, List<DBExpression> previousComplexExpressions, QueryOptions options) {
+	public synchronized String getANSIJoinClause(DBDefinition defn, QueryState queryState, DBRow newTable, QueryOptions options) {
 		List<String> joinClauses = new ArrayList<>();
 		List<String> conditionClauses = new ArrayList<>();
 		String lineSep = System.getProperty("line.separator");
 		boolean isLeftOuterJoin = false;
 		boolean isFullOuterJoin = false;
 
+		List<DBRow> previousTables = queryState.getJoinedTables();
 		final ArrayList<DBRow> preExistingTables = new ArrayList<>();
 		preExistingTables.addAll(previousTables);
 		preExistingTables.addAll(getAssumedQueryTables());
@@ -715,15 +734,8 @@ public class QueryDetails implements DBQueryable, Serializable {
 		}
 
 		StringBuilder sqlToReturn = new StringBuilder();
-		if (previousTables.isEmpty() && previousComplexExpressions.isEmpty()) {
+		if (queryState.hasNotHadATableAddedYet()) {
 			sqlToReturn.append(" ").append(defn.getFromClause(newTable));
-			// Handle the edge case where a complex query has added a table before the first and we need an ON clause.
-			if (queryState.mayRequireOnClause && defn.requiresOnClauseForAllJoins()) {
-				sqlToReturn
-						.append(defn.beginOnClause())
-						.append(BooleanExpression.trueExpression().toSQLString(defn))
-						.append(defn.endOnClause());
-			}
 		} else {
 			if (isFullOuterJoin) {
 				sqlToReturn.append(lineSep).append(defn.beginFullOuterJoin());

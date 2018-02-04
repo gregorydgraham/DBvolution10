@@ -88,7 +88,7 @@ public class DBStatistics<B, R extends EqualResult<B>, D extends QueryableDataty
 		});
 
 	}
-
+	
 	/**
 	 * Count of the rows included in this set of statistics
 	 *

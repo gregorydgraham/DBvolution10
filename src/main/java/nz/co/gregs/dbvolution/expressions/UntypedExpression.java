@@ -79,9 +79,4 @@ public class UntypedExpression extends AnyExpression<Object, UntypedResult, DBUn
 	public UntypedExpression copy() {
 		return new UntypedExpression(this);
 	}
-
-	@Override
-	public StringExpression stringResult() {
-		return new StringExpression(this);
-	}
 }

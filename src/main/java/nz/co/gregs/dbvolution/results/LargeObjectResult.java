@@ -35,7 +35,7 @@ import nz.co.gregs.dbvolution.expressions.DBExpression;
  * @author greg
  * @see DBExpression
  */
-public interface LargeObjectResult extends DBExpression, ExpressionCanHaveNullValues {
+public interface LargeObjectResult extends AnyResult<byte[]> {
 
 	@Override
 	public LargeObjectResult copy();

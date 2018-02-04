@@ -28,34 +28,20 @@
  */
 package nz.co.gregs.dbvolution.expressions;
 
-import nz.co.gregs.dbvolution.expressions.spatial2D.LineSegment2DExpression;
-import nz.co.gregs.dbvolution.expressions.spatial2D.Line2DExpression;
-import nz.co.gregs.dbvolution.expressions.spatial2D.Polygon2DExpression;
-import nz.co.gregs.dbvolution.expressions.spatial2D.MultiPoint2DExpression;
-import nz.co.gregs.dbvolution.expressions.spatial2D.Point2DExpression;
+import nz.co.gregs.dbvolution.expressions.spatial2D.*;
 import com.vividsolutions.jts.geom.LineSegment;
 import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.MultiPoint;
 import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.geom.Polygon;
 import java.io.Serializable;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.databases.DBDatabase;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.results.AnyResult;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
-import nz.co.gregs.dbvolution.results.BooleanResult;
-import nz.co.gregs.dbvolution.results.DateRepeatResult;
-import nz.co.gregs.dbvolution.results.DateResult;
-import nz.co.gregs.dbvolution.results.IntegerResult;
-import nz.co.gregs.dbvolution.results.LineSegment2DResult;
-import nz.co.gregs.dbvolution.results.NumberResult;
-import nz.co.gregs.dbvolution.results.Point2DResult;
-import nz.co.gregs.dbvolution.results.Polygon2DResult;
-import nz.co.gregs.dbvolution.results.StringResult;
+import nz.co.gregs.dbvolution.results.*;
 import org.joda.time.Period;
 
 /**
@@ -723,4 +709,10 @@ public abstract class AnyExpression<B extends Object, R extends AnyResult<B>, D 
 	public final static Polygon2DExpression nullPolygon2D() {
 		return new Polygon2DExpression((Polygon2DResult) null).nullExpression();
 	}
+
+	@Override
+	public String createSQLForGroupByClause(DBDatabase database) {
+		return "";
+	}
+	
 }

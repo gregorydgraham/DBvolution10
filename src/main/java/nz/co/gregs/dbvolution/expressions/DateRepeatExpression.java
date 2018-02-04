@@ -15,17 +15,17 @@
  */
 package nz.co.gregs.dbvolution.expressions;
 
+import java.util.ArrayList;
 import nz.co.gregs.dbvolution.results.DateRepeatResult;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.databases.supports.SupportsDateRepeatDatatypeFunctions;
 import nz.co.gregs.dbvolution.datatypes.DBBoolean;
 import nz.co.gregs.dbvolution.datatypes.DBDateRepeat;
-import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 import nz.co.gregs.dbvolution.results.AnyResult;
-import nz.co.gregs.dbvolution.results.EqualResult;
 import nz.co.gregs.dbvolution.results.StringResult;
 import org.joda.time.Period;
 

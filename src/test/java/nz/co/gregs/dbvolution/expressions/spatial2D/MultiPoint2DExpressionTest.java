@@ -15,8 +15,6 @@
  */
 package nz.co.gregs.dbvolution.expressions.spatial2D;
 
-import nz.co.gregs.dbvolution.expressions.spatial2D.MultiPoint2DExpression;
-import nz.co.gregs.dbvolution.expressions.spatial2D.Line2DExpression;
 import nz.co.gregs.dbvolution.databases.DBDatabase;
 import com.vividsolutions.jts.geom.*;
 import java.sql.SQLException;

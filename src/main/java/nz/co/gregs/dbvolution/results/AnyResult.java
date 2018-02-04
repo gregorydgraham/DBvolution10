@@ -36,6 +36,6 @@ import nz.co.gregs.dbvolution.expressions.DBExpression;
  * @author gregorygraham
  * @param <T>
  */
-public interface AnyResult<T> extends DBExpression, ExpressionCanHaveNullValues, ExpressionHasStandardStringResult {
+public interface AnyResult<T> extends DBExpression, ExpressionCanHaveNullValues {
 	
 }

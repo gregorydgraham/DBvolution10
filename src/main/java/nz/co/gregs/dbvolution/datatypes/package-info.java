@@ -1,7 +1,7 @@
 /**
  * DBvolution Equivalents For The Standard Java and Database Types.
  * <p>
- * QueryableDatatypes like DBString, DBByteArray, and DBInteger make querying
+ * QueryableDatatypes like DBString, DBLargeText, and DBInteger make querying
  * trivial.
  * <p>
  * All the permitted methods are included in the object and type-safety prevent

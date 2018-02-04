@@ -15,8 +15,10 @@
  */
 package nz.co.gregs.dbvolution.expressions;
 
+import java.util.ArrayList;
 import nz.co.gregs.dbvolution.results.LargeObjectResult;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import nz.co.gregs.dbvolution.DBQuery;
 import nz.co.gregs.dbvolution.DBRow;
@@ -33,7 +35,9 @@ import nz.co.gregs.dbvolution.datatypes.DBLargeBinary;
  *
  * @author gregorygraham
  */
-public class LargeObjectExpression implements LargeObjectResult, ExpressionColumn<DBLargeBinary> {
+public class LargeObjectExpression extends AnyExpression<byte[], LargeObjectResult, DBLargeBinary> implements LargeObjectResult, ExpressionColumn<DBLargeBinary> {
+
+	private final static long serialVersionUID = 1l;
 
 	private final LargeObjectResult blobResult;
 	private final boolean nullProtectionRequired;
@@ -54,11 +58,7 @@ public class LargeObjectExpression implements LargeObjectResult, ExpressionColum
 	 */
 	public LargeObjectExpression(LargeObjectResult originalBlob) {
 		blobResult = originalBlob;
-		if (originalBlob == null || originalBlob.getIncludesNull()) {
-			nullProtectionRequired = true;
-		} else {
-			nullProtectionRequired = false;
-		}
+		nullProtectionRequired = originalBlob == null || originalBlob.getIncludesNull();
 	}
 
 	@Override
@@ -143,6 +143,21 @@ public class LargeObjectExpression implements LargeObjectResult, ExpressionColum
 	@Override
 	public boolean isComplexExpression() {
 		return false;
+	}
+
+	@Override
+	public LargeObjectResult expression(byte[] value) {
+		return expression(new DBLargeBinary(value));
+	}
+
+	@Override
+	public LargeObjectResult expression(LargeObjectResult value) {
+		return new LargeObjectExpression(value);
+	}
+
+	@Override
+	public LargeObjectResult expression(DBLargeBinary value) {
+		return new LargeObjectExpression(value);
 	}
 
 }

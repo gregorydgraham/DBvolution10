@@ -18,7 +18,9 @@ package nz.co.gregs.dbvolution.columns;
 import java.io.Serializable;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import nz.co.gregs.dbvolution.databases.DBDatabase;
 import nz.co.gregs.dbvolution.DBRow;
@@ -48,7 +50,7 @@ import nz.co.gregs.dbvolution.query.RowDefinition;
  * @author greg
  */
 public class AbstractColumn implements DBExpression, Serializable {
-	
+
 	private static final long serialVersionUID = 1l;
 
 	private final transient PropertyWrapper propertyWrapper;
@@ -285,5 +287,10 @@ public class AbstractColumn implements DBExpression, Serializable {
 	@Override
 	public boolean isComplexExpression() {
 		return false;
+	}
+
+	@Override
+	public String createSQLForGroupByClause(DBDatabase database) {
+		return "";
 	}
 }

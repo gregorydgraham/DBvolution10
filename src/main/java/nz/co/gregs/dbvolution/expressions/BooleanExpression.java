@@ -35,7 +35,6 @@ import nz.co.gregs.dbvolution.datatypes.DBInteger;
 import nz.co.gregs.dbvolution.datatypes.DBString;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 import nz.co.gregs.dbvolution.results.AnyResult;
-import nz.co.gregs.dbvolution.results.EqualResult;
 import nz.co.gregs.dbvolution.results.IntegerResult;
 import nz.co.gregs.dbvolution.results.RangeComparable;
 import nz.co.gregs.dbvolution.results.RangeResult;
@@ -124,8 +123,8 @@ public class BooleanExpression extends EqualExpression<Boolean, BooleanResult, D
 	 */
 	public BooleanExpression(Boolean bool) {
 		super(new DBBoolean(bool));
-	}
-
+	}		
+	
 	@Override
 	public BooleanExpression copy() {
 		return isNullSafetyTerminator() ? nullBoolean() : new BooleanExpression(this.getInnerResult());

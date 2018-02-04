@@ -15,9 +15,11 @@
  */
 package nz.co.gregs.dbvolution.expressions;
 
+import java.util.ArrayList;
 import nz.co.gregs.dbvolution.results.EqualComparable;
 import nz.co.gregs.dbvolution.results.BooleanArrayResult;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.databases.DBDatabase;
@@ -33,7 +35,9 @@ import nz.co.gregs.dbvolution.datatypes.DBBoolean;
  *
  * @author gregory.graham
  */
-public class BooleanArrayExpression implements BooleanArrayResult, EqualComparable<Boolean[], BooleanArrayResult>, ExpressionColumn<DBBooleanArray> {
+public class BooleanArrayExpression extends AnyExpression<Boolean[], BooleanArrayResult, DBBooleanArray> implements BooleanArrayResult, EqualComparable<Boolean[], BooleanArrayResult>, ExpressionColumn<DBBooleanArray> {
+
+	private final static long serialVersionUID = 1l;
 
 	public static BooleanArrayExpression value(Boolean[] i) {
 		return new BooleanArrayExpression(i);
@@ -216,6 +220,26 @@ public class BooleanArrayExpression implements BooleanArrayResult, EqualComparab
 	@Override
 	public DBBooleanArray asExpressionColumn() {
 		return new DBBooleanArray(this);
+	}
+
+	@Override
+	public BooleanArrayResult expression(Boolean[] value) {
+		return new BooleanArrayExpression(value);
+	}
+
+	@Override
+	public BooleanArrayResult expression(BooleanArrayResult value) {
+		return new BooleanArrayExpression(value);
+	}
+
+	@Override
+	public BooleanArrayResult expression(DBBooleanArray value) {
+		return new BooleanArrayExpression(value);
+	}
+
+	@Override
+	public StringExpression stringResult() {
+		throw new UnsupportedOperationException("Not supported yet.");
 	}
 
 	private static abstract class DBBinaryBooleanArithmetic extends BooleanExpression {
