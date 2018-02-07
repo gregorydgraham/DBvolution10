@@ -17,7 +17,6 @@ package nz.co.gregs.dbvolution;
 
 import nz.co.gregs.dbvolution.internal.query.QueryState;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import nz.co.gregs.dbvolution.annotations.DBAutoIncrement;
@@ -31,7 +30,6 @@ import nz.co.gregs.dbvolution.datatypes.DBInteger;
 import nz.co.gregs.dbvolution.datatypes.DBString;
 import nz.co.gregs.dbvolution.example.*;
 import nz.co.gregs.dbvolution.exceptions.AutoCommitActionDuringTransactionException;
-import nz.co.gregs.dbvolution.expressions.DBExpression;
 import nz.co.gregs.dbvolution.generic.AbstractTest;
 import nz.co.gregs.dbvolution.internal.query.QueryOptions;
 import org.junit.Assert;
@@ -331,12 +329,6 @@ public class OuterJoinTest extends AbstractTest {
 							containsString(testableSQL("( CASE WHEN __1997432637.ENABLED IS NULL THEN -1 ELSE __1997432637.ENABLED END ) = ( CASE WHEN  1  IS NULL THEN -1 ELSE  1  END ))"))
 					)
 			);
-//			if (database.getDefinition().supportsFullOuterJoinNatively()) {
-//				Assert.assertThat(testableQuery.indexOf(marqueCondition), is(testableQuery.lastIndexOf(marqueCondition)));
-//			} else {
-//				int indexOf = testableQuery.indexOf(marqueCondition);
-//				Assert.assertThat(testableQuery.indexOf(marqueCondition, indexOf + 1), is(testableQuery.lastIndexOf(marqueCondition)));
-//			}
 
 			List<DBQueryRow> allRows = dbquery.getAllRows();
 			Assert.assertThat(allRows.size(), is(24));
@@ -443,11 +435,10 @@ public class OuterJoinTest extends AbstractTest {
 			database.createTable(new Encounter());
 			database.createTable(new Antagonist());
 			tablesCreated = true;
-		} catch (SQLException ex) {
-			; // An exception is thrown if the table already exists
-		} catch (AutoCommitActionDuringTransactionException ex) {
+		} catch (SQLException | AutoCommitActionDuringTransactionException ex) {
 			; // An exception is thrown if the table already exists
 		}
+		// An exception is thrown if the table already exists
 
 		// To avoid duplicated rows, 
 		// only insert if the tables are freshly created
