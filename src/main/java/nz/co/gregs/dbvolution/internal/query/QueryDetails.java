@@ -927,7 +927,7 @@ public class QueryDetails implements DBQueryable, Serializable {
 		} else {
 			// Watch out for the infinite loop
 			options.setCreatingNativeQuery(false);
-			String reversedQuery = getSQLForQuery(database, queryState, QueryType.REVERSESELECT, options);
+			String reversedQuery = getSQLForQuery(database, new QueryState(details), QueryType.REVERSESELECT, options);
 			options.setCreatingNativeQuery(true);
 
 			sqlForQuery = existingSQL.replaceAll("; *$", " ").replaceAll(defn.beginFullOuterJoin(), defn.beginLeftOuterJoin());
