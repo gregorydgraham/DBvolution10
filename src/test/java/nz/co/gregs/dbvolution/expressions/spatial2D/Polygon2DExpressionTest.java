@@ -80,14 +80,6 @@ public class Polygon2DExpressionTest extends AbstractTest {
 		polygonTestTable.poly.setValue(geometryFactory.createPolygon(
 				new Coordinate[]{coordinate00, coordinate01, coordinate11, coordinate10, coordinate00}));
 		db.insert(polygonTestTable);
-
-//		polygonTestTable = new PolygonTestTable();
-//		polygonTestTable.poly.setValue(null);
-//		db.insert(polygonTestTable);
-//
-//		polygonTestTable = new PolygonTestTable();
-//		polygonTestTable.poly.setValue(null);
-//		db.insert(polygonTestTable);
 	}
 
 	@Test
@@ -157,7 +149,7 @@ public class Polygon2DExpressionTest extends AbstractTest {
 		PolygonTestTable row = new PolygonTestTable();
 		row.poly.setValueToNull();
 		database.insert(row);
-		
+
 		dbQuery = database.getDBQuery(testTable);
 		dbQuery.addCondition(testTable.column(testTable.poly).isNull());
 		allRows = dbQuery.getAllInstancesOf(testTable);
@@ -294,7 +286,6 @@ public class Polygon2DExpressionTest extends AbstractTest {
 		);
 		List<PolygonTestTable> allRows = dbQuery.getAllInstancesOf(testTable);
 
-//		database.print(allRows);
 		Assert.assertThat(allRows.size(), is(1));
 		for (PolygonTestTable row : allRows) {
 			Assert.assertThat(row.poly_id.intValue(), isOneOf(1));
