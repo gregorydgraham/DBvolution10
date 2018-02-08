@@ -27,7 +27,6 @@ import java.util.Set;
 import nz.co.gregs.dbvolution.*;
 import nz.co.gregs.dbvolution.datatypes.*;
 import nz.co.gregs.dbvolution.results.AnyResult;
-import nz.co.gregs.dbvolution.results.EqualResult;
 import nz.co.gregs.dbvolution.results.IntegerResult;
 
 /**
@@ -55,6 +54,22 @@ import nz.co.gregs.dbvolution.results.IntegerResult;
 public class NumberExpression extends SimpleNumericExpression<Number, NumberResult, DBNumber> implements NumberResult {
 
 	private final static long serialVersionUID = 1l;
+
+	public static final NumberExpression ZERO = new NumberExpression(0.0);
+	public static final NumberExpression ONE = new NumberExpression(1.0);
+	public static final NumberExpression TWO = new NumberExpression(2.0);
+	public static final NumberExpression E = new NumberExpression(Math.E);
+	public static final NumberExpression PI = new NumberExpression(Math.PI);
+	public static final NumberExpression ROOT2 = new NumberExpression(1.414213562373095);
+	public static final NumberExpression GAMMA = new NumberExpression(0.577215664901532);
+	public static final NumberExpression EULERS_CONSTANT = GAMMA;
+	public static final NumberExpression GOLDEN_RATIO = new NumberExpression(1.618033988749895);
+	public static final NumberExpression ZETA3 = new NumberExpression(1.202056903159594);
+	public static final NumberExpression APERYS_CONSTANT = ZETA3;
+
+	public static NumberExpression ifThenElse(BooleanExpression test, NumberExpression trueResult, NumberExpression falseResult) {
+		return test.ifThenElse(trueResult, falseResult);
+	}
 
 	@Override
 	public NumberExpression nullExpression() {
@@ -1862,7 +1877,7 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 			@Override
 			public String toSQLString(DBDefinition db) {
 				if (!db.supportsExpFunction()) {
-					return (new NumberExpression(Math.E)).power(this.only.isGreaterThan(799).ifThenElse(null, this.only)).toSQLString(db);
+					return E.power(this.only.isGreaterThan(799).ifThenElse(null, this.only)).toSQLString(db);
 				} else {
 					return super.toSQLString(db); //To change body of generated methods, choose Tools | Templates.
 				}
@@ -2144,7 +2159,15 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 				if (db.supportsArcSineFunction()) {
 					return super.toSQLString(db);
 				} else {
-					return only.dividedBy(value(1.0).minus(only.times(only).bracket()).bracket().squareRoot()).arctan().toSQLString(db);
+					NumberExpression x = only;
+					return ifThenElse(
+							BooleanExpression.allOf(
+									only.isBetweenInclusive(-1, 1),
+									ONE.plus(ONE.minus(x.squared()).squareRoot()).isNot(0)
+							),
+							x.dividedBy(ONE.plus(ONE.minus(x.squared()).squareRoot())).arctan().times(2),
+							nullNumber()
+					).toSQLString(db);
 				}
 			}
 
@@ -2972,7 +2995,7 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 
 			@Override
 			public String toSQLString(DBDefinition db) {
-				return "(0.0+" + first.toSQLString(db) + ")" + this.getEquationOperator(db) + second.toSQLString(db);
+				return "(0.0+" + first.toSQLString(db) + ")" + this.getEquationOperator(db) + "("+second.toSQLString(db)+")";
 			}
 
 		}
@@ -3410,8 +3433,8 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 
 	private static abstract class DBBinaryArithmetic extends NumberExpression {
 
-		public NumberResult first;
-		public NumberResult second;
+		public NumberExpression first;
+		public NumberExpression second;
 
 		DBBinaryArithmetic() {
 			this.first = null;
@@ -3419,8 +3442,8 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 		}
 
 		DBBinaryArithmetic(NumberResult first, NumberResult second) {
-			this.first = first;
-			this.second = second;
+			this.first = new NumberExpression(first);
+			this.second = new NumberExpression(second);
 		}
 
 		@Override
