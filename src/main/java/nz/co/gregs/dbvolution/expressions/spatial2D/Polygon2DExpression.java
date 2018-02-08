@@ -275,6 +275,39 @@ public class Polygon2DExpression extends Spatial2DExpression<Polygon, Polygon2DR
 	}
 
 	/**
+	 * Create a boolean value that returns the polygon that is part of both shapes
+	 * or NULL if the polygons do not intersect.
+	 *
+	 * @param rightHandSide the polygon to compare against.
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @return a boolean value that is true if the polygons interact in any way.
+	 */
+	public BooleanExpression intersection(Polygon rightHandSide) {
+		return intersects(new DBPolygon2D(rightHandSide));
+	}
+
+	/**
+	 * Create a boolean value that returns the polygon that is part of both shapes
+	 * or NULL if the polygons do not intersect.
+	 *
+	 * @param rightHandSide the polygon to compare against
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @return a boolean value that is true if the polygons interact in any way.
+	 */
+	public Polygon2DExpression intersection(Polygon2DResult rightHandSide) {
+		return new Polygon2DExpression(new PolygonPolygonWithPolygon2DResult(this, new Polygon2DExpression(rightHandSide)) {
+			private final static long serialVersionUID = 1l;
+
+			@Override
+			public String doExpressionTransform(DBDefinition db) {
+				return db.doPolygon2DIntersectionTransform(getFirst().toSQLString(db), getSecond().toSQLString(db));
+			}
+		});
+	}
+
+	/**
 	 * Provides a value that represents value as a polygon2d value.
 	 *
 	 * <P>
@@ -515,6 +548,10 @@ public class Polygon2DExpression extends Spatial2DExpression<Polygon, Polygon2DR
 	 * Two polygon's overlap when their spatial intersection is non-zero but is
 	 * not equal to A or B.
 	 *
+	 * <p>
+	 * If OVERLAPS is not supported natively, DBV will fallback to a test using
+	 * INTERSECTS and INTERSECTION.
+	 *
 	 * @param rightHandSide the polygon to compare against
 	 * <p style="color: #F90;">Support DBvolution at
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
@@ -537,6 +574,10 @@ public class Polygon2DExpression extends Spatial2DExpression<Polygon, Polygon2DR
 	 * Two polygon's overlap when their spatial intersection is non-zero but is
 	 * not equal to A or B.
 	 *
+	 * <p>
+	 * If OVERLAPS is not supported natively, DBV will fallback to a test using
+	 * INTERSECTS and INTERSECTION.
+	 *
 	 * @param rightHandSide the polygon to compare against
 	 * <p style="color: #F90;">Support DBvolution at
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
@@ -544,12 +585,21 @@ public class Polygon2DExpression extends Spatial2DExpression<Polygon, Polygon2DR
 	 * not contained, within, or equal.
 	 */
 	public BooleanExpression overlaps(Polygon2DResult rightHandSide) {
-		return new BooleanExpression(new PolygonPolygonWithBooleanResult(this, new Polygon2DExpression(rightHandSide)) {
+		return new BooleanExpression(
+				new PolygonPolygonWithBooleanResult(this, new Polygon2DExpression(rightHandSide)) {
 			private final static long serialVersionUID = 1l;
 
 			@Override
 			public String doExpressionTransform(DBDefinition db) {
-				return db.doPolygon2DOverlapsTransform(getFirst().toSQLString(db), getSecond().toSQLString(db));
+				try {
+					return db.doPolygon2DOverlapsTransform(getFirst().toSQLString(db), getSecond().toSQLString(db));
+				} catch (UnsupportedOperationException ex) {
+					return BooleanExpression.allOf(
+							this.getFirst().intersects(getSecond()),
+							this.getFirst().intersection(getSecond()).isNot(this.getFirst()),
+							this.getFirst().intersection(getSecond()).isNot(this.getSecond())
+					).toSQLString(db);
+				}
 			}
 		});
 	}
@@ -910,7 +960,6 @@ public class Polygon2DExpression extends Spatial2DExpression<Polygon, Polygon2DR
 		return modeExpr;
 	}
 
-
 	@Override
 	public DBPolygon2D asExpressionColumn() {
 		return new DBPolygon2D(this);
@@ -972,6 +1021,75 @@ public class Polygon2DExpression extends Spatial2DExpression<Polygon, Polygon2DR
 		@Override
 		public PolygonPolygonWithBooleanResult copy() {
 			PolygonPolygonWithBooleanResult newInstance;
+			try {
+				newInstance = getClass().newInstance();
+			} catch (InstantiationException | IllegalAccessException ex) {
+				throw new RuntimeException(ex);
+			}
+			newInstance.first = first.copy();
+			newInstance.second = second.copy();
+			return newInstance;
+		}
+
+		protected abstract String doExpressionTransform(DBDefinition db);
+
+		@Override
+		public Set<DBRow> getTablesInvolved() {
+			HashSet<DBRow> hashSet = new HashSet<DBRow>();
+			if (first != null) {
+				hashSet.addAll(first.getTablesInvolved());
+			}
+			if (second != null) {
+				hashSet.addAll(second.getTablesInvolved());
+			}
+			return hashSet;
+		}
+
+		@Override
+		public boolean isAggregator() {
+			return first.isAggregator() || second.isAggregator();
+		}
+
+		@Override
+		public boolean getIncludesNull() {
+			return requiresNullProtection;
+		}
+	}
+
+	private static abstract class PolygonPolygonWithPolygon2DResult extends Polygon2DExpression {
+
+		private Polygon2DExpression first;
+		private Polygon2DExpression second;
+		private boolean requiresNullProtection;
+
+		PolygonPolygonWithPolygon2DResult(Polygon2DExpression first, Polygon2DExpression second) {
+			this.first = first;
+			this.second = second;
+			if (this.second == null || this.second.getIncludesNull()) {
+				this.requiresNullProtection = true;
+			}
+		}
+
+		Polygon2DExpression getFirst() {
+			return first;
+		}
+
+		Polygon2DResult getSecond() {
+			return second;
+		}
+
+		@Override
+		public final String toSQLString(DBDefinition db) {
+			if (this.getIncludesNull()) {
+				return BooleanExpression.isNull(first).toSQLString(db);
+			} else {
+				return doExpressionTransform(db);
+			}
+		}
+
+		@Override
+		public PolygonPolygonWithPolygon2DResult copy() {
+			PolygonPolygonWithPolygon2DResult newInstance;
 			try {
 				newInstance = getClass().newInstance();
 			} catch (InstantiationException | IllegalAccessException ex) {
