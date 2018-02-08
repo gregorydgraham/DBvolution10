@@ -264,6 +264,34 @@ public class NumberExpressionTest extends AbstractTest {
 	}
 
 	@Test
+	public void testRoundWithNegativeDP() throws SQLException {
+		Marque marq = new Marque();
+		DBQuery dbQuery = database.getDBQuery(marq);
+		dbQuery.addCondition(
+				marq.column(marq.uidMarque).numberResult().plus(2).minus(4).bracket().times(6).bracket().dividedBy(3).is(-2));
+		List<DBQueryRow> allRows = dbQuery.getAllRows();
+
+		Assert.assertThat(allRows.size(), is(1));
+		Marque marque = allRows.get(0).get(marq);
+		Assert.assertThat(marque.uidMarque.getValue().intValue(), is(1));
+
+		dbQuery = database.getDBQuery(marq);
+		dbQuery.addCondition(
+				marq.column(marq.uidMarque).numberResult()
+						.round(-5)
+						.round()// Postgres is a little funny about the results of this maths
+						.is(7700000.0));
+		dbQuery.printSQLForQuery();
+		allRows = dbQuery.getAllRows();
+
+		Assert.assertThat(allRows.size(), is(3));
+		for (DBQueryRow allRow : allRows) {
+			marque = allRow.get(marq);
+			Assert.assertThat(marque.uidMarque.getValue(), isOneOf(7659280l, 7681544l, 7730022l));
+		}
+	}
+
+	@Test
 	public void testRoundNumberExpression() throws SQLException {
 		Marque marq = new Marque();
 		DBQuery dbQuery = database.getDBQuery(marq);

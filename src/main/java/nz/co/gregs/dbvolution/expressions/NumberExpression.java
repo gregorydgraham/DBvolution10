@@ -58,6 +58,7 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 	public static final NumberExpression ZERO = new NumberExpression(0.0);
 	public static final NumberExpression ONE = new NumberExpression(1.0);
 	public static final NumberExpression TWO = new NumberExpression(2.0);
+	public static final NumberExpression TEN = new NumberExpression(10.0);
 	public static final NumberExpression E = new NumberExpression(Math.E);
 	public static final NumberExpression PI = new NumberExpression(Math.PI);
 	public static final NumberExpression ROOT2 = new NumberExpression(1.414213562373095);
@@ -2666,8 +2667,12 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 				try {
 					return db.doRoundWithDecimalPlacesTransform(getFirst().toSQLString(db), getSecond().toSQLString(db));
 				} catch (UnsupportedOperationException exp) {
-					NumberExpression power = NumberExpression.value(10).power(getSecond().round());
-					return getFirst().times(power).round().dividedBy(power).toSQLString(db);
+					NumberExpression power = TEN.power(getSecond().round()).bracket();
+					return getFirst()
+						.times(power)
+						.bracket()
+						.round()
+						.dividedBy(power).toSQLString(db);
 				}
 			}
 
