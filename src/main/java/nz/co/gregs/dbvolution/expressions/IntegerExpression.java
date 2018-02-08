@@ -56,6 +56,10 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 
 	private final static long serialVersionUID = 1l;
 
+	public static IntegerExpression ifThenElse(BooleanExpression test, IntegerExpression trueResult, IntegerExpression falseResult) {
+		return test.ifThenElse(trueResult, falseResult);
+	}
+	
 	@Override
 	public final IntegerExpression nullExpression() {
 		return new NullExpression();
@@ -2076,7 +2080,7 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 	 * number expression.
 	 */
 	public NumberExpression arcsin() {
-		return new NumberExpression(new ArcSineFunction(this));
+		return this.numberResult().arcsin();
 	}
 
 	/**
@@ -2386,13 +2390,17 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 	 * For instance if you require numbers like 12.345 you should use .round(3) to
 	 * get the 3 digits after the decimal point.
 	 *
+	 * <p>
+	 * Round supports negative decimal places: use round(-2) to change 1234.56 to
+	 * 1200</p>
+	 *
 	 * @param decimalPlaces the number of significant places that are required.
 	 * <p style="color: #F90;">Support DBvolution at
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return the equation rounded to the nearest integer.
 	 */
 	public IntegerExpression round(IntegerExpression decimalPlaces) {
-		return new IntegerExpression(new RoundToNumberOfDecimalPlacesFunction(this, expression(decimalPlaces)));
+		return new IntegerExpression(new RoundToNumberOfDecimalPlacesFunction(this, decimalPlaces));
 	}
 
 	/**
@@ -2634,7 +2642,7 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 	 * @return a IntegerExpression
 	 */
 	public NumberExpression dividedBy(IntegerResult number) {
-		return NumberExpression.value(this).dividedBy(number);
+		return new NumberExpression(this).dividedBy(number);
 	}
 
 	/**
@@ -4178,8 +4186,13 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 			try {
 				return db.doRoundWithDecimalPlacesTransform(getFirst().toSQLString(db), getSecond().toSQLString(db));
 			} catch (UnsupportedOperationException exp) {
-				IntegerExpression power = IntegerExpression.value(10).power(getSecond());
-				return getFirst().times(power).dividedBy(power).toSQLString(db);
+				IntegerExpression power = IntegerExpression.value(10).power(getSecond()).bracket();
+				return getFirst()
+						.times(power)
+						.bracket()
+						.numberResult()
+						.trunc()
+						.dividedBy(power).toSQLString(db);
 			}
 		}
 
