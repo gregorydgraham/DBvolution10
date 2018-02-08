@@ -440,7 +440,6 @@ public class IntegerExpressionTest extends AbstractTest {
 						.arcsin().round(2)
 						.is(NumberExpression.PI.dividedBy(2).round(2))
 		);
-		dbQuery.printSQLForQuery();
 		List<DBQueryRow> allRows = dbQuery.getAllRows();
 
 		Assert.assertThat(allRows.size(), is(1));

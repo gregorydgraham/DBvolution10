@@ -281,7 +281,6 @@ public class NumberExpressionTest extends AbstractTest {
 						.round(-5)
 						.round()// Postgres is a little funny about the results of this maths
 						.is(7700000.0));
-		dbQuery.printSQLForQuery();
 		allRows = dbQuery.getAllRows();
 
 		Assert.assertThat(allRows.size(), is(3));
