@@ -291,36 +291,15 @@ public class MySQLDBDefinition extends DBDefinition {
 
 		return "PolyFromText('POLYGON ((" + str + "))')";
 	}
-
-//	@Override
-//	public String transformCoordinateArrayToDatabasePolygon2DFormat(List<String> coordinateSQL) {
-//		
-//		StringBuilder str = new StringBuilder();
-//		String separator = "";
-//		for (String coordinate : coordinateSQL) {
-//			str.append(separator).append(coordinate);
-//			separator = ",";
-//		}
-////'POLYGON ((12 12, 13 12, 13 13, 12 13, 12 12))'
-//		return "PolyFromText('POLYGON (" + str + ")')";
-//	}
-//	
-//	@Override
-//	public String transformPoint2DArrayToDatabasePolygon2DFormat(List<String> pointSQL) {
-//		//POINT (0.0, 0.0) => POLYGON((0.0, 0.0), ... )
-//		StringBuilder str = new StringBuilder();
-//		String separator = "";
-//		for (String point : pointSQL) {
-//			final String coordsOnly = point.replaceAll("POINT ", "");
-//			str.append(separator).append(coordsOnly);
-//			separator = ",";
-//		}
-//
-//		return "PolyFromText('POLYGON (" + str + ")')";
-//	}
+	
 	@Override
 	public String doPolygon2DEqualsTransform(String firstGeometry, String secondGeometry) {
 		return "ST_Equals(" + firstGeometry + ", " + secondGeometry + ")";
+	}
+	
+	@Override
+	public String doPolygon2DIntersectionTransform(String firstGeometry, String secondGeometry) {
+		return "ST_Intersection(" + firstGeometry + ", " + secondGeometry + ")";
 	}
 
 	@Override
@@ -350,7 +329,9 @@ public class MySQLDBDefinition extends DBDefinition {
 
 	@Override
 	public String doPolygon2DOverlapsTransform(String firstGeometry, String secondGeometry) {
-		return "Overlaps(" + firstGeometry + ", " + secondGeometry + ")";
+		throw new UnsupportedOperationException("MySQL 3.6 implements Overlaps and ST_Overlaps but they don't work as advertised");
+		// MySQL 3.6 implements Overlaps and ST_Overlaps but they don't work as advertised
+		//return "Overlaps(" + firstGeometry + ", " + secondGeometry + ")";
 	}
 
 	@Override
