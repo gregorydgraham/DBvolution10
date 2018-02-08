@@ -416,6 +416,52 @@ public enum Polygon2DFunctions implements DBVFeature {
 	/**
 	 *
 	 */
+	UNION("Geometry", "String firstPolyStr, String secondPolyStr", ""
+			+ "			try {\n"
+			+ "				if (firstPolyStr == null || secondPolyStr == null) {\n"
+			+ "					return null;\n"
+			+ "				} else {\n"
+			+ "					WKTReader wktReader = new WKTReader();\n"
+			+ "					GeometryFactory factory = new GeometryFactory();\n"
+			+ "					Geometry firstGeometry = wktReader.read(firstPolyStr);\n"
+			+ "					Geometry secondGeometry = wktReader.read(secondPolyStr);\n"
+			+ "					if ((firstGeometry instanceof Polygon)&&(secondGeometry instanceof Polygon)) {\n"
+			+ "						Polygon firstPoly = (Polygon) firstGeometry;\n"
+			+ "						Polygon secondPoly = (Polygon) secondGeometry;\n"
+			+ "						return firstPoly.union(secondPoly);\n"
+			+ "					}else{"
+			+ "						return null;"
+			+ "					}"
+			+ "				}\n"
+			+ "			} catch (Exception ex) {\n"
+			+ "				throw new RuntimeException(\"Failed To Parse Polygon\", ex);\n"
+			+ "			}"),
+	/**
+	 *
+	 */
+	INTERSECTION("Geometry", "String firstPolyStr, String secondPolyStr", ""
+			+ "			try {\n"
+			+ "				if (firstPolyStr == null || secondPolyStr == null) {\n"
+			+ "					return null;\n"
+			+ "				} else {\n"
+			+ "					WKTReader wktReader = new WKTReader();\n"
+			+ "					GeometryFactory factory = new GeometryFactory();\n"
+			+ "					Geometry firstGeometry = wktReader.read(firstPolyStr);\n"
+			+ "					Geometry secondGeometry = wktReader.read(secondPolyStr);\n"
+			+ "					if ((firstGeometry instanceof Polygon)&&(secondGeometry instanceof Polygon)) {\n"
+			+ "						Polygon firstPoly = (Polygon) firstGeometry;\n"
+			+ "						Polygon secondPoly = (Polygon) secondGeometry;\n"
+			+ "						return firstPoly.intersection(secondPoly);\n"
+			+ "					}else{"
+			+ "						return null;"
+			+ "					}"
+			+ "				}\n"
+			+ "			} catch (Exception ex) {\n"
+			+ "				throw new RuntimeException(\"Failed To Parse Polygon\", ex);\n"
+			+ "			}"),
+	/**
+	 *
+	 */
 	INTERSECTS("Boolean", "String firstPolyStr, String secondPolyStr", ""
 			+ "			try {\n"
 			+ "				if (firstPolyStr == null || secondPolyStr == null) {\n"

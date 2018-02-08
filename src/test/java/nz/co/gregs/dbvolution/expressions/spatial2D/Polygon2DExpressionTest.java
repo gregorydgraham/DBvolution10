@@ -38,6 +38,7 @@ import nz.co.gregs.dbvolution.annotations.DBAutoIncrement;
 import nz.co.gregs.dbvolution.annotations.DBColumn;
 import nz.co.gregs.dbvolution.annotations.DBPrimaryKey;
 import nz.co.gregs.dbvolution.databases.DBDatabase;
+import nz.co.gregs.dbvolution.datatypes.DBBoolean;
 import nz.co.gregs.dbvolution.datatypes.DBInteger;
 import nz.co.gregs.dbvolution.datatypes.spatial2D.DBPolygon2D;
 import nz.co.gregs.dbvolution.generic.AbstractTest;
@@ -186,7 +187,7 @@ public class Polygon2DExpressionTest extends AbstractTest {
 	}
 
 	@Test
-	public void testIntersection() throws SQLException {
+	public void testIntersects() throws SQLException {
 		final PolygonTestTable testTable = new PolygonTestTable();
 		DBQuery dbQuery = database.getDBQuery(testTable);
 		dbQuery.addCondition(
@@ -200,10 +201,8 @@ public class Polygon2DExpressionTest extends AbstractTest {
 													new Coordinate(1, 0),
 													new Coordinate(0, 0)}
 										)));
-//		dbQuery.printSQLForQuery();
 		List<PolygonTestTable> allRows = dbQuery.getAllInstancesOf(testTable);
 
-//		database.print(allRows);
 		Assert.assertThat(allRows.size(), is(2));
 		for (PolygonTestTable row : allRows) {
 			Assert.assertThat(row.poly_id.intValue(), isOneOf(1, 3));
@@ -220,10 +219,8 @@ public class Polygon2DExpressionTest extends AbstractTest {
 						.contains(
 								testTable.column(testTable.poly)
 						));
-//		dbQuery.printSQLForQuery();
 		List<PolygonTestTable> allRows = dbQuery.getAllInstancesOf(testTable);
 
-//		database.print(allRows);
 		Assert.assertThat(allRows.size(), is(2));
 		for (PolygonTestTable row : allRows) {
 			Assert.assertThat(row.poly_id.intValue(), isOneOf(1, 3));
@@ -246,10 +243,8 @@ public class Polygon2DExpressionTest extends AbstractTest {
 													new Coordinate(-1, -3),
 													new Coordinate(0, 0)}
 										)));
-//		dbQuery.printSQLForQuery();
 		List<PolygonTestTable> allRows = dbQuery.getAllInstancesOf(testTable);
 
-//		database.print(allRows);
 		Assert.assertThat(allRows.size(), is(2));
 		for (PolygonTestTable row : allRows) {
 			Assert.assertThat(row.poly_id.intValue(), isOneOf(1, 3));
@@ -261,10 +256,8 @@ public class Polygon2DExpressionTest extends AbstractTest {
 								Polygon2DExpression
 										.value(0, 0, 1, 0, -1, -2, -1, -3, 0, 0)
 						));
-//		dbQuery.printSQLForQuery();
 		allRows = dbQuery.getAllInstancesOf(testTable);
 
-//		database.print(allRows);
 		Assert.assertThat(allRows.size(), is(2));
 		for (PolygonTestTable row : allRows) {
 			Assert.assertThat(row.poly_id.intValue(), isOneOf(1, 3));
@@ -292,6 +285,28 @@ public class Polygon2DExpressionTest extends AbstractTest {
 		}
 	}
 
+	@Test
+	public void testIntersection() throws SQLException {
+		final PolygonIntersectionTestTable testTable = new PolygonIntersectionTestTable();
+
+		DBQuery dbQuery = database.getDBQuery(testTable).setBlankQueryAllowed(true);
+		dbQuery.addCondition(
+				testTable.column(testTable.poly)
+						.intersection(
+								Polygon2DExpression
+										.value(0, 0, 0, 1, 1, 0, 0, 0)
+						).is(Polygon2DExpression
+								.value(0, 0, 0.5, 0.5, 1, 0, 0, 0))
+		);
+
+		List<PolygonIntersectionTestTable> allRows = dbQuery.getAllInstancesOf(testTable);
+		Assert.assertThat(allRows.size(), is(1));
+
+		for (PolygonTestTable row : allRows) {
+			Assert.assertThat(row.poly_id.intValue(), isOneOf(1));
+		}
+	}
+
 	public static class PolygonTestTable extends DBRow {
 
 		private static final long serialVersionUID = 1L;
@@ -303,6 +318,30 @@ public class Polygon2DExpressionTest extends AbstractTest {
 
 		@DBColumn("poly_col")
 		public DBPolygon2D poly = new DBPolygon2D();
+	}
+
+	public static class PolygonIntersectionTestTable extends PolygonTestTable {
+
+		private static final long serialVersionUID = 1L;
+
+		@DBColumn
+		public DBPolygon2D intersection
+				= this.column(this.poly)
+						.intersection(
+								Polygon2DExpression.value(0, 0, 0, 1, 1, 0, 0, 0)
+						).asExpressionColumn();
+		
+		@DBColumn
+		public DBPolygon2D test
+				= Polygon2DExpression.value(0, 0, 0.5, 0.5, 1, 0, 0, 0).asExpressionColumn();
+		
+		@DBColumn
+		public DBBoolean eq
+				= this.column(this.poly)
+						.intersection(
+								Polygon2DExpression.value(0, 0, 0, 1, 1, 0, 0, 0))
+						.is(Polygon2DExpression.value(0, 0, 0.5, 0.5, 1, 0, 0, 0)
+						).asExpressionColumn();//        (0  0, 0.5  0.5, 1  0, 0  0)
 	}
 
 }

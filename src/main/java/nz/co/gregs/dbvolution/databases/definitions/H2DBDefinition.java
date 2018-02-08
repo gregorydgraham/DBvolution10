@@ -382,6 +382,16 @@ public class H2DBDefinition extends DBDefinition implements SupportsDateRepeatDa
 	}
 
 	@Override
+	public String doPolygon2DUnionTransform(String firstGeometry, String secondGeometry) {
+		return Polygon2DFunctions.INTERSECTION.alias() + "(" + firstGeometry + ", " + secondGeometry + ")";
+	}
+
+	@Override
+	public String doPolygon2DIntersectionTransform(String firstGeometry, String secondGeometry) {
+		return Polygon2DFunctions.INTERSECTION.alias() + "(" + firstGeometry + ", " + secondGeometry + ")";
+	}
+
+	@Override
 	public String doPolygon2DIntersectsTransform(String firstGeometry, String secondGeometry) {
 		return Polygon2DFunctions.INTERSECTS.alias() + "(" + firstGeometry + ", " + secondGeometry + ")";
 	}

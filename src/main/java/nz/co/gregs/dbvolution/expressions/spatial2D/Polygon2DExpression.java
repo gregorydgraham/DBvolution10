@@ -15,6 +15,8 @@
  */
 package nz.co.gregs.dbvolution.expressions.spatial2D;
 
+import com.vividsolutions.jts.geom.Coordinate;
+import com.vividsolutions.jts.geom.GeometryFactory;
 import nz.co.gregs.dbvolution.results.Point2DResult;
 import nz.co.gregs.dbvolution.results.Polygon2DResult;
 import com.vividsolutions.jts.geom.Point;
@@ -215,6 +217,24 @@ public class Polygon2DExpression extends Spatial2DExpression<Polygon, Polygon2DR
 		return polygon2DFromPoint2DExpressionArray(exprs.toArray(new Point2DExpression[]{}));
 	}
 
+	/**
+	 * Create a Polygon2DExpression that represents the value for use in {@link DBQuery#addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression)
+	 * }, and when creating column expressions using {@link DBPolygon2D#DBPolygon2D(nz.co.gregs.dbvolution.results.Polygon2DResult)
+	 * } and similar methods.
+	 *
+	 * @param coords the points that define the polygon value of this value.
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @return a polygon2d value
+	 */
+	public Polygon2DExpression expression(Coordinate... coords) {
+		return value(coords);
+	}
+
+	public static Polygon2DExpression value(Coordinate... coordinates) {
+		return new Polygon2DExpression(new GeometryFactory().createPolygon(coordinates));
+	}
+
 	@Override
 	public DBPolygon2D getQueryableDatatypeForExpressionValue() {
 		return new DBPolygon2D();
@@ -283,8 +303,8 @@ public class Polygon2DExpression extends Spatial2DExpression<Polygon, Polygon2DR
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a boolean value that is true if the polygons interact in any way.
 	 */
-	public BooleanExpression intersection(Polygon rightHandSide) {
-		return intersects(new DBPolygon2D(rightHandSide));
+	public Polygon2DExpression intersection(Polygon rightHandSide) {
+		return intersection(new DBPolygon2D(rightHandSide));
 	}
 
 	/**
@@ -371,26 +391,30 @@ public class Polygon2DExpression extends Spatial2DExpression<Polygon, Polygon2DR
 					return db.transformCoordinateArrayToDatabasePolygon2DFormat(pointSQL);
 				} catch (UnsupportedOperationException ex) {
 					StringExpression newPolygon = StringExpression.value("POLYGON ((");
+					StringExpression lastPoint = StringExpression.value("");
 					String separator = "";
 
 					for (NumberExpression coord : allCoords) {
 						newPolygon = newPolygon.append(separator).append(coord);
+						if (separator.equals(" ")) {
+							lastPoint = lastPoint.append(separator).append(coord);
+						} else {
+							lastPoint = lastPoint.expression(coord);
+						}
 						switch (separator) {
-							case "":
-								separator = " ";
-								break;
 							case " ":
 								separator = ", ";
 								break;
-							case ", ":
-								separator = " ";
-								break;
 							default:
+								separator = " ";
 								break;
 						}
 					}
 					final StringExpression firstPoint = allCoords[0].append(" ").append(allCoords[1]);
-					newPolygon = newPolygon.append(separator).append(firstPoint).append("))");
+					if (!firstPoint.toSQLString(db).equals(lastPoint.toSQLString(db))) {
+						newPolygon = newPolygon.append(separator).append(firstPoint).append("))");
+					}
+					newPolygon = newPolygon.append("))");
 					return newPolygon.toSQLString(db);
 				}
 			}
