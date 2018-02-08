@@ -28,7 +28,6 @@ import nz.co.gregs.dbvolution.example.CarCompany;
 import nz.co.gregs.dbvolution.example.Marque;
 import nz.co.gregs.dbvolution.generic.AbstractTest;
 import nz.co.gregs.dbvolution.results.IntegerResult;
-import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Test;
 import static org.hamcrest.Matchers.*;
@@ -184,7 +183,7 @@ public class IntegerExpressionTest extends AbstractTest {
 			Marque marque = dBQueryRow.get(marq);
 			Assert.assertThat(
 					marque.uidMarque.getValue().intValue(),
-					Matchers.anyOf(
+					anyOf(
 							is(1),
 							is(4893101)
 					)
@@ -448,7 +447,7 @@ public class IntegerExpressionTest extends AbstractTest {
 		Marque marque = allRows.get(0).get(marq);
 		Assert.assertThat(marque.uidMarque.getValue().intValue(), is(1));
 	}
-	
+
 	@Test
 	public void testATAN() throws SQLException {
 		Marque marq = new Marque();
@@ -617,7 +616,7 @@ public class IntegerExpressionTest extends AbstractTest {
 	public void testGreatestOfCollection() throws SQLException {
 		Marque marq = new Marque();
 		DBQuery dbQuery = database.getDBQuery(marq);
-		ArrayList<IntegerResult> vals = new ArrayList<>();
+		List<IntegerResult> vals = new ArrayList<IntegerResult>();
 		vals.add(marq.column(marq.uidMarque));
 		vals.add(IntegerExpression.value(900000));
 		vals.add(IntegerExpression.value(800000));
@@ -1239,8 +1238,10 @@ public class IntegerExpressionTest extends AbstractTest {
 
 		Assert.assertThat(allRows.size(), is(4));
 		for (ExtendedCarCompany carCompany : dbQuery.getAllInstancesOf(carCo)) {
-			Assert.assertThat(carCompany.locationOfORD.getValue().intValue(),
-					is(Matchers.isOneOf(0, carCompany.name.stringValue().indexOf("ord") + 1)));
+			Assert.assertThat(
+					carCompany.locationOfORD.getValue().intValue(),
+					isOneOf(0, carCompany.name.stringValue().indexOf("ord") + 1)
+			);
 		}
 	}
 
