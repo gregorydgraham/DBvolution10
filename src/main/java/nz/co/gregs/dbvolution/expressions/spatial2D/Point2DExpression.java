@@ -15,6 +15,9 @@
  */
 package nz.co.gregs.dbvolution.expressions.spatial2D;
 
+import com.vividsolutions.jts.geom.Coordinate;
+import com.vividsolutions.jts.geom.CoordinateSequence;
+import com.vividsolutions.jts.geom.GeometryFactory;
 import nz.co.gregs.dbvolution.results.Point2DResult;
 import com.vividsolutions.jts.geom.Point;
 import java.util.HashSet;
@@ -106,6 +109,19 @@ public class Point2DExpression extends Spatial2DExpression<Point, Point2DResult,
 	 */
 	public static Point2DExpression value(Point2DResult point) {
 		return new Point2DExpression(point);
+	}
+
+	/**
+	 * Create a Point2DExpression that represents the coordinate value provided.
+	 *
+	 * @param coordinate the value of this value.
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @return a Point2DExpression of the point.
+	 */
+	public static Point2DExpression value(Coordinate coordinate) {
+		Point point = new GeometryFactory().createPoint(coordinate);
+		return Point2DExpression.value(point);
 	}
 
 	/**
