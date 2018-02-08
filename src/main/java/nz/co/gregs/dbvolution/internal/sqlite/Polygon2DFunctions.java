@@ -257,10 +257,7 @@ public class Polygon2DFunctions {
 		@Override
 		protected void xFunc() throws SQLException {
 			try {
-//				SQLiteDefinition defn = new SQLiteDefinition();
 				WKTReader wktReader = new WKTReader();
-//				GeometryFactory factory = new GeometryFactory();
-//				List<Coordinate> coords = new ArrayList<Coordinate>();
 				String originalStr;
 				originalStr = value_text(0);
 				if (originalStr == null) {
