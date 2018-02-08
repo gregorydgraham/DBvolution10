@@ -288,15 +288,19 @@ public class MySQLDBDefinition extends DBDefinition {
 			str.append(separator).append(coordsOnly);
 			separator = ",";
 		}
+		String[] points = str.toString().split(",");
+		if (points.length > 0 && !points[0].equals(points[points.length - 1])) {
+			str.append(separator).append(points[0]);
+		}
 
 		return "PolyFromText('POLYGON ((" + str + "))')";
 	}
-	
+
 	@Override
 	public String doPolygon2DEqualsTransform(String firstGeometry, String secondGeometry) {
 		return "ST_Equals(" + firstGeometry + ", " + secondGeometry + ")";
 	}
-	
+
 	@Override
 	public String doPolygon2DIntersectionTransform(String firstGeometry, String secondGeometry) {
 		return "ST_Intersection(" + firstGeometry + ", " + secondGeometry + ")";
