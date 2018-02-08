@@ -620,6 +620,16 @@ public class SQLiteDefinition extends DBDefinition implements SupportsDateRepeat
 	}
 
 	@Override
+	public String doPolygon2DUnionTransform(String firstGeometry, String secondGeometry) {
+		return Polygon2DFunctions.UNION + "(" + firstGeometry + ", " + secondGeometry + ")";
+	}
+
+	@Override
+	public String doPolygon2DIntersectionTransform(String firstGeometry, String secondGeometry) {
+		return Polygon2DFunctions.INTERSECTION + "(" + firstGeometry + ", " + secondGeometry + ")";
+	}
+	
+	@Override
 	public String doPolygon2DIntersectsTransform(String firstGeometry, String secondGeometry) {
 		return Polygon2DFunctions.INTERSECTS + "(" + firstGeometry + ", " + secondGeometry + ")";
 	}
