@@ -3814,10 +3814,23 @@ public abstract class DBDefinition {
 	}
 
 	/**
-	 * Creates a Polygon2D representing the intersection of the Polygon2Ds.
+	 * Creates a Polygon2D representing the union of the Polygon2Ds.
 	 *
 	 * @param firstGeometry the first polygon2d value to compare
 	 * @param secondGeometry the second polygon2d value to compare
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @return SQL that represents a polygon of the union, null if both polygons are null.
+	 */
+	public String doPolygon2DUnionTransform(String firstGeometry, String secondGeometry) {
+		throw new UnsupportedOperationException("Spatial Operations Haven't Been Defined Yet");
+	}
+
+	/**
+	 * Creates a Polygon2D representing the intersection of the Polygon2Ds.
+	 *
+	 * @param firstGeometry the first polygon2d value
+	 * @param secondGeometry the second polygon2d value
 	 * <p style="color: #F90;">Support DBvolution at
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return SQL that represents a polygon of the intersection, null if there is
