@@ -567,4 +567,83 @@ public abstract class EqualExpression<B, R extends EqualResult<B>, D extends Que
 			return secondTableCounterName;
 		}
 	}
+
+	public static class MedianExpression<B, R extends EqualResult<B>, D extends QueryableDatatype<B>, X extends EqualExpression<B, R, D>> extends DBUnaryFunction<B, R, D, X> {
+
+		private final static long serialVersionUID = 1l;
+
+		public MedianExpression(X only) {
+			super(only);
+		}
+
+		@Override
+		public String toSQLString(DBDefinition defn) {
+			return defn.formatExpressionAlias(this);
+		}
+
+		@Override
+		String getFunctionName(DBDefinition db) {
+			return "";
+		}
+
+		@Override
+		protected String afterValue(DBDefinition db) {
+			return "";
+		}
+
+		@Override
+		public boolean isAggregator() {
+			return true;
+		}
+
+		@Override
+		public boolean isComplexExpression() {
+			return true;
+		}
+
+		@Override
+		public String createSQLForFromClause(DBDatabase database) {
+
+			final IntegerExpression expr = new IntegerExpression(getInnerResult());
+
+			DBInteger count = expr.count().asExpressionColumn();
+
+			count.setSortOrderDescending();
+
+			Set<DBRow> tablesInvolved = this.getTablesInvolved();
+			List<DBRow> tablesToUse = new ArrayList<>(0);
+			for (DBRow dBRow : tablesInvolved) {
+				tablesToUse.add(DBRow.copyDBRow(dBRow));
+			}
+
+			DBQuery query = database.getDBQuery(tablesToUse);
+
+			query.setBlankQueryAllowed(true)
+					.setReturnFieldsToNone()
+					.addExpressionColumn(this, expr.asExpressionColumn())
+					.addExpressionColumn("mode count", count)
+					.setSortOrder(query.column(count))
+					.setRowLimit(1);
+			String tableAliasForObject = getInternalTableName(database);
+
+			String sql = "(" + query.getSQLForQuery().replaceAll("; *$", "") + ") " + tableAliasForObject;
+			return sql;
+		}
+
+		public String getInternalTableName(DBDatabase database) {
+			return database.getDefinition().getTableAliasForObject(this);
+		}
+
+		private synchronized String getFirstTableModeName(DBDefinition defn) {
+			return defn.formatExpressionAlias(this);
+		}		
+		
+		@Override
+		public String createSQLForGroupByClause(DBDatabase database) {
+			return "";
+		}
+
+
+	}
+
 }

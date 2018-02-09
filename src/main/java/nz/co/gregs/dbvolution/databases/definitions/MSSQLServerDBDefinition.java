@@ -628,17 +628,17 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 
 	@Override
 	public String transformLineStringIntoDatabaseLine2DFormat(LineString line) {
-		return "geometry::STGeomFromText ('" + line.toText() + "',0).MakeValid()";
+		return "geometry::STGeomFromText ('" + line.toText() + "',0)";
 	}
 
 	@Override
 	public String transformCoordinatesIntoDatabasePoint2DFormat(String xValue, String yValue) {
-		return "geometry::STGeomFromText ('POINT (" + xValue + " " + yValue + ")',0).MakeValid()";
+		return "geometry::STGeomFromText ('POINT (" + xValue + " " + yValue + ")',0)";
 	}
 
 	@Override
 	public String transformPoint2DIntoDatabaseFormat(Point point) {
-		return "geometry::STGeomFromText ('" + point.toText() + "',0).MakeValid()";
+		return "geometry::STGeomFromText ('" + point.toText() + "',0)";
 	}
 
 	@Override
@@ -677,12 +677,12 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 		StringBuilder str = new StringBuilder();
 		String separator = "";
 		for (String point : pointSQL) {
-			final String coordsOnly = point.replaceAll("geometry::STGeomFromText \\('POINT \\(", "").replaceAll("\\)',0\\).MakeValid()", "");
+			final String coordsOnly = point.replaceAll("geometry::STGeomFromText \\('POINT \\(", "").replaceAll("\\)',0\\)", "");
 			str.append(separator).append(coordsOnly);
 			separator = ",";
 		}
 
-		return "geometry::STGeomFromText('POLYGON ((" + str + "))', 0).MakeValid()";
+		return "geometry::STGeomFromText('POLYGON ((" + str + "))', 0)";
 	}
 
 	@Override
@@ -889,7 +889,7 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 
 	@Override
 	public String transformMultiPoint2DToDatabaseMultiPoint2DValue(MultiPoint points) {
-		return "geometry::STGeomFromText ('" + points.toText() + "',0).MakeValid()";
+		return "geometry::STGeomFromText ('" + points.toText() + "',0)";
 	}
 
 	@Override

@@ -44,7 +44,7 @@ public class DBStatistics<B, R extends EqualResult<B>, D extends QueryableDataty
 	private IntegerExpression countExpr;
 	private EqualExpression.ModeSimpleExpression<B, R, D, X> modeSimpleExpression;
 	private EqualExpression.ModeStrictExpression<B, R, D, X> modeStrictExpression;
-	private X medianExpression;
+	private EqualExpression.MedianExpression<B, R, D, X> medianExpression;
 	private X firstQuartileExpression;
 	private X thirdQuartileExpression;
 
@@ -80,11 +80,13 @@ public class DBStatistics<B, R extends EqualResult<B>, D extends QueryableDataty
 		countExpr = originalExpression.count();
 		modeSimpleExpression = new EqualExpression.ModeSimpleExpression<B, R, D, X>(originalExpression);
 		modeStrictExpression = new EqualExpression.ModeStrictExpression<B, R, D, X>(originalExpression);
+		medianExpression = new EqualExpression.MedianExpression<B, R, D, X>(originalExpression);
 
 		this.setColumnExpression(new AnyExpression<?, ?, ?>[]{
 			countExpr,
 			modeSimpleExpression,
-			modeStrictExpression
+			modeStrictExpression,
+			medianExpression
 		});
 
 	}
@@ -229,9 +231,11 @@ public class DBStatistics<B, R extends EqualResult<B>, D extends QueryableDataty
 					final String countColumnAlias = propertyWrapperDefinition.allColumnAspects.get(0).columnAlias;
 					final String modeSimpleAlias = propertyWrapperDefinition.allColumnAspects.get(1).columnAlias;
 					final String modeStrictAlias = propertyWrapperDefinition.allColumnAspects.get(2).columnAlias;
+					final String medianAlias = propertyWrapperDefinition.allColumnAspects.get(3).columnAlias;
 					countOfRows = new DBInteger().getFromResultSet(database, resultSet, countColumnAlias);
 					modeSimple = modeSimpleExpression.asExpressionColumn().getFromResultSet(database, resultSet, modeSimpleAlias);
 					modeStrict = modeStrictExpression.asExpressionColumn().getFromResultSet(database, resultSet, modeStrictAlias);
+					median = medianExpression.asExpressionColumn().getFromResultSet(database, resultSet, medianAlias);
 				} else {
 					countOfRows = getFromResultSet(database, resultSet, resultSetColumnName, 0);
 //					modeSimple = modeSimpleExpression.asExpressionColumn().getFromResultSet(database, resultSet, resultSetColumnName, 1);

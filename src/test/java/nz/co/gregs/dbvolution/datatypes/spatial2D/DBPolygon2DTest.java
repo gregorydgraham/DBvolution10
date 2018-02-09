@@ -194,7 +194,7 @@ public class DBPolygon2DTest extends AbstractTest {
 			Polygon2DExpression polygonResult = Polygon2DExpression.value(pointArray);
 
 //			Polygon polygon = fac.createPolygon(coordArray);
-			DBQuery query = database.getDBQuery(new BasicSpatialTable()).addCondition(Polygon2DExpression.value(polygonResult).intersects(spatial.column(spatial.myfirstgeom)));
+			DBQuery query = database.getDBQuery(new BasicSpatialTable()).addCondition(polygonResult.intersects(spatial.column(spatial.myfirstgeom)));
 			List<BasicSpatialTable> allRows = query.getAllInstancesOf(spatial);
 
 			Assert.assertThat(allRows.size(), is(1));
