@@ -628,17 +628,17 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 
 	@Override
 	public String transformLineStringIntoDatabaseLine2DFormat(LineString line) {
-		return "geometry::STGeomFromText ('" + line.toText() + "',0)";
+		return "geometry::STGeomFromText ('" + line.toText() + "',0).MakeValid()";
 	}
 
 	@Override
 	public String transformCoordinatesIntoDatabasePoint2DFormat(String xValue, String yValue) {
-		return "geometry::STGeomFromText ('POINT (" + xValue + " " + yValue + ")',0)";
+		return "geometry::STGeomFromText ('POINT (" + xValue + " " + yValue + ")',0).MakeValid()";
 	}
 
 	@Override
 	public String transformPoint2DIntoDatabaseFormat(Point point) {
-		return "geometry::STGeomFromText ('" + point.toText() + "',0)";
+		return "geometry::STGeomFromText ('" + point.toText() + "',0).MakeValid()";
 	}
 
 	@Override
@@ -651,7 +651,7 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 			separator = ", ";
 		}
 
-		return "geometry::STGeomFromText('POLYGON ((" + str + "))', 0)";
+		return "geometry::STGeomFromText('POLYGON ((" + str + "))', 0).MakeValid()";
 	}
 
 	@Override
@@ -668,7 +668,7 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 			}
 		}
 //'POLYGON ((12 12, 13 12, 13 13, 12 13, 12 12))'
-		return "geometry::STGeomFromText('POLYGON ((" + str + "))', 0)";
+		return "geometry::STGeomFromText('POLYGON ((" + str + "))', 0).MakeValid()";
 	}
 
 	@Override
@@ -677,12 +677,12 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 		StringBuilder str = new StringBuilder();
 		String separator = "";
 		for (String point : pointSQL) {
-			final String coordsOnly = point.replaceAll("geometry::STGeomFromText \\('POINT \\(", "").replaceAll("\\)',0\\)", "");
+			final String coordsOnly = point.replaceAll("geometry::STGeomFromText \\('POINT \\(", "").replaceAll("\\)',0\\).MakeValid()", "");
 			str.append(separator).append(coordsOnly);
 			separator = ",";
 		}
 
-		return "geometry::STGeomFromText('POLYGON ((" + str + "))', 0)";
+		return "geometry::STGeomFromText('POLYGON ((" + str + "))', 0).MakeValid()";
 	}
 
 	@Override
@@ -889,7 +889,7 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 
 	@Override
 	public String transformMultiPoint2DToDatabaseMultiPoint2DValue(MultiPoint points) {
-		return "geometry::STGeomFromText ('" + points.toText() + "',0)";
+		return "geometry::STGeomFromText ('" + points.toText() + "',0).MakeValid()";
 	}
 
 	@Override

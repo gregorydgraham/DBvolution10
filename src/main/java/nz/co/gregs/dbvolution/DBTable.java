@@ -525,9 +525,9 @@ public class DBTable<E extends DBRow> {
 	}
 
 	/**
-	 * the same as print() but allows you to specify the PrintStream required
+	 * The same as {@link #print()} but allows you to specify the PrintStream required.
 	 *
-	 * myTable.printAllRows(System.err);
+	 * For example: myTable.printAllRows(System.err);
 	 *
 	 * @param stream stream
 	 * @throws java.sql.SQLException java.sql.SQLException

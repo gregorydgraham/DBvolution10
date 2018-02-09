@@ -25,10 +25,8 @@ import java.util.List;
 import nz.co.gregs.dbvolution.DBQuery;
 import nz.co.gregs.dbvolution.DBQueryRow;
 import nz.co.gregs.dbvolution.DBReport;
-import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.annotations.DBColumn;
 import nz.co.gregs.dbvolution.columns.ColumnProvider;
-import nz.co.gregs.dbvolution.databases.MSSQLServerDB;
 import nz.co.gregs.dbvolution.datatypes.DBBoolean;
 import nz.co.gregs.dbvolution.datatypes.DBDate;
 import nz.co.gregs.dbvolution.datatypes.DBNumber;
@@ -842,10 +840,7 @@ public class BooleanExpressionTest extends AbstractTest {
 	@Test
 	public void testCount() throws SQLException, ParseException {
 		MarqueReportWithBooleanExpressionCount marque = new MarqueReportWithBooleanExpressionCount();
-		String sqlForQuery = DBReport.getSQLForQuery(database, marque, new DBRow[]{});
-		
-		if (database instanceof MSSQLServerDB){System.out.println(sqlForQuery);}
-		
+
 		List<MarqueReportWithBooleanExpressionCount> allRows = database.getAllRows(marque);
 
 		Assert.assertThat(allRows.size(), is(2));
@@ -876,8 +871,6 @@ public class BooleanExpressionTest extends AbstractTest {
 		dbQuery.setBlankQueryAllowed(true);
 		dbQuery.setSortOrder(marque.column(marque.greaterThan3));
 		
-		if (database instanceof MSSQLServerDB){System.out.println(dbQuery.getSQLForQuery());}
-
 		List<MarqueWithBooleanExpressionCount> allRows = dbQuery.getAllInstancesOf(marque);
 
 		Assert.assertThat(allRows.size(), is(2));

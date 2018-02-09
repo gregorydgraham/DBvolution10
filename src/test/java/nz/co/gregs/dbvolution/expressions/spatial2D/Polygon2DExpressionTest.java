@@ -56,6 +56,9 @@ public class Polygon2DExpressionTest extends AbstractTest {
 
 	public Polygon2DExpressionTest(Object testIterationName, DBDatabase db) throws SQLException {
 		super(testIterationName, db);
+
+		db.setPrintSQLBeforeExecuting(true);
+
 		PolygonTestTable polygonTestTable = new PolygonTestTable();
 
 		db.preventDroppingOfTables(false);
@@ -81,6 +84,8 @@ public class Polygon2DExpressionTest extends AbstractTest {
 		polygonTestTable.poly.setValue(geometryFactory.createPolygon(
 				new Coordinate[]{coordinate00, coordinate01, coordinate11, coordinate10, coordinate00}));
 		db.insert(polygonTestTable);
+		
+		db.setPrintSQLBeforeExecuting(false);
 	}
 
 	@Test
