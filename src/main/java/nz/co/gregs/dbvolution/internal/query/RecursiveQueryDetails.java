@@ -183,7 +183,6 @@ public class RecursiveQueryDetails<T extends DBRow> extends QueryDetails {
 	}
 
 	private synchronized List<DBQueryRow> performNativeRecursiveQuery(DBDatabase database, RecursiveQueryDetails<T> recursiveDetails, RecursiveSQLDirection direction, List<DBQueryRow> returnList) throws SQLException, UnableToInstantiateDBRowSubclassException {
-//		final DBDatabase database = originalQuery.getReadyDatabase();
 		final DBDefinition defn = database.getDefinition();
 		DBStatement dbStatement = database.getDBStatement();
 		final DBQuery query = recursiveDetails.getOriginalQuery();
