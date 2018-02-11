@@ -349,7 +349,7 @@ public abstract class EqualExpression<B, R extends EqualResult<B>, D extends Que
 		@Override
 		public String createSQLForFromClause(DBDatabase database) {
 
-			final IntegerExpression expr = new IntegerExpression(getInnerResult());
+			final X expr = only;
 
 			DBInteger count = expr.count().asExpressionColumn();
 

@@ -80,17 +80,17 @@ public class DBStatistics<B, R extends EqualResult<B>, D extends QueryableDataty
 		countExpr = originalExpression.count();
 		modeSimpleExpression = new EqualExpression.ModeSimpleExpression<B, R, D, X>(originalExpression);
 		modeStrictExpression = new EqualExpression.ModeStrictExpression<B, R, D, X>(originalExpression);
-		medianExpression = new EqualExpression.MedianExpression<B, R, D, X>(originalExpression);
+//		medianExpression = new EqualExpression.MedianExpression<B, R, D, X>(originalExpression);
 
 		this.setColumnExpression(new AnyExpression<?, ?, ?>[]{
 			countExpr,
-			modeSimpleExpression,
-			modeStrictExpression,
-			medianExpression
+			 modeSimpleExpression,
+			 modeStrictExpression
+			 //,medianExpression
 		});
 
 	}
-	
+
 	/**
 	 * Count of the rows included in this set of statistics
 	 *
@@ -174,8 +174,8 @@ public class DBStatistics<B, R extends EqualResult<B>, D extends QueryableDataty
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public DBStatistics<B,R,D,X> copy() {
-		DBStatistics<B,R,D,X> copy = (DBStatistics<B,R,D,X>) super.copy();
+	public DBStatistics<B, R, D, X> copy() {
+		DBStatistics<B, R, D, X> copy = (DBStatistics<B, R, D, X>) super.copy();
 		copy.countOfRows = this.countOfRows;
 		copy.firstQuartileValue = this.firstQuartileValue;
 		copy.modeStrict = this.modeStrict;
@@ -203,7 +203,7 @@ public class DBStatistics<B, R extends EqualResult<B>, D extends QueryableDataty
 	}
 
 	@Override
-	public DBStatistics<B,R,D,X> getQueryableDatatypeForExpressionValue() {
+	public DBStatistics<B, R, D, X> getQueryableDatatypeForExpressionValue() {
 		return new DBStatistics<>();
 	}
 
@@ -231,11 +231,11 @@ public class DBStatistics<B, R extends EqualResult<B>, D extends QueryableDataty
 					final String countColumnAlias = propertyWrapperDefinition.allColumnAspects.get(0).columnAlias;
 					final String modeSimpleAlias = propertyWrapperDefinition.allColumnAspects.get(1).columnAlias;
 					final String modeStrictAlias = propertyWrapperDefinition.allColumnAspects.get(2).columnAlias;
-					final String medianAlias = propertyWrapperDefinition.allColumnAspects.get(3).columnAlias;
+//					final String medianAlias = propertyWrapperDefinition.allColumnAspects.get(3).columnAlias;
 					countOfRows = new DBInteger().getFromResultSet(database, resultSet, countColumnAlias);
 					modeSimple = modeSimpleExpression.asExpressionColumn().getFromResultSet(database, resultSet, modeSimpleAlias);
 					modeStrict = modeStrictExpression.asExpressionColumn().getFromResultSet(database, resultSet, modeStrictAlias);
-					median = medianExpression.asExpressionColumn().getFromResultSet(database, resultSet, medianAlias);
+//					median = medianExpression.asExpressionColumn().getFromResultSet(database, resultSet, medianAlias);
 				} else {
 					countOfRows = getFromResultSet(database, resultSet, resultSetColumnName, 0);
 //					modeSimple = modeSimpleExpression.asExpressionColumn().getFromResultSet(database, resultSet, resultSetColumnName, 1);

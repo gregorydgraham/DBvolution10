@@ -60,8 +60,8 @@ import nz.co.gregs.dbvolution.expressions.DBExpression;
  */
 public class QueryGraph {
 
-	private final Map<Class<? extends DBRow>, QueryGraphNode> nodes = new LinkedHashMap<>();
-	private final Map<Class<? extends DBRow>, DBRow> rows = new LinkedHashMap<>();
+	private final Map<DBRowClass, QueryGraphNode> nodes = new LinkedHashMap<>();
+	private final Map<DBRowClass, DBRow> rows = new LinkedHashMap<>();
 	private edu.uci.ics.jung.graph.Graph<QueryGraphNode, DBExpression> jungGraph = new SparseMultigraph<>();
 
 	/**
@@ -138,12 +138,12 @@ public class QueryGraph {
 
 		while (tablesRemaining.size() > 0) {
 			DBRow table1 = tablesRemaining.get(0);
-			Class<? extends DBRow> table1Class = table1.getClass();
+			DBRowClass table1Class = new DBRowClass(table1);
 			QueryGraphNode node1 = getOrCreateNode(table1, table1Class, requiredTables);
 			for (DBRow table2 : tablesAdded) {
 				if (!table1.getClass().equals(table2.getClass())) {
 					if (table1.willBeConnectedTo(table2)) {
-						Class<? extends DBRow> table2Class = table2.getClass();
+						DBRowClass table2Class = new DBRowClass(table2);
 						QueryGraphNode node2 = getOrCreateNode(table2, table2Class, requiredTables);
 						node1.connectTable(table2Class);
 						node2.connectTable(table1Class);
@@ -161,11 +161,11 @@ public class QueryGraph {
 				DBRow table1 = tables.iterator().next();
 				Set<DBRow> tablesToConnectTo = new HashSet<>(tables);
 				tablesToConnectTo.remove(table1);
-				final Class<? extends DBRow> table1Class = table1.getClass();
+				final DBRowClass table1Class = new DBRowClass(table1);
 				final QueryGraphNode node1 = getOrCreateNode(table1, table1Class, requiredTables);
 				addNodeToDisplayGraph(node1);
 				for (DBRow table2 : tablesToConnectTo) {
-					final Class<? extends DBRow> table2Class = table2.getClass();
+					final DBRowClass table2Class = new DBRowClass(table2);
 					final QueryGraphNode node2 = getOrCreateNode(table2, table2Class, requiredTables);
 					node1.connectTable(table2Class);
 					node2.connectTable(table1Class);
@@ -176,7 +176,7 @@ public class QueryGraph {
 		}
 	}
 
-	private QueryGraphNode getOrCreateNode(DBRow table1, Class<? extends DBRow> table1Class, boolean requiredTables) {
+	private QueryGraphNode getOrCreateNode(DBRow table1, DBRowClass table1Class, boolean requiredTables) {
 		QueryGraphNode node1 = nodes.get(table1Class);
 		if (node1 == null) {
 			node1 = new QueryGraphNode(table1Class, requiredTables);
@@ -261,7 +261,7 @@ public class QueryGraph {
 	 *
 	 * @return the class of a DBRow from which to start a traversal.
 	 */
-	private Class<? extends DBRow> getStartTable() {
+	private DBRowClass getStartTable() {
 		List<QueryGraphNode> innerNodes = new ArrayList<>();
 		List<QueryGraphNode> outerNodes = new ArrayList<>();
 
@@ -279,7 +279,7 @@ public class QueryGraph {
 		}
 
 		for (QueryGraphNode queryGraphNode : nodesToCheck) {
-			final Class<? extends DBRow> tableClass = queryGraphNode.getTable();
+			final DBRowClass tableClass = queryGraphNode.getTable();
 			final DBRow table = rows.get(tableClass);
 			if (table.hasConditionsSet()) {
 				return tableClass;
@@ -347,11 +347,11 @@ public class QueryGraph {
 	}
 
 	@SuppressWarnings("unchecked")
-	private List<DBRow> toList(Class<? extends DBRow> startFrom, boolean reverse) {
-		LinkedHashSet<Class<? extends DBRow>> sortedInnerTables = new LinkedHashSet<>();
-		LinkedHashSet<Class<? extends DBRow>> sortedAllTables = new LinkedHashSet<>();
-		List<Class<? extends DBRow>> addedInnerTables = new ArrayList<>();
-		List<Class<? extends DBRow>> addedAllTables = new ArrayList<>();
+	private List<DBRow> toList(DBRowClass startFrom, boolean reverse) {
+		LinkedHashSet<DBRowClass> sortedInnerTables = new LinkedHashSet<>();
+		LinkedHashSet<DBRowClass> sortedAllTables = new LinkedHashSet<>();
+		List<DBRowClass> addedInnerTables = new ArrayList<>();
+		List<DBRowClass> addedAllTables = new ArrayList<>();
 		QueryGraphNode nodeA = nodes.get(startFrom);
 		sortedAllTables.add(nodeA.getTable());
 		int sortedAllBeforeLoop = 0;
@@ -364,15 +364,15 @@ public class QueryGraph {
 				sortedInnerBeforeLoop = sortedInnerTables.size();
 				addedInnerTables.clear();
 				// Reverse the list to make it a depth first search
-				Class<?>[] dummyArray = new Class<?>[]{};
-				Class<? extends DBRow>[] sortedArray = (Class<? extends DBRow>[]) sortedInnerTables.toArray(dummyArray);
-				List<Class<? extends DBRow>> reversedList = Arrays.asList(sortedArray);
+				DBRowClass[] dummyArray = new DBRowClass[]{};
+				DBRowClass[] sortedArray = sortedInnerTables.toArray(dummyArray);
+				List<DBRowClass> reversedList = Arrays.asList(sortedArray);
 				Collections.reverse(reversedList);
-				for (Class<? extends DBRow> row : reversedList) {
+				for (DBRowClass row : reversedList) {
 					nodeA = nodes.get(row);
-					for (Class<? extends DBRow> table : nodeA.getConnectedTables()) {
+					for (DBRowClass table : nodeA.getConnectedTables()) {
 						QueryGraphNode nodeToAdd = nodes.get(table);
-						final Class<? extends DBRow> nodeTable = nodeToAdd.getTable();
+						final DBRowClass nodeTable = nodeToAdd.getTable();
 						if (nodeToAdd.isRequiredNode()) {
 							addedInnerTables.add(nodeTable);
 						}
@@ -384,7 +384,7 @@ public class QueryGraph {
 			sortedAllTables.addAll(addedAllTables);
 		}
 		List<DBRow> returnTables = new ArrayList<>();
-		for (Class<? extends DBRow> rowClass : sortedInnerTables) {
+		for (DBRowClass rowClass : sortedInnerTables) {
 			returnTables.add(rows.get(rowClass));
 		}
 		if (reverse) {
@@ -457,7 +457,7 @@ public class QueryGraph {
 			for (DBRow row : rows.values()) {
 				changed = false;
 				if (!returnTables.contains(row)) {
-					returnTables.addAll(toList(row.getClass(), false));
+					returnTables.addAll(toList(new DBRowClass(row), false));
 					changed = true;
 				}
 			}

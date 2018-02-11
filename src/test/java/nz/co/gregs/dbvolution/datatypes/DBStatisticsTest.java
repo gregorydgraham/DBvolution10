@@ -8,6 +8,7 @@ package nz.co.gregs.dbvolution.datatypes;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Set;
+import javassist.ClassPool;
 import nz.co.gregs.dbvolution.DBQuery;
 import nz.co.gregs.dbvolution.DBQueryRow;
 import nz.co.gregs.dbvolution.DBRow;
@@ -384,6 +385,17 @@ public class DBStatisticsTest extends AbstractTest {
 		Assert.assertThat(mode.stringValue(), is("2"));
 	}
 
+	@Test
+	public void testMedianQuery() throws SQLException {
+
+		final Marque table1 = new Marque();
+		final IntegerColumn updateCountColumn = table1.column(table1.updateCount);
+		Marque table2 = new Marque(){};
+		
+		DBQuery dbQuery = database.getDBQuery(table1).add(table2).setBlankQueryAllowed(true);
+		dbQuery.printSQLForQuery();
+	}
+
 	public static class StatsIntegerTest extends Marque {
 
 		private static final long serialVersionUID = 1L;
@@ -412,7 +424,9 @@ public class DBStatisticsTest extends AbstractTest {
 				= new DBStatistics<String, StringResult, DBString, StringExpression>(
 						this.column(this.name).substring(1, 2));
 
-		{this.setReturnFields(carNameStats);}
+		{
+			this.setReturnFields(carNameStats);
+		}
 	}
 
 	public static class StatsOfUpdateCountTest extends Marque {

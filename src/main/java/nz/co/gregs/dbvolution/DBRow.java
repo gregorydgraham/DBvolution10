@@ -127,6 +127,9 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 	private transient final SortedSet<Class<? extends DBRow>> referencedTables = new TreeSet<>(new DBRow.ClassNameComparator());
 	private Boolean emptyRow = true;
 
+	private String recursiveTableAlias = null;
+	private String tableVariantIdentifier = null;
+
 	/**
 	 * Creates a new blank DBRow of the supplied subclass.
 	 *
@@ -183,6 +186,7 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 	public static <T extends DBRow> T copyDBRow(T originalRow) {
 		@SuppressWarnings("unchecked")
 		T newRow = (T) DBRow.getDBRow(originalRow.getClass());
+		newRow.setTableVariantIdentifier(originalRow.getTableVariantIdentifier());
 		if (originalRow.getDefined()) {
 			newRow.setDefined();
 		} else {
@@ -216,9 +220,6 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 		}
 		return newRow;
 	}
-	private String recursiveTableAlias = null;
-	private transient final Object locker = new Object();
-
 	/**
 	 * Returns the QueryableDatatype instance of the Primary Key of This DBRow
 	 *
@@ -1753,6 +1754,19 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 
 	public boolean isRequiredTable() {
 		return getWrapper().isRequiredTable();
+	}
+
+	public String getTableVariantIdentifier() {
+		if (tableVariantIdentifier == null){
+			return this.getTableName();
+		}else{
+			return tableVariantIdentifier;
+		}
+	}
+
+	public DBRow setTableVariantIdentifier(String variantName) {
+		tableVariantIdentifier = variantName;
+		return this;
 	}
 
 	/**

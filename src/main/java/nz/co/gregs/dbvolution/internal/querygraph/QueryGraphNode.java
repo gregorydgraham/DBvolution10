@@ -31,8 +31,8 @@ public class QueryGraphNode {
 
 	private boolean requiredNode = true;
 
-	private final Class<? extends DBRow> table;
-	private final Set<Class<? extends DBRow>> connectedTables = new HashSet<Class<? extends DBRow>>();
+	private final DBRowClass table;
+	private final Set<DBRowClass> connectedTables = new HashSet<DBRowClass>();
 
 	/**
 	 * Create a node for the supplied table.
@@ -42,7 +42,7 @@ public class QueryGraphNode {
 	 *
 	 * @param table
 	 */
-	public QueryGraphNode(Class<? extends DBRow> table) {
+	public QueryGraphNode(DBRowClass table) {
 		this.table = table;
 	}
 
@@ -53,7 +53,7 @@ public class QueryGraphNode {
 	 * @param table
 	 * @param requiredTable
 	 */
-	public QueryGraphNode(Class<? extends DBRow> table, boolean requiredTable) {
+	public QueryGraphNode(DBRowClass table, boolean requiredTable) {
 		this.table = table;
 		requiredNode = requiredTable;
 	}
@@ -70,7 +70,7 @@ public class QueryGraphNode {
 	 *
 	 * @return a set of all classes used in this query
 	 */
-	public Set<Class<? extends DBRow>> getConnectedTables() {
+	public Set<DBRowClass> getConnectedTables() {
 		return connectedTables;
 	}
 
@@ -82,7 +82,7 @@ public class QueryGraphNode {
 	 *
 	 * @param table
 	 */
-	public void connectTable(Class<? extends DBRow> table) {
+	public void connectTable(DBRowClass table) {
 		connectedTables.add(table);
 	}
 
@@ -94,7 +94,7 @@ public class QueryGraphNode {
 	 *
 	 * @return the table
 	 */
-	public Class<? extends DBRow> getTable() {
+	public DBRowClass getTable() {
 		return table;
 	}
 

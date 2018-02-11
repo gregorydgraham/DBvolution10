@@ -60,13 +60,13 @@ public class QueryGraphVertexFillPaintTransformerTest extends AbstractTest {
 	 */
 	@Test
 	public void testTransform() {
-		QueryGraphNode i = new QueryGraphNode((new Marque()).getClass());
+		QueryGraphNode i = new QueryGraphNode(new DBRowClass(new Marque()));
 		QueryGraphVertexFillPaintTransformer instance = new QueryGraphVertexFillPaintTransformer();
 		Paint expResult = Color.RED;
 		Paint result = instance.transform(i);
 		assertEquals(expResult, result);
 		expResult = Color.ORANGE;
-		i = new QueryGraphNode((new Marque()).getClass(), false);
+		i = new QueryGraphNode(new DBRowClass(new Marque()), false);
 		result = instance.transform(i);
 		assertEquals(expResult, result);
 	}
