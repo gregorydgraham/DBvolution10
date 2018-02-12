@@ -8,7 +8,6 @@ package nz.co.gregs.dbvolution.datatypes;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Set;
-import javassist.ClassPool;
 import nz.co.gregs.dbvolution.DBQuery;
 import nz.co.gregs.dbvolution.DBQueryRow;
 import nz.co.gregs.dbvolution.DBRow;
@@ -16,6 +15,7 @@ import nz.co.gregs.dbvolution.annotations.DBColumn;
 import nz.co.gregs.dbvolution.columns.IntegerColumn;
 import nz.co.gregs.dbvolution.example.CarCompany;
 import nz.co.gregs.dbvolution.example.Marque;
+import nz.co.gregs.dbvolution.expressions.BooleanExpression;
 import nz.co.gregs.dbvolution.expressions.IntegerExpression;
 import nz.co.gregs.dbvolution.expressions.StringExpression;
 import nz.co.gregs.dbvolution.generic.AbstractTest;
@@ -387,12 +387,43 @@ public class DBStatisticsTest extends AbstractTest {
 
 	@Test
 	public void testMedianQuery() throws SQLException {
-
+		/*
+SELECT *, upd_count as median FROM (
+	SELECT a1.uid_marque, a1.upd_count, COUNT(a1.upd_count) rownumber 
+	FROM marque a1 
+	left outer join marque a2 on (a1.upd_count > a2.upd_count 
+	       OR (a1.upd_count = a2.upd_count and a1.uid_marque >= a2.uid_marque))
+	group by a1.uid_marque, a1.upd_count
+	order by a1.upd_count desc,a1.uid_marque desc) a3 
+WHERE rownumber = (SELECT (COUNT(*)+1) DIV 2 FROM (select * FROM marque WHERE upd_count is not null) a4)
+;
+		 */
 		final Marque table1 = new Marque();
-		final IntegerColumn updateCountColumn = table1.column(table1.updateCount);
-		Marque table2 = new Marque(){};
+		final IntegerColumn t1UpdateCount = table1.column(table1.updateCount);
+		final IntegerColumn t1UidMarque = table1.column(table1.uidMarque);
+
+		Marque table2 = new Marque();
+		table2.setTableVariantIdentifier("a2");
+		final IntegerColumn t2UpdateCount = table2.column(table2.updateCount);
+		final IntegerColumn t2UIDMarque = table2.column(table2.uidMarque);
+
+		DBQuery dbQuery = database
+				.getDBQuery(table1)
+				.add(table2)
+				.setBlankQueryAllowed(true)
+				.setCartesianJoinsAllowed(true);
 		
-		DBQuery dbQuery = database.getDBQuery(table1).add(table2).setBlankQueryAllowed(true);
+		dbQuery.addCondition(
+				BooleanExpression.seekLessThan(
+						t1UpdateCount, t2UpdateCount,
+						t1UidMarque, t2UIDMarque
+				)
+		);
+		dbQuery.addExpressionColumn(this, t1UpdateCount.count().asExpressionColumn());
+		table1.updateCount.setSortOrderDescending();
+		table1.uidMarque.setSortOrderDescending();
+		dbQuery.setSortOrder(t1UpdateCount, t1UidMarque);
+		dbQuery.setReturnFields(t1UpdateCount, t1UidMarque);
 		dbQuery.printSQLForQuery();
 	}
 

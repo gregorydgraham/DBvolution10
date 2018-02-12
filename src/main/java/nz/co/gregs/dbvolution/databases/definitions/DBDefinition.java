@@ -1304,7 +1304,7 @@ public abstract class DBDefinition {
 	 * @return the table alias.
 	 */
 	public String getTableAlias(RowDefinition tabRow) {
-		return formatTableAlias("" + tabRow.getClass().getSimpleName().hashCode());
+		return formatTableAlias(tabRow.getTableVariantAlias());
 	}
 
 	/**

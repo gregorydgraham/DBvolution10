@@ -1315,4 +1315,8 @@ public class RowDefinition implements Serializable {
 		return columns;
 	}
 
+	public String getTableVariantAlias() {
+		return ""+ getClass().getSimpleName().hashCode();
+	}
+
 }

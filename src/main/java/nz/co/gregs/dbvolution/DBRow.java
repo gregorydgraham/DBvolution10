@@ -220,6 +220,7 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 		}
 		return newRow;
 	}
+
 	/**
 	 * Returns the QueryableDatatype instance of the Primary Key of This DBRow
 	 *
@@ -1757,10 +1758,23 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 	}
 
 	public String getTableVariantIdentifier() {
-		if (tableVariantIdentifier == null){
+		return tableVariantIdentifier;
+	}
+
+	public String getTableNameOrVariantIdentifier() {
+		if (tableVariantIdentifier == null) {
 			return this.getTableName();
-		}else{
+		} else {
 			return tableVariantIdentifier;
+		}
+	}
+
+	@Override
+	public String getTableVariantAlias() {
+		if (tableVariantIdentifier == null) {
+			return super.getTableVariantAlias();
+		} else {
+			return "" + tableVariantIdentifier.hashCode();
 		}
 	}
 

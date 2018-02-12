@@ -228,7 +228,7 @@ public class DBDate extends QueryableDatatype<Date> implements DateResult {
 		try {
 			string = resultSet.getString(fullColumnName);
 		} catch (SQLException sqlex) {
-			throw new DBRuntimeException(sqlex);
+			throw new DBRuntimeException("Unable to get Date from String:"+sqlex.getLocalizedMessage(),sqlex);
 		}
 		if (string == null || string.isEmpty()) {
 			return null;
@@ -259,7 +259,7 @@ public class DBDate extends QueryableDatatype<Date> implements DateResult {
 				}
 			}
 		} catch (SQLException sqlex) {
-			throw new DBRuntimeException(sqlex);
+			throw new DBRuntimeException("Unable to set Date by getting Date: "+sqlex.getLocalizedMessage(), sqlex);
 		}
 		return dbValue;
 	}

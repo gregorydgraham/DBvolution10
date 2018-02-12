@@ -26,7 +26,7 @@
  * 
  * Check the Creative Commons website for any details, legalese, and updates.
  */
-package nz.co.gregs.dbvolution.internal.querygraph;
+package nz.co.gregs.dbvolution.internal.query;
 
 import java.util.Objects;
 import nz.co.gregs.dbvolution.DBRow;
@@ -35,15 +35,15 @@ import nz.co.gregs.dbvolution.DBRow;
  *
  * @author gregorygraham
  */
-class DBRowClass {
+public class DBRowClass {
 	
 	private final DBRow table;
 	
-	DBRowClass(DBRow table) {
+	public DBRowClass(DBRow table) {
 		this.table = table;
 	}
 	
-	String getSimpleName() {
+	public String getSimpleName() {
 		return this.table.getClass().getSimpleName();
 	}
 	
@@ -63,18 +63,13 @@ class DBRowClass {
 				} else {
 					return this.table.getTableName().equals(other.table.getTableName())
 							&& this.table.getSchemaName().equals(other.table.getSchemaName())
-							&& this.table.getTableVariantIdentifier().equals(other.table.getTableVariantIdentifier());
+							&& this.table.getTableNameOrVariantIdentifier().equals(other.table.getTableNameOrVariantIdentifier());
 				}
 			} else {
 				return false;
 			}
 		}
 	}
-	
-//	@Override
-//	public int hashCode() {
-//		return Objects.hashCode(this.table.getClass());
-//	}
 
 	@Override
 	public int hashCode() {
@@ -82,7 +77,7 @@ class DBRowClass {
 		hash = 41 * hash + Objects.hashCode(this.table.getClass());
 		hash = 43*hash + Objects.hashCode(this.table.getTableName());
 		hash = 47*hash + Objects.hashCode(this.table.getSchemaName());
-		hash = 53*hash + Objects.hashCode(this.table.getTableVariantIdentifier());
+		hash = 53*hash + Objects.hashCode(this.table.getTableNameOrVariantIdentifier());
 		return hash;
 	}
 	

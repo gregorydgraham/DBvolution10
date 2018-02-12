@@ -15,6 +15,7 @@
  */
 package nz.co.gregs.dbvolution.internal.querygraph;
 
+import nz.co.gregs.dbvolution.internal.query.DBRowClass;
 import edu.uci.ics.jung.graph.SparseMultigraph;
 import java.util.ArrayList;
 import java.util.Arrays;

@@ -81,7 +81,7 @@ import nz.co.gregs.dbvolution.internal.properties.*;
  *
  * @author Gregory Graham
  */
-public class DBQuery implements Serializable{
+public class DBQuery implements Serializable {
 
 	private static final long serialVersionUID = 1l;
 
@@ -2245,8 +2245,10 @@ public class DBQuery implements Serializable{
 			} else {
 				final AbstractColumn column = provider.getColumn();
 				DBRow table = column.getInstanceOfRow();
+				final DBRowClass tableClass = new DBRowClass(table);
 				for (DBRow allQueryTable : allQueryTables) {
-					if (allQueryTable.getClass().equals(table.getClass())) {
+					final DBRowClass queryTableClass = new DBRowClass(allQueryTable);
+					if (queryTableClass.equals(tableClass)) {
 						Object appropriateFieldFromRow = column.getAppropriateFieldFromRow(allQueryTable);
 						allQueryTable.addReturnFields(appropriateFieldFromRow);
 					}
@@ -2260,20 +2262,19 @@ public class DBQuery implements Serializable{
 	public ColumnProvider column(QueryableDatatype<?> qdt) {
 		List<DBRow> tables = getAllQueryTables();
 		for (DBRow table : tables) {
-			try{
+			try {
 				return table.column(qdt);
-			}catch (IncorrectRowProviderInstanceSuppliedException exp){;}
+			} catch (IncorrectRowProviderInstanceSuppliedException exp) {;
+			}
 		}
 		Map<Object, QueryableDatatype<?>> expressionColumns = details.getExpressionColumns();
 		for (QueryableDatatype<?> entry : expressionColumns.values()) {
-			if (entry.equals(qdt)){
+			if (entry.equals(qdt)) {
 				return new QueryColumn<>(this, entry);
 			}
 		}
 		throw new IncorrectRowProviderInstanceSuppliedException("the object provided could not be found in the table or expressions used in this query, please supply a QDT used by the tables or adde to the query as an expression column.");
 	}
-
-	
 
 	/**
 	 * Sets the query to retrieve that DBQueryRows for the page supplied.
@@ -2286,7 +2287,7 @@ public class DBQuery implements Serializable{
 	 * <p>
 	 * This method is zero-based so the first page is getAllRowsForPage(0).
 	 *
-	 * @param pageNumberZeroBased 	pageNumber
+	 * @param pageNumberZeroBased pageNumber
 	 * <p style="color: #F90;">Support DBvolution at
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a list of the DBQueryRows for the selected page. 1 Database

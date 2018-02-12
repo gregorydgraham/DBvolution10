@@ -431,7 +431,7 @@ public class QueryDetails implements DBQueryable, Serializable {
 			String tableName;
 
 			for (DBRow tabRow : sortedQueryTables) {
-				tableName = tabRow.getTableName();
+				tableName = tabRow.getTableNameOrVariantIdentifier();
 
 				List<PropertyWrapper> tabProps = tabRow.getSelectedProperties();
 				for (PropertyWrapper propWrapper : tabProps) {

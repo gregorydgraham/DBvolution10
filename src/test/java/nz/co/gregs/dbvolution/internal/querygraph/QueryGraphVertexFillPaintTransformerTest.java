@@ -15,6 +15,7 @@
  */
 package nz.co.gregs.dbvolution.internal.querygraph;
 
+import nz.co.gregs.dbvolution.internal.query.DBRowClass;
 import java.awt.Color;
 import java.awt.Paint;
 import nz.co.gregs.dbvolution.example.Marque;

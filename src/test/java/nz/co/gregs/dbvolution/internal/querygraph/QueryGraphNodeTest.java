@@ -15,6 +15,7 @@
  */
 package nz.co.gregs.dbvolution.internal.querygraph;
 
+import nz.co.gregs.dbvolution.internal.query.DBRowClass;
 import nz.co.gregs.dbvolution.example.CarCompany;
 import nz.co.gregs.dbvolution.example.Marque;
 import org.junit.After;

@@ -15,9 +15,9 @@
  */
 package nz.co.gregs.dbvolution.internal.querygraph;
 
+import nz.co.gregs.dbvolution.internal.query.DBRowClass;
 import java.util.HashSet;
 import java.util.Set;
-import nz.co.gregs.dbvolution.DBRow;
 
 /**
  * Nodes (a.k.a. vertexes) of the {@link QueryGraph}
