@@ -54,7 +54,7 @@ public class RecursiveQueryDepthIncreaseExpression extends NumberExpression {
 
 	@Override
 	public RecursiveQueryDepthIncreaseExpression copy() {
-		return this;
+		return (RecursiveQueryDepthIncreaseExpression) super.copy();
 	}
 
 	@Override

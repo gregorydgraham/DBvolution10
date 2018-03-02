@@ -201,7 +201,7 @@ public class LineSegment2DExpression extends Spatial2DExpression<LineSegment, Li
 
 	@Override
 	public LineSegment2DExpression copy() {
-		return isNullSafetyTerminator() ? nullLineSegment2D() : new LineSegment2DExpression(getInnerResult());
+		return isNullSafetyTerminator() ? nullLineSegment2D() : new LineSegment2DExpression((AnyResult<?>) getInnerResult().copy());
 	}
 
 	@Override
@@ -213,6 +213,7 @@ public class LineSegment2DExpression extends Spatial2DExpression<LineSegment, Li
 		}
 		return false;
 	}
+
 	@Override
 	public int hashCode() {
 		int hash = 5;
@@ -239,14 +240,7 @@ public class LineSegment2DExpression extends Spatial2DExpression<LineSegment, Li
 	@Override
 	public LineSegment2DExpression nullExpression() {
 
-		return new LineSegment2DExpression() {
-			private final static long serialVersionUID = 1l;
-
-			@Override
-			public String toSQLString(DBDefinition db) {
-				return db.getNull();
-			}
-		};
+		return new NullExpression();
 	}
 
 	@Override
@@ -269,18 +263,7 @@ public class LineSegment2DExpression extends Spatial2DExpression<LineSegment, Li
 	 */
 	@Override
 	public StringExpression stringResult() {
-		return new StringExpression(new LineSegmentWithStringResult(this) {
-			private final static long serialVersionUID = 1l;
-
-			@Override
-			protected String doExpressionTransform(DBDefinition db) {
-				try {
-					return db.doLineSegment2DAsTextTransform(getFirst().toSQLString(db));
-				} catch (UnsupportedOperationException unsupported) {
-					return getFirst().toSQLString(db);
-				}
-			}
-		});
+		return new StringExpression(new StringResultExpression(this));
 	}
 
 	/**
@@ -299,18 +282,7 @@ public class LineSegment2DExpression extends Spatial2DExpression<LineSegment, Li
 
 	@Override
 	public BooleanExpression is(LineSegment2DResult rightHandSide) {
-		return new BooleanExpression(new LineSegmentLineSegmentWithBooleanResult(this, new LineSegment2DExpression(rightHandSide)) {
-			private final static long serialVersionUID = 1l;
-
-			@Override
-			public String doExpressionTransform(DBDefinition db) {
-				try {
-					return db.doLineSegment2DEqualsTransform(getFirst().toSQLString(db), getSecond().toSQLString(db));
-				} catch (UnsupportedOperationException unsupported) {
-					return getFirst().stringResult().is(getSecond().stringResult()).toSQLString(db);
-				}
-			}
-		});
+		return new BooleanExpression(new IsExpression(this, new LineSegment2DExpression(rightHandSide)));
 	}
 
 	/**
@@ -335,145 +307,51 @@ public class LineSegment2DExpression extends Spatial2DExpression<LineSegment, Li
 
 	@Override
 	public NumberExpression measurableDimensions() {
-		return new NumberExpression(new LineSegmentWithNumberResult(this) {
-			private final static long serialVersionUID = 1l;
-
-			@Override
-			public String doExpressionTransform(DBDefinition db) {
-				try {
-					return db.doLineSegment2DDimensionTransform(getFirst().toSQLString(db));
-				} catch (UnsupportedOperationException unsupported) {
-					return NumberExpression.value(1).toSQLString(db);
-				}
-			}
-		});
+		return new NumberExpression(new MeasurableDimensionsExpression(this));
 	}
 
 	@Override
 	public NumberExpression spatialDimensions() {
-		return new NumberExpression(new LineSegmentWithNumberResult(this) {
-			private final static long serialVersionUID = 1l;
-
-			@Override
-			public String doExpressionTransform(DBDefinition db) {
-				try {
-					return db.doLineSegment2DSpatialDimensionsTransform(getFirst().toSQLString(db));
-				} catch (UnsupportedOperationException unsupported) {
-					return NumberExpression.value(2).toSQLString(db);
-				}
-			}
-		});
+		return new NumberExpression(new SpatialDimensionsExpression(this));
 	}
 
 	@Override
 	public BooleanExpression hasMagnitude() {
-		return new BooleanExpression(new LineSegmentWithBooleanResult(this) {
-			private final static long serialVersionUID = 1l;
-
-			@Override
-			public String doExpressionTransform(DBDefinition db) {
-				try {
-					return db.doLineSegment2DHasMagnitudeTransform(getFirst().toSQLString(db));
-				} catch (UnsupportedOperationException unsupported) {
-					return BooleanExpression.falseExpression().toSQLString(db);
-				}
-			}
-		});
+		return new BooleanExpression(new HasMagnitudeExpression(this));
 	}
 
 	@Override
 	public NumberExpression magnitude() {
-		return new NumberExpression(new LineSegmentWithNumberResult(this) {
-			private final static long serialVersionUID = 1l;
-
-			@Override
-			public String doExpressionTransform(DBDefinition db) {
-				try {
-					return db.doLineSegment2DGetMagnitudeTransform(getFirst().toSQLString(db));
-				} catch (UnsupportedOperationException unsupported) {
-					return nullExpression().toSQLString(db);
-				}
-			}
-		});
+		return new NumberExpression(new MagnitudeExpression(this));
 	}
 
 	@Override
 	public Polygon2DExpression boundingBox() {
-		return new Polygon2DExpression(new LineSegmentWithGeometry2DResult(this) {
-			private final static long serialVersionUID = 1l;
-
-			@Override
-			public String doExpressionTransform(DBDefinition db) {
-				try {
-					return db.doLineSegment2DGetBoundingBoxTransform(getFirst().toSQLString(db));
-				} catch (UnsupportedOperationException unsupported) {
-					final LineSegment2DExpression first = getFirst();
-					final NumberExpression maxX = first.maxX();
-					final NumberExpression maxY = first.maxY();
-					final NumberExpression minX = first.minX();
-					final NumberExpression minY = first.minY();
-					return Polygon2DExpression.value(
-							Point2DExpression.value(minX, minY),
-							Point2DExpression.value(maxX, minY),
-							Point2DExpression.value(maxX, maxY),
-							Point2DExpression.value(minX, maxY),
-							Point2DExpression.value(minX, minY))
-							.toSQLString(db);
-				}
-			}
-		});
+		return new Polygon2DExpression(new BoundingBoxExpression(this));
 	}
 
 	@Override
 	public NumberExpression maxX() {
 
-		return new NumberExpression(new LineSegmentWithNumberResult(this) {
-			private final static long serialVersionUID = 1l;
-
-			@Override
-			public String doExpressionTransform(DBDefinition db) {
-				return db.doLineSegment2DGetMaxXTransform(getFirst().toSQLString(db));
-			}
-		});
+		return new NumberExpression(new MaxXExpression(this));
 	}
 
 	@Override
 	public NumberExpression minX() {
 
-		return new NumberExpression(new LineSegmentWithNumberResult(this) {
-			private final static long serialVersionUID = 1l;
-
-			@Override
-			public String doExpressionTransform(DBDefinition db) {
-				return db.doLineSegment2DGetMinXTransform(getFirst().toSQLString(db));
-			}
-		});
+		return new NumberExpression(new MinXExpression(this));
 	}
 
 	@Override
 	public NumberExpression maxY() {
 
-		return new NumberExpression(new LineSegmentWithNumberResult(this) {
-			private final static long serialVersionUID = 1l;
-
-			@Override
-			public String doExpressionTransform(DBDefinition db) {
-				return db.doLineSegment2DGetMaxYTransform(getFirst().toSQLString(db));
-			}
-		});
+		return new NumberExpression(new MaxYExpression(this));
 	}
 
 	@Override
 	public NumberExpression minY() {
 
-		return new NumberExpression(new LineSegmentWithNumberResult(this) {
-			private final static long serialVersionUID = 1l;
-
-			@Override
-			public String doExpressionTransform(DBDefinition db) {
-				return db.doLineSegment2DGetMinYTransform(getFirst().toSQLString(db));
-			}
-		});
+		return new NumberExpression(new MinYExpression(this));
 	}
 
 	/**
@@ -528,7 +406,6 @@ public class LineSegment2DExpression extends Spatial2DExpression<LineSegment, Li
 
 		return modeExpr;
 	}
-
 
 	/**
 	 * Tests whether this line segment and the line segment represented by the
@@ -599,14 +476,7 @@ public class LineSegment2DExpression extends Spatial2DExpression<LineSegment, Li
 	 * otherwise FALSE.
 	 */
 	public BooleanExpression intersects(LineSegment2DResult crossingLine) {
-		return new BooleanExpression(new LineSegmentLineSegmentWithBooleanResult(this, new LineSegment2DExpression(crossingLine)) {
-			private final static long serialVersionUID = 1l;
-
-			@Override
-			protected String doExpressionTransform(DBDefinition db) {
-				return db.doLineSegment2DIntersectsLineSegment2DTransform(getFirst().toSQLString(db), getSecond().toSQLString(db));
-			}
-		});
+		return new BooleanExpression(new IntersectsExpression(this, new LineSegment2DExpression(crossingLine)));
 	}
 
 	/**
@@ -677,14 +547,7 @@ public class LineSegment2DExpression extends Spatial2DExpression<LineSegment, Li
 	 * @return a Point2DExpression
 	 */
 	public Point2DExpression intersectionWith(LineSegment2DResult crossingLine) {
-		return new Point2DExpression(new LineSegmentLineSegmentWithPointResult(this, new LineSegment2DExpression(crossingLine)) {
-			private final static long serialVersionUID = 1l;
-
-			@Override
-			protected String doExpressionTransform(DBDefinition db) {
-				return db.doLineSegment2DIntersectionPointWithLineSegment2DTransform(getFirst().toSQLString(db), getSecond().toSQLString(db));
-			}
-		});
+		return new Point2DExpression(new IntersectionWithExpression(this, new LineSegment2DExpression(crossingLine)));
 	}
 
 	@Override
@@ -694,8 +557,8 @@ public class LineSegment2DExpression extends Spatial2DExpression<LineSegment, Li
 
 	private static abstract class LineSegmentLineSegmentWithBooleanResult extends BooleanExpression {
 
-		private LineSegment2DExpression first;
-		private LineSegment2DExpression second;
+		private final LineSegment2DExpression first;
+		private final LineSegment2DExpression second;
 		private boolean requiresNullProtection;
 
 		LineSegmentLineSegmentWithBooleanResult(LineSegment2DExpression first, LineSegment2DExpression second) {
@@ -721,19 +584,6 @@ public class LineSegment2DExpression extends Spatial2DExpression<LineSegment, Li
 			} else {
 				return doExpressionTransform(db);
 			}
-		}
-
-		@Override
-		public LineSegmentLineSegmentWithBooleanResult copy() {
-			LineSegmentLineSegmentWithBooleanResult newInstance;
-			try {
-				newInstance = getClass().newInstance();
-			} catch (InstantiationException | IllegalAccessException ex) {
-				throw new RuntimeException(ex);
-			}
-			newInstance.first = first.copy();
-			newInstance.second = second.copy();
-			return newInstance;
 		}
 
 		protected abstract String doExpressionTransform(DBDefinition db);
@@ -763,8 +613,8 @@ public class LineSegment2DExpression extends Spatial2DExpression<LineSegment, Li
 
 	private static abstract class LineSegmentLineSegmentWithPointResult extends Point2DExpression {
 
-		private LineSegment2DExpression first;
-		private LineSegment2DExpression second;
+		private final LineSegment2DExpression first;
+		private final LineSegment2DExpression second;
 		private boolean requiresNullProtection;
 
 		LineSegmentLineSegmentWithPointResult(LineSegment2DExpression first, LineSegment2DExpression second) {
@@ -790,19 +640,6 @@ public class LineSegment2DExpression extends Spatial2DExpression<LineSegment, Li
 			} else {
 				return doExpressionTransform(db);
 			}
-		}
-
-		@Override
-		public LineSegmentLineSegmentWithPointResult copy() {
-			LineSegmentLineSegmentWithPointResult newInstance;
-			try {
-				newInstance = getClass().newInstance();
-			} catch (InstantiationException | IllegalAccessException ex) {
-				throw new RuntimeException(ex);
-			}
-			newInstance.first = first.copy();
-			newInstance.second = second.copy();
-			return newInstance;
 		}
 
 		protected abstract String doExpressionTransform(DBDefinition db);
@@ -832,7 +669,7 @@ public class LineSegment2DExpression extends Spatial2DExpression<LineSegment, Li
 
 	private static abstract class LineSegmentWithNumberResult extends NumberExpression {
 
-		private LineSegment2DExpression first;
+		private final LineSegment2DExpression first;
 		private boolean requiresNullProtection;
 
 		LineSegmentWithNumberResult(LineSegment2DExpression first) {
@@ -853,18 +690,6 @@ public class LineSegment2DExpression extends Spatial2DExpression<LineSegment, Li
 			} else {
 				return doExpressionTransform(db);
 			}
-		}
-
-		@Override
-		public LineSegmentWithNumberResult copy() {
-			LineSegmentWithNumberResult newInstance;
-			try {
-				newInstance = getClass().newInstance();
-			} catch (InstantiationException | IllegalAccessException ex) {
-				throw new RuntimeException(ex);
-			}
-			newInstance.first = first.copy();
-			return newInstance;
 		}
 
 		protected abstract String doExpressionTransform(DBDefinition db);
@@ -891,7 +716,7 @@ public class LineSegment2DExpression extends Spatial2DExpression<LineSegment, Li
 
 	private static abstract class LineSegmentWithBooleanResult extends BooleanExpression {
 
-		private LineSegment2DExpression first;
+		private final LineSegment2DExpression first;
 		private boolean requiresNullProtection;
 
 		LineSegmentWithBooleanResult(LineSegment2DExpression first) {
@@ -912,18 +737,6 @@ public class LineSegment2DExpression extends Spatial2DExpression<LineSegment, Li
 			} else {
 				return doExpressionTransform(db);
 			}
-		}
-
-		@Override
-		public LineSegmentWithBooleanResult copy() {
-			LineSegmentWithBooleanResult newInstance;
-			try {
-				newInstance = getClass().newInstance();
-			} catch (InstantiationException | IllegalAccessException ex) {
-				throw new RuntimeException(ex);
-			}
-			newInstance.first = first.copy();
-			return newInstance;
 		}
 
 		protected abstract String doExpressionTransform(DBDefinition db);
@@ -950,7 +763,7 @@ public class LineSegment2DExpression extends Spatial2DExpression<LineSegment, Li
 
 	private static abstract class LineSegmentWithStringResult extends StringExpression {
 
-		private LineSegment2DExpression first;
+		private final LineSegment2DExpression first;
 		private boolean requiresNullProtection;
 
 		LineSegmentWithStringResult(LineSegment2DExpression first) {
@@ -971,18 +784,6 @@ public class LineSegment2DExpression extends Spatial2DExpression<LineSegment, Li
 			} else {
 				return doExpressionTransform(db);
 			}
-		}
-
-		@Override
-		public LineSegmentWithStringResult copy() {
-			LineSegmentWithStringResult newInstance;
-			try {
-				newInstance = getClass().newInstance();
-			} catch (InstantiationException | IllegalAccessException ex) {
-				throw new RuntimeException(ex);
-			}
-			newInstance.first = first.copy();
-			return newInstance;
 		}
 
 		protected abstract String doExpressionTransform(DBDefinition db);
@@ -1009,7 +810,7 @@ public class LineSegment2DExpression extends Spatial2DExpression<LineSegment, Li
 
 	private static abstract class LineSegmentWithGeometry2DResult extends Polygon2DExpression {
 
-		private LineSegment2DExpression first;
+		private final LineSegment2DExpression first;
 		private boolean requiresNullProtection;
 
 		LineSegmentWithGeometry2DResult(LineSegment2DExpression first) {
@@ -1032,18 +833,6 @@ public class LineSegment2DExpression extends Spatial2DExpression<LineSegment, Li
 			}
 		}
 
-		@Override
-		public LineSegmentWithGeometry2DResult copy() {
-			LineSegmentWithGeometry2DResult newInstance;
-			try {
-				newInstance = getClass().newInstance();
-			} catch (InstantiationException | IllegalAccessException ex) {
-				throw new RuntimeException(ex);
-			}
-			newInstance.first = first.copy();
-			return newInstance;
-		}
-
 		protected abstract String doExpressionTransform(DBDefinition db);
 
 		@Override
@@ -1063,6 +852,325 @@ public class LineSegment2DExpression extends Spatial2DExpression<LineSegment, Li
 		@Override
 		public boolean getIncludesNull() {
 			return requiresNullProtection;
+		}
+	}
+
+	private static class NullExpression extends LineSegment2DExpression {
+
+		public NullExpression() {
+		}
+		private final static long serialVersionUID = 1l;
+
+		@Override
+		public String toSQLString(DBDefinition db) {
+			return db.getNull();
+		}
+
+		@Override
+		public NullExpression copy() {
+			return new NullExpression();
+		}
+	}
+
+	private static class StringResultExpression extends LineSegmentWithStringResult {
+
+		public StringResultExpression(LineSegment2DExpression first) {
+			super(first);
+		}
+		private final static long serialVersionUID = 1l;
+
+		@Override
+		protected String doExpressionTransform(DBDefinition db) {
+			try {
+				return db.doLineSegment2DAsTextTransform(getFirst().toSQLString(db));
+			} catch (UnsupportedOperationException unsupported) {
+				return getFirst().toSQLString(db);
+			}
+		}
+
+		@Override
+		public StringResultExpression copy() {
+			return new StringResultExpression(
+					getFirst() == null ? null : getFirst().copy()
+			);
+		}
+	}
+
+	protected static class IsExpression extends LineSegmentLineSegmentWithBooleanResult {
+
+		public IsExpression(LineSegment2DExpression first, LineSegment2DExpression second) {
+			super(first, second);
+		}
+		private final static long serialVersionUID = 1l;
+
+		@Override
+		public String doExpressionTransform(DBDefinition db) {
+			try {
+				return db.doLineSegment2DEqualsTransform(getFirst().toSQLString(db), getSecond().toSQLString(db));
+			} catch (UnsupportedOperationException unsupported) {
+				return getFirst().stringResult().is(getSecond().stringResult()).toSQLString(db);
+			}
+		}
+
+		@Override
+		public LineSegment2DExpression.IsExpression copy() {
+			return new LineSegment2DExpression.IsExpression(
+					getFirst() == null ? null : getFirst().copy(),
+					getSecond() == null ? null : getSecond().copy()
+			);
+		}
+	}
+
+	protected static class MeasurableDimensionsExpression extends LineSegmentWithNumberResult {
+
+		public MeasurableDimensionsExpression(LineSegment2DExpression first) {
+			super(first);
+		}
+		private final static long serialVersionUID = 1l;
+
+		@Override
+		public String doExpressionTransform(DBDefinition db) {
+			try {
+				return db.doLineSegment2DDimensionTransform(getFirst().toSQLString(db));
+			} catch (UnsupportedOperationException unsupported) {
+				return NumberExpression.value(1).toSQLString(db);
+			}
+		}
+
+		@Override
+		public MeasurableDimensionsExpression copy() {
+			return new MeasurableDimensionsExpression(
+					getFirst() == null ? null : getFirst().copy()
+			);
+		}
+	}
+
+	protected class SpatialDimensionsExpression extends LineSegmentWithNumberResult {
+
+		public SpatialDimensionsExpression(LineSegment2DExpression first) {
+			super(first);
+		}
+		private final static long serialVersionUID = 1l;
+
+		@Override
+		public String doExpressionTransform(DBDefinition db) {
+			try {
+				return db.doLineSegment2DSpatialDimensionsTransform(getFirst().toSQLString(db));
+			} catch (UnsupportedOperationException unsupported) {
+				return NumberExpression.value(2).toSQLString(db);
+			}
+		}
+
+		@Override
+		public SpatialDimensionsExpression copy() {
+			return new SpatialDimensionsExpression(
+					getFirst() == null ? null : getFirst().copy()
+			);
+		}
+	}
+
+	protected class HasMagnitudeExpression extends LineSegmentWithBooleanResult {
+
+		public HasMagnitudeExpression(LineSegment2DExpression first) {
+			super(first);
+		}
+		private final static long serialVersionUID = 1l;
+
+		@Override
+		public String doExpressionTransform(DBDefinition db) {
+			try {
+				return db.doLineSegment2DHasMagnitudeTransform(getFirst().toSQLString(db));
+			} catch (UnsupportedOperationException unsupported) {
+				return BooleanExpression.falseExpression().toSQLString(db);
+			}
+		}
+
+		@Override
+		public HasMagnitudeExpression copy() {
+			return new HasMagnitudeExpression(
+					getFirst() == null ? null : getFirst().copy()
+			);
+		}
+	}
+
+	protected class MagnitudeExpression extends LineSegmentWithNumberResult {
+
+		public MagnitudeExpression(LineSegment2DExpression first) {
+			super(first);
+		}
+		private final static long serialVersionUID = 1l;
+
+		@Override
+		public String doExpressionTransform(DBDefinition db) {
+			try {
+				return db.doLineSegment2DGetMagnitudeTransform(getFirst().toSQLString(db));
+			} catch (UnsupportedOperationException unsupported) {
+				return nullExpression().toSQLString(db);
+			}
+		}
+
+		@Override
+		public MagnitudeExpression copy() {
+			return new LineSegment2DExpression.MagnitudeExpression(
+					getFirst() == null ? null : getFirst().copy()
+			);
+		}
+	}
+
+	protected class BoundingBoxExpression extends LineSegmentWithGeometry2DResult {
+
+		public BoundingBoxExpression(LineSegment2DExpression first) {
+			super(first);
+		}
+		private final static long serialVersionUID = 1l;
+
+		@Override
+		public String doExpressionTransform(DBDefinition db) {
+			try {
+				return db.doLineSegment2DGetBoundingBoxTransform(getFirst().toSQLString(db));
+			} catch (UnsupportedOperationException unsupported) {
+				final LineSegment2DExpression first = getFirst();
+				final NumberExpression maxX = first.maxX();
+				final NumberExpression maxY = first.maxY();
+				final NumberExpression minX = first.minX();
+				final NumberExpression minY = first.minY();
+				return Polygon2DExpression.value(
+						Point2DExpression.value(minX, minY),
+						Point2DExpression.value(maxX, minY),
+						Point2DExpression.value(maxX, maxY),
+						Point2DExpression.value(minX, maxY),
+						Point2DExpression.value(minX, minY))
+						.toSQLString(db);
+			}
+		}
+
+		@Override
+		public LineSegment2DExpression.BoundingBoxExpression copy() {
+			return new LineSegment2DExpression.BoundingBoxExpression(
+					getFirst() == null ? null : getFirst().copy()
+			);
+		}
+	}
+
+	protected class MaxXExpression extends LineSegmentWithNumberResult {
+
+		public MaxXExpression(LineSegment2DExpression first) {
+			super(first);
+		}
+		private final static long serialVersionUID = 1l;
+
+		@Override
+		public String doExpressionTransform(DBDefinition db) {
+			return db.doLineSegment2DGetMaxXTransform(getFirst().toSQLString(db));
+		}
+
+		@Override
+		public MaxXExpression copy() {
+			return new LineSegment2DExpression.MaxXExpression(
+					getFirst() == null ? null : getFirst().copy()
+			);
+		}
+	}
+
+	protected class MinXExpression extends LineSegmentWithNumberResult {
+
+		public MinXExpression(LineSegment2DExpression first) {
+			super(first);
+		}
+		private final static long serialVersionUID = 1l;
+
+		@Override
+		public String doExpressionTransform(DBDefinition db) {
+			return db.doLineSegment2DGetMinXTransform(getFirst().toSQLString(db));
+		}
+
+		@Override
+		public MinXExpression copy() {
+			return new LineSegment2DExpression.MinXExpression(
+					getFirst() == null ? null : getFirst().copy()
+			);
+		}
+	}
+
+	protected class MaxYExpression extends LineSegmentWithNumberResult {
+
+		public MaxYExpression(LineSegment2DExpression first) {
+			super(first);
+		}
+		private final static long serialVersionUID = 1l;
+
+		@Override
+		public String doExpressionTransform(DBDefinition db) {
+			return db.doLineSegment2DGetMaxYTransform(getFirst().toSQLString(db));
+		}
+
+		@Override
+		public MaxYExpression copy() {
+			return new LineSegment2DExpression.MaxYExpression(
+					getFirst() == null ? null : getFirst().copy()
+			);
+		}
+	}
+
+	protected class MinYExpression extends LineSegmentWithNumberResult {
+
+		public MinYExpression(LineSegment2DExpression first) {
+			super(first);
+		}
+		private final static long serialVersionUID = 1l;
+
+		@Override
+		public String doExpressionTransform(DBDefinition db) {
+			return db.doLineSegment2DGetMinYTransform(getFirst().toSQLString(db));
+		}
+
+		@Override
+		public MinYExpression copy() {
+			return new LineSegment2DExpression.MinYExpression(
+					getFirst() == null ? null : getFirst().copy()
+			);
+		}
+	}
+
+	protected class IntersectsExpression extends LineSegmentLineSegmentWithBooleanResult {
+
+		public IntersectsExpression(LineSegment2DExpression first, LineSegment2DExpression second) {
+			super(first, second);
+		}
+		private final static long serialVersionUID = 1l;
+
+		@Override
+		protected String doExpressionTransform(DBDefinition db) {
+			return db.doLineSegment2DIntersectsLineSegment2DTransform(getFirst().toSQLString(db), getSecond().toSQLString(db));
+		}
+
+		@Override
+		public IntersectsExpression copy() {
+			return new LineSegment2DExpression.IntersectsExpression(
+					getFirst() == null ? null : getFirst().copy(),
+					getSecond() == null ? null : getSecond().copy()
+			);
+		}
+	}
+
+	protected class IntersectionWithExpression extends LineSegmentLineSegmentWithPointResult {
+
+		public IntersectionWithExpression(LineSegment2DExpression first, LineSegment2DExpression second) {
+			super(first, second);
+		}
+		private final static long serialVersionUID = 1l;
+
+		@Override
+		protected String doExpressionTransform(DBDefinition db) {
+			return db.doLineSegment2DIntersectionPointWithLineSegment2DTransform(getFirst().toSQLString(db), getSecond().toSQLString(db));
+		}
+
+		@Override
+		public IntersectionWithExpression copy() {
+			return new LineSegment2DExpression.IntersectionWithExpression(
+					getFirst() == null ? null : getFirst().copy(),
+					getSecond() == null ? null : getSecond().copy()
+			);
 		}
 	}
 

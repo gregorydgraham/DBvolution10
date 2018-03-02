@@ -18,7 +18,6 @@ package nz.co.gregs.dbvolution.columns;
 import com.vividsolutions.jts.geom.MultiPoint;
 import java.util.Objects;
 import java.util.Set;
-import nz.co.gregs.dbvolution.databases.DBDatabase;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.datatypes.spatial2D.DBMultiPoint2D;

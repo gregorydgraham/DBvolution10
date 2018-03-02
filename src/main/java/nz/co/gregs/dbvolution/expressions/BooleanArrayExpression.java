@@ -67,7 +67,7 @@ public class BooleanArrayExpression extends AnyExpression<Boolean[], BooleanArra
 
 	@Override
 	public BooleanArrayExpression copy() {
-		return new BooleanArrayExpression(this.getInnerBooleanArrayResult());
+		return new BooleanArrayExpression(this.getInnerBooleanArrayResult().copy());
 	}
 
 	@Override

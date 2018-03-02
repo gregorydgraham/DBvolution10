@@ -180,20 +180,13 @@ public class MultiPoint2DExpression extends Spatial2DExpression<MultiPoint, Mult
 
 	@Override
 	public MultiPoint2DExpression copy() {
-		return isNullSafetyTerminator() ? nullMultiPoint2D() : new MultiPoint2DExpression(getInnerResult());
+		return isNullSafetyTerminator() ? nullMultiPoint2D() : new MultiPoint2DExpression((AnyResult<?>) getInnerResult().copy());
 	}
 
 	@Override
 	public MultiPoint2DExpression nullExpression() {
 
-		return new MultiPoint2DExpression() {
-			private final static long serialVersionUID = 1l;
-
-			@Override
-			public String toSQLString(DBDefinition db) {
-				return db.getNull();
-			}
-		};
+		return new NullExpression();
 	}
 
 	@Override
@@ -247,18 +240,7 @@ public class MultiPoint2DExpression extends Spatial2DExpression<MultiPoint, Mult
 	 */
 	@Override
 	public StringExpression stringResult() {
-		return new StringExpression(new MultiPointFunctionWithStringResult(this) {
-			private final static long serialVersionUID = 1l;
-
-			@Override
-			protected String doExpressionTransform(DBDefinition db) {
-				try {
-					return db.doMultiPoint2DAsTextTransform(getFirst().toSQLString(db));
-				} catch (UnsupportedOperationException unsupported) {
-					return getFirst().toSQLString(db);
-				}
-			}
-		});
+		return new StringExpression(new StringResultExpression(this));
 	}
 
 	/**
@@ -277,18 +259,7 @@ public class MultiPoint2DExpression extends Spatial2DExpression<MultiPoint, Mult
 
 	@Override
 	public BooleanExpression is(MultiPoint2DResult rightHandSide) {
-		return new BooleanExpression(new MultiPoint2DMultiPoint2DFunctionWithBooleanResult(this, new MultiPoint2DExpression(rightHandSide)) {
-			private final static long serialVersionUID = 1l;
-
-			@Override
-			public String doExpressionTransform(DBDefinition db) {
-				try {
-					return db.doMultiPoint2DEqualsTransform(getFirst().toSQLString(db), getSecond().toSQLString(db));
-				} catch (UnsupportedOperationException unsupported) {
-					return getFirst().stringResult().is(getSecond().stringResult()).toSQLString(db);
-				}
-			}
-		});
+		return new BooleanExpression(new IsExpression(this, new MultiPoint2DExpression(rightHandSide)));
 	}
 
 	/**
@@ -312,50 +283,22 @@ public class MultiPoint2DExpression extends Spatial2DExpression<MultiPoint, Mult
 
 	@Override
 	public NumberExpression maxX() {
-		return new NumberExpression(new MultiPointFunctionWithNumberResult(this) {
-			private final static long serialVersionUID = 1l;
-
-			@Override
-			public String doExpressionTransform(DBDefinition db) {
-				return db.doMultiPoint2DGetMaxXTransform(getFirst().toSQLString(db));
-			}
-		});
+		return new NumberExpression(new MaxXExpression(this));
 	}
 
 	@Override
 	public NumberExpression maxY() {
-		return new NumberExpression(new MultiPointFunctionWithNumberResult(this) {
-			private final static long serialVersionUID = 1l;
-
-			@Override
-			public String doExpressionTransform(DBDefinition db) {
-				return db.doMultiPoint2DGetMaxYTransform(getFirst().toSQLString(db));
-			}
-		});
+		return new NumberExpression(new MaxYExpression(this));
 	}
 
 	@Override
 	public NumberExpression minX() {
-		return new NumberExpression(new MultiPointFunctionWithNumberResult(this) {
-			private final static long serialVersionUID = 1l;
-
-			@Override
-			public String doExpressionTransform(DBDefinition db) {
-				return db.doMultiPoint2DGetMinXTransform(getFirst().toSQLString(db));
-			}
-		});
+		return new NumberExpression(new MinXExpression(this));
 	}
 
 	@Override
 	public NumberExpression minY() {
-		return new NumberExpression(new MultiPointFunctionWithNumberResult(this) {
-			private final static long serialVersionUID = 1l;
-
-			@Override
-			public String doExpressionTransform(DBDefinition db) {
-				return db.doMultiPoint2DGetMinYTransform(getFirst().toSQLString(db));
-			}
-		});
+		return new NumberExpression(new MinYExpression(this));
 	}
 
 	/**
@@ -421,14 +364,7 @@ public class MultiPoint2DExpression extends Spatial2DExpression<MultiPoint, Mult
 	 * @return a number value
 	 */
 	public NumberExpression numberOfPoints() {
-		return new NumberExpression(new MultiPointFunctionWithNumberResult(this) {
-			private final static long serialVersionUID = 1l;
-
-			@Override
-			public String doExpressionTransform(DBDefinition db) {
-				return db.doMultiPoint2DGetNumberOfPointsTransform(getFirst().toSQLString(db));
-			}
-		});
+		return new NumberExpression(new NumberOfPointsExpression(this));
 	}
 
 	/**
@@ -497,107 +433,32 @@ public class MultiPoint2DExpression extends Spatial2DExpression<MultiPoint, Mult
 	 * @return a point2d value
 	 */
 	public Point2DExpression getPointAtIndexZeroBased(NumberExpression index) {
-		return new Point2DExpression(new MultiPointNumberFunctionWithPoint2DResult(this, index) {
-			private final static long serialVersionUID = 1l;
-
-			@Override
-			public String doExpressionTransform(DBDefinition db) {
-				return db.doMultiPoint2DGetPointAtIndexTransform(
-						getFirst().toSQLString(db),
-						getSecond().plus(1).toSQLString(db)
-				);
-			}
-		});
+		return new Point2DExpression(new GetPointAtIndexExpression(this, index));
 	}
 
 	@Override
 	public NumberExpression measurableDimensions() {
-		return new NumberExpression(new MultiPointFunctionWithNumberResult(this) {
-			private final static long serialVersionUID = 1l;
-
-			@Override
-			public String doExpressionTransform(DBDefinition db) {
-				try {
-					return db.doMultiPoint2DMeasurableDimensionsTransform(getFirst().toSQLString(db));
-				} catch (UnsupportedOperationException unsupported) {
-					return NumberExpression.value(0).toSQLString(db);
-				}
-			}
-		});
+		return new NumberExpression(new MeasurableDimensionsExpression(this));
 	}
 
 	@Override
 	public NumberExpression spatialDimensions() {
-		return new NumberExpression(new MultiPointFunctionWithNumberResult(this) {
-			private final static long serialVersionUID = 1l;
-
-			@Override
-			public String doExpressionTransform(DBDefinition db) {
-				try {
-					return db.doMultiPoint2DSpatialDimensionsTransform(getFirst().toSQLString(db));
-				} catch (UnsupportedOperationException unsupported) {
-					return NumberExpression.value(2).toSQLString(db);
-				}
-			}
-		});
+		return new NumberExpression(new SpatialDimensionsExpression(this));
 	}
 
 	@Override
 	public BooleanExpression hasMagnitude() {
-		return new BooleanExpression(new SingleArgumentBooleanFunction<DBExpression>(this) {
-			private final static long serialVersionUID = 1l;
-
-			@Override
-			public String doExpressionTransform(DBDefinition db) {
-				try {
-					return db.doMultiPoint2DHasMagnitudeTransform(getFirst().toSQLString(db));
-				} catch (UnsupportedOperationException unsupported) {
-					return BooleanExpression.falseExpression().toSQLString(db);
-				}
-			}
-		});
+		return new BooleanExpression(new HasMagnitudeExpression(this));
 	}
 
 	@Override
 	public NumberExpression magnitude() {
-		return new NumberExpression(new MultiPointFunctionWithNumberResult(this) {
-			private final static long serialVersionUID = 1l;
-
-			@Override
-			public String doExpressionTransform(DBDefinition db) {
-				try {
-					return db.doMultiPoint2DGetMagnitudeTransform(getFirst().toSQLString(db));
-				} catch (UnsupportedOperationException unsupported) {
-					return nullExpression().toSQLString(db);
-				}
-			}
-		});
+		return new NumberExpression(new MagnitudeExpression(this));
 	}
 
 	@Override
 	public Polygon2DExpression boundingBox() {
-		return new Polygon2DExpression(new MultiPoint2DFunctionWithGeometry2DResult(this) {
-			private final static long serialVersionUID = 1l;
-
-			@Override
-			public String doExpressionTransform(DBDefinition db) {
-				try {
-					return db.doMultiPoint2DGetBoundingBoxTransform(getFirst().toSQLString(db));
-				} catch (UnsupportedOperationException exp) {
-					final MultiPoint2DExpression first = getFirst();
-					final NumberExpression maxX = first.maxX();
-					final NumberExpression maxY = first.maxY();
-					final NumberExpression minX = first.minX();
-					final NumberExpression minY = first.minY();
-					return Polygon2DExpression.value(Point2DExpression.value(minX, minY),
-							Point2DExpression.value(maxX, minY),
-							Point2DExpression.value(maxX, maxY),
-							Point2DExpression.value(minX, maxY),
-							Point2DExpression.value(minX, minY))
-							.toSQLString(db);
-				}
-			}
-		});
+		return new Polygon2DExpression(new BoundingBoxExpression(this));
 	}
 
 	/**
@@ -615,14 +476,7 @@ public class MultiPoint2DExpression extends Spatial2DExpression<MultiPoint, Mult
 	 * @return a line2d value
 	 */
 	public Line2DExpression line2DResult() {
-		return new Line2DExpression(new MultiPoint2DFunctionLine2DResult(this) {
-			private final static long serialVersionUID = 1l;
-
-			@Override
-			protected String doExpressionTransform(DBDefinition db) {
-				return db.doMultiPoint2DToLine2DTransform(getFirst().toSQLString(db));
-			}
-		});
+		return new Line2DExpression(new Line2DResultExpression(this));
 	}
 
 	/**
@@ -653,7 +507,7 @@ public class MultiPoint2DExpression extends Spatial2DExpression<MultiPoint, Mult
 
 	private static abstract class MultiPoint2DFunctionLine2DResult extends Line2DExpression {
 
-		private MultiPoint2DExpression first;
+		private final MultiPoint2DExpression first;
 		private boolean requiresNullProtection;
 
 		MultiPoint2DFunctionLine2DResult(MultiPoint2DExpression first) {
@@ -671,19 +525,6 @@ public class MultiPoint2DExpression extends Spatial2DExpression<MultiPoint, Mult
 			} else {
 				return doExpressionTransform(db);
 			}
-		}
-
-		@Override
-		@SuppressWarnings("unchecked")
-		public MultiPoint2DFunctionLine2DResult copy() {
-			MultiPoint2DFunctionLine2DResult newInstance;
-			try {
-				newInstance = getClass().newInstance();
-			} catch (InstantiationException | IllegalAccessException ex) {
-				throw new RuntimeException(ex);
-			}
-			newInstance.first = first.copy();
-			return newInstance;
 		}
 
 		protected abstract String doExpressionTransform(DBDefinition db);
@@ -710,7 +551,7 @@ public class MultiPoint2DExpression extends Spatial2DExpression<MultiPoint, Mult
 
 	private static abstract class SingleArgumentBooleanFunction<A extends DBExpression> extends BooleanExpression {
 
-		private A first;
+		private final A first;
 		private boolean requiresNullProtection;
 
 		SingleArgumentBooleanFunction(A first) {
@@ -728,19 +569,6 @@ public class MultiPoint2DExpression extends Spatial2DExpression<MultiPoint, Mult
 			} else {
 				return doExpressionTransform(db);
 			}
-		}
-
-		@Override
-		@SuppressWarnings("unchecked")
-		public SingleArgumentBooleanFunction<A> copy() {
-			SingleArgumentBooleanFunction<A> newInstance;
-			try {
-				newInstance = getClass().newInstance();
-			} catch (InstantiationException | IllegalAccessException ex) {
-				throw new RuntimeException(ex);
-			}
-			newInstance.first = (A) first.copy();
-			return newInstance;
 		}
 
 		protected abstract String doExpressionTransform(DBDefinition db);
@@ -767,8 +595,8 @@ public class MultiPoint2DExpression extends Spatial2DExpression<MultiPoint, Mult
 
 	private static abstract class MultiPoint2DMultiPoint2DFunctionWithBooleanResult extends BooleanExpression {
 
-		private MultiPoint2DExpression first;
-		private MultiPoint2DExpression second;
+		private final MultiPoint2DExpression first;
+		private final MultiPoint2DExpression second;
 		private boolean requiresNullProtection;
 
 		MultiPoint2DMultiPoint2DFunctionWithBooleanResult(MultiPoint2DExpression first, MultiPoint2DExpression second) {
@@ -794,19 +622,6 @@ public class MultiPoint2DExpression extends Spatial2DExpression<MultiPoint, Mult
 			} else {
 				return doExpressionTransform(db);
 			}
-		}
-
-		@Override
-		public MultiPoint2DMultiPoint2DFunctionWithBooleanResult copy() {
-			MultiPoint2DMultiPoint2DFunctionWithBooleanResult newInstance;
-			try {
-				newInstance = getClass().newInstance();
-			} catch (InstantiationException | IllegalAccessException ex) {
-				throw new RuntimeException(ex);
-			}
-			newInstance.first = first.copy();
-			newInstance.second = second.copy();
-			return newInstance;
 		}
 
 		protected abstract String doExpressionTransform(DBDefinition db);
@@ -836,8 +651,8 @@ public class MultiPoint2DExpression extends Spatial2DExpression<MultiPoint, Mult
 
 	private static abstract class MultiPointNumberFunctionWithPoint2DResult extends Point2DExpression {
 
-		private MultiPoint2DExpression first;
-		private NumberExpression second;
+		private final MultiPoint2DExpression first;
+		private final NumberExpression second;
 		private boolean requiresNullProtection;
 
 		MultiPointNumberFunctionWithPoint2DResult(MultiPoint2DExpression first, NumberExpression second) {
@@ -863,19 +678,6 @@ public class MultiPoint2DExpression extends Spatial2DExpression<MultiPoint, Mult
 			} else {
 				return doExpressionTransform(db);
 			}
-		}
-
-		@Override
-		public MultiPointNumberFunctionWithPoint2DResult copy() {
-			MultiPointNumberFunctionWithPoint2DResult newInstance;
-			try {
-				newInstance = getClass().newInstance();
-			} catch (InstantiationException | IllegalAccessException ex) {
-				throw new RuntimeException(ex);
-			}
-			newInstance.first = first.copy();
-			newInstance.second = second.copy();
-			return newInstance;
 		}
 
 		protected abstract String doExpressionTransform(DBDefinition db);
@@ -905,7 +707,7 @@ public class MultiPoint2DExpression extends Spatial2DExpression<MultiPoint, Mult
 
 	private static abstract class MultiPointFunctionWithNumberResult extends NumberExpression {
 
-		private MultiPoint2DExpression first;
+		private final MultiPoint2DExpression first;
 		private boolean requiresNullProtection;
 
 		MultiPointFunctionWithNumberResult(MultiPoint2DExpression first) {
@@ -926,18 +728,6 @@ public class MultiPoint2DExpression extends Spatial2DExpression<MultiPoint, Mult
 			} else {
 				return doExpressionTransform(db);
 			}
-		}
-
-		@Override
-		public MultiPointFunctionWithNumberResult copy() {
-			MultiPointFunctionWithNumberResult newInstance;
-			try {
-				newInstance = getClass().newInstance();
-			} catch (InstantiationException | IllegalAccessException ex) {
-				throw new RuntimeException(ex);
-			}
-			newInstance.first = first.copy();
-			return newInstance;
 		}
 
 		protected abstract String doExpressionTransform(DBDefinition db);
@@ -964,7 +754,7 @@ public class MultiPoint2DExpression extends Spatial2DExpression<MultiPoint, Mult
 
 	private static abstract class MultiPointFunctionWithStringResult extends StringExpression {
 
-		private MultiPoint2DExpression first;
+		private final MultiPoint2DExpression first;
 		private boolean requiresNullProtection;
 
 		MultiPointFunctionWithStringResult(MultiPoint2DExpression first) {
@@ -985,18 +775,6 @@ public class MultiPoint2DExpression extends Spatial2DExpression<MultiPoint, Mult
 			} else {
 				return doExpressionTransform(db);
 			}
-		}
-
-		@Override
-		public MultiPointFunctionWithStringResult copy() {
-			MultiPointFunctionWithStringResult newInstance;
-			try {
-				newInstance = getClass().newInstance();
-			} catch (InstantiationException | IllegalAccessException ex) {
-				throw new RuntimeException(ex);
-			}
-			newInstance.first = first.copy();
-			return newInstance;
 		}
 
 		protected abstract String doExpressionTransform(DBDefinition db);
@@ -1023,7 +801,7 @@ public class MultiPoint2DExpression extends Spatial2DExpression<MultiPoint, Mult
 
 	private static abstract class MultiPoint2DFunctionWithGeometry2DResult extends Polygon2DExpression {
 
-		private MultiPoint2DExpression first;
+		private final MultiPoint2DExpression first;
 		private boolean requiresNullProtection;
 
 		MultiPoint2DFunctionWithGeometry2DResult(MultiPoint2DExpression first) {
@@ -1046,18 +824,6 @@ public class MultiPoint2DExpression extends Spatial2DExpression<MultiPoint, Mult
 			}
 		}
 
-		@Override
-		public MultiPoint2DFunctionWithGeometry2DResult copy() {
-			MultiPoint2DFunctionWithGeometry2DResult newInstance;
-			try {
-				newInstance = getClass().newInstance();
-			} catch (InstantiationException | IllegalAccessException ex) {
-				throw new RuntimeException(ex);
-			}
-			newInstance.first = first.copy();
-			return newInstance;
-		}
-
 		protected abstract String doExpressionTransform(DBDefinition db);
 
 		@Override
@@ -1078,5 +844,353 @@ public class MultiPoint2DExpression extends Spatial2DExpression<MultiPoint, Mult
 		public boolean getIncludesNull() {
 			return requiresNullProtection;
 		}
+	}
+
+	private static class NullExpression extends MultiPoint2DExpression {
+
+		public NullExpression() {
+		}
+		private final static long serialVersionUID = 1l;
+
+		@Override
+		public String toSQLString(DBDefinition db) {
+			return db.getNull();
+		}
+
+		@Override
+		public NullExpression copy() {
+			return new NullExpression();
+		}
+
+	}
+
+	private class StringResultExpression extends MultiPointFunctionWithStringResult {
+
+		public StringResultExpression(MultiPoint2DExpression first) {
+			super(first);
+		}
+		private final static long serialVersionUID = 1l;
+
+		@Override
+		protected String doExpressionTransform(DBDefinition db) {
+			try {
+				return db.doMultiPoint2DAsTextTransform(getFirst().toSQLString(db));
+			} catch (UnsupportedOperationException unsupported) {
+				return getFirst().toSQLString(db);
+			}
+		}
+
+		@Override
+		public StringResultExpression copy() {
+			return new StringResultExpression(
+					getFirst() == null ? null : getFirst().copy()
+			);
+		}
+	}
+
+	private class IsExpression extends MultiPoint2DMultiPoint2DFunctionWithBooleanResult {
+
+		public IsExpression(MultiPoint2DExpression first, MultiPoint2DExpression second) {
+			super(first, second);
+		}
+		private final static long serialVersionUID = 1l;
+
+		@Override
+		public String doExpressionTransform(DBDefinition db) {
+			try {
+				return db.doMultiPoint2DEqualsTransform(getFirst().toSQLString(db), getSecond().toSQLString(db));
+			} catch (UnsupportedOperationException unsupported) {
+				return getFirst().stringResult().is(getSecond().stringResult()).toSQLString(db);
+			}
+		}
+
+		@Override
+		public MultiPoint2DExpression.IsExpression copy() {
+			return new MultiPoint2DExpression.IsExpression(
+					getFirst() == null ? null : getFirst().copy(),
+					getFirst() == null ? null : getFirst().copy()
+			);
+		}
+	}
+
+	private class MaxXExpression extends MultiPointFunctionWithNumberResult {
+
+		public MaxXExpression(MultiPoint2DExpression first) {
+			super(first);
+		}
+		private final static long serialVersionUID = 1l;
+
+		@Override
+		public String doExpressionTransform(DBDefinition db) {
+			return db.doMultiPoint2DGetMaxXTransform(getFirst().toSQLString(db));
+		}
+
+		@Override
+		public MaxXExpression copy() {
+			return new MultiPoint2DExpression.MaxXExpression(
+					getFirst() == null ? null : getFirst().copy()
+			);
+		}
+	}
+
+private class MaxYExpression extends MultiPointFunctionWithNumberResult {
+
+		public MaxYExpression(MultiPoint2DExpression first) {
+			super(first);
+		}
+		private final static long serialVersionUID = 1l;
+
+		@Override
+		public String doExpressionTransform(DBDefinition db) {
+			return db.doMultiPoint2DGetMaxYTransform(getFirst().toSQLString(db));
+		}
+
+		@Override
+		public MaxYExpression copy() {
+			return new MultiPoint2DExpression.MaxYExpression(
+					getFirst() == null ? null : getFirst().copy()
+			);
+		}
+	}
+
+private class MinXExpression extends MultiPointFunctionWithNumberResult {
+
+		public MinXExpression(MultiPoint2DExpression first) {
+			super(first);
+		}
+		private final static long serialVersionUID = 1l;
+
+		@Override
+		public String doExpressionTransform(DBDefinition db) {
+			return db.doMultiPoint2DGetMinXTransform(getFirst().toSQLString(db));
+		}
+
+		@Override
+		public MinXExpression copy() {
+			return new MultiPoint2DExpression.MinXExpression(
+					getFirst() == null ? null : getFirst().copy()
+			);
+		}
+	}
+
+private class MinYExpression extends MultiPointFunctionWithNumberResult {
+
+		public MinYExpression(MultiPoint2DExpression first) {
+			super(first);
+		}
+		private final static long serialVersionUID = 1l;
+
+		@Override
+		public String doExpressionTransform(DBDefinition db) {
+			return db.doMultiPoint2DGetMinYTransform(getFirst().toSQLString(db));
+		}
+
+		@Override
+		public MinYExpression copy() {
+			return new MultiPoint2DExpression.MinYExpression(
+					getFirst() == null ? null : getFirst().copy()
+			);
+		}
+
+	}
+
+	private class NumberOfPointsExpression extends MultiPointFunctionWithNumberResult {
+
+		public NumberOfPointsExpression(MultiPoint2DExpression first) {
+			super(first);
+		}
+		private final static long serialVersionUID = 1l;
+
+		@Override
+		public String doExpressionTransform(DBDefinition db) {
+			return db.doMultiPoint2DGetNumberOfPointsTransform(getFirst().toSQLString(db));
+		}
+
+		@Override
+		public NumberOfPointsExpression copy() {
+			return new MultiPoint2DExpression.NumberOfPointsExpression(
+					getFirst() == null ? null : getFirst().copy()
+			);
+		}
+
+	}
+
+	private class GetPointAtIndexExpression extends MultiPointNumberFunctionWithPoint2DResult {
+
+		public GetPointAtIndexExpression(MultiPoint2DExpression first, NumberExpression second) {
+			super(first, second);
+		}
+		private final static long serialVersionUID = 1l;
+
+		@Override
+		public String doExpressionTransform(DBDefinition db) {
+			return db.doMultiPoint2DGetPointAtIndexTransform(
+					getFirst().toSQLString(db),
+					getSecond().plus(1).toSQLString(db)
+			);
+		}
+
+		@Override
+		public GetPointAtIndexExpression copy() {
+			return new MultiPoint2DExpression.GetPointAtIndexExpression(
+					getFirst() == null ? null : getFirst().copy(),
+					getSecond() == null ? null : getSecond().copy()
+			);
+		}
+
+	}
+
+	private class MeasurableDimensionsExpression extends MultiPointFunctionWithNumberResult {
+
+		public MeasurableDimensionsExpression(MultiPoint2DExpression first) {
+			super(first);
+		}
+		private final static long serialVersionUID = 1l;
+
+		@Override
+		public String doExpressionTransform(DBDefinition db) {
+			try {
+				return db.doMultiPoint2DMeasurableDimensionsTransform(getFirst().toSQLString(db));
+			} catch (UnsupportedOperationException unsupported) {
+				return NumberExpression.value(0).toSQLString(db);
+			}
+		}
+
+		@Override
+		public MeasurableDimensionsExpression copy() {
+			return new MultiPoint2DExpression.MeasurableDimensionsExpression(
+					getFirst() == null ? null : getFirst().copy()
+			);
+		}
+	}
+
+	private class SpatialDimensionsExpression extends MultiPointFunctionWithNumberResult {
+
+		public SpatialDimensionsExpression(MultiPoint2DExpression first) {
+			super(first);
+		}
+		private final static long serialVersionUID = 1l;
+
+		@Override
+		public String doExpressionTransform(DBDefinition db) {
+			try {
+				return db.doMultiPoint2DSpatialDimensionsTransform(getFirst().toSQLString(db));
+			} catch (UnsupportedOperationException unsupported) {
+				return NumberExpression.value(2).toSQLString(db);
+			}
+		}
+
+		@Override
+		public SpatialDimensionsExpression copy() {
+			return new MultiPoint2DExpression.SpatialDimensionsExpression(
+					getFirst() == null ? null : getFirst().copy()
+			);
+		}
+
+	}
+
+	private class HasMagnitudeExpression extends SingleArgumentBooleanFunction<DBExpression> {
+
+		public HasMagnitudeExpression(DBExpression first) {
+			super(first);
+		}
+		private final static long serialVersionUID = 1l;
+
+		@Override
+		public String doExpressionTransform(DBDefinition db) {
+			try {
+				return db.doMultiPoint2DHasMagnitudeTransform(getFirst().toSQLString(db));
+			} catch (UnsupportedOperationException unsupported) {
+				return BooleanExpression.falseExpression().toSQLString(db);
+			}
+		}
+
+		@Override
+		public HasMagnitudeExpression copy() {
+			return new MultiPoint2DExpression.HasMagnitudeExpression(
+					getFirst() == null ? null : getFirst().copy()
+			);
+		}
+
+	}
+
+	private class MagnitudeExpression extends MultiPointFunctionWithNumberResult {
+
+		public MagnitudeExpression(MultiPoint2DExpression first) {
+			super(first);
+		}
+		private final static long serialVersionUID = 1l;
+
+		@Override
+		public String doExpressionTransform(DBDefinition db) {
+			try {
+				return db.doMultiPoint2DGetMagnitudeTransform(getFirst().toSQLString(db));
+			} catch (UnsupportedOperationException unsupported) {
+				return nullExpression().toSQLString(db);
+			}
+		}
+
+		@Override
+		public MagnitudeExpression copy() {
+			return new MultiPoint2DExpression.MagnitudeExpression(
+					getFirst() == null ? null : getFirst().copy()
+			);
+		}
+
+	}
+
+	private class BoundingBoxExpression extends MultiPoint2DFunctionWithGeometry2DResult {
+
+		public BoundingBoxExpression(MultiPoint2DExpression first) {
+			super(first);
+		}
+		private final static long serialVersionUID = 1l;
+
+		@Override
+		public String doExpressionTransform(DBDefinition db) {
+			try {
+				return db.doMultiPoint2DGetBoundingBoxTransform(getFirst().toSQLString(db));
+			} catch (UnsupportedOperationException exp) {
+				final MultiPoint2DExpression first = getFirst();
+				final NumberExpression maxX = first.maxX();
+				final NumberExpression maxY = first.maxY();
+				final NumberExpression minX = first.minX();
+				final NumberExpression minY = first.minY();
+				return Polygon2DExpression.value(Point2DExpression.value(minX, minY),
+						Point2DExpression.value(maxX, minY),
+						Point2DExpression.value(maxX, maxY),
+						Point2DExpression.value(minX, maxY),
+						Point2DExpression.value(minX, minY))
+						.toSQLString(db);
+			}
+		}
+
+		@Override
+		public BoundingBoxExpression copy() {
+			return new MultiPoint2DExpression.BoundingBoxExpression(
+					getFirst() == null ? null : getFirst().copy()
+			);
+		}
+
+	}
+
+	private class Line2DResultExpression extends MultiPoint2DFunctionLine2DResult {
+
+		public Line2DResultExpression(MultiPoint2DExpression first) {
+			super(first);
+		}
+		private final static long serialVersionUID = 1l;
+
+		@Override
+		protected String doExpressionTransform(DBDefinition db) {
+			return db.doMultiPoint2DToLine2DTransform(getFirst().toSQLString(db));
+		}
+
+		@Override
+		public Line2DResultExpression copy() {
+			return new MultiPoint2DExpression.Line2DResultExpression(
+					getFirst() == null ? null : getFirst().copy());
+		}
+
 	}
 }

@@ -256,9 +256,16 @@ public abstract class QueryableDatatype<T> extends Object implements Serializabl
 				if (this.previousValueAsQDT != null) {
 					newQDT.previousValueAsQDT = this.previousValueAsQDT.copy();
 				}
-//			newQDT.isPrimaryKey = this.isPrimaryKey;
+
 				newQDT.sort = this.sort;
-				newQDT.setColumnExpression(this.getColumnExpression());
+				final DBExpression[] columnExpressions = this.getColumnExpression();
+				final DBExpression[] newExpressions = new DBExpression[columnExpressions.length];
+				int i = 0;
+				for (DBExpression columnExpression1 : columnExpressions) {
+					newExpressions[i] = columnExpression1.copy();
+					i++;
+				}
+				newQDT.setColumnExpression(newExpressions);
 			}
 		} catch (InstantiationException ex) {
 			throw new UnableInstantiateQueryableDatatypeException(this, ex);

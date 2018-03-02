@@ -35,7 +35,7 @@ public class Polygon2DColumn extends Polygon2DExpression implements ColumnProvid
 
 	private final static long serialVersionUID = 1l;
 
-	private AbstractColumn column;
+	private final AbstractColumn column;
 
 	/**
 	 * Creates a portable reference to the column represented by the field of the

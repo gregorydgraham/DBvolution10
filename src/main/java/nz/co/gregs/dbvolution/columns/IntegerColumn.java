@@ -21,7 +21,6 @@ import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.datatypes.DBEnum;
 import nz.co.gregs.dbvolution.datatypes.DBEnumValue;
 import nz.co.gregs.dbvolution.datatypes.DBInteger;
-import nz.co.gregs.dbvolution.datatypes.DBIntegerEnum;
 import nz.co.gregs.dbvolution.expressions.BooleanExpression;
 import nz.co.gregs.dbvolution.expressions.IntegerExpression;
 import nz.co.gregs.dbvolution.expressions.NumberExpression;
@@ -100,9 +99,6 @@ public class IntegerColumn extends IntegerExpression implements ColumnProvider {
 		this.column = new AbstractColumn(row, field);
 	}
 
-//	public IntegerColumn(RowDefinition row, DBIntegerEnum<?> field) {
-//		this.column = new AbstractColumn(row, field);
-//	}
 	@Override
 	public String toSQLString(DBDefinition db) {
 		return column.toSQLString(db);
@@ -110,16 +106,10 @@ public class IntegerColumn extends IntegerExpression implements ColumnProvider {
 
 	@Override
 	public synchronized IntegerColumn copy() {
-		try {
-			IntegerColumn newInstance = this.getClass().newInstance();
-			newInstance.column = this.column;
-			return newInstance;
-		} catch (InstantiationException ex) {
-			throw new RuntimeException(ex);
-		} catch (IllegalAccessException ex) {
-			throw new RuntimeException(ex);
-		}
-
+		final AbstractColumn col = getColumn();
+		final DBRow row = col.getInstanceOfRow();
+		IntegerColumn newInstance = new IntegerColumn(row, (DBInteger) col.getAppropriateQDTFromRow(row));
+		return newInstance;
 	}
 
 	@Override
@@ -156,6 +146,7 @@ public class IntegerColumn extends IntegerExpression implements ColumnProvider {
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a BooleanExpression
 	 */
+	@Override
 	public BooleanExpression is(DBInteger integerColumn) {
 		return super.is(integerColumn);
 	}

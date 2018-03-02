@@ -79,16 +79,10 @@ public class BooleanArrayColumn extends BooleanArrayExpression implements Column
 
 	@Override
 	public BooleanArrayColumn copy() {
-		BooleanArrayColumn newColumn;
-		RowDefinition instanceOfRow = column.getRowDefinition();
-		Object field = column.getField();
-		if (field instanceof DBBooleanArray) {
-			newColumn = new BooleanArrayColumn(instanceOfRow, (DBBooleanArray) field);
-		} else {
-			newColumn = new BooleanArrayColumn(instanceOfRow, (boolean[]) field);
-		}
-
-		return newColumn;
+		final AbstractColumn col = getColumn();
+		final DBRow row = col.getInstanceOfRow();
+		BooleanArrayColumn newInstance = new BooleanArrayColumn(row, (DBBooleanArray) col.getAppropriateQDTFromRow(row));
+		return newInstance;
 	}
 
 	@Override

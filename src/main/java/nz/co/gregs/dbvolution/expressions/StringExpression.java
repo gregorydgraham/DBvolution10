@@ -69,20 +69,7 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 	 */
 	@Override
 	public StringExpression nullExpression() {
-		return new StringExpression() {
-			private final static long serialVersionUID = 1l;
-
-			@Override
-			public String toSQLString(DBDefinition db) {
-				return db.getNull();
-			}
-
-			@Override
-			public boolean getIncludesNull() {
-				return true;
-			}
-
-		};
+		return new StringExpression(new NullStringExpression());
 	}
 
 	/**
@@ -145,7 +132,8 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 		if (stringVariable == null) {
 			stringNullProtectionRequired = true;
 		} else {
-			stringNullProtectionRequired = stringVariable.getIncludesNull();
+			final String value = stringVariable.getValue();
+			stringNullProtectionRequired = value==null||value.isEmpty();
 		}
 	}
 
@@ -256,8 +244,7 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 		AnyResult<?> stringInput = getInnerResult();
 		if (stringInput == null) {
 			stringInput = StringExpression.value("<NULL>");
-		} else if (
-				!(stringInput instanceof StringResult) 
+		} else if (!(stringInput instanceof StringResult)
 				&& (stringInput instanceof ExpressionHasStandardStringResult)) {
 			stringInput = ((ExpressionHasStandardStringResult) stringInput).stringResult();
 		}
@@ -266,7 +253,8 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 
 	@Override
 	public StringExpression copy() {
-		return isNullSafetyTerminator() ? nullString() : new StringExpression(getInnerResult());
+		//return isNullSafetyTerminator() ? nullString() : new StringExpression((AnyResult<?>) getInnerResult().copy());
+		return new StringExpression((AnyResult<?>) (getInnerResult()==null?null:getInnerResult().copy()));
 	}
 
 	@Override
@@ -277,7 +265,7 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 
 	@Override
 	public boolean getIncludesNull() {
-		return stringNullProtectionRequired || super.getIncludesNull();
+		return stringNullProtectionRequired==true || super.getIncludesNull();
 	}
 
 	/**
@@ -470,20 +458,7 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 	 */
 	public StringExpression ifDBNull(StringResult alternative) {
 		return new StringExpression(
-				new StringExpression.DBBinaryStringFunction(this, new StringExpression(alternative)) {
-
-			private final static long serialVersionUID = 1l;
-
-			@Override
-			public String toSQLString(DBDefinition db) {
-				return db.doStringIfNullTransform(this.getFirst().toSQLString(db), getSecond().toSQLString(db));
-			}
-
-			@Override
-			public boolean getIncludesNull() {
-				return false;
-			}
-		});
+				new StringIfDBNullExpression(this, new StringExpression(alternative)));
 	}
 
 	/**
@@ -630,19 +605,7 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 		if (sqlPattern.getIncludesNull()) {
 			return new BooleanExpression(this.isNull());
 		} else {
-			return new BooleanExpression(new DBBinaryBooleanArithmetic(this, sqlPattern) {
-				private final static long serialVersionUID = 1l;
-
-				@Override
-				protected String getEquationOperator(DBDefinition db) {
-					return " LIKE ";
-				}
-
-				@Override
-				public boolean getIncludesNull() {
-					return false;
-				}
-			});
+			return new BooleanExpression(new StringIsLikeExpression(this, sqlPattern));
 		}
 	}
 
@@ -870,24 +833,7 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 		if (equivalentString == null) {
 			return new BooleanExpression(this.isNull());
 		} else {
-			final BooleanExpression is = new BooleanExpression(new DBBinaryBooleanArithmetic(this, equivalentString) {
-				private final static long serialVersionUID = 1l;
-
-				@Override
-				public String toSQLString(DBDefinition db) {
-					return db.doStringEqualsTransform(super.first.toSQLString(db), super.second.toSQLString(db));
-				}
-
-				@Override
-				protected String getEquationOperator(DBDefinition db) {
-					return " = ";
-				}
-
-				@Override
-				public boolean getIncludesNull() {
-					return false;
-				}
-			});
+			final BooleanExpression is = new BooleanExpression(new StringIsExpression(this, equivalentString));
 			if (equivalentString.getIncludesNull()) {
 				return BooleanExpression.anyOf(this.isNull(), is);
 			} else {
@@ -979,26 +925,7 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 		if (equivalentString.getIncludesNull()) {
 			return this.isNotNull();
 		} else {
-			return new BooleanExpression(new DBBinaryBooleanArithmetic(this, equivalentString) {
-				private final static long serialVersionUID = 1l;
-
-				@Override
-				public String toSQLString(DBDefinition db) {
-					return (new StringExpression(first)).ifDBNull("<DBV NULL PROTECTION>").toSQLString(db)
-							+ this.getEquationOperator(db)
-							+ (new StringExpression(second)).ifDBNull("<DBV NULL PROTECTION>").toSQLString(db);
-				}
-
-				@Override
-				protected String getEquationOperator(DBDefinition db) {
-					return " <> ";
-				}
-
-				@Override
-				public boolean getIncludesNull() {
-					return false;
-				}
-			});
+			return new BooleanExpression(new StringIsNotExpression(this, equivalentString));
 		}
 	}
 
@@ -1389,19 +1316,7 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 		if (equivalentString.getIncludesNull()) {
 			return new BooleanExpression(this.isNull());
 		} else {
-			return new BooleanExpression(new DBBinaryBooleanArithmetic(this, equivalentString) {
-				private final static long serialVersionUID = 1l;
-
-				@Override
-				protected String getEquationOperator(DBDefinition db) {
-					return " < ";
-				}
-
-				@Override
-				public boolean getIncludesNull() {
-					return false;
-				}
-			});
+			return new BooleanExpression(new StringIsLessThanExpression(this, equivalentString));
 		}
 	}
 
@@ -1439,19 +1354,7 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 		if (equivalentString.getIncludesNull()) {
 			return new BooleanExpression(this.isNull());
 		} else {
-			return new BooleanExpression(new DBBinaryBooleanArithmetic(this, equivalentString) {
-				private final static long serialVersionUID = 1l;
-
-				@Override
-				protected String getEquationOperator(DBDefinition db) {
-					return " <= ";
-				}
-
-				@Override
-				public boolean getIncludesNull() {
-					return false;
-				}
-			});
+			return new BooleanExpression(new StringIsLessThanOrEqualExpression(this, equivalentString));
 		}
 	}
 
@@ -1489,19 +1392,7 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 		if (equivalentString.getIncludesNull()) {
 			return new BooleanExpression(this.isNotNull());
 		} else {
-			return new BooleanExpression(new DBBinaryBooleanArithmetic(this, equivalentString) {
-				private final static long serialVersionUID = 1l;
-
-				@Override
-				protected String getEquationOperator(DBDefinition db) {
-					return " > ";
-				}
-
-				@Override
-				public boolean getIncludesNull() {
-					return false;
-				}
-			});
+			return new BooleanExpression(new StringIsGreaterThanExpression(this, equivalentString));
 		}
 	}
 
@@ -1539,19 +1430,7 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 		if (equivalentString.getIncludesNull()) {
 			return this.is(equivalentString).not();
 		} else {
-			return new BooleanExpression(new DBBinaryBooleanArithmetic(this, equivalentString) {
-				private final static long serialVersionUID = 1l;
-
-				@Override
-				protected String getEquationOperator(DBDefinition db) {
-					return " >= ";
-				}
-
-				@Override
-				public boolean getIncludesNull() {
-					return false;
-				}
-			});
+			return new BooleanExpression(new StringIsGreaterThanOrEqualExpression(this, equivalentString));
 		}
 	}
 
@@ -1603,25 +1482,7 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 	@Override
 	public BooleanExpression isIn(StringResult... possibleValues) {
 		final BooleanExpression isInExpression
-				= new BooleanExpression(new DBNnaryBooleanFunction(this, possibleValues) {
-					private final static long serialVersionUID = 1l;
-
-					@Override
-					public String toSQLString(DBDefinition db) {
-						List<String> sqlValues = new ArrayList<>();
-						for (StringResult value : values) {
-							if (!value.getIncludesNull()) {
-								sqlValues.add(value.toSQLString(db));
-							}
-						}
-						return db.doInTransform(column.toSQLString(db), sqlValues);
-					}
-
-					@Override
-					protected String getFunctionName(DBDefinition db) {
-						return " IN ";
-					}
-				});
+				= new BooleanExpression(new StringIsInExpression(this, possibleValues));
 		if (isInExpression.getIncludesNull()) {
 			return BooleanExpression.anyOf(new BooleanExpression(this.isNull()), isInExpression);
 		} else {
@@ -1639,19 +1500,7 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 	 * @return a StringExpression.
 	 */
 	public StringExpression append(StringResult string2) {
-		return new StringExpression(new DBBinaryStringArithmetic(this, string2) {
-			private final static long serialVersionUID = 1l;
-
-			@Override
-			public String toSQLString(DBDefinition db) {
-				return db.doConcatTransform(super.first.toSQLString(db), super.second.toSQLString(db));
-			}
-
-			@Override
-			protected String getEquationOperator(DBDefinition db) {
-				return "";
-			}
-		});
+		return new StringExpression(new StringAppendExpression(this, string2));
 	}
 
 	/**
@@ -1751,28 +1600,7 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 			replaceValue = StringExpression.value("");
 		}
 		return new StringExpression(
-				new DBTrinaryStringFunction(this, findString, replaceValue) {
-			private final static long serialVersionUID = 1l;
-
-			@Override
-			public String toSQLString(DBDefinition db) {
-				return db.doReplaceTransform(
-						this.getFirst().toSQLString(db),
-						this.getSecond().toSQLString(db),
-						this.getThird().toSQLString(db));
-			}
-
-			@Override
-			String getFunctionName(DBDefinition db) {
-				return "REPLACE";
-			}
-
-			@Override
-			public boolean getIncludesNull() {
-				// handled before creation
-				return false;
-			}
-		});
+				new StringReplaceExpression(this, findString, replaceValue));
 	}
 
 	/**
@@ -1810,18 +1638,7 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 	 * @return a string expression
 	 */
 	public StringExpression substringBefore(StringResult splitBeforeThis) {
-		return new StringExpression(new DBBinaryStringFunction(this, new StringExpression(splitBeforeThis)) {
-			private final static long serialVersionUID = 1l;
-
-			@Override
-			public String toSQLString(DBDefinition db) {
-				try {
-					return db.doSubstringBeforeTransform(getFirst().toSQLString(db), getSecond().toSQLString(db));
-				} catch (UnsupportedOperationException exp) {
-					return getFirst().locationOf(getSecond()).isGreaterThan(0).ifThenElse(getFirst().substring(0, getFirst().locationOf(getSecond()).minus(1).integerResult()), value("")).toSQLString(db);
-				}
-			}
-		});
+		return new StringExpression(new StringSubstringBeforeExpression(this, new StringExpression(splitBeforeThis)));
 	}
 
 	/**
@@ -1861,18 +1678,7 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 	 * @return a string expression
 	 */
 	public StringExpression substringAfter(StringResult splitAfterThis) {
-		return new StringExpression(new DBBinaryStringFunction(this, new StringExpression(splitAfterThis)) {
-			private final static long serialVersionUID = 1l;
-
-			@Override
-			public String toSQLString(DBDefinition db) {
-				try {
-					return db.doSubstringAfterTransform(getFirst().toSQLString(db), getSecond().toSQLString(db));
-				} catch (UnsupportedOperationException exp) {
-					return getFirst().locationOf(getSecond()).isGreaterThan(0).ifThenElse(getFirst().substring(getFirst().locationOf(getSecond()).integerResult(), getFirst().length()), value("")).toSQLString(db);
-				}
-			}
-		});
+		return new StringExpression(new StringSubstringAfterExpression(this, new StringExpression(splitAfterThis)));
 	}
 
 	/**
@@ -1942,14 +1748,7 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 	 */
 	public StringExpression trim() {
 		return new StringExpression(
-				new StringExpression(this) {
-			private final static long serialVersionUID = 1l;
-
-			@Override
-			public String toSQLString(DBDefinition db) {
-				return db.doTrimFunction(this.getInnerResult().toSQLString(db));
-			}
-		});
+				new StringTrimExpression(this));
 	}
 
 	/**
@@ -1980,14 +1779,7 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 	 */
 	public StringExpression getFirstNumberAsSubstring() {
 		StringExpression exp = new StringExpression(
-				new StringExpression(this) {
-			private final static long serialVersionUID = 1l;
-
-			@Override
-			public String toSQLString(DBDefinition db) {
-				return db.doFindNumberInStringTransform(this.getInnerResult().toSQLString(db));
-			}
-		});
+				new StringFirstNumberAsSubstringExpression(this));
 		return exp;
 	}
 
@@ -2002,14 +1794,7 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 	 */
 	public StringExpression getFirstIntegerAsSubstring() {
 		final StringExpression exp = new StringExpression(
-				new StringExpression(this) {
-			private final static long serialVersionUID = 1l;
-
-			@Override
-			public String toSQLString(DBDefinition db) {
-				return db.doFindIntegerInStringTransform(this.getInnerResult().toSQLString(db));
-			}
-		});
+				new StringFirstIntegerAsSubstringExpression(this));
 		return exp;
 
 	}
@@ -2052,14 +1837,7 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 	 */
 	public StringExpression leftTrim() {
 		return new StringExpression(
-				new StringExpression(this) {
-			private final static long serialVersionUID = 1l;
-
-			@Override
-			public String toSQLString(DBDefinition db) {
-				return db.doLeftTrimTransform(this.getInnerResult().toSQLString(db));
-			}
-		});
+				new StringLeftTrimExpression(this));
 	}
 
 	/**
@@ -2073,14 +1851,7 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 	 */
 	public StringExpression rightTrim() {
 		return new StringExpression(
-				new StringExpression(this) {
-			private final static long serialVersionUID = 1l;
-
-			@Override
-			public String toSQLString(DBDefinition defn) {
-				return defn.getRightTrimFunctionName() + "(" + getInnerResult().toSQLString(defn) + ")";
-			}
-		});
+				new StringRightTrimExpression(this));
 	}
 
 	/**
@@ -2094,14 +1865,7 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 	 */
 	public StringExpression lowercase() {
 		return new StringExpression(
-				new StringExpression(this) {
-			private final static long serialVersionUID = 1l;
-
-			@Override
-			public String toSQLString(DBDefinition defn) {
-				return defn.getLowercaseFunctionName() + "(" + getInnerResult().toSQLString(defn) + ")";
-			}
-		});
+				new StringLowercaseExpression(this));
 	}
 
 	/**
@@ -2115,14 +1879,7 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 	 */
 	public StringExpression uppercase() {
 		return new StringExpression(
-				new StringExpression(this) {
-			private final static long serialVersionUID = 1l;
-
-			@Override
-			public String toSQLString(DBDefinition defn) {
-				return defn.getUppercaseFunctionName() + "(" + getInnerResult().toSQLString(defn) + ")";
-			}
-		});
+				new StringUppercaseExpression(this));
 	}
 
 	/**
@@ -2302,14 +2059,7 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 	 */
 	public IntegerExpression length() {
 		return new IntegerExpression(
-				new IntegerExpression(this) {
-			private final static long serialVersionUID = 1l;
-
-			@Override
-			public String toSQLString(DBDefinition db) {
-				return db.doStringLengthTransform(getInnerResult().toSQLString(db));
-			}
-		});
+				new IntegerLengthExpression(this));
 	}
 
 	/**
@@ -2327,24 +2077,7 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 	 */
 	public static StringExpression currentUser() {
 		return new StringExpression(
-				new StringExpression() {
-			private final static long serialVersionUID = 1l;
-
-			@Override
-			public String toSQLString(DBDefinition db) {
-				return db.getCurrentUserFunctionName();
-			}
-
-			@Override
-			public boolean getIncludesNull() {
-				return false;
-			}
-
-			@Override
-			public boolean isPurelyFunctional() {
-				return true;
-			}
-		});
+				new StringCurrentUserExpression());
 	}
 
 	/**
@@ -2376,14 +2109,7 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 	 * @return an expression that will find the location of the searchString.
 	 */
 	public IntegerExpression locationOf(StringResult searchString) {
-		return new NumberExpression(new BinaryComplicatedNumberFunction(this, searchString) {
-			private final static long serialVersionUID = 1l;
-
-			@Override
-			public String toSQLString(DBDefinition db) {
-				return db.doPositionInStringTransform(this.first.toSQLString(db), this.second.toSQLString(db));
-			}
-		}).integerResult();
+		return new NumberExpression(new StringLocationOfExpression(this, searchString)).integerResult();
 	}
 
 	/**
@@ -2401,19 +2127,7 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 	 */
 	public StringExpression max() {
 		return new StringExpression(
-				new StringExpression(this) {
-			private final static long serialVersionUID = 1l;
-
-			@Override
-			public String toSQLString(DBDefinition defn) {
-				return defn.getMaxFunctionName() + "(" + getInnerResult().toSQLString(defn) + ")";
-			}
-
-			@Override
-			public boolean isAggregator() {
-				return true;
-			}
-		});
+				new StringMaxExpression(this));
 	}
 
 	/**
@@ -2430,19 +2144,7 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 	 * @return a String expression.
 	 */
 	public StringExpression min() {
-		return new StringExpression(new StringExpression(this) {
-			private final static long serialVersionUID = 1l;
-
-			@Override
-			public String toSQLString(DBDefinition defn) {
-				return defn.getMinFunctionName() + "(" + getInnerResult().toSQLString(defn) + ")";
-			}
-
-			@Override
-			public boolean isAggregator() {
-				return true;
-			}
-		});
+		return new StringExpression(new StringMinExpression(this));
 	}
 
 	@Override
@@ -2544,14 +2246,7 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 	 * brackets.
 	 */
 	public StringExpression bracket() {
-		return new StringExpression(new StringExpression(this) {
-			private final static long serialVersionUID = 1l;
-
-			@Override
-			public String toSQLString(DBDefinition defn) {
-				return "(" + getInnerResult().toSQLString(defn) + ")";
-			}
-		});
+		return new StringExpression(new StringBracketExpression(this));
 	}
 
 	/**
@@ -2666,14 +2361,7 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 	 */
 	public NumberExpression numberResult() {
 		return new NumberExpression(
-				new NumberExpression(this) {
-			private final static long serialVersionUID = 1l;
-
-			@Override
-			public String toSQLString(DBDefinition db) {
-				return db.doStringToNumberTransform(getInnerResult().toSQLString(db));
-			}
-		});
+				new StringNumberResultExpression(this));
 	}
 
 	/**
@@ -2714,8 +2402,8 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 
 	private static abstract class DBBinaryStringArithmetic extends StringExpression {
 
-		private StringResult first;
-		private StringResult second;
+		protected StringResult first;
+		protected StringResult second;
 
 		DBBinaryStringArithmetic(StringResult first, StringResult second) {
 			this.first = first;
@@ -2730,19 +2418,6 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 		@Override
 		public String toSQLString(DBDefinition db) {
 			return first.toSQLString(db) + this.getEquationOperator(db) + second.toSQLString(db);
-		}
-
-		@Override
-		public DBBinaryStringArithmetic copy() {
-			DBBinaryStringArithmetic newInstance;
-			try {
-				newInstance = getClass().newInstance();
-			} catch (InstantiationException | IllegalAccessException ex) {
-				throw new RuntimeException(ex);
-			}
-			newInstance.first = first.copy();
-			newInstance.second = second.copy();
-			return newInstance;
 		}
 
 		protected abstract String getEquationOperator(DBDefinition db);
@@ -2813,21 +2488,7 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 					+ this.getSeparator(db) + (getThird() == null ? "" : getThird().toSQLString(db))
 					+ this.afterValue(db);
 		}
-
-		@Override
-		public DBTrinaryStringFunction copy() {
-			DBTrinaryStringFunction newInstance;
-			try {
-				newInstance = getClass().newInstance();
-			} catch (InstantiationException | IllegalAccessException ex) {
-				throw new RuntimeException(ex);
-			}
-			newInstance.first = getFirst() == null ? null : getFirst().copy();
-			newInstance.second = getSecond() == null ? null : getSecond().copy();
-			newInstance.third = getThird() == null ? null : getThird().copy();
-			return newInstance;
-		}
-
+		
 		abstract String getFunctionName(DBDefinition db);
 
 		protected String beforeValue(DBDefinition db) {
@@ -2906,10 +2567,10 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 		}
 	}
 
-	private static abstract class DBBinaryStringFunction extends StringExpression {
+	protected static abstract class DBBinaryStringFunction extends StringExpression {
 
-		private StringExpression first;
-		private StringExpression second;
+		protected StringExpression first;
+		protected StringExpression second;
 
 		DBBinaryStringFunction(StringExpression first) {
 			this.first = first;
@@ -2924,19 +2585,6 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 		@Override
 		public DBString getQueryableDatatypeForExpressionValue() {
 			return new DBString();
-		}
-
-		@Override
-		public DBBinaryStringFunction copy() {
-			DBBinaryStringFunction newInstance;
-			try {
-				newInstance = getClass().newInstance();
-			} catch (InstantiationException | IllegalAccessException ex) {
-				throw new RuntimeException(ex);
-			}
-			newInstance.first = getFirst() == null ? null : getFirst().copy();
-			newInstance.second = getSecond() == null ? null : getSecond().copy();
-			return newInstance;
 		}
 
 		@Override
@@ -3013,19 +2661,6 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 		public abstract String toSQLString(DBDefinition db);
 
 		@Override
-		public StringExpression.BinaryComplicatedNumberFunction copy() {
-			StringExpression.BinaryComplicatedNumberFunction newInstance;
-			try {
-				newInstance = getClass().newInstance();
-			} catch (InstantiationException | IllegalAccessException ex) {
-				throw new RuntimeException(ex);
-			}
-			newInstance.first = first.copy();
-			newInstance.second = second.copy();
-			return newInstance;
-		}
-
-		@Override
 		public Set<DBRow> getTablesInvolved() {
 			HashSet<DBRow> hashSet = new HashSet<>();
 			if (first != null) {
@@ -3082,7 +2717,7 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 
 		Substring(StringResult stringInput, IntegerResult startingIndex0Based) {
 			super(stringInput);
-			this.startingPosition = startingIndex0Based.copy();
+			this.startingPosition = startingIndex0Based;
 			this.length = value(stringInput).length();
 		}
 
@@ -3100,19 +2735,23 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 
 		Substring(StringResult stringInput, IntegerResult startingIndex0Based, IntegerResult endIndex0Based) {
 			super(stringInput);
-			this.startingPosition = startingIndex0Based.copy();
-			this.length = endIndex0Based.copy();
+			this.startingPosition = startingIndex0Based;
+			this.length = endIndex0Based;
 		}
 
 		private Substring(ExpressionHasStandardStringResult stringInput, IntegerResult startingIndex0Based, IntegerResult endIndex0Based) {
 			super(stringInput.stringResult());
-			this.startingPosition = startingIndex0Based.copy();
-			this.length = endIndex0Based.copy();
+			this.startingPosition = startingIndex0Based;
+			this.length = endIndex0Based;
 		}
 
 		@Override
 		public Substring copy() {
-			return new Substring((ExpressionHasStandardStringResult) getInnerResult(), startingPosition, length);
+			return new Substring(
+					getInnerResult() == null ? null : (ExpressionHasStandardStringResult) getInnerResult().copy(),
+					startingPosition == null ? null : startingPosition.copy(),
+					length == null ? null : length.copy()
+			);
 		}
 
 		@Override
@@ -3158,8 +2797,8 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 
 	private static abstract class DBBinaryBooleanArithmetic extends BooleanExpression {
 
-		protected StringResult first;
-		protected StringResult second;
+		protected final StringResult first;
+		protected final StringResult second;
 
 		DBBinaryBooleanArithmetic(StringResult first, StringResult second) {
 			this.first = first;
@@ -3169,19 +2808,6 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 		@Override
 		public String toSQLString(DBDefinition db) {
 			return first.toSQLString(db) + this.getEquationOperator(db) + second.toSQLString(db);
-		}
-
-		@Override
-		public DBBinaryBooleanArithmetic copy() {
-			DBBinaryBooleanArithmetic newInstance;
-			try {
-				newInstance = getClass().newInstance();
-			} catch (InstantiationException | IllegalAccessException ex) {
-				throw new RuntimeException(ex);
-			}
-			newInstance.first = first.copy();
-			newInstance.second = second.copy();
-			return newInstance;
 		}
 
 		protected abstract String getEquationOperator(DBDefinition db);
@@ -3284,6 +2910,681 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 		@Override
 		public boolean getIncludesNull() {
 			return includesNulls;
+		}
+	}
+
+	private static class NullStringExpression extends StringExpression {
+
+		public NullStringExpression() {
+		}
+		private final static long serialVersionUID = 1l;
+
+		@Override
+		public String toSQLString(DBDefinition db) {
+			return db.getNull();
+		}
+
+		@Override
+		public boolean getIncludesNull() {
+			return true;
+		}
+
+		@Override
+		public NullStringExpression copy() {
+			return new NullStringExpression();
+		}
+	}
+
+	protected class StringIfDBNullExpression extends DBBinaryStringFunction {
+
+		public StringIfDBNullExpression(StringExpression first, StringExpression second) {
+			super(first, second);
+		}
+		private final static long serialVersionUID = 1l;
+
+		@Override
+		public String toSQLString(DBDefinition db) {
+			return db.doStringIfNullTransform(this.getFirst().toSQLString(db), getSecond().toSQLString(db));
+		}
+
+		@Override
+		public boolean getIncludesNull() {
+			return false;
+		}
+
+		@Override
+		public StringIfDBNullExpression copy() {
+			return new StringIfDBNullExpression(
+					getFirst() == null ? null : getFirst().copy(),
+					getSecond() == null ? null : getSecond().copy());
+		}
+	}
+
+	protected static class StringIsLikeExpression extends DBBinaryBooleanArithmetic {
+
+		public StringIsLikeExpression(StringResult first, StringResult second) {
+			super(first, second);
+		}
+		private final static long serialVersionUID = 1l;
+
+		@Override
+		protected String getEquationOperator(DBDefinition db) {
+			return " LIKE ";
+		}
+
+		@Override
+		public boolean getIncludesNull() {
+			return false;
+		}
+
+		@Override
+		public StringIsLikeExpression copy() {
+			return new StringIsLikeExpression(
+					first == null ? null : first.copy(),
+					second == null ? null : second.copy()
+			);
+		}
+	}
+
+	protected class StringIsExpression extends DBBinaryBooleanArithmetic {
+
+		public StringIsExpression(StringResult first, StringResult second) {
+			super(first, second);
+		}
+		private final static long serialVersionUID = 1l;
+
+		@Override
+		public String toSQLString(DBDefinition db) {
+			return db.doStringEqualsTransform(super.first.toSQLString(db), super.second.toSQLString(db));
+		}
+
+		@Override
+		protected String getEquationOperator(DBDefinition db) {
+			return " = ";
+		}
+
+		@Override
+		public boolean getIncludesNull() {
+			return false;
+		}
+
+		@Override
+		public StringIsExpression copy() {
+			return new StringIsExpression(
+					first == null ? null : first.copy(),
+					second == null ? null : second.copy()
+			);
+		}
+	}
+
+	protected class StringIsNotExpression extends DBBinaryBooleanArithmetic {
+
+		public StringIsNotExpression(StringResult first, StringResult second) {
+			super(first, second);
+		}
+		private final static long serialVersionUID = 1l;
+
+		@Override
+		public String toSQLString(DBDefinition db) {
+			return (new StringExpression(first)).ifDBNull("<DBV NULL PROTECTION>").toSQLString(db)
+					+ this.getEquationOperator(db)
+					+ (new StringExpression(second)).ifDBNull("<DBV NULL PROTECTION>").toSQLString(db);
+		}
+
+		@Override
+		protected String getEquationOperator(DBDefinition db) {
+			return " <> ";
+		}
+
+		@Override
+		public boolean getIncludesNull() {
+			return false;
+		}
+
+		@Override
+		public StringIsNotExpression copy() {
+			return new StringIsNotExpression(
+					first == null ? null : first.copy(),
+					second == null ? null : second.copy()
+			);
+		}
+	}
+
+	protected static class StringIsLessThanExpression extends DBBinaryBooleanArithmetic {
+
+		public StringIsLessThanExpression(StringResult first, StringResult second) {
+			super(first, second);
+		}
+		private final static long serialVersionUID = 1l;
+
+		@Override
+		protected String getEquationOperator(DBDefinition db) {
+			return " < ";
+		}
+
+		@Override
+		public boolean getIncludesNull() {
+			return false;
+		}
+
+		@Override
+		public StringIsLessThanExpression copy() {
+			return new StringIsLessThanExpression(
+					first == null ? null : first.copy(),
+					second == null ? null : second.copy()
+			);
+		}
+	}
+
+	protected static class StringIsLessThanOrEqualExpression extends DBBinaryBooleanArithmetic {
+
+		public StringIsLessThanOrEqualExpression(StringResult first, StringResult second) {
+			super(first, second);
+		}
+		private final static long serialVersionUID = 1l;
+
+		@Override
+		protected String getEquationOperator(DBDefinition db) {
+			return " <= ";
+		}
+
+		@Override
+		public boolean getIncludesNull() {
+			return false;
+		}
+
+		@Override
+		public StringIsLessThanOrEqualExpression copy() {
+			return new StringIsLessThanOrEqualExpression(
+					first == null ? null : first.copy(),
+					second == null ? null : second.copy()
+			);
+		}
+	}
+
+	protected static class StringIsGreaterThanExpression extends DBBinaryBooleanArithmetic {
+
+		public StringIsGreaterThanExpression(StringResult first, StringResult second) {
+			super(first, second);
+		}
+		private final static long serialVersionUID = 1l;
+
+		@Override
+		protected String getEquationOperator(DBDefinition db) {
+			return " > ";
+		}
+
+		@Override
+		public boolean getIncludesNull() {
+			return false;
+		}
+
+		@Override
+		public StringIsGreaterThanExpression copy() {
+			return new StringIsGreaterThanExpression(
+					first == null ? null : first.copy(),
+					second == null ? null : second.copy()
+			);
+		}
+	}
+
+	protected static class StringIsGreaterThanOrEqualExpression extends DBBinaryBooleanArithmetic {
+
+		public StringIsGreaterThanOrEqualExpression(StringResult first, StringResult second) {
+			super(first, second);
+		}
+		private final static long serialVersionUID = 1l;
+
+		@Override
+		protected String getEquationOperator(DBDefinition db) {
+			return " >= ";
+		}
+
+		@Override
+		public boolean getIncludesNull() {
+			return false;
+		}
+
+		@Override
+		public StringIsGreaterThanOrEqualExpression copy() {
+			return new StringIsGreaterThanOrEqualExpression(
+					first == null ? null : first.copy(),
+					second == null ? null : second.copy()
+			);
+		}
+	}
+
+	protected class StringIsInExpression extends DBNnaryBooleanFunction {
+
+		public StringIsInExpression(StringExpression leftHandSide, StringResult[] rightHandSide) {
+			super(leftHandSide, rightHandSide);
+		}
+		private final static long serialVersionUID = 1l;
+
+		@Override
+		public String toSQLString(DBDefinition db) {
+			List<String> sqlValues = new ArrayList<>();
+			for (StringResult value : values) {
+				if (!value.getIncludesNull()) {
+					sqlValues.add(value.toSQLString(db));
+				}
+			}
+			return db.doInTransform(column.toSQLString(db), sqlValues);
+		}
+
+		@Override
+		protected String getFunctionName(DBDefinition db) {
+			return " IN ";
+		}
+
+		@Override
+		public StringIsInExpression copy() {
+			StringResult[] newValues = new StringResult[values.size()];
+			for (int i = 0; i < newValues.length; i++) {
+				newValues[i] = values.get(i) == null ? null : values.get(i).copy();
+			}
+			return new StringIsInExpression(
+					column == null ? null : column.copy(),
+					newValues
+			);
+		}
+	}
+
+	protected class StringAppendExpression extends DBBinaryStringArithmetic {
+
+		public StringAppendExpression(StringResult first, StringResult second) {
+			super(first, second);
+		}
+		private final static long serialVersionUID = 1l;
+
+		@Override
+		public String toSQLString(DBDefinition db) {
+			return db.doConcatTransform(super.first.toSQLString(db), super.second.toSQLString(db));
+		}
+
+		@Override
+		protected String getEquationOperator(DBDefinition db) {
+			return "";
+		}
+
+		@Override
+		public StringAppendExpression copy() {
+			return new StringAppendExpression(
+					first == null ? null : first.copy(),
+					second == null ? null : second.copy()
+			);
+		}
+	}
+
+	protected class StringReplaceExpression extends DBTrinaryStringFunction {
+
+		public StringReplaceExpression(DBExpression first, DBExpression second, DBExpression third) {
+			super(first, second, third);
+		}
+		private final static long serialVersionUID = 1l;
+
+		@Override
+		public String toSQLString(DBDefinition db) {
+			return db.doReplaceTransform(
+					this.getFirst().toSQLString(db),
+					this.getSecond().toSQLString(db),
+					this.getThird().toSQLString(db));
+		}
+
+		@Override
+		String getFunctionName(DBDefinition db) {
+			return "REPLACE";
+		}
+
+		@Override
+		public boolean getIncludesNull() {
+			// handled before creation
+			return false;
+		}
+
+		@Override
+		public StringReplaceExpression copy() {
+			return new StringReplaceExpression(
+					getFirst() == null ? null : getFirst().copy(),
+					getSecond() == null ? null : getSecond().copy(),
+					getThird() == null ? null : getThird().copy()
+			);
+		}
+	}
+
+	protected static class StringSubstringBeforeExpression extends DBBinaryStringFunction {
+
+		public StringSubstringBeforeExpression(StringExpression first, StringExpression second) {
+			super(first, second);
+		}
+		private final static long serialVersionUID = 1l;
+
+		@Override
+		public String toSQLString(DBDefinition db) {
+			try {
+				return db.doSubstringBeforeTransform(getFirst().toSQLString(db), getSecond().toSQLString(db));
+			} catch (UnsupportedOperationException exp) {
+				return getFirst().locationOf(getSecond()).isGreaterThan(0).ifThenElse(getFirst().substring(0, getFirst().locationOf(getSecond()).minus(1).integerResult()), value("")).toSQLString(db);
+			}
+		}
+
+		@Override
+		public StringSubstringBeforeExpression copy() {
+			StringSubstringBeforeExpression newInstance;
+			newInstance
+					= new StringSubstringBeforeExpression(
+							getFirst() == null ? null : getFirst().copy(),
+							getSecond() == null ? null : getSecond().copy()
+					);
+			return newInstance;
+		}
+	}
+
+	protected class StringSubstringAfterExpression extends DBBinaryStringFunction {
+
+		public StringSubstringAfterExpression(StringExpression first, StringExpression second) {
+			super(first, second);
+		}
+		private final static long serialVersionUID = 1l;
+
+		@Override
+		public String toSQLString(DBDefinition db) {
+			try {
+				return db.doSubstringAfterTransform(getFirst().toSQLString(db), getSecond().toSQLString(db));
+			} catch (UnsupportedOperationException exp) {
+				return getFirst().locationOf(getSecond()).isGreaterThan(0).ifThenElse(getFirst().substring(getFirst().locationOf(getSecond()).integerResult(), getFirst().length()), value("")).toSQLString(db);
+			}
+		}
+
+		@Override
+		public StringSubstringAfterExpression copy() {
+			StringSubstringAfterExpression newInstance;
+			newInstance
+					= new StringSubstringAfterExpression(
+							getFirst() == null ? null : getFirst().copy(),
+							getSecond() == null ? null : getSecond().copy()
+					);
+			return newInstance;
+		}
+	}
+
+	protected class StringTrimExpression extends StringExpression {
+
+		public StringTrimExpression(StringResult stringVariable) {
+			super(stringVariable);
+		}
+		private final static long serialVersionUID = 1l;
+
+		@Override
+		public String toSQLString(DBDefinition db) {
+			return db.doTrimFunction(this.getInnerResult().toSQLString(db));
+		}
+
+		@Override
+		public StringTrimExpression copy() {
+			return new StringTrimExpression(
+					(StringResult) (getInnerResult() == null ? null : getInnerResult().copy())
+			);
+		}
+	}
+
+	protected class StringFirstNumberAsSubstringExpression extends StringExpression {
+
+		public StringFirstNumberAsSubstringExpression(StringResult stringVariable) {
+			super(stringVariable);
+		}
+		private final static long serialVersionUID = 1l;
+
+		@Override
+		public String toSQLString(DBDefinition db) {
+			return db.doFindNumberInStringTransform(this.getInnerResult().toSQLString(db));
+		}
+
+		@Override
+		public StringFirstNumberAsSubstringExpression copy() {
+			return new StringFirstNumberAsSubstringExpression(
+					(StringResult) (getInnerResult() == null ? null : getInnerResult().copy())
+			);
+		}
+	}
+
+	protected class StringFirstIntegerAsSubstringExpression extends StringExpression {
+
+		public StringFirstIntegerAsSubstringExpression(StringResult stringVariable) {
+			super(stringVariable);
+		}
+		private final static long serialVersionUID = 1l;
+
+		@Override
+		public String toSQLString(DBDefinition db) {
+			return db.doFindIntegerInStringTransform(this.getInnerResult().toSQLString(db));
+		}
+
+		@Override
+		public StringFirstIntegerAsSubstringExpression copy() {
+			return new StringFirstIntegerAsSubstringExpression(
+					(StringResult) (getInnerResult() == null ? null : getInnerResult().copy())
+			);
+		}
+	}
+
+	protected class StringLeftTrimExpression extends StringExpression {
+
+		public StringLeftTrimExpression(StringResult stringVariable) {
+			super(stringVariable);
+		}
+		private final static long serialVersionUID = 1l;
+
+		@Override
+		public String toSQLString(DBDefinition db) {
+			return db.doLeftTrimTransform(this.getInnerResult().toSQLString(db));
+		}
+
+		@Override
+		public StringLeftTrimExpression copy() {
+			return new StringLeftTrimExpression((StringResult) (getInnerResult() == null ? null : getInnerResult().copy()));
+		}
+	}
+
+	protected class StringRightTrimExpression extends StringExpression {
+
+		public StringRightTrimExpression(StringResult stringVariable) {
+			super(stringVariable);
+		}
+		private final static long serialVersionUID = 1l;
+
+		@Override
+		public String toSQLString(DBDefinition defn) {
+			return defn.getRightTrimFunctionName() + "(" + getInnerResult().toSQLString(defn) + ")";
+		}
+
+		@Override
+		public StringRightTrimExpression copy() {
+			return new StringRightTrimExpression((StringResult) (getInnerResult() == null ? null : getInnerResult().copy()));
+		}
+	}
+
+	protected class StringLowercaseExpression extends StringExpression {
+
+		public StringLowercaseExpression(StringResult stringVariable) {
+			super(stringVariable);
+		}
+		private final static long serialVersionUID = 1l;
+
+		@Override
+		public String toSQLString(DBDefinition defn) {
+			return defn.getLowercaseFunctionName() + "(" + getInnerResult().toSQLString(defn) + ")";
+		}
+
+		@Override
+		public StringLowercaseExpression copy() {
+			return new StringLowercaseExpression((StringResult) (getInnerResult() == null ? null : getInnerResult().copy()));
+		}
+	}
+
+	protected class StringUppercaseExpression extends StringExpression {
+
+		public StringUppercaseExpression(StringResult stringVariable) {
+			super(stringVariable);
+		}
+		private final static long serialVersionUID = 1l;
+
+		@Override
+		public String toSQLString(DBDefinition defn) {
+			return defn.getUppercaseFunctionName() + "(" + getInnerResult().toSQLString(defn) + ")";
+		}
+
+		@Override
+		public StringUppercaseExpression copy() {
+			return new StringUppercaseExpression((StringResult) (getInnerResult() == null ? null : getInnerResult().copy()));
+		}
+	}
+
+	protected class IntegerLengthExpression extends IntegerExpression {
+
+		public IntegerLengthExpression(AnyResult<?> only) {
+			super(only);
+		}
+		private final static long serialVersionUID = 1l;
+
+		@Override
+		public String toSQLString(DBDefinition db) {
+			return db.doStringLengthTransform(getInnerResult().toSQLString(db));
+		}
+
+		@Override
+		public IntegerLengthExpression copy() {
+			return new IntegerLengthExpression((AnyResult<?>) (getInnerResult() == null ? null : getInnerResult().copy()));
+		}
+	}
+
+	protected static class StringCurrentUserExpression extends StringExpression {
+
+		public StringCurrentUserExpression() {
+		}
+		private final static long serialVersionUID = 1l;
+
+		@Override
+		public String toSQLString(DBDefinition db) {
+			return db.getCurrentUserFunctionName();
+		}
+
+		@Override
+		public boolean getIncludesNull() {
+			return false;
+		}
+
+		@Override
+		public boolean isPurelyFunctional() {
+			return true;
+		}
+
+		@Override
+		public StringCurrentUserExpression copy() {
+			return new StringCurrentUserExpression();
+		}
+	}
+
+	protected class StringLocationOfExpression extends BinaryComplicatedNumberFunction {
+
+		public StringLocationOfExpression(StringExpression first, StringResult second) {
+			super(first, second);
+		}
+		private final static long serialVersionUID = 1l;
+
+		@Override
+		public String toSQLString(DBDefinition db) {
+			return db.doPositionInStringTransform(this.first.toSQLString(db), this.second.toSQLString(db));
+		}
+
+		@Override
+		public StringLocationOfExpression copy() {
+			return new StringLocationOfExpression(
+					first == null ? null : first.copy(),
+					second == null ? null : second.copy()
+			);
+		}
+	}
+
+	protected class StringMaxExpression extends StringExpression {
+
+		public StringMaxExpression(StringResult stringVariable) {
+			super(stringVariable);
+		}
+		private final static long serialVersionUID = 1l;
+
+		@Override
+		public String toSQLString(DBDefinition defn) {
+			return defn.getMaxFunctionName() + "(" + getInnerResult().toSQLString(defn) + ")";
+		}
+
+		@Override
+		public boolean isAggregator() {
+			return true;
+		}
+
+		@Override
+		public StringMaxExpression copy() {
+			return new StringMaxExpression((StringResult) (getInnerResult() == null ? null : getInnerResult().copy()));
+		}
+	}
+
+	protected class StringMinExpression extends StringExpression {
+
+		public StringMinExpression(StringResult stringVariable) {
+			super(stringVariable);
+		}
+		private final static long serialVersionUID = 1l;
+
+		@Override
+		public String toSQLString(DBDefinition defn) {
+			return defn.getMinFunctionName() + "(" + getInnerResult().toSQLString(defn) + ")";
+		}
+
+		@Override
+		public boolean isAggregator() {
+			return true;
+		}
+
+		@Override
+		public StringMinExpression copy() {
+			return new StringMinExpression((StringResult) (getInnerResult() == null ? null : getInnerResult().copy()));
+		}
+	}
+
+	protected class StringBracketExpression extends StringExpression {
+
+		public StringBracketExpression(StringResult stringVariable) {
+			super(stringVariable);
+		}
+		private final static long serialVersionUID = 1l;
+
+		@Override
+		public String toSQLString(DBDefinition defn) {
+			return "(" + getInnerResult().toSQLString(defn) + ")";
+		}
+
+		@Override
+		public StringBracketExpression copy() {
+			return new StringBracketExpression((StringResult) (getInnerResult() == null ? null : getInnerResult().copy()));
+		}
+	}
+
+	protected class StringNumberResultExpression extends NumberExpression {
+
+		public StringNumberResultExpression(AnyResult<?> value) {
+			super(value);
+		}
+		private final static long serialVersionUID = 1l;
+
+		@Override
+		public String toSQLString(DBDefinition db) {
+			return db.doStringToNumberTransform(getInnerResult().toSQLString(db));
+		}
+
+		@Override
+		public StringNumberResultExpression copy() {
+			return new StringNumberResultExpression((AnyResult<?>) (getInnerResult() == null ? null : getInnerResult().copy()));
 		}
 	}
 }

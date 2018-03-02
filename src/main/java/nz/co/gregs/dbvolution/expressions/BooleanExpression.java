@@ -17,7 +17,6 @@ package nz.co.gregs.dbvolution.expressions;
 
 import nz.co.gregs.dbvolution.expressions.spatial2D.Polygon2DExpression;
 import nz.co.gregs.dbvolution.results.StringResult;
-import nz.co.gregs.dbvolution.results.DateResult;
 import nz.co.gregs.dbvolution.results.NumberResult;
 import nz.co.gregs.dbvolution.results.BooleanResult;
 import com.vividsolutions.jts.geom.Polygon;
@@ -123,11 +122,11 @@ public class BooleanExpression extends EqualExpression<Boolean, BooleanResult, D
 	 */
 	public BooleanExpression(Boolean bool) {
 		super(new DBBoolean(bool));
-	}		
-	
+	}
+
 	@Override
 	public BooleanExpression copy() {
-		return isNullSafetyTerminator() ? nullBoolean() : new BooleanExpression(this.getInnerResult());
+		return isNullSafetyTerminator() ? nullBoolean() : new BooleanExpression((AnyResult<?>) this.getInnerResult().copy());
 	}
 
 	/**
@@ -138,15 +137,7 @@ public class BooleanExpression extends EqualExpression<Boolean, BooleanResult, D
 	@SuppressWarnings("unchecked")
 	@Override
 	public BooleanExpression nullExpression() {
-		return new BooleanExpression() {
-			private final static long serialVersionUID = 1l;
-
-			@Override
-			public String toSQLString(DBDefinition db) {
-				return db.getNull();
-			}
-
-		};
+		return new NullExpression();
 	}
 
 	/**
@@ -288,28 +279,7 @@ public class BooleanExpression extends EqualExpression<Boolean, BooleanResult, D
 	 */
 	@Override
 	public BooleanExpression is(BooleanResult bool) {
-		return new BooleanExpression(new DBBinaryBooleanArithmetic(this, bool) {
-			private final static long serialVersionUID = 1l;
-
-			@Override
-			public String toSQLString(DBDefinition defn) {
-				if (defn.supportsComparingBooleanResults()) {
-					return super.toSQLString(defn);
-				} else {
-					BooleanExpression first = this.getFirst();
-					BooleanExpression second = this.getSecond();
-					String returnString = first.getComparableBooleanSQL(defn)
-							+ getEquationOperator(defn)
-							+ second.getComparableBooleanSQL(defn);
-					return returnString;
-				}
-			}
-
-			@Override
-			protected String getEquationOperator(DBDefinition db) {
-				return " = ";
-			}
-		});
+		return new BooleanExpression(new IsExpression(this, bool));
 	}
 
 	/**
@@ -328,29 +298,7 @@ public class BooleanExpression extends EqualExpression<Boolean, BooleanResult, D
 	@Override
 	public BooleanExpression isNot(BooleanResult bool) {
 
-		return new BooleanExpression(new DBBinaryBooleanArithmetic(this, bool) {
-			private final static long serialVersionUID = 1l;
-
-			@Override
-			public String toSQLString(DBDefinition db) {
-				DBDefinition defn = db;
-				if (defn.supportsComparingBooleanResults()) {
-					return super.toSQLString(db);
-				} else {
-					BooleanExpression first = this.getFirst();
-					BooleanExpression second = this.getSecond();
-					String returnString = "(" + first.getComparableBooleanSQL(db) + ")"
-							+ getEquationOperator(db)
-							+ "(" + second.getComparableBooleanSQL(db) + ")";
-					return returnString;
-				}
-			}
-
-			@Override
-			protected String getEquationOperator(DBDefinition db) {
-				return " <> ";
-			}
-		});
+		return new BooleanExpression(new IsNotExpression(this, bool));
 	}
 
 	/**
@@ -368,35 +316,7 @@ public class BooleanExpression extends EqualExpression<Boolean, BooleanResult, D
 	 */
 	@Override
 	public IntegerExpression count() {
-		return new IntegerExpression(new BooleanExpression(this) {
-
-			private final static long serialVersionUID = 1l;
-
-			@Override
-			public String toSQLString(DBDefinition db) {
-				DBDefinition defn = db;
-				final String bool;
-				if (defn.supportsComparingBooleanResults()) {
-					bool = super.toSQLString(db);
-				} else {
-					BooleanExpression first = (BooleanExpression) this.getInnerResult();
-					bool = first.getComparableBooleanSQL(db);
-
-				}
-				String returnString = db.getCountFunctionName() + "(" + bool + ")";
-				return returnString;
-			}
-
-			@Override
-			public boolean isAggregator() {
-				return true;
-			}
-
-			@Override
-			public boolean isBooleanStatement() {
-				return true;
-			}
-		});
+		return new IntegerExpression(new CountExpression(this));
 	}
 
 	protected String getComparableBooleanSQL(DBDefinition db) {
@@ -441,30 +361,7 @@ public class BooleanExpression extends EqualExpression<Boolean, BooleanResult, D
 	 * @return a BooleanExpression of an XOR operation.
 	 */
 	public BooleanExpression xor(BooleanResult bool) {
-		return new BooleanExpression(new DBBinaryBooleanArithmetic(this, bool) {
-
-			private final static long serialVersionUID = 1l;
-
-			@Override
-			public String toSQLString(DBDefinition db) {
-				if (db.supportsXOROperator()) {
-					return super.toSQLString(db);
-				} else {
-					return BooleanExpression.anyOf(
-							BooleanExpression.allOf(
-									this.getFirst(), this.getSecond().not()
-							),
-							BooleanExpression.allOf(
-									this.getFirst().not(), this.getSecond())
-					).toSQLString(db);
-				}
-			}
-
-			@Override
-			protected String getEquationOperator(DBDefinition db) {
-				return "^";
-			}
-		});
+		return new BooleanExpression(new XorExpression(this, bool));
 	}
 
 	/**
@@ -486,14 +383,7 @@ public class BooleanExpression extends EqualExpression<Boolean, BooleanResult, D
 	 * @see #anyOf(BooleanExpression...)
 	 */
 	public static BooleanExpression allOf(final BooleanExpression... booleanExpressions) {
-		return new BooleanExpression(new DBNnaryBooleanArithmetic(booleanExpressions) {
-			private final static long serialVersionUID = 1l;
-
-			@Override
-			protected String getEquationOperator(DBDefinition db) {
-				return db.beginAndLine();
-			}
-		});
+		return new BooleanExpression(new AllOfExpression(booleanExpressions));
 	}
 
 	/**
@@ -578,14 +468,7 @@ public class BooleanExpression extends EqualExpression<Boolean, BooleanResult, D
 	 * @see #allOf(BooleanExpression...)
 	 */
 	public static BooleanExpression anyOf(final BooleanExpression... booleanExpressions) {
-		return new BooleanExpression(new DBNnaryBooleanArithmetic(booleanExpressions) {
-			private final static long serialVersionUID = 1l;
-
-			@Override
-			protected String getEquationOperator(DBDefinition db) {
-				return db.beginOrLine();
-			}
-		});
+		return new BooleanExpression(new AnyOfExpression(booleanExpressions));
 	}
 
 	/**
@@ -628,14 +511,7 @@ public class BooleanExpression extends EqualExpression<Boolean, BooleanResult, D
 	 * expression.
 	 */
 	public BooleanExpression negate() {
-		return new BooleanExpression(new BooleanExpression(this) {
-			private final static long serialVersionUID = 1l;
-
-			@Override
-			public String toSQLString(DBDefinition db) {
-				return db.getNegationFunctionName() + "(" + getInnerResult().toSQLString(db) + ")";
-			}
-		});
+		return new BooleanExpression(new NegateExpression(this));
 	}
 
 	/**
@@ -665,40 +541,7 @@ public class BooleanExpression extends EqualExpression<Boolean, BooleanResult, D
 	 * @return a 0 or 1 depending on the expression
 	 */
 	public NumberExpression numberValue() {
-		return new NumberExpression() {
-			private final static long serialVersionUID = 1l;
-
-			BooleanExpression innerBool = new BooleanExpression(getInnerResult());
-
-			@Override
-			public String toSQLString(DBDefinition db) {
-				return db.doBooleanToIntegerTransform(this.innerBool.toSQLString(db));
-			}
-
-			@Override
-			public NumberExpression copy() {
-				try {
-					return (NumberExpression) this.clone();
-				} catch (CloneNotSupportedException ex) {
-					throw new RuntimeException(ex);
-				}
-			}
-
-			@Override
-			public boolean getIncludesNull() {
-				return innerBool.getIncludesNull();
-			}
-
-			@Override
-			public boolean isAggregator() {
-				return false;
-			}
-
-			@Override
-			public Set<DBRow> getTablesInvolved() {
-				return innerBool.getTablesInvolved();
-			}
-		};
+		return new NumberExpression(new BooleanToNumberExpression(this));
 	}
 
 	/**
@@ -763,19 +606,7 @@ public class BooleanExpression extends EqualExpression<Boolean, BooleanResult, D
 	 * @return a BooleanExpression
 	 */
 	public static BooleanExpression isNotNull(DBExpression possibleNullExpression) {
-		return new BooleanExpression(new DBUnaryBooleanArithmetic(possibleNullExpression) {
-			private final static long serialVersionUID = 1l;
-
-			@Override
-			protected String getEquationOperator(DBDefinition db) {
-				return " IS NOT " + db.getNull();
-			}
-
-			@Override
-			public boolean getIncludesNull() {
-				return false;
-			}
-		});
+		return new BooleanExpression(new IsNotNullExpression(possibleNullExpression));
 	}
 
 	/**
@@ -829,21 +660,7 @@ public class BooleanExpression extends EqualExpression<Boolean, BooleanResult, D
 	 * @return a BooleanExpression
 	 */
 	public static BooleanExpression isNull(DBExpression possibleNullExpression) {
-		return new BooleanExpression(new DBUnaryBooleanArithmetic(possibleNullExpression) {
-
-			private final static long serialVersionUID = 1l;
-
-			@Override
-			protected String getEquationOperator(DBDefinition db) {
-				return " IS " + db.getNull();
-			}
-
-			@Override
-			public boolean getIncludesNull() {
-				return false;
-			}
-
-		});
+		return new BooleanExpression(new IsNullExpression(possibleNullExpression));
 	}
 
 	/**
@@ -894,26 +711,7 @@ public class BooleanExpression extends EqualExpression<Boolean, BooleanResult, D
 	 * to "if (this) then thenExpr else elseExpr".
 	 */
 	public StringExpression ifThenElse(StringExpression thenExpr, StringExpression elseExpr) {
-		return new StringExpression(new DBBooleanStringStringFunction(this, thenExpr, elseExpr) {
-
-			private final static long serialVersionUID = 1l;
-
-			@Override
-			public boolean getIncludesNull() {
-				return false;
-			}
-
-			@Override
-			public String toSQLString(DBDefinition db) {
-				return db.doIfThenElseTransform(onlyBool.toSQLString(db), first.toSQLString(db), second.toSQLString(db));
-			}
-
-			@Override
-			String getFunctionName(DBDefinition db) {
-				return "";
-			}
-
-		});
+		return new StringExpression(new StringIfThenElseExpression(this, thenExpr, elseExpr));
 	}
 
 	/**
@@ -989,25 +787,7 @@ public class BooleanExpression extends EqualExpression<Boolean, BooleanResult, D
 	 * to "if (this) then thenExpr else elseExpr".
 	 */
 	public NumberExpression ifThenElse(NumberResult thenExpr, NumberResult elseExpr) {
-		return new NumberExpression(new DBBooleanNumberNumberFunction(this, thenExpr, elseExpr) {
-
-			private final static long serialVersionUID = 1l;
-
-			@Override
-			public boolean getIncludesNull() {
-				return false;
-			}
-
-			@Override
-			public String toSQLString(DBDefinition db) {
-				return db.doIfThenElseTransform(onlyBool.toSQLString(db), first.toSQLString(db), second.toSQLString(db));
-			}
-
-			@Override
-			String getFunctionName(DBDefinition db) {
-				return "";
-			}
-		});
+		return new NumberExpression(new NumberIfThenElseExpression(this, thenExpr, elseExpr));
 	}
 
 	/**
@@ -1027,25 +807,7 @@ public class BooleanExpression extends EqualExpression<Boolean, BooleanResult, D
 	 * to "if (this) then thenExpr else elseExpr".
 	 */
 	public IntegerExpression ifThenElse(IntegerResult thenExpr, IntegerResult elseExpr) {
-		return new IntegerExpression(new DBBooleanIntegerIntegerFunction(this, thenExpr, elseExpr) {
-
-			private final static long serialVersionUID = 1l;
-
-			@Override
-			public boolean getIncludesNull() {
-				return false;
-			}
-
-			@Override
-			public String toSQLString(DBDefinition db) {
-				return db.doIfThenElseTransform(onlyBool.toSQLString(db), first.toSQLString(db), second.toSQLString(db));
-			}
-
-			@Override
-			String getFunctionName(DBDefinition db) {
-				return "";
-			}
-		});
+		return new IntegerExpression(new IntegerIfThenElseExpression(this, thenExpr, elseExpr));
 	}
 
 	/**
@@ -1083,25 +845,7 @@ public class BooleanExpression extends EqualExpression<Boolean, BooleanResult, D
 	 * to "if (this) then thenExpr else elseExpr".
 	 */
 	public DateExpression ifThenElse(DateExpression thenExpr, DateExpression elseExpr) {
-		return new DateExpression(new DBBinaryDateDateFunction(this, thenExpr, elseExpr) {
-			private final static long serialVersionUID = 1l;
-
-			@Override
-			public boolean getIncludesNull() {
-				return false;
-			}
-
-			@Override
-			public String toSQLString(DBDefinition db) {
-				return db.doIfThenElseTransform(onlyBool.toSQLString(db), first.toSQLString(db), second.toSQLString(db));
-			}
-
-			@Override
-			String getFunctionName(DBDefinition db) {
-				return "";
-			}
-
-		});
+		return new DateExpression(new DateIfThenElseExpression(this, thenExpr, elseExpr));
 	}
 
 	/**
@@ -1139,20 +883,7 @@ public class BooleanExpression extends EqualExpression<Boolean, BooleanResult, D
 	 * to "if (this) then thenExpr else elseExpr".
 	 */
 	public Polygon2DExpression ifThenElse(Polygon2DExpression thenExpr, Polygon2DExpression elseExpr) {
-		return new Polygon2DExpression(new DBBinaryGeometryGeometryFunction(this, thenExpr, elseExpr) {
-			private final static long serialVersionUID = 1l;
-
-			@Override
-			public boolean getIncludesNull() {
-				return false;
-			}
-
-			@Override
-			public String toSQLString(DBDefinition db) {
-				return db.doIfThenElseTransform(onlyBool.toSQLString(db), first.toSQLString(db), second.toSQLString(db));
-			}
-
-		});
+		return new Polygon2DExpression(new Polygon2DIfThenElseExpression(this, thenExpr, elseExpr));
 	}
 
 	/**
@@ -1164,19 +895,7 @@ public class BooleanExpression extends EqualExpression<Boolean, BooleanResult, D
 	 * @return an expression that will always evaluate to FALSE.
 	 */
 	public static BooleanExpression falseExpression() {
-		return new BooleanExpression() {
-			private final static long serialVersionUID = 1l;
-
-			@Override
-			public String toSQLString(DBDefinition db) {
-				return db.getFalseOperation();
-			}
-
-			@Override
-			public boolean isAggregator() {
-				return false;
-			}
-		};
+		return new FalseExpression();
 	}
 
 	/**
@@ -1188,19 +907,7 @@ public class BooleanExpression extends EqualExpression<Boolean, BooleanResult, D
 	 * @return an expression that will always evaluate to TRUE.
 	 */
 	public static BooleanExpression trueExpression() {
-		return new BooleanExpression() {
-			private final static long serialVersionUID = 1l;
-
-			@Override
-			public String toSQLString(DBDefinition db) {
-				return db.getTrueOperation();
-			}
-
-			@Override
-			public boolean isAggregator() {
-				return false;
-			}
-		};
+		return new TrueExpression();
 	}
 
 	/**
@@ -1656,10 +1363,10 @@ public class BooleanExpression extends EqualExpression<Boolean, BooleanResult, D
 
 	private static abstract class DBUnaryBooleanArithmetic extends BooleanExpression {
 
-		private DBExpression onlyBool;
+		protected DBExpression onlyBool;
 
 		DBUnaryBooleanArithmetic(DBExpression bool) {
-			this.onlyBool = bool.copy();
+			this.onlyBool = bool;
 		}
 
 		@Override
@@ -1672,18 +1379,6 @@ public class BooleanExpression extends EqualExpression<Boolean, BooleanResult, D
 			String op = this.getEquationOperator(db);
 			String returnStr = onlyBool.toSQLString(db) + " " + op;
 			return returnStr;
-		}
-
-		@Override
-		public DBUnaryBooleanArithmetic copy() {
-			DBUnaryBooleanArithmetic newInstance;
-			try {
-				newInstance = getClass().newInstance();
-			} catch (InstantiationException | IllegalAccessException ex) {
-				throw new RuntimeException(ex);
-			}
-			newInstance.onlyBool = onlyBool.copy();
-			return newInstance;
 		}
 
 		@Override
@@ -1710,7 +1405,7 @@ public class BooleanExpression extends EqualExpression<Boolean, BooleanResult, D
 
 	private static abstract class DBNnaryBooleanArithmetic extends BooleanExpression {
 
-		private BooleanResult[] bools;
+		protected BooleanResult[] bools;
 
 		DBNnaryBooleanArithmetic(BooleanResult... bools) {
 			this.bools = bools;
@@ -1731,21 +1426,6 @@ public class BooleanExpression extends EqualExpression<Boolean, BooleanResult, D
 				separator = op;
 			}
 			return "(" + returnStr + ")";
-		}
-
-		@Override
-		public DBNnaryBooleanArithmetic copy() {
-			DBNnaryBooleanArithmetic newInstance;
-			try {
-				newInstance = getClass().newInstance();
-			} catch (InstantiationException | IllegalAccessException ex) {
-				throw new RuntimeException(ex);
-			}
-			newInstance.bools = new BooleanResult[bools.length];
-			for (int i = 0; i < newInstance.bools.length; i++) {
-				newInstance.bools[i] = bools[i].copy();
-			}
-			return newInstance;
 		}
 
 		@Override
@@ -1806,19 +1486,6 @@ public class BooleanExpression extends EqualExpression<Boolean, BooleanResult, D
 				sqlString = getFirst().toSQLString(db) + " IS " + db.getNull() + db.beginOrLine() + sqlString;
 			}
 			return "(" + sqlString + ")";
-		}
-
-		@Override
-		public DBBinaryBooleanArithmetic copy() {
-			DBBinaryBooleanArithmetic newInstance;
-			try {
-				newInstance = getClass().newInstance();
-			} catch (InstantiationException | IllegalAccessException ex) {
-				throw new RuntimeException(ex);
-			}
-			newInstance.first = getFirst().copy();
-			newInstance.second = getSecond().copy();
-			return newInstance;
 		}
 
 		protected abstract String getEquationOperator(DBDefinition db);
@@ -1907,21 +1574,6 @@ public class BooleanExpression extends EqualExpression<Boolean, BooleanResult, D
 		}
 
 		@Override
-		@SuppressWarnings("unchecked")
-		public DBBooleanStringStringFunction copy() {
-			DBBooleanStringStringFunction newInstance;
-			try {
-				newInstance = this.getClass().newInstance();
-			} catch (InstantiationException | IllegalAccessException ex) {
-				throw new RuntimeException(ex);
-			}
-			newInstance.onlyBool = (onlyBool == null ? null : onlyBool.copy());
-			newInstance.first = (first == null ? null : first.copy());
-			newInstance.second = (second == null ? null : second.copy());
-			return newInstance;
-		}
-
-		@Override
 		public boolean isAggregator() {
 			return onlyBool.isAggregator() || first.isAggregator() || second.isAggregator();
 		}
@@ -1969,20 +1621,6 @@ public class BooleanExpression extends EqualExpression<Boolean, BooleanResult, D
 		@Override
 		public String toSQLString(DBDefinition db) {
 			return this.beforeValue(db) + (onlyBool == null ? "" : onlyBool.toSQLString(db)) + this.afterValue(db);
-		}
-
-		@Override
-		public DBBooleanNumberNumberFunction copy() {
-			DBBooleanNumberNumberFunction newInstance;
-			try {
-				newInstance = getClass().newInstance();
-			} catch (InstantiationException | IllegalAccessException ex) {
-				throw new RuntimeException(ex);
-			}
-			newInstance.onlyBool = (onlyBool == null ? null : onlyBool.copy());
-			newInstance.first = (first == null ? null : first.copy());
-			newInstance.second = (second == null ? null : second.copy());
-			return newInstance;
 		}
 
 		@Override
@@ -2036,20 +1674,6 @@ public class BooleanExpression extends EqualExpression<Boolean, BooleanResult, D
 		}
 
 		@Override
-		public DBBooleanIntegerIntegerFunction copy() {
-			DBBooleanIntegerIntegerFunction newInstance;
-			try {
-				newInstance = getClass().newInstance();
-			} catch (InstantiationException | IllegalAccessException ex) {
-				throw new RuntimeException(ex);
-			}
-			newInstance.onlyBool = (onlyBool == null ? null : onlyBool.copy());
-			newInstance.first = (first == null ? null : first.copy());
-			newInstance.second = (second == null ? null : second.copy());
-			return newInstance;
-		}
-
-		@Override
 		public boolean isAggregator() {
 			return onlyBool.isAggregator() || first.isAggregator() || second.isAggregator();
 		}
@@ -2072,8 +1696,8 @@ public class BooleanExpression extends EqualExpression<Boolean, BooleanResult, D
 	private static abstract class DBBinaryDateDateFunction extends DateExpression {
 
 		protected BooleanExpression onlyBool = null;
-		protected DateResult first = null;
-		protected DateResult second = null;
+		protected DateExpression first = null;
+		protected DateExpression second = null;
 
 		DBBinaryDateDateFunction() {
 		}
@@ -2097,20 +1721,6 @@ public class BooleanExpression extends EqualExpression<Boolean, BooleanResult, D
 		@Override
 		public String toSQLString(DBDefinition db) {
 			return this.beforeValue(db) + (onlyBool == null ? "" : onlyBool.toSQLString(db)) + this.afterValue(db);
-		}
-
-		@Override
-		public DBBinaryDateDateFunction copy() {
-			DBBinaryDateDateFunction newInstance;
-			try {
-				newInstance = getClass().newInstance();
-			} catch (InstantiationException | IllegalAccessException ex) {
-				throw new RuntimeException(ex);
-			}
-			newInstance.onlyBool = (onlyBool == null ? null : onlyBool.copy());
-			newInstance.first = (first == null ? null : first.copy());
-			newInstance.second = (second == null ? null : second.copy());
-			return newInstance;
 		}
 
 		@Override
@@ -2149,20 +1759,6 @@ public class BooleanExpression extends EqualExpression<Boolean, BooleanResult, D
 		}
 
 		@Override
-		public DBBinaryGeometryGeometryFunction copy() {
-			DBBinaryGeometryGeometryFunction newInstance;
-			try {
-				newInstance = getClass().newInstance();
-			} catch (InstantiationException | IllegalAccessException ex) {
-				throw new RuntimeException(ex);
-			}
-			newInstance.onlyBool = (onlyBool == null ? null : onlyBool.copy());
-			newInstance.first = (first == null ? null : first.copy());
-			newInstance.second = (second == null ? null : second.copy());
-			return newInstance;
-		}
-
-		@Override
 		public boolean isAggregator() {
 			return onlyBool.isAggregator() || first.isAggregator() || second.isAggregator();
 		}
@@ -2198,12 +1794,8 @@ public class BooleanExpression extends EqualExpression<Boolean, BooleanResult, D
 		}
 
 		@Override
-		public IntegerExpression copy() {
-			try {
-				return (IntegerExpression) this.clone();
-			} catch (CloneNotSupportedException ex) {
-				throw new RuntimeException(ex);
-			}
+		public IntegerValueFunction copy() {
+			return new IntegerValueFunction(innerBool.copy());
 		}
 
 		@Override
@@ -2219,6 +1811,513 @@ public class BooleanExpression extends EqualExpression<Boolean, BooleanResult, D
 		@Override
 		public Set<DBRow> getTablesInvolved() {
 			return innerBool.getTablesInvolved();
+		}
+	}
+
+	private class BooleanToNumberExpression extends NumberExpression {
+
+		public BooleanToNumberExpression(BooleanExpression bool) {
+			super(bool);
+		}
+
+		private final static long serialVersionUID = 1l;
+		BooleanExpression innerBool = new BooleanExpression(getInnerResult());
+
+		@Override
+		public String toSQLString(DBDefinition db) {
+			return db.doBooleanToIntegerTransform(this.innerBool.toSQLString(db));
+		}
+
+		@Override
+		public BooleanToNumberExpression copy() {
+			return new BooleanToNumberExpression(innerBool == null ? null : innerBool.copy());
+		}
+
+		@Override
+		public boolean getIncludesNull() {
+			return innerBool.getIncludesNull();
+		}
+
+		@Override
+		public boolean isAggregator() {
+			return false;
+		}
+
+		@Override
+		public Set<DBRow> getTablesInvolved() {
+			return innerBool.getTablesInvolved();
+		}
+	}
+
+	private static class NullExpression extends BooleanExpression {
+
+		public NullExpression() {
+		}
+		private final static long serialVersionUID = 1l;
+
+		@Override
+		public String toSQLString(DBDefinition db) {
+			return db.getNull();
+		}
+
+		@Override
+		public NullExpression copy() {
+			return new NullExpression();
+		}
+
+	}
+
+	protected static class IsExpression extends DBBinaryBooleanArithmetic {
+
+		public IsExpression(BooleanExpression first, BooleanResult second) {
+			super(first, second);
+		}
+		private final static long serialVersionUID = 1l;
+
+		@Override
+		public String toSQLString(DBDefinition defn) {
+			if (defn.supportsComparingBooleanResults()) {
+				return super.toSQLString(defn);
+			} else {
+				BooleanExpression first = this.getFirst();
+				BooleanExpression second = this.getSecond();
+				String returnString = first.getComparableBooleanSQL(defn)
+						+ getEquationOperator(defn)
+						+ second.getComparableBooleanSQL(defn);
+				return returnString;
+			}
+		}
+
+		@Override
+		protected String getEquationOperator(DBDefinition db) {
+			return " = ";
+		}
+
+		@Override
+		public IsExpression copy() {
+			return new IsExpression(
+					getFirst() == null ? null : getFirst().copy(),
+					getSecond() == null ? null : getSecond().copy());
+		}
+
+	}
+
+	protected class IsNotExpression extends DBBinaryBooleanArithmetic {
+
+		public IsNotExpression(BooleanExpression first, BooleanResult second) {
+			super(first, second);
+		}
+		private final static long serialVersionUID = 1l;
+
+		@Override
+		public String toSQLString(DBDefinition db) {
+			DBDefinition defn = db;
+			if (defn.supportsComparingBooleanResults()) {
+				return super.toSQLString(db);
+			} else {
+				BooleanExpression first = this.getFirst();
+				BooleanExpression second = this.getSecond();
+				String returnString = "(" + first.getComparableBooleanSQL(db) + ")"
+						+ getEquationOperator(db)
+						+ "(" + second.getComparableBooleanSQL(db) + ")";
+				return returnString;
+			}
+		}
+
+		@Override
+		protected String getEquationOperator(DBDefinition db) {
+			return " <> ";
+		}
+
+		@Override
+		public IsNotExpression copy() {
+			return new IsNotExpression(
+					getFirst() == null ? null : getFirst().copy(),
+					getSecond() == null ? null : getSecond().copy());
+		}
+	}
+
+	protected class CountExpression extends BooleanExpression {
+
+		public CountExpression(BooleanResult booleanResult) {
+			super(booleanResult);
+		}
+		private final static long serialVersionUID = 1l;
+
+		@Override
+		public String toSQLString(DBDefinition db) {
+			DBDefinition defn = db;
+			final String bool;
+			if (defn.supportsComparingBooleanResults()) {
+				bool = super.toSQLString(db);
+			} else {
+				BooleanExpression first = (BooleanExpression) this.getInnerResult();
+				bool = first.getComparableBooleanSQL(db);
+
+			}
+			String returnString = db.getCountFunctionName() + "(" + bool + ")";
+			return returnString;
+		}
+
+		@Override
+		public boolean isAggregator() {
+			return true;
+		}
+
+		@Override
+		public boolean isBooleanStatement() {
+			return true;
+		}
+
+		@Override
+		public CountExpression copy() {
+			return new CountExpression(
+					(BooleanResult) (getInnerResult() == null ? null : getInnerResult().copy()));
+		}
+
+	}
+
+	protected class XorExpression extends DBBinaryBooleanArithmetic {
+
+		public XorExpression(BooleanExpression first, BooleanResult second) {
+			super(first, second);
+		}
+		private final static long serialVersionUID = 1l;
+
+		@Override
+		public String toSQLString(DBDefinition db) {
+			if (db.supportsXOROperator()) {
+				return super.toSQLString(db);
+			} else {
+				return BooleanExpression.anyOf(
+						BooleanExpression.allOf(
+								this.getFirst(), this.getSecond().not()
+						),
+						BooleanExpression.allOf(
+								this.getFirst().not(), this.getSecond())
+				).toSQLString(db);
+			}
+		}
+
+		@Override
+		protected String getEquationOperator(DBDefinition db) {
+			return "^";
+		}
+
+		@Override
+		public XorExpression copy() {
+			return new XorExpression(
+					getFirst() == null ? null : getFirst().copy(),
+					getSecond() == null ? null : getSecond().copy());
+		}
+
+	}
+
+	protected static class AllOfExpression extends DBNnaryBooleanArithmetic {
+
+		public AllOfExpression(BooleanResult[] bools) {
+			super(bools);
+		}
+		private final static long serialVersionUID = 1l;
+
+		@Override
+		protected String getEquationOperator(DBDefinition db) {
+			return db.beginAndLine();
+		}
+
+		@Override
+		public AllOfExpression copy() {
+			BooleanResult[] newValues = new BooleanResult[bools.length];
+			for (int i = 0; i < newValues.length; i++) {
+				newValues[i] = bools[i] == null ? null : bools[i].copy();
+			}
+			return new AllOfExpression(newValues);
+		}
+
+	}
+
+	protected static class AnyOfExpression extends DBNnaryBooleanArithmetic {
+
+		public AnyOfExpression(BooleanResult[] bools) {
+			super(bools);
+		}
+		private final static long serialVersionUID = 1l;
+
+		@Override
+		protected String getEquationOperator(DBDefinition db) {
+			return db.beginOrLine();
+		}
+
+		@Override
+		public AnyOfExpression copy() {
+			BooleanResult[] newValues = new BooleanResult[bools.length];
+			for (int i = 0; i < newValues.length; i++) {
+				newValues[i] = bools[i] == null ? null : bools[i].copy();
+			}
+			return new AnyOfExpression(newValues);
+		}
+	}
+
+	protected class NegateExpression extends BooleanExpression {
+
+		public NegateExpression(BooleanResult booleanResult) {
+			super(booleanResult);
+		}
+		private final static long serialVersionUID = 1l;
+
+		@Override
+		public String toSQLString(DBDefinition db) {
+			return db.getNegationFunctionName() + "(" + getInnerResult().toSQLString(db) + ")";
+		}
+
+		@Override
+		public NegateExpression copy() {
+			return new NegateExpression((BooleanResult) (getInnerResult() == null ? null : getInnerResult().copy()));
+		}
+	}
+
+	protected static class IsNotNullExpression extends DBUnaryBooleanArithmetic {
+
+		public IsNotNullExpression(DBExpression bool) {
+			super(bool);
+		}
+		private final static long serialVersionUID = 1l;
+
+		@Override
+		protected String getEquationOperator(DBDefinition db) {
+			return " IS NOT " + db.getNull();
+		}
+
+		@Override
+		public boolean getIncludesNull() {
+			return false;
+		}
+
+		@Override
+		public IsNotNullExpression copy() {
+			return new IsNotNullExpression(onlyBool == null ? null : onlyBool.copy());
+		}
+	}
+
+	protected static class IsNullExpression extends DBUnaryBooleanArithmetic {
+
+		public IsNullExpression(DBExpression bool) {
+			super(bool);
+		}
+		private final static long serialVersionUID = 1l;
+
+		@Override
+		protected String getEquationOperator(DBDefinition db) {
+			return " IS " + db.getNull();
+		}
+
+		@Override
+		public boolean getIncludesNull() {
+			return false;
+		}
+
+		@Override
+		public IsNullExpression copy() {
+			return new IsNullExpression(onlyBool == null ? null : onlyBool.copy());
+		}
+	}
+
+	protected class StringIfThenElseExpression extends DBBooleanStringStringFunction {
+
+		public StringIfThenElseExpression(BooleanExpression only, StringResult first, StringResult second) {
+			super(only, first, second);
+		}
+		private final static long serialVersionUID = 1l;
+
+		@Override
+		public boolean getIncludesNull() {
+			return false;
+		}
+
+		@Override
+		public String toSQLString(DBDefinition db) {
+			return db.doIfThenElseTransform(onlyBool.toSQLString(db), first.toSQLString(db), second.toSQLString(db));
+		}
+
+		@Override
+		String getFunctionName(DBDefinition db) {
+			return "";
+		}
+
+		@Override
+		public StringIfThenElseExpression copy() {
+			return new StringIfThenElseExpression(
+					onlyBool == null ? null : onlyBool.copy(),
+					first == null ? null : first.copy(),
+					second == null ? null : second.copy()
+			);
+		}
+	}
+
+	protected class NumberIfThenElseExpression extends DBBooleanNumberNumberFunction {
+
+		public NumberIfThenElseExpression(BooleanExpression only, NumberResult first, NumberResult second) {
+			super(only, first, second);
+		}
+		private final static long serialVersionUID = 1l;
+
+		@Override
+		public boolean getIncludesNull() {
+			return false;
+		}
+
+		@Override
+		public String toSQLString(DBDefinition db) {
+			return db.doIfThenElseTransform(onlyBool.toSQLString(db), first.toSQLString(db), second.toSQLString(db));
+		}
+
+		@Override
+		String getFunctionName(DBDefinition db) {
+			return "";
+		}
+
+		@Override
+		public NumberIfThenElseExpression copy() {
+			return new NumberIfThenElseExpression(
+					onlyBool == null ? null : onlyBool.copy(),
+					first == null ? null : first.copy(),
+					second == null ? null : second.copy()
+			);
+		}
+	}
+
+	protected class IntegerIfThenElseExpression extends DBBooleanIntegerIntegerFunction {
+
+		public IntegerIfThenElseExpression(BooleanExpression only, IntegerResult first, IntegerResult second) {
+			super(only, first, second);
+		}
+		private final static long serialVersionUID = 1l;
+
+		@Override
+		public boolean getIncludesNull() {
+			return false;
+		}
+
+		@Override
+		public String toSQLString(DBDefinition db) {
+			return db.doIfThenElseTransform(onlyBool.toSQLString(db), first.toSQLString(db), second.toSQLString(db));
+		}
+
+		@Override
+		String getFunctionName(DBDefinition db) {
+			return "";
+		}
+
+		@Override
+		public IntegerIfThenElseExpression copy() {
+			return new IntegerIfThenElseExpression(
+					onlyBool == null ? null : onlyBool.copy(),
+					first == null ? null : first.copy(),
+					second == null ? null : second.copy()
+			);
+		}
+	}
+
+	protected class DateIfThenElseExpression extends DBBinaryDateDateFunction {
+
+		public DateIfThenElseExpression(BooleanExpression only, DateExpression first, DateExpression second) {
+			super(only, first, second);
+		}
+		private final static long serialVersionUID = 1l;
+
+		@Override
+		public boolean getIncludesNull() {
+			return false;
+		}
+
+		@Override
+		public String toSQLString(DBDefinition db) {
+			return db.doIfThenElseTransform(onlyBool.toSQLString(db), first.toSQLString(db), second.toSQLString(db));
+		}
+
+		@Override
+		String getFunctionName(DBDefinition db) {
+			return "";
+		}
+
+		@Override
+		public DateIfThenElseExpression copy() {
+			return new DateIfThenElseExpression(
+					onlyBool == null ? null : onlyBool.copy(),
+					first == null ? null : first.copy(),
+					second == null ? null : second.copy()
+			);
+		}
+	}
+
+	protected class Polygon2DIfThenElseExpression extends DBBinaryGeometryGeometryFunction {
+
+		public Polygon2DIfThenElseExpression(BooleanExpression only, Polygon2DExpression first, Polygon2DExpression second) {
+			super(only, first, second);
+		}
+		private final static long serialVersionUID = 1l;
+
+		@Override
+		public boolean getIncludesNull() {
+			return false;
+		}
+
+		@Override
+		public String toSQLString(DBDefinition db) {
+			return db.doIfThenElseTransform(onlyBool.toSQLString(db), first.toSQLString(db), second.toSQLString(db));
+		}
+
+		@Override
+		public Polygon2DIfThenElseExpression copy() {
+			return new Polygon2DIfThenElseExpression(
+					onlyBool == null ? null : onlyBool.copy(),
+					first == null ? null : first.copy(),
+					second == null ? null : second.copy()
+			);
+		}
+	}
+
+	private static class FalseExpression extends BooleanExpression {
+
+		public FalseExpression() {
+		}
+		private final static long serialVersionUID = 1l;
+
+		@Override
+		public String toSQLString(DBDefinition db) {
+			return db.getFalseOperation();
+		}
+
+		@Override
+		public boolean isAggregator() {
+			return false;
+		}
+
+		@Override
+		public FalseExpression copy() {
+			return new FalseExpression();
+		}
+	}
+
+	private static class TrueExpression extends BooleanExpression {
+
+		public TrueExpression() {
+		}
+		private final static long serialVersionUID = 1l;
+
+		@Override
+		public String toSQLString(DBDefinition db) {
+			return db.getTrueOperation();
+		}
+
+		@Override
+		public boolean isAggregator() {
+			return false;
+		}
+
+		@Override
+		public TrueExpression copy() {
+			return new TrueExpression();
 		}
 	}
 }

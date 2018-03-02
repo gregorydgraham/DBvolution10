@@ -150,20 +150,12 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 
 	@Override
 	public DateExpression copy() {
-		return isNullSafetyTerminator() ? nullDate() : new DateExpression(this.getInnerResult());
+		return isNullSafetyTerminator() ? nullDate() : new DateExpression((AnyResult<?>) this.getInnerResult().copy());
 	}
 
 	@Override
 	public DateExpression nullExpression() {
-		return new DateExpression() {
-			private final static long serialVersionUID = 1l;
-
-			@Override
-			public String toSQLString(DBDefinition db) {
-				return db.getNull();
-			}
-
-		};
+		return new DateNullExpression();
 	}
 
 	/**
@@ -182,19 +174,7 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 	 */
 	public static DateExpression currentDateOnly() {
 		return new DateExpression(
-				new FunctionWithDateResult() {
-			private final static long serialVersionUID = 1l;
-
-			@Override
-			public String toSQLString(DBDefinition db) {
-				return db.doCurrentDateOnlyTransform();
-			}
-
-			@Override
-			public DBDate getQueryableDatatypeForExpressionValue() {
-				return new DBDateOnly();
-			}
-		});
+				new DateOnlyCurrentDateExpression());
 	}
 
 	/**
@@ -211,14 +191,7 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 	 */
 	public static DateExpression currentDate() {
 		return new DateExpression(
-				new FunctionWithDateResult() {
-			private final static long serialVersionUID = 1l;
-
-			@Override
-			public String toSQLString(DBDefinition db) {
-				return db.doCurrentDateTimeTransform();
-			}
-		});
+				new DateCurrentDateExpression());
 	}
 
 	/**
@@ -236,14 +209,7 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 	 */
 	public static DateExpression currentTime() {
 		return new DateExpression(
-				new FunctionWithDateResult() {
-			private final static long serialVersionUID = 1l;
-
-			@Override
-			public String toSQLString(DBDefinition db) {
-				return db.doCurrentTimeTransform();
-			}
-		});
+				new DateCurrentTimeExpression());
 	}
 
 	/**
@@ -257,14 +223,7 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 	 */
 	public NumberExpression year() {
 		return new NumberExpression(
-				new DateExpressionWithNumberResult(this) {
-			private final static long serialVersionUID = 1l;
-
-			@Override
-			public String toSQLString(DBDefinition db) {
-				return db.doYearTransform(this.getInnerResult().toSQLString(db));
-			}
-		});
+				new DateYearExpression(this));
 	}
 
 	/**
@@ -343,14 +302,7 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 	 */
 	public NumberExpression month() {
 		return new NumberExpression(
-				new DateExpressionWithNumberResult(this) {
-			private final static long serialVersionUID = 1l;
-
-			@Override
-			public String toSQLString(DBDefinition db) {
-				return db.doMonthTransform(this.getInnerResult().toSQLString(db));
-			}
-		});
+				new DateMonthExpression(this));
 	}
 
 	/**
@@ -437,14 +389,7 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 	 */
 	public NumberExpression day() {
 		return new NumberExpression(
-				new DateExpressionWithNumberResult(this) {
-			private final static long serialVersionUID = 1l;
-
-			@Override
-			public String toSQLString(DBDefinition db) {
-				return db.doDayTransform(this.getInnerResult().toSQLString(db));
-			}
-		});
+				new DateDayExpression(this));
 	}
 
 	/**
@@ -523,14 +468,7 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 	 */
 	public NumberExpression hour() {
 		return new NumberExpression(
-				new DateExpressionWithNumberResult(this) {
-			private final static long serialVersionUID = 1l;
-
-			@Override
-			public String toSQLString(DBDefinition db) {
-				return db.doHourTransform(this.getInnerResult().toSQLString(db));
-			}
-		});
+				new DateHourExpression(this));
 	}
 
 	/**
@@ -609,14 +547,7 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 	 */
 	public NumberExpression minute() {
 		return new NumberExpression(
-				new DateExpressionWithNumberResult(this) {
-			private final static long serialVersionUID = 1l;
-
-			@Override
-			public String toSQLString(DBDefinition db) {
-				return db.doMinuteTransform(this.getInnerResult().toSQLString(db));
-			}
-		});
+				new DateMinuteExpression(this));
 	}
 
 	/**
@@ -704,14 +635,7 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 	 */
 	public NumberExpression second() {
 		return new NumberExpression(
-				new DateExpressionWithNumberResult(this) {
-			private final static long serialVersionUID = 1l;
-
-			@Override
-			public String toSQLString(DBDefinition db) {
-				return db.doSecondTransform(this.getInnerResult().toSQLString(db));
-			}
-		});
+				new DateSecondExpression(this));
 	}
 
 	/**
@@ -729,14 +653,7 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 	 */
 	public NumberExpression subsecond() {
 		return new NumberExpression(
-				new DateExpressionWithNumberResult(this) {
-			private final static long serialVersionUID = 1l;
-
-			@Override
-			public String toSQLString(DBDefinition db) {
-				return db.doSubsecondTransform(this.getInnerResult().toSQLString(db));
-			}
-		});
+				new DateSubsecondExpression(this));
 	}
 
 	/**
@@ -839,14 +756,7 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 	 */
 	@Override
 	public BooleanExpression is(DateResult dateExpression) {
-		BooleanExpression isExpr = new BooleanExpression(new DateDateExpressionWithBooleanResult(this, dateExpression) {
-			private final static long serialVersionUID = 1l;
-
-			@Override
-			protected String getEquationOperator(DBDefinition db) {
-				return " = ";
-			}
-		});
+		BooleanExpression isExpr = new BooleanExpression(new DateIsExpression(this, dateExpression));
 		if (isExpr.getIncludesNull()) {
 			return BooleanExpression.isNull(this);
 		} else {
@@ -881,14 +791,7 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 	 */
 	@Override
 	public BooleanExpression isNot(DateResult dateExpression) {
-		BooleanExpression isExpr = new BooleanExpression(new DateDateExpressionWithBooleanResult(this, dateExpression) {
-			private final static long serialVersionUID = 1l;
-
-			@Override
-			protected String getEquationOperator(DBDefinition db) {
-				return " <> ";
-			}
-		});
+		BooleanExpression isExpr = new BooleanExpression(new DateIsNotExpression(this, dateExpression));
 		if (isExpr.getIncludesNull()) {
 			return BooleanExpression.isNotNull(this);
 		} else {
@@ -1300,19 +1203,7 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 	 */
 	@Override
 	public BooleanExpression isLessThan(DateResult dateExpression) {
-		return new BooleanExpression(new DateExpression.DateDateExpressionWithBooleanResult(this, dateExpression) {
-			private final static long serialVersionUID = 1l;
-
-			@Override
-			protected String getEquationOperator(DBDefinition db) {
-				return " < ";
-			}
-
-			@Override
-			public boolean getIncludesNull() {
-				return false;
-			}
-		});
+		return new BooleanExpression(new DateIsLessThanExpression(this, dateExpression));
 	}
 
 	/**
@@ -1338,38 +1229,7 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 	 * @return DateRepeat expression
 	 */
 	public DateRepeatExpression getDateRepeatFrom(DateResult dateExpression) {
-		return new DateRepeatExpression(new DateDateExpressionWithDateRepeatResult(this, dateExpression) {
-			private final static long serialVersionUID = 1l;
-
-			@Override
-			public String toSQLString(DBDefinition db) {
-				if (db instanceof SupportsDateRepeatDatatypeFunctions) {
-					return db.doDateMinusToDateRepeatTransformation(getFirst().toSQLString(db), getSecond().toSQLString(db));
-				} else {
-					final DateExpression left = getFirst();
-					final DateExpression right = new DateExpression(getSecond());
-					return BooleanExpression.anyOf(left.isNull(), right.isNull())
-							.ifThenElse(
-									nullString(),
-									StringExpression.value(INTERVAL_PREFIX)
-											.append(left.year().minus(right.year()).bracket()).append(YEAR_SUFFIX)
-											.append(left.month().minus(right.month()).bracket()).append(MONTH_SUFFIX)
-											.append(left.day().minus(right.day()).bracket()).append(DAY_SUFFIX)
-											.append(left.hour().minus(right.hour()).bracket()).append(HOUR_SUFFIX)
-											.append(left.minute().minus(right.minute()).bracket()).append(MINUTE_SUFFIX)
-											.append(left.second().minus(right.second()).bracket())
-											.append(".")
-											.append(left.subsecond().minus(right.subsecond()).absoluteValue().stringResult().substringAfter("."))
-											.append(SECOND_SUFFIX)
-							).toSQLString(db);
-				}
-			}
-
-			@Override
-			public boolean getIncludesNull() {
-				return false;
-			}
-		});
+		return new DateRepeatExpression(new DateGetDateRepeatFromExpression(this, dateExpression));
 	}
 
 	/**
@@ -1396,35 +1256,7 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 	 * @return a Date expression
 	 */
 	public DateExpression minus(DateRepeatResult intervalExpression) {
-		return new DateExpression(new DateDateRepeatArithmeticDateResult(this, intervalExpression) {
-			private final static long serialVersionUID = 1l;
-
-			@Override
-			protected String doExpressionTransformation(DBDefinition db) {
-				if (db instanceof SupportsDateRepeatDatatypeFunctions) {
-					return db.doDateMinusDateRepeatTransform(getFirst().toSQLString(db), getSecond().toSQLString(db));
-				} else {
-					final DateExpression left = getFirst();
-					final DateRepeatExpression right = new DateRepeatExpression(getSecond());
-					return BooleanExpression.anyOf(left.isNull(), right.isNull())
-							.ifThenElse(
-									nullDate(),
-									left.addYears(right.getYears().times(-1))
-											.addMonths(right.getMonths().times(-1))
-											.addDays(right.getDays().times(-1))
-											.addHours(right.getHours().times(-1))
-											.addMinutes(right.getMinutes().times(-1))
-											.addSeconds(right.getSeconds().times(-1))
-							//									.addMilliseconds(right.getMilliseconds().times(-1))
-							).toSQLString(db);
-				}
-			}
-
-			@Override
-			public boolean getIncludesNull() {
-				return false;
-			}
-		});
+		return new DateExpression(new DateMinusDateRepeatExpression(this, intervalExpression));
 	}
 
 	/**
@@ -1451,34 +1283,7 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 	 * @return a Date expression
 	 */
 	public DateExpression plus(DateRepeatResult intervalExpression) {
-		return new DateExpression(new DateDateRepeatArithmeticDateResult(this, intervalExpression) {
-			private final static long serialVersionUID = 1l;
-
-			@Override
-			protected String doExpressionTransformation(DBDefinition db) {
-				if (db instanceof SupportsDateRepeatDatatypeFunctions) {
-					return db.doDatePlusDateRepeatTransform(getFirst().toSQLString(db), getSecond().toSQLString(db));
-				} else {
-					final DateExpression left = getFirst();
-					final DateRepeatExpression right = new DateRepeatExpression(getSecond());
-					return BooleanExpression.anyOf(left.isNull(), right.isNull())
-							.ifThenElse(
-									nullDate(),
-									left.addYears(right.getYears())
-											.addMonths(right.getMonths())
-											.addDays(right.getDays())
-											.addHours(right.getHours())
-											.addMinutes(right.getMinutes())
-											.addSeconds(right.getSeconds())
-							).toSQLString(db);
-				}
-			}
-
-			@Override
-			public boolean getIncludesNull() {
-				return false;
-			}
-		});
+		return new DateExpression(new DatePlusDateRepeatExpression(this, intervalExpression));
 	}
 
 	/**
@@ -1506,19 +1311,7 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 	 */
 	@Override
 	public BooleanExpression isLessThanOrEqual(DateResult dateExpression) {
-		return new BooleanExpression(new DateDateExpressionWithBooleanResult(this, dateExpression) {
-			private final static long serialVersionUID = 1l;
-
-			@Override
-			protected String getEquationOperator(DBDefinition db) {
-				return " <= ";
-			}
-
-			@Override
-			public boolean getIncludesNull() {
-				return false;
-			}
-		});
+		return new BooleanExpression(new DateIsLessThanOrEqualExpression(this, dateExpression));
 	}
 
 	/**
@@ -1546,19 +1339,7 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 	 */
 	@Override
 	public BooleanExpression isGreaterThan(DateResult dateExpression) {
-		return new BooleanExpression(new DateDateExpressionWithBooleanResult(this, dateExpression) {
-			private final static long serialVersionUID = 1l;
-
-			@Override
-			protected String getEquationOperator(DBDefinition db) {
-				return " > ";
-			}
-
-			@Override
-			public boolean getIncludesNull() {
-				return false;
-			}
-		});
+		return new BooleanExpression(new DateIsGreaterThanExpression(this, dateExpression));
 	}
 
 	/**
@@ -1586,19 +1367,7 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 	 */
 	@Override
 	public BooleanExpression isGreaterThanOrEqual(DateResult dateExpression) {
-		return new BooleanExpression(new DateDateExpressionWithBooleanResult(this, dateExpression) {
-			private final static long serialVersionUID = 1l;
-
-			@Override
-			protected String getEquationOperator(DBDefinition db) {
-				return " >= ";
-			}
-
-			@Override
-			public boolean getIncludesNull() {
-				return false;
-			}
-		});
+		return new BooleanExpression(new DateIsGreaterThanOrEqualExpression(this, dateExpression));
 	}
 
 	/**
@@ -1759,18 +1528,7 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 	 */
 	@Override
 	public BooleanExpression isIn(DateResult... possibleValues) {
-		BooleanExpression isInExpr = new BooleanExpression(new DateDateResultFunctionWithBooleanResult(this, possibleValues) {
-			private final static long serialVersionUID = 1l;
-
-			@Override
-			public String toSQLString(DBDefinition db) {
-				List<String> sqlValues = new ArrayList<String>();
-				for (DateResult value : getValues()) {
-					sqlValues.add(value.toSQLString(db));
-				}
-				return db.doInTransform(getColumn().toSQLString(db), sqlValues);
-			}
-		});
+		BooleanExpression isInExpr = new BooleanExpression(new DateIsInExpression(this, possibleValues));
 		if (isInExpr.getIncludesNull()) {
 			return BooleanExpression.anyOf(BooleanExpression.isNull(this), isInExpr);
 		} else {
@@ -1819,19 +1577,7 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 	 */
 	public DateExpression ifDBNull(DateResult alternative) {
 		return new DateExpression(
-				new DateExpression.DateDateFunctionWithDateResult(this, alternative) {
-			private final static long serialVersionUID = 1l;
-
-			@Override
-			public String toSQLString(DBDefinition db) {
-				return db.doDateIfNullTransform(this.getFirst().toSQLString(db), getSecond().toSQLString(db));
-			}
-
-			@Override
-			public boolean getIncludesNull() {
-				return false;
-			}
-		});
+				new DateIfDBNullExpression(this, alternative));
 	}
 
 	/**
@@ -1847,24 +1593,7 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 	 * @return a number expression.
 	 */
 	public DateExpression max() {
-		return new DateExpression(new DateFunctionWithDateResult(this) {
-			private final static long serialVersionUID = 1l;
-
-			@Override
-			protected String getFunctionName(DBDefinition db) {
-				return db.getMaxFunctionName();
-			}
-
-			@Override
-			public boolean isAggregator() {
-				return true;
-			}
-
-			@Override
-			public boolean getIncludesNull() {
-				return false;
-			}
-		});
+		return new DateExpression(new DateMaxExpression(this));
 	}
 
 	/**
@@ -1880,24 +1609,7 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 	 * @return a number expression.
 	 */
 	public DateExpression min() {
-		return new DateExpression(new DateFunctionWithDateResult(this) {
-			private final static long serialVersionUID = 1l;
-
-			@Override
-			protected String getFunctionName(DBDefinition db) {
-				return db.getMinFunctionName();
-			}
-
-			@Override
-			public boolean isAggregator() {
-				return true;
-			}
-
-			@Override
-			public boolean getIncludesNull() {
-				return false;
-			}
-		});
+		return new DateExpression(new DateMinExpression(this));
 	}
 
 	@Override
@@ -1933,19 +1645,7 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 	 */
 	public DateExpression addSeconds(NumberExpression secondsToAdd) {
 		return new DateExpression(
-				new DateNumberExpressionWithDateResult(this, secondsToAdd) {
-			private final static long serialVersionUID = 1l;
-
-			@Override
-			public boolean getIncludesNull() {
-				return false;
-			}
-
-			@Override
-			public String toSQLString(DBDefinition db) {
-				return db.doAddSecondsTransform(first.toSQLString(db), second.toSQLString(db));
-			}
-		});
+				new DateAddSecondsExpression(this, secondsToAdd));
 	}
 
 	/**
@@ -1961,19 +1661,7 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 	 */
 	public DateExpression addSeconds(IntegerExpression secondsToAdd) {
 		return new DateExpression(
-				new DateIntegerExpressionWithDateResult(this, secondsToAdd) {
-			private final static long serialVersionUID = 1l;
-
-			@Override
-			public boolean getIncludesNull() {
-				return false;
-			}
-
-			@Override
-			public String toSQLString(DBDefinition db) {
-				return db.doAddSecondsTransform(first.toSQLString(db), second.toSQLString(db));
-			}
-		});
+				new DateAddIntegerSecondsExpression(this, secondsToAdd));
 	}
 
 	/**
@@ -2004,19 +1692,7 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 	 */
 	public DateExpression addMinutes(IntegerExpression minutesToAdd) {
 		return new DateExpression(
-				new DateIntegerExpressionWithDateResult(this, minutesToAdd) {
-			private final static long serialVersionUID = 1l;
-
-			@Override
-			public boolean getIncludesNull() {
-				return false;
-			}
-
-			@Override
-			public String toSQLString(DBDefinition db) {
-				return db.doAddMinutesTransform(first.toSQLString(db), second.toSQLString(db));
-			}
-		});
+				new DateAddIntegerMinutesExpression(this, minutesToAdd));
 	}
 
 	/**
@@ -2077,19 +1753,7 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 	 */
 	public DateExpression addDays(IntegerExpression daysToAdd) {
 		return new DateExpression(
-				new DateIntegerExpressionWithDateResult(this, daysToAdd) {
-			private final static long serialVersionUID = 1l;
-
-			@Override
-			public boolean getIncludesNull() {
-				return false;
-			}
-
-			@Override
-			public String toSQLString(DBDefinition db) {
-				return db.doAddDaysTransform(first.toSQLString(db), second.toSQLString(db));
-			}
-		});
+				new DateAddIntegerDaysExpression(this, daysToAdd));
 	}
 
 	/**
@@ -2105,19 +1769,7 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 	 */
 	public DateExpression addDays(NumberExpression daysToAdd) {
 		return new DateExpression(
-				new DateNumberExpressionWithDateResult(this, daysToAdd) {
-			private final static long serialVersionUID = 1l;
-
-			@Override
-			public boolean getIncludesNull() {
-				return false;
-			}
-
-			@Override
-			public String toSQLString(DBDefinition db) {
-				return db.doAddDaysTransform(first.toSQLString(db), second.toSQLString(db));
-			}
-		});
+				new DateAddDaysExpression(this, daysToAdd));
 	}
 
 	/**
@@ -2148,19 +1800,7 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 	 */
 	public DateExpression addHours(IntegerExpression hoursToAdd) {
 		return new DateExpression(
-				new DateIntegerExpressionWithDateResult(this, hoursToAdd) {
-			private final static long serialVersionUID = 1l;
-
-			@Override
-			public boolean getIncludesNull() {
-				return false;
-			}
-
-			@Override
-			public String toSQLString(DBDefinition db) {
-				return db.doAddHoursTransform(first.toSQLString(db), second.toSQLString(db));
-			}
-		});
+				new DateAddIntegerHoursExpression(this, hoursToAdd));
 	}
 
 	/**
@@ -2191,19 +1831,7 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 	 */
 	public DateExpression addWeeks(IntegerExpression weeksToAdd) {
 		return new DateExpression(
-				new DateIntegerExpressionWithDateResult(this, weeksToAdd) {
-			private final static long serialVersionUID = 1l;
-
-			@Override
-			public boolean getIncludesNull() {
-				return false;
-			}
-
-			@Override
-			public String toSQLString(DBDefinition db) {
-				return db.doAddWeeksTransform(first.toSQLString(db), second.toSQLString(db));
-			}
-		});
+				new DateAddIntegerWeeksExpression(this, weeksToAdd));
 	}
 
 	/**
@@ -2264,19 +1892,7 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 	 */
 	public DateExpression addMonths(IntegerExpression monthsToAdd) {
 		return new DateExpression(
-				new DateIntegerExpressionWithDateResult(this, monthsToAdd) {
-			private final static long serialVersionUID = 1l;
-
-			@Override
-			public boolean getIncludesNull() {
-				return false;
-			}
-
-			@Override
-			public String toSQLString(DBDefinition db) {
-				return db.doAddMonthsTransform(first.toSQLString(db), second.toSQLString(db));
-			}
-		});
+				new DateAddIntegerMonthsExpression(this, monthsToAdd));
 	}
 
 	/**
@@ -2292,19 +1908,7 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 	 */
 	public DateExpression addMonths(NumberExpression monthsToAdd) {
 		return new DateExpression(
-				new DateNumberExpressionWithDateResult(this, monthsToAdd) {
-			private final static long serialVersionUID = 1l;
-
-			@Override
-			public boolean getIncludesNull() {
-				return false;
-			}
-
-			@Override
-			public String toSQLString(DBDefinition db) {
-				return db.doAddMonthsTransform(first.toSQLString(db), second.toSQLString(db));
-			}
-		});
+				new DateAddMonthsExpression(this, monthsToAdd));
 	}
 
 	/**
@@ -2335,19 +1939,7 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 	 */
 	public DateExpression addYears(IntegerExpression yearsToAdd) {
 		return new DateExpression(
-				new DateIntegerExpressionWithDateResult(this, yearsToAdd) {
-			private final static long serialVersionUID = 1l;
-
-			@Override
-			public boolean getIncludesNull() {
-				return false;
-			}
-
-			@Override
-			public String toSQLString(DBDefinition db) {
-				return db.doAddYearsTransform(first.toSQLString(db), second.toSQLString(db));
-			}
-		});
+				new DateAddIntegerYearsExpression(this, yearsToAdd));
 	}
 
 	/**
@@ -2380,19 +1972,7 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 	 */
 	public NumberExpression daysFrom(DateResult dateToCompareTo) {
 		return new NumberExpression(
-				new DateDateFunctionWithNumberResult(this, dateToCompareTo) {
-			private final static long serialVersionUID = 1l;
-
-			@Override
-			public boolean getIncludesNull() {
-				return false;
-			}
-
-			@Override
-			public String toSQLString(DBDefinition db) {
-				return db.doDayDifferenceTransform(first.toSQLString(db), second.toSQLString(db));
-			}
-		});
+				new DateDaysFromExpression(this, dateToCompareTo));
 	}
 
 	/**
@@ -2425,19 +2005,7 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 	 */
 	public NumberExpression weeksFrom(DateExpression dateToCompareTo) {
 		return new NumberExpression(
-				new DateDateFunctionWithNumberResult(this, dateToCompareTo) {
-			private final static long serialVersionUID = 1l;
-
-			@Override
-			public boolean getIncludesNull() {
-				return false;
-			}
-
-			@Override
-			public String toSQLString(DBDefinition db) {
-				return db.doWeekDifferenceTransform(first.toSQLString(db), second.toSQLString(db));
-			}
-		});
+				new DateWeeksFromExpression(this, dateToCompareTo));
 	}
 
 	/**
@@ -2470,19 +2038,7 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 	 */
 	public NumberExpression monthsFrom(DateResult dateToCompareTo) {
 		return new NumberExpression(
-				new DateDateFunctionWithNumberResult(this, dateToCompareTo) {
-			private final static long serialVersionUID = 1l;
-
-			@Override
-			public boolean getIncludesNull() {
-				return false;
-			}
-
-			@Override
-			public String toSQLString(DBDefinition db) {
-				return db.doMonthDifferenceTransform(first.toSQLString(db), second.toSQLString(db));
-			}
-		});
+				new DateMonthsFromExpression(this, dateToCompareTo));
 	}
 
 	/**
@@ -2515,19 +2071,7 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 	 */
 	public NumberExpression yearsFrom(DateResult dateToCompareTo) {
 		return new NumberExpression(
-				new DateDateFunctionWithNumberResult(this, dateToCompareTo) {
-			private final static long serialVersionUID = 1l;
-
-			@Override
-			public boolean getIncludesNull() {
-				return false;
-			}
-
-			@Override
-			public String toSQLString(DBDefinition db) {
-				return db.doYearDifferenceTransform(first.toSQLString(db), second.toSQLString(db));
-			}
-		});
+				new DateYearsFromExpression(this, dateToCompareTo));
 	}
 
 	/**
@@ -2560,19 +2104,7 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 	 */
 	public NumberExpression hoursFrom(DateResult dateToCompareTo) {
 		return new NumberExpression(
-				new DateDateFunctionWithNumberResult(this, dateToCompareTo) {
-			private final static long serialVersionUID = 1l;
-
-			@Override
-			public boolean getIncludesNull() {
-				return false;
-			}
-
-			@Override
-			public String toSQLString(DBDefinition db) {
-				return db.doHourDifferenceTransform(first.toSQLString(db), second.toSQLString(db));
-			}
-		});
+				new DateHoursFromExpression(this, dateToCompareTo));
 	}
 
 	/**
@@ -2605,19 +2137,7 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 	 */
 	public NumberExpression minutesFrom(DateResult dateToCompareTo) {
 		return new NumberExpression(
-				new DateDateFunctionWithNumberResult(this, dateToCompareTo) {
-			private final static long serialVersionUID = 1l;
-
-			@Override
-			public boolean getIncludesNull() {
-				return false;
-			}
-
-			@Override
-			public String toSQLString(DBDefinition db) {
-				return db.doMinuteDifferenceTransform(first.toSQLString(db), second.toSQLString(db));
-			}
-		});
+				new DateMinutesFromExpression(this, dateToCompareTo));
 	}
 
 	/**
@@ -2650,19 +2170,7 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 	 */
 	public NumberExpression secondsFrom(DateResult dateToCompareTo) {
 		return new NumberExpression(
-				new DateDateFunctionWithNumberResult(this, dateToCompareTo) {
-			private final static long serialVersionUID = 1l;
-
-			@Override
-			public boolean getIncludesNull() {
-				return false;
-			}
-
-			@Override
-			public String toSQLString(DBDefinition db) {
-				return db.doSecondDifferenceTransform(first.toSQLString(db), second.toSQLString(db));
-			}
-		});
+				new DateSecondsFromExpression(this, dateToCompareTo));
 	}
 
 	/**
@@ -2687,21 +2195,7 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 	 */
 	public DateExpression endOfMonth() {
 		return new DateExpression(
-				new DateExpression(this) {
-			private final static long serialVersionUID = 1l;
-
-			@Override
-			public String toSQLString(DBDefinition db) {
-				try {
-					return db.doEndOfMonthTransform(this.getInnerResult().toSQLString(db));
-				} catch (UnsupportedOperationException exp) {
-					DateExpression only = (DateExpression) getInnerResult();
-					return only
-							.addDays(only.day().minus(1).bracket().times(-1).integerResult())
-							.addMonths(1).addDays(-1).toSQLString(db);
-				}
-			}
-		}
+				new DateEndOfMonthExpression(this)
 		);
 	}
 
@@ -2718,14 +2212,7 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 	 */
 	public NumberExpression dayOfWeek() {
 		return new NumberExpression(
-				new DateExpressionWithNumberResult(this) {
-			private final static long serialVersionUID = 1l;
-
-			@Override
-			public String toSQLString(DBDefinition db) {
-				return db.doDayOfWeekTransform(this.getInnerResult().toSQLString(db));
-			}
-		});
+				new DateDayOfWeekExpression(this));
 	}
 
 	/**
@@ -2847,28 +2334,7 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 	 */
 	public static DateExpression leastOf(DateResult... possibleValues) {
 		DateExpression leastExpr
-				= new DateExpression(new DateArrayFunctionWithDateResult(possibleValues) {
-					private final static long serialVersionUID = 1l;
-
-					@Override
-					public String toSQLString(DBDefinition db) {
-						List<String> strs = new ArrayList<String>();
-						for (DateResult num : this.values) {
-							strs.add(num.toSQLString(db));
-						}
-						return db.doLeastOfTransformation(strs);
-					}
-
-					@Override
-					protected String getFunctionName(DBDefinition db) {
-						return db.getLeastOfFunctionName();
-					}
-
-					@Override
-					public boolean getIncludesNull() {
-						return true;
-					}
-				});
+				= new DateExpression(new DateLeastOfExpression(possibleValues));
 		return leastExpr;
 	}
 
@@ -2926,23 +2392,7 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 	 */
 	public static DateExpression greatestOf(DateResult... possibleValues) {
 		DateExpression greatestOf
-				= new DateExpression(new DateArrayFunctionWithDateResult(possibleValues) {
-					private final static long serialVersionUID = 1l;
-
-					@Override
-					public String toSQLString(DBDefinition db) {
-						List<String> strs = new ArrayList<String>();
-						for (DateResult num : this.values) {
-							strs.add(num.toSQLString(db));
-						}
-						return db.doGreatestOfTransformation(strs);
-					}
-
-					@Override
-					protected String getFunctionName(DBDefinition db) {
-						return db.getGreatestOfFunctionName();
-					}
-				});
+				= new DateExpression(new DateGreatestOfExpression(possibleValues));
 		return greatestOf;
 	}
 
@@ -3145,13 +2595,13 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 
 	private static abstract class DateDateExpressionWithBooleanResult extends BooleanExpression {
 
-		private DateExpression first;
-		private DateResult second;
+		protected DateExpression first;
+		protected DateExpression second;
 		private boolean requiresNullProtection = false;
 
 		DateDateExpressionWithBooleanResult(DateExpression first, DateResult second) {
 			this.first = first;
-			this.second = second;
+			this.second = new DateExpression(second);
 			if (second == null || second.getIncludesNull()) {
 				this.requiresNullProtection = true;
 			}
@@ -3207,13 +2657,13 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 
 	private static abstract class DateDateExpressionWithDateRepeatResult extends DateRepeatExpression {
 
-		private DateExpression first;
-		private DateResult second;
+		protected DateExpression first;
+		protected DateExpression second;
 		private boolean requiresNullProtection = false;
 
 		DateDateExpressionWithDateRepeatResult(DateExpression first, DateResult second) {
 			this.first = first;
-			this.second = second;
+			this.second = new DateExpression(second);
 			if (second == null || second.getIncludesNull()) {
 				this.requiresNullProtection = true;
 			}
@@ -3270,20 +2720,20 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 		 *
 		 * @return the second
 		 */
-		public DateResult getSecond() {
+		public DateExpression getSecond() {
 			return second;
 		}
 	}
 
 	private static abstract class DateDateRepeatArithmeticDateResult extends DateExpression {
 
-		private DateExpression first;
-		private DateRepeatResult second;
+		protected DateExpression first;
+		protected DateRepeatExpression second;
 		private boolean requiresNullProtection = false;
 
 		DateDateRepeatArithmeticDateResult(DateExpression first, DateRepeatResult second) {
 			this.first = first;
-			this.second = second;
+			this.second = new DateRepeatExpression(second);
 			if (second == null || second.getIncludesNull()) {
 				this.requiresNullProtection = true;
 			}
@@ -3347,7 +2797,7 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 		 *
 		 * @return the second
 		 */
-		public DateRepeatResult getSecond() {
+		public DateRepeatExpression getSecond() {
 			return second;
 		}
 	}
@@ -3412,7 +2862,10 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 				throw new RuntimeException(ex);
 			}
 			newInstance.column = this.column.copy();
-			Collections.copy(this.values, newInstance.values);
+			for (DateResult value : this.values) {
+				newInstance.values.add(value.copy());
+			}
+
 			return newInstance;
 		}
 
@@ -3529,6 +2982,10 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 				throw new RuntimeException(ex);
 			}
 			newInstance.column = this.getColumn().copy();
+			for (DateResult value : this.getValues()) {
+				newInstance.getValues().add(value.copy());
+			}
+
 			Collections.copy(this.getValues(), newInstance.getValues());
 			return newInstance;
 		}
@@ -3768,19 +3225,6 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 		abstract public String toSQLString(DBDefinition db);
 
 		@Override
-		public DateNumberExpressionWithDateResult copy() {
-			DateNumberExpressionWithDateResult newInstance;
-			try {
-				newInstance = getClass().newInstance();
-			} catch (InstantiationException | IllegalAccessException ex) {
-				throw new RuntimeException(ex);
-			}
-			newInstance.first = first.copy();
-			newInstance.second = second.copy();
-			return newInstance;
-		}
-
-		@Override
 		public boolean isAggregator() {
 			return first.isAggregator() || second.isAggregator();
 		}
@@ -3860,6 +3304,1082 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 			} else {
 				return first.isPurelyFunctional() && second.isPurelyFunctional();
 			}
+		}
+	}
+
+	private static class DateNullExpression extends DateExpression {
+
+		public DateNullExpression() {
+		}
+		private final static long serialVersionUID = 1l;
+
+		@Override
+		public String toSQLString(DBDefinition db) {
+			return db.getNull();
+		}
+
+		@Override
+		public DateNullExpression copy() {
+			return new DateNullExpression();
+		}
+	}
+
+	protected static class DateOnlyCurrentDateExpression extends FunctionWithDateResult {
+
+		public DateOnlyCurrentDateExpression() {
+		}
+		private final static long serialVersionUID = 1l;
+
+		@Override
+		public String toSQLString(DBDefinition db) {
+			return db.doCurrentDateOnlyTransform();
+		}
+
+		@Override
+		public DBDate getQueryableDatatypeForExpressionValue() {
+			return new DBDateOnly();
+		}
+
+		@Override
+		public DateOnlyCurrentDateExpression copy() {
+			return new DateOnlyCurrentDateExpression();
+		}
+
+	}
+
+	protected static class DateCurrentDateExpression extends FunctionWithDateResult {
+
+		public DateCurrentDateExpression() {
+		}
+		private final static long serialVersionUID = 1l;
+
+		@Override
+		public String toSQLString(DBDefinition db) {
+			return db.doCurrentDateTimeTransform();
+		}
+
+		@Override
+		public DateCurrentDateExpression copy() {
+			return new DateCurrentDateExpression();
+		}
+
+	}
+
+	protected static class DateCurrentTimeExpression extends FunctionWithDateResult {
+
+		public DateCurrentTimeExpression() {
+		}
+		private final static long serialVersionUID = 1l;
+
+		@Override
+		public String toSQLString(DBDefinition db) {
+			return db.doCurrentTimeTransform();
+		}
+
+		@Override
+		public DateOnlyCurrentDateExpression copy() {
+			return new DateOnlyCurrentDateExpression();
+		}
+
+	}
+
+	protected static class DateYearExpression extends DateExpressionWithNumberResult {
+
+		public DateYearExpression(DateExpression only) {
+			super(only);
+		}
+		private final static long serialVersionUID = 1l;
+
+		@Override
+		public String toSQLString(DBDefinition db) {
+			return db.doYearTransform(this.getInnerResult().toSQLString(db));
+		}
+
+		@Override
+		public DateYearExpression copy() {
+			return new DateYearExpression((DateExpression) getInnerResult().copy());
+		}
+
+	}
+
+	protected static class DateMonthExpression extends DateExpressionWithNumberResult {
+
+		public DateMonthExpression(DateExpression only) {
+			super(only);
+		}
+		private final static long serialVersionUID = 1l;
+
+		@Override
+		public String toSQLString(DBDefinition db) {
+			return db.doMonthTransform(this.getInnerResult().toSQLString(db));
+		}
+
+		@Override
+		public DateMonthExpression copy() {
+			return new DateMonthExpression((DateExpression) getInnerResult().copy());
+		}
+
+	}
+
+	protected static class DateDayExpression extends DateExpressionWithNumberResult {
+
+		public DateDayExpression(DateExpression only) {
+			super(only);
+		}
+		private final static long serialVersionUID = 1l;
+
+		@Override
+		public String toSQLString(DBDefinition db) {
+			return db.doDayTransform(this.getInnerResult().toSQLString(db));
+		}
+
+		@Override
+		public DateDayExpression copy() {
+			return new DateDayExpression((DateExpression) getInnerResult().copy());
+		}
+
+	}
+
+	protected static class DateHourExpression extends DateExpressionWithNumberResult {
+
+		public DateHourExpression(DateExpression only) {
+			super(only);
+		}
+		private final static long serialVersionUID = 1l;
+
+		@Override
+		public String toSQLString(DBDefinition db) {
+			return db.doHourTransform(this.getInnerResult().toSQLString(db));
+		}
+
+		@Override
+		public DateHourExpression copy() {
+			return new DateHourExpression((DateExpression) getInnerResult().copy());
+		}
+
+	}
+
+	protected static class DateMinuteExpression extends DateExpressionWithNumberResult {
+
+		public DateMinuteExpression(DateExpression only) {
+			super(only);
+		}
+		private final static long serialVersionUID = 1l;
+
+		@Override
+		public String toSQLString(DBDefinition db) {
+			return db.doMinuteTransform(this.getInnerResult().toSQLString(db));
+		}
+
+		@Override
+		public DateMinuteExpression copy() {
+			return new DateMinuteExpression((DateExpression) getInnerResult().copy());
+		}
+
+	}
+
+	protected static class DateSecondExpression extends DateExpressionWithNumberResult {
+
+		public DateSecondExpression(DateExpression only) {
+			super(only);
+		}
+		private final static long serialVersionUID = 1l;
+
+		@Override
+		public String toSQLString(DBDefinition db) {
+			return db.doSecondTransform(this.getInnerResult().toSQLString(db));
+		}
+
+		@Override
+		public DateSecondExpression copy() {
+			return new DateSecondExpression((DateExpression) getInnerResult().copy());
+		}
+	}
+
+	protected static class DateSubsecondExpression extends DateExpressionWithNumberResult {
+
+		public DateSubsecondExpression(DateExpression only) {
+			super(only);
+		}
+		private final static long serialVersionUID = 1l;
+
+		@Override
+		public String toSQLString(DBDefinition db) {
+			return db.doSubsecondTransform(this.getInnerResult().toSQLString(db));
+		}
+
+		@Override
+		public DateSubsecondExpression copy() {
+			return new DateSubsecondExpression((DateExpression) getInnerResult().copy());
+		}
+
+	}
+
+	protected static class DateIsExpression extends DateDateExpressionWithBooleanResult {
+
+		public DateIsExpression(DateExpression first, DateResult second) {
+			super(first, second);
+		}
+		private final static long serialVersionUID = 1l;
+
+		@Override
+		protected String getEquationOperator(DBDefinition db) {
+			return " = ";
+		}
+
+		@Override
+		public DateIsExpression copy() {
+			return new DateIsExpression(first.copy(), second.copy());
+		}
+
+	}
+
+	protected static class DateIsNotExpression extends DateDateExpressionWithBooleanResult {
+
+		public DateIsNotExpression(DateExpression first, DateResult second) {
+			super(first, second);
+		}
+		private final static long serialVersionUID = 1l;
+
+		@Override
+		protected String getEquationOperator(DBDefinition db) {
+			return " <> ";
+		}
+
+		@Override
+		public DateIsNotExpression copy() {
+			return new DateIsNotExpression(first.copy(), second.copy());
+		}
+
+	}
+
+	protected static class DateIsLessThanExpression extends DateDateExpressionWithBooleanResult {
+
+		public DateIsLessThanExpression(DateExpression first, DateResult second) {
+			super(first, second);
+		}
+		private final static long serialVersionUID = 1l;
+
+		@Override
+		protected String getEquationOperator(DBDefinition db) {
+			return " < ";
+		}
+
+		@Override
+		public boolean getIncludesNull() {
+			return false;
+		}
+
+		@Override
+		public DateIsLessThanExpression copy() {
+			return new DateIsLessThanExpression(first.copy(), second.copy());
+		}
+
+	}
+
+	protected static class DateGetDateRepeatFromExpression extends DateDateExpressionWithDateRepeatResult {
+
+		public DateGetDateRepeatFromExpression(DateExpression first, DateResult second) {
+			super(first, second);
+		}
+		private final static long serialVersionUID = 1l;
+
+		@Override
+		public String toSQLString(DBDefinition db) {
+			if (db instanceof SupportsDateRepeatDatatypeFunctions) {
+				return db.doDateMinusToDateRepeatTransformation(getFirst().toSQLString(db), getSecond().toSQLString(db));
+			} else {
+				final DateExpression left = getFirst();
+				final DateExpression right = new DateExpression(getSecond());
+				return BooleanExpression.anyOf(left.isNull(), right.isNull())
+						.ifThenElse(
+								nullString(),
+								StringExpression.value(INTERVAL_PREFIX)
+										.append(left.year().minus(right.year()).bracket()).append(YEAR_SUFFIX)
+										.append(left.month().minus(right.month()).bracket()).append(MONTH_SUFFIX)
+										.append(left.day().minus(right.day()).bracket()).append(DAY_SUFFIX)
+										.append(left.hour().minus(right.hour()).bracket()).append(HOUR_SUFFIX)
+										.append(left.minute().minus(right.minute()).bracket()).append(MINUTE_SUFFIX)
+										.append(left.second().minus(right.second()).bracket())
+										.append(".")
+										.append(left.subsecond().minus(right.subsecond()).absoluteValue().stringResult().substringAfter("."))
+										.append(SECOND_SUFFIX)
+						).toSQLString(db);
+			}
+		}
+
+		@Override
+		public boolean getIncludesNull() {
+			return false;
+		}
+
+		@Override
+		public DateGetDateRepeatFromExpression copy() {
+			return new DateGetDateRepeatFromExpression(first.copy(), second.copy());
+		}
+	}
+
+	protected static class DateMinusDateRepeatExpression extends DateDateRepeatArithmeticDateResult {
+
+		public DateMinusDateRepeatExpression(DateExpression first, DateRepeatResult second) {
+			super(first, second);
+		}
+		private final static long serialVersionUID = 1l;
+
+		@Override
+		protected String doExpressionTransformation(DBDefinition db) {
+			if (db instanceof SupportsDateRepeatDatatypeFunctions) {
+				return db.doDateMinusDateRepeatTransform(getFirst().toSQLString(db), getSecond().toSQLString(db));
+			} else {
+				final DateExpression left = getFirst();
+				final DateRepeatExpression right = new DateRepeatExpression(getSecond());
+				return BooleanExpression.anyOf(left.isNull(), right.isNull())
+						.ifThenElse(
+								nullDate(),
+								left.addYears(right.getYears().times(-1))
+										.addMonths(right.getMonths().times(-1))
+										.addDays(right.getDays().times(-1))
+										.addHours(right.getHours().times(-1))
+										.addMinutes(right.getMinutes().times(-1))
+										.addSeconds(right.getSeconds().times(-1))
+						//									.addMilliseconds(right.getMilliseconds().times(-1))
+						).toSQLString(db);
+			}
+		}
+
+		@Override
+		public boolean getIncludesNull() {
+			return false;
+		}
+
+		@Override
+		public DateMinusDateRepeatExpression copy() {
+			return new DateMinusDateRepeatExpression(first.copy(), second.copy());
+		}
+	}
+
+	protected static class DatePlusDateRepeatExpression extends DateDateRepeatArithmeticDateResult {
+
+		public DatePlusDateRepeatExpression(DateExpression first, DateRepeatResult second) {
+			super(first, second);
+		}
+		private final static long serialVersionUID = 1l;
+
+		@Override
+		protected String doExpressionTransformation(DBDefinition db) {
+			if (db instanceof SupportsDateRepeatDatatypeFunctions) {
+				return db.doDatePlusDateRepeatTransform(getFirst().toSQLString(db), getSecond().toSQLString(db));
+			} else {
+				final DateExpression left = getFirst();
+				final DateRepeatExpression right = new DateRepeatExpression(getSecond());
+				return BooleanExpression.anyOf(left.isNull(), right.isNull())
+						.ifThenElse(
+								nullDate(),
+								left.addYears(right.getYears())
+										.addMonths(right.getMonths())
+										.addDays(right.getDays())
+										.addHours(right.getHours())
+										.addMinutes(right.getMinutes())
+										.addSeconds(right.getSeconds())
+						).toSQLString(db);
+			}
+		}
+
+		@Override
+		public boolean getIncludesNull() {
+			return false;
+		}
+
+		@Override
+		public DatePlusDateRepeatExpression copy() {
+			return new DatePlusDateRepeatExpression(getFirst().copy(), getSecond().copy());
+		}
+
+	}
+
+	protected static class DateIsLessThanOrEqualExpression extends DateDateExpressionWithBooleanResult {
+
+		public DateIsLessThanOrEqualExpression(DateExpression first, DateResult second) {
+			super(first, second);
+		}
+		private final static long serialVersionUID = 1l;
+
+		@Override
+		protected String getEquationOperator(DBDefinition db) {
+			return " <= ";
+		}
+
+		@Override
+		public boolean getIncludesNull() {
+			return false;
+		}
+
+		@Override
+		public DateIsLessThanOrEqualExpression copy() {
+			return new DateIsLessThanOrEqualExpression(first.copy(), second.copy());
+		}
+
+	}
+
+	protected static class DateIsGreaterThanExpression extends DateDateExpressionWithBooleanResult {
+
+		public DateIsGreaterThanExpression(DateExpression first, DateResult second) {
+			super(first, second);
+		}
+		private final static long serialVersionUID = 1l;
+
+		@Override
+		protected String getEquationOperator(DBDefinition db) {
+			return " > ";
+		}
+
+		@Override
+		public boolean getIncludesNull() {
+			return false;
+		}
+
+		@Override
+		public DateIsGreaterThanExpression copy() {
+			return new DateIsGreaterThanExpression(first.copy(), second.copy());
+		}
+
+	}
+
+	protected static class DateIsGreaterThanOrEqualExpression extends DateDateExpressionWithBooleanResult {
+
+		public DateIsGreaterThanOrEqualExpression(DateExpression first, DateResult second) {
+			super(first, second);
+		}
+		private final static long serialVersionUID = 1l;
+
+		@Override
+		protected String getEquationOperator(DBDefinition db) {
+			return " >= ";
+		}
+
+		@Override
+		public boolean getIncludesNull() {
+			return false;
+		}
+
+		@Override
+		public DateIsGreaterThanOrEqualExpression copy() {
+			return new DateIsGreaterThanOrEqualExpression(first.copy(), second.copy());
+		}
+	}
+
+	protected class DateIsInExpression extends DateDateResultFunctionWithBooleanResult {
+
+		public DateIsInExpression(DateExpression leftHandSide, DateResult[] rightHandSide) {
+			super(leftHandSide, rightHandSide);
+		}
+		private final static long serialVersionUID = 1l;
+
+		@Override
+		public String toSQLString(DBDefinition db) {
+			List<String> sqlValues = new ArrayList<String>();
+			for (DateResult value : getValues()) {
+				sqlValues.add(value.toSQLString(db));
+			}
+			return db.doInTransform(getColumn().toSQLString(db), sqlValues);
+		}
+
+		@Override
+		public DateIsInExpression copy() {
+			final List<DateResult> values = getValues();
+			final List<DateResult> newValues = new ArrayList<>();
+			for (DateResult value : values) {
+				newValues.add(value.copy());
+			}
+			return new DateIsInExpression(
+					getColumn().copy(),
+					newValues.toArray(new DateResult[]{}));
+		}
+
+	}
+
+	protected static class DateIfDBNullExpression extends DateDateFunctionWithDateResult {
+
+		public DateIfDBNullExpression(DateExpression first, DateResult second) {
+			super(first, second);
+		}
+		private final static long serialVersionUID = 1l;
+
+		@Override
+		public String toSQLString(DBDefinition db) {
+			return db.doDateIfNullTransform(this.getFirst().toSQLString(db), getSecond().toSQLString(db));
+		}
+
+		@Override
+		public boolean getIncludesNull() {
+			return false;
+		}
+
+		@Override
+		public DateIfDBNullExpression copy() {
+			return new DateIfDBNullExpression(getFirst().copy(), getSecond().copy());
+		}
+	}
+
+	protected static class DateMaxExpression extends DateFunctionWithDateResult {
+
+		public DateMaxExpression(DateExpression only) {
+			super(only);
+		}
+		private final static long serialVersionUID = 1l;
+
+		@Override
+		protected String getFunctionName(DBDefinition db) {
+			return db.getMaxFunctionName();
+		}
+
+		@Override
+		public boolean isAggregator() {
+			return true;
+		}
+
+		@Override
+		public boolean getIncludesNull() {
+			return false;
+		}
+
+		@Override
+		public DateMaxExpression copy() {
+			return new DateMaxExpression((DateExpression) getInnerResult().copy());
+		}
+	}
+
+	protected static class DateMinExpression extends DateFunctionWithDateResult {
+
+		public DateMinExpression(DateExpression only) {
+			super(only);
+		}
+		private final static long serialVersionUID = 1l;
+
+		@Override
+		protected String getFunctionName(DBDefinition db) {
+			return db.getMinFunctionName();
+		}
+
+		@Override
+		public boolean isAggregator() {
+			return true;
+		}
+
+		@Override
+		public boolean getIncludesNull() {
+			return false;
+		}
+
+		@Override
+		public DateMinExpression copy() {
+			return new DateMinExpression((DateExpression) getInnerResult().copy());
+		}
+	}
+
+	protected static class DateAddSecondsExpression extends DateNumberExpressionWithDateResult {
+
+		public DateAddSecondsExpression(DateExpression dateExp, NumberExpression numbExp) {
+			super(dateExp, numbExp);
+		}
+		private final static long serialVersionUID = 1l;
+
+		private DateAddSecondsExpression(DateExpression dateExpression) {
+			throw new UnsupportedOperationException("Not supported yet.");
+		}
+
+		@Override
+		public boolean getIncludesNull() {
+			return false;
+		}
+
+		@Override
+		public String toSQLString(DBDefinition db) {
+			return db.doAddSecondsTransform(first.toSQLString(db), second.toSQLString(db));
+		}
+
+		@Override
+		public DateAddSecondsExpression copy() {
+			return new DateAddSecondsExpression((DateExpression) getInnerResult().copy());
+		}
+	}
+
+	protected static class DateAddIntegerSecondsExpression extends DateIntegerExpressionWithDateResult {
+
+		public DateAddIntegerSecondsExpression(DateExpression dateExp, IntegerExpression numbExp) {
+			super(dateExp, numbExp);
+		}
+		private final static long serialVersionUID = 1l;
+
+		@Override
+		public boolean getIncludesNull() {
+			return false;
+		}
+
+		@Override
+		public String toSQLString(DBDefinition db) {
+			return db.doAddSecondsTransform(first.toSQLString(db), second.toSQLString(db));
+		}
+
+		@Override
+		public DateAddIntegerSecondsExpression copy() {
+			return new DateAddIntegerSecondsExpression(first.copy(), second.copy());
+		}
+	}
+
+	protected static class DateAddIntegerMinutesExpression extends DateIntegerExpressionWithDateResult {
+
+		public DateAddIntegerMinutesExpression(DateExpression dateExp, IntegerExpression numbExp) {
+			super(dateExp, numbExp);
+		}
+		private final static long serialVersionUID = 1l;
+
+		@Override
+		public boolean getIncludesNull() {
+			return false;
+		}
+
+		@Override
+		public String toSQLString(DBDefinition db) {
+			return db.doAddMinutesTransform(first.toSQLString(db), second.toSQLString(db));
+		}
+
+		@Override
+		public DateAddIntegerMinutesExpression copy() {
+			return new DateAddIntegerMinutesExpression(first.copy(), second.copy());
+		}
+	}
+
+	protected static class DateAddIntegerDaysExpression extends DateIntegerExpressionWithDateResult {
+
+		public DateAddIntegerDaysExpression(DateExpression dateExp, IntegerExpression numbExp) {
+			super(dateExp, numbExp);
+		}
+		private final static long serialVersionUID = 1l;
+
+		@Override
+		public boolean getIncludesNull() {
+			return false;
+		}
+
+		@Override
+		public String toSQLString(DBDefinition db) {
+			return db.doAddDaysTransform(first.toSQLString(db), second.toSQLString(db));
+		}
+
+		@Override
+		public DateAddIntegerDaysExpression copy() {
+			return new DateAddIntegerDaysExpression(first.copy(), second.copy());
+		}
+	}
+
+	protected static class DateAddDaysExpression extends DateNumberExpressionWithDateResult {
+
+		public DateAddDaysExpression(DateExpression dateExp, NumberExpression numbExp) {
+			super(dateExp, numbExp);
+		}
+		private final static long serialVersionUID = 1l;
+
+		@Override
+		public boolean getIncludesNull() {
+			return false;
+		}
+
+		@Override
+		public String toSQLString(DBDefinition db) {
+			return db.doAddDaysTransform(first.toSQLString(db), second.toSQLString(db));
+		}
+
+
+		@Override
+		public DateAddDaysExpression copy() {
+			return new DateAddDaysExpression(first.copy(), second.copy());
+		}
+	}
+
+	protected static class DateAddIntegerHoursExpression extends DateIntegerExpressionWithDateResult {
+
+		public DateAddIntegerHoursExpression(DateExpression dateExp, IntegerExpression numbExp) {
+			super(dateExp, numbExp);
+		}
+		private final static long serialVersionUID = 1l;
+
+		@Override
+		public boolean getIncludesNull() {
+			return false;
+		}
+
+		@Override
+		public String toSQLString(DBDefinition db) {
+			return db.doAddHoursTransform(first.toSQLString(db), second.toSQLString(db));
+		}
+
+		@Override
+		public DateAddIntegerHoursExpression copy() {
+			return new DateAddIntegerHoursExpression(first.copy(), second.copy());
+		}
+	}
+
+	protected static class DateAddIntegerWeeksExpression extends DateIntegerExpressionWithDateResult {
+
+		public DateAddIntegerWeeksExpression(DateExpression dateExp, IntegerExpression numbExp) {
+			super(dateExp, numbExp);
+		}
+		private final static long serialVersionUID = 1l;
+
+		@Override
+		public boolean getIncludesNull() {
+			return false;
+		}
+
+		@Override
+		public String toSQLString(DBDefinition db) {
+			return db.doAddWeeksTransform(first.toSQLString(db), second.toSQLString(db));
+		}
+
+		@Override
+		public DateAddIntegerWeeksExpression copy() {
+			return new DateAddIntegerWeeksExpression(first.copy(), second.copy());
+		}
+	}
+
+	protected static class DateAddIntegerMonthsExpression extends DateIntegerExpressionWithDateResult {
+
+		public DateAddIntegerMonthsExpression(DateExpression dateExp, IntegerExpression numbExp) {
+			super(dateExp, numbExp);
+		}
+		private final static long serialVersionUID = 1l;
+
+		@Override
+		public boolean getIncludesNull() {
+			return false;
+		}
+
+		@Override
+		public String toSQLString(DBDefinition db) {
+			return db.doAddMonthsTransform(first.toSQLString(db), second.toSQLString(db));
+		}
+
+		@Override
+		public DateAddIntegerMonthsExpression copy() {
+			return new DateAddIntegerMonthsExpression(first.copy(), second.copy());
+		}
+	}
+
+	protected static class DateAddMonthsExpression extends DateNumberExpressionWithDateResult {
+
+		public DateAddMonthsExpression(DateExpression dateExp, NumberExpression numbExp) {
+			super(dateExp, numbExp);
+		}
+		private final static long serialVersionUID = 1l;
+
+		@Override
+		public boolean getIncludesNull() {
+			return false;
+		}
+
+		@Override
+		public String toSQLString(DBDefinition db) {
+			return db.doAddMonthsTransform(first.toSQLString(db), second.toSQLString(db));
+		}
+
+		@Override
+		public DateAddMonthsExpression copy() {
+			return new DateAddMonthsExpression(first.copy(),second.copy());
+		}
+	}
+
+	protected static class DateAddIntegerYearsExpression extends DateIntegerExpressionWithDateResult {
+
+		public DateAddIntegerYearsExpression(DateExpression dateExp, IntegerExpression numbExp) {
+			super(dateExp, numbExp);
+		}
+		private final static long serialVersionUID = 1l;
+
+		@Override
+		public boolean getIncludesNull() {
+			return false;
+		}
+
+		@Override
+		public String toSQLString(DBDefinition db) {
+			return db.doAddYearsTransform(first.toSQLString(db), second.toSQLString(db));
+		}
+
+		@Override
+		public DateAddIntegerYearsExpression copy() {
+			return new DateAddIntegerYearsExpression(first.copy(), second.copy());
+		}
+	}
+
+	protected static class DateDaysFromExpression extends DateDateFunctionWithNumberResult {
+
+		public DateDaysFromExpression(DateExpression dateExp, DateResult otherDateExp) {
+			super(dateExp, otherDateExp);
+		}
+		private final static long serialVersionUID = 1l;
+
+		@Override
+		public boolean getIncludesNull() {
+			return false;
+		}
+
+		@Override
+		public String toSQLString(DBDefinition db) {
+			return db.doDayDifferenceTransform(first.toSQLString(db), second.toSQLString(db));
+		}
+
+		@Override
+		public DateDaysFromExpression copy() {
+			return new DateDaysFromExpression(first.copy(), second.copy());
+		}
+	}
+
+	protected static class DateWeeksFromExpression extends DateDateFunctionWithNumberResult {
+
+		public DateWeeksFromExpression(DateExpression dateExp, DateResult otherDateExp) {
+			super(dateExp, otherDateExp);
+		}
+		private final static long serialVersionUID = 1l;
+
+		@Override
+		public boolean getIncludesNull() {
+			return false;
+		}
+
+		@Override
+		public String toSQLString(DBDefinition db) {
+			return db.doWeekDifferenceTransform(first.toSQLString(db), second.toSQLString(db));
+		}
+
+		@Override
+		public DateWeeksFromExpression copy() {
+			return new DateWeeksFromExpression(first.copy(), second.copy());
+		}
+	}
+
+	protected static class DateMonthsFromExpression extends DateDateFunctionWithNumberResult {
+
+		public DateMonthsFromExpression(DateExpression dateExp, DateResult otherDateExp) {
+			super(dateExp, otherDateExp);
+		}
+		private final static long serialVersionUID = 1l;
+
+		@Override
+		public boolean getIncludesNull() {
+			return false;
+		}
+
+		@Override
+		public String toSQLString(DBDefinition db) {
+			return db.doMonthDifferenceTransform(first.toSQLString(db), second.toSQLString(db));
+		}
+
+		@Override
+		public DateMonthsFromExpression copy() {
+			return new DateMonthsFromExpression(first.copy(), second.copy());
+		}
+	}
+
+	protected static class DateYearsFromExpression extends DateDateFunctionWithNumberResult {
+
+		public DateYearsFromExpression(DateExpression dateExp, DateResult otherDateExp) {
+			super(dateExp, otherDateExp);
+		}
+		private final static long serialVersionUID = 1l;
+
+		@Override
+		public boolean getIncludesNull() {
+			return false;
+		}
+
+		@Override
+		public String toSQLString(DBDefinition db) {
+			return db.doYearDifferenceTransform(first.toSQLString(db), second.toSQLString(db));
+		}
+
+		@Override
+		public DateYearsFromExpression copy() {
+			return new DateYearsFromExpression(first.copy(), second.copy());
+		}
+	}
+
+	protected static class DateHoursFromExpression extends DateDateFunctionWithNumberResult {
+
+		public DateHoursFromExpression(DateExpression dateExp, DateResult otherDateExp) {
+			super(dateExp, otherDateExp);
+		}
+		private final static long serialVersionUID = 1l;
+
+		@Override
+		public boolean getIncludesNull() {
+			return false;
+		}
+
+		@Override
+		public String toSQLString(DBDefinition db) {
+			return db.doHourDifferenceTransform(first.toSQLString(db), second.toSQLString(db));
+		}
+
+		@Override
+		public DateHoursFromExpression copy() {
+			return new DateHoursFromExpression(first.copy(), second.copy());
+		}
+	}
+
+	protected static class DateMinutesFromExpression extends DateDateFunctionWithNumberResult {
+
+		public DateMinutesFromExpression(DateExpression dateExp, DateResult otherDateExp) {
+			super(dateExp, otherDateExp);
+		}
+		private final static long serialVersionUID = 1l;
+
+		@Override
+		public boolean getIncludesNull() {
+			return false;
+		}
+
+		@Override
+		public String toSQLString(DBDefinition db) {
+			return db.doMinuteDifferenceTransform(first.toSQLString(db), second.toSQLString(db));
+		}
+
+		@Override
+		public DateMinutesFromExpression copy() {
+			return new DateMinutesFromExpression(first.copy(), second.copy());
+		}
+	}
+
+	protected static class DateSecondsFromExpression extends DateDateFunctionWithNumberResult {
+
+		public DateSecondsFromExpression(DateExpression dateExp, DateResult otherDateExp) {
+			super(dateExp, otherDateExp);
+		}
+		private final static long serialVersionUID = 1l;
+
+		@Override
+		public boolean getIncludesNull() {
+			return false;
+		}
+
+		@Override
+		public String toSQLString(DBDefinition db) {
+			return db.doSecondDifferenceTransform(first.toSQLString(db), second.toSQLString(db));
+		}
+
+		@Override
+		public DateSecondsFromExpression copy() {
+			return new DateSecondsFromExpression(first.copy(), second.copy());
+		}
+	}
+
+	protected static class DateEndOfMonthExpression extends DateExpression {
+
+		public DateEndOfMonthExpression(DateResult dateVariable) {
+			super(dateVariable);
+		}
+		private final static long serialVersionUID = 1l;
+
+		@Override
+		public String toSQLString(DBDefinition db) {
+			try {
+				return db.doEndOfMonthTransform(this.getInnerResult().toSQLString(db));
+			} catch (UnsupportedOperationException exp) {
+				DateExpression only = (DateExpression) getInnerResult();
+				return only
+						.addDays(only.day().minus(1).bracket().times(-1).integerResult())
+						.addMonths(1).addDays(-1).toSQLString(db);
+			}
+		}
+
+		@Override
+		public DateEndOfMonthExpression copy() {
+			return new DateEndOfMonthExpression((DateResult) getInnerResult().copy());
+		}
+	}
+
+	protected static class DateDayOfWeekExpression extends DateExpressionWithNumberResult {
+
+		public DateDayOfWeekExpression(DateExpression only) {
+			super(only);
+		}
+		private final static long serialVersionUID = 1l;
+
+		@Override
+		public String toSQLString(DBDefinition db) {
+			return db.doDayOfWeekTransform(this.getInnerResult().toSQLString(db));
+		}
+
+		@Override
+		public DateDayOfWeekExpression copy() {
+			return new DateDayOfWeekExpression((DateExpression) getInnerResult().copy());
+		}
+	}
+
+	protected static class DateLeastOfExpression extends DateArrayFunctionWithDateResult {
+
+		public DateLeastOfExpression(DateResult[] rightHandSide) {
+			super(rightHandSide);
+		}
+		private final static long serialVersionUID = 1l;
+
+		@Override
+		public String toSQLString(DBDefinition db) {
+			List<String> strs = new ArrayList<String>();
+			for (DateResult num : this.values) {
+				strs.add(num.toSQLString(db));
+			}
+			return db.doLeastOfTransformation(strs);
+		}
+
+		@Override
+		protected String getFunctionName(DBDefinition db) {
+			return db.getLeastOfFunctionName();
+		}
+
+		@Override
+		public boolean getIncludesNull() {
+			return true;
+		}
+
+		@Override
+		public DateLeastOfExpression copy() {
+			List<DateResult> newValues = new ArrayList<>();
+			for (DateResult value : values) {
+				newValues.add(value.copy());
+			}
+			return new DateLeastOfExpression(newValues.toArray(new DateResult[]{}));
+		}
+	}
+
+	protected static class DateGreatestOfExpression extends DateArrayFunctionWithDateResult {
+
+		public DateGreatestOfExpression(DateResult[] rightHandSide) {
+			super(rightHandSide);
+		}
+		private final static long serialVersionUID = 1l;
+
+		@Override
+		public String toSQLString(DBDefinition db) {
+			List<String> strs = new ArrayList<String>();
+			for (DateResult num : this.values) {
+				strs.add(num.toSQLString(db));
+			}
+			return db.doGreatestOfTransformation(strs);
+		}
+
+		@Override
+		protected String getFunctionName(DBDefinition db) {
+			return db.getGreatestOfFunctionName();
+		}
+
+		@Override
+		public DateGreatestOfExpression copy() {
+			List<DateResult> newValues = new ArrayList<>();
+			for (DateResult value : values) {
+				newValues.add(value.copy());
+			}
+			return new DateGreatestOfExpression(newValues.toArray(new DateResult[]{}));
 		}
 	}
 }

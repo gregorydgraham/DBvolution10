@@ -12,11 +12,13 @@ import nz.co.gregs.dbvolution.DBQuery;
 import nz.co.gregs.dbvolution.DBQueryRow;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.annotations.DBColumn;
+import nz.co.gregs.dbvolution.columns.ColumnProvider;
 import nz.co.gregs.dbvolution.columns.IntegerColumn;
 import nz.co.gregs.dbvolution.example.CarCompany;
 import nz.co.gregs.dbvolution.example.Marque;
 import nz.co.gregs.dbvolution.expressions.BooleanExpression;
 import nz.co.gregs.dbvolution.expressions.IntegerExpression;
+import nz.co.gregs.dbvolution.expressions.RangeExpression;
 import nz.co.gregs.dbvolution.expressions.StringExpression;
 import nz.co.gregs.dbvolution.generic.AbstractTest;
 import nz.co.gregs.dbvolution.results.IntegerResult;
@@ -399,32 +401,45 @@ WHERE rownumber = (SELECT (COUNT(*)+1) DIV 2 FROM (select * FROM marque WHERE up
 ;
 		 */
 		final Marque table1 = new Marque();
-		final IntegerColumn t1UpdateCount = table1.column(table1.updateCount);
-		final IntegerColumn t1UidMarque = table1.column(table1.uidMarque);
+		final RangeExpression t1UpdateCount = table1.column(table1.updateCount);
+		final RangeExpression t1UidMarque = table1.column(table1.uidMarque);
 
-		Marque table2 = new Marque();
-		table2.setTableVariantIdentifier("a2");
-		final IntegerColumn t2UpdateCount = table2.column(table2.updateCount);
-		final IntegerColumn t2UIDMarque = table2.column(table2.uidMarque);
+		DBQuery dbQuery = database.getDBQuery(table1);
 
-		DBQuery dbQuery = database
-				.getDBQuery(table1)
-				.add(table2)
-				.setBlankQueryAllowed(true)
-				.setCartesianJoinsAllowed(true);
-		
+		final RangeExpression t2UpdateCount = (RangeExpression) t1UpdateCount.copy();
+		final RangeExpression t2UIDMarque = (RangeExpression) t1UidMarque.copy();
+		Set<DBRow> tablesInvolved = t2UpdateCount.getTablesInvolved();
+		for (DBRow table : tablesInvolved) {
+			table.setTableVariantIdentifier("a2");
+			dbQuery.addOptional(table);
+		}
+		tablesInvolved = t2UIDMarque.getTablesInvolved();
+		for (DBRow table : tablesInvolved) {
+			table.setTableVariantIdentifier("a2");
+			dbQuery.addOptional(table);
+		}
+
+		dbQuery.setBlankQueryAllowed(true);
+
 		dbQuery.addCondition(
-				BooleanExpression.seekLessThan(
+				BooleanExpression.seekGreaterThan(
 						t1UpdateCount, t2UpdateCount,
 						t1UidMarque, t2UIDMarque
 				)
 		);
-		dbQuery.addExpressionColumn(this, t1UpdateCount.count().asExpressionColumn());
+		
+		final DBInteger t1CounterExpr = t1UpdateCount.count().asExpressionColumn();
+		dbQuery.addExpressionColumn("Counter"+this, t1CounterExpr);
+		ColumnProvider t1CounterColumn = dbQuery.column(t1CounterExpr);
+		ColumnProvider t1UpdateCountColumn = table1.column(table1.updateCount);
+		ColumnProvider t1UidMarqueColumn = table1.column(table1.uidMarque);
 		table1.updateCount.setSortOrderDescending();
 		table1.uidMarque.setSortOrderDescending();
-		dbQuery.setSortOrder(t1UpdateCount, t1UidMarque);
-		dbQuery.setReturnFields(t1UpdateCount, t1UidMarque);
+		dbQuery.setSortOrder(t1UpdateCountColumn, t1UidMarqueColumn);
+		dbQuery.setReturnFields(t1UpdateCountColumn, t1CounterColumn,t1UidMarqueColumn);
 		dbQuery.printSQLForQuery();
+		
+		
 	}
 
 	public static class StatsIntegerTest extends Marque {

@@ -22,7 +22,6 @@ import nz.co.gregs.dbvolution.results.Polygon2DResult;
 import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.geom.Polygon;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -253,7 +252,7 @@ public class Polygon2DExpression extends Spatial2DExpression<Polygon, Polygon2DR
 
 	@Override
 	public Polygon2DExpression copy() {
-		return isNullSafetyTerminator() ? nullPolygon2D() : new Polygon2DExpression(getInnerResult());
+		return isNullSafetyTerminator() ? nullPolygon2D() : new Polygon2DExpression((AnyResult<?>) getInnerResult().copy());
 	}
 
 	@Override
@@ -284,14 +283,7 @@ public class Polygon2DExpression extends Spatial2DExpression<Polygon, Polygon2DR
 	 * @return a boolean value that is true if the polygons interact in any way.
 	 */
 	public BooleanExpression intersects(Polygon2DResult rightHandSide) {
-		return new BooleanExpression(new PolygonPolygonWithBooleanResult(this, new Polygon2DExpression(rightHandSide)) {
-			private final static long serialVersionUID = 1l;
-
-			@Override
-			public String doExpressionTransform(DBDefinition db) {
-				return db.doPolygon2DIntersectsTransform(getFirst().toSQLString(db), getSecond().toSQLString(db));
-			}
-		});
+		return new BooleanExpression(new IntersectsExpression(this, new Polygon2DExpression(rightHandSide)));
 	}
 
 	/**
@@ -317,14 +309,7 @@ public class Polygon2DExpression extends Spatial2DExpression<Polygon, Polygon2DR
 	 * @return a boolean value that is true if the polygons interact in any way.
 	 */
 	public Polygon2DExpression intersection(Polygon2DResult rightHandSide) {
-		return new Polygon2DExpression(new PolygonPolygonWithPolygon2DResult(this, new Polygon2DExpression(rightHandSide)) {
-			private final static long serialVersionUID = 1l;
-
-			@Override
-			public String doExpressionTransform(DBDefinition db) {
-				return db.doPolygon2DIntersectionTransform(getFirst().toSQLString(db), getSecond().toSQLString(db));
-			}
-		});
+		return new Polygon2DExpression(new IntersectionExpression(this, new Polygon2DExpression(rightHandSide)));
 	}
 
 	/**
@@ -348,77 +333,11 @@ public class Polygon2DExpression extends Spatial2DExpression<Polygon, Polygon2DR
 	}
 
 	private static Polygon2DExpression polygon2DFromPoint2DExpressionArray(Point2DExpression... pointExpressions) {
-		return new Polygon2DExpression(new Point2dArrayFunctionWithPolygon2DResult(pointExpressions) {
-			private final static long serialVersionUID = 1l;
-
-			@Override
-			protected String doExpressionTransform(DBDefinition db) {
-				Point2DExpression[] allPoints = getAllPoints();
-				List<String> pointSQL = new ArrayList<String>();
-				for (Point2DExpression pointExpr : allPoints) {
-					pointSQL.add(pointExpr.toSQLString(db));
-				}
-				try {
-					return db.transformPoint2DArrayToDatabasePolygon2DFormat(pointSQL);
-				} catch (UnsupportedOperationException ex) {
-					StringExpression newPolygon = StringExpression.value("POLYGON ((");
-					String separator = "";
-
-					for (Point2DExpression point : allPoints) {
-						newPolygon = newPolygon.append(separator).append(point.getX()).append(" ").append(point.getY());
-						separator = " , ";
-					}
-					final Point2DExpression firstPoint = allPoints[0];
-					newPolygon = newPolygon.append(separator).append(firstPoint.getX()).append(" ").append(firstPoint.getY()).append("))");
-					return newPolygon.toSQLString(db);
-				}
-			}
-		});
+		return new Polygon2DExpression(new CreatePolygon2DFromPoint2DArrayExpression(pointExpressions));
 	}
 
 	private static Polygon2DExpression polygon2DFromCoordinateArray(NumberExpression... coordExpressions) {
-		return new Polygon2DExpression(new CoordinateArrayFunctionWithPolygon2DResult(coordExpressions) {
-			private final static long serialVersionUID = 1l;
-
-			@Override
-			protected String doExpressionTransform(DBDefinition db) {
-				NumberExpression[] allCoords = getAllCoordinates();
-				List<String> pointSQL = new ArrayList<String>();
-				for (NumberExpression pointExpr : allCoords) {
-					pointSQL.add(pointExpr.toSQLString(db));
-				}
-				try {
-					return db.transformCoordinateArrayToDatabasePolygon2DFormat(pointSQL);
-				} catch (UnsupportedOperationException ex) {
-					StringExpression newPolygon = StringExpression.value("POLYGON ((");
-					StringExpression lastPoint = StringExpression.value("");
-					String separator = "";
-
-					for (NumberExpression coord : allCoords) {
-						newPolygon = newPolygon.append(separator).append(coord);
-						if (separator.equals(" ")) {
-							lastPoint = lastPoint.append(separator).append(coord);
-						} else {
-							lastPoint = lastPoint.expression(coord);
-						}
-						switch (separator) {
-							case " ":
-								separator = ", ";
-								break;
-							default:
-								separator = " ";
-								break;
-						}
-					}
-					final StringExpression firstPoint = allCoords[0].append(" ").append(allCoords[1]);
-					if (!firstPoint.toSQLString(db).equals(lastPoint.toSQLString(db))) {
-						newPolygon = newPolygon.append(separator).append(firstPoint).append("))");
-					}
-					newPolygon = newPolygon.append("))");
-					return newPolygon.toSQLString(db);
-				}
-			}
-		});
+		return new Polygon2DExpression(new CreatePolygon2DFromCoordinateArrayExpression(coordExpressions));
 	}
 
 	/**
@@ -437,14 +356,7 @@ public class Polygon2DExpression extends Spatial2DExpression<Polygon, Polygon2DR
 
 	@Override
 	public BooleanExpression is(Polygon2DResult rightHandSide) {
-		return new BooleanExpression(new PolygonPolygonWithBooleanResult(this, new Polygon2DExpression(rightHandSide)) {
-			private final static long serialVersionUID = 1l;
-
-			@Override
-			public String doExpressionTransform(DBDefinition db) {
-				return db.doPolygon2DEqualsTransform(getFirst().toSQLString(db), getSecond().toSQLString(db));
-			}
-		});
+		return new BooleanExpression(new IsExpression(this, new Polygon2DExpression(rightHandSide)));
 	}
 
 	/**
@@ -470,14 +382,7 @@ public class Polygon2DExpression extends Spatial2DExpression<Polygon, Polygon2DR
 	 * @return a boolean value
 	 */
 	public BooleanExpression contains(Point2DResult rightHandSide) {
-		return new BooleanExpression(new PolygonPointWithBooleanResult(this, new Point2DExpression(rightHandSide)) {
-			private final static long serialVersionUID = 1l;
-
-			@Override
-			public String doExpressionTransform(DBDefinition db) {
-				return db.doPolygon2DContainsPoint2DTransform(getFirst().toSQLString(db), getSecond().toSQLString(db));
-			}
-		});
+		return new BooleanExpression(new ContainsPoint2DExpression(this, new Point2DExpression(rightHandSide)));
 	}
 
 	/**
@@ -515,14 +420,7 @@ public class Polygon2DExpression extends Spatial2DExpression<Polygon, Polygon2DR
 	 * @return a boolean value
 	 */
 	public BooleanExpression contains(Polygon2DResult rightHandSide) {
-		return new BooleanExpression(new PolygonPolygonWithBooleanResult(this, new Polygon2DExpression(rightHandSide)) {
-			private final static long serialVersionUID = 1l;
-
-			@Override
-			public String doExpressionTransform(DBDefinition db) {
-				return db.doPolygon2DContainsPolygon2DTransform(getFirst().toSQLString(db), getSecond().toSQLString(db));
-			}
-		});
+		return new BooleanExpression(new ContainsPolygon2DExpression(this, new Polygon2DExpression(rightHandSide)));
 	}
 
 	/**
@@ -550,14 +448,7 @@ public class Polygon2DExpression extends Spatial2DExpression<Polygon, Polygon2DR
 	 * anyway, otherwise FALSE.
 	 */
 	public BooleanExpression doesNotIntersect(Polygon2DResult rightHandSide) {
-		return new BooleanExpression(new PolygonPolygonWithBooleanResult(this, new Polygon2DExpression(rightHandSide)) {
-			private final static long serialVersionUID = 1l;
-
-			@Override
-			public String doExpressionTransform(DBDefinition db) {
-				return db.doPolygon2DDoesNotIntersectTransform(getFirst().toSQLString(db), getSecond().toSQLString(db));
-			}
-		});
+		return new BooleanExpression(new DoesNotIntersectPolygon2D(this, new Polygon2DExpression(rightHandSide)));
 	}
 
 	/**
@@ -610,22 +501,7 @@ public class Polygon2DExpression extends Spatial2DExpression<Polygon, Polygon2DR
 	 */
 	public BooleanExpression overlaps(Polygon2DResult rightHandSide) {
 		return new BooleanExpression(
-				new PolygonPolygonWithBooleanResult(this, new Polygon2DExpression(rightHandSide)) {
-			private final static long serialVersionUID = 1l;
-
-			@Override
-			public String doExpressionTransform(DBDefinition db) {
-				try {
-					return db.doPolygon2DOverlapsTransform(getFirst().toSQLString(db), getSecond().toSQLString(db));
-				} catch (UnsupportedOperationException ex) {
-					return BooleanExpression.allOf(
-							this.getFirst().intersects(getSecond()),
-							this.getFirst().intersection(getSecond()).isNot(this.getFirst()),
-							this.getFirst().intersection(getSecond()).isNot(this.getSecond())
-					).toSQLString(db);
-				}
-			}
-		});
+				new OverlapsPolygon2DExpression(this, new Polygon2DExpression(rightHandSide)));
 	}
 
 	/**
@@ -659,14 +535,7 @@ public class Polygon2DExpression extends Spatial2DExpression<Polygon, Polygon2DR
 	 * touch without overlapping
 	 */
 	public BooleanExpression touches(Polygon2DResult rightHandSide) {
-		return new BooleanExpression(new PolygonPolygonWithBooleanResult(this, new Polygon2DExpression(rightHandSide)) {
-			private final static long serialVersionUID = 1l;
-
-			@Override
-			public String doExpressionTransform(DBDefinition db) {
-				return db.doPolygon2DTouchesTransform(getFirst().toSQLString(db), getSecond().toSQLString(db));
-			}
-		});
+		return new BooleanExpression(new TouchesPolygon2DExpression(this, new Polygon2DExpression(rightHandSide)));
 	}
 
 	/**
@@ -710,74 +579,27 @@ public class Polygon2DExpression extends Spatial2DExpression<Polygon, Polygon2DR
 	 * @return a boolean value
 	 */
 	public BooleanExpression within(Polygon2DResult rightHandSide) {
-		return new BooleanExpression(new PolygonPolygonWithBooleanResult(this, new Polygon2DExpression(rightHandSide)) {
-			private final static long serialVersionUID = 1l;
-
-			@Override
-			public String doExpressionTransform(DBDefinition db) {
-				return db.doPolygon2DWithinTransform(getFirst().toSQLString(db), getSecond().toSQLString(db));
-			}
-		});
+		return new BooleanExpression(new WithinPolygon2DExpression(this, new Polygon2DExpression(rightHandSide)));
 	}
 
 	@Override
 	public NumberExpression measurableDimensions() {
-		return new NumberExpression(new Polygon2DFunctionWithNumberResult(this) {
-			private final static long serialVersionUID = 1l;
-
-			@Override
-			public String doExpressionTransform(DBDefinition db) {
-				return db.doPolygon2DMeasurableDimensionsTransform(getFirst().toSQLString(db));
-			}
-		});
+		return new NumberExpression(new MeasurableDimensionsExpression(this));
 	}
 
 	@Override
 	public NumberExpression spatialDimensions() {
-		return new NumberExpression(new Polygon2DFunctionWithNumberResult(this) {
-			private final static long serialVersionUID = 1l;
-
-			@Override
-			public String doExpressionTransform(DBDefinition db) {
-				try {
-					return db.doPolygon2DSpatialDimensionsTransform(getFirst().toSQLString(db));
-				} catch (UnsupportedOperationException unsupported) {
-					return NumberExpression.value(2).toSQLString(db);
-				}
-			}
-		});
+		return new NumberExpression(new SpatialDimensionsExpression(this));
 	}
 
 	@Override
 	public BooleanExpression hasMagnitude() {
-		return new BooleanExpression(new PolygonWithBooleanResult(this) {
-			private final static long serialVersionUID = 1l;
-
-			@Override
-			public String doExpressionTransform(DBDefinition db) {
-				try {
-					return db.doPolygon2DHasMagnitudeTransform(getFirst().toSQLString(db));
-				} catch (UnsupportedOperationException unsupported) {
-					return BooleanExpression.falseExpression().toSQLString(db);
-				}
-			}
-		});
+		return new BooleanExpression(new HasMagnitudeExpression(this));
 	}
 
 	@Override
 	public NumberExpression magnitude() {
-		return new NumberExpression(new Polygon2DFunctionWithNumberResult(this) {
-			private final static long serialVersionUID = 1l;
-
-			@Override
-			public String doExpressionTransform(DBDefinition db) {
-				try {
-					return db.doPolygon2DGetMagnitudeTransform(getFirst().toSQLString(db));
-				} catch (UnsupportedOperationException unsupported) {
-					return nullExpression().toSQLString(db);
-				}
-			}
-		});
+		return new NumberExpression(new MagnitudeExpression(this));
 	}
 
 	/**
@@ -789,37 +611,12 @@ public class Polygon2DExpression extends Spatial2DExpression<Polygon, Polygon2DR
 	 * @return the area covered by the polygon in units.
 	 */
 	public NumberExpression area() {
-		return new NumberExpression(new Polygon2DFunctionWithNumberResult(this) {
-			private final static long serialVersionUID = 1l;
-
-			@Override
-			public String doExpressionTransform(DBDefinition db) {
-				return db.doPolygon2DGetAreaTransform(getFirst().toSQLString(db));
-			}
-		});
+		return new NumberExpression(new AreaExpression(this));
 	}
 
 	@Override
 	public Polygon2DExpression boundingBox() {
-		return new Polygon2DExpression(new Polygon2DFunctionWithPolygon2DResult(this) {
-			private final static long serialVersionUID = 1l;
-
-			@Override
-			public String doExpressionTransform(DBDefinition db) {
-				try {
-					return db.doPolygon2DGetBoundingBoxTransform(getFirst().toSQLString(db));
-				} catch (UnsupportedOperationException unsupported) {
-					final Polygon2DExpression first = getFirst();
-					final NumberExpression maxX = first.maxX();
-					final NumberExpression maxY = first.maxY();
-					final NumberExpression minX = first.minX();
-					final NumberExpression minY = first.minY();
-					return Polygon2DExpression
-							.value(minX, minY, maxX, minY, maxX, maxY, minX, maxY, minX, minY)
-							.toSQLString(db);
-				}
-			}
-		});
+		return new Polygon2DExpression(new BoundingBoxExpression(this));
 	}
 
 	/**
@@ -836,14 +633,7 @@ public class Polygon2DExpression extends Spatial2DExpression<Polygon, Polygon2DR
 	 * @return a Line2DExpression
 	 */
 	public Line2DExpression exteriorRing() {
-		Line2DExpression exteriorRingExpr = new Line2DExpression(new Polygon2DFunctionWithLine2DResult(this) {
-			private final static long serialVersionUID = 1l;
-
-			@Override
-			public String doExpressionTransform(DBDefinition db) {
-				return db.doPolygon2DGetExteriorRingTransform(getFirst().toSQLString(db));
-			}
-		});
+		Line2DExpression exteriorRingExpr = new Line2DExpression(new ExteriorRingExpression(this));
 		return exteriorRingExpr;
 	}
 
@@ -868,66 +658,31 @@ public class Polygon2DExpression extends Spatial2DExpression<Polygon, Polygon2DR
 
 	@Override
 	public StringExpression stringResult() {
-		StringExpression stringResultExpr = new StringExpression(new Polygon2DFunctionWithStringResult(this) {
-			private final static long serialVersionUID = 1l;
-
-			@Override
-			public String doExpressionTransform(DBDefinition db) {
-				return db.doPolygon2DAsTextTransform(getFirst().toSQLString(db));
-			}
-		});
+		StringExpression stringResultExpr = new StringExpression(new StringResultExpression(this));
 		return stringResultExpr;
 	}
 
 	@Override
 	public NumberExpression maxX() {
-		NumberExpression expr = new NumberExpression(new Polygon2DFunctionWithNumberResult(this) {
-			private final static long serialVersionUID = 1l;
-
-			@Override
-			public String doExpressionTransform(DBDefinition db) {
-				return db.doPolygon2DGetMaxXTransform(getFirst().toSQLString(db));
-			}
-		});
+		NumberExpression expr = new NumberExpression(new MaxXExpression(this));
 		return expr;
 	}
 
 	@Override
 	public NumberExpression maxY() {
-		NumberExpression expr = new NumberExpression(new Polygon2DFunctionWithNumberResult(this) {
-			private final static long serialVersionUID = 1l;
-
-			@Override
-			public String doExpressionTransform(DBDefinition db) {
-				return db.doPolygon2DGetMaxYTransform(getFirst().toSQLString(db));
-			}
-		});
+		NumberExpression expr = new NumberExpression(new MaxYExpression(this));
 		return expr;
 	}
 
 	@Override
 	public NumberExpression minX() {
-		NumberExpression expr = new NumberExpression(new Polygon2DFunctionWithNumberResult(this) {
-			private final static long serialVersionUID = 1l;
-
-			@Override
-			public String doExpressionTransform(DBDefinition db) {
-				return db.doPolygon2DGetMinXTransform(getFirst().toSQLString(db));
-			}
-		});
+		NumberExpression expr = new NumberExpression(new MinXExpression(this));
 		return expr;
 	}
 
 	@Override
 	public NumberExpression minY() {
-		NumberExpression expr = new NumberExpression(new Polygon2DFunctionWithNumberResult(this) {
-			private final static long serialVersionUID = 1l;
-
-			@Override
-			public String doExpressionTransform(DBDefinition db) {
-				return db.doPolygon2DGetMinYTransform(getFirst().toSQLString(db));
-			}
-		});
+		NumberExpression expr = new NumberExpression(new MinYExpression(this));
 		return expr;
 	}
 
@@ -992,14 +747,7 @@ public class Polygon2DExpression extends Spatial2DExpression<Polygon, Polygon2DR
 	@Override
 	public Polygon2DExpression nullExpression() {
 
-		return new Polygon2DExpression() {
-			private final static long serialVersionUID = 1l;
-
-			@Override
-			public String toSQLString(DBDefinition db) {
-				return db.getNull();
-			}
-		};
+		return new NullExpression();
 	}
 
 	public static Polygon2DResult value(DBPolygon2D value) {
@@ -1013,8 +761,8 @@ public class Polygon2DExpression extends Spatial2DExpression<Polygon, Polygon2DR
 
 	private static abstract class PolygonPolygonWithBooleanResult extends BooleanExpression {
 
-		private Polygon2DExpression first;
-		private Polygon2DExpression second;
+		private final Polygon2DExpression first;
+		private final Polygon2DExpression second;
 		private boolean requiresNullProtection;
 
 		PolygonPolygonWithBooleanResult(Polygon2DExpression first, Polygon2DExpression second) {
@@ -1029,7 +777,7 @@ public class Polygon2DExpression extends Spatial2DExpression<Polygon, Polygon2DR
 			return first;
 		}
 
-		Polygon2DResult getSecond() {
+		Polygon2DExpression getSecond() {
 			return second;
 		}
 
@@ -1040,19 +788,6 @@ public class Polygon2DExpression extends Spatial2DExpression<Polygon, Polygon2DR
 			} else {
 				return doExpressionTransform(db);
 			}
-		}
-
-		@Override
-		public PolygonPolygonWithBooleanResult copy() {
-			PolygonPolygonWithBooleanResult newInstance;
-			try {
-				newInstance = getClass().newInstance();
-			} catch (InstantiationException | IllegalAccessException ex) {
-				throw new RuntimeException(ex);
-			}
-			newInstance.first = first.copy();
-			newInstance.second = second.copy();
-			return newInstance;
 		}
 
 		protected abstract String doExpressionTransform(DBDefinition db);
@@ -1082,8 +817,8 @@ public class Polygon2DExpression extends Spatial2DExpression<Polygon, Polygon2DR
 
 	private static abstract class PolygonPolygonWithPolygon2DResult extends Polygon2DExpression {
 
-		private Polygon2DExpression first;
-		private Polygon2DExpression second;
+		private final Polygon2DExpression first;
+		private final Polygon2DExpression second;
 		private boolean requiresNullProtection;
 
 		PolygonPolygonWithPolygon2DResult(Polygon2DExpression first, Polygon2DExpression second) {
@@ -1098,7 +833,7 @@ public class Polygon2DExpression extends Spatial2DExpression<Polygon, Polygon2DR
 			return first;
 		}
 
-		Polygon2DResult getSecond() {
+		Polygon2DExpression getSecond() {
 			return second;
 		}
 
@@ -1109,19 +844,6 @@ public class Polygon2DExpression extends Spatial2DExpression<Polygon, Polygon2DR
 			} else {
 				return doExpressionTransform(db);
 			}
-		}
-
-		@Override
-		public PolygonPolygonWithPolygon2DResult copy() {
-			PolygonPolygonWithPolygon2DResult newInstance;
-			try {
-				newInstance = getClass().newInstance();
-			} catch (InstantiationException | IllegalAccessException ex) {
-				throw new RuntimeException(ex);
-			}
-			newInstance.first = first.copy();
-			newInstance.second = second.copy();
-			return newInstance;
 		}
 
 		protected abstract String doExpressionTransform(DBDefinition db);
@@ -1151,7 +873,7 @@ public class Polygon2DExpression extends Spatial2DExpression<Polygon, Polygon2DR
 
 	private static abstract class PolygonWithBooleanResult extends BooleanExpression {
 
-		private Polygon2DExpression first;
+		private final Polygon2DExpression first;
 		private boolean requiresNullProtection;
 
 		PolygonWithBooleanResult(Polygon2DExpression first) {
@@ -1169,18 +891,6 @@ public class Polygon2DExpression extends Spatial2DExpression<Polygon, Polygon2DR
 			} else {
 				return doExpressionTransform(db);
 			}
-		}
-
-		@Override
-		public PolygonWithBooleanResult copy() {
-			PolygonWithBooleanResult newInstance;
-			try {
-				newInstance = getClass().newInstance();
-			} catch (InstantiationException | IllegalAccessException ex) {
-				throw new RuntimeException(ex);
-			}
-			newInstance.first = first.copy();
-			return newInstance;
 		}
 
 		protected abstract String doExpressionTransform(DBDefinition db);
@@ -1207,8 +917,8 @@ public class Polygon2DExpression extends Spatial2DExpression<Polygon, Polygon2DR
 
 	private static abstract class PolygonPointWithBooleanResult extends BooleanExpression {
 
-		private Polygon2DExpression first;
-		private Point2DExpression second;
+		private final Polygon2DExpression first;
+		private final Point2DExpression second;
 		private boolean requiresNullProtection;
 
 		PolygonPointWithBooleanResult(Polygon2DExpression first, Point2DExpression second) {
@@ -1234,19 +944,6 @@ public class Polygon2DExpression extends Spatial2DExpression<Polygon, Polygon2DR
 			} else {
 				return doExpressionTransform(db);
 			}
-		}
-
-		@Override
-		public PolygonPointWithBooleanResult copy() {
-			PolygonPointWithBooleanResult newInstance;
-			try {
-				newInstance = getClass().newInstance();
-			} catch (InstantiationException | IllegalAccessException ex) {
-				throw new RuntimeException(ex);
-			}
-			newInstance.first = first.copy();
-			newInstance.second = second.copy();
-			return newInstance;
 		}
 
 		protected abstract String doExpressionTransform(DBDefinition db);
@@ -1276,7 +973,7 @@ public class Polygon2DExpression extends Spatial2DExpression<Polygon, Polygon2DR
 
 	private static abstract class Polygon2DFunctionWithNumberResult extends NumberExpression {
 
-		private Polygon2DExpression first;
+		private final Polygon2DExpression first;
 		private boolean requiresNullProtection;
 
 		Polygon2DFunctionWithNumberResult(Polygon2DExpression first) {
@@ -1294,18 +991,6 @@ public class Polygon2DExpression extends Spatial2DExpression<Polygon, Polygon2DR
 			} else {
 				return doExpressionTransform(db);
 			}
-		}
-
-		@Override
-		public Polygon2DFunctionWithNumberResult copy() {
-			Polygon2DFunctionWithNumberResult newInstance;
-			try {
-				newInstance = getClass().newInstance();
-			} catch (InstantiationException | IllegalAccessException ex) {
-				throw new RuntimeException(ex);
-			}
-			newInstance.first = first.copy();
-			return newInstance;
 		}
 
 		protected abstract String doExpressionTransform(DBDefinition db);
@@ -1332,7 +1017,7 @@ public class Polygon2DExpression extends Spatial2DExpression<Polygon, Polygon2DR
 
 	private static abstract class Polygon2DFunctionWithPolygon2DResult extends Polygon2DExpression {
 
-		private Polygon2DExpression first;
+		private final Polygon2DExpression first;
 		private boolean requiresNullProtection;
 
 		Polygon2DFunctionWithPolygon2DResult(Polygon2DExpression first) {
@@ -1350,18 +1035,6 @@ public class Polygon2DExpression extends Spatial2DExpression<Polygon, Polygon2DR
 			} else {
 				return doExpressionTransform(db);
 			}
-		}
-
-		@Override
-		public Polygon2DFunctionWithPolygon2DResult copy() {
-			Polygon2DFunctionWithPolygon2DResult newInstance;
-			try {
-				newInstance = getClass().newInstance();
-			} catch (InstantiationException | IllegalAccessException ex) {
-				throw new RuntimeException(ex);
-			}
-			newInstance.first = first.copy();
-			return newInstance;
 		}
 
 		protected abstract String doExpressionTransform(DBDefinition db);
@@ -1388,7 +1061,7 @@ public class Polygon2DExpression extends Spatial2DExpression<Polygon, Polygon2DR
 
 	private static abstract class Polygon2DFunctionWithLine2DResult extends Line2DExpression {
 
-		private Polygon2DExpression first;
+		private final Polygon2DExpression first;
 		private boolean requiresNullProtection;
 
 		Polygon2DFunctionWithLine2DResult(Polygon2DExpression first) {
@@ -1406,18 +1079,6 @@ public class Polygon2DExpression extends Spatial2DExpression<Polygon, Polygon2DR
 			} else {
 				return doExpressionTransform(db);
 			}
-		}
-
-		@Override
-		public Polygon2DFunctionWithLine2DResult copy() {
-			Polygon2DFunctionWithLine2DResult newInstance;
-			try {
-				newInstance = getClass().newInstance();
-			} catch (InstantiationException | IllegalAccessException ex) {
-				throw new RuntimeException(ex);
-			}
-			newInstance.first = first.copy();
-			return newInstance;
 		}
 
 		protected abstract String doExpressionTransform(DBDefinition db);
@@ -1444,7 +1105,7 @@ public class Polygon2DExpression extends Spatial2DExpression<Polygon, Polygon2DR
 
 	private static abstract class Polygon2DFunctionWithStringResult extends StringExpression {
 
-		private Polygon2DExpression first;
+		private final Polygon2DExpression first;
 		private boolean requiresNullProtection;
 
 		Polygon2DFunctionWithStringResult(Polygon2DExpression first) {
@@ -1462,18 +1123,6 @@ public class Polygon2DExpression extends Spatial2DExpression<Polygon, Polygon2DR
 			} else {
 				return doExpressionTransform(db);
 			}
-		}
-
-		@Override
-		public Polygon2DFunctionWithStringResult copy() {
-			Polygon2DFunctionWithStringResult newInstance;
-			try {
-				newInstance = getClass().newInstance();
-			} catch (InstantiationException | IllegalAccessException ex) {
-				throw new RuntimeException(ex);
-			}
-			newInstance.first = first.copy();
-			return newInstance;
 		}
 
 		protected abstract String doExpressionTransform(DBDefinition db);
@@ -1500,7 +1149,7 @@ public class Polygon2DExpression extends Spatial2DExpression<Polygon, Polygon2DR
 
 	private static abstract class Point2dArrayFunctionWithPolygon2DResult extends Polygon2DExpression {
 
-		private Point2DExpression[] allPoints;
+		private final Point2DExpression[] allPoints;
 		private boolean requiresNullProtection;
 
 		Point2dArrayFunctionWithPolygon2DResult(Point2DExpression... all) {
@@ -1527,18 +1176,6 @@ public class Polygon2DExpression extends Spatial2DExpression<Polygon, Polygon2DR
 			} else {
 				return doExpressionTransform(db);
 			}
-		}
-
-		@Override
-		public Point2dArrayFunctionWithPolygon2DResult copy() {
-			Point2dArrayFunctionWithPolygon2DResult newInstance;
-			try {
-				newInstance = getClass().newInstance();
-			} catch (InstantiationException | IllegalAccessException ex) {
-				throw new RuntimeException(ex);
-			}
-			newInstance.allPoints = Arrays.copyOf(allPoints, allPoints.length);
-			return newInstance;
 		}
 
 		protected abstract String doExpressionTransform(DBDefinition db);
@@ -1571,7 +1208,7 @@ public class Polygon2DExpression extends Spatial2DExpression<Polygon, Polygon2DR
 
 	private static abstract class CoordinateArrayFunctionWithPolygon2DResult extends Polygon2DExpression {
 
-		private NumberExpression[] allCoords;
+		private final NumberExpression[] allCoords;
 		private boolean requiresNullProtection;
 
 		CoordinateArrayFunctionWithPolygon2DResult(NumberExpression... all) {
@@ -1600,18 +1237,6 @@ public class Polygon2DExpression extends Spatial2DExpression<Polygon, Polygon2DR
 			}
 		}
 
-		@Override
-		public CoordinateArrayFunctionWithPolygon2DResult copy() {
-			CoordinateArrayFunctionWithPolygon2DResult newInstance;
-			try {
-				newInstance = getClass().newInstance();
-			} catch (InstantiationException | IllegalAccessException ex) {
-				throw new RuntimeException(ex);
-			}
-			newInstance.allCoords = Arrays.copyOf(allCoords, allCoords.length);
-			return newInstance;
-		}
-
 		protected abstract String doExpressionTransform(DBDefinition db);
 
 		@Override
@@ -1637,6 +1262,584 @@ public class Polygon2DExpression extends Spatial2DExpression<Polygon, Polygon2DR
 		@Override
 		public boolean getIncludesNull() {
 			return requiresNullProtection;
+		}
+	}
+
+	private static class IntersectsExpression extends PolygonPolygonWithBooleanResult {
+
+		public IntersectsExpression(Polygon2DExpression first, Polygon2DExpression second) {
+			super(first, second);
+		}
+		private final static long serialVersionUID = 1l;
+
+		@Override
+		public String doExpressionTransform(DBDefinition db) {
+			return db.doPolygon2DIntersectsTransform(getFirst().toSQLString(db), getSecond().toSQLString(db));
+		}
+
+		@Override
+		public IntersectsExpression copy() {
+			return new Polygon2DExpression.IntersectsExpression(
+					getFirst() == null ? null : getFirst().copy(),
+					getSecond() == null ? null : getSecond().copy());
+		}
+	}
+
+	private class IntersectionExpression extends PolygonPolygonWithPolygon2DResult {
+
+		public IntersectionExpression(Polygon2DExpression first, Polygon2DExpression second) {
+			super(first, second);
+		}
+		private final static long serialVersionUID = 1l;
+
+		@Override
+		public String doExpressionTransform(DBDefinition db) {
+			return db.doPolygon2DIntersectionTransform(getFirst().toSQLString(db), getSecond().toSQLString(db));
+		}
+
+		@Override
+		public IntersectionExpression copy() {
+			return new Polygon2DExpression.IntersectionExpression(
+					getFirst() == null ? null : getFirst().copy(),
+					getSecond() == null ? null : getSecond().copy()
+			);
+		}
+	}
+
+	private static class CreatePolygon2DFromPoint2DArrayExpression extends Point2dArrayFunctionWithPolygon2DResult {
+
+		public CreatePolygon2DFromPoint2DArrayExpression(Point2DExpression[] all) {
+			super(all);
+		}
+		private final static long serialVersionUID = 1l;
+
+		@Override
+		protected String doExpressionTransform(DBDefinition db) {
+			Point2DExpression[] allPoints = getAllPoints();
+			List<String> pointSQL = new ArrayList<String>();
+			for (Point2DExpression pointExpr : allPoints) {
+				pointSQL.add(pointExpr.toSQLString(db));
+			}
+			try {
+				return db.transformPoint2DArrayToDatabasePolygon2DFormat(pointSQL);
+			} catch (UnsupportedOperationException ex) {
+				StringExpression newPolygon = StringExpression.value("POLYGON ((");
+				String separator = "";
+
+				for (Point2DExpression point : allPoints) {
+					newPolygon = newPolygon.append(separator).append(point.getX()).append(" ").append(point.getY());
+					separator = " , ";
+				}
+				final Point2DExpression firstPoint = allPoints[0];
+				newPolygon = newPolygon.append(separator).append(firstPoint.getX()).append(" ").append(firstPoint.getY()).append("))");
+				return newPolygon.toSQLString(db);
+			}
+		}
+
+		@Override
+		public CreatePolygon2DFromPoint2DArrayExpression copy() {
+			Point2DExpression[] allPoints = getAllPoints();
+			List<Point2DExpression> pointCopies = new ArrayList<>();
+			for (Point2DExpression pointExpr : allPoints) {
+				pointCopies.add(pointExpr.copy());
+			}
+			return new Polygon2DExpression.CreatePolygon2DFromPoint2DArrayExpression(
+					pointCopies.isEmpty() ? null : pointCopies.toArray(new Point2DExpression[]{})
+			);
+		}
+	}
+
+	private static class CreatePolygon2DFromCoordinateArrayExpression extends CoordinateArrayFunctionWithPolygon2DResult {
+
+		public CreatePolygon2DFromCoordinateArrayExpression(NumberExpression[] all) {
+			super(all);
+		}
+		private final static long serialVersionUID = 1l;
+
+		@Override
+		public CreatePolygon2DFromCoordinateArrayExpression copy() {
+			NumberExpression[] allPoints = getAllCoordinates();
+			List<NumberExpression> pointCopies = new ArrayList<>();
+			for (NumberExpression pointExpr : allPoints) {
+				pointCopies.add(pointExpr.copy());
+			}
+			return new Polygon2DExpression.CreatePolygon2DFromCoordinateArrayExpression(
+					pointCopies.isEmpty() ? null : pointCopies.toArray(new NumberExpression[]{})
+			);
+		}
+
+		@Override
+		protected String doExpressionTransform(DBDefinition db) {
+			NumberExpression[] allCoords = getAllCoordinates();
+			List<String> pointSQL = new ArrayList<String>();
+			for (NumberExpression pointExpr : allCoords) {
+				pointSQL.add(pointExpr.toSQLString(db));
+			}
+			try {
+				return db.transformCoordinateArrayToDatabasePolygon2DFormat(pointSQL);
+			} catch (UnsupportedOperationException ex) {
+				StringExpression newPolygon = StringExpression.value("POLYGON ((");
+				StringExpression lastPoint = StringExpression.value("");
+				String separator = "";
+
+				for (NumberExpression coord : allCoords) {
+					newPolygon = newPolygon.append(separator).append(coord);
+					if (separator.equals(" ")) {
+						lastPoint = lastPoint.append(separator).append(coord);
+					} else {
+						lastPoint = lastPoint.expression(coord);
+					}
+					switch (separator) {
+						case " ":
+							separator = ", ";
+							break;
+						default:
+							separator = " ";
+							break;
+					}
+				}
+				final StringExpression firstPoint = allCoords[0].append(" ").append(allCoords[1]);
+				if (!firstPoint.toSQLString(db).equals(lastPoint.toSQLString(db))) {
+					newPolygon = newPolygon.append(separator).append(firstPoint).append("))");
+				}
+				newPolygon = newPolygon.append("))");
+				return newPolygon.toSQLString(db);
+			}
+		}
+	}
+
+	private class IsExpression extends PolygonPolygonWithBooleanResult {
+
+		public IsExpression(Polygon2DExpression first, Polygon2DExpression second) {
+			super(first, second);
+		}
+		private final static long serialVersionUID = 1l;
+
+		@Override
+		public String doExpressionTransform(DBDefinition db) {
+			return db.doPolygon2DEqualsTransform(getFirst().toSQLString(db), getSecond().toSQLString(db));
+		}
+
+		@Override
+		public Polygon2DExpression.IsExpression copy() {
+			return new Polygon2DExpression.IsExpression(
+					getFirst() == null ? null : getFirst().copy(),
+					getSecond() == null ? null : getSecond().copy()
+			);
+		}
+	}
+
+	private class ContainsPoint2DExpression extends PolygonPointWithBooleanResult {
+
+		public ContainsPoint2DExpression(Polygon2DExpression first, Point2DExpression second) {
+			super(first, second);
+		}
+		private final static long serialVersionUID = 1l;
+
+		@Override
+		public String doExpressionTransform(DBDefinition db) {
+			return db.doPolygon2DContainsPoint2DTransform(getFirst().toSQLString(db), getSecond().toSQLString(db));
+		}
+
+		@Override
+		public ContainsPoint2DExpression copy() {
+			return new Polygon2DExpression.ContainsPoint2DExpression(
+					getFirst() == null ? null : getFirst().copy(),
+					getSecond() == null ? null : getSecond().copy()
+			);
+		}
+	}
+
+	private class ContainsPolygon2DExpression extends PolygonPolygonWithBooleanResult {
+
+		public ContainsPolygon2DExpression(Polygon2DExpression first, Polygon2DExpression second) {
+			super(first, second);
+		}
+		private final static long serialVersionUID = 1l;
+
+		@Override
+		public String doExpressionTransform(DBDefinition db) {
+			return db.doPolygon2DContainsPolygon2DTransform(getFirst().toSQLString(db), getSecond().toSQLString(db));
+		}
+
+		@Override
+		public ContainsPolygon2DExpression copy() {
+			return new Polygon2DExpression.ContainsPolygon2DExpression(
+					getFirst() == null ? null : getFirst().copy(),
+					getSecond() == null ? null : getSecond().copy()
+			);
+		}
+	}
+
+	private class DoesNotIntersectPolygon2D extends PolygonPolygonWithBooleanResult {
+
+		public DoesNotIntersectPolygon2D(Polygon2DExpression first, Polygon2DExpression second) {
+			super(first, second);
+		}
+		private final static long serialVersionUID = 1l;
+
+		@Override
+		public String doExpressionTransform(DBDefinition db) {
+			return db.doPolygon2DDoesNotIntersectTransform(getFirst().toSQLString(db), getSecond().toSQLString(db));
+		}
+
+		@Override
+		public DoesNotIntersectPolygon2D copy() {
+			return new Polygon2DExpression.DoesNotIntersectPolygon2D(
+					getFirst() == null ? null : getFirst().copy(),
+					getSecond() == null ? null : getSecond().copy()
+			);
+		}
+	}
+
+	private class OverlapsPolygon2DExpression extends PolygonPolygonWithBooleanResult {
+
+		public OverlapsPolygon2DExpression(Polygon2DExpression first, Polygon2DExpression second) {
+			super(first, second);
+		}
+		private final static long serialVersionUID = 1l;
+
+		@Override
+		public String doExpressionTransform(DBDefinition db) {
+			try {
+				return db.doPolygon2DOverlapsTransform(getFirst().toSQLString(db), getSecond().toSQLString(db));
+			} catch (UnsupportedOperationException ex) {
+				return BooleanExpression.allOf(
+						this.getFirst().intersects(getSecond()),
+						this.getFirst().intersection(getSecond()).isNot(this.getFirst()),
+						this.getFirst().intersection(getSecond()).isNot(this.getSecond())
+				).toSQLString(db);
+			}
+		}
+
+		@Override
+		public OverlapsPolygon2DExpression copy() {
+			return new Polygon2DExpression.OverlapsPolygon2DExpression(
+					getFirst() == null ? null : getFirst().copy(),
+					getSecond() == null ? null : getSecond().copy()
+			);
+		}
+	}
+
+	private class TouchesPolygon2DExpression extends PolygonPolygonWithBooleanResult {
+
+		public TouchesPolygon2DExpression(Polygon2DExpression first, Polygon2DExpression second) {
+			super(first, second);
+		}
+		private final static long serialVersionUID = 1l;
+
+		@Override
+		public String doExpressionTransform(DBDefinition db) {
+			return db.doPolygon2DTouchesTransform(getFirst().toSQLString(db), getSecond().toSQLString(db));
+		}
+
+		@Override
+		public TouchesPolygon2DExpression copy() {
+			return new Polygon2DExpression.TouchesPolygon2DExpression(
+					getFirst() == null ? null : getFirst().copy(),
+					getSecond() == null ? null : getSecond().copy()
+			);
+		}
+	}
+
+	private class WithinPolygon2DExpression extends PolygonPolygonWithBooleanResult {
+
+		public WithinPolygon2DExpression(Polygon2DExpression first, Polygon2DExpression second) {
+			super(first, second);
+		}
+		private final static long serialVersionUID = 1l;
+
+		@Override
+		public String doExpressionTransform(DBDefinition db) {
+			return db.doPolygon2DWithinTransform(getFirst().toSQLString(db), getSecond().toSQLString(db));
+		}
+
+		@Override
+		public WithinPolygon2DExpression copy() {
+			return new Polygon2DExpression.WithinPolygon2DExpression(
+					getFirst() == null ? null : getFirst().copy(),
+					getSecond() == null ? null : getSecond().copy()
+			);
+		}
+	}
+
+	private class MeasurableDimensionsExpression extends Polygon2DFunctionWithNumberResult {
+
+		public MeasurableDimensionsExpression(Polygon2DExpression first) {
+			super(first);
+		}
+		private final static long serialVersionUID = 1l;
+
+		@Override
+		public String doExpressionTransform(DBDefinition db) {
+			return db.doPolygon2DMeasurableDimensionsTransform(getFirst().toSQLString(db));
+		}
+
+		@Override
+		public MeasurableDimensionsExpression copy() {
+			return new Polygon2DExpression.MeasurableDimensionsExpression(
+					getFirst() == null ? null : getFirst().copy()
+			);
+		}
+	}
+
+	private class SpatialDimensionsExpression extends Polygon2DFunctionWithNumberResult {
+
+		public SpatialDimensionsExpression(Polygon2DExpression first) {
+			super(first);
+		}
+		private final static long serialVersionUID = 1l;
+
+		@Override
+		public String doExpressionTransform(DBDefinition db) {
+			try {
+				return db.doPolygon2DSpatialDimensionsTransform(getFirst().toSQLString(db));
+			} catch (UnsupportedOperationException unsupported) {
+				return NumberExpression.value(2).toSQLString(db);
+			}
+		}
+
+		@Override
+		public SpatialDimensionsExpression copy() {
+			return new Polygon2DExpression.SpatialDimensionsExpression(
+					getFirst() == null ? null : getFirst().copy()
+			);
+		}
+	}
+
+	private class HasMagnitudeExpression extends PolygonWithBooleanResult {
+
+		public HasMagnitudeExpression(Polygon2DExpression first) {
+			super(first);
+		}
+		private final static long serialVersionUID = 1l;
+
+		@Override
+		public String doExpressionTransform(DBDefinition db) {
+			try {
+				return db.doPolygon2DHasMagnitudeTransform(getFirst().toSQLString(db));
+			} catch (UnsupportedOperationException unsupported) {
+				return BooleanExpression.falseExpression().toSQLString(db);
+			}
+		}
+
+		@Override
+		public HasMagnitudeExpression copy() {
+			return new Polygon2DExpression.HasMagnitudeExpression(
+					getFirst() == null ? null : getFirst().copy()
+			);
+		}
+	}
+
+	private class MagnitudeExpression extends Polygon2DFunctionWithNumberResult {
+
+		public MagnitudeExpression(Polygon2DExpression first) {
+			super(first);
+		}
+		private final static long serialVersionUID = 1l;
+
+		@Override
+		public String doExpressionTransform(DBDefinition db) {
+			try {
+				return db.doPolygon2DGetMagnitudeTransform(getFirst().toSQLString(db));
+			} catch (UnsupportedOperationException unsupported) {
+				return nullExpression().toSQLString(db);
+			}
+		}
+
+		@Override
+		public MagnitudeExpression copy() {
+			return new Polygon2DExpression.MagnitudeExpression(
+					getFirst() == null ? null : getFirst().copy()
+			);
+		}
+	}
+
+	private class AreaExpression extends Polygon2DFunctionWithNumberResult {
+
+		public AreaExpression(Polygon2DExpression first) {
+			super(first);
+		}
+		private final static long serialVersionUID = 1l;
+
+		@Override
+		public String doExpressionTransform(DBDefinition db) {
+			return db.doPolygon2DGetAreaTransform(getFirst().toSQLString(db));
+		}
+
+		@Override
+		public AreaExpression copy() {
+			return new Polygon2DExpression.AreaExpression(
+					getFirst() == null ? null : getFirst().copy()
+			);
+		}
+	}
+
+	private class BoundingBoxExpression extends Polygon2DFunctionWithPolygon2DResult {
+
+		public BoundingBoxExpression(Polygon2DExpression first) {
+			super(first);
+		}
+		private final static long serialVersionUID = 1l;
+
+		@Override
+		public BoundingBoxExpression copy() {
+			return new Polygon2DExpression.BoundingBoxExpression(
+					getFirst() == null ? null : getFirst().copy()
+			);
+		}
+
+		@Override
+		public String doExpressionTransform(DBDefinition db) {
+			try {
+				return db.doPolygon2DGetBoundingBoxTransform(getFirst().toSQLString(db));
+			} catch (UnsupportedOperationException unsupported) {
+				final Polygon2DExpression first = getFirst();
+				final NumberExpression maxX = first.maxX();
+				final NumberExpression maxY = first.maxY();
+				final NumberExpression minX = first.minX();
+				final NumberExpression minY = first.minY();
+				return Polygon2DExpression
+						.value(minX, minY, maxX, minY, maxX, maxY, minX, maxY, minX, minY)
+						.toSQLString(db);
+			}
+		}
+	}
+
+	private class ExteriorRingExpression extends Polygon2DFunctionWithLine2DResult {
+
+		public ExteriorRingExpression(Polygon2DExpression first) {
+			super(first);
+		}
+		private final static long serialVersionUID = 1l;
+
+		@Override
+		public String doExpressionTransform(DBDefinition db) {
+			return db.doPolygon2DGetExteriorRingTransform(getFirst().toSQLString(db));
+		}
+
+		@Override
+		public ExteriorRingExpression copy() {
+			return new Polygon2DExpression.ExteriorRingExpression(
+					getFirst() == null ? null : getFirst().copy()
+			);
+		}
+	}
+
+	private class StringResultExpression extends Polygon2DFunctionWithStringResult {
+
+		public StringResultExpression(Polygon2DExpression first) {
+			super(first);
+		}
+		private final static long serialVersionUID = 1l;
+
+		@Override
+		public String doExpressionTransform(DBDefinition db) {
+			return db.doPolygon2DAsTextTransform(getFirst().toSQLString(db));
+		}
+
+		@Override
+		public StringResultExpression copy() {
+			return new Polygon2DExpression.StringResultExpression(
+					getFirst() == null ? null : getFirst().copy()
+			);
+		}
+	}
+
+	private class MaxXExpression extends Polygon2DFunctionWithNumberResult {
+
+		public MaxXExpression(Polygon2DExpression first) {
+			super(first);
+		}
+		private final static long serialVersionUID = 1l;
+
+		@Override
+		public String doExpressionTransform(DBDefinition db) {
+			return db.doPolygon2DGetMaxXTransform(getFirst().toSQLString(db));
+		}
+
+		@Override
+		public MaxXExpression copy() {
+			return new Polygon2DExpression.MaxXExpression(
+					getFirst() == null ? null : getFirst().copy()
+			);
+		}
+	}
+
+	private class MaxYExpression extends Polygon2DFunctionWithNumberResult {
+
+		public MaxYExpression(Polygon2DExpression first) {
+			super(first);
+		}
+		private final static long serialVersionUID = 1l;
+
+		@Override
+		public String doExpressionTransform(DBDefinition db) {
+			return db.doPolygon2DGetMaxYTransform(getFirst().toSQLString(db));
+		}
+
+		@Override
+		public MaxYExpression copy() {
+			return new Polygon2DExpression.MaxYExpression(
+					getFirst() == null ? null : getFirst().copy()
+			);
+		}
+	}
+
+	private class MinXExpression extends Polygon2DFunctionWithNumberResult {
+
+		public MinXExpression(Polygon2DExpression first) {
+			super(first);
+		}
+		private final static long serialVersionUID = 1l;
+
+		@Override
+		public String doExpressionTransform(DBDefinition db) {
+			return db.doPolygon2DGetMinXTransform(getFirst().toSQLString(db));
+		}
+
+		@Override
+		public MinXExpression copy() {
+			return new Polygon2DExpression.MinXExpression(
+					getFirst() == null ? null : getFirst().copy()
+			);
+		}
+	}
+
+	private class MinYExpression extends Polygon2DFunctionWithNumberResult {
+
+		public MinYExpression(Polygon2DExpression first) {
+			super(first);
+		}
+		private final static long serialVersionUID = 1l;
+
+		@Override
+		public String doExpressionTransform(DBDefinition db) {
+			return db.doPolygon2DGetMinYTransform(getFirst().toSQLString(db));
+		}
+
+		@Override
+		public MinYExpression copy() {
+			return new Polygon2DExpression.MinYExpression(
+					getFirst() == null ? null : getFirst().copy()
+			);
+		}
+	}
+
+	private static class NullExpression extends Polygon2DExpression {
+
+		public NullExpression() {
+		}
+		private final static long serialVersionUID = 1l;
+
+		@Override
+		public String toSQLString(DBDefinition db) {
+			return db.getNull();
+		}
+
+		@Override
+		public NullExpression copy() {
+			return new Polygon2DExpression.NullExpression();
 		}
 	}
 }

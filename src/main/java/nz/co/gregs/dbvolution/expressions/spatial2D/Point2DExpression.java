@@ -16,7 +16,6 @@
 package nz.co.gregs.dbvolution.expressions.spatial2D;
 
 import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.CoordinateSequence;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import nz.co.gregs.dbvolution.results.Point2DResult;
 import com.vividsolutions.jts.geom.Point;
@@ -189,15 +188,7 @@ public class Point2DExpression extends Spatial2DExpression<Point, Point2DResult,
 	}
 
 	public static Point2DExpression value(NumberExpression xValue, NumberExpression yValue) {
-		return new Point2DExpression(new NumberNumberFunctionWithPoint2DResult(xValue, yValue) {
-			private final static long serialVersionUID = 1l;
-
-			@Override
-			protected String doExpressionTransform(DBDefinition db) {
-				return db.transformCoordinatesIntoDatabasePoint2DFormat(getFirst().toSQLString(db), getSecond().toSQLString(db));
-			}
-
-		});
+		return new Point2DExpression(new NumberToPointExpression(xValue, yValue));
 	}
 
 	/**
@@ -220,14 +211,7 @@ public class Point2DExpression extends Spatial2DExpression<Point, Point2DResult,
 	@Override
 	public Point2DExpression nullExpression() {
 
-		return new Point2DExpression() {
-			private final static long serialVersionUID = 1l;
-
-			@Override
-			public String toSQLString(DBDefinition db) {
-				return db.getNull();
-			}
-		};
+		return new NullExpression();
 	}
 
 	@Override
@@ -247,7 +231,7 @@ public class Point2DExpression extends Spatial2DExpression<Point, Point2DResult,
 
 	@Override
 	public Point2DExpression copy() {
-		return this.isNullSafetyTerminator() ? nullPoint2D() : new Point2DExpression(getInnerResult());
+		return this.isNullSafetyTerminator() ? nullPoint2D() : new Point2DExpression((AnyResult<?>) getInnerResult().copy());
 	}
 
 	@Override
@@ -274,18 +258,7 @@ public class Point2DExpression extends Spatial2DExpression<Point, Point2DResult,
 
 	@Override
 	public StringExpression stringResult() {
-		return new StringExpression(new PointFunctionWithStringResult(this) {
-			private final static long serialVersionUID = 1l;
-
-			@Override
-			protected String doExpressionTransform(DBDefinition db) {
-				try {
-					return db.doPoint2DAsTextTransform(getFirst().toSQLString(db));
-				} catch (UnsupportedOperationException unsupported) {
-					return getFirst().toSQLString(db);
-				}
-			}
-		});
+		return new StringExpression(new StringResultExpression(this));
 	}
 
 	/**
@@ -304,23 +277,7 @@ public class Point2DExpression extends Spatial2DExpression<Point, Point2DResult,
 
 	@Override
 	public BooleanExpression is(Point2DResult rightHandSide) {
-		return new BooleanExpression(new PointPointFunctionWithBooleanResult(this, new Point2DExpression(rightHandSide)) {
-			private final static long serialVersionUID = 1l;
-
-			@Override
-			public String doExpressionTransform(DBDefinition db) {
-				try {
-					return db.doPoint2DEqualsTransform(getFirst().toSQLString(db), getSecond().toSQLString(db));
-				} catch (UnsupportedOperationException unsupported) {
-					return BooleanExpression.allOf(
-							getFirst().stringResult().substringBetween("(", " ").numberResult()
-									.is(getSecond().stringResult().substringBetween("(", " ").numberResult()),
-							getFirst().stringResult().substringAfter("(").substringBetween(" ", ")").numberResult()
-									.is(getSecond().stringResult().substringAfter("(").substringBetween(" ", ")").numberResult())
-					).toSQLString(db);
-				}
-			}
-		});
+		return new BooleanExpression(new IsExpression(this, new Point2DExpression(rightHandSide)));
 	}
 
 	/**
@@ -355,18 +312,7 @@ public class Point2DExpression extends Spatial2DExpression<Point, Point2DResult,
 	 * @return a NumberExpression of the X coordinate.
 	 */
 	public NumberExpression getX() {
-		return new NumberExpression(new PointFunctionWithNumberResult(this) {
-			private final static long serialVersionUID = 1l;
-
-			@Override
-			public String doExpressionTransform(DBDefinition db) {
-				try {
-					return db.doPoint2DGetXTransform(getFirst().toSQLString(db));
-				} catch (UnsupportedOperationException unsupported) {
-					return getFirst().stringResult().substringBetween("(", " ").numberResult().toSQLString(db);
-				}
-			}
-		});
+		return new NumberExpression(new GetXExpression(this));
 	}
 
 	/**
@@ -382,88 +328,27 @@ public class Point2DExpression extends Spatial2DExpression<Point, Point2DResult,
 	 * @return a NumberExpression of the Y coordinate.
 	 */
 	public NumberExpression getY() {
-		return new NumberExpression(new PointFunctionWithNumberResult(this) {
-			private final static long serialVersionUID = 1l;
-
-			@Override
-			public String doExpressionTransform(DBDefinition db) {
-				try {
-					return db.doPoint2DGetYTransform(getFirst().toSQLString(db));
-				} catch (UnsupportedOperationException unsupported) {
-					return getFirst().stringResult().substringAfter("(").substringBetween(" ", ")").numberResult().toSQLString(db);
-				}
-			}
-		});
+		return new NumberExpression(new GetYExpression(this));
 	}
 
 	@Override
 	public NumberExpression measurableDimensions() {
-		return new NumberExpression(new PointFunctionWithNumberResult(this) {
-			private final static long serialVersionUID = 1l;
-
-			@Override
-			public String doExpressionTransform(DBDefinition db) {
-				try {
-					return db.doPoint2DMeasurableDimensionsTransform(getFirst().toSQLString(db));
-				} catch (UnsupportedOperationException unsupported) {
-					return NumberExpression.value(0).toSQLString(db);
-				}
-			}
-		});
+		return new NumberExpression(new MeasurableDimensionsExpression(this));
 	}
 
 	@Override
 	public NumberExpression spatialDimensions() {
-		return new NumberExpression(new PointFunctionWithNumberResult(this) {
-			private final static long serialVersionUID = 1l;
-
-			@Override
-			public String doExpressionTransform(DBDefinition db) {
-				try {
-					return db.doPoint2DSpatialDimensionsTransform(getFirst().toSQLString(db));
-				} catch (UnsupportedOperationException unsupported) {
-					return NumberExpression.value(2).toSQLString(db);
-				}
-			}
-		});
+		return new NumberExpression(new SpatialDimensionsExpression(this));
 	}
 
 	@Override
 	public BooleanExpression hasMagnitude() {
-		return new BooleanExpression(new PointFunctionWithBooleanResult(this) {
-			private final static long serialVersionUID = 1l;
-
-			@Override
-			public String doExpressionTransform(DBDefinition db) {
-				try {
-					return db.doPoint2DHasMagnitudeTransform(getFirst().toSQLString(db));
-				} catch (UnsupportedOperationException unsupported) {
-					return BooleanExpression.falseExpression().toSQLString(db);
-				}
-			}
-
-			@Override
-			public boolean isBooleanStatement() {
-				return true;
-			}
-
-		});
+		return new BooleanExpression(new HasMagnitudeExpression(this));
 	}
 
 	@Override
 	public NumberExpression magnitude() {
-		return new NumberExpression(new PointFunctionWithNumberResult(this) {
-			private final static long serialVersionUID = 1l;
-
-			@Override
-			public String doExpressionTransform(DBDefinition db) {
-				try {
-					return db.doPoint2DGetMagnitudeTransform(getFirst().toSQLString(db));
-				} catch (UnsupportedOperationException unsupported) {
-					return nullExpression().toSQLString(db);
-				}
-			}
-		});
+		return new NumberExpression(new MagnitudeExpression(this));
 	}
 
 	/**
@@ -483,45 +368,12 @@ public class Point2DExpression extends Spatial2DExpression<Point, Point2DResult,
 	 * @return a number value of the distance between the two points in units.
 	 */
 	public NumberExpression distanceTo(Point2DExpression otherPoint) {
-		return new NumberExpression(new PointPointFunctionWithNumberResult(this, otherPoint) {
-			private final static long serialVersionUID = 1l;
-
-			@Override
-			public String doExpressionTransform(DBDefinition db) {
-				try {
-					return db.doPoint2DDistanceBetweenTransform(getFirst().toSQLString(db), getSecond().toSQLString(db));
-				} catch (UnsupportedOperationException unsupported) {
-					return getSecond().getX().minus(getFirst().getX()).bracket().squared().plus(getSecond().getY().minus(getFirst().getY()).bracket().squared()).squareRoot().toSQLString(db);
-				}
-			}
-		});
+		return new NumberExpression(new DistanceToExpression(this, otherPoint));
 	}
 
 	@Override
 	public Polygon2DExpression boundingBox() {
-		return new Polygon2DExpression(new PointFunctionWithGeometry2DResult(this) {
-			private final static long serialVersionUID = 1l;
-
-			@Override
-			public String doExpressionTransform(DBDefinition db) {
-				try {
-					return db.doPoint2DGetBoundingBoxTransform(getFirst().toSQLString(db));
-				} catch (UnsupportedOperationException unsupported) {
-					final Point2DExpression first = getFirst();
-					final NumberExpression maxX = first.maxX();
-					final NumberExpression maxY = first.maxY();
-					final NumberExpression minX = first.minX();
-					final NumberExpression minY = first.minY();
-					return Polygon2DExpression.value(
-							Point2DExpression.value(minX, minY),
-							Point2DExpression.value(maxX, minY),
-							Point2DExpression.value(maxX, maxY),
-							Point2DExpression.value(minX, maxY),
-							Point2DExpression.value(minX, minY))
-							.toSQLString(db);
-				}
-			}
-		});
+		return new Polygon2DExpression(new BoundingBoxExpression(this));
 	}
 
 	@Override
@@ -561,8 +413,8 @@ public class Point2DExpression extends Spatial2DExpression<Point, Point2DResult,
 	public Point2DExpression modeSimple() {
 		Point2DExpression modeExpr = new Point2DExpression(
 				new ModeSimpleExpression<>(this));
-		return modeExpr;	
-		}
+		return modeExpr;
+	}
 
 	/**
 	 * Creates an expression that will return the most common value of the column
@@ -589,11 +441,10 @@ public class Point2DExpression extends Spatial2DExpression<Point, Point2DResult,
 	 * @return the mode or null if undefined.
 	 */
 	public Point2DExpression modeStrict() {
-				Point2DExpression modeExpr = new Point2DExpression(
-						new ModeStrictExpression<>(this));
+		Point2DExpression modeExpr = new Point2DExpression(
+				new ModeStrictExpression<>(this));
 		return modeExpr;
 	}
-
 
 	@Override
 	public DBPoint2D asExpressionColumn() {
@@ -602,8 +453,8 @@ public class Point2DExpression extends Spatial2DExpression<Point, Point2DResult,
 
 	private static abstract class PointPointFunctionWithBooleanResult extends BooleanExpression {
 
-		private Point2DExpression first;
-		private Point2DExpression second;
+		private final Point2DExpression first;
+		private final Point2DExpression second;
 		private boolean requiresNullProtection;
 
 		PointPointFunctionWithBooleanResult(Point2DExpression first, Point2DExpression second) {
@@ -629,19 +480,6 @@ public class Point2DExpression extends Spatial2DExpression<Point, Point2DResult,
 			} else {
 				return doExpressionTransform(db);
 			}
-		}
-
-		@Override
-		public PointPointFunctionWithBooleanResult copy() {
-			PointPointFunctionWithBooleanResult newInstance;
-			try {
-				newInstance = getClass().newInstance();
-			} catch (InstantiationException | IllegalAccessException ex) {
-				throw new RuntimeException(ex);
-			}
-			newInstance.first = first.copy();
-			newInstance.second = second.copy();
-			return newInstance;
 		}
 
 		protected abstract String doExpressionTransform(DBDefinition db);
@@ -689,18 +527,6 @@ public class Point2DExpression extends Spatial2DExpression<Point, Point2DResult,
 			} else {
 				return doExpressionTransform(db);
 			}
-		}
-
-		@Override
-		public PointFunctionWithBooleanResult copy() {
-			PointFunctionWithBooleanResult newInstance;
-			try {
-				newInstance = getClass().newInstance();
-			} catch (InstantiationException | IllegalAccessException ex) {
-				throw new RuntimeException(ex);
-			}
-			newInstance.first = first.copy();
-			return newInstance;
 		}
 
 		protected abstract String doExpressionTransform(DBDefinition db);
@@ -754,19 +580,6 @@ public class Point2DExpression extends Spatial2DExpression<Point, Point2DResult,
 			} else {
 				return doExpressionTransform(db);
 			}
-		}
-
-		@Override
-		public PointPointFunctionWithNumberResult copy() {
-			PointPointFunctionWithNumberResult newInstance;
-			try {
-				newInstance = getClass().newInstance();
-			} catch (InstantiationException | IllegalAccessException ex) {
-				throw new RuntimeException(ex);
-			}
-			newInstance.first = first.copy();
-			newInstance.second = second.copy();
-			return newInstance;
 		}
 
 		protected abstract String doExpressionTransform(DBDefinition db);
@@ -825,19 +638,6 @@ public class Point2DExpression extends Spatial2DExpression<Point, Point2DResult,
 			}
 		}
 
-		@Override
-		public NumberNumberFunctionWithPoint2DResult copy() {
-			NumberNumberFunctionWithPoint2DResult newInstance;
-			try {
-				newInstance = getClass().newInstance();
-			} catch (InstantiationException | IllegalAccessException ex) {
-				throw new RuntimeException(ex);
-			}
-			newInstance.first = first.copy();
-			newInstance.second = second.copy();
-			return newInstance;
-		}
-
 		protected abstract String doExpressionTransform(DBDefinition db);
 
 		@Override
@@ -888,18 +688,6 @@ public class Point2DExpression extends Spatial2DExpression<Point, Point2DResult,
 			}
 		}
 
-		@Override
-		public PointFunctionWithNumberResult copy() {
-			PointFunctionWithNumberResult newInstance;
-			try {
-				newInstance = getClass().newInstance();
-			} catch (InstantiationException | IllegalAccessException ex) {
-				throw new RuntimeException(ex);
-			}
-			newInstance.first = first.copy();
-			return newInstance;
-		}
-
 		protected abstract String doExpressionTransform(DBDefinition db);
 
 		@Override
@@ -945,18 +733,6 @@ public class Point2DExpression extends Spatial2DExpression<Point, Point2DResult,
 			} else {
 				return doExpressionTransform(db);
 			}
-		}
-
-		@Override
-		public PointFunctionWithStringResult copy() {
-			PointFunctionWithStringResult newInstance;
-			try {
-				newInstance = getClass().newInstance();
-			} catch (InstantiationException | IllegalAccessException ex) {
-				throw new RuntimeException(ex);
-			}
-			newInstance.first = first.copy();
-			return newInstance;
 		}
 
 		protected abstract String doExpressionTransform(DBDefinition db);
@@ -1006,18 +782,6 @@ public class Point2DExpression extends Spatial2DExpression<Point, Point2DResult,
 			}
 		}
 
-		@Override
-		public PointFunctionWithGeometry2DResult copy() {
-			PointFunctionWithGeometry2DResult newInstance;
-			try {
-				newInstance = getClass().newInstance();
-			} catch (InstantiationException | IllegalAccessException ex) {
-				throw new RuntimeException(ex);
-			}
-			newInstance.first = first.copy();
-			return newInstance;
-		}
-
 		protected abstract String doExpressionTransform(DBDefinition db);
 
 		@Override
@@ -1037,6 +801,308 @@ public class Point2DExpression extends Spatial2DExpression<Point, Point2DResult,
 		@Override
 		public boolean getIncludesNull() {
 			return requiresNullProtection;
+		}
+	}
+
+	private static class NumberToPointExpression extends NumberNumberFunctionWithPoint2DResult {
+
+		public NumberToPointExpression(NumberExpression first, NumberExpression second) {
+			super(first, second);
+		}
+		private final static long serialVersionUID = 1l;
+
+		@Override
+		protected String doExpressionTransform(DBDefinition db) {
+			return db.transformCoordinatesIntoDatabasePoint2DFormat(getFirst().toSQLString(db), getSecond().toSQLString(db));
+		}
+
+		@Override
+		public Point2DExpression copy() {
+			return new NumberToPointExpression(
+					getFirst() == null ? null : getFirst().copy(),
+					getSecond() == null ? null : getSecond().copy()
+			);
+		}
+
+	}
+
+	private static class NullExpression extends Point2DExpression {
+
+		public NullExpression() {
+		}
+		private final static long serialVersionUID = 1l;
+
+		@Override
+		public String toSQLString(DBDefinition db) {
+			return db.getNull();
+		}
+
+		@Override
+		public Point2DExpression copy() {
+			return new NullExpression();
+		}
+	}
+
+	private class StringResultExpression extends PointFunctionWithStringResult {
+
+		public StringResultExpression(Point2DExpression first) {
+			super(first);
+		}
+		private final static long serialVersionUID = 1l;
+
+		@Override
+		protected String doExpressionTransform(DBDefinition db) {
+			try {
+				return db.doPoint2DAsTextTransform(getFirst().toSQLString(db));
+			} catch (UnsupportedOperationException unsupported) {
+				return getFirst().toSQLString(db);
+			}
+		}
+
+		@Override
+		public StringResultExpression copy() {
+			return new StringResultExpression(
+					getFirst() == null ? null : getFirst().copy()
+			);
+		}
+	}
+
+	protected static class IsExpression extends PointPointFunctionWithBooleanResult {
+
+		public IsExpression(Point2DExpression first, Point2DExpression second) {
+			super(first, second);
+		}
+		private final static long serialVersionUID = 1l;
+
+		@Override
+		public String doExpressionTransform(DBDefinition db) {
+			try {
+				return db.doPoint2DEqualsTransform(getFirst().toSQLString(db), getSecond().toSQLString(db));
+			} catch (UnsupportedOperationException unsupported) {
+				return BooleanExpression.allOf(
+						getFirst().stringResult().substringBetween("(", " ").numberResult()
+								.is(getSecond().stringResult().substringBetween("(", " ").numberResult()),
+						getFirst().stringResult().substringAfter("(").substringBetween(" ", ")").numberResult()
+								.is(getSecond().stringResult().substringAfter("(").substringBetween(" ", ")").numberResult())
+				).toSQLString(db);
+			}
+		}
+
+		@Override
+		public Point2DExpression.IsExpression copy() {
+			return new Point2DExpression.IsExpression(
+					getFirst() == null ? null : getFirst().copy(),
+					getSecond() == null ? null : getSecond().copy()
+			);
+		}
+	}
+
+	protected static class GetXExpression extends PointFunctionWithNumberResult {
+
+		public GetXExpression(Point2DExpression first) {
+			super(first);
+		}
+		private final static long serialVersionUID = 1l;
+
+		@Override
+		public String doExpressionTransform(DBDefinition db) {
+			try {
+				return db.doPoint2DGetXTransform(getFirst().toSQLString(db));
+			} catch (UnsupportedOperationException unsupported) {
+				return getFirst().stringResult().substringBetween("(", " ").numberResult().toSQLString(db);
+			}
+		}
+
+		@Override
+		public GetXExpression copy() {
+			return new GetXExpression(
+					getFirst() == null ? null : getFirst().copy()
+			);
+		}
+	}
+
+	protected static class GetYExpression extends PointFunctionWithNumberResult {
+
+		public GetYExpression(Point2DExpression first) {
+			super(first);
+		}
+		private final static long serialVersionUID = 1l;
+
+		@Override
+		public String doExpressionTransform(DBDefinition db) {
+			try {
+				return db.doPoint2DGetYTransform(getFirst().toSQLString(db));
+			} catch (UnsupportedOperationException unsupported) {
+				return getFirst().stringResult().substringAfter("(").substringBetween(" ", ")").numberResult().toSQLString(db);
+			}
+		}
+
+		@Override
+		public GetYExpression copy() {
+			return new GetYExpression(
+					getFirst() == null ? null : getFirst().copy()
+			);
+		}
+	}
+
+	protected static class MeasurableDimensionsExpression extends PointFunctionWithNumberResult {
+
+		public MeasurableDimensionsExpression(Point2DExpression first) {
+			super(first);
+		}
+		private final static long serialVersionUID = 1l;
+
+		@Override
+		public String doExpressionTransform(DBDefinition db) {
+			try {
+				return db.doPoint2DMeasurableDimensionsTransform(getFirst().toSQLString(db));
+			} catch (UnsupportedOperationException unsupported) {
+				return NumberExpression.value(0).toSQLString(db);
+			}
+		}
+
+		@Override
+		public MeasurableDimensionsExpression copy() {
+			return new MeasurableDimensionsExpression(
+					getFirst() == null ? null : getFirst().copy()
+			);
+		}
+	}
+
+	protected static class SpatialDimensionsExpression extends PointFunctionWithNumberResult {
+
+		public SpatialDimensionsExpression(Point2DExpression first) {
+			super(first);
+		}
+		private final static long serialVersionUID = 1l;
+
+		@Override
+		public String doExpressionTransform(DBDefinition db) {
+			try {
+				return db.doPoint2DSpatialDimensionsTransform(getFirst().toSQLString(db));
+			} catch (UnsupportedOperationException unsupported) {
+				return NumberExpression.value(2).toSQLString(db);
+			}
+		}
+
+		@Override
+		public SpatialDimensionsExpression copy() {
+			return new SpatialDimensionsExpression(
+					getFirst() == null ? null : getFirst().copy()
+			);
+		}
+	}
+
+	protected static class HasMagnitudeExpression extends PointFunctionWithBooleanResult {
+
+		public HasMagnitudeExpression(Point2DExpression first) {
+			super(first);
+		}
+		private final static long serialVersionUID = 1l;
+
+		@Override
+		public String doExpressionTransform(DBDefinition db) {
+			try {
+				return db.doPoint2DHasMagnitudeTransform(getFirst().toSQLString(db));
+			} catch (UnsupportedOperationException unsupported) {
+				return BooleanExpression.falseExpression().toSQLString(db);
+			}
+		}
+
+		@Override
+		public boolean isBooleanStatement() {
+			return true;
+		}
+
+		@Override
+		public HasMagnitudeExpression copy() {
+			return new HasMagnitudeExpression(
+					getFirst() == null ? null : getFirst().copy()
+			);
+		}
+	}
+
+	protected static class MagnitudeExpression extends PointFunctionWithNumberResult {
+
+		public MagnitudeExpression(Point2DExpression first) {
+			super(first);
+		}
+		private final static long serialVersionUID = 1l;
+
+		@Override
+		public String doExpressionTransform(DBDefinition db) {
+			try {
+				return db.doPoint2DGetMagnitudeTransform(getFirst().toSQLString(db));
+			} catch (UnsupportedOperationException unsupported) {
+				return nullExpression().toSQLString(db);
+			}
+		}
+
+		@Override
+		public MagnitudeExpression copy() {
+			return new MagnitudeExpression(
+					getFirst() == null ? null : getFirst().copy()
+			);
+		}
+	}
+
+	protected static class DistanceToExpression extends PointPointFunctionWithNumberResult {
+
+		public DistanceToExpression(Point2DExpression first, Point2DExpression second) {
+			super(first, second);
+		}
+		private final static long serialVersionUID = 1l;
+
+		@Override
+		public String doExpressionTransform(DBDefinition db) {
+			try {
+				return db.doPoint2DDistanceBetweenTransform(getFirst().toSQLString(db), getSecond().toSQLString(db));
+			} catch (UnsupportedOperationException unsupported) {
+				return getSecond().getX().minus(getFirst().getX()).bracket().squared().plus(getSecond().getY().minus(getFirst().getY()).bracket().squared()).squareRoot().toSQLString(db);
+			}
+		}
+
+		@Override
+		public DistanceToExpression copy() {
+			return new DistanceToExpression(
+					getFirst() == null ? null : getFirst().copy(),
+					getSecond() == null ? null : getSecond().copy()
+			);
+		}
+	}
+
+	protected static class BoundingBoxExpression extends PointFunctionWithGeometry2DResult {
+
+		public BoundingBoxExpression(Point2DExpression first) {
+			super(first);
+		}
+		private final static long serialVersionUID = 1l;
+
+		@Override
+		public String doExpressionTransform(DBDefinition db) {
+			try {
+				return db.doPoint2DGetBoundingBoxTransform(getFirst().toSQLString(db));
+			} catch (UnsupportedOperationException unsupported) {
+				final Point2DExpression first = getFirst();
+				final NumberExpression maxX = first.maxX();
+				final NumberExpression maxY = first.maxY();
+				final NumberExpression minX = first.minX();
+				final NumberExpression minY = first.minY();
+				return Polygon2DExpression.value(
+						Point2DExpression.value(minX, minY),
+						Point2DExpression.value(maxX, minY),
+						Point2DExpression.value(maxX, maxY),
+						Point2DExpression.value(minX, maxY),
+						Point2DExpression.value(minX, minY))
+						.toSQLString(db);
+			}
+		}
+
+		@Override
+		public Point2DExpression.BoundingBoxExpression copy() {
+			return new Point2DExpression.BoundingBoxExpression(
+					getFirst() == null ? null : getFirst().copy()
+			);
 		}
 	}
 

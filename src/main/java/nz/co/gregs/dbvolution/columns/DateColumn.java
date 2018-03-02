@@ -83,16 +83,17 @@ public class DateColumn extends DateExpression implements ColumnProvider {
 
 	@Override
 	public synchronized DateColumn copy() {
-		try {
-			DateColumn newInstance = this.getClass().newInstance();
-			newInstance.column = this.column;
-			return newInstance;
-		} catch (InstantiationException ex) {
-			throw new RuntimeException(ex);
-		} catch (IllegalAccessException ex) {
-			throw new RuntimeException(ex);
-		}
-
+		final AbstractColumn col = getColumn();
+		final DBRow row = col.getInstanceOfRow();
+		DateColumn newInstance = new DateColumn(row, (DBDate) col.getAppropriateQDTFromRow(row));
+		return newInstance;
+//		try {
+//			DateColumn newInstance = this.getClass().newInstance();
+//			newInstance.column = this.column.copy();
+//			return newInstance;
+//		} catch (InstantiationException | IllegalAccessException ex) {
+//			throw new RuntimeException(ex);
+//		}
 	}
 
 	@Override

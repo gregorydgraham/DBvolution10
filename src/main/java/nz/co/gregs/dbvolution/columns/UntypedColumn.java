@@ -28,6 +28,7 @@
  */
 package nz.co.gregs.dbvolution.columns;
 
+import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.datatypes.DBUntypedValue;
 import nz.co.gregs.dbvolution.expressions.UntypedExpression;
@@ -69,16 +70,11 @@ public class UntypedColumn extends UntypedExpression implements ColumnProvider {
 
 	@Override
 	public synchronized UntypedColumn copy() {
-		UntypedColumn newInstance;
-		try {
-			newInstance = this.getClass().newInstance();
-			newInstance.column = column;
-			return newInstance;
-		} catch (InstantiationException | IllegalAccessException ex) {
-			throw new RuntimeException(ex);
-		}
+		final AbstractColumn col = getColumn();
+		final DBRow row = col.getInstanceOfRow();
+		UntypedColumn newInstance = new UntypedColumn(row, col.getAppropriateQDTFromRow(row));
+		return newInstance;
 	}
-
 
 	@Override
 	public AbstractColumn getColumn() {
@@ -94,5 +90,5 @@ public class UntypedColumn extends UntypedExpression implements ColumnProvider {
 	public String toSQLString(DBDefinition db) {
 		return column.toSQLString(db);
 	}
-	
+
 }

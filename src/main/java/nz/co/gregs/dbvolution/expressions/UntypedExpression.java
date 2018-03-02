@@ -77,6 +77,6 @@ public class UntypedExpression extends AnyExpression<Object, UntypedResult, DBUn
 
 	@Override
 	public UntypedExpression copy() {
-		return new UntypedExpression(this);
+		return new UntypedExpression((AnyResult<?>) this.getInnerResult().copy());
 	}
 }

@@ -20,7 +20,6 @@ import nz.co.gregs.dbvolution.results.StringResult;
 import nz.co.gregs.dbvolution.results.NumberResult;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -74,14 +73,7 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 
 	@Override
 	public NumberExpression nullExpression() {
-		return new NumberExpression() {
-			private final static long serialVersionUID = 1l;
-
-			@Override
-			public String toSQLString(DBDefinition db) {
-				return db.getNull();
-			}
-		};
+		return new NumberNullExpression();
 	}
 
 	/**
@@ -230,7 +222,7 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 
 	@Override
 	public NumberExpression copy() {
-		return isNullSafetyTerminator() ? nullNumber() : new NumberExpression(getInnerResult());
+		return isNullSafetyTerminator() ? nullNumber() : new NumberExpression((AnyResult<?>) getInnerResult().copy());
 	}
 
 	/**
@@ -1241,19 +1233,7 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 	 */
 	@Override
 	public BooleanExpression isLessThan(NumberResult numberExpression) {
-		return new BooleanExpression(new DBBinaryBooleanArithmetic(this, numberExpression) {
-			private final static long serialVersionUID = 1l;
-
-			@Override
-			protected String getEquationOperator(DBDefinition db) {
-				return " < ";
-			}
-
-			@Override
-			public boolean getIncludesNull() {
-				return false;
-			}
-		});
+		return new BooleanExpression(new IsLessThanExpression(this, numberExpression));
 	}
 
 	/**
@@ -1767,23 +1747,7 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 	 */
 	public static NumberExpression greatestOf(NumberResult... possibleValues) {
 		NumberExpression greatestExpr
-				= new NumberExpression(new DBNnaryNumberFunction(possibleValues) {
-					private final static long serialVersionUID = 1l;
-
-					@Override
-					public String toSQLString(DBDefinition db) {
-						List<String> strs = new ArrayList<>();
-						for (NumberResult num : this.values) {
-							strs.add(num.toSQLString(db));
-						}
-						return db.doGreatestOfTransformation(strs);
-					}
-
-					@Override
-					protected String getFunctionName(DBDefinition db) {
-						return db.getGreatestOfFunctionName();
-					}
-				});
+				= new NumberExpression(new GreatestOfExpression(possibleValues));
 		return greatestExpr;
 	}
 
@@ -1827,19 +1791,7 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 	 */
 	public NumberExpression ifDBNull(NumberResult alternative) {
 		return new NumberExpression(
-				new NumberNumberFunctionNumberResult(this, alternative) {
-			private final static long serialVersionUID = 1l;
-
-			@Override
-			public String toSQLString(DBDefinition db) {
-				return db.doNumberIfNullTransform(this.getFirst().toSQLString(db), getSecond().toSQLString(db));
-			}
-
-			@Override
-			String getFunctionName(DBDefinition db) {
-				return db.getIfNullFunctionName();
-			}
-		});
+				new IfDBNullExpression(this, alternative));
 	}
 
 	/**
@@ -1872,23 +1824,7 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 	 * current function.
 	 */
 	public NumberExpression exp() {
-		return new NumberExpression(new DBUnaryFunction(this) {
-			private final static long serialVersionUID = 1l;
-
-			@Override
-			public String toSQLString(DBDefinition db) {
-				if (!db.supportsExpFunction()) {
-					return E.power(this.only.isGreaterThan(799).ifThenElse(null, this.only)).toSQLString(db);
-				} else {
-					return super.toSQLString(db); //To change body of generated methods, choose Tools | Templates.
-				}
-			}
-
-			@Override
-			String getFunctionName(DBDefinition db) {
-				return db.getExpFunctionName();
-			}
-		});
+		return new NumberExpression(new ExponentialExpression(this));
 	}
 
 	/**
@@ -1905,14 +1841,7 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 	 * expression.
 	 */
 	public NumberExpression cos() {
-		return new NumberExpression(new DBUnaryFunction(this) {
-			private final static long serialVersionUID = 1l;
-
-			@Override
-			String getFunctionName(DBDefinition db) {
-				return "cos";
-			}
-		});
+		return new NumberExpression(new CosineExpression(this));
 	}
 
 	/**
@@ -1930,25 +1859,7 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 	 * current number expression.
 	 */
 	public NumberExpression cosh() {
-		return new NumberExpression(new DBUnaryFunction(this) {
-			private final static long serialVersionUID = 1l;
-
-			@Override
-			public String toSQLString(DBDefinition db) {
-				if (db.supportsHyperbolicFunctionsNatively()) {
-					return super.toSQLString(db); //To change body of generated methods, choose Tools | Templates.
-				} else {
-					NumberExpression first = this.only;
-					//(ex + e-x)/2
-					return first.exp().plus(first.times(-1).exp().bracket()).bracket().dividedBy(2).bracket().toSQLString(db);
-				}
-			}
-
-			@Override
-			String getFunctionName(DBDefinition db) {
-				return "cosh";
-			}
-		});
+		return new NumberExpression(new HyperbolicCosineExpression(this));
 	}
 
 	/**
@@ -1965,14 +1876,7 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 	 * expression.
 	 */
 	public NumberExpression sine() {
-		return new NumberExpression(new DBUnaryFunction(this) {
-			private final static long serialVersionUID = 1l;
-
-			@Override
-			String getFunctionName(DBDefinition db) {
-				return "sin";
-			}
-		});
+		return new NumberExpression(new SineExpression(this));
 	}
 
 	/**
@@ -1991,7 +1895,7 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 	 */
 	public NumberExpression sinh() {
 
-		return new SinhFunction(this);
+		return new HyperbolicSineExpression(this);
 	}
 
 	@Override
@@ -1999,11 +1903,11 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 		return this;
 	}
 
-	public static class SinhFunction extends DBUnaryFunction {
+	public static class HyperbolicSineExpression extends DBUnaryFunction {
 
 		private final static long serialVersionUID = 1l;
 
-		public SinhFunction(NumberExpression only) {
+		public HyperbolicSineExpression(NumberExpression only) {
 			this.only = only.isGreaterThan(700).ifThenElse(nullNumber(), only);
 		}
 
@@ -2023,6 +1927,14 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 		String getFunctionName(DBDefinition db) {
 			return "sinh";
 		}
+
+		@Override
+		public HyperbolicSineExpression copy() {
+			final AnyResult<?> innerResult = getInnerResult();
+			return innerResult == null
+					? new HyperbolicSineExpression(only)
+					: new HyperbolicSineExpression(only.copy());
+		}
 	};
 
 	/**
@@ -2040,14 +1952,7 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 	 * expression.
 	 */
 	public NumberExpression tan() {
-		return new NumberExpression(new DBUnaryFunction(this) {
-			private final static long serialVersionUID = 1l;
-
-			@Override
-			String getFunctionName(DBDefinition db) {
-				return "tan";
-			}
-		});
+		return new NumberExpression(new TangentExpression(this));
 	}
 
 	/**
@@ -2065,25 +1970,7 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 	 * current number expression.
 	 */
 	public NumberExpression tanh() {
-		return new NumberExpression(new DBUnaryFunction(this) {
-			private final static long serialVersionUID = 1l;
-
-			@Override
-			public String toSQLString(DBDefinition db) {
-				if (db.supportsHyperbolicFunctionsNatively()) {
-					return super.toSQLString(db); //To change body of generated methods, choose Tools | Templates.
-				} else {
-					NumberExpression first = this.only;
-					//(ex - e-x)/(ex + e-x)
-					return first.exp().minus(first.times(-1).exp()).bracket().dividedBy(first.exp().plus(first.times(-1).exp()).bracket()).bracket().toSQLString(db);
-				}
-			}
-
-			@Override
-			String getFunctionName(DBDefinition db) {
-				return "tanh";
-			}
-		});
+		return new NumberExpression(new HyperbolicTangentExpression(this));
 	}
 
 	/**
@@ -2096,14 +1983,7 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 	 * number expression.
 	 */
 	public NumberExpression abs() {
-		return new NumberExpression(new DBUnaryFunction(this) {
-			private final static long serialVersionUID = 1l;
-
-			@Override
-			String getFunctionName(DBDefinition db) {
-				return "abs";
-			}
-		});
+		return new NumberExpression(new AbsoluteValueExpression(this));
 	}
 
 	/**
@@ -2132,14 +2012,7 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 	 * number expression.
 	 */
 	public NumberExpression arccos() {
-		return new NumberExpression(new DBUnaryFunction(this) {
-			private final static long serialVersionUID = 1l;
-
-			@Override
-			String getFunctionName(DBDefinition db) {
-				return "acos";
-			}
-		});
+		return new NumberExpression(new InverseCosineExpression(this));
 	}
 
 	/**
@@ -2152,31 +2025,7 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 	 * number expression.
 	 */
 	public NumberExpression arcsin() {
-		return new NumberExpression(new DBUnaryFunction(this) {
-			private final static long serialVersionUID = 1l;
-
-			@Override
-			public String toSQLString(DBDefinition db) {
-				if (db.supportsArcSineFunction()) {
-					return super.toSQLString(db);
-				} else {
-					NumberExpression x = only;
-					return ifThenElse(
-							BooleanExpression.allOf(
-									only.isBetweenInclusive(-1, 1),
-									ONE.plus(ONE.minus(x.squared()).squareRoot()).isNot(0)
-							),
-							x.dividedBy(ONE.plus(ONE.minus(x.squared()).squareRoot())).arctan().times(2),
-							nullNumber()
-					).toSQLString(db);
-				}
-			}
-
-			@Override
-			String getFunctionName(DBDefinition db) {
-				return "asin";
-			}
-		});
+		return new NumberExpression(new InverseSineExpression(this));
 	}
 
 	/**
@@ -2189,14 +2038,7 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 	 * number expression.
 	 */
 	public NumberExpression arctan() {
-		return new NumberExpression(new DBUnaryFunction(this) {
-			private final static long serialVersionUID = 1l;
-
-			@Override
-			String getFunctionName(DBDefinition db) {
-				return "atan";
-			}
-		});
+		return new NumberExpression(new InverseTangentExpression(this));
 	}
 
 	/**
@@ -2224,14 +2066,7 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 	 * expression.
 	 */
 	public NumberExpression arctan2(NumberExpression number) {
-		return new NumberExpression(new NumberNumberFunctionNumberResult(this, number) {
-			private final static long serialVersionUID = 1l;
-
-			@Override
-			String getFunctionName(DBDefinition db) {
-				return db.getArctan2FunctionName();
-			}
-		});
+		return new NumberExpression(new InverseTangent2Expression(this, number));
 	}
 
 	/**
@@ -2300,23 +2135,7 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 	 * expression.
 	 */
 	public NumberExpression cotangent() {
-		return new NumberExpression(new DBUnaryFunction(this) {
-			private final static long serialVersionUID = 1l;
-
-			@Override
-			public String toSQLString(DBDefinition db) {
-				if (db.supportsCotangentFunction()) {
-					return super.toSQLString(db);
-				} else {
-					return only.cos().dividedBy(only.sine()).bracket().toSQLString(db);
-				}
-			}
-
-			@Override
-			String getFunctionName(DBDefinition db) {
-				return "cot";
-			}
-		});
+		return new NumberExpression(new CotangentExpression(this));
 	}
 
 	/**
@@ -2332,23 +2151,7 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 	 * number expression.
 	 */
 	public NumberExpression degrees() {
-		return new NumberExpression(new DBUnaryFunction(this) {
-			private final static long serialVersionUID = 1l;
-
-			@Override
-			public String toSQLString(DBDefinition db) {
-				if (db.supportsDegreesFunction()) {
-					return super.toSQLString(db);
-				} else {
-					return db.doDegreesTransform(this.only.toSQLString(db));
-				}
-			}
-
-			@Override
-			String getFunctionName(DBDefinition db) {
-				return "degrees";
-			}
-		});
+		return new NumberExpression(new DegreesExpression(this));
 	}
 
 	/**
@@ -2364,23 +2167,7 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 	 * number expression.
 	 */
 	public NumberExpression radians() {
-		return new NumberExpression(new DBUnaryFunction(this) {
-			private final static long serialVersionUID = 1l;
-
-			@Override
-			public String toSQLString(DBDefinition db) {
-				if (db.supportsRadiansFunction()) {
-					return super.toSQLString(db);
-				} else {
-					return db.doRadiansTransform(this.only.toSQLString(db));
-				}
-			}
-
-			@Override
-			String getFunctionName(DBDefinition db) {
-				return "radians";
-			}
-		});
+		return new NumberExpression(new RadiansExpression(this));
 	}
 
 	/**
@@ -2393,14 +2180,7 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 	 * expression.
 	 */
 	public NumberExpression logN() {
-		return new NumberExpression(new DBUnaryFunction(this) {
-			private final static long serialVersionUID = 1l;
-
-			@Override
-			String getFunctionName(DBDefinition db) {
-				return db.getNaturalLogFunctionName();
-			}
-		});
+		return new NumberExpression(new NaturalLogExpression(this));
 	}
 
 	/**
@@ -2413,19 +2193,7 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 	 * expression.
 	 */
 	public NumberExpression logBase10() {
-		return new NumberExpression(new DBUnaryFunction(this) {
-			private final static long serialVersionUID = 1l;
-
-			@Override
-			public String toSQLString(DBDefinition db) {
-				return db.doLogBase10NumberTransform(this.only.toSQLString(db));
-			}
-
-			@Override
-			String getFunctionName(DBDefinition db) {
-				return db.getLogBase10FunctionName();
-			}
-		});
+		return new NumberExpression(new LogBase10Expression(this));
 	}
 
 	/**
@@ -2440,14 +2208,7 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 	 * @return a NumberExpression
 	 */
 	public NumberExpression power(NumberResult n) {
-		return new NumberExpression(new NumberNumberFunctionNumberResult(this, n) {
-			private final static long serialVersionUID = 1l;
-
-			@Override
-			String getFunctionName(DBDefinition db) {
-				return "power";
-			}
-		});
+		return new NumberExpression(new PowerExpression(this, n));
 	}
 
 	/**
@@ -2476,20 +2237,7 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 	 * query.
 	 */
 	static public NumberExpression random() {
-		return new NumberExpression(new DBNonaryFunction() {
-			private final static long serialVersionUID = 1l;
-
-			@Override
-			public String toSQLString(DBDefinition db) {
-				return db.doRandomNumberTransform();
-			}
-
-			@Override
-			String getFunctionName(DBDefinition db) {
-				return "rand";
-			}
-
-		});
+		return new NumberExpression(new RandomNumberExpression());
 	}
 
 	/**
@@ -2502,14 +2250,7 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 	 * @return a NumberExpression
 	 */
 	public NumberExpression sign() {
-		return new NumberExpression(new DBUnaryFunction(this) {
-			private final static long serialVersionUID = 1l;
-
-			@Override
-			String getFunctionName(DBDefinition db) {
-				return "sign";
-			}
-		});
+		return new NumberExpression(new SignExpression(this));
 	}
 
 	/**
@@ -2521,14 +2262,7 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 	 * @return a NumberExpression
 	 */
 	public NumberExpression squareRoot() {
-		return new NumberExpression(new DBUnaryFunction(this) {
-			private final static long serialVersionUID = 1l;
-
-			@Override
-			String getFunctionName(DBDefinition db) {
-				return "sqrt";
-			}
-		});
+		return new NumberExpression(new SquareRootExpression(this));
 	}
 
 	/**
@@ -2548,14 +2282,7 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 	 * @return the value of the equation rounded up to the nearest integer.
 	 */
 	public NumberExpression roundUp() {
-		return new NumberExpression(new DBUnaryFunction(this) {
-			private final static long serialVersionUID = 1l;
-
-			@Override
-			String getFunctionName(DBDefinition db) {
-				return db.getRoundUpFunctionName();
-			}
-		});
+		return new NumberExpression(new RoundUpExpression(this));
 	}
 
 	/**
@@ -2567,19 +2294,7 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 	 * @return the equation rounded to the nearest integer.
 	 */
 	public NumberExpression round() {
-		return new NumberExpression(new DBUnaryFunction(this) {
-			private final static long serialVersionUID = 1l;
-
-			@Override
-			public String toSQLString(DBDefinition db) {
-				return db.doRoundTransform(only.toSQLString(db));
-			}
-
-			@Override
-			String getFunctionName(DBDefinition db) {
-				return "round";
-			}
-		});
+		return new NumberExpression(new RoundExpression(this));
 	}
 
 	/**
@@ -2659,28 +2374,7 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 	 * @return the equation rounded to the nearest integer.
 	 */
 	public NumberExpression round(NumberExpression decimalPlaces) {
-		return new NumberExpression(new NumberNumberFunctionNumberResult(this, NumberExpression.value(decimalPlaces)) {
-			private final static long serialVersionUID = 1l;
-
-			@Override
-			public String toSQLString(DBDefinition db) {
-				try {
-					return db.doRoundWithDecimalPlacesTransform(getFirst().toSQLString(db), getSecond().toSQLString(db));
-				} catch (UnsupportedOperationException exp) {
-					NumberExpression power = TEN.power(getSecond().round()).bracket();
-					return getFirst()
-						.times(power)
-						.bracket()
-						.round()
-						.dividedBy(power).toSQLString(db);
-				}
-			}
-
-			@Override
-			String getFunctionName(DBDefinition db) {
-				return "round";
-			}
-		});
+		return new NumberExpression(new RoundToNumberofDecimalPlaces(this, NumberExpression.value(decimalPlaces)));
 	}
 
 	/**
@@ -2699,14 +2393,7 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 	 * @return the value of the equation rounded down to the nearest integer.
 	 */
 	public NumberExpression roundDown() {
-		return new NumberExpression(new DBUnaryFunction(this) {
-			private final static long serialVersionUID = 1l;
-
-			@Override
-			String getFunctionName(DBDefinition db) {
-				return "floor";
-			}
-		});
+		return new NumberExpression(new RoundDownExpression(this));
 	}
 
 	/**
@@ -2725,24 +2412,7 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 	 * @return the value of the equation with the decimal part removed.
 	 */
 	public IntegerExpression trunc() {
-		return new IntegerExpression(new DBUnaryIntegerFunction(this) {
-			private final static long serialVersionUID = 1l;
-
-			@Override
-			public String toSQLString(DBDefinition db) {
-				return db.doTruncTransform(only.toSQLString(db), "0");
-			}
-
-			@Override
-			String getFunctionName(DBDefinition db) {
-				return db.getTruncFunctionName();
-			}
-
-//			@Override
-//			protected String afterValue(DBDefinition db) {
-//				return ", 0) ";
-//			}
-		});
+		return new IntegerExpression(new TruncateExpression(this));
 	}
 
 	/**
@@ -2775,25 +2445,7 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 	 */
 	@Override
 	public IntegerExpression integerResult() {
-		return new IntegerExpression(new DBUnaryIntegerFunction(this) {
-			private final static long serialVersionUID = 1l;
-
-			@Override
-			public String toSQLString(DBDefinition db) {
-				return db.doNumberToIntegerTransform(only.toSQLString(db));
-			}
-
-			@Override
-			String getFunctionName(DBDefinition db) {
-				return db.getTruncFunctionName();
-			}
-
-			@Override
-			protected String afterValue(DBDefinition db) {
-				return ", 0) ";
-			}
-
-		});
+		return new IntegerExpression(new IntegerResultExpression(this));
 	}
 
 	/**
@@ -2885,14 +2537,7 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 	 * @return a NumberExpression
 	 */
 	public NumberExpression plus(NumberResult number) {
-		return new NumberExpression(new DBBinaryArithmetic(this, new NumberExpression(number)) {
-			private final static long serialVersionUID = 1l;
-
-			@Override
-			protected String getEquationOperator(DBDefinition db) {
-				return " + ";
-			}
-		});
+		return new NumberExpression(new PlusExpression(this, new NumberExpression(number)));
 	}
 
 	/**
@@ -2937,14 +2582,7 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 	 * @return a NumberExpression
 	 */
 	public NumberExpression times(NumberResult number) {
-		return new NumberExpression(new DBBinaryArithmetic(this, new NumberExpression(number)) {
-			private final static long serialVersionUID = 1l;
-
-			@Override
-			protected String getEquationOperator(DBDefinition db) {
-				return " * ";
-			}
-		});
+		return new NumberExpression(new TimesExpression(this, new NumberExpression(number)));
 	}
 
 	/**
@@ -2989,21 +2627,8 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 	 * @return a NumberExpression
 	 */
 	public NumberExpression dividedBy(NumberResult number) {
-		return new NumberExpression(new DBBinaryArithmetic(this,
-				new NumberExpression(number)) {
-			private final static long serialVersionUID = 1l;
-
-			@Override
-			protected String getEquationOperator(DBDefinition db) {
-				return " / ";
-			}
-
-			@Override
-			public String toSQLString(DBDefinition db) {
-				return "(0.0+" + first.toSQLString(db) + ")" + this.getEquationOperator(db) + "("+second.toSQLString(db)+")";
-			}
-
-		}
+		return new NumberExpression(new DivideByExpression(this,
+				new NumberExpression(number))
 		);
 	}
 
@@ -3058,23 +2683,7 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 	 * @return a NumberExpression of a Modulus operation.
 	 */
 	public NumberExpression mod(NumberResult number) {
-		return new NumberExpression(new NumberNumberFunctionNumberResult(this, NumberExpression.value(number)) {
-			private final static long serialVersionUID = 1l;
-
-			@Override
-			public String toSQLString(DBDefinition db) {
-				if (db.supportsModulusFunction()) {
-					return db.doModulusTransform(getFirst().toSQLString(db), getSecond().toSQLString(db));
-				} else {
-					return "((" + getFirst().toSQLString(db) + ") % (" + getSecond().toSQLString(db) + "))";
-				}
-			}
-
-			@Override
-			String getFunctionName(DBDefinition db) {
-				return "MOD";
-			}
-		});
+		return new NumberExpression(new ModulusRemainderExpression(this, NumberExpression.value(number)));
 	}
 
 	/**
@@ -3175,23 +2784,7 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 	 */
 	public StringExpression choose(StringResult... stringsToChooseFrom) {
 		StringExpression leastExpr
-				= new StringExpression(new DBNumberAndNnaryStringFunction(this, stringsToChooseFrom) {
-					private final static long serialVersionUID = 1l;
-
-					@Override
-					public String toSQLString(DBDefinition db) {
-						List<String> strs = new ArrayList<>();
-						for (StringResult num : this.values) {
-							strs.add(num.toSQLString(db));
-						}
-						return db.doChooseTransformation(NumberExpression.value(numberExpression).plus(1).bracket().toSQLString(db), strs);
-					}
-
-//					@Override
-//					protected String getFunctionName(DBDefinition db) {
-//						return db.getChooseFunctionName();
-//					}
-				});
+				= new StringExpression(new ChooseFromStringsExpression(this, stringsToChooseFrom));
 		return leastExpr;
 	}
 
@@ -3265,19 +2858,7 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 	 * @return A number expression representing the average of the grouped rows.
 	 */
 	public NumberExpression average() {
-		return new NumberExpression(new DBUnaryFunction(this) {
-			private final static long serialVersionUID = 1l;
-
-			@Override
-			String getFunctionName(DBDefinition db) {
-				return db.getAverageFunctionName();
-			}
-
-			@Override
-			public boolean isAggregator() {
-				return true;
-			}
-		});
+		return new NumberExpression(new AverageExpression(this));
 	}
 
 	/**
@@ -3303,31 +2884,7 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 	 * grouped rows.
 	 */
 	public NumberExpression standardDeviation() {
-		return new NumberExpression(new DBUnaryFunction(this) {
-			private final static long serialVersionUID = 1l;
-
-			@Override
-			public String toSQLString(DBDefinition db) {
-				if (db.supportsStandardDeviationFunction()) {
-					return super.toSQLString(db);
-				} else if (this.only != null) {
-					NumberExpression numb = this.only;
-					return new NumberExpression(numb).max().minus(new NumberExpression(numb).min()).bracket().dividedBy(6).toSQLString(db);
-				} else {
-					return null;
-				}
-			}
-
-			@Override
-			String getFunctionName(DBDefinition db) {
-				return db.getStandardDeviationFunctionName();
-			}
-
-			@Override
-			public boolean isAggregator() {
-				return true;
-			}
-		});
+		return new NumberExpression(new StandardDeviationExpression(this));
 	}
 
 	/**
@@ -3374,19 +2931,7 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 	 * @return the sum of all the values from the column.
 	 */
 	public NumberExpression sum() {
-		return new NumberExpression(new DBUnaryFunction(this) {
-			private final static long serialVersionUID = 1l;
-
-			@Override
-			String getFunctionName(DBDefinition db) {
-				return db.getSumFunctionName();
-			}
-
-			@Override
-			public boolean isAggregator() {
-				return true;
-			}
-		});
+		return new NumberExpression(new SumExpression(this));
 	}
 
 	@Override
@@ -3469,8 +3014,8 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 			} catch (IllegalAccessException | InstantiationException ex) {
 				throw new RuntimeException(ex);
 			}
-			newInstance.first = first.copy();
-			newInstance.second = second.copy();
+			newInstance.first = first == null ? null : first.copy();
+			newInstance.second = second == null ? null : second.copy();
 			return newInstance;
 		}
 
@@ -3533,17 +3078,6 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 		}
 
 		@Override
-		public DBNonaryFunction copy() {
-			DBNonaryFunction newInstance;
-			try {
-				newInstance = getClass().newInstance();
-			} catch (InstantiationException | IllegalAccessException ex) {
-				throw new RuntimeException(ex);
-			}
-			return newInstance;
-		}
-
-		@Override
 		public boolean isAggregator() {
 			return false;
 		}
@@ -3594,18 +3128,6 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 		@Override
 		public String toSQLString(DBDefinition db) {
 			return this.beforeValue(db) + (only == null ? "" : only.toSQLString(db)) + this.afterValue(db);
-		}
-
-		@Override
-		public DBUnaryFunction copy() {
-			DBUnaryFunction newInstance;
-			try {
-				newInstance = getClass().newInstance();
-			} catch (InstantiationException | IllegalAccessException ex) {
-				throw new RuntimeException(ex);
-			}
-			newInstance.only = only.copy();
-			return newInstance;
 		}
 
 		@Override
@@ -3677,7 +3199,7 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 			} catch (InstantiationException | IllegalAccessException ex) {
 				throw new RuntimeException(ex);
 			}
-			newInstance.only = only.copy();
+			newInstance.only = only == null ? null : only.copy();
 			return newInstance;
 		}
 
@@ -3748,8 +3270,8 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 			} catch (InstantiationException | IllegalAccessException ex) {
 				throw new RuntimeException(ex);
 			}
-			newInstance.first = getFirst().copy();
-			newInstance.second = getSecond().copy();
+			newInstance.first = getFirst() == null ? null : getFirst().copy();
+			newInstance.second = getSecond() == null ? null : getSecond().copy();
 			return newInstance;
 		}
 
@@ -3867,8 +3389,8 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 			} catch (InstantiationException | IllegalAccessException ex) {
 				throw new RuntimeException(ex);
 			}
-			newInstance.first = first.copy();
-			newInstance.second = second.copy();
+			newInstance.first = first == null ? null : first.copy();
+			newInstance.second = second == null ? null : second.copy();
 			return newInstance;
 		}
 
@@ -3967,7 +3489,9 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 				throw new RuntimeException(ex);
 			}
 			newInstance.column = this.getColumn().copy();
-			Collections.copy(this.getValues(), newInstance.getValues());
+			for (NumberResult value : this.getValues()) {
+				newInstance.getValues().add(value == null ? null : value.copy());
+			}
 			return newInstance;
 		}
 
@@ -4091,8 +3615,10 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 			} catch (InstantiationException | IllegalAccessException ex) {
 				throw new RuntimeException(ex);
 			}
-			newInstance.column = this.column.copy();
-			Collections.copy(this.values, newInstance.values);
+			newInstance.column = this.column == null ? null : this.column.copy();
+			for (NumberResult value : this.values) {
+				newInstance.values.add(value.copy());
+			}
 			return newInstance;
 		}
 
@@ -4180,8 +3706,10 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 			} catch (InstantiationException | IllegalAccessException ex) {
 				throw new RuntimeException(ex);
 			}
-			newInstance.numberExpression = this.numberExpression.copy();
-			Collections.copy(this.values, newInstance.values);
+			newInstance.numberExpression = this.numberExpression == null ? null : this.numberExpression.copy();
+			for (StringResult value : this.values) {
+				newInstance.values.add(value == null ? null : value.copy());
+			}
 			return newInstance;
 		}
 
@@ -4267,7 +3795,7 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 			} catch (InstantiationException | IllegalAccessException ex) {
 				throw new RuntimeException(ex);
 			}
-			newInstance.only = only.copy();
+			newInstance.only = only == null ? null : only.copy();
 			return newInstance;
 		}
 
@@ -4313,6 +3841,11 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 		public boolean isAggregator() {
 			return true;
 		}
+
+		@Override
+		public MaxUnaryFunction copy() {
+			return new MaxUnaryFunction(only == null ? null : only.copy());
+		}
 	}
 
 	private static class MinUnaryFunction extends DBUnaryFunction {
@@ -4332,6 +3865,11 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 		public boolean isAggregator() {
 			return true;
 		}
+
+		@Override
+		public MinUnaryFunction copy() {
+			return new MinUnaryFunction(only == null ? null : only.copy());
+		}
 	}
 
 	private static class MinusBinaryArithmetic extends DBBinaryArithmetic {
@@ -4346,6 +3884,13 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 		protected String getEquationOperator(DBDefinition db) {
 			return " - ";
 		}
+
+		@Override
+		public MinusBinaryArithmetic copy() {
+			return new MinusBinaryArithmetic(
+					first == null ? null : first.copy(),
+					second == null ? null : second.copy());
+		}
 	}
 
 	private static class BracketUnaryFunction extends DBUnaryFunction {
@@ -4359,6 +3904,12 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 		@Override
 		String getFunctionName(DBDefinition db) {
 			return "";
+		}
+
+		@Override
+		public BracketUnaryFunction copy() {
+			return new BracketUnaryFunction(
+					only == null ? null : only.copy());
 		}
 	}
 
@@ -4378,6 +3929,13 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 		@Override
 		public String toSQLString(DBDefinition db) {
 			return first.toSQLString(db) + this.getEquationOperator(db) + "(" + second.toSQLString(db) + "+0.0)";
+		}
+
+		@Override
+		public DivisionBinaryArithmetic copy() {
+			return new DivisionBinaryArithmetic(
+					first == null ? null : first.copy(),
+					second == null ? null : second.copy());
 		}
 	}
 
@@ -4401,6 +3959,17 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 		@Override
 		protected String getFunctionName(DBDefinition db) {
 			return " IN ";
+		}
+
+		@Override
+		public IsInFunction copy() {
+			List<NumberResult> newValues = new ArrayList<>();
+			for (NumberResult value : getValues()) {
+				newValues.add(value == null ? null : value.copy());
+			}
+			return new IsInFunction(
+					getColumn() == null ? null : getColumn().copy(),
+					newValues.toArray(new NumberResult[]{}));
 		}
 	}
 
@@ -4426,6 +3995,12 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 		public boolean getIncludesNull() {
 			return only.getIncludesNull();
 		}
+
+		@Override
+		public StringResultFunction copy() {
+			return new StringResultFunction(
+					only == null ? null : only.copy());
+		}
 	}
 
 	private class IsFunction extends DBBinaryBooleanArithmetic {
@@ -4449,6 +4024,14 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 		protected String getEquationOperator(DBDefinition db) {
 			return " = ";
 		}
+
+		@Override
+		public IsFunction copy() {
+			return new IsFunction(
+					getFirst() == null ? null : getFirst().copy(),
+					getSecond() == null ? null : getSecond().copy()
+			);
+		}
 	}
 
 	private static class IsLessThanOrEqualFunction extends DBBinaryBooleanArithmetic {
@@ -4467,6 +4050,13 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 		@Override
 		public boolean getIncludesNull() {
 			return false;
+		}
+
+		@Override
+		public IsLessThanOrEqualFunction copy() {
+			return new IsLessThanOrEqualFunction(
+					getFirst() == null ? null : getFirst().copy(),
+					getSecond() == null ? null : getSecond().copy());
 		}
 	}
 
@@ -4487,6 +4077,13 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 		public boolean getIncludesNull() {
 			return false;
 		}
+
+		@Override
+		public IsGreaterThanFunction copy() {
+			return new IsGreaterThanFunction(
+					getFirst() == null ? null : getFirst().copy(),
+					getSecond() == null ? null : getSecond().copy());
+		}
 	}
 
 	private static class IsGreaterThanOrEqualFunction extends DBBinaryBooleanArithmetic {
@@ -4505,6 +4102,13 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 		@Override
 		public boolean getIncludesNull() {
 			return false;
+		}
+
+		@Override
+		public IsGreaterThanOrEqualFunction copy() {
+			return new IsGreaterThanOrEqualFunction(
+					getFirst() == null ? null : getFirst().copy(),
+					getSecond() == null ? null : getSecond().copy());
 		}
 	}
 
@@ -4529,5 +4133,909 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 		protected String getFunctionName(DBDefinition db) {
 			return db.getLeastOfFunctionName();
 		}
+
+		@Override
+		public LeastOfFunction copy() {
+			List<NumberResult> newValues = new ArrayList<>();
+			for (NumberResult value : values) {
+				newValues.add(value == null ? null : value.copy());
+			}
+			return new LeastOfFunction(newValues.toArray(new NumberResult[]{}));
+		}
 	}
+
+	private static class NumberNullExpression extends NumberExpression {
+
+		public NumberNullExpression() {
+		}
+		private final static long serialVersionUID = 1l;
+
+		@Override
+		public String toSQLString(DBDefinition db) {
+			return db.getNull();
+		}
+
+		@Override
+		public NumberNullExpression copy() {
+			return new NumberNullExpression();
+		}
+	}
+
+	protected static class IsLessThanExpression extends DBBinaryBooleanArithmetic {
+
+		public IsLessThanExpression(NumberExpression first, NumberResult second) {
+			super(first, second);
+		}
+		private final static long serialVersionUID = 1l;
+
+		@Override
+		protected String getEquationOperator(DBDefinition db) {
+			return " < ";
+		}
+
+		@Override
+		public boolean getIncludesNull() {
+			return false;
+		}
+
+		@Override
+		public IsLessThanExpression copy() {
+			return new IsLessThanExpression(
+					getFirst() == null ? null : getFirst().copy(),
+					getSecond() == null ? null : getSecond().copy());
+		}
+	}
+
+	protected static class GreatestOfExpression extends DBNnaryNumberFunction {
+
+		public GreatestOfExpression(NumberResult[] rightHandSide) {
+			super(rightHandSide);
+		}
+		private final static long serialVersionUID = 1l;
+
+		@Override
+		public String toSQLString(DBDefinition db) {
+			List<String> strs = new ArrayList<>();
+			for (NumberResult num : this.values) {
+				strs.add(num.toSQLString(db));
+			}
+			return db.doGreatestOfTransformation(strs);
+		}
+
+		@Override
+		protected String getFunctionName(DBDefinition db) {
+			return db.getGreatestOfFunctionName();
+		}
+
+		@Override
+		public GreatestOfExpression copy() {
+			List<NumberResult> newValues = new ArrayList<>();
+			for (NumberResult value : values) {
+				newValues.add(value == null ? null : value.copy());
+			}
+			return new GreatestOfExpression(newValues.toArray(new NumberResult[]{}));
+		}
+	}
+
+	protected class IfDBNullExpression extends NumberNumberFunctionNumberResult {
+
+		public IfDBNullExpression(NumberExpression first, NumberResult second) {
+			super(first, second);
+		}
+		private final static long serialVersionUID = 1l;
+
+		@Override
+		public String toSQLString(DBDefinition db) {
+			return db.doNumberIfNullTransform(this.getFirst().toSQLString(db), getSecond().toSQLString(db));
+		}
+
+		@Override
+		String getFunctionName(DBDefinition db) {
+			return db.getIfNullFunctionName();
+		}
+
+		@Override
+		public IfDBNullExpression copy() {
+			return new IfDBNullExpression(
+					getFirst() == null ? null : getFirst().copy(),
+					getSecond() == null ? null : getSecond().copy()
+			);
+		}
+	}
+
+	protected class ExponentialExpression extends DBUnaryFunction {
+
+		public ExponentialExpression(NumberExpression only) {
+			super(only);
+		}
+		private final static long serialVersionUID = 1l;
+
+		@Override
+		public String toSQLString(DBDefinition db) {
+			if (!db.supportsExpFunction()) {
+				return E.power(this.only.isGreaterThan(799).ifThenElse(null, this.only)).toSQLString(db);
+			} else {
+				return super.toSQLString(db); //To change body of generated methods, choose Tools | Templates.
+			}
+		}
+
+		@Override
+		String getFunctionName(DBDefinition db) {
+			return db.getExpFunctionName();
+		}
+
+		@Override
+		public ExponentialExpression copy() {
+			return new ExponentialExpression(
+					only == null ? null : only.copy()
+			);
+		}
+	}
+
+	protected static class CosineExpression extends DBUnaryFunction {
+
+		public CosineExpression(NumberExpression only) {
+			super(only);
+		}
+		private final static long serialVersionUID = 1l;
+
+		@Override
+		String getFunctionName(DBDefinition db) {
+			return "cos";
+		}
+
+		@Override
+		public CosineExpression copy() {
+			return new CosineExpression(
+					only == null ? null : only.copy()
+			);
+		}
+	}
+
+	protected class HyperbolicCosineExpression extends DBUnaryFunction {
+
+		public HyperbolicCosineExpression(NumberExpression only) {
+			super(only);
+		}
+		private final static long serialVersionUID = 1l;
+
+		@Override
+		public String toSQLString(DBDefinition db) {
+			if (db.supportsHyperbolicFunctionsNatively()) {
+				return super.toSQLString(db); //To change body of generated methods, choose Tools | Templates.
+			} else {
+				NumberExpression first = this.only;
+				//(ex + e-x)/2
+				return first.exp().plus(first.times(-1).exp().bracket()).bracket().dividedBy(2).bracket().toSQLString(db);
+			}
+		}
+
+		@Override
+		String getFunctionName(DBDefinition db) {
+			return "cosh";
+		}
+
+		@Override
+		public HyperbolicCosineExpression copy() {
+			return new HyperbolicCosineExpression(
+					only == null ? null :only.copy());
+		}
+	}
+
+	protected static class SineExpression extends DBUnaryFunction {
+
+		public SineExpression(NumberExpression only) {
+			super(only);
+		}
+		private final static long serialVersionUID = 1l;
+
+		@Override
+		String getFunctionName(DBDefinition db) {
+			return "sin";
+		}
+
+		@Override
+		public SineExpression copy() {
+			return new SineExpression(only == null ? null : only.copy());
+		}
+	}
+
+	protected static class TangentExpression extends DBUnaryFunction {
+
+		public TangentExpression(NumberExpression only) {
+			super(only);
+		}
+		private final static long serialVersionUID = 1l;
+
+		@Override
+		String getFunctionName(DBDefinition db) {
+			return "tan";
+		}
+
+		@Override
+		public TangentExpression copy() {
+			return new TangentExpression(only == null ? null : only.copy());
+		}
+	}
+
+	protected class HyperbolicTangentExpression extends DBUnaryFunction {
+
+		public HyperbolicTangentExpression(NumberExpression only) {
+			super(only);
+		}
+		private final static long serialVersionUID = 1l;
+
+		@Override
+		public String toSQLString(DBDefinition db) {
+			if (db.supportsHyperbolicFunctionsNatively()) {
+				return super.toSQLString(db); //To change body of generated methods, choose Tools | Templates.
+			} else {
+				NumberExpression first = this.only;
+				//(ex - e-x)/(ex + e-x)
+				return first.exp().minus(first.times(-1).exp()).bracket().dividedBy(first.exp().plus(first.times(-1).exp()).bracket()).bracket().toSQLString(db);
+			}
+		}
+
+		@Override
+		String getFunctionName(DBDefinition db) {
+			return "tanh";
+		}
+
+		@Override
+		public HyperbolicTangentExpression copy() {
+			return new HyperbolicTangentExpression(only == null ? null : only.copy());
+		}
+	}
+
+	protected static class AbsoluteValueExpression extends DBUnaryFunction {
+
+		public AbsoluteValueExpression(NumberExpression only) {
+			super(only);
+		}
+		private final static long serialVersionUID = 1l;
+
+		@Override
+		String getFunctionName(DBDefinition db) {
+			return "abs";
+		}
+
+		@Override
+		public AbsoluteValueExpression copy() {
+			return new AbsoluteValueExpression(only == null ? null : only.copy());
+		}
+	}
+
+	protected static class InverseCosineExpression extends DBUnaryFunction {
+
+		public InverseCosineExpression(NumberExpression only) {
+			super(only);
+		}
+		private final static long serialVersionUID = 1l;
+
+		@Override
+		String getFunctionName(DBDefinition db) {
+			return "acos";
+		}
+
+		@Override
+		public InverseCosineExpression copy() {
+			return new InverseCosineExpression(only == null ? null : only.copy());
+		}
+	}
+
+	protected class InverseSineExpression extends DBUnaryFunction {
+
+		public InverseSineExpression(NumberExpression only) {
+			super(only);
+		}
+		private final static long serialVersionUID = 1l;
+
+		@Override
+		public String toSQLString(DBDefinition db) {
+			if (db.supportsArcSineFunction()) {
+				return super.toSQLString(db);
+			} else {
+				NumberExpression x = only;
+				return ifThenElse(
+						BooleanExpression.allOf(
+								only.isBetweenInclusive(-1, 1),
+								ONE.plus(ONE.minus(x.squared()).squareRoot()).isNot(0)
+						),
+						x.dividedBy(ONE.plus(ONE.minus(x.squared()).squareRoot())).arctan().times(2),
+						nullNumber()
+				).toSQLString(db);
+			}
+		}
+
+		@Override
+		String getFunctionName(DBDefinition db) {
+			return "asin";
+		}
+
+		@Override
+		public InverseSineExpression copy() {
+			return new InverseSineExpression(only == null ? null : only.copy());
+		}
+	}
+
+	protected static class InverseTangentExpression extends DBUnaryFunction {
+
+		public InverseTangentExpression(NumberExpression only) {
+			super(only);
+		}
+		private final static long serialVersionUID = 1l;
+
+		@Override
+		String getFunctionName(DBDefinition db) {
+			return "atan";
+		}
+
+		@Override
+		public InverseTangentExpression copy() {
+			return new InverseTangentExpression(only == null ? null : only.copy());
+		}
+	}
+
+	protected static class InverseTangent2Expression extends NumberNumberFunctionNumberResult {
+
+		public InverseTangent2Expression(NumberExpression first, NumberExpression second) {
+			super(first, second);
+		}
+		private final static long serialVersionUID = 1l;
+
+		@Override
+		String getFunctionName(DBDefinition db) {
+			return db.getArctan2FunctionName();
+		}
+
+		@Override
+		public InverseTangent2Expression copy() {
+			return new InverseTangent2Expression(
+					getFirst() == null ? null : getFirst().copy(), 
+					getSecond() == null ? null : getSecond().copy());
+		}
+	}
+
+	protected static class CotangentExpression extends DBUnaryFunction {
+
+		public CotangentExpression(NumberExpression only) {
+			super(only);
+		}
+		private final static long serialVersionUID = 1l;
+
+		@Override
+		public String toSQLString(DBDefinition db) {
+			if (db.supportsCotangentFunction()) {
+				return super.toSQLString(db);
+			} else {
+				return only.cos().dividedBy(only.sine()).bracket().toSQLString(db);
+			}
+		}
+
+		@Override
+		String getFunctionName(DBDefinition db) {
+			return "cot";
+		}
+
+		@Override
+		public CotangentExpression copy() {
+			return new CotangentExpression(only == null ? null : only.copy());
+		}
+	}
+
+	protected static class DegreesExpression extends DBUnaryFunction {
+
+		public DegreesExpression(NumberExpression only) {
+			super(only);
+		}
+		private final static long serialVersionUID = 1l;
+
+		@Override
+		public String toSQLString(DBDefinition db) {
+			if (db.supportsDegreesFunction()) {
+				return super.toSQLString(db);
+			} else {
+				return db.doDegreesTransform(this.only.toSQLString(db));
+			}
+		}
+
+		@Override
+		String getFunctionName(DBDefinition db) {
+			return "degrees";
+		}
+
+		@Override
+		public DegreesExpression copy() {
+			return new DegreesExpression(only == null ? null : only.copy());
+		}
+	}
+
+	protected static class RadiansExpression extends DBUnaryFunction {
+
+		public RadiansExpression(NumberExpression only) {
+			super(only);
+		}
+		private final static long serialVersionUID = 1l;
+
+		@Override
+		public String toSQLString(DBDefinition db) {
+			if (db.supportsRadiansFunction()) {
+				return super.toSQLString(db);
+			} else {
+				return db.doRadiansTransform(this.only.toSQLString(db));
+			}
+		}
+
+		@Override
+		String getFunctionName(DBDefinition db) {
+			return "radians";
+		}
+
+		@Override
+		public RadiansExpression copy() {
+			return new RadiansExpression(only == null ? null : only.copy());
+		}
+	}
+
+	protected static class NaturalLogExpression extends DBUnaryFunction {
+
+		public NaturalLogExpression(NumberExpression only) {
+			super(only);
+		}
+		private final static long serialVersionUID = 1l;
+
+		@Override
+		String getFunctionName(DBDefinition db) {
+			return db.getNaturalLogFunctionName();
+		}
+
+		@Override
+		public NaturalLogExpression copy() {
+			return new NaturalLogExpression(only == null ? null : only.copy());
+		}
+	}
+
+	protected static class LogBase10Expression extends DBUnaryFunction {
+
+		public LogBase10Expression(NumberExpression only) {
+			super(only);
+		}
+		private final static long serialVersionUID = 1l;
+
+		@Override
+		public String toSQLString(DBDefinition db) {
+			return db.doLogBase10NumberTransform(this.only.toSQLString(db));
+		}
+
+		@Override
+		String getFunctionName(DBDefinition db) {
+			return db.getLogBase10FunctionName();
+		}
+
+		@Override
+		public LogBase10Expression copy() {
+			return new LogBase10Expression(only == null ? null : only.copy());
+		}
+	}
+
+	protected static class PowerExpression extends NumberNumberFunctionNumberResult {
+
+		public PowerExpression(NumberExpression first, NumberResult second) {
+			super(first, second);
+		}
+		private final static long serialVersionUID = 1l;
+
+		@Override
+		String getFunctionName(DBDefinition db) {
+			return "power";
+		}
+
+		@Override
+		public PowerExpression copy() {
+			return new PowerExpression(first == null ? null : first.copy(), second == null ? null : second.copy());
+		}
+	}
+
+	protected static class RandomNumberExpression extends DBNonaryFunction {
+
+		public RandomNumberExpression() {
+		}
+		private final static long serialVersionUID = 1l;
+
+		@Override
+		public String toSQLString(DBDefinition db) {
+			return db.doRandomNumberTransform();
+		}
+
+		@Override
+		String getFunctionName(DBDefinition db) {
+			return "rand";
+		}
+
+		@Override
+		public RandomNumberExpression copy() {
+			return new RandomNumberExpression();
+		}
+	}
+
+	protected static class SignExpression extends DBUnaryFunction {
+
+		public SignExpression(NumberExpression only) {
+			super(only);
+		}
+		private final static long serialVersionUID = 1l;
+
+		@Override
+		String getFunctionName(DBDefinition db) {
+			return "sign";
+		}
+
+		@Override
+		public SignExpression copy() {
+			return new SignExpression(only == null ? null : only.copy());
+		}
+	}
+
+	protected static class SquareRootExpression extends DBUnaryFunction {
+
+		public SquareRootExpression(NumberExpression only) {
+			super(only);
+		}
+		private final static long serialVersionUID = 1l;
+
+		@Override
+		String getFunctionName(DBDefinition db) {
+			return "sqrt";
+		}
+
+		@Override
+		public SquareRootExpression copy() {
+			return new SquareRootExpression(only == null ? null : only.copy());
+		}
+	}
+
+	protected static class RoundUpExpression extends DBUnaryFunction {
+
+		public RoundUpExpression(NumberExpression only) {
+			super(only);
+		}
+		private final static long serialVersionUID = 1l;
+
+		@Override
+		String getFunctionName(DBDefinition db) {
+			return db.getRoundUpFunctionName();
+		}
+
+		@Override
+		public RoundUpExpression copy() {
+			return new RoundUpExpression(only == null ? null : only.copy());
+		}
+	}
+
+	protected class RoundExpression extends DBUnaryFunction {
+
+		public RoundExpression(NumberExpression only) {
+			super(only);
+		}
+		private final static long serialVersionUID = 1l;
+
+		@Override
+		public String toSQLString(DBDefinition db) {
+			return db.doRoundTransform(only.toSQLString(db));
+		}
+
+		@Override
+		String getFunctionName(DBDefinition db) {
+			return "round";
+		}
+
+		@Override
+		public RoundExpression copy() {
+			return new RoundExpression(only == null ? null : only.copy());
+		}
+	}
+
+	protected class RoundToNumberofDecimalPlaces extends NumberNumberFunctionNumberResult {
+
+		public RoundToNumberofDecimalPlaces(NumberExpression first, NumberExpression second) {
+			super(first, second);
+		}
+		private final static long serialVersionUID = 1l;
+
+		@Override
+		public String toSQLString(DBDefinition db) {
+			try {
+				return db.doRoundWithDecimalPlacesTransform(getFirst().toSQLString(db), getSecond().toSQLString(db));
+			} catch (UnsupportedOperationException exp) {
+				NumberExpression power = TEN.power(getSecond().round()).bracket();
+				return getFirst()
+						.times(power)
+						.bracket()
+						.round()
+						.dividedBy(power).toSQLString(db);
+			}
+		}
+
+		@Override
+		String getFunctionName(DBDefinition db) {
+			return "round";
+		}
+
+		@Override
+		public RoundToNumberofDecimalPlaces copy() {
+			return new RoundToNumberofDecimalPlaces(
+					first == null ? null : first.copy(), second == null ? null : second.copy());
+		}
+	}
+
+	protected static class RoundDownExpression extends DBUnaryFunction {
+
+		public RoundDownExpression(NumberExpression only) {
+			super(only);
+		}
+		private final static long serialVersionUID = 1l;
+
+		@Override
+		String getFunctionName(DBDefinition db) {
+			return "floor";
+		}
+
+		@Override
+		public RoundDownExpression copy() {
+			return new RoundDownExpression(only == null ? null : only.copy());
+		}
+	}
+
+	protected class TruncateExpression extends DBUnaryIntegerFunction {
+
+		public TruncateExpression(NumberExpression only) {
+			super(only);
+		}
+		private final static long serialVersionUID = 1l;
+
+		@Override
+		public String toSQLString(DBDefinition db) {
+			return db.doTruncTransform(only.toSQLString(db), "0");
+		}
+
+		@Override
+		String getFunctionName(DBDefinition db) {
+			return db.getTruncFunctionName();
+		}
+
+		@Override
+		public TruncateExpression copy() {
+			return new TruncateExpression(only == null ? null : only.copy());
+		}
+	}
+
+	protected class IntegerResultExpression extends DBUnaryIntegerFunction {
+
+		public IntegerResultExpression(NumberExpression only) {
+			super(only);
+		}
+		private final static long serialVersionUID = 1l;
+
+		@Override
+		public String toSQLString(DBDefinition db) {
+			return db.doNumberToIntegerTransform(only.toSQLString(db));
+		}
+
+		@Override
+		String getFunctionName(DBDefinition db) {
+			return db.getTruncFunctionName();
+		}
+
+		@Override
+		protected String afterValue(DBDefinition db) {
+			return ", 0) ";
+		}
+
+		@Override
+		public IntegerResultExpression copy() {
+			return new IntegerResultExpression(only == null ? null : only.copy());
+		}
+	}
+
+	protected static class PlusExpression extends DBBinaryArithmetic {
+
+		public PlusExpression(NumberResult first, NumberResult second) {
+			super(first, second);
+		}
+		private final static long serialVersionUID = 1l;
+
+		@Override
+		protected String getEquationOperator(DBDefinition db) {
+			return " + ";
+		}
+
+		@Override
+		public PlusExpression copy() {
+			return new PlusExpression(
+					first == null ? null : first.copy(), second == null ? null : second.copy());
+		}
+	}
+
+	protected static class TimesExpression extends DBBinaryArithmetic {
+
+		public TimesExpression(NumberResult first, NumberResult second) {
+			super(first, second);
+		}
+		private final static long serialVersionUID = 1l;
+
+		@Override
+		protected String getEquationOperator(DBDefinition db) {
+			return " * ";
+		}
+
+		@Override
+		public TimesExpression copy() {
+			return new TimesExpression(first == null ? null : first.copy(), second == null ? null : second.copy());
+		}
+	}
+
+	protected class DivideByExpression extends DBBinaryArithmetic {
+
+		public DivideByExpression(NumberResult first, NumberResult second) {
+			super(first, second);
+		}
+		private final static long serialVersionUID = 1l;
+
+		@Override
+		protected String getEquationOperator(DBDefinition db) {
+			return " / ";
+		}
+
+		@Override
+		public String toSQLString(DBDefinition db) {
+			return "(0.0+" + first.toSQLString(db) + ")" + this.getEquationOperator(db) + "(" + second.toSQLString(db) + ")";
+		}
+
+		@Override
+		public DivideByExpression copy() {
+			return new DivideByExpression(
+					first == null ? null : first.copy(),
+					second == null ? null : second.copy());
+		}
+	}
+
+	protected class ModulusRemainderExpression extends NumberNumberFunctionNumberResult {
+
+		public ModulusRemainderExpression(NumberExpression first, NumberExpression second) {
+			super(first, second);
+		}
+		private final static long serialVersionUID = 1l;
+
+		@Override
+		public String toSQLString(DBDefinition db) {
+			if (db.supportsModulusFunction()) {
+				return db.doModulusTransform(getFirst().toSQLString(db), getSecond().toSQLString(db));
+			} else {
+				return "((" + getFirst().toSQLString(db) + ") % (" + getSecond().toSQLString(db) + "))";
+			}
+		}
+
+		@Override
+		String getFunctionName(DBDefinition db) {
+			return "MOD";
+		}
+
+		@Override
+		public ModulusRemainderExpression copy() {
+			return new ModulusRemainderExpression(
+					first == null ? null : first.copy(), 
+					second == null ? null : second.copy());
+		}
+	}
+
+	protected class ChooseFromStringsExpression extends DBNumberAndNnaryStringFunction {
+
+		public ChooseFromStringsExpression(NumberResult numberResult, StringResult[] rightHandSide) {
+			super(numberResult, rightHandSide);
+		}
+		private final static long serialVersionUID = 1l;
+
+		@Override
+		public String toSQLString(DBDefinition db) {
+			List<String> strs = new ArrayList<>();
+			for (StringResult num : this.values) {
+				strs.add(num.toSQLString(db));
+			}
+			return db.doChooseTransformation(NumberExpression.value(numberExpression).plus(1).bracket().toSQLString(db), strs);
+		}
+
+		@Override
+		public ChooseFromStringsExpression copy() {
+			List<StringResult> newValues = new ArrayList<>();
+			for (StringResult value : values) {
+				newValues.add(value == null ? null : value.copy());
+			}
+			return new ChooseFromStringsExpression(
+					numberExpression == null ? null : numberExpression.copy(),
+					newValues.toArray(new StringResult[]{}));
+		}
+	}
+
+	protected static class AverageExpression extends DBUnaryFunction {
+
+		public AverageExpression(NumberExpression only) {
+			super(only);
+		}
+		private final static long serialVersionUID = 1l;
+
+		@Override
+		String getFunctionName(DBDefinition db) {
+			return db.getAverageFunctionName();
+		}
+
+		@Override
+		public boolean isAggregator() {
+			return true;
+		}
+
+		@Override
+		public AverageExpression copy() {
+			return new AverageExpression(
+					only == null ? null : only.copy());
+		}
+	}
+
+	protected class StandardDeviationExpression extends DBUnaryFunction {
+
+		public StandardDeviationExpression(NumberExpression only) {
+			super(only);
+		}
+		private final static long serialVersionUID = 1l;
+
+		@Override
+		public String toSQLString(DBDefinition db) {
+			if (db.supportsStandardDeviationFunction()) {
+				return super.toSQLString(db);
+			} else if (this.only != null) {
+				NumberExpression numb = this.only;
+				return new NumberExpression(numb).max().minus(new NumberExpression(numb).min()).bracket().dividedBy(6).toSQLString(db);
+			} else {
+				return null;
+			}
+		}
+
+		@Override
+		String getFunctionName(DBDefinition db) {
+			return db.getStandardDeviationFunctionName();
+		}
+
+		@Override
+		public boolean isAggregator() {
+			return true;
+		}
+
+		@Override
+		public StandardDeviationExpression copy() {
+			return new StandardDeviationExpression(only == null ? null : only.copy());
+		}
+	}
+
+	protected static class SumExpression extends DBUnaryFunction {
+
+		public SumExpression(NumberExpression only) {
+			super(only);
+		}
+		private final static long serialVersionUID = 1l;
+
+		@Override
+		String getFunctionName(DBDefinition db) {
+			return db.getSumFunctionName();
+		}
+
+		@Override
+		public boolean isAggregator() {
+			return true;
+		}
+
+		@Override
+		public SumExpression copy() {
+			return new SumExpression(only == null ? null : only.copy());
+		}
+	}
+
 }

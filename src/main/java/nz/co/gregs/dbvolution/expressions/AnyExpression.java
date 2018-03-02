@@ -37,6 +37,7 @@ import com.vividsolutions.jts.geom.Polygon;
 import java.io.Serializable;
 import java.util.*;
 import nz.co.gregs.dbvolution.DBRow;
+import nz.co.gregs.dbvolution.columns.ColumnProvider;
 import nz.co.gregs.dbvolution.databases.DBDatabase;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.results.AnyResult;
@@ -90,7 +91,7 @@ public abstract class AnyExpression<B extends Object, R extends AnyResult<B>, D 
 	public Set<DBRow> getTablesInvolved() {
 		final AnyResult<?> inner = getInnerResult();
 		if (inner == null) {
-			return new HashSet<>(0);
+			return new HashSet<DBRow>(0);
 		} else {
 			return inner.getTablesInvolved();
 		}
@@ -159,6 +160,9 @@ public abstract class AnyExpression<B extends Object, R extends AnyResult<B>, D 
 	public AnyResult<?> getInnerResult() {
 		return innerResult;
 	}
+
+	@Override
+	public abstract AnyResult<?> copy();
 
 	@Override
 	public boolean getIncludesNull() {
@@ -714,5 +718,5 @@ public abstract class AnyExpression<B extends Object, R extends AnyResult<B>, D 
 	public String createSQLForGroupByClause(DBDatabase database) {
 		return "";
 	}
-	
+
 }

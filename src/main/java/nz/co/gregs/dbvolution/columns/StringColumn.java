@@ -94,15 +94,11 @@ public class StringColumn extends StringExpression implements ColumnProvider {
 	}
 
 	@Override
-	public synchronized StringColumn copy() {
-		StringColumn newInstance;
-		try {
-			newInstance = this.getClass().newInstance();
-			newInstance.column = column;
-			return newInstance;
-		} catch (InstantiationException | IllegalAccessException ex) {
-			throw new RuntimeException(ex);
-		}
+	public synchronized StringColumn copy() {		final AbstractColumn col = getColumn();
+		final DBRow row = col.getInstanceOfRow();
+		StringColumn newInstance = new StringColumn(row, (DBString) col.getAppropriateQDTFromRow(row));
+		return newInstance;
+
 	}
 
 	@Override

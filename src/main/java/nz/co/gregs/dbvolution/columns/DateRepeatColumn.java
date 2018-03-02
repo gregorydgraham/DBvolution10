@@ -16,7 +16,6 @@
 package nz.co.gregs.dbvolution.columns;
 
 import java.util.Set;
-import nz.co.gregs.dbvolution.databases.DBDatabase;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.datatypes.DBDateRepeat;
@@ -69,16 +68,10 @@ public class DateRepeatColumn extends DateRepeatExpression implements ColumnProv
 
 	@Override
 	public synchronized DateRepeatColumn copy() {
-		try {
-			DateRepeatColumn newInstance = this.getClass().newInstance();
-			newInstance.column = this.column;
-			return newInstance;
-		} catch (InstantiationException ex) {
-			throw new RuntimeException(ex);
-		} catch (IllegalAccessException ex) {
-			throw new RuntimeException(ex);
-		}
-
+		final AbstractColumn col = getColumn();
+		final DBRow row = col.getInstanceOfRow();
+		DateRepeatColumn newInstance = new DateRepeatColumn(row, (DBDateRepeat) col.getAppropriateQDTFromRow(row));
+		return newInstance;
 	}
 
 	@Override

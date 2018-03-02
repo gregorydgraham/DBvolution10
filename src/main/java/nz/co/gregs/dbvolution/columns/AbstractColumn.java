@@ -16,17 +16,12 @@
 package nz.co.gregs.dbvolution.columns;
 
 import java.io.Serializable;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 import nz.co.gregs.dbvolution.databases.DBDatabase;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
-import nz.co.gregs.dbvolution.exceptions.DBRuntimeException;
 import nz.co.gregs.dbvolution.exceptions.IncorrectRowProviderInstanceSuppliedException;
 import nz.co.gregs.dbvolution.expressions.DBExpression;
 import nz.co.gregs.dbvolution.internal.properties.PropertyWrapper;
@@ -109,13 +104,9 @@ public class AbstractColumn implements DBExpression, Serializable {
 
 	@Override
 	public AbstractColumn copy() {
-		try {
-			Constructor<? extends AbstractColumn> constructor = this.getClass().getConstructor(RowDefinition.class, Object.class);
-			AbstractColumn newInstance = constructor.newInstance(getRowDefinition(), getField());
-			return newInstance;
-		} catch (NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
-			throw new DBRuntimeException("Unable To Copy " + this.getClass().getSimpleName() + ": please ensure it has a public " + this.getClass().getSimpleName() + "(DBRow, Object) constructor.", ex);
-		}
+		final DBRow row = getInstanceOfRow();
+		AbstractColumn newInstance = new AbstractColumn(row, getAppropriateQDTFromRow(row));
+		return newInstance;
 	}
 
 	/**

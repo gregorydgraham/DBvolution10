@@ -69,7 +69,8 @@ public class LargeObjectColumn extends LargeObjectExpression implements ColumnPr
 
 	@Override
 	public LargeObjectColumn copy() {
-		return new LargeObjectColumn(column.getRowDefinition(), (DBLargeObject) column.getField());
+		final DBRow row = column.getInstanceOfRow();
+		return new LargeObjectColumn(row, (DBLargeObject<?>) column.getAppropriateQDTFromRow(row));
 	}
 
 	@Override

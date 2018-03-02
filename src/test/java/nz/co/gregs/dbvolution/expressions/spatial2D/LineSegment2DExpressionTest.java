@@ -15,9 +15,6 @@
  */
 package nz.co.gregs.dbvolution.expressions.spatial2D;
 
-import nz.co.gregs.dbvolution.expressions.spatial2D.Point2DExpression;
-import nz.co.gregs.dbvolution.expressions.spatial2D.LineSegment2DExpression;
-import nz.co.gregs.dbvolution.expressions.spatial2D.Line2DExpression;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.LineSegment;

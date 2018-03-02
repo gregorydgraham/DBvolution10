@@ -84,14 +84,15 @@ public class AbstractQueryColumn extends AbstractColumn {
 	}
 
 	@Override
-	public AbstractColumn copy() {
-		try {
-			Constructor<? extends AbstractQueryColumn> constructor = this.getClass().getConstructor(DBQuery.class, QueryableDatatype.class);
-			AbstractQueryColumn newInstance = constructor.newInstance(getQuery(), getField());
-			return newInstance;
-		} catch (NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
-			throw new DBRuntimeException("Unable To Copy " + this.getClass().getSimpleName() + ": please ensure it has a public " + this.getClass().getSimpleName() + "(DBRow, Object) constructor.", ex);
-		}
+	public AbstractQueryColumn copy() {
+		return new AbstractQueryColumn(query, field.copy());
+//		try {
+//			Constructor<? extends AbstractQueryColumn> constructor = this.getClass().getConstructor(DBQuery.class, QueryableDatatype.class);
+//			AbstractQueryColumn newInstance = constructor.newInstance(getQuery(), getField());
+//			return newInstance;
+//		} catch (NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
+//			throw new DBRuntimeException("Unable To Copy " + this.getClass().getSimpleName() + ": please ensure it has a public " + this.getClass().getSimpleName() + "(DBRow, Object) constructor.", ex);
+//		}
 	}
 
 	/**

@@ -78,7 +78,12 @@ public class BooleanColumn extends BooleanExpression implements ColumnProvider {
 
 	@Override
 	public BooleanColumn copy() {
-		return (BooleanColumn) super.copy();
+		final AbstractColumn col = getColumn();
+		final DBRow row = col.getInstanceOfRow();
+		BooleanColumn newInstance = new BooleanColumn(row, (DBBoolean) col.getAppropriateQDTFromRow(row));
+		return newInstance;
+
+//		return (BooleanColumn) super.copy();
 	}
 
 	@Override

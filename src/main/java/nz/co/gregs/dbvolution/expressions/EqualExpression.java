@@ -97,24 +97,7 @@ public abstract class EqualExpression<B, R extends EqualResult<B>, D extends Que
 	 * @return the count of all the values from the column.
 	 */
 	public static IntegerExpression countAll() {
-		return new IntegerExpression(new DBNonaryFunction() {
-			private final static long serialVersionUID = 1l;
-
-			@Override
-			String getFunctionName(DBDefinition db) {
-				return db.getCountFunctionName();
-			}
-
-			@Override
-			protected String afterValue(DBDefinition db) {
-				return "(*)";
-			}
-
-			@Override
-			public boolean isAggregator() {
-				return true;
-			}
-		});
+		return new IntegerExpression(new CountAllExpression());
 	}
 
 	/**
@@ -131,19 +114,7 @@ public abstract class EqualExpression<B, R extends EqualResult<B>, D extends Que
 	 * @return a number expression.
 	 */
 	public IntegerExpression count() {
-		return new IntegerExpression(new IntegerExpression(this) {
-			private final static long serialVersionUID = 1l;
-
-			@Override
-			public String toSQLString(DBDefinition db) {
-				return db.getCountFunctionName() + "(" + getInnerResult().toSQLString(db) + ")";
-			}
-
-			@Override
-			public boolean isAggregator() {
-				return true;
-			}
-		});
+		return new IntegerExpression(new CountExpression(this));
 	}
 
 	/**
@@ -213,7 +184,7 @@ public abstract class EqualExpression<B, R extends EqualResult<B>, D extends Que
 
 	private static abstract class DBUnaryFunction<B, R extends EqualResult<B>, D extends QueryableDatatype<B>, X extends EqualExpression<B, R, D>> extends EqualExpression<B, R, D> implements EqualResult<B> {
 
-		protected final X only;
+		protected X only;
 
 		DBUnaryFunction(X only) {
 			super(only);
@@ -244,6 +215,7 @@ public abstract class EqualExpression<B, R extends EqualResult<B>, D extends Que
 			} catch (InstantiationException | IllegalAccessException ex) {
 				throw new RuntimeException(ex);
 			}
+			newInstance.only = (X) this.only.copy();
 			return newInstance;
 		}
 
@@ -381,16 +353,20 @@ public abstract class EqualExpression<B, R extends EqualResult<B>, D extends Que
 
 		private synchronized String getFirstTableModeName(DBDefinition defn) {
 			return defn.formatExpressionAlias(this);
-		}		
-		
+		}
+
 		@Override
 		public String createSQLForGroupByClause(DBDatabase database) {
 			DBDefinition defn = database.getDefinition();
 			return ""
-					+getInternalTableName(database)+"."+getFirstTableModeName(defn)
-					;
+					+ getInternalTableName(database) + "." + getFirstTableModeName(defn);
 		}
 
+		@Override
+		@SuppressWarnings("unchecked")
+		public ModeSimpleExpression<B, R, D, X> copy() {
+			return new ModeSimpleExpression<B, R, D, X>((X) (only == null ? null : only.copy()));
+		}
 
 	}
 
@@ -512,10 +488,9 @@ public abstract class EqualExpression<B, R extends EqualResult<B>, D extends Que
 		public String createSQLForGroupByClause(DBDatabase database) {
 			DBDefinition defn = database.getDefinition();
 			return ""
-					+getFirstTableName(defn)+"."+getFirstTableModeName(defn)+", "
-					+getFirstTableName(defn)+"."+getFirstTableCounterName(defn)+", "
-					+getSecondTableName(defn)+"."+getSecondTableCounterName(defn)
-					;
+					+ getFirstTableName(defn) + "." + getFirstTableModeName(defn) + ", "
+					+ getFirstTableName(defn) + "." + getFirstTableCounterName(defn) + ", "
+					+ getSecondTableName(defn) + "." + getSecondTableCounterName(defn);
 		}
 
 		public synchronized String getInternalTableName(DBDefinition database) {
@@ -566,6 +541,13 @@ public abstract class EqualExpression<B, R extends EqualResult<B>, D extends Que
 			}
 			return secondTableCounterName;
 		}
+
+		@Override
+		@SuppressWarnings("unchecked")
+		public ModeStrictExpression<B, R, D, X> copy() {
+			return new ModeStrictExpression<B, R, D, X>((X) (only == null ? null : only.copy()));
+		}
+
 	}
 
 	public static class MedianExpression<B, R extends EqualResult<B>, D extends QueryableDatatype<B>, X extends EqualExpression<B, R, D>> extends DBUnaryFunction<B, R, D, X> {
@@ -604,6 +586,7 @@ public abstract class EqualExpression<B, R extends EqualResult<B>, D extends Que
 		@Override
 		public String createSQLForFromClause(DBDatabase database) {
 
+			DBDefinition defn = database.getDefinition();
 			final IntegerExpression expr = new IntegerExpression(getInnerResult());
 
 			DBInteger count = expr.count().asExpressionColumn();
@@ -618,15 +601,29 @@ public abstract class EqualExpression<B, R extends EqualResult<B>, D extends Que
 
 			DBQuery query = database.getDBQuery(tablesToUse);
 
-			query.setBlankQueryAllowed(true)
-					.setReturnFieldsToNone()
-					.addExpressionColumn(this, expr.asExpressionColumn())
-					.addExpressionColumn("mode count", count)
-					.setSortOrder(query.column(count))
-					.setRowLimit(1);
-			String tableAliasForObject = getInternalTableName(database);
-
-			String sql = "(" + query.getSQLForQuery().replaceAll("; *$", "") + ") " + tableAliasForObject;
+//		Marque table2 = new Marque();
+//		table2.setTableVariantIdentifier("a2");
+//		final IntegerColumn t2UpdateCount = table2.column(table2.updateCount);
+//		final IntegerColumn t2UIDMarque = table2.column(table2.uidMarque);
+//
+//		DBQuery dbQuery = database
+//				.getDBQuery(table1)
+//				.add(table2)
+//				.setBlankQueryAllowed(true)
+//				.setCartesianJoinsAllowed(true);
+//		
+//		dbQuery.addCondition(
+//				BooleanExpression.seekLessThan(
+//						t1UpdateCount, t2UpdateCount,
+//						t1UidMarque, t2UIDMarque
+//				)
+//		);
+//		dbQuery.addExpressionColumn(this, t1UpdateCount.count().asExpressionColumn());
+//		table1.updateCount.setSortOrderDescending();
+//		table1.uidMarque.setSortOrderDescending();
+//		dbQuery.setSortOrder(t1UpdateCount, t1UidMarque);
+//		dbQuery.setReturnFields(t1UpdateCount, t1UidMarque);
+			String sql = "(" + query.getSQLForQuery().replaceAll("; *$", "") + ") " + getFirstTableModeName(defn);
 			return sql;
 		}
 
@@ -636,13 +633,66 @@ public abstract class EqualExpression<B, R extends EqualResult<B>, D extends Que
 
 		private synchronized String getFirstTableModeName(DBDefinition defn) {
 			return defn.formatExpressionAlias(this);
-		}		
-		
+		}
+
 		@Override
 		public String createSQLForGroupByClause(DBDatabase database) {
 			return "";
 		}
 
+	}
+
+	private static class CountAllExpression extends DBNonaryFunction {
+
+		public CountAllExpression() {
+		}
+		private final static long serialVersionUID = 1l;
+
+		@Override
+		String getFunctionName(DBDefinition db) {
+			return db.getCountFunctionName();
+		}
+
+		@Override
+		protected String afterValue(DBDefinition db) {
+			return "(*)";
+		}
+
+		@Override
+		public boolean isAggregator() {
+			return true;
+		}
+
+		@Override
+		public CountAllExpression copy() {
+			return new CountAllExpression();
+		}
+
+	}
+
+	private static class CountExpression extends IntegerExpression {
+
+		public CountExpression(AnyResult<?> only) {
+			super(only);
+		}
+		private final static long serialVersionUID = 1l;
+
+		@Override
+		public String toSQLString(DBDefinition db) {
+			return db.getCountFunctionName() + "(" + getInnerResult().toSQLString(db) + ")";
+		}
+
+		@Override
+		public boolean isAggregator() {
+			return true;
+		}
+
+		@Override
+		public CountExpression copy() {
+			return new CountExpression(
+					(AnyResult<?>) (getInnerResult() == null ? null : getInnerResult().copy())
+			);
+		}
 
 	}
 

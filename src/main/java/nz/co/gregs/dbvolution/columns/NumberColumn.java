@@ -82,14 +82,10 @@ public class NumberColumn extends NumberExpression implements ColumnProvider {
 
 	@Override
 	public synchronized NumberColumn copy() {
-		try {
-			NumberColumn newInstance = this.getClass().newInstance();
-			newInstance.column = this.column;
-			return newInstance;
-		} catch (InstantiationException | IllegalAccessException ex) {
-			throw new RuntimeException(ex);
-		}
-
+		final AbstractColumn col = getColumn();
+		final DBRow row = col.getInstanceOfRow();
+		NumberColumn newInstance = new NumberColumn(row, (DBNumber) col.getAppropriateQDTFromRow(row));
+		return newInstance;
 	}
 
 	@Override

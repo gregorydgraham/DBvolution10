@@ -68,7 +68,7 @@ public class LargeObjectExpression extends AnyExpression<byte[], LargeObjectResu
 
 	@Override
 	public LargeObjectExpression copy() {
-		return new LargeObjectExpression(blobResult.copy());
+		return new LargeObjectExpression(blobResult==null?null:blobResult.copy());
 	}
 
 	@Override
