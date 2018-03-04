@@ -559,6 +559,19 @@ public class DBQuery implements Serializable {
 				}
 				tableSeparator = " | ";
 			}
+			StringBuilder string = new StringBuilder();
+			String separator = "";
+			for (Map.Entry<Object, QueryableDatatype<?>> entry : row.getExpressionColumns().entrySet()) {
+				Object key = entry.getKey();
+				QueryableDatatype<?> qdt = entry.getValue();
+				string.append(separator);
+				string.append(" ");
+				string.append(qdt.getColumnExpression()[0].toSQLString(database.getDefinition()));
+				string.append(":");
+				string.append(qdt.getValue().toString());
+				separator = ",";
+				ps.print(string.toString());
+			}
 			ps.println();
 		}
 	}
