@@ -851,7 +851,9 @@ public abstract class QueryableDatatype<T> extends Object implements Serializabl
 	@SuppressWarnings("unchecked")
 	public QueryableDatatype<T> getQueryableDatatypeForExpressionValue() {
 		try {
-			return this.getClass().newInstance();
+			final QueryableDatatype<T> newInstance = this.getClass().newInstance();
+			newInstance.setColumnExpression(this.getColumnExpression());
+			return newInstance;
 		} catch (InstantiationException | IllegalAccessException e) {
 			return this;
 		}
