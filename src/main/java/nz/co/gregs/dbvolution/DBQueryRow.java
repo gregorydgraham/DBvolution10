@@ -134,6 +134,10 @@ public class DBQueryRow extends HashMap<Class<?>, DBRow> {
 		return expressionColumnValues.get(key);
 	}
 
+	public Map<Object,QueryableDatatype<?>> getExpressionColumns() {
+		return expressionColumnValues;
+	}
+
 	/**
 	 * Returns all the fields names from all the DBRow types in the DBQueryRow.
 	 *
