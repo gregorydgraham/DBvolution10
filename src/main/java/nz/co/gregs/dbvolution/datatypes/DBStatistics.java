@@ -35,8 +35,6 @@ public class DBStatistics<B, R extends EqualResult<B>, D extends QueryableDataty
 	private final X originalExpression;
 	private final DBString numberProxy = new DBString();
 	private Number countOfRows;
-//	private Number rankingHighIsFirst;  // Should be an expression column on an ordinary table
-//	private Number rankingLowIsFirst; // Should be an expression column on an ordinary table
 	private B modeSimple;
 	private B modeStrict;
 	private B median;
@@ -45,7 +43,8 @@ public class DBStatistics<B, R extends EqualResult<B>, D extends QueryableDataty
 	private IntegerExpression countExpr;
 	private EqualExpression.ModeSimpleExpression<B, R, D, X> modeSimpleExpression;
 	private EqualExpression.ModeStrictExpression<B, R, D, X> modeStrictExpression;
-	private RangeExpression.UniqueRankingExpression<B, R, D, X> medianExpression;
+	private RangeExpression.UniqueRankingExpression<B, R, D, X> uniqueRankingExpression;
+	private RangeExpression.MedianExpression<B, R, D, X> medianExpression;
 	private X firstQuartileExpression;
 	private X thirdQuartileExpression;
 
