@@ -52,13 +52,13 @@ import nz.co.gregs.dbvolution.results.SimpleNumericResult;
  * @author Gregory Graham
  */
 public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResult, DBInteger> implements IntegerResult {
-	
+
 	private final static long serialVersionUID = 1l;
-	
+
 	public static IntegerExpression ifThenElse(BooleanExpression test, IntegerExpression trueResult, IntegerExpression falseResult) {
 		return test.ifThenElse(trueResult, falseResult);
 	}
-	
+
 	@Override
 	public final IntegerExpression nullExpression() {
 		return new NullExpression();
@@ -183,12 +183,12 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 	protected IntegerExpression(AnyResult<?> only) {
 		super(only);
 	}
-	
+
 	@Override
 	public String toSQLString(DBDefinition db) {
 		return getInnerResult().toSQLString(db);
 	}
-	
+
 	@Override
 	public IntegerExpression copy() {
 		if (isNullSafetyTerminator()) {
@@ -1943,42 +1943,42 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 	public NumberExpression sinh() {
 		return this.numberResult().sinh();
 	}
-	
+
 	@Override
 	public NumberExpression numberResult() {
 		return new NumberExpression(new NumberResultFunction(this));
 	}
-	
+
 	@Override
 	public IntegerResult expression(DBInteger value) {
 		return new IntegerExpression(value);
 	}
-	
+
 	@Override
 	public IntegerExpression integerResult() {
 		return this;
 	}
-	
+
 	BooleanExpression isBetweenInclusive(Number lowerbound, Number upperbound) {
 		return this.isBetweenInclusive(value(lowerbound), value(upperbound));
 	}
-	
+
 	@Override
 	public BooleanExpression isNot(Long integerValue) {
 		return this.isNot(expression(integerValue));
 	}
-	
+
 	public static class SinhFunction extends DBUnaryFunction {
-		
+
 		private final static long serialVersionUID = 1l;
-		
+
 		private final IntegerExpression limitedTo700;
-		
+
 		public SinhFunction(IntegerExpression only) {
 			super(only);
 			limitedTo700 = only.isGreaterThan(700).ifThenElse(nullExpression(), only);
 		}
-		
+
 		@Override
 		public String toSQLString(DBDefinition db) {
 			if (db.supportsHyperbolicFunctionsNatively()) {
@@ -1990,7 +1990,7 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 						.toSQLString(db);
 			}
 		}
-		
+
 		@Override
 		String getFunctionName(DBDefinition db) {
 			return "sinh";
@@ -2767,6 +2767,45 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 	}
 
 	/**
+	 * Creates an expression that will return the median value of the column
+	 * supplied.
+	 *
+	 * <p>
+	 * MEDIAN: denoting or relating to a value or quantity lying at the midpoint
+	 * of a frequency distribution of observed values or quantities, such that
+	 * there is an equal probability of falling above or below it. For example: in
+	 * {9,9,7,6,5,3,3} the median is 6.</p>
+	 *
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
+	 * @return the median or null if undefined.
+	 */
+	public IntegerExpression median() {
+		IntegerExpression medianExpr
+				= new IntegerExpression(
+						new MedianExpression<Long, IntegerResult, DBInteger, IntegerExpression>(this));
+		return medianExpr;
+	}
+	
+	/**
+	 * Creates an expression that will return the uniqueRanking value of the column
+ supplied.
+	 *
+	 *
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
+	 * @return the mode or null if undefined.
+	 */
+	public IntegerExpression uniqueRanking() {
+		IntegerExpression medianExpr
+				= new IntegerExpression(
+						new UniqueRankingExpression<Long, IntegerResult, DBInteger, IntegerExpression>(this));
+		return medianExpr;
+	}
+
+	/**
 	 * Based on the value of this expression, select a string from the list
 	 * provided.
 	 *
@@ -2963,12 +3002,12 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 	public IntegerExpression sum() {
 		return new IntegerExpression(new SumFunction(this));
 	}
-	
+
 	@Override
 	public DBInteger getQueryableDatatypeForExpressionValue() {
 		return new DBInteger();
 	}
-	
+
 	@Override
 	public boolean isAggregator() {
 		final AnyResult<?> innerResult = getInnerResult();
@@ -2998,7 +3037,7 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 	public IntegerExpression cubed() {
 		return this.squared().times(this.bracket());
 	}
-	
+
 	@Override
 	public DBInteger asExpressionColumn() {
 		return new DBInteger(this);
@@ -3066,32 +3105,32 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 	public BooleanExpression isNotZero() {
 		return this.isIn(0, null).not();
 	}
-	
+
 	private static abstract class DBBinaryArithmetic extends IntegerExpression {
-		
+
 		public IntegerResult first;
 		public IntegerResult second;
-		
+
 		DBBinaryArithmetic() {
 			this.first = null;
 			this.second = null;
 		}
-		
+
 		DBBinaryArithmetic(IntegerResult first, IntegerResult second) {
 			this.first = first;
 			this.second = second;
 		}
-		
+
 		@Override
 		public DBInteger getQueryableDatatypeForExpressionValue() {
 			return new DBInteger();
 		}
-		
+
 		@Override
 		public String toSQLString(DBDefinition db) {
 			return first.toSQLString(db) + this.getEquationOperator(db) + second.toSQLString(db);
 		}
-		
+
 		@Override
 		public DBBinaryArithmetic copy() {
 			DBBinaryArithmetic newInstance;
@@ -3104,7 +3143,7 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 			newInstance.second = second.copy();
 			return newInstance;
 		}
-		
+
 		@Override
 		public Set<DBRow> getTablesInvolved() {
 			HashSet<DBRow> hashSet = new HashSet<>();
@@ -3116,19 +3155,19 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 			}
 			return hashSet;
 		}
-		
+
 		protected abstract String getEquationOperator(DBDefinition db);
-		
+
 		@Override
 		public boolean isAggregator() {
 			return first.isAggregator() || second.isAggregator();
 		}
-		
+
 		@Override
 		public boolean getIncludesNull() {
 			return false;
 		}
-		
+
 		@Override
 		public boolean isPurelyFunctional() {
 			if (first == null && second == null) {
@@ -3142,64 +3181,64 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 			}
 		}
 	}
-	
+
 	private static abstract class DBUnaryFunction extends IntegerExpression {
-		
+
 		DBUnaryFunction() {
 			super();
 		}
-		
+
 		DBUnaryFunction(IntegerExpression only) {
 			super(only);
 		}
-		
+
 		DBUnaryFunction(AnyExpression<?, ?, ?> only) {
 			super(only);
 		}
-		
+
 		abstract String getFunctionName(DBDefinition db);
-		
+
 		protected String beforeValue(DBDefinition db) {
 			return "" + getFunctionName(db) + "( ";
 		}
-		
+
 		protected String afterValue(DBDefinition db) {
 			return ") ";
 		}
-		
+
 		@Override
 		public String toSQLString(DBDefinition db) {
 			final AnyResult<?> only = getInnerResult();
 			return this.beforeValue(db) + (only == null ? "" : only.toSQLString(db)) + this.afterValue(db);
 		}
 	}
-	
+
 	private static abstract class DBUnaryNumberFunction extends NumberExpression {
-		
+
 		DBUnaryNumberFunction() {
 			super();
 		}
-		
+
 		DBUnaryNumberFunction(IntegerExpression only) {
 			super(only);
 		}
-		
+
 		abstract String getFunctionName(DBDefinition db);
-		
+
 		protected String beforeValue(DBDefinition db) {
 			return "" + getFunctionName(db) + "( ";
 		}
-		
+
 		protected String afterValue(DBDefinition db) {
 			return ") ";
 		}
-		
+
 		@Override
 		public String toSQLString(DBDefinition db) {
 			final AnyResult<?> only = getInnerResult();
 			return this.beforeValue(db) + (only == null ? "" : only.toSQLString(db)) + this.afterValue(db);
 		}
-		
+
 		@Override
 		public boolean isPurelyFunctional() {
 			final AnyResult<?> only = getInnerResult();
@@ -3210,51 +3249,51 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 			}
 		}
 	}
-	
+
 	private static abstract class IntegerIntegerFunctionIntegerResult extends IntegerExpression {
-		
+
 		protected IntegerExpression first;
 		protected IntegerExpression second;
-		
+
 		IntegerIntegerFunctionIntegerResult(IntegerExpression first) {
 			this.first = first;
 			this.second = null;
 		}
-		
+
 		IntegerIntegerFunctionIntegerResult(IntegerExpression first, IntegerExpression second) {
 			this.first = first;
 			this.second = second;
 		}
-		
+
 		IntegerIntegerFunctionIntegerResult(IntegerExpression first, IntegerResult second) {
 			this.first = first;
 			this.second = IntegerExpression.value(second);
 		}
-		
+
 		@Override
 		public DBInteger getQueryableDatatypeForExpressionValue() {
 			return new DBInteger();
 		}
-		
+
 		@Override
 		public String toSQLString(DBDefinition db) {
 			return this.beforeValue(db) + getFirst().toSQLString(db) + this.getSeparator(db) + (getSecond() == null ? "" : getSecond().toSQLString(db)) + this.afterValue(db);
 		}
-		
+
 		abstract String getFunctionName(DBDefinition db);
-		
+
 		protected String beforeValue(DBDefinition db) {
 			return " " + getFunctionName(db) + "( ";
 		}
-		
+
 		protected String getSeparator(DBDefinition db) {
 			return ", ";
 		}
-		
+
 		protected String afterValue(DBDefinition db) {
 			return ") ";
 		}
-		
+
 		@Override
 		public Set<DBRow> getTablesInvolved() {
 			HashSet<DBRow> hashSet = new HashSet<>();
@@ -3266,12 +3305,12 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 			}
 			return hashSet;
 		}
-		
+
 		@Override
 		public boolean isAggregator() {
 			return getFirst().isAggregator() || getSecond().isAggregator();
 		}
-		
+
 		@Override
 		public boolean getIncludesNull() {
 			return false;
@@ -3296,7 +3335,7 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 		protected IntegerExpression getSecond() {
 			return second;
 		}
-		
+
 		@Override
 		public boolean isPurelyFunctional() {
 			if (first == null && second == null) {
@@ -3310,13 +3349,13 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 			}
 		}
 	}
-	
+
 	private static abstract class DBBinaryBooleanArithmetic extends BooleanExpression {
-		
+
 		private IntegerExpression first;
 		private IntegerResult second;
 		private boolean requiresNullProtection;
-		
+
 		DBBinaryBooleanArithmetic(IntegerExpression first, IntegerResult second) {
 			this.first = first;
 			this.second = second;
@@ -3324,25 +3363,25 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 				this.requiresNullProtection = true;
 			}
 		}
-		
+
 		IntegerExpression getFirst() {
 			return first;
 		}
-		
+
 		IntegerResult getSecond() {
 			return second;
 		}
-		
+
 		@Override
 		public boolean isBooleanStatement() {
 			return true;
 		}
-		
+
 		@Override
 		public DBBoolean getQueryableDatatypeForExpressionValue() {
 			return new DBBoolean();
 		}
-		
+
 		@Override
 		public String toSQLString(DBDefinition db) {
 			if (this.getIncludesNull()) {
@@ -3351,9 +3390,9 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 				return first.toSQLString(db) + this.getEquationOperator(db) + second.toSQLString(db);
 			}
 		}
-		
+
 		protected abstract String getEquationOperator(DBDefinition db);
-		
+
 		@Override
 		public Set<DBRow> getTablesInvolved() {
 			HashSet<DBRow> hashSet = new HashSet<>();
@@ -3365,32 +3404,32 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 			}
 			return hashSet;
 		}
-		
+
 		@Override
 		public boolean isAggregator() {
 			return first.isAggregator() || second.isAggregator();
 		}
-		
+
 		@Override
 		public boolean getIncludesNull() {
 			return requiresNullProtection;
 		}
-		
+
 		@Override
 		public boolean isPurelyFunctional() {
 			return first.isPurelyFunctional() && second.isPurelyFunctional();
 		}
 	}
-	
+
 	private static abstract class DBNnaryBooleanFunction extends BooleanExpression {
-		
+
 		private IntegerExpression column;
 		private final List<IntegerResult> values = new ArrayList<>();
 		boolean nullProtectionRequired = false;
-		
+
 		DBNnaryBooleanFunction() {
 		}
-		
+
 		DBNnaryBooleanFunction(IntegerExpression leftHandSide, IntegerResult[] rightHandSide) {
 			this.column = leftHandSide;
 			for (IntegerResult numberResult : rightHandSide) {
@@ -3404,22 +3443,22 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 				}
 			}
 		}
-		
+
 		@Override
 		public DBBoolean getQueryableDatatypeForExpressionValue() {
 			return new DBBoolean();
 		}
-		
+
 		abstract String getFunctionName(DBDefinition db);
-		
+
 		protected String beforeValue(DBDefinition db) {
 			return "( ";
 		}
-		
+
 		protected String afterValue(DBDefinition db) {
 			return ") ";
 		}
-		
+
 		@Override
 		public String toSQLString(DBDefinition db) {
 			StringBuilder builder = new StringBuilder();
@@ -3437,7 +3476,7 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 			builder.append(this.afterValue(db));
 			return builder.toString();
 		}
-		
+
 		@Override
 		public Set<DBRow> getTablesInvolved() {
 			HashSet<DBRow> hashSet = new HashSet<>();
@@ -3451,7 +3490,7 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 			}
 			return hashSet;
 		}
-		
+
 		@Override
 		public boolean isAggregator() {
 			boolean result = getColumn().isAggregator();
@@ -3460,7 +3499,7 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 			}
 			return result;
 		}
-		
+
 		@Override
 		public boolean isPurelyFunctional() {
 			boolean result = getColumn().isPurelyFunctional();
@@ -3469,7 +3508,7 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 			}
 			return result;
 		}
-		
+
 		@Override
 		public boolean getIncludesNull() {
 			return nullProtectionRequired;
@@ -3495,16 +3534,16 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 			return values;
 		}
 	}
-	
+
 	private static abstract class DBNnaryIntegerFunction extends IntegerExpression {
-		
+
 		protected IntegerExpression column;
 		protected final List<IntegerResult> values = new ArrayList<>();
 		boolean nullProtectionRequired = false;
-		
+
 		DBNnaryIntegerFunction() {
 		}
-		
+
 		DBNnaryIntegerFunction(IntegerResult[] rightHandSide) {
 			for (IntegerResult numberResult : rightHandSide) {
 				if (numberResult == null) {
@@ -3517,22 +3556,22 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 				}
 			}
 		}
-		
+
 		@Override
 		public DBInteger getQueryableDatatypeForExpressionValue() {
 			return new DBInteger();
 		}
-		
+
 		abstract String getFunctionName(DBDefinition db);
-		
+
 		protected String beforeValue(DBDefinition db) {
 			return "( ";
 		}
-		
+
 		protected String afterValue(DBDefinition db) {
 			return ") ";
 		}
-		
+
 		@Override
 		public String toSQLString(DBDefinition db) {
 			StringBuilder builder = new StringBuilder();
@@ -3549,7 +3588,7 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 			builder.append(this.afterValue(db));
 			return builder.toString();
 		}
-		
+
 		@Override
 		public DBNnaryIntegerFunction copy() {
 			DBNnaryIntegerFunction newInstance;
@@ -3564,7 +3603,7 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 			}
 			return newInstance;
 		}
-		
+
 		@Override
 		public Set<DBRow> getTablesInvolved() {
 			HashSet<DBRow> hashSet = new HashSet<>();
@@ -3578,7 +3617,7 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 			}
 			return hashSet;
 		}
-		
+
 		@Override
 		public boolean isAggregator() {
 			boolean result = false;
@@ -3590,12 +3629,12 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 			}
 			return result;
 		}
-		
+
 		@Override
 		public boolean getIncludesNull() {
 			return nullProtectionRequired;
 		}
-		
+
 		@Override
 		public boolean isPurelyFunctional() {
 			if (column == null && values.isEmpty()) {
@@ -3609,16 +3648,16 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 			}
 		}
 	}
-	
+
 	private static abstract class DBIntegerAndNnaryStringFunction extends StringExpression {
-		
+
 		protected IntegerResult numberExpression = null;
 		protected final List<StringResult> values = new ArrayList<>();
 		boolean nullProtectionRequired = false;
-		
+
 		DBIntegerAndNnaryStringFunction() {
 		}
-		
+
 		DBIntegerAndNnaryStringFunction(IntegerResult numberResult, StringResult[] rightHandSide) {
 			numberExpression = numberResult;
 			for (StringResult stringResult : rightHandSide) {
@@ -3632,15 +3671,15 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 				}
 			}
 		}
-		
+
 		@Override
 		public DBString getQueryableDatatypeForExpressionValue() {
 			return new DBString();
 		}
-		
+
 		@Override
 		abstract public String toSQLString(DBDefinition db);
-		
+
 		@Override
 		public DBIntegerAndNnaryStringFunction copy() {
 			DBIntegerAndNnaryStringFunction newInstance;
@@ -3655,7 +3694,7 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 			}
 			return newInstance;
 		}
-		
+
 		@Override
 		public Set<DBRow> getTablesInvolved() {
 			HashSet<DBRow> hashSet = new HashSet<>();
@@ -3669,7 +3708,7 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 			}
 			return hashSet;
 		}
-		
+
 		@Override
 		public boolean isAggregator() {
 			boolean result = numberExpression.isAggregator();
@@ -3678,12 +3717,12 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 			}
 			return result;
 		}
-		
+
 		@Override
 		public boolean getIncludesNull() {
 			return nullProtectionRequired;
 		}
-		
+
 		@Override
 		public boolean isPurelyFunctional() {
 			if (numberExpression == null && values.isEmpty()) {
@@ -3697,39 +3736,39 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 			}
 		}
 	}
-	
+
 	private static abstract class DBUnaryStringFunction extends StringExpression {
-		
+
 		protected IntegerExpression only;
-		
+
 		DBUnaryStringFunction() {
 			this.only = null;
 		}
-		
+
 		DBUnaryStringFunction(IntegerExpression only) {
 			this.only = only;
 		}
-		
+
 		@Override
 		public DBString getQueryableDatatypeForExpressionValue() {
 			return new DBString();
 		}
-		
+
 		abstract String getFunctionName(DBDefinition db);
-		
+
 		protected String beforeValue(DBDefinition db) {
 			return "" + getFunctionName(db) + "( ";
 		}
-		
+
 		protected String afterValue(DBDefinition db) {
 			return ") ";
 		}
-		
+
 		@Override
 		public String toSQLString(DBDefinition db) {
 			return this.beforeValue(db) + (only == null ? "" : only.toSQLString(db)) + this.afterValue(db);
 		}
-		
+
 		@Override
 		public DBUnaryStringFunction copy() {
 			DBUnaryStringFunction newInstance;
@@ -3741,7 +3780,7 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 			newInstance.only = only.copy();
 			return newInstance;
 		}
-		
+
 		@Override
 		public Set<DBRow> getTablesInvolved() {
 			HashSet<DBRow> hashSet = new HashSet<>();
@@ -3750,12 +3789,12 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 			}
 			return hashSet;
 		}
-		
+
 		@Override
 		public boolean isAggregator() {
 			return only.isAggregator();
 		}
-		
+
 		@Override
 		public boolean isPurelyFunctional() {
 			if (only == null) {
@@ -3764,72 +3803,72 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 				return only.isPurelyFunctional();
 			}
 		}
-		
+
 	}
-	
+
 	private static class MaxUnaryFunction extends DBUnaryFunction {
-		
+
 		private final static long serialVersionUID = 1l;
-		
+
 		MaxUnaryFunction(IntegerExpression only) {
 			super(only);
 		}
-		
+
 		@Override
 		String getFunctionName(DBDefinition db) {
 			return db.getMaxFunctionName();
 		}
-		
+
 		@Override
 		public boolean isAggregator() {
 			return true;
 		}
-		
+
 		@Override
 		public MaxUnaryFunction copy() {
 			return new MaxUnaryFunction(
-					(IntegerExpression) (getInnerResult()== null ? null : getInnerResult().copy()));
+					(IntegerExpression) (getInnerResult() == null ? null : getInnerResult().copy()));
 		}
 	}
-	
+
 	private static class MinUnaryFunction extends DBUnaryFunction {
-		
+
 		private final static long serialVersionUID = 1l;
-		
+
 		MinUnaryFunction(IntegerExpression only) {
 			super(only);
 		}
-		
+
 		@Override
 		String getFunctionName(DBDefinition db) {
 			return db.getMinFunctionName();
 		}
-		
+
 		@Override
 		public boolean isAggregator() {
 			return true;
 		}
-		
+
 		@Override
 		public MinUnaryFunction copy() {
 			return new MinUnaryFunction(
-					(IntegerExpression) (getInnerResult()== null ? null : getInnerResult().copy()));
+					(IntegerExpression) (getInnerResult() == null ? null : getInnerResult().copy()));
 		}
 	}
-	
+
 	private static class MinusBinaryArithmetic extends DBBinaryArithmetic {
-		
+
 		private final static long serialVersionUID = 1l;
-		
+
 		MinusBinaryArithmetic(IntegerResult first, IntegerResult second) {
 			super(first, second);
 		}
-		
+
 		@Override
 		protected String getEquationOperator(DBDefinition db) {
 			return " - ";
 		}
-		
+
 		@Override
 		public MinusBinaryArithmetic copy() {
 			return new MinusBinaryArithmetic(
@@ -3838,50 +3877,50 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 			);
 		}
 	}
-	
+
 	private static class BracketUnaryFunction extends DBUnaryFunction {
-		
+
 		private final static long serialVersionUID = 1l;
-		
+
 		BracketUnaryFunction(IntegerExpression only) {
 			super(only);
 		}
-		
+
 		@Override
 		String getFunctionName(DBDefinition db) {
 			return "";
 		}
-		
+
 		@Override
 		public BracketUnaryFunction copy() {
 			return new BracketUnaryFunction(
-					(IntegerExpression) (getInnerResult()== null ? null : getInnerResult().copy()));
+					(IntegerExpression) (getInnerResult() == null ? null : getInnerResult().copy()));
 		}
 	}
-	
+
 	private class StringResultFunction extends DBUnaryStringFunction {
-		
+
 		private final static long serialVersionUID = 1l;
-		
+
 		public StringResultFunction(IntegerExpression only) {
 			super(only);
 		}
-		
+
 		@Override
 		public String toSQLString(DBDefinition db) {
 			return db.doIntegerToStringTransform(super.only.toSQLString(db));
 		}
-		
+
 		@Override
 		String getFunctionName(DBDefinition db) {
 			throw new UnsupportedOperationException("Not supported yet.");
 		}
-		
+
 		@Override
 		public boolean getIncludesNull() {
 			return only.getIncludesNull();
 		}
-		
+
 		@Override
 		public StringResultFunction copy() {
 			return new StringResultFunction(
@@ -3889,15 +3928,15 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 			);
 		}
 	}
-	
+
 	private class IsFunction extends DBBinaryBooleanArithmetic {
-		
+
 		private final static long serialVersionUID = 1l;
-		
+
 		public IsFunction(IntegerExpression first, IntegerResult second) {
 			super(first, second);
 		}
-		
+
 		@Override
 		public String toSQLString(DBDefinition db) {
 			if (super.getIncludesNull()) {
@@ -3906,12 +3945,12 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 				return db.doIntegerEqualsTransform(getFirst().toSQLString(db), getSecond().toSQLString(db));
 			}
 		}
-		
+
 		@Override
 		protected String getEquationOperator(DBDefinition db) {
 			return " = ";
 		}
-		
+
 		@Override
 		public IsFunction copy() {
 			return new IsFunction(
@@ -3920,25 +3959,25 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 			);
 		}
 	}
-	
+
 	private static class IsLessThanFunction extends DBBinaryBooleanArithmetic {
-		
+
 		private final static long serialVersionUID = 1l;
-		
+
 		public IsLessThanFunction(IntegerExpression first, IntegerResult second) {
 			super(first, second);
 		}
-		
+
 		@Override
 		protected String getEquationOperator(DBDefinition db) {
 			return " < ";
 		}
-		
+
 		@Override
 		public boolean getIncludesNull() {
 			return false;
 		}
-		
+
 		@Override
 		public IsLessThanFunction copy() {
 			return new IsLessThanFunction(
@@ -3947,25 +3986,25 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 			);
 		}
 	}
-	
+
 	private static class IsLessThanOrEqualFunction extends DBBinaryBooleanArithmetic {
-		
+
 		private final static long serialVersionUID = 1l;
-		
+
 		public IsLessThanOrEqualFunction(IntegerExpression first, IntegerResult second) {
 			super(first, second);
 		}
-		
+
 		@Override
 		protected String getEquationOperator(DBDefinition db) {
 			return " <= ";
 		}
-		
+
 		@Override
 		public boolean getIncludesNull() {
 			return false;
 		}
-		
+
 		@Override
 		public IsLessThanOrEqualFunction copy() {
 			return new IsLessThanOrEqualFunction(
@@ -3974,25 +4013,25 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 			);
 		}
 	}
-	
+
 	private static class IsGreaterThanFunction extends DBBinaryBooleanArithmetic {
-		
+
 		private final static long serialVersionUID = 1l;
-		
+
 		public IsGreaterThanFunction(IntegerExpression first, IntegerResult second) {
 			super(first, second);
 		}
-		
+
 		@Override
 		protected String getEquationOperator(DBDefinition db) {
 			return " > ";
 		}
-		
+
 		@Override
 		public boolean getIncludesNull() {
 			return false;
 		}
-		
+
 		@Override
 		public IsGreaterThanFunction copy() {
 			return new IsGreaterThanFunction(
@@ -4001,25 +4040,25 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 			);
 		}
 	}
-	
+
 	private static class IsGreaterThanOrEqualFunction extends DBBinaryBooleanArithmetic {
-		
+
 		private final static long serialVersionUID = 1l;
-		
+
 		public IsGreaterThanOrEqualFunction(IntegerExpression first, IntegerResult second) {
 			super(first, second);
 		}
-		
+
 		@Override
 		protected String getEquationOperator(DBDefinition db) {
 			return " >= ";
 		}
-		
+
 		@Override
 		public boolean getIncludesNull() {
 			return false;
 		}
-		
+
 		@Override
 		public IsGreaterThanOrEqualFunction copy() {
 			return new IsGreaterThanOrEqualFunction(
@@ -4028,15 +4067,15 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 			);
 		}
 	}
-	
+
 	private class IsInFunction extends DBNnaryBooleanFunction {
-		
+
 		private final static long serialVersionUID = 1l;
-		
+
 		public IsInFunction(IntegerExpression leftHandSide, IntegerResult[] rightHandSide) {
 			super(leftHandSide, rightHandSide);
 		}
-		
+
 		@Override
 		public String toSQLString(DBDefinition db) {
 			List<String> sqlValues = new ArrayList<>();
@@ -4045,12 +4084,12 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 			}
 			return db.doInTransform(getColumn().toSQLString(db), sqlValues);
 		}
-		
+
 		@Override
 		protected String getFunctionName(DBDefinition db) {
 			return " IN ";
 		}
-		
+
 		@Override
 		public IsInFunction copy() {
 			List<IntegerResult> newValues = new ArrayList<>();
@@ -4058,20 +4097,20 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 				newValues.add(num == null ? null : num.copy());
 			}
 			return new IsInFunction(
-					getColumn()==null?null:getColumn().copy(),
+					getColumn() == null ? null : getColumn().copy(),
 					newValues.toArray(new IntegerResult[]{})
 			);
 		}
 	}
-	
+
 	private static class LeastOfFunction extends DBNnaryIntegerFunction {
-		
+
 		private final static long serialVersionUID = 1l;
-		
+
 		public LeastOfFunction(IntegerResult[] rightHandSide) {
 			super(rightHandSide);
 		}
-		
+
 		@Override
 		public String toSQLString(DBDefinition db) {
 			List<String> strs = new ArrayList<>();
@@ -4080,12 +4119,12 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 			}
 			return db.doLeastOfTransformation(strs);
 		}
-		
+
 		@Override
 		protected String getFunctionName(DBDefinition db) {
 			return db.getLeastOfFunctionName();
 		}
-		
+
 		@Override
 		public LeastOfFunction copy() {
 			List<IntegerResult> newValues = new ArrayList<>();
@@ -4097,15 +4136,15 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 			);
 		}
 	}
-	
+
 	private static class GreatestOfFunction extends DBNnaryIntegerFunction {
-		
+
 		private final static long serialVersionUID = 1l;
-		
+
 		public GreatestOfFunction(IntegerResult[] rightHandSide) {
 			super(rightHandSide);
 		}
-		
+
 		@Override
 		public String toSQLString(DBDefinition db) {
 			List<String> strs = new ArrayList<>();
@@ -4114,12 +4153,12 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 			}
 			return db.doGreatestOfTransformation(strs);
 		}
-		
+
 		@Override
 		protected String getFunctionName(DBDefinition db) {
 			return db.getGreatestOfFunctionName();
 		}
-		
+
 		@Override
 		public GreatestOfFunction copy() {
 			List<IntegerResult> newValues = new ArrayList<>();
@@ -4131,25 +4170,25 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 			);
 		}
 	}
-	
+
 	private class IfDBNullFunction extends IntegerIntegerFunctionIntegerResult {
-		
+
 		private final static long serialVersionUID = 1l;
-		
+
 		public IfDBNullFunction(IntegerExpression first, IntegerResult second) {
 			super(first, second);
 		}
-		
+
 		@Override
 		public String toSQLString(DBDefinition db) {
 			return db.doIntegerIfNullTransform(this.getFirst().toSQLString(db), getSecond().toSQLString(db));
 		}
-		
+
 		@Override
 		String getFunctionName(DBDefinition db) {
 			return db.getIfNullFunctionName();
 		}
-		
+
 		@Override
 		public IfDBNullFunction copy() {
 			return new IfDBNullFunction(
@@ -4158,80 +4197,80 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 			);
 		}
 	}
-	
+
 	private class NumberResultFunction extends DBUnaryNumberFunction {
-		
+
 		private final static long serialVersionUID = 1l;
-		
+
 		public NumberResultFunction(IntegerExpression only) {
 			super(only);
 		}
-		
+
 		@Override
 		String getFunctionName(DBDefinition db) {
 			throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 		}
-		
+
 		@Override
 		public String toSQLString(DBDefinition db) {
 			return db.doIntegerToNumberTransform(this.getInnerResult().toSQLString(db));
 		}
-		
+
 		@Override
 		public NumberResultFunction copy() {
 			return new NumberResultFunction(
 					(IntegerExpression) (getInnerResult() == null ? null : getInnerResult().copy()));
 		}
 	}
-	
+
 	private static class AbsoluteValueFunction extends DBUnaryFunction {
-		
+
 		private final static long serialVersionUID = 1l;
-		
+
 		public AbsoluteValueFunction(IntegerExpression only) {
 			super(only);
 		}
-		
+
 		@Override
 		String getFunctionName(DBDefinition db) {
 			return "abs";
 		}
-		
+
 		@Override
 		public AbsoluteValueFunction copy() {
 			return new AbsoluteValueFunction(
 					(IntegerExpression) (getInnerResult() == null ? null : getInnerResult().copy()));
 		}
 	}
-	
+
 	private static class ArcCosineFunction extends DBUnaryNumberFunction {
-		
+
 		private final static long serialVersionUID = 1l;
-		
+
 		public ArcCosineFunction(IntegerExpression only) {
 			super(only);
 		}
-		
+
 		@Override
 		String getFunctionName(DBDefinition db) {
 			return "acos";
 		}
-		
+
 		@Override
 		public ArcCosineFunction copy() {
 			return new ArcCosineFunction(
 					(IntegerExpression) (getInnerResult() == null ? null : getInnerResult().copy()));
 		}
 	}
-	
+
 	private class ArcSineFunction extends DBUnaryNumberFunction {
-		
+
 		private final static long serialVersionUID = 1l;
-		
+
 		public ArcSineFunction(IntegerExpression only) {
 			super(only);
 		}
-		
+
 		@Override
 		public String toSQLString(DBDefinition db) {
 			if (db.supportsArcSineFunction()) {
@@ -4241,32 +4280,32 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 				return only.numberResult().dividedBy(value(1.0).minus(only.times(only).bracket()).bracket().squareRoot()).arctan().toSQLString(db);
 			}
 		}
-		
+
 		@Override
 		String getFunctionName(DBDefinition db) {
 			return "asin";
 		}
-		
+
 		@Override
 		public ArcSineFunction copy() {
 			return new ArcSineFunction(
 					(IntegerExpression) (getInnerResult() == null ? null : getInnerResult().copy()));
 		}
 	}
-	
+
 	private static class PowerFunction extends IntegerIntegerFunctionIntegerResult {
-		
+
 		private final static long serialVersionUID = 1l;
-		
+
 		public PowerFunction(IntegerExpression first, IntegerExpression second) {
 			super(first, second);
 		}
-		
+
 		@Override
 		String getFunctionName(DBDefinition db) {
 			return "power";
 		}
-		
+
 		@Override
 		public PowerFunction copy() {
 			return new PowerFunction(
@@ -4275,35 +4314,35 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 			);
 		}
 	}
-	
+
 	private static class SignFunction extends DBUnaryFunction {
-		
+
 		private final static long serialVersionUID = 1l;
-		
+
 		public SignFunction(IntegerExpression only) {
 			super(only);
 		}
-		
+
 		@Override
 		String getFunctionName(DBDefinition db) {
 			return "sign";
 		}
-		
+
 		@Override
 		public SignFunction copy() {
 			return new SignFunction(
 					(IntegerExpression) (getInnerResult() == null ? null : getInnerResult().copy()));
 		}
 	}
-	
+
 	private class RoundToNumberOfDecimalPlacesFunction extends IntegerIntegerFunctionIntegerResult {
-		
+
 		private final static long serialVersionUID = 1l;
-		
+
 		public RoundToNumberOfDecimalPlacesFunction(IntegerExpression first, IntegerExpression second) {
 			super(first, second);
 		}
-		
+
 		@Override
 		public String toSQLString(DBDefinition db) {
 			try {
@@ -4318,12 +4357,12 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 						.dividedBy(power).toSQLString(db);
 			}
 		}
-		
+
 		@Override
 		String getFunctionName(DBDefinition db) {
 			return "round";
 		}
-		
+
 		@Override
 		public RoundToNumberOfDecimalPlacesFunction copy() {
 			return new RoundToNumberOfDecimalPlacesFunction(
@@ -4332,20 +4371,20 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 			);
 		}
 	}
-	
+
 	private static class PlusFunction extends DBBinaryArithmetic {
-		
+
 		private final static long serialVersionUID = 1l;
-		
+
 		public PlusFunction(IntegerResult first, IntegerResult second) {
 			super(first, second);
 		}
-		
+
 		@Override
 		protected String getEquationOperator(DBDefinition db) {
 			return " + ";
 		}
-		
+
 		@Override
 		public PlusFunction copy() {
 			return new PlusFunction(
@@ -4354,20 +4393,20 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 			);
 		}
 	}
-	
+
 	private static class TimesFunction extends DBBinaryArithmetic {
-		
+
 		private final static long serialVersionUID = 1l;
-		
+
 		public TimesFunction(IntegerResult first, IntegerResult second) {
 			super(first, second);
 		}
-		
+
 		@Override
 		protected String getEquationOperator(DBDefinition db) {
 			return " * ";
 		}
-		
+
 		@Override
 		public TimesFunction copy() {
 			return new TimesFunction(
@@ -4376,15 +4415,15 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 			);
 		}
 	}
-	
+
 	private class ModulusFunction extends IntegerIntegerFunctionIntegerResult {
-		
+
 		private final static long serialVersionUID = 1l;
-		
+
 		public ModulusFunction(IntegerExpression first, IntegerExpression second) {
 			super(first, second);
 		}
-		
+
 		@Override
 		public String toSQLString(DBDefinition db) {
 			if (db.supportsModulusFunction()) {
@@ -4393,12 +4432,12 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 				return "((" + getFirst().toSQLString(db) + ") % (" + getSecond().toSQLString(db) + "))";
 			}
 		}
-		
+
 		@Override
 		String getFunctionName(DBDefinition db) {
 			return "MOD";
 		}
-		
+
 		@Override
 		public ModulusFunction copy() {
 			return new ModulusFunction(
@@ -4407,15 +4446,15 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 			);
 		}
 	}
-	
+
 	private class ChooseFunction extends DBIntegerAndNnaryStringFunction {
-		
+
 		private final static long serialVersionUID = 1l;
-		
+
 		public ChooseFunction(IntegerResult numberResult, StringResult[] rightHandSide) {
 			super(numberResult, rightHandSide);
 		}
-		
+
 		@Override
 		public String toSQLString(DBDefinition db) {
 			List<String> strs = new ArrayList<>();
@@ -4424,7 +4463,7 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 			}
 			return db.doChooseTransformation(IntegerExpression.value(numberExpression).plus(1).bracket().toSQLString(db), strs);
 		}
-		
+
 		@Override
 		public ChooseFunction copy() {
 			StringResult[] newValues = new StringResult[values.size()];
@@ -4437,44 +4476,44 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 					newValues);
 		}
 	}
-	
+
 	private static class SumFunction extends DBUnaryFunction {
-		
+
 		private final static long serialVersionUID = 1l;
-		
+
 		public SumFunction(IntegerExpression only) {
 			super(only);
 		}
-		
+
 		@Override
 		String getFunctionName(DBDefinition db) {
 			return db.getSumFunctionName();
 		}
-		
+
 		@Override
 		public boolean isAggregator() {
 			return true;
 		}
-		
+
 		@Override
 		public SumFunction copy() {
 			return new SumFunction(
 					(IntegerExpression) (getInnerResult() == null ? null : getInnerResult().copy()));
 		}
 	}
-	
+
 	private static class NullExpression extends IntegerExpression {
-		
+
 		private final static long serialVersionUID = 1l;
-		
+
 		public NullExpression() {
 		}
-		
+
 		@Override
 		public String toSQLString(DBDefinition db) {
 			return db.getNull();
 		}
-		
+
 		@Override
 		public NullExpression copy() {
 			return new NullExpression();

@@ -46,7 +46,7 @@ import nz.co.gregs.dbvolution.reflection.EncodingInterpreter;
  */
 public class ExampleEncodingInterpreter implements EncodingInterpreter {
 
-	private static final List<String> trueVals = new ArrayList<String>() {
+	private static final List<String> TRUE_VALUES = new ArrayList<String>() {
 		public static final long serialVersionUID = 1L;
 
 		{
@@ -183,7 +183,7 @@ public class ExampleEncodingInterpreter implements EncodingInterpreter {
 
 	@Override
 	public void decodeValue(String value, DBBoolean field) {
-		field.permittedValues(trueVals.contains(value.toLowerCase()));
+		field.permittedValues(TRUE_VALUES.contains(value.toLowerCase()));
 	}
 
 	@Override

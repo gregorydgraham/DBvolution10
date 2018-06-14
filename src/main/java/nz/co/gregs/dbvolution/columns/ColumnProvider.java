@@ -15,6 +15,8 @@
  */
 package nz.co.gregs.dbvolution.columns;
 
+import nz.co.gregs.dbvolution.expressions.DBExpression;
+
 /**
  * Interface to indicate that this object can provide a column.
  *
@@ -24,7 +26,7 @@ package nz.co.gregs.dbvolution.columns;
  *
  * @author Gregory Graham
  */
-public interface ColumnProvider {
+public interface ColumnProvider extends DBExpression {
 
 	/**
 	 * Returns the AbstractColumn from this ColumnProvider.

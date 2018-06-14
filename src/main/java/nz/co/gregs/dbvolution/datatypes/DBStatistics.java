@@ -13,6 +13,7 @@ import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.expressions.AnyExpression;
 import nz.co.gregs.dbvolution.expressions.EqualExpression;
 import nz.co.gregs.dbvolution.expressions.IntegerExpression;
+import nz.co.gregs.dbvolution.expressions.RangeExpression;
 import nz.co.gregs.dbvolution.internal.properties.PropertyWrapperDefinition;
 import nz.co.gregs.dbvolution.results.EqualResult;
 
@@ -44,7 +45,7 @@ public class DBStatistics<B, R extends EqualResult<B>, D extends QueryableDataty
 	private IntegerExpression countExpr;
 	private EqualExpression.ModeSimpleExpression<B, R, D, X> modeSimpleExpression;
 	private EqualExpression.ModeStrictExpression<B, R, D, X> modeStrictExpression;
-	private EqualExpression.MedianExpression<B, R, D, X> medianExpression;
+	private RangeExpression.UniqueRankingExpression<B, R, D, X> medianExpression;
 	private X firstQuartileExpression;
 	private X thirdQuartileExpression;
 
@@ -80,7 +81,7 @@ public class DBStatistics<B, R extends EqualResult<B>, D extends QueryableDataty
 		countExpr = originalExpression.count();
 		modeSimpleExpression = new EqualExpression.ModeSimpleExpression<B, R, D, X>(originalExpression);
 		modeStrictExpression = new EqualExpression.ModeStrictExpression<B, R, D, X>(originalExpression);
-//		medianExpression = new EqualExpression.MedianExpression<B, R, D, X>(originalExpression);
+//		medianExpression = new EqualExpression.UniqueRankingExpression<B, R, D, X>(originalExpression);
 
 		this.setColumnExpression(new AnyExpression<?, ?, ?>[]{
 			countExpr,

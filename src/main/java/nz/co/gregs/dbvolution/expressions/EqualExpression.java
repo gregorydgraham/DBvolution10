@@ -34,6 +34,7 @@ import java.util.List;
 import java.util.Set;
 import nz.co.gregs.dbvolution.DBQuery;
 import nz.co.gregs.dbvolution.DBRow;
+import nz.co.gregs.dbvolution.columns.ColumnProvider;
 import nz.co.gregs.dbvolution.databases.DBDatabase;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.datatypes.DBInteger;
@@ -182,7 +183,7 @@ public abstract class EqualExpression<B, R extends EqualResult<B>, D extends Que
 		}
 	}
 
-	private static abstract class DBUnaryFunction<B, R extends EqualResult<B>, D extends QueryableDatatype<B>, X extends EqualExpression<B, R, D>> extends EqualExpression<B, R, D> implements EqualResult<B> {
+	protected static abstract class DBUnaryFunction<B, R extends EqualResult<B>, D extends QueryableDatatype<B>, X extends EqualExpression<B, R, D>> extends EqualExpression<B, R, D> implements EqualResult<B> {
 
 		protected X only;
 
@@ -546,98 +547,6 @@ public abstract class EqualExpression<B, R extends EqualResult<B>, D extends Que
 		@SuppressWarnings("unchecked")
 		public ModeStrictExpression<B, R, D, X> copy() {
 			return new ModeStrictExpression<B, R, D, X>((X) (only == null ? null : only.copy()));
-		}
-
-	}
-
-	public static class MedianExpression<B, R extends EqualResult<B>, D extends QueryableDatatype<B>, X extends EqualExpression<B, R, D>> extends DBUnaryFunction<B, R, D, X> {
-
-		private final static long serialVersionUID = 1l;
-
-		public MedianExpression(X only) {
-			super(only);
-		}
-
-		@Override
-		public String toSQLString(DBDefinition defn) {
-			return defn.formatExpressionAlias(this);
-		}
-
-		@Override
-		String getFunctionName(DBDefinition db) {
-			return "";
-		}
-
-		@Override
-		protected String afterValue(DBDefinition db) {
-			return "";
-		}
-
-		@Override
-		public boolean isAggregator() {
-			return true;
-		}
-
-		@Override
-		public boolean isComplexExpression() {
-			return true;
-		}
-
-		@Override
-		public String createSQLForFromClause(DBDatabase database) {
-
-			DBDefinition defn = database.getDefinition();
-			final IntegerExpression expr = new IntegerExpression(getInnerResult());
-
-			DBInteger count = expr.count().asExpressionColumn();
-
-			count.setSortOrderDescending();
-
-			Set<DBRow> tablesInvolved = this.getTablesInvolved();
-			List<DBRow> tablesToUse = new ArrayList<>(0);
-			for (DBRow dBRow : tablesInvolved) {
-				tablesToUse.add(DBRow.copyDBRow(dBRow));
-			}
-
-			DBQuery query = database.getDBQuery(tablesToUse);
-
-//		Marque table2 = new Marque();
-//		table2.setTableVariantIdentifier("a2");
-//		final IntegerColumn t2UpdateCount = table2.column(table2.updateCount);
-//		final IntegerColumn t2UIDMarque = table2.column(table2.uidMarque);
-//
-//		DBQuery dbQuery = database
-//				.getDBQuery(table1)
-//				.add(table2)
-//				.setBlankQueryAllowed(true)
-//				.setCartesianJoinsAllowed(true);
-//		
-//		dbQuery.addCondition(
-//				BooleanExpression.seekLessThan(
-//						t1UpdateCount, t2UpdateCount,
-//						t1UidMarque, t2UIDMarque
-//				)
-//		);
-//		dbQuery.addExpressionColumn(this, t1UpdateCount.count().asExpressionColumn());
-//		table1.updateCount.setSortOrderDescending();
-//		table1.uidMarque.setSortOrderDescending();
-//		dbQuery.setSortOrder(t1UpdateCount, t1UidMarque);
-//		dbQuery.setReturnFields(t1UpdateCount, t1UidMarque);
-			String sql = "(" + query.getSQLForQuery().replaceAll("; *$", "") + ") " + getFirstTableModeName(defn);
-			return sql;
-		}
-
-		public String getInternalTableName(DBDatabase database) {
-			return database.getDefinition().getTableAliasForObject(this);
-		}
-
-		private synchronized String getFirstTableModeName(DBDefinition defn) {
-			return defn.formatExpressionAlias(this);
-		}
-
-		@Override
-		public String createSQLForGroupByClause(DBDatabase database) {
-			return "";
 		}
 
 	}

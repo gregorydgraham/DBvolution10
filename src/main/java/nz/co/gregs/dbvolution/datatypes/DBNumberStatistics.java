@@ -155,7 +155,7 @@ public class DBNumberStatistics extends DBNumber {
 	 * <p style="color: #F90;">Support DBvolution at
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 *
-	 * @return the median value in this grouping
+	 * @return the uniqueRanking value in this grouping
 	 */
 	public Number median() {
 		return this.medianNumber;
@@ -178,7 +178,7 @@ public class DBNumberStatistics extends DBNumber {
 	 * <p style="color: #F90;">Support DBvolution at
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 *
-	 * @return the middle number between the median and the smallest value.
+	 * @return the middle number between the uniqueRanking and the smallest value.
 	 */
 	public Number firstQuartile() {
 		return this.firstQuartileNumber;
@@ -189,7 +189,7 @@ public class DBNumberStatistics extends DBNumber {
 	 * <p style="color: #F90;">Support DBvolution at
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 *
-	 * @return the middle number between the median and the largest value.
+	 * @return the middle number between the uniqueRanking and the largest value.
 	 */
 	public Number thirdQuartile() {
 		return this.thirdQuartileNumber;
@@ -201,7 +201,7 @@ public class DBNumberStatistics extends DBNumber {
 	 * <p style="color: #F90;">Support DBvolution at
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 *
-	 * @return the median value in this grouping
+	 * @return the uniqueRanking value in this grouping
 	 */
 	public Number secondQuartile() {
 		return this.medianNumber;

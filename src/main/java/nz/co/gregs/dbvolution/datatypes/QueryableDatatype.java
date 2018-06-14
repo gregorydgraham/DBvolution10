@@ -1075,7 +1075,18 @@ public abstract class QueryableDatatype<T> extends Object implements Serializabl
 
 	@Override
 	public final String createSQLForFromClause(DBDatabase database) {
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+		if (hasColumnExpression()) {
+			StringBuilder str = new StringBuilder();
+			for (DBExpression expr : getColumnExpression()) {
+				if (str.length() > 0) {
+					str.append(", ");
+				}
+				str.append(expr.createSQLForFromClause(database));
+			}
+			return str.toString();
+		} else {
+			throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+		}
 	}
 
 	@Override

@@ -75,11 +75,11 @@ public class DBStatisticsTest extends AbstractTest {
 
 		final DBQueryRow onlyRow = allRows.get(0);
 
-		// Check that the mode is 2
+		// Check that the uniqueRanking is 2
 		QueryableDatatype<?> mode = onlyRow.getExpressionColumnValue("mode");
 		Assert.assertThat(mode.stringValue(), is("2"));
 
-		// Check that the mode was found 9 times
+		// Check that the uniqueRanking was found 9 times
 		QueryableDatatype<?> counted = onlyRow.getExpressionColumnValue("mode count");
 		Assert.assertThat(counted.stringValue(), is("9"));
 	}
@@ -109,11 +109,11 @@ public class DBStatisticsTest extends AbstractTest {
 
 		final DBQueryRow onlyRow = allRows.get(0);
 
-		// Check that the mode is 2
+		// Check that the uniqueRanking is 2
 		QueryableDatatype<?> mode = onlyRow.getExpressionColumnValue("mode");
 		Assert.assertThat(mode.stringValue(), is("0"));
 
-		// Check that the mode was found 9 times
+		// Check that the uniqueRanking was found 9 times
 		QueryableDatatype<?> counted = onlyRow.getExpressionColumnValue("mode count");
 		Assert.assertThat(counted.stringValue(), is("4"));
 	}
@@ -139,7 +139,7 @@ public class DBStatisticsTest extends AbstractTest {
 
 		final DBQueryRow onlyRow = allRows.get(0);
 
-		// Check that the mode is 2
+		// Check that the uniqueRanking is 2
 		QueryableDatatype<?> mode = onlyRow.getExpressionColumnValue("mode");
 		Assert.assertThat(mode.stringValue(), is("2"));
 	}
@@ -157,7 +157,7 @@ public class DBStatisticsTest extends AbstractTest {
 
 		final StatsOfUpdateCountTest onlyRow = allRows.get(0).get(stat);
 
-		// Check that the mode is 2
+		// Check that the uniqueRanking is 2
 		Integer mode = onlyRow.mode.intValue();
 		Assert.assertThat(mode, is(2));
 	}
@@ -176,7 +176,7 @@ public class DBStatisticsTest extends AbstractTest {
 
 		final StatsIntegerTest onlyRow = allRows.get(0).get(stat);
 
-		// Check that the mode is 2
+		// Check that the uniqueRanking is 2
 		Integer mode = onlyRow.carCoStats.modeSimple().intValue();
 		Assert.assertThat(mode, is(4));
 	}
@@ -195,7 +195,7 @@ public class DBStatisticsTest extends AbstractTest {
 
 		final StatsStringTest onlyRow = allRows.get(0).get(stat);
 
-		// Check that the mode is 2
+		// Check that the uniqueRanking is 2
 		String mode = onlyRow.carNameStats.modeSimple();
 		Assert.assertThat(mode, is("O"));
 	}
@@ -214,7 +214,7 @@ public class DBStatisticsTest extends AbstractTest {
 
 		final StatsIntegerTest onlyRow = allRows.get(0).get(stat);
 
-		// Check that the mode is 4 for car company
+		// Check that the uniqueRanking is 4 for car company
 		Long mode = onlyRow.carCoStats.modeStrict();
 		Assert.assertThat(mode, is(4l));
 	}
@@ -232,7 +232,7 @@ public class DBStatisticsTest extends AbstractTest {
 
 		final StatsStringTest onlyRow = allRows.get(0).get(stat);
 
-		// Check that the mode is 4 for car company
+		// Check that the uniqueRanking is 4 for car company
 		String mode = onlyRow.carNameStats.modeStrict();
 		Assert.assertThat(mode, is("O"));
 	}
@@ -279,21 +279,21 @@ public class DBStatisticsTest extends AbstractTest {
 
 		DBQueryRow onlyRow = allRows1.get(0);
 
-		// Check that the mode is 2
+		// Check that the uniqueRanking is 2
 		QueryableDatatype<?> mode = onlyRow.getExpressionColumnValue("mode");
 		Assert.assertThat(mode.stringValue(), is("2"));
 
-		// Check that the mode was found 9 times
+		// Check that the uniqueRanking was found 9 times
 		QueryableDatatype<?> counted = onlyRow.getExpressionColumnValue("mode count");
 		Assert.assertThat(counted.stringValue(), is("9"));
 
 		onlyRow = allRows2.get(0);
 
-		// Check that the second mode is 0
+		// Check that the second uniqueRanking is 0
 		mode = onlyRow.getExpressionColumnValue("mode");
 		Assert.assertThat(mode.stringValue(), is("0"));
 
-		// Check that the mode was found 9 times
+		// Check that the uniqueRanking was found 9 times
 		counted = onlyRow.getExpressionColumnValue("mode count");
 		Assert.assertThat(counted.stringValue(), is("4"));
 	}
@@ -342,21 +342,21 @@ public class DBStatisticsTest extends AbstractTest {
 
 		DBQueryRow onlyRow = allRows1.get(0);
 
-		// Check that the mode is 2
+		// Check that the uniqueRanking is 2
 		QueryableDatatype<?> mode = onlyRow.getExpressionColumnValue("mode");
 		Assert.assertThat(mode.stringValue(), isOneOf("1", "3"));
 
-		// Check that the mode was found 9 times
+		// Check that the uniqueRanking was found 9 times
 		QueryableDatatype<?> counted = onlyRow.getExpressionColumnValue("mode count");
 		Assert.assertThat(counted.stringValue(), is("3"));
 
 		onlyRow = allRows2.get(0);
 
-		// Check that the second mode is 0
+		// Check that the second uniqueRanking is 0
 		mode = onlyRow.getExpressionColumnValue("mode");
 		Assert.assertThat(mode.stringValue(), isOneOf("1", "3"));
 
-		// Check that the mode was found 9 times
+		// Check that the uniqueRanking was found 9 times
 		counted = onlyRow.getExpressionColumnValue("mode count");
 		Assert.assertThat(counted.stringValue(), is("3"));
 	}
@@ -382,7 +382,7 @@ public class DBStatisticsTest extends AbstractTest {
 
 		final DBQueryRow onlyRow = allRows.get(0);
 
-		// Check that the mode is 2
+		// Check that the uniqueRanking is 2
 		QueryableDatatype<?> mode = onlyRow.getExpressionColumnValue("mode");
 		Assert.assertThat(mode.stringValue(), is("2"));
 	}
@@ -390,7 +390,7 @@ public class DBStatisticsTest extends AbstractTest {
 	@Test
 	public void testMedianQuery() throws SQLException {
 		/*
-SELECT *, upd_count as median FROM (
+SELECT *, upd_count as uniqueRanking FROM (
 	SELECT a1.uid_marque, a1.upd_count, COUNT(a1.upd_count) rownumber 
 	FROM marque a1 
 	left outer join marque a2 on (a1.upd_count > a2.upd_count 
@@ -400,14 +400,23 @@ SELECT *, upd_count as median FROM (
 WHERE rownumber = (SELECT (COUNT(*)+1) DIV 2 FROM (select * FROM marque WHERE upd_count is not null) a4)
 ;
 		 */
-		final Marque table1 = new Marque();
-		final RangeExpression t1UpdateCount = table1.column(table1.updateCount);
-		final RangeExpression t1UidMarque = table1.column(table1.uidMarque);
+		final Marque inputTable = new Marque();
+		IntegerColumn inputExpression = inputTable.column(inputTable.updateCount);
+
+		/*   --------------------------------------------------------------   */
+		DBRow table1 = inputExpression.getTablesInvolved().toArray(new DBRow[]{})[0];
+
+		QueryableDatatype<?> inputExpressionQDT = inputExpression.getColumn().getAppropriateQDTFromRow(table1);
+		final RangeExpression inputRangeExpression = inputExpression;
+		final QueryableDatatype<?> pkQDT = table1.getPrimaryKeys().get(0);
+		final ColumnProvider pkColumn = table1.column(pkQDT);
+		final RangeExpression pkRangeExpression = (RangeExpression) pkColumn;
+		final ColumnProvider t1ValueColumn = (ColumnProvider) inputRangeExpression;
 
 		DBQuery dbQuery = database.getDBQuery(table1);
 
-		final RangeExpression t2UpdateCount = (RangeExpression) t1UpdateCount.copy();
-		final RangeExpression t2UIDMarque = (RangeExpression) t1UidMarque.copy();
+		final RangeExpression t2UpdateCount = (RangeExpression) inputRangeExpression.copy();
+		final RangeExpression t2UIDMarque = (RangeExpression) pkRangeExpression.copy();
 		Set<DBRow> tablesInvolved = t2UpdateCount.getTablesInvolved();
 		for (DBRow table : tablesInvolved) {
 			table.setTableVariantIdentifier("a2");
@@ -423,23 +432,62 @@ WHERE rownumber = (SELECT (COUNT(*)+1) DIV 2 FROM (select * FROM marque WHERE up
 
 		dbQuery.addCondition(
 				BooleanExpression.seekGreaterThan(
-						t1UpdateCount, t2UpdateCount,
-						t1UidMarque, t2UIDMarque
+						inputRangeExpression, t2UpdateCount,
+						pkRangeExpression, t2UIDMarque
 				)
 		);
-		
-		final DBInteger t1CounterExpr = t1UpdateCount.count().asExpressionColumn();
-		dbQuery.addExpressionColumn("Counter"+this, t1CounterExpr);
+
+		final DBInteger t1CounterExpr = inputRangeExpression.count().asExpressionColumn();
+		final String counterKey = "Counter" + this;
+		dbQuery.addExpressionColumn(counterKey, t1CounterExpr);
 		ColumnProvider t1CounterColumn = dbQuery.column(t1CounterExpr);
-		ColumnProvider t1UpdateCountColumn = table1.column(table1.updateCount);
-		ColumnProvider t1UidMarqueColumn = table1.column(table1.uidMarque);
-		table1.updateCount.setSortOrderDescending();
-		table1.uidMarque.setSortOrderDescending();
-		dbQuery.setSortOrder(t1UpdateCountColumn, t1UidMarqueColumn);
-		dbQuery.setReturnFields(t1UpdateCountColumn, t1CounterColumn,t1UidMarqueColumn);
+
+		final QueryableDatatype t1ValueExpr = inputRangeExpression.asExpressionColumn();
+		final String valueExprKey = "Value" + this;
+		dbQuery.addExpressionColumn(valueExprKey, t1ValueExpr);
+
+		inputExpressionQDT.setSortOrderDescending();
+		pkQDT.setSortOrderDescending();
+
+		dbQuery.setSortOrder(t1ValueColumn, pkColumn);
+		dbQuery.setReturnFields(t1CounterColumn, t1ValueColumn, pkColumn);
 		dbQuery.printSQLForQuery();
-		
-		
+
+		List<DBQueryRow> allRows = dbQuery.getAllRows();
+		assertThat(allRows.size(), is(20));
+		dbQuery.print();
+		int index = 20;
+		for (DBQueryRow row : allRows) {
+			QueryableDatatype<?> counterQDT = row.getExpressionColumnValue(counterKey);
+			QueryableDatatype<?> valueQDT = row.getExpressionColumnValue(valueExprKey);
+			assertThat(counterQDT.stringValue(), is("" + index));
+
+			final Integer integerIndex = new Integer(counterQDT.stringValue());
+			assertThat(
+					valueQDT.stringValue(),
+					is(integerIndex == 20 ? "4"
+							: integerIndex > 16 ? "3"
+									: integerIndex > 7 ? "2"
+											: integerIndex > 4 ? "1" : "0"
+					)
+			);
+			index--;
+		}
+	}
+
+	public static class MedianExpressionTable extends Marque {
+
+		private static final long serialVersionUID = 1L;
+
+		public MedianExpressionTable() {
+		}
+
+		@DBColumn
+		public DBInteger median = this.column(this.updateCount).median().asExpressionColumn();
+
+		{
+			this.setReturnFields(median);
+		}
 	}
 
 	public static class StatsIntegerTest extends Marque {

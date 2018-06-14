@@ -28,9 +28,17 @@
  */
 package nz.co.gregs.dbvolution.expressions;
 
+import java.util.Set;
+import nz.co.gregs.dbvolution.DBQuery;
+import nz.co.gregs.dbvolution.DBRow;
+import nz.co.gregs.dbvolution.columns.ColumnProvider;
+import nz.co.gregs.dbvolution.databases.DBDatabase;
+import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
+import nz.co.gregs.dbvolution.datatypes.DBInteger;
 import nz.co.gregs.dbvolution.results.RangeResult;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 import nz.co.gregs.dbvolution.results.AnyResult;
+import nz.co.gregs.dbvolution.results.EqualResult;
 import nz.co.gregs.dbvolution.results.RangeComparable;
 
 /**
@@ -54,6 +62,7 @@ public abstract class RangeExpression<B, R extends RangeResult<B>, D extends Que
 	protected RangeExpression() {
 		super();
 	}
+
 	/**
 	 *
 	 * @param only
@@ -222,4 +231,166 @@ public abstract class RangeExpression<B, R extends RangeResult<B>, D extends Que
 		return this.isBetweenExclusive(this.expression(lowerBound), this.expression(upperBound));
 	}
 
+	public static class UniqueRankingExpression<B, R extends EqualResult<B>, D extends QueryableDatatype<B>, X extends EqualExpression<B, R, D>> extends EqualExpression.DBUnaryFunction<B, R, D, X> {
+
+		private final static long serialVersionUID = 1l;
+
+		public UniqueRankingExpression(X only) {
+			super(only);
+		}
+
+		@Override
+		public String toSQLString(DBDefinition defn) {
+			return defn.formatExpressionAlias(this);
+		}
+
+		@Override
+		String getFunctionName(DBDefinition db) {
+			return "";
+		}
+
+		@Override
+		protected String afterValue(DBDefinition db) {
+			return "";
+		}
+
+		@Override
+		public boolean isAggregator() {
+			return true;
+		}
+
+		@Override
+		public boolean isComplexExpression() {
+			return true;
+		}
+
+		@Override
+		public String createSQLForFromClause(DBDatabase database) {
+
+			DBDefinition defn = database.getDefinition();
+			final ColumnProvider inputExpression = (ColumnProvider) getInnerResult();
+
+			DBRow table1 = inputExpression.getTablesInvolved().toArray(new DBRow[]{})[0];
+
+			QueryableDatatype<?> inputExpressionQDT = inputExpression.getColumn().getAppropriateQDTFromRow(table1);
+			final RangeExpression inputRangeExpression = (RangeExpression) inputExpression;
+			final QueryableDatatype<?> pkQDT = table1.getPrimaryKeys().get(0);
+			final ColumnProvider pkColumn = table1.column(pkQDT);
+			final RangeExpression pkRangeExpression = (RangeExpression) pkColumn;
+			final ColumnProvider t1ValueColumn = (ColumnProvider) inputRangeExpression;
+
+			DBQuery dbQuery = database.getDBQuery(table1);
+
+			final RangeExpression t2UpdateCount = (RangeExpression) inputRangeExpression.copy();
+			final RangeExpression t2UIDMarque = (RangeExpression) pkRangeExpression.copy();
+			Set<DBRow> tablesInvolved = (Set<DBRow>)t2UpdateCount.getTablesInvolved();
+			for (DBRow table : tablesInvolved) {
+				table.setTableVariantIdentifier("a2");
+				dbQuery.addOptional(table);
+			}
+			tablesInvolved = (Set<DBRow>)t2UIDMarque.getTablesInvolved();
+			for (DBRow table : tablesInvolved) {
+				table.setTableVariantIdentifier("a2");
+				dbQuery.addOptional(table);
+			}
+
+			dbQuery.setBlankQueryAllowed(true);
+
+			dbQuery.addCondition(
+					BooleanExpression.seekGreaterThan(
+							inputRangeExpression, t2UpdateCount,
+							pkRangeExpression, t2UIDMarque
+					)
+			);
+
+			final DBInteger t1CounterExpr = inputRangeExpression.count().asExpressionColumn();
+			final String counterKey = "Counter" + this;
+			dbQuery.addExpressionColumn(counterKey, t1CounterExpr);
+			ColumnProvider t1CounterColumn = dbQuery.column(t1CounterExpr);
+
+			final QueryableDatatype<?> t1ValueExpr = inputRangeExpression.asExpressionColumn();
+			final String valueExprKey = "Value" + this;
+			dbQuery.addExpressionColumn(valueExprKey, t1ValueExpr);
+
+			inputExpressionQDT.setSortOrderDescending();
+			pkQDT.setSortOrderDescending();
+
+			dbQuery.setSortOrder(t1ValueColumn, pkColumn);
+			dbQuery.setReturnFields(t1CounterColumn, t1ValueColumn, pkColumn);
+
+			String sql = "(" + dbQuery.getSQLForQuery().replaceAll("; *$", "") + ") " + getFirstTableModeName(defn);
+			return sql;
+		}
+
+		public String getInternalTableName(DBDatabase database) {
+			return database.getDefinition().getTableAliasForObject(this);
+		}
+
+		private synchronized String getFirstTableModeName(DBDefinition defn) {
+			return defn.formatExpressionAlias(this);
+		}
+
+		@Override
+		public String createSQLForGroupByClause(DBDatabase database) {
+			return "";
+		}
+
+	}
+	
+	public static class MedianExpression<B, R extends EqualResult<B>, D extends QueryableDatatype<B>, X extends EqualExpression<B, R, D>> extends EqualExpression.DBUnaryFunction<B, R, D, X> {
+
+		private final static long serialVersionUID = 1l;
+
+		public MedianExpression(X only) {
+			super(only);
+		}
+
+		@Override
+		public String toSQLString(DBDefinition defn) {
+			return defn.formatExpressionAlias(this);
+		}
+
+		@Override
+		String getFunctionName(DBDefinition db) {
+			return "";
+		}
+
+		@Override
+		protected String afterValue(DBDefinition db) {
+			return "";
+		}
+
+		@Override
+		public boolean isAggregator() {
+			return true;
+		}
+
+		@Override
+		public boolean isComplexExpression() {
+			return true;
+		}
+
+		@Override
+		public String createSQLForFromClause(DBDatabase database) {
+			DBDefinition defn = database.getDefinition();
+			
+
+			String sql = "() " + getFirstTableModeName(defn);
+			return sql;
+		}
+
+		public String getInternalTableName(DBDatabase database) {
+			return database.getDefinition().getTableAliasForObject(this);
+		}
+
+		private synchronized String getFirstTableModeName(DBDefinition defn) {
+			return defn.formatExpressionAlias(this);
+		}
+
+		@Override
+		public String createSQLForGroupByClause(DBDatabase database) {
+			return "";
+		}
+
+	}
 }

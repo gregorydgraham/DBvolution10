@@ -19,6 +19,7 @@ import nz.co.gregs.dbvolution.actions.DBQueryable;
 import nz.co.gregs.dbvolution.annotations.*;
 import nz.co.gregs.dbvolution.columns.AbstractColumn;
 import nz.co.gregs.dbvolution.columns.ColumnProvider;
+import nz.co.gregs.dbvolution.columns.IntegerColumn;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.datatypes.*;
 import nz.co.gregs.dbvolution.exceptions.AccidentalCartesianJoinException;
@@ -241,6 +242,31 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 			List<QueryableDatatype<?>> names = new ArrayList<>();
 			for (PropertyWrapper pk : primaryKeyPropertyWrappers) {
 				names.add(pk.getQueryableDatatype());
+			}
+			return names;
+		}
+	}
+
+	/**
+	 * Returns the column instance of the Primary Key of This DBRow
+	 *
+	 * <p>
+	 * If the DBRow class has a {@link DBPrimaryKey @DBPrimaryKey} designated
+	 * field, then the Column instance of that field is returned.
+	 *
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
+	 * @return the ColumnProvider instance of the primary key or null if there is no primary key.
+	 */
+	public List<ColumnProvider> getPrimaryKeysAsColumns() {
+		List<PropertyWrapper> primaryKeyPropertyWrappers = getPrimaryKeyPropertyWrappers();
+		if (primaryKeyPropertyWrappers == null) {
+			return null;
+		} else {
+			List<ColumnProvider> names = new ArrayList<>();
+			for (PropertyWrapper pk : primaryKeyPropertyWrappers) {
+				names.add(this.column(pk.getQueryableDatatype()));
 			}
 			return names;
 		}
