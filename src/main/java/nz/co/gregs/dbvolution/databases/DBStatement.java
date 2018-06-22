@@ -63,7 +63,7 @@ public class DBStatement implements Statement {
 	 *
 	 * @param db the target database
 	 * @param connection the connection to the database
-	 * @throws SQLException datbase exceptions
+	 * @throws SQLException database exceptions
 	 */
 	public DBStatement(DBDatabase db, Connection connection) throws SQLException {
 		this.database = db;
