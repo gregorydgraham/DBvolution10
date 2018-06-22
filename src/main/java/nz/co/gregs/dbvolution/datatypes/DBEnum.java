@@ -15,7 +15,11 @@ import nz.co.gregs.dbvolution.operators.DBPermittedValuesOperator;
  * Internally stores only the database-centric literal value in its type.
  * Conversion to the enumeration type is done lazily so that it's possible to
  * handle the case where a database has an invalid value or a new value that
- * isn't in the enumeration.
+ * isn't in the enumeration.</p>
+ * 
+ * <p>
+ * The easiest way to use DBEnum is via {@link DBIntegerEnum} or {@link DBStringEnum}
+ * </p>
  *
  * @param <E> the enumeration type. Must implement {@link DBEnumValue}.
  * @param <T> the base type used on the database.
