@@ -42,6 +42,38 @@ import nz.co.gregs.dbvolution.query.RowDefinition;
  * Conversion to the enumeration type is done lazily so that it's possible to
  * handle the case where a database has an invalid value or a new value that
  * isn't in the enumeration.
+ * 
+ * <p>
+ * Normally declared as something like:</p>
+ * <pre>
+ * {@literal @}DBColumn
+ * DBStringEnum state = new DBStringEnum&lt;MyEnumValue&gt;();
+ *
+ *
+ * public static enum MyEnumValue implements DBEnumValue&lt;String&gt; {
+ *
+ * STATE_ONE(1, "One"),
+ * STATE_TWO(2, "Two"),
+ * STATE_THREE(3, "Three");
+ * private final String literalValue;
+ * private final String displayName;
+ *
+ * private GenericEnumType(String code, String displayName) {
+ * this.literalValue = code;
+ * this.displayName = displayName;
+ * }
+ *
+ * public String getCode() {
+ * return literalValue;
+ * }
+ *
+ * public String getDisplayName() {
+ * return displayName;
+ * }
+ * }
+ * </pre>
+ *
+ *
  *
  * @param <E> an enumeration class that implements the {@link DBEnumValue}
  * interface for String values.

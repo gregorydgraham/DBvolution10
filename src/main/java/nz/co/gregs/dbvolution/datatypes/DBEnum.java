@@ -18,7 +18,11 @@ import nz.co.gregs.dbvolution.operators.DBPermittedValuesOperator;
  * isn't in the enumeration.</p>
  * 
  * <p>
- * The easiest way to use DBEnum is via {@link DBIntegerEnum} or {@link DBStringEnum}
+ * The easiest way to use DBEnum is via {@link DBIntegerEnum} or {@link DBStringEnum}.
+ * </p>
+ * 
+ * <p>
+ * Example implementations are available in 
  * </p>
  *
  * @param <E> the enumeration type. Must implement {@link DBEnumValue}.

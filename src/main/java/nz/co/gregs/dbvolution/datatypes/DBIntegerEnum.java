@@ -37,14 +37,44 @@ import nz.co.gregs.dbvolution.results.IntegerResult;
  * Like {@link DBInteger} except that the database value can be easily
  * interpreted as an enumeration with {@code Integer} or {@code Long} codes.
  *
+ * <p>
+ * Normally declared as something like:</p>
+ * <pre>
+ * {@literal @}DBColumn
+ * DBintegerEnum state = new DBIntegerEnum&lt;MyEnumValue&gt;();
+ *
+ *
+ * public static enum MyEnumValue implements DBEnumValue&lt;Integer&gt; {
+ *
+ * STATE_ONE(1, "One"),
+ * STATE_TWO(2, "Two"),
+ * STATE_THREE(3, "Three");
+ * private final Integer literalValue;
+ * private final String displayName;
+ *
+ * private GenericEnumType(Integer code, String displayName) {
+ * this.literalValue = code;
+ * this.displayName = displayName;
+ * }
+ *
+ * public Integer getCode() {
+ * return literalValue;
+ * }
+ *
+ * public String getDisplayName() {
+ * return displayName;
+ * }
+ * }
+ * </pre>
+ *
+ *
+ *
  * @param <E> type of enumeration class
  *
  * <p style="color: #F90;">Support DBvolution at
  * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
- * @author Gregory Graham
- * <p style="color: #F90;">Support DBvolution at
- * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
  * @author Malcolm Lett
+ * @author Gregory Graham
  */
 public class DBIntegerEnum<E extends Enum<E> & DBEnumValue<Long>> extends DBEnum<E, Long> implements IntegerResult {
 
@@ -742,8 +772,9 @@ public class DBIntegerEnum<E extends Enum<E> & DBEnumValue<Long>> extends DBEnum
 			}
 		}
 	}
+
 	@Override
-	public IntegerColumn getColumn(RowDefinition row) throws IncorrectRowProviderInstanceSuppliedException{
+	public IntegerColumn getColumn(RowDefinition row) throws IncorrectRowProviderInstanceSuppliedException {
 		return new IntegerColumn(row, this);
 	}
 
