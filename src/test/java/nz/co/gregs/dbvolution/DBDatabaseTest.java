@@ -16,6 +16,7 @@
 package nz.co.gregs.dbvolution;
 
 import java.sql.SQLException;
+import java.util.List;
 import nz.co.gregs.dbvolution.annotations.DBAutoIncrement;
 import nz.co.gregs.dbvolution.annotations.DBColumn;
 import nz.co.gregs.dbvolution.annotations.DBForeignKey;
@@ -23,10 +24,12 @@ import nz.co.gregs.dbvolution.annotations.DBPrimaryKey;
 import nz.co.gregs.dbvolution.annotations.DBRequiredTable;
 import nz.co.gregs.dbvolution.datatypes.DBInteger;
 import nz.co.gregs.dbvolution.datatypes.DBString;
+import nz.co.gregs.dbvolution.example.Marque;
 import nz.co.gregs.dbvolution.exceptions.AccidentalDroppingOfDatabaseException;
 import nz.co.gregs.dbvolution.exceptions.AccidentalDroppingOfTableException;
 import nz.co.gregs.dbvolution.exceptions.AutoCommitActionDuringTransactionException;
 import nz.co.gregs.dbvolution.exceptions.DBRuntimeException;
+import nz.co.gregs.dbvolution.exceptions.UnexpectedNumberOfRowsException;
 import nz.co.gregs.dbvolution.generic.AbstractTest;
 import static org.hamcrest.Matchers.*;
 import org.junit.After;
@@ -234,6 +237,26 @@ public class DBDatabaseTest extends AbstractTest {
 		database.preventDroppingOfTables(false);
 		database.preventDroppingOfDatabases(true);
 		database.dropDatabase(false);
+	}
+	
+	@Test
+	public void testIsLiterally() throws SQLException {
+		Marque literalQuery = new Marque();
+		literalQuery.getUidMarque().permittedValues(4893059);
+		List<Marque> rowsByExample = database.getByExample(literalQuery);
+		
+		Assert.assertEquals(1, rowsByExample.size());
+		Assert.assertEquals("" + 4893059, rowsByExample.get(0).getPrimaryKeys().get(0).toSQLString(database.getDefinition()));
+	}
+	
+	@Test
+	public void testIsLiterallyOnlyReturnsOne() throws SQLException, UnexpectedNumberOfRowsException {
+		Marque literalQuery = new Marque();
+		literalQuery.getUidMarque().permittedValues(4893059);
+		List<Marque> rowsByExample = database.get(1l, literalQuery);
+		
+		Assert.assertEquals(1, rowsByExample.size());
+		Assert.assertEquals("" + 4893059, rowsByExample.get(0).getPrimaryKeys().get(0).toSQLString(database.getDefinition()));
 	}
 
 	public void testRequiredTableAutomaticallyCreated() throws SQLException, Exception {
