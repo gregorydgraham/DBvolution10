@@ -170,6 +170,18 @@ public class DBDate extends QueryableDatatype<Date> implements DateResult {
 	}
 
 	/**
+	 * Implement for Java8
+	 * Sets the value of this QDT to the Java.time.LocalDate provided.
+	 *
+	 * @param date	date
+	 */
+	/*TODO*/
+//	@Override
+//	public void setValue(LocalDate date) {
+//		super.setLiteralValue(date);
+//	}
+
+	/**
 	 * Sets the value of this QDT to the dateStr provided.
 	 *
 	 * <p>
