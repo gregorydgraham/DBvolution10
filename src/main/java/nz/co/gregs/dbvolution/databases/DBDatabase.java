@@ -1182,7 +1182,7 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 		return getSQLForCreateTable(newTableRow, includeForeignKeyClauses, new ArrayList<PropertyWrapper>(), new ArrayList<PropertyWrapper>());
 	}
 
-	private final synchronized String getSQLForCreateTable(DBRow newTableRow, boolean includeForeignKeyClauses, List<PropertyWrapper> pkFields, List<PropertyWrapper> spatial2DFields) {
+	private synchronized String getSQLForCreateTable(DBRow newTableRow, boolean includeForeignKeyClauses, List<PropertyWrapper> pkFields, List<PropertyWrapper> spatial2DFields) {
 		StringBuilder sqlScript = new StringBuilder();
 		String lineSeparator = System.getProperty("line.separator");
 		// table name
@@ -1982,7 +1982,7 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 			String testQuery = getDBTable(table)
 					.setQueryTimeout(10000)
 					.setBlankQueryAllowed(true)
-					.setRowLimit(1).getSQLForQuery();
+					.setRowLimit(1).getSQLForQuery().replaceAll("(?is)SELECT .* FROM", "SELECT * FROM");
 			try (DBStatement dbStatement = getDBStatement()) {
 				ResultSet results = dbStatement.executeQuery(testQuery);
 				results.close();
@@ -2003,12 +2003,97 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 		Set<DBRow> tables = DataModel.getRequiredTables();
 		for (DBRow table : tables) {
 			try {
-				if (!tableExists(table)) {
-					createTable(table);
-				}
+				updateTableToMatchDBRow(table);
 			} catch (SQLException ex) {
 				Logger.getLogger(DBDatabase.class.getName()).log(Level.SEVERE, null, ex);
 			}
 		}
+	}
+
+	/**
+	 * Uses the supplied DBRow to update the existing database table by creating
+	 * the table is necessary and adding any columns that are missing.
+	 *
+	 * @param table
+	 */
+	public void updateTableToMatchDBRow(DBRow table) throws SQLException {
+		if (!tableExists(table)) {
+			createTable(table);
+		} else {
+			addMissingColumnsToTable(table);
+		}
+	}
+
+	private void addMissingColumnsToTable(DBRow table) throws SQLException {
+
+		List<PropertyWrapper> newColumns = new ArrayList<>();
+		String testQuery = getDBTable(table)
+				.setQueryTimeout(10000)
+				.setBlankQueryAllowed(true)
+				.setRowLimit(1).getSQLForQuery().replaceAll("(?is)SELECT .* FROM", "SELECT * FROM");
+		try (DBStatement dbStatement = getDBStatement()) {
+			try (ResultSet resultSet = dbStatement.executeQuery(testQuery)) {
+				ResultSetMetaData metaData = resultSet.getMetaData();
+				List<PropertyWrapper> columnPropertyWrappers = table.getColumnPropertyWrappers();
+				for (PropertyWrapper columnPropertyWrapper : columnPropertyWrappers) {
+					int columnCount = metaData.getColumnCount();
+					boolean foundColumn = false;
+					for (int i = 1; i <= columnCount && !foundColumn; i++) {
+						String columnName = metaData.getColumnName(i);
+						if (columnName.equals(definition.formatColumnName(columnPropertyWrapper.columnName()))) {
+							foundColumn = true;
+						}
+					}
+					if (!foundColumn) {
+						// We collect all the changes and process them later because SQLite doesn't like processing them imediately
+						newColumns.add(columnPropertyWrapper);
+					}
+				}
+			}
+		} catch (Exception ex) {
+			// Theoretically this should only need to catch an SQLException 
+			// but databases throw allsorts of weird exceptions
+		}
+		for (PropertyWrapper newColumn : newColumns) {
+			alterTableAddColumn(table, newColumn);
+		}
+	}
+
+	private synchronized void alterTableAddColumn(DBRow existingTable, PropertyWrapper columnPropertyWrapper) {
+		preventDDLDuringTransaction("DBDatabase.alterTable()");
+
+		String sqlString = "ALTER TABLE "
+				+ definition.formatTableName(existingTable)
+				+ " ADD COLUMN "
+				+ getSQLForCreateColumn(existingTable, columnPropertyWrapper)
+				+ this.definition.endSQLStatement();
+
+		try (DBStatement dbStatement = getDBStatement()) {
+			try {
+				boolean execute = dbStatement.execute(sqlString);
+			} catch (SQLException ex) {
+				System.out.println("nz.co.gregs.dbvolution.databases.DBDatabase.alterTableAddColumn() " + ex.getLocalizedMessage());
+				Logger.getLogger(DBDatabase.class.getName()).log(Level.SEVERE, null, ex);
+			}
+		} catch (SQLException ex) {
+			System.out.println("nz.co.gregs.dbvolution.databases.DBDatabase.alterTableAddColumn() " + ex.getLocalizedMessage());
+			Logger.getLogger(DBDatabase.class.getName()).log(Level.SEVERE, null, ex);
+		}
+	}
+
+	private String getSQLForCreateColumn(DBRow existingTable, PropertyWrapper field) {
+
+		StringBuilder sqlScript = new StringBuilder();
+
+		List<PropertyWrapper> fields = existingTable.getColumnPropertyWrappers();
+		if (field.isColumn() && !field.getQueryableDatatype().hasColumnExpression()) {
+			String colName = field.columnName();
+			sqlScript
+					.append(definition.formatColumnName(colName))
+					.append(definition.getCreateTableColumnsNameAndTypeSeparator())
+					.append(definition.getSQLTypeAndModifiersOfDBDatatype(field));
+		}
+
+		return sqlScript.toString();
 	}
 }

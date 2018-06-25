@@ -74,23 +74,23 @@ public class DBStatement implements Statement {
 	/**
 	 * Executes the given SQL statement, which returns a single ResultSet object.
 	 *
-	 * @param string SQL
+	 * @param sql SQL
 	 * <p style="color: #F90;">Support DBvolution at
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a ResultSet
 	 * @throws SQLException database exceptions
 	 */
 	@Override
-	public ResultSet executeQuery(String string) throws SQLException {
-		final String logSQL = "EXECUTING QUERY: " + string;
+	public ResultSet executeQuery(String sql) throws SQLException {
+		final String logSQL = "EXECUTING QUERY: " + sql;
 		database.printSQLIfRequested(logSQL);
 		LOG.debug(logSQL);
 		ResultSet executeQuery = null;
 		try {
-			executeQuery = getInternalStatement().executeQuery(string);
+			executeQuery = getInternalStatement().executeQuery(sql);
 		} catch (SQLException exp) {
 			try {
-				executeQuery = addFeatureAndAttemptQueryAgain(exp, string);
+				executeQuery = addFeatureAndAttemptQueryAgain(exp, sql);
 			} catch (SQLException ex) {
 				throw ex;
 			} catch (Exception ex) {
@@ -100,8 +100,9 @@ public class DBStatement implements Statement {
 		return executeQuery;
 	}
 
-	private ResultSet addFeatureAndAttemptQueryAgain(Exception exp, String string) throws Exception {
+	private ResultSet addFeatureAndAttemptQueryAgain(Exception exp, String sql) throws Exception {
 		ResultSet executeQuery;
+		checkForBrokenConnection(exp, sql);
 		try {
 			database.addFeatureToFixException(exp);
 		} catch (Exception ex) {
@@ -112,13 +113,13 @@ public class DBStatement implements Statement {
 			throw new SQLException(ex);
 		}
 		try {
-			executeQuery = getInternalStatement().executeQuery(string);
+			executeQuery = getInternalStatement().executeQuery(sql);
 			return executeQuery;
 		} catch (SQLException exp2) {
 			if (exp.getMessage().equals(exp2.getMessage())) {
 				throw exp;
 			} else {
-				executeQuery = addFeatureAndAttemptQueryAgain(exp2, string);
+				executeQuery = addFeatureAndAttemptQueryAgain(exp2, sql);
 				return executeQuery;
 			}
 		}
@@ -139,7 +140,9 @@ public class DBStatement implements Statement {
 	 */
 	@Override
 	public int executeUpdate(String string) throws SQLException {
-		return getInternalStatement().executeUpdate(string);
+		int executeUpdate = getInternalStatement().executeUpdate(string);
+		
+		return executeUpdate;
 	}
 
 	/**
@@ -158,6 +161,12 @@ public class DBStatement implements Statement {
 		isClosed = true;
 		try {
 			database.unusedConnection(getConnection());
+		} catch (SQLException e) {
+			// Someone please tell me how you are supposed to cope 
+			// with an exception during the close method????????
+			LOG.warn("Exception occurred during close(): " + e.getMessage(), e);
+		}
+		try {
 			getInternalStatement().close();
 		} catch (SQLException e) {
 			// Someone please tell me how you are supposed to cope 
@@ -300,7 +309,7 @@ public class DBStatement implements Statement {
 	 *
 	 */
 	@Override
-	public synchronized void cancel() throws SQLException{
+	public synchronized void cancel() throws SQLException {
 		try {
 			getInternalStatement().cancel();
 			if (database.getDefinition().willCloseConnectionOnStatementCancel()) {
@@ -330,6 +339,8 @@ public class DBStatement implements Statement {
 	 */
 	protected synchronized void replaceBrokenConnection() throws SQLException, UnableToCreateDatabaseConnectionException, UnableToFindJDBCDriver {
 		database.discardConnection(connection);
+		try{internalStatement.close();}catch(SQLException exception){}
+		try{connection.close();}catch(SQLException exception){}
 		connection = database.getConnection();
 		internalStatement = connection.createStatement();
 	}
@@ -1124,5 +1135,15 @@ public class DBStatement implements Statement {
 	 */
 	protected void setInternalStatement(Statement realStatement) {
 		this.internalStatement = realStatement;
+	}
+
+	private void checkForBrokenConnection(Exception exp, String sql) throws SQLException {
+		final String message = exp.getMessage().toLowerCase();
+		if (message.matches(".*connection.*broken.*")
+				|| message.matches(".*connection.*closed.*")
+				|| message.matches(".*statement.*broken.*")
+				|| message.matches(".*statement.*closed.*")) {
+			replaceBrokenConnection();
+		}
 	}
 }

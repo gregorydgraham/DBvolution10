@@ -22,6 +22,7 @@ import nz.co.gregs.dbvolution.annotations.DBColumn;
 import nz.co.gregs.dbvolution.annotations.DBForeignKey;
 import nz.co.gregs.dbvolution.annotations.DBPrimaryKey;
 import nz.co.gregs.dbvolution.annotations.DBRequiredTable;
+import nz.co.gregs.dbvolution.annotations.DBTableName;
 import nz.co.gregs.dbvolution.datatypes.DBInteger;
 import nz.co.gregs.dbvolution.datatypes.DBString;
 import nz.co.gregs.dbvolution.example.Marque;
@@ -111,6 +112,83 @@ public class DBDatabaseTest extends AbstractTest {
 		}
 		Assert.assertThat(database.tableExists(createTableTestClass), is(false));
 
+	}
+
+	@Test
+	public void testTableExistsIsNotaffectedByMissingColumns() throws SQLException {
+		final CreateTableTestClassWithOriginalColumns originalColumnTable = new CreateTableTestClassWithOriginalColumns();
+		final CreateTableTestClassWithNewColumns newColumntable = new CreateTableTestClassWithNewColumns();
+		try {
+			database.preventDroppingOfTables(false);
+			database.dropTableNoExceptions(originalColumnTable);
+		} catch (AutoCommitActionDuringTransactionException ex) {
+//			SETUP: CreateTableTestClass table not dropped, probably doesn't exist
+		}
+		Assert.assertThat(database.tableExists(originalColumnTable), is(false));
+		try {
+			database.preventDroppingOfTables(false);
+			database.dropTableNoExceptions(originalColumnTable);
+		} catch (AutoCommitActionDuringTransactionException ex) {
+//			SETUP: CreateTableTestClass table not dropped, probably doesn't exist
+		}
+		Assert.assertThat(database.tableExists(originalColumnTable), is(false));
+
+		database.createTable(originalColumnTable);
+		Assert.assertThat(database.tableExists(newColumntable), is(true));
+
+		try {
+			database.preventDroppingOfTables(false);
+			database.dropTableNoExceptions(newColumntable);
+		} catch (AutoCommitActionDuringTransactionException ex) {
+		}
+		Assert.assertThat(database.tableExists(originalColumnTable), is(false));
+
+	}
+
+@Test
+	public void testAddColumnToExistingTable() throws SQLException {
+		final CreateTableTestClassWithOriginalColumns originalColumnTable = new CreateTableTestClassWithOriginalColumns();
+		final CreateTableTestClassWithNewColumns newColumntable = new CreateTableTestClassWithNewColumns();
+		try {
+			database.preventDroppingOfTables(false);
+			database.dropTableNoExceptions(originalColumnTable);
+		} catch (AutoCommitActionDuringTransactionException ex) {
+//			SETUP: CreateTableTestClass table not dropped, probably doesn't exist
+		}
+		Assert.assertThat(database.tableExists(originalColumnTable), is(false));
+
+		database.createTable(originalColumnTable);
+
+		Assert.assertThat(database.tableExists(originalColumnTable), is(true));
+		originalColumnTable.id.setValue(5);
+		originalColumnTable.name.setValue("FIVE");
+		database.insert(originalColumnTable);
+		
+		database.updateTableToMatchDBRow(newColumntable);
+
+		Assert.assertThat(database.tableExists(originalColumnTable), is(true));
+		Assert.assertThat(database.tableExists(newColumntable), is(true));
+		
+		List<CreateTableTestClassWithNewColumns> rows = database.getDBTable(newColumntable).setBlankQueryAllowed(true).getAllRows();
+		Assert.assertThat(rows.size(), is(1));
+		CreateTableTestClassWithNewColumns row = rows.get(0);
+		Assert.assertThat(row.id.getValue(), is(5L));
+		Assert.assertThat(row.name.getValue(), is("FIVE"));
+		
+		newColumntable.id.setValue(6);
+		newColumntable.name.setValue("SIX");
+		newColumntable.newColumn.setValue("SIX+1");
+		database.insert(newColumntable);
+		
+		List<CreateTableTestClassWithNewColumns> newRows 
+				= database.getDBTable(new CreateTableTestClassWithNewColumns())
+						.setBlankQueryAllowed(true)
+						.setSortOrder(newColumntable.column(newColumntable.id))
+						.getAllRows();
+		Assert.assertThat(newRows.size(), is(2));
+		CreateTableTestClassWithNewColumns newRow = newRows.get(1);
+		Assert.assertThat(newRow.id.getValue(), is(6L));
+		Assert.assertThat(newRow.newColumn.getValue(), is("SIX+1"));
 	}
 
 	@Test
@@ -238,23 +316,23 @@ public class DBDatabaseTest extends AbstractTest {
 		database.preventDroppingOfDatabases(true);
 		database.dropDatabase(false);
 	}
-	
+
 	@Test
 	public void testIsLiterally() throws SQLException {
 		Marque literalQuery = new Marque();
 		literalQuery.getUidMarque().permittedValues(4893059);
 		List<Marque> rowsByExample = database.getByExample(literalQuery);
-		
+
 		Assert.assertEquals(1, rowsByExample.size());
 		Assert.assertEquals("" + 4893059, rowsByExample.get(0).getPrimaryKeys().get(0).toSQLString(database.getDefinition()));
 	}
-	
+
 	@Test
 	public void testIsLiterallyOnlyReturnsOne() throws SQLException, UnexpectedNumberOfRowsException {
 		Marque literalQuery = new Marque();
 		literalQuery.getUidMarque().permittedValues(4893059);
 		List<Marque> rowsByExample = database.get(1l, literalQuery);
-		
+
 		Assert.assertEquals(1, rowsByExample.size());
 		Assert.assertEquals("" + 4893059, rowsByExample.get(0).getPrimaryKeys().get(0).toSQLString(database.getDefinition()));
 	}
@@ -336,5 +414,36 @@ public class DBDatabaseTest extends AbstractTest {
 
 		@DBColumn
 		DBString name = new DBString();
+	}
+
+	@DBTableName("bert")
+	public static class CreateTableTestClassWithOriginalColumns extends DBRow {
+
+		public static final long serialVersionUID = 1L;
+
+		@DBColumn
+		@DBPrimaryKey
+		@DBAutoIncrement
+		DBInteger id = new DBInteger();
+
+		@DBColumn
+		DBString name = new DBString();
+	}
+
+	@DBTableName("bert")
+	public static class CreateTableTestClassWithNewColumns extends DBRow {
+
+		public static final long serialVersionUID = 1L;
+
+		@DBColumn
+		@DBPrimaryKey
+		@DBAutoIncrement
+		DBInteger id = new DBInteger();
+
+		@DBColumn
+		DBString name = new DBString();
+
+		@DBColumn
+		DBString newColumn = new DBString();
 	}
 }
