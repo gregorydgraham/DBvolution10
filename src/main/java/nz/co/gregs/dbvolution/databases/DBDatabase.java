@@ -211,6 +211,7 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 	 * @param definition - the subclass of DBDefinition that provides the syntax
 	 * for your database.
 	 * @param ds - a DataSource for the required database.
+	 * @throws java.sql.SQLException
 	 * @see DBDefinition
 	 * @see OracleDB
 	 * @see MSSQLServerDB
@@ -248,6 +249,7 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 	 * @param jdbcURL - The JDBC URL to connect to the database.
 	 * @param username - The username to login to the database as.
 	 * @param password - The users password for the database.
+	 * @throws java.sql.SQLException
 	 * @see DBDefinition
 	 * @see OracleDB
 	 * @see MySQLDB
@@ -2011,6 +2013,7 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 	 * the table is necessary and adding any columns that are missing.
 	 *
 	 * @param table
+	 * @throws java.sql.SQLException
 	 */
 	public void updateTableToMatchDBRow(DBRow table) throws SQLException {
 		if (!tableExists(table)) {
@@ -2035,8 +2038,11 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 					int columnCount = metaData.getColumnCount();
 					boolean foundColumn = false;
 					for (int i = 1; i <= columnCount && !foundColumn; i++) {
-						String columnName = metaData.getColumnName(i);
-						if (columnName.equals(definition.formatColumnName(columnPropertyWrapper.columnName()))) {
+						String columnName = definition.formatColumnName(metaData.getColumnName(i));
+						String formattedPropertyColumnName = definition.formatColumnName(columnPropertyWrapper.columnName());
+						
+						/*Postgres returns a lowercase column name in the meta data so use case-insensitive check*/
+						if (columnName.equalsIgnoreCase(formattedPropertyColumnName)) {
 							foundColumn = true;
 						}
 					}
@@ -2061,27 +2067,26 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 		String sqlString = "ALTER TABLE "
 				+ definition.formatTableName(existingTable)
 				+ " ADD COLUMN "
-				+ getSQLForCreateColumn(existingTable, columnPropertyWrapper)
+				+ getSQLForCreateColumn(columnPropertyWrapper)
 				+ this.definition.endSQLStatement();
 
 		try (DBStatement dbStatement = getDBStatement()) {
 			try {
 				boolean execute = dbStatement.execute(sqlString);
 			} catch (SQLException ex) {
-				System.out.println("nz.co.gregs.dbvolution.databases.DBDatabase.alterTableAddColumn() " + ex.getLocalizedMessage());
+				System.err.println("nz.co.gregs.dbvolution.databases.DBDatabase.alterTableAddColumn() " + ex.getLocalizedMessage());
 				Logger.getLogger(DBDatabase.class.getName()).log(Level.SEVERE, null, ex);
 			}
 		} catch (SQLException ex) {
-			System.out.println("nz.co.gregs.dbvolution.databases.DBDatabase.alterTableAddColumn() " + ex.getLocalizedMessage());
+			System.err.println("nz.co.gregs.dbvolution.databases.DBDatabase.alterTableAddColumn() " + ex.getLocalizedMessage());
 			Logger.getLogger(DBDatabase.class.getName()).log(Level.SEVERE, null, ex);
 		}
 	}
 
-	private String getSQLForCreateColumn(DBRow existingTable, PropertyWrapper field) {
+	private String getSQLForCreateColumn(PropertyWrapper field) {
 
 		StringBuilder sqlScript = new StringBuilder();
 
-		List<PropertyWrapper> fields = existingTable.getColumnPropertyWrappers();
 		if (field.isColumn() && !field.getQueryableDatatype().hasColumnExpression()) {
 			String colName = field.columnName();
 			sqlScript
