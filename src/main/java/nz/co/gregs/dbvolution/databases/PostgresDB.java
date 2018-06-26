@@ -93,7 +93,7 @@ public class PostgresDB extends DBDatabase implements SupportsPolygonDatatype {
 	 *
 	 * @param ds	ds
 	 */
-	public PostgresDB(DataSource ds) {
+	public PostgresDB(DataSource ds) throws SQLException {
 		super(new PostgresDBDefinition(), ds);
 	}
 
@@ -104,7 +104,7 @@ public class PostgresDB extends DBDatabase implements SupportsPolygonDatatype {
 	 * @param username username
 	 * @param password password
 	 */
-	public PostgresDB(String jdbcURL, String username, String password) {
+	public PostgresDB(String jdbcURL, String username, String password) throws SQLException {
 		super(new PostgresDBDefinition(), POSTGRES_DRIVER_NAME, jdbcURL, username, password);
 	}
 
@@ -118,7 +118,7 @@ public class PostgresDB extends DBDatabase implements SupportsPolygonDatatype {
 	 * @param username username
 	 * @param password password
 	 */
-	public PostgresDB(String hostname, int port, String databaseName, String username, String password) {
+	public PostgresDB(String hostname, int port, String databaseName, String username, String password) throws SQLException {
 		this(hostname, port, databaseName, username, password, null);
 	}
 
@@ -137,7 +137,7 @@ public class PostgresDB extends DBDatabase implements SupportsPolygonDatatype {
 	 * @param username username
 	 * @param urlExtras urlExtras
 	 */
-	public PostgresDB(String hostname, int port, String databaseName, String username, String password, String urlExtras) {
+	public PostgresDB(String hostname, int port, String databaseName, String username, String password, String urlExtras) throws SQLException {
 		super(new PostgresDBDefinition(),
 				POSTGRES_DRIVER_NAME,
 				"jdbc:postgresql://" + hostname + ":" + port + "/" + databaseName + (urlExtras == null || urlExtras.isEmpty() ? "" : "?" + urlExtras),
@@ -158,7 +158,7 @@ public class PostgresDB extends DBDatabase implements SupportsPolygonDatatype {
 	 * @param password password
 	 * @param urlExtras urlExtras
 	 */
-	public PostgresDB(String databaseName, String username, String password, String urlExtras) {
+	public PostgresDB(String databaseName, String username, String password, String urlExtras) throws SQLException {
 		this("localhost", POSTGRES_DEFAULT_PORT, databaseName, username, password, urlExtras);
 	}
 

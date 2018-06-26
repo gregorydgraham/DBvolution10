@@ -60,7 +60,7 @@ public class JTDSSQLServerDB extends DBDatabase implements SupportsPolygonDataty
 	 * switch to MSSQLServerDB or MSSQLServer2012DB
 	 */
 	@Deprecated
-	public JTDSSQLServerDB(DataSource ds) {
+	public JTDSSQLServerDB(DataSource ds) throws SQLException {
 		super(new MSSQLServerDBDefinition(), ds);
 	}
 
@@ -76,7 +76,7 @@ public class JTDSSQLServerDB extends DBDatabase implements SupportsPolygonDataty
 	 * switch to MSSQLServerDB or MSSQLServer2012DB
 	 */
 	@Deprecated
-	public JTDSSQLServerDB(String driverName, String jdbcURL, String username, String password) {
+	public JTDSSQLServerDB(String driverName, String jdbcURL, String username, String password) throws SQLException {
 		super(new MSSQLServerDBDefinition(), driverName, jdbcURL, username, password);
 	}
 
@@ -94,7 +94,7 @@ public class JTDSSQLServerDB extends DBDatabase implements SupportsPolygonDataty
 	 * switch to MSSQLServerDB or MSSQLServer2012DB
 	 */
 	@Deprecated
-	public JTDSSQLServerDB(String jdbcURL, String username, String password) {
+	public JTDSSQLServerDB(String jdbcURL, String username, String password) throws SQLException {
 		super(new MSSQLServerDBDefinition(), JTDSDRIVERNAME, jdbcURL, username, password);
 	}
 
@@ -114,7 +114,7 @@ public class JTDSSQLServerDB extends DBDatabase implements SupportsPolygonDataty
 	 * switch to MSSQLServerDB or MSSQLServer2012DB
 	 */
 	@Deprecated
-	public JTDSSQLServerDB(String hostname, String instanceName, String databaseName, int portNumber, String username, String password) {
+	public JTDSSQLServerDB(String hostname, String instanceName, String databaseName, int portNumber, String username, String password) throws SQLException {
 		super(
 				new MSSQLServerDBDefinition(),
 				JTDSDRIVERNAME,
@@ -142,7 +142,7 @@ public class JTDSSQLServerDB extends DBDatabase implements SupportsPolygonDataty
 	 * switch to MSSQLServerDB or MSSQLServer2012DB
 	 */
 	@Deprecated
-	public JTDSSQLServerDB(String driverName, String hostname, String instanceName, String databaseName, int portNumber, String username, String password) {
+	public JTDSSQLServerDB(String driverName, String hostname, String instanceName, String databaseName, int portNumber, String username, String password) throws SQLException {
 		super(
 				new MSSQLServerDBDefinition(),
 				driverName,

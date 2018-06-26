@@ -272,7 +272,7 @@ public abstract class AbstractTest {
 
 		public static final long serialVersionUID = 1l;
 
-		public static H2DB getFromSettings(String prefix) {
+		public static H2DB getFromSettings(String prefix) throws SQLException {
 			String url = System.getProperty(prefix + ".url");
 			String host = System.getProperty(prefix + ".host");
 			String port = System.getProperty(prefix + ".port");
@@ -288,7 +288,7 @@ public abstract class AbstractTest {
 				return new H2TestDatabase(url, username, password);
 			}
 		}
-		public static H2DB getClusterDBFromSettings(String prefix) {
+		public static H2DB getClusterDBFromSettings(String prefix) throws SQLException {
 			String url = System.getProperty(prefix + ".url");
 			String host = System.getProperty(prefix + ".host");
 			String port = System.getProperty(prefix + ".port");
@@ -305,7 +305,7 @@ public abstract class AbstractTest {
 			}
 		}
 
-		public static H2DB getFromSettingsUsingDataSource(String prefix) {
+		public static H2DB getFromSettingsUsingDataSource(String prefix) throws SQLException {
 			String url = System.getProperty(prefix + ".url");
 			String host = System.getProperty(prefix + ".host");
 			String port = System.getProperty(prefix + ".port");
@@ -323,15 +323,15 @@ public abstract class AbstractTest {
 			return H2TestDatabase.getDatabaseFromDataSource(h2DataSource);
 		}
 
-		private static H2DB getDatabaseFromDataSource(JdbcDataSource h2DataSource) {
+		private static H2DB getDatabaseFromDataSource(JdbcDataSource h2DataSource) throws SQLException {
 			return new H2DB(h2DataSource);
 		}
 
-		public static H2DB H2TestDatabaseFromFilename(String file, String username, String password) {
+		public static H2DB H2TestDatabaseFromFilename(String file, String username, String password) throws SQLException {
 			return new H2DB(file, username, password, false);
 		}
 
-		public H2TestDatabase(String url, String username, String password) {
+		public H2TestDatabase(String url, String username, String password) throws SQLException {
 			super(url, username, password);
 		}
 	}
@@ -340,7 +340,7 @@ public abstract class AbstractTest {
 
 		public static final long serialVersionUID = 1l;
 
-		public static MySQL56TestDatabase getFromSettings(String prefix) {
+		public static MySQL56TestDatabase getFromSettings(String prefix) throws SQLException {
 			String url = System.getProperty("" + prefix + ".url");
 			String host = System.getProperty("" + prefix + ".host");
 			String port = System.getProperty("" + prefix + ".port");
@@ -352,7 +352,7 @@ public abstract class AbstractTest {
 			return new MySQL56TestDatabase(url, username, password);
 		}
 
-		public MySQL56TestDatabase(String url, String username, String password) {
+		public MySQL56TestDatabase(String url, String username, String password) throws SQLException {
 			super(url, username, password);
 		}
 	}
@@ -361,7 +361,7 @@ public abstract class AbstractTest {
 
 		public static final long serialVersionUID = 1l;
 
-		public static MySQLTestDatabase getFromSettings(String prefix) {
+		public static MySQLTestDatabase getFromSettings(String prefix) throws SQLException {
 			String url = System.getProperty("" + prefix + ".url");
 			String host = System.getProperty("" + prefix + ".host");
 			String port = System.getProperty("" + prefix + ".port");
@@ -373,7 +373,7 @@ public abstract class AbstractTest {
 			return new MySQLTestDatabase(host, port, database, username, password, schema);
 		}
 		
-		public static MySQLTestDatabase getClusterDBFromSettings(String prefix) {
+		public static MySQLTestDatabase getClusterDBFromSettings(String prefix) throws SQLException {
 			String url = System.getProperty("" + prefix + ".url");
 			String host = System.getProperty("" + prefix + ".host");
 			String port = System.getProperty("" + prefix + ".port");
@@ -385,11 +385,11 @@ public abstract class AbstractTest {
 			return new MySQLTestDatabase(host, port, database, username, password, schema);
 		}
 
-		public MySQLTestDatabase(String host, String port, String database, String username, String password, String schema) {
+		public MySQLTestDatabase(String host, String port, String database, String username, String password, String schema) throws SQLException {
 			super(host, new Integer(port), database, username, password);
 		}
 
-		public MySQLTestDatabase(String url, String username, String password) {
+		public MySQLTestDatabase(String url, String username, String password) throws SQLException {
 			super(url, username, password);
 		}
 	}
@@ -398,7 +398,7 @@ public abstract class AbstractTest {
 
 		public static final long serialVersionUID = 1l;
 
-		public static PostgresDB getFromSettings(String prefix) {
+		public static PostgresDB getFromSettings(String prefix) throws SQLException {
 			String url = System.getProperty("" + prefix + ".url");
 			String host = System.getProperty("" + prefix + ".host");
 			String port = System.getProperty("" + prefix + ".port");
@@ -410,7 +410,7 @@ public abstract class AbstractTest {
 			return PostgreSQLTestDatabase.getTestDatabase(url, host, port, instance, username, password, schema);
 		}
 
-		public static PostgresDB getClusterDBFromSettings(String prefix) {
+		public static PostgresDB getClusterDBFromSettings(String prefix) throws SQLException {
 			String url = System.getProperty("" + prefix + ".url");
 			String host = System.getProperty("" + prefix + ".host");
 			String port = System.getProperty("" + prefix + ".port");
@@ -422,7 +422,7 @@ public abstract class AbstractTest {
 			return PostgreSQLTestDatabase.getTestDatabase(url, host, port, database, username, password, schema);
 		}
 
-		protected static PostgresDB getTestDatabase(String url, String host, String port, String database, String username, String password, String schema) {
+		protected static PostgresDB getTestDatabase(String url, String host, String port, String database, String username, String password, String schema) throws SQLException {
 			return new PostgresDB(host, new Integer(port), database, username, password);
 		}
 	}
@@ -431,11 +431,11 @@ public abstract class AbstractTest {
 
 		public static final long serialVersionUID = 1l;
 
-		public static SQLiteTestDB getFromSettings() throws IOException {
+		public static SQLiteTestDB getFromSettings() throws IOException, SQLException {
 			return getFromSettings("sqlite");
 		}
 
-		public static SQLiteTestDB getFromSettings(String prefix) throws IOException {
+		public static SQLiteTestDB getFromSettings(String prefix) throws IOException, SQLException {
 			String url = System.getProperty(prefix + ".url");
 //			String filename = System.getProperty(prefix + ".filename");
 			String username = System.getProperty(prefix + ".username");
@@ -443,7 +443,7 @@ public abstract class AbstractTest {
 			return new SQLiteTestDB(url, username, password);
 		}
 
-		public static SQLiteTestDB getClusterDBFromSettings(String prefix) throws IOException {
+		public static SQLiteTestDB getClusterDBFromSettings(String prefix) throws IOException, SQLException {
 //			String url = System.getProperty(prefix + ".url");
 			String filename = System.getProperty(prefix + ".filename")+"-cluster.sqlite";
 			String username = System.getProperty(prefix + ".username");
@@ -451,11 +451,11 @@ public abstract class AbstractTest {
 			return new SQLiteTestDB(new File(filename), username, password);
 		}
 
-		public SQLiteTestDB(String jdbcurl, String username, String password) throws IOException {
+		public SQLiteTestDB(String jdbcurl, String username, String password) throws IOException, SQLException {
 			super(jdbcurl, username, password);
 		}
 
-		private SQLiteTestDB(File file, String username, String password) throws IOException {
+		private SQLiteTestDB(File file, String username, String password) throws IOException, SQLException {
 			super(file, username, password);
 		}
 	}
@@ -464,7 +464,7 @@ public abstract class AbstractTest {
 
 		public static final long serialVersionUID = 1l;
 
-		public static Oracle11XETestDB getFromSettings(String prefix) {
+		public static Oracle11XETestDB getFromSettings(String prefix) throws SQLException {
 			String url = System.getProperty("" + prefix + ".url");
 			String host = System.getProperty("" + prefix + ".host");
 			String port = System.getProperty("" + prefix + ".port");
@@ -476,7 +476,7 @@ public abstract class AbstractTest {
 			return new Oracle11XETestDB(host, port, instance, username, password);
 		}
 
-		public Oracle11XETestDB(String host, String port, String instance, String username, String password) {
+		public Oracle11XETestDB(String host, String port, String instance, String username, String password) throws SQLException {
 			super(host, Integer.parseInt(port), instance, username, password);
 		}
 	}
@@ -485,7 +485,7 @@ public abstract class AbstractTest {
 
 		public static final long serialVersionUID = 1l;
 
-		public static MSSQLServerTestDB getFromSettings(String prefix) {
+		public static MSSQLServerTestDB getFromSettings(String prefix) throws SQLException {
 			String url = System.getProperty("" + prefix + ".url");
 			String host = System.getProperty("" + prefix + ".host");
 			String port = System.getProperty("" + prefix + ".port");
@@ -497,7 +497,7 @@ public abstract class AbstractTest {
 			return new MSSQLServerTestDB(host, instance, database, port, username, password);
 		}
 
-		public MSSQLServerTestDB(String host, String instance, String database, String port, String username, String password) {
+		public MSSQLServerTestDB(String host, String instance, String database, String port, String username, String password) throws SQLException {
 			super(host, instance, database, Integer.parseInt(port), username, password);
 		}
 	}
@@ -506,7 +506,7 @@ public abstract class AbstractTest {
 
 		public static final long serialVersionUID = 1l;
 
-		public static H2MemoryTestDB getFromSettings(String prefix) {
+		public static H2MemoryTestDB getFromSettings(String prefix) throws SQLException {
 			String url = System.getProperty("" + prefix + ".url");
 			String host = System.getProperty("" + prefix + ".host");
 			String port = System.getProperty("" + prefix + ".port");
@@ -518,7 +518,7 @@ public abstract class AbstractTest {
 			return new H2MemoryTestDB(instance, username, password);
 		}
 
-		public static H2MemoryTestDB getClusterDBFromSettings(String prefix) {
+		public static H2MemoryTestDB getClusterDBFromSettings(String prefix) throws SQLException {
 			String url = System.getProperty(prefix + ".url");
 			String host = System.getProperty(prefix + ".host");
 			String port = System.getProperty(prefix + ".port");
@@ -535,15 +535,15 @@ public abstract class AbstractTest {
 			}
 		}
 
-		public static H2MemoryTestDB blankDB() {
+		public static H2MemoryTestDB blankDB() throws SQLException {
 			return new H2MemoryTestDB("Blank", "", "");
 		}
 
-		public H2MemoryTestDB() {
+		public H2MemoryTestDB() throws SQLException {
 			this("memoryTest.h2db", "", "");
 		}
 
-		public H2MemoryTestDB(String instance, String username, String password) {
+		public H2MemoryTestDB(String instance, String username, String password) throws SQLException {
 			super(instance, username, password, false);
 		}
 	}

@@ -544,6 +544,24 @@ public class DBDatabaseCluster extends DBDatabase {
 	}
 
 	@Override
+	public void updateTableToMatchDBRow(DBRow table) throws SQLException {
+		boolean finished = false;
+		do {
+			DBDatabase[] dbs = details.getReadyDatabases();
+			for (DBDatabase next : dbs) {
+				synchronized (next) {
+					try {
+						next.updateTableToMatchDBRow(table);
+						finished = true;
+					} catch (SQLException e) {
+						handleExceptionDuringQuery(e, next);
+					}
+				}
+			}
+		} while (!finished);
+	}
+
+	@Override
 	public DBActionList test(DBScript script) throws Exception {
 		final DBDatabase readyDatabase = getReadyDatabase();
 		synchronized (readyDatabase) {

@@ -223,7 +223,7 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 	 * @see MariaClusterDB
 	 * @see NuoDB
 	 */
-	public DBDatabase(DBDefinition definition, DataSource ds) {
+	public DBDatabase(DBDefinition definition, DataSource ds) throws SQLException {
 		SLEEP_BETWEEN_CONNECTION_RETRIES_MILLIS = 10;
 		MAX_CONNECTION_RETRIES = 6;
 		this.definition = definition;
@@ -257,7 +257,7 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 	 * @see InformixDB
 	 * @see PostgresDB
 	 */
-	public DBDatabase(DBDefinition definition, String driverName, String jdbcURL, String username, String password) {
+	public DBDatabase(DBDefinition definition, String driverName, String jdbcURL, String username, String password) throws SQLException {
 		SLEEP_BETWEEN_CONNECTION_RETRIES_MILLIS = 1;
 		MAX_CONNECTION_RETRIES = 6;
 		this.definition = definition;
@@ -1999,14 +1999,10 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 		return tableExists(DBRow.getDBRow(tab));
 	}
 
-	private void createRequiredTables() {
+	private void createRequiredTables() throws SQLException {
 		Set<DBRow> tables = DataModel.getRequiredTables();
 		for (DBRow table : tables) {
-			try {
-				updateTableToMatchDBRow(table);
-			} catch (SQLException ex) {
-				Logger.getLogger(DBDatabase.class.getName()).log(Level.SEVERE, null, ex);
-			}
+			updateTableToMatchDBRow(table);
 		}
 	}
 

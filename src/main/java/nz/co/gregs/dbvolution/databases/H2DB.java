@@ -101,7 +101,7 @@ public class H2DB extends DBDatabase {
 	 *
 	 * @param dataSource dataSource
 	 */
-	public H2DB(DataSource dataSource) {
+	public H2DB(DataSource dataSource) throws SQLException {
 		super(new H2DBDefinition(), dataSource);
 	}
 
@@ -117,7 +117,7 @@ public class H2DB extends DBDatabase {
 	 * @param username username
 	 * @param password password
 	 */
-	public H2DB(String jdbcURL, String username, String password) {
+	public H2DB(String jdbcURL, String username, String password) throws SQLException {
 		super(new H2DBDefinition(), "org.h2.Driver", jdbcURL, username, password);
 	}
 
@@ -134,7 +134,7 @@ public class H2DB extends DBDatabase {
 	 * @param password password
 	 * @param dummy unused
 	 */
-	public H2DB(String databaseFilename, String username, String password, boolean dummy) {
+	public H2DB(String databaseFilename, String username, String password, boolean dummy) throws SQLException {
 		super(new H2DBDefinition(), "org.h2.Driver", "jdbc:h2:" + databaseFilename, username, password);
 	}
 

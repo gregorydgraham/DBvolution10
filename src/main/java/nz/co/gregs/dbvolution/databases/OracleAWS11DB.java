@@ -73,7 +73,7 @@ public class OracleAWS11DB extends OracleAWSDB {
 	 *
 	 * @param dataSource a datasource to an Oracle database
 	 */
-	public OracleAWS11DB(DataSource dataSource) {
+	public OracleAWS11DB(DataSource dataSource) throws SQLException {
 		super(new OracleAWS11DBDefinition(), dataSource);
 	}
 
@@ -85,8 +85,9 @@ public class OracleAWS11DB extends OracleAWSDB {
 	 * @param driverName driverName
 	 * @param password password
 	 * @param username username
+	 * @throws java.sql.SQLException
 	 */
-	public OracleAWS11DB(OracleAWSDBDefinition definition, String driverName, String jdbcURL, String username, String password) {
+	public OracleAWS11DB(OracleAWSDBDefinition definition, String driverName, String jdbcURL, String username, String password) throws SQLException {
 		super(definition, driverName, jdbcURL, username, password);
 	}
 
@@ -98,7 +99,7 @@ public class OracleAWS11DB extends OracleAWSDB {
 	 * @param username username
 	 * @param password password
 	 */
-	public OracleAWS11DB(String driverName, String jdbcURL, String username, String password) {
+	public OracleAWS11DB(String driverName, String jdbcURL, String username, String password) throws SQLException {
 		super(new OracleAWS11DBDefinition(), driverName, jdbcURL, username, password);
 	}
 
@@ -109,7 +110,7 @@ public class OracleAWS11DB extends OracleAWSDB {
 	 * @param username username
 	 * @param password password
 	 */
-	public OracleAWS11DB(String jdbcURL, String username, String password) {
+	public OracleAWS11DB(String jdbcURL, String username, String password) throws SQLException {
 		super(new OracleAWS11DBDefinition(), "oracle.jdbc.driver.OracleDriver", jdbcURL, username, password);
 	}
 
@@ -122,7 +123,7 @@ public class OracleAWS11DB extends OracleAWSDB {
 	 * @param password password
 	 * @param username username
 	 */
-	public OracleAWS11DB(String host, int port, String serviceName, String username, String password) {
+	public OracleAWS11DB(String host, int port, String serviceName, String username, String password) throws SQLException {
 		super(new OracleAWS11DBDefinition(), "oracle.jdbc.driver.OracleDriver", "jdbc:oracle:thin:@//" + host + ":" + port + "/" + serviceName, username, password);
 	}
 
@@ -131,23 +132,12 @@ public class OracleAWS11DB extends OracleAWSDB {
 
 		if (tableRow.getPrimaryKeys() != null) {
 			DBDefinition definition = getDefinition();
-//			final DBStatement dbStatement = getDBStatement();
 			final String formattedTableName = definition.formatTableName(tableRow);
 			final List<String> primaryKeyColumnNames = tableRow.getPrimaryKeyColumnNames();
 			for (String primaryKeyColumnName : primaryKeyColumnNames) {
 				final String formattedColumnName = definition.formatColumnName(primaryKeyColumnName);
-//				try {
 				dbStatement.execute("DROP SEQUENCE " + definition.getPrimaryKeySequenceName(formattedTableName, formattedColumnName));
-//				} finally {
-//					dbStatement.close();
-//				}
 			}
-//			final DBStatement dbStatement2 = getDBStatement();
-//			try {
-//				dbStatement2.execute("DROP TRIGGER " + definition.getPrimaryKeyTriggerName(formattedTableName, formattedColumnName));
-//			} finally {
-//				dbStatement2.close();
-//			}
 		}
 		super.dropAnyAssociatedDatabaseObjects(dbStatement, tableRow);
 	}

@@ -88,7 +88,7 @@ public abstract class OracleDB extends DBDatabase implements SupportsPolygonData
 	 * @param driverName driverName
 	 * @param username username
 	 */
-	public OracleDB(DBDefinition definition, String driverName, String jdbcURL, String username, String password) {
+	public OracleDB(DBDefinition definition, String driverName, String jdbcURL, String username, String password) throws SQLException {
 		super(definition, driverName, jdbcURL, username, password);
 	}
 
@@ -98,7 +98,7 @@ public abstract class OracleDB extends DBDatabase implements SupportsPolygonData
 	 * @param dbDefinition an oracle database definition instance
 	 * @param dataSource a data source to an Oracle database
 	 */
-	public OracleDB(DBDefinition dbDefinition, DataSource dataSource) {
+	public OracleDB(DBDefinition dbDefinition, DataSource dataSource) throws SQLException {
 		super(dbDefinition, dataSource);
 	}
 

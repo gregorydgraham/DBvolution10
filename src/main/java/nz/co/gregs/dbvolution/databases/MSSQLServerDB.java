@@ -60,11 +60,11 @@ public class MSSQLServerDB extends DBDatabase implements SupportsPolygonDatatype
 	 *
 	 * @param ds	a DataSource to an MS SQLServer database
 	 */
-	public MSSQLServerDB(DataSource ds) {
+	public MSSQLServerDB(DataSource ds) throws SQLException {
 		this(new MSSQLServerDBDefinition(), ds);
 	}
 
-	protected MSSQLServerDB(MSSQLServerDBDefinition defn, DataSource ds) {
+	protected MSSQLServerDB(MSSQLServerDBDefinition defn, DataSource ds) throws SQLException {
 		super(defn, ds);
 	}
 
@@ -77,11 +77,11 @@ public class MSSQLServerDB extends DBDatabase implements SupportsPolygonDatatype
 	 * @param username username
 	 * @param password password
 	 */
-	public MSSQLServerDB(String driverName, String jdbcURL, String username, String password) {
+	public MSSQLServerDB(String driverName, String jdbcURL, String username, String password) throws SQLException {
 		this(new MSSQLServerDBDefinition(), driverName, jdbcURL, username, password);
 	}
 
-	public MSSQLServerDB(MSSQLServerDBDefinition defn, String driverName, String jdbcURL, String username, String password) {
+	public MSSQLServerDB(MSSQLServerDBDefinition defn, String driverName, String jdbcURL, String username, String password) throws SQLException {
 		super(defn, driverName, jdbcURL, username, password);
 	}
 
@@ -96,11 +96,11 @@ public class MSSQLServerDB extends DBDatabase implements SupportsPolygonDatatype
 	 * @param username username
 	 * @param password password
 	 */
-	public MSSQLServerDB(String jdbcURL, String username, String password) {
+	public MSSQLServerDB(String jdbcURL, String username, String password) throws SQLException {
 		this(new MSSQLServerDBDefinition(), SQLSERVERDRIVERNAME, jdbcURL, username, password);
 	}
 
-	protected MSSQLServerDB(MSSQLServerDBDefinition defn, String jdbcURL, String username, String password) {
+	protected MSSQLServerDB(MSSQLServerDBDefinition defn, String jdbcURL, String username, String password) throws SQLException {
 		super(defn, SQLSERVERDRIVERNAME, jdbcURL, username, password);
 	}
 
@@ -117,7 +117,7 @@ public class MSSQLServerDB extends DBDatabase implements SupportsPolygonDatatype
 	 * @param username the account to connect via
 	 * @param password the password to identify username.
 	 */
-	public MSSQLServerDB(String hostname, String instanceName, String databaseName, int portNumber, String username, String password) {
+	public MSSQLServerDB(String hostname, String instanceName, String databaseName, int portNumber, String username, String password) throws SQLException {
 		this(
 				new MSSQLServerDBDefinition(),
 				hostname, instanceName, databaseName, portNumber,
@@ -125,7 +125,7 @@ public class MSSQLServerDB extends DBDatabase implements SupportsPolygonDatatype
 		);
 	}
 
-	public MSSQLServerDB(MSSQLServerDBDefinition defn, String hostname, String instanceName, String databaseName, int portNumber, String username, String password) {
+	public MSSQLServerDB(MSSQLServerDBDefinition defn, String hostname, String instanceName, String databaseName, int portNumber, String username, String password) throws SQLException {
 		super(
 				defn,
 				SQLSERVERDRIVERNAME,
@@ -149,7 +149,7 @@ public class MSSQLServerDB extends DBDatabase implements SupportsPolygonDatatype
 	 * @param username the account to connect via.
 	 * @param password the password to identify username.
 	 */
-	public MSSQLServerDB(String driverName, String hostname, String instanceName, String databaseName, int portNumber, String username, String password) {
+	public MSSQLServerDB(String driverName, String hostname, String instanceName, String databaseName, int portNumber, String username, String password) throws SQLException {
 		this(
 				new MSSQLServerDBDefinition(),
 				driverName,
@@ -158,7 +158,7 @@ public class MSSQLServerDB extends DBDatabase implements SupportsPolygonDatatype
 		);
 	}
 
-	protected MSSQLServerDB(MSSQLServerDBDefinition defn, String driverName, String hostname, String instanceName, String databaseName, int portNumber, String username, String password) {
+	protected MSSQLServerDB(MSSQLServerDBDefinition defn, String driverName, String hostname, String instanceName, String databaseName, int portNumber, String username, String password) throws SQLException {
 		super(
 				defn,
 				driverName,

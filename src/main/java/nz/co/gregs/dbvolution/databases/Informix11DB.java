@@ -50,7 +50,7 @@ public class Informix11DB extends InformixDB {
 	 * @param password password
 	 * @throws java.lang.ClassNotFoundException java.lang.ClassNotFoundException
 	 */
-	public Informix11DB(String jdbcURL, String username, String password) throws ClassNotFoundException {
+	public Informix11DB(String jdbcURL, String username, String password) throws ClassNotFoundException, SQLException {
 		super(new Informix11DBDefinition(), INFORMIXDRIVERNAME, jdbcURL, username, password);
 	}
 

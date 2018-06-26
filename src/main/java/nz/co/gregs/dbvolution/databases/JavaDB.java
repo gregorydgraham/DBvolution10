@@ -49,7 +49,7 @@ public class JavaDB extends DBDatabase {
 	 *
 	 * @param dataSource	dataSource
 	 */
-	public JavaDB(DataSource dataSource) {
+	public JavaDB(DataSource dataSource) throws SQLException {
 		super(new JavaDBDefinition(), dataSource);
 	}
 
@@ -61,7 +61,7 @@ public class JavaDB extends DBDatabase {
 	 * @param username username
 	 * @param password password
 	 */
-	public JavaDB(String jdbcURL, String username, String password) {
+	public JavaDB(String jdbcURL, String username, String password) throws SQLException {
 		super(new JavaDBDefinition(), DRIVER_NAME, jdbcURL, username, password);
 	}
 
@@ -75,7 +75,7 @@ public class JavaDB extends DBDatabase {
 	 * @param password password
 	 * @param username username
 	 */
-	public JavaDB(String host, int port, String database, String username, String password) {
+	public JavaDB(String host, int port, String database, String username, String password) throws SQLException {
 		super(new JavaDBDefinition(), DRIVER_NAME, "jdbc:derby://" + host + ":" + port + "/" + database + ";create=true", username, password);
 	}
 

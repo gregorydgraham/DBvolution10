@@ -28,6 +28,7 @@
  */
 package nz.co.gregs.dbvolution.databases;
 
+import java.sql.SQLException;
 import javax.sql.DataSource;
 import nz.co.gregs.dbvolution.databases.definitions.MSSQLServer2012DBDefinition;
 
@@ -35,23 +36,23 @@ public class MSSQLServer2012DB extends MSSQLServerDB {
 
 	public static final long serialVersionUID = 1l;
 
-	public MSSQLServer2012DB(DataSource ds) {
+	public MSSQLServer2012DB(DataSource ds) throws SQLException {
 		super(new MSSQLServer2012DBDefinition(), ds);
 	}
 
-	public MSSQLServer2012DB(String driverName, String jdbcURL, String username, String password) {
+	public MSSQLServer2012DB(String driverName, String jdbcURL, String username, String password) throws SQLException {
 		super(new MSSQLServer2012DBDefinition(), driverName, jdbcURL, username, password);
 	}
 
-	public MSSQLServer2012DB(String jdbcURL, String username, String password) {
+	public MSSQLServer2012DB(String jdbcURL, String username, String password) throws SQLException {
 		super(new MSSQLServer2012DBDefinition(), jdbcURL, username, password);
 	}
 
-	public MSSQLServer2012DB(String hostname, String instanceName, String databaseName, int portNumber, String username, String password) {
+	public MSSQLServer2012DB(String hostname, String instanceName, String databaseName, int portNumber, String username, String password) throws SQLException {
 		super(new MSSQLServer2012DBDefinition(), hostname, instanceName, databaseName, portNumber, username, password);
 	}
 
-	public MSSQLServer2012DB(String driverName, String hostname, String instanceName, String databaseName, int portNumber, String username, String password) {
+	public MSSQLServer2012DB(String driverName, String hostname, String instanceName, String databaseName, int portNumber, String username, String password) throws SQLException {
 		super(new MSSQLServer2012DBDefinition(), driverName, hostname, instanceName, databaseName, portNumber, username, password);
 	}
 

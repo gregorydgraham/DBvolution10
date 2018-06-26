@@ -44,7 +44,7 @@ public class InformixDB extends DBDatabase {
 	 * can be supplied.
 	 * @param ds the data source that defines the connection to the database.
 	 */
-	protected InformixDB(DBDefinition definition, DataSource ds) {
+	protected InformixDB(DBDefinition definition, DataSource ds) throws SQLException {
 		super(definition, ds);
 		// Informix causes problems when using batched statements :(
 		setBatchSQLStatementsWhenPossible(false);
@@ -62,7 +62,7 @@ public class InformixDB extends DBDatabase {
 	 * @param username the username to use when connecting to the database
 	 * @param password the password to use when connecting
 	 */
-	protected InformixDB(DBDefinition definition, String driverName, String jdbcURL, String username, String password) {
+	protected InformixDB(DBDefinition definition, String driverName, String jdbcURL, String username, String password) throws SQLException {
 		super(definition, driverName, jdbcURL, username, password);
 		// Informix causes problems when using batched statements :(
 		setBatchSQLStatementsWhenPossible(false);
@@ -86,7 +86,7 @@ public class InformixDB extends DBDatabase {
 	 * @param password password the password required to connect the user to the
 	 * database
 	 */
-	public InformixDB(String jdbcURL, String username, String password) {
+	public InformixDB(String jdbcURL, String username, String password) throws SQLException {
 		this(new InformixDBDefinition(), INFORMIXDRIVERNAME, jdbcURL, username, password);
 	}
 
@@ -102,7 +102,7 @@ public class InformixDB extends DBDatabase {
 	 *
 	 * @param dataSource dataSource
 	 */
-	public InformixDB(DataSource dataSource) {
+	public InformixDB(DataSource dataSource) throws SQLException {
 		this(new InformixDBDefinition(), dataSource);
 	}
 

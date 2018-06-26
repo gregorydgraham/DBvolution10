@@ -84,7 +84,7 @@ public abstract class OracleAWSDB extends OracleDB implements SupportsPolygonDat
 	 * @param driverName driverName
 	 * @param username username
 	 */
-	public OracleAWSDB(DBDefinition definition, String driverName, String jdbcURL, String username, String password) {
+	public OracleAWSDB(DBDefinition definition, String driverName, String jdbcURL, String username, String password) throws SQLException {
 		super(definition, driverName, jdbcURL, username, password);
 	}
 
@@ -94,7 +94,7 @@ public abstract class OracleAWSDB extends OracleDB implements SupportsPolygonDat
 	 * @param dbDefinition an oracle database definition instance
 	 * @param dataSource a data source to an Oracle database
 	 */
-	public OracleAWSDB(DBDefinition dbDefinition, DataSource dataSource) {
+	public OracleAWSDB(DBDefinition dbDefinition, DataSource dataSource) throws SQLException {
 		super(dbDefinition, dataSource);
 	}
 

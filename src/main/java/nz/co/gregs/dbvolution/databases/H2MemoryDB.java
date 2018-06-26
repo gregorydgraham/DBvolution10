@@ -88,7 +88,7 @@ public class H2MemoryDB extends H2DB {
 	 * @param password password
 	 * @param dummy dummy
 	 */
-	public H2MemoryDB(String databaseName, String username, String password, boolean dummy) {
+	public H2MemoryDB(String databaseName, String username, String password, boolean dummy) throws SQLException {
 		super("jdbc:h2:mem:" + databaseName, username, password);
 		setDatabaseName(databaseName);
 		jamDatabaseConnectionOpen();

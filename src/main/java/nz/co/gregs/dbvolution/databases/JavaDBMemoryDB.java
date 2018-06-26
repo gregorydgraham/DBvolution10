@@ -47,7 +47,7 @@ public class JavaDBMemoryDB extends DBDatabase {
 	 *
 	 * @param dataSource	dataSource
 	 */
-	public JavaDBMemoryDB(DataSource dataSource) {
+	public JavaDBMemoryDB(DataSource dataSource) throws SQLException {
 		super(new JavaDBMemoryDBDefinition(), dataSource);
 	}
 
@@ -59,7 +59,7 @@ public class JavaDBMemoryDB extends DBDatabase {
 	 * @param username username
 	 * @param password password
 	 */
-	public JavaDBMemoryDB(String jdbcURL, String username, String password) {
+	public JavaDBMemoryDB(String jdbcURL, String username, String password) throws SQLException {
 		super(new JavaDBMemoryDBDefinition(), DRIVER_NAME, jdbcURL, username, password);
 	}
 

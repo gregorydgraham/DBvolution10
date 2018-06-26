@@ -75,7 +75,7 @@ public class Oracle11XEDB extends OracleDB {
 	 *
 	 * @param dataSource a datasource to an Oracle database
 	 */
-	public Oracle11XEDB(DataSource dataSource) {
+	public Oracle11XEDB(DataSource dataSource) throws SQLException {
 		super(new Oracle11XEDBDefinition(), dataSource);
 	}
 
@@ -88,7 +88,7 @@ public class Oracle11XEDB extends OracleDB {
 	 * @param password password
 	 * @param username username
 	 */
-	public Oracle11XEDB(OracleDBDefinition definition, String driverName, String jdbcURL, String username, String password) {
+	public Oracle11XEDB(OracleDBDefinition definition, String driverName, String jdbcURL, String username, String password) throws SQLException {
 		super(definition, driverName, jdbcURL, username, password);
 	}
 
@@ -100,7 +100,7 @@ public class Oracle11XEDB extends OracleDB {
 	 * @param username username
 	 * @param password password
 	 */
-	public Oracle11XEDB(String driverName, String jdbcURL, String username, String password) {
+	public Oracle11XEDB(String driverName, String jdbcURL, String username, String password) throws SQLException {
 		super(new Oracle11XEDBDefinition(), driverName, jdbcURL, username, password);
 	}
 
@@ -111,7 +111,7 @@ public class Oracle11XEDB extends OracleDB {
 	 * @param username username
 	 * @param password password
 	 */
-	public Oracle11XEDB(String jdbcURL, String username, String password) {
+	public Oracle11XEDB(String jdbcURL, String username, String password) throws SQLException {
 		super(new Oracle11XEDBDefinition(), "oracle.jdbc.driver.OracleDriver", jdbcURL, username, password);
 	}
 
@@ -124,7 +124,7 @@ public class Oracle11XEDB extends OracleDB {
 	 * @param password password
 	 * @param username username
 	 */
-	public Oracle11XEDB(String host, int port, String serviceName, String username, String password) {
+	public Oracle11XEDB(String host, int port, String serviceName, String username, String password) throws SQLException {
 		super(new Oracle11XEDBDefinition(), "oracle.jdbc.driver.OracleDriver", "jdbc:oracle:thin:@//" + host + ":" + port + "/" + serviceName, username, password);
 	}
 
