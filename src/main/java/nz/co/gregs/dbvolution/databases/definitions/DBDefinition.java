@@ -29,6 +29,7 @@ import java.sql.ResultSet;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.TimeZone;
@@ -5927,5 +5928,13 @@ public abstract class DBDefinition {
 
 	public String getSequenceUpdateSQL(String tableName, String columnName, long primaryKeyGenerated) {
 		return "UPDATE SEQUENCE FOR TABLE "+tableName+" ON COLUMN "+columnName+" TO "+(primaryKeyGenerated+1);
+	}
+
+	public Collection<? extends String> getInsertPreparation(DBRow table) {
+		return new ArrayList<String>();
+	}
+
+	public Collection<? extends String> getInsertCleanUp(DBRow table) {
+		return new ArrayList<String>();
 	}
 }

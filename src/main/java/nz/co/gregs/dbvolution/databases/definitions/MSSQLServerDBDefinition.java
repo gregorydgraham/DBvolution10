@@ -472,8 +472,8 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 	}
 
 	/**
-	 * Transforms a SQL snippet of a integer expression into a character expression
-	 * for this database.
+	 * Transforms a SQL snippet of a integer expression into a character
+	 * expression for this database.
 	 *
 	 * @param numberExpression	numberExpression
 	 * <p style="color: #F90;">Support DBvolution at
@@ -1076,5 +1076,19 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 	@Override
 	public String doFindIntegerInStringTransform(String toSQLString) {
 		return MigrationFunctions.FINDFIRSTINTEGER + "(" + toSQLString + ')';
+	}
+
+	@Override
+	public Collection<? extends String> getInsertPreparation(DBRow table) {
+		final ArrayList<String> strs = new ArrayList<String>();
+		strs.add("SET IDENTITY_INSERT "+this.formatTableName(table)+" ON;GO\n");
+		return strs;
+	}
+
+	@Override
+	public Collection<? extends String> getInsertCleanUp(DBRow table) {
+		final ArrayList<String> strs = new ArrayList<String>();
+		strs.add("SET IDENTITY_INSERT "+this.formatTableName(table)+" OFF;GO\n");
+		return strs;
 	}
 }

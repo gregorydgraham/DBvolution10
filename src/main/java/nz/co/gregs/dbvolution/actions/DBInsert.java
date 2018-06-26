@@ -133,6 +133,7 @@ public class DBInsert extends DBAction {
 		InsertFields fields = processAllFieldsForInsert(db, table);
 
 		ArrayList<String> strs = new ArrayList<>();
+		strs.addAll(defn.getInsertPreparation(table));
 		final StringBuilder allChangedColumns = fields.getAllChangedColumns();
 		if (allChangedColumns.length() != 0) {
 			strs.add(defn.beginInsertLine()
@@ -151,6 +152,7 @@ public class DBInsert extends DBAction {
 					+ fields.getAllValues()
 					+ defn.endInsertLine());
 		}
+		strs.addAll(defn.getInsertCleanUp(table));
 		return strs;
 	}
 
