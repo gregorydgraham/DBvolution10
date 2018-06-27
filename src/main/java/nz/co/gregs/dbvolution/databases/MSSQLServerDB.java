@@ -76,6 +76,7 @@ public class MSSQLServerDB extends DBDatabase implements SupportsPolygonDatatype
 	 * @param jdbcURL jdbcURL
 	 * @param username username
 	 * @param password password
+	 * @throws java.sql.SQLException
 	 */
 	public MSSQLServerDB(String driverName, String jdbcURL, String username, String password) throws SQLException {
 		this(new MSSQLServerDBDefinition(), driverName, jdbcURL, username, password);
@@ -95,6 +96,7 @@ public class MSSQLServerDB extends DBDatabase implements SupportsPolygonDatatype
 	 * @param jdbcURL jdbcURL
 	 * @param username username
 	 * @param password password
+	 * @throws java.sql.SQLException
 	 */
 	public MSSQLServerDB(String jdbcURL, String username, String password) throws SQLException {
 		this(new MSSQLServerDBDefinition(), SQLSERVERDRIVERNAME, jdbcURL, username, password);
@@ -116,6 +118,7 @@ public class MSSQLServerDB extends DBDatabase implements SupportsPolygonDatatype
 	 * @param portNumber the port number that the database is available on
 	 * @param username the account to connect via
 	 * @param password the password to identify username.
+	 * @throws java.sql.SQLException
 	 */
 	public MSSQLServerDB(String hostname, String instanceName, String databaseName, int portNumber, String username, String password) throws SQLException {
 		this(
@@ -148,6 +151,7 @@ public class MSSQLServerDB extends DBDatabase implements SupportsPolygonDatatype
 	 * @param portNumber the port number that the database is available on .
 	 * @param username the account to connect via.
 	 * @param password the password to identify username.
+	 * @throws java.sql.SQLException
 	 */
 	public MSSQLServerDB(String driverName, String hostname, String instanceName, String databaseName, int portNumber, String username, String password) throws SQLException {
 		this(

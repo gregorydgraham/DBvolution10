@@ -1081,14 +1081,18 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 	@Override
 	public Collection<? extends String> getInsertPreparation(DBRow table) {
 		final ArrayList<String> strs = new ArrayList<String>();
-		strs.add("SET IDENTITY_INSERT "+this.formatTableName(table)+" ON;");
+		if (table.hasAutoIncrementField()) {
+			strs.add("SET IDENTITY_INSERT " + this.formatTableName(table) + " ON;");
+		}
 		return strs;
 	}
 
 	@Override
 	public Collection<? extends String> getInsertCleanUp(DBRow table) {
 		final ArrayList<String> strs = new ArrayList<String>();
-		strs.add("SET IDENTITY_INSERT "+this.formatTableName(table)+" OFF;");
+		if (table.hasAutoIncrementField()) {
+			strs.add("SET IDENTITY_INSERT " + this.formatTableName(table) + " OFF;");
+		}
 		return strs;
 	}
 }

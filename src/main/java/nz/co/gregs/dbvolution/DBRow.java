@@ -257,7 +257,8 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 	 * <p style="color: #F90;">Support DBvolution at
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 *
-	 * @return the ColumnProvider instance of the primary key or null if there is no primary key.
+	 * @return the ColumnProvider instance of the primary key or null if there is
+	 * no primary key.
 	 */
 	public List<ColumnProvider> getPrimaryKeysAsColumns() {
 		List<PropertyWrapper> primaryKeyPropertyWrappers = getPrimaryKeyPropertyWrappers();
@@ -1807,6 +1808,16 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 	public DBRow setTableVariantIdentifier(String variantName) {
 		tableVariantIdentifier = variantName;
 		return this;
+	}
+
+	public boolean hasAutoIncrementField() {
+		List<PropertyWrapper> columns = getColumnPropertyWrappers();
+		for (PropertyWrapper column : columns) {
+			if (column.isAutoIncrement()) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	/**
