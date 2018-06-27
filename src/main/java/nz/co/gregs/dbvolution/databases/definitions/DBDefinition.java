@@ -3821,7 +3821,8 @@ public abstract class DBDefinition {
 	 * @param secondGeometry the second polygon2d value to compare
 	 * <p style="color: #F90;">Support DBvolution at
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 * @return SQL that represents a polygon of the union, null if both polygons are null.
+	 * @return SQL that represents a polygon of the union, null if both polygons
+	 * are null.
 	 */
 	public String doPolygon2DUnionTransform(String firstGeometry, String secondGeometry) {
 		throw new UnsupportedOperationException("Spatial Operations Haven't Been Defined Yet");
@@ -5927,7 +5928,7 @@ public abstract class DBDefinition {
 	}
 
 	public String getSequenceUpdateSQL(String tableName, String columnName, long primaryKeyGenerated) {
-		return "UPDATE SEQUENCE FOR TABLE "+tableName+" ON COLUMN "+columnName+" TO "+(primaryKeyGenerated+1);
+		return "UPDATE SEQUENCE FOR TABLE " + tableName + " ON COLUMN " + columnName + " TO " + (primaryKeyGenerated + 1);
 	}
 
 	public Collection<? extends String> getInsertPreparation(DBRow table) {
@@ -5936,5 +5937,24 @@ public abstract class DBDefinition {
 
 	public Collection<? extends String> getInsertCleanUp(DBRow table) {
 		return new ArrayList<String>();
+	}
+
+	public String getAlterTableAddColumnSQL(DBRow existingTable, PropertyWrapper columnPropertyWrapper) {
+		return "ALTER TABLE " + formatTableName(existingTable) + " ADD COLUMN " + getAddColumnColumnSQL(columnPropertyWrapper) + endSQLStatement();
+	}
+
+	public String getAddColumnColumnSQL(PropertyWrapper field) {
+
+		StringBuilder sqlScript = new StringBuilder();
+
+		if (field.isColumn() && !field.getQueryableDatatype().hasColumnExpression()) {
+			String colName = field.columnName();
+			sqlScript
+					.append(formatColumnName(colName))
+					.append(getCreateTableColumnsNameAndTypeSeparator())
+					.append(getSQLTypeAndModifiersOfDBDatatype(field));
+		}
+
+		return sqlScript.toString();
 	}
 }

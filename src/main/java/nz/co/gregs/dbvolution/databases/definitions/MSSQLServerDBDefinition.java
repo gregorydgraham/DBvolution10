@@ -27,6 +27,7 @@ import nz.co.gregs.dbvolution.exceptions.DBRuntimeException;
 import nz.co.gregs.dbvolution.exceptions.IncorrectGeometryReturnedForDatatype;
 import nz.co.gregs.dbvolution.expressions.BooleanExpression;
 import nz.co.gregs.dbvolution.expressions.DBExpression;
+import nz.co.gregs.dbvolution.internal.properties.PropertyWrapper;
 import nz.co.gregs.dbvolution.internal.query.LargeObjectHandlerType;
 import nz.co.gregs.dbvolution.internal.sqlserver.*;
 import nz.co.gregs.dbvolution.internal.query.QueryOptions;
@@ -1094,5 +1095,9 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 			strs.add("SET IDENTITY_INSERT " + this.formatTableName(table) + " OFF;");
 		}
 		return strs;
+	}
+
+	public String getAlterTableAddColumnSQL(DBRow existingTable, PropertyWrapper columnPropertyWrapper) {
+		return "ALTER TABLE " + formatTableName(existingTable) + " ADD " + getAddColumnColumnSQL(columnPropertyWrapper) + endSQLStatement();
 	}
 }

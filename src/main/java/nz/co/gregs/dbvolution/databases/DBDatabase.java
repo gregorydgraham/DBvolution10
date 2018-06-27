@@ -2064,11 +2064,7 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 	private synchronized void alterTableAddColumn(DBRow existingTable, PropertyWrapper columnPropertyWrapper) {
 		preventDDLDuringTransaction("DBDatabase.alterTable()");
 
-		String sqlString = "ALTER TABLE "
-				+ definition.formatTableName(existingTable)
-				+ " ADD COLUMN "
-				+ getSQLForCreateColumn(columnPropertyWrapper)
-				+ this.definition.endSQLStatement();
+		String sqlString = definition.getAlterTableAddColumnSQL(existingTable, columnPropertyWrapper);
 
 		try (DBStatement dbStatement = getDBStatement()) {
 			try {
@@ -2081,20 +2077,5 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 			System.err.println("nz.co.gregs.dbvolution.databases.DBDatabase.alterTableAddColumn() " + ex.getLocalizedMessage());
 			Logger.getLogger(DBDatabase.class.getName()).log(Level.SEVERE, null, ex);
 		}
-	}
-
-	private String getSQLForCreateColumn(PropertyWrapper field) {
-
-		StringBuilder sqlScript = new StringBuilder();
-
-		if (field.isColumn() && !field.getQueryableDatatype().hasColumnExpression()) {
-			String colName = field.columnName();
-			sqlScript
-					.append(definition.formatColumnName(colName))
-					.append(definition.getCreateTableColumnsNameAndTypeSeparator())
-					.append(definition.getSQLTypeAndModifiersOfDBDatatype(field));
-		}
-
-		return sqlScript.toString();
 	}
 }
