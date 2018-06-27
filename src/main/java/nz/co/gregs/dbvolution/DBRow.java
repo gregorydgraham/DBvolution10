@@ -1820,6 +1820,16 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 		return false;
 	}
 
+	public PropertyWrapper getAutoIncrementField() {
+		List<PropertyWrapper> columns = getColumnPropertyWrappers();
+		for (PropertyWrapper column : columns) {
+			if (column.isAutoIncrement()) {
+				return column;
+			}
+		}
+		return null;
+	}
+
 	/**
 	 * Default sorting for DBRow in the various collections in DBRow and DBQuery.
 	 *

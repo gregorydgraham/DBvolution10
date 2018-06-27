@@ -907,7 +907,10 @@ public abstract class QueryableDatatype<T> extends Object implements Serializabl
 	 * <p style="color: #F90;">Support DBvolution at
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 *
-	 * @return the setValueHasBeenCalled
+	 * Indicates whether this column has had it's value set, either by the
+	 * external program or DBV's internal processes.
+	 *
+	 * @return the setValue method has been called
 	 */
 	public synchronized boolean hasBeenSet() {
 		return setValueHasBeenCalled;
