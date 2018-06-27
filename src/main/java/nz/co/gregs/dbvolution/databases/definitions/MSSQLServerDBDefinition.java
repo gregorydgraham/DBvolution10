@@ -1081,7 +1081,7 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 	@Override
 	public Collection<? extends String> getInsertPreparation(DBRow table) {
 		final ArrayList<String> strs = new ArrayList<String>();
-		if (table.hasAutoIncrementField()) {
+		if (table.hasAutoIncrementField() && table.getAutoIncrementField().getQueryableDatatype().hasBeenSet()) {
 			strs.add("SET IDENTITY_INSERT " + this.formatTableName(table) + " ON;");
 		}
 		return strs;
@@ -1090,7 +1090,7 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 	@Override
 	public Collection<? extends String> getInsertCleanUp(DBRow table) {
 		final ArrayList<String> strs = new ArrayList<String>();
-		if (table.hasAutoIncrementField()) {
+		if (table.hasAutoIncrementField() && table.getAutoIncrementField().getQueryableDatatype().hasBeenSet()) {
 			strs.add("SET IDENTITY_INSERT " + this.formatTableName(table) + " OFF;");
 		}
 		return strs;
