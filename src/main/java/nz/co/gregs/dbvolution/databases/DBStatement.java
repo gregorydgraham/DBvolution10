@@ -141,7 +141,7 @@ public class DBStatement implements Statement {
 	@Override
 	public int executeUpdate(String string) throws SQLException {
 		int executeUpdate = getInternalStatement().executeUpdate(string);
-		
+
 		return executeUpdate;
 	}
 
@@ -339,8 +339,14 @@ public class DBStatement implements Statement {
 	 */
 	protected synchronized void replaceBrokenConnection() throws SQLException, UnableToCreateDatabaseConnectionException, UnableToFindJDBCDriver {
 		database.discardConnection(connection);
-		try{internalStatement.close();}catch(SQLException exception){}
-		try{connection.close();}catch(SQLException exception){}
+		try {
+			internalStatement.close();
+		} catch (SQLException exception) {
+		}
+		try {
+			connection.close();
+		} catch (SQLException exception) {
+		}
 		connection = database.getConnection();
 		internalStatement = connection.createStatement();
 	}
@@ -454,6 +460,26 @@ public class DBStatement implements Statement {
 		} catch (SQLException exp2) {
 			if (!exp.getMessage().equals(exp2.getMessage())) {
 				executeQuery = addFeatureAndAttemptExecuteAgain(exp2, string);
+				return executeQuery;
+			} else {
+				throw new SQLException(exp);
+			}
+		}
+	}
+
+	private boolean addFeatureAndAttemptExecuteAgain(Exception exp,String string, String[] strings) throws SQLException {
+		boolean executeQuery;
+		try {
+			database.addFeatureToFixException(exp);
+		} catch (Exception ex) {
+			throw new SQLException("Failed To Add Support For SQL: " + exp.getMessage() + " : Original Query: " + string, ex);
+		}
+		try {
+			executeQuery = getInternalStatement().execute(string, strings);
+			return executeQuery;
+		} catch (SQLException exp2) {
+			if (!exp.getMessage().equals(exp2.getMessage())) {
+				executeQuery = addFeatureAndAttemptExecuteAgain(exp2, string, strings);
 				return executeQuery;
 			} else {
 				throw new SQLException(exp);
@@ -947,7 +973,11 @@ public class DBStatement implements Statement {
 		final String logSQL = "EXECUTING: " + string;
 		database.printSQLIfRequested(logSQL);
 		LOG.debug(logSQL);
-		return getInternalStatement().execute(string, strings);
+		try {
+			return getInternalStatement().execute(string, strings);
+		} catch (SQLException exp) {
+			return addFeatureAndAttemptExecuteAgain(exp,string, strings);
+		}
 	}
 
 	/**
