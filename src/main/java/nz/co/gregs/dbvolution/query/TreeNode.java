@@ -175,6 +175,9 @@ public class TreeNode<T extends DBRow> {
 	/**
 	 * Retrieves the node that is the parent of this node.
 	 *
+	 * <p>
+	 * Use {@link #isRoot() } to determine if the root has been reached.</p>
+	 *
 	 * <p style="color: #F90;">Support DBvolution at
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 *
