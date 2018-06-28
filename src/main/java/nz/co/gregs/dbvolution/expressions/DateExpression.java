@@ -1207,6 +1207,32 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 	}
 
 	/**
+	 * Creates an SQL expression that test whether this date expression is less
+	 * than to the supplied date.
+	 *
+	 * @param date the date this expression must not exceed
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @return a boolean expression representing the required comparison
+	 */
+	public BooleanExpression isEarlierThan(Date date) {
+		return isEarlierThan(new DateExpression(date));
+	}
+
+	/**
+	 * Creates an SQL expression that test whether this date expression is less
+	 * than to the supplied date.
+	 *
+	 * @param dateExpression the date this expression must not exceed
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @return a boolean expression representing the required comparison
+	 */
+	public BooleanExpression isEarlierThan(DateResult dateExpression) {
+		return this.isLessThan(dateExpression);
+	}
+
+	/**
 	 * Create a DateRepeat value representing the difference between this date
 	 * expression and the one provided
 	 *
@@ -1340,6 +1366,32 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 	@Override
 	public BooleanExpression isGreaterThan(DateResult dateExpression) {
 		return new BooleanExpression(new DateIsGreaterThanExpression(this, dateExpression));
+	}
+
+	/**
+	 * Creates an SQL expression that test whether this date expression is greater
+	 * than the supplied date.
+	 *
+	 * @param date the date this expression must be compared to
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @return an expression that will evaluate to a greater than operation
+	 */
+	public BooleanExpression isLaterThan(Date date) {
+		return isGreaterThan(new DateExpression(date));
+	}
+
+	/**
+	 * Creates an SQL expression that test whether this date expression is greater
+	 * than the supplied DateResult.
+	 *
+	 * @param dateExpression the date this expression must be compared to
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @return a boolean expression representing the required comparison
+	 */
+	public BooleanExpression isLaterThan(DateResult dateExpression) {
+		return isGreaterThan(dateExpression);
 	}
 
 	/**
@@ -3990,7 +4042,6 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 			return db.doAddDaysTransform(first.toSQLString(db), second.toSQLString(db));
 		}
 
-
 		@Override
 		public DateAddDaysExpression copy() {
 			return new DateAddDaysExpression(first.copy(), second.copy());
@@ -4085,7 +4136,7 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 
 		@Override
 		public DateAddMonthsExpression copy() {
-			return new DateAddMonthsExpression(first.copy(),second.copy());
+			return new DateAddMonthsExpression(first.copy(), second.copy());
 		}
 	}
 
