@@ -2035,6 +2035,7 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 				ResultSetMetaData metaData = resultSet.getMetaData();
 				List<PropertyWrapper> columnPropertyWrappers = table.getColumnPropertyWrappers();
 				for (PropertyWrapper columnPropertyWrapper : columnPropertyWrappers) {
+					if(!columnPropertyWrapper.hasColumnExpression()){
 					int columnCount = metaData.getColumnCount();
 					boolean foundColumn = false;
 					for (int i = 1; i <= columnCount && !foundColumn; i++) {
@@ -2050,7 +2051,7 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 						// We collect all the changes and process them later because SQLite doesn't like processing them imediately
 						newColumns.add(columnPropertyWrapper);
 					}
-				}
+				}}
 			}
 		} catch (Exception ex) {
 			// Theoretically this should only need to catch an SQLException 

@@ -362,6 +362,33 @@ public abstract class QueryableDatatype<T> extends Object implements Serializabl
 		}
 	}
 
+
+	/**
+	 * Gets the current literal value of this queryable data type or the value supplied if the value is NULL.
+	 *
+	 * <p>
+	 * This method will return NULL if the QDT represents a database NULL OR the
+	 * field is undefined. Use {@link #isNull() } and {@link #isDefined() } to
+	 * differentiate the 2 states.
+	 *
+	 * <p>
+	 * Undefined QDTs represents a QDT that is not a field from the database.
+	 * Undefined QDTs are similar to {@link DBRow#isDefined undefined DBRows}
+	 *
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
+	 * @return the literal value, if defined, which may be null
+	 */
+	public T getValueWithDefaultValue(T valueIfNull) {
+		T value = getValue();
+		if (value == null) {
+			return valueIfNull;
+		} else {
+			return value;
+		}
+	}
+
 	/**
 	 * Set the value of this QDT to the value provided.
 	 *
