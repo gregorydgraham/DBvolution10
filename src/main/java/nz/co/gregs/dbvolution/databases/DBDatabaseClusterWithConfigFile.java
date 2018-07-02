@@ -148,9 +148,9 @@ public class DBDatabaseClusterWithConfigFile extends DBDatabaseCluster {
 		// the file or directory name.
 		FileVisitResult find(Path path) {
 			Path name = path.getFileName();
-			System.out.println("FIND: " + path.toAbsolutePath().toString());
+//			System.out.println("FIND: " + path.toAbsolutePath().toString());
 			if (name != null && name.toString().equals(yamlConfigFilename)) {
-				System.out.println("FOUND: " + path.toString());
+//				System.out.println("FOUND: " + path.toString());
 				configPath = path;
 				return FileVisitResult.TERMINATE;
 			}
@@ -195,10 +195,10 @@ public class DBDatabaseClusterWithConfigFile extends DBDatabaseCluster {
 				Constructor<?> constructor = dbDatabaseClass.getConstructor(String.class, String.class, String.class);
 				Object newInstance = constructor.newInstance(jdbcUrl, user, pass);
 				if (DBDatabase.class.isInstance(newInstance)) {
-					System.out.println("Created Database: " + jdbcUrl + ":" + user);
+//					System.out.println("Created Database: " + jdbcUrl + ":" + user);
 					return (DBDatabase) newInstance;
 				} else {
-					System.out.println("FAILED TO CREATE DATABASE: " + jdbcUrl + ":" + user);
+//					System.out.println("FAILED TO CREATE DATABASE: " + jdbcUrl + ":" + user);
 				}
 			} catch (ClassNotFoundException ex) {
 				Logger.getLogger(DBDatabaseClusterWithConfigFile.class.getName()).log(Level.SEVERE, null, ex);
