@@ -97,7 +97,7 @@ public class DBDatabaseCluster extends DBDatabase {
 
 	private static final long serialVersionUID = 1l;
 
-	private final ClusterDetails details;
+	protected final ClusterDetails details;
 	private transient final ExecutorService threadPool;
 	private final transient DBStatementCluster clusterStatement;
 
