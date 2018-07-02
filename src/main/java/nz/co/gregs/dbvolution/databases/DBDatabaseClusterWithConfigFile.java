@@ -95,6 +95,11 @@ public class DBDatabaseClusterWithConfigFile extends DBDatabaseCluster {
 		this.yamlConfigFilename = yamlConfigFilename;
 		findDatabaseConfigurationAndApply(yamlConfigFilename);
 	}
+	
+	public void reloadConfiguration(){
+		this.removeDatabases(details.getAllDatabases());
+		findDatabaseConfigurationAndApply(yamlConfigFilename);
+	}
 
 	private void findDatabaseConfigurationAndApply(String yamlConfigFilename) {
 		try {
