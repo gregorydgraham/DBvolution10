@@ -165,6 +165,17 @@ public class DBDatabaseCluster extends DBDatabase {
 	public Status getDatabaseStatus(DBDatabase db) {
 		return details.getStatusOf(db);
 	}
+	
+	/**
+	 * Adds the database to the cluster, synchronizes it, and then removes it.
+	 *
+	 * @param backupDatabase
+	 * @throws SQLException
+	 */
+	public void backupToDBDatabase(DBDatabase backupDatabase) throws SQLException{
+		this.addDatabaseAndWait(backupDatabase);
+		removeDatabase(backupDatabase);
+	}
 
 	/**
 	 * Removes the first occurrence of the specified element from this list, if it
