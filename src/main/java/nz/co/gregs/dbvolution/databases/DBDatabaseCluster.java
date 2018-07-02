@@ -1114,6 +1114,10 @@ public class DBDatabaseCluster extends DBDatabase {
 		return details.getTemplateDatabase();
 	}
 
+	public String getClusterStatus() {
+		return "Active Databases: "+details.getReadyDatabases().length+" of "+details.getAllDatabases().length;
+	}
+
 	private static class ActionTask implements Callable<DBActionList> {
 
 		private final DBDatabase database;
