@@ -28,6 +28,14 @@
  */
 package nz.co.gregs.dbvolution;
 
+import com.fasterxml.jackson.core.JsonEncoding;
+import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectWriter;
+import com.fasterxml.jackson.databind.SequenceWriter;
+import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
+import java.io.File;
+import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
@@ -39,7 +47,9 @@ import nz.co.gregs.dbvolution.annotations.DBColumn;
 import nz.co.gregs.dbvolution.annotations.DBPrimaryKey;
 import nz.co.gregs.dbvolution.annotations.DBRequiredTable;
 import nz.co.gregs.dbvolution.databases.DBDatabaseCluster;
+import nz.co.gregs.dbvolution.databases.DBDatabaseClusterWithConfigFile;
 import nz.co.gregs.dbvolution.databases.H2MemoryDB;
+import nz.co.gregs.dbvolution.databases.SQLiteDB;
 import nz.co.gregs.dbvolution.datatypes.DBBoolean;
 import nz.co.gregs.dbvolution.datatypes.DBDate;
 import nz.co.gregs.dbvolution.datatypes.DBInteger;
@@ -96,10 +106,10 @@ public class DBDatabaseClusterTest extends AbstractTest {
 		Assert.assertThat(cluster.getDBTable(testTable).count(), is(22l));
 		Assert.assertThat(soloDB.getDBTable(testTable).count(), is(22l));
 
-		H2MemoryDB slowSynchingDB = new H2MemoryDB("SlowSynchingDB", "who", "what", true){
-			
+		H2MemoryDB slowSynchingDB = new H2MemoryDB("SlowSynchingDB", "who", "what", true) {
+
 			private static final long serialVersionUID = 1l;
-			
+
 			@Override
 			public boolean tableExists(DBRow table) throws SQLException {
 				try {
@@ -224,6 +234,42 @@ public class DBDatabaseClusterTest extends AbstractTest {
 		} catch (SQLException | AutoCommitActionDuringTransactionException e) {
 		}
 		Assert.assertThat(cluster.size(), is(1));
+	}
+
+	@Test
+	public void testYAMLFileProcessing() throws IOException, SQLException {
+		final String yamlConfigFilename = "DBDatabaseCluster.yml";
+
+		File file = new File(yamlConfigFilename);
+		file.delete();
+
+		DBDatabaseClusterWithConfigFile database = new DBDatabaseClusterWithConfigFile(yamlConfigFilename);
+		Assert.assertThat(database.getClusterStatus(), is("Active Databases: 0 of 0"));
+
+		DBDatabaseClusterWithConfigFile.DBDataSource source = new DBDatabaseClusterWithConfigFile.DBDataSource();
+		source.setDbDatabase(H2MemoryDB.class.getCanonicalName());
+		source.setUrl("jdbc:h2:mem:DBDatabaseClusterWithConfigFile.h2");
+		source.setUsername("admin");
+		source.setPassword("admin");
+
+		DBDatabaseClusterWithConfigFile.DBDataSource source2 = new DBDatabaseClusterWithConfigFile.DBDataSource();
+		source2.setDbDatabase(SQLiteDB.class.getCanonicalName());
+		source2.setUrl("jdbc:sqlite:DBDatabaseClusterWithConfigFile.sqlite");
+		source2.setUsername("admin");
+		source2.setPassword("admin");
+
+		final YAMLFactory yamlFactory = new YAMLFactory();
+		file = new File(yamlConfigFilename);
+		JsonGenerator generator = yamlFactory.createGenerator(file, JsonEncoding.UTF8);
+		ObjectMapper mapper = new ObjectMapper(yamlFactory);
+		ObjectWriter writerFor = mapper.writerFor(DBDatabaseClusterWithConfigFile.DBDataSource.class);
+		SequenceWriter writeValuesAsArray = writerFor.writeValuesAsArray(generator);
+		writeValuesAsArray.writeAll(new DBDatabaseClusterWithConfigFile.DBDataSource[]{source, source2});
+
+		database = new DBDatabaseClusterWithConfigFile(yamlConfigFilename);
+		Assert.assertThat(database.getClusterStatus(), is("Active Databases: 2 of 2"));
+		
+		file.delete();
 	}
 
 	private List<DBDatabaseClusterTestTable> createData(Date firstDate, Date secondDate) {
