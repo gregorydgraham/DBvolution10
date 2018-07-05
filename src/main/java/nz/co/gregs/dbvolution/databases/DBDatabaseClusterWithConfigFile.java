@@ -95,8 +95,8 @@ public class DBDatabaseClusterWithConfigFile extends DBDatabaseCluster {
 		this.yamlConfigFilename = yamlConfigFilename;
 		findDatabaseConfigurationAndApply(yamlConfigFilename);
 	}
-	
-	public void reloadConfiguration(){
+
+	public void reloadConfiguration() {
 		this.removeDatabases(details.getAllDatabases());
 		findDatabaseConfigurationAndApply(yamlConfigFilename);
 	}
@@ -119,7 +119,11 @@ public class DBDatabaseClusterWithConfigFile extends DBDatabaseCluster {
 					DBDatabase database = db.createDBDatabase();
 
 					if (database != null) {
-						this.addDatabase(database);
+						if (this.details.getReadyDatabases().length < 2) {
+							this.addDatabaseAndWait(database);
+						} else {
+							this.addDatabase(database);
+						}
 					}
 				}
 			}
