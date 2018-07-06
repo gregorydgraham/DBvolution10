@@ -119,13 +119,11 @@ public class DBDatabaseClusterWithConfigFile extends DBDatabaseCluster {
 					DBDatabase database = db.createDBDatabase();
 
 					if (database != null) {
-						if (this.details.getReadyDatabases().length < 2) {
-							this.addDatabaseAndWait(database);
-						} else {
-							this.addDatabase(database);
-						}
+						System.out.println("Adding Database: " + db.dbDatabase + ":" + db.url + ":" + db.username);
+						this.addDatabaseAndWait(database);
 					}
 				}
+				System.out.println("Completed Database");
 			}
 		} catch (IOException ex) {
 			Logger.getLogger(DBDatabaseCluster.class.getName()).log(Level.SEVERE, null, ex);
