@@ -36,6 +36,7 @@ import com.fasterxml.jackson.databind.SequenceWriter;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
@@ -237,14 +238,19 @@ public class DBDatabaseClusterTest extends AbstractTest {
 	}
 
 	@Test
-	public void testYAMLFileProcessing() throws IOException, SQLException {
+	public void testYAMLFileProcessing() {
 		final String yamlConfigFilename = "DBDatabaseCluster.yml";
 
 		File file = new File(yamlConfigFilename);
 		file.delete();
 
-		DBDatabaseClusterWithConfigFile database = new DBDatabaseClusterWithConfigFile(yamlConfigFilename);
-		Assert.assertThat(database.getClusterStatus(), is("Active Databases: 0 of 0"));
+		DBDatabaseCluster db = new DBDatabaseCluster();
+		try {
+			db = new DBDatabaseClusterWithConfigFile(yamlConfigFilename);
+		} catch (SQLException | IOException | SecurityException | IllegalArgumentException | ClassNotFoundException | NoSuchMethodException | InstantiationException | IllegalAccessException | InvocationTargetException ex) {
+			Logger.getLogger(DBDatabaseClusterTest.class.getName()).log(Level.SEVERE, null, ex);
+		}
+		Assert.assertThat(db.getClusterStatus(), is("Active Databases: 0 of 0"));
 
 		DBDatabaseClusterWithConfigFile.DBDataSource source = new DBDatabaseClusterWithConfigFile.DBDataSource();
 		source.setDbDatabase(H2MemoryDB.class.getCanonicalName());
@@ -260,15 +266,35 @@ public class DBDatabaseClusterTest extends AbstractTest {
 
 		final YAMLFactory yamlFactory = new YAMLFactory();
 		file = new File(yamlConfigFilename);
-		JsonGenerator generator = yamlFactory.createGenerator(file, JsonEncoding.UTF8);
+		JsonGenerator generator = null;
+		try {
+			generator = yamlFactory.createGenerator(file, JsonEncoding.UTF8);
+		} catch (IOException ex) {
+			Logger.getLogger(DBDatabaseClusterTest.class.getName()).log(Level.SEVERE, null, ex);
+		}
 		ObjectMapper mapper = new ObjectMapper(yamlFactory);
 		ObjectWriter writerFor = mapper.writerFor(DBDatabaseClusterWithConfigFile.DBDataSource.class);
-		SequenceWriter writeValuesAsArray = writerFor.writeValuesAsArray(generator);
-		writeValuesAsArray.writeAll(new DBDatabaseClusterWithConfigFile.DBDataSource[]{source, source2});
+		SequenceWriter writeValuesAsArray = null;
+		try {
+			writeValuesAsArray = writerFor.writeValuesAsArray(generator);
+		} catch (IOException ex) {
+			Logger.getLogger(DBDatabaseClusterTest.class.getName()).log(Level.SEVERE, null, ex);
+		}
+		try {
+			if (writeValuesAsArray != null) {
+				writeValuesAsArray.writeAll(new DBDatabaseClusterWithConfigFile.DBDataSource[]{source, source2});
+			}
+		} catch (IOException ex) {
+			Logger.getLogger(DBDatabaseClusterTest.class.getName()).log(Level.SEVERE, null, ex);
+		}
 
-		database = new DBDatabaseClusterWithConfigFile(yamlConfigFilename);
-		Assert.assertThat(database.getClusterStatus(), is("Active Databases: 2 of 2"));
-		
+		try {
+			db = new DBDatabaseClusterWithConfigFile(yamlConfigFilename);
+		} catch (SQLException | IOException | SecurityException | IllegalArgumentException | ClassNotFoundException | NoSuchMethodException | InstantiationException | IllegalAccessException | InvocationTargetException ex) {
+			Logger.getLogger(DBDatabaseClusterTest.class.getName()).log(Level.SEVERE, null, ex);
+		}
+		Assert.assertThat(db.getClusterStatus(), is("Active Databases: 2 of 2"));
+
 		file.delete();
 	}
 

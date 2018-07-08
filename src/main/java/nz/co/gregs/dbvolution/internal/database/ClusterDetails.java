@@ -30,7 +30,6 @@ package nz.co.gregs.dbvolution.internal.database;
 
 import java.io.Serializable;
 import nz.co.gregs.dbvolution.exceptions.NoAvailableDatabaseException;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -66,7 +65,7 @@ public class ClusterDetails implements Serializable {
 	private final Set<DBRow> requiredTables = Collections.synchronizedSet(DataModel.getRequiredTables());
 	private final transient Map<DBDatabase, Queue<DBAction>> queuedActions = Collections.synchronizedMap(new HashMap<DBDatabase, Queue<DBAction>>(0));
 
-	public ClusterDetails() throws SQLException {
+	public ClusterDetails() {
 	}
 
 	public synchronized boolean add(DBDatabase database) {

@@ -101,7 +101,7 @@ public class DBDatabaseCluster extends DBDatabase {
 	private transient final ExecutorService threadPool;
 	private final transient DBStatementCluster clusterStatement;
 
-	public DBDatabaseCluster() throws SQLException {
+	public DBDatabaseCluster() {
 		super();
 		clusterStatement = new DBStatementCluster(this);
 		details = new ClusterDetails();

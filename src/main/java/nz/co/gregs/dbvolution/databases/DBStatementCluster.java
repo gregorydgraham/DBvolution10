@@ -41,7 +41,7 @@ public class DBStatementCluster extends DBStatement {
 
 	private final DBDatabaseCluster databaseCluster;
 
-	public DBStatementCluster(DBDatabaseCluster db) throws SQLException {
+	public DBStatementCluster(DBDatabaseCluster db) {
 		super(db, new DBConnectionCluster(db));
 		this.databaseCluster = db;
 	}

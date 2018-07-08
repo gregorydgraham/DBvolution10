@@ -55,7 +55,7 @@ public class DBStatement implements Statement {
 	private Statement internalStatement;
 	private boolean batchHasEntries;
 	final DBDatabase database;
-	private Connection connection;
+	private final Connection connection;
 	private boolean isClosed = false;
 
 	/**
@@ -63,12 +63,11 @@ public class DBStatement implements Statement {
 	 *
 	 * @param db the target database
 	 * @param connection the connection to the database
-	 * @throws SQLException database exceptions
 	 */
-	public DBStatement(DBDatabase db, Connection connection) throws SQLException {
+	public DBStatement(DBDatabase db, Connection connection) {
 		this.database = db;
 		this.connection = connection;
-		this.internalStatement = connection.createStatement();
+//		this.internalStatement = connection.createStatement();
 	}
 
 	/**
@@ -339,16 +338,16 @@ public class DBStatement implements Statement {
 	 */
 	protected synchronized void replaceBrokenConnection() throws SQLException, UnableToCreateDatabaseConnectionException, UnableToFindJDBCDriver {
 		database.discardConnection(connection);
-		try {
-			internalStatement.close();
-		} catch (SQLException exception) {
-		}
-		try {
-			connection.close();
-		} catch (SQLException exception) {
-		}
-		connection = database.getConnection();
-		internalStatement = connection.createStatement();
+//		try {
+//			internalStatement.close();
+//		} catch (SQLException exception) {
+//		}
+//		try {
+//			connection.close();
+//		} catch (SQLException exception) {
+//		}
+//		connection = database.getConnection();
+//		internalStatement = connection.createStatement();
 	}
 
 	/**
@@ -467,7 +466,7 @@ public class DBStatement implements Statement {
 		}
 	}
 
-	private boolean addFeatureAndAttemptExecuteAgain(Exception exp,String string, String[] strings) throws SQLException {
+	private boolean addFeatureAndAttemptExecuteAgain(Exception exp, String string, String[] strings) throws SQLException {
 		boolean executeQuery;
 		try {
 			database.addFeatureToFixException(exp);
@@ -976,7 +975,7 @@ public class DBStatement implements Statement {
 		try {
 			return getInternalStatement().execute(string, strings);
 		} catch (SQLException exp) {
-			return addFeatureAndAttemptExecuteAgain(exp,string, strings);
+			return addFeatureAndAttemptExecuteAgain(exp, string, strings);
 		}
 	}
 
@@ -1155,15 +1154,19 @@ public class DBStatement implements Statement {
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 *
 	 * @return the internalStatement
+	 * @throws java.sql.SQLException
 	 */
-	protected Statement getInternalStatement() {
-		return internalStatement;
+	protected synchronized Statement getInternalStatement() throws SQLException {
+		if (this.internalStatement == null) {
+			this.internalStatement = connection.createStatement();
+		}
+		return this.internalStatement;
 	}
 
 	/**
 	 * @param realStatement the internalStatement to set
 	 */
-	protected void setInternalStatement(Statement realStatement) {
+	protected synchronized void setInternalStatement(Statement realStatement) {
 		this.internalStatement = realStatement;
 	}
 

@@ -41,8 +41,6 @@ import java.nio.file.Paths;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.sql.SQLException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * Creates a DBDatabaseCluster based on the information in yamlConfigFilename.
@@ -90,49 +88,39 @@ public class DBDatabaseClusterWithConfigFile extends DBDatabaseCluster {
 
 	private final String yamlConfigFilename;
 
-	public DBDatabaseClusterWithConfigFile(String yamlConfigFilename) throws SQLException {
+	public DBDatabaseClusterWithConfigFile(String yamlConfigFilename) throws SQLException, IOException, SecurityException, IllegalArgumentException, ClassNotFoundException, NoSuchMethodException, InstantiationException, IllegalAccessException, InvocationTargetException {
 		super();
 		this.yamlConfigFilename = yamlConfigFilename;
 		findDatabaseConfigurationAndApply(yamlConfigFilename);
 	}
 
-	public void reloadConfiguration() {
+	public void reloadConfiguration() throws IOException, SQLException, SecurityException, IllegalArgumentException, ClassNotFoundException, NoSuchMethodException, InstantiationException, IllegalAccessException, InvocationTargetException {
 		this.removeDatabases(details.getAllDatabases());
 		findDatabaseConfigurationAndApply(yamlConfigFilename);
 	}
 
-	private void findDatabaseConfigurationAndApply(String yamlConfigFilename) {
-		try {
-			final DefaultConfigFinder finder = new DefaultConfigFinder(yamlConfigFilename);
-			Files.walkFileTree(Paths.get("."), finder);
-			if (finder.configPath != null) {
-				Path filePath = finder.configPath;
-				File file = filePath.toFile();
+	private void findDatabaseConfigurationAndApply(String yamlConfigFilename) throws IOException, SQLException, SecurityException, IllegalArgumentException, ClassNotFoundException, NoSuchMethodException, InstantiationException, IllegalAccessException, InvocationTargetException {
+		final DefaultConfigFinder finder = new DefaultConfigFinder(yamlConfigFilename);
+		Files.walkFileTree(Paths.get("."), finder);
+		if (finder.configPath != null) {
+			Path filePath = finder.configPath;
+			File file = filePath.toFile();
 
-				final YAMLFactory yamlFactory = new YAMLFactory();
-				YAMLParser parser = yamlFactory.createParser(file);
-				ObjectMapper mapper = new ObjectMapper(yamlFactory);
-				DBDataSource[] dbs = mapper.readValue(parser, DBDataSource[].class);
+			final YAMLFactory yamlFactory = new YAMLFactory();
+			YAMLParser parser = yamlFactory.createParser(file);
+			ObjectMapper mapper = new ObjectMapper(yamlFactory);
+			DBDataSource[] dbs = mapper.readValue(parser, DBDataSource[].class);
 
-				for (DBDataSource db : dbs) {
+			for (DBDataSource db : dbs) {
 
-					DBDatabase database = db.createDBDatabase();
+				DBDatabase database = db.createDBDatabase();
 
-					if (database != null) {
-						System.out.println("Adding Database: " + db.dbDatabase + ":" + db.url + ":" + db.username);
-						this.addDatabaseAndWait(database);
-					}
+				if (database != null) {
+					System.out.println("Adding Database: " + db.dbDatabase + ":" + db.url + ":" + db.username);
+					this.addDatabaseAndWait(database);
 				}
-				System.out.println("Completed Database");
 			}
-		} catch (IOException ex) {
-			Logger.getLogger(DBDatabaseCluster.class.getName()).log(Level.SEVERE, null, ex);
-		} catch (SecurityException ex) {
-			Logger.getLogger(DBDatabaseCluster.class.getName()).log(Level.SEVERE, null, ex);
-		} catch (IllegalArgumentException ex) {
-			Logger.getLogger(DBDatabaseCluster.class.getName()).log(Level.SEVERE, null, ex);
-		} catch (SQLException ex) {
-			Logger.getLogger(DBDatabaseCluster.class.getName()).log(Level.SEVERE, null, ex);
+			System.out.println("Completed Database");
 		}
 	}
 
@@ -150,9 +138,7 @@ public class DBDatabaseClusterWithConfigFile extends DBDatabaseCluster {
 		// the file or directory name.
 		FileVisitResult find(Path path) {
 			Path name = path.getFileName();
-//			System.out.println("FIND: " + path.toAbsolutePath().toString());
 			if (name != null && name.toString().equals(yamlConfigFilename)) {
-//				System.out.println("FOUND: " + path.toString());
 				configPath = path;
 				return FileVisitResult.TERMINATE;
 			}
@@ -188,36 +174,18 @@ public class DBDatabaseClusterWithConfigFile extends DBDatabaseCluster {
 		private String username;
 		private String password;
 
-		private DBDatabase createDBDatabase() {
-			try {
-				Class<?> dbDatabaseClass = Class.forName(this.getDbDatabase());
-				String jdbcUrl = this.getUrl();
-				String user = this.getUsername();
-				String pass = this.getPassword();
-				Constructor<?> constructor = dbDatabaseClass.getConstructor(String.class, String.class, String.class);
-				Object newInstance = constructor.newInstance(jdbcUrl, user, pass);
-				if (DBDatabase.class.isInstance(newInstance)) {
-//					System.out.println("Created Database: " + jdbcUrl + ":" + user);
-					return (DBDatabase) newInstance;
-				} else {
-//					System.out.println("FAILED TO CREATE DATABASE: " + jdbcUrl + ":" + user);
-				}
-			} catch (ClassNotFoundException ex) {
-				Logger.getLogger(DBDatabaseClusterWithConfigFile.class.getName()).log(Level.SEVERE, null, ex);
-			} catch (NoSuchMethodException ex) {
-				Logger.getLogger(DBDatabaseClusterWithConfigFile.class.getName()).log(Level.SEVERE, null, ex);
-			} catch (SecurityException ex) {
-				Logger.getLogger(DBDatabaseClusterWithConfigFile.class.getName()).log(Level.SEVERE, null, ex);
-			} catch (InstantiationException ex) {
-				Logger.getLogger(DBDatabaseClusterWithConfigFile.class.getName()).log(Level.SEVERE, null, ex);
-			} catch (IllegalAccessException ex) {
-				Logger.getLogger(DBDatabaseClusterWithConfigFile.class.getName()).log(Level.SEVERE, null, ex);
-			} catch (IllegalArgumentException ex) {
-				Logger.getLogger(DBDatabaseClusterWithConfigFile.class.getName()).log(Level.SEVERE, null, ex);
-			} catch (InvocationTargetException ex) {
-				Logger.getLogger(DBDatabaseClusterWithConfigFile.class.getName()).log(Level.SEVERE, null, ex);
+		private DBDatabase createDBDatabase() throws ClassNotFoundException, NoSuchMethodException, SecurityException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+			Class<?> dbDatabaseClass = Class.forName(this.getDbDatabase());
+			String jdbcUrl = this.getUrl();
+			String user = this.getUsername();
+			String pass = this.getPassword();
+			Constructor<?> constructor = dbDatabaseClass.getConstructor(String.class, String.class, String.class);
+			Object newInstance = constructor.newInstance(jdbcUrl, user, pass);
+			if (DBDatabase.class.isInstance(newInstance)) {
+				return (DBDatabase) newInstance;
+			} else {
+				return null;
 			}
-			return null;
 		}
 
 		/**
