@@ -35,7 +35,7 @@ import nz.co.gregs.dbvolution.internal.h2.*;
 public class H2DB extends DBDatabase {
 
 	private static final long serialVersionUID = 1l;
-
+	public static final String DRIVER_NAME = "org.h2.Driver";
 	private final static Map<String, DBVFeature> FEATURE_MAP = new HashMap<>();
 	private static boolean dataTypesNotProcessed = true;
 
@@ -100,6 +100,7 @@ public class H2DB extends DBDatabase {
 	 * Database exceptions may be thrown
 	 *
 	 * @param dataSource dataSource
+	 * @throws java.sql.SQLException
 	 */
 	public H2DB(DataSource dataSource) throws SQLException {
 		super(new H2DBDefinition(), dataSource);
@@ -116,9 +117,10 @@ public class H2DB extends DBDatabase {
 	 * @param jdbcURL jdbcURL
 	 * @param username username
 	 * @param password password
+	 * @throws java.sql.SQLException
 	 */
 	public H2DB(String jdbcURL, String username, String password) throws SQLException {
-		super(new H2DBDefinition(), "org.h2.Driver", jdbcURL, username, password);
+		super(new H2DBDefinition(), DRIVER_NAME, jdbcURL, username, password);
 	}
 
 	/**
@@ -133,9 +135,10 @@ public class H2DB extends DBDatabase {
 	 * @param username username
 	 * @param password password
 	 * @param dummy unused
+	 * @throws java.sql.SQLException
 	 */
 	public H2DB(String databaseFilename, String username, String password, boolean dummy) throws SQLException {
-		super(new H2DBDefinition(), "org.h2.Driver", "jdbc:h2:" + databaseFilename, username, password);
+		super(new H2DBDefinition(), DRIVER_NAME, "jdbc:h2:" + databaseFilename, username, password);
 	}
 
 	@Override
@@ -167,8 +170,6 @@ public class H2DB extends DBDatabase {
 
 	@Override
 	public void addFeatureToFixException(Exception exp) throws Exception {
-//		org.h2.jdbc.JdbcSQLException: Function "DBV_LINE2D_EQUALS" not found
-//      org.h2.jdbc.JdbcSQLException: Unknown data type: "DBV_LINE2D"; SQL statement:
 		boolean handledException = false;
 		if (exp instanceof org.h2.jdbc.JdbcSQLException) {
 			String message = exp.getMessage();
@@ -189,7 +190,6 @@ public class H2DB extends DBDatabase {
 					datatype.add(getConnection().createStatement());
 					handledException = true;
 				}
-				//symbol:   method DBV_MULTIPOINT2D_BOUNDINGBOX(
 			} else if (message.matches(": +method \"DBV_[A-Z_0-9]+")) {
 				String[] split = message.split("method \"");
 				split = split[1].split("\\(");
