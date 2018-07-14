@@ -38,6 +38,17 @@ public class H2MemoryDB extends H2DB {
 	 * Creates a DBDatabase instance for an H2 Memory database with the given JDBC
 	 * URL, user and password.
 	 *
+	 * - Database exceptions may be thrown
+	 *
+	 */
+	public H2MemoryDB() {
+		super();
+	}
+
+	/**
+	 * Creates a DBDatabase instance for an H2 Memory database with the given JDBC
+	 * URL, user and password.
+	 *
 	 *
 	 *
 	 *
@@ -87,6 +98,7 @@ public class H2MemoryDB extends H2DB {
 	 * @param username username
 	 * @param password password
 	 * @param dummy dummy
+	 * @throws java.sql.SQLException
 	 */
 	public H2MemoryDB(String databaseName, String username, String password, boolean dummy) throws SQLException {
 		super("jdbc:h2:mem:" + databaseName, username, password);
