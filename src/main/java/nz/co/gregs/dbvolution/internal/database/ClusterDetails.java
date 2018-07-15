@@ -166,7 +166,6 @@ public class ClusterDetails implements Serializable {
 	}
 
 	public DBDatabase getReadyDatabase() throws NoAvailableDatabaseException {
-		Random rand = new Random();
 		DBDatabase[] dbs = getReadyDatabases();
 		int tries = 0;
 		while (dbs.length < 1 && pausedDatabases.size() > 0 && tries <= 1000) {
@@ -178,6 +177,7 @@ public class ClusterDetails implements Serializable {
 			}
 			dbs = getReadyDatabases();
 		}
+		Random rand = new Random();
 		if (dbs.length > 0) {
 			final int randNumber = rand.nextInt(dbs.length);
 			DBDatabase randomElement = dbs[randNumber];
