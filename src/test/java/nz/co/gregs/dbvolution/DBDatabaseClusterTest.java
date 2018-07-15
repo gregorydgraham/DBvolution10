@@ -247,7 +247,7 @@ public class DBDatabaseClusterTest extends AbstractTest {
 		DBDatabaseCluster db = new DBDatabaseCluster();
 		try {
 			db = new DBDatabaseClusterWithConfigFile(yamlConfigFilename);
-		} catch (SQLException | IOException | SecurityException | IllegalArgumentException | ClassNotFoundException | NoSuchMethodException | InstantiationException | IllegalAccessException | InvocationTargetException ex) {
+		} catch (SecurityException | IllegalArgumentException | DBDatabaseClusterWithConfigFile.NoDatabaseConfigurationFound | DBDatabaseClusterWithConfigFile.UnableToCreateDatabaseCluster ex) {
 			Logger.getLogger(DBDatabaseClusterTest.class.getName()).log(Level.SEVERE, null, ex);
 		}
 		Assert.assertThat(db.getClusterStatus(), is("Active Databases: 0 of 0"));
@@ -290,7 +290,7 @@ public class DBDatabaseClusterTest extends AbstractTest {
 
 		try {
 			db = new DBDatabaseClusterWithConfigFile(yamlConfigFilename);
-		} catch (SQLException | IOException | SecurityException | IllegalArgumentException | ClassNotFoundException | NoSuchMethodException | InstantiationException | IllegalAccessException | InvocationTargetException ex) {
+		} catch (DBDatabaseClusterWithConfigFile.NoDatabaseConfigurationFound | DBDatabaseClusterWithConfigFile.UnableToCreateDatabaseCluster ex) {
 			Logger.getLogger(DBDatabaseClusterTest.class.getName()).log(Level.SEVERE, null, ex);
 		}
 		Assert.assertThat(db.getClusterStatus(), is("Active Databases: 2 of 2"));
