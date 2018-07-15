@@ -475,7 +475,7 @@
 						<version>2.18.1</version>
 						<configuration>
 							<systemPropertyVariables>
-                                <testClusteredDB>true</testClusteredDB>
+								<testClusteredDB>true</testClusteredDB>
 							</systemPropertyVariables>
 						</configuration>
 					</plugin>
@@ -492,8 +492,8 @@
 						<version>2.18.1</version>
 						<configuration>
 							<systemPropertyVariables>
-                                <testMySQL>true</testMySQL>
-                                <testClusteredDB>true</testClusteredDB>
+								<testMySQL>true</testMySQL>
+								<testClusteredDB>true</testClusteredDB>
 							</systemPropertyVariables>
 						</configuration>
 					</plugin>
@@ -510,7 +510,7 @@
 						<version>2.18.1</version>
 						<configuration>
 							<systemPropertyVariables>
-                                <testSmallCluster>true</testSmallCluster>
+								<testSmallCluster>true</testSmallCluster>
 							</systemPropertyVariables>
 						</configuration>
 					</plugin>
@@ -680,7 +680,7 @@
 				</plugins>
 			</build>
 		</profile>
-<!--		<profile>
+		<!--		<profile>
 			<id>JTDSSQLServerTest</id>
 			<build>
 				<plugins>
@@ -945,7 +945,17 @@
 			<groupId>org.reflections</groupId>
 			<artifactId>reflections</artifactId>
 			<version>0.9.11</version>
-			<type>jar</type>
+			<type>jar</type> 
+			<exclusions>
+				<exclusion>
+					<groupId>com.google.guava</groupId>
+					<artifactId>guava</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>com.google.code.findbugs</groupId>
+					<artifactId>annotations</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>commons-logging</groupId>
@@ -1037,28 +1047,28 @@
 			<artifactId>mssql-jdbc</artifactId>
 			<version>6.2.2.jre7</version>
 		</dependency>
-	 <dependency>
-	  <groupId>com.google.code.findbugs</groupId>
-	  <artifactId>annotations</artifactId>
-	  <version>3.0.1u2</version>
-	 </dependency>
-	 <dependency>
-	  <groupId>com.google.code.findbugs</groupId>
-	  <artifactId>jsr305</artifactId>
-	  <version>3.0.2</version>
-	 </dependency>
-	 <dependency>
-	  <groupId>com.fasterxml.jackson.dataformat</groupId>
-	  <artifactId>jackson-dataformat-yaml</artifactId>
-	  <version>2.9.6</version>
-	  <type>jar</type>
-	 </dependency>
-	 <dependency>
-	  <groupId>com.fasterxml.jackson.core</groupId>
-	  <artifactId>jackson-databind</artifactId>
-	  <version>2.9.6</version>
-	  <type>jar</type>
-	 </dependency>
+		<dependency>
+			<groupId>com.google.code.findbugs</groupId>
+			<artifactId>annotations</artifactId>
+			<version>3.0.1u2</version>
+		</dependency>
+		<dependency>
+			<groupId>com.google.code.findbugs</groupId>
+			<artifactId>jsr305</artifactId>
+			<version>3.0.2</version>
+		</dependency>
+		<dependency>
+			<groupId>com.fasterxml.jackson.dataformat</groupId>
+			<artifactId>jackson-dataformat-yaml</artifactId>
+			<version>2.9.6</version>
+			<type>jar</type>
+		</dependency>
+		<dependency>
+			<groupId>com.fasterxml.jackson.core</groupId>
+			<artifactId>jackson-databind</artifactId>
+			<version>2.9.6</version>
+			<type>jar</type>
+		</dependency>
 	</dependencies>
 	<distributionManagement>
 		<site>
