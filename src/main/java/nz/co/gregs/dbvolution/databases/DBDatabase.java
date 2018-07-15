@@ -1777,21 +1777,27 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 	 * @param jdbcURL the jdbcURL to set
 	 */
 	protected synchronized void setJdbcURL(String jdbcURL) {
-		this.jdbcURL = jdbcURL;
+		if (FREE_CONNECTIONS.isEmpty()) {
+			this.jdbcURL = jdbcURL;
+		}
 	}
 
 	/**
 	 * @param username the username to set
 	 */
 	protected synchronized void setUsername(String username) {
-		this.username = username;
+		if (FREE_CONNECTIONS.isEmpty()) {
+			this.username = username;
+		}
 	}
 
 	/**
 	 * @param password the password to set
 	 */
 	protected synchronized void setPassword(String password) {
-		this.password = password;
+		if (FREE_CONNECTIONS.isEmpty()) {
+			this.password = password;
+		}
 	}
 
 	/**
@@ -2035,25 +2041,27 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 				ResultSetMetaData metaData = resultSet.getMetaData();
 				List<PropertyWrapper> columnPropertyWrappers = table.getColumnPropertyWrappers();
 				for (PropertyWrapper columnPropertyWrapper : columnPropertyWrappers) {
-					if(!columnPropertyWrapper.hasColumnExpression()){
-					int columnCount = metaData.getColumnCount();
-					boolean foundColumn = false;
-					for (int i = 1; i <= columnCount && !foundColumn; i++) {
-						String columnName = definition.formatColumnName(metaData.getColumnName(i));
-						String formattedPropertyColumnName = definition.formatColumnName(columnPropertyWrapper.columnName());
-						
-						/*Postgres returns a lowercase column name in the meta data so use case-insensitive check*/
-						if (columnName.equalsIgnoreCase(formattedPropertyColumnName)) {
-							foundColumn = true;
+					if (!columnPropertyWrapper.hasColumnExpression()) {
+						int columnCount = metaData.getColumnCount();
+						boolean foundColumn = false;
+						for (int i = 1; i <= columnCount && !foundColumn; i++) {
+							String columnName = definition.formatColumnName(metaData.getColumnName(i));
+							String formattedPropertyColumnName = definition.formatColumnName(columnPropertyWrapper.columnName());
+
+							/*Postgres returns a lowercase column name in the meta data so use case-insensitive check*/
+							if (columnName.equalsIgnoreCase(formattedPropertyColumnName)) {
+								foundColumn = true;
+							}
+						}
+						if (!foundColumn) {
+							// We collect all the changes and process them later because SQLite doesn't like processing them imediately
+							newColumns.add(columnPropertyWrapper);
 						}
 					}
-					if (!foundColumn) {
-						// We collect all the changes and process them later because SQLite doesn't like processing them imediately
-						newColumns.add(columnPropertyWrapper);
-					}
-				}}
+				}
 			}
 		} catch (Exception ex) {
+			LOG.warn("Error occurred while adding columns to required table", ex);
 			// Theoretically this should only need to catch an SQLException 
 			// but databases throw allsorts of weird exceptions
 		}
