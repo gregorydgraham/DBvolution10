@@ -41,6 +41,8 @@ import java.nio.file.Paths;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.sql.SQLException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Creates a DBDatabaseCluster based on the information in yamlConfigFilename.
@@ -88,39 +90,48 @@ public class DBDatabaseClusterWithConfigFile extends DBDatabaseCluster {
 
 	private final String yamlConfigFilename;
 
-	public DBDatabaseClusterWithConfigFile(String yamlConfigFilename) throws SQLException, IOException, SecurityException, IllegalArgumentException, ClassNotFoundException, NoSuchMethodException, InstantiationException, IllegalAccessException, InvocationTargetException {
+	public DBDatabaseClusterWithConfigFile(String yamlConfigFilename) throws NoDatabaseConfigurationFound, UnableToCreateDatabaseCluster {
 		super();
 		this.yamlConfigFilename = yamlConfigFilename;
 		findDatabaseConfigurationAndApply(yamlConfigFilename);
 	}
 
-	public void reloadConfiguration() throws IOException, SQLException, SecurityException, IllegalArgumentException, ClassNotFoundException, NoSuchMethodException, InstantiationException, IllegalAccessException, InvocationTargetException {
+	public void reloadConfiguration() throws NoDatabaseConfigurationFound, UnableToCreateDatabaseCluster {
 		this.removeDatabases(details.getAllDatabases());
 		findDatabaseConfigurationAndApply(yamlConfigFilename);
 	}
 
-	private void findDatabaseConfigurationAndApply(String yamlConfigFilename) throws IOException, SQLException, SecurityException, IllegalArgumentException, ClassNotFoundException, NoSuchMethodException, InstantiationException, IllegalAccessException, InvocationTargetException {
-		final DefaultConfigFinder finder = new DefaultConfigFinder(yamlConfigFilename);
-		Files.walkFileTree(Paths.get("."), finder);
-		if (finder.configPath != null) {
-			Path filePath = finder.configPath;
-			File file = filePath.toFile();
-
-			final YAMLFactory yamlFactory = new YAMLFactory();
-			YAMLParser parser = yamlFactory.createParser(file);
-			ObjectMapper mapper = new ObjectMapper(yamlFactory);
-			DBDataSource[] dbs = mapper.readValue(parser, DBDataSource[].class);
-
-			for (DBDataSource db : dbs) {
-
-				DBDatabase database = db.createDBDatabase();
-
-				if (database != null) {
-					System.out.println("Adding Database: " + db.dbDatabase + ":" + db.url + ":" + db.username);
-					this.addDatabaseAndWait(database);
+	private void findDatabaseConfigurationAndApply(String yamlConfigFilename) throws NoDatabaseConfigurationFound, UnableToCreateDatabaseCluster {
+		try {
+			final DefaultConfigFinder finder = new DefaultConfigFinder(yamlConfigFilename);
+			Files.walkFileTree(Paths.get("."), finder);
+			if (finder.configPath != null) {
+				Path filePath = finder.configPath;
+				File file = filePath.toFile();
+				
+				final YAMLFactory yamlFactory = new YAMLFactory();
+				YAMLParser parser = yamlFactory.createParser(file);
+				ObjectMapper mapper = new ObjectMapper(yamlFactory);
+				DBDataSource[] dbs = mapper.readValue(parser, DBDataSource[].class);
+				
+				if (dbs.length == 0) {
+					throw new NoDatabaseConfigurationFound(yamlConfigFilename);
+				} else {
+					for (DBDataSource db : dbs) {
+						
+						DBDatabase database = db.createDBDatabase();
+						
+						if (database != null) {
+							LOG.info("Adding Database: " + db.dbDatabase + ":" + db.url + ":" + db.username);
+							this.addDatabaseAndWait(database);
+						}
+					}
 				}
+				LOG.info("Completed Database");
 			}
-			System.out.println("Completed Database");
+		} catch (IOException|ClassNotFoundException|NoSuchMethodException|SecurityException |InstantiationException|IllegalAccessException|IllegalArgumentException |InvocationTargetException | SQLException ex) {
+			Logger.getLogger(DBDatabaseClusterWithConfigFile.class.getName()).log(Level.SEVERE, null, ex);
+			throw new UnableToCreateDatabaseCluster(ex);
 		}
 	}
 
@@ -242,6 +253,20 @@ public class DBDatabaseClusterWithConfigFile extends DBDatabaseCluster {
 		 */
 		public void setPassword(String password) {
 			this.password = password;
+		}
+	}
+
+	public static class NoDatabaseConfigurationFound extends Exception {
+
+		private NoDatabaseConfigurationFound(String yamlConfigFilename) {
+			super("No DBDatabase Configuration File named \""+yamlConfigFilename+"\" was found in the filesystem: check the filname and ensure that the location is accessible from \".\""+(Paths.get(".").toAbsolutePath()));
+		}
+	}
+
+	public static class UnableToCreateDatabaseCluster extends Exception {
+
+		public UnableToCreateDatabaseCluster(Exception ex) {
+			super("Unable Create DBDatabaseCluster Due To Exception",ex);
 		}
 	}
 }
