@@ -176,6 +176,14 @@ public class DBDatabaseClusterWithConfigFile extends DBDatabaseCluster {
 		public FileVisitResult visitFileFailed(Path file, IOException exc) {
 			return FileVisitResult.CONTINUE;
 		}
+
+		@Override
+		public FileVisitResult postVisitDirectory(Path dir, IOException exc) throws IOException {
+			if (configPath==null){
+				LOG.debug("Unable To Find Config File In: "+dir.toAbsolutePath().toString());
+			}
+			return super.postVisitDirectory(dir, exc);
+		}
 	}
 
 	public static class DBDataSource {
