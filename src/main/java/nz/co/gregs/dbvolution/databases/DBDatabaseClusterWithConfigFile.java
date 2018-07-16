@@ -180,7 +180,7 @@ public class DBDatabaseClusterWithConfigFile extends DBDatabaseCluster {
 		@Override
 		public FileVisitResult postVisitDirectory(Path dir, IOException exc) throws IOException {
 			if (configPath==null){
-				LOG.debug("Unable To Find Config File In: "+dir.toAbsolutePath().toString());
+				LOG.debug("Unable To Find Database Cluster Config File In: "+dir.toAbsolutePath().toString());
 			}
 			return super.postVisitDirectory(dir, exc);
 		}
