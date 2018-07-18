@@ -117,6 +117,12 @@ public class DBQuery implements Serializable {
 		blankResults();
 	}
 
+	/**
+	 * Don't use this, it's for DBDatabase
+	 * @param database
+	 * @param examples
+	 * @return 
+	*/
 	public static DBQuery getInstance(DBDatabase database, DBRow... examples) {
 		DBQuery dbQuery = new DBQuery(database);
 		for (DBRow example : examples) {
