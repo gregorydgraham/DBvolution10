@@ -197,7 +197,12 @@ public class DBRecursiveQuery<T extends DBRow> {
 		this.queryDetails.setRecursiveQueryDirection(RecursiveSQLDirection.TOWARDS_ROOT);
 		List<DBQueryRow> ancestors = this.getRowsFromRecursiveQuery(queryDetails);
 		for (DBQueryRow ancestor : ancestors) {
-			resultsList.add(ancestor.get(getReturnType(queryDetails)));
+			final T got = ancestor.get(getReturnType(queryDetails));
+			// loop protection, doesn't protect against it breaking in SQL but if you got here you're a little safer
+			if (resultsList.contains(got)) {
+				break;
+			}
+			resultsList.add(got);
 		}
 		return resultsList;
 	}
@@ -363,7 +368,7 @@ public class DBRecursiveQuery<T extends DBRow> {
 	}
 
 	private synchronized List<DBQueryRow> getRowsFromRecursiveQuery(RecursiveQueryDetails<T> queryDetails) throws SQLException {
-		if(queryDetails.needsResults(queryDetails.getOptions())){
+		if (queryDetails.needsResults(queryDetails.getOptions())) {
 			queryDetails.getOriginalQuery().getDatabase().executeDBQuery(queryDetails);
 		}
 		return queryDetails.getResults();
