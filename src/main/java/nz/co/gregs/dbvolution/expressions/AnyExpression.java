@@ -89,11 +89,11 @@ public abstract class AnyExpression<B extends Object, R extends AnyResult<B>, D 
 	@Override
 	public Set<DBRow> getTablesInvolved() {
 		final AnyResult<?> inner = getInnerResult();
-		if (inner == null) {
-			return new HashSet<DBRow>(0);
-		} else {
-			return inner.getTablesInvolved();
+		Set<DBRow> result = new HashSet<DBRow>(0);
+		if (inner != null) {
+			result = inner.getTablesInvolved();
 		}
+		return result;
 	}
 
 	@Override
