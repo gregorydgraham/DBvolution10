@@ -1033,10 +1033,18 @@ public abstract class DBDefinition {
 		if (sortOrder == null) {
 			return "";
 		} else if (sortOrder) {
-			return " ASC ";
+			return getOrderByAscending();
 		} else {
-			return " DESC ";
+			return getOrderByDescending();
 		}
+	}
+
+	public static String getOrderByDescending() {
+		return " DESC ";
+	}
+
+	public static String getOrderByAscending() {
+		return " ASC ";
 	}
 
 	/**
