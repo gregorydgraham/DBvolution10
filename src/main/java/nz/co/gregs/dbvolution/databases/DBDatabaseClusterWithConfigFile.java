@@ -88,6 +88,8 @@ import java.util.logging.Logger;
  */
 public class DBDatabaseClusterWithConfigFile extends DBDatabaseCluster {
 
+	static final long serialVersionUID = 1L;
+
 	private final String yamlConfigFilename;
 
 	public DBDatabaseClusterWithConfigFile(String yamlConfigFilename) throws NoDatabaseConfigurationFound, UnableToCreateDatabaseCluster {
@@ -108,19 +110,19 @@ public class DBDatabaseClusterWithConfigFile extends DBDatabaseCluster {
 			if (finder.configPath != null) {
 				Path filePath = finder.configPath;
 				File file = filePath.toFile();
-				
+
 				final YAMLFactory yamlFactory = new YAMLFactory();
 				YAMLParser parser = yamlFactory.createParser(file);
 				ObjectMapper mapper = new ObjectMapper(yamlFactory);
 				DBDataSource[] dbs = mapper.readValue(parser, DBDataSource[].class);
-				
+
 				if (dbs.length == 0) {
 					throw new NoDatabaseConfigurationFound(yamlConfigFilename);
 				} else {
 					for (DBDataSource db : dbs) {
-						
+
 						DBDatabase database = db.createDBDatabase();
-						
+
 						if (database != null) {
 							LOG.info("Adding Database: " + db.dbDatabase + ":" + db.url + ":" + db.username);
 							this.addDatabaseAndWait(database);
@@ -129,7 +131,7 @@ public class DBDatabaseClusterWithConfigFile extends DBDatabaseCluster {
 				}
 				LOG.info("Completed Database");
 			}
-		} catch (IOException|ClassNotFoundException|NoSuchMethodException|SecurityException |InstantiationException|IllegalAccessException|IllegalArgumentException |InvocationTargetException | SQLException ex) {
+		} catch (IOException | ClassNotFoundException | NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException | SQLException ex) {
 			Logger.getLogger(DBDatabaseClusterWithConfigFile.class.getName()).log(Level.SEVERE, null, ex);
 			throw new UnableToCreateDatabaseCluster(ex);
 		}
@@ -179,8 +181,8 @@ public class DBDatabaseClusterWithConfigFile extends DBDatabaseCluster {
 
 		@Override
 		public FileVisitResult postVisitDirectory(Path dir, IOException exc) throws IOException {
-			if (configPath==null){
-				LOG.debug("Unable To Find Database Cluster Config File In: "+dir.toAbsolutePath().toString());
+			if (configPath == null) {
+				LOG.debug("Unable To Find Database Cluster Config File In: " + dir.toAbsolutePath().toString());
 			}
 			return super.postVisitDirectory(dir, exc);
 		}
@@ -266,15 +268,19 @@ public class DBDatabaseClusterWithConfigFile extends DBDatabaseCluster {
 
 	public static class NoDatabaseConfigurationFound extends Exception {
 
+		static final long serialVersionUID = 1L;
+
 		private NoDatabaseConfigurationFound(String yamlConfigFilename) {
-			super("No DBDatabase Configuration File named \""+yamlConfigFilename+"\" was found in the filesystem: check the filname and ensure that the location is accessible from \".\""+(Paths.get(".").toAbsolutePath()));
+			super("No DBDatabase Configuration File named \"" + yamlConfigFilename + "\" was found in the filesystem: check the filname and ensure that the location is accessible from \".\"" + (Paths.get(".").toAbsolutePath()));
 		}
 	}
 
 	public static class UnableToCreateDatabaseCluster extends Exception {
 
+		static final long serialVersionUID = 1L;
+
 		public UnableToCreateDatabaseCluster(Exception ex) {
-			super("Unable Create DBDatabaseCluster Due To Exception",ex);
+			super("Unable Create DBDatabaseCluster Due To Exception", ex);
 		}
 	}
 }
