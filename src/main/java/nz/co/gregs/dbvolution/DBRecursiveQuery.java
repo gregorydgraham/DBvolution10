@@ -198,10 +198,6 @@ public class DBRecursiveQuery<T extends DBRow> {
 		List<DBQueryRow> ancestors = this.getRowsFromRecursiveQuery(queryDetails);
 		for (DBQueryRow ancestor : ancestors) {
 			final T got = ancestor.get(getReturnType(queryDetails));
-			// loop protection, doesn't protect against it breaking in SQL but if you got here you're a little safer
-			if (resultsList.contains(got)) {
-				break;
-			}
 			resultsList.add(got);
 		}
 		return resultsList;
