@@ -82,9 +82,43 @@ public class SortingTest extends AbstractTest {
 		Assert.assertThat(sortedMarques.get(1).name.toString(), is("CHRYSLER"));
 		Assert.assertThat(sortedMarques.get(2).name.toString(), is("DAEWOO"));
 		Assert.assertThat(sortedMarques.get(3).name.toString(), is("DAIHATSU"));
+		
 		marque.name.setSortOrderDescending();
-
 		sortedMarques = query.getAllInstancesOf(marque);
+		Assert.assertThat(sortedMarques.size(), is(22));
+		Assert.assertThat(sortedMarques.get(0).name.toString(), is("VW"));
+		Assert.assertThat(sortedMarques.get(1).name.toString(), is("VOLVO"));
+		Assert.assertThat(sortedMarques.get(2).name.toString(), is("TOYOTA"));
+		Assert.assertThat(sortedMarques.get(3).name.toString(), is("SUZUKI"));
+	}
+
+	@Test
+	public void sortingDBQueryUsingExpressions() throws SQLException {
+		database.setPrintSQLBeforeExecuting(true);
+		final Marque marque = new Marque();
+		final CarCompany carCo = new CarCompany();
+		DBQuery query = database.getDBQuery(marque, carCo);
+		query.setBlankQueryAllowed(true);
+
+		query.setSortOrder(marque.column(marque.carCompany).times(2).ascending(), marque.column(marque.name).substring(0, 3).ascending());
+		List<Marque> sortedMarques = query.getAllInstancesOf(marque);
+		Assert.assertThat(sortedMarques.size(), is(22));
+		Assert.assertThat(sortedMarques.get(0).name.toString(), is("HYUNDAI"));
+		Assert.assertThat(sortedMarques.get(1).name.toString(), is("TOYOTA"));
+		Assert.assertThat(sortedMarques.get(2).name.toString(), is("FORD"));
+		Assert.assertThat(sortedMarques.get(3).name.toString(), is("HOLDEN"));
+		
+		query.setSortOrder(marque.column(marque.name).substring(0, 3).ascending());
+		sortedMarques = query.getAllInstancesOf(marque);
+		Assert.assertThat(sortedMarques.size(), is(22));
+		Assert.assertThat(sortedMarques.get(0).name.toString(), is("BMW"));
+		Assert.assertThat(sortedMarques.get(1).name.toString(), is("CHRYSLER"));
+		Assert.assertThat(sortedMarques.get(2).name.toString(), is("DAEWOO"));
+		Assert.assertThat(sortedMarques.get(3).name.toString(), is("DAIHATSU"));
+		
+		query.setSortOrder(marque.column(marque.name).substring(0, 3).descending());
+		sortedMarques = query.getAllInstancesOf(marque);
+		database.print(sortedMarques);
 		Assert.assertThat(sortedMarques.size(), is(22));
 		Assert.assertThat(sortedMarques.get(0).name.toString(), is("VW"));
 		Assert.assertThat(sortedMarques.get(1).name.toString(), is("VOLVO"));
