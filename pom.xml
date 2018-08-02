@@ -947,10 +947,10 @@
 			<version>0.9.11</version>
 			<type>jar</type> 
 			<exclusions>
-				<exclusion>
+<!--				<exclusion>
 					<groupId>com.google.guava</groupId>
 					<artifactId>guava</artifactId>
-				</exclusion>
+				</exclusion>-->
 				<exclusion>
 					<groupId>com.google.code.findbugs</groupId>
 					<artifactId>annotations</artifactId>
@@ -1036,7 +1036,19 @@
 			<groupId>com.github.mpkorstanje</groupId>
 			<artifactId>simmetrics-core</artifactId>
 			<version>4.1.1</version>
+			<exclusions>
+				<exclusion>
+					<groupId>com.google.guava</groupId>
+					<artifactId>guava</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
+<!--		<dependency>
+			 Needed by simmetrics-core but needs to be >20 for everything else to work
+			<groupId>com.google.guava</groupId>
+			<artifactId>guava</artifactId>
+			<version>20.0</version>
+		</dependency>-->
 		<dependency>
 			<groupId>net.sourceforge.jtds</groupId>
 			<artifactId>jtds</artifactId>
