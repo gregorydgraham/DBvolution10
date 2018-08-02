@@ -27,7 +27,6 @@ import static org.hamcrest.Matchers.*;
 import nz.co.gregs.dbvolution.example.*;
 import nz.co.gregs.dbvolution.exceptions.AccidentalBlankQueryException;
 import nz.co.gregs.dbvolution.generic.AbstractTest;
-import org.hamcrest.core.IsNull;
 
 /**
  *
@@ -156,7 +155,9 @@ public class FindDistinctDBRowColumnValuesTest extends AbstractTest {
 						)
 				);
 			}
-			foundStrings.add((val.toString()));
+			if (val != null) {
+				foundStrings.add((val.toString()));
+			}
 		}
 		if (database.getDefinition().supportsDifferenceBetweenNullAndEmptyString()) {
 			Assert.assertThat(distinctValuesForColumn.size(), is(3));

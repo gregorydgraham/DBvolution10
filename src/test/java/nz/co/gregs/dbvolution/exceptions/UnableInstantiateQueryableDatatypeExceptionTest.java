@@ -18,7 +18,6 @@ package nz.co.gregs.dbvolution.exceptions;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import nz.co.gregs.dbvolution.columns.ColumnProvider;
-import nz.co.gregs.dbvolution.databases.DBDatabase;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 import nz.co.gregs.dbvolution.query.RowDefinition;

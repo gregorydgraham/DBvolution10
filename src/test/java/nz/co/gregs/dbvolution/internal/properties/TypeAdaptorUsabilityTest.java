@@ -8,6 +8,7 @@ import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.annotations.DBAdaptType;
 import nz.co.gregs.dbvolution.annotations.DBColumn;
 import nz.co.gregs.dbvolution.annotations.DBTableName;
+import nz.co.gregs.dbvolution.columns.ColumnProvider;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.datatypes.DBDate;
 import nz.co.gregs.dbvolution.datatypes.DBInteger;
@@ -270,7 +271,7 @@ public class TypeAdaptorUsabilityTest {
 			}
 
 			@Override
-			public nz.co.gregs.dbvolution.columns.ColumnProvider getColumn(RowDefinition row) throws nz.co.gregs.dbvolution.exceptions.IncorrectRowProviderInstanceSuppliedException {
+			public ColumnProvider getColumn(RowDefinition row) throws nz.co.gregs.dbvolution.exceptions.IncorrectRowProviderInstanceSuppliedException {
 				throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 			}
 		}
@@ -343,7 +344,7 @@ public class TypeAdaptorUsabilityTest {
 			}
 
 			@Override
-			public nz.co.gregs.dbvolution.columns.ColumnProvider getColumn(RowDefinition row) throws nz.co.gregs.dbvolution.exceptions.IncorrectRowProviderInstanceSuppliedException {
+			public ColumnProvider getColumn(RowDefinition row) throws nz.co.gregs.dbvolution.exceptions.IncorrectRowProviderInstanceSuppliedException {
 				throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 			}
 		}
