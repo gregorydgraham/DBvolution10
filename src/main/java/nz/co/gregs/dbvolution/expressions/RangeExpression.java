@@ -315,7 +315,7 @@ public abstract class RangeExpression<B, R extends RangeResult<B>, D extends Que
 			inputExpressionQDT.setSortOrderDescending();
 			pkQDT.setSortOrderDescending();
 
-			dbQuery.setSortOrder(t1ValueColumn, pkColumn);
+			dbQuery.setSortOrder(t1ValueColumn.getSortProvider(), pkColumn.getSortProvider());
 			dbQuery.setReturnFields(t1CounterColumn, t1ValueColumn, pkColumn);
 
 			String sql = "(" + dbQuery.getSQLForQuery().replaceAll("; *$", "") + ") " + getFirstTableModeName(defn);

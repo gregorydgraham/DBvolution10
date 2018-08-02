@@ -19,7 +19,6 @@ import nz.co.gregs.dbvolution.actions.DBQueryable;
 import nz.co.gregs.dbvolution.annotations.*;
 import nz.co.gregs.dbvolution.columns.AbstractColumn;
 import nz.co.gregs.dbvolution.columns.ColumnProvider;
-import nz.co.gregs.dbvolution.columns.IntegerColumn;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.datatypes.*;
 import nz.co.gregs.dbvolution.exceptions.AccidentalCartesianJoinException;
@@ -557,17 +556,17 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 		if (op != null) {
 			if (column instanceof DBExpression) {
 				DBExpression requiredExpression = (DBExpression) column;
-				if (qdt.hasColumnExpression()) {
-					DBExpression[] columnExpression = qdt.getColumnExpression();
-					String sep = "";
-					for (DBExpression dBExpression : columnExpression) {
-						whereClause.append(sep).append(op.generateWhereExpression(db, dBExpression).toSQLString(db));
-						sep = db.beginAndLine();
-					}
-				} else {
-					whereClause = new StringBuilder(op.generateWhereExpression(db, requiredExpression).toSQLString(db));
+			if (qdt.hasColumnExpression()) {
+				DBExpression[] columnExpression = qdt.getColumnExpression();
+				String sep = "";
+				for (DBExpression dBExpression : columnExpression) {
+					whereClause.append(sep).append(op.generateWhereExpression(db, dBExpression).toSQLString(db));
+					sep = db.beginAndLine();
 				}
+			} else {
+				whereClause = new StringBuilder(op.generateWhereExpression(db, requiredExpression).toSQLString(db));
 			}
+		}
 		}
 		return whereClause.toString();
 	}
@@ -1637,7 +1636,7 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 		final ColumnProvider columnProvider = this.column(thisQDT);
 		DBExpression expr = columnProvider.getColumn().asExpression();
 		DBQuery dbQuery = database.getDBQuery(this).addGroupByColumn(this, expr);
-		dbQuery.setSortOrder(columnProvider);
+		dbQuery.setSortOrder(columnProvider.getSortProvider());
 		dbQuery.setBlankQueryAllowed(true);
 		List<DBQueryRow> allRows = dbQuery.getAllRows();
 		for (DBQueryRow row : allRows) {

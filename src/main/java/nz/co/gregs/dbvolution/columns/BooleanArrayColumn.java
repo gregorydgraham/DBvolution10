@@ -21,6 +21,7 @@ import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.datatypes.DBBooleanArray;
 import nz.co.gregs.dbvolution.expressions.BooleanArrayExpression;
 import nz.co.gregs.dbvolution.expressions.BooleanExpression;
+import nz.co.gregs.dbvolution.expressions.SortProvider;
 import nz.co.gregs.dbvolution.query.RowDefinition;
 
 /**
@@ -120,5 +121,10 @@ public class BooleanArrayColumn extends BooleanArrayExpression implements Column
 	 */
 	public BooleanExpression is(DBBooleanArray boolArrayColumn) {
 		return super.is(boolArrayColumn);
+	}
+
+	@Override
+	public SortProvider.Column getSortProvider() {
+		return column.getSortProvider();
 	}
 }

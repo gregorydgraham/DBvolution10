@@ -31,6 +31,7 @@ package nz.co.gregs.dbvolution.columns;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.datatypes.DBUntypedValue;
+import nz.co.gregs.dbvolution.expressions.SortProvider;
 import nz.co.gregs.dbvolution.expressions.UntypedExpression;
 import nz.co.gregs.dbvolution.query.RowDefinition;
 
@@ -89,6 +90,11 @@ public class UntypedColumn extends UntypedExpression implements ColumnProvider {
 	@Override
 	public String toSQLString(DBDefinition db) {
 		return column.toSQLString(db);
+	}
+
+	@Override
+	public SortProvider.Column getSortProvider() {
+		return column.getSortProvider();
 	}
 
 }

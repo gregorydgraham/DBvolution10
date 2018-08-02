@@ -100,7 +100,7 @@ public class AbstractQueryColumn extends AbstractColumn {
 	 */
 	@Override
 	public PropertyWrapper getPropertyWrapper() {
-		throw new RuntimeException("AbstractQqueryColumn has no PropertyWrapper to return");
+		throw new RuntimeException("AbstractQueryColumn has no PropertyWrapper to return");
 	}
 
 	/**
@@ -254,5 +254,10 @@ public class AbstractQueryColumn extends AbstractColumn {
 	@Override
 	public Class<? extends DBRow> getClassReferencedByForeignKey() {
 		throw new RuntimeException("AbstractQueryColumn.getClassReferencedByForeignKey: does not have connect to a DBRow");
+	}
+
+	@Override
+	public boolean getSortDirection() {
+		return field.getSortOrder();
 	}
 }

@@ -119,10 +119,11 @@ public class DBQuery implements Serializable {
 
 	/**
 	 * Don't use this, it's for DBDatabase
+	 *
 	 * @param database
 	 * @param examples
-	 * @return 
-	*/
+	 * @return
+	 */
 	public static DBQuery getInstance(DBDatabase database, DBRow... examples) {
 		DBQuery dbQuery = new DBQuery(database);
 		for (DBRow example : examples) {
@@ -786,6 +787,38 @@ public class DBQuery implements Serializable {
 	 * For example the following code snippet will sort by just the name column:
 	 * <pre>
 	 * Customer customer = ...;
+	 * query.setSortOrder(customer.column(customer.name).getSortProvider());
+	 * </pre>
+	 * <p>
+	 * The following code snippet will sort by just the length of the name column:
+	 * <pre>
+	 * Customer customer = ...;
+	 * query.setSortOrder(customer.column(customer.name).length().ascending());
+	 * </pre>
+	 *
+	 * <p>
+	 * Where possible DBvolution sorts NULL values as the least significant value,
+	 * for example "NULL, 1, 2, 3, 4..." not "... 4, 5, 6, NULL".
+	 *
+	 * @param sortColumns a list of sort providers to sort the query by.
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @return this DBQuery instance
+	 */
+	public DBQuery setSortOrder(SortProvider... sortColumns) {
+		blankResults();
+		details.setSortOrder(sortColumns);
+		return this;
+	}
+
+	/**
+	 * Sets the sort order of properties (field and/or method) by the given
+	 * property object references.
+	 *
+	 * <p>
+	 * For example the following code snippet will sort by just the name column:
+	 * <pre>
+	 * Customer customer = ...;
 	 * query.setSortOrder(customer.column(customer.name));
 	 * </pre>
 	 *
@@ -793,76 +826,45 @@ public class DBQuery implements Serializable {
 	 * Where possible DBvolution sorts NULL values as the least significant value,
 	 * for example "NULL, 1, 2, 3, 4..." not "... 4, 5, 6, NULL".
 	 *
-	 * @param sortColumns a list of columns to sort the query by.
+	 * @param columns a list of columns to sort the query by.
 	 * <p style="color: #F90;">Support DBvolution at
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return this DBQuery instance
 	 */
-	public DBQuery setSortOrder(ColumnProvider... sortColumns) {
-		blankResults();
-		details.setSortOrder(sortColumns);
-		return this;
-	}
-
-	/**
-	 * Adds the properties (field and/or method) to the end of the sort order.
-	 *
-	 * <p>
-	 * For example the following code snippet will add the name column at the end
-	 * of the sort order after district:
-	 * <pre>
-	 * Customer customer = ...;
-	 * query.setSortOrder(customer.column(customer.district));
-	 * query.addToSortOrder(customer.column(customer.name));
-	 * </pre>
-	 *
-	 * <p>
-	 * Note that the above example is equivalent to:
-	 * <pre>
-	 * Customer customer = ...;
-	 * query.setSortOrder(customer.column(customer.district), customer.column(customer.name));
-	 * </pre>
-	 *
-	 * @param sortColumns a list of columns to sort the query by.
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 * @return this DBQuery instance
-	 */
-	public DBQuery addToSortOrder(ColumnProvider... sortColumns) {
-		details.addToSortOrder(sortColumns);
-		return this;
-	}
-
-	/**
-	 * Adds the properties (field and/or method) to the end of the sort order.
-	 *
-	 * <p>
-	 * For example the following code snippet will add the name column at the end
-	 * of the sort order after district:
-	 * <pre>
-	 * Customer customer = ...;
-	 * query.setSortOrder(customer.column(customer.district));
-	 * query.addToSortOrder(customer.column(customer.name));
-	 * </pre>
-	 *
-	 * <p>
-	 * Note that the above example is equivalent to:
-	 * <pre>
-	 * Customer customer = ...;
-	 * query.setSortOrder(customer.column(customer.district), customer.column(customer.name));
-	 * </pre>
-	 *
-	 * @param sortColumns a list of columns to sort the query by.
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 * @return this DBQuery instance
-	 */
-	public DBQuery addToSortOrder(DBExpression... sortColumns) {
-		for (DBExpression dBExpression : sortColumns) {
-			if (dBExpression instanceof ColumnProvider) {
-				this.addToSortOrder((ColumnProvider) dBExpression);
-			}
+	public DBQuery setSortOrder(ColumnProvider... columns) {
+		List<SortProvider> results = new ArrayList<SortProvider>();
+		for (ColumnProvider column : columns) {
+			results.add(column.getSortProvider());
 		}
+		return setSortOrder(results.toArray(new SortProvider[]{}));
+	}
+
+	/**
+	 * Adds the properties (field and/or method) to the end of the sort order.
+	 *
+	 * <p>
+	 * For example the following code snippet will add the name column at the end
+	 * of the sort order after district:
+	 * <pre>
+	 * Customer customer = ...;
+	 * query.setSortOrder(customer.column(customer.district));
+	 * query.addToSortOrder(customer.column(customer.name));
+	 * </pre>
+	 *
+	 * <p>
+	 * Note that the above example is equivalent to:
+	 * <pre>
+	 * Customer customer = ...;
+	 * query.setSortOrder(customer.column(customer.district), customer.column(customer.name));
+	 * </pre>
+	 *
+	 * @param sortColumns a list of columns to sort the query by.
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @return this DBQuery instance
+	 */
+	public DBQuery addToSortOrder(SortProvider... sortColumns) {
+		details.addToSortOrder(sortColumns);
 		return this;
 	}
 
@@ -2003,7 +2005,7 @@ public class DBQuery implements Serializable {
 					fieldRow.addReturnFields(thisQDT);
 					distinctQuery.setBlankQueryAllowed(true);
 					final ColumnProvider column = fieldRow.column(fieldDefn.getQueryableDatatype(fieldRow));
-					distinctQuery.addToSortOrder(column);
+					distinctQuery.addToSortOrder(column.getSortProvider());
 					distinctQuery.addGroupByColumn(fieldRow, column.getColumn().asExpression());
 					returnList = distinctQuery.getAllRows();
 				} else {
@@ -2263,17 +2265,17 @@ public class DBQuery implements Serializable {
 //				qc.setReturnField(true);
 			} else {
 				final AbstractColumn column = provider.getColumn();
-				DBRow table = column.getInstanceOfRow();
-				final DBRowClass tableClass = new DBRowClass(table);
-				for (DBRow allQueryTable : allQueryTables) {
-					final DBRowClass queryTableClass = new DBRowClass(allQueryTable);
-					if (queryTableClass.equals(tableClass)) {
-						Object appropriateFieldFromRow = column.getAppropriateFieldFromRow(allQueryTable);
-						allQueryTable.addReturnFields(appropriateFieldFromRow);
+					DBRow table = column.getInstanceOfRow();
+					final DBRowClass tableClass = new DBRowClass(table);
+					for (DBRow allQueryTable : allQueryTables) {
+						final DBRowClass queryTableClass = new DBRowClass(allQueryTable);
+						if (queryTableClass.equals(tableClass)) {
+							Object appropriateFieldFromRow = column.getAppropriateFieldFromRow(allQueryTable);
+							allQueryTable.addReturnFields(appropriateFieldFromRow);
+						}
 					}
 				}
 			}
-		}
 		return this;
 	}
 

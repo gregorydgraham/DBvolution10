@@ -339,7 +339,7 @@ public abstract class EqualExpression<B, R extends EqualResult<B>, D extends Que
 					.setReturnFieldsToNone()
 					.addExpressionColumn(this, expr.asExpressionColumn())
 					.addExpressionColumn("mode count", count)
-					.setSortOrder(query.column(count))
+					.setSortOrder(query.column(count).descending())
 					.setRowLimit(1);
 			String tableAliasForObject = getInternalTableName(database);
 
@@ -453,7 +453,7 @@ public abstract class EqualExpression<B, R extends EqualResult<B>, D extends Que
 					.setReturnFieldsToNone()
 					.addExpressionColumn(MODE1KEY, mode1)
 					.addExpressionColumn(COUNTER1KEY, count1)
-					.setSortOrder(query1.column(count1))
+					.setSortOrder(query1.column(count1).descending())
 					.setRowLimit(1);
 
 			DBQuery query2 = database.getDBQuery(tablesToUse);
@@ -462,7 +462,7 @@ public abstract class EqualExpression<B, R extends EqualResult<B>, D extends Que
 					.setReturnFieldsToNone()
 					.addExpressionColumn(MODE2KEY, mode2)
 					.addExpressionColumn(COUNTER2KEY, count2)
-					.setSortOrder(query2.column(count2))
+					.setSortOrder(query2.column(count2).descending())
 					.setRowLimit(1)
 					.setPageRequired(1);
 			final boolean useANSISyntax = query1.getQueryDetails().getOptions().isUseANSISyntax();

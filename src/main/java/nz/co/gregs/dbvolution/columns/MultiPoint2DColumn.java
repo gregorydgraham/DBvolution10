@@ -21,6 +21,7 @@ import java.util.Set;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.datatypes.spatial2D.DBMultiPoint2D;
+import nz.co.gregs.dbvolution.expressions.SortProvider;
 import nz.co.gregs.dbvolution.expressions.spatial2D.MultiPoint2DExpression;
 import nz.co.gregs.dbvolution.query.RowDefinition;
 
@@ -105,6 +106,11 @@ public class MultiPoint2DColumn extends MultiPoint2DExpression implements Column
 		final DBRow row = col.getInstanceOfRow();
 		MultiPoint2DColumn newInstance = new MultiPoint2DColumn(row, (DBMultiPoint2D) col.getAppropriateQDTFromRow(row));
 		return newInstance;
+	}
+
+	@Override
+	public SortProvider.Column getSortProvider() {
+		return column.getSortProvider();
 	}
 
 }

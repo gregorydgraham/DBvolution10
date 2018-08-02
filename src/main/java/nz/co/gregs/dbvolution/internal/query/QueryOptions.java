@@ -17,8 +17,8 @@ package nz.co.gregs.dbvolution.internal.query;
 
 import java.io.Serializable;
 import java.util.Arrays;
-import nz.co.gregs.dbvolution.columns.ColumnProvider;
 import nz.co.gregs.dbvolution.databases.DBDatabase;
+import nz.co.gregs.dbvolution.expressions.SortProvider;
 
 /**
  *
@@ -34,7 +34,7 @@ public class QueryOptions  implements Serializable{
 	private boolean matchAll = true;
 	private int rowLimit = -1;
 	private int pageIndex = 0;
-	private ColumnProvider[] sortColumns = new ColumnProvider[]{};
+	private SortProvider[] sortColumns = new SortProvider[]{};
 	private boolean blankQueryAllowed = false;
 	private boolean cartesianJoinAllowed = false;
 	private boolean useANSISyntax = true;
@@ -131,14 +131,14 @@ public class QueryOptions  implements Serializable{
 	 *
 	 * @return the sortColumns
 	 */
-	public ColumnProvider[] getSortColumns() {
+	public SortProvider[] getSortColumns() {
 		return Arrays.copyOf(sortColumns, sortColumns.length);
 	}
 
 	/**
 	 * @param sortColumns the sortColumns to set
 	 */
-	public final void setSortColumns(ColumnProvider[] sortColumns) {
+	public final void setSortColumns(SortProvider[] sortColumns) {
 		this.sortColumns = Arrays.copyOf(sortColumns, sortColumns.length);
 	}
 

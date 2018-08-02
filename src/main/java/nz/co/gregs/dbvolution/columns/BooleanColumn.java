@@ -20,6 +20,7 @@ import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.datatypes.DBBoolean;
 import nz.co.gregs.dbvolution.expressions.BooleanExpression;
+import nz.co.gregs.dbvolution.expressions.SortProvider;
 import nz.co.gregs.dbvolution.query.RowDefinition;
 
 /**
@@ -120,6 +121,7 @@ public class BooleanColumn extends BooleanExpression implements ColumnProvider {
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a BooleanExpression
 	 */
+	@Override
 	public BooleanExpression is(DBBoolean boolColumn) {
 		return super.is(boolColumn);
 	}
@@ -127,5 +129,10 @@ public class BooleanColumn extends BooleanExpression implements ColumnProvider {
 	@Override
 	public boolean isBooleanStatement() {
 		return false;
+	}
+
+	@Override
+	public SortProvider.Column getSortProvider() {
+		return column.getSortProvider();
 	}
 }

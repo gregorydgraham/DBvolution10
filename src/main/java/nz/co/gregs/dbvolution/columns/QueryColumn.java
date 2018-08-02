@@ -22,6 +22,7 @@ import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 import nz.co.gregs.dbvolution.expressions.AnyExpression;
 import nz.co.gregs.dbvolution.expressions.BooleanExpression;
+import nz.co.gregs.dbvolution.expressions.SortProvider;
 import nz.co.gregs.dbvolution.query.RowDefinition;
 import nz.co.gregs.dbvolution.results.AnyResult;
 
@@ -51,7 +52,7 @@ import nz.co.gregs.dbvolution.results.AnyResult;
  * @see AbstractColumn
  * @see BooleanExpression
  */
-public class QueryColumn<B, R extends AnyResult<B>, D extends QueryableDatatype<B>> extends AnyExpression<B, R,D> implements ColumnProvider {
+public class QueryColumn<B, R extends AnyResult<B>, D extends QueryableDatatype<B>> extends AnyExpression<B, R, D> implements ColumnProvider {
 
 	private static final long serialVersionUID = 1l;
 
@@ -78,8 +79,8 @@ public class QueryColumn<B, R extends AnyResult<B>, D extends QueryableDatatype<
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public QueryColumn<B,R,D> copy() {
-		return new QueryColumn<B,R,D>(query, (D) field.copy());
+	public QueryColumn<B, R, D> copy() {
+		return new QueryColumn<B, R, D>(query, (D) field.copy());
 	}
 
 	@Override
@@ -132,5 +133,10 @@ public class QueryColumn<B, R extends AnyResult<B>, D extends QueryableDatatype<
 	@SuppressWarnings("unchecked")
 	public D getQueryableDatatypeForExpressionValue() {
 		return field;
+	}
+
+	@Override
+	public SortProvider getSortProvider() {
+		return new SortProvider(this);
 	}
 }

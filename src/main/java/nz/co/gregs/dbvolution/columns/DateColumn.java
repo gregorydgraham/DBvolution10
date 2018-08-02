@@ -133,4 +133,9 @@ public class DateColumn extends DateExpression implements ColumnProvider {
 	public BooleanExpression is(DBDate dateColumn) {
 		return super.is(dateColumn);
 	}
+
+	@Override
+	public SortProvider.Column getSortProvider() {
+		return column.getSortProvider();
+	}
 }

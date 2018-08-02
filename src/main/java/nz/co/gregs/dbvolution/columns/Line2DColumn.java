@@ -21,6 +21,7 @@ import java.util.Set;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.datatypes.spatial2D.DBLine2D;
+import nz.co.gregs.dbvolution.expressions.SortProvider;
 import nz.co.gregs.dbvolution.expressions.spatial2D.Line2DExpression;
 import nz.co.gregs.dbvolution.query.RowDefinition;
 
@@ -112,5 +113,10 @@ public class Line2DColumn extends Line2DExpression implements ColumnProvider {
 		final DBRow row = col.getInstanceOfRow();
 		Line2DColumn newInstance = new Line2DColumn(row, (DBLine2D) col.getAppropriateQDTFromRow(row));
 		return newInstance;
+	}
+
+	@Override
+	public SortProvider.Column getSortProvider() {
+		return column.getSortProvider();
 	}
 }

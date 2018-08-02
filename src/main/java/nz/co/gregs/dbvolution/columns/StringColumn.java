@@ -21,6 +21,7 @@ import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.datatypes.DBEnum;
 import nz.co.gregs.dbvolution.datatypes.DBEnumValue;
 import nz.co.gregs.dbvolution.datatypes.DBString;
+import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 import nz.co.gregs.dbvolution.expressions.*;
 import nz.co.gregs.dbvolution.query.RowDefinition;
 
@@ -94,7 +95,8 @@ public class StringColumn extends StringExpression implements ColumnProvider {
 	}
 
 	@Override
-	public synchronized StringColumn copy() {		final AbstractColumn col = getColumn();
+	public synchronized StringColumn copy() {
+		final AbstractColumn col = getColumn();
 		final DBRow row = col.getInstanceOfRow();
 		StringColumn newInstance = new StringColumn(row, (DBString) col.getAppropriateQDTFromRow(row));
 		return newInstance;
@@ -138,6 +140,11 @@ public class StringColumn extends StringExpression implements ColumnProvider {
 	@Override
 	public BooleanExpression is(DBString column) {
 		return super.is(column);
+	}
+
+	@Override
+	public SortProvider.Column getSortProvider() {
+		return column.getSortProvider();
 	}
 
 }

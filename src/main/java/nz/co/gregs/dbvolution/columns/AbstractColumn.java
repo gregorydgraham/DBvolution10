@@ -24,6 +24,8 @@ import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 import nz.co.gregs.dbvolution.exceptions.IncorrectRowProviderInstanceSuppliedException;
 import nz.co.gregs.dbvolution.expressions.DBExpression;
+import nz.co.gregs.dbvolution.expressions.RangeExpression;
+import nz.co.gregs.dbvolution.expressions.SortProvider;
 import nz.co.gregs.dbvolution.internal.properties.PropertyWrapper;
 import nz.co.gregs.dbvolution.query.RowDefinition;
 
@@ -283,5 +285,30 @@ public class AbstractColumn implements DBExpression, Serializable {
 	@Override
 	public String createSQLForGroupByClause(DBDatabase database) {
 		return "";
+	}
+
+	/**
+	 * Returns the sort order configured on the column.
+	 *
+	 * @return {@link QueryableDatatype#SORT_ASCENDING} or
+	 * {@link QueryableDatatype#SORT_DESCENDING}
+	 */
+	public boolean getSortDirection() {
+		if (this.field instanceof QueryableDatatype) {
+			QueryableDatatype<?> qdt = (QueryableDatatype) field;
+			return qdt.getSortOrder();
+		} else {
+			return QueryableDatatype.SORT_ASCENDING;
+		}
+	}
+
+	/**
+	 * Returns the sort order configured on the column.
+	 *
+	 * @return {@link QueryableDatatype#SORT_ASCENDING} or
+	 * {@link QueryableDatatype#SORT_DESCENDING}
+	 */
+	public SortProvider.Column getSortProvider() {
+		return new SortProvider.Column(this);
 	}
 }

@@ -21,8 +21,10 @@ import java.util.HashSet;
 import java.util.Set;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.columns.ColumnProvider;
+import nz.co.gregs.dbvolution.columns.UntypedColumn;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.exceptions.IncorrectRowProviderInstanceSuppliedException;
+import nz.co.gregs.dbvolution.expressions.AnyExpression;
 import nz.co.gregs.dbvolution.query.RowDefinition;
 
 /**
@@ -91,6 +93,6 @@ public class DBUnknownDatatype extends QueryableDatatype<Object> {
 
 	@Override
 	public ColumnProvider getColumn(RowDefinition row) throws IncorrectRowProviderInstanceSuppliedException {
-		return null;
+		return new UntypedColumn(row, this);
 	}
 }

@@ -31,6 +31,7 @@ import nz.co.gregs.dbvolution.datatypes.*;
 import nz.co.gregs.dbvolution.exceptions.AccidentalBlankQueryException;
 import nz.co.gregs.dbvolution.exceptions.IncorrectRowProviderInstanceSuppliedException;
 import nz.co.gregs.dbvolution.exceptions.UnexpectedNumberOfRowsException;
+import nz.co.gregs.dbvolution.expressions.SortProvider;
 import nz.co.gregs.dbvolution.internal.properties.PropertyWrapper;
 import nz.co.gregs.dbvolution.internal.properties.PropertyWrapperDefinition;
 import nz.co.gregs.dbvolution.internal.query.QueryOptions;
@@ -806,8 +807,38 @@ public class DBTable<E extends DBRow> {
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return this
 	 */
-	public DBTable<E> setSortOrder(ColumnProvider... sortColumns) {
+	public DBTable<E> setSortOrder(SortProvider... sortColumns) {
 		this.options.setSortColumns(sortColumns);
+		return this;
+	}
+
+	/**
+	 * Sets the sort order of properties (field and/or method) by the given
+	 * property object references.
+	 *
+	 * <p>
+	 * For example the following code snippet will sort by just the name column:
+	 * <pre>
+	 * Customer customer = ...;
+	 * customer.setSortOrder(customer, customer.name);
+	 * </pre>
+	 *
+	 * <p>
+	 * Requires that all {@literal orderColumns} be from the {@code baseRow}
+	 * instance to work.
+	 *
+	 *
+	 * @param sortColumns	sortColumns
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @return this
+	 */
+	public DBTable<E> setSortOrder(ColumnProvider... sortColumns) {
+		List<SortProvider> cols = new ArrayList<SortProvider>();
+		for (ColumnProvider sortColumn : sortColumns) {
+			cols.add(sortColumn.getSortProvider());
+		}
+		this.options.setSortColumns(cols.toArray(new SortProvider[]{}));
 		return this;
 	}
 
@@ -822,7 +853,7 @@ public class DBTable<E extends DBRow> {
 	 */
 	public DBTable<E> clearSortOrder() {
 		if (this.options.getSortColumns().length > 0) {
-			this.options.setSortColumns(new ColumnProvider[]{});
+			this.options.setSortColumns(new SortProvider[]{});
 		}
 		return this;
 	}
@@ -971,7 +1002,7 @@ public class DBTable<E extends DBRow> {
 		DBQuery distinctQuery = database.getDBQuery(exemplar);
 		distinctQuery.setBlankQueryAllowed(true);
 		final ColumnProvider column = exemplar.column(thisQDT);
-		distinctQuery.setSortOrder(column);
+		distinctQuery.setSortOrder(column.getSortProvider());
 		distinctQuery.addGroupByColumn(exemplar, column.getColumn().asExpression());
 		List<DBQueryRow> allRows = distinctQuery.getAllRows();
 		for (DBQueryRow dBQueryRow : allRows) {

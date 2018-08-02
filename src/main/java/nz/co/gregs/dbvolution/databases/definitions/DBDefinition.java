@@ -1039,11 +1039,11 @@ public abstract class DBDefinition {
 		}
 	}
 
-	public static String getOrderByDescending() {
+	public String getOrderByDescending() {
 		return " DESC ";
 	}
 
-	public static String getOrderByAscending() {
+	public String getOrderByAscending() {
 		return " ASC ";
 	}
 

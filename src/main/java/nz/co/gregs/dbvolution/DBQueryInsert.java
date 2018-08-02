@@ -229,7 +229,7 @@ public class DBQueryInsert<M extends DBRow> extends RowDefinition {
 
 	private static final long serialVersionUID = 1L;
 
-	private ColumnProvider[] sortColumns = new ColumnProvider[]{};
+	private SortProvider[] sortColumns = new SortProvider[]{};
 	Boolean cartesian = false;
 	Boolean blank = false;
 
@@ -487,8 +487,8 @@ public class DBQueryInsert<M extends DBRow> extends RowDefinition {
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return this DBReport instance
 	 */
-	public DBQueryInsert<M> setSortOrder(ColumnProvider... columns) {
-		sortColumns = new ColumnProvider[columns.length];
+	public DBQueryInsert<M> setSortOrder(SortProvider... columns) {
+		sortColumns = new SortProvider[columns.length];
 		System.arraycopy(columns, 0, getSortColumns(), 0, columns.length);
 		return this;
 	}
@@ -513,12 +513,12 @@ public class DBQueryInsert<M extends DBRow> extends RowDefinition {
 	 * @return this DBReport instance
 	 */
 	public DBQueryInsert<M> setSortOrder(QueryableDatatype<?>... columns) {
-		List<ColumnProvider> columnProviders = new ArrayList<>();
+		List<SortProvider> columnProviders = new ArrayList<>();
 		for (QueryableDatatype<?> qdt : columns) {
 			final ColumnProvider expr = this.column(qdt);
-			columnProviders.add(expr);
+			columnProviders.add(expr.getSortProvider());
 		}
-		sortColumns = columnProviders.toArray(new ColumnProvider[]{});
+		sortColumns = columnProviders.toArray(new SortProvider[]{});
 		return this;
 	}
 
@@ -549,7 +549,7 @@ public class DBQueryInsert<M extends DBRow> extends RowDefinition {
 	 *
 	 * @return the sortColumns
 	 */
-	protected ColumnProvider[] getSortColumns() {
+	protected SortProvider[] getSortColumns() {
 		return sortColumns;
 	}
 

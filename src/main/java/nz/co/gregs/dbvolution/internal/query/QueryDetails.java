@@ -50,6 +50,7 @@ import nz.co.gregs.dbvolution.exceptions.UnableToInstantiateDBRowSubclassExcepti
 import nz.co.gregs.dbvolution.exceptions.UnacceptableClassForAutoFillAnnotation;
 import nz.co.gregs.dbvolution.expressions.BooleanExpression;
 import nz.co.gregs.dbvolution.expressions.DBExpression;
+import nz.co.gregs.dbvolution.expressions.SortProvider;
 import nz.co.gregs.dbvolution.internal.properties.PropertyWrapper;
 import nz.co.gregs.dbvolution.internal.properties.PropertyWrapperDefinition;
 import nz.co.gregs.dbvolution.internal.querygraph.QueryGraph;
@@ -94,8 +95,8 @@ public class QueryDetails implements DBQueryable, Serializable {
 	private Integer resultsRowLimit = -1;
 	private Long queryCount = null;
 	private transient QueryGraph queryGraph;
-	private ColumnProvider[] sortOrderColumns;
-	private ArrayList<PropertyWrapper> sortOrder;
+	private SortProvider[] sortOrderColumns;
+//	private ArrayList<PropertyWrapper> sortOrder;
 	private List<DBQueryRow> currentPage;
 
 	/**
@@ -814,17 +815,29 @@ public class QueryDetails implements DBQueryable, Serializable {
 		final boolean prefersIndexBasedOrderByClause = defn.prefersIndexBasedOrderByClause();
 		if (sortOrderColumns != null && sortOrderColumns.length > 0) {
 			state.setHasBeenOrdered(true);
-			StringBuilder orderByClause = new StringBuilder(defn.beginOrderByClause());
+			StringBuilder orderByClause = new StringBuilder("");
 			String sortSeparator = defn.getStartingOrderByClauseSeparator();
-			for (ColumnProvider column : sortOrderColumns) {
-				if (column instanceof QueryColumn) {
-					QueryColumn<?, ?, ?> qc = (QueryColumn) column;
-					final QueryableDatatype<?> qdt = qc.getQueryableDatatypeForExpressionValue();
-					orderByClause.append(sortSeparator).append(qc.toSQLString(defn)).append(defn.getOrderByDirectionClause(qdt.getSortOrder()));
+			for (SortProvider sorter : sortOrderColumns) {
+				if (sorter.hasQueryColumn()) {
+					orderByClause.append(sortSeparator).append(sorter.toSQLString(defn));
+					sortSeparator = defn.getSubsequentOrderByClauseSeparator();
+//					QueryColumn<?, ?, ?> qc = column.getQueryColumn();
+//					final QueryableDatatype<?> qdt = qc.getQueryableDatatypeForExpressionValue();
+//					orderByClause.append(sortSeparator).append(qc.toSQLString(defn)).append(defn.getOrderByDirectionClause(qdt.getSortOrder()));
 				} else {
-					PropertyWrapper prop = column.getColumn().getPropertyWrapper();
-					QueryableDatatype<?> qdt = prop.getQueryableDatatype();
-					PropertyWrapperDefinition propDefn = prop.getPropertyWrapperDefinition();
+					PropertyWrapper prop;
+					PropertyWrapperDefinition propDefn;
+					QueryableDatatype<?> qdt;
+					if (sorter instanceof SortProvider.Column) {
+						prop = ((SortProvider.Column)sorter).getPropertyWrapper();
+						propDefn = prop.getPropertyWrapperDefinition();
+						qdt = prop.getQueryableDatatype();
+					} else {
+						prop = null;
+						propDefn = null;
+						qdt = sorter.asExpressionColumn();
+					}
+
 					if (prefersIndexBasedOrderByClause) {
 						Integer columnIndex = indexesOfSelectedProperties.get(propDefn);
 						if (columnIndex == null) {
@@ -836,37 +849,46 @@ public class QueryDetails implements DBQueryable, Serializable {
 								columnIndex = IndexesOfSelectedExpressions.get(columnExpression);
 							}
 						}
-						orderByClause.append(sortSeparator).append(columnIndex).append(defn.getOrderByDirectionClause(qdt.getSortOrder()));
+						orderByClause.append(sortSeparator).append(columnIndex).append(sorter.getSortDirectionSQL(defn));//defn.getOrderByDirectionClause(qdt.getSortOrder()));
 						sortSeparator = defn.getSubsequentOrderByClauseSeparator();
 					} else {
-						if (qdt.hasColumnExpression()) {
-							final DBExpression[] columnExpressions = qdt.getColumnExpression();
-							for (DBExpression columnExpression : columnExpressions) {
-								final String dbColumnName = defn.transformToStorableType(columnExpression).toSQLString(defn);
-								if (dbColumnName != null) {
-									orderByClause.append(sortSeparator).append(dbColumnName).append(defn.getOrderByDirectionClause(qdt.getSortOrder()));
-									sortSeparator = defn.getSubsequentOrderByClauseSeparator();
-								}
-							}
-						} else {
-							final RowDefinition possibleDBRow = prop.getRowDefinitionInstanceWrapper().adapteeRowDefinition();
-
-							if (possibleDBRow != null && DBRow.class.isAssignableFrom(possibleDBRow.getClass())) {
-								final DBRow adapteeDBRow = (DBRow) possibleDBRow;
-								final String dbColumnName = defn.formatTableAliasAndColumnName(adapteeDBRow, prop.columnName());
-								if (dbColumnName
-										!= null) {
-									orderByClause.append(sortSeparator).append(dbColumnName).append(defn.getOrderByDirectionClause(qdt.getSortOrder()));
-									sortSeparator = defn.getSubsequentOrderByClauseSeparator();
-								}
-							}
-						}
+						orderByClause.append(sortSeparator).append(sorter.toSQLString(defn));
+						sortSeparator = defn.getSubsequentOrderByClauseSeparator();
+//						if (qdt.hasColumnExpression()) {
+//							final DBExpression[] columnExpressions = qdt.getColumnExpression();
+//							for (DBExpression columnExpression : columnExpressions) {
+//								final String dbColumnName = defn.transformToStorableType(columnExpression).toSQLString(defn);
+//								if (dbColumnName != null) {
+//									orderByClause.append(sortSeparator).append(dbColumnName).append(defn.getOrderByDirectionClause(qdt.getSortOrder()));
+//									sortSeparator = defn.getSubsequentOrderByClauseSeparator();
+//								}
+//							}
+//						} else {
+//							if (prop != null) {
+//								final RowDefinition possibleDBRow = prop.getRowDefinitionInstanceWrapper().adapteeRowDefinition();
+//
+//								if (possibleDBRow != null && DBRow.class.isAssignableFrom(possibleDBRow.getClass())) {
+//									final DBRow adapteeDBRow = (DBRow) possibleDBRow;
+//									final String dbColumnName = defn.formatTableAliasAndColumnName(adapteeDBRow, prop.columnName());
+//									if (dbColumnName
+//											!= null) {
+//										orderByClause.append(sortSeparator).append(dbColumnName).append(defn.getOrderByDirectionClause(qdt.getSortOrder()));
+//										sortSeparator = defn.getSubsequentOrderByClauseSeparator();
+//									}
+//								}
+//							}
+//						}
 					}
 				}
 			}
-			orderByClause.append(defn.endOrderByClause());
-			return orderByClause.toString();
+			if (orderByClause.toString().replaceAll(" ", "").isEmpty()) {
+				return "";
+			} else {
+				orderByClause.insert(0, defn.beginOrderByClause()).append(defn.endOrderByClause());
+				return orderByClause.toString();
+			}
 		}
+
 		return "";
 	}
 
@@ -937,22 +959,17 @@ public class QueryDetails implements DBQueryable, Serializable {
 		return sqlForQuery;
 	}
 
-	public synchronized void setSortOrder(ColumnProvider[] sortColumns) {
+	public synchronized void setSortOrder(SortProvider[] sortColumns) {
 		blankResults();
 		sortOrderColumns = Arrays.copyOf(sortColumns, sortColumns.length);
+	}
 
-		sortOrder = new ArrayList<>();
-		PropertyWrapper prop;
+	public synchronized void setSortOrder(ColumnProvider[] sortColumns) {
+		List<SortProvider> sorters = new ArrayList<>();
 		for (ColumnProvider col : sortColumns) {
-			if (col instanceof QueryColumn) {
-//				System.out.println(""+((QueryColumn) col).toSQLString(new H2DBDefinition()));
-			} else {
-				prop = col.getColumn().getPropertyWrapper();
-				if (prop != null) {
-					sortOrder.add(prop);
-				}
-			}
+			sorters.add(col.getSortProvider());
 		}
+		this.setSortOrder(sorters.toArray(new SortProvider[]{}));
 	}
 
 	public synchronized void blankResults() {
@@ -961,21 +978,21 @@ public class QueryDetails implements DBQueryable, Serializable {
 		queryGraph = null;
 	}
 
-	public synchronized void addToSortOrder(ColumnProvider[] sortColumns) {
+	public synchronized void addToSortOrder(SortProvider[] sortColumns) {
 		if (sortColumns != null) {
 			blankResults();
-			List<ColumnProvider> sortOrderColumnsList = new LinkedList<>();
+			List<SortProvider> sortOrderColumnsList = new LinkedList<>();
 			if (sortOrderColumns != null) {
 				sortOrderColumnsList.addAll(Arrays.asList(sortOrderColumns));
 			}
 			sortOrderColumnsList.addAll(Arrays.asList(sortColumns));
 
-			setSortOrder(sortOrderColumnsList.toArray(new ColumnProvider[]{}));
+			setSortOrder(sortOrderColumnsList.toArray(new SortProvider[]{}));
 		}
 	}
 
 	public synchronized void clearSortOrder() {
-		sortOrder = null;
+//		sortOrder = null;
 		sortOrderColumns = null;
 	}
 
@@ -1137,14 +1154,20 @@ public class QueryDetails implements DBQueryable, Serializable {
 					if (requiredClass.isArray()) {
 						requiredClass = requiredClass.getComponentType();
 						arrayRequired = true;
-					} else if (Collection.class.isAssignableFrom(requiredClass)) {
+
+					} else if (Collection.class
+							.isAssignableFrom(requiredClass)) {
 						listRequired = true;
 						requiredClass = field.getAutoFillingClass();
-						if (requiredClass.isAssignableFrom(DBRow.class)) {
+
+						if (requiredClass.isAssignableFrom(DBRow.class
+						)) {
 							throw new nz.co.gregs.dbvolution.exceptions.UnacceptableClassForAutoFillAnnotation(field, requiredClass);
+
 						}
 					}
-					if (DBRow.class.isAssignableFrom(requiredClass)) {
+					if (DBRow.class
+							.isAssignableFrom(requiredClass)) {
 						DBRow fieldInstance;
 						try {
 							fieldInstance = (DBRow) requiredClass.newInstance();

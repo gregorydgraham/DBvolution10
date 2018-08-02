@@ -378,6 +378,7 @@ public abstract class QueryableDatatype<T> extends Object implements Serializabl
 	 * <p style="color: #F90;">Support DBvolution at
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 *
+	 * @param valueIfNull
 	 * @return the literal value, if defined, which may be null
 	 */
 	public T getValueWithDefaultValue(T valueIfNull) {
@@ -769,8 +770,8 @@ public abstract class QueryableDatatype<T> extends Object implements Serializabl
 	 * <p style="color: #F90;">Support DBvolution at
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 *
-	 * @return {@link #SORT_ASCENDING} if the column is to be sorted ascending,
-	 * {@link #SORT_DESCENDING} otherwise.
+	 * @return {@link #SORT_DESCENDING} if the column is to be sorted descending,
+	 * {@link #SORT_ASCENDING} otherwise.
 	 */
 	public Boolean getSortOrder() {
 		return sort;

@@ -21,6 +21,7 @@ import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.datatypes.DBDateRepeat;
 import nz.co.gregs.dbvolution.expressions.BooleanExpression;
 import nz.co.gregs.dbvolution.expressions.DateRepeatExpression;
+import nz.co.gregs.dbvolution.expressions.SortProvider;
 import nz.co.gregs.dbvolution.query.RowDefinition;
 import org.joda.time.Period;
 
@@ -111,5 +112,10 @@ public class DateRepeatColumn extends DateRepeatExpression implements ColumnProv
 	 */
 	public BooleanExpression is(DBDateRepeat intervalColumn) {
 		return super.is(intervalColumn);
+	}
+
+	@Override
+	public SortProvider.Column getSortProvider() {
+		return column.getSortProvider();
 	}
 }

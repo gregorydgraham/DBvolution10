@@ -717,5 +717,12 @@ public abstract class AnyExpression<B extends Object, R extends AnyResult<B>, D 
 	public String createSQLForGroupByClause(DBDatabase database) {
 		return "";
 	}
-
+	
+	public SortProvider ascending(){
+		return new SortProvider.Ascending(this);
+	}
+	
+	public SortProvider descending(){
+		return new SortProvider.Descending(this);
+	}
 }

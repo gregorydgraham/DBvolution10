@@ -26,8 +26,10 @@ import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 import nz.co.gregs.dbvolution.exceptions.UnableToAccessDBReportFieldException;
 import nz.co.gregs.dbvolution.exceptions.UnableToInstantiateDBReportSubclassException;
 import nz.co.gregs.dbvolution.exceptions.UnableToSetDBReportFieldException;
+import nz.co.gregs.dbvolution.expressions.AnyExpression;
 import nz.co.gregs.dbvolution.expressions.BooleanExpression;
 import nz.co.gregs.dbvolution.expressions.DBExpression;
+import nz.co.gregs.dbvolution.expressions.SortProvider;
 import nz.co.gregs.dbvolution.query.RowDefinition;
 
 /**
@@ -88,7 +90,7 @@ public class DBReport extends RowDefinition {
 
 	private static final long serialVersionUID = 1L;
 
-	private ColumnProvider[] sortColumns = new ColumnProvider[]{};
+	private SortProvider[] sortColumns = new SortProvider[]{};
 	private boolean blankQueryAllowed = false;
 
 	/**
@@ -387,10 +389,34 @@ public class DBReport extends RowDefinition {
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return this DBReport instance
 	 */
-	public DBReport setSortOrder(ColumnProvider... columns) {
-		sortColumns = new ColumnProvider[columns.length];
+	public DBReport setSortOrder(SortProvider... columns) {
+		sortColumns = new SortProvider[columns.length];
 		System.arraycopy(columns, 0, getSortColumns(), 0, columns.length);
 		return this;
+	}
+
+	/**
+	 * Sets the sort order of DBReport (field and/or method) by the given column
+	 * providers.
+	 *
+	 * <p>
+	 * For example the following code snippet will sort by just the name column:
+	 * <pre>
+	 * CustomerReport customers = ...;
+	 * customers.setSortOrder(customers.column(customers.name));
+	 * </pre>
+	 *
+	 * @param columns a list of columns to sort the query by.
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @return this DBReport instance
+	 */
+	public DBReport setSortOrder(ColumnProvider... columns) {
+		ArrayList<SortProvider> sorters = new ArrayList<SortProvider>(0);
+		for (ColumnProvider column : columns) {
+			sorters.add(column.getSortProvider());
+		}
+		return this.setSortOrder(sorters.toArray(new SortProvider[]{}));
 	}
 
 	/**
@@ -413,13 +439,12 @@ public class DBReport extends RowDefinition {
 	 * @return this DBReport instance
 	 */
 	public DBReport setSortOrder(QueryableDatatype<?>... columns) {
-		List<ColumnProvider> columnProviders = new ArrayList<>();
+		List<SortProvider> sorters = new ArrayList<>();
 		for (QueryableDatatype<?> qdt : columns) {
-			final ColumnProvider expr = this.column(qdt);
-			columnProviders.add(expr);
+			final SortProvider expr = this.column(qdt).getSortProvider();
+			sorters.add(expr);
 		}
-		sortColumns = columnProviders.toArray(new ColumnProvider[]{});
-		return this;
+		return this.setSortOrder(sorters.toArray(new SortProvider[]{}));
 	}
 
 	/**
@@ -519,7 +544,7 @@ public class DBReport extends RowDefinition {
 	 *
 	 * @return the sortColumns
 	 */
-	protected ColumnProvider[] getSortColumns() {
+	protected SortProvider[] getSortColumns() {
 		return sortColumns;
 	}
 }

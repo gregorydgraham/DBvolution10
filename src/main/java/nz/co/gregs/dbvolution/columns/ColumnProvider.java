@@ -16,6 +16,8 @@
 package nz.co.gregs.dbvolution.columns;
 
 import nz.co.gregs.dbvolution.expressions.DBExpression;
+import nz.co.gregs.dbvolution.expressions.RangeExpression;
+import nz.co.gregs.dbvolution.expressions.SortProvider;
 
 /**
  * Interface to indicate that this object can provide a column.
@@ -50,5 +52,26 @@ public interface ColumnProvider extends DBExpression {
 	 * @param useTableAlias true or false
 	 */
 	public void setUseTableAlias(boolean useTableAlias);
+
+	/**
+	 * Provides the sorting for this column as defined by the methods {@link QueryableDatatype#setSortOrder(java.lang.Boolean) }, {@link QueryableDatatype#setSortOrderAscending()
+	 * }, and {@link QueryableDatatype#setSortOrderDescending() } on the QDT.
+	 *
+	 * <p>
+	 * At the time of querying the sort order defined on the original QDT field
+	 * provided is add to the query, with ASCENDING being used as the default
+	 * ordering.</p>
+	 * <p>
+	 * To be certain of the ordering use the {@link RangeExpression#ascending() }
+	 * and {@link RangeExpression#descending() } methods.</p>
+	 *
+	 * @return a SortProvider configured to use the sorting defined on original
+	 * QDT or ASCENDING.
+	 */
+	public SortProvider getSortProvider();
+
+	public SortProvider ascending();
+
+	public SortProvider descending();
 
 }
