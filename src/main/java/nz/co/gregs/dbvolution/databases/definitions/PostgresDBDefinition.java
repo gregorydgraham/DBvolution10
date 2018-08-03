@@ -115,15 +115,23 @@ public class PostgresDBDefinition extends DBDefinition {
 		}
 	}
 
-	@Override
-	public Object getOrderByDirectionClause(Boolean sortOrder) {
-		if (sortOrder == null) {
-			return "";
-		} else if (sortOrder) {
-			return " ASC NULLS FIRST ";
-		} else {
-			return " DESC NULLS LAST ";
-		}
+//	@Override
+//	public String getOrderByDirectionClause(Boolean sortOrder) {
+//		if (sortOrder == null) {
+//			return "";
+//		} else if (sortOrder) {
+//			return " ASC NULLS FIRST ";
+//		} else {
+//			return " DESC NULLS LAST ";
+//		}
+//	}
+
+	protected String getOrderByDescending() {
+		return " DESC NULLS LAST ";
+	}
+
+	protected String getOrderByAscending() {
+		return " ASC NULLS FIRST ";
 	}
 
 	@Override

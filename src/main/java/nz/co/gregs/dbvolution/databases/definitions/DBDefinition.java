@@ -1029,7 +1029,7 @@ public abstract class DBDefinition {
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return " ASC " for TRUE, " DESC " for false or equivalent
 	 */
-	public Object getOrderByDirectionClause(Boolean sortOrder) {
+	public String getOrderByDirectionClause(Boolean sortOrder) {
 		if (sortOrder == null) {
 			return "";
 		} else if (sortOrder) {
@@ -1039,11 +1039,11 @@ public abstract class DBDefinition {
 		}
 	}
 
-	public String getOrderByDescending() {
+	protected String getOrderByDescending() {
 		return " DESC ";
 	}
 
-	public String getOrderByAscending() {
+	protected String getOrderByAscending() {
 		return " ASC ";
 	}
 

@@ -143,8 +143,12 @@ public class FindDistinctDBRowColumnValuesTest extends AbstractTest {
 	public void testDBTableMethodWithDBString() throws SQLException {
 		Marque marque = new Marque();
 		final DBTable<Marque> dbTable = database.getDBTable(marque);
+//		marque.individualAllocationsAllowed.setSortOrderDescending();
+		database.setPrintSQLBeforeExecuting(true);
 		List<DBString> distinctValuesForColumn = dbTable.getDistinctValuesOfColumn(marque.individualAllocationsAllowed);
-
+		for (DBString dBString : distinctValuesForColumn) {
+			System.out.println("nz.co.gregs.dbvolution.FindDistinctDBRowColumnValuesTest.testDBTableMethodWithDBString(): "+dBString.stringValue());
+		}
 		List<String> foundStrings = new ArrayList<String>();
 		for (DBString val : distinctValuesForColumn) {
 			if (val != null && val.isNotNull()) {
@@ -155,9 +159,9 @@ public class FindDistinctDBRowColumnValuesTest extends AbstractTest {
 						)
 				);
 			}
-			if (val != null) {
+//			if (val != null) {
 				foundStrings.add((val.toString()));
-			}
+//			}
 		}
 		if (database.getDefinition().supportsDifferenceBetweenNullAndEmptyString()) {
 			Assert.assertThat(distinctValuesForColumn.size(), is(3));

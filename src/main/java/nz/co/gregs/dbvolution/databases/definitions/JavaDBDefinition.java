@@ -288,9 +288,17 @@ public class JavaDBDefinition extends DBDefinition {
 		return false;
 	}
 
-	@Override
-	public Object getOrderByDirectionClause(Boolean sortOrder) {
-		return super.getOrderByDirectionClause(sortOrder) + (sortOrder ? " NULLS FIRST " : " NULLS LAST ");
+//	@Override
+//	public String getOrderByDirectionClause(Boolean sortOrder) {
+//		return super.getOrderByDirectionClause(sortOrder) + (sortOrder ? " NULLS FIRST " : " NULLS LAST ");
+//	}
+
+	protected String getOrderByDescending() {
+		return " DESC NULLS LAST ";
+	}
+
+	protected String getOrderByAscending() {
+		return " ASC NULLS FIRST ";
 	}
 
 	@Override

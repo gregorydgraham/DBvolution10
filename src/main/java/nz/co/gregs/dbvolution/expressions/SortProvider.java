@@ -217,13 +217,9 @@ public class SortProvider implements DBExpression {
 	public String getSortDirectionSQL(DBDefinition defn) {
 		if (hasQueryColumn()) {
 			final AbstractQueryColumn column = getQueryColumn().getColumn();
-			if (QueryableDatatype.SORT_DESCENDING.equals(column.getSortDirection())) {
-				return defn.getOrderByDescending();
-			} else {
-				return defn.getOrderByAscending();
-			}
+			return defn.getOrderByDirectionClause(column.getSortDirection());
 		}
-		return defn.getOrderByAscending();
+		return defn.getOrderByDirectionClause(QueryableDatatype.SORT_ASCENDING);
 	}
 
 	public static class Ascending extends SortProvider {
@@ -234,7 +230,7 @@ public class SortProvider implements DBExpression {
 
 		@Override
 		public String getSortDirectionSQL(DBDefinition defn) {
-			return defn.getOrderByAscending();
+			return defn.getOrderByDirectionClause(QueryableDatatype.SORT_ASCENDING);
 		}
 
 		@Override
@@ -251,7 +247,7 @@ public class SortProvider implements DBExpression {
 
 		@Override
 		public String getSortDirectionSQL(DBDefinition defn) {
-			return defn.getOrderByDescending();
+			return defn.getOrderByDirectionClause(QueryableDatatype.SORT_DESCENDING);
 		}
 
 		@Override
@@ -282,9 +278,7 @@ public class SortProvider implements DBExpression {
 
 		@Override
 		public String getSortDirectionSQL(DBDefinition defn) {
-			return (innerColumn.getSortDirection() == QueryableDatatype.SORT_DESCENDING
-					? defn.getOrderByDescending()
-					: defn.getOrderByAscending());
+			return defn.getOrderByDirectionClause(innerColumn.getSortDirection());
 		}
 
 		@Override
