@@ -16,6 +16,7 @@
 package nz.co.gregs.dbvolution.datatypes;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.List;
@@ -130,6 +131,37 @@ public class DBLargeBinaryTest extends AbstractTest {
 		database.insert(blobTable);
 
 		File newFile = new File("retrieveRowWithBinaryObject.jpg");
+		try {
+			newFile.delete();
+		} catch (Exception exp) {
+			;// I just need it gone
+		}
+
+		blobTable = new CompanyLogoForRetreivingBinaryObject();
+		CompanyLogoForRetreivingBinaryObject firstRow = database.getDBTable(blobTable).getRowsByPrimaryKey(primaryKey).get(0);
+
+		firstRow.imageBytes.writeToFileSystem(newFile);
+		Assert.assertThat(newFile.length(), is(image.length()));
+	}
+
+	@Test
+	public void retrieveRowWithBinaryObjectUsingInputStream() throws FileNotFoundException, IOException, SQLException, UnexpectedNumberOfRowsException, ClassNotFoundException, InstantiationException {
+
+		CompanyLogoForRetreivingBinaryObject blobTable = new CompanyLogoForRetreivingBinaryObject();
+
+		database.preventDroppingOfTables(false);
+		database.dropTableNoExceptions(blobTable);
+		database.createTable(blobTable);
+
+		int primaryKey = 3;
+		blobTable.logoID.setValue(primaryKey);
+		blobTable.carCompany.setValue(1);//Toyota
+		blobTable.imageFilename.setValue("toyota_logo.jpg");
+		File image = new File("toyota_share_logo.jpg");
+		blobTable.imageBytes.setValue(new FileInputStream(image));
+		database.insert(blobTable);
+
+		File newFile = new File("retrieveRowWithBinaryObjectUsingInputStream.jpg");
 		try {
 			newFile.delete();
 		} catch (Exception exp) {
