@@ -601,4 +601,33 @@ public class DBLargeBinary extends DBLargeObject<byte[]> {
 	public LargeObjectColumn getColumn(RowDefinition row) throws IncorrectRowProviderInstanceSuppliedException {
 		return new LargeObjectColumn(row, this);
 	}
+
+	/**
+	 * Indicates whether object is NULL within the database
+	 *
+	 * <p>
+	 * Databases and Java both use the term NULL but for slightly different
+	 * meanings.
+	 *
+	 * <p>
+	 * This method indicates whether the field represented by this object is NULL
+	 * in the database sense.
+	 *
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
+	 * @return TRUE if this object represents a NULL database value, otherwise
+	 * FALSE
+	 */
+	@Override
+	public boolean isNull() {
+		return super.isNull() && getLiteralValue() == null && this.byteStream == null;
+	}
+
+	@Override
+	public DBLargeBinary copy() {
+		DBLargeBinary result = (DBLargeBinary) super.copy();
+		result.byteStream = byteStream;
+		return result;
+	}
 }
