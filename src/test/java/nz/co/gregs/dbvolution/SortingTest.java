@@ -94,7 +94,6 @@ public class SortingTest extends AbstractTest {
 
 	@Test
 	public void sortingDBQueryUsingExpressions() throws SQLException {
-		database.setPrintSQLBeforeExecuting(true);
 		final Marque marque = new Marque();
 		final CarCompany carCo = new CarCompany();
 		DBQuery query = database.getDBQuery(marque, carCo);
@@ -118,7 +117,6 @@ public class SortingTest extends AbstractTest {
 		
 		query.setSortOrder(marque.column(marque.name).substring(0, 3).descending());
 		sortedMarques = query.getAllInstancesOf(marque);
-		database.print(sortedMarques);
 		Assert.assertThat(sortedMarques.size(), is(22));
 		Assert.assertThat(sortedMarques.get(0).name.toString(), is("VW"));
 		Assert.assertThat(sortedMarques.get(1).name.toString(), is("VOLVO"));
