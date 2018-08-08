@@ -175,7 +175,7 @@ public class DBUpdateLargeObjects extends DBUpdate {
 			} catch (SQLException exp) {
 				try {
 					prep.setBinaryStream(1, largeObject.getInputStream(), largeObject.getSize());
-				} catch (SQLException exp2) {
+				} catch (Exception exp2) {
 					throw new DBRuntimeException(exp);
 				}
 			}
@@ -183,7 +183,7 @@ public class DBUpdateLargeObjects extends DBUpdate {
 		}
 	}
 
-	private void setUsingBLOB(DBDefinition defn, DBRow row, String col, DBLargeObject<?> largeObject, DBDatabase db, DBStatement statement) throws SQLException {
+	private void setUsingBLOB(DBDefinition defn, DBRow row, String col, DBLargeObject<?> largeObject, DBDatabase db, DBStatement statement) throws SQLException, IOException {
 		String sqlString = defn.beginUpdateLine()
 				+ defn.formatTableName(row)
 				+ defn.beginSetClause()
@@ -200,7 +200,7 @@ public class DBUpdateLargeObjects extends DBUpdate {
 		}
 	}
 
-	private void setUsingCLOB(DBDefinition defn, DBRow row, String col, DBLargeObject<?> largeObject, DBDatabase db, DBStatement statement) throws SQLException {
+	private void setUsingCLOB(DBDefinition defn, DBRow row, String col, DBLargeObject<?> largeObject, DBDatabase db, DBStatement statement) throws SQLException, IOException {
 		String sqlString = defn.beginUpdateLine()
 				+ defn.formatTableName(row)
 				+ defn.beginSetClause()

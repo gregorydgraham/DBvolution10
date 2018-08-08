@@ -15,6 +15,7 @@
  */
 package nz.co.gregs.dbvolution.datatypes;
 
+import java.io.IOException;
 import java.io.InputStream;
 import nz.co.gregs.dbvolution.expressions.LargeObjectExpression;
 import nz.co.gregs.dbvolution.results.LargeObjectResult;
@@ -80,8 +81,9 @@ public abstract class DBLargeObject<T> extends QueryableDatatype<T> implements L
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 *
 	 * @return the size of the Large Object as an int
+	 * @throws java.io.IOException
 	 */
-	public abstract int getSize();
+	public abstract int getSize() throws IOException;
 
 	@Override
 	public String toString() {

@@ -509,12 +509,16 @@ public class DBLargeBinary extends DBLargeObject<byte[]> {
 	}
 
 	@Override
-	public int getSize() {
-		final byte[] bytes = getBytes();
-		if (bytes != null) {
-			return bytes.length;
+	public int getSize() throws IOException {
+		if (byteStream != null) {
+				return byteStream.available();
 		} else {
-			return 0;
+			final byte[] bytes = getBytes();
+			if (bytes != null) {
+				return bytes.length;
+			} else {
+				return 0;
+			}
 		}
 	}
 
