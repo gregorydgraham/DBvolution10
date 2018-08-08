@@ -451,11 +451,9 @@ WHERE rownumber = (SELECT (COUNT(*)+1) DIV 2 FROM (select * FROM marque WHERE up
 
 		dbQuery.setSortOrder(t1ValueColumn, pkColumn);
 		dbQuery.setReturnFields(t1CounterColumn, t1ValueColumn, pkColumn);
-		dbQuery.printSQLForQuery();
 
 		List<DBQueryRow> allRows = dbQuery.getAllRows();
 		assertThat(allRows.size(), is(20));
-		dbQuery.print();
 		int index = 20;
 		for (DBQueryRow row : allRows) {
 			QueryableDatatype<?> counterQDT = row.getExpressionColumnValue(counterKey);
