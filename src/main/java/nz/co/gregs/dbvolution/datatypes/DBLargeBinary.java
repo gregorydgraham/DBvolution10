@@ -55,7 +55,6 @@ import org.apache.commons.codec.binary.Base64;
 public class DBLargeBinary extends DBLargeObject<byte[]> {
 
 	private static final long serialVersionUID = 1;
-	transient InputStream byteStream = null;
 
 	/**
 	 * The Default constructor for a DBBinaryObject.
@@ -108,11 +107,6 @@ public class DBLargeBinary extends DBLargeObject<byte[]> {
 
 	private void setByteArray(byte[] byteArray) {
 		super.setLiteralValue(byteArray);
-		if (byteArray == null) {
-			byteStream = new BufferedInputStream(new ByteArrayInputStream(new byte[]{}));
-		} else {
-			byteStream = new BufferedInputStream(new ByteArrayInputStream(byteArray));
-		}
 	}
 
 	/**
@@ -125,8 +119,7 @@ public class DBLargeBinary extends DBLargeObject<byte[]> {
 	 * @param inputViaStream	inputViaStream
 	 */
 	public void setValue(InputStream inputViaStream) {
-		super.setLiteralValue(null);
-		byteStream = new BufferedInputStream(inputViaStream);
+		setValue(getBytesFromInputStream(inputViaStream));
 	}
 
 	/**
@@ -141,7 +134,7 @@ public class DBLargeBinary extends DBLargeObject<byte[]> {
 	 * @throws java.io.IOException java.io.IOException
 	 */
 	public void setValue(File fileToRead) throws IOException {
-		setValue(setFromFileSystem(fileToRead));
+		setFromFileSystem(fileToRead);
 	}
 
 	/**
@@ -211,13 +204,11 @@ public class DBLargeBinary extends DBLargeObject<byte[]> {
 			System.arraycopy(someBytes, 0, bytes, bytesAdded, Math.min(someBytes.length, bytes.length - bytesAdded));
 			bytesAdded += someBytes.length;
 		}
-//			this.setValue(bytes);
 		return bytes;
 	}
 
 	private byte[] getFromGetBytes(ResultSet resultSet, String fullColumnName) throws SQLException {
 		byte[] bytes = resultSet.getBytes(fullColumnName);
-//		this.setValue(bytes);
 		return bytes;
 	}
 
@@ -259,7 +250,6 @@ public class DBLargeBinary extends DBLargeObject<byte[]> {
 					bytesAdded += someBytes.length;
 				}
 				decodeBuffer = Base64.decodeBase64(bytes);
-//				this.setValue(decodeBuffer);
 			}
 		}
 		return decodeBuffer;
@@ -325,15 +315,14 @@ public class DBLargeBinary extends DBLargeObject<byte[]> {
 	 * @param originalFile	originalFile
 	 * <p style="color: #F90;">Support DBvolution at
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 * @return the byte[] of the contents of the file.
 	 * @throws java.io.FileNotFoundException java.io.FileNotFoundException
 	 * @throws java.io.IOException java.io.IOException
 	 *
 	 *
 	 */
-	public byte[] setFromFileSystem(String originalFile) throws FileNotFoundException, IOException {
+	public void setFromFileSystem(String originalFile) throws FileNotFoundException, IOException {
 		File file = new File(originalFile);
-		return setFromFileSystem(file);
+		setFromFileSystem(file);
 	}
 
 	/**
@@ -345,15 +334,14 @@ public class DBLargeBinary extends DBLargeObject<byte[]> {
 	 * @param originalFile	originalFile
 	 * <p style="color: #F90;">Support DBvolution at
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 * @return the byte[] of the contents of the file.
 	 * @throws java.io.FileNotFoundException java.io.FileNotFoundException
 	 * @throws java.io.IOException java.io.IOException
 	 *
 	 *
 	 */
-	public byte[] setFromFileSystem(DBString originalFile) throws FileNotFoundException, IOException {
+	public void setFromFileSystem(DBString originalFile) throws FileNotFoundException, IOException {
 		File file = new File(originalFile.stringValue());
-		return setFromFileSystem(file);
+		setFromFileSystem(file);
 	}
 
 	/**
@@ -362,13 +350,12 @@ public class DBLargeBinary extends DBLargeObject<byte[]> {
 	 * @param originalFile	originalFile
 	 * <p style="color: #F90;">Support DBvolution at
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 * @return the byte[] of the contents of the file.
 	 * @throws java.io.FileNotFoundException java.io.FileNotFoundException
 	 * @throws java.io.IOException java.io.IOException
 	 *
 	 *
 	 */
-	public byte[] setFromFileSystem(File originalFile) throws FileNotFoundException, IOException {
+	private void setFromFileSystem(File originalFile) throws FileNotFoundException, IOException {
 		byte[] bytes = new byte[(int) originalFile.length()];
 		InputStream input = null;
 		try {
@@ -376,7 +363,6 @@ public class DBLargeBinary extends DBLargeObject<byte[]> {
 			input = new BufferedInputStream(new FileInputStream(originalFile));
 			while (totalBytesRead < bytes.length) {
 				int bytesRemaining = bytes.length - totalBytesRead;
-				//input.read() returns -1, 0, or more :
 				int bytesRead = input.read(bytes, totalBytesRead, bytesRemaining);
 				if (bytesRead > 0) {
 					totalBytesRead += bytesRead;
@@ -393,7 +379,6 @@ public class DBLargeBinary extends DBLargeObject<byte[]> {
 			}
 		}
 		setValue(bytes);
-		return bytes;
 	}
 
 	/**
@@ -479,10 +464,7 @@ public class DBLargeBinary extends DBLargeObject<byte[]> {
 	 */
 	@Override
 	public InputStream getInputStream() {
-		if (byteStream == null) {
-			this.setValue(getBytes());
-		}
-		return byteStream;
+		return new BufferedInputStream(new ByteArrayInputStream(getBytes()));
 	}
 
 	/**
@@ -510,16 +492,12 @@ public class DBLargeBinary extends DBLargeObject<byte[]> {
 
 	@Override
 	public int getSize() throws IOException {
-		if (byteStream != null) {
-				return byteStream.available();
-		} else {
 			final byte[] bytes = getBytes();
 			if (bytes != null) {
 				return bytes.length;
 			} else {
 				return 0;
 			}
-		}
 	}
 
 	@Override
@@ -625,13 +603,12 @@ public class DBLargeBinary extends DBLargeObject<byte[]> {
 	 */
 	@Override
 	public boolean isNull() {
-		return super.isNull() && getLiteralValue() == null && this.byteStream == null;
+		return super.isNull() && getLiteralValue() == null ;//&& this.byteStream == null;
 	}
 
 	@Override
-	public DBLargeBinary copy() {
+	public synchronized DBLargeBinary copy() {
 		DBLargeBinary result = (DBLargeBinary) super.copy();
-		result.byteStream = byteStream;
 		return result;
 	}
 }

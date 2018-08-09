@@ -67,7 +67,7 @@ public class DBLargeBinaryTest extends AbstractTest {
 		companyLogo.carCompany.setValue(ford.uidCarCompany.getValue());
 		companyLogo.imageFilename.setValue("ford_logo.jpg");
 		File fordLogoFile = new File("ford_logo.jpg");
-		companyLogo.imageBytes.setFromFileSystem(fordLogoFile);
+		companyLogo.imageBytes.setValue(fordLogoFile);
 		database.insert(companyLogo);
 
 		CompanyLogo logoExample = new CompanyLogo();
@@ -97,7 +97,7 @@ public class DBLargeBinaryTest extends AbstractTest {
 		companyLogo.carCompany.setValue(ford.uidCarCompany.getValue());
 		companyLogo.imageFilename.setValue("ford_logo.jpg");
 		File fordLogoFile = new File("ford_logo.jpg");
-		companyLogo.imageBytes.setFromFileSystem(fordLogoFile);
+		companyLogo.imageBytes.setValue(fordLogoFile);
 		database.insert(companyLogo);
 
 		CompanyLogo logoExample = new CompanyLogo();
@@ -108,7 +108,9 @@ public class DBLargeBinaryTest extends AbstractTest {
 
 		Assert.assertThat(foundLogos.size(), is(1));
 		String hexValueFromDatabase = "0x" + Hex.encodeHexString(foundLogo.imageBytes.getBytes());
-		byte[] fil = new DBLargeBinary().setFromFileSystem("ford_logo.jpg");
+		DBLargeBinary dbBinary = new DBLargeBinary();
+		dbBinary.setFromFileSystem("ford_logo.jpg");
+		byte[] fil = dbBinary.getBytes();
 		String hexValueFromFileSystem = "0x" + Hex.encodeHexString(fil);
 		Assert.assertThat(hexValueFromFileSystem, is(hexValueFromDatabase));
 	}
@@ -127,7 +129,7 @@ public class DBLargeBinaryTest extends AbstractTest {
 		blobTable.carCompany.setValue(1);//Toyota
 		blobTable.imageFilename.setValue("toyota_logo.jpg");
 		File image = new File("toyota_share_logo.jpg");
-		blobTable.imageBytes.setFromFileSystem(image);
+		blobTable.imageBytes.setValue(image);
 		database.insert(blobTable);
 
 		File newFile = new File("retrieveRowWithBinaryObject.jpg");
