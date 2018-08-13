@@ -181,32 +181,78 @@ public class DBLargeBinary extends DBLargeObject<byte[]> {
 	}
 
 	private byte[] getBytesFromInputStream(InputStream inputStream) {
-		byte[] bytes;
 		InputStream input = new BufferedInputStream(inputStream);
 		List<byte[]> byteArrays = new ArrayList<>();
-		int totalBytesRead = 0;
 		try {
 			byte[] resultSetBytes;
-			resultSetBytes = new byte[100000];
+			final int byteArrayDefaultSize = 100000;
+			resultSetBytes = new byte[byteArrayDefaultSize];
 			int bytesRead = input.read(resultSetBytes);
 			while (bytesRead > 0) {
-				totalBytesRead += bytesRead;
-				byteArrays.add(resultSetBytes);
-				resultSetBytes = new byte[100000];
+				if (bytesRead == byteArrayDefaultSize) {
+					byteArrays.add(resultSetBytes);
+				} else {
+					byte[] shortBytes = new byte[bytesRead];
+					System.arraycopy(resultSetBytes, 0, shortBytes, 0, bytesRead);
+					byteArrays.add(shortBytes);
+				}
+				resultSetBytes = new byte[byteArrayDefaultSize];
 				bytesRead = input.read(resultSetBytes);
 			}
 		} catch (IOException ex) {
 			Logger.getLogger(DBLargeBinary.class.getName()).log(Level.SEVERE, null, ex);
 		}
-		bytes = new byte[totalBytesRead];
-		int bytesAdded = 0;
-		for (byte[] someBytes : byteArrays) {
-			System.arraycopy(someBytes, 0, bytes, bytesAdded, Math.min(someBytes.length, bytes.length - bytesAdded));
-			bytesAdded += someBytes.length;
-		}
-		return bytes;
+		return concatAllByteArrays(byteArrays);
 	}
 
+	public static byte[] concatAllByteArrays(List<byte[]> bytes) {
+		byte[] first = bytes.get(0);
+		bytes.remove(0);
+		byte[][] rest = bytes.toArray(new byte[][]{});
+		int totalLength = first.length;
+		for (byte[] array : rest) {
+			totalLength += array.length;
+		}
+		byte[] result = Arrays.copyOf(first, totalLength);
+		int offset = first.length;
+		for (byte[] array : rest) {
+			System.arraycopy(array, 0, result, offset, array.length);
+			offset += array.length;
+		}
+		return result;
+	}
+
+//
+//	private byte[] getBytesFromInputStream(InputStream inputStream) {
+//		InputStream input = new BufferedInputStream(inputStream);
+//		List<byte[]> byteArrays = new ArrayList<>();
+//		int totalBytesRead = 0;
+//		try {
+//			byte[] resultSetBytes;
+//			final int byteArrayDefaultSize = 100000;
+//			resultSetBytes = new byte[byteArrayDefaultSize];
+//			int bytesRead = input.read(resultSetBytes);
+//			while (bytesRead > 0) {
+//				totalBytesRead += bytesRead;
+//				byteArrays.add(resultSetBytes);
+//				resultSetBytes = new byte[byteArrayDefaultSize];
+//				bytesRead = input.read(resultSetBytes);
+//			}
+//		} catch (IOException ex) {
+//			Logger.getLogger(DBLargeBinary.class.getName()).log(Level.SEVERE, null, ex);
+//		}
+//		final byte[] bytes = new byte[totalBytesRead];
+//		int bytesAdded = 0;
+//		for (byte[] someBytes : byteArrays) {
+//			final int copyStart =Math.min(totalBytesRead-1, bytesAdded);
+//			final int copyLength =Math.max(0, Math.min(someBytes.length, bytes.length - bytesAdded));
+//			System.out.println("copyStart, copyLength, bytesAdded, Math.min(someBytes.length, bytes.length - bytesAdded) = "+copyStart+", "+copyLength+", "+bytesAdded+", "+someBytes.length+", "+bytes.length+" - "+bytesAdded+"("+(bytes.length - bytesAdded)+")");
+//			System.arraycopy(someBytes, 0, bytes, copyStart, copyLength);
+////			System.arraycopy(someBytes, 0, bytes, bytesAdded, Math.min(someBytes.length, bytes.length - bytesAdded));
+//			bytesAdded += someBytes.length;
+//		}
+//		return bytes;
+//	}
 	private byte[] getFromGetBytes(ResultSet resultSet, String fullColumnName) throws SQLException {
 		byte[] bytes = resultSet.getBytes(fullColumnName);
 		return bytes;
@@ -492,12 +538,12 @@ public class DBLargeBinary extends DBLargeObject<byte[]> {
 
 	@Override
 	public int getSize() throws IOException {
-			final byte[] bytes = getBytes();
-			if (bytes != null) {
-				return bytes.length;
-			} else {
-				return 0;
-			}
+		final byte[] bytes = getBytes();
+		if (bytes != null) {
+			return bytes.length;
+		} else {
+			return 0;
+		}
 	}
 
 	@Override
@@ -603,7 +649,7 @@ public class DBLargeBinary extends DBLargeObject<byte[]> {
 	 */
 	@Override
 	public boolean isNull() {
-		return super.isNull() && getLiteralValue() == null ;//&& this.byteStream == null;
+		return super.isNull() && getLiteralValue() == null;//&& this.byteStream == null;
 	}
 
 	@Override
