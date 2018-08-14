@@ -3,6 +3,8 @@ ${licenseFirst}
 </#if>
 ${licensePrefix}Copyright ${date?date?string("yyyy")} ${project.organization!user}.
 ${licensePrefix?replace(" +$", "", "r")}
+${licensePrefix}Commercial licenses are available, please contact info@gregs.co.nz for details.
+${licensePrefix}
 ${licensePrefix}This work is licensed under the Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License. 
 ${licensePrefix}To view a copy of this license, visit http://creativecommons.org/licenses/by-nc-sa/4.0/ 
 ${licensePrefix}or send a letter to Creative Commons, PO Box 1866, Mountain View, CA 94042, USA.
