@@ -14,8 +14,8 @@ services:
 jdk:
   - openjdk7
 #  - oraclejdk8
-notifications:
-  email: false
+#notifications:
+#  email: false
 before_install:
   - mysql -e 'CREATE DATABASE IF NOT EXISTS dbvtest;'
   - mysql -e 'CREATE DATABASE IF NOT EXISTS dbvtest_cluster;'
