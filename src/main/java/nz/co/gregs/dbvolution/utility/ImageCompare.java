@@ -69,8 +69,8 @@ public class ImageCompare {
 
 	// like this to perhaps be upgraded to something more heuristic in the future.
 	protected synchronized final void autoSetParameters() {
-		compared=false;
-		imageDiff=null;
+		compared = false;
+		imageDiff = null;
 		comparex = 10;
 		comparey = 10;
 		factorA = 10;
@@ -79,8 +79,8 @@ public class ImageCompare {
 
 	// set the parameters for use during change detection.
 	public synchronized void setParameters(int x, int y, int factorA, int factorD) {
-		compared=false;
-		imageDiff=null;
+		compared = false;
+		imageDiff = null;
 		this.comparex = x;
 		this.comparey = y;
 		this.factorA = factorA;
@@ -89,8 +89,8 @@ public class ImageCompare {
 
 	// want to see some stuff in the console as the comparison is happening?
 	public void setDebugMode(int m) {
-		compared=false;
-		imageDiff=null;
+		compared = false;
+		imageDiff = null;
 		this.debugMode = m;
 	}
 
@@ -170,26 +170,16 @@ public class ImageCompare {
 	}
 
 	// write a buffered image to a jpeg file.
-	protected static void saveJPG(Image img, String filename) {
+	protected static void saveJPG(Image img, String filename) throws FileNotFoundException, IOException {
 		BufferedImage bi = imageToBufferedImage(img);
-		try {
-			FileOutputStream out = new FileOutputStream(filename);
-			ImageIO.write(bi, "jpg", out);
-		} catch (java.io.FileNotFoundException io) {
-			System.out.println("File Not Found");
-		} catch (IOException ex) {
-			Logger.getLogger(ImageCompare.class.getName()).log(Level.SEVERE, null, ex);
-		}
+		FileOutputStream out = new FileOutputStream(filename);
+		ImageIO.write(bi, "jpg", out);
 	}
 
 	// read a jpeg file into a buffered image
 	protected static Image loadJPG(String filename) throws IOException {
 		FileInputStream in = null;
-		try {
-			in = new FileInputStream(filename);
-		} catch (java.io.FileNotFoundException io) {
-			System.out.println("File Not Found");
-		}
+		in = new FileInputStream(filename);
 		BufferedImage bi = ImageIO.read(new File(filename));
 		return bi;
 	}
