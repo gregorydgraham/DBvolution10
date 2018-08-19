@@ -201,6 +201,14 @@ public class DBLargeBinary extends DBLargeObject<byte[]> {
 			}
 		} catch (IOException ex) {
 			Logger.getLogger(DBLargeBinary.class.getName()).log(Level.SEVERE, null, ex);
+			throw new DBRuntimeException(ex);
+		} finally {
+			try {
+				input.close();
+			} catch (IOException ex) {
+				Logger.getLogger(DBLargeBinary.class.getName()).log(Level.SEVERE, null, ex);
+				throw new DBRuntimeException(ex);
+			}
 		}
 		return concatAllByteArrays(byteArrays);
 	}
@@ -222,43 +230,28 @@ public class DBLargeBinary extends DBLargeObject<byte[]> {
 		return result;
 	}
 
-//
-//	private byte[] getBytesFromInputStream(InputStream inputStream) {
-//		InputStream input = new BufferedInputStream(inputStream);
-//		List<byte[]> byteArrays = new ArrayList<>();
-//		int totalBytesRead = 0;
-//		try {
-//			byte[] resultSetBytes;
-//			final int byteArrayDefaultSize = 100000;
-//			resultSetBytes = new byte[byteArrayDefaultSize];
-//			int bytesRead = input.read(resultSetBytes);
-//			while (bytesRead > 0) {
-//				totalBytesRead += bytesRead;
-//				byteArrays.add(resultSetBytes);
-//				resultSetBytes = new byte[byteArrayDefaultSize];
-//				bytesRead = input.read(resultSetBytes);
-//			}
-//		} catch (IOException ex) {
-//			Logger.getLogger(DBLargeBinary.class.getName()).log(Level.SEVERE, null, ex);
+//	public static byte[] concatAllCharArrays(List<char[]> bytes) {
+//		char[] first = bytes.get(0);
+//		bytes.remove(0);
+//		char[][] rest = bytes.toArray(new char[][]{});
+//		int totalLength = first.length;
+//		for (char[] array : rest) {
+//			totalLength += array.length;
 //		}
-//		final byte[] bytes = new byte[totalBytesRead];
-//		int bytesAdded = 0;
-//		for (byte[] someBytes : byteArrays) {
-//			final int copyStart =Math.min(totalBytesRead-1, bytesAdded);
-//			final int copyLength =Math.max(0, Math.min(someBytes.length, bytes.length - bytesAdded));
-//			System.out.println("copyStart, copyLength, bytesAdded, Math.min(someBytes.length, bytes.length - bytesAdded) = "+copyStart+", "+copyLength+", "+bytesAdded+", "+someBytes.length+", "+bytes.length+" - "+bytesAdded+"("+(bytes.length - bytesAdded)+")");
-//			System.arraycopy(someBytes, 0, bytes, copyStart, copyLength);
-////			System.arraycopy(someBytes, 0, bytes, bytesAdded, Math.min(someBytes.length, bytes.length - bytesAdded));
-//			bytesAdded += someBytes.length;
+//		char[] result = Arrays.copyOf(first, totalLength);
+//		int offset = first.length;
+//		for (char[] array : rest) {
+//			System.arraycopy(array, 0, result, offset, array.length);
+//			offset += array.length;
 //		}
-//		return bytes;
+//		return result;
 //	}
 	private byte[] getFromGetBytes(ResultSet resultSet, String fullColumnName) throws SQLException {
 		byte[] bytes = resultSet.getBytes(fullColumnName);
 		return bytes;
 	}
 
-	private byte[] getFromCharacterReader(ResultSet resultSet, String fullColumnName) throws SQLException, IOException {
+	private byte[] getFromCharacterReader(ResultSet resultSet, String fullColumnName) throws SQLException {
 		byte[] decodeBuffer = new byte[]{};
 		Reader inputReader = null;
 		try {
@@ -273,28 +266,56 @@ public class DBLargeBinary extends DBLargeObject<byte[]> {
 				BufferedReader input = new BufferedReader(inputReader);
 				List<byte[]> byteArrays = new ArrayList<>();
 
-				int totalBytesRead = 0;
 				try {
 					char[] resultSetBytes;
-					resultSetBytes = new char[100000];
+					final int byteArrayDefaultSize = 100000;
+					resultSetBytes = new char[byteArrayDefaultSize];
 					int bytesRead = input.read(resultSetBytes);
 					while (bytesRead > 0) {
-						totalBytesRead += bytesRead;
-						byteArrays.add(String.valueOf(resultSetBytes).getBytes(UTF_8));
-						resultSetBytes = new char[100000];
+						if (bytesRead == byteArrayDefaultSize) {
+							byteArrays.add(String.valueOf(resultSetBytes).getBytes(UTF_8));
+						} else {
+							char[] shortBytes = new char[bytesRead];
+							System.arraycopy(resultSetBytes, 0, shortBytes, 0, bytesRead);
+							byteArrays.add(String.valueOf(shortBytes).getBytes(UTF_8));
+						}
+						resultSetBytes = new char[byteArrayDefaultSize];
 						bytesRead = input.read(resultSetBytes);
 					}
 				} catch (IOException ex) {
 					Logger.getLogger(DBLargeBinary.class.getName()).log(Level.SEVERE, null, ex);
+					throw new DBRuntimeException(ex);
 				} finally {
-					input.close();
+					try {
+						input.close();
+					} catch (IOException ex) {
+						Logger.getLogger(DBLargeBinary.class.getName()).log(Level.SEVERE, null, ex);
+						throw new DBRuntimeException(ex);
+					}
 				}
-				byte[] bytes = new byte[totalBytesRead];
-				int bytesAdded = 0;
-				for (byte[] someBytes : byteArrays) {
-					System.arraycopy(someBytes, 0, bytes, bytesAdded, Math.min(someBytes.length, bytes.length - bytesAdded));
-					bytesAdded += someBytes.length;
-				}
+				byte[] bytes = concatAllByteArrays(byteArrays);
+//				int totalBytesRead = 0;
+//				try {
+//					char[] resultSetBytes;
+//					resultSetBytes = new char[100000];
+//					int bytesRead = input.read(resultSetBytes);
+//					while (bytesRead > 0) {
+//						totalBytesRead += bytesRead;
+//						byteArrays.add(String.valueOf(resultSetBytes).getBytes(UTF_8));
+//						resultSetBytes = new char[100000];
+//						bytesRead = input.read(resultSetBytes);
+//					}
+//				} catch (IOException ex) {
+//					Logger.getLogger(DBLargeBinary.class.getName()).log(Level.SEVERE, null, ex);
+//				} finally {
+//					input.close();
+//				}
+//				byte[] bytes = new byte[totalBytesRead];
+//				int bytesAdded = 0;
+//				for (byte[] someBytes : byteArrays) {
+//					System.arraycopy(someBytes, 0, bytes, bytesAdded, Math.min(someBytes.length, bytes.length - bytesAdded));
+//					bytesAdded += someBytes.length;
+//				}
 				decodeBuffer = Base64.decodeBase64(bytes);
 			}
 		}
@@ -312,35 +333,64 @@ public class DBLargeBinary extends DBLargeObject<byte[]> {
 				BufferedReader input = new BufferedReader(characterStream);
 				List<byte[]> byteArrays = new ArrayList<>();
 
-				int totalBytesRead = 0;
 				try {
 					char[] resultSetBytes;
-					resultSetBytes = new char[100000];
-					try {
-						int bytesRead = input.read(resultSetBytes);
-						while (bytesRead > 0) {
-							totalBytesRead += bytesRead;
+					final int byteArrayDefaultSize = 100000;
+					resultSetBytes = new char[byteArrayDefaultSize];
+					int bytesRead = input.read(resultSetBytes);
+					while (bytesRead > 0) {
+						if (bytesRead == byteArrayDefaultSize) {
 							byteArrays.add(String.valueOf(resultSetBytes).getBytes(UTF_8));
-							resultSetBytes = new char[100000];
-							bytesRead = input.read(resultSetBytes);
+						} else {
+							char[] shortBytes = new char[bytesRead];
+							System.arraycopy(resultSetBytes, 0, shortBytes, 0, bytesRead);
+							byteArrays.add(String.valueOf(shortBytes).getBytes(UTF_8));
 						}
-					} finally {
-						input.close();
+						resultSetBytes = new char[byteArrayDefaultSize];
+						bytesRead = input.read(resultSetBytes);
 					}
 				} catch (IOException ex) {
 					Logger.getLogger(DBLargeBinary.class.getName()).log(Level.SEVERE, null, ex);
+					throw new DBRuntimeException(ex);
+				} finally {
+					try {
+						input.close();
+					} catch (IOException ex) {
+						Logger.getLogger(DBLargeBinary.class.getName()).log(Level.SEVERE, null, ex);
+					}
 				}
-				bytes = new byte[totalBytesRead];
-				int bytesAdded = 0;
-				for (byte[] someBytes : byteArrays) {
-					System.arraycopy(someBytes, 0, bytes, bytesAdded, Math.min(someBytes.length, bytes.length - bytesAdded));
-					bytesAdded += someBytes.length;
-				}
+				bytes = concatAllByteArrays(byteArrays);
+//				int totalBytesRead = 0;
+//				try {
+//					char[] resultSetBytes;
+//					resultSetBytes = new char[100000];
+//					try {
+//						int bytesRead = input.read(resultSetBytes);
+//						while (bytesRead > 0) {
+//							totalBytesRead += bytesRead;
+//							byteArrays.add(String.valueOf(resultSetBytes).getBytes(UTF_8));
+//							resultSetBytes = new char[100000];
+//							bytesRead = input.read(resultSetBytes);
+//						}
+//					} finally {
+//						input.close();
+//					}
+//				} catch (IOException ex) {
+//					Logger.getLogger(DBLargeBinary.class.getName()).log(Level.SEVERE, null, ex);
+//					throw new DBRuntimeException(ex);
+//				}
+//				bytes = new byte[totalBytesRead];
+//				int bytesAdded = 0;
+//				for (byte[] someBytes : byteArrays) {
+//					System.arraycopy(someBytes, 0, bytes, bytesAdded, Math.min(someBytes.length, bytes.length - bytesAdded));
+//					bytesAdded += someBytes.length;
+//				}
 			} finally {
 				try {
 					characterStream.close();
 				} catch (IOException ex) {
 					Logger.getLogger(DBLargeBinary.class.getName()).log(Level.SEVERE, null, ex);
+					throw new DBRuntimeException(ex);
 				}
 			}
 		}
@@ -581,11 +631,7 @@ public class DBLargeBinary extends DBLargeObject<byte[]> {
 				bytes = getFromBinaryStream(resultSet, fullColumnName);
 				break;
 			case CHARSTREAM:
-				try {
-					bytes = getFromCharacterReader(resultSet, fullColumnName);
-				} catch (IOException exp) {
-					throw new DBRuntimeException(exp);
-				}
+				bytes = getFromCharacterReader(resultSet, fullColumnName);
 				break;
 			case CLOB:
 				bytes = getFromCLOB(resultSet, fullColumnName);
