@@ -16,6 +16,7 @@
 package nz.co.gregs.dbvolution.datatypes;
 
 import java.io.*;
+import static java.nio.charset.StandardCharsets.UTF_8;
 import java.sql.*;
 import java.util.*;
 import java.util.logging.*;
@@ -153,6 +154,23 @@ public class DBJavaObject<O> extends DBLargeObject<O> {
 		return null;
 	}
 
+	public static byte[] concatAllByteArrays(List<byte[]> bytes) {
+		byte[] first = bytes.get(0);
+		bytes.remove(0);
+		byte[][] rest = bytes.toArray(new byte[][]{});
+		int totalLength = first.length;
+		for (byte[] array : rest) {
+			totalLength += array.length;
+		}
+		byte[] result = Arrays.copyOf(first, totalLength);
+		int offset = first.length;
+		for (byte[] array : rest) {
+			System.arraycopy(array, 0, result, offset, array.length);
+			offset += array.length;
+		}
+		return result;
+	}
+
 	@SuppressWarnings("unchecked")
 	private O getFromCharacterReader(ResultSet resultSet, String fullColumnName) throws SQLException, IOException {
 		O obj = null;
@@ -168,32 +186,58 @@ public class DBJavaObject<O> extends DBLargeObject<O> {
 			} else {
 				try (BufferedReader input = new BufferedReader(inputReader)) {
 					List<byte[]> byteArrays = new ArrayList<>();
-
-					int totalBytesRead = 0;
 					try {
 						char[] resultSetBytes;
-						resultSetBytes = new char[100000];
+						final int byteArrayDefaultSize = 100000;
+						resultSetBytes = new char[byteArrayDefaultSize];
 						int bytesRead = input.read(resultSetBytes);
 						while (bytesRead > 0) {
-							totalBytesRead += bytesRead;
-							byteArrays.add(String.valueOf(resultSetBytes).getBytes());
-							resultSetBytes = new char[100000];
+							if (bytesRead == byteArrayDefaultSize) {
+								byteArrays.add(String.valueOf(resultSetBytes).getBytes(UTF_8));
+							} else {
+								char[] shortBytes = new char[bytesRead];
+								System.arraycopy(resultSetBytes, 0, shortBytes, 0, bytesRead);
+								byteArrays.add(String.valueOf(shortBytes).getBytes(UTF_8));
+							}
+							resultSetBytes = new char[byteArrayDefaultSize];
 							bytesRead = input.read(resultSetBytes);
 						}
 					} catch (IOException ex) {
-						Logger.getLogger(DBJavaObject.class.getName()).log(Level.SEVERE, null, ex);
+						Logger.getLogger(DBLargeBinary.class.getName()).log(Level.SEVERE, null, ex);
+						throw new DBRuntimeException(ex);
+					} finally {
+						try {
+							input.close();
+						} catch (IOException ex) {
+							Logger.getLogger(DBLargeBinary.class.getName()).log(Level.SEVERE, null, ex);
+							throw new DBRuntimeException(ex);
+						}
 					}
-					byte[] bytes = new byte[totalBytesRead];
-					int bytesAdded = 0;
-					for (byte[] someBytes : byteArrays) {
-						System.arraycopy(someBytes, 0, bytes, bytesAdded, Math.min(someBytes.length, bytes.length - bytesAdded));
-						bytesAdded += someBytes.length;
-					}
+					byte[] bytes = concatAllByteArrays(byteArrays);
+//					int totalBytesRead = 0;
+//					try {
+//						char[] resultSetBytes;
+//						resultSetBytes = new char[100000];
+//						int bytesRead = input.read(resultSetBytes);
+//						while (bytesRead > 0) {
+//							totalBytesRead += bytesRead;
+//							byteArrays.add(String.valueOf(resultSetBytes).getBytes());
+//							resultSetBytes = new char[100000];
+//							bytesRead = input.read(resultSetBytes);
+//						}
+//					} catch (IOException ex) {
+//						Logger.getLogger(DBJavaObject.class.getName()).log(Level.SEVERE, null, ex);
+//					}
+//					byte[] bytes = new byte[totalBytesRead];
+//					int bytesAdded = 0;
+//					for (byte[] someBytes : byteArrays) {
+//						System.arraycopy(someBytes, 0, bytes, bytesAdded, Math.min(someBytes.length, bytes.length - bytesAdded));
+//						bytesAdded += someBytes.length;
+//					}
 					byte[] decodeBuffer = Base64.decodeBase64(bytes);
 
 					ObjectInputStream decodedInput = new ObjectInputStream(new ByteArrayInputStream(decodeBuffer));
 					try {
-//					this.setValue(decodedInput.readObject());
 						obj = (O) decodedInput.readObject();
 					} catch (ClassNotFoundException ex) {
 						Logger.getLogger(DBJavaObject.class.getName()).log(Level.SEVERE, null, ex);
@@ -212,29 +256,58 @@ public class DBJavaObject<O> extends DBLargeObject<O> {
 			this.setToNull();
 		} else {
 			try {
+				List<byte[]> byteArrays = new ArrayList<>();
 				try (BufferedReader input = new BufferedReader(clob.getCharacterStream())) {
-					List<byte[]> byteArrays = new ArrayList<>();
 
-					int totalBytesRead = 0;
 					try {
+
 						char[] resultSetBytes;
-						resultSetBytes = new char[100000];
+						final int byteArrayDefaultSize = 100000;
+						resultSetBytes = new char[byteArrayDefaultSize];
 						int bytesRead = input.read(resultSetBytes);
 						while (bytesRead > 0) {
-							totalBytesRead += bytesRead;
-							byteArrays.add(String.valueOf(resultSetBytes).getBytes());
-							resultSetBytes = new char[100000];
+							if (bytesRead == byteArrayDefaultSize) {
+								byteArrays.add(String.valueOf(resultSetBytes).getBytes(UTF_8));
+							} else {
+								char[] shortBytes = new char[bytesRead];
+								System.arraycopy(resultSetBytes, 0, shortBytes, 0, bytesRead);
+								byteArrays.add(String.valueOf(shortBytes).getBytes(UTF_8));
+							}
+							resultSetBytes = new char[byteArrayDefaultSize];
 							bytesRead = input.read(resultSetBytes);
 						}
 					} catch (IOException ex) {
-						Logger.getLogger(DBJavaObject.class.getName()).log(Level.SEVERE, null, ex);
+						Logger.getLogger(DBLargeBinary.class.getName()).log(Level.SEVERE, null, ex);
+						throw new DBRuntimeException(ex);
+					} finally {
+						try {
+							input.close();
+						} catch (IOException ex) {
+							Logger.getLogger(DBLargeBinary.class.getName()).log(Level.SEVERE, null, ex);
+							throw new DBRuntimeException(ex);
+						}
 					}
-					byte[] bytes = new byte[totalBytesRead];
-					int bytesAdded = 0;
-					for (byte[] someBytes : byteArrays) {
-						System.arraycopy(someBytes, 0, bytes, bytesAdded, Math.min(someBytes.length, bytes.length - bytesAdded));
-						bytesAdded += someBytes.length;
-					}
+					byte[] bytes = concatAllByteArrays(byteArrays);
+//					int totalBytesRead = 0;
+//					try {
+//						char[] resultSetBytes;
+//						resultSetBytes = new char[100000];
+//						int bytesRead = input.read(resultSetBytes);
+//						while (bytesRead > 0) {
+//							totalBytesRead += bytesRead;
+//							byteArrays.add(String.valueOf(resultSetBytes).getBytes());
+//							resultSetBytes = new char[100000];
+//							bytesRead = input.read(resultSetBytes);
+//						}
+//					} catch (IOException ex) {
+//						Logger.getLogger(DBJavaObject.class.getName()).log(Level.SEVERE, null, ex);
+//					}
+//					byte[] bytes = new byte[totalBytesRead];
+//					int bytesAdded = 0;
+//					for (byte[] someBytes : byteArrays) {
+//						System.arraycopy(someBytes, 0, bytes, bytesAdded, Math.min(someBytes.length, bytes.length - bytesAdded));
+//						bytesAdded += someBytes.length;
+//					}
 					ObjectInputStream objectInput = new ObjectInputStream(new ByteArrayInputStream(bytes));
 //				this.setValue(objectInput.readObject());
 					returnValue = (O) objectInput.readObject();
