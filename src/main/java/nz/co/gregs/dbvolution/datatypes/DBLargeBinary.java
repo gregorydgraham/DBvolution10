@@ -230,22 +230,6 @@ public class DBLargeBinary extends DBLargeObject<byte[]> {
 		return result;
 	}
 
-//	public static byte[] concatAllCharArrays(List<char[]> bytes) {
-//		char[] first = bytes.get(0);
-//		bytes.remove(0);
-//		char[][] rest = bytes.toArray(new char[][]{});
-//		int totalLength = first.length;
-//		for (char[] array : rest) {
-//			totalLength += array.length;
-//		}
-//		char[] result = Arrays.copyOf(first, totalLength);
-//		int offset = first.length;
-//		for (char[] array : rest) {
-//			System.arraycopy(array, 0, result, offset, array.length);
-//			offset += array.length;
-//		}
-//		return result;
-//	}
 	private byte[] getFromGetBytes(ResultSet resultSet, String fullColumnName) throws SQLException {
 		byte[] bytes = resultSet.getBytes(fullColumnName);
 		return bytes;
@@ -294,28 +278,6 @@ public class DBLargeBinary extends DBLargeObject<byte[]> {
 					}
 				}
 				byte[] bytes = concatAllByteArrays(byteArrays);
-//				int totalBytesRead = 0;
-//				try {
-//					char[] resultSetBytes;
-//					resultSetBytes = new char[100000];
-//					int bytesRead = input.read(resultSetBytes);
-//					while (bytesRead > 0) {
-//						totalBytesRead += bytesRead;
-//						byteArrays.add(String.valueOf(resultSetBytes).getBytes(UTF_8));
-//						resultSetBytes = new char[100000];
-//						bytesRead = input.read(resultSetBytes);
-//					}
-//				} catch (IOException ex) {
-//					Logger.getLogger(DBLargeBinary.class.getName()).log(Level.SEVERE, null, ex);
-//				} finally {
-//					input.close();
-//				}
-//				byte[] bytes = new byte[totalBytesRead];
-//				int bytesAdded = 0;
-//				for (byte[] someBytes : byteArrays) {
-//					System.arraycopy(someBytes, 0, bytes, bytesAdded, Math.min(someBytes.length, bytes.length - bytesAdded));
-//					bytesAdded += someBytes.length;
-//				}
 				decodeBuffer = Base64.decodeBase64(bytes);
 			}
 		}
@@ -360,31 +322,6 @@ public class DBLargeBinary extends DBLargeObject<byte[]> {
 					}
 				}
 				bytes = concatAllByteArrays(byteArrays);
-//				int totalBytesRead = 0;
-//				try {
-//					char[] resultSetBytes;
-//					resultSetBytes = new char[100000];
-//					try {
-//						int bytesRead = input.read(resultSetBytes);
-//						while (bytesRead > 0) {
-//							totalBytesRead += bytesRead;
-//							byteArrays.add(String.valueOf(resultSetBytes).getBytes(UTF_8));
-//							resultSetBytes = new char[100000];
-//							bytesRead = input.read(resultSetBytes);
-//						}
-//					} finally {
-//						input.close();
-//					}
-//				} catch (IOException ex) {
-//					Logger.getLogger(DBLargeBinary.class.getName()).log(Level.SEVERE, null, ex);
-//					throw new DBRuntimeException(ex);
-//				}
-//				bytes = new byte[totalBytesRead];
-//				int bytesAdded = 0;
-//				for (byte[] someBytes : byteArrays) {
-//					System.arraycopy(someBytes, 0, bytes, bytesAdded, Math.min(someBytes.length, bytes.length - bytesAdded));
-//					bytesAdded += someBytes.length;
-//				}
 			} finally {
 				try {
 					characterStream.close();
@@ -656,19 +593,19 @@ public class DBLargeBinary extends DBLargeObject<byte[]> {
 
 	@Override
 	protected void setValueFromStandardStringEncoding(String encodedValue) {
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+		throw new UnsupportedOperationException("Not supported yet."); 
 	}
 
 	private byte[] getFromBase64(ResultSet resultSet, String fullColumnName) {
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+		throw new UnsupportedOperationException("Not supported yet.");
 	}
 
 	private byte[] getFromString(ResultSet resultSet, String fullColumnName) {
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+		throw new UnsupportedOperationException("Not supported yet.");
 	}
 
 	private byte[] getFromJavaObject(ResultSet resultSet, String fullColumnName) {
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+		throw new UnsupportedOperationException("Not supported yet."); 
 	}
 
 	@Override

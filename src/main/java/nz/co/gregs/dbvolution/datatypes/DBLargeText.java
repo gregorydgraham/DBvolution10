@@ -229,33 +229,9 @@ public class DBLargeText extends DBLargeObject<byte[]> {
 			}
 		}
 		bytes = concatAllByteArrays(byteArrays);
-//		int totalBytesRead = 0;
-//		try {
-//			byte[] resultSetBytes;
-//			resultSetBytes = new byte[100000];
-//			int bytesRead = input.read(resultSetBytes);
-//			while (bytesRead > 0) {
-//				totalBytesRead += bytesRead;
-//				byteArrays.add(resultSetBytes);
-//				resultSetBytes = new byte[100000];
-//				bytesRead = input.read(resultSetBytes);
-//			}
-//		} catch (IOException ex) {
-//			Logger.getLogger(DBLargeText.class.getName()).log(Level.SEVERE, null, ex);
-//		}
-//		bytes = new byte[totalBytesRead];
-//		int bytesAdded = 0;
-//		for (byte[] someBytes : byteArrays) {
-//			System.arraycopy(someBytes, 0, bytes, bytesAdded, Math.min(someBytes.length, bytes.length - bytesAdded));
-//			bytesAdded += someBytes.length;
-//		}
 		return bytes;
 	}
 
-//	private byte[] getFromGetBytes(ResultSet resultSet, String fullColumnName) throws SQLException {
-//		byte[] bytes = resultSet.getBytes(fullColumnName);
-//		return bytes;
-//	}
 	private byte[] getFromString(ResultSet resultSet, String fullColumnName) throws SQLException {
 		String gotString = resultSet.getString(fullColumnName);
 		return gotString.getBytes(UTF_8);
@@ -304,28 +280,6 @@ public class DBLargeText extends DBLargeObject<byte[]> {
 					}
 				}
 				byte[] bytes = concatAllByteArrays(byteArrays);
-//				int totalBytesRead = 0;
-//				try {
-//					char[] resultSetBytes;
-//					resultSetBytes = new char[100000];
-//					int bytesRead = input.read(resultSetBytes);
-//					while (bytesRead > 0) {
-//						totalBytesRead += bytesRead;
-//						byteArrays.add(String.valueOf(resultSetBytes).getBytes(UTF_8));
-//						resultSetBytes = new char[100000];
-//						bytesRead = input.read(resultSetBytes);
-//					}
-//				} catch (IOException ex) {
-//					Logger.getLogger(DBLargeText.class.getName()).log(Level.SEVERE, null, ex);
-//				} finally {
-//					input.close();
-//				}
-//				byte[] bytes = new byte[totalBytesRead];
-//				int bytesAdded = 0;
-//				for (byte[] someBytes : byteArrays) {
-//					System.arraycopy(someBytes, 0, bytes, bytesAdded, Math.min(someBytes.length, bytes.length - bytesAdded));
-//					bytesAdded += someBytes.length;
-//				}
 				decodeBuffer = Base64.decodeBase64(bytes);
 			}
 		}
@@ -370,37 +324,6 @@ public class DBLargeText extends DBLargeObject<byte[]> {
 				}
 			}
 			bytes = concatAllByteArrays(byteArrays);
-//				int totalBytesRead = 0;
-//				try {
-//					char[] resultSetBytes;
-//					resultSetBytes = new char[100000];
-//					try {
-//						int bytesRead = input.read(resultSetBytes);
-//						while (bytesRead > 0) {
-//							totalBytesRead += bytesRead;
-//							byteArrays.add(String.valueOf(resultSetBytes).getBytes(UTF_8));
-//							resultSetBytes = new char[100000];
-//							bytesRead = input.read(resultSetBytes);
-//						}
-//					} finally {
-//						input.close();
-//					}
-//				} catch (IOException ex) {
-//					Logger.getLogger(DBLargeText.class.getName()).log(Level.SEVERE, null, ex);
-//				}
-//				bytes = new byte[totalBytesRead];
-//				int bytesAdded = 0;
-//				for (byte[] someBytes : byteArrays) {
-//					System.arraycopy(someBytes, 0, bytes, bytesAdded, Math.min(someBytes.length, bytes.length - bytesAdded));
-//					bytesAdded += someBytes.length;
-//				}
-//			} finally {
-//				try {
-//					characterStream.close();
-//				} catch (IOException ex) {
-//					Logger.getLogger(DBLargeText.class.getName()).log(Level.SEVERE, null, ex);
-//				}
-//			}
 		}
 		return bytes;
 	}

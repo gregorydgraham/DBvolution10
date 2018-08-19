@@ -65,7 +65,6 @@ public class DBJavaObject<O> extends DBLargeObject<O> {
 					ObjectOutputStream oStream = new ObjectOutputStream(tempByteStream);
 					oStream.writeObject(literalObject);
 					setLiteralValue(literalObject);
-//					setLiteralValue(tempByteStream.toByteArray());
 				} catch (IOException ex) {
 					throw new RuntimeException(ex);
 				}
@@ -214,26 +213,6 @@ public class DBJavaObject<O> extends DBLargeObject<O> {
 						}
 					}
 					byte[] bytes = concatAllByteArrays(byteArrays);
-//					int totalBytesRead = 0;
-//					try {
-//						char[] resultSetBytes;
-//						resultSetBytes = new char[100000];
-//						int bytesRead = input.read(resultSetBytes);
-//						while (bytesRead > 0) {
-//							totalBytesRead += bytesRead;
-//							byteArrays.add(String.valueOf(resultSetBytes).getBytes());
-//							resultSetBytes = new char[100000];
-//							bytesRead = input.read(resultSetBytes);
-//						}
-//					} catch (IOException ex) {
-//						Logger.getLogger(DBJavaObject.class.getName()).log(Level.SEVERE, null, ex);
-//					}
-//					byte[] bytes = new byte[totalBytesRead];
-//					int bytesAdded = 0;
-//					for (byte[] someBytes : byteArrays) {
-//						System.arraycopy(someBytes, 0, bytes, bytesAdded, Math.min(someBytes.length, bytes.length - bytesAdded));
-//						bytesAdded += someBytes.length;
-//					}
 					byte[] decodeBuffer = Base64.decodeBase64(bytes);
 
 					ObjectInputStream decodedInput = new ObjectInputStream(new ByteArrayInputStream(decodeBuffer));
@@ -288,28 +267,7 @@ public class DBJavaObject<O> extends DBLargeObject<O> {
 						}
 					}
 					byte[] bytes = concatAllByteArrays(byteArrays);
-//					int totalBytesRead = 0;
-//					try {
-//						char[] resultSetBytes;
-//						resultSetBytes = new char[100000];
-//						int bytesRead = input.read(resultSetBytes);
-//						while (bytesRead > 0) {
-//							totalBytesRead += bytesRead;
-//							byteArrays.add(String.valueOf(resultSetBytes).getBytes());
-//							resultSetBytes = new char[100000];
-//							bytesRead = input.read(resultSetBytes);
-//						}
-//					} catch (IOException ex) {
-//						Logger.getLogger(DBJavaObject.class.getName()).log(Level.SEVERE, null, ex);
-//					}
-//					byte[] bytes = new byte[totalBytesRead];
-//					int bytesAdded = 0;
-//					for (byte[] someBytes : byteArrays) {
-//						System.arraycopy(someBytes, 0, bytes, bytesAdded, Math.min(someBytes.length, bytes.length - bytesAdded));
-//						bytesAdded += someBytes.length;
-//					}
 					ObjectInputStream objectInput = new ObjectInputStream(new ByteArrayInputStream(bytes));
-//				this.setValue(objectInput.readObject());
 					returnValue = (O) objectInput.readObject();
 				}
 			} catch (IOException | ClassNotFoundException ex) {
@@ -430,45 +388,6 @@ public class DBJavaObject<O> extends DBLargeObject<O> {
 				obj = getFromGetBytes(resultSet, fullColumnName);
 				break;
 		}
-//		if (defn.prefersLargeObjectsReadAsBase64CharacterStream(this)) {
-//			try {
-//				obj = getFromCharacterReader(resultSet, fullColumnName);
-//			} catch (IOException ex) {
-//				throw new DBRuntimeException("Unable To Set Value: " + ex.getMessage(), ex);
-//			}
-//		} else if (defn.prefersLargeObjectsReadAsBytes()) {
-//			obj = getFromGetBytes(resultSet, fullColumnName);
-//		} else if (defn.prefersLargeObjectsReadAsCLOB()) {
-//			obj = getFromCLOB(resultSet, fullColumnName);
-//		} else {
-//			obj = getFromBinaryStream(resultSet, fullColumnName);
-//		}
-
-//		try {
-//			obj = getFromBinaryStream(resultSet, fullColumnName);
-//		} catch (Throwable exp1) {
-//			Logger.getLogger(DBLargeBinary.class.getName()).log(Level.WARNING, "Database rejected Binary Stream method", exp1);
-//			try {
-//				obj = getFromBLOB(resultSet, fullColumnName);
-//			} catch (Throwable exp2) {
-//				Logger.getLogger(DBLargeBinary.class.getName()).log(Level.WARNING, "Database rejected Binary Stream method", exp1);
-//				try {
-//					obj = getFromGetBytes(resultSet, fullColumnName);
-//				} catch (Throwable exp3) {
-//					Logger.getLogger(DBLargeBinary.class.getName()).log(Level.WARNING, "Database rejected BLOB method", exp2);
-//					try {
-//						obj = getFromCLOB(resultSet, fullColumnName);
-//					} catch (Throwable exp4) {
-//						Logger.getLogger(DBLargeBinary.class.getName()).log(Level.WARNING, "Database rejected Bytes method", exp4);
-//						try {
-//							obj = getFromCharacterReader(resultSet, fullColumnName);
-//						} catch (Throwable exp5) {
-//							Logger.getLogger(DBLargeBinary.class.getName()).log(Level.SEVERE, "Database rejected Character Reader method", exp5);
-//						}
-//					}
-//				}
-//			}
-//		}
 		return obj;
 	}
 
@@ -479,11 +398,11 @@ public class DBJavaObject<O> extends DBLargeObject<O> {
 
 	@Override
 	protected void setValueFromStandardStringEncoding(String encodedValue) {
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+		throw new UnsupportedOperationException("Not supported yet."); 
 	}
 
 	private O getFromString(ResultSet resultSet, String fullColumnName) {
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+		throw new UnsupportedOperationException("Not supported yet."); 
 	}
 
 	@SuppressWarnings("unchecked")
@@ -502,7 +421,7 @@ public class DBJavaObject<O> extends DBLargeObject<O> {
 	}
 
 	private O getFromBase64(ResultSet resultSet, String fullColumnName) {
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+		throw new UnsupportedOperationException("Not supported yet."); 
 	}
 
 	@Override
