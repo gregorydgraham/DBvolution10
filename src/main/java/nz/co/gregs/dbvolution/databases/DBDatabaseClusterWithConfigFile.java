@@ -41,6 +41,8 @@ import java.nio.file.Paths;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -142,6 +144,7 @@ public class DBDatabaseClusterWithConfigFile extends DBDatabaseCluster {
 
 		private final String yamlConfigFilename;
 		private Path configPath;
+		private final List<String> visitedFiles = new ArrayList<>();
 
 		DefaultConfigFinder(String yamlConfigFilename) {
 			this.yamlConfigFilename = yamlConfigFilename;
@@ -150,10 +153,12 @@ public class DBDatabaseClusterWithConfigFile extends DBDatabaseCluster {
 		// Compares the glob pattern against
 		// the file or directory name.
 		FileVisitResult find(Path path) {
-			Path name = path.getFileName();
-			if (name != null && name.toString().equals(yamlConfigFilename)) {
-				configPath = path;
-				return FileVisitResult.TERMINATE;
+			if (!visited(path)) {
+				Path name = path.getFileName();
+				if (name != null && name.toString().equals(yamlConfigFilename)) {
+					configPath = path;
+					return FileVisitResult.TERMINATE;
+				}
 			}
 			return FileVisitResult.CONTINUE;
 		}
@@ -185,6 +190,16 @@ public class DBDatabaseClusterWithConfigFile extends DBDatabaseCluster {
 				LOG.debug("Unable To Find Database Cluster Config File In: " + dir.toAbsolutePath().toString());
 			}
 			return super.postVisitDirectory(dir, exc);
+		}
+
+		private boolean visited(Path path) {
+			String key = path.toAbsolutePath().toString();
+			if(visitedFiles.contains(key)){
+				return true;
+			}else{
+				visitedFiles.add(key);
+			}
+			return false;
 		}
 	}
 
