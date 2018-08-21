@@ -45,6 +45,7 @@ import nz.co.gregs.dbvolution.results.AnyResult;
  */
 public abstract class SimpleNumericExpression<B, R extends SimpleNumericResult<B>, D extends QueryableDatatype<B>> extends RangeExpression<B, R, D> implements SimpleNumericResult<B>{
 
+	private static final long serialVersionUID = 1L;
 	public abstract NumberExpression numberResult();
 	public abstract IntegerExpression integerResult();
 	

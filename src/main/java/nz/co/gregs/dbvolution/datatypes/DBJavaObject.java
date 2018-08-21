@@ -204,13 +204,6 @@ public class DBJavaObject<O> extends DBLargeObject<O> {
 					} catch (IOException ex) {
 						Logger.getLogger(DBLargeBinary.class.getName()).log(Level.SEVERE, null, ex);
 						throw new DBRuntimeException(ex);
-					} finally {
-						try {
-							input.close();
-						} catch (IOException ex) {
-							Logger.getLogger(DBLargeBinary.class.getName()).log(Level.SEVERE, null, ex);
-							throw new DBRuntimeException(ex);
-						}
 					}
 					byte[] bytes = concatAllByteArrays(byteArrays);
 					byte[] decodeBuffer = Base64.decodeBase64(bytes);
@@ -258,13 +251,6 @@ public class DBJavaObject<O> extends DBLargeObject<O> {
 					} catch (IOException ex) {
 						Logger.getLogger(DBLargeBinary.class.getName()).log(Level.SEVERE, null, ex);
 						throw new DBRuntimeException(ex);
-					} finally {
-						try {
-							input.close();
-						} catch (IOException ex) {
-							Logger.getLogger(DBLargeBinary.class.getName()).log(Level.SEVERE, null, ex);
-							throw new DBRuntimeException(ex);
-						}
 					}
 					byte[] bytes = concatAllByteArrays(byteArrays);
 					ObjectInputStream objectInput = new ObjectInputStream(new ByteArrayInputStream(bytes));
@@ -310,7 +296,6 @@ public class DBJavaObject<O> extends DBLargeObject<O> {
 		if (byteStream == null) {
 			try {
 				byteStream = new ByteArrayInputStream(getBytes());
-//			this.setValue(getBytes());
 			} catch (IOException ex) {
 				throw new RuntimeException(ex);
 			}

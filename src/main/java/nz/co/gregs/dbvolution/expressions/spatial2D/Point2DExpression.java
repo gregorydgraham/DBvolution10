@@ -453,6 +453,8 @@ public class Point2DExpression extends Spatial2DExpression<Point, Point2DResult,
 
 	private static abstract class PointPointFunctionWithBooleanResult extends BooleanExpression {
 
+		private static final long serialVersionUID = 1L;
+
 		private final Point2DExpression first;
 		private final Point2DExpression second;
 		private boolean requiresNullProtection;
@@ -509,7 +511,9 @@ public class Point2DExpression extends Spatial2DExpression<Point, Point2DResult,
 
 	private static abstract class PointFunctionWithBooleanResult extends BooleanExpression {
 
-		private Point2DExpression first;
+		private static final long serialVersionUID = 1L;
+
+		private final Point2DExpression first;
 		private boolean requiresNullProtection;
 
 		PointFunctionWithBooleanResult(Point2DExpression first) {
@@ -553,8 +557,10 @@ public class Point2DExpression extends Spatial2DExpression<Point, Point2DResult,
 
 	private static abstract class PointPointFunctionWithNumberResult extends NumberExpression {
 
-		private Point2DExpression first;
-		private Point2DExpression second;
+		private static final long serialVersionUID = 1L;
+
+		private final Point2DExpression first;
+		private final Point2DExpression second;
 		private boolean requiresNullProtection;
 
 		PointPointFunctionWithNumberResult(Point2DExpression first, Point2DExpression second) {
@@ -609,8 +615,10 @@ public class Point2DExpression extends Spatial2DExpression<Point, Point2DResult,
 
 	private static abstract class NumberNumberFunctionWithPoint2DResult extends Point2DExpression {
 
-		private NumberExpression first;
-		private NumberExpression second;
+		private static final long serialVersionUID = 1L;
+
+		private final NumberExpression first;
+		private final NumberExpression second;
 		private boolean requiresNullProtection;
 
 		NumberNumberFunctionWithPoint2DResult(NumberExpression first, NumberExpression second) {
@@ -665,7 +673,9 @@ public class Point2DExpression extends Spatial2DExpression<Point, Point2DResult,
 
 	private static abstract class PointFunctionWithNumberResult extends NumberExpression {
 
-		private Point2DExpression first;
+		private static final long serialVersionUID = 1L;
+
+		private final Point2DExpression first;
 		private boolean requiresNullProtection;
 
 		PointFunctionWithNumberResult(Point2DExpression first) {
@@ -712,7 +722,9 @@ public class Point2DExpression extends Spatial2DExpression<Point, Point2DResult,
 
 	private static abstract class PointFunctionWithStringResult extends StringExpression {
 
-		private Point2DExpression first;
+		private static final long serialVersionUID = 1L;
+
+		private final Point2DExpression first;
 		private boolean requiresNullProtection;
 
 		PointFunctionWithStringResult(Point2DExpression first) {
@@ -759,7 +771,9 @@ public class Point2DExpression extends Spatial2DExpression<Point, Point2DResult,
 
 	private static abstract class PointFunctionWithGeometry2DResult extends Polygon2DExpression {
 
-		private Point2DExpression first;
+		private static final long serialVersionUID = 1L;
+
+		private final Point2DExpression first;
 		private boolean requiresNullProtection;
 
 		PointFunctionWithGeometry2DResult(Point2DExpression first) {

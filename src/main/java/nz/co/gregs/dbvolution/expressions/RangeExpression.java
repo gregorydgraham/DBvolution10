@@ -51,6 +51,7 @@ import nz.co.gregs.dbvolution.results.RangeComparable;
  */
 public abstract class RangeExpression<B, R extends RangeResult<B>, D extends QueryableDatatype<B>> extends InExpression<B, R, D> implements RangeComparable<B, R> {
 
+	private static final long serialVersionUID = 1L;
 	/**
 	 *
 	 * @param only
@@ -265,6 +266,7 @@ public abstract class RangeExpression<B, R extends RangeResult<B>, D extends Que
 		}
 
 		@Override
+		@SuppressWarnings("unchecked")
 		public String createSQLForFromClause(DBDatabase database) {
 
 			DBDefinition defn = database.getDefinition();
@@ -281,14 +283,14 @@ public abstract class RangeExpression<B, R extends RangeResult<B>, D extends Que
 
 			DBQuery dbQuery = database.getDBQuery(table1);
 
-			final RangeExpression t2UpdateCount = (RangeExpression) inputRangeExpression.copy();
-			final RangeExpression t2UIDMarque = (RangeExpression) pkRangeExpression.copy();
-			Set<DBRow> tablesInvolved = (Set<DBRow>)t2UpdateCount.getTablesInvolved();
+			final RangeExpression<?,?,?> t2UpdateCount = (RangeExpression) inputRangeExpression.copy();
+			final RangeExpression<?,?,?> t2UIDMarque = (RangeExpression) pkRangeExpression.copy();
+			Set<DBRow> tablesInvolved = t2UpdateCount.getTablesInvolved();
 			for (DBRow table : tablesInvolved) {
 				table.setTableVariantIdentifier("a2");
 				dbQuery.addOptional(table);
 			}
-			tablesInvolved = (Set<DBRow>)t2UIDMarque.getTablesInvolved();
+			tablesInvolved = t2UIDMarque.getTablesInvolved();
 			for (DBRow table : tablesInvolved) {
 				table.setTableVariantIdentifier("a2");
 				dbQuery.addOptional(table);

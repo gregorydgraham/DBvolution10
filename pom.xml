@@ -105,7 +105,7 @@
 			<plugin>
 				<groupId>org.jacoco</groupId>
 				<artifactId>jacoco-maven-plugin</artifactId>
-				<version>0.7.7.201606060606</version>
+				<version>0.8.1</version>
 				<reportSets>
 					<reportSet>
 						<reports>
@@ -181,6 +181,20 @@
 						<configuration>
 							<haltOnFailure>false</haltOnFailure>
 							<rules>
+								<!-- implementation is needed only for Maven 2 -->
+								<rule implementation="org.jacoco.maven.RuleConfiguration">
+									<element>METHOD</element>
+									<excludes>
+										<exclude>xFunc</exclude>
+									</excludes>
+									<limits><!-- implementation is needed only for Maven 2 -->
+										<limit implementation="org.jacoco.report.check.Limit">
+											<counter>INSTRUCTION</counter>
+											<value>COVEREDRATIO</value>
+											<minimum>0.20</minimum>
+										</limit>
+									</limits>
+								</rule>
 								<rule implementation="org.jacoco.maven.RuleConfiguration">
 									<element>CLASS</element>
 									<excludes>
@@ -236,7 +250,7 @@
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>cobertura-maven-plugin</artifactId>
-				<version>2.6</version>
+				<version>2.7</version>
 			</plugin>
 			<plugin>
 				<groupId>org.sonatype.plugins</groupId>

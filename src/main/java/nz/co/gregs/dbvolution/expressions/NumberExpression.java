@@ -1709,7 +1709,7 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return the greatest/largest value from the list.
 	 */
-	public static NumberExpression greatestOf(SimpleNumericExpression... possibleValues) {
+	public static NumberExpression greatestOf(SimpleNumericExpression<?, ?, ?>... possibleValues) {
 		List<NumberExpression> possVals = new ArrayList<>();
 		for (SimpleNumericExpression<?, ?, ?> num : possibleValues) {
 			possVals.add(num.numberResult());
@@ -2983,6 +2983,8 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 
 	private static abstract class DBBinaryArithmetic extends NumberExpression {
 
+		private static final long serialVersionUID = 1L;
+
 		public NumberExpression first;
 		public NumberExpression second;
 
@@ -3059,6 +3061,8 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 
 	private static abstract class DBNonaryFunction extends NumberExpression {
 
+		private static final long serialVersionUID = 1L;
+
 		DBNonaryFunction() {
 		}
 
@@ -3099,6 +3103,8 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 	}
 
 	private static abstract class DBUnaryFunction extends NumberExpression {
+
+		private static final long serialVersionUID = 1L;
 
 		protected NumberExpression only;
 
@@ -3160,6 +3166,8 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 	}
 
 	private static abstract class DBUnaryIntegerFunction extends IntegerExpression {
+
+		private static final long serialVersionUID = 1L;
 
 		protected NumberExpression only;
 
@@ -3233,6 +3241,8 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 	}
 
 	private static abstract class NumberNumberFunctionNumberResult extends NumberExpression {
+
+		private static final long serialVersionUID = 1L;
 
 		protected NumberExpression first;
 		protected NumberExpression second;
@@ -4318,7 +4328,7 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 		@Override
 		public HyperbolicCosineExpression copy() {
 			return new HyperbolicCosineExpression(
-					only == null ? null :only.copy());
+					only == null ? null : only.copy());
 		}
 	}
 
@@ -4491,7 +4501,7 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 		@Override
 		public InverseTangent2Expression copy() {
 			return new InverseTangent2Expression(
-					getFirst() == null ? null : getFirst().copy(), 
+					getFirst() == null ? null : getFirst().copy(),
 					getSecond() == null ? null : getSecond().copy());
 		}
 	}
@@ -4923,7 +4933,7 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 		@Override
 		public ModulusRemainderExpression copy() {
 			return new ModulusRemainderExpression(
-					first == null ? null : first.copy(), 
+					first == null ? null : first.copy(),
 					second == null ? null : second.copy());
 		}
 	}

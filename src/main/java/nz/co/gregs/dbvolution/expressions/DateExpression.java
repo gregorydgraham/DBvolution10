@@ -2574,6 +2574,8 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 
 	private static abstract class FunctionWithDateResult extends DateExpression {
 
+		private static final long serialVersionUID = 1L;
+
 		FunctionWithDateResult() {
 		}
 
@@ -2628,6 +2630,8 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 
 	private static abstract class DateExpressionWithNumberResult extends NumberExpression {
 
+		private static final long serialVersionUID = 1L;
+
 		DateExpressionWithNumberResult() {
 			super();
 		}
@@ -2646,6 +2650,8 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 	}
 
 	private static abstract class DateDateExpressionWithBooleanResult extends BooleanExpression {
+
+		private static final long serialVersionUID = 1L;
 
 		protected DateExpression first;
 		protected DateExpression second;
@@ -2708,6 +2714,8 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 	}
 
 	private static abstract class DateDateExpressionWithDateRepeatResult extends DateRepeatExpression {
+
+		private static final long serialVersionUID = 1L;
 
 		protected DateExpression first;
 		protected DateExpression second;
@@ -2778,6 +2786,8 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 	}
 
 	private static abstract class DateDateRepeatArithmeticDateResult extends DateExpression {
+
+		private static final long serialVersionUID = 1L;
 
 		protected DateExpression first;
 		protected DateRepeatExpression second;
@@ -2855,6 +2865,8 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 	}
 
 	private static abstract class DateArrayFunctionWithDateResult extends DateExpression {
+
+		private static final long serialVersionUID = 1L;
 
 		protected DateExpression column;
 		protected final List<DateResult> values = new ArrayList<DateResult>();
@@ -2967,6 +2979,8 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 	}
 
 	private static abstract class DateDateResultFunctionWithBooleanResult extends BooleanExpression {
+
+		private static final long serialVersionUID = 1L;
 
 		private DateExpression column;
 		private List<DateResult> values = new ArrayList<DateResult>();
@@ -3093,6 +3107,8 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 
 	private static abstract class DateDateFunctionWithDateResult extends DateExpression {
 
+		private static final long serialVersionUID = 1L;
+
 		private DateExpression first;
 		private DateResult second;
 
@@ -3175,6 +3191,8 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 
 	private static abstract class DateFunctionWithDateResult extends DateExpression {
 
+		private static final long serialVersionUID = 1L;
+
 		DateFunctionWithDateResult() {
 			super();
 		}
@@ -3202,6 +3220,8 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 	}
 
 	private static abstract class DateIntegerExpressionWithDateResult extends DateExpression {
+
+		private static final long serialVersionUID = 1L;
 
 		protected DateExpression first;
 		protected IntegerExpression second;
@@ -3260,6 +3280,8 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 
 	private static abstract class DateNumberExpressionWithDateResult extends DateExpression {
 
+		private static final long serialVersionUID = 1L;
+
 		protected DateExpression first;
 		protected NumberExpression second;
 
@@ -3303,6 +3325,8 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 	}
 
 	private static abstract class DateDateFunctionWithNumberResult extends NumberExpression {
+
+		private static final long serialVersionUID = 1L;
 
 		protected DateExpression first;
 		protected DateResult second;

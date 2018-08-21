@@ -507,6 +507,8 @@ public class MultiPoint2DExpression extends Spatial2DExpression<MultiPoint, Mult
 
 	private static abstract class MultiPoint2DFunctionLine2DResult extends Line2DExpression {
 
+		private static final long serialVersionUID = 1L;
+
 		private final MultiPoint2DExpression first;
 		private boolean requiresNullProtection;
 
@@ -551,6 +553,8 @@ public class MultiPoint2DExpression extends Spatial2DExpression<MultiPoint, Mult
 
 	private static abstract class SingleArgumentBooleanFunction<A extends DBExpression> extends BooleanExpression {
 
+		private static final long serialVersionUID = 1L;
+
 		private final A first;
 		private boolean requiresNullProtection;
 
@@ -594,6 +598,8 @@ public class MultiPoint2DExpression extends Spatial2DExpression<MultiPoint, Mult
 	}
 
 	private static abstract class MultiPoint2DMultiPoint2DFunctionWithBooleanResult extends BooleanExpression {
+
+		private static final long serialVersionUID = 1L;
 
 		private final MultiPoint2DExpression first;
 		private final MultiPoint2DExpression second;
@@ -651,6 +657,8 @@ public class MultiPoint2DExpression extends Spatial2DExpression<MultiPoint, Mult
 
 	private static abstract class MultiPointNumberFunctionWithPoint2DResult extends Point2DExpression {
 
+		private static final long serialVersionUID = 1L;
+
 		private final MultiPoint2DExpression first;
 		private final NumberExpression second;
 		private boolean requiresNullProtection;
@@ -707,6 +715,8 @@ public class MultiPoint2DExpression extends Spatial2DExpression<MultiPoint, Mult
 
 	private static abstract class MultiPointFunctionWithNumberResult extends NumberExpression {
 
+		private static final long serialVersionUID = 1L;
+
 		private final MultiPoint2DExpression first;
 		private boolean requiresNullProtection;
 
@@ -754,6 +764,8 @@ public class MultiPoint2DExpression extends Spatial2DExpression<MultiPoint, Mult
 
 	private static abstract class MultiPointFunctionWithStringResult extends StringExpression {
 
+		private static final long serialVersionUID = 1L;
+
 		private final MultiPoint2DExpression first;
 		private boolean requiresNullProtection;
 
@@ -800,6 +812,8 @@ public class MultiPoint2DExpression extends Spatial2DExpression<MultiPoint, Mult
 	}
 
 	private static abstract class MultiPoint2DFunctionWithGeometry2DResult extends Polygon2DExpression {
+
+		private static final long serialVersionUID = 1L;
 
 		private final MultiPoint2DExpression first;
 		private boolean requiresNullProtection;

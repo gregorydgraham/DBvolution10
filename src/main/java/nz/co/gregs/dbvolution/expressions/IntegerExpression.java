@@ -2787,10 +2787,10 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 						new MedianExpression<Long, IntegerResult, DBInteger, IntegerExpression>(this));
 		return medianExpr;
 	}
-	
+
 	/**
-	 * Creates an expression that will return the uniqueRanking value of the column
- supplied.
+	 * Creates an expression that will return the uniqueRanking value of the
+	 * column supplied.
 	 *
 	 *
 	 * <p style="color: #F90;">Support DBvolution at
@@ -3108,6 +3108,8 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 
 	private static abstract class DBBinaryArithmetic extends IntegerExpression {
 
+		private static final long serialVersionUID = 1L;
+
 		public IntegerResult first;
 		public IntegerResult second;
 
@@ -3183,6 +3185,8 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 	}
 
 	private static abstract class DBUnaryFunction extends IntegerExpression {
+
+		private static final long serialVersionUID = 1L;
 
 		DBUnaryFunction() {
 			super();

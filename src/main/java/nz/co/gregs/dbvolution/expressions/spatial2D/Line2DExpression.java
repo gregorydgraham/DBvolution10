@@ -786,6 +786,8 @@ public class Line2DExpression extends Spatial2DExpression<LineString, Line2DResu
 
 	private static abstract class LineLineWithBooleanResult extends BooleanExpression {
 
+		private static final long serialVersionUID = 1L;
+
 		private final Line2DExpression first;
 		private final Line2DExpression second;
 		private boolean requiresNullProtection;
@@ -842,6 +844,8 @@ public class Line2DExpression extends Spatial2DExpression<LineString, Line2DResu
 
 	private static abstract class LineWithBooleanResult extends BooleanExpression {
 
+		private static final long serialVersionUID = 1L;
+
 		private final Line2DExpression first;
 		private boolean requiresNullProtection;
 
@@ -885,6 +889,8 @@ public class Line2DExpression extends Spatial2DExpression<LineString, Line2DResu
 	}
 
 	private static abstract class LineLineWithPoint2DResult extends Point2DExpression {
+
+		private static final long serialVersionUID = 1L;
 
 		private final Line2DExpression first;
 		private final Line2DExpression second;
@@ -942,6 +948,8 @@ public class Line2DExpression extends Spatial2DExpression<LineString, Line2DResu
 
 	private static abstract class LineLineWithMultiPoint2DResult extends MultiPoint2DExpression {
 
+		private static final long serialVersionUID = 1L;
+
 		private final Line2DExpression first;
 		private final Line2DExpression second;
 		private boolean requiresNullProtection;
@@ -998,6 +1006,8 @@ public class Line2DExpression extends Spatial2DExpression<LineString, Line2DResu
 
 	private static abstract class LineFunctionWithNumberResult extends NumberExpression {
 
+		private static final long serialVersionUID = 1L;
+
 		private final Line2DExpression first;
 		private boolean requiresNullProtection;
 
@@ -1045,6 +1055,8 @@ public class Line2DExpression extends Spatial2DExpression<LineString, Line2DResu
 
 	private static abstract class LineFunctionWithStringResult extends StringExpression {
 
+		private static final long serialVersionUID = 1L;
+
 		private final Line2DExpression first;
 		private boolean requiresNullProtection;
 
@@ -1091,6 +1103,8 @@ public class Line2DExpression extends Spatial2DExpression<LineString, Line2DResu
 	}
 
 	private static abstract class LineFunctionWithPolygon2DResult extends Polygon2DExpression {
+
+		private static final long serialVersionUID = 1L;
 
 		private final Line2DExpression first;
 		private boolean requiresNullProtection;

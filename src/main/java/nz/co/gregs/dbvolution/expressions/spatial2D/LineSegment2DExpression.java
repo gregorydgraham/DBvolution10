@@ -557,6 +557,8 @@ public class LineSegment2DExpression extends Spatial2DExpression<LineSegment, Li
 
 	private static abstract class LineSegmentLineSegmentWithBooleanResult extends BooleanExpression {
 
+		private static final long serialVersionUID = 1L;
+
 		private final LineSegment2DExpression first;
 		private final LineSegment2DExpression second;
 		private boolean requiresNullProtection;
@@ -612,6 +614,8 @@ public class LineSegment2DExpression extends Spatial2DExpression<LineSegment, Li
 	}
 
 	private static abstract class LineSegmentLineSegmentWithPointResult extends Point2DExpression {
+
+		private static final long serialVersionUID = 1L;
 
 		private final LineSegment2DExpression first;
 		private final LineSegment2DExpression second;
@@ -669,6 +673,8 @@ public class LineSegment2DExpression extends Spatial2DExpression<LineSegment, Li
 
 	private static abstract class LineSegmentWithNumberResult extends NumberExpression {
 
+		private static final long serialVersionUID = 1L;
+
 		private final LineSegment2DExpression first;
 		private boolean requiresNullProtection;
 
@@ -715,6 +721,8 @@ public class LineSegment2DExpression extends Spatial2DExpression<LineSegment, Li
 	}
 
 	private static abstract class LineSegmentWithBooleanResult extends BooleanExpression {
+
+		private static final long serialVersionUID = 1L;
 
 		private final LineSegment2DExpression first;
 		private boolean requiresNullProtection;
@@ -763,6 +771,8 @@ public class LineSegment2DExpression extends Spatial2DExpression<LineSegment, Li
 
 	private static abstract class LineSegmentWithStringResult extends StringExpression {
 
+		private static final long serialVersionUID = 1L;
+
 		private final LineSegment2DExpression first;
 		private boolean requiresNullProtection;
 
@@ -809,6 +819,8 @@ public class LineSegment2DExpression extends Spatial2DExpression<LineSegment, Li
 	}
 
 	private static abstract class LineSegmentWithGeometry2DResult extends Polygon2DExpression {
+
+		private static final long serialVersionUID = 1L;
 
 		private final LineSegment2DExpression first;
 		private boolean requiresNullProtection;

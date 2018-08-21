@@ -53,6 +53,7 @@ import nz.co.gregs.dbvolution.results.InResult;
  */
 public abstract class InExpression<B, R extends InResult<B>, D extends QueryableDatatype<B>> extends EqualExpression<B, R, D> {
 
+	private static final long serialVersionUID = 1L;
 	/**
 	 *
 	 * @param only

@@ -244,6 +244,8 @@ public class BooleanArrayExpression extends AnyExpression<Boolean[], BooleanArra
 
 	private static abstract class DBBinaryBooleanArithmetic extends BooleanExpression {
 
+		private static final long serialVersionUID = 1L;
+
 		private BooleanArrayExpression first;
 		private BooleanArrayResult second;
 		private boolean requiresNullProtection;

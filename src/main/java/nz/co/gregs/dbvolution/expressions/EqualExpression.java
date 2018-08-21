@@ -52,6 +52,8 @@ import nz.co.gregs.dbvolution.results.EqualResult;
  */
 public abstract class EqualExpression<B, R extends EqualResult<B>, D extends QueryableDatatype<B>> extends AnyExpression<B, R, D> implements EqualResult<B>, EqualComparable<B, R> {
 
+	private static final long serialVersionUID = 1L;
+
 	/**
 	 *
 	 * @param only
@@ -184,6 +186,7 @@ public abstract class EqualExpression<B, R extends EqualResult<B>, D extends Que
 
 	protected static abstract class DBUnaryFunction<B, R extends EqualResult<B>, D extends QueryableDatatype<B>, X extends EqualExpression<B, R, D>> extends EqualExpression<B, R, D> implements EqualResult<B> {
 
+		private static final long serialVersionUID = 1L;
 		protected X only;
 
 		DBUnaryFunction(X only) {

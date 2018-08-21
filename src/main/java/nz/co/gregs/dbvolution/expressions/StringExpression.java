@@ -2402,6 +2402,8 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 
 	private static abstract class DBBinaryStringArithmetic extends StringExpression {
 
+		private static final long serialVersionUID = 1L;
+
 		protected StringResult first;
 		protected StringResult second;
 
@@ -2454,6 +2456,8 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 	}
 
 	private static abstract class DBTrinaryStringFunction extends StringExpression {
+
+		private static final long serialVersionUID = 1L;
 
 		private DBExpression first;
 		private DBExpression second;
@@ -2569,6 +2573,8 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 
 	protected static abstract class DBBinaryStringFunction extends StringExpression {
 
+		private static final long serialVersionUID = 1L;
+
 		protected StringExpression first;
 		protected StringExpression second;
 
@@ -2639,6 +2645,8 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 	}
 
 	private static abstract class BinaryComplicatedNumberFunction extends NumberExpression {
+
+		private static final long serialVersionUID = 1L;
 
 		protected StringExpression first = null;
 		protected StringResult second = null;
@@ -2797,6 +2805,8 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 
 	private static abstract class DBBinaryBooleanArithmetic extends BooleanExpression {
 
+		private static final long serialVersionUID = 1L;
+
 		protected final StringResult first;
 		protected final StringResult second;
 
@@ -2831,6 +2841,8 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 	}
 
 	private static abstract class DBNnaryBooleanFunction extends BooleanExpression {
+
+		private static final long serialVersionUID = 1L;
 
 		protected final StringExpression column;
 		protected final List<StringResult> values = new ArrayList<>();

@@ -1363,6 +1363,8 @@ public class BooleanExpression extends EqualExpression<Boolean, BooleanResult, D
 
 	private static abstract class DBUnaryBooleanArithmetic extends BooleanExpression {
 
+		private static final long serialVersionUID = 1L;
+
 		protected DBExpression onlyBool;
 
 		DBUnaryBooleanArithmetic(DBExpression bool) {
@@ -1404,6 +1406,8 @@ public class BooleanExpression extends EqualExpression<Boolean, BooleanResult, D
 	}
 
 	private static abstract class DBNnaryBooleanArithmetic extends BooleanExpression {
+
+		private static final long serialVersionUID = 1L;
 
 		protected BooleanResult[] bools;
 
@@ -1463,6 +1467,8 @@ public class BooleanExpression extends EqualExpression<Boolean, BooleanResult, D
 	}
 
 	private static abstract class DBBinaryBooleanArithmetic extends BooleanExpression {
+
+		private static final long serialVersionUID = 1L;
 
 		private BooleanExpression first;
 		private BooleanExpression second;
@@ -1545,6 +1551,8 @@ public class BooleanExpression extends EqualExpression<Boolean, BooleanResult, D
 
 	private static abstract class DBBooleanStringStringFunction extends StringExpression {
 
+		private static final long serialVersionUID = 1L;
+
 		protected BooleanExpression onlyBool = null;
 		protected StringResult first = null;
 		protected StringResult second = null;
@@ -1594,6 +1602,8 @@ public class BooleanExpression extends EqualExpression<Boolean, BooleanResult, D
 	}
 
 	private static abstract class DBBooleanNumberNumberFunction extends NumberExpression {
+
+		private static final long serialVersionUID = 1L;
 
 		protected BooleanExpression onlyBool = null;
 		protected NumberResult first = null;
@@ -1645,6 +1655,8 @@ public class BooleanExpression extends EqualExpression<Boolean, BooleanResult, D
 
 	private static abstract class DBBooleanIntegerIntegerFunction extends IntegerExpression {
 
+		private static final long serialVersionUID = 1L;
+
 		protected BooleanExpression onlyBool = null;
 		protected IntegerResult first = null;
 		protected IntegerResult second = null;
@@ -1695,6 +1707,8 @@ public class BooleanExpression extends EqualExpression<Boolean, BooleanResult, D
 
 	private static abstract class DBBinaryDateDateFunction extends DateExpression {
 
+		private static final long serialVersionUID = 1L;
+
 		protected BooleanExpression onlyBool = null;
 		protected DateExpression first = null;
 		protected DateExpression second = null;
@@ -1744,6 +1758,8 @@ public class BooleanExpression extends EqualExpression<Boolean, BooleanResult, D
 	}
 
 	private static abstract class DBBinaryGeometryGeometryFunction extends Polygon2DExpression {
+
+		private static final long serialVersionUID = 1L;
 
 		protected BooleanExpression onlyBool = null;
 		protected Polygon2DExpression first = null;

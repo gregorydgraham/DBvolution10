@@ -57,14 +57,14 @@ import nz.co.gregs.dbvolution.results.AnyResult;
  */
 public class SortProvider implements DBExpression {
 
-	private final AnyExpression innerExpression;
+	private final AnyExpression<?,?,?> innerExpression;
 	private QueryColumn<?, ? extends AnyResult<?>, ? extends QueryableDatatype<?>> queryColumn;
 
 	public SortProvider() {
 		innerExpression = null;
 	}
 
-	public SortProvider(AnyExpression exp) {
+	public SortProvider(AnyExpression<?,?,?> exp) {
 		this.innerExpression = exp;
 	}
 
@@ -102,7 +102,7 @@ public class SortProvider implements DBExpression {
 			return getQueryColumn().getTablesInvolved();
 		} else {
 			Set<DBRow> result = new HashSet<DBRow>(0);
-			final AnyExpression innerExpression1 = this.getInnerExpression();
+			final AnyExpression<?,?,?> innerExpression1 = this.getInnerExpression();
 			if (innerExpression1 != null) {
 				result = innerExpression1.getTablesInvolved();
 			}
@@ -157,7 +157,7 @@ public class SortProvider implements DBExpression {
 	/**
 	 * @return the innerExpression
 	 */
-	public AnyExpression getInnerExpression() {
+	public AnyExpression<?,?,?> getInnerExpression() {
 		return innerExpression;
 	}
 
@@ -224,7 +224,7 @@ public class SortProvider implements DBExpression {
 
 	public static class Ascending extends SortProvider {
 
-		public Ascending(AnyExpression exp) {
+		public Ascending(AnyExpression<?,?,?> exp) {
 			super(exp);
 		}
 
@@ -241,7 +241,7 @@ public class SortProvider implements DBExpression {
 
 	public static class Descending extends SortProvider {
 
-		public Descending(AnyExpression exp) {
+		public Descending(AnyExpression<?,?,?> exp) {
 			super(exp);
 		}
 
@@ -287,7 +287,7 @@ public class SortProvider implements DBExpression {
 		}
 
 		@Override
-		public AnyExpression getInnerExpression() {
+		public AnyExpression<?,?,?> getInnerExpression() {
 			return super.getInnerExpression();
 		}
 

@@ -602,6 +602,8 @@ public class DateRepeatExpression extends RangeExpression<Period, DateRepeatResu
 
 	private static abstract class DateRepeatDateRepeatWithBooleanResult extends BooleanExpression {
 
+		private static final long serialVersionUID = 1L;
+
 		private final DateRepeatExpression first;
 		private final DateRepeatExpression second;
 		private boolean requiresNullProtection;
@@ -663,6 +665,8 @@ public class DateRepeatExpression extends RangeExpression<Period, DateRepeatResu
 
 	private static abstract class DateRepeatWithNumberResult extends NumberExpression {
 
+		private static final long serialVersionUID = 1L;
+
 		private final DateRepeatExpression first;
 		private boolean requiresNullProtection;
 
@@ -707,6 +711,8 @@ public class DateRepeatExpression extends RangeExpression<Period, DateRepeatResu
 
 	private static abstract class DateRepeatWithIntegerResult extends IntegerExpression {
 
+		private static final long serialVersionUID = 1L;
+
 		private final DateRepeatExpression first;
 		private boolean requiresNullProtection;
 
@@ -750,6 +756,8 @@ public class DateRepeatExpression extends RangeExpression<Period, DateRepeatResu
 	}
 
 	private static abstract class DateRepeatWithStringResult extends StringExpression {
+
+		private static final long serialVersionUID = 1L;
 
 		private final DateRepeatExpression first;
 		private boolean requiresNullProtection;

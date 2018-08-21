@@ -50,6 +50,7 @@ import nz.co.gregs.dbvolution.internal.properties.PropertyWrapper;
  */
 public abstract class DBAction implements Serializable{
 
+	private static final long serialVersionUID = 1L;
 	final DBRow row;
 
 	/**

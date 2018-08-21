@@ -761,6 +761,8 @@ public class Polygon2DExpression extends Spatial2DExpression<Polygon, Polygon2DR
 
 	private static abstract class PolygonPolygonWithBooleanResult extends BooleanExpression {
 
+		private static final long serialVersionUID = 1L;
+
 		private final Polygon2DExpression first;
 		private final Polygon2DExpression second;
 		private boolean requiresNullProtection;
@@ -816,6 +818,8 @@ public class Polygon2DExpression extends Spatial2DExpression<Polygon, Polygon2DR
 	}
 
 	private static abstract class PolygonPolygonWithPolygon2DResult extends Polygon2DExpression {
+
+		private static final long serialVersionUID = 1L;
 
 		private final Polygon2DExpression first;
 		private final Polygon2DExpression second;
@@ -873,6 +877,8 @@ public class Polygon2DExpression extends Spatial2DExpression<Polygon, Polygon2DR
 
 	private static abstract class PolygonWithBooleanResult extends BooleanExpression {
 
+		private static final long serialVersionUID = 1L;
+
 		private final Polygon2DExpression first;
 		private boolean requiresNullProtection;
 
@@ -916,6 +922,8 @@ public class Polygon2DExpression extends Spatial2DExpression<Polygon, Polygon2DR
 	}
 
 	private static abstract class PolygonPointWithBooleanResult extends BooleanExpression {
+
+		private static final long serialVersionUID = 1L;
 
 		private final Polygon2DExpression first;
 		private final Point2DExpression second;
@@ -973,6 +981,8 @@ public class Polygon2DExpression extends Spatial2DExpression<Polygon, Polygon2DR
 
 	private static abstract class Polygon2DFunctionWithNumberResult extends NumberExpression {
 
+		private static final long serialVersionUID = 1L;
+
 		private final Polygon2DExpression first;
 		private boolean requiresNullProtection;
 
@@ -1016,6 +1026,8 @@ public class Polygon2DExpression extends Spatial2DExpression<Polygon, Polygon2DR
 	}
 
 	private static abstract class Polygon2DFunctionWithPolygon2DResult extends Polygon2DExpression {
+
+		private static final long serialVersionUID = 1L;
 
 		private final Polygon2DExpression first;
 		private boolean requiresNullProtection;
@@ -1061,6 +1073,8 @@ public class Polygon2DExpression extends Spatial2DExpression<Polygon, Polygon2DR
 
 	private static abstract class Polygon2DFunctionWithLine2DResult extends Line2DExpression {
 
+		private static final long serialVersionUID = 1L;
+
 		private final Polygon2DExpression first;
 		private boolean requiresNullProtection;
 
@@ -1105,6 +1119,8 @@ public class Polygon2DExpression extends Spatial2DExpression<Polygon, Polygon2DR
 
 	private static abstract class Polygon2DFunctionWithStringResult extends StringExpression {
 
+		private static final long serialVersionUID = 1L;
+
 		private final Polygon2DExpression first;
 		private boolean requiresNullProtection;
 
@@ -1148,6 +1164,8 @@ public class Polygon2DExpression extends Spatial2DExpression<Polygon, Polygon2DR
 	}
 
 	private static abstract class Point2dArrayFunctionWithPolygon2DResult extends Polygon2DExpression {
+
+		private static final long serialVersionUID = 1L;
 
 		private final Point2DExpression[] allPoints;
 		private boolean requiresNullProtection;
@@ -1207,6 +1225,8 @@ public class Polygon2DExpression extends Spatial2DExpression<Polygon, Polygon2DR
 	}
 
 	private static abstract class CoordinateArrayFunctionWithPolygon2DResult extends Polygon2DExpression {
+
+		private static final long serialVersionUID = 1L;
 
 		private final NumberExpression[] allCoords;
 		private boolean requiresNullProtection;
