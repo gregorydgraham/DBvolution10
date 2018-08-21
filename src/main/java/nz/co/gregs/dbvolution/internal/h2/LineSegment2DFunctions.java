@@ -280,45 +280,6 @@ public enum LineSegment2DFunctions implements DBVFeature {
 		stmt.execute(createFunctionStatement);
 	}
 
-	private String intersection(String firstLine, String secondLine) {
-		if (firstLine == null || secondLine == null) {
-			return null;
-		}
-		String[] split = firstLine.split("[ (),]+");
-		double p0x = Double.parseDouble(split[1]);
-		double p0y = Double.parseDouble(split[2]);
-		double p1x = Double.parseDouble(split[3]);
-		double p1y = Double.parseDouble(split[4]);
-
-		split = secondLine.split("[ (),]+");
-		double p2x = Double.parseDouble(split[1]);
-		double p2y = Double.parseDouble(split[2]);
-		double p3x = Double.parseDouble(split[3]);
-		double p3y = Double.parseDouble(split[4]);
-
-		double s1_x, s1_y, s2_x, s2_y;
-		double i_x, i_y;
-		s1_x = p1x - p0x;
-		s1_y = p1y - p0y;
-		s2_x = p3x - p2x;
-		s2_y = p3y - p2y;
-
-		double s, t;
-
-		s = (-s1_y * (p0x - p2x) + s1_x * (p0y - p2y)) / (-s2_x * s1_y + s1_x * s2_y);
-		t = (s2_x * (p0y - p2y) - s2_y * (p0x - p2x)) / (-s2_x * s1_y + s1_x * s2_y);
-
-		if (s >= 0 && s <= 1 && t >= 0 && t <= 1) {
-			// Collision detected
-			i_x = p0x + (t * s1_x);
-			i_y = p0y + (t * s1_y);
-			return "POINT (" + i_x + " " + i_y + ")";
-		} else {
-			// No collision
-			return null;
-		}
-	}
-
 	@Override
 	public String alias() {
 		return toString();
