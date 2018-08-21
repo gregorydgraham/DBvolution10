@@ -272,7 +272,7 @@ public abstract class AbstractTest {
 
 		public static final long serialVersionUID = 1l;
 
-		public static H2DB getFromSettings(String prefix) throws SQLException {
+		public static H2DB getFromSettings(String prefix) throws SQLException, IOException {
 			String url = System.getProperty(prefix + ".url");
 			String host = System.getProperty(prefix + ".host");
 			String port = System.getProperty(prefix + ".port");
@@ -288,7 +288,7 @@ public abstract class AbstractTest {
 				return new H2TestDatabase(url, username, password);
 			}
 		}
-		public static H2DB getClusterDBFromSettings(String prefix) throws SQLException {
+		public static H2DB getClusterDBFromSettings(String prefix) throws SQLException, IOException {
 			String url = System.getProperty(prefix + ".url");
 			String host = System.getProperty(prefix + ".host");
 			String port = System.getProperty(prefix + ".port");
@@ -327,8 +327,8 @@ public abstract class AbstractTest {
 			return new H2DB(h2DataSource);
 		}
 
-		public static H2DB H2TestDatabaseFromFilename(String file, String username, String password) throws SQLException {
-			return new H2DB(file, username, password, false);
+		public static H2DB H2TestDatabaseFromFilename(String file, String username, String password) throws SQLException, IOException {
+			return new H2DB(new File(file), username, password);
 		}
 
 		public H2TestDatabase(String url, String username, String password) throws SQLException {
