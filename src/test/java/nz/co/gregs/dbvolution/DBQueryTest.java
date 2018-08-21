@@ -212,6 +212,23 @@ public class DBQueryTest extends AbstractTest {
 	}
 
 	@Test
+	public void thrownExceptionIfColumnIsNotInTheInstance() throws Exception {
+		Marque wrongMarque = new Marque();
+		Marque marqueQuery = new Marque();
+		marqueQuery.uidMarque.permittedValues(wrongMarque.uidMarque.getValue());
+
+		DBQuery query = database.getDBQuery(marqueQuery, new CarCompany());
+		try {
+			query.getDistinctCombinationsOfColumnValues(wrongMarque.carCompany);
+			throw new RuntimeException("IncorrectDBRowInstanceSuppliedException should have been thrown");
+		} catch (IncorrectRowProviderInstanceSuppliedException wrongDBRowEx) {
+		}
+		marqueQuery.ignoreForeignKey(marqueQuery.carCompany);
+		query.setCartesianJoinsAllowed(true);
+		List<DBQueryRow> rows = query.getAllRows();
+	}
+
+	@Test
 	public void thrownExceptionIfTheForeignKeyFieldsToBeIgnoredIsNotInTheInstance() throws Exception {
 		Marque wrongMarque = new Marque();
 		Marque marqueQuery = new Marque();
