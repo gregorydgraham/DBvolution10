@@ -300,6 +300,7 @@ public abstract class AbstractTest {
 			String schema = System.getProperty(prefix + ".schema");
 			String file = System.getProperty(prefix + ".file");
 			if (file != null && !file.equals("")) {
+				System.out.println("MAKING H2DB with FILENAME: "+file);
 				return H2TestDatabaseFromFilename(file+"-cluster.h2db", username, password);
 			} else {
 				return new H2TestDatabase(url, username, password);
