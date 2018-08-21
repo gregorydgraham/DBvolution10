@@ -34,6 +34,8 @@ import nz.co.gregs.dbvolution.results.Spatial2DResult;
  */
 public abstract class Spatial2DExpression< B, R extends Spatial2DResult<B>, D extends QueryableDatatype<B>> extends EqualExpression<B, R, D> implements Spatial2DComparable<B, R> {
 
+	private final static long serialVersionUID = 1l;
+
 	/**
 	 *
 	 * @param only

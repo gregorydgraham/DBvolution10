@@ -134,6 +134,8 @@ public abstract class EqualExpression<B, R extends EqualResult<B>, D extends Que
 
 	private static abstract class DBNonaryFunction extends IntegerExpression {
 
+	private final static long serialVersionUID = 1l;
+
 		DBNonaryFunction() {
 		}
 

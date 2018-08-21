@@ -3219,6 +3219,8 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 
 	private static abstract class DBUnaryNumberFunction extends NumberExpression {
 
+		private final static long serialVersionUID = 1l;
+
 		DBUnaryNumberFunction() {
 			super();
 		}
@@ -3255,6 +3257,8 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 	}
 
 	private static abstract class IntegerIntegerFunctionIntegerResult extends IntegerExpression {
+
+		private final static long serialVersionUID = 1l;
 
 		protected IntegerExpression first;
 		protected IntegerExpression second;
@@ -3356,6 +3360,8 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 
 	private static abstract class DBBinaryBooleanArithmetic extends BooleanExpression {
 
+		private final static long serialVersionUID = 1l;
+
 		private IntegerExpression first;
 		private IntegerResult second;
 		private boolean requiresNullProtection;
@@ -3426,6 +3432,8 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 	}
 
 	private static abstract class DBNnaryBooleanFunction extends BooleanExpression {
+
+		private final static long serialVersionUID = 1l;
 
 		private IntegerExpression column;
 		private final List<IntegerResult> values = new ArrayList<>();
@@ -3541,6 +3549,8 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 
 	private static abstract class DBNnaryIntegerFunction extends IntegerExpression {
 
+		private final static long serialVersionUID = 1l;
+
 		protected IntegerExpression column;
 		protected final List<IntegerResult> values = new ArrayList<>();
 		boolean nullProtectionRequired = false;
@@ -3655,6 +3665,8 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 
 	private static abstract class DBIntegerAndNnaryStringFunction extends StringExpression {
 
+		private final static long serialVersionUID = 1l;
+
 		protected IntegerResult numberExpression = null;
 		protected final List<StringResult> values = new ArrayList<>();
 		boolean nullProtectionRequired = false;
@@ -3742,6 +3754,8 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 	}
 
 	private static abstract class DBUnaryStringFunction extends StringExpression {
+
+		private final static long serialVersionUID = 1l;
 
 		protected IntegerExpression only;
 

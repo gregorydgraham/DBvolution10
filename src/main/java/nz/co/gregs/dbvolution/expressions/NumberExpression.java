@@ -3357,6 +3357,8 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 
 	private static abstract class DBBinaryBooleanArithmetic extends BooleanExpression {
 
+		private final static long serialVersionUID = 1l;
+
 		private NumberExpression first;
 		private NumberResult second;
 		private boolean requiresNullProtection;
@@ -3435,6 +3437,8 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 	}
 
 	private static abstract class DBNnaryBooleanFunction extends BooleanExpression {
+
+	private final static long serialVersionUID = 1l;
 
 		private NumberExpression column;
 		private final List<NumberResult> values = new ArrayList<NumberResult>();
@@ -3565,6 +3569,8 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 
 	private static abstract class DBNnaryNumberFunction extends NumberExpression {
 
+	private final static long serialVersionUID = 1l;
+
 		protected NumberExpression column;
 		protected final List<NumberResult> values = new ArrayList<NumberResult>();
 		boolean nullProtectionRequired = false;
@@ -3679,6 +3685,8 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 
 	private static abstract class DBNumberAndNnaryStringFunction extends StringExpression {
 
+	private final static long serialVersionUID = 1l;
+
 		protected NumberResult numberExpression = null;
 		protected final List<StringResult> values = new ArrayList<StringResult>();
 		boolean nullProtectionRequired = false;
@@ -3766,6 +3774,8 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 	}
 
 	private static abstract class DBUnaryStringFunction extends StringExpression {
+
+	private final static long serialVersionUID = 1l;
 
 		protected NumberExpression only;
 

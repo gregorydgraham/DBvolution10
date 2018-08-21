@@ -32,6 +32,8 @@ import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
  */
 public abstract class DBDelete extends DBAction {
 
+	private final static long serialVersionUID = 1l;
+
 	/**
 	 * Creates a DBDelete action for the supplied row.
 	 *

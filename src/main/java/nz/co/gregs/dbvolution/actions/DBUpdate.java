@@ -32,6 +32,8 @@ import nz.co.gregs.dbvolution.exceptions.AccidentalUpdateOfUndefinedRowException
  */
 public abstract class DBUpdate extends DBAction {
 
+	private final static long serialVersionUID = 1l;
+
 	/**
 	 * Creates a DBUpdate action for the row supplied.
 	 *
