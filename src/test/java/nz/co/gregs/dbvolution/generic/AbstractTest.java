@@ -83,6 +83,22 @@ public abstract class AbstractTest {
 				H2MemoryTestDB.getFromSettings("h2memory")
 				)});
 		}
+		if (System.getProperty("testBundledCluster") != null) {
+			databases.add(new Object[]{"ClusteredDB",
+				new DBDatabaseCluster(
+				SQLiteTestDB.getFromSettings(),
+				H2MemoryTestDB.getFromSettings("h2memory")
+				)});
+		}
+		if (System.getProperty("testOpenSourceCluster") != null) {
+			databases.add(new Object[]{"ClusteredDB",
+				new DBDatabaseCluster(
+				H2MemoryTestDB.getFromSettings("h2memory"),
+				SQLiteTestDB.getFromSettings(),
+				PostgreSQLTestDatabase.getFromSettings("postgres"),
+				MySQLTestDatabase.getFromSettings("mysql")
+				)});
+		}
 		if (System.getProperty("MySQL+Cluster") != null) {
 			databases.add(new Object[]{"ClusteredDB",
 				new DBDatabaseCluster(
@@ -93,7 +109,7 @@ public abstract class AbstractTest {
 				)});
 			databases.add(new Object[]{"MySQL",
 				MySQLTestDatabase.getFromSettings("mysql")
-				});
+			});
 		}
 		if (System.getProperty("testSQLite") != null) {
 			databases.add(new Object[]{"SQLiteDB", SQLiteTestDB.getFromSettings()});
@@ -283,12 +299,13 @@ public abstract class AbstractTest {
 			String schema = System.getProperty(prefix + ".schema");
 			String file = System.getProperty(prefix + ".file");
 			if (file != null && !file.equals("")) {
-				System.out.println("MAKING H2DB with FILENAME: "+file);
+				System.out.println("MAKING H2DB with FILENAME: " + file);
 				return H2TestDatabaseFromFilename(file, username, password);
 			} else {
 				return new H2TestDatabase(url, username, password);
 			}
 		}
+
 		public static H2DB getClusterDBFromSettings(String prefix) throws SQLException, IOException {
 			String url = System.getProperty(prefix + ".url");
 			String host = System.getProperty(prefix + ".host");
@@ -300,8 +317,8 @@ public abstract class AbstractTest {
 			String schema = System.getProperty(prefix + ".schema");
 			String file = System.getProperty(prefix + ".file");
 			if (file != null && !file.equals("")) {
-				System.out.println("MAKING H2DB with FILENAME: "+file);
-				return H2TestDatabaseFromFilename(file+"-cluster.h2db", username, password);
+				System.out.println("MAKING H2DB with FILENAME: " + file);
+				return H2TestDatabaseFromFilename(file + "-cluster.h2db", username, password);
 			} else {
 				return new H2TestDatabase(url, username, password);
 			}
@@ -374,16 +391,16 @@ public abstract class AbstractTest {
 			String schema = System.getProperty("" + prefix + ".schema");
 			return new MySQLTestDatabase(host, port, database, username, password, schema);
 		}
-		
+
 		public static MySQLTestDatabase getClusterDBFromSettings(String prefix) throws SQLException {
 			String url = System.getProperty("" + prefix + ".url");
 			String host = System.getProperty("" + prefix + ".host");
 			String port = System.getProperty("" + prefix + ".port");
 			String instance = System.getProperty("" + prefix + ".instance");
-			String database = System.getProperty("" + prefix + ".database")+"_cluster";
+			String database = System.getProperty("" + prefix + ".database") + "_cluster";
 			String username = System.getProperty("" + prefix + ".username");
 			String password = System.getProperty("" + prefix + ".password");
-			String schema = System.getProperty("" + prefix + ".schema")+"cluster";
+			String schema = System.getProperty("" + prefix + ".schema") + "cluster";
 			return new MySQLTestDatabase(host, port, database, username, password, schema);
 		}
 
@@ -415,7 +432,7 @@ public abstract class AbstractTest {
 			String host = System.getProperty("" + prefix + ".host");
 			String port = System.getProperty("" + prefix + ".port");
 			String instance = System.getProperty("" + prefix + ".instance");
-			String database = System.getProperty("" + prefix + ".database")+"_cluster";
+			String database = System.getProperty("" + prefix + ".database") + "_cluster";
 			String username = System.getProperty("" + prefix + ".username");
 			String password = System.getProperty("" + prefix + ".password");
 			String schema = System.getProperty("" + prefix + ".schema");
@@ -443,7 +460,7 @@ public abstract class AbstractTest {
 
 		public static SQLiteTestDB getClusterDBFromSettings(String prefix) throws IOException, SQLException {
 //			String url = System.getProperty(prefix + ".url");
-			String filename = System.getProperty(prefix + ".filename")+"-cluster.sqlite";
+			String filename = System.getProperty(prefix + ".filename") + "-cluster.sqlite";
 			String username = System.getProperty(prefix + ".username");
 			String password = System.getProperty(prefix + ".password");
 			return new SQLiteTestDB(new File(filename), username, password);
@@ -478,7 +495,7 @@ public abstract class AbstractTest {
 	}
 
 	private static class MSSQLServerTestDB extends MSSQLServer2012DB {
-
+		
 		public static MSSQLServerTestDB getFromSettings(String prefix) throws SQLException {
 			String url = System.getProperty("" + prefix + ".url");
 			String host = System.getProperty("" + prefix + ".host");
@@ -523,7 +540,7 @@ public abstract class AbstractTest {
 			String schema = System.getProperty(prefix + ".schema");
 			String file = System.getProperty(prefix + ".file");
 			if (file != null && !file.equals("")) {
-				return new H2MemoryTestDB(file+"-cluster.h2db", username, password);
+				return new H2MemoryTestDB(file + "-cluster.h2db", username, password);
 			} else {
 				return new H2MemoryTestDB("cluster.h2db", username, password);
 			}
