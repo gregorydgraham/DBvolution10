@@ -92,6 +92,7 @@ public class PostgresDB extends DBDatabase implements SupportsPolygonDatatype {
 	 * Creates a PostgreSQL connection for the DataSource.
 	 *
 	 * @param ds	ds
+	 * @throws java.sql.SQLException
 	 */
 	public PostgresDB(DataSource ds) throws SQLException {
 		super(new PostgresDBDefinition(), ds);
@@ -103,6 +104,7 @@ public class PostgresDB extends DBDatabase implements SupportsPolygonDatatype {
 	 * @param jdbcURL jdbcURL
 	 * @param username username
 	 * @param password password
+	 * @throws java.sql.SQLException
 	 */
 	public PostgresDB(String jdbcURL, String username, String password) throws SQLException {
 		super(new PostgresDBDefinition(), POSTGRES_DRIVER_NAME, jdbcURL, username, password);
@@ -117,6 +119,7 @@ public class PostgresDB extends DBDatabase implements SupportsPolygonDatatype {
 	 * @param databaseName databaseName
 	 * @param username username
 	 * @param password password
+	 * @throws java.sql.SQLException
 	 */
 	public PostgresDB(String hostname, int port, String databaseName, String username, String password) throws SQLException {
 		this(hostname, port, databaseName, username, password, null);
@@ -136,6 +139,7 @@ public class PostgresDB extends DBDatabase implements SupportsPolygonDatatype {
 	 * @param port port
 	 * @param username username
 	 * @param urlExtras urlExtras
+	 * @throws java.sql.SQLException
 	 */
 	public PostgresDB(String hostname, int port, String databaseName, String username, String password, String urlExtras) throws SQLException {
 		super(new PostgresDBDefinition(),
@@ -157,6 +161,7 @@ public class PostgresDB extends DBDatabase implements SupportsPolygonDatatype {
 	 * @param username username
 	 * @param password password
 	 * @param urlExtras urlExtras
+	 * @throws java.sql.SQLException
 	 */
 	public PostgresDB(String databaseName, String username, String password, String urlExtras) throws SQLException {
 		this("localhost", POSTGRES_DEFAULT_PORT, databaseName, username, password, urlExtras);
@@ -186,7 +191,7 @@ public class PostgresDB extends DBDatabase implements SupportsPolygonDatatype {
 	@SuppressFBWarnings(value = "SQL_NONCONSTANT_STRING_PASSED_TO_EXECUTE",
 			justification = "Escaping over values takes place within this method to protect data integrity")
 	public int loadFromCSVFile(DBRow table, File file, String delimiter, String nullValue, String escapeCharacter, String quoteCharacter) throws SQLException {
-		int returnValue = 0;
+		int returnValue;
 		try (DBStatement dbStatement = this.getDBStatement()) {
 			returnValue = dbStatement.executeUpdate("COPY " + table.getTableName().replaceAll("\\\"", "") + " FROM '" + file.getAbsolutePath().replaceAll("\\\"", "") + "' WITH (DELIMITER '" + delimiter.replaceAll("\\\"", "") + "', NULL '" + nullValue.replaceAll("\\\"", "") + "', ESCAPE '" + escapeCharacter.replaceAll("\\\"", "") + "', FORMAT csv, QUOTE '" + quoteCharacter.replaceAll("\\\"", "") + "');");
 		}
@@ -282,7 +287,7 @@ public class PostgresDB extends DBDatabase implements SupportsPolygonDatatype {
 			}
 		} catch (org.postgresql.util.PSQLException pexc) {
 			LOG.warn("POSTGIS TOPOLOGY Rejected: Spatial operations will NOT function.", pexc);
-		} catch (Exception sqlex) {
+		} catch (SQLException sqlex) {
 		}
 	}
 
