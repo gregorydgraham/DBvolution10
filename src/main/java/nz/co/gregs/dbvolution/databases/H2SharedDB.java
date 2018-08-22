@@ -76,7 +76,7 @@ public class H2SharedDB extends H2DB {
 	@Override
 	protected String getUrlFromSettings(DatabaseConnectionSettings settings) {
 		String hostname = settings.getHost() == null || settings.getHost().isEmpty() ? "localhost" : settings.getHost();
-		return "jdbc:h2:tcp://" + hostname + "/~/" + settings.getDatabaseName();
+		return "jdbc:h2:tcp://" + hostname + "/" + settings.getDatabaseName();
 	}
 
 	@Override
