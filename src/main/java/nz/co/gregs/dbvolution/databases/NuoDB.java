@@ -48,7 +48,7 @@ public class NuoDB extends DBDatabase {
 	 * @param ds	ds
 	 */
 	public NuoDB(DataSource ds) throws SQLException {
-		super(new NuoDBDefinition(), ds);
+		super(new NuoDBDefinition(), NUODB_DRIVER, ds);
 	}
 
 	/**

@@ -210,6 +210,7 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 	 *
 	 * @param definition - the subclass of DBDefinition that provides the syntax
 	 * for your database.
+	 * @param driverName
 	 * @param ds - a DataSource for the required database.
 	 * @throws java.sql.SQLException
 	 * @see DBDefinition
@@ -224,10 +225,11 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 	 * @see MariaClusterDB
 	 * @see NuoDB
 	 */
-	public DBDatabase(DBDefinition definition, DataSource ds) throws SQLException {
+	public DBDatabase(DBDefinition definition, String driverName, DataSource ds) throws SQLException {
 		SLEEP_BETWEEN_CONNECTION_RETRIES_MILLIS = 10;
 		MAX_CONNECTION_RETRIES = 6;
 		this.definition = definition;
+		this.driverName = driverName;
 		this.dataSource = ds;
 		createRequiredTables();
 	}

@@ -44,7 +44,7 @@ public class MariaClusterDB extends DBDatabase {
 	 * @param ds	ds
 	 */
 	public MariaClusterDB(DataSource ds) throws SQLException {
-		super(new MariaDBDefinition(), ds);
+		super(new MariaDBDefinition(), MARIADBDRIVERNAME, ds);
 	}
 
 	/**

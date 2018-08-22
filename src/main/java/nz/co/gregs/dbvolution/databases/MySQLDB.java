@@ -42,7 +42,7 @@ public class MySQLDB extends DBDatabase implements SupportsPolygonDatatype {
 	 * @param ds	ds
 	 */
 	public MySQLDB(DataSource ds) throws SQLException {
-		super(new MySQLDBDefinition(), ds);
+		super(new MySQLDBDefinition(), MYSQLDRIVERNAME, ds);
 	}
 
 	/**

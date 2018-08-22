@@ -95,7 +95,7 @@ public class PostgresDB extends DBDatabase implements SupportsPolygonDatatype {
 	 * @throws java.sql.SQLException
 	 */
 	public PostgresDB(DataSource ds) throws SQLException {
-		super(new PostgresDBDefinition(), ds);
+		super(new PostgresDBDefinition(), POSTGRES_DRIVER_NAME, ds);
 	}
 
 	/**

@@ -39,7 +39,7 @@ public class MariaDB extends DBDatabase {
 	 * @param ds	ds
 	 */
 	public MariaDB(DataSource ds) throws SQLException {
-		super(new MariaDBDefinition(), ds);
+		super(new MariaDBDefinition(),MARIADBDRIVERNAME, ds);
 	}
 
 	/**

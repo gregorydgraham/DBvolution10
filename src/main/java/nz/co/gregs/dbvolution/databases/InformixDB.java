@@ -45,7 +45,7 @@ public class InformixDB extends DBDatabase {
 	 * @param ds the data source that defines the connection to the database.
 	 */
 	protected InformixDB(DBDefinition definition, DataSource ds) throws SQLException {
-		super(definition, ds);
+		super(definition, INFORMIXDRIVERNAME, ds);
 		// Informix causes problems when using batched statements :(
 		setBatchSQLStatementsWhenPossible(false);
 	}

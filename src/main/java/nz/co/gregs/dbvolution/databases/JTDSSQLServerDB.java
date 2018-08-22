@@ -61,7 +61,7 @@ public class JTDSSQLServerDB extends DBDatabase implements SupportsPolygonDataty
 	 */
 	@Deprecated
 	public JTDSSQLServerDB(DataSource ds) throws SQLException {
-		super(new MSSQLServerDBDefinition(), ds);
+		super(new MSSQLServerDBDefinition(), JTDSDRIVERNAME, ds);
 	}
 
 	/**

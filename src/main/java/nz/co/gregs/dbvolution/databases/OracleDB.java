@@ -42,6 +42,7 @@ import nz.co.gregs.dbvolution.internal.properties.PropertyWrapper;
  */
 public abstract class OracleDB extends DBDatabase implements SupportsPolygonDatatype {
 
+	public static final String ORACLE_JDBC_DRIVER = "oracle.jdbc.driver.OracleDriver";
 	public static final long serialVersionUID = 1l;
 	public static final int DEFAULT_PORT = 1521;
 	/**
@@ -97,9 +98,10 @@ public abstract class OracleDB extends DBDatabase implements SupportsPolygonData
 	 *
 	 * @param dbDefinition an oracle database definition instance
 	 * @param dataSource a data source to an Oracle database
+	 * @throws java.sql.SQLException
 	 */
 	public OracleDB(DBDefinition dbDefinition, DataSource dataSource) throws SQLException {
-		super(dbDefinition, dataSource);
+		super(dbDefinition, ORACLE_JDBC_DRIVER, dataSource);
 	}
 
 	@Override

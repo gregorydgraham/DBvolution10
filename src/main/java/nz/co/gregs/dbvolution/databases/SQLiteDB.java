@@ -72,7 +72,7 @@ public class SQLiteDB extends DBDatabase {
 	 * @param ds	ds
 	 */
 	public SQLiteDB(DataSource ds) throws SQLException {
-		super(new SQLiteDefinition(), ds);
+		super(new SQLiteDefinition(), SQLITE_DRIVER_NAME, ds);
 	}
 
 	/**

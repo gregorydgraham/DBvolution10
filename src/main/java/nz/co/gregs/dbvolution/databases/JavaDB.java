@@ -50,7 +50,7 @@ public class JavaDB extends DBDatabase {
 	 * @param dataSource	dataSource
 	 */
 	public JavaDB(DataSource dataSource) throws SQLException {
-		super(new JavaDBDefinition(), dataSource);
+		super(new JavaDBDefinition(),DRIVER_NAME, dataSource);
 	}
 
 	/**

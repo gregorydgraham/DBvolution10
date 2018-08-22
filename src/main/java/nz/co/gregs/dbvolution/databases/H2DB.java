@@ -20,6 +20,8 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.sql.DataSource;
 import nz.co.gregs.dbvolution.databases.definitions.H2DBDefinition;
 import nz.co.gregs.dbvolution.internal.h2.*;
@@ -40,6 +42,11 @@ public class H2DB extends DBDatabase {
 	private static boolean dataTypesNotProcessed = true;
 
 	static {
+		try {
+			Class.forName(DRIVER_NAME);
+		} catch (ClassNotFoundException ex) {
+			Logger.getLogger(H2DB.class.getName()).log(Level.SEVERE, null, ex);
+		}
 		for (DBVFeature function : DateRepeatFunctions.values()) {
 			FEATURE_MAP.put(function.alias(), function);
 		}
@@ -103,7 +110,7 @@ public class H2DB extends DBDatabase {
 	 * @throws java.sql.SQLException
 	 */
 	public H2DB(DataSource dataSource) throws SQLException {
-		super(new H2DBDefinition(), dataSource);
+		super(new H2DBDefinition(), DRIVER_NAME, dataSource);
 	}
 
 	/**

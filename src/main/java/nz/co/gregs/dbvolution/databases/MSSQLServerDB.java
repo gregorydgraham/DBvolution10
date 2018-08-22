@@ -65,7 +65,7 @@ public class MSSQLServerDB extends DBDatabase implements SupportsPolygonDatatype
 	}
 
 	protected MSSQLServerDB(MSSQLServerDBDefinition defn, DataSource ds) throws SQLException {
-		super(defn, ds);
+		super(defn, SQLSERVERDRIVERNAME, ds);
 	}
 
 	/**
