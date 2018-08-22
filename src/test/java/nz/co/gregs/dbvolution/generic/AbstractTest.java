@@ -301,7 +301,8 @@ public abstract class AbstractTest {
 			String password = System.getProperty(prefix + ".password");
 			String schema = System.getProperty(prefix + ".schema");
 			String file = System.getProperty(prefix + ".file");
-			System.out.println("MAKING H2DB with FILENAME: " + prefix + file);
+			System.out.println("MAKING H2DB :"+prefix+": FILENAME: " + prefix + file);
+			System.out.println("H2TestDatabaseFromFilename("+file+", "+username+", "+password+")");
 			if (file != null && !file.equals("")) {
 				return H2TestDatabaseFromFilename(file, username, password);
 			} else {
@@ -311,20 +312,7 @@ public abstract class AbstractTest {
 
 		public static H2DB getSharedDBFromSettings(String prefix) throws SQLException, IOException {
 			DatabaseConnectionSettings settings = DatabaseConnectionSettings.getSettingsfromSystemUsingPrefix(prefix + ".");
-//			String url = System.getProperty(prefix + ".url");
-//			String host = System.getProperty(prefix + ".host");
-//			String port = System.getProperty(prefix + ".port");
-//			String instance = System.getProperty(prefix + ".instance");
-//			String database = System.getProperty(prefix + ".database");
-//			String username = System.getProperty(prefix + ".username");
-//			String password = System.getProperty(prefix + ".password");
-//			String schema = System.getProperty(prefix + ".schema");
-//			String file = System.getProperty(prefix + ".file");
-//			if (settings.getHost() != null && !settings.getHost().equals("")) {
 			return new H2SharedDB(settings);
-//			} else {
-//				return new H2SharedDB(database, username, password);
-//			}
 		}
 
 		public static H2DB getClusterDBFromSettings(String prefix) throws SQLException, IOException {
