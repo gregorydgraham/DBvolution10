@@ -35,6 +35,7 @@ public class MySQLDB extends DBDatabase implements SupportsPolygonDatatype {
 	private final static String MYSQLDRIVERNAME = "com.mysql.jdbc.Driver";
 	private static final long serialVersionUID = 1l;
 	public static final int DEFAULT_PORT = 3306;
+	private String derivedURL;
 
 	/**
 	 * Creates a {@link DBDatabase } instance for the data source.
@@ -74,6 +75,15 @@ public class MySQLDB extends DBDatabase implements SupportsPolygonDatatype {
 				username,
 				password);
 		this.setDatabaseName(databaseName);
+	}
+
+	@Override
+	protected String getUrlFromSettings(DatabaseConnectionSettings settings) {
+		if (derivedURL == null || derivedURL.isEmpty()) {
+			derivedURL = "jdbc:mysql://" + settings.getHost() + ":" + settings.getPort() + "/" + settings.getDatabaseName() + "?createDatabaseIfNotExist=true&useUnicode=yes&characterEncoding=utf8&characterSetResults=utf8&verifyServerCertificate=false&useSSL=true"
+					+ settings.formatExtras("&", "=", "&", "");
+		}
+		return derivedURL;
 	}
 
 	@Override

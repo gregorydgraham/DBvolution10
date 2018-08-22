@@ -51,6 +51,7 @@ public class JTDSSQLServerDB extends DBDatabase implements SupportsPolygonDataty
 	 * The default port used by MS SQLServer databases.
 	 */
 	public final static int DEFAULT_PORT_NUMBER = 1433;
+	private String derivedURL;
 
 	/**
 	 * Creates a {@link DBDatabase } instance for the MS SQL Server data source.
@@ -123,6 +124,19 @@ public class JTDSSQLServerDB extends DBDatabase implements SupportsPolygonDataty
 				username,
 				password
 		);
+	}
+
+	@Override
+	protected String getUrlFromSettings(DatabaseConnectionSettings settings) {
+//		DatabaseConnectionSettings settings = getSettings();
+		if (derivedURL == null || derivedURL.isEmpty()) {
+			derivedURL = "jdbc:jtds:sqlserver://"
+					+ settings.getHost() + ":"
+					+ settings.getPort() 
+					+ (settings.getDatabaseName() == null ? "" : "/" + settings.getDatabaseName()) 
+					+ (settings.getInstance() != null ? ";instance=" + settings.getInstance() : "");
+		}
+		return derivedURL;
 	}
 
 	/**

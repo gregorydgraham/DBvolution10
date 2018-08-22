@@ -32,6 +32,7 @@ public class MariaDB extends DBDatabase {
 
 	private final static String MARIADBDRIVERNAME = "com.mariadb.jdbc.Driver";
 	public static final long serialVersionUID = 1l;
+	private String derivedURL;
 
 	/**
 	 * Creates a {@link DBDatabase } instance for the data source.
@@ -71,6 +72,17 @@ public class MariaDB extends DBDatabase {
 				username,
 				password);
 		this.setDatabaseName(databaseName);
+	}
+
+	@Override
+	protected String getUrlFromSettings(DatabaseConnectionSettings settings) {
+		if (derivedURL == null || derivedURL.isEmpty()) {
+			derivedURL = "jdbc:mariadb://"
+					+ settings.getHost() + ":"
+					+ settings.getPort() + "/"
+					+ settings.getDatabaseName();
+		}
+		return derivedURL;
 	}
 
 	@Override

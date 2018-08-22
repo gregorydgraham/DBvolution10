@@ -61,6 +61,7 @@ public class PostgresDB extends DBDatabase implements SupportsPolygonDatatype {
 	private boolean postGISTopologyAlreadyTried = false;
 	private boolean postGISAlreadyTried = false;
 	private boolean postGISInstalled = false;
+	private String derivedURL;
 
 	/**
 	 *
@@ -165,6 +166,18 @@ public class PostgresDB extends DBDatabase implements SupportsPolygonDatatype {
 	 */
 	public PostgresDB(String databaseName, String username, String password, String urlExtras) throws SQLException {
 		this("localhost", POSTGRES_DEFAULT_PORT, databaseName, username, password, urlExtras);
+	}
+
+	@Override
+	protected String getUrlFromSettings(DatabaseConnectionSettings settings) {
+		if (derivedURL == null || derivedURL.isEmpty()) {
+			derivedURL = "jdbc:postgresql://"
+					+ settings.getHost() + ":"
+					+ settings.getPort() + "/"
+					+ settings.getDatabaseName()
+					+ settings.formatExtras("?", "=", "&", "");
+		}
+		return derivedURL;
 	}
 
 	@Override

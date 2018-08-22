@@ -45,6 +45,7 @@ public abstract class OracleDB extends DBDatabase implements SupportsPolygonData
 	public static final String ORACLE_JDBC_DRIVER = "oracle.jdbc.driver.OracleDriver";
 	public static final long serialVersionUID = 1l;
 	public static final int DEFAULT_PORT = 1521;
+	private String derivedURL;
 	/**
 	 *
 	 * Provides a convenient constructor for DBDatabases that have configuration
@@ -169,6 +170,14 @@ public abstract class OracleDB extends DBDatabase implements SupportsPolygonData
 		DBDefinition definition = getDefinition();
 		final String formattedTableName = definition.formatTableName(tableRow);
 		statement.execute("DELETE FROM USER_SDO_GEOM_METADATA WHERE TABLE_NAME = '" + formattedTableName.toUpperCase() + "'");
+	}
+
+	@Override
+	protected String getUrlFromSettings(DatabaseConnectionSettings settings) {
+		if (derivedURL == null || derivedURL.isEmpty()) {
+			derivedURL = "jdbc:oracle:thin:@//" + settings.getHost() + ":" + settings.getPort() + "/" + settings.getInstance();
+		}
+		return derivedURL;
 	}
 
 }

@@ -36,6 +36,7 @@ public class JavaDB extends DBDatabase {
 
 	private static final String DRIVER_NAME = "org.apache.derby.jdbc.ClientDriver";
 	public static final long serialVersionUID = 1l;
+	private String derivedURL;
 
 	/**
 	 * Default Constructor.
@@ -77,6 +78,18 @@ public class JavaDB extends DBDatabase {
 	 */
 	public JavaDB(String host, int port, String database, String username, String password) throws SQLException {
 		super(new JavaDBDefinition(), DRIVER_NAME, "jdbc:derby://" + host + ":" + port + "/" + database + ";create=true", username, password);
+	}
+
+	@Override
+	protected String getUrlFromSettings(DatabaseConnectionSettings settings) {
+//		DatabaseConnectionSettings settings = getSettings();
+		if (derivedURL == null || derivedURL.isEmpty()) {
+			derivedURL = "jdbc:derby://"
+					+ settings.getHost() + ":"
+					+ settings.getPort() + "/"
+					+ settings.getDatabaseName() + ":create=true";
+		}
+		return derivedURL;
 	}
 
 	@Override

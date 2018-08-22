@@ -95,6 +95,7 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 	private static final transient HashMap<DBDatabase, List<Connection>> FREE_CONNECTIONS = new HashMap<>();
 	private Boolean needToAddDatabaseSpecificFeatures = true;
 	boolean explicitCommitActionRequired = false;
+	private DatabaseConnectionSettings settings;
 
 	@Override
 	public String toString() {
@@ -231,6 +232,44 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 		this.definition = definition;
 		this.driverName = driverName;
 		this.dataSource = ds;
+		createRequiredTables();
+	}
+
+	/**
+	 * Define a new DBDatabase.
+	 *
+	 * <p>
+	 * Most programmers should not call this constructor directly. Check the
+	 * subclasses in {@code nz.co.gregs.dbvolution} for your particular database.
+	 *
+	 * <p>
+	 * DBDatabase encapsulates the knowledge of the database, in particular the
+	 * syntax of the database in the DBDefinition and the connection details from
+	 * a DataSource.
+	 *
+	 * @param definition - the subclass of DBDefinition that provides the syntax
+	 * for your database.
+	 * @param driverName
+	 * @param dcs - a DatabaseConnectionSettings for the required database.
+	 * @throws java.sql.SQLException
+	 * @see DBDefinition
+	 * @see OracleDB
+	 * @see MSSQLServerDB
+	 * @see MySQLDB
+	 * @see PostgresDB
+	 * @see H2DB
+	 * @see H2MemoryDB
+	 * @see InformixDB
+	 * @see MariaDB
+	 * @see MariaClusterDB
+	 * @see NuoDB
+	 */
+	public DBDatabase(DBDefinition definition, String driverName, DatabaseConnectionSettings dcs) throws SQLException {
+		SLEEP_BETWEEN_CONNECTION_RETRIES_MILLIS = 10;
+		MAX_CONNECTION_RETRIES = 6;
+		this.definition = definition;
+		this.driverName = driverName;
+		this.settings = dcs;
 		createRequiredTables();
 	}
 
@@ -388,6 +427,7 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 		synchronized (getConnectionSynchronizeObject) {
 			if (this.dataSource == null) {
 				try {
+					startServerIfRequired();
 					// load the driver
 					Class.forName(getDriverName());
 				} catch (ClassNotFoundException noDriver) {
@@ -903,6 +943,9 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 	 * @return the jdbcURL
 	 */
 	public synchronized String getJdbcURL() {
+		if (settings != null) {
+			return getUrlFromSettings(getSettings());
+		}
 		return jdbcURL;
 	}
 
@@ -915,6 +958,9 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 	 * @return the username
 	 */
 	public synchronized String getUsername() {
+		if (settings != null) {
+			return settings.getUsername();
+		}
 		return username;
 	}
 
@@ -927,6 +973,9 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 	 * @return the password
 	 */
 	public synchronized String getPassword() {
+		if (settings != null) {
+			return settings.getPassword();
+		}
 		return password;
 	}
 
@@ -1608,6 +1657,9 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 	 * @return the database name
 	 */
 	public synchronized String getDatabaseName() {
+		if (settings != null) {
+			return settings.getDatabaseName();
+		}
 		return databaseName;
 	}
 
@@ -2088,5 +2140,15 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 			System.err.println("nz.co.gregs.dbvolution.databases.DBDatabase.alterTableAddColumn() " + ex.getLocalizedMessage());
 			Logger.getLogger(DBDatabase.class.getName()).log(Level.SEVERE, null, ex);
 		}
+	}
+
+	protected abstract String getUrlFromSettings(DatabaseConnectionSettings settings) ;
+
+	public DatabaseConnectionSettings getSettings() {
+		return settings;
+	}
+
+	protected void startServerIfRequired() {
+		;
 	}
 }

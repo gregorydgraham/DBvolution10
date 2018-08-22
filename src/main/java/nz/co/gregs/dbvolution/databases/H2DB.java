@@ -116,6 +116,19 @@ public class H2DB extends DBDatabase {
 	/**
 	 * Creates a DBDatabase for a H2 database.
 	 *
+	 * <p>
+	 * Database exceptions may be thrown
+	 *
+	 * @param dataSource dataSource
+	 * @throws java.sql.SQLException
+	 */
+	public H2DB(DatabaseConnectionSettings dataSource) throws SQLException {
+		super(new H2DBDefinition(), DRIVER_NAME, dataSource);
+	}
+
+	/**
+	 * Creates a DBDatabase for a H2 database.
+	 *
 	 *
 	 *
 	 *
@@ -223,4 +236,8 @@ public class H2DB extends DBDatabase {
 		}
 	}
 
+	@Override
+	protected String getUrlFromSettings(DatabaseConnectionSettings settings) {
+		return "jdbc:h2:"+settings.getDatabaseName();
+	}
 }

@@ -34,6 +34,7 @@ public class InformixDB extends DBDatabase {
 	private final static String INFORMIXDRIVERNAME = "com.informix.jdbc.IfxDriver";
 	public static final long serialVersionUID = 1l;
 	public static final int DEFAULT_PORT = 1526;
+	private String derivedURL;
 
 	/**
 	 * Create a database object for a Informix 7+ database using the supplied
@@ -115,5 +116,19 @@ public class InformixDB extends DBDatabase {
 	protected void addDatabaseSpecificFeatures(Statement statement) throws SQLException {
 		// none implemented so far
 		;
+	}
+
+	@Override
+	protected String getUrlFromSettings(DatabaseConnectionSettings settings) {
+//		DatabaseConnectionSettings settings = getSettings();
+		if (derivedURL == null || derivedURL.isEmpty()) {
+			derivedURL = "jdbc:informix-sqli://"
+					+ settings.getHost() + ":"
+					+ settings.getPort() + "/"
+					+ settings.getDatabaseName() + ":INFORMIXSERVER="
+					+ settings.getInstance()
+					+ settings.formatExtras(":", "=", ";", "");
+		}
+		return derivedURL;
 	}
 }

@@ -39,6 +39,7 @@ public class SQLiteDB extends DBDatabase {
 
 	private static final String SQLITE_DRIVER_NAME = "org.sqlite.JDBC";
 	public static final long serialVersionUID = 1l;
+	private String derivedURL;
 
 	/**
 	 *
@@ -121,6 +122,15 @@ public class SQLiteDB extends DBDatabase {
 				"jdbc:sqlite:"+filename,
 				username, 
 				password);
+	}
+
+	@Override
+	protected String getUrlFromSettings(DatabaseConnectionSettings settings) {
+		if (derivedURL == null || derivedURL.isEmpty()) {
+			derivedURL = "jdbc:sqlite:"
+					+ settings.getDatabaseName();
+		}
+		return derivedURL;
 	}
 
 	@Override

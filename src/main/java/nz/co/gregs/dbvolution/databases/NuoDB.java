@@ -36,6 +36,7 @@ public class NuoDB extends DBDatabase {
 	private static final String NUODB_DRIVER = "com.nuodb.jdbc.Driver";
 	private static final String NUODB_URL_PREFIX = "jdbc:com.nuodb://";
 	public static final long serialVersionUID = 1l;
+	private String derivedURL;
 
 	@Override
 	public DBDatabase clone() throws CloneNotSupportedException {
@@ -136,6 +137,16 @@ public class NuoDB extends DBDatabase {
 		setUsername(username);
 		setPassword(password);
 		setDatabaseName(databaseName);
+	}
+
+	@Override
+	protected String getUrlFromSettings(DatabaseConnectionSettings settings) {
+		if (derivedURL == null || derivedURL.isEmpty()) {
+			derivedURL = NUODB_URL_PREFIX
+					+ settings.getHost() + "/"
+					+ settings.getDatabaseName() + "?schema="+getSettings().getSchema();
+		}
+		return derivedURL;
 	}
 
 	@Override

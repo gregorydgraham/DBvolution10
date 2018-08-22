@@ -30,6 +30,7 @@ import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 public class PostgresDBOverSSL extends PostgresDB {
 
 	public static final long serialVersionUID = 1l;
+	private String derivedURL;
 
 	/**
 	 *
@@ -77,6 +78,19 @@ public class PostgresDBOverSSL extends PostgresDB {
 	 */
 	public PostgresDBOverSSL(String hostname, int port, String databaseName, String username, String password, String urlExtras) throws SQLException {
 		super(hostname, port, databaseName, username, password, "ssl=true&sslfactory=org.postgresql.ssl.NonValidatingFactory" + (urlExtras == null || urlExtras.isEmpty() ? "" : "&" + urlExtras));
+	}
+
+	@Override
+	protected String getUrlFromSettings(DatabaseConnectionSettings settings) {
+		if (derivedURL == null || derivedURL.isEmpty()) {
+			derivedURL = "jdbc:postgresql://"
+					+ settings.getHost() + ":"
+					+ settings.getPort() + "/"
+					+ settings.getDatabaseName()
+					+ "ssl=true&sslfactory=org.postgresql.ssl.NonValidatingFactory"
+					+ settings.formatExtras("&", "=", "&", "");
+		}
+		return derivedURL;
 	}
 
 	/**

@@ -54,6 +54,7 @@ public class MSSQLServerDB extends DBDatabase implements SupportsPolygonDatatype
 	 * The default port used by MS SQLServer databases.
 	 */
 	public final static int DEFAULT_PORT_NUMBER = 1433;
+	private String derivedURL;
 
 	/**
 	 * Creates a {@link DBDatabase } instance for the MS SQL Server data source.
@@ -138,6 +139,17 @@ public class MSSQLServerDB extends DBDatabase implements SupportsPolygonDatatype
 		);
 	}
 
+	@Override
+	protected String getUrlFromSettings(DatabaseConnectionSettings settings) {
+		if (derivedURL == null || derivedURL.isEmpty()) {
+			derivedURL = "jdbc:sqlserver://" + settings.getHost()
+					+ (settings.getInstance() != null ? "\\" + settings.getInstance() : "") + ":"
+					+ settings.getPort() + ";"
+					+ (settings.getDatabaseName() == null ? "" : "databaseName=" + settings.getDatabaseName() + ";");
+		}
+		return derivedURL;
+	}
+
 	/**
 	 * Connect to an MS SQLServer database using the connection details specified
 	 * and Microsoft's driver.
@@ -157,7 +169,7 @@ public class MSSQLServerDB extends DBDatabase implements SupportsPolygonDatatype
 		this(
 				new MSSQLServerDBDefinition(),
 				driverName,
-				hostname, instanceName,databaseName, portNumber,
+				hostname, instanceName, databaseName, portNumber,
 				username, password
 		);
 	}
@@ -174,7 +186,7 @@ public class MSSQLServerDB extends DBDatabase implements SupportsPolygonDatatype
 
 	@Override
 	public DBDatabase clone() throws CloneNotSupportedException {
-		return super.clone(); 
+		return super.clone();
 	}
 
 	@Override
@@ -196,10 +208,11 @@ public class MSSQLServerDB extends DBDatabase implements SupportsPolygonDatatype
 	@Override
 	public void addFeatureToFixException(Exception exp) throws Exception {
 		final String message = exp.getMessage();
-		System.out.println("nz.co.gregs.dbvolution.databases.MSSQLServerDB.addFeatureToFixException() "+ message);
-		if (message.matches("IDENTITY_INSERT is already ON for table '[^']*'. Cannot perform SET operation for table.*")){
+		System.out.println("nz.co.gregs.dbvolution.databases.MSSQLServerDB.addFeatureToFixException() " + message);
+		if (message.matches("IDENTITY_INSERT is already ON for table '[^']*'. Cannot perform SET operation for table.*")) {
 			String table = message.split("'")[1];
-			Statement stmt = getConnection().createStatement();stmt.execute("SET IDENTITY_INSERT " + table + " ON;");
+			Statement stmt = getConnection().createStatement();
+			stmt.execute("SET IDENTITY_INSERT " + table + " ON;");
 		}
 		super.addFeatureToFixException(exp);
 	}

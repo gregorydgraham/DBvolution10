@@ -123,6 +123,9 @@ public abstract class AbstractTest {
 		if (System.getProperty("testH2DB") != null) {
 			databases.add(new Object[]{"H2DB", H2TestDatabase.getFromSettings("h2")});
 		}
+		if (System.getProperty("testH2SharedDB") != null) {
+			databases.add(new Object[]{"H2SharedDB", H2TestDatabase.getSharedDBFromSettings("h2shared")});
+		}
 		if (System.getProperty("testH2FileDB") != null) {
 			databases.add(new Object[]{"H2FileDB", H2TestDatabase.getFromSettings("h2file")});
 		}
@@ -298,12 +301,30 @@ public abstract class AbstractTest {
 			String password = System.getProperty(prefix + ".password");
 			String schema = System.getProperty(prefix + ".schema");
 			String file = System.getProperty(prefix + ".file");
+			System.out.println("MAKING H2DB with FILENAME: " + prefix + file);
 			if (file != null && !file.equals("")) {
-				System.out.println("MAKING H2DB with FILENAME: " + file);
 				return H2TestDatabaseFromFilename(file, username, password);
 			} else {
 				return new H2TestDatabase(url, username, password);
 			}
+		}
+
+		public static H2DB getSharedDBFromSettings(String prefix) throws SQLException, IOException {
+			DatabaseConnectionSettings settings = DatabaseConnectionSettings.getSettingsfromSystemUsingPrefix(prefix + ".");
+//			String url = System.getProperty(prefix + ".url");
+//			String host = System.getProperty(prefix + ".host");
+//			String port = System.getProperty(prefix + ".port");
+//			String instance = System.getProperty(prefix + ".instance");
+//			String database = System.getProperty(prefix + ".database");
+//			String username = System.getProperty(prefix + ".username");
+//			String password = System.getProperty(prefix + ".password");
+//			String schema = System.getProperty(prefix + ".schema");
+//			String file = System.getProperty(prefix + ".file");
+//			if (settings.getHost() != null && !settings.getHost().equals("")) {
+			return new H2SharedDB(settings);
+//			} else {
+//				return new H2SharedDB(database, username, password);
+//			}
 		}
 
 		public static H2DB getClusterDBFromSettings(String prefix) throws SQLException, IOException {
@@ -495,7 +516,7 @@ public abstract class AbstractTest {
 	}
 
 	private static class MSSQLServerTestDB extends MSSQLServer2012DB {
-		
+
 		public static MSSQLServerTestDB getFromSettings(String prefix) throws SQLException {
 			String url = System.getProperty("" + prefix + ".url");
 			String host = System.getProperty("" + prefix + ".host");

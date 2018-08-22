@@ -107,6 +107,11 @@ public class H2MemoryDB extends H2DB {
 	}
 
 	@Override
+	protected String getUrlFromSettings(DatabaseConnectionSettings settings) {
+		return "jdbc:h2:mem:"+settings.getDatabaseName();
+	}
+
+	@Override
 	public H2MemoryDB clone() throws CloneNotSupportedException {
 		return (H2MemoryDB) super.clone(); //To change body of generated methods, choose Tools | Templates.
 	}

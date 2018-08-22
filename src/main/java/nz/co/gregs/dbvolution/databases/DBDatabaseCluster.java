@@ -1129,6 +1129,11 @@ public class DBDatabaseCluster extends DBDatabase {
 		return "Active Databases: "+details.getReadyDatabases().length+" of "+details.getAllDatabases().length;
 	}
 
+	@Override
+	protected String getUrlFromSettings(DatabaseConnectionSettings settings) {
+		throw new UnsupportedOperationException("Not supported yet.");
+	}
+
 	private static class ActionTask implements Callable<DBActionList> {
 
 		private final DBDatabase database;

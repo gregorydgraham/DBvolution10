@@ -34,6 +34,7 @@ public class JavaDBMemoryDB extends DBDatabase {
 
 	public static final long serialVersionUID = 1l;
 	private static final String DRIVER_NAME = "org.apache.derby.jdbc.ClientDriver";
+	private String derivedURL;
 
 	/**
 	 * Default Constructor.
@@ -75,6 +76,17 @@ public class JavaDBMemoryDB extends DBDatabase {
 	 */
 	public JavaDBMemoryDB(String host, int port, String database, String username, String password) throws SQLException, UnableToCreateDatabaseConnectionException, UnableToFindJDBCDriver {
 		super(new JavaDBMemoryDBDefinition(), DRIVER_NAME, "jdbc:derby://" + host + ":" + port + "/memory:" + database + ";create=true", username, password);
+	}
+
+	@Override
+	protected String getUrlFromSettings(DatabaseConnectionSettings settings) {
+		if (derivedURL == null || derivedURL.isEmpty()) {
+			derivedURL = "jdbc:derby://"
+					+ settings.getHost() + ":"
+					+ settings.getPort() + "/memory:"
+					+ settings.getDatabaseName() + ";create=true";
+		}
+		return derivedURL;
 	}
 
 	@Override
