@@ -33,10 +33,73 @@ package nz.co.gregs.dbvolution.databases;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+import nz.co.gregs.dbvolution.annotations.DBTableName;
 
 /**
+ * A standardized collection of the database connection settings.
  *
- * @author gregorygraham
+ * <p>
+ * This object is a bean to provide a consistent way of defining a the
+ * connection details needed to connect to a database.</p>
+ *
+ * <p>
+ * Connection details can be grouped as username/password, URL, settings, and
+ * extras.</p>
+ *
+ * <p>
+ * Username and password are generally required to connect to a database and are
+ * provided to the connection separately from the url, settings, and extras.</p>
+ *
+ * <p>
+ * URL, settings, and extras are used to create the JDBC connection URL to the
+ * database and, with the username/password, to connection to the database.</p>
+ *
+ * <p>
+ * If the URL is supplied it will be used as provided and settings and extras
+ * will be ignored. This is reflected in the 2 standard constructors for
+ * DatabaseConnectionSettings:
+ * {@link #DatabaseConnectionSettings(java.lang.String, java.lang.String, java.lang.String) one for username/password/url}
+ * and
+ * {@link #DatabaseConnectionSettings(java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.util.Map) one for username/password/settings/extras}.</p>
+ *
+ * <p>
+ * Without an explicit URL the settings (host, port, instance, database, schema)
+ * and extras will be combined to create the JDBC URL. This combination is
+ * deferred to the appropriate DBDatabase class and its version of null {@link DBDatabase#getUrlFromSettings(nz.co.gregs.dbvolution.databases.DatabaseConnectionSettings)
+ * }</p>
+ *
+ * <p>
+ * Extras are any miscellaneous and database specific settings that are added to
+ * the end of the JDBC URL to tweak the connection or database. Generally these
+ * are very database specific and will not work as expected for any other
+ * providers product.</p>
+ *
+ * <p>
+ * There is some confusion in the Database/JDBC world as to what some of the
+ * settings names (host, port, instance, database, schema) mean. For the
+ * purposes of DatabaseConnectionSettings:</p>
+ * <ul>
+ * <li>Host is the server name or Internet address of the database server, for
+ * instance db1.acme.com or 101.203.54.9.</li>
+ * <li>Port is the port number on the host that the database will accept
+ * connections from, for instance 1336</li>
+ * <li>Instance is the particular application or service that is providing the
+ * database if the database application is capable of running multiple instances
+ * on one server. Many databases are not and this setting should be ignored for
+ * those that cannot.</li>
+ * <li>Database is the named database within the application that the connection
+ * should use. Database is the central concept that all database providers
+ * implement. File based databases should use this to provide the file
+ * name.</li>
+ * <li>Schema is the level below database. It is optional or irrelevant for many
+ * RDBMSs or user setups. This is primarily where a user can create their own
+ * groupings below the database that they have been assigned to. Schema can also
+ * be specified using {@link DBTableName} when the schema name is
+ * unchanging.</li>
+ * </ul>
+ *
+ *
+ * @author Gregory Graham
  */
 public class DatabaseConnectionSettings {
 
@@ -48,7 +111,6 @@ public class DatabaseConnectionSettings {
 	private String username = "";
 	private String password = "";
 	private String schema = "";
-	private String file = "";
 	private final Map<String, String> extras = new HashMap<>();
 
 	private DatabaseConnectionSettings() {
@@ -63,7 +125,7 @@ public class DatabaseConnectionSettings {
 
 	public DatabaseConnectionSettings(String host, String port, String instance, String database, String schema, String username, String password, Map<String, String> extras) {
 		super();
-		this.url = host;
+		this.host = host;
 		this.port = port;
 		this.instance = instance;
 		this.database = database;
@@ -75,15 +137,14 @@ public class DatabaseConnectionSettings {
 
 	public static DatabaseConnectionSettings getSettingsfromSystemUsingPrefix(String prefix) {
 		DatabaseConnectionSettings settings = new DatabaseConnectionSettings();
+		settings.setUsername(System.getProperty(prefix + "username"));
+		settings.setPassword(System.getProperty(prefix + "password"));
 		settings.setUrl(System.getProperty(prefix + "url"));
 		settings.setHost(System.getProperty(prefix + "host"));
 		settings.setPort(System.getProperty(prefix + "port"));
 		settings.setInstance(System.getProperty(prefix + "instance"));
 		settings.setDatabase(System.getProperty(prefix + "database"));
-		settings.setUsername(System.getProperty(prefix + "username"));
-		settings.setPassword(System.getProperty(prefix + "password"));
 		settings.setSchema(System.getProperty(prefix + "schema"));
-		settings.setFile(System.getProperty(prefix + "file"));
 		return settings;
 	}
 
@@ -144,13 +205,6 @@ public class DatabaseConnectionSettings {
 	}
 
 	/**
-	 * @return the file
-	 */
-	public String getFile() {
-		return file;
-	}
-
-	/**
 	 * @param url the url to set
 	 */
 	public void setUrl(String url) {
@@ -159,7 +213,7 @@ public class DatabaseConnectionSettings {
 
 	/**
 	 * @param host the host to set
-	 * @return 
+	 * @return
 	 */
 	public DatabaseConnectionSettings setHost(String host) {
 		this.host = host;
@@ -168,7 +222,7 @@ public class DatabaseConnectionSettings {
 
 	/**
 	 * @param port the port to set
-	 * @return 
+	 * @return
 	 */
 	public DatabaseConnectionSettings setPort(String port) {
 		this.port = port;
@@ -177,7 +231,7 @@ public class DatabaseConnectionSettings {
 
 	/**
 	 * @param instance the instance to set
-	 * @return 
+	 * @return
 	 */
 	public DatabaseConnectionSettings setInstance(String instance) {
 		this.instance = instance;
@@ -186,7 +240,7 @@ public class DatabaseConnectionSettings {
 
 	/**
 	 * @param database the database to set
-	 * @return 
+	 * @return
 	 */
 	public DatabaseConnectionSettings setDatabase(String database) {
 		this.database = database;
@@ -195,7 +249,7 @@ public class DatabaseConnectionSettings {
 
 	/**
 	 * @param username the username to set
-	 * @return 
+	 * @return
 	 */
 	public DatabaseConnectionSettings setUsername(String username) {
 		this.username = username;
@@ -204,7 +258,7 @@ public class DatabaseConnectionSettings {
 
 	/**
 	 * @param password the password to set
-	 * @return 
+	 * @return
 	 */
 	public DatabaseConnectionSettings setPassword(String password) {
 		this.password = password;
@@ -213,19 +267,10 @@ public class DatabaseConnectionSettings {
 
 	/**
 	 * @param schema the schema to set
-	 * @return 
+	 * @return
 	 */
 	public DatabaseConnectionSettings setSchema(String schema) {
 		this.schema = schema;
-		return this;
-	}
-
-	/**
-	 * @param file the file to set
-	 * @return 
-	 */
-	public DatabaseConnectionSettings setFile(String file) {
-		this.file = file;
 		return this;
 	}
 
@@ -240,10 +285,10 @@ public class DatabaseConnectionSettings {
 	 * @param newExtras
 	 * @return the extras
 	 */
-	public DatabaseConnectionSettings setExtras(Map<String,String> newExtras) {
-		 extras.clear();
-		 extras.putAll(newExtras);
-		 return this;
+	public DatabaseConnectionSettings setExtras(Map<String, String> newExtras) {
+		extras.clear();
+		extras.putAll(newExtras);
+		return this;
 	}
 
 	public String formatExtras(String prefix, String nameValueSeparator, String nameValuePairSeparator, String suffix) {

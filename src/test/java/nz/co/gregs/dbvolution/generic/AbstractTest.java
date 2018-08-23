@@ -424,6 +424,8 @@ public abstract class AbstractTest {
 	}
 
 	private static class PostgreSQLTestDatabase extends PostgresDB {
+		
+		private final static long serialVersionUID = 1l;
 
 		public static PostgresDB getFromSettings(String prefix) throws SQLException {
 			String url = System.getProperty("" + prefix + ".url");
@@ -455,6 +457,8 @@ public abstract class AbstractTest {
 	}
 
 	private static class SQLiteTestDB extends SQLiteDB {
+		
+		private final static long serialVersionUID = 1l;
 
 		public static SQLiteTestDB getFromSettings() throws IOException, SQLException {
 			return getFromSettings("sqlite");
@@ -486,6 +490,8 @@ public abstract class AbstractTest {
 	}
 
 	private static class Oracle11XETestDB extends Oracle11XEDB {
+		
+		private final static long serialVersionUID = 1l;
 
 		public static Oracle11XETestDB getFromSettings(String prefix) throws SQLException {
 			String url = System.getProperty("" + prefix + ".url");
@@ -505,6 +511,8 @@ public abstract class AbstractTest {
 	}
 
 	private static class MSSQLServerTestDB extends MSSQLServer2012DB {
+		
+		private final static long serialVersionUID = 1l;
 
 		public static MSSQLServerTestDB getFromSettings(String prefix) throws SQLException {
 			String url = System.getProperty("" + prefix + ".url");

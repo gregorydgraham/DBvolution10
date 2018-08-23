@@ -442,7 +442,7 @@ WHERE rownumber = (SELECT (COUNT(*)+1) DIV 2 FROM (select * FROM marque WHERE up
 		dbQuery.addExpressionColumn(counterKey, t1CounterExpr);
 		ColumnProvider t1CounterColumn = dbQuery.column(t1CounterExpr);
 
-		final QueryableDatatype t1ValueExpr = inputRangeExpression.asExpressionColumn();
+		final QueryableDatatype<?> t1ValueExpr = inputRangeExpression.asExpressionColumn();
 		final String valueExprKey = "Value" + this;
 		dbQuery.addExpressionColumn(valueExprKey, t1ValueExpr);
 

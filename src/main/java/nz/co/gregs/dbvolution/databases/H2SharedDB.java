@@ -40,6 +40,8 @@ import javax.sql.DataSource;
 import org.h2.tools.Server;
 
 public class H2SharedDB extends H2DB {
+	
+	private final static long serialVersionUID = 1l;
 
 	Server server = null;
 
@@ -60,7 +62,7 @@ public class H2SharedDB extends H2DB {
 	}
 
 	public H2SharedDB(String serverName, String databaseName, String username, String password) throws SQLException {
-		this("jdbc:h2:tcp://" + serverName + "/~/" + databaseName, username, password, false);
+		this("jdbc:h2:tcp://" + serverName + "/" + databaseName, username, password, false);
 		this.setDatabaseName(databaseName);
 	}
 
