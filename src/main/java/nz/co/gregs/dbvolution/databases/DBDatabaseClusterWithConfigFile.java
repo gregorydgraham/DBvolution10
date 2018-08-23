@@ -142,6 +142,7 @@ public class DBDatabaseClusterWithConfigFile extends DBDatabaseCluster {
 	public static class DefaultConfigFinder
 			extends SimpleFileVisitor<Path> {
 
+		private int filesChecked = 0;
 		private final String yamlConfigFilename;
 		private Path configPath;
 		private final List<String> visitedFiles = new ArrayList<>();
@@ -153,6 +154,10 @@ public class DBDatabaseClusterWithConfigFile extends DBDatabaseCluster {
 		// Compares the glob pattern against
 		// the file or directory name.
 		FileVisitResult find(Path path) {
+			if (filesChecked > 100000) {
+				return FileVisitResult.TERMINATE;
+			}
+			filesChecked++;
 			if (!visited(path)) {
 				Path name = path.getFileName();
 				if (name != null && name.toString().equals(yamlConfigFilename)) {
@@ -194,9 +199,9 @@ public class DBDatabaseClusterWithConfigFile extends DBDatabaseCluster {
 
 		private boolean visited(Path path) {
 			String key = path.toAbsolutePath().toString();
-			if(visitedFiles.contains(key)){
+			if (visitedFiles.contains(key)) {
 				return true;
-			}else{
+			} else {
 				visitedFiles.add(key);
 			}
 			return false;
