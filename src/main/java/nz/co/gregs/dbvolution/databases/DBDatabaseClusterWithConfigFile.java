@@ -157,6 +157,7 @@ public class DBDatabaseClusterWithConfigFile extends DBDatabaseCluster {
 			if (filesChecked > 100000) {
 				return FileVisitResult.TERMINATE;
 			}
+			System.out.println("VISITING: "+path);
 			filesChecked++;
 			if (!visited(path)) {
 				Path name = path.getFileName();
