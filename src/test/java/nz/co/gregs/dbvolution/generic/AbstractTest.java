@@ -300,10 +300,7 @@ public abstract class AbstractTest {
 			String username = System.getProperty(prefix + ".username");
 			String password = System.getProperty(prefix + ".password");
 			String schema = System.getProperty(prefix + ".schema");
-			System.out.println("System.getProperty("+prefix+".file)");
 			String file = System.getProperty(prefix + ".file");
-			System.out.println("MAKING H2DB :"+prefix + ".file"+": FILENAME: " + file);
-			System.out.println("H2TestDatabaseFromFilename("+file+", "+username+", "+password+")");
 			if (file != null && !file.isEmpty()) {
 				return H2TestDatabaseFromFilename(file, username, password);
 			} else {
