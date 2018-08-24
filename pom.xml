@@ -353,6 +353,15 @@
 						<h2memory.password>${h2memory.password}</h2memory.password>
 						<h2memory.schema>${h2memory.schema}</h2memory.schema>
                         
+						<h2shared.url>${h2shared.url}</h2shared.url>
+						<h2shared.host>${h2shared.host}</h2shared.host>
+						<h2shared.port>${h2shared.port}</h2shared.port>
+						<h2shared.instance>${h2shared.instance}</h2shared.instance>
+						<h2shared.database>${h2shared.database}</h2shared.database>
+						<h2shared.username>${h2shared.username}</h2shared.username>
+						<h2shared.password>${h2shared.password}</h2shared.password>
+						<h2shared.schema>${h2shared.schema}</h2shared.schema>
+                        
 						<mysql.url>${mysql.url}</mysql.url>
 						<mysql.host>${mysql.host}</mysql.host>
 						<mysql.port>${mysql.port}</mysql.port>

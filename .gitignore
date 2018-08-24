@@ -23,3 +23,4 @@
 /fileTest.h2db.trace.db
 /dbvolutionTest.sqlite-cluster.sqlite
 /DBDatabaseClusterWithConfigFile.sqlite
+/sharedTest.h2db.mv.db
