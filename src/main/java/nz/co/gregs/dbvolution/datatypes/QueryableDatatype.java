@@ -362,9 +362,9 @@ public abstract class QueryableDatatype<T> extends Object implements Serializabl
 		}
 	}
 
-
 	/**
-	 * Gets the current literal value of this queryable data type or the value supplied if the value is NULL.
+	 * Gets the current literal value of this queryable data type or the value
+	 * supplied if the value is NULL.
 	 *
 	 * <p>
 	 * This method will return NULL if the QDT represents a database NULL OR the
@@ -401,7 +401,11 @@ public abstract class QueryableDatatype<T> extends Object implements Serializabl
 
 	/**
 	 * Set the value of this QDT to the value provided from the standard string
-	 * encoding of this datatype
+	 * encoding of this datatype.
+	 *
+	 * <p>
+	 * A good example of this method is {@link DBBoolean#setValueFromStandardStringEncoding(java.lang.String)
+	 * } which translates the string encodings TRUE, YES, and 1 to true.
 	 *
 	 * <p>
 	 * Subclass writers should ensure that the method handles nulls correctly and
