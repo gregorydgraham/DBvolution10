@@ -1722,6 +1722,16 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 	 *
 	 * @param droppingTablesIsAMistake just leave it at TRUE.
 	 */
+	/*
+	* The lack of documentation is by design: you probably shouldn't be using this method.
+	
+	If you must use it, maybe you're the DBA or something, this only works for one call of dropTable().
+	
+	It is automatically reset to TRUE after every use to avoid accidental use.
+	
+	Also note that there is a race condition between the setting of this and your call to dropTable().  If other code
+	calls dropTable() somewhere else, it may get there before you do, so just never use this, OK?
+	*/
 	public synchronized void preventDroppingOfTables(boolean droppingTablesIsAMistake) {
 		this.preventAccidentalDroppingOfTables = droppingTablesIsAMistake;
 	}
@@ -1730,6 +1740,16 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 	 *
 	 * @param justLeaveThisAtTrue	justLeaveThisAtTrue
 	 */
+	/*
+	* The lack of documentation is by design: you shouldn't be using this method.
+	
+	If you must use it, maybe you're the DBA or something, this only works for one call of dropDatabase().
+	
+	It is automatically reset to TRUE after every use to avoid accidental use.
+	
+	Also note that there is a race condition between the setting of this and your call to dropDatabase().  If other code
+	calls dropDatabase() somewhere else, it may get there before you do, so just never use this, OK?
+	*/
 	public synchronized void preventDroppingOfDatabases(boolean justLeaveThisAtTrue) {
 		this.preventAccidentalDroppingDatabase = justLeaveThisAtTrue;
 	}
