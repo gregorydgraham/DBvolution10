@@ -22,6 +22,7 @@ import java.util.List;
 import nz.co.gregs.dbvolution.DBTable;
 import nz.co.gregs.dbvolution.databases.DBDatabase;
 import nz.co.gregs.dbvolution.example.Marque;
+import nz.co.gregs.dbvolution.exceptions.ExceptionThrownDuringTransaction;
 import nz.co.gregs.dbvolution.generic.AbstractTest;
 import org.junit.Assert;
 import org.junit.Test;
@@ -46,22 +47,26 @@ public class DBTableTransactionTest extends AbstractTest {
 		List<Marque> original = marquesTable.setBlankQueryAllowed(true).getRowsByExample(new Marque());
 		DBTable<Marque> transacted = database.doTransaction(new DBTransaction<DBTable<Marque>>() {
 			@Override
-			public DBTable<Marque> doTransaction(DBDatabase dbDatabase) throws SQLException {
-				Marque myTableRow = new Marque();
-				DBTable<Marque> marques = DBTable.getInstance(dbDatabase, myTableRow);
-				myTableRow.getUidMarque().setValue(999);
-				myTableRow.getName().setValue("TOYOTA");
-				myTableRow.getNumericCode().setValue(10);
-				marques.insert(myTableRow);
-				marques.setBlankQueryAllowed(true).getAllRows();
-
-				List<Marque> myTableRows = new ArrayList<Marque>();
-				myTableRows.add(new Marque(3, "False", 1246974, "", 3, "UV", "TVR", "", "Y", new Date(), 4, null));
-
-				marques.insert(myTableRows);
-
-				marques.getAllRows();
-				return marques;
+			public DBTable<Marque> doTransaction(DBDatabase dbDatabase) throws ExceptionThrownDuringTransaction {
+				try {
+					Marque myTableRow = new Marque();
+					DBTable<Marque> marques = DBTable.getInstance(dbDatabase, myTableRow);
+					myTableRow.getUidMarque().setValue(999);
+					myTableRow.getName().setValue("TOYOTA");
+					myTableRow.getNumericCode().setValue(10);
+					marques.insert(myTableRow);
+					marques.setBlankQueryAllowed(true).getAllRows();
+					
+					List<Marque> myTableRows = new ArrayList<Marque>();
+					myTableRows.add(new Marque(3, "False", 1246974, "", 3, "UV", "TVR", "", "Y", new Date(), 4, null));
+					
+					marques.insert(myTableRows);
+					
+					marques.getAllRows();
+					return marques;
+				} catch (SQLException ex) {
+					throw new ExceptionThrownDuringTransaction(ex);
+				}
 			}
 		}, true);
 		List<Marque> added = marquesTable.getRowsByExample(new Marque());
@@ -74,25 +79,28 @@ public class DBTableTransactionTest extends AbstractTest {
 		try {
 			DBTable<Marque> transacted = database.doTransaction(new DBTransaction<DBTable<Marque>>() {
 				@Override
-				public DBTable<Marque> doTransaction(DBDatabase dbDatabase) throws SQLException {
-					Marque myTableRow = new Marque();
-					DBTable<Marque> marques = DBTable.getInstance(dbDatabase, myTableRow);
-					myTableRow.getUidMarque().permittedValues(999);
-					myTableRow.getName().permittedValues("TOYOTA");
-					myTableRow.getNumericCode().permittedValues(10);
-					marques.insert(myTableRow);
-
-					List<Marque> myTableRows = new ArrayList<Marque>();
-					myTableRows.add(new Marque(999, "False", 1246974, "", 3, "UV", "TVR", "", "Y", new Date(), 4, null));
-
-					marques.insert(myTableRows);
-
-					marques.getAllRows();
-					return marques;
+				public DBTable<Marque> doTransaction(DBDatabase dbDatabase) throws ExceptionThrownDuringTransaction {
+					try {
+						Marque myTableRow = new Marque();
+						DBTable<Marque> marques = DBTable.getInstance(dbDatabase, myTableRow);
+						myTableRow.getUidMarque().permittedValues(999);
+						myTableRow.getName().permittedValues("TOYOTA");
+						myTableRow.getNumericCode().permittedValues(10);
+						marques.insert(myTableRow);
+						
+						List<Marque> myTableRows = new ArrayList<Marque>();
+						myTableRows.add(new Marque(999, "False", 1246974, "", 3, "UV", "TVR", "", "Y", new Date(), 4, null));
+						
+						marques.insert(myTableRows);
+						
+						marques.getAllRows();
+						return marques;
+					} catch (SQLException ex) {
+						throw new ExceptionThrownDuringTransaction(ex);
+					}
 				}
-
 			}, true);
-		} catch (Exception e) {
+		} catch (SQLException | ExceptionThrownDuringTransaction e) {
 		}
 		final List<Marque> addedRows = marquesTable.getRowsByExample(new Marque());
 		List<Marque> added = marquesTable.toList();

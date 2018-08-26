@@ -16,6 +16,7 @@
 package nz.co.gregs.dbvolution.transactions;
 
 import nz.co.gregs.dbvolution.databases.DBDatabase;
+import nz.co.gregs.dbvolution.exceptions.ExceptionThrownDuringTransaction;
 
 /**
  *
@@ -36,8 +37,8 @@ public interface DBTransaction<V> {
 	 * <p style="color: #F90;">Support DBvolution at
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return TRUE if the transaction completed without errors, FALSE otherwise.
-	 * @throws java.lang.Exception java.lang.Exception
+	 * @throws nz.co.gregs.dbvolution.exceptions.ExceptionThrownDuringTransaction
 	 *
 	 */
-	V doTransaction(DBDatabase dbDatabase) throws Exception;
+	V doTransaction(DBDatabase dbDatabase) throws ExceptionThrownDuringTransaction;
 }

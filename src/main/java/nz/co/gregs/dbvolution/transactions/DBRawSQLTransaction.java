@@ -19,6 +19,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import nz.co.gregs.dbvolution.databases.DBDatabase;
 import nz.co.gregs.dbvolution.databases.DBStatement;
+import nz.co.gregs.dbvolution.exceptions.ExceptionThrownDuringTransaction;
 
 /**
  * Performs transactions for arbitrary SQL strings.
@@ -51,7 +52,7 @@ public class DBRawSQLTransaction implements DBTransaction<Boolean> {
 	 *
 	 */
 	@Override
-	public Boolean doTransaction(DBDatabase dbDatabase) throws SQLException {
+	public Boolean doTransaction(DBDatabase dbDatabase) throws ExceptionThrownDuringTransaction {
 		try (DBStatement dbStatement = dbDatabase.getDBStatement()) {
 			dbDatabase.printSQLIfRequested(sql);
 			dbStatement.addBatch(sql);
@@ -61,6 +62,8 @@ public class DBRawSQLTransaction implements DBTransaction<Boolean> {
 					return Boolean.FALSE;
 				}
 			}
+		} catch (SQLException ex) {
+			throw new ExceptionThrownDuringTransaction(ex);
 		}
 		return Boolean.TRUE;
 	}

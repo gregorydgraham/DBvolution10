@@ -15,9 +15,11 @@
  */
 package nz.co.gregs.dbvolution;
 
+import java.sql.SQLException;
 import nz.co.gregs.dbvolution.databases.DBDatabase;
 import nz.co.gregs.dbvolution.transactions.DBTransaction;
 import nz.co.gregs.dbvolution.actions.DBActionList;
+import nz.co.gregs.dbvolution.exceptions.ExceptionThrownDuringTransaction;
 
 /**
  * A convenient method of implement a database script in DBvolution.
@@ -104,10 +106,11 @@ public abstract class DBScript {
 	 * <p style="color: #F90;">Support DBvolution at
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a DBActionList of all the actions performed on the database
-	 * @throws java.lang.Exception java.lang.Exception
-	 *
+	 * @throws java.sql.SQLException
+	 * @throws nz.co.gregs.dbvolution.exceptions.ExceptionThrownDuringTransaction
+	 * 
 	 */
-	public final DBActionList test(DBDatabase db) throws Exception {
+	public final DBActionList test(DBDatabase db) throws SQLException, ExceptionThrownDuringTransaction {
 		DBTransaction<DBActionList> trans = getDBTransaction();
 		DBActionList revertScript = db.doReadOnlyTransaction(trans);
 		return revertScript;
@@ -124,9 +127,13 @@ public abstract class DBScript {
 	public final DBTransaction<DBActionList> getDBTransaction() {
 		return new DBTransaction<DBActionList>() {
 			@Override
-			public DBActionList doTransaction(DBDatabase dbd) throws Exception {
-				DBActionList revertScript = script(dbd);
-				return revertScript;
+			public DBActionList doTransaction(DBDatabase dbd) throws ExceptionThrownDuringTransaction {
+				try {
+					DBActionList revertScript = script(dbd);
+					return revertScript;
+				} catch (Exception ex) {
+					throw new ExceptionThrownDuringTransaction(ex);
+				}
 			}
 		};
 	}

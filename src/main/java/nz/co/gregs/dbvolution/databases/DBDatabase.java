@@ -787,16 +787,20 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return the object returned by the transaction
 	 * @throws SQLException database exceptions
-	 * @throws java.lang.CloneNotSupportedException
+	 * @throws nz.co.gregs.dbvolution.exceptions.ExceptionThrownDuringTransaction
 	 * @see DBTransaction
 	 * @see
 	 * DBDatabase#doTransaction(nz.co.gregs.dbvolution.transactions.DBTransaction)
 	 * @see
 	 * DBDatabase#doReadOnlyTransaction(nz.co.gregs.dbvolution.transactions.DBTransaction)
 	 */
-	public synchronized <V> V doTransaction(DBTransaction<V> dbTransaction, Boolean commit) throws SQLException, CloneNotSupportedException, Exception {
+	public synchronized <V> V doTransaction(DBTransaction<V> dbTransaction, Boolean commit) throws SQLException, ExceptionThrownDuringTransaction {
 		DBDatabase db;
-		db = this.clone();
+		try {
+			db = this.clone();
+		} catch (CloneNotSupportedException ex) {
+			throw new UnsupportedOperationException("Unable to drop database due to incorrecte DBDatabase implementation: correct the implementation of clone()", ex);
+		}
 		V returnValues = null;
 		db.transactionStatement = db.getDBTransactionStatement();
 		try {
@@ -852,10 +856,10 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return the object returned by the transaction
 	 * @throws SQLException database exceptions
-	 * @throws java.lang.CloneNotSupportedException
+	 * @throws nz.co.gregs.dbvolution.exceptions.ExceptionThrownDuringTransaction
 	 * @see DBTransaction
 	 */
-	public <V> V doTransaction(DBTransaction<V> dbTransaction) throws SQLException, CloneNotSupportedException, Exception {
+	public <V> V doTransaction(DBTransaction<V> dbTransaction) throws SQLException, ExceptionThrownDuringTransaction {
 		return doTransaction(dbTransaction, true);
 	}
 
@@ -876,10 +880,10 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return the object returned by the transaction
 	 * @throws SQLException database exceptions
-	 * @throws Exception any other exception
+	 * @throws nz.co.gregs.dbvolution.exceptions.ExceptionThrownDuringTransaction
 	 * @see DBTransaction
 	 */
-	public <V> V doReadOnlyTransaction(DBTransaction<V> dbTransaction) throws SQLException, Exception {
+	public <V> V doReadOnlyTransaction(DBTransaction<V> dbTransaction) throws SQLException, ExceptionThrownDuringTransaction {
 		return doTransaction(dbTransaction, false);
 	}
 
@@ -907,9 +911,10 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 	 * <p style="color: #F90;">Support DBvolution at
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a DBActionList provided by the script
-	 * @throws Exception DBScripts can throw any exception at any time
+	 * @throws java.sql.SQLException
+	 * @throws nz.co.gregs.dbvolution.exceptions.ExceptionThrownDuringTransaction
 	 */
-	public DBActionList test(DBScript script) throws Exception {
+	public DBActionList test(DBScript script) throws SQLException, ExceptionThrownDuringTransaction {
 		return script.test(this);
 	}
 
@@ -1588,33 +1593,33 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 	 * Do NOT Use This.
 	 *
 	 * @param doIt don't do it.
-	 * @throws
-	 * nz.co.gregs.dbvolution.exceptions.AccidentalDroppingOfDatabaseException
-	 * @throws java.lang.CloneNotSupportedException
-	 * @throws nz.co.gregs.dbvolution.exceptions.UnableToDropDatabaseException
+	 * @throws AccidentalDroppingOfDatabaseException
+	 * @throws UnableToDropDatabaseException
+	 * @throws nz.co.gregs.dbvolution.exceptions.ExceptionThrownDuringTransaction
 	 */
-	public synchronized void dropDatabase(boolean doIt) throws AccidentalDroppingOfDatabaseException, UnsupportedOperationException, AutoCommitActionDuringTransactionException, CloneNotSupportedException, UnableToDropDatabaseException, SQLException {
-		preventDDLDuringTransaction("DBDatabase.dropDatabase()");
-		if (preventAccidentalDroppingOfTables) {
-			throw new AccidentalDroppingOfTableException();
-		}
-		if (preventAccidentalDroppingDatabase) {
-			throw new AccidentalDroppingOfDatabaseException();
-		}
-
-		String dropStr = getDefinition().getDropDatabase(getDatabaseName());
-
-		printSQLIfRequested(dropStr);
-		LOG.info(dropStr);
-		if (doIt) {
-			try {
-				this.doTransaction(new DBRawSQLTransaction(dropStr));
-			} catch (Exception ex) {
-				throw new UnableToDropDatabaseException(ex);
-			}
-		}
-		preventAccidentalDroppingOfTables = true;
-		preventAccidentalDroppingDatabase = true;
+	public synchronized void dropDatabase(boolean doIt) throws AccidentalDroppingOfDatabaseException, UnableToDropDatabaseException, SQLException, AutoCommitActionDuringTransactionException, ExceptionThrownDuringTransaction {
+		dropDatabase(getDatabaseName(), true);
+//		preventDDLDuringTransaction("DBDatabase.dropDatabase()");
+//		if (preventAccidentalDroppingOfTables) {
+//			throw new AccidentalDroppingOfTableException();
+//		}
+//		if (preventAccidentalDroppingDatabase) {
+//			throw new AccidentalDroppingOfDatabaseException();
+//		}
+//
+//		String dropStr = getDefinition().getDropDatabase(getDatabaseName());
+//
+//		printSQLIfRequested(dropStr);
+//		LOG.info(dropStr);
+//		if (doIt) {
+//			try {
+//				this.doTransaction(new DBRawSQLTransaction(dropStr));
+//			} catch (Exception ex) {
+//				throw new UnableToDropDatabaseException(ex);
+//			}
+//		}
+//		preventAccidentalDroppingOfTables = true;
+//		preventAccidentalDroppingDatabase = true;
 	}
 
 	/**
@@ -1626,9 +1631,10 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 	 * @param databaseName the database to be permanently and completely
 	 * destroyed.
 	 * @param doIt don't do it.
-	 * @throws java.lang.Exception java.lang.Exception
+	 * @throws AccidentalDroppingOfDatabaseException
+	 * @throws nz.co.gregs.dbvolution.exceptions.ExceptionThrownDuringTransaction
 	 */
-	public synchronized void dropDatabase(String databaseName, boolean doIt) throws Exception, UnsupportedOperationException, AutoCommitActionDuringTransactionException {
+	public synchronized void dropDatabase(String databaseName, boolean doIt) throws UnsupportedOperationException, AutoCommitActionDuringTransactionException, AccidentalDroppingOfDatabaseException, SQLException, ExceptionThrownDuringTransaction {
 		preventDDLDuringTransaction("DBDatabase.dropDatabase()");
 		if (preventAccidentalDroppingOfTables) {
 			throw new AccidentalDroppingOfTableException();
@@ -1731,7 +1737,7 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 	
 	Also note that there is a race condition between the setting of this and your call to dropTable().  If other code
 	calls dropTable() somewhere else, it may get there before you do, so just never use this, OK?
-	*/
+	 */
 	public synchronized void preventDroppingOfTables(boolean droppingTablesIsAMistake) {
 		this.preventAccidentalDroppingOfTables = droppingTablesIsAMistake;
 	}
@@ -1749,7 +1755,7 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 	
 	Also note that there is a race condition between the setting of this and your call to dropDatabase().  If other code
 	calls dropDatabase() somewhere else, it may get there before you do, so just never use this, OK?
-	*/
+	 */
 	public synchronized void preventDroppingOfDatabases(boolean justLeaveThisAtTrue) {
 		this.preventAccidentalDroppingDatabase = justLeaveThisAtTrue;
 	}
@@ -2162,7 +2168,7 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 		}
 	}
 
-	protected abstract String getUrlFromSettings(DatabaseConnectionSettings settings) ;
+	protected abstract String getUrlFromSettings(DatabaseConnectionSettings settings);
 
 	public DatabaseConnectionSettings getSettings() {
 		return settings;

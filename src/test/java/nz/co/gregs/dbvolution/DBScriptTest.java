@@ -34,6 +34,7 @@ import nz.co.gregs.dbvolution.annotations.DBColumn;
 import nz.co.gregs.dbvolution.annotations.DBPrimaryKey;
 import nz.co.gregs.dbvolution.datatypes.DBInteger;
 import nz.co.gregs.dbvolution.datatypes.DBString;
+import nz.co.gregs.dbvolution.exceptions.ExceptionThrownDuringTransaction;
 import org.junit.rules.ExpectedException;
 
 /**
@@ -116,11 +117,11 @@ public class DBScriptTest extends AbstractTest {
 				is(allMarques.size()));
 	}
 
-	@Test//(expected = IndexOutOfBoundsException.class)
+	@Test
 	public void testExceptionThrowing() throws Exception {
 		List<Marque> allMarques = database.getDBTable(new Marque()).setBlankQueryAllowed(true).getAllRows();
 
-		thrown.expect(IndexOutOfBoundsException.class);
+		thrown.expect(ExceptionThrownDuringTransaction.class);
 		DBScript script = new ScriptThatThrowsAnException();
 		DBActionList result = script.test(database);
 		List<Marque> allMarques2 = database.getDBTable(new Marque()).setBlankQueryAllowed(true).getAllRows();

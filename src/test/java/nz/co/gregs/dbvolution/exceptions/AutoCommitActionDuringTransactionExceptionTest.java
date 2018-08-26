@@ -15,6 +15,7 @@
  */
 package nz.co.gregs.dbvolution.exceptions;
 
+import java.sql.SQLException;
 import nz.co.gregs.dbvolution.databases.DBDatabase;
 import nz.co.gregs.dbvolution.DBScript;
 import nz.co.gregs.dbvolution.actions.DBActionList;
@@ -35,7 +36,7 @@ public class AutoCommitActionDuringTransactionExceptionTest extends AbstractTest
 		super(testIterationName, db);
 	}
 
-	@Test(expected = AutoCommitActionDuringTransactionException.class)
+	@Test
 	public void testDropTableThrowsAutoCommitException() throws Exception {
 		DBScript badScript = new DBScript() {
 
@@ -45,10 +46,20 @@ public class AutoCommitActionDuringTransactionExceptionTest extends AbstractTest
 				return new DBActionList();
 			}
 		};
-		database.test(badScript);
+		try {
+			database.test(badScript);
+		} catch (SQLException ex) {
+			throw ex;
+		} catch (ExceptionThrownDuringTransaction ex) {
+			if (ex.getCause() instanceof AutoCommitActionDuringTransactionException) {
+				// Success!
+			} else {
+				throw new Exception("Expected AutoCommitActionDuringTransactionException wrapped in ExceptionThrownDuringTransaction");
+			}
+		}
 	}
 
-	@Test(expected = AutoCommitActionDuringTransactionException.class)
+	@Test
 	public void testCreateTableThrowsAutoCommitException() throws Exception {
 		DBScript badScript = new DBScript() {
 
@@ -58,11 +69,20 @@ public class AutoCommitActionDuringTransactionExceptionTest extends AbstractTest
 				return new DBActionList();
 			}
 		};
-		database.test(badScript);
+		try {
+			database.test(badScript);
+			throw new Exception("Expected exception to be thrown");
+		} catch (ExceptionThrownDuringTransaction ex) {
+			if (ex.getCause() instanceof AutoCommitActionDuringTransactionException) {
+				///success!
+			} else {
+				throw new Exception("Expected AutoCommitActionDuringTransactionException to be thrown");
+			}
+		}
 	}
 
-	@Test(expected = AutoCommitActionDuringTransactionException.class)
-	public void testDropDatabaseThrowsAutoCommitException() throws Exception {
+	@Test
+	public void testDropDatabaseThrowsAutoCommitException() throws Exception {//throws Exception {
 		DBScript badScript = new DBScript() {
 
 			@Override
@@ -71,7 +91,17 @@ public class AutoCommitActionDuringTransactionExceptionTest extends AbstractTest
 				return new DBActionList();
 			}
 		};
-		database.test(badScript);
+		try {
+			database.test(badScript);
+		} catch (SQLException ex) {
+			throw ex;
+		} catch (ExceptionThrownDuringTransaction ex) {
+			if (ex.getCause() instanceof AutoCommitActionDuringTransactionException) {
+				// Success
+			} else {
+				throw new Exception("Expected AutoCommitActionDuringTransactionException wrapped in ExceptionThrownDuringTransaction");
+			}
+		}
 	}
 
 }

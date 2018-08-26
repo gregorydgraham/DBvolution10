@@ -55,6 +55,7 @@ import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.exceptions.AccidentalDroppingOfTableException;
 import nz.co.gregs.dbvolution.exceptions.AutoCommitActionDuringTransactionException;
 import nz.co.gregs.dbvolution.exceptions.DBRuntimeException;
+import nz.co.gregs.dbvolution.exceptions.ExceptionThrownDuringTransaction;
 import nz.co.gregs.dbvolution.exceptions.NoAvailableDatabaseException;
 import nz.co.gregs.dbvolution.exceptions.UnableToCreateDatabaseConnectionException;
 import nz.co.gregs.dbvolution.exceptions.UnableToFindJDBCDriver;
@@ -165,14 +166,14 @@ public class DBDatabaseCluster extends DBDatabase {
 	public Status getDatabaseStatus(DBDatabase db) {
 		return details.getStatusOf(db);
 	}
-	
+
 	/**
 	 * Adds the database to the cluster, synchronizes it, and then removes it.
 	 *
 	 * @param backupDatabase
 	 * @throws SQLException
 	 */
-	public void backupToDBDatabase(DBDatabase backupDatabase) throws SQLException{
+	public void backupToDBDatabase(DBDatabase backupDatabase) throws SQLException {
 		this.addDatabaseAndWait(backupDatabase);
 		removeDatabase(backupDatabase);
 	}
@@ -324,7 +325,7 @@ public class DBDatabaseCluster extends DBDatabase {
 	}
 
 	@Override
-	public synchronized void dropDatabase(String databaseName, boolean doIt) throws Exception, UnsupportedOperationException, AutoCommitActionDuringTransactionException {
+	public synchronized void dropDatabase(String databaseName, boolean doIt) throws UnsupportedOperationException, AutoCommitActionDuringTransactionException, SQLException {
 		boolean finished = false;
 		do {
 			DBDatabase[] dbs = details.getReadyDatabases();
@@ -332,7 +333,7 @@ public class DBDatabaseCluster extends DBDatabase {
 				try {
 					next.dropDatabase(databaseName, doIt);
 					finished = true;
-				} catch (Exception e) {
+				} catch (UnsupportedOperationException | SQLException | AutoCommitActionDuringTransactionException | ExceptionThrownDuringTransaction e) {
 					handleExceptionDuringQuery(e, next);
 				}
 			}
@@ -342,19 +343,21 @@ public class DBDatabaseCluster extends DBDatabase {
 	@Override
 	public void dropDatabase(boolean doIt) throws UnsupportedOperationException, AutoCommitActionDuringTransactionException, SQLException {
 		boolean finished = false;
+		int tried = 0;
 		do {
 			DBDatabase[] dbs = details.getReadyDatabases();
 			for (DBDatabase next : dbs) {
 				synchronized (next) {
 					try {
+						tried++;
 						next.dropDatabase(doIt);
 						finished = true;
-					} catch (CloneNotSupportedException | UnsupportedOperationException | SQLException | AutoCommitActionDuringTransactionException e) {
+					} catch (UnsupportedOperationException | SQLException | AutoCommitActionDuringTransactionException | ExceptionThrownDuringTransaction e) {
 						handleExceptionDuringQuery(e, next);
 					}
 				}
 			}
-		} while (!finished);
+		} while (tried < 20 && !finished);
 	}
 
 	@Override
@@ -573,7 +576,7 @@ public class DBDatabaseCluster extends DBDatabase {
 	}
 
 	@Override
-	public DBActionList test(DBScript script) throws Exception {
+	public DBActionList test(DBScript script) throws SQLException, ExceptionThrownDuringTransaction {
 		final DBDatabase readyDatabase = getReadyDatabase();
 		synchronized (readyDatabase) {
 			return readyDatabase.test(script);
@@ -581,7 +584,7 @@ public class DBDatabaseCluster extends DBDatabase {
 	}
 
 	@Override
-	public <V> V doReadOnlyTransaction(DBTransaction<V> dbTransaction) throws SQLException, Exception {
+	public <V> V doReadOnlyTransaction(DBTransaction<V> dbTransaction) throws SQLException, ExceptionThrownDuringTransaction {
 		final DBDatabase readyDatabase = getReadyDatabase();
 		synchronized (readyDatabase) {
 			return readyDatabase.doReadOnlyTransaction(dbTransaction);
@@ -615,7 +618,7 @@ public class DBDatabaseCluster extends DBDatabase {
 									discardConnection(db.transactionConnection);
 								}
 							}
-						} catch (Exception ex) {
+						} catch (ExceptionThrownDuringTransaction ex) {
 							try {
 								if (!explicitCommitActionRequired) {
 									db.transactionConnection.rollback();
@@ -1126,7 +1129,7 @@ public class DBDatabaseCluster extends DBDatabase {
 	}
 
 	public String getClusterStatus() {
-		return "Active Databases: "+details.getReadyDatabases().length+" of "+details.getAllDatabases().length;
+		return "Active Databases: " + details.getReadyDatabases().length + " of " + details.getAllDatabases().length;
 	}
 
 	@Override
