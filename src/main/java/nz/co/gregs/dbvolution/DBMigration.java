@@ -49,8 +49,9 @@ public class DBMigration<M extends DBRow> extends RowDefinition {
 	 * @return a list of DBReport instances representing the results of the report
 	 * query. Database exceptions may be thrown
 	 * @throws java.sql.SQLException java.sql.SQLException
+	 * @throws nz.co.gregs.dbvolution.exceptions.AccidentalBlankQueryException
 	 */
-	public List<M> getAllRows() throws SQLException {
+	public List<M> getAllRows() throws SQLException, AccidentalCartesianJoinException, AccidentalBlankQueryException {
 		return getAllRows(database);
 	}
 
@@ -158,12 +159,13 @@ public class DBMigration<M extends DBRow> extends RowDefinition {
 	 * @return a list of DBReport instances representing the results of the report
 	 * query. 1 Database exceptions may be thrown
 	 * @throws java.sql.SQLException java.sql.SQLException
+	 * @throws nz.co.gregs.dbvolution.exceptions.AccidentalBlankQueryException
 	 */
-	public List<M> getAllRows(DBRow... extraExamples) throws SQLException {
+	public List<M> getAllRows(DBRow... extraExamples) throws SQLException, AccidentalCartesianJoinException, AccidentalBlankQueryException {
 		return getAllRows(database, extraExamples);
 	}
 
-	private List<M> getAllRows(DBDatabase database, DBRow... extraExamples) throws SQLException {
+	private List<M> getAllRows(DBDatabase database, DBRow... extraExamples) throws SQLException, AccidentalCartesianJoinException, AccidentalBlankQueryException {
 		DBQuery query = getDBQuery(database, extraExamples);
 //		query.setBlankQueryAllowed(true);
 		List<DBQueryRow> allRows = query.getAllRows();
@@ -222,8 +224,9 @@ public class DBMigration<M extends DBRow> extends RowDefinition {
 	 * @return a list of DBReport instances representing the results of the report
 	 * query. 1 Database exceptions may be thrown
 	 * @throws java.sql.SQLException java.sql.SQLException
+	 * @throws nz.co.gregs.dbvolution.exceptions.AccidentalBlankQueryException
 	 */
-	public List<M> getRows(DBDatabase database, DBRow... rows) throws SQLException {
+	public List<M> getRows(DBDatabase database, DBRow... rows) throws SQLException, AccidentalCartesianJoinException, AccidentalBlankQueryException {
 		DBQuery query = getDBQuery(database, rows);
 		List<DBQueryRow> allRows = query.getAllRows();
 		List<M> reportRows = getInsertedRowsFromQueryResults(allRows);
@@ -259,8 +262,9 @@ public class DBMigration<M extends DBRow> extends RowDefinition {
 	 * @return a list of DBReport instances representing the results of the report
 	 * query
 	 * @throws java.sql.SQLException Database exceptions may be thrown
+	 * @throws nz.co.gregs.dbvolution.exceptions.AccidentalBlankQueryException
 	 */
-	public List<M> getRowsHaving(DBDatabase database, DBRow[] rows, BooleanExpression... conditions) throws SQLException {
+	public List<M> getRowsHaving(DBDatabase database, DBRow[] rows, BooleanExpression... conditions) throws SQLException, AccidentalCartesianJoinException, AccidentalBlankQueryException {
 		DBQuery query = getDBQuery(database, rows);
 		List<M> reportRows;
 		List<DBQueryRow> allRows = query.addConditions(conditions).getAllRows();
@@ -381,7 +385,7 @@ public class DBMigration<M extends DBRow> extends RowDefinition {
 	 * exceptions may be thrown
 	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
-	public Long count(DBDatabase database, DBRow... rows) throws SQLException {
+	public Long count(DBDatabase database, DBRow... rows) throws SQLException, AccidentalCartesianJoinException, AccidentalBlankQueryException {
 		DBQuery setUpQuery = getDBQuery(database, rows);
 		return setUpQuery.count();
 	}

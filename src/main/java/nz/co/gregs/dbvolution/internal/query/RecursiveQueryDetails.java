@@ -53,6 +53,8 @@ import nz.co.gregs.dbvolution.datatypes.DBInteger;
 import nz.co.gregs.dbvolution.datatypes.DBNumber;
 import nz.co.gregs.dbvolution.datatypes.DBString;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
+import nz.co.gregs.dbvolution.exceptions.AccidentalBlankQueryException;
+import nz.co.gregs.dbvolution.exceptions.AccidentalCartesianJoinException;
 import nz.co.gregs.dbvolution.exceptions.ColumnProvidedMustBeAForeignKey;
 import nz.co.gregs.dbvolution.exceptions.IncorrectRowProviderInstanceSuppliedException;
 import nz.co.gregs.dbvolution.exceptions.UnableToInstantiateDBRowSubclassException;
@@ -138,7 +140,7 @@ public class RecursiveQueryDetails<T extends DBRow> extends QueryDetails {
 	}
 	
 	@Override
-	public synchronized DBQueryable query(DBDatabase db) throws SQLException {
+	public synchronized DBQueryable query(DBDatabase db) throws SQLException, AccidentalBlankQueryException {
 		getRowsFromRecursiveQuery(db, this);
 		return this;
 	}
@@ -170,7 +172,7 @@ public class RecursiveQueryDetails<T extends DBRow> extends QueryDetails {
 	 * @return A linked List
 	 *
 	 */
-	private synchronized List<DBQueryRow> getRowsFromRecursiveQuery(DBDatabase database, RecursiveQueryDetails<T> details) throws SQLException {
+	private synchronized List<DBQueryRow> getRowsFromRecursiveQuery(DBDatabase database, RecursiveQueryDetails<T> details) throws SQLException, AccidentalCartesianJoinException, AccidentalBlankQueryException {
 		List<DBQueryRow> returnList = new ArrayList<>();
 		final RecursiveSQLDirection direction = details.getDirection();
 		if (database.getDefinition().supportsRecursiveQueriesNatively()) {
@@ -366,7 +368,7 @@ public class RecursiveQueryDetails<T extends DBRow> extends QueryDetails {
 			}
 		}
 	
-	private synchronized List<DBQueryRow> performRecursiveQueryEmulation(DBDatabase database, RecursiveQueryDetails<T> recursiveDetails, RecursiveSQLDirection direction) throws SQLException {
+	private synchronized List<DBQueryRow> performRecursiveQueryEmulation(DBDatabase database, RecursiveQueryDetails<T> recursiveDetails, RecursiveSQLDirection direction) throws SQLException, AccidentalCartesianJoinException, AccidentalBlankQueryException {
 		
 		final T returnType = getReturnType(recursiveDetails);
 		List<DBQueryRow> returnList = new ArrayList<>();

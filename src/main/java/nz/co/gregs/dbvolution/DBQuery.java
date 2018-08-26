@@ -365,13 +365,14 @@ public class DBQuery implements Serializable {
 	 * with their related instances. 1 Database exceptions may be thrown
 	 * @throws java.sql.SQLException java.sql.SQLException
 	 * @throws java.sql.SQLTimeoutException
+	 * @throws nz.co.gregs.dbvolution.exceptions.AccidentalBlankQueryException
 	 * @see DBRow
 	 * @see DBForeignKey
 	 * @see QueryableDatatype
 	 * @see BooleanExpression
 	 * @see DBDatabase
 	 */
-	public List<DBQueryRow> getAllRows() throws SQLException, SQLTimeoutException, AccidentalBlankQueryException, AccidentalCartesianJoinException {
+	public List<DBQueryRow> getAllRows() throws SQLException, AccidentalCartesianJoinException, AccidentalBlankQueryException {
 		final QueryOptions options = details.getOptions();
 		if (this.needsResults(options)) {
 			details.setQueryType(QueryType.SELECT);
@@ -430,9 +431,10 @@ public class DBQuery implements Serializable {
 	 * @throws java.sql.SQLException java.sql.SQLException
 	 * @throws nz.co.gregs.dbvolution.exceptions.UnexpectedNumberOfRowsException
 	 * nz.co.gregs.dbvolution.exceptions.UnexpectedNumberOfRowsException
+	 * @throws nz.co.gregs.dbvolution.exceptions.AccidentalBlankQueryException
 	 *
 	 */
-	public <R extends DBRow> R getOnlyInstanceOf(R exemplar) throws SQLException, UnexpectedNumberOfRowsException {
+	public <R extends DBRow> R getOnlyInstanceOf(R exemplar) throws SQLException, UnexpectedNumberOfRowsException, AccidentalCartesianJoinException, AccidentalBlankQueryException {
 		List<R> allInstancesFound = getAllInstancesOf(exemplar, 1);
 		return allInstancesFound.get(0);
 	}
@@ -471,9 +473,10 @@ public class DBQuery implements Serializable {
 	 * @throws java.sql.SQLException java.sql.SQLException
 	 * @throws nz.co.gregs.dbvolution.exceptions.UnexpectedNumberOfRowsException
 	 * nz.co.gregs.dbvolution.exceptions.UnexpectedNumberOfRowsException
+	 * @throws nz.co.gregs.dbvolution.exceptions.AccidentalBlankQueryException
 	 *
 	 */
-	public <R extends DBRow> List<R> getAllInstancesOf(R exemplar, long expected) throws SQLException, UnexpectedNumberOfRowsException {
+	public <R extends DBRow> List<R> getAllInstancesOf(R exemplar, long expected) throws SQLException, UnexpectedNumberOfRowsException, AccidentalCartesianJoinException, AccidentalBlankQueryException {
 		List<R> allInstancesFound = getAllInstancesOf(exemplar);
 		final int actual = allInstancesFound.size();
 		if (actual > expected) {
@@ -508,8 +511,9 @@ public class DBQuery implements Serializable {
 	 *
 	 * Database exceptions may be thrown
 	 * @throws java.sql.SQLException java.sql.SQLException
+	 * @throws nz.co.gregs.dbvolution.exceptions.AccidentalBlankQueryException
 	 */
-	public <R extends DBRow> List<R> getAllInstancesOf(R exemplar) throws SQLException {
+	public <R extends DBRow> List<R> getAllInstancesOf(R exemplar) throws SQLException, AccidentalCartesianJoinException, AccidentalBlankQueryException {
 		List<R> arrayList = new ArrayList<>();
 		final QueryOptions options = details.getOptions();
 		if (details.needsResults(options)) {
@@ -534,8 +538,9 @@ public class DBQuery implements Serializable {
 	 * Equivalent to: printAll(System.out);
 	 *
 	 * @throws java.sql.SQLException database exception
+	 * @throws nz.co.gregs.dbvolution.exceptions.AccidentalBlankQueryException
 	 */
-	public void print() throws SQLException {
+	public void print() throws SQLException, AccidentalCartesianJoinException, AccidentalBlankQueryException {
 		print(System.out);
 	}
 
@@ -546,9 +551,10 @@ public class DBQuery implements Serializable {
 	 *
 	 * @param ps a printstream to print to.
 	 * @throws java.sql.SQLException java.sql.SQLException
+	 * @throws nz.co.gregs.dbvolution.exceptions.AccidentalBlankQueryException
 	 *
 	 */
-	public void print(PrintStream ps) throws SQLException {
+	public void print(PrintStream ps) throws SQLException, AccidentalCartesianJoinException, AccidentalBlankQueryException {
 		final QueryOptions options = details.getOptions();
 		if (needsResults(options)) {
 			details.setQueryType(QueryType.SELECT);
@@ -599,9 +605,10 @@ public class DBQuery implements Serializable {
 	 *
 	 * @param printStream a printstream to print to
 	 * @throws java.sql.SQLException java.sql.SQLException
+	 * @throws nz.co.gregs.dbvolution.exceptions.AccidentalBlankQueryException
 	 *
 	 */
-	public void printAllDataColumns(PrintStream printStream) throws SQLException {
+	public void printAllDataColumns(PrintStream printStream) throws SQLException, AccidentalCartesianJoinException, AccidentalBlankQueryException {
 		final QueryOptions options = details.getOptions();
 		if (needsResults(options)) {
 			details.setQueryType(QueryType.SELECT);
@@ -631,9 +638,10 @@ public class DBQuery implements Serializable {
 	 *
 	 * @param ps a PrintStream to print to.
 	 * @throws java.sql.SQLException java.sql.SQLException
+	 * @throws nz.co.gregs.dbvolution.exceptions.AccidentalBlankQueryException
 	 *
 	 */
-	public void printAllPrimaryKeys(PrintStream ps) throws SQLException {
+	public void printAllPrimaryKeys(PrintStream ps) throws SQLException, AccidentalCartesianJoinException, AccidentalBlankQueryException {
 		final QueryOptions options = details.getOptions();
 		if (needsResults(options)) {
 			details.setQueryType(QueryType.SELECT);
@@ -689,8 +697,9 @@ public class DBQuery implements Serializable {
 	 * @return the number of rows that have or will be retrieved. Database
 	 * exceptions may be thrown
 	 * @throws java.sql.SQLException java.sql.SQLException
+	 * @throws nz.co.gregs.dbvolution.exceptions.AccidentalBlankQueryException
 	 */
-	public Long count() throws SQLException {
+	public Long count() throws SQLException, AccidentalCartesianJoinException, AccidentalBlankQueryException {
 		if (needsResults(details.getOptions())) {
 			this.details.setQueryType(QueryType.COUNT);
 			database.executeDBQuery(details);
@@ -979,8 +988,9 @@ public class DBQuery implements Serializable {
 	 *
 	 * @throws nz.co.gregs.dbvolution.exceptions.UnexpectedNumberOfRowsException
 	 * @throws java.sql.SQLException
+	 * @throws nz.co.gregs.dbvolution.exceptions.AccidentalBlankQueryException
 	 */
-	public List<DBQueryRow> getAllRows(long expectedRows) throws UnexpectedNumberOfRowsException, SQLException {
+	public List<DBQueryRow> getAllRows(long expectedRows) throws UnexpectedNumberOfRowsException, SQLException, AccidentalCartesianJoinException, AccidentalBlankQueryException {
 		List<DBQueryRow> allRows = getAllRows();
 		if (allRows.size() != expectedRows) {
 			throw new UnexpectedNumberOfRowsException(expectedRows, allRows.size());
@@ -1415,8 +1425,9 @@ public class DBQuery implements Serializable {
 	 * @return A list of DBQueryRow instances that relate to the exemplar 1
 	 * Database exceptions may be thrown
 	 * @throws java.sql.SQLException java.sql.SQLException
+	 * @throws nz.co.gregs.dbvolution.exceptions.AccidentalBlankQueryException
 	 */
-	public List<DBQueryRow> getAllRowsContaining(DBRow instance) throws SQLException {
+	public List<DBQueryRow> getAllRowsContaining(DBRow instance) throws SQLException, AccidentalCartesianJoinException, AccidentalBlankQueryException {
 		final QueryOptions options = details.getOptions();
 		if (this.needsResults(options)) {
 			details.setQueryType(QueryType.SELECT);
@@ -1451,8 +1462,9 @@ public class DBQuery implements Serializable {
 	 * @return a list of the DBQueryRows for the selected page. 1 Database
 	 * exceptions may be thrown
 	 * @throws java.sql.SQLException java.sql.SQLException
+	 * @throws nz.co.gregs.dbvolution.exceptions.AccidentalBlankQueryException
 	 */
-	public List<DBQueryRow> getPage(Integer pageNumber) throws SQLException {
+	public List<DBQueryRow> getPage(Integer pageNumber) throws SQLException, AccidentalCartesianJoinException, AccidentalBlankQueryException {
 		return getAllRowsForPage(pageNumber);
 	}
 
@@ -1473,8 +1485,9 @@ public class DBQuery implements Serializable {
 	 * @return a list of the DBQueryRows for the selected page. 1 Database
 	 * exceptions may be thrown
 	 * @throws java.sql.SQLException java.sql.SQLException
+	 * @throws nz.co.gregs.dbvolution.exceptions.AccidentalBlankQueryException
 	 */
-	public List<DBQueryRow> getAllRowsForPage(Integer pageNumber) throws SQLException {
+	public List<DBQueryRow> getAllRowsForPage(Integer pageNumber) throws SQLException, AccidentalCartesianJoinException, AccidentalBlankQueryException {
 		final QueryOptions options = details.getOptions();
 		details.setQueryType(QueryType.ROWSFORPAGE);
 		details.setResultsPageIndex(pageNumber);
@@ -1958,6 +1971,7 @@ public class DBQuery implements Serializable {
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a list of DBQQueryRows with distinct combinations of values used in
 	 * the columns. 1 Database exceptions may be thrown
+	 * @throws nz.co.gregs.dbvolution.exceptions.AccidentalBlankQueryException
 	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
 	@SuppressWarnings({"unchecked", "empty-statement"})
@@ -2320,7 +2334,7 @@ public class DBQuery implements Serializable {
 		return this;
 	}
 
-	public void printAllRows() throws SQLException {
+	public void printAllRows() throws SQLException, AccidentalCartesianJoinException, AccidentalBlankQueryException {
 		List<DBQueryRow> allRows = getAllRows();
 		for (DBQueryRow row : allRows) {
 			System.out.println(row);

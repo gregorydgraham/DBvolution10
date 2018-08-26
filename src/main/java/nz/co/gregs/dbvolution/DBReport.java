@@ -23,10 +23,11 @@ import java.util.Arrays;
 import java.util.List;
 import nz.co.gregs.dbvolution.columns.ColumnProvider;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
+import nz.co.gregs.dbvolution.exceptions.AccidentalBlankQueryException;
+import nz.co.gregs.dbvolution.exceptions.AccidentalCartesianJoinException;
 import nz.co.gregs.dbvolution.exceptions.UnableToAccessDBReportFieldException;
 import nz.co.gregs.dbvolution.exceptions.UnableToInstantiateDBReportSubclassException;
 import nz.co.gregs.dbvolution.exceptions.UnableToSetDBReportFieldException;
-import nz.co.gregs.dbvolution.expressions.AnyExpression;
 import nz.co.gregs.dbvolution.expressions.BooleanExpression;
 import nz.co.gregs.dbvolution.expressions.DBExpression;
 import nz.co.gregs.dbvolution.expressions.SortProvider;
@@ -114,8 +115,9 @@ public class DBReport extends RowDefinition {
 	 * @return a list of DBReport instances representing the results of the report
 	 * query. 1 Database exceptions may be thrown
 	 * @throws java.sql.SQLException java.sql.SQLException
+	 * @throws nz.co.gregs.dbvolution.exceptions.AccidentalBlankQueryException
 	 */
-	public static <A extends DBReport> List<A> getAllRows(DBDatabase database, A exampleReport) throws SQLException {
+	public static <A extends DBReport> List<A> getAllRows(DBDatabase database, A exampleReport) throws SQLException, AccidentalCartesianJoinException, AccidentalBlankQueryException {
 		return getAllRows(database, exampleReport, new DBRow[]{});
 	}
 
@@ -172,8 +174,9 @@ public class DBReport extends RowDefinition {
 	 * @return a list of DBReport instances representing the results of the report
 	 * query. 1 Database exceptions may be thrown
 	 * @throws java.sql.SQLException java.sql.SQLException
+	 * @throws nz.co.gregs.dbvolution.exceptions.AccidentalBlankQueryException
 	 */
-	public static <A extends DBReport> List<A> getAllRows(DBDatabase database, A exampleReport, DBRow... extraExamples) throws SQLException {
+	public static <A extends DBReport> List<A> getAllRows(DBDatabase database, A exampleReport, DBRow... extraExamples) throws SQLException, AccidentalCartesianJoinException, AccidentalBlankQueryException {
 		DBQuery query = getDBQuery(database, exampleReport, extraExamples);
 		List<A> reportRows;
 		query.setBlankQueryAllowed(true);
@@ -236,8 +239,9 @@ public class DBReport extends RowDefinition {
 	 * @return a list of DBReport instances representing the results of the report
 	 * query. 1 Database exceptions may be thrown
 	 * @throws java.sql.SQLException java.sql.SQLException
+	 * @throws nz.co.gregs.dbvolution.exceptions.AccidentalBlankQueryException
 	 */
-	public static <A extends DBReport> List<A> getRows(DBDatabase database, A exampleReport, DBRow... rows) throws SQLException {
+	public static <A extends DBReport> List<A> getRows(DBDatabase database, A exampleReport, DBRow... rows) throws SQLException, AccidentalCartesianJoinException, AccidentalBlankQueryException {
 		DBQuery query = getDBQuery(database, exampleReport, rows);
 		query.setBlankQueryAllowed(exampleReport.getBlankQueryAllowed());
 		List<A> reportRows;
@@ -277,8 +281,9 @@ public class DBReport extends RowDefinition {
 	 * @return a list of DBReport instances representing the results of the report
 	 * query
 	 * @throws java.sql.SQLException Database exceptions may be thrown
+	 * @throws nz.co.gregs.dbvolution.exceptions.AccidentalBlankQueryException
 	 */
-	public static <A extends DBReport> List<A> getRowsHaving(DBDatabase database, A exampleReport, DBRow[] rows, BooleanExpression... conditions) throws SQLException {
+	public static <A extends DBReport> List<A> getRowsHaving(DBDatabase database, A exampleReport, DBRow[] rows, BooleanExpression... conditions) throws SQLException, AccidentalCartesianJoinException, AccidentalBlankQueryException {
 		DBQuery query = getDBQuery(database, exampleReport, rows);
 		List<A> reportRows;
 		List<DBQueryRow> allRows = query.addConditions(conditions).getAllRows();
@@ -367,8 +372,9 @@ public class DBReport extends RowDefinition {
 	 * @return the number of rows that have or will be retrieved. 1 Database
 	 * exceptions may be thrown
 	 * @throws java.sql.SQLException java.sql.SQLException
+	 * @throws nz.co.gregs.dbvolution.exceptions.AccidentalBlankQueryException
 	 */
-	public static Long count(DBDatabase database, DBReport exampleReport, DBRow... rows) throws SQLException {
+	public static Long count(DBDatabase database, DBReport exampleReport, DBRow... rows) throws SQLException, AccidentalCartesianJoinException, AccidentalBlankQueryException {
 		DBQuery setUpQuery = getDBQuery(database, exampleReport, rows);
 		return setUpQuery.count();
 	}

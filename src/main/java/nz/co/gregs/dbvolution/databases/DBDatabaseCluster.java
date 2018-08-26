@@ -52,6 +52,8 @@ import nz.co.gregs.dbvolution.actions.DBActionList;
 import nz.co.gregs.dbvolution.actions.DBQueryable;
 import nz.co.gregs.dbvolution.databases.definitions.ClusterDatabaseDefinition;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
+import nz.co.gregs.dbvolution.exceptions.AccidentalBlankQueryException;
+import nz.co.gregs.dbvolution.exceptions.AccidentalCartesianJoinException;
 import nz.co.gregs.dbvolution.exceptions.AccidentalDroppingOfTableException;
 import nz.co.gregs.dbvolution.exceptions.AutoCommitActionDuringTransactionException;
 import nz.co.gregs.dbvolution.exceptions.DBRuntimeException;
@@ -657,7 +659,7 @@ public class DBDatabaseCluster extends DBDatabase {
 	}
 
 	@Override
-	public <A extends DBReport> List<A> getRows(A report, DBRow... examples) throws SQLException {
+	public <A extends DBReport> List<A> getRows(A report, DBRow... examples) throws SQLException, AccidentalCartesianJoinException, AccidentalBlankQueryException {
 		DBDatabase readyDatabase;
 		boolean finished = false;
 		do {
@@ -674,7 +676,7 @@ public class DBDatabaseCluster extends DBDatabase {
 	}
 
 	@Override
-	public <A extends DBReport> List<A> getAllRows(A report, DBRow... examples) throws SQLException {
+	public <A extends DBReport> List<A> getAllRows(A report, DBRow... examples) throws SQLException, AccidentalCartesianJoinException, AccidentalBlankQueryException {
 		DBDatabase readyDatabase;
 		boolean finished = false;
 		do {
@@ -691,7 +693,7 @@ public class DBDatabaseCluster extends DBDatabase {
 	}
 
 	@Override
-	public <A extends DBReport> List<A> get(A report, DBRow... examples) throws SQLException {
+	public <A extends DBReport> List<A> get(A report, DBRow... examples) throws SQLException, AccidentalCartesianJoinException, AccidentalBlankQueryException {
 		DBDatabase readyDatabase;
 		boolean finished = false;
 		do {
@@ -708,7 +710,7 @@ public class DBDatabaseCluster extends DBDatabase {
 	}
 
 	@Override
-	public List<DBQueryRow> get(Long expectedNumberOfRows, DBRow... rows) throws SQLException, UnexpectedNumberOfRowsException {
+	public List<DBQueryRow> get(Long expectedNumberOfRows, DBRow... rows) throws SQLException, UnexpectedNumberOfRowsException, AccidentalCartesianJoinException, AccidentalBlankQueryException {
 		DBDatabase readyDatabase;
 		boolean finished = false;
 		do {
@@ -725,7 +727,7 @@ public class DBDatabaseCluster extends DBDatabase {
 	}
 
 	@Override
-	public List<DBQueryRow> getByExamples(DBRow... rows) throws SQLException {
+	public List<DBQueryRow> getByExamples(DBRow... rows) throws SQLException, AccidentalCartesianJoinException, AccidentalBlankQueryException {
 		DBDatabase readyDatabase;
 		boolean finished = false;
 		do {
@@ -742,7 +744,7 @@ public class DBDatabaseCluster extends DBDatabase {
 	}
 
 	@Override
-	public List<DBQueryRow> get(DBRow... rows) throws SQLException {
+	public List<DBQueryRow> get(DBRow... rows) throws SQLException, AccidentalCartesianJoinException, AccidentalBlankQueryException {
 		DBDatabase readyDatabase;
 		boolean finished = false;
 		do {
@@ -759,7 +761,7 @@ public class DBDatabaseCluster extends DBDatabase {
 	}
 
 	@Override
-	public <R extends DBRow> List<R> getByExample(Long expectedNumberOfRows, R exampleRow) throws SQLException, UnexpectedNumberOfRowsException {
+	public <R extends DBRow> List<R> getByExample(Long expectedNumberOfRows, R exampleRow) throws SQLException, UnexpectedNumberOfRowsException, AccidentalBlankQueryException {
 		DBDatabase readyDatabase;
 		boolean finished = false;
 		do {
@@ -776,7 +778,7 @@ public class DBDatabaseCluster extends DBDatabase {
 	}
 
 	@Override
-	public <R extends DBRow> List<R> get(Long expectedNumberOfRows, R exampleRow) throws SQLException, UnexpectedNumberOfRowsException {
+	public <R extends DBRow> List<R> get(Long expectedNumberOfRows, R exampleRow) throws SQLException, UnexpectedNumberOfRowsException, AccidentalBlankQueryException {
 		DBDatabase readyDatabase;
 		boolean finished = false;
 		do {
@@ -793,7 +795,7 @@ public class DBDatabaseCluster extends DBDatabase {
 	}
 
 	@Override
-	public <R extends DBRow> List<R> getByExample(R exampleRow) throws SQLException {
+	public <R extends DBRow> List<R> getByExample(R exampleRow) throws SQLException, AccidentalCartesianJoinException, AccidentalBlankQueryException {
 		DBDatabase readyDatabase;
 		boolean finished = false;
 		do {
@@ -810,7 +812,7 @@ public class DBDatabaseCluster extends DBDatabase {
 	}
 
 	@Override
-	public <R extends DBRow> List<R> get(R exampleRow) throws SQLException {
+	public <R extends DBRow> List<R> get(R exampleRow) throws SQLException, AccidentalCartesianJoinException, AccidentalBlankQueryException {
 		DBDatabase readyDatabase;
 		boolean finished = false;
 		do {
@@ -895,7 +897,7 @@ public class DBDatabaseCluster extends DBDatabase {
 	}
 
 	@Override
-	public DBQueryable executeDBQuery(DBQueryable query) throws SQLException, UnableToRemoveLastDatabaseFromClusterException {
+	public DBQueryable executeDBQuery(DBQueryable query) throws SQLException, UnableToRemoveLastDatabaseFromClusterException, AccidentalCartesianJoinException, AccidentalBlankQueryException {
 		DBQueryable actionsPerformed = query;
 		boolean finished = false;
 		while (!finished) {
@@ -1002,7 +1004,7 @@ public class DBDatabaseCluster extends DBDatabase {
 		}
 	}
 
-	private void synchronizeSecondaryDatabase(DBDatabase secondary) throws SQLException, NoAvailableDatabaseException {
+	private void synchronizeSecondaryDatabase(DBDatabase secondary) throws SQLException, NoAvailableDatabaseException, AccidentalCartesianJoinException, AccidentalBlankQueryException {
 
 		DBDatabase template = null;
 		try {

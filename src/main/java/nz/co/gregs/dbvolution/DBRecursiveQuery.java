@@ -165,8 +165,9 @@ public class DBRecursiveQuery<T extends DBRow> {
 	 *
 	 * @return a list of all descendants of this query.
 	 * @throws SQLException
+	 * @throws nz.co.gregs.dbvolution.exceptions.AccidentalBlankQueryException
 	 */
-	public synchronized List<T> getDescendants() throws SQLException {
+	public synchronized List<T> getDescendants() throws SQLException, AccidentalCartesianJoinException, AccidentalBlankQueryException {
 		List<T> resultsList = new ArrayList<>();
 		queryDetails.setRecursiveQueryDirection(RecursiveSQLDirection.TOWARDS_LEAVES);
 		List<DBQueryRow> descendants = this.getRowsFromRecursiveQuery(queryDetails);
@@ -191,8 +192,9 @@ public class DBRecursiveQuery<T extends DBRow> {
 	 *
 	 * @return a list of all descendants of this query.
 	 * @throws SQLException
+	 * @throws nz.co.gregs.dbvolution.exceptions.AccidentalBlankQueryException
 	 */
-	public synchronized List<T> getAncestors() throws SQLException {
+	public synchronized List<T> getAncestors() throws SQLException, AccidentalCartesianJoinException, AccidentalBlankQueryException {
 		List<T> resultsList = new ArrayList<>();
 		this.queryDetails.setRecursiveQueryDirection(RecursiveSQLDirection.TOWARDS_ROOT);
 		List<DBQueryRow> ancestors = this.getRowsFromRecursiveQuery(queryDetails);
@@ -249,8 +251,9 @@ public class DBRecursiveQuery<T extends DBRow> {
 	 * @return a list of the ancestors of the results from this query. 1 Database
 	 * exceptions may be thrown
 	 * @throws java.sql.SQLException java.sql.SQLException
+	 * @throws nz.co.gregs.dbvolution.exceptions.AccidentalBlankQueryException
 	 */
-	public synchronized List<TreeNode<T>> getPathsToRoot() throws SQLException {
+	public synchronized List<TreeNode<T>> getPathsToRoot() throws SQLException, AccidentalCartesianJoinException, AccidentalBlankQueryException {
 		List<T> ancestors = getAncestors();
 		List<TreeNode<T>> paths = new ArrayList<>();
 		Map<String, TreeNode<T>> parentMap = new HashMap<>();
@@ -322,8 +325,9 @@ public class DBRecursiveQuery<T extends DBRow> {
 	 * @return a list of trees of the descendants of the results from this query.
 	 * 1 Database exceptions may be thrown
 	 * @throws java.sql.SQLException java.sql.SQLException
+	 * @throws nz.co.gregs.dbvolution.exceptions.AccidentalBlankQueryException
 	 */
-	public synchronized List<TreeNode<T>> getTrees() throws SQLException {
+	public synchronized List<TreeNode<T>> getTrees() throws SQLException, AccidentalCartesianJoinException, AccidentalBlankQueryException {
 		List<T> descendants = getDescendants();
 		List<TreeNode<T>> trees = new ArrayList<>();
 		Map<String, TreeNode<T>> parentMap = new HashMap<>();
@@ -363,7 +367,7 @@ public class DBRecursiveQuery<T extends DBRow> {
 		return trees;
 	}
 
-	private synchronized List<DBQueryRow> getRowsFromRecursiveQuery(RecursiveQueryDetails<T> queryDetails) throws SQLException {
+	private synchronized List<DBQueryRow> getRowsFromRecursiveQuery(RecursiveQueryDetails<T> queryDetails) throws SQLException, AccidentalCartesianJoinException, AccidentalBlankQueryException {
 		if (queryDetails.needsResults(queryDetails.getOptions())) {
 			queryDetails.getOriginalQuery().getDatabase().executeDBQuery(queryDetails);
 		}

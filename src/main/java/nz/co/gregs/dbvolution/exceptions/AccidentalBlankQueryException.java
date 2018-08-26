@@ -22,8 +22,9 @@ package nz.co.gregs.dbvolution.exceptions;
  *
  * @author Gregory Graham
  */
-@SuppressWarnings("serial")
 public class AccidentalBlankQueryException extends RuntimeException {
+
+	static final long serialVersionUID = 1l;
 
 	/**
 	 * Thrown when a DBQuery or DBTable attempts to run a query without any
@@ -35,7 +36,7 @@ public class AccidentalBlankQueryException extends RuntimeException {
 	}
 
 	public AccidentalBlankQueryException(boolean blankQueryAllowed, boolean willCreateBlankQuery, boolean hasNoRawSQL) {
-		super("Accidental Blank Query Aborted: ensure you have added all the required tables, defined all the criteria, and are using the correct allowBlankQueries() setting: BlankQueryAllowed?"+blankQueryAllowed+" willCreateBlankQuery?"+willCreateBlankQuery+" hasNoRawSQL?"+hasNoRawSQL);
+		super("Accidental Blank Query Aborted: ensure you have added all the required tables, defined all the criteria, and are using the correct allowBlankQueries() setting: BlankQueryAllowed?" + blankQueryAllowed + " willCreateBlankQuery?" + willCreateBlankQuery + " hasNoRawSQL?" + hasNoRawSQL);
 	}
 
 }

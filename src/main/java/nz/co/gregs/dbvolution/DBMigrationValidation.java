@@ -25,6 +25,8 @@ import nz.co.gregs.dbvolution.columns.StringColumn;
 import nz.co.gregs.dbvolution.datatypes.DBBoolean;
 import nz.co.gregs.dbvolution.datatypes.DBString;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
+import nz.co.gregs.dbvolution.exceptions.AccidentalBlankQueryException;
+import nz.co.gregs.dbvolution.exceptions.AccidentalCartesianJoinException;
 import nz.co.gregs.dbvolution.exceptions.UnableToInstantiateDBRowSubclassException;
 import nz.co.gregs.dbvolution.expressions.BooleanExpression;
 import nz.co.gregs.dbvolution.expressions.StringExpression;
@@ -76,8 +78,9 @@ public class DBMigrationValidation<R extends DBRow> {
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return the results of the validation
 	 * @throws SQLException
+	 * @throws nz.co.gregs.dbvolution.exceptions.AccidentalBlankQueryException
 	 */
-	public Results validate(DBDatabase database) throws SQLException {
+	public Results validate(DBDatabase database) throws SQLException, AccidentalCartesianJoinException, AccidentalBlankQueryException {
 
 		QueryDetails details = sourceMigration.getQueryDetails();
 		QueryOptions options = details.getOptions();

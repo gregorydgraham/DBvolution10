@@ -21,6 +21,7 @@ import nz.co.gregs.dbvolution.columns.AbstractColumn;
 import nz.co.gregs.dbvolution.columns.ColumnProvider;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.datatypes.*;
+import nz.co.gregs.dbvolution.exceptions.AccidentalBlankQueryException;
 import nz.co.gregs.dbvolution.exceptions.AccidentalCartesianJoinException;
 import nz.co.gregs.dbvolution.exceptions.IncorrectRowProviderInstanceSuppliedException;
 import nz.co.gregs.dbvolution.exceptions.UnableToInterpolateReferencedColumnInMultiColumnPrimaryKeyException;
@@ -555,7 +556,7 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 		DBOperator op = qdt.getOperator();
 		if (op != null) {
 			if (column instanceof DBExpression) {
-				DBExpression requiredExpression = (DBExpression) column;
+				DBExpression requiredExpression = column;
 			if (qdt.hasColumnExpression()) {
 				DBExpression[] columnExpression = qdt.getColumnExpression();
 				String sep = "";
@@ -618,7 +619,7 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 		DBOperator op = qdt.getOperator();
 		if (op != null) {
 			if (column instanceof DBExpression) {
-				DBExpression requiredExpression = (DBExpression) column;
+				DBExpression requiredExpression = column;
 				if (qdt.hasColumnExpression()) {
 					DBExpression[] columnExpression = qdt.getColumnExpression();
 					for (DBExpression dBExpression : columnExpression) {
@@ -1367,8 +1368,9 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 	 * @return all instances of {@code example} that are connected to this
 	 * instance in the {@code query} 1 Database exceptions may be thrown
 	 * @throws java.sql.SQLException java.sql.SQLException
+	 * @throws nz.co.gregs.dbvolution.exceptions.AccidentalBlankQueryException
 	 */
-	public <R extends DBRow> List<R> getRelatedInstancesFromQuery(DBQueryable query, R example) throws SQLException {
+	public <R extends DBRow> List<R> getRelatedInstancesFromQuery(DBQueryable query, R example) throws SQLException, AccidentalCartesianJoinException, AccidentalBlankQueryException {
 		List<R> instances = new ArrayList<>();
 		final List<DBQueryRow> allRows = query.getAllRows();
 		for (DBQueryRow qrow : allRows) {
@@ -1626,9 +1628,10 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 	 * @return a list of distinct values used in the column. 1 Database exceptions
 	 * may be thrown
 	 * @throws java.sql.SQLException java.sql.SQLException
+	 * @throws nz.co.gregs.dbvolution.exceptions.AccidentalBlankQueryException
 	 */
 	@SuppressWarnings("unchecked")
-	public <A> List<A> getDistinctValuesOfColumn(DBDatabase database, A fieldOfThisInstance) throws SQLException {
+	public <A> List<A> getDistinctValuesOfColumn(DBDatabase database, A fieldOfThisInstance) throws SQLException, AccidentalCartesianJoinException, AccidentalBlankQueryException {
 		List<A> results = new ArrayList<>();
 		final PropertyWrapper fieldProp = this.getPropertyWrapperOf(fieldOfThisInstance);
 		QueryableDatatype<?> thisQDT = fieldProp.getPropertyWrapperDefinition().getQueryableDatatype(this);
@@ -1719,7 +1722,7 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 	}
 
 	@SuppressWarnings("unchecked")
-	void setAutoFilledFields(DBQueryable query) throws SQLException {
+	void setAutoFilledFields(DBQueryable query) throws SQLException, AccidentalCartesianJoinException, AccidentalBlankQueryException {
 		boolean arrayRequired = false;
 		boolean listRequired = false;
 		try {

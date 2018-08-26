@@ -29,6 +29,7 @@ import nz.co.gregs.dbvolution.actions.*;
 import nz.co.gregs.dbvolution.columns.ColumnProvider;
 import nz.co.gregs.dbvolution.datatypes.*;
 import nz.co.gregs.dbvolution.exceptions.AccidentalBlankQueryException;
+import nz.co.gregs.dbvolution.exceptions.AccidentalCartesianJoinException;
 import nz.co.gregs.dbvolution.exceptions.IncorrectRowProviderInstanceSuppliedException;
 import nz.co.gregs.dbvolution.exceptions.UnexpectedNumberOfRowsException;
 import nz.co.gregs.dbvolution.expressions.SortProvider;
@@ -131,8 +132,9 @@ public class DBTable<E extends DBRow> {
 	 *
 	 * @return all the appropriate rows of the table from the database;
 	 * @throws SQLException database exceptions
+	 * @throws nz.co.gregs.dbvolution.exceptions.AccidentalBlankQueryException
 	 */
-	public List<E> getAllRows() throws SQLException {
+	public List<E> getAllRows() throws SQLException, AccidentalCartesianJoinException, AccidentalBlankQueryException {
 		query.refreshQuery();
 		applyConfigs();
 		List<E> allInstancesOf = query.getAllInstancesOf(exemplar);
@@ -154,7 +156,7 @@ public class DBTable<E extends DBRow> {
 	 * @return all the appropriate rows 1 Database exceptions may be thrown
 	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
-	public List<E> toList() throws SQLException {
+	public List<E> toList() throws SQLException, AccidentalCartesianJoinException, AccidentalBlankQueryException {
 		return getAllRows();
 	}
 
@@ -182,7 +184,7 @@ public class DBTable<E extends DBRow> {
 	 * @see QueryableDatatype
 	 * @see DBRow
 	 */
-	public List<E> getRowsByExample(E example) throws SQLException {
+	public List<E> getRowsByExample(E example) throws SQLException, AccidentalCartesianJoinException, AccidentalBlankQueryException {
 		this.exemplar = DBRow.copyDBRow(example);
 		this.query = database.getDBQuery(exemplar);
 		return getAllRows();
@@ -205,7 +207,7 @@ public class DBTable<E extends DBRow> {
 	 * @throws java.sql.SQLException java.sql.SQLException
 	 *
 	 */
-	public E getFirstRow() throws SQLException {
+	public E getFirstRow() throws SQLException, AccidentalCartesianJoinException, AccidentalBlankQueryException {
 		List<E> allRows = getAllRows();
 		return allRows.get(0);
 	}
@@ -231,7 +233,7 @@ public class DBTable<E extends DBRow> {
 	 *
 	 *
 	 */
-	public E getOnlyRow() throws SQLException, UnexpectedNumberOfRowsException {
+	public E getOnlyRow() throws SQLException, UnexpectedNumberOfRowsException, AccidentalCartesianJoinException, AccidentalBlankQueryException {
 		List<E> allRows = getAllRows();
 		if (allRows.size() != 1) {
 			throw new UnexpectedNumberOfRowsException(1, allRows.size());
@@ -307,7 +309,7 @@ public class DBTable<E extends DBRow> {
 		}
 	}
 
-	private List<E> getRowsByPrimaryKeyObject(Object pkValue) throws SQLException, ClassNotFoundException {
+	private List<E> getRowsByPrimaryKeyObject(Object pkValue) throws SQLException, ClassNotFoundException, AccidentalCartesianJoinException, AccidentalBlankQueryException {
 		DBRow newInstance = DBRow.getDBRow(exemplar.getClass());
 		final List<QueryableDatatype<?>> primaryKeys = newInstance.getPrimaryKeys();
 		for (QueryableDatatype<?> primaryKey : primaryKeys) {
@@ -349,7 +351,7 @@ public class DBTable<E extends DBRow> {
 	 * may be thrown
 	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
-	public List<E> getRowsForPage(Integer pageNumber) throws SQLException {
+	public List<E> getRowsForPage(Integer pageNumber) throws SQLException, AccidentalCartesianJoinException, AccidentalBlankQueryException {
 		query.refreshQuery();
 		applyConfigs();
 		List<DBQueryRow> allRowsForPage = query.getAllRowsForPage(pageNumber);
@@ -377,7 +379,7 @@ public class DBTable<E extends DBRow> {
 	 * @throws java.lang.ClassNotFoundException java.lang.ClassNotFoundException
 	 *
 	 */
-	public List<E> getRowsByPrimaryKey(Number pkValue) throws SQLException, ClassNotFoundException {
+	public List<E> getRowsByPrimaryKey(Number pkValue) throws SQLException, ClassNotFoundException, AccidentalCartesianJoinException, AccidentalBlankQueryException {
 		return getRowsByPrimaryKeyObject(pkValue);
 	}
 
@@ -398,7 +400,7 @@ public class DBTable<E extends DBRow> {
 	 * @throws java.lang.ClassNotFoundException java.lang.ClassNotFoundException
 	 *
 	 */
-	public List<E> getRowsByPrimaryKey(String pkValue) throws SQLException, ClassNotFoundException {
+	public List<E> getRowsByPrimaryKey(String pkValue) throws SQLException, ClassNotFoundException, AccidentalCartesianJoinException, AccidentalBlankQueryException {
 		return getRowsByPrimaryKeyObject(pkValue);
 	}
 
@@ -419,7 +421,7 @@ public class DBTable<E extends DBRow> {
 	 * @throws java.lang.ClassNotFoundException java.lang.ClassNotFoundException
 	 *
 	 */
-	public List<E> getRowsByPrimaryKey(Date pkValue) throws SQLException, ClassNotFoundException {
+	public List<E> getRowsByPrimaryKey(Date pkValue) throws SQLException, ClassNotFoundException, AccidentalCartesianJoinException, AccidentalBlankQueryException {
 		return getRowsByPrimaryKeyObject(pkValue);
 	}
 
@@ -511,7 +513,7 @@ public class DBTable<E extends DBRow> {
 	 * exceptions may be thrown
 	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
-	public Long count() throws SQLException {
+	public Long count() throws SQLException, AccidentalCartesianJoinException, AccidentalBlankQueryException {
 		return query.count();
 	}
 
@@ -521,7 +523,7 @@ public class DBTable<E extends DBRow> {
 	 *
 	 * @throws java.sql.SQLException SQLException
 	 */
-	public void print() throws SQLException {
+	public void print() throws SQLException, AccidentalCartesianJoinException, AccidentalBlankQueryException {
 		print(System.out);
 	}
 
@@ -533,7 +535,7 @@ public class DBTable<E extends DBRow> {
 	 * @param stream stream
 	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
-	public void print(PrintStream stream) throws SQLException {
+	public void print(PrintStream stream) throws SQLException, AccidentalCartesianJoinException, AccidentalBlankQueryException {
 		List<E> allRows = getAllRows();
 		for (E row : allRows) {
 			stream.println(row);
@@ -675,7 +677,7 @@ public class DBTable<E extends DBRow> {
 	 * @see #getPrimaryKeysAsString()
 	 * @see #getAllRows()
 	 */
-	public List<Long> getPrimaryKeysAsLong() throws SQLException {
+	public List<Long> getPrimaryKeysAsLong() throws SQLException, AccidentalCartesianJoinException, AccidentalBlankQueryException {
 		List<E> allRows = getAllRows();
 		List<Long> longPKs = new ArrayList<>();
 		for (E row : allRows) {
@@ -703,7 +705,7 @@ public class DBTable<E extends DBRow> {
 	 * @see #getPrimaryKeysAsString()
 	 * @see #getAllRows()
 	 */
-	public List<String> getPrimaryKeysAsString() throws SQLException {
+	public List<String> getPrimaryKeysAsString() throws SQLException, AccidentalCartesianJoinException, AccidentalBlankQueryException {
 		List<E> allRows = getAllRows();
 		List<String> stringPKs = new ArrayList<>();
 		for (E row : allRows) {
@@ -725,7 +727,7 @@ public class DBTable<E extends DBRow> {
 	 * @throws java.sql.SQLException java.sql.SQLException
 	 *
 	 */
-	public void compare(DBTable<E> secondTable) throws SQLException {
+	public void compare(DBTable<E> secondTable) throws SQLException, AccidentalCartesianJoinException, AccidentalBlankQueryException {
 		HashMap<String, E> secondMap = new HashMap<>();
 		for (E row : secondTable.getAllRows()) {
 			secondMap.put(row.getPrimaryKeys().toString(), row);
@@ -990,7 +992,7 @@ public class DBTable<E extends DBRow> {
 	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
 	@SuppressWarnings("unchecked")
-	public <A> List<A> getDistinctValuesOfColumn(A fieldOfProvidedRow) throws AccidentalBlankQueryException, IncorrectRowProviderInstanceSuppliedException, SQLException {
+	public <A> List<A> getDistinctValuesOfColumn(A fieldOfProvidedRow) throws IncorrectRowProviderInstanceSuppliedException, SQLException, AccidentalCartesianJoinException, AccidentalBlankQueryException {
 		List<A> returnList = new ArrayList<>();
 		final PropertyWrapper fieldProp = original.getPropertyWrapperOf(fieldOfProvidedRow);
 		if (fieldProp == null) {

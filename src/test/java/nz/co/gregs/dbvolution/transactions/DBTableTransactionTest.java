@@ -95,7 +95,7 @@ public class DBTableTransactionTest extends AbstractTest {
 						
 						marques.getAllRows();
 						return marques;
-					} catch (SQLException ex) {
+					} catch (Exception ex) {
 						throw new ExceptionThrownDuringTransaction(ex);
 					}
 				}

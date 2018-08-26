@@ -58,7 +58,7 @@ public interface DBQueryable {
 	 * on the database
 	 * @throws SQLException Database operations may throw SQLExceptions
 	 */
-	public DBQueryable query(DBDatabase db) throws SQLException;
+	public DBQueryable query(DBDatabase db) throws SQLException, AccidentalCartesianJoinException, AccidentalBlankQueryException;
 
 	public List<DBQueryRow> getAllRows() throws SQLException, SQLTimeoutException, AccidentalBlankQueryException, AccidentalCartesianJoinException ;
 

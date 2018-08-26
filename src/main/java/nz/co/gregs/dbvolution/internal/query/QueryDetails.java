@@ -1028,7 +1028,7 @@ public class QueryDetails implements DBQueryable, Serializable {
 	}
 
 	@Override
-	public synchronized DBQueryable query(DBDatabase db) throws SQLException {
+	public synchronized DBQueryable query(DBDatabase db) throws SQLException, AccidentalBlankQueryException {
 		getOptions().setQueryDatabase(db);
 		final QueryType queryType = getOptions().getQueryType();
 		switch (queryType) {
@@ -1053,7 +1053,7 @@ public class QueryDetails implements DBQueryable, Serializable {
 		return this;
 	}
 
-	public synchronized void getAllRowsForPage(DBDatabase database, QueryDetails details) throws SQLException {
+	public synchronized void getAllRowsForPage(DBDatabase database, QueryDetails details) throws SQLException, AccidentalBlankQueryException {
 		final QueryOptions opts = getOptions();
 		int pageNumber = getResultsPageIndex();
 		final DBDefinition defn = database.getDefinition();
@@ -1099,7 +1099,7 @@ public class QueryDetails implements DBQueryable, Serializable {
 		}
 	}
 
-	protected synchronized void fillResultSetInternal(DBDatabase db, QueryDetails details, QueryOptions options) throws SQLException {
+	protected synchronized void fillResultSetInternal(DBDatabase db, QueryDetails details, QueryOptions options) throws SQLException, AccidentalBlankQueryException {
 		prepareForQuery(db, options);
 
 		final DBDefinition defn = db.getDefinition();
@@ -1118,7 +1118,7 @@ public class QueryDetails implements DBQueryable, Serializable {
 
 	}
 
-	protected synchronized void fillResultSetFromSQL(DBDatabase db, QueryDetails details, final DBDefinition defn, String sqlString) throws SQLException {
+	protected synchronized void fillResultSetFromSQL(DBDatabase db, QueryDetails details, final DBDefinition defn, String sqlString) throws SQLException, AccidentalCartesianJoinException, AccidentalBlankQueryException {
 		DBQueryRow queryRow;
 
 		try (DBStatement dbStatement = db.getDBStatement();
@@ -1143,7 +1143,7 @@ public class QueryDetails implements DBQueryable, Serializable {
 	}
 
 	@SuppressWarnings("unchecked")
-	synchronized void setAutoFilledFields(DBRow row) throws SQLException {
+	synchronized void setAutoFilledFields(DBRow row) throws SQLException, AccidentalCartesianJoinException, AccidentalBlankQueryException {
 		boolean arrayRequired = false;
 		boolean listRequired = false;
 		try {
@@ -1209,7 +1209,7 @@ public class QueryDetails implements DBQueryable, Serializable {
 	 * instance in the {@code query} 1 Database exceptions may be thrown
 	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
-	public <R extends DBRow> List<R> getRelatedInstancesFromQuery(DBRow row, R example) throws SQLException {
+	public <R extends DBRow> List<R> getRelatedInstancesFromQuery(DBRow row, R example) throws SQLException, AccidentalCartesianJoinException, AccidentalBlankQueryException {
 		List<R> instances = new ArrayList<>();
 		final List<DBQueryRow> allRows = getAllRows();
 		for (DBQueryRow qrow : allRows) {
