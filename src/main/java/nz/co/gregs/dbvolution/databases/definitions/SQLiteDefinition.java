@@ -356,10 +356,6 @@ public class SQLiteDefinition extends DBDefinition implements SupportsDateRepeat
 		return false;
 	}
 
-//	@Override
-//	public String doAddMillisecondsTransform(String dateValue, String numberOfMilliseconds) {
-//		return "strftime('%Y-%m-%d %H:%M:%f', (" + dateValue + "), (" + numberOfMilliseconds + "/1000.0)||' SECOND' )";
-//	}
 	@Override
 	public String doAddSecondsTransform(String dateValue, String numberOfSeconds) {
 		return "strftime('%Y-%m-%d %H:%M:%f', (" + dateValue + "), (" + numberOfSeconds + ")||' SECOND')";
@@ -430,10 +426,6 @@ public class SQLiteDefinition extends DBDefinition implements SupportsDateRepeat
 		return "cast((strftime('%s'," + otherDateValue + ")-strftime('%s'," + dateValue + ")) AS real)";
 	}
 
-//	@Override
-//	public String doMillisecondDifferenceTransform(String dateValue, String otherDateValue) {
-//		return "((CAST(strftime('%f',"+dateValue+") AS real)*1000.0)-(CAST(strftime('%s',("+otherDateValue+")) as INTEGER)*1000.0))"; 
-//	}
 	@Override
 	public String doDayOfWeekTransform(String dateSQL) {
 		return " (cast(STRFTIME('%w', (" + dateSQL + ")) AS real)+1)";
@@ -842,10 +834,6 @@ public class SQLiteDefinition extends DBDefinition implements SupportsDateRepeat
 		return MultiPoint2DFunctions.ASLINE2D + "(" + first + ")";
 	}
 
-//	@Override
-//	public String doMultiPoint2DToPolygon2DTransform(String first) {
-//		return MultiPoint2DFunctions.ASPOLYGON2D+"("+first+")";
-//	}
 	@Override
 	public String doMultiPoint2DGetMinYTransform(String first) {
 		return MultiPoint2DFunctions.GETMINY_FUNCTION + "(" + first + ")";
