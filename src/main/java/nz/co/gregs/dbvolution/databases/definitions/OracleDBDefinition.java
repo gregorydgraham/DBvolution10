@@ -116,7 +116,7 @@ public class OracleDBDefinition extends DBDefinition {
 //        return true;
 //    }
 	@Override
-	public Object endSQLStatement() {
+	public String endSQLStatement() {
 		return "";
 	}
 
@@ -323,10 +323,12 @@ public class OracleDBDefinition extends DBDefinition {
 //		}
 //	}
 
+	@Override
 	protected String getOrderByDescending() {
 		return " DESC NULLS LAST ";
 	}
 
+	@Override
 	protected String getOrderByAscending() {
 		return " ASC NULLS FIRST ";
 	}
