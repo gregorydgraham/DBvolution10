@@ -154,7 +154,7 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 	}
 
 	@Override
-	public Object endSQLStatement() {
+	public String endSQLStatement() {
 		return "";
 	}
 
@@ -1097,6 +1097,7 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 		return strs;
 	}
 
+	@Override
 	public String getAlterTableAddColumnSQL(DBRow existingTable, PropertyWrapper columnPropertyWrapper) {
 		return "ALTER TABLE " + formatTableName(existingTable) + " ADD " + getAddColumnColumnSQL(columnPropertyWrapper) + endSQLStatement();
 	}
