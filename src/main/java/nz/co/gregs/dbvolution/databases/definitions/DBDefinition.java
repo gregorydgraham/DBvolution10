@@ -930,7 +930,7 @@ public abstract class DBDefinition {
 	 *
 	 * @return ";" or equivalent.
 	 */
-	public Object endSQLStatement() {
+	public String endSQLStatement() {
 		return ";";
 	}
 
