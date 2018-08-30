@@ -32,6 +32,7 @@ package nz.co.gregs.dbvolution.utility;
 
 import com.google.common.base.Stopwatch;
 import java.util.concurrent.TimeUnit;
+import nz.co.gregs.dbvolution.exceptions.IncorrectPasswordException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.mindrot.jbcrypt.BCrypt;
@@ -95,7 +96,7 @@ public class UpdatingBCrypt {
 	 * @param password
 	 * @param hash
 	 * @return the original hash or a more appropriate hash for your CPU.
-	 * @throws UpdatingBCrypt.IncorrectPasswordException
+	 * @throws IncorrectPasswordException
 	 */
 	public String checkPasswordAndCreateSecureHash(String password, String hash) throws IncorrectPasswordException {
 		if (looksLikeABCryptHash(hash)) {
@@ -116,13 +117,13 @@ public class UpdatingBCrypt {
 					return newHash;
 				}
 			} else {
-				throw new IncorrectPasswordException(password, hash);
+				throw new IncorrectPasswordException(hash);
 			}
 		} else {
 			if (hash.equals(password)) {
 				return hashPassword(password);
 			} else {
-				throw new IncorrectPasswordException(password, hash);
+				throw new IncorrectPasswordException(hash);
 			}
 		}
 		return hash;
@@ -159,14 +160,5 @@ public class UpdatingBCrypt {
 
 	public static boolean looksLikeABCryptHash(String maybeHash) {
 		return maybeHash != null && maybeHash.matches("\\$..\\$..\\$.*");
-	}
-
-	public static class IncorrectPasswordException extends Exception {
-		
-		 static final long serialVersionUID = 1l;
-
-		public IncorrectPasswordException(String password, String hash) {
-			super("An incorrect password, \"" + password + "\", was detected when checking against \"" + hash + "\"");
-		}
 	}
 }

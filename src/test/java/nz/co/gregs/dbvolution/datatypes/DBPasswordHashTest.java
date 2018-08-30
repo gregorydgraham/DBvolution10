@@ -37,8 +37,8 @@ import nz.co.gregs.dbvolution.DBTable;
 import nz.co.gregs.dbvolution.annotations.DBAutoIncrement;
 import nz.co.gregs.dbvolution.annotations.DBColumn;
 import nz.co.gregs.dbvolution.annotations.DBPrimaryKey;
+import nz.co.gregs.dbvolution.exceptions.IncorrectPasswordException;
 import nz.co.gregs.dbvolution.generic.AbstractTest;
-import nz.co.gregs.dbvolution.utility.UpdatingBCrypt;
 import static org.hamcrest.Matchers.*;
 import org.junit.Assert;
 import org.junit.Test;
@@ -50,7 +50,7 @@ public class DBPasswordHashTest extends AbstractTest {
 	}
 
 	@Test
-	public void testDBPasswordHash() throws SQLException, UpdatingBCrypt.IncorrectPasswordException {
+	public void testDBPasswordHash() throws SQLException, IncorrectPasswordException {
 		PasswordTestTable insertRow = new PasswordTestTable();
 		String correctPassword = "correct secretAAA!!!{}|!@#$%^&*()_+-=';:/?.,<>\"";
 		String wrongPassword = "wrong passwordAAA!!!{}|!@#$%^&*()_+-=';:/?.,<>\"";
@@ -76,7 +76,7 @@ public class DBPasswordHashTest extends AbstractTest {
 			try {
 				Assert.assertThat(row.passwordHash.checkPasswordWithException(wrongPassword), is(false));
 				Assert.fail("row.passwordHash.checkPasswordWithException(wrongPassword) should have thrown an exception");
-			} catch (UpdatingBCrypt.IncorrectPasswordException exp) {
+			} catch (IncorrectPasswordException exp) {
 				// all good, we were hoping for an exception :)
 			}
 

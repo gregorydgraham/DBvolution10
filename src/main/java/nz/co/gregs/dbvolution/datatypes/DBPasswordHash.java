@@ -30,6 +30,7 @@
  */
 package nz.co.gregs.dbvolution.datatypes;
 
+import nz.co.gregs.dbvolution.exceptions.IncorrectPasswordException;
 import nz.co.gregs.dbvolution.databases.DBDatabase;
 import nz.co.gregs.dbvolution.utility.UpdatingBCrypt;
 
@@ -115,11 +116,11 @@ public class DBPasswordHash extends DBString {
 		return UpdatingBCrypt.checkPassword(password, getValue());
 	}
 
-	public final boolean checkPasswordWithException(String password) throws UpdatingBCrypt.IncorrectPasswordException {
+	public final boolean checkPasswordWithException(String password) throws IncorrectPasswordException {
 		if (UpdatingBCrypt.checkPassword(password, getValue())) {
 			return true;
 		} else {
-			throw new UpdatingBCrypt.IncorrectPasswordException(password, getValue());
+			throw new IncorrectPasswordException(getValue());
 		}
 	}
 
@@ -140,9 +141,9 @@ public class DBPasswordHash extends DBString {
 	 *
 	 * @param password
 	 * @return
-	 * @throws UpdatingBCrypt.IncorrectPasswordException
+	 * @throws IncorrectPasswordException
 	 */
-	public boolean checkPasswordAndUpdateHash(String password) throws UpdatingBCrypt.IncorrectPasswordException {
+	public boolean checkPasswordAndUpdateHash(String password) throws IncorrectPasswordException {
 		String newHash = crypt.checkPasswordAndCreateSecureHash(password, getValue());
 		if (!newHash.equals(getValue())) {
 			super.setValue(newHash);
