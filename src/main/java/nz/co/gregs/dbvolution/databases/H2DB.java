@@ -193,13 +193,14 @@ public class H2DB extends DBDatabase {
 		boolean handledException = false;
 		if (exp instanceof org.h2.jdbc.JdbcSQLException) {
 			String message = exp.getMessage();
+			try(Statement statement = getConnection().createStatement()){
 			if ((message.startsWith("Function \"DBV_") && message.contains("\" not found"))
 					|| (message.startsWith("Method \"DBV_") && message.contains("\" not found"))) {
 				String[] split = message.split("[\" ]+");
 				String functionName = split[1];
 				DBVFeature functions = FEATURE_MAP.get(functionName);
 				if (functions != null) {
-					functions.add(getConnection().createStatement());
+					functions.add(statement);
 					handledException = true;
 				}
 			} else if (message.startsWith("Unknown data type: \"DBV_")) {
@@ -207,7 +208,7 @@ public class H2DB extends DBDatabase {
 				String functionName = split[1];
 				DBVFeature datatype = FEATURE_MAP.get(functionName);
 				if (datatype != null) {
-					datatype.add(getConnection().createStatement());
+					datatype.add(statement);
 					handledException = true;
 				}
 			} else if (message.matches(": +method \"DBV_[A-Z_0-9]+")) {
@@ -217,7 +218,7 @@ public class H2DB extends DBDatabase {
 
 				DBVFeature functions = FEATURE_MAP.get(functionName);
 				if (functions != null) {
-					functions.add(getConnection().createStatement());
+					functions.add(statement);
 					handledException = true;
 				}
 			} else {
@@ -225,11 +226,12 @@ public class H2DB extends DBDatabase {
 					String key = entrySet.getKey();
 					DBVFeature value = entrySet.getValue();
 					if (message.contains(key)) {
-						value.add(getConnection().createStatement());
+						value.add(statement);
 						handledException = true;
 					}
 				}
 			}
+		}
 		}
 		if (!handledException) {
 			throw exp;

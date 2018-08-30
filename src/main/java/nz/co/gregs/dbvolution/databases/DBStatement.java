@@ -21,6 +21,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.SQLWarning;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.exceptions.UnableToCreateDatabaseConnectionException;
 import nz.co.gregs.dbvolution.exceptions.UnableToFindJDBCDriver;
@@ -58,6 +60,9 @@ public class DBStatement implements Statement {
 	private final Connection connection;
 	private boolean isClosed = false;
 
+	private static final List<DBStatement> DBSTATEMENT_REGISTER = new ArrayList<>();
+	private static final List<DBStatement> DBSTATEMENT_CLOSED_REGISTER = new ArrayList<>();
+
 	/**
 	 * Creates a statement object for the given DBDatabase and Connection.
 	 *
@@ -68,6 +73,7 @@ public class DBStatement implements Statement {
 		this.database = db;
 		this.connection = connection;
 //		this.internalStatement = connection.createStatement();
+		DBSTATEMENT_REGISTER.add(this);
 	}
 
 	/**
@@ -108,7 +114,7 @@ public class DBStatement implements Statement {
 			Exception ex1 = exp;
 			while (!ex1.getMessage().equals(ex.getMessage())) {
 				database.addFeatureToFixException(ex);
-			}
+				}
 			throw new SQLException(ex);
 		}
 		try {
@@ -166,7 +172,12 @@ public class DBStatement implements Statement {
 			LOG.warn("Exception occurred during close(): " + e.getMessage(), e);
 		}
 		try {
-			getInternalStatement().close();
+			Statement statement = getInternalStatement();
+//			System.out.println("CLOSING DBSTATEMENT");
+			statement.close();
+			setInternalStatement(null);
+			DBSTATEMENT_REGISTER.remove(this);
+			DBSTATEMENT_CLOSED_REGISTER.remove(this);
 		} catch (SQLException e) {
 			// Someone please tell me how you are supposed to cope 
 			// with an exception during the close method????????
@@ -441,6 +452,7 @@ public class DBStatement implements Statement {
 		try {
 			execute = getInternalStatement().execute(sql);
 		} catch (SQLException exp) {
+//			exp.printStackTrace();
 			return addFeatureAndAttemptExecuteAgain(exp, sql);
 		}
 		return execute;
@@ -451,12 +463,14 @@ public class DBStatement implements Statement {
 		try {
 			database.addFeatureToFixException(exp);
 		} catch (Exception ex) {
+//			ex.printStackTrace();
 			throw new SQLException("Failed To Add Support For SQL: " + exp.getMessage() + " : Original Query: " + string, ex);
 		}
 		try {
 			executeQuery = getInternalStatement().execute(string);
 			return executeQuery;
 		} catch (SQLException exp2) {
+//			exp2.printStackTrace();
 			if (!exp.getMessage().equals(exp2.getMessage())) {
 				executeQuery = addFeatureAndAttemptExecuteAgain(exp2, string);
 				return executeQuery;
@@ -1158,7 +1172,8 @@ public class DBStatement implements Statement {
 	 */
 	protected synchronized Statement getInternalStatement() throws SQLException {
 		if (this.internalStatement == null) {
-			this.internalStatement = connection.createStatement();
+//			System.out.println("OPENING DBSTATEMENT");
+			this.setInternalStatement(connection.createStatement());
 		}
 		return this.internalStatement;
 	}

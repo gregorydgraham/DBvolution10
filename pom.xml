@@ -141,7 +141,6 @@
 				<configuration>
 					<effort>Max</effort>
 				</configuration>
-			
 			</plugin>
 		</plugins>
 	</reporting>
@@ -1012,7 +1011,7 @@
 			<version>0.9.11</version>
 			<type>jar</type> 
 			<exclusions>
-<!--				<exclusion>
+				<!--				<exclusion>
 					<groupId>com.google.guava</groupId>
 					<artifactId>guava</artifactId>
 				</exclusion>-->
@@ -1108,7 +1107,7 @@
 				</exclusion>
 			</exclusions>
 		</dependency>
-<!--		<dependency>
+		<!--		<dependency>
 			 Needed by simmetrics-core but needs to be >20 for everything else to work
 			<groupId>com.google.guava</groupId>
 			<artifactId>guava</artifactId>
@@ -1145,6 +1144,11 @@
 			<artifactId>jackson-databind</artifactId>
 			<version>2.9.6</version>
 			<type>jar</type>
+		</dependency>
+		<dependency>
+			<groupId>org.mindrot</groupId>
+			<artifactId>jbcrypt</artifactId>
+			<version>0.4</version>
 		</dependency>
 	</dependencies>
 	<distributionManagement>

@@ -40,10 +40,10 @@ import javax.sql.DataSource;
 import org.h2.tools.Server;
 
 public class H2SharedDB extends H2DB {
-	
+
 	private final static long serialVersionUID = 1l;
 
-	Server server = null;
+	 Server server = null;
 
 	public H2SharedDB(File file, String username, String password) throws IOException, SQLException {
 		this(file.getAbsoluteFile().toString(), username, password);
@@ -91,5 +91,5 @@ public class H2SharedDB extends H2DB {
 			}
 		}
 	}
-
+	
 }

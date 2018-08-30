@@ -39,7 +39,6 @@ import nz.co.gregs.dbvolution.DBQueryRow;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.actions.DBQueryable;
 import nz.co.gregs.dbvolution.columns.ColumnProvider;
-import nz.co.gregs.dbvolution.columns.QueryColumn;
 import nz.co.gregs.dbvolution.databases.DBDatabase;
 import nz.co.gregs.dbvolution.databases.DBStatement;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
@@ -54,7 +53,6 @@ import nz.co.gregs.dbvolution.expressions.SortProvider;
 import nz.co.gregs.dbvolution.internal.properties.PropertyWrapper;
 import nz.co.gregs.dbvolution.internal.properties.PropertyWrapperDefinition;
 import nz.co.gregs.dbvolution.internal.querygraph.QueryGraph;
-import nz.co.gregs.dbvolution.query.RowDefinition;
 
 /**
  *
@@ -825,15 +823,13 @@ public class QueryDetails implements DBQueryable, Serializable {
 //					final QueryableDatatype<?> qdt = qc.getQueryableDatatypeForExpressionValue();
 //					orderByClause.append(sortSeparator).append(qc.toSQLString(defn)).append(defn.getOrderByDirectionClause(qdt.getSortOrder()));
 				} else {
-					PropertyWrapper prop;
 					PropertyWrapperDefinition propDefn;
 					QueryableDatatype<?> qdt;
 					if (sorter instanceof SortProvider.Column) {
-						prop = ((SortProvider.Column)sorter).getPropertyWrapper();
+						PropertyWrapper prop = ((SortProvider.Column) sorter).getPropertyWrapper();
 						propDefn = prop.getPropertyWrapperDefinition();
 						qdt = prop.getQueryableDatatype();
 					} else {
-						prop = null;
 						propDefn = null;
 						qdt = sorter.asExpressionColumn();
 					}
@@ -854,30 +850,6 @@ public class QueryDetails implements DBQueryable, Serializable {
 					} else {
 						orderByClause.append(sortSeparator).append(sorter.toSQLString(defn));
 						sortSeparator = defn.getSubsequentOrderByClauseSeparator();
-//						if (qdt.hasColumnExpression()) {
-//							final DBExpression[] columnExpressions = qdt.getColumnExpression();
-//							for (DBExpression columnExpression : columnExpressions) {
-//								final String dbColumnName = defn.transformToStorableType(columnExpression).toSQLString(defn);
-//								if (dbColumnName != null) {
-//									orderByClause.append(sortSeparator).append(dbColumnName).append(defn.getOrderByDirectionClause(qdt.getSortOrder()));
-//									sortSeparator = defn.getSubsequentOrderByClauseSeparator();
-//								}
-//							}
-//						} else {
-//							if (prop != null) {
-//								final RowDefinition possibleDBRow = prop.getRowDefinitionInstanceWrapper().adapteeRowDefinition();
-//
-//								if (possibleDBRow != null && DBRow.class.isAssignableFrom(possibleDBRow.getClass())) {
-//									final DBRow adapteeDBRow = (DBRow) possibleDBRow;
-//									final String dbColumnName = defn.formatTableAliasAndColumnName(adapteeDBRow, prop.columnName());
-//									if (dbColumnName
-//											!= null) {
-//										orderByClause.append(sortSeparator).append(dbColumnName).append(defn.getOrderByDirectionClause(qdt.getSortOrder()));
-//										sortSeparator = defn.getSubsequentOrderByClauseSeparator();
-//									}
-//								}
-//							}
-//						}
 					}
 				}
 			}
@@ -1121,15 +1093,16 @@ public class QueryDetails implements DBQueryable, Serializable {
 	protected synchronized void fillResultSetFromSQL(DBDatabase db, QueryDetails details, final DBDefinition defn, String sqlString) throws SQLException, AccidentalCartesianJoinException, AccidentalBlankQueryException {
 		DBQueryRow queryRow;
 
-		try (DBStatement dbStatement = db.getDBStatement();
-				ResultSet resultSet = getResultSetForSQL(dbStatement, sqlString)) {
-			while (resultSet.next()) {
-				queryRow = new DBQueryRow(this);
+		try (DBStatement dbStatement = db.getDBStatement()) {
+			try (ResultSet resultSet = getResultSetForSQL(dbStatement, sqlString)) {
+				while (resultSet.next()) {
+					queryRow = new DBQueryRow(this);
 
-				setExpressionColumns(defn, resultSet, queryRow);
+					setExpressionColumns(defn, resultSet, queryRow);
 
-				setQueryRowFromResultSet(defn, resultSet, details, queryRow, details.isGroupedQuery());
-				details.getResults().add(queryRow);
+					setQueryRowFromResultSet(defn, resultSet, details, queryRow, details.isGroupedQuery());
+					details.getResults().add(queryRow);
+				}
 			}
 		}
 		for (DBQueryRow result : details.getResults()) {
