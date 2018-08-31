@@ -36,7 +36,6 @@ import com.fasterxml.jackson.databind.SequenceWriter;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import java.io.File;
 import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
@@ -61,6 +60,7 @@ import nz.co.gregs.dbvolution.exceptions.AccidentalBlankQueryException;
 import nz.co.gregs.dbvolution.exceptions.AccidentalCartesianJoinException;
 import nz.co.gregs.dbvolution.exceptions.AccidentalDroppingOfTableException;
 import nz.co.gregs.dbvolution.exceptions.AutoCommitActionDuringTransactionException;
+import nz.co.gregs.dbvolution.exceptions.UnableToRemoveLastDatabaseFromClusterException;
 import nz.co.gregs.dbvolution.generic.AbstractTest;
 import static org.hamcrest.Matchers.*;
 import org.junit.Assert;
@@ -157,6 +157,51 @@ public class DBDatabaseClusterTest extends AbstractTest {
 		try {
 			List<DBQueryRow> allRows = query.getAllRows();
 		} catch (SQLException | AccidentalBlankQueryException | AccidentalCartesianJoinException e) {
+		}
+		Assert.assertThat(cluster.size(), is(1));
+
+	}
+
+	@Test
+	public synchronized void testLastDatabaseCannotBeRemovedAfterErrorInQuery() throws SQLException {
+		DBDatabaseCluster cluster = new DBDatabaseCluster(database);
+		H2MemoryDB soloDB2 = new H2MemoryDB("DBDatabaseClusterTest3a", "who", "what", true);
+		cluster.addDatabase(soloDB2);
+		Assert.assertThat(cluster.size(), is(2));
+
+		DBQuery query = cluster.getDBQuery(new Marque());
+		query.setRawSQL("blart = norn");
+		try {
+			List<DBQueryRow> allRows = query.getAllRows();
+		} catch (SQLException | AccidentalBlankQueryException | AccidentalCartesianJoinException e) {
+		}
+		Assert.assertThat(cluster.size(), is(1));
+		try {
+			List<DBQueryRow> allRows = query.getAllRows();
+			Assert.fail("Should have thrown an exception");
+		} catch (SQLException e) {
+			Assert.assertThat(e, is(instanceOf(SQLException.class)));
+		} catch (Exception e) {
+			Assert.fail("Should have thrown an SQLException");
+		}
+		Assert.assertThat(cluster.size(), is(1));
+
+	}
+
+	@Test
+	public synchronized void testLastDatabaseCannotBeRemovedDirectly() throws SQLException {
+		DBDatabaseCluster cluster = new DBDatabaseCluster(database);
+		H2MemoryDB soloDB2 = new H2MemoryDB("DBDatabaseClusterTest3b", "who", "what", true);
+		cluster.addDatabase(soloDB2);
+		Assert.assertThat(cluster.size(), is(2));
+
+		cluster.removeDatabase(cluster.getReadyDatabase());
+		Assert.assertThat(cluster.size(), is(1));
+		try {
+			cluster.removeDatabase(cluster.getReadyDatabase());
+			Assert.fail();
+		} catch (Exception e) {
+			Assert.assertThat(e, is(instanceOf(UnableToRemoveLastDatabaseFromClusterException.class)));
 		}
 		Assert.assertThat(cluster.size(), is(1));
 

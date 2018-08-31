@@ -1,6 +1,8 @@
 /*
- * Copyright 2018 gregorygraham.
+ * Copyright 2018 Gregory Graham.
  *
+ * Commercial licenses are available, please contact info@gregs.co.nz for details.
+ * 
  * This work is licensed under the Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License. 
  * To view a copy of this license, visit http://creativecommons.org/licenses/by-nc-sa/4.0/ 
  * or send a letter to Creative Commons, PO Box 1866, Mountain View, CA 94042, USA.
@@ -32,13 +34,13 @@ package nz.co.gregs.dbvolution.exceptions;
  *
  * @author gregorygraham
  */
-public class UnableToRemoveLastDatabaseFromClusterException extends ClusterException {
+class DBException extends Exception{
 
-	private static final long serialVersionUID = 1L;
-	private static final String STATIC_MESSAGE = "Removing the last remaining database from the cluster is not permitted.";
-
-	public UnableToRemoveLastDatabaseFromClusterException() {
-		super(STATIC_MESSAGE);
+	public DBException() {
+		super();
 	}
-	
+
+	public DBException(String message) {
+		super(message);
+	}	
 }

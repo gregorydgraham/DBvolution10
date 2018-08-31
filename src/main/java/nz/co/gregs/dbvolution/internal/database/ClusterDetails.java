@@ -99,7 +99,7 @@ public class ClusterDetails implements Serializable {
 		return DBDatabaseCluster.Status.UNKNOWN;
 	}
 
-	public synchronized boolean quarantineDatabase(DBDatabase database) {
+	public synchronized boolean quarantineDatabase(DBDatabase database) throws UnableToRemoveLastDatabaseFromClusterException {
 		if (readyDatabases.size() < 2 && readyDatabases.contains(database)) {
 			// Unable to quarantine the only remaining database
 			throw new UnableToRemoveLastDatabaseFromClusterException();
@@ -113,10 +113,15 @@ public class ClusterDetails implements Serializable {
 	}
 
 	public synchronized boolean removeDatabase(DBDatabase database) {
-		return queuedActions.remove(database) != null
-				&& allDatabases.remove(database)
-				&& readyDatabases.remove(database)
-				&& quarantinedDatabases.remove(database);
+		if (readyDatabases.size() < 2 && readyDatabases.contains(database)) {
+			// Unable to quarantine the only remaining database
+			throw new UnableToRemoveLastDatabaseFromClusterException();
+		} else {
+			return queuedActions.remove(database) != null
+					&& allDatabases.remove(database)
+					&& readyDatabases.remove(database)
+					&& quarantinedDatabases.remove(database);
+		}
 	}
 
 	public synchronized DBDatabase[] getUnsynchronizedDatabases() {
