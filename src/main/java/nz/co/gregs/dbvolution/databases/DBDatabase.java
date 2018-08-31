@@ -105,7 +105,6 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 //		startAutocloser();
 //		addToDBDatabaseRegister(this);
 //	}
-
 	@Override
 	public String toString() {
 		if (jdbcURL != null && !jdbcURL.isEmpty()) {
@@ -351,18 +350,18 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 //		if (closed) {
 //			throw new DBDatabaseAutoclosedAlready(this);
 //		} else {
-			DBStatement statement;
-			synchronized (getStatementSynchronizeObject) {
-				if (isInATransaction) {
-					statement = this.transactionStatement;
-					if (statement.isClosed()) {
-						this.transactionStatement = new DBTransactionStatement(this, getLowLevelStatement());
-					}
-				} else {
-					statement = getLowLevelStatement();
+		DBStatement statement;
+		synchronized (getStatementSynchronizeObject) {
+			if (isInATransaction) {
+				statement = this.transactionStatement;
+				if (statement.isClosed()) {
+					this.transactionStatement = new DBTransactionStatement(this, getLowLevelStatement());
 				}
+			} else {
+				statement = getLowLevelStatement();
 			}
-			return statement;
+		}
+		return statement;
 //		}
 	}
 
@@ -1664,7 +1663,11 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 		printSQLIfRequested(dropStr);
 		LOG.info(dropStr);
 		if (doIt) {
-			this.doTransaction(new DBRawSQLTransaction(dropStr));
+			try {
+				this.doTransaction(new DBRawSQLTransaction(dropStr));
+			} catch (Exception ex) {
+				throw new UnableToDropDatabaseException(ex);
+			}
 		}
 		preventAccidentalDroppingOfTables = true;
 		preventAccidentalDroppingDatabase = true;
