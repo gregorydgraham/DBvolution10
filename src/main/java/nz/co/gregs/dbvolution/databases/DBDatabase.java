@@ -135,11 +135,12 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 	@Override
 	public synchronized int hashCode() {
 		int hash = 7;
-		hash = 29 * hash + (this.driverName != null ? this.driverName.hashCode() : 0);
-		hash = 29 * hash + (this.jdbcURL != null ? this.jdbcURL.hashCode() : 0);
+		hash = 29 * hash + (this.getDriverName() != null ? this.getDriverName().hashCode() : 0);
+		hash = 29 * hash + (this.getJdbcURL() != null ? this.getJdbcURL().hashCode() : 0);
 		hash = 29 * hash + (this.username != null ? this.username.hashCode() : 0);
 		hash = 29 * hash + (this.password != null ? this.password.hashCode() : 0);
 		hash = 29 * hash + (this.dataSource != null ? this.dataSource.hashCode() : 0);
+		hash = 29 * hash + (this.getSettings() != null ? this.getSettings().hashCode() : 0);
 		return hash;
 	}
 
