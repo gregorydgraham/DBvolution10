@@ -35,6 +35,7 @@ package nz.co.gregs.dbvolution.exceptions;
  * @author gregorygraham
  */
 class DBException extends Exception{
+    static final long serialVersionUID = 1l;
 
 	public DBException() {
 		super();

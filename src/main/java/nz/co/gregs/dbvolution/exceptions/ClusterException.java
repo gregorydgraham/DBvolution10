@@ -35,6 +35,7 @@ package nz.co.gregs.dbvolution.exceptions;
  * @author gregorygraham
  */
 class ClusterException extends DBRuntimeException {
+    static final long serialVersionUID = 1l;
 
 	public ClusterException() {
 		super();
