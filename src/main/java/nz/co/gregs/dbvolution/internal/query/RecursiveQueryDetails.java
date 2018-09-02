@@ -369,7 +369,7 @@ public class RecursiveQueryDetails<T extends DBRow> extends QueryDetails {
 
 		final T returnType = getReturnType(recursiveDetails);
 		List<DBQueryRow> returnList = new ArrayList<>();
-		Integer timeout = recursiveDetails.getTimeoutInMilliseconds();
+		Long timeout = recursiveDetails.getTimeoutInMilliseconds();
 		long start = new java.util.Date().getTime();
 		final DBQuery query = recursiveDetails.getOriginalQuery();
 		query.setTimeoutInMilliseconds(timeout);

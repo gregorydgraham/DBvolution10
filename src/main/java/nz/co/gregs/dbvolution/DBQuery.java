@@ -2216,8 +2216,36 @@ public class DBQuery implements Serializable {
 	 * Changes the default timeout for this query.
 	 *
 	 * <p>
+	 * Use this method to set the exact timeout for the query.</p>
+	 *
+	 * <p>
 	 * DBvolution defaults to a timeout of 10000milliseconds (10 seconds) to avoid
-	 * eternal queries.
+	 * eternal queries. The actual timeout is based on the performance of the
+	 * application server.</p>
+	 *
+	 * <p>
+	 * Use this method If you require a longer running query.
+	 *
+	 * @param milliseconds
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @return this query.
+	 */
+	public synchronized DBQuery setTimeoutInMilliseconds(Long milliseconds) {
+		details.setTimeoutInMilliseconds(milliseconds);
+		return this;
+	}
+
+	/**
+	 * Changes the default timeout for this query.
+	 *
+	 * <p>
+	 * Use this method to set the exact timeout for the query.
+	 *
+	 * <p>
+	 * DBvolution defaults to a timeout of 10000milliseconds (10 seconds) to avoid
+	 * eternal queries. The actual timeout is based on the performance of the
+	 * application server.
 	 *
 	 * <p>
 	 * Use this method If you require a longer running query.
@@ -2229,6 +2257,41 @@ public class DBQuery implements Serializable {
 	 */
 	public synchronized DBQuery setTimeoutInMilliseconds(Integer milliseconds) {
 		details.setTimeoutInMilliseconds(milliseconds);
+		return this;
+	}
+
+	/**
+	 * Returns the query to the default timeout.
+	 *
+	 * <p>
+	 * DBvolution defaults to a timeout of approximately 10000milliseconds (10
+	 * seconds) to avoid eternal queries. The actual timeout is based on the
+	 * performance of the application server.
+	 *
+	 * <p>
+	 * Use this method If you have an ordinary query.
+	 *
+	 * @return this query.
+	 */
+	public synchronized DBQuery setTimeoutToDefault() {
+		details.setTimeoutToDefault();
+		return this;
+	}
+
+	/**
+	 * Changes the default timeout for this query.
+	 *
+	 * <p>
+	 * Remove the automatic query timeout and allow the query to run forever if
+	 * necessary.
+	 *
+	 * <p>
+	 * Use this method If you require a longer running query.
+	 *
+	 * @return this query.
+	 */
+	public synchronized DBQuery setTimeoutToForever() {
+		details.setTimeoutToForever();
 		return this;
 	}
 
@@ -2248,7 +2311,7 @@ public class DBQuery implements Serializable {
 	 * @return this DBQuery object
 	 */
 	public synchronized DBQuery clearTimeout() {
-		details.setTimeoutInMilliseconds(null);
+		details.setTimeoutInMilliseconds((Long) null);
 		return this;
 	}
 
@@ -2279,17 +2342,17 @@ public class DBQuery implements Serializable {
 //				qc.setReturnField(true);
 			} else {
 				final AbstractColumn column = provider.getColumn();
-					DBRow table = column.getInstanceOfRow();
-					final DBRowClass tableClass = new DBRowClass(table);
-					for (DBRow allQueryTable : allQueryTables) {
-						final DBRowClass queryTableClass = new DBRowClass(allQueryTable);
-						if (queryTableClass.equals(tableClass)) {
-							Object appropriateFieldFromRow = column.getAppropriateFieldFromRow(allQueryTable);
-							allQueryTable.addReturnFields(appropriateFieldFromRow);
-						}
+				DBRow table = column.getInstanceOfRow();
+				final DBRowClass tableClass = new DBRowClass(table);
+				for (DBRow allQueryTable : allQueryTables) {
+					final DBRowClass queryTableClass = new DBRowClass(allQueryTable);
+					if (queryTableClass.equals(tableClass)) {
+						Object appropriateFieldFromRow = column.getAppropriateFieldFromRow(allQueryTable);
+						allQueryTable.addReturnFields(appropriateFieldFromRow);
 					}
 				}
 			}
+		}
 		return this;
 	}
 

@@ -93,7 +93,7 @@ public class DBRecursiveQuery<T extends DBRow> {
 	 * @return this query.
 	 */
 	public synchronized DBRecursiveQuery<T> clearTimeout() {
-		this.queryDetails.setTimeoutInMilliseconds(null);
+		this.queryDetails.setTimeoutToDefault();
 		return this;
 	}
 
