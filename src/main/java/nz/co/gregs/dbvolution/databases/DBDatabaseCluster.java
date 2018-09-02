@@ -174,7 +174,7 @@ public class DBDatabaseCluster extends DBDatabase {
 	 *
 	 * @param backupDatabase
 	 * @throws SQLException
-	 * @throws nz.co.gregs.dbvolution.exceptions.UnableToRemoveLastDatabaseFromClusterException
+	 * @throws UnableToRemoveLastDatabaseFromClusterException
 	 */
 	public void backupToDBDatabase(DBDatabase backupDatabase) throws SQLException, UnableToRemoveLastDatabaseFromClusterException {
 		this.addDatabaseAndWait(backupDatabase);
@@ -193,7 +193,7 @@ public class DBDatabaseCluster extends DBDatabase {
 	 *
 	 * @param databases DBDatabases to be removed from this list, if present
 	 * @return <tt>true</tt> if this list contained the specified element
-	 * @throws nz.co.gregs.dbvolution.exceptions.UnableToRemoveLastDatabaseFromClusterException
+	 * @throws UnableToRemoveLastDatabaseFromClusterException
 	 * @throws ClassCastException if the type of the specified element is
 	 * incompatible with this list
 	 * (<a href="Collection.html#optional-restrictions">optional</a>)
@@ -219,7 +219,7 @@ public class DBDatabaseCluster extends DBDatabase {
 	 *
 	 * @param databases DBDatabases to be removed from this list, if present
 	 * @return <tt>true</tt> if this list contained the specified element
-	 * @throws nz.co.gregs.dbvolution.exceptions.UnableToRemoveLastDatabaseFromClusterException
+	 * @throws UnableToRemoveLastDatabaseFromClusterException
 	 * @throws ClassCastException if the type of the specified element is
 	 * incompatible with this list
 	 * (<a href="Collection.html#optional-restrictions">optional</a>)
@@ -248,7 +248,7 @@ public class DBDatabaseCluster extends DBDatabase {
 	 *
 	 * @param database DBDatabase to be removed from this list, if present
 	 * @return <tt>true</tt> if this list contained the specified element
-	 * @throws nz.co.gregs.dbvolution.exceptions.UnableToRemoveLastDatabaseFromClusterException
+	 * @throws UnableToRemoveLastDatabaseFromClusterException
 	 * @throws ClassCastException if the type of the specified element is
 	 * incompatible with this list
 	 * (<a href="Collection.html#optional-restrictions">optional</a>)
@@ -386,7 +386,7 @@ public class DBDatabaseCluster extends DBDatabase {
 	}
 
 	@Override
-	public void dropTable(DBRow tableRow) throws SQLException, AutoCommitActionDuringTransactionException, AccidentalDroppingOfTableException,UnableToRemoveLastDatabaseFromClusterException {
+	public void dropTable(DBRow tableRow) throws SQLException, AutoCommitActionDuringTransactionException, AccidentalDroppingOfTableException, UnableToRemoveLastDatabaseFromClusterException {
 		boolean finished = false;
 		do {
 			DBDatabase[] dbs = details.getReadyDatabases();
@@ -930,7 +930,7 @@ public class DBDatabaseCluster extends DBDatabase {
 		}
 	};
 
-	private void handleExceptionDuringQuery(Exception e, final DBDatabase readyDatabase) throws SQLException,UnableToRemoveLastDatabaseFromClusterException {
+	private void handleExceptionDuringQuery(Exception e, final DBDatabase readyDatabase) throws SQLException, UnableToRemoveLastDatabaseFromClusterException {
 		if (!okExceptions.contains(e.getClass())) {
 			if (size() == 1) {
 				if (e instanceof SQLException) {
@@ -944,7 +944,7 @@ public class DBDatabaseCluster extends DBDatabase {
 		}
 	}
 
-	private void handleExceptionDuringAction(Exception e, final DBDatabase readyDatabase) throws SQLException,UnableToRemoveLastDatabaseFromClusterException {
+	private void handleExceptionDuringAction(Exception e, final DBDatabase readyDatabase) throws SQLException, UnableToRemoveLastDatabaseFromClusterException {
 		if (size() == 1) {
 			if (e instanceof SQLException) {
 				throw (SQLException) e;
