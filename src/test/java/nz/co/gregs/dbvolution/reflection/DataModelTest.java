@@ -78,7 +78,7 @@ public class DataModelTest extends AbstractTest {
 		for (Class<? extends DBDatabase> val : conMap.values()) {
 			System.out.println(val);
 		}
-		Assert.assertThat(result.size(), is(9));
+		Assert.assertThat(result.size(), is(10));
 	}
 
 	@Test
