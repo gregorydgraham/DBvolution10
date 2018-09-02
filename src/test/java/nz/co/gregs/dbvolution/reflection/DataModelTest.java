@@ -20,8 +20,11 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -56,13 +59,58 @@ public class DataModelTest extends AbstractTest {
 	@Test
 	public void testGetDatabases() {
 		Set<Class<? extends DBDatabase>> result = DataModel.getUseableDBDatabaseClasses();
+		Map<String, Class<? extends DBDatabase>> conMap = new HashMap<>();
+		for (Class<? extends DBDatabase> val : result) {
+			conMap.put(val.toString(),val);
+		}
+		Set<String> constr = conMap.keySet();
+		List<String> knownStrings = new ArrayList<>();
+		knownStrings.add("class nz.co.gregs.dbvolution.generic.AbstractTest$H2MemoryTestDB");
+		knownStrings.add("class nz.co.gregs.dbvolution.generic.AbstractTest$SQLiteTestDB");
+		knownStrings.add("class nz.co.gregs.dbvolution.generic.AbstractTest$MySQL56TestDatabase");
+		knownStrings.add("class nz.co.gregs.dbvolution.generic.AbstractTest$MSSQLServerTestDB");
+		knownStrings.add("class nz.co.gregs.dbvolution.generic.AbstractTest$Oracle11XETestDB");
+		knownStrings.add("class nz.co.gregs.dbvolution.generic.AbstractTest$MySQLTestDatabase");
+		knownStrings.add("class nz.co.gregs.dbvolution.generic.AbstractTest$PostgreSQLTestDatabase");
+		knownStrings.add("class nz.co.gregs.dbvolution.generic.AbstractTest$H2TestDatabase");
+		knownStrings.add("class nz.co.gregs.dbvolution.DBDatabaseClusterTest$1");
+		knownStrings.add("class nz.co.gregs.dbvolution.DBDatabaseTest$1");
+		for (Class<? extends DBDatabase> val : conMap.values()) {
+			System.out.println(val);
+		}
 		Assert.assertThat(result.size(), is(9));
 	}
 
 	@Test
 	public void testGetDBDatabaseConstructors() {
 		Set<Constructor<DBDatabase>> result = DataModel.getDBDatabaseConstructors();
-		Assert.assertThat(result.size(), is(12));
+		Map<String, Constructor<DBDatabase>> conMap = new HashMap<String,Constructor<DBDatabase>>();
+		for (Constructor<DBDatabase> constructor : result) {
+			conMap.put(constructor.toString(),constructor);
+		}
+		Set<String> constr = conMap.keySet();
+		List<String> knownStrings = new ArrayList<>();
+		knownStrings.add("public nz.co.gregs.dbvolution.generic.AbstractTest$MySQLTestDatabase(java.lang.String,java.lang.String,java.lang.String) throws java.sql.SQLException");
+		knownStrings.add("public nz.co.gregs.dbvolution.generic.AbstractTest$MySQLTestDatabase(java.lang.String,java.lang.String,java.lang.String,java.lang.String,java.lang.String,java.lang.String) throws java.sql.SQLException");
+		knownStrings.add("private nz.co.gregs.dbvolution.generic.AbstractTest$PostgreSQLTestDatabase()");
+		knownStrings.add("public nz.co.gregs.dbvolution.generic.AbstractTest$H2TestDatabase(java.lang.String,java.lang.String,java.lang.String) throws java.sql.SQLException");
+		knownStrings.add("public nz.co.gregs.dbvolution.generic.AbstractTest$Oracle11XETestDB(java.lang.String,java.lang.String,java.lang.String,java.lang.String,java.lang.String) throws java.sql.SQLException");
+		knownStrings.add("public nz.co.gregs.dbvolution.generic.AbstractTest$MySQL56TestDatabase(java.lang.String,java.lang.String,java.lang.String) throws java.sql.SQLException");
+		knownStrings.add("public nz.co.gregs.dbvolution.generic.AbstractTest$H2MemoryTestDB(java.lang.String,java.lang.String,java.lang.String) throws java.sql.SQLException");
+		knownStrings.add("public nz.co.gregs.dbvolution.generic.AbstractTest$H2MemoryTestDB() throws java.sql.SQLException");
+		knownStrings.add("public nz.co.gregs.dbvolution.generic.AbstractTest$MSSQLServerTestDB(java.lang.String,java.lang.String,java.lang.String,java.lang.String,java.lang.String,java.lang.String) throws java.sql.SQLException");
+		knownStrings.add("private nz.co.gregs.dbvolution.generic.AbstractTest$SQLiteTestDB(java.io.File,java.lang.String,java.lang.String) throws java.io.IOException,java.sql.SQLException");
+		knownStrings.add("public nz.co.gregs.dbvolution.generic.AbstractTest$SQLiteTestDB(java.lang.String,java.lang.String,java.lang.String) throws java.io.IOException,java.sql.SQLException");
+		knownStrings.add("nz.co.gregs.dbvolution.DBDatabaseClusterTest$1(nz.co.gregs.dbvolution.DBDatabaseClusterTest,java.lang.String,java.lang.String,java.lang.String,boolean)");
+		knownStrings.add("nz.co.gregs.dbvolution.DBDatabaseTest$1(nz.co.gregs.dbvolution.DBDatabaseTest,java.lang.String,java.lang.String,java.lang.String,boolean)");
+		for (String knownString : knownStrings) {
+			Assert.assertTrue(constr.contains(knownString));
+			conMap.remove(knownString);
+		}
+		for (Constructor<DBDatabase> constructor : conMap.values()) {
+			System.out.println(constructor);
+		}
+		Assert.assertThat(result.size(), is(13));
 	}
 
 	@Test
