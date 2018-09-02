@@ -74,11 +74,17 @@ public class DataModelTest extends AbstractTest {
 		knownStrings.add("class nz.co.gregs.dbvolution.generic.AbstractTest$PostgreSQLTestDatabase");
 		knownStrings.add("class nz.co.gregs.dbvolution.generic.AbstractTest$H2TestDatabase");
 		knownStrings.add("class nz.co.gregs.dbvolution.DBDatabaseClusterTest$1");
-		knownStrings.add("class nz.co.gregs.dbvolution.DBDatabaseTest$1");
+		for (String knownString : knownStrings) {
+			if(!constr.contains(knownString)){
+				System.out.println(""+knownString);
+			}
+			Assert.assertTrue(constr.contains(knownString));
+			conMap.remove(knownString);
+		}
 		for (Class<? extends DBDatabase> val : conMap.values()) {
 			System.out.println(val);
 		}
-		Assert.assertThat(result.size(), is(10));
+		Assert.assertThat(result.size(), is(9));
 	}
 
 	@Test
@@ -102,15 +108,17 @@ public class DataModelTest extends AbstractTest {
 		knownStrings.add("private nz.co.gregs.dbvolution.generic.AbstractTest$SQLiteTestDB(java.io.File,java.lang.String,java.lang.String) throws java.io.IOException,java.sql.SQLException");
 		knownStrings.add("public nz.co.gregs.dbvolution.generic.AbstractTest$SQLiteTestDB(java.lang.String,java.lang.String,java.lang.String) throws java.io.IOException,java.sql.SQLException");
 		knownStrings.add("nz.co.gregs.dbvolution.DBDatabaseClusterTest$1(nz.co.gregs.dbvolution.DBDatabaseClusterTest,java.lang.String,java.lang.String,java.lang.String,boolean)");
-		knownStrings.add("nz.co.gregs.dbvolution.DBDatabaseTest$1(nz.co.gregs.dbvolution.DBDatabaseTest,java.lang.String,java.lang.String,java.lang.String,boolean)");
 		for (String knownString : knownStrings) {
+			if(!constr.contains(knownString)){
+				System.out.println(""+knownString);
+			}
 			Assert.assertTrue(constr.contains(knownString));
 			conMap.remove(knownString);
 		}
 		for (Constructor<DBDatabase> constructor : conMap.values()) {
 			System.out.println(constructor);
 		}
-		Assert.assertThat(result.size(), is(13));
+		Assert.assertThat(result.size(), is(12));
 	}
 
 	@Test
