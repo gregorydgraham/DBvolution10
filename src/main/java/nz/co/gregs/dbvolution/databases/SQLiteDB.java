@@ -78,6 +78,17 @@ public class SQLiteDB extends DBDatabase {
 	}
 
 	/**
+	 * Creates a DBDatabase tweaked for a SQLite database on the DataSource
+	 * provided.
+	 *
+	 * @param ds	ds
+	 * @throws java.sql.SQLException
+	 */
+	public SQLiteDB(DatabaseConnectionSettings ds) throws SQLException {
+		super(new SQLiteDefinition(), SQLITE_DRIVER_NAME, ds);
+	}
+
+	/**
 	 * Creates a DBDatabase tweaked for a SQLite database using the parameters
 	 * provided.
 	 *
