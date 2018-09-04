@@ -155,6 +155,33 @@ public class DBNumber extends QueryableDatatype<Number> implements NumberResult 
 	}
 
 	/**
+	 * Set the value of this DBNumber to the Double, Long, Integer, or other
+	 * number provided.
+	 * 
+	 * <p>A convenience method the uses Double.parseDouble(String) to create a number from the string.
+	 *
+	 * <p>
+	 * This is probably the method you want to use to set or change the value of
+	 * this DBNumber. When creating a new row or updating an existing row use this
+	 * method or {@link #setValue(nz.co.gregs.dbvolution.datatypes.DBNumber)} to
+	 * correctly set the value.
+	 *
+	 * <p>
+	 * Remember:</p>
+	 *
+	 * <ul>
+	 * <li>Set the column to NULL using setValue((Number)null)</li>
+	 * <li>Use {@link DBDatabase#insert(nz.co.gregs.dbvolution.DBRow...) } or {@link DBDatabase#update(nz.co.gregs.dbvolution.DBRow...)
+	 * } to make the changes permanent.</li>
+	 * </ul>
+	 *
+	 * @param newLiteralValue	newLiteralValue
+	 */
+	public void setValue(String newLiteralValue) {
+		setValue(Double.parseDouble(newLiteralValue));
+	}
+
+	/**
 	 *
 	 * <p style="color: #F90;">Support DBvolution at
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
