@@ -3,6 +3,7 @@ package nz.co.gregs.dbvolution;
 import nz.co.gregs.dbvolution.databases.DBDatabase;
 import java.io.Serializable;
 import java.lang.reflect.Array;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
@@ -142,7 +143,9 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 	 */
 	public static <T extends DBRow> T getDBRow(Class<T> requiredDBRowClass) throws UnableToInstantiateDBRowSubclassException {
 		try {
-			return requiredDBRowClass.getConstructor().newInstance();
+			Constructor<T> constructor = requiredDBRowClass.getConstructor();
+			constructor.setAccessible(true);
+			return constructor.newInstance();
 		} catch (NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
 			throw new UnableToInstantiateDBRowSubclassException(requiredDBRowClass, ex);
 		}
