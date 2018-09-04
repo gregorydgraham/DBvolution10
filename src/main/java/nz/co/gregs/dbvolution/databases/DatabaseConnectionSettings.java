@@ -30,6 +30,8 @@
  */
 package nz.co.gregs.dbvolution.databases;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -112,8 +114,10 @@ public class DatabaseConnectionSettings {
 	private String password = "";
 	private String schema = "";
 	private final Map<String, String> extras = new HashMap<>();
+	private String dbdatabase = "";
 
-	private DatabaseConnectionSettings() {
+	public DatabaseConnectionSettings() {
+		super();
 	}
 
 	public DatabaseConnectionSettings(String url, String username, String password) {
@@ -137,15 +141,35 @@ public class DatabaseConnectionSettings {
 
 	public static DatabaseConnectionSettings getSettingsfromSystemUsingPrefix(String prefix) {
 		DatabaseConnectionSettings settings = new DatabaseConnectionSettings();
+		settings.setDBDatabase(System.getProperty(prefix + "dbdatabase"));
 		settings.setUsername(System.getProperty(prefix + "username"));
 		settings.setPassword(System.getProperty(prefix + "password"));
 		settings.setUrl(System.getProperty(prefix + "url"));
 		settings.setHost(System.getProperty(prefix + "host"));
 		settings.setPort(System.getProperty(prefix + "port"));
 		settings.setInstance(System.getProperty(prefix + "instance"));
-		settings.setDatabase(System.getProperty(prefix + "database"));
+		settings.setDatabaseName(System.getProperty(prefix + "database"));
 		settings.setSchema(System.getProperty(prefix + "schema"));
 		return settings;
+	}
+
+	public DBDatabase createDBDatabase() throws ClassNotFoundException, NoSuchMethodException, SecurityException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+		Class<?> dbDatabaseClass = Class.forName(this.getDBDatabase());
+//		String jdbcUrl = this.getUrl();
+//		String user = this.getUsername();
+//		String pass = this.getPassword();
+		Constructor<?> constructor = dbDatabaseClass.getConstructor(DatabaseConnectionSettings.class);
+		if (constructor == null) {
+			return null;
+		} else {
+			constructor.setAccessible(true);
+			Object newInstance = constructor.newInstance(this);
+			if (newInstance != null && DBDatabase.class.isInstance(newInstance)) {
+				return (DBDatabase) newInstance;
+			} else {
+				return null;
+			}
+		}
 	}
 
 	/**
@@ -242,7 +266,7 @@ public class DatabaseConnectionSettings {
 	 * @param database the database to set
 	 * @return
 	 */
-	public DatabaseConnectionSettings setDatabase(String database) {
+	public DatabaseConnectionSettings setDatabaseName(String database) {
 		this.database = database;
 		return this;
 	}
@@ -304,5 +328,13 @@ public class DatabaseConnectionSettings {
 		} else {
 			return "";
 		}
+	}
+
+	public void setDBDatabase(String canonicalNameOfADBDatabaseSubclass) {
+		this.dbdatabase = canonicalNameOfADBDatabaseSubclass;
+	}
+
+	public String getDBDatabase() {
+		return this.dbdatabase;
 	}
 }

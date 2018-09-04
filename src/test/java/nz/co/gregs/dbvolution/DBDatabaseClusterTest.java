@@ -48,6 +48,7 @@ import nz.co.gregs.dbvolution.annotations.DBPrimaryKey;
 import nz.co.gregs.dbvolution.annotations.DBRequiredTable;
 import nz.co.gregs.dbvolution.databases.DBDatabaseCluster;
 import nz.co.gregs.dbvolution.databases.DBDatabaseClusterWithConfigFile;
+import nz.co.gregs.dbvolution.databases.DatabaseConnectionSettings;
 import nz.co.gregs.dbvolution.databases.H2MemoryDB;
 import nz.co.gregs.dbvolution.databases.SQLiteDB;
 import nz.co.gregs.dbvolution.datatypes.DBBoolean;
@@ -297,15 +298,19 @@ public class DBDatabaseClusterTest extends AbstractTest {
 		}
 		Assert.assertThat(db.getClusterStatus(), is("Active Databases: 0 of 0"));
 
-		DBDatabaseClusterWithConfigFile.DBDataSource source = new DBDatabaseClusterWithConfigFile.DBDataSource();
-		source.setDbDatabase(H2MemoryDB.class.getCanonicalName());
-		source.setUrl("jdbc:h2:mem:DBDatabaseClusterWithConfigFile.h2");
+		DatabaseConnectionSettings source = new DatabaseConnectionSettings();
+//		DBDatabaseClusterWithConfigFile.DBDataSource source = new DBDatabaseClusterWithConfigFile.DBDataSource();
+		source.setDBDatabase(H2MemoryDB.class.getCanonicalName());
+//		source.setUrl("jdbc:h2:mem:DBDatabaseClusterWithConfigFile.h2");
+		source.setDatabaseName("DBDatabaseClusterWithConfigFile.h2");
 		source.setUsername("admin");
 		source.setPassword("admin");
 
-		DBDatabaseClusterWithConfigFile.DBDataSource source2 = new DBDatabaseClusterWithConfigFile.DBDataSource();
-		source2.setDbDatabase(SQLiteDB.class.getCanonicalName());
-		source2.setUrl("jdbc:sqlite:DBDatabaseClusterWithConfigFile.sqlite");
+		DatabaseConnectionSettings source2 = new DatabaseConnectionSettings();
+//		DBDatabaseClusterWithConfigFile.DBDataSource source2 = new DBDatabaseClusterWithConfigFile.DBDataSource();
+		source2.setDBDatabase(SQLiteDB.class.getCanonicalName());
+//		source2.setUrl("jdbc:sqlite:DBDatabaseClusterWithConfigFile.sqlite");
+		source2.setDatabaseName("DBDatabaseClusterWithConfigFile.sqlite");
 		source2.setUsername("admin");
 		source2.setPassword("admin");
 
@@ -318,7 +323,7 @@ public class DBDatabaseClusterTest extends AbstractTest {
 			Logger.getLogger(DBDatabaseClusterTest.class.getName()).log(Level.SEVERE, null, ex);
 		}
 		ObjectMapper mapper = new ObjectMapper(yamlFactory);
-		ObjectWriter writerFor = mapper.writerFor(DBDatabaseClusterWithConfigFile.DBDataSource.class);
+		ObjectWriter writerFor = mapper.writerFor(DatabaseConnectionSettings.class);
 		SequenceWriter writeValuesAsArray = null;
 		try {
 			writeValuesAsArray = writerFor.writeValuesAsArray(generator);
@@ -327,7 +332,7 @@ public class DBDatabaseClusterTest extends AbstractTest {
 		}
 		try {
 			if (writeValuesAsArray != null) {
-				writeValuesAsArray.writeAll(new DBDatabaseClusterWithConfigFile.DBDataSource[]{source, source2});
+				writeValuesAsArray.writeAll(new DatabaseConnectionSettings[]{source, source2});
 			}
 		} catch (IOException ex) {
 			Logger.getLogger(DBDatabaseClusterTest.class.getName()).log(Level.SEVERE, null, ex);

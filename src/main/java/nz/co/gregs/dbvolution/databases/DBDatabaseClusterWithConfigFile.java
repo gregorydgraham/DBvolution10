@@ -116,17 +116,17 @@ public class DBDatabaseClusterWithConfigFile extends DBDatabaseCluster {
 				final YAMLFactory yamlFactory = new YAMLFactory();
 				YAMLParser parser = yamlFactory.createParser(file);
 				ObjectMapper mapper = new ObjectMapper(yamlFactory);
-				DBDataSource[] dbs = mapper.readValue(parser, DBDataSource[].class);
+				DatabaseConnectionSettings[] dbs = mapper.readValue(parser, DatabaseConnectionSettings[].class);
 
 				if (dbs.length == 0) {
 					throw new NoDatabaseConfigurationFound(yamlConfigFilename);
 				} else {
-					for (DBDataSource db : dbs) {
+					for (DatabaseConnectionSettings db : dbs) {
 
 						DBDatabase database = db.createDBDatabase();
 
 						if (database != null) {
-							LOG.info("Adding Database: " + db.dbDatabase + ":" + db.url + ":" + db.username);
+							LOG.info("Adding Database: " + db.getDBDatabase() + ":" + database.getUrlFromSettings(db) + ":" + db.getUsername());
 							this.addDatabaseAndWait(database);
 						}
 					}
@@ -205,84 +205,6 @@ public class DBDatabaseClusterWithConfigFile extends DBDatabaseCluster {
 				visitedFiles.add(key);
 			}
 			return false;
-		}
-	}
-
-	public static class DBDataSource {
-
-		private String dbDatabase;
-		private String url;
-		private String username;
-		private String password;
-
-		private DBDatabase createDBDatabase() throws ClassNotFoundException, NoSuchMethodException, SecurityException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
-			Class<?> dbDatabaseClass = Class.forName(this.getDbDatabase());
-			String jdbcUrl = this.getUrl();
-			String user = this.getUsername();
-			String pass = this.getPassword();
-			Constructor<?> constructor = dbDatabaseClass.getConstructor(String.class, String.class, String.class);
-			Object newInstance = constructor.newInstance(jdbcUrl, user, pass);
-			if (DBDatabase.class.isInstance(newInstance)) {
-				return (DBDatabase) newInstance;
-			} else {
-				return null;
-			}
-		}
-
-		/**
-		 * @return the dbDatabase
-		 */
-		public String getDbDatabase() {
-			return dbDatabase;
-		}
-
-		/**
-		 * @return the url
-		 */
-		public String getUrl() {
-			return url;
-		}
-
-		/**
-		 * @return the username
-		 */
-		public String getUsername() {
-			return username;
-		}
-
-		/**
-		 * @return the password
-		 */
-		public String getPassword() {
-			return password;
-		}
-
-		/**
-		 * @param dbDatabase the dbDatabase to set
-		 */
-		public void setDbDatabase(String dbDatabase) {
-			this.dbDatabase = dbDatabase;
-		}
-
-		/**
-		 * @param url the url to set
-		 */
-		public void setUrl(String url) {
-			this.url = url;
-		}
-
-		/**
-		 * @param username the username to set
-		 */
-		public void setUsername(String username) {
-			this.username = username;
-		}
-
-		/**
-		 * @param password the password to set
-		 */
-		public void setPassword(String password) {
-			this.password = password;
 		}
 	}
 
