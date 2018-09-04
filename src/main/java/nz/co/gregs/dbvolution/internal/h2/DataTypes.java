@@ -30,6 +30,10 @@ public enum DataTypes implements DBVFeature {
 	/**
 	 *
 	 */
+	INTEGER("INTEGER", "BIGINT", new DBVFeature[]{}),
+	/**
+	 *
+	 */
 	DATEREPEAT("DBV_DATEREPEAT", "VARCHAR(100)", DateRepeatFunctions.values()),
 	/**
 	 *
