@@ -643,6 +643,17 @@ public class DBInteger extends QueryableDatatype<Long> implements IntegerResult 
 
 	/**
 	 * Sets the value of this DBInteger to the value provided.
+	 * 
+	 * <p>Convenience method that uses {@link  Long#Long(java.lang.String)} to set the value
+	 *
+	 * @param newLiteralValue	newLiteralValue
+	 */
+	public void setValue(String newLiteralValue) {
+		setValue(Long.parseLong(newLiteralValue));
+	}
+
+	/**
+	 * Sets the value of this DBInteger to the value provided.
 	 *
 	 * @param newLiteralValue	newLiteralValue
 	 */
