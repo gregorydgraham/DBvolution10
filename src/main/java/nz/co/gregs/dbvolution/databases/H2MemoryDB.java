@@ -106,6 +106,19 @@ public class H2MemoryDB extends H2DB {
 		jamDatabaseConnectionOpen();
 	}
 
+	/**
+	 * Creates a DBDatabase for a H2 database.
+	 *
+	 * <p>
+	 * Database exceptions may be thrown
+	 *
+	 * @param dataSource dataSource
+	 * @throws java.sql.SQLException
+	 */
+	public H2MemoryDB(DatabaseConnectionSettings dataSource) throws SQLException {
+		super(dataSource);
+	}
+
 	@Override
 	protected String getUrlFromSettings(DatabaseConnectionSettings settings) {
 		return "jdbc:h2:mem:"+settings.getDatabaseName();
