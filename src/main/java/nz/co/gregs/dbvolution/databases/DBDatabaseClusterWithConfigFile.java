@@ -32,7 +32,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.*;
 import java.io.File;
 import java.io.IOException;
-import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
@@ -56,30 +55,34 @@ import java.util.logging.Logger;
  *
  * <p>
  * the file can be placed anywhere in the file system below "." but must be
- * named exactly yamlConfigFilename. Only the first such file found will be used
- * and the search order is not defined so avoid creating multiple versions of
- * yamlConfigFilename.</p>
+ * named exactly at specified in the constructor. Only the first such file found
+ * will be used and the search order is not defined so avoid creating multiple
+ * versions of yamlConfigFilename.</p>
  *
  * <p>
  * The file's contents must be YAML for an array of
- * DBDatabaseClusterWithConfigFile.DBDataSource objects. Each DBDataSource
- * object has a DBDatabase's canonical class name and a string for url,
- * username, and password specifying the configuration of that DBDatabase. The
- * constructor of the DBDatabase class that takes 3 strings (and only that) will
- * be called and the resulting DBDatabase instance will be added to the
+ * {@link DatabaseConnectionSettings} objects. Each DatabaseConnectionSettings
+ * object has a DBDatabase's canonical class name, username and password, and
+ * either a JDBC URL or a combination of host, port, instance, database, schema,
+ * and extras specifying the configuration of the DBDatabase. The DBDatabase
+ * constructor that takes a DatabaseConnectionSettings (and only that) will be
+ * called and the resulting DBDatabase instance will be added to the
  * cluster.</p>
  * <p>
  * Example yamlConfigFilename contents:</p>
  * <pre>
  * ---
- * - dbDatabase: "nz.co.gregs.dbvolution.databases.H2MemoryDB"
+ * - dbdatabase: "nz.co.gregs.dbvolution.databases.H2MemoryDB"
  *   url: "jdbc:h2:mem:TestDatabase.h2"
  *   username: "admin"
  *   password: "admin"
- * - dbDatabase: "nz.co.gregs.dbvolution.databases.SQLiteDB"
- *   url: "jdbc:sqlite:TestDatabase.sqlite"
+ * - dbdatabase: "nz.co.gregs.dbvolution.databases.MySQLDB"
  *   username: "admin"
- *   password: "admin"</pre>
+ *   host: "myserver.com"
+ *   port: "40006"
+ *   instance: "myinstance"
+ *   database: "appdatabase"
+ *   schema: "default"</pre>
  *
  * <p>
  * DBDatabase classes without a url/username/password based constructor cannot
@@ -94,10 +97,107 @@ public class DBDatabaseClusterWithConfigFile extends DBDatabaseCluster {
 
 	private final String yamlConfigFilename;
 
+	/**
+	 * Creates a DBDatabaseCluster based on the information in yamlConfigFilename.
+	 *
+	 * <p>
+	 * Searches the application's file system from "." looking for a file named
+	 * yamlConfigFilename and uses the details within to create a
+	 * DBDatabaseCluster.</p>
+	 *
+	 * <p>
+	 * the file can be placed anywhere in the file system below "." but must be
+	 * named exactly at specified in the constructor. Only the first such file
+	 * found will be used and the search order is not defined so avoid creating
+	 * multiple versions of yamlConfigFilename.</p>
+	 *
+	 * <<p>
+	 * The file's contents must be YAML for an array of
+	 * {@link DatabaseConnectionSettings} objects. Each DatabaseConnectionSettings
+	 * object has a DBDatabase's canonical class name, username and password, and
+	 * either a JDBC URL or a combination of host, port, instance, database,
+	 * schema, and extras specifying the configuration of the DBDatabase. The
+	 * DBDatabase constructor that takes a DatabaseConnectionSettings (and only
+	 * that) will be called and the resulting DBDatabase instance will be added to
+	 * the cluster.</p>
+	 * <p>
+	 * Example yamlConfigFilename contents:</p>
+	 * <pre>
+	 * ---
+	 * - dbdatabase: "nz.co.gregs.dbvolution.databases.H2MemoryDB"
+	 *   url: "jdbc:h2:mem:TestDatabase.h2"
+	 *   username: "admin"
+	 *   password: "admin"
+	 * - dbdatabase: "nz.co.gregs.dbvolution.databases.MySQLDB"
+	 *   username: "admin"
+	 *   host: "myserver.com"
+	 *   port: "40006"
+	 *   instance: "myinstance"
+	 *   database: "appdatabase"
+	 *   schema: "default"</pre>
+	 *
+	 * <p>
+	 * DBDatabase classes without a url/username/password based constructor cannot
+	 * be created. Note that this means you cannot add a DBDatabaseCluster to this
+	 * cluster via this method.</p>
+	 *
+	 * @author gregorygraham
+	 * @param yamlConfigFilename
+	 * @throws DBDatabaseClusterWithConfigFile.NoDatabaseConfigurationFound
+	 * @throws DBDatabaseClusterWithConfigFile.UnableToCreateDatabaseCluster
+	 */
 	public DBDatabaseClusterWithConfigFile(String yamlConfigFilename) throws NoDatabaseConfigurationFound, UnableToCreateDatabaseCluster {
 		super();
 		this.yamlConfigFilename = yamlConfigFilename;
 		findDatabaseConfigurationAndApply(yamlConfigFilename);
+	}
+
+	/**
+	 * Creates a DBDatabaseCluster based on the information in yamlConfigFile.
+	 *
+	 * <p>
+	 * Uses the details within the file specified to create a
+	 * DBDatabaseCluster.</p>
+	 *
+	 * <p>
+	 * The file's contents must be YAML for an array of
+	 * {@link DatabaseConnectionSettings} objects. Each DatabaseConnectionSettings
+	 * object has a DBDatabase's canonical class name, username and password, and
+	 * either a JDBC URL or a combination of host, port, instance, database,
+	 * schema, and extras specifying the configuration of the DBDatabase. The
+	 * DBDatabase constructor that takes a DatabaseConnectionSettings (and only
+	 * that) will be called and the resulting DBDatabase instance will be added to
+	 * the cluster.</p>
+	 * <p>
+	 * Example yamlConfigFile contents:</p>
+	 * <pre>
+	 * ---
+	 * - dbdatabase: "nz.co.gregs.dbvolution.databases.H2MemoryDB"
+	 *   url: "jdbc:h2:mem:TestDatabase.h2"
+	 *   username: "admin"
+	 *   password: "admin"
+	 * - dbdatabase: "nz.co.gregs.dbvolution.databases.MySQLDB"
+	 *   username: "admin"
+	 *   host: "myserver.com"
+	 *   port: "40006"
+	 *   instance: "myinstance"
+	 *   database: "appdatabase"
+	 *   schema: "default"</pre>
+	 *
+	 * <p>
+	 * DBDatabase classes without a url/username/password based constructor cannot
+	 * be created. Note that this means you cannot add a DBDatabaseCluster to this
+	 * cluster via this method.</p>
+	 *
+	 * @author gregorygraham
+	 * @param yamlConfigFile
+	 * @throws DBDatabaseClusterWithConfigFile.NoDatabaseConfigurationFound
+	 * @throws DBDatabaseClusterWithConfigFile.UnableToCreateDatabaseCluster
+	 */
+	public DBDatabaseClusterWithConfigFile(File yamlConfigFile) throws NoDatabaseConfigurationFound, UnableToCreateDatabaseCluster {
+		super();
+		this.yamlConfigFilename = yamlConfigFile.getName();
+		parseYAMLAndAddDatabases(yamlConfigFile, yamlConfigFilename);
 	}
 
 	public void reloadConfiguration() throws NoDatabaseConfigurationFound, UnableToCreateDatabaseCluster {
@@ -113,27 +213,37 @@ public class DBDatabaseClusterWithConfigFile extends DBDatabaseCluster {
 				Path filePath = finder.configPath;
 				File file = filePath.toFile();
 
-				final YAMLFactory yamlFactory = new YAMLFactory();
-				YAMLParser parser = yamlFactory.createParser(file);
-				ObjectMapper mapper = new ObjectMapper(yamlFactory);
-				DatabaseConnectionSettings[] dbs = mapper.readValue(parser, DatabaseConnectionSettings[].class);
+				parseYAMLAndAddDatabases(file, yamlConfigFilename);
+				LOG.info("Completed Database");
+			} else {
+				throw new NoDatabaseConfigurationFound(yamlConfigFilename);
+			}
+		} catch (IOException | SecurityException | IllegalArgumentException ex) {
+			Logger.getLogger(DBDatabaseClusterWithConfigFile.class.getName()).log(Level.SEVERE, null, ex);
+			throw new UnableToCreateDatabaseCluster(ex);
+		}
+	}
 
-				if (dbs.length == 0) {
-					throw new NoDatabaseConfigurationFound(yamlConfigFilename);
-				} else {
-					for (DatabaseConnectionSettings db : dbs) {
+	private void parseYAMLAndAddDatabases(File file, String yamlConfigFilename) throws UnableToCreateDatabaseCluster {
+		try {
+			final YAMLFactory yamlFactory = new YAMLFactory();
+			YAMLParser parser = yamlFactory.createParser(file);
+			ObjectMapper mapper = new ObjectMapper(yamlFactory);
+			DatabaseConnectionSettings[] dbs = mapper.readValue(parser, DatabaseConnectionSettings[].class);
+			if (dbs.length == 0) {
+				throw new NoDatabaseConfigurationFound(yamlConfigFilename);
+			} else {
+				for (DatabaseConnectionSettings db : dbs) {
 
-						DBDatabase database = db.createDBDatabase();
+					DBDatabase database = db.createDBDatabase();
 
-						if (database != null) {
-							LOG.info("Adding Database: " + db.getDBDatabase() + ":" + database.getUrlFromSettings(db) + ":" + db.getUsername());
-							this.addDatabaseAndWait(database);
-						}
+					if (database != null) {
+						LOG.info("Adding Database: " + db.getDBDatabase() + ":" + database.getUrlFromSettings(db) + ":" + db.getUsername());
+						this.addDatabaseAndWait(database);
 					}
 				}
-				LOG.info("Completed Database");
 			}
-		} catch (IOException | ClassNotFoundException | NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException | SQLException ex) {
+		} catch (IOException | NoDatabaseConfigurationFound | ClassNotFoundException | NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException | SQLException ex) {
 			Logger.getLogger(DBDatabaseClusterWithConfigFile.class.getName()).log(Level.SEVERE, null, ex);
 			throw new UnableToCreateDatabaseCluster(ex);
 		}
@@ -213,7 +323,16 @@ public class DBDatabaseClusterWithConfigFile extends DBDatabaseCluster {
 		static final long serialVersionUID = 1L;
 
 		private NoDatabaseConfigurationFound(String yamlConfigFilename) {
-			super("No DBDatabase Configuration File named \"" + yamlConfigFilename + "\" was found in the filesystem: check the filname and ensure that the location is accessible from \".\"" + (Paths.get(".").toAbsolutePath()));
+			super("No DBDatabase Configuration File named \"" + yamlConfigFilename + "\" was found in the filesystem: check the filename and ensure that the location is accessible from \".\"" + (Paths.get(".").toAbsolutePath()));
+		}
+	}
+
+	public static class NoDatabasesSpecifiedWithinConfiguration extends Exception {
+
+		static final long serialVersionUID = 1L;
+
+		private NoDatabasesSpecifiedWithinConfiguration(String yamlConfigFilename) {
+			super("The Configuration File named \"" + yamlConfigFilename + "\" was found but no databases were specified within: check the filename, location, and syntax of databases within .");
 		}
 	}
 
