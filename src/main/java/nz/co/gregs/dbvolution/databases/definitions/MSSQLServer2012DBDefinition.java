@@ -72,6 +72,7 @@ public class MSSQLServer2012DBDefinition extends MSSQLServerDBDefinition {
 		return 38;
 	}
 
+	@Override
 	public boolean requiresOnClauseForAllJoins() {
 		return true;
 	}
