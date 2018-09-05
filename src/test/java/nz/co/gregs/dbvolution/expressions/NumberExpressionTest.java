@@ -122,6 +122,21 @@ public class NumberExpressionTest extends AbstractTest {
 	}
 
 	@Test
+	public void testBooleanConvertToNumber() throws SQLException {
+
+		Marque marq = new Marque();
+		DBQuery dbQuery = database.getDBQuery(marq);
+		dbQuery.addCondition(marq.column(marq.uidMarque).numberResult().mod(2).is(0).numberValue().is(1));
+		List<DBQueryRow> allRows = dbQuery.getAllRows();
+
+		Assert.assertThat(allRows.size(), is(11));
+		for (Marque marque : dbQuery.getAllInstancesOf(marq)) {
+			Assert.assertThat(marque.uidMarque.getValue().intValue() % 2, is(0));
+		}
+
+	}
+
+	@Test
 	public void testAllArithmetic() throws SQLException {
 		Marque marq = new Marque();
 		DBQuery dbQuery = database.getDBQuery(marq);
