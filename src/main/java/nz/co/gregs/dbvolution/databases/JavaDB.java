@@ -51,7 +51,7 @@ public class JavaDB extends DBDatabase {
 	 * @param dataSource	dataSource
 	 */
 	public JavaDB(DataSource dataSource) throws SQLException {
-		super(new JavaDBDefinition(),DRIVER_NAME, dataSource);
+		super(new JavaDBDefinition(), DRIVER_NAME, dataSource);
 	}
 
 	/**
@@ -83,13 +83,11 @@ public class JavaDB extends DBDatabase {
 	@Override
 	protected String getUrlFromSettings(DatabaseConnectionSettings settings) {
 //		DatabaseConnectionSettings settings = getSettings();
-		if (derivedURL == null || derivedURL.isEmpty()) {
-			derivedURL = "jdbc:derby://"
+		String url = settings.getUrl();
+		return url != null && !url.isEmpty() ? url :"jdbc:derby://"
 					+ settings.getHost() + ":"
 					+ settings.getPort() + "/"
 					+ settings.getDatabaseName() + ":create=true";
-		}
-		return derivedURL;
 	}
 
 	@Override

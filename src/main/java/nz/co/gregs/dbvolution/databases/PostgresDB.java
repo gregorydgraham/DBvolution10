@@ -170,14 +170,14 @@ public class PostgresDB extends DBDatabase implements SupportsPolygonDatatype {
 
 	@Override
 	protected String getUrlFromSettings(DatabaseConnectionSettings settings) {
-		if (derivedURL == null || derivedURL.isEmpty()) {
-			derivedURL = "jdbc:postgresql://"
-					+ settings.getHost() + ":"
-					+ settings.getPort() + "/"
-					+ settings.getDatabaseName()
-					+ settings.formatExtras("?", "=", "&", "");
-		}
-		return derivedURL;
+		String url = settings.getUrl();
+		return url != null && !url.isEmpty()
+				? url
+				: "jdbc:postgresql://"
+				+ settings.getHost() + ":"
+				+ settings.getPort() + "/"
+				+ settings.getDatabaseName()
+				+ settings.formatExtras("?", "=", "&", "");
 	}
 
 	@Override
@@ -224,7 +224,7 @@ public class PostgresDB extends DBDatabase implements SupportsPolygonDatatype {
 	@SuppressFBWarnings(value = "SQL_NONCONSTANT_STRING_PASSED_TO_EXECUTE",
 			justification = "Escaping over values takes place within this method to protect data integrity")
 	public void createDatabase(String databaseName) throws SQLException {
-		String sqlString = "CREATE DATABASE " + databaseName.replaceAll("\\\"", "")  + ";";
+		String sqlString = "CREATE DATABASE " + databaseName.replaceAll("\\\"", "") + ";";
 		try (DBStatement dbStatement = getDBStatement()) {
 			dbStatement.execute(sqlString);
 		}

@@ -40,7 +40,7 @@ public class MariaDB extends DBDatabase {
 	 * @param ds	ds
 	 */
 	public MariaDB(DataSource ds) throws SQLException {
-		super(new MariaDBDefinition(),MARIADBDRIVERNAME, ds);
+		super(new MariaDBDefinition(), MARIADBDRIVERNAME, ds);
 	}
 
 	/**
@@ -76,13 +76,11 @@ public class MariaDB extends DBDatabase {
 
 	@Override
 	protected String getUrlFromSettings(DatabaseConnectionSettings settings) {
-		if (derivedURL == null || derivedURL.isEmpty()) {
-			derivedURL = "jdbc:mariadb://"
-					+ settings.getHost() + ":"
-					+ settings.getPort() + "/"
-					+ settings.getDatabaseName();
-		}
-		return derivedURL;
+		String url = settings.getUrl();
+		return url != null && !url.isEmpty() ? url : "jdbc:mariadb://"
+				+ settings.getHost() + ":"
+				+ settings.getPort() + "/"
+				+ settings.getDatabaseName();
 	}
 
 	@Override

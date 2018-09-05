@@ -80,13 +80,11 @@ public class JavaDBMemoryDB extends DBDatabase {
 
 	@Override
 	protected String getUrlFromSettings(DatabaseConnectionSettings settings) {
-		if (derivedURL == null || derivedURL.isEmpty()) {
-			derivedURL = "jdbc:derby://"
-					+ settings.getHost() + ":"
-					+ settings.getPort() + "/memory:"
-					+ settings.getDatabaseName() + ";create=true";
-		}
-		return derivedURL;
+		String url = settings.getUrl();
+		return url != null && !url.isEmpty() ? url : "jdbc:derby://"
+				+ settings.getHost() + ":"
+				+ settings.getPort() + "/memory:"
+				+ settings.getDatabaseName() + ";create=true";
 	}
 
 	@Override

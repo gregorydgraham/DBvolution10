@@ -86,13 +86,11 @@ public class MariaClusterDB extends DBDatabase {
 
 	@Override
 	protected String getUrlFromSettings(DatabaseConnectionSettings settings) {
-		if (derivedURL == null || derivedURL.isEmpty()) {
-			derivedURL = "jdbc:mariadb://"
-					+ settings.getHost() + ":"
-					+ settings.getPort() + "/"
-					+ settings.getDatabaseName();
-		}
-		return derivedURL;
+		String url = settings.getUrl();
+		return url != null && !url.isEmpty() ? url : "jdbc:mariadb://"
+				+ settings.getHost() + ":"
+				+ settings.getPort() + "/"
+				+ settings.getDatabaseName();
 	}
 
 	/**

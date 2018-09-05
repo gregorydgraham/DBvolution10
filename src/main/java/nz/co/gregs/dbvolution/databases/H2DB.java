@@ -193,45 +193,45 @@ public class H2DB extends DBDatabase {
 		boolean handledException = false;
 		if (exp instanceof org.h2.jdbc.JdbcSQLException) {
 			String message = exp.getMessage();
-			try(Statement statement = getConnection().createStatement()){
-			if ((message.startsWith("Function \"DBV_") && message.contains("\" not found"))
-					|| (message.startsWith("Method \"DBV_") && message.contains("\" not found"))) {
-				String[] split = message.split("[\" ]+");
-				String functionName = split[1];
-				DBVFeature functions = FEATURE_MAP.get(functionName);
-				if (functions != null) {
-					functions.add(statement);
-					handledException = true;
-				}
-			} else if (message.startsWith("Unknown data type: \"DBV_")) {
-				String[] split = message.split("\"");
-				String functionName = split[1];
-				DBVFeature datatype = FEATURE_MAP.get(functionName);
-				if (datatype != null) {
-					datatype.add(statement);
-					handledException = true;
-				}
-			} else if (message.matches(": +method \"DBV_[A-Z_0-9]+")) {
-				String[] split = message.split("method \"");
-				split = split[1].split("\\(");
-				String functionName = split[0];
-
-				DBVFeature functions = FEATURE_MAP.get(functionName);
-				if (functions != null) {
-					functions.add(statement);
-					handledException = true;
-				}
-			} else {
-				for (Map.Entry<String, DBVFeature> entrySet : FEATURE_MAP.entrySet()) {
-					String key = entrySet.getKey();
-					DBVFeature value = entrySet.getValue();
-					if (message.contains(key)) {
-						value.add(statement);
+			try (Statement statement = getConnection().createStatement()) {
+				if ((message.startsWith("Function \"DBV_") && message.contains("\" not found"))
+						|| (message.startsWith("Method \"DBV_") && message.contains("\" not found"))) {
+					String[] split = message.split("[\" ]+");
+					String functionName = split[1];
+					DBVFeature functions = FEATURE_MAP.get(functionName);
+					if (functions != null) {
+						functions.add(statement);
 						handledException = true;
+					}
+				} else if (message.startsWith("Unknown data type: \"DBV_")) {
+					String[] split = message.split("\"");
+					String functionName = split[1];
+					DBVFeature datatype = FEATURE_MAP.get(functionName);
+					if (datatype != null) {
+						datatype.add(statement);
+						handledException = true;
+					}
+				} else if (message.matches(": +method \"DBV_[A-Z_0-9]+")) {
+					String[] split = message.split("method \"");
+					split = split[1].split("\\(");
+					String functionName = split[0];
+
+					DBVFeature functions = FEATURE_MAP.get(functionName);
+					if (functions != null) {
+						functions.add(statement);
+						handledException = true;
+					}
+				} else {
+					for (Map.Entry<String, DBVFeature> entrySet : FEATURE_MAP.entrySet()) {
+						String key = entrySet.getKey();
+						DBVFeature value = entrySet.getValue();
+						if (message.contains(key)) {
+							value.add(statement);
+							handledException = true;
+						}
 					}
 				}
 			}
-		}
 		}
 		if (!handledException) {
 			throw exp;
@@ -240,6 +240,7 @@ public class H2DB extends DBDatabase {
 
 	@Override
 	protected String getUrlFromSettings(DatabaseConnectionSettings settings) {
-		return "jdbc:h2:"+settings.getDatabaseName();
+		String url = settings.getUrl();
+		return url != null && !url.isEmpty() ? url : "jdbc:h2:" + settings.getDatabaseName();
 	}
 }

@@ -121,7 +121,8 @@ public class H2MemoryDB extends H2DB {
 
 	@Override
 	protected String getUrlFromSettings(DatabaseConnectionSettings settings) {
-		return "jdbc:h2:mem:"+settings.getDatabaseName();
+		String url = settings.getUrl();
+		return url != null && !url.isEmpty() ? url : "jdbc:h2:mem:" + settings.getDatabaseName();
 	}
 
 	@Override

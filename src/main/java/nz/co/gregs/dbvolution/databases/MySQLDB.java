@@ -79,11 +79,13 @@ public class MySQLDB extends DBDatabase implements SupportsPolygonDatatype {
 
 	@Override
 	protected String getUrlFromSettings(DatabaseConnectionSettings settings) {
-		if (derivedURL == null || derivedURL.isEmpty()) {
-			derivedURL = "jdbc:mysql://" + settings.getHost() + ":" + settings.getPort() + "/" + settings.getDatabaseName() + "?createDatabaseIfNotExist=true&useUnicode=yes&characterEncoding=utf8&characterSetResults=utf8&verifyServerCertificate=false&useSSL=true"
-					+ settings.formatExtras("&", "=", "&", "");
-		}
-		return derivedURL;
+		String url = settings.getUrl();
+		return url != null && !url.isEmpty() ? url : "jdbc:mysql://" 
+				+ settings.getHost() + ":" 
+				+ settings.getPort() + "/" 
+				+ settings.getDatabaseName() 
+				+ "?createDatabaseIfNotExist=true&useUnicode=yes&characterEncoding=utf8&characterSetResults=utf8&verifyServerCertificate=false&useSSL=true"
+				+ settings.formatExtras("&", "=", "&", "");
 	}
 
 	@Override

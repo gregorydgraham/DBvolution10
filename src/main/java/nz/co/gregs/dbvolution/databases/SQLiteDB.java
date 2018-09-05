@@ -112,10 +112,10 @@ public class SQLiteDB extends DBDatabase {
 	 * @throws java.sql.SQLException
 	 */
 	public SQLiteDB(File databaseFile, String username, String password) throws IOException, SQLException {
-		super(new SQLiteDefinition(), 
-				SQLITE_DRIVER_NAME, 
-				"jdbc:sqlite:"+databaseFile.getCanonicalFile(), 
-				username, 
+		super(new SQLiteDefinition(),
+				SQLITE_DRIVER_NAME,
+				"jdbc:sqlite:" + databaseFile.getCanonicalFile(),
+				username,
 				password);
 	}
 
@@ -131,20 +131,18 @@ public class SQLiteDB extends DBDatabase {
 	 * @throws java.sql.SQLException
 	 */
 	public SQLiteDB(String filename, String username, String password, boolean dummy) throws IOException, SQLException {
-		super(new SQLiteDefinition(), 
-				SQLITE_DRIVER_NAME, 
-				"jdbc:sqlite:"+filename,
-				username, 
+		super(new SQLiteDefinition(),
+				SQLITE_DRIVER_NAME,
+				"jdbc:sqlite:" + filename,
+				username,
 				password);
 	}
 
 	@Override
 	protected String getUrlFromSettings(DatabaseConnectionSettings settings) {
-		if (derivedURL == null || derivedURL.isEmpty()) {
-			derivedURL = "jdbc:sqlite:"
-					+ settings.getDatabaseName();
-		}
-		return derivedURL;
+		String url = settings.getUrl();
+		return url != null && !url.isEmpty() ? url : "jdbc:sqlite:"
+				+ settings.getDatabaseName();
 	}
 
 	@Override

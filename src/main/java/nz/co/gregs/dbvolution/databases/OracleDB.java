@@ -46,6 +46,7 @@ public abstract class OracleDB extends DBDatabase implements SupportsPolygonData
 	public static final long serialVersionUID = 1l;
 	public static final int DEFAULT_PORT = 1521;
 	private String derivedURL;
+
 	/**
 	 *
 	 * Provides a convenient constructor for DBDatabases that have configuration
@@ -164,7 +165,7 @@ public abstract class OracleDB extends DBDatabase implements SupportsPolygonData
 	 * meta-data removed.
 	 * @throws SQLException database exceptions may be thrown.
 	 */
-	@SuppressFBWarnings(value="SQL_NONCONSTANT_STRING_PASSED_TO_EXECUTE",
+	@SuppressFBWarnings(value = "SQL_NONCONSTANT_STRING_PASSED_TO_EXECUTE",
 			justification = "Compiled DBRows are safe, for a reasonable value of safe")
 	protected <TR extends DBRow> void removeSpatialMetadata(DBStatement statement, TR tableRow) throws SQLException {
 		DBDefinition definition = getDefinition();
@@ -174,10 +175,13 @@ public abstract class OracleDB extends DBDatabase implements SupportsPolygonData
 
 	@Override
 	protected String getUrlFromSettings(DatabaseConnectionSettings settings) {
-		if (derivedURL == null || derivedURL.isEmpty()) {
-			derivedURL = "jdbc:oracle:thin:@//" + settings.getHost() + ":" + settings.getPort() + "/" + settings.getInstance();
-		}
-		return derivedURL;
+		String url = settings.getUrl();
+		return url != null && !url.isEmpty()
+				? url
+				: "jdbc:oracle:thin:@//"
+				+ settings.getHost() + ":"
+				+ settings.getPort() + "/"
+				+ settings.getInstance();
 	}
 
 }

@@ -141,13 +141,11 @@ public class MSSQLServerDB extends DBDatabase implements SupportsPolygonDatatype
 
 	@Override
 	protected String getUrlFromSettings(DatabaseConnectionSettings settings) {
-		if (derivedURL == null || derivedURL.isEmpty()) {
-			derivedURL = "jdbc:sqlserver://" + settings.getHost()
-					+ (settings.getInstance() != null ? "\\" + settings.getInstance() : "") + ":"
-					+ settings.getPort() + ";"
-					+ (settings.getDatabaseName() == null ? "" : "databaseName=" + settings.getDatabaseName() + ";");
-		}
-		return derivedURL;
+		String url = settings.getUrl();
+		return url != null && !url.isEmpty() ? url : "jdbc:sqlserver://" + settings.getHost()
+				+ (settings.getInstance() != null ? "\\" + settings.getInstance() : "") + ":"
+				+ settings.getPort() + ";"
+				+ (settings.getDatabaseName() == null ? "" : "databaseName=" + settings.getDatabaseName() + ";");
 	}
 
 	/**

@@ -101,6 +101,8 @@ public class SQLiteDefinition extends DBDefinition implements SupportsDateRepeat
 	protected String getDatabaseDataTypeOfQueryableDatatype(QueryableDatatype<?> qdt) {
 		if (qdt instanceof DBLargeText) {
 			return " NTEXT ";
+		} else if (qdt instanceof DBInteger) {
+			return " BIGINT ";
 		} else if (qdt instanceof DBJavaObject) {
 			return " BLOB ";
 		} else if (qdt instanceof DBLargeBinary) {

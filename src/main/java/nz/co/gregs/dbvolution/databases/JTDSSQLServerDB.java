@@ -129,14 +129,12 @@ public class JTDSSQLServerDB extends DBDatabase implements SupportsPolygonDataty
 	@Override
 	protected String getUrlFromSettings(DatabaseConnectionSettings settings) {
 //		DatabaseConnectionSettings settings = getSettings();
-		if (derivedURL == null || derivedURL.isEmpty()) {
-			derivedURL = "jdbc:jtds:sqlserver://"
+		String url = settings.getUrl();
+		return url != null && !url.isEmpty() ? url : "jdbc:jtds:sqlserver://"
 					+ settings.getHost() + ":"
 					+ settings.getPort() 
 					+ (settings.getDatabaseName() == null ? "" : "/" + settings.getDatabaseName()) 
 					+ (settings.getInstance() != null ? ";instance=" + settings.getInstance() : "");
-		}
-		return derivedURL;
 	}
 
 	/**

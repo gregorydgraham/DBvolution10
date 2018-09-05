@@ -310,8 +310,8 @@ public class DBDatabaseClusterTest extends AbstractTest {
 		DatabaseConnectionSettings source2 = new DatabaseConnectionSettings();
 //		DBDatabaseClusterWithConfigFile.DBDataSource source2 = new DBDatabaseClusterWithConfigFile.DBDataSource();
 		source2.setDBDatabase(SQLiteDB.class.getCanonicalName());
-//		source2.setUrl("jdbc:sqlite:DBDatabaseClusterWithConfigFile.sqlite");
-		source2.setDatabaseName("DBDatabaseClusterWithConfigFile.sqlite");
+		source2.setUrl("jdbc:sqlite:DBDatabaseClusterWithConfigFile.sqlite");
+//		source2.setDatabaseName("DBDatabaseClusterWithConfigFile.sqlite");
 		source2.setUsername("admin");
 		source2.setPassword("admin");
 
@@ -344,6 +344,8 @@ public class DBDatabaseClusterTest extends AbstractTest {
 
 		try {
 			db = new DBDatabaseClusterWithConfigFile(yamlConfigFilename);
+			Assert.assertThat(db.getDatabases()[0].getJdbcURL(), containsString("jdbc:h2:mem:DBDatabaseClusterWithConfigFile.h2"));
+			Assert.assertThat(db.getDatabases()[1].getJdbcURL(), containsString("jdbc:sqlite:DBDatabaseClusterWithConfigFile.sqlite"));
 		} catch (DBDatabaseClusterWithConfigFile.NoDatabaseConfigurationFound | DBDatabaseClusterWithConfigFile.UnableToCreateDatabaseCluster ex) {
 			Logger.getLogger(DBDatabaseClusterTest.class.getName()).log(Level.SEVERE, null, ex);
 			Assert.fail(ex.getMessage());
@@ -379,8 +381,8 @@ public class DBDatabaseClusterTest extends AbstractTest {
 		DatabaseConnectionSettings source2 = new DatabaseConnectionSettings();
 //		DBDatabaseClusterWithConfigFile.DBDataSource source2 = new DBDatabaseClusterWithConfigFile.DBDataSource();
 		source2.setDBDatabase(SQLiteDB.class.getCanonicalName());
-//		source2.setUrl("jdbc:sqlite:DBDatabaseClusterWithConfigFile.sqlite");
-		source2.setDatabaseName("DBDatabaseClusterWithConfigFile.sqlite");
+		source2.setUrl("jdbc:sqlite:DBDatabaseClusterWithConfigFile.sqlite");
+//		source2.setDatabaseName("DBDatabaseClusterWithConfigFile.sqlite");
 		source2.setUsername("admin");
 		source2.setPassword("admin");
 
@@ -413,6 +415,8 @@ public class DBDatabaseClusterTest extends AbstractTest {
 
 		try {
 			db = new DBDatabaseClusterWithConfigFile(file);
+			Assert.assertThat(db.getDatabases()[0].getJdbcURL(), containsString("jdbc:h2:mem:DBDatabaseClusterWithConfigFile.h2"));
+			Assert.assertThat(db.getDatabases()[1].getJdbcURL(), containsString("jdbc:sqlite:DBDatabaseClusterWithConfigFile.sqlite"));
 		} catch (DBDatabaseClusterWithConfigFile.NoDatabaseConfigurationFound | DBDatabaseClusterWithConfigFile.UnableToCreateDatabaseCluster ex) {
 			Logger.getLogger(DBDatabaseClusterTest.class.getName()).log(Level.SEVERE, null, ex);
 			Assert.fail(ex.getMessage());

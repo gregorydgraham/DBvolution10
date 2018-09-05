@@ -963,7 +963,7 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 	 *
 	 * @return the jdbcURL
 	 */
-	public synchronized String getJdbcURL() {
+	public final synchronized String getJdbcURL() {
 		if (settings != null) {
 			return getUrlFromSettings(getSettings());
 		}
@@ -2197,6 +2197,10 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 
 	public DatabaseConnectionSettings getSettings() {
 		return settings;
+	}
+
+	protected void setSettings(DatabaseConnectionSettings newSettings) {
+		settings = newSettings;
 	}
 
 	protected void startServerIfRequired() {

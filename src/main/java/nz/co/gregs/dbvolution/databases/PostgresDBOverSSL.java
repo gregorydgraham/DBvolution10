@@ -82,15 +82,13 @@ public class PostgresDBOverSSL extends PostgresDB {
 
 	@Override
 	protected String getUrlFromSettings(DatabaseConnectionSettings settings) {
-		if (derivedURL == null || derivedURL.isEmpty()) {
-			derivedURL = "jdbc:postgresql://"
+		String url = settings.getUrl();
+		return url != null && !url.isEmpty() ? url : "jdbc:postgresql://"
 					+ settings.getHost() + ":"
 					+ settings.getPort() + "/"
 					+ settings.getDatabaseName()
 					+ "ssl=true&sslfactory=org.postgresql.ssl.NonValidatingFactory"
 					+ settings.formatExtras("&", "=", "&", "");
-		}
-		return derivedURL;
 	}
 
 	/**

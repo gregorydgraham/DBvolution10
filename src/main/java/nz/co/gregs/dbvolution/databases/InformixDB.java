@@ -121,14 +121,12 @@ public class InformixDB extends DBDatabase {
 	@Override
 	protected String getUrlFromSettings(DatabaseConnectionSettings settings) {
 //		DatabaseConnectionSettings settings = getSettings();
-		if (derivedURL == null || derivedURL.isEmpty()) {
-			derivedURL = "jdbc:informix-sqli://"
+		String url = settings.getUrl();
+		return url != null && !url.isEmpty() ? url : "jdbc:informix-sqli://"
 					+ settings.getHost() + ":"
 					+ settings.getPort() + "/"
 					+ settings.getDatabaseName() + ":INFORMIXSERVER="
 					+ settings.getInstance()
 					+ settings.formatExtras(":", "=", ";", "");
-		}
-		return derivedURL;
 	}
 }

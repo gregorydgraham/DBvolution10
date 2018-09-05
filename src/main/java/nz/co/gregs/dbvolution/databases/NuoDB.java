@@ -141,12 +141,10 @@ public class NuoDB extends DBDatabase {
 
 	@Override
 	protected String getUrlFromSettings(DatabaseConnectionSettings settings) {
-		if (derivedURL == null || derivedURL.isEmpty()) {
-			derivedURL = NUODB_URL_PREFIX
-					+ settings.getHost() + "/"
-					+ settings.getDatabaseName() + "?schema="+getSettings().getSchema();
-		}
-		return derivedURL;
+		String url = settings.getUrl();
+		return url != null && !url.isEmpty() ? url : NUODB_URL_PREFIX
+				+ settings.getHost() + "/"
+				+ settings.getDatabaseName() + "?schema=" + getSettings().getSchema();
 	}
 
 	@Override

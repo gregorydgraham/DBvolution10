@@ -218,7 +218,7 @@ public class DBDatabaseClusterWithConfigFile extends DBDatabaseCluster {
 			} else {
 				throw new NoDatabaseConfigurationFound(yamlConfigFilename);
 			}
-		} catch (IOException | SecurityException | IllegalArgumentException ex) {
+		} catch (IOException ex) {
 			Logger.getLogger(DBDatabaseClusterWithConfigFile.class.getName()).log(Level.SEVERE, null, ex);
 			throw new UnableToCreateDatabaseCluster(ex);
 		}
@@ -229,23 +229,23 @@ public class DBDatabaseClusterWithConfigFile extends DBDatabaseCluster {
 			final YAMLFactory yamlFactory = new YAMLFactory();
 			YAMLParser parser = yamlFactory.createParser(file);
 			ObjectMapper mapper = new ObjectMapper(yamlFactory);
-			DatabaseConnectionSettings[] dbs = mapper.readValue(parser, DatabaseConnectionSettings[].class);
-			if (dbs.length == 0) {
+			DatabaseConnectionSettings[] settingsArray = mapper.readValue(parser, DatabaseConnectionSettings[].class);
+			if (settingsArray.length == 0) {
 				throw new NoDatabaseConfigurationFound(yamlConfigFilename);
 			} else {
-				for (DatabaseConnectionSettings db : dbs) {
+				for (DatabaseConnectionSettings settings : settingsArray) {
 
-					DBDatabase database = db.createDBDatabase();
+					DBDatabase database = settings.createDBDatabase();
 
 					if (database != null) {
-						LOG.info("Adding Database: " + db.getDBDatabase() + ":" + database.getUrlFromSettings(db) + ":" + db.getUsername());
+						LOG.info("Adding Database: " + settings.getDBDatabase() + ":" + database.getUrlFromSettings(settings) + ":" + settings.getUsername());
 						this.addDatabaseAndWait(database);
 					}
 				}
 			}
 		} catch (IOException | NoDatabaseConfigurationFound | ClassNotFoundException | NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException | SQLException ex) {
 			Logger.getLogger(DBDatabaseClusterWithConfigFile.class.getName()).log(Level.SEVERE, null, ex);
-			throw new UnableToCreateDatabaseCluster(ex);
+			throw new UnableToCreateDatabaseCluster(ex, file);
 		}
 	}
 
@@ -342,6 +342,10 @@ public class DBDatabaseClusterWithConfigFile extends DBDatabaseCluster {
 
 		public UnableToCreateDatabaseCluster(Exception ex) {
 			super("Unable Create DBDatabaseCluster Due To Exception", ex);
+		}
+
+		private UnableToCreateDatabaseCluster(Exception ex, File file) {
+			super("Unable Create DBDatabaseCluster Due To Exception: "+file.getAbsolutePath(), ex);
 		}
 	}
 }
