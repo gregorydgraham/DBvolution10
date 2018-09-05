@@ -294,7 +294,8 @@ public class DBDatabaseClusterTest extends AbstractTest {
 		try {
 			db = new DBDatabaseClusterWithConfigFile(yamlConfigFilename);
 		} catch (SecurityException | IllegalArgumentException | DBDatabaseClusterWithConfigFile.NoDatabaseConfigurationFound | DBDatabaseClusterWithConfigFile.UnableToCreateDatabaseCluster ex) {
-			Logger.getLogger(DBDatabaseClusterTest.class.getName()).log(Level.SEVERE, null, ex);
+//			Logger.getLogger(DBDatabaseClusterTest.class.getName()).log(Level.SEVERE, null, ex);
+			Assert.assertThat(ex, is(instanceOf(DBDatabaseClusterWithConfigFile.NoDatabaseConfigurationFound.class)));
 		}
 		Assert.assertThat(db.getClusterStatus(), is("Active Databases: 0 of 0"));
 
@@ -321,6 +322,7 @@ public class DBDatabaseClusterTest extends AbstractTest {
 			generator = yamlFactory.createGenerator(file, JsonEncoding.UTF8);
 		} catch (IOException ex) {
 			Logger.getLogger(DBDatabaseClusterTest.class.getName()).log(Level.SEVERE, null, ex);
+			Assert.fail(ex.getMessage());
 		}
 		ObjectMapper mapper = new ObjectMapper(yamlFactory);
 		ObjectWriter writerFor = mapper.writerFor(DatabaseConnectionSettings.class);
@@ -329,6 +331,7 @@ public class DBDatabaseClusterTest extends AbstractTest {
 			writeValuesAsArray = writerFor.writeValuesAsArray(generator);
 		} catch (IOException ex) {
 			Logger.getLogger(DBDatabaseClusterTest.class.getName()).log(Level.SEVERE, null, ex);
+			Assert.fail(ex.getMessage());
 		}
 		try {
 			if (writeValuesAsArray != null) {
@@ -336,12 +339,83 @@ public class DBDatabaseClusterTest extends AbstractTest {
 			}
 		} catch (IOException ex) {
 			Logger.getLogger(DBDatabaseClusterTest.class.getName()).log(Level.SEVERE, null, ex);
+			Assert.fail(ex.getMessage());
 		}
 
 		try {
 			db = new DBDatabaseClusterWithConfigFile(yamlConfigFilename);
 		} catch (DBDatabaseClusterWithConfigFile.NoDatabaseConfigurationFound | DBDatabaseClusterWithConfigFile.UnableToCreateDatabaseCluster ex) {
 			Logger.getLogger(DBDatabaseClusterTest.class.getName()).log(Level.SEVERE, null, ex);
+			Assert.fail(ex.getMessage());
+		}
+		Assert.assertThat(db.getClusterStatus(), is("Active Databases: 2 of 2"));
+
+		file.delete();
+	}
+	@Test
+	public void testYAMLFileProcessingWithFile() {
+		final String yamlConfigFilename = "DBDatabaseCluster.yml";
+
+		File file = new File(yamlConfigFilename);
+		file.delete();
+
+		DBDatabaseCluster db = new DBDatabaseCluster();
+		try {
+			db = new DBDatabaseClusterWithConfigFile(yamlConfigFilename);
+		} catch (SecurityException | IllegalArgumentException | DBDatabaseClusterWithConfigFile.NoDatabaseConfigurationFound | DBDatabaseClusterWithConfigFile.UnableToCreateDatabaseCluster ex) {
+//			Logger.getLogger(DBDatabaseClusterTest.class.getName()).log(Level.SEVERE, null, ex);
+			Assert.assertThat(ex, is(instanceOf(DBDatabaseClusterWithConfigFile.NoDatabaseConfigurationFound.class)));
+		}
+		Assert.assertThat(db.getClusterStatus(), is("Active Databases: 0 of 0"));
+
+		DatabaseConnectionSettings source = new DatabaseConnectionSettings();
+//		DBDatabaseClusterWithConfigFile.DBDataSource source = new DBDatabaseClusterWithConfigFile.DBDataSource();
+		source.setDBDatabase(H2MemoryDB.class.getCanonicalName());
+//		source.setUrl("jdbc:h2:mem:DBDatabaseClusterWithConfigFile.h2");
+		source.setDatabaseName("DBDatabaseClusterWithConfigFile.h2");
+		source.setUsername("admin");
+		source.setPassword("admin");
+
+		DatabaseConnectionSettings source2 = new DatabaseConnectionSettings();
+//		DBDatabaseClusterWithConfigFile.DBDataSource source2 = new DBDatabaseClusterWithConfigFile.DBDataSource();
+		source2.setDBDatabase(SQLiteDB.class.getCanonicalName());
+//		source2.setUrl("jdbc:sqlite:DBDatabaseClusterWithConfigFile.sqlite");
+		source2.setDatabaseName("DBDatabaseClusterWithConfigFile.sqlite");
+		source2.setUsername("admin");
+		source2.setPassword("admin");
+
+		final YAMLFactory yamlFactory = new YAMLFactory();
+		file = new File(yamlConfigFilename);
+		JsonGenerator generator = null;
+		try {
+			generator = yamlFactory.createGenerator(file, JsonEncoding.UTF8);
+		} catch (IOException ex) {
+			Logger.getLogger(DBDatabaseClusterTest.class.getName()).log(Level.SEVERE, null, ex);
+			Assert.fail(ex.getMessage());
+		}
+		ObjectMapper mapper = new ObjectMapper(yamlFactory);
+		ObjectWriter writerFor = mapper.writerFor(DatabaseConnectionSettings.class);
+		SequenceWriter writeValuesAsArray = null;
+		try {
+			writeValuesAsArray = writerFor.writeValuesAsArray(generator);
+		} catch (IOException ex) {
+			Logger.getLogger(DBDatabaseClusterTest.class.getName()).log(Level.SEVERE, null, ex);
+			Assert.fail(ex.getMessage());
+		}
+		try {
+			if (writeValuesAsArray != null) {
+				writeValuesAsArray.writeAll(new DatabaseConnectionSettings[]{source, source2});
+			}
+		} catch (IOException ex) {
+			Logger.getLogger(DBDatabaseClusterTest.class.getName()).log(Level.SEVERE, null, ex);
+			Assert.fail(ex.getMessage());
+		}
+
+		try {
+			db = new DBDatabaseClusterWithConfigFile(file);
+		} catch (DBDatabaseClusterWithConfigFile.NoDatabaseConfigurationFound | DBDatabaseClusterWithConfigFile.UnableToCreateDatabaseCluster ex) {
+			Logger.getLogger(DBDatabaseClusterTest.class.getName()).log(Level.SEVERE, null, ex);
+			Assert.fail(ex.getMessage());
 		}
 		Assert.assertThat(db.getClusterStatus(), is("Active Databases: 2 of 2"));
 
