@@ -32,6 +32,7 @@ import nz.co.gregs.dbvolution.datatypes.DBNumber;
 import nz.co.gregs.dbvolution.datatypes.DBString;
 import nz.co.gregs.dbvolution.datatypes.InternalQueryableDatatypeProxy;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
+import nz.co.gregs.dbvolution.exceptions.DBSQLException;
 import nz.co.gregs.dbvolution.internal.properties.PropertyWrapper;
 import nz.co.gregs.dbvolution.internal.properties.PropertyWrapperDefinition;
 import org.apache.commons.logging.Log;
@@ -216,7 +217,7 @@ public class DBInsert extends DBAction {
 						try {
 							statement.execute(sql);
 						} catch (SQLException ex) {
-							throw new SQLException(sql+(System.getProperty("line.separator")+sqlex.getLocalizedMessage()), sqlex);
+							throw new DBSQLException(db, sql, sqlex);
 						}
 					}
 				} else {
