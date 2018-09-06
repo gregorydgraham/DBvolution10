@@ -71,6 +71,8 @@ public class MySQLDBDefinition extends DBDefinition {
 	public String getDatabaseDataTypeOfQueryableDatatype(QueryableDatatype<?> qdt) {
 		if (qdt instanceof DBString) {
 			return "  VARCHAR(1000) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin";
+		} else if (qdt instanceof DBInteger) {
+			return " BIGINT ";
 		} else if (qdt instanceof DBDate) {
 			return " DATETIME(6) ";
 		} else if (qdt instanceof DBLargeBinary) {

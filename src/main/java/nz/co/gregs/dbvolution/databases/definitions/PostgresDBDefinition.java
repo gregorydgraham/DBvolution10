@@ -84,6 +84,8 @@ public class PostgresDBDefinition extends DBDefinition {
 	public String getDatabaseDataTypeOfQueryableDatatype(QueryableDatatype<?> qdt) {
 		if (qdt instanceof DBLargeText) {
 			return " TEXT ";
+		} else if (qdt instanceof DBInteger) {
+			return " BIGINT ";
 		} else if (qdt instanceof DBDate) {
 			return " TIMESTAMP WITH TIME ZONE ";
 		} else if (qdt instanceof DBLargeObject) {

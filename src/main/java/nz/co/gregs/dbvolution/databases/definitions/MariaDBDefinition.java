@@ -23,6 +23,7 @@ import nz.co.gregs.dbvolution.databases.MariaDB;
 import nz.co.gregs.dbvolution.datatypes.DBLargeBinary;
 import nz.co.gregs.dbvolution.datatypes.DBLargeText;
 import nz.co.gregs.dbvolution.datatypes.DBDate;
+import nz.co.gregs.dbvolution.datatypes.DBInteger;
 import nz.co.gregs.dbvolution.datatypes.DBLargeObject;
 import nz.co.gregs.dbvolution.datatypes.DBString;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
@@ -68,6 +69,8 @@ public class MariaDBDefinition extends DBDefinition {
 			return " NVARCHAR(1000) CHARACTER SET utf8 COLLATE utf8_bin ";
 		} else if (qdt instanceof DBDate) {
 			return " DATETIME ";
+		} else if (qdt instanceof DBInteger) {
+			return " BIGINT ";
 		} else if (qdt instanceof DBLargeBinary) {
 			return " LONGBLOB ";
 		} else if (qdt instanceof DBLargeText) {
