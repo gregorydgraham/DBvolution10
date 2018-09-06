@@ -774,7 +774,7 @@ public class DBString extends QueryableDatatype<String> implements StringResult 
 	 * @return TRUE if the database value is "" or NULL, otherwise FALSE.
 	 */
 	public boolean isEmptyOrNullString() {
-		return isEmptyString() || isNull();
+		return isNull() || isEmptyString();
 	}
 
 	@Override
