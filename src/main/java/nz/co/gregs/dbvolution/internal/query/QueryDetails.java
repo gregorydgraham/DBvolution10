@@ -1219,7 +1219,7 @@ public class QueryDetails implements DBQueryable, Serializable {
 		ScheduledFuture<?> cancelHandle = null;
 		if (timeoutTime > 0) {
 			if (timeoutTime != null && timeoutTime > 0) {
-				final QueryCanceller canceller = new QueryCanceller(statement);
+				final QueryCanceller canceller = new QueryCanceller(statement, sql);
 				cancelHandle = canceller.schedule(timeoutTime);//TIMER_SERVICE.schedule(canceller, timeoutTime, TimeUnit.MILLISECONDS);
 			}
 		}

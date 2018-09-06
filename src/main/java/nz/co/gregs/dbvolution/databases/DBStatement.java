@@ -94,14 +94,14 @@ public class DBStatement implements Statement {
 		try {
 			executeQuery = getInternalStatement().executeQuery(sql);
 		} catch (SQLException exp) {
-			try {
+				try {
 				executeQuery = addFeatureAndAttemptQueryAgain(exp, sql);
-			} catch (SQLException ex) {
-				throw ex;
-			} catch (Exception ex) {
-				throw new SQLException(ex);
+				} catch (SQLException ex) {
+					throw ex;
+				} catch (Exception ex) {
+					throw new SQLException(ex);
+				}
 			}
-		}
 		return executeQuery;
 	}
 
@@ -114,7 +114,7 @@ public class DBStatement implements Statement {
 			Exception ex1 = exp;
 			while (!ex1.getMessage().equals(ex.getMessage())) {
 				database.addFeatureToFixException(ex);
-				}
+			}
 			throw new SQLException(ex);
 		}
 		try {
@@ -349,16 +349,6 @@ public class DBStatement implements Statement {
 	 */
 	protected synchronized void replaceBrokenConnection() throws SQLException, UnableToCreateDatabaseConnectionException, UnableToFindJDBCDriver {
 		database.discardConnection(connection);
-//		try {
-//			internalStatement.close();
-//		} catch (SQLException exception) {
-//		}
-//		try {
-//			connection.close();
-//		} catch (SQLException exception) {
-//		}
-//		connection = database.getConnection();
-//		internalStatement = connection.createStatement();
 	}
 
 	/**
@@ -458,21 +448,21 @@ public class DBStatement implements Statement {
 		return execute;
 	}
 
-	private boolean addFeatureAndAttemptExecuteAgain(Exception exp, String string) throws SQLException {
+	private boolean addFeatureAndAttemptExecuteAgain(Exception exp, String sql) throws SQLException {
 		boolean executeQuery;
 		try {
 			database.addFeatureToFixException(exp);
 		} catch (Exception ex) {
 //			ex.printStackTrace();
-			throw new SQLException("Failed To Add Support For SQL: " + exp.getMessage() + " : Original Query: " + string, ex);
+			throw new SQLException("Failed To Add Support For SQL: " + exp.getMessage() + " : Original Query: " + sql, ex);
 		}
 		try {
-			executeQuery = getInternalStatement().execute(string);
+			executeQuery = getInternalStatement().execute(sql);
 			return executeQuery;
 		} catch (SQLException exp2) {
 //			exp2.printStackTrace();
 			if (!exp.getMessage().equals(exp2.getMessage())) {
-				executeQuery = addFeatureAndAttemptExecuteAgain(exp2, string);
+				executeQuery = addFeatureAndAttemptExecuteAgain(exp2, sql);
 				return executeQuery;
 			} else {
 				throw new SQLException(exp);

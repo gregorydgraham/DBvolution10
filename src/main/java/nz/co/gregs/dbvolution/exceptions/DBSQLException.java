@@ -38,8 +38,9 @@ import nz.co.gregs.dbvolution.databases.DBDatabase;
  * @author gregorygraham
  */
 public class DBSQLException extends SQLException {
+	private static final long serialVersionUID = 2l;
 
-	public DBSQLException(DBDatabase db, String sql, SQLException sqlex) {
+	public DBSQLException(DBDatabase db, String sql, Exception sqlex) {
 		super(
 				"Error During DBInsert [" + db.getClass().getCanonicalName() + "]: " 
 						+ sql 

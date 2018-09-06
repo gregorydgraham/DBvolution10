@@ -46,16 +46,18 @@ class QueryCanceller implements Runnable {
 
 	private final DBStatement statement;
 	private final Date timestamp;
+	private final String sql;
 
-	public QueryCanceller(DBStatement statement) {
+	QueryCanceller(DBStatement statement, String sql) {
 		this.statement = statement;
+		this.sql = sql;
 		this.timestamp = new Date();
 	}
 
 	@Override
 	public void run() {
 		try {
-			System.out.println("CANCELLER: Cancelling query...");
+			System.out.println("CANCELLER: Cancelling query - "+sql);
 			System.out.println("CANCELLER: after ... " + ((0.0+((new Date()).getTime() - timestamp.getTime()))/1000.0) + "seconds");
 			statement.cancel();
 		} catch (SQLException ex) {
