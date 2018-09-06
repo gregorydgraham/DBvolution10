@@ -69,7 +69,6 @@ class QueryCanceller implements Runnable {
 	public static Long getStandardCancelOffset() {
 		if (standardCancelOffset == null) {
 			long targetTicks = 2000000000l;// about 1s worth of ops on the reference platform
-//			long targetTicks = 3000000000l;// about 1s worth of ops on the reference platform
 			long ticks = 0;
 			Date startDate = new Date();
 			while (ticks < targetTicks) {
@@ -77,8 +76,7 @@ class QueryCanceller implements Runnable {
 			}
 			standardCancelOffset = Math.max(
 					DEFAULT_TIMEOUT_MILLISECONDS, // at least 10s timeout
-					((new Date()).getTime() - startDate.getTime()) * 10);// 20x1sec-equivalents
-//			System.out.println("MILLIS: " + standardCancelOffset);
+					((new Date()).getTime() - startDate.getTime()) * 10);// 10x1sec-equivalents
 		}
 		return standardCancelOffset;
 	}
