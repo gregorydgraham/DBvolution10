@@ -30,7 +30,7 @@ public enum DataTypes implements DBVFeature {
 	/**
 	 *
 	 */
-	INTEGER("INTEGER", "BIGINT", new DBVFeature[]{}),
+	INTEGER("BIGINT", "INT8", new DBVFeature[]{}),
 	/**
 	 *
 	 */
@@ -77,16 +77,7 @@ public enum DataTypes implements DBVFeature {
 	 */
 	@Override
 	public void add(Statement stmt) throws SQLException {
-//		try {
-//			stmt.execute("DROP DOMAIN " + datatype + "; ");
-//		} catch (SQLException sqlex) {
-//			; // I don't care.
-//		}
 		stmt.execute("CREATE DOMAIN IF NOT EXISTS " + datatype + " AS " + actualType + "; ");
-
-//		for (DBVFeature function : functions) {
-//			function.add(stmt);
-//		}
 	}
 
 	/**
