@@ -29,6 +29,11 @@
 package nz.co.gregs.dbvolution.internal.query;
 
 import java.sql.SQLException;
+import java.util.Date;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import nz.co.gregs.dbvolution.databases.DBStatement;
@@ -38,20 +43,49 @@ import nz.co.gregs.dbvolution.databases.DBStatement;
  * @author gregorygraham
  */
 class QueryCanceller implements Runnable {
-	
+
 	private final DBStatement statement;
+	private final Date timestamp;
 
 	public QueryCanceller(DBStatement statement) {
 		this.statement = statement;
+		this.timestamp = new Date();
 	}
 
 	@Override
 	public void run() {
 		try {
+			System.out.println("CANCELLER: Cancelling query...");
+			System.out.println("CANCELLER: after ... " + ((0.0+((new Date()).getTime() - timestamp.getTime()))/1000.0) + "seconds");
 			statement.cancel();
 		} catch (SQLException ex) {
 			Logger.getLogger(QueryDetails.class.getName()).log(Level.SEVERE, null, ex);
 		}
 	}
-	
+
+	private static Long standardCancelOffset = null;
+	private static final int DEFAULT_TIMEOUT_MILLISECONDS = 10000;
+
+	public static Long getStandardCancelOffset() {
+		if (standardCancelOffset == null) {
+			long targetTicks = 2000000000l;// about 1s worth of ops on the reference platform
+//			long targetTicks = 3000000000l;// about 1s worth of ops on the reference platform
+			long ticks = 0;
+			Date startDate = new Date();
+			while (ticks < targetTicks) {
+				ticks++;
+			}
+			standardCancelOffset = Math.max(
+					DEFAULT_TIMEOUT_MILLISECONDS, // at least 10s timeout
+					((new Date()).getTime() - startDate.getTime()) * 10);// 20x1sec-equivalents
+//			System.out.println("MILLIS: " + standardCancelOffset);
+		}
+		return standardCancelOffset;
+	}
+
+	static final transient ScheduledExecutorService TIMER_SERVICE = Executors.newSingleThreadScheduledExecutor();
+
+	public ScheduledFuture<?> schedule(Long timeoutTimeInMilliseconds) {
+		return TIMER_SERVICE.schedule(this, timeoutTimeInMilliseconds, TimeUnit.MILLISECONDS);
+	}
 }

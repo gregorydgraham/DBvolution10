@@ -24,7 +24,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -32,10 +31,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
 import nz.co.gregs.dbvolution.DBQueryRow;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.actions.DBQueryable;
@@ -66,9 +62,7 @@ public class QueryDetails implements DBQueryable, Serializable {
 
 	private static final long serialVersionUID = 1l;
 
-	private static final int DEFAULT_TIMEOUT_MILLISECONDS = 10000;
 	private Long timeoutInMilliseconds = 0l;//DEFAULT_TIMEOUT_MILLISECONDS;
-	static final transient ScheduledExecutorService TIMER_SERVICE = Executors.newSingleThreadScheduledExecutor();
 
 	private final Map<Class<? extends DBRow>, DBRow> emptyRows = new HashMap<>();
 
@@ -1225,8 +1219,8 @@ public class QueryDetails implements DBQueryable, Serializable {
 		ScheduledFuture<?> cancelHandle = null;
 		if (timeoutTime > 0) {
 			if (timeoutTime != null && timeoutTime > 0) {
-				final Runnable canceller = new QueryCanceller(statement);
-				cancelHandle = TIMER_SERVICE.schedule(canceller, timeoutTime, TimeUnit.MILLISECONDS);
+				final QueryCanceller canceller = new QueryCanceller(statement);
+				cancelHandle = canceller.schedule(timeoutTime);//TIMER_SERVICE.schedule(canceller, timeoutTime, TimeUnit.MILLISECONDS);
 			}
 		}
 		final ResultSet queryResults = statement.executeQuery(sql);
@@ -1420,7 +1414,7 @@ public class QueryDetails implements DBQueryable, Serializable {
 	 */
 	public synchronized Long getTimeoutInMilliseconds() {
 		if (timeoutInMilliseconds == null || timeoutInMilliseconds == 0) {
-			return getStandardCancelOffset();
+			return QueryCanceller.getStandardCancelOffset();
 		} else {
 			return timeoutInMilliseconds;
 		}
@@ -1435,24 +1429,6 @@ public class QueryDetails implements DBQueryable, Serializable {
 			default:
 				return getSQLForQuery(db, new QueryState(this), QueryType.SELECT, getOptions());
 		}
-	}
-
-	private static Long standardCancelOffset = null;
-
-	private Long getStandardCancelOffset() {
-		if (standardCancelOffset == null) {
-			long targetTicks = 3000000000l;// about 1s worth of ops on the reference platform
-			long ticks = 0;
-			Date startDate = new Date();
-			while (ticks < targetTicks) {
-				ticks++;
-			}
-			standardCancelOffset = Math.max(
-					DEFAULT_TIMEOUT_MILLISECONDS, // at least 10s timeout
-					((new Date()).getTime() - startDate.getTime()) * 10);// 10x1sec-equivalents
-//			System.out.println("MILLIS: " + standardCancelOffset);
-		}
-		return standardCancelOffset;
 	}
 
 }
