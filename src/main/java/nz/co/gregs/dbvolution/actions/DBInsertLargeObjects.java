@@ -61,10 +61,10 @@ public class DBInsertLargeObjects extends DBUpdateLargeObjects {
 		return returnList;
 	}
 
-	@Override
-	protected DBActionList getActions() {
-		return new DBActionList(new DBInsertLargeObjects(getRow()));
-	}
+//	@Override
+//	protected DBActionList getActions() {
+//		return new DBActionList(new DBInsertLargeObjects(getRow()));
+//	}
 
 	@Override
 	protected String getPrimaryKeySQL(DBDatabase db, DBRow row) {

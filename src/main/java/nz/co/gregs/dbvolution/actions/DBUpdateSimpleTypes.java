@@ -127,8 +127,8 @@ public class DBUpdateSimpleTypes extends DBUpdate {
 		return getPrimaryKeySQL(db, row);
 	}
 
-	@Override
-	protected DBActionList getActions() {
-		return new DBActionList(new DBUpdateSimpleTypes(getRow()));
-	}
+//	@Override
+//	protected DBActionList getActions() {
+//		return new DBActionList(new DBUpdateSimpleTypes(getRow()));
+//	}
 }

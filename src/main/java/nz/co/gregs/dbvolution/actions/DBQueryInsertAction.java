@@ -167,8 +167,8 @@ public class DBQueryInsertAction<R extends DBRow> extends DBAction {
 		throw new UnsupportedOperationException("Reverting A Migration Is Not Possible Yet.");
 	}
 
-	@Override
-	protected DBActionList getActions() {//DBRow row) {
-		return new DBActionList(new DBInsert(getRow()));
-	}
+//	@Override
+//	protected DBActionList getActions() {//DBRow row) {
+//		return new DBActionList(new DBInsert(getRow()));
+//	}
 }

@@ -88,21 +88,6 @@ public abstract class DBAction implements Serializable{
 	protected abstract DBActionList getRevertDBActionList();
 
 	/**
-	 * Returns a DBActionList of the actions required to perform this DBAction.
-	 *
-	 * <p>
-	 * Actions are allowed to create sub-actions so all actions are returned as
-	 * a DBActionList.
-	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 *
-	 * @return a DBActionList of this DBAction.
-	 */
-	protected abstract DBActionList getActions();
-
-
-	/**
 	 * Returns a copy of the row supplied during creation.
 	 *
 	 * <p style="color: #F90;">Support DBvolution at

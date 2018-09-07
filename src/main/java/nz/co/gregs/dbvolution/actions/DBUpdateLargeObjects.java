@@ -321,10 +321,10 @@ public class DBUpdateLargeObjects extends DBUpdate {
 		return new DBActionList();
 	}
 
-	@Override
-	protected DBActionList getActions() {
-		return new DBActionList(new DBUpdateLargeObjects(getRow()));
-	}
+//	@Override
+//	protected DBActionList getActions() {
+//		return new DBActionList(new DBUpdateLargeObjects(getRow()));
+//	}
 
 	private List<PropertyWrapper> getChangedLargeObjects(DBRow row) {
 		List<PropertyWrapper> changed = new ArrayList<>();

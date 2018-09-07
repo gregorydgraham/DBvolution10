@@ -351,10 +351,10 @@ public class DBInsert extends DBAction {
 		return reverts;
 	}
 
-	@Override
-	protected DBActionList getActions() {//DBRow row) {
-		return new DBActionList(new DBInsert(getRow()));
-	}
+//	@Override
+//	protected DBActionList getActions() {//DBRow row) {
+//		return new DBActionList(new DBInsert(getRow()));
+//	}
 
 	/**
 	 * Creates a DBActionList of inserts actions for the rows.

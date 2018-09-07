@@ -10,8 +10,6 @@ import javax.swing.*;
 import java.io.*;
 import java.awt.*;
 import java.awt.image.*;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.imageio.ImageIO;
 
 public class ImageCompare {
@@ -27,28 +25,10 @@ public class ImageCompare {
 	protected int debugMode = 0; // 1: textual indication of change, 2: difference of factors
 	private boolean compared = false;
 
-	/* create a runable demo. */
-//	public static void main(String[] args) {
-//		// Create a compare object specifying the 2 images for comparison.
-//		ImageCompare ic = new ImageCompare("c:\\test1.jpg", "c:\\test2.jpg");
-//		// Set the comparison parameters. 
-//		//   (num vertical regions, num horizontal regions, sensitivity, stabilizer)
-//		ic.setParameters(8, 6, 5, 10);
-//		// Display some indication of the differences in the image.
-//		ic.setDebugMode(2);
-//		// Compare.
-//		ic.compare();
-//		// Display if these images are considered a match according to our parameters.
-//		System.out.println("Match: " + ic.match());
-//		// If its not a match then write a file to show changed regions.
-//		if (!ic.match()) {
-//			saveJPG(ic.getChangeIndicator(), "c:\\changes.jpg");
-//		}
-//	}
 	// constructor 1. use filenames
-	public ImageCompare(String file1, String file2) throws IOException {
-		this(loadJPG(file1), loadJPG(file2));
-	}
+//	public ImageCompare(String file1, String file2) throws IOException {
+//		this(loadJPG(file1), loadJPG(file2));
+//	}
 
 	// constructor 1b. use files
 	public ImageCompare(File file1, File file2) throws IOException {
@@ -88,11 +68,11 @@ public class ImageCompare {
 	}
 
 	// want to see some stuff in the console as the comparison is happening?
-	public void setDebugMode(int m) {
-		compared = false;
-		imageDiff = null;
-		this.debugMode = m;
-	}
+//	public void setDebugMode(int m) {
+//		compared = false;
+//		imageDiff = null;
+//		this.debugMode = m;
+//	}
 
 	// compare the two images in this object.
 	public void compare() {
@@ -137,9 +117,9 @@ public class ImageCompare {
 	}
 
 	// return the image that indicates the regions where changes where detected.
-	public BufferedImage getChangeIndicator() {
-		return imageDiff;
-	}
+//	public BufferedImage getChangeIndicator() {
+//		return imageDiff;
+//	}
 
 	// returns a value specifying some kind of average brightness in the image.
 	protected int getAverageBrightness(BufferedImage img) {
@@ -170,11 +150,11 @@ public class ImageCompare {
 	}
 
 	// write a buffered image to a jpeg file.
-	protected static void saveJPG(Image img, String filename) throws FileNotFoundException, IOException {
-		BufferedImage bi = imageToBufferedImage(img);
-		FileOutputStream out = new FileOutputStream(filename);
-		ImageIO.write(bi, "jpg", out);
-	}
+//	protected static void saveJPG(Image img, String filename) throws FileNotFoundException, IOException {
+//		BufferedImage bi = imageToBufferedImage(img);
+//		FileOutputStream out = new FileOutputStream(filename);
+//		ImageIO.write(bi, "jpg", out);
+//	}
 
 	// read a jpeg file into a buffered image
 	protected static Image loadJPG(String filename) throws IOException {
