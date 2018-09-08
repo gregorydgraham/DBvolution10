@@ -189,7 +189,7 @@ public class H2DB extends DBDatabase {
 	}
 
 	@Override
-	public void addFeatureToFixException(Exception exp) throws Exception {
+	public ResponseToException addFeatureToFixException(Exception exp) throws Exception {
 		boolean handledException = false;
 		if (exp instanceof org.h2.jdbc.JdbcSQLException) {
 			String message = exp.getMessage();
@@ -235,6 +235,8 @@ public class H2DB extends DBDatabase {
 		}
 		if (!handledException) {
 			throw exp;
+		}else{
+			return ResponseToException.REQUERY;
 		}
 	}
 

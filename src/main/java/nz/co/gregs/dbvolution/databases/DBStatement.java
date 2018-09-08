@@ -21,8 +21,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.SQLWarning;
 import java.sql.Statement;
-import java.util.ArrayList;
-import java.util.List;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.exceptions.UnableToCreateDatabaseConnectionException;
 import nz.co.gregs.dbvolution.exceptions.UnableToFindJDBCDriver;
@@ -60,8 +58,8 @@ public class DBStatement implements Statement {
 	private final Connection connection;
 	private boolean isClosed = false;
 
-	private static final List<DBStatement> DBSTATEMENT_REGISTER = new ArrayList<>();
-	private static final List<DBStatement> DBSTATEMENT_CLOSED_REGISTER = new ArrayList<>();
+//	private static final List<DBStatement> DBSTATEMENT_REGISTER = new ArrayList<>();
+//	private static final List<DBStatement> DBSTATEMENT_CLOSED_REGISTER = new ArrayList<>();
 
 	/**
 	 * Creates a statement object for the given DBDatabase and Connection.
@@ -73,7 +71,7 @@ public class DBStatement implements Statement {
 		this.database = db;
 		this.connection = connection;
 //		this.internalStatement = connection.createStatement();
-		DBSTATEMENT_REGISTER.add(this);
+//		DBSTATEMENT_REGISTER.add(this);
 	}
 
 	/**
@@ -94,40 +92,44 @@ public class DBStatement implements Statement {
 		try {
 			executeQuery = getInternalStatement().executeQuery(sql);
 		} catch (SQLException exp) {
-				try {
+			try {
 				executeQuery = addFeatureAndAttemptQueryAgain(exp, sql);
-				} catch (SQLException ex) {
-					throw ex;
-				} catch (Exception ex) {
-					throw new SQLException(ex);
-				}
+			} catch (SQLException ex) {
+				throw ex;
+			} catch (Exception ex) {
+				throw new SQLException(ex);
 			}
+		}
 		return executeQuery;
 	}
 
 	private ResultSet addFeatureAndAttemptQueryAgain(Exception exp, String sql) throws Exception {
 		ResultSet executeQuery;
 		checkForBrokenConnection(exp, sql);
+		DBDatabase.ResponseToException nextAction = DBDatabase.ResponseToException.REQUERY;
 		try {
-			database.addFeatureToFixException(exp);
+			nextAction = database.addFeatureToFixException(exp);
 		} catch (Exception ex) {
 			Exception ex1 = exp;
 			while (!ex1.getMessage().equals(ex.getMessage())) {
 				database.addFeatureToFixException(ex);
 			}
-			throw new SQLException(ex);
+			throw new SQLException(exp);
 		}
-		try {
-			executeQuery = getInternalStatement().executeQuery(sql);
-			return executeQuery;
-		} catch (SQLException exp2) {
-			if (exp.getMessage().equals(exp2.getMessage())) {
-				throw exp;
-			} else {
-				executeQuery = addFeatureAndAttemptQueryAgain(exp2, sql);
+		if (nextAction.equals(DBDatabase.ResponseToException.REQUERY)) {
+			try {
+				executeQuery = getInternalStatement().executeQuery(sql);
 				return executeQuery;
+			} catch (SQLException exp2) {
+				if (exp.getMessage().equals(exp2.getMessage())) {
+					throw exp;
+				} else {
+					executeQuery = addFeatureAndAttemptQueryAgain(exp2, sql);
+					return executeQuery;
+				}
 			}
 		}
+		return null;
 	}
 
 	/**
@@ -176,8 +178,8 @@ public class DBStatement implements Statement {
 //			System.out.println("CLOSING DBSTATEMENT");
 			statement.close();
 			setInternalStatement(null);
-			DBSTATEMENT_REGISTER.remove(this);
-			DBSTATEMENT_CLOSED_REGISTER.remove(this);
+//			DBSTATEMENT_REGISTER.remove(this);
+//			DBSTATEMENT_CLOSED_REGISTER.remove(this);
 		} catch (SQLException e) {
 			// Someone please tell me how you are supposed to cope 
 			// with an exception during the close method????????

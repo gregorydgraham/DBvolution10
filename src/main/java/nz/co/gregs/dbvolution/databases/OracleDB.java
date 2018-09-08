@@ -150,7 +150,7 @@ public abstract class OracleDB extends DBDatabase implements SupportsPolygonData
 	}
 
 	@Override
-	public void addFeatureToFixException(Exception exp) throws Exception {
+	public ResponseToException addFeatureToFixException(Exception exp) throws Exception {
 		throw exp;
 	}
 

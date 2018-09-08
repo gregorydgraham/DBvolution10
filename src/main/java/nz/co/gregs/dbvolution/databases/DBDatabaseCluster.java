@@ -272,7 +272,7 @@ public class DBDatabaseCluster extends DBDatabase {
 	}
 
 	@Override
-	public void addFeatureToFixException(Exception exp) throws Exception {
+	public ResponseToException addFeatureToFixException(Exception exp) throws Exception {
 		throw new UnsupportedOperationException("DBDatabase.addFeatureToFixException(Exception) should not be called");
 	}
 

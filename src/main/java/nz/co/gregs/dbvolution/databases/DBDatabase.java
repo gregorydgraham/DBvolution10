@@ -1222,6 +1222,23 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 	}
 
 	/**
+	 * Creates or updates a table on the database based on the DBRow.
+	 *
+	 * <p>
+	 * Implemented to facilitate testing, this method creates an actual table on
+	 * the database using the default data types supplied by the fields of the
+	 * DBRow.
+	 *
+	 * @param newTableRow the table to create
+	 * @throws SQLException database exceptions
+	 * @throws AutoCommitActionDuringTransactionException thrown if this action is
+	 * used during a DBTransaction or DBScript
+	 */
+	public void createOrUpdateTable(DBRow newTableRow) throws SQLException, AutoCommitActionDuringTransactionException {
+			updateTableToMatchDBRow(newTableRow);
+	}
+
+	/**
 	 * Creates a table on the database based on the DBRow, and creates the
 	 * required database foreign key constraints.
 	 *
@@ -2019,9 +2036,10 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 	 * The statement will be automatically run after this method exits.
 	 *
 	 * @param exp the exception throw by the database that may need fixing
+	 * @return the preferred response to the exception
 	 * @throws SQLException accessing the database may cause exceptions
 	 */
-	public void addFeatureToFixException(Exception exp) throws Exception {
+	protected ResponseToException addFeatureToFixException(Exception exp) throws Exception {
 		throw exp;
 	}
 
@@ -2093,12 +2111,13 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 			}
 		} else {
 			String testQuery = getDBTable(table)
-					.setQueryTimeout(10000)
 					.setBlankQueryAllowed(true)
 					.setRowLimit(1).getSQLForQuery().replaceAll("(?is)SELECT .* FROM", "SELECT * FROM");
 			try (DBStatement dbStatement = getDBStatement()) {
 				ResultSet results = dbStatement.executeQuery(testQuery);
-				results.close();
+				if (results != null) {
+					results.close();
+				}
 				tableExists = true;
 			} catch (Exception ex) {
 				// Theoretically this should only need to catch an SQLException 
@@ -2121,7 +2140,7 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 
 	/**
 	 * Uses the supplied DBRow to update the existing database table by creating
-	 * the table is necessary and adding any columns that are missing.
+	 * the table, if necessary, or adding any columns that are missing.
 	 *
 	 * @param table
 	 * @throws java.sql.SQLException
@@ -2343,4 +2362,11 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 //			DBDatabase.autoCloseAll();
 //		}
 //	}
+	protected static enum ResponseToException {
+		REQUERY(),
+		SKIPQUERY();
+
+		ResponseToException() {
+		}
+	}
 }

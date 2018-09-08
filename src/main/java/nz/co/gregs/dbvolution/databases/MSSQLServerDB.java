@@ -204,14 +204,15 @@ public class MSSQLServerDB extends DBDatabase implements SupportsPolygonDatatype
 	}
 
 	@Override
-	public void addFeatureToFixException(Exception exp) throws Exception {
+	public ResponseToException addFeatureToFixException(Exception exp) throws Exception {
 		final String message = exp.getMessage();
 		System.out.println("nz.co.gregs.dbvolution.databases.MSSQLServerDB.addFeatureToFixException() " + message);
 		if (message.matches("IDENTITY_INSERT is already ON for table '[^']*'. Cannot perform SET operation for table.*")) {
 			String table = message.split("'")[1];
 			Statement stmt = getConnection().createStatement();
 			stmt.execute("SET IDENTITY_INSERT " + table + " ON;");
+			return ResponseToException.REQUERY;
 		}
-		super.addFeatureToFixException(exp);
+		return super.addFeatureToFixException(exp);
 	}
 }

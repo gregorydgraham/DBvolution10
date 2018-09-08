@@ -322,4 +322,33 @@ public class PostgresDB extends DBDatabase implements SupportsPolygonDatatype {
 		} catch (SQLException sqlex) {
 		}
 	}
+
+	/**
+	 * Used to add features in a just-in-time manner.
+	 *
+	 * <p>
+	 * During a statement the database may throw an exception because a feature
+	 * has not yet been added. Use this method to parse the exception and install
+	 * the required feature.
+	 *
+	 * <p>
+	 * The statement will be automatically run after this method exits.
+	 *
+	 * @param exp the exception throw by the database that may need fixing
+	 * @return
+	 * @throws SQLException accessing the database may cause exceptions
+	 */
+	@Override
+	public ResponseToException addFeatureToFixException(Exception exp) throws Exception {
+		if ((exp instanceof org.postgresql.util.PSQLException)) {
+			String message = exp.getMessage();
+			if (message.matches("ERROR: relation \"[^\"]*\" already exists.*")) {
+				return ResponseToException.SKIPQUERY;
+			} else {
+				throw exp;
+			}
+		} else {
+			throw exp;
+		}
+	}
 }
