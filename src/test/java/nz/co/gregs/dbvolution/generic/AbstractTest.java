@@ -276,7 +276,7 @@ public abstract class AbstractTest {
 
 		database.preventDroppingOfTables(false);
 		database.dropTableNoExceptions(new LinkCarCompanyAndLogo());
-		database.createTable(new LinkCarCompanyAndLogo());
+		database.createOrUpdateTable(new LinkCarCompanyAndLogo());
 	}
 
 	@After
