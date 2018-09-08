@@ -94,47 +94,6 @@ public abstract class DBDelete extends DBAction {
 
 	/**
 	 * Creates a DBActionList of delete actions for the rows.
-	 * <p>
-	 * You probably want to use {@link #getDeletes(nz.co.gregs.dbvolution.databases.DBDatabase, nz.co.gregs.dbvolution.DBRow...)
-	 * } instead.
-	 * <p>
-	 * The actions created can be applied on a particular database using
-	 * {@link DBActionList#execute(nz.co.gregs.dbvolution.databases.DBDatabase)}
-	 *
-	 * <p>
-	 * This method cannot produce DBInsert statements for the revert action list
-	 * until the actions have been executed. If you need the revert script to
-	 * include insert statements use the {@link #getDeletes(nz.co.gregs.dbvolution.databases.DBDatabase, nz.co.gregs.dbvolution.DBRow[])
-	 * } method.
-	 *
-	 * @param rows the rows to be deleted
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 * @return a DBActionList of deletes.
-	 * @throws SQLException Database actions can throw SQLException
-	 */
-	public static DBActionList getDeletesWithRevertCapability(DBRow... rows) throws SQLException {
-		DBActionList actions = new DBActionList();
-		for (DBRow row : rows) {
-			if (row.getDefined()) {
-				final List<QueryableDatatype<?>> primaryKeys = row.getPrimaryKeys();
-				if (primaryKeys == null || primaryKeys.isEmpty()) {
-					DBDeleteUsingAllColumns allCols = new DBDeleteUsingAllColumns(row);
-					actions.addAll(allCols.getActions());
-				} else {
-					DBDeleteByPrimaryKey pk = new DBDeleteByPrimaryKey(row);
-					actions.addAll(pk.getActions());
-				}
-			} else {
-				DBDeleteByExample example = new DBDeleteByExample(row);
-				actions.addAll(example.getActions());
-			}
-		}
-		return actions;
-	}
-
-	/**
-	 * Creates a DBActionList of delete actions for the rows.
 	 *
 	 * <p>
 	 * The actions created can be applied on a particular database using
