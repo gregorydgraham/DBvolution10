@@ -290,7 +290,7 @@ public class DatabaseConnectionSettings {
 
 	public static DatabaseConnectionSettings getSettingsfromSystemUsingPrefix(String prefix) {
 		DatabaseConnectionSettings settings = new DatabaseConnectionSettings();
-		settings.setDBDatabase(System.getProperty(prefix + "dbdatabase"));
+		settings.setDbdatabase(System.getProperty(prefix + "dbdatabase"));
 		settings.setUsername(System.getProperty(prefix + "username"));
 		settings.setPassword(System.getProperty(prefix + "password"));
 		settings.setUrl(System.getProperty(prefix + "url"));
@@ -302,8 +302,8 @@ public class DatabaseConnectionSettings {
 		return settings;
 	}
 
-	public DBDatabase createDBDatabase() throws ClassNotFoundException, NoSuchMethodException, SecurityException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
-		Class<?> dbDatabaseClass = Class.forName(this.getDBDatabase());
+	public final DBDatabase createDBDatabase() throws ClassNotFoundException, NoSuchMethodException, SecurityException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+		Class<?> dbDatabaseClass = Class.forName(this.getDbdatabase());
 		Constructor<?> constructor = dbDatabaseClass.getConstructor(DatabaseConnectionSettings.class);
 		if (constructor == null) {
 			return null;
@@ -383,65 +383,58 @@ public class DatabaseConnectionSettings {
 
 	/**
 	 * @param host the host to set
-	 * @return
 	 */
-	public DatabaseConnectionSettings setHost(String host) {
+	public void setHost(String host) {
 		this.host = host;
-		return this;
+//		return this;
 	}
 
 	/**
 	 * @param port the port to set
-	 * @return
 	 */
-	public DatabaseConnectionSettings setPort(String port) {
+	public void setPort(String port) {
 		this.port = port;
-		return this;
+//		return this;
 	}
 
 	/**
 	 * @param instance the instance to set
-	 * @return
 	 */
-	public DatabaseConnectionSettings setInstance(String instance) {
+	public void setInstance(String instance) {
 		this.instance = instance;
-		return this;
+//		return this;
 	}
 
 	/**
 	 * @param database the database to set
-	 * @return
 	 */
-	public DatabaseConnectionSettings setDatabaseName(String database) {
+	public void setDatabaseName(String database) {
 		this.database = database;
-		return this;
+//		return this;
 	}
 
 	/**
 	 * @param username the username to set
-	 * @return
 	 */
-	public DatabaseConnectionSettings setUsername(String username) {
+	public void setUsername(String username) {
 		this.username = username;
-		return this;
+//		return this;
 	}
 
 	/**
 	 * @param password the password to set
-	 * @return
 	 */
-	public DatabaseConnectionSettings setPassword(String password) {
+	public void setPassword(String password) {
 		this.password = password;
-		return this;
+//		return this;
 	}
 
 	/**
 	 * @param schema the schema to set
-	 * @return
 	 */
-	public DatabaseConnectionSettings setSchema(String schema) {
+	public void setSchema(String schema) {
 		this.schema = schema;
-		return this;
+//		return this;
 	}
 
 	/**
@@ -476,11 +469,11 @@ public class DatabaseConnectionSettings {
 		}
 	}
 
-	public void setDBDatabase(String canonicalNameOfADBDatabaseSubclass) {
+	public void setDbdatabase(String canonicalNameOfADBDatabaseSubclass) {
 		this.dbdatabase = canonicalNameOfADBDatabaseSubclass;
 	}
 
-	public String getDBDatabase() {
+	public String getDbdatabase() {
 		return this.dbdatabase;
 	}
 }

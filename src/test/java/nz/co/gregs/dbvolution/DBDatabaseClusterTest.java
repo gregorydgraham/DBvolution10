@@ -301,7 +301,7 @@ public class DBDatabaseClusterTest extends AbstractTest {
 
 		DatabaseConnectionSettings source = new DatabaseConnectionSettings();
 //		DBDatabaseClusterWithConfigFile.DBDataSource source = new DBDatabaseClusterWithConfigFile.DBDataSource();
-		source.setDBDatabase(H2MemoryDB.class.getCanonicalName());
+		source.setDbdatabase(H2MemoryDB.class.getCanonicalName());
 //		source.setUrl("jdbc:h2:mem:DBDatabaseClusterWithConfigFile.h2");
 		source.setDatabaseName("DBDatabaseClusterWithConfigFile.h2");
 		source.setUsername("admin");
@@ -309,7 +309,7 @@ public class DBDatabaseClusterTest extends AbstractTest {
 
 		DatabaseConnectionSettings source2 = new DatabaseConnectionSettings();
 //		DBDatabaseClusterWithConfigFile.DBDataSource source2 = new DBDatabaseClusterWithConfigFile.DBDataSource();
-		source2.setDBDatabase(SQLiteDB.class.getCanonicalName());
+		source2.setDbdatabase(SQLiteDB.class.getCanonicalName());
 		source2.setUrl("jdbc:sqlite:DBDatabaseClusterWithConfigFile.sqlite");
 //		source2.setDatabaseName("DBDatabaseClusterWithConfigFile.sqlite");
 		source2.setUsername("admin");
@@ -372,7 +372,7 @@ public class DBDatabaseClusterTest extends AbstractTest {
 
 		DatabaseConnectionSettings source = new DatabaseConnectionSettings();
 //		DBDatabaseClusterWithConfigFile.DBDataSource source = new DBDatabaseClusterWithConfigFile.DBDataSource();
-		source.setDBDatabase(H2MemoryDB.class.getCanonicalName());
+		source.setDbdatabase(H2MemoryDB.class.getCanonicalName());
 //		source.setUrl("jdbc:h2:mem:DBDatabaseClusterWithConfigFile.h2");
 		source.setDatabaseName("DBDatabaseClusterWithConfigFile.h2");
 		source.setUsername("admin");
@@ -380,7 +380,7 @@ public class DBDatabaseClusterTest extends AbstractTest {
 
 		DatabaseConnectionSettings source2 = new DatabaseConnectionSettings();
 //		DBDatabaseClusterWithConfigFile.DBDataSource source2 = new DBDatabaseClusterWithConfigFile.DBDataSource();
-		source2.setDBDatabase(SQLiteDB.class.getCanonicalName());
+		source2.setDbdatabase(SQLiteDB.class.getCanonicalName());
 		source2.setUrl("jdbc:sqlite:DBDatabaseClusterWithConfigFile.sqlite");
 //		source2.setDatabaseName("DBDatabaseClusterWithConfigFile.sqlite");
 		source2.setUsername("admin");

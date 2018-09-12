@@ -28,6 +28,7 @@
  */
 package nz.co.gregs.dbvolution.databases;
 
+import java.lang.reflect.InvocationTargetException;
 import nz.co.gregs.dbvolution.internal.database.ClusterDetails;
 import nz.co.gregs.dbvolution.exceptions.UnableToRemoveLastDatabaseFromClusterException;
 import java.sql.Connection;
@@ -118,6 +119,14 @@ public class DBDatabaseCluster extends DBDatabase {
 		synchronizeSecondaryDatabases();
 	}
 
+	public DBDatabaseCluster(DatabaseConnectionSettings... settings) throws SQLException, InvocationTargetException, IllegalArgumentException, IllegalAccessException, InstantiationException, SecurityException, NoSuchMethodException, ClassNotFoundException {
+		this();
+		setDefinition(new ClusterDatabaseDefinition());
+		for (DatabaseConnectionSettings setting : settings) {
+			this.addDatabase(setting.createDBDatabase());
+		}
+	}
+
 	public synchronized DBStatement getClusterStatement() {
 		return clusterStatement;
 	}
@@ -135,7 +144,7 @@ public class DBDatabaseCluster extends DBDatabase {
 	 * @return <tt>true</tt> if the database has been added to the cluster.
 	 * @throws java.sql.SQLException
 	 */
-	public synchronized boolean addDatabase(DBDatabase database) throws SQLException {
+	public final synchronized boolean addDatabase(DBDatabase database) throws SQLException {
 		boolean add = details.add(database);
 		synchronizeAddedDatabases(false);
 		return add;
