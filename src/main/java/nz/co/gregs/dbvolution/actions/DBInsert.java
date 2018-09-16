@@ -109,8 +109,9 @@ public class DBInsert extends DBAction {
 		}
 		if (!dbInsert.generatedKeys.isEmpty() && !pksHaveBeenSet) {
 			final QueryableDatatype<?> pkQDT = primaryKeys.get(0);
-			new InternalQueryableDatatypeProxy(pkQDT).setValue(dbInsert.generatedKeys.get(0));
+			new InternalQueryableDatatypeProxy(pkQDT).setValueFromDatabase(dbInsert.generatedKeys.get(0));
 		}
+		row.setSimpleTypesToUnchanged();
 		return executedActions;
 	}
 
@@ -280,15 +281,15 @@ public class DBInsert extends DBAction {
 
 	private synchronized void setPrimaryKeyOfStoredRows(final long pkValue, DBRow table, final DBInsert newInsert) {
 		QueryableDatatype<?> pkQDT = this.originalRow.getPrimaryKeys().get(0);
-		new InternalQueryableDatatypeProxy(pkQDT).setValue(pkValue);
+		new InternalQueryableDatatypeProxy(pkQDT).setValueFromDatabase(pkValue);
 		pkQDT = this.row.getPrimaryKeys().get(0);
-		new InternalQueryableDatatypeProxy(pkQDT).setValue(pkValue);
+		new InternalQueryableDatatypeProxy(pkQDT).setValueFromDatabase(pkValue);
 		pkQDT = table.getPrimaryKeys().get(0);
-		new InternalQueryableDatatypeProxy(pkQDT).setValue(pkValue);
+		new InternalQueryableDatatypeProxy(pkQDT).setValueFromDatabase(pkValue);
 		pkQDT = newInsert.row.getPrimaryKeys().get(0);
-		new InternalQueryableDatatypeProxy(pkQDT).setValue(pkValue);
+		new InternalQueryableDatatypeProxy(pkQDT).setValueFromDatabase(pkValue);
 		pkQDT = newInsert.originalRow.getPrimaryKeys().get(0);
-		new InternalQueryableDatatypeProxy(pkQDT).setValue(pkValue);
+		new InternalQueryableDatatypeProxy(pkQDT).setValueFromDatabase(pkValue);
 	}
 
 	private InsertFields processAllFieldsForInsert(DBDatabase database, DBRow row) {

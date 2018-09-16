@@ -87,7 +87,7 @@ public class DBStatement implements Statement {
 	public ResultSet executeQuery(String sql) throws SQLException {
 		final String logSQL = "EXECUTING QUERY: " + sql;
 		database.printSQLIfRequested(logSQL);
-		LOG.debug(logSQL);
+//		LOG.debug(logSQL);
 		ResultSet executeQuery = null;
 		try {
 			executeQuery = getInternalStatement().executeQuery(sql);

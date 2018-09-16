@@ -400,6 +400,18 @@ public abstract class QueryableDatatype<T> extends Object implements Serializabl
 	}
 
 	/**
+	 * Used by {@link InternalQueryableDatatypeProxy#setValueFromDatabase(java.lang.Object)
+	 *
+	 * @param newLiteralValue the new value
+	 */
+	void setValueFromDatabase(T newLiteralValue) {
+		this.setLiteralValueInternal(newLiteralValue);
+		setValueHasBeenCalled=false;
+		changed=false;
+		setDefined(true);
+	}
+
+	/**
 	 * Set the value of this QDT to the value provided from the standard string
 	 * encoding of this datatype.
 	 *
@@ -422,6 +434,11 @@ public abstract class QueryableDatatype<T> extends Object implements Serializabl
 	 * @param newLiteralValue the literalValue to set
 	 */
 	protected synchronized void setLiteralValue(T newLiteralValue) {
+		setLiteralValueInternal(newLiteralValue);
+		this.setHasBeenSet(true);
+	}
+
+	private void setLiteralValueInternal(T newLiteralValue) {
 		QueryableDatatype.this.moveCurrentValueToPreviousValue(newLiteralValue);
 		if (newLiteralValue == null) {
 			setToNull();
@@ -435,7 +452,6 @@ public abstract class QueryableDatatype<T> extends Object implements Serializabl
 				this.setOperator(new DBEqualsOperator(this.copy()));
 			}
 		}
-		this.setHasBeenSet(true);
 	}
 
 	/**
@@ -953,6 +969,7 @@ public abstract class QueryableDatatype<T> extends Object implements Serializabl
 	 */
 	private synchronized void setHasBeenSet(boolean hasBeenSet) {
 		this.setValueHasBeenCalled = hasBeenSet;
+		this.setChanged(true);
 	}
 
 	/**

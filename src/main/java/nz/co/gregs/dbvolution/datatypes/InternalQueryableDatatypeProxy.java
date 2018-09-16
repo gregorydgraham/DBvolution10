@@ -2,8 +2,6 @@ package nz.co.gregs.dbvolution.datatypes;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import nz.co.gregs.dbvolution.exceptions.DBRuntimeException;
 import nz.co.gregs.dbvolution.internal.properties.PropertyWrapperDefinition;
 
@@ -63,6 +61,29 @@ public class InternalQueryableDatatypeProxy {
 				qdt.setToNull();
 			} else {
 				Method method = qdt.getClass().getMethod("setValue", obj.getClass());
+				method.invoke(qdt, obj);
+			}
+		} catch (NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
+			throw new DBRuntimeException("Synchronisation Failed:" + ex.getMessage(), ex);
+		}
+
+	}
+	/**
+	 * Internal class, do not use.
+	 * <p>
+	 * Hides the generic setValue(Object) method within QueryableDatatype while
+	 * allowing it to be used.
+	 *
+	 * @param obj	obj
+	 */
+	public void setValueFromDatabase(Object obj) {
+		try {
+			// TODO what type checking can/should be done here?
+			//internalQDT.setValue(internalValue);
+			if (obj == null) {
+				qdt.setToNull();
+			} else {
+				Method method = qdt.getClass().getMethod("setValueFromDatabase", obj.getClass());
 				method.invoke(qdt, obj);
 			}
 		} catch (NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
