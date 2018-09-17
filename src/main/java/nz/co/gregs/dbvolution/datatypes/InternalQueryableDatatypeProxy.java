@@ -2,6 +2,8 @@ package nz.co.gregs.dbvolution.datatypes;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import nz.co.gregs.dbvolution.exceptions.DBRuntimeException;
 import nz.co.gregs.dbvolution.internal.properties.PropertyWrapperDefinition;
 
@@ -68,6 +70,7 @@ public class InternalQueryableDatatypeProxy {
 		}
 
 	}
+
 	/**
 	 * Internal class, do not use.
 	 * <p>
@@ -83,8 +86,27 @@ public class InternalQueryableDatatypeProxy {
 			if (obj == null) {
 				qdt.setToNull();
 			} else {
-				Method method = qdt.getClass().getMethod("setValueFromDatabase", obj.getClass());
-				method.invoke(qdt, obj);
+				Method method = null;
+				Class qdtClass = qdt.getClass();
+				NoSuchMethodException nsmEx = null;
+				while (method == null && !qdtClass.equals(Object.class)) {
+					try {
+						method = qdtClass.getDeclaredMethod("setValueFromDatabase", obj.getClass());
+					} catch (NoSuchMethodException ex) {
+						try {
+							method = qdtClass.getDeclaredMethod("setValueFromDatabase", Object.class);
+						} catch (NoSuchMethodException ex2) {
+							nsmEx = ex;
+						}
+					}
+					qdtClass = qdtClass.getSuperclass();
+				}
+				if (method != null) {
+					method.setAccessible(true);
+					method.invoke(qdt, obj);
+				} else {
+					throw nsmEx;
+				}
 			}
 		} catch (NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
 			throw new DBRuntimeException("Synchronisation Failed:" + ex.getMessage(), ex);
