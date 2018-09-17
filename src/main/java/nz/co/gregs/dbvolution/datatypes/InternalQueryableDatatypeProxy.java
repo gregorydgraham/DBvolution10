@@ -87,7 +87,7 @@ public class InternalQueryableDatatypeProxy {
 				qdt.setToNull();
 			} else {
 				Method method = null;
-				Class qdtClass = qdt.getClass();
+				Class<?> qdtClass = qdt.getClass();
 				NoSuchMethodException nsmEx = null;
 				while (method == null && !qdtClass.equals(Object.class)) {
 					try {
