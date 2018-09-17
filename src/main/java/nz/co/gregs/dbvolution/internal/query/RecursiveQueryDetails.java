@@ -78,6 +78,7 @@ public class RecursiveQueryDetails<T extends DBRow> extends QueryDetails {
 	private ColumnProvider keyToFollow;
 	private T typeToReturn = null;
 	private RecursiveSQLDirection recursiveQueryDirection = RecursiveSQLDirection.TOWARDS_ROOT;
+	private int maximumDepth = 10;
 
 	/**
 	 * @return the originalQuery
@@ -317,10 +318,15 @@ public class RecursiveQueryDetails<T extends DBRow> extends QueryDetails {
 			if (direction == RecursiveSQLDirection.TOWARDS_ROOT) {
 				addAscendingExpressionToQuery(recursiveDetails, originatingRow, foreignKeyToFollow, referencedRow, newQuery);
 			}
+			String depthColumnName = database.getDefinition().getRecursiveQueryDepthColumnName();
+			RecursiveQueryDepthIncreaseExpression depthExpression = new RecursiveQueryDepthIncreaseExpression();
+			DBNumber depthColumn = depthExpression.asExpressionColumn();
 
-			newQuery.addExpressionColumn(database.getDefinition().getRecursiveQueryDepthColumnName(),
-					new RecursiveQueryDepthIncreaseExpression().asExpressionColumn()
-			);
+			newQuery.addExpressionColumn(depthColumnName, depthColumn);
+			if (getMaximumDepth() > 0) {
+				// depthExpression is the depth column +1 so add one to the max depth
+				newQuery.addCondition(depthExpression.isLessThan(getMaximumDepth()+1));
+			}
 
 		} catch (InstantiationException | IllegalAccessException ex) {
 			throw new UnableToInstantiateDBRowSubclassException(referencedClass, ex);
@@ -494,6 +500,18 @@ public class RecursiveQueryDetails<T extends DBRow> extends QueryDetails {
 		} else {
 			throw new UnsupportedOperationException("Only Integer, Number, and String Primary Keys are supported.");
 		}
+	}
+
+	public int getMaximumDepth() {
+		return maximumDepth;
+	}
+
+	public void setMaximumDepth(int maxDepth) {
+		maximumDepth = maxDepth;
+	}
+
+	public void ignoreMaximumDepth() {
+		maximumDepth = -1;
 	}
 
 }

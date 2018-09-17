@@ -171,8 +171,10 @@ public class DBRecursiveQuery<T extends DBRow> {
 		List<T> resultsList = new ArrayList<>();
 		queryDetails.setRecursiveQueryDirection(RecursiveSQLDirection.TOWARDS_LEAVES);
 		List<DBQueryRow> descendants = this.getRowsFromRecursiveQuery(queryDetails);
+		T returnType = getReturnType(queryDetails);
 		for (DBQueryRow descendant : descendants) {
-			resultsList.add(descendant.get(getReturnType(queryDetails)));
+			T actualDescendant = descendant.get(returnType);
+			resultsList.add(actualDescendant);
 		}
 		return resultsList;
 	}
@@ -200,7 +202,9 @@ public class DBRecursiveQuery<T extends DBRow> {
 		List<DBQueryRow> ancestors = this.getRowsFromRecursiveQuery(queryDetails);
 		for (DBQueryRow ancestor : ancestors) {
 			final T got = ancestor.get(getReturnType(queryDetails));
-			resultsList.add(got);
+			if (!resultsList.contains(got)) {
+				resultsList.add(got);
+			}
 		}
 		return resultsList;
 	}
