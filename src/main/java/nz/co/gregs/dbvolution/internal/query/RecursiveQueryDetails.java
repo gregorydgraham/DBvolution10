@@ -413,7 +413,8 @@ public class RecursiveQueryDetails<T extends DBRow> extends QueryDetails {
 		dbQuery.setTimeoutInMilliseconds((int) (timeout - (new java.util.Date().getTime() - start)));
 		List<DBQueryRow> allRows = dbQuery.getAllRows();
 
-		while (allRows.size() > 0) {
+		int iteration = 0;
+		while (allRows.size() > 0 && iteration < getMaximumDepth()) {
 			List<String> recurseValues = new ArrayList<>();
 			returnList.addAll(allRows);
 			for (DBQueryRow row : allRows) {
@@ -452,6 +453,7 @@ public class RecursiveQueryDetails<T extends DBRow> extends QueryDetails {
 				dbQuery1.setTimeoutInMilliseconds((int) (timeout - (new java.util.Date().getTime() - start)));
 				allRows = dbQuery1.getAllRows();
 			}
+			iteration++;
 		}
 
 		return returnList;

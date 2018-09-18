@@ -260,11 +260,12 @@ public class DBRecursiveQuery<T extends DBRow> {
 	public synchronized List<TreeNode<T>> getPathsToRoot() throws SQLException, AccidentalCartesianJoinException, AccidentalBlankQueryException {
 		List<T> ancestors = getAncestors();
 		List<TreeNode<T>> paths = new ArrayList<>();
-		List<T> alreadyProcessed = new ArrayList<>();
+		List<String> alreadyProcessed = new ArrayList<>();
 		Map<String, TreeNode<T>> parentMap = new HashMap<>();
 		Map<String, List<TreeNode<T>>> childrenMap = new HashMap<>();
 		for (T currentRow : ancestors) {
-			if (!alreadyProcessed.contains(currentRow)) {
+			String currentRowString = currentRow.toString();
+			if (!alreadyProcessed.contains(currentRowString)) {
 				TreeNode<T> currentNode = new TreeNode<>(currentRow);
 				final String parentPKValue = queryDetails.getKeyToFollow().getColumn().getAppropriateQDTFromRow(currentRow).stringValue();
 				TreeNode<T> parent = parentMap.get(parentPKValue);
@@ -292,7 +293,7 @@ public class DBRecursiveQuery<T extends DBRow> {
 						paths.add(currentNode);
 					}
 				}
-				alreadyProcessed.add(currentRow);
+				alreadyProcessed.add(currentRowString);
 			}
 		}
 		return paths;
@@ -333,11 +334,12 @@ public class DBRecursiveQuery<T extends DBRow> {
 	public synchronized List<TreeNode<T>> getTrees() throws SQLException, AccidentalCartesianJoinException, AccidentalBlankQueryException {
 		List<T> descendants = getDescendants();
 		List<TreeNode<T>> trees = new ArrayList<>();
-		List<T> alreadyProcessed = new ArrayList<>();
+		List<String> alreadyProcessed = new ArrayList<>();
 		Map<String, TreeNode<T>> parentMap = new HashMap<>();
 		Map<String, List<TreeNode<T>>> childrenMap = new HashMap<>();
 		for (T currentRow : descendants) {
-			if (!alreadyProcessed.contains(currentRow)) {
+			final String currentRowString = currentRow.toString();
+			if (!alreadyProcessed.contains(currentRowString)) {
 				String parentPKValue = queryDetails.getKeyToFollow().getColumn().getAppropriateQDTFromRow(currentRow).stringValue();
 				final List<QueryableDatatype<?>> pks = currentRow.getPrimaryKeys();
 				for (QueryableDatatype<?> pk : pks) {
@@ -368,7 +370,7 @@ public class DBRecursiveQuery<T extends DBRow> {
 //					trees.remove(currentNode);
 					}
 				}
-				alreadyProcessed.add(currentRow);
+				alreadyProcessed.add(currentRowString);
 			}
 		}
 		return trees;
