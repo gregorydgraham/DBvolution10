@@ -202,9 +202,9 @@ public class DBRecursiveQuery<T extends DBRow> {
 		List<DBQueryRow> ancestors = this.getRowsFromRecursiveQuery(queryDetails);
 		for (DBQueryRow ancestor : ancestors) {
 			final T got = ancestor.get(getReturnType(queryDetails));
-			if (!resultsList.contains(got)) {
-				resultsList.add(got);
-			}
+//			if (!resultsList.contains(got)) {
+			resultsList.add(got);
+//			}
 		}
 		return resultsList;
 	}
@@ -260,40 +260,39 @@ public class DBRecursiveQuery<T extends DBRow> {
 	public synchronized List<TreeNode<T>> getPathsToRoot() throws SQLException, AccidentalCartesianJoinException, AccidentalBlankQueryException {
 		List<T> ancestors = getAncestors();
 		List<TreeNode<T>> paths = new ArrayList<>();
+		List<T> alreadyProcessed = new ArrayList<>();
 		Map<String, TreeNode<T>> parentMap = new HashMap<>();
 		Map<String, List<TreeNode<T>>> childrenMap = new HashMap<>();
 		for (T currentRow : ancestors) {
-			TreeNode<T> currentNode = new TreeNode<>(currentRow);
-			final String parentPKValue = queryDetails.getKeyToFollow().getColumn().getAppropriateQDTFromRow(currentRow).stringValue();
-			TreeNode<T> parent = parentMap.get(parentPKValue);
-			if (parent != null) {
-				parent.addChild(currentNode);
-			} else {
-				List<TreeNode<T>> listOfChildren = childrenMap.get(parentPKValue);
-				if (listOfChildren == null) {
-					listOfChildren = new ArrayList<>();
-					childrenMap.put(parentPKValue, listOfChildren);
-				}
-				listOfChildren.add(currentNode);
-			}
-			final List<QueryableDatatype<?>> primaryKeys = currentRow.getPrimaryKeys();
-			for (QueryableDatatype<?> primaryKey : primaryKeys) {
-				String pkValue = primaryKey.stringValue();
-				List<TreeNode<T>> children = childrenMap.get(pkValue);
-				if (children != null) {
-					for (TreeNode<T> child : children) {
-						currentNode.addChild(child);
-					}
-					childrenMap.remove(pkValue);
-				}
-				parentMap.put(pkValue, currentNode);
-				parent = currentNode.getParent();
+			if (!alreadyProcessed.contains(currentRow)) {
+				TreeNode<T> currentNode = new TreeNode<>(currentRow);
+				final String parentPKValue = queryDetails.getKeyToFollow().getColumn().getAppropriateQDTFromRow(currentRow).stringValue();
+				TreeNode<T> parent = parentMap.get(parentPKValue);
 				if (parent != null) {
-					paths.remove(parent);
+					parent.addChild(currentNode);
+				} else {
+					List<TreeNode<T>> listOfChildren = childrenMap.get(parentPKValue);
+					if (listOfChildren == null) {
+						listOfChildren = new ArrayList<>();
+						childrenMap.put(parentPKValue, listOfChildren);
+					}
+					listOfChildren.add(currentNode);
 				}
-				if (currentNode.getChildren().isEmpty()) {
-					paths.add(currentNode);
+				final List<QueryableDatatype<?>> primaryKeys = currentRow.getPrimaryKeys();
+				for (QueryableDatatype<?> primaryKey : primaryKeys) {
+					String pkValue = primaryKey.stringValue();
+					List<TreeNode<T>> children = childrenMap.get(pkValue);
+					if (children != null) {
+						for (TreeNode<T> child : children) {
+							currentNode.addChild(child);
+						}
+					}
+					parentMap.put(pkValue, currentNode);
+					if (currentNode.getChildren().isEmpty()) {
+						paths.add(currentNode);
+					}
 				}
+				alreadyProcessed.add(currentRow);
 			}
 		}
 		return paths;
@@ -334,38 +333,42 @@ public class DBRecursiveQuery<T extends DBRow> {
 	public synchronized List<TreeNode<T>> getTrees() throws SQLException, AccidentalCartesianJoinException, AccidentalBlankQueryException {
 		List<T> descendants = getDescendants();
 		List<TreeNode<T>> trees = new ArrayList<>();
+		List<T> alreadyProcessed = new ArrayList<>();
 		Map<String, TreeNode<T>> parentMap = new HashMap<>();
 		Map<String, List<TreeNode<T>>> childrenMap = new HashMap<>();
 		for (T currentRow : descendants) {
-			String parentPKValue = queryDetails.getKeyToFollow().getColumn().getAppropriateQDTFromRow(currentRow).stringValue();
-			final List<QueryableDatatype<?>> pks = currentRow.getPrimaryKeys();
-			for (QueryableDatatype<?> pk : pks) {
-				String pkValue = pk.stringValue();
-				TreeNode<T> currentNode = new TreeNode<>(currentRow);
-				List<TreeNode<T>> children = childrenMap.get(pkValue);
-				if (children != null) {
-					for (TreeNode<T> child : children) {
-						currentNode.addChild(child);
-						trees.remove(child);
+			if (!alreadyProcessed.contains(currentRow)) {
+				String parentPKValue = queryDetails.getKeyToFollow().getColumn().getAppropriateQDTFromRow(currentRow).stringValue();
+				final List<QueryableDatatype<?>> pks = currentRow.getPrimaryKeys();
+				for (QueryableDatatype<?> pk : pks) {
+					String pkValue = pk.stringValue();
+					TreeNode<T> currentNode = new TreeNode<>(currentRow);
+					List<TreeNode<T>> children = childrenMap.get(pkValue);
+					if (children != null) {
+						for (TreeNode<T> child : children) {
+							currentNode.addChild(child);
+//						trees.remove(child);
+						}
+					}
+					parentMap.put(pkValue, currentNode);
+					TreeNode<T> parent = parentMap.get(parentPKValue);
+					if (parent != null) {
+						parent.addChild(currentNode);
+					} else {
+						List<TreeNode<T>> listOfChildren = childrenMap.get(parentPKValue);
+						if (listOfChildren == null) {
+							listOfChildren = new ArrayList<>();
+							childrenMap.put(parentPKValue, listOfChildren);
+						}
+						listOfChildren.add(currentNode);
+					}
+					if (currentNode.getParent() == null) {
+						trees.add(currentNode);
+					} else {
+//					trees.remove(currentNode);
 					}
 				}
-				parentMap.put(pkValue, currentNode);
-				TreeNode<T> parent = parentMap.get(parentPKValue);
-				if (parent != null) {
-					parent.addChild(currentNode);
-				} else {
-					List<TreeNode<T>> listOfChildren = childrenMap.get(parentPKValue);
-					if (listOfChildren == null) {
-						listOfChildren = new ArrayList<>();
-						childrenMap.put(parentPKValue, listOfChildren);
-					}
-					listOfChildren.add(currentNode);
-				}
-				if (currentNode.getParent() == null) {
-					trees.add(currentNode);
-				} else {
-					trees.remove(currentNode);
-				}
+				alreadyProcessed.add(currentRow);
 			}
 		}
 		return trees;
@@ -376,5 +379,20 @@ public class DBRecursiveQuery<T extends DBRow> {
 			queryDetails.getOriginalQuery().getDatabase().executeDBQuery(queryDetails);
 		}
 		return queryDetails.getResults();
+	}
+
+	public DBRecursiveQuery<T> setMaximumDepth(int maximumDepth) {
+		this.queryDetails.setMaximumDepth(maximumDepth);
+		return this;
+	}
+
+	public DBRecursiveQuery<T> setMaximumDepthOff() {
+		this.queryDetails.setMaximumDepthOff();
+		return this;
+	}
+
+	public DBRecursiveQuery<T> setMaximumDepthToDefault() {
+		this.queryDetails.setMaximumDepth(RecursiveQueryDetails.MAXIMUM_DEPTH_DEFAULT);
+		return this;
 	}
 }

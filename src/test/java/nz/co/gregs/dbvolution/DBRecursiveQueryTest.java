@@ -294,7 +294,7 @@ public class DBRecursiveQueryTest extends AbstractTest {
 		recursive = new DBRecursiveQuery<Parts>(baseQuery, part.column(part.subPartOf));
 		trees = recursive.getTrees();
 
-		Assert.assertThat(trees.size(), is(1));
+		Assert.assertThat(trees.size(), is(3));
 		final TreeNode<Parts> wingProbably = trees.get(0);
 		Assert.assertThat(wingProbably.getData().name.stringValue(), is("wing"));
 		final List<TreeNode<Parts>> wingChildren = trees.get(0).getChildren();
@@ -306,6 +306,17 @@ public class DBRecursiveQueryTest extends AbstractTest {
 		Assert.assertThat(aileronChildren.size(), is(2));
 		Assert.assertThat(aileronChildren.get(0).getData().name.stringValue(), anyOf(is("lever"), is("screw")));
 		Assert.assertThat(aileronChildren.get(1).getData().name.stringValue(), anyOf(is("lever"), is("screw")));
+		
+		TreeNode<Parts> oneTree = trees.get(1);
+		Assert.assertThat(oneTree.getData().name.stringValue(), is("lever"));
+		List<TreeNode<Parts>> children = oneTree.getChildren();
+		Assert.assertThat(children.size(), is(0));
+		
+		oneTree = trees.get(2);
+		Assert.assertThat(oneTree.getData().name.stringValue(), is("screw"));
+		children = oneTree.getChildren();
+		Assert.assertThat(children.size(), is(0));
+		
 	}
 
 	@Test
@@ -354,8 +365,60 @@ public class DBRecursiveQueryTest extends AbstractTest {
 				findTheAileronQuery, aileronID.column(aileronID.fkToParts));
 	}
 
-	//TODO Generate a Tree from the list of descendants.
-	// TODO Investigate need for "part_id"
+	@Test 
+	public void copesWithLoopInPathToRoot() throws SQLException {
+		Parts tail = new Parts();
+		tail.name.setValue("Tail");
+		database.insert(tail);
+		Parts fuselage = new Parts();
+		fuselage.name.setValue("Fuselage");
+		database.insert(fuselage);
+		tail.subPartOf.setValue(fuselage.partID);
+		fuselage.subPartOf.setValue(tail.partID);
+		database.update(tail, fuselage);
+
+		Parts example = new Parts();
+		example.name.permittedValues("Fuselage");
+		final DBQuery query = database.getDBQuery(example);
+
+		DBRecursiveQuery<Parts> recursive 
+				= new DBRecursiveQuery<Parts>(query, example.column(example.subPartOf));
+		List<TreeNode<Parts>> pathsToRoot = recursive.getPathsToRoot();
+		Assert.assertThat(pathsToRoot.size(), is(1));
+		TreeNode<Parts> path = pathsToRoot.get(0);
+
+		Assert.assertThat(path.getData().name.stringValue(), is("Fuselage"));
+		Assert.assertThat(path.getParent().getData().name.stringValue(), is("Tail"));
+		database.delete(tail, fuselage);
+	}
+
+	@Test 
+	public void copesWithLoopInTrees() throws SQLException {
+		Parts nose = new Parts();
+		nose.name.setValue("Nose");
+		database.insert(nose);
+		Parts cockpit = new Parts();
+		cockpit.name.setValue("Cockpit");
+		database.insert(cockpit);
+		nose.subPartOf.setValue(cockpit.partID);
+		cockpit.subPartOf.setValue(nose.partID);
+		database.update(nose, cockpit);
+
+		Parts example = new Parts();
+		example.name.permittedValues("Cockpit");
+		final DBQuery query = database.getDBQuery(example);
+
+		DBRecursiveQuery<Parts> recursive 
+				= new DBRecursiveQuery<Parts>(query, example.column(example.subPartOf));
+		List<TreeNode<Parts>> trees = recursive.getTrees();
+		Assert.assertThat(trees.size(), is(1));
+		TreeNode<Parts> path = trees.get(0);
+
+		Assert.assertThat(path.getData().name.stringValue(), is("Cockpit"));
+		Assert.assertThat(path.getParent().getData().name.stringValue(), is("Nose"));
+		database.delete(nose, cockpit);
+	}
+
 	@DBTableName("parts")
 	public static class Parts extends DBRow {
 

@@ -78,7 +78,8 @@ public class RecursiveQueryDetails<T extends DBRow> extends QueryDetails {
 	private ColumnProvider keyToFollow;
 	private T typeToReturn = null;
 	private RecursiveSQLDirection recursiveQueryDirection = RecursiveSQLDirection.TOWARDS_ROOT;
-	private int maximumDepth = 10;
+	public static final  int MAXIMUM_DEPTH_DEFAULT = 10;
+	private int maximumDepth = MAXIMUM_DEPTH_DEFAULT;
 
 	/**
 	 * @return the originalQuery
@@ -510,7 +511,7 @@ public class RecursiveQueryDetails<T extends DBRow> extends QueryDetails {
 		maximumDepth = maxDepth;
 	}
 
-	public void ignoreMaximumDepth() {
+	public void setMaximumDepthOff() {
 		maximumDepth = -1;
 	}
 
