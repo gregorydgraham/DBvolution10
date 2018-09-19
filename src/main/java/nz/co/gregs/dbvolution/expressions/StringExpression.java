@@ -520,7 +520,63 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 	 * @return a BooleanExpression of the SQL comparison.
 	 */
 	public BooleanExpression contains(StringResult string) {
-		return isLike(value(string).prepend("%").append("%"));
+		return contains(value(string));
+	}
+
+	/**
+	 * Creates a query comparison using the LIKE operator.
+	 *
+	 * <p>
+	 * Use this comparison to generate a BooleanExpression that compares the
+	 * current StringExpression to the supplied SQL pattern.
+	 *
+	 * @param string
+	 * @return a BooleanExpression of the SQL comparison.
+	 */
+	public BooleanExpression startsWith(String string) {
+		return startsWith(value(string));
+	}
+
+	/**
+	 * Creates a query comparison using the LIKE operator.
+	 *
+	 * <p>
+	 * Use this comparison to generate a BooleanExpression that compares the
+	 * current StringExpression to the supplied SQL pattern.
+	 *
+	 * @param string
+	 * @return a BooleanExpression of the SQL comparison.
+	 */
+	public BooleanExpression endsWith(String string) {
+		return endsWith(value(string));
+	}
+
+	/**
+	 * Creates a query comparison using the LIKE operator.
+	 *
+	 * <p>
+	 * Use this comparison to generate a BooleanExpression that compares the
+	 * current StringExpression to the supplied SQL pattern.
+	 *
+	 * @param string
+	 * @return a BooleanExpression of the SQL comparison.
+	 */
+	public BooleanExpression startsWith(StringResult string) {
+		return isLike(value(string).append("%"));
+	}
+
+	/**
+	 * Creates a query comparison using the LIKE operator.
+	 *
+	 * <p>
+	 * Use this comparison to generate a BooleanExpression that compares the
+	 * current StringExpression to the supplied SQL pattern.
+	 *
+	 * @param string
+	 * @return a BooleanExpression of the SQL comparison.
+	 */
+	public BooleanExpression endsWith(StringResult string) {
+		return isLike(value(string).prepend("%"));
 	}
 
 	/**
