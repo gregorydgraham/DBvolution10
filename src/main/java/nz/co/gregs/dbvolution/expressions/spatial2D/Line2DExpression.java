@@ -645,7 +645,7 @@ public class Line2DExpression extends Spatial2DExpression<LineString, Line2DResu
 	 * 2 lines.
 	 */
 	public MultiPoint2DExpression intersectionPoints(Line2DResult crossingLine) {
-		return new MultiPoint2DExpression(new InsectionPointsExpression(this, new Line2DExpression(crossingLine)));
+		return new MultiPoint2DExpression(new IntersectionPointsExpression(this, new Line2DExpression(crossingLine)));
 	}
 
 	/**
@@ -1474,9 +1474,9 @@ public class Line2DExpression extends Spatial2DExpression<LineString, Line2DResu
 		}
 	}
 
-	protected static class InsectionPointsExpression extends LineLineWithMultiPoint2DResult {
+	protected static class IntersectionPointsExpression extends LineLineWithMultiPoint2DResult {
 
-		public InsectionPointsExpression(Line2DExpression first, Line2DExpression second) {
+		public IntersectionPointsExpression(Line2DExpression first, Line2DExpression second) {
 			super(first, second);
 		}
 		private final static long serialVersionUID = 1l;
@@ -1487,8 +1487,8 @@ public class Line2DExpression extends Spatial2DExpression<LineString, Line2DResu
 		}
 
 		@Override
-		public InsectionPointsExpression copy() {
-			return new Line2DExpression.InsectionPointsExpression(
+		public IntersectionPointsExpression copy() {
+			return new Line2DExpression.IntersectionPointsExpression(
 					getFirst() == null ? null : getFirst().copy(),
 					getSecond() == null ? null : getSecond().copy()
 			);
