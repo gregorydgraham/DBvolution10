@@ -484,6 +484,46 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 	}
 
 	/**
+	 * Creates a query comparison using the LIKE operator.
+	 *
+	 * <p>
+	 * Use this comparison to generate a BooleanExpression that compares the
+	 * current StringExpression to the supplied SQL pattern.
+	 *
+	 * <p>
+	 * DBvolution does not process the SQL pattern so please ensure that it
+	 * conforms to the database's implementation of LIKE. Most implementations
+	 * only provide access to the "_" and "%" wildcards but there may be
+	 * exceptions.
+	 *
+	 * @param string
+	 * @return a BooleanExpression of the SQL comparison.
+	 */
+	public BooleanExpression contains(String string) {
+		return contains(value(string));
+	}
+
+	/**
+	 * Creates a query comparison using the LIKE operator.
+	 *
+	 * <p>
+	 * Use this comparison to generate a BooleanExpression that compares the
+	 * current StringExpression to the supplied SQL pattern.
+	 *
+	 * <p>
+	 * DBvolution does not process the SQL pattern so please ensure that it
+	 * conforms to the database's implementation of LIKE. Most implementations
+	 * only provide access to the "_" and "%" wildcards but there may be
+	 * exceptions.
+	 *
+	 * @param string
+	 * @return a BooleanExpression of the SQL comparison.
+	 */
+	public BooleanExpression contains(StringResult string) {
+		return isLike(value(string).prepend("%").append("%"));
+	}
+
+	/**
 	 * Like LESSTHAN_OR_EQUAL but only includes the EQUAL values if the fallback
 	 * matches.
 	 *
@@ -2398,6 +2438,14 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 	@Override
 	public StringResult expression(DBString value) {
 		return new StringExpression(value);
+	}
+
+	public StringExpression prepend(String string) {
+		return StringExpression.value(string).append(this);
+	}
+
+	public StringExpression prepend(StringResult string) {
+		return value(string).append(this);
 	}
 
 	private static abstract class DBBinaryStringArithmetic extends StringExpression {
