@@ -530,6 +530,26 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 	 * Use this comparison to generate a BooleanExpression that compares the
 	 * current StringExpression to the supplied SQL pattern.
 	 *
+	 * <p>
+	 * DBvolution does not process the SQL pattern so please ensure that it
+	 * conforms to the database's implementation of LIKE. Most implementations
+	 * only provide access to the "_" and "%" wildcards but there may be
+	 * exceptions.
+	 *
+	 * @param string
+	 * @return a BooleanExpression of the SQL comparison.
+	 */
+	public BooleanExpression contains(StringExpression string) {
+		return this.isLike(string.prepend("%").append("%"));
+	}
+
+	/**
+	 * Creates a query comparison using the LIKE operator.
+	 *
+	 * <p>
+	 * Use this comparison to generate a BooleanExpression that compares the
+	 * current StringExpression to the supplied SQL pattern.
+	 *
 	 * @param string
 	 * @return a BooleanExpression of the SQL comparison.
 	 */

@@ -551,6 +551,27 @@ public class StringExpressionTest extends AbstractTest {
 	}
 
 	@Test
+	public void testStringContains() throws SQLException {
+
+		Marque marq = new Marque();
+		marq.name.clear();
+		DBQuery query = database.getDBQuery(marq);
+
+		query.addCondition(
+				BooleanExpression.anyOf(
+						marq.column(marq.name).lowercase().contains("oyo"),
+						marq.column(marq.name).lowercase().contains("lv")
+				)
+		);
+		query.setSortOrder(marq.column(marq.name));
+		List<Marque> got = query.getAllInstancesOf(marq);
+
+		Assert.assertThat(got.size(), is(2));
+		Assert.assertThat((got.get(0)).name.stringValue(), is("TOYOTA"));
+		Assert.assertThat((got.get(1)).name.stringValue(), is("VOLVO"));
+	}
+
+	@Test
 	public void testStringBetweenInclusiveResultLeft() throws SQLException {
 
 		Marque marq = new Marque();
@@ -560,6 +581,50 @@ public class StringExpressionTest extends AbstractTest {
 		query.addCondition(
 				marq.column(marq.name).lowercase()
 						.isBetweenInclusive(StringExpression.value("toy"), "volvo"));
+		query.setSortOrder(marq.column(marq.name));
+		List<Marque> got = query.getAllInstancesOf(marq);
+
+		Assert.assertThat(got.size(), is(2));
+		Assert.assertThat((got.get(0)).name.stringValue(), is("TOYOTA"));
+		Assert.assertThat((got.get(1)).name.stringValue(), is("VOLVO"));
+	}
+
+	@Test
+	public void testStringStartsWith() throws SQLException {
+
+		Marque marq = new Marque();
+		marq.name.clear();
+		DBQuery query = database.getDBQuery(marq);
+		StringExpression lowercase = marq.column(marq.name).lowercase();
+
+		query.addCondition(
+				BooleanExpression.anyOf(
+						lowercase.startsWith("toyo"),
+						lowercase.startsWith("vo")
+				)
+		);
+		query.setSortOrder(marq.column(marq.name));
+		List<Marque> got = query.getAllInstancesOf(marq);
+
+		Assert.assertThat(got.size(), is(2));
+		Assert.assertThat((got.get(0)).name.stringValue(), is("TOYOTA"));
+		Assert.assertThat((got.get(1)).name.stringValue(), is("VOLVO"));
+	}
+
+	@Test
+	public void testStringEndsWith() throws SQLException {
+
+		Marque marq = new Marque();
+		marq.name.clear();
+		DBQuery query = database.getDBQuery(marq);
+		StringExpression lowercase = marq.column(marq.name).lowercase();
+
+		query.addCondition(
+				BooleanExpression.anyOf(
+						lowercase.endsWith("ota"),
+						lowercase.endsWith("lvo")
+				)
+		);
 		query.setSortOrder(marq.column(marq.name));
 		List<Marque> got = query.getAllInstancesOf(marq);
 
@@ -760,7 +825,7 @@ public class StringExpressionTest extends AbstractTest {
 		final DBTable<FindFirstIntegerTable> query = database.getDBTable(tab)
 				.setBlankQueryAllowed(true)
 				.setSortOrder(tab.column(tab.sample));
-		
+
 		List<FindFirstIntegerTable> allRows = query.getAllRows();
 
 		if (allRows.size() != 14) {
