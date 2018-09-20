@@ -25,6 +25,7 @@ import java.util.Set;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.columns.StringColumn;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
+import nz.co.gregs.dbvolution.databases.definitions.H2DBDefinition;
 import nz.co.gregs.dbvolution.datatypes.*;
 import nz.co.gregs.dbvolution.results.AnyResult;
 import nz.co.gregs.dbvolution.results.ExpressionHasStandardStringResult;
@@ -133,7 +134,7 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 			stringNullProtectionRequired = true;
 		} else {
 			final String value = stringVariable.getValue();
-			stringNullProtectionRequired = value==null||value.isEmpty();
+			stringNullProtectionRequired = value == null || value.isEmpty();
 		}
 	}
 
@@ -254,7 +255,7 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 	@Override
 	public StringExpression copy() {
 		//return isNullSafetyTerminator() ? nullString() : new StringExpression((AnyResult<?>) getInnerResult().copy());
-		return new StringExpression((AnyResult<?>) (getInnerResult()==null?null:getInnerResult().copy()));
+		return new StringExpression((AnyResult<?>) (getInnerResult() == null ? null : getInnerResult().copy()));
 	}
 
 	@Override
@@ -265,7 +266,7 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 
 	@Override
 	public boolean getIncludesNull() {
-		return stringNullProtectionRequired==true || super.getIncludesNull();
+		return stringNullProtectionRequired == true || super.getIncludesNull();
 	}
 
 	/**
@@ -516,6 +517,107 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 	 * only provide access to the "_" and "%" wildcards but there may be
 	 * exceptions.
 	 *
+	 * @param strings
+	 * @return a BooleanExpression of the SQL comparison.
+	 */
+	public BooleanExpression containsAnyOf(String... strings) {
+		List<BooleanExpression> bools = new ArrayList<>();
+		for (String string : strings) {
+			bools.add(this.contains(string));
+		}
+		BooleanExpression[] boolArray = bools.toArray(new BooleanExpression[]{});
+		return BooleanExpression.anyOf(boolArray);
+	}
+
+	/**
+	 * Advanced search that lowercases everything, requires search terms with a
+	 * plus (+requiredterm), and removes search terms with a minus (-neverthis).
+	 *
+	 * <p>
+	 * Use this comparison to generate a BooleanExpression that compares the
+	 * current StringExpression to the supplied SQL pattern.
+	 *
+	 * <p>
+	 * DBvolution does not process the SQL pattern so please ensure that it
+	 * conforms to the database's implementation of LIKE. Most implementations
+	 * only provide access to the "_" and "%" wildcards but there may be
+	 * exceptions.
+	 *
+	 * @param strings
+	 * @return a BooleanExpression of the SQL comparison.
+	 */
+	public BooleanExpression searchFor(String... strings) {
+		List<BooleanExpression> optionalBools = new ArrayList<>();
+		optionalBools.add(BooleanExpression.trueExpression());
+		List<BooleanExpression> requiredBools = new ArrayList<>();
+		List<BooleanExpression> excludedBools = new ArrayList<>();
+		for (String string : strings) {
+			if (string.startsWith("+")) {
+				BooleanExpression contains = this.containsIgnoreCase(string.replaceFirst("\\+", ""));
+				requiredBools.add(contains);
+			} else if (string.startsWith("-")) {
+				BooleanExpression contains = this.containsIgnoreCase(string.replaceFirst("\\-", ""));
+				excludedBools.add(contains);
+			} else {
+				BooleanExpression contains = this.containsIgnoreCase(string);
+				optionalBools.add(contains);
+			}
+		}
+		BooleanExpression[] optionalArray = optionalBools.toArray(new BooleanExpression[]{});
+		BooleanExpression[] requiredArray = requiredBools.toArray(new BooleanExpression[]{});
+		BooleanExpression[] excludedArray = excludedBools.toArray(new BooleanExpression[]{});
+		BooleanExpression searchTerm = BooleanExpression.allOf(requiredArray)
+				.and(BooleanExpression.anyOf(optionalArray))
+				.and(BooleanExpression.noneOf(excludedArray));
+		System.out.println("" + searchTerm.toSQLString(new H2DBDefinition()));
+		return searchTerm;
+	}
+
+	/**
+	 * Advanced search that lowercases everything, requires search terms with a
+	 * plus (+requiredterm), and removes search terms with a minus (-neverthis).
+	 *
+	 * <p>
+	 * Use this comparison to generate a BooleanExpression that compares the
+	 * current StringExpression to the supplied SQL pattern.
+	 *
+	 * <p>
+	 * DBvolution does not process the SQL pattern so please ensure that it
+	 * conforms to the database's implementation of LIKE. Most implementations
+	 * only provide access to the "_" and "%" wildcards but there may be
+	 * exceptions.
+	 *
+	 * @param strings
+	 * @return a BooleanExpression of the SQL comparison.
+	 */
+	public IntegerExpression searchForRanking(String... strings) {
+		IntegerExpression rankingExpr = new IntegerExpression(0);
+		for (String string : strings) {
+			if (string.startsWith("+")) {
+				rankingExpr = rankingExpr.plus(this.containsIgnoreCase(string.replaceFirst("\\+", "")).ifThenElse(10, 0));
+			} else if (string.startsWith("-")) {
+				rankingExpr = rankingExpr.plus(this.containsIgnoreCase(string.replaceFirst("\\-", "")).ifThenElse(-10, 0));
+			} else {
+				rankingExpr = rankingExpr.plus(this.containsIgnoreCase(string).ifThenElse(-1, 0));
+			}
+		}
+		System.out.println("" + rankingExpr.toSQLString(new H2DBDefinition()));
+		return rankingExpr;
+	}
+
+	/**
+	 * Creates a query comparison using the LIKE operator.
+	 *
+	 * <p>
+	 * Use this comparison to generate a BooleanExpression that compares the
+	 * current StringExpression to the supplied SQL pattern.
+	 *
+	 * <p>
+	 * DBvolution does not process the SQL pattern so please ensure that it
+	 * conforms to the database's implementation of LIKE. Most implementations
+	 * only provide access to the "_" and "%" wildcards but there may be
+	 * exceptions.
+	 *
 	 * @param string
 	 * @return a BooleanExpression of the SQL comparison.
 	 */
@@ -541,6 +643,66 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 	 */
 	public BooleanExpression contains(StringExpression string) {
 		return this.isLike(string.prepend("%").append("%"));
+	}
+
+	/**
+	 * Creates a query comparison using the LIKE operator.
+	 *
+	 * <p>
+	 * Use this comparison to generate a BooleanExpression that compares the
+	 * current StringExpression to the supplied SQL pattern.
+	 *
+	 * <p>
+	 * DBvolution does not process the SQL pattern so please ensure that it
+	 * conforms to the database's implementation of LIKE. Most implementations
+	 * only provide access to the "_" and "%" wildcards but there may be
+	 * exceptions.
+	 *
+	 * @param string
+	 * @return a BooleanExpression of the SQL comparison.
+	 */
+	public BooleanExpression containsIgnoreCase(String string) {
+		return containsIgnoreCase(value(string));
+	}
+
+	/**
+	 * Creates a query comparison using the LIKE operator.
+	 *
+	 * <p>
+	 * Use this comparison to generate a BooleanExpression that compares the
+	 * current StringExpression to the supplied SQL pattern.
+	 *
+	 * <p>
+	 * DBvolution does not process the SQL pattern so please ensure that it
+	 * conforms to the database's implementation of LIKE. Most implementations
+	 * only provide access to the "_" and "%" wildcards but there may be
+	 * exceptions.
+	 *
+	 * @param string
+	 * @return a BooleanExpression of the SQL comparison.
+	 */
+	public BooleanExpression containsIgnoreCase(StringResult string) {
+		return containsIgnoreCase(value(string));
+	}
+
+	/**
+	 * Creates a query comparison using the LIKE operator.
+	 *
+	 * <p>
+	 * Use this comparison to generate a BooleanExpression that compares the
+	 * current StringExpression to the supplied SQL pattern.
+	 *
+	 * <p>
+	 * DBvolution does not process the SQL pattern so please ensure that it
+	 * conforms to the database's implementation of LIKE. Most implementations
+	 * only provide access to the "_" and "%" wildcards but there may be
+	 * exceptions.
+	 *
+	 * @param string
+	 * @return a BooleanExpression of the SQL comparison.
+	 */
+	public BooleanExpression containsIgnoreCase(StringExpression string) {
+		return this.lowercase().isLike(string.lowercase().prepend("%").append("%"));
 	}
 
 	/**
@@ -2616,7 +2778,7 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 					+ this.getSeparator(db) + (getThird() == null ? "" : getThird().toSQLString(db))
 					+ this.afterValue(db);
 		}
-		
+
 		abstract String getFunctionName(DBDefinition db);
 
 		protected String beforeValue(DBDefinition db) {
