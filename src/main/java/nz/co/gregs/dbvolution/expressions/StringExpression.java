@@ -569,7 +569,6 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 		BooleanExpression searchTerm = BooleanExpression.allOf(requiredArray)
 				.and(BooleanExpression.anyOf(optionalArray))
 				.and(BooleanExpression.noneOf(excludedArray));
-		System.out.println("" + searchTerm.toSQLString(new H2DBDefinition()));
 		return searchTerm;
 	}
 
@@ -601,7 +600,6 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 				rankingExpr = rankingExpr.plus(this.containsIgnoreCase(string).ifThenElse(-1, 0));
 			}
 		}
-		System.out.println("" + rankingExpr.toSQLString(new H2DBDefinition()));
 		return rankingExpr;
 	}
 
