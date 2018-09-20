@@ -547,31 +547,32 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 	 * @return a BooleanExpression of the SQL comparison.
 	 */
 	public BooleanExpression searchFor(String... strings) {
-		List<BooleanExpression> optionalBools = new ArrayList<>();
-		optionalBools.add(BooleanExpression.trueExpression());
-		List<BooleanExpression> requiredBools = new ArrayList<>();
-		requiredBools.add(BooleanExpression.trueExpression());
-		List<BooleanExpression> excludedBools = new ArrayList<>();
-		excludedBools.add(BooleanExpression.falseExpression());
-		for (String string : strings) {
-			if (string.startsWith("+")) {
-				BooleanExpression contains = this.containsIgnoreCase(string.replaceFirst("\\+", ""));
-				requiredBools.add(contains);
-			} else if (string.startsWith("-")) {
-				BooleanExpression contains = this.containsIgnoreCase(string.replaceFirst("\\-", ""));
-				excludedBools.add(contains);
-			} else {
-				BooleanExpression contains = this.containsIgnoreCase(string);
-				optionalBools.add(contains);
-			}
-		}
-		BooleanExpression[] optionalArray = optionalBools.toArray(new BooleanExpression[]{});
-		BooleanExpression[] requiredArray = requiredBools.toArray(new BooleanExpression[]{});
-		BooleanExpression[] excludedArray = excludedBools.toArray(new BooleanExpression[]{});
-		BooleanExpression searchTerm = BooleanExpression.allOf(requiredArray)
-				.and(BooleanExpression.anyOf(optionalArray))
-				.and(BooleanExpression.noneOf(excludedArray));
-		return searchTerm;
+//		List<BooleanExpression> optionalBools = new ArrayList<>();
+//		optionalBools.add(BooleanExpression.trueExpression());
+//		List<BooleanExpression> requiredBools = new ArrayList<>();
+//		requiredBools.add(BooleanExpression.trueExpression());
+//		List<BooleanExpression> excludedBools = new ArrayList<>();
+//		excludedBools.add(BooleanExpression.falseExpression());
+//		for (String string : strings) {
+//			if (string.startsWith("+")) {
+//				BooleanExpression contains = this.containsIgnoreCase(string.replaceFirst("\\+", ""));
+//				requiredBools.add(contains);
+//			} else if (string.startsWith("-")) {
+//				BooleanExpression contains = this.containsIgnoreCase(string.replaceFirst("\\-", ""));
+//				excludedBools.add(contains);
+//			} else {
+//				BooleanExpression contains = this.containsIgnoreCase(string);
+//				optionalBools.add(contains);
+//			}
+//		}
+//		BooleanExpression[] optionalArray = optionalBools.toArray(new BooleanExpression[]{});
+//		BooleanExpression[] requiredArray = requiredBools.toArray(new BooleanExpression[]{});
+//		BooleanExpression[] excludedArray = excludedBools.toArray(new BooleanExpression[]{});
+//		BooleanExpression searchTerm = BooleanExpression.allOf(requiredArray)
+//				.and(BooleanExpression.anyOf(optionalArray))
+//				.and(BooleanExpression.noneOf(excludedArray));
+//		return searchTerm;
+		return this.searchForRanking(strings).isGreaterThan(0);
 	}
 
 	/**
@@ -595,7 +596,7 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 		IntegerExpression rankingExpr = new IntegerExpression(0);
 		for (String string : strings) {
 			if (string.startsWith("+")) {
-				rankingExpr = rankingExpr.plus(this.containsIgnoreCase(string.replaceFirst("\\+", "")).ifThenElse(10, 0));
+				rankingExpr = rankingExpr.plus(this.containsIgnoreCase(string.replaceFirst("\\+", "")).ifThenElse(10, -10));
 			} else if (string.startsWith("-")) {
 				rankingExpr = rankingExpr.plus(this.containsIgnoreCase(string.replaceFirst("\\-", "")).ifThenElse(-10, 0));
 			} else {
