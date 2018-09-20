@@ -550,7 +550,9 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 		List<BooleanExpression> optionalBools = new ArrayList<>();
 		optionalBools.add(BooleanExpression.trueExpression());
 		List<BooleanExpression> requiredBools = new ArrayList<>();
+		requiredBools.add(BooleanExpression.trueExpression());
 		List<BooleanExpression> excludedBools = new ArrayList<>();
+		excludedBools.add(BooleanExpression.falseExpression());
 		for (String string : strings) {
 			if (string.startsWith("+")) {
 				BooleanExpression contains = this.containsIgnoreCase(string.replaceFirst("\\+", ""));
@@ -597,7 +599,7 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 			} else if (string.startsWith("-")) {
 				rankingExpr = rankingExpr.plus(this.containsIgnoreCase(string.replaceFirst("\\-", "")).ifThenElse(-10, 0));
 			} else {
-				rankingExpr = rankingExpr.plus(this.containsIgnoreCase(string).ifThenElse(-1, 0));
+				rankingExpr = rankingExpr.plus(this.containsIgnoreCase(string).ifThenElse(1, 0));
 			}
 		}
 		return rankingExpr;
