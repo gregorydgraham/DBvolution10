@@ -34,6 +34,8 @@ import nz.co.gregs.dbvolution.internal.query.QueryState;
  */
 public class Oracle12DBDefinition extends OracleSpatialDBDefinition {
 
+	public static final long serialVersionUID = 1L;
+	
 	@Override
 	public String getLimitRowsSubClauseAfterWhereClause(QueryState state, QueryOptions options) {
 		int rowLimit = options.getRowLimit();

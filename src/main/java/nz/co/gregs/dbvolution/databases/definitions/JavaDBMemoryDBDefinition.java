@@ -11,6 +11,8 @@ package nz.co.gregs.dbvolution.databases.definitions;
  */
 public class JavaDBMemoryDBDefinition extends JavaDBDefinition {
 
+	public static final long serialVersionUID = 1L;
+	
 	public JavaDBMemoryDBDefinition() {
 		super();
 	}

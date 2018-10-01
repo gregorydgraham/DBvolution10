@@ -50,6 +50,8 @@ import nz.co.gregs.dbvolution.internal.query.QueryState;
  */
 public class OracleDBDefinition extends DBDefinition {
 
+	public static final long serialVersionUID = 1L;
+	
 	private final static String DATE_FORMAT_STRING = "yyyy-M-d HH:mm:ss.SSS Z";
 	private final static String ORACLE_DATE_FORMAT_STRING = "YYYY-MM-DD HH24:MI:SS.FF3 TZHTZM";
 	private final SimpleDateFormat JAVA_TO_STRING_FORMATTER = new SimpleDateFormat(DATE_FORMAT_STRING);

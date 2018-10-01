@@ -48,6 +48,8 @@ import nz.co.gregs.dbvolution.internal.h2.*;
  */
 public class H2DBDefinition extends DBDefinition implements SupportsDateRepeatDatatypeFunctions, SupportsPolygonDatatype {
 
+	public static final long serialVersionUID = 1L;
+	
 	private static final String DATE_FORMAT_STR = "yyyy-M-d HH:mm:ss.SSS Z";
 	private static final String H2_DATE_FORMAT_STR = "yyyy-M-d HH:mm:ss.SSS Z";//2017-02-18 18:59:59.000 +10:00
 	private final SimpleDateFormat strToDateFormat = new SimpleDateFormat(DATE_FORMAT_STR);

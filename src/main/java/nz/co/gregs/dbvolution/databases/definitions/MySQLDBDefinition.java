@@ -49,6 +49,8 @@ import nz.co.gregs.dbvolution.internal.properties.PropertyWrapper;
  */
 public class MySQLDBDefinition extends DBDefinition {
 
+	public static final long serialVersionUID = 1L;
+	
 	private final DateFormat DATETIME_FORMAT = new SimpleDateFormat("dd,MM,yyyy HH:mm:ss.SSS");
 
 	@Override

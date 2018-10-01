@@ -26,6 +26,8 @@ import nz.co.gregs.dbvolution.internal.query.QueryOptions;
  */
 public class Informix11DBDefinition extends InformixDBDefinition {
 
+	public static final long serialVersionUID = 1L;
+	
 	@Override
 	public boolean supportsPagingNatively(QueryOptions options) {
 		return true;

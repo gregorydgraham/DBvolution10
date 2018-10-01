@@ -43,6 +43,8 @@ import nz.co.gregs.dbvolution.exceptions.IncorrectGeometryReturnedForDatatype;
  */
 public class OracleAWSDBDefinition extends OracleDBDefinition {
 
+	public static final long serialVersionUID = 1L;
+	
 	@Override
 	public String getDatabaseDataTypeOfQueryableDatatype(QueryableDatatype<?> qdt) {
 		if (qdt instanceof DBPoint2D) {

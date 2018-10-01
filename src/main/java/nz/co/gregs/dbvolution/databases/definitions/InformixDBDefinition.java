@@ -37,6 +37,8 @@ import nz.co.gregs.dbvolution.internal.query.QueryState;
  */
 public class InformixDBDefinition extends DBDefinition {
 
+	public static final long serialVersionUID = 1L;
+	
 	private static final String DATE_FORMAT = "yyyy-MM-dd HH:mm:ss.SSS";
 	//TO_DATE("1998-07-07 10:24",   "%Y-%m-%d %H:%M")
 	private static final String INFORMIX_DATE_FORMAT = "%Y-%m-%d %H:%M:%S%F3";

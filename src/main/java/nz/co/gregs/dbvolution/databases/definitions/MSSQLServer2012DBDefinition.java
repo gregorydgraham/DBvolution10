@@ -29,6 +29,8 @@ import nz.co.gregs.dbvolution.internal.query.QueryState;
  */
 public class MSSQLServer2012DBDefinition extends MSSQLServerDBDefinition {
 
+	public static final long serialVersionUID = 1L;
+	
 	@Override
 	public boolean supportsPagingNatively(QueryOptions options) {
 		return true;

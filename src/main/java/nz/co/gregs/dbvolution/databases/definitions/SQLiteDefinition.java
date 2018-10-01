@@ -50,6 +50,8 @@ import org.joda.time.Period;
  */
 public class SQLiteDefinition extends DBDefinition implements SupportsDateRepeatDatatypeFunctions, SupportsPolygonDatatype {
 
+	public static final long serialVersionUID = 1L;
+	
 	/**
 	 * The date format used internally within DBvolution's SQLite implementation.
 	 *

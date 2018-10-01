@@ -46,6 +46,8 @@ import nz.co.gregs.dbvolution.results.ExpressionHasStandardStringResult;
  */
 public class PostgresDBDefinition extends DBDefinition {
 
+	public static final long serialVersionUID = 1L;
+	
 	private final DateFormat DATETIME_FORMAT = new SimpleDateFormat("yyyyMMdd HH:mm:ss.SSS Z");
 
 	private static final String[] RESERVED_WORD_ARRAY = new String[]{"LIMIT", "END"};

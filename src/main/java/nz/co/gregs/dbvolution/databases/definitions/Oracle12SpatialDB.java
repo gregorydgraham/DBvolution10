@@ -35,6 +35,8 @@ import nz.co.gregs.dbvolution.results.Spatial2DResult;
  */
 public class Oracle12SpatialDB extends Oracle12DBDefinition {
 
+	public static final long serialVersionUID = 1L;
+	
 	@Override
 	public String getDatabaseDataTypeOfQueryableDatatype(QueryableDatatype<?> qdt) {
 		if (qdt instanceof Spatial2DResult) {

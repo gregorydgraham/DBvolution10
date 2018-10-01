@@ -25,6 +25,7 @@ import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.MultiPoint;
 import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.io.WKTReader;
+import java.io.Serializable;
 import java.sql.ResultSet;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -68,8 +69,10 @@ import org.joda.time.Period;
  *
  * @author Gregory Graham
  */
-public abstract class DBDefinition {
+public abstract class DBDefinition implements Serializable{
 
+	public static final long serialVersionUID = 1L;
+	
 	public int getNumericPrecision() {
 		return DBNumber.getNumericPrecision();
 	}
