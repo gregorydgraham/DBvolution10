@@ -120,6 +120,19 @@ public class DatabaseConnectionSettings {
 		super();
 	}
 
+	@Override
+	public String toString() {
+		return "DATABASECONNECTIONSETTINGS: "
+				+ getDbdatabase()+";"
+				+ getHost()+";"
+				+ getPort()+";"
+				+ getInstance()+";"
+				+ getDatabaseName()+";"
+				+ getSchema()+";"
+				+ getUrl()+";"
+				+ getUsername()+";";
+	}
+
 	/**
 	 * A standardized collection of the database connection settings.
 	 *
