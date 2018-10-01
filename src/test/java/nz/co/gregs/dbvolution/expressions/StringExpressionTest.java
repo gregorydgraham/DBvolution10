@@ -595,6 +595,8 @@ public class StringExpressionTest extends AbstractTest {
 	
 	public static class SearchMarque extends Marque{
 		
+		private static final long serialVersionUID = 1L;
+		
 		@DBColumn
 		public DBInteger ranking = new DBInteger(column(name).searchForRanking("+o", "-l", "R"));
 	}
