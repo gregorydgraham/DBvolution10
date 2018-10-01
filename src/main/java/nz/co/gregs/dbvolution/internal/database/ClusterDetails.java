@@ -156,21 +156,27 @@ public class ClusterDetails implements Serializable {
 	}
 
 	public synchronized DBDatabase[] getReadyDatabases() {
-		return readyDatabases.toArray(new DBDatabase[]{});
+		if (readyDatabases == null || readyDatabases.isEmpty()) {
+			return new DBDatabase[]{};
+		} else {
+			return readyDatabases.toArray(new DBDatabase[]{});
+		}
 	}
 
 	public synchronized void pauseDatabase(DBDatabase template) {
-		readyDatabases.remove(template);
-		pausedDatabases.add(template);
+		if (template != null) {
+			readyDatabases.remove(template);
+			pausedDatabases.add(template);
+		}
 	}
 
-	public synchronized DBDatabase getPausedDatabase() throws NoAvailableDatabaseException {
+	public synchronized DBDatabase getPausedDatabase() {
 		DBDatabase template = getReadyDatabase();
 		pauseDatabase(template);
 		return template;
 	}
 
-	public DBDatabase getReadyDatabase() throws NoAvailableDatabaseException {
+	public DBDatabase getReadyDatabase() {
 		DBDatabase[] dbs = getReadyDatabases();
 		int tries = 0;
 		while (dbs.length < 1 && pausedDatabases.size() > 0 && tries <= 1000) {
@@ -188,7 +194,7 @@ public class ClusterDetails implements Serializable {
 			DBDatabase randomElement = dbs[randNumber];
 			return randomElement;
 		}
-		throw new NoAvailableDatabaseException();
+		return null;
 	}
 
 	public synchronized void addAll(DBDatabase[] databases) {
@@ -197,7 +203,7 @@ public class ClusterDetails implements Serializable {
 		}
 	}
 
-	public synchronized DBDatabase getTemplateDatabase() {
+	public synchronized DBDatabase getTemplateDatabase() throws NoAvailableDatabaseException{
 		if (readyDatabases.isEmpty() && pausedDatabases.isEmpty()) {
 			throw new NoAvailableDatabaseException();
 		}
