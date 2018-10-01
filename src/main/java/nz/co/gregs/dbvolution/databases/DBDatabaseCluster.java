@@ -127,6 +127,32 @@ public class DBDatabaseCluster extends DBDatabase {
 		}
 	}
 
+	/**
+	 * Removes all databases from the cluster then adds databases as defined by
+	 * the settings.
+	 *
+	 * <p>
+	 * Probably not a good idea to use this method but it allows the cluster to be
+	 * set up as a bean, using the default constructor and a collection of
+	 * settings.</p>
+	 *
+	 * @param settings
+	 * @throws SQLException
+	 * @throws InvocationTargetException
+	 * @throws IllegalArgumentException
+	 * @throws IllegalAccessException
+	 * @throws InstantiationException
+	 * @throws SecurityException
+	 * @throws NoSuchMethodException
+	 * @throws ClassNotFoundException
+	 */
+	public void setConnectionSettings(DatabaseConnectionSettings... settings) throws SQLException, InvocationTargetException, IllegalArgumentException, IllegalAccessException, InstantiationException, SecurityException, NoSuchMethodException, ClassNotFoundException {
+		removeDatabases(getDatabases());
+		for (DatabaseConnectionSettings setting : settings) {
+			this.addDatabase(setting.createDBDatabase());
+		}
+	}
+
 	public synchronized DBStatement getClusterStatement() {
 		return clusterStatement;
 	}
@@ -170,6 +196,14 @@ public class DBDatabaseCluster extends DBDatabase {
 		return add;
 	}
 
+	/**
+	 * Returns all databases within this cluster.
+	 *
+	 * Please note, that you should probably NOT be using this method, rather just
+	 * use the cluster like a normal DBDatabase.
+	 *
+	 * @return all the databases defined within the cluster
+	 */
 	public synchronized DBDatabase[] getDatabases() {
 		return details.getAllDatabases();
 	}
@@ -276,7 +310,7 @@ public class DBDatabaseCluster extends DBDatabase {
 	 *
 	 * @return a ready database
 	 */
-	public DBDatabase getReadyDatabase() throws NoAvailableDatabaseException {
+	public DBDatabase getReadyDatabase() {
 		return details.getReadyDatabase();
 	}
 
