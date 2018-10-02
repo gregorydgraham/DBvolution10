@@ -791,4 +791,20 @@ public class DBString extends QueryableDatatype<String> implements StringResult 
 	public StringExpression stringResult() {
 		return new StringExpression(this).stringResult();
 	}
+
+	public void excludeNotNull() {
+		this.permittedValues((String) null);
+	}
+
+	public void excludeNull() {
+		this.excludedValues((String) null);
+	}
+	
+	public void permitOnlyNull() {
+		excludeNotNull();
+	}
+	
+	public void permitOnlyNotNull() {
+		excludeNull();
+	}
 }
