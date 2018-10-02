@@ -713,4 +713,20 @@ public class DBNumber extends QueryableDatatype<Number> implements NumberResult 
 	public NumberColumn getColumn(RowDefinition row) throws IncorrectRowProviderInstanceSuppliedException {
 		return new NumberColumn(row, this);
 	}
+
+	public void excludeNotNull() {
+		this.permittedValues((Number) null);
+	}
+
+	public void excludeNull() {
+		this.excludedValues((Number) null);
+	}
+	
+	public void permitOnlyNull() {
+		excludeNotNull();
+	}
+	
+	public void permitOnlyNotNull() {
+		excludeNull();
+	}
 }

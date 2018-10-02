@@ -287,4 +287,20 @@ public class DBBoolean extends QueryableDatatype<Boolean> implements BooleanResu
 		return new BooleanColumn(row, this);
 	}
 
+	public void excludeNotNull() {
+		this.permittedValues((Boolean) null);
+	}
+
+	public void excludeNull() {
+		this.excludedValues((Boolean) null);
+	}
+	
+	public void permitOnlyNull() {
+		excludeNotNull();
+	}
+	
+	public void permitOnlyNotNull() {
+		excludeNull();
+	}
+
 }

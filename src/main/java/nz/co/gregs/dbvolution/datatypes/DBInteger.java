@@ -760,4 +760,19 @@ public class DBInteger extends QueryableDatatype<Long> implements IntegerResult 
 		return new IntegerColumn(row, this);
 	}
 
+	public void excludeNotNull() {
+		this.permittedValues((Long) null);
+	}
+
+	public void excludeNull() {
+		this.excludedValues((Long) null);
+	}
+	
+	public void permitOnlyNull() {
+		excludeNotNull();
+	}
+	
+	public void permitOnlyNotNull() {
+		excludeNull();
+	}
 }

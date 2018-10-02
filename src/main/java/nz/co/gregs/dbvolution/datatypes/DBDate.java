@@ -691,4 +691,20 @@ public class DBDate extends QueryableDatatype<Date> implements DateResult {
 	public StringExpression stringResult() {
 		return new DateExpression(this).stringResult();
 	}
+
+	public void excludeNotNull() {
+		this.permittedValues((Date) null);
+	}
+
+	public void excludeNull() {
+		this.excludedValues((Date) null);
+	}
+	
+	public void permitOnlyNull() {
+		excludeNotNull();
+	}
+	
+	public void permitOnlyNotNull() {
+		excludeNull();
+	}
 }
