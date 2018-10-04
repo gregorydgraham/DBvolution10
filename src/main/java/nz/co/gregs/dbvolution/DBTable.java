@@ -1022,13 +1022,52 @@ public class DBTable<E extends DBRow> {
 		System.out.println(this.getSQLForQuery());
 	}
 
+	
+
+	/**
+	 * Changes the default timeout for this query.
+	 *
+	 * <p>
+	 * Use this method to set the exact timeout for the query.
+	 *
+	 * <p>
+	 * DBvolution defaults to a timeout of 10000milliseconds (10 seconds) to avoid
+	 * eternal queries. The actual timeout is based on the performance of the
+	 * application server.
+	 *
+	 * <p>
+	 * Use this method If you require a longer running query.
+	 *
+	 * @param milliseconds
+	 * @return this query.
+	 */
 	public DBTable<E> setQueryTimeout(int i) {
 		query.setTimeoutInMilliseconds(i);
 		return this;
 	}
 	
+	/**
+	 * Completely removes the timeout from this query.
+	 *
+	 * <p>
+	 * DBvolution defaults to a timeout of 10000milliseconds (10 seconds) to avoid
+	 * eternal queries.
+	 *
+	 * <p>
+	 * Use this method if you expect an extremely long query.
+	 *
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
+	 * @return this DBQuery object
+	 */
 	public DBTable<E> clearTimeout(){
 		query.clearTimeout();
+		return this;
+	}
+	
+	public DBTable<E> setTimeoutToForever(){
+		query.setTimeoutToForever();
 		return this;
 	}
 }
