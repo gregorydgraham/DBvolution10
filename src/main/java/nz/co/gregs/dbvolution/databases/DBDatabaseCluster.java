@@ -107,20 +107,34 @@ public class DBDatabaseCluster extends DBDatabase {
 	private transient final ExecutorService threadPool;
 	private final transient DBStatementCluster clusterStatement;
 
-	public DBDatabaseCluster(String clusterName, boolean useAutoRebuild) {
+	{
+		Runtime.getRuntime().addShutdownHook(new Thread() {
+			@Override
+			public void run() {
+				threadPool.shutdown();
+			}
+		});
+	}
+
+	public DBDatabaseCluster() {
 		super();
-		setDatabaseName(clusterName);
 		clusterStatement = new DBStatementCluster(this);
-		details = new ClusterDetails(clusterName, useAutoRebuild);
+		details = new ClusterDetails("", false);
 		threadPool = Executors.newCachedThreadPool();
 	}
-	
+
+	public DBDatabaseCluster(String clusterName, boolean useAutoRebuild) {
+		this();
+		setDatabaseName(clusterName);
+		setAutoRebuild(useAutoRebuild);
+	}
+
 	public DBDatabaseCluster(String clusterName) {
 		this(clusterName, true);
 	}
 
 	public DBDatabaseCluster(String clusterName, boolean useAutoRebuild, DBDatabase... databases) throws SQLException {
-		this(clusterName,useAutoRebuild);
+		this(clusterName, useAutoRebuild);
 		details.addAll(databases);
 		setDefinition(new ClusterDatabaseDefinition());
 		synchronizeSecondaryDatabases();
@@ -175,7 +189,18 @@ public class DBDatabaseCluster extends DBDatabase {
 		}
 	}
 
-	public synchronized DBStatement getClusterStatement() {
+	/**
+	 * Sets the database name.
+	 *
+	 * @param databaseName	databaseName
+	 */
+	@Override
+	final public synchronized void setDatabaseName(String databaseName) {
+		super.setDatabaseName(databaseName);
+		details.setClusterName(databaseName);
+	}
+
+	private synchronized DBStatement getClusterStatement() {
 		return clusterStatement;
 	}
 
@@ -1098,7 +1123,7 @@ public class DBDatabaseCluster extends DBDatabase {
 							final Long primaryTableCount = primaryTable.count();
 							final Long secondaryTableCount = secondaryTable.count();
 							if (primaryTableCount > 0) {
-								final DBTable<DBRow> primaryData = primaryTable.setBlankQueryAllowed(true);
+								final DBTable<DBRow> primaryData = primaryTable.setBlankQueryAllowed(true).setTimeoutToForever();
 								// Check that the new database has data
 								if (secondaryTableCount == 0) {
 									List<DBRow> allRows = primaryData.getAllRows();
@@ -1117,7 +1142,6 @@ public class DBDatabaseCluster extends DBDatabase {
 		}
 		releaseTemplateDatabase(template);
 		synchronizeActions(secondary);
-//		}
 	}
 
 	private synchronized void synchronizeActions(DBDatabase db) throws SQLException {
@@ -1205,7 +1229,7 @@ public class DBDatabaseCluster extends DBDatabase {
 
 	@Override
 	protected String getUrlFromSettings(DatabaseConnectionSettings settings) {
-		throw new UnsupportedOperationException("Not supported yet.");
+		return "CLUSTER";
 	}
 
 	@Override
@@ -1233,7 +1257,7 @@ public class DBDatabaseCluster extends DBDatabase {
 		return "CLUSTER";
 	}
 
-	public void setAutoRebuild(boolean b) {
+	public final void setAutoRebuild(boolean b) {
 		details.setAutoRebuild(b);
 	}
 
