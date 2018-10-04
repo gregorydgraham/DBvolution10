@@ -69,7 +69,7 @@ public class ClusterDetails implements Serializable {
 	private final transient Map<DBDatabase, Queue<DBAction>> queuedActions = Collections.synchronizedMap(new HashMap<DBDatabase, Queue<DBAction>>(0));
 
 	private final Preferences prefs = Preferences.userNodeForPackage(this.getClass());
-	private final String clusterName;
+	private String clusterName;
 	private boolean useAutoRebuild;
 
 	public ClusterDetails(String clusterName, boolean autoRebuild) {
@@ -228,6 +228,7 @@ public class ClusterDetails implements Serializable {
 				return authoritativeDatabase.createDBDatabase();
 			} catch (ClassNotFoundException | NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
 				Logger.getLogger(ClusterDetails.class.getName()).log(Level.SEVERE, null, ex);
+				throw new NoAvailableDatabaseException();
 			}
 		} else {
 			if (readyDatabases.isEmpty() && pausedDatabases.isEmpty()) {
@@ -235,17 +236,15 @@ public class ClusterDetails implements Serializable {
 			}
 			return getPausedDatabase();
 		}
-		return null;
 	}
 
 	private synchronized void setAuthoritativeDatabase() {
-		if (useAutoRebuild == false) {
-			;
-		} else {
+		if (useAutoRebuild) {
 			for (DBDatabase db : allDatabases) {
-				if (!db.isMemoryDatabase()) {
+				final String name = getClusterName();
+				if (!db.isMemoryDatabase() && name != null && !name.isEmpty()) {
 					final String encode = db.getSettings().encode();
-					prefs.put(clusterName, encode);
+					prefs.put(name, encode);
 					return;
 				}
 			}
@@ -253,20 +252,20 @@ public class ClusterDetails implements Serializable {
 	}
 
 	private synchronized void removeAuthoritativeDatabase() {
-		prefs.remove(clusterName);
+		prefs.remove(getClusterName());
 	}
 
 	private DatabaseConnectionSettings getAuthoritativeDatabase() {
-		if (useAutoRebuild == false) {
-			return null;
-		} else {
-			String encodedSettings = prefs.get(clusterName, null);
+		if (useAutoRebuild) {
+			String encodedSettings = prefs.get(getClusterName(), null);
 			if (encodedSettings != null) {
 				DatabaseConnectionSettings settings = DatabaseConnectionSettings.decode(encodedSettings);
 				return settings;
 			} else {
 				return null;
 			}
+		} else {
+			return null;
 		}
 	}
 
@@ -287,6 +286,21 @@ public class ClusterDetails implements Serializable {
 		} else {
 			removeAuthoritativeDatabase();
 		}
+	}
+
+	/**
+	 * @return the clusterName
+	 */
+	public String getClusterName() {
+		return clusterName;
+	}
+
+	/**
+	 * @param clusterName the clusterName to set
+	 */
+	public void setClusterName(String clusterName) {
+		this.clusterName = clusterName;
+		setAuthoritativeDatabase();
 	}
 
 }
