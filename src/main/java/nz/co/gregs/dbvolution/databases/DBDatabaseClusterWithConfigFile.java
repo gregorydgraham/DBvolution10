@@ -142,12 +142,13 @@ public class DBDatabaseClusterWithConfigFile extends DBDatabaseCluster {
 	 * cluster via this method.</p>
 	 *
 	 * @author gregorygraham
+	 * @param clusterName
 	 * @param yamlConfigFilename
 	 * @throws DBDatabaseClusterWithConfigFile.NoDatabaseConfigurationFound
 	 * @throws DBDatabaseClusterWithConfigFile.UnableToCreateDatabaseCluster
 	 */
-	public DBDatabaseClusterWithConfigFile(String yamlConfigFilename) throws NoDatabaseConfigurationFound, UnableToCreateDatabaseCluster {
-		super();
+	public DBDatabaseClusterWithConfigFile(String clusterName, boolean useAutoRebuild, String yamlConfigFilename) throws NoDatabaseConfigurationFound, UnableToCreateDatabaseCluster {
+		super(clusterName, useAutoRebuild);
 		this.yamlConfigFilename = yamlConfigFilename;
 		findDatabaseConfigurationAndApply(yamlConfigFilename);
 	}
@@ -190,12 +191,13 @@ public class DBDatabaseClusterWithConfigFile extends DBDatabaseCluster {
 	 * cluster via this method.</p>
 	 *
 	 * @author gregorygraham
+	 * @param clusterName
 	 * @param yamlConfigFile
 	 * @throws DBDatabaseClusterWithConfigFile.NoDatabaseConfigurationFound
 	 * @throws DBDatabaseClusterWithConfigFile.UnableToCreateDatabaseCluster
 	 */
-	public DBDatabaseClusterWithConfigFile(File yamlConfigFile) throws NoDatabaseConfigurationFound, UnableToCreateDatabaseCluster {
-		super();
+	public DBDatabaseClusterWithConfigFile(String clusterName, boolean useAutoRebuild, File yamlConfigFile) throws NoDatabaseConfigurationFound, UnableToCreateDatabaseCluster {
+		super(clusterName, useAutoRebuild);
 		this.yamlConfigFilename = yamlConfigFile.getName();
 		parseYAMLAndAddDatabases(yamlConfigFile, yamlConfigFilename);
 	}

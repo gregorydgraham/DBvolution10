@@ -97,14 +97,6 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 	boolean explicitCommitActionRequired = false;
 	private DatabaseConnectionSettings settings;
 
-//	static {
-//		Runtime.getRuntime().addShutdownHook(startAutoCloseAllJob());
-//	}
-//	
-//	{
-//		startAutocloser();
-//		addToDBDatabaseRegister(this);
-//	}
 	@Override
 	public String toString() {
 		if (jdbcURL != null && !jdbcURL.isEmpty()) {
@@ -1050,7 +1042,7 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 	 */
 	public DBQuery getDBQuery(Collection<DBRow> examples) {
 		DBRow[] toArray = examples.toArray(new DBRow[]{});
-		//	return DBQuery.getInstance(this, toArray);
+		//	return DBQuery.getDatabaseInstance(this, toArray);
 		return getDBQuery(toArray);
 	}
 
@@ -1235,7 +1227,7 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 	 * used during a DBTransaction or DBScript
 	 */
 	public void createOrUpdateTable(DBRow newTableRow) throws SQLException, AutoCommitActionDuringTransactionException {
-			updateTableToMatchDBRow(newTableRow);
+		updateTableToMatchDBRow(newTableRow);
 	}
 
 	/**
@@ -2215,6 +2207,20 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 	protected abstract String getUrlFromSettings(DatabaseConnectionSettings settings);
 
 	public DatabaseConnectionSettings getSettings() {
+		if (settings == null) {
+			DatabaseConnectionSettings newSettings = new DatabaseConnectionSettings();
+			newSettings.setDatabaseName(databaseName);
+			newSettings.setDbdatabase(this.getClass().getCanonicalName());
+			newSettings.setExtras(getExtras());
+			newSettings.setHost(getHost());
+			newSettings.setInstance(getDatabaseInstance());
+			newSettings.setPassword(getPassword());
+			newSettings.setPort(getPort());
+			newSettings.setSchema(getSchema());
+			newSettings.setUrl(getJdbcURL());
+			newSettings.setUsername(getUsername());
+			this.settings = newSettings;
+		}
 		return settings;
 	}
 
@@ -2226,143 +2232,21 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 		;
 	}
 
-//	private static List<DBDatabase> DBDATABASE_REGISTER = new ArrayList<DBDatabase>();
-//
-//	private void addToDBDatabaseRegister(DBDatabase database) {
-//		DBDATABASE_REGISTER.add(database);
-//	}
-//
-//	private static Thread startAutoCloseAllJob() {
-//		return new Thread(new AutoCloseAllJob());
-//	}
-//
-//	private static synchronized void autoCloseAll() {
-//		Logger.getLogger(DBDatabase.class.getName()).log(Level.INFO,"Starting AutoCloseAll");
-//		for (DBDatabase db : DBDATABASE_REGISTER) {
-//			try {
-//				db.autoClose();
-//			} catch (SQLException ex) {
-//				Logger.getLogger(DBDatabase.class.getName()).log(Level.SEVERE, null, ex);
-//			}finally{
-//				DBDATABASE_REGISTER.remove(db);
-//			}
-//		}
-//		Logger.getLogger(DBDatabase.class.getName()).log(Level.INFO,"Finished AutoCloseAll");
-//	}
-//
-//	/**
-//	 * Closes resources and allows the DBDatabase to be garbage collected.
-//	 *
-//	 * @throws java.sql.SQLException
-//	 */
-//	protected synchronized void autoClose() throws SQLException {
-//		Logger.getLogger(DBDatabase.class.getName()).log(Level.INFO,"Starting AutoClose");
-//		if (storedConnection != null) {
-//			storedConnection.close();
-//			storedConnection = null;
-//		}
-//		if (transactionStatement != null) {
-//			transactionStatement.close();
-//			transactionStatement = null;
-//		}
-//		if (transactionConnection != null) {
-//			transactionConnection.close();
-//			transactionConnection = null;
-//		}
-//		List<Connection> busy = getConnectionList(BUSY_CONNECTION);
-//		for (Connection connection : busy) {
-//			discardConnection(connection);
-//		}
-//		List<Connection> free = getConnectionList(FREE_CONNECTIONS);
-//		for (Connection connection : free) {
-//			discardConnection(connection);
-//		}
-//		BUSY_CONNECTION.remove(this.hashCode());
-//		FREE_CONNECTIONS.remove(this.hashCode());
-//		this.closed = true;
-//		DBDATABASE_REGISTER.remove(this);
-//		Logger.getLogger(DBDatabase.class.getName()).log(Level.INFO,"Finished AutoClose");
-//	}
-//
-//	static final ScheduledExecutorService AUTOCLOSE_SERVICE = Executors.newSingleThreadScheduledExecutor();
-//	int autocloseFrequency = 3;
-//	private boolean closed = false;
-//
-//	protected void startAutocloser() {
-//		scheduleAutoCloserService();
-//	}
-//
-//	private void scheduleAutoCloserService() {
-//		AUTOCLOSE_SERVICE.schedule(new AutoCloser(this), this.autocloseFrequency, TimeUnit.SECONDS);
-//	}
-//
-//	private static class AutoCloser implements Runnable {
-//
-//		private DBDatabase database;
-//
-//		public AutoCloser(DBDatabase db) {
-//			this.database = db;
-//		}
-//
-//		@Override
-//		public void run() {
-//			if (database != null && !database.closed) {
-//				System.out.println("Should I close it???? " + database);
-//				GregorianCalendar cal = new GregorianCalendar();
-//				cal.add(GregorianCalendar.SECOND, -1 * database.autocloseFrequency);
-//				java.util.Date time = cal.getTime();
-//				List<Connection> busy = database.getConnectionList(BUSY_CONNECTION);
-//				System.out.println("BUSY: " + busy.size());
-//				List<Connection> free = database.getConnectionList(FREE_CONNECTIONS);
-//				System.out.println("FREE: " + free.size());
-//				System.out.println("LastConnectionUse: " + database.LastConnectionUse);
-//				if (database.LastConnectionUse == null) {
-//					System.out.println("Haven't actually done anything yet...");
-//					database.LastConnectionUse = new java.util.Date();
-//					database.scheduleAutoCloserService();
-//				} else {
-//					if (database.LastConnectionUse.before(time)
-//							&& (busy.isEmpty() || (busy.size() == 1 && database.storedConnection != null))) {
-//						try {
-//							System.out.print("I SHOULD CLOSE IT!");
-//							DBDatabase thisDatabase = database;
-//							database = null;
-//							thisDatabase.autoClose();
-//							System.out.print(" CLOSED BUSY: " + busy.size());
-//							System.out.print(" CLOSED FREE: " + free.size());
-//							System.out.println(" CLOSED ");
-//						} catch (SQLException ex) {
-//							System.out.print("Oops... ");
-//							System.out.println(ex.getMessage());
-//							if (database != null) {
-//								database.scheduleAutoCloserService();
-//							}
-//							throw new RuntimeException("Unable to AutoClose DBDatabase [" + database + "]", ex);
-//						}
-//					} else {
-//						System.out.println("Maybe later...");
-//						database.scheduleAutoCloserService();
-//					}
-//				}
-//			} else {
-//				System.out.println("Already closed.");
-//				database = null;
-//			}
-//		}
-//
-//	}
-//
-//	private static class AutoCloseAllJob implements Runnable {
-//
-//		public AutoCloseAllJob() {
-//		}
-//
-//		@Override
-//		public void run() {
-//			DBDatabase.autoCloseAll();
-//		}
-//	}
-	protected static enum ResponseToException {
+	public boolean isMemoryDatabase() {
+		return false;
+	}
+
+	abstract protected Map<String, String> getExtras();
+
+	abstract protected String getHost();
+
+	abstract protected String getDatabaseInstance();
+
+	abstract protected String getPort();
+
+	abstract protected String getSchema();
+
+	public static enum ResponseToException {
 		REQUERY(),
 		SKIPQUERY();
 

@@ -17,7 +17,9 @@ package nz.co.gregs.dbvolution.databases;
 
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import javax.sql.DataSource;
 import nz.co.gregs.dbvolution.databases.definitions.MariaDBDefinition;
 
@@ -136,6 +138,42 @@ public class MariaClusterDB extends DBDatabase {
 	@Override
 	protected void addDatabaseSpecificFeatures(Statement statement) throws SQLException {
 		;
+	}
+
+	@Override
+	protected Map<String, String> getExtras() {
+		String jdbcURL = getJdbcURL();
+		if (jdbcURL.matches(";")) {
+			String extrasString = jdbcURL.split(";", 2)[1];
+			return DatabaseConnectionSettings.decodeExtras(extrasString, "", "=", ";", "");
+		} else {
+			return new HashMap<String, String>();
+		}
+	}
+
+	@Override
+	protected String getHost() {
+		String jdbcURL = getJdbcURL();
+		String noPrefix = jdbcURL.replaceAll("^jdbc:mariadb://", "");
+			return noPrefix
+					.split("/",2)[0];
+		
+	}
+
+	@Override
+	protected String getDatabaseInstance() {
+		String jdbcURL = getJdbcURL();
+		return getExtras().get("instance");
+	}
+
+	@Override
+	protected String getPort() {
+		return null;
+	}
+
+	@Override
+	protected String getSchema() {
+		return null;
 	}
 
 }

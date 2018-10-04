@@ -17,6 +17,8 @@ package nz.co.gregs.dbvolution.databases;
 
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.HashMap;
+import java.util.Map;
 import javax.sql.DataSource;
 import nz.co.gregs.dbvolution.databases.definitions.MSSQLServerDBDefinition;
 import nz.co.gregs.dbvolution.databases.supports.SupportsPolygonDatatype;
@@ -214,5 +216,48 @@ public class MSSQLServerDB extends DBDatabase implements SupportsPolygonDatatype
 			return ResponseToException.REQUERY;
 		}
 		return super.addFeatureToFixException(exp);
+	}
+
+	@Override
+	protected Map<String, String> getExtras() {
+		String jdbcURL = getJdbcURL();
+		if (jdbcURL.matches(";")) {
+			String extrasString = jdbcURL.split(";", 2)[1];
+			return DatabaseConnectionSettings.decodeExtras(extrasString, "", "=", ";", "");
+		} else {
+			return new HashMap<String, String>();
+		}
+	}
+
+	@Override
+	protected String getHost() {
+		String jdbcURL = getJdbcURL();
+		String noPrefix = jdbcURL.replaceAll("^jdbc:sqlserver://", "");
+			return noPrefix
+					.split("\\",2)[0];
+		
+	}
+
+	@Override
+	protected String getDatabaseInstance() {
+		String jdbcURL = getJdbcURL();
+		String noPrefix = jdbcURL.replaceAll("^jdbc:sqlserver://", "");
+			return noPrefix
+					.split("\\",2)[1]
+					.split(":")[0];
+	}
+
+	@Override
+	protected String getPort() {
+		String jdbcURL = getJdbcURL();
+		String noPrefix = jdbcURL.replaceAll("^jdbc:sqlserver://", "");
+			return noPrefix
+					.split("\\",2)[1]
+					.split(":")[1];
+	}
+
+	@Override
+	protected String getSchema() {
+		return "";
 	}
 }

@@ -21,6 +21,8 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.HashMap;
+import java.util.Map;
 import javax.sql.DataSource;
 import org.sqlite.SQLiteConfig;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
@@ -99,6 +101,7 @@ public class SQLiteDB extends DBDatabase {
 	 */
 	public SQLiteDB(String jdbcURL, String username, String password) throws SQLException {
 		super(new SQLiteDefinition(), SQLITE_DRIVER_NAME, jdbcURL, username, password);
+		setDatabasenameFromURL();
 	}
 
 	/**
@@ -117,6 +120,7 @@ public class SQLiteDB extends DBDatabase {
 				"jdbc:sqlite:" + databaseFile.getCanonicalFile(),
 				username,
 				password);
+		setDatabaseName(databaseFile.getCanonicalFile().toString());
 	}
 
 	/**
@@ -136,6 +140,7 @@ public class SQLiteDB extends DBDatabase {
 				"jdbc:sqlite:" + filename,
 				username,
 				password);
+		setDatabaseName(new File(filename).getCanonicalFile().toString());
 	}
 
 	@Override
@@ -173,6 +178,54 @@ public class SQLiteDB extends DBDatabase {
 	@Override
 	protected void addDatabaseSpecificFeatures(Statement statement) throws SQLException {
 		;
+	}
+
+	@Override
+	protected Map<String, String> getExtras() {
+		String jdbcURL = getJdbcURL();
+		if (jdbcURL.matches(";")) {
+			String extrasString = jdbcURL.split("?", 2)[1];
+			return DatabaseConnectionSettings.decodeExtras(extrasString, "", "=", ";", "");
+		} else {
+			return new HashMap<String, String>();
+		}
+	}
+
+	@Override
+	protected String getHost() {
+		String jdbcURL = getJdbcURL();
+		String noPrefix = jdbcURL.replaceAll("^jdbc:sqlite://", "");
+			return noPrefix
+					.split("/",2)[0]
+					.split(":")[0];
+		
+	}
+
+	@Override
+	protected String getDatabaseInstance() {
+		String jdbcURL = getJdbcURL();
+		return getExtras().get("instance");
+	}
+
+	@Override
+	protected String getPort() {
+		String jdbcURL = getJdbcURL();
+		String noPrefix = jdbcURL.replaceAll("^jdbc:sqlite://", "");
+			return noPrefix
+					.split("/",2)[0]
+					.replaceAll("^[^:]*:+", "");
+	}
+
+	@Override
+	protected String getSchema() {
+		return "";
+	}
+
+	private void setDatabasenameFromURL() {
+		String jdbcURL = getJdbcURL();
+		String noPrefix = jdbcURL.replaceAll("^jdbc:sqlite://", "");
+		String name = noPrefix.split(":",3)[2];
+		setDatabaseName(name);
 	}
 
 }

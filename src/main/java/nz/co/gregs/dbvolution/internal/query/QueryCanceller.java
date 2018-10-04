@@ -66,7 +66,7 @@ class QueryCanceller implements Runnable {
 	}
 
 	private static Long standardCancelOffset = null;
-	private static final int DEFAULT_TIMEOUT_MILLISECONDS = 10000;
+	private static final int DEFAULT_TIMEOUT_MILLISECONDS = 15000;
 
 	public static Long getStandardCancelOffset() {
 		if (standardCancelOffset == null) {
@@ -78,7 +78,7 @@ class QueryCanceller implements Runnable {
 			}
 			standardCancelOffset = Math.max(
 					DEFAULT_TIMEOUT_MILLISECONDS, // at least 10s timeout
-					((new Date()).getTime() - startDate.getTime()) * 10);// 10x1sec-equivalents
+					((new Date()).getTime() - startDate.getTime()) * 15);// 15x1sec-equivalents
 		}
 		return standardCancelOffset;
 	}

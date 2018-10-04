@@ -20,7 +20,9 @@ import nz.co.gregs.dbvolution.internal.oracle.StringFunctions;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import javax.sql.DataSource;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
@@ -182,6 +184,43 @@ public abstract class OracleDB extends DBDatabase implements SupportsPolygonData
 				+ settings.getHost() + ":"
 				+ settings.getPort() + "/"
 				+ settings.getInstance();
+	}
+
+	@Override
+	protected Map<String, String> getExtras() {
+		return new HashMap<String, String>();
+	}
+
+	@Override
+	protected String getHost() {
+		String jdbcURL = getJdbcURL();
+		String noPrefix = jdbcURL.replaceAll("^jdbc:oracle:[^:]*:@//", "");
+		return noPrefix
+				.split("/", 2)[0]
+				.split(":")[0];
+
+	}
+
+	@Override
+	protected String getDatabaseInstance() {
+		String jdbcURL = getJdbcURL();
+		String noPrefix = jdbcURL.replaceAll("^jdbc:oracle:[^:]*:@//", "");
+		return noPrefix
+				.split("/", 2)[1];
+	}
+
+	@Override
+	protected String getPort() {
+		String jdbcURL = getJdbcURL();
+		String noPrefix = jdbcURL.replaceAll("^jdbc:oracle:[^:]*:@//", "");
+		return noPrefix
+				.split("/", 2)[0]
+				.replaceAll("^[^:]*:+", "");
+	}
+
+	@Override
+	protected String getSchema() {
+		return "";
 	}
 
 }

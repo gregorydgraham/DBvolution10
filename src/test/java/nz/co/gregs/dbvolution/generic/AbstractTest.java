@@ -69,7 +69,7 @@ public abstract class AbstractTest {
 
 		if (System.getProperty("testClusteredDB") != null) {
 			databases.add(new Object[]{"ClusteredDB",
-				new DBDatabaseCluster(
+				new DBDatabaseCluster("testClusteredDB",
 				H2MemoryTestDB.getClusterDBFromSettings("h2memory"),
 				SQLiteTestDB.getClusterDBFromSettings("sqlite"),
 				PostgreSQLTestDatabase.getClusterDBFromSettings("postgres"),
@@ -78,21 +78,21 @@ public abstract class AbstractTest {
 		}
 		if (System.getProperty("testSmallCluster") != null) {
 			databases.add(new Object[]{"ClusteredDB",
-				new DBDatabaseCluster(
+				new DBDatabaseCluster("testSmallCluster",
 				SQLiteTestDB.getFromSettings(),
 				H2MemoryTestDB.getFromSettings("h2memory")
 				)});
 		}
 		if (System.getProperty("testBundledCluster") != null) {
 			databases.add(new Object[]{"ClusteredDB",
-				new DBDatabaseCluster(
+				new DBDatabaseCluster("testSmallCluster",
 				SQLiteTestDB.getFromSettings(),
 				H2MemoryTestDB.getFromSettings("h2memory")
 				)});
 		}
 		if (System.getProperty("testOpenSourceCluster") != null) {
 			databases.add(new Object[]{"ClusteredDB",
-				new DBDatabaseCluster(
+				new DBDatabaseCluster("testOpenSourceCluster",
 				H2MemoryTestDB.getFromSettings("h2memory"),
 				SQLiteTestDB.getFromSettings(),
 				PostgreSQLTestDatabase.getFromSettings("postgres"),
@@ -101,7 +101,7 @@ public abstract class AbstractTest {
 		}
 		if (System.getProperty("MySQL+Cluster") != null) {
 			databases.add(new Object[]{"ClusteredDB",
-				new DBDatabaseCluster(
+				new DBDatabaseCluster("MySQL+Cluster",
 				H2MemoryTestDB.getFromSettings("h2memory"),
 				SQLiteTestDB.getFromSettings(),
 				PostgreSQLTestDatabase.getFromSettings("postgres"),

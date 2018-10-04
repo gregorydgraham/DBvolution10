@@ -235,7 +235,7 @@ public class H2DB extends DBDatabase {
 		}
 		if (!handledException) {
 			throw exp;
-		}else{
+		} else {
 			return ResponseToException.REQUERY;
 		}
 	}
@@ -244,5 +244,73 @@ public class H2DB extends DBDatabase {
 	protected String getUrlFromSettings(DatabaseConnectionSettings settings) {
 		String url = settings.getUrl();
 		return url != null && !url.isEmpty() ? url : "jdbc:h2:" + settings.getDatabaseName();
+	}
+
+	@Override
+	public boolean isMemoryDatabase() {
+		return getJdbcURL().matches(":mem:");
+	}
+
+	@Override
+	protected Map<String, String> getExtras() {
+		String jdbcURL = getJdbcURL();
+		if (jdbcURL.matches(";")) {
+			String extrasString = jdbcURL.split(";", 2)[1];
+			return DatabaseConnectionSettings.decodeExtras(extrasString, "", "=", ";", "");
+		} else {
+			return new HashMap<String, String>();
+		}
+	}
+
+	@Override
+	protected String getHost() {
+		String jdbcURL = getJdbcURL();
+		String noPrefix = jdbcURL.replaceAll("^jdbc:h2:", "").replaceAll("^mem:", "");
+		if (noPrefix.startsWith("tcp")||noPrefix.startsWith("ssl")) {
+			return noPrefix
+					.replaceAll("^tcp://", "")
+					.replaceAll("^ssl://", "")
+					.split("/",2)[0]
+					.split(":")[0];
+		} else {
+			return "";
+		}
+	}
+
+	protected String getFileFromJdbcURL() {
+		String jdbcURL = getJdbcURL();
+		String noPrefix = jdbcURL.replaceAll("^jdbc:h2:", "").replaceAll("^mem:", "");
+		if (noPrefix.startsWith("tcp")||noPrefix.startsWith("ssl")) {
+			return noPrefix
+					.replaceAll("tcp://", "")
+					.replaceAll("ssl://", "").split("/",2)[1];
+		} else {
+			return noPrefix.replaceAll("^file:", "").split(";", 2)[0];
+		}
+	}
+
+	@Override
+	protected String getDatabaseInstance() {
+		return "";
+	}
+
+	@Override
+	protected String getPort() {
+		String jdbcURL = getJdbcURL();
+		String noPrefix = jdbcURL.replaceAll("^jdbc:h2:", "").replaceAll("^mem:", "");
+		if (noPrefix.startsWith("tcp")||noPrefix.startsWith("ssl")) {
+			return noPrefix
+					.replaceAll("^tcp://", "")
+					.replaceAll("^ssl://", "")
+					.split("/",2)[0]
+					.replaceAll("^[^:]*:", "");
+		} else {
+			return "";
+		}
+	}
+
+	@Override
+	protected String getSchema() {
+		return "";
 	}
 }

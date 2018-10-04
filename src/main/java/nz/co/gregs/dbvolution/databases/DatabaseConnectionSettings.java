@@ -123,14 +123,65 @@ public class DatabaseConnectionSettings {
 	@Override
 	public String toString() {
 		return "DATABASECONNECTIONSETTINGS: "
-				+ getDbdatabase()+";"
-				+ getHost()+";"
-				+ getPort()+";"
-				+ getInstance()+";"
-				+ getDatabaseName()+";"
-				+ getSchema()+";"
-				+ getUrl()+";"
-				+ getUsername()+";";
+				+ getDbdatabase() + ";"
+				+ getHost() + ";"
+				+ getPort() + ";"
+				+ getInstance() + ";"
+				+ getDatabaseName() + ";"
+				+ getSchema() + ";"
+				+ getUrl() + ";"
+				+ getUsername() + ";";
+	}
+
+	public String encode() {
+		return "DATABASECONNECTIONSETTINGS: "
+				+ getDbdatabase() + ";"
+				+ getHost() + ";"
+				+ getPort() + ";"
+				+ getInstance() + ";"
+				+ getDatabaseName() + ";"
+				+ getSchema() + ";"
+				+ getUrl() + ";"
+				+ getUsername() + ";"
+				+ getPassword() + ";";
+	}
+
+	public static DatabaseConnectionSettings decode(String encodedSettings) {
+		DatabaseConnectionSettings settings = new DatabaseConnectionSettings();
+
+		String[] data = encodedSettings.split("DATABASECONNECTIONSETTINGS: ")[1].split(";");
+		if (data.length > 0) {
+			settings.setDbdatabase(data[0]);
+			if (data.length > 1) {
+				settings.setHost(data[1]);
+				if (data.length > 2) {
+					settings.setPort(data[2]);
+					if (data.length > 3) {
+						settings.setInstance(data[3]);
+						if (data.length > 4) {
+							settings.setDatabaseName(data[4]);
+							if (data.length > 5) {
+								settings.setSchema(data[5]);
+								if (data.length > 6) {
+									settings.setUrl(data[6]);
+									if (data.length > 7) {
+										settings.setUsername(data[7]);
+										if (data.length > 8) {
+											settings.setPassword(data[8]);
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+		return settings;
+	}
+
+	public boolean equals(DatabaseConnectionSettings obj) {
+		return this.encode().equals(obj.encode());
 	}
 
 	/**
@@ -391,14 +442,14 @@ public class DatabaseConnectionSettings {
 	 * @param url the url to set
 	 */
 	public void setUrl(String url) {
-		this.url = url;
+		this.url = url == null ? "" : url;
 	}
 
 	/**
 	 * @param host the host to set
 	 */
 	public void setHost(String host) {
-		this.host = host;
+		this.host = host == null ? "" : host;
 //		return this;
 	}
 
@@ -406,7 +457,7 @@ public class DatabaseConnectionSettings {
 	 * @param port the port to set
 	 */
 	public void setPort(String port) {
-		this.port = port;
+		this.port = port == null ? "" : port;
 //		return this;
 	}
 
@@ -414,7 +465,7 @@ public class DatabaseConnectionSettings {
 	 * @param instance the instance to set
 	 */
 	public void setInstance(String instance) {
-		this.instance = instance;
+		this.instance = instance == null ? "" : instance;
 //		return this;
 	}
 
@@ -422,7 +473,7 @@ public class DatabaseConnectionSettings {
 	 * @param database the database to set
 	 */
 	public void setDatabaseName(String database) {
-		this.database = database;
+		this.database = database == null ? "" : database;
 //		return this;
 	}
 
@@ -430,7 +481,7 @@ public class DatabaseConnectionSettings {
 	 * @param username the username to set
 	 */
 	public void setUsername(String username) {
-		this.username = username;
+		this.username = username == null ? "" : username;
 //		return this;
 	}
 
@@ -438,7 +489,7 @@ public class DatabaseConnectionSettings {
 	 * @param password the password to set
 	 */
 	public void setPassword(String password) {
-		this.password = password;
+		this.password = password == null ? "" : password;
 //		return this;
 	}
 
@@ -446,7 +497,7 @@ public class DatabaseConnectionSettings {
 	 * @param schema the schema to set
 	 */
 	public void setSchema(String schema) {
-		this.schema = schema;
+		this.schema = schema == null ? "" : schema;
 //		return this;
 	}
 
@@ -463,11 +514,17 @@ public class DatabaseConnectionSettings {
 	 */
 	public DatabaseConnectionSettings setExtras(Map<String, String> newExtras) {
 		extras.clear();
-		extras.putAll(newExtras);
+		if (newExtras != null && !newExtras.isEmpty()) {
+			extras.putAll(newExtras);
+		}
 		return this;
 	}
 
 	public String formatExtras(String prefix, String nameValueSeparator, String nameValuePairSeparator, String suffix) {
+		return encodeExtras(extras, prefix, nameValueSeparator, nameValuePairSeparator, suffix);
+	}
+
+	public static String encodeExtras(Map<String, String> extras, String prefix, String nameValueSeparator, String nameValuePairSeparator, String suffix) {
 		StringBuilder str = new StringBuilder();
 		for (Entry<String, String> extra : extras.entrySet()) {
 			if (str.length() > 0) {
@@ -480,6 +537,17 @@ public class DatabaseConnectionSettings {
 		} else {
 			return "";
 		}
+	}
+
+	public static Map<String, String> decodeExtras(String extras, String prefix, String nameValueSeparator, String nameValuePairSeparator, String suffix) {
+		Map<String, String> map = new HashMap<String, String>();
+		String onlyValues = extras.replaceAll("$" + prefix, "");
+		String[] split = onlyValues.split(nameValuePairSeparator);
+		for (String string : split) {
+			String[] nameAndValue = string.split(nameValueSeparator);
+			map.put(nameAndValue[0], nameAndValue[1]);
+		}
+		return map;
 	}
 
 	public void setDbdatabase(String canonicalNameOfADBDatabaseSubclass) {

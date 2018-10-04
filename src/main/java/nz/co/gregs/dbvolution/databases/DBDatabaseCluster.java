@@ -35,7 +35,9 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Queue;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
@@ -105,22 +107,42 @@ public class DBDatabaseCluster extends DBDatabase {
 	private transient final ExecutorService threadPool;
 	private final transient DBStatementCluster clusterStatement;
 
-	public DBDatabaseCluster() {
+	public DBDatabaseCluster(String clusterName, boolean useAutoRebuild) {
 		super();
+		setDatabaseName(clusterName);
 		clusterStatement = new DBStatementCluster(this);
-		details = new ClusterDetails();
+		details = new ClusterDetails(clusterName, useAutoRebuild);
 		threadPool = Executors.newCachedThreadPool();
 	}
+	
+	public DBDatabaseCluster(String clusterName) {
+		this(clusterName, true);
+	}
 
-	public DBDatabaseCluster(DBDatabase... databases) throws SQLException {
-		this();
+	public DBDatabaseCluster(String clusterName, boolean useAutoRebuild, DBDatabase... databases) throws SQLException {
+		this(clusterName,useAutoRebuild);
 		details.addAll(databases);
 		setDefinition(new ClusterDatabaseDefinition());
 		synchronizeSecondaryDatabases();
 	}
 
-	public DBDatabaseCluster(DatabaseConnectionSettings... settings) throws SQLException, InvocationTargetException, IllegalArgumentException, IllegalAccessException, InstantiationException, SecurityException, NoSuchMethodException, ClassNotFoundException {
-		this();
+	public DBDatabaseCluster(String clusterName, boolean useAutoRebuild, DatabaseConnectionSettings... settings) throws SQLException, InvocationTargetException, IllegalArgumentException, IllegalAccessException, InstantiationException, SecurityException, NoSuchMethodException, ClassNotFoundException {
+		this(clusterName, useAutoRebuild);
+		setDefinition(new ClusterDatabaseDefinition());
+		for (DatabaseConnectionSettings setting : settings) {
+			this.addDatabase(setting.createDBDatabase());
+		}
+	}
+
+	public DBDatabaseCluster(String clusterName, DBDatabase... databases) throws SQLException {
+		this(clusterName);
+		details.addAll(databases);
+		setDefinition(new ClusterDatabaseDefinition());
+		synchronizeSecondaryDatabases();
+	}
+
+	public DBDatabaseCluster(String clusterName, DatabaseConnectionSettings... settings) throws SQLException, InvocationTargetException, IllegalArgumentException, IllegalAccessException, InstantiationException, SecurityException, NoSuchMethodException, ClassNotFoundException {
+		this(clusterName);
 		setDefinition(new ClusterDatabaseDefinition());
 		for (DatabaseConnectionSettings setting : settings) {
 			this.addDatabase(setting.createDBDatabase());
@@ -1061,7 +1083,7 @@ public class DBDatabaseCluster extends DBDatabase {
 		}
 		if (template != null) {
 			// Check that we're not synchronising the reference database
-			if (!template.equals(secondary)) {
+			if (!template.getSettings().equals(secondary.getSettings())) {
 				final DBRow[] requiredTables = details.getRequiredTables();
 				for (DBRow table : requiredTables) {
 					if (true) {
@@ -1184,6 +1206,35 @@ public class DBDatabaseCluster extends DBDatabase {
 	@Override
 	protected String getUrlFromSettings(DatabaseConnectionSettings settings) {
 		throw new UnsupportedOperationException("Not supported yet.");
+	}
+
+	@Override
+	protected Map<String, String> getExtras() {
+		return new HashMap<String, String>();
+	}
+
+	@Override
+	protected String getHost() {
+		return "CLUSTER";
+	}
+
+	@Override
+	protected String getDatabaseInstance() {
+		return "CLUSTER";
+	}
+
+	@Override
+	protected String getPort() {
+		return "CLUSTER";
+	}
+
+	@Override
+	protected String getSchema() {
+		return "CLUSTER";
+	}
+
+	public void setAutoRebuild(boolean b) {
+		details.setAutoRebuild(b);
 	}
 
 	private static class ActionTask implements Callable<DBActionList> {
