@@ -96,7 +96,7 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 	private Boolean needToAddDatabaseSpecificFeatures = true;
 	boolean explicitCommitActionRequired = false;
 	private DatabaseConnectionSettings settings;
-
+	
 	@Override
 	public String toString() {
 		if (jdbcURL != null && !jdbcURL.isEmpty()) {
@@ -1624,27 +1624,6 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 	 */
 	public synchronized void dropDatabase(boolean doIt) throws AccidentalDroppingOfDatabaseException, UnableToDropDatabaseException, SQLException, AutoCommitActionDuringTransactionException, ExceptionThrownDuringTransaction {
 		dropDatabase(getDatabaseName(), true);
-//		preventDDLDuringTransaction("DBDatabase.dropDatabase()");
-//		if (preventAccidentalDroppingOfTables) {
-//			throw new AccidentalDroppingOfTableException();
-//		}
-//		if (preventAccidentalDroppingDatabase) {
-//			throw new AccidentalDroppingOfDatabaseException();
-//		}
-//
-//		String dropStr = getDefinition().getDropDatabase(getDatabaseName());
-//
-//		printSQLIfRequested(dropStr);
-//		LOG.info(dropStr);
-//		if (doIt) {
-//			try {
-//				this.doTransaction(new DBRawSQLTransaction(dropStr));
-//			} catch (Exception ex) {
-//				throw new UnableToDropDatabaseException(ex);
-//			}
-//		}
-//		preventAccidentalDroppingOfTables = true;
-//		preventAccidentalDroppingDatabase = true;
 	}
 
 	/**
@@ -1703,7 +1682,7 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 	 *
 	 * @param databaseName	databaseName
 	 */
-	final protected synchronized void setDatabaseName(String databaseName) {
+	public synchronized void setDatabaseName(String databaseName) {
 		this.databaseName = databaseName;
 	}
 
