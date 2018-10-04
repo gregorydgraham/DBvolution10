@@ -598,7 +598,11 @@ public class DBLargeText extends DBLargeObject<byte[]> {
 
 	private byte[] getFromBase64(ResultSet resultSet, String fullColumnName) throws SQLException {
 		String gotString = resultSet.getString(fullColumnName);
-		return Base64.decodeBase64(gotString.getBytes(UTF_8));
+		if (gotString == null) {
+			return null;
+		} else {
+			return Base64.decodeBase64(gotString.getBytes(UTF_8));
+		}
 	}
 
 	private byte[] getFromJavaObject(ResultSet resultSet, String fullColumnName) {
