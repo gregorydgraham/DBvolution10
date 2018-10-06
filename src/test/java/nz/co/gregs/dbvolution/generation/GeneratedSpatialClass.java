@@ -71,6 +71,7 @@ public class GeneratedSpatialClass extends AbstractTest {
 					+ "}\n"
 					+ "");
 			generateSchema = DBTableClassGenerator.generateClassesOfTables(database, "nz.co.gregs.dbvolution.generation", new DBTableClassGenerator.Options());
+			System.out.println("Everything is OK");
 			for (DBTableClass dbcl : generateSchema) {
 				if (testClassNames.contains(dbcl.getClassName())) {
 					classesTested++;

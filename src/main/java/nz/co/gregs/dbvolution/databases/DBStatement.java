@@ -175,15 +175,13 @@ public class DBStatement implements Statement {
 		}
 		try {
 			Statement statement = getInternalStatement();
-//			System.out.println("CLOSING DBSTATEMENT");
 			statement.close();
-			setInternalStatement(null);
-//			DBSTATEMENT_REGISTER.remove(this);
-//			DBSTATEMENT_CLOSED_REGISTER.remove(this);
 		} catch (SQLException e) {
 			// Someone please tell me how you are supposed to cope 
 			// with an exception during the close method????????
 			LOG.warn("Exception occurred during close(): " + e.getMessage(), e);
+		}finally{
+			setInternalStatement(null);
 		}
 	}
 

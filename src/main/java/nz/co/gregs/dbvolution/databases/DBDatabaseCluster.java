@@ -107,15 +107,6 @@ public class DBDatabaseCluster extends DBDatabase {
 	private transient final ExecutorService threadPool;
 	private final transient DBStatementCluster clusterStatement;
 
-	{
-		Runtime.getRuntime().addShutdownHook(new Thread() {
-			@Override
-			public void run() {
-				threadPool.shutdown();
-			}
-		});
-	}
-
 	public DBDatabaseCluster() {
 		super();
 		clusterStatement = new DBStatementCluster(this);
@@ -1216,7 +1207,13 @@ public class DBDatabaseCluster extends DBDatabase {
 	}
 
 	private synchronized void releaseTemplateDatabase(DBDatabase primary) throws SQLException {
-		synchronizeActions(primary);
+		if (primary != null) {
+			if (details.clusterContainsDatabase(primary)) {
+				synchronizeActions(primary);
+			} else {
+				primary.terminate();
+			}
+		}
 	}
 
 	private DBDatabase getTemplateDatabase() throws NoAvailableDatabaseException {
@@ -1259,6 +1256,14 @@ public class DBDatabaseCluster extends DBDatabase {
 
 	public final void setAutoRebuild(boolean b) {
 		details.setAutoRebuild(b);
+	}
+
+	@Override
+	public synchronized void terminate() {
+		for (DBDatabase db : details.getAllDatabases()) {
+			db.terminate();
+		}
+		threadPool.shutdown();
 	}
 
 	private static class ActionTask implements Callable<DBActionList> {

@@ -269,11 +269,13 @@ public class ClusterDetails implements Serializable {
 		}
 	}
 
-	private boolean clusterContainsDatabase(DBDatabase database) {
-		final DatabaseConnectionSettings newEncode = database.getSettings();
-		for (DBDatabase db : allDatabases) {
-			if (db.getSettings().equals(newEncode)) {
-				return true;
+	public boolean clusterContainsDatabase(DBDatabase database) {
+		if (database != null) {
+			final DatabaseConnectionSettings newEncode = database.getSettings();
+			for (DBDatabase db : allDatabases) {
+				if (db.getSettings().equals(newEncode)) {
+					return true;
+				}
 			}
 		}
 		return false;

@@ -91,12 +91,22 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 	private final Object getStatementSynchronizeObject = new Object();
 	private final Object getConnectionSynchronizeObject = new Object();
 	Connection transactionConnection;
-	private static final transient Map<Integer, List<Connection>> BUSY_CONNECTION = new HashMap<>();
-	private static final transient HashMap<Integer, List<Connection>> FREE_CONNECTIONS = new HashMap<>();
+	private static final transient Map<String, List<Connection>> BUSY_CONNECTIONS = new HashMap<>();
+	private static final transient HashMap<String, List<Connection>> FREE_CONNECTIONS = new HashMap<>();
 	private Boolean needToAddDatabaseSpecificFeatures = true;
 	boolean explicitCommitActionRequired = false;
 	private DatabaseConnectionSettings settings;
-	
+	private boolean terminated = false;
+
+	{
+		Runtime.getRuntime().addShutdownHook(new Thread() {
+			@Override
+			public void run() {
+				terminate();
+			}
+		});
+	}
+
 	@Override
 	public String toString() {
 		if (jdbcURL != null && !jdbcURL.isEmpty()) {
@@ -157,7 +167,12 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 		if ((this.getPassword() == null) ? (other.getPassword() != null) : !this.getPassword().equals(other.getPassword())) {
 			return false;
 		}
-		return !(this.dataSource != other.dataSource && (this.dataSource == null || !this.dataSource.equals(other.dataSource)));
+		if ((this.dataSource == null) ? (other.dataSource != null) : !this.dataSource.equals(other.dataSource)) {
+			return false;
+		}
+		final DatabaseConnectionSettings thisSettings = this.getSettings();
+		final DatabaseConnectionSettings otherSettings = other.getSettings();
+		return !(thisSettings != otherSettings && (thisSettings == null || !thisSettings.equals(otherSettings)));
 	}
 
 	/**
@@ -359,17 +374,20 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 	}
 
 	protected DBStatement getLowLevelStatement() throws UnableToCreateDatabaseConnectionException, UnableToFindJDBCDriver, SQLException {
-		Connection connection = getConnection();
-		try {
-			while (connection.isClosed()) {
+		if (!terminated) {
+			Connection connection = getConnection();
+			try {
+				while (connection.isClosed()) {
+					discardConnection(connection);
+					connection = getConnection();
+				}
+				return new DBStatement(this, connection);
+			} catch (SQLException cantCreateStatement) {
 				discardConnection(connection);
-				connection = getConnection();
+				throw new UnableToCreateDatabaseConnectionException(getJdbcURL(), getUsername(), cantCreateStatement);
 			}
-			return new DBStatement(this, connection);
-		} catch (SQLException cantCreateStatement) {
-			discardConnection(connection);
-			throw new UnableToCreateDatabaseConnectionException(getJdbcURL(), getUsername(), cantCreateStatement);
 		}
+		return null;
 	}
 
 	/**
@@ -392,86 +410,93 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 	 * to work with those databases.
 	 */
 	public synchronized Connection getConnection() throws UnableToCreateDatabaseConnectionException, UnableToFindJDBCDriver, SQLException {
-		if (isInATransaction && !this.transactionConnection.isClosed()) {
-			return this.transactionConnection;
-		}
-		Connection conn = null;
-		while (conn == null) {
-			if (supportsPooledConnections()) {
-				//synchronized (FREE_CONNECTIONS) {
-				if (FREE_CONNECTIONS.isEmpty() || getConnectionList(FREE_CONNECTIONS).isEmpty()) {
-					conn = getRawConnection();
-				} else {
-					conn = getConnectionList(FREE_CONNECTIONS).get(0);
-				}
-				//}
-			} else {
-				conn = getRawConnection();
+		if (terminated) {
+			return null;
+		} else {
+			if (isInATransaction && !this.transactionConnection.isClosed()) {
+				return this.transactionConnection;
 			}
-			try {
-				if (conn.isClosed()) {
-					discardConnection(conn);
+			Connection conn = null;
+			while (conn == null) {
+				if (supportsPooledConnections()) {
+					//synchronized (FREE_CONNECTIONS) {
+					if (FREE_CONNECTIONS.isEmpty() || getConnectionList(FREE_CONNECTIONS).isEmpty()) {
+						conn = getRawConnection();
+					} else {
+						conn = getConnectionList(FREE_CONNECTIONS).get(0);
+					}
+					//}
+				} else {
+					conn = getRawConnection();
+				}
+				try {
+					if (conn.isClosed()) {
+						discardConnection(conn);
+						conn = null;
+					}
+				} catch (SQLException ex) {
+					Logger.getLogger(DBDatabase.class.getName()).log(Level.FINEST, null, ex);
+				}
+				if (connectionUsedForPersistentConnection(conn)) {
 					conn = null;
 				}
-			} catch (SQLException ex) {
-				Logger.getLogger(DBDatabase.class.getName()).log(Level.FINEST, null, ex);
 			}
-			if (connectionUsedForPersistentConnection(conn)) {
-				conn = null;
-			}
+			usedConnection(conn);
+			return conn;
 		}
-		usedConnection(conn);
-		return conn;
 	}
 
 	@edu.umd.cs.findbugs.annotations.SuppressFBWarnings(
 			value = {"OBL_UNSATISFIED_OBLIGATION_EXCEPTION_EDGE", "ODR_OPEN_DATABASE_RESOURCE"},
 			justification = "Raw connections are pooled and closed  in discardConnection()")
 	private Connection getRawConnection() throws UnableToFindJDBCDriver, UnableToCreateDatabaseConnectionException, SQLException {
-		Connection connection = null;
-		int retries = 0;
-		synchronized (getConnectionSynchronizeObject) {
-			if (this.dataSource == null) {
-				try {
-					startServerIfRequired();
-					// load the driver
-					Class.forName(getDriverName());
-				} catch (ClassNotFoundException noDriver) {
-					throw new UnableToFindJDBCDriver(getDriverName(), noDriver);
-				}
-				while (connection == null) {
+		if (!terminated) {
+			Connection connection = null;
+			int retries = 0;
+			synchronized (getConnectionSynchronizeObject) {
+				if (this.dataSource == null) {
 					try {
-						connection = getConnectionFromDriverManager();
-					} catch (SQLException noConnection) {
-						if (retries < MAX_CONNECTION_RETRIES) {
-							retries++;
-							try {
-								getConnectionSynchronizeObject.wait(SLEEP_BETWEEN_CONNECTION_RETRIES_MILLIS);
-							} catch (InterruptedException ex) {
-								Logger.getLogger(DBDatabase.class.getName()).log(Level.SEVERE, null, ex);
+						startServerIfRequired();
+						// load the driver
+						Class.forName(getDriverName());
+					} catch (ClassNotFoundException noDriver) {
+						throw new UnableToFindJDBCDriver(getDriverName(), noDriver);
+					}
+					while (connection == null) {
+						try {
+							connection = getConnectionFromDriverManager();
+						} catch (SQLException noConnection) {
+							if (retries < MAX_CONNECTION_RETRIES) {
+								retries++;
+								try {
+									getConnectionSynchronizeObject.wait(SLEEP_BETWEEN_CONNECTION_RETRIES_MILLIS);
+								} catch (InterruptedException ex) {
+									Logger.getLogger(DBDatabase.class.getName()).log(Level.SEVERE, null, ex);
+								}
+							} else {
+								throw noConnection;
 							}
-						} else {
-							throw noConnection;
 						}
 					}
-				}
-			} else {
-				try {
-					connection = dataSource.getConnection();
-				} catch (SQLException noConnection) {
-					throw new UnableToCreateDatabaseConnectionException(dataSource, noConnection);
-				}
-			}
-		}
-		synchronized (this) {
-			if (needToAddDatabaseSpecificFeatures) {
-				try (Statement createStatement = connection.createStatement()) {
-					addDatabaseSpecificFeatures(createStatement);
-					needToAddDatabaseSpecificFeatures = false;
+				} else {
+					try {
+						connection = dataSource.getConnection();
+					} catch (SQLException noConnection) {
+						throw new UnableToCreateDatabaseConnectionException(dataSource, noConnection);
+					}
 				}
 			}
+			synchronized (this) {
+				if (needToAddDatabaseSpecificFeatures) {
+					try (Statement createStatement = connection.createStatement()) {
+						addDatabaseSpecificFeatures(createStatement);
+						needToAddDatabaseSpecificFeatures = false;
+					}
+				}
+			}
+			return connection;
 		}
-		return connection;
+		return null;
 	}
 	private final int SLEEP_BETWEEN_CONNECTION_RETRIES_MILLIS;
 	private int MAX_CONNECTION_RETRIES = 6;
@@ -1854,10 +1879,14 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
 	protected Connection getConnectionFromDriverManager() throws SQLException {
-		try {
-			return DriverManager.getConnection(getJdbcURL(), getUsername(), getPassword());
-		} catch (SQLException e) {
-			throw new DBRuntimeException("Connection Failed to URL " + getJdbcURL(), e);
+		if (terminated) {
+			return null;
+		} else {
+			try {
+				return DriverManager.getConnection(getJdbcURL(), getUsername(), getPassword());
+			} catch (SQLException e) {
+				throw new DBRuntimeException("Connection Failed to URL " + getJdbcURL(), e);
+			}
 		}
 	}
 
@@ -1914,18 +1943,13 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 	 */
 	public synchronized void unusedConnection(Connection connection) throws SQLException {
 		if (supportsPooledConnections()) {
-			List<Connection> busy = getConnectionList(BUSY_CONNECTION);
+			List<Connection> busy = getConnectionList(BUSY_CONNECTIONS);
 			busy.remove(connection);
 			getConnectionList(FREE_CONNECTIONS).add(connection);
-			if (busy.isEmpty()) {
-				LastConnectionUse = new java.util.Date();
-			}
 		} else {
 			discardConnection(connection);
 		}
 	}
-
-	private transient java.util.Date LastConnectionUse = null;
 
 	/**
 	 * Used to indicate that the DBDatabase class supports Connection Pooling.
@@ -1947,7 +1971,7 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 	private synchronized void usedConnection(Connection connection) {
 		if (supportsPooledConnections()) {
 			getConnectionList(FREE_CONNECTIONS).remove(connection);
-			getConnectionList(BUSY_CONNECTION).add(connection);
+			getConnectionList(BUSY_CONNECTIONS).add(connection);
 		}
 	}
 
@@ -1960,21 +1984,24 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 	 * @param connection the JDBC connection to be removed
 	 */
 	public synchronized void discardConnection(Connection connection) {
-		getConnectionList(BUSY_CONNECTION).remove(connection);
-		getConnectionList(FREE_CONNECTIONS).remove(connection);
-		try {
-			connection.close();
-		} catch (SQLException ex) {
-			Logger.getLogger(DBDatabase.class
-					.getName()).log(Level.WARNING, null, ex);
+		if (connection != null) {
+			getConnectionList(BUSY_CONNECTIONS).remove(connection);
+			getConnectionList(FREE_CONNECTIONS).remove(connection);
+			try {
+				connection.close();
+			} catch (SQLException ex) {
+				Logger.getLogger(DBDatabase.class
+						.getName()).log(Level.WARNING, null, ex);
+			}
 		}
 	}
 
-	private synchronized List<Connection> getConnectionList(Map<Integer, List<Connection>> connectionMap) {
-		List<Connection> connList = connectionMap.get(this.hashCode());
+	private synchronized List<Connection> getConnectionList(Map<String, List<Connection>> connectionMap) {
+		final String key = this.getSettings().encode();
+		List<Connection> connList = connectionMap.get(key);
 		if (connList == null) {
 			connList = new ArrayList<>();
-			connectionMap.put(this.hashCode(), connList);
+			connectionMap.put(key, connList);
 		}
 		return connList;
 	}
@@ -2224,6 +2251,47 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 	abstract protected String getPort();
 
 	abstract protected String getSchema();
+
+	public synchronized void terminate() {
+		terminated = true;
+		try {
+			if (transactionStatement != null) {
+				try {
+					transactionStatement.close();
+				} catch (Exception ex) {
+					ex.printStackTrace();
+					Logger.getLogger(DBDatabase.class.getName()).log(Level.SEVERE, null, ex);
+				}
+			}
+			if (transactionConnection != null) {
+				try {
+					discardConnection(transactionConnection);
+				} catch (Exception ex) {
+					ex.printStackTrace();
+					Logger.getLogger(DBDatabase.class.getName()).log(Level.SEVERE, null, ex);
+				}
+			}
+			final Connection[] free = getConnectionList(FREE_CONNECTIONS).toArray(new Connection[]{});
+			for (Connection connection : free) {
+				discardConnection(connection);
+			}
+			final Connection[] busy = getConnectionList(BUSY_CONNECTIONS).toArray(new Connection[]{});
+			for (Connection connection : busy) {
+				discardConnection(connection);
+			}
+			try {
+				if (storedConnection != null) {
+					storedConnection.close();
+				}
+			} catch (Exception ex) {
+				ex.printStackTrace();
+				Logger.getLogger(DBDatabase.class.getName()).log(Level.SEVERE, null, ex);
+			}
+		} catch (Exception ex) {
+			ex.printStackTrace();
+			Logger.getLogger(DBDatabase.class.getName()).log(Level.SEVERE, null, ex);
+		}
+	}
 
 	public static enum ResponseToException {
 		REQUERY(),
