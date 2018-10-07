@@ -2271,11 +2271,13 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 					Logger.getLogger(DBDatabase.class.getName()).log(Level.SEVERE, null, ex);
 				}
 			}
-			final Connection[] free = getConnectionList(FREE_CONNECTIONS).toArray(new Connection[]{});
+			final List<Connection> freeConnections = getConnectionList(FREE_CONNECTIONS);
+			final Connection[] free = freeConnections.toArray(new Connection[]{});
 			for (Connection connection : free) {
 				discardConnection(connection);
 			}
-			final Connection[] busy = getConnectionList(BUSY_CONNECTIONS).toArray(new Connection[]{});
+			final List<Connection> busyConnections = getConnectionList(BUSY_CONNECTIONS);
+			final Connection[] busy = busyConnections.toArray(new Connection[]{});
 			for (Connection connection : busy) {
 				discardConnection(connection);
 			}

@@ -18,6 +18,7 @@ package nz.co.gregs.dbvolution.generic;
 import java.io.File;
 import nz.co.gregs.dbvolution.databases.DBDatabase;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -64,7 +65,7 @@ public abstract class AbstractTest {
 	public static Date april2nd2011 = (new GregorianCalendar(2011, 3, 2, 1, 2, 3)).getTime();
 
 	@Parameters(name = "{0}")
-	public static List<Object[]> data() throws IOException, SQLException, ClassNotFoundException {
+	public static List<Object[]> data() throws IOException, SQLException, ClassNotFoundException, NoSuchMethodException, SecurityException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
 
 		List<Object[]> databases = new ArrayList<>();
 
@@ -79,21 +80,21 @@ public abstract class AbstractTest {
 		}
 		if (System.getProperty("testSmallCluster") != null) {
 			databases.add(new Object[]{"ClusteredDB",
-				new DBDatabaseCluster("testSmallCluster",false,
+				new DBDatabaseCluster("testSmallCluster", false,
 				SQLiteTestDB.getFromSettings(),
 				H2MemoryTestDB.getFromSettings("h2memory")
 				)});
 		}
 		if (System.getProperty("testBundledCluster") != null) {
 			databases.add(new Object[]{"ClusteredDB",
-				new DBDatabaseCluster("testSmallCluster",false,
+				new DBDatabaseCluster("testSmallCluster", false,
 				SQLiteTestDB.getFromSettings(),
 				H2MemoryTestDB.getFromSettings("h2memory")
 				)});
 		}
 		if (System.getProperty("testOpenSourceCluster") != null) {
 			databases.add(new Object[]{"ClusteredDB",
-				new DBDatabaseCluster("testOpenSourceCluster",false,
+				new DBDatabaseCluster("testOpenSourceCluster", false,
 				H2MemoryTestDB.getFromSettings("h2memory"),
 				SQLiteTestDB.getFromSettings(),
 				PostgreSQLTestDatabase.getFromSettings("postgres"),
@@ -102,7 +103,7 @@ public abstract class AbstractTest {
 		}
 		if (System.getProperty("MySQL+Cluster") != null) {
 			databases.add(new Object[]{"ClusteredDB",
-				new DBDatabaseCluster("MySQL+Cluster",false,
+				new DBDatabaseCluster("MySQL+Cluster", false,
 				H2MemoryTestDB.getFromSettings("h2memory"),
 				SQLiteTestDB.getFromSettings(),
 				PostgreSQLTestDatabase.getFromSettings("postgres"),
@@ -309,9 +310,11 @@ public abstract class AbstractTest {
 			}
 		}
 
-		public static H2DB getSharedDBFromSettings(String prefix) throws SQLException, IOException {
+		public static DBDatabase getSharedDBFromSettings(String prefix)
+				throws SQLException, IOException, ClassNotFoundException, NoSuchMethodException, SecurityException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
 			DatabaseConnectionSettings settings = DatabaseConnectionSettings.getSettingsfromSystemUsingPrefix(prefix + ".");
-			return new H2SharedDB(settings);
+			settings.setDbdatabase(H2SharedDB.class.getCanonicalName());
+			return settings.createDBDatabase();
 		}
 
 		public static H2DB getClusterDBFromSettings(String prefix) throws SQLException, IOException {
@@ -422,7 +425,7 @@ public abstract class AbstractTest {
 	}
 
 	private static class PostgreSQLTestDatabase extends PostgresDB {
-		
+
 		private final static long serialVersionUID = 1l;
 
 		public static PostgresDB getFromSettings(String prefix) throws SQLException {
@@ -455,7 +458,7 @@ public abstract class AbstractTest {
 	}
 
 	private static class SQLiteTestDB extends SQLiteDB {
-		
+
 		private final static long serialVersionUID = 1l;
 
 		public static SQLiteTestDB getFromSettings() throws IOException, SQLException {
@@ -488,7 +491,7 @@ public abstract class AbstractTest {
 	}
 
 	private static class Oracle11XETestDB extends Oracle11XEDB {
-		
+
 		private final static long serialVersionUID = 1l;
 
 		public static Oracle11XETestDB getFromSettings(String prefix) throws SQLException {
@@ -509,7 +512,7 @@ public abstract class AbstractTest {
 	}
 
 	private static class MSSQLServerTestDB extends MSSQLServer2012DB {
-		
+
 		private final static long serialVersionUID = 1l;
 
 		public static MSSQLServerTestDB getFromSettings(String prefix) throws SQLException {

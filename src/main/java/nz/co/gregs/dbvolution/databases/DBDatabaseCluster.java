@@ -43,6 +43,8 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.RejectedExecutionException;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import nz.co.gregs.dbvolution.DBQueryRow;
@@ -104,14 +106,30 @@ public class DBDatabaseCluster extends DBDatabase {
 	private static final long serialVersionUID = 1l;
 
 	protected final ClusterDetails details;
-	private transient final ExecutorService threadPool;
+	private transient final ExecutorService actionThreadPool;
 	private final transient DBStatementCluster clusterStatement;
+	private final ScheduledExecutorService reconnectionThreadPool;
+	final int RECONNECTION_OFFSET = 5;
+	private static final TimeUnit RECONNECTION_FREQUENCY = TimeUnit.MINUTES;
+
+	public static enum Status {
+
+		READY,
+		UNSYNCHRONISED,
+		PAUSED,
+		DEAD,
+		EJECTED,
+		UNKNOWN,
+		PROCESSING
+	}
 
 	public DBDatabaseCluster() {
 		super();
 		clusterStatement = new DBStatementCluster(this);
 		details = new ClusterDetails("", false);
-		threadPool = Executors.newCachedThreadPool();
+		actionThreadPool = Executors.newCachedThreadPool();
+		reconnectionThreadPool = Executors.newSingleThreadScheduledExecutor();
+		reconnectionThreadPool.schedule(new ReconnectionTask(), RECONNECTION_OFFSET, RECONNECTION_FREQUENCY);
 	}
 
 	public DBDatabaseCluster(String clusterName, boolean useAutoRebuild) {
@@ -281,7 +299,7 @@ public class DBDatabaseCluster extends DBDatabase {
 	 * @throws NullPointerException if the specified element is null and this list
 	 * does not permit null elements
 	 * (<a href="Collection.html#optional-restrictions">optional</a>)
-	 * @throws UnsupportedOperationException if the <tt>quarantineDatabase</tt>
+	 * @throws UnsupportedOperationException if the <tt>ejectDatabase</tt>
 	 * operation is not supported by this list
 	 */
 	public synchronized boolean removeDatabases(List<DBDatabase> databases) throws UnableToRemoveLastDatabaseFromClusterException {
@@ -307,7 +325,7 @@ public class DBDatabaseCluster extends DBDatabase {
 	 * @throws NullPointerException if the specified element is null and this list
 	 * does not permit null elements
 	 * (<a href="Collection.html#optional-restrictions">optional</a>)
-	 * @throws UnsupportedOperationException if the <tt>quarantineDatabase</tt>
+	 * @throws UnsupportedOperationException if the <tt>ejectDatabase</tt>
 	 * operation is not supported by this list
 	 */
 	public synchronized boolean removeDatabases(DBDatabase... databases) throws UnableToRemoveLastDatabaseFromClusterException {
@@ -336,11 +354,33 @@ public class DBDatabaseCluster extends DBDatabase {
 	 * @throws NullPointerException if the specified element is null and this list
 	 * does not permit null elements
 	 * (<a href="Collection.html#optional-restrictions">optional</a>)
-	 * @throws UnsupportedOperationException if the <tt>quarantineDatabase</tt>
+	 * @throws UnsupportedOperationException if the <tt>ejectDatabase</tt>
 	 * operation is not supported by this list
 	 */
 	public boolean removeDatabase(DBDatabase database) throws UnableToRemoveLastDatabaseFromClusterException {
-		return details.quarantineDatabase(database);
+		return details.removeDatabase(database);
+	}
+
+	/**
+	 * Ejects the database from the cluster.
+	 *
+	 * <p>
+	 * Auto-reconnecting clusters will try to restore ejected databases.</p>
+	 *
+	 * @param database DBDatabase to be removed from this list, if present
+	 * @return <tt>true</tt> if this list contained the specified element
+	 * @throws UnableToRemoveLastDatabaseFromClusterException
+	 * @throws ClassCastException if the type of the specified element is
+	 * incompatible with this list
+	 * (<a href="Collection.html#optional-restrictions">optional</a>)
+	 * @throws NullPointerException if the specified element is null and this list
+	 * does not permit null elements
+	 * (<a href="Collection.html#optional-restrictions">optional</a>)
+	 * @throws UnsupportedOperationException if the <tt>ejectDatabase</tt>
+	 * operation is not supported by this list
+	 */
+	protected boolean ejectDatabase(DBDatabase database) throws UnableToRemoveLastDatabaseFromClusterException {
+		return details.ejectDatabase(database);
 	}
 
 	/**
@@ -970,7 +1010,7 @@ public class DBDatabaseCluster extends DBDatabase {
 					removeActionFromQueue(next, action);
 				}
 			}
-			threadPool.invokeAll(tasks);
+			actionThreadPool.invokeAll(tasks);
 		} catch (InterruptedException ex) {
 			Logger.getLogger(DBDatabaseCluster.class.getName()).log(Level.SEVERE, null, ex);
 			throw new DBRuntimeException("Unable To Run Actions", ex);
@@ -1020,7 +1060,7 @@ public class DBDatabaseCluster extends DBDatabase {
 					throw new SQLException(e);
 				}
 			} else {
-				removeDatabase(readyDatabase);
+				ejectDatabase(readyDatabase);
 			}
 		}
 	}
@@ -1033,7 +1073,7 @@ public class DBDatabaseCluster extends DBDatabase {
 				throw new SQLException(e);
 			}
 		} else {
-			removeDatabase(readyDatabase);
+			ejectDatabase(readyDatabase);
 		}
 	}
 
@@ -1167,7 +1207,7 @@ public class DBDatabaseCluster extends DBDatabase {
 				}
 			} else {
 				try {
-					threadPool.submit(task);
+					actionThreadPool.submit(task);
 				} catch (RejectedExecutionException ex) {
 					task.synchronise(this, addedDatabase);
 				}
@@ -1263,7 +1303,8 @@ public class DBDatabaseCluster extends DBDatabase {
 		for (DBDatabase db : details.getAllDatabases()) {
 			db.terminate();
 		}
-		threadPool.shutdown();
+		actionThreadPool.shutdown();
+		reconnectionThreadPool.shutdownNow();
 	}
 
 	private static class ActionTask implements Callable<DBActionList> {
@@ -1334,15 +1375,27 @@ public class DBDatabaseCluster extends DBDatabase {
 		public abstract Void synchronise(DBDatabaseCluster cluster, DBDatabase database) throws SQLException;
 	}
 
-	public static enum Status {
+	private class ReconnectionTask implements Runnable {
 
-		READY,
-		UNSYNCHRONISED,
-		PAUSED,
-		DEAD,
-		REJECTED,
-		UNKNOWN,
-		PROCESSING,
-		QUARANTINED
+		public ReconnectionTask() {
+		}
+
+		@Override
+		public void run() {
+			System.out.println("PREPARING TO RECONNECT DATABASES...");
+			reconnectEjectedDatabases();
+			System.out.println("FINISHED RECONNECTING DATABASES.");
+		}
+	}
+
+	public void reconnectEjectedDatabases() {
+		DBDatabase[] ejecta = details.getEjectedDatabases().toArray(new DBDatabase[]{});
+		for (DBDatabase ejected : ejecta) {
+			try {
+				addDatabase(ejected);
+			} catch (SQLException ex) {
+				ejectDatabase(ejected);
+			}
+		}
 	}
 }

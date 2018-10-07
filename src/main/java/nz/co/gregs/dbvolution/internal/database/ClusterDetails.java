@@ -63,7 +63,7 @@ public class ClusterDetails implements Serializable {
 	private final List<DBDatabase> unsynchronizedDatabases = Collections.synchronizedList(new ArrayList<DBDatabase>(0));
 	private final List<DBDatabase> readyDatabases = Collections.synchronizedList(new ArrayList<DBDatabase>(0));
 	private final List<DBDatabase> pausedDatabases = Collections.synchronizedList(new ArrayList<DBDatabase>(0));
-	private final List<DBDatabase> quarantinedDatabases = Collections.synchronizedList(new ArrayList<DBDatabase>(0));
+	private final List<DBDatabase> ejectedDatabases = Collections.synchronizedList(new ArrayList<DBDatabase>(0));
 
 	private final Set<DBRow> requiredTables = Collections.synchronizedSet(DataModel.getRequiredTables());
 	private final transient Map<DBDatabase, Queue<DBAction>> queuedActions = Collections.synchronizedMap(new HashMap<DBDatabase, Queue<DBAction>>(0));
@@ -95,7 +95,7 @@ public class ClusterDetails implements Serializable {
 	public synchronized DBDatabaseCluster.Status getStatusOf(DBDatabase db) {
 		final boolean ready = readyDatabases.contains(db);
 		final boolean paused = pausedDatabases.contains(db);
-		final boolean quarantined = quarantinedDatabases.contains(db);
+		final boolean quarantined = ejectedDatabases.contains(db);
 		final boolean unsynched = unsynchronizedDatabases.contains(db);
 		if (ready) {
 			return DBDatabaseCluster.Status.READY;
@@ -104,7 +104,7 @@ public class ClusterDetails implements Serializable {
 			return DBDatabaseCluster.Status.PAUSED;
 		}
 		if (quarantined) {
-			return DBDatabaseCluster.Status.QUARANTINED;
+			return DBDatabaseCluster.Status.EJECTED;
 		}
 		if (unsynched) {
 			return DBDatabaseCluster.Status.UNSYNCHRONISED;
@@ -112,7 +112,7 @@ public class ClusterDetails implements Serializable {
 		return DBDatabaseCluster.Status.UNKNOWN;
 	}
 
-	public synchronized boolean quarantineDatabase(DBDatabase database) throws UnableToRemoveLastDatabaseFromClusterException {
+	public synchronized boolean ejectDatabase(DBDatabase database) throws UnableToRemoveLastDatabaseFromClusterException {
 		if (readyDatabases.size() < 2 && readyDatabases.contains(database)) {
 			// Unable to quarantine the only remaining database
 			throw new UnableToRemoveLastDatabaseFromClusterException();
@@ -120,7 +120,7 @@ public class ClusterDetails implements Serializable {
 			return queuedActions.remove(database) != null
 					&& allDatabases.remove(database)
 					&& readyDatabases.remove(database)
-					&& quarantinedDatabases.add(database);
+					&& ejectedDatabases.add(database);
 
 		}
 	}
@@ -133,7 +133,7 @@ public class ClusterDetails implements Serializable {
 			final boolean result = queuedActions.remove(database) != null
 					&& allDatabases.remove(database)
 					&& readyDatabases.remove(database)
-					&& quarantinedDatabases.remove(database);
+					&& ejectedDatabases.remove(database);
 			if (result) {
 				setAuthoritativeDatabase();
 			}
@@ -303,6 +303,10 @@ public class ClusterDetails implements Serializable {
 	public void setClusterName(String clusterName) {
 		this.clusterName = clusterName;
 		setAuthoritativeDatabase();
+	}
+
+	public List<DBDatabase> getEjectedDatabases() {
+		return ejectedDatabases;
 	}
 
 }
