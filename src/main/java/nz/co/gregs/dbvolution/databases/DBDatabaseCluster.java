@@ -1261,7 +1261,23 @@ public class DBDatabaseCluster extends DBDatabase {
 	}
 
 	public String getClusterStatus() {
-		return "Active Databases: " + details.getReadyDatabases().length + " of " + details.getAllDatabases().length;
+		final DBDatabase[] ready = details.getReadyDatabases();
+		final String summary = "Active Databases: " + ready.length + " of " + details.getAllDatabases().length;
+		final String unsyn = "Unsynchronised: " + details.getUnsynchronizedDatabases().length + " of " + details.getAllDatabases().length;
+		final String ejected = "Ejected Databases: " + details.getEjectedDatabases().size() + " of " + details.getAllDatabases().length;
+		return summary + "\n" + unsyn + "\n" + ejected;
+	}
+
+	public String getDatabaseStatuses() {
+		StringBuilder result = new StringBuilder();
+		final DBDatabase[] all = details.getAllDatabases();
+		for (DBDatabase db : all) {
+			result.append(this.getDatabaseStatus(db).name())
+					.append(": ")
+					.append(db.getSettings().toString())
+					.append("\n");
+		}
+		return result.toString();
 	}
 
 	@Override

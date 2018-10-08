@@ -324,7 +324,7 @@ public class DBDatabaseClusterTest extends AbstractTest {
 		} catch (SecurityException | IllegalArgumentException | DBDatabaseClusterWithConfigFile.NoDatabaseConfigurationFound | DBDatabaseClusterWithConfigFile.UnableToCreateDatabaseCluster ex) {
 			Assert.assertThat(ex, is(instanceOf(DBDatabaseClusterWithConfigFile.NoDatabaseConfigurationFound.class)));
 		}
-		Assert.assertThat(db.getClusterStatus(), is("Active Databases: 0 of 0"));
+		Assert.assertThat(db.getClusterStatus(), is("Active Databases: 0 of 0\nUnsynchronised: 0 of 0\nEjected Databases: 0 of 0"));
 
 		DatabaseConnectionSettings source = new DatabaseConnectionSettings();
 		source.setDbdatabase(H2MemoryDB.class.getCanonicalName());
@@ -373,7 +373,7 @@ public class DBDatabaseClusterTest extends AbstractTest {
 			Logger.getLogger(DBDatabaseClusterTest.class.getName()).log(Level.SEVERE, null, ex);
 			Assert.fail(ex.getMessage());
 		}
-		Assert.assertThat(db.getClusterStatus(), is("Active Databases: 2 of 2"));
+		Assert.assertThat(db.getClusterStatus(), is("Active Databases: 2 of 2\nUnsynchronised: 0 of 2\nEjected Databases: 0 of 2"));
 
 		file.delete();
 	}
@@ -391,7 +391,7 @@ public class DBDatabaseClusterTest extends AbstractTest {
 		} catch (SecurityException | IllegalArgumentException | DBDatabaseClusterWithConfigFile.NoDatabaseConfigurationFound | DBDatabaseClusterWithConfigFile.UnableToCreateDatabaseCluster ex) {
 			Assert.assertThat(ex, is(instanceOf(DBDatabaseClusterWithConfigFile.NoDatabaseConfigurationFound.class)));
 		}
-		Assert.assertThat(db.getClusterStatus(), is("Active Databases: 0 of 0"));
+		Assert.assertThat(db.getClusterStatus(), is("Active Databases: 0 of 0\nUnsynchronised: 0 of 0\nEjected Databases: 0 of 0"));
 
 		DatabaseConnectionSettings source = new DatabaseConnectionSettings();
 		source.setDbdatabase(H2MemoryDB.class.getCanonicalName());
@@ -440,7 +440,7 @@ public class DBDatabaseClusterTest extends AbstractTest {
 			Logger.getLogger(DBDatabaseClusterTest.class.getName()).log(Level.SEVERE, null, ex);
 			Assert.fail(ex.getMessage());
 		}
-		Assert.assertThat(db.getClusterStatus(), is("Active Databases: 2 of 2"));
+		Assert.assertThat(db.getClusterStatus(), is("Active Databases: 2 of 2\nUnsynchronised: 0 of 2\nEjected Databases: 0 of 2"));
 
 		file.delete();
 	}
