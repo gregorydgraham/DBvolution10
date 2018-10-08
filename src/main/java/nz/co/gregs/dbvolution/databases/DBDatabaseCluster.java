@@ -35,6 +35,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -1261,11 +1262,23 @@ public class DBDatabaseCluster extends DBDatabase {
 	}
 
 	public String getClusterStatus() {
-		final DBDatabase[] ready = details.getReadyDatabases();
-		final String summary = "Active Databases: " + ready.length + " of " + details.getAllDatabases().length;
-		final String unsyn = "Unsynchronised: " + details.getUnsynchronizedDatabases().length + " of " + details.getAllDatabases().length;
-		final String ejected = "Ejected Databases: " + details.getEjectedDatabases().size() + " of " + details.getAllDatabases().length;
+		final String summary = getStatusOfActiveDatabases();
+		final String unsyn = getStatusOfUnsynchronisedDatabases();
+		final String ejected = getStatusOfEjectedDatabases();
 		return summary + "\n" + unsyn + "\n" + ejected;
+	}
+
+	private String getStatusOfEjectedDatabases() {
+		return (new Date()).toString()+"Ejected Databases: " + details.getEjectedDatabases().size() + " of " + details.getAllDatabases().length;
+	}
+
+	private String getStatusOfUnsynchronisedDatabases() {
+		return (new Date()).toString()+"Unsynchronised: " + details.getUnsynchronizedDatabases().length + " of " + details.getAllDatabases().length;
+	}
+
+	private String getStatusOfActiveDatabases() {
+		final DBDatabase[] ready = details.getReadyDatabases();
+		return (new Date()).toString()+"Active Databases: " + ready.length + " of " + details.getAllDatabases().length;
 	}
 
 	public String getDatabaseStatuses() {
@@ -1274,7 +1287,7 @@ public class DBDatabaseCluster extends DBDatabase {
 		for (DBDatabase db : all) {
 			result.append(this.getDatabaseStatus(db).name())
 					.append(": ")
-					.append(db.getSettings().toString())
+					.append(db.getSettings().toString().replaceAll("DATABASECONNECTIONSETTINGS: ", ""))
 					.append("\n");
 		}
 		return result.toString();
