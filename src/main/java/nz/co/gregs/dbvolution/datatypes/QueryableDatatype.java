@@ -395,7 +395,7 @@ public abstract class QueryableDatatype<T> extends Object implements Serializabl
 	 *
 	 * @param newLiteralValue the new value
 	 */
-	void setValue(T newLiteralValue) {
+	public void setValue(T newLiteralValue) {
 		this.setLiteralValue(newLiteralValue);
 	}
 

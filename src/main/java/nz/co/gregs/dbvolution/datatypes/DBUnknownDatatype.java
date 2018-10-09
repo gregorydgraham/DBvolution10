@@ -24,7 +24,6 @@ import nz.co.gregs.dbvolution.columns.ColumnProvider;
 import nz.co.gregs.dbvolution.columns.UntypedColumn;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.exceptions.IncorrectRowProviderInstanceSuppliedException;
-import nz.co.gregs.dbvolution.expressions.AnyExpression;
 import nz.co.gregs.dbvolution.query.RowDefinition;
 
 /**
@@ -62,7 +61,7 @@ public class DBUnknownDatatype extends QueryableDatatype<Object> {
 	}
 
 	@Override
-	void setValue(Object newLiteralValue) {
+	public void setValue(Object newLiteralValue) {
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
