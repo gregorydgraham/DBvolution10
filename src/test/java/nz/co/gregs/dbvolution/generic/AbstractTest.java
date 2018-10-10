@@ -73,7 +73,7 @@ public abstract class AbstractTest {
 			databases.add(new Object[]{"ClusteredDB",
 				new DBDatabaseCluster("testClusteredDB",
 				H2MemoryTestDB.getClusterDBFromSettings("h2memory"),
-				SQLiteTestDB.getClusterDBFromSettings("sqlite"),
+				SQLiteTestDB.getClusterDBFromSettings("sqlite", ""),
 				PostgreSQLTestDatabase.getClusterDBFromSettings("postgres"),
 				MySQLTestDatabase.getClusterDBFromSettings("mysql")
 				)});
@@ -88,7 +88,7 @@ public abstract class AbstractTest {
 		if (System.getProperty("testBundledCluster") != null) {
 			databases.add(new Object[]{"ClusteredDB",
 				new DBDatabaseCluster("testSmallCluster", false,
-				SQLiteTestDB.getFromSettings(),
+				SQLiteTestDB.getClusterDBFromSettings("sqlite", "bundled"),
 				H2MemoryTestDB.getFromSettings("h2memory")
 				)});
 		}
@@ -96,7 +96,7 @@ public abstract class AbstractTest {
 			databases.add(new Object[]{"ClusteredDB",
 				new DBDatabaseCluster("testOpenSourceCluster", false,
 				H2MemoryTestDB.getFromSettings("h2memory"),
-				SQLiteTestDB.getFromSettings(),
+				SQLiteTestDB.getClusterDBFromSettings("sqlite", "open"),
 				PostgreSQLTestDatabase.getFromSettings("postgres"),
 				MySQLTestDatabase.getFromSettings("mysql")
 				)});
@@ -473,9 +473,9 @@ public abstract class AbstractTest {
 			return new SQLiteTestDB(url, username, password);
 		}
 
-		public static SQLiteTestDB getClusterDBFromSettings(String prefix) throws IOException, SQLException {
+		public static SQLiteTestDB getClusterDBFromSettings(String prefix, String name) throws IOException, SQLException {
 //			String url = System.getProperty(prefix + ".url");
-			String filename = System.getProperty(prefix + ".filename") + "-cluster.sqlite";
+			String filename = System.getProperty(prefix + ".filename") + "-"+name+"cluster.sqlite";
 			String username = System.getProperty(prefix + ".username");
 			String password = System.getProperty(prefix + ".password");
 			return new SQLiteTestDB(new File(filename), username, password);
