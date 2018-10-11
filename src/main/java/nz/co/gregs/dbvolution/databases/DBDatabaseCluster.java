@@ -28,6 +28,7 @@
  */
 package nz.co.gregs.dbvolution.databases;
 
+import nz.co.gregs.dbvolution.utility.RegularProcess;
 import java.lang.reflect.InvocationTargetException;
 import nz.co.gregs.dbvolution.internal.database.ClusterDetails;
 import nz.co.gregs.dbvolution.exceptions.UnableToRemoveLastDatabaseFromClusterException;
@@ -35,7 +36,9 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -107,11 +110,13 @@ public class DBDatabaseCluster extends DBDatabase {
 	private static final long serialVersionUID = 1l;
 
 	protected final ClusterDetails details;
-	private transient final ExecutorService actionThreadPool;
+	private transient final ExecutorService ACTION_THREAD_POOL;
 	private final transient DBStatementCluster clusterStatement;
-	private final ScheduledExecutorService reconnectionThreadPool;
-	final int RECONNECTION_OFFSET = 5;
-	private static final TimeUnit RECONNECTION_FREQUENCY = TimeUnit.MINUTES;
+//	private final ScheduledExecutorService reconnectionThreadPool;
+	private final ScheduledExecutorService REGULAR_THREAD_POOL;
+//	final int RECONNECTION_OFFSET = 5;
+//	private static final TimeUnit RECONNECTION_FREQUENCY = TimeUnit.MINUTES;
+	private final List<RegularProcess> REGULAR_PROCESSORS = new ArrayList<>();
 
 	public static enum Status {
 
@@ -128,9 +133,12 @@ public class DBDatabaseCluster extends DBDatabase {
 		super();
 		clusterStatement = new DBStatementCluster(this);
 		details = new ClusterDetails("", false);
-		actionThreadPool = Executors.newCachedThreadPool();
-		reconnectionThreadPool = Executors.newSingleThreadScheduledExecutor();
-		reconnectionThreadPool.schedule(new ReconnectionTask(), RECONNECTION_OFFSET, RECONNECTION_FREQUENCY);
+		ACTION_THREAD_POOL = Executors.newCachedThreadPool();
+//		reconnectionThreadPool = Executors.newSingleThreadScheduledExecutor();
+//		reconnectionThreadPool.schedule(new ReconnectionTask(), RECONNECTION_OFFSET, RECONNECTION_FREQUENCY);
+		REGULAR_THREAD_POOL = Executors.newSingleThreadScheduledExecutor();
+		REGULAR_THREAD_POOL.schedule(new RunRegularProcessors(), 1, TimeUnit.MINUTES);
+		REGULAR_PROCESSORS.add(new ReconnectionProcessor());
 	}
 
 	public DBDatabaseCluster(String clusterName, boolean useAutoRebuild) {
@@ -267,6 +275,14 @@ public class DBDatabaseCluster extends DBDatabase {
 
 	public Status getDatabaseStatus(DBDatabase db) {
 		return details.getStatusOf(db);
+	}
+
+	public void addRegularProcess(RegularProcess processor) {
+		REGULAR_PROCESSORS.add(processor);
+	}
+
+	public void removeRegularProcess(RegularProcess processor) {
+		REGULAR_PROCESSORS.remove(processor);
 	}
 
 	/**
@@ -1011,7 +1027,7 @@ public class DBDatabaseCluster extends DBDatabase {
 					removeActionFromQueue(next, action);
 				}
 			}
-			actionThreadPool.invokeAll(tasks);
+			ACTION_THREAD_POOL.invokeAll(tasks);
 		} catch (InterruptedException ex) {
 			Logger.getLogger(DBDatabaseCluster.class.getName()).log(Level.SEVERE, null, ex);
 			throw new DBRuntimeException("Unable To Run Actions", ex);
@@ -1208,7 +1224,7 @@ public class DBDatabaseCluster extends DBDatabase {
 				}
 			} else {
 				try {
-					actionThreadPool.submit(task);
+					ACTION_THREAD_POOL.submit(task);
 				} catch (RejectedExecutionException ex) {
 					task.synchronise(this, addedDatabase);
 				}
@@ -1269,16 +1285,16 @@ public class DBDatabaseCluster extends DBDatabase {
 	}
 
 	private String getStatusOfEjectedDatabases() {
-		return (new Date()).toString()+"Ejected Databases: " + details.getEjectedDatabases().size() + " of " + details.getAllDatabases().length;
+		return (new Date()).toString() + "Ejected Databases: " + details.getEjectedDatabases().size() + " of " + details.getAllDatabases().length;
 	}
 
 	private String getStatusOfUnsynchronisedDatabases() {
-		return (new Date()).toString()+"Unsynchronised: " + details.getUnsynchronizedDatabases().length + " of " + details.getAllDatabases().length;
+		return (new Date()).toString() + "Unsynchronised: " + details.getUnsynchronizedDatabases().length + " of " + details.getAllDatabases().length;
 	}
 
 	private String getStatusOfActiveDatabases() {
 		final DBDatabase[] ready = details.getReadyDatabases();
-		return (new Date()).toString()+"Active Databases: " + ready.length + " of " + details.getAllDatabases().length;
+		return (new Date()).toString() + "Active Databases: " + ready.length + " of " + details.getAllDatabases().length;
 	}
 
 	public String getDatabaseStatuses() {
@@ -1332,8 +1348,9 @@ public class DBDatabaseCluster extends DBDatabase {
 		for (DBDatabase db : details.getAllDatabases()) {
 			db.terminate();
 		}
-		actionThreadPool.shutdown();
-		reconnectionThreadPool.shutdownNow();
+		ACTION_THREAD_POOL.shutdown();
+//		reconnectionThreadPool.shutdownNow();
+		REGULAR_THREAD_POOL.shutdownNow();
 	}
 
 	private static class ActionTask implements Callable<DBActionList> {
@@ -1404,20 +1421,39 @@ public class DBDatabaseCluster extends DBDatabase {
 		public abstract Void synchronise(DBDatabaseCluster cluster, DBDatabase database) throws SQLException;
 	}
 
-	private class ReconnectionTask implements Runnable {
+	private class RunRegularProcessors implements Runnable {
 
-		public ReconnectionTask() {
+		public RunRegularProcessors() {
 		}
 
 		@Override
 		public void run() {
+			for (RegularProcess process : REGULAR_PROCESSORS) {
+				if (process.preprocess()) {
+					process.process();
+					process.postprocess();
+					process.offsetTime();
+				}
+			}
+		}
+	}
+
+	private class ReconnectionProcessor extends RegularProcess {
+
+		public ReconnectionProcessor() {
+		}
+
+		@Override
+		public synchronized void process() {
 			System.out.println("PREPARING TO RECONNECT DATABASES...");
+
 			reconnectEjectedDatabases();
+
 			System.out.println("FINISHED RECONNECTING DATABASES.");
 		}
 	}
 
-	public void reconnectEjectedDatabases() {
+	protected void reconnectEjectedDatabases() {
 		DBDatabase[] ejecta = details.getEjectedDatabases().toArray(new DBDatabase[]{});
 		for (DBDatabase ejected : ejecta) {
 			try {
