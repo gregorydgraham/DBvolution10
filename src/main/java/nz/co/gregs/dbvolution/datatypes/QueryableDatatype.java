@@ -741,7 +741,7 @@ public abstract class QueryableDatatype<T> extends Object implements Serializabl
 	}
 
 	/**
-	 * Used to switch the direction of the column's sort order
+	 * Used to switch the direction of the column's sort order.
 	 *
 	 * use setSortOrderAscending() and setSortOrderDescending() where possible
 	 *
