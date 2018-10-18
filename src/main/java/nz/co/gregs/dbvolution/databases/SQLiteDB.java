@@ -41,7 +41,7 @@ public class SQLiteDB extends DBDatabase {
 
 	private static final String SQLITE_DRIVER_NAME = "org.sqlite.JDBC";
 	public static final long serialVersionUID = 1l;
-	private String derivedURL;
+//	private String derivedURL;
 
 	/**
 	 *
@@ -195,10 +195,10 @@ public class SQLiteDB extends DBDatabase {
 	protected String getHost() {
 		String jdbcURL = getJdbcURL();
 		String noPrefix = jdbcURL.replaceAll("^jdbc:sqlite://", "");
-			return noPrefix
-					.split("/",2)[0]
-					.split(":")[0];
-		
+		return noPrefix
+				.split("/", 2)[0]
+				.split(":")[0];
+
 	}
 
 	@Override
@@ -211,9 +211,9 @@ public class SQLiteDB extends DBDatabase {
 	protected String getPort() {
 		String jdbcURL = getJdbcURL();
 		String noPrefix = jdbcURL.replaceAll("^jdbc:sqlite://", "");
-			return noPrefix
-					.split("/",2)[0]
-					.replaceAll("^[^:]*:+", "");
+		return noPrefix
+				.split("/", 2)[0]
+				.replaceAll("^[^:]*:+", "");
 	}
 
 	@Override
@@ -224,8 +224,20 @@ public class SQLiteDB extends DBDatabase {
 	private void setDatabasenameFromURL() {
 		String jdbcURL = getJdbcURL();
 		String noPrefix = jdbcURL.replaceAll("^jdbc:sqlite://", "");
-		String name = noPrefix.split(":",3)[2];
+		String name = noPrefix.split(":", 3)[2];
 		setDatabaseName(name);
+	}
+
+	@Override
+	public ResponseToException addFeatureToFixException(Exception exp) throws Exception {
+//		System.out.println("nz.co.gregs.dbvolution.databases.SQLiteDB.addFeatureToFixException()");
+//		System.out.println(exp.getClass().getCanonicalName());
+//		System.out.println(exp.getMessage());
+		if (exp.getMessage().matches("SQL error or missing database (table ([^ ]*) already exists) : Original Query: CREATE TABLE \1")){
+			// Attempting to 
+			return ResponseToException.SKIPQUERY;
+		}
+		return super.addFeatureToFixException(exp);
 	}
 
 }

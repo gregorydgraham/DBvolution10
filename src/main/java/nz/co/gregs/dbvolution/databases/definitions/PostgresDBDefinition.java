@@ -59,11 +59,6 @@ public class PostgresDBDefinition extends DBDefinition {
 	}
 
 	@Override
-	public String getDropTableStart() {
-		return super.getDropTableStart() + " IF EXISTS "; //To change body of generated methods, choose Tools | Templates.
-	}
-
-	@Override
 	public String formatPrimaryKeyForRetrievingGeneratedKeys(String primaryKeyColumnName) {
 		return primaryKeyColumnName.toLowerCase();
 	}
@@ -130,12 +125,14 @@ public class PostgresDBDefinition extends DBDefinition {
 //		}
 //	}
 
-	protected String getOrderByDescending() {
-		return " DESC NULLS LAST ";
+	@Override
+	public String getOrderByDescending() {
+		return " DESC ";
 	}
 
-	protected String getOrderByAscending() {
-		return " ASC NULLS FIRST ";
+	@Override
+	public String getOrderByAscending() {
+		return " ASC ";
 	}
 
 	@Override

@@ -37,7 +37,7 @@ public class MSSQLServer2012DBDefinition extends MSSQLServerDBDefinition {
 	}
 
 	@Override
-	public Object getLimitRowsSubClauseDuringSelectClause(QueryOptions options) {
+	public String getLimitRowsSubClauseDuringSelectClause(QueryOptions options) {
 		return "";
 	}
 

@@ -48,7 +48,7 @@ public class FindDistinctDBRowColumnValuesTest extends AbstractTest {
 		marque.setReturnFields(marque.creationDate);
 		DBQuery dbQuery = database.getDBQuery(marque)
 				.addGroupByColumn(marque, marque.column(marque.creationDate))
-				.setSortOrder(marque.column(marque.creationDate));
+				.setSortOrder(marque.column(marque.creationDate).getSortProvider().nullsLowest());
 		dbQuery.setBlankQueryAllowed(true);
 		List<DBQueryRow> allRows = dbQuery.getAllRows();
 
@@ -79,6 +79,7 @@ public class FindDistinctDBRowColumnValuesTest extends AbstractTest {
 	@Test
 	public void testDBRowMethod() throws SQLException {
 		Marque marque = new Marque();
+		database.setPrintSQLBeforeExecuting(true);
 		List<DBDate> distinctValuesForColumn = marque.getDistinctValuesOfColumn(database, marque.creationDate);
 
 		Assert.assertThat(distinctValuesForColumn.size(), is(3));
@@ -142,6 +143,7 @@ public class FindDistinctDBRowColumnValuesTest extends AbstractTest {
 	@Test
 	public void testDBTableMethodWithDBString() throws SQLException {
 		Marque marque = new Marque();
+		database.setPrintSQLBeforeExecuting(true);
 		final DBTable<Marque> dbTable = database.getDBTable(marque);
 		List<DBString> distinctValuesForColumn = dbTable.getDistinctValuesOfColumn(marque.individualAllocationsAllowed);
 		List<String> foundStrings = new ArrayList<String>();
@@ -157,6 +159,9 @@ public class FindDistinctDBRowColumnValuesTest extends AbstractTest {
 //			if (val != null) {
 				foundStrings.add((val.toString()));
 //			}
+		}
+		for (String foundString : foundStrings) {
+			System.out.println(foundString);
 		}
 		if (database.getDefinition().supportsDifferenceBetweenNullAndEmptyString()) {
 			Assert.assertThat(distinctValuesForColumn.size(), is(3));

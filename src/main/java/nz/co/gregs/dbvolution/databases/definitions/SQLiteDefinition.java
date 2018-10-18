@@ -75,11 +75,6 @@ public class SQLiteDefinition extends DBDefinition implements SupportsDateRepeat
 	}
 
 	@Override
-	public String getDropTableStart() {
-		return super.getDropTableStart() + " IF EXISTS "; //To change body of generated methods, choose Tools | Templates.
-	}
-
-	@Override
 	public boolean prefersTrailingPrimaryKeyDefinition() {
 		return false;
 	}
@@ -940,6 +935,11 @@ public class SQLiteDefinition extends DBDefinition implements SupportsDateRepeat
 
 	@Override
 	public boolean supportsTableCheckingViaMetaData() {
+		return false;
+	}
+
+	@Override
+	public boolean supportsNullsOrderingStandard() {
 		return false;
 	}
 }

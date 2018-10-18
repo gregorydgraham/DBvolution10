@@ -166,7 +166,7 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 	}
 
 	@Override
-	public Object getLimitRowsSubClauseDuringSelectClause(QueryOptions options) {
+	public String getLimitRowsSubClauseDuringSelectClause(QueryOptions options) {
 		return " TOP(" + options.getRowLimit() + ") "; //To change body of generated methods, choose Tools | Templates.
 	}
 

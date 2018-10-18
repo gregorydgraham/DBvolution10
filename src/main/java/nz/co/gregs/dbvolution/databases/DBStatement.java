@@ -106,17 +106,15 @@ public class DBStatement implements Statement {
 	private ResultSet addFeatureAndAttemptQueryAgain(Exception exp, String sql) throws Exception {
 		ResultSet executeQuery;
 		checkForBrokenConnection(exp, sql);
-		DBDatabase.ResponseToException nextAction = DBDatabase.ResponseToException.REQUERY;
 		try {
-			nextAction = database.addFeatureToFixException(exp);
+			database.addFeatureToFixException(exp);
 		} catch (Exception ex) {
 			Exception ex1 = exp;
 			while (!ex1.getMessage().equals(ex.getMessage())) {
 				database.addFeatureToFixException(ex);
 			}
-			throw new SQLException(exp);
+			throw new SQLException(ex);
 		}
-		if (nextAction.equals(DBDatabase.ResponseToException.REQUERY)) {
 			try {
 				executeQuery = getInternalStatement().executeQuery(sql);
 				return executeQuery;
@@ -129,8 +127,6 @@ public class DBStatement implements Statement {
 				}
 			}
 		}
-		return null;
-	}
 
 	/**
 	 * Executes the given SQL statement, which may be an INSERT, UPDATE, or DELETE
@@ -442,7 +438,6 @@ public class DBStatement implements Statement {
 		try {
 			execute = getInternalStatement().execute(sql);
 		} catch (SQLException exp) {
-//			exp.printStackTrace();
 			return addFeatureAndAttemptExecuteAgain(exp, sql);
 		}
 		return execute;
@@ -453,14 +448,12 @@ public class DBStatement implements Statement {
 		try {
 			database.addFeatureToFixException(exp);
 		} catch (Exception ex) {
-//			ex.printStackTrace();
 			throw new SQLException("Failed To Add Support For SQL: " + exp.getMessage() + " : Original Query: " + sql, ex);
 		}
 		try {
 			executeQuery = getInternalStatement().execute(sql);
 			return executeQuery;
 		} catch (SQLException exp2) {
-//			exp2.printStackTrace();
 			if (!exp.getMessage().equals(exp2.getMessage())) {
 				executeQuery = addFeatureAndAttemptExecuteAgain(exp2, sql);
 				return executeQuery;

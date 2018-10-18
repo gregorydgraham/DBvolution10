@@ -80,21 +80,21 @@ public abstract class AbstractTest {
 		}
 		if (System.getProperty("testSmallCluster") != null) {
 			databases.add(new Object[]{"ClusteredDB",
-				new DBDatabaseCluster("testSmallCluster", false,
+				new DBDatabaseCluster("testSmallCluster", new DBDatabaseCluster.Configuration(false, false),
 				SQLiteTestDB.getFromSettings(),
 				H2MemoryTestDB.getFromSettings("h2memory")
 				)});
 		}
 		if (System.getProperty("testBundledCluster") != null) {
 			databases.add(new Object[]{"ClusteredDB",
-				new DBDatabaseCluster("testSmallCluster", false,
+				new DBDatabaseCluster("testSmallCluster", new DBDatabaseCluster.Configuration(false, false),
 				SQLiteTestDB.getClusterDBFromSettings("sqlite", "bundled"),
 				H2MemoryTestDB.getFromSettings("h2memory")
 				)});
 		}
 		if (System.getProperty("testOpenSourceCluster") != null) {
 			databases.add(new Object[]{"ClusteredDB",
-				new DBDatabaseCluster("testOpenSourceCluster", false,
+				new DBDatabaseCluster("testOpenSourceCluster", new DBDatabaseCluster.Configuration(false, false),
 				H2MemoryTestDB.getFromSettings("h2memory"),
 				SQLiteTestDB.getClusterDBFromSettings("sqlite", "open"),
 				PostgreSQLTestDatabase.getFromSettings("postgres"),
@@ -103,7 +103,7 @@ public abstract class AbstractTest {
 		}
 		if (System.getProperty("MySQL+Cluster") != null) {
 			databases.add(new Object[]{"ClusteredDB",
-				new DBDatabaseCluster("MySQL+Cluster", false,
+				new DBDatabaseCluster("MySQL+Cluster", new DBDatabaseCluster.Configuration(false, false),
 				H2MemoryTestDB.getFromSettings("h2memory"),
 				SQLiteTestDB.getFromSettings(),
 				PostgreSQLTestDatabase.getFromSettings("postgres"),
@@ -225,7 +225,7 @@ public abstract class AbstractTest {
 	public void setup(DBDatabase database) throws Exception {
 		database.setPrintSQLBeforeExecuting(false);
 		database.preventDroppingOfTables(false);
-		database.dropTableNoExceptions(new Marque());
+		database.dropTableIfExists(new Marque());
 		database.createTable(myMarqueRow);
 
 		database.preventDroppingOfTables(false);

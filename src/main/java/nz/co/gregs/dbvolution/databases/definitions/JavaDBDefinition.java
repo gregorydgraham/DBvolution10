@@ -295,12 +295,12 @@ public class JavaDBDefinition extends DBDefinition {
 //		return super.getOrderByDirectionClause(sortOrder) + (sortOrder ? " NULLS FIRST " : " NULLS LAST ");
 //	}
 
-	protected String getOrderByDescending() {
-		return " DESC NULLS LAST ";
+	public String getOrderByDescending() {
+		return " DESC ";
 	}
 
-	protected String getOrderByAscending() {
-		return " ASC NULLS FIRST ";
+	public String getOrderByAscending() {
+		return " ASC ";
 	}
 
 	@Override

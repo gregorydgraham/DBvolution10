@@ -1370,8 +1370,6 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 					try {
 						dbStatement.execute(sql);
 					} catch (SQLException sqlex) {
-//						System.out.println(sqlex.getLocalizedMessage()+": "+sql);
-//						sqlex.printStackTrace();
 					}
 				}
 			}
@@ -1581,6 +1579,34 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 	}
 
 	/**
+	 * Drops a table from the database.
+	 *
+	 * <p>
+	 * The easy way to drop a table that might not exist. Will still throw a
+	 * AutoCommitActionDuringTransactionException if you use it during a
+	 * transaction or AccidentalDroppingOfTableException if dropping tables is
+	 * being prevented by DBvolution.
+	 * <p>
+	 * An even worse idea than {@link #dropTable(nz.co.gregs.dbvolution.DBRow)}
+	 * <p>
+	 * In General NEVER USE THIS METHOD.
+	 *
+	 * <p>
+	 * Seriously NEVER USE THIS METHOD.
+	 *
+	 * <p>
+	 * Your DBA will murder you.
+	 *
+	 * @param <TR> DBRow type
+	 * @param tableRow tableRow
+	 */
+	public <TR extends DBRow> void dropTableIfExists(TR tableRow) throws AccidentalDroppingOfTableException, AutoCommitActionDuringTransactionException, SQLException {
+		if (tableExists(tableRow)) {
+			this.dropTable(tableRow);
+		}
+	}
+
+	/**
 	 * Returns the DBdefinition used by this DBDatabase
 	 *
 	 * <p>
@@ -1751,7 +1777,7 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 		batchIfPossible = batchSQLStatementsWhenPossible;
 	}
 
-	private synchronized void preventDDLDuringTransaction(String message) throws AutoCommitActionDuringTransactionException {
+	protected synchronized void preventDDLDuringTransaction(String message) throws AutoCommitActionDuringTransactionException {
 		if (isInATransaction) {
 			throw new AutoCommitActionDuringTransactionException(message);
 		}
@@ -1775,6 +1801,10 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 		this.preventAccidentalDroppingOfTables = droppingTablesIsAMistake;
 	}
 
+	protected synchronized boolean getPreventAccidentalDroppingOfTables() {
+		return this.preventAccidentalDroppingOfTables;
+	}
+
 	/**
 	 *
 	 * @param justLeaveThisAtTrue	justLeaveThisAtTrue
@@ -1791,6 +1821,10 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 	 */
 	public synchronized void preventDroppingOfDatabases(boolean justLeaveThisAtTrue) {
 		this.preventAccidentalDroppingDatabase = justLeaveThisAtTrue;
+	}
+
+	public synchronized boolean getPreventAccidentalDroppingOfDatabases() {
+		return this.preventAccidentalDroppingDatabase;
 	}
 
 	/**
@@ -2108,9 +2142,10 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 				}
 			}
 		} else {
-			String testQuery = getDBTable(table)
-					.setBlankQueryAllowed(true)
-					.setRowLimit(1).getSQLForQuery().replaceAll("(?is)SELECT .* FROM", "SELECT * FROM");
+			String testQuery = getDefinition().getTableExistsSQL(table);
+//			String testQuery = getDBTable(table)
+//					.setBlankQueryAllowed(true)
+//					.setRowLimit(1).getSQLForQuery().replaceAll("(?is)SELECT .* FROM", "SELECT * FROM");
 			try (DBStatement dbStatement = getDBStatement()) {
 				ResultSet results = dbStatement.executeQuery(testQuery);
 				if (results != null) {
@@ -2259,39 +2294,43 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 				try {
 					transactionStatement.close();
 				} catch (Exception ex) {
-					ex.printStackTrace();
-					Logger.getLogger(DBDatabase.class.getName()).log(Level.SEVERE, null, ex);
+//					ex.printStackTrace();
+//					Logger.getLogger(DBDatabase.class.getName()).log(Level.SEVERE, null, ex);
 				}
 			}
 			if (transactionConnection != null) {
 				try {
 					discardConnection(transactionConnection);
 				} catch (Exception ex) {
-					ex.printStackTrace();
-					Logger.getLogger(DBDatabase.class.getName()).log(Level.SEVERE, null, ex);
+//					ex.printStackTrace();
+//					Logger.getLogger(DBDatabase.class.getName()).log(Level.SEVERE, null, ex);
 				}
 			}
 			final List<Connection> freeConnections = getConnectionList(FREE_CONNECTIONS);
-			final Connection[] free = freeConnections.toArray(new Connection[]{});
-			for (Connection connection : free) {
-				discardConnection(connection);
+			synchronized (freeConnections) {
+				final Connection[] free = freeConnections.toArray(new Connection[]{});
+				for (Connection connection : free) {
+					discardConnection(connection);
+				}
 			}
 			final List<Connection> busyConnections = getConnectionList(BUSY_CONNECTIONS);
-			final Connection[] busy = busyConnections.toArray(new Connection[]{});
-			for (Connection connection : busy) {
-				discardConnection(connection);
+			synchronized (busyConnections) {
+				final Connection[] busy = busyConnections.toArray(new Connection[]{});
+				for (Connection connection : busy) {
+					discardConnection(connection);
+				}
 			}
 			try {
 				if (storedConnection != null) {
 					storedConnection.close();
 				}
 			} catch (Exception ex) {
-				ex.printStackTrace();
-				Logger.getLogger(DBDatabase.class.getName()).log(Level.SEVERE, null, ex);
+//				ex.printStackTrace();
+//				Logger.getLogger(DBDatabase.class.getName()).log(Level.SEVERE, null, ex);
 			}
 		} catch (Exception ex) {
-			ex.printStackTrace();
-			Logger.getLogger(DBDatabase.class.getName()).log(Level.SEVERE, null, ex);
+//			ex.printStackTrace();
+//			Logger.getLogger(DBDatabase.class.getName()).log(Level.SEVERE, null, ex);
 		}
 	}
 

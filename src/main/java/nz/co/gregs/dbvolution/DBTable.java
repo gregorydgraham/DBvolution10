@@ -1004,7 +1004,7 @@ public class DBTable<E extends DBRow> {
 		DBQuery distinctQuery = database.getDBQuery(exemplar);
 		distinctQuery.setBlankQueryAllowed(true);
 		final ColumnProvider column = exemplar.column(thisQDT);
-		distinctQuery.setSortOrder(column.getSortProvider());
+		distinctQuery.setSortOrder(column.getSortProvider().nullsLowest());
 		distinctQuery.addGroupByColumn(exemplar, column.getColumn().asExpression());
 		List<DBQueryRow> allRows = distinctQuery.getAllRows();
 		for (DBQueryRow dBQueryRow : allRows) {
@@ -1041,8 +1041,8 @@ public class DBTable<E extends DBRow> {
 	 * @param milliseconds
 	 * @return this query.
 	 */
-	public DBTable<E> setQueryTimeout(int i) {
-		query.setTimeoutInMilliseconds(i);
+	public DBTable<E> setQueryTimeout(int milliseconds) {
+		query.setTimeoutInMilliseconds(milliseconds);
 		return this;
 	}
 	

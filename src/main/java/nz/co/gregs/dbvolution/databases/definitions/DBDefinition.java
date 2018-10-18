@@ -51,11 +51,13 @@ import nz.co.gregs.dbvolution.exceptions.AutoIncrementFieldClassAndDatatypeMisma
 import nz.co.gregs.dbvolution.exceptions.IncorrectGeometryReturnedForDatatype;
 import nz.co.gregs.dbvolution.expressions.DBExpression;
 import nz.co.gregs.dbvolution.expressions.DateRepeatExpression;
+import nz.co.gregs.dbvolution.expressions.SortProvider;
 import nz.co.gregs.dbvolution.expressions.StringExpression;
 import nz.co.gregs.dbvolution.generation.DBTableClassGenerator;
 import nz.co.gregs.dbvolution.generation.DBTableField;
 import nz.co.gregs.dbvolution.internal.datatypes.DateRepeatImpl;
 import nz.co.gregs.dbvolution.internal.properties.PropertyWrapper;
+import nz.co.gregs.dbvolution.internal.query.QueryDetails;
 import nz.co.gregs.dbvolution.internal.query.QueryOptions;
 import nz.co.gregs.dbvolution.internal.query.QueryState;
 import nz.co.gregs.dbvolution.query.RowDefinition;
@@ -489,7 +491,7 @@ public abstract class DBDefinition implements Serializable{
 	 * @return "DROP TABLE " or equivalent for the database.
 	 */
 	public String getDropTableStart() {
-		return "DROP TABLE ";
+		return "DROP TABLE IF EXISTS ";
 	}
 
 	/**
@@ -993,7 +995,7 @@ public abstract class DBDefinition implements Serializable{
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a string for the row limit sub-clause or ""
 	 */
-	public Object getLimitRowsSubClauseDuringSelectClause(QueryOptions options) {
+	public String getLimitRowsSubClauseDuringSelectClause(QueryOptions options) {
 		return "";
 	}
 
@@ -1042,11 +1044,31 @@ public abstract class DBDefinition implements Serializable{
 		}
 	}
 
-	protected String getOrderByDescending() {
+	/**
+	 * Returns the appropriate ascending or descending keyword for this database
+	 * given the sort order.
+	 *
+	 * @param sortOrder	sortOrder
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @return " ASC " for TRUE, " DESC " for false or equivalent
+	 */
+	public String getOrderByDirectionClause(SortProvider.Ordering sortOrder) {
+		switch (sortOrder) {
+			case DESCENDING:
+				return getOrderByDescending();
+			case ASCENDING:
+				return getOrderByAscending();
+			default:
+				return "";
+		}
+	}
+
+	public String getOrderByDescending() {
 		return " DESC ";
 	}
 
-	protected String getOrderByAscending() {
+	public String getOrderByAscending() {
 		return " ASC ";
 	}
 
@@ -5967,5 +5989,41 @@ public abstract class DBDefinition implements Serializable{
 		}
 
 		return sqlScript.toString();
+	}
+
+	public boolean supportsNullsOrderingStandard() {
+		return true;
+	}
+
+	public String getNullsLast() {
+		return "NULLS LAST";
+	}
+
+	public String getNullsFirst() {
+		return "NULLS FIRST";
+	}
+
+	public String getNullsAnyOrder() {
+		return "";
+	}
+
+	public String getTableExistsSQL(DBRow table) {
+		final QueryOptions queryOptions = new QueryOptions();
+		queryOptions.setRowLimit(1);
+		return beginSelectStatement()+getLimitRowsSubClauseDuringSelectClause(queryOptions)
+				+" * "
+				+beginFromClause()
+				+this.formatTableName(table)
+				+" "
+				+getLimitRowsSubClauseAfterWhereClause(new QueryState(new QueryDetails()), queryOptions)
+				+" ;";
+	}
+
+	public boolean supportsDropTableIfExists() {
+		return true;
+	}
+
+	public String getDropTableIfExistsClause() {
+		return " IF EXISTS ";
 	}
 }

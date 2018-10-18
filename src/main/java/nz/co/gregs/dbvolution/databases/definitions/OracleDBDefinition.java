@@ -326,13 +326,13 @@ public class OracleDBDefinition extends DBDefinition {
 //	}
 
 	@Override
-	protected String getOrderByDescending() {
-		return " DESC NULLS LAST ";
+	public String getOrderByDescending() {
+		return " DESC ";
 	}
 
 	@Override
-	protected String getOrderByAscending() {
-		return " ASC NULLS FIRST ";
+	public String getOrderByAscending() {
+		return " ASC ";
 	}
 
 	@Override

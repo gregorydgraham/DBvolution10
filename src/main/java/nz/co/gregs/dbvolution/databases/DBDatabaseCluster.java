@@ -36,9 +36,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -63,6 +61,7 @@ import nz.co.gregs.dbvolution.databases.definitions.ClusterDatabaseDefinition;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.exceptions.AccidentalBlankQueryException;
 import nz.co.gregs.dbvolution.exceptions.AccidentalCartesianJoinException;
+import nz.co.gregs.dbvolution.exceptions.AccidentalDroppingOfDatabaseException;
 import nz.co.gregs.dbvolution.exceptions.AccidentalDroppingOfTableException;
 import nz.co.gregs.dbvolution.exceptions.AutoCommitActionDuringTransactionException;
 import nz.co.gregs.dbvolution.exceptions.DBRuntimeException;
@@ -113,7 +112,8 @@ public class DBDatabaseCluster extends DBDatabase {
 	private transient final ExecutorService ACTION_THREAD_POOL;
 	private final transient DBStatementCluster clusterStatement;
 //	private final ScheduledExecutorService reconnectionThreadPool;
-	private final ScheduledExecutorService REGULAR_THREAD_POOL;
+	private final ScheduledExecutorService REGULAR_THREAD_POOL = Executors.newSingleThreadScheduledExecutor();
+	;
 //	final int RECONNECTION_OFFSET = 5;
 //	private static final TimeUnit RECONNECTION_FREQUENCY = TimeUnit.MINUTES;
 	private final List<RegularProcess> REGULAR_PROCESSORS = new ArrayList<>();
@@ -130,36 +130,39 @@ public class DBDatabaseCluster extends DBDatabase {
 	}
 
 	public DBDatabaseCluster() {
-		super();
-		clusterStatement = new DBStatementCluster(this);
-		details = new ClusterDetails("", false);
-		ACTION_THREAD_POOL = Executors.newCachedThreadPool();
-//		reconnectionThreadPool = Executors.newSingleThreadScheduledExecutor();
-//		reconnectionThreadPool.schedule(new ReconnectionTask(), RECONNECTION_OFFSET, RECONNECTION_FREQUENCY);
-		REGULAR_THREAD_POOL = Executors.newSingleThreadScheduledExecutor();
-		REGULAR_THREAD_POOL.schedule(new RunRegularProcessors(), 1, TimeUnit.MINUTES);
-		REGULAR_PROCESSORS.add(new ReconnectionProcessor());
+		this("", new Configuration(true, true));
 	}
 
-	public DBDatabaseCluster(String clusterName, boolean useAutoRebuild) {
-		this();
+	public DBDatabaseCluster(String clusterName, Configuration config) {
+		super();
+		clusterStatement = new DBStatementCluster(this);
+		details = new ClusterDetails(clusterName, config.isUseAutoRebuild());
 		setDatabaseName(clusterName);
-		setAutoRebuild(useAutoRebuild);
+		ACTION_THREAD_POOL = Executors.newCachedThreadPool();
+		startReconnectionProcessor(config);
+		setAutoRebuild(config.isUseAutoRebuild());
+	}
+
+	private void startReconnectionProcessor(Configuration config) {
+		if (config.isUseAutoReconnect()) {
+			REGULAR_THREAD_POOL.schedule(new RunRegularProcessors(), 1, TimeUnit.MINUTES);
+			REGULAR_PROCESSORS.add(new ReconnectionProcessor());
+		}
 	}
 
 	public DBDatabaseCluster(String clusterName) {
-		this(clusterName, true);
+		this(clusterName, new Configuration(true, true));
 	}
 
-	public DBDatabaseCluster(String clusterName, boolean useAutoRebuild, DBDatabase... databases) throws SQLException {
-		this(clusterName, useAutoRebuild);
+	public DBDatabaseCluster(String clusterName, Configuration config, DBDatabase... databases) throws SQLException {
+		this(clusterName, config);
 		details.addAll(databases);
 		setDefinition(new ClusterDatabaseDefinition());
 		synchronizeSecondaryDatabases();
 	}
 
-	public DBDatabaseCluster(String clusterName, boolean useAutoRebuild, DatabaseConnectionSettings... settings) throws SQLException, InvocationTargetException, IllegalArgumentException, IllegalAccessException, InstantiationException, SecurityException, NoSuchMethodException, ClassNotFoundException {
-		this(clusterName, useAutoRebuild);
+	public DBDatabaseCluster(String clusterName, Configuration config, DatabaseConnectionSettings... settings) throws SQLException, InvocationTargetException, IllegalArgumentException, IllegalAccessException, InstantiationException, SecurityException, NoSuchMethodException, ClassNotFoundException {
+		this(clusterName, config);
 		setDefinition(new ClusterDatabaseDefinition());
 		for (DatabaseConnectionSettings setting : settings) {
 			this.addDatabase(setting.createDBDatabase());
@@ -436,6 +439,7 @@ public class DBDatabaseCluster extends DBDatabase {
 
 	@Override
 	public synchronized void preventDroppingOfDatabases(boolean justLeaveThisAtTrue) {
+		super.preventDroppingOfDatabases(justLeaveThisAtTrue);
 		DBDatabase[] dbs = details.getReadyDatabases();
 		for (DBDatabase next : dbs) {
 			next.preventDroppingOfDatabases(justLeaveThisAtTrue);
@@ -444,6 +448,7 @@ public class DBDatabaseCluster extends DBDatabase {
 
 	@Override
 	public synchronized void preventDroppingOfTables(boolean droppingTablesIsAMistake) {
+		super.preventDroppingOfTables(droppingTablesIsAMistake);
 		DBDatabase[] dbs = details.getReadyDatabases();
 		for (DBDatabase next : dbs) {
 			next.preventDroppingOfTables(droppingTablesIsAMistake);
@@ -452,6 +457,7 @@ public class DBDatabaseCluster extends DBDatabase {
 
 	@Override
 	public synchronized void setBatchSQLStatementsWhenPossible(boolean batchSQLStatementsWhenPossible) {
+		super.setBatchSQLStatementsWhenPossible(batchSQLStatementsWhenPossible);
 		DBDatabase[] dbs = details.getReadyDatabases();
 		for (DBDatabase next : dbs) {
 			next.setBatchSQLStatementsWhenPossible(batchSQLStatementsWhenPossible);
@@ -460,6 +466,7 @@ public class DBDatabaseCluster extends DBDatabase {
 
 	@Override
 	public synchronized boolean batchSQLStatementsWhenPossible() {
+		super.batchSQLStatementsWhenPossible();
 		boolean result = true;
 		DBDatabase[] dbs = details.getReadyDatabases();
 		for (DBDatabase next : dbs) {
@@ -470,6 +477,13 @@ public class DBDatabaseCluster extends DBDatabase {
 
 	@Override
 	public synchronized void dropDatabase(String databaseName, boolean doIt) throws UnsupportedOperationException, AutoCommitActionDuringTransactionException, SQLException {
+		preventDDLDuringTransaction("DBDatabase.dropDatabase()");
+		if (getPreventAccidentalDroppingOfTables()) {
+			throw new AccidentalDroppingOfTableException();
+		}
+		if (getPreventAccidentalDroppingOfDatabases()) {
+			throw new AccidentalDroppingOfDatabaseException();
+		}
 		boolean finished = false;
 		do {
 			DBDatabase[] dbs = details.getReadyDatabases();
@@ -486,6 +500,13 @@ public class DBDatabaseCluster extends DBDatabase {
 
 	@Override
 	public void dropDatabase(boolean doIt) throws UnsupportedOperationException, AutoCommitActionDuringTransactionException, SQLException, UnableToRemoveLastDatabaseFromClusterException {
+		preventDDLDuringTransaction("DBDatabase.dropDatabase()");
+		if (getPreventAccidentalDroppingOfTables()) {
+			throw new AccidentalDroppingOfTableException();
+		}
+		if (getPreventAccidentalDroppingOfDatabases()) {
+			throw new AccidentalDroppingOfDatabaseException();
+		}
 		boolean finished = false;
 		int tried = 0;
 		do {
@@ -511,6 +532,9 @@ public class DBDatabaseCluster extends DBDatabase {
 
 	@Override
 	public synchronized <TR extends DBRow> void dropTableNoExceptions(TR tableRow) throws AccidentalDroppingOfTableException, AutoCommitActionDuringTransactionException, UnableToRemoveLastDatabaseFromClusterException {
+		if (getPreventAccidentalDroppingOfTables()) {
+			throw new AccidentalDroppingOfTableException();
+		}
 		boolean finished = false;
 		do {
 			DBDatabase[] dbs = details.getReadyDatabases();
@@ -525,6 +549,9 @@ public class DBDatabaseCluster extends DBDatabase {
 
 	@Override
 	public void dropTable(DBRow tableRow) throws SQLException, AutoCommitActionDuringTransactionException, AccidentalDroppingOfTableException, UnableToRemoveLastDatabaseFromClusterException {
+		if (getPreventAccidentalDroppingOfTables()) {
+			throw new AccidentalDroppingOfTableException();
+		}
 		boolean finished = false;
 		do {
 			DBDatabase[] dbs = details.getReadyDatabases();
@@ -533,7 +560,7 @@ public class DBDatabaseCluster extends DBDatabase {
 					try {
 						next.dropTable(tableRow);
 						finished = true;
-					} catch (SQLException e) {
+					} catch (Exception e) {
 						handleExceptionDuringQuery(e, next);
 					}
 				}
@@ -551,7 +578,7 @@ public class DBDatabaseCluster extends DBDatabase {
 					try {
 						next.createIndexesOnAllFields(newTableRow);
 						finished = true;
-					} catch (SQLException e) {
+					} catch (Exception e) {
 						handleExceptionDuringQuery(e, next);
 					}
 				}
@@ -569,7 +596,7 @@ public class DBDatabaseCluster extends DBDatabase {
 					try {
 						next.removeForeignKeyConstraints(newTableRow);
 						finished = true;
-					} catch (SQLException e) {
+					} catch (Exception e) {
 						handleExceptionDuringQuery(e, next);
 					}
 				}
@@ -587,7 +614,7 @@ public class DBDatabaseCluster extends DBDatabase {
 					try {
 						next.createForeignKeyConstraints(newTableRow);
 						finished = true;
-					} catch (SQLException e) {
+					} catch (Exception e) {
 						handleExceptionDuringQuery(e, next);
 					}
 				}
@@ -605,7 +632,7 @@ public class DBDatabaseCluster extends DBDatabase {
 					try {
 						next.createTableWithForeignKeys(newTableRow);
 						finished = true;
-					} catch (SQLException e) {
+					} catch (Exception e) {
 						handleExceptionDuringQuery(e, next);
 					}
 				}
@@ -623,7 +650,7 @@ public class DBDatabaseCluster extends DBDatabase {
 					try {
 						next.createTable(newTableRow);
 						finished = true;
-					} catch (SQLException e) {
+					} catch (Exception e) {
 						handleExceptionDuringQuery(e, next);
 					}
 				}
@@ -711,7 +738,7 @@ public class DBDatabaseCluster extends DBDatabase {
 					try {
 						next.updateTableToMatchDBRow(table);
 						finished = true;
-					} catch (SQLException e) {
+					} catch (Exception e) {
 						handleExceptionDuringQuery(e, next);
 					}
 				}
@@ -809,7 +836,7 @@ public class DBDatabaseCluster extends DBDatabase {
 			synchronized (readyDatabase) {
 				try {
 					return readyDatabase.getRows(report, examples);
-				} catch (SQLException e) {
+				} catch (Exception e) {
 					handleExceptionDuringQuery(e, readyDatabase);
 				}
 			}
@@ -826,7 +853,7 @@ public class DBDatabaseCluster extends DBDatabase {
 			synchronized (readyDatabase) {
 				try {
 					return readyDatabase.getAllRows(report, examples);
-				} catch (SQLException e) {
+				} catch (Exception e) {
 					handleExceptionDuringQuery(e, readyDatabase);
 				}
 			}
@@ -843,7 +870,7 @@ public class DBDatabaseCluster extends DBDatabase {
 			synchronized (readyDatabase) {
 				try {
 					return readyDatabase.get(report, examples);
-				} catch (SQLException e) {
+				} catch (Exception e) {
 					handleExceptionDuringQuery(e, readyDatabase);
 				}
 			}
@@ -860,7 +887,7 @@ public class DBDatabaseCluster extends DBDatabase {
 			synchronized (readyDatabase) {
 				try {
 					return readyDatabase.get(expectedNumberOfRows, rows);
-				} catch (SQLException e) {
+				} catch (Exception e) {
 					handleExceptionDuringQuery(e, readyDatabase);
 				}
 			}
@@ -877,7 +904,7 @@ public class DBDatabaseCluster extends DBDatabase {
 			synchronized (readyDatabase) {
 				try {
 					return readyDatabase.getByExamples(rows);
-				} catch (SQLException e) {
+				} catch (Exception e) {
 					handleExceptionDuringQuery(e, readyDatabase);
 				}
 			}
@@ -894,7 +921,7 @@ public class DBDatabaseCluster extends DBDatabase {
 			synchronized (readyDatabase) {
 				try {
 					return readyDatabase.get(rows);
-				} catch (SQLException e) {
+				} catch (Exception e) {
 					handleExceptionDuringQuery(e, readyDatabase);
 				}
 			}
@@ -911,7 +938,7 @@ public class DBDatabaseCluster extends DBDatabase {
 			synchronized (readyDatabase) {
 				try {
 					return readyDatabase.getByExample(expectedNumberOfRows, exampleRow);
-				} catch (SQLException e) {
+				} catch (Exception e) {
 					handleExceptionDuringQuery(e, readyDatabase);
 				}
 			}
@@ -928,7 +955,7 @@ public class DBDatabaseCluster extends DBDatabase {
 			synchronized (readyDatabase) {
 				try {
 					return readyDatabase.get(expectedNumberOfRows, exampleRow);
-				} catch (SQLException e) {
+				} catch (Exception e) {
 					handleExceptionDuringQuery(e, readyDatabase);
 				}
 			}
@@ -945,7 +972,7 @@ public class DBDatabaseCluster extends DBDatabase {
 			synchronized (readyDatabase) {
 				try {
 					return readyDatabase.getByExample(exampleRow);
-				} catch (SQLException e) {
+				} catch (Exception e) {
 					handleExceptionDuringQuery(e, readyDatabase);
 				}
 			}
@@ -962,7 +989,7 @@ public class DBDatabaseCluster extends DBDatabase {
 			synchronized (readyDatabase) {
 				try {
 					return readyDatabase.get(exampleRow);
-				} catch (SQLException e) {
+				} catch (Exception e) {
 					handleExceptionDuringQuery(e, readyDatabase);
 				}
 			}
@@ -1014,7 +1041,7 @@ public class DBDatabaseCluster extends DBDatabase {
 					} else {
 						finished = true;
 					}
-				} catch (SQLException e) {
+				} catch (Exception e) {
 					handleExceptionDuringAction(e, readyDatabase);
 				}
 			} while (!finished && size() > 1);
@@ -1048,7 +1075,7 @@ public class DBDatabaseCluster extends DBDatabase {
 				try {
 					actionsPerformed = readyDatabase.executeDBQuery(query);
 					finished = true;
-				} catch (SQLException e) {
+				} catch (Exception e) {
 					handleExceptionDuringQuery(e, readyDatabase);
 				}
 			}
@@ -1070,7 +1097,7 @@ public class DBDatabaseCluster extends DBDatabase {
 
 	private void handleExceptionDuringQuery(Exception e, final DBDatabase readyDatabase) throws SQLException, UnableToRemoveLastDatabaseFromClusterException {
 		if (!okExceptions.contains(e.getClass())) {
-			if (size() == 1) {
+			if (size() < 2) {
 				if (e instanceof SQLException) {
 					throw (SQLException) e;
 				} else {
@@ -1083,7 +1110,7 @@ public class DBDatabaseCluster extends DBDatabase {
 	}
 
 	private void handleExceptionDuringAction(Exception e, final DBDatabase readyDatabase) throws SQLException, UnableToRemoveLastDatabaseFromClusterException {
-		if (size() == 1) {
+		if (size() < 2) {
 			if (e instanceof SQLException) {
 				throw (SQLException) e;
 			} else {
@@ -1345,11 +1372,36 @@ public class DBDatabaseCluster extends DBDatabase {
 
 	@Override
 	public synchronized void terminate() {
+		shutdownClusterProcesses();
 		for (DBDatabase db : details.getAllDatabases()) {
 			db.terminate();
 		}
+		details.removeAllDatabases();
+	}
+
+	/**
+	 * Removes all databases from the cluster without terminating them and
+	 * shutdown all cluster processes.
+	 *
+	 * <p>
+	 * Dismantling the cluster is only needed in a small number of scenarios,
+	 * mostly testing.
+	 *
+	 * <p>
+	 * Dismantling the cluster ends all threads, removes all databases, and
+	 * removes the authoritative database configuration.
+	 *
+	 * <p>
+	 * This process is more comprehensive than {@link DBDatabaseCluster#terminate()
+	 * } but does not terminate or dismantle the individual databases.
+	 */
+	public synchronized void dismantle() {
+		shutdownClusterProcesses();
+		details.dismantle();
+	}
+
+	private synchronized void shutdownClusterProcesses() {
 		ACTION_THREAD_POOL.shutdown();
-//		reconnectionThreadPool.shutdownNow();
 		REGULAR_THREAD_POOL.shutdownNow();
 	}
 
@@ -1372,7 +1424,7 @@ public class DBDatabaseCluster extends DBDatabase {
 				DBActionList actions = database.executeDBAction(action);
 				setActionList(actions);
 				return getActionList();
-			} catch (SQLException e) {
+			} catch (Exception e) {
 				cluster.handleExceptionDuringAction(e, database);
 			}
 			return getActionList();
@@ -1445,11 +1497,11 @@ public class DBDatabaseCluster extends DBDatabase {
 
 		@Override
 		public synchronized void process() {
-			System.out.println("PREPARING TO RECONNECT DATABASES...");
+			System.out.println(getDatabaseName() + ": PREPARING TO RECONNECT DATABASES... ");
 
 			reconnectEjectedDatabases();
 
-			System.out.println("FINISHED RECONNECTING DATABASES.");
+			System.out.println(getDatabaseName() + ": FINISHED RECONNECTING DATABASES...");
 		}
 	}
 
@@ -1462,5 +1514,45 @@ public class DBDatabaseCluster extends DBDatabase {
 				ejectDatabase(ejected);
 			}
 		}
+	}
+
+	public static class Configuration {
+
+		private boolean useAutoRebuild;
+		private boolean useAutoReconnect;
+
+		public Configuration(boolean useAutoRebuild, boolean useAutoReconnect) {
+			this.useAutoRebuild = useAutoRebuild;
+			this.useAutoReconnect = useAutoReconnect;
+		}
+
+		/**
+		 * @return the useAutoRebuild
+		 */
+		public boolean isUseAutoRebuild() {
+			return useAutoRebuild;
+		}
+
+		/**
+		 * @return the useAutoReconnect
+		 */
+		public boolean isUseAutoReconnect() {
+			return useAutoReconnect;
+		}
+
+		/**
+		 * @param useAutoRebuild the useAutoRebuild to set
+		 */
+		public void setUseAutoRebuild(boolean useAutoRebuild) {
+			this.useAutoRebuild = useAutoRebuild;
+		}
+
+		/**
+		 * @param useAutoReconnect the useAutoReconnect to set
+		 */
+		public void setUseAutoReconnect(boolean useAutoReconnect) {
+			this.useAutoReconnect = useAutoReconnect;
+		}
+
 	}
 }

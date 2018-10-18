@@ -2019,7 +2019,7 @@ public class DBQuery implements Serializable {
 					fieldRow.addReturnFields(thisQDT);
 					distinctQuery.setBlankQueryAllowed(true);
 					final ColumnProvider column = fieldRow.column(fieldDefn.getQueryableDatatype(fieldRow));
-					distinctQuery.addToSortOrder(column.getSortProvider());
+					distinctQuery.addToSortOrder(column.getSortProvider().nullsLowest());
 					distinctQuery.addGroupByColumn(fieldRow, column.getColumn().asExpression());
 					returnList = distinctQuery.getAllRows();
 				} else {

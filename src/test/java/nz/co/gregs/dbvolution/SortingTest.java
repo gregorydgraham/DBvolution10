@@ -16,13 +16,17 @@
 package nz.co.gregs.dbvolution;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
+import nz.co.gregs.dbvolution.datatypes.DBString;
 import nz.co.gregs.dbvolution.example.CarCompany;
 import nz.co.gregs.dbvolution.example.Marque;
 import nz.co.gregs.dbvolution.generic.AbstractTest;
+import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Test;
 import static org.hamcrest.Matchers.*;
+import org.hamcrest.core.IsNull;
 
 public class SortingTest extends AbstractTest {
 
@@ -82,7 +86,7 @@ public class SortingTest extends AbstractTest {
 		Assert.assertThat(sortedMarques.get(1).name.toString(), is("CHRYSLER"));
 		Assert.assertThat(sortedMarques.get(2).name.toString(), is("DAEWOO"));
 		Assert.assertThat(sortedMarques.get(3).name.toString(), is("DAIHATSU"));
-		
+
 		marque.name.setSortOrderDescending();
 		sortedMarques = query.getAllInstancesOf(marque);
 		Assert.assertThat(sortedMarques.size(), is(22));
@@ -106,7 +110,7 @@ public class SortingTest extends AbstractTest {
 		Assert.assertThat(sortedMarques.get(1).name.toString(), is("TOYOTA"));
 		Assert.assertThat(sortedMarques.get(2).name.toString(), is("FORD"));
 		Assert.assertThat(sortedMarques.get(3).name.toString(), is("HOLDEN"));
-		
+
 		query.setSortOrder(marque.column(marque.name).substring(0, 3).ascending());
 		sortedMarques = query.getAllInstancesOf(marque);
 		Assert.assertThat(sortedMarques.size(), is(22));
@@ -114,7 +118,7 @@ public class SortingTest extends AbstractTest {
 		Assert.assertThat(sortedMarques.get(1).name.toString(), is("CHRYSLER"));
 		Assert.assertThat(sortedMarques.get(2).name.toString(), is("DAEWOO"));
 		Assert.assertThat(sortedMarques.get(3).name.toString(), is("DAIHATSU"));
-		
+
 		query.setSortOrder(marque.column(marque.name).substring(0, 3).descending());
 		sortedMarques = query.getAllInstancesOf(marque);
 		Assert.assertThat(sortedMarques.size(), is(22));
@@ -122,5 +126,253 @@ public class SortingTest extends AbstractTest {
 		Assert.assertThat(sortedMarques.get(1).name.toString(), is("VOLVO"));
 		Assert.assertThat(sortedMarques.get(2).name.toString(), is("TOYOTA"));
 		Assert.assertThat(sortedMarques.get(3).name.toString(), is("SUZUKI"));
+	}
+
+	@Test
+	public void sortingNullsLast() throws SQLException {
+		Marque marque = new Marque();
+		database.setPrintSQLBeforeExecuting(true);
+		List<Marque> allRows = database
+				.getDBTable(marque)
+				.setBlankQueryAllowed(true)
+				.setSortOrder(marque.column(marque.individualAllocationsAllowed)
+						.ascending()
+						.nullsLast()
+				).getAllRows();
+		Assert.assertThat(allRows.size(), is(22));
+
+		if (database.getDefinition().supportsDifferenceBetweenNullAndEmptyString()) {
+			Assert.assertThat(allRows.get(0).individualAllocationsAllowed.getValue(), is(""));
+			Assert.assertThat(allRows.get(1).individualAllocationsAllowed.getValue(), is(""));
+			Assert.assertThat(allRows.get(2).individualAllocationsAllowed.getValue(), is(""));
+			Assert.assertThat(allRows.get(3).individualAllocationsAllowed.getValue(), is(""));
+			Assert.assertThat(allRows.get(4).individualAllocationsAllowed.getValue(), is(""));
+			Assert.assertThat(allRows.get(5).individualAllocationsAllowed.getValue(), is(""));
+			Assert.assertThat(allRows.get(6).individualAllocationsAllowed.getValue(), is(""));
+			Assert.assertThat(allRows.get(7).individualAllocationsAllowed.getValue(), is(""));
+			Assert.assertThat(allRows.get(8).individualAllocationsAllowed.getValue(), is(""));
+			Assert.assertThat(allRows.get(9).individualAllocationsAllowed.getValue(), is(""));
+			Assert.assertThat(allRows.get(10).individualAllocationsAllowed.getValue(), is(""));
+			Assert.assertThat(allRows.get(11).individualAllocationsAllowed.getValue(), is(""));
+			Assert.assertThat(allRows.get(12).individualAllocationsAllowed.getValue(), is(""));
+			Assert.assertThat(allRows.get(13).individualAllocationsAllowed.getValue(), is(""));
+			Assert.assertThat(allRows.get(14).individualAllocationsAllowed.getValue(), is(""));
+			Assert.assertThat(allRows.get(15).individualAllocationsAllowed.getValue(), is(""));
+			Assert.assertThat(allRows.get(16).individualAllocationsAllowed.getValue(), is(""));
+			Assert.assertThat(allRows.get(17).individualAllocationsAllowed.getValue(), is(""));
+			Assert.assertThat(allRows.get(18).individualAllocationsAllowed.getValue(), is(""));
+			Assert.assertThat(allRows.get(19).individualAllocationsAllowed.getValue(), is("Y"));
+			Assert.assertThat(allRows.get(20).individualAllocationsAllowed.getValue(), nullValue());
+			Assert.assertThat(allRows.get(21).individualAllocationsAllowed.getValue(), nullValue());
+		} else {
+			Assert.assertThat(allRows.get(0).individualAllocationsAllowed.getValue(), is("Y"));
+			Assert.assertThat(allRows.get(1).individualAllocationsAllowed.getValue(), is(""));
+			Assert.assertThat(allRows.get(2).individualAllocationsAllowed.getValue(), is(""));
+			Assert.assertThat(allRows.get(3).individualAllocationsAllowed.getValue(), is(""));
+			Assert.assertThat(allRows.get(4).individualAllocationsAllowed.getValue(), is(""));
+			Assert.assertThat(allRows.get(5).individualAllocationsAllowed.getValue(), is(""));
+			Assert.assertThat(allRows.get(6).individualAllocationsAllowed.getValue(), is(""));
+			Assert.assertThat(allRows.get(7).individualAllocationsAllowed.getValue(), is(""));
+			Assert.assertThat(allRows.get(8).individualAllocationsAllowed.getValue(), is(""));
+			Assert.assertThat(allRows.get(9).individualAllocationsAllowed.getValue(), is(""));
+			Assert.assertThat(allRows.get(10).individualAllocationsAllowed.getValue(), is(""));
+			Assert.assertThat(allRows.get(11).individualAllocationsAllowed.getValue(), is(""));
+			Assert.assertThat(allRows.get(12).individualAllocationsAllowed.getValue(), is(""));
+			Assert.assertThat(allRows.get(13).individualAllocationsAllowed.getValue(), is(""));
+			Assert.assertThat(allRows.get(14).individualAllocationsAllowed.getValue(), is(""));
+			Assert.assertThat(allRows.get(15).individualAllocationsAllowed.getValue(), is(""));
+			Assert.assertThat(allRows.get(16).individualAllocationsAllowed.getValue(), is(""));
+			Assert.assertThat(allRows.get(17).individualAllocationsAllowed.getValue(), is(""));
+			Assert.assertThat(allRows.get(18).individualAllocationsAllowed.getValue(), is(""));
+			Assert.assertThat(allRows.get(19).individualAllocationsAllowed.getValue(), is(""));
+			Assert.assertThat(allRows.get(20).individualAllocationsAllowed.getValue(), is(""));
+			Assert.assertThat(allRows.get(21).individualAllocationsAllowed.getValue(), is(""));
+		}
+	}
+
+	@Test
+	public void sortingNullsFirst() throws SQLException {
+		Marque marque = new Marque();
+		database.setPrintSQLBeforeExecuting(true);
+		List<Marque> allRows = database
+				.getDBTable(marque)
+				.setBlankQueryAllowed(true)
+				.setSortOrder(marque.column(marque.individualAllocationsAllowed)
+						.ascending()
+						.nullsFirst()
+				).getAllRows();
+		Assert.assertThat(allRows.size(), is(22));
+
+		if (database.getDefinition().supportsDifferenceBetweenNullAndEmptyString()) {
+			Assert.assertThat(allRows.get(0).individualAllocationsAllowed.getValue(), nullValue());
+			Assert.assertThat(allRows.get(1).individualAllocationsAllowed.getValue(), nullValue());
+			Assert.assertThat(allRows.get(2).individualAllocationsAllowed.getValue(), is(""));
+			Assert.assertThat(allRows.get(3).individualAllocationsAllowed.getValue(), is(""));
+			Assert.assertThat(allRows.get(4).individualAllocationsAllowed.getValue(), is(""));
+			Assert.assertThat(allRows.get(5).individualAllocationsAllowed.getValue(), is(""));
+			Assert.assertThat(allRows.get(6).individualAllocationsAllowed.getValue(), is(""));
+			Assert.assertThat(allRows.get(7).individualAllocationsAllowed.getValue(), is(""));
+			Assert.assertThat(allRows.get(8).individualAllocationsAllowed.getValue(), is(""));
+			Assert.assertThat(allRows.get(9).individualAllocationsAllowed.getValue(), is(""));
+			Assert.assertThat(allRows.get(10).individualAllocationsAllowed.getValue(), is(""));
+			Assert.assertThat(allRows.get(11).individualAllocationsAllowed.getValue(), is(""));
+			Assert.assertThat(allRows.get(12).individualAllocationsAllowed.getValue(), is(""));
+			Assert.assertThat(allRows.get(13).individualAllocationsAllowed.getValue(), is(""));
+			Assert.assertThat(allRows.get(14).individualAllocationsAllowed.getValue(), is(""));
+			Assert.assertThat(allRows.get(15).individualAllocationsAllowed.getValue(), is(""));
+			Assert.assertThat(allRows.get(16).individualAllocationsAllowed.getValue(), is(""));
+			Assert.assertThat(allRows.get(17).individualAllocationsAllowed.getValue(), is(""));
+			Assert.assertThat(allRows.get(18).individualAllocationsAllowed.getValue(), is(""));
+			Assert.assertThat(allRows.get(19).individualAllocationsAllowed.getValue(), is(""));
+			Assert.assertThat(allRows.get(20).individualAllocationsAllowed.getValue(), is(""));
+			Assert.assertThat(allRows.get(21).individualAllocationsAllowed.getValue(), is("Y"));
+		} else {
+			Assert.assertThat(allRows.get(0).individualAllocationsAllowed.getValue(), is(""));
+			Assert.assertThat(allRows.get(1).individualAllocationsAllowed.getValue(), is(""));
+			Assert.assertThat(allRows.get(2).individualAllocationsAllowed.getValue(), is(""));
+			Assert.assertThat(allRows.get(3).individualAllocationsAllowed.getValue(), is(""));
+			Assert.assertThat(allRows.get(4).individualAllocationsAllowed.getValue(), is(""));
+			Assert.assertThat(allRows.get(5).individualAllocationsAllowed.getValue(), is(""));
+			Assert.assertThat(allRows.get(6).individualAllocationsAllowed.getValue(), is(""));
+			Assert.assertThat(allRows.get(7).individualAllocationsAllowed.getValue(), is(""));
+			Assert.assertThat(allRows.get(8).individualAllocationsAllowed.getValue(), is(""));
+			Assert.assertThat(allRows.get(9).individualAllocationsAllowed.getValue(), is(""));
+			Assert.assertThat(allRows.get(10).individualAllocationsAllowed.getValue(), is(""));
+			Assert.assertThat(allRows.get(11).individualAllocationsAllowed.getValue(), is(""));
+			Assert.assertThat(allRows.get(12).individualAllocationsAllowed.getValue(), is(""));
+			Assert.assertThat(allRows.get(13).individualAllocationsAllowed.getValue(), is(""));
+			Assert.assertThat(allRows.get(14).individualAllocationsAllowed.getValue(), is(""));
+			Assert.assertThat(allRows.get(15).individualAllocationsAllowed.getValue(), is(""));
+			Assert.assertThat(allRows.get(16).individualAllocationsAllowed.getValue(), is(""));
+			Assert.assertThat(allRows.get(17).individualAllocationsAllowed.getValue(), is(""));
+			Assert.assertThat(allRows.get(18).individualAllocationsAllowed.getValue(), is(""));
+			Assert.assertThat(allRows.get(19).individualAllocationsAllowed.getValue(), is(""));
+			Assert.assertThat(allRows.get(20).individualAllocationsAllowed.getValue(), is(""));
+			Assert.assertThat(allRows.get(21).individualAllocationsAllowed.getValue(), is("Y"));
+		}
+	}
+
+	@Test
+	public void sortingNullsHighest() throws SQLException {
+		Marque marque = new Marque();
+		database.setPrintSQLBeforeExecuting(true);
+		List<Marque> allRows = database
+				.getDBTable(marque)
+				.setBlankQueryAllowed(true)
+				.setSortOrder(marque.column(marque.individualAllocationsAllowed)
+						.descending()
+						.nullsHighest()
+				).getAllRows();
+		Assert.assertThat(allRows.size(), is(22));
+
+		if (database.getDefinition().supportsDifferenceBetweenNullAndEmptyString()) {
+			Assert.assertThat(allRows.get(0).individualAllocationsAllowed.getValue(), nullValue());
+			Assert.assertThat(allRows.get(1).individualAllocationsAllowed.getValue(), nullValue());
+			Assert.assertThat(allRows.get(2).individualAllocationsAllowed.getValue(), is("Y"));
+			Assert.assertThat(allRows.get(3).individualAllocationsAllowed.getValue(), is(""));
+			Assert.assertThat(allRows.get(4).individualAllocationsAllowed.getValue(), is(""));
+			Assert.assertThat(allRows.get(5).individualAllocationsAllowed.getValue(), is(""));
+			Assert.assertThat(allRows.get(6).individualAllocationsAllowed.getValue(), is(""));
+			Assert.assertThat(allRows.get(7).individualAllocationsAllowed.getValue(), is(""));
+			Assert.assertThat(allRows.get(8).individualAllocationsAllowed.getValue(), is(""));
+			Assert.assertThat(allRows.get(9).individualAllocationsAllowed.getValue(), is(""));
+			Assert.assertThat(allRows.get(10).individualAllocationsAllowed.getValue(), is(""));
+			Assert.assertThat(allRows.get(11).individualAllocationsAllowed.getValue(), is(""));
+			Assert.assertThat(allRows.get(12).individualAllocationsAllowed.getValue(), is(""));
+			Assert.assertThat(allRows.get(13).individualAllocationsAllowed.getValue(), is(""));
+			Assert.assertThat(allRows.get(14).individualAllocationsAllowed.getValue(), is(""));
+			Assert.assertThat(allRows.get(15).individualAllocationsAllowed.getValue(), is(""));
+			Assert.assertThat(allRows.get(16).individualAllocationsAllowed.getValue(), is(""));
+			Assert.assertThat(allRows.get(17).individualAllocationsAllowed.getValue(), is(""));
+			Assert.assertThat(allRows.get(18).individualAllocationsAllowed.getValue(), is(""));
+			Assert.assertThat(allRows.get(19).individualAllocationsAllowed.getValue(), is(""));
+			Assert.assertThat(allRows.get(20).individualAllocationsAllowed.getValue(), isEmptyString());
+			Assert.assertThat(allRows.get(21).individualAllocationsAllowed.getValue(), isEmptyString());
+		} else {
+			Assert.assertThat(allRows.get(0).individualAllocationsAllowed.getValue(), is(""));
+			Assert.assertThat(allRows.get(1).individualAllocationsAllowed.getValue(), is(""));
+			Assert.assertThat(allRows.get(2).individualAllocationsAllowed.getValue(), is(""));
+			Assert.assertThat(allRows.get(3).individualAllocationsAllowed.getValue(), is(""));
+			Assert.assertThat(allRows.get(4).individualAllocationsAllowed.getValue(), is(""));
+			Assert.assertThat(allRows.get(5).individualAllocationsAllowed.getValue(), is(""));
+			Assert.assertThat(allRows.get(6).individualAllocationsAllowed.getValue(), is(""));
+			Assert.assertThat(allRows.get(7).individualAllocationsAllowed.getValue(), is(""));
+			Assert.assertThat(allRows.get(8).individualAllocationsAllowed.getValue(), is(""));
+			Assert.assertThat(allRows.get(9).individualAllocationsAllowed.getValue(), is(""));
+			Assert.assertThat(allRows.get(10).individualAllocationsAllowed.getValue(), is(""));
+			Assert.assertThat(allRows.get(11).individualAllocationsAllowed.getValue(), is(""));
+			Assert.assertThat(allRows.get(12).individualAllocationsAllowed.getValue(), is(""));
+			Assert.assertThat(allRows.get(13).individualAllocationsAllowed.getValue(), is(""));
+			Assert.assertThat(allRows.get(14).individualAllocationsAllowed.getValue(), is(""));
+			Assert.assertThat(allRows.get(15).individualAllocationsAllowed.getValue(), is(""));
+			Assert.assertThat(allRows.get(16).individualAllocationsAllowed.getValue(), is(""));
+			Assert.assertThat(allRows.get(17).individualAllocationsAllowed.getValue(), is(""));
+			Assert.assertThat(allRows.get(18).individualAllocationsAllowed.getValue(), is(""));
+			Assert.assertThat(allRows.get(19).individualAllocationsAllowed.getValue(), is(""));
+			Assert.assertThat(allRows.get(20).individualAllocationsAllowed.getValue(), is(""));
+			Assert.assertThat(allRows.get(21).individualAllocationsAllowed.getValue(), is("Y"));
+		}
+	}
+
+	@Test
+	public void sortingNullsLowest() throws SQLException {
+		Marque marque = new Marque();
+		database.setPrintSQLBeforeExecuting(true);
+		List<Marque> allRows = database
+				.getDBTable(marque)
+				.setBlankQueryAllowed(true)
+				.setSortOrder(marque.column(marque.individualAllocationsAllowed)
+						.ascending()
+						.nullsLowest()
+				).getAllRows();
+		Assert.assertThat(allRows.size(), is(22));
+
+		if (database.getDefinition().supportsDifferenceBetweenNullAndEmptyString()) {
+			Assert.assertThat(allRows.get(0).individualAllocationsAllowed.getValue(), nullValue());
+			Assert.assertThat(allRows.get(1).individualAllocationsAllowed.getValue(), nullValue());
+			Assert.assertThat(allRows.get(2).individualAllocationsAllowed.getValue(), is(""));
+			Assert.assertThat(allRows.get(3).individualAllocationsAllowed.getValue(), is(""));
+			Assert.assertThat(allRows.get(4).individualAllocationsAllowed.getValue(), is(""));
+			Assert.assertThat(allRows.get(5).individualAllocationsAllowed.getValue(), is(""));
+			Assert.assertThat(allRows.get(6).individualAllocationsAllowed.getValue(), is(""));
+			Assert.assertThat(allRows.get(7).individualAllocationsAllowed.getValue(), is(""));
+			Assert.assertThat(allRows.get(8).individualAllocationsAllowed.getValue(), is(""));
+			Assert.assertThat(allRows.get(9).individualAllocationsAllowed.getValue(), is(""));
+			Assert.assertThat(allRows.get(10).individualAllocationsAllowed.getValue(), is(""));
+			Assert.assertThat(allRows.get(11).individualAllocationsAllowed.getValue(), is(""));
+			Assert.assertThat(allRows.get(12).individualAllocationsAllowed.getValue(), is(""));
+			Assert.assertThat(allRows.get(13).individualAllocationsAllowed.getValue(), is(""));
+			Assert.assertThat(allRows.get(14).individualAllocationsAllowed.getValue(), is(""));
+			Assert.assertThat(allRows.get(15).individualAllocationsAllowed.getValue(), is(""));
+			Assert.assertThat(allRows.get(16).individualAllocationsAllowed.getValue(), is(""));
+			Assert.assertThat(allRows.get(17).individualAllocationsAllowed.getValue(), is(""));
+			Assert.assertThat(allRows.get(18).individualAllocationsAllowed.getValue(), is(""));
+			Assert.assertThat(allRows.get(19).individualAllocationsAllowed.getValue(), is(""));
+			Assert.assertThat(allRows.get(20).individualAllocationsAllowed.getValue(), isEmptyString());
+			Assert.assertThat(allRows.get(21).individualAllocationsAllowed.getValue(), is("Y"));
+		} else {
+			Assert.assertThat(allRows.get(0).individualAllocationsAllowed.getValue(), is(""));
+			Assert.assertThat(allRows.get(1).individualAllocationsAllowed.getValue(), is(""));
+			Assert.assertThat(allRows.get(2).individualAllocationsAllowed.getValue(), is(""));
+			Assert.assertThat(allRows.get(3).individualAllocationsAllowed.getValue(), is(""));
+			Assert.assertThat(allRows.get(4).individualAllocationsAllowed.getValue(), is(""));
+			Assert.assertThat(allRows.get(5).individualAllocationsAllowed.getValue(), is(""));
+			Assert.assertThat(allRows.get(6).individualAllocationsAllowed.getValue(), is(""));
+			Assert.assertThat(allRows.get(7).individualAllocationsAllowed.getValue(), is(""));
+			Assert.assertThat(allRows.get(8).individualAllocationsAllowed.getValue(), is(""));
+			Assert.assertThat(allRows.get(9).individualAllocationsAllowed.getValue(), is(""));
+			Assert.assertThat(allRows.get(10).individualAllocationsAllowed.getValue(), is(""));
+			Assert.assertThat(allRows.get(11).individualAllocationsAllowed.getValue(), is(""));
+			Assert.assertThat(allRows.get(12).individualAllocationsAllowed.getValue(), is(""));
+			Assert.assertThat(allRows.get(13).individualAllocationsAllowed.getValue(), is(""));
+			Assert.assertThat(allRows.get(14).individualAllocationsAllowed.getValue(), is(""));
+			Assert.assertThat(allRows.get(15).individualAllocationsAllowed.getValue(), is(""));
+			Assert.assertThat(allRows.get(16).individualAllocationsAllowed.getValue(), is(""));
+			Assert.assertThat(allRows.get(17).individualAllocationsAllowed.getValue(), is(""));
+			Assert.assertThat(allRows.get(18).individualAllocationsAllowed.getValue(), is(""));
+			Assert.assertThat(allRows.get(19).individualAllocationsAllowed.getValue(), is(""));
+			Assert.assertThat(allRows.get(20).individualAllocationsAllowed.getValue(), is(""));
+			Assert.assertThat(allRows.get(21).individualAllocationsAllowed.getValue(), is("Y"));
+		}
 	}
 }

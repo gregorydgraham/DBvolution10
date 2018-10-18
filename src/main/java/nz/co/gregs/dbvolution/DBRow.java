@@ -1642,7 +1642,7 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 		final ColumnProvider columnProvider = this.column(thisQDT);
 		DBExpression expr = columnProvider.getColumn().asExpression();
 		DBQuery dbQuery = database.getDBQuery(this).addGroupByColumn(this, expr);
-		dbQuery.setSortOrder(columnProvider.getSortProvider());
+		dbQuery.setSortOrder(columnProvider.getSortProvider().nullsLowest());
 		dbQuery.setBlankQueryAllowed(true);
 		List<DBQueryRow> allRows = dbQuery.getAllRows();
 		for (DBQueryRow row : allRows) {

@@ -130,15 +130,22 @@ public class ClusterDetails implements Serializable {
 			// Unable to quarantine the only remaining database
 			throw new UnableToRemoveLastDatabaseFromClusterException();
 		} else {
-			final boolean result = queuedActions.remove(database) != null
-					&& allDatabases.remove(database)
-					&& readyDatabases.remove(database)
-					&& ejectedDatabases.remove(database);
+			final boolean result = removeDatabaseFromAllLists(database);
 			if (result) {
 				setAuthoritativeDatabase();
 			}
 			return result;
 		}
+	}
+
+	private synchronized boolean removeDatabaseFromAllLists(DBDatabase database) {
+		boolean result = queuedActions.containsKey(database)?queuedActions.remove(database) != null:true;
+		result = result && ejectedDatabases.contains(database)?ejectedDatabases.remove(database):true;
+		result = result && unsynchronizedDatabases.contains(database)?unsynchronizedDatabases.remove(database):true;
+		result = result && pausedDatabases.contains(database)?pausedDatabases.remove(database):true;
+		result = result && readyDatabases.contains(database)?readyDatabases.remove(database):true;
+		result = result && allDatabases.contains(database)? allDatabases.remove(database):true;
+		return result;
 	}
 
 	public synchronized DBDatabase[] getUnsynchronizedDatabases() {
@@ -307,6 +314,18 @@ public class ClusterDetails implements Serializable {
 
 	public List<DBDatabase> getEjectedDatabases() {
 		return ejectedDatabases;
+	}
+
+	public synchronized void removeAllDatabases() {
+		DBDatabase[] dbs = allDatabases.toArray(new DBDatabase[]{});
+		for (DBDatabase db : dbs) {
+			removeDatabaseFromAllLists(db);
+		}
+	}
+
+	public synchronized void dismantle() {
+		removeAuthoritativeDatabase();
+		removeAllDatabases();
 	}
 
 }

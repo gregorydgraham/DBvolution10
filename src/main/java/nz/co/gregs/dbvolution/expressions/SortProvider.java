@@ -57,15 +57,45 @@ import nz.co.gregs.dbvolution.results.AnyResult;
  */
 public class SortProvider implements DBExpression {
 
-	private final AnyExpression<?,?,?> innerExpression;
-	private QueryColumn<?, ? extends AnyResult<?>, ? extends QueryableDatatype<?>> queryColumn;
+	private final AnyExpression<?, ?, ?> innerExpression;
+	private QueryColumn<?, ? extends AnyResult<?>, ? extends QueryableDatatype<?>> queryColumn = null;
+	private AbstractColumn innerColumn = null;
+	protected Ordering direction = Ordering.UNDEFINED;
+	protected OrderOfNulls nullsOrdering = OrderOfNulls.UNDEFINED;
 
-	public SortProvider() {
+	public static enum Ordering {
+		ASCENDING,
+		UNDEFINED,
+		DESCENDING;
+	}
+
+	public static enum OrderOfNulls {
+		UNDEFINED(),
+		LOWEST(),
+		HIGHEST(),
+		FIRST(),
+		LAST();
+	}
+
+	protected SortProvider() {
 		innerExpression = null;
 	}
 
-	public SortProvider(AnyExpression<?,?,?> exp) {
+	protected SortProvider(SortProvider sort) {
+		this.innerExpression = sort.innerExpression;
+		this.direction = sort.direction;
+		this.queryColumn = sort.queryColumn;
+		this.innerColumn = sort.innerColumn;
+	}
+
+	protected SortProvider(AnyExpression<?, ?, ?> exp, Ordering direction) {
 		this.innerExpression = exp;
+		this.direction = direction;
+	}
+
+	public SortProvider(AbstractColumn exp) {
+		this();
+		this.innerColumn = exp;
 	}
 
 	public <A, B extends AnyResult<A>, C extends QueryableDatatype<A>> SortProvider(QueryColumn<A, B, C> exp) {
@@ -77,6 +107,8 @@ public class SortProvider implements DBExpression {
 	public QueryableDatatype<?> getQueryableDatatypeForExpressionValue() {
 		if (hasQueryColumn()) {
 			return getQueryColumn().asExpressionColumn();
+		} else if (hasColumn()) {
+			return getColumn().getQueryableDatatypeForExpressionValue();
 		} else if (getInnerExpression() == null) {
 			return new DBUnknownDatatype();
 		} else {
@@ -88,6 +120,8 @@ public class SortProvider implements DBExpression {
 	public boolean isAggregator() {
 		if (hasQueryColumn()) {
 			return getQueryColumn().isAggregator();
+		} else if (hasColumn()) {
+			return getColumn().isAggregator();
 		} else if (getInnerExpression() == null) {
 			return false;
 		} else {
@@ -100,9 +134,11 @@ public class SortProvider implements DBExpression {
 	public Set<DBRow> getTablesInvolved() {
 		if (hasQueryColumn()) {
 			return getQueryColumn().getTablesInvolved();
+		} else if (hasColumn()) {
+			return getColumn().getTablesInvolved();
 		} else {
 			Set<DBRow> result = new HashSet<DBRow>(0);
-			final AnyExpression<?,?,?> innerExpression1 = this.getInnerExpression();
+			final AnyExpression<?, ?, ?> innerExpression1 = this.getInnerExpression();
 			if (innerExpression1 != null) {
 				result = innerExpression1.getTablesInvolved();
 			}
@@ -114,6 +150,8 @@ public class SortProvider implements DBExpression {
 	public boolean isPurelyFunctional() {
 		if (hasQueryColumn()) {
 			return getQueryColumn().isPurelyFunctional();
+		} else if (hasColumn()) {
+			return getColumn().isPurelyFunctional();
 		} else if (getInnerExpression() == null) {
 			return true;
 		} else {
@@ -125,6 +163,8 @@ public class SortProvider implements DBExpression {
 	public boolean isComplexExpression() {
 		if (hasQueryColumn()) {
 			return getQueryColumn().isComplexExpression();
+		} else if (hasColumn()) {
+			return getColumn().isComplexExpression();
 		} else if (getInnerExpression() == null) {
 			return false;
 		} else {
@@ -136,6 +176,8 @@ public class SortProvider implements DBExpression {
 	public String createSQLForFromClause(DBDatabase database) {
 		if (hasQueryColumn()) {
 			return getQueryColumn().createSQLForFromClause(database);
+		} if (hasColumn()) {
+			return getColumn().createSQLForFromClause(database);
 		} else if (getInnerExpression() == null) {
 			return database.getDefinition().getTrueOperation();
 		} else {
@@ -147,6 +189,8 @@ public class SortProvider implements DBExpression {
 	public String createSQLForGroupByClause(DBDatabase database) {
 		if (hasQueryColumn()) {
 			return getQueryColumn().createSQLForGroupByClause(database);
+		} else if (hasColumn()) {
+			return getColumn().createSQLForGroupByClause(database);
 		} else if (getInnerExpression() == null) {
 			return database.getDefinition().getTrueOperation();
 		} else {
@@ -157,12 +201,20 @@ public class SortProvider implements DBExpression {
 	/**
 	 * @return the innerExpression
 	 */
-	public AnyExpression<?,?,?> getInnerExpression() {
+	public AnyExpression<?, ?, ?> getInnerExpression() {
 		return innerExpression;
 	}
 
 	public boolean hasQueryColumn() {
 		return queryColumn != null;
+	}
+
+	public boolean hasColumn() {
+		return innerColumn != null;
+	}
+
+	protected AbstractColumn getColumn() {
+		return innerColumn;
 	}
 
 	public void setQueryColumn(QueryColumn<?, ?, ?> qc) {
@@ -176,6 +228,8 @@ public class SortProvider implements DBExpression {
 	public QueryableDatatype<?> asExpressionColumn() {
 		if (hasQueryColumn()) {
 			return getQueryColumn().asExpressionColumn();
+		} else if (hasColumn()) {
+			return getColumn().getQueryableDatatypeForExpressionValue();
 		} else if (getInnerExpression() == null) {
 			return new DBUnknownDatatype();
 		} else {
@@ -185,16 +239,23 @@ public class SortProvider implements DBExpression {
 
 	@Override
 	public String toSQLString(DBDefinition defn) {
-		String exprSQL = null;
-		if (hasQueryColumn()) {
-			exprSQL = getQueryColumn().toSQLString(defn);
-		} else if (hasInnerExpression()) {
-			exprSQL = getInnerExpression().toSQLString(defn);
-		}
-		return exprSQL == null
+		String exprSQL = getExpressionSQL(defn);
+		return exprSQL.isEmpty()
 				? defn.getTrueOperation()
 				: exprSQL
 				+ getSortDirectionSQL(defn);
+	}
+
+	protected String getExpressionSQL(DBDefinition defn) {
+		String exprSQL = "";
+		if (hasQueryColumn()) {
+			exprSQL = getQueryColumn().toSQLString(defn);
+		} else if (hasColumn()) {
+			exprSQL = getColumn().toSQLString(defn);
+		} else if (hasInnerExpression()) {
+			exprSQL = getInnerExpression().toSQLString(defn);
+		}
+		return exprSQL;
 	}
 
 	public boolean hasInnerExpression() {
@@ -203,13 +264,14 @@ public class SortProvider implements DBExpression {
 
 	@Override
 	public DBExpression copy() {
-		return new SortProvider(innerExpression);
+		return new SortProvider(this);
 	}
 
 	/**
 	 * Returns the sort order set for the provider.
-	 * 
-	 * <p>defaults to ASCENDING</p>
+	 *
+	 * <p>
+	 * defaults to ASCENDING</p>
 	 *
 	 * @param defn
 	 * @return SQL for the sort direction.
@@ -218,14 +280,36 @@ public class SortProvider implements DBExpression {
 		if (hasQueryColumn()) {
 			final AbstractQueryColumn column = getQueryColumn().getColumn();
 			return defn.getOrderByDirectionClause(column.getSortDirection());
+		}else if (hasColumn()) {
+			return defn.getOrderByDirectionClause(getColumn().getSortDirection());
 		}
-		return defn.getOrderByDirectionClause(QueryableDatatype.SORT_ASCENDING);
+		return defn.getOrderByDirectionClause(getOrdering());
+	}
+
+	public Ordering getOrdering() {
+		return direction;
+	}
+
+	public SortProvider nullsLast() {
+		return new SortProvider.NullsLast(this);
+	}
+
+	public SortProvider nullsFirst() {
+		return new SortProvider.NullsFirst(this);
+	}
+
+	public SortProvider nullsHighest() {
+		return new SortProvider.NullsHighest(this);
+	}
+
+	public SortProvider nullsLowest() {
+		return new SortProvider.NullsLowest(this);
 	}
 
 	public static class Ascending extends SortProvider {
 
-		public Ascending(AnyExpression<?,?,?> exp) {
-			super(exp);
+		public Ascending(AnyExpression<?, ?, ?> exp) {
+			super(exp, Ordering.ASCENDING);
 		}
 
 		@Override
@@ -241,8 +325,8 @@ public class SortProvider implements DBExpression {
 
 	public static class Descending extends SortProvider {
 
-		public Descending(AnyExpression<?,?,?> exp) {
-			super(exp);
+		public Descending(AnyExpression<?, ?, ?> exp) {
+			super(exp, Ordering.DESCENDING);
 		}
 
 		@Override
@@ -258,84 +342,201 @@ public class SortProvider implements DBExpression {
 
 	public static class Column extends SortProvider {
 
-		private final AbstractColumn innerColumn;
-
 		public Column(AbstractColumn column) {
-			super();
-			this.innerColumn = column;
-		}
-
-		@Override
-		public DBExpression copy() {
-			return new Column(innerColumn);
-		}
-
-		@Override
-		public String toSQLString(DBDefinition defn) {
-			return innerColumn.toSQLString(defn)
-					+ getSortDirectionSQL(defn);
-		}
-
-		@Override
-		public String getSortDirectionSQL(DBDefinition defn) {
-			return defn.getOrderByDirectionClause(innerColumn.getSortDirection());
+			super(column);
 		}
 
 		@Override
 		public QueryableDatatype<?> asExpressionColumn() {
-			return innerColumn.getQueryableDatatypeForExpressionValue();
+			return getColumn().getQueryableDatatypeForExpressionValue();
 		}
 
-		@Override
-		public AnyExpression<?,?,?> getInnerExpression() {
-			return super.getInnerExpression();
-		}
+//		@Override
+//		public String createSQLForGroupByClause(DBDatabase database) {
+//			if (getColumn() == null) {
+//				return database.getDefinition().getTrueOperation();
+//			} else {
+//				return getColumn().createSQLForGroupByClause(database);
+//			}
+//		}
 
-		@Override
-		public String createSQLForGroupByClause(DBDatabase database) {
-			if (innerColumn == null) {
-				return database.getDefinition().getTrueOperation();
-			} else {
-				return innerColumn.createSQLForGroupByClause(database);
-			}
-		}
-
-		@Override
-		public String createSQLForFromClause(DBDatabase database) {
-			if (innerColumn == null) {
-				return database.getDefinition().getTrueOperation();
-			} else {
-				return innerColumn.createSQLForGroupByClause(database);
-			}
-		}
-
-		@Override
-		public boolean isComplexExpression() {
-			return innerColumn.isComplexExpression();
-		}
-
-		@Override
-		public boolean isPurelyFunctional() {
-			return innerColumn.isPurelyFunctional();
-		}
-
-		@Override
-		public Set<DBRow> getTablesInvolved() {
-			return innerColumn.getTablesInvolved();
-		}
-
-		@Override
-		public boolean isAggregator() {
-			return innerColumn.isAggregator();
-		}
-
-		@Override
-		public QueryableDatatype<?> getQueryableDatatypeForExpressionValue() {
-			return innerColumn.getQueryableDatatypeForExpressionValue();
-		}
+//		@Override
+//		public String createSQLForFromClause(DBDatabase database) {
+//			if (getColumn() == null) {
+//				return database.getDefinition().getTrueOperation();
+//			} else {
+//				return getColumn().createSQLForGroupByClause(database);
+//			}
+////		}
+//
+//		@Override
+//		public boolean isComplexExpression() {
+//			return getColumn().isComplexExpression();
+//		}
+//
+//		@Override
+//		public boolean isPurelyFunctional() {
+//			return getColumn().isPurelyFunctional();
+//		}
+//
+//		@Override
+//		public Set<DBRow> getTablesInvolved() {
+//			return getColumn().getTablesInvolved();
+//		}
+//
+//		@Override
+//		public boolean isAggregator() {
+//			return getColumn().isAggregator();
+////		}
+//
+//		@Override
+//		public QueryableDatatype<?> getQueryableDatatypeForExpressionValue() {
+//			return getColumn().getQueryableDatatypeForExpressionValue();
+//		}
 
 		public PropertyWrapper getPropertyWrapper() {
-			return innerColumn.getPropertyWrapper();
+			return getColumn().getPropertyWrapper();
+		}
+	}
+
+	public static abstract class NullsOrderer extends SortProvider {
+
+//		private final SortProvider innerSort;
+		protected NullsOrderer(SortProvider sort, OrderOfNulls nullsOrdering) {
+			super(sort);
+			this.nullsOrdering = nullsOrdering;
+		}
+
+		@Override
+		public String toSQLString(DBDefinition defn) {
+			String exprSQL = getExpressionSQL(defn);
+			if (exprSQL == null || exprSQL.isEmpty()) {
+				return defn.getTrueOperation();
+			} else {
+				String sortingSQL = "";
+				if (defn.supportsNullsOrderingStandard()) {
+					// The standard "mycolumn ASC NULLS LAST" sort
+					sortingSQL = exprSQL + getSortDirectionSQL(defn) + " " + getNullsOrderingStandardSQL(defn);
+				} else {
+					// The hacky "isnull(mycolumn, 1, 0) ASC, mycolumn ASC" alternative
+					sortingSQL = getNullsOrderingSimulatedSQL(defn) + ", " + exprSQL + " " + getSortDirectionSQL(defn);
+				}
+				return sortingSQL;
+			}
+		}
+
+		protected abstract String getNullsOrderingStandardSQL(DBDefinition defn);
+
+		protected final String simulateNullsFirst(DBDefinition defn) {
+			return defn.doIfThenElseTransform(getExpressionSQL(defn) + " IS NULL", "0", "1")
+					+ " "
+					+ defn.getOrderByAscending();
+		}
+
+		protected final String simulateNullsLast(DBDefinition defn) {
+			return defn.doIfThenElseTransform(getExpressionSQL(defn) + " IS NULL", "1", "0")
+					+ " "
+					+ defn.getOrderByAscending();
+		}
+
+		abstract String getNullsOrderingSimulatedSQL(DBDefinition defn);
+	}
+
+	public static class NullsLast extends NullsOrderer {
+
+		public NullsLast(SortProvider sort) {
+			super(sort, OrderOfNulls.LAST);
+		}
+
+		@Override
+		public String getNullsOrderingStandardSQL(DBDefinition defn) {
+			return defn.getNullsLast();
+		}
+
+		@Override
+		String getNullsOrderingSimulatedSQL(DBDefinition defn) {
+			return simulateNullsLast(defn);
+		}
+	}
+
+	private static class NullsFirst extends NullsOrderer {
+
+		public NullsFirst(SortProvider sort) {
+			super(sort, OrderOfNulls.FIRST);
+		}
+
+		@Override
+		public String getNullsOrderingStandardSQL(DBDefinition defn) {
+			return defn.getNullsFirst();
+		}
+
+		@Override
+		String getNullsOrderingSimulatedSQL(DBDefinition defn) {
+			return simulateNullsFirst(defn);
+		}
+
+	}
+
+	private static class NullsHighest extends NullsOrderer {
+
+		public NullsHighest(SortProvider sort) {
+			super(sort, OrderOfNulls.HIGHEST);
+		}
+
+		@Override
+		public String getNullsOrderingStandardSQL(DBDefinition defn) {
+			switch (getOrdering()) {
+				case ASCENDING:
+					return defn.getNullsLast();
+				case DESCENDING:
+					return defn.getNullsFirst();
+				default:
+					return defn.getNullsLast();
+			}
+		}
+
+		@Override
+		String getNullsOrderingSimulatedSQL(DBDefinition defn) {
+			switch (getOrdering()) {
+				case ASCENDING:
+					return simulateNullsLast(defn);
+				case DESCENDING:
+					return simulateNullsFirst(defn);
+				default:
+					return simulateNullsLast(defn);
+			}
+		}
+
+	}
+
+	private static class NullsLowest extends NullsOrderer {
+
+		public NullsLowest(SortProvider sort) {
+			super(sort, OrderOfNulls.LOWEST);
+		}
+
+		@Override
+		public String getNullsOrderingStandardSQL(DBDefinition defn) {
+			switch (getOrdering()) {
+				case ASCENDING:
+					return defn.getNullsFirst();
+				case DESCENDING:
+					return defn.getNullsLast();
+				default:
+					return defn.getNullsFirst();
+			}
+		}
+
+		@Override
+		String getNullsOrderingSimulatedSQL(DBDefinition defn) {
+			switch (getOrdering()) {
+				case ASCENDING:
+					return simulateNullsFirst(defn);
+				case DESCENDING:
+					return simulateNullsLast(defn);
+				default:
+					return simulateNullsFirst(defn);
+			}
 		}
 	}
 }

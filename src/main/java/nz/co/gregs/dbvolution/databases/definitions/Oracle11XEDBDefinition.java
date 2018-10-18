@@ -46,7 +46,7 @@ public class Oracle11XEDBDefinition extends OracleSpatialDBDefinition {
 	public static final long serialVersionUID = 1L;
 	
 	@Override
-	public Object getLimitRowsSubClauseDuringSelectClause(QueryOptions options) {
+	public String getLimitRowsSubClauseDuringSelectClause(QueryOptions options) {
 		return " /*+ FIRST_ROWS(" + options.getRowLimit() + ") */ ";
 	}
 
