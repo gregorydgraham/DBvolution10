@@ -48,7 +48,7 @@ build_script:
   
   - mvn -q clean compile --batch-mode -DskipTest
 test_script:
-  - mvn -q test -P MSSQLServerTest,DBs-OpenSource,ClusteredDBTest --batch-mode -s appveyor-settings.xml
+  - mvn -q test -P MSSQLServerTest,DBs-OpenSource --batch-mode -s appveyor-settings.xml
 cache:
   - C:\Users\appveyor\.m2
 #on_failure:

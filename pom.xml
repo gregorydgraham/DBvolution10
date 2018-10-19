@@ -523,7 +523,7 @@
 				</plugins>
 			</build>
 		</profile>
-		<profile>
+<!--		<profile>
 			<id>ClusteredDBTest</id>
 			<build>
 				<plugins>
@@ -539,8 +539,8 @@
 					</plugin>
 				</plugins>
 			</build>
-		</profile>
-		<profile>
+		</profile>-->
+<!--		<profile>
 			<id>MySQL+Cluster</id>
 			<build>
 				<plugins>
@@ -557,8 +557,8 @@
 					</plugin>
 				</plugins>
 			</build>
-		</profile>
-		<profile>
+		</profile>-->
+<!--		<profile>
 			<id>SmallCluster</id>
 			<build>
 				<plugins>
@@ -574,7 +574,7 @@
 					</plugin>
 				</plugins>
 			</build>
-		</profile>
+		</profile>-->
 		<profile>
 			<id>Cluster-Bundled</id>
 			<build>

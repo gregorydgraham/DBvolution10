@@ -6,7 +6,7 @@ addons:
     apt:
       packages:
       - postgresql-9.6-postgis-2.3
-script: "mvn -q -B -s .travis-settings.xml -P DBs-OpenSource,ClusteredDBTest test "
+script: "mvn -q -B -s .travis-settings.xml -P DBs-OpenSource test "
 services:
   - mysql
   - postgresql
