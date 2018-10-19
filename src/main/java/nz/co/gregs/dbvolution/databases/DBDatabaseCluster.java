@@ -476,7 +476,7 @@ public class DBDatabaseCluster extends DBDatabase {
 	}
 
 	@Override
-	public synchronized void dropDatabase(String databaseName, boolean doIt) throws UnsupportedOperationException, AutoCommitActionDuringTransactionException, SQLException {
+	public synchronized void dropDatabase(String databaseName, boolean doIt) throws UnsupportedOperationException, AutoCommitActionDuringTransactionException, SQLException, ExceptionThrownDuringTransaction {
 		preventDDLDuringTransaction("DBDatabase.dropDatabase()");
 		if (getPreventAccidentalDroppingOfTables()) {
 			throw new AccidentalDroppingOfTableException();
@@ -492,14 +492,16 @@ public class DBDatabaseCluster extends DBDatabase {
 					next.dropDatabase(databaseName, doIt);
 					finished = true;
 				} catch (UnsupportedOperationException | SQLException | AutoCommitActionDuringTransactionException | ExceptionThrownDuringTransaction e) {
-					handleExceptionDuringQuery(e, next);
+					if (handleExceptionDuringQuery(e, next).equals(HandlerAdvice.ABORT)) {
+						throw e;
+					}
 				}
 			}
 		} while (!finished);
 	}
 
 	@Override
-	public void dropDatabase(boolean doIt) throws UnsupportedOperationException, AutoCommitActionDuringTransactionException, SQLException, UnableToRemoveLastDatabaseFromClusterException {
+	public void dropDatabase(boolean doIt) throws UnsupportedOperationException, AutoCommitActionDuringTransactionException, SQLException, UnableToRemoveLastDatabaseFromClusterException, ExceptionThrownDuringTransaction {
 		preventDDLDuringTransaction("DBDatabase.dropDatabase()");
 		if (getPreventAccidentalDroppingOfTables()) {
 			throw new AccidentalDroppingOfTableException();
@@ -518,7 +520,9 @@ public class DBDatabaseCluster extends DBDatabase {
 						next.dropDatabase(doIt);
 						finished = true;
 					} catch (UnsupportedOperationException | SQLException | AutoCommitActionDuringTransactionException | ExceptionThrownDuringTransaction e) {
-						handleExceptionDuringQuery(e, next);
+						if (handleExceptionDuringQuery(e, next).equals(HandlerAdvice.ABORT)) {
+							throw e;
+						}
 					}
 				}
 			}
@@ -561,7 +565,9 @@ public class DBDatabaseCluster extends DBDatabase {
 						next.dropTable(tableRow);
 						finished = true;
 					} catch (Exception e) {
-						handleExceptionDuringQuery(e, next);
+						if (handleExceptionDuringQuery(e, next).equals(HandlerAdvice.ABORT)) {
+							throw e;
+						}
 					}
 				}
 			}
@@ -579,7 +585,9 @@ public class DBDatabaseCluster extends DBDatabase {
 						next.createIndexesOnAllFields(newTableRow);
 						finished = true;
 					} catch (Exception e) {
-						handleExceptionDuringQuery(e, next);
+						if (handleExceptionDuringQuery(e, next).equals(HandlerAdvice.ABORT)) {
+							throw e;
+						}
 					}
 				}
 			}
@@ -597,7 +605,9 @@ public class DBDatabaseCluster extends DBDatabase {
 						next.removeForeignKeyConstraints(newTableRow);
 						finished = true;
 					} catch (Exception e) {
-						handleExceptionDuringQuery(e, next);
+						if (handleExceptionDuringQuery(e, next).equals(HandlerAdvice.ABORT)) {
+							throw e;
+						}
 					}
 				}
 			}
@@ -615,7 +625,9 @@ public class DBDatabaseCluster extends DBDatabase {
 						next.createForeignKeyConstraints(newTableRow);
 						finished = true;
 					} catch (Exception e) {
-						handleExceptionDuringQuery(e, next);
+						if (handleExceptionDuringQuery(e, next).equals(HandlerAdvice.ABORT)) {
+							throw e;
+						}
 					}
 				}
 			}
@@ -633,7 +645,9 @@ public class DBDatabaseCluster extends DBDatabase {
 						next.createTableWithForeignKeys(newTableRow);
 						finished = true;
 					} catch (Exception e) {
-						handleExceptionDuringQuery(e, next);
+						if (handleExceptionDuringQuery(e, next).equals(HandlerAdvice.ABORT)) {
+							throw e;
+						}
 					}
 				}
 			}
@@ -651,7 +665,9 @@ public class DBDatabaseCluster extends DBDatabase {
 						next.createTable(newTableRow);
 						finished = true;
 					} catch (Exception e) {
-						handleExceptionDuringQuery(e, next);
+						if (handleExceptionDuringQuery(e, next).equals(HandlerAdvice.ABORT)) {
+							throw e;
+						}
 					}
 				}
 			}
@@ -739,7 +755,9 @@ public class DBDatabaseCluster extends DBDatabase {
 						next.updateTableToMatchDBRow(table);
 						finished = true;
 					} catch (Exception e) {
-						handleExceptionDuringQuery(e, next);
+						if (handleExceptionDuringQuery(e, next).equals(HandlerAdvice.ABORT)) {
+							throw e;
+						}
 					}
 				}
 			}
@@ -837,7 +855,9 @@ public class DBDatabaseCluster extends DBDatabase {
 				try {
 					return readyDatabase.getRows(report, examples);
 				} catch (Exception e) {
-					handleExceptionDuringQuery(e, readyDatabase);
+					if (handleExceptionDuringQuery(e, readyDatabase).equals(HandlerAdvice.ABORT)) {
+						throw e;
+					}
 				}
 			}
 		} while (!finished);
@@ -854,7 +874,9 @@ public class DBDatabaseCluster extends DBDatabase {
 				try {
 					return readyDatabase.getAllRows(report, examples);
 				} catch (Exception e) {
-					handleExceptionDuringQuery(e, readyDatabase);
+					if (handleExceptionDuringQuery(e, readyDatabase).equals(HandlerAdvice.ABORT)) {
+						throw e;
+					}
 				}
 			}
 		} while (!finished);
@@ -871,7 +893,9 @@ public class DBDatabaseCluster extends DBDatabase {
 				try {
 					return readyDatabase.get(report, examples);
 				} catch (Exception e) {
-					handleExceptionDuringQuery(e, readyDatabase);
+					if (handleExceptionDuringQuery(e, readyDatabase).equals(HandlerAdvice.ABORT)) {
+						throw e;
+					}
 				}
 			}
 		} while (!finished);
@@ -888,7 +912,9 @@ public class DBDatabaseCluster extends DBDatabase {
 				try {
 					return readyDatabase.get(expectedNumberOfRows, rows);
 				} catch (Exception e) {
-					handleExceptionDuringQuery(e, readyDatabase);
+					if (handleExceptionDuringQuery(e, readyDatabase).equals(HandlerAdvice.ABORT)) {
+						throw e;
+					}
 				}
 			}
 		} while (!finished);
@@ -905,7 +931,9 @@ public class DBDatabaseCluster extends DBDatabase {
 				try {
 					return readyDatabase.getByExamples(rows);
 				} catch (Exception e) {
-					handleExceptionDuringQuery(e, readyDatabase);
+					if (handleExceptionDuringQuery(e, readyDatabase).equals(HandlerAdvice.ABORT)) {
+						throw e;
+					}
 				}
 			}
 		} while (!finished);
@@ -922,7 +950,9 @@ public class DBDatabaseCluster extends DBDatabase {
 				try {
 					return readyDatabase.get(rows);
 				} catch (Exception e) {
-					handleExceptionDuringQuery(e, readyDatabase);
+					if (handleExceptionDuringQuery(e, readyDatabase).equals(HandlerAdvice.ABORT)) {
+						throw e;
+					}
 				}
 			}
 		} while (!finished);
@@ -939,7 +969,9 @@ public class DBDatabaseCluster extends DBDatabase {
 				try {
 					return readyDatabase.getByExample(expectedNumberOfRows, exampleRow);
 				} catch (Exception e) {
-					handleExceptionDuringQuery(e, readyDatabase);
+					if (handleExceptionDuringQuery(e, readyDatabase).equals(HandlerAdvice.ABORT)) {
+						throw e;
+					}
 				}
 			}
 		} while (!finished);
@@ -956,7 +988,9 @@ public class DBDatabaseCluster extends DBDatabase {
 				try {
 					return readyDatabase.get(expectedNumberOfRows, exampleRow);
 				} catch (Exception e) {
-					handleExceptionDuringQuery(e, readyDatabase);
+					if (handleExceptionDuringQuery(e, readyDatabase).equals(HandlerAdvice.ABORT)) {
+						throw e;
+					}
 				}
 			}
 		} while (!finished);
@@ -973,7 +1007,9 @@ public class DBDatabaseCluster extends DBDatabase {
 				try {
 					return readyDatabase.getByExample(exampleRow);
 				} catch (Exception e) {
-					handleExceptionDuringQuery(e, readyDatabase);
+					if (handleExceptionDuringQuery(e, readyDatabase).equals(HandlerAdvice.ABORT)) {
+						throw e;
+					}
 				}
 			}
 		} while (!finished);
@@ -990,7 +1026,9 @@ public class DBDatabaseCluster extends DBDatabase {
 				try {
 					return readyDatabase.get(exampleRow);
 				} catch (Exception e) {
-					handleExceptionDuringQuery(e, readyDatabase);
+					if (handleExceptionDuringQuery(e, readyDatabase).equals(HandlerAdvice.ABORT)) {
+						throw e;
+					};
 				}
 			}
 		} while (!finished);
@@ -1042,7 +1080,9 @@ public class DBDatabaseCluster extends DBDatabase {
 						finished = true;
 					}
 				} catch (Exception e) {
-					handleExceptionDuringAction(e, readyDatabase);
+					if (handleExceptionDuringAction(e, readyDatabase).equals(HandlerAdvice.ABORT)) {
+						throw e;
+					}
 				}
 			} while (!finished && size() > 1);
 			final DBDatabase[] readyDatabases = details.getReadyDatabases();
@@ -1076,7 +1116,9 @@ public class DBDatabaseCluster extends DBDatabase {
 					actionsPerformed = readyDatabase.executeDBQuery(query);
 					finished = true;
 				} catch (Exception e) {
-					handleExceptionDuringQuery(e, readyDatabase);
+					if (handleExceptionDuringQuery(e, readyDatabase).equals(HandlerAdvice.ABORT)) {
+						throw e;
+					}
 				}
 			}
 		}
@@ -1092,32 +1134,45 @@ public class DBDatabaseCluster extends DBDatabase {
 			add(AutoCommitActionDuringTransactionException.class);
 			add(AccidentalDroppingOfTableException.class);
 			add(CloneNotSupportedException.class);
+			add(AccidentalCartesianJoinException.class);
 		}
 	};
 
-	private void handleExceptionDuringQuery(Exception e, final DBDatabase readyDatabase) throws SQLException, UnableToRemoveLastDatabaseFromClusterException {
+	private static enum HandlerAdvice {
+		REQUERY,
+		SKIP,
+		ABORT;
+	}
+
+	private HandlerAdvice handleExceptionDuringQuery(Exception e, final DBDatabase readyDatabase) throws SQLException, UnableToRemoveLastDatabaseFromClusterException {
 		if (!okExceptions.contains(e.getClass())) {
 			if (size() < 2) {
-				if (e instanceof SQLException) {
-					throw (SQLException) e;
-				} else {
-					throw new SQLException(e);
-				}
+				return HandlerAdvice.ABORT;
+//				if (e instanceof SQLException) {
+//					throw (SQLException) e;
+//				} else {
+//					throw new SQLException(e);
+//				}
 			} else {
 				ejectDatabase(readyDatabase);
+				return HandlerAdvice.REQUERY;
 			}
+		} else {
+			return HandlerAdvice.ABORT;
 		}
 	}
 
-	private void handleExceptionDuringAction(Exception e, final DBDatabase readyDatabase) throws SQLException, UnableToRemoveLastDatabaseFromClusterException {
+	private HandlerAdvice handleExceptionDuringAction(Exception e, final DBDatabase readyDatabase) throws SQLException, UnableToRemoveLastDatabaseFromClusterException {
 		if (size() < 2) {
-			if (e instanceof SQLException) {
-				throw (SQLException) e;
-			} else {
-				throw new SQLException(e);
-			}
+//			if (e instanceof SQLException) {
+//				throw (SQLException) e;
+//			} else {
+//				throw new SQLException(e);
+//			}
+			return HandlerAdvice.ABORT;
 		} else {
 			ejectDatabase(readyDatabase);
+			return HandlerAdvice.REQUERY;
 		}
 	}
 
@@ -1425,7 +1480,9 @@ public class DBDatabaseCluster extends DBDatabase {
 				setActionList(actions);
 				return getActionList();
 			} catch (Exception e) {
-				cluster.handleExceptionDuringAction(e, database);
+				if (cluster.handleExceptionDuringAction(e, database).equals(HandlerAdvice.ABORT)) {
+					throw e;
+				}
 			}
 			return getActionList();
 		}
