@@ -682,4 +682,9 @@ public class MySQLDBDefinition extends DBDefinition {
 	public boolean supportsFullOuterJoinNatively() {
 		return false;
 	}
+
+	@Override
+	public boolean supportsNullsOrderingStandard() {
+		return false;
+	}
 }
