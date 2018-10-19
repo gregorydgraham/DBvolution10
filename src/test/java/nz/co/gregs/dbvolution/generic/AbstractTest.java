@@ -71,7 +71,7 @@ public abstract class AbstractTest {
 
 		if (System.getProperty("testClusteredDB") != null) {
 			databases.add(new Object[]{"ClusteredDB",
-				new DBDatabaseCluster("testClusteredDB",
+				new DBDatabaseCluster("testClusteredDB", new DBDatabaseCluster.Configuration(false, false),
 				H2MemoryTestDB.getClusterDBFromSettings("h2memory"),
 				SQLiteTestDB.getClusterDBFromSettings("sqlite", ""),
 				PostgreSQLTestDatabase.getClusterDBFromSettings("postgres"),
@@ -223,7 +223,6 @@ public abstract class AbstractTest {
 	}
 
 	public void setup(DBDatabase database) throws Exception {
-		database.setPrintSQLBeforeExecuting(false);
 		database.preventDroppingOfTables(false);
 		database.dropTableIfExists(new Marque());
 		database.createTable(myMarqueRow);
