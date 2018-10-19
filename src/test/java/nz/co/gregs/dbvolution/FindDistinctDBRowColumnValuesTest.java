@@ -79,7 +79,6 @@ public class FindDistinctDBRowColumnValuesTest extends AbstractTest {
 	@Test
 	public void testDBRowMethod() throws SQLException {
 		Marque marque = new Marque();
-		database.setPrintSQLBeforeExecuting(true);
 		List<DBDate> distinctValuesForColumn = marque.getDistinctValuesOfColumn(database, marque.creationDate);
 
 		Assert.assertThat(distinctValuesForColumn.size(), is(3));
@@ -143,7 +142,6 @@ public class FindDistinctDBRowColumnValuesTest extends AbstractTest {
 	@Test
 	public void testDBTableMethodWithDBString() throws SQLException {
 		Marque marque = new Marque();
-		database.setPrintSQLBeforeExecuting(true);
 		final DBTable<Marque> dbTable = database.getDBTable(marque);
 		List<DBString> distinctValuesForColumn = dbTable.getDistinctValuesOfColumn(marque.individualAllocationsAllowed);
 		List<String> foundStrings = new ArrayList<String>();

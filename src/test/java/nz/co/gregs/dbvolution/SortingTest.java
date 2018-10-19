@@ -131,7 +131,6 @@ public class SortingTest extends AbstractTest {
 	@Test
 	public void sortingNullsLast() throws SQLException {
 		Marque marque = new Marque();
-		database.setPrintSQLBeforeExecuting(true);
 		List<Marque> allRows = database
 				.getDBTable(marque)
 				.setBlankQueryAllowed(true)
@@ -193,7 +192,6 @@ public class SortingTest extends AbstractTest {
 	@Test
 	public void sortingNullsFirst() throws SQLException {
 		Marque marque = new Marque();
-		database.setPrintSQLBeforeExecuting(true);
 		List<Marque> allRows = database
 				.getDBTable(marque)
 				.setBlankQueryAllowed(true)
@@ -255,7 +253,6 @@ public class SortingTest extends AbstractTest {
 	@Test
 	public void sortingNullsHighest() throws SQLException {
 		Marque marque = new Marque();
-		database.setPrintSQLBeforeExecuting(true);
 		List<Marque> allRows = database
 				.getDBTable(marque)
 				.setBlankQueryAllowed(true)
@@ -317,7 +314,6 @@ public class SortingTest extends AbstractTest {
 	@Test
 	public void sortingNullsLowest() throws SQLException {
 		Marque marque = new Marque();
-		database.setPrintSQLBeforeExecuting(true);
 		List<Marque> allRows = database
 				.getDBTable(marque)
 				.setBlankQueryAllowed(true)

@@ -51,13 +51,10 @@ public class TypeAdaptorTest {
 		c.uid.setValue(22);
 		c.year.setValue(2012);
 		db.insert(c);
-
-//		this.db.setPrintSQLBeforeExecuting(true);
 	}
 
 	@After
 	public void tearDown() throws Exception {
-		db.setPrintSQLBeforeExecuting(false);
 		db.preventDroppingOfTables(false);
 		db.dropTable(new CustomerWithDBInteger());
 		try {
