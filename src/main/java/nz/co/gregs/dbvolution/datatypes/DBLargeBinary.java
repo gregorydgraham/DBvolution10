@@ -214,20 +214,24 @@ public class DBLargeBinary extends DBLargeObject<byte[]> {
 	}
 
 	public static byte[] concatAllByteArrays(List<byte[]> bytes) {
-		byte[] first = bytes.get(0);
-		bytes.remove(0);
-		byte[][] rest = bytes.toArray(new byte[][]{});
-		int totalLength = first.length;
-		for (byte[] array : rest) {
-			totalLength += array.length;
+		if (bytes.isEmpty()) {
+			return new byte[]{};
+		} else {
+			byte[] first = bytes.get(0);
+			bytes.remove(0);
+			byte[][] rest = bytes.toArray(new byte[][]{});
+			int totalLength = first.length;
+			for (byte[] array : rest) {
+				totalLength += array.length;
+			}
+			byte[] result = Arrays.copyOf(first, totalLength);
+			int offset = first.length;
+			for (byte[] array : rest) {
+				System.arraycopy(array, 0, result, offset, array.length);
+				offset += array.length;
+			}
+			return result;
 		}
-		byte[] result = Arrays.copyOf(first, totalLength);
-		int offset = first.length;
-		for (byte[] array : rest) {
-			System.arraycopy(array, 0, result, offset, array.length);
-			offset += array.length;
-		}
-		return result;
 	}
 
 	private byte[] getFromGetBytes(ResultSet resultSet, String fullColumnName) throws SQLException {
@@ -593,7 +597,7 @@ public class DBLargeBinary extends DBLargeObject<byte[]> {
 
 	@Override
 	protected void setValueFromStandardStringEncoding(String encodedValue) {
-		throw new UnsupportedOperationException("Not supported yet."); 
+		throw new UnsupportedOperationException("Not supported yet.");
 	}
 
 	private byte[] getFromBase64(ResultSet resultSet, String fullColumnName) {
@@ -605,7 +609,7 @@ public class DBLargeBinary extends DBLargeObject<byte[]> {
 	}
 
 	private byte[] getFromJavaObject(ResultSet resultSet, String fullColumnName) {
-		throw new UnsupportedOperationException("Not supported yet."); 
+		throw new UnsupportedOperationException("Not supported yet.");
 	}
 
 	@Override
