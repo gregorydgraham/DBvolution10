@@ -520,6 +520,11 @@ public class DBLargeText extends DBLargeObject<byte[]> {
 	}
 
 	@Override
+	public String toString() {
+		return super.stringValue();
+	}
+
+	@Override
 	public int getSize() {
 		final byte[] bytes = getBytes();
 		if (bytes != null) {
