@@ -180,20 +180,24 @@ public class DBLargeText extends DBLargeObject<byte[]> {
 	}
 
 	public static byte[] concatAllByteArrays(List<byte[]> bytes) {
-		byte[] first = bytes.get(0);
-		bytes.remove(0);
-		byte[][] rest = bytes.toArray(new byte[][]{});
-		int totalLength = first.length;
-		for (byte[] array : rest) {
-			totalLength += array.length;
+		if (bytes.isEmpty()) {
+			return new byte[]{};
+		} else {
+			byte[] first = bytes.get(0);
+			bytes.remove(0);
+			byte[][] rest = bytes.toArray(new byte[][]{});
+			int totalLength = first.length;
+			for (byte[] array : rest) {
+				totalLength += array.length;
+			}
+			byte[] result = Arrays.copyOf(first, totalLength);
+			int offset = first.length;
+			for (byte[] array : rest) {
+				System.arraycopy(array, 0, result, offset, array.length);
+				offset += array.length;
+			}
+			return result;
 		}
-		byte[] result = Arrays.copyOf(first, totalLength);
-		int offset = first.length;
-		for (byte[] array : rest) {
-			System.arraycopy(array, 0, result, offset, array.length);
-			offset += array.length;
-		}
-		return result;
 	}
 
 	private byte[] getBytesFromInputStream(InputStream inputStream) {
