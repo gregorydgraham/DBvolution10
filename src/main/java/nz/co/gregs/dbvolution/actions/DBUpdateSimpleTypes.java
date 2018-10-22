@@ -22,6 +22,7 @@ import nz.co.gregs.dbvolution.databases.DBDatabase;
 import nz.co.gregs.dbvolution.databases.DBStatement;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
+import nz.co.gregs.dbvolution.datatypes.DBLargeObject;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 import nz.co.gregs.dbvolution.internal.properties.PropertyWrapper;
 
@@ -41,7 +42,7 @@ import nz.co.gregs.dbvolution.internal.properties.PropertyWrapper;
 public class DBUpdateSimpleTypes extends DBUpdate {
 
 	private static final long serialVersionUID = 1l;
-	
+
 	DBUpdateSimpleTypes(DBRow row) {
 		super(row);
 	}
@@ -93,7 +94,7 @@ public class DBUpdateSimpleTypes extends DBUpdate {
 		for (PropertyWrapper field : fields) {
 			if (field.isColumn()) {
 				final QueryableDatatype<?> qdt = field.getQueryableDatatype();
-				if (qdt.hasChanged()) {
+				if (qdt.hasChanged() && !(qdt instanceof DBLargeObject)) {
 					String columnName = field.columnName();
 					sql.append(separator)
 							.append(defn.formatColumnName(columnName))
