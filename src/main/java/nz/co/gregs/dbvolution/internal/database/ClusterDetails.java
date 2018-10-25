@@ -139,12 +139,12 @@ public class ClusterDetails implements Serializable {
 	}
 
 	private synchronized boolean removeDatabaseFromAllLists(DBDatabase database) {
-		boolean result = queuedActions.containsKey(database)?queuedActions.remove(database) != null:true;
-		result = result && ejectedDatabases.contains(database)?ejectedDatabases.remove(database):true;
-		result = result && unsynchronizedDatabases.contains(database)?unsynchronizedDatabases.remove(database):true;
-		result = result && pausedDatabases.contains(database)?pausedDatabases.remove(database):true;
-		result = result && readyDatabases.contains(database)?readyDatabases.remove(database):true;
-		result = result && allDatabases.contains(database)? allDatabases.remove(database):true;
+		boolean result = queuedActions.containsKey(database) ? queuedActions.remove(database) != null : true;
+		result = result && ejectedDatabases.contains(database) ? ejectedDatabases.remove(database) : true;
+		result = result && unsynchronizedDatabases.contains(database) ? unsynchronizedDatabases.remove(database) : true;
+		result = result && pausedDatabases.contains(database) ? pausedDatabases.remove(database) : true;
+		result = result && readyDatabases.contains(database) ? readyDatabases.remove(database) : true;
+		result = result && allDatabases.contains(database) ? allDatabases.remove(database) : true;
 		return result;
 	}
 
@@ -176,6 +176,11 @@ public class ClusterDetails implements Serializable {
 	public synchronized void readyDatabase(DBDatabase secondary) {
 		unsynchronizedDatabases.remove(secondary);
 		pausedDatabases.remove(secondary);
+		DBDatabase readyDatabase = getReadyDatabase();
+		if (readyDatabase != null) {
+			secondary.setPrintSQLBeforeExecuting(readyDatabase.getPrintSQLBeforeExecuting());
+			secondary.setBatchSQLStatementsWhenPossible(readyDatabase.getBatchSQLStatementsWhenPossible());
+		}
 		readyDatabases.add(secondary);
 		setAuthoritativeDatabase();
 	}
