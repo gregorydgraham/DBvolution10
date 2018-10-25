@@ -667,6 +667,47 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 	/**
 	 *
 	 * Automatically selects the correct table based on the example supplied and
+	 * returns the number of rows found based on the example.
+	 *
+	 * <p>
+	 * See {@link nz.co.gregs.dbvolution.DBTable#count()}
+	 *
+	 * @param <R> the row affected
+	 * @param exampleRow the example
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @return a list of the selected rows
+	 * @throws SQLException database exceptions
+	 * @throws AccidentalCartesianJoinException
+	 */
+	public <R extends DBRow> long getCount(R exampleRow) throws SQLException, AccidentalCartesianJoinException {
+		DBTable<R> dbTable = getDBTable(exampleRow).setBlankQueryAllowed(true);
+		return dbTable.count();
+	}
+
+	/**
+	 *
+	 * Automatically selects the correct table based on the examples supplied and
+	 * returns the number of rows found based on the example.
+	 *
+	 * <p>
+	 * See {@link nz.co.gregs.dbvolution.DBTable#count()}
+	 *
+	 * @param examples the examples
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @return a list of the selected rows
+	 * @throws SQLException database exceptions
+	 * @throws AccidentalCartesianJoinException
+	 */
+	public long getCount(DBRow... examples) throws SQLException, AccidentalCartesianJoinException {
+		DBQuery query = getDBQuery(examples).setBlankQueryAllowed(true);
+		return query.count();
+	}
+
+	/**
+	 *
+	 * Automatically selects the correct table based on the example supplied and
 	 * returns the selected rows as a list
 	 *
 	 * <p>
@@ -2332,6 +2373,14 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 //			ex.printStackTrace();
 //			Logger.getLogger(DBDatabase.class.getName()).log(Level.SEVERE, null, ex);
 		}
+	}
+
+	public boolean getPrintSQLBeforeExecuting() {
+		return printSQLBeforeExecuting;
+	}
+
+	public boolean getBatchSQLStatementsWhenPossible() {
+		return batchIfPossible;
 	}
 
 	public static enum ResponseToException {
