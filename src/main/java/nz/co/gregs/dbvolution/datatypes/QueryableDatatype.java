@@ -406,8 +406,8 @@ public abstract class QueryableDatatype<T> extends Object implements Serializabl
 	 */
 	protected void setValueFromDatabase(T newLiteralValue) {
 		this.setLiteralValueInternal(newLiteralValue);
-		setValueHasBeenCalled=false;
-		changed=false;
+		setValueHasBeenCalled = false;
+		changed = false;
 		setDefined(true);
 	}
 
@@ -682,7 +682,7 @@ public abstract class QueryableDatatype<T> extends Object implements Serializabl
 	}
 
 	/**
-	 * Indicates whether object is NULL within the database
+	 * Indicates whether object is NULL within the database.
 	 *
 	 * <p>
 	 * Databases and Java both use the term NULL but for slightly different
@@ -691,6 +691,10 @@ public abstract class QueryableDatatype<T> extends Object implements Serializabl
 	 * <p>
 	 * This method indicates whether the field represented by this object is NULL
 	 * in the database sense.
+	 *
+	 * <p>
+	 * If you are trying to set a test for a query, use permittedOnlyNull or
+	 * excludedOnlyNull instead</p>
 	 *
 	 * <p style="color: #F90;">Support DBvolution at
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
@@ -703,7 +707,7 @@ public abstract class QueryableDatatype<T> extends Object implements Serializabl
 	}
 
 	/**
-	 * Indicates whether object is NULL within the database
+	 * Indicates whether object is NULL within the database.
 	 *
 	 * <p>
 	 * Databases and Java both use the term NULL but for slightly different
@@ -712,6 +716,10 @@ public abstract class QueryableDatatype<T> extends Object implements Serializabl
 	 * <p>
 	 * This method indicates whether the field represented by this object is NULL
 	 * in the database sense.
+	 * 
+	 * <p>
+	 * If you are trying to set a test for a query, use permittedOnlyNull or
+	 * excludedOnlyNull instead</p>
 	 *
 	 * <p style="color: #F90;">Support DBvolution at
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
