@@ -112,11 +112,8 @@ public class DBDatabaseCluster extends DBDatabase {
 	private transient final ExecutorService ACTION_THREAD_POOL;
 	private final transient DBStatementCluster clusterStatement;
 //	private final ScheduledExecutorService reconnectionThreadPool;
-	private final ScheduledExecutorService REGULAR_THREAD_POOL = Executors.newSingleThreadScheduledExecutor();
-	;
 //	final int RECONNECTION_OFFSET = 5;
 //	private static final TimeUnit RECONNECTION_FREQUENCY = TimeUnit.MINUTES;
-	private final List<RegularProcess> REGULAR_PROCESSORS = new ArrayList<>();
 
 	public static enum Status {
 
@@ -139,13 +136,12 @@ public class DBDatabaseCluster extends DBDatabase {
 		details = new ClusterDetails(clusterName, config.isUseAutoRebuild());
 		setDatabaseName(clusterName);
 		ACTION_THREAD_POOL = Executors.newCachedThreadPool();
-		startReconnectionProcessor(config);
+		addReconnectionProcessor(config);
 		setAutoRebuild(config.isUseAutoRebuild());
 	}
 
-	private void startReconnectionProcessor(Configuration config) {
+	private void addReconnectionProcessor(Configuration config) {
 		if (config.isUseAutoReconnect()) {
-			REGULAR_THREAD_POOL.schedule(new RunRegularProcessors(), 1, TimeUnit.MINUTES);
 			REGULAR_PROCESSORS.add(new ReconnectionProcessor());
 		}
 	}
@@ -280,14 +276,6 @@ public class DBDatabaseCluster extends DBDatabase {
 		return details.getStatusOf(db);
 	}
 
-	public void addRegularProcess(RegularProcess processor) {
-		REGULAR_PROCESSORS.add(processor);
-	}
-
-	public void removeRegularProcess(RegularProcess processor) {
-		REGULAR_PROCESSORS.remove(processor);
-	}
-
 	/**
 	 * Adds the database to the cluster, synchronizes it, and then removes it.
 	 *
@@ -295,6 +283,7 @@ public class DBDatabaseCluster extends DBDatabase {
 	 * @throws SQLException
 	 * @throws UnableToRemoveLastDatabaseFromClusterException
 	 */
+	@Override
 	public void backupToDBDatabase(DBDatabase backupDatabase) throws SQLException, UnableToRemoveLastDatabaseFromClusterException {
 		this.addDatabaseAndWait(backupDatabase);
 		removeDatabase(backupDatabase);
@@ -1350,7 +1339,7 @@ public class DBDatabaseCluster extends DBDatabase {
 			if (details.clusterContainsDatabase(primary)) {
 				synchronizeActions(primary);
 			} else {
-				primary.terminate();
+				primary.stop();
 			}
 		}
 	}
@@ -1426,10 +1415,10 @@ public class DBDatabaseCluster extends DBDatabase {
 	}
 
 	@Override
-	public synchronized void terminate() {
+	public synchronized void stop() {
 		shutdownClusterProcesses();
 		for (DBDatabase db : details.getAllDatabases()) {
-			db.terminate();
+			db.stop();
 		}
 		details.removeAllDatabases();
 	}
@@ -1447,8 +1436,8 @@ public class DBDatabaseCluster extends DBDatabase {
 	 * removes the authoritative database configuration.
 	 *
 	 * <p>
-	 * This process is more comprehensive than {@link DBDatabaseCluster#terminate()
-	 * } but does not terminate or dismantle the individual databases.
+	 * This process is similar to {@link DBDatabaseCluster#stop()
+	 * } but does not stop or dismantle the individual databases.
 	 */
 	public synchronized void dismantle() {
 		shutdownClusterProcesses();
@@ -1528,23 +1517,6 @@ public class DBDatabaseCluster extends DBDatabase {
 		}
 
 		public abstract Void synchronise(DBDatabaseCluster cluster, DBDatabase database) throws SQLException;
-	}
-
-	private class RunRegularProcessors implements Runnable {
-
-		public RunRegularProcessors() {
-		}
-
-		@Override
-		public void run() {
-			for (RegularProcess process : REGULAR_PROCESSORS) {
-				if (process.preprocess()) {
-					process.process();
-					process.postprocess();
-					process.offsetTime();
-				}
-			}
-		}
 	}
 
 	private class ReconnectionProcessor extends RegularProcess {

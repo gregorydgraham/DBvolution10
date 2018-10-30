@@ -19,8 +19,13 @@ import nz.co.gregs.dbvolution.exceptions.UnableToDropDatabaseException;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import java.io.PrintStream;
 import java.io.Serializable;
+import java.math.BigInteger;
+import java.security.SecureRandom;
 import java.sql.*;
 import java.util.*;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.sql.DataSource;
@@ -42,6 +47,7 @@ import nz.co.gregs.dbvolution.exceptions.*;
 import nz.co.gregs.dbvolution.transactions.*;
 import nz.co.gregs.dbvolution.internal.properties.PropertyWrapper;
 import nz.co.gregs.dbvolution.reflection.DataModel;
+import nz.co.gregs.dbvolution.utility.RegularProcess;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -97,14 +103,11 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 	boolean explicitCommitActionRequired = false;
 	private DatabaseConnectionSettings settings;
 	private boolean terminated = false;
+	protected final List<RegularProcess> REGULAR_PROCESSORS = new ArrayList<>();
+	protected final ScheduledExecutorService REGULAR_THREAD_POOL = Executors.newSingleThreadScheduledExecutor();
 
 	{
-		Runtime.getRuntime().addShutdownHook(new Thread() {
-			@Override
-			public void run() {
-				terminate();
-			}
-		});
+		Runtime.getRuntime().addShutdownHook(new StopDatabase(this));
 	}
 
 	@Override
@@ -211,7 +214,7 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 	protected DBDatabase() {
 		SLEEP_BETWEEN_CONNECTION_RETRIES_MILLIS = 10;
 		MAX_CONNECTION_RETRIES = 6;
-//		addToDBDatabaseRegister(this);
+		startRegularProcessor();
 	}
 
 	/**
@@ -244,8 +247,7 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 	 * @see NuoDB
 	 */
 	public DBDatabase(DBDefinition definition, String driverName, DataSource ds) throws SQLException {
-		SLEEP_BETWEEN_CONNECTION_RETRIES_MILLIS = 10;
-		MAX_CONNECTION_RETRIES = 6;
+		this();
 		this.definition = definition;
 		this.driverName = driverName;
 		this.dataSource = ds;
@@ -282,8 +284,7 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 	 * @see NuoDB
 	 */
 	public DBDatabase(DBDefinition definition, String driverName, DatabaseConnectionSettings dcs) throws SQLException {
-		SLEEP_BETWEEN_CONNECTION_RETRIES_MILLIS = 10;
-		MAX_CONNECTION_RETRIES = 6;
+		this();
 		this.definition = definition;
 		this.driverName = driverName;
 		this.settings = dcs;
@@ -318,8 +319,7 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 	 * @see PostgresDB
 	 */
 	public DBDatabase(DBDefinition definition, String driverName, String jdbcURL, String username, String password) throws SQLException {
-		SLEEP_BETWEEN_CONNECTION_RETRIES_MILLIS = 1;
-		MAX_CONNECTION_RETRIES = 6;
+		this();
 		this.definition = definition;
 		this.driverName = driverName;
 		this.jdbcURL = jdbcURL;
@@ -2116,6 +2116,14 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 		throw exp;
 	}
 
+	public static enum ResponseToException {
+		REQUERY(),
+		SKIPQUERY();
+
+		ResponseToException() {
+		}
+	}
+
 	public <K extends DBRow> DBQueryInsert<K> getDBQueryInsert(K mapper) {
 		return new DBQueryInsert<>(this, mapper);
 	}
@@ -2328,23 +2336,34 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 
 	abstract protected String getSchema();
 
-	public synchronized void terminate() {
+	/**
+	 * Closes all threads, connections, and resources used by the database.
+	 *
+	 * <p>
+	 * While it is not usually necessary to close a DBDatabase, this method should
+	 * be used during shutdown to release all resources used by the database.
+	 *
+	 * <p>
+	 * In particular the regular processing thread is stopped and the connection
+	 * is shutdown and emptied.
+	 * 
+	 * <p>Please note that this is very different from {@link DBDatabaseCluster#dismantle() }
+	 *
+	 */
+	public synchronized void stop() {
+		REGULAR_THREAD_POOL.shutdown();
 		terminated = true;
 		try {
 			if (transactionStatement != null) {
 				try {
 					transactionStatement.close();
 				} catch (Exception ex) {
-//					ex.printStackTrace();
-//					Logger.getLogger(DBDatabase.class.getName()).log(Level.SEVERE, null, ex);
 				}
 			}
 			if (transactionConnection != null) {
 				try {
 					discardConnection(transactionConnection);
 				} catch (Exception ex) {
-//					ex.printStackTrace();
-//					Logger.getLogger(DBDatabase.class.getName()).log(Level.SEVERE, null, ex);
 				}
 			}
 			final List<Connection> freeConnections = getConnectionList(FREE_CONNECTIONS);
@@ -2366,12 +2385,11 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 					storedConnection.close();
 				}
 			} catch (Exception ex) {
-//				ex.printStackTrace();
-//				Logger.getLogger(DBDatabase.class.getName()).log(Level.SEVERE, null, ex);
 			}
 		} catch (Exception ex) {
-//			ex.printStackTrace();
-//			Logger.getLogger(DBDatabase.class.getName()).log(Level.SEVERE, null, ex);
+		}
+		if (!REGULAR_THREAD_POOL.isTerminated()) {
+			REGULAR_THREAD_POOL.shutdownNow();
 		}
 	}
 
@@ -2383,11 +2401,71 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 		return batchIfPossible;
 	}
 
-	public static enum ResponseToException {
-		REQUERY(),
-		SKIPQUERY();
+	/**
+	 * Creates a backup of this database in the specified database.
+	 *
+	 * @param backupDatabase
+	 * @throws SQLException
+	 * @throws UnableToRemoveLastDatabaseFromClusterException
+	 */
+	public void backupToDBDatabase(DBDatabase backupDatabase) throws SQLException, UnableToRemoveLastDatabaseFromClusterException {
+		String randomName = new BigInteger(130, new SecureRandom()).toString(32);
+		DBDatabaseCluster cluster = new DBDatabaseCluster(randomName,new DBDatabaseCluster.Configuration(false, false));
+		cluster.addDatabase(this);
+		cluster.backupToDBDatabase(backupDatabase);
+		cluster.dismantle();
+	}
 
-		ResponseToException() {
+	private void startRegularProcessor() {
+		REGULAR_THREAD_POOL.schedule(new RunRegularProcessors(), 1, TimeUnit.MINUTES);
+	}
+
+	public void addRegularProcess(RegularProcess processor) {
+		processor.setDatabase(this);
+		REGULAR_PROCESSORS.add(processor);
+	}
+
+	public void removeRegularProcess(RegularProcess processor) {
+		processor.setDatabase(null);
+		REGULAR_PROCESSORS.remove(processor);
+	}
+
+	protected class RunRegularProcessors implements Runnable {
+
+		public RunRegularProcessors() {
+			super();
+		}
+
+		@Override
+		public void run() {
+			for (RegularProcess process : REGULAR_PROCESSORS) {
+				if (process.hasExceededTimeLimit()) {
+					try {
+						if (process.preprocess()) {
+							process.process();
+						}
+					} catch (Exception ex) {
+						process.handleExceptionDuringProcessing(ex);
+					} finally {
+						process.postprocess();
+						process.offsetTime();
+					}
+				}
+			}
+		}
+	}
+
+	private class StopDatabase extends Thread {
+
+		DBDatabase db;
+
+		public StopDatabase(DBDatabase db) {
+			this.db = db;
+		}
+
+		@Override
+		public void run() {
+			db.stop();
 		}
 	}
 }

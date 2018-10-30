@@ -33,40 +33,141 @@ package nz.co.gregs.dbvolution.utility;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import nz.co.gregs.dbvolution.databases.DBDatabase;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
+ * Regular Processes provide a standard means of performing regular database
+ * related tasks.
+ *
+ * <p>
+ * Examples of regular processes are database backups, and clearing old records
+ * from tables.</p>
+ *
+ * <p>
+ * Use
+ * {@link DBDatabase#addRegularProcess(nz.co.gregs.dbvolution.utility.RegularProcess) to add a regular process.</p>
+ *
+ * <p>
+ * Regular processes can access the database they are registered with using
+ * {@link #getDatabase() }.  Accessing more than one database is not supported automatically.</p>
+ *
+ * <p>
+ * The only method you need to implement is {@link #process() } but you can overload {@link #preprocess() }
+ * to perform checks before processing and {@link #postprocess() } to clean up any resources.</p>
  *
  * @author gregorygraham
  */
 public abstract class RegularProcess {
 
+	final Log LOG = LogFactory.getLog(RegularProcess.class);
+
 	private Date nextRun = new Date();
 	private int timeField = GregorianCalendar.MINUTE;
 	private int timeOffset = 5;
+	private DBDatabase dbDatabase;
 
-	public abstract void process();
+	/**
+	 * Method that does all the processing that needs to be regularly performed.
+	 *
+	 * <p>
+	 * If {@link #preprocess() } returns true, process() is called to perform the
+	 * actual processing.
+	 *
+	 * <p>
+	 * {@link #postprocess() } will be called to clean up any resources after
+	 * processing and {@link #handleExceptionDuringProcessing(java.lang.Exception) can be overloaded if exceptions during processing need to be handled.
+	 *
+	 * @throws Exception
+	 */
+	public abstract void process() throws Exception;
 
-	private boolean hasExceededTimeLimit() {
+	public final boolean hasExceededTimeLimit() {
 		return nextRun.before(new Date());
 	}
 
+	/**
+	 * Sets the time field and offset value to use when generating the next run
+	 * time.
+	 *
+	 * <p>
+	 * Note that {@link DBDatabase} regular processes are checked once a minute.
+	 *
+	 * @param calendarTimeField
+	 * @param offset
+	 */
 	public final void setTimeOffset(int calendarTimeField, int offset) {
 		timeField = calendarTimeField;
 		timeOffset = offset;
 	}
 
+	/**
+	 * A method that is called before {@link #process() } and will stop processing
+	 * if FALSE is returned.
+	 *
+	 * <p>
+	 * By default this method returns true always.
+	 *
+	 * @return TRUE if processing should continue, FALSE otherwise.
+	 */
 	public boolean preprocess() {
-		return hasExceededTimeLimit();
+		return true;
 	}
 
+	/**
+	 * A method that is always called after {@link #preprocess() } and {@link #process()
+	 * }.
+	 *
+	 * <p>
+	 * By default this method does nothing.
+	 */
 	public void postprocess() {
-
 	}
 
+	/**
+	 * Provides a way to intercept exceptions thrown during processing.
+	 *
+	 * <p>
+	 * By default, this method logs the exception as a warning.
+	 *
+	 * @param ex
+	 */
+	public void handleExceptionDuringProcessing(Exception ex) {
+		LOG.warn(this, ex);
+	}
+
+	/**
+	 * Used to generate the next run time for this process
+	 *
+	 */
 	public final void offsetTime() {
 		Calendar cal = GregorianCalendar.getInstance();
 		cal.add(timeField, timeOffset);
 		nextRun = cal.getTime();
+	}
+
+	/**
+	 * Returns the (last) database that this process has been added to using {@link DBDatabase#addRegularProcess(nz.co.gregs.dbvolution.utility.RegularProcess)
+	 * }.
+	 *
+	 * @return the database that this process should work upon.
+	 */
+	public final DBDatabase getDatabase() {
+		return dbDatabase;
+	}
+
+	/**
+	 * Used by  {@link DBDatabase#addRegularProcess(nz.co.gregs.dbvolution.utility.RegularProcess) }
+	 * to set the database.
+	 *
+	 * <p>
+	 * You probably don't need this method.
+	 *
+	 * @param db
+	 */
+	public final void setDatabase(DBDatabase db) {
+		this.dbDatabase = db;
 	}
 
 }
