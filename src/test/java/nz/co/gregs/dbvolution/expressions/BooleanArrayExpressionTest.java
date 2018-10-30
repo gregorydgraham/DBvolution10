@@ -144,7 +144,7 @@ public class BooleanArrayExpressionTest extends AbstractTest {
 		tab.boolArrayColumn.setValue(new Boolean[]{true, false, true, true});
 		database.insert(tab);
 		tab = new BooleanArrayExpressionTable();
-		tab.boolArrayColumn.setValue(null);
+		tab.boolArrayColumn.setValue((Boolean[])null);
 		database.insert(tab);
 
 		final BooleanArrayExpressionTable example = new BooleanArrayExpressionTable();

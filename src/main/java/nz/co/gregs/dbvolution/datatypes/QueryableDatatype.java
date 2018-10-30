@@ -400,6 +400,15 @@ public abstract class QueryableDatatype<T> extends Object implements Serializabl
 	}
 
 	/**
+	 * Set the value of this QDT to the value provided.
+	 *
+	 * @param newLiteralValue the new value
+	 */
+	public void setValue(QueryableDatatype<T> newLiteralValue) {
+		this.setLiteralValue(newLiteralValue.getValue());
+	}
+
+	/**
 	 * Used by {@link InternalQueryableDatatypeProxy#setValueFromDatabase(java.lang.Object)
 	 *
 	 * @param newLiteralValue the new value
