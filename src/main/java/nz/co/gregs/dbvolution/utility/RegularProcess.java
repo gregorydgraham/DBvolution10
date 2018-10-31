@@ -169,5 +169,13 @@ public abstract class RegularProcess {
 	public final void setDatabase(DBDatabase db) {
 		this.dbDatabase = db;
 	}
+	
+	public final void stop() {
+		this.dbDatabase = null;
+	}
+	
+	public final boolean canRun() {
+		return this.dbDatabase != null;
+	}
 
 }

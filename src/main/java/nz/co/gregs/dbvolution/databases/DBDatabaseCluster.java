@@ -45,8 +45,6 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.RejectedExecutionException;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import nz.co.gregs.dbvolution.DBQueryRow;
@@ -142,7 +140,7 @@ public class DBDatabaseCluster extends DBDatabase {
 
 	private void addReconnectionProcessor(Configuration config) {
 		if (config.isUseAutoReconnect()) {
-			REGULAR_PROCESSORS.add(new ReconnectionProcessor());
+			getRegularProcessors().add(new ReconnectionProcessor());
 		}
 	}
 
@@ -1421,6 +1419,7 @@ public class DBDatabaseCluster extends DBDatabase {
 			db.stop();
 		}
 		details.removeAllDatabases();
+		super.stop();
 	}
 
 	/**
@@ -1446,7 +1445,6 @@ public class DBDatabaseCluster extends DBDatabase {
 
 	private synchronized void shutdownClusterProcesses() {
 		ACTION_THREAD_POOL.shutdown();
-		REGULAR_THREAD_POOL.shutdownNow();
 	}
 
 	private static class ActionTask implements Callable<DBActionList> {

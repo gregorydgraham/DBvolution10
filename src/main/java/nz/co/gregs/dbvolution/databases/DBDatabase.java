@@ -103,8 +103,8 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 	boolean explicitCommitActionRequired = false;
 	private DatabaseConnectionSettings settings;
 	private boolean terminated = false;
-	protected final List<RegularProcess> REGULAR_PROCESSORS = new ArrayList<>();
-	protected final ScheduledExecutorService REGULAR_THREAD_POOL = Executors.newSingleThreadScheduledExecutor();
+	private final List<RegularProcess> REGULAR_PROCESSORS = new ArrayList<>();
+	private static final ScheduledExecutorService REGULAR_THREAD_POOL = Executors.newSingleThreadScheduledExecutor();
 
 	{
 		Runtime.getRuntime().addShutdownHook(new StopDatabase(this));
@@ -1640,6 +1640,7 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 	 *
 	 * @param <TR> DBRow type
 	 * @param tableRow tableRow
+	 * @throws java.sql.SQLException
 	 */
 	public <TR extends DBRow> void dropTableIfExists(TR tableRow) throws AccidentalDroppingOfTableException, AutoCommitActionDuringTransactionException, SQLException {
 		if (tableExists(tableRow)) {
@@ -2346,13 +2347,17 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 	 * <p>
 	 * In particular the regular processing thread is stopped and the connection
 	 * is shutdown and emptied.
-	 * 
-	 * <p>Please note that this is very different from {@link DBDatabaseCluster#dismantle() }
+	 *
+	 * <p>
+	 * Please note that this is very different from {@link DBDatabaseCluster#dismantle()
+	 * }
 	 *
 	 */
 	public synchronized void stop() {
-		REGULAR_THREAD_POOL.shutdown();
 		terminated = true;
+		for (RegularProcess regularProcessor : getRegularProcessors()) {
+			regularProcessor.stop();
+		}
 		try {
 			if (transactionStatement != null) {
 				try {
@@ -2388,9 +2393,6 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 			}
 		} catch (Exception ex) {
 		}
-		if (!REGULAR_THREAD_POOL.isTerminated()) {
-			REGULAR_THREAD_POOL.shutdownNow();
-		}
 	}
 
 	public boolean getPrintSQLBeforeExecuting() {
@@ -2410,24 +2412,24 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 	 */
 	public void backupToDBDatabase(DBDatabase backupDatabase) throws SQLException, UnableToRemoveLastDatabaseFromClusterException {
 		String randomName = new BigInteger(130, new SecureRandom()).toString(32);
-		DBDatabaseCluster cluster = new DBDatabaseCluster(randomName,new DBDatabaseCluster.Configuration(false, false));
+		DBDatabaseCluster cluster = new DBDatabaseCluster(randomName, new DBDatabaseCluster.Configuration(false, false));
 		cluster.addDatabase(this);
 		cluster.backupToDBDatabase(backupDatabase);
 		cluster.dismantle();
 	}
 
 	private void startRegularProcessor() {
-		REGULAR_THREAD_POOL.schedule(new RunRegularProcessors(), 1, TimeUnit.MINUTES);
+		getRegularThreadPool().schedule(new RunRegularProcessors(), 1, TimeUnit.MINUTES);
 	}
 
 	public void addRegularProcess(RegularProcess processor) {
 		processor.setDatabase(this);
-		REGULAR_PROCESSORS.add(processor);
+		getRegularProcessors().add(processor);
 	}
 
 	public void removeRegularProcess(RegularProcess processor) {
 		processor.setDatabase(null);
-		REGULAR_PROCESSORS.remove(processor);
+		getRegularProcessors().remove(processor);
 	}
 
 	protected class RunRegularProcessors implements Runnable {
@@ -2438,8 +2440,8 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 
 		@Override
 		public void run() {
-			for (RegularProcess process : REGULAR_PROCESSORS) {
-				if (process.hasExceededTimeLimit()) {
+			for (RegularProcess process : getRegularProcessors()) {
+				if (process.canRun() && process.hasExceededTimeLimit()) {
 					try {
 						if (process.preprocess()) {
 							process.process();
@@ -2467,5 +2469,19 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 		public void run() {
 			db.stop();
 		}
+	}
+
+	/**
+	 * @return the REGULAR_PROCESSORS
+	 */
+	protected List<RegularProcess> getRegularProcessors() {
+		return REGULAR_PROCESSORS;
+	}
+
+	/**
+	 * @return the REGULAR_THREAD_POOL
+	 */
+	protected ScheduledExecutorService getRegularThreadPool() {
+		return REGULAR_THREAD_POOL;
 	}
 }

@@ -25,3 +25,4 @@
 /DBDatabaseClusterWithConfigFile.sqlite
 /sharedTest.h2db.mv.db
 /dbvolutionTest.sqlite-bundledcluster.sqlite
+/dbvolutionTest.sqlite-opencluster.sqlite
