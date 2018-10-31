@@ -147,7 +147,11 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 			constructor.setAccessible(true);
 			return constructor.newInstance();
 		} catch (NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
-			throw new UnableToInstantiateDBRowSubclassException(requiredDBRowClass, ex);
+			try {
+				return requiredDBRowClass.newInstance();
+			} catch (InstantiationException | IllegalAccessException ex1) {
+				throw new UnableToInstantiateDBRowSubclassException(requiredDBRowClass, ex);
+			}
 		}
 	}
 
@@ -560,17 +564,17 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 		if (op != null) {
 			if (column instanceof DBExpression) {
 				DBExpression requiredExpression = column;
-			if (qdt.hasColumnExpression()) {
-				DBExpression[] columnExpression = qdt.getColumnExpression();
-				String sep = "";
-				for (DBExpression dBExpression : columnExpression) {
-					whereClause.append(sep).append(op.generateWhereExpression(db, dBExpression).toSQLString(db));
-					sep = db.beginAndLine();
+				if (qdt.hasColumnExpression()) {
+					DBExpression[] columnExpression = qdt.getColumnExpression();
+					String sep = "";
+					for (DBExpression dBExpression : columnExpression) {
+						whereClause.append(sep).append(op.generateWhereExpression(db, dBExpression).toSQLString(db));
+						sep = db.beginAndLine();
+					}
+				} else {
+					whereClause = new StringBuilder(op.generateWhereExpression(db, requiredExpression).toSQLString(db));
 				}
-			} else {
-				whereClause = new StringBuilder(op.generateWhereExpression(db, requiredExpression).toSQLString(db));
 			}
-		}
 		}
 		return whereClause.toString();
 	}
