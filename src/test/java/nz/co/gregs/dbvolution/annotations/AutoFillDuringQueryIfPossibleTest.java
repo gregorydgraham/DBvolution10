@@ -57,6 +57,23 @@ public class AutoFillDuringQueryIfPossibleTest extends AbstractTest {
 	}
 
 	@Test
+	public void testFillingSimpleFieldInOptionalTable() throws SQLException {
+		DBQuery query = database.getDBQuery(new FilledMarque()).addOptional(new CarCompany()).setBlankQueryAllowed(true);
+		query.getAllRows();
+		List<FilledMarque> instances = query.getAllInstancesOf(new FilledMarque());
+
+		for (FilledMarque instance : instances) {
+			final CarCompany relatedCarCo = query.getQueryDetails().getRelatedInstancesFromQuery(instance, new CarCompany()).get(0);
+			final CarCompany actualCarCo = instance.actualCarCo;
+			if (actualCarCo == null) {
+				Assert.assertThat(relatedCarCo, nullValue());
+			} else {
+				Assert.assertThat(relatedCarCo.name.stringValue(), is(actualCarCo.name.stringValue()));
+			}
+		}
+	}
+
+	@Test
 	public void testFillingArray() throws SQLException, Exception {
 		DBQuery query = database.getDBQuery(new FilledCarCoWithArray(), new Marque()).setBlankQueryAllowed(true);
 		query.getAllRows();
