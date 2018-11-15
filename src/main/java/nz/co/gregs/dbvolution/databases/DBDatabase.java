@@ -33,6 +33,7 @@ import nz.co.gregs.dbvolution.DBMigration;
 import nz.co.gregs.dbvolution.DBQuery;
 import nz.co.gregs.dbvolution.DBQueryInsert;
 import nz.co.gregs.dbvolution.DBQueryRow;
+import nz.co.gregs.dbvolution.DBRecursiveQuery;
 import nz.co.gregs.dbvolution.DBReport;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.DBScript;
@@ -40,7 +41,9 @@ import nz.co.gregs.dbvolution.DBTable;
 import nz.co.gregs.dbvolution.actions.DBAction;
 import nz.co.gregs.dbvolution.actions.DBActionList;
 import nz.co.gregs.dbvolution.actions.DBQueryable;
+import nz.co.gregs.dbvolution.columns.ColumnProvider;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
+import nz.co.gregs.dbvolution.datatypes.DBInteger;
 import nz.co.gregs.dbvolution.datatypes.DBLargeObject;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 import nz.co.gregs.dbvolution.exceptions.*;
@@ -2115,6 +2118,44 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 	 */
 	protected ResponseToException addFeatureToFixException(Exception exp) throws Exception {
 		throw exp;
+	}
+
+	/**
+	 * Create a DBRecursiveQuery based on the query and foreign key supplied.
+	 *
+	 * <p>
+	 * DBRecursiveQuery uses the query to create the first rows of the recursive
+	 * query. This can be any query and contain any tables. However it must
+	 * contain the table T and the foreign key must be a recursive foreign key (FK) to and from
+	 * table T.
+	 *
+	 * <p>
+	 * After the priming query has been created the FK supplied will
+	 * be followed repeatedly. The FK must be contained in one of the tables of
+	 * the priming query and it must reference the same table, that is to say it
+	 * must be a recursive foreign key.
+	 *
+	 * <p>
+	 * The FK will be repeatedly followed until the root node is reached (an
+	 * ascending query) or the leaf nodes have been reached (a descending query).
+	 * A root node is defined as a row with a null value in the FK. A leaf node is
+	 * a row that has no FKs referencing it.
+	 *
+	 * <p>
+	 * While it is possible to define a root node in other ways only the above
+	 * definition is currently supported.
+	 *
+	 * @param <T>
+	 * @param query
+	 * @param keyToFollow
+	 * @param dbRow
+	 * @return 
+	 * @throws ColumnProvidedMustBeAForeignKey
+	 * @throws ForeignKeyDoesNotReferenceATableInTheQuery
+	 * @throws ForeignKeyIsNotRecursiveException
+	 */
+	public <T extends DBRow> DBRecursiveQuery<T> getDBRecursiveQuery(DBQuery query, ColumnProvider keyToFollow, T dbRow) {
+		return new DBRecursiveQuery<>(query, keyToFollow);
 	}
 
 	public static enum ResponseToException {
