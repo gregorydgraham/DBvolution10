@@ -2404,4 +2404,32 @@ public class DBQuery implements Serializable {
 		}
 	}
 
+	/**
+	 * Convenience method to create a recursive query with this query.
+	 * <p>
+	 * DBRecursiveQuery uses this query to create the first rows of the recursive
+	 * query. This can be any query and contain any tables. However it must
+	 * contain the table T and the column must be a recursive foreign key (FK) to and from
+	 * table T.
+	 *
+	 * <p>
+	 * After the priming query has been created the FK supplied will
+	 * be followed repeatedly. The FK must be contained in one of the tables of
+	 * the priming query and it must reference the same table, that is to say it
+	 * must be a recursive foreign key.
+	 *
+	 * <p>
+	 * The FK will be repeatedly followed until the root node is reached (an
+	 * ascending query) or the leaf nodes have been reached (a descending query).
+	 * A root node is defined as a row with a null value in the FK. A leaf node is
+	 * a row that has no FKs referencing it.
+	 *
+	 * @param <T>
+	 * @param column
+	 * @param aileronID
+	 * @return
+	 */
+	public <T extends DBRow> DBRecursiveQuery<T> getDBRecursiveQuery(ColumnProvider column, T aileronID) {
+		return new DBRecursiveQuery<T>(this, column);
+	}
 }
