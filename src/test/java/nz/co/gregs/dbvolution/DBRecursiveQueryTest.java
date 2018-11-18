@@ -114,6 +114,40 @@ public class DBRecursiveQueryTest extends AbstractTest {
 	}
 
 	@Test
+	public void descendSimpleTreeUsingDBDatabaseConvenienceMethod() throws SQLException {
+		Parts aileronID = new Parts();
+		aileronID.partID.permittedValues(aileron.partID.intValue());
+		final DBQuery findTheAileronQuery = database.getDBQuery(aileronID);
+
+//		DBRecursiveQuery<Parts> recursive = new DBRecursiveQuery<Parts>(findTheAileronQuery, aileronID.column(aileronID.subPartOf));
+		DBRecursiveQuery<Parts> recursive = database.getDBRecursiveQuery(findTheAileronQuery, aileronID.column(aileronID.subPartOf), aileronID);
+//		@SuppressWarnings("unchecked")
+		List<Parts> componentsOfTheAileron = recursive.getDescendants();
+
+		Assert.assertThat(componentsOfTheAileron.size(), is(3));
+		Assert.assertThat(componentsOfTheAileron.get(0).name.stringValue(), is("aileron"));
+		Assert.assertThat(componentsOfTheAileron.get(1).name.stringValue(), anyOf(is("screw"), is("lever")));
+		Assert.assertThat(componentsOfTheAileron.get(2).name.stringValue(), anyOf(is("screw"), is("lever")));
+	}
+
+	@Test
+	public void descendSimpleTreeUsingDBQueryConvenienceMethod() throws SQLException {
+		Parts aileronID = new Parts();
+		aileronID.partID.permittedValues(aileron.partID.intValue());
+		final DBQuery findTheAileronQuery = database.getDBQuery(aileronID);
+
+//		DBRecursiveQuery<Parts> recursive = new DBRecursiveQuery<Parts>(findTheAileronQuery, aileronID.column(aileronID.subPartOf));
+		DBRecursiveQuery<Parts> recursive = findTheAileronQuery.getDBRecursiveQuery(aileronID.column(aileronID.subPartOf), aileronID);
+//		@SuppressWarnings("unchecked")
+		List<Parts> componentsOfTheAileron = recursive.getDescendants();
+
+		Assert.assertThat(componentsOfTheAileron.size(), is(3));
+		Assert.assertThat(componentsOfTheAileron.get(0).name.stringValue(), is("aileron"));
+		Assert.assertThat(componentsOfTheAileron.get(1).name.stringValue(), anyOf(is("screw"), is("lever")));
+		Assert.assertThat(componentsOfTheAileron.get(2).name.stringValue(), anyOf(is("screw"), is("lever")));
+	}
+
+	@Test
 	public void ascendSimpleTree() throws SQLException {
 		Parts aileronID = new Parts();
 		aileronID.partID.permittedValues(aileron.partID.intValue());
