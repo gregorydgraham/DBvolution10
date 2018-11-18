@@ -2155,7 +2155,7 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 	 * @throws ForeignKeyIsNotRecursiveException
 	 */
 	public <T extends DBRow> DBRecursiveQuery<T> getDBRecursiveQuery(DBQuery query, ColumnProvider keyToFollow, T dbRow) {
-		return new DBRecursiveQuery<>(query, keyToFollow);
+		return new DBRecursiveQuery<T>(query, keyToFollow);
 	}
 
 	public static enum ResponseToException {
