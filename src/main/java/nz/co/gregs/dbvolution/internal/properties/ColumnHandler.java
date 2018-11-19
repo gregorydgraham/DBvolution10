@@ -1,8 +1,10 @@
 package nz.co.gregs.dbvolution.internal.properties;
 
 import java.io.Serializable;
+import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.annotations.DBAutoIncrement;
 import nz.co.gregs.dbvolution.annotations.DBColumn;
+import nz.co.gregs.dbvolution.annotations.DBForeignKey;
 import nz.co.gregs.dbvolution.annotations.DBPrimaryKey;
 
 /**
@@ -28,11 +30,14 @@ class ColumnHandler  implements Serializable{
 	private transient final DBColumn columnAnnotation; // null if not present on property
 	private transient final DBPrimaryKey primaryKeyAnnotation; // null if not present on property
 	private transient final DBAutoIncrement autoIncrementAnnotation; // null if not present on property
+	private transient final DBForeignKey foreignKeyAnnotation; // null if not present on property
+//	private transient final boolean foreignKeyIsRecursive = false;
 
 	ColumnHandler(JavaProperty adaptee) {
 		this.columnAnnotation = adaptee.getAnnotation(DBColumn.class);
 		this.primaryKeyAnnotation = adaptee.getAnnotation(DBPrimaryKey.class);
 		this.autoIncrementAnnotation = adaptee.getAnnotation(DBAutoIncrement.class);
+		this.foreignKeyAnnotation = adaptee.getAnnotation(DBForeignKey.class);
 
 		// pre-calculate column name
 		// (null if no annotation, default if annotation present but no name given)
@@ -69,6 +74,18 @@ class ColumnHandler  implements Serializable{
 	}
 
 	/**
+	 * Indicates whether this property is a primary key column.
+	 *
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
+	 * @return {@code true} if a column and marked as primary key
+	 */
+	public boolean isForeignKey() {
+		return isColumn() && (foreignKeyAnnotation != null);
+	}
+
+	/**
 	 * Gets the explicitly or implicitly indicated column name.
 	 *
 	 * <p>
@@ -101,7 +118,7 @@ class ColumnHandler  implements Serializable{
 		return columnAnnotation;
 	}
 
-	boolean isAutoIncrement() {
+	public boolean isAutoIncrement() {
 		return this.autoIncrementAnnotation != null;
 	}
 }

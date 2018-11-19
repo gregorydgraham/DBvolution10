@@ -759,6 +759,33 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 	}
 
 	/**
+	 *
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
+	 * @return a list of all foreign keys, MINUS the ignored foreign keys
+	 */
+	public List<PropertyWrapper> getRecursiveForeignKeyPropertyWrappers() {
+		System.out.println("nz.co.gregs.dbvolution.DBRow.getRecursiveForeignKeyPropertyWrappers()");
+		synchronized (fkFields) {
+			if (fkFields.isEmpty()) {
+				List<PropertyWrapper> props = getWrapper().getRecursiveForeignKeyPropertyWrappers();
+
+				for (PropertyWrapper prop : props) {
+					if (prop.isColumn()) {
+						if (prop.isForeignKey()&& prop.isRecursiveForeignKey()) {
+							if (!ignoredForeignKeys.contains(prop.getPropertyWrapperDefinition())) {
+								fkFields.add(prop);
+							}
+						}
+					}
+				}
+			}
+			return fkFields;
+		}
+	}
+
+	/**
 	 * Ignores the foreign key of the property (field or method) given the
 	 * property's object reference.
 	 *
@@ -1484,6 +1511,32 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 	}
 
 	/**
+	 * Finds all fields is this object that are foreign keys to the table
+	 * represented by the supplied DBRow.
+	 *
+	 * <p>
+	 * Returned QueryableDatatypes do not necessarily reference the supplied
+	 * DBRow.
+	 *
+	 * <p>
+	 * Values of the primary key and foreign keys are not compared.
+	 *
+	 * @param <R> DBRow type
+	 * @return a list of {@link QueryableDatatype} that are foreign keys to the
+	 * {@link DBRow}
+	 */
+	public <R extends DBRow> List<QueryableDatatype<?>> getRecursiveForeignKeys() {
+		System.out.println("nz.co.gregs.dbvolution.DBRow.getRecursiveForeignKeys()");
+		List<QueryableDatatype<?>> fksToSelf = new ArrayList<>();
+		RowDefinitionInstanceWrapper wrapper = getWrapper();
+		List<PropertyWrapper> foreignKeyPropertyWrappers = wrapper.getRecursiveForeignKeyPropertyWrappers();
+		for (PropertyWrapper propertyWrapper : foreignKeyPropertyWrappers) {
+				fksToSelf.add(propertyWrapper.getQueryableDatatype());
+		}
+		return fksToSelf;
+	}
+
+	/**
 	 * Provides DBExpressions representing the FK relationship between this DBRow
 	 * and the target specified.
 	 *
@@ -1521,6 +1574,78 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 				} catch (IllegalAccessException | IllegalArgumentException | NoSuchMethodException | SecurityException | InvocationTargetException ex) {
 					throw new nz.co.gregs.dbvolution.exceptions.ForeignKeyCannotBeComparedToPrimaryKey(ex, source, propertyWrapper, target, targetProperty);
 				}
+			}
+		}
+		return fksToR;
+	}
+
+	/**
+	 * Provides DBExpressions representing the FK relationship between this DBRow
+	 * and the target specified.
+	 *
+	 * <p>
+	 * Values of the primary key and foreign keys are not compared.
+	 *
+	 * @param <R> DBRow type
+	 * @return a list of {@link DBExpression DBExpressions} that are foreign keys
+	 * to the {@link DBRow target}
+	 */
+	public <R extends DBRow> List<DBExpression> getRecursiveForeignKeyExpressions() {
+		System.out.println("nz.co.gregs.dbvolution.DBRow.getRecursiveForeignKeyExpressions()");
+		List<DBExpression> fksToR = new ArrayList<>();
+		RowDefinitionInstanceWrapper wrapper = getWrapper();
+		List<PropertyWrapper> foreignKeyPropertyWrappers = wrapper.getRecursiveForeignKeyPropertyWrappers();
+		for (PropertyWrapper propertyWrapper : foreignKeyPropertyWrappers) {
+			if (propertyWrapper.isRecursiveForeignKey()) {
+				RowDefinition source = propertyWrapper.getRowDefinitionInstanceWrapper().adapteeRowDefinition();
+				final QueryableDatatype<?> sourceFK = propertyWrapper.getQueryableDatatype();
+				PropertyWrapperDefinition targetPropertyDefinition = propertyWrapper.getPropertyWrapperDefinition().referencedPropertyDefinitionIdentity();
+				PropertyWrapper targetProperty = this.getWrapper().getPropertyByName(targetPropertyDefinition.javaName());
+				QueryableDatatype<?> targetPK = targetProperty.getQueryableDatatype().getQueryableDatatypeForExpressionValue();
+
+				ColumnProvider column = source.column(sourceFK);
+				try {
+					final Method isMethod = column.getClass().getMethod("is", targetPK.getClass());
+					if (isMethod != null) {
+						Object fkExpression = isMethod.invoke(column, targetPK);
+						if (DBExpression.class.isAssignableFrom(fkExpression.getClass())) {
+							fksToR.add((DBExpression) fkExpression);
+						}
+					}
+				} catch (IllegalAccessException | IllegalArgumentException | NoSuchMethodException | SecurityException | InvocationTargetException ex) {
+					throw new nz.co.gregs.dbvolution.exceptions.ForeignKeyCannotBeComparedToPrimaryKey(ex, source, propertyWrapper, this, targetProperty);
+				}
+			}
+		}
+		return fksToR;
+	}
+
+	/**
+	 * Provides DBExpressions representing the FK relationship between this DBRow
+	 * and the target specified.
+	 *
+	 * <p>
+	 * Values of the primary key and foreign keys are not compared.
+	 *
+	 * @param <R> DBRow type
+	 * @return a list of {@link DBExpression DBExpressions} that are foreign keys
+	 * to the {@link DBRow target}
+	 */
+	public <R extends DBRow> List<ColumnProvider> getRecursiveForeignKeyColumns() {
+		System.out.println("nz.co.gregs.dbvolution.DBRow.getRecursiveForeignKeyExpressions()");
+		List<ColumnProvider> fksToR = new ArrayList<>();
+		RowDefinitionInstanceWrapper wrapper = getWrapper();
+		List<PropertyWrapper> foreignKeyPropertyWrappers = wrapper.getRecursiveForeignKeyPropertyWrappers();
+		for (PropertyWrapper propertyWrapper : foreignKeyPropertyWrappers) {
+			if (propertyWrapper.isRecursiveForeignKey()) {
+				RowDefinition source = propertyWrapper.getRowDefinitionInstanceWrapper().adapteeRowDefinition();
+				final QueryableDatatype<?> sourceFK = propertyWrapper.getQueryableDatatype();
+//				PropertyWrapperDefinition targetPropertyDefinition = propertyWrapper.getPropertyWrapperDefinition().referencedPropertyDefinitionIdentity();
+//				PropertyWrapper targetProperty = this.getWrapper().getPropertyByName(targetPropertyDefinition.javaName());
+//				QueryableDatatype<?> targetPK = targetProperty.getQueryableDatatype().getQueryableDatatypeForExpressionValue();
+
+				ColumnProvider column = source.column(sourceFK);
+				fksToR.add(column);
 			}
 		}
 		return fksToR;

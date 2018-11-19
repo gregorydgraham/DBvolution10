@@ -4,6 +4,8 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.annotations.AutoFillDuringQueryIfPossible;
 import nz.co.gregs.dbvolution.annotations.DBForeignKey;
@@ -666,8 +668,12 @@ public class PropertyWrapperDefinition  implements Serializable{
 		}
 	}
 
-	boolean isForeignKeyTo(DBRow table) {
+	boolean isForeignKeyTo(RowDefinition table) {
 		return foreignKeyHandler.isForeignKeyTo(table.getClass());
+	}
+
+	boolean isRecursiveForeignKey() {
+		return foreignKeyHandler.isForeignKeyTo(classWrapper.adapteeClass());
 	}
 
 	void setColumnIndex(int columnIndex) {

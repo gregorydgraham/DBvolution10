@@ -6,6 +6,8 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import nz.co.gregs.dbvolution.databases.DBDatabase;
 import nz.co.gregs.dbvolution.annotations.DBTableName;
@@ -568,6 +570,34 @@ public class RowDefinitionClassWrapper implements Serializable{
 		for (PropertyWrapperDefinition property : columnProperties) {
 			if (property.isColumn() && property.isForeignKey()) {
 				list.add(property);
+			}
+		}
+		return list;
+	}
+
+	/**
+	 * Gets all recursive foreign key properties.
+	 *
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
+	 * @return a list of ProperyWrapperDefinitions for all the recursive foreign keys
+	 * defined in the wrapped object
+	 */
+	public List<PropertyWrapperDefinition> getRecursiveForeignKeyPropertyDefinitions() {
+		if (identityOnly) {
+			throw new AssertionError("Attempt to access non-identity information of identity-only DBRow class wrapper");
+		}
+		System.out.println("nz.co.gregs.dbvolution.internal.properties.RowDefinitionClassWrapper.getRecursiveForeignKeyPropertyDefinitions()");
+		List<PropertyWrapperDefinition> list = new ArrayList<PropertyWrapperDefinition>();
+		for (PropertyWrapperDefinition property : columnProperties) {
+			try {
+				if (property.isColumn() && property.isForeignKey() && property.isForeignKeyTo(this.adapteeClass().newInstance())) {
+					list.add(property);
+				}
+			} catch (InstantiationException | IllegalAccessException ex) {
+				Logger.getLogger(RowDefinitionClassWrapper.class.getName()).log(Level.SEVERE, null, ex);
+				ex.printStackTrace();
 			}
 		}
 		return list;

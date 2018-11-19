@@ -44,6 +44,7 @@ public class RowDefinitionInstanceWrapper implements Serializable{
 	private final List<PropertyWrapper> columnProperties;
 	private final List<PropertyWrapper> autoFillingProperties;
 	private final List<PropertyWrapper> foreignKeyProperties;
+	private final List<PropertyWrapper> recursiveForeignKeyProperties;
 	private final List<PropertyWrapper> primaryKeyProperties;
 
 	/**
@@ -88,8 +89,12 @@ public class RowDefinitionInstanceWrapper implements Serializable{
 		}
 
 		this.foreignKeyProperties = new ArrayList<PropertyWrapper>();
+		this.recursiveForeignKeyProperties = new ArrayList<PropertyWrapper>();
 		for (PropertyWrapperDefinition propertyDefinition : classWrapper.getForeignKeyPropertyDefinitions()) {
 			this.foreignKeyProperties.add(new PropertyWrapper(this, propertyDefinition, rowDefinition));
+			if(propertyDefinition.isRecursiveForeignKey()){
+				this.recursiveForeignKeyProperties.add(new PropertyWrapper(this, propertyDefinition, rowDefinition));
+			}
 		}
 
 		this.primaryKeyProperties = new ArrayList<PropertyWrapper>();
@@ -401,6 +406,33 @@ public class RowDefinitionInstanceWrapper implements Serializable{
 	 */
 	public List<PropertyWrapperDefinition> getForeignKeyPropertyWrapperDefinitions() {
 		return classWrapper.getForeignKeyPropertyDefinitions();
+	}
+
+	/**
+	 * Gets all foreign key properties.
+	 *
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
+	 * @return non-null list of PropertyWrappers, empty if no foreign key
+	 * properties
+	 */
+	public List<PropertyWrapper> getRecursiveForeignKeyPropertyWrappers() {
+		return recursiveForeignKeyProperties;
+	}
+
+	/**
+	 * Gets all foreign key properties as property definitions.
+	 *
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
+	 * @return a non-null list of PropertyWrapperDefinitions, empty if no foreign
+	 * key properties
+	 */
+	public List<PropertyWrapperDefinition> getRecursiveForeignKeyPropertyWrapperDefinitions() {
+		System.out.println("nz.co.gregs.dbvolution.internal.properties.RowDefinitionInstanceWrapper.getRecursiveForeignKeyPropertyWrapperDefinitions()");
+		return classWrapper.getRecursiveForeignKeyPropertyDefinitions();
 	}
 
 	/**

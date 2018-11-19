@@ -119,9 +119,7 @@ public class DBRecursiveQueryTest extends AbstractTest {
 		aileronID.partID.permittedValues(aileron.partID.intValue());
 		final DBQuery findTheAileronQuery = database.getDBQuery(aileronID);
 
-//		DBRecursiveQuery<Parts> recursive = new DBRecursiveQuery<Parts>(findTheAileronQuery, aileronID.column(aileronID.subPartOf));
 		DBRecursiveQuery<Parts> recursive = database.getDBRecursiveQuery(findTheAileronQuery, aileronID.column(aileronID.subPartOf), aileronID);
-//		@SuppressWarnings("unchecked")
 		List<Parts> componentsOfTheAileron = recursive.getDescendants();
 
 		Assert.assertThat(componentsOfTheAileron.size(), is(3));
@@ -136,9 +134,7 @@ public class DBRecursiveQueryTest extends AbstractTest {
 		aileronID.partID.permittedValues(aileron.partID.intValue());
 		final DBQuery findTheAileronQuery = database.getDBQuery(aileronID);
 
-//		DBRecursiveQuery<Parts> recursive = new DBRecursiveQuery<Parts>(findTheAileronQuery, aileronID.column(aileronID.subPartOf));
-		DBRecursiveQuery<Parts> recursive = findTheAileronQuery.getDBRecursiveQuery(aileronID.column(aileronID.subPartOf), aileronID);
-//		@SuppressWarnings("unchecked")
+		DBRecursiveQuery<Parts> recursive = findTheAileronQuery.getDBRecursiveQuery(aileronID.column(aileronID.subPartOf));
 		List<Parts> componentsOfTheAileron = recursive.getDescendants();
 
 		Assert.assertThat(componentsOfTheAileron.size(), is(3));

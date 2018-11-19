@@ -708,6 +708,18 @@ public class PropertyWrapper implements Serializable{
 	}
 
 	/**
+	 * Returns TRUE if the property wrapped is a foreign key reference to the
+	 * table supplied
+	 *
+	 * @return TRUE if the property wrapped is a foreign key reference to the
+	 * table supplied, otherwise FALSE.
+	 */
+	public boolean isRecursiveForeignKey() {
+		System.out.println("nz.co.gregs.dbvolution.internal.properties.PropertyWrapper.isRecursiveForeignKey()");
+		return propertyDefinition.isRecursiveForeignKey();
+	}
+
+	/**
 	 * Returns true if the property wrapped is an auto-incrementing column.
 	 *
 	 * <p>

@@ -11,6 +11,7 @@ import nz.co.gregs.dbvolution.annotations.DBForeignKey;
 import nz.co.gregs.dbvolution.exceptions.DBRuntimeException;
 import nz.co.gregs.dbvolution.exceptions.ReferenceToUndefinedPrimaryKeyException;
 import nz.co.gregs.dbvolution.exceptions.UnableToInterpolateReferencedColumnInMultiColumnPrimaryKeyException;
+import nz.co.gregs.dbvolution.query.RowDefinition;
 import org.simmetrics.StringMetric;
 import org.simmetrics.metrics.DamerauLevenshtein;
 import org.simmetrics.simplifiers.Simplifiers;
@@ -33,7 +34,7 @@ import static org.simmetrics.builders.StringMetricBuilder.with;
  */
 // TODO if referenced property has differing case of column name,
 // need to throw exception during a deferred validation step once database case-ness is known.
-class ForeignKeyHandler implements Serializable{
+class ForeignKeyHandler implements Serializable {
 
 	private static final long serialVersionUID = 1l;
 
@@ -244,9 +245,19 @@ class ForeignKeyHandler implements Serializable{
 		return foreignKeyAnnotation;
 	}
 
-	boolean isForeignKeyTo(Class<? extends DBRow> aClass) {
+	boolean isForeignKeyTo(Class<? extends RowDefinition> aClass) {
 		final Class<? extends DBRow> reffedClass = getReferencedClass();
 		final boolean assignableFrom = reffedClass.isAssignableFrom(aClass);
 		return assignableFrom;
+	}
+
+	boolean isForeignKeyRecursive() {
+		final Class<? extends DBRow> reffedClass = getReferencedClass();
+		final Class<? extends DBRow> originalReferencedClass = identityOnlyReferencedProperty.referencedClass();
+		if (reffedClass != null && originalReferencedClass != null) {
+			final boolean assignableFrom = reffedClass.isAssignableFrom(originalReferencedClass);
+			return assignableFrom;
+		}
+		return false;
 	}
 }

@@ -17,6 +17,7 @@ package nz.co.gregs.dbvolution.columns;
 
 import java.util.Set;
 import nz.co.gregs.dbvolution.DBRow;
+import nz.co.gregs.dbvolution.databases.DBDatabase;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.datatypes.DBEnum;
 import nz.co.gregs.dbvolution.datatypes.DBEnumValue;
@@ -26,6 +27,7 @@ import nz.co.gregs.dbvolution.expressions.IntegerExpression;
 import nz.co.gregs.dbvolution.expressions.NumberExpression;
 import nz.co.gregs.dbvolution.expressions.SortProvider;
 import nz.co.gregs.dbvolution.query.RowDefinition;
+import nz.co.gregs.dbvolution.results.AnyResult;
 
 /**
  * Represents a database column storing an integer value.
@@ -66,6 +68,7 @@ public class IntegerColumn extends IntegerExpression implements ColumnProvider {
 	 * @param field the field defining the column
 	 */
 	public IntegerColumn(RowDefinition row, Long field) {
+		super();
 		this.column = new AbstractColumn(row, field);
 	}
 
@@ -155,5 +158,15 @@ public class IntegerColumn extends IntegerExpression implements ColumnProvider {
 	@Override
 	public SortProvider.Column getSortProvider() {
 		return column.getSortProvider();
+	}
+
+	@Override
+	public String createSQLForGroupByClause(DBDatabase database) {
+		return column.createSQLForGroupByClause(database);
+	}
+
+	@Override
+	public String createSQLForFromClause(DBDatabase database) {
+		return column.createSQLForFromClause(database);
 	}
 }
