@@ -363,6 +363,36 @@ public abstract class QueryableDatatype<T> extends Object implements Serializabl
 	}
 
 	/**
+	 * Gets the current literal value of this queryable data type or the default
+	 * value specified if no values is set or available. The returned value
+	 * <i>should</i> be in the correct type as appropriate for the type of
+	 * queryable data type.
+	 *
+	 * <p>
+	 * This method will return NULL if the QDT represents a database NULL OR the
+	 * field is undefined. Use {@link #isNull() } and {@link #isDefined() } to
+	 * differentiate the 2 states.
+	 *
+	 * <p>
+	 * Undefined QDTs represents a QDT that is not a field from the database.
+	 * Undefined QDTs are similar to {@link DBRow#isDefined undefined DBRows}
+	 *
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
+	 * @param defaultValue the value to return when the actual value is not set or is null
+	 * @return the literal value, if defined, which may be null
+	 */
+	public T getValue(T defaultValue) {
+		if (undefined || isNull()) {
+			return defaultValue;
+		} else {
+			final T literalValue1 = getLiteralValue();
+			return literalValue1 == null ? defaultValue : literalValue1;
+		}
+	}
+
+	/**
 	 * Gets the current literal value of this queryable data type or the value
 	 * supplied if the value is NULL.
 	 *
@@ -725,7 +755,7 @@ public abstract class QueryableDatatype<T> extends Object implements Serializabl
 	 * <p>
 	 * This method indicates whether the field represented by this object is NULL
 	 * in the database sense.
-	 * 
+	 *
 	 * <p>
 	 * If you are trying to set a test for a query, use permittedOnlyNull or
 	 * excludedOnlyNull instead</p>
