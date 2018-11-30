@@ -146,4 +146,21 @@ public class DBInsertTest extends AbstractTest {
 		public DBString name = new DBString();
 
 	}
+	
+	public static class TestValueRetrievalWith2PKs extends DBRow {
+
+		private static final long serialVersionUID = 1L;
+
+		@DBPrimaryKey
+		@DBColumn
+		public DBInteger pk_uid = new DBInteger();
+
+		@DBPrimaryKey
+		@DBColumn
+		public DBInteger pk_other_uid = new DBInteger();
+
+		@DBColumn
+		public DBString name = new DBString();
+
+	}
 }
