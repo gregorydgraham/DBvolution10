@@ -155,7 +155,7 @@ public class DBDatabaseClusterTest extends AbstractTest {
 		}
 	}
 
-	@Test // Failed testing
+	@Test 
 	public synchronized void testDatabaseRemovedAfterErrorInQuery() throws SQLException {
 		DBDatabaseCluster cluster
 				= new DBDatabaseCluster(
@@ -178,7 +178,7 @@ public class DBDatabaseClusterTest extends AbstractTest {
 		}
 	}
 
-	@Test// Failed testing
+	@Test
 	public synchronized void testLastDatabaseCannotBeRemovedAfterErrorInQuery() throws SQLException {
 		DBDatabaseCluster cluster
 				= new DBDatabaseCluster(
@@ -199,16 +199,6 @@ public class DBDatabaseClusterTest extends AbstractTest {
 				System.out.println(e.getMessage());
 			}
 			Assert.assertThat(cluster.size(), is(1));
-//			try {
-//				List<DBQueryRow> allRows = query.getAllRows();
-//				Assert.fail("Should have thrown an exception");
-//			} catch (SQLException e) {
-//				Assert.assertThat(e, is(instanceOf(SQLException.class)));
-//				System.out.println("CORRECT EXCEPTION: " + e.getMessage());
-//			} catch (Exception e) {
-//				Assert.fail("Should have thrown an SQLException");
-//			}
-//			Assert.assertThat(cluster.size(), is(1));
 		} finally {
 			Assert.assertThat(cluster.size(), Matchers.greaterThan(0));
 			cluster.dismantle();
@@ -286,7 +276,7 @@ public class DBDatabaseClusterTest extends AbstractTest {
 		}
 	}
 
-	@Test // Failed Testing 
+	@Test
 	public synchronized void testDatabaseRemovedAfterErrorInDelete() throws SQLException {
 		DBDatabaseCluster cluster
 				= new DBDatabaseCluster(
@@ -309,7 +299,7 @@ public class DBDatabaseClusterTest extends AbstractTest {
 		}
 	}
 
-	@Test // Failed Testing
+	@Test
 	public synchronized void testDatabaseRemovedAfterErrorInInsert() throws SQLException {
 		DBDatabaseCluster cluster
 				= new DBDatabaseCluster(
@@ -334,7 +324,7 @@ public class DBDatabaseClusterTest extends AbstractTest {
 		}
 	}
 
-	@Test //Failed testing
+	@Test
 	public synchronized void testDatabaseRemovedAfterErrorInUpdate() throws SQLException {
 		DBDatabaseCluster cluster
 				= new DBDatabaseCluster(
@@ -360,21 +350,7 @@ public class DBDatabaseClusterTest extends AbstractTest {
 			cluster.dismantle();
 		}
 	}
-
-//	@Test // OBSOLETE - Adding IF EXISTS has meant this doesn't work
-//	public synchronized void testDatabaseRemovedAfterErrorInDropTable() throws SQLException {
-//		DBDatabaseCluster cluster = new DBDatabaseCluster("testDatabaseRemovedAfterErrorInDropTable", false, database);
-//		cluster.setAutoRebuild(false);
-//		H2MemoryDB soloDB2 = new H2MemoryDB("DBDatabaseClusterTest5", "who", "what", true);
-//		cluster.addDatabaseAndWait(soloDB2);
-//		Assert.assertThat(cluster.size(), is(2));
-//		try {
-//			cluster.preventDroppingOfTables(false);
-//			cluster.createTable(new TableThatDoesntExistOnTheCluster());
-//		} catch (SQLException | AccidentalDroppingOfTableException | AutoCommitActionDuringTransactionException e) {
-//		}
-//		Assert.assertThat(cluster.size(), is(1));
-//	}
+	
 	@Test
 	public synchronized void testDatabaseRemovedAfterErrorInCreateTable() throws SQLException {
 		DBDatabaseCluster cluster
