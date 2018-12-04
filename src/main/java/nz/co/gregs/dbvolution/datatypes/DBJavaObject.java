@@ -109,6 +109,11 @@ public class DBJavaObject<O> extends DBLargeObject<O> {
 			} catch (IOException | ClassNotFoundException ex) {
 				Logger.getLogger(DBJavaObject.class.getName()).log(Level.SEVERE, null, ex);
 			}
+			try {
+				inputStream.close();
+			} catch (IOException ex) {
+				Logger.getLogger(DBJavaObject.class.getName()).log(Level.SEVERE, null, ex);
+			}
 		}
 		return returnValue;
 	}
@@ -133,6 +138,11 @@ public class DBJavaObject<O> extends DBLargeObject<O> {
 						returnValue = (O) input.readObject();
 					}
 				} catch (IOException | ClassNotFoundException ex) {
+					Logger.getLogger(DBJavaObject.class.getName()).log(Level.SEVERE, null, ex);
+				}
+				try {
+					inputStream.close();
+				} catch (IOException ex) {
 					Logger.getLogger(DBJavaObject.class.getName()).log(Level.SEVERE, null, ex);
 				}
 			}
@@ -208,8 +218,7 @@ public class DBJavaObject<O> extends DBLargeObject<O> {
 					byte[] bytes = concatAllByteArrays(byteArrays);
 					byte[] decodeBuffer = Base64.decodeBase64(bytes);
 
-					ObjectInputStream decodedInput = new ObjectInputStream(new ByteArrayInputStream(decodeBuffer));
-					try {
+					try (ObjectInputStream decodedInput = new ObjectInputStream(new ByteArrayInputStream(decodeBuffer))) {
 						obj = (O) decodedInput.readObject();
 					} catch (ClassNotFoundException ex) {
 						Logger.getLogger(DBJavaObject.class.getName()).log(Level.SEVERE, null, ex);
@@ -253,8 +262,9 @@ public class DBJavaObject<O> extends DBLargeObject<O> {
 						throw new DBRuntimeException(ex);
 					}
 					byte[] bytes = concatAllByteArrays(byteArrays);
-					ObjectInputStream objectInput = new ObjectInputStream(new ByteArrayInputStream(bytes));
-					returnValue = (O) objectInput.readObject();
+					try (ObjectInputStream objectInput = new ObjectInputStream(new ByteArrayInputStream(bytes))) {
+						returnValue = (O) objectInput.readObject();
+					}
 				}
 			} catch (IOException | ClassNotFoundException ex) {
 				Logger.getLogger(DBJavaObject.class.getName()).log(Level.SEVERE, null, ex);

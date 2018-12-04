@@ -100,11 +100,11 @@ public class DBLargeText extends DBLargeObject<byte[]> {
 	@Override
 	public void setValue(byte[] byteArray) {
 		super.setLiteralValue(byteArray);
-		if (byteArray == null) {
-			byteStream = new BufferedInputStream(new ByteArrayInputStream(new byte[]{}));
-		} else {
-			byteStream = new BufferedInputStream(new ByteArrayInputStream(byteArray));
-		}
+//		if (byteArray == null) {
+//			byteStream = new BufferedInputStream(new ByteArrayInputStream(new byte[]{}));
+//		} else {
+//			byteStream = new BufferedInputStream(new ByteArrayInputStream(byteArray));
+//		}
 	}
 
 	/**
@@ -118,7 +118,7 @@ public class DBLargeText extends DBLargeObject<byte[]> {
 	 */
 	public void setValue(InputStream inputViaStream) {
 		super.setLiteralValue(null);
-		byteStream = new BufferedInputStream(inputViaStream);
+//		byteStream = new BufferedInputStream(inputViaStream);
 	}
 
 	/**
@@ -151,15 +151,15 @@ public class DBLargeText extends DBLargeObject<byte[]> {
 
 	private byte[] getFromBinaryStream(ResultSet resultSet, String fullColumnName) throws SQLException {
 		byte[] bytes = new byte[]{};
-		InputStream inputStream;
-		inputStream = resultSet.getBinaryStream(fullColumnName);
-		if (resultSet.wasNull()) {
-			inputStream = null;
-		}
-		if (inputStream == null) {
-			this.setToNull();
-		} else {
-			bytes = getBytesFromInputStream(inputStream);
+		try (InputStream inputStream = resultSet.getBinaryStream(fullColumnName)) {
+			if (resultSet.wasNull()) {
+				this.setToNull();
+				return bytes;
+			} else {
+				bytes = getBytesFromInputStream(inputStream);
+			}
+		} catch (IOException ex) {
+			Logger.getLogger(DBLargeText.class.getName()).log(Level.SEVERE, null, ex);
 		}
 		return bytes;
 	}
@@ -173,8 +173,11 @@ public class DBLargeText extends DBLargeObject<byte[]> {
 		if (blob == null) {
 			this.setToNull();
 		} else {
-			InputStream inputStream = blob.getBinaryStream();
-			bytes = getBytesFromInputStream(inputStream);
+			try (InputStream inputStream = blob.getBinaryStream()) {
+				bytes = getBytesFromInputStream(inputStream);
+			} catch (IOException ex) {
+				Logger.getLogger(DBLargeText.class.getName()).log(Level.SEVERE, null, ex);
+			}
 		}
 		return bytes;
 	}
@@ -200,10 +203,10 @@ public class DBLargeText extends DBLargeObject<byte[]> {
 		}
 	}
 
-	private byte[] getBytesFromInputStream(InputStream inputStream) {
+	private byte[] getBytesFromInputStream(InputStream inputStream) throws IOException {
 		byte[] bytes;
-		InputStream input = new BufferedInputStream(inputStream);
 		List<byte[]> byteArrays = new ArrayList<>();
+		try(InputStream input = new BufferedInputStream(inputStream)){
 
 		try {
 			byte[] resultSetBytes;
@@ -231,7 +234,7 @@ public class DBLargeText extends DBLargeObject<byte[]> {
 				Logger.getLogger(DBLargeBinary.class.getName()).log(Level.SEVERE, null, ex);
 				throw new DBRuntimeException(ex);
 			}
-		}
+		}}
 		bytes = concatAllByteArrays(byteArrays);
 		return bytes;
 	}
@@ -391,10 +394,8 @@ public class DBLargeText extends DBLargeObject<byte[]> {
 	 */
 	public byte[] setFromFileSystem(File originalFile) throws FileNotFoundException, IOException {
 		byte[] bytes = new byte[(int) originalFile.length()];
-		InputStream input = null;
-		try {
+		try (InputStream input = new BufferedInputStream(new FileInputStream(originalFile))) {
 			int totalBytesRead = 0;
-			input = new BufferedInputStream(new FileInputStream(originalFile));
 			while (totalBytesRead < bytes.length) {
 				int bytesRemaining = bytes.length - totalBytesRead;
 				//input.read() returns -1, 0, or more :
@@ -402,10 +403,6 @@ public class DBLargeText extends DBLargeObject<byte[]> {
 				if (bytesRead > 0) {
 					totalBytesRead += bytesRead;
 				}
-			}
-		} finally {
-			if (input != null) {
-				input.close();
 			}
 		}
 		setValue(bytes);
@@ -495,10 +492,11 @@ public class DBLargeText extends DBLargeObject<byte[]> {
 	 */
 	@Override
 	public InputStream getInputStream() {
-		if (byteStream == null) {
-			this.setValue(getBytes());
-		}
-		return byteStream;
+		return new BufferedInputStream(new ByteArrayInputStream(getBytes()));
+//		if (byteStream == null) {
+//			this.setValue(getBytes());
+//		}
+//		return byteStream;
 	}
 
 	/**

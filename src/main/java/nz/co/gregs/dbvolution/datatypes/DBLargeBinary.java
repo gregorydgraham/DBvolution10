@@ -162,6 +162,11 @@ public class DBLargeBinary extends DBLargeObject<byte[]> {
 		} else {
 			bytes = getBytesFromInputStream(inputStream);
 		}
+		try {
+			inputStream.close();
+		} catch (IOException ex) {
+			Logger.getLogger(DBLargeBinary.class.getName()).log(Level.SEVERE, null, ex);
+		}
 		return bytes;
 	}
 
@@ -176,6 +181,11 @@ public class DBLargeBinary extends DBLargeObject<byte[]> {
 		} else {
 			InputStream inputStream = blob.getBinaryStream();
 			bytes = getBytesFromInputStream(inputStream);
+			try {
+				inputStream.close();
+			} catch (IOException ex) {
+				Logger.getLogger(DBLargeBinary.class.getName()).log(Level.SEVERE, null, ex);
+			}
 		}
 		return bytes;
 	}

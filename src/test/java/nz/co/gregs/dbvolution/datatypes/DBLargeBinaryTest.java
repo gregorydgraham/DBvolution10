@@ -15,10 +15,14 @@
  */
 package nz.co.gregs.dbvolution.datatypes;
 
+import com.google.common.io.ByteStreams;
+import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
 import java.sql.SQLException;
 import nz.co.gregs.dbvolution.DBRow;
@@ -33,6 +37,7 @@ import nz.co.gregs.dbvolution.example.CompanyLogo;
 import nz.co.gregs.dbvolution.generic.AbstractTest;
 import nz.co.gregs.dbvolution.utility.ImageCompare;
 import org.apache.commons.codec.binary.Hex;
+import org.h2.util.IOUtils;
 import org.junit.Assert;
 import org.junit.Test;
 import static org.hamcrest.Matchers.*;
@@ -183,6 +188,99 @@ public class DBLargeBinaryTest extends AbstractTest {
 		firstRow.imageBytes.writeToFileSystem(newFile);
 		Assert.assertThat(newFile.length(), is(image.length()));
 		ImageCompare imgcomp = new ImageCompare(newFile, image);
+		imgcomp.setParameters(8, 6, 5, 10);
+		Assert.assertThat(imgcomp.match(), is(true));
+	}
+
+	@Test
+	public void retrieveRowWithBinaryObjectUsingInputStreamTwice() throws FileNotFoundException, IOException, SQLException, UnexpectedNumberOfRowsException, ClassNotFoundException, InstantiationException {
+
+		CompanyLogoForRetreivingBinaryObject blobTable = new CompanyLogoForRetreivingBinaryObject();
+
+		database.preventDroppingOfTables(false);
+		database.dropTableNoExceptions(blobTable);
+		database.createTable(blobTable);
+
+		int primaryKey = 3;
+		blobTable.logoID.setValue(primaryKey);
+		blobTable.carCompany.setValue(1);//Toyota
+		blobTable.imageFilename.setValue("toyota_logo.jpg");
+		File image = new File("toyota_share_logo.jpg");
+		blobTable.imageBytes.setValue(new FileInputStream(image));
+		database.insert(blobTable);
+
+		File newFile = new File("retrieveRowWithBinaryObjectUsingInputStreamTwice.jpg");
+		try {
+			newFile.delete();
+		} catch (Exception exp) {
+			;// I just need it gone
+		}
+
+		blobTable = new CompanyLogoForRetreivingBinaryObject();
+		CompanyLogoForRetreivingBinaryObject firstRow = database.getDBTable(blobTable).getRowsByPrimaryKey(primaryKey).get(0);
+
+		newFile.createNewFile();
+		BufferedOutputStream out = new BufferedOutputStream(new FileOutputStream(newFile));
+		InputStream in = firstRow.imageBytes.getInputStream();
+		ByteStreams.copy(in, out);
+		in.close();
+		out.close();
+
+		Assert.assertThat(newFile.length(), is(image.length()));
+		ImageCompare imgcomp = new ImageCompare(newFile, image);
+		imgcomp.setParameters(8, 6, 5, 10);
+		Assert.assertThat(imgcomp.match(), is(true));
+
+		newFile.delete();
+		newFile.createNewFile();
+		out = new BufferedOutputStream(new FileOutputStream(newFile));
+		in = firstRow.imageBytes.getInputStream();
+		ByteStreams.copy(in, out);
+		in.close();
+		out.close();
+
+		Assert.assertThat(newFile.length(), is(image.length()));
+		imgcomp = new ImageCompare(newFile, image);
+		imgcomp.setParameters(8, 6, 5, 10);
+		Assert.assertThat(imgcomp.match(), is(true));
+	}
+
+	@Test
+	public void retrieveRowWithBinaryObjectUsingWriteToFileSystemTwice() throws FileNotFoundException, IOException, SQLException, UnexpectedNumberOfRowsException, ClassNotFoundException, InstantiationException {
+
+		CompanyLogoForRetreivingBinaryObject blobTable = new CompanyLogoForRetreivingBinaryObject();
+
+		database.preventDroppingOfTables(false);
+		database.dropTableNoExceptions(blobTable);
+		database.createTable(blobTable);
+
+		int primaryKey = 3;
+		blobTable.logoID.setValue(primaryKey);
+		blobTable.carCompany.setValue(1);//Toyota
+		blobTable.imageFilename.setValue("toyota_logo.jpg");
+		File image = new File("toyota_share_logo.jpg");
+		blobTable.imageBytes.setValue(new FileInputStream(image));
+		database.insert(blobTable);
+
+		File newFile = new File("retrieveRowWithBinaryObjectUsingInputStream.jpg");
+		try {
+			newFile.delete();
+		} catch (Exception exp) {
+			;// I just need it gone
+		}
+
+		blobTable = new CompanyLogoForRetreivingBinaryObject();
+		CompanyLogoForRetreivingBinaryObject firstRow = database.getDBTable(blobTable).getRowsByPrimaryKey(primaryKey).get(0);
+
+		firstRow.imageBytes.writeToFileSystem(newFile);
+		Assert.assertThat(newFile.length(), is(image.length()));
+		ImageCompare imgcomp = new ImageCompare(newFile, image);
+		imgcomp.setParameters(8, 6, 5, 10);
+		Assert.assertThat(imgcomp.match(), is(true));
+
+		firstRow.imageBytes.writeToFileSystem(newFile);
+		Assert.assertThat(newFile.length(), is(image.length()));
+		imgcomp = new ImageCompare(newFile, image);
 		imgcomp.setParameters(8, 6, 5, 10);
 		Assert.assertThat(imgcomp.match(), is(true));
 	}
