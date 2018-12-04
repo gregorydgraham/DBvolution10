@@ -483,17 +483,9 @@ public class DBLargeBinary extends DBLargeObject<byte[]> {
 				}
 			}
 			if (originalFile.exists()) {
-				OutputStream output = null;
-				try {
-					output = new BufferedOutputStream(new FileOutputStream(originalFile));
+				try (BufferedOutputStream output = new BufferedOutputStream(new FileOutputStream(originalFile))) {
 					output.write(getBytes());
 					output.flush();
-					output.close();
-					output = null;
-				} finally {
-					if (output != null) {
-						output.close();
-					}
 				}
 			} else {
 				throw new FileNotFoundException("Unable Create File: the file \"" + originalFile.getAbsolutePath() + " could not be found or created.");
@@ -503,6 +495,8 @@ public class DBLargeBinary extends DBLargeObject<byte[]> {
 
 	/**
 	 * Returns the internal InputStream.
+	 * 
+	 * <p>Remember to close the InputStream.
 	 *
 	 * <p style="color: #F90;">Support DBvolution at
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>

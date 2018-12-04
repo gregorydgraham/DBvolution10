@@ -37,7 +37,6 @@ import nz.co.gregs.dbvolution.example.CompanyLogo;
 import nz.co.gregs.dbvolution.generic.AbstractTest;
 import nz.co.gregs.dbvolution.utility.ImageCompare;
 import org.apache.commons.codec.binary.Hex;
-import org.h2.util.IOUtils;
 import org.junit.Assert;
 import org.junit.Test;
 import static org.hamcrest.Matchers.*;
