@@ -61,7 +61,7 @@ public class DataModelTest extends AbstractTest {
 		Set<Class<? extends DBDatabase>> result = DataModel.getUseableDBDatabaseClasses();
 		Map<String, Class<? extends DBDatabase>> conMap = new HashMap<>();
 		for (Class<? extends DBDatabase> val : result) {
-			conMap.put(val.toString(),val);
+			conMap.put(val.toString(), val);
 		}
 		Set<String> constr = conMap.keySet();
 		List<String> knownStrings = new ArrayList<>();
@@ -75,8 +75,8 @@ public class DataModelTest extends AbstractTest {
 		knownStrings.add("class nz.co.gregs.dbvolution.generic.AbstractTest$H2TestDatabase");
 		knownStrings.add("class nz.co.gregs.dbvolution.DBDatabaseClusterTest$1");
 		for (String knownString : knownStrings) {
-			if(!constr.contains(knownString)){
-				System.out.println(""+knownString);
+			if (!constr.contains(knownString)) {
+				System.out.println("" + knownString);
 			}
 			Assert.assertTrue(constr.contains(knownString));
 			conMap.remove(knownString);
@@ -90,9 +90,9 @@ public class DataModelTest extends AbstractTest {
 	@Test
 	public void testGetDBDatabaseConstructors() {
 		Set<Constructor<DBDatabase>> result = DataModel.getDBDatabaseConstructors();
-		Map<String, Constructor<DBDatabase>> conMap = new HashMap<String,Constructor<DBDatabase>>();
+		Map<String, Constructor<DBDatabase>> conMap = new HashMap<String, Constructor<DBDatabase>>();
 		for (Constructor<DBDatabase> constructor : result) {
-			conMap.put(constructor.toString(),constructor);
+			conMap.put(constructor.toString(), constructor);
 		}
 		Set<String> constr = conMap.keySet();
 		List<String> knownStrings = new ArrayList<>();
@@ -107,10 +107,9 @@ public class DataModelTest extends AbstractTest {
 		knownStrings.add("public nz.co.gregs.dbvolution.generic.AbstractTest$MSSQLServerTestDB(java.lang.String,java.lang.String,java.lang.String,java.lang.String,java.lang.String,java.lang.String) throws java.sql.SQLException");
 		knownStrings.add("private nz.co.gregs.dbvolution.generic.AbstractTest$SQLiteTestDB(java.io.File,java.lang.String,java.lang.String) throws java.io.IOException,java.sql.SQLException");
 		knownStrings.add("public nz.co.gregs.dbvolution.generic.AbstractTest$SQLiteTestDB(java.lang.String,java.lang.String,java.lang.String) throws java.io.IOException,java.sql.SQLException");
-		knownStrings.add("nz.co.gregs.dbvolution.DBDatabaseClusterTest$1(nz.co.gregs.dbvolution.DBDatabaseClusterTest,java.lang.String,java.lang.String,java.lang.String,boolean)");
 		for (String knownString : knownStrings) {
-			if(!constr.contains(knownString)){
-				System.out.println(""+knownString);
+			if (!constr.contains(knownString)) {
+				System.out.println("CONSTRUCTOR: -" + knownString+"-");
 			}
 			Assert.assertTrue(constr.contains(knownString));
 			conMap.remove(knownString);
