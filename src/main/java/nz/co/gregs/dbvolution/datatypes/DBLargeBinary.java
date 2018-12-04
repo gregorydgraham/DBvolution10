@@ -152,18 +152,12 @@ public class DBLargeBinary extends DBLargeObject<byte[]> {
 
 	private byte[] getFromBinaryStream(ResultSet resultSet, String fullColumnName) throws SQLException {
 		byte[] bytes = new byte[]{};
-		InputStream inputStream;
-		inputStream = resultSet.getBinaryStream(fullColumnName);
-		if (resultSet.wasNull()) {
-			inputStream = null;
-		}
-		if (inputStream == null) {
-			this.setToNull();
-		} else {
-			bytes = getBytesFromInputStream(inputStream);
-		}
-		try {
-			inputStream.close();
+		try (InputStream inputStream = resultSet.getBinaryStream(fullColumnName)) {
+			if (inputStream == null) {
+				this.setToNull();
+			} else {
+				bytes = getBytesFromInputStream(inputStream);
+			}
 		} catch (IOException ex) {
 			Logger.getLogger(DBLargeBinary.class.getName()).log(Level.SEVERE, null, ex);
 		}
@@ -495,8 +489,9 @@ public class DBLargeBinary extends DBLargeObject<byte[]> {
 
 	/**
 	 * Returns the internal InputStream.
-	 * 
-	 * <p>Remember to close the InputStream.
+	 *
+	 * <p>
+	 * Remember to close the InputStream.
 	 *
 	 * <p style="color: #F90;">Support DBvolution at
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
