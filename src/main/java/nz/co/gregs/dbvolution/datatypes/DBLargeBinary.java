@@ -514,7 +514,11 @@ public class DBLargeBinary extends DBLargeObject<byte[]> {
 	 * @return the byte[] value of this DBLargeBinary.
 	 */
 	public byte[] getBytes() {
-		return this.getLiteralValue();
+		final byte[] litVal = this.getLiteralValue();
+		if (litVal != null) {
+			return litVal;
+		}
+		return new byte[]{};
 	}
 
 	@Override
