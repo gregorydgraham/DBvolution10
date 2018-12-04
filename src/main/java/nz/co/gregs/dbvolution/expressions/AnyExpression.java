@@ -725,4 +725,20 @@ public abstract class AnyExpression<B extends Object, R extends AnyResult<B>, D 
 	public SortProvider descending(){
 		return new SortProvider.Descending(this);
 	}
+	
+	public SortProvider lowestFirst(){
+		return ascending();
+	}
+	
+	public SortProvider highestFirst(){
+		return descending();
+	}
+	
+	public SortProvider lowestLast(){
+		return descending();
+	}
+	
+	public SortProvider highestLast(){
+		return ascending();
+	}
 }
