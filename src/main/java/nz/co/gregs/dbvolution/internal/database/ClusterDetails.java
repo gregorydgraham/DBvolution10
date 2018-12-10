@@ -267,7 +267,7 @@ public class ClusterDetails implements Serializable {
 		prefs.remove(getClusterName());
 	}
 
-	private DatabaseConnectionSettings getAuthoritativeDatabase() {
+	public DatabaseConnectionSettings getAuthoritativeDatabase() {
 		if (useAutoRebuild) {
 			String encodedSettings = prefs.get(getClusterName(), null);
 			if (encodedSettings != null) {
