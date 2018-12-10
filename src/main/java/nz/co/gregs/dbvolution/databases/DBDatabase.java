@@ -43,7 +43,6 @@ import nz.co.gregs.dbvolution.actions.DBActionList;
 import nz.co.gregs.dbvolution.actions.DBQueryable;
 import nz.co.gregs.dbvolution.columns.ColumnProvider;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
-import nz.co.gregs.dbvolution.datatypes.DBInteger;
 import nz.co.gregs.dbvolution.datatypes.DBLargeObject;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 import nz.co.gregs.dbvolution.exceptions.*;
@@ -2156,6 +2155,10 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 	 */
 	public <T extends DBRow> DBRecursiveQuery<T> getDBRecursiveQuery(DBQuery query, ColumnProvider keyToFollow, T dbRow) {
 		return new DBRecursiveQuery<T>(query, keyToFollow);
+	}
+
+	public boolean isDBDatabaseCluster() {
+		return (this instanceof DBDatabaseCluster);
 	}
 
 	public static enum ResponseToException {
