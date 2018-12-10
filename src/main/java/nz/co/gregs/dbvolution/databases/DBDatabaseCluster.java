@@ -109,9 +109,15 @@ public class DBDatabaseCluster extends DBDatabase {
 	protected final ClusterDetails details;
 	private transient final ExecutorService ACTION_THREAD_POOL;
 	private final transient DBStatementCluster clusterStatement;
-//	private final ScheduledExecutorService reconnectionThreadPool;
-//	final int RECONNECTION_OFFSET = 5;
-//	private static final TimeUnit RECONNECTION_FREQUENCY = TimeUnit.MINUTES;
+
+	/**
+	 * Nope.
+	 * 
+	 * @return ClusterDetails
+	 */
+	public ClusterDetails getClusterDetails() {
+		return details;
+	}
 
 	public static enum Status {
 
@@ -1135,11 +1141,6 @@ public class DBDatabaseCluster extends DBDatabase {
 		if (!okExceptions.contains(e.getClass())) {
 			if (size() < 2) {
 				return HandlerAdvice.ABORT;
-//				if (e instanceof SQLException) {
-//					throw (SQLException) e;
-//				} else {
-//					throw new SQLException(e);
-//				}
 			} else {
 				ejectDatabase(readyDatabase);
 				return HandlerAdvice.REQUERY;
@@ -1151,11 +1152,6 @@ public class DBDatabaseCluster extends DBDatabase {
 
 	private HandlerAdvice handleExceptionDuringAction(Exception e, final DBDatabase readyDatabase) throws SQLException, UnableToRemoveLastDatabaseFromClusterException {
 		if (size() < 2) {
-//			if (e instanceof SQLException) {
-//				throw (SQLException) e;
-//			} else {
-//				throw new SQLException(e);
-//			}
 			return HandlerAdvice.ABORT;
 		} else {
 			ejectDatabase(readyDatabase);
