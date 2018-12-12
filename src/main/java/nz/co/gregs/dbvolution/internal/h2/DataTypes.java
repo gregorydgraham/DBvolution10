@@ -30,7 +30,7 @@ public enum DataTypes implements DBVFeature {
 	/**
 	 *
 	 */
-	INTEGER("BIGINT", "INT8", new DBVFeature[]{}),
+//	INTEGER("BIGINT", "INT8", new DBVFeature[]{}),
 	/**
 	 *
 	 */

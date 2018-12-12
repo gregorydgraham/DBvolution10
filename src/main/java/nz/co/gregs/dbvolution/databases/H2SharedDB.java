@@ -43,7 +43,7 @@ public class H2SharedDB extends H2DB {
 
 	private final static long serialVersionUID = 1l;
 
-	 Server server = null;
+	Server server = null;
 
 	public H2SharedDB(File file, String username, String password) throws IOException, SQLException {
 		this(file.getAbsoluteFile().toString(), username, password);
@@ -77,19 +77,73 @@ public class H2SharedDB extends H2DB {
 
 	@Override
 	protected String getUrlFromSettings(DatabaseConnectionSettings settings) {
-		String hostname = settings.getHost() == null || settings.getHost().isEmpty() ? "localhost" : settings.getHost();String url = settings.getUrl();
-		return url != null && !url.isEmpty() ? url : "jdbc:h2:tcp://" + hostname + "/" + settings.getDatabaseName();
+		String hostname = settings.getHost() == null || settings.getHost().isEmpty() ? "localhost" : settings.getHost();
+		String port = settings.getPort() == null || settings.getPort().isEmpty() ? "9123" : settings.getPort();
+		String url = settings.getUrl();
+		return url != null && !url.isEmpty() ? url : "jdbc:h2:tcp://" + hostname + ":" + port + "/" + settings.getDatabaseName();
 	}
 
 	@Override
 	protected void startServerIfRequired() {
-		if (server == null) {
-			try {
-				server = Server.createTcpServer("-tcpAllowOthers").start();
-			} catch (SQLException ex) {
-				Logger.getLogger(H2SharedDB.class.getName()).log(Level.SEVERE, null, ex);
+//		System.out.println("nz.co.gregs.dbvolution.databases.H2SharedDB.startServerIfRequired()");
+//		System.out.println("getHost(): " + getHost());
+		if (isLocalhostServer()) {
+//			System.out.println("CHECK H2 SERVER IS RUNNING...");
+			if (server == null || !server.isRunning(false)) {
+				if (serverIsUnreachable()) {
+//					System.out.println("STARTING H2 SERVER...");
+					try {
+						if (getPort().isEmpty()) {
+							server = Server.createTcpServer("-tcpAllowOthers", "-tcpDaemon").start();
+						} else {
+							server = Server.createTcpServer("-tcpAllowOthers", "-tcpDaemon", "-tcpPort", getPort()).start();
+						}
+						if (server != null && server.isRunning(false)) {
+//							System.out.println("STARTED H2 SERVER ON " + server.getURL());
+						} else {
+//							System.out.println("H2 SERVER FAILED.");
+						}
+					} catch (SQLException ex) {
+//						System.out.println("FAILED H2 SERVER: " + ex.getLocalizedMessage());
+						Logger.getLogger(H2SharedDB.class.getName()).log(Level.SEVERE, null, ex);
+					}
+				} else {
+//					System.out.println("H2 SERVER ALREADY RUNNING IN ANOTHER VM.");
+				}
+			} else {
+//				System.out.println("H2 SERVER IS RUNNING...");
 			}
+		} else {
+//			System.out.println("H2 SERVER NOT REQUIRED.");
 		}
 	}
-	
+
+	public boolean isLocalhostServer() {
+		return getHost() == null || getHost().equals("") || getHost().equalsIgnoreCase("localhost") || getHost().startsWith("127.0.0");
+	}
+
+	@Override
+	public synchronized void stop() {
+		super.stop();
+		if (server != null && server.isRunning(false)) {
+//			System.out.println("STOPPING H2 SERVER...");
+			server.stop();
+		}
+//		System.out.println("ALL STOPPED.");
+	}
+
+	private boolean serverIsUnreachable() {
+		try {
+			getConnectionFromDriverManager().close();
+//			System.out.println("SUCCESSFULLY OPENED AND CLOSED A CONNECTION TO THE SERVER.");
+			return false;
+		} catch (Exception ex) {
+//			ex.printStackTrace();
+//			Logger.getLogger(H2SharedDB.class.getName()).log(Level.SEVERE, null, ex);
+//			System.out.println("FAILED TO CONNECT TO THE SERVER.");
+		}
+//		System.out.println("SERVER IS UNREACHABLE.");
+		return true;
+	}
+
 }

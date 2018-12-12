@@ -373,6 +373,16 @@ public class DBDatabaseClusterTest extends AbstractTest {
 			cluster.dismantle();
 		}
 	}
+	
+	@Test
+	public synchronized void testDatabaseTableExists() throws SQLException {
+		Assert.assertTrue(database.tableExists(new TableThatDoesExistOnTheCluster()));
+	}
+	
+	@Test
+	public synchronized void testDatabaseTableDoesNotExists() throws SQLException {
+		Assert.assertFalse(database.tableExists(new TableThatDoesntExistOnTheCluster()));
+	}
 
 	@Test
 	public void testYAMLFileProcessing() {
@@ -394,13 +404,13 @@ public class DBDatabaseClusterTest extends AbstractTest {
 				is("Active Databases: 0 of 0\nUnsynchronised: 0 of 0\nEjected Databases: 0 of 0"));
 
 		DatabaseConnectionSettings source = new DatabaseConnectionSettings();
-		source.setDbdatabase(H2MemoryDB.class.getCanonicalName());
+		source.setDbdatabaseClass(H2MemoryDB.class.getCanonicalName());
 		source.setDatabaseName("DBDatabaseClusterWithConfigFile.h2");
 		source.setUsername("admin");
 		source.setPassword("admin");
 
 		DatabaseConnectionSettings source2 = new DatabaseConnectionSettings();
-		source2.setDbdatabase(SQLiteDB.class.getCanonicalName());
+		source2.setDbdatabaseClass(SQLiteDB.class.getCanonicalName());
 		source2.setUrl("jdbc:sqlite:DBDatabaseClusterWithConfigFile.sqlite");
 		source2.setUsername("admin");
 		source2.setPassword("admin");
@@ -472,13 +482,13 @@ public class DBDatabaseClusterTest extends AbstractTest {
 					is("Active Databases: 0 of 0\nUnsynchronised: 0 of 0\nEjected Databases: 0 of 0"));
 
 			DatabaseConnectionSettings source = new DatabaseConnectionSettings();
-			source.setDbdatabase(H2MemoryDB.class.getCanonicalName());
+			source.setDbdatabaseClass(H2MemoryDB.class.getCanonicalName());
 			source.setDatabaseName("DBDatabaseClusterWithConfigFile.h2");
 			source.setUsername("admin");
 			source.setPassword("admin");
 
 			DatabaseConnectionSettings source2 = new DatabaseConnectionSettings();
-			source2.setDbdatabase(SQLiteDB.class.getCanonicalName());
+			source2.setDbdatabaseClass(SQLiteDB.class.getCanonicalName());
 			source2.setUrl("jdbc:sqlite:DBDatabaseClusterWithConfigFile.sqlite");
 			source2.setUsername("admin");
 			source2.setPassword("admin");

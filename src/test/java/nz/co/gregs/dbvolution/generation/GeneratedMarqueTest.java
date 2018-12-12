@@ -30,6 +30,7 @@ import nz.co.gregs.dbvolution.annotations.DBForeignKey;
 import nz.co.gregs.dbvolution.annotations.DBPrimaryKey;
 import nz.co.gregs.dbvolution.annotations.DBTableName;
 import nz.co.gregs.dbvolution.databases.H2MemoryDB;
+import nz.co.gregs.dbvolution.databases.H2SharedDB;
 import nz.co.gregs.dbvolution.datatypes.DBInteger;
 import nz.co.gregs.dbvolution.datatypes.DBString;
 import nz.co.gregs.dbvolution.example.CarCompany;
@@ -244,31 +245,35 @@ public class GeneratedMarqueTest extends AbstractTest {
 	@Test
 	public void testCompiling() throws SQLException, IOException, Exception {
 		List<JavaSourceFromString> compilationUnits = new ArrayList<JavaSourceFromString>(); // input for first compilation task
-		List<DBTableClass> generateSchema = DBTableClassGenerator.generateClassesOfTables(database, "nz.co.gregs.dbvolution.generation", new Options());
-		for (DBTableClass dbcl : generateSchema) {
-			compilationUnits.add(new JavaSourceFromString(dbcl.getFullyQualifiedName(), dbcl.getJavaSource()));
-		}
-		JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
-		DiagnosticCollector<JavaFileObject> diagnostics = new DiagnosticCollector<JavaFileObject>();
-		Boolean succeeded;
-		// Try to add the classes to the TARGET directory
-		try (StandardJavaFileManager fileManager = compiler.getStandardFileManager(diagnostics, null, null)) {
+		if (database instanceof H2SharedDB) {
+              // not supported in shared inastances of H2
+		} else {
+			List<DBTableClass> generateSchema = DBTableClassGenerator.generateClassesOfTables(database, "nz.co.gregs.dbvolution.generation", new Options());
+			for (DBTableClass dbcl : generateSchema) {
+				compilationUnits.add(new JavaSourceFromString(dbcl.getFullyQualifiedName(), dbcl.getJavaSource()));
+			}
+			JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
+			DiagnosticCollector<JavaFileObject> diagnostics = new DiagnosticCollector<JavaFileObject>();
+			Boolean succeeded;
 			// Try to add the classes to the TARGET directory
-			List<File> locations = new ArrayList<File>();
-			File file = new File(System.getProperty("user.dir"), "target");
-			if (file.exists()) {
-				locations.add(file);
-			} else {
-				locations.add(new File(System.getProperty("user.dir")));
+			try (StandardJavaFileManager fileManager = compiler.getStandardFileManager(diagnostics, null, null)) {
+				// Try to add the classes to the TARGET directory
+				List<File> locations = new ArrayList<File>();
+				File file = new File(System.getProperty("user.dir"), "target");
+				if (file.exists()) {
+					locations.add(file);
+				} else {
+					locations.add(new File(System.getProperty("user.dir")));
+				}
+				fileManager.setLocation(StandardLocation.CLASS_OUTPUT, locations);
+				JavaCompiler.CompilationTask task = compiler.getTask(null, fileManager, diagnostics, null, null, compilationUnits);
+				succeeded = task.call();
+				for (Diagnostic<?> diagnostic : diagnostics.getDiagnostics()) {
+					succeeded = false;
+				}
 			}
-			fileManager.setLocation(StandardLocation.CLASS_OUTPUT, locations);
-			JavaCompiler.CompilationTask task = compiler.getTask(null, fileManager, diagnostics, null, null, compilationUnits);
-			succeeded = task.call();
-			for (Diagnostic<?> diagnostic : diagnostics.getDiagnostics()) {
-				succeeded = false;
-			}
+			Assert.assertThat(succeeded, is(true));
 		}
-		Assert.assertThat(succeeded, is(true));
 	}
 
 	/**

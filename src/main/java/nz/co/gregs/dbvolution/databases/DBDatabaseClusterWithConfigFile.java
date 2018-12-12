@@ -241,7 +241,7 @@ public class DBDatabaseClusterWithConfigFile extends DBDatabaseCluster {
 					DBDatabase database = settings.createDBDatabase();
 
 					if (database != null) {
-						LOG.info("Adding Database: " + settings.getDbdatabase() + ":" + database.getUrlFromSettings(settings) + ":" + settings.getUsername());
+						LOG.info("Adding Database: " + settings.getDbdatabaseClass() + ":" + database.getUrlFromSettings(settings) + ":" + settings.getUsername());
 						this.addDatabaseAndWait(database);
 					}
 				}

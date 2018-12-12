@@ -191,11 +191,18 @@ public class H2DB extends DBDatabase {
 	@Override
 	public ResponseToException addFeatureToFixException(Exception exp) throws Exception {
 		boolean handledException = false;
+//			System.out.println("nz.co.gregs.dbvolution.databases.H2DB.addFeatureToFixException()");
+//			System.out.println(""+exp.getClass().getCanonicalName());
 		if (exp instanceof org.h2.jdbc.JdbcSQLException) {
 			String message = exp.getMessage();
+//			System.out.println(""+message);
 			if (message.matches("Table \"([^\"]*)\" not found; SQL statement:\n"
 					+ "DROP TABLE \\1")) {
-				handledException = true;
+				return ResponseToException.SKIPQUERY;
+//				handledException = true;
+			} else if (message.matches("Table \"([^\"]*)\" already exists; SQL statement:")) {
+				return ResponseToException.SKIPQUERY;
+				//handledException = true;
 			} else {
 				try (Statement statement = getConnection().createStatement()) {
 					if ((message.startsWith("Function \"DBV_") && message.contains("\" not found"))

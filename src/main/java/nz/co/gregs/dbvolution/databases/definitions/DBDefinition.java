@@ -6011,7 +6011,7 @@ public abstract class DBDefinition implements Serializable{
 		final QueryOptions queryOptions = new QueryOptions();
 		queryOptions.setRowLimit(1);
 		return beginSelectStatement()+getLimitRowsSubClauseDuringSelectClause(queryOptions)
-				+" * "
+				+getCountFunctionName()+"(*) c"
 				+beginFromClause()
 				+this.formatTableName(table)
 				+" "

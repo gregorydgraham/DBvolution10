@@ -91,9 +91,9 @@ public class H2DBDefinition extends DBDefinition implements SupportsDateRepeatDa
 
 	@Override
 	protected String getDatabaseDataTypeOfQueryableDatatype(QueryableDatatype<?> qdt) {
-		if (qdt instanceof DBInteger) {
+		/*if (qdt instanceof DBInteger) {
 			return DataTypes.INTEGER.datatype();
-		} else if (qdt instanceof DBDateRepeat) {
+		} else*/ if (qdt instanceof DBDateRepeat) {
 			return DataTypes.DATEREPEAT.datatype();
 		} else if (qdt instanceof DBPoint2D) {
 			return DataTypes.POINT2D.datatype();

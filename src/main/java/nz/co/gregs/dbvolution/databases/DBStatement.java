@@ -58,9 +58,6 @@ public class DBStatement implements Statement {
 	private final Connection connection;
 	private boolean isClosed = false;
 
-//	private static final List<DBStatement> DBSTATEMENT_REGISTER = new ArrayList<>();
-//	private static final List<DBStatement> DBSTATEMENT_CLOSED_REGISTER = new ArrayList<>();
-
 	/**
 	 * Creates a statement object for the given DBDatabase and Connection.
 	 *
@@ -70,8 +67,6 @@ public class DBStatement implements Statement {
 	public DBStatement(DBDatabase db, Connection connection) {
 		this.database = db;
 		this.connection = connection;
-//		this.internalStatement = connection.createStatement();
-//		DBSTATEMENT_REGISTER.add(this);
 	}
 
 	/**
@@ -87,7 +82,6 @@ public class DBStatement implements Statement {
 	public ResultSet executeQuery(String sql) throws SQLException {
 		final String logSQL = "EXECUTING QUERY: " + sql;
 		database.printSQLIfRequested(logSQL);
-//		LOG.debug(logSQL);
 		ResultSet executeQuery = null;
 		try {
 			executeQuery = getInternalStatement().executeQuery(sql);
@@ -115,18 +109,18 @@ public class DBStatement implements Statement {
 			}
 			throw new SQLException(ex);
 		}
-			try {
-				executeQuery = getInternalStatement().executeQuery(sql);
+		try {
+			executeQuery = getInternalStatement().executeQuery(sql);
+			return executeQuery;
+		} catch (SQLException exp2) {
+			if (exp.getMessage().equals(exp2.getMessage())) {
+				throw exp;
+			} else {
+				executeQuery = addFeatureAndAttemptQueryAgain(exp2, sql);
 				return executeQuery;
-			} catch (SQLException exp2) {
-				if (exp.getMessage().equals(exp2.getMessage())) {
-					throw exp;
-				} else {
-					executeQuery = addFeatureAndAttemptQueryAgain(exp2, sql);
-					return executeQuery;
-				}
 			}
 		}
+	}
 
 	/**
 	 * Executes the given SQL statement, which may be an INSERT, UPDATE, or DELETE
@@ -176,7 +170,7 @@ public class DBStatement implements Statement {
 			// Someone please tell me how you are supposed to cope 
 			// with an exception during the close method????????
 			LOG.warn("Exception occurred during close(): " + e.getMessage(), e);
-		}finally{
+		} finally {
 			setInternalStatement(null);
 		}
 	}
@@ -322,7 +316,6 @@ public class DBStatement implements Statement {
 				replaceBrokenConnection();
 			}
 		} catch (SQLException | UnableToCreateDatabaseConnectionException | UnableToFindJDBCDriver ex) {
-			//;Logger.getLogger(DBStatement.class.getName()).log(Level.INFO, "Cancel Threw An Exception", ex);
 		}
 	}
 
@@ -446,7 +439,10 @@ public class DBStatement implements Statement {
 	private boolean addFeatureAndAttemptExecuteAgain(Exception exp, String sql) throws SQLException {
 		boolean executeQuery;
 		try {
-			database.addFeatureToFixException(exp);
+			DBDatabase.ResponseToException response = database.addFeatureToFixException(exp);
+			if (response.equals(DBDatabase.ResponseToException.SKIPQUERY)) {
+				return true;
+			}
 		} catch (Exception ex) {
 			throw new SQLException("Failed To Add Support For SQL: " + exp.getMessage() + " : Original Query: " + sql, ex);
 		}
@@ -466,7 +462,10 @@ public class DBStatement implements Statement {
 	private boolean addFeatureAndAttemptExecuteAgain(Exception exp, String string, String[] strings) throws SQLException {
 		boolean executeQuery;
 		try {
-			database.addFeatureToFixException(exp);
+			DBDatabase.ResponseToException response = database.addFeatureToFixException(exp);
+			if (response.equals(DBDatabase.ResponseToException.SKIPQUERY)) {
+				return true;
+			}
 		} catch (Exception ex) {
 			throw new SQLException("Failed To Add Support For SQL: " + exp.getMessage() + " : Original Query: " + string, ex);
 		}

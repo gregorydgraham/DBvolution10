@@ -107,6 +107,7 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 	private boolean terminated = false;
 	private final List<RegularProcess> REGULAR_PROCESSORS = new ArrayList<>();
 	private static final ScheduledExecutorService REGULAR_THREAD_POOL = Executors.newSingleThreadScheduledExecutor();
+	private String label = "";
 
 	{
 		Runtime.getRuntime().addShutdownHook(new StopDatabase(this));
@@ -458,12 +459,12 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 			synchronized (getConnectionSynchronizeObject) {
 				if (this.dataSource == null) {
 					try {
-						startServerIfRequired();
 						// load the driver
 						Class.forName(getDriverName());
 					} catch (ClassNotFoundException noDriver) {
 						throw new UnableToFindJDBCDriver(getDriverName(), noDriver);
 					}
+					startServerIfRequired();
 					while (connection == null) {
 						try {
 							connection = getConnectionFromDriverManager();
@@ -1782,6 +1783,31 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 	}
 
 	/**
+	 * A label for the database for reference within an application.
+	 *
+	 * <p>
+	 * This label has no effect on the actual database connection.
+	 *
+	 * @param label
+	 */
+	public void setLabel(String label) {
+		this.label = label;
+	}
+
+	/**
+	 * A label for the database for reference within an application.
+	 *
+	 * <p>
+	 * This label has no effect on the actual database connection.
+	 *
+	 *
+	 * @return
+	 */
+	public String getLabel() {
+		return this.label;
+	}
+
+	/**
 	 * Returns whether this DBDatabase will attempt to batch multiple SQL
 	 * commands.
 	 *
@@ -2125,14 +2151,14 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 	 * <p>
 	 * DBRecursiveQuery uses the query to create the first rows of the recursive
 	 * query. This can be any query and contain any tables. However it must
-	 * contain the table T and the foreign key must be a recursive foreign key (FK) to and from
-	 * table T.
+	 * contain the table T and the foreign key must be a recursive foreign key
+	 * (FK) to and from table T.
 	 *
 	 * <p>
-	 * After the priming query has been created the FK supplied will
-	 * be followed repeatedly. The FK must be contained in one of the tables of
-	 * the priming query and it must reference the same table, that is to say it
-	 * must be a recursive foreign key.
+	 * After the priming query has been created the FK supplied will be followed
+	 * repeatedly. The FK must be contained in one of the tables of the priming
+	 * query and it must reference the same table, that is to say it must be a
+	 * recursive foreign key.
 	 *
 	 * <p>
 	 * The FK will be repeatedly followed until the root node is reached (an
@@ -2148,7 +2174,7 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 	 * @param query
 	 * @param keyToFollow
 	 * @param dbRow
-	 * @return 
+	 * @return
 	 * @throws ColumnProvidedMustBeAForeignKey
 	 * @throws ForeignKeyDoesNotReferenceATableInTheQuery
 	 * @throws ForeignKeyIsNotRecursiveException
@@ -2237,9 +2263,6 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 			}
 		} else {
 			String testQuery = getDefinition().getTableExistsSQL(table);
-//			String testQuery = getDBTable(table)
-//					.setBlankQueryAllowed(true)
-//					.setRowLimit(1).getSQLForQuery().replaceAll("(?is)SELECT .* FROM", "SELECT * FROM");
 			try (DBStatement dbStatement = getDBStatement()) {
 				ResultSet results = dbStatement.executeQuery(testQuery);
 				if (results != null) {
@@ -2344,8 +2367,9 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 	public DatabaseConnectionSettings getSettings() {
 		if (settings == null) {
 			DatabaseConnectionSettings newSettings = new DatabaseConnectionSettings();
-			newSettings.setDatabaseName(databaseName);
-			newSettings.setDbdatabase(this.getClass().getCanonicalName());
+			newSettings.setLabel(getLabel());
+			newSettings.setDatabaseName(getDatabaseName());
+			newSettings.setDbdatabaseClass(this.getClass().getCanonicalName());
 			newSettings.setExtras(getExtras());
 			newSettings.setHost(getHost());
 			newSettings.setInstance(getDatabaseInstance());

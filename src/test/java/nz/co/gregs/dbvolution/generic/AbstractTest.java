@@ -312,7 +312,7 @@ public abstract class AbstractTest {
 		public static DBDatabase getSharedDBFromSettings(String prefix)
 				throws SQLException, IOException, ClassNotFoundException, NoSuchMethodException, SecurityException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
 			DatabaseConnectionSettings settings = DatabaseConnectionSettings.getSettingsfromSystemUsingPrefix(prefix + ".");
-			settings.setDbdatabase(H2SharedDB.class.getCanonicalName());
+			settings.setDbdatabaseClass(H2SharedDB.class.getCanonicalName());
 			return settings.createDBDatabase();
 		}
 
