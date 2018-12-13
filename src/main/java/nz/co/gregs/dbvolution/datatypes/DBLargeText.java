@@ -206,35 +206,36 @@ public class DBLargeText extends DBLargeObject<byte[]> {
 	private byte[] getBytesFromInputStream(InputStream inputStream) throws IOException {
 		byte[] bytes;
 		List<byte[]> byteArrays = new ArrayList<>();
-		try(InputStream input = new BufferedInputStream(inputStream)){
+		try (InputStream input = new BufferedInputStream(inputStream)) {
 
-		try {
-			byte[] resultSetBytes;
-			final int byteArrayDefaultSize = 100000;
-			resultSetBytes = new byte[byteArrayDefaultSize];
-			int bytesRead = input.read(resultSetBytes);
-			while (bytesRead > 0) {
-				if (bytesRead == byteArrayDefaultSize) {
-					byteArrays.add(resultSetBytes);
-				} else {
-					byte[] shortBytes = new byte[bytesRead];
-					System.arraycopy(resultSetBytes, 0, shortBytes, 0, bytesRead);
-					byteArrays.add(shortBytes);
-				}
-				resultSetBytes = new byte[byteArrayDefaultSize];
-				bytesRead = input.read(resultSetBytes);
-			}
-		} catch (IOException ex) {
-			Logger.getLogger(DBLargeBinary.class.getName()).log(Level.SEVERE, null, ex);
-			throw new DBRuntimeException(ex);
-		} finally {
 			try {
-				input.close();
+				byte[] resultSetBytes;
+				final int byteArrayDefaultSize = 100000;
+				resultSetBytes = new byte[byteArrayDefaultSize];
+				int bytesRead = input.read(resultSetBytes);
+				while (bytesRead > 0) {
+					if (bytesRead == byteArrayDefaultSize) {
+						byteArrays.add(resultSetBytes);
+					} else {
+						byte[] shortBytes = new byte[bytesRead];
+						System.arraycopy(resultSetBytes, 0, shortBytes, 0, bytesRead);
+						byteArrays.add(shortBytes);
+					}
+					resultSetBytes = new byte[byteArrayDefaultSize];
+					bytesRead = input.read(resultSetBytes);
+				}
 			} catch (IOException ex) {
 				Logger.getLogger(DBLargeBinary.class.getName()).log(Level.SEVERE, null, ex);
 				throw new DBRuntimeException(ex);
+//			} finally {
+//				try {
+//					input.close();
+//				} catch (IOException ex) {
+//					Logger.getLogger(DBLargeBinary.class.getName()).log(Level.SEVERE, null, ex);
+//					throw new DBRuntimeException(ex);
+//				}
 			}
-		}}
+		}
 		bytes = concatAllByteArrays(byteArrays);
 		return bytes;
 	}
