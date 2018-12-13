@@ -361,6 +361,7 @@ public class DBDatabaseClusterTest extends AbstractTest {
 		try {
 			cluster.setAutoRebuild(false);
 			H2MemoryDB soloDB2 = new H2MemoryDB("DBDatabaseClusterTest6", "who", "what", true) {
+				private static final long serialVersionUID = 1l;
 				@Override
 				public void createTable(DBRow newTableRow) throws SQLException, AutoCommitActionDuringTransactionException {
 					if (newTableRow instanceof TableThatDoesExistOnTheCluster) {
