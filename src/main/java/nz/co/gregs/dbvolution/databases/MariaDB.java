@@ -95,45 +95,68 @@ public class MariaDB extends DBDatabase {
 		;
 	}
 
-	@Override
-	protected Map<String, String> getExtras() {
-		String jdbcURL = getJdbcURL();
+//	@Override
+//	protected Map<String, String> getExtras() {
+//		String jdbcURL = getJdbcURL();
+//		if (jdbcURL.matches(";")) {
+//			String extrasString = jdbcURL.split(";", 2)[1];
+//			return DatabaseConnectionSettings.decodeExtras(extrasString, "", "=", ";", "");
+//		} else {
+//			return new HashMap<String, String>();
+//		}
+//	}
+//
+//	@Override
+//	protected String getHost() {
+//		String jdbcURL = getJdbcURL();
+//		String noPrefix = jdbcURL.replaceAll("^jdbc:mariadb://", "");
+//			return noPrefix
+//					.split("/",2)[0]
+//					.split(":")[0];
+//		
+//	}
+//
+//	@Override
+//	protected String getDatabaseInstance() {
+//		String jdbcURL = getJdbcURL();
+//		return getExtras().get("instance");
+//	}
+//
+//	@Override
+//	protected String getPort() {
+//		String jdbcURL = getJdbcURL();
+//		String noPrefix = jdbcURL.replaceAll("^jdbc:mariadb://", "");
+//			return noPrefix
+//					.split("/",2)[0]
+//					.replaceAll("^[^:]*:", "");
+//	}
+//
+//	@Override
+//	protected String getSchema() {
+//		return "";
+//	}
+@Override
+	protected DatabaseConnectionSettings getSettingsFromJDBCURL(String jdbcURL) {
+		DatabaseConnectionSettings set = new DatabaseConnectionSettings();
+		String noPrefix = jdbcURL.replaceAll("^jdbc:mariadb://", "");
+		set.setPort(noPrefix
+					.split("/",2)[0]
+					.replaceAll("^[^:]*:+", ""));
+		set.setHost(noPrefix
+					.split("/",2)[0]
+					.split(":")[0]);
 		if (jdbcURL.matches(";")) {
 			String extrasString = jdbcURL.split(";", 2)[1];
-			return DatabaseConnectionSettings.decodeExtras(extrasString, "", "=", ";", "");
-		} else {
-			return new HashMap<String, String>();
+			set.setExtras(DatabaseConnectionSettings.decodeExtras(extrasString, "", "=", ";", ""));
 		}
+		set.setInstance(getExtras().get("instance"));
+		set.setSchema("");
+		return set;
 	}
 
 	@Override
-	protected String getHost() {
-		String jdbcURL = getJdbcURL();
-		String noPrefix = jdbcURL.replaceAll("^jdbc:mariadb://", "");
-			return noPrefix
-					.split("/",2)[0]
-					.split(":")[0];
-		
-	}
-
-	@Override
-	protected String getDatabaseInstance() {
-		String jdbcURL = getJdbcURL();
-		return getExtras().get("instance");
-	}
-
-	@Override
-	protected String getPort() {
-		String jdbcURL = getJdbcURL();
-		String noPrefix = jdbcURL.replaceAll("^jdbc:mariadb://", "");
-			return noPrefix
-					.split("/",2)[0]
-					.replaceAll("^[^:]*:", "");
-	}
-
-	@Override
-	protected String getSchema() {
-		return "";
+	public Integer getDefaultPort() {
+		return 3306;
 	}
 
 }

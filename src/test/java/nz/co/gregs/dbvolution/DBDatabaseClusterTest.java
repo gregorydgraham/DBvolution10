@@ -394,7 +394,7 @@ public class DBDatabaseClusterTest extends AbstractTest {
 						database);
 		try {
 			cluster.setAutoRebuild(false);
-			H2MemoryDB soloDB2 = new H2MemoryDB("DBDatabaseClusterTest6", "who", "what", true);
+			H2MemoryDB soloDB2 = new H2MemoryDB("DBDatabaseClusterTest7", "who", "what", true);
 			cluster.addDatabaseAndWait(soloDB2);
 			Assert.assertThat(cluster.size(), is(2));
 			try {

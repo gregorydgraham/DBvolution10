@@ -122,54 +122,70 @@ public class InformixDB extends DBDatabase {
 
 	@Override
 	protected String getUrlFromSettings(DatabaseConnectionSettings settings) {
-//		DatabaseConnectionSettings settings = getSettings();
 		String url = settings.getUrl();
 		return url != null && !url.isEmpty() ? url : "jdbc:informix-sqli://"
-					+ settings.getHost() + ":"
-					+ settings.getPort() + "/"
-					+ settings.getDatabaseName() + ":INFORMIXSERVER="
-					+ settings.getInstance()
-					+ settings.formatExtras(":", "=", ";", "");
+				+ settings.getHost() + ":"
+				+ settings.getPort() + "/"
+				+ settings.getDatabaseName() + ":INFORMIXSERVER="
+				+ settings.getInstance()
+				+ settings.formatExtras(":", "=", ";", "");
 	}
 
+//	@Override
+//	protected Map<String, String> getExtras() {
+//		String jdbcURL = getJdbcURL();
+//		if (jdbcURL.matches(";")) {
+//			String extrasString = jdbcURL.split(";", 2)[1];
+//			return DatabaseConnectionSettings.decodeExtras(extrasString, ":", "=", ";", "");
+//		} else {
+//			return new HashMap<String, String>();
+//		}
+//	}
+//	@Override
+//	protected String getHost() {
+//		String jdbcURL = getJdbcURL();
+//		String noPrefix = jdbcURL.replaceAll("^jdbc:informix-sqli://", "");
+//		return noPrefix
+//				.split("/", 2)[0]
+//				.split(":")[0];
+//
+//	}
+//	@Override
+//	protected String getDatabaseInstance() {
+//		return getExtras().get("INFORMIXSERVER");
+//	}
+//	@Override
+//	protected String getPort() {
+//		String jdbcURL = getJdbcURL();
+//		String noPrefix = jdbcURL.replaceAll("^jdbc:informix-sqli://", "");
+//		return noPrefix
+//				.split("/", 2)[0]
+//				.replaceAll("^[^:]*:", "");
+//	}
+//	@Override
+//	protected String getSchema() {
+//		return "";
+//	}
 	@Override
-	protected Map<String, String> getExtras() {
-		String jdbcURL = getJdbcURL();
+	protected DatabaseConnectionSettings getSettingsFromJDBCURL(String jdbcURL) {
+		DatabaseConnectionSettings set = new DatabaseConnectionSettings();
+		String noPrefix = jdbcURL.replaceAll("^jdbc:informix-sqli://", "");
+		set.setPort(noPrefix
+				.split("/", 2)[0]
+				.replaceAll("^[^:]*:", ""));
+		set.setHost(noPrefix
+				.split("/", 2)[0]
+				.split(":")[0]);
 		if (jdbcURL.matches(";")) {
 			String extrasString = jdbcURL.split(";", 2)[1];
-			return DatabaseConnectionSettings.decodeExtras(extrasString, ":", "=", ";", "");
-		} else {
-			return new HashMap<String, String>();
+			set.setExtras(DatabaseConnectionSettings.decodeExtras(extrasString, ":", "=", ";", ""));
 		}
+		set.setInstance(getExtras().get("INFORMIXSERVER"));
+		return set;
 	}
 
 	@Override
-	protected String getHost() {
-		String jdbcURL = getJdbcURL();
-		String noPrefix = jdbcURL.replaceAll("^jdbc:informix-sqli://", "");
-			return noPrefix
-					.split("/",2)[0]
-					.split(":")[0];
-		
-	}
-
-	@Override
-	protected String getDatabaseInstance() {
-		String jdbcURL = getJdbcURL();
-		return getExtras().get("INFORMIXSERVER");
-	}
-
-	@Override
-	protected String getPort() {
-		String jdbcURL = getJdbcURL();
-		String noPrefix = jdbcURL.replaceAll("^jdbc:informix-sqli://", "");
-			return noPrefix
-					.split("/",2)[0]
-					.replaceAll("^[^:]*:", "");
-	}
-
-	@Override
-	protected String getSchema() {
-		return "";
+	public Integer getDefaultPort() {
+		return 1526;
 	}
 }

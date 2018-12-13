@@ -21,8 +21,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.regex.Pattern;
 import javax.sql.DataSource;
 import org.sqlite.SQLiteConfig;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
@@ -101,7 +100,7 @@ public class SQLiteDB extends DBDatabase {
 	 */
 	public SQLiteDB(String jdbcURL, String username, String password) throws SQLException {
 		super(new SQLiteDefinition(), SQLITE_DRIVER_NAME, jdbcURL, username, password);
-		setDatabasenameFromURL();
+//		setDatabasenameFromURL();
 	}
 
 	/**
@@ -180,61 +179,88 @@ public class SQLiteDB extends DBDatabase {
 		;
 	}
 
+//	@Override
+//	protected Map<String, String> getExtras() {
+//		String jdbcURL = getJdbcURL();
+//		if (jdbcURL.matches(";")) {
+//			String extrasString = jdbcURL.split("?", 2)[1];
+//			return DatabaseConnectionSettings.decodeExtras(extrasString, "", "=", ";", "");
+//		} else {
+//			return new HashMap<String, String>();
+//		}
+//	}
+
+//	@Override
+//	protected String getHost() {
+//		String jdbcURL = getJdbcURL();
+//		String noPrefix = jdbcURL.replaceAll("^jdbc:sqlite://", "");
+//		return noPrefix
+//				.split("/", 2)[0]
+//				.split(":")[0];
+//
+//	}
+
+//	@Override
+//	protected String getDatabaseInstance() {
+//		String jdbcURL = getJdbcURL();
+//		return getExtras().get("instance");
+//	}
+
+//	@Override
+//	protected String getPort() {
+//		String jdbcURL = getJdbcURL();
+//		String noPrefix = jdbcURL.replaceAll("^jdbc:sqlite://", "");
+//		return noPrefix
+//				.split("/", 2)[0]
+//				.replaceAll("^[^:]*:+", "");
+//	}
+
+//	@Override
+//	protected String getSchema() {
+//		return "";
+//	}
+
+//	private void setDatabasenameFromURL() {
+//		String jdbcURL = getJdbcURL();
+//		String noPrefix = jdbcURL.replaceAll("^jdbc:sqlite://", "");
+//		String name = noPrefix.split(":", 3)[2];
+//		setDatabaseName(name);
+//	}
+	
 	@Override
-	protected Map<String, String> getExtras() {
-		String jdbcURL = getJdbcURL();
-		if (jdbcURL.matches(";")) {
+	protected DatabaseConnectionSettings getSettingsFromJDBCURL(String jdbcURL) {
+		DatabaseConnectionSettings set = new DatabaseConnectionSettings();
+		String noPrefix = jdbcURL.replaceAll("^jdbc:sqlite://", "");
+		if (jdbcURL.contains(";")) {
 			String extrasString = jdbcURL.split("?", 2)[1];
-			return DatabaseConnectionSettings.decodeExtras(extrasString, "", "=", ";", "");
-		} else {
-			return new HashMap<String, String>();
+			set.setExtras(DatabaseConnectionSettings.decodeExtras(extrasString, "", "=", ";", ""));
 		}
-	}
-
-	@Override
-	protected String getHost() {
-		String jdbcURL = getJdbcURL();
-		String noPrefix = jdbcURL.replaceAll("^jdbc:sqlite://", "");
-		return noPrefix
+		set.setDatabaseName(noPrefix.split(":", 3)[2]);
+		set.setPort(noPrefix
 				.split("/", 2)[0]
-				.split(":")[0];
-
-	}
-
-	@Override
-	protected String getDatabaseInstance() {
-		String jdbcURL = getJdbcURL();
-		return getExtras().get("instance");
-	}
-
-	@Override
-	protected String getPort() {
-		String jdbcURL = getJdbcURL();
-		String noPrefix = jdbcURL.replaceAll("^jdbc:sqlite://", "");
-		return noPrefix
+				.replaceAll("^[^:]*:+", ""));
+		set.setHost(noPrefix
 				.split("/", 2)[0]
-				.replaceAll("^[^:]*:+", "");
+				.split(":")[0]);
+		set.setInstance(getExtras().get("instance"));
+		set.setSchema("");
+		return set;
 	}
 
 	@Override
-	protected String getSchema() {
-		return "";
+	public Integer getDefaultPort() {
+		return 5432;
 	}
 
-	private void setDatabasenameFromURL() {
-		String jdbcURL = getJdbcURL();
-		String noPrefix = jdbcURL.replaceAll("^jdbc:sqlite://", "");
-		String name = noPrefix.split(":", 3)[2];
-		setDatabaseName(name);
-	}
-
+	private final static Pattern TABLE_ALREADY_EXISTS = Pattern.compile("\\[SQLITE_ERROR\\] SQL error or missing database \\(table [^ ]* already exists\\)");
 	@Override
 	public ResponseToException addFeatureToFixException(Exception exp) throws Exception {
-//		System.out.println("nz.co.gregs.dbvolution.databases.SQLiteDB.addFeatureToFixException()");
-//		System.out.println(exp.getClass().getCanonicalName());
-//		System.out.println(exp.getMessage());
-		if (exp.getMessage().matches("SQL error or missing database (table ([^ ]*) already exists) : Original Query: CREATE TABLE \1")){
-			// Attempting to 
+		System.out.println("nz.co.gregs.dbvolution.databases.SQLiteDB.addFeatureToFixException()");
+		System.out.println("nz.co.gregs.dbvolution.databases.SQLiteDB.addFeatureToFixException()"+exp.getClass().getCanonicalName());
+		System.out.println("nz.co.gregs.dbvolution.databases.SQLiteDB.addFeatureToFixException()"+exp.getMessage());
+		System.out.println("nz.co.gregs.dbvolution.databases.SQLiteDB.addFeatureToFixException()"+TABLE_ALREADY_EXISTS.matcher(exp.getMessage()).lookingAt());
+		if (TABLE_ALREADY_EXISTS.matcher(exp.getMessage()).matches()){
+		System.out.println("nz.co.gregs.dbvolution.databases.SQLiteDB.addFeatureToFixException() TABLE EXISTS WHILE CREATING TABLE: OK.");
 			return ResponseToException.SKIPQUERY;
 		}
 		return super.addFeatureToFixException(exp);

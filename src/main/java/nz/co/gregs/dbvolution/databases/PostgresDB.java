@@ -20,8 +20,6 @@ import java.io.File;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.TimeZone;
 import javax.sql.DataSource;
 import nz.co.gregs.dbvolution.DBRow;
@@ -354,44 +352,67 @@ public class PostgresDB extends DBDatabase implements SupportsPolygonDatatype {
 		}
 	}
 
+//	@Override
+//	protected Map<String, String> getExtras() {
+//		String jdbcURL = getJdbcURL();
+//		if (jdbcURL.matches(";")) {
+//			String extrasString = jdbcURL.split("?", 2)[1];
+//			return DatabaseConnectionSettings.decodeExtras(extrasString, "", "=", "&", "");
+//		} else {
+//			return new HashMap<String, String>();
+//		}
+//	}
+
+//	@Override
+//	protected String getHost() {
+//		String jdbcURL = getJdbcURL();
+//		String noPrefix = jdbcURL.replaceAll("^jdbc:postgresql://", "");
+//			return noPrefix
+//					.split("/",2)[0]
+//					.split(":")[0];
+//		
+//	}
+
+//	@Override
+//	protected String getDatabaseInstance() {
+//		String jdbcURL = getJdbcURL();
+//		return getExtras().get("instance");
+//	}
+
+//	@Override
+//	protected String getPort() {
+//		String jdbcURL = getJdbcURL();
+//		String noPrefix = jdbcURL.replaceAll("^jdbc:postgresql://", "");
+//			return noPrefix
+//					.split("/",2)[0]
+//					.replaceAll("^[^:]*:+", "");
+//	}
+
+//	@Override
+//	protected String getSchema() {
+//		return "";
+//	}
 	@Override
-	protected Map<String, String> getExtras() {
-		String jdbcURL = getJdbcURL();
+	protected DatabaseConnectionSettings getSettingsFromJDBCURL(String jdbcURL) {
+		DatabaseConnectionSettings set = new DatabaseConnectionSettings();
+		String noPrefix = jdbcURL.replaceAll("^jdbc:postgresql://", "");
 		if (jdbcURL.matches(";")) {
 			String extrasString = jdbcURL.split("?", 2)[1];
-			return DatabaseConnectionSettings.decodeExtras(extrasString, "", "=", "&", "");
-		} else {
-			return new HashMap<String, String>();
+			set.setExtras(DatabaseConnectionSettings.decodeExtras(extrasString, "", "=", "&", ""));
 		}
-	}
-
-	@Override
-	protected String getHost() {
-		String jdbcURL = getJdbcURL();
-		String noPrefix = jdbcURL.replaceAll("^jdbc:postgresql://", "");
-			return noPrefix
+		set.setPort(noPrefix
 					.split("/",2)[0]
-					.split(":")[0];
-		
-	}
-
-	@Override
-	protected String getDatabaseInstance() {
-		String jdbcURL = getJdbcURL();
-		return getExtras().get("instance");
-	}
-
-	@Override
-	protected String getPort() {
-		String jdbcURL = getJdbcURL();
-		String noPrefix = jdbcURL.replaceAll("^jdbc:postgresql://", "");
-			return noPrefix
+					.replaceAll("^[^:]*:+", ""));
+		set.setHost(noPrefix
 					.split("/",2)[0]
-					.replaceAll("^[^:]*:+", "");
+					.split(":")[0]);
+		set.setInstance(getExtras().get("instance"));
+		set.setSchema("");
+		return set;
 	}
 
 	@Override
-	protected String getSchema() {
-		return "";
+	public Integer getDefaultPort() {
+		return 5432;
 	}
 }

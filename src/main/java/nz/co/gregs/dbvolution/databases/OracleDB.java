@@ -186,41 +186,56 @@ public abstract class OracleDB extends DBDatabase implements SupportsPolygonData
 				+ settings.getInstance();
 	}
 
+//	@Override
+//	protected Map<String, String> getExtras() {
+//		return new HashMap<String, String>();
+//	}
+//	@Override
+//	protected String getHost() {
+//		String jdbcURL = getJdbcURL();
+//		String noPrefix = jdbcURL.replaceAll("^jdbc:oracle:[^:]*:@//", "");
+//		return noPrefix
+//				.split("/", 2)[0]
+//				.split(":")[0];
+//
+//	}
+//	@Override
+//	protected String getDatabaseInstance() {
+//		String jdbcURL = getJdbcURL();
+//		String noPrefix = jdbcURL.replaceAll("^jdbc:oracle:[^:]*:@//", "");
+//		return noPrefix
+//				.split("/", 2)[1];
+//	}
+//	@Override
+//	protected String getPort() {
+//		String jdbcURL = getJdbcURL();
+//		String noPrefix = jdbcURL.replaceAll("^jdbc:oracle:[^:]*:@//", "");
+//		return noPrefix
+//				.split("/", 2)[0]
+//				.replaceAll("^[^:]*:+", "");
+//	}
+//	@Override
+//	protected String getSchema() {
+//		return "";
+//	}
 	@Override
-	protected Map<String, String> getExtras() {
-		return new HashMap<String, String>();
-	}
-
-	@Override
-	protected String getHost() {
-		String jdbcURL = getJdbcURL();
+	protected DatabaseConnectionSettings getSettingsFromJDBCURL(String jdbcURL) {
+		DatabaseConnectionSettings set = new DatabaseConnectionSettings();
 		String noPrefix = jdbcURL.replaceAll("^jdbc:oracle:[^:]*:@//", "");
-		return noPrefix
-				.split("/", 2)[0]
-				.split(":")[0];
-
+		if (jdbcURL.matches(";")) {
+			String extrasString = jdbcURL.split("?", 2)[1];
+			set.setExtras(DatabaseConnectionSettings.decodeExtras(extrasString, "", "=", ";", ""));
+		}
+		set.setPort(noPrefix.split("/", 2)[0].replaceAll("^[^:]*:+", ""));
+		set.setHost(noPrefix.split("/", 2)[0].split(":")[0]);
+		set.setInstance(noPrefix.split("/", 2)[1]);
+		set.setSchema("");
+		return set;
 	}
 
 	@Override
-	protected String getDatabaseInstance() {
-		String jdbcURL = getJdbcURL();
-		String noPrefix = jdbcURL.replaceAll("^jdbc:oracle:[^:]*:@//", "");
-		return noPrefix
-				.split("/", 2)[1];
-	}
-
-	@Override
-	protected String getPort() {
-		String jdbcURL = getJdbcURL();
-		String noPrefix = jdbcURL.replaceAll("^jdbc:oracle:[^:]*:@//", "");
-		return noPrefix
-				.split("/", 2)[0]
-				.replaceAll("^[^:]*:+", "");
-	}
-
-	@Override
-	protected String getSchema() {
-		return "";
+	public Integer getDefaultPort() {
+		return 1521;
 	}
 
 }

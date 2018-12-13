@@ -218,46 +218,63 @@ public class MSSQLServerDB extends DBDatabase implements SupportsPolygonDatatype
 		return super.addFeatureToFixException(exp);
 	}
 
+//	@Override
+//	protected Map<String, String> getExtras() {
+//		String jdbcURL = getJdbcURL();
+//		if (jdbcURL.matches(";")) {
+//			String extrasString = jdbcURL.split(";", 2)[1];
+//			return DatabaseConnectionSettings.decodeExtras(extrasString, "", "=", ";", "");
+//		} else {
+//			return new HashMap<String, String>();
+//		}
+//	}
+//	@Override
+//	protected String getHost() {
+//		String jdbcURL = getJdbcURL();
+//		String noPrefix = jdbcURL.replaceAll("^jdbc:sqlserver://", "");
+//			return noPrefix
+//					.split("\\",2)[0];
+//		
+//	}
+//	@Override
+//	protected String getDatabaseInstance() {
+//		String jdbcURL = getJdbcURL();
+//		String noPrefix = jdbcURL.replaceAll("^jdbc:sqlserver://", "");
+//			return noPrefix
+//					.split("\\",2)[1]
+//					.split(":")[0];
+//	}
+//	@Override
+//	protected String getPort() {
+//		String jdbcURL = getJdbcURL();
+//		String noPrefix = jdbcURL.replaceAll("^jdbc:sqlserver://", "");
+//			return noPrefix
+//					.split("\\",2)[1]
+//					.split(":")[1];
+//	}
+//	@Override
+//	protected String getSchema() {
+//		return "";
+//	}
 	@Override
-	protected Map<String, String> getExtras() {
-		String jdbcURL = getJdbcURL();
+	protected DatabaseConnectionSettings getSettingsFromJDBCURL(String jdbcURL) {
+		DatabaseConnectionSettings set = new DatabaseConnectionSettings();
+		String noPrefix = jdbcURL.replaceAll("^jdbc:sqlserver://", "");
+		set.setPort(noPrefix.split("\\", 2)[1].split(":")[1]);
+		set.setHost(noPrefix.split("\\", 2)[0]);
 		if (jdbcURL.matches(";")) {
 			String extrasString = jdbcURL.split(";", 2)[1];
-			return DatabaseConnectionSettings.decodeExtras(extrasString, "", "=", ";", "");
-		} else {
-			return new HashMap<String, String>();
+			set.setExtras(DatabaseConnectionSettings.decodeExtras(extrasString, "", "=", ";", ""));
 		}
+		set.setInstance(noPrefix
+				.split("\\", 2)[1]
+				.split(":")[0]);
+		set.setSchema("");
+		return set;
 	}
 
 	@Override
-	protected String getHost() {
-		String jdbcURL = getJdbcURL();
-		String noPrefix = jdbcURL.replaceAll("^jdbc:sqlserver://", "");
-			return noPrefix
-					.split("\\",2)[0];
-		
-	}
-
-	@Override
-	protected String getDatabaseInstance() {
-		String jdbcURL = getJdbcURL();
-		String noPrefix = jdbcURL.replaceAll("^jdbc:sqlserver://", "");
-			return noPrefix
-					.split("\\",2)[1]
-					.split(":")[0];
-	}
-
-	@Override
-	protected String getPort() {
-		String jdbcURL = getJdbcURL();
-		String noPrefix = jdbcURL.replaceAll("^jdbc:sqlserver://", "");
-			return noPrefix
-					.split("\\",2)[1]
-					.split(":")[1];
-	}
-
-	@Override
-	protected String getSchema() {
-		return "";
+	public Integer getDefaultPort() {
+		return 1433;
 	}
 }

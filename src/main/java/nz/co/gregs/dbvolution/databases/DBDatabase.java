@@ -84,15 +84,10 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 	static final Log LOG = LogFactory.getLog(DBDatabase.class);
 
 	private String driverName = "";
-	private String jdbcURL = "";
-	private String username = "";
-	private String password = null;
-	private DataSource dataSource = null;
 	private boolean printSQLBeforeExecuting = false;
 	boolean isInATransaction = false;
 	DBTransactionStatement transactionStatement;
 	private DBDefinition definition = null;
-	private String databaseName;
 	private boolean batchIfPossible = true;
 	private boolean preventAccidentalDroppingOfTables = true;
 	private boolean preventAccidentalDroppingDatabase = true;
@@ -103,11 +98,10 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 	private static final transient HashMap<String, List<Connection>> FREE_CONNECTIONS = new HashMap<>();
 	private Boolean needToAddDatabaseSpecificFeatures = true;
 	boolean explicitCommitActionRequired = false;
-	private DatabaseConnectionSettings settings;
+	private DatabaseConnectionSettings settings = new DatabaseConnectionSettings();
 	private boolean terminated = false;
 	private final List<RegularProcess> REGULAR_PROCESSORS = new ArrayList<>();
 	private static final ScheduledExecutorService REGULAR_THREAD_POOL = Executors.newSingleThreadScheduledExecutor();
-	private String label = "";
 
 	{
 		Runtime.getRuntime().addShutdownHook(new StopDatabase(this));
@@ -115,10 +109,13 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 
 	@Override
 	public String toString() {
+		String jdbcURL = settings.getUrl();
+		String databaseName = settings.getDatabaseName();
+		String username = settings.getUsername();
 		if (jdbcURL != null && !jdbcURL.isEmpty()) {
 			return this.getClass().getSimpleName() + "{" + (databaseName == null ? "UNNAMED" : databaseName + "=") + jdbcURL + ":" + username + "}";
-		} else if (dataSource != null) {
-			return this.getClass().getSimpleName() + ": " + dataSource.toString();
+		} else if (getDataSource() != null) {
+			return this.getClass().getSimpleName() + ": " + getDataSource().toString();
 		} else {
 			return super.toString();
 		}
@@ -145,9 +142,9 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 		int hash = 7;
 		hash = 29 * hash + (this.getDriverName() != null ? this.getDriverName().hashCode() : 0);
 		hash = 29 * hash + (this.getJdbcURL() != null ? this.getJdbcURL().hashCode() : 0);
-		hash = 29 * hash + (this.username != null ? this.username.hashCode() : 0);
-		hash = 29 * hash + (this.password != null ? this.password.hashCode() : 0);
-		hash = 29 * hash + (this.dataSource != null ? this.dataSource.hashCode() : 0);
+		hash = 29 * hash + (this.getUsername() != null ? this.getUsername().hashCode() : 0);
+		hash = 29 * hash + (this.getPassword() != null ? this.getPassword().hashCode() : 0);
+		hash = 29 * hash + (this.getDataSource() != null ? this.getDataSource().hashCode() : 0);
 		hash = 29 * hash + (this.getSettings() != null ? this.getSettings().hashCode() : 0);
 		return hash;
 	}
@@ -173,7 +170,7 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 		if ((this.getPassword() == null) ? (other.getPassword() != null) : !this.getPassword().equals(other.getPassword())) {
 			return false;
 		}
-		if ((this.dataSource == null) ? (other.dataSource != null) : !this.dataSource.equals(other.dataSource)) {
+		if ((this.getDataSource() == null) ? (other.getDataSource() != null) : !this.getDataSource().equals(other.getDataSource())) {
 			return false;
 		}
 		final DatabaseConnectionSettings thisSettings = this.getSettings();
@@ -251,9 +248,10 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 	 */
 	public DBDatabase(DBDefinition definition, String driverName, DataSource ds) throws SQLException {
 		this();
+		settings.setDbdatabaseClass(this.getClass().getCanonicalName());
 		this.definition = definition;
 		this.driverName = driverName;
-		this.dataSource = ds;
+		settings.setDataSource(ds);
 		createRequiredTables();
 	}
 
@@ -325,9 +323,19 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 		this();
 		this.definition = definition;
 		this.driverName = driverName;
-		this.jdbcURL = jdbcURL;
-		this.password = password;
-		this.username = username;
+		settings.setUrl(jdbcURL);
+		settings.setUsername(username);
+		settings.setPassword(password);
+		DatabaseConnectionSettings set = this.getSettingsFromJDBCURL(jdbcURL);
+		settings.setDatabaseName(set.getDatabaseName());
+		settings.setExtras(set.getExtras());
+		settings.setHost(set.getHost());
+		settings.setInstance(set.getInstance());
+		settings.setLabel(set.getLabel());
+		settings.setPort(set.getPort());
+		settings.setProtocol(set.getProtocol());
+		settings.setSchema(set.getSchema());
+		settings.setPort(set.getPort());
 		createRequiredTables();
 	}
 
@@ -358,9 +366,6 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 	 * @throws java.sql.SQLException interacts with the database layer.
 	 */
 	public final DBStatement getDBStatement() throws SQLException {
-//		if (closed) {
-//			throw new DBDatabaseAutoclosedAlready(this);
-//		} else {
 		DBStatement statement;
 		synchronized (getStatementSynchronizeObject) {
 			if (isInATransaction) {
@@ -373,7 +378,6 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 			}
 		}
 		return statement;
-//		}
 	}
 
 	protected DBStatement getLowLevelStatement() throws UnableToCreateDatabaseConnectionException, UnableToFindJDBCDriver, SQLException {
@@ -422,13 +426,11 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 			Connection conn = null;
 			while (conn == null) {
 				if (supportsPooledConnections()) {
-					//synchronized (FREE_CONNECTIONS) {
 					if (FREE_CONNECTIONS.isEmpty() || getConnectionList(FREE_CONNECTIONS).isEmpty()) {
 						conn = getRawConnection();
 					} else {
 						conn = getConnectionList(FREE_CONNECTIONS).get(0);
 					}
-					//}
 				} else {
 					conn = getRawConnection();
 				}
@@ -457,7 +459,7 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 			Connection connection = null;
 			int retries = 0;
 			synchronized (getConnectionSynchronizeObject) {
-				if (this.dataSource == null) {
+				if (this.getDataSource() == null) {
 					try {
 						// load the driver
 						Class.forName(getDriverName());
@@ -483,9 +485,9 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 					}
 				} else {
 					try {
-						connection = dataSource.getConnection();
+						connection = getDataSource().getConnection();
 					} catch (SQLException noConnection) {
-						throw new UnableToCreateDatabaseConnectionException(dataSource, noConnection);
+						throw new UnableToCreateDatabaseConnectionException(getDataSource(), noConnection);
 					}
 				}
 			}
@@ -1025,10 +1027,7 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 	 * @return the jdbcURL
 	 */
 	public final synchronized String getJdbcURL() {
-		if (settings != null) {
 			return getUrlFromSettings(getSettings());
-		}
-		return jdbcURL;
 	}
 
 	/**
@@ -1039,11 +1038,8 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 	 *
 	 * @return the username
 	 */
-	public synchronized String getUsername() {
-		if (settings != null) {
+	final public synchronized String getUsername() {
 			return settings.getUsername();
-		}
-		return username;
 	}
 
 	/**
@@ -1054,11 +1050,8 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 	 *
 	 * @return the password
 	 */
-	public synchronized String getPassword() {
-		if (settings != null) {
+	final public synchronized String getPassword() {
 			return settings.getPassword();
-		}
-		return password;
 	}
 
 	/**
@@ -1766,11 +1759,8 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 	 *
 	 * @return the database name
 	 */
-	public synchronized String getDatabaseName() {
-		if (settings != null) {
+	final public synchronized String getDatabaseName() {
 			return settings.getDatabaseName();
-		}
-		return databaseName;
 	}
 
 	/**
@@ -1779,7 +1769,7 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 	 * @param databaseName	databaseName
 	 */
 	public synchronized void setDatabaseName(String databaseName) {
-		this.databaseName = databaseName;
+		settings.setDatabaseName(databaseName);
 	}
 
 	/**
@@ -1790,8 +1780,9 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 	 *
 	 * @param label
 	 */
-	public void setLabel(String label) {
-		this.label = label;
+	final public void setLabel(String label) {
+		settings.setLabel(label);
+//		this.label = label;
 	}
 
 	/**
@@ -1803,8 +1794,9 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 	 *
 	 * @return
 	 */
-	public String getLabel() {
-		return this.label;
+	final public String getLabel() {
+		return settings.getLabel();
+//		return this.label;
 	}
 
 	/**
@@ -1997,27 +1989,30 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 	/**
 	 * @param jdbcURL the jdbcURL to set
 	 */
-	protected synchronized void setJdbcURL(String jdbcURL) {
+	final protected synchronized void setJdbcURL(String jdbcURL) {
 		if (FREE_CONNECTIONS.isEmpty()) {
-			this.jdbcURL = jdbcURL;
+			settings.setUrl(jdbcURL);
+//			this.jdbcURL = jdbcURL;
 		}
 	}
 
 	/**
 	 * @param username the username to set
 	 */
-	protected synchronized void setUsername(String username) {
+	final protected synchronized void setUsername(String username) {
 		if (FREE_CONNECTIONS.isEmpty()) {
-			this.username = username;
+			settings.setUsername(username);
+//			this.username = username;
 		}
 	}
 
 	/**
 	 * @param password the password to set
 	 */
-	protected synchronized void setPassword(String password) {
+	final protected synchronized void setPassword(String password) {
 		if (FREE_CONNECTIONS.isEmpty()) {
-			this.password = password;
+			settings.setPassword(password);
+//			this.password = password;
 		}
 	}
 
@@ -2187,7 +2182,12 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 		return (this instanceof DBDatabaseCluster);
 	}
 
+	protected final DataSource getDataSource() {
+		return settings.getDataSource();
+	}
+
 	public static enum ResponseToException {
+		REPLACECONNECTION(),
 		REQUERY(),
 		SKIPQUERY();
 
@@ -2364,22 +2364,26 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 
 	protected abstract String getUrlFromSettings(DatabaseConnectionSettings settings);
 
+	protected abstract DatabaseConnectionSettings getSettingsFromJDBCURL(String jdbcURL);
+	
+	public abstract Integer getDefaultPort();
+
 	public DatabaseConnectionSettings getSettings() {
-		if (settings == null) {
-			DatabaseConnectionSettings newSettings = new DatabaseConnectionSettings();
-			newSettings.setLabel(getLabel());
-			newSettings.setDatabaseName(getDatabaseName());
-			newSettings.setDbdatabaseClass(this.getClass().getCanonicalName());
-			newSettings.setExtras(getExtras());
-			newSettings.setHost(getHost());
-			newSettings.setInstance(getDatabaseInstance());
-			newSettings.setPassword(getPassword());
-			newSettings.setPort(getPort());
-			newSettings.setSchema(getSchema());
-			newSettings.setUrl(getJdbcURL());
-			newSettings.setUsername(getUsername());
-			this.settings = newSettings;
-		}
+//		if (settings == null) {
+//			DatabaseConnectionSettings newSettings = new DatabaseConnectionSettings();
+//			newSettings.setLabel(getLabel());
+//			newSettings.setDatabaseName(getDatabaseName());
+//			newSettings.setDbdatabaseClass(this.getClass().getCanonicalName());
+//			newSettings.setExtras(getExtras());
+//			newSettings.setHost(getHost());
+//			newSettings.setInstance(getDatabaseInstance());
+//			newSettings.setPassword(getPassword());
+//			newSettings.setPort(getPort());
+//			newSettings.setSchema(getSchema());
+//			newSettings.setUrl(getJdbcURL());
+//			newSettings.setUsername(getUsername());
+//			this.settings = newSettings;
+//		}
 		return settings;
 	}
 
@@ -2395,15 +2399,25 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 		return false;
 	}
 
-	abstract protected Map<String, String> getExtras();
+	protected final Map<String, String> getExtras(){
+		return settings.getExtras();
+	}
 
-	abstract protected String getHost();
+	protected final String getHost(){
+		return settings.getHost();
+	}
 
-	abstract protected String getDatabaseInstance();
+	protected final String getDatabaseInstance(){
+		return settings.getInstance();
+	}
 
-	abstract protected String getPort();
+	protected final String getPort(){
+		return settings.getPort();
+	}
 
-	abstract protected String getSchema();
+	protected final String getSchema(){
+		return settings.getSchema();
+	}
 
 	/**
 	 * Closes all threads, connections, and resources used by the database.

@@ -101,11 +101,13 @@ public class DBStatement implements Statement {
 		ResultSet executeQuery;
 		checkForBrokenConnection(exp, sql);
 		try {
-			database.addFeatureToFixException(exp);
+			handleResponseFromFixingException(exp);
+//			database.addFeatureToFixException(exp);
 		} catch (Exception ex) {
 			Exception ex1 = exp;
 			while (!ex1.getMessage().equals(ex.getMessage())) {
-				database.addFeatureToFixException(ex);
+				handleResponseFromFixingException(exp);
+//				database.addFeatureToFixException(ex);
 			}
 			throw new SQLException(ex);
 		}
@@ -438,9 +440,9 @@ public class DBStatement implements Statement {
 
 	private boolean addFeatureAndAttemptExecuteAgain(Exception exp, String sql) throws SQLException {
 		boolean executeQuery;
+		checkForBrokenConnection(exp, sql);
 		try {
-			DBDatabase.ResponseToException response = database.addFeatureToFixException(exp);
-			if (response.equals(DBDatabase.ResponseToException.SKIPQUERY)) {
+			if (handleResponseFromFixingException(exp)) {
 				return true;
 			}
 		} catch (Exception ex) {
@@ -459,11 +461,21 @@ public class DBStatement implements Statement {
 		}
 	}
 
+	public boolean handleResponseFromFixingException(Exception exp) throws Exception {
+		DBDatabase.ResponseToException response = database.addFeatureToFixException(exp);
+		if (response.equals(DBDatabase.ResponseToException.REPLACECONNECTION)) {
+			replaceBrokenConnection();
+			return true;
+		} else if (response.equals(DBDatabase.ResponseToException.SKIPQUERY)) {
+			return true;
+		}
+		return false;
+	}
+
 	private boolean addFeatureAndAttemptExecuteAgain(Exception exp, String string, String[] strings) throws SQLException {
 		boolean executeQuery;
 		try {
-			DBDatabase.ResponseToException response = database.addFeatureToFixException(exp);
-			if (response.equals(DBDatabase.ResponseToException.SKIPQUERY)) {
+			if (handleResponseFromFixingException(exp)) {
 				return true;
 			}
 		} catch (Exception ex) {

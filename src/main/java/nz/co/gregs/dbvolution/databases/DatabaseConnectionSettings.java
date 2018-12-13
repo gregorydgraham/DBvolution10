@@ -35,6 +35,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+import javax.sql.DataSource;
 import nz.co.gregs.dbvolution.annotations.DBTableName;
 
 /**
@@ -116,6 +117,8 @@ public class DatabaseConnectionSettings {
 	private final Map<String, String> extras = new HashMap<>();
 	private String dbdatabase = "";
 	private String label = "";
+	private DataSource dataSource = null;
+	private String protocol;
 
 	public DatabaseConnectionSettings() {
 		super();
@@ -760,5 +763,21 @@ public class DatabaseConnectionSettings {
 	 */
 	public String getLabel() {
 		return this.label;
+	}
+	
+	public void setDataSource(DataSource ds){
+		dataSource = ds;
+	}
+	
+	public DataSource getDataSource(){
+		return dataSource;
+	}
+	
+	public void setProtocol(String protocol){
+		this.protocol = protocol;
+	}
+	
+	public String getProtocol(){
+		return protocol;
 	}
 }

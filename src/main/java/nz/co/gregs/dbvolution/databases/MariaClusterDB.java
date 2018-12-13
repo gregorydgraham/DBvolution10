@@ -140,40 +140,61 @@ public class MariaClusterDB extends DBDatabase {
 		;
 	}
 
-	@Override
-	protected Map<String, String> getExtras() {
-		String jdbcURL = getJdbcURL();
+//	@Override
+//	protected Map<String, String> getExtras() {
+//		String jdbcURL = getJdbcURL();
+//		if (jdbcURL.matches(";")) {
+//			String extrasString = jdbcURL.split(";", 2)[1];
+//			return DatabaseConnectionSettings.decodeExtras(extrasString, "", "=", ";", "");
+//		} else {
+//			return new HashMap<String, String>();
+//		}
+//	}
+//
+//	@Override
+//	protected String getHost() {
+//		String jdbcURL = getJdbcURL();
+//		String noPrefix = jdbcURL.replaceAll("^jdbc:mariadb://", "");
+//			return noPrefix
+//					.split("/",2)[0];
+//		
+//	}
+//
+//	@Override
+//	protected String getDatabaseInstance() {
+//		String jdbcURL = getJdbcURL();
+//		return getExtras().get("instance");
+//	}
+//
+//	@Override
+//	protected String getPort() {
+//		return null;
+//	}
+//
+//	@Override
+//	protected String getSchema() {
+//		return null;
+//	}
+	
+@Override
+	protected DatabaseConnectionSettings getSettingsFromJDBCURL(String jdbcURL) {
+		DatabaseConnectionSettings set = new DatabaseConnectionSettings();
+		String noPrefix = jdbcURL.replaceAll("^jdbc:mariadb://", "");
+		set.setHost(noPrefix
+					.split("/",2)[0]
+					.split(":")[0]);
 		if (jdbcURL.matches(";")) {
 			String extrasString = jdbcURL.split(";", 2)[1];
-			return DatabaseConnectionSettings.decodeExtras(extrasString, "", "=", ";", "");
-		} else {
-			return new HashMap<String, String>();
+			set.setExtras(DatabaseConnectionSettings.decodeExtras(extrasString, "", "=", ";", ""));
 		}
+		set.setInstance(getExtras().get("instance"));
+		set.setSchema("");
+		return set;
 	}
 
 	@Override
-	protected String getHost() {
-		String jdbcURL = getJdbcURL();
-		String noPrefix = jdbcURL.replaceAll("^jdbc:mariadb://", "");
-			return noPrefix
-					.split("/",2)[0];
-		
-	}
-
-	@Override
-	protected String getDatabaseInstance() {
-		String jdbcURL = getJdbcURL();
-		return getExtras().get("instance");
-	}
-
-	@Override
-	protected String getPort() {
-		return null;
-	}
-
-	@Override
-	protected String getSchema() {
-		return null;
+	public Integer getDefaultPort() {
+		return -1;
 	}
 
 }

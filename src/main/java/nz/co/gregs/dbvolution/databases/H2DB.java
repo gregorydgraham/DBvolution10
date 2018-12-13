@@ -189,6 +189,7 @@ public class H2DB extends DBDatabase {
 		return (H2DB) super.clone();
 	}
 
+	private final static Pattern BROKEN_CONNECTION_PATTERN = Pattern.compile("Connection is broken: \"session closed\"");
 	private final static Pattern DROPPING_NONEXISTENT_TABLE_PATTERN = Pattern.compile("Table \"([^\"]*)\" not found; SQL statement:.*DROP TABLE \\1");
 	private final static Pattern CREATING_EXISTING_TABLE_PATTERN = Pattern.compile("Table \"[^\"]*\" already exists; SQL statement:");
 
@@ -203,7 +204,10 @@ public class H2DB extends DBDatabase {
 //				System.out.println("nz.co.gregs.dbvolution.databases.H2DB.addFeatureToFixException()" + message);
 //				System.out.println("nz.co.gregs.dbvolution.databases.H2DB.addFeatureToFixException()" + DROPPING_NONEXISTENT_TABLE_PATTERN.matcher(message).lookingAt());
 //				System.out.println("nz.co.gregs.dbvolution.databases.H2DB.addFeatureToFixException()" + CREATING_EXISTING_TABLE_PATTERN.matcher(message).lookingAt());
-				if (DROPPING_NONEXISTENT_TABLE_PATTERN.matcher(message).lookingAt()) {
+				if (BROKEN_CONNECTION_PATTERN.matcher(message).lookingAt()) {
+					System.out.println("nz.co.gregs.dbvolution.databases.H2DB.addFeatureToFixException()" + "BROKEN CONNECTION: REPLACE CONNECTION.");
+					return ResponseToException.REPLACECONNECTION;
+				} else if (DROPPING_NONEXISTENT_TABLE_PATTERN.matcher(message).lookingAt()) {
 					System.out.println("nz.co.gregs.dbvolution.databases.H2DB.addFeatureToFixException()" + "TABLE DOES NOT EXIST WHILE CREATING TABLE: OK.");
 					return ResponseToException.SKIPQUERY;
 				} else if (CREATING_EXISTING_TABLE_PATTERN.matcher(message).lookingAt()) {
@@ -270,32 +274,31 @@ public class H2DB extends DBDatabase {
 		return getJdbcURL().matches(":mem:");
 	}
 
-	@Override
-	protected Map<String, String> getExtras() {
-		String jdbcURL = getJdbcURL();
-		if (jdbcURL.matches(";")) {
-			String extrasString = jdbcURL.split(";", 2)[1];
-			return DatabaseConnectionSettings.decodeExtras(extrasString, "", "=", ";", "");
-		} else {
-			return new HashMap<String, String>();
-		}
-	}
-
-	@Override
-	protected String getHost() {
-		String jdbcURL = getJdbcURL();
-		String noPrefix = jdbcURL.replaceAll("^jdbc:h2:", "").replaceAll("^mem:", "");
-		if (noPrefix.startsWith("tcp") || noPrefix.startsWith("ssl")) {
-			return noPrefix
-					.replaceAll("^tcp://", "")
-					.replaceAll("^ssl://", "")
-					.split("/", 2)[0]
-					.split(":")[0];
-		} else {
-			return "";
-		}
-	}
-
+//	@Override
+//	protected Map<String, String> getExtras() {
+//		String jdbcURL = getJdbcURL();
+//		if (jdbcURL.matches(";")) {
+//			String extrasString = jdbcURL.split(";", 2)[1];
+//			return DatabaseConnectionSettings.decodeExtras(extrasString, "", "=", ";", "");
+//		} else {
+//			return new HashMap<String, String>();
+//		}
+//	}
+//
+//	@Override
+//	protected String getHost() {
+//		String jdbcURL = getJdbcURL();
+//		String noPrefix = jdbcURL.replaceAll("^jdbc:h2:", "").replaceAll("^mem:", "");
+//		if (noPrefix.startsWith("tcp") || noPrefix.startsWith("ssl")) {
+//			return noPrefix
+//					.replaceAll("^tcp://", "")
+//					.replaceAll("^ssl://", "")
+//					.split("/", 2)[0]
+//					.split(":")[0];
+//		} else {
+//			return "";
+//		}
+//	}
 	protected String getFileFromJdbcURL() {
 		String jdbcURL = getJdbcURL();
 		String noPrefix = jdbcURL.replaceAll("^jdbc:h2:", "").replaceAll("^mem:", "");
@@ -308,28 +311,76 @@ public class H2DB extends DBDatabase {
 		}
 	}
 
+//	@Override
+//	protected String getDatabaseInstance() {
+//		return "";
+//	}
+//
+//	@Override
+//	protected String getPort() {
+//		String jdbcURL = getJdbcURL();
+//		String noPrefix = jdbcURL.replaceAll("^jdbc:h2:", "").replaceAll("^mem:", "");
+//		if (noPrefix.startsWith("tcp") || noPrefix.startsWith("ssl")) {
+//			return noPrefix
+//					.replaceAll("^tcp://", "")
+//					.replaceAll("^ssl://", "")
+//					.split("/", 2)[0]
+//					.replaceAll("^[^:]*:", "");
+//		} else {
+//			return "";
+//		}
+//	}
+//
+//	@Override
+//	protected String getSchema() {
+//		return "";
+//	}
 	@Override
-	protected String getDatabaseInstance() {
-		return "";
-	}
-
-	@Override
-	protected String getPort() {
-		String jdbcURL = getJdbcURL();
-		String noPrefix = jdbcURL.replaceAll("^jdbc:h2:", "").replaceAll("^mem:", "");
-		if (noPrefix.startsWith("tcp") || noPrefix.startsWith("ssl")) {
-			return noPrefix
-					.replaceAll("^tcp://", "")
-					.replaceAll("^ssl://", "")
-					.split("/", 2)[0]
-					.replaceAll("^[^:]*:", "");
-		} else {
-			return "";
+	protected DatabaseConnectionSettings getSettingsFromJDBCURL(String jdbcURL) {
+		DatabaseConnectionSettings set = new DatabaseConnectionSettings();
+		int protocolIndex = 2;
+		int restIndex = 4;
+		String[] firstSplit = jdbcURL.split(":", restIndex);
+		set.setProtocol(firstSplit[protocolIndex]);
+		if (!set.getProtocol().equals("tcp")
+				&& !set.getProtocol().equals("ssl")
+				&& !set.getProtocol().equals("mem")
+				&& !set.getProtocol().equals("zip")
+				&& !set.getProtocol().equals("file")) {
+			set.setProtocol("file");
+			restIndex -= 1;
+			firstSplit = jdbcURL.split(":", restIndex);
 		}
+		String restString = firstSplit[restIndex - 1];
+//		either
+//      //<server>[:<port>]/[<path>]<databaseName>;EXTRA1=THING;EXTRA2=SOMETHING
+//      or
+//      [<path>]<databaseName>;EXTRA1=THING;EXTRA2=SOMETHING
+		if (restString.startsWith("//")) {
+			String[] secondSplit = restString.split("/", 4);
+			String hostAndPort = secondSplit[2];
+			if (hostAndPort.contains(":")) {
+				String[] thirdSplit = hostAndPort.split(":");
+				set.setHost(thirdSplit[0]);
+				set.setPort(thirdSplit[1]);
+			} else {
+				set.setHost(hostAndPort);
+				set.setPort("" + getDefaultPort());
+			}
+			restString = secondSplit[3];
+		}
+		// now
+		// [<path>]<databaseName>;EXTRA1=THING;EXTRA2=SOMETHING
+		String[] fourthSplit = restString.split(";");
+		set.setDatabaseName(fourthSplit[0]);
+		if (fourthSplit.length > 1) {
+			set.setExtras(DatabaseConnectionSettings.decodeExtras(fourthSplit[1], ";", "=", ";", ""));
+		}
+		return set;
 	}
 
 	@Override
-	protected String getSchema() {
-		return "";
+	public Integer getDefaultPort() {
+		return 9123;
 	}
 }

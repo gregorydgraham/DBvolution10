@@ -17,8 +17,7 @@ package nz.co.gregs.dbvolution.databases;
 
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.regex.Pattern;
 import javax.sql.DataSource;
 import nz.co.gregs.dbvolution.databases.definitions.MySQLDBDefinition;
 import nz.co.gregs.dbvolution.databases.supports.SupportsPolygonDatatype;
@@ -102,45 +101,82 @@ public class MySQLDB extends DBDatabase implements SupportsPolygonDatatype {
 		}
 	}
 
-	@Override
-	protected Map<String, String> getExtras() {
-		String jdbcURL = getJdbcURL();
+//	@Override
+//	protected Map<String, String> getExtras() {
+//		String jdbcURL = getJdbcURL();
+//		if (jdbcURL.matches(";")) {
+//			String extrasString = jdbcURL.split("?", 2)[1];
+//			return DatabaseConnectionSettings.decodeExtras(extrasString, "", "=", ";", "");
+//		} else {
+//			return new HashMap<String, String>();
+//		}
+//	}
+
+//	@Override
+//	protected String getHost() {
+//		String jdbcURL = getJdbcURL();
+//		String noPrefix = jdbcURL.replaceAll("^jdbc:mysql://", "");
+//			return noPrefix
+//					.split("/",2)[0]
+//					.split(":")[0];
+//		
+//	}
+
+//	@Override
+//	protected String getDatabaseInstance() {
+//		String jdbcURL = getJdbcURL();
+//		return getExtras().get("instance");
+//	}
+
+//	@Override
+//	protected String getPort() {
+//		String jdbcURL = getJdbcURL();
+//		String noPrefix = jdbcURL.replaceAll("^jdbc:mysql://", "");
+//			return noPrefix
+//					.split("/",2)[0]
+//					.replaceAll("^[^:]*:+", "");
+//	}
+
+//	@Override
+//	protected String getSchema() {
+//		return "";
+//	}
+@Override
+	protected DatabaseConnectionSettings getSettingsFromJDBCURL(String jdbcURL) {
+		DatabaseConnectionSettings set = new DatabaseConnectionSettings();
+		String noPrefix = jdbcURL.replaceAll("^jdbc:mysql://", "");
+		set.setPort(noPrefix
+					.split("/",2)[0]
+					.replaceAll("^[^:]*:+", ""));
+		set.setHost(noPrefix
+					.split("/",2)[0]
+					.split(":")[0]);
 		if (jdbcURL.matches(";")) {
 			String extrasString = jdbcURL.split("?", 2)[1];
-			return DatabaseConnectionSettings.decodeExtras(extrasString, "", "=", ";", "");
-		} else {
-			return new HashMap<String, String>();
+			set.setExtras(DatabaseConnectionSettings.decodeExtras(extrasString, "", "=", ";", ""));
 		}
+		set.setInstance(getExtras().get("instance"));
+		set.setSchema("");
+		return set;
 	}
 
 	@Override
-	protected String getHost() {
-		String jdbcURL = getJdbcURL();
-		String noPrefix = jdbcURL.replaceAll("^jdbc:mysql://", "");
-			return noPrefix
-					.split("/",2)[0]
-					.split(":")[0];
-		
+	public Integer getDefaultPort() {
+		return 3306;
 	}
 
+	private final static Pattern TABLE_ALREADY_EXISTS = Pattern.compile("Table '[^']*' already exists");
 	@Override
-	protected String getDatabaseInstance() {
-		String jdbcURL = getJdbcURL();
-		return getExtras().get("instance");
-	}
-
-	@Override
-	protected String getPort() {
-		String jdbcURL = getJdbcURL();
-		String noPrefix = jdbcURL.replaceAll("^jdbc:mysql://", "");
-			return noPrefix
-					.split("/",2)[0]
-					.replaceAll("^[^:]*:+", "");
-	}
-
-	@Override
-	protected String getSchema() {
-		return "";
+	public ResponseToException addFeatureToFixException(Exception exp) throws Exception {
+		System.out.println("nz.co.gregs.dbvolution.databases.MySQLDB.addFeatureToFixException()");
+		System.out.println("nz.co.gregs.dbvolution.databases.MySQLDB.addFeatureToFixException()"+exp.getClass().getCanonicalName());
+		System.out.println("nz.co.gregs.dbvolution.databases.MySQLDB.addFeatureToFixException()"+exp.getMessage());
+		System.out.println("nz.co.gregs.dbvolution.databases.MySQLDB.addFeatureToFixException()"+TABLE_ALREADY_EXISTS.matcher(exp.getMessage()).lookingAt());
+		if (TABLE_ALREADY_EXISTS.matcher(exp.getMessage()).matches()){
+		System.out.println("nz.co.gregs.dbvolution.databases.MySQLDB.addFeatureToFixException() TABLE EXISTS WHILE CREATING TABLE: OK.");
+			return ResponseToException.SKIPQUERY;
+		}
+		return super.addFeatureToFixException(exp);
 	}
 
 }

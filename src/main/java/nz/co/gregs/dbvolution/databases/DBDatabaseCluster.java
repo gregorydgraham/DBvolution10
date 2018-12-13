@@ -119,6 +119,16 @@ public class DBDatabaseCluster extends DBDatabase {
 		return details;
 	}
 
+	@Override
+	protected DatabaseConnectionSettings getSettingsFromJDBCURL(String jdbcURL) {
+		throw new UnsupportedOperationException("Not supported yet.");
+	}
+
+	@Override
+	public Integer getDefaultPort() {
+		throw new UnsupportedOperationException("Not supported yet.");
+	}
+
 	public static enum Status {
 
 		READY,
@@ -1245,7 +1255,7 @@ public class DBDatabaseCluster extends DBDatabase {
 										secondaryTable.insert(allRows);
 									} else if (!secondaryTableCount.equals(primaryTableCount)) {
 										// Something is different in the data so correct it
-										secondary.delete(secondaryTable.setBlankQueryAllowed(true).getAllRows());
+										secondary.delete(table);
 										if (secondary.explicitCommitActionRequired) {
 											secondary.doCommit();
 										}
@@ -1386,30 +1396,30 @@ public class DBDatabaseCluster extends DBDatabase {
 		return "CLUSTER";
 	}
 
-	@Override
-	protected Map<String, String> getExtras() {
-		return new HashMap<String, String>();
-	}
-
-	@Override
-	protected String getHost() {
-		return "CLUSTER";
-	}
-
-	@Override
-	protected String getDatabaseInstance() {
-		return "CLUSTER";
-	}
-
-	@Override
-	protected String getPort() {
-		return "CLUSTER";
-	}
-
-	@Override
-	protected String getSchema() {
-		return "CLUSTER";
-	}
+//	@Override
+//	protected Map<String, String> getExtras() {
+//		return new HashMap<String, String>();
+//	}
+//
+//	@Override
+//	protected String getHost() {
+//		return "CLUSTER";
+//	}
+//
+//	@Override
+//	protected String getDatabaseInstance() {
+//		return "CLUSTER";
+//	}
+//
+//	@Override
+//	protected String getPort() {
+//		return "CLUSTER";
+//	}
+//
+//	@Override
+//	protected String getSchema() {
+//		return "CLUSTER";
+//	}
 
 	public final void setAutoRebuild(boolean b) {
 		details.setAutoRebuild(b);

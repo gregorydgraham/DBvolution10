@@ -83,6 +83,12 @@ public class H2SharedDB extends H2DB {
 		return url != null && !url.isEmpty() ? url : "jdbc:h2:tcp://" + hostname + ":" + port + "/" + settings.getDatabaseName();
 	}
 
+//	@Override
+//	protected String getPort() {
+//		DatabaseConnectionSettings settings = this.getSettings();
+//		return settings.getPort() == null || settings.getPort().isEmpty() ? "9123" : settings.getPort();
+//	}
+
 	@Override
 	protected void startServerIfRequired() {
 //		System.out.println("nz.co.gregs.dbvolution.databases.H2SharedDB.startServerIfRequired()");
