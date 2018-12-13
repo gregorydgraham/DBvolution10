@@ -227,13 +227,6 @@ public class DBLargeText extends DBLargeObject<byte[]> {
 			} catch (IOException ex) {
 				Logger.getLogger(DBLargeBinary.class.getName()).log(Level.SEVERE, null, ex);
 				throw new DBRuntimeException(ex);
-//			} finally {
-//				try {
-//					input.close();
-//				} catch (IOException ex) {
-//					Logger.getLogger(DBLargeBinary.class.getName()).log(Level.SEVERE, null, ex);
-//					throw new DBRuntimeException(ex);
-//				}
 			}
 		}
 		bytes = concatAllByteArrays(byteArrays);
