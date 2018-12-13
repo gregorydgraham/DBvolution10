@@ -84,7 +84,7 @@ public class DataModelTest extends AbstractTest {
 		for (Class<? extends DBDatabase> val : conMap.values()) {
 			System.out.println(val);
 		}
-		Assert.assertThat(result.size(), is(9));
+		Assert.assertThat(result.size(), is(10));
 	}
 
 	@Test
@@ -109,7 +109,7 @@ public class DataModelTest extends AbstractTest {
 		knownStrings.add("public nz.co.gregs.dbvolution.generic.AbstractTest$SQLiteTestDB(java.lang.String,java.lang.String,java.lang.String) throws java.io.IOException,java.sql.SQLException");
 		for (String knownString : knownStrings) {
 			if (!constr.contains(knownString)) {
-				System.out.println("CONSTRUCTOR: -" + knownString+"-");
+				System.out.println("CONSTRUCTOR: -" + knownString + "-");
 			}
 			Assert.assertTrue(constr.contains(knownString));
 			conMap.remove(knownString);
@@ -117,7 +117,7 @@ public class DataModelTest extends AbstractTest {
 		for (Constructor<DBDatabase> constructor : conMap.values()) {
 			System.out.println(constructor);
 		}
-		Assert.assertThat(result.size(), is(12));
+		Assert.assertThat(result.size(), is(13));
 	}
 
 	@Test
