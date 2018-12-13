@@ -22,6 +22,7 @@ import java.sql.Statement;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.regex.Pattern;
 import javax.sql.DataSource;
 import nz.co.gregs.dbvolution.databases.definitions.H2DBDefinition;
 import nz.co.gregs.dbvolution.internal.h2.*;
@@ -188,57 +189,63 @@ public class H2DB extends DBDatabase {
 		return (H2DB) super.clone();
 	}
 
+	private final static Pattern DROPPING_NONEXISTENT_TABLE_PATTERN = Pattern.compile("Table \"([^\"]*)\" not found; SQL statement:.*DROP TABLE \\1");
+	private final static Pattern CREATING_EXISTING_TABLE_PATTERN = Pattern.compile("Table \"[^\"]*\" already exists; SQL statement:");
+
 	@Override
 	public ResponseToException addFeatureToFixException(Exception exp) throws Exception {
 		boolean handledException = false;
-//			System.out.println("nz.co.gregs.dbvolution.databases.H2DB.addFeatureToFixException()");
-//			System.out.println(""+exp.getClass().getCanonicalName());
+//		System.out.println("nz.co.gregs.dbvolution.databases.H2DB.addFeatureToFixException()");
+//		System.out.println("nz.co.gregs.dbvolution.databases.H2DB.addFeatureToFixException()" + exp.getClass().getCanonicalName());
 		if (exp instanceof org.h2.jdbc.JdbcSQLException) {
 			String message = exp.getMessage();
-//			System.out.println(""+message);
-			if (message.matches("Table \"([^\"]*)\" not found; SQL statement:\n"
-					+ "DROP TABLE \\1")) {
-				return ResponseToException.SKIPQUERY;
-//				handledException = true;
-			} else if (message.matches("Table \"([^\"]*)\" already exists; SQL statement:")) {
-				return ResponseToException.SKIPQUERY;
-				//handledException = true;
-			} else {
-				try (Statement statement = getConnection().createStatement()) {
-					if ((message.startsWith("Function \"DBV_") && message.contains("\" not found"))
-							|| (message.startsWith("Method \"DBV_") && message.contains("\" not found"))) {
-						String[] split = message.split("[\" ]+");
-						String functionName = split[1];
-						DBVFeature functions = FEATURE_MAP.get(functionName);
-						if (functions != null) {
-							functions.add(statement);
-							handledException = true;
-						}
-					} else if (message.startsWith("Unknown data type: \"DBV_")) {
-						String[] split = message.split("\"");
-						String functionName = split[1];
-						DBVFeature datatype = FEATURE_MAP.get(functionName);
-						if (datatype != null) {
-							datatype.add(statement);
-							handledException = true;
-						}
-					} else if (message.matches(": +method \"DBV_[A-Z_0-9]+")) {
-						String[] split = message.split("method \"");
-						split = split[1].split("\\(");
-						String functionName = split[0];
-
-						DBVFeature functions = FEATURE_MAP.get(functionName);
-						if (functions != null) {
-							functions.add(statement);
-							handledException = true;
-						}
-					} else {
-						for (Map.Entry<String, DBVFeature> entrySet : FEATURE_MAP.entrySet()) {
-							String key = entrySet.getKey();
-							DBVFeature value = entrySet.getValue();
-							if (message.contains(key)) {
-								value.add(statement);
+			if (message != null) {
+//				System.out.println("nz.co.gregs.dbvolution.databases.H2DB.addFeatureToFixException()" + message);
+//				System.out.println("nz.co.gregs.dbvolution.databases.H2DB.addFeatureToFixException()" + DROPPING_NONEXISTENT_TABLE_PATTERN.matcher(message).lookingAt());
+//				System.out.println("nz.co.gregs.dbvolution.databases.H2DB.addFeatureToFixException()" + CREATING_EXISTING_TABLE_PATTERN.matcher(message).lookingAt());
+				if (DROPPING_NONEXISTENT_TABLE_PATTERN.matcher(message).lookingAt()) {
+					System.out.println("nz.co.gregs.dbvolution.databases.H2DB.addFeatureToFixException()" + "TABLE DOES NOT EXIST WHILE CREATING TABLE: OK.");
+					return ResponseToException.SKIPQUERY;
+				} else if (CREATING_EXISTING_TABLE_PATTERN.matcher(message).lookingAt()) {
+					System.out.println("nz.co.gregs.dbvolution.databases.H2DB.addFeatureToFixException()" + "TABLE EXISTS WHILE CREATING TABLE: OK.");
+					return ResponseToException.SKIPQUERY;
+				} else {
+					try (Statement statement = getConnection().createStatement()) {
+						if ((message.startsWith("Function \"DBV_") && message.contains("\" not found"))
+								|| (message.startsWith("Method \"DBV_") && message.contains("\" not found"))) {
+							String[] split = message.split("[\" ]+");
+							String functionName = split[1];
+							DBVFeature functions = FEATURE_MAP.get(functionName);
+							if (functions != null) {
+								functions.add(statement);
 								handledException = true;
+							}
+						} else if (message.startsWith("Unknown data type: \"DBV_")) {
+							String[] split = message.split("\"");
+							String functionName = split[1];
+							DBVFeature datatype = FEATURE_MAP.get(functionName);
+							if (datatype != null) {
+								datatype.add(statement);
+								handledException = true;
+							}
+						} else if (message.matches(": +method \"DBV_[A-Z_0-9]+")) {
+							String[] split = message.split("method \"");
+							split = split[1].split("\\(");
+							String functionName = split[0];
+
+							DBVFeature functions = FEATURE_MAP.get(functionName);
+							if (functions != null) {
+								functions.add(statement);
+								handledException = true;
+							}
+						} else {
+							for (Map.Entry<String, DBVFeature> entrySet : FEATURE_MAP.entrySet()) {
+								String key = entrySet.getKey();
+								DBVFeature value = entrySet.getValue();
+								if (message.contains(key)) {
+									value.add(statement);
+									handledException = true;
+								}
 							}
 						}
 					}
