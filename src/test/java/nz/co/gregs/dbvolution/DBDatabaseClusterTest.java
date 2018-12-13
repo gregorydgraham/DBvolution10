@@ -155,7 +155,7 @@ public class DBDatabaseClusterTest extends AbstractTest {
 		}
 	}
 
-	@Test 
+	@Test
 	public synchronized void testDatabaseRemovedAfterErrorInQuery() throws SQLException {
 		DBDatabaseCluster cluster
 				= new DBDatabaseCluster(
@@ -350,9 +350,42 @@ public class DBDatabaseClusterTest extends AbstractTest {
 			cluster.dismantle();
 		}
 	}
-	
+
 	@Test
 	public synchronized void testDatabaseRemovedAfterErrorInCreateTable() throws SQLException {
+		DBDatabaseCluster cluster
+				= new DBDatabaseCluster(
+						"testDatabaseRemovedAfterErrorInCreateTable",
+						new DBDatabaseCluster.Configuration(false, false),
+						database);
+		try {
+			cluster.setAutoRebuild(false);
+			H2MemoryDB soloDB2 = new H2MemoryDB("DBDatabaseClusterTest6", "who", "what", true) {
+				@Override
+				public void createTable(DBRow newTableRow) throws SQLException, AutoCommitActionDuringTransactionException {
+					if (newTableRow instanceof TableThatDoesExistOnTheCluster) {
+						throw new SQLException("DELIBERATE EXCEPTION");
+					} else {
+						super.createTable(newTableRow);
+					}
+				}
+
+			};
+			cluster.addDatabaseAndWait(soloDB2);
+			Assert.assertThat(cluster.size(), is(2));
+			try {
+				cluster.createTable(new TableThatDoesExistOnTheCluster());
+			} catch (SQLException | AutoCommitActionDuringTransactionException e) {
+			}
+			Assert.assertThat(cluster.size(), is(1));
+
+		} finally {
+			cluster.dismantle();
+		}
+	}
+
+	@Test
+	public synchronized void testDatabaseRemainsInClusterAfterCreatingExistingTable() throws SQLException {
 		DBDatabaseCluster cluster
 				= new DBDatabaseCluster(
 						"testDatabaseRemovedAfterErrorInCreateTable",
@@ -367,18 +400,18 @@ public class DBDatabaseClusterTest extends AbstractTest {
 				cluster.createTable(new TableThatDoesExistOnTheCluster());
 			} catch (SQLException | AutoCommitActionDuringTransactionException e) {
 			}
-			Assert.assertThat(cluster.size(), is(1));
+			Assert.assertThat(cluster.size(), is(2));
 
 		} finally {
 			cluster.dismantle();
 		}
 	}
-	
+
 	@Test
 	public synchronized void testDatabaseTableExists() throws SQLException {
 		Assert.assertTrue(database.tableExists(new TableThatDoesExistOnTheCluster()));
 	}
-	
+
 	@Test
 	public synchronized void testDatabaseTableDoesNotExists() throws SQLException {
 		Assert.assertFalse(database.tableExists(new TableThatDoesntExistOnTheCluster()));
