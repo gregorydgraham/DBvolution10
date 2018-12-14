@@ -168,12 +168,12 @@ public class MySQLDB extends DBDatabase implements SupportsPolygonDatatype {
 	private final static Pattern TABLE_ALREADY_EXISTS = Pattern.compile("Table '[^']*' already exists");
 	@Override
 	public ResponseToException addFeatureToFixException(Exception exp) throws Exception {
-		System.out.println("nz.co.gregs.dbvolution.databases.MySQLDB.addFeatureToFixException()");
-		System.out.println("nz.co.gregs.dbvolution.databases.MySQLDB.addFeatureToFixException()"+exp.getClass().getCanonicalName());
-		System.out.println("nz.co.gregs.dbvolution.databases.MySQLDB.addFeatureToFixException()"+exp.getMessage());
-		System.out.println("nz.co.gregs.dbvolution.databases.MySQLDB.addFeatureToFixException()"+TABLE_ALREADY_EXISTS.matcher(exp.getMessage()).lookingAt());
+//		System.out.println("nz.co.gregs.dbvolution.databases.MySQLDB.addFeatureToFixException()");
+//		System.out.println("nz.co.gregs.dbvolution.databases.MySQLDB.addFeatureToFixException()"+exp.getClass().getCanonicalName());
+//		System.out.println("nz.co.gregs.dbvolution.databases.MySQLDB.addFeatureToFixException()"+exp.getMessage());
+//		System.out.println("nz.co.gregs.dbvolution.databases.MySQLDB.addFeatureToFixException()"+TABLE_ALREADY_EXISTS.matcher(exp.getMessage()).lookingAt());
 		if (TABLE_ALREADY_EXISTS.matcher(exp.getMessage()).matches()){
-		System.out.println("nz.co.gregs.dbvolution.databases.MySQLDB.addFeatureToFixException() TABLE EXISTS WHILE CREATING TABLE: OK.");
+//		System.out.println("nz.co.gregs.dbvolution.databases.MySQLDB.addFeatureToFixException() TABLE EXISTS WHILE CREATING TABLE: OK.");
 			return ResponseToException.SKIPQUERY;
 		}
 		return super.addFeatureToFixException(exp);

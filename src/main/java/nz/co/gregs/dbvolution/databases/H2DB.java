@@ -190,6 +190,7 @@ public class H2DB extends DBDatabase {
 	}
 
 	private final static Pattern BROKEN_CONNECTION_PATTERN = Pattern.compile("Connection is broken: \"session closed\"");
+	private final static Pattern ALREADY_CLOSED_PATTERN = Pattern.compile("The object is already closed");
 	private final static Pattern DROPPING_NONEXISTENT_TABLE_PATTERN = Pattern.compile("Table \"([^\"]*)\" not found; SQL statement:.*DROP TABLE \\1");
 	private final static Pattern CREATING_EXISTING_TABLE_PATTERN = Pattern.compile("Table \"[^\"]*\" already exists; SQL statement:");
 
@@ -204,14 +205,15 @@ public class H2DB extends DBDatabase {
 //				System.out.println("nz.co.gregs.dbvolution.databases.H2DB.addFeatureToFixException()" + message);
 //				System.out.println("nz.co.gregs.dbvolution.databases.H2DB.addFeatureToFixException()" + DROPPING_NONEXISTENT_TABLE_PATTERN.matcher(message).lookingAt());
 //				System.out.println("nz.co.gregs.dbvolution.databases.H2DB.addFeatureToFixException()" + CREATING_EXISTING_TABLE_PATTERN.matcher(message).lookingAt());
-				if (BROKEN_CONNECTION_PATTERN.matcher(message).lookingAt()) {
-					System.out.println("nz.co.gregs.dbvolution.databases.H2DB.addFeatureToFixException()" + "BROKEN CONNECTION: REPLACE CONNECTION.");
+				if (BROKEN_CONNECTION_PATTERN.matcher(message).lookingAt()
+						||ALREADY_CLOSED_PATTERN.matcher(message).lookingAt()) {
+//					System.out.println("nz.co.gregs.dbvolution.databases.H2DB.addFeatureToFixException()" + "BROKEN CONNECTION: REPLACE CONNECTION.");
 					return ResponseToException.REPLACECONNECTION;
 				} else if (DROPPING_NONEXISTENT_TABLE_PATTERN.matcher(message).lookingAt()) {
-					System.out.println("nz.co.gregs.dbvolution.databases.H2DB.addFeatureToFixException()" + "TABLE DOES NOT EXIST WHILE CREATING TABLE: OK.");
+//					System.out.println("nz.co.gregs.dbvolution.databases.H2DB.addFeatureToFixException()" + "TABLE DOES NOT EXIST WHILE CREATING TABLE: OK.");
 					return ResponseToException.SKIPQUERY;
 				} else if (CREATING_EXISTING_TABLE_PATTERN.matcher(message).lookingAt()) {
-					System.out.println("nz.co.gregs.dbvolution.databases.H2DB.addFeatureToFixException()" + "TABLE EXISTS WHILE CREATING TABLE: OK.");
+//					System.out.println("nz.co.gregs.dbvolution.databases.H2DB.addFeatureToFixException()" + "TABLE EXISTS WHILE CREATING TABLE: OK.");
 					return ResponseToException.SKIPQUERY;
 				} else {
 					try (Statement statement = getConnection().createStatement()) {

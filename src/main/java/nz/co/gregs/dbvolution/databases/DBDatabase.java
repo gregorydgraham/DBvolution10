@@ -102,6 +102,7 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 	private boolean terminated = false;
 	private final List<RegularProcess> REGULAR_PROCESSORS = new ArrayList<>();
 	private static final ScheduledExecutorService REGULAR_THREAD_POOL = Executors.newSingleThreadScheduledExecutor();
+	private Exception exception = null;
 
 	{
 		Runtime.getRuntime().addShutdownHook(new StopDatabase(this));
@@ -2184,6 +2185,14 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 
 	protected final DataSource getDataSource() {
 		return settings.getDataSource();
+	}
+
+	public void setLastException(Exception except) {
+		this.exception = except;
+	}
+
+	public Exception getLastException() {
+		return this.exception;
 	}
 
 	public static enum ResponseToException {
