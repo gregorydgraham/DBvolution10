@@ -119,11 +119,13 @@ public class ClusterDetails implements Serializable {
 		} else {
 			except.printStackTrace();
 			database.setLastException(except);
-			queuedActions.remove(database);
-			allDatabases.remove(database);
+
 			readyDatabases.remove(database);
 			pausedDatabases.remove(database);
 			unsynchronizedDatabases.remove(database);
+
+			queuedActions.remove(database);
+
 			quarantinedDatabases.add(database);
 		}
 	}
