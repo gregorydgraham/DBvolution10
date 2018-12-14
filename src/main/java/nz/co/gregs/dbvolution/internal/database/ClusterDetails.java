@@ -71,6 +71,7 @@ public class ClusterDetails implements Serializable {
 	private final Preferences prefs = Preferences.userNodeForPackage(this.getClass());
 	private String clusterName;
 	private boolean useAutoRebuild;
+	private boolean autoreconnect;
 
 	public ClusterDetails(String clusterName, boolean autoRebuild) {
 		this.clusterName = clusterName;
@@ -339,6 +340,14 @@ public class ClusterDetails implements Serializable {
 	public synchronized void dismantle() {
 		removeAuthoritativeDatabase();
 		removeAllDatabases();
+	}
+
+	public void setAutoReconnect(boolean useAutoReconnect) {
+		this.autoreconnect = useAutoReconnect;
+	}
+
+	public boolean getAutoReconnect() {
+		return this.autoreconnect;
 	}
 
 }

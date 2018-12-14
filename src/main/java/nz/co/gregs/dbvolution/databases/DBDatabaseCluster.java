@@ -146,16 +146,11 @@ public class DBDatabaseCluster extends DBDatabase {
 		super();
 		clusterStatement = new DBStatementCluster(this);
 		details = new ClusterDetails(clusterName, config.isUseAutoRebuild());
+		details.setAutoReconnect(config.useAutoReconnect);
 		setDatabaseName(clusterName);
 		ACTION_THREAD_POOL = Executors.newCachedThreadPool();
-		addReconnectionProcessor(config);
+		getRegularProcessors().add(new ReconnectionProcessor());
 		setAutoRebuild(config.isUseAutoRebuild());
-	}
-
-	private void addReconnectionProcessor(Configuration config) {
-		if (config.isUseAutoReconnect()) {
-			getRegularProcessors().add(new ReconnectionProcessor());
-		}
 	}
 
 	public DBDatabaseCluster(String clusterName) {
@@ -1220,58 +1215,60 @@ public class DBDatabaseCluster extends DBDatabase {
 	}
 
 	private void synchronizeSecondaryDatabase(DBDatabase secondary) throws SQLException, NoAvailableDatabaseException, AccidentalCartesianJoinException, AccidentalBlankQueryException {
-
-		DBDatabase template = null;
 		try {
-			template = getTemplateDatabase();
-		} catch (NoAvailableDatabaseException except) {
-			// must be the first database
-		}
-		if (template != null) {
-			// we need to unpause the template no matter wht happens so use a finally clause
+			DBDatabase template = null;
 			try {
-				// Check that we're not synchronising the reference database
-				if (!template.getSettings().equals(secondary.getSettings())) {
-					final DBRow[] requiredTables = details.getRequiredTables();
-					for (DBRow table : requiredTables) {
-						if (true) {
-							if (template.tableExists(table)) {
-								// Make sure it exists in the new database
-								if (secondary.tableExists(table) == false) {
-									secondary.createTable(table);
-								}
-								// Check that the table has data
-								final DBTable<DBRow> primaryTable = template.getDBTable(table);
-								final DBTable<DBRow> secondaryTable = secondary.getDBTable(table);
-								final Long primaryTableCount = primaryTable.count();
-								final Long secondaryTableCount = secondaryTable.count();
-								if (primaryTableCount > 0) {
-									final DBTable<DBRow> primaryData = primaryTable.setBlankQueryAllowed(true).setTimeoutToForever();
-									// Check that the new database has data
-									if (secondaryTableCount == 0) {
-										List<DBRow> allRows = primaryData.getAllRows();
-										secondaryTable.insert(allRows);
-									} else if (!secondaryTableCount.equals(primaryTableCount)) {
-										// Something is different in the data so correct it
-										secondary.delete(table);
-										if (secondary.explicitCommitActionRequired) {
-											secondary.doCommit();
+				template = getTemplateDatabase();
+			} catch (NoAvailableDatabaseException except) {
+				// must be the first database
+			}
+			if (template != null) {
+				// we need to unpause the template no matter wht happens so use a finally clause
+				try {
+					// Check that we're not synchronising the reference database
+					if (!template.getSettings().equals(secondary.getSettings())) {
+						final DBRow[] requiredTables = details.getRequiredTables();
+						for (DBRow table : requiredTables) {
+							if (true) {
+								if (template.tableExists(table)) {
+									// Make sure it exists in the new database
+									if (secondary.tableExists(table) == false) {
+										secondary.createTable(table);
+									}
+									// Check that the table has data
+									final DBTable<DBRow> primaryTable = template.getDBTable(table);
+									final DBTable<DBRow> secondaryTable = secondary.getDBTable(table);
+									final Long primaryTableCount = primaryTable.count();
+									final Long secondaryTableCount = secondaryTable.count();
+									if (primaryTableCount > 0) {
+										final DBTable<DBRow> primaryData = primaryTable.setBlankQueryAllowed(true).setTimeoutToForever();
+										// Check that the new database has data
+										if (secondaryTableCount == 0) {
+											List<DBRow> allRows = primaryData.getAllRows();
+											secondaryTable.insert(allRows);
+										} else if (!secondaryTableCount.equals(primaryTableCount)) {
+											// Something is different in the data so correct it
+											secondary.delete(table);
+											if (secondary.explicitCommitActionRequired) {
+												secondary.doCommit();
+											}
+											List<DBRow> allRows = primaryData.getAllRows();
+											secondary.insert(allRows);
 										}
-										List<DBRow> allRows = primaryData.getAllRows();
-										secondary.insert(allRows);
 									}
 								}
 							}
 						}
 					}
+				} finally {
+					releaseTemplateDatabase(template);
 				}
-			} catch (Exception ex) {
-				quarantineDatabase(secondary, ex);
-			} finally {
-				releaseTemplateDatabase(template);
 			}
+			synchronizeActions(secondary);
+		} catch (Exception ex) {
+			quarantineDatabase(secondary, ex);
+			throw ex;
 		}
-		synchronizeActions(secondary);
 	}
 
 	private synchronized void synchronizeActions(DBDatabase db) throws SQLException {
@@ -1395,9 +1392,17 @@ public class DBDatabaseCluster extends DBDatabase {
 	protected String getUrlFromSettings(DatabaseConnectionSettings settings) {
 		return "CLUSTER";
 	}
-	
+
 	public final void setAutoRebuild(boolean b) {
 		details.setAutoRebuild(b);
+	}
+
+	public final void setAutoReconnect(boolean b) {
+		details.setAutoReconnect(b);
+	}
+
+	public final boolean getAutoReconnect() {
+		return details.getAutoReconnect();
 	}
 
 	@Override
@@ -1507,16 +1512,19 @@ public class DBDatabaseCluster extends DBDatabase {
 
 	private class ReconnectionProcessor extends RegularProcess {
 
+
 		public ReconnectionProcessor() {
 		}
 
 		@Override
 		public synchronized void process() {
-			System.out.println(getDatabaseName() + ": PREPARING TO RECONNECT DATABASES... ");
+			if (getAutoReconnect()) {
+				System.out.println(getDatabaseName() + ": PREPARING TO RECONNECT DATABASES... ");
 
-			reconnectQuarantinedDatabases();
+				reconnectQuarantinedDatabases();
 
-			System.out.println(getDatabaseName() + ": FINISHED RECONNECTING DATABASES...");
+				System.out.println(getDatabaseName() + ": FINISHED RECONNECTING DATABASES...");
+			}
 		}
 	}
 
