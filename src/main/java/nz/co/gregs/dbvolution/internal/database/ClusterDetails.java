@@ -79,7 +79,10 @@ public class ClusterDetails implements Serializable {
 
 	public final synchronized boolean add(DBDatabase database) {
 		if (clusterContainsDatabase(database)) {
-			return false;
+			readyDatabases.remove(database);
+			pausedDatabases.remove(database);
+			quarantinedDatabases.remove(database);
+			return unsynchronizedDatabases.add(database);
 		} else {
 			unsynchronizedDatabases.add(database);
 			return allDatabases.add(database);
@@ -104,7 +107,7 @@ public class ClusterDetails implements Serializable {
 			return DBDatabaseCluster.Status.PAUSED;
 		}
 		if (quarantined) {
-			return DBDatabaseCluster.Status.EJECTED;
+			return DBDatabaseCluster.Status.QUARANTINED;
 		}
 		if (unsynched) {
 			return DBDatabaseCluster.Status.UNSYNCHRONISED;

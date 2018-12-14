@@ -133,7 +133,7 @@ public class DBDatabaseCluster extends DBDatabase {
 		UNSYNCHRONISED,
 		PAUSED,
 		DEAD,
-		EJECTED,
+		QUARANTINED,
 		UNKNOWN,
 		PROCESSING
 	}
@@ -1395,31 +1395,7 @@ public class DBDatabaseCluster extends DBDatabase {
 	protected String getUrlFromSettings(DatabaseConnectionSettings settings) {
 		return "CLUSTER";
 	}
-
-//	@Override
-//	protected Map<String, String> getExtras() {
-//		return new HashMap<String, String>();
-//	}
-//
-//	@Override
-//	protected String getHost() {
-//		return "CLUSTER";
-//	}
-//
-//	@Override
-//	protected String getDatabaseInstance() {
-//		return "CLUSTER";
-//	}
-//
-//	@Override
-//	protected String getPort() {
-//		return "CLUSTER";
-//	}
-//
-//	@Override
-//	protected String getSchema() {
-//		return "CLUSTER";
-//	}
+	
 	public final void setAutoRebuild(boolean b) {
 		details.setAutoRebuild(b);
 	}
