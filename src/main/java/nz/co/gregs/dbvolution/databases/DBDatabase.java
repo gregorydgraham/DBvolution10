@@ -2535,7 +2535,7 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 				if (process.canRun() && process.hasExceededTimeLimit()) {
 					try {
 						if (process.preprocess()) {
-							process.process();
+							process.setLastResult(process.process());
 						}
 					} catch (Exception ex) {
 						process.handleExceptionDuringProcessing(ex);
@@ -2565,7 +2565,7 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 	/**
 	 * @return the REGULAR_PROCESSORS
 	 */
-	protected List<RegularProcess> getRegularProcessors() {
+	public final List<RegularProcess> getRegularProcessors() {
 		return REGULAR_PROCESSORS;
 	}
 

@@ -67,6 +67,8 @@ public abstract class RegularProcess {
 	private int timeField = GregorianCalendar.MINUTE;
 	private int timeOffset = 5;
 	private DBDatabase dbDatabase;
+	private String lastResult = "Not Run Yet";
+	private Date lastRunTime = new Date();
 
 	/**
 	 * Method that does all the processing that needs to be regularly performed.
@@ -81,7 +83,7 @@ public abstract class RegularProcess {
 	 *
 	 * @throws Exception
 	 */
-	public abstract void process() throws Exception;
+	public abstract String process() throws Exception;
 
 	public final boolean hasExceededTimeLimit() {
 		return nextRun.before(new Date());
@@ -142,6 +144,7 @@ public abstract class RegularProcess {
 	 *
 	 */
 	public final void offsetTime() {
+		lastRunTime=new Date();
 		Calendar cal = GregorianCalendar.getInstance();
 		cal.add(timeField, timeOffset);
 		nextRun = cal.getTime();
@@ -176,6 +179,18 @@ public abstract class RegularProcess {
 	
 	public final boolean canRun() {
 		return this.dbDatabase != null;
+	}
+
+	public String getLastResult() {
+		return lastResult;
+	}
+
+	public Date getLastRuntime() {
+		return lastRunTime;
+	}
+
+	public void setLastResult(String process) {
+		this.lastResult = process;
 	}
 
 }

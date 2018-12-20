@@ -1512,31 +1512,36 @@ public class DBDatabaseCluster extends DBDatabase {
 
 	private class ReconnectionProcessor extends RegularProcess {
 
-
 		public ReconnectionProcessor() {
 		}
 
 		@Override
-		public synchronized void process() {
+		public synchronized String process() {
+			String str = "Nothing Processed";
 			if (getAutoReconnect()) {
 				System.out.println(getDatabaseName() + ": PREPARING TO RECONNECT DATABASES... ");
 
-				reconnectQuarantinedDatabases();
+				str = reconnectQuarantinedDatabases();
 
 				System.out.println(getDatabaseName() + ": FINISHED RECONNECTING DATABASES...");
 			}
+			return str;
 		}
 	}
 
-	public void reconnectQuarantinedDatabases() {
+	public String reconnectQuarantinedDatabases() {
+		StringBuilder str = new StringBuilder();
 		DBDatabase[] ejecta = details.getQuarantinedDatabases().toArray(new DBDatabase[]{});
 		for (DBDatabase ejected : ejecta) {
 			try {
 				addDatabase(ejected);
+				str.append("").append(ejected.getLabel()).append(" added");
 			} catch (SQLException ex) {
 				quarantineDatabase(ejected, ex);
+				str.append("").append(ejected.getLabel()).append(" quarantined: " + ex.getLocalizedMessage());
 			}
 		}
+		return str.toString();
 	}
 
 	public static class Configuration {
