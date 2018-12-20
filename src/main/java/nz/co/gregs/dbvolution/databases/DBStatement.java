@@ -340,6 +340,15 @@ public class DBStatement implements Statement {
 	 */
 	protected synchronized void replaceBrokenConnection() throws SQLException, UnableToCreateDatabaseConnectionException, UnableToFindJDBCDriver {
 		database.discardConnection(connection);
+		if (internalStatement != null) {
+			try {
+				internalStatement.close();
+			} catch (SQLException exp) {
+				LOG.debug(this, exp);
+			}
+			internalStatement = null;
+			getInternalStatement();
+		}
 	}
 
 	/**
