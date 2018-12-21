@@ -30,6 +30,7 @@
  */
 package nz.co.gregs.dbvolution.utility;
 
+import java.io.Serializable;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -59,7 +60,9 @@ import org.apache.commons.logging.LogFactory;
  *
  * @author gregorygraham
  */
-public abstract class RegularProcess {
+public abstract class RegularProcess implements Serializable {
+	
+	public static final long serialVersionUID = 1l;
 
 	final Log LOG = LogFactory.getLog(RegularProcess.class);
 
