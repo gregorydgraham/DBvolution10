@@ -587,6 +587,24 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 
 	/**
 	 *
+	 * Deletes DBRows from the correct tables automatically
+	 *
+	 * @param rows a list of DBRows
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @return a DBActionList of all the actions performed
+	 * @throws SQLException database exceptions
+	 */
+	public final DBActionList deleteAll(DBRow... rows) throws SQLException {
+		DBActionList changes = new DBActionList();
+		for (DBRow row : rows) {
+			changes.addAll(this.getDBTable(row).deleteAll(row));
+		}
+		return changes;
+	}
+
+	/**
+	 *
 	 * Deletes Lists of DBRows from the correct tables automatically
 	 *
 	 * @param list a list of DBRows

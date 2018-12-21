@@ -597,7 +597,7 @@ public class RowDefinitionClassWrapper implements Serializable{
 				}
 			} catch (InstantiationException | IllegalAccessException ex) {
 				Logger.getLogger(RowDefinitionClassWrapper.class.getName()).log(Level.SEVERE, null, ex);
-				ex.printStackTrace();
+//				ex.printStackTrace();
 			}
 		}
 		return list;

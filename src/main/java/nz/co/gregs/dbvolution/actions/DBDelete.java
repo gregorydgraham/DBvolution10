@@ -87,6 +87,26 @@ public abstract class DBDelete extends DBAction {
 	 * @return the actions executed as a DBActionList
 	 * @throws SQLException database exceptions
 	 */
+	public static DBActionList deleteAll(DBDatabase database, DBRow... rows) throws SQLException {
+		DBActionList actions = new DBActionList();
+		for (DBRow row : rows) {
+			DBDeleteAll example = new DBDeleteAll(row);
+			actions.addAll(example.getActions(database, row));
+		}
+		return actions.execute(database);
+	}
+
+	/**
+	 * Deletes the specified row or example from the database and returns the
+	 * actions performed.
+	 *
+	 * @param database the target database
+	 * @param rows the row to be deleted
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @return the actions executed as a DBActionList
+	 * @throws SQLException database exceptions
+	 */
 	public static DBActionList delete(DBDatabase database, Collection<? extends DBRow> rows) throws SQLException {
 		DBActionList delete = getDeletes(database, rows);
 		return delete.execute(database);

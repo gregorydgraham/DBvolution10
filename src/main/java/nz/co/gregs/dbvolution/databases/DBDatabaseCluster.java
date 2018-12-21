@@ -1248,7 +1248,7 @@ public class DBDatabaseCluster extends DBDatabase {
 											secondaryTable.insert(allRows);
 										} else if (!secondaryTableCount.equals(primaryTableCount)) {
 											// Something is different in the data so correct it
-											secondary.delete(table);
+											secondary.deleteAll(table);
 											if (secondary.explicitCommitActionRequired) {
 												secondary.doCommit();
 											}

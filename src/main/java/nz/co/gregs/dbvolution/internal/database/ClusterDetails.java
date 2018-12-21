@@ -123,7 +123,7 @@ public class ClusterDetails implements Serializable {
 			// Unable to quarantine the only remaining database
 			throw new UnableToRemoveLastDatabaseFromClusterException();
 		} else {
-			except.printStackTrace();
+//			except.printStackTrace();
 			database.setLastException(except);
 
 			readyDatabases.remove(database);

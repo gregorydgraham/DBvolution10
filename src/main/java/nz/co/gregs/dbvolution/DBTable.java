@@ -610,6 +610,24 @@ public class DBTable<E extends DBRow> {
 	 * may be thrown
 	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
+	@SafeVarargs
+	public final DBActionList deleteAll(E... oldRows) throws SQLException {
+		DBActionList actions = new DBActionList();
+		actions.addAll(DBDelete.deleteAll(database, oldRows));
+		query.refreshQuery();
+		return actions;
+	}
+
+	/**
+	 * Deletes the rows from the database permanently.
+	 *
+	 * @param oldRows	oldRows
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @return a {@link DBActionList} of the delete actions. 1 Database exceptions
+	 * may be thrown
+	 * @throws java.sql.SQLException java.sql.SQLException
+	 */
 	public DBActionList delete(Collection<E> oldRows) throws SQLException {
 		DBActionList actions = new DBActionList();
 		actions.addAll(DBDelete.delete(database, oldRows));
