@@ -55,7 +55,7 @@ public class DBStatement implements Statement {
 	private Statement internalStatement;
 	private boolean batchHasEntries;
 	final DBDatabase database;
-	private final Connection connection;
+	private Connection connection;
 	private boolean isClosed = false;
 
 	/**
@@ -340,6 +340,7 @@ public class DBStatement implements Statement {
 	 */
 	protected synchronized void replaceBrokenConnection() throws SQLException, UnableToCreateDatabaseConnectionException, UnableToFindJDBCDriver {
 		database.discardConnection(connection);
+		connection = database.getConnection();
 		if (internalStatement != null) {
 			try {
 				internalStatement.close();
