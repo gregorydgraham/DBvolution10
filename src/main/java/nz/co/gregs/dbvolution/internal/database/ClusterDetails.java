@@ -42,14 +42,12 @@ import java.util.Set;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.actions.DBAction;
 import nz.co.gregs.dbvolution.databases.DBDatabase;
 import nz.co.gregs.dbvolution.databases.DBDatabaseCluster;
 import nz.co.gregs.dbvolution.databases.DatabaseConnectionSettings;
-import nz.co.gregs.dbvolution.exceptions.DBRuntimeException;
 import nz.co.gregs.dbvolution.exceptions.UnableToRemoveLastDatabaseFromClusterException;
 import nz.co.gregs.dbvolution.reflection.DataModel;
 
@@ -71,13 +69,20 @@ public class ClusterDetails implements Serializable {
 	private final transient Map<DBDatabase, Queue<DBAction>> queuedActions = Collections.synchronizedMap(new HashMap<DBDatabase, Queue<DBAction>>(0));
 
 	private final Preferences prefs = Preferences.userNodeForPackage(this.getClass());
-	private String clusterName;
-	private boolean useAutoRebuild;
-	private boolean autoreconnect;
+	private String clusterName = "NotDefined";
+	private boolean useAutoRebuild = false;
+	private boolean autoreconnect = false;
 
-	public ClusterDetails(String clusterName, boolean autoRebuild) {
+	public ClusterDetails(String clusterName) {
+		this();
 		this.clusterName = clusterName;
+	}
+	public ClusterDetails(String clusterName, boolean autoRebuild) {
+		this(clusterName);
 		setAutoRebuild(autoRebuild);
+	}
+
+	public ClusterDetails() {
 	}
 
 	public final synchronized boolean add(DBDatabase database) {
@@ -353,4 +358,7 @@ public class ClusterDetails implements Serializable {
 		return this.autoreconnect;
 	}
 
+	public boolean getAutoRebuild() {
+		return this.useAutoRebuild;
+	}
 }
