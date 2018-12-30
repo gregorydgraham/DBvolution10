@@ -548,6 +548,17 @@ public class DatabaseConnectionSettings {
 		return settings;
 	}
 
+	/** Create the DBDatabase described by these settings
+	 *
+	 * @return the DBDatabase
+	 * @throws ClassNotFoundException
+	 * @throws NoSuchMethodException
+	 * @throws SecurityException
+	 * @throws InstantiationException
+	 * @throws IllegalAccessException
+	 * @throws IllegalArgumentException
+	 * @throws InvocationTargetException
+	 */
 	public final DBDatabase createDBDatabase() throws ClassNotFoundException, NoSuchMethodException, SecurityException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
 		Class<?> dbDatabaseClass = Class.forName(this.getDbdatabaseClass());
 		Constructor<?> constructor = dbDatabaseClass.getConstructor(DatabaseConnectionSettings.class);
