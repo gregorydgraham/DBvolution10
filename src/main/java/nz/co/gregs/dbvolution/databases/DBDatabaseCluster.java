@@ -36,6 +36,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Queue;
@@ -145,12 +146,15 @@ public class DBDatabaseCluster extends DBDatabase {
 	public DBDatabaseCluster(String clusterName, Configuration config) {
 		super();
 		clusterStatement = new DBStatementCluster(this);
-		details = new ClusterDetails(clusterName, config.isUseAutoRebuild());
+		details = new ClusterDetails();
+		details.setClusterName(clusterName);
+		details.setAutoRebuild(config.isUseAutoRebuild());
 		details.setAutoReconnect(config.useAutoReconnect);
 		setDatabaseName(clusterName);
 		ACTION_THREAD_POOL = Executors.newCachedThreadPool();
-		getRegularProcessors().add(new ReconnectionProcessor());
-		setAutoRebuild(config.isUseAutoRebuild());
+		final ReconnectionProcessor reconnectionProcessor = new ReconnectionProcessor();
+		reconnectionProcessor.setTimeOffset(Calendar.MINUTE, 1);
+		getRegularProcessors().add(reconnectionProcessor);
 	}
 
 	public DBDatabaseCluster(String clusterName) {
@@ -1393,6 +1397,10 @@ public class DBDatabaseCluster extends DBDatabase {
 		return "CLUSTER";
 	}
 
+	public final boolean getAutoRebuild() {
+		return details.getAutoRebuild();
+	}
+
 	public final void setAutoRebuild(boolean b) {
 		details.setAutoRebuild(b);
 	}
@@ -1533,12 +1541,15 @@ public class DBDatabaseCluster extends DBDatabase {
 		StringBuilder str = new StringBuilder();
 		DBDatabase[] ejecta = details.getQuarantinedDatabases().toArray(new DBDatabase[]{});
 		for (DBDatabase ejected : ejecta) {
+			str.append(ejected.getSettings());
 			try {
 				addDatabase(ejected);
 				str.append("").append(ejected.getLabel()).append(" added");
-			} catch (SQLException ex) {
+			} catch (Exception ex) {
 				quarantineDatabase(ejected, ex);
 				str.append("").append(ejected.getLabel()).append(" quarantined: " + ex.getLocalizedMessage());
+			}finally{
+				str.append("\n");
 			}
 		}
 		return str.toString();
