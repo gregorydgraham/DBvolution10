@@ -33,7 +33,6 @@ import nz.co.gregs.dbvolution.databases.*;
 import nz.co.gregs.dbvolution.example.*;
 import org.h2.jdbcx.JdbcDataSource;
 import org.junit.After;
-import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
