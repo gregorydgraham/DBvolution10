@@ -88,7 +88,7 @@ public enum Polygon2DFunctions implements DBVFeature {
 			+ "					}\n"
 			+ "				}\n"
 			+ "			} catch (Exception ex) {\n"
-			+ "				throw new RuntimeException(\"Failed To Parse Polygon: either '\"+firstPolyStr+\"' or '\"+secondPolyStr+\"' is wrong somehow\", ex);\n"
+			+ "				throw new RuntimeException(\"Failed To Parse Polygon During EQUALS: either '\"+firstPolyStr+\"' or '\"+secondPolyStr+\"' is wrong somehow\", ex);\n"
 			+ "			}"),
 	/**
 	 *
@@ -416,7 +416,7 @@ public enum Polygon2DFunctions implements DBVFeature {
 	/**
 	 *
 	 */
-	UNION("Geometry", "String firstPolyStr, String secondPolyStr", ""
+	UNION("String", "String firstPolyStr, String secondPolyStr", ""
 			+ "			try {\n"
 			+ "				if (firstPolyStr == null || secondPolyStr == null) {\n"
 			+ "					return null;\n"
@@ -428,7 +428,7 @@ public enum Polygon2DFunctions implements DBVFeature {
 			+ "					if ((firstGeometry instanceof Polygon)&&(secondGeometry instanceof Polygon)) {\n"
 			+ "						Polygon firstPoly = (Polygon) firstGeometry;\n"
 			+ "						Polygon secondPoly = (Polygon) secondGeometry;\n"
-			+ "						return firstPoly.union(secondPoly);\n"
+			+ "						return firstPoly.union(secondPoly).toText();\n"
 			+ "					}else{"
 			+ "						return null;"
 			+ "					}"
@@ -439,7 +439,7 @@ public enum Polygon2DFunctions implements DBVFeature {
 	/**
 	 *
 	 */
-	INTERSECTION("Geometry", "String firstPolyStr, String secondPolyStr", ""
+	INTERSECTION("String", "String firstPolyStr, String secondPolyStr", ""
 			+ "			try {\n"
 			+ "				if (firstPolyStr == null || secondPolyStr == null) {\n"
 			+ "					return null;\n"
@@ -451,13 +451,13 @@ public enum Polygon2DFunctions implements DBVFeature {
 			+ "					if ((firstGeometry instanceof Polygon)&&(secondGeometry instanceof Polygon)) {\n"
 			+ "						Polygon firstPoly = (Polygon) firstGeometry;\n"
 			+ "						Polygon secondPoly = (Polygon) secondGeometry;\n"
-			+ "						return firstPoly.intersection(secondPoly);\n"
+			+ "						return firstPoly.intersection(secondPoly).toText();\n"
 			+ "					}else{"
 			+ "						return null;"
 			+ "					}"
 			+ "				}\n"
 			+ "			} catch (Exception ex) {\n"
-			+ "				throw new RuntimeException(\"Failed To Parse Polygon\", ex);\n"
+			+ "				throw new RuntimeException(\"Failed To Parse Polygon During INTERSECTION\", ex);\n"
 			+ "			}"),
 	/**
 	 *
@@ -480,7 +480,7 @@ public enum Polygon2DFunctions implements DBVFeature {
 			+ "					}"
 			+ "				}\n"
 			+ "			} catch (Exception ex) {\n"
-			+ "				throw new RuntimeException(\"Failed To Parse Polygon\", ex);\n"
+			+ "				throw new RuntimeException(\"Failed To Parse Polygon During INTERSECTS\", ex);\n"
 			+ "			}"),
 	/**
 	 *
