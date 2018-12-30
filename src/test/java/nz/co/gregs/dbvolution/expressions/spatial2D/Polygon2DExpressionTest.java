@@ -56,7 +56,7 @@ public class Polygon2DExpressionTest extends AbstractTest {
 
 	public Polygon2DExpressionTest(Object testIterationName, DBDatabase db) throws SQLException {
 		super(testIterationName, db);
-
+		
 		PolygonTestTable polygonTestTable = new PolygonTestTable();
 
 		db.preventDroppingOfTables(false);
