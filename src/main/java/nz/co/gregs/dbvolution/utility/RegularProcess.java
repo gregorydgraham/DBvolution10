@@ -84,6 +84,7 @@ public abstract class RegularProcess implements Serializable {
 	 * {@link #postprocess() } will be called to clean up any resources after
 	 * processing and {@link #handleExceptionDuringProcessing(java.lang.Exception) can be overloaded if exceptions during processing need to be handled.
 	 *
+	 * @return the output from processing
 	 * @throws Exception
 	 */
 	public abstract String process() throws Exception;
