@@ -155,7 +155,7 @@ public class DBDatabaseCluster extends DBDatabase {
 		ACTION_THREAD_POOL = Executors.newCachedThreadPool();
 		final ReconnectionProcess reconnectionProcessor = new ReconnectionProcess();
 		reconnectionProcessor.setTimeOffset(Calendar.MINUTE, 1);
-		getRegularProcessors().add(reconnectionProcessor);
+		addRegularProcess(reconnectionProcessor);
 	}
 
 	public DBDatabaseCluster(String clusterName) {

@@ -2531,12 +2531,12 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 		getRegularThreadPool().schedule(new RunRegularProcessors(), 1, TimeUnit.MINUTES);
 	}
 
-	public void addRegularProcess(RegularProcess processor) {
+	public final void addRegularProcess(RegularProcess processor) {
 		processor.setDatabase(this);
 		getRegularProcessors().add(processor);
 	}
 
-	public void removeRegularProcess(RegularProcess processor) {
+	public final void removeRegularProcess(RegularProcess processor) {
 		processor.setDatabase(null);
 		getRegularProcessors().remove(processor);
 	}

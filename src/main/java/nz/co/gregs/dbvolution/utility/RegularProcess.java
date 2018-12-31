@@ -182,6 +182,9 @@ public abstract class RegularProcess implements Serializable {
 	}
 	
 	public final boolean canRun() {
+		if(this.dbDatabase==null){
+			LOG.warn(this.getClass().getSimpleName()+" has not had setDatabase(DBDatabase) called and can not process.");
+		}
 		return this.dbDatabase != null;
 	}
 
@@ -191,6 +194,10 @@ public abstract class RegularProcess implements Serializable {
 
 	public Date getLastRuntime() {
 		return lastRunTime;
+	}
+
+	public Date getNextRuntime() {
+		return nextRun;
 	}
 
 	public void setLastResult(String process) {
