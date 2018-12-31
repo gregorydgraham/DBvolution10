@@ -71,10 +71,10 @@ import org.joda.time.Period;
  *
  * @author Gregory Graham
  */
-public abstract class DBDefinition implements Serializable{
+public abstract class DBDefinition implements Serializable {
 
 	public static final long serialVersionUID = 1L;
-	
+
 	public int getNumericPrecision() {
 		return DBNumber.getNumericPrecision();
 	}
@@ -6010,13 +6010,13 @@ public abstract class DBDefinition implements Serializable{
 	public String getTableExistsSQL(DBRow table) {
 		final QueryOptions queryOptions = new QueryOptions();
 		queryOptions.setRowLimit(1);
-		return beginSelectStatement()+getLimitRowsSubClauseDuringSelectClause(queryOptions)
-				+getCountFunctionName()+"(*) c"
-				+beginFromClause()
-				+this.formatTableName(table)
-				+" "
-				+getLimitRowsSubClauseAfterWhereClause(new QueryState(new QueryDetails()), queryOptions)
-				+" ;";
+		return beginSelectStatement() + getLimitRowsSubClauseDuringSelectClause(queryOptions)
+				+ getCountFunctionName() + "(*) c"
+				+ beginFromClause()
+				+ this.formatTableName(table)
+				+ " "
+				+ getLimitRowsSubClauseAfterWhereClause(new QueryState(new QueryDetails()), queryOptions)
+				+ " ;";
 	}
 
 	public boolean supportsDropTableIfExists() {
