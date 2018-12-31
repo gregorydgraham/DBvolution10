@@ -97,7 +97,6 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 	private static final transient Map<String, List<Connection>> BUSY_CONNECTIONS = new HashMap<>();
 	private static final transient HashMap<String, List<Connection>> FREE_CONNECTIONS = new HashMap<>();
 	private Boolean needToAddDatabaseSpecificFeatures = true;
-	boolean explicitCommitActionRequired = false;
 	private DatabaseConnectionSettings settings = new DatabaseConnectionSettings();
 	private boolean terminated = false;
 	private final List<RegularProcess> REGULAR_PROCESSORS = new ArrayList<>();
@@ -907,22 +906,18 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 			db.transactionConnection.setAutoCommit(false);
 			try {
 				returnValues = dbTransaction.doTransaction(db);
-				if (commit && !explicitCommitActionRequired) {
+				if (commit){
 					db.transactionConnection.commit();
 				} else {
 					try {
-						if (!explicitCommitActionRequired) {
 							db.transactionConnection.rollback();
-						}
 					} catch (SQLException rollbackFailed) {
 						discardConnection(db.transactionConnection);
 					}
 				}
 			} catch (SQLException ex) {
 				try {
-					if (!explicitCommitActionRequired) {
 						db.transactionConnection.rollback();
-					}
 				} catch (SQLException excp) {
 					LOG.warn("Exception Occurred During Rollback: " + ex.getLocalizedMessage());
 				}
@@ -1046,7 +1041,7 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 	 * @return the jdbcURL
 	 */
 	public final synchronized String getJdbcURL() {
-			return getUrlFromSettings(getSettings());
+		return getUrlFromSettings(getSettings());
 	}
 
 	/**
@@ -1058,7 +1053,7 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 	 * @return the username
 	 */
 	final public synchronized String getUsername() {
-			return settings.getUsername();
+		return settings.getUsername();
 	}
 
 	/**
@@ -1070,7 +1065,7 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 	 * @return the password
 	 */
 	final public synchronized String getPassword() {
-			return settings.getPassword();
+		return settings.getPassword();
 	}
 
 	/**
@@ -1779,7 +1774,7 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 	 * @return the database name
 	 */
 	final public synchronized String getDatabaseName() {
-			return settings.getDatabaseName();
+		return settings.getDatabaseName();
 	}
 
 	/**
@@ -2250,18 +2245,6 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 		return new DBMigration<>(this, mapper);
 	}
 
-	public void doCommit() {
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-	}
-
-	public void doRollback() {
-
-	}
-
-	public synchronized void setExplicitCommitAction(boolean b) {
-		explicitCommitActionRequired = b;
-	}
-
 	public DBActionList executeDBAction(DBAction action) throws SQLException {
 		return action.execute(this);
 	}
@@ -2392,7 +2375,7 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 	protected abstract String getUrlFromSettings(DatabaseConnectionSettings settings);
 
 	protected abstract DatabaseConnectionSettings getSettingsFromJDBCURL(String jdbcURL);
-	
+
 	public abstract Integer getDefaultPort();
 
 	public DatabaseConnectionSettings getSettings() {
@@ -2426,23 +2409,23 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 		return false;
 	}
 
-	protected final Map<String, String> getExtras(){
+	protected final Map<String, String> getExtras() {
 		return settings.getExtras();
 	}
 
-	protected final String getHost(){
+	protected final String getHost() {
 		return settings.getHost();
 	}
 
-	protected final String getDatabaseInstance(){
+	protected final String getDatabaseInstance() {
 		return settings.getInstance();
 	}
 
-	protected final String getPort(){
+	protected final String getPort() {
 		return settings.getPort();
 	}
 
-	protected final String getSchema(){
+	protected final String getSchema() {
 		return settings.getSchema();
 	}
 

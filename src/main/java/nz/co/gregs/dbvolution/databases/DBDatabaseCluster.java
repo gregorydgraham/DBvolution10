@@ -810,9 +810,7 @@ public class DBDatabaseCluster extends DBDatabase {
 							}
 						} catch (ExceptionThrownDuringTransaction ex) {
 							try {
-								if (!explicitCommitActionRequired) {
 									db.transactionConnection.rollback();
-								}
 							} catch (SQLException excp) {
 								LOG.warn("Exception Occurred During Rollback: " + ex.getMessage());
 							}
@@ -1254,9 +1252,6 @@ public class DBDatabaseCluster extends DBDatabase {
 										} else if (!secondaryTableCount.equals(primaryTableCount)) {
 											// Something is different in the data so correct it
 											secondary.deleteAll(table);
-											if (secondary.explicitCommitActionRequired) {
-												secondary.doCommit();
-											}
 											List<DBRow> allRows = primaryData.getAllRows();
 											secondary.insert(allRows);
 										}
@@ -1278,13 +1273,11 @@ public class DBDatabaseCluster extends DBDatabase {
 
 	private synchronized void synchronizeActions(DBDatabase db) throws SQLException {
 		if (db != null) {
-			db.setExplicitCommitAction(false);
 			Queue<DBAction> queue = details.getActionQueue(db);
 			while (queue != null && !queue.isEmpty()) {
 				DBAction action = queue.remove();
 				db.executeDBAction(action);
 			}
-			db.setExplicitCommitAction(true);
 			details.readyDatabase(db);
 		}
 	}
