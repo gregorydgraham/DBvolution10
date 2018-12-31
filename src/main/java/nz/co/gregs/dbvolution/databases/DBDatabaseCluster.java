@@ -28,6 +28,7 @@
  */
 package nz.co.gregs.dbvolution.databases;
 
+import nz.co.gregs.dbvolution.utility.ReconnectionProcess;
 import nz.co.gregs.dbvolution.utility.RegularProcess;
 import java.lang.reflect.InvocationTargetException;
 import nz.co.gregs.dbvolution.internal.database.ClusterDetails;
@@ -152,7 +153,7 @@ public class DBDatabaseCluster extends DBDatabase {
 		details.setAutoReconnect(config.useAutoReconnect);
 		setDatabaseName(clusterName);
 		ACTION_THREAD_POOL = Executors.newCachedThreadPool();
-		final ReconnectionProcessor reconnectionProcessor = new ReconnectionProcessor();
+		final ReconnectionProcess reconnectionProcessor = new ReconnectionProcess();
 		reconnectionProcessor.setTimeOffset(Calendar.MINUTE, 1);
 		getRegularProcessors().add(reconnectionProcessor);
 	}
@@ -1518,24 +1519,6 @@ public class DBDatabaseCluster extends DBDatabase {
 		public abstract Void synchronise(DBDatabaseCluster cluster, DBDatabase database) throws SQLException;
 	}
 
-	private class ReconnectionProcessor extends RegularProcess {
-
-		public ReconnectionProcessor() {
-		}
-
-		@Override
-		public synchronized String process() {
-			String str = "Nothing Processed";
-			if (getAutoReconnect()) {
-				System.out.println(getDatabaseName() + ": PREPARING TO RECONNECT DATABASES... ");
-
-				str = reconnectQuarantinedDatabases();
-
-				System.out.println(getDatabaseName() + ": FINISHED RECONNECTING DATABASES...");
-			}
-			return str;
-		}
-	}
 
 	public String reconnectQuarantinedDatabases() {
 		StringBuilder str = new StringBuilder();
@@ -1547,8 +1530,8 @@ public class DBDatabaseCluster extends DBDatabase {
 				str.append("").append(ejected.getLabel()).append(" added");
 			} catch (Exception ex) {
 				quarantineDatabase(ejected, ex);
-				str.append("").append(ejected.getLabel()).append(" quarantined: " + ex.getLocalizedMessage());
-			}finally{
+				str.append("").append(ejected.getLabel()).append(" quarantined: ").append(ex.getLocalizedMessage());
+			} finally {
 				str.append("\n");
 			}
 		}
