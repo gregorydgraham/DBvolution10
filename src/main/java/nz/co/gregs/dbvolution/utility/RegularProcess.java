@@ -70,7 +70,7 @@ public abstract class RegularProcess implements Serializable {
 	private int timeField = GregorianCalendar.MINUTE;
 	private int timeOffset = 5;
 	private DBDatabase dbDatabase;
-	private String lastResult = "Not Run Yet";
+	private String lastResult = "Not Processed Yet";
 	private Date lastRunTime = new Date();
 
 	/**
