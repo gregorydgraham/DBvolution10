@@ -1589,6 +1589,29 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 	}
 
 	/**
+	 * Creates an SQL expression that test whether this date expression is
+	 * included in the list of DateResults.
+	 *
+	 * <p>
+	 * Be careful when using this expression as dates have lots of fields and it
+	 * is easy to miss a similar date.
+	 *
+	 * @param possibleValues allowed values
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @return a boolean expression representing the required comparison
+	 */
+	@Override
+	public BooleanExpression isNotIn(DateResult... possibleValues) {
+		BooleanExpression isNotInExpr = new BooleanExpression(new DateIsNotInExpression(this, possibleValues));
+		if (isNotInExpr.getIncludesNull()) {
+			return BooleanExpression.anyOf(BooleanExpression.isNull(this), isNotInExpr);
+		} else {
+			return isNotInExpr;
+		}
+	}
+
+	/**
 	 * Creates and expression that replaces a NULL result with the supplied date.
 	 *
 	 * <p>
@@ -3868,6 +3891,36 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 				newValues.add(value.copy());
 			}
 			return new DateIsInExpression(
+					getColumn().copy(),
+					newValues.toArray(new DateResult[]{}));
+		}
+
+	}
+
+	protected class DateIsNotInExpression extends DateDateResultFunctionWithBooleanResult {
+
+		public DateIsNotInExpression(DateExpression leftHandSide, DateResult[] rightHandSide) {
+			super(leftHandSide, rightHandSide);
+		}
+		private final static long serialVersionUID = 1l;
+
+		@Override
+		public String toSQLString(DBDefinition db) {
+			List<String> sqlValues = new ArrayList<String>();
+			for (DateResult value : getValues()) {
+				sqlValues.add(value.toSQLString(db));
+			}
+			return db.doNotInTransform(getColumn().toSQLString(db), sqlValues);
+		}
+
+		@Override
+		public DateIsNotInExpression copy() {
+			final List<DateResult> values = getValues();
+			final List<DateResult> newValues = new ArrayList<>();
+			for (DateResult value : values) {
+				newValues.add(value.copy());
+			}
+			return new DateIsNotInExpression(
 					getColumn().copy(),
 					newValues.toArray(new DateResult[]{}));
 		}

@@ -581,6 +581,17 @@ public class DateRepeatExpression extends RangeExpression<Period, DateRepeatResu
 	}
 
 	@Override
+	public BooleanExpression isNotIn(DateRepeatResult... otherInstances) {
+		StringResult[] strs = new StringResult[otherInstances.length];
+		int i = 0;
+		for (DateRepeatResult otherInstance : otherInstances) {
+			strs[i] = otherInstance.stringResult();
+			i++;
+		}
+		return this.stringResult().isNotIn(strs);
+	}
+
+	@Override
 	public DateRepeatExpression nullExpression() {
 		return new NullExpression();
 	}

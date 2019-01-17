@@ -1769,6 +1769,29 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 	}
 
 	/**
+	 * Creates a query comparison using the IN operator.
+	 *
+	 * <p>
+	 * Use this comparison to generate a BooleanExpression that indicates whether
+	 * the current StringExpression is included in the supplied values.
+	 *
+	 * @param possibleValues	possibleValues
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @return a BooleanExpression of the SQL comparison.
+	 */
+	@Override
+	public BooleanExpression isNotIn(StringResult... possibleValues) {
+		final BooleanExpression isNotInExpression
+				= new BooleanExpression(new StringIsNotInExpression(this, possibleValues));
+		if (isNotInExpression.getIncludesNull()) {
+			return BooleanExpression.noneOf(new BooleanExpression(this.isNull()), isNotInExpression);
+		} else {
+			return isNotInExpression;
+		}
+	}
+
+	/**
 	 * Creates a query expression that appends the supplied value to the current
 	 * StringExpression.
 	 *
@@ -3482,6 +3505,42 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 				newValues[i] = values.get(i) == null ? null : values.get(i).copy();
 			}
 			return new StringIsInExpression(
+					column == null ? null : column.copy(),
+					newValues
+			);
+		}
+	}
+
+	protected class StringIsNotInExpression extends DBNnaryBooleanFunction {
+
+		public StringIsNotInExpression(StringExpression leftHandSide, StringResult[] rightHandSide) {
+			super(leftHandSide, rightHandSide);
+		}
+		private final static long serialVersionUID = 1l;
+
+		@Override
+		public String toSQLString(DBDefinition db) {
+			List<String> sqlValues = new ArrayList<>();
+			for (StringResult value : values) {
+				if (!value.getIncludesNull()) {
+					sqlValues.add(value.toSQLString(db));
+				}
+			}
+			return db.doNotInTransform(column.toSQLString(db), sqlValues);
+		}
+
+		@Override
+		protected String getFunctionName(DBDefinition db) {
+			return " NOT IN ";
+		}
+
+		@Override
+		public StringIsNotInExpression copy() {
+			StringResult[] newValues = new StringResult[values.size()];
+			for (int i = 0; i < newValues.length; i++) {
+				newValues[i] = values.get(i) == null ? null : values.get(i).copy();
+			}
+			return new StringIsNotInExpression(
 					column == null ? null : column.copy(),
 					newValues
 			);

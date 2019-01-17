@@ -1601,6 +1601,27 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 	}
 
 	/**
+	 * Compares the NumberExpression against the list of possible values and
+	 * returns false if the NumberExpression is represented in the list.
+	 *
+	 * @param possibleValues must not be one of these
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @return a BooleanExpression for use in
+	 * {@link DBQuery#addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression)}
+	 */
+	@Override
+	public BooleanExpression isNotIn(NumberResult... possibleValues) {
+		BooleanExpression isnotinExpr
+				= new IsNotInFunction(this, possibleValues);
+		if (isnotinExpr.getIncludesNull()) {
+			return BooleanExpression.anyOf(BooleanExpression.isNull(this), isnotinExpr);
+		} else {
+			return isnotinExpr;
+		}
+	}
+
+	/**
 	 * Returns the least/smallest value from the list.
 	 *
 	 * <p>
@@ -3988,6 +4009,40 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 				newValues.add(value == null ? null : value.copy());
 			}
 			return new IsInFunction(
+					getColumn() == null ? null : getColumn().copy(),
+					newValues.toArray(new NumberResult[]{}));
+		}
+	}
+
+	private class IsNotInFunction extends DBNnaryBooleanFunction {
+
+		private final static long serialVersionUID = 1l;
+
+		public IsNotInFunction(NumberExpression leftHandSide, NumberResult[] rightHandSide) {
+			super(leftHandSide, rightHandSide);
+		}
+
+		@Override
+		public String toSQLString(DBDefinition db) {
+			List<String> sqlValues = new ArrayList<>();
+			for (NumberResult value : this.getValues()) {
+				sqlValues.add(value.toSQLString(db));
+			}
+			return db.doNotInTransform(getColumn().toSQLString(db), sqlValues);
+		}
+
+		@Override
+		protected String getFunctionName(DBDefinition db) {
+			return " NOT IN ";
+		}
+
+		@Override
+		public IsNotInFunction copy() {
+			List<NumberResult> newValues = new ArrayList<>();
+			for (NumberResult value : getValues()) {
+				newValues.add(value == null ? null : value.copy());
+			}
+			return new IsNotInFunction(
 					getColumn() == null ? null : getColumn().copy(),
 					newValues.toArray(new NumberResult[]{}));
 		}

@@ -1633,6 +1633,25 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 	}
 
 	/**
+	 * Compares the IntegerExpression against the list of possible values and
+	 * returns true if the IntegerExpression is represented in the list.
+	 *
+	 * @param possibleValues needs to be one of these
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @return a BooleanExpression for use in
+	 * {@link DBQuery#addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression)}
+	 */
+	public BooleanExpression isNotIn(IntegerResult... possibleValues) {
+		BooleanExpression isNotInExpr = new IsNotInFunction(this, possibleValues);
+		if (isNotInExpr.getIncludesNull()) {
+			return BooleanExpression.noneOf(BooleanExpression.isNull(this), isNotInExpr);
+		} else {
+			return new BooleanExpression(isNotInExpr);
+		}
+	}
+
+	/**
 	 * Returns the least/smallest value from the list.
 	 *
 	 * <p>
@@ -4106,6 +4125,43 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 		@Override
 		protected String getFunctionName(DBDefinition db) {
 			return " IN ";
+		}
+
+		@Override
+		public IsInFunction copy() {
+			List<IntegerResult> newValues = new ArrayList<>();
+			for (IntegerResult num : this.getValues()) {
+				newValues.add(num == null ? null : num.copy());
+			}
+			return new IsInFunction(
+					getColumn() == null ? null : getColumn().copy(),
+					newValues.toArray(new IntegerResult[]{})
+			);
+		}
+	}
+
+
+
+	private class IsNotInFunction extends DBNnaryBooleanFunction {
+
+		private final static long serialVersionUID = 1l;
+
+		public IsNotInFunction(IntegerExpression leftHandSide, IntegerResult[] rightHandSide) {
+			super(leftHandSide, rightHandSide);
+		}
+
+		@Override
+		public String toSQLString(DBDefinition db) {
+			List<String> sqlValues = new ArrayList<>();
+			for (IntegerResult value : this.getValues()) {
+				sqlValues.add(value.toSQLString(db));
+			}
+			return db.doInTransform(getColumn().toSQLString(db), sqlValues);
+		}
+
+		@Override
+		protected String getFunctionName(DBDefinition db) {
+			return " NOT IN ";
 		}
 
 		@Override

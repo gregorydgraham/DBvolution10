@@ -3145,6 +3145,32 @@ public abstract class DBDefinition implements Serializable {
 	}
 
 	/**
+	 * Produce SQL that will compare the first value to all the other values using
+	 * the NOT IN operator.
+	 *
+	 * @param comparableValue comparableValue
+	 * @param values values
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @return SQL similar to "comparableValue IN (value, value, value)"
+	 */
+	public String doNotInTransform(String comparableValue, List<String> values) {
+		StringBuilder builder = new StringBuilder();
+		builder
+				.append(comparableValue)
+				.append(" NOT IN ( ");
+		String separator = "";
+		for (String val : values) {
+			if (val != null) {
+				builder.append(separator).append(val);
+			}
+			separator = ", ";
+		}
+		builder.append(")");
+		return builder.toString();
+	}
+
+	/**
 	 * Returns FROM clause to be used for this table.
 	 *
 	 * @param table the table to transform into a FROM clause.

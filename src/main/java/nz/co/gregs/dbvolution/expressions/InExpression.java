@@ -94,4 +94,26 @@ public abstract class InExpression<B, R extends InResult<B>, D extends Queryable
 		}
 		return this.isIn((R[]) exps.toArray());
 	}
+
+	abstract public BooleanExpression isNotIn(R... value);
+
+	@SuppressWarnings("unchecked")
+	public BooleanExpression isNotIn(B... possibleValues) {
+		List<R> exps = new ArrayList<R>(0);
+		for (B possibleValue : possibleValues) {
+			final R expression = this.expression(possibleValue);
+			exps.add(expression);
+		}
+		return this.isNotIn((R[]) exps.toArray());
+	}
+
+	@SuppressWarnings("unchecked")
+	public BooleanExpression isNotIn(D... possibleValues) {
+		List<R> exps = new ArrayList<R>(0);
+		for (D possibleValue : possibleValues) {
+			final R expression = this.expression(possibleValue);
+			exps.add(expression);
+		}
+		return this.isNotIn((R[]) exps.toArray());
+	}
 }
