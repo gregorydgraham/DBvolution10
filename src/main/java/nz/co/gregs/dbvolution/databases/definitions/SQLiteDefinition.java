@@ -21,7 +21,9 @@ import com.vividsolutions.jts.io.WKTReader;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.databases.SQLiteDB;
 import nz.co.gregs.dbvolution.databases.supports.SupportsDateRepeatDatatypeFunctions;
@@ -58,6 +60,8 @@ public class SQLiteDefinition extends DBDefinition implements SupportsDateRepeat
 	 */
 	private final DateFormat DATETIME_PRECISE_FORMAT = getDateTimeFormat();//
 	private static final SimpleDateFormat DATETIME_SIMPLE_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+	private static final String[] RESERVED_WORDS_ARRAY = new String[]{"ABORT", "ACTION", "ADD", "AFTER", "ALL", "ALTER", "ANALYZE", "AND", "AS", "ASC", "ATTACH", "AUTOINCREMENT", "BEFORE", "BEGIN", "BETWEEN", "BY", "CASCADE", "CASE", "CAST", "CHECK", "COLLATE", "COLUMN", "COMMIT", "CONFLICT", "CONSTRAINT", "CREATE", "CROSS", "CURRENT", "CURRENT_DATE", "CURRENT_TIME", "CURRENT_TIMESTAMP", "DATABASE", "DEFAULT", "DEFERRABLE", "DEFERRED", "DELETE", "DESC", "DETACH", "DISTINCT", "DO", "DROP", "EACH", "ELSE", "END", "ESCAPE", "EXCEPT", "EXCLUSIVE", "EXISTS", "EXPLAIN", "FAIL", "FILTER", "FOLLOWING", "FOR", "FOREIGN", "FROM", "FULL", "GLOB", "GROUP", "HAVING", "IF", "IGNORE", "IMMEDIATE", "IN", "INDEX", "INDEXED", "INITIALLY", "INNER", "INSERT", "INSTEAD", "INTERSECT", "INTO", "IS", "ISNULL", "JOIN", "KEY", "LEFT", "LIKE", "LIMIT", "MATCH", "NATURAL", "NO", "NOT", "NOTHING", "NOTNULL", "NULL", "OF", "OFFSET", "ON", "OR", "ORDER", "OUTER", "OVER", "PARTITION", "PLAN", "PRAGMA", "PRECEDING", "PRIMARY", "QUERY", "RAISE", "RANGE", "RECURSIVE", "REFERENCES", "REGEXP", "REINDEX", "RELEASE", "RENAME", "REPLACE", "RESTRICT", "RIGHT", "ROLLBACK", "ROW", "ROWS", "SAVEPOINT", "SELECT", "SET", "TABLE", "TEMP", "TEMPORARY", "THEN", "TO", "TRANSACTION", "TRIGGER", "UNBOUNDED", "UNION", "UNIQUE", "UPDATE", "USING", "VACUUM", "VALUES", "VIEW", "VIRTUAL", "WHEN", "WHERE", "WINDOW", "WITH", "WITHOUT"};
+	private static final List<String> RESERVED_WORDS_LIST = Arrays.asList(RESERVED_WORDS_ARRAY);
 
 	@Override
 	public String getDateFormattedForQuery(Date date) {
@@ -124,6 +128,15 @@ public class SQLiteDefinition extends DBDefinition implements SupportsDateRepeat
 		if (dbTableField.isPrimaryKey && 
 				(dbTableField.columnType.equals(DBInteger.class)||dbTableField.columnType.equals(DBNumber.class))) {
 			dbTableField.isAutoIncrement = true;
+		}
+	}
+
+	@Override
+	protected String formatNameForDatabase(final String sqlObjectName) {
+		if (!(RESERVED_WORDS_LIST.contains(sqlObjectName.toUpperCase()))) {
+			return sqlObjectName.replaceAll("^[_-]", "O").replaceAll("-", "_");
+		} else {
+			return ("O" + sqlObjectName.hashCode()).replaceAll("^[_-]", "O").replaceAll("-", "_");
 		}
 	}
 
