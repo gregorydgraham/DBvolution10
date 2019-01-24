@@ -170,6 +170,14 @@ public class DBDate extends QueryableDatatype<Date> implements DateResult {
 	}
 
 	/**
+	 * Sets the value of this QDT to the date and time now.
+	 *
+	 */
+	public void setValueToNow() {
+		super.setValue(new Date());
+	}
+
+	/**
 	 * Implement for Java8
 	 * Sets the value of this QDT to the Java.time.LocalDate provided.
 	 *
