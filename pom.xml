@@ -95,17 +95,17 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-report-plugin</artifactId>
-				<version>2.18.1</version>
+				<version>2.22.1</version>
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-project-info-reports-plugin</artifactId>
-				<version>2.9</version>
+				<version>3.0.0</version>
 			</plugin>
 			<plugin>
 				<groupId>org.jacoco</groupId>
 				<artifactId>jacoco-maven-plugin</artifactId>
-				<version>0.8.1</version>
+				<version>0.8.2</version>
 				<reportSets>
 					<reportSet>
 						<reports>
@@ -118,7 +118,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-javadoc-plugin</artifactId>
-				<version>2.9</version>
+				<version>3.0.1</version>
 				<reportSets>
 					<reportSet><!-- by default, id = "default" -->
 						<reports><!-- select non-aggregate reports -->
@@ -150,14 +150,14 @@
 			<extension>
 				<groupId>org.apache.maven.wagon</groupId>
 				<artifactId>wagon-ftp</artifactId>
-				<version>3.0.0</version>
+				<version>3.3.1</version>
 			</extension>
 		</extensions>
 		<plugins>
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>animal-sniffer-maven-plugin</artifactId>
-				<version>1.7</version>
+				<version>1.17</version>
 				<executions>
 					<execution>
 						<id>signature-check</id>
@@ -178,7 +178,7 @@
 			<plugin>
 				<groupId>org.jacoco</groupId>
 				<artifactId>jacoco-maven-plugin</artifactId>
-				<version>0.7.9</version>
+				<version>0.8.2</version>
 				<executions>
 					<execution>
 						<id>default-prepare-agent</id>
@@ -308,7 +308,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
-				<version>3.7.0</version>
+				<version>3.8.0</version>
 				<configuration>
 					<source>1.7</source>
 					<target>1.7</target>
@@ -321,7 +321,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-plugin</artifactId>
-				<version>2.19.1</version>
+				<version>2.22.1</version>
 				<configuration>
 					<argLine>-Dfile.encoding=UTF8 @{argLine}</argLine>
 					<includes>
@@ -431,7 +431,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-shade-plugin</artifactId>
-				<version>3.1.0</version>
+				<version>3.2.1</version>
 				<executions>
 					<execution>
 						<phase>package</phase>
@@ -456,7 +456,7 @@
 					<plugin>
 						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-source-plugin</artifactId>
-						<version>2.4</version>
+						<version>3.0.1</version>
 						<executions>
 							<execution>
 								<id>attach-sources</id>
@@ -469,7 +469,7 @@
 					<plugin>
 						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-javadoc-plugin</artifactId>
-						<version>2.10.4</version>
+						<version>3.0.1</version>
 						<executions>
 							<execution>
 								<id>attach-javadoc</id>
@@ -508,7 +508,7 @@
 					<plugin>
 						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-surefire-plugin</artifactId>
-						<version>2.18.1</version>
+						<version>2.22.1</version>
 						<configuration>
 							<systemPropertyVariables>
 								<testSQLite>true</testSQLite>
@@ -582,7 +582,7 @@
 					<plugin>
 						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-surefire-plugin</artifactId>
-						<version>2.18.1</version>
+						<version>2.22.1</version>
 						<configuration>
 							<systemPropertyVariables>
 								<testBundledCluster>true</testBundledCluster>
@@ -599,7 +599,7 @@
 					<plugin>
 						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-surefire-plugin</artifactId>
-						<version>2.18.1</version>
+						<version>2.22.1</version>
 						<configuration>
 							<systemPropertyVariables>
 								<testOpenSourceCluster>true</testOpenSourceCluster>
@@ -616,7 +616,7 @@
 					<plugin>
 						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-surefire-plugin</artifactId>
-						<version>2.18.1</version>
+						<version>2.22.1</version>
 						<configuration>
 							<systemPropertyVariables>
 								<testSQLite>true</testSQLite>
@@ -642,7 +642,7 @@
 					<plugin>
 						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-surefire-plugin</artifactId>
-						<version>2.18.1</version>
+						<version>2.22.1</version>
 						<configuration>
 							<systemPropertyVariables>
 								<testOracleXE>true</testOracleXE>
@@ -670,7 +670,7 @@
 					<plugin>
 						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-surefire-plugin</artifactId>
-						<version>2.18.1</version>
+						<version>2.22.1</version>
 						<configuration>
 							<systemPropertyVariables>
 								<testSQLite>true</testSQLite>
@@ -704,7 +704,7 @@
 					<plugin>
 						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-surefire-plugin</artifactId>
-						<version>2.18.1</version>
+						<version>2.22.1</version>
 						<configuration>
 							<systemPropertyVariables>
 								<testSQLite>true</testSQLite>
@@ -735,7 +735,7 @@
 					<plugin>
 						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-surefire-plugin</artifactId>
-						<version>2.18.1</version>
+						<version>2.22.1</version>
 						<configuration>
 							<systemPropertyVariables>
 								<testOracleXE>true</testOracleXE>
@@ -757,7 +757,7 @@
 					<plugin>
 						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-surefire-plugin</artifactId>
-						<version>2.18.1</version>
+						<version>2.22.1</version>
 						<configuration>
 							<systemPropertyVariables>
 								<testMSSQLServer>true</testMSSQLServer>
@@ -949,7 +949,7 @@
 					<plugin>
 						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-surefire-plugin</artifactId>
-						<version>2.18</version>
+						<version>2.22.1</version>
 						<configuration>
 							<systemPropertyVariables>
 								<testNuo>true</testNuo>
@@ -1079,14 +1079,14 @@
 		<dependency>
 			<groupId>org.xerial</groupId>
 			<artifactId>sqlite-jdbc</artifactId>
-			<version>3.23.1</version>
+			<version>3.25.2</version>
 			<scope>compile</scope>
 			<type>jar</type>
 		</dependency>
 		<dependency>
 			<groupId>commons-codec</groupId>
 			<artifactId>commons-codec</artifactId>
-			<version>1.10</version>
+			<version>1.11</version>
 			<type>jar</type>
 		</dependency>
 		<dependency>
@@ -1114,7 +1114,7 @@
 		<dependency>
 			<groupId>joda-time</groupId>
 			<artifactId>joda-time</artifactId>
-			<version>2.9.7</version>
+			<version>2.10.1</version>
 			<type>jar</type>
 		</dependency>
 		<dependency>
