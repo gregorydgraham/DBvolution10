@@ -321,7 +321,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-plugin</artifactId>
-				<version>2.22.1</version>
+				<version>3.0.0-M3</version>
 				<configuration>
 					<argLine>-Dfile.encoding=UTF8 @{argLine}</argLine>
 					<includes>
@@ -474,7 +474,7 @@
 							<execution>
 								<id>attach-javadoc</id>
 								<goals>
-									<goal>jar</goal>
+									<goal>jar-no-fork</goal>
 								</goals>
 							</execution>
 						</executions>
@@ -508,7 +508,7 @@
 					<plugin>
 						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-surefire-plugin</artifactId>
-						<version>2.22.1</version>
+						<version>3.0.0-M3</version>
 						<configuration>
 							<systemPropertyVariables>
 								<testSQLite>true</testSQLite>
@@ -582,7 +582,7 @@
 					<plugin>
 						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-surefire-plugin</artifactId>
-						<version>2.22.1</version>
+						<version>3.0.0-M3</version>
 						<configuration>
 							<systemPropertyVariables>
 								<testBundledCluster>true</testBundledCluster>
@@ -599,7 +599,7 @@
 					<plugin>
 						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-surefire-plugin</artifactId>
-						<version>2.22.1</version>
+						<version>3.0.0-M3</version>
 						<configuration>
 							<systemPropertyVariables>
 								<testOpenSourceCluster>true</testOpenSourceCluster>
@@ -616,7 +616,7 @@
 					<plugin>
 						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-surefire-plugin</artifactId>
-						<version>2.22.1</version>
+						<version>3.0.0-M3</version>
 						<configuration>
 							<systemPropertyVariables>
 								<testSQLite>true</testSQLite>
@@ -642,7 +642,7 @@
 					<plugin>
 						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-surefire-plugin</artifactId>
-						<version>2.22.1</version>
+						<version>3.0.0-M3</version>
 						<configuration>
 							<systemPropertyVariables>
 								<testOracleXE>true</testOracleXE>
@@ -670,7 +670,7 @@
 					<plugin>
 						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-surefire-plugin</artifactId>
-						<version>2.22.1</version>
+						<version>3.0.0-M3</version>
 						<configuration>
 							<systemPropertyVariables>
 								<testSQLite>true</testSQLite>
@@ -704,7 +704,7 @@
 					<plugin>
 						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-surefire-plugin</artifactId>
-						<version>2.22.1</version>
+						<version>3.0.0-M3</version>
 						<configuration>
 							<systemPropertyVariables>
 								<testSQLite>true</testSQLite>
@@ -735,7 +735,7 @@
 					<plugin>
 						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-surefire-plugin</artifactId>
-						<version>2.22.1</version>
+						<version>3.0.0-M3</version>
 						<configuration>
 							<systemPropertyVariables>
 								<testOracleXE>true</testOracleXE>
@@ -757,7 +757,7 @@
 					<plugin>
 						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-surefire-plugin</artifactId>
-						<version>2.22.1</version>
+						<version>3.0.0-M3</version>
 						<configuration>
 							<systemPropertyVariables>
 								<testMSSQLServer>true</testMSSQLServer>
@@ -779,7 +779,7 @@
 					<plugin>
 						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-surefire-plugin</artifactId>
-						<!--<version>2.18</version>-->
+						<version>3.0.0-M3</version>
 						<configuration>
 							<systemPropertyVariables>
 								<testH2DB>true</testH2DB>
@@ -801,7 +801,7 @@
 					<plugin>
 						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-surefire-plugin</artifactId>
-						<!--<version>2.18</version>-->
+						<version>3.0.0-M3</version>
 						<configuration>
 							<systemPropertyVariables>
 								<testH2SharedDB>true</testH2SharedDB>
@@ -823,6 +823,7 @@
 					<plugin>
 						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-surefire-plugin</artifactId>
+						<version>3.0.0-M3</version>
 						<configuration>
 							<systemPropertyVariables>
 								<testH2FileDB>true</testH2FileDB>
@@ -844,6 +845,7 @@
 					<plugin>
 						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-surefire-plugin</artifactId>
+						<version>3.0.0-M3</version>
 						<configuration>
 							<systemPropertyVariables>
 								<testH2MemoryDB>true</testH2MemoryDB>
@@ -865,6 +867,7 @@
 					<plugin>
 						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-surefire-plugin</artifactId>
+						<version>3.0.0-M3</version>
 						<configuration>
 							<systemPropertyVariables>
 								<testH2DataSourceDB>true</testH2DataSourceDB>
@@ -886,6 +889,7 @@
 					<plugin>
 						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-surefire-plugin</artifactId>
+						<version>3.0.0-M3</version>
 						<configuration>
 							<systemPropertyVariables>
 								<testMySQL>true</testMySQL>
@@ -907,6 +911,7 @@
 					<plugin>
 						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-surefire-plugin</artifactId>
+						<version>3.0.0-M3</version>
 						<configuration>
 							<systemPropertyVariables>
 								<testMySQL56>true</testMySQL56>
@@ -928,6 +933,7 @@
 					<plugin>
 						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-surefire-plugin</artifactId>
+						<version>3.0.0-M3</version>
 						<configuration>
 							<systemPropertyVariables>
 								<testPostgresSQL>true</testPostgresSQL>
@@ -949,7 +955,7 @@
 					<plugin>
 						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-surefire-plugin</artifactId>
-						<version>2.22.1</version>
+						<version>3.0.0-M3</version>
 						<configuration>
 							<systemPropertyVariables>
 								<testNuo>true</testNuo>
