@@ -155,6 +155,16 @@
 		</extensions>
 		<plugins>
 			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-site-plugin</artifactId>
+				<version>3.7.1</version>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-project-info-reports-plugin</artifactId>
+				<version>3.0.0</version>
+			</plugin>
+			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>animal-sniffer-maven-plugin</artifactId>
 				<version>1.17</version>
@@ -523,7 +533,7 @@
 				</plugins>
 			</build>
 		</profile>
-<!--		<profile>
+		<!--		<profile>
 			<id>ClusteredDBTest</id>
 			<build>
 				<plugins>
@@ -540,7 +550,7 @@
 				</plugins>
 			</build>
 		</profile>-->
-<!--		<profile>
+		<!--		<profile>
 			<id>MySQL+Cluster</id>
 			<build>
 				<plugins>
@@ -558,7 +568,7 @@
 				</plugins>
 			</build>
 		</profile>-->
-<!--		<profile>
+		<!--		<profile>
 			<id>SmallCluster</id>
 			<build>
 				<plugins>
