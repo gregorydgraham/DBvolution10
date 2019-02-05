@@ -45,7 +45,7 @@ import nz.co.gregs.dbvolution.internal.query.QueryDetails;
  * @author Gregory Graham
  *
  */
-public class DBQueryRow extends HashMap<Class<?>, DBRow> {
+public class DBQueryRow extends HashMap<Class<? extends DBRow>, DBRow> {
 
 	private static final long serialVersionUID = 1;
 	private final Map<Object, QueryableDatatype<?>> expressionColumnValues = new LinkedHashMap<>();
