@@ -1890,7 +1890,13 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 							field.setRawJavaValue(relatedInstancesFromQuery);
 						} else if (relatedInstancesFromQuery.isEmpty()) {
 							field.setRawJavaValue(null);
-						} else {
+						} else if(relatedInstancesFromQuery.size()==1){
+							field.setRawJavaValue(relatedInstancesFromQuery.get(0));
+						}else {
+							System.out.println("nz.co.gregs.dbvolution.DBRow.setAutoFilledFields(): TOO MANY MATCHING ELEMENTS FOUND");
+							for (DBRow dBRow : relatedInstancesFromQuery) {
+								System.out.println(""+dBRow);
+							}
 							field.setRawJavaValue(relatedInstancesFromQuery.get(0));
 						}
 					}
