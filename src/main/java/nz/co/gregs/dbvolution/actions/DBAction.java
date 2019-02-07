@@ -124,7 +124,7 @@ public abstract class DBAction implements Serializable{
 					.append(definition.formatColumnName(wrapper.columnName()))
 					.append(definition.getEqualsComparator())
 					.append(pkValue);
-			separator = definition.beginOrLine();
+			separator = definition.beginAndLine();
 		}
 		return sqlString.append(")").toString();
 	}
