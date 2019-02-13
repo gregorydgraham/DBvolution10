@@ -1844,6 +1844,102 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 	}
 
 	/**
+	 * Creates a query expression that aggregates the current StringExpression
+	 * into a single string value.
+	 *
+	 * <p>
+	 * For a table with rows like {"First"} and {"Second"}, using aggregate(", ")
+	 * will return "First, Second".</p>
+	 *
+	 * <p>
+	 * Like all aggregates, return values will vary based on the other fields
+	 * returned by the queries. For instance if the table has rows like {1,
+	 * "First", 3} and {2, "Second", 3} and the query returns all the columns and
+	 * the string aggregate, the result will be {1, "First", 3, "First"} and {2,
+	 * "Second", 3, "Second"}. However if only the third column and the string
+	 * aggregate are returned then the result will be {3, "First, Second"}. Use {@link DBRow#setReturnFields(nz.co.gregs.dbvolution.columns.ColumnProvider...)}, {@link DBRow#setReturnFieldsToNone()
+	 * }, and similar methods to change the returned fields.
+	 * </p>
+	 *
+	 * @param separator	separator to place between the values
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @return a StringExpression.
+	 */
+	public StringExpression aggregate(StringResult separator) {
+		return new StringAggregateExpression(this, StringExpression.value(separator));
+	}
+
+	/**
+	 * Creates a query expression that aggregates the current StringExpression
+	 * into a single string value.
+	 *
+	 * <p>
+	 * For a table with rows like {"First"} and {"Second"}, using aggregate(", ")
+	 * will return "First, Second".</p>
+	 *
+	 * <p>
+	 * Like all aggregates, return values will vary based on the other fields
+	 * returned by the queries. For instance if the table has rows like {1,
+	 * "First", 3} and {2, "Second", 3} and the query returns all the columns and
+	 * the string aggregate, the result will be {1, "First", 3, "First"} and {2,
+	 * "Second", 3, "Second"}. However if only the third column and the string
+	 * aggregate are returned then the result will be {3, "First, Second"}. Use {@link DBRow#setReturnFields(nz.co.gregs.dbvolution.columns.ColumnProvider...)}, {@link DBRow#setReturnFieldsToNone()
+	 * }, and similar methods to change the returned fields.
+	 * </p>
+	 *
+	 * @param separator	separator placed between all values
+	 * @param orderBy the sort ordering to use in the aggregator
+	 * @return a StringExpression.
+	 */
+	public StringExpression aggregate(String separator, SortProvider orderBy) {
+		return aggregate(StringExpression.value(separator), orderBy);
+	}
+
+	/**
+	 * Creates a query expression that aggregates the current StringExpression
+	 * into a single string value.
+	 *
+	 * <p>
+	 * For a table with rows like {"First"} and {"Second"}, using aggregate(", ")
+	 * will return "First, Second".</p>
+	 *
+	 * <p>
+	 * Like all aggregates, return values will vary based on the other fields
+	 * returned by the queries. For instance if the table has rows like {1,
+	 * "First", 3} and {2, "Second", 3} and the query returns all the columns and
+	 * the string aggregate, the result will be {1, "First", 3, "First"} and {2,
+	 * "Second", 3, "Second"}. However if only the third column and the string
+	 * aggregate are returned then the result will be {3, "First, Second"}. Use {@link DBRow#setReturnFields(nz.co.gregs.dbvolution.columns.ColumnProvider...)}, {@link DBRow#setReturnFieldsToNone()
+	 * }, and similar methods to change the returned fields.
+	 * </p>
+	 *
+	 * @param separator	separator placed between all values
+	 * @param orderBy the sort ordering to use in the aggregator
+	 * @return a StringExpression.
+	 */
+	public StringExpression aggregate(StringResult separator, SortProvider orderBy) {
+		return new StringAggregateWithOrderByExpression(
+				this,
+				StringExpression.value(separator),
+				orderBy
+		);
+	}
+
+	/**
+	 * Creates a query expression that appends the supplied value to the current
+	 * StringExpression.
+	 *
+	 * @param separator	string2
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @return a StringExpression.
+	 */
+	public StringExpression aggregate(String separator) {
+		return this.aggregate(StringExpression.value(separator));
+	}
+
+	/**
 	 * Creates a query expression that replaces the supplied value within the
 	 * current StringExpression.
 	 *
@@ -1901,7 +1997,10 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 			replaceValue = StringExpression.value("");
 		}
 		return new StringExpression(
-				new StringReplaceExpression(this, findString, replaceValue));
+				new StringReplaceExpression(
+						this,
+						StringExpression.value(findString),
+						StringExpression.value(replaceValue)));
 	}
 
 	/**
@@ -2768,22 +2867,22 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 
 		private static final long serialVersionUID = 1L;
 
-		private DBExpression first;
-		private DBExpression second;
-		private DBExpression third;
+		private StringExpression first;
+		private StringExpression second;
+		private StringExpression third;
 
-		DBTrinaryStringFunction(DBExpression first) {
+		DBTrinaryStringFunction(StringExpression first) {
 			this.first = first;
 			this.second = null;
 			this.third = null;
 		}
 
-		DBTrinaryStringFunction(DBExpression first, DBExpression second) {
+		DBTrinaryStringFunction(StringExpression first, StringExpression second) {
 			this.first = first;
 			this.second = second;
 		}
 
-		DBTrinaryStringFunction(DBExpression first, DBExpression second, DBExpression third) {
+		DBTrinaryStringFunction(StringExpression first, StringExpression second, StringExpression third) {
 			this.first = first;
 			this.second = second;
 			this.third = third;
@@ -2842,7 +2941,7 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 		 *
 		 * @return the first
 		 */
-		protected DBExpression getFirst() {
+		protected StringExpression getFirst() {
 			return first;
 		}
 
@@ -2852,7 +2951,7 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 		 *
 		 * @return the second
 		 */
-		protected DBExpression getSecond() {
+		protected StringExpression getSecond() {
 			return second;
 		}
 
@@ -2862,7 +2961,7 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 		 *
 		 * @return the third
 		 */
-		protected DBExpression getThird() {
+		protected StringExpression getThird() {
 			return third;
 		}
 
@@ -3573,9 +3672,80 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 		}
 	}
 
+	protected class StringAggregateExpression extends DBBinaryStringFunction {
+
+		public StringAggregateExpression(StringExpression columnToAccumulate, StringExpression separator) {
+			super(columnToAccumulate, separator);
+		}
+		private final static long serialVersionUID = 1l;
+
+		@Override
+		public String toSQLString(DBDefinition db) {
+			return db.doStringAccumulateTransform(
+					super.first.toSQLString(db),
+					super.second.toSQLString(db),
+					super.first.getTablesInvolved().toArray(new DBRow[]{})[0].getTableName());
+		}
+
+		@Override
+		public StringAggregateExpression copy() {
+			return new StringAggregateExpression(
+					first == null ? null : first.copy(),
+					second == null ? null : second.copy()
+			);
+		}
+
+		@Override
+		public boolean isAggregator() {
+			return true;
+		}
+	}
+
+	protected class StringAggregateWithOrderByExpression extends StringExpression {
+
+		private final StringExpression columnToAccumulate;
+		private final StringExpression separator;
+		private final SortProvider orderBy;
+
+		public StringAggregateWithOrderByExpression(StringExpression columnToAccumulate, StringExpression separator, SortProvider orderBy) {
+			super();
+			this.columnToAccumulate = columnToAccumulate;
+			this.separator = separator;
+			this.orderBy = orderBy;
+			for (DBRow table : orderBy.getTablesInvolved()) {
+				table.setSortedSubselectRequired(orderBy);
+			}
+		}
+		private final static long serialVersionUID = 1l;
+
+		@Override
+		public String toSQLString(DBDefinition db) {
+			return db.doStringAccumulateTransform(
+					columnToAccumulate.toSQLString(db),
+					separator.toSQLString(db),
+					orderBy.toSQLString(db),
+					columnToAccumulate.getTablesInvolved().toArray(new DBRow[]{})[0].getTableName()
+			);
+		}
+
+		@Override
+		public StringAggregateWithOrderByExpression copy() {
+			return new StringAggregateWithOrderByExpression(
+					columnToAccumulate == null ? null : columnToAccumulate.copy(),
+					separator == null ? null : separator.copy(),
+					orderBy == null ? null : orderBy.copy()
+			);
+		}
+
+		@Override
+		public boolean isAggregator() {
+			return true;
+		}
+	}
+
 	protected class StringReplaceExpression extends DBTrinaryStringFunction {
 
-		public StringReplaceExpression(DBExpression first, DBExpression second, DBExpression third) {
+		public StringReplaceExpression(StringExpression first, StringExpression second, StringExpression third) {
 			super(first, second, third);
 		}
 		private final static long serialVersionUID = 1l;
