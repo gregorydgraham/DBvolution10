@@ -263,7 +263,7 @@ public class SortProvider implements DBExpression {
 	}
 
 	@Override
-	public DBExpression copy() {
+	public SortProvider copy() {
 		return new SortProvider(this);
 	}
 
@@ -318,7 +318,7 @@ public class SortProvider implements DBExpression {
 		}
 
 		@Override
-		public DBExpression copy() {
+		public Ascending copy() {
 			return new Ascending(getInnerExpression());
 		}
 	}
@@ -335,7 +335,7 @@ public class SortProvider implements DBExpression {
 		}
 
 		@Override
-		public DBExpression copy() {
+		public Descending copy() {
 			return new Descending(getInnerExpression());
 		}
 	}
@@ -413,7 +413,7 @@ public class SortProvider implements DBExpression {
 			if (exprSQL == null || exprSQL.isEmpty()) {
 				return defn.getTrueOperation();
 			} else {
-				String sortingSQL = "";
+				String sortingSQL;
 				if (defn.supportsNullsOrderingStandard()) {
 					// The standard "mycolumn ASC NULLS LAST" sort
 					sortingSQL = exprSQL + getSortDirectionSQL(defn) + " " + getNullsOrderingStandardSQL(defn);

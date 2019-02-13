@@ -592,11 +592,11 @@ public class StringExpressionTest extends AbstractTest {
 		Assert.assertThat((got.get(0)).name.stringValue(), is("TOYOTA"));
 		Assert.assertThat((got.get(1)).name.stringValue(), is("VOLVO"));
 	}
-	
-	public static class SearchMarque extends Marque{
-		
+
+	public static class SearchMarque extends Marque {
+
 		private static final long serialVersionUID = 1L;
-		
+
 		@DBColumn
 		public DBInteger ranking = new DBInteger(column(name).searchForRanking("+o", "-l", "R"));
 	}
@@ -613,7 +613,7 @@ public class StringExpressionTest extends AbstractTest {
 		);
 		query.setSortOrder(marq.column(marq.name));
 		List<SearchMarque> got = query.getAllInstancesOf(marq);
-		
+
 		Assert.assertThat(got.size(), is(7));
 		Assert.assertThat((got.get(0)).name.stringValue(), is("DAEWOO"));
 		Assert.assertThat((got.get(1)).name.stringValue(), is("FORD"));
@@ -641,11 +641,11 @@ public class StringExpressionTest extends AbstractTest {
 
 		query.addCondition(rankColumn.isGreaterThan(0)
 		);
-		
+
 		query.setSortOrder(rankColumn, marq.column(marq.name));
-		
+
 		List<SearchMarque> got = query.getAllInstancesOf(marq);
-		
+
 		Assert.assertThat(got.size(), is(7));
 		Assert.assertThat((got.get(0)).name.stringValue(), is("LANDROVER"));
 		Assert.assertThat((got.get(1)).name.stringValue(), is("DAEWOO"));
@@ -741,6 +741,74 @@ public class StringExpressionTest extends AbstractTest {
 		Assert.assertThat(got.size(), is(2));
 		Assert.assertThat((got.get(0)).name.stringValue(), is("TOYOTA"));
 		Assert.assertThat((got.get(1)).name.stringValue(), is("VOLVO"));
+	}
+
+	@Test
+	public void testStringAccumulate() throws SQLException {
+
+		Marque marq = new Marque();
+		marq.name.clear();
+		marq.setReturnFieldsToNone();
+		DBQuery query = database.getDBQuery(marq);
+
+		query.addCondition(
+				marq.column(marq.name).lowercase()
+						.isBetweenInclusive("toy", StringExpression.value("volvo")));
+		query.addExpressionColumn(this, marq.column(marq.name).aggregate(", ").asExpressionColumn());
+		List<DBQueryRow> got = query.getAllRows();
+
+		Assert.assertThat(got.size(), is(1));
+		Assert.assertThat(
+				got.get(0).getExpressionColumnValue(this).stringValue(),
+				isOneOf("TOYOTA, VOLVO", "VOLVO, TOYOTA"));
+	}
+
+	@Test
+	public void testStringAccumulateWithOrderByDescending() throws SQLException {
+
+		Marque marq = new Marque();
+		marq.name.clear();
+		marq.setReturnFieldsToNone();
+		DBQuery query = database.getDBQuery(marq);
+
+		query.addCondition(
+				marq.column(marq.name).lowercase()
+						.isBetweenInclusive("toy", StringExpression.value("volvo")));
+		query.addExpressionColumn(
+				this,
+				marq.column(marq.name)
+						.aggregate(", ", marq.column(marq.name).descending())
+						.asExpressionColumn()
+		);
+		System.out.println(""+query.getSQLForQuery());
+		List<DBQueryRow> got = query.getAllRows();
+
+		Assert.assertThat(got.size(), is(1));
+		Assert.assertThat(got.get(0).getExpressionColumnValue(this).stringValue(), is("VOLVO, TOYOTA"));
+	}
+		
+
+	@Test
+	public void testStringAccumulateWithOrderByAscending() throws SQLException {
+		Marque marq = new Marque();
+		marq.name.clear();
+		marq.setReturnFieldsToNone();
+		DBQuery query = database.getDBQuery(marq);
+
+		query.addCondition(
+				marq.column(marq.name).lowercase()
+						.isBetweenInclusive("toy", StringExpression.value("volvo")));
+		query.addExpressionColumn(
+				this,
+				marq.column(marq.name)
+						.aggregate(", ", marq.column(marq.name).ascending())
+						.asExpressionColumn()
+		);
+		System.out.println(""+query.getSQLForQuery());
+		List<DBQueryRow> got = query.getAllRows();
+
+		Assert.assertThat(got.size(), is(1));
+		Assert.assertThat(got.get(0).getExpressionColumnValue(this).stringValue(), is("TOYOTA, VOLVO"));
 	}
 
 	@Test

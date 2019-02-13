@@ -3185,7 +3185,9 @@ public abstract class DBDefinition implements Serializable {
 			return recursiveTableAlias;
 		} else if (selectQuery != null) {
 			return "(" + selectQuery + ")" + beginTableAlias() + getTableAlias(table) + endTableAlias();
-		} else {
+		} else if(table.getSortedSubSelectRequired()!=null && requiresSortedSubselectForStringAggregate()){
+			return "(SELECT * FROM "+formatTableName(table)+ beginTableAlias() + getTableAlias(table) + endTableAlias()+" ORDER BY "+table.getSortedSubSelectRequired().toSQLString(this)+")"+ beginTableAlias() + getTableAlias(table) + endTableAlias();
+		}else {
 			return formatTableName(table) + beginTableAlias() + getTableAlias(table) + endTableAlias();
 		}
 	}
@@ -6051,5 +6053,17 @@ public abstract class DBDefinition implements Serializable {
 
 	public String getDropTableIfExistsClause() {
 		return " IF EXISTS ";
+	}
+
+	public String doStringAccumulateTransform(String accumulateColumn, String separator, String referencedTable) {
+		return "GROUP_CONCAT("+accumulateColumn+" SEPARATOR "+separator+")";
+	}
+
+	public String doStringAccumulateTransform(String accumulateColumn, String separator, String orderByColumnName, String referencedTable) {
+		return "GROUP_CONCAT("+accumulateColumn+" ORDER BY "+orderByColumnName+" SEPARATOR "+separator+")";
+	}
+
+	public boolean requiresSortedSubselectForStringAggregate() {
+		return false;
 	}
 }

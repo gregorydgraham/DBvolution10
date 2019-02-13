@@ -1109,14 +1109,13 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 		return false;
 	}
 
-//	@Override
-//	public String doStringAccumulateTransform(String accumulateColumn, String separator, String referencedTable) {
-//		return "stuff((select  "+separator+" + "+accumulateColumn+" from    "+referencedTable+" t1 where   t1.ID = t.ID for xml path('')),1,1,'')";
-//	}
-//
-//	@Override
-//	public String doStringAccumulateTransform(String accumulateColumn, String separator, String orderByColumnName, String referencedTable) {
-////		return "STRING_AGG("+accumulateColumn+", "+separator+" ORDER BY "+orderByColumnName+")";
-//		return "stuff((select  "+separator+" + "+accumulateColumn+" from    "+referencedTable+" t1 where   t1.ID = t.ID order by "+orderByColumnName+" for xml path('')),1,1,'')";
-//	}
+	@Override
+	public String doStringAccumulateTransform(String accumulateColumn, String separator, String referencedTable) {
+		return "stuff((select  "+separator+" + "+accumulateColumn+" from    "+referencedTable+" t1 where   t1.ID = t.ID for xml path('')),1,1,'')";
+	}
+
+	@Override
+	public String doStringAccumulateTransform(String accumulateColumn, String separator, String orderByColumnName, String referencedTable) {
+		return "stuff((select  "+separator+" + "+accumulateColumn+" from    "+referencedTable+" t1 where   t1.ID = t.ID order by "+orderByColumnName+" for xml path('')),1,1,'')";
+	}
 }

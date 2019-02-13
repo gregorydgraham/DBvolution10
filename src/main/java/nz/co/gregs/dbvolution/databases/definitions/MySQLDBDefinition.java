@@ -687,4 +687,14 @@ public class MySQLDBDefinition extends DBDefinition {
 	public boolean supportsNullsOrderingStandard() {
 		return false;
 	}
+
+	@Override
+	public String doStringAccumulateTransform(String accumulateColumn, String separator, String referencedTable) {
+		return "GROUP_CONCAT("+accumulateColumn+" SEPARATOR "+separator+")";
+	}
+
+	@Override
+	public String doStringAccumulateTransform(String accumulateColumn, String separator, String orderByColumnName, String referencedTable) {
+		return "GROUP_CONCAT("+accumulateColumn+" ORDER BY "+orderByColumnName+" SEPARATOR "+separator+")";
+	}
 }

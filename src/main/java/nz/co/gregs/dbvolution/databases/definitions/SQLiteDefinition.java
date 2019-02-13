@@ -53,7 +53,7 @@ import org.joda.time.Period;
 public class SQLiteDefinition extends DBDefinition implements SupportsDateRepeatDatatypeFunctions, SupportsPolygonDatatype {
 
 	public static final long serialVersionUID = 1L;
-	
+
 	/**
 	 * The date format used internally within DBvolution's SQLite implementation.
 	 *
@@ -126,8 +126,8 @@ public class SQLiteDefinition extends DBDefinition implements SupportsDateRepeat
 
 	@Override
 	public void sanityCheckDBTableField(DBTableField dbTableField) {
-		if (dbTableField.isPrimaryKey && 
-				(dbTableField.columnType.equals(DBInteger.class)||dbTableField.columnType.equals(DBNumber.class))) {
+		if (dbTableField.isPrimaryKey
+				&& (dbTableField.columnType.equals(DBInteger.class) || dbTableField.columnType.equals(DBNumber.class))) {
 			dbTableField.isAutoIncrement = true;
 		}
 	}
@@ -633,7 +633,7 @@ public class SQLiteDefinition extends DBDefinition implements SupportsDateRepeat
 	public String doPolygon2DIntersectionTransform(String firstGeometry, String secondGeometry) {
 		return Polygon2DFunctions.INTERSECTION + "(" + firstGeometry + ", " + secondGeometry + ")";
 	}
-	
+
 	@Override
 	public String doPolygon2DIntersectsTransform(String firstGeometry, String secondGeometry) {
 		return Polygon2DFunctions.INTERSECTS + "(" + firstGeometry + ", " + secondGeometry + ")";
@@ -955,5 +955,20 @@ public class SQLiteDefinition extends DBDefinition implements SupportsDateRepeat
 	@Override
 	public boolean supportsNullsOrderingStandard() {
 		return false;
+	}
+
+	@Override
+	public String doStringAccumulateTransform(String accumulateColumn, String separator, String referencedTable) {
+		return "GROUP_CONCAT(" + accumulateColumn + ", " + separator + ")";
+	}
+
+	@Override
+	public String doStringAccumulateTransform(String accumulateColumn, String separator, String orderByColumnName, String referencedTable) {
+		return "GROUP_CONCAT("+accumulateColumn+", "+separator+")";
+	}
+
+	@Override
+	public boolean requiresSortedSubselectForStringAggregate() {
+		return true;
 	}
 }

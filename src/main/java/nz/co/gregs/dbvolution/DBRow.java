@@ -31,6 +31,7 @@ import nz.co.gregs.dbvolution.exceptions.UnacceptableClassForAutoFillAnnotation;
 import nz.co.gregs.dbvolution.exceptions.UndefinedPrimaryKeyException;
 import nz.co.gregs.dbvolution.expressions.BooleanExpression;
 import nz.co.gregs.dbvolution.expressions.DBExpression;
+import nz.co.gregs.dbvolution.expressions.SortProvider;
 import nz.co.gregs.dbvolution.internal.properties.*;
 import nz.co.gregs.dbvolution.operators.DBOperator;
 import nz.co.gregs.dbvolution.query.RowDefinition;
@@ -131,6 +132,7 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 
 	private String recursiveTableAlias = null;
 	private String tableVariantIdentifier = null;
+	private SortProvider sortedSubselectRequired = null;
 
 	/**
 	 * Creates a new blank DBRow of the supplied subclass.
@@ -1968,6 +1970,14 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 			}
 		}
 		return null;
+	}
+
+	public void setSortedSubselectRequired(SortProvider value) {
+		sortedSubselectRequired = value;
+	}
+
+	public SortProvider getSortedSubSelectRequired() {
+		return sortedSubselectRequired;
 	}
 
 	/**

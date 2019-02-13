@@ -902,4 +902,14 @@ public class PostgresDBDefinition extends DBDefinition {
 	public String getSequenceUpdateSQL(String tableName, String columnName, long primaryKeyGenerated) {
 		return "ALTER SEQUENCE "+tableName+"_"+columnName+"_seq RESTART WITH "+(primaryKeyGenerated+1)+";";
 	}
+
+	@Override
+	public String doStringAccumulateTransform(String accumulateColumn, String separator, String referencedTable) {
+		return "STRING_AGG("+accumulateColumn+", "+separator+")";
+	}
+
+	@Override
+	public String doStringAccumulateTransform(String accumulateColumn, String separator, String orderByColumnName, String referencedTable) {
+		return "STRING_AGG("+accumulateColumn+", "+separator+" ORDER BY "+orderByColumnName+")";
+	}
 }
