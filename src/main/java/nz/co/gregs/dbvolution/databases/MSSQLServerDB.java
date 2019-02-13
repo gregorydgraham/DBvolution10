@@ -17,8 +17,6 @@ package nz.co.gregs.dbvolution.databases;
 
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.HashMap;
-import java.util.Map;
 import javax.sql.DataSource;
 import nz.co.gregs.dbvolution.databases.definitions.MSSQLServerDBDefinition;
 import nz.co.gregs.dbvolution.databases.supports.SupportsPolygonDatatype;
@@ -62,6 +60,7 @@ public class MSSQLServerDB extends DBDatabase implements SupportsPolygonDatatype
 	 * Creates a {@link DBDatabase } instance for the MS SQL Server data source.
 	 *
 	 * @param ds	a DataSource to an MS SQLServer database
+	 * @throws java.sql.SQLException
 	 */
 	public MSSQLServerDB(DataSource ds) throws SQLException {
 		this(new MSSQLServerDBDefinition(), ds);
@@ -217,57 +216,19 @@ public class MSSQLServerDB extends DBDatabase implements SupportsPolygonDatatype
 		}
 		return super.addFeatureToFixException(exp);
 	}
-
-//	@Override
-//	protected Map<String, String> getExtras() {
-//		String jdbcURL = getJdbcURL();
-//		if (jdbcURL.matches(";")) {
-//			String extrasString = jdbcURL.split(";", 2)[1];
-//			return DatabaseConnectionSettings.decodeExtras(extrasString, "", "=", ";", "");
-//		} else {
-//			return new HashMap<String, String>();
-//		}
-//	}
-//	@Override
-//	protected String getHost() {
-//		String jdbcURL = getJdbcURL();
-//		String noPrefix = jdbcURL.replaceAll("^jdbc:sqlserver://", "");
-//			return noPrefix
-//					.split("\\",2)[0];
-//		
-//	}
-//	@Override
-//	protected String getDatabaseInstance() {
-//		String jdbcURL = getJdbcURL();
-//		String noPrefix = jdbcURL.replaceAll("^jdbc:sqlserver://", "");
-//			return noPrefix
-//					.split("\\",2)[1]
-//					.split(":")[0];
-//	}
-//	@Override
-//	protected String getPort() {
-//		String jdbcURL = getJdbcURL();
-//		String noPrefix = jdbcURL.replaceAll("^jdbc:sqlserver://", "");
-//			return noPrefix
-//					.split("\\",2)[1]
-//					.split(":")[1];
-//	}
-//	@Override
-//	protected String getSchema() {
-//		return "";
-//	}
+	
 	@Override
 	protected DatabaseConnectionSettings getSettingsFromJDBCURL(String jdbcURL) {
 		DatabaseConnectionSettings set = new DatabaseConnectionSettings();
 		String noPrefix = jdbcURL.replaceAll("^jdbc:sqlserver://", "");
-		set.setPort(noPrefix.split("\\", 2)[1].split(":")[1]);
-		set.setHost(noPrefix.split("\\", 2)[0]);
+		set.setPort(noPrefix.split("\\\\", 2)[1].split(":")[1]);
+		set.setHost(noPrefix.split("\\\\", 2)[0]);
 		if (jdbcURL.matches(";")) {
 			String extrasString = jdbcURL.split(";", 2)[1];
 			set.setExtras(DatabaseConnectionSettings.decodeExtras(extrasString, "", "=", ";", ""));
 		}
 		set.setInstance(noPrefix
-				.split("\\", 2)[1]
+				.split("\\\\", 2)[1]
 				.split(":")[0]);
 		set.setSchema("");
 		return set;
