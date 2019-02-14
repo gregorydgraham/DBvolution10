@@ -3409,8 +3409,10 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 		public String toSQLString(DBDefinition db) {
 			if (this.getIncludesNull()) {
 				return BooleanExpression.isNull(first).toSQLString(db);
-			} else {
+			} else if (db.supportsComparingBooleanResults()){
 				return first.toSQLString(db) + this.getEquationOperator(db) + second.toSQLString(db);
+			} else {
+				return this.getComparableBooleanSQL(db);
 			}
 		}
 
@@ -4090,8 +4092,10 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 		public String toSQLString(DBDefinition db) {
 			if (super.getIncludesNull()) {
 				return BooleanExpression.isNull(getFirst()).toSQLString(db);
-			} else {
+			} else if (db.supportsComparingBooleanResults()){
 				return db.doNumberEqualsTransform(getFirst().toSQLString(db), getSecond().toSQLString(db));
+			} else {
+				return this.getComparableBooleanSQL(db);
 			}
 		}
 
