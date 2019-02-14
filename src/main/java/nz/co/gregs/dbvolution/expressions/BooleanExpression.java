@@ -320,12 +320,16 @@ public class BooleanExpression extends EqualExpression<Boolean, BooleanResult, D
 	}
 
 	protected String getComparableBooleanSQL(DBDefinition db) {
+		return getComparableBooleanSQL(db, this.toSQLString(db));
+	}
+
+	protected String getComparableBooleanSQL(DBDefinition db, String preparedSQL) {
 		String firstSQL;
 		boolean firstIsStatement = this.isBooleanStatement();
 		if (firstIsStatement) {
-			firstSQL = db.doBooleanStatementToBooleanComparisonValueTransform(this.toSQLString(db));
+			firstSQL = db.doBooleanStatementToBooleanComparisonValueTransform(preparedSQL);
 		} else {
-			firstSQL = db.doBooleanValueToBooleanComparisonValueTransform(this.toSQLString(db));
+			firstSQL = db.doBooleanValueToBooleanComparisonValueTransform(preparedSQL);
 		}
 		return "(" + firstSQL + ")";
 	}
