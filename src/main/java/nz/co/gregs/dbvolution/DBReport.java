@@ -318,7 +318,6 @@ public class DBReport extends RowDefinition {
 	 *
 	 * @param <A> the class of the supplied report.
 	 * @param database the database the SQL will be run against.
-	 * @param exampleReport the report required.
 	 * @param rows additional conditions to apply to the report.
 	 * <p style="color: #F90;">Support DBvolution at
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
@@ -326,8 +325,8 @@ public class DBReport extends RowDefinition {
 	 * exceptions may be thrown
 	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
-	public static <A extends DBReport> String getSQLForQuery(DBDatabase database, A exampleReport, DBRow... rows) throws SQLException {
-		DBQuery query = getDBQuery(database, exampleReport, rows);
+	public <A extends DBReport> String getSQLForQuery(DBDatabase database, DBRow... rows) throws SQLException {
+		DBQuery query = getDBQuery(database, this, rows);
 		return query.getSQLForQuery();
 	}
 
@@ -340,7 +339,6 @@ public class DBReport extends RowDefinition {
 	 * {@link DBReport#count(nz.co.gregs.dbvolution.databases.DBDatabase, nz.co.gregs.dbvolution.DBReport, nz.co.gregs.dbvolution.DBRow...)  the count method}
 	 *
 	 * @param database the database to format the query for.
-	 * @param exampleReport the report to retrieve.
 	 * @param rows additional conditions to be applied.
 	 * <p style="color: #F90;">Support DBvolution at
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
@@ -348,8 +346,8 @@ public class DBReport extends RowDefinition {
 	 * returned by this report 1 Database exceptions may be thrown
 	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
-	public static String getSQLForCount(DBDatabase database, DBReport exampleReport, DBRow... rows) throws SQLException {
-		DBQuery query = getDBQuery(database, exampleReport, rows);
+	public String getSQLForCount(DBDatabase database, DBRow... rows) throws SQLException {
+		DBQuery query = getDBQuery(database, this, rows);
 		return query.getSQLForCount();
 	}
 
