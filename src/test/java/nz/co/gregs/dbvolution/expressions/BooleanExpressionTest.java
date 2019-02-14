@@ -870,7 +870,7 @@ public class BooleanExpressionTest extends AbstractTest {
 		final DBQuery dbQuery = database.getDBQuery(marque);
 		dbQuery.setBlankQueryAllowed(true);
 		dbQuery.setSortOrder(marque.column(marque.greaterThan3));
-		
+		System.out.println(""+dbQuery.getSQLForQuery());
 		List<MarqueWithBooleanExpressionCount> allRows = dbQuery.getAllInstancesOf(marque);
 
 		Assert.assertThat(allRows.size(), is(2));
