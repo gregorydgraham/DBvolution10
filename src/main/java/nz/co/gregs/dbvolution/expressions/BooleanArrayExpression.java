@@ -121,6 +121,17 @@ public class BooleanArrayExpression extends AnyExpression<Boolean[], BooleanArra
 	}
 
 	/**
+	 * Returns a value of the required type that will evaluate to NULL.
+	 *
+	 * @return a NULL for use in boolean statements.
+	 */
+	@SuppressWarnings("unchecked")
+	@Override
+	public BooleanArrayExpression nullExpression() {
+		return (BooleanArrayExpression) super.nullExpression();
+	}
+
+	/**
 	 * Return the BooleanArrayResult held internally in this class.
 	 *
 	 * <p style="color: #F90;">Support DBvolution at
