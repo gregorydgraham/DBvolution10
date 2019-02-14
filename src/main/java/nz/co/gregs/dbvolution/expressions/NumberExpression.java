@@ -3409,10 +3409,13 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 		public String toSQLString(DBDefinition db) {
 			if (this.getIncludesNull()) {
 				return BooleanExpression.isNull(first).toSQLString(db);
-			} else if (db.supportsComparingBooleanResults()){
-				return first.toSQLString(db) + this.getEquationOperator(db) + second.toSQLString(db);
 			} else {
-				return this.getComparableBooleanSQL(db);
+				final String preparedSQL = first.toSQLString(db) + this.getEquationOperator(db) + second.toSQLString(db);
+				if (db.supportsComparingBooleanResults()) {
+					return preparedSQL;
+				} else {
+					return this.getComparableBooleanSQL(db, preparedSQL);
+				}
 			}
 		}
 
@@ -3461,7 +3464,7 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 
 	private static abstract class DBNnaryBooleanFunction extends BooleanExpression {
 
-	private final static long serialVersionUID = 1l;
+		private final static long serialVersionUID = 1l;
 
 		private NumberExpression column;
 		private final List<NumberResult> values = new ArrayList<NumberResult>();
@@ -3592,7 +3595,7 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 
 	private static abstract class DBNnaryNumberFunction extends NumberExpression {
 
-	private final static long serialVersionUID = 1l;
+		private final static long serialVersionUID = 1l;
 
 		protected NumberExpression column;
 		protected final List<NumberResult> values = new ArrayList<NumberResult>();
@@ -3708,7 +3711,7 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 
 	private static abstract class DBNumberAndNnaryStringFunction extends StringExpression {
 
-	private final static long serialVersionUID = 1l;
+		private final static long serialVersionUID = 1l;
 
 		protected NumberResult numberExpression = null;
 		protected final List<StringResult> values = new ArrayList<StringResult>();
@@ -3798,7 +3801,7 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 
 	private static abstract class DBUnaryStringFunction extends StringExpression {
 
-	private final static long serialVersionUID = 1l;
+		private final static long serialVersionUID = 1l;
 
 		protected NumberExpression only;
 
@@ -4092,10 +4095,13 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 		public String toSQLString(DBDefinition db) {
 			if (super.getIncludesNull()) {
 				return BooleanExpression.isNull(getFirst()).toSQLString(db);
-			} else if (db.supportsComparingBooleanResults()){
-				return db.doNumberEqualsTransform(getFirst().toSQLString(db), getSecond().toSQLString(db));
 			} else {
-				return this.getComparableBooleanSQL(db);
+				final String preparedSQL = db.doNumberEqualsTransform(getFirst().toSQLString(db), getSecond().toSQLString(db));
+				if (db.supportsComparingBooleanResults()) {
+					return preparedSQL;
+				} else {
+					return this.getComparableBooleanSQL(db, preparedSQL);
+				}
 			}
 		}
 
