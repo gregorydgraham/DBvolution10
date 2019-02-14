@@ -316,7 +316,7 @@ public class BooleanExpression extends EqualExpression<Boolean, BooleanResult, D
 	 */
 	@Override
 	public IntegerExpression count() {
-		return new IntegerExpression(new CountExpression(this));
+		return this.integerValue().count();
 	}
 
 	protected String getComparableBooleanSQL(DBDefinition db) {
