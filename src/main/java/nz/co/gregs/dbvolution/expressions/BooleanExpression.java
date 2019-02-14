@@ -1484,6 +1484,19 @@ public class BooleanExpression extends EqualExpression<Boolean, BooleanResult, D
 
 		@Override
 		public String toSQLString(DBDefinition db) {
+			if (db.supportsComparingBooleanResults()) {
+				return simpleToSQLString(db);
+			} else {
+				BooleanExpression first = this.getFirst();
+				BooleanExpression second = this.getSecond();
+				String returnString = "(" + first.getComparableBooleanSQL(db) + ")"
+						+ getEquationOperator(db)
+						+ "(" + second.getComparableBooleanSQL(db) + ")";
+				return returnString;
+			}
+		}
+
+		private String simpleToSQLString(DBDefinition db) {
 			String sqlString = getFirst().toSQLString(db) + this.getEquationOperator(db) + getSecond().toSQLString(db);
 			if (getFirst().getIncludesNull()) {
 				sqlString = getSecond().toSQLString(db) + " IS " + db.getNull() + db.beginOrLine() + sqlString;
@@ -1891,20 +1904,6 @@ public class BooleanExpression extends EqualExpression<Boolean, BooleanResult, D
 		private final static long serialVersionUID = 1l;
 
 		@Override
-		public String toSQLString(DBDefinition defn) {
-			if (defn.supportsComparingBooleanResults()) {
-				return super.toSQLString(defn);
-			} else {
-				BooleanExpression first = this.getFirst();
-				BooleanExpression second = this.getSecond();
-				String returnString = first.getComparableBooleanSQL(defn)
-						+ getEquationOperator(defn)
-						+ second.getComparableBooleanSQL(defn);
-				return returnString;
-			}
-		}
-
-		@Override
 		protected String getEquationOperator(DBDefinition db) {
 			return " = ";
 		}
@@ -1924,21 +1923,6 @@ public class BooleanExpression extends EqualExpression<Boolean, BooleanResult, D
 			super(first, second);
 		}
 		private final static long serialVersionUID = 1l;
-
-		@Override
-		public String toSQLString(DBDefinition db) {
-			DBDefinition defn = db;
-			if (defn.supportsComparingBooleanResults()) {
-				return super.toSQLString(db);
-			} else {
-				BooleanExpression first = this.getFirst();
-				BooleanExpression second = this.getSecond();
-				String returnString = "(" + first.getComparableBooleanSQL(db) + ")"
-						+ getEquationOperator(db)
-						+ "(" + second.getComparableBooleanSQL(db) + ")";
-				return returnString;
-			}
-		}
 
 		@Override
 		protected String getEquationOperator(DBDefinition db) {
