@@ -59,6 +59,16 @@ public class MSSQLServerDB extends DBDatabase implements SupportsPolygonDatatype
 	/**
 	 * Creates a {@link DBDatabase } instance for the MS SQL Server data source.
 	 *
+	 * @param settings	a DataSource to an MS SQLServer database
+	 * @throws java.sql.SQLException
+	 */
+	public MSSQLServerDB(DatabaseConnectionSettings settings) throws SQLException {
+		super(new MSSQLServerDBDefinition(), SQLSERVERDRIVERNAME, settings);
+	}
+
+	/**
+	 * Creates a {@link DBDatabase } instance for the MS SQL Server data source.
+	 *
 	 * @param ds	a DataSource to an MS SQLServer database
 	 * @throws java.sql.SQLException
 	 */
