@@ -20,11 +20,13 @@ import com.vividsolutions.jts.io.WKTReader;
 import java.text.*;
 import java.util.*;
 import nz.co.gregs.dbvolution.DBRow;
+import nz.co.gregs.dbvolution.columns.AbstractColumn;
 import nz.co.gregs.dbvolution.databases.MSSQLServerDB;
 import nz.co.gregs.dbvolution.datatypes.*;
 import nz.co.gregs.dbvolution.datatypes.spatial2D.*;
 import nz.co.gregs.dbvolution.exceptions.DBRuntimeException;
 import nz.co.gregs.dbvolution.exceptions.IncorrectGeometryReturnedForDatatype;
+import nz.co.gregs.dbvolution.expressions.AnyExpression;
 import nz.co.gregs.dbvolution.expressions.BooleanExpression;
 import nz.co.gregs.dbvolution.expressions.DBExpression;
 import nz.co.gregs.dbvolution.internal.properties.PropertyWrapper;
@@ -32,6 +34,7 @@ import nz.co.gregs.dbvolution.internal.query.LargeObjectHandlerType;
 import nz.co.gregs.dbvolution.internal.sqlserver.*;
 import nz.co.gregs.dbvolution.internal.query.QueryOptions;
 import nz.co.gregs.dbvolution.internal.query.QueryState;
+import nz.co.gregs.dbvolution.results.BooleanResult;
 
 /**
  * Defines the features of the Microsoft SQL Server database that differ from
@@ -49,7 +52,7 @@ import nz.co.gregs.dbvolution.internal.query.QueryState;
 public class MSSQLServerDBDefinition extends DBDefinition {
 
 	public static final long serialVersionUID = 1L;
-	
+
 	private static final String[] RESERVED_WORDS_ARRAY = new String[]{"ADD", "EXTERNAL", "PROCEDURE", "ALL", "FETCH", "PUBLIC", "ALTER", "FILE", "RAISERROR", "AND", "FILLFACTOR", "READ", "ANY", "FOR", "READTEXT", "AS", "FOREIGN", "RECONFIGURE", "ASC", "FREETEXT", "REFERENCES", "AUTHORIZATION", "FREETEXTTABLE", "REPLICATION", "BACKUP", "FROM", "RESTORE", "BEGIN", "FULL", "RESTRICT", "BETWEEN", "FUNCTION", "RETURN", "BREAK", "GOTO", "REVERT", "BROWSE", "GRANT", "REVOKE", "BULK", "GROUP", "RIGHT", "BY", "HAVING", "ROLLBACK", "CASCADE", "HOLDLOCK", "ROWCOUNT", "CASE", "IDENTITY", "ROWGUIDCOL", "CHECK", "IDENTITY_INSERT", "RULE", "CHECKPOINT", "IDENTITYCOL", "SAVE", "CLOSE", "IF", "SCHEMA", "CLUSTERED", "IN", "SECURITYAUDIT", "COALESCE", "INDEX", "SELECT", "COLLATE", "INNER", "SEMANTICKEYPHRASETABLE", "COLUMN", "INSERT", "SEMANTICSIMILARITYDETAILSTABLE", "COMMIT", "INTERSECT", "SEMANTICSIMILARITYTABLE", "COMPUTE", "INTO", "SESSION_USER", "CONSTRAINT", "IS", "SET", "CONTAINS", "JOIN", "SETUSER", "CONTAINSTABLE", "KEY", "SHUTDOWN", "CONTINUE", "KILL", "SOME", "CONVERT", "LEFT", "STATISTICS", "CREATE", "LIKE", "SYSTEM_USER", "CROSS", "LINENO", "TABLE", "CURRENT", "LOAD", "TABLESAMPLE", "CURRENT_DATE", "MERGE", "TEXTSIZE", "CURRENT_TIME", "NATIONAL", "THEN", "CURRENT_TIMESTAMP", "NOCHECK", "TO", "CURRENT_USER", "NONCLUSTERED", "TOP", "CURSOR", "NOT", "TRAN", "DATABASE", "NULL", "TRANSACTION", "DBCC", "NULLIF", "TRIGGER", "DEALLOCATE", "OF", "TRUNCATE", "DECLARE", "OFF", "TRY_CONVERT", "DEFAULT", "OFFSETS", "TSEQUAL", "DELETE", "ON", "UNION", "DENY", "OPEN", "UNIQUE", "DESC", "OPENDATASOURCE", "UNPIVOT", "DISK", "OPENQUERY", "UPDATE", "DISTINCT", "OPENROWSET", "UPDATETEXT", "DISTRIBUTED", "OPENXML", "USE", "DOUBLE", "OPTION", "USER", "DROP", "OR", "VALUES", "DUMP", "ORDER", "VARYING", "ELSE", "OUTER", "VIEW", "END", "OVER", "WAITFOR", "ERRLVL", "PERCENT", "WHEN", "ESCAPE", "PIVOT", "WHERE", "EXCEPT", "PLAN", "WHILE", "EXEC", "PRECISION", "WITH", "EXECUTE", "PRIMARY", "WITHIN GROUP", "EXISTS", "PRINT", "WRITETEXT", "EXIT", "PROC"};
 	private static final List<String> RESERVED_WORDS = Arrays.asList(RESERVED_WORDS_ARRAY);
 
@@ -537,10 +540,30 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 	@Override
 	public DBExpression transformToStorableType(DBExpression columnExpression) {
 		if (columnExpression instanceof BooleanExpression) {
-			return ((BooleanExpression) columnExpression).ifThenElse(1, 0);
+			return ((BooleanExpression) columnExpression).ifThenElse(1, 0).bracket();
+		} else if (columnExpression instanceof AbstractColumn) {
+			Object col = ((AbstractColumn) columnExpression).getField();
+			if (col != null && (col instanceof DBBoolean)) {
+				final DBBoolean bool = (DBBoolean) col;
+				final DBExpression[] exprns = bool.getColumnExpression();
+				if (exprns.length > 0) {
+					for (DBExpression expr : exprns) {/* TODO handle multiple expressions */
+						if (expr instanceof BooleanExpression) {
+							return ((BooleanExpression) expr).ifThenElse(1, 0).bracket();
+						} else {
+							return super.transformToStorableType(columnExpression);
+						}
+					}
+				} else {
+					return super.transformToStorableType(columnExpression);
+				}
+			} else {
+				return super.transformToStorableType(columnExpression);
+			}
 		} else {
 			return super.transformToStorableType(columnExpression);
 		}
+		return super.transformToStorableType(columnExpression);
 	}
 
 	@Override
@@ -1111,11 +1134,11 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 
 	@Override
 	public String doStringAccumulateTransform(String accumulateColumn, String separator, String referencedTable) {
-		return "stuff((select  "+separator+" + "+accumulateColumn+" from    "+referencedTable+" t1 where   t1.ID = t.ID for xml path('')),1,1,'')";
+		return "stuff((select  " + separator + " + " + accumulateColumn + " from    " + referencedTable + " t1 where   t1.ID = t.ID for xml path('')),1,1,'')";
 	}
 
 	@Override
 	public String doStringAccumulateTransform(String accumulateColumn, String separator, String orderByColumnName, String referencedTable) {
-		return "stuff((select  "+separator+" + "+accumulateColumn+" from    "+referencedTable+" t1 where   t1.ID = t.ID order by "+orderByColumnName+" for xml path('')),1,1,'')";
+		return "stuff((select  " + separator + " + " + accumulateColumn + " from    " + referencedTable + " t1 where   t1.ID = t.ID order by " + orderByColumnName + " for xml path('')),1,1,'')";
 	}
 }
