@@ -251,7 +251,7 @@ public class SortProvider implements DBExpression {
 		if (hasQueryColumn()) {
 			exprSQL = getQueryColumn().toSQLString(defn);
 		} else if (hasColumn()) {
-			exprSQL = getColumn().toSQLString(defn);
+			exprSQL = defn.transformToStorableType(getColumn()).toSQLString(defn);
 		} else if (hasInnerExpression()) {
 			exprSQL = getInnerExpression().toSQLString(defn);
 		}
