@@ -167,7 +167,7 @@ public class AbstractQueryColumn extends AbstractColumn {
 	 * @return the field
 	 */
 	@Override
-	protected QueryableDatatype<?> getField() {
+	public QueryableDatatype<?> getField() {
 		return field;
 	}
 

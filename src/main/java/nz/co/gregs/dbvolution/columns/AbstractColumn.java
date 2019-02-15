@@ -185,7 +185,7 @@ public class AbstractColumn implements DBExpression, Serializable {
 	 *
 	 * @return the field
 	 */
-	protected Object getField() {
+	public Object getField() {
 		return field;
 	}
 
