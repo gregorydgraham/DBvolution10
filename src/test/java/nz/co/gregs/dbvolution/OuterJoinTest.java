@@ -297,7 +297,8 @@ public class OuterJoinTest extends AbstractTest {
 								containsString(testableSQL("(__78874071.name) <= N'toyota'"))),
 						anyOf(containsString(testableSQL("__1997432637.enabled = TRUE")),
 								containsString(testableSQL("__1997432637.enabled = 1")),
-								containsString(testableSQL("( CASE WHEN __1997432637.enabled IS NULL THEN -1 ELSE __1997432637.enabled END ) = ( CASE WHEN  1  IS NULL THEN -1 ELSE  1  END )")))
+								containsString(testableSQL("( CASE WHEN __1997432637.enabled IS NULL THEN -1 ELSE __1997432637.enabled END ) = ( CASE WHEN  1  IS NULL THEN -1 ELSE  1  END )"))),
+								containsString(testableSQL("(( case when __1997432637.enabled is null then -1 else __1997432637.enabled end )) = (( case when 1 is null then -1 else 1 end ))"))
 				));
 		final String carCompanyCondition = testableSQL("__78874071.NAME) >= 'ford' and (__78874071.NAME) <= 'TOYOTA'");
 		final String testableQuery = testableSQL(sqlForQuery);
