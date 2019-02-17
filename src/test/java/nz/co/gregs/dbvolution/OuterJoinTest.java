@@ -318,6 +318,10 @@ public class OuterJoinTest extends AbstractTest {
 		dbquery.addOptional(carCompany);
 
 		if (database.getDefinition().supportsFullOuterJoin()) {
+
+			List<DBQueryRow> allRows = dbquery.getAllRows();
+			Assert.assertThat(allRows.size(), is(24));
+			
 			String sqlForQuery = dbquery.getSQLForQuery();
 			String testableQuery = testableSQL(sqlForQuery);
 
@@ -329,9 +333,6 @@ public class OuterJoinTest extends AbstractTest {
 							containsString(testableSQL("( CASE WHEN __1997432637.ENABLED IS NULL THEN -1 ELSE __1997432637.ENABLED END ) = ( CASE WHEN  1  IS NULL THEN -1 ELSE  1  END ))"))
 					)
 			);
-
-			List<DBQueryRow> allRows = dbquery.getAllRows();
-			Assert.assertThat(allRows.size(), is(24));
 		}
 
 	}
