@@ -17,6 +17,7 @@ package nz.co.gregs.dbvolution.databases;
 
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.regex.Pattern;
 import javax.sql.DataSource;
 import nz.co.gregs.dbvolution.databases.definitions.MSSQLServerDBDefinition;
 import nz.co.gregs.dbvolution.databases.supports.SupportsPolygonDatatype;
@@ -213,6 +214,8 @@ public class MSSQLServerDB extends DBDatabase implements SupportsPolygonDatatype
 			fn.add(statement);
 		}
 	}
+	//There is already an object named 'TableThatDoesExistOnTheCluster' in the database.
+	private final static Pattern CREATING_EXISTING_TABLE_PATTERN = Pattern.compile("There is already an object named '[^\"]*\' in the database.");
 
 	@Override
 	public ResponseToException addFeatureToFixException(Exception exp) throws Exception {
@@ -223,10 +226,13 @@ public class MSSQLServerDB extends DBDatabase implements SupportsPolygonDatatype
 			Statement stmt = getConnection().createStatement();
 			stmt.execute("SET IDENTITY_INSERT " + table + " ON;");
 			return ResponseToException.REQUERY;
+		} else if (CREATING_EXISTING_TABLE_PATTERN.matcher(message).lookingAt()) {
+//					System.out.println("nz.co.gregs.dbvolution.databases.H2DB.addFeatureToFixException()" + "TABLE EXISTS WHILE CREATING TABLE: OK.");
+			return ResponseToException.SKIPQUERY;
 		}
 		return super.addFeatureToFixException(exp);
 	}
-	
+
 	@Override
 	protected DatabaseConnectionSettings getSettingsFromJDBCURL(String jdbcURL) {
 		DatabaseConnectionSettings set = new DatabaseConnectionSettings();
