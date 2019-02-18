@@ -38,11 +38,12 @@ public class H2MemoryDB extends H2DB {
 	 * Creates a DBDatabase instance for an H2 Memory database with the given JDBC
 	 * URL, user and password.
 	 *
-	 * - Database exceptions may be thrown
+	 * <p>- Database exceptions may be thrown</p>
 	 *
+	 * @throws java.sql.SQLException
 	 */
-	public H2MemoryDB() {
-		super();
+	public H2MemoryDB() throws SQLException {
+		this(new DatabaseConnectionSettings());
 	}
 
 	/**
