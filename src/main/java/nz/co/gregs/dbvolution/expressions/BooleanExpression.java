@@ -1491,11 +1491,12 @@ public class BooleanExpression extends EqualExpression<Boolean, BooleanResult, D
 			if (db.supportsComparingBooleanResults()) {
 				return simpleToSQLString(db);
 			} else {
-				BooleanExpression first = this.getFirst();
-				BooleanExpression second = this.getSecond();
-				String returnString = "(" + first.getComparableBooleanSQL(db) + ")"
+				BooleanExpression firstParameter = this.getFirst();
+				BooleanExpression secondParameter = this.getSecond();
+				String returnString = 
+						firstParameter.getComparableBooleanSQL(db)
 						+ getEquationOperator(db)
-						+ "(" + second.getComparableBooleanSQL(db) + ")";
+						+ secondParameter.getComparableBooleanSQL(db);
 				return returnString;
 			}
 		}

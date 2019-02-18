@@ -192,17 +192,17 @@ public class OuterJoinTest extends AbstractTest {
 			String pseudoFullOuterQuery2 = testableSQLWithoutColumnAliases("select __1997432637.numeric_code, __1997432637.uid_marque, __1997432637.isusedfortafros, __1997432637.fk_toystatusclass, __1997432637.intindallocallowed, __1997432637.upd_count, __1997432637.auto_created, __1997432637.name, __1997432637.pricingcodeprefix, __1997432637.reservationsalwd, __1997432637.creation_date, __1997432637.enabled, __1997432637.fk_carcompany, __78874071.name, __78874071.uid_carcompany, _1159239592.logo_id, _1159239592.car_company_fk, _1159239592.image_file, _1159239592.image_name, _1617907935.fk_car_company, _1617907935.fk_company_logo from marque as __1997432637 left outer join car_company as __78874071 on( __1997432637.fk_carcompany = __78874071.uid_carcompany ) left outer join companylogo as _1159239592 on( _1159239592.car_company_fk = __78874071.uid_carcompany ) left outer join lt_carco_logo as _1617907935 on( _1617907935.fk_car_company = __78874071.uid_carcompany and _1617907935.fk_company_logo = _1159239592.logo_id ) union distinct select __1997432637.numeric_code, __1997432637.uid_marque, __1997432637.isusedfortafros, __1997432637.fk_toystatusclass, __1997432637.intindallocallowed, __1997432637.upd_count, __1997432637.auto_created, __1997432637.name, __1997432637.pricingcodeprefix, __1997432637.reservationsalwd, __1997432637.creation_date, __1997432637.enabled, __1997432637.fk_carcompany, __78874071.name, __78874071.uid_carcompany, _1159239592.logo_id, _1159239592.car_company_fk, _1159239592.image_file, _1159239592.image_name, _1617907935.fk_car_company, _1617907935.fk_company_logo from marque as __1997432637 right outer join car_company as __78874071 on( __1997432637.fk_carcompany = __78874071.uid_carcompany ) right outer join companylogo as _1159239592 on( _1159239592.car_company_fk = __78874071.uid_carcompany ) right outer join lt_carco_logo as _1617907935 on( _1617907935.fk_car_company = __78874071.uid_carcompany and _1617907935.fk_company_logo = _1159239592.logo_id ) ;");
 			String reversedFullOuterQuery1 = testableSQLWithoutColumnAliases("select __1997432637.numeric_code, __1997432637.uid_marque, __1997432637.isusedfortafros, __1997432637.fk_toystatusclass, __1997432637.intindallocallowed, __1997432637.upd_count, __1997432637.auto_created, __1997432637.name, __1997432637.pricingcodeprefix, __1997432637.reservationsalwd, __1997432637.creation_date, __1997432637.enabled, __1997432637.fk_carcompany, __78874071.name, __78874071.uid_carcompany, _1617907935.fk_car_company, _1617907935.fk_company_logo, _1159239592.logo_id, _1159239592.car_company_fk, _1159239592.image_file, _1159239592.image_name from marque as __1997432637 left outer join car_company as __78874071 on( __1997432637.fk_carcompany = __78874071.uid_carcompany ) left outer join lt_carco_logo as _1617907935 on( _1617907935.fk_car_company = __78874071.uid_carcompany ) left outer join companylogo as _1159239592 on( _1159239592.car_company_fk = __78874071.uid_carcompany and _1617907935.fk_company_logo = _1159239592.logo_id ) union select __1997432637.numeric_code, __1997432637.uid_marque, __1997432637.isusedfortafros, __1997432637.fk_toystatusclass, __1997432637.intindallocallowed, __1997432637.upd_count, __1997432637.auto_created, __1997432637.name, __1997432637.pricingcodeprefix, __1997432637.reservationsalwd, __1997432637.creation_date, __1997432637.enabled, __1997432637.fk_carcompany, __78874071.name, __78874071.uid_carcompany, _1617907935.fk_car_company, _1617907935.fk_company_logo, _1159239592.logo_id, _1159239592.car_company_fk, _1159239592.image_file, _1159239592.image_name from companylogo as _1159239592 left outer join lt_carco_logo as _1617907935 on( _1617907935.fk_company_logo = _1159239592.logo_id ) left outer join car_company as __78874071 on( _1159239592.car_company_fk = __78874071.uid_carcompany and _1617907935.fk_car_company = __78874071.uid_carcompany ) left outer join marque as __1997432637 on( __1997432637.fk_carcompany = __78874071.uid_carcompany )");
 			String reversedFullOuterQuery2 = testableSQLWithoutColumnAliases("select __1997432637.numeric_code, __1997432637.uid_marque, __1997432637.isusedfortafros, __1997432637.fk_toystatusclass, __1997432637.intindallocallowed, __1997432637.upd_count, __1997432637.auto_created, __1997432637.name, __1997432637.pricingcodeprefix, __1997432637.reservationsalwd, __1997432637.creation_date, __1997432637.enabled, __1997432637.fk_carcompany, __78874071.name, __78874071.uid_carcompany, _1159239592.logo_id, _1159239592.car_company_fk, _1159239592.image_file, _1159239592.image_name, _1617907935.fk_car_company, _1617907935.fk_company_logo from marque as __1997432637 left outer join car_company as __78874071 on( __1997432637.fk_carcompany = __78874071.uid_carcompany ) left outer join companylogo as _1159239592 on( _1159239592.car_company_fk = __78874071.uid_carcompany ) left outer join lt_carco_logo as _1617907935 on( _1617907935.fk_car_company = __78874071.uid_carcompany and _1617907935.fk_company_logo = _1159239592.logo_id ) union select __1997432637.numeric_code, __1997432637.uid_marque, __1997432637.isusedfortafros, __1997432637.fk_toystatusclass, __1997432637.intindallocallowed, __1997432637.upd_count, __1997432637.auto_created, __1997432637.name, __1997432637.pricingcodeprefix, __1997432637.reservationsalwd, __1997432637.creation_date, __1997432637.enabled, __1997432637.fk_carcompany, __78874071.name, __78874071.uid_carcompany, _1159239592.logo_id, _1159239592.car_company_fk, _1159239592.image_file, _1159239592.image_name, _1617907935.fk_car_company, _1617907935.fk_company_logo from lt_carco_logo as _1617907935 left outer join companylogo as _1159239592 on( _1617907935.fk_company_logo = _1159239592.logo_id ) left outer join car_company as __78874071 on( _1617907935.fk_car_company = __78874071.uid_carcompany and _1159239592.car_company_fk = __78874071.uid_carcompany ) left outer join marque as __1997432637 on( __1997432637.fk_carcompany = __78874071.uid_carcompany )");
-				Assert.assertThat(
-						testableSQLWithoutColumnAliases(sqlForQuery),
-						anyOf(
-								is(expectedFullOuterQuery),
-								is(otherExpectedFullOuterQuery),
-								is(pseudoFullOuterQuery1),
-								is(pseudoFullOuterQuery2),
-								is(reversedFullOuterQuery1),
-								is(reversedFullOuterQuery2)
-						)
-				);
+			Assert.assertThat(
+					testableSQLWithoutColumnAliases(sqlForQuery),
+					anyOf(
+							is(expectedFullOuterQuery),
+							is(otherExpectedFullOuterQuery),
+							is(pseudoFullOuterQuery1),
+							is(pseudoFullOuterQuery2),
+							is(reversedFullOuterQuery1),
+							is(reversedFullOuterQuery2)
+					)
+			);
 
 //			if (database.getDefinition().supportsFullOuterJoinNatively()) {
 //				Assert.assertThat(
@@ -288,6 +288,28 @@ public class OuterJoinTest extends AbstractTest {
 		sqlForQuery = dbquery.getSQLForQuery();
 
 		Assert.assertThat(testableSQL(sqlForQuery),
+				anyOf(
+						containsString(testableSQL("(__78874071.name) >= 'ford'")),
+						containsString(testableSQL("(__78874071.name) >= N'ford'")
+						)
+				)
+		);
+		Assert.assertThat(testableSQL(sqlForQuery),
+				anyOf(
+						containsString(testableSQL("(__78874071.name) <= 'toyota'")),
+						containsString(testableSQL("(__78874071.name) <= N'toyota'")
+						)
+				)
+		);
+		Assert.assertThat(testableSQL(sqlForQuery),
+				anyOf(containsString(testableSQL("__1997432637.enabled = TRUE")),
+						containsString(testableSQL("__1997432637.enabled = 1")),
+						containsString(testableSQL("( CASE WHEN __1997432637.enabled IS NULL THEN -1 ELSE __1997432637.enabled END ) = ( CASE WHEN  1  IS NULL THEN -1 ELSE  1  END )")),
+						containsString(testableSQL("(( case when __1997432637.enabled is null then -1 else __1997432637.enabled end )) = (( case when 1 is null then -1 else 1 end ))")
+						)
+				)
+		);
+		Assert.assertThat(testableSQL(sqlForQuery),
 				allOf(
 						anyOf(
 								containsString(testableSQL("(__78874071.name) >= 'ford'")),
@@ -297,9 +319,11 @@ public class OuterJoinTest extends AbstractTest {
 								containsString(testableSQL("(__78874071.name) <= N'toyota'"))),
 						anyOf(containsString(testableSQL("__1997432637.enabled = TRUE")),
 								containsString(testableSQL("__1997432637.enabled = 1")),
-								containsString(testableSQL("( CASE WHEN __1997432637.enabled IS NULL THEN -1 ELSE __1997432637.enabled END ) = ( CASE WHEN  1  IS NULL THEN -1 ELSE  1  END )"))),
+								containsString(testableSQL("( CASE WHEN __1997432637.enabled IS NULL THEN -1 ELSE __1997432637.enabled END ) = ( CASE WHEN  1  IS NULL THEN -1 ELSE  1  END )")),
 								containsString(testableSQL("(( case when __1997432637.enabled is null then -1 else __1997432637.enabled end )) = (( case when 1 is null then -1 else 1 end ))"))
-				));
+						)
+				)
+		);
 		final String carCompanyCondition = testableSQL("__78874071.NAME) >= 'ford' and (__78874071.NAME) <= 'TOYOTA'");
 		final String testableQuery = testableSQL(sqlForQuery);
 		Assert.assertThat(testableQuery.indexOf(carCompanyCondition), is(testableQuery.lastIndexOf(carCompanyCondition)));
@@ -322,7 +346,7 @@ public class OuterJoinTest extends AbstractTest {
 
 			List<DBQueryRow> allRows = dbquery.getAllRows();
 			Assert.assertThat(allRows.size(), is(24));
-			
+
 			String sqlForQuery = dbquery.getSQLForQuery();
 			String testableQuery = testableSQL(sqlForQuery);
 

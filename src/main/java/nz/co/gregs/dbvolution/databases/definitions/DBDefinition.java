@@ -5649,7 +5649,7 @@ public abstract class DBDefinition implements Serializable {
 		if (this.supportsComparingBooleanResults()) {
 			return booleanStatement;
 		} else {
-			return " CASE WHEN " + booleanStatement + " THEN " + getTrueValue() + " WHEN NOT " + booleanStatement + " THEN " + getFalseValue() + " ELSE -1 END ";
+			return " (CASE WHEN " + booleanStatement + " THEN " + getTrueValue() + " WHEN NOT " + booleanStatement + " THEN " + getFalseValue() + " ELSE -1 END) ";
 		}
 	}
 
