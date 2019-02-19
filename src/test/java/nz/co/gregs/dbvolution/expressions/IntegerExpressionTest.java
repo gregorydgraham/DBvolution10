@@ -301,6 +301,9 @@ public class IntegerExpressionTest extends AbstractTest {
 						.round(-4)
 						.is(20000));
 		allRows = dbQuery.getAllRows();
+		if(allRows.size()!= 4){
+			System.out.println(""+dbQuery.getSQLForQuery());
+		}
 
 		Assert.assertThat(allRows.size(), is(4));
 		for (DBQueryRow allRow : allRows) {
@@ -317,6 +320,9 @@ public class IntegerExpressionTest extends AbstractTest {
 						.round(-4)
 						.is(30000));
 		allRows = dbQuery.getAllRows();
+		if(allRows.size()!= 3){
+			System.out.println(""+dbQuery.getSQLForQuery());
+		}
 
 		Assert.assertThat(allRows.size(), is(3));
 		for (DBQueryRow allRow : allRows) {
