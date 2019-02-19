@@ -4427,8 +4427,10 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 						.times(power)
 						.bracket()
 						.numberResult()
-						.trunc()
-						.dividedBy(power).toSQLString(db);
+						.round()
+						.dividedBy(power)
+						.integerResult()
+						.toSQLString(db);
 			}
 		}
 

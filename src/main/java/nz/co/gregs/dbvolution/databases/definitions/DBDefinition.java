@@ -4635,7 +4635,7 @@ public abstract class DBDefinition implements Serializable {
 	public String doRoundTransform(String numberSQL) {
 		return "ROUND(" + numberSQL + ")";
 	}
-
+	
 	/**
 	 * Generate the SQL to apply rounding to the Number expressions with the
 	 * specified number of decimal places.
@@ -4647,7 +4647,7 @@ public abstract class DBDefinition implements Serializable {
 	 * @return SQL
 	 */
 	public String doRoundWithDecimalPlacesTransform(String number, String decimalPlaces) {
-		throw new UnsupportedOperationException();
+		return "ROUND(" + number + ", " + decimalPlaces + ")";
 	}
 
 	/**

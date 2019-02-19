@@ -302,12 +302,28 @@ public class IntegerExpressionTest extends AbstractTest {
 						.is(20000));
 		allRows = dbQuery.getAllRows();
 
-		Assert.assertThat(allRows.size(), is(6));
+		Assert.assertThat(allRows.size(), is(4));
 		for (DBQueryRow allRow : allRows) {
 			marque = allRow.get(marque);
 			Assert.assertThat(
 					marque.uidMarque.getValue().intValue(),
-					isOneOf(7659280, 7681544, 7730022, 8376505, 8587147, 9971178)
+					isOneOf(6664478, 7659280, 7681544, 7730022)
+			);
+		}
+		dbQuery = database.getDBQuery(marq);
+		dbQuery.addCondition(
+				marq.column(marq.uidMarque).dividedBy(335)
+						.integerResult()
+						.round(-4)
+						.is(30000));
+		allRows = dbQuery.getAllRows();
+
+		Assert.assertThat(allRows.size(), is(3));
+		for (DBQueryRow allRow : allRows) {
+			marque = allRow.get(marque);
+			Assert.assertThat(
+					marque.uidMarque.getValue().intValue(),
+					isOneOf(8376505, 8587147, 9971178)
 			);
 		}
 	}

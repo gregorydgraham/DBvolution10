@@ -271,6 +271,28 @@ public class SQLiteDefinition extends DBDefinition implements SupportsDateRepeat
 		// TRUNC is defined in SQLiteDB as a user defined function.
 		return "TRUNC";
 	}
+	
+	/**
+	 * Generate the SQL to apply rounding to the Number expressions with the
+	 * specified number of decimal places.
+	 * 
+	 * <p>SQLite ROUND doesn't support negative decimal places so use the alternative method. </p>
+	 *
+	 * @param number the number value
+	 * @param decimalPlaces the number value of the decimal places required.
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @return SQL
+	 */
+	@Override
+	public String doRoundWithDecimalPlacesTransform(String number, String decimalPlaces) {
+		throw new UnsupportedOperationException();
+	}
+	
+	@Override
+	public String doNumberToIntegerTransform(String sql) {
+		return "cast(("+sql+") as int)";
+	}
 
 	@Override
 	public String doPositionInStringTransform(String originalString, String stringToFind) {
