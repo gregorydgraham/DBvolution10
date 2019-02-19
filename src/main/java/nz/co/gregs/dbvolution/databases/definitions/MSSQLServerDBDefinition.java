@@ -1134,11 +1134,11 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 
 	@Override
 	public String doStringAccumulateTransform(String accumulateColumn, String separator, String referencedTable) {
-		return "stuff((select  " + separator + " + " + accumulateColumn + " from    " + referencedTable + " t1 where   t1.ID = t.ID for xml path('')),1,1,'')";
+		return "stuff((select  " + separator + " + " + accumulateColumn + " from    " + referencedTable + " for xml path('')),1,1,'')";
 	}
 
 	@Override
 	public String doStringAccumulateTransform(String accumulateColumn, String separator, String orderByColumnName, String referencedTable) {
-		return "stuff((select  " + separator + " + " + accumulateColumn + " from    " + referencedTable + " t1 where   t1.ID = t.ID order by " + orderByColumnName + " for xml path('')),1,1,'')";
+		return "stuff((select  " + separator + " + " + accumulateColumn + " from    " + referencedTable + " order by " + orderByColumnName + " for xml path('')),1,1,'')";
 	}
 }
