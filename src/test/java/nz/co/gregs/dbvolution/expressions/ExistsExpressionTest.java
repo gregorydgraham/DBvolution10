@@ -47,9 +47,9 @@ public class ExistsExpressionTest extends AbstractTest {
 						.add(carCompany)
 						.add(new CompanyLogo());
 
-		if (!database.tableExists(carCompany)){
-			System.out.println(existsTables.getSQLForQuery());
-		}
+//		if (!database.tableExists(carCompany)){
+//			System.out.println(existsTables.getSQLForQuery());
+//		}
 		
 		Marque marque = new Marque();
 		DBQuery outerQuery = database.getDBQuery(marque);
@@ -57,9 +57,9 @@ public class ExistsExpressionTest extends AbstractTest {
 		DBQuery marquesQuery = database.getDBQuery(marque);
 		marquesQuery.addCondition(new ExistsExpression(outerQuery, existsTables));
 
-		if (!database.tableExists(carCompany)){
-			System.out.println(marquesQuery.getSQLForQuery());
-		}		
+//		if (!database.tableExists(carCompany)){
+//			System.out.println(marquesQuery.getSQLForQuery());
+//		}		
 
 		List<Marque> rowList = marquesQuery.getAllInstancesOf(marque);
 

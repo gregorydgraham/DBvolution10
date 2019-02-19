@@ -780,7 +780,7 @@ public class StringExpressionTest extends AbstractTest {
 						.aggregate(", ", marq.column(marq.name).descending())
 						.asExpressionColumn()
 		);
-		System.out.println(""+query.getSQLForQuery());
+//		System.out.println(""+query.getSQLForQuery());
 		List<DBQueryRow> got = query.getAllRows();
 
 		Assert.assertThat(got.size(), is(1));
@@ -804,7 +804,7 @@ public class StringExpressionTest extends AbstractTest {
 						.aggregate(", ", marq.column(marq.name).ascending())
 						.asExpressionColumn()
 		);
-		System.out.println(""+query.getSQLForQuery());
+//		System.out. (""+query.getSQLForQuery());
 		List<DBQueryRow> got = query.getAllRows();
 
 		Assert.assertThat(got.size(), is(1));
@@ -949,7 +949,7 @@ public class StringExpressionTest extends AbstractTest {
 		List<FindFirstNumberTable> allRows = query.getAllRows();
 
 		if (allRows.size() != 14) {
-			System.out.println(query.getSQLForQuery());
+//			System.out.println(query.getSQLForQuery());
 			database.print(allRows);
 		}
 

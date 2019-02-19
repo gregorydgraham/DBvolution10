@@ -158,9 +158,9 @@ public class FindDistinctDBRowColumnValuesTest extends AbstractTest {
 				foundStrings.add((val.toString()));
 //			}
 		}
-		for (String foundString : foundStrings) {
-			System.out.println(foundString);
-		}
+//		for (String foundString : foundStrings) {
+//			System.out.println(foundString);
+//		}
 		if (database.getDefinition().supportsDifferenceBetweenNullAndEmptyString()) {
 			Assert.assertThat(distinctValuesForColumn.size(), is(3));
 //			Assert.assertThat(distinctValuesForColumn, hasItem((DBString) null));

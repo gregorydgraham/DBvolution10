@@ -81,9 +81,9 @@ public class DataModelTest extends AbstractTest {
 			Assert.assertTrue(constr.contains(knownString));
 			conMap.remove(knownString);
 		}
-		for (Class<? extends DBDatabase> val : conMap.values()) {
-			System.out.println(val);
-		}
+//		for (Class<? extends DBDatabase> val : conMap.values()) {
+//			System.out.println(val);
+//		}
 		Assert.assertThat(result.size(), is(10));
 	}
 
@@ -114,9 +114,9 @@ public class DataModelTest extends AbstractTest {
 			Assert.assertTrue(constr.contains(knownString));
 			conMap.remove(knownString);
 		}
-		for (Constructor<DBDatabase> constructor : conMap.values()) {
-			System.out.println(constructor);
-		}
+//		for (Constructor<DBDatabase> constructor : conMap.values()) {
+//			System.out.println(constructor);
+//		}
 		Assert.assertThat(result.size(), is(13));
 	}
 
