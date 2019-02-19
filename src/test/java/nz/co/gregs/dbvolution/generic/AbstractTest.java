@@ -34,6 +34,7 @@ import nz.co.gregs.dbvolution.example.*;
 import org.h2.jdbcx.JdbcDataSource;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
@@ -69,7 +70,7 @@ public abstract class AbstractTest {
 		List<Object[]> databases = new ArrayList<>();
 
 		if (System.getProperty("testClusteredDB") != null) {
-			databases.add(new Object[]{"ClusteredDB",
+			databases.add(new Object[]{"ClusteredDB-H2+SQLite+Postgres+MySQL",
 				new DBDatabaseCluster("testClusteredDB", new DBDatabaseCluster.Configuration(false, false),
 				H2MemoryTestDB.getClusterDBFromSettings("h2memory"),
 				SQLiteTestDB.getClusterDBFromSettings("sqlite", ""),
@@ -78,21 +79,21 @@ public abstract class AbstractTest {
 				)});
 		}
 		if (System.getProperty("testSmallCluster") != null) {
-			databases.add(new Object[]{"ClusteredDB",
+			databases.add(new Object[]{"ClusteredDB-H2+SQLite",
 				new DBDatabaseCluster("testSmallCluster", new DBDatabaseCluster.Configuration(false, false),
 				SQLiteTestDB.getFromSettings(),
 				H2MemoryTestDB.getFromSettings("h2memory")
 				)});
 		}
 		if (System.getProperty("testBundledCluster") != null) {
-			databases.add(new Object[]{"ClusteredDB",
+			databases.add(new Object[]{"ClusteredDB-H2+SQLite",
 				new DBDatabaseCluster("testSmallCluster", new DBDatabaseCluster.Configuration(false, false),
 				SQLiteTestDB.getClusterDBFromSettings("sqlite", "bundled"),
 				H2MemoryTestDB.getFromSettings("h2memory")
 				)});
 		}
 		if (System.getProperty("testOpenSourceCluster") != null) {
-			databases.add(new Object[]{"ClusteredDB",
+			databases.add(new Object[]{"ClusteredDB-H2+SQLite+Postgres+MySQL",
 				new DBDatabaseCluster("testOpenSourceCluster", new DBDatabaseCluster.Configuration(false, false),
 				H2MemoryTestDB.getFromSettings("h2memory"),
 				SQLiteTestDB.getClusterDBFromSettings("sqlite", "open"),
@@ -101,7 +102,7 @@ public abstract class AbstractTest {
 				)});
 		}
 		if (System.getProperty("MySQL+Cluster") != null) {
-			databases.add(new Object[]{"ClusteredDB",
+			databases.add(new Object[]{"ClusteredDB-H2+SQLite+Postgres+MySQL",
 				new DBDatabaseCluster("MySQL+Cluster", new DBDatabaseCluster.Configuration(false, false),
 				H2MemoryTestDB.getFromSettings("h2memory"),
 				SQLiteTestDB.getFromSettings(),
@@ -150,6 +151,10 @@ public abstract class AbstractTest {
 		}
 		if (databases.isEmpty() || System.getProperty("testH2BlankDB") != null) {
 			databases.add(new Object[]{"H2BlankDB", H2MemoryTestDB.blankDB()});
+		}
+
+		for (Object[] database : databases) {
+			System.out.println("Processing: Database " + database[0]);
 		}
 
 		return databases;
@@ -473,7 +478,7 @@ public abstract class AbstractTest {
 
 		public static SQLiteTestDB getClusterDBFromSettings(String prefix, String name) throws IOException, SQLException {
 //			String url = System.getProperty(prefix + ".url");
-			String filename = System.getProperty(prefix + ".filename") + "-"+name+"cluster.sqlite";
+			String filename = System.getProperty(prefix + ".filename") + "-" + name + "cluster.sqlite";
 			String username = System.getProperty(prefix + ".username");
 			String password = System.getProperty(prefix + ".password");
 			return new SQLiteTestDB(new File(filename), username, password);
