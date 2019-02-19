@@ -912,4 +912,19 @@ public class PostgresDBDefinition extends DBDefinition {
 	public String doStringAccumulateTransform(String accumulateColumn, String separator, String orderByColumnName, String referencedTable) {
 		return "STRING_AGG("+accumulateColumn+", "+separator+" ORDER BY "+orderByColumnName+")";
 	}
+	
+	/**
+	 * Generate the SQL to apply rounding to the Number expressions with the
+	 * specified number of decimal places.
+	 *
+	 * @param number the number value
+	 * @param decimalPlaces the number value of the decimal places required.
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @return SQL
+	 */
+	@Override
+	public String doRoundWithDecimalPlacesTransform(String number, String decimalPlaces) {
+		return "ROUND((" + number + ")::numeric, " + decimalPlaces + ")";
+	}
 }
