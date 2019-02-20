@@ -25,6 +25,7 @@ import nz.co.gregs.dbvolution.databases.H2DB;
 import nz.co.gregs.dbvolution.databases.supports.SupportsDateRepeatDatatypeFunctions;
 import nz.co.gregs.dbvolution.databases.supports.SupportsPolygonDatatype;
 import nz.co.gregs.dbvolution.datatypes.DBDateRepeat;
+import nz.co.gregs.dbvolution.datatypes.DBInteger;
 import nz.co.gregs.dbvolution.datatypes.DBJavaObject;
 import nz.co.gregs.dbvolution.datatypes.DBLargeObject;
 import nz.co.gregs.dbvolution.datatypes.DBLargeText;
@@ -90,9 +91,9 @@ public class H2DBDefinition extends DBDefinition implements SupportsDateRepeatDa
 
 	@Override
 	protected String getDatabaseDataTypeOfQueryableDatatype(QueryableDatatype<?> qdt) {
-		/*if (qdt instanceof DBInteger) {
-			return DataTypes.INTEGER.datatype();
-		} else*/ if (qdt instanceof DBDateRepeat) {
+		if (qdt instanceof DBInteger) {
+			return " BIGINT ";
+		} else if (qdt instanceof DBDateRepeat) {
 			return DataTypes.DATEREPEAT.datatype();
 		} else if (qdt instanceof DBPoint2D) {
 			return DataTypes.POINT2D.datatype();
