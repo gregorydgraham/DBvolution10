@@ -780,13 +780,14 @@ public class StringExpressionTest extends AbstractTest {
 						.aggregate(", ", marq.column(marq.name).descending())
 						.asExpressionColumn()
 		);
-//		System.out.println(""+query.getSQLForQuery());
 		List<DBQueryRow> got = query.getAllRows();
 
+		if (got.size() != 1) {
+			System.out.println("" + query.getSQLForQuery());
+		}
 		Assert.assertThat(got.size(), is(1));
 		Assert.assertThat(got.get(0).getExpressionColumnValue(this).stringValue(), is("VOLVO, TOYOTA"));
 	}
-		
 
 	@Test
 	public void testStringAccumulateWithOrderByAscending() throws SQLException {
@@ -804,9 +805,11 @@ public class StringExpressionTest extends AbstractTest {
 						.aggregate(", ", marq.column(marq.name).ascending())
 						.asExpressionColumn()
 		);
-//		System.out. (""+query.getSQLForQuery());
 		List<DBQueryRow> got = query.getAllRows();
 
+		if (got.size() != 1) {
+			System.out.println("" + query.getSQLForQuery());
+		}
 		Assert.assertThat(got.size(), is(1));
 		Assert.assertThat(got.get(0).getExpressionColumnValue(this).stringValue(), is("TOYOTA, VOLVO"));
 	}
@@ -949,7 +952,7 @@ public class StringExpressionTest extends AbstractTest {
 		List<FindFirstNumberTable> allRows = query.getAllRows();
 
 		if (allRows.size() != 14) {
-//			System.out.println(query.getSQLForQuery());
+			System.out.println(query.getSQLForQuery());
 			database.print(allRows);
 		}
 
