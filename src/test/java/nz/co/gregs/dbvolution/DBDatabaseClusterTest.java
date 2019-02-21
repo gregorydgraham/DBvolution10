@@ -362,6 +362,7 @@ public class DBDatabaseClusterTest extends AbstractTest {
 			cluster.setAutoRebuild(false);
 			H2MemoryDB soloDB2 = new H2MemoryDB("DBDatabaseClusterTest6", "who", "what", true) {
 				private static final long serialVersionUID = 1l;
+
 				@Override
 				public void createTable(DBRow newTableRow) throws SQLException, AutoCommitActionDuringTransactionException {
 					if (newTableRow instanceof TableThatDoesExistOnTheCluster) {
@@ -497,6 +498,12 @@ public class DBDatabaseClusterTest extends AbstractTest {
 
 	@Test
 	public void testYAMLFileProcessingWithFile() {
+
+		new DBDatabaseCluster("testYAMLFileProcessingWithFile",
+				new DBDatabaseCluster.Configuration(false, false)).dismantle();
+		new DBDatabaseCluster("testYAMLFileProcessingWithFile2",
+				new DBDatabaseCluster.Configuration(false, false)).dismantle();
+
 		final String yamlConfigFilename = "DBDatabaseCluster.yml";
 
 		File file = new File(yamlConfigFilename);

@@ -34,7 +34,6 @@ import nz.co.gregs.dbvolution.example.*;
 import org.h2.jdbcx.JdbcDataSource;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
@@ -69,15 +68,6 @@ public abstract class AbstractTest {
 
 		List<Object[]> databases = new ArrayList<>();
 
-		if (System.getProperty("testClusteredDB") != null) {
-			databases.add(new Object[]{"ClusteredDB-H2+SQLite+Postgres+MySQL",
-				new DBDatabaseCluster("testClusteredDB", new DBDatabaseCluster.Configuration(false, false),
-				H2MemoryTestDB.getClusterDBFromSettings("h2memory"),
-				SQLiteTestDB.getClusterDBFromSettings("sqlite", ""),
-				PostgreSQLTestDatabase.getClusterDBFromSettings("postgres"),
-				MySQLTestDatabase.getClusterDBFromSettings("mysql")
-				)});
-		}
 		if (System.getProperty("testSmallCluster") != null) {
 			databases.add(new Object[]{"ClusteredDB-H2+SQLite",
 				new DBDatabaseCluster("testSmallCluster", new DBDatabaseCluster.Configuration(false, false),
