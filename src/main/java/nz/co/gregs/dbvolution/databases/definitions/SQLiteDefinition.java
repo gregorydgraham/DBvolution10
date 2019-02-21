@@ -291,7 +291,7 @@ public class SQLiteDefinition extends DBDefinition implements SupportsDateRepeat
 	
 	@Override
 	public String doNumberToIntegerTransform(String sql) {
-		return "cast(("+sql+") as int)";
+		return "cast(("+sql+") as bigint)";
 	}
 
 	@Override
@@ -311,37 +311,37 @@ public class SQLiteDefinition extends DBDefinition implements SupportsDateRepeat
 
 	@Override
 	public String doMonthTransform(String dateExpression) {
-		return " (CAST(strftime('%m', " + dateExpression + ") as INTEGER))";
+		return " (CAST(strftime('%m', " + dateExpression + ") as BIGINT))";
 	}
 
 	@Override
 	public String doYearTransform(String dateExpression) {
-		return " (CAST(strftime('%Y', " + dateExpression + ") as INTEGER))";
+		return " (CAST(strftime('%Y', " + dateExpression + ") as BIGINT))";
 	}
 
 	@Override
 	public String doDayTransform(String dateExpression) {
-		return " (CAST(strftime('%d', " + dateExpression + ") as INTEGER))";
+		return " (CAST(strftime('%d', " + dateExpression + ") as BIGINT))";
 	}
 
 	@Override
 	public String doHourTransform(String dateExpression) {
-		return " (CAST(strftime('%H', " + dateExpression + ") as INTEGER))";
+		return " (CAST(strftime('%H', " + dateExpression + ") as BIGINT))";
 	}
 
 	@Override
 	public String doMinuteTransform(String dateExpression) {
-		return " (CAST(strftime('%M', " + dateExpression + ") as INTEGER))";
+		return " (CAST(strftime('%M', " + dateExpression + ") as BIGINT))";
 	}
 
 	@Override
 	public String doSecondTransform(String dateExpression) {
-		return " (CAST(strftime('%S', " + dateExpression + ") as INTEGER))";
+		return " (CAST(strftime('%S', " + dateExpression + ") as BIGINT))";
 	}
 
 	@Override
 	public String doSubsecondTransform(String dateExpression) {
-		return " ((CAST(strftime('%f', " + dateExpression + ") as REAL))-(CAST(strftime('%S', " + dateExpression + ") as INTEGER)))";
+		return " ((CAST(strftime('%f', " + dateExpression + ") as REAL))-(CAST(strftime('%S', " + dateExpression + ") as BIGINT)))";
 	}
 
 	@Override
