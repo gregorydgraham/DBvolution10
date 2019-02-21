@@ -214,8 +214,13 @@ public class MSSQLServerDB extends DBDatabase implements SupportsPolygonDatatype
 			fn.add(statement);
 		}
 	}
+	//Invalid object name 'TableThatDoesntExistOnTheCluster'.
+	private final static Pattern NONEXISTANT_TABLE_PATTERN = Pattern.compile("Invalid object name '[^\"]*\'.");
 	//There is already an object named 'TableThatDoesExistOnTheCluster' in the database.
 	private final static Pattern CREATING_EXISTING_TABLE_PATTERN = Pattern.compile("There is already an object named '[^\"]*\' in the database.");
+	//Cannot find the object "TableThatDoesntExistOnTheCluster" because it does not exist or you do not have permissions.
+	private final static Pattern UNABLE_TO_FIND_DATABASE_OBJECT_PATTERN = Pattern.compile("Cannot find the object \"[^\"]*\" because it does not exist or you do not have permissions.");
+	
 
 	@Override
 	public ResponseToException addFeatureToFixException(Exception exp) throws Exception {
@@ -228,6 +233,10 @@ public class MSSQLServerDB extends DBDatabase implements SupportsPolygonDatatype
 			return ResponseToException.REQUERY;
 		} else if (CREATING_EXISTING_TABLE_PATTERN.matcher(message).lookingAt()) {
 //					System.out.println("nz.co.gregs.dbvolution.databases.H2DB.addFeatureToFixException()" + "TABLE EXISTS WHILE CREATING TABLE: OK.");
+			return ResponseToException.SKIPQUERY;
+		} else if (NONEXISTANT_TABLE_PATTERN.matcher(message).lookingAt()) {
+			return ResponseToException.SKIPQUERY;
+		} else if (UNABLE_TO_FIND_DATABASE_OBJECT_PATTERN.matcher(message).lookingAt()) {
 			return ResponseToException.SKIPQUERY;
 		}
 		return super.addFeatureToFixException(exp);
