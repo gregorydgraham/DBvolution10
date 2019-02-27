@@ -313,7 +313,7 @@ public class DBInsert extends DBAction {
 		String allValuesSeparator = defn.beginValueClause();
 		for (PropertyWrapper prop : props) {
 			// BLOBS are not inserted normally so don't include them
-			if (prop.isColumn()) {
+			if (prop.isColumn() && !prop.hasColumnExpression()) {
 				final QueryableDatatype<?> qdt = prop.getQueryableDatatype();
 				if (!(qdt instanceof DBLargeObject)) {
 					//support for inserting empty rows in a table with an autoincrementing pk

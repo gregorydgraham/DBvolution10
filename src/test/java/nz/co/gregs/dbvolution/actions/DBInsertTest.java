@@ -101,6 +101,30 @@ public class DBInsertTest extends AbstractTest {
 		}
 	}
 
+	@Test
+	public void testSaveWithExpressionColumn() throws Exception {
+		if (database.getDefinition().supportsGeneratedKeys() || database.getDefinition().supportsRetrievingLastInsertedRowViaSQL()) {
+			TestInsertDoesNotUpdateExpressionColumns row = new TestInsertDoesNotUpdateExpressionColumns();
+			TestInsertDoesNotUpdateExpressionColumns row2 = new TestInsertDoesNotUpdateExpressionColumns();
+
+			database.preventDroppingOfTables(false);
+			database.dropTableNoExceptions(row);
+
+			database.createTable(row);
+
+			database.insert(row);
+			Assert.assertThat(row.pk_uid.getValue(), is(1L));
+			database.insert(row2);
+			Assert.assertThat(row2.pk_uid.getValue(), is(2L));
+			final Long pkValue = row2.pk_uid.getValue();
+			TestInsertDoesNotUpdateExpressionColumns gotRow2 = database.getDBTable(row2).getRowsByPrimaryKey(pkValue).get(0);
+			Assert.assertThat(gotRow2.pk_uid.getValue(), is(2L));
+
+			database.preventDroppingOfTables(false);
+			database.dropTableNoExceptions(row);
+		}
+	}
+
 	@Test(expected = AutoIncrementFieldClassAndDatatypeMismatch.class)
 	public void testSaveWithDefaultValuesAndIncorrectDatatype() throws Exception {
 		TestDefaultValueIncorrectDatatype row = new TestDefaultValueIncorrectDatatype();
@@ -161,6 +185,23 @@ public class DBInsertTest extends AbstractTest {
 
 		@DBColumn
 		public DBString name = new DBString();
+
+	}
+
+	public static class TestInsertDoesNotUpdateExpressionColumns extends DBRow {
+
+		private static final long serialVersionUID = 1L;
+
+		@DBPrimaryKey
+		@DBColumn
+		@DBAutoIncrement
+		public DBInteger pk_uid = new DBInteger();
+
+		@DBColumn
+		public DBString name = new DBString();
+		
+		@DBColumn
+		public DBBoolean hasValue = new DBBoolean(this.column(this.name).length().isGreaterThan(0));
 
 	}
 }
