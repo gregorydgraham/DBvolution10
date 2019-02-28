@@ -60,6 +60,7 @@ import nz.co.gregs.dbvolution.example.Marque;
 import nz.co.gregs.dbvolution.exceptions.AccidentalBlankQueryException;
 import nz.co.gregs.dbvolution.exceptions.AccidentalCartesianJoinException;
 import nz.co.gregs.dbvolution.exceptions.AutoCommitActionDuringTransactionException;
+import nz.co.gregs.dbvolution.exceptions.NoAvailableDatabaseException;
 import nz.co.gregs.dbvolution.exceptions.UnableToRemoveLastDatabaseFromClusterException;
 import nz.co.gregs.dbvolution.generic.AbstractTest;
 import org.hamcrest.Matchers;

@@ -681,8 +681,9 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a list of the selected rows
 	 * @throws SQLException database exceptions
+	 * @throws nz.co.gregs.dbvolution.exceptions.NoAvailableDatabaseException
 	 */
-	public <R extends DBRow> List<R> get(R exampleRow) throws SQLException, AccidentalCartesianJoinException, AccidentalBlankQueryException {
+	public <R extends DBRow> List<R> get(R exampleRow) throws SQLException, AccidentalCartesianJoinException, AccidentalBlankQueryException, NoAvailableDatabaseException {
 		DBTable<R> dbTable = getDBTable(exampleRow);
 		return dbTable.getAllRows();
 	}
@@ -744,7 +745,7 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 	 * @return a list of the selected rows
 	 * @throws SQLException database exceptions
 	 */
-	public <R extends DBRow> List<R> getByExample(R exampleRow) throws SQLException, AccidentalCartesianJoinException, AccidentalBlankQueryException {
+	public <R extends DBRow> List<R> getByExample(R exampleRow) throws SQLException, AccidentalCartesianJoinException, AccidentalBlankQueryException, NoAvailableDatabaseException {
 		return get(exampleRow);
 	}
 
@@ -767,7 +768,7 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 	 * @throws UnexpectedNumberOfRowsException the exception thrown if the number
 	 * of rows is wrong
 	 */
-	public <R extends DBRow> List<R> get(Long expectedNumberOfRows, R exampleRow) throws SQLException, UnexpectedNumberOfRowsException, AccidentalBlankQueryException {
+	public <R extends DBRow> List<R> get(Long expectedNumberOfRows, R exampleRow) throws SQLException, UnexpectedNumberOfRowsException, AccidentalBlankQueryException, NoAvailableDatabaseException {
 		if (expectedNumberOfRows == null) {
 			return get(exampleRow);
 		} else {
@@ -792,8 +793,9 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 	 * @throws SQLException database exceptions
 	 * @throws UnexpectedNumberOfRowsException the exception thrown when the
 	 * number of rows is not correct
+	 * @throws nz.co.gregs.dbvolution.exceptions.NoAvailableDatabaseException
 	 */
-	public <R extends DBRow> List<R> getByExample(Long expectedNumberOfRows, R exampleRow) throws SQLException, UnexpectedNumberOfRowsException, AccidentalBlankQueryException {
+	public <R extends DBRow> List<R> getByExample(Long expectedNumberOfRows, R exampleRow) throws SQLException, UnexpectedNumberOfRowsException, AccidentalBlankQueryException, NoAvailableDatabaseException {
 		return get(expectedNumberOfRows, exampleRow);
 	}
 
@@ -809,7 +811,7 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 	 * @see DBQuery
 	 * @see DBQuery#getAllRows()
 	 */
-	public List<DBQueryRow> get(DBRow... rows) throws SQLException, AccidentalCartesianJoinException, AccidentalBlankQueryException {
+	public List<DBQueryRow> get(DBRow... rows) throws SQLException, AccidentalCartesianJoinException, AccidentalBlankQueryException, NoAvailableDatabaseException {
 		DBQuery dbQuery = getDBQuery(rows);
 		return dbQuery.getAllRows();
 	}
@@ -826,7 +828,7 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 	 * @see DBQuery
 	 * @see DBQuery#getAllRows()
 	 */
-	public List<DBQueryRow> getByExamples(DBRow... rows) throws SQLException, AccidentalCartesianJoinException, AccidentalBlankQueryException {
+	public List<DBQueryRow> getByExamples(DBRow... rows) throws SQLException, AccidentalCartesianJoinException, AccidentalBlankQueryException, NoAvailableDatabaseException {
 		return get(rows);
 	}
 
@@ -864,7 +866,7 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 	 * @see DBQuery
 	 * @see DBQuery#getAllRows(long)
 	 */
-	public List<DBQueryRow> get(Long expectedNumberOfRows, DBRow... rows) throws SQLException, UnexpectedNumberOfRowsException, AccidentalCartesianJoinException, AccidentalBlankQueryException {
+	public List<DBQueryRow> get(Long expectedNumberOfRows, DBRow... rows) throws SQLException, UnexpectedNumberOfRowsException, AccidentalCartesianJoinException, AccidentalBlankQueryException, NoAvailableDatabaseException {
 		if (expectedNumberOfRows == null) {
 			return get(rows);
 		} else {
@@ -976,7 +978,7 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 	 * @throws nz.co.gregs.dbvolution.exceptions.ExceptionThrownDuringTransaction
 	 * @see DBTransaction
 	 */
-	public <V> V doReadOnlyTransaction(DBTransaction<V> dbTransaction) throws SQLException, ExceptionThrownDuringTransaction {
+	public <V> V doReadOnlyTransaction(DBTransaction<V> dbTransaction) throws SQLException, ExceptionThrownDuringTransaction, NoAvailableDatabaseException {
 		return doTransaction(dbTransaction, false);
 	}
 
@@ -1006,8 +1008,9 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 	 * @return a DBActionList provided by the script
 	 * @throws java.sql.SQLException
 	 * @throws nz.co.gregs.dbvolution.exceptions.ExceptionThrownDuringTransaction
+	 * @throws nz.co.gregs.dbvolution.exceptions.NoAvailableDatabaseException
 	 */
-	public DBActionList test(DBScript script) throws SQLException, ExceptionThrownDuringTransaction {
+	public DBActionList test(DBScript script) throws SQLException, ExceptionThrownDuringTransaction, NoAvailableDatabaseException {
 		return script.test(this);
 	}
 
@@ -1674,7 +1677,7 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 	 *
 	 * @return the DBDefinition used by this DBDatabase instance
 	 */
-	public synchronized DBDefinition getDefinition() {
+	public synchronized DBDefinition getDefinition() throws NoAvailableDatabaseException{
 		return definition;
 	}
 
@@ -1698,19 +1701,19 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 	}
 
 	/**
-	 * Returns whether or not the example has any specified criteria.
+	 * Returns whether or not the example has any specified criteria.See
+ 	{@link DBRow#willCreateBlankQuery(nz.co.gregs.dbvolution.databases.definitions.DBDefinition) willCreateBlankQuery}
+ on DBRow.
 	 *
-	 * See
-	 * {@link DBRow#willCreateBlankQuery(nz.co.gregs.dbvolution.databases.definitions.DBDefinition) willCreateBlankQuery}
-	 * on DBRow.
 	 *
 	 * @param row row
 	 * <p style="color: #F90;">Support DBvolution at
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return TRUE if the specified row has no specified criteria, FALSE
 	 * otherwise
+	 * @throws nz.co.gregs.dbvolution.exceptions.NoAvailableDatabaseException
 	 */
-	public boolean willCreateBlankQuery(DBRow row) {
+	public boolean willCreateBlankQuery(DBRow row) throws NoAvailableDatabaseException{
 		return row.willCreateBlankQuery(this.getDefinition());
 	}
 
@@ -1757,7 +1760,7 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 		if (doIt) {
 			try {
 				this.doTransaction(new DBRawSQLTransaction(dropStr));
-			} catch (Exception ex) {
+			} catch (SQLException | ExceptionThrownDuringTransaction ex) {
 				throw new UnableToDropDatabaseException(ex);
 			}
 		}
@@ -1922,7 +1925,7 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 	 * Database exceptions may be thrown
 	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
-	public <A extends DBReport> List<A> get(A report, DBRow... examples) throws SQLException, AccidentalCartesianJoinException, AccidentalBlankQueryException {
+	public <A extends DBReport> List<A> get(A report, DBRow... examples) throws SQLException, AccidentalCartesianJoinException, AccidentalBlankQueryException, NoAvailableDatabaseException {
 		return DBReport.getRows(this, report, examples);
 	}
 
@@ -1947,7 +1950,7 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 	 * @return A list of the DBreports generated
 	 * @throws SQLException database exceptions
 	 */
-	public <A extends DBReport> List<A> getAllRows(A report, DBRow... examples) throws SQLException, AccidentalCartesianJoinException, AccidentalBlankQueryException {
+	public <A extends DBReport> List<A> getAllRows(A report, DBRow... examples) throws SQLException, AccidentalCartesianJoinException, AccidentalBlankQueryException, NoAvailableDatabaseException {
 		return DBReport.getAllRows(this, report, examples);
 	}
 
@@ -1970,7 +1973,7 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 	 * Database exceptions may be thrown
 	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
-	public <A extends DBReport> List<A> getRows(A report, DBRow... examples) throws SQLException, AccidentalCartesianJoinException, AccidentalBlankQueryException {
+	public <A extends DBReport> List<A> getRows(A report, DBRow... examples) throws SQLException, AccidentalCartesianJoinException, AccidentalBlankQueryException, NoAvailableDatabaseException {
 		return DBReport.getRows(this, report, examples);
 	}
 
@@ -2245,15 +2248,15 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 		return new DBMigration<>(this, mapper);
 	}
 
-	public DBActionList executeDBAction(DBAction action) throws SQLException {
+	public DBActionList executeDBAction(DBAction action) throws SQLException, NoAvailableDatabaseException {
 		return action.execute(this);
 	}
 
-	public DBQueryable executeDBQuery(DBQueryable query) throws SQLException, AccidentalCartesianJoinException, AccidentalBlankQueryException {
+	public DBQueryable executeDBQuery(DBQueryable query) throws SQLException, AccidentalCartesianJoinException, AccidentalBlankQueryException, NoAvailableDatabaseException {
 		return query.query(this);
 	}
 
-	public String getSQLForDBQuery(DBQueryable query) {
+	public String getSQLForDBQuery(DBQueryable query) throws NoAvailableDatabaseException{
 		return query.toSQLString(this);
 	}
 
@@ -2454,7 +2457,7 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 			if (transactionStatement != null) {
 				try {
 					transactionStatement.close();
-				} catch (Exception ex) {
+				} catch (SQLException ex) {
 				}
 			}
 			if (transactionConnection != null) {
@@ -2481,7 +2484,7 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 				if (storedConnection != null) {
 					storedConnection.close();
 				}
-			} catch (Exception ex) {
+			} catch (SQLException ex) {
 			}
 		} catch (Exception ex) {
 		}

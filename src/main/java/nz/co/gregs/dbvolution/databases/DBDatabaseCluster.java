@@ -57,6 +57,7 @@ import nz.co.gregs.dbvolution.actions.DBActionList;
 import nz.co.gregs.dbvolution.actions.DBQueryable;
 import nz.co.gregs.dbvolution.databases.definitions.ClusterDatabaseDefinition;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
+import nz.co.gregs.dbvolution.databases.definitions.H2DBDefinition;
 import nz.co.gregs.dbvolution.exceptions.AccidentalBlankQueryException;
 import nz.co.gregs.dbvolution.exceptions.AccidentalCartesianJoinException;
 import nz.co.gregs.dbvolution.exceptions.AccidentalDroppingOfDatabaseException;
@@ -408,8 +409,9 @@ public class DBDatabaseCluster extends DBDatabase {
 	 * Returns a single random database that is ready for queries
 	 *
 	 * @return a ready database
+	 * @throws nz.co.gregs.dbvolution.exceptions.NoAvailableDatabaseException
 	 */
-	public DBDatabase getReadyDatabase() {
+	public DBDatabase getReadyDatabase() throws NoAvailableDatabaseException {
 		return details.getReadyDatabase();
 	}
 
@@ -531,7 +533,7 @@ public class DBDatabaseCluster extends DBDatabase {
 	}
 
 	@Override
-	public boolean willCreateBlankQuery(DBRow row) {
+	public boolean willCreateBlankQuery(DBRow row) throws NoAvailableDatabaseException {
 		return getReadyDatabase().willCreateBlankQuery(row);
 	}
 
@@ -766,7 +768,7 @@ public class DBDatabaseCluster extends DBDatabase {
 	}
 
 	@Override
-	public DBActionList test(DBScript script) throws SQLException, ExceptionThrownDuringTransaction {
+	public DBActionList test(DBScript script) throws SQLException, ExceptionThrownDuringTransaction, NoAvailableDatabaseException {
 		final DBDatabase readyDatabase = getReadyDatabase();
 		synchronized (readyDatabase) {
 			return readyDatabase.test(script);
@@ -774,7 +776,7 @@ public class DBDatabaseCluster extends DBDatabase {
 	}
 
 	@Override
-	public <V> V doReadOnlyTransaction(DBTransaction<V> dbTransaction) throws SQLException, ExceptionThrownDuringTransaction {
+	public <V> V doReadOnlyTransaction(DBTransaction<V> dbTransaction) throws SQLException, ExceptionThrownDuringTransaction, NoAvailableDatabaseException {
 		final DBDatabase readyDatabase = getReadyDatabase();
 		synchronized (readyDatabase) {
 			return readyDatabase.doReadOnlyTransaction(dbTransaction);
@@ -810,7 +812,7 @@ public class DBDatabaseCluster extends DBDatabase {
 							}
 						} catch (ExceptionThrownDuringTransaction ex) {
 							try {
-									db.transactionConnection.rollback();
+								db.transactionConnection.rollback();
 							} catch (SQLException excp) {
 								LOG.warn("Exception Occurred During Rollback: " + ex.getMessage());
 							}
@@ -845,7 +847,7 @@ public class DBDatabaseCluster extends DBDatabase {
 	}
 
 	@Override
-	public <A extends DBReport> List<A> getRows(A report, DBRow... examples) throws SQLException, AccidentalCartesianJoinException, AccidentalBlankQueryException {
+	public <A extends DBReport> List<A> getRows(A report, DBRow... examples) throws SQLException, AccidentalCartesianJoinException, AccidentalBlankQueryException, NoAvailableDatabaseException {
 		DBDatabase readyDatabase;
 		boolean finished = false;
 		do {
@@ -853,7 +855,7 @@ public class DBDatabaseCluster extends DBDatabase {
 			synchronized (readyDatabase) {
 				try {
 					return readyDatabase.getRows(report, examples);
-				} catch (Exception e) {
+				} catch (SQLException | AccidentalBlankQueryException | AccidentalCartesianJoinException | NoAvailableDatabaseException e) {
 					if (handleExceptionDuringQuery(e, readyDatabase).equals(HandlerAdvice.ABORT)) {
 						throw e;
 					}
@@ -864,7 +866,7 @@ public class DBDatabaseCluster extends DBDatabase {
 	}
 
 	@Override
-	public <A extends DBReport> List<A> getAllRows(A report, DBRow... examples) throws SQLException, AccidentalCartesianJoinException, AccidentalBlankQueryException {
+	public <A extends DBReport> List<A> getAllRows(A report, DBRow... examples) throws SQLException, AccidentalCartesianJoinException, AccidentalBlankQueryException, NoAvailableDatabaseException {
 		DBDatabase readyDatabase;
 		boolean finished = false;
 		do {
@@ -872,7 +874,7 @@ public class DBDatabaseCluster extends DBDatabase {
 			synchronized (readyDatabase) {
 				try {
 					return readyDatabase.getAllRows(report, examples);
-				} catch (Exception e) {
+				} catch (SQLException | AccidentalBlankQueryException | AccidentalCartesianJoinException | NoAvailableDatabaseException e) {
 					if (handleExceptionDuringQuery(e, readyDatabase).equals(HandlerAdvice.ABORT)) {
 						throw e;
 					}
@@ -883,7 +885,7 @@ public class DBDatabaseCluster extends DBDatabase {
 	}
 
 	@Override
-	public <A extends DBReport> List<A> get(A report, DBRow... examples) throws SQLException, AccidentalCartesianJoinException, AccidentalBlankQueryException {
+	public <A extends DBReport> List<A> get(A report, DBRow... examples) throws SQLException, AccidentalCartesianJoinException, AccidentalBlankQueryException, NoAvailableDatabaseException {
 		DBDatabase readyDatabase;
 		boolean finished = false;
 		do {
@@ -891,7 +893,7 @@ public class DBDatabaseCluster extends DBDatabase {
 			synchronized (readyDatabase) {
 				try {
 					return readyDatabase.get(report, examples);
-				} catch (Exception e) {
+				} catch (SQLException | AccidentalBlankQueryException | AccidentalCartesianJoinException | NoAvailableDatabaseException e) {
 					if (handleExceptionDuringQuery(e, readyDatabase).equals(HandlerAdvice.ABORT)) {
 						throw e;
 					}
@@ -902,7 +904,7 @@ public class DBDatabaseCluster extends DBDatabase {
 	}
 
 	@Override
-	public List<DBQueryRow> get(Long expectedNumberOfRows, DBRow... rows) throws SQLException, UnexpectedNumberOfRowsException, AccidentalCartesianJoinException, AccidentalBlankQueryException {
+	public List<DBQueryRow> get(Long expectedNumberOfRows, DBRow... rows) throws SQLException, UnexpectedNumberOfRowsException, AccidentalCartesianJoinException, AccidentalBlankQueryException, NoAvailableDatabaseException {
 		DBDatabase readyDatabase;
 		boolean finished = false;
 		do {
@@ -910,7 +912,7 @@ public class DBDatabaseCluster extends DBDatabase {
 			synchronized (readyDatabase) {
 				try {
 					return readyDatabase.get(expectedNumberOfRows, rows);
-				} catch (Exception e) {
+				} catch (SQLException | AccidentalBlankQueryException | AccidentalCartesianJoinException | NoAvailableDatabaseException | UnexpectedNumberOfRowsException e) {
 					if (handleExceptionDuringQuery(e, readyDatabase).equals(HandlerAdvice.ABORT)) {
 						throw e;
 					}
@@ -921,7 +923,7 @@ public class DBDatabaseCluster extends DBDatabase {
 	}
 
 	@Override
-	public List<DBQueryRow> getByExamples(DBRow... rows) throws SQLException, AccidentalCartesianJoinException, AccidentalBlankQueryException {
+	public List<DBQueryRow> getByExamples(DBRow... rows) throws SQLException, AccidentalCartesianJoinException, AccidentalBlankQueryException, NoAvailableDatabaseException {
 		DBDatabase readyDatabase;
 		boolean finished = false;
 		do {
@@ -929,7 +931,7 @@ public class DBDatabaseCluster extends DBDatabase {
 			synchronized (readyDatabase) {
 				try {
 					return readyDatabase.getByExamples(rows);
-				} catch (Exception e) {
+				} catch (SQLException | AccidentalBlankQueryException | AccidentalCartesianJoinException | NoAvailableDatabaseException e) {
 					if (handleExceptionDuringQuery(e, readyDatabase).equals(HandlerAdvice.ABORT)) {
 						throw e;
 					}
@@ -940,7 +942,7 @@ public class DBDatabaseCluster extends DBDatabase {
 	}
 
 	@Override
-	public List<DBQueryRow> get(DBRow... rows) throws SQLException, AccidentalCartesianJoinException, AccidentalBlankQueryException {
+	public List<DBQueryRow> get(DBRow... rows) throws SQLException, AccidentalCartesianJoinException, AccidentalBlankQueryException, NoAvailableDatabaseException {
 		DBDatabase readyDatabase;
 		boolean finished = false;
 		do {
@@ -948,7 +950,7 @@ public class DBDatabaseCluster extends DBDatabase {
 			synchronized (readyDatabase) {
 				try {
 					return readyDatabase.get(rows);
-				} catch (Exception e) {
+				} catch (SQLException | AccidentalBlankQueryException | AccidentalCartesianJoinException | NoAvailableDatabaseException e) {
 					if (handleExceptionDuringQuery(e, readyDatabase).equals(HandlerAdvice.ABORT)) {
 						throw e;
 					}
@@ -959,7 +961,7 @@ public class DBDatabaseCluster extends DBDatabase {
 	}
 
 	@Override
-	public <R extends DBRow> List<R> getByExample(Long expectedNumberOfRows, R exampleRow) throws SQLException, UnexpectedNumberOfRowsException, AccidentalBlankQueryException {
+	public <R extends DBRow> List<R> getByExample(Long expectedNumberOfRows, R exampleRow) throws SQLException, UnexpectedNumberOfRowsException, AccidentalBlankQueryException, NoAvailableDatabaseException {
 		DBDatabase readyDatabase;
 		boolean finished = false;
 		do {
@@ -967,7 +969,7 @@ public class DBDatabaseCluster extends DBDatabase {
 			synchronized (readyDatabase) {
 				try {
 					return readyDatabase.getByExample(expectedNumberOfRows, exampleRow);
-				} catch (Exception e) {
+				} catch (SQLException | AccidentalBlankQueryException | UnexpectedNumberOfRowsException e) {
 					if (handleExceptionDuringQuery(e, readyDatabase).equals(HandlerAdvice.ABORT)) {
 						throw e;
 					}
@@ -978,7 +980,7 @@ public class DBDatabaseCluster extends DBDatabase {
 	}
 
 	@Override
-	public <R extends DBRow> List<R> get(Long expectedNumberOfRows, R exampleRow) throws SQLException, UnexpectedNumberOfRowsException, AccidentalBlankQueryException {
+	public <R extends DBRow> List<R> get(Long expectedNumberOfRows, R exampleRow) throws SQLException, UnexpectedNumberOfRowsException, AccidentalBlankQueryException, NoAvailableDatabaseException {
 		DBDatabase readyDatabase;
 		boolean finished = false;
 		do {
@@ -986,7 +988,7 @@ public class DBDatabaseCluster extends DBDatabase {
 			synchronized (readyDatabase) {
 				try {
 					return readyDatabase.get(expectedNumberOfRows, exampleRow);
-				} catch (Exception e) {
+				} catch (SQLException | AccidentalBlankQueryException | NoAvailableDatabaseException | UnexpectedNumberOfRowsException e) {
 					if (handleExceptionDuringQuery(e, readyDatabase).equals(HandlerAdvice.ABORT)) {
 						throw e;
 					}
@@ -997,7 +999,7 @@ public class DBDatabaseCluster extends DBDatabase {
 	}
 
 	@Override
-	public <R extends DBRow> List<R> getByExample(R exampleRow) throws SQLException, AccidentalCartesianJoinException, AccidentalBlankQueryException {
+	public <R extends DBRow> List<R> getByExample(R exampleRow) throws SQLException, AccidentalCartesianJoinException, AccidentalBlankQueryException, NoAvailableDatabaseException {
 		DBDatabase readyDatabase;
 		boolean finished = false;
 		do {
@@ -1005,7 +1007,7 @@ public class DBDatabaseCluster extends DBDatabase {
 			synchronized (readyDatabase) {
 				try {
 					return readyDatabase.getByExample(exampleRow);
-				} catch (Exception e) {
+				} catch (SQLException | AccidentalBlankQueryException | AccidentalCartesianJoinException | NoAvailableDatabaseException e) {
 					if (handleExceptionDuringQuery(e, readyDatabase).equals(HandlerAdvice.ABORT)) {
 						throw e;
 					}
@@ -1016,7 +1018,7 @@ public class DBDatabaseCluster extends DBDatabase {
 	}
 
 	@Override
-	public <R extends DBRow> List<R> get(R exampleRow) throws SQLException, AccidentalCartesianJoinException, AccidentalBlankQueryException {
+	public <R extends DBRow> List<R> get(R exampleRow) throws SQLException, AccidentalCartesianJoinException, AccidentalBlankQueryException, NoAvailableDatabaseException {
 		DBDatabase readyDatabase;
 		boolean finished = false;
 		do {
@@ -1024,7 +1026,7 @@ public class DBDatabaseCluster extends DBDatabase {
 			synchronized (readyDatabase) {
 				try {
 					return readyDatabase.get(exampleRow);
-				} catch (Exception e) {
+				} catch (SQLException | AccidentalBlankQueryException | AccidentalCartesianJoinException | NoAvailableDatabaseException e) {
 					if (handleExceptionDuringQuery(e, readyDatabase).equals(HandlerAdvice.ABORT)) {
 						throw e;
 					};
@@ -1061,7 +1063,7 @@ public class DBDatabaseCluster extends DBDatabase {
 	}
 
 	@Override
-	public synchronized DBActionList executeDBAction(DBAction action) throws SQLException {
+	public synchronized DBActionList executeDBAction(DBAction action) throws SQLException, NoAvailableDatabaseException {
 		addActionToQueue(action);
 		List<ActionTask> tasks = new ArrayList<ActionTask>();
 		DBActionList actionsPerformed = new DBActionList();
@@ -1078,7 +1080,7 @@ public class DBDatabaseCluster extends DBDatabase {
 					} else {
 						finished = true;
 					}
-				} catch (Exception e) {
+				} catch (SQLException e) {
 					if (handleExceptionDuringAction(e, readyDatabase).equals(HandlerAdvice.ABORT)) {
 						throw e;
 					}
@@ -1105,7 +1107,7 @@ public class DBDatabaseCluster extends DBDatabase {
 	}
 
 	@Override
-	public DBQueryable executeDBQuery(DBQueryable query) throws SQLException, UnableToRemoveLastDatabaseFromClusterException, AccidentalCartesianJoinException, AccidentalBlankQueryException {
+	public DBQueryable executeDBQuery(DBQueryable query) throws SQLException, UnableToRemoveLastDatabaseFromClusterException, AccidentalCartesianJoinException, AccidentalBlankQueryException, NoAvailableDatabaseException {
 		DBQueryable actionsPerformed = query;
 		boolean finished = false;
 		while (!finished) {
@@ -1114,7 +1116,7 @@ public class DBDatabaseCluster extends DBDatabase {
 				try {
 					actionsPerformed = readyDatabase.executeDBQuery(query);
 					finished = true;
-				} catch (Exception e) {
+				} catch (SQLException | AccidentalBlankQueryException | AccidentalCartesianJoinException | NoAvailableDatabaseException e) {
 					if (handleExceptionDuringQuery(e, readyDatabase).equals(HandlerAdvice.ABORT)) {
 						throw e;
 					}
@@ -1166,7 +1168,7 @@ public class DBDatabaseCluster extends DBDatabase {
 	}
 
 	@Override
-	public String getSQLForDBQuery(DBQueryable query) {
+	public String getSQLForDBQuery(DBQueryable query) throws NoAvailableDatabaseException {
 		final DBDatabase readyDatabase = this.getReadyDatabase();
 		synchronized (readyDatabase) {
 			return readyDatabase.getSQLForDBQuery(query);
@@ -1185,7 +1187,7 @@ public class DBDatabaseCluster extends DBDatabase {
 	}
 
 	@Override
-	public DBDefinition getDefinition() {
+	public DBDefinition getDefinition() throws NoAvailableDatabaseException {
 		final DBDatabase readyDatabase = getReadyDatabase();
 		synchronized (readyDatabase) {
 			return readyDatabase.getDefinition();
@@ -1217,7 +1219,7 @@ public class DBDatabaseCluster extends DBDatabase {
 		}
 	}
 
-	private void synchronizeSecondaryDatabase(DBDatabase secondary) throws SQLException, NoAvailableDatabaseException, AccidentalCartesianJoinException, AccidentalBlankQueryException {
+	private void synchronizeSecondaryDatabase(DBDatabase secondary) throws SQLException, AccidentalCartesianJoinException, AccidentalBlankQueryException {
 		try {
 			DBDatabase template = null;
 			try {
@@ -1264,14 +1266,17 @@ public class DBDatabaseCluster extends DBDatabase {
 					releaseTemplateDatabase(template);
 				}
 			}
+//			} catch (NoAvailableDatabaseException except) {
+//				// must be the first database
+//			}
 			synchronizeActions(secondary);
-		} catch (Exception ex) {
+		} catch (SQLException | AccidentalBlankQueryException | AccidentalCartesianJoinException | AutoCommitActionDuringTransactionException ex) {
 			quarantineDatabase(secondary, ex);
 			throw ex;
 		}
 	}
 
-	private synchronized void synchronizeActions(DBDatabase db) throws SQLException {
+	private synchronized void synchronizeActions(DBDatabase db) throws SQLException, NoAvailableDatabaseException, NoAvailableDatabaseException {
 		if (db != null) {
 			Queue<DBAction> queue = details.getActionQueue(db);
 			while (queue != null && !queue.isEmpty()) {
@@ -1340,7 +1345,7 @@ public class DBDatabaseCluster extends DBDatabase {
 		return details.getReadyDatabases().length;
 	}
 
-	private synchronized void releaseTemplateDatabase(DBDatabase primary) throws SQLException {
+	private synchronized void releaseTemplateDatabase(DBDatabase primary) throws SQLException, NoAvailableDatabaseException {
 		if (primary != null) {
 			if (details.clusterContainsDatabase(primary)) {
 				synchronizeActions(primary);
@@ -1456,12 +1461,12 @@ public class DBDatabaseCluster extends DBDatabase {
 		}
 
 		@Override
-		public DBActionList call() throws SQLException {
+		public DBActionList call() throws SQLException, NoAvailableDatabaseException {
 			try {
 				DBActionList actions = database.executeDBAction(action);
 				setActionList(actions);
 				return getActionList();
-			} catch (Exception e) {
+			} catch (SQLException | NoAvailableDatabaseException e) {
 				if (cluster.handleExceptionDuringAction(e, database).equals(HandlerAdvice.ABORT)) {
 					throw e;
 				}
@@ -1512,7 +1517,6 @@ public class DBDatabaseCluster extends DBDatabase {
 		public abstract Void synchronise(DBDatabaseCluster cluster, DBDatabase database) throws SQLException;
 	}
 
-
 	public String reconnectQuarantinedDatabases() {
 		StringBuilder str = new StringBuilder();
 		DBDatabase[] ejecta = details.getQuarantinedDatabases().toArray(new DBDatabase[]{});
@@ -1521,7 +1525,7 @@ public class DBDatabaseCluster extends DBDatabase {
 			try {
 				addDatabase(ejected);
 				str.append("").append(ejected.getLabel()).append(" added");
-			} catch (Exception ex) {
+			} catch (SQLException ex) {
 				quarantineDatabase(ejected, ex);
 				str.append("").append(ejected.getLabel()).append(" quarantined: ").append(ex.getLocalizedMessage());
 			} finally {
