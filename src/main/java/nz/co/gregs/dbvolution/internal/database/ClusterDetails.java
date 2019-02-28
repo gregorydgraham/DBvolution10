@@ -77,6 +77,7 @@ public class ClusterDetails implements Serializable {
 		this();
 		this.clusterName = clusterName;
 	}
+
 	public ClusterDetails(String clusterName, boolean autoRebuild) {
 		this(clusterName);
 		setAutoRebuild(autoRebuild);
@@ -124,7 +125,7 @@ public class ClusterDetails implements Serializable {
 	}
 
 	public synchronized void quarantineDatabase(DBDatabase database, Exception except) throws UnableToRemoveLastDatabaseFromClusterException {
-		if (readyDatabases.size() < 2 && readyDatabases.contains(database)) {
+		if (hasTooFewReadyDatabases() && readyDatabases.contains(database)) {
 			// Unable to quarantine the only remaining database
 			throw new UnableToRemoveLastDatabaseFromClusterException();
 		} else {
@@ -143,7 +144,7 @@ public class ClusterDetails implements Serializable {
 	}
 
 	public synchronized boolean removeDatabase(DBDatabase database) {
-		if (readyDatabases.size() < 2 && readyDatabases.contains(database)) {
+		if (hasTooFewReadyDatabases() && readyDatabases.contains(database)) {
 			// Unable to quarantine the only remaining database
 			throw new UnableToRemoveLastDatabaseFromClusterException();
 		} else {
@@ -153,6 +154,10 @@ public class ClusterDetails implements Serializable {
 			}
 			return result;
 		}
+	}
+
+	protected boolean hasTooFewReadyDatabases() {
+		return readyDatabases.size() < 2;
 	}
 
 	private synchronized boolean removeDatabaseFromAllLists(DBDatabase database) {
@@ -193,13 +198,23 @@ public class ClusterDetails implements Serializable {
 	public synchronized void readyDatabase(DBDatabase secondary) {
 		unsynchronizedDatabases.remove(secondary);
 		pausedDatabases.remove(secondary);
-		DBDatabase readyDatabase = getReadyDatabase();
-		if (readyDatabase != null) {
-			secondary.setPrintSQLBeforeExecuting(readyDatabase.getPrintSQLBeforeExecuting());
-			secondary.setBatchSQLStatementsWhenPossible(readyDatabase.getBatchSQLStatementsWhenPossible());
+		try {
+			if (hasReadyDatabases()) {
+				DBDatabase readyDatabase = getReadyDatabase();
+				if (readyDatabase != null) {
+					secondary.setPrintSQLBeforeExecuting(readyDatabase.getPrintSQLBeforeExecuting());
+					secondary.setBatchSQLStatementsWhenPossible(readyDatabase.getBatchSQLStatementsWhenPossible());
+				}
+			}
+		} catch (NoAvailableDatabaseException ex) {
+
 		}
 		readyDatabases.add(secondary);
 		setAuthoritativeDatabase();
+	}
+
+	protected boolean hasReadyDatabases() {
+		return readyDatabases.size() > 0;
 	}
 
 	public synchronized DBDatabase[] getReadyDatabases() {
@@ -217,13 +232,13 @@ public class ClusterDetails implements Serializable {
 		}
 	}
 
-	public synchronized DBDatabase getPausedDatabase() {
+	public synchronized DBDatabase getPausedDatabase() throws NoAvailableDatabaseException {
 		DBDatabase template = getReadyDatabase();
 		pauseDatabase(template);
 		return template;
 	}
 
-	public DBDatabase getReadyDatabase() {
+	public DBDatabase getReadyDatabase() throws NoAvailableDatabaseException {
 		DBDatabase[] dbs = getReadyDatabases();
 		int tries = 0;
 		while (dbs.length < 1 && pausedDatabases.size() > 0 && tries <= 1000) {
@@ -241,7 +256,8 @@ public class ClusterDetails implements Serializable {
 			DBDatabase randomElement = dbs[randNumber];
 			return randomElement;
 		}
-		return null;
+		throw new NoAvailableDatabaseException();
+//		return null;
 	}
 
 	public synchronized void addAll(DBDatabase[] databases) {
