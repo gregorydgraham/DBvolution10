@@ -312,32 +312,52 @@ public class DBInsert extends DBAction {
 		String valuesSeparator = defn.beginValueClause();
 		String allValuesSeparator = defn.beginValueClause();
 		for (PropertyWrapper prop : props) {
-			// BLOBS are not inserted normally so don't include them
 			if (prop.isColumn() && !prop.hasColumnExpression()) {
 				final QueryableDatatype<?> qdt = prop.getQueryableDatatype();
-				if (!(qdt instanceof DBLargeObject)) {
-					//support for inserting empty rows in a table with an autoincrementing pk
-					if (!prop.isAutoIncrement()) {
-						allColumns
-								.append(allColumnSeparator)
-								.append(" ")
-								.append(defn.formatColumnName(prop.columnName()));
-						allColumnSeparator = defn.getValuesClauseColumnSeparator();
-						// add the value
-						allValues.append(allValuesSeparator).append(qdt.toSQLString(database.getDefinition()));
-						allValuesSeparator = defn.getValuesClauseValueSeparator();
-					}
-					if (qdt.hasBeenSet()) {
-						// nice normal columns
-						// Add the column
-						allChangedColumns
-								.append(columnSeparator)
-								.append(" ")
-								.append(defn.formatColumnName(prop.columnName()));
-						columnSeparator = defn.getValuesClauseColumnSeparator();
-						// add the value
-						allSetValues.append(valuesSeparator).append(qdt.toSQLString(database.getDefinition()));
-						valuesSeparator = defn.getValuesClauseValueSeparator();
+				if (qdt != null) {
+					// BLOBS are not inserted normally so don't include them
+					if (!(qdt instanceof DBLargeObject)) {
+						//support for inserting empty rows in a table with an autoincrementing pk
+						if (!prop.isAutoIncrement()) {
+							allColumns
+									.append(allColumnSeparator)
+									.append(" ")
+									.append(defn.formatColumnName(prop.columnName()));
+							allColumnSeparator = defn.getValuesClauseColumnSeparator();
+							// add the value
+							allValues.append(allValuesSeparator);
+							if (!qdt.hasBeenSet() && qdt.hasDefaultInsertValue()) {
+								allValues.append(
+										qdt.getDefaultInsertValueSQLString(database.getDefinition())
+								);
+							} else {
+								allValues.append(
+										qdt.toSQLString(database.getDefinition())
+								);
+							}
+							allValuesSeparator = defn.getValuesClauseValueSeparator();
+						}
+						if (qdt.hasBeenSet() || qdt.hasDefaultInsertValue()) {
+							// nice normal columns
+							// Add the column
+							allChangedColumns
+									.append(columnSeparator)
+									.append(" ")
+									.append(defn.formatColumnName(prop.columnName()));
+							columnSeparator = defn.getValuesClauseColumnSeparator();
+							allSetValues.append(valuesSeparator);
+							// add the value
+							if (qdt.hasBeenSet()) {
+								allSetValues.append(
+										qdt.toSQLString(database.getDefinition())
+								);
+							} else if (qdt.hasDefaultInsertValue()) {
+								allSetValues.append(
+										qdt.getDefaultInsertValueSQLString(database.getDefinition())
+								);
+							}
+							valuesSeparator = defn.getValuesClauseValueSeparator();
+						}
 					}
 				}
 			}
@@ -359,10 +379,6 @@ public class DBInsert extends DBAction {
 		return reverts;
 	}
 
-//	@Override
-//	protected DBActionList getActions() {//DBRow row) {
-//		return new DBActionList(new DBInsert(getRow()));
-//	}
 	/**
 	 * Creates a DBActionList of inserts actions for the rows.
 	 *

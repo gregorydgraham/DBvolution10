@@ -44,6 +44,7 @@ import nz.co.gregs.dbvolution.operators.DBEqualsOperator;
 import nz.co.gregs.dbvolution.operators.DBIsNullOperator;
 import nz.co.gregs.dbvolution.operators.DBOperator;
 import nz.co.gregs.dbvolution.query.RowDefinition;
+import nz.co.gregs.dbvolution.results.AnyResult;
 import nz.co.gregs.dbvolution.results.IntegerResult;
 
 /**
@@ -83,6 +84,10 @@ public abstract class QueryableDatatype<T> extends Object implements Serializabl
 	transient PropertyWrapperDefinition propertyWrapperDefn; // no guarantees whether this gets set
 	private DBExpression[] columnExpression = new DBExpression[]{};
 	private boolean setValueHasBeenCalled = false;
+	private T defaultInsertValue = null;
+	private AnyResult<T> defaultInsertExpression;
+	private AnyResult<T> defaultUpdateExpression;
+	private T defaultUpdateValue;
 
 	/**
 	 * Default Constructor
@@ -253,6 +258,10 @@ public abstract class QueryableDatatype<T> extends Object implements Serializabl
 				newQDT.undefined = this.undefined;
 				newQDT.changed = this.changed;
 				newQDT.setValueHasBeenCalled = this.setValueHasBeenCalled;
+				newQDT.defaultInsertValue = this.defaultInsertValue;
+				newQDT.defaultInsertExpression = this.defaultInsertExpression;
+				newQDT.defaultUpdateValue = this.defaultUpdateValue;
+				newQDT.defaultUpdateExpression = this.defaultUpdateExpression;
 				if (this.previousValueAsQDT != null) {
 					newQDT.previousValueAsQDT = this.previousValueAsQDT.copy();
 				}
@@ -380,7 +389,8 @@ public abstract class QueryableDatatype<T> extends Object implements Serializabl
 	 * <p style="color: #F90;">Support DBvolution at
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 *
-	 * @param defaultValue the value to return when the actual value is not set or is null
+	 * @param defaultValue the value to return when the actual value is not set or
+	 * is null
 	 * @return the literal value, if defined, which may be null
 	 */
 	public T getValue(T defaultValue) {
@@ -1204,5 +1214,144 @@ public abstract class QueryableDatatype<T> extends Object implements Serializabl
 	@Override
 	public String createSQLForGroupByClause(DBDatabase database) {
 		return "";
+	}
+
+	/**
+	 * Set the value to be inserted when no value has been set, using
+	 * {@link #setValue(java.lang.Object) setValue(...)}, for the QDT.
+	 *
+	 * <p>
+	 * The value is only used during the initial insert and does not effect the
+	 * definition of the column within the database.</p>
+	 *
+	 * <p>
+	 * Care should be taken when using this as some "obvious" uses are better
+	 * handled using
+	 * {@link #setDefaultInsertValue(nz.co.gregs.dbvolution.results.AnyResult) expression version.  In particular, setDefaultInsertValue(new Date()) is probably NOT what you want, setDefaultInsertValue(DateExpression.currentDate()) will produce a correct creation date value.</p>
+	 *
+	 * @param value the value to use during insertion when no particular value has
+	 * been specified.
+	 * @return This QDT
+	 */
+	public synchronized QueryableDatatype<T> setDefaultInsertValue(T value) {
+		this.defaultInsertExpression = null;
+		this.defaultInsertValue = value;
+		return this;
+	}
+
+	/**
+	 * Set the value to be inserted when no value has been set, using
+	 * {@link #setValue(java.lang.Object) setValue(...)}, for the QDT.
+	 *
+	 * <p>
+	 * The value is only used during the initial insert and does not effect the
+	 * definition of the column within the database.</p>
+	 *
+	 * @param value the value to use during insertion when no particular value has
+	 * been specified.
+	 * @return This QDT
+	 */
+	protected synchronized QueryableDatatype<T> setDefaultInsertValue(AnyResult<T> value) {
+		this.defaultInsertValue = null;
+		this.defaultInsertExpression = value;
+		return this;
+	}
+
+	/**
+	 * Set the value to be used during an update when no value has been set, using
+	 * {@link #setValue(java.lang.Object) setValue(...)}, for the QDT.
+	 *
+	 * <p>
+	 * The value is only used during updates and does not effect the definition of
+	 * the column within the database nor the initial value of the column.</p>
+	 *
+	 * <p>
+	 * Care should be taken when using this as some "obvious" uses are better
+	 * handled using
+	 * {@link #setDefaultUpdateValue(nz.co.gregs.dbvolution.results.AnyResult) expression version.  In particular, setDefaultUpdateValue(new Date()) is probably NOT what you want, setDefaultUpdateValue(DateExpression.currentDate()) will produce a correct update time value.</p>
+	 *
+	 * @param value the value to use during update when no particular value has
+	 * been specified.
+	 * @return This QDT
+	 */
+	public synchronized QueryableDatatype<T> setDefaultUpdateValue(T value) {
+		this.defaultUpdateExpression = null;
+		this.defaultUpdateValue = value;
+		return this;
+	}
+
+	/**
+	 * Set the value to be used during an update when no value has been set, using
+	 * {@link #setValue(java.lang.Object) setValue(...)}, for the QDT.
+	 *
+	 * <p>
+	 * The value is only used during updates and does not effect the definition of
+	 * the column within the database nor the initial value of the column.</p>
+	 *
+	 * @param value the value to use during update when no particular value has
+	 * been specified.
+	 * @return This QDT
+	 */
+	protected synchronized QueryableDatatype<T> setDefaultUpdateValue(AnyResult<T> value) {
+		this.defaultUpdateValue = null;
+		this.defaultUpdateExpression = value;
+		return this;
+	}
+
+	/**
+	 * Return true if the QDT has a default insert value defined.
+	 *
+	 * @return
+	 */
+	public boolean hasDefaultInsertValue() {
+		return defaultInsertValue != null || defaultInsertExpression != null;
+	}
+
+	/**
+	 * Returns the value of the default insert value formatted by the DBDefinition provided.
+	 * 
+	 * <p>Probably not the method you are looking for.</p>
+	 *
+	 * @param defn
+	 * @return
+	 */
+	public String getDefaultInsertValueSQLString(DBDefinition defn) {
+		QueryableDatatype<T> newQDT = this.getQueryableDatatypeForExpressionValue();
+		if (defaultInsertValue != null) {
+			newQDT.setValue(defaultInsertValue);
+			return newQDT.toSQLString(defn);
+		} else if (defaultInsertExpression != null) {
+			return defaultInsertExpression.toSQLString(defn);
+		}
+		return newQDT.toSQLString(defn);
+	}
+
+	/**
+	 * Return true if the QDT has a default update value defined.
+	 *
+	 * @return
+	 */
+	public boolean hasDefaultUpdateValue() {
+		return defaultUpdateValue != null || defaultUpdateExpression != null;
+	}
+
+
+	/**
+	 * Returns the value of the default update value formatted by the DBDefinition provided.
+	 * 
+	 * <p>Probably not the method you are looking for.</p>
+	 *
+	 * @param defn
+	 * @return
+	 */
+	public String getDefaultUpdateValueSQLString(DBDefinition defn) {
+		QueryableDatatype<T> newQDT = this.getQueryableDatatypeForExpressionValue();
+		if (defaultUpdateValue != null) {
+			newQDT.setValue(defaultUpdateValue);
+			return newQDT.toSQLString(defn);
+		} else if (defaultUpdateExpression != null) {
+			return defaultUpdateExpression.toSQLString(defn);
+		}
+		return newQDT.toSQLString(defn);
 	}
 }

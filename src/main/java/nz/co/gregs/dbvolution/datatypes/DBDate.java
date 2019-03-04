@@ -178,8 +178,8 @@ public class DBDate extends QueryableDatatype<Date> implements DateResult {
 	}
 
 	/**
-	 * Implement for Java8
-	 * Sets the value of this QDT to the Java.time.LocalDate provided.
+	 * Implement for Java8 Sets the value of this QDT to the Java.time.LocalDate
+	 * provided.
 	 *
 	 * @param date	date
 	 */
@@ -188,7 +188,6 @@ public class DBDate extends QueryableDatatype<Date> implements DateResult {
 //	public void setValue(LocalDate date) {
 //		super.setLiteralValue(date);
 //	}
-
 	/**
 	 * Sets the value of this QDT to the dateStr provided.
 	 *
@@ -248,7 +247,7 @@ public class DBDate extends QueryableDatatype<Date> implements DateResult {
 		try {
 			string = resultSet.getString(fullColumnName);
 		} catch (SQLException sqlex) {
-			throw new DBRuntimeException("Unable to get Date from String:"+sqlex.getLocalizedMessage(),sqlex);
+			throw new DBRuntimeException("Unable to get Date from String:" + sqlex.getLocalizedMessage(), sqlex);
 		}
 		if (string == null || string.isEmpty()) {
 			return null;
@@ -279,7 +278,7 @@ public class DBDate extends QueryableDatatype<Date> implements DateResult {
 				}
 			}
 		} catch (SQLException sqlex) {
-			throw new DBRuntimeException("Unable to set Date by getting Date: "+sqlex.getLocalizedMessage(), sqlex);
+			throw new DBRuntimeException("Unable to set Date by getting Date: " + sqlex.getLocalizedMessage(), sqlex);
 		}
 		return dbValue;
 	}
@@ -707,12 +706,160 @@ public class DBDate extends QueryableDatatype<Date> implements DateResult {
 	public void excludeNull() {
 		this.excludedValues((Date) null);
 	}
-	
+
 	public void permitOnlyNull() {
 		excludeNotNull();
 	}
-	
+
 	public void permitOnlyNotNull() {
 		excludeNull();
+	}
+
+	/**
+	 * Set the value to be inserted when no value has been set, using
+	 * {@link #setValue(nz.co.gregs.dbvolution.datatypes.DBDate) setValue(...)},
+	 * for the QDT.
+	 *
+	 * <p>
+	 * The value is only used during the initial insert and does not effect the
+	 * definition of the column within the database.</p>
+	 *
+	 * <p>
+	 * Correct usages for standard date defaults:
+	 *
+	 * <pre>
+	 * &#64;DBColumn
+	 * public DBDate creationDate = new DBDate().setDefaultInsertValue(DateExpression.currentDate());
+	 *
+	 * &#64;DBColumn
+	 * public DBDate updateDate = new DBDate().setDefaultUpdateValue(DateExpression.currentDate());
+	 *
+	 * &#64;DBColumn
+	 * public DBDate creationOrUpdateDate = new DBDate()
+	 * .setDefaultInsertValue(DateExpression.currentDate())
+	 * .setDefaultUpdateValue(DateExpression.currentDate());
+	 * </pre></p>
+	 *
+	 * @param value the value to use during insertion when no particular value has
+	 * been specified.
+	 * @return This QDT
+	 */
+	@Override
+	public synchronized DBDate setDefaultInsertValue(Date value) {
+		super.setDefaultInsertValue(value);
+		return this;
+	}
+
+	/**
+	 * Set the value to be inserted when no value has been set, using
+	 * {@link #setValue(nz.co.gregs.dbvolution.datatypes.DBDate) setValue(...)},
+	 * for the QDT.
+	 *
+	 * <p>
+	 * The value is only used during the initial insert and does not effect the
+	 * definition of the column within the database.</p>
+	 *
+	 * <p>
+	 * Care should be taken when using this as some "obvious" uses are better
+	 * handled using
+	 * {@link #setDefaultInsertValue(nz.co.gregs.dbvolution.results.AnyResult) expression version.  In particular, setDefaultInsertValue(new Date()) is probably NOT what you want, setDefaultInsertValue(DateExpression.currentDate()) will produce a correct creation date value.</p>
+	 *
+	 * <p>
+	 * Correct usages for standard date defaults:
+	 *
+	 * <pre>
+	 * &#64;DBColumn
+	 * public DBDate creationDate = new DBDate().setDefaultInsertValue(DateExpression.currentDate());
+	 *
+	 * &#64;DBColumn
+	 * public DBDate updateDate = new DBDate().setDefaultUpdateValue(DateExpression.currentDate());
+	 *
+	 * &#64;DBColumn
+	 * public DBDate creationOrUpdateDate = new DBDate()
+	 * .setDefaultInsertValue(DateExpression.currentDate())
+	 * .setDefaultUpdateValue(DateExpression.currentDate());
+	 * </pre></p>
+	 *
+	 * @param value the value to use during insertion when no particular value has
+	 * been specified.
+	 * @return This QDT
+	 */
+	public synchronized DBDate setDefaultInsertValue(DateResult value) {
+		super.setDefaultInsertValue(value);
+		return this;
+	}
+
+	/**
+	 * Set the value to be used during an update when no value has been set, using
+	 * {@link #setValue(nz.co.gregs.dbvolution.datatypes.DBDate)  setValue(...)},
+	 * for the QDT.
+	 *
+	 * <p>
+	 * The value is only used during updates and does not effect the definition of
+	 * the column within the database nor the initial value of the column.</p>
+	 *
+	 * <p>
+	 * Care should be taken when using this as some "obvious" uses are better
+	 * handled using
+	 * {@link #setDefaultUpdateValue(nz.co.gregs.dbvolution.results.AnyResult) expression version.  In particular, setDefaultUpdateValue(new Date()) is probably NOT what you want, setDefaultUpdateValue(DateExpression.currentDate()) will produce a correct update time value.</p>
+	 *
+	 * <p>
+	 * Correct usages for standard date defaults:
+	 *
+	 * <pre>
+	 * &#64;DBColumn
+	 * public DBDate creationDate = new DBDate().setDefaultInsertValue(DateExpression.currentDate());
+	 *
+	 * &#64;DBColumn
+	 * public DBDate updateDate = new DBDate().setDefaultUpdateValue(DateExpression.currentDate());
+	 *
+	 * &#64;DBColumn
+	 * public DBDate creationOrUpdateDate = new DBDate()
+	 * .setDefaultInsertValue(DateExpression.currentDate())
+	 * .setDefaultUpdateValue(DateExpression.currentDate());
+	 * </pre></p>
+	 *
+	 * @param value the value to use during update when no particular value has
+	 * been specified.
+	 * @return This QDT
+	 */
+	@Override
+	public synchronized DBDate setDefaultUpdateValue(Date value) {
+		super.setDefaultUpdateValue(value);
+		return this;
+	}
+
+	/**
+	 * Set the value to be used during an update when no value has been set, using
+	 * {@link #setValue(nz.co.gregs.dbvolution.datatypes.DBDate)  setValue(...)},
+	 * for the QDT.
+	 *
+	 * <p>
+	 * The value is only used during updates and does not effect the definition of
+	 * the column within the database nor the initial value of the column.</p>
+	 *
+	 * <p>
+	 * Correct usages for standard date defaults:
+	 *
+	 * <pre>
+	 * &#64;DBColumn
+	 * public DBDate creationDate = new DBDate().setDefaultInsertValue(DateExpression.currentDate());
+	 *
+	 * &#64;DBColumn
+	 * public DBDate updateDate = new DBDate().setDefaultUpdateValue(DateExpression.currentDate());
+	 *
+	 * &#64;DBColumn
+	 * public DBDate creationOrUpdateDate = new DBDate()
+	 * .setDefaultInsertValue(DateExpression.currentDate())
+	 * .setDefaultUpdateValue(DateExpression.currentDate());
+	 * </pre></p>
+	 *
+	 * @param value the value to use during update when no particular value has
+	 * been specified.
+	 * @return This QDT
+	 */
+	public synchronized DBDate setDefaultUpdateValue(DateResult value) {
+		super.setDefaultUpdateValue(value);
+		return this;
 	}
 }

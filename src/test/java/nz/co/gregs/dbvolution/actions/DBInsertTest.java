@@ -15,12 +15,14 @@
  */
 package nz.co.gregs.dbvolution.actions;
 
-import java.util.List;
+import java.util.Date;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.annotations.*;
 import nz.co.gregs.dbvolution.datatypes.*;
 import nz.co.gregs.dbvolution.example.CarCompany;
 import nz.co.gregs.dbvolution.exceptions.AutoIncrementFieldClassAndDatatypeMismatch;
+import nz.co.gregs.dbvolution.expressions.DateExpression;
+import nz.co.gregs.dbvolution.expressions.StringExpression;
 import nz.co.gregs.dbvolution.generic.AbstractTest;
 import static org.hamcrest.Matchers.*;
 import org.junit.Test;
@@ -52,7 +54,7 @@ public class DBInsertTest extends AbstractTest {
 	}
 
 	@Test
-	public void testSaveWithDefaultValues() throws Exception {
+	public void testSaveWithAutoIncrementValues() throws Exception {
 		if (database.getDefinition().supportsGeneratedKeys() || database.getDefinition().supportsRetrievingLastInsertedRowViaSQL()) {
 			TestDefaultValueRetrieval row = new TestDefaultValueRetrieval();
 			TestDefaultValueRetrieval row2 = new TestDefaultValueRetrieval();
@@ -143,6 +145,84 @@ public class DBInsertTest extends AbstractTest {
 		}
 	}
 
+	@Test
+	public void testSaveWithDefaultValues() throws Exception {
+		Date startTime = new Date();
+
+		TestDefaultInsertValue row = new TestDefaultInsertValue();
+		database.setPrintSQLBeforeExecuting(true);
+		database.preventDroppingOfTables(false);
+		database.dropTableNoExceptions(row);
+
+		database.createTable(row);
+
+		/* Check that row can be inserted successfully*/
+		database.insert(row);
+		Assert.assertThat(row.pk_uid.getValue(), is(1L));
+		TestDefaultInsertValue gotRow = database.getDBTable(row).getRowsByPrimaryKey(row.pk_uid.getValue()).get(0);
+		Assert.assertThat(gotRow.pk_uid.getValue(), is(1L));
+		Assert.assertThat(gotRow.name.getValue(), is("def"));
+		Assert.assertThat(gotRow.defaultExpression.getValue(), is("def"));
+		Assert.assertThat(gotRow.creationDate.getValue(), greaterThan(startTime));
+		Assert.assertThat(gotRow.creationDate.getValue(), lessThanOrEqualTo(new Date()));
+		Assert.assertThat(gotRow.updateDate.getValue(), nullValue());
+		Assert.assertThat(gotRow.creationOrUpdateDate.getValue(), greaterThan(startTime));
+		Assert.assertThat(gotRow.creationOrUpdateDate.getValue(), lessThanOrEqualTo(new Date()));
+
+		/* Check that default insert values can be overridden */
+		TestDefaultInsertValue row2 = new TestDefaultInsertValue();
+		row2.name.setValue("notdefault");
+		row2.defaultExpression.setValue("notdefaulteither");
+		Assert.assertThat(row2.creationDate.hasDefaultInsertValue(), is(true));
+		database.insert(row2);
+		Assert.assertThat(row2.pk_uid.getValue(), is(2L));
+//		Assert.assertThat(row2.name.getValue(), is("notdefault"));
+//		Assert.assertThat(row2.defaultExpression.getValue(), is("notdefaulteither"));
+
+		/* Retreive the default values and check they're correct */
+		final Long pkValue = row2.pk_uid.getValue();
+		TestDefaultInsertValue gotRow2 = database.getDBTable(row2).getRowsByPrimaryKey(pkValue).get(0);
+		Assert.assertThat(gotRow2.pk_uid.getValue(), is(2L));
+		Assert.assertThat(gotRow2.name.getValue(), is("notdefault"));
+		Assert.assertThat(gotRow2.defaultExpression.getValue(), is("notdefaulteither"));
+		Assert.assertThat(gotRow2.creationDate.getValue(), greaterThan(startTime));
+		Assert.assertThat(gotRow2.creationDate.getValue(), lessThanOrEqualTo(new Date()));
+		Assert.assertThat(gotRow2.updateDate.getValue(), nullValue());
+		Assert.assertThat(gotRow2.creationOrUpdateDate.getValue(), greaterThan(startTime));
+		Assert.assertThat(gotRow2.creationOrUpdateDate.getValue(), lessThanOrEqualTo(new Date()));
+
+		gotRow2.name.setValue("blarg");
+		database.update(gotRow2);
+		gotRow2 = database.getDBTable(row2).getRowsByPrimaryKey(pkValue).get(0);
+		Assert.assertThat(gotRow2.pk_uid.getValue(), is(2L));
+		Assert.assertThat(gotRow2.name.getValue(), is("blarg"));
+		Assert.assertThat(gotRow2.defaultExpression.getValue(), is("notdefaulteither"));
+		Assert.assertThat(gotRow2.creationDate.getValue(), greaterThan(startTime));
+		Assert.assertThat(gotRow2.creationDate.getValue(), lessThan(new Date()));
+		Assert.assertThat(gotRow2.updateDate.getValue(), greaterThan(gotRow2.creationDate.getValue()));
+		Assert.assertThat(gotRow2.updateDate.getValue(), lessThanOrEqualTo(new Date()));
+		Assert.assertThat(gotRow2.creationOrUpdateDate.getValue(), greaterThan(gotRow2.creationDate.getValue()));
+		Assert.assertThat(gotRow2.creationOrUpdateDate.getValue(), lessThanOrEqualTo(new Date()));
+		Date formerUpdateDate = gotRow2.updateDate.getValue();
+
+		gotRow2.name.setValue("blarg");
+		gotRow2.creationDate.setValue(april2nd2011);
+		database.update(gotRow2);
+		gotRow2 = database.getDBTable(row2).getRowsByPrimaryKey(pkValue).get(0);
+		Assert.assertThat(gotRow2.pk_uid.getValue(), is(2L));
+		Assert.assertThat(gotRow2.name.getValue(), is("blarg"));
+		Assert.assertThat(gotRow2.defaultExpression.getValue(), is("notdefaulteither"));
+		Assert.assertThat(gotRow2.creationDate.getValue(), is(april2nd2011));
+		Assert.assertThat(gotRow2.updateDate.getValue(), greaterThan(formerUpdateDate));
+		Assert.assertThat(gotRow2.updateDate.getValue(), lessThanOrEqualTo(new Date()));
+		Assert.assertThat(gotRow2.creationOrUpdateDate.getValue(), greaterThan(formerUpdateDate));
+		Assert.assertThat(gotRow2.creationOrUpdateDate.getValue(), lessThanOrEqualTo(new Date()));
+
+		database.preventDroppingOfTables(false);
+		database.dropTableNoExceptions(row);
+		database.setPrintSQLBeforeExecuting(false);
+	}
+
 	public static class TestDefaultValueRetrieval extends DBRow {
 
 		private static final long serialVersionUID = 1L;
@@ -154,6 +234,37 @@ public class DBInsertTest extends AbstractTest {
 
 		@DBColumn
 		public DBString name = new DBString();
+
+	}
+
+	public static class TestDefaultInsertValue extends DBRow {
+
+		private static final long serialVersionUID = 1L;
+
+		@DBPrimaryKey
+		@DBColumn
+		@DBAutoIncrement
+		public DBInteger pk_uid = new DBInteger();
+
+		@DBColumn
+		public DBString name = new DBString().setDefaultInsertValue("def");
+
+		@DBColumn
+		public DBString defaultExpression = new DBString()
+				.setDefaultInsertValue(StringExpression.value("default").substring(0, 3));
+
+		@DBColumn
+		public DBDate creationDate = new DBDate()
+				.setDefaultInsertValue(DateExpression.currentDate());
+
+		@DBColumn
+		public DBDate updateDate = new DBDate()
+				.setDefaultUpdateValue(DateExpression.currentDate());
+
+		@DBColumn
+		public DBDate creationOrUpdateDate = new DBDate()
+				.setDefaultInsertValue(DateExpression.currentDate())
+				.setDefaultUpdateValue(DateExpression.currentDate());
 
 	}
 
@@ -170,7 +281,7 @@ public class DBInsertTest extends AbstractTest {
 		public DBString name = new DBString();
 
 	}
-	
+
 	public static class TestValueRetrievalWith2PKs extends DBRow {
 
 		private static final long serialVersionUID = 1L;
@@ -199,7 +310,7 @@ public class DBInsertTest extends AbstractTest {
 
 		@DBColumn
 		public DBString name = new DBString();
-		
+
 		@DBColumn
 		public DBBoolean hasValue = new DBBoolean(this.column(this.name).length().isGreaterThan(0));
 

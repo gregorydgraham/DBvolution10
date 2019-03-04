@@ -94,14 +94,25 @@ public class DBUpdateSimpleTypes extends DBUpdate {
 		for (PropertyWrapper field : fields) {
 			if (field.isColumn()) {
 				final QueryableDatatype<?> qdt = field.getQueryableDatatype();
-				if (qdt.hasChanged() && !(qdt instanceof DBLargeObject)) {
-					String columnName = field.columnName();
-					sql.append(separator)
-							.append(defn.formatColumnName(columnName))
-							.append(defn.getEqualsComparator())
-							.append(qdt
-									.toSQLString(db.getDefinition()));
-					separator = defn.getSubsequentSetSubClauseSeparator();
+				if (qdt != null) {
+					if (!(qdt instanceof DBLargeObject)) {
+						if (qdt.hasChanged()) {
+							String columnName = field.columnName();
+							sql.append(separator)
+									.append(defn.formatColumnName(columnName))
+									.append(defn.getEqualsComparator())
+									.append(qdt
+											.toSQLString(defn));
+							separator = defn.getSubsequentSetSubClauseSeparator();
+						}else if (qdt.hasDefaultUpdateValue()){
+							String columnName = field.columnName();
+							sql.append(separator)
+									.append(defn.formatColumnName(columnName))
+									.append(defn.getEqualsComparator())
+									.append(qdt.getDefaultUpdateValueSQLString(defn));
+							separator = defn.getSubsequentSetSubClauseSeparator();
+						}
+					}
 				}
 			}
 		}

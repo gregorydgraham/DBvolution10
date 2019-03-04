@@ -729,4 +729,84 @@ public class DBNumber extends QueryableDatatype<Number> implements NumberResult 
 	public void permitOnlyNotNull() {
 		excludeNull();
 	}
+
+	/**
+	 * Set the value to be inserted when no value has been set, using
+	 * {@link #setValue(java.lang.Object) setValue(...)}, for the QDT.
+	 *
+	 * <p>
+	 * The value is only used during the initial insert and does not effect the
+	 * definition of the column within the database.</p>
+	 *
+	 * <p>
+	 * Care should be taken when using this as some "obvious" uses are better
+	 * handled using
+	 * {@link #setDefaultInsertValue(nz.co.gregs.dbvolution.results.AnyResult) expression version.  In particular, setDefaultInsertValue(new Date()) is probably NOT what you want, setDefaultInsertValue(DateExpression.currentDate()) will produce a correct creation date value.</p>
+	 *
+	 * @param value the value to use during insertion when no particular value has
+	 * been specified.
+	 * @return This QDT
+	 */
+	@Override
+	public synchronized DBNumber setDefaultInsertValue(Number value) {
+		super.setDefaultInsertValue(value.longValue());
+		return this;
+	}
+
+	/**
+	 * Set the value to be inserted when no value has been set, using
+	 * {@link #setValue(java.lang.Object) setValue(...)}, for the QDT.
+	 *
+	 * <p>
+	 * The value is only used during the initial insert and does not effect the
+	 * definition of the column within the database.</p>
+	 *
+	 * @param value the value to use during insertion when no particular value has
+	 * been specified.
+	 * @return This QDT
+	 */
+	public synchronized DBNumber setDefaultInsertValue(NumberResult value) {
+		super.setDefaultInsertValue(value);
+		return this;
+	}
+
+	/**
+	 * Set the value to be used during an update when no value has been set, using
+	 * {@link #setValue(java.lang.Object) setValue(...)}, for the QDT.
+	 *
+	 * <p>
+	 * The value is only used during updates and does not effect the definition of
+	 * the column within the database nor the initial value of the column.</p>
+	 *
+	 * <p>
+	 * Care should be taken when using this as some "obvious" uses are better
+	 * handled using
+	 * {@link #setDefaultUpdateValue(nz.co.gregs.dbvolution.results.AnyResult) expression version.  In particular, setDefaultUpdateValue(new Date()) is probably NOT what you want, setDefaultUpdateValue(DateExpression.currentDate()) will produce a correct update time value.</p>
+	 *
+	 * @param value the value to use during update when no particular value has
+	 * been specified.
+	 * @return This QDT
+	 */
+	@Override
+	public synchronized DBNumber setDefaultUpdateValue(Number value) {
+		super.setDefaultUpdateValue(value.longValue());
+		return this;
+	}
+
+	/**
+	 * Set the value to be used during an update when no value has been set, using
+	 * {@link #setValue(java.lang.Object) setValue(...)}, for the QDT.
+	 *
+	 * <p>
+	 * The value is only used during updates and does not effect the definition of
+	 * the column within the database nor the initial value of the column.</p>
+	 *
+	 * @param value the value to use during update when no particular value has
+	 * been specified.
+	 * @return This QDT
+	 */
+	public synchronized DBNumber setDefaultUpdateValue(NumberResult value) {
+		super.setDefaultUpdateValue(value);
+		return this;
+	}
 }
