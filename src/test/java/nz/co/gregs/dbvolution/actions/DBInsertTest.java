@@ -163,10 +163,10 @@ public class DBInsertTest extends AbstractTest {
 		Assert.assertThat(gotRow.pk_uid.getValue(), is(1L));
 		Assert.assertThat(gotRow.name.getValue(), is("def"));
 		Assert.assertThat(gotRow.defaultExpression.getValue(), is("def"));
-		Assert.assertThat(gotRow.creationDate.getValue(), greaterThan(startTime));
+		Assert.assertThat(gotRow.creationDate.getValue(), greaterThanOrEqualTo(startTime));
 		Assert.assertThat(gotRow.creationDate.getValue(), lessThanOrEqualTo(new Date()));
 		Assert.assertThat(gotRow.updateDate.getValue(), nullValue());
-		Assert.assertThat(gotRow.creationOrUpdateDate.getValue(), greaterThan(startTime));
+		Assert.assertThat(gotRow.creationOrUpdateDate.getValue(), greaterThanOrEqualTo(startTime));
 		Assert.assertThat(gotRow.creationOrUpdateDate.getValue(), lessThanOrEqualTo(new Date()));
 
 		/* Check that default insert values can be overridden */
@@ -185,10 +185,10 @@ public class DBInsertTest extends AbstractTest {
 		Assert.assertThat(gotRow2.pk_uid.getValue(), is(2L));
 		Assert.assertThat(gotRow2.name.getValue(), is("notdefault"));
 		Assert.assertThat(gotRow2.defaultExpression.getValue(), is("notdefaulteither"));
-		Assert.assertThat(gotRow2.creationDate.getValue(), greaterThan(startTime));
+		Assert.assertThat(gotRow2.creationDate.getValue(), greaterThanOrEqualTo(startTime));
 		Assert.assertThat(gotRow2.creationDate.getValue(), lessThanOrEqualTo(new Date()));
 		Assert.assertThat(gotRow2.updateDate.getValue(), nullValue());
-		Assert.assertThat(gotRow2.creationOrUpdateDate.getValue(), greaterThan(startTime));
+		Assert.assertThat(gotRow2.creationOrUpdateDate.getValue(), greaterThanOrEqualTo(startTime));
 		Assert.assertThat(gotRow2.creationOrUpdateDate.getValue(), lessThanOrEqualTo(new Date()));
 
 		gotRow2.name.setValue("blarg");
@@ -199,9 +199,9 @@ public class DBInsertTest extends AbstractTest {
 		Assert.assertThat(gotRow2.defaultExpression.getValue(), is("notdefaulteither"));
 		Assert.assertThat(gotRow2.creationDate.getValue(), greaterThan(startTime));
 		Assert.assertThat(gotRow2.creationDate.getValue(), lessThan(new Date()));
-		Assert.assertThat(gotRow2.updateDate.getValue(), greaterThan(gotRow2.creationDate.getValue()));
+		Assert.assertThat(gotRow2.updateDate.getValue(), greaterThanOrEqualTo(gotRow2.creationDate.getValue()));
 		Assert.assertThat(gotRow2.updateDate.getValue(), lessThanOrEqualTo(new Date()));
-		Assert.assertThat(gotRow2.creationOrUpdateDate.getValue(), greaterThan(gotRow2.creationDate.getValue()));
+		Assert.assertThat(gotRow2.creationOrUpdateDate.getValue(), greaterThanOrEqualTo(gotRow2.creationDate.getValue()));
 		Assert.assertThat(gotRow2.creationOrUpdateDate.getValue(), lessThanOrEqualTo(new Date()));
 		Date formerUpdateDate = gotRow2.updateDate.getValue();
 
@@ -213,9 +213,9 @@ public class DBInsertTest extends AbstractTest {
 		Assert.assertThat(gotRow2.name.getValue(), is("blarg"));
 		Assert.assertThat(gotRow2.defaultExpression.getValue(), is("notdefaulteither"));
 		Assert.assertThat(gotRow2.creationDate.getValue(), is(april2nd2011));
-		Assert.assertThat(gotRow2.updateDate.getValue(), greaterThan(formerUpdateDate));
+		Assert.assertThat(gotRow2.updateDate.getValue(), greaterThanOrEqualTo(formerUpdateDate));
 		Assert.assertThat(gotRow2.updateDate.getValue(), lessThanOrEqualTo(new Date()));
-		Assert.assertThat(gotRow2.creationOrUpdateDate.getValue(), greaterThan(formerUpdateDate));
+		Assert.assertThat(gotRow2.creationOrUpdateDate.getValue(), greaterThanOrEqualTo(formerUpdateDate));
 		Assert.assertThat(gotRow2.creationOrUpdateDate.getValue(), lessThanOrEqualTo(new Date()));
 
 		database.preventDroppingOfTables(false);
