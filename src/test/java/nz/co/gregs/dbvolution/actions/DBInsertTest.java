@@ -16,6 +16,7 @@
 package nz.co.gregs.dbvolution.actions;
 
 import java.util.Date;
+import java.util.GregorianCalendar;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.annotations.*;
 import nz.co.gregs.dbvolution.datatypes.*;
@@ -27,6 +28,7 @@ import nz.co.gregs.dbvolution.generic.AbstractTest;
 import static org.hamcrest.Matchers.*;
 import org.junit.Test;
 import org.junit.Assert;
+import sun.util.calendar.Gregorian;
 
 /**
  *
@@ -147,10 +149,12 @@ public class DBInsertTest extends AbstractTest {
 
 	@Test
 	public void testSaveWithDefaultValues() throws Exception {
-		Date startTime = new Date();
+		GregorianCalendar cal = new GregorianCalendar();
+		cal.add(GregorianCalendar.MINUTE, -1);
+		Date startTime = cal.getTime();
 
 		TestDefaultInsertValue row = new TestDefaultInsertValue();
-		database.setPrintSQLBeforeExecuting(true);
+//		database.setPrintSQLBeforeExecuting(true);
 		database.preventDroppingOfTables(false);
 		database.dropTableNoExceptions(row);
 
@@ -220,7 +224,7 @@ public class DBInsertTest extends AbstractTest {
 
 		database.preventDroppingOfTables(false);
 		database.dropTableNoExceptions(row);
-		database.setPrintSQLBeforeExecuting(false);
+//		database.setPrintSQLBeforeExecuting(false);
 	}
 
 	public static class TestDefaultValueRetrieval extends DBRow {
