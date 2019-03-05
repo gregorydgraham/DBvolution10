@@ -431,6 +431,33 @@ public abstract class QueryableDatatype<T> extends Object implements Serializabl
 	}
 
 	/**
+	 * Gets the previous literal value of this queryable data type. The returned
+	 * value <i>should</i> be in the correct type as appropriate for the type of
+	 * queryable data type.
+	 *
+	 * <p>
+	 * This method will return NULL if the QDT represents a database NULL OR the
+	 * field is undefined OR the field is unchanged. Use {@link #isNull() } and {@link #isDefined() } to
+	 * differentiate the 2 states.
+	 *
+	 * <p>
+	 * Undefined QDTs represents a QDT that is not a field from the database.
+	 * Undefined QDTs are similar to {@link DBRow#isDefined undefined DBRows}
+	 *
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
+	 * @return the literal value, if defined, which may be null
+	 */
+	public T getPreviousValue() {
+		if (undefined || isNull()|| !hasChanged()) {
+			return null;
+		} else {
+			return getPreviousValueAsQDT().getValue();
+		}
+	}
+
+	/**
 	 * Set the value of this QDT to the value provided.
 	 *
 	 * @param newLiteralValue the new value
@@ -793,7 +820,7 @@ public abstract class QueryableDatatype<T> extends Object implements Serializabl
 	 * @return the previous value of this field as an SQL formatted String
 	 */
 	public String getPreviousSQLValue(DBDefinition db) {
-		QueryableDatatype<T> prevQDT = getPreviousValue();
+		QueryableDatatype<T> prevQDT = getPreviousValueAsQDT();
 		return (prevQDT == null) ? null : prevQDT.toSQLString(db);
 	}
 
@@ -1083,7 +1110,7 @@ public abstract class QueryableDatatype<T> extends Object implements Serializabl
 	 *
 	 * @return the previous value of this QDT.
 	 */
-	protected QueryableDatatype<T> getPreviousValue() {
+	protected QueryableDatatype<T> getPreviousValueAsQDT() {
 		return previousValueAsQDT;
 	}
 
