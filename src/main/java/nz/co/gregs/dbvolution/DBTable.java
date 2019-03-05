@@ -342,7 +342,7 @@ public class DBTable<E extends DBRow> {
 	 * number.
 	 *
 	 * <p>
-	 * This method is zero-based so the first page is getAllRows(0).
+	 * This method is zero-based so the first page is getRowsForPage(0).
 	 *
 	 * @param pageNumber	pageNumber
 	 * <p style="color: #F90;">Support DBvolution at
@@ -360,6 +360,28 @@ public class DBTable<E extends DBRow> {
 			set.add(row.get(exemplar));
 		}
 		return new ArrayList<>(set);
+	}
+
+	/**
+	 * Retrieves that DBRows for the page supplied.
+	 *
+	 * <p>
+	 * DBvolution supports paging through this method. Use {@link #setRowLimit(int)
+	 * } to set the page size and then call this method with the desired page
+	 * number.
+	 *
+	 * <p>
+	 * This method is zero-based so the first page is getPage(0).
+	 *
+	 * @param pageNumber	pageNumber
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @return a list of the DBRows for the selected page. 1 Database exceptions
+	 * may be thrown
+	 * @throws java.sql.SQLException java.sql.SQLException
+	 */
+	public List<E> getPage(Integer pageNumber) throws SQLException, AccidentalCartesianJoinException, AccidentalBlankQueryException {
+		return getRowsForPage(pageNumber);
 	}
 
 	/**
@@ -779,6 +801,25 @@ public class DBTable<E extends DBRow> {
 	public DBTable<E> setRowLimit(int rowLimit) {
 		this.options.setRowLimit(rowLimit);
 		return this;
+	}
+
+	/**
+	 * Limit the query to only returning a certain number of rows
+	 *
+	 * <p>
+	 * Implements support of the LIMIT and TOP operators of many databases.
+	 *
+	 * <p>
+	 * Only the specified number of rows will be returned from the database and
+	 * DBvolution.
+	 *
+	 * @param rowLimit	rowLimit
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @return this DBTable instance
+	 */
+	public DBTable<E> setPageSize(int rowLimit) {
+		return setRowLimit(rowLimit);
 	}
 
 	private DBTable<E> applyRowLimit() {

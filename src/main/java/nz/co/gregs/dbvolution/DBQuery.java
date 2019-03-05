@@ -770,6 +770,32 @@ public class DBQuery implements Serializable {
 	}
 
 	/**
+	 * Limit the query to only returning a certain number of rows.
+	 *
+	 * <p>
+	 * Implements support of the LIMIT and TOP operators of many databases. Also
+	 * sets the "page" length for retrieving rows by pages.
+	 *
+	 * <p>
+	 * Only the specified number of rows will be returned from the database and
+	 * DBvolution.
+	 *
+	 * <p>
+	 * Only positive limits are permitted: negative numbers will be converted to
+	 * zero(0). To remove the row limit use {@link #clearRowLimit() }.
+	 *
+	 * @param maximumNumberOfRowsReturned the require limit to the number of rows
+	 * returned
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @return this DBQuery instance
+	 * @see #clearRowLimit()
+	 */
+	public DBQuery setPageSize(int maximumNumberOfRowsReturned) {
+		return setRowLimit(maximumNumberOfRowsReturned);
+	}
+
+	/**
 	 * Clear the row limit on this DBQuery and return it to retrieving all rows.
 	 *
 	 * <p>
