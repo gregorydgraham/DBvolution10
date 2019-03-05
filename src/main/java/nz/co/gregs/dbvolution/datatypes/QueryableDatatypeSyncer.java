@@ -349,7 +349,7 @@ public class QueryableDatatypeSyncer implements Serializable{
 			setQDTValueUsingDangerousReflection(targetQdt, simpleTypeAdaptor.convert(sourceQdt.getLiteralValue()));
 
 			// copy previous value with translation
-			targetQdt.setPreviousValue((QueryableDatatype) convert(sourceQdt.getPreviousValue()));
+			targetQdt.setPreviousValue((QueryableDatatype) convert(sourceQdt.getPreviousValueAsQDT()));
 
 			// copy operator with translation
 			if (sourceQdt.getOperator() == null) {
