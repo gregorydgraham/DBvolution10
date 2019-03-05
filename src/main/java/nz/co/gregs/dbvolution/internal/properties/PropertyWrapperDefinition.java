@@ -707,6 +707,11 @@ public class PropertyWrapperDefinition  implements Serializable{
 		return this.javaProperty.getAnnotation(AutoFillDuringQueryIfPossible.class).requiredClass();
 	}
 
+	boolean isLargeObject() {
+		return DBLargeObject.class.isAssignableFrom(type());
+//		return type().getClass().isAssignableFrom(DBLargeObject.class);
+	}
+
 	public static class ColumnAspects implements Serializable{
 
 	private static final long serialVersionUID = 1l;

@@ -5,6 +5,8 @@ import static org.junit.Assert.*;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.annotations.DBColumn;
 import nz.co.gregs.dbvolution.datatypes.DBInteger;
+import nz.co.gregs.dbvolution.datatypes.DBJavaObject;
+import nz.co.gregs.dbvolution.datatypes.DBLargeText;
 import nz.co.gregs.dbvolution.expressions.NumberExpression;
 
 import org.junit.Test;
@@ -89,6 +91,27 @@ public class PropertyWrapperTest {
 		PropertyWrapper intField2 = propertyOf(new MyClass1(), "intField2");
 		assertThat(intField1.hasColumnExpression(), is(false));
 		assertThat(intField2.hasColumnExpression(), is(true));
+	}
+
+	@Test
+	public void largeObjectTest() {
+		class MyClass1 extends DBRow {
+
+			@DBColumn
+			public DBInteger intField1 = new DBInteger();
+
+			@DBColumn
+			public DBJavaObject<String> javaObject = new DBJavaObject<String>();
+			@DBColumn
+			public DBLargeText largeText = new DBLargeText();
+		}
+
+		PropertyWrapper intField1 = propertyOf(new MyClass1(), "intField1");
+		PropertyWrapper javaField = propertyOf(new MyClass1(), "javaObject");
+		PropertyWrapper textField = propertyOf(new MyClass1(), "largeText");
+		assertThat(intField1.isLargeObjectType(), is(false));
+		assertThat(javaField.isLargeObjectType(), is(true));
+		assertThat(textField.isLargeObjectType(), is(true));
 	}
 
 	// note: intentionally doesn't use a wrapper factory for tests on equals() methods

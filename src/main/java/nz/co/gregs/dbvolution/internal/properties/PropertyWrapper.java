@@ -53,7 +53,7 @@ import nz.co.gregs.dbvolution.query.RowDefinition;
  * This class is not serializable. References to it within serializable classes
  * should be marked as {@code transient}.
  */
-public class PropertyWrapper implements Serializable{
+public class PropertyWrapper implements Serializable {
 
 	private static final long serialVersionUID = 1l;
 
@@ -781,5 +781,22 @@ public class PropertyWrapper implements Serializable{
 	 */
 	public Class<?> getAutoFillingClass() {
 		return propertyDefinition.getAutoFillingClass();
+	}
+
+	/**
+	 * Returns true if the property wrapped is a Large Object column.
+	 *
+	 * <p>
+	 * This generally means that the column is a BLOB, CLOB, TEXT, Java Object of
+	 * other binary type.
+	 *
+	 * <p>
+	 * Spatial columns are special in that they can't generally be used in WHERE clauses.
+	 *
+	 * @return TRUE if the value of this column is a 2D geometry type, otherwise
+	 * FALSE.
+	 */
+	public boolean isLargeObjectType() {
+		return propertyDefinition.isLargeObject();
 	}
 }

@@ -531,7 +531,7 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 		List<String> whereClause = new ArrayList<>();
 		List<PropertyWrapper> props = getWrapper().getColumnPropertyWrappers();
 		for (PropertyWrapper prop : props) {
-			if (prop.isColumn()) {
+			if (prop.isColumn() && !prop.isLargeObjectType()) {
 				QueryableDatatype<?> qdt = prop.getQueryableDatatype();
 				String possibleWhereClause;
 				ColumnProvider column;
