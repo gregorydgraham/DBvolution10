@@ -619,4 +619,13 @@ public class DBLargeText extends DBLargeObject<byte[]> {
 	public LargeObjectColumn getColumn(RowDefinition row) throws IncorrectRowProviderInstanceSuppliedException {
 		return new LargeObjectColumn(row, this);
 	}
+
+	@Override
+	protected synchronized void setLiteralValue(byte[] newLiteralValue) {
+		if ((!hasBeenSet() && newLiteralValue != null)
+				|| (hasBeenSet() && getLiteralValue() != null && !(new String(getLiteralValue())).equals(new String(newLiteralValue)))
+				|| (hasBeenSet() && getLiteralValue() == null && newLiteralValue != null && newLiteralValue.length > 0)) {
+			super.setLiteralValue(newLiteralValue);
+		}
+	}
 }
