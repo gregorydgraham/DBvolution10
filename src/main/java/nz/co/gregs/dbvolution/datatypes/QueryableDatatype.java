@@ -510,7 +510,8 @@ public abstract class QueryableDatatype<T> extends Object implements Serializabl
 	 * @param newLiteralValue the literalValue to set
 	 */
 	protected synchronized void setLiteralValue(T newLiteralValue) {
-		if (!hasBeenSet()
+		if (
+				(!hasBeenSet() && newLiteralValue!=null)
 				|| (hasBeenSet() && newLiteralValue != null && !newLiteralValue.equals(getLiteralValue()))
 				|| (hasBeenSet() && newLiteralValue == null && getLiteralValue() != null)
 				) {
