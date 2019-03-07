@@ -437,8 +437,8 @@ public abstract class QueryableDatatype<T> extends Object implements Serializabl
 	 *
 	 * <p>
 	 * This method will return NULL if the QDT represents a database NULL OR the
-	 * field is undefined OR the field is unchanged. Use {@link #isNull() } and {@link #isDefined() } to
-	 * differentiate the 2 states.
+	 * field is undefined OR the field is unchanged. Use {@link #isNull() } and {@link #isDefined()
+	 * } to differentiate the 2 states.
 	 *
 	 * <p>
 	 * Undefined QDTs represents a QDT that is not a field from the database.
@@ -450,7 +450,7 @@ public abstract class QueryableDatatype<T> extends Object implements Serializabl
 	 * @return the literal value, if defined, which may be null
 	 */
 	public T getPreviousValue() {
-		if (undefined || isNull()|| !hasChanged()) {
+		if (undefined || isNull() || !hasChanged() || getPreviousValueAsQDT() == null) {
 			return null;
 		} else {
 			return getPreviousValueAsQDT().getValue();
@@ -510,8 +510,13 @@ public abstract class QueryableDatatype<T> extends Object implements Serializabl
 	 * @param newLiteralValue the literalValue to set
 	 */
 	protected synchronized void setLiteralValue(T newLiteralValue) {
-		setLiteralValueInternal(newLiteralValue);
-		this.setHasBeenSet(true);
+		if (!hasBeenSet()
+				|| (hasBeenSet() && newLiteralValue != null && !newLiteralValue.equals(getLiteralValue()))
+				|| (hasBeenSet() && newLiteralValue == null && getLiteralValue() != null)
+				) {
+			setLiteralValueInternal(newLiteralValue);
+			this.setHasBeenSet(true);
+		}
 	}
 
 	private void setLiteralValueInternal(T newLiteralValue) {
@@ -1335,9 +1340,11 @@ public abstract class QueryableDatatype<T> extends Object implements Serializabl
 	}
 
 	/**
-	 * Returns the value of the default insert value formatted by the DBDefinition provided.
-	 * 
-	 * <p>Probably not the method you are looking for.</p>
+	 * Returns the value of the default insert value formatted by the DBDefinition
+	 * provided.
+	 *
+	 * <p>
+	 * Probably not the method you are looking for.</p>
 	 *
 	 * @param defn
 	 * @return
@@ -1362,11 +1369,12 @@ public abstract class QueryableDatatype<T> extends Object implements Serializabl
 		return defaultUpdateValue != null || defaultUpdateExpression != null;
 	}
 
-
 	/**
-	 * Returns the value of the default update value formatted by the DBDefinition provided.
-	 * 
-	 * <p>Probably not the method you are looking for.</p>
+	 * Returns the value of the default update value formatted by the DBDefinition
+	 * provided.
+	 *
+	 * <p>
+	 * Probably not the method you are looking for.</p>
 	 *
 	 * @param defn
 	 * @return

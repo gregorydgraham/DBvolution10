@@ -15,11 +15,9 @@
  */
 package nz.co.gregs.dbvolution.expressions;
 
-import java.util.ArrayList;
 import nz.co.gregs.dbvolution.results.EqualComparable;
 import nz.co.gregs.dbvolution.results.BooleanArrayResult;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.databases.DBDatabase;
@@ -248,10 +246,10 @@ public class BooleanArrayExpression extends AnyExpression<Boolean[], BooleanArra
 		return new BooleanArrayExpression(value);
 	}
 
-	@Override
-	public StringExpression stringResult() {
-		throw new UnsupportedOperationException("Not supported yet.");
-	}
+//	@Override
+//	public StringExpression stringResult() {
+//		return new StringExpression().
+//	}
 
 	private static abstract class DBBinaryBooleanArithmetic extends BooleanExpression {
 

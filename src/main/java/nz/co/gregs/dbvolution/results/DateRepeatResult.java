@@ -24,7 +24,7 @@ import org.joda.time.Period;
  *
  * @author gregory.graham
  */
-public interface DateRepeatResult extends RangeResult<Period> {
+public interface DateRepeatResult extends RangeResult<Period>, ExpressionHasStandardStringResult {
 
 	@Override
 	public DateRepeatResult copy();

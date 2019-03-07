@@ -741,4 +741,47 @@ public abstract class AnyExpression<B extends Object, R extends AnyResult<B>, D 
 	public SortProvider highestLast(){
 		return ascending();
 	}
+	
+	/**
+	 * Creates an expression that will count all the values of the column
+	 * supplied.
+	 *
+	 * <p>
+	 * Count is an aggregator function for use in DBReport or in a column
+	 * expression.
+	 *
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
+	 * @return a number expression.
+	 */
+	public IntegerExpression count() {
+		return new IntegerExpression(new CountExpression(this));
+	}
+
+	private static class CountExpression extends IntegerExpression {
+
+		public CountExpression(AnyResult<?> only) {
+			super(only);
+		}
+		private final static long serialVersionUID = 1l;
+
+		@Override
+		public String toSQLString(DBDefinition db) {
+			return db.getCountFunctionName() + "(" + getInnerResult().toSQLString(db) + ")";
+		}
+
+		@Override
+		public boolean isAggregator() {
+			return true;
+		}
+
+		@Override
+		public CountExpression copy() {
+			return new CountExpression(
+					(AnyResult<?>) (getInnerResult() == null ? null : getInnerResult().copy())
+			);
+		}
+
+	}
 }

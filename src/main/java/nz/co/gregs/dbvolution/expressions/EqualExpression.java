@@ -103,23 +103,6 @@ public abstract class EqualExpression<B, R extends EqualResult<B>, D extends Que
 	}
 
 	/**
-	 * Creates an expression that will count all the values of the column
-	 * supplied.
-	 *
-	 * <p>
-	 * Count is an aggregator function for use in DBReport or in a column
-	 * expression.
-	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 *
-	 * @return a number expression.
-	 */
-	public IntegerExpression count() {
-		return new IntegerExpression(new CountExpression(this));
-	}
-
-	/**
 	 * Aggregrator that counts this row if the booleanResult is true.
 	 *
 	 * @param booleanResult an value that will be TRUE when the row needs to be
@@ -262,11 +245,6 @@ public abstract class EqualExpression<B, R extends EqualResult<B>, D extends Que
 		@Override
 		public QueryableDatatype<?> getQueryableDatatypeForExpressionValue() {
 			return only.getQueryableDatatypeForExpressionValue();
-		}
-
-		@Override
-		public StringExpression stringResult() {
-			return only.stringResult();
 		}
 
 		@Override
@@ -580,33 +558,5 @@ public abstract class EqualExpression<B, R extends EqualResult<B>, D extends Que
 		public CountAllExpression copy() {
 			return new CountAllExpression();
 		}
-
 	}
-
-	private static class CountExpression extends IntegerExpression {
-
-		public CountExpression(AnyResult<?> only) {
-			super(only);
-		}
-		private final static long serialVersionUID = 1l;
-
-		@Override
-		public String toSQLString(DBDefinition db) {
-			return db.getCountFunctionName() + "(" + getInnerResult().toSQLString(db) + ")";
-		}
-
-		@Override
-		public boolean isAggregator() {
-			return true;
-		}
-
-		@Override
-		public CountExpression copy() {
-			return new CountExpression(
-					(AnyResult<?>) (getInnerResult() == null ? null : getInnerResult().copy())
-			);
-		}
-
-	}
-
 }

@@ -16,6 +16,7 @@ import nz.co.gregs.dbvolution.expressions.IntegerExpression;
 import nz.co.gregs.dbvolution.expressions.RangeExpression;
 import nz.co.gregs.dbvolution.internal.properties.PropertyWrapperDefinition;
 import nz.co.gregs.dbvolution.results.EqualResult;
+import nz.co.gregs.dbvolution.results.ExpressionHasStandardStringResult;
 
 /**
  *
@@ -28,7 +29,7 @@ import nz.co.gregs.dbvolution.results.EqualResult;
  * @param <D>
  * @param <X>
  */
-public class DBStatistics<B, R extends EqualResult<B>, D extends QueryableDatatype<B>, X extends EqualExpression<B, R, D>> extends DBString {
+public class DBStatistics<B, R extends EqualResult<B>, D extends QueryableDatatype<B>, X extends EqualExpression<B, R, D> & ExpressionHasStandardStringResult> extends DBString {
 
 	private static final long serialVersionUID = 1;
 

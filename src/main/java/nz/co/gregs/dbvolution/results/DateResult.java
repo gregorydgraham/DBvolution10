@@ -37,7 +37,7 @@ import nz.co.gregs.dbvolution.expressions.DBExpression;
  * @author greg
  * @see DBExpression
  */
-public interface DateResult extends RangeResult<Date> {
+public interface DateResult extends RangeResult<Date>, ExpressionHasStandardStringResult {
 
 	@Override
 	public DateResult copy();
