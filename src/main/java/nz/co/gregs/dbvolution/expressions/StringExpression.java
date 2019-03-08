@@ -3721,10 +3721,9 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 		@Override
 		public String toSQLString(DBDefinition db) {
 			return db.doStringAccumulateTransform(
-					columnToAccumulate.toSQLString(db),
-					separator.toSQLString(db),
-					orderBy.toSQLString(db),
-					columnToAccumulate.getTablesInvolved().toArray(new DBRow[]{})[0].getTableName()
+					columnToAccumulate,
+					separator,
+					orderBy
 			);
 		}
 

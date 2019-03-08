@@ -49,7 +49,7 @@ import nz.co.gregs.dbvolution.internal.query.QueryState;
  *
  * @author Gregory Graham
  */
-public class MSSQLServerDBDefinition extends DBDefinition {
+public class MSSQLServerDBDefinition2016 extends DBDefinition {
 
 	public static final long serialVersionUID = 1L;
 
@@ -1134,11 +1134,21 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 
 	@Override
 	public String doStringAccumulateTransform(String accumulateColumn, String separator, String referencedTable) {
-		return "(STRING_AGG("+accumulateColumn+", "+separator+"))";
+		return "stuff((select  " + separator + " + " + accumulateColumn + " from    " + referencedTable + " for xml path('')),1,1,'')";
 	}
 
 	@Override
+	public String doStringAccumulateTransform(StringExpression columnToAccumulate, StringExpression separator, SortProvider orderBy) {
+		return doStringAccumulateTransform(
+					columnToAccumulate.toSQLString(this),
+					separator.toSQLString(this),
+					orderBy.toSQLString(this),
+					columnToAccumulate.getTablesInvolved().toArray(new DBRow[]{})[0].getTableName()
+			);
+	}
+	
+	@Override
 	public String doStringAccumulateTransform(String accumulateColumn, String separator, String orderByColumnName, String referencedTable) {
-		return "(STRING_AGG("+accumulateColumn+", "+separator+") WITHIN GROUP (ORDER BY "+orderByColumnName+"))";
+		return "CAST(stuff((select  " + separator + " + " + accumulateColumn + " from    " + referencedTable + " order by " + orderByColumnName + " for xml path('')),1,2,'') as VARCHAR(1000))";
 	}
 }

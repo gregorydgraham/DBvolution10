@@ -6066,4 +6066,13 @@ public abstract class DBDefinition implements Serializable {
 	public boolean requiresSortedSubselectForStringAggregate() {
 		return false;
 	}
+
+	public String doStringAccumulateTransform(StringExpression columnToAccumulate, StringExpression separator, SortProvider orderBy) {
+		return doStringAccumulateTransform(
+					columnToAccumulate.toSQLString(this),
+					separator.toSQLString(this),
+					orderBy.toSQLString(this),
+					columnToAccumulate.getTablesInvolved().toArray(new DBRow[]{})[0].getTableName()
+			);
+	}
 }

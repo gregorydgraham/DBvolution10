@@ -23,7 +23,7 @@ os: Windows Server 2012
 services:
   - postgresql95
   - mysql
-  - mssql2016
+  - mssql2017
 
 install:
   - ps: |
