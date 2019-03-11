@@ -200,7 +200,7 @@ public class DBInsertTest extends AbstractTest {
 		Assert.assertThat(gotRow.name.getValue(), is("blarg"));
 		Assert.assertThat(gotRow.defaultExpression.getValue(), is("notdefaulteither"));
 		Assert.assertThat(gotRow.creationDate.getValue(), greaterThan(startTime));
-		Assert.assertThat(gotRow.creationDate.getValue(), lessThan(gotRow.currentDate.getValue()));
+		Assert.assertThat(gotRow.creationDate.getValue(), lessThanOrEqualTo(gotRow.currentDate.getValue()));
 		Assert.assertThat(gotRow.updateDate.getValue(), greaterThanOrEqualTo(gotRow.creationDate.getValue()));
 		Assert.assertThat(gotRow.updateDate.getValue(), lessThanOrEqualTo(gotRow.currentDate.getValue()));
 		Assert.assertThat(gotRow.creationOrUpdateDate.getValue(), greaterThanOrEqualTo(gotRow.creationDate.getValue()));
