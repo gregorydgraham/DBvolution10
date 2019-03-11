@@ -287,9 +287,9 @@ public class DateExpressionTest extends AbstractTest {
 		query = database.getDBQuery(marq);
 		query.addConditions(
 				marq.column(marq.creationDate)
-						.hour().isIn(
-								DateExpression.currentDate().addSeconds(-100).hour(),
-								DateExpression.currentDate().addSeconds(100).hour()),
+						.day().isIn(
+								DateExpression.currentDate().addSeconds(-100).day(),
+								DateExpression.currentDate().addSeconds(100).day()),
 				marq.column(marq.creationDate).isGreaterThan(march23rd2013)
 		);
 
