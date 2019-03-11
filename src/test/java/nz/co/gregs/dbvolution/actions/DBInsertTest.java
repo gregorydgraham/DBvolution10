@@ -153,7 +153,6 @@ public class DBInsertTest extends AbstractTest {
 		Date startTime = cal.getTime();
 
 		TestDefaultInsertValue row = new TestDefaultInsertValue();
-		database.setPrintSQLBeforeExecuting(true);
 		database.preventDroppingOfTables(false);
 		database.dropTableNoExceptions(row);
 
@@ -181,8 +180,6 @@ public class DBInsertTest extends AbstractTest {
 		Assert.assertThat(row2.creationDate.hasDefaultInsertValue(), is(true));
 		database.insert(row2);
 		Assert.assertThat(row2.pk_uid.getValue(), is(2L));
-//		Assert.assertThat(row2.name.getValue(), is("notdefault"));
-//		Assert.assertThat(row2.defaultExpression.getValue(), is("notdefaulteither"));
 
 		/* Retreive the default values and check they're correct */
 		final Long pkValue = row2.pk_uid.getValue();
@@ -225,7 +222,6 @@ public class DBInsertTest extends AbstractTest {
 
 		database.preventDroppingOfTables(false);
 		database.dropTableNoExceptions(row);
-		database.setPrintSQLBeforeExecuting(false);
 	}
 
 	public static class TestDefaultValueRetrieval extends DBRow {
