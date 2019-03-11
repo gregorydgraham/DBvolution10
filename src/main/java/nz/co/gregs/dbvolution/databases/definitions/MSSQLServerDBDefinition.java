@@ -28,8 +28,6 @@ import nz.co.gregs.dbvolution.exceptions.DBRuntimeException;
 import nz.co.gregs.dbvolution.exceptions.IncorrectGeometryReturnedForDatatype;
 import nz.co.gregs.dbvolution.expressions.BooleanExpression;
 import nz.co.gregs.dbvolution.expressions.DBExpression;
-import nz.co.gregs.dbvolution.expressions.SortProvider;
-import nz.co.gregs.dbvolution.expressions.StringExpression;
 import nz.co.gregs.dbvolution.internal.properties.PropertyWrapper;
 import nz.co.gregs.dbvolution.internal.query.LargeObjectHandlerType;
 import nz.co.gregs.dbvolution.internal.sqlserver.*;
@@ -1140,5 +1138,10 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 	@Override
 	public String doStringAccumulateTransform(String accumulateColumn, String separator, String orderByColumnName, String referencedTable) {
 		return "(STRING_AGG("+accumulateColumn+", "+separator+") WITHIN GROUP (ORDER BY "+orderByColumnName+"))";
+	}
+
+	@Override
+	public boolean requiresClosedPolygons() {
+		return true;
 	}
 }

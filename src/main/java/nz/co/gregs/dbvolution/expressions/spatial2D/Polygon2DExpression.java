@@ -22,6 +22,7 @@ import nz.co.gregs.dbvolution.results.Polygon2DResult;
 import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.geom.Polygon;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -53,9 +54,10 @@ public class Polygon2DExpression extends Spatial2DExpression<Polygon, Polygon2DR
 	public static Polygon2DExpression unitSquare() {
 		return value(
 				new Point2DExpression(0, 0),
-				new Point2DExpression(1, 0),
+				new Point2DExpression(0, 1),
 				new Point2DExpression(1, 1),
-				new Point2DExpression(0, 1)
+				new Point2DExpression(1, 0)
+		//				,new Point2DExpression(0, 0)
 		);
 	}
 
@@ -1184,7 +1186,7 @@ public class Polygon2DExpression extends Spatial2DExpression<Polygon, Polygon2DR
 		}
 
 		@Override
-		public final String toSQLString(DBDefinition db) {
+		public String toSQLString(DBDefinition db) {
 			BooleanExpression isNull = BooleanExpression.trueExpression();
 			if (this.getIncludesNull()) {
 				for (Point2DResult allPoint : allPoints) {
@@ -1245,7 +1247,7 @@ public class Polygon2DExpression extends Spatial2DExpression<Polygon, Polygon2DR
 		}
 
 		@Override
-		public final String toSQLString(DBDefinition db) {
+		public String toSQLString(DBDefinition db) {
 			BooleanExpression isNull = BooleanExpression.trueExpression();
 			if (this.getIncludesNull()) {
 				for (NumberExpression allPoint : allCoords) {
@@ -1367,6 +1369,34 @@ public class Polygon2DExpression extends Spatial2DExpression<Polygon, Polygon2DR
 					pointCopies.isEmpty() ? null : pointCopies.toArray(new Point2DExpression[]{})
 			);
 		}
+
+		@Override
+		public String toSQLString(DBDefinition db) {
+			final Point2DExpression[] allCoordinates = getAllPoints();
+			if (allCoordinates != null
+					&& allCoordinates.length > 0
+					&& db.requiresClosedPolygons()
+					&& !closedPolygon(db)) {
+				List<Point2DExpression> asList = Arrays.asList(allCoordinates);
+				ArrayList<Point2DExpression> list = new ArrayList<Point2DExpression>();
+				list.addAll(asList);
+				list.add(allCoordinates[0]);
+				for (Point2DExpression num : list) {
+					System.out.println(""+num.toSQLString(db));
+				}
+				Point2DExpression[] toArray = list.toArray(new Point2DExpression[]{});
+				return (new CreatePolygon2DFromPoint2DArrayExpression(toArray)).toSQLString(db);
+			} else {
+				return super.toSQLString(db);
+			}
+		}
+
+		protected boolean closedPolygon(DBDefinition db) {
+			Point2DExpression[] allCoordinates = getAllPoints();
+			final String firstCoord = allCoordinates[0].toSQLString(db);
+			final String lastCoord = allCoordinates[allCoordinates.length - 1].toSQLString(db);
+			return firstCoord.equals(lastCoord);
+		}
 	}
 
 	private static class CreatePolygon2DFromCoordinateArrayExpression extends CoordinateArrayFunctionWithPolygon2DResult {
@@ -1386,6 +1416,37 @@ public class Polygon2DExpression extends Spatial2DExpression<Polygon, Polygon2DR
 			return new Polygon2DExpression.CreatePolygon2DFromCoordinateArrayExpression(
 					pointCopies.isEmpty() ? null : pointCopies.toArray(new NumberExpression[]{})
 			);
+		}
+
+		@Override
+		public String toSQLString(DBDefinition db) {
+			final NumberExpression[] allCoordinates = getAllCoordinates();
+			if (allCoordinates != null
+					&& allCoordinates.length > 0
+					&& db.requiresClosedPolygons()
+					&& !closedPolygon(db)) {
+				List<NumberExpression> asList = Arrays.asList(allCoordinates);
+				ArrayList<NumberExpression> list = new ArrayList<NumberExpression>();
+				list.addAll(asList);
+				list.add(allCoordinates[0]);
+				list.add(allCoordinates[1]);
+				for (NumberExpression num : list) {
+					System.out.println(""+num.toSQLString(db));
+				}
+				NumberExpression[] toArray = list.toArray(new NumberExpression[]{});
+				return (new CreatePolygon2DFromCoordinateArrayExpression(toArray)).toSQLString(db);
+			} else {
+				return super.toSQLString(db);
+			}
+		}
+
+		protected boolean closedPolygon(DBDefinition db) {
+			NumberExpression[] allCoordinates = getAllCoordinates();
+			final String firstCoord = allCoordinates[0].toSQLString(db);
+			final String secondCoord = allCoordinates[1].toSQLString(db);
+			final String secondLastCoord = allCoordinates[allCoordinates.length - 2].toSQLString(db);
+			final String lastCoord = allCoordinates[allCoordinates.length - 1].toSQLString(db);
+			return firstCoord.equals(secondLastCoord)&&secondCoord.equals(lastCoord);
 		}
 
 		@Override
@@ -1426,6 +1487,7 @@ public class Polygon2DExpression extends Spatial2DExpression<Polygon, Polygon2DR
 				return newPolygon.toSQLString(db);
 			}
 		}
+
 	}
 
 	private class IsExpression extends PolygonPolygonWithBooleanResult {

@@ -1151,4 +1151,9 @@ public class MSSQLServerDBDefinition2016 extends DBDefinition {
 	public String doStringAccumulateTransform(String accumulateColumn, String separator, String orderByColumnName, String referencedTable) {
 		return "CAST(stuff((select  " + separator + " + " + accumulateColumn + " from    " + referencedTable + " order by " + orderByColumnName + " for xml path('')),1,2,'') as VARCHAR(1000))";
 	}
+
+	@Override
+	public boolean requiresClosedPolygons() {
+		return true;
+	}
 }

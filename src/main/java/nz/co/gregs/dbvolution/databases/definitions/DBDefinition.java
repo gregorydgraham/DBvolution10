@@ -6075,4 +6075,8 @@ public abstract class DBDefinition implements Serializable {
 					columnToAccumulate.getTablesInvolved().toArray(new DBRow[]{})[0].getTableName()
 			);
 	}
+
+	public boolean requiresClosedPolygons() {
+		return false;
+	}
 }
