@@ -1068,12 +1068,18 @@
 			<version>10.11.1.1</version>
 			<type>jar</type>
 		</dependency>
-		<dependency>
+		<!--		<dependency>
 			<groupId>com.vividsolutions</groupId>
 			<artifactId>jts</artifactId>
 			<version>1.13</version>
 			<type>jar</type>
-		</dependency>
+		</dependency>-->
+<!--		<dependency>
+			<groupId>org.locationtech.jts</groupId>
+			<artifactId>jts-modules</artifactId>
+			<version>1.16.1</version>
+			<type>bundle</type>
+		</dependency>-->
 		<dependency>
 			<groupId>joda-time</groupId>
 			<artifactId>joda-time</artifactId>
@@ -1134,6 +1140,18 @@
 			<artifactId>jbcrypt</artifactId>
 			<version>0.4</version>
 		</dependency>
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-lang3</artifactId>
+			<version>3.7</version>
+			<type>jar</type>
+		</dependency>
+	 <dependency>
+	  <groupId>org.locationtech.jts</groupId>
+	  <artifactId>jts-core</artifactId>
+	  <version>1.15.0</version>
+	  <type>jar</type>
+	 </dependency>
 	</dependencies>
 	<distributionManagement>
 		<site>

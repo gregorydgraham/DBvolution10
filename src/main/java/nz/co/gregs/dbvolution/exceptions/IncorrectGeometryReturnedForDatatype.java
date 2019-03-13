@@ -15,7 +15,7 @@
  */
 package nz.co.gregs.dbvolution.exceptions;
 
-import com.vividsolutions.jts.geom.Geometry;
+import org.locationtech.jts.geom.Geometry;
 
 /**
  * Thrown when the database has returned a geometry that cannot be interpreted

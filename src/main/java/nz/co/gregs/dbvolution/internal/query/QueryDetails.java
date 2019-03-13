@@ -533,7 +533,7 @@ public class QueryDetails implements DBQueryable, Serializable {
 				final QueryableDatatype<?> qdt = entry.getValue();
 				DBExpression[] expressions = qdt.getColumnExpression();
 				for (DBExpression expression : expressions) {
-					selectClause.append(colSep).append(defn.transformToStorableType(expression).toSQLString(defn)).append(" ").append(defn.formatExpressionAlias(key));
+					selectClause.append(colSep).append(defn.transformToSelectableType(expression).toSQLString(defn)).append(" ").append(defn.formatExpressionAlias(key));
 					colSep = defn.getSubsequentSelectSubClauseSeparator() + lineSep;
 					if (expression.isAggregator()) {
 						setGroupByRequiredByAggregator(true);
@@ -543,7 +543,7 @@ public class QueryDetails implements DBQueryable, Serializable {
 						groupByIsRequired = true;
 						groupByColumnIndex += groupByColumnIndexSeparator + columnIndex;
 						groupByColumnIndexSeparator = defn.getSubsequentGroupBySubClauseSeparator();
-						groupByClause.append(groupByColSep).append(defn.transformToStorableType(expression).toSQLString(defn));
+						groupByClause.append(groupByColSep).append(defn.transformToSelectableType(expression).toSQLString(defn));
 						groupByColSep = defn.getSubsequentGroupBySubClauseSeparator() + lineSep;
 
 					}

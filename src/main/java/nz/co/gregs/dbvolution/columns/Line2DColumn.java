@@ -15,7 +15,7 @@
  */
 package nz.co.gregs.dbvolution.columns;
 
-import com.vividsolutions.jts.geom.LineString;
+import org.locationtech.jts.geom.LineString;
 import java.util.Objects;
 import java.util.Set;
 import nz.co.gregs.dbvolution.DBRow;

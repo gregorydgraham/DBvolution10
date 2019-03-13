@@ -16,7 +16,7 @@
 package nz.co.gregs.dbvolution.databases.definitions;
 
 import nz.co.gregs.dbvolution.internal.query.LargeObjectHandlerType;
-import com.vividsolutions.jts.geom.*;
+import org.locationtech.jts.geom.*;
 import java.text.*;
 import java.util.*;
 import nz.co.gregs.dbvolution.databases.PostgresDB;
@@ -483,7 +483,7 @@ public class PostgresDBDefinition extends DBDefinition {
 	}
 
 	@Override
-	public Point transformDatabasePoint2DValueToJTSPoint(String pointAsString) throws com.vividsolutions.jts.io.ParseException {
+	public Point transformDatabasePoint2DValueToJTSPoint(String pointAsString) throws org.locationtech.jts.io.ParseException {
 		Point point = null;
 		if (pointAsString.matches(" *\\( *[-0-9.]+, *[-0-9.]+ *\\) *")) {
 			String[] split = pointAsString.split("[^-0-9.]+");
@@ -501,7 +501,7 @@ public class PostgresDBDefinition extends DBDefinition {
 	// ((2,3),(2,3),(2,3),(2,3))
 	// POLYGON((2 3,2 4,3 4,3 3,2 3))
 	@Override
-	public Polygon transformDatabasePolygon2DToJTSPolygon(String geometryAsString) throws com.vividsolutions.jts.io.ParseException {
+	public Polygon transformDatabasePolygon2DToJTSPolygon(String geometryAsString) throws org.locationtech.jts.io.ParseException {
 		//String string = "POLYGON " + geometryAsString.replaceAll("\\),\\(", ", ").replaceAll("([-0-9.]+),([-0-9.]+)", "$1 $2");
 		String[] splits = geometryAsString.split("[^0-9.]+");
 		List<Coordinate> coords = new ArrayList<>();
@@ -527,7 +527,7 @@ public class PostgresDBDefinition extends DBDefinition {
 	}
 
 	@Override
-	public LineString transformDatabaseLine2DValueToJTSLineString(String lineStringAsString) throws com.vividsolutions.jts.io.ParseException {
+	public LineString transformDatabaseLine2DValueToJTSLineString(String lineStringAsString) throws org.locationtech.jts.io.ParseException {
 		LineString lineString;
 		if (!lineStringAsString.matches("^ *LINESTRING.*")) {
 			//String string = "LINESTRING " + lineStringAsString.replaceAll("\\),\\(", ", ").replaceAll("([-0-9.]+),([-0-9.]+)", "$1 $2");
@@ -674,7 +674,7 @@ public class PostgresDBDefinition extends DBDefinition {
 	}
 
 	@Override
-	public LineSegment transformDatabaseLineSegment2DValueToJTSLineSegment(String lineStringAsString) throws com.vividsolutions.jts.io.ParseException {
+	public LineSegment transformDatabaseLineSegment2DValueToJTSLineSegment(String lineStringAsString) throws org.locationtech.jts.io.ParseException {
 		LineSegment lineString;
 		if (!lineStringAsString.matches("^ *LINESTRING.*")) {
 			//String string = "LINESTRING " + lineStringAsString.replaceAll("\\),\\(", ", ").replaceAll("([-0-9.]+),([-0-9.]+)", "$1 $2");
@@ -754,7 +754,7 @@ public class PostgresDBDefinition extends DBDefinition {
 	}
 
 	@Override
-	public MultiPoint transformDatabaseMultiPoint2DValueToJTSMultiPoint(String pointsAsString) throws com.vividsolutions.jts.io.ParseException {
+	public MultiPoint transformDatabaseMultiPoint2DValueToJTSMultiPoint(String pointsAsString) throws org.locationtech.jts.io.ParseException {
 		return super.transformDatabaseMultiPoint2DValueToJTSMultiPoint(pointsAsString);
 	}
 

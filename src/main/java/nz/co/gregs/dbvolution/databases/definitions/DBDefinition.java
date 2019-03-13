@@ -16,15 +16,7 @@
 package nz.co.gregs.dbvolution.databases.definitions;
 
 import nz.co.gregs.dbvolution.internal.query.LargeObjectHandlerType;
-import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.GeometryFactory;
-import com.vividsolutions.jts.geom.LineSegment;
-import com.vividsolutions.jts.geom.Polygon;
-import com.vividsolutions.jts.geom.LineString;
-import com.vividsolutions.jts.geom.MultiPoint;
-import com.vividsolutions.jts.geom.Point;
-import com.vividsolutions.jts.io.WKTReader;
+import org.locationtech.jts.geom.*;
 import java.io.Serializable;
 import java.sql.ResultSet;
 import java.text.ParseException;
@@ -63,6 +55,7 @@ import nz.co.gregs.dbvolution.internal.query.QueryState;
 import nz.co.gregs.dbvolution.query.RowDefinition;
 import nz.co.gregs.dbvolution.results.Line2DResult;
 import org.joda.time.Period;
+import org.locationtech.jts.io.WKTReader;
 
 /**
  *
@@ -4308,7 +4301,7 @@ public abstract class DBDefinition implements Serializable {
 	 *
 	 * <p>
 	 * The same as
-	 * {@link #transformPoint2DIntoDatabaseFormat(com.vividsolutions.jts.geom.Point)}
+	 * {@link #transformPoint2DIntoDatabaseFormat(org.locationtech.jts.geom.Point)}
 	 * but for two coordinates as SQL.
 	 *
 	 * @param xValue a number value
@@ -4325,21 +4318,24 @@ public abstract class DBDefinition implements Serializable {
 	 * From the database's representation of a Point2D create a JTS Point.
 	 *
 	 * <p>
-	 * This is the inverse of {@link #transformPoint2DIntoDatabaseFormat(com.vividsolutions.jts.geom.Point)
+	 * This is the inverse of {@link #transformPoint2DIntoDatabaseFormat(org.locationtech.jts.geom.Point)
 	 * }.
 	 *
 	 * @param pointAsString a point2d value
 	 * <p style="color: #F90;">Support DBvolution at
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a point created from the point2d value
-	 * @throws com.vividsolutions.jts.io.ParseException if the database result is
+	 * @throws org.locationtech.jts.io.ParseException if the database result is
 	 * not a valid WKT
 	 */
-	public Point transformDatabasePoint2DValueToJTSPoint(String pointAsString) throws com.vividsolutions.jts.io.ParseException {
-		Point point = (new GeometryFactory()).createPoint(new Coordinate(0, 0));
+	public Point transformDatabasePoint2DValueToJTSPoint(String pointAsString) throws org.locationtech.jts.io.ParseException {
+		final GeometryFactory geom = new GeometryFactory();
+		Point point = geom.createPoint(new Coordinate(0, 0));
 		WKTReader wktReader = new WKTReader();
 		Geometry geometry = wktReader.read(pointAsString);
-		if (geometry instanceof Point) {
+		if (geometry.isEmpty()) {
+			point = geom.createPoint();
+		} else if (geometry instanceof Point) {
 			point = (Point) geometry;
 		} else {
 			throw new IncorrectGeometryReturnedForDatatype(geometry, point);
@@ -4352,20 +4348,23 @@ public abstract class DBDefinition implements Serializable {
 	 *
 	 * <p>
 	 * This is the inverse of
-	 * {@link #transformPolygonIntoDatabasePolygon2DFormat(com.vividsolutions.jts.geom.Polygon)}.
+	 * {@link #transformPolygonIntoDatabasePolygon2DFormat(org.locationtech.jts.geom.Polygon)}.
 	 *
 	 * @param polygon2DSQL a polygon2d value
 	 * <p style="color: #F90;">Support DBvolution at
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a polygon created from the polygon2d value
-	 * @throws com.vividsolutions.jts.io.ParseException if the database result is
+	 * @throws org.locationtech.jts.io.ParseException if the database result is
 	 * not a valid WKT
 	 */
-	public Polygon transformDatabasePolygon2DToJTSPolygon(String polygon2DSQL) throws com.vividsolutions.jts.io.ParseException {
-		Polygon poly = (new GeometryFactory()).createPolygon(new Coordinate[]{});
+	public Polygon transformDatabasePolygon2DToJTSPolygon(String polygon2DSQL) throws org.locationtech.jts.io.ParseException {
+		final GeometryFactory geom = new GeometryFactory();
+		Polygon poly = geom.createPolygon(new Coordinate[]{});
 		WKTReader wktReader = new WKTReader();
 		Geometry geometry = wktReader.read(polygon2DSQL);
-		if (geometry instanceof Polygon) {
+		if (geometry.isEmpty()) {
+			poly = geom.createPolygon();
+		} else if (geometry instanceof Polygon) {
 			poly = (Polygon) geometry;
 		} else if (geometry instanceof LineString) {
 			GeometryFactory geofactory = new GeometryFactory();
@@ -4386,20 +4385,23 @@ public abstract class DBDefinition implements Serializable {
 	 *
 	 * <p>
 	 * This is the inverse of
-	 * {@link #transformPolygonIntoDatabasePolygon2DFormat(com.vividsolutions.jts.geom.Polygon)}.
+	 * {@link #transformPolygonIntoDatabasePolygon2DFormat(org.locationtech.jts.geom.Polygon)}.
 	 *
 	 * @param lineStringAsSQL a line2d value
 	 * <p style="color: #F90;">Support DBvolution at
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a linestring created from the line2d
-	 * @throws com.vividsolutions.jts.io.ParseException if the database result is
+	 * @throws org.locationtech.jts.io.ParseException if the database result is
 	 * not a valid WKT
 	 */
-	public LineString transformDatabaseLine2DValueToJTSLineString(String lineStringAsSQL) throws com.vividsolutions.jts.io.ParseException {
-		LineString lineString = (new GeometryFactory()).createLineString(new Coordinate[]{});
+	public org.locationtech.jts.geom.LineString transformDatabaseLine2DValueToJTSLineString(String lineStringAsSQL) throws org.locationtech.jts.io.ParseException {
+		final GeometryFactory geom = new GeometryFactory();
+		LineString lineString = geom.createLineString(new Coordinate[]{});
 		WKTReader wktReader = new WKTReader();
 		Geometry geometry = wktReader.read(lineStringAsSQL);
-		if (geometry instanceof LineString) {
+		if (geometry.isEmpty()) {
+			lineString = geom.createLineString();
+		} else if (geometry instanceof LineString) {
 			lineString = (LineString) geometry;
 		} else {
 			throw new IncorrectGeometryReturnedForDatatype(geometry, lineString);
@@ -4787,15 +4789,15 @@ public abstract class DBDefinition implements Serializable {
 	 * object.
 	 *
 	 * @param lineSegmentAsSQL the database linesegment2d value to create a
-	 * {@link com.vividsolutions.jts.geom.LineSegment JTS LineSegment} with
+	 * {@link org.locationtech.jts.geom.LineSegment JTS LineSegment} with
 	 * <p style="color: #F90;">Support DBvolution at
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a JTS LineSegment derived from the database's response, may be
 	 * null.
-	 * @throws com.vividsolutions.jts.io.ParseException malformed WKT will throw
+	 * @throws org.locationtech.jts.io.ParseException malformed WKT will throw
 	 * an exception
 	 */
-	public LineSegment transformDatabaseLineSegment2DValueToJTSLineSegment(String lineSegmentAsSQL) throws com.vividsolutions.jts.io.ParseException {
+	public LineSegment transformDatabaseLineSegment2DValueToJTSLineSegment(String lineSegmentAsSQL) throws org.locationtech.jts.io.ParseException {
 		LineString lineString = (new GeometryFactory()).createLineString(new Coordinate[]{});
 		WKTReader wktReader = new WKTReader();
 		Geometry geometry = wktReader.read(lineSegmentAsSQL);
@@ -5027,19 +5029,22 @@ public abstract class DBDefinition implements Serializable {
 	 * MultiPoint..
 	 *
 	 * @param pointsAsString the MultiPoint2D value to create a
-	 * {@link com.vividsolutions.jts.geom.MultiPoint JTS MultiPoint} with.
+	 * {@link org.locationtech.jts.geom.MultiPoint JTS MultiPoint} with.
 	 * <p style="color: #F90;">Support DBvolution at
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return the MultiPoint2D as a
-	 * {@link com.vividsolutions.jts.geom.MultiPoint JTS MultiPoint} instance
-	 * @throws com.vividsolutions.jts.io.ParseException malformed WKT values will
+	 * {@link org.locationtech.jts.geom.MultiPoint JTS MultiPoint} instance
+	 * @throws org.locationtech.jts.io.ParseException malformed WKT values will
 	 * throw an exception
 	 */
-	public MultiPoint transformDatabaseMultiPoint2DValueToJTSMultiPoint(String pointsAsString) throws com.vividsolutions.jts.io.ParseException {
-		MultiPoint mpoint = (new GeometryFactory()).createMultiPoint(new Coordinate[]{});
+	public MultiPoint transformDatabaseMultiPoint2DValueToJTSMultiPoint(String pointsAsString) throws org.locationtech.jts.io.ParseException {
+		final GeometryFactory geom = new GeometryFactory();
+		MultiPoint mpoint = geom.createMultiPointFromCoords(new Coordinate[]{});
 		WKTReader wktReader = new WKTReader();
 		Geometry geometry = wktReader.read(pointsAsString);
-		if (geometry instanceof MultiPoint) {
+		if (geometry.isEmpty()) {
+			mpoint = geom.createMultiPoint();
+		} else if (geometry instanceof MultiPoint) {
 			mpoint = (MultiPoint) geometry;
 		} else if (geometry instanceof Point) {
 			mpoint = (new GeometryFactory().createMultiPoint(new Point[]{((Point) geometry)}));
@@ -6078,5 +6083,13 @@ public abstract class DBDefinition implements Serializable {
 
 	public boolean requiresClosedPolygons() {
 		return false;
+	}
+
+	public boolean requiresReversingLineStringsFromDatabase() {
+		return false;
+	}
+
+	public DBExpression transformToSelectableType(DBExpression expression) {
+		return transformToStorableType(expression);
 	}
 }

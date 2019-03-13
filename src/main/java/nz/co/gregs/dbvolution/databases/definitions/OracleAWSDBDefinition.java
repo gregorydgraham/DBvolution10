@@ -19,8 +19,8 @@ import nz.co.gregs.dbvolution.internal.oracle.aws.MultiPoint2DFunctions;
 import nz.co.gregs.dbvolution.internal.oracle.aws.Polygon2DFunctions;
 import nz.co.gregs.dbvolution.internal.oracle.aws.LineSegment2DFunctions;
 import nz.co.gregs.dbvolution.internal.oracle.aws.Line2DFunctions;
-import com.vividsolutions.jts.geom.*;
-import com.vividsolutions.jts.io.WKTReader;
+import org.locationtech.jts.geom.*;
+import org.locationtech.jts.io.WKTReader;
 import java.util.List;
 import nz.co.gregs.dbvolution.databases.DBDatabase;
 import nz.co.gregs.dbvolution.datatypes.*;
@@ -328,7 +328,7 @@ public class OracleAWSDBDefinition extends OracleDBDefinition {
 	}
 
 	@Override
-	public MultiPoint transformDatabaseMultiPoint2DValueToJTSMultiPoint(String pointsAsString) throws com.vividsolutions.jts.io.ParseException {
+	public MultiPoint transformDatabaseMultiPoint2DValueToJTSMultiPoint(String pointsAsString) throws org.locationtech.jts.io.ParseException {
 		MultiPoint mpoint = null;
 		WKTReader wktReader = new WKTReader();
 		Geometry geometry = wktReader.read(pointsAsString);

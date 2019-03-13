@@ -16,8 +16,8 @@
 package nz.co.gregs.dbvolution.datatypes.spatial2D;
 
 import nz.co.gregs.dbvolution.datatypes.TransformRequiredForSelectClause;
-import com.vividsolutions.jts.geom.Polygon;
-import com.vividsolutions.jts.io.ParseException;
+import org.locationtech.jts.geom.Polygon;
+import org.locationtech.jts.io.ParseException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.logging.Level;

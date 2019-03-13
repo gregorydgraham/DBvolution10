@@ -161,9 +161,9 @@ public class DBInsertTest extends AbstractTest {
 		/* Check that row can be inserted successfully*/
 		database.insert(row);
 		Assert.assertThat(row.pk_uid.getValue(), is(1L));
-		System.out.println(""+ database.getDBTable(row).getSQLForQuery());
+		
 		TestDefaultInsertValue gotRow = database.getDBTable(row).getRowsByPrimaryKey(row.pk_uid.getValue()).get(0);
-		System.out.println(""+gotRow);
+		
 		Assert.assertThat(gotRow.pk_uid.getValue(), is(1L));
 		Assert.assertThat(gotRow.name.getValue(), is("def"));
 		Assert.assertThat(gotRow.defaultExpression.getValue(), is("def"));

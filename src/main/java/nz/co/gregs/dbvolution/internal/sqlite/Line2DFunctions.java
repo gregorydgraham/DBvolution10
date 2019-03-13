@@ -15,18 +15,19 @@
  */
 package nz.co.gregs.dbvolution.internal.sqlite;
 
-import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.GeometryFactory;
-import com.vividsolutions.jts.geom.LineString;
-import com.vividsolutions.jts.geom.Point;
-import com.vividsolutions.jts.geom.Polygon;
-import com.vividsolutions.jts.io.WKTReader;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.LineString;
+import org.locationtech.jts.geom.Point;
+import org.locationtech.jts.geom.Polygon;
+import org.locationtech.jts.io.ParseException;
+import org.locationtech.jts.io.WKTReader;
 import org.sqlite.Function;
 
 /**
@@ -293,7 +294,7 @@ public class Line2DFunctions {
 						result(firstLine.intersects(secondLine) ? 1 : 0);
 					}
 				}
-			} catch (com.vividsolutions.jts.io.ParseException ex) {
+			} catch (SQLException|ParseException ex) {
 				Logger.getLogger(Line2DFunctions.class.getName()).log(Level.SEVERE, null, ex);
 				throw new RuntimeException("Failed To Parse SQLite Polygon", ex);
 			}
@@ -325,7 +326,7 @@ public class Line2DFunctions {
 						}
 					}
 				}
-			} catch (com.vividsolutions.jts.io.ParseException ex) {
+			} catch (SQLException|ParseException ex) {
 				Logger.getLogger(Line2DFunctions.class.getName()).log(Level.SEVERE, null, ex);
 				throw new RuntimeException("Failed To Parse SQLite Polygon", ex);
 			}
@@ -371,7 +372,7 @@ public class Line2DFunctions {
 						}
 					}
 				}
-			} catch (com.vividsolutions.jts.io.ParseException ex) {
+			} catch (SQLException|ParseException ex) {
 				Logger.getLogger(Line2DFunctions.class.getName()).log(Level.SEVERE, null, ex);
 				throw new RuntimeException("Failed To Parse SQLite Polygon", ex);
 			}
@@ -432,7 +433,7 @@ public class Line2DFunctions {
 
 	private static abstract class PolygonFunction extends Function {
 
-		Polygon getPolygon(String possiblePoly) throws com.vividsolutions.jts.io.ParseException {
+		Polygon getPolygon(String possiblePoly) throws ParseException {
 			WKTReader wktReader = new WKTReader();
 			Geometry firstGeom = wktReader.read(possiblePoly);
 			if (firstGeom instanceof Polygon) {
@@ -441,7 +442,7 @@ public class Line2DFunctions {
 			return null;
 		}
 
-		LineString getLineString(String possiblePoly) throws com.vividsolutions.jts.io.ParseException {
+		LineString getLineString(String possiblePoly) throws ParseException {
 			WKTReader wktReader = new WKTReader();
 			Geometry firstGeom = wktReader.read(possiblePoly);
 			if (firstGeom instanceof LineString) {
@@ -450,7 +451,7 @@ public class Line2DFunctions {
 			return null;
 		}
 
-		Point getPoint(String possiblePoly) throws com.vividsolutions.jts.io.ParseException {
+		Point getPoint(String possiblePoly) throws ParseException {
 			WKTReader wktReader = new WKTReader();
 			Geometry firstGeom = wktReader.read(possiblePoly);
 			if (firstGeom instanceof Point) {

@@ -745,7 +745,7 @@ public class StringExpressionTest extends AbstractTest {
 
 	@Test
 	public void testStringAccumulate() throws SQLException {
-		System.out.println("nz.co.gregs.dbvolution.expressions.StringExpressionTest.testStringAccumulate()");
+//		System.out.println("nz.co.gregs.dbvolution.expressions.StringExpressionTest.testStringAccumulate()");
 		Marque marq = new Marque();
 		marq.name.clear();
 		marq.setReturnFieldsToNone();
@@ -755,7 +755,7 @@ public class StringExpressionTest extends AbstractTest {
 				marq.column(marq.name).lowercase()
 						.isBetweenInclusive("toy", StringExpression.value("volvo")));
 		query.addExpressionColumn(this, marq.column(marq.name).aggregate(", ").asExpressionColumn());
-		System.out.println(""+query.getSQLForQuery());
+//		System.out.println(""+query.getSQLForQuery());
 		List<DBQueryRow> got = query.getAllRows();
 
 		Assert.assertThat(got.size(), is(1));
@@ -766,7 +766,7 @@ public class StringExpressionTest extends AbstractTest {
 
 	@Test
 	public void testStringAccumulateWithOrderByDescending() throws SQLException {
-		System.out.println("nz.co.gregs.dbvolution.expressions.StringExpressionTest.testStringAccumulateWithOrderByDescending()");
+//		System.out.println("nz.co.gregs.dbvolution.expressions.StringExpressionTest.testStringAccumulateWithOrderByDescending()");
 		Marque marq = new Marque();
 		marq.name.clear();
 		marq.setReturnFieldsToNone();
@@ -784,7 +784,7 @@ public class StringExpressionTest extends AbstractTest {
 		List<DBQueryRow> got = query.getAllRows();
 
 //		if (got.size() != 1) {
-			System.out.println("" + query.getSQLForQuery());
+//			System.out.println("" + query.getSQLForQuery());
 //		}
 		Assert.assertThat(got.size(), is(1));
 		Assert.assertThat(got.get(0).getExpressionColumnValue(this).stringValue(), is("VOLVO, TOYOTA"));
@@ -792,7 +792,7 @@ public class StringExpressionTest extends AbstractTest {
 
 	@Test
 	public void testStringAccumulateWithOrderByAscending() throws SQLException {
-		System.out.println("nz.co.gregs.dbvolution.expressions.StringExpressionTest.testStringAccumulateWithOrderByAscending()");
+//		System.out.println("nz.co.gregs.dbvolution.expressions.StringExpressionTest.testStringAccumulateWithOrderByAscending()");
 		Marque marq = new Marque();
 		marq.name.clear();
 		marq.setReturnFieldsToNone();
@@ -810,7 +810,7 @@ public class StringExpressionTest extends AbstractTest {
 		List<DBQueryRow> got = query.getAllRows();
 
 //		if (got.size() != 1) {
-			System.out.println("" + query.getSQLForQuery());
+//			System.out.println("" + query.getSQLForQuery());
 //		}
 		Assert.assertThat(got.size(), is(1));
 		Assert.assertThat(got.get(0).getExpressionColumnValue(this).stringValue(), is("TOYOTA, VOLVO"));

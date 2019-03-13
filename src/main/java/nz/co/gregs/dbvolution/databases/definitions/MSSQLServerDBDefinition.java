@@ -15,8 +15,8 @@
  */
 package nz.co.gregs.dbvolution.databases.definitions;
 
-import com.vividsolutions.jts.geom.*;
-import com.vividsolutions.jts.io.WKTReader;
+import org.locationtech.jts.geom.*;
+import org.locationtech.jts.io.WKTReader;
 import java.text.*;
 import java.util.*;
 import nz.co.gregs.dbvolution.DBRow;
@@ -28,11 +28,15 @@ import nz.co.gregs.dbvolution.exceptions.DBRuntimeException;
 import nz.co.gregs.dbvolution.exceptions.IncorrectGeometryReturnedForDatatype;
 import nz.co.gregs.dbvolution.expressions.BooleanExpression;
 import nz.co.gregs.dbvolution.expressions.DBExpression;
+import nz.co.gregs.dbvolution.expressions.spatial2D.Point2DExpression;
+import nz.co.gregs.dbvolution.expressions.spatial2D.Spatial2DExpression;
 import nz.co.gregs.dbvolution.internal.properties.PropertyWrapper;
 import nz.co.gregs.dbvolution.internal.query.LargeObjectHandlerType;
 import nz.co.gregs.dbvolution.internal.sqlserver.*;
 import nz.co.gregs.dbvolution.internal.query.QueryOptions;
 import nz.co.gregs.dbvolution.internal.query.QueryState;
+import nz.co.gregs.dbvolution.results.ExpressionHasStandardStringResult;
+import org.apache.commons.lang3.ArrayUtils;
 
 /**
  * Defines the features of the Microsoft SQL Server database that differ from
@@ -107,7 +111,7 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 	@Override
 	public String doColumnTransformForSelect(QueryableDatatype<?> qdt, String selectableName) {
 		if (qdt instanceof DBPolygon2D) {
-			return "(" + selectableName + ").STAsText()";
+			return "CAST((" + selectableName + ").STAsText() AS NVARCHAR(2000))";
 		} else if (qdt instanceof DBPoint2D) {
 			return "CAST((" + selectableName + ").STAsText() AS NVARCHAR(2000))";
 		} else if (qdt instanceof DBLine2D) {
@@ -591,7 +595,7 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 
 	@Override
 	public String doPoint2DAsTextTransform(String point2DString) {
-		return "(" + point2DString + ").STAsText()";
+		return "CAST((" + point2DString + ").STAsText() as varchar(1000))";
 	}
 
 	@Override
@@ -652,7 +656,7 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 
 	@Override
 	public String transformLineStringIntoDatabaseLine2DFormat(LineString line) {
-		return "geometry::STGeomFromText ('" + line.toText() + "',0)";
+		return "geometry::STGeomFromText ('" + line.toText() + "',0).MakeValid().STUnion(geometry::STGeomFromText('" + line.toText() + "', 0).MakeValid().STStartPoint())";
 	}
 
 	@Override
@@ -675,7 +679,7 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 			separator = ", ";
 		}
 
-		return "geometry::STGeomFromText('POLYGON ((" + str + "))', 0).MakeValid()";
+		return "geometry::STGeomFromText('POLYGON ((" + str + "))', 0).MakeValid().STUnion(geometry::STGeomFromText('POLYGON ((" + str + "))', 0).MakeValid().STStartPoint())";
 	}
 
 	@Override
@@ -692,7 +696,8 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 			}
 		}
 //'POLYGON ((12 12, 13 12, 13 13, 12 13, 12 12))'
-		return "geometry::STGeomFromText('POLYGON ((" + str + "))', 0).MakeValid()";
+// the STUnion corrects for the unusual handedness of SQLServer
+		return "geometry::STGeomFromText('POLYGON ((" + str + "))', 0).MakeValid().STUnion(geometry::STGeomFromText('POLYGON ((" + str + "))', 0).MakeValid().STStartPoint())";
 	}
 
 	@Override
@@ -706,7 +711,7 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 			separator = ",";
 		}
 
-		return "geometry::STGeomFromText('POLYGON ((" + str + "))', 0)";
+		return "geometry::STGeomFromText('POLYGON ((" + str + "))', 0).MakeValid().STUnion(geometry::STGeomFromText('POLYGON ((" + str + "))', 0).MakeValid().STStartPoint())";
 	}
 
 	@Override
@@ -747,7 +752,8 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 
 	@Override
 	public String doPolygon2DEqualsTransform(String firstGeometry, String secondGeometry) {
-		return "((" + firstGeometry + ").STEquals(" + secondGeometry + ")=1)";
+		//return "((" + firstGeometry + ").STEquals(" + secondGeometry + ")=1)";
+		return "(" + Polygon2DFunctions.EQUALS + "((" + firstGeometry + "), (" + secondGeometry + "))=1)";
 	}
 
 	/**
@@ -846,7 +852,7 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 	}
 
 	@Override
-	public LineSegment transformDatabaseLineSegment2DValueToJTSLineSegment(String lineSegmentAsSQL) throws com.vividsolutions.jts.io.ParseException {
+	public LineSegment transformDatabaseLineSegment2DValueToJTSLineSegment(String lineSegmentAsSQL) throws org.locationtech.jts.io.ParseException {
 		return super.transformDatabaseLineSegment2DValueToJTSLineSegment(lineSegmentAsSQL);
 	}
 
@@ -913,22 +919,43 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 
 	@Override
 	public String transformMultiPoint2DToDatabaseMultiPoint2DValue(MultiPoint points) {
-		return "geometry::STGeomFromText ('" + points.toText() + "',0)";
+		return "geometry::STGeomFromText ('" + points.toText() + "',0).MakeValid().STUnion(geometry::STGeomFromText('" + points.toText() + "', 0).MakeValid().STStartPoint())";
 	}
 
 	@Override
-	public MultiPoint transformDatabaseMultiPoint2DValueToJTSMultiPoint(String pointsAsString) throws com.vividsolutions.jts.io.ParseException {
+	public MultiPoint transformDatabaseMultiPoint2DValueToJTSMultiPoint(String pointsAsString) throws org.locationtech.jts.io.ParseException {
 		MultiPoint mpoint = null;
 		WKTReader wktReader = new WKTReader();
 		if (pointsAsString == null || pointsAsString.isEmpty()) {
 			mpoint = (new GeometryFactory()).createMultiPoint(new Point[]{});
 		} else {
 			Geometry geometry = wktReader.read(pointsAsString);
-			if (geometry instanceof MultiPoint) {
+			if (geometry.isEmpty()) {
+				mpoint = (new GeometryFactory()).createMultiPoint();
+			} else if (geometry instanceof MultiPoint) {
 				mpoint = (MultiPoint) geometry;
 			} else if (geometry instanceof Point) {
 				Point point = (Point) geometry;
 				mpoint = (new GeometryFactory()).createMultiPoint(new Point[]{point});
+			} else {
+				throw new IncorrectGeometryReturnedForDatatype(geometry, mpoint);
+			}
+		}
+		return mpoint;
+	}
+
+	@Override
+	public Point transformDatabasePoint2DValueToJTSPoint(String pointsAsString) throws org.locationtech.jts.io.ParseException {
+		Point mpoint = null;
+		WKTReader wktReader = new WKTReader();
+		if (pointsAsString == null || pointsAsString.isEmpty()) {
+			mpoint = (new GeometryFactory()).createPoint();
+		} else {
+			Geometry geometry = wktReader.read(pointsAsString);
+			if (geometry.isEmpty()) {
+				mpoint = (new GeometryFactory()).createPoint();
+			} else if (geometry instanceof Point) {
+				mpoint = (Point) geometry;
 			} else {
 				throw new IncorrectGeometryReturnedForDatatype(geometry, mpoint);
 			}
@@ -943,7 +970,7 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 
 	@Override
 	public String doMultiPoint2DGetPointAtIndexTransform(String first, String index) {
-		return "(" + first + ").STPointN(" + index + ")";
+		return "(" + first + ").STPointN(" + doMultiPoint2DGetNumberOfPointsTransform(first) + " - (" + index + " -1))";
 	}
 
 	@Override
@@ -1132,16 +1159,51 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 
 	@Override
 	public String doStringAccumulateTransform(String accumulateColumn, String separator, String referencedTable) {
-		return "(STRING_AGG("+accumulateColumn+", "+separator+"))";
+		return "(STRING_AGG(" + accumulateColumn + ", " + separator + "))";
 	}
 
 	@Override
 	public String doStringAccumulateTransform(String accumulateColumn, String separator, String orderByColumnName, String referencedTable) {
-		return "(STRING_AGG("+accumulateColumn+", "+separator+") WITHIN GROUP (ORDER BY "+orderByColumnName+"))";
+		return "(STRING_AGG(" + accumulateColumn + ", " + separator + ") WITHIN GROUP (ORDER BY " + orderByColumnName + "))";
 	}
 
 	@Override
 	public boolean requiresClosedPolygons() {
 		return true;
+	}
+
+	@Override
+	public boolean requiresReversingLineStringsFromDatabase() {
+		return true;
+	}
+
+	@Override
+	public LineString transformDatabaseLine2DValueToJTSLineString(String lineStringAsSQL) throws org.locationtech.jts.io.ParseException {
+		final GeometryFactory geom = new GeometryFactory();
+		LineString lineString = geom.createLineString(new Coordinate[]{});
+		WKTReader wktReader = new WKTReader();
+		Geometry geometry = wktReader.read(lineStringAsSQL);
+		if (geometry.isEmpty()) {
+			lineString = geom.createLineString();
+		} else if (geometry instanceof LineString) {
+			lineString = (LineString) geometry;
+			Coordinate[] coords = lineString.getCoordinates();
+			ArrayUtils.reverse(coords);
+			lineString = geom.createLineString(coords);
+		} else {
+			throw new IncorrectGeometryReturnedForDatatype(geometry, lineString);
+		}
+		return lineString;
+	}
+
+	@Override
+	public DBExpression transformToSelectableType(DBExpression expression) {
+		if (expression instanceof BooleanExpression) {
+			return ((BooleanExpression) expression).ifThenElse(1, 0).bracket();
+		} else if (expression instanceof Spatial2DExpression) {
+			return( (ExpressionHasStandardStringResult)expression).stringResult();
+		} else {
+			return super.transformToStorableType(expression);
+		}
 	}
 }

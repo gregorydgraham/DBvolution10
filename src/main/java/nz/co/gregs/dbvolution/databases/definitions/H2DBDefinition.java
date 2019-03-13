@@ -16,7 +16,7 @@
 package nz.co.gregs.dbvolution.databases.definitions;
 
 import nz.co.gregs.dbvolution.internal.query.LargeObjectHandlerType;
-import com.vividsolutions.jts.geom.Polygon;
+import org.locationtech.jts.geom.Polygon;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.TimeZone;

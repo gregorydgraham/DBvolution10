@@ -16,8 +16,8 @@
 package nz.co.gregs.dbvolution.databases.definitions;
 
 import nz.co.gregs.dbvolution.internal.query.LargeObjectHandlerType;
-import com.vividsolutions.jts.geom.*;
-import com.vividsolutions.jts.io.WKTReader;
+import org.locationtech.jts.geom.*;
+import org.locationtech.jts.io.WKTReader;
 import nz.co.gregs.dbvolution.datatypes.spatial2D.DBPolygon2D;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -486,7 +486,7 @@ public class MySQLDBDefinition extends DBDefinition {
 	}
 
 	@Override
-	public LineSegment transformDatabaseLineSegment2DValueToJTSLineSegment(String lineSegmentAsSQL) throws com.vividsolutions.jts.io.ParseException {
+	public LineSegment transformDatabaseLineSegment2DValueToJTSLineSegment(String lineSegmentAsSQL) throws org.locationtech.jts.io.ParseException {
 		LineString line = transformDatabaseLine2DValueToJTSLineString(lineSegmentAsSQL);
 		LineSegment lineSegment = new LineSegment(line.getCoordinateN(0), line.getCoordinateN(1));
 		return lineSegment;
@@ -562,7 +562,7 @@ public class MySQLDBDefinition extends DBDefinition {
 	}
 
 	@Override
-	public MultiPoint transformDatabaseMultiPoint2DValueToJTSMultiPoint(String pointsAsString) throws com.vividsolutions.jts.io.ParseException {
+	public MultiPoint transformDatabaseMultiPoint2DValueToJTSMultiPoint(String pointsAsString) throws org.locationtech.jts.io.ParseException {
 		MultiPoint mpoint = null;
 		WKTReader wktReader = new WKTReader();
 		Geometry geometry = wktReader.read(pointsAsString);

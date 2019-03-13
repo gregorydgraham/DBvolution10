@@ -213,6 +213,9 @@ public class MSSQLServerDB extends DBDatabase implements SupportsPolygonDatatype
 		for (MultiPoint2DFunctions fn : MultiPoint2DFunctions.values()) {
 			fn.add(statement);
 		}
+		for (Polygon2DFunctions fn : Polygon2DFunctions.values()) {
+			fn.add(statement);
+		}
 	}
 
 	//Invalid object name 'TableThatDoesntExistOnTheCluster'.

@@ -15,15 +15,13 @@
  */
 package nz.co.gregs.dbvolution.internal.sqlite;
 
-import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.LineString;
-import com.vividsolutions.jts.geom.Point;
-import com.vividsolutions.jts.geom.Polygon;
-import com.vividsolutions.jts.io.WKTReader;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.locationtech.jts.geom.*;
+import org.locationtech.jts.io.ParseException;
+import org.locationtech.jts.io.WKTReader;
 import org.sqlite.Function;
 
 /**
@@ -284,7 +282,7 @@ public class LineSegment2DFunctions {
 						result(firstLine.intersects(secondLine) ? 1 : 0);
 					}
 				}
-			} catch (com.vividsolutions.jts.io.ParseException ex) {
+			} catch (ParseException ex) {
 				Logger.getLogger(Line2DFunctions.class.getName()).log(Level.SEVERE, null, ex);
 				throw new RuntimeException("Failed To Parse SQLite Polygon", ex);
 			}
@@ -316,7 +314,7 @@ public class LineSegment2DFunctions {
 						}
 					}
 				}
-			} catch (com.vividsolutions.jts.io.ParseException ex) {
+			} catch (ParseException ex) {
 				Logger.getLogger(Line2DFunctions.class.getName()).log(Level.SEVERE, null, ex);
 				throw new RuntimeException("Failed To Parse SQLite geometry", ex);
 			}
@@ -377,7 +375,7 @@ public class LineSegment2DFunctions {
 
 	private static abstract class PolygonFunction extends Function {
 
-		Polygon getPolygon(String possiblePoly) throws com.vividsolutions.jts.io.ParseException {
+		Polygon getPolygon(String possiblePoly) throws ParseException {
 			WKTReader wktReader = new WKTReader();
 			Geometry firstGeom = wktReader.read(possiblePoly);
 			if (firstGeom instanceof Polygon) {
@@ -386,7 +384,7 @@ public class LineSegment2DFunctions {
 			return null;
 		}
 
-		LineString getLineString(String possiblePoly) throws com.vividsolutions.jts.io.ParseException {
+		LineString getLineString(String possiblePoly) throws ParseException {
 			WKTReader wktReader = new WKTReader();
 			Geometry firstGeom = wktReader.read(possiblePoly);
 			if (firstGeom instanceof LineString) {
@@ -395,7 +393,7 @@ public class LineSegment2DFunctions {
 			return null;
 		}
 
-		Point getPoint(String possiblePoly) throws com.vividsolutions.jts.io.ParseException {
+		Point getPoint(String possiblePoly) throws ParseException {
 			WKTReader wktReader = new WKTReader();
 			Geometry firstGeom = wktReader.read(possiblePoly);
 			if (firstGeom instanceof Point) {

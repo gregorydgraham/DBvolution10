@@ -15,13 +15,9 @@
  */
 package nz.co.gregs.dbvolution.datatypes.spatial2D;
 
-import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.GeometryFactory;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
-import com.vividsolutions.jts.geom.LineString;
-import com.vividsolutions.jts.geom.Point;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
@@ -37,6 +33,8 @@ import nz.co.gregs.dbvolution.expressions.StringExpression;
 import nz.co.gregs.dbvolution.query.RowDefinition;
 import nz.co.gregs.dbvolution.results.Line2DResult;
 import nz.co.gregs.dbvolution.results.MultiPoint2DResult;
+import org.locationtech.jts.geom.*;
+import org.locationtech.jts.io.ParseException;
 
 /**
  * Represents datatypes and columns that are composed of a series of points
@@ -136,7 +134,7 @@ public class DBLine2D extends QueryableDatatype<LineString> implements Line2DRes
 	 *
 	 * @param columnExpression
 	 */
-	public DBLine2D(nz.co.gregs.dbvolution.expressions.spatial2D.Line2DExpression columnExpression) {
+	public DBLine2D(Line2DExpression columnExpression) {
 		super(columnExpression);
 	}
 
@@ -251,7 +249,7 @@ public class DBLine2D extends QueryableDatatype<LineString> implements Line2DRes
 		} else {
 			try {
 				lineString = database.transformDatabaseLine2DValueToJTSLineString(string);
-			} catch (com.vividsolutions.jts.io.ParseException ex) {
+			} catch (ParseException ex) {
 				Logger.getLogger(DBPoint2D.class.getName()).log(Level.SEVERE, null, ex);
 				throw new ParsingSpatialValueException(fullColumnName, string, ex);
 			}

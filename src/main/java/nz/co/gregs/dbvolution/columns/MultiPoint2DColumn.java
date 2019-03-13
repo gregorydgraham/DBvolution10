@@ -15,7 +15,7 @@
  */
 package nz.co.gregs.dbvolution.columns;
 
-import com.vividsolutions.jts.geom.MultiPoint;
+import org.locationtech.jts.geom.MultiPoint;
 import java.util.Objects;
 import java.util.Set;
 import nz.co.gregs.dbvolution.DBRow;

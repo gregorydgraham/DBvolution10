@@ -15,8 +15,8 @@
  */
 package nz.co.gregs.dbvolution.databases.definitions;
 
-import com.vividsolutions.jts.geom.*;
-import com.vividsolutions.jts.io.WKTReader;
+import org.locationtech.jts.geom.*;
+import org.locationtech.jts.io.WKTReader;
 import java.text.*;
 import java.util.*;
 import nz.co.gregs.dbvolution.DBRow;
@@ -677,7 +677,7 @@ public class MSSQLServerDBDefinition2016 extends DBDefinition {
 			separator = ", ";
 		}
 
-		return "geometry::STGeomFromText('POLYGON ((" + str + "))', 0).MakeValid()";
+		return "geometry::STGeomFromText('POLYGON ((" + str + "))', 0).MakeValid().STUnion(geometry::STGeomFromText('POLYGON ((" + str + "))', 0))";
 	}
 
 	@Override
@@ -848,7 +848,7 @@ public class MSSQLServerDBDefinition2016 extends DBDefinition {
 	}
 
 	@Override
-	public LineSegment transformDatabaseLineSegment2DValueToJTSLineSegment(String lineSegmentAsSQL) throws com.vividsolutions.jts.io.ParseException {
+	public LineSegment transformDatabaseLineSegment2DValueToJTSLineSegment(String lineSegmentAsSQL) throws org.locationtech.jts.io.ParseException {
 		return super.transformDatabaseLineSegment2DValueToJTSLineSegment(lineSegmentAsSQL);
 	}
 
@@ -919,7 +919,7 @@ public class MSSQLServerDBDefinition2016 extends DBDefinition {
 	}
 
 	@Override
-	public MultiPoint transformDatabaseMultiPoint2DValueToJTSMultiPoint(String pointsAsString) throws com.vividsolutions.jts.io.ParseException {
+	public MultiPoint transformDatabaseMultiPoint2DValueToJTSMultiPoint(String pointsAsString) throws org.locationtech.jts.io.ParseException {
 		MultiPoint mpoint = null;
 		WKTReader wktReader = new WKTReader();
 		if (pointsAsString == null || pointsAsString.isEmpty()) {
@@ -931,6 +931,8 @@ public class MSSQLServerDBDefinition2016 extends DBDefinition {
 			} else if (geometry instanceof Point) {
 				Point point = (Point) geometry;
 				mpoint = (new GeometryFactory()).createMultiPoint(new Point[]{point});
+			} else if ((geometry instanceof GeometryCollection) && (geometry.isEmpty())){
+				mpoint = (new GeometryFactory()).createMultiPoint(new Point[]{});
 			} else {
 				throw new IncorrectGeometryReturnedForDatatype(geometry, mpoint);
 			}
@@ -1155,5 +1157,9 @@ public class MSSQLServerDBDefinition2016 extends DBDefinition {
 	@Override
 	public boolean requiresClosedPolygons() {
 		return true;
+	}
+
+	public boolean requiresReversingLineStringsFromDatabase() {
+		return false;
 	}
 }

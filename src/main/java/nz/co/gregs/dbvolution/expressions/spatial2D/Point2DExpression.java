@@ -15,10 +15,10 @@
  */
 package nz.co.gregs.dbvolution.expressions.spatial2D;
 
-import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.GeometryFactory;
 import nz.co.gregs.dbvolution.results.Point2DResult;
-import com.vividsolutions.jts.geom.Point;
+import org.locationtech.jts.geom.Point;
 import java.util.HashSet;
 import java.util.Set;
 import nz.co.gregs.dbvolution.DBRow;

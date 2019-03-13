@@ -15,10 +15,6 @@
  */
 package nz.co.gregs.dbvolution.expressions.spatial2D;
 
-import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.GeometryFactory;
-import com.vividsolutions.jts.geom.LineSegment;
-import com.vividsolutions.jts.geom.Point;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Set;
@@ -37,6 +33,7 @@ import org.junit.Assert;
 import static org.hamcrest.Matchers.*;
 import org.junit.Test;
 import static org.junit.Assert.assertEquals;
+import org.locationtech.jts.geom.*;
 
 /**
  *

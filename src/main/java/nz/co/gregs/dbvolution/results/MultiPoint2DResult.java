@@ -15,7 +15,7 @@
  */
 package nz.co.gregs.dbvolution.results;
 
-import com.vividsolutions.jts.geom.MultiPoint;
+import org.locationtech.jts.geom.MultiPoint;
 
 /**
  *

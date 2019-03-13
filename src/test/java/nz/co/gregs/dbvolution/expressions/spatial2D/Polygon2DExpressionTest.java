@@ -28,8 +28,8 @@
  */
 package nz.co.gregs.dbvolution.expressions.spatial2D;
 
-import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.GeometryFactory;
 import java.sql.SQLException;
 import java.util.List;
 import nz.co.gregs.dbvolution.DBQuery;
@@ -56,7 +56,7 @@ public class Polygon2DExpressionTest extends AbstractTest {
 
 	public Polygon2DExpressionTest(Object testIterationName, DBDatabase db) throws SQLException {
 		super(testIterationName, db);
-		
+
 		PolygonTestTable polygonTestTable = new PolygonTestTable();
 
 		db.preventDroppingOfTables(false);
@@ -331,11 +331,11 @@ public class Polygon2DExpressionTest extends AbstractTest {
 						.intersection(
 								Polygon2DExpression.value(0, 0, 0, 1, 1, 0, 0, 0)
 						).asExpressionColumn();
-		
+
 		@DBColumn
 		public DBPolygon2D test
 				= Polygon2DExpression.value(0, 0, 0.5, 0.5, 1, 0, 0, 0).asExpressionColumn();
-		
+
 		@DBColumn
 		public DBBoolean eq
 				= this.column(this.poly)

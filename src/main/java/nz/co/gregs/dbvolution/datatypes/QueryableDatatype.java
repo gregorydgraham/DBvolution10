@@ -730,7 +730,7 @@ public abstract class QueryableDatatype<T> extends Object implements Serializabl
 		}
 		setUnchanged();
 		setDefined(true);
-		propertyWrapperDefn = null;
+//		propertyWrapperDefn = null;
 	}
 
 	/**

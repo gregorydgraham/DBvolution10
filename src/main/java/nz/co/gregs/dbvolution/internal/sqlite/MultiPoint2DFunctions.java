@@ -15,14 +15,11 @@
  */
 package nz.co.gregs.dbvolution.internal.sqlite;
 
-import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.LineString;
-import com.vividsolutions.jts.geom.MultiPoint;
-import com.vividsolutions.jts.geom.Point;
-import com.vividsolutions.jts.geom.Polygon;
-import com.vividsolutions.jts.io.WKTReader;
 import java.sql.Connection;
 import java.sql.SQLException;
+import org.locationtech.jts.geom.*;
+import org.locationtech.jts.io.ParseException;
+import org.locationtech.jts.io.WKTReader;
 import org.sqlite.Function;
 
 /**
@@ -346,46 +343,10 @@ public class MultiPoint2DFunctions {
 			result(line);
 		}
 	}
-
-//	private static class AsPolygon2D extends PolygonFunction {
-//
-//		@Override
-//		protected void xFunc() throws SQLException {
-//			try {
-//				String mpointStr = value_text(0);
-//				if (mpointStr == null) {
-//					result();
-//				} else {
-//					MultiPoint mPoint = getMultiPoint(mpointStr);
-//					if (mPoint == null) {
-//						result();
-//					} else {
-//						Polygon poly = null;
-//						int numPoints = mPoint.getNumPoints();
-//						if (numPoints < 3) {
-//							result();
-//						} else {
-//							Coordinate[] coordinates = mPoint.getCoordinates();
-//							if (coordinates[0].equals2D(coordinates[coordinates.length - 1])) {
-//								poly = (Polygon) mPoint.convexHull();
-//							} else {
-//								List<Coordinate> asList = Arrays.asList(coordinates);
-//								asList.add(coordinates[0]);
-//								final GeometryFactory geometryFactory = new GeometryFactory();
-//								poly = geometryFactory.createPolygon(asList.toArray(coordinates));
-//							}
-//							result(poly.toText());
-//						}
-//					}
-//				}
-//			} catch (ParseException ex) {
-//				Logger.getLogger(MultiPoint2DFunctions.class.getName()).log(Level.SEVERE, null, ex);
-//			}
-//		}
-//	}
+	
 	private static abstract class PolygonFunction extends Function {
 
-		Polygon getPolygon(String possiblePoly) throws com.vividsolutions.jts.io.ParseException {
+		Polygon getPolygon(String possiblePoly) throws ParseException {
 			WKTReader wktReader = new WKTReader();
 			Geometry firstGeom = wktReader.read(possiblePoly);
 			if (firstGeom instanceof Polygon) {
@@ -394,7 +355,7 @@ public class MultiPoint2DFunctions {
 			return null;
 		}
 
-		LineString getLineString(String possiblePoly) throws com.vividsolutions.jts.io.ParseException {
+		LineString getLineString(String possiblePoly) throws ParseException {
 			WKTReader wktReader = new WKTReader();
 			Geometry firstGeom = wktReader.read(possiblePoly);
 			if (firstGeom instanceof LineString) {
@@ -403,7 +364,7 @@ public class MultiPoint2DFunctions {
 			return null;
 		}
 
-		Point getPoint(String possiblePoly) throws com.vividsolutions.jts.io.ParseException {
+		Point getPoint(String possiblePoly) throws ParseException {
 			WKTReader wktReader = new WKTReader();
 			Geometry firstGeom = wktReader.read(possiblePoly);
 			if (firstGeom instanceof Point) {
@@ -412,7 +373,7 @@ public class MultiPoint2DFunctions {
 			return null;
 		}
 
-		MultiPoint getMultiPoint(String possiblePoly) throws com.vividsolutions.jts.io.ParseException {
+		MultiPoint getMultiPoint(String possiblePoly) throws ParseException {
 			WKTReader wktReader = new WKTReader();
 			Geometry firstGeom = wktReader.read(possiblePoly);
 			if (firstGeom instanceof MultiPoint) {

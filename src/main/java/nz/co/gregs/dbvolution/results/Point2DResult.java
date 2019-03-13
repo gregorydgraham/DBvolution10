@@ -15,7 +15,7 @@
  */
 package nz.co.gregs.dbvolution.results;
 
-import com.vividsolutions.jts.geom.Point;
+import org.locationtech.jts.geom.Point;
 
 /**
  *
