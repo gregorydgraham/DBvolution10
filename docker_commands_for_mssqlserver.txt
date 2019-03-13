@@ -1,0 +1,16 @@
+-- IP Address for connections is the IP of the host machine (for instance 192.168.0.2)
+
+-- Get latest version
+docker pull microsoft/mssql-server-linux
+
+-- Start the container
+docker run --name sqlserver_container -v /Users/gregorygraham/Projects/MSSQLServer:/MSSQLServer -i --cap-add=SYS_TIME -e ACCEPT_EULA=Y -e SA_PASSWORD=Password23 -e 'TZ=NZDT' -p 1433:1433 -d microsoft/mssql-server-linux
+docker container exec sqlserver_container apt-get update
+docker container exec sqlserver_container apt-get upgrade -y
+docker container exec sqlserver_container apt-get install -y ntp
+docker container exec sqlserver_container ntpd -gq
+docker container exec sqlserver_container service ntp start
+
+-- Stop and remove the container
+docker container stop sqlserver_container ; docker container rm sqlserver_container
+
