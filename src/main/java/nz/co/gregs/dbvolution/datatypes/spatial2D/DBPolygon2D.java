@@ -30,6 +30,7 @@ import nz.co.gregs.dbvolution.expressions.spatial2D.Polygon2DExpression;
 import nz.co.gregs.dbvolution.expressions.StringExpression;
 import nz.co.gregs.dbvolution.query.RowDefinition;
 import nz.co.gregs.dbvolution.results.Polygon2DResult;
+import org.locationtech.jts.geom.GeometryFactory;
 
 /**
  * Represents database columns and values that are a 2 dimensional polygon: an
@@ -120,7 +121,11 @@ public class DBPolygon2D extends QueryableDatatype<Polygon> implements Transform
 			return null;
 		} else {
 			try {
-				geometry = database.transformDatabasePolygon2DToJTSPolygon(string);
+				if (string.equals("GEOMETRYCOLLECTION()")) {
+					geometry = (new GeometryFactory()).createPolygon();
+				} else {
+					geometry = database.transformDatabasePolygon2DToJTSPolygon(string);
+				}
 			} catch (ParseException ex) {
 				Logger.getLogger(DBPolygon2D.class.getName()).log(Level.SEVERE, null, ex);
 				throw new nz.co.gregs.dbvolution.exceptions.ParsingSpatialValueException(fullColumnName, string, ex);

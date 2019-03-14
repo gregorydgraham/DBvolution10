@@ -156,8 +156,8 @@ public class DBMultiPoint2D extends QueryableDatatype<MultiPoint> implements Mul
 	 * Create a DBPoint2D with the column value specified.
 	 *
 	 * <p>
- When retrieving this object from the database the value will be
- evaluated to provide the value.
+	 * When retrieving this object from the database the value will be evaluated
+	 * to provide the value.
 	 *
 	 * @param columnExpression
 	 */
@@ -202,7 +202,11 @@ public class DBMultiPoint2D extends QueryableDatatype<MultiPoint> implements Mul
 			return null;
 		} else {
 			try {
-				point = database.transformDatabaseMultiPoint2DValueToJTSMultiPoint(string);
+				if (string.equals("GEOMETRYCOLLECTION()")) {
+					point = (new GeometryFactory().createMultiPoint());
+				} else {
+					point = database.transformDatabaseMultiPoint2DValueToJTSMultiPoint(string);
+				}
 			} catch (ParseException ex) {
 				Logger.getLogger(DBPoint2D.class.getName()).log(Level.SEVERE, null, ex);
 				throw new ParsingSpatialValueException(fullColumnName, string, ex);

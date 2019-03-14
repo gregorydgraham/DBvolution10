@@ -109,8 +109,8 @@ public class DBPoint2D extends QueryableDatatype<Point> implements Point2DResult
 	 * Create a DBPoint2D with the column value specified.
 	 *
 	 * <p>
- When retrieving this object from the database the value will be
- evaluated to provide the value.
+	 * When retrieving this object from the database the value will be evaluated
+	 * to provide the value.
 	 *
 	 * @param columnExpression
 	 */
@@ -155,7 +155,11 @@ public class DBPoint2D extends QueryableDatatype<Point> implements Point2DResult
 			return null;
 		} else {
 			try {
-				point = database.transformDatabasePoint2DValueToJTSPoint(string);
+				if (string.equals("GEOMETRYCOLLECTION()")) {
+					point = (new GeometryFactory()).createPoint();
+				} else {
+					point = database.transformDatabasePoint2DValueToJTSPoint(string);
+				}
 			} catch (ParseException ex) {
 				Logger.getLogger(DBPoint2D.class.getName()).log(Level.SEVERE, null, ex);
 				throw new ParsingSpatialValueException(fullColumnName, string, ex);

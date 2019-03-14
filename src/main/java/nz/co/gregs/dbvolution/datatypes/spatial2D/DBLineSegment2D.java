@@ -236,7 +236,10 @@ public class DBLineSegment2D extends QueryableDatatype<LineSegment> implements L
 			return null;
 		} else {
 			try {
-				lineSegment = database.transformDatabaseLineSegment2DValueToJTSLineSegment(string);
+				if (string.equals("GEOMETRYCOLLECTION()")) {
+					lineSegment = new LineSegment();
+				} else {
+				lineSegment = database.transformDatabaseLineSegment2DValueToJTSLineSegment(string);}
 			} catch (ParseException ex) {
 				Logger.getLogger(DBLineSegment2D.class.getName()).log(Level.SEVERE, null, ex);
 				throw new ParsingSpatialValueException(fullColumnName, string, ex);

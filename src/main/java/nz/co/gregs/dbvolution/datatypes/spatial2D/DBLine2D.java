@@ -78,8 +78,8 @@ public class DBLine2D extends QueryableDatatype<LineString> implements Line2DRes
 	 * Create a DBLine2D with the value set to the {@link LineString} provided.
 	 *
 	 * <p>
- This is a convenient way to assign a constant value in an value or
- DBRow subclass.
+	 * This is a convenient way to assign a constant value in an value or DBRow
+	 * subclass.
 	 *
 	 * @param lineString
 	 */
@@ -91,16 +91,16 @@ public class DBLine2D extends QueryableDatatype<LineString> implements Line2DRes
 	 * Create a DBLine2D with the value set to the {@link LineString} provided.
 	 *
 	 * <p>
- This is a convenient way to assign a constant value in an value or
- DBRow subclass.
+	 * This is a convenient way to assign a constant value in an value or DBRow
+	 * subclass.
 	 *
 	 * @param lineString
 	 */
 	public DBLine2D(Point... lineString) {
 		super(lineStringFromPoints(lineString));
 	}
-	
-	private static LineString lineStringFromPoints(Point... points){
+
+	private static LineString lineStringFromPoints(Point... points) {
 		GeometryFactory geometryFactory = new GeometryFactory();
 		List<Coordinate> coords = new ArrayList<Coordinate>();
 		for (Point point : points) {
@@ -115,8 +115,8 @@ public class DBLine2D extends QueryableDatatype<LineString> implements Line2DRes
 	 * {@link MultiPoint2DResult multipoint value or value} provided.
 	 *
 	 * <p>
- This is a convenient way to assign a constant value in an value or
- DBRow subclass.
+	 * This is a convenient way to assign a constant value in an value or DBRow
+	 * subclass.
 	 *
 	 * @param multipoint either a {@link MultiPoint2DExpression} or a
 	 * {@link DBMultiPoint2D}
@@ -129,8 +129,8 @@ public class DBLine2D extends QueryableDatatype<LineString> implements Line2DRes
 	 * Create a DBLine2D using the value supplied.
 	 *
 	 * <p>
- Useful for defining value columns in DBRow subclass that acquire their
- value from a transformation of data at query time.
+	 * Useful for defining value columns in DBRow subclass that acquire their
+	 * value from a transformation of data at query time.
 	 *
 	 * @param columnExpression
 	 */
@@ -141,8 +141,8 @@ public class DBLine2D extends QueryableDatatype<LineString> implements Line2DRes
 	public DBLine2D(Coordinate... coords) {
 		super(linestringFromCoords(coords));
 	}
-	
-	private static LineString linestringFromCoords(Coordinate... coords){
+
+	private static LineString linestringFromCoords(Coordinate... coords) {
 		GeometryFactory geometryFactory = new GeometryFactory();
 		LineString line = geometryFactory.createLineString(coords);
 		return line;
@@ -248,7 +248,11 @@ public class DBLine2D extends QueryableDatatype<LineString> implements Line2DRes
 			return null;
 		} else {
 			try {
-				lineString = database.transformDatabaseLine2DValueToJTSLineString(string);
+				if (string.equals("GEOMETRYCOLLECTION()")) {
+					lineString = (new GeometryFactory()).createLineString();
+				} else {
+					lineString = database.transformDatabaseLine2DValueToJTSLineString(string);
+				}
 			} catch (ParseException ex) {
 				Logger.getLogger(DBPoint2D.class.getName()).log(Level.SEVERE, null, ex);
 				throw new ParsingSpatialValueException(fullColumnName, string, ex);
