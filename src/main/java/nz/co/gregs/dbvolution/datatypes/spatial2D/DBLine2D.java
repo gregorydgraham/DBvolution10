@@ -33,8 +33,9 @@ import nz.co.gregs.dbvolution.expressions.StringExpression;
 import nz.co.gregs.dbvolution.query.RowDefinition;
 import nz.co.gregs.dbvolution.results.Line2DResult;
 import nz.co.gregs.dbvolution.results.MultiPoint2DResult;
-import org.locationtech.jts.geom.*;
-import org.locationtech.jts.io.ParseException;
+import com.vividsolutions.jts.geom.*;
+import com.vividsolutions.jts.geom.impl.CoordinateArraySequence;
+import com.vividsolutions.jts.io.ParseException;
 
 /**
  * Represents datatypes and columns that are composed of a series of points
@@ -249,7 +250,7 @@ public class DBLine2D extends QueryableDatatype<LineString> implements Line2DRes
 		} else {
 			try {
 				if (string.equals("GEOMETRYCOLLECTION()")) {
-					lineString = (new GeometryFactory()).createLineString();
+					lineString = (new GeometryFactory()).createLineString(new Coordinate[]{});
 				} else {
 					lineString = database.transformDatabaseLine2DValueToJTSLineString(string);
 				}

@@ -1068,12 +1068,12 @@
 			<version>10.11.1.1</version>
 			<type>jar</type>
 		</dependency>
-		<!--		<dependency>
+				<dependency>
 			<groupId>com.vividsolutions</groupId>
 			<artifactId>jts</artifactId>
 			<version>1.13</version>
 			<type>jar</type>
-		</dependency>-->
+		</dependency>
 <!--		<dependency>
 			<groupId>org.locationtech.jts</groupId>
 			<artifactId>jts-modules</artifactId>
@@ -1146,12 +1146,12 @@
 			<version>3.7</version>
 			<type>jar</type>
 		</dependency>
-	 <dependency>
+<!--	 <dependency>
 	  <groupId>org.locationtech.jts</groupId>
 	  <artifactId>jts-core</artifactId>
 	  <version>1.15.0</version>
 	  <type>jar</type>
-	 </dependency>
+	 </dependency>-->
 	</dependencies>
 	<distributionManagement>
 		<site>

@@ -15,8 +15,8 @@
  */
 package nz.co.gregs.dbvolution.databases.definitions;
 
-import org.locationtech.jts.geom.*;
-import org.locationtech.jts.io.WKTReader;
+import com.vividsolutions.jts.geom.*;
+import com.vividsolutions.jts.io.WKTReader;
 import java.text.*;
 import java.util.*;
 import nz.co.gregs.dbvolution.DBRow;
@@ -28,7 +28,6 @@ import nz.co.gregs.dbvolution.exceptions.DBRuntimeException;
 import nz.co.gregs.dbvolution.exceptions.IncorrectGeometryReturnedForDatatype;
 import nz.co.gregs.dbvolution.expressions.BooleanExpression;
 import nz.co.gregs.dbvolution.expressions.DBExpression;
-import nz.co.gregs.dbvolution.expressions.spatial2D.Point2DExpression;
 import nz.co.gregs.dbvolution.expressions.spatial2D.Spatial2DExpression;
 import nz.co.gregs.dbvolution.internal.properties.PropertyWrapper;
 import nz.co.gregs.dbvolution.internal.query.LargeObjectHandlerType;
@@ -852,7 +851,7 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 	}
 
 	@Override
-	public LineSegment transformDatabaseLineSegment2DValueToJTSLineSegment(String lineSegmentAsSQL) throws org.locationtech.jts.io.ParseException {
+	public LineSegment transformDatabaseLineSegment2DValueToJTSLineSegment(String lineSegmentAsSQL) throws com.vividsolutions.jts.io.ParseException {
 		return super.transformDatabaseLineSegment2DValueToJTSLineSegment(lineSegmentAsSQL);
 	}
 
@@ -923,7 +922,7 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 	}
 
 	@Override
-	public MultiPoint transformDatabaseMultiPoint2DValueToJTSMultiPoint(String pointsAsString) throws org.locationtech.jts.io.ParseException {
+	public MultiPoint transformDatabaseMultiPoint2DValueToJTSMultiPoint(String pointsAsString) throws com.vividsolutions.jts.io.ParseException {
 		MultiPoint mpoint = null;
 		WKTReader wktReader = new WKTReader();
 		if (pointsAsString == null || pointsAsString.isEmpty()) {
@@ -931,7 +930,7 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 		} else {
 			Geometry geometry = wktReader.read(pointsAsString);
 			if (geometry.isEmpty()) {
-				mpoint = (new GeometryFactory()).createMultiPoint();
+				mpoint = (new GeometryFactory()).createMultiPoint(new Coordinate[]{});
 			} else if (geometry instanceof MultiPoint) {
 				mpoint = (MultiPoint) geometry;
 			} else if (geometry instanceof Point) {
@@ -945,15 +944,15 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 	}
 
 	@Override
-	public Point transformDatabasePoint2DValueToJTSPoint(String pointsAsString) throws org.locationtech.jts.io.ParseException {
+	public Point transformDatabasePoint2DValueToJTSPoint(String pointsAsString) throws com.vividsolutions.jts.io.ParseException {
 		Point mpoint = null;
 		WKTReader wktReader = new WKTReader();
 		if (pointsAsString == null || pointsAsString.isEmpty()) {
-			mpoint = (new GeometryFactory()).createPoint();
+			mpoint = (new GeometryFactory()).createPoint(new Coordinate());
 		} else {
 			Geometry geometry = wktReader.read(pointsAsString);
 			if (geometry.isEmpty()) {
-				mpoint = (new GeometryFactory()).createPoint();
+				mpoint = (new GeometryFactory()).createPoint(new Coordinate());
 			} else if (geometry instanceof Point) {
 				mpoint = (Point) geometry;
 			} else {
@@ -1178,13 +1177,13 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 	}
 
 	@Override
-	public LineString transformDatabaseLine2DValueToJTSLineString(String lineStringAsSQL) throws org.locationtech.jts.io.ParseException {
+	public LineString transformDatabaseLine2DValueToJTSLineString(String lineStringAsSQL) throws com.vividsolutions.jts.io.ParseException {
 		final GeometryFactory geom = new GeometryFactory();
 		LineString lineString = geom.createLineString(new Coordinate[]{});
 		WKTReader wktReader = new WKTReader();
 		Geometry geometry = wktReader.read(lineStringAsSQL);
 		if (geometry.isEmpty()) {
-			lineString = geom.createLineString();
+			lineString = geom.createLineString(new Coordinate[]{});
 		} else if (geometry instanceof LineString) {
 			lineString = (LineString) geometry;
 			Coordinate[] coords = lineString.getCoordinates();

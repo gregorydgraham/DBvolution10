@@ -15,8 +15,8 @@
  */
 package nz.co.gregs.dbvolution.databases.definitions;
 
-import org.locationtech.jts.geom.*;
-import org.locationtech.jts.io.WKTReader;
+import com.vividsolutions.jts.geom.*;
+import com.vividsolutions.jts.io.WKTReader;
 import java.text.*;
 import java.util.*;
 import nz.co.gregs.dbvolution.DBRow;
@@ -848,7 +848,7 @@ public class MSSQLServerDBDefinition2016 extends DBDefinition {
 	}
 
 	@Override
-	public LineSegment transformDatabaseLineSegment2DValueToJTSLineSegment(String lineSegmentAsSQL) throws org.locationtech.jts.io.ParseException {
+	public LineSegment transformDatabaseLineSegment2DValueToJTSLineSegment(String lineSegmentAsSQL) throws com.vividsolutions.jts.io.ParseException {
 		return super.transformDatabaseLineSegment2DValueToJTSLineSegment(lineSegmentAsSQL);
 	}
 
@@ -919,7 +919,7 @@ public class MSSQLServerDBDefinition2016 extends DBDefinition {
 	}
 
 	@Override
-	public MultiPoint transformDatabaseMultiPoint2DValueToJTSMultiPoint(String pointsAsString) throws org.locationtech.jts.io.ParseException {
+	public MultiPoint transformDatabaseMultiPoint2DValueToJTSMultiPoint(String pointsAsString) throws com.vividsolutions.jts.io.ParseException {
 		MultiPoint mpoint = null;
 		WKTReader wktReader = new WKTReader();
 		if (pointsAsString == null || pointsAsString.isEmpty()) {

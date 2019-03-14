@@ -29,8 +29,8 @@ import nz.co.gregs.dbvolution.expressions.spatial2D.LineSegment2DExpression;
 import nz.co.gregs.dbvolution.expressions.StringExpression;
 import nz.co.gregs.dbvolution.query.RowDefinition;
 import nz.co.gregs.dbvolution.results.LineSegment2DResult;
-import org.locationtech.jts.geom.*;
-import org.locationtech.jts.io.ParseException;
+import com.vividsolutions.jts.geom.*;
+import com.vividsolutions.jts.io.ParseException;
 
 /**
  * Represents datatypes and columns that are composed of a 2 points connected as

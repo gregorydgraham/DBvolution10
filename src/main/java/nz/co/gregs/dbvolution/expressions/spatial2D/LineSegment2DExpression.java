@@ -16,9 +16,9 @@
 package nz.co.gregs.dbvolution.expressions.spatial2D;
 
 import nz.co.gregs.dbvolution.results.LineSegment2DResult;
-import org.locationtech.jts.geom.Coordinate;
-import org.locationtech.jts.geom.LineSegment;
-import org.locationtech.jts.geom.Point;
+import com.vividsolutions.jts.geom.Coordinate;
+import com.vividsolutions.jts.geom.LineSegment;
+import com.vividsolutions.jts.geom.Point;
 import java.util.HashSet;
 import java.util.Set;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
@@ -412,7 +412,7 @@ public class LineSegment2DExpression extends Spatial2DExpression<LineSegment, Li
 	 * points ever cross.
 	 *
 	 * <p>
-	 * Use {@link #intersectionWith(org.locationtech.jts.geom.Point, org.locationtech.jts.geom.Point)
+	 * Use {@link #intersectionWith(com.vividsolutions.jts.geom.Point, com.vividsolutions.jts.geom.Point)
 	 * } to find the intersection point.
 	 *
 	 * @param point1 the first point in the line segment to compare against
@@ -431,7 +431,7 @@ public class LineSegment2DExpression extends Spatial2DExpression<LineSegment, Li
 	 * coordinates ever cross.
 	 *
 	 * <p>
-	 * Use {@link #intersectionWith(org.locationtech.jts.geom.Coordinate, org.locationtech.jts.geom.Coordinate)
+	 * Use {@link #intersectionWith(com.vividsolutions.jts.geom.Coordinate, com.vividsolutions.jts.geom.Coordinate)
 	 * } to find the intersection point.
 	 *
 	 * @param coord1 the first point in the line segment to compare against
@@ -449,7 +449,7 @@ public class LineSegment2DExpression extends Spatial2DExpression<LineSegment, Li
 	 * Tests whether this line segment and the other line segment ever cross.
 	 *
 	 * <p>
-	 * Use {@link #intersectionWith(org.locationtech.jts.geom.LineSegment) } to
+	 * Use {@link #intersectionWith(com.vividsolutions.jts.geom.LineSegment) } to
 	 * find the intersection point.
 	 *
 	 * @param linesegment the value to compare against

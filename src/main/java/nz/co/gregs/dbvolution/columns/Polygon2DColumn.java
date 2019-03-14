@@ -15,7 +15,7 @@
  */
 package nz.co.gregs.dbvolution.columns;
 
-import org.locationtech.jts.geom.Polygon;
+import com.vividsolutions.jts.geom.Polygon;
 import java.util.Set;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;

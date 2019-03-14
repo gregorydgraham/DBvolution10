@@ -19,9 +19,9 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.locationtech.jts.geom.*;
-import org.locationtech.jts.io.ParseException;
-import org.locationtech.jts.io.WKTReader;
+import com.vividsolutions.jts.geom.*;
+import com.vividsolutions.jts.io.ParseException;
+import com.vividsolutions.jts.io.WKTReader;
 import org.sqlite.Function;
 
 /**

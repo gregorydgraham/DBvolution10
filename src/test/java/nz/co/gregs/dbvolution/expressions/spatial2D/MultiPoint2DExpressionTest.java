@@ -16,7 +16,7 @@
 package nz.co.gregs.dbvolution.expressions.spatial2D;
 
 import nz.co.gregs.dbvolution.databases.DBDatabase;
-import org.locationtech.jts.geom.*;
+import com.vividsolutions.jts.geom.*;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;

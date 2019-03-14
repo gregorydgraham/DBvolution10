@@ -17,9 +17,9 @@ package nz.co.gregs.dbvolution.internal.sqlite;
 
 import java.sql.Connection;
 import java.sql.SQLException;
-import org.locationtech.jts.geom.*;
-import org.locationtech.jts.io.ParseException;
-import org.locationtech.jts.io.WKTReader;
+import com.vividsolutions.jts.geom.*;
+import com.vividsolutions.jts.io.ParseException;
+import com.vividsolutions.jts.io.WKTReader;
 import org.sqlite.Function;
 
 /**

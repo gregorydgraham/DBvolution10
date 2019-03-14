@@ -31,7 +31,7 @@ import static org.hamcrest.Matchers.*;
 import org.junit.Assert;
 import org.junit.Test;
 import static org.junit.Assert.*;
-import org.locationtech.jts.geom.*;
+import com.vividsolutions.jts.geom.*;
 
 /**
  *

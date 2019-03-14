@@ -15,7 +15,7 @@
  */
 package nz.co.gregs.dbvolution.results;
 
-import org.locationtech.jts.geom.LineSegment;
+import com.vividsolutions.jts.geom.LineSegment;
 
 /**
  *

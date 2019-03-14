@@ -15,11 +15,11 @@
  */
 package nz.co.gregs.dbvolution.datatypes.spatial2D;
 
-import org.locationtech.jts.geom.Coordinate;
-import org.locationtech.jts.geom.GeometryFactory;
-import org.locationtech.jts.geom.MultiPoint;
-import org.locationtech.jts.geom.Point;
-import org.locationtech.jts.io.ParseException;
+import com.vividsolutions.jts.geom.Coordinate;
+import com.vividsolutions.jts.geom.GeometryFactory;
+import com.vividsolutions.jts.geom.MultiPoint;
+import com.vividsolutions.jts.geom.Point;
+import com.vividsolutions.jts.io.ParseException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.logging.Level;
@@ -203,7 +203,7 @@ public class DBMultiPoint2D extends QueryableDatatype<MultiPoint> implements Mul
 		} else {
 			try {
 				if (string.equals("GEOMETRYCOLLECTION()")) {
-					point = (new GeometryFactory().createMultiPoint());
+					point = (new GeometryFactory().createMultiPoint(new Coordinate[]{}));
 				} else {
 					point = database.transformDatabaseMultiPoint2DValueToJTSMultiPoint(string);
 				}

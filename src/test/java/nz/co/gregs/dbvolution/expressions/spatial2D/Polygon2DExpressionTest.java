@@ -28,8 +28,8 @@
  */
 package nz.co.gregs.dbvolution.expressions.spatial2D;
 
-import org.locationtech.jts.geom.Coordinate;
-import org.locationtech.jts.geom.GeometryFactory;
+import com.vividsolutions.jts.geom.Coordinate;
+import com.vividsolutions.jts.geom.GeometryFactory;
 import java.sql.SQLException;
 import java.util.List;
 import nz.co.gregs.dbvolution.DBQuery;

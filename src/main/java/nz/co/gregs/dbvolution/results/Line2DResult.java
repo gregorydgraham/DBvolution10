@@ -15,7 +15,7 @@
  */
 package nz.co.gregs.dbvolution.results;
 
-import org.locationtech.jts.geom.LineString;
+import com.vividsolutions.jts.geom.LineString;
 
 /**
  * Represents SQL results that are 2 dimensional paths: a series of connected

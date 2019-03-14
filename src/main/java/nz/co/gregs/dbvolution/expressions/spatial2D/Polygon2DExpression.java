@@ -15,12 +15,12 @@
  */
 package nz.co.gregs.dbvolution.expressions.spatial2D;
 
-import org.locationtech.jts.geom.Coordinate;
-import org.locationtech.jts.geom.GeometryFactory;
+import com.vividsolutions.jts.geom.Coordinate;
+import com.vividsolutions.jts.geom.GeometryFactory;
 import nz.co.gregs.dbvolution.results.Point2DResult;
 import nz.co.gregs.dbvolution.results.Polygon2DResult;
-import org.locationtech.jts.geom.Point;
-import org.locationtech.jts.geom.Polygon;
+import com.vividsolutions.jts.geom.Point;
+import com.vividsolutions.jts.geom.Polygon;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;

@@ -15,7 +15,7 @@
  */
 package nz.co.gregs.dbvolution.internal.sqlite;
 
-import org.locationtech.jts.io.WKTReader;
+import com.vividsolutions.jts.io.WKTReader;
 import java.sql.SQLException;
 import java.text.ParseException;
 import java.util.ArrayList;
@@ -23,7 +23,7 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import nz.co.gregs.dbvolution.databases.SQLiteDB;
-import org.locationtech.jts.geom.*;
+import com.vividsolutions.jts.geom.*;
 import org.sqlite.Function;
 
 /**
@@ -202,7 +202,7 @@ public class Polygon2DFunctions {
 				Polygon polygon = getPolygon(value_text(0));
 				//			polygon.normalize();
 				result(polygon.toText());
-			} catch (SQLException|org.locationtech.jts.io.ParseException ex) {
+			} catch (SQLException|com.vividsolutions.jts.io.ParseException ex) {
 				Logger.getLogger(Polygon2DFunctions.class.getName()).log(Level.SEVERE, null, ex);
 			}
 		}
@@ -241,7 +241,7 @@ public class Polygon2DFunctions {
 				Polygon createPolygon = factory.createPolygon(coords.toArray(new Coordinate[]{}));
 				createPolygon.normalize();
 				result(createPolygon.toText());
-			} catch (ParseException | org.locationtech.jts.io.ParseException ex) {
+			} catch (ParseException | com.vividsolutions.jts.io.ParseException ex) {
 				Logger.getLogger(SQLiteDB.class.getName()).log(Level.SEVERE, null, ex);
 				throw new RuntimeException("Failed To Parse SQLite Polygon", ex);
 			}
@@ -275,7 +275,7 @@ public class Polygon2DFunctions {
 						throw new ParseException(originalStr, 0);
 					}
 				}
-			} catch (ParseException | org.locationtech.jts.io.ParseException ex) {
+			} catch (ParseException | com.vividsolutions.jts.io.ParseException ex) {
 				Logger.getLogger(SQLiteDB.class.getName()).log(Level.SEVERE, null, ex);
 				throw new RuntimeException("Failed To Parse SQLite Polygon", ex);
 			}
@@ -309,7 +309,7 @@ public class Polygon2DFunctions {
 						throw new ParseException(originalStr, 0);
 					}
 				}
-			} catch (ParseException | org.locationtech.jts.io.ParseException ex) {
+			} catch (ParseException | com.vividsolutions.jts.io.ParseException ex) {
 				Logger.getLogger(SQLiteDB.class.getName()).log(Level.SEVERE, null, ex);
 				throw new RuntimeException("Failed To Parse SQLite Polygon", ex);
 			}
@@ -345,7 +345,7 @@ public class Polygon2DFunctions {
 				}
 //				Polygon createPolygon = factory.createPolygon(coords.toArray(new Coordinate[]{}));
 //				result(createPolygon.toText());
-			} catch (ParseException | org.locationtech.jts.io.ParseException ex) {
+			} catch (ParseException | com.vividsolutions.jts.io.ParseException ex) {
 				Logger.getLogger(SQLiteDB.class.getName()).log(Level.SEVERE, null, ex);
 				throw new RuntimeException("Failed To Parse SQLite Polygon", ex);
 			}
@@ -379,7 +379,7 @@ public class Polygon2DFunctions {
 						throw new ParseException(originalStr, 0);
 					}
 				}
-			} catch (org.locationtech.jts.io.ParseException | SQLException | ParseException ex) {
+			} catch (com.vividsolutions.jts.io.ParseException | SQLException | ParseException ex) {
 				throw new RuntimeException("Failed To Parse Polygon", ex);
 			}
 		}
@@ -432,7 +432,7 @@ public class Polygon2DFunctions {
 						throw new ParseException(originalStr, 0);
 					}
 				}
-			} catch (ParseException | org.locationtech.jts.io.ParseException ex) {
+			} catch (ParseException | com.vividsolutions.jts.io.ParseException ex) {
 				Logger.getLogger(SQLiteDB.class.getName()).log(Level.SEVERE, null, ex);
 				throw new RuntimeException("Failed To Parse SQLite Polygon", ex);
 			}
@@ -453,7 +453,7 @@ public class Polygon2DFunctions {
 					secondPoly.normalize();
 					result(firstPoly.toText().equals(secondPoly.toText()) ? 1 : 0);
 				}
-			} catch (org.locationtech.jts.io.ParseException ex) {
+			} catch (com.vividsolutions.jts.io.ParseException ex) {
 				Logger.getLogger(SQLiteDB.class.getName()).log(Level.SEVERE, null, ex);
 				throw new RuntimeException("Failed To Parse SQLite Polygon", ex);
 			}
@@ -471,7 +471,7 @@ public class Polygon2DFunctions {
 				} else {
 					result(poly.getArea());
 				}
-			} catch (org.locationtech.jts.io.ParseException ex) {
+			} catch (com.vividsolutions.jts.io.ParseException ex) {
 				Logger.getLogger(SQLiteDB.class.getName()).log(Level.SEVERE, null, ex);
 				throw new RuntimeException("Failed To Parse SQLite Polygon", ex);
 			}
@@ -490,7 +490,7 @@ public class Polygon2DFunctions {
 				} else {
 					result(poly1.touches(poly2) ? 1 : 0);
 				}
-			} catch (org.locationtech.jts.io.ParseException | SQLException ex) {
+			} catch (com.vividsolutions.jts.io.ParseException | SQLException ex) {
 				throw new RuntimeException("Failed To Parse Polygon", ex);
 			}
 		}
@@ -513,7 +513,7 @@ public class Polygon2DFunctions {
 					Geometry reverse = createLineString.reverse();
 					result(reverse.toText());
 				}
-			} catch (org.locationtech.jts.io.ParseException ex) {
+			} catch (com.vividsolutions.jts.io.ParseException ex) {
 				Logger.getLogger(SQLiteDB.class.getName()).log(Level.SEVERE, null, ex);
 				throw new RuntimeException("Failed To Parse SQLite Polygon", ex);
 			}
@@ -532,7 +532,7 @@ public class Polygon2DFunctions {
 				} else {
 					result(poly1.contains(poly2) ? 1 : 0);
 				}
-			} catch (org.locationtech.jts.io.ParseException | SQLException ex) {
+			} catch (com.vividsolutions.jts.io.ParseException | SQLException ex) {
 				throw new RuntimeException("Failed To Parse Polygon", ex);
 			}
 		}
@@ -550,7 +550,7 @@ public class Polygon2DFunctions {
 				} else {
 					result(poly1.contains(point) ? 1 : 0);
 				}
-			} catch (org.locationtech.jts.io.ParseException | SQLException ex) {
+			} catch (com.vividsolutions.jts.io.ParseException | SQLException ex) {
 				throw new RuntimeException("Failed To Parse Polygon or Point", ex);
 			}
 		}
@@ -568,7 +568,7 @@ public class Polygon2DFunctions {
 				} else {
 					result(poly1.within(poly2) ? 1 : 0);
 				}
-			} catch (org.locationtech.jts.io.ParseException ex) {
+			} catch (com.vividsolutions.jts.io.ParseException ex) {
 				Logger.getLogger(SQLiteDB.class.getName()).log(Level.SEVERE, null, ex);
 				throw new RuntimeException("Failed To Parse SQLite Polygon", ex);
 			}
@@ -587,7 +587,7 @@ public class Polygon2DFunctions {
 				} else {
 					result(poly1.overlaps(poly2) ? 1 : 0);
 				}
-			} catch (org.locationtech.jts.io.ParseException ex) {
+			} catch (com.vividsolutions.jts.io.ParseException ex) {
 				Logger.getLogger(SQLiteDB.class.getName()).log(Level.SEVERE, null, ex);
 				throw new RuntimeException("Failed To Parse SQLite Polygon", ex);
 			}
@@ -606,7 +606,7 @@ public class Polygon2DFunctions {
 				} else {
 					result(poly1.intersects(poly2) ? 1 : 0);
 				}
-			} catch (org.locationtech.jts.io.ParseException ex) {
+			} catch (com.vividsolutions.jts.io.ParseException ex) {
 				Logger.getLogger(SQLiteDB.class.getName()).log(Level.SEVERE, null, ex);
 				throw new RuntimeException("Failed To Parse SQLite Polygon", ex);
 			}
@@ -625,7 +625,7 @@ public class Polygon2DFunctions {
 				} else {
 					result(poly1.intersection(poly2).toText());
 				}
-			} catch (org.locationtech.jts.io.ParseException ex) {
+			} catch (com.vividsolutions.jts.io.ParseException ex) {
 				Logger.getLogger(SQLiteDB.class.getName()).log(Level.SEVERE, null, ex);
 				throw new RuntimeException("Failed To Parse SQLite Polygon", ex);
 			}
@@ -645,7 +645,7 @@ public class Polygon2DFunctions {
 				} else {
 					result(poly1.union(poly2).toText());
 				}
-			} catch (org.locationtech.jts.io.ParseException ex) {
+			} catch (com.vividsolutions.jts.io.ParseException ex) {
 				Logger.getLogger(SQLiteDB.class.getName()).log(Level.SEVERE, null, ex);
 				throw new RuntimeException("Failed To Parse SQLite Polygon", ex);
 			}
@@ -664,7 +664,7 @@ public class Polygon2DFunctions {
 				} else {
 					result(poly1.disjoint(poly2) ? 1 : 0);
 				}
-			} catch (org.locationtech.jts.io.ParseException ex) {
+			} catch (com.vividsolutions.jts.io.ParseException ex) {
 				Logger.getLogger(Polygon2DFunctions.class.getName()).log(Level.SEVERE, null, ex);
 				throw new RuntimeException("Failed To Parse SQLite Polygon", ex);
 			}
@@ -673,7 +673,7 @@ public class Polygon2DFunctions {
 
 	private static abstract class PolygonFunction extends Function {
 
-		Polygon getPolygon(String possiblePoly) throws org.locationtech.jts.io.ParseException {
+		Polygon getPolygon(String possiblePoly) throws com.vividsolutions.jts.io.ParseException {
 			WKTReader wktReader = new WKTReader();
 			Geometry firstGeom = wktReader.read(possiblePoly);
 			if (firstGeom instanceof Polygon) {
@@ -682,7 +682,7 @@ public class Polygon2DFunctions {
 			return null;
 		}
 
-		Point getPoint(String possiblePoly) throws org.locationtech.jts.io.ParseException {
+		Point getPoint(String possiblePoly) throws com.vividsolutions.jts.io.ParseException {
 			WKTReader wktReader = new WKTReader();
 			Geometry firstGeom = wktReader.read(possiblePoly);
 			if (firstGeom instanceof Point) {

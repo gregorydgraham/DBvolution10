@@ -15,9 +15,10 @@
  */
 package nz.co.gregs.dbvolution.datatypes.spatial2D;
 
+import com.vividsolutions.jts.geom.Coordinate;
 import nz.co.gregs.dbvolution.datatypes.TransformRequiredForSelectClause;
-import org.locationtech.jts.geom.Polygon;
-import org.locationtech.jts.io.ParseException;
+import com.vividsolutions.jts.geom.Polygon;
+import com.vividsolutions.jts.io.ParseException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.logging.Level;
@@ -30,7 +31,7 @@ import nz.co.gregs.dbvolution.expressions.spatial2D.Polygon2DExpression;
 import nz.co.gregs.dbvolution.expressions.StringExpression;
 import nz.co.gregs.dbvolution.query.RowDefinition;
 import nz.co.gregs.dbvolution.results.Polygon2DResult;
-import org.locationtech.jts.geom.GeometryFactory;
+import com.vividsolutions.jts.geom.GeometryFactory;
 
 /**
  * Represents database columns and values that are a 2 dimensional polygon: an
@@ -122,7 +123,7 @@ public class DBPolygon2D extends QueryableDatatype<Polygon> implements Transform
 		} else {
 			try {
 				if (string.equals("GEOMETRYCOLLECTION()")) {
-					geometry = (new GeometryFactory()).createPolygon();
+					geometry = (new GeometryFactory()).createPolygon(new Coordinate[]{});
 				} else {
 					geometry = database.transformDatabasePolygon2DToJTSPolygon(string);
 				}

@@ -29,11 +29,11 @@
 package nz.co.gregs.dbvolution.expressions;
 
 import nz.co.gregs.dbvolution.expressions.spatial2D.*;
-import org.locationtech.jts.geom.LineSegment;
-import org.locationtech.jts.geom.LineString;
-import org.locationtech.jts.geom.MultiPoint;
-import org.locationtech.jts.geom.Point;
-import org.locationtech.jts.geom.Polygon;
+import com.vividsolutions.jts.geom.LineSegment;
+import com.vividsolutions.jts.geom.LineString;
+import com.vividsolutions.jts.geom.MultiPoint;
+import com.vividsolutions.jts.geom.Point;
+import com.vividsolutions.jts.geom.Polygon;
 import java.io.Serializable;
 import java.util.*;
 import nz.co.gregs.dbvolution.DBRow;

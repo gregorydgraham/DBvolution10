@@ -540,10 +540,10 @@ public enum Polygon2DFunctions implements DBVFeature {
 		}
 		if (code.isEmpty()) {
 			stmt.execute("CREATE ALIAS IF NOT EXISTS " + alias() + " DETERMINISTIC AS $$ \n"
-					+ "import org.locationtech.jts.geom.*; import org.locationtech.jts.io.*;\n import java.util.*;\n" + "@CODE " + returnType + " " + alias() + "(" + parameters + ") {\n throw new UnsupportedOperationException(\"Not supported yet.\");} $$;");
+					+ "import com.vividsolutions.jts.geom.*; import com.vividsolutions.jts.io.*;\n import java.util.*;\n" + "@CODE " + returnType + " " + alias() + "(" + parameters + ") {\n throw new UnsupportedOperationException(\"Not supported yet.\");} $$;");
 		} else {
 			stmt.execute("CREATE ALIAS IF NOT EXISTS " + alias() + " DETERMINISTIC AS $$ \n"
-					+ "import org.locationtech.jts.geom.*; import org.locationtech.jts.io.*;\n import java.util.*;\n" + "@CODE " + returnType + " " + alias() + "(" + parameters + ") {\n" + code + "} $$;");
+					+ "import com.vividsolutions.jts.geom.*; import com.vividsolutions.jts.io.*;\n import java.util.*;\n" + "@CODE " + returnType + " " + alias() + "(" + parameters + ") {\n" + code + "} $$;");
 		}
 	}
 }
