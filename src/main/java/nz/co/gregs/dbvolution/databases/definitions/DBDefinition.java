@@ -3178,9 +3178,9 @@ public abstract class DBDefinition implements Serializable {
 			return recursiveTableAlias;
 		} else if (selectQuery != null) {
 			return "(" + selectQuery + ")" + beginTableAlias() + getTableAlias(table) + endTableAlias();
-		} else if(table.getSortedSubSelectRequired()!=null && requiresSortedSubselectForStringAggregate()){
-			return "(SELECT * FROM "+formatTableName(table)+ beginTableAlias() + getTableAlias(table) + endTableAlias()+" ORDER BY "+table.getSortedSubSelectRequired().toSQLString(this)+")"+ beginTableAlias() + getTableAlias(table) + endTableAlias();
-		}else {
+		} else if (table.getSortedSubSelectRequired() != null && requiresSortedSubselectForStringAggregate()) {
+			return "(SELECT * FROM " + formatTableName(table) + beginTableAlias() + getTableAlias(table) + endTableAlias() + " ORDER BY " + table.getSortedSubSelectRequired().toSQLString(this) + ")" + beginTableAlias() + getTableAlias(table) + endTableAlias();
+		} else {
 			return formatTableName(table) + beginTableAlias() + getTableAlias(table) + endTableAlias();
 		}
 	}
@@ -4333,7 +4333,7 @@ public abstract class DBDefinition implements Serializable {
 		Point point = geom.createPoint(new Coordinate(0, 0));
 		WKTReader wktReader = new WKTReader();
 		Geometry geometry = wktReader.read(pointAsString);
-		if (geometry.isEmpty()) {
+		if (geometry == null || geometry.isEmpty()) {
 			point = geom.createPoint();
 		} else if (geometry instanceof Point) {
 			point = (Point) geometry;
@@ -4362,7 +4362,7 @@ public abstract class DBDefinition implements Serializable {
 		Polygon poly = geom.createPolygon(new Coordinate[]{});
 		WKTReader wktReader = new WKTReader();
 		Geometry geometry = wktReader.read(polygon2DSQL);
-		if (geometry.isEmpty()) {
+		if (geometry == null || geometry.isEmpty()) {
 			poly = geom.createPolygon();
 		} else if (geometry instanceof Polygon) {
 			poly = (Polygon) geometry;
@@ -4399,7 +4399,7 @@ public abstract class DBDefinition implements Serializable {
 		LineString lineString = geom.createLineString(new Coordinate[]{});
 		WKTReader wktReader = new WKTReader();
 		Geometry geometry = wktReader.read(lineStringAsSQL);
-		if (geometry.isEmpty()) {
+		if (geometry == null || geometry.isEmpty()) {
 			lineString = geom.createLineString();
 		} else if (geometry instanceof LineString) {
 			lineString = (LineString) geometry;
@@ -4637,7 +4637,7 @@ public abstract class DBDefinition implements Serializable {
 	public String doRoundTransform(String numberSQL) {
 		return "ROUND(" + numberSQL + ")";
 	}
-	
+
 	/**
 	 * Generate the SQL to apply rounding to the Number expressions with the
 	 * specified number of decimal places.
@@ -4794,8 +4794,8 @@ public abstract class DBDefinition implements Serializable {
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a JTS LineSegment derived from the database's response, may be
 	 * null.
-	 * @throws org.locationtech.jts.io.ParseException malformed WKT will throw
-	 * an exception
+	 * @throws org.locationtech.jts.io.ParseException malformed WKT will throw an
+	 * exception
 	 */
 	public LineSegment transformDatabaseLineSegment2DValueToJTSLineSegment(String lineSegmentAsSQL) throws org.locationtech.jts.io.ParseException {
 		LineString lineString = (new GeometryFactory()).createLineString(new Coordinate[]{});
@@ -5042,7 +5042,7 @@ public abstract class DBDefinition implements Serializable {
 		MultiPoint mpoint = geom.createMultiPointFromCoords(new Coordinate[]{});
 		WKTReader wktReader = new WKTReader();
 		Geometry geometry = wktReader.read(pointsAsString);
-		if (geometry.isEmpty()) {
+		if (geometry == null || geometry.isEmpty()) {
 			mpoint = geom.createMultiPoint();
 		} else if (geometry instanceof MultiPoint) {
 			mpoint = (MultiPoint) geometry;
@@ -6061,11 +6061,11 @@ public abstract class DBDefinition implements Serializable {
 	}
 
 	public String doStringAccumulateTransform(String accumulateColumn, String separator, String referencedTable) {
-		return "GROUP_CONCAT("+accumulateColumn+" SEPARATOR "+separator+")";
+		return "GROUP_CONCAT(" + accumulateColumn + " SEPARATOR " + separator + ")";
 	}
 
 	public String doStringAccumulateTransform(String accumulateColumn, String separator, String orderByColumnName, String referencedTable) {
-		return "GROUP_CONCAT("+accumulateColumn+" ORDER BY "+orderByColumnName+" SEPARATOR "+separator+")";
+		return "GROUP_CONCAT(" + accumulateColumn + " ORDER BY " + orderByColumnName + " SEPARATOR " + separator + ")";
 	}
 
 	public boolean requiresSortedSubselectForStringAggregate() {
@@ -6074,11 +6074,11 @@ public abstract class DBDefinition implements Serializable {
 
 	public String doStringAccumulateTransform(StringExpression columnToAccumulate, StringExpression separator, SortProvider orderBy) {
 		return doStringAccumulateTransform(
-					columnToAccumulate.toSQLString(this),
-					separator.toSQLString(this),
-					orderBy.toSQLString(this),
-					columnToAccumulate.getTablesInvolved().toArray(new DBRow[]{})[0].getTableName()
-			);
+				columnToAccumulate.toSQLString(this),
+				separator.toSQLString(this),
+				orderBy.toSQLString(this),
+				columnToAccumulate.getTablesInvolved().toArray(new DBRow[]{})[0].getTableName()
+		);
 	}
 
 	public boolean requiresClosedPolygons() {
