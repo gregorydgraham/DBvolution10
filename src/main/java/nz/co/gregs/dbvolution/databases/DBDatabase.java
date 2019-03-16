@@ -250,7 +250,7 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 		this();
 		settings.setDbdatabaseClass(this.getClass().getCanonicalName());
 		this.definition = definition;
-		this.driverName = driverName;
+		initDriver(driverName);
 		settings.setDataSource(ds);
 		createRequiredTables();
 	}
@@ -287,7 +287,7 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 	public DBDatabase(DBDefinition definition, String driverName, DatabaseConnectionSettings dcs) throws SQLException {
 		this();
 		this.definition = definition;
-		this.driverName = driverName;
+		initDriver(driverName);
 		this.settings = dcs;
 		createRequiredTables();
 	}
@@ -322,7 +322,7 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 	public DBDatabase(DBDefinition definition, String driverName, String jdbcURL, String username, String password) throws SQLException {
 		this();
 		this.definition = definition;
-		this.driverName = driverName;
+		initDriver(driverName);
 		settings.setUrl(jdbcURL);
 		settings.setUsername(username);
 		settings.setPassword(password);
@@ -337,6 +337,15 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 		settings.setSchema(set.getSchema());
 		settings.setPort(set.getPort());
 		createRequiredTables();
+	}
+
+	private void initDriver(String driverName1) {
+		this.driverName = driverName1;
+		try {
+			Class.forName(this.driverName);
+		} catch (ClassNotFoundException ex) {
+			Logger.getLogger(DBDatabase.class.getName()).log(Level.SEVERE, null, ex);
+		}
 	}
 
 	DBTransactionStatement getDBTransactionStatement() throws SQLException {
