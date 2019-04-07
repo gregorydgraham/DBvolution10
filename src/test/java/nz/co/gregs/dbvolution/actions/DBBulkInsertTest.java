@@ -1,0 +1,96 @@
+/*
+ * Copyright 2014 Gregory Graham.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package nz.co.gregs.dbvolution.actions;
+
+import java.util.ArrayList;
+import nz.co.gregs.dbvolution.DBRow;
+import nz.co.gregs.dbvolution.annotations.*;
+import nz.co.gregs.dbvolution.datatypes.*;
+import nz.co.gregs.dbvolution.example.CarCompany;
+import nz.co.gregs.dbvolution.generic.AbstractTest;
+import static org.hamcrest.Matchers.*;
+import org.junit.Test;
+import org.junit.Assert;
+
+/**
+ *
+ * <p style="color: #F90;">Support DBvolution at
+ * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+ *
+ * @author Gregory Graham
+ */
+public class DBBulkInsertTest extends AbstractTest {
+	
+	public DBBulkInsertTest(Object testIterationName, Object db) {
+		super(testIterationName, db);
+	}
+	
+	@Test
+	public void testSaveWithMultipleRows() throws Exception {
+		DBRow row = new CarCompany("Lada", 124);
+		DBRow row2 = new CarCompany("Saab", 125);
+		database.setPrintSQLBeforeExecuting(true);
+		DBActionList result = database.insert(row, row2);
+		database.setPrintSQLBeforeExecuting(false);
+		CarCompany example = new CarCompany();
+		example.uidCarCompany.permittedValues(124, 125);
+		database.print(database.getDBTable(example).getAllRows());
+		Assert.assertThat(result.size(), is(2));
+	}
+	
+	@Test
+	public void testSaveWithAutoIncrement() throws Exception {
+		database.preventDroppingOfTables(false);
+		database.dropTableNoExceptions(new BulkInsertTestTable());
+		database.createTableNoExceptions(new BulkInsertTestTable());
+		final BulkInsertTestTable row = new BulkInsertTestTable("Lada");
+		final BulkInsertTestTable row2 = new BulkInsertTestTable("Saab");
+		database.setPrintSQLBeforeExecuting(true);
+		DBActionList result = database.insert(row, row2);
+		Assert.assertThat(result.size(), is(2));
+
+		database.setPrintSQLBeforeExecuting(false);
+//		database.print(new ArrayList<DBRow>() {
+//			{this.add(row);this.add(row2);}
+//		});
+//		BulkInsertTestTable example = new BulkInsertTestTable();
+//		example.string.permittedValues("Lada");
+//		database.print(database.getDBTable(example).getAllRows());
+		Assert.assertThat(row.pk.isDefined(), is(true));
+		Assert.assertThat(row.pk.getValue(), is(1l));
+		Assert.assertThat(row2.pk.isDefined(), is(true));
+		Assert.assertThat(row2.pk.getValue(), is(2l));
+	}
+	
+	public static class BulkInsertTestTable extends DBRow {
+		
+		@DBPrimaryKey
+		@DBAutoIncrement
+		@DBColumn
+		DBInteger pk = new DBInteger();
+		
+		@DBColumn
+		DBString string = new DBString();
+		
+		public BulkInsertTestTable() {
+		}
+		
+		public BulkInsertTestTable(String str) {
+			string.setValue(str);
+		}
+	}
+	
+}

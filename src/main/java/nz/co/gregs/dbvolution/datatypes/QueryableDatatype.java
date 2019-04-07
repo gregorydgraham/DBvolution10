@@ -949,7 +949,7 @@ public abstract class QueryableDatatype<T> extends Object implements Serializabl
 	 * <p style="color: #F90;">Support DBvolution at
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 *
-	 * @return the undefined
+	 * @return true if the value was retrieved from the database
 	 */
 	public boolean isDefined() {
 		return !undefined;

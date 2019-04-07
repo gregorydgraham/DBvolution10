@@ -15,6 +15,7 @@
  */
 package nz.co.gregs.dbvolution.databases;
 
+import nz.co.gregs.dbvolution.actions.DBBulkInsert;
 import nz.co.gregs.dbvolution.exceptions.UnableToDropDatabaseException;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import java.io.PrintStream;
@@ -541,6 +542,22 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 	 *
 	 * Inserts DBRows into the correct tables automatically
 	 *
+	 * @param row a list of DBRows
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @return a DBActionList of all the actions performed
+	 * @throws SQLException database exceptions
+	 */
+	public final DBActionList insert(DBRow row) throws SQLException {
+		DBActionList changes = new DBActionList();
+		changes.addAll(this.getDBTable(row).insert(row));
+		return changes;
+	}
+
+	/**
+	 *
+	 * Inserts DBRows into the correct tables automatically
+	 *
 	 * @param listOfRowsToInsert a list of DBRows
 	 * <p style="color: #F90;">Support DBvolution at
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
@@ -548,11 +565,12 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 	 * @throws SQLException database exceptions
 	 */
 	public final DBActionList insert(DBRow... listOfRowsToInsert) throws SQLException {
-		DBActionList changes = new DBActionList();
-		for (DBRow row : listOfRowsToInsert) {
-			changes.addAll(this.getDBTable(row).insert(row));
+		if (listOfRowsToInsert.length > 0) {
+			DBBulkInsert insert = new DBBulkInsert(listOfRowsToInsert[0]);
+			insert.addAll(listOfRowsToInsert);
+			return insert.insert(this);
 		}
-		return changes;
+		return new DBActionList();
 	}
 
 	/**
@@ -917,18 +935,18 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 			db.transactionConnection.setAutoCommit(false);
 			try {
 				returnValues = dbTransaction.doTransaction(db);
-				if (commit){
+				if (commit) {
 					db.transactionConnection.commit();
 				} else {
 					try {
-							db.transactionConnection.rollback();
+						db.transactionConnection.rollback();
 					} catch (SQLException rollbackFailed) {
 						discardConnection(db.transactionConnection);
 					}
 				}
 			} catch (SQLException ex) {
 				try {
-						db.transactionConnection.rollback();
+					db.transactionConnection.rollback();
 				} catch (SQLException excp) {
 					LOG.warn("Exception Occurred During Rollback: " + ex.getLocalizedMessage());
 				}
@@ -1686,7 +1704,7 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 	 *
 	 * @return the DBDefinition used by this DBDatabase instance
 	 */
-	public synchronized DBDefinition getDefinition() throws NoAvailableDatabaseException{
+	public synchronized DBDefinition getDefinition() throws NoAvailableDatabaseException {
 		return definition;
 	}
 
@@ -1711,8 +1729,8 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 
 	/**
 	 * Returns whether or not the example has any specified criteria.See
- 	{@link DBRow#willCreateBlankQuery(nz.co.gregs.dbvolution.databases.definitions.DBDefinition) willCreateBlankQuery}
- on DBRow.
+	 * {@link DBRow#willCreateBlankQuery(nz.co.gregs.dbvolution.databases.definitions.DBDefinition) willCreateBlankQuery}
+	 * on DBRow.
 	 *
 	 *
 	 * @param row row
@@ -1722,7 +1740,7 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 	 * otherwise
 	 * @throws nz.co.gregs.dbvolution.exceptions.NoAvailableDatabaseException
 	 */
-	public boolean willCreateBlankQuery(DBRow row) throws NoAvailableDatabaseException{
+	public boolean willCreateBlankQuery(DBRow row) throws NoAvailableDatabaseException {
 		return row.willCreateBlankQuery(this.getDefinition());
 	}
 
@@ -2265,7 +2283,7 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 		return query.query(this);
 	}
 
-	public String getSQLForDBQuery(DBQueryable query) throws NoAvailableDatabaseException{
+	public String getSQLForDBQuery(DBQueryable query) throws NoAvailableDatabaseException {
 		return query.toSQLString(this);
 	}
 

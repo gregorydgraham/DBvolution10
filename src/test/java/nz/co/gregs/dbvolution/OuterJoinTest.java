@@ -423,10 +423,15 @@ public class OuterJoinTest extends AbstractTest {
 		// DBvolution will create an outer join to accomodate our instruction
 		dbQuery.addOptional(antagonistExample);
 
+		database.print(database.getDBTable(new Antagonist()).setBlankQueryAllowed(true).getAllRows());
+		System.out.println(""+dbQuery.getSQLForQuery());
+
 		// getting all the rows is similar to DBTable 
 		// but returns a collection of DBQueryRows
 		List<nz.co.gregs.dbvolution.DBQueryRow> allQueryRows
 				= dbQuery.getAllRows();
+		
+		database.print(allQueryRows);
 
 		Assert.assertThat(allQueryRows.size(), is(3));
 
@@ -477,6 +482,8 @@ public class OuterJoinTest extends AbstractTest {
 			Antagonist guard = new Antagonist("Guard");
 			Antagonist dragon = new Antagonist("Dragon");
 			database.insert(goblin, guard, dragon);
+			
+			database.print(database.getDBTable(new Antagonist()).setBlankQueryAllowed(true).getAllRows());
 
 			//Now that the antagonists have been inserted 
 			//they have valid IDs 

@@ -1260,6 +1260,18 @@ public abstract class DBDefinition implements Serializable {
 	}
 
 	/**
+	 * Used within DBBulkInsert to separate the VALUES clauses of the INSERT statement.
+	 *
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
+	 * @return the default implementation returns ", ( ".
+	 */
+	public String beginValueSeparatorClause() {
+		return ", ( ";
+	}
+
+	/**
 	 * Used within DBInsert to end the VALUES clause of the INSERT statement.
 	 *
 	 * <p style="color: #F90;">Support DBvolution at
@@ -6091,5 +6103,9 @@ public abstract class DBDefinition implements Serializable {
 
 	public DBExpression transformToSelectableType(DBExpression expression) {
 		return transformToStorableType(expression);
+	}
+
+	public boolean supportsBulkInserts() {
+		return true;
 	}
 }

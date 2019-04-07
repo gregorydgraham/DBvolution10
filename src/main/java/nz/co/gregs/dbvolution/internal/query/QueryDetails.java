@@ -1251,8 +1251,8 @@ public class QueryDetails implements DBQueryable, Serializable {
 
 			newInstance.setDefined(); // Actually came from the database so it is a defined row.
 
-			Map<String, DBRow> existingInstancesOfThisTableRow = details.getExistingInstances().get(tableRow.getClass());
-			existingInstancesOfThisTableRow = setExistingInstancesForTable(existingInstancesOfThisTableRow, newInstance);
+//			Map<String, DBRow> existingInstancesOfThisTableRow = details.getExistingInstances().get(tableRow.getClass());
+//			existingInstancesOfThisTableRow = setExistingInstancesForTable(existingInstancesOfThisTableRow, newInstance);
 			final Class<? extends DBRow> newInstanceClass = newInstance.getClass();
 
 			if (newInstance.isEmptyRow()) {
@@ -1272,6 +1272,8 @@ public class QueryDetails implements DBQueryable, Serializable {
 				if (isGroupedQuery || primaryKeys.isEmpty() || !pksHaveBeenSet) {
 					queryRow.put(newInstanceClass, newInstance);
 				} else {
+					Map<String, DBRow> existingInstancesOfThisTableRow = details.getExistingInstances().get(tableRow.getClass());
+					existingInstancesOfThisTableRow = setExistingInstancesForTable(existingInstancesOfThisTableRow, newInstance);
 					DBRow existingInstance = getOrSetExistingInstanceForRow(defn, newInstance, existingInstancesOfThisTableRow);
 					queryRow.put(existingInstance.getClass(), existingInstance);
 				}
@@ -1360,20 +1362,40 @@ public class QueryDetails implements DBQueryable, Serializable {
 	 */
 	protected DBRow getOrSetExistingInstanceForRow(DBDefinition defn, DBRow newInstance, Map<String, DBRow> existingInstancesOfThisTableRow) {
 		DBRow existingInstance = newInstance;
+		String keyToSearchFor = "";
 		final List<PropertyWrapper> primaryKeys = newInstance.getPrimaryKeyPropertyWrappers();
 		for (PropertyWrapper primaryKey : primaryKeys) {
 			if (primaryKey != null) {
 				final QueryableDatatype<?> qdt = primaryKey.getQueryableDatatype();
 				if (qdt != null) {
-					existingInstance = existingInstancesOfThisTableRow.get(qdt.toSQLString(defn));
-					if (existingInstance == null) {
-						existingInstance = newInstance;
-						existingInstancesOfThisTableRow.put(qdt.toSQLString(defn), existingInstance);
-					}
+					keyToSearchFor += "("+qdt.toSQLString(defn) + ")";
 				}
 			}
 		}
+		if (!keyToSearchFor.isEmpty()) {
+			existingInstance = existingInstancesOfThisTableRow.get(keyToSearchFor);
+			if (existingInstance == null) {
+				existingInstance = newInstance;
+				existingInstancesOfThisTableRow.put(keyToSearchFor, existingInstance);
+			}
+		}
 		return existingInstance;
+		
+//		DBRow existingInstance = newInstance;
+//		final List<PropertyWrapper> primaryKeys = newInstance.getPrimaryKeyPropertyWrappers();
+//		for (PropertyWrapper primaryKey : primaryKeys) {
+//			if (primaryKey != null) {
+//				final QueryableDatatype<?> qdt = primaryKey.getQueryableDatatype();
+//				if (qdt != null) {
+//					existingInstance = existingInstancesOfThisTableRow.get(qdt.toSQLString(defn));
+//					if (existingInstance == null) {
+//						existingInstance = newInstance;
+//						existingInstancesOfThisTableRow.put(qdt.toSQLString(defn), existingInstance);
+//					}
+//				}
+//			}
+//		}
+//		return existingInstance;
 	}
 
 	protected synchronized void setCurrentPage(List<DBQueryRow> results) {

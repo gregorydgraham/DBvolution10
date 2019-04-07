@@ -448,7 +448,7 @@ public class DBInsert extends DBAction {
 		return initialDatabase != next;
 	}
 
-	private static class InsertFields {
+	protected static class InsertFields {
 
 		private final StringBuilder allColumns = new StringBuilder();
 		private final StringBuilder allValues = new StringBuilder();
@@ -458,19 +458,19 @@ public class DBInsert extends DBAction {
 		public InsertFields() {
 		}
 
-		private StringBuilder getAllColumns() {
+		StringBuilder getAllColumns() {
 			return this.allColumns;
 		}
 
-		private StringBuilder getAllValues() {
+		StringBuilder getAllValues() {
 			return this.allValues;
 		}
 
-		private StringBuilder getAllChangedColumns() {
+		StringBuilder getAllChangedColumns() {
 			return this.allChangedColumns;
 		}
 
-		private StringBuilder getAllSetValues() {
+		StringBuilder getAllSetValues() {
 			return this.allSetValues;
 		}
 	}
