@@ -431,7 +431,7 @@ public class RowDefinitionInstanceWrapper implements Serializable{
 	 * key properties
 	 */
 	public List<PropertyWrapperDefinition> getRecursiveForeignKeyPropertyWrapperDefinitions() {
-		System.out.println("nz.co.gregs.dbvolution.internal.properties.RowDefinitionInstanceWrapper.getRecursiveForeignKeyPropertyWrapperDefinitions()");
+//		System.out.println("nz.co.gregs.dbvolution.internal.properties.RowDefinitionInstanceWrapper.getRecursiveForeignKeyPropertyWrapperDefinitions()");
 		return classWrapper.getRecursiveForeignKeyPropertyDefinitions();
 	}
 

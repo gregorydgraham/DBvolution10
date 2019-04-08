@@ -588,7 +588,7 @@ public class RowDefinitionClassWrapper implements Serializable{
 		if (identityOnly) {
 			throw new AssertionError("Attempt to access non-identity information of identity-only DBRow class wrapper");
 		}
-		System.out.println("nz.co.gregs.dbvolution.internal.properties.RowDefinitionClassWrapper.getRecursiveForeignKeyPropertyDefinitions()");
+//		System.out.println("nz.co.gregs.dbvolution.internal.properties.RowDefinitionClassWrapper.getRecursiveForeignKeyPropertyDefinitions()");
 		List<PropertyWrapperDefinition> list = new ArrayList<PropertyWrapperDefinition>();
 		for (PropertyWrapperDefinition property : columnProperties) {
 			try {

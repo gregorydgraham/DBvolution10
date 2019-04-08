@@ -715,7 +715,7 @@ public class PropertyWrapper implements Serializable {
 	 * table supplied, otherwise FALSE.
 	 */
 	public boolean isRecursiveForeignKey() {
-		System.out.println("nz.co.gregs.dbvolution.internal.properties.PropertyWrapper.isRecursiveForeignKey()");
+//		System.out.println("nz.co.gregs.dbvolution.internal.properties.PropertyWrapper.isRecursiveForeignKey()");
 		return propertyDefinition.isRecursiveForeignKey();
 	}
 

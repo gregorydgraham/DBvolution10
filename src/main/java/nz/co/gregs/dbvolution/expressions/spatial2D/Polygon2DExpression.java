@@ -1381,9 +1381,9 @@ public class Polygon2DExpression extends Spatial2DExpression<Polygon, Polygon2DR
 				ArrayList<Point2DExpression> list = new ArrayList<Point2DExpression>();
 				list.addAll(asList);
 				list.add(allCoordinates[0]);
-				for (Point2DExpression num : list) {
-					System.out.println(""+num.toSQLString(db));
-				}
+//				for (Point2DExpression num : list) {
+//					System.out.println(""+num.toSQLString(db));
+//				}
 				Point2DExpression[] toArray = list.toArray(new Point2DExpression[]{});
 				return (new CreatePolygon2DFromPoint2DArrayExpression(toArray)).toSQLString(db);
 			} else {
@@ -1430,9 +1430,9 @@ public class Polygon2DExpression extends Spatial2DExpression<Polygon, Polygon2DR
 				list.addAll(asList);
 				list.add(allCoordinates[0]);
 				list.add(allCoordinates[1]);
-				for (NumberExpression num : list) {
-					System.out.println(""+num.toSQLString(db));
-				}
+//				for (NumberExpression num : list) {
+//					System.out.println(""+num.toSQLString(db));
+//				}
 				NumberExpression[] toArray = list.toArray(new NumberExpression[]{});
 				return (new CreatePolygon2DFromCoordinateArrayExpression(toArray)).toSQLString(db);
 			} else {

@@ -768,7 +768,7 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 	 * @return a list of all foreign keys, MINUS the ignored foreign keys
 	 */
 	public List<PropertyWrapper> getRecursiveForeignKeyPropertyWrappers() {
-		System.out.println("nz.co.gregs.dbvolution.DBRow.getRecursiveForeignKeyPropertyWrappers()");
+//		System.out.println("nz.co.gregs.dbvolution.DBRow.getRecursiveForeignKeyPropertyWrappers()");
 		synchronized (fkFields) {
 			if (fkFields.isEmpty()) {
 				List<PropertyWrapper> props = getWrapper().getRecursiveForeignKeyPropertyWrappers();
@@ -1528,7 +1528,7 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 	 * {@link DBRow}
 	 */
 	public <R extends DBRow> List<QueryableDatatype<?>> getRecursiveForeignKeys() {
-		System.out.println("nz.co.gregs.dbvolution.DBRow.getRecursiveForeignKeys()");
+//		System.out.println("nz.co.gregs.dbvolution.DBRow.getRecursiveForeignKeys()");
 		List<QueryableDatatype<?>> fksToSelf = new ArrayList<>();
 		RowDefinitionInstanceWrapper wrapper = getWrapper();
 		List<PropertyWrapper> foreignKeyPropertyWrappers = wrapper.getRecursiveForeignKeyPropertyWrappers();
@@ -1593,7 +1593,7 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 	 * to the {@link DBRow target}
 	 */
 	public <R extends DBRow> List<DBExpression> getRecursiveForeignKeyExpressions() {
-		System.out.println("nz.co.gregs.dbvolution.DBRow.getRecursiveForeignKeyExpressions()");
+//		System.out.println("nz.co.gregs.dbvolution.DBRow.getRecursiveForeignKeyExpressions()");
 		List<DBExpression> fksToR = new ArrayList<>();
 		RowDefinitionInstanceWrapper wrapper = getWrapper();
 		List<PropertyWrapper> foreignKeyPropertyWrappers = wrapper.getRecursiveForeignKeyPropertyWrappers();
@@ -1634,7 +1634,7 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 	 * to the {@link DBRow target}
 	 */
 	public <R extends DBRow> List<ColumnProvider> getRecursiveForeignKeyColumns() {
-		System.out.println("nz.co.gregs.dbvolution.DBRow.getRecursiveForeignKeyExpressions()");
+//		System.out.println("nz.co.gregs.dbvolution.DBRow.getRecursiveForeignKeyExpressions()");
 		List<ColumnProvider> fksToR = new ArrayList<>();
 		RowDefinitionInstanceWrapper wrapper = getWrapper();
 		List<PropertyWrapper> foreignKeyPropertyWrappers = wrapper.getRecursiveForeignKeyPropertyWrappers();
@@ -1895,10 +1895,10 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 						} else if(relatedInstancesFromQuery.size()==1){
 							field.setRawJavaValue(relatedInstancesFromQuery.get(0));
 						}else {
-							System.out.println("nz.co.gregs.dbvolution.DBRow.setAutoFilledFields(): TOO MANY MATCHING ELEMENTS FOUND");
-							for (DBRow dBRow : relatedInstancesFromQuery) {
-								System.out.println(""+dBRow);
-							}
+//							System.out.println("nz.co.gregs.dbvolution.DBRow.setAutoFilledFields(): TOO MANY MATCHING ELEMENTS FOUND");
+//							for (DBRow dBRow : relatedInstancesFromQuery) {
+//								System.out.println(""+dBRow);
+//							}
 							field.setRawJavaValue(relatedInstancesFromQuery.get(0));
 						}
 					}

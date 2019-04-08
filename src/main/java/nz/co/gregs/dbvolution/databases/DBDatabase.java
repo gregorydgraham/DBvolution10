@@ -2393,11 +2393,11 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 			try {
 				boolean execute = dbStatement.execute(sqlString);
 			} catch (SQLException ex) {
-				System.err.println("nz.co.gregs.dbvolution.databases.DBDatabase.alterTableAddColumn() " + ex.getLocalizedMessage());
+//				System.err.println("nz.co.gregs.dbvolution.databases.DBDatabase.alterTableAddColumn() " + ex.getLocalizedMessage());
 				Logger.getLogger(DBDatabase.class.getName()).log(Level.SEVERE, null, ex);
 			}
 		} catch (SQLException ex) {
-			System.err.println("nz.co.gregs.dbvolution.databases.DBDatabase.alterTableAddColumn() " + ex.getLocalizedMessage());
+//			System.err.println("nz.co.gregs.dbvolution.databases.DBDatabase.alterTableAddColumn() " + ex.getLocalizedMessage());
 			Logger.getLogger(DBDatabase.class.getName()).log(Level.SEVERE, null, ex);
 		}
 	}
