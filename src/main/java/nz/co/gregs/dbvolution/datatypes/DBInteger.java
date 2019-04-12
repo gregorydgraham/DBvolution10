@@ -274,6 +274,16 @@ public class DBInteger extends QueryableDatatype<Long> implements IntegerResult 
 	 *
 	 * @param permitted	permitted
 	 */
+	public void permittedValuesLong(Collection<Long> permitted) {
+		permittedValues(permitted);
+	}
+
+	/**
+	 *
+	 * reduces the rows to only the object, Set, List, Array, or vararg of objects
+	 *
+	 * @param permitted	permitted
+	 */
 	public void permittedValues(Integer... permitted) {
 		this.setOperator(new DBPermittedValuesOperator<Integer>(permitted));
 	}
