@@ -32,6 +32,10 @@ import nz.co.gregs.dbvolution.exceptions.DBRuntimeException;
 import nz.co.gregs.dbvolution.exceptions.IncorrectRowProviderInstanceSuppliedException;
 import nz.co.gregs.dbvolution.expressions.DateExpression;
 import nz.co.gregs.dbvolution.expressions.StringExpression;
+import nz.co.gregs.dbvolution.operators.DBGreaterThanOperator;
+import nz.co.gregs.dbvolution.operators.DBGreaterThanOrEqualsOperator;
+import nz.co.gregs.dbvolution.operators.DBLessThanOperator;
+import nz.co.gregs.dbvolution.operators.DBLessThanOrEqualOperator;
 import nz.co.gregs.dbvolution.results.DateResult;
 import nz.co.gregs.dbvolution.operators.DBPermittedRangeExclusiveOperator;
 import nz.co.gregs.dbvolution.operators.DBPermittedRangeInclusiveOperator;
@@ -861,5 +865,37 @@ public class DBDate extends QueryableDatatype<Date> implements DateResult {
 	public synchronized DBDate setDefaultUpdateValue(DateResult value) {
 		super.setDefaultUpdateValue(value);
 		return this;
+	}
+
+	public void permitOnlyPastAndPresent() {
+		this.setOperator(new DBLessThanOrEqualOperator(DateExpression.currentDate()));
+	}
+
+	public void permitOnlyPresentAndFuture() {
+		this.setOperator(new DBGreaterThanOrEqualsOperator(DateExpression.currentDate()));
+	}
+
+	public void permitOnlyPast() {
+		this.setOperator(new DBLessThanOperator(DateExpression.currentDate()));
+	}
+
+	public void permitOnlyFuture() {
+		this.setOperator(new DBGreaterThanOperator(DateExpression.currentDate()));
+	}
+
+	public void permitOnlyPastAndPresentByDateOnly() {
+		this.setOperator(new DBLessThanOrEqualOperator(DateExpression.currentDateOnly()));
+	}
+
+	public void permitOnlyPresentAndFutureByDateOnly() {
+		this.setOperator(new DBGreaterThanOrEqualsOperator(DateExpression.currentDateOnly()));
+	}
+
+	public void permitOnlyPastByDateOnly() {
+		this.setOperator(new DBLessThanOperator(DateExpression.currentDateOnly()));
+	}
+
+	public void permitOnlyFutureByDateOnly() {
+		this.setOperator(new DBGreaterThanOperator(DateExpression.currentDateOnly()));
 	}
 }
