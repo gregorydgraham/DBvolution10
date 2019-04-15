@@ -1078,7 +1078,7 @@ public class QueryDetails implements DBQueryable, Serializable {
 		if (!options.isCartesianJoinAllowed()
 				&& (details.getRequiredQueryTables().size() + details.getOptionalQueryTables().size()) > 1
 				&& queryGraph.willCreateCartesianJoin()) {
-			throw new AccidentalCartesianJoinException(details.getResultSQL());
+			throw new AccidentalCartesianJoinException(details);
 		}
 
 		fillResultSetFromSQL(db, details, defn, details.getResultSQL());
@@ -1368,7 +1368,7 @@ public class QueryDetails implements DBQueryable, Serializable {
 			if (primaryKey != null) {
 				final QueryableDatatype<?> qdt = primaryKey.getQueryableDatatype();
 				if (qdt != null) {
-					keyToSearchFor += "("+qdt.toSQLString(defn) + ")";
+					keyToSearchFor += "(" + qdt.toSQLString(defn) + ")";
 				}
 			}
 		}
@@ -1380,7 +1380,7 @@ public class QueryDetails implements DBQueryable, Serializable {
 			}
 		}
 		return existingInstance;
-		
+
 //		DBRow existingInstance = newInstance;
 //		final List<PropertyWrapper> primaryKeys = newInstance.getPrimaryKeyPropertyWrappers();
 //		for (PropertyWrapper primaryKey : primaryKeys) {
