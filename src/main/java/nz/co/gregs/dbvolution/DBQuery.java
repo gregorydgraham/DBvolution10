@@ -111,7 +111,7 @@ public class DBQuery implements Serializable {
 		}
 	}
 
-	private DBQuery(DBDatabase database) {
+	protected DBQuery(DBDatabase database) {
 		this.database = database;
 //		this.details.setDefinition(database.getDefinition());
 		blankResults();
@@ -152,9 +152,11 @@ public class DBQuery implements Serializable {
 	 */
 	public DBQuery add(DBRow... examples) {
 		for (DBRow table : examples) {
-			details.getRequiredQueryTables().add(table);
-			details.getAllQueryTables().add(table);
-			blankResults();
+			if (table != null) {
+				details.getRequiredQueryTables().add(table);
+				details.getAllQueryTables().add(table);
+				blankResults();
+			}
 		}
 		return this;
 	}
@@ -179,9 +181,11 @@ public class DBQuery implements Serializable {
 	 */
 	public DBQuery add(List<DBRow> examples) {
 		for (DBRow table : examples) {
-			details.getRequiredQueryTables().add(table);
-			details.getAllQueryTables().add(table);
-			blankResults();
+			if (table != null) {
+				details.getRequiredQueryTables().add(table);
+				details.getAllQueryTables().add(table);
+				blankResults();
+			}
 		}
 		return this;
 	}
@@ -209,9 +213,11 @@ public class DBQuery implements Serializable {
 	 */
 	public DBQuery addOptional(DBRow... examples) {
 		for (DBRow table : examples) {
-			details.getOptionalQueryTables().add(table);
-			details.getAllQueryTables().add(table);
-			blankResults();
+			if (examples != null) {
+				details.getOptionalQueryTables().add(table);
+				details.getAllQueryTables().add(table);
+				blankResults();
+			}
 		}
 		return this;
 	}
@@ -1881,7 +1887,12 @@ public class DBQuery implements Serializable {
 	 * @return this DBQuery with the extra examples added
 	 */
 	public DBQuery addExtraExamples(DBRow... extraExamples) {
-		this.details.getExtraExamples().addAll(Arrays.asList(extraExamples));
+		final List<DBRow> extras = this.details.getExtraExamples();
+		for (DBRow extraExample : extraExamples) {
+			if (extraExample != null) {
+				extras.add(extraExample);
+			}
+		}
 		blankResults();
 		return this;
 	}
@@ -2170,9 +2181,11 @@ public class DBQuery implements Serializable {
 	 */
 	public DBQuery addAssumedTables(DBRow... tables) {
 		for (DBRow table : tables) {
-			details.getAssumedQueryTables().add(table);
-			details.getAllQueryTables().add(table);
-			blankResults();
+			if (table != null) {
+				details.getAssumedQueryTables().add(table);
+				details.getAllQueryTables().add(table);
+				blankResults();
+			}
 		}
 		return this;
 	}
