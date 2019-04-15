@@ -868,7 +868,11 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 	public void print(List<?> rows) {
 		if (rows != null) {
 			for (Object row : rows) {
-				System.out.println(row.toString());
+				if (row != null) {
+					System.out.println(row.toString());
+				} else {
+					System.out.println("null");
+				}
 			}
 		}
 	}
