@@ -142,7 +142,7 @@ public class QueryGraph {
 			DBRowClass table1Class = new DBRowClass(table1);
 			QueryGraphNode node1 = getOrCreateNode(table1, table1Class, requiredTables);
 			for (DBRow table2 : tablesAdded) {
-				if (!table1.getClass().equals(table2.getClass())) {
+				if (table1 != null && table2 != null && !table1.getClass().equals(table2.getClass())) {
 					if (table1.willBeConnectedTo(table2)) {
 						DBRowClass table2Class = new DBRowClass(table2);
 						QueryGraphNode node2 = getOrCreateNode(table2, table2Class, requiredTables);
