@@ -36,17 +36,17 @@ import nz.co.gregs.dbvolution.DBRow;
  * @author gregorygraham
  */
 public class DBRowClass {
-	
+
 	private final DBRow table;
-	
+
 	public DBRowClass(DBRow table) {
 		this.table = table;
 	}
-	
+
 	public String getSimpleName() {
 		return this.table.getClass().getSimpleName();
 	}
-	
+
 	@Override
 	public boolean equals(Object obj) {
 		if (super.equals(obj)) {
@@ -74,11 +74,13 @@ public class DBRowClass {
 	@Override
 	public int hashCode() {
 		int hash = 7;
-		hash = 41 * hash + Objects.hashCode(this.table.getClass());
-		hash = 43*hash + Objects.hashCode(this.table.getTableName());
-		hash = 47*hash + Objects.hashCode(this.table.getSchemaName());
-		hash = 53*hash + Objects.hashCode(this.table.getTableNameOrVariantIdentifier());
+		if (this.table != null) {
+			hash = 41 * hash + Objects.hashCode(this.table.getClass());
+			hash = 43 * hash + Objects.hashCode(this.table.getTableName());
+			hash = 47 * hash + Objects.hashCode(this.table.getSchemaName());
+			hash = 53 * hash + Objects.hashCode(this.table.getTableNameOrVariantIdentifier());
+		}
 		return hash;
 	}
-	
+
 }
