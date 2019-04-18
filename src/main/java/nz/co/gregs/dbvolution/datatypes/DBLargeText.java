@@ -235,7 +235,11 @@ public class DBLargeText extends DBLargeObject<byte[]> {
 
 	private byte[] getFromString(ResultSet resultSet, String fullColumnName) throws SQLException {
 		String gotString = resultSet.getString(fullColumnName);
-		return gotString.getBytes(UTF_8);
+		if (gotString != null) {
+			return gotString.getBytes(UTF_8);
+		} else {
+			return new byte[]{};
+		}
 	}
 
 	private byte[] getFromCharacterReader(ResultSet resultSet, String fullColumnName) throws SQLException, IOException {
