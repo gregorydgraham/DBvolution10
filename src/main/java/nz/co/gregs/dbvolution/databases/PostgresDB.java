@@ -99,6 +99,16 @@ public class PostgresDB extends DBDatabase implements SupportsPolygonDatatype {
 	}
 
 	/**
+	 * Creates a PostgreSQL connection for the DatabaseConnectionSettings.
+	 *
+	 * @param dcs	dcs
+	 * @throws java.sql.SQLException
+	 */
+	public PostgresDB(DatabaseConnectionSettings dcs) throws SQLException {
+		super(new PostgresDBDefinition(), POSTGRES_DRIVER_NAME, dcs);
+	}
+
+	/**
 	 * Creates a PostgreSQL connection for the JDBC URL, username, and password.
 	 *
 	 * @param jdbcURL jdbcURL
