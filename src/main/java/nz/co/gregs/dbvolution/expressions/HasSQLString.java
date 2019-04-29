@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 Gregory Graham.
+ * Copyright 2019 Gregory Graham.
  *
  * Commercial licenses are available, please contact info@gregs.co.nz for details.
  * 
@@ -28,40 +28,33 @@
  * 
  * Check the Creative Commons website for any details, legalese, and updates.
  */
-package nz.co.gregs.dbvolution.utility;
+package nz.co.gregs.dbvolution.expressions;
 
-import nz.co.gregs.dbvolution.databases.DBDatabase;
-import nz.co.gregs.dbvolution.databases.DBDatabaseCluster;
+import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 
 /**
  *
  * @author gregorygraham
  */
-public class ReconnectionProcess extends RegularProcess {
+public interface HasSQLString {
 
-	public static final long serialVersionUID = 1l;
-	
-	public ReconnectionProcess() {
-		super();
-	}
-
-	@Override
-	public synchronized String process() {
-		String str = "No Databases To Reconnect";
-		final DBDatabase database = getDatabase();
-		if (database instanceof DBDatabaseCluster) {
-			DBDatabaseCluster cluster = (DBDatabaseCluster) database;
-			if (cluster.getAutoReconnect()) {
-				String msg = database.getDatabaseName() + ": PREPARING TO RECONNECT DATABASES... \n";
-				System.out.println(msg);
-				str = msg;
-				str += cluster.reconnectQuarantinedDatabases();
-				msg = database.getDatabaseName() + ": FINISHED RECONNECTING DATABASES...";
-				System.out.println(msg);
-				str += "\n" + msg;
-			}
-		}
-		return str;
-	}
+	/**
+	 * Produces the snippet provided by this class.
+	 *
+	 * <p>
+	 * This is only used internally.
+	 *
+	 * <p>
+	 * If you are extending DBvolution and adding a new function this is the place
+	 * to format the information for use in SQL. A DBDefinition instance is
+	 * provided to supply context and so your SQL can used on multiple database
+	 * engines.
+	 *
+	 * @param defn the target database
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @return the DBValue formatted as a SQL snippet
+	 */
+	String toSQLString(DBDefinition defn);
 	
 }

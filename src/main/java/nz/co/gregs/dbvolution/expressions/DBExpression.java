@@ -19,7 +19,6 @@ import java.util.Set;
 import nz.co.gregs.dbvolution.DBReport;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.databases.DBDatabase;
-import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 
 /**
@@ -42,7 +41,7 @@ import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
  *
  * @author Gregory Graham
  */
-public interface DBExpression {
+public interface DBExpression extends HasSQLString {
 
 	/**
 	 * Provides a blank instance of the {@link QueryableDatatype} used by this
@@ -63,25 +62,6 @@ public interface DBExpression {
 	 * this expression
 	 */
 	public QueryableDatatype<?> getQueryableDatatypeForExpressionValue();
-
-	/**
-	 * Produces the snippet provided by this class.
-	 *
-	 * <p>
-	 * This is only used internally.
-	 *
-	 * <p>
-	 * If you are extending DBvolution and adding a new function this is the place
-	 * to format the information for use in SQL. A DBDefinition instance is
-	 * provided to supply context and so your SQL can used on multiple database
-	 * engines.
-	 *
-	 * @param defn the target database
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 * @return the DBValue formatted as a SQL snippet
-	 */
-	public String toSQLString(DBDefinition defn);
 
 	/**
 	 * A Complete Copy Of This DBValue.
@@ -168,4 +148,6 @@ public interface DBExpression {
 	public String createSQLForFromClause(DBDatabase database);
 
 	public String createSQLForGroupByClause(DBDatabase database);
+	
+	public boolean isWindowingFunction() ;
 }

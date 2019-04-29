@@ -76,6 +76,8 @@ public class DBBulkInsertTest extends AbstractTest {
 	}
 	
 	public static class BulkInsertTestTable extends DBRow {
+
+	private static final long serialVersionUID = 1L;
 		
 		@DBPrimaryKey
 		@DBAutoIncrement

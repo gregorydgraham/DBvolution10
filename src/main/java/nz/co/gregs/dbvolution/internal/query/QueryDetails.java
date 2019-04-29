@@ -444,7 +444,7 @@ public class QueryDetails implements DBQueryable, Serializable {
 							setGroupByRequiredByAggregator(true);
 						}
 						if (expression == null
-								|| (!expression.isAggregator()
+								|| (!expression.isAggregator() && !expression.isWindowingFunction()
 								&& (!expression.isPurelyFunctional() || defn.supportsPurelyFunctionalGroupByColumns()))) {
 							groupByIsRequired = true;
 							groupByColumnIndex += groupByColumnIndexSeparator + columnIndex;
@@ -474,11 +474,13 @@ public class QueryDetails implements DBQueryable, Serializable {
 										.append(BooleanExpression.trueExpression().toSQLString(defn))
 										.append(defn.endOnClause());
 							}
-							final String groupBySQL = expression.createSQLForGroupByClause(database);
-							if (groupBySQL != null && !groupBySQL.isEmpty() && !groupBySQL.trim().isEmpty()) {
-								groupByClause.append(groupByColSep).append(groupBySQL);
-								groupByColSep = defn.getSubsequentGroupBySubClauseSeparator() + lineSep;
-								groupByIsRequired = true;
+							if (!expression.isWindowingFunction()) {
+								final String groupBySQL = expression.createSQLForGroupByClause(database);
+								if (groupBySQL != null && !groupBySQL.isEmpty() && !groupBySQL.trim().isEmpty()) {
+									groupByClause.append(groupByColSep).append(groupBySQL);
+									groupByColSep = defn.getSubsequentGroupBySubClauseSeparator() + lineSep;
+									groupByIsRequired = true;
+								}
 							}
 							queryState.addJoinedExpression(expression);
 						}
@@ -538,7 +540,7 @@ public class QueryDetails implements DBQueryable, Serializable {
 					if (expression.isAggregator()) {
 						setGroupByRequiredByAggregator(true);
 					}
-					if (!expression.isAggregator()
+					if (!expression.isAggregator() && !expression.isWindowingFunction()
 							&& (!expression.isPurelyFunctional() || defn.supportsPurelyFunctionalGroupByColumns())) {
 						groupByIsRequired = true;
 						groupByColumnIndex += groupByColumnIndexSeparator + columnIndex;
@@ -560,11 +562,13 @@ public class QueryDetails implements DBQueryable, Serializable {
 									.append(defn.endOnClause());
 						}
 						fromClauseTableSeparator = (options.isUseANSISyntax() ? " join " : ", ") + lineSep;
-						final String groupBySQL = expression.createSQLForGroupByClause(database);
-						if (groupBySQL != null && !groupBySQL.isEmpty() && !groupBySQL.trim().isEmpty()) {
-							groupByClause.append(groupByColSep).append(groupBySQL);
-							groupByColSep = defn.getSubsequentGroupBySubClauseSeparator() + lineSep;
-							groupByIsRequired = true;
+						if (!expression.isWindowingFunction()) {
+							final String groupBySQL = expression.createSQLForGroupByClause(database);
+							if (groupBySQL != null && !groupBySQL.isEmpty() && !groupBySQL.trim().isEmpty()) {
+								groupByClause.append(groupByColSep).append(groupBySQL);
+								groupByColSep = defn.getSubsequentGroupBySubClauseSeparator() + lineSep;
+								groupByIsRequired = true;
+							}
 						}
 						queryState.addJoinedExpression(expression);
 					}
@@ -575,7 +579,8 @@ public class QueryDetails implements DBQueryable, Serializable {
 
 			for (Map.Entry<Object, DBExpression> entry : getDBReportGroupByColumns().entrySet()) {
 				final DBExpression expression = entry.getValue();
-				if ((!expression.isPurelyFunctional() || defn.supportsPurelyFunctionalGroupByColumns())) {
+				if (!expression.isWindowingFunction()
+						&& (!expression.isPurelyFunctional() || defn.supportsPurelyFunctionalGroupByColumns())) {
 					groupByClause.append(groupByColSep).append(defn.transformToStorableType(expression).toSQLString(defn));
 					groupByColSep = defn.getSubsequentGroupBySubClauseSeparator() + lineSep;
 				}

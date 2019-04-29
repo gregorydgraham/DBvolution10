@@ -83,21 +83,11 @@ public class H2SharedDB extends H2DB {
 		return url != null && !url.isEmpty() ? url : "jdbc:h2:tcp://" + hostname + ":" + port + "/" + settings.getDatabaseName();
 	}
 
-//	@Override
-//	protected String getPort() {
-//		DatabaseConnectionSettings settings = this.getSettings();
-//		return settings.getPort() == null || settings.getPort().isEmpty() ? "9123" : settings.getPort();
-//	}
-
 	@Override
 	protected void startServerIfRequired() {
-//		System.out.println("nz.co.gregs.dbvolution.databases.H2SharedDB.startServerIfRequired()");
-//		System.out.println("getHost(): " + getHost());
 		if (isLocalhostServer()) {
-//			System.out.println("CHECK H2 SERVER IS RUNNING...");
 			if (server == null || !server.isRunning(false)) {
 				if (serverIsUnreachable()) {
-//					System.out.println("STARTING H2 SERVER...");
 					try {
 						if (getPort().isEmpty()) {
 							server = Server.createTcpServer("-tcpAllowOthers", "-tcpDaemon").start();
@@ -105,22 +95,16 @@ public class H2SharedDB extends H2DB {
 							server = Server.createTcpServer("-tcpAllowOthers", "-tcpDaemon", "-tcpPort", getPort()).start();
 						}
 						if (server != null && server.isRunning(false)) {
-//							System.out.println("STARTED H2 SERVER ON " + server.getURL());
 						} else {
-//							System.out.println("H2 SERVER FAILED.");
 						}
 					} catch (SQLException ex) {
-//						System.out.println("FAILED H2 SERVER: " + ex.getLocalizedMessage());
 						Logger.getLogger(H2SharedDB.class.getName()).log(Level.SEVERE, null, ex);
 					}
 				} else {
-//					System.out.println("H2 SERVER ALREADY RUNNING IN ANOTHER VM.");
 				}
 			} else {
-//				System.out.println("H2 SERVER IS RUNNING...");
 			}
 		} else {
-//			System.out.println("H2 SERVER NOT REQUIRED.");
 		}
 	}
 
@@ -132,23 +116,17 @@ public class H2SharedDB extends H2DB {
 	public synchronized void stop() {
 		super.stop();
 		if (server != null && server.isRunning(false)) {
-//			System.out.println("STOPPING H2 SERVER...");
 			server.stop();
 		}
-//		System.out.println("ALL STOPPED.");
 	}
 
 	private boolean serverIsUnreachable() {
 		try {
 			getConnectionFromDriverManager().close();
-//			System.out.println("SUCCESSFULLY OPENED AND CLOSED A CONNECTION TO THE SERVER.");
 			return false;
 		} catch (Exception ex) {
-//			ex.printStackTrace();
-//			Logger.getLogger(H2SharedDB.class.getName()).log(Level.SEVERE, null, ex);
-//			System.out.println("FAILED TO CONNECT TO THE SERVER.");
+			LOG.error("Unable to reach server", ex);
 		}
-//		System.out.println("SERVER IS UNREACHABLE.");
 		return true;
 	}
 

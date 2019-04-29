@@ -315,7 +315,7 @@ public class BooleanExpression extends EqualExpression<Boolean, BooleanResult, D
 	 * @return a number expression.
 	 */
 	@Override
-	public IntegerExpression count() {
+	public AnyExpression.CountExpression count() {
 		return this.integerValue().count();
 	}
 

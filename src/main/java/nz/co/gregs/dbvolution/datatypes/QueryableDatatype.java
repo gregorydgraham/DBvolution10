@@ -510,11 +510,9 @@ public abstract class QueryableDatatype<T> extends Object implements Serializabl
 	 * @param newLiteralValue the literalValue to set
 	 */
 	protected synchronized void setLiteralValue(T newLiteralValue) {
-		if (
-				(!hasBeenSet() && newLiteralValue!=null)
+		if ((!hasBeenSet() && newLiteralValue != null)
 				|| (hasBeenSet() && newLiteralValue != null && !newLiteralValue.equals(getLiteralValue()))
-				|| (hasBeenSet() && newLiteralValue == null && getLiteralValue() != null)
-				) {
+				|| (hasBeenSet() && newLiteralValue == null && getLiteralValue() != null)) {
 			setLiteralValueInternal(newLiteralValue);
 			this.setHasBeenSet(true);
 		}
@@ -1389,5 +1387,18 @@ public abstract class QueryableDatatype<T> extends Object implements Serializabl
 			return defaultUpdateExpression.toSQLString(defn);
 		}
 		return newQDT.toSQLString(defn);
+	}
+
+	@Override
+	public boolean isWindowingFunction() {
+		if (hasColumnExpression()) {
+			boolean windower = false;
+			for (DBExpression dBExpression : getColumnExpression()) {
+				windower = windower && dBExpression.isWindowingFunction();
+			}
+			return windower;
+		} else {
+			return false;
+		}
 	}
 }

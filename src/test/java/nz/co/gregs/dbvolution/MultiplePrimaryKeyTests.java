@@ -147,6 +147,8 @@ public class MultiplePrimaryKeyTests extends AbstractTest {
 
 	public static class Colleagues extends DBRow {
 
+	private static final long serialVersionUID = 1L;
+
 		@DBColumn("userid1")
 		@DBPrimaryKey
 		@DBForeignKey(RequestingUser.class)
@@ -184,6 +186,8 @@ public class MultiplePrimaryKeyTests extends AbstractTest {
 
 	public static class RequestingUser extends User {
 
+	private static final long serialVersionUID = 1L;
+
 		public RequestingUser(int i) {
 			super(i);
 		}
@@ -196,6 +200,8 @@ public class MultiplePrimaryKeyTests extends AbstractTest {
 
 	public static class InvitedUser extends User {
 
+	private static final long serialVersionUID = 1L;
+
 		public InvitedUser(int i) {
 			super(i);
 		}
@@ -207,6 +213,8 @@ public class MultiplePrimaryKeyTests extends AbstractTest {
 	}
 
 	public static class User extends DBRow {
+
+	private static final long serialVersionUID = 1L;
 
 		public User() {
 		}

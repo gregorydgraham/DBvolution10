@@ -33,6 +33,7 @@ import nz.co.gregs.dbvolution.internal.postgres.MultiPoint2DFunctions;
 import nz.co.gregs.dbvolution.internal.postgres.StringFunctions;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.postgresql.util.PSQLException;
 
 /**
  * A DBDatabase tweaked for PostgreSQL.
@@ -321,7 +322,7 @@ public class PostgresDB extends DBDatabase implements SupportsPolygonDatatype {
 				final ResultSet resultSet = stmnt.getResultSet();
 				boolean postGISAlreadyCreated = resultSet.next();
 				if (!postGISAlreadyCreated) {
-					stmnt.execute("CREATE EXTENSION IF NOT EXISTS postgis;");
+						stmnt.execute("CREATE EXTENSION IF NOT EXISTS postgis;");
 				}
 				postGISInstalled = true;
 			}
@@ -370,11 +371,11 @@ public class PostgresDB extends DBDatabase implements SupportsPolygonDatatype {
 			set.setExtras(DatabaseConnectionSettings.decodeExtras(extrasString, "", "=", "&", ""));
 		}
 		set.setPort(noPrefix
-					.split("/",2)[0]
-					.replaceAll("^[^:]*:+", ""));
+				.split("/", 2)[0]
+				.replaceAll("^[^:]*:+", ""));
 		set.setHost(noPrefix
-					.split("/",2)[0]
-					.split(":")[0]);
+				.split("/", 2)[0]
+				.split(":")[0]);
 		set.setInstance(getExtras().get("instance"));
 		set.setSchema("");
 		return set;

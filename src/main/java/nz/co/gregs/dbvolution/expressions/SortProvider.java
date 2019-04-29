@@ -130,6 +130,19 @@ public class SortProvider implements DBExpression {
 	}
 
 	@Override
+	public boolean isWindowingFunction() {
+		if (hasQueryColumn()) {
+			return getQueryColumn().isWindowingFunction();
+		} else if (hasColumn()) {
+			return getColumn().isWindowingFunction();
+		} else if (getInnerExpression() == null) {
+			return false;
+		} else {
+			return this.getInnerExpression().isWindowingFunction();
+		}
+	}
+
+	@Override
 	@SuppressWarnings("unchecked")
 	public Set<DBRow> getTablesInvolved() {
 		if (hasQueryColumn()) {

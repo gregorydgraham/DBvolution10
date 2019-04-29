@@ -48,6 +48,8 @@ import nz.co.gregs.dbvolution.internal.properties.PropertyWrapper;
  */
 public class DBBulkInsert extends DBAction {
 
+	public static final long serialVersionUID = 1l;
+	
 	List<DBRow> rows = new ArrayList<>();
 
 	public <R extends DBRow> DBBulkInsert(R row) {

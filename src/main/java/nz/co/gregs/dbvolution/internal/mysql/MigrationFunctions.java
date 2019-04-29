@@ -127,7 +127,7 @@ public enum MigrationFunctions {
 		if (!this.code.isEmpty()) {
 			final String createFn = "CREATE FUNCTION " + this + "(" + this.parameters + ")\n"
 					+ "    RETURNS " + this.returnType
-					+ "\n  BEGIN\n" + "\n" + this.code
+					+ "\n  DETERMINISTIC BEGIN\n" + "\n" + this.code
 					+ "\n END;";
 			stmt.execute(createFn);
 		}

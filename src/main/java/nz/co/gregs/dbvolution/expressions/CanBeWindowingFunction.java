@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 Gregory Graham.
+ * Copyright 2019 Gregory Graham.
  *
  * Commercial licenses are available, please contact info@gregs.co.nz for details.
  * 
@@ -28,40 +28,14 @@
  * 
  * Check the Creative Commons website for any details, legalese, and updates.
  */
-package nz.co.gregs.dbvolution.utility;
-
-import nz.co.gregs.dbvolution.databases.DBDatabase;
-import nz.co.gregs.dbvolution.databases.DBDatabaseCluster;
+package nz.co.gregs.dbvolution.expressions;
 
 /**
  *
  * @author gregorygraham
  */
-public class ReconnectionProcess extends RegularProcess {
+public interface CanBeWindowingFunction {
 
-	public static final long serialVersionUID = 1l;
-	
-	public ReconnectionProcess() {
-		super();
-	}
-
-	@Override
-	public synchronized String process() {
-		String str = "No Databases To Reconnect";
-		final DBDatabase database = getDatabase();
-		if (database instanceof DBDatabaseCluster) {
-			DBDatabaseCluster cluster = (DBDatabaseCluster) database;
-			if (cluster.getAutoReconnect()) {
-				String msg = database.getDatabaseName() + ": PREPARING TO RECONNECT DATABASES... \n";
-				System.out.println(msg);
-				str = msg;
-				str += cluster.reconnectQuarantinedDatabases();
-				msg = database.getDatabaseName() + ": FINISHED RECONNECTING DATABASES...";
-				System.out.println(msg);
-				str += "\n" + msg;
-			}
-		}
-		return str;
-	}
+	public WindowingFunctionInterface over();
 	
 }

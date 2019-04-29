@@ -1,5 +1,7 @@
 -- IP Address for connections is the IP of the host machine (for instance 192.168.0.2)
 
+-- Remember to start the Docker app
+
 -- Get latest version
 docker pull microsoft/mssql-server-linux
 

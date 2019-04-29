@@ -103,6 +103,12 @@ public abstract class AnyExpression<B extends Object, R extends AnyResult<B>, D 
 	}
 
 	@Override
+	public boolean isWindowingFunction() {
+		final AnyResult<?> inner = getInnerResult();
+		return inner == null ? false : inner.isWindowingFunction();
+	}
+
+	@Override
 	public String toSQLString(DBDefinition db) {
 		return (getInnerResult() == null) ? db.getNull() : getInnerResult().toSQLString(db);
 	}
@@ -717,31 +723,31 @@ public abstract class AnyExpression<B extends Object, R extends AnyResult<B>, D 
 	public String createSQLForGroupByClause(DBDatabase database) {
 		return "";
 	}
-	
-	public SortProvider ascending(){
+
+	public SortProvider ascending() {
 		return new SortProvider.Ascending(this);
 	}
-	
-	public SortProvider descending(){
+
+	public SortProvider descending() {
 		return new SortProvider.Descending(this);
 	}
-	
-	public SortProvider lowestFirst(){
+
+	public SortProvider lowestFirst() {
 		return ascending();
 	}
-	
-	public SortProvider highestFirst(){
+
+	public SortProvider highestFirst() {
 		return descending();
 	}
-	
-	public SortProvider lowestLast(){
+
+	public SortProvider lowestLast() {
 		return descending();
 	}
-	
-	public SortProvider highestLast(){
+
+	public SortProvider highestLast() {
 		return ascending();
 	}
-	
+
 	/**
 	 * Creates an expression that will count all the values of the column
 	 * supplied.
@@ -755,11 +761,11 @@ public abstract class AnyExpression<B extends Object, R extends AnyResult<B>, D 
 	 *
 	 * @return a number expression.
 	 */
-	public IntegerExpression count() {
-		return new IntegerExpression(new CountExpression(this));
+	public CountExpression count() {
+		return new CountExpression(this);
 	}
 
-	private static class CountExpression extends IntegerExpression {
+	public static class CountExpression extends IntegerExpression implements CanBeWindowingFunction {
 
 		public CountExpression(AnyResult<?> only) {
 			super(only);
@@ -783,5 +789,19 @@ public abstract class AnyExpression<B extends Object, R extends AnyResult<B>, D 
 			);
 		}
 
+		@Override
+		public WindowingFunctionWithIntegerResult over() {
+			return new WindowingFunctionWithIntegerResult(this);
+		}
+
+	}
+
+	protected static class WindowingFunctionWithIntegerResult extends WindowFunction<IntegerExpression>{
+
+		private static final long serialVersionUID = 1L;
+		
+		public WindowingFunctionWithIntegerResult(IntegerExpression expr){
+			super(new IntegerExpression(expr));
+		}
 	}
 }

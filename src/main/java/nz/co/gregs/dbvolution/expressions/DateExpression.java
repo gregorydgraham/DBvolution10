@@ -1667,8 +1667,8 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 	 *
 	 * @return a number expression.
 	 */
-	public DateExpression max() {
-		return new DateExpression(new DateMaxExpression(this));
+	public DateMaxExpression max() {
+		return new DateMaxExpression(this);
 	}
 
 	/**
@@ -1683,8 +1683,8 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 	 *
 	 * @return a number expression.
 	 */
-	public DateExpression min() {
-		return new DateExpression(new DateMinExpression(this));
+	public DateMinExpression min() {
+		return new DateMinExpression(this);
 	}
 
 	@Override
@@ -3242,6 +3242,15 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 		}
 	}
 
+	protected static class WindowingDateFunctionWithDateResult extends WindowFunction<DateExpression>{
+
+		private static final long serialVersionUID = 1L;
+		
+		public WindowingDateFunctionWithDateResult(DateExpression expr){
+			super(new DateExpression(expr));
+		}
+	}
+
 	private static abstract class DateIntegerExpressionWithDateResult extends DateExpression {
 
 		private static final long serialVersionUID = 1L;
@@ -3950,7 +3959,7 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 		}
 	}
 
-	protected static class DateMaxExpression extends DateFunctionWithDateResult {
+	protected static class DateMaxExpression extends DateFunctionWithDateResult implements CanBeWindowingFunction{
 
 		public DateMaxExpression(DateExpression only) {
 			super(only);
@@ -3976,9 +3985,14 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 		public DateMaxExpression copy() {
 			return new DateMaxExpression((DateExpression) getInnerResult().copy());
 		}
+
+		@Override
+		public WindowingDateFunctionWithDateResult over() {
+			return new WindowingDateFunctionWithDateResult(this);
+		}
 	}
 
-	protected static class DateMinExpression extends DateFunctionWithDateResult {
+	protected static class DateMinExpression extends DateFunctionWithDateResult implements CanBeWindowingFunction{
 
 		public DateMinExpression(DateExpression only) {
 			super(only);
@@ -4003,6 +4017,10 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 		@Override
 		public DateMinExpression copy() {
 			return new DateMinExpression((DateExpression) getInnerResult().copy());
+		}
+		@Override
+		public WindowingDateFunctionWithDateResult over() {
+			return new WindowingDateFunctionWithDateResult(this);
 		}
 	}
 

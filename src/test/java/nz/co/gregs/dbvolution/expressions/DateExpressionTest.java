@@ -264,6 +264,190 @@ public class DateExpressionTest extends AbstractTest {
 	}
 
 	@Test
+	public void testWindowingFunctions() throws SQLException {
+		MarqueWithDateWindowingFunctions marq = new MarqueWithDateWindowingFunctions();
+//		database.setPrintSQLBeforeExecuting(true);
+		DBQuery query = database.getDBQuery(marq)
+				.setBlankQueryAllowed(true)
+				.setSortOrder(marq.column(marq.carCompany));
+		query.printSQLForQuery();
+		List<DBQueryRow> allRows = query.getAllRows();
+
+		Assert.assertThat(allRows.size(), is(22));
+		database.print(allRows);
+		MarqueWithDateWindowingFunctions got;// = allRows.get(0).get(marq);
+		ArrayList<Object[]> expectedValues = new ArrayList<>();
+		expectedValues.add(new Object[]{2, march23rd2013, march23rd2013});
+		expectedValues.add(new Object[]{2, march23rd2013, march23rd2013});
+		expectedValues.add(new Object[]{1, march23rd2013, march23rd2013});
+		expectedValues.add(new Object[]{3, march23rd2013, april2nd2011});
+		expectedValues.add(new Object[]{3, march23rd2013, april2nd2011});
+		expectedValues.add(new Object[]{3, march23rd2013, april2nd2011});
+		expectedValues.add(new Object[]{15, march23rd2013, april2nd2011});
+		expectedValues.add(new Object[]{15, march23rd2013, april2nd2011});
+		expectedValues.add(new Object[]{15, march23rd2013, april2nd2011});
+		expectedValues.add(new Object[]{15, march23rd2013, april2nd2011});
+		expectedValues.add(new Object[]{15, march23rd2013, april2nd2011});
+		expectedValues.add(new Object[]{15, march23rd2013, april2nd2011});
+		expectedValues.add(new Object[]{15, march23rd2013, april2nd2011});
+		expectedValues.add(new Object[]{15, march23rd2013, april2nd2011});
+		expectedValues.add(new Object[]{15, march23rd2013, april2nd2011});
+		expectedValues.add(new Object[]{15, march23rd2013, april2nd2011});
+		expectedValues.add(new Object[]{15, march23rd2013, april2nd2011});
+		expectedValues.add(new Object[]{15, march23rd2013, april2nd2011});
+		expectedValues.add(new Object[]{15, march23rd2013, april2nd2011});
+		expectedValues.add(new Object[]{15, march23rd2013, april2nd2011});
+		expectedValues.add(new Object[]{15, march23rd2013, april2nd2011});
+		expectedValues.add(new Object[]{15, march23rd2013, april2nd2011});
+		for (int i = 0; i < allRows.size(); i++) {
+			System.out.println("ROW: " + i);
+			got = allRows.get(i).get(marq);
+			Object[] expect = expectedValues.get(i);
+			Assert.assertThat(got.countOfDates.intValue(), is((Integer) expect[0]));
+			Assert.assertThat(got.maxOfAll.dateValue(), is((Date) expect[1]));
+			Assert.assertThat(got.maxOfDates.dateValue(), is((Date) expect[1]));
+			Assert.assertThat(got.minOfDates.dateValue(), is((Date) expect[2]));
+		}
+	}
+
+	public static class MarqueWithDateWindowingFunctions extends Marque {
+
+		private static final long serialVersionUID = 1L;
+
+		@DBColumn
+		DBNumber countOfAllRows = new DBNumber(this.column(this.creationDate).count().over().allRows());
+		@DBColumn
+		DBNumber rowNumber = new DBNumber(this.column(this.creationDate).count().over().AllRowsAndOrderBy(this.column(this.carCompany).ascending()));
+		@DBColumn
+		DBNumber countOfDates = new DBNumber(this.column(this.creationDate).count().over().partition(this.column(this.carCompany)).unordered());
+		@DBColumn
+		DBNumber rowWithinCarCo = new DBNumber(this.column(this.creationDate).count()
+				.over()
+				.partition(this.column(this.carCompany))
+				.orderBy(this.column(this.carCompany).ascending())
+				.defaultFrame());
+		@DBColumn
+		DBDate maxOfAll = new DBDate(this.column(this.creationDate).max().over().allRows());
+		@DBColumn
+		DBDate maxOfDates = new DBDate(this.column(this.creationDate).max().over().partition(this.column(this.carCompany)).unordered());
+		@DBColumn
+		DBDate minOfDates = new DBDate(this.column(this.creationDate).min().over().partition(this.column(this.carCompany)).unordered());
+		@DBColumn
+		DBDate test1 = new DBDate(this.column(this.creationDate).min()
+				.over().partition(this.column(this.carCompany))
+				.unsorted());
+		@DBColumn
+		DBDate test2 = new DBDate(this.column(this.creationDate).min()
+				.over().partition(this.column(this.carCompany))
+				.orderBy(this.column(this.carCompany).descending())
+				.rows().unboundedPreceding().currentRow());
+		@DBColumn
+		DBDate test3 = new DBDate(this.column(this.creationDate).min()
+				.over().partition(this.column(this.carCompany))
+				.orderBy(this.column(this.carCompany).descending())
+				.rows().unboundedPreceding().currentRow());
+		@DBColumn
+		DBDate test4 = new DBDate(this.column(this.creationDate).min()
+				.over().partition(this.column(this.carCompany))
+				.orderBy(this.column(this.carCompany).descending())
+				.rows().currentRow().currentRow());
+		@DBColumn
+		DBDate test5 = new DBDate(this.column(this.creationDate).min()
+				.over().partition(this.column(this.carCompany))
+				.orderBy(this.column(this.carCompany).descending())
+				.rows().offsetPrecedingAndCurrentRow(5));
+		@DBColumn
+		DBDate test6 = new DBDate(this.column(this.creationDate).min()
+				.over().partition(this.column(this.carCompany))
+				.orderBy(this.column(this.carCompany).descending())
+				.rows().currentRow().unboundedFollowing());
+		@DBColumn
+		DBDate test7 = new DBDate(this.column(this.creationDate).min()
+				.over().partition(this.column(this.carCompany))
+				.orderBy(this.column(this.carCompany).descending())
+				.rows().currentRow().following(3));
+		@DBColumn
+		DBDate test8 = new DBDate(this.column(this.creationDate).min()
+				.over().partition(this.column(this.carCompany))
+				.orderBy(this.column(this.carCompany).descending())
+				.rows().unboundedPreceding().unboundedFollowing());
+		@DBColumn
+		DBDate test9 = new DBDate(this.column(this.creationDate).min()
+				.over().partition(this.column(this.carCompany))
+				.orderBy(this.column(this.carCompany).descending())
+				.rows().unboundedPreceding().following(1));
+	}
+
+	@Test
+	public void testAggregatorWithWindowingFunctions() throws SQLException {
+		MarqueWithAggregatorAndDateWindowingFunctions marq = new MarqueWithAggregatorAndDateWindowingFunctions();
+//		database.setPrintSQLBeforeExecuting(true);
+		DBQuery query = database.getDBQuery(marq)
+				.setBlankQueryAllowed(true)
+				.setSortOrder(marq.column(marq.carCompany));
+		query.printSQLForQuery();
+		List<DBQueryRow> allRows = query.getAllRows();
+
+		Assert.assertThat(allRows.size(), is(22));
+		database.print(allRows);
+		MarqueWithAggregatorAndDateWindowingFunctions got;// = allRows.get(0).get(marq);
+		ArrayList<Object[]> expectedValues = new ArrayList<>();
+		expectedValues.add(new Object[]{2, march23rd2013, march23rd2013});
+		expectedValues.add(new Object[]{2, march23rd2013, march23rd2013});
+		expectedValues.add(new Object[]{1, march23rd2013, march23rd2013});
+		expectedValues.add(new Object[]{3, march23rd2013, april2nd2011});
+		expectedValues.add(new Object[]{3, march23rd2013, april2nd2011});
+		expectedValues.add(new Object[]{3, march23rd2013, april2nd2011});
+		expectedValues.add(new Object[]{15, march23rd2013, april2nd2011});
+		expectedValues.add(new Object[]{15, march23rd2013, april2nd2011});
+		expectedValues.add(new Object[]{15, march23rd2013, april2nd2011});
+		expectedValues.add(new Object[]{15, march23rd2013, april2nd2011});
+		expectedValues.add(new Object[]{15, march23rd2013, april2nd2011});
+		expectedValues.add(new Object[]{15, march23rd2013, april2nd2011});
+		expectedValues.add(new Object[]{15, march23rd2013, april2nd2011});
+		expectedValues.add(new Object[]{15, march23rd2013, april2nd2011});
+		expectedValues.add(new Object[]{15, march23rd2013, april2nd2011});
+		expectedValues.add(new Object[]{15, march23rd2013, april2nd2011});
+		expectedValues.add(new Object[]{15, march23rd2013, april2nd2011});
+		expectedValues.add(new Object[]{15, march23rd2013, april2nd2011});
+		expectedValues.add(new Object[]{15, march23rd2013, april2nd2011});
+		expectedValues.add(new Object[]{15, march23rd2013, april2nd2011});
+		expectedValues.add(new Object[]{15, march23rd2013, april2nd2011});
+		expectedValues.add(new Object[]{15, march23rd2013, april2nd2011});
+		for (int i = 0; i < allRows.size(); i++) {
+			System.out.println("ROW: " + i);
+			got = allRows.get(i).get(marq);
+			Object[] expect = expectedValues.get(i);
+			Assert.assertThat(got.countOfDates.intValue(), is((Integer) expect[0]));
+			Assert.assertThat(got.maxOfDates.dateValue(), is((Date) expect[1]));
+			Assert.assertThat(got.minOfDates.dateValue(), is((Date) expect[2]));
+		}
+	}
+
+	public static class MarqueWithAggregatorAndDateWindowingFunctions extends Marque {
+
+		private static final long serialVersionUID = 1L;
+
+		@DBColumn
+		DBNumber countAggregator = new DBNumber(this.column(this.creationDate).count());
+		@DBColumn
+		DBNumber countOfAllRows = new DBNumber(this.column(this.creationDate).count().over().allRows());
+		@DBColumn
+		DBNumber countOfDates = new DBNumber(this.column(this.creationDate).count()
+				.over()
+				.partition(this.column(this.carCompany)).unordered());
+		@DBColumn
+		DBDate maxOfAll = new DBDate(this.column(this.creationDate).max().over().allRows());
+		@DBColumn
+		DBDate maxOfDates = new DBDate(this.column(this.creationDate).max().over()
+				.partition(this.column(this.carCompany)).unordered());
+		@DBColumn
+		DBDate minOfDates = new DBDate(this.column(this.creationDate).min()
+				.over()
+				.partition(this.column(this.carCompany)).unordered());
+	}
+
+	@Test
 	public void testCurrentTime() throws SQLException {
 
 		Marque marq = new Marque();
@@ -807,9 +991,9 @@ public class DateExpressionTest extends AbstractTest {
 		query.addCondition(
 				marq.column(marq.creationDate).dayIs(NumberExpression.value(2)));
 		got = query.getAllInstancesOf(marq);
-		
+
 		Assert.assertThat(got.size(), is(3));
-		
+
 		query = database.getDBQuery(marq);
 		query.addCondition(
 				marq.column(marq.creationDate).dayIs(NumberExpression.value(2).numberResult()));
@@ -979,7 +1163,7 @@ public class DateExpressionTest extends AbstractTest {
 		dbQuery = database.getDBQuery(marque);
 		dbQuery.setBlankQueryAllowed(true);
 		allRows = dbQuery.getAllRows();
-		
+
 		Assert.assertThat(allRows.size(), is(23));
 
 		dbQuery.addCondition(
@@ -1010,7 +1194,7 @@ public class DateExpressionTest extends AbstractTest {
 		dbQuery = database.getDBQuery(marque);
 		dbQuery.setBlankQueryAllowed(true);
 		allRows = dbQuery.getAllRows();
-		
+
 		Assert.assertThat(allRows.size(), is(23));
 
 		dbQuery.addCondition(
@@ -1041,7 +1225,7 @@ public class DateExpressionTest extends AbstractTest {
 		dbQuery = database.getDBQuery(marque);
 		dbQuery.setBlankQueryAllowed(true);
 		allRows = dbQuery.getAllRows();
-		
+
 		Assert.assertThat(allRows.size(), is(23));
 
 		List<DateExpression> dates = new ArrayList<DateExpression>();
@@ -1076,7 +1260,7 @@ public class DateExpressionTest extends AbstractTest {
 		dbQuery = database.getDBQuery(marque);
 		dbQuery.setBlankQueryAllowed(true);
 		allRows = dbQuery.getAllRows();
-		
+
 		Assert.assertThat(allRows.size(), is(23));
 
 		dbQuery.addCondition(
@@ -1107,7 +1291,7 @@ public class DateExpressionTest extends AbstractTest {
 		dbQuery = database.getDBQuery(marque);
 		dbQuery.setBlankQueryAllowed(true);
 		allRows = dbQuery.getAllRows();
-		
+
 		Assert.assertThat(allRows.size(), is(23));
 
 		dbQuery.addCondition(
@@ -1274,12 +1458,12 @@ public class DateExpressionTest extends AbstractTest {
 
 		Marque secondDateMarques = new Marque();
 		secondDateMarques.creationDate.permittedValues(secondDate);
-		int numberOfSecondDateRows = 
-				database
-				.getDBTable(secondDateMarques)
-				.setBlankQueryAllowed(true)
-				.count()
-				.intValue();
+		int numberOfSecondDateRows
+				= database
+						.getDBTable(secondDateMarques)
+						.setBlankQueryAllowed(true)
+						.count()
+						.intValue();
 		Assert.assertThat(got.size(), is(numberOfSecondDateRows));
 	}
 

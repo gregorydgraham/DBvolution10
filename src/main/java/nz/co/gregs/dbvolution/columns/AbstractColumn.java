@@ -156,6 +156,19 @@ public class AbstractColumn implements DBExpression, Serializable {
 	}
 
 	@Override
+	public boolean isWindowingFunction() {
+		boolean windower = false;
+		if ((field instanceof QueryableDatatype) && ((QueryableDatatype) field).hasColumnExpression()) {
+			final QueryableDatatype<?> qdtField = (QueryableDatatype) field;
+			DBExpression[] columnExpressions = qdtField.getColumnExpression();
+			for (DBExpression columnExpression : columnExpressions) {
+				windower = windower || columnExpression.isWindowingFunction();
+			}
+		}
+		return windower;
+	}
+
+	@Override
 	public boolean isPurelyFunctional() {
 		return getTablesInvolved().isEmpty();
 	}
