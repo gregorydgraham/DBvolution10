@@ -26,6 +26,7 @@ import java.util.regex.Pattern;
 import javax.sql.DataSource;
 import nz.co.gregs.dbvolution.databases.definitions.H2DBDefinition;
 import nz.co.gregs.dbvolution.internal.h2.*;
+import org.h2.jdbc.JdbcException;
 
 /**
  * Stores all the required functionality to use an H2 database.
@@ -197,23 +198,15 @@ public class H2DB extends DBDatabase {
 	@Override
 	public ResponseToException addFeatureToFixException(Exception exp) throws Exception {
 		boolean handledException = false;
-//		System.out.println("nz.co.gregs.dbvolution.databases.H2DB.addFeatureToFixException()");
-//		System.out.println("nz.co.gregs.dbvolution.databases.H2DB.addFeatureToFixException()" + exp.getClass().getCanonicalName());
-		if (exp instanceof org.h2.jdbc.JdbcSQLException) {
+		if ((exp instanceof JdbcException)) {
 			String message = exp.getMessage();
 			if (message != null) {
-//				System.out.println("nz.co.gregs.dbvolution.databases.H2DB.addFeatureToFixException()" + message);
-//				System.out.println("nz.co.gregs.dbvolution.databases.H2DB.addFeatureToFixException()" + DROPPING_NONEXISTENT_TABLE_PATTERN.matcher(message).lookingAt());
-//				System.out.println("nz.co.gregs.dbvolution.databases.H2DB.addFeatureToFixException()" + CREATING_EXISTING_TABLE_PATTERN.matcher(message).lookingAt());
 				if (BROKEN_CONNECTION_PATTERN.matcher(message).lookingAt()
 						||ALREADY_CLOSED_PATTERN.matcher(message).lookingAt()) {
-//					System.out.println("nz.co.gregs.dbvolution.databases.H2DB.addFeatureToFixException()" + "BROKEN CONNECTION: REPLACE CONNECTION.");
 					return ResponseToException.REPLACECONNECTION;
 				} else if (DROPPING_NONEXISTENT_TABLE_PATTERN.matcher(message).lookingAt()) {
-//					System.out.println("nz.co.gregs.dbvolution.databases.H2DB.addFeatureToFixException()" + "TABLE DOES NOT EXIST WHILE CREATING TABLE: OK.");
 					return ResponseToException.SKIPQUERY;
 				} else if (CREATING_EXISTING_TABLE_PATTERN.matcher(message).lookingAt()) {
-//					System.out.println("nz.co.gregs.dbvolution.databases.H2DB.addFeatureToFixException()" + "TABLE EXISTS WHILE CREATING TABLE: OK.");
 					return ResponseToException.SKIPQUERY;
 				} else {
 					try (Statement statement = getConnection().createStatement()) {
@@ -276,31 +269,6 @@ public class H2DB extends DBDatabase {
 		return getJdbcURL().matches(":mem:");
 	}
 
-//	@Override
-//	protected Map<String, String> getExtras() {
-//		String jdbcURL = getJdbcURL();
-//		if (jdbcURL.matches(";")) {
-//			String extrasString = jdbcURL.split(";", 2)[1];
-//			return DatabaseConnectionSettings.decodeExtras(extrasString, "", "=", ";", "");
-//		} else {
-//			return new HashMap<String, String>();
-//		}
-//	}
-//
-//	@Override
-//	protected String getHost() {
-//		String jdbcURL = getJdbcURL();
-//		String noPrefix = jdbcURL.replaceAll("^jdbc:h2:", "").replaceAll("^mem:", "");
-//		if (noPrefix.startsWith("tcp") || noPrefix.startsWith("ssl")) {
-//			return noPrefix
-//					.replaceAll("^tcp://", "")
-//					.replaceAll("^ssl://", "")
-//					.split("/", 2)[0]
-//					.split(":")[0];
-//		} else {
-//			return "";
-//		}
-//	}
 	protected String getFileFromJdbcURL() {
 		String jdbcURL = getJdbcURL();
 		String noPrefix = jdbcURL.replaceAll("^jdbc:h2:", "").replaceAll("^mem:", "");
@@ -312,31 +280,7 @@ public class H2DB extends DBDatabase {
 			return noPrefix.replaceAll("^file:", "").split(";", 2)[0];
 		}
 	}
-
-//	@Override
-//	protected String getDatabaseInstance() {
-//		return "";
-//	}
-//
-//	@Override
-//	protected String getPort() {
-//		String jdbcURL = getJdbcURL();
-//		String noPrefix = jdbcURL.replaceAll("^jdbc:h2:", "").replaceAll("^mem:", "");
-//		if (noPrefix.startsWith("tcp") || noPrefix.startsWith("ssl")) {
-//			return noPrefix
-//					.replaceAll("^tcp://", "")
-//					.replaceAll("^ssl://", "")
-//					.split("/", 2)[0]
-//					.replaceAll("^[^:]*:", "");
-//		} else {
-//			return "";
-//		}
-//	}
-//
-//	@Override
-//	protected String getSchema() {
-//		return "";
-//	}
+	
 	@Override
 	protected DatabaseConnectionSettings getSettingsFromJDBCURL(String jdbcURL) {
 		DatabaseConnectionSettings set = new DatabaseConnectionSettings();
