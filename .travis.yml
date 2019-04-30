@@ -12,7 +12,7 @@ services:
   - postgresql
 
 jdk:
-  - openjdk7
+  - openjdk10
 #  - oraclejdk8
 #notifications:
 #  email: false
