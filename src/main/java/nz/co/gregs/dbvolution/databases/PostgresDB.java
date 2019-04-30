@@ -33,7 +33,6 @@ import nz.co.gregs.dbvolution.internal.postgres.MultiPoint2DFunctions;
 import nz.co.gregs.dbvolution.internal.postgres.StringFunctions;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.postgresql.util.PSQLException;
 
 /**
  * A DBDatabase tweaked for PostgreSQL.

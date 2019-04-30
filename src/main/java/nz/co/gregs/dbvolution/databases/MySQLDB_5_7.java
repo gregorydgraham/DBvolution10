@@ -19,7 +19,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.regex.Pattern;
 import javax.sql.DataSource;
-import nz.co.gregs.dbvolution.databases.definitions.MySQLDBDefinition;
+import nz.co.gregs.dbvolution.databases.definitions.MySQLDBDefinition_5_7;
 import nz.co.gregs.dbvolution.databases.supports.SupportsPolygonDatatype;
 import nz.co.gregs.dbvolution.internal.mysql.MigrationFunctions;
 
@@ -31,7 +31,7 @@ import nz.co.gregs.dbvolution.internal.mysql.MigrationFunctions;
  *
  * @author Gregory Graham
  */
-public class MySQLDB extends DBDatabase implements SupportsPolygonDatatype {
+public class MySQLDB_5_7 extends DBDatabase implements SupportsPolygonDatatype {
 
 	private final static String MYSQLDRIVERNAME = "com.mysql.jdbc.Driver";
 	private static final long serialVersionUID = 1l;
@@ -44,8 +44,8 @@ public class MySQLDB extends DBDatabase implements SupportsPolygonDatatype {
 	 * @param ds	ds
 	 * @throws java.sql.SQLException
 	 */
-	public MySQLDB(DataSource ds) throws SQLException {
-		super(new MySQLDBDefinition(), MYSQLDRIVERNAME, ds);
+	public MySQLDB_5_7(DataSource ds) throws SQLException {
+		super(new MySQLDBDefinition_5_7(), MYSQLDRIVERNAME, ds);
 	}
 
 	/**
@@ -57,8 +57,8 @@ public class MySQLDB extends DBDatabase implements SupportsPolygonDatatype {
 	 * @param username username
 	 * @throws java.sql.SQLException
 	 */
-	public MySQLDB(String jdbcURL, String username, String password) throws SQLException {
-		super(new MySQLDBDefinition(), MYSQLDRIVERNAME, jdbcURL, username, password);
+	public MySQLDB_5_7(String jdbcURL, String username, String password) throws SQLException {
+		super(new MySQLDBDefinition_5_7(), MYSQLDRIVERNAME, jdbcURL, username, password);
 	}
 
 	/**
@@ -72,8 +72,8 @@ public class MySQLDB extends DBDatabase implements SupportsPolygonDatatype {
 	 * @param password the password required to login successfully.
 	 * @throws java.sql.SQLException
 	 */
-	public MySQLDB(String server, long port, String databaseName, String username, String password) throws SQLException {
-		super(new MySQLDBDefinition(),
+	public MySQLDB_5_7(String server, long port, String databaseName, String username, String password) throws SQLException {
+		super(new MySQLDBDefinition_5_7(),
 				MYSQLDRIVERNAME,
 				"jdbc:mysql://" + server + ":" + port + "/" + databaseName + "?createDatabaseIfNotExist=true&useUnicode=yes&characterEncoding=utf8&characterSetResults=utf8&verifyServerCertificate=false&useSSL=true",
 				username,

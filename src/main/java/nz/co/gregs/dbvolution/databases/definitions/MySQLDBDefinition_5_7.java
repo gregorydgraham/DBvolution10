@@ -47,7 +47,7 @@ import nz.co.gregs.dbvolution.internal.properties.PropertyWrapper;
  *
  * @author Gregory Graham
  */
-public class MySQLDBDefinition extends DBDefinition {
+public class MySQLDBDefinition_5_7 extends DBDefinition {
 
 	public static final long serialVersionUID = 1L;
 
@@ -109,15 +109,15 @@ public class MySQLDBDefinition extends DBDefinition {
 	@Override
 	public String doColumnTransformForSelect(QueryableDatatype<?> qdt, String selectableName) {
 		if (qdt instanceof DBPolygon2D) {
-			return "ST_AsText(" + selectableName + ")";
+			return "AsText(" + selectableName + ")";
 		} else if (qdt instanceof DBPoint2D) {
-			return "ST_AsText(" + selectableName + ")";
+			return "AsText(" + selectableName + ")";
 		} else if (qdt instanceof DBLine2D) {
-			return "ST_AsText(" + selectableName + ")";
+			return "AsText(" + selectableName + ")";
 		} else if (qdt instanceof DBLineSegment2D) {
-			return "ST_AsText(" + selectableName + ")";
+			return "AsText(" + selectableName + ")";
 		} else if (qdt instanceof DBMultiPoint2D) {
-			return "ST_AsText(" + selectableName + ")";
+			return "AsText(" + selectableName + ")";
 		} else {
 			return selectableName;
 		}
@@ -262,7 +262,7 @@ public class MySQLDBDefinition extends DBDefinition {
 	@Override
 	public String transformPolygonIntoDatabasePolygon2DFormat(Polygon geom) {
 		String wktValue = geom.toText();
-		return "ST_PolyFromText('" + wktValue + "')";
+		return "PolyFromText('" + wktValue + "')";
 	}
 
 	@Override
@@ -279,7 +279,7 @@ public class MySQLDBDefinition extends DBDefinition {
 			}
 		}
 //'POLYGON ((12 12, 13 12, 13 13, 12 13, 12 12))'
-		return "ST_PolyFromText('POLYGON ((" + str + "))')";
+		return "PolyFromText('POLYGON ((" + str + "))')";
 	}
 
 	@Override
@@ -288,7 +288,7 @@ public class MySQLDBDefinition extends DBDefinition {
 		StringBuilder str = new StringBuilder();
 		String separator = "";
 		for (String point : pointSQL) {
-			final String coordsOnly = point.replaceAll("ST_PointFromText\\('POINT \\(", "").replaceAll("\\)'\\)", "");
+			final String coordsOnly = point.replaceAll("PointFromText\\('POINT \\(", "").replaceAll("\\)'\\)", "");
 			str.append(separator).append(coordsOnly);
 			separator = ",";
 		}
@@ -297,7 +297,7 @@ public class MySQLDBDefinition extends DBDefinition {
 			str.append(separator).append(points[0]);
 		}
 
-		return "ST_PolyFromText('POLYGON ((" + str + "))')";
+		return "PolyFromText('POLYGON ((" + str + "))')";
 	}
 
 	@Override
@@ -317,12 +317,12 @@ public class MySQLDBDefinition extends DBDefinition {
 
 	@Override
 	public String doPolygon2DContainsPolygon2DTransform(String firstGeometry, String secondGeometry) {
-		return "ST_Contains(" + firstGeometry + ", " + secondGeometry + ")";
+		return "Contains(" + firstGeometry + ", " + secondGeometry + ")";
 	}
 
 	@Override
 	public String doPolygon2DContainsPoint2DTransform(String polygon2DSQL, String point2DSQL) {
-		return "ST_Contains(" + polygon2DSQL + ", " + point2DSQL + ")";
+		return "Contains(" + polygon2DSQL + ", " + point2DSQL + ")";
 	}
 
 	@Override
@@ -350,7 +350,7 @@ public class MySQLDBDefinition extends DBDefinition {
 	@Override
 	public String doPolygon2DWithinTransform(String firstGeometry, String secondGeometry) {
 		//Returns 1 or 0 to indicate whether g1 is spatially within g2. This tests the opposite relationship as Contains(). 
-		return "ST_Within(" + firstGeometry + ", " + secondGeometry + ")";
+		return "Within(" + firstGeometry + ", " + secondGeometry + ")";
 	}
 
 	@Override
@@ -360,37 +360,37 @@ public class MySQLDBDefinition extends DBDefinition {
 
 	@Override
 	public String doPolygon2DGetBoundingBoxTransform(String thisGeometry) {
-		return "ST_Envelope(" + thisGeometry + ")";
+		return "Envelope(" + thisGeometry + ")";
 	}
 
 	@Override
 	public String doPolygon2DGetAreaTransform(String thisGeometry) {
-		return "ST_Area(" + thisGeometry + ")";
+		return "Area(" + thisGeometry + ")";
 	}
 
 	@Override
 	public String doPolygon2DGetExteriorRingTransform(String thisGeometry) {
-		return "ST_ExteriorRing(" + thisGeometry + ")";
+		return "ExteriorRing(" + thisGeometry + ")";
 	}
 
 	@Override
 	public String doPolygon2DGetMaxXTransform(String toSQLString) {
-		return "ST_X(ST_PointN(ST_ExteriorRing(ST_Envelope(" + toSQLString + ")),3))";
+		return "X(PointN(ExteriorRing(Envelope(" + toSQLString + ")),3))";
 	}
 
 	@Override
 	public String doPolygon2DGetMinXTransform(String toSQLString) {
-		return "ST_X(ST_PointN(ST_ExteriorRing(ST_Envelope(" + toSQLString + ")),1))";
+		return "X(PointN(ExteriorRing(Envelope(" + toSQLString + ")),1))";
 	}
 
 	@Override
 	public String doPolygon2DGetMaxYTransform(String toSQLString) {
-		return "ST_Y(ST_PointN(ST_ExteriorRing(ST_Envelope(" + toSQLString + ")),3))";
+		return "Y(PointN(ExteriorRing(Envelope(" + toSQLString + ")),3))";
 	}
 
 	@Override
 	public String doPolygon2DGetMinYTransform(String toSQLString) {
-		return "ST_Y(ST_PointN(ST_ExteriorRing(ST_Envelope(" + toSQLString + ")),1))";
+		return "Y(PointN(ExteriorRing(Envelope(" + toSQLString + ")),1))";
 	}
 
 	@Override
@@ -400,22 +400,22 @@ public class MySQLDBDefinition extends DBDefinition {
 
 	@Override
 	public String transformCoordinatesIntoDatabasePoint2DFormat(String xValue, String yValue) {
-		return "ST_PointFromText('POINT (" + xValue + " " + yValue + ")')";
+		return "PointFromText('POINT (" + xValue + " " + yValue + ")')";
 	}
 
 	@Override
 	public String doPoint2DEqualsTransform(String firstPoint, String secondPoint) {
-		return "ST_Equals(" + firstPoint + ", " + secondPoint + ")";
+		return "Equals(" + firstPoint + ", " + secondPoint + ")";
 	}
 
 	@Override
 	public String doPoint2DGetXTransform(String point2D) {
-		return " ST_X(" + point2D + ")";
+		return " X(" + point2D + ")";
 	}
 
 	@Override
 	public String doPoint2DGetYTransform(String point2D) {
-		return " ST_Y(" + point2D + ")";
+		return " Y(" + point2D + ")";
 	}
 
 	@Override
@@ -430,44 +430,44 @@ public class MySQLDBDefinition extends DBDefinition {
 
 	@Override
 	public String doPoint2DAsTextTransform(String point2DString) {
-		return " ST_AsText(" + point2DString + ")";
+		return " AsText(" + point2DString + ")";
 	}
 
 	@Override
 	public String transformPoint2DIntoDatabaseFormat(Point point) {
 		String wktValue = point.toText();
-		return "ST_PointFromText('" + wktValue + "')";
+		return "PointFromText('" + wktValue + "')";
 	}
 
 	@Override
 	public String transformLineStringIntoDatabaseLine2DFormat(LineString line) {
 		String wktValue = line.toText();
-		return "ST_LineFromText('" + wktValue + "')";
+		return "LineFromText('" + wktValue + "')";
 	}
 
 	@Override
 	public String doLine2DGetBoundingBoxTransform(String toSQLString) {
-		return "ST_Envelope(" + toSQLString + ")";
+		return "Envelope(" + toSQLString + ")";
 	}
 
 	@Override
 	public String doLine2DGetMaxXTransform(String toSQLString) {
-		return "ST_X(ST_PointN(ST_ExteriorRing(ST_Envelope(" + toSQLString + ")),3))";
+		return "X(PointN(ExteriorRing(Envelope(" + toSQLString + ")),3))";
 	}
 
 	@Override
 	public String doLine2DGetMinXTransform(String toSQLString) {
-		return "ST_X(ST_PointN(ST_ExteriorRing(ST_Envelope(" + toSQLString + ")),1))";
+		return "X(PointN(ExteriorRing(Envelope(" + toSQLString + ")),1))";
 	}
 
 	@Override
 	public String doLine2DGetMaxYTransform(String toSQLString) {
-		return "ST_Y(ST_PointN(ST_ExteriorRing(ST_Envelope(" + toSQLString + ")),3))";
+		return "Y(PointN(ExteriorRing(Envelope(" + toSQLString + ")),3))";
 	}
 
 	@Override
 	public String doLine2DGetMinYTransform(String toSQLString) {
-		return "ST_Y(ST_PointN(ST_ExteriorRing(ST_Envelope(" + toSQLString + ")),1))";
+		return "Y(PointN(ExteriorRing(Envelope(" + toSQLString + ")),1))";
 	}
 
 	@Override
@@ -558,7 +558,7 @@ public class MySQLDBDefinition extends DBDefinition {
 	@Override
 	public String transformMultiPoint2DToDatabaseMultiPoint2DValue(MultiPoint points) {
 		String wktValue = points.toText().replace("((", "(").replace("))", ")").replaceAll("\\), \\(", ", ");
-		return "ST_MPointFromText('" + wktValue + "')";
+		return "MPointFromText('" + wktValue + "')";
 	}
 
 	@Override
@@ -579,37 +579,37 @@ public class MySQLDBDefinition extends DBDefinition {
 
 	@Override
 	public String doMultiPoint2DEqualsTransform(String first, String second) {
-		return "ST_Equals(" + first + ", " + second + ")";
+		return "Equals(" + first + ", " + second + ")";
 	}
 
 	@Override
 	public String doMultiPoint2DGetPointAtIndexTransform(String first, String index) {
-		return "ST_PointN(" + doMultiPoint2DToLine2DTransform(first) + ", " + index + ")";
+		return "PointN(" + doMultiPoint2DToLine2DTransform(first) + ", " + index + ")";
 	}
 
 	@Override
 	public String doMultiPoint2DGetNumberOfPointsTransform(String first) {
-		return "ST_NumPoints(" + doMultiPoint2DToLine2DTransform(first) + ")";
+		return "NumPoints(" + doMultiPoint2DToLine2DTransform(first) + ")";
 	}
 
 	@Override
 	public String doMultiPoint2DMeasurableDimensionsTransform(String first) {
-		return "ST_Dimension(" + first + ")";
+		return "Dimension(" + first + ")";
 	}
 
 	@Override
 	public String doMultiPoint2DGetBoundingBoxTransform(String first) {
-		return "ST_Envelope(" + first + ")";
+		return "Envelope(" + first + ")";
 	}
 
 	@Override
 	public String doMultiPoint2DAsTextTransform(String first) {
-		return "ST_AsText(" + first + ")";
+		return "AsText(" + first + ")";
 	}
 
 	@Override
 	public String doMultiPoint2DToLine2DTransform(String first) {
-		return "ST_LineFromText(REPLACE(REPLACE(REPLACE(REPLACE(ST_ASTEXT(" + first + "),'MULTIPOINT', 'LINESTRING'),'((','('),'),(',','),'))',')'))";
+		return "LineFromText(REPLACE(REPLACE(REPLACE(REPLACE(ASTEXT(" + first + "),'MULTIPOINT', 'LINESTRING'),'((','('),'),(',','),'))',')'))";
 	}
 
 //	@Override
@@ -618,22 +618,22 @@ public class MySQLDBDefinition extends DBDefinition {
 //	}
 	@Override
 	public String doMultiPoint2DGetMinYTransform(String first) {
-		return "ST_Y(ST_PointN(ST_ExteriorRing(ST_Envelope(" + first + ")),1))";
+		return "Y(PointN(ExteriorRing(Envelope(" + first + ")),1))";
 	}
 
 	@Override
 	public String doMultiPoint2DGetMinXTransform(String first) {
-		return "ST_X(ST_PointN(ST_ExteriorRing(ST_Envelope(" + first + ")),1))";
+		return "X(PointN(ExteriorRing(Envelope(" + first + ")),1))";
 	}
 
 	@Override
 	public String doMultiPoint2DGetMaxYTransform(String first) {
-		return "ST_Y(ST_PointN(ST_ExteriorRing(ST_Envelope(" + first + ")),3))";
+		return "Y(PointN(ExteriorRing(Envelope(" + first + ")),3))";
 	}
 
 	@Override
 	public String doMultiPoint2DGetMaxXTransform(String first) {
-		return "ST_X(ST_PointN(ST_ExteriorRing(ST_Envelope(" + first + ")),3))";
+		return "X(PointN(ExteriorRing(Envelope(" + first + ")),3))";
 	}
 
 // Relies on Java8 :(
