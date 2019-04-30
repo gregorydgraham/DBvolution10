@@ -89,13 +89,10 @@ public class H2SharedDB extends H2DB {
 			if (server == null || !server.isRunning(false)) {
 				if (serverIsUnreachable()) {
 					try {
-						if (getPort().isEmpty()) {
-							server = Server.createTcpServer("-tcpAllowOthers", "-tcpDaemon").start();
-						} else {
-							server = Server.createTcpServer("-tcpAllowOthers", "-tcpDaemon", "-tcpPort", getPort()).start();
-						}
+						server = startServer();
 						if (server != null && server.isRunning(false)) {
 						} else {
+							server = startServer();
 						}
 					} catch (SQLException ex) {
 						Logger.getLogger(H2SharedDB.class.getName()).log(Level.SEVERE, null, ex);
@@ -105,6 +102,14 @@ public class H2SharedDB extends H2DB {
 			} else {
 			}
 		} else {
+		}
+	}
+
+	protected Server startServer() throws SQLException {
+		if (getPort().isEmpty()) {
+			return Server.createTcpServer("-tcpAllowOthers", "-ifNotExists", "-tcpDaemon").start();
+		} else {
+			return Server.createTcpServer("-tcpAllowOthers", "-ifNotExists", "-tcpDaemon", "-tcpPort", getPort()).start();
 		}
 	}
 
