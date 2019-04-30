@@ -558,7 +558,7 @@ public class MySQLDBDefinition extends DBDefinition {
 	@Override
 	public String transformMultiPoint2DToDatabaseMultiPoint2DValue(MultiPoint points) {
 		String wktValue = points.toText().replace("((", "(").replace("))", ")").replaceAll("\\), \\(", ", ");
-		return "ST_MPointFromText('" + wktValue + "')";
+		return "ST_MultiPointFromText('" + wktValue + "')";
 	}
 
 	@Override
