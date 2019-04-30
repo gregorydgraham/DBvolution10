@@ -270,11 +270,11 @@ public class DateExpressionTest extends AbstractTest {
 		DBQuery query = database.getDBQuery(marq)
 				.setBlankQueryAllowed(true)
 				.setSortOrder(marq.column(marq.carCompany));
-		query.printSQLForQuery();
+//		query.printSQLForQuery();
 		List<DBQueryRow> allRows = query.getAllRows();
 
 		Assert.assertThat(allRows.size(), is(22));
-		database.print(allRows);
+//		database.print(allRows);
 		MarqueWithDateWindowingFunctions got;// = allRows.get(0).get(marq);
 		ArrayList<Object[]> expectedValues = new ArrayList<>();
 		expectedValues.add(new Object[]{2, march23rd2013, march23rd2013});
@@ -300,7 +300,7 @@ public class DateExpressionTest extends AbstractTest {
 		expectedValues.add(new Object[]{15, march23rd2013, april2nd2011});
 		expectedValues.add(new Object[]{15, march23rd2013, april2nd2011});
 		for (int i = 0; i < allRows.size(); i++) {
-			System.out.println("ROW: " + i);
+//			System.out.println("ROW: " + i);
 			got = allRows.get(i).get(marq);
 			Object[] expect = expectedValues.get(i);
 			Assert.assertThat(got.countOfDates.intValue(), is((Integer) expect[0]));
@@ -385,11 +385,11 @@ public class DateExpressionTest extends AbstractTest {
 		DBQuery query = database.getDBQuery(marq)
 				.setBlankQueryAllowed(true)
 				.setSortOrder(marq.column(marq.carCompany));
-		query.printSQLForQuery();
+//		query.printSQLForQuery();
 		List<DBQueryRow> allRows = query.getAllRows();
 
 		Assert.assertThat(allRows.size(), is(22));
-		database.print(allRows);
+//		database.print(allRows);
 		MarqueWithAggregatorAndDateWindowingFunctions got;// = allRows.get(0).get(marq);
 		ArrayList<Object[]> expectedValues = new ArrayList<>();
 		expectedValues.add(new Object[]{2, march23rd2013, march23rd2013});
@@ -415,7 +415,7 @@ public class DateExpressionTest extends AbstractTest {
 		expectedValues.add(new Object[]{15, march23rd2013, april2nd2011});
 		expectedValues.add(new Object[]{15, march23rd2013, april2nd2011});
 		for (int i = 0; i < allRows.size(); i++) {
-			System.out.println("ROW: " + i);
+//			System.out.println("ROW: " + i);
 			got = allRows.get(i).get(marq);
 			Object[] expect = expectedValues.get(i);
 			Assert.assertThat(got.countOfDates.intValue(), is((Integer) expect[0]));
