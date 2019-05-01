@@ -5,7 +5,6 @@ addons:
     apt:
       - postgres
       - postgis
-    packages:
 script: "mvn -q -B -s .travis-settings.xml -P DBs-OpenSource,Cluster-OpenSource test "
 services:
   - mysql
