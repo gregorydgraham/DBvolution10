@@ -143,13 +143,13 @@ public class WindowFunction<A extends RangeExpression> implements WindowingFunct
 		@Override
 		@SuppressWarnings("unchecked")
 		public A unsorted() {
-			return (A) new Unsorted(this).getRequiredExpression();
+			return this.orderBy(BooleanExpression.trueExpression().ascending()).defaultFrame();
 		}
 
 		@Override
 		@SuppressWarnings("unchecked")
 		public A unordered() {
-			return (A) new Unsorted(this).getRequiredExpression();
+			return this.orderBy(BooleanExpression.trueExpression().ascending()).defaultFrame();
 		}
 
 	}
@@ -773,22 +773,4 @@ public class WindowFunction<A extends RangeExpression> implements WindowingFunct
 			return true;
 		}
 	}
-
-	public static class Unsorted<A extends RangeExpression> extends WindowEnd<A> {
-
-		public Unsorted(Partitioned<A> aThis) {
-			super(aThis);
-		}
-
-		@Override
-		public String toSQLString(DBDefinition defn) {
-			return getStart().toSQLString(defn) + " )";
-		}
-
-		@Override
-		public Unsorted<A> copy() {
-			return new Unsorted<A>((Partitioned<A>) getStart().copy());
-		}
-	}
-
 }
