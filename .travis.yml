@@ -1,6 +1,8 @@
 language: java
 dist: xenial
 sudo: required
+apt:
+  - postgis
 script: "mvn -q -B -s .travis-settings.xml -P DBs-OpenSource,Cluster-OpenSource test "
 services:
   - mysql
