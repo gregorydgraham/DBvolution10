@@ -86,26 +86,35 @@ public class H2SharedDB extends H2DB {
 	@Override
 	protected void startServerIfRequired() {
 		if (isLocalhostServer()) {
-			if (server == null || !server.isRunning(false)) {
+			if (internalServerIsNotRunning()) {
 				if (serverIsUnreachable()) {
 					try {
-						server = startServer();
-						if (server != null && server.isRunning(false)) {
-						} else {
-							server = startServer();
+						server = startInternalServer();
+						if (internalServerIsNotRunning()) {
+							//try a second time just in case
+							server = startInternalServer();
+						}
+						if (internalServerIsRunning()) {
+							// the server can be assigned a random port during startup so update our settings
+							getSettings().setPort("" + server.getPort());
 						}
 					} catch (SQLException ex) {
 						Logger.getLogger(H2SharedDB.class.getName()).log(Level.SEVERE, null, ex);
 					}
-				} else {
 				}
-			} else {
 			}
-		} else {
 		}
 	}
 
-	protected Server startServer() throws SQLException {
+	protected boolean internalServerIsRunning() {
+		return server != null && server.isRunning(false);
+	}
+
+	protected boolean internalServerIsNotRunning() {
+		return server == null || !server.isRunning(false);
+	}
+
+	protected Server startInternalServer() throws SQLException {
 		if (getPort().isEmpty()) {
 			return Server.createTcpServer("-tcpAllowOthers", "-ifNotExists", "-tcpDaemon").start();
 		} else {
@@ -120,19 +129,23 @@ public class H2SharedDB extends H2DB {
 	@Override
 	public synchronized void stop() {
 		super.stop();
-		if (server != null && server.isRunning(false)) {
+		if (internalServerIsRunning()) {
 			server.stop();
 		}
 	}
 
 	private boolean serverIsUnreachable() {
 		try {
-			getConnectionFromDriverManager().close();
+			tryToReachServer();
 			return false;
 		} catch (Exception ex) {
-			LOG.error("Unable to reach server", ex);
+//			LOG.info("Unable to reach server", ex);
 		}
 		return true;
+	}
+
+	private void tryToReachServer() throws SQLException {
+		getConnectionFromDriverManager().close();
 	}
 
 }
