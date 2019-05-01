@@ -69,8 +69,8 @@
 				<postgres.port>5432</postgres.port>
 				<postgres.database>dbvtest</postgres.database>
 				<postgres.instance>dbvtest</postgres.instance>
-				<postgres.username>postgres</postgres.username>
-				<postgres.password></postgres.password>
+				<postgres.username>dbv</postgres.username>
+				<postgres.password>dbv</postgres.password>
 				<postgres.schema></postgres.schema>
 			</properties>
 		</profile>
