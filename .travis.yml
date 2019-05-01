@@ -1,9 +1,14 @@
 language: java
 dist: xenial
 sudo: required
-apt:
-  - postgis
-script: "mvn -q -B -s .travis-settings.xml -P DBs-OpenSource,Cluster-OpenSource test "
+addons:
+  postgresql: "10"
+  apt:
+    packages:
+    - postgresql-10
+    - postgresql-client-10
+    - postgresql-10-postgis-2.4
+before_script: psql -U postgres -c "create extension postgis"
 services:
   - mysql
   - postgresql
@@ -20,5 +25,6 @@ before_install:
   - psql -c 'create database dbvtest;' -U postgres
   - psql -c 'create database dbvtest_cluster;' -U postgres
   - psql --version
-before_script: 
+  
+script: "mvn -q -B -s .travis-settings.xml -P DBs-OpenSource,Cluster-OpenSource test "
   
