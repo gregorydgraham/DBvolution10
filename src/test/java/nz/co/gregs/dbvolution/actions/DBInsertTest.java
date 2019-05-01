@@ -193,6 +193,8 @@ public class DBInsertTest extends AbstractTest {
 		Assert.assertThat(gotRow.creationOrUpdateDate.getValue(), greaterThanOrEqualTo(startTime));
 		Assert.assertThat(gotRow.creationOrUpdateDate.getValue(), lessThanOrEqualTo(gotRow.currentDate.getValue()));
 
+		Thread.sleep(500);
+		
 		gotRow.name.setValue("blarg");
 		database.update(gotRow);
 		gotRow = database.getDBTable(row2).getRowsByPrimaryKey(pkValue).get(0);
@@ -207,6 +209,8 @@ public class DBInsertTest extends AbstractTest {
 		Assert.assertThat(gotRow.creationOrUpdateDate.getValue(), lessThanOrEqualTo(gotRow.currentDate.getValue()));
 		Date formerUpdateDate = gotRow.updateDate.getValue();
 
+		Thread.sleep(500);
+		
 		gotRow.name.setValue("blarg");
 		gotRow.creationDate.setValue(april2nd2011);
 		database.update(gotRow);
