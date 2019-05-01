@@ -1,11 +1,13 @@
 language: java
 dist: xenial
-sudo: required
+sudo: true
 addons:
-    postgresql: "9.6"
+    postgresql: '10'
     apt:
-      packages:
-      - postgresql-9.6-postgis-2.3
+    packages:
+      - postgresql-10-postgis-2.4
+      - postgresql-10-postgis-2.4-scripts
+      - postgresql-client-10
 script: "mvn -q -B -s .travis-settings.xml -P DBs-OpenSource,Cluster-OpenSource test "
 services:
   - mysql
