@@ -717,7 +717,9 @@ public class QueryDetails implements DBQueryable, Serializable {
 				}
 				if (tablesInvolved.size() <= previousTables.size()) {
 					if (previousTables.containsAll(tablesInvolved)) {
-						if (expr.isRelationship()) {
+						if (expr.isWindowingFunction()) {
+							havingColumns.add(expr);
+						} else if (expr.isRelationship()) {
 							joinClauses.add(expr.toSQLString(defn));
 						} else {
 							if (requiredTables.containsAll(tablesInvolved)) {
