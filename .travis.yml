@@ -2,13 +2,13 @@ language: java
 dist: xenial
 sudo: required
 addons:
+  mysql: "8"
   postgresql: "10"
   apt:
     packages:
     - postgresql-10
     - postgresql-client-10
     - postgresql-10-postgis-2.4
-    update: true
 before_script: psql -U postgres -c "create extension postgis"
 services:
   - mysql
