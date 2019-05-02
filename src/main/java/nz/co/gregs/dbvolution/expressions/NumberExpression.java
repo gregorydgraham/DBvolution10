@@ -3865,7 +3865,7 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 
 	}
 
-	private static class MaxUnaryFunction extends DBUnaryFunction {
+	public static class MaxUnaryFunction extends DBUnaryFunction implements CanBeWindowingFunction<NumberExpression>{
 
 		private final static long serialVersionUID = 1l;
 
@@ -3887,9 +3887,14 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 		public MaxUnaryFunction copy() {
 			return new MaxUnaryFunction(only == null ? null : only.copy());
 		}
+
+		@Override
+		public WindowFunction<NumberExpression> over() {
+			return new WindowFunction<>(new NumberExpression(only));
+		}
 	}
 
-	private static class MinUnaryFunction extends DBUnaryFunction {
+	public static class MinUnaryFunction extends DBUnaryFunction implements CanBeWindowingFunction<NumberExpression>{
 
 		private final static long serialVersionUID = 1l;
 
@@ -3910,6 +3915,11 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 		@Override
 		public MinUnaryFunction copy() {
 			return new MinUnaryFunction(only == null ? null : only.copy());
+		}
+
+		@Override
+		public WindowFunction<NumberExpression> over() {
+			return new WindowFunction<>(new NumberExpression(this));
 		}
 	}
 
@@ -5031,7 +5041,7 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 		}
 	}
 
-	protected static class AverageExpression extends DBUnaryFunction {
+	public static class AverageExpression extends DBUnaryFunction implements CanBeWindowingFunction<NumberExpression>{
 
 		public AverageExpression(NumberExpression only) {
 			super(only);
@@ -5053,9 +5063,14 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 			return new AverageExpression(
 					only == null ? null : only.copy());
 		}
+
+		@Override
+		public WindowFunction<NumberExpression> over() {
+			return new WindowFunction<>(new NumberExpression(this));
+		}
 	}
 
-	protected class StandardDeviationExpression extends DBUnaryFunction {
+	public class StandardDeviationExpression extends DBUnaryFunction implements CanBeWindowingFunction<NumberExpression> {
 
 		public StandardDeviationExpression(NumberExpression only) {
 			super(only);
@@ -5088,9 +5103,14 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 		public StandardDeviationExpression copy() {
 			return new StandardDeviationExpression(only == null ? null : only.copy());
 		}
+
+		@Override
+		public WindowFunction<NumberExpression> over() {
+			return new WindowFunction<>(new NumberExpression(this));
+		}
 	}
 
-	protected static class SumExpression extends DBUnaryFunction {
+	public static class SumExpression extends DBUnaryFunction implements CanBeWindowingFunction<NumberExpression>{
 
 		public SumExpression(NumberExpression only) {
 			super(only);
@@ -5110,6 +5130,11 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 		@Override
 		public SumExpression copy() {
 			return new SumExpression(only == null ? null : only.copy());
+		}
+
+		@Override
+		public WindowFunction<NumberExpression> over() {
+			return new WindowFunction<>(new NumberExpression(this));
 		}
 	}
 

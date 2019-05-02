@@ -1642,6 +1642,7 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 	 * @return a BooleanExpression for use in
 	 * {@link DBQuery#addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression)}
 	 */
+	@Override
 	public BooleanExpression isNotIn(IntegerResult... possibleValues) {
 		BooleanExpression isNotInExpr = new IsNotInFunction(this, possibleValues);
 		if (isNotInExpr.getIncludesNull()) {
@@ -3843,7 +3844,7 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 
 	}
 
-	private static class MaxUnaryFunction extends DBUnaryFunction {
+	public static class MaxUnaryFunction extends DBUnaryFunction implements CanBeWindowingFunction<IntegerExpression>{
 
 		private final static long serialVersionUID = 1l;
 
@@ -3866,9 +3867,14 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 			return new MaxUnaryFunction(
 					(IntegerExpression) (getInnerResult() == null ? null : getInnerResult().copy()));
 		}
+
+		@Override
+		public WindowFunction<IntegerExpression> over() {
+			return new WindowFunction<>(new IntegerExpression(this));
+		}
 	}
 
-	private static class MinUnaryFunction extends DBUnaryFunction {
+	public static class MinUnaryFunction extends DBUnaryFunction implements CanBeWindowingFunction<IntegerExpression>{
 
 		private final static long serialVersionUID = 1l;
 
@@ -3890,6 +3896,11 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 		public MinUnaryFunction copy() {
 			return new MinUnaryFunction(
 					(IntegerExpression) (getInnerResult() == null ? null : getInnerResult().copy()));
+		}
+
+		@Override
+		public WindowFunction<IntegerExpression> over() {
+			return new WindowFunction<>(new IntegerExpression(this));
 		}
 	}
 
@@ -4553,7 +4564,7 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 		}
 	}
 
-	private static class SumFunction extends DBUnaryFunction {
+	public static class SumFunction extends DBUnaryFunction implements CanBeWindowingFunction<IntegerExpression>{
 
 		private final static long serialVersionUID = 1l;
 
@@ -4575,6 +4586,11 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 		public SumFunction copy() {
 			return new SumFunction(
 					(IntegerExpression) (getInnerResult() == null ? null : getInnerResult().copy()));
+		}
+
+		@Override
+		public WindowFunction<IntegerExpression> over() {
+			return new WindowFunction<>(new IntegerExpression(this));
 		}
 	}
 

@@ -2595,7 +2595,7 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 		return new DateExpression(value);
 	}
 
-	private static abstract class FunctionWithDateResult extends DateExpression {
+	private static abstract class FunctionWithDateResult extends DateExpression implements CanBeWindowingFunction {
 
 		private static final long serialVersionUID = 1L;
 
@@ -2649,6 +2649,11 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 		public boolean isPurelyFunctional() {
 			return true;
 		}
+
+		@Override
+		public WindowFunction<DateExpression> over() {
+			return new WindowFunction<DateExpression>(new DateExpression(this));
+		}
 	}
 
 	private static abstract class DateExpressionWithNumberResult extends NumberExpression {
@@ -2672,7 +2677,7 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 		public abstract String toSQLString(DBDefinition db);
 	}
 
-	private static abstract class DateDateExpressionWithBooleanResult extends BooleanExpression {
+	private static abstract class DateDateExpressionWithBooleanResult extends BooleanExpression implements CanBeWindowingFunction{
 
 		private static final long serialVersionUID = 1L;
 
@@ -2734,9 +2739,14 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 		public boolean getIncludesNull() {
 			return requiresNullProtection;
 		}
+		
+		@Override
+		public WindowFunction<BooleanExpression> over() {
+			return new WindowFunction<BooleanExpression>(new BooleanExpression(first));
+		}
 	}
 
-	private static abstract class DateDateExpressionWithDateRepeatResult extends DateRepeatExpression {
+	private static abstract class DateDateExpressionWithDateRepeatResult extends DateRepeatExpression implements CanBeWindowingFunction{
 
 		private static final long serialVersionUID = 1L;
 
@@ -2805,6 +2815,11 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 		 */
 		public DateExpression getSecond() {
 			return second;
+		}
+		
+		@Override
+		public WindowFunction<DateRepeatExpression> over() {
+			return new WindowFunction<DateRepeatExpression>(new DateRepeatExpression(this));
 		}
 	}
 
@@ -3242,14 +3257,14 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 		}
 	}
 
-	protected static class WindowingDateFunctionWithDateResult extends WindowFunction<DateExpression>{
-
-		private static final long serialVersionUID = 1L;
-		
-		public WindowingDateFunctionWithDateResult(DateExpression expr){
-			super(new DateExpression(expr));
-		}
-	}
+//	protected static class WindowingDateFunctionWithDateResult extends WindowFunction<DateExpression>{
+//
+//		private static final long serialVersionUID = 1L;
+//		
+//		public WindowingDateFunctionWithDateResult(DateExpression expr){
+//			super(new DateExpression(expr));
+//		}
+//	}
 
 	private static abstract class DateIntegerExpressionWithDateResult extends DateExpression {
 
@@ -3959,7 +3974,7 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 		}
 	}
 
-	protected static class DateMaxExpression extends DateFunctionWithDateResult implements CanBeWindowingFunction{
+	public static class DateMaxExpression extends DateFunctionWithDateResult implements CanBeWindowingFunction{
 
 		public DateMaxExpression(DateExpression only) {
 			super(only);
@@ -3987,12 +4002,12 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 		}
 
 		@Override
-		public WindowingDateFunctionWithDateResult over() {
-			return new WindowingDateFunctionWithDateResult(this);
+		public WindowFunction<DateExpression> over() {
+			return new WindowFunction<DateExpression>(new DateExpression(this));
 		}
 	}
 
-	protected static class DateMinExpression extends DateFunctionWithDateResult implements CanBeWindowingFunction{
+	public static class DateMinExpression extends DateFunctionWithDateResult implements CanBeWindowingFunction{
 
 		public DateMinExpression(DateExpression only) {
 			super(only);
@@ -4018,9 +4033,10 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 		public DateMinExpression copy() {
 			return new DateMinExpression((DateExpression) getInnerResult().copy());
 		}
+
 		@Override
-		public WindowingDateFunctionWithDateResult over() {
-			return new WindowingDateFunctionWithDateResult(this);
+		public WindowFunction<DateExpression> over() {
+			return new WindowFunction<DateExpression>(new DateExpression(this));
 		}
 	}
 

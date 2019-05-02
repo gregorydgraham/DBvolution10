@@ -3672,7 +3672,7 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 		}
 	}
 
-	protected class StringAggregateExpression extends DBBinaryStringFunction {
+	public class StringAggregateExpression extends DBBinaryStringFunction implements CanBeWindowingFunction<StringExpression>{
 
 		public StringAggregateExpression(StringExpression columnToAccumulate, StringExpression separator) {
 			super(columnToAccumulate, separator);
@@ -3699,9 +3699,14 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 		public boolean isAggregator() {
 			return true;
 		}
+
+		@Override
+		public WindowFunction<StringExpression> over() {
+			return new WindowFunction<>(new StringExpression(this));
+		}
 	}
 
-	protected class StringAggregateWithOrderByExpression extends StringExpression {
+	public class StringAggregateWithOrderByExpression extends StringExpression implements CanBeWindowingFunction<StringExpression>{
 
 		private final StringExpression columnToAccumulate;
 		private final StringExpression separator;
@@ -3739,6 +3744,11 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 		@Override
 		public boolean isAggregator() {
 			return true;
+		}
+
+		@Override
+		public WindowFunction<StringExpression> over() {
+			return new WindowFunction<>(new StringExpression(this));
 		}
 	}
 
@@ -4032,7 +4042,7 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 		}
 	}
 
-	protected class StringMaxExpression extends StringExpression {
+	public class StringMaxExpression extends StringExpression implements CanBeWindowingFunction<StringExpression>{
 
 		public StringMaxExpression(StringResult stringVariable) {
 			super(stringVariable);
@@ -4053,9 +4063,14 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 		public StringMaxExpression copy() {
 			return new StringMaxExpression((StringResult) (getInnerResult() == null ? null : getInnerResult().copy()));
 		}
+
+		@Override
+		public WindowFunction<StringExpression> over() {
+			return new WindowFunction<>(new StringExpression(this));
+		}
 	}
 
-	protected class StringMinExpression extends StringExpression {
+	public class StringMinExpression extends StringExpression implements CanBeWindowingFunction<StringExpression>{
 
 		public StringMinExpression(StringResult stringVariable) {
 			super(stringVariable);
@@ -4075,6 +4090,11 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 		@Override
 		public StringMinExpression copy() {
 			return new StringMinExpression((StringResult) (getInnerResult() == null ? null : getInnerResult().copy()));
+		}
+
+		@Override
+		public WindowFunction<StringExpression> over() {
+			return new WindowFunction<>(new StringExpression(this));
 		}
 	}
 

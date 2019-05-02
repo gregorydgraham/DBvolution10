@@ -37,25 +37,25 @@ import nz.co.gregs.dbvolution.columns.ColumnProvider;
  * @author gregorygraham
  * @param <A>
  */
-public interface WindowingFunctionInterface<A extends RangeExpression> extends HasSQLString{
+public interface WindowingFunctionInterface<A extends EqualExpression> extends HasSQLString{
 
 	Partitioned<A> partition(ColumnProvider... cols);
 	
 	Class<A> getRequiredExpressionClass();
 	
-	public interface WindowPart<A extends RangeExpression> extends HasSQLString{
+	public interface WindowPart<A extends EqualExpression> extends HasSQLString{
 		Class<A> getRequiredExpressionClass();
 		abstract WindowPart<A> copy();
 	}
 	
-	public interface Partitioned<A extends RangeExpression> extends WindowPart<A>{
+	public interface Partitioned<A extends EqualExpression> extends WindowPart<A>{
 		
 		A unsorted();
 		A unordered();
 		Sorted<A> orderBy(SortProvider sort, SortProvider... sorts);
 	}
 	
-	public interface Sorted<A extends RangeExpression> extends WindowPart<A>{
+	public interface Sorted<A extends EqualExpression> extends WindowPart<A>{
 		
 		FrameType<A> rows();
 		
@@ -65,7 +65,7 @@ public interface WindowingFunctionInterface<A extends RangeExpression> extends H
 		FrameType<A> range();
 	}
 	
-	public interface FrameType<A extends RangeExpression> extends WindowPart<A>{
+	public interface FrameType<A extends EqualExpression> extends WindowPart<A>{
 		
 		FrameStart<A> unboundedPreceding();
 		
@@ -82,7 +82,7 @@ public interface WindowingFunctionInterface<A extends RangeExpression> extends H
 		FrameStart<A> unboundedFollowing();
 	}
 	
-	public interface FrameStart<A extends RangeExpression> extends WindowPart<A>{
+	public interface FrameStart<A extends EqualExpression> extends WindowPart<A>{
 		
 		A unboundedPreceding();
 		
@@ -99,7 +99,7 @@ public interface WindowingFunctionInterface<A extends RangeExpression> extends H
 		A unboundedFollowing();
 	}
 	
-	public interface WindowEnd<A extends RangeExpression> extends HasSQLString{
+	public interface WindowEnd<A extends EqualExpression> extends HasSQLString{
 		A getRequiredExpression();
 	}
 }

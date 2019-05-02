@@ -33,9 +33,10 @@ package nz.co.gregs.dbvolution.expressions;
 /**
  *
  * @author gregorygraham
+ * @param <A>
  */
-public interface CanBeWindowingFunction {
+public interface CanBeWindowingFunction<A extends EqualExpression> {
 
-	public WindowingFunctionInterface over();
+	public WindowFunction<A> over();
 	
 }

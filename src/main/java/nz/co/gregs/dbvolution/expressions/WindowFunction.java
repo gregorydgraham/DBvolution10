@@ -47,7 +47,7 @@ import nz.co.gregs.dbvolution.results.AnyResult;
  * @author gregorygraham
  * @param <A>
  */
-public class WindowFunction<A extends RangeExpression> implements WindowingFunctionInterface<A> {
+public class WindowFunction<A extends EqualExpression> implements WindowingFunctionInterface<A> {
 
 	private final A innerExpression;
 
@@ -96,7 +96,7 @@ public class WindowFunction<A extends RangeExpression> implements WindowingFunct
 		return new WindowFunction<A>((A) this.innerExpression.copy());
 	}
 
-	public static class Partitioned<A extends RangeExpression> implements WindowingFunctionInterface.Partitioned<A> {
+	public static class Partitioned<A extends EqualExpression> implements WindowingFunctionInterface.Partitioned<A> {
 
 		private final WindowFunction<A> innerExpression;
 		private final ColumnProvider[] columns;
@@ -154,7 +154,7 @@ public class WindowFunction<A extends RangeExpression> implements WindowingFunct
 
 	}
 
-	public static class Sorted<A extends RangeExpression> implements WindowingFunctionInterface.Sorted<A> {
+	public static class Sorted<A extends EqualExpression> implements WindowingFunctionInterface.Sorted<A> {
 
 		private final WindowFunction.Partitioned<A> innerExpression;
 		private final SortProvider[] sorts;
@@ -212,7 +212,7 @@ public class WindowFunction<A extends RangeExpression> implements WindowingFunct
 
 	}
 
-	public static abstract class FrameType<A extends RangeExpression> implements WindowingFunctionInterface.FrameType<A> {
+	public static abstract class FrameType<A extends EqualExpression> implements WindowingFunctionInterface.FrameType<A> {
 
 		private final Sorted<A> sorted;
 
@@ -285,7 +285,7 @@ public class WindowFunction<A extends RangeExpression> implements WindowingFunct
 		public abstract FrameType<A> copy();
 	}
 
-	public static class Range<A extends RangeExpression> extends FrameType<A> {
+	public static class Range<A extends EqualExpression> extends FrameType<A> {
 
 		public Range(Sorted<A> sorted) {
 			super(sorted);
@@ -303,7 +303,7 @@ public class WindowFunction<A extends RangeExpression> implements WindowingFunct
 		}
 	}
 
-	public static class Rows<A extends RangeExpression> extends FrameType<A> {
+	public static class Rows<A extends EqualExpression> extends FrameType<A> {
 
 		public Rows(Sorted<A> sorted) {
 			super(sorted);
@@ -339,7 +339,7 @@ public class WindowFunction<A extends RangeExpression> implements WindowingFunct
 		}
 	}
 
-	public static abstract class FrameStart<A extends RangeExpression> implements WindowingFunctionInterface.FrameStart<A> {
+	public static abstract class FrameStart<A extends EqualExpression> implements WindowingFunctionInterface.FrameStart<A> {
 
 		protected final FrameType<A> type;
 		protected final IntegerExpression offset;
@@ -409,7 +409,7 @@ public class WindowFunction<A extends RangeExpression> implements WindowingFunct
 		public abstract FrameStart<A> copy();
 	}
 
-	private static class UnboundedPrecedingStart<A extends RangeExpression> extends FrameStart<A> {
+	private static class UnboundedPrecedingStart<A extends EqualExpression> extends FrameStart<A> {
 
 		public UnboundedPrecedingStart(FrameType<A> type) {
 			super(type);
@@ -426,7 +426,7 @@ public class WindowFunction<A extends RangeExpression> implements WindowingFunct
 		}
 	}
 
-	private static class OffsetPrecedingStart<A extends RangeExpression> extends FrameStart<A> {
+	private static class OffsetPrecedingStart<A extends EqualExpression> extends FrameStart<A> {
 
 		public OffsetPrecedingStart(FrameType<A> type, int offset) {
 			super(type, offset);
@@ -447,7 +447,7 @@ public class WindowFunction<A extends RangeExpression> implements WindowingFunct
 		}
 	}
 
-	private static class CurrentRowStart<A extends RangeExpression> extends FrameStart<A> {
+	private static class CurrentRowStart<A extends EqualExpression> extends FrameStart<A> {
 
 		public CurrentRowStart(FrameType<A> type) {
 			super(type);
@@ -464,7 +464,7 @@ public class WindowFunction<A extends RangeExpression> implements WindowingFunct
 		}
 	}
 
-	private static class OffsetFollowingStart<A extends RangeExpression> extends FrameStart<A> {
+	private static class OffsetFollowingStart<A extends EqualExpression> extends FrameStart<A> {
 
 		public OffsetFollowingStart(FrameType<A> type, int offset) {
 			super(type, offset);
@@ -485,7 +485,7 @@ public class WindowFunction<A extends RangeExpression> implements WindowingFunct
 		}
 	}
 
-	private static class UnboundedFollowingStart<A extends RangeExpression> extends FrameStart<A> {
+	private static class UnboundedFollowingStart<A extends EqualExpression> extends FrameStart<A> {
 
 		public UnboundedFollowingStart(FrameType<A> type) {
 			super(type);
@@ -502,7 +502,7 @@ public class WindowFunction<A extends RangeExpression> implements WindowingFunct
 		}
 	}
 
-	public static abstract class FrameEnd<A extends RangeExpression> implements WindowingFunctionInterface.WindowEnd<A>, AnyResult<A> {
+	public static abstract class FrameEnd<A extends EqualExpression> implements WindowingFunctionInterface.WindowEnd<A>, AnyResult<A> {
 
 		private final FrameStart<A> start;
 		private final IntegerExpression offset;
@@ -601,7 +601,7 @@ public class WindowFunction<A extends RangeExpression> implements WindowingFunct
 		}
 	}
 
-	public static class UnboundedPrecedingEnd<A extends RangeExpression> extends FrameEnd<A> {
+	public static class UnboundedPrecedingEnd<A extends EqualExpression> extends FrameEnd<A> {
 
 		public UnboundedPrecedingEnd(FrameStart<A> start) {
 			super(start);
@@ -618,7 +618,7 @@ public class WindowFunction<A extends RangeExpression> implements WindowingFunct
 		}
 	}
 
-	public static class OffsetPrecedingEnd<A extends RangeExpression> extends FrameEnd<A> {
+	public static class OffsetPrecedingEnd<A extends EqualExpression> extends FrameEnd<A> {
 
 		public OffsetPrecedingEnd(FrameStart<A> aThis, int offset) {
 			super(aThis, offset);
@@ -639,7 +639,7 @@ public class WindowFunction<A extends RangeExpression> implements WindowingFunct
 		}
 	}
 
-	public static class CurrentRowEnd<A extends RangeExpression> extends FrameEnd<A> {
+	public static class CurrentRowEnd<A extends EqualExpression> extends FrameEnd<A> {
 
 		public CurrentRowEnd(FrameStart<A> start) {
 			super(start);
@@ -656,7 +656,7 @@ public class WindowFunction<A extends RangeExpression> implements WindowingFunct
 		}
 	}
 
-	private static class OffsetFollowingEnd<A extends RangeExpression> extends FrameEnd<A> {
+	private static class OffsetFollowingEnd<A extends EqualExpression> extends FrameEnd<A> {
 
 		public OffsetFollowingEnd(FrameStart<A> aThis, int offset) {
 			super(aThis, offset);
@@ -677,7 +677,7 @@ public class WindowFunction<A extends RangeExpression> implements WindowingFunct
 		}
 	}
 
-	public static class UnboundedFollowingEnd<A extends RangeExpression> extends FrameEnd<A> {
+	public static class UnboundedFollowingEnd<A extends EqualExpression> extends FrameEnd<A> {
 
 		public UnboundedFollowingEnd(FrameStart<A> aThis) {
 			super(aThis);
@@ -694,7 +694,7 @@ public class WindowFunction<A extends RangeExpression> implements WindowingFunct
 		}
 	}
 
-	public static abstract class WindowEnd<A extends RangeExpression> implements WindowingFunctionInterface.WindowEnd<A>, AnyResult<A> {
+	public static abstract class WindowEnd<A extends EqualExpression> implements WindowingFunctionInterface.WindowEnd<A>, AnyResult<A> {
 
 		private final WindowPart<A> start;
 

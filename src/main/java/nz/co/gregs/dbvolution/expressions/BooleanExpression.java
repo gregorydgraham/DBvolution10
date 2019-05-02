@@ -1942,46 +1942,6 @@ public class BooleanExpression extends EqualExpression<Boolean, BooleanResult, D
 		}
 	}
 
-	protected class CountExpression extends BooleanExpression {
-
-		public CountExpression(BooleanResult booleanResult) {
-			super(booleanResult);
-		}
-		private final static long serialVersionUID = 1l;
-
-		@Override
-		public String toSQLString(DBDefinition db) {
-			DBDefinition defn = db;
-			final String bool;
-			if (defn.supportsComparingBooleanResults()) {
-				bool = super.toSQLString(db);
-			} else {
-				BooleanExpression first = (BooleanExpression) this.getInnerResult();
-				bool = first.getComparableBooleanSQL(db);
-
-			}
-			String returnString = db.getCountFunctionName() + "(" + bool + ")";
-			return returnString;
-		}
-
-		@Override
-		public boolean isAggregator() {
-			return true;
-		}
-
-		@Override
-		public boolean isBooleanStatement() {
-			return true;
-		}
-
-		@Override
-		public CountExpression copy() {
-			return new CountExpression(
-					(BooleanResult) (getInnerResult() == null ? null : getInnerResult().copy()));
-		}
-
-	}
-
 	protected class XorExpression extends DBBinaryBooleanArithmetic {
 
 		public XorExpression(BooleanExpression first, BooleanResult second) {

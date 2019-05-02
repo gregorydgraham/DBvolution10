@@ -268,7 +268,7 @@ public abstract class EqualExpression<B, R extends EqualResult<B>, D extends Que
 		}
 	}
 
-	public static class ModeSimpleExpression<B, R extends EqualResult<B>, D extends QueryableDatatype<B>, X extends EqualExpression<B, R, D>> extends DBUnaryFunction<B, R, D, X> {
+	public static class ModeSimpleExpression<B, R extends EqualResult<B>, D extends QueryableDatatype<B>, X extends EqualExpression<B, R, D>> extends DBUnaryFunction<B, R, D, X> implements CanBeWindowingFunction<ModeSimpleExpression<B,R,D,X>>{
 
 		private final static long serialVersionUID = 1l;
 
@@ -351,9 +351,14 @@ public abstract class EqualExpression<B, R extends EqualResult<B>, D extends Que
 			return new ModeSimpleExpression<B, R, D, X>((X) (only == null ? null : only.copy()));
 		}
 
+		@Override
+		public WindowFunction<ModeSimpleExpression<B, R, D, X>> over() {
+			return new WindowFunction<>(this);
+		}
+
 	}
 
-	public static class ModeStrictExpression<B, R extends EqualResult<B>, D extends QueryableDatatype<B>, X extends EqualExpression<B, R, D>> extends DBUnaryFunction<B, R, D, X> {
+	public static class ModeStrictExpression<B, R extends EqualResult<B>, D extends QueryableDatatype<B>, X extends EqualExpression<B, R, D>> extends DBUnaryFunction<B, R, D, X> implements CanBeWindowingFunction<ModeStrictExpression<B, R, D, X>>{
 
 		private final static long serialVersionUID = 1l;
 
@@ -531,9 +536,14 @@ public abstract class EqualExpression<B, R extends EqualResult<B>, D extends Que
 			return new ModeStrictExpression<B, R, D, X>((X) (only == null ? null : only.copy()));
 		}
 
+		@Override
+		public WindowFunction<ModeStrictExpression<B, R, D, X>> over() {
+			return new WindowFunction<>(this);
+		}
+
 	}
 
-	private static class CountAllExpression extends DBNonaryFunction {
+	public static class CountAllExpression extends DBNonaryFunction implements CanBeWindowingFunction<CountAllExpression>{
 
 		public CountAllExpression() {
 		}
@@ -557,6 +567,11 @@ public abstract class EqualExpression<B, R extends EqualResult<B>, D extends Que
 		@Override
 		public CountAllExpression copy() {
 			return new CountAllExpression();
+		}
+
+		@Override
+		public WindowFunction<CountAllExpression> over() {
+			return new WindowFunction<>(this);
 		}
 	}
 }
