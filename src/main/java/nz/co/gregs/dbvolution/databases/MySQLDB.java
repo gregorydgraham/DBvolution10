@@ -15,11 +15,16 @@
  */
 package nz.co.gregs.dbvolution.databases;
 
+import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Properties;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.regex.Pattern;
 import javax.sql.DataSource;
 import nz.co.gregs.dbvolution.databases.definitions.MySQLDBDefinition;
+import nz.co.gregs.dbvolution.databases.definitions.MySQLDBDefinition_5_7;
 import nz.co.gregs.dbvolution.databases.supports.SupportsPolygonDatatype;
 import nz.co.gregs.dbvolution.internal.mysql.MigrationFunctions;
 
@@ -183,6 +188,21 @@ public class MySQLDB extends DBDatabase implements SupportsPolygonDatatype {
 			
 		}
 		return super.addFeatureToFixException(exp);
+	}
+
+	@Override
+	protected void setDefinitionBasedOnConnectionMetaData(Properties clientInfo, DatabaseMetaData metaData) {
+		try {
+			if(metaData.getDatabaseMajorVersion()<8){
+				setDefinition(new MySQLDBDefinition_5_7());
+			}else{
+				setDefinition(new MySQLDBDefinition());
+			}
+		} catch (SQLException ex) {
+			final Logger logger = Logger.getLogger(MySQLDB.class.getName());
+			logger.log(Level.INFO, "Failed to get connection metadata information to set the database definition");
+			logger.log(Level.INFO, null, ex);
+		}
 	}
 
 }

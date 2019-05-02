@@ -480,6 +480,11 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 					while (connection == null) {
 						try {
 							connection = getConnectionFromDriverManager();
+							LOG.debug("NEW CONNECTION: " + this.getUrlFromSettings(settings));
+							DatabaseMetaData metaData = connection.getMetaData();
+							LOG.debug("DATABASE: " + metaData.getDatabaseProductName() + " - " + metaData.getDatabaseProductVersion());
+							LOG.debug("DATABASE: " + metaData.getDriverName() + " - " + metaData.getDriverVersion());
+							setDefinitionBasedOnConnectionMetaData(connection.getClientInfo(), metaData);
 						} catch (SQLException noConnection) {
 							if (retries < MAX_CONNECTION_RETRIES) {
 								retries++;
@@ -1728,6 +1733,8 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 	protected synchronized final void setDefinition(DBDefinition defn) {
 		if (definition == null) {
 			definition = defn;
+		}else if(defn!=null && definition.getClass()!=defn.getClass()){
+			definition = defn;
 		}
 	}
 
@@ -2240,6 +2247,10 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 
 	public Exception getLastException() {
 		return this.exception;
+	}
+
+	protected void setDefinitionBasedOnConnectionMetaData(Properties clientInfo, DatabaseMetaData metaData) {
+		;
 	}
 
 	public static enum ResponseToException {
