@@ -718,7 +718,9 @@ public class QueryDetails implements DBQueryable, Serializable {
 				if (tablesInvolved.size() <= previousTables.size()) {
 					if (previousTables.containsAll(tablesInvolved)) {
 						if (expr.isWindowingFunction()) {
-							havingColumns.add(expr);
+							if (defn.supportsWindowingFunctionsInTheHavingClause()) {
+								havingColumns.add(expr);
+							}
 						} else if (expr.isRelationship()) {
 							joinClauses.add(expr.toSQLString(defn));
 						} else {
@@ -818,40 +820,39 @@ public class QueryDetails implements DBQueryable, Serializable {
 			StringBuilder orderByClause = new StringBuilder("");
 			String sortSeparator = defn.getStartingOrderByClauseSeparator();
 			for (SortProvider sorter : sortOrderColumns) {
-				if (sorter.hasQueryColumn()) {
-					orderByClause.append(sortSeparator).append(sorter.toSQLString(defn));
-					sortSeparator = defn.getSubsequentOrderByClauseSeparator();
-//					QueryColumn<?, ?, ?> qc = column.getQueryColumn();
-//					final QueryableDatatype<?> qdt = qc.getQueryableDatatypeForExpressionValue();
-//					orderByClause.append(sortSeparator).append(qc.toSQLString(defn)).append(defn.getOrderByDirectionClause(qdt.getSortOrder()));
-				} else {
-					PropertyWrapperDefinition propDefn;
-					QueryableDatatype<?> qdt;
-					if (sorter instanceof SortProvider.Column) {
-						PropertyWrapper prop = ((SortProvider.Column) sorter).getPropertyWrapper();
-						propDefn = prop.getPropertyWrapperDefinition();
-						qdt = prop.getQueryableDatatype();
-					} else {
-						propDefn = null;
-						qdt = sorter.asExpressionColumn();
-					}
-
-					if (prefersIndexBasedOrderByClause) {
-						Integer columnIndex = indexesOfSelectedProperties.get(propDefn);
-						if (columnIndex == null) {
-							columnIndex = IndexesOfSelectedExpressions.get(qdt);
-						}
-						if (columnIndex == null) {
-							final DBExpression[] columnExpressions = qdt.getColumnExpression();
-							for (DBExpression columnExpression : columnExpressions) {
-								columnIndex = IndexesOfSelectedExpressions.get(columnExpression);
-							}
-						}
-						orderByClause.append(sortSeparator).append(columnIndex).append(sorter.getSortDirectionSQL(defn));//defn.getOrderByDirectionClause(qdt.getSortOrder()));
-						sortSeparator = defn.getSubsequentOrderByClauseSeparator();
-					} else {
+				if (!sorter.isWindowingFunction() || defn.supportsWindowingFunctionsInTheOrderByClause()) {
+					if (sorter.hasQueryColumn()) {
 						orderByClause.append(sortSeparator).append(sorter.toSQLString(defn));
 						sortSeparator = defn.getSubsequentOrderByClauseSeparator();
+					} else {
+						PropertyWrapperDefinition propDefn;
+						QueryableDatatype<?> qdt;
+						if (sorter instanceof SortProvider.Column) {
+							PropertyWrapper prop = ((SortProvider.Column) sorter).getPropertyWrapper();
+							propDefn = prop.getPropertyWrapperDefinition();
+							qdt = prop.getQueryableDatatype();
+						} else {
+							propDefn = null;
+							qdt = sorter.asExpressionColumn();
+						}
+
+						if (prefersIndexBasedOrderByClause) {
+							Integer columnIndex = indexesOfSelectedProperties.get(propDefn);
+							if (columnIndex == null) {
+								columnIndex = IndexesOfSelectedExpressions.get(qdt);
+							}
+							if (columnIndex == null) {
+								final DBExpression[] columnExpressions = qdt.getColumnExpression();
+								for (DBExpression columnExpression : columnExpressions) {
+									columnIndex = IndexesOfSelectedExpressions.get(columnExpression);
+								}
+							}
+							orderByClause.append(sortSeparator).append(columnIndex).append(sorter.getSortDirectionSQL(defn));//defn.getOrderByDirectionClause(qdt.getSortOrder()));
+							sortSeparator = defn.getSubsequentOrderByClauseSeparator();
+						} else {
+							orderByClause.append(sortSeparator).append(sorter.toSQLString(defn));
+							sortSeparator = defn.getSubsequentOrderByClauseSeparator();
+						}
 					}
 				}
 			}

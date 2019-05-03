@@ -6108,4 +6108,12 @@ public abstract class DBDefinition implements Serializable {
 	public boolean supportsBulkInserts() {
 		return true;
 	}
+
+	public boolean supportsWindowingFunctionsInTheHavingClause() {
+		return false;
+	}
+
+	public boolean supportsWindowingFunctionsInTheOrderByClause() {
+		return false;
+	}
 }
