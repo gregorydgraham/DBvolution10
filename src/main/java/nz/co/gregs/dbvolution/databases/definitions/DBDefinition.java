@@ -6116,4 +6116,36 @@ public abstract class DBDefinition implements Serializable {
 	public boolean supportsWindowingFunctionsInTheOrderByClause() {
 		return false;
 	}
+
+	public String getRowNumberFunctionName() {
+		return "ROW_NUMBER";
+	}
+
+	public String getDenseRankFunctionName() {
+		return "DENSE_RANK";
+	}
+
+	public String getRankFunctionName() {
+		return "RANK";
+	}
+
+	public String getNTilesFunctionName() {
+		return "NTILE";
+	}
+
+	public String getPercentRankFunctionName() {
+		return "PERCENT_RANK";
+	}
+
+	public String getFirstValueFunctionName() {
+		return "FIRST_VALUE";
+	}
+
+	public String getLastValueFunctionName() {
+		return "LAST_VALUE";
+	}
+
+	public String getNthValueFunctionName() {
+		return "NTH_VALUE";
+	}
 }

@@ -64,13 +64,21 @@ public class WindowFunction<A extends EqualExpression> implements WindowingFunct
 	public A allRows() {
 		return this.partition().unsorted();
 	}
+	
+	public A getInnerExpression(){
+		return innerExpression;
+	}
+
+	public A allRowsPreceding() {
+		return this.partition().unsortedWithFrame().rows().unboundedPrecedingAndCurrentRow();
+	}
 
 	public A AllRowsAndOrderBy(SortProvider... sorts) {
 		if (sorts.length > 0) {
 			if (sorts.length > 1) {
 				SortProvider sort = sorts[0];
-				SortProvider[] newSorts = new SortProvider[sorts.length-1];
-				System.arraycopy(sorts, 1, newSorts, 0, sorts.length-1);
+				SortProvider[] newSorts = new SortProvider[sorts.length - 1];
+				System.arraycopy(sorts, 1, newSorts, 0, sorts.length - 1);
 				return this.partition().orderBy(sort, newSorts).rows().unboundedPreceding().currentRow();
 			} else {
 				return this.partition().orderBy(sorts[0]).rows().unboundedPrecedingAndCurrentRow();
@@ -92,8 +100,50 @@ public class WindowFunction<A extends EqualExpression> implements WindowingFunct
 	}
 
 	@SuppressWarnings("unchecked")
-	private WindowFunction<A> copy() {
+	@Override
+	public WindowFunction<A> copy() {
 		return new WindowFunction<A>((A) this.innerExpression.copy());
+	}
+
+	@Override
+	public QueryableDatatype<?> getQueryableDatatypeForExpressionValue() {
+		throw new UnsupportedOperationException("Not supported yet.");
+	}
+
+	@Override
+	public boolean isAggregator() {
+		throw new UnsupportedOperationException("Not supported yet.");
+	}
+
+	@Override
+	public Set<DBRow> getTablesInvolved() {
+		throw new UnsupportedOperationException("Not supported yet.");
+	}
+
+	@Override
+	public boolean isPurelyFunctional() {
+		boolean functional = innerExpression.isPurelyFunctional();
+		return functional;
+	}
+
+	@Override
+	public boolean isComplexExpression() {
+		throw new UnsupportedOperationException("Not supported yet.");
+	}
+
+	@Override
+	public String createSQLForFromClause(DBDatabase database) {
+		throw new UnsupportedOperationException("Not supported yet.");
+	}
+
+	@Override
+	public String createSQLForGroupByClause(DBDatabase database) {
+		throw new UnsupportedOperationException("Not supported yet.");
+	}
+
+	@Override
+	public boolean isWindowingFunction() {
+		throw new UnsupportedOperationException("Not supported yet.");
 	}
 
 	public static class Partitioned<A extends EqualExpression> implements WindowingFunctionInterface.Partitioned<A> {
@@ -143,13 +193,81 @@ public class WindowFunction<A extends EqualExpression> implements WindowingFunct
 		@Override
 		@SuppressWarnings("unchecked")
 		public A unsorted() {
-			return this.orderBy(BooleanExpression.trueExpression().ascending()).defaultFrame();
+			return this.orderBy(BooleanExpression.trueExpression().ascending()).withoutFrame();
+		}
+
+		@SuppressWarnings("unchecked")
+		@Override
+		public Sorted<A> unsortedWithFrame() {
+			return this.orderBy(BooleanExpression.trueExpression().ascending());
 		}
 
 		@Override
 		@SuppressWarnings("unchecked")
 		public A unordered() {
-			return this.orderBy(BooleanExpression.trueExpression().ascending()).defaultFrame();
+			return unsorted();
+		}
+
+		@Override
+		@SuppressWarnings("unchecked")
+		public Sorted<A> unorderedWithFrame() {
+			return unsortedWithFrame();
+		}
+
+		@Override
+		public QueryableDatatype<?> getQueryableDatatypeForExpressionValue() {
+			throw new UnsupportedOperationException("Not supported yet.");
+		}
+
+		@Override
+		public boolean isAggregator() {
+			throw new UnsupportedOperationException("Not supported yet.");
+		}
+
+		@Override
+		public Set<DBRow> getTablesInvolved() {
+			throw new UnsupportedOperationException("Not supported yet.");
+		}
+
+		@Override
+		public boolean isPurelyFunctional() {
+			boolean functional = innerExpression.isPurelyFunctional();
+			if (functional == true) {
+				for (ColumnProvider column : columns) {
+					functional = functional && column.isPurelyFunctional();
+				}
+			}
+			return functional;
+		}
+
+		@Override
+		public boolean isComplexExpression() {
+			throw new UnsupportedOperationException("Not supported yet.");
+		}
+
+		@Override
+		public String createSQLForFromClause(DBDatabase database) {
+			throw new UnsupportedOperationException("Not supported yet.");
+		}
+
+		@Override
+		public String createSQLForGroupByClause(DBDatabase database) {
+			throw new UnsupportedOperationException("Not supported yet.");
+		}
+
+		@Override
+		public boolean isWindowingFunction() {
+			throw new UnsupportedOperationException("Not supported yet.");
+		}
+
+		@Override
+		public Sorted<A> orderByWithPrimaryKeys(SortProvider... partitionFields) {
+			throw new UnsupportedOperationException("Not supported yet.");
+		}
+
+		@Override
+		public Sorted<A> orderByWithPrimaryKeys(ColumnProvider... partitionFields) {
+			return orderByWithPrimaryKeys(SortProvider.getSortProviders(partitionFields));
 		}
 
 	}
@@ -184,6 +302,11 @@ public class WindowFunction<A extends EqualExpression> implements WindowingFunct
 		}
 
 		@Override
+		public A withoutFrame() {
+			return new EmptyFrameEnd<>(this).getRequiredExpression();
+		}
+
+		@Override
 		public Rows<A> rows() {
 			return new Rows<A>(this);
 		}
@@ -193,7 +316,6 @@ public class WindowFunction<A extends EqualExpression> implements WindowingFunct
 //		public Groups<A> groups() {
 //			return new Groups<A>(this);
 //		}
-
 		@Override
 		public Range<A> range() {
 			return new Range<A>(this);
@@ -208,6 +330,52 @@ public class WindowFunction<A extends EqualExpression> implements WindowingFunct
 		@Override
 		public Sorted<A> copy() {
 			return new Sorted<A>(this.innerExpression.copy(), this.sorts);
+		}
+
+		@Override
+		public boolean isPurelyFunctional() {
+			boolean functional = innerExpression.isPurelyFunctional();
+			if (functional == true) {
+				for (SortProvider sort : sorts) {
+					functional = functional && sort.isPurelyFunctional();
+				}
+			}
+			return functional;
+		}
+
+		@Override
+		public QueryableDatatype<?> getQueryableDatatypeForExpressionValue() {
+			throw new UnsupportedOperationException("Not supported yet.");
+		}
+
+		@Override
+		public boolean isAggregator() {
+			throw new UnsupportedOperationException("Not supported yet.");
+		}
+
+		@Override
+		public Set<DBRow> getTablesInvolved() {
+			throw new UnsupportedOperationException("Not supported yet.");
+		}
+
+		@Override
+		public boolean isComplexExpression() {
+			throw new UnsupportedOperationException("Not supported yet.");
+		}
+
+		@Override
+		public String createSQLForFromClause(DBDatabase database) {
+			throw new UnsupportedOperationException("Not supported yet.");
+		}
+
+		@Override
+		public String createSQLForGroupByClause(DBDatabase database) {
+			throw new UnsupportedOperationException("Not supported yet.");
+		}
+
+		@Override
+		public boolean isWindowingFunction() {
+			throw new UnsupportedOperationException("Not supported yet.");
 		}
 
 	}
@@ -242,39 +410,39 @@ public class WindowFunction<A extends EqualExpression> implements WindowingFunct
 		}
 
 		@Override
-		public FrameStart<A> unboundedPreceding() {
+		public UnboundedPrecedingStart<A> unboundedPreceding() {
 			return new UnboundedPrecedingStart<A>(this);
 		}
 
 		@Override
-		public FrameStart<A> preceding(int offset) {
+		public OffsetPrecedingStart<A> preceding(int offset) {
 			return new OffsetPrecedingStart<A>(this, offset);
 		}
 
 		@Override
-		public FrameStart<A> preceding(IntegerExpression offset) {
+		public OffsetPrecedingStart<A> preceding(IntegerExpression offset) {
 			return new OffsetPrecedingStart<A>(this, offset);
 		}
 
 		@Override
-		public FrameStart<A> currentRow() {
+		public CurrentRowStart<A> currentRow() {
 			return new CurrentRowStart<A>(this);
 		}
 
 		@Override
-		public FrameStart<A> following(int offset) {
+		public OffsetFollowingStart<A> following(int offset) {
 			return new OffsetFollowingStart<A>(this, offset);
 		}
 
 		@Override
-		public FrameStart<A> following(IntegerExpression offset) {
+		public OffsetFollowingStart<A> following(IntegerExpression offset) {
 			return new OffsetFollowingStart<A>(this, offset);
 		}
 
-		@Override
-		public FrameStart<A> unboundedFollowing() {
-			return new UnboundedFollowingStart<A>(this);
-		}
+//		@Override
+//		public FrameStart<A> unboundedFollowing() {
+//			return new UnboundedFollowingStart<A>(this);
+//		}
 
 		@Override
 		public Class<A> getRequiredExpressionClass() {
@@ -283,6 +451,46 @@ public class WindowFunction<A extends EqualExpression> implements WindowingFunct
 
 		@Override
 		public abstract FrameType<A> copy();
+
+		@Override
+		public final boolean isPurelyFunctional() {
+			return getSorted().isPurelyFunctional();
+		}
+
+		@Override
+		public QueryableDatatype<?> getQueryableDatatypeForExpressionValue() {
+			throw new UnsupportedOperationException("Not supported yet.");
+		}
+
+		@Override
+		public boolean isAggregator() {
+			throw new UnsupportedOperationException("Not supported yet.");
+		}
+
+		@Override
+		public Set<DBRow> getTablesInvolved() {
+			throw new UnsupportedOperationException("Not supported yet.");
+		}
+
+		@Override
+		public boolean isComplexExpression() {
+			throw new UnsupportedOperationException("Not supported yet.");
+		}
+
+		@Override
+		public String createSQLForFromClause(DBDatabase database) {
+			throw new UnsupportedOperationException("Not supported yet.");
+		}
+
+		@Override
+		public String createSQLForGroupByClause(DBDatabase database) {
+			throw new UnsupportedOperationException("Not supported yet.");
+		}
+
+		@Override
+		public boolean isWindowingFunction() {
+			return true;
+		}
 	}
 
 	public static class Range<A extends EqualExpression> extends FrameType<A> {
@@ -339,7 +547,7 @@ public class WindowFunction<A extends EqualExpression> implements WindowingFunct
 		}
 	}
 
-	public static abstract class FrameStart<A extends EqualExpression> implements WindowingFunctionInterface.FrameStart<A> {
+	public static abstract class FrameStart<A extends EqualExpression> implements WindowingFunctionInterface.EmptyFrameStart<A> {
 
 		protected final FrameType<A> type;
 		protected final IntegerExpression offset;
@@ -356,18 +564,121 @@ public class WindowFunction<A extends EqualExpression> implements WindowingFunct
 			this.offset = IntegerExpression.value(offset);
 		}
 
+		public FrameStart(FrameType<A> type, long offset) {
+			super();
+			this.type = type;
+			this.offset = IntegerExpression.value(offset);
+		}
+
 		public FrameStart(FrameType<A> type, IntegerExpression offset) {
 			super();
 			this.type = type;
 			this.offset = offset;
 		}
 
+//		@Override
+//		@SuppressWarnings("unchecked")
+//		public A unboundedPreceding() {
+//			return new UnboundedPrecedingEnd<A>(this).getRequiredExpression();
+//		}
+
 		@Override
-		@SuppressWarnings("unchecked")
-		public A unboundedPreceding() {
-			return new UnboundedPrecedingEnd<A>(this).getRequiredExpression();
+		public Class<A> getRequiredExpressionClass() {
+			return type.getRequiredExpressionClass();
 		}
 
+		@SuppressWarnings("unchecked")
+		@Override
+		public abstract FrameStart<A> copy();
+
+		@Override
+		public QueryableDatatype<?> getQueryableDatatypeForExpressionValue() {
+			throw new UnsupportedOperationException("Not supported yet.");
+		}
+
+		@Override
+		public boolean isAggregator() {
+			throw new UnsupportedOperationException("Not supported yet.");
+		}
+
+		@Override
+		public Set<DBRow> getTablesInvolved() {
+			throw new UnsupportedOperationException("Not supported yet.");
+		}
+
+		@Override
+		public boolean isComplexExpression() {
+			throw new UnsupportedOperationException("Not supported yet.");
+		}
+
+		@Override
+		public String createSQLForFromClause(DBDatabase database) {
+			throw new UnsupportedOperationException("Not supported yet.");
+		}
+
+		@Override
+		public String createSQLForGroupByClause(DBDatabase database) {
+			throw new UnsupportedOperationException("Not supported yet.");
+		}
+
+		@Override
+		public boolean isWindowingFunction() {
+			throw new UnsupportedOperationException("Not supported yet.");
+		}
+	}
+
+	private static abstract class FrameStartAbsolute<A extends EqualExpression> extends FrameStart<A> {
+
+		public FrameStartAbsolute(FrameType<A> type) {
+			super(type);
+		}
+
+		@Override
+		public final boolean isPurelyFunctional() {
+			return type.isPurelyFunctional();
+		}
+	}
+
+	private static abstract class FrameStartOffset<A extends EqualExpression> extends FrameStart<A> {
+
+		public FrameStartOffset(FrameType<A> type, int offset) {
+			super(type, offset);
+		}
+
+		public FrameStartOffset(FrameType<A> type, long offset) {
+			super(type, offset);
+		}
+
+		public FrameStartOffset(FrameType<A> type, IntegerExpression offset) {
+			super(type, offset);
+		}
+
+		public FrameStartOffset(FrameType<A> type) {
+			super(type);
+		}
+
+		@Override
+		public final boolean isPurelyFunctional() {
+			return type.isPurelyFunctional() && offset.isPurelyFunctional();
+		}
+	}
+
+	public static class UnboundedPrecedingStart<A extends EqualExpression> extends FrameStartAbsolute<A> implements FrameStartAllPreceding<A>{
+
+		public UnboundedPrecedingStart(FrameType<A> type) {
+			super(type);
+		}
+
+		@Override
+		public String toSQLString(DBDefinition defn) {
+			return type.toSQLString(defn) + " UNBOUNDED PRECEDING ";
+		}
+
+		@Override
+		public UnboundedPrecedingStart<A> copy() {
+			return new UnboundedPrecedingStart<>(type.copy());
+		}
+		
 		@Override
 		@SuppressWarnings("unchecked")
 		public A preceding(int offset) {
@@ -399,36 +710,15 @@ public class WindowFunction<A extends EqualExpression> implements WindowingFunct
 			return new UnboundedFollowingEnd<A>(this).getRequiredExpression();
 		}
 
-		@Override
-		public Class<A> getRequiredExpressionClass() {
-			return type.getRequiredExpressionClass();
-		}
-
-		@SuppressWarnings("unchecked")
-		@Override
-		public abstract FrameStart<A> copy();
 	}
 
-	private static class UnboundedPrecedingStart<A extends EqualExpression> extends FrameStart<A> {
-
-		public UnboundedPrecedingStart(FrameType<A> type) {
-			super(type);
-		}
-
-		@Override
-		public String toSQLString(DBDefinition defn) {
-			return type.toSQLString(defn) + " UNBOUNDED PRECEDING ";
-		}
-
-		@Override
-		public UnboundedPrecedingStart<A> copy() {
-			return new UnboundedPrecedingStart<>(type.copy());
-		}
-	}
-
-	private static class OffsetPrecedingStart<A extends EqualExpression> extends FrameStart<A> {
+	public static class OffsetPrecedingStart<A extends EqualExpression> extends FrameStartOffset<A> implements FrameStartPreceding<A>{
 
 		public OffsetPrecedingStart(FrameType<A> type, int offset) {
+			super(type, offset);
+		}
+
+		public OffsetPrecedingStart(FrameType<A> type, long offset) {
 			super(type, offset);
 		}
 
@@ -442,12 +732,43 @@ public class WindowFunction<A extends EqualExpression> implements WindowingFunct
 		}
 
 		@Override
+		public A preceding(int offset) {
+			return new OffsetPrecedingEnd<A>(this, offset).getRequiredExpression();
+		}
+
+		@Override
+		public A preceding(IntegerExpression offset) {
+			return new OffsetPrecedingEnd<A>(this, offset).getRequiredExpression();
+		}
+
+		@Override
 		public OffsetPrecedingStart<A> copy() {
 			return new OffsetPrecedingStart<>(type.copy(), offset.copy());
 		}
+
+		@Override
+		public A currentRow() {
+			return new CurrentRowEnd<A>(this).getRequiredExpression();
+		}
+
+		@Override
+		public A following(int offset) {
+			return new OffsetFollowingEnd<A>(this, offset).getRequiredExpression();
+		}
+
+		@Override
+		public A following(IntegerExpression offset) {
+			return new OffsetFollowingEnd<A>(this, offset).getRequiredExpression();
+		}
+
+		@Override
+		public A unboundedFollowing() {
+			return new UnboundedFollowingEnd<A>(this).getRequiredExpression();
+		}
+
 	}
 
-	private static class CurrentRowStart<A extends EqualExpression> extends FrameStart<A> {
+	public static class CurrentRowStart<A extends EqualExpression> extends FrameStartAbsolute<A> implements FrameStartCurrentRow<A>{
 
 		public CurrentRowStart(FrameType<A> type) {
 			super(type);
@@ -462,11 +783,36 @@ public class WindowFunction<A extends EqualExpression> implements WindowingFunct
 		public CurrentRowStart<A> copy() {
 			return new CurrentRowStart<>(type.copy());
 		}
+
+		@Override
+		public A currentRow() {
+			return new CurrentRowEnd<A>(this).getRequiredExpression();
+		}
+
+		@Override
+		public A following(int offset) {
+			return new OffsetFollowingEnd<A>(this, offset).getRequiredExpression();
+		}
+
+		@Override
+		public A following(IntegerExpression offset) {
+			return new OffsetFollowingEnd<A>(this, offset).getRequiredExpression();
+		}
+
+		@Override
+		public A unboundedFollowing() {
+			return new UnboundedFollowingEnd<A>(this).getRequiredExpression();
+		}
+
 	}
 
-	private static class OffsetFollowingStart<A extends EqualExpression> extends FrameStart<A> {
+	public static class OffsetFollowingStart<A extends EqualExpression> extends FrameStartOffset<A> implements FrameStartFollowing<A>{
 
 		public OffsetFollowingStart(FrameType<A> type, int offset) {
+			super(type, offset);
+		}
+
+		public OffsetFollowingStart(FrameType<A> type, long offset) {
 			super(type, offset);
 		}
 
@@ -483,41 +829,39 @@ public class WindowFunction<A extends EqualExpression> implements WindowingFunct
 		public OffsetFollowingStart<A> copy() {
 			return new OffsetFollowingStart<>(type.copy(), offset.copy());
 		}
-	}
 
-	private static class UnboundedFollowingStart<A extends EqualExpression> extends FrameStart<A> {
-
-		public UnboundedFollowingStart(FrameType<A> type) {
-			super(type);
+		@Override
+		public A following(int offset) {
+			return new OffsetFollowingEnd<A>(this, offset).getRequiredExpression();
 		}
 
 		@Override
-		public String toSQLString(DBDefinition defn) {
-			return type.toSQLString(defn) + " UNBOUNDED FOLLOWING ";
+		public A following(IntegerExpression offset) {
+			return new OffsetFollowingEnd<A>(this, offset).getRequiredExpression();
 		}
 
 		@Override
-		public UnboundedFollowingStart<A> copy() {
-			return new UnboundedFollowingStart<>(type.copy());
+		public A unboundedFollowing() {
+			return new UnboundedFollowingEnd<A>(this).getRequiredExpression();
 		}
 	}
 
 	public static abstract class FrameEnd<A extends EqualExpression> implements WindowingFunctionInterface.WindowEnd<A>, AnyResult<A> {
 
-		private final FrameStart<A> start;
+		private final WindowPart<A> start;
 		private final IntegerExpression offset;
 
-		public FrameEnd(FrameStart<A> start) {
+		protected FrameEnd(WindowPart<A> start) {
 			this.start = start;
 			this.offset = IntegerExpression.value(0);
 		}
 
-		public FrameEnd(FrameStart<A> start, int offset) {
+		protected FrameEnd(WindowPart<A> start, int offset) {
 			this.start = start;
 			this.offset = IntegerExpression.value(offset);
 		}
 
-		public FrameEnd(FrameStart<A> start, IntegerExpression offset) {
+		protected FrameEnd(WindowPart<A> start, IntegerExpression offset) {
 			this.start = start;
 			this.offset = offset;
 		}
@@ -539,7 +883,7 @@ public class WindowFunction<A extends EqualExpression> implements WindowingFunct
 		@Override
 		public A getRequiredExpression() {
 			try {
-				final Class<A> clazz = start.getRequiredExpressionClass();
+				final Class<A> clazz = getStart().getRequiredExpressionClass();
 				Constructor<?>[] constructors = clazz.getDeclaredConstructors();
 				for (Constructor<?> constructor : constructors) {
 					if (constructor.getParameterTypes().length == 1 && constructor.getParameterTypes()[0].equals(AnyResult.class)) {
@@ -570,11 +914,10 @@ public class WindowFunction<A extends EqualExpression> implements WindowingFunct
 			throw new UnsupportedOperationException("Not supported yet.");
 		}
 
-		@Override
-		public boolean isPurelyFunctional() {
-			throw new UnsupportedOperationException("Not supported yet.");
-		}
-
+//		@Override
+//		public boolean isPurelyFunctional() {
+//			throw new UnsupportedOperationException("Not supported yet.");
+//		}
 		@Override
 		public boolean isComplexExpression() {
 			return false;
@@ -616,6 +959,11 @@ public class WindowFunction<A extends EqualExpression> implements WindowingFunct
 		public UnboundedPrecedingEnd<A> copy() {
 			return new UnboundedPrecedingEnd<A>((FrameStart<A>) getStart().copy());
 		}
+
+		@Override
+		public boolean isPurelyFunctional() {
+			return getStart().isPurelyFunctional();
+		}
 	}
 
 	public static class OffsetPrecedingEnd<A extends EqualExpression> extends FrameEnd<A> {
@@ -637,6 +985,11 @@ public class WindowFunction<A extends EqualExpression> implements WindowingFunct
 		public OffsetPrecedingEnd<A> copy() {
 			return new OffsetPrecedingEnd<A>((FrameStart<A>) getStart().copy(), getOffset().copy());
 		}
+
+		@Override
+		public boolean isPurelyFunctional() {
+			return getStart().isPurelyFunctional() && getOffset().isPurelyFunctional();
+		}
 	}
 
 	public static class CurrentRowEnd<A extends EqualExpression> extends FrameEnd<A> {
@@ -653,6 +1006,11 @@ public class WindowFunction<A extends EqualExpression> implements WindowingFunct
 		@Override
 		public CurrentRowEnd<A> copy() {
 			return new CurrentRowEnd<A>((FrameStart<A>) getStart().copy());
+		}
+
+		@Override
+		public boolean isPurelyFunctional() {
+			return getStart().isPurelyFunctional();
 		}
 	}
 
@@ -675,6 +1033,11 @@ public class WindowFunction<A extends EqualExpression> implements WindowingFunct
 		public OffsetFollowingEnd<A> copy() {
 			return new OffsetFollowingEnd<A>((FrameStart<A>) getStart().copy(), getOffset().copy());
 		}
+
+		@Override
+		public boolean isPurelyFunctional() {
+			return getStart().isPurelyFunctional() && getOffset().isPurelyFunctional();
+		}
 	}
 
 	public static class UnboundedFollowingEnd<A extends EqualExpression> extends FrameEnd<A> {
@@ -692,85 +1055,112 @@ public class WindowFunction<A extends EqualExpression> implements WindowingFunct
 		public UnboundedFollowingEnd<A> copy() {
 			return new UnboundedFollowingEnd<A>((FrameStart<A>) getStart().copy());
 		}
+
+		@Override
+		public boolean isPurelyFunctional() {
+			return getStart().isPurelyFunctional();
+		}
 	}
 
-	public static abstract class WindowEnd<A extends EqualExpression> implements WindowingFunctionInterface.WindowEnd<A>, AnyResult<A> {
+	public static class EmptyFrameEnd<A extends EqualExpression> extends FrameEnd<A> {
 
-		private final WindowPart<A> start;
-
-		public WindowEnd(WindowPart<A> start) {
-			this.start = start;
-		}
-
-		/**
-		 * @return the and
-		 */
-		protected WindowPart<A> getStart() {
-			return start;
+		public EmptyFrameEnd(WindowPart<A> aThis) {
+			super(aThis);
 		}
 
 		@Override
-		public A getRequiredExpression() {
-			try {
-				final Class<A> clazz = start.getRequiredExpressionClass();
-				Constructor<?>[] constructors = clazz.getDeclaredConstructors();
-				for (Constructor<?> constructor : constructors) {
-					if (constructor.getParameterTypes().length == 1 && constructor.getParameterTypes()[0].equals(AnyResult.class)) {
-						constructor.setAccessible(true);
-						@SuppressWarnings("unchecked")
-						A newInstance = (A) constructor.newInstance((AnyResult) this);
-						return newInstance;
-					}
-				}
-			} catch (SecurityException | InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
-				Logger.getLogger(WindowFunction.class.getName()).log(Level.SEVERE, null, ex);
-			}
-			return null;
+		public String toSQLString(DBDefinition defn) {
+			return getStart().toSQLString(defn) + " )";
 		}
 
 		@Override
-		public QueryableDatatype<?> getQueryableDatatypeForExpressionValue() {
-			throw new UnsupportedOperationException("Not supported yet.");
-		}
-
-		@Override
-		public boolean isAggregator() {
-			return false;
-		}
-
-		@Override
-		public Set<DBRow> getTablesInvolved() {
-			throw new UnsupportedOperationException("Not supported yet.");
+		public EmptyFrameEnd<A> copy() {
+			return new EmptyFrameEnd<A>(getStart().copy());
 		}
 
 		@Override
 		public boolean isPurelyFunctional() {
-			throw new UnsupportedOperationException("Not supported yet.");
-		}
-
-		@Override
-		public boolean isComplexExpression() {
-			return false;
-		}
-
-		@Override
-		public String createSQLForFromClause(DBDatabase database) {
-			throw new UnsupportedOperationException("Not supported yet.");
-		}
-
-		@Override
-		public String createSQLForGroupByClause(DBDatabase database) {
-			throw new UnsupportedOperationException("Not supported yet.");
-		}
-
-		@Override
-		public boolean isWindowingFunction() {
-			return true;
-		}
-
-		@Override
-		public boolean getIncludesNull() {
-			return true;
+			return getStart().isPurelyFunctional();
 		}
 	}
+
+//	public static abstract class WindowEnd<A extends EqualExpression> implements WindowingFunctionInterface.WindowEnd<A>, AnyResult<A> {
+//
+//		private final WindowPart<A> start;
+//
+//		public WindowEnd(WindowPart<A> start) {
+//			this.start = start;
+//		}
+//
+//		/**
+//		 * @return the and
+//		 */
+//		protected WindowPart<A> getStart() {
+//			return start;
+//		}
+//
+//		@Override
+//		public A getRequiredExpression() {
+//			try {
+//				final Class<A> clazz = start.getRequiredExpressionClass();
+//				Constructor<?>[] constructors = clazz.getDeclaredConstructors();
+//				for (Constructor<?> constructor : constructors) {
+//					if (constructor.getParameterTypes().length == 1 && constructor.getParameterTypes()[0].equals(AnyResult.class)) {
+//						constructor.setAccessible(true);
+//						@SuppressWarnings("unchecked")
+//						A newInstance = (A) constructor.newInstance((AnyResult) this);
+//						return newInstance;
+//					}
+//				}
+//			} catch (SecurityException | InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
+//				Logger.getLogger(WindowFunction.class.getName()).log(Level.SEVERE, null, ex);
+//			}
+//			return null;
+//		}
+//
+//		@Override
+//		public QueryableDatatype<?> getQueryableDatatypeForExpressionValue() {
+//			throw new UnsupportedOperationException("Not supported yet.");
+//		}
+//
+//		@Override
+//		public boolean isAggregator() {
+//			return false;
+//		}
+//
+//		@Override
+//		public Set<DBRow> getTablesInvolved() {
+//			throw new UnsupportedOperationException("Not supported yet.");
+//		}
+//
+//		@Override
+//		public boolean isPurelyFunctional() {
+//			throw new UnsupportedOperationException("Not supported yet.");
+//		}
+//
+//		@Override
+//		public boolean isComplexExpression() {
+//			return false;
+//		}
+//
+//		@Override
+//		public String createSQLForFromClause(DBDatabase database) {
+//			throw new UnsupportedOperationException("Not supported yet.");
+//		}
+//
+//		@Override
+//		public String createSQLForGroupByClause(DBDatabase database) {
+//			throw new UnsupportedOperationException("Not supported yet.");
+//		}
+//
+//		@Override
+//		public boolean isWindowingFunction() {
+//			return true;
+//		}
+//
+//		@Override
+//		public boolean getIncludesNull() {
+//			return true;
+//		}
+//	}
 }

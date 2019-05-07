@@ -29,6 +29,7 @@ import nz.co.gregs.dbvolution.annotations.DBColumn;
 import nz.co.gregs.dbvolution.columns.DateColumn;
 import nz.co.gregs.dbvolution.datatypes.DBDate;
 import nz.co.gregs.dbvolution.datatypes.DBDateOnly;
+import nz.co.gregs.dbvolution.datatypes.DBInteger;
 import nz.co.gregs.dbvolution.datatypes.DBNumber;
 import nz.co.gregs.dbvolution.datatypes.DBString;
 import nz.co.gregs.dbvolution.example.Marque;
@@ -270,11 +271,11 @@ public class DateExpressionTest extends AbstractTest {
 		DBQuery query = database.getDBQuery(marq)
 				.setBlankQueryAllowed(true)
 				.setSortOrder(marq.column(marq.carCompany));
-//		query.printSQLForQuery();
+		query.printSQLForQuery();
 		List<DBQueryRow> allRows = query.getAllRows();
 
 		Assert.assertThat(allRows.size(), is(22));
-//		database.print(allRows);
+		database.print(allRows);
 		MarqueWithDateWindowingFunctions got;// = allRows.get(0).get(marq);
 		ArrayList<Object[]> expectedValues = new ArrayList<>();
 		expectedValues.add(new Object[]{2, march23rd2013, march23rd2013});
@@ -385,11 +386,11 @@ public class DateExpressionTest extends AbstractTest {
 		DBQuery query = database.getDBQuery(marq)
 				.setBlankQueryAllowed(true)
 				.setSortOrder(marq.column(marq.carCompany));
-//		query.printSQLForQuery();
+		query.printSQLForQuery();
 		List<DBQueryRow> allRows = query.getAllRows();
 
 		Assert.assertThat(allRows.size(), is(22));
-//		database.print(allRows);
+		database.print(allRows);
 		MarqueWithAggregatorAndDateWindowingFunctions got;// = allRows.get(0).get(marq);
 		ArrayList<Object[]> expectedValues = new ArrayList<>();
 		expectedValues.add(new Object[]{2, march23rd2013, march23rd2013});
@@ -445,6 +446,70 @@ public class DateExpressionTest extends AbstractTest {
 		DBDate minOfDates = new DBDate(this.column(this.creationDate).min()
 				.over()
 				.partition(this.column(this.carCompany)).unordered());
+		@DBColumn
+		DBInteger rowNumber = new DBInteger(AnyExpression.rowNumber().allRows());
+		@DBColumn
+		DBInteger rank = new DBInteger(AnyExpression.rank().allRows());
+		@DBColumn
+		DBInteger denseRank = new DBInteger(AnyExpression.denseRank().allRows());
+		@DBColumn
+		DBInteger nTile = new DBInteger(IntegerExpression.nTile(3).allRows());
+	}
+
+	@Test
+	public void testComplexWindowingFunctions() throws SQLException {
+		MarqueWithComplexWindowingFunction marq = new MarqueWithComplexWindowingFunction();
+//		database.setPrintSQLBeforeExecuting(true);
+		DBQuery query = database.getDBQuery(marq)
+				.setBlankQueryAllowed(true)
+				.setSortOrder(marq.column(marq.carCompany));
+		query.printSQLForQuery();
+		List<DBQueryRow> allRows = query.getAllRows();
+
+		Assert.assertThat(allRows.size(), is(22));
+		database.print(allRows);
+		MarqueWithComplexWindowingFunction got;// = allRows.get(0).get(marq);
+		ArrayList<Object[]> expectedValues = new ArrayList<>();
+		expectedValues.add(new Object[]{2, march23rd2013, march23rd2013});
+		expectedValues.add(new Object[]{2, march23rd2013, march23rd2013});
+		expectedValues.add(new Object[]{1, march23rd2013, march23rd2013});
+		expectedValues.add(new Object[]{3, march23rd2013, april2nd2011});
+		expectedValues.add(new Object[]{3, march23rd2013, april2nd2011});
+		expectedValues.add(new Object[]{3, march23rd2013, april2nd2011});
+		expectedValues.add(new Object[]{15, march23rd2013, april2nd2011});
+		expectedValues.add(new Object[]{15, march23rd2013, april2nd2011});
+		expectedValues.add(new Object[]{15, march23rd2013, april2nd2011});
+		expectedValues.add(new Object[]{15, march23rd2013, april2nd2011});
+		expectedValues.add(new Object[]{15, march23rd2013, april2nd2011});
+		expectedValues.add(new Object[]{15, march23rd2013, april2nd2011});
+		expectedValues.add(new Object[]{15, march23rd2013, april2nd2011});
+		expectedValues.add(new Object[]{15, march23rd2013, april2nd2011});
+		expectedValues.add(new Object[]{15, march23rd2013, april2nd2011});
+		expectedValues.add(new Object[]{15, march23rd2013, april2nd2011});
+		expectedValues.add(new Object[]{15, march23rd2013, april2nd2011});
+		expectedValues.add(new Object[]{15, march23rd2013, april2nd2011});
+		expectedValues.add(new Object[]{15, march23rd2013, april2nd2011});
+		expectedValues.add(new Object[]{15, march23rd2013, april2nd2011});
+		expectedValues.add(new Object[]{15, march23rd2013, april2nd2011});
+		expectedValues.add(new Object[]{15, march23rd2013, april2nd2011});
+		for (int i = 0; i < allRows.size(); i++) {
+//			System.out.println("ROW: " + i);
+			got = allRows.get(i).get(marq);
+			Object[] expect = expectedValues.get(i);
+		}
+	}
+
+	public static class MarqueWithComplexWindowingFunction extends Marque {
+
+		private static final long serialVersionUID = 1L;
+
+		@DBColumn //(rank - 1) / (total partition rows - 1)
+		DBNumber percentileRank = new DBNumber(AnyExpression.percentageRank().allRows());
+
+		// (0.0+( ROW_NUMBER() OVER (partition by *PARTITION_FIELDS* order by *PARTITION_FIELDS*, *PK_FIELDS* ) - 1)) 
+		//  / greatest(1,(COUNT(*) OVER (partition by *PARTITION_FIELDS* ORDER BY  (1=1)  ASC  ) - 1))
+//		@DBColumn //(rank - 1) / (total partition rows - 1)
+//		DBNumber fakePercentileRank = new DBNumber(AnyExpression.fakePercentageRank());
 	}
 
 	@Test

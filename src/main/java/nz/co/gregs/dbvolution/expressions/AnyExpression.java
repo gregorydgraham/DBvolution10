@@ -37,6 +37,7 @@ import com.vividsolutions.jts.geom.Polygon;
 import java.io.Serializable;
 import java.util.*;
 import nz.co.gregs.dbvolution.DBRow;
+import nz.co.gregs.dbvolution.columns.ColumnProvider;
 import nz.co.gregs.dbvolution.databases.DBDatabase;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.results.AnyResult;
@@ -764,6 +765,46 @@ public abstract class AnyExpression<B extends Object, R extends AnyResult<B>, D 
 	public CountExpression count() {
 		return new CountExpression(this);
 	}
+	public static WindowFunction<IntegerExpression> rank() {
+		return new RankExpression().over();
+	}
+	public static WindowFunction<NumberExpression> percentageRank() {
+		return new PercentageExpression().over();
+	}
+//	public static NumberExpression fakePercentageRank(ColumnProvider[] partitionFields) {
+		// (0.0+( ROW_NUMBER() OVER (partition by *PARTITION_FIELDS* order by *PARTITION_FIELDS*, PK_FIELDS ) - 1)) 
+		//  / greatest(1,(COUNT(*) OVER (partition by *PARTITION_FIELDS* ORDER BY  (1=1)  ASC  ) - 1))
+		//
+//		final IntegerExpression rank = IntegerExpression
+//				.rowNumber()
+//				.partition()
+//				.orderByWithPrimaryKeys(partitionFields)
+//				.withoutFrame();
+//		final IntegerExpression numerator = rank.minus(1).bracket();
+//		
+//		final IntegerExpression totalNumberOfRows = IntegerExpression
+//				.countAll()
+//				.over()
+//				.allRows();
+//		final IntegerExpression divisor = totalNumberOfRows.minus(1);
+//		final NumberExpression wholeFn = numerator.dividedBy(divisor);
+//		return wholeFn;
+//	}
+	public static WindowFunction<IntegerExpression> denseRank() {
+		return new DenseRankExpression().over();
+	}
+	public static WindowFunction<IntegerExpression> rowNumber() {
+		return new RowNumberExpression().over();
+	}
+	public static WindowFunction<IntegerExpression> nTile(Integer tiles) {
+		return new NTileExpression(tiles).over();
+	}
+	public static WindowFunction<IntegerExpression> nTile(IntegerExpression tiles) {
+		return new NTileExpression(tiles).over();
+	}
+	public static WindowFunction<IntegerExpression> nTile(Long tiles) {
+		return new NTileExpression(tiles).over();
+	}
 
 	public static class CountExpression extends IntegerExpression implements CanBeWindowingFunction {
 
@@ -790,18 +831,215 @@ public abstract class AnyExpression<B extends Object, R extends AnyResult<B>, D 
 		}
 
 		@Override
-		public WindowingFunctionWithIntegerResult over() {
-			return new WindowingFunctionWithIntegerResult(this);
+		public WindowFunction<IntegerExpression> over() {
+			return new WindowFunction<IntegerExpression>(new IntegerExpression(this));
 		}
 
 	}
 
-	protected static class WindowingFunctionWithIntegerResult extends WindowFunction<IntegerExpression>{
+	/**
+	 * Aggregrator that counts all the rows of the query.
+	 *
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
+	 * @return the count of all the values from the column.
+	 */
+	public static CountAllExpression countAll() {
+		return new CountAllExpression();
+	}
 
-		private static final long serialVersionUID = 1L;
+	public static class CountAllExpression extends IntegerExpression implements CanBeWindowingFunction<IntegerExpression>{
+
+		public CountAllExpression() {
+			super();
+		}
+		private final static long serialVersionUID = 1l;
+
 		
-		public WindowingFunctionWithIntegerResult(IntegerExpression expr){
-			super(new IntegerExpression(expr));
+		@Override
+		public String toSQLString(DBDefinition db) {
+			return db.getCountFunctionName() + "(*)";
+		}
+
+
+		@Override
+		public boolean isAggregator() {
+			return true;
+		}
+
+		@Override
+		public CountAllExpression copy() {
+			return new CountAllExpression();
+		}
+
+		@Override
+		public WindowFunction<IntegerExpression> over() {
+			return new WindowFunction<IntegerExpression>(new IntegerExpression(this));
 		}
 	}
+
+	public static class RankExpression extends IntegerExpression implements CanBeWindowingFunction {
+
+		public RankExpression() {
+			super();
+		}
+		private final static long serialVersionUID = 1l;
+
+		@Override
+		public String toSQLString(DBDefinition db) {
+			return db.getRankFunctionName() + "()";
+		}
+
+		@Override
+		public boolean isAggregator() {
+			return false;
+		}
+
+		@Override
+		public RankExpression copy() {
+			return new RankExpression();
+		}
+
+		@Override
+		public WindowFunction<IntegerExpression> over() {
+			return new WindowFunction<IntegerExpression>(new IntegerExpression(this));
+		}
+
+	}
+
+	public static class PercentageExpression extends NumberExpression implements CanBeWindowingFunction {
+
+		public PercentageExpression() {
+			super();
+		}
+		private final static long serialVersionUID = 1l;
+
+		@Override
+		public String toSQLString(DBDefinition db) {
+			return db.getPercentRankFunctionName() + "()";
+		}
+
+		@Override
+		public boolean isAggregator() {
+			return false;
+		}
+
+		@Override
+		public PercentageExpression copy() {
+			return new PercentageExpression();
+		}
+
+		@Override
+		public WindowFunction<NumberExpression> over() {
+			return new WindowFunction<NumberExpression>(new NumberExpression(this));
+		}
+
+	}
+
+	private static class DenseRankExpression extends IntegerExpression implements CanBeWindowingFunction {
+
+		public DenseRankExpression() {
+			super();
+		}
+		private final static long serialVersionUID = 1l;
+
+		@Override
+		public String toSQLString(DBDefinition db) {
+			return db.getDenseRankFunctionName() + "()";
+		}
+
+		@Override
+		public boolean isAggregator() {
+			return false;
+		}
+
+		@Override
+		public DenseRankExpression copy() {
+			return new DenseRankExpression();
+		}
+
+		@Override
+		public WindowFunction<IntegerExpression> over() {
+			return new WindowFunction<IntegerExpression>(new IntegerExpression(this));
+		}
+
+	}
+
+	private static class RowNumberExpression extends IntegerExpression implements CanBeWindowingFunction {
+
+		public RowNumberExpression() {
+			super();
+		}
+		private final static long serialVersionUID = 1l;
+
+		@Override
+		public String toSQLString(DBDefinition db) {
+			return db.getRowNumberFunctionName() + "()";
+		}
+
+		@Override
+		public boolean isAggregator() {
+			return false;
+		}
+
+		@Override
+		public RowNumberExpression copy() {
+			return new RowNumberExpression();
+		}
+
+		@Override
+		public WindowFunction<IntegerExpression> over() {
+			return new WindowFunction<IntegerExpression>(new IntegerExpression(this));
+		}
+
+	}
+
+	public static class NTileExpression extends IntegerExpression implements CanBeWindowingFunction {
+
+		public NTileExpression(IntegerExpression only) {
+			super(only);
+		}
+
+		public NTileExpression(Long only) {
+			super(new IntegerExpression(only));
+		}
+
+		public NTileExpression(Integer only) {
+			super(new IntegerExpression(only));
+		}
+		private final static long serialVersionUID = 1l;
+
+		@Override
+		public String toSQLString(DBDefinition db) {
+			return db.getNTilesFunctionName() + "("+getInnerResult().toSQLString(db)+")";
+		}
+
+		@Override
+		public boolean isAggregator() {
+			return false;
+		}
+
+		@Override
+		public NTileExpression copy() {
+			return new NTileExpression(
+					(IntegerExpression )(getInnerResult() == null ? null : getInnerResult().copy())
+			);
+		}
+
+		@Override
+		public WindowFunction<IntegerExpression> over() {
+			return new WindowFunction<IntegerExpression>(new IntegerExpression(this));
+		}
+
+	}
+
+//	protected static class WindowingFunctionWithIntegerResult extends WindowFunction<IntegerExpression>{
+//
+//		private static final long serialVersionUID = 1L;
+//		
+//		public WindowingFunctionWithIntegerResult(IntegerExpression expr){
+//			super(new IntegerExpression(expr));
+//		}
+//	}
 }

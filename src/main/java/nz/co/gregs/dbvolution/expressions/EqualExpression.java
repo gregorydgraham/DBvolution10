@@ -29,7 +29,6 @@
 package nz.co.gregs.dbvolution.expressions;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import nz.co.gregs.dbvolution.DBQuery;
@@ -91,18 +90,6 @@ public abstract class EqualExpression<B, R extends EqualResult<B>, D extends Que
 	}
 
 	/**
-	 * Aggregrator that counts all the rows of the query.
-	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 *
-	 * @return the count of all the values from the column.
-	 */
-	public static IntegerExpression countAll() {
-		return new IntegerExpression(new CountAllExpression());
-	}
-
-	/**
 	 * Aggregrator that counts this row if the booleanResult is true.
 	 *
 	 * @param booleanResult an value that will be TRUE when the row needs to be
@@ -113,60 +100,6 @@ public abstract class EqualExpression<B, R extends EqualResult<B>, D extends Que
 	 */
 	public static IntegerExpression countIf(BooleanResult booleanResult) {
 		return new IntegerExpression(new BooleanExpression(booleanResult).ifThenElse(1L, 0L)).sum();
-	}
-
-	private static abstract class DBNonaryFunction extends IntegerExpression {
-
-	private final static long serialVersionUID = 1l;
-
-		DBNonaryFunction() {
-		}
-
-		abstract String getFunctionName(DBDefinition db);
-
-		protected String beforeValue(DBDefinition db) {
-			return " " + getFunctionName(db) + "";
-		}
-
-		protected String afterValue(DBDefinition db) {
-			return " ";
-		}
-
-		@Override
-		public String toSQLString(DBDefinition db) {
-			return this.beforeValue(db) + this.afterValue(db);
-		}
-
-		@Override
-		public DBNonaryFunction copy() {
-			DBNonaryFunction newInstance;
-			try {
-				newInstance = getClass().newInstance();
-			} catch (InstantiationException | IllegalAccessException ex) {
-				throw new RuntimeException(ex);
-			}
-			return newInstance;
-		}
-
-		@Override
-		public boolean isAggregator() {
-			return false;
-		}
-
-		@Override
-		public Set<DBRow> getTablesInvolved() {
-			return new HashSet<DBRow>();
-		}
-
-		@Override
-		public boolean getIncludesNull() {
-			return false;
-		}
-
-		@Override
-		public boolean isPurelyFunctional() {
-			return true;
-		}
 	}
 
 	protected static abstract class DBUnaryFunction<B, R extends EqualResult<B>, D extends QueryableDatatype<B>, X extends EqualExpression<B, R, D>> extends EqualExpression<B, R, D> implements EqualResult<B> {
@@ -541,37 +474,5 @@ public abstract class EqualExpression<B, R extends EqualResult<B>, D extends Que
 			return new WindowFunction<>(this);
 		}
 
-	}
-
-	public static class CountAllExpression extends DBNonaryFunction implements CanBeWindowingFunction<CountAllExpression>{
-
-		public CountAllExpression() {
-		}
-		private final static long serialVersionUID = 1l;
-
-		@Override
-		String getFunctionName(DBDefinition db) {
-			return db.getCountFunctionName();
-		}
-
-		@Override
-		protected String afterValue(DBDefinition db) {
-			return "(*)";
-		}
-
-		@Override
-		public boolean isAggregator() {
-			return true;
-		}
-
-		@Override
-		public CountAllExpression copy() {
-			return new CountAllExpression();
-		}
-
-		@Override
-		public WindowFunction<CountAllExpression> over() {
-			return new WindowFunction<>(this);
-		}
 	}
 }

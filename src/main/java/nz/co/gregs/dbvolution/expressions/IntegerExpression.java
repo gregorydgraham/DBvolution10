@@ -186,7 +186,12 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 
 	@Override
 	public String toSQLString(DBDefinition db) {
-		return getInnerResult().toSQLString(db);
+		final AnyResult<?> inner = getInnerResult();
+		if (inner != null) {
+			return inner.toSQLString(db);
+		} else {
+			return "";
+		}
 	}
 
 	@Override
@@ -3844,7 +3849,7 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 
 	}
 
-	public static class MaxUnaryFunction extends DBUnaryFunction implements CanBeWindowingFunction<IntegerExpression>{
+	public static class MaxUnaryFunction extends DBUnaryFunction implements CanBeWindowingFunction<IntegerExpression> {
 
 		private final static long serialVersionUID = 1l;
 
@@ -3874,7 +3879,7 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 		}
 	}
 
-	public static class MinUnaryFunction extends DBUnaryFunction implements CanBeWindowingFunction<IntegerExpression>{
+	public static class MinUnaryFunction extends DBUnaryFunction implements CanBeWindowingFunction<IntegerExpression> {
 
 		private final static long serialVersionUID = 1l;
 
@@ -4150,8 +4155,6 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 			);
 		}
 	}
-
-
 
 	private class IsNotInFunction extends DBNnaryBooleanFunction {
 
@@ -4564,7 +4567,7 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 		}
 	}
 
-	public static class SumFunction extends DBUnaryFunction implements CanBeWindowingFunction<IntegerExpression>{
+	public static class SumFunction extends DBUnaryFunction implements CanBeWindowingFunction<IntegerExpression> {
 
 		private final static long serialVersionUID = 1l;
 
@@ -4610,5 +4613,111 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 		public NullExpression copy() {
 			return new NullExpression();
 		}
+	}
+
+	public static WindowFunction<IntegerExpression> firstValue() {
+		return new FirstValueExpression().over();
+	}
+
+	public static class FirstValueExpression extends IntegerExpression implements CanBeWindowingFunction {
+
+		public FirstValueExpression() {
+			super();
+		}
+
+		private final static long serialVersionUID = 1l;
+
+		@Override
+		public String toSQLString(DBDefinition db) {
+			return db.getFirstValueFunctionName() + "()";
+		}
+
+		@Override
+		public boolean isAggregator() {
+			return true;
+		}
+
+		@Override
+		@SuppressWarnings("unchecked")
+		public FirstValueExpression copy() {
+			return new FirstValueExpression();
+		}
+
+		@Override
+		public WindowFunction<IntegerExpression> over() {
+			return new WindowFunction<IntegerExpression>(new IntegerExpression(this));
+		}
+
+	}
+
+	public static WindowFunction<IntegerExpression> lastValue() {
+		return new LastValueExpression().over();
+	}
+
+	public static class LastValueExpression extends IntegerExpression implements CanBeWindowingFunction {
+
+		public LastValueExpression() {
+			super();
+		}
+
+		private final static long serialVersionUID = 1l;
+
+		@Override
+		public String toSQLString(DBDefinition db) {
+			return db.getLastValueFunctionName() + "()";
+		}
+
+		@Override
+		public boolean isAggregator() {
+			return true;
+		}
+
+		@Override
+		@SuppressWarnings("unchecked")
+		public LastValueExpression copy() {
+			return new LastValueExpression();
+		}
+
+		@Override
+		public WindowFunction<IntegerExpression> over() {
+			return new WindowFunction<IntegerExpression>(new IntegerExpression(this));
+		}
+
+	}
+
+	public static WindowFunction<IntegerExpression> nthValue(IntegerExpression indexExpression) {
+		return new NthValueExpression(indexExpression).over();
+	}
+
+	public static class NthValueExpression extends IntegerExpression implements CanBeWindowingFunction {
+
+		public NthValueExpression(IntegerExpression only) {
+			super(only);
+		}
+
+		private final static long serialVersionUID = 1l;
+
+		@Override
+		public String toSQLString(DBDefinition db) {
+			return db.getNthValueFunctionName() + "(" + getInnerResult().toSQLString(db) + ")";
+		}
+
+		@Override
+		public boolean isAggregator() {
+			return true;
+		}
+
+		@Override
+		@SuppressWarnings("unchecked")
+		public NthValueExpression copy() {
+			return new NthValueExpression(
+					(IntegerExpression) (getInnerResult() == null ? null : getInnerResult().copy()));
+		}
+
+		@Override
+		public WindowFunction<IntegerExpression> over() {
+			return new WindowFunction<IntegerExpression>(new IntegerExpression(this));
+		}
+
 	}
 }

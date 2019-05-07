@@ -33,6 +33,7 @@ import java.util.Set;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.columns.AbstractColumn;
 import nz.co.gregs.dbvolution.columns.AbstractQueryColumn;
+import nz.co.gregs.dbvolution.columns.ColumnProvider;
 import nz.co.gregs.dbvolution.columns.QueryColumn;
 import nz.co.gregs.dbvolution.databases.DBDatabase;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
@@ -56,6 +57,14 @@ import nz.co.gregs.dbvolution.results.AnyResult;
  * @author gregorygraham
  */
 public class SortProvider implements DBExpression {
+
+	static SortProvider[] getSortProviders(ColumnProvider[] columns) {
+		SortProvider[] sorts = new SortProvider[columns.length];
+		for (int i = 0; i < columns.length; i++) {
+			sorts[i] = columns[i].ascending();
+		}
+		return sorts;
+	}
 
 	private final AnyExpression<?, ?, ?> innerExpression;
 	private QueryColumn<?, ? extends AnyResult<?>, ? extends QueryableDatatype<?>> queryColumn = null;
