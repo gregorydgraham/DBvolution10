@@ -748,7 +748,7 @@ public abstract class QueryableDatatype<T> extends Object implements Serializabl
 
 	private synchronized void moveCurrentValueToPreviousValue(T newLiteralValue) {
 		if ((this.isDBNull && newLiteralValue != null)
-				|| (getLiteralValue() != null && (newLiteralValue == null || !newLiteralValue.equals(literalValue)))) {
+				|| (!this.isDBNull && (newLiteralValue == null || !newLiteralValue.equals(literalValue)))) {
 			changed = true;
 			@SuppressWarnings("unchecked")
 			QueryableDatatype<T> copyOfOldValues = QueryableDatatype.getQueryableDatatypeInstance(this.getClass());
