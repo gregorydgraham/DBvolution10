@@ -28,22 +28,25 @@
  * 
  * Check the Creative Commons website for any details, legalese, and updates.
  */
-package nz.co.gregs.dbvolution.expressions;
+package nz.co.gregs.dbvolution.expressions.windows;
 
 import nz.co.gregs.dbvolution.columns.ColumnProvider;
+import nz.co.gregs.dbvolution.expressions.DBExpression;
+import nz.co.gregs.dbvolution.expressions.EqualExpression;
+import nz.co.gregs.dbvolution.expressions.SortProvider;
 
 /**
  *
  * @author gregorygraham
  * @param <A>
  */
-public interface WindowingFunctionInterface<A extends EqualExpression> extends DBExpression {
+public interface WindowingFunctionInterface<A extends EqualExpression<?,?,?>> extends DBExpression {
 
 	Partitioned<A> partition(ColumnProvider... cols);
 
 	Class<A> getRequiredExpressionClass();
 
-	public interface WindowPart<A extends EqualExpression> extends DBExpression {
+	public interface WindowPart<A extends EqualExpression<?,?,?>> extends DBExpression {
 
 		Class<A> getRequiredExpressionClass();
 
@@ -51,7 +54,7 @@ public interface WindowingFunctionInterface<A extends EqualExpression> extends D
 		abstract WindowPart<A> copy();
 	}
 
-	public interface Partitioned<A extends EqualExpression> extends WindowPart<A> {
+	public interface Partitioned<A extends EqualExpression<?,?,?>> extends WindowPart<A> {
 
 		A unsorted();
 
@@ -62,18 +65,9 @@ public interface WindowingFunctionInterface<A extends EqualExpression> extends D
 		 */
 		A unordered();
 
-		Sorted<A> orderBy(SortProvider sort, SortProvider... sorts);
+		A orderBy(SortProvider sort, SortProvider... sorts);
 
-		Sorted<A> unsortedWithFrame();
-
-		/**
-		 * Orders by the provided sort providers and adds the required primary keys
-		 * as well.
-		 *
-		 * @param sorts
-		 * @return
-		 */
-		Sorted<A> orderByWithPrimaryKeys(SortProvider... sorts);
+//		Sorted<A> unsortedWithFrame();
 
 		/**
 		 * Orders by the provided sort providers and adds the required primary keys
@@ -82,86 +76,31 @@ public interface WindowingFunctionInterface<A extends EqualExpression> extends D
 		 * @param sorts
 		 * @return
 		 */
-		Sorted<A> orderByWithPrimaryKeys(ColumnProvider... sorts);
+		A orderByWithPrimaryKeys(SortProvider... sorts);
+
+		/**
+		 * Orders by the provided sort providers and adds the required primary keys
+		 * as well.
+		 *
+		 * @param sorts
+		 * @return
+		 */
+		A orderByWithPrimaryKeys(ColumnProvider... sorts);
 
 		/**
 		 * A synonym for {@link #unsortedWithFrame() }
 		 *
 		 * @return
 		 */
-		Sorted<A> unorderedWithFrame();
+//		Sorted<A> unorderedWithFrame();
 	}
 
-	public interface Sorted<A extends EqualExpression> extends WindowPart<A> {
-
-		FrameType<A> rows();
-
-		/* MS SQL Server 2017 does not support groups*/
-//		FrameType<A> groups();
-		FrameType<A> range();
-
-		A withoutFrame();
-	}
-
-	public interface FrameType<A extends EqualExpression> extends WindowPart<A> {
-
-		FrameStartAllPreceding<A> unboundedPreceding();
-
-		FrameStartPreceding<A> preceding(int offset);
-
-		FrameStartPreceding<A> preceding(IntegerExpression offset);
-
-		FrameStartCurrentRow<A> currentRow();
-
-		FrameStartFollowing<A> following(int offset);
-
-		FrameStartFollowing<A> following(IntegerExpression offset);
-	}
-
-	public interface EmptyFrameStart<A extends EqualExpression> extends WindowPart<A> {
+	public interface Sorted<A extends EqualExpression<?,?,?>> extends WindowPart<A>, WindowEnd<A> {
 
 	}
 
-	public interface FrameStart<A extends EqualExpression> extends EmptyFrameStart<A> {
 
-		A following(int offset);
-
-		A following(IntegerExpression offset);
-
-		A unboundedFollowing();
-	}
-
-	public interface FrameStartAllPreceding<A extends EqualExpression> extends FrameStart<A> {
-
-		A preceding(int offset);
-
-		A preceding(IntegerExpression offset);
-
-		A currentRow();
-
-	}
-
-	public interface FrameStartPreceding<A extends EqualExpression> extends FrameStart<A> {
-
-		A preceding(int offset);
-
-		A preceding(IntegerExpression offset);
-
-		A currentRow();
-
-	}
-
-	public interface FrameStartCurrentRow<A extends EqualExpression> extends FrameStart<A> {
-
-		A currentRow();
-
-	}
-
-	public interface FrameStartFollowing<A extends EqualExpression> extends FrameStart<A> {
-
-	}
-
-	public interface WindowEnd<A extends EqualExpression> extends DBExpression {
+	public interface WindowEnd<A extends EqualExpression<?,?,?>> extends DBExpression {
 
 		A getRequiredExpression();
 	}

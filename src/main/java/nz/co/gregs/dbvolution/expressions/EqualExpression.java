@@ -28,6 +28,8 @@
  */
 package nz.co.gregs.dbvolution.expressions;
 
+import nz.co.gregs.dbvolution.expressions.windows.WindowFunctionFramable;
+import nz.co.gregs.dbvolution.expressions.windows.CanBeWindowingFunctionWithFrame;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -201,7 +203,7 @@ public abstract class EqualExpression<B, R extends EqualResult<B>, D extends Que
 		}
 	}
 
-	public static class ModeSimpleExpression<B, R extends EqualResult<B>, D extends QueryableDatatype<B>, X extends EqualExpression<B, R, D>> extends DBUnaryFunction<B, R, D, X> implements CanBeWindowingFunction<ModeSimpleExpression<B,R,D,X>>{
+	public static class ModeSimpleExpression<B, R extends EqualResult<B>, D extends QueryableDatatype<B>, X extends EqualExpression<B, R, D>> extends DBUnaryFunction<B, R, D, X> implements CanBeWindowingFunctionWithFrame<ModeSimpleExpression<B,R,D,X>>{
 
 		private final static long serialVersionUID = 1l;
 
@@ -285,13 +287,13 @@ public abstract class EqualExpression<B, R extends EqualResult<B>, D extends Que
 		}
 
 		@Override
-		public WindowFunction<ModeSimpleExpression<B, R, D, X>> over() {
-			return new WindowFunction<>(this);
+		public WindowFunctionFramable<ModeSimpleExpression<B, R, D, X>> over() {
+			return new WindowFunctionFramable<>(this);
 		}
 
 	}
 
-	public static class ModeStrictExpression<B, R extends EqualResult<B>, D extends QueryableDatatype<B>, X extends EqualExpression<B, R, D>> extends DBUnaryFunction<B, R, D, X> implements CanBeWindowingFunction<ModeStrictExpression<B, R, D, X>>{
+	public static class ModeStrictExpression<B, R extends EqualResult<B>, D extends QueryableDatatype<B>, X extends EqualExpression<B, R, D>> extends DBUnaryFunction<B, R, D, X> implements CanBeWindowingFunctionWithFrame<ModeStrictExpression<B, R, D, X>>{
 
 		private final static long serialVersionUID = 1l;
 
@@ -470,8 +472,8 @@ public abstract class EqualExpression<B, R extends EqualResult<B>, D extends Que
 		}
 
 		@Override
-		public WindowFunction<ModeStrictExpression<B, R, D, X>> over() {
-			return new WindowFunction<>(this);
+		public WindowFunctionFramable<ModeStrictExpression<B, R, D, X>> over() {
+			return new WindowFunctionFramable<>(this);
 		}
 
 	}

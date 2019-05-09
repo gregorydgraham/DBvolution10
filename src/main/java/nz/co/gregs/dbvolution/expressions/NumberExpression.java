@@ -15,6 +15,8 @@
  */
 package nz.co.gregs.dbvolution.expressions;
 
+import nz.co.gregs.dbvolution.expressions.windows.WindowFunctionFramable;
+import nz.co.gregs.dbvolution.expressions.windows.CanBeWindowingFunctionWithFrame;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.results.StringResult;
 import nz.co.gregs.dbvolution.results.NumberResult;
@@ -3865,7 +3867,7 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 
 	}
 
-	public static class MaxUnaryFunction extends DBUnaryFunction implements CanBeWindowingFunction<NumberExpression>{
+	public static class MaxUnaryFunction extends DBUnaryFunction implements CanBeWindowingFunctionWithFrame<NumberExpression>{
 
 		private final static long serialVersionUID = 1l;
 
@@ -3889,12 +3891,12 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 		}
 
 		@Override
-		public WindowFunction<NumberExpression> over() {
-			return new WindowFunction<>(new NumberExpression(only));
+		public WindowFunctionFramable<NumberExpression> over() {
+			return new WindowFunctionFramable<>(new NumberExpression(only));
 		}
 	}
 
-	public static class MinUnaryFunction extends DBUnaryFunction implements CanBeWindowingFunction<NumberExpression>{
+	public static class MinUnaryFunction extends DBUnaryFunction implements CanBeWindowingFunctionWithFrame<NumberExpression>{
 
 		private final static long serialVersionUID = 1l;
 
@@ -3918,8 +3920,8 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 		}
 
 		@Override
-		public WindowFunction<NumberExpression> over() {
-			return new WindowFunction<>(new NumberExpression(this));
+		public WindowFunctionFramable<NumberExpression> over() {
+			return new WindowFunctionFramable<>(new NumberExpression(this));
 		}
 	}
 
@@ -5041,7 +5043,7 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 		}
 	}
 
-	public static class AverageExpression extends DBUnaryFunction implements CanBeWindowingFunction<NumberExpression>{
+	public static class AverageExpression extends DBUnaryFunction implements CanBeWindowingFunctionWithFrame<NumberExpression>{
 
 		public AverageExpression(NumberExpression only) {
 			super(only);
@@ -5065,12 +5067,12 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 		}
 
 		@Override
-		public WindowFunction<NumberExpression> over() {
-			return new WindowFunction<>(new NumberExpression(this));
+		public WindowFunctionFramable<NumberExpression> over() {
+			return new WindowFunctionFramable<>(new NumberExpression(this));
 		}
 	}
 
-	public class StandardDeviationExpression extends DBUnaryFunction implements CanBeWindowingFunction<NumberExpression> {
+	public class StandardDeviationExpression extends DBUnaryFunction implements CanBeWindowingFunctionWithFrame<NumberExpression> {
 
 		public StandardDeviationExpression(NumberExpression only) {
 			super(only);
@@ -5105,12 +5107,12 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 		}
 
 		@Override
-		public WindowFunction<NumberExpression> over() {
-			return new WindowFunction<>(new NumberExpression(this));
+		public WindowFunctionFramable<NumberExpression> over() {
+			return new WindowFunctionFramable<>(new NumberExpression(this));
 		}
 	}
 
-	public static class SumExpression extends DBUnaryFunction implements CanBeWindowingFunction<NumberExpression>{
+	public static class SumExpression extends DBUnaryFunction implements CanBeWindowingFunctionWithFrame<NumberExpression>{
 
 		public SumExpression(NumberExpression only) {
 			super(only);
@@ -5133,8 +5135,8 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 		}
 
 		@Override
-		public WindowFunction<NumberExpression> over() {
-			return new WindowFunction<>(new NumberExpression(this));
+		public WindowFunctionFramable<NumberExpression> over() {
+			return new WindowFunctionFramable<>(new NumberExpression(this));
 		}
 	}
 

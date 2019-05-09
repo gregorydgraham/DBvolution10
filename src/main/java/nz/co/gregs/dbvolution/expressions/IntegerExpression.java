@@ -15,6 +15,8 @@
  */
 package nz.co.gregs.dbvolution.expressions;
 
+import nz.co.gregs.dbvolution.expressions.windows.WindowFunctionFramable;
+import nz.co.gregs.dbvolution.expressions.windows.CanBeWindowingFunctionWithFrame;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.results.StringResult;
 import nz.co.gregs.dbvolution.results.IntegerResult;
@@ -3849,7 +3851,7 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 
 	}
 
-	public static class MaxUnaryFunction extends DBUnaryFunction implements CanBeWindowingFunction<IntegerExpression> {
+	public static class MaxUnaryFunction extends DBUnaryFunction implements CanBeWindowingFunctionWithFrame<IntegerExpression> {
 
 		private final static long serialVersionUID = 1l;
 
@@ -3874,12 +3876,12 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 		}
 
 		@Override
-		public WindowFunction<IntegerExpression> over() {
-			return new WindowFunction<>(new IntegerExpression(this));
+		public WindowFunctionFramable<IntegerExpression> over() {
+			return new WindowFunctionFramable<>(new IntegerExpression(this));
 		}
 	}
 
-	public static class MinUnaryFunction extends DBUnaryFunction implements CanBeWindowingFunction<IntegerExpression> {
+	public static class MinUnaryFunction extends DBUnaryFunction implements CanBeWindowingFunctionWithFrame<IntegerExpression> {
 
 		private final static long serialVersionUID = 1l;
 
@@ -3904,8 +3906,8 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 		}
 
 		@Override
-		public WindowFunction<IntegerExpression> over() {
-			return new WindowFunction<>(new IntegerExpression(this));
+		public WindowFunctionFramable<IntegerExpression> over() {
+			return new WindowFunctionFramable<>(new IntegerExpression(this));
 		}
 	}
 
@@ -4567,7 +4569,7 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 		}
 	}
 
-	public static class SumFunction extends DBUnaryFunction implements CanBeWindowingFunction<IntegerExpression> {
+	public static class SumFunction extends DBUnaryFunction implements CanBeWindowingFunctionWithFrame<IntegerExpression> {
 
 		private final static long serialVersionUID = 1l;
 
@@ -4592,8 +4594,8 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 		}
 
 		@Override
-		public WindowFunction<IntegerExpression> over() {
-			return new WindowFunction<>(new IntegerExpression(this));
+		public WindowFunctionFramable<IntegerExpression> over() {
+			return new WindowFunctionFramable<>(new IntegerExpression(this));
 		}
 	}
 
@@ -4615,11 +4617,11 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 		}
 	}
 
-	public static WindowFunction<IntegerExpression> firstValue() {
+	public static WindowFunctionFramable<IntegerExpression> firstValue() {
 		return new FirstValueExpression().over();
 	}
 
-	public static class FirstValueExpression extends IntegerExpression implements CanBeWindowingFunction {
+	public static class FirstValueExpression extends IntegerExpression implements CanBeWindowingFunctionWithFrame<IntegerExpression> {
 
 		public FirstValueExpression() {
 			super();
@@ -4644,17 +4646,17 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 		}
 
 		@Override
-		public WindowFunction<IntegerExpression> over() {
-			return new WindowFunction<IntegerExpression>(new IntegerExpression(this));
+		public WindowFunctionFramable<IntegerExpression> over() {
+			return new WindowFunctionFramable<IntegerExpression>(new IntegerExpression(this));
 		}
 
 	}
 
-	public static WindowFunction<IntegerExpression> lastValue() {
+	public static WindowFunctionFramable<IntegerExpression> lastValue() {
 		return new LastValueExpression().over();
 	}
 
-	public static class LastValueExpression extends IntegerExpression implements CanBeWindowingFunction {
+	public static class LastValueExpression extends IntegerExpression implements CanBeWindowingFunctionWithFrame<IntegerExpression> {
 
 		public LastValueExpression() {
 			super();
@@ -4679,17 +4681,17 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 		}
 
 		@Override
-		public WindowFunction<IntegerExpression> over() {
-			return new WindowFunction<IntegerExpression>(new IntegerExpression(this));
+		public WindowFunctionFramable<IntegerExpression> over() {
+			return new WindowFunctionFramable<IntegerExpression>(new IntegerExpression(this));
 		}
 
 	}
 
-	public static WindowFunction<IntegerExpression> nthValue(IntegerExpression indexExpression) {
+	public static WindowFunctionFramable<IntegerExpression> nthValue(IntegerExpression indexExpression) {
 		return new NthValueExpression(indexExpression).over();
 	}
 
-	public static class NthValueExpression extends IntegerExpression implements CanBeWindowingFunction {
+	public static class NthValueExpression extends IntegerExpression implements CanBeWindowingFunctionWithFrame<IntegerExpression> {
 
 		public NthValueExpression(IntegerExpression only) {
 			super(only);
@@ -4715,8 +4717,8 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 		}
 
 		@Override
-		public WindowFunction<IntegerExpression> over() {
-			return new WindowFunction<IntegerExpression>(new IntegerExpression(this));
+		public WindowFunctionFramable<IntegerExpression> over() {
+			return new WindowFunctionFramable<IntegerExpression>(new IntegerExpression(this));
 		}
 
 	}

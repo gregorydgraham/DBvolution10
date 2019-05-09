@@ -28,15 +28,17 @@
  * 
  * Check the Creative Commons website for any details, legalese, and updates.
  */
-package nz.co.gregs.dbvolution.expressions;
+package nz.co.gregs.dbvolution.expressions.windows;
+
+import nz.co.gregs.dbvolution.expressions.EqualExpression;
 
 /**
  *
  * @author gregorygraham
  * @param <A>
  */
-public interface CanBeWindowingFunction<A extends EqualExpression> {
+public interface CanBeWindowingFunctionWithFrame<A extends EqualExpression<?,?,?>> {
 
-	public WindowFunction<A> over();
+	public WindowFunctionFramable<A> over();
 	
 }

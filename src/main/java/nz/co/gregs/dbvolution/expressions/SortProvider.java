@@ -58,7 +58,7 @@ import nz.co.gregs.dbvolution.results.AnyResult;
  */
 public class SortProvider implements DBExpression {
 
-	static SortProvider[] getSortProviders(ColumnProvider[] columns) {
+	public static SortProvider[] getSortProviders(ColumnProvider[] columns) {
 		SortProvider[] sorts = new SortProvider[columns.length];
 		for (int i = 0; i < columns.length; i++) {
 			sorts[i] = columns[i].ascending();

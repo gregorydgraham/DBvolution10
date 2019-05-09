@@ -15,6 +15,8 @@
  */
 package nz.co.gregs.dbvolution.expressions;
 
+import nz.co.gregs.dbvolution.expressions.windows.WindowFunctionFramable;
+import nz.co.gregs.dbvolution.expressions.windows.CanBeWindowingFunctionWithFrame;
 import nz.co.gregs.dbvolution.results.StringResult;
 import nz.co.gregs.dbvolution.results.NumberResult;
 import java.util.ArrayList;
@@ -3672,7 +3674,7 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 		}
 	}
 
-	public class StringAggregateExpression extends DBBinaryStringFunction implements CanBeWindowingFunction<StringExpression>{
+	public class StringAggregateExpression extends DBBinaryStringFunction implements CanBeWindowingFunctionWithFrame<StringExpression>{
 
 		public StringAggregateExpression(StringExpression columnToAccumulate, StringExpression separator) {
 			super(columnToAccumulate, separator);
@@ -3701,12 +3703,12 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 		}
 
 		@Override
-		public WindowFunction<StringExpression> over() {
-			return new WindowFunction<>(new StringExpression(this));
+		public WindowFunctionFramable<StringExpression> over() {
+			return new WindowFunctionFramable<>(new StringExpression(this));
 		}
 	}
 
-	public class StringAggregateWithOrderByExpression extends StringExpression implements CanBeWindowingFunction<StringExpression>{
+	public class StringAggregateWithOrderByExpression extends StringExpression implements CanBeWindowingFunctionWithFrame<StringExpression>{
 
 		private final StringExpression columnToAccumulate;
 		private final StringExpression separator;
@@ -3747,8 +3749,8 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 		}
 
 		@Override
-		public WindowFunction<StringExpression> over() {
-			return new WindowFunction<>(new StringExpression(this));
+		public WindowFunctionFramable<StringExpression> over() {
+			return new WindowFunctionFramable<>(new StringExpression(this));
 		}
 	}
 
@@ -4042,7 +4044,7 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 		}
 	}
 
-	public class StringMaxExpression extends StringExpression implements CanBeWindowingFunction<StringExpression>{
+	public class StringMaxExpression extends StringExpression implements CanBeWindowingFunctionWithFrame<StringExpression>{
 
 		public StringMaxExpression(StringResult stringVariable) {
 			super(stringVariable);
@@ -4065,12 +4067,12 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 		}
 
 		@Override
-		public WindowFunction<StringExpression> over() {
-			return new WindowFunction<>(new StringExpression(this));
+		public WindowFunctionFramable<StringExpression> over() {
+			return new WindowFunctionFramable<>(new StringExpression(this));
 		}
 	}
 
-	public class StringMinExpression extends StringExpression implements CanBeWindowingFunction<StringExpression>{
+	public class StringMinExpression extends StringExpression implements CanBeWindowingFunctionWithFrame<StringExpression>{
 
 		public StringMinExpression(StringResult stringVariable) {
 			super(stringVariable);
@@ -4093,8 +4095,8 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 		}
 
 		@Override
-		public WindowFunction<StringExpression> over() {
-			return new WindowFunction<>(new StringExpression(this));
+		public WindowFunctionFramable<StringExpression> over() {
+			return new WindowFunctionFramable<>(new StringExpression(this));
 		}
 	}
 

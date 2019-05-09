@@ -504,7 +504,7 @@ public class DateExpressionTest extends AbstractTest {
 		private static final long serialVersionUID = 1L;
 
 		@DBColumn //(rank - 1) / (total partition rows - 1)
-		DBNumber percentileRank = new DBNumber(AnyExpression.percentageRank().allRows());
+		DBNumber percentileRank = AnyExpression.percentageRank().allRows().asExpressionColumn();
 
 		// (0.0+( ROW_NUMBER() OVER (partition by *PARTITION_FIELDS* order by *PARTITION_FIELDS*, *PK_FIELDS* ) - 1)) 
 		//  / greatest(1,(COUNT(*) OVER (partition by *PARTITION_FIELDS* ORDER BY  (1=1)  ASC  ) - 1))

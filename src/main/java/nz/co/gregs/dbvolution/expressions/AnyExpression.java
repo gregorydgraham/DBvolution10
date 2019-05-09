@@ -28,6 +28,10 @@
  */
 package nz.co.gregs.dbvolution.expressions;
 
+import nz.co.gregs.dbvolution.expressions.windows.CanBeWindowingFunctionWithoutFrame;
+import nz.co.gregs.dbvolution.expressions.windows.WindowFunctionFramable;
+import nz.co.gregs.dbvolution.expressions.windows.WindowFunction;
+import nz.co.gregs.dbvolution.expressions.windows.CanBeWindowingFunctionWithFrame;
 import nz.co.gregs.dbvolution.expressions.spatial2D.*;
 import com.vividsolutions.jts.geom.LineSegment;
 import com.vividsolutions.jts.geom.LineString;
@@ -37,7 +41,6 @@ import com.vividsolutions.jts.geom.Polygon;
 import java.io.Serializable;
 import java.util.*;
 import nz.co.gregs.dbvolution.DBRow;
-import nz.co.gregs.dbvolution.columns.ColumnProvider;
 import nz.co.gregs.dbvolution.databases.DBDatabase;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.results.AnyResult;
@@ -806,7 +809,7 @@ public abstract class AnyExpression<B extends Object, R extends AnyResult<B>, D 
 		return new NTileExpression(tiles).over();
 	}
 
-	public static class CountExpression extends IntegerExpression implements CanBeWindowingFunction {
+	public static class CountExpression extends IntegerExpression implements CanBeWindowingFunctionWithFrame<IntegerExpression> {
 
 		public CountExpression(AnyResult<?> only) {
 			super(only);
@@ -831,8 +834,8 @@ public abstract class AnyExpression<B extends Object, R extends AnyResult<B>, D 
 		}
 
 		@Override
-		public WindowFunction<IntegerExpression> over() {
-			return new WindowFunction<IntegerExpression>(new IntegerExpression(this));
+		public WindowFunctionFramable<IntegerExpression> over() {
+			return new WindowFunctionFramable<IntegerExpression>(new IntegerExpression(this));
 		}
 
 	}
@@ -849,7 +852,7 @@ public abstract class AnyExpression<B extends Object, R extends AnyResult<B>, D 
 		return new CountAllExpression();
 	}
 
-	public static class CountAllExpression extends IntegerExpression implements CanBeWindowingFunction<IntegerExpression>{
+	public static class CountAllExpression extends IntegerExpression implements CanBeWindowingFunctionWithFrame<IntegerExpression>{
 
 		public CountAllExpression() {
 			super();
@@ -874,12 +877,12 @@ public abstract class AnyExpression<B extends Object, R extends AnyResult<B>, D 
 		}
 
 		@Override
-		public WindowFunction<IntegerExpression> over() {
-			return new WindowFunction<IntegerExpression>(new IntegerExpression(this));
+		public WindowFunctionFramable<IntegerExpression> over() {
+			return new WindowFunctionFramable<IntegerExpression>(new IntegerExpression(this));
 		}
 	}
 
-	public static class RankExpression extends IntegerExpression implements CanBeWindowingFunction {
+	public static class RankExpression extends IntegerExpression implements CanBeWindowingFunctionWithoutFrame<IntegerExpression> {
 
 		public RankExpression() {
 			super();
@@ -905,10 +908,9 @@ public abstract class AnyExpression<B extends Object, R extends AnyResult<B>, D 
 		public WindowFunction<IntegerExpression> over() {
 			return new WindowFunction<IntegerExpression>(new IntegerExpression(this));
 		}
-
 	}
 
-	public static class PercentageExpression extends NumberExpression implements CanBeWindowingFunction {
+	public static class PercentageExpression extends NumberExpression implements CanBeWindowingFunctionWithoutFrame<NumberExpression> {
 
 		public PercentageExpression() {
 			super();
@@ -934,10 +936,9 @@ public abstract class AnyExpression<B extends Object, R extends AnyResult<B>, D 
 		public WindowFunction<NumberExpression> over() {
 			return new WindowFunction<NumberExpression>(new NumberExpression(this));
 		}
-
 	}
 
-	private static class DenseRankExpression extends IntegerExpression implements CanBeWindowingFunction {
+	private static class DenseRankExpression extends IntegerExpression implements CanBeWindowingFunctionWithoutFrame<IntegerExpression> {
 
 		public DenseRankExpression() {
 			super();
@@ -963,10 +964,9 @@ public abstract class AnyExpression<B extends Object, R extends AnyResult<B>, D 
 		public WindowFunction<IntegerExpression> over() {
 			return new WindowFunction<IntegerExpression>(new IntegerExpression(this));
 		}
-
 	}
 
-	private static class RowNumberExpression extends IntegerExpression implements CanBeWindowingFunction {
+	private static class RowNumberExpression extends IntegerExpression implements CanBeWindowingFunctionWithoutFrame<IntegerExpression> {
 
 		public RowNumberExpression() {
 			super();
@@ -992,10 +992,9 @@ public abstract class AnyExpression<B extends Object, R extends AnyResult<B>, D 
 		public WindowFunction<IntegerExpression> over() {
 			return new WindowFunction<IntegerExpression>(new IntegerExpression(this));
 		}
-
 	}
 
-	public static class NTileExpression extends IntegerExpression implements CanBeWindowingFunction {
+	public static class NTileExpression extends IntegerExpression implements CanBeWindowingFunctionWithoutFrame<IntegerExpression> {
 
 		public NTileExpression(IntegerExpression only) {
 			super(only);
@@ -1031,15 +1030,5 @@ public abstract class AnyExpression<B extends Object, R extends AnyResult<B>, D 
 		public WindowFunction<IntegerExpression> over() {
 			return new WindowFunction<IntegerExpression>(new IntegerExpression(this));
 		}
-
 	}
-
-//	protected static class WindowingFunctionWithIntegerResult extends WindowFunction<IntegerExpression>{
-//
-//		private static final long serialVersionUID = 1L;
-//		
-//		public WindowingFunctionWithIntegerResult(IntegerExpression expr){
-//			super(new IntegerExpression(expr));
-//		}
-//	}
 }
