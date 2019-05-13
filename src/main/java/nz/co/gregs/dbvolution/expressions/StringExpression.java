@@ -31,6 +31,7 @@ import nz.co.gregs.dbvolution.datatypes.*;
 import nz.co.gregs.dbvolution.results.AnyResult;
 import nz.co.gregs.dbvolution.results.ExpressionHasStandardStringResult;
 import nz.co.gregs.dbvolution.results.IntegerResult;
+import nz.co.gregs.dbvolution.utility.StringSeparated;
 
 /**
  * StringExpression implements standard functions that produce a character or
@@ -548,31 +549,6 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 	 * @return a BooleanExpression of the SQL comparison.
 	 */
 	public BooleanExpression searchFor(String... strings) {
-//		List<BooleanExpression> optionalBools = new ArrayList<>();
-//		optionalBools.add(BooleanExpression.trueExpression());
-//		List<BooleanExpression> requiredBools = new ArrayList<>();
-//		requiredBools.add(BooleanExpression.trueExpression());
-//		List<BooleanExpression> excludedBools = new ArrayList<>();
-//		excludedBools.add(BooleanExpression.falseExpression());
-//		for (String string : strings) {
-//			if (string.startsWith("+")) {
-//				BooleanExpression contains = this.containsIgnoreCase(string.replaceFirst("\\+", ""));
-//				requiredBools.add(contains);
-//			} else if (string.startsWith("-")) {
-//				BooleanExpression contains = this.containsIgnoreCase(string.replaceFirst("\\-", ""));
-//				excludedBools.add(contains);
-//			} else {
-//				BooleanExpression contains = this.containsIgnoreCase(string);
-//				optionalBools.add(contains);
-//			}
-//		}
-//		BooleanExpression[] optionalArray = optionalBools.toArray(new BooleanExpression[]{});
-//		BooleanExpression[] requiredArray = requiredBools.toArray(new BooleanExpression[]{});
-//		BooleanExpression[] excludedArray = excludedBools.toArray(new BooleanExpression[]{});
-//		BooleanExpression searchTerm = BooleanExpression.allOf(requiredArray)
-//				.and(BooleanExpression.anyOf(optionalArray))
-//				.and(BooleanExpression.noneOf(excludedArray));
-//		return searchTerm;
 		return this.searchForRanking(strings).isGreaterThan(0);
 	}
 
@@ -585,6 +561,14 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 	 * current StringExpression to the supplied SQL pattern.
 	 *
 	 * <p>
+	 * Despite the simple description above the search ranking includes all terms
+	 * but assigns a number to the column value based on the search terms. Exact
+	 * case-sensitive matches are rated highest, case-insensitive exact matches
+	 * second highest then individual terms are considered. Plus(+) terms get rated
+	 * twice as important as unmodified terms and minus(-) terms are rated downwards.
+	 * Frequency of occurrence does not affect the results.
+	 *
+	 * <p>
 	 * DBvolution does not process the SQL pattern so please ensure that it
 	 * conforms to the database's implementation of LIKE. Most implementations
 	 * only provide access to the "_" and "%" wildcards but there may be
@@ -594,18 +578,47 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 	 * @return a BooleanExpression of the SQL comparison.
 	 */
 	public IntegerExpression searchForRanking(String... strings) {
-		IntegerExpression rankingExpr = new IntegerExpression(0);
+		IntegerExpression containsSequence = new IntegerExpression(0);
+		IntegerExpression containsWord = new IntegerExpression(0);
+		StringSeparated preferredTerms = new StringSeparated(" ");
 		for (String string : strings) {
 			if (string.startsWith("+")) {
-				rankingExpr = rankingExpr.plus(this.containsIgnoreCase(string.replaceFirst("\\+", "")).ifThenElse(10, -10));
+				final String safeString = string.replaceFirst("\\+", "");
+				preferredTerms.add(safeString);
+				containsSequence = containsSequence.plus(this.containsIgnoreCase(safeString).ifThenElse(CONTAINS_WANTED_SEARCH_SEQUENCE_VALUE, 0));
+				containsWord = containsWord.plus(this.startsWith(safeString + " ")
+						.or(this.containsIgnoreCase(" " + safeString + " ")
+								.or(this.endsWith(" " + safeString))).ifThenElse(CONTAINS_WANTED_SEARCH_WORD_VALUE, 0));
 			} else if (string.startsWith("-")) {
-				rankingExpr = rankingExpr.plus(this.containsIgnoreCase(string.replaceFirst("\\-", "")).ifThenElse(-10, 0));
+				final String safeString = string.replaceFirst("\\-", "");
+				containsSequence = containsSequence.plus(this.containsIgnoreCase(safeString).ifThenElse(CONTAINS_UNWANTED_SEARCH_SEQUENCE_VALUE, 0));
+				containsWord = containsWord.plus(this.startsWith(safeString + " ")
+						.or(this.containsIgnoreCase(" " + safeString + " ")
+								.or(this.endsWith(" " + safeString))).ifThenElse(CONTAINS_UNWANTED_SEARCH_WORD_VALUE, 0));
 			} else {
-				rankingExpr = rankingExpr.plus(this.containsIgnoreCase(string).ifThenElse(1, 0));
+				preferredTerms.add(string);
+				containsSequence = containsSequence.plus(this.containsIgnoreCase(string).ifThenElse(CONTAINS_SEARCH_SEQUENCE_VALUE, 0));
+				containsWord = containsWord.plus(this.startsWith(string + " ")
+						.or(this.containsIgnoreCase(" " + string + " ")
+								.or(this.endsWith(" " + string))).ifThenElse(CONTAINS_SEARCH_WORD_VALUE, 0));
 			}
 		}
-		return rankingExpr;
+		if (preferredTerms.isNotEmpty()) {
+			containsSequence = new IntegerExpression(0)
+					.plus(this.contains(preferredTerms.toString()).ifThenElse(CONTAINS_EXACT_MATCH_VALUE, 0))
+					.plus(this.containsIgnoreCase(preferredTerms.toString()).ifThenElse(CONTAINS_INSENSITIVE_MATCH_VALUE, 0))
+					.plus(containsSequence);
+		}
+		return containsSequence;
 	}
+	final int CONTAINS_EXACT_MATCH_VALUE = 10000;
+	final int CONTAINS_INSENSITIVE_MATCH_VALUE = 1000;
+	final int CONTAINS_SEARCH_SEQUENCE_VALUE = 50;
+	final int CONTAINS_SEARCH_WORD_VALUE = 100;
+	final int CONTAINS_WANTED_SEARCH_SEQUENCE_VALUE = 5;
+	final int CONTAINS_WANTED_SEARCH_WORD_VALUE = 10;
+	final int CONTAINS_UNWANTED_SEARCH_SEQUENCE_VALUE = -1;
+	final int CONTAINS_UNWANTED_SEARCH_WORD_VALUE = -2;
 
 	/**
 	 * Creates a query comparison using the LIKE operator.
@@ -3674,7 +3687,7 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 		}
 	}
 
-	public class StringAggregateExpression extends DBBinaryStringFunction implements CanBeWindowingFunctionWithFrame<StringExpression>{
+	public class StringAggregateExpression extends DBBinaryStringFunction implements CanBeWindowingFunctionWithFrame<StringExpression> {
 
 		public StringAggregateExpression(StringExpression columnToAccumulate, StringExpression separator) {
 			super(columnToAccumulate, separator);
@@ -3708,7 +3721,7 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 		}
 	}
 
-	public class StringAggregateWithOrderByExpression extends StringExpression implements CanBeWindowingFunctionWithFrame<StringExpression>{
+	public class StringAggregateWithOrderByExpression extends StringExpression implements CanBeWindowingFunctionWithFrame<StringExpression> {
 
 		private final StringExpression columnToAccumulate;
 		private final StringExpression separator;
@@ -4044,7 +4057,7 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 		}
 	}
 
-	public class StringMaxExpression extends StringExpression implements CanBeWindowingFunctionWithFrame<StringExpression>{
+	public class StringMaxExpression extends StringExpression implements CanBeWindowingFunctionWithFrame<StringExpression> {
 
 		public StringMaxExpression(StringResult stringVariable) {
 			super(stringVariable);
@@ -4072,7 +4085,7 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 		}
 	}
 
-	public class StringMinExpression extends StringExpression implements CanBeWindowingFunctionWithFrame<StringExpression>{
+	public class StringMinExpression extends StringExpression implements CanBeWindowingFunctionWithFrame<StringExpression> {
 
 		public StringMinExpression(StringResult stringVariable) {
 			super(stringVariable);
@@ -4135,7 +4148,7 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 			return new StringNumberResultExpression((AnyResult<?>) (getInnerResult() == null ? null : getInnerResult().copy()));
 		}
 	}
-	
+
 	public static WindowFunctionFramable<StringExpression> firstValue() {
 		return new FirstValueExpression().over();
 	}
