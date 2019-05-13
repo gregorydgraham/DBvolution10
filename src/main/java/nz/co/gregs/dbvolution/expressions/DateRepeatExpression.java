@@ -23,6 +23,8 @@ import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.databases.supports.SupportsDateRepeatDatatypeFunctions;
 import nz.co.gregs.dbvolution.datatypes.DBBoolean;
 import nz.co.gregs.dbvolution.datatypes.DBDateRepeat;
+import nz.co.gregs.dbvolution.expressions.windows.CanBeWindowingFunctionWithFrame;
+import nz.co.gregs.dbvolution.expressions.windows.WindowFunctionFramable;
 import nz.co.gregs.dbvolution.results.AnyResult;
 import nz.co.gregs.dbvolution.results.StringResult;
 import org.joda.time.Period;
@@ -1126,6 +1128,111 @@ public class DateRepeatExpression extends RangeExpression<Period, DateRepeatResu
 		@Override
 		public NullExpression copy() {
 			return new NullExpression();
+		}
+	}
+	
+	public static WindowFunctionFramable<DateRepeatExpression> firstValue() {
+		return new FirstValueExpression().over();
+	}
+
+	public static class FirstValueExpression extends DateRepeatExpression implements CanBeWindowingFunctionWithFrame<DateRepeatExpression> {
+
+		public FirstValueExpression() {
+			super();
+		}
+
+		private final static long serialVersionUID = 1l;
+
+		@Override
+		public String toSQLString(DBDefinition db) {
+			return db.getFirstValueFunctionName() + "()";
+		}
+
+		@Override
+		public boolean isAggregator() {
+			return true;
+		}
+
+		@Override
+		@SuppressWarnings("unchecked")
+		public FirstValueExpression copy() {
+			return new FirstValueExpression();
+		}
+
+		@Override
+		public WindowFunctionFramable<DateRepeatExpression> over() {
+			return new WindowFunctionFramable<DateRepeatExpression>(new DateRepeatExpression(this));
+		}
+
+	}
+
+	public static WindowFunctionFramable<DateRepeatExpression> lastValue() {
+		return new LastValueExpression().over();
+	}
+
+	public static class LastValueExpression extends DateRepeatExpression implements CanBeWindowingFunctionWithFrame<DateRepeatExpression> {
+
+		public LastValueExpression() {
+			super();
+		}
+
+		private final static long serialVersionUID = 1l;
+
+		@Override
+		public String toSQLString(DBDefinition db) {
+			return db.getLastValueFunctionName() + "()";
+		}
+
+		@Override
+		public boolean isAggregator() {
+			return true;
+		}
+
+		@Override
+		@SuppressWarnings("unchecked")
+		public LastValueExpression copy() {
+			return new LastValueExpression();
+		}
+
+		@Override
+		public WindowFunctionFramable<DateRepeatExpression> over() {
+			return new WindowFunctionFramable<DateRepeatExpression>(new DateRepeatExpression(this));
+		}
+
+	}
+
+	public static WindowFunctionFramable<DateRepeatExpression> nthValue(IntegerExpression indexExpression) {
+		return new NthValueExpression(indexExpression).over();
+	}
+
+	public static class NthValueExpression extends DateRepeatExpression implements CanBeWindowingFunctionWithFrame<DateRepeatExpression> {
+
+		public NthValueExpression(IntegerExpression only) {
+			super(only);
+		}
+
+		private final static long serialVersionUID = 1l;
+
+		@Override
+		public String toSQLString(DBDefinition db) {
+			return db.getNthValueFunctionName() + "(" + getInnerResult().toSQLString(db) + ")";
+		}
+
+		@Override
+		public boolean isAggregator() {
+			return true;
+		}
+
+		@Override
+		@SuppressWarnings("unchecked")
+		public NthValueExpression copy() {
+			return new NthValueExpression(
+					(IntegerExpression) (getInnerResult() == null ? null : getInnerResult().copy()));
+		}
+
+		@Override
+		public WindowFunctionFramable<DateRepeatExpression> over() {
+			return new WindowFunctionFramable<DateRepeatExpression>(new DateRepeatExpression(this));
 		}
 	}
 }

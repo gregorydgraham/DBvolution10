@@ -5140,4 +5140,109 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 		}
 	}
 
+	public static WindowFunctionFramable<NumberExpression> firstValue() {
+		return new FirstValueExpression().over();
+	}
+
+	public static class FirstValueExpression extends NumberExpression implements CanBeWindowingFunctionWithFrame<NumberExpression> {
+
+		public FirstValueExpression() {
+			super();
+		}
+
+		private final static long serialVersionUID = 1l;
+
+		@Override
+		public String toSQLString(DBDefinition db) {
+			return db.getFirstValueFunctionName() + "()";
+		}
+
+		@Override
+		public boolean isAggregator() {
+			return true;
+		}
+
+		@Override
+		@SuppressWarnings("unchecked")
+		public FirstValueExpression copy() {
+			return new FirstValueExpression();
+		}
+
+		@Override
+		public WindowFunctionFramable<NumberExpression> over() {
+			return new WindowFunctionFramable<NumberExpression>(new NumberExpression(this));
+		}
+
+	}
+
+	public static WindowFunctionFramable<NumberExpression> lastValue() {
+		return new LastValueExpression().over();
+	}
+
+	public static class LastValueExpression extends NumberExpression implements CanBeWindowingFunctionWithFrame<NumberExpression> {
+
+		public LastValueExpression() {
+			super();
+		}
+
+		private final static long serialVersionUID = 1l;
+
+		@Override
+		public String toSQLString(DBDefinition db) {
+			return db.getLastValueFunctionName() + "()";
+		}
+
+		@Override
+		public boolean isAggregator() {
+			return true;
+		}
+
+		@Override
+		@SuppressWarnings("unchecked")
+		public NumberExpression copy() {
+			return new LastValueExpression();
+		}
+
+		@Override
+		public WindowFunctionFramable<NumberExpression> over() {
+			return new WindowFunctionFramable<NumberExpression>(new NumberExpression(this));
+		}
+
+	}
+
+	public static WindowFunctionFramable<NumberExpression> nthValue(IntegerExpression indexExpression) {
+		return new NthValueExpression(indexExpression).over();
+	}
+
+	public static class NthValueExpression extends NumberExpression implements CanBeWindowingFunctionWithFrame<NumberExpression> {
+
+		public NthValueExpression(IntegerExpression only) {
+			super(only);
+		}
+
+		private final static long serialVersionUID = 1l;
+
+		@Override
+		public String toSQLString(DBDefinition db) {
+			return db.getNthValueFunctionName() + "(" + getInnerResult().toSQLString(db) + ")";
+		}
+
+		@Override
+		public boolean isAggregator() {
+			return true;
+		}
+
+		@Override
+		@SuppressWarnings("unchecked")
+		public NthValueExpression copy() {
+			return new NthValueExpression(
+					(IntegerExpression) (getInnerResult() == null ? null : getInnerResult().copy()));
+		}
+
+		@Override
+		public WindowFunctionFramable<NumberExpression> over() {
+			return new WindowFunctionFramable<NumberExpression>(new NumberExpression(this));
+		}
+
+	}
 }

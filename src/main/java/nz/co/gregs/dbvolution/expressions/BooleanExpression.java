@@ -33,6 +33,8 @@ import nz.co.gregs.dbvolution.datatypes.DBBoolean;
 import nz.co.gregs.dbvolution.datatypes.DBInteger;
 import nz.co.gregs.dbvolution.datatypes.DBString;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
+import nz.co.gregs.dbvolution.expressions.windows.CanBeWindowingFunctionWithFrame;
+import nz.co.gregs.dbvolution.expressions.windows.WindowFunctionFramable;
 import nz.co.gregs.dbvolution.results.AnyResult;
 import nz.co.gregs.dbvolution.results.IntegerResult;
 import nz.co.gregs.dbvolution.results.RangeComparable;
@@ -1493,8 +1495,8 @@ public class BooleanExpression extends EqualExpression<Boolean, BooleanResult, D
 			} else {
 				BooleanExpression firstParameter = this.getFirst();
 				BooleanExpression secondParameter = this.getSecond();
-				String returnString = 
-						firstParameter.getComparableBooleanSQL(db)
+				String returnString
+						= firstParameter.getComparableBooleanSQL(db)
 						+ getEquationOperator(db)
 						+ secondParameter.getComparableBooleanSQL(db);
 				return returnString;
@@ -2284,5 +2286,111 @@ public class BooleanExpression extends EqualExpression<Boolean, BooleanResult, D
 		public TrueExpression copy() {
 			return new TrueExpression();
 		}
+	}
+
+	public static WindowFunctionFramable<BooleanExpression> firstValue() {
+		return new FirstValueExpression().over();
+	}
+
+	public static class FirstValueExpression extends BooleanExpression implements CanBeWindowingFunctionWithFrame<BooleanExpression> {
+
+		public FirstValueExpression() {
+			super();
+		}
+
+		private final static long serialVersionUID = 1l;
+
+		@Override
+		public String toSQLString(DBDefinition db) {
+			return db.getFirstValueFunctionName() + "()";
+		}
+
+		@Override
+		public boolean isAggregator() {
+			return true;
+		}
+
+		@Override
+		@SuppressWarnings("unchecked")
+		public FirstValueExpression copy() {
+			return new FirstValueExpression();
+		}
+
+		@Override
+		public WindowFunctionFramable<BooleanExpression> over() {
+			return new WindowFunctionFramable<BooleanExpression>(new BooleanExpression(this));
+		}
+
+	}
+
+	public static WindowFunctionFramable<BooleanExpression> lastValue() {
+		return new LastValueExpression().over();
+	}
+
+	public static class LastValueExpression extends IntegerExpression implements CanBeWindowingFunctionWithFrame<BooleanExpression> {
+
+		public LastValueExpression() {
+			super();
+		}
+
+		private final static long serialVersionUID = 1l;
+
+		@Override
+		public String toSQLString(DBDefinition db) {
+			return db.getLastValueFunctionName() + "()";
+		}
+
+		@Override
+		public boolean isAggregator() {
+			return true;
+		}
+
+		@Override
+		@SuppressWarnings("unchecked")
+		public LastValueExpression copy() {
+			return new LastValueExpression();
+		}
+
+		@Override
+		public WindowFunctionFramable<BooleanExpression> over() {
+			return new WindowFunctionFramable<BooleanExpression>(new BooleanExpression(this));
+		}
+
+	}
+
+	public static WindowFunctionFramable<BooleanExpression> nthValue(IntegerExpression indexExpression) {
+		return new NthValueExpression(indexExpression).over();
+	}
+
+	public static class NthValueExpression extends BooleanExpression implements CanBeWindowingFunctionWithFrame<BooleanExpression> {
+
+		public NthValueExpression(IntegerExpression only) {
+			super(only);
+		}
+
+		private final static long serialVersionUID = 1l;
+
+		@Override
+		public String toSQLString(DBDefinition db) {
+			return db.getNthValueFunctionName() + "(" + getInnerResult().toSQLString(db) + ")";
+		}
+
+		@Override
+		public boolean isAggregator() {
+			return true;
+		}
+
+		@Override
+		@SuppressWarnings("unchecked")
+		public NthValueExpression copy() {
+			return new NthValueExpression(
+					(IntegerExpression) (getInnerResult() == null ? null : getInnerResult().copy()));
+		}
+
+		@Override
+		public WindowFunctionFramable<BooleanExpression> over() {
+			return new WindowFunctionFramable<BooleanExpression>(new BooleanExpression(this));
+		}
+
 	}
 }

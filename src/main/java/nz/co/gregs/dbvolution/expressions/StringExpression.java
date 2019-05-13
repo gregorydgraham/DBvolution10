@@ -4135,4 +4135,109 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 			return new StringNumberResultExpression((AnyResult<?>) (getInnerResult() == null ? null : getInnerResult().copy()));
 		}
 	}
+	
+	public static WindowFunctionFramable<StringExpression> firstValue() {
+		return new FirstValueExpression().over();
+	}
+
+	public static class FirstValueExpression extends StringExpression implements CanBeWindowingFunctionWithFrame<StringExpression> {
+
+		public FirstValueExpression() {
+			super();
+		}
+
+		private final static long serialVersionUID = 1l;
+
+		@Override
+		public String toSQLString(DBDefinition db) {
+			return db.getFirstValueFunctionName() + "()";
+		}
+
+		@Override
+		public boolean isAggregator() {
+			return true;
+		}
+
+		@Override
+		@SuppressWarnings("unchecked")
+		public FirstValueExpression copy() {
+			return new FirstValueExpression();
+		}
+
+		@Override
+		public WindowFunctionFramable<StringExpression> over() {
+			return new WindowFunctionFramable<StringExpression>(new StringExpression(this));
+		}
+
+	}
+
+	public static WindowFunctionFramable<StringExpression> lastValue() {
+		return new LastValueExpression().over();
+	}
+
+	public static class LastValueExpression extends StringExpression implements CanBeWindowingFunctionWithFrame<StringExpression> {
+
+		public LastValueExpression() {
+			super();
+		}
+
+		private final static long serialVersionUID = 1l;
+
+		@Override
+		public String toSQLString(DBDefinition db) {
+			return db.getLastValueFunctionName() + "()";
+		}
+
+		@Override
+		public boolean isAggregator() {
+			return true;
+		}
+
+		@Override
+		@SuppressWarnings("unchecked")
+		public StringExpression copy() {
+			return new LastValueExpression();
+		}
+
+		@Override
+		public WindowFunctionFramable<StringExpression> over() {
+			return new WindowFunctionFramable<StringExpression>(new StringExpression(this));
+		}
+
+	}
+
+	public static WindowFunctionFramable<StringExpression> nthValue(IntegerExpression indexExpression) {
+		return new NthValueExpression(indexExpression).over();
+	}
+
+	public static class NthValueExpression extends StringExpression implements CanBeWindowingFunctionWithFrame<StringExpression> {
+
+		public NthValueExpression(IntegerExpression only) {
+			super(only);
+		}
+
+		private final static long serialVersionUID = 1l;
+
+		@Override
+		public String toSQLString(DBDefinition db) {
+			return db.getNthValueFunctionName() + "(" + getInnerResult().toSQLString(db) + ")";
+		}
+
+		@Override
+		public boolean isAggregator() {
+			return true;
+		}
+
+		@Override
+		@SuppressWarnings("unchecked")
+		public NthValueExpression copy() {
+			return new NthValueExpression(
+					(IntegerExpression) (getInnerResult() == null ? null : getInnerResult().copy()));
+		}
+
+		@Override
+		public WindowFunctionFramable<StringExpression> over() {
+			return new WindowFunctionFramable<StringExpression>(new StringExpression(this));
+		}
+	}
 }
