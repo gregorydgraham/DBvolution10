@@ -881,6 +881,36 @@ public class DBQuery implements Serializable {
 	}
 
 	/**
+	 * Sets the sort order of properties (field and/or method) by the given
+	 * property object references. 
+	 * 
+	 * <p>All provided expressions are sorted in ascending order. Use {@link #setSortOrder(nz.co.gregs.dbvolution.expressions.SortProvider...)} for finer control.</p>
+	 *
+	 * <p>
+	 * For example the following code snippet will sort by just the length of the name column:
+	 * <pre>
+	 * Customer customer = ...;
+	 * query.setSortOrder(customer.column(customer.name).length());
+	 * </pre>
+	 *
+	 * <p>
+	 * Where possible DBvolution sorts NULL values as the least significant value,
+	 * for example "NULL, 1, 2, 3, 4..." not "... 4, 5, 6, NULL".
+	 *
+	 * @param expressions a list of columns to sort the query by.
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @return this DBQuery instance
+	 */
+	public DBQuery setSortOrder(RangeExpression... expressions) {
+		List<SortProvider> sorters = new ArrayList<SortProvider>();
+		for (RangeExpression expression : expressions) {
+			sorters.add(expression.ascending());
+		}
+		return setSortOrder(sorters.toArray(new SortProvider[]{}));
+	}
+
+	/**
 	 * Adds the properties (field and/or method) to the end of the sort order.
 	 *
 	 * <p>
