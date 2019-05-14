@@ -31,32 +31,85 @@
 package nz.co.gregs.dbvolution.utility;
 
 import java.util.ArrayList;
+import java.util.Collection;
 
 /**
  *
  * @author gregorygraham
  */
-public class StringSeparated extends ArrayList<String>{
+public class StringSeparated {
 
 	private final String separator;
+	private final ArrayList<String> strings = new ArrayList<>();
+	private String prefix;
+	private String suffix;
 	
-	public StringSeparated(String separator){
+	public StringSeparated(String prefix, String separator, String suffix) {
+		this.prefix =prefix;
 		this.separator = separator;
+		this.suffix = suffix;
 	}
-	
+
+	public StringSeparated(String separator) {
+		this("", separator, "");
+	}
+
 	@Override
-	public String toString(){
+	public String toString() {
 		StringBuilder strs = new StringBuilder();
 		String sep = "";
-		for (String str : this) {
+		for (String str : this.strings) {
 			strs.append(sep).append(str);
 			sep = this.separator;
 		}
-		return strs.toString();
+		return prefix+strs.toString()+suffix;
 	}
 
 	public boolean isNotEmpty() {
 		return !isEmpty();
 	}
-	
+
+	public boolean isEmpty() {
+		return strings.isEmpty();
+	}
+
+	public StringSeparated removeAll(Collection<?> c) {
+		strings.removeAll(c);
+		return this;
+	}
+
+	public StringSeparated addAll(int index, Collection<? extends String> c) {
+		strings.addAll(index, c);
+		return this;
+	}
+
+	public StringSeparated addAll(Collection<? extends String> c) {
+		strings.addAll(c);
+		return this;
+	}
+
+	public StringSeparated remove(int index) {
+		strings.remove(index);
+		return this;
+	}
+
+	/**
+	 * Inserts the specified element at the specified position in this list.Shifts
+	 * the element currently at that position (if any) and any subsequent elements
+	 * to the right (adds one to their indices).
+	 *
+	 * @param index index at which the specified element is to be inserted
+	 * @param element element to be inserted
+	 * @return this
+	 * @throws IndexOutOfBoundsException {@inheritDoc}
+	 */
+	public StringSeparated add(int index, String element) {
+		strings.add(index, element);
+		return this;
+	}
+
+	public StringSeparated add(String safeString) {
+		strings.add(safeString);
+		return this;
+	}
 }
