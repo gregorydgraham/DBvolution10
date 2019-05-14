@@ -443,11 +443,6 @@ public class WindowFunctionFramable<A extends EqualExpression<?,?,?>> implements
 			return new OffsetFollowingStart<A>(this, offset);
 		}
 
-//		@Override
-//		public FrameStart<A> unboundedFollowing() {
-//			return new UnboundedFollowingStart<A>(this);
-//		}
-
 		@Override
 		public Class<A> getRequiredExpressionClass() {
 			return sorted.getRequiredExpressionClass();
@@ -579,12 +574,6 @@ public class WindowFunctionFramable<A extends EqualExpression<?,?,?>> implements
 			this.type = type;
 			this.offset = offset;
 		}
-
-//		@Override
-//		@SuppressWarnings("unchecked")
-//		public A unboundedPreceding() {
-//			return new UnboundedPrecedingEnd<A>(this).getRequiredExpression();
-//		}
 
 		@Override
 		public Class<A> getRequiredExpressionClass() {
@@ -918,10 +907,6 @@ public class WindowFunctionFramable<A extends EqualExpression<?,?,?>> implements
 			throw new UnsupportedOperationException("Not supported yet.");
 		}
 
-//		@Override
-//		public boolean isPurelyFunctional() {
-//			throw new UnsupportedOperationException("Not supported yet.");
-//		}
 		@Override
 		public boolean isComplexExpression() {
 			return false;
@@ -1087,84 +1072,4 @@ public class WindowFunctionFramable<A extends EqualExpression<?,?,?>> implements
 			return getStart().isPurelyFunctional();
 		}
 	}
-
-//	public static abstract class WindowEnd<A extends EqualExpression<?,?,?>> implements WindowingFunctionFramableInterface.WindowEnd<A>, AnyResult<A> {
-//
-//		private final WindowPart<A> start;
-//
-//		public WindowEnd(WindowPart<A> start) {
-//			this.start = start;
-//		}
-//
-//		/**
-//		 * @return the and
-//		 */
-//		protected WindowPart<A> getStart() {
-//			return start;
-//		}
-//
-//		@Override
-//		public A getRequiredExpression() {
-//			try {
-//				final Class<A> clazz = start.getRequiredExpressionClass();
-//				Constructor<?>[] constructors = clazz.getDeclaredConstructors();
-//				for (Constructor<?> constructor : constructors) {
-//					if (constructor.getParameterTypes().length == 1 && constructor.getParameterTypes()[0].equals(AnyResult.class)) {
-//						constructor.setAccessible(true);
-//						@SuppressWarnings("unchecked")
-//						A newInstance = (A) constructor.newInstance((AnyResult) this);
-//						return newInstance;
-//					}
-//				}
-//			} catch (SecurityException | InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
-//				Logger.getLogger(WindowFunctionFramable.class.getName()).log(Level.SEVERE, null, ex);
-//			}
-//			return null;
-//		}
-//
-//		@Override
-//		public QueryableDatatype<?> getQueryableDatatypeForExpressionValue() {
-//			throw new UnsupportedOperationException("Not supported yet.");
-//		}
-//
-//		@Override
-//		public boolean isAggregator() {
-//			return false;
-//		}
-//
-//		@Override
-//		public Set<DBRow> getTablesInvolved() {
-//			throw new UnsupportedOperationException("Not supported yet.");
-//		}
-//
-//		@Override
-//		public boolean isPurelyFunctional() {
-//			throw new UnsupportedOperationException("Not supported yet.");
-//		}
-//
-//		@Override
-//		public boolean isComplexExpression() {
-//			return false;
-//		}
-//
-//		@Override
-//		public String createSQLForFromClause(DBDatabase database) {
-//			throw new UnsupportedOperationException("Not supported yet.");
-//		}
-//
-//		@Override
-//		public String createSQLForGroupByClause(DBDatabase database) {
-//			throw new UnsupportedOperationException("Not supported yet.");
-//		}
-//
-//		@Override
-//		public boolean isWindowingFunction() {
-//			return true;
-//		}
-//
-//		@Override
-//		public boolean getIncludesNull() {
-//			return true;
-//		}
-//	}
 }
