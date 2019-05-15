@@ -42,6 +42,8 @@ import nz.co.gregs.dbvolution.columns.ColumnProvider;
 import nz.co.gregs.dbvolution.databases.DBDatabaseCluster;
 import nz.co.gregs.dbvolution.internal.querygraph.*;
 import nz.co.gregs.dbvolution.internal.properties.*;
+import nz.co.gregs.dbvolution.results.ExpressionHasStandardStringResult;
+import nz.co.gregs.dbvolution.utility.SearchString;
 
 /**
  * The Definition of a Query on a Database
@@ -1612,7 +1614,7 @@ public class DBQuery implements Serializable {
 	 */
 	public DBQuery addConditions(BooleanExpression... conditions) {
 		for (BooleanExpression condition : conditions) {
-			addCondition(condition);
+			DBQuery.this.addCondition(condition);
 		}
 		return this;
 	}
@@ -1654,8 +1656,37 @@ public class DBQuery implements Serializable {
 	 */
 	public DBQuery addConditions(Collection<BooleanExpression> conditions) {
 		for (BooleanExpression condition : conditions) {
-			addCondition(condition);
+			DBQuery.this.addCondition(condition);
 		}
+		return this;
+	}
+
+	/**
+	 * Provides a convenient method to search for a {@link SearchString} pattern
+	 * over multiple columns.
+	 *
+	 * <p>
+	 * For any column provided that has a
+	 * {@link ExpressionHasStandardStringResult standard string representation}
+	 * (essentially all non-BLOBS), the string representation is used with the {@link StringExpression#searchFor(nz.co.gregs.dbvolution.utility.SearchString)
+	 * } method.</p>
+	 *
+	 * @param search
+	 * @param columnsToSearch
+	 * @return
+	 */
+	public DBQuery addCondition(SearchString search, ColumnProvider... columnsToSearch) {
+		BooleanExpression theExpr = BooleanExpression.falseExpression();
+		for (ColumnProvider col : columnsToSearch) {
+			final AbstractColumn column = col.getColumn();
+			if (column instanceof ExpressionHasStandardStringResult) {
+				StringExpression strColumn = ((ExpressionHasStandardStringResult) column).stringResult();
+				theExpr.or(strColumn.searchFor(search));
+			}
+		}
+
+		this.addCondition(theExpr);
+
 		return this;
 	}
 
