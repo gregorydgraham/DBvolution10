@@ -2380,14 +2380,16 @@ public class DBQuery implements Serializable {
 //				QueryColumn<?,?,?> qc = (QueryColumn)provider;
 //				qc.setReturnField(true);
 			} else {
-				final AbstractColumn column = provider.getColumn();
-				DBRow table = column.getInstanceOfRow();
-				final DBRowClass tableClass = new DBRowClass(table);
-				for (DBRow allQueryTable : allQueryTables) {
-					final DBRowClass queryTableClass = new DBRowClass(allQueryTable);
-					if (queryTableClass.equals(tableClass)) {
-						Object appropriateFieldFromRow = column.getAppropriateFieldFromRow(allQueryTable);
-						allQueryTable.addReturnFields(appropriateFieldFromRow);
+				if (provider != null) {
+					final AbstractColumn column = provider.getColumn();
+					DBRow table = column.getInstanceOfRow();
+					final DBRowClass tableClass = new DBRowClass(table);
+					for (DBRow allQueryTable : allQueryTables) {
+						final DBRowClass queryTableClass = new DBRowClass(allQueryTable);
+						if (queryTableClass.equals(tableClass)) {
+							Object appropriateFieldFromRow = column.getAppropriateFieldFromRow(allQueryTable);
+							allQueryTable.addReturnFields(appropriateFieldFromRow);
+						}
 					}
 				}
 			}
