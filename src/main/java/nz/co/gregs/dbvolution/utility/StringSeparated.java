@@ -31,6 +31,7 @@
 package nz.co.gregs.dbvolution.utility;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 
 /**
@@ -85,6 +86,11 @@ public class StringSeparated {
 
 	public StringSeparated addAll(Collection<? extends String> c) {
 		strings.addAll(c);
+		return this;
+	}
+
+	public StringSeparated addAll(String... strs) {
+		strings.addAll(Arrays.asList(strs));
 		return this;
 	}
 
