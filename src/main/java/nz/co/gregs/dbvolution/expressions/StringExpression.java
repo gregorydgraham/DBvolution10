@@ -609,7 +609,14 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 			IntegerExpression expr = new IntegerExpression();
 			final SearchString.Term[] searchTerms = strings.getSearchTerms();
 			for (SearchString.Term term : searchTerms) {
-				final IntegerExpression newExpr = this.contains(term.getString()).ifThenElse(term.getValue(), 0)
+				final IntegerExpression newExpr = 
+						// the term exactly is worth the normal value
+						this.contains(term.getString()).ifThenElse(term.getValue(), 0)
+						// the term exactly as a word is worth twice the value
+						.plus(this.contains(" "+term.getString()+" ").ifThenElse(term.getValue()*2, 0))
+						// the term as a case-insensitive word is worth the normal value
+						.plus(this.containsIgnoreCase(" "+term.getString()+" ").ifThenElse(term.getValue(), 0))
+						// the term as a case-insensitive sequence is worth half the value
 						.plus(this.containsIgnoreCase(term.getString()).ifThenElse(term.getValue()/2, 0));
 //				System.out.println(""+newExpr.toSQLString(new H2DBDefinition()));
 				expr = expr.plus(newExpr);
