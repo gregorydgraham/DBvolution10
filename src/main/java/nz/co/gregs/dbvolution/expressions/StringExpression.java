@@ -24,6 +24,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import nz.co.gregs.dbvolution.DBQuery;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.columns.StringColumn;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
@@ -31,8 +32,8 @@ import nz.co.gregs.dbvolution.datatypes.*;
 import nz.co.gregs.dbvolution.results.AnyResult;
 import nz.co.gregs.dbvolution.results.ExpressionHasStandardStringResult;
 import nz.co.gregs.dbvolution.results.IntegerResult;
-import nz.co.gregs.dbvolution.utility.SearchString;
 import nz.co.gregs.dbvolution.utility.SeparatedString;
+import nz.co.gregs.dbvolution.expressions.search.SearchString;
 
 /**
  * StringExpression implements standard functions that produce a character or
@@ -538,19 +539,24 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 	 *
 	 * <p>
 	 * Use this comparison to generate a BooleanExpression that compares the
-	 * current StringExpression to the supplied SQL pattern.
+	 * current StringExpression to the supplied SQL pattern.</p>
 	 *
 	 * <p>
 	 * DBvolution does not process the SQL pattern so please ensure that it
 	 * conforms to the database's implementation of LIKE. Most implementations
 	 * only provide access to the "_" and "%" wildcards but there may be
-	 * exceptions.
+	 * exceptions.</p>
+	 *
+	 * <p>
+	 * See
+	 * {@link DBQuery#addCondition(nz.co.gregs.dbvolution.utility.SearchString) }
+	 * for using this method multiple columns easily.</p>
 	 *
 	 * @param searchString
 	 * @return a BooleanExpression of the SQL comparison.
 	 */
 	public BooleanExpression searchFor(SearchString searchString) {
-		return this.searchForRanking(searchString).isGreaterThan(0);
+		return searchString.getComparisonExpression(this);
 	}
 
 	/**
@@ -559,23 +565,25 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 	 *
 	 * <p>
 	 * Use this comparison to generate a BooleanExpression that compares the
-	 * current StringExpression to the supplied SQL pattern.
+	 * current StringExpression to the supplied SQL pattern.</p>
 	 *
 	 * <p>
 	 * DBvolution does not process the SQL pattern so please ensure that it
 	 * conforms to the database's implementation of LIKE. Most implementations
 	 * only provide access to the "_" and "%" wildcards but there may be
-	 * exceptions.
+	 * exceptions.</p>
+	 *
+	 * <p>
+	 * See
+	 * {@link DBQuery#addCondition(nz.co.gregs.dbvolution.utility.SearchString, nz.co.gregs.dbvolution.columns.ColumnProvider...) }
+	 * for using this method multiple columns easily.</p>
 	 *
 	 * @param strings
 	 * @return a BooleanExpression of the SQL comparison.
 	 */
 	public BooleanExpression searchFor(String... strings) {
-		SeparatedString separatedBySpaces = new SeparatedString(" ");
-		separatedBySpaces.addAll(strings);
-		final SearchString searchStr = new SearchString(separatedBySpaces.toString());
-		return searchForRanking(searchStr).isGreaterThan(0);
-//		return this.searchForRanking(strings).isGreaterThan(0);
+		final SearchString searchStr = new SearchString(SeparatedString.bySpaces().addAll(strings).toString());
+		return this.searchFor(searchStr);
 	}
 
 	/**
@@ -604,27 +612,7 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 	 * @return a BooleanExpression of the SQL comparison.
 	 */
 	public IntegerExpression searchForRanking(SearchString strings) {
-		try {
-			IntegerExpression expr = new IntegerExpression();
-			final SearchString.Term[] searchTerms = strings.getSearchTerms();
-			for (SearchString.Term term : searchTerms) {
-				final IntegerExpression newExpr = 
-						// the term exactly is worth the normal value
-						this.contains(term.getString()).ifThenElse(term.getValue(), 0)
-						// the term exactly as a word is worth twice the value
-						.plus(this.contains(" "+term.getString()+" ").ifThenElse(term.getValue()*2, 0))
-						// the term as a case-insensitive word is worth the normal value
-						.plus(this.containsIgnoreCase(" "+term.getString()+" ").ifThenElse(term.getValue(), 0))
-						// the term as a case-insensitive sequence is worth half the value
-						.plus(this.containsIgnoreCase(term.getString()).ifThenElse(term.getValue()/2, 0));
-//				System.out.println(""+newExpr.toSQLString(new H2DBDefinition()));
-				expr = expr.plus(newExpr);
-			}
-//			System.out.println("" + expr.toSQLString(new H2DBDefinition()));
-			return expr;
-		} catch (SearchString.NothingToSearchFor ex) {
-			return IntegerExpression.value(-1);
-		}
+		return strings.getRankingExpression(this);
 	}
 
 	/**
@@ -653,51 +641,11 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 	 * @return a BooleanExpression of the SQL comparison.
 	 */
 	public IntegerExpression searchForRanking(String... strings) {
-		SeparatedString separatedBySpaces = new SeparatedString(" ");
+		SeparatedString separatedBySpaces = SeparatedString.bySpaces();
 		separatedBySpaces.addAll(strings);
 		final SearchString searchStr = new SearchString(separatedBySpaces.toString());
 		return searchForRanking(searchStr);
-//		IntegerExpression containsSequence = new IntegerExpression(0);
-//		IntegerExpression containsWord = new IntegerExpression(0);
-//		StringSeparated preferredTerms = new StringSeparated(" ");
-//		for (String string : strings) {
-//			if (string.startsWith("+")) {
-//				final String safeString = string.replaceFirst("\\+", "");
-//				preferredTerms.add(safeString);
-//				containsSequence = containsSequence.plus(this.containsIgnoreCase(safeString).ifThenElse(CONTAINS_WANTED_SEARCH_SEQUENCE_VALUE, 0));
-//				containsWord = containsWord.plus(this.startsWith(safeString + " ")
-//						.or(this.containsIgnoreCase(" " + safeString + " ")
-//								.or(this.endsWith(" " + safeString))).ifThenElse(CONTAINS_WANTED_SEARCH_WORD_VALUE, 0));
-//			} else if (string.startsWith("-")) {
-//				final String safeString = string.replaceFirst("\\-", "");
-//				containsSequence = containsSequence.plus(this.containsIgnoreCase(safeString).ifThenElse(CONTAINS_UNWANTED_SEARCH_SEQUENCE_VALUE, 0));
-//				containsWord = containsWord.plus(this.startsWith(safeString + " ")
-//						.or(this.containsIgnoreCase(" " + safeString + " ")
-//								.or(this.endsWith(" " + safeString))).ifThenElse(CONTAINS_UNWANTED_SEARCH_WORD_VALUE, 0));
-//			} else {
-//				preferredTerms.add(string);
-//				containsSequence = containsSequence.plus(this.containsIgnoreCase(string).ifThenElse(CONTAINS_SEARCH_SEQUENCE_VALUE, 0));
-//				containsWord = containsWord.plus(this.startsWith(string + " ")
-//						.or(this.containsIgnoreCase(" " + string + " ")
-//								.or(this.endsWith(" " + string))).ifThenElse(CONTAINS_SEARCH_WORD_VALUE, 0));
-//			}
-//		}
-//		if (preferredTerms.isNotEmpty()) {
-//			containsSequence = new IntegerExpression(0)
-//					.plus(this.contains(preferredTerms.toString()).ifThenElse(CONTAINS_EXACT_MATCH_VALUE, 0))
-//					.plus(this.containsIgnoreCase(preferredTerms.toString()).ifThenElse(CONTAINS_INSENSITIVE_MATCH_VALUE, 0))
-//					.plus(containsSequence);
-//		}
-//		return containsSequence;
 	}
-//	final int CONTAINS_EXACT_MATCH_VALUE = 10000;
-//	final int CONTAINS_INSENSITIVE_MATCH_VALUE = 1000;
-//	final int CONTAINS_SEARCH_SEQUENCE_VALUE = 50;
-//	final int CONTAINS_SEARCH_WORD_VALUE = 100;
-//	final int CONTAINS_WANTED_SEARCH_SEQUENCE_VALUE = 5;
-//	final int CONTAINS_WANTED_SEARCH_WORD_VALUE = 10;
-//	final int CONTAINS_UNWANTED_SEARCH_SEQUENCE_VALUE = -1;
-//	final int CONTAINS_UNWANTED_SEARCH_WORD_VALUE = -2;
 
 	/**
 	 * Creates a query comparison using the LIKE operator.
