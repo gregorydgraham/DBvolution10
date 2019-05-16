@@ -35,7 +35,8 @@ import nz.co.gregs.dbvolution.datatypes.DBString;
 import nz.co.gregs.dbvolution.example.CarCompany;
 import nz.co.gregs.dbvolution.generic.AbstractTest;
 import nz.co.gregs.dbvolution.results.NumberResult;
-import nz.co.gregs.dbvolution.utility.SearchString;
+import nz.co.gregs.dbvolution.expressions.search.SearchAcross;
+import nz.co.gregs.dbvolution.expressions.search.SearchString;
 import static org.hamcrest.Matchers.*;
 import org.junit.Assert;
 import org.junit.Test;
@@ -616,9 +617,9 @@ public class StringExpressionTest extends AbstractTest {
 				marq.column(marq.name).searchFor("+o", "-l", "R").descending(),
 				marq.column(marq.name).ascending()
 		);
-		
+
 		List<SearchMarque> got = query.getAllInstancesOf(marq);
-		
+
 		Assert.assertThat(got.size(), is(12));
 		Assert.assertThat((got.get(0)).name.stringValue(), is("CHRYSLER"));
 		Assert.assertThat((got.get(1)).name.stringValue(), is("DAEWOO"));
@@ -706,49 +707,46 @@ public class StringExpressionTest extends AbstractTest {
 				marq.column(marq.name).searchForRanking(searchString).descending(),
 				marq.column(marq.name).ascending()
 		);
-
-		List<SearchMarque> got = query.getAllInstancesOf(marq);
 		
+		List<SearchMarque> got = query.getAllInstancesOf(marq);
+
 		Assert.assertThat(got.size(), is(9));
-		Assert.assertThat((got.get(0)).name.stringValue(), is("DAEWOO"));
-		Assert.assertThat((got.get(1)).name.stringValue(), is("FORD"));
-		Assert.assertThat((got.get(2)).name.stringValue(), is("HOLDEN"));
-		Assert.assertThat((got.get(3)).name.stringValue(), is("HONDA"));
+		Assert.assertThat((got.get(0)).name.stringValue(), is("HOLDEN"));
+		Assert.assertThat((got.get(1)).name.stringValue(), is("HONDA"));
+		Assert.assertThat((got.get(2)).name.stringValue(), is("DAEWOO"));
+		Assert.assertThat((got.get(3)).name.stringValue(), is("FORD"));
 		Assert.assertThat((got.get(4)).name.stringValue(), is("LANDROVER"));
 		Assert.assertThat((got.get(5)).name.stringValue(), is("PEUGEOT"));
 		Assert.assertThat((got.get(6)).name.stringValue(), is("ROVER"));
 		Assert.assertThat((got.get(7)).name.stringValue(), is("TOYOTA"));
 		Assert.assertThat((got.get(8)).name.stringValue(), is("VOLVO"));
-		Assert.assertThat((got.get(0)).ranking.intValue(), is(50));
-		Assert.assertThat((got.get(1)).ranking.intValue(), is(65));
-		Assert.assertThat((got.get(2)).ranking.intValue(), is(49));
-		Assert.assertThat((got.get(3)).ranking.intValue(), is(50));
-		Assert.assertThat((got.get(4)).ranking.intValue(), is(64));
-		Assert.assertThat((got.get(5)).ranking.intValue(), is(50));
-		Assert.assertThat((got.get(6)).ranking.intValue(), is(65));
-		Assert.assertThat((got.get(7)).ranking.intValue(), is(50));
-		Assert.assertThat((got.get(8)).ranking.intValue(), is(49));
 	}
+
 	@Test
 	public void testSearchStringUsingAdds() throws SQLException {
 
 		SearchMarque marq = new SearchMarque();
 		marq.name.clear();
 		DBQuery query = database.getDBQuery(marq);
-		final SearchString searchString = new SearchString("n").addQuotedTerm("ho").addReducedTerm("r");
+		final SearchAcross searchString
+				= new SearchAcross("n")
+						.addQuotedTerm("ho")
+						.addReducedTerm("r")
+						.andSearchAcross(marq.column(marq.name), "name")
+						.andSearchAcross(marq.column(marq.numericCode).stringResult(), "code");
 
 		query.addCondition(
-				marq.column(marq.name).searchFor(searchString)
+				searchString.getComparisonExpression()
 		);
 		query.addExpressionColumn(
-				this, 
-				marq.column(marq.name).searchForRanking(searchString).asExpressionColumn()
+				this,
+				searchString.getRankingExpression().asExpressionColumn()
 		);
 		query.setSortOrder(
-				marq.column(marq.name).searchForRanking(searchString).descending(),
+				searchString.descending(),
 				marq.column(marq.name).ascending()
 		);
-
+		
 		List<DBQueryRow> got = query.getAllRows();
 
 		Assert.assertThat(got.size(), is(5));
@@ -757,19 +755,62 @@ public class StringExpressionTest extends AbstractTest {
 		Assert.assertThat((got.get(2)).get(marq).name.stringValue(), is("HYUNDAI"));
 		Assert.assertThat((got.get(3)).get(marq).name.stringValue(), is("NISSAN"));
 		Assert.assertThat((got.get(4)).get(marq).name.stringValue(), is("LANDROVER"));
-		
+
 		Assert.assertThat((got.get(0)).get(marq).ranking.intValue(), is(49));
 		Assert.assertThat((got.get(1)).get(marq).ranking.intValue(), is(50));
 		Assert.assertThat((got.get(2)).get(marq).ranking.intValue(), is(0));
 		Assert.assertThat((got.get(3)).get(marq).ranking.intValue(), is(0));
 		Assert.assertThat((got.get(4)).get(marq).ranking.intValue(), is(64));
+
+		Assert.assertThat(got.get(0).getExpressionColumnValue(this).getValue().toString(), is("55"));
+		Assert.assertThat(got.get(1).getExpressionColumnValue(this).getValue().toString(), is("55"));
+		Assert.assertThat(got.get(2).getExpressionColumnValue(this).getValue().toString(), is("5"));
+		Assert.assertThat(got.get(3).getExpressionColumnValue(this).getValue().toString(), is("5"));
+		Assert.assertThat(got.get(4).getExpressionColumnValue(this).getValue().toString(), is("4"));
+	}
+	
+	@Test
+	public void testSearchStringWithAliases() throws SQLException {
+
+		SearchMarque marq = new SearchMarque();
+		marq.name.clear();
+		DBQuery query = database.getDBQuery(marq);
+		final SearchAcross searchString
+				= new SearchAcross("name:n")
+						.addQuotedTerm("ho")
+						.addReducedTerm("r")
+						.andSearchAcross(marq.column(marq.name), "name")
+						.andSearchAcross(marq.column(marq.numericCode).stringResult(), "code");
+
+		query.addCondition(
+				searchString.getComparisonExpression()
+		);
+		query.addExpressionColumn(
+				this,
+				searchString.getRankingExpression().asExpressionColumn()
+		);
+		query.setSortOrder(
+				searchString.descending(),
+				marq.column(marq.name).ascending()
+		);
 		
-//		for (int i = 0; i < 5; i++) {
-//			System.out.println("SEARCH RANK: "+got.get(i).getExpressionColumnValue(this).getValue());
-//		}
-		
-		Assert.assertThat(got.get(0).getExpressionColumnValue(this).getValue().toString(), is("5"));
-		Assert.assertThat(got.get(1).getExpressionColumnValue(this).getValue().toString(), is("5"));
+		List<DBQueryRow> got = query.getAllRows();
+
+		Assert.assertThat(got.size(), is(5));
+		Assert.assertThat((got.get(0)).get(marq).name.stringValue(), is("HOLDEN"));
+		Assert.assertThat((got.get(1)).get(marq).name.stringValue(), is("HONDA"));
+		Assert.assertThat((got.get(2)).get(marq).name.stringValue(), is("HYUNDAI"));
+		Assert.assertThat((got.get(3)).get(marq).name.stringValue(), is("NISSAN"));
+		Assert.assertThat((got.get(4)).get(marq).name.stringValue(), is("LANDROVER"));
+
+		Assert.assertThat((got.get(0)).get(marq).ranking.intValue(), is(49));
+		Assert.assertThat((got.get(1)).get(marq).ranking.intValue(), is(50));
+		Assert.assertThat((got.get(2)).get(marq).ranking.intValue(), is(0));
+		Assert.assertThat((got.get(3)).get(marq).ranking.intValue(), is(0));
+		Assert.assertThat((got.get(4)).get(marq).ranking.intValue(), is(64));
+
+		Assert.assertThat(got.get(0).getExpressionColumnValue(this).getValue().toString(), is("5055"));
+		Assert.assertThat(got.get(1).getExpressionColumnValue(this).getValue().toString(), is("5055"));
 		Assert.assertThat(got.get(2).getExpressionColumnValue(this).getValue().toString(), is("5"));
 		Assert.assertThat(got.get(3).getExpressionColumnValue(this).getValue().toString(), is("5"));
 		Assert.assertThat(got.get(4).getExpressionColumnValue(this).getValue().toString(), is("4"));
