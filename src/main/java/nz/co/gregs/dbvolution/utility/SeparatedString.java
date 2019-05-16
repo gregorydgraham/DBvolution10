@@ -30,18 +30,196 @@
  */
 package nz.co.gregs.dbvolution.utility;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.regex.Pattern;
+
 /**
- * Synonym for StringSeparated.
+ * Simple access to creating a string of a variety of strings separated by a
+ * common character or sequence.
+ *
+ * <p>
+ * Also supports string prefix and suffix, and is a fluent API.</p>
  *
  * @author gregorygraham
  */
-public class SeparatedString extends StringSeparated{
-	
+public class SeparatedString {
+
+	private final String separator;
+	private final ArrayList<String> strings = new ArrayList<>();
+	private String prefix;
+	private String suffix;
+	private String wrapBefore = "";
+	private String wrapAfter = "";
+	private String escapeChar = "";
+
+	public SeparatedString(String prefix, String separator, String suffix) {
+		this.prefix = prefix;
+		this.separator = separator;
+		this.suffix = suffix;
+	}
+
 	public SeparatedString(String separator) {
-		super(separator);
+		this("", separator, "");
 	}
 	
-	public SeparatedString(String prefix, String separator, String suffix) {
-		super(prefix, separator, suffix);
+	public static SeparatedString bySpaces(){
+		return new SeparatedString(" ");
+	}
+
+	public static SeparatedString byCommas(){
+		return new SeparatedString(", ");
+	}
+
+	public static SeparatedString byCommasWithQuotedTermsAndBackslashEscape(){
+		return new SeparatedString(", ").withWrapping("\"", "\"").withEscapeChar("\\");
+	}
+	
+	public static SeparatedString byCommasWithQuotedTermsAndDoubleBackslashEscape(){
+		return new SeparatedString(", ").withWrapping("\"", "\"").withEscapeChar("\\\\");
+	}
+
+	public static SeparatedString byTabs(){
+		return new SeparatedString("\t");
+	}
+
+	public static SeparatedString byLines(){
+		return new SeparatedString("\n");
+	}
+	
+	public SeparatedString withWrapping(String before, String after){
+		this.wrapBefore = before;
+		this.wrapAfter = after;
+		return this;
+	}
+	
+	public SeparatedString withEscapeChar(String esc){
+		this.escapeChar = esc;
+		return this;
+	}
+
+	@Override
+	public String toString() {
+		StringBuilder strs = new StringBuilder();
+		String sep = "";
+		Pattern matchSep = Pattern.compile(getSeparator());
+		Pattern matchBefore = Pattern.compile(getWrapBefore());
+		Pattern matchAfter = Pattern.compile(getWrapAfter());
+		Pattern matchEsc = Pattern.compile(getEscapeChar());
+		for (String element : this.getStrings()) {
+			String str = element;
+			if(!escapeChar.equals("")){
+				str = matchSep.matcher(str).replaceAll(getEscapeChar()+getSeparator());
+				str = matchBefore.matcher(str).replaceAll(getEscapeChar()+getWrapBefore());
+				str = matchAfter.matcher(str).replaceAll(getEscapeChar()+getWrapAfter());
+				str = matchEsc.matcher(str).replaceAll(getEscapeChar()+getEscapeChar());
+			}
+			strs.append(sep).append(getWrapBefore()).append(str).append(getWrapAfter());
+			sep = this.getSeparator();
+		}
+		return getPrefix() + strs.toString() + getSuffix();
+	}
+
+	public boolean isNotEmpty() {
+		return !isEmpty();
+	}
+
+	public boolean isEmpty() {
+		return getStrings().isEmpty();
+	}
+
+	public SeparatedString removeAll(Collection<?> c) {
+		getStrings().removeAll(c);
+		return this;
+	}
+
+	public SeparatedString addAll(int index, Collection<? extends String> c) {
+		getStrings().addAll(index, c);
+		return this;
+	}
+
+	public SeparatedString addAll(Collection<? extends String> c) {
+		getStrings().addAll(c);
+		return this;
+	}
+
+	public SeparatedString addAll(String... strs) {
+		getStrings().addAll(Arrays.asList(strs));
+		return this;
+	}
+
+	public SeparatedString remove(int index) {
+		getStrings().remove(index);
+		return this;
+	}
+
+	/**
+	 * Inserts the specified element at the specified position in this list.Shifts
+	 * the element currently at that position (if any) and any subsequent elements
+	 * to the right (adds one to their indices).
+	 *
+	 * @param index index at which the specified element is to be inserted
+	 * @param element element to be inserted
+	 * @return this
+	 * @throws IndexOutOfBoundsException {@inheritDoc}
+	 */
+	public SeparatedString add(int index, String element) {
+		getStrings().add(index, element);
+		return this;
+	}
+
+	public SeparatedString add(String string) {
+		getStrings().add(string);
+		return this;
+	}
+
+	/**
+	 * @return the separator
+	 */
+	public String getSeparator() {
+		return separator;
+	}
+
+	/**
+	 * @return the strings
+	 */
+	public ArrayList<String> getStrings() {
+		return strings;
+	}
+
+	/**
+	 * @return the prefix
+	 */
+	public String getPrefix() {
+		return prefix;
+	}
+
+	/**
+	 * @return the suffix
+	 */
+	public String getSuffix() {
+		return suffix;
+	}
+
+	/**
+	 * @return the wrapBefore
+	 */
+	public String getWrapBefore() {
+		return wrapBefore;
+	}
+
+	/**
+	 * @return the wrapAfter
+	 */
+	public String getWrapAfter() {
+		return wrapAfter;
+	}
+
+	/**
+	 * @return the escapeChar
+	 */
+	public String getEscapeChar() {
+		return escapeChar;
 	}
 }
