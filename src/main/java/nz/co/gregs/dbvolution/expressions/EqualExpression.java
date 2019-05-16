@@ -203,7 +203,7 @@ public abstract class EqualExpression<B, R extends EqualResult<B>, D extends Que
 		}
 	}
 
-	public static class ModeSimpleExpression<B, R extends EqualResult<B>, D extends QueryableDatatype<B>, X extends EqualExpression<B, R, D>> extends DBUnaryFunction<B, R, D, X> implements CanBeWindowingFunctionWithFrame<ModeSimpleExpression<B,R,D,X>>{
+	public static class ModeSimpleExpression<B, R extends EqualResult<B>, D extends QueryableDatatype<B>, X extends EqualExpression<B, R, D>> extends DBUnaryFunction<B, R, D, X> implements CanBeWindowingFunctionWithFrame<ModeSimpleExpression<B, R, D, X>> {
 
 		private final static long serialVersionUID = 1l;
 
@@ -293,7 +293,7 @@ public abstract class EqualExpression<B, R extends EqualResult<B>, D extends Que
 
 	}
 
-	public static class ModeStrictExpression<B, R extends EqualResult<B>, D extends QueryableDatatype<B>, X extends EqualExpression<B, R, D>> extends DBUnaryFunction<B, R, D, X> implements CanBeWindowingFunctionWithFrame<ModeStrictExpression<B, R, D, X>>{
+	public static class ModeStrictExpression<B, R extends EqualResult<B>, D extends QueryableDatatype<B>, X extends EqualExpression<B, R, D>> extends DBUnaryFunction<B, R, D, X> implements CanBeWindowingFunctionWithFrame<ModeStrictExpression<B, R, D, X>> {
 
 		private final static long serialVersionUID = 1l;
 

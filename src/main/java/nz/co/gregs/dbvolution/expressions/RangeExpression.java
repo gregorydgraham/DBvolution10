@@ -283,8 +283,8 @@ public abstract class RangeExpression<B, R extends RangeResult<B>, D extends Que
 
 			DBQuery dbQuery = database.getDBQuery(table1);
 
-			final RangeExpression<?,?,?> t2UpdateCount = (RangeExpression) inputRangeExpression.copy();
-			final RangeExpression<?,?,?> t2UIDMarque = (RangeExpression) pkRangeExpression.copy();
+			final RangeExpression<?, ?, ?> t2UpdateCount = (RangeExpression) inputRangeExpression.copy();
+			final RangeExpression<?, ?, ?> t2UIDMarque = (RangeExpression) pkRangeExpression.copy();
 			Set<DBRow> tablesInvolved = t2UpdateCount.getTablesInvolved();
 			for (DBRow table : tablesInvolved) {
 				table.setTableVariantIdentifier("a2");
@@ -338,7 +338,7 @@ public abstract class RangeExpression<B, R extends RangeResult<B>, D extends Que
 		}
 
 	}
-	
+
 	public static class MedianExpression<B, R extends EqualResult<B>, D extends QueryableDatatype<B>, X extends EqualExpression<B, R, D>> extends EqualExpression.DBUnaryFunction<B, R, D, X> {
 
 		private final static long serialVersionUID = 1l;
@@ -375,7 +375,6 @@ public abstract class RangeExpression<B, R extends RangeResult<B>, D extends Que
 		@Override
 		public String createSQLForFromClause(DBDatabase database) {
 			DBDefinition defn = database.getDefinition();
-			
 
 			String sql = "() " + getFirstTableModeName(defn);
 			return sql;

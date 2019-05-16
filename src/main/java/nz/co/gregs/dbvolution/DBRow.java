@@ -428,7 +428,7 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 		for (PropertyWrapper prop : propertyWrappers) {
 			final QueryableDatatype<?> qdt = prop.getQueryableDatatype();
 			if (!(qdt instanceof DBLargeObject)) {
-				if (qdt.hasChanged()) {
+				if (qdt!=null && qdt.hasChanged()) {
 					qdt.setUnchanged();
 
 					// ensure field set when using type adaptors

@@ -751,7 +751,7 @@ public abstract class AnyExpression<B extends Object, R extends AnyResult<B>, D 
 	public SortProvider highestLast() {
 		return ascending();
 	}
-
+	
 	/**
 	 * Creates an expression that will count all the values of the column
 	 * supplied.

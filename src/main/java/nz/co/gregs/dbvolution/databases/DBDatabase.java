@@ -1714,7 +1714,7 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 	 * @return the DBDefinition used by this DBDatabase instance
 	 */
 	public synchronized DBDefinition getDefinition() throws NoAvailableDatabaseException {
-		return definition;
+		return definition; 
 	}
 
 	/**
