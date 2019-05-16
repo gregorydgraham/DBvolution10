@@ -33,21 +33,21 @@ import java.util.Set;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.columns.AbstractColumn;
 import nz.co.gregs.dbvolution.columns.AbstractQueryColumn;
-import nz.co.gregs.dbvolution.columns.ColumnProvider;
 import nz.co.gregs.dbvolution.columns.QueryColumn;
 import nz.co.gregs.dbvolution.databases.DBDatabase;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.datatypes.DBUnknownDatatype;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 import nz.co.gregs.dbvolution.internal.properties.PropertyWrapper;
+import nz.co.gregs.dbvolution.columns.ColumnProvider;
 import nz.co.gregs.dbvolution.results.AnyResult;
 
 /**
  * Provides the sorting expressions used in the ORDER BY clause.
  *
  * <p>
- * The best way to create a SortProvider is to use the appropriate {@link RangeExpression#ascending()
- * } or {@link RangeExpression#descending() } method of an expression or
+ * The best way to create a SortProvider is to use the appropriate {@link AnyExpression#ascending()
+ * } or {@link AnyExpression#descending() } method of an expression or
  * column</p>
  *
  * <p>
@@ -66,8 +66,8 @@ public class SortProvider implements DBExpression {
 		return sorts;
 	}
 
-	private final AnyExpression<?, ?, ?> innerExpression;
-	private QueryColumn<?, ? extends AnyResult<?>, ? extends QueryableDatatype<?>> queryColumn = null;
+	private final AnyExpression<? extends Object, ? extends AnyResult<?>, ? extends QueryableDatatype<?>> innerExpression;
+	private QueryColumn<? extends Object, ? extends AnyResult<?>, ? extends QueryableDatatype<?>> queryColumn = null;
 	private AbstractColumn innerColumn = null;
 	protected Ordering direction = Ordering.UNDEFINED;
 	protected OrderOfNulls nullsOrdering = OrderOfNulls.UNDEFINED;
@@ -97,7 +97,11 @@ public class SortProvider implements DBExpression {
 		this.innerColumn = sort.innerColumn;
 	}
 
-	protected SortProvider(AnyExpression<?, ?, ?> exp, Ordering direction) {
+	protected <A, B extends AnyResult<A>, C extends QueryableDatatype<A>> SortProvider(AnyExpression<A, B, C> exp) {
+		this.innerExpression = exp;
+	}
+
+	protected SortProvider(AnyExpression<? extends Object, ? extends AnyResult<?>, ? extends QueryableDatatype<?>> exp, Ordering direction) {
 		this.innerExpression = exp;
 		this.direction = direction;
 	}
@@ -198,7 +202,8 @@ public class SortProvider implements DBExpression {
 	public String createSQLForFromClause(DBDatabase database) {
 		if (hasQueryColumn()) {
 			return getQueryColumn().createSQLForFromClause(database);
-		} if (hasColumn()) {
+		}
+		if (hasColumn()) {
 			return getColumn().createSQLForFromClause(database);
 		} else if (getInnerExpression() == null) {
 			return database.getDefinition().getTrueOperation();
@@ -223,7 +228,7 @@ public class SortProvider implements DBExpression {
 	/**
 	 * @return the innerExpression
 	 */
-	public AnyExpression<?, ?, ?> getInnerExpression() {
+	public AnyExpression<? extends Object, ? extends AnyResult<?>, ? extends QueryableDatatype<?>> getInnerExpression() {
 		return innerExpression;
 	}
 
@@ -239,7 +244,7 @@ public class SortProvider implements DBExpression {
 		return innerColumn;
 	}
 
-	public void setQueryColumn(QueryColumn<?, ?, ?> qc) {
+	public void setQueryColumn(QueryColumn<?, ? extends AnyResult<?>, ?> qc) {
 		this.queryColumn = qc;
 	}
 
@@ -302,7 +307,7 @@ public class SortProvider implements DBExpression {
 		if (hasQueryColumn()) {
 			final AbstractQueryColumn column = getQueryColumn().getColumn();
 			return defn.getOrderByDirectionClause(column.getSortDirection());
-		}else if (hasColumn()) {
+		} else if (hasColumn()) {
 			return defn.getOrderByDirectionClause(getColumn().getSortDirection());
 		}
 		return defn.getOrderByDirectionClause(getOrdering());
@@ -330,7 +335,7 @@ public class SortProvider implements DBExpression {
 
 	public static class Ascending extends SortProvider {
 
-		public Ascending(AnyExpression<?, ?, ?> exp) {
+		public Ascending(AnyExpression<? extends Object, ? extends AnyResult<?>, ? extends QueryableDatatype<?>> exp) {
 			super(exp, Ordering.ASCENDING);
 		}
 
@@ -347,7 +352,7 @@ public class SortProvider implements DBExpression {
 
 	public static class Descending extends SortProvider {
 
-		public Descending(AnyExpression<?, ?, ?> exp) {
+		public Descending(AnyExpression<? extends Object, ? extends AnyResult<?>, ? extends QueryableDatatype<?>> exp) {
 			super(exp, Ordering.DESCENDING);
 		}
 
@@ -373,57 +378,41 @@ public class SortProvider implements DBExpression {
 			return getColumn().getQueryableDatatypeForExpressionValue();
 		}
 
-//		@Override
-//		public String createSQLForGroupByClause(DBDatabase database) {
-//			if (getColumn() == null) {
-//				return database.getDefinition().getTrueOperation();
-//			} else {
-//				return getColumn().createSQLForGroupByClause(database);
-//			}
-//		}
-
-//		@Override
-//		public String createSQLForFromClause(DBDatabase database) {
-//			if (getColumn() == null) {
-//				return database.getDefinition().getTrueOperation();
-//			} else {
-//				return getColumn().createSQLForGroupByClause(database);
-//			}
-////		}
-//
-//		@Override
-//		public boolean isComplexExpression() {
-//			return getColumn().isComplexExpression();
-//		}
-//
-//		@Override
-//		public boolean isPurelyFunctional() {
-//			return getColumn().isPurelyFunctional();
-//		}
-//
-//		@Override
-//		public Set<DBRow> getTablesInvolved() {
-//			return getColumn().getTablesInvolved();
-//		}
-//
-//		@Override
-//		public boolean isAggregator() {
-//			return getColumn().isAggregator();
-////		}
-//
-//		@Override
-//		public QueryableDatatype<?> getQueryableDatatypeForExpressionValue() {
-//			return getColumn().getQueryableDatatypeForExpressionValue();
-//		}
-
 		public PropertyWrapper getPropertyWrapper() {
 			return getColumn().getPropertyWrapper();
+		}
+
+		public SortProvider descending() {
+			return new Column(getColumn()) {
+				@Override
+				public Ordering getOrdering() {
+					return Ordering.DESCENDING;
+				}
+
+				@Override
+				public String getSortDirectionSQL(DBDefinition defn) {
+					return defn.getOrderByDirectionClause(QueryableDatatype.SORT_DESCENDING);
+				}
+			};
+		}
+
+		public SortProvider ascending() {
+			return new Column(getColumn()) {
+				@Override
+				public Ordering getOrdering() {
+					return Ordering.ASCENDING;
+				}
+
+				@Override
+				public String getSortDirectionSQL(DBDefinition defn) {
+					return defn.getOrderByDirectionClause(QueryableDatatype.SORT_ASCENDING);
+				}
+			};
 		}
 	}
 
 	public static abstract class NullsOrderer extends SortProvider {
 
-//		private final SortProvider innerSort;
 		protected NullsOrderer(SortProvider sort, OrderOfNulls nullsOrdering) {
 			super(sort);
 			this.nullsOrdering = nullsOrdering;
