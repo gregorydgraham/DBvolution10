@@ -46,6 +46,7 @@ import nz.co.gregs.dbvolution.operators.DBOperator;
 import nz.co.gregs.dbvolution.query.RowDefinition;
 import nz.co.gregs.dbvolution.results.AnyResult;
 import nz.co.gregs.dbvolution.results.IntegerResult;
+import nz.co.gregs.dbvolution.expressions.HasSQLString;
 
 /**
  *
@@ -65,6 +66,12 @@ public abstract class QueryableDatatype<T> extends Object implements Serializabl
 	private boolean changed = false;
 	private QueryableDatatype<T> previousValueAsQDT = null;
 
+	/**
+	 * Used to indicate the the QDT should be sorted using the default ordering
+	 * when using the {@link #setSortOrder(java.lang.Boolean)
+	 * } method.
+	 */
+	public static Boolean SORT_UNSORTED = null;
 	/**
 	 * Used to indicate the the QDT should be sorted so that the values run from
 	 * A-&gt;Z or 0-&gt;9 when using the {@link #setSortOrder(java.lang.Boolean)
@@ -616,7 +623,7 @@ public abstract class QueryableDatatype<T> extends Object implements Serializabl
 		if (this.isDBNull || getLiteralValue() == null) {
 			return defn.getNull();
 		} else if (getLiteralValue() instanceof DBExpression) {
-			return "(" + ((DBExpression) getLiteralValue()).toSQLString(defn) + ")";
+			return "(" + ((HasSQLString) getLiteralValue()).toSQLString(defn) + ")";
 		} else {
 			return formatValueForSQLStatement(defn);
 		}
@@ -879,7 +886,8 @@ public abstract class QueryableDatatype<T> extends Object implements Serializabl
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 *
 	 * @return {@link #SORT_DESCENDING} if the column is to be sorted descending,
-	 * {@link #SORT_ASCENDING} otherwise.
+	 * {@link #SORT_ASCENDING} if the column is to be sorted ascending otherwise
+	 * {@link #SORT_UNSORTED}.
 	 */
 	public Boolean getSortOrder() {
 		return sort;
