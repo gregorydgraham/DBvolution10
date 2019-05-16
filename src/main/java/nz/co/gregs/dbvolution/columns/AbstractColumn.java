@@ -324,4 +324,24 @@ public class AbstractColumn implements DBExpression, Serializable {
 	public SortProvider.Column getSortProvider() {
 		return new SortProvider.Column(this);
 	}
+
+	/**
+	 * Returns the sort order configured on the column.
+	 *
+	 * @return {@link QueryableDatatype#SORT_ASCENDING} or
+	 * {@link QueryableDatatype#SORT_DESCENDING}
+	 */
+	public SortProvider ascending() {
+		return getSortProvider().ascending();
+	}
+
+	/**
+	 * Returns the sort order configured on the column.
+	 *
+	 * @return {@link QueryableDatatype#SORT_ASCENDING} or
+	 * {@link QueryableDatatype#SORT_DESCENDING}
+	 */
+	public SortProvider descending() {
+		return getSortProvider().descending();
+	}
 }
