@@ -35,10 +35,9 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import nz.co.gregs.dbvolution.expressions.AnyExpression;
-import nz.co.gregs.dbvolution.expressions.IntegerExpression;
+import nz.co.gregs.dbvolution.expressions.NumberExpression;
 import nz.co.gregs.dbvolution.expressions.StringExpression;
 import nz.co.gregs.dbvolution.results.ExpressionHasStandardStringResult;
-import nz.co.gregs.dbvolution.utility.SeparatedString;
 
 /**
  *
@@ -46,14 +45,14 @@ import nz.co.gregs.dbvolution.utility.SeparatedString;
  */
 public abstract class SearchAbstract {
 
-	static final int CONTAINS_EXACT_MATCH_VALUE = 10000;
-	static final int CONTAINS_INSENSITIVE_MATCH_VALUE = 1000;
-	static final int CONTAINS_QUOTED_SEARCH_WORD_VALUE = 100;
-	static final int CONTAINS_WANTED_SEARCH_WORD_VALUE = 100;
-	static final int CONTAINS_SEARCH_WORD_VALUE = 10;
-	static final int CONTAINS_UNWANTED_SEARCH_WORD_VALUE = -2;
-
 	protected String searchString;
+
+	private static final Pattern TERM_PATTERN = Pattern.compile("((\\w+):){0,1}([+-]{0,1})((\\w+)|(\"([^\"]*)\"?))");
+
+	private static final int ALIAS_GROUP = 2;
+	private static final int MODE_GROUP = 3;
+	private static final int SIMPLE_TERM_GROUP = 4;
+	private static final int QUOTED_TERM_GROUP = 7;
 
 	public SearchAbstract() {
 	}
@@ -95,173 +94,60 @@ public abstract class SearchAbstract {
 	}
 
 	protected final Term[] getSearchTerms() throws NothingToSearchFor {
-		List<Term> results = new ArrayList<>(0);
-		SeparatedString separated = SeparatedString.bySpaces();
-		String replaced = getSearchString();
-		if (replaced != null) {
-			replaced = processAliasedTerms(replaced, results, separated);
-			replaced = processQuotedTerms(replaced, results, separated);
-			separated.addAll(processUnquotedTerms(replaced, results));
-			final String newTerm = separated.toString();
-			try {
-				results.add(new Term(newTerm, CONTAINS_EXACT_MATCH_VALUE));
-			} catch (InvalidTermException ex) {
-				//skip it
-			}
-			return results.toArray(new Term[]{});
-		} else {
-			throw new NothingToSearchFor();
-		}
-	}
-
-	private String processAliasedTerms(String input, List<Term> results, SeparatedString separated) {
-		String replaced = input;
-		replaced = processQuotedAliasedTerms(replaced, results);
-		replaced = processSimpleAliasedTerms(replaced, results);
-
-		return replaced;
-	}
-
-	private static final Pattern ALIASED_STR = java.util.regex.Pattern.compile("(\\w*):(\\w*)");
-	private static final Pattern ALIASED_QUOTED_STR = java.util.regex.Pattern.compile("(\\w*):\"([^\"]*)\"");
-
-	private String processSimpleAliasedTerms(String input, List<Term> results) {
-		String replaced = input;
-		Matcher matcher = ALIASED_STR.matcher(replaced);
+		List<Term> terms = new ArrayList<>();
+		Matcher matcher = TERM_PATTERN.matcher(getSearchString());
 		while (matcher.find()) {
-			String wholeMatch = matcher.group();
-			String searchAlias = matcher.group(1);
-			String searchTerm = matcher.group(2);
-			if (!searchAlias.isEmpty() && !searchTerm.isEmpty()) {
-				ArrayList<Term> arrayList = new ArrayList<Term>();
-				processUnquotedTerms(searchTerm, arrayList);
-				for (Term term : arrayList) {
-					results.add(new Term(term.getString(), term.getValue(), searchAlias));
-				}
+			String all = matcher.group(WHOLE_MATCH_GROUP);
+			String alias = matcher.group(ALIAS_GROUP);
+			String modeStr = matcher.group(MODE_GROUP);
+			Mode mode = modeStr.equals("+") ? Mode.PLUS : modeStr.equals("-") ? Mode.MINUS : Mode.NORMAL;
+			String simpleTerm = matcher.group(SIMPLE_TERM_GROUP);
+			String quotedTerm = matcher.group(QUOTED_TERM_GROUP);
+			if (quotedTerm != null) {
+				terms.add(new Term(quotedTerm, true, mode, alias));
+			} else {
+				terms.add(new Term(simpleTerm, false, mode, alias));
 			}
-			replaced = replaced.replace(wholeMatch, "");
-			matcher = ALIASED_STR.matcher(replaced);
 		}
-		return replaced;
+		return terms.toArray(new Term[]{});
 	}
 
-	private String processQuotedAliasedTerms(String input, List<Term> results) {
-		String replaced = input;
-		Matcher matcher = ALIASED_QUOTED_STR.matcher(replaced);
-		while (matcher.find()) {
-			String wholeMatch = matcher.group();
-			String searchAlias = matcher.group(1);
-			String searchTerm = matcher.group(2);
-			if (!searchAlias.isEmpty() && !searchTerm.isEmpty()) {
-				ArrayList<Term> arrayList = new ArrayList<Term>();
-				processUnquotedTerms(searchTerm, arrayList);
-				for (Term term : arrayList) {
-					results.add(new Term(term.getString(), term.getValue(), searchAlias));
-				}
-			}
-			replaced = replaced.replace(wholeMatch, "");
-			matcher = ALIASED_QUOTED_STR.matcher(replaced);
-		}
-		return replaced;
-	}
+	private static final int WHOLE_MATCH_GROUP = 0;
 
-	protected IntegerExpression getRankingExpression(ExpressionAlias col) {
-		final AnyExpression<?,?,?> column = col.getExpr();
+	protected NumberExpression getRankingExpression(ExpressionAlias col) {
+		final AnyExpression<?, ?, ?> column = col.getExpr();
 		if (column instanceof ExpressionHasStandardStringResult) {
 			StringExpression stringExpression = ((ExpressionHasStandardStringResult) column).stringResult();
 			try {
-				IntegerExpression expr = new IntegerExpression(0);
+				NumberExpression expr = new NumberExpression(0);
 				final Term[] searchTerms = this.getSearchTerms();
 				for (SearchAcross.Term term : searchTerms) {
-					IntegerExpression newExpr = getRankingExpressionForTerm(stringExpression, term, col.getAlias());
+					NumberExpression newExpr = getRankingExpressionForTerm(stringExpression, term, col.getAlias());
 					expr = expr.plus(newExpr);
 				}
 				return expr;
 			} catch (NothingToSearchFor ex) {
-				return IntegerExpression.value(-1);
+				return NumberExpression.value(-1.0);
 			}
 		}
-		return IntegerExpression.value(-1);
+		return NumberExpression.value(-1.0);
 	}
 
-	protected List<String> processUnquotedTerms(String replaced, List<Term> results) {
-		SeparatedString separated = SeparatedString.bySpaces();
-		String[] split = replaced.split(" ");
-		for (String string : split) {
-			if (!string.isEmpty()) {
-				if (string.startsWith("+")) {
-					final String termString = string.replace("+", "");
-					try {
-						results.add(new Term(termString, CONTAINS_WANTED_SEARCH_WORD_VALUE));
-						separated.add(termString);
-					} catch (InvalidTermException ex) {
-						//skip it
-					}
-				} else if (string.startsWith("-")) {
-					final String termString = string.replace("-", "");
-					try {
-						results.add(new Term(termString, CONTAINS_UNWANTED_SEARCH_WORD_VALUE));
-//					separated.add(termString);		
-					} catch (InvalidTermException ex) {
-						//skip it
-					}
-				} else {
-					final String termString = string;
-					try {
-						results.add(new Term(termString, CONTAINS_SEARCH_WORD_VALUE));
-						separated.add(termString);
-					} catch (InvalidTermException ex) {
-						//skip it
-					}
-				}
-			}
-		}
-		return separated.getStrings();
-	}
-
-	private static final Pattern QUOTED_STR = Pattern.compile("\\\"[^\\\"]*\\\"");
-	private static final Pattern QUOTE_AT_START = Pattern.compile("^\"");
-	private static final Pattern QUOTE_AT_END = Pattern.compile("\"$");
-	private static final Pattern QUOTE_ANY = Pattern.compile("\"");
-
-	protected String processQuotedTerms(String input, List<Term> results, SeparatedString separated) {
-		Matcher matcher;
-		String replaced = input;
-		do {
-			matcher = QUOTED_STR.matcher(replaced);
-			if (matcher.find()) {
-				String group = matcher.group();
-				String termString = QUOTE_AT_START.matcher(group).replaceAll("");
-				termString = QUOTE_AT_END.matcher(termString).replaceAll("");
-				try {
-					results.add(new Term(termString, CONTAINS_QUOTED_SEARCH_WORD_VALUE));
-					separated.add(termString);
-				} catch (InvalidTermException ex) {
-					//skip it
-				}
-				replaced = matcher.replaceFirst("");
-				matcher = QUOTED_STR.matcher(replaced);
-			}
-		} while (matcher.find());
-		replaced = QUOTE_ANY.matcher(replaced).replaceAll("");
-		return replaced;
-	}
-
-	protected IntegerExpression getRankingExpressionForTerm(StringExpression stringExpression, Term term, String columnAlias) {
+	protected NumberExpression getRankingExpressionForTerm(StringExpression stringExpression, Term term, String columnAlias) {
 		if (term.hasString()
 				&& (term.hasNoAlias() || term.getAlias().equalsIgnoreCase(columnAlias))) {
-			IntegerExpression newExpr
+			NumberExpression newExpr
 					= // the term exactly is worth the normal value
-					stringExpression.contains(term.getString()).ifThenElse(term.getValue(), 0);
+					stringExpression.contains(term.getString()).ifThenElse(term.getValue(), 0.0);
 			// exactly as a word is worth twice the value
-			newExpr = newExpr.plus(stringExpression.contains(" " + term.getString() + " ").ifThenElse(term.getValue() * 2, 0));
+			newExpr = newExpr.plus(stringExpression.contains(" " + term.getString() + " ").ifThenElse(term.getValue() * 2, 0.0));
 			// as a case-insensitive word is worth the normal value
-			newExpr = newExpr.plus(stringExpression.containsIgnoreCase(" " + term.getString() + " ").ifThenElse(term.getValue(), 0));
+			newExpr = newExpr.plus(stringExpression.containsIgnoreCase(" " + term.getString() + " ").ifThenElse(term.getValue(), 0.0));
 			// as a case-insensitive sequence is worth half the value
-			newExpr = newExpr.plus(stringExpression.containsIgnoreCase(term.getString()).ifThenElse(term.getValue() / 2, 0));
+			newExpr = newExpr.plus(stringExpression.containsIgnoreCase(term.getString()).ifThenElse(term.getValue() / 2, 0.0));
 			return newExpr;
 		} else {
-			return new IntegerExpression(0);
+			return new NumberExpression(0);
 		}
 	}
 
@@ -289,22 +175,18 @@ public abstract class SearchAbstract {
 
 		private final int value;
 		private final String string;
-		private String alias = EMPTY_ALIAS;
+		private final String alias;
+		private final boolean isQuoted;
+		private final Mode mode;
 
 		public static final String EMPTY_ALIAS = "";
 
-		public Term(String string) {
-			this(string, CONTAINS_SEARCH_WORD_VALUE, EMPTY_ALIAS);
-		}
-
-		public Term(String string, int value) throws InvalidTermException {
-			this(string, value, EMPTY_ALIAS);
-		}
-
-		public Term(String string, int value, String alias) {
+		private Term(String string, boolean isQuoted, Mode mode, String alias) {
 			this.string = string;
-			this.value = value;
-			this.alias = alias;
+			this.mode = mode;
+			this.isQuoted = isQuoted;
+			this.alias = alias == null ? EMPTY_ALIAS : alias.isEmpty() ? EMPTY_ALIAS : alias;
+			this.value = calculateValue();
 		}
 
 		public String getString() {
@@ -344,12 +226,36 @@ public abstract class SearchAbstract {
 		public String getAlias() {
 			return alias;
 		}
+
+		static final int CONTAINS_EXACT_MATCH_VALUE = 10000;
+		static final int CONTAINS_INSENSITIVE_MATCH_VALUE = 1000;
+		static final int CONTAINS_QUOTED_SEARCH_WORD_VALUE = 100;
+		static final int CONTAINS_WANTED_SEARCH_WORD_VALUE = 100;
+		static final int CONTAINS_SEARCH_WORD_VALUE = 10;
+		static final int CONTAINS_UNWANTED_SEARCH_WORD_VALUE = -2;
+
+		private int calculateValue() {
+			return (11 + (this.isQuoted ? 9 : 0))
+					* (hasAlias() ? 10 : 1)
+					* (isPlus() ? 10 : 1)
+					* (isMinus() ? -7 : 1);
+		}
+
+		private boolean isMinus() {
+			return this.mode.equals(Mode.MINUS);
+		}
+
+		private boolean isPlus() {
+			return this.mode.equals(Mode.PLUS);
+		}
 	}
 
-	private static class InvalidTermException extends Exception {
-    static final long serialVersionUID = -3387516993124229948L;
+	public static enum Mode {
+		PLUS(),
+		MINUS(),
+		NORMAL();
 
-		public InvalidTermException() {
+		private Mode() {
 		}
 	}
 }

@@ -34,7 +34,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import nz.co.gregs.dbvolution.expressions.BooleanExpression;
-import nz.co.gregs.dbvolution.expressions.IntegerExpression;
+import nz.co.gregs.dbvolution.expressions.NumberExpression;
 import nz.co.gregs.dbvolution.expressions.SortProvider;
 import nz.co.gregs.dbvolution.expressions.StringExpression;
 
@@ -46,6 +46,10 @@ public class SearchAcross extends SearchAbstract {
 
 	private final List<ExpressionAlias> columnsToSearch = new ArrayList<>();
 
+	public SearchAcross() {
+		setSearchString("");
+	}
+	
 	public SearchAcross(String searchTerms, ExpressionAlias... columns) {
 		setSearchString(searchTerms);
 		this.columnsToSearch.addAll(Arrays.asList(columns));
@@ -55,12 +59,12 @@ public class SearchAcross extends SearchAbstract {
 		return getRankingExpression().isGreaterThan(0);
 	}
 
-	public IntegerExpression getRankingExpression() {
-		IntegerExpression theExpr = IntegerExpression.value(0);
+	public NumberExpression getRankingExpression() {
+		NumberExpression theExpr = NumberExpression.value(0.0);
 		for (ExpressionAlias col : columnsToSearch) {
 			theExpr = theExpr.plus(this.getRankingExpression(col));
 		}
-		return theExpr.plus(0);
+		return theExpr.plus(0).bracket();
 	}
 
 //	private IntegerExpression getRankingExpression(ExpressionAlias col) {

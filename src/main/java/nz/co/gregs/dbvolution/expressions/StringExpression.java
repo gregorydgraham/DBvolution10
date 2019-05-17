@@ -611,7 +611,7 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 	 * @param strings
 	 * @return a BooleanExpression of the SQL comparison.
 	 */
-	public IntegerExpression searchForRanking(SearchString strings) {
+	public NumberExpression searchForRanking(SearchString strings) {
 		return strings.getRankingExpression(this);
 	}
 
@@ -640,7 +640,7 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 	 * @param strings
 	 * @return a BooleanExpression of the SQL comparison.
 	 */
-	public IntegerExpression searchForRanking(String... strings) {
+	public NumberExpression searchForRanking(String... strings) {
 		SeparatedString separatedBySpaces = SeparatedString.bySpaces();
 		separatedBySpaces.addAll(strings);
 		final SearchString searchStr = new SearchString(separatedBySpaces.toString());

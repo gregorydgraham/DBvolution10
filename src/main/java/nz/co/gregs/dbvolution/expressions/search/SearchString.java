@@ -31,7 +31,7 @@
 package nz.co.gregs.dbvolution.expressions.search;
 
 import nz.co.gregs.dbvolution.expressions.BooleanExpression;
-import nz.co.gregs.dbvolution.expressions.IntegerExpression;
+import nz.co.gregs.dbvolution.expressions.NumberExpression;
 import nz.co.gregs.dbvolution.expressions.StringExpression;
 
 /**
@@ -86,18 +86,18 @@ public class SearchString extends SearchAbstract {
 		return this.getRankingExpression(col).isGreaterThan(0);
 	}
 
-	public IntegerExpression getRankingExpression(StringExpression col) {
-		StringExpression stringExpression = col;
+	public NumberExpression getRankingExpression(StringExpression expression) {
+		StringExpression stringExpression = expression;
 		try {
-			IntegerExpression expr = new IntegerExpression(0);
+			NumberExpression expr = NumberExpression.value(0.0);
 			final SearchString.Term[] searchTerms = this.getSearchTerms();
 			for (SearchString.Term term : searchTerms) {
-				IntegerExpression newExpr = getRankingExpressionForTerm(stringExpression, term, term.getAlias());
+				NumberExpression newExpr = getRankingExpressionForTerm(stringExpression, term, term.getAlias());
 				expr = expr.plus(newExpr);
 			}
 			return expr;
 		} catch (SearchString.NothingToSearchFor ex) {
-			return IntegerExpression.value(-1);
+			return NumberExpression.value(-1.0);
 		}
 	}
 
