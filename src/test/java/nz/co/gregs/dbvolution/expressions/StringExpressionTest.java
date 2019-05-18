@@ -642,9 +642,9 @@ public class StringExpressionTest extends AbstractTest {
 		Assert.assertThat((got.get(5)).name.stringValue(), is("TOYOTA"));
 		Assert.assertThat((got.get(6)).name.stringValue(), is("LANDROVER"));
 		Assert.assertThat((got.get(7)).name.stringValue(), is("HOLDEN"));
-		Assert.assertThat((got.get(8)).name.stringValue(), is("VOLVO"));
-		Assert.assertThat((got.get(9)).name.stringValue(), is("HUMMER"));
-		Assert.assertThat((got.get(10)).name.stringValue(), is("SUBARU"));
+		Assert.assertThat((got.get(8)).name.stringValue(), is("HUMMER"));
+		Assert.assertThat((got.get(9)).name.stringValue(), is("SUBARU"));
+		Assert.assertThat((got.get(10)).name.stringValue(), is("VOLVO"));
 		Assert.assertThat((got.get(0)).ranking.intValue(), is(71));
 		Assert.assertThat((got.get(1)).ranking.intValue(), is(71));
 		Assert.assertThat((got.get(2)).ranking.intValue(), is(55));
@@ -652,8 +652,8 @@ public class StringExpressionTest extends AbstractTest {
 		Assert.assertThat((got.get(4)).ranking.intValue(), is(55));
 		Assert.assertThat((got.get(5)).ranking.intValue(), is(55));
 		Assert.assertThat((got.get(6)).ranking.intValue(), is(33));
-		Assert.assertThat((got.get(7)).ranking.intValue(), is(17));
-		Assert.assertThat((got.get(8)).ranking.intValue(), is(17));
+		Assert.assertThat((got.get(7)).ranking.intValue(), is(16));
+		Assert.assertThat((got.get(8)).ranking.intValue(), is(16));
 		Assert.assertThat((got.get(9)).ranking.intValue(), is(16));
 		Assert.assertThat((got.get(10)).ranking.intValue(), is(16));
 	}
@@ -698,9 +698,9 @@ public class StringExpressionTest extends AbstractTest {
 		Assert.assertThat((got.get(5)).name.stringValue(), is("TOYOTA"));
 		Assert.assertThat((got.get(6)).name.stringValue(), is("LANDROVER"));
 		Assert.assertThat((got.get(7)).name.stringValue(), is("HOLDEN"));
-		Assert.assertThat((got.get(8)).name.stringValue(), is("VOLVO"));
-		Assert.assertThat((got.get(9)).name.stringValue(), is("HUMMER"));
-		Assert.assertThat((got.get(10)).name.stringValue(), is("SUBARU"));
+		Assert.assertThat((got.get(8)).name.stringValue(), is("HUMMER"));
+		Assert.assertThat((got.get(9)).name.stringValue(), is("SUBARU"));
+		Assert.assertThat((got.get(10)).name.stringValue(), is("VOLVO"));
 		Assert.assertThat((got.get(0)).ranking.intValue(), is(71));
 		Assert.assertThat((got.get(1)).ranking.intValue(), is(71));
 		Assert.assertThat((got.get(2)).ranking.intValue(), is(55));
@@ -708,8 +708,8 @@ public class StringExpressionTest extends AbstractTest {
 		Assert.assertThat((got.get(4)).ranking.intValue(), is(55));
 		Assert.assertThat((got.get(5)).ranking.intValue(), is(55));
 		Assert.assertThat((got.get(6)).ranking.intValue(), is(33));
-		Assert.assertThat((got.get(7)).ranking.intValue(), is(17));
-		Assert.assertThat((got.get(8)).ranking.intValue(), is(17));
+		Assert.assertThat((got.get(7)).ranking.intValue(), is(16));
+		Assert.assertThat((got.get(8)).ranking.intValue(), is(16));
 		Assert.assertThat((got.get(9)).ranking.intValue(), is(16));
 		Assert.assertThat((got.get(10)).ranking.intValue(), is(16));
 	}
@@ -788,10 +788,10 @@ public class StringExpressionTest extends AbstractTest {
 		Assert.assertThat((got.get(2)).get(marq).name.stringValue(), is("HYUNDAI"));
 		Assert.assertThat((got.get(3)).get(marq).name.stringValue(), is("NISSAN"));
 
-		Assert.assertThat(got.get(0).getExpressionColumnValue(this).getValue().toString(), is("15.0"));
-		Assert.assertThat(got.get(1).getExpressionColumnValue(this).getValue().toString(), is("15.0"));
-		Assert.assertThat(got.get(2).getExpressionColumnValue(this).getValue().toString(), is("5.0"));
-		Assert.assertThat(got.get(3).getExpressionColumnValue(this).getValue().toString(), is("5.0"));
+		Assert.assertThat(got.get(0).getExpressionColumnValue(this).getValue().toString(), is("15.5"));
+		Assert.assertThat(got.get(1).getExpressionColumnValue(this).getValue().toString(), is("15.5"));
+		Assert.assertThat(got.get(2).getExpressionColumnValue(this).getValue().toString(), is("5.5"));
+		Assert.assertThat(got.get(3).getExpressionColumnValue(this).getValue().toString(), is("5.5"));
 	}
 
 	@Test
@@ -842,7 +842,7 @@ public class StringExpressionTest extends AbstractTest {
 		Assert.assertThat(got.get(1).getExpressionColumnValue(this).getValue().toString(), is("65.0"));
 		Assert.assertThat(got.get(2).getExpressionColumnValue(this).getValue().toString(), is("55.0"));
 		Assert.assertThat(got.get(3).getExpressionColumnValue(this).getValue().toString(), is("55.0"));
-		Assert.assertThat(got.get(4).getExpressionColumnValue(this).getValue().toString(), is("17.0"));
+		Assert.assertThat(got.get(4).getExpressionColumnValue(this).getValue().toString(), is("16.5"));
 	}
 
 	@Test
@@ -883,9 +883,9 @@ public class StringExpressionTest extends AbstractTest {
 		Assert.assertThat((got.get(5)).name.stringValue(), is("TOYOTA"));
 		Assert.assertThat((got.get(6)).name.stringValue(), is("LANDROVER"));
 		Assert.assertThat((got.get(7)).name.stringValue(), is("HOLDEN"));
-		Assert.assertThat((got.get(8)).name.stringValue(), is("VOLVO"));
-		Assert.assertThat((got.get(9)).name.stringValue(), is("HUMMER"));
-		Assert.assertThat((got.get(10)).name.stringValue(), is("SUBARU"));
+		Assert.assertThat((got.get(8)).name.stringValue(), is("HUMMER"));
+		Assert.assertThat((got.get(9)).name.stringValue(), is("SUBARU"));
+		Assert.assertThat((got.get(10)).name.stringValue(), is("VOLVO"));
 		Assert.assertThat((got.get(0)).ranking.intValue(), is(71));
 		Assert.assertThat((got.get(1)).ranking.intValue(), is(71));
 		Assert.assertThat((got.get(2)).ranking.intValue(), is(55));
@@ -893,8 +893,8 @@ public class StringExpressionTest extends AbstractTest {
 		Assert.assertThat((got.get(4)).ranking.intValue(), is(55));
 		Assert.assertThat((got.get(5)).ranking.intValue(), is(55));
 		Assert.assertThat((got.get(6)).ranking.intValue(), is(33));
-		Assert.assertThat((got.get(7)).ranking.intValue(), is(17));
-		Assert.assertThat((got.get(8)).ranking.intValue(), is(17));
+		Assert.assertThat((got.get(7)).ranking.intValue(), is(16));
+		Assert.assertThat((got.get(8)).ranking.intValue(), is(16));
 		Assert.assertThat((got.get(9)).ranking.intValue(), is(16));
 		Assert.assertThat((got.get(10)).ranking.intValue(), is(16));
 	}

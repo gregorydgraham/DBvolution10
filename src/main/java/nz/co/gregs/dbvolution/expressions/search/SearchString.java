@@ -35,6 +35,28 @@ import nz.co.gregs.dbvolution.expressions.NumberExpression;
 import nz.co.gregs.dbvolution.expressions.StringExpression;
 
 /**
+ * Standardised searching using string terms and expression aliases.
+ *
+ * <p>
+ * Designed to provide easy access to complex user-driven searching such as
+ * 'terminator -schwarzenagger "come with me if" desc:quote author:+"james
+ * cameron"'.</p>
+ *
+ * <p>
+ * Search terms can be single words or sequence, or quoted phrases. Terms can
+ * also be prioritized with + and - and restricted to a single column using an
+ * alias followed by a colon (alias:term). Searching for any empty value can be
+ * done with an alias followed by empty quotes, for example description:""</p>
+ *
+ * <p>
+ * Use with a single column using {@link StringExpression#searchFor(nz.co.gregs.dbvolution.expressions.search.SearchString)
+ * } and {@link StringExpression#searchForRanking(nz.co.gregs.dbvolution.expressions.search.SearchString)
+ * }: marq.column(marq.name).searchFor(searchString). If you have individual
+ * strings use
+ * {@link StringExpression#searchFor(java.lang.String...) and {@link StringExpression#searchForRanking(java.lang.String...) }.</p>
+ *
+ * <p>
+ * searchForRanking produces a number value that can be used for sorting. </p>
  *
  * @author gregorygraham
  */
@@ -48,44 +70,38 @@ public class SearchString extends SearchAbstract {
 		setSearchString(searchTerms);
 	}
 
-//	@Override
-//	public Term[] getSearchTerms() throws NothingToSearchFor {
-//		List<Term> results = new ArrayList<>(0);
-//		SeparatedString separated = SeparatedString.bySpaces();
-//		if (getSearchString() != null) {
-//			String replaced = getSearchString();
-//			replaced = processQuotedTerms(replaced, results, separated);
-//			separated.addAll(processUnquotedTerms(replaced, results));
-//			results.add(new Term(separated.toString(), CONTAINS_EXACT_MATCH_VALUE));
-//			return results.toArray(new Term[]{});
-//		} else {
-//			throw new NothingToSearchFor();
-//		}
-//	}
-
-//	public IntegerExpression getRankingExpression(ExpressionAlias col) {
-//		final AnyExpression column = col.getExpr();
-//		if (column instanceof ExpressionHasStandardStringResult) {
-//			StringExpression stringExpression = ((ExpressionHasStandardStringResult) column).stringResult();
-//			try {
-//				IntegerExpression expr = new IntegerExpression(0);
-//				final SearchString.Term[] searchTerms = this.getSearchTerms();
-//				for (SearchString.Term term : searchTerms) {
-//					IntegerExpression newExpr = getRankingExpressionForTerm(stringExpression, term, col.getAlias());
-//					expr = expr.plus(newExpr);
-//				}
-//				return expr;
-//			} catch (SearchString.NothingToSearchFor ex) {
-//				return IntegerExpression.value(-1);
-//			}
-//		}
-//		return IntegerExpression.value(-1);
-//	}
-
 	public BooleanExpression getComparisonExpression(ExpressionAlias col) {
 		return this.getRankingExpression(col).isGreaterThan(0);
 	}
 
+	/**
+	 * Standardised searching using string terms and expression aliases.
+	 *
+	 * <p>
+	 * Designed to provide easy access to complex user-driven searching such as
+	 * 'terminator -schwarzenagger "come with me if" desc:quote author:+"james
+	 * cameron"'.</p>
+	 *
+	 * <p>
+	 * Search terms can be single words or sequence, or quoted phrases. Terms can
+	 * also be prioritized with + and - and restricted to a single column using an
+	 * alias followed by a colon (alias:term). Searching for any empty value can
+	 * be done with an alias followed by empty quotes, for example
+	 * description:""</p>
+	 *
+	 * <p>
+	 * Use with a single column using {@link StringExpression#searchFor(nz.co.gregs.dbvolution.expressions.search.SearchString)
+	 * } and {@link StringExpression#searchForRanking(nz.co.gregs.dbvolution.expressions.search.SearchString)
+	 * }: marq.column(marq.name).searchFor(searchString). If you have individual
+	 * strings use
+	 * {@link StringExpression#searchFor(java.lang.String...) and {@link StringExpression#searchForRanking(java.lang.String...) }.</p>
+	 *
+	 * <p>
+	 * searchForRanking produces a number value that can be used for sorting. </p>
+	 *
+	 * @param expression
+	 * @return A numeric representation of the expression's relationship to the search string
+	 */
 	public NumberExpression getRankingExpression(StringExpression expression) {
 		StringExpression stringExpression = expression;
 		try {

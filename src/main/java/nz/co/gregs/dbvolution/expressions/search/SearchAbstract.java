@@ -40,6 +40,28 @@ import nz.co.gregs.dbvolution.expressions.StringExpression;
 import nz.co.gregs.dbvolution.results.ExpressionHasStandardStringResult;
 
 /**
+ * Standardised searching using string terms and expression aliases.
+ *
+ * <p>
+ * Designed to provide easy access to complex user-driven searching such as
+ * 'terminator -schwarzenagger "come with me if" desc:quote author:+"james
+ * cameron"'.</p>
+ *
+ * <p>
+ * Search terms can be single words or sequence, or quoted phrases. Terms can
+ * also be prioritized with + and - and restricted to a single column using an
+ * alias followed by a colon (alias:term). Searching for any empty value can be
+ * done with an alias followed by empty quotes, for example description:""</p>
+ *
+ * <p>
+ * Use with a single column using {@link StringExpression#searchFor(nz.co.gregs.dbvolution.expressions.search.SearchString)
+ * } and {@link StringExpression#searchForRanking(nz.co.gregs.dbvolution.expressions.search.SearchString)
+ * }: marq.column(marq.name).searchFor(searchString). If you have individual
+ * strings use
+ * {@link StringExpression#searchFor(java.lang.String...) and {@link StringExpression#searchForRanking(java.lang.String...) }.</p>
+ *
+ * <p>
+ * searchForRanking produces a number value that can be used for sorting. </p>
  *
  * @author gregorygraham
  */
@@ -135,7 +157,7 @@ public abstract class SearchAbstract {
 
 	protected NumberExpression getRankingExpressionForTerm(StringExpression stringExpression, Term term, String columnAlias) {
 		if (term.hasString()
-				&& (term.hasNoAlias() || term.getAlias().equalsIgnoreCase(columnAlias))) {
+				&& (term.hasNoAlias() || term.aliasMatches(columnAlias))) {
 			NumberExpression newExpr
 					= // the term exactly is worth the normal value
 					stringExpression.contains(term.getString()).ifThenElse(term.getValue(), 0.0);
@@ -146,6 +168,8 @@ public abstract class SearchAbstract {
 			// as a case-insensitive sequence is worth half the value
 			newExpr = newExpr.plus(stringExpression.containsIgnoreCase(term.getString()).ifThenElse(term.getValue() / 2, 0.0));
 			return newExpr;
+		} else if (term.hasAlias() && term.isQuoted() && term.hasNoString() && term.aliasMatches(columnAlias)) {
+			return stringExpression.is("").ifThenElse(term.getValue(), 0);
 		} else {
 			return new NumberExpression(0);
 		}
@@ -173,7 +197,7 @@ public abstract class SearchAbstract {
 
 	public static class Term {
 
-		private final int value;
+		private final double value;
 		private final String string;
 		private final String alias;
 		private final boolean isQuoted;
@@ -193,7 +217,7 @@ public abstract class SearchAbstract {
 			return string;
 		}
 
-		public int getValue() {
+		public double getValue() {
 			return value;
 		}
 
@@ -227,26 +251,34 @@ public abstract class SearchAbstract {
 			return alias;
 		}
 
-		static final int CONTAINS_EXACT_MATCH_VALUE = 10000;
-		static final int CONTAINS_INSENSITIVE_MATCH_VALUE = 1000;
-		static final int CONTAINS_QUOTED_SEARCH_WORD_VALUE = 100;
-		static final int CONTAINS_WANTED_SEARCH_WORD_VALUE = 100;
-		static final int CONTAINS_SEARCH_WORD_VALUE = 10;
-		static final int CONTAINS_UNWANTED_SEARCH_WORD_VALUE = -2;
+		static final double CONTAINS_EXACT_MATCH_VALUE = 10000;
+		static final double CONTAINS_INSENSITIVE_MATCH_VALUE = 1000;
+		static final double CONTAINS_QUOTED_SEARCH_WORD_VALUE = 100;
+		static final double CONTAINS_WANTED_SEARCH_WORD_VALUE = 100;
+		static final double CONTAINS_SEARCH_WORD_VALUE = 10;
+		static final double CONTAINS_UNWANTED_SEARCH_WORD_VALUE = -2;
 
-		private int calculateValue() {
-			return (11 + (this.isQuoted ? 9 : 0))
+		private double calculateValue() {
+			return (11.0 + (isQuoted() ? 9 : 0))
 					* (hasAlias() ? 10 : 1)
 					* (isPlus() ? 10 : 1)
 					* (isMinus() ? -7 : 1);
 		}
 
-		private boolean isMinus() {
+		public boolean isMinus() {
 			return this.mode.equals(Mode.MINUS);
 		}
 
-		private boolean isPlus() {
+		public boolean isPlus() {
 			return this.mode.equals(Mode.PLUS);
+		}
+
+		public boolean isQuoted() {
+			return this.isQuoted;
+		}
+
+		public boolean aliasMatches(String columnAlias) {
+			return getAlias().equalsIgnoreCase(columnAlias);
 		}
 	}
 

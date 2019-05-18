@@ -587,26 +587,30 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 	}
 
 	/**
-	 * Advanced search that lowercases everything, requires search terms with a
-	 * plus (+requiredterm), and removes search terms with a minus (-neverthis).
+	 * Standardised searching using string terms and expression aliases.
 	 *
 	 * <p>
-	 * Use this comparison to generate a BooleanExpression that compares the
-	 * current StringExpression to the supplied SQL pattern.
+	 * Designed to provide easy access to complex user-driven searching such as
+	 * 'terminator -schwarzenagger "come with me if" desc:quote author:+"james
+	 * cameron"'.</p>
 	 *
 	 * <p>
-	 * Despite the simple description above the search ranking includes all terms
-	 * but assigns a number to the column value based on the search terms. Exact
-	 * case-sensitive matches are rated highest, case-insensitive exact matches
-	 * second highest then individual terms are considered. Plus(+) terms get
-	 * rated twice as important as unmodified terms and minus(-) terms are rated
-	 * downwards. Frequency of occurrence does not affect the results.
+	 * Search terms can be single words or sequence, or quoted phrases. Terms can
+	 * also be prioritized with + and - and restricted to a single column using an
+	 * alias followed by a colon (alias:term). Searching for any empty value can
+	 * be done with an alias followed by empty quotes, for example
+	 * description:""</p>
 	 *
 	 * <p>
-	 * DBvolution does not process the SQL pattern so please ensure that it
-	 * conforms to the database's implementation of LIKE. Most implementations
-	 * only provide access to the "_" and "%" wildcards but there may be
-	 * exceptions.
+	 * Use with a single column using {@link StringExpression#searchFor(nz.co.gregs.dbvolution.expressions.search.SearchString)
+	 * } and {@link StringExpression#searchForRanking(nz.co.gregs.dbvolution.expressions.search.SearchString)
+	 * }: marq.column(marq.name).searchFor(searchString). If you have individual
+	 * strings use
+	 * {@link StringExpression#searchFor(java.lang.String...) and {@link StringExpression#searchForRanking(java.lang.String...) }.</p>
+	 *
+	 * <p>
+	 * searchForRanking produces a number value that can be used for sorting. </p>
+	 *
 	 *
 	 * @param strings
 	 * @return a BooleanExpression of the SQL comparison.
@@ -616,29 +620,33 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 	}
 
 	/**
-	 * Advanced search that lowercases everything, requires search terms with a
-	 * plus (+requiredterm), and removes search terms with a minus (-neverthis).
+	 * Standardised searching using string terms and expression aliases.
 	 *
 	 * <p>
-	 * Use this comparison to generate a BooleanExpression that compares the
-	 * current StringExpression to the supplied SQL pattern.
+	 * Designed to provide easy access to complex user-driven searching such as
+	 * 'terminator -schwarzenagger "come with me if" desc:quote author:+"james
+	 * cameron"'.</p>
 	 *
 	 * <p>
-	 * Despite the simple description above the search ranking includes all terms
-	 * but assigns a number to the column value based on the search terms. Exact
-	 * case-sensitive matches are rated highest, case-insensitive exact matches
-	 * second highest then individual terms are considered. Plus(+) terms get
-	 * rated twice as important as unmodified terms and minus(-) terms are rated
-	 * downwards. Frequency of occurrence does not affect the results.
+	 * Search terms can be single words or sequence, or quoted phrases. Terms can
+	 * also be prioritized with + and - and restricted to a single column using an
+	 * alias followed by a colon (alias:term). Searching for any empty value can
+	 * be done with an alias followed by empty quotes, for example
+	 * description:""</p>
 	 *
 	 * <p>
-	 * DBvolution does not process the SQL pattern so please ensure that it
-	 * conforms to the database's implementation of LIKE. Most implementations
-	 * only provide access to the "_" and "%" wildcards but there may be
-	 * exceptions.
+	 * Use with a single column using {@link StringExpression#searchFor(nz.co.gregs.dbvolution.expressions.search.SearchString)
+	 * } and {@link StringExpression#searchForRanking(nz.co.gregs.dbvolution.expressions.search.SearchString)
+	 * }: marq.column(marq.name).searchFor(searchString). If you have individual
+	 * strings use
+	 * {@link StringExpression#searchFor(java.lang.String...) and {@link StringExpression#searchForRanking(java.lang.String...) }.</p>
+	 *
+	 * <p>
+	 * searchForRanking produces a number value that can be used for sorting. </p>
 	 *
 	 * @param strings
-	 * @return a BooleanExpression of the SQL comparison.
+	 * @return
+	 *
 	 */
 	public NumberExpression searchForRanking(String... strings) {
 		SeparatedString separatedBySpaces = SeparatedString.bySpaces();
@@ -1248,12 +1256,12 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 			return new BooleanExpression(new StringIsNotExpression(this, equivalentString));
 		}
 	}
-	
-	public BooleanExpression isEmpty(){
+
+	public BooleanExpression isEmpty() {
 		return this.length().is(0);
 	}
-	
-	public BooleanExpression isNotEmpty(){
+
+	public BooleanExpression isNotEmpty() {
 		return this.length().isGreaterThan(0);
 	}
 
@@ -2640,7 +2648,7 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 	public BooleanExpression isNotNullAndNotEmpty() {
 		return BooleanExpression.allOf(
 				BooleanExpression.isNotNull(this),
-				this.isNot("")
+				this.isNotEmpty()
 		);
 	}
 
@@ -2682,7 +2690,7 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 	public BooleanExpression isNullOrEmpty() {
 		return BooleanExpression.anyOf(
 				BooleanExpression.isNull(this),
-				this.is("")
+				this.isEmpty()
 		);
 	}
 
