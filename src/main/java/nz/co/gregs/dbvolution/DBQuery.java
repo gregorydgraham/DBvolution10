@@ -76,7 +76,7 @@ import nz.co.gregs.dbvolution.expressions.search.SearchAcross;
  *
  * <p>
  * DBQuery can even scan the Class path and find all related DBRow classes and
- * add them on request.
+ * addTerm them on request.
  *
  * <p style="color: #F90;">Support DBvolution at
  * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
@@ -726,7 +726,7 @@ public class DBQuery implements Serializable {
 	 *
 	 * <p>
 	 * This helps avoid the common mistake of accidentally retrieving all the rows
-	 * of the tables by forgetting to add criteria.
+	 * of the tables by forgetting to addTerm criteria.
 	 *
 	 * <p>
 	 * No attempt to compare the length of the query results with the length of
@@ -886,8 +886,8 @@ public class DBQuery implements Serializable {
 	 * Adds the properties (field and/or method) to the end of the sort order.
 	 *
 	 * <p>
-	 * For example the following code snippet will add the name column at the end
-	 * of the sort order after district:
+	 * For example the following code snippet will addTerm the name column at the
+	 * end of the sort order after district:
 	 * <pre>
 	 * Customer customer = ...;
 	 * query.setSortOrder(customer.column(customer.district));
@@ -1842,7 +1842,7 @@ public class DBQuery implements Serializable {
 	}
 
 	/**
-	 * Used by DBReport to add columns to the SELECT clause
+	 * Used by DBReport to addTerm columns to the SELECT clause
 	 *
 	 * @param identifyingObject identifyingObject
 	 * @param expressionToAdd expressionToAdd
@@ -1857,7 +1857,7 @@ public class DBQuery implements Serializable {
 	}
 
 	/**
-	 * Used by DBReport to add columns to the GROUP BY clause.
+	 * Used by DBReport to addTerm columns to the GROUP BY clause.
 	 *
 	 * @param identifyingObject identifyingObject
 	 * @param expressionToAdd expressionToAdd
@@ -1890,8 +1890,8 @@ public class DBQuery implements Serializable {
 	 * Adds Extra Examples to the Query.
 	 *
 	 * <p>
-	 * The included DBRow instances will be used to add extra criteria as though
-	 * they were an added table.
+	 * The included DBRow instances will be used to addTerm extra criteria as
+	 * though they were an added table.
 	 *
 	 * <p>
 	 * Only useful for DBReports or queries that have been
@@ -1899,7 +1899,7 @@ public class DBQuery implements Serializable {
 	 *
 	 * <p>
 	 * They will NOT be added as tables however, for that use
-	 * {@link #add(nz.co.gregs.dbvolution.DBRow...) add and related methods}.
+	 * {@link #add(nz.co.gregs.dbvolution.DBRow...) addTerm and related methods}.
 	 *
 	 * @param extraExamples
 	 * <p style="color: #F90;">Support DBvolution at
