@@ -40,6 +40,8 @@ import nz.co.gregs.dbvolution.datatypes.*;
 import nz.co.gregs.dbvolution.exceptions.*;
 import nz.co.gregs.dbvolution.columns.ColumnProvider;
 import nz.co.gregs.dbvolution.databases.DBDatabaseCluster;
+import nz.co.gregs.dbvolution.expressions.search.HasComparisonExpression;
+import nz.co.gregs.dbvolution.expressions.search.HasRankingExpression;
 import nz.co.gregs.dbvolution.internal.querygraph.*;
 import nz.co.gregs.dbvolution.internal.properties.*;
 import nz.co.gregs.dbvolution.results.ExpressionHasStandardStringResult;
@@ -1674,7 +1676,7 @@ public class DBQuery implements Serializable {
 	 * @param search
 	 * @return
 	 */
-	public DBQuery addCondition(SearchAcross search) {
+	public DBQuery addCondition(HasComparisonExpression search) {
 		this.addCondition(search.getComparisonExpression());
 		return this;
 	}
@@ -2522,7 +2524,7 @@ public class DBQuery implements Serializable {
 		return new DBRecursiveQuery<T>(this, column);
 	}
 
-	public void setSortOrder(SearchAcross terms) {
-		this.setSortOrder(terms.getRankingExpression().ascending());
+	public void setSortOrder(HasRankingExpression rankableExpression) {
+		this.setSortOrder(rankableExpression.getRankingExpression().ascending());
 	}
 }
