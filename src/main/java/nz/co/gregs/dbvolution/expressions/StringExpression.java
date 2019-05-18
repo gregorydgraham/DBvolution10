@@ -556,7 +556,7 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 	 * @return a BooleanExpression of the SQL comparison.
 	 */
 	public BooleanExpression searchFor(SearchString searchString) {
-		return searchString.getComparisonExpression(this);
+		return searchString.setExpression(this).getComparisonExpression();
 	}
 
 	/**
@@ -582,8 +582,8 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 	 * @return a BooleanExpression of the SQL comparison.
 	 */
 	public BooleanExpression searchFor(String... strings) {
-		final SearchString searchStr = new SearchString(SeparatedString.bySpaces().addAll(strings).toString());
-		return this.searchFor(searchStr);
+		final SearchString searchStr = new SearchString(this, SeparatedString.bySpaces().addAll(strings).toString());
+		return searchStr.getComparisonExpression();
 	}
 
 	/**
@@ -616,7 +616,7 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 	 * @return a BooleanExpression of the SQL comparison.
 	 */
 	public NumberExpression searchForRanking(SearchString strings) {
-		return strings.getRankingExpression(this);
+		return strings.setExpression(this).getRankingExpression();
 	}
 
 	/**
@@ -651,7 +651,7 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 	public NumberExpression searchForRanking(String... strings) {
 		SeparatedString separatedBySpaces = SeparatedString.bySpaces();
 		separatedBySpaces.addAll(strings);
-		final SearchString searchStr = new SearchString(separatedBySpaces.toString());
+		final SearchString searchStr = new SearchString(this, separatedBySpaces.toString());
 		return searchForRanking(searchStr);
 	}
 

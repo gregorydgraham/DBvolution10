@@ -30,28 +30,14 @@
  */
 package nz.co.gregs.dbvolution.expressions.search;
 
-import nz.co.gregs.dbvolution.expressions.AnyExpression;
+import nz.co.gregs.dbvolution.expressions.BooleanExpression;
 
-public class ExpressionAlias {
+/**
+ *
+ * @author gregorygraham
+ */
+public interface HasComparisonExpression {
 
-	private final AnyExpression<?,?,?> expr;
-	private final String alias;
-
-	public ExpressionAlias(AnyExpression<?,?,?> column, String alias) {
-		this.expr = column;
-		this.alias = alias;
-	}
-
-	public ExpressionAlias(AnyExpression<?,?,?> column) {
-		this(column, "");
-	}
-
-	public AnyExpression<?,?,?> getExpr() {
-		return expr;
-	}
-
-	public String getAlias() {
-		return alias;
-	}
-
+	BooleanExpression getComparisonExpression();
+	
 }

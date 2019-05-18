@@ -71,6 +71,7 @@ public abstract class SearchAbstract {
 
 	private static final Pattern TERM_PATTERN = Pattern.compile("((\\w+):){0,1}([+-]{0,1})((\\w+)|(\"([^\"]*)\"?))");
 
+	private static final int WHOLE_MATCH_GROUP = 0;
 	private static final int ALIAS_GROUP = 2;
 	private static final int MODE_GROUP = 3;
 	private static final int SIMPLE_TERM_GROUP = 4;
@@ -90,8 +91,8 @@ public abstract class SearchAbstract {
 	}
 
 	public SearchAbstract addToSearchString(String string) {
-		if (getSearchString().isEmpty()) {
-			this.searchString += string;
+		if (getSearchString()==null||getSearchString().isEmpty()) {
+			this.searchString = string;
 		} else {
 			this.searchString += " " + string;
 		}
@@ -134,8 +135,6 @@ public abstract class SearchAbstract {
 		}
 		return terms.toArray(new Term[]{});
 	}
-
-	private static final int WHOLE_MATCH_GROUP = 0;
 
 	protected final NumberExpression getRankingExpression(ExpressionAlias col) {
 		final AnyExpression<?, ?, ?> column = col.getExpr();

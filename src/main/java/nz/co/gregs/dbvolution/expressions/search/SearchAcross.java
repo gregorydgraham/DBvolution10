@@ -64,10 +64,26 @@ import nz.co.gregs.dbvolution.expressions.StringExpression;
  *
  * @author gregorygraham
  */
-public class SearchAcross extends SearchAbstract {
+public class SearchAcross extends SearchAbstract implements HasComparisonExpression, HasRankingExpression {
 
-	public static SearchAcross start() {
+	public static SearchAcross empty() {
 		return new SearchAcross();
+	}
+
+	public static SearchAcross searchFor(String searchString) {
+		return new SearchAcross(searchString);
+	}
+
+	public static SearchAcross search(ExpressionAlias... aliases) {
+		return new SearchAcross("", aliases);
+	}
+
+	public static SearchAcross search(StringExpression expression) {
+		return new SearchAcross(new ExpressionAlias(expression));
+	}
+
+	public static SearchAcross search(StringExpression expression, String alias) {
+		return new SearchAcross(new ExpressionAlias(expression, alias));
 	}
 
 	private final List<ExpressionAlias> columnsToSearch = new ArrayList<>();
@@ -80,11 +96,21 @@ public class SearchAcross extends SearchAbstract {
 		setSearchString(searchTerms);
 		this.columnsToSearch.addAll(Arrays.asList(columns));
 	}
+	
+	public SearchAcross(ExpressionAlias column) {
+		this.columnsToSearch.add(column);
+	}
+	
+	public SearchAcross(ExpressionAlias... columns) {
+		this.columnsToSearch.addAll(Arrays.asList(columns));
+	}
 
+	@Override
 	public BooleanExpression getComparisonExpression() {
 		return getRankingExpression().isGreaterThan(0);
 	}
 
+	@Override
 	public NumberExpression getRankingExpression() {
 		NumberExpression theExpr = NumberExpression.value(0.0);
 		for (ExpressionAlias col : columnsToSearch) {
@@ -98,10 +124,12 @@ public class SearchAcross extends SearchAbstract {
 		return this;
 	}
 
+	@Override
 	public SortProvider ascending() {
 		return this.getRankingExpression().ascending();
 	}
 
+	@Override
 	public SortProvider descending() {
 		return this.getRankingExpression().descending();
 	}

@@ -30,9 +30,9 @@ import static org.hamcrest.Matchers.*;
 import org.junit.Assert;
 import org.junit.Test;
 
-public class SearchStringExpression extends AbstractTest {
+public class SearchStringTest extends AbstractTest {
 
-	public SearchStringExpression(Object testIterationName, Object db) {
+	public SearchStringTest(Object testIterationName, Object db) {
 		super(testIterationName, db);
 	}
 
@@ -86,17 +86,17 @@ public class SearchStringExpression extends AbstractTest {
 		Assert.assertThat((got.get(8)).name.stringValue(), is("HUMMER"));
 		Assert.assertThat((got.get(9)).name.stringValue(), is("SUBARU"));
 		Assert.assertThat((got.get(10)).name.stringValue(), is("VOLVO"));
-		Assert.assertThat((got.get(0)).ranking.intValue(), is(71));
-		Assert.assertThat((got.get(1)).ranking.intValue(), is(71));
-		Assert.assertThat((got.get(2)).ranking.intValue(), is(55));
-		Assert.assertThat((got.get(3)).ranking.intValue(), is(55));
-		Assert.assertThat((got.get(4)).ranking.intValue(), is(55));
-		Assert.assertThat((got.get(5)).ranking.intValue(), is(55));
-		Assert.assertThat((got.get(6)).ranking.intValue(), is(33));
-		Assert.assertThat((got.get(7)).ranking.intValue(), is(16));
-		Assert.assertThat((got.get(8)).ranking.intValue(), is(16));
-		Assert.assertThat((got.get(9)).ranking.intValue(), is(16));
-		Assert.assertThat((got.get(10)).ranking.intValue(), is(16));
+		Assert.assertThat((got.get(0)).ranking.intValue(), is(214));
+		Assert.assertThat((got.get(1)).ranking.intValue(), is(214));
+		Assert.assertThat((got.get(2)).ranking.intValue(), is(165));
+		Assert.assertThat((got.get(3)).ranking.intValue(), is(165));
+		Assert.assertThat((got.get(4)).ranking.intValue(), is(165));
+		Assert.assertThat((got.get(5)).ranking.intValue(), is(165));
+		Assert.assertThat((got.get(6)).ranking.intValue(), is(99));
+		Assert.assertThat((got.get(7)).ranking.intValue(), is(49));
+		Assert.assertThat((got.get(8)).ranking.intValue(), is(49));
+		Assert.assertThat((got.get(9)).ranking.intValue(), is(49));
+		Assert.assertThat((got.get(10)).ranking.intValue(), is(49));
 	}
 
 	@Test
@@ -142,17 +142,17 @@ public class SearchStringExpression extends AbstractTest {
 		Assert.assertThat((got.get(8)).name.stringValue(), is("HUMMER"));
 		Assert.assertThat((got.get(9)).name.stringValue(), is("SUBARU"));
 		Assert.assertThat((got.get(10)).name.stringValue(), is("VOLVO"));
-		Assert.assertThat((got.get(0)).ranking.intValue(), is(71));
-		Assert.assertThat((got.get(1)).ranking.intValue(), is(71));
-		Assert.assertThat((got.get(2)).ranking.intValue(), is(55));
-		Assert.assertThat((got.get(3)).ranking.intValue(), is(55));
-		Assert.assertThat((got.get(4)).ranking.intValue(), is(55));
-		Assert.assertThat((got.get(5)).ranking.intValue(), is(55));
-		Assert.assertThat((got.get(6)).ranking.intValue(), is(33));
-		Assert.assertThat((got.get(7)).ranking.intValue(), is(16));
-		Assert.assertThat((got.get(8)).ranking.intValue(), is(16));
-		Assert.assertThat((got.get(9)).ranking.intValue(), is(16));
-		Assert.assertThat((got.get(10)).ranking.intValue(), is(16));
+		Assert.assertThat((got.get(0)).ranking.intValue(), is(214));
+		Assert.assertThat((got.get(1)).ranking.intValue(), is(214));
+		Assert.assertThat((got.get(2)).ranking.intValue(), is(165));
+		Assert.assertThat((got.get(3)).ranking.intValue(), is(165));
+		Assert.assertThat((got.get(4)).ranking.intValue(), is(165));
+		Assert.assertThat((got.get(5)).ranking.intValue(), is(165));
+		Assert.assertThat((got.get(6)).ranking.intValue(), is(99));
+		Assert.assertThat((got.get(7)).ranking.intValue(), is(49));
+		Assert.assertThat((got.get(8)).ranking.intValue(), is(49));
+		Assert.assertThat((got.get(9)).ranking.intValue(), is(49));
+		Assert.assertThat((got.get(10)).ranking.intValue(), is(49));
 	}
 
 	@Test
@@ -276,16 +276,16 @@ public class SearchStringExpression extends AbstractTest {
 		Assert.assertThat((got.get(8)).name.stringValue(), is("HUMMER"));
 		Assert.assertThat((got.get(9)).name.stringValue(), is("SUBARU"));
 		Assert.assertThat((got.get(10)).name.stringValue(), is("VOLVO"));
-		Assert.assertThat((got.get(0)).ranking.intValue(), is(71));
-		Assert.assertThat((got.get(1)).ranking.intValue(), is(71));
-		Assert.assertThat((got.get(2)).ranking.intValue(), is(55));
-		Assert.assertThat((got.get(3)).ranking.intValue(), is(55));
-		Assert.assertThat((got.get(4)).ranking.intValue(), is(55));
-		Assert.assertThat((got.get(5)).ranking.intValue(), is(55));
-		Assert.assertThat((got.get(6)).ranking.intValue(), is(33));
-		Assert.assertThat((got.get(7)).ranking.intValue(), is(16));
-		Assert.assertThat((got.get(8)).ranking.intValue(), is(16));
-		Assert.assertThat((got.get(9)).ranking.intValue(), is(16));
-		Assert.assertThat((got.get(10)).ranking.intValue(), is(16));
+		Assert.assertThat((got.get(0)).ranking.intValue(), is(214));
+		Assert.assertThat((got.get(1)).ranking.intValue(), is(214));
+		Assert.assertThat((got.get(2)).ranking.intValue(), is(165));
+		Assert.assertThat((got.get(3)).ranking.intValue(), is(165));
+		Assert.assertThat((got.get(4)).ranking.intValue(), is(165));
+		Assert.assertThat((got.get(5)).ranking.intValue(), is(165));
+		Assert.assertThat((got.get(6)).ranking.intValue(), is(99));
+		Assert.assertThat((got.get(7)).ranking.intValue(), is(49));
+		Assert.assertThat((got.get(8)).ranking.intValue(), is(49));
+		Assert.assertThat((got.get(9)).ranking.intValue(), is(49));
+		Assert.assertThat((got.get(10)).ranking.intValue(), is(49));
 	}
 }

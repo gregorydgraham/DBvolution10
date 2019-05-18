@@ -30,28 +30,19 @@
  */
 package nz.co.gregs.dbvolution.expressions.search;
 
-import nz.co.gregs.dbvolution.expressions.AnyExpression;
+import nz.co.gregs.dbvolution.expressions.NumberExpression;
+import nz.co.gregs.dbvolution.expressions.SortProvider;
 
-public class ExpressionAlias {
+/**
+ *
+ * @author gregorygraham
+ */
+public interface HasRankingExpression {
 
-	private final AnyExpression<?,?,?> expr;
-	private final String alias;
+	SortProvider ascending();
 
-	public ExpressionAlias(AnyExpression<?,?,?> column, String alias) {
-		this.expr = column;
-		this.alias = alias;
-	}
+	SortProvider descending();
 
-	public ExpressionAlias(AnyExpression<?,?,?> column) {
-		this(column, "");
-	}
-
-	public AnyExpression<?,?,?> getExpr() {
-		return expr;
-	}
-
-	public String getAlias() {
-		return alias;
-	}
-
+	NumberExpression getRankingExpression();
+	
 }

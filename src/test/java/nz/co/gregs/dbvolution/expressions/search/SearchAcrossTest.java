@@ -28,9 +28,9 @@ import static org.hamcrest.Matchers.*;
 import org.junit.Assert;
 import org.junit.Test;
 
-public class SearchAcrossExpression extends AbstractTest {
+public class SearchAcrossTest extends AbstractTest {
 
-	public SearchAcrossExpression(Object testIterationName, Object db) {
+	public SearchAcrossTest(Object testIterationName, Object db) {
 		super(testIterationName, db);
 	}
 
@@ -39,7 +39,7 @@ public class SearchAcrossExpression extends AbstractTest {
 		private static final long serialVersionUID = 1L;
 
 		@DBColumn
-		public DBNumber ranking = SearchAcross.start()
+		public DBNumber ranking = SearchAcross.empty()
 				.addTerm("R")
 				.addPreferredTerm("o")
 				.addReducedTerm("l")
@@ -56,11 +56,11 @@ public class SearchAcrossExpression extends AbstractTest {
 		marq.name.clear();
 		DBQuery query = database.getDBQuery(marq);
 		final SearchAcross searchString
-				= new SearchAcross()
+				= SearchAcross
+						.search(marq.column(marq.name), "name")
 						.addTerm("n")
 						.addQuotedTerm("ho")
 						.addReducedTerm("r")
-						.addSearchColumn(marq.column(marq.name), "name")
 						.addSearchColumn(marq.column(marq.numericCode).stringResult(), "code");
 
 		query.addExpressionColumn(
@@ -72,15 +72,15 @@ public class SearchAcrossExpression extends AbstractTest {
 				marq.column(marq.name).ascending()
 		);
 
-//		query.printSQLForQuery();
-//		List<DBQueryRow> rows = query.setBlankQueryAllowed(true).getAllRows();
-//		int i = 0;
-//		for (DBQueryRow row : rows) {
-//			final SearchAcrossMarque marque = row.get(marq);
-//			String rank = rows.get(i).getExpressionColumnValue(this).getValue().toString();
-//			System.out.println("ROW:  name: " + marque.name + " \tRANK: " + rank + " \tnumericcode:" + marque.numericCode);
-//			i++;
-//		}
+		query.printSQLForQuery();
+		List<DBQueryRow> rows = query.setBlankQueryAllowed(true).getAllRows();
+		int i = 0;
+		for (DBQueryRow row : rows) {
+			final SearchAcrossMarque marque = row.get(marq);
+			String rank = rows.get(i).getExpressionColumnValue(this).getValue().toString();
+			System.out.println("ROW:  name: " + marque.name + " \tRANK: " + rank + " \tnumericcode:" + marque.numericCode);
+			i++;
+		}
 
 		query.addCondition(
 				searchString.getComparisonExpression()
