@@ -72,15 +72,15 @@ public class SearchAcrossTest extends AbstractTest {
 				marq.column(marq.name).ascending()
 		);
 
-		query.printSQLForQuery();
-		List<DBQueryRow> rows = query.setBlankQueryAllowed(true).getAllRows();
-		int i = 0;
-		for (DBQueryRow row : rows) {
-			final SearchAcrossMarque marque = row.get(marq);
-			String rank = rows.get(i).getExpressionColumnValue(this).getValue().toString();
-			System.out.println("ROW:  name: " + marque.name + " \tRANK: " + rank + " \tnumericcode:" + marque.numericCode);
-			i++;
-		}
+//		query.printSQLForQuery();
+//		List<DBQueryRow> rows = query.setBlankQueryAllowed(true).getAllRows();
+//		int i = 0;
+//		for (DBQueryRow row : rows) {
+//			final SearchAcrossMarque marque = row.get(marq);
+//			String rank = rows.get(i).getExpressionColumnValue(this).getValue().toString();
+//			System.out.println("ROW:  name: " + marque.name + " \tRANK: " + rank + " \tnumericcode:" + marque.numericCode);
+//			i++;
+//		}
 
 		query.addCondition(
 				searchString.getComparisonExpression()
