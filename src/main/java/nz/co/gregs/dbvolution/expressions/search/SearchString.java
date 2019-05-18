@@ -100,21 +100,18 @@ public class SearchString extends SearchAbstract {
 	 * searchForRanking produces a number value that can be used for sorting. </p>
 	 *
 	 * @param expression
-	 * @return A numeric representation of the expression's relationship to the search string
+	 * @return A numeric representation of the expression's relationship to the
+	 * search string
 	 */
 	public NumberExpression getRankingExpression(StringExpression expression) {
 		StringExpression stringExpression = expression;
-		try {
-			NumberExpression expr = NumberExpression.value(0.0);
-			final SearchString.Term[] searchTerms = this.getSearchTerms();
-			for (SearchString.Term term : searchTerms) {
-				NumberExpression newExpr = getRankingExpressionForTerm(stringExpression, term, term.getAlias());
-				expr = expr.plus(newExpr);
-			}
-			return expr;
-		} catch (SearchString.NothingToSearchFor ex) {
-			return NumberExpression.value(-1.0);
+		NumberExpression expr = NumberExpression.value(0.0);
+		final SearchString.Term[] searchTerms = this.getSearchTerms();
+		for (SearchString.Term term : searchTerms) {
+			NumberExpression newExpr = getRankingExpressionForTerm(stringExpression, term, term.getAlias());
+			expr = expr.plus(newExpr);
 		}
+		return expr;
 	}
 
 	public BooleanExpression getComparisonExpression(StringExpression col) {

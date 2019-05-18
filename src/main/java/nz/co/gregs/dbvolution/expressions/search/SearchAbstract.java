@@ -84,11 +84,12 @@ public abstract class SearchAbstract {
 		setSearchString(search);
 	}
 
-	protected void setSearchString(String search) {
+	protected SearchAbstract setSearchString(String search) {
 		this.searchString = search;
+		return this;
 	}
 
-	public SearchAbstract add(String string) {
+	public SearchAbstract addToSearchString(String string) {
 		if (getSearchString().isEmpty()) {
 			this.searchString += string;
 		} else {
@@ -97,25 +98,25 @@ public abstract class SearchAbstract {
 		return this;
 	}
 
-	public SearchAbstract addQuotedTerm(String string) {
-		return add("\"" + string + "\"");
+	public SearchAbstract addQuotedTermToSearchString(String string) {
+		return addToSearchString("\"" + string + "\"");
 	}
 
-	public SearchAbstract addPreferredTerm(String string) {
+	public SearchAbstract addPreferredTermToSearchString(String string) {
 		for (String str : string.split(" ")) {
-			add("+" + str);
+			addToSearchString("+" + str);
 		}
 		return this;
 	}
 
-	public SearchAbstract addReducedTerm(String string) {
+	public SearchAbstract addReducedTermToSearchString(String string) {
 		for (String str : string.split(" ")) {
-			add("-" + str);
+			addToSearchString("-" + str);
 		}
 		return this;
 	}
 
-	protected final Term[] getSearchTerms() throws NothingToSearchFor {
+	protected final Term[] getSearchTerms() {
 		List<Term> terms = new ArrayList<>();
 		Matcher matcher = TERM_PATTERN.matcher(getSearchString());
 		while (matcher.find()) {
@@ -136,26 +137,22 @@ public abstract class SearchAbstract {
 
 	private static final int WHOLE_MATCH_GROUP = 0;
 
-	protected NumberExpression getRankingExpression(ExpressionAlias col) {
+	protected final NumberExpression getRankingExpression(ExpressionAlias col) {
 		final AnyExpression<?, ?, ?> column = col.getExpr();
 		if (column instanceof ExpressionHasStandardStringResult) {
 			StringExpression stringExpression = ((ExpressionHasStandardStringResult) column).stringResult();
-			try {
-				NumberExpression expr = new NumberExpression(0);
-				final Term[] searchTerms = this.getSearchTerms();
-				for (SearchAcross.Term term : searchTerms) {
-					NumberExpression newExpr = getRankingExpressionForTerm(stringExpression, term, col.getAlias());
-					expr = expr.plus(newExpr);
-				}
-				return expr;
-			} catch (NothingToSearchFor ex) {
-				return NumberExpression.value(-1.0);
+			NumberExpression expr = new NumberExpression(0);
+			final Term[] searchTerms = this.getSearchTerms();
+			for (SearchAcross.Term term : searchTerms) {
+				NumberExpression newExpr = getRankingExpressionForTerm(stringExpression, term, col.getAlias());
+				expr = expr.plus(newExpr);
 			}
+			return expr;
 		}
 		return NumberExpression.value(-1.0);
 	}
 
-	protected NumberExpression getRankingExpressionForTerm(StringExpression stringExpression, Term term, String columnAlias) {
+	protected final NumberExpression getRankingExpressionForTerm(StringExpression stringExpression, Term term, String columnAlias) {
 		if (term.hasString()
 				&& (term.hasNoAlias() || term.aliasMatches(columnAlias))) {
 			NumberExpression newExpr
@@ -178,21 +175,13 @@ public abstract class SearchAbstract {
 	/**
 	 * @return the searchString
 	 */
-	protected String getSearchString() {
+	protected final String getSearchString() {
 		return searchString;
 	}
 
-	public SearchAbstract addAliasedTerm(String string, String alias) {
-		add(alias + ":" + string);
+	protected SearchAbstract addAliasedTermToSearchString(String string, String alias) {
+		addToSearchString(alias + ":" + string);
 		return this;
-	}
-
-	public static class NothingToSearchFor extends Exception {
-
-		private final static long serialVersionUID = 1l;
-
-		public NothingToSearchFor() {
-		}
 	}
 
 	public static class Term {

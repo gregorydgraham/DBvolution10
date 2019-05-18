@@ -66,6 +66,10 @@ import nz.co.gregs.dbvolution.expressions.StringExpression;
  */
 public class SearchAcross extends SearchAbstract {
 
+	public static SearchAcross start() {
+		return new SearchAcross();
+	}
+
 	private final List<ExpressionAlias> columnsToSearch = new ArrayList<>();
 
 	public SearchAcross() {
@@ -89,7 +93,7 @@ public class SearchAcross extends SearchAbstract {
 		return theExpr.plus(0).bracket();
 	}
 
-	public SearchAcross andSearchAcross(StringExpression column, String name) {
+	public SearchAcross addSearchColumn(StringExpression column, String name) {
 		this.columnsToSearch.add(new ExpressionAlias(column, name));
 		return this;
 	}
@@ -102,33 +106,28 @@ public class SearchAcross extends SearchAbstract {
 		return this.getRankingExpression().descending();
 	}
 
-	@Override
-	public SearchAcross add(String string) {
-		super.add(string);
+	public SearchAcross addTerm(String string) {
+		super.addToSearchString(string);
 		return this;
 	}
 
-	@Override
 	public SearchAcross addAliasedTerm(String string, String alias) {
-		super.addAliasedTerm(string, alias);
+		super.addAliasedTermToSearchString(string, alias);
 		return this;
 	}
 
-	@Override
 	public SearchAcross addQuotedTerm(String string) {
-		super.addQuotedTerm(string);
+		super.addQuotedTermToSearchString(string);
 		return this;
 	}
 
-	@Override
 	public SearchAcross addPreferredTerm(String string) {
-		super.addPreferredTerm(string);
+		super.addPreferredTermToSearchString(string);
 		return this;
 	}
 
-	@Override
 	public SearchAcross addReducedTerm(String string) {
-		super.addReducedTerm(string);
+		super.addReducedTermToSearchString(string);
 		return this;
 	}
 
