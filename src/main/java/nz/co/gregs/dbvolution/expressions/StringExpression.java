@@ -1248,6 +1248,14 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 			return new BooleanExpression(new StringIsNotExpression(this, equivalentString));
 		}
 	}
+	
+	public BooleanExpression isEmpty(){
+		return this.length().is(0);
+	}
+	
+	public BooleanExpression isNotEmpty(){
+		return this.length().isGreaterThan(0);
+	}
 
 	/**
 	 * Performs searches based on a range.
