@@ -335,6 +335,18 @@ public class PropertyWrapper implements Serializable {
 	}
 
 	/**
+	 * Indicates whether this property is a primary key.
+	 *
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
+	 * @return {@code true} if this property is a primary key
+	 */
+	public boolean isNotPrimaryKey() {
+		return !isPrimaryKey();
+	}
+
+	/**
 	 * Indicates whether this property is a foreign key.
 	 *
 	 * <p style="color: #F90;">Support DBvolution at
