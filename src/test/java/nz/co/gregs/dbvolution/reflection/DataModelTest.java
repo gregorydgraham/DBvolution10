@@ -139,13 +139,13 @@ public class DataModelTest extends AbstractTest {
 	@Test
 	public void testGetDBRowClasses() {
 		Set<Class<? extends DBRow>> result = DataModel.getDBRowSubclasses();
-		Assert.assertThat(result.size(), is(263));
+		Assert.assertThat(result.size(), is(264));
 	}
 
 	@Test
 	public void testGetDBRowDirectSubclasses() {
 		Set<Class<? extends DBRow>> result = DataModel.getDBRowDirectSubclasses();
-		Assert.assertThat(result.size(), is(108));
+		Assert.assertThat(result.size(), is(109));
 	}
 
 	@Test
