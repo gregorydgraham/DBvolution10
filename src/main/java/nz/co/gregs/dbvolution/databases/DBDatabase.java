@@ -545,6 +545,54 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 
 	/**
 	 *
+	 * Inserts or updates DBRows into the correct tables automatically
+	 *
+	 * @param row a DBRow
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @return a DBActionList of all the actions performed
+	 * @throws SQLException database exceptions
+	 */
+	public final DBActionList save(DBRow row) throws SQLException {
+		DBActionList changes = new DBActionList();
+		final DBTable<DBRow> table = this.getDBTable(row);
+		changes.addAll(table.save(row));
+		return changes;
+	}
+	/**
+	 *
+	 * Inserts or updates DBRows into the correct tables automatically
+	 *
+	 * @param rows a DBRow
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @return a DBActionList of all the actions performed
+	 * @throws SQLException database exceptions
+	 */
+	public final DBActionList save(DBRow... rows) throws SQLException {
+		return save(Arrays.asList(rows));
+	}
+
+	/**
+	 *
+	 * Inserts or updates DBRows into the correct tables automatically
+	 *
+	 * @param rows a DBRow
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @return a DBActionList of all the actions performed
+	 * @throws SQLException database exceptions
+	 */
+	public final DBActionList save(Collection<DBRow> rows) throws SQLException {
+		DBActionList actions = new DBActionList();
+		for (DBRow row : rows) {
+			actions.addAll(save(row));
+		}
+		return actions;
+	}
+
+	/**
+	 *
 	 * Inserts DBRows into the correct tables automatically
 	 *
 	 * @param row a list of DBRows
@@ -596,6 +644,34 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 			}
 		}
 		return changes;
+	}
+
+	/**
+	 *
+	 * Inserts DBRows and Lists of DBRows into the correct tables automatically
+	 *
+	 * @param listOfRowsToInsert a List of DBRows
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @return a DBActionList of all the actions performed
+	 * @throws SQLException database exceptions
+	 */
+	public final DBActionList insertOrUpdate(Collection<? extends DBRow> listOfRowsToInsert) throws SQLException {
+		DBActionList changes = new DBActionList();
+		if (listOfRowsToInsert.size() > 0) {
+			for (DBRow row : listOfRowsToInsert) {
+				changes.addAll(this.getDBTable(row).insertOrUpdate(row));
+			}
+		}
+		return changes;
+	}
+
+	protected DBActionList updateAnyway(List<DBRow> rows) throws SQLException {
+		DBActionList actions = new DBActionList();
+		for (DBRow row : rows) {
+			actions.addAll(this.getDBTable(row).updateAnyway(row));
+		}
+		return actions;
 	}
 
 	/**
@@ -1714,7 +1790,7 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 	 * @return the DBDefinition used by this DBDatabase instance
 	 */
 	public synchronized DBDefinition getDefinition() throws NoAvailableDatabaseException {
-		return definition; 
+		return definition;
 	}
 
 	/**
@@ -1733,7 +1809,7 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 	protected synchronized final void setDefinition(DBDefinition defn) {
 		if (definition == null) {
 			definition = defn;
-		}else if(defn!=null && definition.getClass()!=defn.getClass()){
+		} else if (defn != null && definition.getClass() != defn.getClass()) {
 			definition = defn;
 		}
 	}

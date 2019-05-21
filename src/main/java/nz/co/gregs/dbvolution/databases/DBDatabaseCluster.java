@@ -29,7 +29,6 @@
 package nz.co.gregs.dbvolution.databases;
 
 import nz.co.gregs.dbvolution.utility.ReconnectionProcess;
-import nz.co.gregs.dbvolution.utility.RegularProcess;
 import java.lang.reflect.InvocationTargetException;
 import nz.co.gregs.dbvolution.internal.database.ClusterDetails;
 import nz.co.gregs.dbvolution.exceptions.UnableToRemoveLastDatabaseFromClusterException;
@@ -57,7 +56,6 @@ import nz.co.gregs.dbvolution.actions.DBActionList;
 import nz.co.gregs.dbvolution.actions.DBQueryable;
 import nz.co.gregs.dbvolution.databases.definitions.ClusterDatabaseDefinition;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
-import nz.co.gregs.dbvolution.databases.definitions.H2DBDefinition;
 import nz.co.gregs.dbvolution.exceptions.AccidentalBlankQueryException;
 import nz.co.gregs.dbvolution.exceptions.AccidentalCartesianJoinException;
 import nz.co.gregs.dbvolution.exceptions.AccidentalDroppingOfDatabaseException;
@@ -1249,14 +1247,24 @@ public class DBDatabaseCluster extends DBDatabase {
 										final DBTable<DBRow> primaryData = primaryTable.setBlankQueryAllowed(true).setTimeoutToForever();
 										// Check that the new database has data
 										if (secondaryTableCount == 0) {
+											LOG.info("CLUSTER FILLING NEW DATABASE TABLE");
 											List<DBRow> allRows = primaryData.getAllRows();
 											secondaryTable.insert(allRows);
 										} else if (!secondaryTableCount.equals(primaryTableCount)) {
 											// Something is different in the data so correct it
+											LOG.info("CLUSTER REBUILDING NEW DATABASE TABLE");
 											secondary.deleteAll(table);
 											List<DBRow> allRows = primaryData.getAllRows();
 											secondary.insert(allRows);
+										} else {
+											//ensure the rows are the same with a forced update
+											LOG.info("CLUSTER UPDATING NEW DATABASE TABLE");
+											List<DBRow> allRows = primaryData.getAllRows();
+											secondary.updateAnyway(allRows);
 										}
+									} else if (secondaryTableCount > 0) {
+										LOG.info("CLUSTER EMPTYING NEW DATABASE TABLE");
+										secondary.deleteAll(table);
 									}
 								}
 							}

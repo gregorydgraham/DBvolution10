@@ -60,8 +60,8 @@ import nz.co.gregs.dbvolution.example.Marque;
 import nz.co.gregs.dbvolution.exceptions.AccidentalBlankQueryException;
 import nz.co.gregs.dbvolution.exceptions.AccidentalCartesianJoinException;
 import nz.co.gregs.dbvolution.exceptions.AutoCommitActionDuringTransactionException;
-import nz.co.gregs.dbvolution.exceptions.NoAvailableDatabaseException;
 import nz.co.gregs.dbvolution.exceptions.UnableToRemoveLastDatabaseFromClusterException;
+import nz.co.gregs.dbvolution.exceptions.UnexpectedNumberOfRowsException;
 import nz.co.gregs.dbvolution.generic.AbstractTest;
 import org.hamcrest.Matchers;
 import static org.hamcrest.Matchers.*;
@@ -151,6 +151,70 @@ public class DBDatabaseClusterTest extends AbstractTest {
 
 			Assert.assertThat(soloDB.getDBTable(testTable).count(), is(0l));
 			Assert.assertThat(slowSynchingDB.getDBTable(testTable).count(), is(0l));
+		} finally {
+			cluster.dismantle();
+		}
+	}
+
+	@Test
+	public synchronized void testAutomaticDataUpdating() throws SQLException, InterruptedException, UnexpectedNumberOfRowsException {
+		final DBDatabaseClusterTestTable2 testTable = new DBDatabaseClusterTestTable2();
+
+		DBDatabaseCluster cluster
+				= new DBDatabaseCluster(
+						"testAutomaticDataUpdating",
+						new DBDatabaseCluster.Configuration(false, false),
+						database);
+		try {
+			Assert.assertTrue(cluster.tableExists(testTable));
+			final DBTable<DBDatabaseClusterTestTable2> query = cluster
+					.getDBTable(testTable)
+					.setBlankQueryAllowed(true);
+			final List<DBDatabaseClusterTestTable2> allRows = query.getAllRows();
+
+			cluster.delete(allRows);
+
+			Date firstDate = new Date();
+			Date secondDate = new Date();
+			List<DBDatabaseClusterTestTable2> data = createData2(firstDate, secondDate);
+
+			cluster.insert(data);
+
+			Assert.assertThat(cluster.getDBTable(testTable).count(), is(22l));
+
+			H2MemoryDB soloDB = new H2MemoryDB("SoloTestAutomaticDataUpdating", "who", "what", true);
+
+			Assert.assertTrue(soloDB.tableExists(testTable));
+			Assert.assertThat(soloDB.getDBTable(testTable).count(), is(0l));
+
+			cluster.addDatabase(soloDB);
+
+			Assert.assertThat(cluster.getDBTable(testTable).count(), is(22l));
+			Assert.assertThat(soloDB.getDBTable(testTable).count(), is(22l));
+
+			cluster.removeDatabase(soloDB);
+			DBDatabaseClusterTestTable2 example = new DBDatabaseClusterTestTable2();
+			example.uidMarque.permittedValues(1);
+			DBDatabaseClusterTestTable2 row = soloDB.getDBTable(example).getOnlyRow();
+			row.isUsedForTAFROs.setValue("ANYTHING");
+			soloDB.update(row);
+			
+			row = soloDB.getDBTable(example).getOnlyRow();
+			Assert.assertThat(row.isUsedForTAFROs.getValue(), is("ANYTHING"));
+			
+			cluster.setPrintSQLBeforeExecuting(true);
+			
+			cluster.addDatabaseAndWait(soloDB);
+			
+			Assert.assertThat(cluster.getDBTable(testTable).count(), is(22l));
+			Assert.assertThat(database.getDBTable(testTable).count(), is(22l));
+			Assert.assertThat(soloDB.getDBTable(testTable).count(), is(22l));
+			
+			example = new DBDatabaseClusterTestTable2();
+			example.uidMarque.permittedValues(1);
+			row = soloDB.getDBTable(example).getOnlyRow();
+			Assert.assertThat(row.isUsedForTAFROs.getValue(), is("False"));
+			
 		} finally {
 			cluster.dismantle();
 		}
@@ -649,6 +713,84 @@ public class DBDatabaseClusterTest extends AbstractTest {
 		}
 
 		public DBDatabaseClusterTestTable(int uidMarque, String isUsedForTAFROs, int statusClass, String intIndividualAllocationsAllowed, Integer updateCount, String autoCreated, String name, String pricingCodePrefix, String reservationsAllowed, Date creationDate, int carCompany, Boolean enabled) {
+			this.uidMarque.setValue(uidMarque);
+			this.isUsedForTAFROs.setValue(isUsedForTAFROs);
+			this.statusClassID.setValue(statusClass);
+			this.individualAllocationsAllowed.setValue(intIndividualAllocationsAllowed);
+			this.updateCount.setValue(updateCount);
+			this.auto_created.setValue(autoCreated);
+			this.name.setValue(name);
+			this.pricingCodePrefix.setValue(pricingCodePrefix);
+			this.reservationsAllowed.setValue(reservationsAllowed);
+			this.creationDate.setValue(creationDate);
+			this.carCompany.setValue(carCompany);
+			this.enabled.setValue(enabled);
+		}
+	}
+
+	private List<DBDatabaseClusterTestTable2> createData2(Date firstDate, Date secondDate) {
+		List<DBDatabaseClusterTestTable2> data = new ArrayList<>();
+		data.add(new DBDatabaseClusterTestTable2(4893059, "True", 1246974, null, 3, "UV", "PEUGEOT", null, "Y", null, 4, true));
+		data.add(new DBDatabaseClusterTestTable2(4893090, "False", 1246974, "", 1, "UV", "FORD", "", "Y", firstDate, 2, false));
+		data.add(new DBDatabaseClusterTestTable2(4893101, "False", 1246974, "", 2, "UV", "HOLDEN", "", "Y", firstDate, 3, null));
+		data.add(new DBDatabaseClusterTestTable2(4893112, "False", 1246974, "", 2, "UV", "MITSUBISHI", "", "Y", firstDate, 4, null));
+		data.add(new DBDatabaseClusterTestTable2(4893150, "False", 1246974, "", 3, "UV", "SUZUKI", "", "Y", firstDate, 4, null));
+		data.add(new DBDatabaseClusterTestTable2(4893263, "False", 1246974, "", 2, "UV", "HONDA", "", "Y", firstDate, 4, null));
+		data.add(new DBDatabaseClusterTestTable2(4893353, "False", 1246974, "", 4, "UV", "NISSAN", "", "Y", firstDate, 4, null));
+		data.add(new DBDatabaseClusterTestTable2(4893557, "False", 1246974, "", 2, "UV", "SUBARU", "", "Y", firstDate, 4, null));
+		data.add(new DBDatabaseClusterTestTable2(4894018, "False", 1246974, "", 2, "UV", "MAZDA", "", "Y", firstDate, 4, null));
+		data.add(new DBDatabaseClusterTestTable2(4895203, "False", 1246974, "", 2, "UV", "ROVER", "", "Y", firstDate, 4, null));
+		data.add(new DBDatabaseClusterTestTable2(4896300, "False", 1246974, null, 2, "UV", "HYUNDAI", null, "Y", firstDate, 1, null));
+		data.add(new DBDatabaseClusterTestTable2(4899527, "False", 1246974, "", 1, "UV", "JEEP", "", "Y", firstDate, 3, null));
+		data.add(new DBDatabaseClusterTestTable2(7659280, "False", 1246972, "Y", 3, "", "DAIHATSU", "", "Y", firstDate, 4, null));
+		data.add(new DBDatabaseClusterTestTable2(7681544, "False", 1246974, "", 2, "UV", "LANDROVER", "", "Y", firstDate, 4, null));
+		data.add(new DBDatabaseClusterTestTable2(7730022, "False", 1246974, "", 2, "UV", "VOLVO", "", "Y", firstDate, 4, null));
+		data.add(new DBDatabaseClusterTestTable2(8376505, "False", 1246974, "", null, "", "ISUZU", "", "Y", firstDate, 4, null));
+		data.add(new DBDatabaseClusterTestTable2(8587147, "False", 1246974, "", null, "", "DAEWOO", "", "Y", firstDate, 4, null));
+		data.add(new DBDatabaseClusterTestTable2(9971178, "False", 1246974, "", 1, "", "CHRYSLER", "", "Y", firstDate, 4, null));
+		data.add(new DBDatabaseClusterTestTable2(13224369, "False", 1246974, "", 0, "", "VW", "", "Y", secondDate, 4, null));
+		data.add(new DBDatabaseClusterTestTable2(6664478, "False", 1246974, "", 0, "", "BMW", "", "Y", secondDate, 4, null));
+		data.add(new DBDatabaseClusterTestTable2(1, "False", 1246974, "", 0, "", "TOYOTA", "", "Y", firstDate, 1, true));
+		data.add(new DBDatabaseClusterTestTable2(2, "False", 1246974, "", 0, "", "HUMMER", "", "Y", secondDate, 3, null));
+
+		return data;
+	}
+	@DBRequiredTable
+	public static class DBDatabaseClusterTestTable2 extends DBRow {
+
+		public static final long serialVersionUID = 1L;
+		@DBColumn(value = "NUMERIC_CODE")
+		public nz.co.gregs.dbvolution.datatypes.DBNumber numericCode = new DBNumber();
+		@nz.co.gregs.dbvolution.annotations.DBColumn(value = "UID_MARQUE")
+		@nz.co.gregs.dbvolution.annotations.DBPrimaryKey
+		public nz.co.gregs.dbvolution.datatypes.DBInteger uidMarque = new DBInteger();
+		@nz.co.gregs.dbvolution.annotations.DBColumn(value = "ISUSEDFORTAFROS")
+		public nz.co.gregs.dbvolution.datatypes.DBString isUsedForTAFROs = new DBString();
+		@nz.co.gregs.dbvolution.annotations.DBColumn(value = "FK_TOYSTATUSCLASS")
+		public nz.co.gregs.dbvolution.datatypes.DBNumber statusClassID = new DBNumber();
+		@nz.co.gregs.dbvolution.annotations.DBColumn(value = "INTINDALLOCALLOWED")
+		public nz.co.gregs.dbvolution.datatypes.DBString individualAllocationsAllowed = new DBString();
+		@nz.co.gregs.dbvolution.annotations.DBColumn(value = "UPD_COUNT")
+		public nz.co.gregs.dbvolution.datatypes.DBInteger updateCount = new DBInteger();
+		@nz.co.gregs.dbvolution.annotations.DBColumn(value = "AUTO_CREATED")
+		public nz.co.gregs.dbvolution.datatypes.DBString auto_created = new DBString();
+		@nz.co.gregs.dbvolution.annotations.DBColumn(value = "NAME")
+		public nz.co.gregs.dbvolution.datatypes.DBString name = new DBString();
+		@nz.co.gregs.dbvolution.annotations.DBColumn(value = "PRICINGCODEPREFIX")
+		public nz.co.gregs.dbvolution.datatypes.DBString pricingCodePrefix = new DBString();
+		@nz.co.gregs.dbvolution.annotations.DBColumn(value = "RESERVATIONSALWD")
+		public nz.co.gregs.dbvolution.datatypes.DBString reservationsAllowed = new DBString();
+		@nz.co.gregs.dbvolution.annotations.DBColumn(value = "CREATION_DATE")
+		public nz.co.gregs.dbvolution.datatypes.DBDate creationDate = new DBDate();
+		@nz.co.gregs.dbvolution.annotations.DBColumn(value = "ENABLED")
+		public nz.co.gregs.dbvolution.datatypes.DBBoolean enabled = new DBBoolean();
+		@nz.co.gregs.dbvolution.annotations.DBColumn(value = "FK_CARCOMPANY")
+		public nz.co.gregs.dbvolution.datatypes.DBInteger carCompany = new DBInteger();
+
+		public DBDatabaseClusterTestTable2() {
+		}
+
+		public DBDatabaseClusterTestTable2(int uidMarque, String isUsedForTAFROs, int statusClass, String intIndividualAllocationsAllowed, Integer updateCount, String autoCreated, String name, String pricingCodePrefix, String reservationsAllowed, Date creationDate, int carCompany, Boolean enabled) {
 			this.uidMarque.setValue(uidMarque);
 			this.isUsedForTAFROs.setValue(isUsedForTAFROs);
 			this.statusClassID.setValue(statusClass);

@@ -19,6 +19,7 @@ import nz.co.gregs.dbvolution.databases.DBDatabase;
 import java.io.PrintStream;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
@@ -550,7 +551,8 @@ public class DBTable<E extends DBRow> {
 	}
 
 	/**
-	 * The same as {@link #print()} but allows you to specify the PrintStream required.
+	 * The same as {@link #print()} but allows you to specify the PrintStream
+	 * required.
 	 *
 	 * For example: myTable.printAllRows(System.err);
 	 *
@@ -565,6 +567,26 @@ public class DBTable<E extends DBRow> {
 	}
 
 	/**
+	 * Inserts DBRow into the database.
+	 *
+	 * @param row
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @return a DBActionList of all the actions performed 1 Database exceptions
+	 * may be thrown
+	 * @throws java.sql.SQLException java.sql.SQLException
+	 */
+	public final DBActionList insert(E row) throws SQLException {
+		return DBInsert.save(database, row);
+//		DBActionList actions = new DBActionList();
+//		for (E row : newRows) {
+//			actions.addAll(DBInsert.save(database, row));
+//		}
+//		query.refreshQuery();
+//		return actions;
+	}
+
+	/**
 	 * Inserts DBRows into the database.
 	 *
 	 * @param newRows	newRows
@@ -576,12 +598,13 @@ public class DBTable<E extends DBRow> {
 	 */
 	@SafeVarargs
 	public final DBActionList insert(E... newRows) throws SQLException {
-		DBActionList actions = new DBActionList();
-		for (E row : newRows) {
-			actions.addAll(DBInsert.save(database, row));
-		}
-		query.refreshQuery();
-		return actions;
+		return insert(Arrays.asList(newRows));
+//		DBActionList actions = new DBActionList();
+//		for (E row : newRows) {
+//			actions.addAll(DBInsert.save(database, row));
+//		}
+//		query.refreshQuery();
+//		return actions;
 	}
 
 	/**
@@ -589,19 +612,179 @@ public class DBTable<E extends DBRow> {
 	 * Inserts DBRows into the database
 	 *
 	 * @param newRows	newRows
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a DBActionList of all the actions performed 1 Database exceptions
 	 * may be thrown
 	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
 	public DBActionList insert(Collection<E> newRows) throws SQLException {
 		DBActionList changes = new DBActionList();
-		for (DBRow row : newRows) {
-			changes.addAll(DBInsert.save(database, row));
+		for (E row : newRows) {
+			changes.addAll(insert(row));
 		}
 		query.refreshQuery();
 		return changes;
+	}
+
+	/**
+	 *
+	 * Inserts DBRows into the database
+	 *
+	 * @param row
+	 * @return a DBActionList of all the actions performed 1 Database exceptions
+	 * may be thrown
+	 * @throws java.sql.SQLException java.sql.SQLException
+	 */
+	public DBActionList insertOrUpdate(E row) throws SQLException {
+		DBActionList changes = new DBActionList();
+		try {
+			changes.addAll(insert(row));
+		} catch (SQLException exc1) {
+			try {
+				changes.addAll(update(row));
+			} catch (SQLException exc2) {
+				throw exc1;
+			}
+		}
+		query.refreshQuery();
+		return changes;
+	}
+
+	/**
+	 *
+	 * Inserts DBRows into the database
+	 *
+	 * @param rows
+	 * @return a DBActionList of all the actions performed 1 Database exceptions
+	 * may be thrown
+	 * @throws java.sql.SQLException java.sql.SQLException
+	 */
+	@SafeVarargs
+	public final DBActionList insertOrUpdate(E... rows) throws SQLException {
+		return this.insertOrUpdate(Arrays.asList(rows));
+	}
+
+	/**
+	 *
+	 * Inserts DBRows into the database
+	 *
+	 * @param newRows	newRows
+	 * @return a DBActionList of all the actions performed 1 Database exceptions
+	 * may be thrown
+	 * @throws java.sql.SQLException java.sql.SQLException
+	 */
+	public DBActionList insertOrUpdate(Collection<E> newRows) throws SQLException {
+		DBActionList changes = new DBActionList();
+		for (E row : newRows) {
+			try {
+				changes.addAll(insert(row));
+			} catch (SQLException exc1) {
+				try {
+					changes.addAll(update(row));
+				} catch (SQLException exc2) {
+					throw exc1;
+				}
+			}
+		}
+		query.refreshQuery();
+		return changes;
+	}
+
+	protected DBActionList updateAnyway(E row) throws SQLException {
+		DBActionList actions = new DBActionList();
+		actions.addAll(DBUpdateForcedOnSimpleTypesUsingPrimaryKey.updateAnyway(database, row));
+		return actions;
+	}
+
+	protected DBActionList updateAnyway(List<E> rows) throws SQLException {
+		DBActionList actions = new DBActionList();
+		for (E row : rows) {
+			actions.addAll(updateAnyway(row));
+		}
+		return actions;
+	}
+
+	@SafeVarargs
+	public final DBActionList updateAnyway(E... rows) throws SQLException {
+		return updateAnyway(Arrays.asList(rows));
+	}
+
+	/**
+	 *
+	 * Inserts or updates DBRows into the correct tables automatically
+	 *
+	 * <p>
+	 * If the row is already defined an update is attempted, and an insert if the
+	 * update fails.</p>
+	 *
+	 * <p>
+	 * Otherwise the row is inserted, and an updated is attempted if the insert
+	 * fails</p>
+	 *
+	 * @param row a DBRow
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @return a DBActionList of all the actions performed
+	 * @throws SQLException database exceptions
+	 */
+	public final DBActionList save(E row) throws SQLException {
+		DBActionList changes = new DBActionList();
+		DBActionList action;
+		if (row.getDefined()) {
+			try {
+				action = update(row);
+			} catch (SQLException sqlException) {
+				try {
+					action = insert(row);
+				} catch (SQLException exception2) {
+					throw sqlException;
+				}
+			}
+		} else {
+			try {
+				action = insert(row);
+			} catch (SQLException sqlException) {
+				try {
+					action = update(row);
+				} catch (SQLException exception2) {
+					throw sqlException;
+				}
+			}
+		}
+		changes.addAll(action);
+		return changes;
+	}
+
+	/**
+	 *
+	 * Inserts or updates DBRows into the correct tables automatically
+	 *
+	 * @param rows a DBRow
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @return a DBActionList of all the actions performed
+	 * @throws SQLException database exceptions
+	 */
+	@SafeVarargs
+	public final DBActionList save(E... rows) throws SQLException {
+		return save(Arrays.asList(rows));
+	}
+
+	/**
+	 *
+	 * Inserts or updates DBRows into the correct tables automatically
+	 *
+	 * @param row a DBRow
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @return a DBActionList of all the actions performed
+	 * @throws SQLException database exceptions
+	 */
+	public final DBActionList save(Collection<E> row) throws SQLException {
+		DBActionList actions = new DBActionList();
+		for (E e : row) {
+			actions.addAll(save(e));
+		}
+		return actions;
 	}
 
 	/**
@@ -1073,15 +1256,9 @@ public class DBTable<E extends DBRow> {
 		return returnList;
 	}
 
-//	public void mustIntersectWith(DBQuery dbQuery) {
-//		this.query.mustIntersectWith(dbQuery);
-//	}
-
 	public void printSQLForQuery() {
 		System.out.println(this.getSQLForQuery());
 	}
-
-	
 
 	/**
 	 * Changes the default timeout for this query.
@@ -1104,7 +1281,7 @@ public class DBTable<E extends DBRow> {
 		query.setTimeoutInMilliseconds(milliseconds);
 		return this;
 	}
-	
+
 	/**
 	 * Completely removes the timeout from this query.
 	 *
@@ -1120,12 +1297,12 @@ public class DBTable<E extends DBRow> {
 	 *
 	 * @return this DBQuery object
 	 */
-	public DBTable<E> clearTimeout(){
+	public DBTable<E> clearTimeout() {
 		query.clearTimeout();
 		return this;
 	}
-	
-	public DBTable<E> setTimeoutToForever(){
+
+	public DBTable<E> setTimeoutToForever() {
 		query.setTimeoutToForever();
 		return this;
 	}
