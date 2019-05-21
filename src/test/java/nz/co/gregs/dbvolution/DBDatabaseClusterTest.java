@@ -202,7 +202,7 @@ public class DBDatabaseClusterTest extends AbstractTest {
 			row = soloDB.getDBTable(example).getOnlyRow();
 			Assert.assertThat(row.isUsedForTAFROs.getValue(), is("ANYTHING"));
 			
-			cluster.setPrintSQLBeforeExecuting(true);
+//			cluster.setPrintSQLBeforeExecuting(true);
 			
 			cluster.addDatabaseAndWait(soloDB);
 			
@@ -260,8 +260,8 @@ public class DBDatabaseClusterTest extends AbstractTest {
 			try {
 				List<DBQueryRow> allRows = query.getAllRows();
 			} catch (SQLException | AccidentalBlankQueryException | AccidentalCartesianJoinException e) {
-				System.out.println("nz.co.gregs.dbvolution.DBDatabaseClusterTest.testLastDatabaseCannotBeRemovedAfterErrorInQuery()");
-				System.out.println(e.getMessage());
+//				System.out.println("nz.co.gregs.dbvolution.DBDatabaseClusterTest.testLastDatabaseCannotBeRemovedAfterErrorInQuery()");
+//				System.out.println(e.getMessage());
 			}
 			Assert.assertThat(cluster.size(), is(1));
 		} finally {
