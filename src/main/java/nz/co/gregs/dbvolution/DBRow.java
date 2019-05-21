@@ -767,6 +767,32 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 	 *
 	 * @return a list of all foreign keys, MINUS the ignored foreign keys
 	 */
+	public List<PropertyWrapper> getNonPrimaryKeyPropertyWrappers() {
+		synchronized (fkFields) {
+			if (fkFields.isEmpty()) {
+				List<PropertyWrapper> props = getWrapper().getForeignKeyPropertyWrappers();
+
+				for (PropertyWrapper prop : props) {
+					if (prop.isColumn()) {
+						if (!prop.isPrimaryKey()) {
+							if (!ignoredForeignKeys.contains(prop.getPropertyWrapperDefinition())) {
+								fkFields.add(prop);
+							}
+						}
+					}
+				}
+			}
+			return fkFields;
+		}
+	}
+
+	/**
+	 *
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
+	 * @return a list of all foreign keys, MINUS the ignored foreign keys
+	 */
 	public List<PropertyWrapper> getRecursiveForeignKeyPropertyWrappers() {
 //		System.out.println("nz.co.gregs.dbvolution.DBRow.getRecursiveForeignKeyPropertyWrappers()");
 		synchronized (fkFields) {
