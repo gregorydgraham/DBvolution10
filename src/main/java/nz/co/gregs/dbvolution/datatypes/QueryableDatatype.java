@@ -552,6 +552,14 @@ public abstract class QueryableDatatype<T> extends Object implements Serializabl
 	}
 
 	/**
+	 * Used internally
+	 *
+	 */
+	public void setChanged() {
+		changed = true;
+	}
+
+	/**
 	 *
 	 * Sets the value of this column to DBNull Also changes the operator to
 	 * DBIsNullOperator for comparisons
@@ -1108,7 +1116,7 @@ public abstract class QueryableDatatype<T> extends Object implements Serializabl
 	 */
 	protected void setChanged(boolean hasChanged) {
 		if (hasChanged) {
-			changed = true;
+			setChanged();
 		} else {
 			setUnchanged();
 		}
