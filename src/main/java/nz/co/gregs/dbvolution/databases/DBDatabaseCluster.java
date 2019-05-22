@@ -1247,23 +1247,23 @@ public class DBDatabaseCluster extends DBDatabase {
 										final DBTable<DBRow> primaryData = primaryTable.setBlankQueryAllowed(true).setTimeoutToForever();
 										// Check that the new database has data
 										if (secondaryTableCount == 0) {
-											LOG.info("CLUSTER FILLING NEW DATABASE TABLE");
+											LOG.info("CLUSTER FILLING NEW DATABASE TABLE "+table.getTableName());
 											List<DBRow> allRows = primaryData.getAllRows();
 											secondaryTable.insert(allRows);
 										} else if (!secondaryTableCount.equals(primaryTableCount)) {
 											// Something is different in the data so correct it
-											LOG.info("CLUSTER REBUILDING NEW DATABASE TABLE");
+											LOG.info("CLUSTER REBUILDING NEW DATABASE TABLE "+table.getTableName());
 											secondary.deleteAll(table);
 											List<DBRow> allRows = primaryData.getAllRows();
 											secondary.insert(allRows);
 										} else {
 											//ensure the rows are the same with a forced update
-											LOG.info("CLUSTER UPDATING NEW DATABASE TABLE");
+											LOG.info("CLUSTER UPDATING NEW DATABASE TABLE "+table.getTableName());
 											List<DBRow> allRows = primaryData.getAllRows();
 											secondary.updateAnyway(allRows);
 										}
 									} else if (secondaryTableCount > 0) {
-										LOG.info("CLUSTER EMPTYING NEW DATABASE TABLE");
+										LOG.info("CLUSTER EMPTYING NEW DATABASE TABLE "+table.getTableName());
 										secondary.deleteAll(table);
 									}
 								}
