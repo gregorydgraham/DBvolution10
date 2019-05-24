@@ -51,7 +51,7 @@ import nz.co.gregs.dbvolution.results.AnyResult;
  * @author gregorygraham
  * @param <A>
  */
-public class WindowFunctionFramable<A extends EqualExpression<?,?,?>> implements WindowingFunctionFramableInterface<A> {
+public class WindowFunctionFramable<A extends EqualExpression<?, ?, ?>> implements WindowingFunctionFramableInterface<A> {
 
 	private final A innerExpression;
 
@@ -68,8 +68,8 @@ public class WindowFunctionFramable<A extends EqualExpression<?,?,?>> implements
 	public A allRows() {
 		return this.partition().unsorted();
 	}
-	
-	public A getInnerExpression(){
+
+	public A getInnerExpression() {
 		return innerExpression;
 	}
 
@@ -150,7 +150,7 @@ public class WindowFunctionFramable<A extends EqualExpression<?,?,?>> implements
 		throw new UnsupportedOperationException("Not supported yet.");
 	}
 
-	public static class Partitioned<A extends EqualExpression<?,?,?>> implements WindowingFunctionFramableInterface.Partitioned<A> {
+	public static class Partitioned<A extends EqualExpression<?, ?, ?>> implements WindowingFunctionFramableInterface.Partitioned<A> {
 
 		private final WindowFunctionFramable<A> innerExpression;
 		private final ColumnProvider[] columns;
@@ -172,32 +172,33 @@ public class WindowFunctionFramable<A extends EqualExpression<?,?,?>> implements
 		@Override
 		public String toSQLString(DBDefinition defn) {
 			StringBuilder partitionClause = new StringBuilder();
-			if (columns.length > 0) {
+			if (getColumns().length > 0) {
 				partitionClause.append("PARTITION BY ");
 				String separator = "";
-				for (ColumnProvider partitionByColumn : columns) {
+				for (ColumnProvider partitionByColumn : getColumns()) {
 					partitionClause.append(separator).append(partitionByColumn.toSQLString(defn));
 					separator = ", ";
 				}
 			}
-			return innerExpression.toSQLString(defn) + partitionClause;
+			return getInnerExpression().toSQLString(defn) + partitionClause;
 		}
 
 		@Override
 		public Class<A> getRequiredExpressionClass() {
-			return innerExpression.getRequiredExpressionClass();
+			return getInnerExpression().getRequiredExpressionClass();
 		}
 
 		@SuppressWarnings("unchecked")
 		@Override
 		public Partitioned<A> copy() {
-			return new Partitioned<A>(this.innerExpression.copy(), this.columns);
+			return new Partitioned<A>(this.getInnerExpression().copy(), this.getColumns());
 		}
 
 		@Override
 		@SuppressWarnings("unchecked")
 		public A unsorted() {
-			return this.orderBy(BooleanExpression.trueExpression().ascending()).withoutFrame();
+			final Sorted<A> orderBy = new UnSorted<A>(this);
+			return orderBy.withoutFrame();
 		}
 
 		@SuppressWarnings("unchecked")
@@ -235,9 +236,9 @@ public class WindowFunctionFramable<A extends EqualExpression<?,?,?>> implements
 
 		@Override
 		public boolean isPurelyFunctional() {
-			boolean functional = innerExpression.isPurelyFunctional();
+			boolean functional = getInnerExpression().isPurelyFunctional();
 			if (functional == true) {
-				for (ColumnProvider column : columns) {
+				for (ColumnProvider column : getColumns()) {
 					functional = functional && column.isPurelyFunctional();
 				}
 			}
@@ -274,9 +275,38 @@ public class WindowFunctionFramable<A extends EqualExpression<?,?,?>> implements
 			return orderByWithPrimaryKeys(SortProvider.getSortProviders(partitionFields));
 		}
 
+		/**
+		 * @return the innerExpression
+		 */
+		protected WindowFunctionFramable<A> getInnerExpression() {
+			return innerExpression;
+		}
+
+		/**
+		 * @return the columns
+		 */
+		protected ColumnProvider[] getColumns() {
+			return columns;
+		}
+
+		private class UnSorted<A extends EqualExpression<?, ?, ?>> extends Sorted<A> {
+
+			public UnSorted(Partitioned<A> expression) {
+				super(expression, BooleanExpression.trueExpression().ascending());
+			}
+
+			@Override
+			public String toSQLString(DBDefinition defn) {
+				if (defn.supportsComparingBooleanResults()) {
+					return super.toSQLString(defn);
+				} else {
+					return getInnerExpression().toSQLString(defn);
+				}
+			}
+		}
 	}
 
-	public static class Sorted<A extends EqualExpression<?,?,?>> implements WindowingFunctionFramableInterface.Sorted<A> {
+	public static class Sorted<A extends EqualExpression<?, ?, ?>> implements WindowingFunctionFramableInterface.Sorted<A> {
 
 		private final WindowFunctionFramable.Partitioned<A> innerExpression;
 		private final SortProvider[] sorts;
@@ -290,15 +320,15 @@ public class WindowFunctionFramable<A extends EqualExpression<?,?,?>> implements
 		@Override
 		public String toSQLString(DBDefinition defn) {
 			StringBuilder orderByClause = new StringBuilder();
-			if (sorts.length > 0) {
+			if (getSorts().length > 0) {
 				orderByClause.append(" ORDER BY ");
 				String separator = "";
-				for (SortProvider partitionByColumn : sorts) {
+				for (SortProvider partitionByColumn : getSorts()) {
 					orderByClause.append(separator).append(partitionByColumn.toSQLString(defn));
 					separator = ", ";
 				}
 			}
-			return innerExpression.toSQLString(defn) + orderByClause;
+			return getInnerExpression().toSQLString(defn) + orderByClause;
 		}
 
 		public A defaultFrame() {
@@ -327,20 +357,20 @@ public class WindowFunctionFramable<A extends EqualExpression<?,?,?>> implements
 
 		@Override
 		public Class<A> getRequiredExpressionClass() {
-			return innerExpression.getRequiredExpressionClass();
+			return getInnerExpression().getRequiredExpressionClass();
 		}
 
 		@SuppressWarnings("unchecked")
 		@Override
 		public Sorted<A> copy() {
-			return new Sorted<A>(this.innerExpression.copy(), this.sorts);
+			return new Sorted<A>(this.getInnerExpression().copy(), this.getSorts());
 		}
 
 		@Override
 		public boolean isPurelyFunctional() {
-			boolean functional = innerExpression.isPurelyFunctional();
+			boolean functional = getInnerExpression().isPurelyFunctional();
 			if (functional == true) {
-				for (SortProvider sort : sorts) {
+				for (SortProvider sort : getSorts()) {
 					functional = functional && sort.isPurelyFunctional();
 				}
 			}
@@ -382,9 +412,23 @@ public class WindowFunctionFramable<A extends EqualExpression<?,?,?>> implements
 			throw new UnsupportedOperationException("Not supported yet.");
 		}
 
+		/**
+		 * @return the innerExpression
+		 */
+		protected WindowFunctionFramable.Partitioned<A> getInnerExpression() {
+			return innerExpression;
+		}
+
+		/**
+		 * @return the sorts
+		 */
+		protected SortProvider[] getSorts() {
+			return sorts;
+		}
+
 	}
 
-	public static abstract class FrameType<A extends EqualExpression<?,?,?>> implements WindowingFunctionFramableInterface.FrameType<A> {
+	public static abstract class FrameType<A extends EqualExpression<?, ?, ?>> implements WindowingFunctionFramableInterface.FrameType<A> {
 
 		private final Sorted<A> sorted;
 
@@ -492,7 +536,7 @@ public class WindowFunctionFramable<A extends EqualExpression<?,?,?>> implements
 		}
 	}
 
-	public static class Range<A extends EqualExpression<?,?,?>> extends FrameType<A> {
+	public static class Range<A extends EqualExpression<?, ?, ?>> extends FrameType<A> {
 
 		public Range(Sorted<A> sorted) {
 			super(sorted);
@@ -510,7 +554,7 @@ public class WindowFunctionFramable<A extends EqualExpression<?,?,?>> implements
 		}
 	}
 
-	public static class Rows<A extends EqualExpression<?,?,?>> extends FrameType<A> {
+	public static class Rows<A extends EqualExpression<?, ?, ?>> extends FrameType<A> {
 
 		public Rows(Sorted<A> sorted) {
 			super(sorted);
@@ -528,7 +572,7 @@ public class WindowFunctionFramable<A extends EqualExpression<?,?,?>> implements
 		}
 	}
 
-	public static class Groups<A extends EqualExpression<?,?,?>> extends FrameType<A> {
+	public static class Groups<A extends EqualExpression<?, ?, ?>> extends FrameType<A> {
 
 		public Groups(Sorted<A> sorted) {
 			super(sorted);
@@ -546,7 +590,7 @@ public class WindowFunctionFramable<A extends EqualExpression<?,?,?>> implements
 		}
 	}
 
-	public static abstract class FrameStart<A extends EqualExpression<?,?,?>> implements WindowingFunctionFramableInterface.EmptyFrameStart<A> {
+	public static abstract class FrameStart<A extends EqualExpression<?, ?, ?>> implements WindowingFunctionFramableInterface.EmptyFrameStart<A> {
 
 		protected final FrameType<A> type;
 		protected final IntegerExpression offset;
@@ -620,7 +664,7 @@ public class WindowFunctionFramable<A extends EqualExpression<?,?,?>> implements
 		}
 	}
 
-	private static abstract class FrameStartAbsolute<A extends EqualExpression<?,?,?>> extends FrameStart<A> {
+	private static abstract class FrameStartAbsolute<A extends EqualExpression<?, ?, ?>> extends FrameStart<A> {
 
 		public FrameStartAbsolute(FrameType<A> type) {
 			super(type);
@@ -632,7 +676,7 @@ public class WindowFunctionFramable<A extends EqualExpression<?,?,?>> implements
 		}
 	}
 
-	private static abstract class FrameStartOffset<A extends EqualExpression<?,?,?>> extends FrameStart<A> {
+	private static abstract class FrameStartOffset<A extends EqualExpression<?, ?, ?>> extends FrameStart<A> {
 
 		public FrameStartOffset(FrameType<A> type, int offset) {
 			super(type, offset);
@@ -656,7 +700,7 @@ public class WindowFunctionFramable<A extends EqualExpression<?,?,?>> implements
 		}
 	}
 
-	public static class UnboundedPrecedingStart<A extends EqualExpression<?,?,?>> extends FrameStartAbsolute<A> implements FrameStartAllPreceding<A>{
+	public static class UnboundedPrecedingStart<A extends EqualExpression<?, ?, ?>> extends FrameStartAbsolute<A> implements FrameStartAllPreceding<A> {
 
 		public UnboundedPrecedingStart(FrameType<A> type) {
 			super(type);
@@ -671,7 +715,7 @@ public class WindowFunctionFramable<A extends EqualExpression<?,?,?>> implements
 		public UnboundedPrecedingStart<A> copy() {
 			return new UnboundedPrecedingStart<>(type.copy());
 		}
-		
+
 		@Override
 		@SuppressWarnings("unchecked")
 		public A preceding(int offset) {
@@ -705,7 +749,7 @@ public class WindowFunctionFramable<A extends EqualExpression<?,?,?>> implements
 
 	}
 
-	public static class OffsetPrecedingStart<A extends EqualExpression<?,?,?>> extends FrameStartOffset<A> implements FrameStartPreceding<A>{
+	public static class OffsetPrecedingStart<A extends EqualExpression<?, ?, ?>> extends FrameStartOffset<A> implements FrameStartPreceding<A> {
 
 		public OffsetPrecedingStart(FrameType<A> type, int offset) {
 			super(type, offset);
@@ -761,7 +805,7 @@ public class WindowFunctionFramable<A extends EqualExpression<?,?,?>> implements
 
 	}
 
-	public static class CurrentRowStart<A extends EqualExpression<?,?,?>> extends FrameStartAbsolute<A> implements FrameStartCurrentRow<A>{
+	public static class CurrentRowStart<A extends EqualExpression<?, ?, ?>> extends FrameStartAbsolute<A> implements FrameStartCurrentRow<A> {
 
 		public CurrentRowStart(FrameType<A> type) {
 			super(type);
@@ -799,7 +843,7 @@ public class WindowFunctionFramable<A extends EqualExpression<?,?,?>> implements
 
 	}
 
-	public static class OffsetFollowingStart<A extends EqualExpression<?,?,?>> extends FrameStartOffset<A> implements FrameStartFollowing<A>{
+	public static class OffsetFollowingStart<A extends EqualExpression<?, ?, ?>> extends FrameStartOffset<A> implements FrameStartFollowing<A> {
 
 		public OffsetFollowingStart(FrameType<A> type, int offset) {
 			super(type, offset);
@@ -839,7 +883,7 @@ public class WindowFunctionFramable<A extends EqualExpression<?,?,?>> implements
 		}
 	}
 
-	public static abstract class FrameEnd<A extends EqualExpression<?,?,?>> implements WindowingFunctionFramableInterface.WindowEnd<A>, AnyResult<A> {
+	public static abstract class FrameEnd<A extends EqualExpression<?, ?, ?>> implements WindowingFunctionFramableInterface.WindowEnd<A>, AnyResult<A> {
 
 		private final WindowPart<A> start;
 		private final IntegerExpression offset;
@@ -933,7 +977,7 @@ public class WindowFunctionFramable<A extends EqualExpression<?,?,?>> implements
 		}
 	}
 
-	public static class UnboundedPrecedingEnd<A extends EqualExpression<?,?,?>> extends FrameEnd<A> {
+	public static class UnboundedPrecedingEnd<A extends EqualExpression<?, ?, ?>> extends FrameEnd<A> {
 
 		public UnboundedPrecedingEnd(FrameStart<A> start) {
 			super(start);
@@ -955,7 +999,7 @@ public class WindowFunctionFramable<A extends EqualExpression<?,?,?>> implements
 		}
 	}
 
-	public static class OffsetPrecedingEnd<A extends EqualExpression<?,?,?>> extends FrameEnd<A> {
+	public static class OffsetPrecedingEnd<A extends EqualExpression<?, ?, ?>> extends FrameEnd<A> {
 
 		public OffsetPrecedingEnd(FrameStart<A> aThis, int offset) {
 			super(aThis, offset);
@@ -981,7 +1025,7 @@ public class WindowFunctionFramable<A extends EqualExpression<?,?,?>> implements
 		}
 	}
 
-	public static class CurrentRowEnd<A extends EqualExpression<?,?,?>> extends FrameEnd<A> {
+	public static class CurrentRowEnd<A extends EqualExpression<?, ?, ?>> extends FrameEnd<A> {
 
 		public CurrentRowEnd(FrameStart<A> start) {
 			super(start);
@@ -1003,7 +1047,7 @@ public class WindowFunctionFramable<A extends EqualExpression<?,?,?>> implements
 		}
 	}
 
-	private static class OffsetFollowingEnd<A extends EqualExpression<?,?,?>> extends FrameEnd<A> {
+	private static class OffsetFollowingEnd<A extends EqualExpression<?, ?, ?>> extends FrameEnd<A> {
 
 		public OffsetFollowingEnd(FrameStart<A> aThis, int offset) {
 			super(aThis, offset);
@@ -1029,7 +1073,7 @@ public class WindowFunctionFramable<A extends EqualExpression<?,?,?>> implements
 		}
 	}
 
-	public static class UnboundedFollowingEnd<A extends EqualExpression<?,?,?>> extends FrameEnd<A> {
+	public static class UnboundedFollowingEnd<A extends EqualExpression<?, ?, ?>> extends FrameEnd<A> {
 
 		public UnboundedFollowingEnd(FrameStart<A> aThis) {
 			super(aThis);
@@ -1051,7 +1095,7 @@ public class WindowFunctionFramable<A extends EqualExpression<?,?,?>> implements
 		}
 	}
 
-	public static class EmptyFrameEnd<A extends EqualExpression<?,?,?>> extends FrameEnd<A> {
+	public static class EmptyFrameEnd<A extends EqualExpression<?, ?, ?>> extends FrameEnd<A> {
 
 		public EmptyFrameEnd(WindowPart<A> aThis) {
 			super(aThis);

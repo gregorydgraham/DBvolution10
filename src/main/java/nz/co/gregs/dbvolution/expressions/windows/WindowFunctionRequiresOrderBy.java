@@ -40,7 +40,6 @@ import nz.co.gregs.dbvolution.columns.ColumnProvider;
 import nz.co.gregs.dbvolution.databases.DBDatabase;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
-import nz.co.gregs.dbvolution.expressions.BooleanExpression;
 import nz.co.gregs.dbvolution.expressions.EqualExpression;
 import nz.co.gregs.dbvolution.expressions.IntegerExpression;
 import nz.co.gregs.dbvolution.expressions.SortProvider;
@@ -51,44 +50,26 @@ import nz.co.gregs.dbvolution.results.AnyResult;
  * @author gregorygraham
  * @param <A>
  */
-public class WindowFunction<A extends EqualExpression<?, ?, ?>> implements WindowingFunctionInterface<A> {
+public class WindowFunctionRequiresOrderBy<A extends EqualExpression<?, ?, ?>> implements WindowingFunctionRequiresOrderByInterface<A> {
 
 	private final A innerExpression;
 
-	public WindowFunction(A expression) {
+	public WindowFunctionRequiresOrderBy(A expression) {
 		super();
 		this.innerExpression = expression;
 	}
 
 	@Override
 	public Partitioned<A> partition(ColumnProvider... cols) {
-		return new WindowFunction.Partitioned<A>(this, cols);
-	}
-
-	public A allRows() {
-		return this.partition().unsorted();
+		return new WindowFunctionRequiresOrderBy.Partitioned<A>(this, cols);
 	}
 
 	public A getInnerExpression() {
 		return innerExpression;
 	}
 
-//	public A allRowsPreceding() {
-//		return this.partition().unsortedWithFrame().rows().unboundedPrecedingAndCurrentRow();
-//	}
-	public A AllRowsAndOrderBy(SortProvider... sorts) {
-		if (sorts.length > 0) {
-			if (sorts.length > 1) {
-				SortProvider sort = sorts[0];
-				SortProvider[] newSorts = new SortProvider[sorts.length - 1];
-				System.arraycopy(sorts, 1, newSorts, 0, sorts.length - 1);
-				return this.partition().orderBy(sort, newSorts);
-			} else {
-				return this.partition().orderBy(sorts[0]);
-			}
-		} else {
-			return this.partition().unsorted();
-		}
+	public A AllRowsAndOrderBy(SortProvider sort, SortProvider... sorts) {
+				return this.partition().orderBy(sort, sorts);
 	}
 
 	@Override
@@ -104,8 +85,8 @@ public class WindowFunction<A extends EqualExpression<?, ?, ?>> implements Windo
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public WindowFunction<A> copy() {
-		return new WindowFunction<A>((A) this.innerExpression.copy());
+	public WindowFunctionRequiresOrderBy<A> copy() {
+		return new WindowFunctionRequiresOrderBy<A>((A) this.innerExpression.copy());
 	}
 
 	@Override
@@ -149,12 +130,12 @@ public class WindowFunction<A extends EqualExpression<?, ?, ?>> implements Windo
 		throw new UnsupportedOperationException("Not supported yet.");
 	}
 
-	public static class Partitioned<A extends EqualExpression<?, ?, ?>> implements WindowingFunctionInterface.Partitioned<A> {
+	public static class Partitioned<A extends EqualExpression<?, ?, ?>> implements WindowingFunctionRequiresOrderByInterface.Partitioned<A> {
 
-		private final WindowFunction<A> innerExpression;
+		private final WindowFunctionRequiresOrderBy<A> innerExpression;
 		private final ColumnProvider[] columns;
 
-		private Partitioned(WindowFunction<A> expression, ColumnProvider... cols) {
+		private Partitioned(WindowFunctionRequiresOrderBy<A> expression, ColumnProvider... cols) {
 			super();
 			this.innerExpression = expression;
 			this.columns = cols;
@@ -165,7 +146,7 @@ public class WindowFunction<A extends EqualExpression<?, ?, ?>> implements Windo
 			SortProvider[] newSorts = new SortProvider[sorts.length + 1];
 			newSorts[0] = sort;
 			System.arraycopy(sorts, 0, newSorts, 1, sorts.length);
-			return new WindowFunction.Sorted<A>(this, newSorts).getRequiredExpression();
+			return new WindowFunctionRequiresOrderBy.Sorted<A>(this, newSorts).getRequiredExpression();
 		}
 
 		@Override
@@ -191,14 +172,6 @@ public class WindowFunction<A extends EqualExpression<?, ?, ?>> implements Windo
 		@Override
 		public Partitioned<A> copy() {
 			return new Partitioned<A>(this.innerExpression.copy(), this.columns);
-		}
-
-		@Override
-		@SuppressWarnings("unchecked")
-		public A unsorted() {
-//			return this.orderBy(BooleanExpression.trueExpression().ascending());
-			final Sorted<A> orderBy = new UnSorted<A>(this);
-			return orderBy.getRequiredExpression();
 		}
 
 		@Override
@@ -257,19 +230,14 @@ public class WindowFunction<A extends EqualExpression<?, ?, ?>> implements Windo
 			return orderByWithPrimaryKeys(SortProvider.getSortProviders(partitionFields));
 		}
 
-		@Override
-		public A unordered() {
-			return this.unsorted();
-		}
-
 	}
 
 	public static class Sorted<A extends EqualExpression<?, ?, ?>> implements WindowingFunctionInterface.Sorted<A>, AnyResult<A> {
 
-		private final WindowFunction.Partitioned<A> innerExpression;
+		private final WindowFunctionRequiresOrderBy.Partitioned<A> innerExpression;
 		private final SortProvider[] sorts;
 
-		public Sorted(WindowFunction.Partitioned<A> expression, SortProvider... sorts) {
+		public Sorted(WindowFunctionRequiresOrderBy.Partitioned<A> expression, SortProvider... sorts) {
 			super();
 			this.innerExpression = expression;
 			this.sorts = sorts;
@@ -303,7 +271,7 @@ public class WindowFunction<A extends EqualExpression<?, ?, ?>> implements Windo
 					}
 				}
 			} catch (SecurityException | InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
-				Logger.getLogger(WindowFunction.class.getName()).log(Level.SEVERE, null, ex);
+				Logger.getLogger(WindowFunctionRequiresOrderBy.class.getName()).log(Level.SEVERE, null, ex);
 			}
 			return null;
 		}
@@ -373,7 +341,7 @@ public class WindowFunction<A extends EqualExpression<?, ?, ?>> implements Windo
 		/**
 		 * @return the innerExpression
 		 */
-		protected WindowFunction.Partitioned<A> getInnerExpression() {
+		protected WindowFunctionRequiresOrderBy.Partitioned<A> getInnerExpression() {
 			return innerExpression;
 		}
 
@@ -433,7 +401,7 @@ public class WindowFunction<A extends EqualExpression<?, ?, ?>> implements Windo
 					}
 				}
 			} catch (SecurityException | InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
-				Logger.getLogger(WindowFunction.class.getName()).log(Level.SEVERE, null, ex);
+				Logger.getLogger(WindowFunctionRequiresOrderBy.class.getName()).log(Level.SEVERE, null, ex);
 			}
 			return null;
 		}
@@ -452,11 +420,7 @@ public class WindowFunction<A extends EqualExpression<?, ?, ?>> implements Windo
 		public Set<DBRow> getTablesInvolved() {
 			throw new UnsupportedOperationException("Not supported yet.");
 		}
-
-//		@Override
-//		public boolean isPurelyFunctional() {
-//			throw new UnsupportedOperationException("Not supported yet.");
-//		}
+		
 		@Override
 		public boolean isComplexExpression() {
 			return false;
@@ -480,22 +444,6 @@ public class WindowFunction<A extends EqualExpression<?, ?, ?>> implements Windo
 		@Override
 		public boolean getIncludesNull() {
 			return true;
-		}
-	}
-
-	private static class UnSorted<A extends EqualExpression<?, ?, ?>> extends WindowFunction.Sorted<A> {
-
-		public UnSorted(WindowFunction.Partitioned<A> expression) {
-			super(expression, BooleanExpression.trueExpression().ascending());
-		}
-
-		@Override
-		public String toSQLString(DBDefinition defn) {
-			if (defn.supportsComparingBooleanResults()) {
-				return super.toSQLString(defn);
-			} else {
-				return getInnerExpression().toSQLString(defn) + ")";
-			}
 		}
 	}
 }
