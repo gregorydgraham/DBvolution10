@@ -28,9 +28,7 @@
  */
 package nz.co.gregs.dbvolution.expressions;
 
-import nz.co.gregs.dbvolution.expressions.windows.CanBeWindowingFunctionWithoutFrame;
 import nz.co.gregs.dbvolution.expressions.windows.WindowFunctionFramable;
-import nz.co.gregs.dbvolution.expressions.windows.WindowFunction;
 import nz.co.gregs.dbvolution.expressions.windows.CanBeWindowingFunctionWithFrame;
 import nz.co.gregs.dbvolution.expressions.spatial2D.*;
 import com.vividsolutions.jts.geom.LineSegment;
@@ -45,8 +43,10 @@ import nz.co.gregs.dbvolution.databases.DBDatabase;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.results.AnyResult;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
+import nz.co.gregs.dbvolution.expressions.windows.WindowFunctionRequiresOrderBy;
 import nz.co.gregs.dbvolution.results.*;
 import org.joda.time.Period;
+import nz.co.gregs.dbvolution.expressions.windows.CanBeWindowingFunctionRequiresOrderByOptionalFrame;
 
 /**
  *
@@ -768,10 +768,10 @@ public abstract class AnyExpression<B extends Object, R extends AnyResult<B>, D 
 	public CountExpression count() {
 		return new CountExpression(this);
 	}
-	public static WindowFunction<IntegerExpression> rank() {
+	public static WindowFunctionRequiresOrderBy<IntegerExpression> rank() {
 		return new RankExpression().over();
 	}
-	public static WindowFunction<NumberExpression> percentageRank() {
+	public static WindowFunctionRequiresOrderBy<NumberExpression> percentageRank() {
 		return new PercentageExpression().over();
 	}
 //	public static NumberExpression fakePercentageRank(ColumnProvider[] partitionFields) {
@@ -793,19 +793,19 @@ public abstract class AnyExpression<B extends Object, R extends AnyResult<B>, D 
 //		final NumberExpression wholeFn = numerator.dividedBy(divisor);
 //		return wholeFn;
 //	}
-	public static WindowFunction<IntegerExpression> denseRank() {
+	public static WindowFunctionRequiresOrderBy<IntegerExpression> denseRank() {
 		return new DenseRankExpression().over();
 	}
-	public static WindowFunction<IntegerExpression> rowNumber() {
+	public static WindowFunctionRequiresOrderBy<IntegerExpression> rowNumber() {
 		return new RowNumberExpression().over();
 	}
-	public static WindowFunction<IntegerExpression> nTile(Integer tiles) {
+	public static WindowFunctionRequiresOrderBy<IntegerExpression> nTile(Integer tiles) {
 		return new NTileExpression(tiles).over();
 	}
-	public static WindowFunction<IntegerExpression> nTile(IntegerExpression tiles) {
+	public static WindowFunctionRequiresOrderBy<IntegerExpression> nTile(IntegerExpression tiles) {
 		return new NTileExpression(tiles).over();
 	}
-	public static WindowFunction<IntegerExpression> nTile(Long tiles) {
+	public static WindowFunctionRequiresOrderBy<IntegerExpression> nTile(Long tiles) {
 		return new NTileExpression(tiles).over();
 	}
 
@@ -882,7 +882,7 @@ public abstract class AnyExpression<B extends Object, R extends AnyResult<B>, D 
 		}
 	}
 
-	public static class RankExpression extends IntegerExpression implements CanBeWindowingFunctionWithoutFrame<IntegerExpression> {
+	public static class RankExpression extends IntegerExpression implements CanBeWindowingFunctionRequiresOrderByOptionalFrame<IntegerExpression> {
 
 		public RankExpression() {
 			super();
@@ -905,12 +905,12 @@ public abstract class AnyExpression<B extends Object, R extends AnyResult<B>, D 
 		}
 
 		@Override
-		public WindowFunction<IntegerExpression> over() {
-			return new WindowFunction<IntegerExpression>(new IntegerExpression(this));
+		public WindowFunctionRequiresOrderBy<IntegerExpression> over() {
+			return new WindowFunctionRequiresOrderBy<IntegerExpression>(new IntegerExpression(this));
 		}
 	}
 
-	public static class PercentageExpression extends NumberExpression implements CanBeWindowingFunctionWithoutFrame<NumberExpression> {
+	public static class PercentageExpression extends NumberExpression implements CanBeWindowingFunctionRequiresOrderByOptionalFrame<NumberExpression> {
 
 		public PercentageExpression() {
 			super();
@@ -933,12 +933,12 @@ public abstract class AnyExpression<B extends Object, R extends AnyResult<B>, D 
 		}
 
 		@Override
-		public WindowFunction<NumberExpression> over() {
-			return new WindowFunction<NumberExpression>(new NumberExpression(this));
+		public WindowFunctionRequiresOrderBy<NumberExpression> over() {
+			return new WindowFunctionRequiresOrderBy<NumberExpression>(new NumberExpression(this));
 		}
 	}
 
-	private static class DenseRankExpression extends IntegerExpression implements CanBeWindowingFunctionWithoutFrame<IntegerExpression> {
+	private static class DenseRankExpression extends IntegerExpression implements CanBeWindowingFunctionRequiresOrderByOptionalFrame<IntegerExpression> {
 
 		public DenseRankExpression() {
 			super();
@@ -961,12 +961,12 @@ public abstract class AnyExpression<B extends Object, R extends AnyResult<B>, D 
 		}
 
 		@Override
-		public WindowFunction<IntegerExpression> over() {
-			return new WindowFunction<IntegerExpression>(new IntegerExpression(this));
+		public WindowFunctionRequiresOrderBy<IntegerExpression> over() {
+			return new WindowFunctionRequiresOrderBy<IntegerExpression>(new IntegerExpression(this));
 		}
 	}
 
-	private static class RowNumberExpression extends IntegerExpression implements CanBeWindowingFunctionWithoutFrame<IntegerExpression> {
+	private static class RowNumberExpression extends IntegerExpression implements CanBeWindowingFunctionRequiresOrderByOptionalFrame<IntegerExpression> {
 
 		public RowNumberExpression() {
 			super();
@@ -989,12 +989,12 @@ public abstract class AnyExpression<B extends Object, R extends AnyResult<B>, D 
 		}
 
 		@Override
-		public WindowFunction<IntegerExpression> over() {
-			return new WindowFunction<IntegerExpression>(new IntegerExpression(this));
+		public WindowFunctionRequiresOrderBy<IntegerExpression> over() {
+			return new WindowFunctionRequiresOrderBy<IntegerExpression>(new IntegerExpression(this));
 		}
 	}
 
-	public static class NTileExpression extends IntegerExpression implements CanBeWindowingFunctionWithoutFrame<IntegerExpression> {
+	public static class NTileExpression extends IntegerExpression implements CanBeWindowingFunctionRequiresOrderByOptionalFrame<IntegerExpression> {
 
 		public NTileExpression(IntegerExpression only) {
 			super(only);
@@ -1027,8 +1027,8 @@ public abstract class AnyExpression<B extends Object, R extends AnyResult<B>, D 
 		}
 
 		@Override
-		public WindowFunction<IntegerExpression> over() {
-			return new WindowFunction<IntegerExpression>(new IntegerExpression(this));
+		public WindowFunctionRequiresOrderBy<IntegerExpression> over() {
+			return new WindowFunctionRequiresOrderBy<IntegerExpression>(new IntegerExpression(this));
 		}
 	}
 }
