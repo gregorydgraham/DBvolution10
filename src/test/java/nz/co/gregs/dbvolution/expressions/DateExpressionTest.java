@@ -447,13 +447,13 @@ public class DateExpressionTest extends AbstractTest {
 				.over()
 				.partition(this.column(this.carCompany)).unordered());
 		@DBColumn
-		DBInteger rowNumber = new DBInteger(AnyExpression.rowNumber().allRows());
+		DBInteger rowNumber = new DBInteger(AnyExpression.rowNumber().AllRowsAndOrderBy(column(carCompany).ascending()));
 		@DBColumn
-		DBInteger rank = new DBInteger(AnyExpression.rank().allRows());
+		DBInteger rank = new DBInteger(AnyExpression.rank().AllRowsAndOrderBy(column(carCompany).ascending()));
 		@DBColumn
-		DBInteger denseRank = new DBInteger(AnyExpression.denseRank().allRows());
+		DBInteger denseRank = new DBInteger(AnyExpression.denseRank().AllRowsAndOrderBy(column(carCompany).ascending()));
 		@DBColumn
-		DBInteger nTile = new DBInteger(IntegerExpression.nTile(3).allRows());
+		DBInteger nTile = new DBInteger(IntegerExpression.nTile(3).AllRowsAndOrderBy(column(carCompany).ascending()));
 	}
 
 	@Test
@@ -463,7 +463,7 @@ public class DateExpressionTest extends AbstractTest {
 		DBQuery query = database.getDBQuery(marq)
 				.setBlankQueryAllowed(true)
 				.setSortOrder(marq.column(marq.carCompany));
-//		query.printSQLForQuery();
+		query.printSQLForQuery();
 		List<DBQueryRow> allRows = query.getAllRows();
 
 		Assert.assertThat(allRows.size(), is(22));
@@ -504,7 +504,7 @@ public class DateExpressionTest extends AbstractTest {
 		private static final long serialVersionUID = 1L;
 
 		@DBColumn //(rank - 1) / (total partition rows - 1)
-		DBNumber percentileRank = AnyExpression.percentageRank().allRows().asExpressionColumn();
+		DBNumber percentileRank = AnyExpression.percentageRank().AllRowsAndOrderBy(column(carCompany).ascending()).asExpressionColumn();
 
 		// (0.0+( ROW_NUMBER() OVER (partition by *PARTITION_FIELDS* order by *PARTITION_FIELDS*, *PK_FIELDS* ) - 1)) 
 		//  / greatest(1,(COUNT(*) OVER (partition by *PARTITION_FIELDS* ORDER BY  (1=1)  ASC  ) - 1))
