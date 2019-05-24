@@ -78,6 +78,27 @@ public class OracleAWS11DB extends OracleAWSDB {
 	}
 
 	/**
+	 * Creates an Oracle connection for the DatabaseConnectionSettings.
+	 *
+	 * @param dcs	dcs
+	 * @throws java.sql.SQLException
+	 */
+	public OracleAWS11DB(DatabaseConnectionSettings dcs) throws SQLException {
+		this(new OracleAWS11DBDefinition(), dcs);
+	}
+
+	/**
+	 * Creates an Oracle connection for the DatabaseConnectionSettings.
+	 *
+	 * @param dcs	dcs
+	 * @param defn
+	 * @throws java.sql.SQLException
+	 */
+	public OracleAWS11DB(OracleAWS11DBDefinition defn, DatabaseConnectionSettings dcs) throws SQLException {
+		super(defn, dcs);
+	}
+
+	/**
 	 * Creates a DBDatabase instance tweaked for Oracle 11.
 	 *
 	 * @param definition definition
@@ -150,6 +171,11 @@ public class OracleAWS11DB extends OracleAWSDB {
 	@Override
 	protected Connection getConnectionFromDriverManager() throws SQLException {
 		return super.getConnectionFromDriverManager(); //To change body of generated methods, choose Tools | Templates.
+	}
+
+	@Override
+	protected Class<? extends DBDatabase> getBaseDBDatabaseClass() {
+		return OracleAWS11DB.class;
 	}
 
 }

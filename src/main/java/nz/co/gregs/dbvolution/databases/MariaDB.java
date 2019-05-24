@@ -159,4 +159,9 @@ public class MariaDB extends DBDatabase {
 		return 3306;
 	}
 
+	@Override
+	protected Class<? extends DBDatabase> getBaseDBDatabaseClass() {
+		return MariaDB.class;
+	}
+
 }

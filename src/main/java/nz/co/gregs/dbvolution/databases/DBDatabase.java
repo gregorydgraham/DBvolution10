@@ -98,7 +98,7 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 	private static final transient Map<String, List<Connection>> BUSY_CONNECTIONS = new HashMap<>();
 	private static final transient HashMap<String, List<Connection>> FREE_CONNECTIONS = new HashMap<>();
 	private Boolean needToAddDatabaseSpecificFeatures = true;
-	private DatabaseConnectionSettings settings = new DatabaseConnectionSettings();
+	private final DatabaseConnectionSettings settings = new DatabaseConnectionSettings();
 	private boolean terminated = false;
 	private final List<RegularProcess> REGULAR_PROCESSORS = new ArrayList<>();
 	private static final ScheduledExecutorService REGULAR_THREAD_POOL = Executors.newSingleThreadScheduledExecutor();
@@ -249,10 +249,11 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 	 */
 	public DBDatabase(DBDefinition definition, String driverName, DataSource ds) throws SQLException {
 		this();
-		settings.setDbdatabaseClass(this.getClass().getCanonicalName());
+		setDBDatabaseClassInSettings();
 		this.definition = definition;
 		initDriver(driverName);
 		settings.setDataSource(ds);
+		setDBDatabaseClassInSettings();
 		createRequiredTables();
 	}
 
@@ -289,7 +290,8 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 		this();
 		this.definition = definition;
 		initDriver(driverName);
-		this.settings = dcs;
+		this.settings.copy(dcs);
+		setDBDatabaseClassInSettings();
 		createRequiredTables();
 	}
 
@@ -324,6 +326,7 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 		this();
 		this.definition = definition;
 		initDriver(driverName);
+		setDBDatabaseClassInSettings();
 		settings.setUrl(jdbcURL);
 		settings.setUsername(username);
 		settings.setPassword(password);
@@ -559,6 +562,7 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 		changes.addAll(table.save(row));
 		return changes;
 	}
+
 	/**
 	 *
 	 * Inserts or updates DBRows into the correct tables automatically
@@ -2515,11 +2519,17 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 //			newSettings.setUsername(getUsername());
 //			this.settings = newSettings;
 //		}
+//		setDBDatabaseClassInSettings();
 		return settings;
 	}
 
 	protected void setSettings(DatabaseConnectionSettings newSettings) {
-		settings = newSettings;
+		settings.copy(newSettings);
+		setDBDatabaseClassInSettings();
+	}
+
+	private void setDBDatabaseClassInSettings() {
+		settings.setDbdatabaseClass(getBaseDBDatabaseClass().getCanonicalName());
 	}
 
 	protected void startServerIfRequired() {
@@ -2625,7 +2635,7 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 	 */
 	public void backupToDBDatabase(DBDatabase backupDatabase) throws SQLException, UnableToRemoveLastDatabaseFromClusterException {
 		String randomName = new BigInteger(130, new SecureRandom()).toString(32);
-		DBDatabaseCluster cluster = new DBDatabaseCluster(randomName, new DBDatabaseCluster.Configuration(false, false));
+		DBDatabaseCluster cluster = new DBDatabaseCluster(randomName, DBDatabaseCluster.Configuration.manual());
 		cluster.addDatabase(this);
 		cluster.backupToDBDatabase(backupDatabase);
 		cluster.dismantle();
@@ -2644,6 +2654,8 @@ public abstract class DBDatabase implements Serializable, Cloneable {
 		processor.setDatabase(null);
 		getRegularProcessors().remove(processor);
 	}
+
+	protected abstract Class<? extends DBDatabase> getBaseDBDatabaseClass();
 
 	protected class RunRegularProcessors implements Runnable {
 

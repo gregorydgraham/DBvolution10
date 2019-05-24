@@ -166,4 +166,9 @@ public class JavaDB extends DBDatabase {
 	public Integer getDefaultPort() {
 		return 1527;
 	}
+
+	@Override
+	protected  Class<? extends DBDatabase> getBaseDBDatabaseClass() {
+		return JavaDB.class;
+	}
 }

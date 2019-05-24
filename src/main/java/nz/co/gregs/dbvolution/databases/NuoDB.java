@@ -218,4 +218,9 @@ public class NuoDB extends DBDatabase {
 	public Integer getDefaultPort() {
 		return 8888;
 	}
+
+	@Override
+	protected Class<? extends DBDatabase> getBaseDBDatabaseClass() {
+		return NuoDB.class;
+	}
 }

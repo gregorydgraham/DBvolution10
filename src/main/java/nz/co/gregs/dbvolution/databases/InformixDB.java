@@ -188,4 +188,9 @@ public class InformixDB extends DBDatabase {
 	public Integer getDefaultPort() {
 		return 1526;
 	}
+
+	@Override
+	protected  Class<? extends DBDatabase> getBaseDBDatabaseClass() {
+		return InformixDB.class;
+	}
 }

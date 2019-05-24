@@ -18,6 +18,7 @@ package nz.co.gregs.dbvolution.databases;
 import java.sql.SQLException;
 import javax.sql.DataSource;
 import nz.co.gregs.dbvolution.databases.definitions.Oracle12DBDefinition;
+import nz.co.gregs.dbvolution.databases.definitions.OracleAWSDBDefinition;
 
 /**
  * Implements support for version 12 of the Oracle database.
@@ -47,9 +48,6 @@ public class Oracle12DB extends OracleDB {
 	protected Oracle12DB() {
 		super();
 	}
-//	public Oracle12DB(DBDefinition definition, String driverName, String jdbcURL, String username, String password) {
-//		super(definition, driverName, jdbcURL, username, password);
-//	}
 
 	/**
 	 * Creates a DBDatabase instance tweaked for Oracle 12 and above.
@@ -58,6 +56,27 @@ public class Oracle12DB extends OracleDB {
 	 */
 	public Oracle12DB(DataSource dataSource) throws SQLException {
 		super(new Oracle12DBDefinition(), dataSource);
+	}
+
+	/**
+	 * Creates an Oracle connection for the DatabaseConnectionSettings.
+	 *
+	 * @param dcs	dcs
+	 * @throws java.sql.SQLException
+	 */
+	public Oracle12DB(DatabaseConnectionSettings dcs) throws SQLException {
+		this(new Oracle12DBDefinition(), dcs);
+	}
+
+	/**
+	 * Creates an Oracle connection for the DatabaseConnectionSettings.
+	 *
+	 * @param dcs	dcs
+	 * @param defn
+	 * @throws java.sql.SQLException
+	 */
+	public Oracle12DB(Oracle12DBDefinition defn, DatabaseConnectionSettings dcs) throws SQLException {
+		super(defn, dcs);
 	}
 
 	/**
@@ -99,6 +118,11 @@ public class Oracle12DB extends OracleDB {
 	@Override
 	public DBDatabase clone() throws CloneNotSupportedException {
 		return super.clone(); //To change body of generated methods, choose Tools | Templates.
+	}
+
+	@Override
+	protected Class<? extends DBDatabase> getBaseDBDatabaseClass() {
+		return Oracle12DB.class;
 	}
 
 }

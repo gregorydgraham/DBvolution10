@@ -321,7 +321,7 @@ public class PostgresDB extends DBDatabase implements SupportsPolygonDatatype {
 				final ResultSet resultSet = stmnt.getResultSet();
 				boolean postGISAlreadyCreated = resultSet.next();
 				if (!postGISAlreadyCreated) {
-						stmnt.execute("CREATE EXTENSION IF NOT EXISTS postgis;");
+					stmnt.execute("CREATE EXTENSION IF NOT EXISTS postgis;");
 				}
 				postGISInstalled = true;
 			}
@@ -383,5 +383,10 @@ public class PostgresDB extends DBDatabase implements SupportsPolygonDatatype {
 	@Override
 	public Integer getDefaultPort() {
 		return 5432;
+	}
+
+	@Override
+	protected Class<? extends DBDatabase> getBaseDBDatabaseClass() {
+		return PostgresDB.class;
 	}
 }

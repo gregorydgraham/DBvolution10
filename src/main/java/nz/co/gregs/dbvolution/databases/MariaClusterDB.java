@@ -175,14 +175,13 @@ public class MariaClusterDB extends DBDatabase {
 //	protected String getSchema() {
 //		return null;
 //	}
-	
-@Override
+	@Override
 	protected DatabaseConnectionSettings getSettingsFromJDBCURL(String jdbcURL) {
 		DatabaseConnectionSettings set = new DatabaseConnectionSettings();
 		String noPrefix = jdbcURL.replaceAll("^jdbc:mariadb://", "");
 		set.setHost(noPrefix
-					.split("/",2)[0]
-					.split(":")[0]);
+				.split("/", 2)[0]
+				.split(":")[0]);
 		if (jdbcURL.matches(";")) {
 			String extrasString = jdbcURL.split(";", 2)[1];
 			set.setExtras(DatabaseConnectionSettings.decodeExtras(extrasString, "", "=", ";", ""));
@@ -197,4 +196,8 @@ public class MariaClusterDB extends DBDatabase {
 		return -1;
 	}
 
+	@Override
+	protected Class<? extends DBDatabase> getBaseDBDatabaseClass() {
+		return MariaClusterDB.class;
+	}
 }

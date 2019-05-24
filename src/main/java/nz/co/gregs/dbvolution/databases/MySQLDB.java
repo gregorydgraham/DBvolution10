@@ -54,6 +54,16 @@ public class MySQLDB extends DBDatabase implements SupportsPolygonDatatype {
 	}
 
 	/**
+	 * Creates a MySQL connection for the DatabaseConnectionSettings.
+	 *
+	 * @param dcs	dcs
+	 * @throws java.sql.SQLException
+	 */
+	public MySQLDB(DatabaseConnectionSettings dcs) throws SQLException {
+		super(new MySQLDBDefinition(), MYSQLDRIVERNAME, dcs);
+	}
+
+	/**
 	 * Creates DBDatabase suitable for use with MySQL attached to the supplied
 	 * JDBC URL, username, and password.
 	 *
@@ -205,4 +215,8 @@ public class MySQLDB extends DBDatabase implements SupportsPolygonDatatype {
 		}
 	}
 
+	@Override
+	protected Class<? extends DBDatabase> getBaseDBDatabaseClass() {
+		return MySQLDB.class;
+	}
 }

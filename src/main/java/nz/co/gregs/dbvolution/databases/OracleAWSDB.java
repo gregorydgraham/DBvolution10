@@ -24,6 +24,7 @@ import java.sql.Statement;
 import javax.sql.DataSource;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
+import nz.co.gregs.dbvolution.databases.definitions.OracleAWSDBDefinition;
 import nz.co.gregs.dbvolution.databases.supports.SupportsPolygonDatatype;
 
 /**
@@ -68,6 +69,27 @@ public abstract class OracleAWSDB extends OracleDB implements SupportsPolygonDat
 	 * @see OracleAWSDB
 	 */
 	protected OracleAWSDB() {
+	}
+
+	/**
+	 * Creates an Oracle connection for the DatabaseConnectionSettings.
+	 *
+	 * @param dcs	dcs
+	 * @throws java.sql.SQLException
+	 */
+	public OracleAWSDB(DatabaseConnectionSettings dcs) throws SQLException {
+		this(new OracleAWSDBDefinition(), dcs);
+	}
+
+	/**
+	 * Creates an Oracle connection for the DatabaseConnectionSettings.
+	 *
+	 * @param dcs	dcs
+	 * @param defn
+	 * @throws java.sql.SQLException
+	 */
+	public OracleAWSDB(OracleAWSDBDefinition defn, DatabaseConnectionSettings dcs) throws SQLException {
+		super(defn, dcs);
 	}
 
 	/**
@@ -123,6 +145,11 @@ public abstract class OracleAWSDB extends OracleDB implements SupportsPolygonDat
 
 	@Override
 	protected <TR extends DBRow> void removeSpatialMetadata(DBStatement dbStatement, TR tableRow) throws SQLException {
+	}
+
+	@Override
+	protected Class<? extends DBDatabase> getBaseDBDatabaseClass() {
+		return OracleAWSDB.class ;
 	}
 
 }

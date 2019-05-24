@@ -76,4 +76,9 @@ public class Informix11DB extends InformixDB {
 	public DBDatabase clone() throws CloneNotSupportedException {
 		return super.clone();
 	}
+
+	@Override
+	protected  Class<? extends DBDatabase> getBaseDBDatabaseClass() {
+		return Informix11DB.class;
+	}
 }

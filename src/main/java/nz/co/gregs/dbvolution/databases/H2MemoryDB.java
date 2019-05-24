@@ -106,6 +106,11 @@ public class H2MemoryDB extends H2DB {
 		setDatabaseName(databaseName);
 		jamDatabaseConnectionOpen();
 	}
+	
+	public static H2MemoryDB randomDatabase() throws SQLException{
+		final String dbName = ("RandomH2MemoryDB-"+Math.random()).replaceFirst("0\\.", "");
+		return new H2MemoryDB(dbName, "", "", true);
+	}
 
 	/**
 	 * Creates a DBDatabase for a H2 database.
@@ -140,4 +145,13 @@ public class H2MemoryDB extends H2DB {
 		}
 	}
 
+//	@Override
+//	public boolean isMemoryDatabase() {
+//		return true;
+//	}
+
+	@Override
+	protected  Class<? extends DBDatabase> getBaseDBDatabaseClass() {
+		return H2MemoryDB.class;
+	}
 }

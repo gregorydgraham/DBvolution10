@@ -266,4 +266,9 @@ public class SQLiteDB extends DBDatabase {
 		return super.addFeatureToFixException(exp);
 	}
 
+	@Override
+	protected Class<? extends DBDatabase> getBaseDBDatabaseClass() {
+		return SQLiteDB.class;
+	}
+
 }

@@ -185,4 +185,9 @@ public class MySQLDB_5_7 extends DBDatabase implements SupportsPolygonDatatype {
 		return super.addFeatureToFixException(exp);
 	}
 
+	@Override
+	protected Class<? extends DBDatabase> getBaseDBDatabaseClass() {
+		return MySQLDB_5_7.class;
+	}
+
 }

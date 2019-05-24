@@ -109,4 +109,9 @@ public class PostgresDBOverSSL extends PostgresDB {
 		return super.clone(); //To change body of generated methods, choose Tools | Templates.
 	}
 
+	@Override
+	protected Class<? extends DBDatabase> getBaseDBDatabaseClass() {
+		return PostgresDBOverSSL.class ;
+	}
+
 }

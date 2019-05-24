@@ -26,6 +26,7 @@ import java.util.Map;
 import javax.sql.DataSource;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
+import nz.co.gregs.dbvolution.databases.definitions.OracleDBDefinition;
 import nz.co.gregs.dbvolution.databases.supports.SupportsPolygonDatatype;
 import nz.co.gregs.dbvolution.internal.properties.PropertyWrapper;
 
@@ -77,6 +78,27 @@ public abstract class OracleDB extends DBDatabase implements SupportsPolygonData
 	 */
 	protected OracleDB() {
 
+	}
+
+	/**
+	 * Creates an Oracle connection for the DatabaseConnectionSettings.
+	 *
+	 * @param dcs	dcs
+	 * @throws java.sql.SQLException
+	 */
+	public OracleDB(DatabaseConnectionSettings dcs) throws SQLException {
+		this(new OracleDBDefinition(), dcs);
+	}
+
+	/**
+	 * Creates an Oracle connection for the DatabaseConnectionSettings.
+	 *
+	 * @param dcs	dcs
+	 * @param defn
+	 * @throws java.sql.SQLException
+	 */
+	public OracleDB(OracleDBDefinition defn, DatabaseConnectionSettings dcs) throws SQLException {
+		super(defn, ORACLE_JDBC_DRIVER, dcs);
 	}
 
 	/**
@@ -236,6 +258,11 @@ public abstract class OracleDB extends DBDatabase implements SupportsPolygonData
 	@Override
 	public Integer getDefaultPort() {
 		return 1521;
+	}
+
+	@Override
+	protected Class<? extends DBDatabase> getBaseDBDatabaseClass() {
+		return OracleDB.class;
 	}
 
 }

@@ -251,4 +251,9 @@ public class JTDSSQLServerDB extends DBDatabase implements SupportsPolygonDataty
 	public Integer getDefaultPort() {
 		return 1433;
 	}
+
+	@Override
+	protected  Class<? extends DBDatabase> getBaseDBDatabaseClass() {
+		return JTDSSQLServerDB.class;
+	}
 }

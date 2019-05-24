@@ -148,4 +148,9 @@ public class H2SharedDB extends H2DB {
 		getConnectionFromDriverManager().close();
 	}
 
+	@Override
+	protected  Class<? extends DBDatabase> getBaseDBDatabaseClass() {
+		return H2SharedDB.class;
+	}
+
 }

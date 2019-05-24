@@ -39,6 +39,10 @@ public class MSSQLServer2012DB extends MSSQLServerDB {
 	public MSSQLServer2012DB(DataSource ds) throws SQLException {
 		super(new MSSQLServer2012DBDefinition(), ds);
 	}
+	
+	public MSSQLServer2012DB(DatabaseConnectionSettings dcs) throws SQLException {
+		super(new MSSQLServer2012DBDefinition(), dcs);
+	}
 
 	public MSSQLServer2012DB(String driverName, String jdbcURL, String username, String password) throws SQLException {
 		super(new MSSQLServer2012DBDefinition(), driverName, jdbcURL, username, password);
@@ -54,6 +58,11 @@ public class MSSQLServer2012DB extends MSSQLServerDB {
 
 	public MSSQLServer2012DB(String driverName, String hostname, String instanceName, String databaseName, int portNumber, String username, String password) throws SQLException {
 		super(new MSSQLServer2012DBDefinition(), driverName, hostname, instanceName, databaseName, portNumber, username, password);
+	}
+
+	@Override
+	protected  Class<? extends DBDatabase> getBaseDBDatabaseClass() {
+		return MSSQLServer2012DB.class;
 	}
 
 }

@@ -119,6 +119,8 @@ public class DatabaseConnectionSettings {
 	private String label = "";
 	private DataSource dataSource = null;
 	private String protocol;
+	
+	private static final String FIELD_SEPARATOR = "<DCS FIELD>";
 
 	public DatabaseConnectionSettings() {
 		super();
@@ -127,35 +129,35 @@ public class DatabaseConnectionSettings {
 	@Override
 	public String toString() {
 		return "DATABASECONNECTIONSETTINGS: "
-				+ getDbdatabaseClass() + ";"
-				+ getHost() + ";"
-				+ getPort() + ";"
-				+ getInstance() + ";"
-				+ getDatabaseName() + ";"
-				+ getSchema() + ";"
-				+ getUrl() + ";"
-				+ getUsername() + ";"
-				+ getLabel() + ";";
+				+ getDbdatabaseClass() + FIELD_SEPARATOR
+				+ getHost() + FIELD_SEPARATOR
+				+ getPort() + FIELD_SEPARATOR
+				+ getInstance() + FIELD_SEPARATOR
+				+ getDatabaseName() + FIELD_SEPARATOR
+				+ getSchema() + FIELD_SEPARATOR
+				+ getUrl() + FIELD_SEPARATOR
+				+ getUsername() + FIELD_SEPARATOR
+				+ getLabel() + FIELD_SEPARATOR;
 	}
 
 	public String encode() {
 		return "DATABASECONNECTIONSETTINGS: "
-				+ getDbdatabaseClass() + ";"
-				+ getHost() + ";"
-				+ getPort() + ";"
-				+ getInstance() + ";"
-				+ getDatabaseName() + ";"
-				+ getSchema() + ";"
-				+ getUrl() + ";"
-				+ getUsername() + ";"
-				+ getPassword() + ";"
-				+ getLabel() + ";";
+				+ getDbdatabaseClass() + FIELD_SEPARATOR
+				+ getHost() + FIELD_SEPARATOR
+				+ getPort() + FIELD_SEPARATOR
+				+ getInstance() + FIELD_SEPARATOR
+				+ getDatabaseName() + FIELD_SEPARATOR
+				+ getSchema() + FIELD_SEPARATOR
+				+ getUrl() + FIELD_SEPARATOR
+				+ getUsername() + FIELD_SEPARATOR
+				+ getPassword() + FIELD_SEPARATOR
+				+ getLabel() + FIELD_SEPARATOR;
 	}
 
 	public static DatabaseConnectionSettings decode(String encodedSettings) {
 		DatabaseConnectionSettings settings = new DatabaseConnectionSettings();
 
-		String[] data = encodedSettings.split("DATABASECONNECTIONSETTINGS: ")[1].split(";");
+		String[] data = encodedSettings.split("DATABASECONNECTIONSETTINGS: ")[1].split(FIELD_SEPARATOR);
 		if (data.length > 0) {
 			settings.setDbdatabaseClass(data[0]);
 			if (data.length > 1) {
@@ -191,6 +193,10 @@ public class DatabaseConnectionSettings {
 
 	public boolean equals(DatabaseConnectionSettings obj) {
 		return this.encode().equals(obj.encode());
+	}
+
+	public boolean notEquals(DatabaseConnectionSettings obj) {
+		return !this.encode().equals(obj.encode());
 	}
 
 	/**
@@ -546,6 +552,22 @@ public class DatabaseConnectionSettings {
 		settings.setDatabaseName(System.getProperty(prefix + "database"));
 		settings.setSchema(System.getProperty(prefix + "schema"));
 		return settings;
+	}
+	
+	public void copy(DatabaseConnectionSettings newSettings){
+		this.setDataSource(newSettings.getDataSource());
+		this.setDatabaseName(newSettings.getDatabaseName());
+		this.setDbdatabaseClass(newSettings.getDbdatabaseClass());
+		this.setHost(newSettings.getHost());
+		this.setExtras(newSettings.getExtras());
+		this.setInstance(newSettings.getInstance());
+		this.setLabel(newSettings.getLabel());
+		this.setPassword(newSettings.getPassword());
+		this.setPort(newSettings.getPort());
+		this.setProtocol(newSettings.getProtocol());
+		this.setSchema(newSettings.getSchema());
+		this.setUrl(newSettings.getUrl());
+		this.setUsername(newSettings.getUsername());
 	}
 
 	/** Create the DBDatabase described by these settings

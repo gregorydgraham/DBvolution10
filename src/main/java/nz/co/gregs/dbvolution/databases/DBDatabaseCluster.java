@@ -128,6 +128,11 @@ public class DBDatabaseCluster extends DBDatabase {
 		throw new UnsupportedOperationException("Not supported yet.");
 	}
 
+	@Override
+	protected Class<? extends DBDatabase> getBaseDBDatabaseClass() {
+		return DBDatabaseCluster.class;
+	}
+
 	public static enum Status {
 
 		READY,
@@ -191,6 +196,16 @@ public class DBDatabaseCluster extends DBDatabase {
 		}
 	}
 
+	public static DBDatabaseCluster randomCluster(Configuration config, DBDatabase databases) throws SQLException {
+		final String dbName = ("RandomClusterDB-" + Math.random()).replaceFirst("0\\.", "");
+		return new DBDatabaseCluster(dbName, config, databases);
+	}
+
+	public static DBDatabaseCluster randomManualCluster(DBDatabase databases) throws SQLException {
+		final String dbName = ("RandomClusterDB-" + Math.random()).replaceFirst("0\\.", "");
+		return new DBDatabaseCluster(dbName, Configuration.manual(), databases);
+	}
+
 	/**
 	 * Removes all databases from the cluster then adds databases as defined by
 	 * the settings.
@@ -246,9 +261,7 @@ public class DBDatabaseCluster extends DBDatabase {
 	 * @throws java.sql.SQLException
 	 */
 	public final synchronized boolean addDatabase(DBDatabase database) throws SQLException {
-		boolean add = details.add(database);
-		synchronizeAddedDatabases(false);
-		return add;
+		return addDatabaseWithWaiting(database, false);
 	}
 
 	/**
@@ -266,8 +279,12 @@ public class DBDatabaseCluster extends DBDatabase {
 	 * @throws java.sql.SQLException
 	 */
 	public synchronized boolean addDatabaseAndWait(DBDatabase database) throws SQLException {
+		return addDatabaseWithWaiting(database, true);
+	}
+
+	private boolean addDatabaseWithWaiting(DBDatabase database, boolean wait) throws SQLException {
 		boolean add = details.add(database);
-		synchronizeAddedDatabases(true);
+		synchronizeAddedDatabases(wait);
 		return add;
 	}
 
@@ -1247,23 +1264,23 @@ public class DBDatabaseCluster extends DBDatabase {
 										final DBTable<DBRow> primaryData = primaryTable.setBlankQueryAllowed(true).setTimeoutToForever();
 										// Check that the new database has data
 										if (secondaryTableCount == 0) {
-											LOG.info("CLUSTER FILLING NEW DATABASE TABLE "+table.getTableName());
+											LOG.info("CLUSTER FILLING NEW DATABASE TABLE " + table.getTableName());
 											List<DBRow> allRows = primaryData.getAllRows();
 											secondaryTable.insert(allRows);
 										} else if (!secondaryTableCount.equals(primaryTableCount)) {
 											// Something is different in the data so correct it
-											LOG.info("CLUSTER REBUILDING NEW DATABASE TABLE "+table.getTableName());
+											LOG.info("CLUSTER REBUILDING NEW DATABASE TABLE " + table.getTableName());
 											secondary.deleteAll(table);
 											List<DBRow> allRows = primaryData.getAllRows();
 											secondary.insert(allRows);
 										} else {
 											//ensure the rows are the same with a forced update
-											LOG.info("CLUSTER UPDATING NEW DATABASE TABLE "+table.getTableName());
+											LOG.info("CLUSTER UPDATING NEW DATABASE TABLE " + table.getTableName());
 											List<DBRow> allRows = primaryData.getAllRows();
 											secondary.updateAnyway(allRows);
 										}
 									} else if (secondaryTableCount > 0) {
-										LOG.info("CLUSTER EMPTYING NEW DATABASE TABLE "+table.getTableName());
+										LOG.info("CLUSTER EMPTYING NEW DATABASE TABLE " + table.getTableName());
 										secondary.deleteAll(table);
 									}
 								}
@@ -1548,9 +1565,25 @@ public class DBDatabaseCluster extends DBDatabase {
 		private boolean useAutoRebuild;
 		private boolean useAutoReconnect;
 
-		public Configuration(boolean useAutoRebuild, boolean useAutoReconnect) {
+		private Configuration(boolean useAutoRebuild, boolean useAutoReconnect) {
 			this.useAutoRebuild = useAutoRebuild;
 			this.useAutoReconnect = useAutoReconnect;
+		}
+
+		public static Configuration manual() {
+			return new Configuration(false, false);
+		}
+
+		public static Configuration autoRebuild() {
+			return new Configuration(true, false);
+		}
+
+		public static Configuration autoReconnect() {
+			return new Configuration(false, true);
+		}
+
+		public static Configuration autoRebuildAndReconnect() {
+			return new Configuration(true, true);
 		}
 
 		/**

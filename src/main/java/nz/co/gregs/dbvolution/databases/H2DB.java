@@ -266,7 +266,7 @@ public class H2DB extends DBDatabase {
 
 	@Override
 	public boolean isMemoryDatabase() {
-		return getJdbcURL().matches(":mem:");
+		return getJdbcURL().contains(":mem:");
 	}
 
 	protected String getFileFromJdbcURL() {
@@ -328,5 +328,10 @@ public class H2DB extends DBDatabase {
 	@Override
 	public Integer getDefaultPort() {
 		return 9123;
+	}
+
+	@Override
+	protected  Class<? extends DBDatabase> getBaseDBDatabaseClass() {
+		return H2DB.class;
 	}
 }

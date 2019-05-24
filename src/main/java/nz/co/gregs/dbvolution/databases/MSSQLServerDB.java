@@ -66,6 +66,16 @@ public class MSSQLServerDB extends DBDatabase implements SupportsPolygonDatatype
 	public MSSQLServerDB(DatabaseConnectionSettings settings) throws SQLException {
 		super(new MSSQLServerDBDefinition(), SQLSERVERDRIVERNAME, settings);
 	}
+	/**
+	 * Creates a {@link DBDatabase } instance for the MS SQL Server data source.
+	 *
+	 * @param defn
+	 * @param settings	a DataSource to an MS SQLServer database
+	 * @throws java.sql.SQLException
+	 */
+	public MSSQLServerDB(MSSQLServerDBDefinition defn, DatabaseConnectionSettings settings) throws SQLException {
+		super(defn, SQLSERVERDRIVERNAME, settings);
+	}
 
 	/**
 	 * Creates a {@link DBDatabase } instance for the MS SQL Server data source.
@@ -154,10 +164,11 @@ public class MSSQLServerDB extends DBDatabase implements SupportsPolygonDatatype
 	@Override
 	protected String getUrlFromSettings(DatabaseConnectionSettings settings) {
 		String url = settings.getUrl();
-		return url != null && !url.isEmpty() ? url : "jdbc:sqlserver://" + settings.getHost()
+		final String urlFromSettings = "jdbc:sqlserver://" + settings.getHost()
 				+ (settings.getInstance() != null ? "\\" + settings.getInstance() : "") + ":"
 				+ settings.getPort() + ";"
 				+ (settings.getDatabaseName() == null ? "" : "databaseName=" + settings.getDatabaseName() + ";");
+		return url != null && !url.isEmpty() ? url : urlFromSettings;
 	}
 
 	/**
@@ -249,15 +260,18 @@ public class MSSQLServerDB extends DBDatabase implements SupportsPolygonDatatype
 	protected DatabaseConnectionSettings getSettingsFromJDBCURL(String jdbcURL) {
 		DatabaseConnectionSettings set = new DatabaseConnectionSettings();
 		String noPrefix = jdbcURL.replaceAll("^jdbc:sqlserver://", "");
-		set.setPort(noPrefix.split("\\\\", 2)[1].split(":")[1]);
-		set.setHost(noPrefix.split("\\\\", 2)[0]);
+		final String port = noPrefix.split("\\\\", 2)[1].split(":")[1];
+		set.setPort(port);
+		final String host = noPrefix.split("\\\\", 2)[0];
+		set.setHost(host);
 		if (jdbcURL.matches(";")) {
 			String extrasString = jdbcURL.split(";", 2)[1];
 			set.setExtras(DatabaseConnectionSettings.decodeExtras(extrasString, "", "=", ";", ""));
 		}
-		set.setInstance(noPrefix
+		final String instance = noPrefix
 				.split("\\\\", 2)[1]
-				.split(":")[0]);
+				.split(":")[0];
+		set.setInstance(instance);
 		set.setSchema("");
 		return set;
 	}
@@ -265,5 +279,10 @@ public class MSSQLServerDB extends DBDatabase implements SupportsPolygonDatatype
 	@Override
 	public Integer getDefaultPort() {
 		return 1433;
+	}
+
+	@Override
+	protected  Class<? extends DBDatabase> getBaseDBDatabaseClass() {
+		return MSSQLServerDB.class;
 	}
 }
