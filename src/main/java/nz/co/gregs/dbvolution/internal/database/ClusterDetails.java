@@ -50,6 +50,7 @@ import nz.co.gregs.dbvolution.databases.DBDatabaseCluster;
 import nz.co.gregs.dbvolution.databases.DatabaseConnectionSettings;
 import nz.co.gregs.dbvolution.exceptions.UnableToRemoveLastDatabaseFromClusterException;
 import nz.co.gregs.dbvolution.reflection.DataModel;
+import nz.co.gregs.dbvolution.utility.Encryption;
 
 /**
  *
@@ -267,13 +268,18 @@ public class ClusterDetails implements Serializable {
 	}
 
 	public synchronized DBDatabase getTemplateDatabase() throws NoAvailableDatabaseException {
-		final DatabaseConnectionSettings authoritativeDatabase = getAuthoritativeDatabase();
-		if (allDatabases.isEmpty() && authoritativeDatabase != null) {
-			try {
-				return authoritativeDatabase.createDBDatabase();
-			} catch (ClassNotFoundException | NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
-				Logger.getLogger(ClusterDetails.class.getName()).log(Level.SEVERE, null, ex);
-				throw new NoAvailableDatabaseException();
+//		if (allDatabases.isEmpty()) {
+		if (allDatabases.size() < 2) {
+			final DatabaseConnectionSettings authoritativeDCS = getAuthoritativeDatabaseConnectionSettings();
+			if (authoritativeDCS != null) {
+				try {
+					return authoritativeDCS.createDBDatabase();
+				} catch (ClassNotFoundException | NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
+					Logger.getLogger(ClusterDetails.class.getName()).log(Level.SEVERE, null, ex);
+					throw new NoAvailableDatabaseException();
+				}
+			} else {
+				return null;
 			}
 		} else {
 			if (readyDatabases.isEmpty() && pausedDatabases.isEmpty()) {
@@ -289,7 +295,12 @@ public class ClusterDetails implements Serializable {
 				final String name = getClusterName();
 				if (!db.isMemoryDatabase() && name != null && !name.isEmpty()) {
 					final String encode = db.getSettings().encode();
-					prefs.put(name, encode);
+					try {
+						prefs.put(name, Encryption.encrypt(encode));
+					} catch (Encryption.CannotEncryptInputException ex) {
+						Logger.getLogger(ClusterDetails.class.getName()).log(Level.SEVERE, null, ex);
+						prefs.put(name, encode);
+					}
 					return;
 				}
 			}
@@ -300,9 +311,16 @@ public class ClusterDetails implements Serializable {
 		prefs.remove(getClusterName());
 	}
 
-	public DatabaseConnectionSettings getAuthoritativeDatabase() {
+	public DatabaseConnectionSettings getAuthoritativeDatabaseConnectionSettings() {
 		if (useAutoRebuild) {
-			String encodedSettings = prefs.get(getClusterName(), null);
+			String encodedSettings = "";
+			final String rawPrefsValue = prefs.get(getClusterName(), null);
+			try {
+				encodedSettings = Encryption.decrypt(rawPrefsValue);
+			} catch (Encryption.UnableToDecryptInput ex) {
+				Logger.getLogger(ClusterDetails.class.getName()).log(Level.SEVERE, null, ex);
+				encodedSettings = rawPrefsValue;
+			}
 			if (encodedSettings != null) {
 				DatabaseConnectionSettings settings = DatabaseConnectionSettings.decode(encodedSettings);
 				return settings;
