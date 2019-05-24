@@ -995,10 +995,6 @@
 			<version>0.9.11</version>
 			<type>jar</type> 
 			<exclusions>
-				<!--				<exclusion>
-					<groupId>com.google.guava</groupId>
-					<artifactId>guava</artifactId>
-				</exclusion>-->
 				<exclusion>
 					<groupId>com.google.code.findbugs</groupId>
 					<artifactId>annotations</artifactId>
@@ -1074,12 +1070,6 @@
 			<version>1.13</version>
 			<type>jar</type>
 		</dependency>
-<!--		<dependency>
-			<groupId>org.locationtech.jts</groupId>
-			<artifactId>jts-modules</artifactId>
-			<version>1.16.1</version>
-			<type>bundle</type>
-		</dependency>-->
 		<dependency>
 			<groupId>joda-time</groupId>
 			<artifactId>joda-time</artifactId>
@@ -1097,12 +1087,6 @@
 				</exclusion>
 			</exclusions>
 		</dependency>
-		<!--		<dependency>
-			 Needed by simmetrics-core but needs to be >20 for everything else to work
-			<groupId>com.google.guava</groupId>
-			<artifactId>guava</artifactId>
-			<version>20.0</version>
-		</dependency>-->
 		<dependency>
 			<groupId>net.sourceforge.jtds</groupId>
 			<artifactId>jtds</artifactId>
@@ -1126,13 +1110,13 @@
 		<dependency>
 			<groupId>com.fasterxml.jackson.dataformat</groupId>
 			<artifactId>jackson-dataformat-yaml</artifactId>
-			<version>2.9.8</version>
+			<version>2.9.9</version>
 			<type>jar</type>
 		</dependency>
 		<dependency>
 			<groupId>com.fasterxml.jackson.core</groupId>
 			<artifactId>jackson-databind</artifactId>
-			<version>2.9.8</version>
+			<version>2.9.9</version>
 			<type>jar</type>
 		</dependency>
 		<dependency>
@@ -1146,12 +1130,11 @@
 			<version>3.7</version>
 			<type>jar</type>
 		</dependency>
-<!--	 <dependency>
-	  <groupId>org.locationtech.jts</groupId>
-	  <artifactId>jts-core</artifactId>
-	  <version>1.15.0</version>
-	  <type>jar</type>
-	 </dependency>-->
+	 <dependency>
+	  <groupId>org.apache.commons</groupId>
+	  <artifactId>commons-crypto</artifactId>
+	  <version>1.0.0</version>
+	 </dependency>
 	</dependencies>
 	<distributionManagement>
 		<site>
