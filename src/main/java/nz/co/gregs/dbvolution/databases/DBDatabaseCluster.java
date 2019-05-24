@@ -1472,6 +1472,11 @@ public class DBDatabaseCluster extends DBDatabase {
 		ACTION_THREAD_POOL.shutdown();
 	}
 
+	@Override
+	public boolean isMemoryDatabase() {
+		return !details.getAutoRebuild()||!details.hasAuthoritativeDatabase();
+	}
+
 	private static class ActionTask implements Callable<DBActionList> {
 
 		private final DBDatabase database;

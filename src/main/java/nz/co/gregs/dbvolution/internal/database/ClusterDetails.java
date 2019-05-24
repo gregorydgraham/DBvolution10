@@ -395,4 +395,8 @@ public class ClusterDetails implements Serializable {
 	public boolean getAutoRebuild() {
 		return this.useAutoRebuild;
 	}
+
+	public boolean hasAuthoritativeDatabase() {
+		return this.getAuthoritativeDatabaseConnectionSettings()!=null;
+	}
 }
