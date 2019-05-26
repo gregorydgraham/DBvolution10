@@ -119,8 +119,9 @@ public class DatabaseConnectionSettings {
 	private String label = "";
 	private DataSource dataSource = null;
 	private String protocol;
-	
+
 	private static final String FIELD_SEPARATOR = "<DCS FIELD>";
+	private static final String TOSTRING_SEPARATOR = ", ";
 
 	public DatabaseConnectionSettings() {
 		super();
@@ -129,15 +130,15 @@ public class DatabaseConnectionSettings {
 	@Override
 	public String toString() {
 		return "DATABASECONNECTIONSETTINGS: "
-				+ getDbdatabaseClass() + FIELD_SEPARATOR
-				+ getHost() + FIELD_SEPARATOR
-				+ getPort() + FIELD_SEPARATOR
-				+ getInstance() + FIELD_SEPARATOR
-				+ getDatabaseName() + FIELD_SEPARATOR
-				+ getSchema() + FIELD_SEPARATOR
-				+ getUrl() + FIELD_SEPARATOR
-				+ getUsername() + FIELD_SEPARATOR
-				+ getLabel() + FIELD_SEPARATOR;
+				+ getDbdatabaseClass() + TOSTRING_SEPARATOR
+				+ getHost() + TOSTRING_SEPARATOR
+				+ getPort() + TOSTRING_SEPARATOR
+				+ getInstance() + TOSTRING_SEPARATOR
+				+ getDatabaseName() + TOSTRING_SEPARATOR
+				+ getSchema() + TOSTRING_SEPARATOR
+				+ getUrl() + TOSTRING_SEPARATOR
+				+ getUsername() + TOSTRING_SEPARATOR
+				+ getLabel() + TOSTRING_SEPARATOR;
 	}
 
 	public String encode() {
@@ -553,8 +554,8 @@ public class DatabaseConnectionSettings {
 		settings.setSchema(System.getProperty(prefix + "schema"));
 		return settings;
 	}
-	
-	public void copy(DatabaseConnectionSettings newSettings){
+
+	public void copy(DatabaseConnectionSettings newSettings) {
 		this.setDataSource(newSettings.getDataSource());
 		this.setDatabaseName(newSettings.getDatabaseName());
 		this.setDbdatabaseClass(newSettings.getDbdatabaseClass());
@@ -570,7 +571,8 @@ public class DatabaseConnectionSettings {
 		this.setUsername(newSettings.getUsername());
 	}
 
-	/** Create the DBDatabase described by these settings
+	/**
+	 * Create the DBDatabase described by these settings
 	 *
 	 * @return the DBDatabase
 	 * @throws ClassNotFoundException
@@ -797,20 +799,20 @@ public class DatabaseConnectionSettings {
 	public String getLabel() {
 		return this.label;
 	}
-	
-	public void setDataSource(DataSource ds){
+
+	public void setDataSource(DataSource ds) {
 		dataSource = ds;
 	}
-	
-	public DataSource getDataSource(){
+
+	public DataSource getDataSource() {
 		return dataSource;
 	}
-	
-	public void setProtocol(String protocol){
+
+	public void setProtocol(String protocol) {
 		this.protocol = protocol;
 	}
-	
-	public String getProtocol(){
+
+	public String getProtocol() {
 		return protocol;
 	}
 }
