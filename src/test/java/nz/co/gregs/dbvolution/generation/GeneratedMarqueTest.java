@@ -23,6 +23,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import javax.tools.*;
+import net.openhft.compiler.CachedCompiler;
+import net.openhft.compiler.CompilerUtils;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.annotations.DBAutoIncrement;
 import nz.co.gregs.dbvolution.annotations.DBColumn;
@@ -39,8 +41,6 @@ import nz.co.gregs.dbvolution.example.Marque;
 import nz.co.gregs.dbvolution.example.UIDBasedPKRecognisor;
 import nz.co.gregs.dbvolution.generation.DBTableClassGenerator.Options;
 import nz.co.gregs.dbvolution.generic.AbstractTest;
-import org.freshvanilla.compile.CachedCompiler;
-import org.freshvanilla.compile.CompilerUtils;
 import org.junit.Assert;
 import org.junit.Test;
 import static org.hamcrest.Matchers.*;
@@ -217,7 +217,8 @@ public class GeneratedMarqueTest extends AbstractTest {
 					final String javaSource = dbcl.getJavaSource();
 
 					Class<?> compiledClass = cc.loadFromJava(dbcl.getFullyQualifiedName(), javaSource);
-					Object newInstance = compiledClass.newInstance();
+//					Class<?> compiledClass = cc.loadFromJava(dbcl.getFullyQualifiedName(), javaSource);
+					Object newInstance = compiledClass.getDeclaredConstructor().newInstance();
 					DBRow row = (DBRow) newInstance;
 					List<DBRow> rows = database.getDBTable(row).setBlankQueryAllowed(true).getAllRows();
 
@@ -254,7 +255,7 @@ public class GeneratedMarqueTest extends AbstractTest {
 			}
 			JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
 			DiagnosticCollector<JavaFileObject> diagnostics = new DiagnosticCollector<JavaFileObject>();
-			Boolean succeeded;
+			Boolean succeeded = false;
 			// Try to add the classes to the TARGET directory
 			try (StandardJavaFileManager fileManager = compiler.getStandardFileManager(diagnostics, null, null)) {
 				// Try to add the classes to the TARGET directory
