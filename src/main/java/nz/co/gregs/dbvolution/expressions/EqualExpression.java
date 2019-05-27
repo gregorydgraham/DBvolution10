@@ -28,11 +28,14 @@
  */
 package nz.co.gregs.dbvolution.expressions;
 
+import java.lang.reflect.InvocationTargetException;
 import nz.co.gregs.dbvolution.expressions.windows.WindowFunctionFramable;
 import nz.co.gregs.dbvolution.expressions.windows.CanBeWindowingFunctionWithFrame;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import nz.co.gregs.dbvolution.DBQuery;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.databases.DBDatabase;
@@ -134,8 +137,8 @@ public abstract class EqualExpression<B, R extends EqualResult<B>, D extends Que
 		public DBUnaryFunction<B, R, D, X> copy() {
 			DBUnaryFunction<B, R, D, X> newInstance;
 			try {
-				newInstance = getClass().newInstance();
-			} catch (InstantiationException | IllegalAccessException ex) {
+				newInstance = getClass().getDeclaredConstructor().newInstance();
+			} catch (InstantiationException | IllegalAccessException | NoSuchMethodException | SecurityException | IllegalArgumentException | InvocationTargetException ex) {
 				throw new RuntimeException(ex);
 			}
 			newInstance.only = (X) this.only.copy();

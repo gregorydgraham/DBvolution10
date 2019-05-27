@@ -1,6 +1,7 @@
 package nz.co.gregs.dbvolution.internal.properties;
 
 import java.io.Serializable;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -592,10 +593,11 @@ public class RowDefinitionClassWrapper implements Serializable{
 		List<PropertyWrapperDefinition> list = new ArrayList<PropertyWrapperDefinition>();
 		for (PropertyWrapperDefinition property : columnProperties) {
 			try {
-				if (property.isColumn() && property.isForeignKey() && property.isForeignKeyTo(this.adapteeClass().newInstance())) {
+				final RowDefinition newInstance = this.adapteeClass().getConstructor().newInstance();
+				if (property.isColumn() && property.isForeignKey() && property.isForeignKeyTo(newInstance)) {
 					list.add(property);
 				}
-			} catch (InstantiationException | IllegalAccessException ex) {
+			} catch (InstantiationException | IllegalAccessException | NoSuchMethodException | SecurityException | IllegalArgumentException | InvocationTargetException ex) {
 				Logger.getLogger(RowDefinitionClassWrapper.class.getName()).log(Level.SEVERE, null, ex);
 //				ex.printStackTrace();
 			}

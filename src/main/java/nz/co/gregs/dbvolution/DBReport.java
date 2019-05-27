@@ -17,6 +17,7 @@ package nz.co.gregs.dbvolution;
 
 import nz.co.gregs.dbvolution.databases.DBDatabase;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -509,7 +510,7 @@ public class DBReport extends RowDefinition {
 	@SuppressWarnings("unchecked")
 	private static <A extends DBReport> A getReportInstance(A exampleReport, DBQueryRow row) {
 		try {
-			A newReport = (A) exampleReport.getClass().newInstance();
+			A newReport = (A) exampleReport.getClass().getConstructor().newInstance();
 			Field[] fields = exampleReport.getClass().getDeclaredFields();
 			for (Field field : fields) {
 				field.setAccessible(true);
@@ -535,7 +536,7 @@ public class DBReport extends RowDefinition {
 				}
 			}
 			return newReport;
-		} catch (InstantiationException | IllegalAccessException ex) {
+		} catch (InstantiationException | IllegalAccessException | NoSuchMethodException | SecurityException | IllegalArgumentException | InvocationTargetException ex) {
 			throw new UnableToInstantiateDBReportSubclassException(exampleReport, ex);
 		}
 	}

@@ -8,6 +8,7 @@ package nz.co.gregs.dbvolution;
 import nz.co.gregs.dbvolution.internal.query.QueryDetails;
 import nz.co.gregs.dbvolution.databases.DBDatabase;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -181,9 +182,9 @@ public class DBQueryInsert<M extends DBRow> extends RowDefinition {
 	}
 
 	@SuppressWarnings("unchecked")
-	M createInstanceOfMappingTarget() throws InstantiationException, IllegalAccessException {
+	M createInstanceOfMappingTarget() throws InstantiationException, IllegalAccessException, NoSuchMethodException, IllegalArgumentException, InvocationTargetException {
 		Class<? extends DBRow> aClass = mapper.getClass();
-		return (M) aClass.newInstance();
+		return (M) aClass.getConstructor().newInstance();
 	}
 
 	private M getMappedTarget(DBQueryRow row) {
@@ -223,7 +224,7 @@ public class DBQueryInsert<M extends DBRow> extends RowDefinition {
 				}
 			}
 			return newTarget;
-		} catch (InstantiationException | IllegalAccessException ex) {
+		} catch (InstantiationException | IllegalAccessException | NoSuchMethodException | IllegalArgumentException | InvocationTargetException ex) {
 			throw new UnableToInstantiateDBMigrationSubclassException(this, ex);
 		}
 	}

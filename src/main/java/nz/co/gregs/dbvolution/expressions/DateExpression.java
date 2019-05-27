@@ -15,6 +15,7 @@
  */
 package nz.co.gregs.dbvolution.expressions;
 
+import java.lang.reflect.InvocationTargetException;
 import nz.co.gregs.dbvolution.expressions.windows.WindowFunctionFramable;
 import nz.co.gregs.dbvolution.expressions.windows.CanBeWindowingFunctionWithFrame;
 import nz.co.gregs.dbvolution.results.DateRepeatResult;
@@ -2625,8 +2626,8 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 		public DateExpression.FunctionWithDateResult copy() {
 			DateExpression.FunctionWithDateResult newInstance;
 			try {
-				newInstance = getClass().newInstance();
-			} catch (InstantiationException | IllegalAccessException ex) {
+				newInstance = getClass().getDeclaredConstructor().newInstance();
+			} catch (IllegalAccessException | IllegalArgumentException | InstantiationException | NoSuchMethodException | SecurityException | InvocationTargetException ex) {
 				throw new RuntimeException(ex);
 			}
 			return newInstance;
@@ -2709,8 +2710,8 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 		public DateDateExpressionWithBooleanResult copy() {
 			DateDateExpressionWithBooleanResult newInstance;
 			try {
-				newInstance = getClass().newInstance();
-			} catch (InstantiationException | IllegalAccessException ex) {
+				newInstance = getClass().getDeclaredConstructor().newInstance();
+			} catch (IllegalAccessException | IllegalArgumentException | InstantiationException | NoSuchMethodException | SecurityException | InvocationTargetException ex) {
 				throw new RuntimeException(ex);
 			}
 			newInstance.first = first.copy();
@@ -2768,8 +2769,8 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 		public DateDateExpressionWithDateRepeatResult copy() {
 			DateDateExpressionWithDateRepeatResult newInstance;
 			try {
-				newInstance = getClass().newInstance();
-			} catch (InstantiationException | IllegalAccessException ex) {
+				newInstance = getClass().getDeclaredConstructor().newInstance();
+			} catch (IllegalAccessException | IllegalArgumentException | InstantiationException | NoSuchMethodException | SecurityException | InvocationTargetException ex) {
 				throw new RuntimeException(ex);
 			}
 			newInstance.first = getFirst().copy();
@@ -2850,8 +2851,8 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 		public DateDateRepeatArithmeticDateResult copy() {
 			DateDateRepeatArithmeticDateResult newInstance;
 			try {
-				newInstance = getClass().newInstance();
-			} catch (InstantiationException | IllegalAccessException ex) {
+				newInstance = getClass().getDeclaredConstructor().newInstance();
+			} catch (IllegalAccessException | IllegalArgumentException | InstantiationException | NoSuchMethodException | SecurityException | InvocationTargetException ex) {
 				throw new RuntimeException(ex);
 			}
 			newInstance.first = getFirst().copy();
@@ -2961,8 +2962,8 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 		public DateArrayFunctionWithDateResult copy() {
 			DateArrayFunctionWithDateResult newInstance;
 			try {
-				newInstance = getClass().newInstance();
-			} catch (InstantiationException | IllegalAccessException ex) {
+				newInstance = getClass().getDeclaredConstructor().newInstance();
+			} catch (IllegalAccessException | IllegalArgumentException | InstantiationException | NoSuchMethodException | SecurityException | InvocationTargetException ex) {
 				throw new RuntimeException(ex);
 			}
 			newInstance.column = this.column.copy();
@@ -3083,8 +3084,8 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 		public DateDateResultFunctionWithBooleanResult copy() {
 			DateDateResultFunctionWithBooleanResult newInstance;
 			try {
-				newInstance = getClass().newInstance();
-			} catch (InstantiationException | IllegalAccessException ex) {
+				newInstance = getClass().getDeclaredConstructor().newInstance();
+			} catch (IllegalAccessException | IllegalArgumentException | InstantiationException | NoSuchMethodException | SecurityException | InvocationTargetException ex) {
 				throw new RuntimeException(ex);
 			}
 			newInstance.column = this.getColumn().copy();
@@ -3169,8 +3170,8 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 		public DateDateFunctionWithDateResult copy() {
 			DateDateFunctionWithDateResult newInstance;
 			try {
-				newInstance = getClass().newInstance();
-			} catch (InstantiationException | IllegalAccessException ex) {
+				newInstance = getClass().getDeclaredConstructor().newInstance();
+			} catch (IllegalAccessException | IllegalArgumentException | InstantiationException | NoSuchMethodException | SecurityException | InvocationTargetException ex) {
 				throw new RuntimeException(ex);
 			}
 			newInstance.first = getFirst().copy();
@@ -3283,8 +3284,8 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 		public DateIntegerExpressionWithDateResult copy() {
 			DateIntegerExpressionWithDateResult newInstance;
 			try {
-				newInstance = getClass().newInstance();
-			} catch (InstantiationException | IllegalAccessException ex) {
+				newInstance = getClass().getDeclaredConstructor().newInstance();
+			} catch (IllegalAccessException | IllegalArgumentException | InstantiationException | NoSuchMethodException | SecurityException | InvocationTargetException ex) {
 				throw new RuntimeException(ex);
 			}
 			newInstance.first = first.copy();
@@ -3388,8 +3389,8 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 		public DateDateFunctionWithNumberResult copy() {
 			DateDateFunctionWithNumberResult newInstance;
 			try {
-				newInstance = getClass().newInstance();
-			} catch (InstantiationException | IllegalAccessException ex) {
+				newInstance = getClass().getDeclaredConstructor().newInstance();
+			} catch (IllegalAccessException | IllegalArgumentException | InstantiationException | NoSuchMethodException | SecurityException | InvocationTargetException ex) {
 				throw new RuntimeException(ex);
 			}
 			newInstance.first = first.copy();

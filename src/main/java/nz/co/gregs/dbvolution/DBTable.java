@@ -578,12 +578,6 @@ public class DBTable<E extends DBRow> {
 	 */
 	public final DBActionList insert(E row) throws SQLException {
 		return DBInsert.save(database, row);
-//		DBActionList actions = new DBActionList();
-//		for (E row : newRows) {
-//			actions.addAll(DBInsert.save(database, row));
-//		}
-//		query.refreshQuery();
-//		return actions;
 	}
 
 	/**
@@ -599,12 +593,6 @@ public class DBTable<E extends DBRow> {
 	@SafeVarargs
 	public final DBActionList insert(E... newRows) throws SQLException {
 		return insert(Arrays.asList(newRows));
-//		DBActionList actions = new DBActionList();
-//		for (E row : newRows) {
-//			actions.addAll(DBInsert.save(database, row));
-//		}
-//		query.refreshQuery();
-//		return actions;
 	}
 
 	/**

@@ -15,6 +15,7 @@
  */
 package nz.co.gregs.dbvolution.expressions;
 
+import java.lang.reflect.InvocationTargetException;
 import nz.co.gregs.dbvolution.expressions.windows.WindowFunctionFramable;
 import nz.co.gregs.dbvolution.expressions.windows.CanBeWindowingFunctionWithFrame;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
@@ -3035,8 +3036,8 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 		public DBBinaryArithmetic copy() {
 			DBBinaryArithmetic newInstance;
 			try {
-				newInstance = getClass().newInstance();
-			} catch (IllegalAccessException | InstantiationException ex) {
+				newInstance = getClass().getDeclaredConstructor().newInstance();
+			} catch (IllegalAccessException | IllegalArgumentException | InstantiationException | NoSuchMethodException | SecurityException | InvocationTargetException ex) {
 				throw new RuntimeException(ex);
 			}
 			newInstance.first = first == null ? null : first.copy();
@@ -3226,8 +3227,8 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 		public DBUnaryIntegerFunction copy() {
 			DBUnaryIntegerFunction newInstance;
 			try {
-				newInstance = getClass().newInstance();
-			} catch (InstantiationException | IllegalAccessException ex) {
+				newInstance = getClass().getDeclaredConstructor().newInstance();
+			} catch (IllegalAccessException | IllegalArgumentException | InstantiationException | NoSuchMethodException | SecurityException | InvocationTargetException ex) {
 				throw new RuntimeException(ex);
 			}
 			newInstance.only = only == null ? null : only.copy();
@@ -3299,8 +3300,8 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 		public NumberNumberFunctionNumberResult copy() {
 			NumberNumberFunctionNumberResult newInstance;
 			try {
-				newInstance = getClass().newInstance();
-			} catch (InstantiationException | IllegalAccessException ex) {
+				newInstance = getClass().getDeclaredConstructor().newInstance();
+			} catch (IllegalAccessException | IllegalArgumentException | InstantiationException | NoSuchMethodException | SecurityException | InvocationTargetException ex) {
 				throw new RuntimeException(ex);
 			}
 			newInstance.first = getFirst() == null ? null : getFirst().copy();
@@ -3420,8 +3421,8 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 		public DBBinaryBooleanArithmetic copy() {
 			DBBinaryBooleanArithmetic newInstance;
 			try {
-				newInstance = getClass().newInstance();
-			} catch (InstantiationException | IllegalAccessException ex) {
+				newInstance = getClass().getDeclaredConstructor().newInstance();
+			} catch (IllegalAccessException | IllegalArgumentException | InstantiationException | NoSuchMethodException | SecurityException | InvocationTargetException ex) {
 				throw new RuntimeException(ex);
 			}
 			newInstance.first = first == null ? null : first.copy();
@@ -3521,8 +3522,8 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 		public DBNnaryBooleanFunction copy() {
 			DBNnaryBooleanFunction newInstance;
 			try {
-				newInstance = getClass().newInstance();
-			} catch (InstantiationException | IllegalAccessException ex) {
+				newInstance = getClass().getDeclaredConstructor().newInstance();
+			} catch (IllegalAccessException | IllegalArgumentException | InstantiationException | NoSuchMethodException | SecurityException | InvocationTargetException ex) {
 				throw new RuntimeException(ex);
 			}
 			newInstance.column = this.getColumn().copy();
@@ -3650,8 +3651,8 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 		public DBNnaryNumberFunction copy() {
 			DBNnaryNumberFunction newInstance;
 			try {
-				newInstance = getClass().newInstance();
-			} catch (InstantiationException | IllegalAccessException ex) {
+				newInstance = getClass().getDeclaredConstructor().newInstance();
+			} catch (IllegalAccessException | IllegalArgumentException | InstantiationException | NoSuchMethodException | SecurityException | InvocationTargetException ex) {
 				throw new RuntimeException(ex);
 			}
 			newInstance.column = this.column == null ? null : this.column.copy();
@@ -3743,8 +3744,8 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 		public DBNumberAndNnaryStringFunction copy() {
 			DBNumberAndNnaryStringFunction newInstance;
 			try {
-				newInstance = getClass().newInstance();
-			} catch (InstantiationException | IllegalAccessException ex) {
+				newInstance = getClass().getDeclaredConstructor().newInstance();
+			} catch (IllegalAccessException | IllegalArgumentException | InstantiationException | NoSuchMethodException | SecurityException | InvocationTargetException ex) {
 				throw new RuntimeException(ex);
 			}
 			newInstance.numberExpression = this.numberExpression == null ? null : this.numberExpression.copy();
@@ -3834,8 +3835,8 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 		public DBUnaryStringFunction copy() {
 			DBUnaryStringFunction newInstance;
 			try {
-				newInstance = getClass().newInstance();
-			} catch (InstantiationException | IllegalAccessException ex) {
+				newInstance = getClass().getDeclaredConstructor().newInstance();
+			} catch (IllegalAccessException | IllegalArgumentException | InstantiationException | NoSuchMethodException | SecurityException | InvocationTargetException ex) {
 				throw new RuntimeException(ex);
 			}
 			newInstance.only = only == null ? null : only.copy();
@@ -3867,7 +3868,7 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 
 	}
 
-	public static class MaxUnaryFunction extends DBUnaryFunction implements CanBeWindowingFunctionWithFrame<NumberExpression>{
+	public static class MaxUnaryFunction extends DBUnaryFunction implements CanBeWindowingFunctionWithFrame<NumberExpression> {
 
 		private final static long serialVersionUID = 1l;
 
@@ -3896,7 +3897,7 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 		}
 	}
 
-	public static class MinUnaryFunction extends DBUnaryFunction implements CanBeWindowingFunctionWithFrame<NumberExpression>{
+	public static class MinUnaryFunction extends DBUnaryFunction implements CanBeWindowingFunctionWithFrame<NumberExpression> {
 
 		private final static long serialVersionUID = 1l;
 
@@ -5043,7 +5044,7 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 		}
 	}
 
-	public static class AverageExpression extends DBUnaryFunction implements CanBeWindowingFunctionWithFrame<NumberExpression>{
+	public static class AverageExpression extends DBUnaryFunction implements CanBeWindowingFunctionWithFrame<NumberExpression> {
 
 		public AverageExpression(NumberExpression only) {
 			super(only);
@@ -5112,7 +5113,7 @@ public class NumberExpression extends SimpleNumericExpression<Number, NumberResu
 		}
 	}
 
-	public static class SumExpression extends DBUnaryFunction implements CanBeWindowingFunctionWithFrame<NumberExpression>{
+	public static class SumExpression extends DBUnaryFunction implements CanBeWindowingFunctionWithFrame<NumberExpression> {
 
 		public SumExpression(NumberExpression only) {
 			super(only);

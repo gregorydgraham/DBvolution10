@@ -15,6 +15,7 @@
  */
 package nz.co.gregs.dbvolution.expressions;
 
+import java.lang.reflect.InvocationTargetException;
 import nz.co.gregs.dbvolution.expressions.windows.WindowFunctionFramable;
 import nz.co.gregs.dbvolution.expressions.windows.CanBeWindowingFunctionWithFrame;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
@@ -3164,8 +3165,8 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 		public DBBinaryArithmetic copy() {
 			DBBinaryArithmetic newInstance;
 			try {
-				newInstance = getClass().newInstance();
-			} catch (IllegalAccessException | InstantiationException ex) {
+				newInstance = getClass().getDeclaredConstructor().newInstance();
+			} catch (IllegalAccessException | IllegalArgumentException | InstantiationException | NoSuchMethodException | SecurityException | InvocationTargetException ex) {
 				throw new RuntimeException(ex);
 			}
 			newInstance.first = first.copy();
@@ -3634,8 +3635,8 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 		public DBNnaryIntegerFunction copy() {
 			DBNnaryIntegerFunction newInstance;
 			try {
-				newInstance = getClass().newInstance();
-			} catch (InstantiationException | IllegalAccessException ex) {
+				newInstance = getClass().getDeclaredConstructor().newInstance();
+			} catch (IllegalAccessException | IllegalArgumentException | InstantiationException | NoSuchMethodException | SecurityException | InvocationTargetException ex) {
 				throw new RuntimeException(ex);
 			}
 			newInstance.column = this.column.copy();
@@ -3727,8 +3728,8 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 		public DBIntegerAndNnaryStringFunction copy() {
 			DBIntegerAndNnaryStringFunction newInstance;
 			try {
-				newInstance = getClass().newInstance();
-			} catch (InstantiationException | IllegalAccessException ex) {
+				newInstance = getClass().getDeclaredConstructor().newInstance();
+			} catch (IllegalAccessException | IllegalArgumentException | InstantiationException | NoSuchMethodException | SecurityException | InvocationTargetException ex) {
 				throw new RuntimeException(ex);
 			}
 			newInstance.numberExpression = this.numberExpression.copy();
@@ -3818,8 +3819,8 @@ public class IntegerExpression extends SimpleNumericExpression<Long, IntegerResu
 		public DBUnaryStringFunction copy() {
 			DBUnaryStringFunction newInstance;
 			try {
-				newInstance = getClass().newInstance();
-			} catch (InstantiationException | IllegalAccessException ex) {
+				newInstance = getClass().getDeclaredConstructor().newInstance();
+			} catch (IllegalAccessException | IllegalArgumentException | InstantiationException | NoSuchMethodException | SecurityException | InvocationTargetException ex) {
 				throw new RuntimeException(ex);
 			}
 			newInstance.only = only.copy();

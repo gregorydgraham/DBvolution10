@@ -22,6 +22,8 @@ import java.util.AbstractMap.SimpleEntry;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import nz.co.gregs.dbvolution.expressions.DBExpression;
 
 import nz.co.gregs.dbvolution.exceptions.DBRuntimeException;
@@ -40,7 +42,7 @@ import org.apache.commons.logging.LogFactory;
  *
  * @author Malcolm Lett
  */
-public class QueryableDatatypeSyncer implements Serializable{
+public class QueryableDatatypeSyncer implements Serializable {
 
 	private static final long serialVersionUID = 1l;
 
@@ -80,12 +82,12 @@ public class QueryableDatatypeSyncer implements Serializable{
 				typeAdaptor, Direction.TO_INTERNAL, externalSimpleType, internalQdtLiteralType);
 
 		try {
-			this.internalQdt = internalQdtType.newInstance();
+			this.internalQdt = internalQdtType.getConstructor().newInstance();
 		} catch (InstantiationException e) {
 			// TODO produce a better error message that is consistent with how this is handled elsewhere
 			throw new DBRuntimeException("Instantiation error creating internal "
 					+ internalQdtType.getSimpleName() + " QDT: " + e.getMessage(), e);
-		} catch (IllegalAccessException e) {
+		} catch (IllegalAccessException | NoSuchMethodException | SecurityException|IllegalArgumentException | InvocationTargetException e) {
 			// TODO produce a better error message that is consistent with how this is handled elsewhere
 			throw new DBRuntimeException("Access error creating internal "
 					+ internalQdtType.getSimpleName() + " QDT: " + e.getMessage(), e);
@@ -362,12 +364,12 @@ public class QueryableDatatypeSyncer implements Serializable{
 		// factory method
 		private QueryableDatatype<?> newTargetQDT() {
 			try {
-				return targetQdtType.newInstance();
+				return targetQdtType.getConstructor().newInstance();
 			} catch (InstantiationException e) {
 				// TODO produce a better error message that is consistent with how this is handled elsewhere
 				throw new DBRuntimeException("Instantiation error creating internal "
 						+ targetQdtType.getSimpleName() + " QDT: " + e.getMessage(), e);
-			} catch (IllegalAccessException e) {
+			} catch (IllegalAccessException|NoSuchMethodException | SecurityException | IllegalArgumentException | InvocationTargetException e) {
 				// TODO produce a better error message that is consistent with how this is handled elsewhere
 				throw new DBRuntimeException("Access error creating internal "
 						+ targetQdtType.getSimpleName() + " QDT: " + e.getMessage(), e);

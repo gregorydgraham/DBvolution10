@@ -1112,12 +1112,8 @@ public class DBQuery implements Serializable {
 		for (DBRow table : details.getAllQueryTables()) {
 			SortedSet<Class<? extends DBRow>> allRelatedTables = table.getRelatedTables();
 			for (Class<? extends DBRow> connectedTable : allRelatedTables) {
-				try {
-					if (resultClasses.add(connectedTable)) {
-						result.add(connectedTable.newInstance());
-					}
-				} catch (IllegalAccessException | InstantiationException ex) {
-					throw new UnableToInstantiateDBRowSubclassException(connectedTable, ex);
+				if (resultClasses.add(connectedTable)) {
+					result.add(DBRow.getDBRow(connectedTable));
 				}
 			}
 		}
@@ -1153,11 +1149,11 @@ public class DBQuery implements Serializable {
 		for (DBRow table : details.getAllQueryTables()) {
 			Set<Class<? extends DBRow>> allRelatedTables = table.getReferencedTables();
 			for (Class<? extends DBRow> connectedTable : allRelatedTables) {
-				try {
-					result.add(connectedTable.newInstance());
-				} catch (InstantiationException | IllegalAccessException ex) {
-					throw new UnableToInstantiateDBRowSubclassException(connectedTable, ex);
-				}
+//				try {
+					result.add(DBRow.getDBRow(connectedTable));
+//				} catch (InstantiationException | IllegalAccessException ex) {
+//					throw new UnableToInstantiateDBRowSubclassException(connectedTable, ex);
+//				}
 			}
 		}
 
@@ -1237,11 +1233,11 @@ public class DBQuery implements Serializable {
 		for (DBRow table : details.getAllQueryTables()) {
 			Set<Class<? extends DBRow>> allConnectedTables = table.getAllConnectedTables();
 			for (Class<? extends DBRow> connectedTable : allConnectedTables) {
-				try {
-					tablesToAdd.add(connectedTable.newInstance());
-				} catch (InstantiationException | IllegalAccessException ex) {
-					throw new UnableToInstantiateDBRowSubclassException(connectedTable, ex);
-				}
+//				try {
+					tablesToAdd.add(DBRow.getDBRow(connectedTable));
+//				} catch (InstantiationException | IllegalAccessException ex) {
+//					throw new UnableToInstantiateDBRowSubclassException(connectedTable, ex);
+//				}
 			}
 		}
 		add(tablesToAdd.toArray(new DBRow[]{}));
@@ -1275,11 +1271,11 @@ public class DBQuery implements Serializable {
 		for (DBRow table : details.getAllQueryTables()) {
 			Set<Class<? extends DBRow>> allConnectedTables = table.getAllConnectedBaseTables();
 			for (Class<? extends DBRow> connectedTable : allConnectedTables) {
-				try {
-					tablesToAdd.add(connectedTable.newInstance());
-				} catch (InstantiationException | IllegalAccessException ex) {
-					throw new UnableToInstantiateDBRowSubclassException(connectedTable, ex);
-				}
+//				try {
+					tablesToAdd.add(DBRow.getDBRow(connectedTable));
+//				} catch (InstantiationException | IllegalAccessException ex) {
+//					throw new UnableToInstantiateDBRowSubclassException(connectedTable, ex);
+//				}
 			}
 		}
 		add(tablesToAdd.toArray(new DBRow[]{}));
@@ -1320,11 +1316,11 @@ public class DBQuery implements Serializable {
 			Set<Class<? extends DBRow>> allRelatedTables = table.getAllConnectedTables();
 			for (Class<? extends DBRow> relatedTable : allRelatedTables) {
 				DBRow newInstance;
-				try {
-					newInstance = relatedTable.newInstance();
-				} catch (InstantiationException | IllegalAccessException ex) {
-					throw new UnableToInstantiateDBRowSubclassException(relatedTable, ex);
-				}
+//				try {
+					newInstance =DBRow.getDBRow(relatedTable);
+//				} catch (InstantiationException | IllegalAccessException ex) {
+//					throw new UnableToInstantiateDBRowSubclassException(relatedTable, ex);
+//				}
 				@SuppressWarnings("unchecked")
 				final Class<DBRow> newInstanceClass = (Class<DBRow>) newInstance.getClass();
 				if (!alreadyAddedClasses.contains(newInstanceClass)) {
@@ -1372,11 +1368,11 @@ public class DBQuery implements Serializable {
 			for (Class<? extends DBRow> relatedTable : allRelatedTables) {
 //				DBRow newInstance = relatedTable.newInstance();
 				DBRow newInstance;
-				try {
-					newInstance = relatedTable.newInstance();
-				} catch (InstantiationException | IllegalAccessException ex) {
-					throw new UnableToInstantiateDBRowSubclassException(relatedTable, ex);
-				}
+//				try {
+					newInstance = DBRow.getDBRow(relatedTable);
+//				} catch (InstantiationException | IllegalAccessException ex) {
+//					throw new UnableToInstantiateDBRowSubclassException(relatedTable, ex);
+//				}
 				@SuppressWarnings("unchecked")
 				final Class<DBRow> newInstanceClass = (Class<DBRow>) newInstance.getClass();
 				if (!alreadyAddedClasses.contains(newInstanceClass)) {
@@ -1424,11 +1420,11 @@ public class DBQuery implements Serializable {
 			for (Class<? extends DBRow> relatedTable : allRelatedTables) {
 //				DBRow newInstance = relatedTable.newInstance();
 				DBRow newInstance;
-				try {
-					newInstance = relatedTable.newInstance();
-				} catch (InstantiationException | IllegalAccessException ex) {
-					throw new UnableToInstantiateDBRowSubclassException(relatedTable, ex);
-				}
+//				try {
+					newInstance = DBRow.getDBRow(relatedTable);
+//				} catch (InstantiationException | IllegalAccessException ex) {
+//					throw new UnableToInstantiateDBRowSubclassException(relatedTable, ex);
+//				}
 				@SuppressWarnings("unchecked")
 				final Class<DBRow> newInstanceClass = (Class<DBRow>) newInstance.getClass();
 				if (!alreadyAddedClasses.contains(newInstanceClass)) {

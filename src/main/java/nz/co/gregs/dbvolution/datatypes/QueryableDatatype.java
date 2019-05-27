@@ -24,7 +24,6 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
-
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.actions.DBActionList;
 import nz.co.gregs.dbvolution.columns.ColumnProvider;
@@ -168,13 +167,40 @@ public abstract class QueryableDatatype<T> extends Object implements Serializabl
 	 * <p style="color: #F90;">Support DBvolution at
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a new instance of the supplied QDT class
+	 * @throws java.lang.NoSuchMethodException
+	 * @throws java.lang.InstantiationException
+	 * @throws java.lang.IllegalAccessException
+	 * @throws java.lang.reflect.InvocationTargetException
 	 */
-	public static <T extends QueryableDatatype<?>> T getQueryableDatatypeInstance(Class<T> requiredQueryableDatatype) {
-		try {
-			return requiredQueryableDatatype.getConstructor().newInstance();
-		} catch (NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
-			throw new RuntimeException("Unable To Create " + requiredQueryableDatatype.getClass().getSimpleName() + ": Please ensure that the constructor of " + requiredQueryableDatatype.getClass().getSimpleName() + " has no arguments, throws no exceptions, and is public", ex);
-		}
+	public static <T extends QueryableDatatype<?>> T getQueryableDatatypeInstance(Class<T> requiredQueryableDatatype) throws NoSuchMethodException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+//		try {
+		return requiredQueryableDatatype.getConstructor().newInstance();
+//		} catch (NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
+//			throw new RuntimeException("Unable To Create " + requiredQueryableDatatype.getClass().getSimpleName() + ": Please ensure that the constructor of " + requiredQueryableDatatype.getClass().getSimpleName() + " has no arguments, throws no exceptions, and is public", ex);
+//		}
+	}
+
+	/**
+	 * Factory method that creates a new QDT instance with the same class as the
+	 * provided example.
+	 *
+	 * <p>
+	 * This method only provides a new blank instance. To copy the QDT and its
+	 * fields, use {@link #copy() }.
+	 *
+	 * @param <T> the QDT type
+	 * @param requiredQueryableDatatype requiredQueryableDatatype
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @return a new instance of the supplied QDT class
+	 * @throws java.lang.NoSuchMethodException
+	 * @throws java.lang.InstantiationException
+	 * @throws java.lang.IllegalAccessException
+	 * @throws java.lang.reflect.InvocationTargetException
+	 */
+	@SuppressWarnings("unchecked")
+	public static <T extends QueryableDatatype<?>> T getQueryableDatatypeInstance(T requiredQueryableDatatype) throws NoSuchMethodException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+		return (T) getQueryableDatatypeInstance(requiredQueryableDatatype.getClass());
 	}
 
 	/**
@@ -257,7 +283,7 @@ public abstract class QueryableDatatype<T> extends Object implements Serializabl
 		QueryableDatatype<T> newQDT = this;
 		try {
 			synchronized (newQDT) {
-				newQDT = this.getClass().newInstance();
+				newQDT = getQueryableDatatypeInstance(this.getClass());//this.getClass().newInstance();
 
 				newQDT.literalValue = this.getLiteralValue();
 				newQDT.isDBNull = this.isDBNull;
@@ -283,9 +309,9 @@ public abstract class QueryableDatatype<T> extends Object implements Serializabl
 				}
 				newQDT.setColumnExpression(newExpressions);
 			}
-		} catch (InstantiationException ex) {
+		} catch (InstantiationException | NoSuchMethodException | InvocationTargetException ex) {
 			throw new UnableInstantiateQueryableDatatypeException(this, ex);
-		} catch (IllegalAccessException ex) {
+		} catch (IllegalAccessException | IllegalArgumentException ex) {
 			throw new UnableToCopyQueryableDatatypeException(this, ex);
 		}
 
@@ -765,14 +791,20 @@ public abstract class QueryableDatatype<T> extends Object implements Serializabl
 		if ((this.isDBNull && newLiteralValue != null)
 				|| (!this.isDBNull && (newLiteralValue == null || !newLiteralValue.equals(literalValue)))) {
 			changed = true;
-			@SuppressWarnings("unchecked")
-			QueryableDatatype<T> copyOfOldValues = QueryableDatatype.getQueryableDatatypeInstance(this.getClass());
-			if (this.isDBNull) {
-				copyOfOldValues.setToNull();
-			} else {
-				copyOfOldValues.setLiteralValue(this.getLiteralValue());
+			try {
+				@SuppressWarnings("unchecked")
+				QueryableDatatype<T> copyOfOldValues = QueryableDatatype.getQueryableDatatypeInstance(this.getClass());
+				if (this.isDBNull) {
+					copyOfOldValues.setToNull();
+				} else {
+					copyOfOldValues.setLiteralValue(this.getLiteralValue());
+				}
+				setPreviousValue(copyOfOldValues);
+			} catch (InstantiationException | NoSuchMethodException | InvocationTargetException ex) {
+				throw new UnableInstantiateQueryableDatatypeException(this, ex);
+			} catch (IllegalAccessException | IllegalArgumentException ex) {
+				throw new UnableToCopyQueryableDatatypeException(this, ex);
 			}
-			setPreviousValue(copyOfOldValues);
 		}
 	}
 
@@ -1003,10 +1035,10 @@ public abstract class QueryableDatatype<T> extends Object implements Serializabl
 	@SuppressWarnings("unchecked")
 	public QueryableDatatype<T> getQueryableDatatypeForExpressionValue() {
 		try {
-			final QueryableDatatype<T> newInstance = this.getClass().newInstance();
+			final QueryableDatatype<T> newInstance = getQueryableDatatypeInstance(this);//this.getClass().newInstance();
 			newInstance.setColumnExpression(this.getColumnExpression());
 			return newInstance;
-		} catch (InstantiationException | IllegalAccessException e) {
+		} catch (InstantiationException | IllegalAccessException | NoSuchMethodException | IllegalArgumentException | InvocationTargetException e) {
 			return this;
 		}
 	}

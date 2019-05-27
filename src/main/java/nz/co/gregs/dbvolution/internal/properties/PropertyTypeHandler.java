@@ -5,7 +5,6 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
 import java.util.Date;
-
 import nz.co.gregs.dbvolution.annotations.DBAdaptType;
 import nz.co.gregs.dbvolution.annotations.DBColumn;
 import nz.co.gregs.dbvolution.datatypes.DBBoolean;
@@ -45,7 +44,7 @@ import nz.co.gregs.dbvolution.internal.properties.InterfaceInfo.UnsupportedType;
  */
 // TODO: this class could also handle implicit type adaptors where the target object's properties
 // are simple types, and we need to automatically convert between DBv data types.
-class PropertyTypeHandler implements Serializable{
+class PropertyTypeHandler implements Serializable {
 
 	private static final long serialVersionUID = 1l;
 
@@ -549,12 +548,8 @@ class PropertyTypeHandler implements Serializable{
 		}
 
 		try {
-			adaptorClass.newInstance();
-		} catch (InstantiationException e) {
-			throw new InvalidDeclaredTypeException("Type adaptor " + adaptorClass.getName()
-					+ " could not be constructed, on property "
-					+ property.qualifiedName() + ": " + e.getMessage(), e);
-		} catch (IllegalAccessException e) {
+			adaptorClass.getConstructor().newInstance();
+		} catch (InstantiationException | IllegalAccessException | NoSuchMethodException | SecurityException | IllegalArgumentException | InvocationTargetException e) {
 			throw new InvalidDeclaredTypeException("Type adaptor " + adaptorClass.getName()
 					+ " could not be constructed, on property "
 					+ property.qualifiedName() + ": " + e.getMessage(), e);

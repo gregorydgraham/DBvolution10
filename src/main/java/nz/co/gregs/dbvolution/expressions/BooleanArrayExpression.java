@@ -15,6 +15,7 @@
  */
 package nz.co.gregs.dbvolution.expressions;
 
+import java.lang.reflect.InvocationTargetException;
 import nz.co.gregs.dbvolution.results.EqualComparable;
 import nz.co.gregs.dbvolution.results.BooleanArrayResult;
 import java.util.HashSet;
@@ -285,8 +286,8 @@ public class BooleanArrayExpression extends AnyExpression<Boolean[], BooleanArra
 		public DBBinaryBooleanArithmetic copy() {
 			DBBinaryBooleanArithmetic newInstance;
 			try {
-				newInstance = getClass().newInstance();
-			} catch (InstantiationException | IllegalAccessException ex) {
+				newInstance = getClass().getConstructor().newInstance();
+			} catch (InstantiationException | IllegalAccessException|IllegalArgumentException | InvocationTargetException | NoSuchMethodException | SecurityException ex) {
 				throw new RuntimeException(ex);
 			}
 			newInstance.first = first.copy();

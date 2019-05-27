@@ -439,12 +439,8 @@ public class DataModel {
 	public static List<DBRow> getDBRowInstances(Collection<Class<? extends DBRow>> dbRowClasses) {
 		List<DBRow> dbrows = new ArrayList<DBRow>();
 		for (Class<? extends DBRow> dbRowClass : dbRowClasses) {
-			try {
-				DBRow newInstance = dbRowClass.newInstance();
-				dbrows.add(newInstance);
-			} catch (InstantiationException | IllegalAccessException ex) {
-				Logger.getLogger(DataModel.class.getName()).log(Level.INFO, null, ex);
-			}
+			DBRow newInstance = DBRow.getDBRow(dbRowClass);
+			dbrows.add(newInstance);
 		}
 		return dbrows;
 	}
@@ -483,7 +479,9 @@ public class DataModel {
 			if (newInstance == null) {
 				Class<?> tableClass = Class.forName(table);
 				if (DBRow.class.isAssignableFrom(tableClass)) {
-					newInstance = (DBRow) tableClass.newInstance();
+					@SuppressWarnings("unchecked")
+					final Class<? extends DBRow> rowClass = (Class<? extends DBRow>) tableClass;
+					newInstance = DBRow.getDBRow(rowClass);
 					foundAlready.put(table, newInstance);
 				} else {
 					throw new DBRuntimeException("Class Specified Is Not A DBRow Sub-Class: expected " + tableClass + "(derived from " + table + ") to be a DBRow subclass but it was not.  Please only use DBRows with this method.");

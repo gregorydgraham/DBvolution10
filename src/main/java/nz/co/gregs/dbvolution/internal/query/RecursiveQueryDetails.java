@@ -78,7 +78,7 @@ public class RecursiveQueryDetails<T extends DBRow> extends QueryDetails {
 	private ColumnProvider keyToFollow;
 	private T typeToReturn = null;
 	private RecursiveSQLDirection recursiveQueryDirection = RecursiveSQLDirection.TOWARDS_ROOT;
-	public static final  int MAXIMUM_DEPTH_DEFAULT = 10;
+	public static final int MAXIMUM_DEPTH_DEFAULT = 10;
 	private int maximumDepth = MAXIMUM_DEPTH_DEFAULT;
 
 	/**
@@ -213,43 +213,39 @@ public class RecursiveQueryDetails<T extends DBRow> extends QueryDetails {
 
 	private synchronized String getRecursiveSQL(DBDatabase database, RecursiveQueryDetails<T> details, ColumnProvider foreignKeyToFollow, RecursiveSQLDirection direction) {
 		final Class<? extends DBRow> referencedClass = foreignKeyToFollow.getColumn().getPropertyWrapper().referencedClass();
-		try {
-			DBDefinition defn = database.getDefinition();
-			final DBRow newInstance = referencedClass.newInstance();
-			final String recursiveTableAlias = database.getDefinition().getTableAlias(newInstance);
-			String recursiveColumnNames = "";
-			StringBuilder recursiveAliases = new StringBuilder();
-			final RowDefinitionInstanceWrapper rowDefinitionInstanceWrapper = foreignKeyToFollow.getColumn().getPropertyWrapper().getRowDefinitionInstanceWrapper();
-			RowDefinition adapteeRowDefinition = rowDefinitionInstanceWrapper.adapteeRowDefinition();
-			List<PropertyWrapper> propertyWrappers = adapteeRowDefinition.getColumnPropertyWrappers();
-			String separator = "";
-			for (PropertyWrapper propertyWrapper : propertyWrappers) {
-				for (PropertyWrapperDefinition.ColumnAspects entry : propertyWrapper.getColumnAspects(database.getDefinition())) {
-					String alias = entry.columnAlias;
-					final String columnName = defn.formatColumnName(propertyWrapper.columnName());
-					recursiveColumnNames += separator + columnName;
-					recursiveAliases.append(separator).append(columnName).append(" ").append(alias);
-					separator = ", ";
-				}
+		DBDefinition defn = database.getDefinition();
+		final DBRow newInstance = DBRow.getDBRow(referencedClass);
+		final String recursiveTableAlias = database.getDefinition().getTableAlias(newInstance);
+		String recursiveColumnNames = "";
+		StringBuilder recursiveAliases = new StringBuilder();
+		final RowDefinitionInstanceWrapper rowDefinitionInstanceWrapper = foreignKeyToFollow.getColumn().getPropertyWrapper().getRowDefinitionInstanceWrapper();
+		RowDefinition adapteeRowDefinition = rowDefinitionInstanceWrapper.adapteeRowDefinition();
+		List<PropertyWrapper> propertyWrappers = adapteeRowDefinition.getColumnPropertyWrappers();
+		String separator = "";
+		for (PropertyWrapper propertyWrapper : propertyWrappers) {
+			for (PropertyWrapperDefinition.ColumnAspects entry : propertyWrapper.getColumnAspects(database.getDefinition())) {
+				String alias = entry.columnAlias;
+				final String columnName = defn.formatColumnName(propertyWrapper.columnName());
+				recursiveColumnNames += separator + columnName;
+				recursiveAliases.append(separator).append(columnName).append(" ").append(alias);
+				separator = ", ";
 			}
-			recursiveColumnNames += separator + defn.getRecursiveQueryDepthColumnName();
-
-			final DBQuery primingSubQueryForRecursiveQuery = getPrimingSubQueryForRecursiveQuery(database, details, foreignKeyToFollow);
-			final DBQuery recursiveSubQuery = getRecursiveSubQuery(database, details, recursiveTableAlias, foreignKeyToFollow, direction);
-
-			String recursiveQuery
-					= defn.beginWithClause() + defn.formatWithClauseTableDefinition(recursiveTableAlias, recursiveColumnNames)
-					+ defn.beginWithClausePrimingQuery()
-					+ removeTrailingSemicolon(primingSubQueryForRecursiveQuery.getSQLForQuery())
-					+ defn.endWithClausePrimingQuery()
-					+ defn.beginWithClauseRecursiveQuery()
-					+ removeTrailingSemicolon(recursiveSubQuery.getSQLForQuery())
-					+ defn.endWithClauseRecursiveQuery()
-					+ defn.doSelectFromRecursiveTable(recursiveTableAlias, recursiveAliases.toString());
-			return recursiveQuery;
-		} catch (InstantiationException | IllegalAccessException ex) {
-			throw new UnableToInstantiateDBRowSubclassException(referencedClass, ex);
 		}
+		recursiveColumnNames += separator + defn.getRecursiveQueryDepthColumnName();
+
+		final DBQuery primingSubQueryForRecursiveQuery = getPrimingSubQueryForRecursiveQuery(database, details, foreignKeyToFollow);
+		final DBQuery recursiveSubQuery = getRecursiveSubQuery(database, details, recursiveTableAlias, foreignKeyToFollow, direction);
+
+		String recursiveQuery
+				= defn.beginWithClause() + defn.formatWithClauseTableDefinition(recursiveTableAlias, recursiveColumnNames)
+				+ defn.beginWithClausePrimingQuery()
+				+ removeTrailingSemicolon(primingSubQueryForRecursiveQuery.getSQLForQuery())
+				+ defn.endWithClausePrimingQuery()
+				+ defn.beginWithClauseRecursiveQuery()
+				+ removeTrailingSemicolon(recursiveSubQuery.getSQLForQuery())
+				+ defn.endWithClauseRecursiveQuery()
+				+ defn.doSelectFromRecursiveTable(recursiveTableAlias, recursiveAliases.toString());
+		return recursiveQuery;
 	}
 
 	private synchronized String removeTrailingSemicolon(String sql) {
@@ -300,37 +296,33 @@ public class RecursiveQueryDetails<T extends DBRow> extends QueryDetails {
 
 		final AbstractColumn fkColumn = foreignKeyToFollow.getColumn();
 		referencedClass = fkColumn.getClassReferencedByForeignKey();
-		try {
-			final DBRow referencedRow = referencedClass.newInstance();
 
-			DBRow originatingRow = fkColumn.getInstanceOfRow();
+		final DBRow referencedRow = DBRow.getDBRow(referencedClass);
 
-			referencedRow.setReturnFieldsToNone();
-			if (database.getDefinition().requiresRecursiveTableAlias()) {
-				referencedRow.setRecursiveTableAlias(recursiveTableAlias);
-			}
-			if (direction == RecursiveSQLDirection.TOWARDS_ROOT) {
-				originatingRow.ignoreAllForeignKeys();
-				referencedRow.ignoreAllForeignKeys();
-			}
-			newQuery.add(originatingRow);
-			newQuery.add(referencedRow);
+		DBRow originatingRow = fkColumn.getInstanceOfRow();
 
-			if (direction == RecursiveSQLDirection.TOWARDS_ROOT) {
-				addAscendingExpressionToQuery(recursiveDetails, originatingRow, foreignKeyToFollow, referencedRow, newQuery);
-			}
-			String depthColumnName = database.getDefinition().getRecursiveQueryDepthColumnName();
-			RecursiveQueryDepthIncreaseExpression depthExpression = new RecursiveQueryDepthIncreaseExpression();
-			DBNumber depthColumn = depthExpression.asExpressionColumn();
+		referencedRow.setReturnFieldsToNone();
+		if (database.getDefinition().requiresRecursiveTableAlias()) {
+			referencedRow.setRecursiveTableAlias(recursiveTableAlias);
+		}
+		if (direction == RecursiveSQLDirection.TOWARDS_ROOT) {
+			originatingRow.ignoreAllForeignKeys();
+			referencedRow.ignoreAllForeignKeys();
+		}
+		newQuery.add(originatingRow);
+		newQuery.add(referencedRow);
 
-			newQuery.addExpressionColumn(depthColumnName, depthColumn);
-			if (getMaximumDepth() > 0) {
-				// depthExpression is the depth column +1 so add one to the max depth
-				newQuery.addCondition(depthExpression.isLessThan(getMaximumDepth()+1));
-			}
+		if (direction == RecursiveSQLDirection.TOWARDS_ROOT) {
+			addAscendingExpressionToQuery(recursiveDetails, originatingRow, foreignKeyToFollow, referencedRow, newQuery);
+		}
+		String depthColumnName = database.getDefinition().getRecursiveQueryDepthColumnName();
+		RecursiveQueryDepthIncreaseExpression depthExpression = new RecursiveQueryDepthIncreaseExpression();
+		DBNumber depthColumn = depthExpression.asExpressionColumn();
 
-		} catch (InstantiationException | IllegalAccessException ex) {
-			throw new UnableToInstantiateDBRowSubclassException(referencedClass, ex);
+		newQuery.addExpressionColumn(depthColumnName, depthColumn);
+		if (getMaximumDepth() > 0) {
+			// depthExpression is the depth column +1 so add one to the max depth
+			newQuery.addCondition(depthExpression.isLessThan(getMaximumDepth() + 1));
 		}
 
 		return newQuery;

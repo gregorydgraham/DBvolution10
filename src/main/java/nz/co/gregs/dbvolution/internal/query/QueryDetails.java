@@ -17,6 +17,7 @@ package nz.co.gregs.dbvolution.internal.query;
 
 import java.io.Serializable;
 import java.lang.reflect.Array;
+import java.lang.reflect.InvocationTargetException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.SQLTimeoutException;
@@ -1142,12 +1143,11 @@ public class QueryDetails implements DBQueryable, Serializable {
 
 						}
 					}
-					if (DBRow.class
-							.isAssignableFrom(requiredClass)) {
+					if (DBRow.class.isAssignableFrom(requiredClass)) {
 						DBRow fieldInstance;
 						try {
-							fieldInstance = (DBRow) requiredClass.newInstance();
-						} catch (InstantiationException | IllegalAccessException ex) {
+							fieldInstance = DBRow.getDBRow((Class<? extends DBRow>) requiredClass);
+						} catch (IllegalArgumentException | SecurityException ex) {
 							throw new UnableToInstantiateDBRowSubclassException((Class<? extends DBRow>) requiredClass, ex);
 						}
 						List<DBRow> relatedInstancesFromQuery = getRelatedInstancesFromQuery(row, fieldInstance);

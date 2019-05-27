@@ -219,13 +219,13 @@ public class ExampleEncodingInterpreter implements EncodingInterpreter {
 	public void decodeValue(String value, DBNumber num) throws NumberFormatException {
 		if (value.contains("...")) {
 			String[] split = value.split("\\.\\.\\.");
-			Double startOfRange = split[0] == null || split[0].isEmpty() ? null : new Double(split[0]);
-			Double endOfRange = split.length == 1 || split[1] == null || split[1].isEmpty() ? null : new Double(split[1]);
+			Double startOfRange = split[0] == null || split[0].isEmpty() ? null : Double.parseDouble(split[0]);
+			Double endOfRange = split.length == 1 || split[1] == null || split[1].isEmpty() ? null :  Double.parseDouble(split[1]);
 			num.permittedRangeInclusive(
 					startOfRange,
 					endOfRange);
 		} else {
-			num.permittedValues(new Double(value));
+			num.permittedValues(Double.parseDouble(value));
 		}
 	}
 
@@ -249,7 +249,7 @@ public class ExampleEncodingInterpreter implements EncodingInterpreter {
 					startOfRange,
 					endOfRange);
 		} else {
-			num.permittedValues(new Double(value));
+			num.permittedValues(Double.parseDouble(value));
 		}
 	}
 
