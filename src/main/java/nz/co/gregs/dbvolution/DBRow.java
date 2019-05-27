@@ -150,8 +150,8 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 			return constructor.newInstance();
 		} catch (NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
 			try {
-				return requiredDBRowClass.newInstance();
-			} catch (InstantiationException | IllegalAccessException ex1) {
+				return requiredDBRowClass.getDeclaredConstructor().newInstance();
+			} catch (InstantiationException | IllegalAccessException | NoSuchMethodException | SecurityException | IllegalArgumentException | InvocationTargetException ex1) {
 				throw new UnableToInstantiateDBRowSubclassException(requiredDBRowClass, ex);
 			}
 		}
@@ -538,12 +538,12 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 				if (prop.isTypeAdapted()) {
 					Object rawJavaValue = prop.rawJavaValue();
 					if (rawJavaValue == null) {
-						try {
-							rawJavaValue = prop.getRawJavaType().newInstance();
-						} catch (InstantiationException | IllegalAccessException ex) {
-							// note: InstantiationException tends to be thrown without a message
-							throw new RuntimeException("Unable to instantiate instance of " + prop.toString(), ex);
-						}
+//						try {
+							rawJavaValue = prop.getRawJavaTypeInstance();//.newInstance();
+//						} catch (InstantiationException | IllegalAccessException ex) {
+//							// note: InstantiationException tends to be thrown without a message
+//							throw new RuntimeException("Unable to instantiate instance of " + prop.toString(), ex);
+//						}
 						prop.setRawJavaValue(rawJavaValue);
 					}
 					column = this.column(rawJavaValue);
@@ -601,12 +601,12 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 				if (prop.isTypeAdapted()) {
 					Object rawJavaValue = prop.rawJavaValue();
 					if (rawJavaValue == null) {
-						try {
-							rawJavaValue = prop.getRawJavaType().newInstance();
-						} catch (InstantiationException | IllegalAccessException ex) {
+//						try {
+							rawJavaValue = prop.getRawJavaTypeInstance();
+//						} catch (InstantiationException | IllegalAccessException ex) {
 							// note: InstantiationException tends to be thrown without a message
-							throw new RuntimeException("Unable to instantiate instance of " + prop.toString(), ex);
-						}
+//							throw new RuntimeException("Unable to instantiate instance of " + prop.toString(), ex);
+//						}
 						prop.setRawJavaValue(rawJavaValue);
 					}
 					column = this.column(rawJavaValue);
@@ -1322,16 +1322,16 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 
 		Set<Class<? extends DBRow>> subTypes = reflections.getSubTypesOf(DBRow.class);
 		for (Class<? extends DBRow> tableClass : subTypes) {
-			try {
+//			try {
 				if (!Modifier.isAbstract(tableClass.getModifiers())) {
-					DBRow newInstance = tableClass.newInstance();
+					DBRow newInstance = DBRow.getDBRow(tableClass);//tableClass.newInstance();
 					if (newInstance.getReferencedTables().contains(this.getClass())) {
 						relatedTables.add(tableClass);
 					}
 				}
-			} catch (InstantiationException | IllegalAccessException ex) {
-				throw new UnableToInstantiateDBRowSubclassException(tableClass, ex);
-			}
+//			} catch (InstantiationException | IllegalAccessException ex) {
+//				throw new UnableToInstantiateDBRowSubclassException(tableClass, ex);
+//			}
 		}
 		return relatedTables;
 	}
@@ -1361,16 +1361,17 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 		Set<Class<? extends DBRow>> subTypes = reflections.getSubTypesOf(DBRow.class);
 		for (Class<? extends DBRow> tableClass : subTypes) {
 			if (tableClass.getSuperclass().equals(DBRow.class)) {
-				try {
+//				try {
 					if (!Modifier.isAbstract(tableClass.getModifiers())) {
-						DBRow newInstance = tableClass.newInstance();
+						DBRow newInstance = DBRow.getDBRow(tableClass);
+//						DBRow newInstance = tableClass.newInstance();
 						if (newInstance.getReferencedTables().contains(this.getClass())) {
 							relatedTables.add(tableClass);
 						}
 					}
-				} catch (InstantiationException | IllegalAccessException ex) {
-					throw new UnableToInstantiateDBRowSubclassException(tableClass, ex);
-				}
+//				} catch (InstantiationException | IllegalAccessException ex) {
+//					throw new UnableToInstantiateDBRowSubclassException(tableClass, ex);
+//				}
 			}
 		}
 		return relatedTables;
@@ -1862,11 +1863,12 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 					&& tab.getSuperclass().equals(DBRow.class)
 					&& tab.getPackage().equals(referencePackage)) {
 				DBRow tabInstance;
-				try {
-					tabInstance = tab.newInstance();
-				} catch (InstantiationException | IllegalAccessException ex) {
-					throw new UnableToInstantiateDBRowSubclassException(tab, ex);
-				}
+				tabInstance = DBRow.getDBRow(tab);
+//				try {
+//					tabInstance = tab.newInstance();
+//				} catch (InstantiationException | IllegalAccessException ex) {
+//					throw new UnableToInstantiateDBRowSubclassException(tab, ex);
+//				}
 				resultList.add(tabInstance);
 			}
 		}
@@ -1902,11 +1904,12 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 					}
 					if (DBRow.class.isAssignableFrom(requiredClass)) {
 						DBRow fieldInstance;
-						try {
-							fieldInstance = (DBRow) requiredClass.newInstance();
-						} catch (InstantiationException | IllegalAccessException ex) {
-							throw new UnableToInstantiateDBRowSubclassException((Class<? extends DBRow>) requiredClass, ex);
-						}
+						fieldInstance = DBRow.getDBRow((Class<? extends DBRow>) requiredClass);
+//						try {
+//							fieldInstance = (DBRow) requiredClass.newInstance();
+//						} catch (InstantiationException | IllegalAccessException ex) {
+//							throw new UnableToInstantiateDBRowSubclassException((Class<? extends DBRow>) requiredClass, ex);
+//						}
 						List<DBRow> relatedInstancesFromQuery = this.getRelatedInstancesFromQuery(query, fieldInstance);
 						if (arrayRequired) {
 							Object newInstance = Array.newInstance(requiredClass, relatedInstancesFromQuery.size());

@@ -1,6 +1,7 @@
 package nz.co.gregs.dbvolution.internal.properties;
 
 import java.io.Serializable;
+import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.annotations.AutoFillDuringQueryIfPossible;
@@ -803,12 +804,22 @@ public class PropertyWrapper implements Serializable {
 	 * other binary type.
 	 *
 	 * <p>
-	 * Spatial columns are special in that they can't generally be used in WHERE clauses.
+	 * Spatial columns are special in that they can't generally be used in WHERE
+	 * clauses.
 	 *
 	 * @return TRUE if the value of this column is a 2D geometry type, otherwise
 	 * FALSE.
 	 */
 	public boolean isLargeObjectType() {
 		return propertyDefinition.isLargeObject();
+	}
+
+	public Object getRawJavaTypeInstance() {
+		try {
+			return this.getRawJavaType().getDeclaredConstructor().newInstance();
+		} catch (InstantiationException | IllegalAccessException | NoSuchMethodException | SecurityException | IllegalArgumentException | InvocationTargetException ex) {
+			// note: InstantiationException tends to be thrown without a message
+			throw new RuntimeException("Unable to instantiate instance of " + this.toString(), ex);
+		}
 	}
 }
