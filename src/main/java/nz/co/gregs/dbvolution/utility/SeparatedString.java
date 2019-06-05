@@ -63,38 +63,38 @@ public class SeparatedString {
 	public SeparatedString(String separator) {
 		this("", separator, "");
 	}
-	
-	public static SeparatedString bySpaces(){
+
+	public static SeparatedString bySpaces() {
 		return new SeparatedString(" ");
 	}
 
-	public static SeparatedString byCommas(){
+	public static SeparatedString byCommas() {
 		return new SeparatedString(", ");
 	}
 
-	public static SeparatedString byCommasWithQuotedTermsAndBackslashEscape(){
+	public static SeparatedString byCommasWithQuotedTermsAndBackslashEscape() {
 		return new SeparatedString(", ").withWrapping("\"", "\"").withEscapeChar("\\");
 	}
-	
-	public static SeparatedString byCommasWithQuotedTermsAndDoubleBackslashEscape(){
+
+	public static SeparatedString byCommasWithQuotedTermsAndDoubleBackslashEscape() {
 		return new SeparatedString(", ").withWrapping("\"", "\"").withEscapeChar("\\\\");
 	}
 
-	public static SeparatedString byTabs(){
+	public static SeparatedString byTabs() {
 		return new SeparatedString("\t");
 	}
 
-	public static SeparatedString byLines(){
+	public static SeparatedString byLines() {
 		return new SeparatedString("\n");
 	}
-	
-	public SeparatedString withWrapping(String before, String after){
+
+	public SeparatedString withWrapping(String before, String after) {
 		this.wrapBefore = before;
 		this.wrapAfter = after;
 		return this;
 	}
-	
-	public SeparatedString withEscapeChar(String esc){
+
+	public SeparatedString withEscapeChar(String esc) {
 		this.escapeChar = esc;
 		return this;
 	}
@@ -109,11 +109,11 @@ public class SeparatedString {
 		Pattern matchEsc = Pattern.compile(getEscapeChar());
 		for (String element : this.getStrings()) {
 			String str = element;
-			if(!escapeChar.equals("")){
-				str = matchSep.matcher(str).replaceAll(getEscapeChar()+getSeparator());
-				str = matchBefore.matcher(str).replaceAll(getEscapeChar()+getWrapBefore());
-				str = matchAfter.matcher(str).replaceAll(getEscapeChar()+getWrapAfter());
-				str = matchEsc.matcher(str).replaceAll(getEscapeChar()+getEscapeChar());
+			if (!escapeChar.equals("")) {
+				str = matchSep.matcher(str).replaceAll(getEscapeChar() + getSeparator());
+				str = matchBefore.matcher(str).replaceAll(getEscapeChar() + getWrapBefore());
+				str = matchAfter.matcher(str).replaceAll(getEscapeChar() + getWrapAfter());
+				str = matchEsc.matcher(str).replaceAll(getEscapeChar() + getEscapeChar());
 			}
 			strs.append(sep).append(getWrapBefore()).append(str).append(getWrapAfter());
 			sep = this.getSeparator();
@@ -171,6 +171,33 @@ public class SeparatedString {
 
 	public SeparatedString add(String string) {
 		getStrings().add(string);
+		return this;
+	}
+
+	public SeparatedString add(Double string) {
+		getStrings().add(string.toString());
+		return this;
+	}
+
+	public SeparatedString add(Long string) {
+		getStrings().add(string.toString());
+		return this;
+	}
+
+	public SeparatedString add(Integer string) {
+		getStrings().add(string.toString());
+		return this;
+	}
+
+	public SeparatedString add(Object string) {
+		getStrings().add(string.toString());
+		return this;
+	}
+
+	public SeparatedString add(Object... strings) {
+		for (Object string : strings) {
+			getStrings().add(string.toString());
+		}
 		return this;
 	}
 
