@@ -184,21 +184,10 @@ public class DBLocalDate extends QueryableDatatype<LocalDate> implements LocalDa
 	}
 
 	/**
-	 * Implement for Java8 Sets the value of this QDT to the Java.time.LocalDate
-	 * provided.
-	 *
-	 * @param date	date
-	 */
-	/*TODO*/
-//	@Override
-//	public void setValue(LocalDate date) {
-//		super.setLiteralValue(date);
-//	}
-	/**
 	 * Sets the value of this QDT to the dateStr provided.
 	 *
 	 * <p>
-	 * The date String will be parsed by {@link LocalDate#parse(java.lang.String)
+	 * The date String will be parsed by {@link LocalDate#parse(java.lang.CharSequence)
 	 * }
 	 * so please confirms to the requirements of that method.
 	 *
@@ -207,8 +196,6 @@ public class DBLocalDate extends QueryableDatatype<LocalDate> implements LocalDa
 	@SuppressWarnings("deprecation")
 	public void setValue(String dateStr) {
 		final LocalDate date = LocalDate.parse(dateStr);
-//		LocalDate date = new LocalDate();
-//		date.setTime(dateLong);
 		setValue(date);
 	}
 
@@ -725,8 +712,7 @@ public class DBLocalDate extends QueryableDatatype<LocalDate> implements LocalDa
 
 	/**
 	 * Set the value to be inserted when no value has been set, using
-	 * {@link #setValue(nz.co.gregs.dbvolution.datatypes.DBDate) setValue(...)},
-	 * for the QDT.
+	 * {@link #setValue(java.time.LocalDate) setValue(...)}, for the QDT.
 	 *
 	 * <p>
 	 * The value is only used during the initial insert and does not effect the
@@ -746,7 +732,7 @@ public class DBLocalDate extends QueryableDatatype<LocalDate> implements LocalDa
 	 * public DBDate creationOrUpdateDate = new DBDate()
 	 * .setDefaultInsertValue(DateExpression.currentDate())
 	 * .setDefaultUpdateValue(DateExpression.currentDate());
-	 * </pre></p>
+	 * </pre>
 	 *
 	 * @param value the value to use during insertion when no particular value has
 	 * been specified.
@@ -760,7 +746,7 @@ public class DBLocalDate extends QueryableDatatype<LocalDate> implements LocalDa
 
 	/**
 	 * Set the value to be inserted when no value has been set, using
-	 * {@link #setValue(nz.co.gregs.dbvolution.datatypes.DBDate) setValue(...)},
+	 * {@link #setValue(nz.co.gregs.dbvolution.datatypes.DBLocalDate) setValue(...)},
 	 * for the QDT.
 	 *
 	 * <p>
@@ -769,24 +755,67 @@ public class DBLocalDate extends QueryableDatatype<LocalDate> implements LocalDa
 	 *
 	 * <p>
 	 * Care should be taken when using this as some "obvious" uses are better
-	 * handled using
-	 * {@link #setDefaultInsertValue(nz.co.gregs.dbvolution.results.AnyResult) expression version.  In particular, setDefaultInsertValue(new LocalDate()) is probably NOT what you want, setDefaultInsertValue(DateExpression.currentDate()) will produce a correct creation date value.</p>
+	 * handled using the
+	 * {@link #setDefaultInsertValue(nz.co.gregs.dbvolution.results.AnyResult) expression version}.
+	 * In particular, setDefaultInsertValue(new LocalDate()) is probably NOT what
+	 * you want, setDefaultInsertValue(LocalDateExpression.currentLocalDate())
+	 * will produce a correct creation date value.</p>
 	 *
 	 * <p>
 	 * Correct usages for standard date defaults:
 	 *
 	 * <pre>
 	 * &#64;DBColumn
-	 * public DBDate creationDate = new DBDate().setDefaultInsertValue(DateExpression.currentDate());
+	 * public DBLocalDate creationDate = new DBLocalDate().setDefaultInsertValue(LocalDateExpression.currentLocalDate());
 	 *
 	 * &#64;DBColumn
-	 * public DBDate updateDate = new DBDate().setDefaultUpdateValue(DateExpression.currentDate());
+	 * public DBLocalDate updateDate = new DBLocalDate().setDefaultUpdateValue(LocalDateExpression.currentLocalDate());
 	 *
 	 * &#64;DBColumn
-	 * public DBDate creationOrUpdateDate = new DBDate()
-	 * .setDefaultInsertValue(DateExpression.currentDate())
-	 * .setDefaultUpdateValue(DateExpression.currentDate());
-	 * </pre></p>
+	 * public DBLocalDate creationOrUpdateDate = new DBLocalDate()
+	 * .setDefaultInsertValue(LocalDateExpression.currentLocalDate())
+	 * .setDefaultUpdateValue(LocalDateExpression.currentLocalDate());
+	 * </pre>
+	 *
+	 * @return This QDT
+	 */
+	public synchronized DBLocalDate setDefaultInsertValueToCurrentLocalDate() {
+		super.setDefaultInsertValue(LocalDateExpression.currentLocalDate());
+		return this;
+	}
+
+	/**
+	 * Set the value to be inserted when no value has been set, using
+	 * {@link #setValue(nz.co.gregs.dbvolution.datatypes.DBLocalDate) setValue(...)},
+	 * for the QDT.
+	 *
+	 * <p>
+	 * The value is only used during the initial insert and does not effect the
+	 * definition of the column within the database.</p>
+	 *
+	 * <p>
+	 * Care should be taken when using this as some "obvious" uses are better
+	 * handled using the
+	 * {@link #setDefaultInsertValue(nz.co.gregs.dbvolution.results.AnyResult) expression version}.
+	 * In particular, setDefaultInsertValue(new LocalDate()) is probably NOT what
+	 * you want, setDefaultInsertValue(LocalDateExpression.currentLocalDate())
+	 * will produce a correct creation date value.</p>
+	 *
+	 * <p>
+	 * Correct usages for standard date defaults:
+	 *
+	 * <pre>
+	 * &#64;DBColumn
+	 * public DBLocalDate creationDate = new DBLocalDate().setDefaultInsertValue(LocalDateExpression.currentLocalDate());
+	 *
+	 * &#64;DBColumn
+	 * public DBLocalDate updateDate = new DBLocalDate().setDefaultUpdateValue(LocalDateExpression.currentLocalDate());
+	 *
+	 * &#64;DBColumn
+	 * public DBLocalDate creationOrUpdateDate = new DBLocalDate()
+	 * .setDefaultInsertValue(LocalDateExpression.currentLocalDate())
+	 * .setDefaultUpdateValue(LocalDateExpression.currentLocalDate());
+	 * </pre>
 	 *
 	 * @param value the value to use during insertion when no particular value has
 	 * been specified.
@@ -799,8 +828,7 @@ public class DBLocalDate extends QueryableDatatype<LocalDate> implements LocalDa
 
 	/**
 	 * Set the value to be used during an update when no value has been set, using
-	 * {@link #setValue(nz.co.gregs.dbvolution.datatypes.DBDate)  setValue(...)},
-	 * for the QDT.
+	 * {@link #setValue(java.time.LocalDate)  setValue(...)}, for the QDT.
 	 *
 	 * <p>
 	 * The value is only used during updates and does not effect the definition of
@@ -808,24 +836,66 @@ public class DBLocalDate extends QueryableDatatype<LocalDate> implements LocalDa
 	 *
 	 * <p>
 	 * Care should be taken when using this as some "obvious" uses are better
-	 * handled using
-	 * {@link #setDefaultUpdateValue(nz.co.gregs.dbvolution.results.AnyResult) expression version.  In particular, setDefaultUpdateValue(new LocalDate()) is probably NOT what you want, setDefaultUpdateValue(DateExpression.currentDate()) will produce a correct update time value.</p>
+	 * handled using the
+	 * {@link #setDefaultUpdateValue(nz.co.gregs.dbvolution.results.AnyResult) expression version}.
+	 * In particular, setDefaultUpdateValue(new LocalDate()) is probably NOT what
+	 * you want, setDefaultUpdateValue(DateExpression.currentDate()) will produce
+	 * a correct update time value.</p>
 	 *
 	 * <p>
 	 * Correct usages for standard date defaults:
 	 *
 	 * <pre>
 	 * &#64;DBColumn
-	 * public DBDate creationDate = new DBDate().setDefaultInsertValue(DateExpression.currentDate());
+	 * public DBLocalDate creationDate = new DBLocalDate().setDefaultInsertValue(LocalDateExpression.currentLocalDate());
 	 *
 	 * &#64;DBColumn
-	 * public DBDate updateDate = new DBDate().setDefaultUpdateValue(DateExpression.currentDate());
+	 * public DBLocalDate updateDate = new DBLocalDate().setDefaultUpdateValue(LocalDateExpression.currentLocalDate());
 	 *
 	 * &#64;DBColumn
-	 * public DBDate creationOrUpdateDate = new DBDate()
-	 * .setDefaultInsertValue(DateExpression.currentDate())
-	 * .setDefaultUpdateValue(DateExpression.currentDate());
-	 * </pre></p>
+	 * public DBLocalDate creationOrUpdateDate = new DBLocalDate()
+	 * .setDefaultInsertValue(LocalDateExpression.currentLocalDate())
+	 * .setDefaultUpdateValue(LocalDateExpression.currentLocalDate());
+	 * </pre>
+	 *
+	 * @return This QDT
+	 */
+	public synchronized DBLocalDate setDefaultUpdateValueToCurrentLocalDate() {
+		super.setDefaultUpdateValue(LocalDateExpression.currentLocalDate());
+		return this;
+	}
+
+	/**
+	 * Set the value to be used during an update when no value has been set, using
+	 * {@link #setValue(java.time.LocalDate)  setValue(...)}, for the QDT.
+	 *
+	 * <p>
+	 * The value is only used during updates and does not effect the definition of
+	 * the column within the database nor the initial value of the column.</p>
+	 *
+	 * <p>
+	 * Care should be taken when using this as some "obvious" uses are better
+	 * handled using the
+	 * {@link #setDefaultUpdateValue(nz.co.gregs.dbvolution.results.AnyResult) expression version}.
+	 * In particular, setDefaultUpdateValue(new LocalDate()) is probably NOT what
+	 * you want, setDefaultUpdateValue(DateExpression.currentDate()) will produce
+	 * a correct update time value.</p>
+	 *
+	 * <p>
+	 * Correct usages for standard date defaults:
+	 *
+	 * <pre>
+	 * &#64;DBColumn
+	 * public DBLocalDate creationDate = new DBLocalDate().setDefaultInsertValue(LocalDateExpression.currentLocalDate());
+	 *
+	 * &#64;DBColumn
+	 * public DBLocalDate updateDate = new DBLocalDate().setDefaultUpdateValue(LocalDateExpression.currentLocalDate());
+	 *
+	 * &#64;DBColumn
+	 * public DBLocalDate creationOrUpdateDate = new DBLocalDate()
+	 * .setDefaultInsertValue(LocalDateExpression.currentLocalDate())
+	 * .setDefaultUpdateValue(LocalDateExpression.currentLocalDate());
+	 * </pre>
 	 *
 	 * @param value the value to use during update when no particular value has
 	 * been specified.
@@ -839,8 +909,7 @@ public class DBLocalDate extends QueryableDatatype<LocalDate> implements LocalDa
 
 	/**
 	 * Set the value to be used during an update when no value has been set, using
-	 * {@link #setValue(nz.co.gregs.dbvolution.datatypes.DBDate)  setValue(...)},
-	 * for the QDT.
+	 * {@link #setValue(java.time.LocalDate) setValue(...)}, for the QDT.
 	 *
 	 * <p>
 	 * The value is only used during updates and does not effect the definition of
@@ -851,16 +920,16 @@ public class DBLocalDate extends QueryableDatatype<LocalDate> implements LocalDa
 	 *
 	 * <pre>
 	 * &#64;DBColumn
-	 * public DBDate creationDate = new DBDate().setDefaultInsertValue(DateExpression.currentDate());
+	 * public DBLocalDate creationDate = new DBLocalDate().setDefaultInsertValue(LocalDateExpression.currentLocalDate());
 	 *
 	 * &#64;DBColumn
-	 * public DBDate updateDate = new DBDate().setDefaultUpdateValue(DateExpression.currentDate());
+	 * public DBLocalDate updateDate = new DBLocalDate().setDefaultUpdateValue(LocalDateExpression.currentLocalDate());
 	 *
 	 * &#64;DBColumn
-	 * public DBDate creationOrUpdateDate = new DBDate()
-	 * .setDefaultInsertValue(DateExpression.currentDate())
-	 * .setDefaultUpdateValue(DateExpression.currentDate());
-	 * </pre></p>
+	 * public DBLocalDate creationOrUpdateDate = new DBLocalDate()
+	 * .setDefaultInsertValue(LocalDateExpression.currentLocalDate())
+	 * .setDefaultUpdateValue(LocalDateExpression.currentLocalDate());
+	 * </pre>
 	 *
 	 * @param value the value to use during update when no particular value has
 	 * been specified.

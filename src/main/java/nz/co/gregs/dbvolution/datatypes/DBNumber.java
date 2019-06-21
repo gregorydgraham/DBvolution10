@@ -103,7 +103,7 @@ public class DBNumber extends QueryableDatatype<Number> implements NumberResult 
 	}
 
 	public DBNumber(IntegerExpression integerExpression) {
-		this(integerExpression.numberResult()); 
+		this(integerExpression.numberResult());
 	}
 
 	@Override
@@ -157,8 +157,10 @@ public class DBNumber extends QueryableDatatype<Number> implements NumberResult 
 	/**
 	 * Set the value of this DBNumber to the Double, Long, Integer, or other
 	 * number provided.
-	 * 
-	 * <p>A convenience method the uses Double.parseDouble(String) to create a number from the string.
+	 *
+	 * <p>
+	 * A convenience method the uses Double.parseDouble(String) to create a number
+	 * from the string.
 	 *
 	 * <p>
 	 * This is probably the method you want to use to set or change the value of
@@ -721,11 +723,11 @@ public class DBNumber extends QueryableDatatype<Number> implements NumberResult 
 	public void excludeNull() {
 		this.excludedValues((Number) null);
 	}
-	
+
 	public void permitOnlyNull() {
 		excludeNotNull();
 	}
-	
+
 	public void permitOnlyNotNull() {
 		excludeNull();
 	}
@@ -740,8 +742,11 @@ public class DBNumber extends QueryableDatatype<Number> implements NumberResult 
 	 *
 	 * <p>
 	 * Care should be taken when using this as some "obvious" uses are better
-	 * handled using
-	 * {@link #setDefaultInsertValue(nz.co.gregs.dbvolution.results.AnyResult) expression version.  In particular, setDefaultInsertValue(new Date()) is probably NOT what you want, setDefaultInsertValue(DateExpression.currentDate()) will produce a correct creation date value.</p>
+	 * handled using the
+	 * {@link #setDefaultInsertValue(nz.co.gregs.dbvolution.results.AnyResult) expression version}.
+	 * In particular, setDefaultInsertValue(new Date()) is probably NOT what you
+	 * want, setDefaultInsertValue(DateExpression.currentDate()) will produce a
+	 * correct creation date value.</p>
 	 *
 	 * @param value the value to use during insertion when no particular value has
 	 * been specified.
@@ -780,8 +785,11 @@ public class DBNumber extends QueryableDatatype<Number> implements NumberResult 
 	 *
 	 * <p>
 	 * Care should be taken when using this as some "obvious" uses are better
-	 * handled using
-	 * {@link #setDefaultUpdateValue(nz.co.gregs.dbvolution.results.AnyResult) expression version.  In particular, setDefaultUpdateValue(new Date()) is probably NOT what you want, setDefaultUpdateValue(DateExpression.currentDate()) will produce a correct update time value.</p>
+	 * handled using the
+	 * {@link #setDefaultUpdateValue(nz.co.gregs.dbvolution.results.AnyResult) expression version}.
+	 * In particular, setDefaultUpdateValue(new Date()) is probably NOT what you
+	 * want, setDefaultUpdateValue(DateExpression.currentDate()) will produce a
+	 * correct update time value.</p>
 	 *
 	 * @param value the value to use during update when no particular value has
 	 * been specified.

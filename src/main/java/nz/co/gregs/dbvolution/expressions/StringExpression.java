@@ -29,6 +29,7 @@ import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.columns.StringColumn;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.datatypes.*;
+import nz.co.gregs.dbvolution.expressions.search.SearchAcross;
 import nz.co.gregs.dbvolution.results.AnyResult;
 import nz.co.gregs.dbvolution.results.ExpressionHasStandardStringResult;
 import nz.co.gregs.dbvolution.results.IntegerResult;
@@ -549,8 +550,9 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 	 *
 	 * <p>
 	 * See
-	 * {@link DBQuery#addCondition(nz.co.gregs.dbvolution.utility.SearchString) }
-	 * for using this method multiple columns easily.</p>
+	 * {@link DBQuery#addCondition(nz.co.gregs.dbvolution.expressions.search.HasComparisonExpression) }
+	 * and {@link SearchAcross} for using this method with multiple columns
+	 * easily.</p>
 	 *
 	 * @param searchString
 	 * @return a BooleanExpression of the SQL comparison.
@@ -575,8 +577,9 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 	 *
 	 * <p>
 	 * See
-	 * {@link DBQuery#addCondition(nz.co.gregs.dbvolution.utility.SearchString, nz.co.gregs.dbvolution.columns.ColumnProvider...) }
-	 * for using this method multiple columns easily.</p>
+	 * {@link DBQuery#addCondition(nz.co.gregs.dbvolution.expressions.search.HasComparisonExpression) }
+	 * and {@link SearchAcross} for using this method with multiple columns
+	 * easily.</p>
 	 *
 	 * @param strings
 	 * @return a BooleanExpression of the SQL comparison.
@@ -604,9 +607,10 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 	 * <p>
 	 * Use with a single column using {@link StringExpression#searchFor(nz.co.gregs.dbvolution.expressions.search.SearchString)
 	 * } and {@link StringExpression#searchForRanking(nz.co.gregs.dbvolution.expressions.search.SearchString)
-	 * }: marq.column(marq.name).searchFor(searchString). If you have individual
-	 * strings use
-	 * {@link StringExpression#searchFor(java.lang.String...) and {@link StringExpression#searchForRanking(java.lang.String...) }.</p>
+	 * }: e.g. marq.column(marq.name).searchFor(searchString). If you have
+	 * individual strings use
+	 * {@link StringExpression#searchFor(java.lang.String...)} and {@link StringExpression#searchForRanking(java.lang.String...)
+	 * }.</p>
 	 *
 	 * <p>
 	 * searchForRanking produces a number value that can be used for sorting. </p>
@@ -637,9 +641,9 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 	 * <p>
 	 * Use with a single column using {@link StringExpression#searchFor(nz.co.gregs.dbvolution.expressions.search.SearchString)
 	 * } and {@link StringExpression#searchForRanking(nz.co.gregs.dbvolution.expressions.search.SearchString)
-	 * }: marq.column(marq.name).searchFor(searchString). If you have individual
+	 * }: e.g. marq.column(marq.name).searchFor(searchString). If you have individual
 	 * strings use
-	 * {@link StringExpression#searchFor(java.lang.String...) and {@link StringExpression#searchForRanking(java.lang.String...) }.</p>
+	 * {@link StringExpression#searchFor(java.lang.String...)} and {@link StringExpression#searchForRanking(java.lang.String...) }.</p>
 	 *
 	 * <p>
 	 * searchForRanking produces a number value that can be used for sorting. </p>
@@ -2897,13 +2901,13 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 			if (db.supportsLeftPadTransform()) {
 				return db.doLeftPadTransform(this.string.toSQLString(db), this.padding.toSQLString(db), this.length.toSQLString(db));
 			} else {
-				return "LPAD_SUBSTITUTE_REQUIRED(" + 
-						SeparatedString
+				return "LPAD_SUBSTITUTE_REQUIRED("
+						+ SeparatedString
 								.startsWith("LPAD_SUBSTITUTE_REQUIRED(")
 								.add(this.string.toSQLString(db), this.padding.toSQLString(db), this.length.toSQLString(db))
-						.separatedBy(", ")
-						.withSuffix(")")
-										.toString()						;
+								.separatedBy(", ")
+								.withSuffix(")")
+								.toString();
 			}
 		}
 
@@ -3468,7 +3472,7 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 			return new NullStringExpression();
 		}
 	}
-	
+
 	protected class StringIfDBNullExpression extends DBBinaryStringFunction {
 
 		public StringIfDBNullExpression(StringExpression first, StringExpression second) {

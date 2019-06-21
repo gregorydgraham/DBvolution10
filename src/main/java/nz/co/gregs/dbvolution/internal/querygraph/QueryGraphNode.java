@@ -62,7 +62,7 @@ public class QueryGraphNode {
 	 * Return all connected tables known by this node.
 	 *
 	 * <p>
-	 * Only includes DBRows/tables that have been connected to this node using {@link #connectTable(java.lang.Class)
+	 * Only includes DBRows/tables that have been connected to this node using {@link #connectTable(nz.co.gregs.dbvolution.internal.query.DBRowClass) 
 	 * }.
 	 *
 	 * <p style="color: #F90;">Support DBvolution at

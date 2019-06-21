@@ -111,7 +111,7 @@ public class DBDatabaseClusterWithConfigFile extends DBDatabaseCluster {
 	 * found will be used and the search order is not defined so avoid creating
 	 * multiple versions of yamlConfigFilename.</p>
 	 *
-	 * <<p>
+	 * <p>
 	 * The file's contents must be YAML for an array of
 	 * {@link DatabaseConnectionSettings} objects. Each DatabaseConnectionSettings
 	 * object has a DBDatabase's canonical class name, username and password, and

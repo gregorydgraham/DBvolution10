@@ -34,7 +34,7 @@ import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
  * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
  *
  * @author Gregory Graham
- * @param <T>
+ * @param <T> the type of the values to be included in the collection of values
  */
 public class DBPermittedRangeOperator<T> extends DBMetaOperator {
 

@@ -36,7 +36,7 @@ import nz.co.gregs.dbvolution.results.LargeObjectResult;
  * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
  *
  * @author Gregory Graham
- * @param <T>
+ * @param <T> the Java type of the value to be represented by this BLOB QDT
  */
 public abstract class DBLargeObject<T> extends QueryableDatatype<T> implements LargeObjectResult {
 

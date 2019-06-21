@@ -82,7 +82,7 @@ public abstract class DBExtractor extends DBScript {
 	/**
 	 * Default constructor.
 	 *
-	 * @param db
+	 * @param db the database to extract data from.
 	 */
 	public DBExtractor(DBDatabase db) {
 		database = db;
@@ -92,8 +92,8 @@ public abstract class DBExtractor extends DBScript {
 	 * When Extractor has successfully extract some rows, they are handed to this
 	 * method for processing.
 	 *
-	 * @param rows
-	 * @throws Exception
+	 * @param rows the rows extracted from the database, ready for processing.
+	 * @throws Exception any exception can be thrown.
 	 */
 	abstract public void processRows(List<DBQueryRow> rows) throws Exception;
 
@@ -117,9 +117,9 @@ public abstract class DBExtractor extends DBScript {
 	 * The rows found by the Extractor will be sent to
 	 * {@link #processRows(java.util.List)} .
 	 *
-	 * @param db
-	 * @param lowerbound
-	 * @param upperbound
+	 * @param db the database to query
+	 * @param lowerbound the lowest ID required
+	 * @param upperbound the highest ID required
 	 * <p style="color: #F90;">Support DBvolution at
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a DBQuery for the database and range
@@ -144,10 +144,8 @@ public abstract class DBExtractor extends DBScript {
 	 * extraction process that achieves fast results on unreliable or
 	 * under-resourced databases.
 	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 *
-	 * @return @throws Exception
+	 * @return a list of actions that were tested.
+	 * @throws Exception any exception could be thrown
 	 */
 	public final DBActionList extract() throws Exception {
 		DBActionList actions = new DBActionList();
@@ -191,15 +189,11 @@ public abstract class DBExtractor extends DBScript {
 	 * <p>
 	 * This method cannot be changed.
 	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 *
 	 * @return an action list
-	 * @throws java.io.FileNotFoundException
-	 * @throws java.sql.SQLException
+	 * @throws Exception any exception maybe thrown while get rows and processing them
 	 */
 	@Override
-	public final DBActionList script(DBDatabase db) throws FileNotFoundException, IOException, SQLException, Exception {
+	public final DBActionList script(DBDatabase db) throws Exception {
 		DBActionList actions = new DBActionList();
 
 		List<DBQueryRow> rows = getRows(db);
@@ -405,7 +399,7 @@ public abstract class DBExtractor extends DBScript {
 	 * <p>
 	 * Use this method to extend or reduce the timeout period as required.
 	 *
-	 * @param milliseconds
+	 * @param milliseconds the milliseconds required to elapse before the underlying query is cancelled.
 	 */
 	protected void setTimeoutInMilliseconds(Integer milliseconds) {
 		this.timeoutInMilliseconds = milliseconds;

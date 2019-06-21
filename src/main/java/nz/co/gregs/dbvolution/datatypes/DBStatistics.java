@@ -24,10 +24,14 @@ import nz.co.gregs.dbvolution.results.ExpressionHasStandardStringResult;
  * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
  *
  * @author gregorygraham
- * @param <B>
- * @param <R>
- * @param <D>
- * @param <X>
+ * @param <B> the base Java type of the values to be processed by this
+ * DBStatistics
+ * @param <R> the Results type of the DBStatistics, e.g. if B is Integer, R will
+ * be IntegerResult
+ * @param <D> the QDT to be used by this DBStatistics. E.g. if B is Integer, Q
+ * will be DBInteger
+ * @param <X> the expression type to be used by this DBStatistics. E.g if B is
+ * integer X will be IntegerExpression
  */
 public class DBStatistics<B, R extends EqualResult<B>, D extends QueryableDatatype<B>, X extends EqualExpression<B, R, D> & ExpressionHasStandardStringResult> extends DBString {
 
@@ -85,9 +89,9 @@ public class DBStatistics<B, R extends EqualResult<B>, D extends QueryableDataty
 
 		this.setColumnExpression(new AnyExpression<?, ?, ?>[]{
 			countExpr,
-			 modeSimpleExpression,
-			 modeStrictExpression
-			 //,medianExpression
+			modeSimpleExpression,
+			modeStrictExpression
+		//,medianExpression
 		});
 
 	}

@@ -283,7 +283,7 @@ public class DBBoolean extends QueryableDatatype<Boolean> implements BooleanResu
 	}
 
 	@Override
-	public BooleanColumn getColumn(RowDefinition row) throws IncorrectRowProviderInstanceSuppliedException{
+	public BooleanColumn getColumn(RowDefinition row) throws IncorrectRowProviderInstanceSuppliedException {
 		return new BooleanColumn(row, this);
 	}
 
@@ -294,11 +294,11 @@ public class DBBoolean extends QueryableDatatype<Boolean> implements BooleanResu
 	public void excludeNull() {
 		this.excludedValues((Boolean) null);
 	}
-	
+
 	public void permitOnlyNull() {
 		excludeNotNull();
 	}
-	
+
 	public void permitOnlyNotNull() {
 		excludeNull();
 	}
@@ -313,8 +313,11 @@ public class DBBoolean extends QueryableDatatype<Boolean> implements BooleanResu
 	 *
 	 * <p>
 	 * Care should be taken when using this as some "obvious" uses are better
-	 * handled using
-	 * {@link #setDefaultInsertValue(nz.co.gregs.dbvolution.results.AnyResult) expression version.  In particular, setDefaultInsertValue(new Date()) is probably NOT what you want, setDefaultInsertValue(DateExpression.currentDate()) will produce a correct creation date value.</p>
+	 * handled using the
+	 * {@link #setDefaultInsertValue(nz.co.gregs.dbvolution.results.AnyResult) expression version}.
+	 * In particular, setDefaultInsertValue(new Date()) is probably NOT what you
+	 * want, setDefaultInsertValue(DateExpression.currentDate()) will produce a
+	 * correct creation date value.</p>
 	 *
 	 * @param value the value to use during insertion when no particular value has
 	 * been specified.
@@ -353,8 +356,11 @@ public class DBBoolean extends QueryableDatatype<Boolean> implements BooleanResu
 	 *
 	 * <p>
 	 * Care should be taken when using this as some "obvious" uses are better
-	 * handled using
-	 * {@link #setDefaultUpdateValue(nz.co.gregs.dbvolution.results.AnyResult) expression version.  In particular, setDefaultUpdateValue(new Date()) is probably NOT what you want, setDefaultUpdateValue(DateExpression.currentDate()) will produce a correct update time value.</p>
+	 * handled using the
+	 * {@link #setDefaultUpdateValue(nz.co.gregs.dbvolution.results.AnyResult) expression version}.
+	 * In particular, setDefaultUpdateValue(new Date()) is probably NOT what you
+	 * want, setDefaultUpdateValue(DateExpression.currentDate()) will produce a
+	 * correct update time value.</p>
 	 *
 	 * @param value the value to use during update when no particular value has
 	 * been specified.
@@ -376,8 +382,11 @@ public class DBBoolean extends QueryableDatatype<Boolean> implements BooleanResu
 	 *
 	 * <p>
 	 * Care should be taken when using this as some "obvious" uses are better
-	 * handled using
-	 * {@link #setDefaultUpdateValue(nz.co.gregs.dbvolution.results.AnyResult) expression version.  In particular, setDefaultUpdateValue(new Date()) is probably NOT what you want, setDefaultUpdateValue(DateExpression.currentDate()) will produce a correct update time value.</p>
+	 * handled using the
+	 * {@link #setDefaultUpdateValue(nz.co.gregs.dbvolution.results.AnyResult) expression version}.
+	 * In particular, setDefaultUpdateValue(new Date()) is probably NOT what you
+	 * want, setDefaultUpdateValue(DateExpression.currentDate()) will produce a
+	 * correct update time value.</p>
 	 *
 	 * @param value the value to use during update when no particular value has
 	 * been specified.

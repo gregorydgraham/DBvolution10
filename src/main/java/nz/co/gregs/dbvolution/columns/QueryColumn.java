@@ -45,9 +45,9 @@ import nz.co.gregs.dbvolution.results.AnyResult;
  * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
  *
  * @author Gregory Graham
- * @param <B>
- * @param <R>
- * @param <D>
+ * @param <B> the base Java type of this expression, e.g. Integer
+ * @param <R> the Results type of this expression, e.g. IntegerExpression
+ * @param <D> the QDT of this expression, e.g. DBInteger
  * @see RowDefinition
  * @see AbstractColumn
  * @see BooleanExpression

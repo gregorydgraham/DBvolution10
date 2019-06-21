@@ -57,8 +57,8 @@ public abstract class DBScript {
 	 * @param db	db
 	 * <p style="color: #F90;">Support DBvolution at
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 * @return DBActionList
-	 * @throws java.lang.Exception
+	 * @return DBActionList the actions performed by the script
+	 * @throws java.lang.Exception any exceptions required to be handled
 	 *
 	 */
 	public abstract DBActionList script(DBDatabase db) throws Exception;
@@ -106,8 +106,8 @@ public abstract class DBScript {
 	 * <p style="color: #F90;">Support DBvolution at
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a DBActionList of all the actions performed on the database
-	 * @throws java.sql.SQLException
-	 * @throws nz.co.gregs.dbvolution.exceptions.ExceptionThrownDuringTransaction
+	 * @throws java.sql.SQLException Database exceptions
+	 * @throws nz.co.gregs.dbvolution.exceptions.ExceptionThrownDuringTransaction DBvolution exceptions
 	 * 
 	 */
 	public final DBActionList test(DBDatabase db) throws SQLException, ExceptionThrownDuringTransaction {

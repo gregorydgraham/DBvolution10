@@ -41,9 +41,6 @@ import nz.co.gregs.dbvolution.results.InResult;
  * This class brings together the related classes used to work with database
  * values: the base type, the result type, and the QueryableDatatype.<p>
  *
- * <p>
- * </p>
- *
  * @author gregorygraham
  * @param <B> a base type similar to Integer or String that is ultimately what
  * you want to work with.

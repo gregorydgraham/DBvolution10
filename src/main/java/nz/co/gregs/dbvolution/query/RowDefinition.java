@@ -1380,7 +1380,7 @@ public class RowDefinition implements Serializable {
 	/**
 	 * Changed the list of columns that are to be return during a query.
 	 *
-	 * @param returnColumns
+	 * @param returnColumns a list of all the columns to be included in the returned data from the database.  Other columns will be DBNull REGARDLESS of there actual value in the database.
 	 */
 	protected void setReturnColumns(List<PropertyWrapperDefinition> returnColumns) {
 		this.returnColumns = returnColumns;

@@ -32,7 +32,7 @@ import nz.co.gregs.dbvolution.internal.properties.InterfaceInfo.UnsupportedType;
  *
  * <p>
  * This class handles the majority of the type support logic that is exposed by
- * the {@link DBPropertyDefinition} class, which just delegates to this class.
+ * the {@link PropertyWrapperDefinition} class, which just delegates to this class.
  *
  * <p>
  * This class behaves correctly when no {@link DBAdaptType} property is present.

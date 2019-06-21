@@ -49,7 +49,7 @@ import nz.co.gregs.dbvolution.results.AnyResult;
 /**
  *
  * @author gregorygraham
- * @param <A>
+ * @param <A> the expression type returned by this windowing function, e.g. IntegerExpression
  */
 public class WindowFunctionFramable<A extends EqualExpression<?, ?, ?>> implements WindowingFunctionFramableInterface<A> {
 

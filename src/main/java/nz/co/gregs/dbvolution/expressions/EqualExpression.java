@@ -50,9 +50,9 @@ import nz.co.gregs.dbvolution.results.EqualResult;
 /**
  *
  * @author gregorygraham
- * @param <B>
- * @param <R>
- * @param <D>
+ * @param <B> the base Java type of this expression, e.g. Integer
+ * @param <R> the Results type of this expression, e.g. IntegerExpression
+ * @param <D> the QDT of this expression, e.g. DBInteger
  */
 public abstract class EqualExpression<B, R extends EqualResult<B>, D extends QueryableDatatype<B>> extends AnyExpression<B, R, D> implements EqualResult<B>, EqualComparable<B, R> {
 

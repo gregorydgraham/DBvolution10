@@ -45,7 +45,7 @@ import org.joda.time.Period;
  * <p>
  * LocalDateTime and Time are considered synonymous with timestamp as that
  * appears to be the standard usage by developers. So every date has a time
- * component and every time has a date component. {@link DBLocalDateTimeOnly}
+ * component and every time has a date component. {@link DBLocalDate}
  * implements a time-less date for DBvolution but is considered a
  * DBLocalDateTime with a time of Midnight for LocalDateTimeExpression purposes.
  *
@@ -118,7 +118,7 @@ public class LocalDateTimeExpression extends RangeExpression<LocalDateTime, Loca
 	 *
 	 * <p>
 	 * {@link LocalDateTimeResult} is generally a LocalDateTimeExpression but it
-	 * may also be a {@link DBLocalDateTime} or {@link DBLocalDateTimeOnly}.
+	 * may also be a {@link DBLocalDateTime} or {@link DBLocalDate}.
 	 *
 	 * @param dateVariable a date expression or QueryableDatatype
 	 */
@@ -132,7 +132,7 @@ public class LocalDateTimeExpression extends RangeExpression<LocalDateTime, Loca
 	 *
 	 * <p>
 	 * {@link LocalDateTimeResult} is generally a LocalDateTimeExpression but it
-	 * may also be a {@link DBLocalDateTime} or {@link DBLocalDateTimeOnly}.
+	 * may also be a {@link DBLocalDateTime} or {@link DBLocalDate}.
 	 *
 	 * @param variable a date expression or QueryableDatatype
 	 */

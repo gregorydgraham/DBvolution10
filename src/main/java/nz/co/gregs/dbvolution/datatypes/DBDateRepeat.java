@@ -183,7 +183,6 @@ public class DBDateRepeat extends QueryableDatatype<Period> implements DateRepea
 	public DateRepeatColumn getColumn(RowDefinition row) throws IncorrectRowProviderInstanceSuppliedException {
 		return new DateRepeatColumn(row, this);
 	}
-	
 
 	/**
 	 * Set the value to be inserted when no value has been set, using
@@ -195,8 +194,11 @@ public class DBDateRepeat extends QueryableDatatype<Period> implements DateRepea
 	 *
 	 * <p>
 	 * Care should be taken when using this as some "obvious" uses are better
-	 * handled using
-	 * {@link #setDefaultInsertValue(nz.co.gregs.dbvolution.results.AnyResult) expression version.  In particular, setDefaultInsertValue(new Date()) is probably NOT what you want, setDefaultInsertValue(DateExpression.currentDate()) will produce a correct creation date value.</p>
+	 * handled using the
+	 * {@link #setDefaultInsertValue(nz.co.gregs.dbvolution.results.AnyResult) expression version}.
+	 * In particular, setDefaultInsertValue(new Date()) is probably NOT what you
+	 * want, setDefaultInsertValue(DateExpression.currentDate()) will produce a
+	 * correct creation date value.</p>
 	 *
 	 * @param value the value to use during insertion when no particular value has
 	 * been specified.
@@ -219,7 +221,8 @@ public class DBDateRepeat extends QueryableDatatype<Period> implements DateRepea
 	 * @param value the value to use during insertion when no particular value has
 	 * been specified.
 	 * @return This QDT
-	 */public synchronized DBDateRepeat setDefaultInsertValue(DateRepeatResult value) {
+	 */
+	public synchronized DBDateRepeat setDefaultInsertValue(DateRepeatResult value) {
 		super.setDefaultInsertValue(value);
 		return this;
 	}
@@ -234,14 +237,17 @@ public class DBDateRepeat extends QueryableDatatype<Period> implements DateRepea
 	 *
 	 * <p>
 	 * Care should be taken when using this as some "obvious" uses are better
-	 * handled using
-	 * {@link #setDefaultUpdateValue(nz.co.gregs.dbvolution.results.AnyResult) expression version.  In particular, setDefaultUpdateValue(new Date()) is probably NOT what you want, setDefaultUpdateValue(DateExpression.currentDate()) will produce a correct update time value.</p>
+	 * handled using the
+	 * {@link #setDefaultUpdateValue(nz.co.gregs.dbvolution.results.AnyResult) expression version}.
+	 * In particular, setDefaultUpdateValue(new Date()) is probably NOT what you
+	 * want, setDefaultUpdateValue(DateExpression.currentDate()) will produce a
+	 * correct update time value.</p>
 	 *
 	 * @param value the value to use during update when no particular value has
 	 * been specified.
 	 * @return This QDT
 	 */
-	 @Override
+	@Override
 	public synchronized DBDateRepeat setDefaultUpdateValue(Period value) {
 		super.setDefaultUpdateValue(value);
 		return this;

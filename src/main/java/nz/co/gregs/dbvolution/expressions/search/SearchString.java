@@ -53,8 +53,8 @@ import nz.co.gregs.dbvolution.expressions.StringExpression;
  * Use with a single column using {@link StringExpression#searchFor(nz.co.gregs.dbvolution.expressions.search.SearchString)
  * } and {@link StringExpression#searchForRanking(nz.co.gregs.dbvolution.expressions.search.SearchString)
  * }: marq.column(marq.name).searchFor(searchString). If you have individual
- * strings use
- * {@link StringExpression#searchFor(java.lang.String...) and {@link StringExpression#searchForRanking(java.lang.String...) }.</p>
+ * strings use {@link StringExpression#searchFor(java.lang.String...)} and {@link StringExpression#searchForRanking(java.lang.String...)
+ * }.</p>
  *
  * <p>
  * searchForRanking produces a number value that can be used for sorting. </p>
@@ -83,8 +83,6 @@ public class SearchString extends SearchAbstract implements HasComparisonExpress
 		setSearchString(searchTerms);
 	}
 
-	
-
 	/**
 	 * Standardised searching using string terms and expression aliases.
 	 *
@@ -104,8 +102,8 @@ public class SearchString extends SearchAbstract implements HasComparisonExpress
 	 * Use with a single column using {@link StringExpression#searchFor(nz.co.gregs.dbvolution.expressions.search.SearchString)
 	 * } and {@link StringExpression#searchForRanking(nz.co.gregs.dbvolution.expressions.search.SearchString)
 	 * }: marq.column(marq.name).searchFor(searchString). If you have individual
-	 * strings use
-	 * {@link StringExpression#searchFor(java.lang.String...) and {@link StringExpression#searchForRanking(java.lang.String...) }.</p>
+	 * strings use {@link StringExpression#searchFor(java.lang.String...)} and {@link StringExpression#searchForRanking(java.lang.String...)
+	 * }.</p>
 	 *
 	 * <p>
 	 * searchForRanking produces a number value that can be used for sorting. </p>
@@ -137,8 +135,8 @@ public class SearchString extends SearchAbstract implements HasComparisonExpress
 	 * Use with a single column using {@link StringExpression#searchFor(nz.co.gregs.dbvolution.expressions.search.SearchString)
 	 * } and {@link StringExpression#searchForRanking(nz.co.gregs.dbvolution.expressions.search.SearchString)
 	 * }: marq.column(marq.name).searchFor(searchString). If you have individual
-	 * strings use
-	 * {@link StringExpression#searchFor(java.lang.String...) and {@link StringExpression#searchForRanking(java.lang.String...) }.</p>
+	 * strings use {@link StringExpression#searchFor(java.lang.String...)} and {@link StringExpression#searchForRanking(java.lang.String...)
+	 * }.</p>
 	 *
 	 * <p>
 	 * searchForRanking produces a number value that can be used for sorting. </p>

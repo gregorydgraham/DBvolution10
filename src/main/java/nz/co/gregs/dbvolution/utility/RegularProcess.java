@@ -48,20 +48,24 @@ import org.apache.commons.logging.LogFactory;
  *
  * <p>
  * Use
- * {@link DBDatabase#addRegularProcess(nz.co.gregs.dbvolution.utility.RegularProcess) to add a regular process.</p>
+ * {@link DBDatabase#addRegularProcess(nz.co.gregs.dbvolution.utility.RegularProcess)}
+ * to add a regular process.</p>
  *
  * <p>
  * Regular processes can access the database they are registered with using
- * {@link #getDatabase() }.  Accessing more than one database is not supported automatically.</p>
+ * {@link #getDatabase() }. Accessing more than one database is not supported
+ * automatically.</p>
  *
  * <p>
- * The only method you need to implement is {@link #process() } but you can overload {@link #preprocess() }
- * to perform checks before processing and {@link #postprocess() } to clean up any resources.</p>
+ * The only method you need to implement is {@link #process() } but you can
+ * overload {@link #preprocess() }
+ * to perform checks before processing and {@link #postprocess() } to clean up
+ * any resources.</p>
  *
  * @author gregorygraham
  */
 public abstract class RegularProcess implements Serializable {
-	
+
 	public static final long serialVersionUID = 1l;
 
 	final Log LOG = LogFactory.getLog(RegularProcess.class);
@@ -82,7 +86,9 @@ public abstract class RegularProcess implements Serializable {
 	 *
 	 * <p>
 	 * {@link #postprocess() } will be called to clean up any resources after
-	 * processing and {@link #handleExceptionDuringProcessing(java.lang.Exception) can be overloaded if exceptions during processing need to be handled.
+	 * processing and
+	 * {@link #handleExceptionDuringProcessing(java.lang.Exception)} can be
+	 * overloaded if exceptions during processing need to be handled.
 	 *
 	 * @return the output from processing
 	 * @throws Exception
@@ -148,7 +154,7 @@ public abstract class RegularProcess implements Serializable {
 	 *
 	 */
 	public final void offsetTime() {
-		lastRunTime=new Date();
+		lastRunTime = new Date();
 		Calendar cal = GregorianCalendar.getInstance();
 		cal.add(timeField, timeOffset);
 		nextRun = cal.getTime();
@@ -176,14 +182,14 @@ public abstract class RegularProcess implements Serializable {
 	public final void setDatabase(DBDatabase db) {
 		this.dbDatabase = db;
 	}
-	
+
 	public final void stop() {
 		this.dbDatabase = null;
 	}
-	
+
 	public final boolean canRun() {
-		if(this.dbDatabase==null){
-			LOG.warn(this.getClass().getSimpleName()+" has not had setDatabase(DBDatabase) called and can not process.");
+		if (this.dbDatabase == null) {
+			LOG.warn(this.getClass().getSimpleName() + " has not had setDatabase(DBDatabase) called and can not process.");
 		}
 		return this.dbDatabase != null;
 	}

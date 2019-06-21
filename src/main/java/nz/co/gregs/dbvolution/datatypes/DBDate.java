@@ -729,7 +729,7 @@ public class DBDate extends QueryableDatatype<Date> implements DateResult {
 	 * definition of the column within the database.</p>
 	 *
 	 * <p>
-	 * Correct usages for standard date defaults:
+	 * Correct usages for standard date defaults:</p>
 	 *
 	 * <pre>
 	 * &#64;DBColumn
@@ -742,7 +742,7 @@ public class DBDate extends QueryableDatatype<Date> implements DateResult {
 	 * public DBDate creationOrUpdateDate = new DBDate()
 	 * .setDefaultInsertValue(DateExpression.currentDate())
 	 * .setDefaultUpdateValue(DateExpression.currentDate());
-	 * </pre></p>
+	 * </pre>
 	 *
 	 * @param value the value to use during insertion when no particular value has
 	 * been specified.
@@ -751,6 +751,36 @@ public class DBDate extends QueryableDatatype<Date> implements DateResult {
 	@Override
 	public synchronized DBDate setDefaultInsertValue(Date value) {
 		super.setDefaultInsertValue(value);
+		return this;
+	}
+
+	/**
+	 * Sets the value to be inserted when no value has been set to the current database date.
+	 *
+	 * <p>
+	 * The value is only used during the initial insert and does not effect the
+	 * definition of the column within the database.</p>
+	 *
+	 * <p>
+	 * Correct usages for standard date defaults:</p>
+	 *
+	 * <pre>
+	 * &#64;DBColumn
+	 * public DBDate creationDate = new DBDate().setDefaultInsertValue(DateExpression.currentDate());
+	 *
+	 * &#64;DBColumn
+	 * public DBDate updateDate = new DBDate().setDefaultUpdateValue(DateExpression.currentDate());
+	 *
+	 * &#64;DBColumn
+	 * public DBDate creationOrUpdateDate = new DBDate()
+	 * .setDefaultInsertValue(DateExpression.currentDate())
+	 * .setDefaultUpdateValue(DateExpression.currentDate());
+	 * </pre>
+	 *
+	 * @return This QDT
+	 */
+	public synchronized DBDate setDefaultInsertValueToCurrentDate() {
+		super.setDefaultInsertValue(DateExpression.currentDate());
 		return this;
 	}
 
@@ -765,8 +795,8 @@ public class DBDate extends QueryableDatatype<Date> implements DateResult {
 	 *
 	 * <p>
 	 * Care should be taken when using this as some "obvious" uses are better
-	 * handled using
-	 * {@link #setDefaultInsertValue(nz.co.gregs.dbvolution.results.AnyResult) expression version.  In particular, setDefaultInsertValue(new Date()) is probably NOT what you want, setDefaultInsertValue(DateExpression.currentDate()) will produce a correct creation date value.</p>
+	 * handled using the
+	 * {@link #setDefaultInsertValue(nz.co.gregs.dbvolution.results.AnyResult) expression version}.  In particular, setDefaultInsertValue(new Date()) is probably NOT what you want, setDefaultInsertValue(DateExpression.currentDate()) will produce a correct creation date value.</p>
 	 *
 	 * <p>
 	 * Correct usages for standard date defaults:
@@ -782,7 +812,7 @@ public class DBDate extends QueryableDatatype<Date> implements DateResult {
 	 * public DBDate creationOrUpdateDate = new DBDate()
 	 * .setDefaultInsertValue(DateExpression.currentDate())
 	 * .setDefaultUpdateValue(DateExpression.currentDate());
-	 * </pre></p>
+	 * </pre>
 	 *
 	 * @param value the value to use during insertion when no particular value has
 	 * been specified.
@@ -821,7 +851,7 @@ public class DBDate extends QueryableDatatype<Date> implements DateResult {
 	 * public DBDate creationOrUpdateDate = new DBDate()
 	 * .setDefaultInsertValue(DateExpression.currentDate())
 	 * .setDefaultUpdateValue(DateExpression.currentDate());
-	 * </pre></p>
+	 * </pre>
 	 *
 	 * @param value the value to use during update when no particular value has
 	 * been specified.
@@ -830,6 +860,38 @@ public class DBDate extends QueryableDatatype<Date> implements DateResult {
 	@Override
 	public synchronized DBDate setDefaultUpdateValue(Date value) {
 		super.setDefaultUpdateValue(value);
+		return this;
+	}
+	
+	/**
+	 * Sets the value to be used during an update when no value has been set, using
+	 * {@link #setValue(nz.co.gregs.dbvolution.datatypes.DBDate)  setValue(...)},
+	 * for the QDT.
+	 *
+	 * <p>
+	 * The value is only used during updates and does not effect the definition of
+	 * the column within the database nor the initial value of the column.</p>
+	 *
+	 * <p>
+	 * Correct usages for standard date defaults:
+	 *
+	 * <pre>
+	 * &#64;DBColumn
+	 * public DBDate creationDate = new DBDate().setDefaultInsertValue(DateExpression.currentDate());
+	 *
+	 * &#64;DBColumn
+	 * public DBDate updateDate = new DBDate().setDefaultUpdateValue(DateExpression.currentDate());
+	 *
+	 * &#64;DBColumn
+	 * public DBDate creationOrUpdateDate = new DBDate()
+	 * .setDefaultInsertValue(DateExpression.currentDate())
+	 * .setDefaultUpdateValue(DateExpression.currentDate());
+	 * </pre>
+	 *
+	 * @return This QDT
+	 */
+	public synchronized DBDate setDefaultUpdateValueToCurrentDate() {
+		super.setDefaultUpdateValue(DateExpression.currentDate());
 		return this;
 	}
 
@@ -856,7 +918,7 @@ public class DBDate extends QueryableDatatype<Date> implements DateResult {
 	 * public DBDate creationOrUpdateDate = new DBDate()
 	 * .setDefaultInsertValue(DateExpression.currentDate())
 	 * .setDefaultUpdateValue(DateExpression.currentDate());
-	 * </pre></p>
+	 * </pre>
 	 *
 	 * @param value the value to use during update when no particular value has
 	 * been specified.

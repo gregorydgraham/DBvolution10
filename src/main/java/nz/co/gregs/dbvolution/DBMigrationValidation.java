@@ -45,7 +45,7 @@ import org.apache.commons.logging.LogFactory;
  * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
  *
  * @author Gregory Graham
- * @param <R>
+ * @param <R> the database table that will receive the migrated data
  */
 public class DBMigrationValidation<R extends DBRow> {
 
@@ -61,8 +61,9 @@ public class DBMigrationValidation<R extends DBRow> {
 	 * Creates a DBValidate action for the table.
 	 *
 	 * @param migration the mapping to migrate
-	 * @param mapper
-	 * @param examples
+	 * @param mapper the mapper class to be used to produce all the migrated data
+	 * @param examples additional table examples used to limit the underlying
+	 * query
 	 */
 	public DBMigrationValidation(DBMigration<R> migration, DBRow mapper, DBRow... examples) {
 		sourceMigration = migration;
@@ -77,8 +78,10 @@ public class DBMigrationValidation<R extends DBRow> {
 	 * <p style="color: #F90;">Support DBvolution at
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return the results of the validation
-	 * @throws SQLException
+	 * @throws SQLException database exceptions thrown when querying the database
 	 * @throws nz.co.gregs.dbvolution.exceptions.AccidentalBlankQueryException
+	 * thrown if there are no conditions detectable and blank queries have not
+	 * been explicitly permitted
 	 */
 	public Results validate(DBDatabase database) throws SQLException, AccidentalCartesianJoinException, AccidentalBlankQueryException {
 

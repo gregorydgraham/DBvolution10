@@ -15,10 +15,12 @@
  */
 package nz.co.gregs.dbvolution.exceptions;
 
+import nz.co.gregs.dbvolution.DBQuery;
+
 /**
- *
- * <p style="color: #F90;">Support DBvolution at
- * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+ * Thrown when no conditions are detectable within the query and blank queries
+ * have not been explicitly set with {@link DBQuery#setBlankQueryAllowed(boolean)
+ * } or similar.
  *
  * @author Gregory Graham
  */

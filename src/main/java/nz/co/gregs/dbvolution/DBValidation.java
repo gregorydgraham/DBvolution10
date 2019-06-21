@@ -45,7 +45,7 @@ import org.apache.commons.logging.LogFactory;
  * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
  *
  * @author Gregory Graham
- * @param <R>
+ * @param <R> the database table that will receive the data
  */
 public class DBValidation<R extends DBRow> {
 

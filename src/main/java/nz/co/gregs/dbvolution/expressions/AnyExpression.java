@@ -54,9 +54,9 @@ import nz.co.gregs.dbvolution.expressions.windows.CanBeWindowingFunctionRequires
 /**
  *
  * @author gregorygraham
- * @param <B>
- * @param <R>
- * @param <D>
+ * @param <B> the base Java type of this expression, e.g. Integer
+ * @param <R> the Results type of this expression, e.g. IntegerExpression
+ * @param <D> the QDT of this expression, e.g. DBInteger
  */
 public abstract class AnyExpression<B extends Object, R extends AnyResult<B>, D extends QueryableDatatype<B>> implements ExpressionColumn<D>, AnyResult<B>, Serializable {
 

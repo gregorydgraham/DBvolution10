@@ -31,7 +31,7 @@ package nz.co.gregs.dbvolution.results;
 /**
  *
  * @author gregorygraham
- * @param <T>
+ * @param <T> the base Java type produced and manipulated by this Result object
  */
 public interface SimpleNumericResult<T> extends RangeResult<T>{
 	

@@ -49,8 +49,10 @@ public class DBMigration<M extends DBRow> extends RowDefinition {
 	 *
 	 * @return a list of DBReport instances representing the results of the report
 	 * query. Database exceptions may be thrown
-	 * @throws java.sql.SQLException java.sql.SQLException
+	 * @throws java.sql.SQLException Database exceptions
 	 * @throws nz.co.gregs.dbvolution.exceptions.AccidentalBlankQueryException
+	 * thrown if DBV cannot detect and conditions applied to the query and blank
+	 * queries have not been explicitly allowed
 	 */
 	public List<M> getAllRows() throws SQLException, AccidentalCartesianJoinException, AccidentalBlankQueryException {
 		return getAllRows(database);
@@ -139,7 +141,7 @@ public class DBMigration<M extends DBRow> extends RowDefinition {
 				}
 			}
 			return newTarget;
-		} catch (InstantiationException | IllegalAccessException|NoSuchMethodException | IllegalArgumentException | InvocationTargetException ex) {
+		} catch (InstantiationException | IllegalAccessException | NoSuchMethodException | IllegalArgumentException | InvocationTargetException ex) {
 			throw new UnableToInstantiateDBMigrationSubclassException(this, ex);
 		}
 	}
@@ -160,7 +162,7 @@ public class DBMigration<M extends DBRow> extends RowDefinition {
 	 * @return a list of DBReport instances representing the results of the report
 	 * query. 1 Database exceptions may be thrown
 	 * @throws java.sql.SQLException java.sql.SQLException
-	 * @throws nz.co.gregs.dbvolution.exceptions.AccidentalBlankQueryException
+	 * @throws nz.co.gregs.dbvolution.exceptions.AccidentalBlankQueryException thrown if no conditions have been set and blank queries have not been explicitly allowed
 	 */
 	public List<M> getAllRows(DBRow... extraExamples) throws SQLException, AccidentalCartesianJoinException, AccidentalBlankQueryException {
 		return getAllRows(database, extraExamples);
@@ -225,7 +227,7 @@ public class DBMigration<M extends DBRow> extends RowDefinition {
 	 * @return a list of DBReport instances representing the results of the report
 	 * query. 1 Database exceptions may be thrown
 	 * @throws java.sql.SQLException java.sql.SQLException
-	 * @throws nz.co.gregs.dbvolution.exceptions.AccidentalBlankQueryException
+	 * @throws nz.co.gregs.dbvolution.exceptions.AccidentalBlankQueryException  thrown if no conditions have been set and blank queries have not been explicitly allowed
 	 */
 	public List<M> getRows(DBDatabase database, DBRow... rows) throws SQLException, AccidentalCartesianJoinException, AccidentalBlankQueryException {
 		DBQuery query = getDBQuery(database, rows);
@@ -263,7 +265,7 @@ public class DBMigration<M extends DBRow> extends RowDefinition {
 	 * @return a list of DBReport instances representing the results of the report
 	 * query
 	 * @throws java.sql.SQLException Database exceptions may be thrown
-	 * @throws nz.co.gregs.dbvolution.exceptions.AccidentalBlankQueryException
+	 * @throws nz.co.gregs.dbvolution.exceptions.AccidentalBlankQueryException  thrown if no conditions have been set and blank queries have not been explicitly allowed
 	 */
 	public List<M> getRowsHaving(DBDatabase database, DBRow[] rows, BooleanExpression... conditions) throws SQLException, AccidentalCartesianJoinException, AccidentalBlankQueryException {
 		DBQuery query = getDBQuery(database, rows);
@@ -444,8 +446,12 @@ public class DBMigration<M extends DBRow> extends RowDefinition {
 
 	/**
 	 * Add the rows as optional tables in the query.
+	 * 
+	 * <p>Optional tables are joined to the query using an outer join and results are returned regardless of whether there is a matching row in the optional table.</p>
+	 * 
+	 * <p>Optional rows may contain only DBNull values, that is there getValue() method will return NULL and isDBNull() will be true.</p>
 	 *
-	 * @param examples
+	 * @param examples additional tables to include in the query if possible.
 	 */
 	public void addAsOptionalTables(DBRow... examples) {
 		optionalTables.addAll(Arrays.asList(examples));

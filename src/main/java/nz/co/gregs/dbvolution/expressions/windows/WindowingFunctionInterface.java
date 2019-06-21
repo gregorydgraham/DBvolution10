@@ -38,7 +38,7 @@ import nz.co.gregs.dbvolution.expressions.SortProvider;
 /**
  *
  * @author gregorygraham
- * @param <A>
+ * @param <A> the Expression type returned by this windowing function, e.g. IntegerExpression
  */
 public interface WindowingFunctionInterface<A extends EqualExpression<?,?,?>> extends DBExpression {
 

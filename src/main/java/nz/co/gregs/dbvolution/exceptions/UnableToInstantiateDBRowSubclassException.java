@@ -22,7 +22,7 @@ import nz.co.gregs.dbvolution.DBRow;
  * so.
  *
  * <p>
- * Please ensure all DBReports have a public, argument-less, default
+ * Please ensure all DBRows have a public, argument-less, default
  * constructor.
  *
  */

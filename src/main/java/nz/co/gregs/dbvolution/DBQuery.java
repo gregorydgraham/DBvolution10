@@ -123,10 +123,12 @@ public class DBQuery implements Serializable {
 
 	/**
 	 * Don't use this, it's for DBDatabase
+	 * 
+	 * <p>Use {@link DBDatabase#getDBQuery(java.util.Collection) } instead</p>
 	 *
-	 * @param database
-	 * @param examples
-	 * @return
+	 * @param database the database to query
+	 * @param examples examples to base the query on
+	 * @return a DBQuery object
 	 */
 	public static DBQuery getInstance(DBDatabase database, DBRow... examples) {
 		DBQuery dbQuery = new DBQuery(database);
@@ -374,8 +376,8 @@ public class DBQuery implements Serializable {
 	 * @return A List of DBQueryRows containing all the DBRow instances aligned
 	 * with their related instances. 1 Database exceptions may be thrown
 	 * @throws java.sql.SQLException java.sql.SQLException
-	 * @throws java.sql.SQLTimeoutException
-	 * @throws nz.co.gregs.dbvolution.exceptions.AccidentalBlankQueryException
+	 * @throws java.sql.SQLTimeoutException timeout
+	 * @throws nz.co.gregs.dbvolution.exceptions.AccidentalBlankQueryException add a condition or set blank queries permitted
 	 * @see DBRow
 	 * @see DBForeignKey
 	 * @see QueryableDatatype
@@ -400,12 +402,12 @@ public class DBQuery implements Serializable {
 	/**
 	 * Sets all the expression columns using data from the current ResultSet row.
 	 *
-	 * Database exceptions may be thrown
+	 * <p>You probably shouldn't be using this</p>
 	 *
-	 * @param defn
-	 * @param resultSet resultSet
-	 * @param queryRow queryRow
-	 * @throws java.sql.SQLException java.sql.SQLException
+	 * @param defn the database definition to use
+	 * @param resultSet the data retrieved
+	 * @param queryRow the query row to be filled
+	 * @throws java.sql.SQLException database errors
 	 */
 	public void setExpressionColumns(DBDefinition defn, ResultSet resultSet, DBQueryRow queryRow) throws SQLException {
 		for (Map.Entry<Object, QueryableDatatype<?>> entry : details.getExpressionColumns().entrySet()) {
@@ -439,9 +441,8 @@ public class DBQuery implements Serializable {
 	 * @return the ONLY instance found using this query 1 Database exceptions may
 	 * be thrown
 	 * @throws java.sql.SQLException java.sql.SQLException
-	 * @throws nz.co.gregs.dbvolution.exceptions.UnexpectedNumberOfRowsException
-	 * nz.co.gregs.dbvolution.exceptions.UnexpectedNumberOfRowsException
-	 * @throws nz.co.gregs.dbvolution.exceptions.AccidentalBlankQueryException
+	 * @throws nz.co.gregs.dbvolution.exceptions.UnexpectedNumberOfRowsException the number of rows retrieved was not what was expected
+	 * @throws nz.co.gregs.dbvolution.exceptions.AccidentalBlankQueryException add a condition or permit blank queries
 	 *
 	 */
 	public <R extends DBRow> R getOnlyInstanceOf(R exemplar) throws SQLException, UnexpectedNumberOfRowsException, AccidentalCartesianJoinException, AccidentalBlankQueryException {
@@ -481,9 +482,8 @@ public class DBQuery implements Serializable {
 	 *
 	 * Database exceptions may be thrown
 	 * @throws java.sql.SQLException java.sql.SQLException
-	 * @throws nz.co.gregs.dbvolution.exceptions.UnexpectedNumberOfRowsException
-	 * nz.co.gregs.dbvolution.exceptions.UnexpectedNumberOfRowsException
-	 * @throws nz.co.gregs.dbvolution.exceptions.AccidentalBlankQueryException
+	 * @throws nz.co.gregs.dbvolution.exceptions.UnexpectedNumberOfRowsException the number of results differs from the number expected
+	 * @throws nz.co.gregs.dbvolution.exceptions.AccidentalBlankQueryException add conditions or permit blank queries
 	 *
 	 */
 	public <R extends DBRow> List<R> getAllInstancesOf(R exemplar, long expected) throws SQLException, UnexpectedNumberOfRowsException, AccidentalCartesianJoinException, AccidentalBlankQueryException {
@@ -521,7 +521,7 @@ public class DBQuery implements Serializable {
 	 *
 	 * Database exceptions may be thrown
 	 * @throws java.sql.SQLException java.sql.SQLException
-	 * @throws nz.co.gregs.dbvolution.exceptions.AccidentalBlankQueryException
+	 * @throws nz.co.gregs.dbvolution.exceptions.AccidentalBlankQueryException add conditions or permit blank queries
 	 */
 	public <R extends DBRow> List<R> getAllInstancesOf(R exemplar) throws SQLException, AccidentalCartesianJoinException, AccidentalBlankQueryException {
 		List<R> arrayList = new ArrayList<>();
@@ -548,7 +548,7 @@ public class DBQuery implements Serializable {
 	 * Equivalent to: printAll(System.out);
 	 *
 	 * @throws java.sql.SQLException database exception
-	 * @throws nz.co.gregs.dbvolution.exceptions.AccidentalBlankQueryException
+	 * @throws nz.co.gregs.dbvolution.exceptions.AccidentalBlankQueryException add conditions or permit blank queries
 	 */
 	public void print() throws SQLException, AccidentalCartesianJoinException, AccidentalBlankQueryException {
 		print(System.out);
@@ -561,7 +561,7 @@ public class DBQuery implements Serializable {
 	 *
 	 * @param ps a printstream to print to.
 	 * @throws java.sql.SQLException java.sql.SQLException
-	 * @throws nz.co.gregs.dbvolution.exceptions.AccidentalBlankQueryException
+	 * @throws nz.co.gregs.dbvolution.exceptions.AccidentalBlankQueryException add conditions or permit blank queries
 	 *
 	 */
 	public void print(PrintStream ps) throws SQLException, AccidentalCartesianJoinException, AccidentalBlankQueryException {
@@ -615,7 +615,7 @@ public class DBQuery implements Serializable {
 	 *
 	 * @param printStream a printstream to print to
 	 * @throws java.sql.SQLException java.sql.SQLException
-	 * @throws nz.co.gregs.dbvolution.exceptions.AccidentalBlankQueryException
+	 * @throws nz.co.gregs.dbvolution.exceptions.AccidentalBlankQueryException add conditions or permit blank queries
 	 *
 	 */
 	public void printAllDataColumns(PrintStream printStream) throws SQLException, AccidentalCartesianJoinException, AccidentalBlankQueryException {
@@ -648,7 +648,7 @@ public class DBQuery implements Serializable {
 	 *
 	 * @param ps a PrintStream to print to.
 	 * @throws java.sql.SQLException java.sql.SQLException
-	 * @throws nz.co.gregs.dbvolution.exceptions.AccidentalBlankQueryException
+	 * @throws nz.co.gregs.dbvolution.exceptions.AccidentalBlankQueryException add conditions or permit blank queries
 	 *
 	 */
 	public void printAllPrimaryKeys(PrintStream ps) throws SQLException, AccidentalCartesianJoinException, AccidentalBlankQueryException {
@@ -707,7 +707,7 @@ public class DBQuery implements Serializable {
 	 * @return the number of rows that have or will be retrieved. Database
 	 * exceptions may be thrown
 	 * @throws java.sql.SQLException java.sql.SQLException
-	 * @throws nz.co.gregs.dbvolution.exceptions.AccidentalBlankQueryException
+	 * @throws nz.co.gregs.dbvolution.exceptions.AccidentalBlankQueryException add conditions or permit blank queries
 	 */
 	public Long count() throws SQLException, AccidentalCartesianJoinException, AccidentalBlankQueryException {
 		if (needsResults(details.getOptions())) {
@@ -1022,9 +1022,9 @@ public class DBQuery implements Serializable {
 	 * <p>
 	 * Database exceptions may be thrown.
 	 *
-	 * @throws nz.co.gregs.dbvolution.exceptions.UnexpectedNumberOfRowsException
-	 * @throws java.sql.SQLException
-	 * @throws nz.co.gregs.dbvolution.exceptions.AccidentalBlankQueryException
+	 * @throws nz.co.gregs.dbvolution.exceptions.UnexpectedNumberOfRowsException incorrect number of rows
+	 * @throws java.sql.SQLException Database errors
+	 * @throws nz.co.gregs.dbvolution.exceptions.AccidentalBlankQueryException add conditions or permit blank queries
 	 */
 	public List<DBQueryRow> getAllRows(long expectedRows) throws UnexpectedNumberOfRowsException, SQLException, AccidentalCartesianJoinException, AccidentalBlankQueryException {
 		List<DBQueryRow> allRows = getAllRows();
@@ -1226,7 +1226,7 @@ public class DBQuery implements Serializable {
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 *
 	 * @return this DBQuery instance
-	 * @throws UnableToInstantiateDBRowSubclassException
+	 * @throws UnableToInstantiateDBRowSubclassException thrown if the there is no accessible default constructor for the DBRow class
 	 */
 	public DBQuery addAllConnectedTables() throws UnableToInstantiateDBRowSubclassException {
 		List<DBRow> tablesToAdd = new ArrayList<>();
@@ -1264,7 +1264,7 @@ public class DBQuery implements Serializable {
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 *
 	 * @return this DBQuery instance
-	 * @throws UnableToInstantiateDBRowSubclassException
+	 * @throws UnableToInstantiateDBRowSubclassException  thrown if the there is no accessible default constructor for the DBRow class
 	 */
 	public DBQuery addAllConnectedBaseTables() throws UnableToInstantiateDBRowSubclassException {
 		List<DBRow> tablesToAdd = new ArrayList<>();
@@ -1302,7 +1302,7 @@ public class DBQuery implements Serializable {
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 *
 	 * @return this DBQuery instance
-	 * @throws UnableToInstantiateDBRowSubclassException
+	 * @throws UnableToInstantiateDBRowSubclassException thrown if there is no accessible default constructor for the DBRow class
 	 */
 	public DBQuery addAllConnectedTablesAsOptional() throws UnableToInstantiateDBRowSubclassException {
 		Set<DBRow> tablesToAdd = new HashSet<>();
@@ -1353,7 +1353,7 @@ public class DBQuery implements Serializable {
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 *
 	 * @return this DBQuery instance
-	 * @throws UnableToInstantiateDBRowSubclassException
+	 * @throws UnableToInstantiateDBRowSubclassException thrown if there is no accessible default constructor for the DBRow class
 	 */
 	public DBQuery addAllConnectedBaseTablesAsOptional() throws UnableToInstantiateDBRowSubclassException {
 		Set<DBRow> tablesToAdd = new HashSet<>();
@@ -1402,7 +1402,7 @@ public class DBQuery implements Serializable {
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 *
 	 * @return this DBQuery instance
-	 * @throws UnableToInstantiateDBRowSubclassException
+	 * @throws UnableToInstantiateDBRowSubclassException thrown if there is no accessible default constructor for the DBRow class
 	 */
 	public DBQuery addAllConnectedTablesAsOptionalWithoutInternalRelations() throws UnableToInstantiateDBRowSubclassException {
 		Set<DBRow> tablesToAdd = new HashSet<>();
@@ -1457,7 +1457,9 @@ public class DBQuery implements Serializable {
 	 * @return A list of DBQueryRow instances that relate to the exemplar 1
 	 * Database exceptions may be thrown
 	 * @throws java.sql.SQLException java.sql.SQLException
-	 * @throws nz.co.gregs.dbvolution.exceptions.AccidentalBlankQueryException
+	 * @throws nz.co.gregs.dbvolution.exceptions.AccidentalBlankQueryException Thrown when no conditions are detectable within the query and blank queries
+	 * have not been explicitly set with {@link DBQuery#setBlankQueryAllowed(boolean)
+	 * } or similar.	 
 	 */
 	public List<DBQueryRow> getAllRowsContaining(DBRow instance) throws SQLException, AccidentalCartesianJoinException, AccidentalBlankQueryException {
 		final QueryOptions options = details.getOptions();
@@ -1494,7 +1496,9 @@ public class DBQuery implements Serializable {
 	 * @return a list of the DBQueryRows for the selected page. 1 Database
 	 * exceptions may be thrown
 	 * @throws java.sql.SQLException java.sql.SQLException
-	 * @throws nz.co.gregs.dbvolution.exceptions.AccidentalBlankQueryException
+	 * @throws nz.co.gregs.dbvolution.exceptions.AccidentalBlankQueryException Thrown when no conditions are detectable within the query and blank queries
+ * have not been explicitly set with {@link DBQuery#setBlankQueryAllowed(boolean)
+ * } or similar.
 	 */
 	public List<DBQueryRow> getPage(Integer pageNumber) throws SQLException, AccidentalCartesianJoinException, AccidentalBlankQueryException {
 		return getAllRowsForPage(pageNumber);
@@ -1517,7 +1521,9 @@ public class DBQuery implements Serializable {
 	 * @return a list of the DBQueryRows for the selected page. 1 Database
 	 * exceptions may be thrown
 	 * @throws java.sql.SQLException java.sql.SQLException
-	 * @throws nz.co.gregs.dbvolution.exceptions.AccidentalBlankQueryException
+	 * @throws nz.co.gregs.dbvolution.exceptions.AccidentalBlankQueryException Thrown when no conditions are detectable within the query and blank queries
+ * have not been explicitly set with {@link DBQuery#setBlankQueryAllowed(boolean)
+ * } or similar.
 	 */
 	public List<DBQueryRow> getAllRowsForPage(Integer pageNumber) throws SQLException, AccidentalCartesianJoinException, AccidentalBlankQueryException {
 		final QueryOptions options = details.getOptions();
@@ -1669,8 +1675,8 @@ public class DBQuery implements Serializable {
 	 * (essentially all non-BLOBS), the string representation is used with the {@link StringExpression#searchFor(nz.co.gregs.dbvolution.utility.SearchString)
 	 * } method.</p>
 	 *
-	 * @param search
-	 * @return
+	 * @param search a SearchString or SearchAcross object for this query
+	 * @return this query
 	 */
 	public DBQuery addCondition(HasComparisonExpression search) {
 		this.addCondition(search.getComparisonExpression());
@@ -2026,7 +2032,9 @@ public class DBQuery implements Serializable {
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a list of DBQQueryRows with distinct combinations of values used in
 	 * the columns. 1 Database exceptions may be thrown
-	 * @throws nz.co.gregs.dbvolution.exceptions.AccidentalBlankQueryException
+	 * @throws nz.co.gregs.dbvolution.exceptions.AccidentalBlankQueryException Thrown when no conditions are detectable within the query and blank queries
+ * have not been explicitly set with {@link DBQuery#setBlankQueryAllowed(boolean)
+ * } or similar.
 	 * @throws java.sql.SQLException java.sql.SQLException
 	 */
 	@SuppressWarnings({"unchecked", "empty-statement"})
@@ -2483,12 +2491,12 @@ public class DBQuery implements Serializable {
 	 * A root node is defined as a row with a null value in the FK. A leaf node is
 	 * a row that has no FKs referencing it.
 	 *
-	 * @param <T>
-	 * @param column
-	 * @param aileronID
-	 * @return
+	 * @param <T> the DBRow that will be produced by this recursive query
+	 * @param column the column to follow while recursing
+	 * @param exampleOfT an example of T, required by Java to set T
+	 * @return a recursive query using this query as it's starting point
 	 */
-	public <T extends DBRow> DBRecursiveQuery<T> getDBRecursiveQuery(ColumnProvider column, T aileronID) {
+	public <T extends DBRow> DBRecursiveQuery<T> getDBRecursiveQuery(ColumnProvider column, T exampleOfT) {
 		return new DBRecursiveQuery<T>(this, column);
 	}
 

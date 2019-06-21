@@ -34,7 +34,7 @@ import nz.co.gregs.dbvolution.expressions.DBExpression;
  * Top of the Result heirarchy.
  * 
  * @author gregorygraham
- * @param <T>
+ * @param <T> the base Java type that this result class produces and manipulates, e.g. Integer
  */
 public interface AnyResult<T> extends DBExpression, ExpressionCanHaveNullValues {
 	

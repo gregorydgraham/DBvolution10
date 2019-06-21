@@ -105,8 +105,9 @@ public class DBInteger extends QueryableDatatype<Long> implements IntegerResult 
 
 	/**
 	 * Create a DBInteger as a column expression.
-	 * 
-	 * <p>Only the integer part of the number will be represented.
+	 *
+	 * <p>
+	 * Only the integer part of the number will be represented.
 	 *
 	 * @param value	value
 	 */
@@ -129,7 +130,7 @@ public class DBInteger extends QueryableDatatype<Long> implements IntegerResult 
 	public String getSQLDatatype() {
 		return "INTEGER";
 	}
-	
+
 	/**
 	 * Returns a Long of the database value or NULL if the database value is null
 	 *
@@ -197,7 +198,7 @@ public class DBInteger extends QueryableDatatype<Long> implements IntegerResult 
 	 */
 	public void permittedValues(NumberResult... permitted) {
 		List<IntegerResult> list = new ArrayList<>();
-		for(NumberResult num: permitted){
+		for (NumberResult num : permitted) {
 			list.add(new NumberExpression(num).integerResult());
 		}
 		this.setOperator(new DBPermittedValuesOperator<IntegerResult>(list.toArray(new IntegerResult[]{})));
@@ -653,8 +654,10 @@ public class DBInteger extends QueryableDatatype<Long> implements IntegerResult 
 
 	/**
 	 * Sets the value of this DBInteger to the value provided.
-	 * 
-	 * <p>Convenience method that uses {@link  Long#Long(java.lang.String)} to set the value
+	 *
+	 * <p>
+	 * Convenience method that uses {@link  Long#Long(java.lang.String)} to set the
+	 * value
 	 *
 	 * @param newLiteralValue	newLiteralValue
 	 */
@@ -765,8 +768,9 @@ public class DBInteger extends QueryableDatatype<Long> implements IntegerResult 
 			}
 		}
 	}
+
 	@Override
-	public IntegerColumn getColumn(RowDefinition row) throws IncorrectRowProviderInstanceSuppliedException{
+	public IntegerColumn getColumn(RowDefinition row) throws IncorrectRowProviderInstanceSuppliedException {
 		return new IntegerColumn(row, this);
 	}
 
@@ -777,11 +781,11 @@ public class DBInteger extends QueryableDatatype<Long> implements IntegerResult 
 	public void excludeNull() {
 		this.excludedValues((Long) null);
 	}
-	
+
 	public void permitOnlyNull() {
 		excludeNotNull();
 	}
-	
+
 	public void permitOnlyNotNull() {
 		excludeNull();
 	}
@@ -796,8 +800,11 @@ public class DBInteger extends QueryableDatatype<Long> implements IntegerResult 
 	 *
 	 * <p>
 	 * Care should be taken when using this as some "obvious" uses are better
-	 * handled using
-	 * {@link #setDefaultInsertValue(nz.co.gregs.dbvolution.results.AnyResult) expression version.  In particular, setDefaultInsertValue(new Date()) is probably NOT what you want, setDefaultInsertValue(DateExpression.currentDate()) will produce a correct creation date value.</p>
+	 * handled using the
+	 * {@link #setDefaultInsertValue(nz.co.gregs.dbvolution.results.AnyResult) expression version}.
+	 * In particular, setDefaultInsertValue(new Date()) is probably NOT what you
+	 * want, setDefaultInsertValue(DateExpression.currentDate()) will produce a
+	 * correct creation date value.</p>
 	 *
 	 * @param value the value to use during insertion when no particular value has
 	 * been specified.
@@ -836,8 +843,11 @@ public class DBInteger extends QueryableDatatype<Long> implements IntegerResult 
 	 *
 	 * <p>
 	 * Care should be taken when using this as some "obvious" uses are better
-	 * handled using
-	 * {@link #setDefaultUpdateValue(nz.co.gregs.dbvolution.results.AnyResult) expression version.  In particular, setDefaultUpdateValue(new Date()) is probably NOT what you want, setDefaultUpdateValue(DateExpression.currentDate()) will produce a correct update time value.</p>
+	 * handled using the
+	 * {@link #setDefaultUpdateValue(nz.co.gregs.dbvolution.results.AnyResult) expression version}.
+	 * In particular, setDefaultUpdateValue(new Date()) is probably NOT what you
+	 * want, setDefaultUpdateValue(DateExpression.currentDate()) will produce a
+	 * correct update time value.</p>
 	 *
 	 * @param value the value to use during update when no particular value has
 	 * been specified.

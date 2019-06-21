@@ -48,7 +48,7 @@ import nz.co.gregs.dbvolution.results.AnyResult;
 /**
  *
  * @author gregorygraham
- * @param <A>
+ * @param <A> the expression type returned by this windowing function, e.g. IntegerExpression
  */
 public class WindowFunctionRequiresOrderBy<A extends EqualExpression<?, ?, ?>> implements WindowingFunctionRequiresOrderByInterface<A> {
 

@@ -103,7 +103,7 @@ import nz.co.gregs.dbvolution.query.*;
  * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
  *
  * @author gregorygraham
- * @param <M>
+ * @param <M> the table that the query will insert into.
  */
 public class DBQueryInsert<M extends DBRow> extends RowDefinition {
 

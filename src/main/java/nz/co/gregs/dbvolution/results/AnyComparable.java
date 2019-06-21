@@ -29,7 +29,7 @@ import nz.co.gregs.dbvolution.expressions.DBExpression;
  * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
  *
  * @author Gregory Graham
- * @param <B>
+ * @param <B> the base Java type produced and manipulated by this class
  * @param <A> the class that can be compared using the "=" operator
  *
  */
