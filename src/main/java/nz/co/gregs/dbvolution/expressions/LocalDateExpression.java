@@ -16,17 +16,19 @@
 package nz.co.gregs.dbvolution.expressions;
 
 import java.lang.reflect.InvocationTargetException;
+import java.time.LocalDate;
+import java.time.Month;
 import nz.co.gregs.dbvolution.expressions.windows.WindowFunctionFramable;
 import nz.co.gregs.dbvolution.expressions.windows.CanBeWindowingFunctionWithFrame;
 import nz.co.gregs.dbvolution.results.DateRepeatResult;
-import nz.co.gregs.dbvolution.results.DateResult;
 import nz.co.gregs.dbvolution.results.NumberResult;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.DBReport;
@@ -35,18 +37,19 @@ import nz.co.gregs.dbvolution.databases.supports.SupportsDateRepeatDatatypeFunct
 import nz.co.gregs.dbvolution.datatypes.*;
 import nz.co.gregs.dbvolution.results.AnyResult;
 import nz.co.gregs.dbvolution.results.IntegerResult;
+import nz.co.gregs.dbvolution.results.LocalDateResult;
 import org.joda.time.Period;
 
 /**
- * DateExpression implements standard functions that produce a Date or Time
+ * DateExpression implements standard functions that produce a LocalDate or Time
  * result.
  *
  * <p>
- * Date and Time are considered synonymous with timestamp as that appears to be
- * the standard usage by developers. So every date has a time component and
- * every time has a date component. {@link DBDateOnly} implements a time-less
- * date for DBvolution but is considered a DBDate with a time of Midnight for
- * DateExpression purposes.
+ * LocalDate and Time are considered synonymous with timestamp as that appears
+ * to be the standard usage by developers. So every date has a time component
+ * and every time has a date component. {@link DBDateOnly} implements a
+ * time-less date for DBvolution but is considered a DBDate with a time of
+ * Midnight for DateExpression purposes.
  *
  * <p>
  * Most query requirements are provided by {@link QueryableDatatype}s like
@@ -59,7 +62,7 @@ import org.joda.time.Period;
  *
  * <p>
  * Generally you get a DateExpression from a column or value using
- * {@link DateExpression#value(java.util.Date) } or
+ * {@link DateExpression#value(java.util.LocalDate) } or
  * {@link DBRow#column(nz.co.gregs.dbvolution.datatypes.DBDate)}.
  *
  * <p style="color: #F90;">Support DBvolution at
@@ -67,7 +70,7 @@ import org.joda.time.Period;
  *
  * @author Gregory Graham
  */
-public class DateExpression extends RangeExpression<Date, DateResult, DBDate> implements DateResult {
+public class LocalDateExpression extends RangeExpression<LocalDate, LocalDateResult, DBLocalDate> implements LocalDateResult {
 
 	private final static long serialVersionUID = 1l;
 
@@ -100,50 +103,63 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 	 */
 	static final public Number SATURDAY = 7;
 
+	public static LocalDateExpression value(IntegerExpression year, IntegerExpression month, IntegerExpression day) {
+		return new NewLocalDateExpression(year, month, day);
+	}
+
+	public static LocalDateExpression newLocalDate(IntegerExpression year, IntegerExpression month, IntegerExpression day) {
+		return new NewLocalDateExpression(year, month, day);
+	}
+
+	public static LocalDateExpression newLocalDate(DateExpression dateExpression) {
+		//return new LocalDateExpression(dateExpression);
+		return new NewLocalDateExpression(dateExpression.year(), dateExpression.month(), dateExpression.day());
+	}
+
 	/**
 	 * Default Constructor
 	 */
-	protected DateExpression() {
+	protected LocalDateExpression() {
 		super();
 	}
 
 	/**
-	 * Create a DateExpression based on an existing {@link DateResult}.
+	 * Create a DateExpression based on an existing {@link LocalDateResult}.
 	 *
 	 * <p>
-	 * {@link DateResult} is generally a DateExpression but it may also be a
+	 * {@link LocalDateResult} is generally a DateExpression but it may also be a
 	 * {@link DBDate} or {@link DBDateOnly}.
 	 *
 	 * @param dateVariable a date expression or QueryableDatatype
 	 */
-	public DateExpression(DateResult dateVariable) {
+	public LocalDateExpression(LocalDateResult dateVariable) {
 		super(dateVariable);
 	}
 
 	/**
-	 * Create a DateExpression based on an existing {@link DateResult}.
+	 * Create a DateExpression based on an existing {@link LocalDateResult}.
 	 *
 	 * <p>
-	 * {@link DateResult} is generally a DateExpression but it may also be a
+	 * {@link LocalDateResult} is generally a DateExpression but it may also be a
 	 * {@link DBDate} or {@link DBDateOnly}.
 	 *
 	 * @param variable a date expression or QueryableDatatype
 	 */
-	protected DateExpression(AnyResult<?> variable) {
+	protected LocalDateExpression(AnyResult<?> variable) {
 		super(variable);
 	}
 
 	/**
-	 * Create a DateExpression based on an existing Date.
+	 * Create a DateExpression based on an existing LocalDate.
 	 *
 	 * <p>
-	 * This performs a similar function to {@link DateExpression#value(java.util.Date)
+	 * This performs a similar function to {@link DateExpression#value(java.util.LocalDate)
 	 * }.
 	 *
 	 * @param date the date to be used in this expression
 	 */
-	public DateExpression(Date date) {
-		super(new DBDate(date));
+	public LocalDateExpression(LocalDate date) {
+		super(new DBLocalDate(date));
 	}
 
 	@Override
@@ -152,12 +168,12 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 	}
 
 	@Override
-	public DateExpression copy() {
-		return isNullSafetyTerminator() ? nullDate() : new DateExpression((AnyResult<?>) this.getInnerResult().copy());
+	public LocalDateExpression copy() {
+		return isNullSafetyTerminator() ? nullExpression() : new LocalDateExpression((AnyResult<?>) this.getInnerResult().copy());
 	}
 
 	@Override
-	public DateExpression nullExpression() {
+	public LocalDateExpression nullExpression() {
 		return new DateNullExpression();
 	}
 
@@ -175,8 +191,8 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 	 * @return a date expression of only the date part of the current database
 	 * timestamp.
 	 */
-	public static DateExpression currentDateOnly() {
-		return new DateExpression(
+	public static LocalDateExpression currentLocalDate() {
+		return new LocalDateExpression(
 				new DateOnlyCurrentDateExpression());
 	}
 
@@ -192,9 +208,8 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 	 *
 	 * @return a date expression of the current database timestamp.
 	 */
-	public static DateExpression currentDate() {
-		return new DateExpression(
-				new DateCurrentDateExpression());
+	public static LocalDateTimeExpression currentLocalDateTime() {
+		return LocalDateExpression.currentLocalDateTime();
 	}
 
 	/**
@@ -210,9 +225,43 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 	 * @return a date expression of only the time part of the current database
 	 * timestamp.
 	 */
-	public static DateExpression currentTime() {
-		return new DateExpression(
+	public static LocalDateExpression currentDate() {
+		return new LocalDateExpression(
 				new DateCurrentTimeExpression());
+	}
+
+	/**
+	 * Creates a date expression that returns the current time on the database.
+	 *
+	 * <p>
+	 * That is to say the expression returns the current time, according to the
+	 * database, with the date set to database's zero date.
+	 *
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
+	 * @return a date expression of only the time part of the current database
+	 * timestamp.
+	 */
+	public static LocalDateExpression now() {
+		return currentDate();
+	}
+
+	/**
+	 * Creates a date expression that returns the current time on the database.
+	 *
+	 * <p>
+	 * That is to say the expression returns the current time, according to the
+	 * database, with the date set to database's zero date.
+	 *
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
+	 * @return a date expression of only the time part of the current database
+	 * timestamp.
+	 */
+	public static LocalDateExpression today() {
+		return currentDate();
 	}
 
 	/**
@@ -391,8 +440,7 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 	 * @return a NumberExpression that will provide the day of this date.
 	 */
 	public IntegerExpression day() {
-		return new IntegerExpression(
-				new DateDayExpression(this));
+		return new DateDayExpression(this);
 	}
 
 	/**
@@ -461,275 +509,6 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 	}
 
 	/**
-	 * Creates an SQL expression that returns the hour part of this date
-	 * expression.
-	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 *
-	 * @return the hour of this date expression as a number.
-	 */
-	public NumberExpression hour() {
-		return new NumberExpression(
-				new DateHourExpression(this));
-	}
-
-	/**
-	 * Creates an SQL expression that tests the hour part of this date expression.
-	 *
-	 * @param hourRequired the hour to be used in the expression
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 * @return a BooleanExpression that is TRUE if the hour is the same as the
-	 * example supplied.
-	 */
-	public BooleanExpression hourIs(Number hourRequired) {
-		return this.hour().is(hourRequired);
-	}
-
-	/**
-	 * Creates an SQL expression that tests the hour part of this date expression.
-	 *
-	 * @param hourRequired the hour to be used in the expression
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 * @return a BooleanExpression that is TRUE if the hour is the same as the
-	 * example supplied.
-	 */
-	public BooleanExpression hourIs(Long hourRequired) {
-		return this.hour().is(hourRequired);
-	}
-
-	/**
-	 * Creates an SQL expression that tests the hour part of this date expression.
-	 *
-	 * @param hourRequired the hour to be used in the expression
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 * @return a BooleanExpression that is TRUE if the hour is the same as the
-	 * example supplied.
-	 */
-	public BooleanExpression hourIs(Integer hourRequired) {
-		return this.hour().is(hourRequired);
-	}
-
-	/**
-	 * Creates an SQL expression that tests the hour part of this date expression.
-	 *
-	 * @param hourRequired the hour to be compared to.
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 * @return a BooleanExpression that is TRUE if the hour is the same as the
-	 * example supplied.
-	 */
-	public BooleanExpression hourIs(IntegerResult hourRequired) {
-		return this.hour().is(hourRequired);
-	}
-
-	/**
-	 * Creates an SQL expression that tests the hour part of this date expression.
-	 *
-	 * @param hourRequired the hour to be compared to.
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 * @return a BooleanExpression that is TRUE if the hour is the same as the
-	 * example supplied.
-	 */
-	public BooleanExpression hourIs(NumberResult hourRequired) {
-		return this.hour().is(hourRequired);
-	}
-
-	/**
-	 * Creates an SQL expression that returns the minute part of this date
-	 * expression.
-	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 *
-	 * @return the minute of this date expression as a number.
-	 */
-	public NumberExpression minute() {
-		return new NumberExpression(
-				new DateMinuteExpression(this));
-	}
-
-	/**
-	 * Creates an SQL expression that tests the minute part of this date
-	 * expression.
-	 *
-	 * @param minuteRequired the minute to be compared to
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 * @return a BooleanExpression that is TRUE if the minute is the same as the
-	 * example supplied.
-	 */
-	public BooleanExpression minuteIs(Number minuteRequired) {
-		return this.minute().is(minuteRequired);
-	}
-
-	/**
-	 * Creates an SQL expression that tests the minute part of this date
-	 * expression.
-	 *
-	 * @param minuteRequired the minute to be compared to
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 * @return a BooleanExpression that is TRUE if the minute is the same as the
-	 * example supplied.
-	 */
-	public BooleanExpression minuteIs(Long minuteRequired) {
-		return this.minute().is(minuteRequired);
-	}
-
-	/**
-	 * Creates an SQL expression that tests the minute part of this date
-	 * expression.
-	 *
-	 * @param minuteRequired the minute to be compared to
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 * @return a BooleanExpression that is TRUE if the minute is the same as the
-	 * example supplied.
-	 */
-	public BooleanExpression minuteIs(Integer minuteRequired) {
-		return this.minute().is(minuteRequired);
-	}
-
-	/**
-	 * Creates an SQL expression that tests the minute part of this date
-	 * expression.
-	 *
-	 * @param minuteRequired the minute to be compared to
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 * @return a BooleanExpression that is TRUE if the minute is the same as the
-	 * example supplied.
-	 */
-	public BooleanExpression minuteIs(NumberResult minuteRequired) {
-		return this.minute().is(minuteRequired);
-	}
-
-	/**
-	 * Creates an SQL expression that tests the minute part of this date
-	 * expression.
-	 *
-	 * @param minuteRequired the minute to be compared to
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 * @return a BooleanExpression that is TRUE if the minute is the same as the
-	 * example supplied.
-	 */
-	public BooleanExpression minuteIs(IntegerResult minuteRequired) {
-		return this.minute().is(minuteRequired);
-	}
-
-	/**
-	 * Creates an SQL expression that returns the second part of this date
-	 * expression.
-	 *
-	 * <p>
-	 * Contains only whole seconds, use {@link #subsecond()} to retrieve the
-	 * fractional part.
-	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 *
-	 * @return the second of this date expression as a number.
-	 */
-	public NumberExpression second() {
-		return new NumberExpression(
-				new DateSecondExpression(this));
-	}
-
-	/**
-	 * Creates an SQL expression that returns the fractions of a second part of
-	 * this date expression.
-	 *
-	 * <p>
-	 * Contains only the fractional part of the seconds, that is always between 0
-	 * and 1, use {@link #second()} to retrieve the integer part.
-	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 *
-	 * @return the second of this date expression as a number.
-	 */
-	public NumberExpression subsecond() {
-		return new NumberExpression(
-				new DateSubsecondExpression(this));
-	}
-
-	/**
-	 * Creates an SQL expression that tests the second part of this date
-	 * expression.
-	 *
-	 * @param minuteRequired the minute required
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 * @return a BooleanExpression that is TRUE if the second is the same as the
-	 * example supplied.
-	 */
-	public BooleanExpression secondIs(Number minuteRequired) {
-		return this.second().is(minuteRequired);
-	}
-
-	/**
-	 * Creates an SQL expression that tests the second part of this date
-	 * expression.
-	 *
-	 * @param minuteRequired the minute required
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 * @return a BooleanExpression that is TRUE if the second is the same as the
-	 * example supplied.
-	 */
-	public BooleanExpression secondIs(Long minuteRequired) {
-		return this.second().is(minuteRequired);
-	}
-
-	/**
-	 * Creates an SQL expression that tests the second part of this date
-	 * expression.
-	 *
-	 * @param minuteRequired the minute required
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 * @return a BooleanExpression that is TRUE if the second is the same as the
-	 * example supplied.
-	 */
-	public BooleanExpression secondIs(Integer minuteRequired) {
-		return this.second().is(minuteRequired);
-	}
-
-	/**
-	 * Creates an SQL expression that tests the second part of this date
-	 * expression.
-	 *
-	 * @param minuteRequired the minute that the expression must match
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 * @return a BooleanExpression that is TRUE if the second is the same as the
-	 * example supplied.
-	 */
-	public BooleanExpression secondIs(NumberResult minuteRequired) {
-		return this.second().is(minuteRequired);
-	}
-
-	/**
-	 * Creates an SQL expression that tests the second part of this date
-	 * expression.
-	 *
-	 * @param minuteRequired the minute that the expression must match
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 * @return a BooleanExpression that is TRUE if the second is the same as the
-	 * example supplied.
-	 */
-	public BooleanExpression secondIs(IntegerResult minuteRequired) {
-		return this.second().is(minuteRequired);
-	}
-
-	/**
 	 * Creates an SQL expression that test whether this date expression is equal
 	 * to the supplied date.
 	 *
@@ -743,7 +522,7 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 	 * @return a BooleanExpression comparing the date and this DateExpression.
 	 */
 	@Override
-	public BooleanExpression is(Date date) {
+	public BooleanExpression is(LocalDate date) {
 		return is(value(date));
 	}
 
@@ -754,11 +533,11 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 	 * @param dateExpression the date the expression must match
 	 * <p style="color: #F90;">Support DBvolution at
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 * @return a BooleanExpression comparing the DateResult and this
+	 * @return a BooleanExpression comparing the LocalDateResult and this
 	 * DateExpression.
 	 */
 	@Override
-	public BooleanExpression is(DateResult dateExpression) {
+	public BooleanExpression is(LocalDateResult dateExpression) {
 		BooleanExpression isExpr = new BooleanExpression(new DateIsExpression(this, dateExpression));
 		if (isExpr.getIncludesNull()) {
 			return BooleanExpression.isNull(this);
@@ -774,11 +553,11 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 	 * @param date the date the expression must not match
 	 * <p style="color: #F90;">Support DBvolution at
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 * @return a BooleanExpression comparing the DateResult and this
+	 * @return a BooleanExpression comparing the LocalDateResult and this
 	 * DateExpression.
 	 */
 	@Override
-	public BooleanExpression isNot(Date date) {
+	public BooleanExpression isNot(LocalDate date) {
 		return this.isNot(value(date));
 	}
 
@@ -789,11 +568,11 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 	 * @param dateExpression the date the expression must not match
 	 * <p style="color: #F90;">Support DBvolution at
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 * @return a BooleanExpression comparing the DateResult and this
+	 * @return a BooleanExpression comparing the LocalDateResult and this
 	 * DateExpression.
 	 */
 	@Override
-	public BooleanExpression isNot(DateResult dateExpression) {
+	public BooleanExpression isNot(LocalDateResult dateExpression) {
 		BooleanExpression isExpr = new BooleanExpression(new DateIsNotExpression(this, dateExpression));
 		if (isExpr.getIncludesNull()) {
 			return BooleanExpression.isNotNull(this);
@@ -852,7 +631,7 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 	 * @return a boolean expression representing the required comparison
 	 */
 	@Override
-	public BooleanExpression isBetween(DateResult lowerBound, DateResult upperBound) {
+	public BooleanExpression isBetween(LocalDateResult lowerBound, LocalDateResult upperBound) {
 		return BooleanExpression.allOf(
 				this.isGreaterThan(lowerBound),
 				this.isLessThanOrEqual(upperBound)
@@ -883,7 +662,7 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 	 * @return a boolean expression representing the required comparison
 	 */
 	@Override
-	public BooleanExpression isBetween(Date lowerBound, DateResult upperBound) {
+	public BooleanExpression isBetween(LocalDate lowerBound, LocalDateResult upperBound) {
 		return super.isBetween(lowerBound, upperBound);
 	}
 
@@ -911,7 +690,7 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 	 * @return a boolean expression representing the required comparison
 	 */
 	@Override
-	public BooleanExpression isBetween(DateResult lowerBound, Date upperBound) {
+	public BooleanExpression isBetween(LocalDateResult lowerBound, LocalDate upperBound) {
 		return super.isBetween(lowerBound, upperBound);
 	}
 
@@ -939,7 +718,7 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 	 * @return a boolean expression representing the required comparison
 	 */
 	@Override
-	public BooleanExpression isBetween(Date lowerBound, Date upperBound) {
+	public BooleanExpression isBetween(LocalDate lowerBound, LocalDate upperBound) {
 		return super.isBetween(lowerBound, upperBound);
 	}
 
@@ -967,7 +746,7 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 	 * @return a boolean expression representing the required comparison
 	 */
 	@Override
-	public BooleanExpression isBetweenInclusive(DateResult lowerBound, DateResult upperBound) {
+	public BooleanExpression isBetweenInclusive(LocalDateResult lowerBound, LocalDateResult upperBound) {
 		return BooleanExpression.allOf(
 				this.isGreaterThanOrEqual(lowerBound),
 				this.isLessThanOrEqual(upperBound)
@@ -998,7 +777,7 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 	 * @return a boolean expression representing the required comparison
 	 */
 	@Override
-	public BooleanExpression isBetweenInclusive(Date lowerBound, DateResult upperBound) {
+	public BooleanExpression isBetweenInclusive(LocalDate lowerBound, LocalDateResult upperBound) {
 		return super.isBetweenInclusive(lowerBound, upperBound);
 	}
 
@@ -1026,7 +805,7 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 	 * @return a boolean expression representing the required comparison
 	 */
 	@Override
-	public BooleanExpression isBetweenInclusive(DateResult lowerBound, Date upperBound) {
+	public BooleanExpression isBetweenInclusive(LocalDateResult lowerBound, LocalDate upperBound) {
 		return super.isBetweenInclusive(lowerBound, upperBound);
 	}
 
@@ -1054,7 +833,7 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 	 * @return a boolean expression representing the required comparison
 	 */
 	@Override
-	public BooleanExpression isBetweenInclusive(Date lowerBound, Date upperBound) {
+	public BooleanExpression isBetweenInclusive(LocalDate lowerBound, LocalDate upperBound) {
 		return super.isBetweenInclusive(lowerBound, upperBound);
 	}
 
@@ -1084,7 +863,7 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 	 * @return a boolean expression representing the required comparison
 	 */
 	@Override
-	public BooleanExpression isBetweenExclusive(DateResult lowerBound, DateResult upperBound) {
+	public BooleanExpression isBetweenExclusive(LocalDateResult lowerBound, LocalDateResult upperBound) {
 		return BooleanExpression.allOf(
 				this.isGreaterThan(lowerBound),
 				this.isLessThan(upperBound)
@@ -1117,7 +896,7 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 	 * @return a boolean expression representing the required comparison
 	 */
 	@Override
-	public BooleanExpression isBetweenExclusive(Date lowerBound, DateResult upperBound) {
+	public BooleanExpression isBetweenExclusive(LocalDate lowerBound, LocalDateResult upperBound) {
 		return super.isBetweenExclusive(lowerBound, upperBound);
 	}
 
@@ -1147,7 +926,7 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 	 * @return a boolean expression representing the required comparison
 	 */
 	@Override
-	public BooleanExpression isBetweenExclusive(DateResult lowerBound, Date upperBound) {
+	public BooleanExpression isBetweenExclusive(LocalDateResult lowerBound, LocalDate upperBound) {
 		return super.isBetweenExclusive(lowerBound, upperBound);
 	}
 
@@ -1177,7 +956,7 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 	 * @return a boolean expression representing the required comparison
 	 */
 	@Override
-	public BooleanExpression isBetweenExclusive(Date lowerBound, Date upperBound) {
+	public BooleanExpression isBetweenExclusive(LocalDate lowerBound, LocalDate upperBound) {
 		return super.isBetweenExclusive(lowerBound, upperBound);
 	}
 
@@ -1191,7 +970,7 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 	 * @return a boolean expression representing the required comparison
 	 */
 	@Override
-	public BooleanExpression isLessThan(Date date) {
+	public BooleanExpression isLessThan(LocalDate date) {
 		return super.isLessThan(date);
 	}
 
@@ -1205,7 +984,7 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 	 * @return a boolean expression representing the required comparison
 	 */
 	@Override
-	public BooleanExpression isLessThan(DateResult dateExpression) {
+	public BooleanExpression isLessThan(LocalDateResult dateExpression) {
 		return new BooleanExpression(new DateIsLessThanExpression(this, dateExpression));
 	}
 
@@ -1218,8 +997,8 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a boolean expression representing the required comparison
 	 */
-	public BooleanExpression isEarlierThan(Date date) {
-		return isEarlierThan(new DateExpression(date));
+	public BooleanExpression isEarlierThan(LocalDate date) {
+		return isEarlierThan(new LocalDateExpression(date));
 	}
 
 	/**
@@ -1231,7 +1010,7 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a boolean expression representing the required comparison
 	 */
-	public BooleanExpression isEarlierThan(DateResult dateExpression) {
+	public BooleanExpression isEarlierThan(LocalDateResult dateExpression) {
 		return this.isLessThan(dateExpression);
 	}
 
@@ -1244,7 +1023,7 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a DateRepeat expression
 	 */
-	public DateRepeatExpression getDateRepeatFrom(Date date) {
+	public DateRepeatExpression getDateRepeatFrom(LocalDate date) {
 		return getDateRepeatFrom(value(date));
 	}
 
@@ -1257,7 +1036,7 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return DateRepeat expression
 	 */
-	public DateRepeatExpression getDateRepeatFrom(DateResult dateExpression) {
+	public DateRepeatExpression getDateRepeatFrom(LocalDateResult dateExpression) {
 		return new DateRepeatExpression(new DateGetDateRepeatFromExpression(this, dateExpression));
 	}
 
@@ -1268,9 +1047,9 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 	 * @param interval the amount of time this date needs to be offset by.
 	 * <p style="color: #F90;">Support DBvolution at
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 * @return a Date expression
+	 * @return a LocalDate expression
 	 */
-	public DateExpression minus(Period interval) {
+	public LocalDateExpression minus(Period interval) {
 		return minus(DateRepeatExpression.value(interval));
 	}
 
@@ -1282,10 +1061,10 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 	 * by.
 	 * <p style="color: #F90;">Support DBvolution at
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 * @return a Date expression
+	 * @return a LocalDate expression
 	 */
-	public DateExpression minus(DateRepeatResult intervalExpression) {
-		return new DateExpression(new DateMinusDateRepeatExpression(this, intervalExpression));
+	public LocalDateExpression minus(DateRepeatResult intervalExpression) {
+		return new LocalDateExpression(new DateMinusDateRepeatExpression(this, intervalExpression));
 	}
 
 	/**
@@ -1295,9 +1074,9 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 	 * @param interval the amount of time this date needs to be offset by.
 	 * <p style="color: #F90;">Support DBvolution at
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 * @return a Date expression
+	 * @return a LocalDate expression
 	 */
-	public DateExpression plus(Period interval) {
+	public LocalDateExpression plus(Period interval) {
 		return plus(DateRepeatExpression.value(interval));
 	}
 
@@ -1309,10 +1088,10 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 	 * by.
 	 * <p style="color: #F90;">Support DBvolution at
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 * @return a Date expression
+	 * @return a LocalDate expression
 	 */
-	public DateExpression plus(DateRepeatResult intervalExpression) {
-		return new DateExpression(new DatePlusDateRepeatExpression(this, intervalExpression));
+	public LocalDateExpression plus(DateRepeatResult intervalExpression) {
+		return new LocalDateExpression(new DatePlusDateRepeatExpression(this, intervalExpression));
 	}
 
 	/**
@@ -1325,13 +1104,13 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 	 * @return a boolean expression representing the required comparison
 	 */
 	@Override
-	public BooleanExpression isLessThanOrEqual(Date date) {
+	public BooleanExpression isLessThanOrEqual(LocalDate date) {
 		return super.isLessThanOrEqual(date);
 	}
 
 	/**
 	 * Creates an SQL expression that test whether this date expression is less
-	 * than or equal to the supplied DateResult.
+	 * than or equal to the supplied LocalDateResult.
 	 *
 	 * @param dateExpression the date this expression must not exceed
 	 * <p style="color: #F90;">Support DBvolution at
@@ -1339,7 +1118,7 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 	 * @return a boolean expression representing the required comparison
 	 */
 	@Override
-	public BooleanExpression isLessThanOrEqual(DateResult dateExpression) {
+	public BooleanExpression isLessThanOrEqual(LocalDateResult dateExpression) {
 		return new BooleanExpression(new DateIsLessThanOrEqualExpression(this, dateExpression));
 	}
 
@@ -1353,13 +1132,13 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 	 * @return an expression that will evaluate to a greater than operation
 	 */
 	@Override
-	public BooleanExpression isGreaterThan(Date date) {
+	public BooleanExpression isGreaterThan(LocalDate date) {
 		return super.isGreaterThan(date);
 	}
 
 	/**
 	 * Creates an SQL expression that test whether this date expression is greater
-	 * than the supplied DateResult.
+	 * than the supplied LocalDateResult.
 	 *
 	 * @param dateExpression the date this expression must be compared to
 	 * <p style="color: #F90;">Support DBvolution at
@@ -1367,7 +1146,7 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 	 * @return a boolean expression representing the required comparison
 	 */
 	@Override
-	public BooleanExpression isGreaterThan(DateResult dateExpression) {
+	public BooleanExpression isGreaterThan(LocalDateResult dateExpression) {
 		return new BooleanExpression(new DateIsGreaterThanExpression(this, dateExpression));
 	}
 
@@ -1380,26 +1159,26 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return an expression that will evaluate to a greater than operation
 	 */
-	public BooleanExpression isLaterThan(Date date) {
-		return isGreaterThan(new DateExpression(date));
+	public BooleanExpression isLaterThan(LocalDate date) {
+		return isGreaterThan(new LocalDateExpression(date));
 	}
 
 	/**
 	 * Creates an SQL expression that test whether this date expression is greater
-	 * than the supplied DateResult.
+	 * than the supplied LocalDateResult.
 	 *
 	 * @param dateExpression the date this expression must be compared to
 	 * <p style="color: #F90;">Support DBvolution at
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a boolean expression representing the required comparison
 	 */
-	public BooleanExpression isLaterThan(DateResult dateExpression) {
+	public BooleanExpression isLaterThan(LocalDateResult dateExpression) {
 		return isGreaterThan(dateExpression);
 	}
 
 	/**
 	 * Creates an SQL expression that test whether this date expression is greater
-	 * than or equal to the supplied Date.
+	 * than or equal to the supplied LocalDate.
 	 *
 	 * @param date the date this expression must be compared to
 	 * <p style="color: #F90;">Support DBvolution at
@@ -1407,13 +1186,13 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 	 * @return a boolean expression representing the required comparison
 	 */
 	@Override
-	public BooleanExpression isGreaterThanOrEqual(Date date) {
+	public BooleanExpression isGreaterThanOrEqual(LocalDate date) {
 		return super.isGreaterThanOrEqual(date);
 	}
 
 	/**
 	 * Creates an SQL expression that test whether this date expression is greater
-	 * than or equal to the supplied DateResult.
+	 * than or equal to the supplied LocalDateResult.
 	 *
 	 * @param dateExpression the date this expression must be compared to
 	 * <p style="color: #F90;">Support DBvolution at
@@ -1421,7 +1200,7 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 	 * @return a boolean expression representing the required comparison
 	 */
 	@Override
-	public BooleanExpression isGreaterThanOrEqual(DateResult dateExpression) {
+	public BooleanExpression isGreaterThanOrEqual(LocalDateResult dateExpression) {
 		return new BooleanExpression(new DateIsGreaterThanOrEqualExpression(this, dateExpression));
 	}
 
@@ -1446,7 +1225,7 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 	 * @return a BooleanExpression
 	 */
 	@Override
-	public BooleanExpression isLessThan(Date value, BooleanExpression fallBackWhenEquals) {
+	public BooleanExpression isLessThan(LocalDate value, BooleanExpression fallBackWhenEquals) {
 		return super.isLessThan(value, fallBackWhenEquals);
 	}
 
@@ -1471,7 +1250,7 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 	 * @return a BooleanExpression
 	 */
 	@Override
-	public BooleanExpression isGreaterThan(Date value, BooleanExpression fallBackWhenEquals) {
+	public BooleanExpression isGreaterThan(LocalDate value, BooleanExpression fallBackWhenEquals) {
 		return super.isGreaterThan(value, fallBackWhenEquals);
 	}
 
@@ -1496,7 +1275,7 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 	 * @return a BooleanExpression
 	 */
 	@Override
-	public BooleanExpression isLessThan(DateResult value, BooleanExpression fallBackWhenEquals) {
+	public BooleanExpression isLessThan(LocalDateResult value, BooleanExpression fallBackWhenEquals) {
 		return this.isLessThan(value).or(this.is(value).and(fallBackWhenEquals));
 	}
 
@@ -1521,7 +1300,7 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 	 * @return a BooleanExpression
 	 */
 	@Override
-	public BooleanExpression isGreaterThan(DateResult value, BooleanExpression fallBackWhenEquals) {
+	public BooleanExpression isGreaterThan(LocalDateResult value, BooleanExpression fallBackWhenEquals) {
 		return this.isGreaterThan(value).or(this.is(value).and(fallBackWhenEquals));
 	}
 
@@ -1539,12 +1318,12 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 	 * @return a boolean expression representing the required comparison
 	 */
 	@Override
-	public BooleanExpression isIn(Date... possibleValues) {
-		List<DateExpression> possVals = new ArrayList<DateExpression>();
-		for (Date num : possibleValues) {
+	public BooleanExpression isIn(LocalDate... possibleValues) {
+		List<LocalDateExpression> possVals = new ArrayList<LocalDateExpression>();
+		for (LocalDate num : possibleValues) {
 			possVals.add(value(num));
 		}
-		return isIn(possVals.toArray(new DateExpression[]{}));
+		return isIn(possVals.toArray(new LocalDateExpression[]{}));
 	}
 
 	/**
@@ -1560,12 +1339,12 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a boolean expression representing the required comparison
 	 */
-	public BooleanExpression isIn(Collection<? extends DateResult> possibleValues) {
+	public BooleanExpression isIn(Collection<? extends LocalDateResult> possibleValues) {
 		//List<DateExpression> possVals = new ArrayList<DateExpression>();
-		//for (Date num : possibleValues) {
+		//for (LocalDate num : possibleValues) {
 		//	possVals.add(value(num));
 		//}
-		return isIn(possibleValues.toArray(new DateResult[]{}));
+		return isIn(possibleValues.toArray(new LocalDateResult[]{}));
 	}
 
 	/**
@@ -1582,7 +1361,7 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 	 * @return a boolean expression representing the required comparison
 	 */
 	@Override
-	public BooleanExpression isIn(DateResult... possibleValues) {
+	public BooleanExpression isIn(LocalDateResult... possibleValues) {
 		BooleanExpression isInExpr = new BooleanExpression(new DateIsInExpression(this, possibleValues));
 		if (isInExpr.getIncludesNull()) {
 			return BooleanExpression.anyOf(BooleanExpression.isNull(this), isInExpr);
@@ -1605,7 +1384,7 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 	 * @return a boolean expression representing the required comparison
 	 */
 	@Override
-	public BooleanExpression isNotIn(DateResult... possibleValues) {
+	public BooleanExpression isNotIn(LocalDateResult... possibleValues) {
 		BooleanExpression isNotInExpr = new BooleanExpression(new DateIsNotInExpression(this, possibleValues));
 		if (isNotInExpr.getIncludesNull()) {
 			return BooleanExpression.anyOf(BooleanExpression.isNull(this), isNotInExpr);
@@ -1625,7 +1404,7 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a boolean expression representing the required comparison
 	 */
-	public DateExpression ifDBNull(Date alternative) {
+	public LocalDateExpression ifDBNull(LocalDate alternative) {
 		return ifDBNull(value(alternative));
 //		return new DateExpression(
 //				new DateExpression.DateDateFunctionWithDateResult(this, new DateExpression(alternative)) {
@@ -1643,7 +1422,7 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 
 	/**
 	 * Creates and expression that replaces a NULL result with the supplied
-	 * DateResult.
+	 * LocalDateResult.
 	 *
 	 * <p>
 	 * This is a way of handling dates that should have a value but don't.
@@ -1653,8 +1432,8 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a boolean expression representing the required comparison
 	 */
-	public DateExpression ifDBNull(DateResult alternative) {
-		return new DateExpression(
+	public LocalDateExpression ifDBNull(LocalDateResult alternative) {
+		return new LocalDateExpression(
 				new DateIfDBNullExpression(this, alternative));
 	}
 
@@ -1696,85 +1475,8 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 	}
 
 	/**
-	 * Date Arithmetic: add the supplied number of seconds to the date expression.
-	 *
-	 * <p>
-	 * Negative seconds are supported.
-	 *
-	 * @param secondsToAdd seconds to offset by
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 * @return a DateExpression
-	 */
-	public DateExpression addSeconds(int secondsToAdd) {
-		return this.addSeconds(value(secondsToAdd));
-	}
-
-	/**
-	 * Date Arithmetic: add the supplied number of seconds to the date expression.
-	 *
-	 * <p>
-	 * Negative seconds are supported.
-	 *
-	 * @param secondsToAdd seconds to offset by
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 * @return a DateExpression
-	 */
-	public DateExpression addSeconds(NumberExpression secondsToAdd) {
-		return new DateExpression(
-				new DateAddSecondsExpression(this, secondsToAdd));
-	}
-
-	/**
-	 * Date Arithmetic: add the supplied number of seconds to the date expression.
-	 *
-	 * <p>
-	 * Negative seconds are supported.
-	 *
-	 * @param secondsToAdd seconds to offset by
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 * @return a DateExpression
-	 */
-	public DateExpression addSeconds(IntegerExpression secondsToAdd) {
-		return new DateExpression(
-				new DateAddIntegerSecondsExpression(this, secondsToAdd));
-	}
-
-	/**
-	 * Date Arithmetic: add the supplied number of minutes to the date expression.
-	 *
-	 * <p>
-	 * Negative values are supported.
-	 *
-	 * @param minutesToAdd minutes to offset by
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 * @return a DateExpression
-	 */
-	public DateExpression addMinutes(int minutesToAdd) {
-		return this.addMinutes(value(minutesToAdd));
-	}
-
-	/**
-	 * Date Arithmetic: add the supplied number of minutes to the date expression.
-	 *
-	 * <p>
-	 * Negative values are supported.
-	 *
-	 * @param minutesToAdd minutes to offset by
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 * @return a DateExpression
-	 */
-	public DateExpression addMinutes(IntegerExpression minutesToAdd) {
-		return new DateExpression(
-				new DateAddIntegerMinutesExpression(this, minutesToAdd));
-	}
-
-	/**
-	 * Date Arithmetic: add the supplied number of days to the date expression.
+	 * LocalDate Arithmetic: add the supplied number of days to the date
+	 * expression.
 	 *
 	 * <p>
 	 * Negative values are supported.
@@ -1784,12 +1486,13 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a DateExpression
 	 */
-	public DateExpression addDays(Integer daysToAdd) {
+	public LocalDateExpression addDays(Integer daysToAdd) {
 		return this.addDays(value(daysToAdd));
 	}
 
 	/**
-	 * Date Arithmetic: add the supplied number of days to the date expression.
+	 * LocalDate Arithmetic: add the supplied number of days to the date
+	 * expression.
 	 *
 	 * <p>
 	 * Negative values are supported.
@@ -1799,12 +1502,13 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a DateExpression
 	 */
-	public DateExpression addDays(Long daysToAdd) {
+	public LocalDateExpression addDays(Long daysToAdd) {
 		return this.addDays(value(daysToAdd));
 	}
 
 	/**
-	 * Date Arithmetic: add the supplied number of days to the date expression.
+	 * LocalDate Arithmetic: add the supplied number of days to the date
+	 * expression.
 	 *
 	 * <p>
 	 * Negative values are supported.
@@ -1814,12 +1518,13 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a DateExpression
 	 */
-	public DateExpression addDays(Number daysToAdd) {
+	public LocalDateExpression addDays(Number daysToAdd) {
 		return this.addDays(value(daysToAdd));
 	}
 
 	/**
-	 * Date Arithmetic: add the supplied number of days to the date expression.
+	 * LocalDate Arithmetic: add the supplied number of days to the date
+	 * expression.
 	 *
 	 * <p>
 	 * Negative values are supported.
@@ -1829,13 +1534,14 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a DateExpression
 	 */
-	public DateExpression addDays(IntegerExpression daysToAdd) {
-		return new DateExpression(
+	public LocalDateExpression addDays(IntegerExpression daysToAdd) {
+		return new LocalDateExpression(
 				new DateAddIntegerDaysExpression(this, daysToAdd));
 	}
 
 	/**
-	 * Date Arithmetic: add the supplied number of days to the date expression.
+	 * LocalDate Arithmetic: add the supplied number of days to the date
+	 * expression.
 	 *
 	 * <p>
 	 * Negative values are supported.
@@ -1845,44 +1551,14 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a DateExpression
 	 */
-	public DateExpression addDays(NumberExpression daysToAdd) {
-		return new DateExpression(
+	public LocalDateExpression addDays(NumberExpression daysToAdd) {
+		return new LocalDateExpression(
 				new DateAddDaysExpression(this, daysToAdd));
 	}
 
 	/**
-	 * Date Arithmetic: add the supplied number of hours to the date expression.
-	 *
-	 * <p>
-	 * Negative values are supported.
-	 *
-	 * @param hoursToAdd hours to offset by
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 * @return a DateExpression
-	 */
-	public DateExpression addHours(int hoursToAdd) {
-		return this.addHours(value(hoursToAdd));
-	}
-
-	/**
-	 * Date Arithmetic: add the supplied number of hours to the date expression.
-	 *
-	 * <p>
-	 * Negative values are supported.
-	 *
-	 * @param hoursToAdd hours to offset by
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 * @return a DateExpression
-	 */
-	public DateExpression addHours(IntegerExpression hoursToAdd) {
-		return new DateExpression(
-				new DateAddIntegerHoursExpression(this, hoursToAdd));
-	}
-
-	/**
-	 * Date Arithmetic: add the supplied number of weeks to the date expression.
+	 * LocalDate Arithmetic: add the supplied number of weeks to the date
+	 * expression.
 	 *
 	 * <p>
 	 * Negative values are supported.
@@ -1892,12 +1568,13 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a DateExpression
 	 */
-	public DateExpression addWeeks(int weeksToAdd) {
+	public LocalDateExpression addWeeks(int weeksToAdd) {
 		return this.addWeeks(value(weeksToAdd));
 	}
 
 	/**
-	 * Date Arithmetic: add the supplied number of weeks to the date expression.
+	 * LocalDate Arithmetic: add the supplied number of weeks to the date
+	 * expression.
 	 *
 	 * <p>
 	 * Negative values are supported.
@@ -1907,13 +1584,14 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a DateExpression
 	 */
-	public DateExpression addWeeks(IntegerExpression weeksToAdd) {
-		return new DateExpression(
+	public LocalDateExpression addWeeks(IntegerExpression weeksToAdd) {
+		return new LocalDateExpression(
 				new DateAddIntegerWeeksExpression(this, weeksToAdd));
 	}
 
 	/**
-	 * Date Arithmetic: add the supplied number of months to the date expression.
+	 * LocalDate Arithmetic: add the supplied number of months to the date
+	 * expression.
 	 *
 	 * <p>
 	 * Negative values are supported.
@@ -1923,12 +1601,13 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a DateExpression
 	 */
-	public DateExpression addMonths(Number monthsToAdd) {
+	public LocalDateExpression addMonths(Number monthsToAdd) {
 		return this.addMonths(value(monthsToAdd));
 	}
 
 	/**
-	 * Date Arithmetic: add the supplied number of months to the date expression.
+	 * LocalDate Arithmetic: add the supplied number of months to the date
+	 * expression.
 	 *
 	 * <p>
 	 * Negative values are supported.
@@ -1938,12 +1617,13 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a DateExpression
 	 */
-	public DateExpression addMonths(Integer monthsToAdd) {
+	public LocalDateExpression addMonths(Integer monthsToAdd) {
 		return this.addMonths(value(monthsToAdd));
 	}
 
 	/**
-	 * Date Arithmetic: add the supplied number of months to the date expression.
+	 * LocalDate Arithmetic: add the supplied number of months to the date
+	 * expression.
 	 *
 	 * <p>
 	 * Negative values are supported.
@@ -1953,12 +1633,13 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a DateExpression
 	 */
-	public DateExpression addMonths(Long monthsToAdd) {
+	public LocalDateExpression addMonths(Long monthsToAdd) {
 		return this.addMonths(value(monthsToAdd));
 	}
 
 	/**
-	 * Date Arithmetic: add the supplied number of months to the date expression.
+	 * LocalDate Arithmetic: add the supplied number of months to the date
+	 * expression.
 	 *
 	 * <p>
 	 * Negative values are supported.
@@ -1968,13 +1649,14 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a DateExpression
 	 */
-	public DateExpression addMonths(IntegerExpression monthsToAdd) {
-		return new DateExpression(
+	public LocalDateExpression addMonths(IntegerExpression monthsToAdd) {
+		return new LocalDateExpression(
 				new DateAddIntegerMonthsExpression(this, monthsToAdd));
 	}
 
 	/**
-	 * Date Arithmetic: add the supplied number of months to the date expression.
+	 * LocalDate Arithmetic: add the supplied number of months to the date
+	 * expression.
 	 *
 	 * <p>
 	 * Negative values are supported.
@@ -1984,13 +1666,14 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a DateExpression
 	 */
-	public DateExpression addMonths(NumberExpression monthsToAdd) {
-		return new DateExpression(
+	public LocalDateExpression addMonths(NumberExpression monthsToAdd) {
+		return new LocalDateExpression(
 				new DateAddMonthsExpression(this, monthsToAdd));
 	}
 
 	/**
-	 * Date Arithmetic: add the supplied number of years to the date expression.
+	 * LocalDate Arithmetic: add the supplied number of years to the date
+	 * expression.
 	 *
 	 * <p>
 	 * Negative values are supported.
@@ -2000,12 +1683,13 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a DateExpression
 	 */
-	public DateExpression addYears(int yearsToAdd) {
+	public LocalDateExpression addYears(int yearsToAdd) {
 		return this.addYears(value(yearsToAdd));
 	}
 
 	/**
-	 * Date Arithmetic: add the supplied number of years to the date expression.
+	 * LocalDate Arithmetic: add the supplied number of years to the date
+	 * expression.
 	 *
 	 * <p>
 	 * Negative values are supported.
@@ -2015,14 +1699,14 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a DateExpression
 	 */
-	public DateExpression addYears(IntegerExpression yearsToAdd) {
-		return new DateExpression(
+	public LocalDateExpression addYears(IntegerExpression yearsToAdd) {
+		return new LocalDateExpression(
 				new DateAddIntegerYearsExpression(this, yearsToAdd));
 	}
 
 	/**
-	 * Date Arithmetic: get the days between the date expression and the supplied
-	 * date.
+	 * LocalDate Arithmetic: get the days between the date expression and the
+	 * supplied date.
 	 *
 	 * <p>
 	 * Negative values are supported.
@@ -2032,13 +1716,13 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a NumberExpression
 	 */
-	public NumberExpression daysFrom(Date dateToCompareTo) {
-		return daysFrom(DateExpression.value(dateToCompareTo));
+	public NumberExpression daysFrom(LocalDate dateToCompareTo) {
+		return daysFrom(LocalDateExpression.value(dateToCompareTo));
 	}
 
 	/**
-	 * Date Arithmetic: get the days between the date expression and the supplied
-	 * date.
+	 * LocalDate Arithmetic: get the days between the date expression and the
+	 * supplied date.
 	 *
 	 * <p>
 	 * Negative values are supported.
@@ -2048,14 +1732,14 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a NumberExpression
 	 */
-	public NumberExpression daysFrom(DateResult dateToCompareTo) {
+	public NumberExpression daysFrom(LocalDateResult dateToCompareTo) {
 		return new NumberExpression(
 				new DateDaysFromExpression(this, dateToCompareTo));
 	}
 
 	/**
-	 * Date Arithmetic: get the weeks between the date expression and the supplied
-	 * date.
+	 * LocalDate Arithmetic: get the weeks between the date expression and the
+	 * supplied date.
 	 *
 	 * <p>
 	 * Negative values are supported.
@@ -2065,13 +1749,13 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a NumberExpression
 	 */
-	public NumberExpression weeksFrom(Date dateToCompareTo) {
-		return weeksFrom(DateExpression.value(dateToCompareTo));
+	public NumberExpression weeksFrom(LocalDate dateToCompareTo) {
+		return weeksFrom(LocalDateExpression.value(dateToCompareTo));
 	}
 
 	/**
-	 * Date Arithmetic: get the weeks between the date expression and the supplied
-	 * date.
+	 * LocalDate Arithmetic: get the weeks between the date expression and the
+	 * supplied date.
 	 *
 	 * <p>
 	 * Negative values are supported.
@@ -2081,13 +1765,13 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a NumberExpression
 	 */
-	public NumberExpression weeksFrom(DateExpression dateToCompareTo) {
+	public NumberExpression weeksFrom(LocalDateExpression dateToCompareTo) {
 		return new NumberExpression(
 				new DateWeeksFromExpression(this, dateToCompareTo));
 	}
 
 	/**
-	 * Date Arithmetic: get the months between the date expression and the
+	 * LocalDate Arithmetic: get the months between the date expression and the
 	 * supplied date.
 	 *
 	 * <p>
@@ -2098,12 +1782,12 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a NumberExpression
 	 */
-	public NumberExpression monthsFrom(Date dateToCompareTo) {
-		return monthsFrom(DateExpression.value(dateToCompareTo));
+	public NumberExpression monthsFrom(LocalDate dateToCompareTo) {
+		return monthsFrom(LocalDateExpression.value(dateToCompareTo));
 	}
 
 	/**
-	 * Date Arithmetic: get the months between the date expression and the
+	 * LocalDate Arithmetic: get the months between the date expression and the
 	 * supplied date.
 	 *
 	 * <p>
@@ -2114,14 +1798,14 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a NumberExpression
 	 */
-	public NumberExpression monthsFrom(DateResult dateToCompareTo) {
+	public NumberExpression monthsFrom(LocalDateResult dateToCompareTo) {
 		return new NumberExpression(
 				new DateMonthsFromExpression(this, dateToCompareTo));
 	}
 
 	/**
-	 * Date Arithmetic: get the years between the date expression and the supplied
-	 * date.
+	 * LocalDate Arithmetic: get the years between the date expression and the
+	 * supplied date.
 	 *
 	 * <p>
 	 * Negative values are supported.
@@ -2131,13 +1815,13 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a NumberExpression
 	 */
-	public NumberExpression yearsFrom(Date dateToCompareTo) {
-		return yearsFrom(DateExpression.value(dateToCompareTo));
+	public NumberExpression yearsFrom(LocalDate dateToCompareTo) {
+		return yearsFrom(LocalDateExpression.value(dateToCompareTo));
 	}
 
 	/**
-	 * Date Arithmetic: get the years between the date expression and the supplied
-	 * date.
+	 * LocalDate Arithmetic: get the years between the date expression and the
+	 * supplied date.
 	 *
 	 * <p>
 	 * Negative values are supported.
@@ -2147,108 +1831,9 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a NumberExpression
 	 */
-	public NumberExpression yearsFrom(DateResult dateToCompareTo) {
+	public NumberExpression yearsFrom(LocalDateResult dateToCompareTo) {
 		return new NumberExpression(
 				new DateYearsFromExpression(this, dateToCompareTo));
-	}
-
-	/**
-	 * Date Arithmetic: get the Hours between the date expression and the supplied
-	 * date.
-	 *
-	 * <p>
-	 * Negative values are supported.
-	 *
-	 * @param dateToCompareTo date to compare
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 * @return a NumberExpression
-	 */
-	public NumberExpression hoursFrom(Date dateToCompareTo) {
-		return hoursFrom(DateExpression.value(dateToCompareTo));
-	}
-
-	/**
-	 * Date Arithmetic: get the Hours between the date expression and the supplied
-	 * date.
-	 *
-	 * <p>
-	 * Negative values are supported.
-	 *
-	 * @param dateToCompareTo date to compare
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 * @return a NumberExpression
-	 */
-	public NumberExpression hoursFrom(DateResult dateToCompareTo) {
-		return new NumberExpression(
-				new DateHoursFromExpression(this, dateToCompareTo));
-	}
-
-	/**
-	 * Date Arithmetic: get the minutes between the date expression and the
-	 * supplied date.
-	 *
-	 * <p>
-	 * Negative values are supported.
-	 *
-	 * @param dateToCompareTo date to compare
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 * @return a NumberExpression
-	 */
-	public NumberExpression minutesFrom(Date dateToCompareTo) {
-		return minutesFrom(DateExpression.value(dateToCompareTo));
-	}
-
-	/**
-	 * Date Arithmetic: get the days between the date expression and the supplied
-	 * date.
-	 *
-	 * <p>
-	 * Negative values are supported.
-	 *
-	 * @param dateToCompareTo date to compare
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 * @return a NumberExpression
-	 */
-	public NumberExpression minutesFrom(DateResult dateToCompareTo) {
-		return new NumberExpression(
-				new DateMinutesFromExpression(this, dateToCompareTo));
-	}
-
-	/**
-	 * Date Arithmetic: get the seconds between the date expression and the
-	 * supplied date.
-	 *
-	 * <p>
-	 * Negative values are supported.
-	 *
-	 * @param dateToCompareTo date to compare
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 * @return a NumberExpression
-	 */
-	public NumberExpression secondsFrom(Date dateToCompareTo) {
-		return secondsFrom(DateExpression.value(dateToCompareTo));
-	}
-
-	/**
-	 * Date Arithmetic: get the days between the date expression and the supplied
-	 * date.
-	 *
-	 * <p>
-	 * Negative values are supported.
-	 *
-	 * @param dateToCompareTo date to compare
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 * @return a NumberExpression
-	 */
-	public NumberExpression secondsFrom(DateResult dateToCompareTo) {
-		return new NumberExpression(
-				new DateSecondsFromExpression(this, dateToCompareTo));
 	}
 
 	/**
@@ -2257,9 +1842,9 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 	 * <p style="color: #F90;">Support DBvolution at
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 *
-	 * @return a Date expression
+	 * @return a LocalDate expression
 	 */
-	public DateExpression firstOfMonth() {
+	public LocalDateExpression firstOfMonth() {
 		return this.addDays(this.day().minus(1).bracket().times(-1).integerResult());
 	}
 
@@ -2269,12 +1854,10 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 	 * <p style="color: #F90;">Support DBvolution at
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 *
-	 * @return a Date expression
+	 * @return a LocalDate expression
 	 */
-	public DateExpression endOfMonth() {
-		return new DateExpression(
-				new DateEndOfMonthExpression(this)
-		);
+	public LocalDateExpression endOfMonth() {
+		return new DateEndOfMonthExpression(this);
 	}
 
 	/**
@@ -2306,10 +1889,9 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a boolean expression
 	 */
-	public static BooleanExpression overlaps(Date firstStartTime, Date firstEndTime, Date secondStartTime, Date secondEndtime) {
-		return DateExpression.overlaps(
-				DateExpression.value(firstStartTime), DateExpression.value(firstEndTime),
-				DateExpression.value(secondStartTime), DateExpression.value(secondEndtime)
+	public static BooleanExpression overlaps(LocalDate firstStartTime, LocalDate firstEndTime, LocalDate secondStartTime, LocalDate secondEndtime) {
+		return LocalDateExpression.overlaps(LocalDateExpression.value(firstStartTime), LocalDateExpression.value(firstEndTime),
+				LocalDateExpression.value(secondStartTime), LocalDateExpression.value(secondEndtime)
 		);
 	}
 
@@ -2326,9 +1908,8 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a boolean expression
 	 */
-	public static BooleanExpression overlaps(DateResult firstStartTime, DateResult firstEndTime, DateResult secondStartTime, DateResult secondEndtime) {
-		return DateExpression.overlaps(
-				new DateExpression(firstStartTime), new DateExpression(firstEndTime),
+	public static BooleanExpression overlaps(LocalDateResult firstStartTime, LocalDateResult firstEndTime, LocalDateResult secondStartTime, LocalDateResult secondEndtime) {
+		return LocalDateExpression.overlaps(new LocalDateExpression(firstStartTime), new LocalDateExpression(firstEndTime),
 				secondStartTime, secondEndtime
 		);
 	}
@@ -2346,7 +1927,7 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a Boolean expression
 	 */
-	public static BooleanExpression overlaps(DateExpression firstStartTime, DateExpression firstEndTime, DateResult secondStartTime, DateResult secondEndtime) {
+	public static BooleanExpression overlaps(LocalDateExpression firstStartTime, LocalDateExpression firstEndTime, LocalDateResult secondStartTime, LocalDateResult secondEndtime) {
 		return BooleanExpression.anyOf(
 				firstStartTime.isBetween(
 						leastOf(secondStartTime, secondEndtime),
@@ -2370,12 +1951,12 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return the least/smallest value from the list.
 	 */
-	public static DateExpression leastOf(Date... possibleValues) {
-		ArrayList<DateExpression> possVals = new ArrayList<DateExpression>();
-		for (Date num : possibleValues) {
+	public static LocalDateExpression leastOf(LocalDate... possibleValues) {
+		ArrayList<LocalDateExpression> possVals = new ArrayList<LocalDateExpression>();
+		for (LocalDate num : possibleValues) {
 			possVals.add(value(num));
 		}
-		return leastOf(possVals.toArray(new DateExpression[]{}));
+		return leastOf(possVals.toArray(new LocalDateExpression[]{}));
 	}
 
 	/**
@@ -2390,12 +1971,12 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return the least/smallest value from the list.
 	 */
-	public static DateExpression leastOf(Collection<? extends DateResult> possibleValues) {
-		ArrayList<DateExpression> possVals = new ArrayList<DateExpression>();
-		for (DateResult num : possibleValues) {
-			possVals.add(new DateExpression(num));
+	public static LocalDateExpression leastOf(Collection<? extends LocalDateResult> possibleValues) {
+		ArrayList<LocalDateExpression> possVals = new ArrayList<LocalDateExpression>();
+		for (LocalDateResult num : possibleValues) {
+			possVals.add(new LocalDateExpression(num));
 		}
-		return leastOf(possVals.toArray(new DateExpression[]{}));
+		return leastOf(possVals.toArray(new LocalDateExpression[]{}));
 	}
 
 	/**
@@ -2410,9 +1991,9 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return the least/smallest value from the list.
 	 */
-	public static DateExpression leastOf(DateResult... possibleValues) {
-		DateExpression leastExpr
-				= new DateExpression(new DateLeastOfExpression(possibleValues));
+	public static LocalDateExpression leastOf(LocalDateResult... possibleValues) {
+		LocalDateExpression leastExpr
+				= new LocalDateExpression(new DateLeastOfExpression(possibleValues));
 		return leastExpr;
 	}
 
@@ -2428,12 +2009,12 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return the largest value from the list.
 	 */
-	public static DateExpression greatestOf(Date... possibleValues) {
-		ArrayList<DateExpression> possVals = new ArrayList<DateExpression>();
-		for (Date num : possibleValues) {
+	public static LocalDateExpression greatestOf(LocalDate... possibleValues) {
+		ArrayList<LocalDateExpression> possVals = new ArrayList<LocalDateExpression>();
+		for (LocalDate num : possibleValues) {
 			possVals.add(value(num));
 		}
-		return greatestOf(possVals.toArray(new DateExpression[]{}));
+		return greatestOf(possVals.toArray(new LocalDateExpression[]{}));
 	}
 
 	/**
@@ -2448,12 +2029,12 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return the largest value from the list.
 	 */
-	public static DateExpression greatestOf(Collection<? extends DateResult> possibleValues) {
-		ArrayList<DateExpression> possVals = new ArrayList<DateExpression>();
-		for (DateResult num : possibleValues) {
-			possVals.add(new DateExpression(num));
+	public static LocalDateExpression greatestOf(Collection<? extends LocalDateResult> possibleValues) {
+		ArrayList<LocalDateExpression> possVals = new ArrayList<LocalDateExpression>();
+		for (LocalDateResult num : possibleValues) {
+			possVals.add(new LocalDateExpression(num));
 		}
-		return greatestOf(possVals.toArray(new DateExpression[]{}));
+		return greatestOf(possVals.toArray(new LocalDateExpression[]{}));
 	}
 
 	/**
@@ -2468,15 +2049,15 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return the largest value from the list.
 	 */
-	public static DateExpression greatestOf(DateResult... possibleValues) {
-		DateExpression greatestOf
-				= new DateExpression(new DateGreatestOfExpression(possibleValues));
+	public static LocalDateExpression greatestOf(LocalDateResult... possibleValues) {
+		LocalDateExpression greatestOf
+				= new LocalDateExpression(new DateGreatestOfExpression(possibleValues));
 		return greatestOf;
 	}
 
 	@Override
-	public DBDate asExpressionColumn() {
-		return new DBDate(this);
+	public DBLocalDate asExpressionColumn() {
+		return new DBLocalDate(this);
 	}
 
 	/**
@@ -2512,15 +2093,7 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 				.append("-")
 				.append(this.month())
 				.append("-")
-				.append(this.day())
-				.append("T")
-				.append(this.hour())
-				.append(":")
-				.append(this.minute())
-				.append(":")
-				.append(this.second())
-				.append(".")
-				.append(this.subsecond());
+				.append(this.day());
 		return isoFormatDateTime;
 	}
 
@@ -2541,15 +2114,7 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 				.append("-")
 				.append(this.day())
 				.append("-")
-				.append(this.year())
-				.append(" ")
-				.append(this.hour())
-				.append(":")
-				.append(this.minute())
-				.append(":")
-				.append(this.second())
-				.append(".")
-				.append(this.subsecond());
+				.append(this.year());
 		return usaFormatDateTime;
 	}
 
@@ -2571,47 +2136,61 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 				.append("-")
 				.append(this.month())
 				.append("-")
-				.append(this.year())
-				.append(" ")
-				.append(this.hour())
-				.append(":")
-				.append(this.minute())
-				.append(":")
-				.append(this.second())
-				.append(".")
-				.append(this.subsecond());
+				.append(this.year());
 		return commonFormatDateTime;
 	}
 
 	@Override
-	public DateExpression expression(Date value) {
-		return new DateExpression(value);
+	public LocalDateExpression expression(LocalDate value) {
+		return new LocalDateExpression(value);
 	}
 
 	@Override
-	public DateExpression expression(DateResult value) {
-		return new DateExpression(value);
+	public LocalDateExpression expression(LocalDateResult value) {
+		return new LocalDateExpression(value);
 	}
 
 	@Override
-	public DateResult expression(DBDate value) {
-		return new DateExpression(value);
+	public LocalDateResult expression(DBLocalDate value) {
+		return new LocalDateExpression(value);
 	}
 
-	public LocalDateTimeExpression toLocalDateTime() {
-		return new LocalDateTimeExpression(this);
+	public LocalDateExpression setYear(int i) {
+		return this.setYear(IntegerExpression.value(i));
 	}
 
-	public LocalDateExpression toLocalDate() {
-//		return new LocalDateExpression(this);
-		return LocalDateExpression.newLocalDate(this);
+	public LocalDateExpression setYear(IntegerExpression i) {
+		return new NewLocalDateExpression(i, this.month(), this.day());
 	}
 
-	private static abstract class FunctionWithDateResult extends DateExpression implements CanBeWindowingFunctionWithFrame<DateExpression> {
+	public LocalDateExpression setMonth(Month month) {
+		return setMonth(month.getValue());
+	}
+
+	public LocalDateExpression setMonth(int i) {
+		return setMonth(AnyExpression.value(i));
+	}
+
+	public LocalDateExpression setMonth(IntegerExpression i) {
+//		return this.addDays(IntegerExpression.value(i).minus(this.day().integerResult()));
+		return new NewLocalDateExpression(this.year(), i, this.day());
+	}
+
+	public LocalDateExpression setDay(int i) {
+//		return this.addDays(IntegerExpression.value(i).minus(this.day().integerResult()));
+		return setDay(AnyExpression.value(i));
+	}
+
+	public LocalDateExpression setDay(IntegerExpression i) {
+//		return this.addDays(IntegerExpression.value(i).minus(this.day().integerResult()));
+		return new NewLocalDateExpression(this.year(), this.month(), i);
+	}
+
+	private static abstract class FunctionWithLocalDateResult extends LocalDateExpression implements CanBeWindowingFunctionWithFrame<LocalDateExpression> {
 
 		private static final long serialVersionUID = 1L;
 
-		FunctionWithDateResult() {
+		FunctionWithLocalDateResult() {
 		}
 
 		protected String getFunctionName(DBDefinition db) {
@@ -2632,8 +2211,8 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 		}
 
 		@Override
-		public DateExpression.FunctionWithDateResult copy() {
-			DateExpression.FunctionWithDateResult newInstance;
+		public LocalDateExpression.FunctionWithLocalDateResult copy() {
+			LocalDateExpression.FunctionWithLocalDateResult newInstance;
 			try {
 				newInstance = getClass().getDeclaredConstructor().newInstance();
 			} catch (IllegalAccessException | IllegalArgumentException | InstantiationException | NoSuchMethodException | SecurityException | InvocationTargetException ex) {
@@ -2663,9 +2242,30 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 		}
 
 		@Override
-		public WindowFunctionFramable<DateExpression> over() {
-			return new WindowFunctionFramable<DateExpression>(new DateExpression(this));
+		public WindowFunctionFramable<LocalDateExpression> over() {
+			return new WindowFunctionFramable<LocalDateExpression>(new LocalDateExpression(this));
 		}
+	}
+
+	private static abstract class DateExpressionWithNumberResult extends NumberExpression {
+
+		private static final long serialVersionUID = 1L;
+
+		DateExpressionWithNumberResult() {
+			super();
+		}
+
+		DateExpressionWithNumberResult(LocalDateExpression only) {
+			super(only);
+		}
+
+		@Override
+		public DBNumber getQueryableDatatypeForExpressionValue() {
+			return new DBNumber();
+		}
+
+		@Override
+		public abstract String toSQLString(DBDefinition db);
 	}
 
 	private static abstract class DateExpressionWithIntegerResult extends IntegerExpression {
@@ -2676,7 +2276,7 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 			super();
 		}
 
-		DateExpressionWithIntegerResult(DateExpression only) {
+		DateExpressionWithIntegerResult(LocalDateExpression only) {
 			super(only);
 		}
 
@@ -2684,17 +2284,17 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 		public abstract String toSQLString(DBDefinition db);
 	}
 
-	private static abstract class DateDateExpressionWithBooleanResult extends BooleanExpression implements CanBeWindowingFunctionWithFrame<BooleanExpression>{
+	private static abstract class DateDateExpressionWithBooleanResult extends BooleanExpression implements CanBeWindowingFunctionWithFrame<BooleanExpression> {
 
 		private static final long serialVersionUID = 1L;
 
-		protected DateExpression first;
-		protected DateExpression second;
+		protected LocalDateExpression first;
+		protected LocalDateExpression second;
 		private boolean requiresNullProtection = false;
 
-		DateDateExpressionWithBooleanResult(DateExpression first, DateResult second) {
+		DateDateExpressionWithBooleanResult(LocalDateExpression first, LocalDateResult second) {
 			this.first = first;
-			this.second = new DateExpression(second);
+			this.second = new LocalDateExpression(second);
 			if (second == null || second.getIncludesNull()) {
 				this.requiresNullProtection = true;
 			}
@@ -2746,24 +2346,24 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 		public boolean getIncludesNull() {
 			return requiresNullProtection;
 		}
-		
+
 		@Override
 		public WindowFunctionFramable<BooleanExpression> over() {
 			return new WindowFunctionFramable<BooleanExpression>(new BooleanExpression(first));
 		}
 	}
 
-	private static abstract class DateDateExpressionWithDateRepeatResult extends DateRepeatExpression implements CanBeWindowingFunctionWithFrame<DateRepeatExpression>{
+	private static abstract class DateDateExpressionWithDateRepeatResult extends DateRepeatExpression implements CanBeWindowingFunctionWithFrame<DateRepeatExpression> {
 
 		private static final long serialVersionUID = 1L;
 
-		protected DateExpression first;
-		protected DateExpression second;
+		protected LocalDateExpression first;
+		protected LocalDateExpression second;
 		private boolean requiresNullProtection = false;
 
-		DateDateExpressionWithDateRepeatResult(DateExpression first, DateResult second) {
+		DateDateExpressionWithDateRepeatResult(LocalDateExpression first, LocalDateResult second) {
 			this.first = first;
-			this.second = new DateExpression(second);
+			this.second = new LocalDateExpression(second);
 			if (second == null || second.getIncludesNull()) {
 				this.requiresNullProtection = true;
 			}
@@ -2810,7 +2410,7 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 		 *
 		 * @return the first
 		 */
-		public DateExpression getFirst() {
+		public LocalDateExpression getFirst() {
 			return first;
 		}
 
@@ -2820,25 +2420,25 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 		 *
 		 * @return the second
 		 */
-		public DateExpression getSecond() {
+		public LocalDateExpression getSecond() {
 			return second;
 		}
-		
+
 		@Override
 		public WindowFunctionFramable<DateRepeatExpression> over() {
 			return new WindowFunctionFramable<DateRepeatExpression>(new DateRepeatExpression(this));
 		}
 	}
 
-	private static abstract class DateDateRepeatArithmeticDateResult extends DateExpression {
+	private static abstract class DateDateRepeatArithmeticDateResult extends LocalDateExpression {
 
 		private static final long serialVersionUID = 1L;
 
-		protected DateExpression first;
+		protected LocalDateExpression first;
 		protected DateRepeatExpression second;
 		private boolean requiresNullProtection = false;
 
-		DateDateRepeatArithmeticDateResult(DateExpression first, DateRepeatResult second) {
+		DateDateRepeatArithmeticDateResult(LocalDateExpression first, DateRepeatResult second) {
 			this.first = first;
 			this.second = new DateRepeatExpression(second);
 			if (second == null || second.getIncludesNull()) {
@@ -2894,7 +2494,7 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 		 *
 		 * @return the first
 		 */
-		public DateExpression getFirst() {
+		public LocalDateExpression getFirst() {
 			return first;
 		}
 
@@ -2909,19 +2509,19 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 		}
 	}
 
-	private static abstract class DateArrayFunctionWithDateResult extends DateExpression {
+	private static abstract class DateArrayFunctionWithDateResult extends LocalDateExpression {
 
 		private static final long serialVersionUID = 1L;
 
-		protected DateExpression column;
-		protected final List<DateResult> values = new ArrayList<DateResult>();
+		protected LocalDateExpression column;
+		protected final List<LocalDateResult> values = new ArrayList<LocalDateResult>();
 		boolean nullProtectionRequired = false;
 
 		DateArrayFunctionWithDateResult() {
 		}
 
-		DateArrayFunctionWithDateResult(DateResult[] rightHandSide) {
-			for (DateResult dateResult : rightHandSide) {
+		DateArrayFunctionWithDateResult(LocalDateResult[] rightHandSide) {
+			for (LocalDateResult dateResult : rightHandSide) {
 				if (dateResult == null) {
 					this.nullProtectionRequired = true;
 				} else {
@@ -2952,7 +2552,7 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 					.append(this.getFunctionName(db))
 					.append(this.beforeValue(db));
 			String separator = "";
-			for (DateResult val : values) {
+			for (LocalDateResult val : values) {
 				if (val != null) {
 					builder.append(separator).append(val.toSQLString(db));
 				}
@@ -2971,7 +2571,7 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 				throw new RuntimeException(ex);
 			}
 			newInstance.column = this.column.copy();
-			for (DateResult value : this.values) {
+			for (LocalDateResult value : this.values) {
 				newInstance.values.add(value.copy());
 			}
 
@@ -2984,7 +2584,7 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 			if (column != null) {
 				hashSet.addAll(column.getTablesInvolved());
 			}
-			for (DateResult second : values) {
+			for (LocalDateResult second : values) {
 				if (second != null) {
 					hashSet.addAll(second.getTablesInvolved());
 				}
@@ -2998,7 +2598,7 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 			if (column != null) {
 				result = column.isAggregator();
 			}
-			for (DateResult numer : values) {
+			for (LocalDateResult numer : values) {
 				result = result || numer.isAggregator();
 			}
 			return result;
@@ -3015,7 +2615,7 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 				return true;
 			} else {
 				boolean result = column == null ? true : column.isPurelyFunctional();
-				for (DateResult value : values) {
+				for (LocalDateResult value : values) {
 					result &= value.isPurelyFunctional();
 				}
 				return result;
@@ -3027,16 +2627,16 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 
 		private static final long serialVersionUID = 1L;
 
-		private DateExpression column;
-		private List<DateResult> values = new ArrayList<DateResult>();
+		private LocalDateExpression column;
+		private List<LocalDateResult> values = new ArrayList<LocalDateResult>();
 		boolean nullProtectionRequired = false;
 
 		DateDateResultFunctionWithBooleanResult() {
 		}
 
-		DateDateResultFunctionWithBooleanResult(DateExpression leftHandSide, DateResult[] rightHandSide) {
+		DateDateResultFunctionWithBooleanResult(LocalDateExpression leftHandSide, LocalDateResult[] rightHandSide) {
 			this.column = leftHandSide;
-			for (DateResult dateResult : rightHandSide) {
+			for (LocalDateResult dateResult : rightHandSide) {
 				if (dateResult == null) {
 					this.nullProtectionRequired = true;
 				} else {
@@ -3074,7 +2674,7 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 					.append(this.getFunctionName(db))
 					.append(this.beforeValue(db));
 			String separator = "";
-			for (DateResult val : getValues()) {
+			for (LocalDateResult val : getValues()) {
 				if (val != null) {
 					builder.append(separator).append(val.toSQLString(db));
 				}
@@ -3093,7 +2693,7 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 				throw new RuntimeException(ex);
 			}
 			newInstance.column = this.getColumn().copy();
-			for (DateResult value : this.getValues()) {
+			for (LocalDateResult value : this.getValues()) {
 				newInstance.getValues().add(value.copy());
 			}
 
@@ -3107,7 +2707,7 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 			if (getColumn() != null) {
 				hashSet.addAll(getColumn().getTablesInvolved());
 			}
-			for (DateResult val : getValues()) {
+			for (LocalDateResult val : getValues()) {
 				if (val != null) {
 					hashSet.addAll(val.getTablesInvolved());
 				}
@@ -3118,7 +2718,7 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 		@Override
 		public boolean isAggregator() {
 			boolean result = false || getColumn().isAggregator();
-			for (DateResult dater : getValues()) {
+			for (LocalDateResult dater : getValues()) {
 				result = result || dater.isAggregator();
 			}
 			return result;
@@ -3135,7 +2735,7 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 		 *
 		 * @return the column
 		 */
-		protected DateExpression getColumn() {
+		protected LocalDateExpression getColumn() {
 			return column;
 		}
 
@@ -3145,24 +2745,24 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 		 *
 		 * @return the values
 		 */
-		protected List<DateResult> getValues() {
+		protected List<LocalDateResult> getValues() {
 			return values;
 		}
 	}
 
-	private static abstract class DateDateFunctionWithDateResult extends DateExpression {
+	private static abstract class DateDateFunctionWithDateResult extends LocalDateExpression {
 
 		private static final long serialVersionUID = 1L;
 
-		private DateExpression first;
-		private DateResult second;
+		private LocalDateExpression first;
+		private LocalDateResult second;
 
-		DateDateFunctionWithDateResult(DateExpression first) {
+		DateDateFunctionWithDateResult(LocalDateExpression first) {
 			this.first = first;
 			this.second = null;
 		}
 
-		DateDateFunctionWithDateResult(DateExpression first, DateResult second) {
+		DateDateFunctionWithDateResult(LocalDateExpression first, LocalDateResult second) {
 			this.first = first;
 			this.second = second;
 		}
@@ -3206,7 +2806,7 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 		 *
 		 * @return the first
 		 */
-		protected DateExpression getFirst() {
+		protected LocalDateExpression getFirst() {
 			return first;
 		}
 
@@ -3216,7 +2816,7 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 		 *
 		 * @return the second
 		 */
-		protected DateResult getSecond() {
+		protected LocalDateResult getSecond() {
 			return second;
 		}
 
@@ -3234,7 +2834,7 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 		}
 	}
 
-	private static abstract class DateFunctionWithDateResult extends DateExpression {
+	private static abstract class DateFunctionWithDateResult extends LocalDateExpression {
 
 		private static final long serialVersionUID = 1L;
 
@@ -3242,7 +2842,7 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 			super();
 		}
 
-		DateFunctionWithDateResult(DateExpression only) {
+		DateFunctionWithDateResult(LocalDateExpression only) {
 			super(only);
 		}
 
@@ -3264,19 +2864,19 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 		}
 	}
 
-	private static abstract class DateIntegerExpressionWithDateResult extends DateExpression {
+	private static abstract class DateIntegerExpressionWithLocalDateResult extends LocalDateExpression {
 
 		private static final long serialVersionUID = 1L;
 
-		protected DateExpression first;
+		protected LocalDateExpression first;
 		protected IntegerExpression second;
 
-		DateIntegerExpressionWithDateResult() {
+		DateIntegerExpressionWithLocalDateResult() {
 			this.first = null;
 			this.second = null;
 		}
 
-		DateIntegerExpressionWithDateResult(DateExpression dateExp, IntegerExpression numbExp) {
+		DateIntegerExpressionWithLocalDateResult(LocalDateExpression dateExp, IntegerExpression numbExp) {
 			this.first = dateExp;
 			this.second = numbExp;
 		}
@@ -3285,8 +2885,8 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 		abstract public String toSQLString(DBDefinition db);
 
 		@Override
-		public DateIntegerExpressionWithDateResult copy() {
-			DateIntegerExpressionWithDateResult newInstance;
+		public DateIntegerExpressionWithLocalDateResult copy() {
+			DateIntegerExpressionWithLocalDateResult newInstance;
 			try {
 				newInstance = getClass().getDeclaredConstructor().newInstance();
 			} catch (IllegalAccessException | IllegalArgumentException | InstantiationException | NoSuchMethodException | SecurityException | InvocationTargetException ex) {
@@ -3323,19 +2923,19 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 		}
 	}
 
-	private static abstract class DateNumberExpressionWithDateResult extends DateExpression {
+	private static abstract class DateNumberExpressionWithLocalDateResult extends LocalDateExpression {
 
 		private static final long serialVersionUID = 1L;
 
-		protected DateExpression first;
+		protected LocalDateExpression first;
 		protected NumberExpression second;
 
-		DateNumberExpressionWithDateResult() {
+		DateNumberExpressionWithLocalDateResult() {
 			this.first = null;
 			this.second = null;
 		}
 
-		DateNumberExpressionWithDateResult(DateExpression dateExp, NumberExpression numbExp) {
+		DateNumberExpressionWithLocalDateResult(LocalDateExpression dateExp, NumberExpression numbExp) {
 			this.first = dateExp;
 			this.second = numbExp;
 		}
@@ -3373,15 +2973,15 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 
 		private static final long serialVersionUID = 1L;
 
-		protected DateExpression first;
-		protected DateResult second;
+		protected LocalDateExpression first;
+		protected LocalDateResult second;
 
 		DateDateFunctionWithNumberResult() {
 			this.first = null;
 			this.second = null;
 		}
 
-		DateDateFunctionWithNumberResult(DateExpression dateExp, DateResult otherDateExp) {
+		DateDateFunctionWithNumberResult(LocalDateExpression dateExp, LocalDateResult otherDateExp) {
 			this.first = dateExp;
 			this.second = otherDateExp;
 		}
@@ -3428,7 +3028,7 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 		}
 	}
 
-	private static class DateNullExpression extends DateExpression {
+	private static class DateNullExpression extends LocalDateExpression {
 
 		public DateNullExpression() {
 		}
@@ -3445,7 +3045,7 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 		}
 	}
 
-	protected static class DateOnlyCurrentDateExpression extends FunctionWithDateResult {
+	protected static class DateOnlyCurrentDateExpression extends FunctionWithLocalDateResult {
 
 		public DateOnlyCurrentDateExpression() {
 		}
@@ -3468,7 +3068,7 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 
 	}
 
-	protected static class DateCurrentDateExpression extends FunctionWithDateResult {
+	protected static class DateCurrentDateExpression extends FunctionWithLocalDateResult {
 
 		public DateCurrentDateExpression() {
 		}
@@ -3486,7 +3086,7 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 
 	}
 
-	protected static class DateCurrentTimeExpression extends FunctionWithDateResult {
+	protected static class DateCurrentTimeExpression extends FunctionWithLocalDateResult {
 
 		public DateCurrentTimeExpression() {
 		}
@@ -3506,7 +3106,7 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 
 	protected static class DateYearExpression extends DateExpressionWithIntegerResult {
 
-		public DateYearExpression(DateExpression only) {
+		public DateYearExpression(LocalDateExpression only) {
 			super(only);
 		}
 		private final static long serialVersionUID = 1l;
@@ -3518,14 +3118,14 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 
 		@Override
 		public DateYearExpression copy() {
-			return new DateYearExpression((DateExpression) getInnerResult().copy());
+			return new DateYearExpression((LocalDateExpression) getInnerResult().copy());
 		}
 
 	}
 
 	protected static class DateMonthExpression extends DateExpressionWithIntegerResult {
 
-		public DateMonthExpression(DateExpression only) {
+		public DateMonthExpression(LocalDateExpression only) {
 			super(only);
 		}
 		private final static long serialVersionUID = 1l;
@@ -3537,14 +3137,14 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 
 		@Override
 		public DateMonthExpression copy() {
-			return new DateMonthExpression((DateExpression) getInnerResult().copy());
+			return new DateMonthExpression((LocalDateExpression) getInnerResult().copy());
 		}
 
 	}
 
 	protected static class DateDayExpression extends DateExpressionWithIntegerResult {
 
-		public DateDayExpression(DateExpression only) {
+		public DateDayExpression(LocalDateExpression only) {
 			super(only);
 		}
 		private final static long serialVersionUID = 1l;
@@ -3556,14 +3156,14 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 
 		@Override
 		public DateDayExpression copy() {
-			return new DateDayExpression((DateExpression) getInnerResult().copy());
+			return new DateDayExpression((LocalDateExpression) getInnerResult().copy());
 		}
 
 	}
 
-	protected static class DateHourExpression extends DateExpressionWithIntegerResult {
+	protected static class DateHourExpression extends DateExpressionWithNumberResult {
 
-		public DateHourExpression(DateExpression only) {
+		public DateHourExpression(LocalDateExpression only) {
 			super(only);
 		}
 		private final static long serialVersionUID = 1l;
@@ -3575,14 +3175,14 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 
 		@Override
 		public DateHourExpression copy() {
-			return new DateHourExpression((DateExpression) getInnerResult().copy());
+			return new DateHourExpression((LocalDateExpression) getInnerResult().copy());
 		}
 
 	}
 
-	protected static class DateMinuteExpression extends DateExpressionWithIntegerResult {
+	protected static class DateMinuteExpression extends DateExpressionWithNumberResult {
 
-		public DateMinuteExpression(DateExpression only) {
+		public DateMinuteExpression(LocalDateExpression only) {
 			super(only);
 		}
 		private final static long serialVersionUID = 1l;
@@ -3594,14 +3194,14 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 
 		@Override
 		public DateMinuteExpression copy() {
-			return new DateMinuteExpression((DateExpression) getInnerResult().copy());
+			return new DateMinuteExpression((LocalDateExpression) getInnerResult().copy());
 		}
 
 	}
 
-	protected static class DateSecondExpression extends DateExpressionWithIntegerResult {
+	protected static class DateSecondExpression extends DateExpressionWithNumberResult {
 
-		public DateSecondExpression(DateExpression only) {
+		public DateSecondExpression(LocalDateExpression only) {
 			super(only);
 		}
 		private final static long serialVersionUID = 1l;
@@ -3613,13 +3213,13 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 
 		@Override
 		public DateSecondExpression copy() {
-			return new DateSecondExpression((DateExpression) getInnerResult().copy());
+			return new DateSecondExpression((LocalDateExpression) getInnerResult().copy());
 		}
 	}
 
-	protected static class DateSubsecondExpression extends DateExpressionWithIntegerResult {
+	protected static class DateSubsecondExpression extends DateExpressionWithNumberResult {
 
-		public DateSubsecondExpression(DateExpression only) {
+		public DateSubsecondExpression(LocalDateExpression only) {
 			super(only);
 		}
 		private final static long serialVersionUID = 1l;
@@ -3631,14 +3231,14 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 
 		@Override
 		public DateSubsecondExpression copy() {
-			return new DateSubsecondExpression((DateExpression) getInnerResult().copy());
+			return new DateSubsecondExpression((LocalDateExpression) getInnerResult().copy());
 		}
 
 	}
 
 	protected static class DateIsExpression extends DateDateExpressionWithBooleanResult {
 
-		public DateIsExpression(DateExpression first, DateResult second) {
+		public DateIsExpression(LocalDateExpression first, LocalDateResult second) {
 			super(first, second);
 		}
 		private final static long serialVersionUID = 1l;
@@ -3657,7 +3257,7 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 
 	protected static class DateIsNotExpression extends DateDateExpressionWithBooleanResult {
 
-		public DateIsNotExpression(DateExpression first, DateResult second) {
+		public DateIsNotExpression(LocalDateExpression first, LocalDateResult second) {
 			super(first, second);
 		}
 		private final static long serialVersionUID = 1l;
@@ -3676,7 +3276,7 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 
 	protected static class DateIsLessThanExpression extends DateDateExpressionWithBooleanResult {
 
-		public DateIsLessThanExpression(DateExpression first, DateResult second) {
+		public DateIsLessThanExpression(LocalDateExpression first, LocalDateResult second) {
 			super(first, second);
 		}
 		private final static long serialVersionUID = 1l;
@@ -3700,7 +3300,7 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 
 	protected static class DateGetDateRepeatFromExpression extends DateDateExpressionWithDateRepeatResult {
 
-		public DateGetDateRepeatFromExpression(DateExpression first, DateResult second) {
+		public DateGetDateRepeatFromExpression(LocalDateExpression first, LocalDateResult second) {
 			super(first, second);
 		}
 		private final static long serialVersionUID = 1l;
@@ -3710,8 +3310,8 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 			if (db instanceof SupportsDateRepeatDatatypeFunctions) {
 				return db.doDateMinusToDateRepeatTransformation(getFirst().toSQLString(db), getSecond().toSQLString(db));
 			} else {
-				final DateExpression left = getFirst();
-				final DateExpression right = new DateExpression(getSecond());
+				final LocalDateExpression left = getFirst();
+				final LocalDateExpression right = new LocalDateExpression(getSecond());
 				return BooleanExpression.anyOf(left.isNull(), right.isNull())
 						.ifThenElse(
 								nullString(),
@@ -3719,12 +3319,12 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 										.append(left.year().minus(right.year()).bracket()).append(YEAR_SUFFIX)
 										.append(left.month().minus(right.month()).bracket()).append(MONTH_SUFFIX)
 										.append(left.day().minus(right.day()).bracket()).append(DAY_SUFFIX)
-										.append(left.hour().minus(right.hour()).bracket()).append(HOUR_SUFFIX)
-										.append(left.minute().minus(right.minute()).bracket()).append(MINUTE_SUFFIX)
-										.append(left.second().minus(right.second()).bracket())
-										.append(".")
-										.append(left.subsecond().minus(right.subsecond()).absoluteValue().stringResult().substringAfter("."))
-										.append(SECOND_SUFFIX)
+						//										.append(left.hour().minus(right.hour()).bracket()).append(HOUR_SUFFIX)
+						//										.append(left.minute().minus(right.minute()).bracket()).append(MINUTE_SUFFIX)
+						//										.append(left.second().minus(right.second()).bracket())
+						//										.append(".")
+						//										.append(left.subsecond().minus(right.subsecond()).absoluteValue().stringResult().substringAfter("."))
+						//										.append(SECOND_SUFFIX)
 						).toSQLString(db);
 			}
 		}
@@ -3742,7 +3342,7 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 
 	protected static class DateMinusDateRepeatExpression extends DateDateRepeatArithmeticDateResult {
 
-		public DateMinusDateRepeatExpression(DateExpression first, DateRepeatResult second) {
+		public DateMinusDateRepeatExpression(LocalDateExpression first, DateRepeatResult second) {
 			super(first, second);
 		}
 		private final static long serialVersionUID = 1l;
@@ -3752,17 +3352,17 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 			if (db instanceof SupportsDateRepeatDatatypeFunctions) {
 				return db.doDateMinusDateRepeatTransform(getFirst().toSQLString(db), getSecond().toSQLString(db));
 			} else {
-				final DateExpression left = getFirst();
+				final LocalDateExpression left = getFirst();
 				final DateRepeatExpression right = new DateRepeatExpression(getSecond());
 				return BooleanExpression.anyOf(left.isNull(), right.isNull())
 						.ifThenElse(
-								nullDate(),
+								nullLocalDate(),
 								left.addYears(right.getYears().times(-1))
 										.addMonths(right.getMonths().times(-1))
 										.addDays(right.getDays().times(-1))
-										.addHours(right.getHours().times(-1))
-										.addMinutes(right.getMinutes().times(-1))
-										.addSeconds(right.getSeconds().times(-1))
+						//										.addHours(right.getHours().times(-1))
+						//										.addMinutes(right.getMinutes().times(-1))
+						//										.addSeconds(right.getSeconds().times(-1))
 						//									.addMilliseconds(right.getMilliseconds().times(-1))
 						).toSQLString(db);
 			}
@@ -3781,7 +3381,7 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 
 	protected static class DatePlusDateRepeatExpression extends DateDateRepeatArithmeticDateResult {
 
-		public DatePlusDateRepeatExpression(DateExpression first, DateRepeatResult second) {
+		public DatePlusDateRepeatExpression(LocalDateExpression first, DateRepeatResult second) {
 			super(first, second);
 		}
 		private final static long serialVersionUID = 1l;
@@ -3791,17 +3391,17 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 			if (db instanceof SupportsDateRepeatDatatypeFunctions) {
 				return db.doDatePlusDateRepeatTransform(getFirst().toSQLString(db), getSecond().toSQLString(db));
 			} else {
-				final DateExpression left = getFirst();
+				final LocalDateExpression left = getFirst();
 				final DateRepeatExpression right = new DateRepeatExpression(getSecond());
 				return BooleanExpression.anyOf(left.isNull(), right.isNull())
 						.ifThenElse(
-								nullDate(),
+								nullLocalDate(),
 								left.addYears(right.getYears())
 										.addMonths(right.getMonths())
 										.addDays(right.getDays())
-										.addHours(right.getHours())
-										.addMinutes(right.getMinutes())
-										.addSeconds(right.getSeconds())
+						//										.addHours(right.getHours())
+						//										.addMinutes(right.getMinutes())
+						//										.addSeconds(right.getSeconds())
 						).toSQLString(db);
 			}
 		}
@@ -3820,7 +3420,7 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 
 	protected static class DateIsLessThanOrEqualExpression extends DateDateExpressionWithBooleanResult {
 
-		public DateIsLessThanOrEqualExpression(DateExpression first, DateResult second) {
+		public DateIsLessThanOrEqualExpression(LocalDateExpression first, LocalDateResult second) {
 			super(first, second);
 		}
 		private final static long serialVersionUID = 1l;
@@ -3844,7 +3444,7 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 
 	protected static class DateIsGreaterThanExpression extends DateDateExpressionWithBooleanResult {
 
-		public DateIsGreaterThanExpression(DateExpression first, DateResult second) {
+		public DateIsGreaterThanExpression(LocalDateExpression first, LocalDateResult second) {
 			super(first, second);
 		}
 		private final static long serialVersionUID = 1l;
@@ -3868,7 +3468,7 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 
 	protected static class DateIsGreaterThanOrEqualExpression extends DateDateExpressionWithBooleanResult {
 
-		public DateIsGreaterThanOrEqualExpression(DateExpression first, DateResult second) {
+		public DateIsGreaterThanOrEqualExpression(LocalDateExpression first, LocalDateResult second) {
 			super(first, second);
 		}
 		private final static long serialVersionUID = 1l;
@@ -3889,9 +3489,79 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 		}
 	}
 
+	private static class NewLocalDateExpression extends LocalDateExpression {
+		
+		private final static long serialVersionUID = 1l;
+
+		private final IntegerExpression yearExpression;
+		private final IntegerExpression monthExpression;
+		private final IntegerExpression dayExpression;
+
+		public NewLocalDateExpression(IntegerExpression year, IntegerExpression month, IntegerExpression day) {
+			this.yearExpression = year;
+			this.monthExpression = month;
+			this.dayExpression = day;
+		}
+
+		@Override
+		public String toSQLString(DBDefinition db) {
+			final String doNewLocalDateFromYearMonthDayTransform = db.doNewLocalDateFromYearMonthDayTransform(
+					yearExpression.toSQLString(db),//.stringResult().toSQLString(db),
+					monthExpression.toSQLString(db),//.stringResult().leftPad("0", 2).toSQLString(db),
+					dayExpression.toSQLString(db)//.stringResult().leftPad("0", 2).toSQLString(db)
+			);
+			return doNewLocalDateFromYearMonthDayTransform;
+		}
+
+		@Override
+		public LocalDateExpression copy() {
+			return new NewLocalDateExpression(yearExpression.copy(), monthExpression.copy(), dayExpression.copy());
+		}
+		
+		@Override
+		public boolean isPurelyFunctional() {
+			List<AnyExpression<?,?,?>> exprs = new ArrayList<AnyExpression<?,?,?>>();
+			exprs.addAll(Arrays.asList(new AnyExpression<?,?,?>[]{yearExpression, monthExpression, dayExpression}));
+			Optional<Boolean> reduced = exprs.stream().map((t) -> t.isPurelyFunctional()).reduce((t, u) -> t||u);
+			return reduced.isPresent()&&reduced.get();
+		}
+
+		@Override
+		public boolean isComplexExpression() {
+			List<AnyExpression<?,?,?>> exprs = new ArrayList<AnyExpression<?,?,?>>();
+			exprs.addAll(Arrays.asList(new AnyExpression<?,?,?>[]{yearExpression, monthExpression, dayExpression}));
+			Optional<Boolean> reduced = exprs.stream().map((t) -> t.isComplexExpression()).reduce((t, u) -> t||u);
+			return reduced.isPresent()&&reduced.get();
+		}
+
+		@Override
+		public boolean isAggregator() {
+			List<AnyExpression<?,?,?>> exprs = new ArrayList<AnyExpression<?,?,?>>();
+			exprs.addAll(Arrays.asList(new AnyExpression<?,?,?>[]{yearExpression, monthExpression, dayExpression}));
+			Optional<Boolean> reduced = exprs.stream().map((t) -> t.isAggregator()).reduce((t, u) -> t||u);
+			return reduced.isPresent()&&reduced.get();
+		}
+
+		@Override
+		protected boolean isNullSafetyTerminator() {
+			List<AnyExpression<?,?,?>> exprs = new ArrayList<AnyExpression<?,?,?>>();
+			exprs.addAll(Arrays.asList(new AnyExpression<?,?,?>[]{yearExpression, monthExpression, dayExpression}));
+			Optional<Boolean> reduced = exprs.stream().map((t) -> t.isNullSafetyTerminator()).reduce((t, u) -> t||u);
+			return reduced.isPresent()&&reduced.get();
+		}
+
+		@Override
+		public boolean isWindowingFunction() {
+			List<AnyExpression<?,?,?>> exprs = new ArrayList<AnyExpression<?,?,?>>();
+			exprs.addAll(Arrays.asList(new AnyExpression<?,?,?>[]{yearExpression, monthExpression, dayExpression}));
+			Optional<Boolean> reduced = exprs.stream().map((t) -> t.isWindowingFunction()).reduce((t, u) -> t||u);
+			return reduced.isPresent()&&reduced.get();
+		}
+	}
+
 	protected class DateIsInExpression extends DateDateResultFunctionWithBooleanResult {
 
-		public DateIsInExpression(DateExpression leftHandSide, DateResult[] rightHandSide) {
+		public DateIsInExpression(LocalDateExpression leftHandSide, LocalDateResult[] rightHandSide) {
 			super(leftHandSide, rightHandSide);
 		}
 		private final static long serialVersionUID = 1l;
@@ -3899,7 +3569,7 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 		@Override
 		public String toSQLString(DBDefinition db) {
 			List<String> sqlValues = new ArrayList<String>();
-			for (DateResult value : getValues()) {
+			for (LocalDateResult value : getValues()) {
 				sqlValues.add(value.toSQLString(db));
 			}
 			return db.doInTransform(getColumn().toSQLString(db), sqlValues);
@@ -3907,21 +3577,21 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 
 		@Override
 		public DateIsInExpression copy() {
-			final List<DateResult> values = getValues();
-			final List<DateResult> newValues = new ArrayList<>();
-			for (DateResult value : values) {
+			final List<LocalDateResult> values = getValues();
+			final List<LocalDateResult> newValues = new ArrayList<>();
+			for (LocalDateResult value : values) {
 				newValues.add(value.copy());
 			}
 			return new DateIsInExpression(
 					getColumn().copy(),
-					newValues.toArray(new DateResult[]{}));
+					newValues.toArray(new LocalDateResult[]{}));
 		}
 
 	}
 
 	protected class DateIsNotInExpression extends DateDateResultFunctionWithBooleanResult {
 
-		public DateIsNotInExpression(DateExpression leftHandSide, DateResult[] rightHandSide) {
+		public DateIsNotInExpression(LocalDateExpression leftHandSide, LocalDateResult[] rightHandSide) {
 			super(leftHandSide, rightHandSide);
 		}
 		private final static long serialVersionUID = 1l;
@@ -3929,7 +3599,7 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 		@Override
 		public String toSQLString(DBDefinition db) {
 			List<String> sqlValues = new ArrayList<String>();
-			for (DateResult value : getValues()) {
+			for (LocalDateResult value : getValues()) {
 				sqlValues.add(value.toSQLString(db));
 			}
 			return db.doNotInTransform(getColumn().toSQLString(db), sqlValues);
@@ -3937,21 +3607,21 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 
 		@Override
 		public DateIsNotInExpression copy() {
-			final List<DateResult> values = getValues();
-			final List<DateResult> newValues = new ArrayList<>();
-			for (DateResult value : values) {
+			final List<LocalDateResult> values = getValues();
+			final List<LocalDateResult> newValues = new ArrayList<>();
+			for (LocalDateResult value : values) {
 				newValues.add(value.copy());
 			}
 			return new DateIsNotInExpression(
 					getColumn().copy(),
-					newValues.toArray(new DateResult[]{}));
+					newValues.toArray(new LocalDateResult[]{}));
 		}
 
 	}
 
 	protected static class DateIfDBNullExpression extends DateDateFunctionWithDateResult {
 
-		public DateIfDBNullExpression(DateExpression first, DateResult second) {
+		public DateIfDBNullExpression(LocalDateExpression first, LocalDateResult second) {
 			super(first, second);
 		}
 		private final static long serialVersionUID = 1l;
@@ -3972,9 +3642,9 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 		}
 	}
 
-	public static class DateMaxExpression extends DateFunctionWithDateResult implements CanBeWindowingFunctionWithFrame<DateExpression>{
+	public static class DateMaxExpression extends DateFunctionWithDateResult implements CanBeWindowingFunctionWithFrame<LocalDateExpression> {
 
-		public DateMaxExpression(DateExpression only) {
+		public DateMaxExpression(LocalDateExpression only) {
 			super(only);
 		}
 		private final static long serialVersionUID = 1l;
@@ -3996,18 +3666,18 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 
 		@Override
 		public DateMaxExpression copy() {
-			return new DateMaxExpression((DateExpression) getInnerResult().copy());
+			return new DateMaxExpression((LocalDateExpression) getInnerResult().copy());
 		}
 
 		@Override
-		public WindowFunctionFramable<DateExpression> over() {
-			return new WindowFunctionFramable<DateExpression>(new DateExpression(this));
+		public WindowFunctionFramable<LocalDateExpression> over() {
+			return new WindowFunctionFramable<LocalDateExpression>(new LocalDateExpression(this));
 		}
 	}
 
-	public static class DateMinExpression extends DateFunctionWithDateResult implements CanBeWindowingFunctionWithFrame<DateExpression>{
+	public static class DateMinExpression extends DateFunctionWithDateResult implements CanBeWindowingFunctionWithFrame<LocalDateExpression> {
 
-		public DateMinExpression(DateExpression only) {
+		public DateMinExpression(LocalDateExpression only) {
 			super(only);
 		}
 		private final static long serialVersionUID = 1l;
@@ -4029,23 +3699,23 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 
 		@Override
 		public DateMinExpression copy() {
-			return new DateMinExpression((DateExpression) getInnerResult().copy());
+			return new DateMinExpression((LocalDateExpression) getInnerResult().copy());
 		}
 
 		@Override
-		public WindowFunctionFramable<DateExpression> over() {
-			return new WindowFunctionFramable<DateExpression>(new DateExpression(this));
+		public WindowFunctionFramable<LocalDateExpression> over() {
+			return new WindowFunctionFramable<LocalDateExpression>(new LocalDateExpression(this));
 		}
 	}
 
-	protected static class DateAddSecondsExpression extends DateNumberExpressionWithDateResult {
+	protected static class DateAddSecondsExpression extends DateNumberExpressionWithLocalDateResult {
 
-		public DateAddSecondsExpression(DateExpression dateExp, NumberExpression numbExp) {
+		public DateAddSecondsExpression(LocalDateExpression dateExp, NumberExpression numbExp) {
 			super(dateExp, numbExp);
 		}
 		private final static long serialVersionUID = 1l;
 
-		private DateAddSecondsExpression(DateExpression dateExpression) {
+		private DateAddSecondsExpression(LocalDateExpression dateExpression) {
 			throw new UnsupportedOperationException("Not supported yet.");
 		}
 
@@ -4061,13 +3731,13 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 
 		@Override
 		public DateAddSecondsExpression copy() {
-			return new DateAddSecondsExpression((DateExpression) getInnerResult().copy());
+			return new DateAddSecondsExpression((LocalDateExpression) getInnerResult().copy());
 		}
 	}
 
-	protected static class DateAddIntegerSecondsExpression extends DateIntegerExpressionWithDateResult {
+	protected static class DateAddIntegerSecondsExpression extends DateIntegerExpressionWithLocalDateResult {
 
-		public DateAddIntegerSecondsExpression(DateExpression dateExp, IntegerExpression numbExp) {
+		public DateAddIntegerSecondsExpression(LocalDateExpression dateExp, IntegerExpression numbExp) {
 			super(dateExp, numbExp);
 		}
 		private final static long serialVersionUID = 1l;
@@ -4088,9 +3758,9 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 		}
 	}
 
-	protected static class DateAddIntegerMinutesExpression extends DateIntegerExpressionWithDateResult {
+	protected static class DateAddIntegerMinutesExpression extends DateIntegerExpressionWithLocalDateResult {
 
-		public DateAddIntegerMinutesExpression(DateExpression dateExp, IntegerExpression numbExp) {
+		public DateAddIntegerMinutesExpression(LocalDateExpression dateExp, IntegerExpression numbExp) {
 			super(dateExp, numbExp);
 		}
 		private final static long serialVersionUID = 1l;
@@ -4111,9 +3781,9 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 		}
 	}
 
-	protected static class DateAddIntegerDaysExpression extends DateIntegerExpressionWithDateResult {
+	protected static class DateAddIntegerDaysExpression extends DateIntegerExpressionWithLocalDateResult {
 
-		public DateAddIntegerDaysExpression(DateExpression dateExp, IntegerExpression numbExp) {
+		public DateAddIntegerDaysExpression(LocalDateExpression dateExp, IntegerExpression numbExp) {
 			super(dateExp, numbExp);
 		}
 		private final static long serialVersionUID = 1l;
@@ -4134,9 +3804,9 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 		}
 	}
 
-	protected static class DateAddDaysExpression extends DateNumberExpressionWithDateResult {
+	protected static class DateAddDaysExpression extends DateNumberExpressionWithLocalDateResult {
 
-		public DateAddDaysExpression(DateExpression dateExp, NumberExpression numbExp) {
+		public DateAddDaysExpression(LocalDateExpression dateExp, NumberExpression numbExp) {
 			super(dateExp, numbExp);
 		}
 		private final static long serialVersionUID = 1l;
@@ -4157,9 +3827,9 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 		}
 	}
 
-	protected static class DateAddIntegerHoursExpression extends DateIntegerExpressionWithDateResult {
+	protected static class DateAddIntegerHoursExpression extends DateIntegerExpressionWithLocalDateResult {
 
-		public DateAddIntegerHoursExpression(DateExpression dateExp, IntegerExpression numbExp) {
+		public DateAddIntegerHoursExpression(LocalDateExpression dateExp, IntegerExpression numbExp) {
 			super(dateExp, numbExp);
 		}
 		private final static long serialVersionUID = 1l;
@@ -4180,9 +3850,9 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 		}
 	}
 
-	protected static class DateAddIntegerWeeksExpression extends DateIntegerExpressionWithDateResult {
+	protected static class DateAddIntegerWeeksExpression extends DateIntegerExpressionWithLocalDateResult {
 
-		public DateAddIntegerWeeksExpression(DateExpression dateExp, IntegerExpression numbExp) {
+		public DateAddIntegerWeeksExpression(LocalDateExpression dateExp, IntegerExpression numbExp) {
 			super(dateExp, numbExp);
 		}
 		private final static long serialVersionUID = 1l;
@@ -4203,9 +3873,9 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 		}
 	}
 
-	protected static class DateAddIntegerMonthsExpression extends DateIntegerExpressionWithDateResult {
+	protected static class DateAddIntegerMonthsExpression extends DateIntegerExpressionWithLocalDateResult {
 
-		public DateAddIntegerMonthsExpression(DateExpression dateExp, IntegerExpression numbExp) {
+		public DateAddIntegerMonthsExpression(LocalDateExpression dateExp, IntegerExpression numbExp) {
 			super(dateExp, numbExp);
 		}
 		private final static long serialVersionUID = 1l;
@@ -4226,9 +3896,9 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 		}
 	}
 
-	protected static class DateAddMonthsExpression extends DateNumberExpressionWithDateResult {
+	protected static class DateAddMonthsExpression extends DateNumberExpressionWithLocalDateResult {
 
-		public DateAddMonthsExpression(DateExpression dateExp, NumberExpression numbExp) {
+		public DateAddMonthsExpression(LocalDateExpression dateExp, NumberExpression numbExp) {
 			super(dateExp, numbExp);
 		}
 		private final static long serialVersionUID = 1l;
@@ -4249,9 +3919,9 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 		}
 	}
 
-	protected static class DateAddIntegerYearsExpression extends DateIntegerExpressionWithDateResult {
+	protected static class DateAddIntegerYearsExpression extends DateIntegerExpressionWithLocalDateResult {
 
-		public DateAddIntegerYearsExpression(DateExpression dateExp, IntegerExpression numbExp) {
+		public DateAddIntegerYearsExpression(LocalDateExpression dateExp, IntegerExpression numbExp) {
 			super(dateExp, numbExp);
 		}
 		private final static long serialVersionUID = 1l;
@@ -4274,7 +3944,7 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 
 	protected static class DateDaysFromExpression extends DateDateFunctionWithNumberResult {
 
-		public DateDaysFromExpression(DateExpression dateExp, DateResult otherDateExp) {
+		public DateDaysFromExpression(LocalDateExpression dateExp, LocalDateResult otherDateExp) {
 			super(dateExp, otherDateExp);
 		}
 		private final static long serialVersionUID = 1l;
@@ -4297,7 +3967,7 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 
 	protected static class DateWeeksFromExpression extends DateDateFunctionWithNumberResult {
 
-		public DateWeeksFromExpression(DateExpression dateExp, DateResult otherDateExp) {
+		public DateWeeksFromExpression(LocalDateExpression dateExp, LocalDateResult otherDateExp) {
 			super(dateExp, otherDateExp);
 		}
 		private final static long serialVersionUID = 1l;
@@ -4320,7 +3990,7 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 
 	protected static class DateMonthsFromExpression extends DateDateFunctionWithNumberResult {
 
-		public DateMonthsFromExpression(DateExpression dateExp, DateResult otherDateExp) {
+		public DateMonthsFromExpression(LocalDateExpression dateExp, LocalDateResult otherDateExp) {
 			super(dateExp, otherDateExp);
 		}
 		private final static long serialVersionUID = 1l;
@@ -4343,7 +4013,7 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 
 	protected static class DateYearsFromExpression extends DateDateFunctionWithNumberResult {
 
-		public DateYearsFromExpression(DateExpression dateExp, DateResult otherDateExp) {
+		public DateYearsFromExpression(LocalDateExpression dateExp, LocalDateResult otherDateExp) {
 			super(dateExp, otherDateExp);
 		}
 		private final static long serialVersionUID = 1l;
@@ -4366,7 +4036,7 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 
 	protected static class DateHoursFromExpression extends DateDateFunctionWithNumberResult {
 
-		public DateHoursFromExpression(DateExpression dateExp, DateResult otherDateExp) {
+		public DateHoursFromExpression(LocalDateExpression dateExp, LocalDateResult otherDateExp) {
 			super(dateExp, otherDateExp);
 		}
 		private final static long serialVersionUID = 1l;
@@ -4389,7 +4059,7 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 
 	protected static class DateMinutesFromExpression extends DateDateFunctionWithNumberResult {
 
-		public DateMinutesFromExpression(DateExpression dateExp, DateResult otherDateExp) {
+		public DateMinutesFromExpression(LocalDateExpression dateExp, LocalDateResult otherDateExp) {
 			super(dateExp, otherDateExp);
 		}
 		private final static long serialVersionUID = 1l;
@@ -4412,7 +4082,7 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 
 	protected static class DateSecondsFromExpression extends DateDateFunctionWithNumberResult {
 
-		public DateSecondsFromExpression(DateExpression dateExp, DateResult otherDateExp) {
+		public DateSecondsFromExpression(LocalDateExpression dateExp, LocalDateResult otherDateExp) {
 			super(dateExp, otherDateExp);
 		}
 		private final static long serialVersionUID = 1l;
@@ -4433,9 +4103,9 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 		}
 	}
 
-	protected static class DateEndOfMonthExpression extends DateExpression {
+	protected static class DateEndOfMonthExpression extends LocalDateExpression {
 
-		public DateEndOfMonthExpression(DateResult dateVariable) {
+		public DateEndOfMonthExpression(LocalDateResult dateVariable) {
 			super(dateVariable);
 		}
 		private final static long serialVersionUID = 1l;
@@ -4445,7 +4115,7 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 			try {
 				return db.doEndOfMonthTransform(this.getInnerResult().toSQLString(db));
 			} catch (UnsupportedOperationException exp) {
-				DateExpression only = (DateExpression) getInnerResult();
+				LocalDateExpression only = (LocalDateExpression) getInnerResult();
 				return only
 						.addDays(only.day().minus(1).bracket().times(-1).integerResult())
 						.addMonths(1).addDays(-1).toSQLString(db);
@@ -4454,13 +4124,13 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 
 		@Override
 		public DateEndOfMonthExpression copy() {
-			return new DateEndOfMonthExpression((DateResult) getInnerResult().copy());
+			return new DateEndOfMonthExpression((LocalDateResult) getInnerResult().copy());
 		}
 	}
 
-	protected static class DateDayOfWeekExpression extends DateExpressionWithIntegerResult {
+	protected static class DateDayOfWeekExpression extends DateExpressionWithNumberResult {
 
-		public DateDayOfWeekExpression(DateExpression only) {
+		public DateDayOfWeekExpression(LocalDateExpression only) {
 			super(only);
 		}
 		private final static long serialVersionUID = 1l;
@@ -4472,13 +4142,13 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 
 		@Override
 		public DateDayOfWeekExpression copy() {
-			return new DateDayOfWeekExpression((DateExpression) getInnerResult().copy());
+			return new DateDayOfWeekExpression((LocalDateExpression) getInnerResult().copy());
 		}
 	}
 
 	protected static class DateLeastOfExpression extends DateArrayFunctionWithDateResult {
 
-		public DateLeastOfExpression(DateResult[] rightHandSide) {
+		public DateLeastOfExpression(LocalDateResult[] rightHandSide) {
 			super(rightHandSide);
 		}
 		private final static long serialVersionUID = 1l;
@@ -4486,7 +4156,7 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 		@Override
 		public String toSQLString(DBDefinition db) {
 			List<String> strs = new ArrayList<String>();
-			for (DateResult num : this.values) {
+			for (LocalDateResult num : this.values) {
 				strs.add(num.toSQLString(db));
 			}
 			return db.doLeastOfTransformation(strs);
@@ -4504,17 +4174,17 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 
 		@Override
 		public DateLeastOfExpression copy() {
-			List<DateResult> newValues = new ArrayList<>();
-			for (DateResult value : values) {
+			List<LocalDateResult> newValues = new ArrayList<>();
+			for (LocalDateResult value : values) {
 				newValues.add(value.copy());
 			}
-			return new DateLeastOfExpression(newValues.toArray(new DateResult[]{}));
+			return new DateLeastOfExpression(newValues.toArray(new LocalDateResult[]{}));
 		}
 	}
 
 	protected static class DateGreatestOfExpression extends DateArrayFunctionWithDateResult {
 
-		public DateGreatestOfExpression(DateResult[] rightHandSide) {
+		public DateGreatestOfExpression(LocalDateResult[] rightHandSide) {
 			super(rightHandSide);
 		}
 		private final static long serialVersionUID = 1l;
@@ -4522,7 +4192,7 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 		@Override
 		public String toSQLString(DBDefinition db) {
 			List<String> strs = new ArrayList<String>();
-			for (DateResult num : this.values) {
+			for (LocalDateResult num : this.values) {
 				strs.add(num.toSQLString(db));
 			}
 			return db.doGreatestOfTransformation(strs);
@@ -4535,19 +4205,19 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 
 		@Override
 		public DateGreatestOfExpression copy() {
-			List<DateResult> newValues = new ArrayList<>();
-			for (DateResult value : values) {
+			List<LocalDateResult> newValues = new ArrayList<>();
+			for (LocalDateResult value : values) {
 				newValues.add(value.copy());
 			}
-			return new DateGreatestOfExpression(newValues.toArray(new DateResult[]{}));
+			return new DateGreatestOfExpression(newValues.toArray(new LocalDateResult[]{}));
 		}
 	}
 
-	public static WindowFunctionFramable<DateExpression> firstValue() {
+	public static WindowFunctionFramable<LocalDateExpression> firstValue() {
 		return new FirstValueExpression().over();
 	}
 
-	public static class FirstValueExpression extends BooleanExpression implements CanBeWindowingFunctionWithFrame<DateExpression> {
+	public static class FirstValueExpression extends BooleanExpression implements CanBeWindowingFunctionWithFrame<LocalDateExpression> {
 
 		public FirstValueExpression() {
 			super();
@@ -4572,17 +4242,17 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 		}
 
 		@Override
-		public WindowFunctionFramable<DateExpression> over() {
-			return new WindowFunctionFramable<DateExpression>(new DateExpression(this));
+		public WindowFunctionFramable<LocalDateExpression> over() {
+			return new WindowFunctionFramable<LocalDateExpression>(new LocalDateExpression(this));
 		}
 
 	}
 
-	public static WindowFunctionFramable<DateExpression> lastValue() {
+	public static WindowFunctionFramable<LocalDateExpression> lastValue() {
 		return new LastValueExpression().over();
 	}
 
-	public static class LastValueExpression extends DateExpression implements CanBeWindowingFunctionWithFrame<DateExpression> {
+	public static class LastValueExpression extends LocalDateExpression implements CanBeWindowingFunctionWithFrame<LocalDateExpression> {
 
 		public LastValueExpression() {
 			super();
@@ -4602,22 +4272,22 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 
 		@Override
 		@SuppressWarnings("unchecked")
-		public DateExpression copy() {
+		public LocalDateExpression copy() {
 			return new LastValueExpression();
 		}
 
 		@Override
-		public WindowFunctionFramable<DateExpression> over() {
-			return new WindowFunctionFramable<DateExpression>(new DateExpression(this));
+		public WindowFunctionFramable<LocalDateExpression> over() {
+			return new WindowFunctionFramable<LocalDateExpression>(new LocalDateExpression(this));
 		}
 
 	}
 
-	public static WindowFunctionFramable<DateExpression> nthValue(IntegerExpression indexExpression) {
+	public static WindowFunctionFramable<LocalDateExpression> nthValue(IntegerExpression indexExpression) {
 		return new NthValueExpression(indexExpression).over();
 	}
 
-	public static class NthValueExpression extends DateExpression implements CanBeWindowingFunctionWithFrame<DateExpression> {
+	public static class NthValueExpression extends LocalDateExpression implements CanBeWindowingFunctionWithFrame<LocalDateExpression> {
 
 		public NthValueExpression(IntegerExpression only) {
 			super(only);
@@ -4643,9 +4313,8 @@ public class DateExpression extends RangeExpression<Date, DateResult, DBDate> im
 		}
 
 		@Override
-		public WindowFunctionFramable<DateExpression> over() {
-			return new WindowFunctionFramable<DateExpression>(new DateExpression(this));
+		public WindowFunctionFramable<LocalDateExpression> over() {
+			return new WindowFunctionFramable<LocalDateExpression>(new LocalDateExpression(this));
 		}
-
 	}
 }

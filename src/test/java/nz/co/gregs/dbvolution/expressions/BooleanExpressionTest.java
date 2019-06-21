@@ -515,8 +515,8 @@ public class BooleanExpressionTest extends AbstractTest {
 		Marque marque = new Marque();
 		DBQuery dbQuery = database.getDBQuery(marque);
 		List<Long> longs = new ArrayList<Long>();
-		longs.add(new Long(1));
-		longs.add(new Long(2));
+		longs.add(Long.valueOf(1));
+		longs.add(Long.valueOf(2));
 
 		dbQuery.addCondition(marque.column(marque.uidMarque).isIn(longs));
 
@@ -870,7 +870,7 @@ public class BooleanExpressionTest extends AbstractTest {
 		final DBQuery dbQuery = database.getDBQuery(marque);
 		dbQuery.setBlankQueryAllowed(true);
 		dbQuery.setSortOrder(marque.column(marque.greaterThan3));
-//		System.out.println(""+dbQuery.getSQLForQuery());
+
 		List<MarqueWithBooleanExpressionCount> allRows = dbQuery.getAllInstancesOf(marque);
 
 		Assert.assertThat(allRows.size(), is(2));

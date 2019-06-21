@@ -17,6 +17,8 @@ package nz.co.gregs.dbvolution.databases.definitions;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Date;
 import nz.co.gregs.dbvolution.databases.NuoDB;
 import nz.co.gregs.dbvolution.datatypes.DBBoolean;
@@ -42,14 +44,26 @@ public class NuoDBDefinition extends DBDefinition {
 
 	public static final long serialVersionUID = 1L;
 	
+	private static final String DB_DATE_FORMAT_STR = "yyyy-M-d HH:mm:ss.SSS";//2017-02-18 18:59:59.000 +10:00
 	private final DateFormat DATETIME_FORMAT = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss.SSS");
 
 	@Override
 	@SuppressWarnings("deprecation")
 	public String getDateFormattedForQuery(Date date) {
-
 		return " DATE_FROM_STR('" + DATETIME_FORMAT.format(date) + "', 'dd/MM/yyyy HH:mm:ss.SSS') ";
+	}
 
+	@Override
+	public String getDatePartsFormattedForQuery(String years, String months, String days, String hours, String minutes, String seconds, String subsecond, String timeZoneSign, String timeZoneHourOffset, String timeZoneMinuteOffSet) {
+		return "PARSEDATETIME("
+				+ years
+				+ "||'-'||" + months
+				+ "||'-'||" + days
+				+ "||' '||" + hours
+				+ "||':'||" + minutes
+				+ "||':'||(" + seconds+"+"+subsecond+")"
+				+ ", '" + DB_DATE_FORMAT_STR + "')";
+		//return "PARSEDATETIME('" + years + "','" + H2_DATE_FORMAT_STR + "')";
 	}
 
 	@Override
@@ -186,4 +200,14 @@ public class NuoDBDefinition extends DBDefinition {
 	public boolean supportsFullOuterJoinNatively() {
 		return false;
 	}
+
+//	@Override
+//	public String getLocalDateFormattedForQuery(LocalDate date) {
+//		return " DATE_FROM_STR('" + DATETIME_FORMAT.format(date) + "', 'dd/MM/yyyy HH:mm:ss.SSS') ";
+//	}
+//
+//	@Override
+//	public String getLocalDateTimeFormattedForQuery(LocalDateTime date) {
+//		return " DATE_FROM_STR('" + DATETIME_FORMAT.format(date) + "', 'dd/MM/yyyy HH:mm:ss.SSS') ";
+//	}
 }

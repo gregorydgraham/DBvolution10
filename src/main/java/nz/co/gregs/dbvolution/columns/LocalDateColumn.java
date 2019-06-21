@@ -15,11 +15,11 @@
  */
 package nz.co.gregs.dbvolution.columns;
 
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.Set;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
-import nz.co.gregs.dbvolution.datatypes.DBDate;
+import nz.co.gregs.dbvolution.datatypes.DBLocalDate;
 import nz.co.gregs.dbvolution.expressions.*;
 import nz.co.gregs.dbvolution.query.RowDefinition;
 
@@ -46,13 +46,13 @@ import nz.co.gregs.dbvolution.query.RowDefinition;
  * @see AbstractColumn
  * @see DateExpression
  */
-public class DateColumn extends DateExpression implements ColumnProvider {
+public class LocalDateColumn extends LocalDateExpression implements ColumnProvider {
 
 	private static final long serialVersionUID = 1l;
 
 	private AbstractColumn column;
 
-	private DateColumn() {
+	private LocalDateColumn() {
 	}
 
 	/**
@@ -61,7 +61,7 @@ public class DateColumn extends DateExpression implements ColumnProvider {
 	 * @param row the row containing the field
 	 * @param field the field defining the column
 	 */
-	public DateColumn(RowDefinition row, Date field) {
+	public LocalDateColumn(RowDefinition row, LocalDate field) {
 		this.column = new AbstractColumn(row, field);
 	}
 
@@ -71,7 +71,7 @@ public class DateColumn extends DateExpression implements ColumnProvider {
 	 * @param row the row containing the field
 	 * @param field the field defining the column
 	 */
-	public DateColumn(RowDefinition row, DBDate field) {
+	public LocalDateColumn(RowDefinition row, DBLocalDate field) {
 		this.column = new AbstractColumn(row, field);
 	}
 
@@ -81,10 +81,10 @@ public class DateColumn extends DateExpression implements ColumnProvider {
 	}
 
 	@Override
-	public synchronized DateColumn copy() {
+	public synchronized LocalDateColumn copy() {
 		final AbstractColumn col = getColumn();
 		final DBRow row = col.getInstanceOfRow();
-		DateColumn newInstance = new DateColumn(row, (DBDate) col.getAppropriateQDTFromRow(row));
+		LocalDateColumn newInstance = new LocalDateColumn(row, (DBLocalDate) col.getAppropriateQDTFromRow(row));
 		return newInstance;
 //		try {
 //			DateColumn newInstance = this.getClass().newInstance();
@@ -129,7 +129,8 @@ public class DateColumn extends DateExpression implements ColumnProvider {
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a BooleanExpression
 	 */
-	public BooleanExpression is(DBDate dateColumn) {
+	@Override
+	public BooleanExpression is(DBLocalDate dateColumn) {
 		return super.is(dateColumn);
 	}
 

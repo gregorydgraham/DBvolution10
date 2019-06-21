@@ -16,6 +16,7 @@
 package nz.co.gregs.dbvolution.actions;
 
 import java.util.ArrayList;
+import java.util.List;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.annotations.*;
 import nz.co.gregs.dbvolution.datatypes.*;
@@ -42,12 +43,13 @@ public class DBBulkInsertTest extends AbstractTest {
 	public void testSaveWithMultipleRows() throws Exception {
 		DBRow row = new CarCompany("Lada", 124);
 		DBRow row2 = new CarCompany("Saab", 125);
-		database.setPrintSQLBeforeExecuting(true);
+
 		DBActionList result = database.insert(row, row2);
-		database.setPrintSQLBeforeExecuting(false);
+
 		CarCompany example = new CarCompany();
 		example.uidCarCompany.permittedValues(124, 125);
-		database.print(database.getDBTable(example).getAllRows());
+		final List<CarCompany> allRows = database.getDBTable(example).getAllRows();
+		database.print(allRows);
 		Assert.assertThat(result.size(), is(2));
 	}
 	
@@ -58,17 +60,10 @@ public class DBBulkInsertTest extends AbstractTest {
 		database.createTableNoExceptions(new BulkInsertTestTable());
 		final BulkInsertTestTable row = new BulkInsertTestTable("Lada");
 		final BulkInsertTestTable row2 = new BulkInsertTestTable("Saab");
-		database.setPrintSQLBeforeExecuting(true);
+
 		DBActionList result = database.insert(row, row2);
 		Assert.assertThat(result.size(), is(2));
 
-		database.setPrintSQLBeforeExecuting(false);
-//		database.print(new ArrayList<DBRow>() {
-//			{this.add(row);this.add(row2);}
-//		});
-//		BulkInsertTestTable example = new BulkInsertTestTable();
-//		example.string.permittedValues("Lada");
-//		database.print(database.getDBTable(example).getAllRows());
 		Assert.assertThat(row.pk.isDefined(), is(true));
 		Assert.assertThat(row.pk.getValue(), is(1l));
 		Assert.assertThat(row2.pk.isDefined(), is(true));

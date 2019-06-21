@@ -276,7 +276,9 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 		} else {
 			List<ColumnProvider> names = new ArrayList<>();
 			for (PropertyWrapper pk : primaryKeyPropertyWrappers) {
-				names.add(this.column(pk.getQueryableDatatype()));
+				final QueryableDatatype<?> qdt = pk.getQueryableDatatype();
+				final ColumnProvider column = this.column(qdt);
+				names.add(column);
 			}
 			return names;
 		}

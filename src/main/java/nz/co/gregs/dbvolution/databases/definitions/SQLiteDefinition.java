@@ -21,6 +21,9 @@ import com.vividsolutions.jts.io.WKTReader;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
@@ -35,6 +38,7 @@ import nz.co.gregs.dbvolution.generation.DBTableField;
 import nz.co.gregs.dbvolution.internal.datatypes.DateRepeatImpl;
 import nz.co.gregs.dbvolution.internal.properties.PropertyWrapper;
 import nz.co.gregs.dbvolution.internal.sqlite.*;
+import nz.co.gregs.dbvolution.utility.StringLeftPadded;
 import org.joda.time.Period;
 
 /**
@@ -60,13 +64,26 @@ public class SQLiteDefinition extends DBDefinition implements SupportsDateRepeat
 	 */
 	private final DateFormat DATETIME_PRECISE_FORMAT = getDateTimeFormat();//
 	private static final SimpleDateFormat DATETIME_SIMPLE_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-//	private static final String[] RESERVED_WORDS_ARRAY = new String[]{"ABORT", "ACTION", "ADD", "AFTER", "ALL", "ALTER", "ANALYZE", "AND", "AS", "ASC", "ATTACH", "AUTOINCREMENT", "BEFORE", "BEGIN", "BETWEEN", "BY", "CASCADE", "CASE", "CAST", "CHECK", "COLLATE", "COLUMN", "COMMIT", "CONFLICT", "CONSTRAINT", "CREATE", "CROSS", "CURRENT", "CURRENT_DATE", "CURRENT_TIME", "CURRENT_TIMESTAMP", "DATABASE", "DEFAULT", "DEFERRABLE", "DEFERRED", "DELETE", "DESC", "DETACH", "DISTINCT", "DO", "DROP", "EACH", "ELSE", "END", "ESCAPE", "EXCEPT", "EXCLUSIVE", "EXISTS", "EXPLAIN", "FAIL", "FILTER", "FOLLOWING", "FOR", "FOREIGN", "FROM", "FULL", "GLOB", "GROUP", "HAVING", "IF", "IGNORE", "IMMEDIATE", "IN", "INDEX", "INDEXED", "INITIALLY", "INNER", "INSERT", "INSTEAD", "INTERSECT", "INTO", "IS", "ISNULL", "JOIN", "KEY", "LEFT", "LIKE", "LIMIT", "MATCH", "NATURAL", "NO", "NOT", "NOTHING", "NOTNULL", "NULL", "OF", "OFFSET", "ON", "OR", "ORDER", "OUTER", "OVER", "PARTITION", "PLAN", "PRAGMA", "PRECEDING", "PRIMARY", "QUERY", "RAISE", "RANGE", "RECURSIVE", "REFERENCES", "REGEXP", "REINDEX", "RELEASE", "RENAME", "REPLACE", "RESTRICT", "RIGHT", "ROLLBACK", "ROW", "ROWS", "SAVEPOINT", "SELECT", "SET", "TABLE", "TEMP", "TEMPORARY", "THEN", "TO", "TRANSACTION", "TRIGGER", "UNBOUNDED", "UNION", "UNIQUE", "UPDATE", "USING", "VACUUM", "VALUES", "VIEW", "VIRTUAL", "WHEN", "WHERE", "WINDOW", "WITH", "WITHOUT"};
 	private static final String[] RESERVED_WORDS_ARRAY = new String[]{};
 	private static final List<String> RESERVED_WORDS_LIST = Arrays.asList(RESERVED_WORDS_ARRAY);
 
 	@Override
 	public String getDateFormattedForQuery(Date date) {
 		return " strftime('%Y-%m-%d %H:%M:%f', '" + DATETIME_PRECISE_FORMAT.format(date) + "') ";
+	}
+
+	@Override
+	public String getDatePartsFormattedForQuery(String years, String months, String days, String hours, String minutes, String seconds, String subsecond, String timeZoneSign, String timeZoneHourOffset, String timeZoneMinuteOffSet) {
+		return "strftime('%Y-%m-%d %H:%M:%f', "
+				+ " " + years
+				+ "||'-'||" + doLeftPadTransform(months, "0", "2")
+				+ "||'-'||" + doLeftPadTransform(days, "0", "2")
+				+ "||' '||" + doLeftPadTransform(hours, "0", "2")
+				+ "||':'||" + doLeftPadTransform(minutes, "0", "2")
+				+ "||':'||" + doIfThenElseTransform(doIntegerEqualsTransform(doStringLengthTransform("''||"+seconds), "1"), "'0'", "''")
+				+ "||(" + seconds + "+" + subsecond + ")"
+				+ " )";
+		//return "PARSEDATETIME('" + years + "','" + H2_DATE_FORMAT_STR + "')";
 	}
 
 	@Override
@@ -271,12 +288,14 @@ public class SQLiteDefinition extends DBDefinition implements SupportsDateRepeat
 		// TRUNC is defined in SQLiteDB as a user defined function.
 		return "TRUNC";
 	}
-	
+
 	/**
 	 * Generate the SQL to apply rounding to the Number expressions with the
 	 * specified number of decimal places.
-	 * 
-	 * <p>SQLite ROUND doesn't support negative decimal places so use the alternative method. </p>
+	 *
+	 * <p>
+	 * SQLite ROUND doesn't support negative decimal places so use the alternative
+	 * method. </p>
 	 *
 	 * @param number the number value
 	 * @param decimalPlaces the number value of the decimal places required.
@@ -287,11 +306,6 @@ public class SQLiteDefinition extends DBDefinition implements SupportsDateRepeat
 	@Override
 	public String doRoundWithDecimalPlacesTransform(String number, String decimalPlaces) {
 		throw new UnsupportedOperationException();
-	}
-	
-	@Override
-	public String doNumberToIntegerTransform(String sql) {
-		return "cast(("+sql+") as bigint)";
 	}
 
 	@Override
@@ -986,11 +1000,43 @@ public class SQLiteDefinition extends DBDefinition implements SupportsDateRepeat
 
 	@Override
 	public String doStringAccumulateTransform(String accumulateColumn, String separator, String orderByColumnName, String referencedTable) {
-		return "GROUP_CONCAT("+accumulateColumn+", "+separator+")";
+		return "GROUP_CONCAT(" + accumulateColumn + ", " + separator + ")";
 	}
 
 	@Override
 	public boolean requiresSortedSubselectForStringAggregate() {
 		return true;
 	}
+
+	@Override
+	public LocalDate parseLocalDateFromGetString(String inputFromResultSet) throws ParseException {
+		String getStringDate = inputFromResultSet.replaceAll(" ", "T");
+		System.out.println("PARSE DATE STRING: " + getStringDate);
+		return LocalDate.parse(getStringDate.subSequence(0, getStringDate.length()), DateTimeFormatter.ISO_DATE_TIME);
+	}
+
+	@Override
+	public LocalDateTime parseLocalDateTimeFromGetString(String inputFromResultSet) throws ParseException {
+		String getStringDate = inputFromResultSet.replaceAll(" ", "T");
+		System.out.println("PARSE DATE STRING: " + getStringDate);
+		return LocalDateTime.parse(getStringDate.subSequence(0, getStringDate.length()), DateTimeFormatter.ISO_DATE_TIME);
+	}
+
+	@Override
+	public String doRightPadTransform(String toPad, String padWith, String length) {
+		return "(" + toPad
+				+ "||substr(replace(hex(zeroblob("
+				+ length + ")), '00', " + padWith + "), 1,"
+				+ length + " - length(" + toPad + ")))";
+	}
+
+	@Override
+	public String doLeftPadTransform(String toPad, String padWith, String length) {
+		return "(substr(replace(hex(zeroblob("
+				+ length + ")),'00', "
+				+ padWith + "), 1,"
+				+ length + " - length(" + toPad + "))||"
+				+ toPad + ")";
+	}
+
 }

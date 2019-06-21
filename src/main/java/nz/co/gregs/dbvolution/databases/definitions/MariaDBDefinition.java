@@ -17,6 +17,9 @@ package nz.co.gregs.dbvolution.databases.definitions;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.Date;
 import nz.co.gregs.dbvolution.databases.MariaClusterDB;
 import nz.co.gregs.dbvolution.databases.MariaDB;
@@ -50,9 +53,23 @@ public class MariaDBDefinition extends DBDefinition {
 	@Override
 	@SuppressWarnings("deprecation")
 	public String getDateFormattedForQuery(Date date) {
-
 		return " STR_TO_DATE('" + DATETIME_FORMAT.format(date) + "', '%d,%m,%Y %H:%i:%s') ";
+	}
 
+	@Override
+	public String getDatePartsFormattedForQuery(String years, String months, String days, String hours, String minutes, String seconds, String subsecond, String timeZoneSign, String timeZoneHourOffset, String timeZoneMinuteOffSet) {
+		return " STR_TO_DATE('" 
+				+ days
+				+ "||'-'||" + months
+				+ "||'-'||" + years
+				+ "||' '||" + hours
+				+ "||':'||" + minutes
+				+ "||':'||(" + seconds+"+"+subsecond+")"
+//				+ "||' '||" + timeZoneSign
+//				+ "||" + timeZoneHourOffset
+//				+ "||':'||" + timeZoneMinuteOffSet
+				+ "', '%d,%m,%Y %H:%i:%s') ";
+		//return "PARSEDATETIME('" + years + "','" + H2_DATE_FORMAT_STR + "')";
 	}
 
 	@Override
@@ -122,4 +139,14 @@ public class MariaDBDefinition extends DBDefinition {
 	public boolean supportsFullOuterJoinNatively() {
 		return false;
 	}
+
+//	@Override
+//	public String getLocalDateFormattedForQuery(LocalDate date) {
+//		return " STR_TO_DATE('" + DATETIME_FORMAT.format(date) + "', '%d,%m,%Y %H:%i:%s') ";
+//	}
+//
+//	@Override
+//	public String getLocalDateTimeFormattedForQuery(LocalDateTime date) {
+//		return " STR_TO_DATE('" + DATETIME_FORMAT.format(date) + "', '%d,%m,%Y %H:%i:%s') ";
+//	}
 }

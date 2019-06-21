@@ -91,6 +91,16 @@ public class MySQLDBDefinition extends DBDefinition {
 	}
 
 	@Override
+	public String getDatePartsFormattedForQuery(String years, String months, String days, String hours, String minutes, String seconds, String subsecond, String timeZoneSign, String timeZoneHourOffset, String timeZoneMinuteOffSet) {
+		return " STR_TO_DATE("
+				+ doConcatTransform(years, "'-'", months, "'-'", days,
+						"' '", hours, "'-'", minutes, "'-'", "(" + seconds + "+" + subsecond + ")"
+						 //"' '", timeZoneSign, timeZoneHourOffset, timeZoneMinuteOffSet)//MySQL doesn't support time zones
+				) + ", '%Y-%m-%d %H-%i-%s.%f') ";
+		//return "PARSEDATETIME('" + years + "','" + H2_DATE_FORMAT_STR + "')";
+	}
+
+	@Override
 	public Class<? extends QueryableDatatype<?>> getQueryableDatatypeClassForSQLDatatype(String typeName) {
 		switch (typeName) {
 			case "POLYGON":
@@ -690,11 +700,16 @@ public class MySQLDBDefinition extends DBDefinition {
 
 	@Override
 	public String doStringAccumulateTransform(String accumulateColumn, String separator, String referencedTable) {
-		return "GROUP_CONCAT("+accumulateColumn+" SEPARATOR "+separator+")";
+		return "GROUP_CONCAT(" + accumulateColumn + " SEPARATOR " + separator + ")";
 	}
 
 	@Override
 	public String doStringAccumulateTransform(String accumulateColumn, String separator, String orderByColumnName, String referencedTable) {
-		return "GROUP_CONCAT("+accumulateColumn+" ORDER BY "+orderByColumnName+" SEPARATOR "+separator+")";
+		return "GROUP_CONCAT(" + accumulateColumn + " ORDER BY " + orderByColumnName + " SEPARATOR " + separator + ")";
+	}
+
+	@Override
+	public String doNumberToIntegerTransform(String sql) {
+		return "CAST(" + sql + " AS SIGNED)";
 	}
 }

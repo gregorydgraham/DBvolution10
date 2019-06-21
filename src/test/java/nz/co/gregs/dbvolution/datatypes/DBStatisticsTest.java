@@ -460,7 +460,7 @@ WHERE rownumber = (SELECT (COUNT(*)+1) DIV 2 FROM (select * FROM marque WHERE up
 			QueryableDatatype<?> valueQDT = row.getExpressionColumnValue(valueExprKey);
 			assertThat(counterQDT.stringValue(), is("" + index));
 
-			final Integer integerIndex = new Integer(counterQDT.stringValue());
+			final Integer integerIndex = Integer.valueOf(counterQDT.stringValue());
 			assertThat(
 					valueQDT.stringValue(),
 					is(integerIndex == 20 ? "4"

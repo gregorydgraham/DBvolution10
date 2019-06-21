@@ -21,6 +21,8 @@ import com.vividsolutions.jts.io.WKTReader;
 import nz.co.gregs.dbvolution.datatypes.spatial2D.DBPolygon2D;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 import java.util.TimeZone;
@@ -57,6 +59,22 @@ public class MySQLDBDefinition_5_7 extends DBDefinition {
 	@SuppressWarnings("deprecation")
 	public String getDateFormattedForQuery(Date date) {
 		return " STR_TO_DATE('" + DATETIME_FORMAT.format(date) + "', '%d,%m,%Y %H:%i:%s.%f') ";
+	}
+
+	@Override
+	public String getDatePartsFormattedForQuery(String years, String months, String days, String hours, String minutes, String seconds, String subsecond, String timeZoneSign, String timeZoneHourOffset, String timeZoneMinuteOffSet) {
+		return " STR_TO_DATE('" 
+				+ days
+				+ "||'-'||" + months
+				+ "||'-'||" + years
+				+ "||' '||" + hours
+				+ "||':'||" + minutes
+				+ "||':'||(" + seconds+"+"+subsecond+")"
+//				+ "||' '||" + timeZoneSign
+//				+ "||" + timeZoneHourOffset
+//				+ "||':'||" + timeZoneMinuteOffSet
+				+ "', '%d,%m,%Y %H:%i:%s') ";
+		//return "PARSEDATETIME('" + years + "','" + H2_DATE_FORMAT_STR + "')";
 	}
 
 	@Override
@@ -697,4 +715,14 @@ public class MySQLDBDefinition_5_7 extends DBDefinition {
 	public String doStringAccumulateTransform(String accumulateColumn, String separator, String orderByColumnName, String referencedTable) {
 		return "GROUP_CONCAT("+accumulateColumn+" ORDER BY "+orderByColumnName+" SEPARATOR "+separator+")";
 	}
+
+//	@Override
+//	public String getLocalDateFormattedForQuery(LocalDate date) {
+//		return " STR_TO_DATE('" + DATETIME_FORMAT.format(date) + "', '%d,%m,%Y %H:%i:%s.%f') ";
+//	}
+//
+//	@Override
+//	public String getLocalDateTimeFormattedForQuery(LocalDateTime date) {
+//		return " STR_TO_DATE('" + DATETIME_FORMAT.format(date) + "', '%d,%m,%Y %H:%i:%s.%f') ";
+//	}
 }

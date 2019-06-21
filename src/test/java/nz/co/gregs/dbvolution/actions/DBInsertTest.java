@@ -148,6 +148,7 @@ public class DBInsertTest extends AbstractTest {
 
 	@Test
 	public void testSaveWithDefaultValues() throws Exception {
+database.setPrintSQLBeforeExecuting(true);
 		GregorianCalendar cal = new GregorianCalendar();
 		cal.add(GregorianCalendar.MINUTE, -1);
 		Date startTime = cal.getTime();
@@ -155,7 +156,6 @@ public class DBInsertTest extends AbstractTest {
 		TestDefaultInsertValue row = new TestDefaultInsertValue();
 		database.preventDroppingOfTables(false);
 		database.dropTableNoExceptions(row);
-
 		database.createTable(row);
 
 		/* Check that row can be inserted successfully*/
@@ -163,7 +163,9 @@ public class DBInsertTest extends AbstractTest {
 		Assert.assertThat(row.pk_uid.getValue(), is(1L));
 		
 		TestDefaultInsertValue gotRow = database.getDBTable(row).getRowsByPrimaryKey(row.pk_uid.getValue()).get(0);
+		System.out.println(""+gotRow);
 		
+database.setPrintSQLBeforeExecuting(false);
 		Assert.assertThat(gotRow.pk_uid.getValue(), is(1L));
 		Assert.assertThat(gotRow.name.getValue(), is("def"));
 		Assert.assertThat(gotRow.defaultExpression.getValue(), is("def"));
@@ -257,6 +259,10 @@ public class DBInsertTest extends AbstractTest {
 		@DBColumn
 		public DBString defaultExpression = new DBString()
 				.setDefaultInsertValue(StringExpression.value("default").substring(0, 3));
+
+		@DBColumn
+		public DBDate javaDate = new DBDate()
+				.setDefaultInsertValue(new Date());
 
 		@DBColumn
 		public DBDate creationDate = new DBDate()

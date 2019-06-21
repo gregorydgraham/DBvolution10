@@ -18,6 +18,8 @@ package nz.co.gregs.dbvolution.databases.definitions;
 import com.vividsolutions.jts.geom.*;
 import com.vividsolutions.jts.io.WKTReader;
 import java.text.*;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.*;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.columns.AbstractColumn;
@@ -73,6 +75,22 @@ public class MSSQLServerDBDefinition2016 extends DBDefinition {
 		}
 		final String result = " CAST('" + format.format(date) + " " + tz + "' as DATETIMEOFFSET) ";
 		return result;
+	}
+
+	@Override
+	public String getDatePartsFormattedForQuery(String years, String months, String days, String hours, String minutes, String seconds, String subsecond, String timeZoneSign, String timeZoneHourOffset, String timeZoneMinuteOffSet) {
+		return "CAST("
+				+ years
+				+ "||'-'||" + months
+				+ "||'-'||" + days
+				+ "||' '||" + hours
+				+ "||':'||" + minutes
+				+ "||':'||(" + seconds+"+"+subsecond+")"
+//				+ "||' '||" + timeZoneSign
+//				+ "||" + timeZoneHourOffset
+//				+ "||':'||" + timeZoneMinuteOffSet
+				+ " as DATETIMEOFFSET)";
+		//return "PARSEDATETIME('" + years + "','" + H2_DATE_FORMAT_STR + "')";
 	}
 
 	@Override
@@ -1159,7 +1177,46 @@ public class MSSQLServerDBDefinition2016 extends DBDefinition {
 		return true;
 	}
 
+	@Override
 	public boolean requiresReversingLineStringsFromDatabase() {
 		return false;
 	}
+
+//	@Override
+//	public String getLocalDateFormattedForQuery(LocalDate date) {
+//		DateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+//		DateFormat tzFormat = new SimpleDateFormat("Z");
+//		String tz = tzFormat.format(date);
+//		switch (tz.length()) {
+//			case 4:
+//				tz = "+" + tz.substring(0, 2) + ":" + tz.substring(2, 4);
+//				break;
+//			case 5:
+//				tz = tz.substring(0, 3) + ":" + tz.substring(3, 5);
+//				break;
+//			default:
+//				throw new DBRuntimeException("TIMEZONE was :\"" + tz + "\"");
+//		}
+//		final String result = " CAST('" + format.format(date) + " " + tz + "' as DATETIMEOFFSET) ";
+//		return result;
+//	}
+//
+//	@Override
+//	public String getLocalDateTimeFormattedForQuery(LocalDateTime date) {
+//		DateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+//		DateFormat tzFormat = new SimpleDateFormat("Z");
+//		String tz = tzFormat.format(date);
+//		switch (tz.length()) {
+//			case 4:
+//				tz = "+" + tz.substring(0, 2) + ":" + tz.substring(2, 4);
+//				break;
+//			case 5:
+//				tz = tz.substring(0, 3) + ":" + tz.substring(3, 5);
+//				break;
+//			default:
+//				throw new DBRuntimeException("TIMEZONE was :\"" + tz + "\"");
+//		}
+//		final String result = " CAST('" + format.format(date) + " " + tz + "' as DATETIMEOFFSET) ";
+//		return result;
+//	}
 }

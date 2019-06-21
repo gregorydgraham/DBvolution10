@@ -16,6 +16,8 @@
 package nz.co.gregs.dbvolution.databases.definitions;
 
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
@@ -51,7 +53,7 @@ import nz.co.gregs.dbvolution.internal.query.QueryState;
 public class OracleDBDefinition extends DBDefinition {
 
 	public static final long serialVersionUID = 1L;
-	
+
 	private final static String DATE_FORMAT_STRING = "yyyy-M-d HH:mm:ss.SSS Z";
 	private final static String ORACLE_DATE_FORMAT_STRING = "YYYY-MM-DD HH24:MI:SS.FF3 TZHTZM";
 	private final SimpleDateFormat JAVA_TO_STRING_FORMATTER = new SimpleDateFormat(DATE_FORMAT_STRING);
@@ -64,6 +66,22 @@ public class OracleDBDefinition extends DBDefinition {
 			return getNull();
 		}
 		return " TO_TIMESTAMP_TZ('" + JAVA_TO_STRING_FORMATTER.format(date) + "','" + ORACLE_DATE_FORMAT_STRING + "') ";
+	}
+
+	@Override
+	public String getDatePartsFormattedForQuery(String years, String months, String days, String hours, String minutes, String seconds, String subsecond, String timeZoneSign, String timeZoneHourOffset, String timeZoneMinuteOffSet) {
+		return "PARSEDATETIME("
+				+ years
+				+ "||'-'||" + months
+				+ "||'-'||" + days
+				+ "||' '||" + hours
+				+ "||':'||" + minutes
+				+ "||':'||(" + seconds+"+"+subsecond+")"
+//				+ "||' '||" + timeZoneSign
+//				+ "||" + timeZoneHourOffset
+//				+ "||" + timeZoneMinuteOffSet
+				+ ", '" + ORACLE_DATE_FORMAT_STRING + "')";
+		//return "PARSEDATETIME('" + years + "','" + H2_DATE_FORMAT_STR + "')";
 	}
 
 	@Override
@@ -324,7 +342,6 @@ public class OracleDBDefinition extends DBDefinition {
 //			return " DESC NULLS LAST";
 //		}
 //	}
-
 	@Override
 	public String getOrderByDescending() {
 		return " DESC ";
@@ -576,4 +593,20 @@ public class OracleDBDefinition extends DBDefinition {
 	public Boolean supportsDifferenceBetweenNullAndEmptyString() {
 		return false;
 	}
+
+//	@Override
+//	public String getLocalDateFormattedForQuery(LocalDate date) {
+//		if (date == null) {
+//			return getNull();
+//		}
+//		return " TO_TIMESTAMP_TZ('" + JAVA_TO_STRING_FORMATTER.format(date) + "','" + ORACLE_DATE_FORMAT_STRING + "') ";
+//	}
+//
+//	@Override
+//	public String getLocalDateTimeFormattedForQuery(LocalDateTime date) {
+//		if (date == null) {
+//			return getNull();
+//		}
+//		return " TO_TIMESTAMP_TZ('" + JAVA_TO_STRING_FORMATTER.format(date) + "','" + ORACLE_DATE_FORMAT_STRING + "') ";
+//	}
 }

@@ -21,6 +21,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.SQLWarning;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
 import nz.co.gregs.dbvolution.databases.definitions.DBDefinition;
 import nz.co.gregs.dbvolution.exceptions.UnableToCreateDatabaseConnectionException;
 import nz.co.gregs.dbvolution.exceptions.UnableToFindJDBCDriver;
@@ -57,6 +59,7 @@ public class DBStatement implements Statement {
 	final DBDatabase database;
 	private Connection connection;
 	private boolean isClosed = false;
+	private List<String> localBatchList = new ArrayList<String>();
 
 	/**
 	 * Creates a statement object for the given DBDatabase and Connection.
@@ -139,6 +142,7 @@ public class DBStatement implements Statement {
 	 */
 	@Override
 	public int executeUpdate(String string) throws SQLException {
+		database.printSQLIfRequested(string);
 		int executeUpdate = getInternalStatement().executeUpdate(string);
 
 		return executeUpdate;
@@ -689,8 +693,9 @@ public class DBStatement implements Statement {
 	 */
 	@Override
 	public void addBatch(String string) throws SQLException {
+		localBatchList.add(string);
 		getInternalStatement().addBatch(string);
-		setBatchHasEntries(true);
+//		setBatchHasEntries(true);
 	}
 
 	/**
@@ -702,8 +707,9 @@ public class DBStatement implements Statement {
 	 */
 	@Override
 	public void clearBatch() throws SQLException {
+		localBatchList.clear();
 		getInternalStatement().clearBatch();
-		setBatchHasEntries(false);
+//		setBatchHasEntries(false);
 	}
 
 	/**
@@ -748,6 +754,9 @@ public class DBStatement implements Statement {
 	 */
 	@Override
 	public int[] executeBatch() throws SQLException {
+		if (database.isPrintSQLBeforeExecuting()) {
+			localBatchList.stream().forEach((t) -> database.printSQLIfRequested(t));
+		}
 		return getInternalStatement().executeBatch();
 	}
 
@@ -831,6 +840,7 @@ public class DBStatement implements Statement {
 	 */
 	@Override
 	public int executeUpdate(String string, int i) throws SQLException {
+		database.printSQLIfRequested(string);
 		return getInternalStatement().executeUpdate(string, i);
 	}
 
@@ -856,6 +866,7 @@ public class DBStatement implements Statement {
 	 */
 	@Override
 	public int executeUpdate(String string, int[] ints) throws SQLException {
+		database.printSQLIfRequested(string);
 		return getInternalStatement().executeUpdate(string, ints);
 	}
 
@@ -1125,8 +1136,19 @@ public class DBStatement implements Statement {
 		return getInternalStatement().isWrapperFor(iface);
 	}
 
-	private void setBatchHasEntries(boolean b) {
-		batchHasEntries = b;
+//	private void setBatchHasEntries(boolean b) {
+//		batchHasEntries = b;
+//	}
+	/**
+	 * Indicates that a batch has been added.
+	 *
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 *
+	 * @return TRUE if the batch has un-executed entries, otherwise FALSE.
+	 */
+	public boolean getBatchHasEntries() {
+		return !getBatchIsEmpty();
 	}
 
 	/**
@@ -1137,8 +1159,8 @@ public class DBStatement implements Statement {
 	 *
 	 * @return TRUE if the batch has un-executed entries, otherwise FALSE.
 	 */
-	public boolean getBatchHasEntries() {
-		return batchHasEntries;
+	public boolean getBatchIsEmpty() {
+		return localBatchList.isEmpty();
 	}
 
 	/**

@@ -2866,6 +2866,62 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 		return value(string).append(this);
 	}
 
+	public StringExpression append(IntegerExpression value) {
+		return append(value.stringResult());
+	}
+
+	public StringExpression leftPad(String padWith, int ensureLength) {
+		return new LeftPadExpression(this, AnyExpression.value(padWith), AnyExpression.value(ensureLength));
+	}
+
+	public StringExpression leftPad(StringExpression padWith, IntegerExpression ensureLength) {
+		return new LeftPadExpression(this, padWith, ensureLength);
+	}
+
+	private static class LeftPadExpression extends StringExpression {
+
+		private final StringExpression string;
+		private final IntegerExpression length;
+		private final StringExpression padding;
+
+		public LeftPadExpression(StringExpression string, StringExpression padding, IntegerExpression i) {
+			super();
+			this.string = string;
+			this.padding = padding;
+			this.length = i;
+		}
+		private final static long serialVersionUID = 1l;
+
+		@Override
+		public String toSQLString(DBDefinition db) {
+			if (db.supportsLeftPadTransform()) {
+				return db.doLeftPadTransform(this.string.toSQLString(db), this.padding.toSQLString(db), this.length.toSQLString(db));
+			} else {
+				return "LPAD_SUBSTITUTE_REQUIRED(" + 
+						SeparatedString
+								.startsWith("LPAD_SUBSTITUTE_REQUIRED(")
+								.add(this.string.toSQLString(db), this.padding.toSQLString(db), this.length.toSQLString(db))
+						.separatedBy(", ")
+						.withSuffix(")")
+										.toString()						;
+			}
+		}
+
+		@Override
+		public boolean getIncludesNull() {
+			return false;
+		}
+
+		@Override
+		public LeftPadExpression copy() {
+			return new LeftPadExpression(
+					string == null ? null : string.copy(),
+					padding == null ? null : padding.copy(),
+					length == null ? null : length.copy()
+			);
+		}
+	}
+
 	private static abstract class DBBinaryStringArithmetic extends StringExpression {
 
 		private static final long serialVersionUID = 1L;
@@ -3412,7 +3468,7 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 			return new NullStringExpression();
 		}
 	}
-
+	
 	protected class StringIfDBNullExpression extends DBBinaryStringFunction {
 
 		public StringIfDBNullExpression(StringExpression first, StringExpression second) {

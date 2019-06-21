@@ -17,6 +17,8 @@ package nz.co.gregs.dbvolution.databases.definitions;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
@@ -40,6 +42,7 @@ public class JavaDBDefinition extends DBDefinition {
 
 	public static final long serialVersionUID = 1L;
 	
+	private static final String DB_DATE_FORMAT_STR = "yyyy-M-d HH:mm:ss.SSS";//2017-02-18 18:59:59.000 +10:00
 	private final DateFormat DATETIME_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
 	private static final String[] RESERVED_WORD_ARRAY = new String[]{};
 	private static final List<String> RESERVED_WORDS = Arrays.asList(RESERVED_WORD_ARRAY);
@@ -48,6 +51,22 @@ public class JavaDBDefinition extends DBDefinition {
 	public String getDateFormattedForQuery(Date date) {
 //		yyyy-mm-dd hh[:mm[:ss
 		return "TIMESTAMP('" + DATETIME_FORMAT.format(date) + "')";
+	}
+
+	@Override
+	public String getDatePartsFormattedForQuery(String years, String months, String days, String hours, String minutes, String seconds, String subsecond, String timeZoneSign, String timeZoneHourOffset, String timeZoneMinuteOffSet) {
+		return "PARSEDATETIME("
+				+ years
+				+ "||'-'||" + months
+				+ "||'-'||" + days
+				+ "||' '||" + hours
+				+ "||':'||" + minutes
+				+ "||':'||(" + seconds+"+"+subsecond+")"
+//				+ "||' '||" + timeZoneSign
+//				+ "||" + timeZoneHourOffset
+//				+ "||" + timeZoneMinuteOffSet
+				+ ", '" + DB_DATE_FORMAT_STR + "')";
+		//return "PARSEDATETIME('" + years + "','" + H2_DATE_FORMAT_STR + "')";
 	}
 
 	@Override
@@ -290,15 +309,12 @@ public class JavaDBDefinition extends DBDefinition {
 		return false;
 	}
 
-//	@Override
-//	public String getOrderByDirectionClause(Boolean sortOrder) {
-//		return super.getOrderByDirectionClause(sortOrder) + (sortOrder ? " NULLS FIRST " : " NULLS LAST ");
-//	}
-
+	@Override
 	public String getOrderByDescending() {
 		return " DESC ";
 	}
 
+	@Override
 	public String getOrderByAscending() {
 		return " ASC ";
 	}
@@ -312,4 +328,14 @@ public class JavaDBDefinition extends DBDefinition {
 	public boolean supportsFullOuterJoinNatively() {
 		return false;
 	}
+
+//	@Override
+//	public String getLocalDateFormattedForQuery(LocalDate date) {
+//		return "TIMESTAMP('" + DATETIME_FORMAT.format(date) + "')";
+//	}
+//
+//	@Override
+//	public String getLocalDateTimeFormattedForQuery(LocalDateTime date) {
+//		return "TIMESTAMP('" + DATETIME_FORMAT.format(date) + "')";
+//	}
 }

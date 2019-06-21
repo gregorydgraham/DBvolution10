@@ -16,6 +16,8 @@
 package nz.co.gregs.dbvolution.databases.definitions;
 
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Date;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.databases.InformixDB;
@@ -57,6 +59,22 @@ public class InformixDBDefinition extends DBDefinition {
 	@Override
 	public String getDateFormattedForQuery(Date date) {
 		return "TO_DATE('" + dateFormat.format(date) + "','" + INFORMIX_DATE_FORMAT + "')";
+	}
+
+	@Override
+	public String getDatePartsFormattedForQuery(String years, String months, String days, String hours, String minutes, String seconds, String subsecond, String timeZoneSign, String timeZoneHourOffset, String timeZoneMinuteOffSet) {
+		return "PARSEDATETIME("
+				+ years
+				+ "||'-'||" + months
+				+ "||'-'||" + days
+				+ "||' '||" + hours
+				+ "||':'||" + minutes
+				+ "||':'||(" + seconds+"+"+subsecond+")"
+//				+ "||' '||" + timeZoneSign
+//				+ "||" + timeZoneHourOffset
+//				+ "||" + timeZoneMinuteOffSet
+				+ ", '" + INFORMIX_DATE_FORMAT + "')";
+		//return "PARSEDATETIME('" + years + "','" + H2_DATE_FORMAT_STR + "')";
 	}
 
 	/**
@@ -221,4 +239,14 @@ public class InformixDBDefinition extends DBDefinition {
 	public boolean supportsStatementIsClosed() {
 		return false;
 	}
+
+//	@Override
+//	public String getLocalDateFormattedForQuery(LocalDate date) {
+//		return "TO_DATE('" + dateFormat.format(date) + "','" + INFORMIX_DATE_FORMAT + "')";
+//	}
+//
+//	@Override
+//	public String getLocalDateTimeFormattedForQuery(LocalDateTime date) {
+//		return "TO_DATE('" + dateFormat.format(date) + "','" + INFORMIX_DATE_FORMAT + "')";
+//	}
 }

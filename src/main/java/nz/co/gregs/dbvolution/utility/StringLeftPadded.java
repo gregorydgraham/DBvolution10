@@ -1,6 +1,8 @@
 /*
- * Copyright 2017 greg.
+ * Copyright 2019 Gregory Graham.
  *
+ * Commercial licenses are available, please contact info@gregs.co.nz for details.
+ * 
  * This work is licensed under the Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License. 
  * To view a copy of this license, visit http://creativecommons.org/licenses/by-nc-sa/4.0/ 
  * or send a letter to Creative Commons, PO Box 1866, Mountain View, CA 94042, USA.
@@ -26,45 +28,42 @@
  * 
  * Check the Creative Commons website for any details, legalese, and updates.
  */
-package nz.co.gregs.dbvolution.databases.definitions;
+package nz.co.gregs.dbvolution.utility;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.Date;
+/**
+ *
+ * @author gregorygraham
+ */
+public class StringLeftPadded {
 
+	private final String string;
+	private String padding;
+	private Integer length;
 
-public class ClusterDatabaseDefinition extends DBDefinition {
-
-	public static final long serialVersionUID = 1L;
-		
-	@Override
-	public String getDateFormattedForQuery(Date date) {
-		throw new UnsupportedOperationException("Clusters Do Not Support These Operations Directly");
-	}
-
-	@Override
-	public String doDayOfWeekTransform(String dateSQL) {
-		throw new UnsupportedOperationException("Clusters Do Not Support These Operations Directly");
-	}
-
-	@Override
-	public boolean supportsStatementIsClosed() {
-		return false;
-	}
-
-//	@Override
-//	public String getLocalDateFormattedForQuery(LocalDate date) {
-//		throw new UnsupportedOperationException("Clusters Do Not Support These Operations Directly");
-//	}
-//
-//	@Override
-//	public String getLocalDateTimeFormattedForQuery(LocalDateTime date) {
-//		throw new UnsupportedOperationException("Clusters Do Not Support These Operations Directly");
-//	}
-
-	@Override
-	public String getDatePartsFormattedForQuery(String years, String months, String days, String hours, String minutes, String seconds, String subsecond, String timeZoneSign, String timeZoneHourOffset, String timeZoneMinuteOffSet) {
-		throw new UnsupportedOperationException("Clusters Do Not Support These Operations Directly");
+	private StringLeftPadded(String string) {
+		this.string = string;
+		this.length = 1;
+		this.padding = " ";
 	}
 	
+	public static StringLeftPadded pad(String str){
+		StringLeftPadded lps = new StringLeftPadded(str);
+		return lps;
+	}
+	
+	public StringLeftPadded with(String padding){
+		this.padding = padding;
+		return this;
+	}
+	
+	public StringLeftPadded toLength(Integer length){
+		this.length = length;
+		return this;
+	}
+	
+	@Override
+	public String toString(){
+		return String.format("%1$" + length + "s", string).replace(" ", padding);
+	}
+
 }

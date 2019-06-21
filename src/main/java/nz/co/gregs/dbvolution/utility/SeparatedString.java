@@ -46,52 +46,68 @@ import java.util.regex.Pattern;
  */
 public class SeparatedString {
 
-	private final String separator;
+	private String separator = " ";
 	private final ArrayList<String> strings = new ArrayList<>();
-	private String prefix;
-	private String suffix;
+	private String prefix = "";
+	private String suffix = "";
 	private String wrapBefore = "";
 	private String wrapAfter = "";
 	private String escapeChar = "";
 
-	public SeparatedString(String prefix, String separator, String suffix) {
-		this.prefix = prefix;
-		this.separator = separator;
-		this.suffix = suffix;
+	private SeparatedString() {
 	}
 
-	public SeparatedString(String separator) {
-		this("", separator, "");
+	public static SeparatedString startsWith(String precedingString) {
+		return new SeparatedString().withPrefix(precedingString);
+	}
+
+	public static SeparatedString of(String... allStrings) {
+		return new SeparatedString().add(allStrings);
+	}
+
+	public static SeparatedString of(Object... allStrings) {
+		return new SeparatedString().add(allStrings);
+	}
+
+	public static SeparatedString forSeparator(String separator) {
+		return new SeparatedString().separatedBy(separator);
+	}
+
+	public SeparatedString separatedBy(String separator) {
+		this.separator = separator;
+		return this;
 	}
 
 	public static SeparatedString bySpaces() {
-		return new SeparatedString(" ");
+		return SeparatedString.forSeparator(" ");
 	}
 
 	public static SeparatedString byCommas() {
-		return new SeparatedString(", ");
+		return SeparatedString.forSeparator(", ");
 	}
 
 	public static SeparatedString byCommasWithQuotedTermsAndBackslashEscape() {
-		return new SeparatedString(", ").withWrapping("\"", "\"").withEscapeChar("\\");
+		return SeparatedString
+				.forSeparator(", ")
+				.withWrapBefore("\"")
+				.withWrapAfter("\"")
+				.withEscapeChar("\\");
 	}
 
 	public static SeparatedString byCommasWithQuotedTermsAndDoubleBackslashEscape() {
-		return new SeparatedString(", ").withWrapping("\"", "\"").withEscapeChar("\\\\");
+		return SeparatedString
+				.forSeparator(", ")
+				.withWrapBefore("\"")
+				.withWrapAfter("\"")
+				.withEscapeChar("\\\\");
 	}
 
 	public static SeparatedString byTabs() {
-		return new SeparatedString("\t");
+		return SeparatedString.forSeparator("\t");
 	}
 
 	public static SeparatedString byLines() {
-		return new SeparatedString("\n");
-	}
-
-	public SeparatedString withWrapping(String before, String after) {
-		this.wrapBefore = before;
-		this.wrapAfter = after;
-		return this;
+		return SeparatedString.forSeparator("\n");
 	}
 
 	public SeparatedString withEscapeChar(String esc) {
@@ -103,14 +119,12 @@ public class SeparatedString {
 	public String toString() {
 		StringBuilder strs = new StringBuilder();
 		String sep = "";
-		Pattern matchSep = Pattern.compile(getSeparator());
 		Pattern matchBefore = Pattern.compile(getWrapBefore());
 		Pattern matchAfter = Pattern.compile(getWrapAfter());
 		Pattern matchEsc = Pattern.compile(getEscapeChar());
 		for (String element : this.getStrings()) {
 			String str = element;
 			if (!escapeChar.equals("")) {
-				str = matchSep.matcher(str).replaceAll(getEscapeChar() + getSeparator());
 				str = matchBefore.matcher(str).replaceAll(getEscapeChar() + getWrapBefore());
 				str = matchAfter.matcher(str).replaceAll(getEscapeChar() + getWrapAfter());
 				str = matchEsc.matcher(str).replaceAll(getEscapeChar() + getEscapeChar());
@@ -174,30 +188,18 @@ public class SeparatedString {
 		return this;
 	}
 
-	public SeparatedString add(Double string) {
-		getStrings().add(string.toString());
-		return this;
-	}
-
-	public SeparatedString add(Long string) {
-		getStrings().add(string.toString());
-		return this;
-	}
-
-	public SeparatedString add(Integer string) {
-		getStrings().add(string.toString());
-		return this;
-	}
-
 	public SeparatedString add(Object string) {
 		getStrings().add(string.toString());
 		return this;
 	}
 
 	public SeparatedString add(Object... strings) {
-		for (Object string : strings) {
-			getStrings().add(string.toString());
-		}
+		Arrays.asList(strings).stream().forEach((t) -> add(t));
+		return this;
+	}
+
+	public SeparatedString add(String... strings) {
+		getStrings().addAll(Arrays.asList(strings));
 		return this;
 	}
 
@@ -248,5 +250,35 @@ public class SeparatedString {
 	 */
 	public String getEscapeChar() {
 		return escapeChar;
+	}
+
+	public SeparatedString withWrapper(String wrapAroundEachTerm) {
+		this.wrapBefore = wrapAroundEachTerm;
+		this.wrapAfter = wrapAroundEachTerm;
+		return this;
+	}
+
+	public SeparatedString withWrapBefore(String wrapAtTheBeginningOfTerms) {
+		this.wrapBefore = wrapAtTheBeginningOfTerms;
+		return this;
+	}
+
+	public SeparatedString withWrapAfter(String placeAtTheEndOfEachTerm) {
+		this.wrapAfter = placeAtTheEndOfEachTerm;
+		return this;
+	}
+
+	public SeparatedString withPrefix(String placeAtTheBeginningOfTheString) {
+		this.prefix = placeAtTheBeginningOfTheString;
+		return this;
+	}
+
+	public SeparatedString withSuffix(String placeAtTheEndOfTheString) {
+		this.suffix = placeAtTheEndOfTheString;
+		return this;
+	}
+
+	public final SeparatedString endsWith(String string) {
+		return withSuffix(string);
 	}
 }

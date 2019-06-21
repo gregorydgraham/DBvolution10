@@ -25,6 +25,8 @@ import nz.co.gregs.dbvolution.results.NumberResult;
 import nz.co.gregs.dbvolution.datatypes.spatial2D.DBPolygon2D;
 import java.io.Serializable;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.*;
 import nz.co.gregs.dbvolution.DBQuery;
 import nz.co.gregs.dbvolution.columns.*;
@@ -1136,6 +1138,50 @@ public class RowDefinition implements Serializable {
 	}
 
 	/**
+	 * Creates a new LocalDateColumn instance to help create
+	 * {@link DBExpression expressions}
+	 *
+	 * <p>
+	 * This method is the easy way to create a reference to the database column
+	 * represented by the field for use in creating complex expressions within
+	 * your query.
+	 *
+	 * <p>
+	 * For use with the
+	 * {@link DBQuery#addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression) DBQuery addCondition method}
+	 *
+	 * @param fieldOfThisInstance	fieldOfThisInstance
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @return A Column representing the supplied field
+	 */
+	public LocalDateColumn column(DBLocalDate fieldOfThisInstance) {
+		return new LocalDateColumn(this, fieldOfThisInstance);
+	}
+
+	/**
+	 * Creates a new LocalDateColumn instance to help create
+	 * {@link DBExpression expressions}
+	 *
+	 * <p>
+	 * This method is the easy way to create a reference to the database column
+	 * represented by the field for use in creating complex expressions within
+	 * your query.
+	 *
+	 * <p>
+	 * For use with the
+	 * {@link DBQuery#addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression) DBQuery addCondition method}
+	 *
+	 * @param fieldOfThisInstance	fieldOfThisInstance
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @return A Column representing the supplied field
+	 */
+	public LocalDateTimeColumn column(DBLocalDateTime fieldOfThisInstance) {
+		return new LocalDateTimeColumn(this, fieldOfThisInstance);
+	}
+
+	/**
 	 * Creates a new DateColumn instance to help create
 	 * {@link DBExpression expressions}
 	 *
@@ -1155,6 +1201,50 @@ public class RowDefinition implements Serializable {
 	 */
 	public DateColumn column(Date fieldOfThisInstance) {
 		return new DateColumn(this, fieldOfThisInstance);
+	}
+
+	/**
+	 * Creates a new DateColumn instance to help create
+	 * {@link DBExpression expressions}
+	 *
+	 * <p>
+	 * This method is the easy way to create a reference to the database column
+	 * represented by the field for use in creating complex expressions within
+	 * your query.
+	 *
+	 * <p>
+	 * For use with the
+	 * {@link DBQuery#addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression) DBQuery addCondition method}
+	 *
+	 * @param fieldOfThisInstance	fieldOfThisInstance
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @return A Column representing the supplied field
+	 */
+	public LocalDateColumn column(LocalDate fieldOfThisInstance) {
+		return new LocalDateColumn(this, fieldOfThisInstance);
+	}
+
+	/**
+	 * Creates a new DateColumn instance to help create
+	 * {@link DBExpression expressions}
+	 *
+	 * <p>
+	 * This method is the easy way to create a reference to the database column
+	 * represented by the field for use in creating complex expressions within
+	 * your query.
+	 *
+	 * <p>
+	 * For use with the
+	 * {@link DBQuery#addCondition(nz.co.gregs.dbvolution.expressions.BooleanExpression) DBQuery addCondition method}
+	 *
+	 * @param fieldOfThisInstance	fieldOfThisInstance
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @return A Column representing the supplied field
+	 */
+	public LocalDateTimeColumn column(LocalDateTime fieldOfThisInstance) {
+		return new LocalDateTimeColumn(this, fieldOfThisInstance);
 	}
 
 	/**
@@ -1192,7 +1282,7 @@ public class RowDefinition implements Serializable {
 				string.append(" ");
 				string.append(field.javaName());
 				string.append(":");
-				string.append(field.getQueryableDatatype());
+				string.append(field.getQueryableDatatype().toString());
 				separator = ",";
 			}
 		}
@@ -1223,9 +1313,9 @@ public class RowDefinition implements Serializable {
 	public List<String> getFieldNames() {
 		List<String> returnList = new ArrayList<String>();
 		List<PropertyWrapperDefinition> fieldDefns = this.getReturnColumns();
-		for (PropertyWrapperDefinition prop : fieldDefns) {
+		fieldDefns.forEach((prop) -> {
 			returnList.add(prop.javaName());
-		}
+		});
 		return returnList;
 	}
 

@@ -18,6 +18,9 @@ package nz.co.gregs.dbvolution.databases.definitions;
 import nz.co.gregs.dbvolution.internal.query.LargeObjectHandlerType;
 import com.vividsolutions.jts.geom.Polygon;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.TimeZone;
 import nz.co.gregs.dbvolution.DBRow;
@@ -32,6 +35,7 @@ import nz.co.gregs.dbvolution.datatypes.DBLargeText;
 import nz.co.gregs.dbvolution.datatypes.QueryableDatatype;
 import nz.co.gregs.dbvolution.datatypes.spatial2D.*;
 import nz.co.gregs.dbvolution.internal.h2.*;
+import nz.co.gregs.dbvolution.utility.SeparatedString;
 
 /**
  * Defines the features of the H2 database that differ from the standard
@@ -49,10 +53,11 @@ import nz.co.gregs.dbvolution.internal.h2.*;
 public class H2DBDefinition extends DBDefinition implements SupportsDateRepeatDatatypeFunctions, SupportsPolygonDatatype {
 
 	public static final long serialVersionUID = 1L;
-	
+
 	private static final String DATE_FORMAT_STR = "yyyy-M-d HH:mm:ss.SSS Z";
+	private static final String H2_DATE_FORMAT_WITHOUT_TZ = "yyyy-M-d HH:mm:ss.SSS";
 	private static final String H2_DATE_FORMAT_STR = "yyyy-M-d HH:mm:ss.SSS Z";//2017-02-18 18:59:59.000 +10:00
-	private final SimpleDateFormat strToDateFormat = new SimpleDateFormat(DATE_FORMAT_STR);
+	private static final SimpleDateFormat strToDateFormat = new SimpleDateFormat(DATE_FORMAT_STR);
 
 	@Override
 	public String getDateFormattedForQuery(Date date) {
@@ -64,19 +69,20 @@ public class H2DBDefinition extends DBDefinition implements SupportsDateRepeatDa
 
 	@Override
 	public String getDatePartsFormattedForQuery(String years, String months, String days, String hours, String minutes, String seconds, String subsecond, String timeZoneSign, String timeZoneHourOffset, String timeZoneMinuteOffSet) {
-		return "PARSEDATETIME("
-				+ years
-				+ "||'-'||" + months
-				+ "||'-'||" + days
-				+ "||' '||" + hours
-				+ "||':'||" + minutes
-				+ "||':'||" + seconds
-				//				+"||'.'||"+subsecond
-				+ "||' '||" + timeZoneSign
-				+ "||" + timeZoneHourOffset
-				+ "||" + timeZoneMinuteOffSet
-				+ ", '" + H2_DATE_FORMAT_STR + "')";
-		//return "PARSEDATETIME('" + years + "','" + H2_DATE_FORMAT_STR + "')";
+		String result = "PARSEDATETIME("
+				+ "''||"+years
+				+ "||'-'||" + doLeftPadTransform(months, "'0'", "2")
+				+ "||'-'||" + doLeftPadTransform(days, "'0'","2")
+				+ "||' '||" + doLeftPadTransform(hours,"'0'","2")
+				+ "||':'||" + doLeftPadTransform(minutes, "'0'","2")
+				+ "||':'||" + doIfThenElseTransform(doIntegerEqualsTransform(doStringLengthTransform("''||"+seconds), "1"), "'0'", "''")
+				+ "||(" + seconds + "+" +doStringToNumberTransform(doSubstringTransform(subsecond, "1","5"))+")"
+				+ "||" + doIfThenElseTransform(doIntegerEqualsTransform(doStringLengthTransform("''||"+doStringToNumberTransform(doSubstringTransform(subsecond, "1","5"))), "2"), "'000'", "''")
+				+ "||" + doIfThenElseTransform(doIntegerEqualsTransform(doStringLengthTransform("''||"+doStringToNumberTransform(doSubstringTransform(subsecond, "1","5"))), "3"), "'00'", "''")
+				+ "||" + doIfThenElseTransform(doIntegerEqualsTransform(doStringLengthTransform("''||"+doStringToNumberTransform(doSubstringTransform(subsecond, "1","5"))), "4"), "'0'", "''")
+				+ ", '" + H2_DATE_FORMAT_WITHOUT_TZ+"'"
+				+")";
+		return result;
 	}
 
 	@Override
@@ -621,11 +627,11 @@ public class H2DBDefinition extends DBDefinition implements SupportsDateRepeatDa
 
 	@Override
 	public String doStringAccumulateTransform(String accumulateColumn, String separator, String referencedTable) {
-		return "GROUP_CONCAT("+accumulateColumn+" SEPARATOR "+separator+")";
+		return "GROUP_CONCAT(" + accumulateColumn + " SEPARATOR " + separator + ")";
 	}
 
 	@Override
 	public String doStringAccumulateTransform(String accumulateColumn, String separator, String orderByColumnName, String referencedTable) {
-		return "GROUP_CONCAT("+accumulateColumn+" ORDER BY "+orderByColumnName+" SEPARATOR "+separator+")";
+		return "GROUP_CONCAT(" + accumulateColumn + " ORDER BY " + orderByColumnName + " SEPARATOR " + separator + ")";
 	}
 }

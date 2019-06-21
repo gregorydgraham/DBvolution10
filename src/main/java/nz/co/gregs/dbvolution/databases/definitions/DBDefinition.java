@@ -56,6 +56,10 @@ import nz.co.gregs.dbvolution.query.RowDefinition;
 import nz.co.gregs.dbvolution.results.Line2DResult;
 import org.joda.time.Period;
 import com.vividsolutions.jts.io.WKTReader;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import nz.co.gregs.dbvolution.utility.SeparatedString;
 
 /**
  *
@@ -93,6 +97,62 @@ public abstract class DBDefinition implements Serializable {
 	public abstract String getDateFormattedForQuery(Date date);
 
 	/**
+	 * Transforms the Date instance into a SQL snippet that can be used as a date
+	 * in a query.
+	 *
+	 * <p>
+	 * For instance the date might be transformed into a string like "
+	 * DATETIME('2013-03-23 00:00:00') "
+	 *
+	 * @param date	date
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @return the date formatted as a string that the database will correctly
+	 * interpret as a date.
+	 */
+	public final String getLocalDateFormattedForQuery(LocalDate date) {
+		if (date == null) {
+			return getNull();
+		}
+		final int tzMillis = TimeZone.getDefault().getRawOffset();
+		String tzSign = tzMillis < 0 ? "-" : "+";
+		int tzHour = tzMillis / (1000 * 60 * 60);
+		int tzMinutes = (tzMillis - (tzHour * 1000 * 60 * 60)) / 1000 * 60;
+		return getDatePartsFormattedForQuery("" + date.getYear(), "" + date.getMonth().getValue(), "" + date.getDayOfMonth(), "0", "0", "0", "0.0", tzSign, "" + tzHour, "" + tzMinutes);
+	}
+
+	/**
+	 * Transforms the Date instance into a SQL snippet that can be used as a date
+	 * in a query.
+	 *
+	 * <p>
+	 * For instance the date might be transformed into a string like "
+	 * DATETIME('2013-03-23 00:00:00') "
+	 *
+	 * @param date	date
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @return the date formatted as a string that the database will correctly
+	 * interpret as a date.
+	 */
+	public final String getLocalDateTimeFormattedForQuery(LocalDateTime date) {
+		if (date == null) {
+			return getNull();
+		}
+		final int tzMillis = TimeZone.getDefault().getRawOffset();
+		String tzSign = tzMillis < 0 ? "-" : "+";
+		int tzHour = tzMillis / (1000 * 60 * 60);
+		int tzMinutes = (tzMillis - (tzHour * 1000 * 60 * 60)) / 1000 * 60;
+//		var strings = SeparatedString.byCommas()
+//				.add(date.getYear(),date.getMonth().getValue(),date.getDayOfMonth())
+//				.add(date.getHour(),date.getMinute())
+//				.add(date.getSecond(),((0.0+date.getNano())/1000000000.0))
+//				.add(tzSign,tzHour, tzMinutes);
+//		System.out.println(strings.toString());
+		return getDatePartsFormattedForQuery("" + date.getYear(), "" + date.getMonth().getValue(), "" + date.getDayOfMonth(), "" + date.getHour(), "" + date.getMinute(), "" + date.getSecond(), "" + ((0.0 + date.getNano()) / 1000000000.0), tzSign, "" + tzHour, "" + tzMinutes);
+	}
+
+	/**
 	 * Transforms the specific parts of a date from their SQL snippets into a SQL
 	 * snippet that can be used as a date in a query.
 	 *
@@ -118,9 +178,9 @@ public abstract class DBDefinition implements Serializable {
 	 * @return the date formatted as a string that the database will be correctly
 	 * interpret as a date.
 	 */
-	public String getDatePartsFormattedForQuery(String years, String months, String days, String hours, String minutes, String seconds, String subsecond, String timeZoneSign, String timeZoneHourOffset, String timeZoneMinuteOffSet) {
-		return "";
-	}
+	public abstract String getDatePartsFormattedForQuery(String years, String months, String days, String hours, String minutes, String seconds, String subsecond, String timeZoneSign, String timeZoneHourOffset, String timeZoneMinuteOffSet);// {
+//		return "";
+//	}
 
 	/**
 	 * Transforms the Date instance into UTC time zone date.
@@ -1260,7 +1320,8 @@ public abstract class DBDefinition implements Serializable {
 	}
 
 	/**
-	 * Used within DBBulkInsert to separate the VALUES clauses of the INSERT statement.
+	 * Used within DBBulkInsert to separate the VALUES clauses of the INSERT
+	 * statement.
 	 *
 	 * <p style="color: #F90;">Support DBvolution at
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
@@ -1530,6 +1591,28 @@ public abstract class DBDefinition implements Serializable {
 	}
 
 	/**
+	 * Wraps the provided SQL snippets in a statement that joins the two snippets
+	 * into one SQL snippet.
+	 *
+	 * @param firstString firstString
+	 * @param secondString secondString
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @return SQL snippet
+	 * @see StringExpression#append(java.lang.String)
+	 * @see StringExpression#append(java.lang.Number)
+	 * @see StringExpression#append(nz.co.gregs.dbvolution.results.StringResult)
+	 * @see StringExpression#append(nz.co.gregs.dbvolution.results.NumberResult)
+	 */
+	public String doConcatTransform(String firstString, String secondString, String... rest) {
+		SeparatedString sep = SeparatedString.startsWith("CONCAT(").separatedBy(", ").endsWith(")")
+				.add(firstString)
+				.add(secondString)
+				.add(rest);
+		return sep.toString();
+	}
+
+	/**
 	 * Returns the function name of the function used to return the next value of
 	 * a sequence.
 	 *
@@ -1638,7 +1721,7 @@ public abstract class DBDefinition implements Serializable {
 	 * @return a SQL snippet that will produce the year of the supplied date.
 	 */
 	public String doYearTransform(String dateExpression) {
-		return "EXTRACT(YEAR FROM " + dateExpression + ")";
+		return doNumberToIntegerTransform("EXTRACT(YEAR FROM " + dateExpression + ")");
 	}
 
 	/**
@@ -1651,7 +1734,7 @@ public abstract class DBDefinition implements Serializable {
 	 * @return a SQL snippet that will produce the month of the supplied date.
 	 */
 	public String doMonthTransform(String dateExpression) {
-		return "EXTRACT(MONTH FROM " + dateExpression + ")";
+		return doNumberToIntegerTransform("EXTRACT(MONTH FROM " + dateExpression + ")");
 	}
 
 	/**
@@ -1668,7 +1751,7 @@ public abstract class DBDefinition implements Serializable {
 	 * @return a SQL snippet that will produce the day of the supplied date.
 	 */
 	public String doDayTransform(String dateExpression) {
-		return "EXTRACT(DAY FROM " + dateExpression + ")";
+		return doNumberToIntegerTransform("EXTRACT(DAY FROM " + dateExpression + ")");
 	}
 
 	/**
@@ -1681,7 +1764,7 @@ public abstract class DBDefinition implements Serializable {
 	 * @return a SQL snippet that will produce the hour of the supplied date.
 	 */
 	public String doHourTransform(String dateExpression) {
-		return "EXTRACT(HOUR FROM " + dateExpression + ")";
+		return doNumberToIntegerTransform("EXTRACT(HOUR FROM " + dateExpression + ")");
 	}
 
 	/**
@@ -1694,7 +1777,7 @@ public abstract class DBDefinition implements Serializable {
 	 * @return a SQL snippet that will produce the minute of the supplied date.
 	 */
 	public String doMinuteTransform(String dateExpression) {
-		return "EXTRACT(MINUTE FROM " + dateExpression + ")";
+		return doNumberToIntegerTransform("EXTRACT(MINUTE FROM " + dateExpression + ")");
 	}
 
 	/**
@@ -2420,7 +2503,50 @@ public abstract class DBDefinition implements Serializable {
 	 * @see #prefersDatesReadAsStrings()
 	 */
 	public Date parseDateFromGetString(String getStringDate) throws ParseException {
-		return new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(getStringDate);
+		return SIMPLE_DATE_FORMAT.parse(getStringDate);
+	}
+	private static final SimpleDateFormat SIMPLE_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+
+	/**
+	 * returns the date format used when reading dates as strings.
+	 *
+	 * <p>
+	 * Normally dates are read as dates but this method allows DBvolution to read
+	 * them using a text mode.
+	 *
+	 * @param getStringDate a date retrieved with {@link ResultSet#getString(java.lang.String)
+	 * }
+	 *
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @return return the date format required to interpret strings as dates.
+	 * @throws java.text.ParseException SimpleDateFormat may throw a parse
+	 * exception
+	 * @see #prefersDatesReadAsStrings()
+	 */
+	public LocalDate parseLocalDateFromGetString(String getStringDate) throws ParseException {
+		return LocalDate.parse(getStringDate.subSequence(0, getStringDate.length()), DateTimeFormatter.ISO_DATE);
+	}
+
+	/**
+	 * returns the date format used when reading dates as strings.
+	 *
+	 * <p>
+	 * Normally dates are read as dates but this method allows DBvolution to read
+	 * them using a text mode.
+	 *
+	 * @param inputFromResultSet a date retrieved with {@link ResultSet#getString(java.lang.String)
+	 * }
+	 *
+	 * <p style="color: #F90;">Support DBvolution at
+	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @return return the date format required to interpret strings as dates.
+	 * @throws java.text.ParseException SimpleDateFormat may throw a parse
+	 * exception
+	 * @see #prefersDatesReadAsStrings()
+	 */
+	public LocalDateTime parseLocalDateTimeFromGetString(String inputFromResultSet) throws ParseException {
+		return LocalDateTime.parse(inputFromResultSet.subSequence(0, inputFromResultSet.length()), DateTimeFormatter.ISO_DATE_TIME);
 	}
 
 	/**
@@ -4806,8 +4932,8 @@ public abstract class DBDefinition implements Serializable {
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a JTS LineSegment derived from the database's response, may be
 	 * null.
-	 * @throws com.vividsolutions.jts.io.ParseException malformed WKT will throw an
-	 * exception
+	 * @throws com.vividsolutions.jts.io.ParseException malformed WKT will throw
+	 * an exception
 	 */
 	public LineSegment transformDatabaseLineSegment2DValueToJTSLineSegment(String lineSegmentAsSQL) throws com.vividsolutions.jts.io.ParseException {
 		LineString lineString = (new GeometryFactory()).createLineString(new Coordinate[]{});
@@ -5831,7 +5957,7 @@ public abstract class DBDefinition implements Serializable {
 	}
 
 	public String doNumberToIntegerTransform(String sql) {
-		return doTruncTransform(sql, "0");
+		return "CAST(" + sql + " AS BIGINT)";
 	}
 
 	public String doFindNumberInStringTransform(String toSQLString) {
@@ -6147,5 +6273,37 @@ public abstract class DBDefinition implements Serializable {
 
 	public String getNthValueFunctionName() {
 		return "NTH_VALUE";
+	}
+
+	public String doNewLocalDateFromYearMonthDayTransform(String years, String months, String days) {
+		final int tz = TimeZone.getDefault().getRawOffset();
+		String sign = tz > 0 ? "+" : "-";
+		int tzHours = tz / (1000 * 60 * 60);
+		int tzMinutes = tz - (tzHours * 1000 * 60 * 60);
+		return getDatePartsFormattedForQuery(years, months, days, "0", "0", "0", "0.0", sign, ""+tzHours, ""+tzMinutes);
+	}
+
+	public String doLeftPadTransform(String toPad, String padWith, String length) {
+		return SeparatedString
+				.startsWith("LPAD(")
+				.separatedBy(", ")
+				.add(toPad, length, padWith)
+				.endsWith(")").toString();
+	}
+
+	public boolean supportsLeftPadTransform() {
+		return true;
+	}
+
+	public String doRightPadTransform(String toPad, String padWith, String length) {
+		return SeparatedString
+				.startsWith("RPAD(")
+				.separatedBy(", ")
+				.add(toPad, length, padWith)
+				.endsWith(")").toString();
+	}
+
+	public boolean supportsRightPadTransform() {
+		return true;
 	}
 }

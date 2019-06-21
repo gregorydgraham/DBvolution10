@@ -21,12 +21,12 @@ import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Locale;
-import net.sourceforge.tedhi.FlexibleDateFormat;
 import net.sourceforge.tedhi.FlexibleDateRangeFormat;
 import nz.co.gregs.dbvolution.DBTable;
 import nz.co.gregs.dbvolution.databases.*;
@@ -55,8 +55,9 @@ public abstract class AbstractTest {
 	DBTable<CarCompany> carCompanies;
 	public List<Marque> marqueRows = new ArrayList<>();
 	public List<CarCompany> carTableRows = new ArrayList<>();
-	public static final FlexibleDateFormat TEDHI_FORMAT = FlexibleDateFormat.getPatternInstance("dd/M/yyyy h:m:s", Locale.UK);
+//	public static final FlexibleDateFormat TEDHI_FORMAT = FlexibleDateFormat.getPatternInstance("dd/M/yyyy h:m:s", Locale.UK);
 	public static final SimpleDateFormat DATETIME_FORMAT = new SimpleDateFormat("dd/MMM/yyyy HH:mm:ss", Locale.UK);
+	public static final DateTimeFormatter LOCALDATETIME_FORMAT = DateTimeFormatter.ofPattern("dd/MMMM/y HH:mm:ss");
 	public static final FlexibleDateRangeFormat TEDHI_RANGE_FORMAT = FlexibleDateRangeFormat.getPatternInstance("M yyyy", Locale.UK);
 	public static String firstDateStr = "23/March/2013 12:34:56";
 	public static String secondDateStr = "2/April/2011 1:02:03";
@@ -409,7 +410,7 @@ public abstract class AbstractTest {
 		}
 
 		public MySQLTestDatabase(String host, String port, String database, String username, String password, String schema) throws SQLException {
-			super(host, new Integer(port), database, username, password);
+			super(host, Integer.valueOf(port), database, username, password);
 		}
 
 		public MySQLTestDatabase(String url, String username, String password) throws SQLException {
@@ -446,7 +447,7 @@ public abstract class AbstractTest {
 		}
 
 		protected static PostgresDB getTestDatabase(String url, String host, String port, String database, String username, String password, String schema) throws SQLException {
-			return new PostgresDB(host, new Integer(port), database, username, password);
+			return new PostgresDB(host, Integer.valueOf(port), database, username, password);
 		}
 	}
 

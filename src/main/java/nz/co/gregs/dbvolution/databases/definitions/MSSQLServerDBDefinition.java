@@ -18,6 +18,11 @@ package nz.co.gregs.dbvolution.databases.definitions;
 import com.vividsolutions.jts.geom.*;
 import com.vividsolutions.jts.io.WKTReader;
 import java.text.*;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.OffsetTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.*;
 import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.columns.AbstractColumn;
@@ -35,6 +40,7 @@ import nz.co.gregs.dbvolution.internal.sqlserver.*;
 import nz.co.gregs.dbvolution.internal.query.QueryOptions;
 import nz.co.gregs.dbvolution.internal.query.QueryState;
 import nz.co.gregs.dbvolution.results.ExpressionHasStandardStringResult;
+import nz.co.gregs.dbvolution.utility.SeparatedString;
 import org.apache.commons.lang3.ArrayUtils;
 
 /**
@@ -60,7 +66,7 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 	@Override
 	public String getDateFormattedForQuery(Date date) {
 		DateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
-		DateFormat tzFormat = new SimpleDateFormat("Z");
+		DateFormat tzFormat = new SimpleDateFormat("XXX");
 		String tz = tzFormat.format(date);
 		switch (tz.length()) {
 			case 4:
@@ -69,11 +75,37 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 			case 5:
 				tz = tz.substring(0, 3) + ":" + tz.substring(3, 5);
 				break;
+			case 6:
+				tz = tz; // "+13:00" is perfect :)
+				break;
 			default:
 				throw new DBRuntimeException("TIMEZONE was :\"" + tz + "\"");
 		}
-		final String result = " CAST('" + format.format(date) + " " + tz + "' as DATETIMEOFFSET) ";
+		final String result = " CAST('" + format.format(date) /*+ " " + tz*/ +"' as DATETIME2(7)) ";
+//		final String result = " CAST('" + format.format(date) + " " + tz + "' as DATETIMEOFFSET(7)) ";
 		return result;
+	}
+
+	@Override
+	public String getDatePartsFormattedForQuery(String years, String months, String days, String hours, String minutes, String seconds, String subsecond, String timeZoneSign, String timeZoneHourOffset, String timeZoneMinuteOffSet) {
+		return "CAST("
+				+ doConcatTransform(
+						doNumberToStringTransform(years), "'-'", doNumberToStringTransform(months), "'-'", doNumberToStringTransform(days), "' '",
+						doNumberToStringTransform(hours), "':'", doNumberToStringTransform(minutes), "':'", doNumberToStringTransform("(" + seconds + "+" + subsecond + ")") 
+//						, "' '", timeZoneSign, timeZoneHourOffset, "':'", timeZoneMinuteOffSet
+//						, "'" + OffsetTime.now().format(DateTimeFormatter.ofPattern("XXX")) + "'"
+				)
+				+ " as DATETIME2(7))";
+		//return "PARSEDATETIME('" + years + "','" + H2_DATE_FORMAT_STR + "')";
+	}
+
+	@Override
+	public String doConcatTransform(String firstString, String secondString, String... rest) {
+		SeparatedString sep = SeparatedString.startsWith("(").separatedBy("+").endsWith(")")
+				.add(firstString)
+				.add(secondString)
+				.add(rest);
+		return sep.toString();
 	}
 
 	@Override
@@ -83,7 +115,11 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 		} else if (qdt instanceof DBBooleanArray) {
 			return " VARCHAR(64) ";
 		} else if (qdt instanceof DBDate) {
-			return " DATETIMEOFFSET ";
+			return " DATETIME2(7) ";
+		} else if (qdt instanceof DBLocalDate) {
+			return " DATETIME2(7) ";
+		} else if (qdt instanceof DBLocalDateTime) {
+			return " DATETIME2(7) ";
 		} else if (qdt instanceof DBLargeBinary) {
 			return " IMAGE ";
 		} else if (qdt instanceof DBLargeText) {
@@ -134,9 +170,37 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 		String tempString = getStringDate.replaceAll(":([0-9]*)$", "$1");
 		Date parsed;
 		try {
-			parsed = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS Z").parse(tempString);
+			parsed = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.S").parse(tempString);
+//			parsed = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.S Z").parse(tempString);
 		} catch (ParseException ex) {
-			parsed = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS").parse(tempString);
+			parsed = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.S").parse(tempString);
+		}
+		return parsed;
+	}
+
+	//'2019-06-11 23:09:06.1075250 +12:00'
+//	DateTimeFormatter DATETIMEFORMATTER_WITH_ZONE = DateTimeFormatter.ofPattern("y-M-d H:m:s.n ZZZZZ");
+	DateTimeFormatter DATETIMEFORMATTER_WITH_ZONE = DateTimeFormatter.ofPattern("y-M-d H:m:s.n");
+	DateTimeFormatter DATETIMEFORMATTER_WITHOUT_ZONE = DateTimeFormatter.ofPattern("y-M-d H:m:s.n");
+
+	@Override
+	public LocalDate parseLocalDateFromGetString(String inputFromResultSet) throws ParseException {
+		LocalDate parsed;
+		try {
+			parsed = LocalDate.parse(inputFromResultSet.subSequence(0, inputFromResultSet.length()), DATETIMEFORMATTER_WITH_ZONE);
+		} catch (DateTimeParseException ex) {
+			parsed = LocalDate.parse(inputFromResultSet.subSequence(0, inputFromResultSet.length()), DATETIMEFORMATTER_WITHOUT_ZONE);
+		}
+		return parsed;
+	}
+
+	@Override
+	public LocalDateTime parseLocalDateTimeFromGetString(String inputFromResultSet) throws ParseException {
+		LocalDateTime parsed;
+		try {
+			parsed = LocalDateTime.parse(inputFromResultSet.subSequence(0, inputFromResultSet.length()), DATETIMEFORMATTER_WITH_ZONE);
+		} catch (DateTimeParseException ex) {
+			parsed = LocalDateTime.parse(inputFromResultSet.subSequence(0, inputFromResultSet.length()), DATETIMEFORMATTER_WITHOUT_ZONE);
 		}
 		return parsed;
 	}
@@ -500,7 +564,11 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 
 	@Override
 	protected String getCurrentDateTimeFunction() {
-		return " SYSDATETIMEOFFSET() ";
+		return " switchoffset("+
+				"SYSDATETIME()" + ", '"
+				+OffsetTime.now().format(DateTimeFormatter.ofPattern("ZZZZZ"))
+				+"')"
+				;
 	}
 
 	@Override
@@ -1200,7 +1268,7 @@ public class MSSQLServerDBDefinition extends DBDefinition {
 		if (expression instanceof BooleanExpression) {
 			return ((BooleanExpression) expression).ifThenElse(1, 0).bracket();
 		} else if (expression instanceof Spatial2DExpression) {
-			return( (ExpressionHasStandardStringResult)expression).stringResult();
+			return ((ExpressionHasStandardStringResult) expression).stringResult();
 		} else {
 			return super.transformToStorableType(expression);
 		}
