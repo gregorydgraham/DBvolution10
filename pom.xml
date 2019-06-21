@@ -118,6 +118,9 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-javadoc-plugin</artifactId>
+				<configuration>
+					<additionalOptions>-html5</additionalOptions>
+				</configuration>
 				<version>3.0.1</version>
 				<reportSets>
 					<reportSet><!-- by default, id = "default" -->
@@ -164,7 +167,7 @@
 				<artifactId>maven-project-info-reports-plugin</artifactId>
 				<version>3.0.0</version>
 			</plugin>
-<!--			<plugin>
+			<!--			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>animal-sniffer-maven-plugin</artifactId>
 				<version>1.18</version>
@@ -1064,7 +1067,7 @@
 			<version>10.11.1.1</version>
 			<type>jar</type>
 		</dependency>
-				<dependency>
+		<dependency>
 			<groupId>com.vividsolutions</groupId>
 			<artifactId>jts</artifactId>
 			<version>1.13</version>
@@ -1130,16 +1133,16 @@
 			<version>3.7</version>
 			<type>jar</type>
 		</dependency>
-	 <dependency>
-	  <groupId>org.apache.commons</groupId>
-	  <artifactId>commons-crypto</artifactId>
-	  <version>1.0.0</version>
-	 </dependency>
-	 <dependency>
-	  <groupId>net.openhft</groupId>
-	  <artifactId>compiler</artifactId>
-	  <version>2.3.4</version>
-	 </dependency>
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-crypto</artifactId>
+			<version>1.0.0</version>
+		</dependency>
+		<dependency>
+			<groupId>net.openhft</groupId>
+			<artifactId>compiler</artifactId>
+			<version>2.3.4</version>
+		</dependency>
 	</dependencies>
 	<distributionManagement>
 		<site>
