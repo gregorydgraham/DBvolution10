@@ -61,8 +61,8 @@ public class DBValidation<R extends DBRow> {
 	 * Creates a DBValidate action for the table.
 	 *
 	 * @param migration the mapping to migrate
-	 * @param mapper
-	 * @param examples
+	 * @param mapper the DBRow that defines the transition from one table to it's declared super-table
+	 * @param examples table examples to limit the query
 	 */
 	public DBValidation(DBQueryInsert<R> migration, DBRow mapper, DBRow... examples) {
 		sourceMigration = migration;

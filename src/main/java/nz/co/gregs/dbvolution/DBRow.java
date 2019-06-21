@@ -430,7 +430,7 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 		for (PropertyWrapper prop : propertyWrappers) {
 			final QueryableDatatype<?> qdt = prop.getQueryableDatatype();
 			if (!(qdt instanceof DBLargeObject)) {
-				if (qdt!=null && qdt.hasChanged()) {
+				if (qdt != null && qdt.hasChanged()) {
 					qdt.setUnchanged();
 
 					// ensure field set when using type adaptors
@@ -541,7 +541,7 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 					Object rawJavaValue = prop.rawJavaValue();
 					if (rawJavaValue == null) {
 //						try {
-							rawJavaValue = prop.getRawJavaTypeInstance();//.newInstance();
+						rawJavaValue = prop.getRawJavaTypeInstance();//.newInstance();
 //						} catch (InstantiationException | IllegalAccessException ex) {
 //							// note: InstantiationException tends to be thrown without a message
 //							throw new RuntimeException("Unable to instantiate instance of " + prop.toString(), ex);
@@ -586,10 +586,8 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 	/**
 	 * USED INTERNALLY
 	 *
-	 * @param db
-	 * @param useTableAlias
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @param db the database
+	 * @param useTableAlias should the alias be used?
 	 * @return a list of the DBExpressions that are defined for this exemplar.
 	 */
 	public final List<BooleanExpression> getWhereClauseExpressions(DBDefinition db, boolean useTableAlias) //throws InstantiationException, IllegalAccessException 
@@ -604,9 +602,9 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 					Object rawJavaValue = prop.rawJavaValue();
 					if (rawJavaValue == null) {
 //						try {
-							rawJavaValue = prop.getRawJavaTypeInstance();
+						rawJavaValue = prop.getRawJavaTypeInstance();
 //						} catch (InstantiationException | IllegalAccessException ex) {
-							// note: InstantiationException tends to be thrown without a message
+						// note: InstantiationException tends to be thrown without a message
 //							throw new RuntimeException("Unable to instantiate instance of " + prop.toString(), ex);
 //						}
 						prop.setRawJavaValue(rawJavaValue);
@@ -803,7 +801,7 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 
 				for (PropertyWrapper prop : props) {
 					if (prop.isColumn()) {
-						if (prop.isForeignKey()&& prop.isRecursiveForeignKey()) {
+						if (prop.isForeignKey() && prop.isRecursiveForeignKey()) {
 							if (!ignoredForeignKeys.contains(prop.getPropertyWrapperDefinition())) {
 								fkFields.add(prop);
 							}
@@ -1325,12 +1323,12 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 		Set<Class<? extends DBRow>> subTypes = reflections.getSubTypesOf(DBRow.class);
 		for (Class<? extends DBRow> tableClass : subTypes) {
 //			try {
-				if (!Modifier.isAbstract(tableClass.getModifiers())) {
-					DBRow newInstance = DBRow.getDBRow(tableClass);//tableClass.newInstance();
-					if (newInstance.getReferencedTables().contains(this.getClass())) {
-						relatedTables.add(tableClass);
-					}
+			if (!Modifier.isAbstract(tableClass.getModifiers())) {
+				DBRow newInstance = DBRow.getDBRow(tableClass);//tableClass.newInstance();
+				if (newInstance.getReferencedTables().contains(this.getClass())) {
+					relatedTables.add(tableClass);
 				}
+			}
 //			} catch (InstantiationException | IllegalAccessException ex) {
 //				throw new UnableToInstantiateDBRowSubclassException(tableClass, ex);
 //			}
@@ -1364,13 +1362,13 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 		for (Class<? extends DBRow> tableClass : subTypes) {
 			if (tableClass.getSuperclass().equals(DBRow.class)) {
 //				try {
-					if (!Modifier.isAbstract(tableClass.getModifiers())) {
-						DBRow newInstance = DBRow.getDBRow(tableClass);
+				if (!Modifier.isAbstract(tableClass.getModifiers())) {
+					DBRow newInstance = DBRow.getDBRow(tableClass);
 //						DBRow newInstance = tableClass.newInstance();
-						if (newInstance.getReferencedTables().contains(this.getClass())) {
-							relatedTables.add(tableClass);
-						}
+					if (newInstance.getReferencedTables().contains(this.getClass())) {
+						relatedTables.add(tableClass);
 					}
+				}
 //				} catch (InstantiationException | IllegalAccessException ex) {
 //					throw new UnableToInstantiateDBRowSubclassException(tableClass, ex);
 //				}
@@ -1434,6 +1432,9 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 	 * instance in the {@code query} 1 Database exceptions may be thrown
 	 * @throws java.sql.SQLException java.sql.SQLException
 	 * @throws nz.co.gregs.dbvolution.exceptions.AccidentalBlankQueryException
+	 * Thrown when no conditions are detectable within the query and blank queries
+	 * have not been explicitly set with {@link DBQuery#setBlankQueryAllowed(boolean)
+	 * } or similar.
 	 */
 	public <R extends DBRow> List<R> getRelatedInstancesFromQuery(DBQueryable query, R example) throws SQLException, AccidentalCartesianJoinException, AccidentalBlankQueryException {
 		List<R> instances = new ArrayList<>();
@@ -1562,7 +1563,7 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 		RowDefinitionInstanceWrapper wrapper = getWrapper();
 		List<PropertyWrapper> foreignKeyPropertyWrappers = wrapper.getRecursiveForeignKeyPropertyWrappers();
 		for (PropertyWrapper propertyWrapper : foreignKeyPropertyWrappers) {
-				fksToSelf.add(propertyWrapper.getQueryableDatatype());
+			fksToSelf.add(propertyWrapper.getQueryableDatatype());
 		}
 		return fksToSelf;
 	}
@@ -1792,6 +1793,9 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 	 * may be thrown
 	 * @throws java.sql.SQLException java.sql.SQLException
 	 * @throws nz.co.gregs.dbvolution.exceptions.AccidentalBlankQueryException
+	 * Thrown when no conditions are detectable within the query and blank queries
+	 * have not been explicitly set with {@link DBQuery#setBlankQueryAllowed(boolean)
+	 * } or similar.
 	 */
 	@SuppressWarnings("unchecked")
 	public <A> List<A> getDistinctValuesOfColumn(DBDatabase database, A fieldOfThisInstance) throws SQLException, AccidentalCartesianJoinException, AccidentalBlankQueryException {
@@ -1923,9 +1927,9 @@ abstract public class DBRow extends RowDefinition implements Serializable {
 							field.setRawJavaValue(relatedInstancesFromQuery);
 						} else if (relatedInstancesFromQuery.isEmpty()) {
 							field.setRawJavaValue(null);
-						} else if(relatedInstancesFromQuery.size()==1){
+						} else if (relatedInstancesFromQuery.size() == 1) {
 							field.setRawJavaValue(relatedInstancesFromQuery.get(0));
-						}else {
+						} else {
 //							System.out.println("nz.co.gregs.dbvolution.DBRow.setAutoFilledFields(): TOO MANY MATCHING ELEMENTS FOUND");
 //							for (DBRow dBRow : relatedInstancesFromQuery) {
 //								System.out.println(""+dBRow);

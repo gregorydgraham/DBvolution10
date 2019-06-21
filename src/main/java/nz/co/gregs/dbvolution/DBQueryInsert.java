@@ -136,6 +136,9 @@ public class DBQueryInsert<M extends DBRow> extends RowDefinition {
 	 * query. Database exceptions may be thrown
 	 * @throws java.sql.SQLException java.sql.SQLException
 	 * @throws nz.co.gregs.dbvolution.exceptions.AccidentalBlankQueryException
+	 * Thrown when no conditions are detectable within the query and blank queries
+	 * have not been explicitly set with {@link DBQuery#setBlankQueryAllowed(boolean)
+	 * } or similar.
 	 */
 	public List<M> getAllRows() throws SQLException, AccidentalCartesianJoinException, AccidentalBlankQueryException {
 		return getAllRows(database);
@@ -246,6 +249,9 @@ public class DBQueryInsert<M extends DBRow> extends RowDefinition {
 	 * query. 1 Database exceptions may be thrown
 	 * @throws java.sql.SQLException java.sql.SQLException
 	 * @throws nz.co.gregs.dbvolution.exceptions.AccidentalBlankQueryException
+	 * Thrown when no conditions are detectable within the query and blank queries
+	 * have not been explicitly set with {@link DBQuery#setBlankQueryAllowed(boolean)
+	 * } or similar.
 	 */
 	public List<M> getAllRows(DBRow... extraExamples) throws SQLException, AccidentalCartesianJoinException, AccidentalBlankQueryException {
 		return getAllRows(database, extraExamples);
@@ -311,6 +317,9 @@ public class DBQueryInsert<M extends DBRow> extends RowDefinition {
 	 * query. 1 Database exceptions may be thrown
 	 * @throws java.sql.SQLException java.sql.SQLException
 	 * @throws nz.co.gregs.dbvolution.exceptions.AccidentalBlankQueryException
+	 * Thrown when no conditions are detectable within the query and blank queries
+	 * have not been explicitly set with {@link DBQuery#setBlankQueryAllowed(boolean)
+	 * } or similar.
 	 */
 	public List<M> getRows(DBDatabase database, DBRow... rows) throws SQLException, AccidentalCartesianJoinException, AccidentalBlankQueryException {
 		DBQuery query = getDBQuery(database, rows);
@@ -349,6 +358,9 @@ public class DBQueryInsert<M extends DBRow> extends RowDefinition {
 	 * query
 	 * @throws java.sql.SQLException Database exceptions may be thrown
 	 * @throws nz.co.gregs.dbvolution.exceptions.AccidentalBlankQueryException
+	 * Thrown when no conditions are detectable within the query and blank queries
+	 * have not been explicitly set with {@link DBQuery#setBlankQueryAllowed(boolean)
+	 * } or similar.
 	 */
 	public List<M> getRowsHaving(DBDatabase database, DBRow[] rows, BooleanExpression... conditions) throws SQLException, AccidentalCartesianJoinException, AccidentalBlankQueryException {
 		DBQuery query = getDBQuery(database, rows);
@@ -471,6 +483,9 @@ public class DBQueryInsert<M extends DBRow> extends RowDefinition {
 	 * exceptions may be thrown
 	 * @throws java.sql.SQLException java.sql.SQLException
 	 * @throws nz.co.gregs.dbvolution.exceptions.AccidentalBlankQueryException
+	 * Thrown when no conditions are detectable within the query and blank queries
+	 * have not been explicitly set with {@link DBQuery#setBlankQueryAllowed(boolean)
+	 * } or similar.
 	 */
 	public Long count(DBDatabase database, DBRow... rows) throws SQLException, AccidentalCartesianJoinException, AccidentalBlankQueryException {
 		DBQuery setUpQuery = getDBQuery(database, rows);
@@ -531,7 +546,7 @@ public class DBQueryInsert<M extends DBRow> extends RowDefinition {
 	/**
 	 * Add the rows as optional tables in the query.
 	 *
-	 * @param examples
+	 * @param examples additional optional tables
 	 */
 	public void addAsOptionalTables(DBRow... examples) {
 		optionalTables.addAll(Arrays.asList(examples));
@@ -702,8 +717,8 @@ public class DBQueryInsert<M extends DBRow> extends RowDefinition {
 	 * migration.insertAllRows();
 	 * </code>
 	 *
-	 * @param extraExamples
-	 * @throws SQLException
+	 * @param extraExamples extra examples used to reduce the source data set.
+	 * @throws SQLException database exceptions
 	 */
 	public void insertAllRows(DBRow... extraExamples) throws SQLException {
 		DBQueryInsertAction<M> migrate = getDBQueryInsertAction(extraExamples);
@@ -796,10 +811,8 @@ public class DBQueryInsert<M extends DBRow> extends RowDefinition {
 	 * migration.insertAllRows();
 	 * </code>
 	 *
-	 * @param extraExamples
-	 * @throws SQLException
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+	 * @param extraExamples extra examples used to reduce the source data set.
+	 * @throws SQLException database exceptions
 	 * @return the validation results of the migration
 	 */
 	public DBValidation.Results validateAllRows(DBRow... extraExamples) throws SQLException {

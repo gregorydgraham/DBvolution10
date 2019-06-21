@@ -502,7 +502,7 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 	 * only provide access to the "_" and "%" wildcards but there may be
 	 * exceptions.
 	 *
-	 * @param string
+	 * @param string a literal value to find
 	 * @return a BooleanExpression of the SQL comparison.
 	 */
 	public BooleanExpression contains(String string) {
@@ -522,7 +522,7 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 	 * only provide access to the "_" and "%" wildcards but there may be
 	 * exceptions.
 	 *
-	 * @param strings
+	 * @param strings literal values to find
 	 * @return a BooleanExpression of the SQL comparison.
 	 */
 	public BooleanExpression containsAnyOf(String... strings) {
@@ -554,7 +554,7 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 	 * and {@link SearchAcross} for using this method with multiple columns
 	 * easily.</p>
 	 *
-	 * @param searchString
+	 * @param searchString a collection of search terms to find
 	 * @return a BooleanExpression of the SQL comparison.
 	 */
 	public BooleanExpression searchFor(SearchString searchString) {
@@ -581,7 +581,7 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 	 * and {@link SearchAcross} for using this method with multiple columns
 	 * easily.</p>
 	 *
-	 * @param strings
+	 * @param strings search terms to find
 	 * @return a BooleanExpression of the SQL comparison.
 	 */
 	public BooleanExpression searchFor(String... strings) {
@@ -616,7 +616,7 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 	 * searchForRanking produces a number value that can be used for sorting. </p>
 	 *
 	 *
-	 * @param strings
+	 * @param strings search terms to find
 	 * @return a BooleanExpression of the SQL comparison.
 	 */
 	public NumberExpression searchForRanking(SearchString strings) {
@@ -648,8 +648,8 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 	 * <p>
 	 * searchForRanking produces a number value that can be used for sorting. </p>
 	 *
-	 * @param strings
-	 * @return
+	 * @param strings terms to find and rank
+	 * @return an expression
 	 *
 	 */
 	public NumberExpression searchForRanking(String... strings) {
@@ -692,7 +692,7 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 	 * only provide access to the "_" and "%" wildcards but there may be
 	 * exceptions.
 	 *
-	 * @param string
+	 * @param string an expression to search for
 	 * @return a BooleanExpression of the SQL comparison.
 	 */
 	public BooleanExpression contains(StringExpression string) {
@@ -712,7 +712,7 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 	 * only provide access to the "_" and "%" wildcards but there may be
 	 * exceptions.
 	 *
-	 * @param string
+	 * @param string a literal string to find
 	 * @return a BooleanExpression of the SQL comparison.
 	 */
 	public BooleanExpression containsIgnoreCase(String string) {
@@ -732,7 +732,7 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 	 * only provide access to the "_" and "%" wildcards but there may be
 	 * exceptions.
 	 *
-	 * @param string
+	 * @param string an expression to search for
 	 * @return a BooleanExpression of the SQL comparison.
 	 */
 	public BooleanExpression containsIgnoreCase(StringResult string) {
@@ -752,7 +752,7 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 	 * only provide access to the "_" and "%" wildcards but there may be
 	 * exceptions.
 	 *
-	 * @param string
+	 * @param string an expression to search for
 	 * @return a BooleanExpression of the SQL comparison.
 	 */
 	public BooleanExpression containsIgnoreCase(StringExpression string) {
@@ -766,7 +766,7 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 	 * Use this comparison to generate a BooleanExpression that compares the
 	 * current StringExpression to the supplied SQL pattern.
 	 *
-	 * @param string
+	 * @param string a literal to search for
 	 * @return a BooleanExpression of the SQL comparison.
 	 */
 	public BooleanExpression startsWith(String string) {
@@ -780,7 +780,7 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 	 * Use this comparison to generate a BooleanExpression that compares the
 	 * current StringExpression to the supplied SQL pattern.
 	 *
-	 * @param string
+	 * @param string a literal to search for
 	 * @return a BooleanExpression of the SQL comparison.
 	 */
 	public BooleanExpression endsWith(String string) {
@@ -794,7 +794,7 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 	 * Use this comparison to generate a BooleanExpression that compares the
 	 * current StringExpression to the supplied SQL pattern.
 	 *
-	 * @param string
+	 * @param string an expression to search for
 	 * @return a BooleanExpression of the SQL comparison.
 	 */
 	public BooleanExpression startsWith(StringResult string) {
@@ -808,7 +808,7 @@ public class StringExpression extends RangeExpression<String, StringResult, DBSt
 	 * Use this comparison to generate a BooleanExpression that compares the
 	 * current StringExpression to the supplied SQL pattern.
 	 *
-	 * @param string
+	 * @param string an expression to find
 	 * @return a BooleanExpression of the SQL comparison.
 	 */
 	public BooleanExpression endsWith(StringResult string) {

@@ -15,13 +15,11 @@
  */
 package nz.co.gregs.dbvolution.exceptions;
 
-import nz.co.gregs.dbvolution.DBRow;
 import nz.co.gregs.dbvolution.internal.query.QueryDetails;
 
 /**
- *
- * <p style="color: #F90;">Support DBvolution at
- * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
+ * Thrown when a query will create a Cartesian Join and cartesian joins have not
+ * been explicitly permitted.
  *
  * @author Gregory Graham
  */

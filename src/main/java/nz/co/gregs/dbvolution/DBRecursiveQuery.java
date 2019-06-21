@@ -122,11 +122,13 @@ public class DBRecursiveQuery<T extends DBRow> {
 	 * While it is possible to define a root node in other ways only the above
 	 * definition is currently supported.
 	 *
-	 * @param query
-	 * @param keyToFollow
-	 * @throws ColumnProvidedMustBeAForeignKey
-	 * @throws ForeignKeyDoesNotReferenceATableInTheQuery
-	 * @throws ForeignKeyIsNotRecursiveException
+	 * @param query starting query
+	 * @param keyToFollow the FK to follow during recursion
+	 * @throws ColumnProvidedMustBeAForeignKey Only FKs please
+	 * @throws ForeignKeyDoesNotReferenceATableInTheQuery The FK must be in a
+	 * table
+	 * @throws ForeignKeyIsNotRecursiveException the FK must reference the table
+	 * it is in
 	 */
 	public DBRecursiveQuery(DBQuery query, ColumnProvider keyToFollow) throws ColumnProvidedMustBeAForeignKey, ForeignKeyDoesNotReferenceATableInTheQuery, ForeignKeyIsNotRecursiveException {
 		this.queryDetails.setOriginalQuery(query);
@@ -164,8 +166,11 @@ public class DBRecursiveQuery<T extends DBRow> {
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 *
 	 * @return a list of all descendants of this query.
-	 * @throws SQLException
+	 * @throws SQLException database errors
 	 * @throws nz.co.gregs.dbvolution.exceptions.AccidentalBlankQueryException
+	 * Thrown when no conditions are detectable within the query and blank queries
+	 * have not been explicitly set with {@link DBQuery#setBlankQueryAllowed(boolean)
+	 * } or similar.
 	 */
 	public synchronized List<T> getDescendants() throws SQLException, AccidentalCartesianJoinException, AccidentalBlankQueryException {
 		List<T> resultsList = new ArrayList<>();
@@ -189,12 +194,12 @@ public class DBRecursiveQuery<T extends DBRow> {
 	 * This is used by {@link #getPathsToRoot() } to recreate the paths stored in
 	 * the database as a list of {@link TreeNode TreeNodes}.
 	 *
-	 * <p style="color: #F90;">Support DBvolution at
-	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
-	 *
 	 * @return a list of all descendants of this query.
-	 * @throws SQLException
+	 * @throws SQLException database errors
 	 * @throws nz.co.gregs.dbvolution.exceptions.AccidentalBlankQueryException
+	 * Thrown when no conditions are detectable within the query and blank queries
+	 * have not been explicitly set with {@link DBQuery#setBlankQueryAllowed(boolean)
+	 * } or similar.
 	 */
 	public synchronized List<T> getAncestors() throws SQLException, AccidentalCartesianJoinException, AccidentalBlankQueryException {
 		List<T> resultsList = new ArrayList<>();
@@ -256,6 +261,9 @@ public class DBRecursiveQuery<T extends DBRow> {
 	 * exceptions may be thrown
 	 * @throws java.sql.SQLException java.sql.SQLException
 	 * @throws nz.co.gregs.dbvolution.exceptions.AccidentalBlankQueryException
+	 * Thrown when no conditions are detectable within the query and blank queries
+	 * have not been explicitly set with {@link DBQuery#setBlankQueryAllowed(boolean)
+	 * } or similar.
 	 */
 	public synchronized List<TreeNode<T>> getPathsToRoot() throws SQLException, AccidentalCartesianJoinException, AccidentalBlankQueryException {
 		List<T> ancestors = getAncestors();
@@ -330,6 +338,9 @@ public class DBRecursiveQuery<T extends DBRow> {
 	 * 1 Database exceptions may be thrown
 	 * @throws java.sql.SQLException java.sql.SQLException
 	 * @throws nz.co.gregs.dbvolution.exceptions.AccidentalBlankQueryException
+	 * Thrown when no conditions are detectable within the query and blank queries
+	 * have not been explicitly set with {@link DBQuery#setBlankQueryAllowed(boolean)
+	 * } or similar.
 	 */
 	public synchronized List<TreeNode<T>> getTrees() throws SQLException, AccidentalCartesianJoinException, AccidentalBlankQueryException {
 		List<T> descendants = getDescendants();

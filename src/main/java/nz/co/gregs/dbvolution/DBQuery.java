@@ -2520,9 +2520,9 @@ public class DBQuery implements Serializable {
 	 * A root node is defined as a row with a null value in the FK. A leaf node is
 	 * a row that has no FKs referencing it.
 	 *
-	 * @param <T>
-	 * @param column
-	 * @return
+	 * @param <T> the DBRow class to be produced by the recursive query
+	 * @param column the column to follow during recursion
+	 * @return a recursive query
 	 */
 	public <T extends DBRow> DBRecursiveQuery<T> getDBRecursiveQuery(ColumnProvider column) {
 		return new DBRecursiveQuery<T>(this, column);

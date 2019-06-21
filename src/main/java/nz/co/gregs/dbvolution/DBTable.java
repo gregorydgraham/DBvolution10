@@ -134,6 +134,9 @@ public class DBTable<E extends DBRow> {
 	 * @return all the appropriate rows of the table from the database;
 	 * @throws SQLException database exceptions
 	 * @throws nz.co.gregs.dbvolution.exceptions.AccidentalBlankQueryException
+	 * Thrown when no conditions are detectable within the query and blank queries
+	 * have not been explicitly set with {@link DBQuery#setBlankQueryAllowed(boolean)
+	 * } or similar.
 	 */
 	public List<E> getAllRows() throws SQLException, AccidentalCartesianJoinException, AccidentalBlankQueryException {
 		query.refreshQuery();
@@ -617,7 +620,7 @@ public class DBTable<E extends DBRow> {
 	 *
 	 * Inserts DBRows into the database
 	 *
-	 * @param row
+	 * @param row the row to insert
 	 * @return a DBActionList of all the actions performed 1 Database exceptions
 	 * may be thrown
 	 * @throws java.sql.SQLException java.sql.SQLException
@@ -639,9 +642,9 @@ public class DBTable<E extends DBRow> {
 
 	/**
 	 *
-	 * Inserts DBRows into the database
+	 * Inserts DBRows into the database.
 	 *
-	 * @param rows
+	 * @param rows the rows to insert
 	 * @return a DBActionList of all the actions performed 1 Database exceptions
 	 * may be thrown
 	 * @throws java.sql.SQLException java.sql.SQLException
@@ -1262,7 +1265,7 @@ public class DBTable<E extends DBRow> {
 	 * <p>
 	 * Use this method If you require a longer running query.
 	 *
-	 * @param milliseconds
+	 * @param milliseconds the number of milliseconds required to elapse
 	 * @return this query.
 	 */
 	public DBTable<E> setQueryTimeout(int milliseconds) {

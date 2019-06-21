@@ -167,17 +167,13 @@ public abstract class QueryableDatatype<T> extends Object implements Serializabl
 	 * <p style="color: #F90;">Support DBvolution at
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a new instance of the supplied QDT class
-	 * @throws java.lang.NoSuchMethodException
-	 * @throws java.lang.InstantiationException
-	 * @throws java.lang.IllegalAccessException
-	 * @throws java.lang.reflect.InvocationTargetException
+	 * @throws java.lang.NoSuchMethodException All QDTs need an accessible default constructor
+	 * @throws java.lang.InstantiationException All QDTs need an accessible default constructor
+	 * @throws java.lang.IllegalAccessException All QDTs need an accessible default constructor
+	 * @throws java.lang.reflect.InvocationTargetException All QDTs need an accessible default constructor
 	 */
 	public static <T extends QueryableDatatype<?>> T getQueryableDatatypeInstance(Class<T> requiredQueryableDatatype) throws NoSuchMethodException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
-//		try {
 		return requiredQueryableDatatype.getConstructor().newInstance();
-//		} catch (NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
-//			throw new RuntimeException("Unable To Create " + requiredQueryableDatatype.getClass().getSimpleName() + ": Please ensure that the constructor of " + requiredQueryableDatatype.getClass().getSimpleName() + " has no arguments, throws no exceptions, and is public", ex);
-//		}
 	}
 
 	/**
@@ -193,10 +189,10 @@ public abstract class QueryableDatatype<T> extends Object implements Serializabl
 	 * <p style="color: #F90;">Support DBvolution at
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 * @return a new instance of the supplied QDT class
-	 * @throws java.lang.NoSuchMethodException
-	 * @throws java.lang.InstantiationException
-	 * @throws java.lang.IllegalAccessException
-	 * @throws java.lang.reflect.InvocationTargetException
+	 * @throws java.lang.NoSuchMethodException All QDTs need an accessible default constructor
+	 * @throws java.lang.InstantiationException All QDTs need an accessible default constructor
+	 * @throws java.lang.IllegalAccessException All QDTs need an accessible default constructor
+	 * @throws java.lang.reflect.InvocationTargetException All QDTs need an accessible default constructor
 	 */
 	@SuppressWarnings("unchecked")
 	public static <T extends QueryableDatatype<?>> T getQueryableDatatypeInstance(T requiredQueryableDatatype) throws NoSuchMethodException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
@@ -451,7 +447,7 @@ public abstract class QueryableDatatype<T> extends Object implements Serializabl
 	 * <p style="color: #F90;">Support DBvolution at
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 *
-	 * @param valueIfNull
+	 * @param valueIfNull the value to use if the column contains NULL
 	 * @return the literal value, if defined, which may be null
 	 */
 	public T getValueWithDefaultValue(T valueIfNull) {
@@ -649,7 +645,7 @@ public abstract class QueryableDatatype<T> extends Object implements Serializabl
 	 * <p style="color: #F90;">Support DBvolution at
 	 * <a href="http://patreon.com/dbvolution" target=new>Patreon</a></p>
 	 *
-	 * @param defn
+	 * @param defn the DBDefinition
 	 * @return the literal value as it would appear in an SQL statement i.e.
 	 * {yada} =&gt; 'yada', {1} =&gt; 1 and {} =&gt; NULL
 	 */
@@ -1254,7 +1250,7 @@ public abstract class QueryableDatatype<T> extends Object implements Serializabl
 	 * Used internally to maintain the relationship between QDTs and their
 	 * ColumnProvider equivalents.</p>
 	 *
-	 * @param row
+	 * @param row the row from which to get the column provider
 	 * @return a column object appropriate to this datatype based on the object
 	 * and the row
 	 * @throws IncorrectRowProviderInstanceSuppliedException if this object is not
@@ -1387,7 +1383,7 @@ public abstract class QueryableDatatype<T> extends Object implements Serializabl
 	/**
 	 * Return true if the QDT has a default insert value defined.
 	 *
-	 * @return
+	 * @return TRUE if a default has been defined for use during inserts.
 	 */
 	public boolean hasDefaultInsertValue() {
 		return defaultInsertValue != null || defaultInsertExpression != null;
@@ -1400,8 +1396,8 @@ public abstract class QueryableDatatype<T> extends Object implements Serializabl
 	 * <p>
 	 * Probably not the method you are looking for.</p>
 	 *
-	 * @param defn
-	 * @return
+	 * @param defn the DBDefinition
+	 * @return the SQL version of the default value
 	 */
 	public String getDefaultInsertValueSQLString(DBDefinition defn) {
 		QueryableDatatype<T> newQDT = this.getQueryableDatatypeForExpressionValue();
@@ -1417,7 +1413,7 @@ public abstract class QueryableDatatype<T> extends Object implements Serializabl
 	/**
 	 * Return true if the QDT has a default update value defined.
 	 *
-	 * @return
+	 * @return TRUE if a default update value has been set
 	 */
 	public boolean hasDefaultUpdateValue() {
 		return defaultUpdateValue != null || defaultUpdateExpression != null;
@@ -1430,8 +1426,8 @@ public abstract class QueryableDatatype<T> extends Object implements Serializabl
 	 * <p>
 	 * Probably not the method you are looking for.</p>
 	 *
-	 * @param defn
-	 * @return
+	 * @param defn the DBDefinition
+	 * @return the default update value as SQL
 	 */
 	public String getDefaultUpdateValueSQLString(DBDefinition defn) {
 		QueryableDatatype<T> newQDT = this.getQueryableDatatypeForExpressionValue();

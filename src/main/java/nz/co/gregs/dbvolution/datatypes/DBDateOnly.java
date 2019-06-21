@@ -222,7 +222,7 @@ public class DBDateOnly extends DBDate {
 	 * public DBDate creationOrUpdateDate = new DBDate()
 	 * .setDefaultInsertValue(DateExpression.currentDate())
 	 * .setDefaultUpdateValue(DateExpression.currentDate());
-	 * </pre></p>
+	 * </pre>
 	 *
 	 * @param value the value to use during insertion when no particular value has
 	 * been specified.
@@ -262,7 +262,7 @@ public class DBDateOnly extends DBDate {
 	 * public DBDate creationOrUpdateDate = new DBDate()
 	 * .setDefaultInsertValue(DateExpression.currentDate())
 	 * .setDefaultUpdateValue(DateExpression.currentDate());
-	 * </pre></p>
+	 * </pre>
 	 *
 	 * @param value the value to use during update when no particular value has
 	 * been specified.
@@ -302,7 +302,7 @@ public class DBDateOnly extends DBDate {
 	 * public DBDate creationOrUpdateDate = new DBDate()
 	 * .setDefaultInsertValue(DateExpression.currentDate())
 	 * .setDefaultUpdateValue(DateExpression.currentDate());
-	 * </pre></p>
+	 * </pre>
 	 *
 	 * @return This QDT
 	 */
@@ -334,7 +334,7 @@ public class DBDateOnly extends DBDate {
 	 * public DBDate creationOrUpdateDate = new DBDate()
 	 * .setDefaultInsertValue(DateExpression.currentDate())
 	 * .setDefaultUpdateValue(DateExpression.currentDate());
-	 * </pre></p>
+	 * </pre>
 	 *
 	 * @param value the value to use during update when no particular value has
 	 * been specified.

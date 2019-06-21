@@ -718,7 +718,7 @@ public class DBLocalDateTime extends QueryableDatatype<LocalDateTime> implements
 
 	/**
 	 * Set the value to be inserted when no value has been set, using
-	 * {@link #setValue(nz.co.gregs.dbvolution.datatypes.DBDate) setValue(...)},
+	 * {@link #setValue(java.time.LocalDateTime)  setValue(...)},
 	 * for the QDT.
 	 *
 	 * <p>
@@ -739,7 +739,7 @@ public class DBLocalDateTime extends QueryableDatatype<LocalDateTime> implements
 	 * public DBDate creationOrUpdateDate = new DBDate()
 	 * .setDefaultInsertValue(DateExpression.currentDate())
 	 * .setDefaultUpdateValue(DateExpression.currentDate());
-	 * </pre></p>
+	 * </pre>
 	 *
 	 * @param value the value to use during insertion when no particular value has
 	 * been specified.
@@ -753,7 +753,7 @@ public class DBLocalDateTime extends QueryableDatatype<LocalDateTime> implements
 
 	/**
 	 * Set the value to be inserted when no value has been set, using
-	 * {@link #setValue(nz.co.gregs.dbvolution.datatypes.DBDate) setValue(...)},
+	 * {@link #setValue(java.time.LocalDateTime)  setValue(...)},
 	 * for the QDT.
 	 *
 	 * <p>
@@ -762,8 +762,8 @@ public class DBLocalDateTime extends QueryableDatatype<LocalDateTime> implements
 	 *
 	 * <p>
 	 * Care should be taken when using this as some "obvious" uses are better
-	 * handled using
-	 * {@link #setDefaultInsertValue(nz.co.gregs.dbvolution.results.AnyResult) expression version.  In particular, setDefaultInsertValue(new Date()) is probably NOT what you want, setDefaultInsertValue(DateExpression.currentDate()) will produce a correct creation date value.</p>
+	 * handled using the
+	 * {@link #setDefaultInsertValue(nz.co.gregs.dbvolution.results.AnyResult) expression version}.  In particular, setDefaultInsertValue(new Date()) is probably NOT what you want, setDefaultInsertValue(DateExpression.currentDate()) will produce a correct creation date value.</p>
 	 *
 	 * <p>
 	 * Correct usages for standard date defaults:
@@ -779,7 +779,7 @@ public class DBLocalDateTime extends QueryableDatatype<LocalDateTime> implements
 	 * public DBDate creationOrUpdateDate = new DBDate()
 	 * .setDefaultInsertValue(DateExpression.currentDate())
 	 * .setDefaultUpdateValue(DateExpression.currentDate());
-	 * </pre></p>
+	 * </pre>
 	 *
 	 * @param value the value to use during insertion when no particular value has
 	 * been specified.
@@ -792,7 +792,7 @@ public class DBLocalDateTime extends QueryableDatatype<LocalDateTime> implements
 
 	/**
 	 * Set the value to be used during an update when no value has been set, using
-	 * {@link #setValue(nz.co.gregs.dbvolution.datatypes.DBDate)  setValue(...)},
+	 * {@link #setValue(java.time.LocalDateTime)   setValue(...)},
 	 * for the QDT.
 	 *
 	 * <p>
@@ -801,8 +801,8 @@ public class DBLocalDateTime extends QueryableDatatype<LocalDateTime> implements
 	 *
 	 * <p>
 	 * Care should be taken when using this as some "obvious" uses are better
-	 * handled using
-	 * {@link #setDefaultUpdateValue(nz.co.gregs.dbvolution.results.AnyResult) expression version.  In particular, setDefaultUpdateValue(new Date()) is probably NOT what you want, setDefaultUpdateValue(DateExpression.currentDate()) will produce a correct update time value.</p>
+	 * handled using the
+	 * {@link #setDefaultUpdateValue(nz.co.gregs.dbvolution.results.AnyResult) expression version}.  In particular, setDefaultUpdateValue(new Date()) is probably NOT what you want, setDefaultUpdateValue(DateExpression.currentDate()) will produce a correct update time value.</p>
 	 *
 	 * <p>
 	 * Correct usages for standard date defaults:
@@ -818,7 +818,7 @@ public class DBLocalDateTime extends QueryableDatatype<LocalDateTime> implements
 	 * public DBDate creationOrUpdateDate = new DBDate()
 	 * .setDefaultInsertValue(DateExpression.currentDate())
 	 * .setDefaultUpdateValue(DateExpression.currentDate());
-	 * </pre></p>
+	 * </pre>
 	 *
 	 * @param value the value to use during update when no particular value has
 	 * been specified.
@@ -832,7 +832,7 @@ public class DBLocalDateTime extends QueryableDatatype<LocalDateTime> implements
 
 	/**
 	 * Set the value to be used during an update when no value has been set, using
-	 * {@link #setValue(nz.co.gregs.dbvolution.datatypes.DBDate)  setValue(...)},
+	 * {@link #setValue(java.time.LocalDateTime)   setValue(...)},
 	 * for the QDT.
 	 *
 	 * <p>
